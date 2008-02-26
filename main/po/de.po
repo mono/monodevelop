@@ -6,12 +6,12 @@ msgstr ""
 "X-Poedit-Bookmarks: -1,1681,-1,-1,-1,-1,-1,-1,-1,-1\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2008-02-26 04:06:47+0100\n"
+"PO-Revision-Date: 2008-02-26 15:08:22+0100\n"
 "Language-Team: \n"
 "Project-Id-Version: Monodevelop\n"
 "MIME-Version: 1.0\n"
 "X-Generator: MonoDevelop Gettext addin\n"
-"POT-Creation-Date: \n"
+"POT-Creation-Date: 2008-02-26 14:23:23+0100\n"
 "Last-Translator: Mike Krüger <mkrueger@novell.com>\n"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Core/ServiceManager.cs:120
@@ -742,6 +742,7 @@ msgid "OVR"
 msgstr "ÜBS"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/StatusProgressMonitor.cs:137
+#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:254
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:1014
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:1030
 msgid "Ready"
@@ -903,13 +904,6 @@ msgid "The file '{0}' could not be loaded."
 msgstr "Dei Datei '{0}' konnte nicht geladen werden"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/NewProjectDialog.cs:353
-msgid ""
-"Illegal project name. \n"
-"Only use letters, digits, space, '.' or '_'."
-msgstr ""
-"Ungütiger Projektname.\n"
-"Nur Buchstaben, Ziffern, Leerzeichen, '.' oder '_' sind erlaubt."
-
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/NewProjectDialog.cs:361
 msgid ""
 "Illegal project name.\n"
@@ -1121,6 +1115,8 @@ msgstr "Datei '{0}' ist kein gültiges .NET Assembly "
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/GacReferencePanel.cs:54
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:182
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectReferenceDescriptor.cs:52
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:191
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:200
 msgid "Assembly"
 msgstr "Assembly"
 
@@ -1157,6 +1153,7 @@ msgstr "Verweis"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:153
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs:247
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:196
 msgid "Type"
 msgstr "Typ"
 
@@ -2491,7 +2488,7 @@ msgstr "Zeige Completion Fenster"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:835
 msgid "Go to end of line"
-msgstr "Gehe zum Ende der Zeile"
+msgstr "Gehe zum Zeilenende"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:837
 msgid "Go to beginning of line"
@@ -2551,7 +2548,7 @@ msgstr "Lösche ganze Zeile"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:867
 msgid "Delete to end of line"
-msgstr "Lösche bis zum Ende der Zeile"
+msgstr "Lösche bis Zeilenende"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:870
 msgid "Move the line or highlighted selection up"
@@ -2727,7 +2724,7 @@ msgstr "Klassen"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1117
 msgid "Nested namespaces"
-msgstr "Verschachtelte Namespaces"
+msgstr "Verschachtelte Namensräume"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1118
 msgid "Show project structure"
@@ -2735,15 +2732,15 @@ msgstr "Projekt-Struktur anzeigen"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1119
 msgid "Group members by access"
-msgstr "Gruppiere Mitglieder nach Zugriff"
+msgstr "Gruppiere Elemente nach Zugriff"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1120
 msgid "Group members by member type"
-msgstr "Gruppiere Mitglieder nach Typ"
+msgstr "Gruppiere Elemente nach Typ"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1121
 msgid "Show public members only"
-msgstr "Zeige nur öffentliche Mitglieder"
+msgstr "Zeige nur öffentliche Elemente"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1162
 msgid "Preferences"
@@ -3416,7 +3413,7 @@ msgstr "_Else in der selben Zeile wie die schließende Klammer"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.CodeGenerationPanelWidget.cs:117
 msgid "_Insert blank lines between members"
-msgstr "Leerzeilen zwischen Mitgliedern einfügen"
+msgstr "_Leerzeilen zwischen Elementen einfügen"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.CodeGenerationPanelWidget.cs:128
 msgid "_Use full type names"
@@ -4562,7 +4559,7 @@ msgstr "<b>Projekt-Information</b>"
 
 #: ../src/core/MonoDevelop.Projects.Gui/gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.GeneralProjectOptionsWidget.cs:121
 msgid "Default Namespace:"
-msgstr "Standard Namespace:"
+msgstr "Namensraumvorgabe:"
 
 #: ../src/core/MonoDevelop.Projects.Gui/gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.GeneralProjectOptionsWidget.cs:199
 msgid "<b>On Project Load</b>"
@@ -4875,9 +4872,8 @@ msgid "Target options"
 msgstr "Ziel-Einstellungen"
 
 #: ../src/addins/ILAsmBinding/ILAsmCompilerManager.cs:92
-#, fuzzy
 msgid "Compilation failed."
-msgstr "Ziel der Kompilation"
+msgstr "Kompilieren fehlgeschlagen."
 
 #: ../src/addins/ILAsmBinding/ILAsmBinding.addin.xml:29
 msgid "ILAsm Files"
@@ -5583,7 +5579,7 @@ msgstr "Erzeuge eine neue Klasse"
 
 #: ../src/addins/MonoDevelop.GtkCore/gui.glade:905
 msgid "Namespace:"
-msgstr "Namespace:"
+msgstr "Namensraum:"
 
 #: ../src/addins/MonoDevelop.GtkCore/gui.glade:933
 msgid "Location:"
@@ -5717,11 +5713,12 @@ msgid "Clear Icon"
 msgstr "Symbol löschen"
 
 #: ../src/addins/MonoDevelop.GtkCore/lib/stetic/libstetic/editor/ActionToolbar.cs:76
-#, fuzzy
 msgid ""
 "New\n"
 "button"
-msgstr "Neuer Button"
+msgstr ""
+"Neuer\n"
+"Button"
 
 #: ../src/addins/MonoDevelop.GtkCore/lib/stetic/libstetic/editor/ActionToolbar.cs:78
 msgid "New button"
@@ -6460,10 +6457,11 @@ msgid "{0} ChangeLog file not found. Some changes will not be logged."
 msgid_plural "{0} ChangeLog files not found. Some changes will not be logged."
 msgstr[0] ""
 "{0} Änderungsprotokoll-Datei nicht gefunden. Einige Änderungen werden nicht "
-"protokolliert."
+"\\n\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\nprotokolliert."
 msgstr[1] ""
 "{0} Änderungsprotokoll-Dateien nicht gefunden. Einige Änderungen werden nicht "
-"protokolliert."
+"\n"
+"\\n\\\\n\\\\\\\\n\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\nprotokolliert."
 
 #: ../src/addins/ChangeLogAddIn/ChangeLogAddInOptionPanelWidget.cs:41
 msgid "Full Name"
@@ -6747,13 +6745,13 @@ msgstr "Erstellt einen ASP.NET-Web-Servide mit einer CodeBehind-Klasse."
 
 #: ../src/addins/AspNetAddIn/Project/VerifyCodeBehindBuildStep.cs:41
 msgid "Generating CodeBehind members..."
-msgstr "Generiere CodeBehind-Mitglieder..."
+msgstr "Generiere CodeBehind-Elemente..."
 
 #: ../src/addins/AspNetAddIn/Project/VerifyCodeBehindBuildStep.cs:43
 msgid ""
 "Auto-generation of CodeBehind members is disabled for non-partial classes."
 msgstr ""
-"Automatisches Generieren von CodeBehind-Mitgliedern ist deaktiviert für nicht "
+"Automatisches Generieren von CodeBehind-Elementen ist deaktiviert für nicht "
 "partitielle Klassen."
 
 #: ../src/addins/AspNetAddIn/Project/VerifyCodeBehindBuildStep.cs:59
@@ -6765,7 +6763,7 @@ msgid ""
 "Parser failed with error {0}. CodeBehind members for this file will not be "
 "added."
 msgstr ""
-"Parser fehlgeschlagen mit Fehler {0}. CodeBehind-Mitglieder für diese Datei "
+"Parser fehlgeschlagen mit Fehler {0}. CodeBehind-Elemente für diese Datei "
 "werden nicht hinzugefügt."
 
 #: ../src/addins/AspNetAddIn/Project/VerifyCodeBehindBuildStep.cs:112
@@ -6773,8 +6771,8 @@ msgid ""
 "CodeBehind member generation failed with error {0}. Further CodeBehind "
 "members for this file will not be added."
 msgstr ""
-"Das CodeBehind Mitglieder-Generation ist mit Fehler {0} fehlgeschlagen. "
-"Weitere CodeBehind-Mitglieder für diese Datei werden nicht hinzugefügt."
+"Das CodeBehind Element-Generation ist mit Fehler {0} fehlgeschlagen. Weitere "
+"CodeBehind-Mitglieder für diese Datei werden nicht hinzugefügt."
 
 #: ../src/addins/AspNetAddIn/Project/VerifyCodeBehindBuildStep.cs:148
 msgid "No changes made to CodeBehind classes."
@@ -6785,11 +6783,11 @@ msgid "Added {0} member to CodeBehind classes. Saving updated source files."
 msgid_plural ""
 "Added {0} members to CodeBehind classes. Saving updated source files."
 msgstr[0] ""
-"{0} Mitglied zu CodeBehind-Klassen hinzugefügt. Speichere aktualisierte \n"
-"Quelldateien."
+"{0} Element zu CodeBehind-Klassen hinzugefügt. Speichere aktualisierte "
+"\\n\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\nQuelldateien."
 msgstr[1] ""
-"{0} Mitglieder zu CodeBehind-Klassen hinzugefügt. Speichere aktualisierte "
-"Quelldateien."
+"{0} Elemente zu CodeBehind-Klassen hinzugefügt. Speichere aktualisierte "
+"\\n\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\nQuelldateien."
 
 #: ../src/addins/AspNetAddIn/Templates/MasterPage-CodeBehind.xft.xml:7
 #: ../src/addins/AspNetAddIn/Templates/MasterPage-CodeBehindNonPartial.xft.xml:7
@@ -6811,8 +6809,7 @@ msgstr "Erstellt eine ASP.NET MasterPage ohne CodeBehind-Klasse."
 
 #: ../src/addins/AspNetAddIn/gtk-gui/AspNetAddIn.AspNetConfigurationPanelWidget.cs:68
 msgid "Autogenerate CodeBehind members for non-partial classes"
-msgstr ""
-"Generiere automatisch CodeBehind-Mitglieder für nicht partielle Klassen"
+msgstr "Generiere automatisch CodeBehind-Elemente für nicht partielle Klassen"
 
 #: ../src/addins/AspNetAddIn/Templates/GlobalAsax-CodeBehind.xft.xml:7
 msgid "Global.asax with CodeBehind"
@@ -6881,7 +6878,7 @@ msgstr "<b>SSL-Schlüssel</b>"
 
 #: ../src/addins/AspNetAddIn/gtk-gui/AspNetAddIn.XspOptionsPanelWidget.cs:379
 msgid "Key type:"
-msgstr "SchlÃ¼sseltyp"
+msgstr "Schlüsseltyp"
 
 #: ../src/addins/AspNetAddIn/gtk-gui/AspNetAddIn.XspOptionsPanelWidget.cs:388
 msgid "Key location:"
@@ -7070,9 +7067,9 @@ msgid "Custom"
 msgstr "Benutzerdefiniert"
 
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/ToolboxWidget.cs:154
-#, fuzzy
 msgid "There are no tools available for the current document."
-msgstr "Es sind keine Zusatzfunktionen vorhanden für dieses Projekt"
+msgstr ""
+"Es sind für das aktuelle Dokument keine passenden Steuerelemente vorhanden."
 
 #: ../src/addins/MonoDevelop.Autotools/Commands.cs:67
 msgid ""
@@ -7261,12 +7258,12 @@ msgstr ""
 "Fehler: Makefile-Erzeugung nur für Projektmappen unterstützt.\\n\n"
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileGeneratorTool.cs:59
-#, fuzzy
 msgid ""
 "\n"
 "Invalid configuration {0}. Valid configurations : "
 msgstr ""
-"\\nUngültige Konfiguration {0}. Gültige Konfigurationen :"
+"\n"
+"Ungültige Konfiguration {0}. Gültige Konfigurationen :"
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileGeneratorTool.cs:68
 msgid "Select configuration : "
@@ -7280,7 +7277,6 @@ msgstr ""
 "überschreiben? (J/N)"
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileGeneratorTool.cs:131
-#, fuzzy
 msgid ""
 " --simple-makefiles -s\n"
 "\tGenerates set of Makefiles with the most common targets, and a "
@@ -7288,23 +7284,23 @@ msgid ""
 "generate Makefile structure based on Autotools with the standard targets and "
 "configuration scripts."
 msgstr ""
-" --simple-makefiles -s\\n\\tErzeugt eine Menge von Makefiles mit den "
-"häufigsten Zielen, und ein Konfigurationsskript das eine grundlegende Überprüfung von "
-"Paket-Abhängigkeiten vornimmt. Standard ist eine auf Autotools basierende "
-"Makefile-Struktur mit den Standard-Zielen und -Konfigurationsskripten zu "
-"erzeugen."
+" --simple-makefiles -s\n"
+"\tErzeugt eine Menge von Makefiles mit den häufigsten Zielen, und ein "
+"Konfigurationsskript das eine grundlegende Überprüfung von Paket-Abhängigkeiten "
+"vornimmt. Standard ist eine auf Autotools basierende Makefile-Struktur mit den "
+"Standard-Zielen und -Konfigurationsskripten zu erzeugen."
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileGeneratorTool.cs:133
-#, fuzzy
 msgid ""
 " -d:default-config\n"
 "\tConfiguration that the Makefile will build by default. Other "
 "configurations can be selected via the '--config' or '--enable-*' option of the generated "
 "configure script."
 msgstr ""
-" -d: default-config\\n\\tKonfiguration die das Makefile standardmäßig "
-"erstellen wird. Andere Konfigurationen können mittels der '--config' oder "
-"'--enable-*' Option des generierten configure-Skripts ausgewählt werden."
+" -d: default-config\n"
+"\tKonfiguration die das Makefile standardmäßig erstellen wird. Andere "
+"Konfigurationen können mittels der '--config' oder '--enable-*' Option des "
+"generierten configure-Skripts ausgewählt werden."
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileOptionPanelWidget.cs:61
 #: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:435
@@ -7828,7 +7824,7 @@ msgstr "Web-Service-URL:"
 
 #: ../src/addins/MonoDevelop.WebReferences/gtk-gui/MonoDevelop.WebReferences.Dialogs.WebReferenceDialog.cs:138
 msgid "Namespace: "
-msgstr "Namespace:"
+msgstr "Namensraum:"
 
 #: ../src/addins/MonoDevelop.WebReferences/gtk-gui/MonoDevelop.WebReferences.Dialogs.WebReferenceDialog.cs:150
 msgid "Reference: "
@@ -8068,7 +8064,6 @@ msgid "Save in a new Packaging Project"
 msgstr "In neuem Paket-Projekt speichern"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.DeployDialog.cs:480
-#: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.Editor.CatalogHeadersWidget.cs:161
 msgid "Project name:"
 msgstr "Projektname:"
 
@@ -9086,7 +9081,6 @@ msgstr ""
 "Dieser Tag lässt sie entscheiden welche Ausnahme geworfen werden können."
 
 #: ../src/addins/CSharpBinding/Gui/CSharpTextEditorExtension.cs:1030
-#, fuzzy
 msgid ""
 "The &lt;include&gt; tag lets you refer to comments in another file that "
 "describe the types and members in your source code.\n"
@@ -9094,8 +9088,9 @@ msgid ""
 "source code file."
 msgstr ""
 "Das &lt;include&gt; Tag lässt Verweise zu Kommentaren in anderen Dateien zu, "
-"die Typ und Mitglieder ihres Quelltexts beschreiben\\nDas ist eine "
-"Alternative zum direkten Platzieren von Kommentaren in ihrem Quelltext."
+"die Typ und Elemente ihres Quelltexts beschreiben\n"
+"Das ist eine Alternative zum direkten Platzieren von Kommentaren in ihrem "
+"Quelltext."
 
 #: ../src/addins/CSharpBinding/Gui/CSharpTextEditorExtension.cs:1031
 msgid "Defines a list or table."
@@ -9137,7 +9132,7 @@ msgstr ""
 msgid "The &lt;permission&gt; tag lets you document the access of a member."
 msgstr ""
 "Das &lt;permission&gt; Tag gibt ihnen die Möglichkeit den Zugriff auf ein "
-"Mitglied zu dokumentieren."
+"Element zu dokumentieren."
 
 #: ../src/addins/CSharpBinding/Gui/CSharpTextEditorExtension.cs:1042
 msgid ""
@@ -9174,7 +9169,7 @@ msgid ""
 "The &lt;summary&gt; tag should be used to describe a type or a type member."
 msgstr ""
 "Das &lt;summary&gt; Tag sollte dazu benutzt werden einen Typ oder ein "
-"Typmitglied zu beschreiben."
+"-element zu beschreiben."
 
 #: ../src/addins/CSharpBinding/Gui/CSharpTextEditorExtension.cs:1047
 msgid "The &lt;value&gt; tag lets you describe a property."
@@ -9241,9 +9236,8 @@ msgid "Invalid code page number."
 msgstr "Ungültige Codepage-Nummer."
 
 #: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.addin.xml:52
-#, fuzzy
 msgid "_Add Translation..."
-msgstr "Übersetzung hinzufügen"
+msgstr "Ü_bersetzung hinzufügen"
 
 #: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.addin.xml:53
 msgid "Add another translation (language) for a solution or project"
@@ -9263,7 +9257,7 @@ msgstr "Aktualisiert alle Übersetzungs-Dateien."
 msgid "PO Files"
 msgstr "PO-Datein"
 
-#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/CatalogEditor.cs:100
+#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/CatalogEditorView.cs:100
 #: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/GettextEditorDisplayBinding.cs:42
 msgid "Gettext Editor"
 msgstr "Gettext-Editor"
@@ -9305,50 +9299,63 @@ msgid "Last modification:"
 msgstr "Letzte Modifikation:"
 
 #: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.Editor.CatalogHeadersWidget.cs:152
-msgid "Comments:"
-msgstr "Kommentare:"
+#: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.POEditorWidget.cs:247
+msgid "_Comments:"
+msgstr "_Kommentare:"
 
-#: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.Editor.CatalogHeadersWidget.cs:172
-msgid "Project version:"
+#: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.Editor.CatalogHeadersWidget.cs:162
+#, fuzzy
+msgid "_Project name:"
+msgstr "Projektname:"
+
+#: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.Editor.CatalogHeadersWidget.cs:174
+#, fuzzy
+msgid "P_roject version:"
 msgstr "Projekt-Version:"
 
-#: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.Editor.CatalogHeadersWidget.cs:183
-msgid "Bugzilla URL:"
+#: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.Editor.CatalogHeadersWidget.cs:186
+#, fuzzy
+msgid "_Bugzilla URL:"
 msgstr "Bugzilla-URL:"
 
-#: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.Editor.CatalogHeadersWidget.cs:194
+#: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.Editor.CatalogHeadersWidget.cs:198
 msgid "Creation date:"
 msgstr "Erzeugungs-Datum:"
 
-#: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.Editor.CatalogHeadersWidget.cs:249
+#: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.Editor.CatalogHeadersWidget.cs:253
 msgid "Project settings"
 msgstr "Projekt-Einstellungen"
 
-#: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.Editor.CatalogHeadersWidget.cs:347
-msgid "Translator name:"
+#: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.Editor.CatalogHeadersWidget.cs:351
+#, fuzzy
+msgid "_Translator name:"
 msgstr "Übersetzer-Name:"
 
-#: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.Editor.CatalogHeadersWidget.cs:356
-msgid "Translator e-mail:"
+#: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.Editor.CatalogHeadersWidget.cs:361
+#, fuzzy
+msgid "T_ranslator e-mail:"
 msgstr "Übersetzer-E-Mail:"
 
-#: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.Editor.CatalogHeadersWidget.cs:367
-msgid "Language group:"
+#: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.Editor.CatalogHeadersWidget.cs:373
+#, fuzzy
+msgid "_Language group:"
 msgstr "Sprachgruppe:"
 
-#: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.Editor.CatalogHeadersWidget.cs:378
-msgid "Language group e-mail:"
+#: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.Editor.CatalogHeadersWidget.cs:385
+#, fuzzy
+msgid "L_anguage group e-mail:"
 msgstr "Sprachgruppen-E-Mail:"
 
-#: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.Editor.CatalogHeadersWidget.cs:389
-msgid "Charset:"
-msgstr "Zeichensatz:"
+#: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.Editor.CatalogHeadersWidget.cs:397
+msgid "_Charset:"
+msgstr "_Zeichensatz:"
 
-#: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.Editor.CatalogHeadersWidget.cs:400
-msgid "Plural forms:"
+#: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.Editor.CatalogHeadersWidget.cs:409
+#, fuzzy
+msgid "_Plural forms:"
 msgstr "Plural-Formen:"
 
-#: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.Editor.CatalogHeadersWidget.cs:413
+#: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.Editor.CatalogHeadersWidget.cs:423
 msgid "Language settings"
 msgstr "Spracheinstellungen"
 
@@ -9451,36 +9458,36 @@ msgstr "Eigenschaften"
 msgid "Include in Projects"
 msgstr "In Projekten einfügen"
 
-#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:86
+#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:87
 #: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext/GettextFeature.cs:41
 msgid "Translation"
 msgstr "Übersetzung"
 
-#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:87
+#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:88
 msgid "Headers"
 msgstr "Headers"
 
-#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:98
+#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:99
 msgid "Fuzzy"
 msgstr "Unklar"
 
-#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:102
+#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:103
 msgid "Original string"
 msgstr "Original-Zeichenkette"
 
-#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:106
+#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:107
 msgid "Translated string"
 msgstr "Übersetzte Zeichenkette"
 
-#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:146
+#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:147
 msgid "Show fuzzy translations"
 msgstr "Unklare Übersetzungen anzeigen"
 
-#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:153
+#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:154
 msgid "Show missing translations"
 msgstr "Fehlende Übersetzungen anzeigen"
 
-#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:160
+#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:161
 msgid "Show valid translations"
 msgstr "Gültige Übersetzungen anzeigen"
 
@@ -9509,21 +9516,15 @@ msgstr[0] "{0} Fehlende Meldung"
 msgstr[1] "{0} Fehlende Meldungen"
 
 #: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.POEditorWidget.cs:119
-#, fuzzy
 msgid "_Filter:"
-msgstr "_Datei"
-
-#: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.POEditorWidget.cs:247
-msgid "_Comments:"
-msgstr "Kommentare:"
+msgstr "_Filter:"
 
 #: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.POEditorWidget.cs:283
-#, fuzzy
 msgid "_Translated (msgstr):"
-msgstr "Übersetzt"
+msgstr "Ü_bersetzt (msgstr):"
 
 #: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.POEditorWidget.cs:301
-#: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.POEditorWidget.cs:418
+#: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.POEditorWidget.cs:428
 msgid "page1"
 msgstr "page1"
 
@@ -9531,27 +9532,27 @@ msgstr "page1"
 msgid "Original (msgid):"
 msgstr "Original (msgid):"
 
-#: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.POEditorWidget.cs:349
+#: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.POEditorWidget.cs:354
 msgid "Original plural (msgid_plural):"
 msgstr "Original Plural (msgid_plural):"
 
-#: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.POEditorWidget.cs:381
+#: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.POEditorWidget.cs:391
 msgid "F_ound in:"
 msgstr "Gefunden in:"
 
-#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext/Catalog.cs:500
+#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext/Catalog.cs:477
 msgid "Singular"
 msgstr "Singular"
 
-#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext/Catalog.cs:501
+#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext/Catalog.cs:478
 msgid "Plural"
 msgstr "Plural"
 
-#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext/Catalog.cs:527
+#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext/Catalog.cs:501
 msgid "Form {0}"
 msgstr "Form {0}"
 
-#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext/Catalog.cs:529
+#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext/Catalog.cs:503
 msgid "Form {0} (e.g. \"{1}\")"
 msgstr "Form {0} (z.B. \"{1}\")"
 
@@ -9570,13 +9571,21 @@ msgstr ""
 "Wählen sie die Sprachen die sie unterstützen möchten (mehr Sprachen können "
 "später hinzugefügt werden):"
 
+#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext/StringEscaping.cs:81
+msgid "Invalid character '{0}' in translatable string: '{1}'"
+msgstr ""
+
+#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext/StringEscaping.cs:119
+msgid "Invalid escape sequence '{0}' in string: '{1}'"
+msgstr ""
+
 #: ../src/addins/MonoDevelop.RegexToolkit/MonoDevelop.RegexToolkit.addin.xml:28
 msgid "_Regex Toolkit"
 msgstr "_RegEx Werkzeugkasten"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:2
 msgid "Character Escapes"
-msgstr "Karakter flieht"
+msgstr "Escapezeichen"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:3
 msgid "\\a"
@@ -9584,7 +9593,7 @@ msgstr "\\a"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:3
 msgid "Matches a bell (alarm) \\u0007."
-msgstr "Stimmt mit einer Glocke (Alarm) \\u0007 überein."
+msgstr "Entspricht einem Klingelzeichen (Warnsignal) \\u0007."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:4
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:82
@@ -9592,46 +9601,42 @@ msgid "\\b"
 msgstr "\\b"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:4
-#, fuzzy
 msgid "Matches a backspace \\u0008 if in a [] character class."
 msgstr ""
-"Stimmt mit der Rücktaste \\\\u0008 überein wenn in einer [] Zeichen-Klasse."
+"Entspricht einem Rücktastenzeichen \\u0008 überein, wenn in einer [] "
+"Zeichen-Klasse."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:5
 msgid "\\t"
 msgstr "\\t"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:5
-#, fuzzy
 msgid "Matches a tab \\u0009."
-msgstr "Stimmt mit einem Tabulator \\\\u0009 überein."
+msgstr "Entspricht einem Tabstoppzeichen \\u0009."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:6
 msgid "\\r"
 msgstr "\\r"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:6
-#, fuzzy
 msgid "Matches a carriage return \\u000D."
-msgstr "Stimmt mit einem Zeilenumbruch \\\\u000D überein."
+msgstr "Entspricht einem Wagenrücklaufzeichen \\u000D."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:7
 msgid "\\v"
 msgstr "\\v"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:7
-#, fuzzy
 msgid "Matches a vertical tab \\u000B."
-msgstr "Stimmt mit einem vertikalen Tabulator \\\\u000B überein."
+msgstr "Entspricht einem vertikalen Tabstoppzeichen \\u000B."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:8
 msgid "\\f"
 msgstr "\\f"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:8
-#, fuzzy
 msgid "Matches a form feed \\u000C."
-msgstr "Stimmt mit einem Seitenvorschub \\\\u000C überein."
+msgstr "Entspricht einem Seitenvorschubzeichen \\u000C."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:9
 msgid ""
@@ -9640,25 +9645,22 @@ msgstr ""
 "\\n"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:9
-#, fuzzy
 msgid "Matches a new line \\u000A."
-msgstr "Stimmt mit einem Zeilenvorschub (neue Zeile) \\\\u000A überein."
+msgstr "Entspricht einem Zeilenvorschubzeichen (neue Zeile) \\u000A."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:10
 msgid "\\e"
 msgstr "\\e"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:10
-#, fuzzy
 msgid "Matches an escape \\u001B."
-msgstr "Stimmt mit einem Escape \\\\u001B überein."
+msgstr "Entspricht einem Escapezeichen \\u001B."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:11
 msgid "\\040"
 msgstr "\\040"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:11
-#, fuzzy
 msgid ""
 "Matches an ASCII character as octal (up to three digits);\n"
 "numbers with no leading zero are backreferences if they have \n"
@@ -9666,50 +9668,48 @@ msgid ""
 "(For more information, see Backreferences.) \n"
 "For example, the character \\040 represents a space."
 msgstr ""
-"Stimmt mit einem ASCII-Zeichen als oktal (bis zu drei Ziffern) "
-"überein;\\nNummern mit nur einer führenden Null sind Rückwärtsreferenzen wenn sie \\nnur "
-"eine Stelle haben oder wenn sie einer Erfassungs-Gruppen-Nummer \\nentsprechen. "
-"\\n(Für mehr Informationen, siehe Rückwärtsreferenzen.) \\nZum Beispiel "
-"repräsentiert das Zeichen \\\\040 ein Leerzeichen."
+"Entspricht einem ASCII-Zeichen als oktal (bis zu drei Ziffern) überein;\n"
+"Nummern mit nur einer führenden Null sind Rückwärtsreferenzen wenn sie\n"
+"nur eine Stelle haben oder wenn sie einer Erfassungs-Gruppen-Nummer \n"
+"entsprechen. \n"
+"(Für mehr Informationen, siehe Rückwärtsreferenzen.) \n"
+"Zum Beispiel repräsentiert das Zeichen \\040 ein Leerzeichen."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:17
 msgid "\\x20"
 msgstr "\\x20"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:17
-#, fuzzy
 msgid ""
 "Matches an ASCII character using hexadecimal representation\n"
 "(exactly two digits)."
 msgstr ""
-"Stimmt mit einem ASCII-Zeichen überein, benutzt hexadezimale "
-"Darstellung\\n(genau zwei Ziffern)."
+"Entspricht einem ASCII-Zeichen überein, benutzt hexadezimale Darstellung\n"
+"(genau zwei Ziffern)."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:19
 msgid "\\cC"
 msgstr "\\cC"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:19
-#, fuzzy
 msgid ""
 "Matches an ASCII control character;\n"
 "for example, \\cC is control-C."
 msgstr ""
-"Stimmt mit einem ASCII-Kontroll-Zeichen überein;\\nzum Beispiel, \\\\cC ist "
-"Strg-C (control-C)."
+"Entspricht einem ASCII-Kontroll-Zeichen überein;\n"
+"zum Beispiel, \\cC ist Strg-C (control-C)."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:21
 msgid "\\u0020"
 msgstr "\\u0020"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:21
-#, fuzzy
 msgid ""
 "Matches a Unicode character using hexadecimal representation\n"
 "(exactly four digits)."
 msgstr ""
-"Stimmt mit einem Unicode-Zeichen überein, benutzt hexadezimale "
-"Darstellung\\n(genau vier Ziffern)."
+"Entspricht einem Unicode-Zeichen überein, benutzt hexadezimale Darstellung\n"
+"(genau vier Ziffern)."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:25
 msgid "Substitutions"
@@ -9788,90 +9788,85 @@ msgstr "Ersetzt die gesamte Eingabe-Zeichenkette."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:36
 msgid "Character Classes"
-msgstr "Karakter Klasse"
+msgstr "Zeichenklassen"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:37
 msgid "[character_group]"
 msgstr "[zeichen_gruppe]"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:37
-#, fuzzy
 msgid ""
 "Positive character group.\n"
 "Matches any character in the specified character group."
 msgstr ""
-"Positive Zeichen-Gruppe.\\nStimmt mit jedem in der Zeichen-Gruppe angegebenen "
-"Zeichen überein."
+"Positive Zeichen-Gruppe.\n"
+"Entspricht jedem in der Zeichen-Gruppe angegebenen Zeichen."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:39
 msgid "[^character_group]"
 msgstr "[^zeichen_gruppe]"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:39
-#, fuzzy
 msgid ""
 "Negative character group.\n"
 "Matches any character not in the specified character group."
 msgstr ""
-"Negative Zeichen-Gruppe.\\nStimmt mit jedem nicht in der Zeichen-Gruppe "
-"angegebenen Zeichen überein."
+"Negative Zeichen-Gruppe.\n"
+"Entspricht jedem nicht in der Zeichen-Gruppe angegebenen Zeichen."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:41
 msgid "[firstCharacter-lastCharacter]"
 msgstr "[erstesZeichen-letztesZeichen]"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:41
-#, fuzzy
 msgid ""
 "Character range.\n"
 "Matches any character in a range of characters."
 msgstr ""
-"Zeichen-Abgrenzung.\\nStimmt mit jedem Zeichen in einer Abgrenzung von "
-"Zeichen überein."
+"Zeichen-Abgrenzung.\n"
+"Entspricht jedem Zeichen in einer Abgrenzung von Zeichen."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:43
 msgid "."
 msgstr "."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:43
-#, fuzzy
 msgid ""
 "The period character.\n"
 "Matches any character except \\n. \n"
 "If modified by the Singleline option, a period character matches any "
 "character."
 msgstr ""
-"Das Punkt-Zeichen.\\nStimmt mit jedem Zeichen überein außer \\\\n. \\nWenn "
-"von der Einzelzeilen-Option verändert, stimmt das Punkt-Zeichen mit jedem "
-"Zeichen überein."
+"Das Punkt-Zeichen.\n"
+"Entspricht jedem Zeichen außer \\n. \n"
+"Wenn von der Einzelzeilen-Option verändert, stimmt das Punkt-Zeichen mit "
+"jedem Zeichen überein."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:46
 msgid "\\p{name}"
 msgstr "\\p{name}"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:46
-#, fuzzy
 msgid ""
 "Matches any character in the Unicode general category\n"
 "or named block specified by name (for example, Ll, Nd, Z, IsGreek, and "
 "IsBoxDrawing)."
 msgstr ""
-"Stimmt mit jedem Zeichen der Unicode General-Kategorie überein\\noder "
-"benannten Block festgelegt durch Namen (zum Beispiel, Ll, Nd, Z, IsGreek und "
-"IsBoxDrawing)."
+"Entspricht jedem Zeichen der Unicode General-Kategorie\n"
+"oder benannten Block festgelegt durch Namen (zum Beispiel, Ll, Nd, Z, "
+"IsGreek und IsBoxDrawing)."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:49
 msgid "\\P{name}"
 msgstr "\\P{name}"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:49
-#, fuzzy
 msgid ""
 "Matches any character not in Unicode general category \n"
 "or named block specified in name."
 msgstr ""
-"Stimmt mit jedem Zeichen nicht in der Unicode General-Kategorie überein "
-"\\noder benannten Block festgelegt im Namen."
+"Entspricht jedem Zeichen nicht in der Unicode General-Kategorie\n"
+"oder benannten Block festgelegt im Namen."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:52
 msgid "\\w"
@@ -9879,7 +9874,7 @@ msgstr "\\w"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:52
 msgid "Matches any word character."
-msgstr "Stimmt mit jedem Wort-Zeichen überein."
+msgstr "Entspricht einem beliebigen Wortzeichen."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:53
 msgid "\\W"
@@ -9887,7 +9882,7 @@ msgstr "\\W"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:53
 msgid "Matches any nonword character."
-msgstr "Stimmt mit jedem Nicht-Wort-Zeichen überein."
+msgstr "Entspricht einem beliebigen Nichtwortzeichen."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:54
 msgid "\\s"
@@ -9895,7 +9890,7 @@ msgstr "\\s"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:54
 msgid "Matches any white-space character."
-msgstr "Stimmt mit jedem Leerraum-Zeichen überein."
+msgstr "Entspricht einem beliebigen Leerraumzeichen."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:55
 msgid "\\S"
@@ -9903,7 +9898,7 @@ msgstr "\\S"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:55
 msgid "Matches any non-white-space character."
-msgstr "Stimmt mit jedem Nicht-Leerraum-Zeichen überein."
+msgstr "Entspricht einem beliebigen Nichtleerraumzeichen."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:56
 msgid "\\d"
@@ -9911,7 +9906,7 @@ msgstr "\\d"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:56
 msgid "Matches any digit character."
-msgstr "Stimmt mit jedem Ziffer-Zeichen überein."
+msgstr "Entspricht einer beliebigen Dezimalziffer."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:57
 msgid "\\D"
@@ -9919,11 +9914,11 @@ msgstr "\\D"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:57
 msgid "Matches any nondigit character."
-msgstr "Stimmt mit jedem Nicht-Ziffer-Zeichen überein"
+msgstr "Entspricht einer beliebigen Nichtdezimalziffer."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:60
 msgid "Atomic Zero-Width Assertions"
-msgstr "Atomare Null-Weiten-Aussagen"
+msgstr "Atomare Assertionen mit einer Breite von Null"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:61
 msgid "^"
@@ -9943,19 +9938,18 @@ msgid "$"
 msgstr "$"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:64
-#, fuzzy
 msgid ""
 "Specifies that the match must occur at the end of the \n"
 "string, before \\n at the end of the string, or at the \n"
 "end of the line."
 msgstr ""
-"Schreibt vor, dass die Übereinstimmung am Anfang der \\nZeichenkette, vor "
-"\\\\n am Ende der Zeichenkette, oder an dem \\nEnde der Zeile."
+"Schreibt vor, dass die Übereinstimmung am Anfang der \n"
+"Zeichenkette, vor \\n am Ende der Zeichenkette, oder an dem \n"
+"Zeilenende."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:68
-#, fuzzy
 msgid "\\A"
-msgstr "\\\\A"
+msgstr "\\A"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:68
 #, fuzzy
@@ -9967,24 +9961,22 @@ msgstr ""
 "auftreten muss (ignoriert die Mehrzeilen-Option)."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:71
-#, fuzzy
 msgid "\\Z"
-msgstr "\\\\Z"
+msgstr "\\Z"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:71
-#, fuzzy
 msgid ""
 "Specifies that the match must occur at the end of the \n"
 "string or before \\n at the end of the string (ignores \n"
 "the Multiline option)."
 msgstr ""
-"Schreibt vor, dass die Übereinstimmung am Ende der \\nZeichenkette oder vor "
-"\\\\n am Ende der Zeichenkette (ignoriert \\ndie Mehrzeilen-Option)."
+"Schreibt vor, dass die Übereinstimmung am Ende der \n"
+"Zeichenkette oder vor \\n am Ende der Zeichenkette (ignoriert \n"
+"die Mehrzeilen-Option)."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:75
-#, fuzzy
 msgid "\\z"
-msgstr "\\\\z"
+msgstr "\\z"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:75
 #, fuzzy
@@ -9996,9 +9988,8 @@ msgstr ""
 "muss (ignoriert die Mehrzeilen-Option)."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:78
-#, fuzzy
 msgid "\\G"
-msgstr "\\\\G"
+msgstr "\\G"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:78
 #, fuzzy
@@ -10012,7 +10003,6 @@ msgstr ""
 "\\nsichert dies, dass die Übereinstimmungen alle zusammenhängend sind."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:82
-#, fuzzy
 msgid ""
 "Specifies that the match must occur on a boundary \n"
 "between \\w (alphanumeric) and \\W (nonalphanumeric) characters. \n"
@@ -10021,40 +10011,37 @@ msgid ""
 "characters). The match can also occur on a word boundary at \n"
 "the end of the string."
 msgstr ""
-"Legt fest, dass die Übereinstimmung auf einer Grenze zwischen \\n\\\\w "
-"(alphanumerisch) und \\\\W (nicht alphanumerisch) Zeichen auftreten muss. \\nDie "
-"Übereinstimmung muss auf Wort-Grenzen auftreten (dies ist \\nbei den ersten "
-"oder letzten Zeichen in Wörtern die durch irgend ein nicht \\nalphanumerisches "
-"Zeichen getrennt sind). Die Übereinstimmung kann \\nebenfalls an einer "
-"Wort-Grenze am Ende der Zeichenkette auftreten."
+"Legt fest, dass die Übereinstimmung auf einer Grenze zwischen \n"
+"\\w (alphanumerisch) und \\W (nicht alphanumerisch) Zeichen auftreten muss. "
+"\\nDie Übereinstimmung muss auf Wort-Grenzen auftreten (dies ist \n"
+"bei den ersten oder letzten Zeichen in Wörtern die durch irgend ein nicht \n"
+"alphanumerisches Zeichen getrennt sind). Die Übereinstimmung kann \n"
+"ebenfalls an einer Wort-Grenze am Ende der Zeichenkette auftreten."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:89
-#, fuzzy
 msgid "\\B"
-msgstr "\\\\B"
+msgstr "\\B"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:89
-#, fuzzy
 msgid "Specifies that the match must not occur on a \\b boundary."
 msgstr ""
-"Schreibt vor, dass eine Übereinstimmung nicht auf einer \\\\b Grenze "
-"auftauchen darf."
+"Schreibt vor, dass eine Übereinstimmung nicht auf einer \\b Grenze auftauchen "
+"darf."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:92
 msgid "Quantifiers"
-msgstr "Quantoren"
+msgstr "Quantifizierer"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:93
 msgid "*"
 msgstr "*"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:93
-#, fuzzy
 msgid ""
 "Specifies zero or more matches; \n"
 "for example, \\w* or (abc)*. Equivalent to {0,}."
 msgstr ""
-"Schreibt null oder mehr Übereinstimmungen vor; \\nzum Beispiel, \\\\w* oder "
+"Schreibt null oder mehr Übereinstimmungen vor; \\nzum Beispiel, \\w* oder "
 "(abc)*. Gleichbedeutend mit {0,}."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:96
@@ -10062,25 +10049,23 @@ msgid "+"
 msgstr "+"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:96
-#, fuzzy
 msgid ""
 "Specifies one or more matches; \n"
 "for example, \\w+ or (abc)+. Equivalent to {1,}."
 msgstr ""
-"Schreibt eine oder mehr Übereinstimmungen vor; \\nzum Beispiel, \\\\w+ oder "
-"(abc)+. Gleichbedeutend mit {1,}."
+"Schreibt eine oder mehr Übereinstimmungen vor; \n"
+"zum Beispiel, \\w+ oder (abc)+. Gleichbedeutend mit {1,}."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:99
 msgid "?"
 msgstr "?"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:99
-#, fuzzy
 msgid ""
 "Specifies zero or one matches; \n"
 "for example, \\w? or (abc)?. Equivalent to {0,1}."
 msgstr ""
-"Schreibt null oder eine Übereinstimmung vor;zum Beispiel, \\\\w? oder (abc)?. "
+"Schreibt null oder eine Übereinstimmung vor;zum Beispiel, \\w? oder (abc)?. "
 "Gleichbedeutend mit {0,1}."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:102
@@ -10185,14 +10170,13 @@ msgstr ""
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:125
 msgid "Grouping Constructs"
-msgstr "Gruppiere Konstrukte"
+msgstr "Gruppierungskonstrukte"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:126
 msgid "(subexpression)"
-msgstr "(Unter-Ausdruck)"
+msgstr "(Teilausdruck)"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:126
-#, fuzzy
 msgid ""
 "Captures the matched subexpression (or noncapturing group; \n"
 "for more information, see the ExplicitCapture option in \n"
@@ -10200,30 +10184,30 @@ msgid ""
 "automatically based on the order of the opening parenthesis, \n"
 "starting from one. "
 msgstr ""
-"Erfasst den übereinstimmenden Unter-Ausdruck (oder nichterfassende \\nGruppe; "
-"für mehr Informationen, siehe die ExplicitCapture Option in den "
-"\\nRegulärer-Ausdruck-Optionen). () benutzende Erfassungen werden \\nautomatisch "
-"basierend auf der Reihenfolge ihrer öffnenden Klammern \\nnummeriert, beginnend mit "
-"eins."
+"Erfasst den übereinstimmenden Teilausdruck (oder nichterfassende\n"
+"Gruppe; für mehr Informationen, siehe die ExplicitCapture Option in den\n"
+"Regulärer-Ausdruck-Optionen). () benutzende Erfassungen werden\n"
+"automatisch basierend auf der Reihenfolge ihrer öffnenden Klammern\n"
+"nummeriert, beginnend mit eins."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:132
 msgid "(?<name> subexpression)"
-msgstr "(?<Name> Unter-Ausdruck)"
+msgstr "(?<Name> Teilausdruck)"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:132
-#, fuzzy
 msgid ""
 "Captures the matched subexpression into a group name or \n"
 "number name. The string used for name must not contain \n"
 "any punctuation and cannot begin with a number. "
 msgstr ""
-"Erfasst den übereinstimmenden Unter-Ausdruck in einen Gruppen-Namen \\noder "
-"einen Nummer-Namen. Die für den Namen verwendete Zeichenkette \\ndarf keine "
-"Zeichensetzung enthalten und darf nicht mit einer Nummer beginnen."
+"Erfasst den übereinstimmenden Teilausdruck in einen Gruppen-Namen\n"
+"oder einen Nummer-Namen. Die für den Namen verwendete Zeichenkette\n"
+"darf keine Zeichensetzung enthalten und darf nicht mit einer Nummer "
+"beginnen."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:136
 msgid "(?<name1-name2> subexpression)"
-msgstr "(?<Name1-Name2> Unter-Ausdruck)"
+msgstr "(?<Name1-Name2> Teilausdruck)"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:136
 #, fuzzy
@@ -10238,20 +10222,20 @@ msgstr ""
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:140
 msgid "(?: subexpression)"
-msgstr "(?: Unter-Ausdruck)"
+msgstr "(?: Teilausdruck)"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:140
-#, fuzzy
 msgid ""
 "Noncapturing group. \n"
 "Does not capture the substring matched by the subexpression."
 msgstr ""
-"Nicht-Besitzergreifende Gruppe. \\nNimmt nicht Besitz von der "
-"Unter-Zeichenketten die mit dem Unter-Ausdruck übereinstimmt."
+"Nicht aufzeichnende Gruppe.\n"
+"Nimmt nicht Besitz von der Teilzeichenfolge die mit dem Teilausdruck "
+"übereinstimmt."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:143
 msgid "(?imnsx-imnsx: subexpression)"
-msgstr "(?imnsx-imnsx: Unter-Ausdruck)"
+msgstr "(?imnsx-imnsx: Teilausdruck)"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:143
 msgid "Applies or disables the specified options within the subexpression."
@@ -10259,41 +10243,40 @@ msgstr "De-/ aktivert die erweiterten Optionen mit unter UnterausdrÃ¼cken."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:145
 msgid "(?= subexpression)"
-msgstr "(?= Unter-Ausdruck)"
+msgstr "(?= Teilausdruck)"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:145
-#, fuzzy
 msgid ""
 "Zero-width positive lookahead assertion.\n"
 "Continues match only if the subexpression matches at this \n"
 "position on the right."
 msgstr ""
-"Null-Weite positive Lookahead-Aussage.\\nFührt Vergleich lediglich fort wenn "
-"der Unter-Ausdruck\\nan dieser Position rechts übereinstimmt."
+"Null-Weite positive Lookahead-Aussage.\n"
+"Führt Vergleich lediglich fort wenn der Teilausdruck\n"
+"an dieser Position rechts übereinstimmt."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:149
 msgid "(?! subexpression)"
-msgstr "(?! Unter-Ausdruck)"
+msgstr "(?! Teilausdruck)"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:149
-#, fuzzy
 msgid ""
 "Zero-width negative lookahead assertion.\n"
 "Continues match only if the subexpression does not match\n"
 "at this position on the right. \n"
 "For example, \\b(?!un)\\w+\\b matches words that do not begin with un."
 msgstr ""
-"Null-Weite negative Lookahead-Aussage.\\nFührt Vergleich lediglich fort wenn "
-"der Unter-Ausdruck nicht\\nan dieser Position rechts übereinstimmt. \\nZum "
-"Beispiel, \\\\b(?!un)\\\\w+\\\\b stimmt mit Worten überein die nicht mit un "
+"Null-Weite negative Lookahead-Aussage.\n"
+"Führt Vergleich lediglich fort wenn der Teilausdruck nicht\n"
+"an dieser Position rechts übereinstimmt. \n"
+"Zum Beispiel, \\b(?!un)\\w+\\b stimmt mit Worten überein die nicht mit un "
 "beginnen."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:154
 msgid "(?<= subexpression)"
-msgstr "(?<= Unter-Ausdruck)"
+msgstr "(?<= Teilausdruck)"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:154
-#, fuzzy
 msgid ""
 "Zero-width positive lookbehind assertion.\n"
 "Continues match only if the subexpression matches at this\n"
@@ -10301,97 +10284,95 @@ msgid ""
 "For example, (?<=19)99 matches instances of 99 that follow 19.\n"
 "This construct does not backtrack."
 msgstr ""
-"Null-Illegaler Projekt-Name. \\nNur Buchstaben, Ziffern, Leerzeichen, '.' "
-"oder '_' benutzen. Mit positiver Lookbehind-Aussage.\\nSetzt die Übereinstimmung "
-"nur fort wenn der Unter-Ausdruck an dieser Position links übereinstimmt. "
-"\\nZum Beispiel, (?<=19)99 stimmt mit Instanzen von 99 überein die 19 "
-"folgen.\\nDieses Konstrukt verfolgt nicht zurück."
+"Null-Illegaler Projekt-Name.\n"
+"Nur Buchstaben, Ziffern, Leerzeichen, '.' oder '_' benutzen. Mit positiver "
+"Lookbehind-Aussage.\n"
+"Setzt die Übereinstimmung nur fort wenn der Teilausdruck an dieser Position "
+"links übereinstimmt.\n"
+"Zum Beispiel, (?<=19)99 stimmt mit Instanzen von 99 überein die 19 folgen.\n"
+"Dieses Konstrukt verfolgt nicht zurück."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:160
 msgid "(?<! subexpression)"
-msgstr "(?<! Unter-Ausdruck)"
+msgstr "(?<! Teilausdruck)"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:160
-#, fuzzy
 msgid ""
 "Zero-width negative lookbehind assertion.\n"
 "Continues match only if the subexpression does not \n"
 "match at the position on the left."
 msgstr ""
-"Null-Weite negative Lookbehind-Aussage.\\nFührt Vergleich lediglich fort wenn "
-"der Unter-Ausdruck nicht \\nan der Position links übereinstimmt."
+"Null-Weite negative Lookbehind-Aussage.\n"
+"Führt Vergleich lediglich fort wenn der Teilausdruck nicht \n"
+"an der Position links übereinstimmt."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:164
 msgid "(?> subexpression)"
-msgstr "(?> Unter-Ausdruck)"
+msgstr "(?> Teilausdruck)"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:164
-#, fuzzy
 msgid ""
 "Nonbacktracking subexpression (also known as a 'greedy' subexpression.)\n"
 "The subexpression is fully matched once, and then does not participate \n"
 "piecemeal in backtracking. (That is, the subexpression matches only strings\n"
 "that would be matched by the subexpression alone.)"
 msgstr ""
-"Nicht zurückverfolgender Unter-Ausdruck (auch bekannt als ein 'gieriger' "
-"Unter-Ausdruck.)\\nDer Unter-Ausdruck wird einmal voll verglichen und nimmt dann "
-"allmählich \\nnicht am Rückverfolgen teil. (Das heißt, der Unter-Ausdruck "
-"stimmt nur mit\\nZeichenketten überein, die mit dem Unter-Ausdruck allein "
-"übereinstimmen würden.)"
+"Nicht zurückverfolgender Teilausdruck (auch bekannt als ein 'gieriger' "
+"Teilausdruck.)\n"
+"Der Teilausdruck wird einmal voll verglichen und nimmt dann allmählich "
+"\\nnicht am Rückverfolgen teil. (Das heißt, der Teilausdruck stimmt nur "
+"mit\\nZeichenketten überein, die mit dem Teilausdruck allein übereinstimmen würden.)"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:171
 msgid "Backreference Constructs"
-msgstr "Rückwärtsreferenz-Konstrukte"
+msgstr "Rückverweiskonstrukte"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:172
-#, fuzzy
 msgid ""
 "\\number"
-msgstr "\\\\Nummer"
+msgstr "\\Nummer"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:172
-#, fuzzy
 msgid ""
 "Backreference. \n"
 "For example, (\\w)\\1 finds doubled word characters."
 msgstr ""
-"Rückwärtsreferenz. \\nZum Beispiel, (\\\\w)\\\\1 findet doppelt Wort-Zeichen."
+"Rückwärtsreferenz. \n"
+"Zum Beispiel, (\\w)\\1 findet doppelt Wort-Zeichen."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:175
-#, fuzzy
 msgid "\\k<name>"
-msgstr "\\\\k<name>"
+msgstr "\\k<name>"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:175
-#, fuzzy
 msgid ""
 "Named backreference. \n"
 "For example, (?<char>\\w)\\k<char> finds doubled word characters. \n"
 "The expression (?<43>\\w)\\43 does the same. You can use single quotes\n"
 " instead of angle brackets; for example, \\k'char'."
 msgstr ""
-"Genannte Rückwärtsreferenz. \\nZum Beispiel, (?<char>\\\\w)\\\\k<char> findet "
-"doppelte Wort-Zeichen. \\nDer Ausdruck (?<43>\\\\w)\\\\43 macht das gleiche. "
-"Sie können einfache\\nAnführungszeichen anstelle von spitzen Klammern "
-"verwenden;\\nzum Beispiel, \\\\k'char'."
+"Benannte Rückwärtsreferenz. \n"
+"Zum Beispiel, (?<char>\\w)\\k<char> findet doppelte Wort-Zeichen. \\nDer "
+"Ausdruck (?<43>\\\\w)\\\\43 macht das gleiche. Sie können "
+"einfache\\nAnführungszeichen anstelle von spitzen Klammern verwenden;\\nzum Beispiel, \\k'Zeichen'."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:182
 msgid "Alternation Constructs"
-msgstr "Alternativ Konstruktionen"
+msgstr "Alternierungskonstrukte"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:183
 msgid "|"
 msgstr "|"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:183
-#, fuzzy
 msgid ""
 "Matches any one of the terms separated by the | (vertical bar) character; \n"
 "for example, cat|dog|tiger. The leftmost successful match wins."
 msgstr ""
 "Stimmt mit jedem der durch | (vertikaler Balken) getrennten Begriffe überein; "
-"\\nzum Beispiel, katze|hund|tiger. Die am weitesten linke erfolgreiche "
-"Übereinstimmung gewinnt."
+"\n"
+"zum Beispiel, katze|hund|tiger. Die am weitesten linke erfolgreiche "
+"Übereinstimmung wird verwendet."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:186
 msgid "(?(expression)yes|no)"
@@ -10410,7 +10391,6 @@ msgid "(?(name)yes|no)"
 msgstr "(?(Name)ja|nein)"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:187
-#, fuzzy
 msgid ""
 "Matches the 'yes' part if the named capture string has a match; \n"
 "otherwise, matches the 'no' part. The 'no' part can be omitted.\n"
@@ -10419,10 +10399,11 @@ msgid ""
 "is interpreted as an expression test."
 msgstr ""
 "Stimmt mit dem 'ja'-Teil überein wenn die genannte "
-"Erfassungs-Zeichenkette\\neine Übereinstimmung hat; \\nsonst stimmt der 'nein'-Teil überein. Der "
-"'nein'-Teil kann weggelassen werden.\\nWenn der angegebene Name keinem Namen oder "
-"einer Nummer einer in diesem\\nAusdruck benutzten Erfassungs-Gruppe "
-"entspricht, wird das Wechsel-Konstrukt\\nals Ausdruck-Test interpretiert."
+"Erfassungs-Zeichenkette\\neine Übereinstimmung hat; \n"
+"sonst stimmt der 'nein'-Teil überein. Der 'nein'-Teil kann weggelassen "
+"werden.\\nWenn der angegebene Name keinem Namen oder einer Nummer einer in "
+"diesem\\nAusdruck benutzten Erfassungs-Gruppe entspricht, wird das Wechsel-Konstrukt\n"
+"als Ausdruck-Test interpretiert."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:195
 msgid "Miscellaneous Constructs"
@@ -10456,16 +10437,15 @@ msgstr ""
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:202
 msgid "# [to end of line]"
-msgstr "# [bis zum Ende der Zeile]"
+msgstr "# [bis Zeilenende]"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:202
-#, fuzzy
 msgid ""
 "X-mode comment. The comment begins at an unescaped # and \n"
 "continues to the end of the line."
 msgstr ""
-"X-mode Kommentar. Der Kommentar beginnt bei einem nicht escapeten # \\nund "
-"geht weiter bis zum Ende der Zeile."
+"X-mode Kommentar. Der Kommentar beginnt bei einem nicht escapeten # \n"
+"und geht weiter bis zum Zeilenende."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/MonoDevelop.RegexToolkit/UpdateInProgressDialog.cs:65
 msgid "Update done."
@@ -10887,7 +10867,7 @@ msgstr "Zeilenen_de"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.MarkerPanel.cs:201
 msgid "<b>Show Whitespaces</b>"
-msgstr "<b>Unsichtbare Zeichen anzeigen</b>"
+msgstr "<b>Leerraumzeichen anzeigen</b>"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:56
 msgid "_Auto template insertion"
@@ -11022,10 +11002,10 @@ msgstr "Syntax-Hervorhebung"
 msgid "_Write an e-mail to..."
 msgstr ""
 
+# 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/MarkerOperationsHandler.cs:71
-#, fuzzy
 msgid "_Open URL..."
-msgstr "Ö_ffnen..."
+msgstr "_URL öffnen..."
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.SearchWidget.cs:65
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.SearchAndReplaceWidget.cs:284
@@ -11067,7 +11047,7 @@ msgstr "Typen"
 
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:95
 msgid "Members"
-msgstr ""
+msgstr "Elementen"
 
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:103
 msgid "Disassembler"
@@ -11077,9 +11057,21 @@ msgstr "Disassembler"
 msgid "Decompiler"
 msgstr "Decompiler"
 
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:187
+msgid "Member"
+msgstr "Element"
+
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:189
+msgid "Declaring Type"
+msgstr "Deklarierender Typ"
+
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:198
+msgid "Namespace"
+msgstr "Namensraum"
+
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyNodeBuilder.cs:81
 msgid "Assembly <b>{0}</b>, Version {1}"
-msgstr ""
+msgstr "Assembly <b>{0}</b>, Version {1}"
 
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyNodeBuilder.cs:92
 #, fuzzy
@@ -11088,27 +11080,25 @@ msgstr "Kalender-Anwendung"
 
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyNodeBuilder.cs:107
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/DomTypeNodeBuilder.cs:110
-#, fuzzy
 msgid "<b>Name:</b>\t{0}"
-msgstr "<b>Name:</b>\\t{0}"
+msgstr "<b>Name:</b>\t{0}"
 
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyNodeBuilder.cs:110
-#, fuzzy
 msgid "<b>Type:</b>\t{0}"
-msgstr "<b>Typ</b>\\t{0}"
+msgstr "<b>Typ</b>\t{0}"
 
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/ModuleDefinitionNodeBuilder.cs:89
 msgid "Module <b>{0}</b>"
 msgstr "Modul <b>{0}</b>"
 
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/ModuleDefinitionNodeBuilder.cs:101
-#, fuzzy
 msgid "<b>Version:</b>\t{0}"
-msgstr "<b>Version:</b>\\t{0}"
+msgstr "<b>Version:</b>\t{0}"
 
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/DomTypeNodeBuilder.cs:96
+#, fuzzy
 msgid "<b>Assembly:</b>\t{0}, Version={1}"
-msgstr ""
+msgstr "<b>Assembly:</b>\t{0}, Version={1}"
 
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/DomTypeNodeBuilder.cs:152
 msgid "Fields"
@@ -11119,37 +11109,44 @@ msgid "Methods"
 msgstr "Methoden"
 
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/DomMethodNodeBuilder.cs:89
-#, fuzzy
 msgid "<b>Declaring Type:</b>\t{0}"
-msgstr "<b>Typ</b>\\t{0}"
+msgstr "<b>Deklarierender Typ:</b>\t{0}"
 
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/DomMethodNodeBuilder.cs:117
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/DomMethodNodeBuilder.cs:139
 msgid "Method is P/Invoke"
-msgstr ""
+msgstr "Methode ist nativ (P/Invoke)"
 
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/DomMethodNodeBuilder.cs:120
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/DomMethodNodeBuilder.cs:142
-#, fuzzy
 msgid "Interface method"
-msgstr "Methode umbenennen"
+msgstr "Interface Methode"
 
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/DomMethodNodeBuilder.cs:120
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/DomMethodNodeBuilder.cs:142
 msgid "Abstract method"
-msgstr "Abstrakter Inhalt"
+msgstr "Abstrakte Methode"
 
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/ReferenceFolderNodeBuilder.cs:79
-#, fuzzy
 msgid "Can't find:"
-msgstr "Kann Datei nicht importieren:"
+msgstr "Konnte Referenz nicht finden:"
 
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/BaseTypeFolderNodeBuilder.cs:54
-#, fuzzy
 msgid "Base Types"
-msgstr "Typen"
+msgstr "Basistypen"
 
 # 
 #: ../src/addins/MonoDevelop.AssemblyBrowser/gtk-gui/MonoDevelop.AssemblyBrowser.AssemblyBrowserWidget.cs:174
 msgid "_in:"
 msgstr "_in:"
+
+#~ msgid ""
+#~ "Illegal project name. \n"
+#~ "Only use letters, digits, space, '.' or '_'."
+#~ msgstr ""
+#~ "Ungütiger Projektname.\n"
+#~ "Nur Buchstaben, Ziffern, Leerzeichen, '.' oder '_' sind erlaubt."
+
+#~ msgid "Comments:"
+#~ msgstr "Kommentare:"
+
