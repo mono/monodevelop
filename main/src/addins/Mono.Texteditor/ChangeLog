@@ -1,3 +1,9 @@
+2008-02-27  Aaron Bockover <abockover@novell.com>
+
+	* OblivionStyle.xml: Made some style changes to be less bland
+
+	* BrownStyle.xml: Renamed from UbuntuStyle
+
 2008-02-27  Mike Krüger <mkrueger@novell.com> 
 
 	* Mono.TextEditor/TextViewMargin.cs: fixed drawing bug.

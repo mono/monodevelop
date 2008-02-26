@@ -75,7 +75,7 @@ RES =  \
 	JavaSyntaxMode.xml \
 	OblivionStyle.xml \
 	TangoLightStyle.xml \
-	UbuntuStyle.xml \
+	BrownStyle.xml \
 	VBNetSyntaxMode.xml \
 	VisualStudioStyle.xml \
 	XmlSyntaxMode.xml

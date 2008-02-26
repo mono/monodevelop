@@ -66,7 +66,7 @@
     <File name="Mono.TextEditor/TextUtil.cs" subtype="Code" buildaction="Compile" />
     <File name="Mono.TextEditor/FoldingType.cs" subtype="Code" buildaction="Compile" />
     <File name="Mono.TextEditor.Highlighting/Marker.cs" subtype="Code" buildaction="Compile" />
-    <File name="UbuntuStyle.xml" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="BrownStyle.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="Mono.TextEditor/TextViewMargin.cs" subtype="Code" buildaction="Compile" />
     <File name="Mono.TextEditor.Highlighting/SemanticRule.cs" subtype="Code" buildaction="Compile" />
     <File name="VisualStudioStyle.xml" subtype="Code" buildaction="EmbedAsResource" />
