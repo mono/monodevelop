@@ -1,3 +1,8 @@
+2008-02-27  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs: worked on search
+	  feature.
+
 2008-02-26  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs: Added progress bar
