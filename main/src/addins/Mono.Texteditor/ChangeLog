@@ -1,5 +1,9 @@
 2008-02-27  Mike Krüger <mkrueger@novell.com> 
 
+	* Mono.TextEditor/TextViewMargin.cs: fixed drawing bug.
+
+2008-02-27  Mike Krüger <mkrueger@novell.com> 
+
 	* Mono.TextEditor/TextViewMargin.cs: fixed not to draw invalid line bug.
 
 2008-02-27  Mike Krüger <mkrueger@novell.com> 
