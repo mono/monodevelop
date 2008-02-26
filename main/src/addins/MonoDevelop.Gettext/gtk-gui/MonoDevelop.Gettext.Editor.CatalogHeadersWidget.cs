@@ -150,7 +150,8 @@ namespace MonoDevelop.Gettext.Editor {
             this.label5 = new Gtk.Label();
             this.label5.Name = "label5";
             this.label5.Xalign = 0F;
-            this.label5.LabelProp = Mono.Unix.Catalog.GetString("Comments:");
+            this.label5.LabelProp = Mono.Unix.Catalog.GetString("_Comments:");
+            this.label5.UseUnderline = true;
             this.table1.Add(this.label5);
             Gtk.Table.TableChild w5 = ((Gtk.Table.TableChild)(this.table1[this.label5]));
             w5.XOptions = ((Gtk.AttachOptions)(4));
@@ -159,7 +160,8 @@ namespace MonoDevelop.Gettext.Editor {
             this.label6 = new Gtk.Label();
             this.label6.Name = "label6";
             this.label6.Xalign = 0F;
-            this.label6.LabelProp = Mono.Unix.Catalog.GetString("Project name:");
+            this.label6.LabelProp = Mono.Unix.Catalog.GetString("_Project name:");
+            this.label6.UseUnderline = true;
             this.table1.Add(this.label6);
             Gtk.Table.TableChild w6 = ((Gtk.Table.TableChild)(this.table1[this.label6]));
             w6.TopAttach = ((uint)(1));
@@ -170,7 +172,8 @@ namespace MonoDevelop.Gettext.Editor {
             this.label7 = new Gtk.Label();
             this.label7.Name = "label7";
             this.label7.Xalign = 0F;
-            this.label7.LabelProp = Mono.Unix.Catalog.GetString("Project version:");
+            this.label7.LabelProp = Mono.Unix.Catalog.GetString("P_roject version:");
+            this.label7.UseUnderline = true;
             this.table1.Add(this.label7);
             Gtk.Table.TableChild w7 = ((Gtk.Table.TableChild)(this.table1[this.label7]));
             w7.TopAttach = ((uint)(2));
@@ -181,7 +184,8 @@ namespace MonoDevelop.Gettext.Editor {
             this.label8 = new Gtk.Label();
             this.label8.Name = "label8";
             this.label8.Xalign = 0F;
-            this.label8.LabelProp = Mono.Unix.Catalog.GetString("Bugzilla URL:");
+            this.label8.LabelProp = Mono.Unix.Catalog.GetString("_Bugzilla URL:");
+            this.label8.UseUnderline = true;
             this.table1.Add(this.label8);
             Gtk.Table.TableChild w8 = ((Gtk.Table.TableChild)(this.table1[this.label8]));
             w8.TopAttach = ((uint)(3));
@@ -345,7 +349,8 @@ namespace MonoDevelop.Gettext.Editor {
             this.label10 = new Gtk.Label();
             this.label10.Name = "label10";
             this.label10.Xalign = 0F;
-            this.label10.LabelProp = Mono.Unix.Catalog.GetString("Translator name:");
+            this.label10.LabelProp = Mono.Unix.Catalog.GetString("_Translator name:");
+            this.label10.UseUnderline = true;
             this.table2.Add(this.label10);
             Gtk.Table.TableChild w22 = ((Gtk.Table.TableChild)(this.table2[this.label10]));
             w22.XOptions = ((Gtk.AttachOptions)(4));
@@ -354,7 +359,8 @@ namespace MonoDevelop.Gettext.Editor {
             this.label11 = new Gtk.Label();
             this.label11.Name = "label11";
             this.label11.Xalign = 0F;
-            this.label11.LabelProp = Mono.Unix.Catalog.GetString("Translator e-mail:");
+            this.label11.LabelProp = Mono.Unix.Catalog.GetString("T_ranslator e-mail:");
+            this.label11.UseUnderline = true;
             this.table2.Add(this.label11);
             Gtk.Table.TableChild w23 = ((Gtk.Table.TableChild)(this.table2[this.label11]));
             w23.TopAttach = ((uint)(1));
@@ -365,7 +371,8 @@ namespace MonoDevelop.Gettext.Editor {
             this.label12 = new Gtk.Label();
             this.label12.Name = "label12";
             this.label12.Xalign = 0F;
-            this.label12.LabelProp = Mono.Unix.Catalog.GetString("Language group:");
+            this.label12.LabelProp = Mono.Unix.Catalog.GetString("_Language group:");
+            this.label12.UseUnderline = true;
             this.table2.Add(this.label12);
             Gtk.Table.TableChild w24 = ((Gtk.Table.TableChild)(this.table2[this.label12]));
             w24.TopAttach = ((uint)(2));
@@ -376,7 +383,8 @@ namespace MonoDevelop.Gettext.Editor {
             this.label13 = new Gtk.Label();
             this.label13.Name = "label13";
             this.label13.Xalign = 0F;
-            this.label13.LabelProp = Mono.Unix.Catalog.GetString("Language group e-mail:");
+            this.label13.LabelProp = Mono.Unix.Catalog.GetString("L_anguage group e-mail:");
+            this.label13.UseUnderline = true;
             this.table2.Add(this.label13);
             Gtk.Table.TableChild w25 = ((Gtk.Table.TableChild)(this.table2[this.label13]));
             w25.TopAttach = ((uint)(3));
@@ -387,7 +395,8 @@ namespace MonoDevelop.Gettext.Editor {
             this.label14 = new Gtk.Label();
             this.label14.Name = "label14";
             this.label14.Xalign = 0F;
-            this.label14.LabelProp = Mono.Unix.Catalog.GetString("Charset:");
+            this.label14.LabelProp = Mono.Unix.Catalog.GetString("_Charset:");
+            this.label14.UseUnderline = true;
             this.table2.Add(this.label14);
             Gtk.Table.TableChild w26 = ((Gtk.Table.TableChild)(this.table2[this.label14]));
             w26.TopAttach = ((uint)(4));
@@ -398,7 +407,8 @@ namespace MonoDevelop.Gettext.Editor {
             this.label15 = new Gtk.Label();
             this.label15.Name = "label15";
             this.label15.Xalign = 0F;
-            this.label15.LabelProp = Mono.Unix.Catalog.GetString("Plural forms:");
+            this.label15.LabelProp = Mono.Unix.Catalog.GetString("_Plural forms:");
+            this.label15.UseUnderline = true;
             this.table2.Add(this.label15);
             Gtk.Table.TableChild w27 = ((Gtk.Table.TableChild)(this.table2[this.label15]));
             w27.TopAttach = ((uint)(5));
@@ -418,6 +428,15 @@ namespace MonoDevelop.Gettext.Editor {
             if ((this.Child != null)) {
                 this.Child.ShowAll();
             }
+            this.label5.MnemonicWidget = this.textviewComments;
+            this.label6.MnemonicWidget = this.entryProjectName;
+            this.label7.MnemonicWidget = this.entryProjectVersion;
+            this.label8.MnemonicWidget = this.entryBugzilla;
+            this.label10.MnemonicWidget = this.entryTranslatorName;
+            this.label11.MnemonicWidget = this.entryTranslatorEmail;
+            this.label12.MnemonicWidget = this.entryLanguageGroupName;
+            this.label13.MnemonicWidget = this.entryLanguageGroupEmail;
+            this.label15.MnemonicWidget = this.entryPluralsForms;
             this.Show();
             this.entryProjectVersion.Changed += new System.EventHandler(this.OnHeaderChanged);
             this.entryProjectName.Changed += new System.EventHandler(this.OnHeaderChanged);

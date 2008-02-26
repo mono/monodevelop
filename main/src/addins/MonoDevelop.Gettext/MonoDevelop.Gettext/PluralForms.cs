@@ -2,10 +2,10 @@
 // PluralForms.cs
 //
 // Author:
-//   David Makovský <yakeen@sannyas-on.net>
+//   David Makovskï¿½ <yakeen@sannyas-on.net>
 //
 // Copyright (C) 1999-2006 Vaclav Slavik (Code and design inspiration - poedit.org)
-// Copyright (C) 2007 David Makovský
+// Copyright (C) 2007 David Makovskï¿½
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -69,7 +69,6 @@ namespace MonoDevelop.Gettext
 				Number
 				'(' Expression ')'
 */
-	
 	internal class PluralFormsToken
 	{
 		public enum Type
@@ -629,18 +628,16 @@ namespace MonoDevelop.Gettext
 				return null;
 			PluralFormsNode n = p;
 			if (Token.TokenType == PluralFormsToken.Type.Greater
-				|| Token.TokenType == PluralFormsToken.Type.Less
+			    || Token.TokenType == PluralFormsToken.Type.Less
 				|| Token.TokenType == PluralFormsToken.Type.GreaterOrEqual
 				|| Token.TokenType == PluralFormsToken.Type.LessOrEqual)
 			{
 				PluralFormsNode qn = new PluralFormsNode (new PluralFormsToken(Token));
-				if (! NextToken ())
-				{
+				if (! NextToken ()) {
 					return null;
 				}
 				p = MultiplicativeExpression ();
-				if (p == null)
-				{
+				if (p == null) {
 					return null;
 				}
 				qn.SetNode (1, p);
@@ -653,35 +650,27 @@ namespace MonoDevelop.Gettext
 		PluralFormsNode PmExpression ()
 		{
 			PluralFormsNode n;
-			if (Token.TokenType == PluralFormsToken.Type.N || Token.TokenType == PluralFormsToken.Type.Number)
-			{
+			if (Token.TokenType == PluralFormsToken.Type.N || Token.TokenType == PluralFormsToken.Type.Number) {
 				n = new PluralFormsNode (new PluralFormsToken(Token));
-				if (! NextToken ())
-				{
+				if (! NextToken ()) {
 					return null;
 				}
-			} else if (Token.TokenType == PluralFormsToken.Type.LeftBracket)
-			{
-				if (! NextToken ())
-				{
+			} else if (Token.TokenType == PluralFormsToken.Type.LeftBracket) {
+				if (! NextToken ()) {
 					return null;
 				}
 				PluralFormsNode p = Expression ();
-				if (p == null)
-				{
+				if (p == null) {
 					return null;
 				}
 				n = p;
-				if (Token.TokenType != PluralFormsToken.Type.RightBracket)
-				{
+				if (Token.TokenType != PluralFormsToken.Type.RightBracket) {
 					return null;
 				}
-				if (! NextToken ())
-				{
+				if (! NextToken ()) {
 					return null;
 				}
-			} else
-			{
+			} else {
 				return null;
 			}
 			return n;

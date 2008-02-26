@@ -79,7 +79,9 @@ namespace MonoDevelop.Gettext
 				}
 				
 				if (c != '_' && char.IsControl (c))
-					throw new FormatException ("Invalid character '" + c + "' in translatable string : '" + text + "'");
+					throw new FormatException (String.Format (MonoDevelop.Core.GettextCatalog.GetString ("Invalid character '{0}' in translatable string: '{1}'"),
+					                                          c,
+					                                          text));
 				
 				sb.Append (c);
 			}
@@ -115,7 +117,9 @@ namespace MonoDevelop.Gettext
 							i++;
 							continue;
 						}
-						throw new FormatException ("Invalid escape sequence '" + nextChar + "' in gettext string : '" + text + "'");
+						throw new FormatException (String.Format (MonoDevelop.Core.GettextCatalog.GetString ("Invalid escape sequence '{0}' in string: '{1}'"),
+						                                          nextChar,
+						                                          text));
 					}
 					break;
 				}

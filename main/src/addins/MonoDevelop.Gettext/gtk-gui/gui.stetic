@@ -126,7 +126,9 @@
               <widget class="Gtk.Label" id="label5">
                 <property name="MemberName" />
                 <property name="Xalign">0</property>
-                <property name="LabelProp" translatable="yes">Comments:</property>
+                <property name="LabelProp" translatable="yes">_Comments:</property>
+                <property name="UseUnderline">True</property>
+                <property name="MnemonicWidget">textviewComments</property>
               </widget>
               <packing>
                 <property name="AutoSize">True</property>
@@ -144,7 +146,9 @@
               <widget class="Gtk.Label" id="label6">
                 <property name="MemberName" />
                 <property name="Xalign">0</property>
-                <property name="LabelProp" translatable="yes">Project name:</property>
+                <property name="LabelProp" translatable="yes">_Project name:</property>
+                <property name="UseUnderline">True</property>
+                <property name="MnemonicWidget">entryProjectName</property>
               </widget>
               <packing>
                 <property name="TopAttach">1</property>
@@ -164,7 +168,9 @@
               <widget class="Gtk.Label" id="label7">
                 <property name="MemberName" />
                 <property name="Xalign">0</property>
-                <property name="LabelProp" translatable="yes">Project version:</property>
+                <property name="LabelProp" translatable="yes">P_roject version:</property>
+                <property name="UseUnderline">True</property>
+                <property name="MnemonicWidget">entryProjectVersion</property>
               </widget>
               <packing>
                 <property name="TopAttach">2</property>
@@ -184,7 +190,9 @@
               <widget class="Gtk.Label" id="label8">
                 <property name="MemberName" />
                 <property name="Xalign">0</property>
-                <property name="LabelProp" translatable="yes">Bugzilla URL:</property>
+                <property name="LabelProp" translatable="yes">_Bugzilla URL:</property>
+                <property name="UseUnderline">True</property>
+                <property name="MnemonicWidget">entryBugzilla</property>
               </widget>
               <packing>
                 <property name="TopAttach">3</property>
@@ -465,7 +473,9 @@
               <widget class="Gtk.Label" id="label10">
                 <property name="MemberName" />
                 <property name="Xalign">0</property>
-                <property name="LabelProp" translatable="yes">Translator name:</property>
+                <property name="LabelProp" translatable="yes">_Translator name:</property>
+                <property name="UseUnderline">True</property>
+                <property name="MnemonicWidget">entryTranslatorName</property>
               </widget>
               <packing>
                 <property name="AutoSize">True</property>
@@ -483,7 +493,9 @@
               <widget class="Gtk.Label" id="label11">
                 <property name="MemberName" />
                 <property name="Xalign">0</property>
-                <property name="LabelProp" translatable="yes">Translator e-mail:</property>
+                <property name="LabelProp" translatable="yes">T_ranslator e-mail:</property>
+                <property name="UseUnderline">True</property>
+                <property name="MnemonicWidget">entryTranslatorEmail</property>
               </widget>
               <packing>
                 <property name="TopAttach">1</property>
@@ -503,7 +515,9 @@
               <widget class="Gtk.Label" id="label12">
                 <property name="MemberName" />
                 <property name="Xalign">0</property>
-                <property name="LabelProp" translatable="yes">Language group:</property>
+                <property name="LabelProp" translatable="yes">_Language group:</property>
+                <property name="UseUnderline">True</property>
+                <property name="MnemonicWidget">entryLanguageGroupName</property>
               </widget>
               <packing>
                 <property name="TopAttach">2</property>
@@ -523,7 +537,9 @@
               <widget class="Gtk.Label" id="label13">
                 <property name="MemberName" />
                 <property name="Xalign">0</property>
-                <property name="LabelProp" translatable="yes">Language group e-mail:</property>
+                <property name="LabelProp" translatable="yes">L_anguage group e-mail:</property>
+                <property name="UseUnderline">True</property>
+                <property name="MnemonicWidget">entryLanguageGroupEmail</property>
               </widget>
               <packing>
                 <property name="TopAttach">3</property>
@@ -543,7 +559,8 @@
               <widget class="Gtk.Label" id="label14">
                 <property name="MemberName" />
                 <property name="Xalign">0</property>
-                <property name="LabelProp" translatable="yes">Charset:</property>
+                <property name="LabelProp" translatable="yes">_Charset:</property>
+                <property name="UseUnderline">True</property>
               </widget>
               <packing>
                 <property name="TopAttach">4</property>
@@ -563,7 +580,9 @@
               <widget class="Gtk.Label" id="label15">
                 <property name="MemberName" />
                 <property name="Xalign">0</property>
-                <property name="LabelProp" translatable="yes">Plural forms:</property>
+                <property name="LabelProp" translatable="yes">_Plural forms:</property>
+                <property name="UseUnderline">True</property>
+                <property name="MnemonicWidget">entryPluralsForms</property>
               </widget>
               <packing>
                 <property name="TopAttach">5</property>
@@ -744,6 +763,7 @@
                       <widget class="Gtk.RadioButton" id="radiobuttonKnown">
                         <property name="MemberName" />
                         <property name="Label" translatable="yes">_Known Language</property>
+                        <property name="Active">True</property>
                         <property name="DrawIndicator">True</property>
                         <property name="HasLabel">True</property>
                         <property name="UseUnderline">True</property>

@@ -62,7 +62,7 @@ namespace MonoDevelop.Gettext
 				this.GetTextView (0).Buffer.Changed += delegate {
 					TreeIter iter = SelectedIter;
 					if (treeviewEntries.Selection.IterIsSelected (iter))
-						return store.SetValue (iter, (int)Columns.Translation, this.GetTextView (0).Buffer.Text);
+						return store.SetValue (iter, (int)Columns.Translation, StringEscaping.ToGettextFormat (this.SelectedEntry.GetTranslation (0)));
 				};
 				UpdateFromCatalog ();
 				UpdateProgressBar ();
@@ -78,6 +78,7 @@ namespace MonoDevelop.Gettext
 			}
 		}
 		
+		internal static readonly Gdk.Color errorColor = new Gdk.Color (210, 32, 32);
 		public POEditorWidget ()
 		{
 			this.Build();
@@ -164,19 +165,11 @@ namespace MonoDevelop.Gettext
 				UpdateFromCatalog ();
 			};
 			
-//			this.textviewTranslatedPlural.Buffer.Changed += delegate {
-//				if (this.isUpdating)
-//					return;
-//				if (this.currentEntry != null)
-//					this.currentEntry.SetTranslation (textviewTranslatedPlural.Buffer.Text, 1);
-//				UpdateProgressBar ();
-//			};
-//			
 			this.textviewComments.Buffer.Changed += delegate {
 				if (this.isUpdating)
 					return;
 				if (this.currentEntry != null) {
-					string[] lines = textviewComments.Buffer.Text.Split (new string[] { System.Environment.NewLine }, System.StringSplitOptions.None);
+					string[] lines = StringEscaping.FromGettextFormat (textviewComments.Buffer.Text).Split (new string[] { System.Environment.NewLine }, System.StringSplitOptions.None);
 					for (int i = 0; i < lines.Length; i++) {
 						if (!lines[i].StartsWith ("#"))
 							lines[i] = "# " + lines[i];
@@ -256,8 +249,15 @@ namespace MonoDevelop.Gettext
 			textView.Buffer.Changed += delegate {
 				if (this.isUpdating)
 					return;
-				if (this.currentEntry != null)
-					this.currentEntry.SetTranslation (textView.Buffer.Text, index);
+				try {
+					if (this.currentEntry != null)
+						this.currentEntry.SetTranslation (StringEscaping.FromGettextFormat (textView.Buffer.Text), index);
+					IdeApp.Workbench.StatusBar.ShowErrorMessage (MonoDevelop.Core.GettextCatalog.GetString ("Ready"));
+					textView.ModifyBase (StateType.Normal, Style.Base (StateType.Normal));
+				} catch (Exception e) {
+					IdeApp.Workbench.StatusBar.ShowErrorMessage (e.Message);
+					textView.ModifyBase (StateType.Normal, errorColor);
+				}
 				UpdateProgressBar ();
 			};
 			
@@ -369,8 +369,8 @@ namespace MonoDevelop.Gettext
 			try {
 				currentEntry = entry;
 					
-				this.textviewOriginal.Buffer.Text = entry != null ? entry.String : "";
-					
+				this.textviewOriginal.Buffer.Text = entry != null ? StringEscaping.ToGettextFormat (entry.String) : "";
+				
 				if (GtkSpell.IsSupported && !gtkSpellSet.ContainsKey (this.textviewOriginal)) {
 					GtkSpell.Attach (this.textviewOriginal, "en");
 					this.gtkSpellSet[this.textviewOriginal] = true;
@@ -380,7 +380,7 @@ namespace MonoDevelop.Gettext
 				this.notebookTranslated.ShowTabs = entry != null && entry.HasPlural;
 				
 				if (entry != null && entry.HasPlural) {
-					this.textviewOriginalPlural.Buffer.Text = entry.PluralString;
+					this.textviewOriginalPlural.Buffer.Text = StringEscaping.ToGettextFormat (entry.PluralString);
 					if (GtkSpell.IsSupported && !gtkSpellSet.ContainsKey (this.textviewOriginalPlural)) {
 						GtkSpell.Attach (this.textviewOriginalPlural, "en");
 						this.gtkSpellSet[this.textviewOriginalPlural] = true;
@@ -400,7 +400,7 @@ namespace MonoDevelop.Gettext
 						TextView textView = GetTextView (i);
 						if (textView == null)
 							continue;
-						textView.Buffer.Text = entry != null ? entry.GetTranslation (i) : "";
+						textView.Buffer.Text = entry != null ? StringEscaping.ToGettextFormat (entry.GetTranslation (i)) : "";
 						if (GtkSpell.IsSupported && !gtkSpellSet.ContainsKey (textView)) {
 							GtkSpell.Attach (textView, "en");
 							this.gtkSpellSet[textView] = true;
@@ -423,7 +423,7 @@ namespace MonoDevelop.Gettext
 					}
 				}
 				
-				this.textviewComments.Buffer.Text = entry != null ? entry.Comment : null;
+				this.textviewComments.Buffer.Text = entry != null ? StringEscaping.ToGettextFormat (entry.Comment) : null;
 				
 				if (GtkSpell.IsSupported) {
 					foreach (TextView view in this.gtkSpellSet.Keys)

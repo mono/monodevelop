@@ -1,5 +1,14 @@
 2008-02-26  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.Gettext.Editor/POEditorWidget.cs,
+	  MonoDevelop.Gettext/StringEscaping.cs,
+	  MonoDevelop.Gettext/PluralForms.cs: Now using the gettext format for
+	  text input instead of the plain text (otherwise the translation of some
+	  strings is impossible and I assume that the translators are used to the
+	  \n, \r, \t escape sequences).
+
+2008-02-26  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.Gettext.Editor/CatalogEditorView.cs,
 	  MonoDevelop.Gettext.Editor/POEditorWidget.cs,
 	  MonoDevelop.Gettext.Editor/CatalogHeadersWidget.cs,
