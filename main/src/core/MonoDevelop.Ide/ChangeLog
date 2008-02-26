@@ -1,3 +1,8 @@
+2008-02-26  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Gui.Search/SearchReplaceInFilesManager.cs: Make sure
+	  end of search events are fired in the gui thread.
+
 2008-02-26  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Ide.addin.xml: Added missing _ shortcut.
