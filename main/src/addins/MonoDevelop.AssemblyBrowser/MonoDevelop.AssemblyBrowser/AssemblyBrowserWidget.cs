@@ -94,9 +94,11 @@ namespace MonoDevelop.AssemblyBrowser
 			};
 			this.searchInCombobox.AppendText (GettextCatalog.GetString ("Types"));
 			this.searchInCombobox.AppendText (GettextCatalog.GetString ("Members"));
+			this.searchInCombobox.AppendText (GettextCatalog.GetString ("Disassembler"));
+			this.searchInCombobox.AppendText (GettextCatalog.GetString ("Decompiler"));
 			this.searchInCombobox.Active = 0;
 			this.searchInCombobox.Changed += delegate {
-				searchMember = this.searchInCombobox.Active != 0;
+				this.searchMode = (SearchMode)this.searchInCombobox.Active;
 				CreateColumns ();
 				StartSearch ();
 			};
@@ -104,7 +106,7 @@ namespace MonoDevelop.AssemblyBrowser
 			this.notebook1.SetTabLabel (this.disassemblerScrolledWindow, new Label (GettextCatalog.GetString ("Disassembler")));
 			this.notebook1.SetTabLabel (this.decompilerScrolledWindow, new Label (GettextCatalog.GetString ("Decompiler")));
 			this.notebook1.SetTabLabel (this.searchWidget, new Label (GettextCatalog.GetString ("Search")));
-			this.searchWidget.Visible = false;
+			//this.searchWidget.Visible = false;
 				
 			typeListStore = new Gtk.ListStore (typeof (Gdk.Pixbuf), // type image
 			                                   typeof (string),     // name
@@ -126,12 +128,23 @@ namespace MonoDevelop.AssemblyBrowser
 			this.searchTreeview.RowActivated += delegate {
 				TreeIter selectedIter;
 				if (searchTreeview.Selection.GetSelected (out selectedIter)) {
-					IMember member = (IMember)(searchMember ? memberListStore.GetValue (selectedIter, 4) : typeListStore.GetValue (selectedIter, 4));
-					System.Console.WriteLine("member:" + member);
+					IMember member = (IMember)(searchMode != SearchMode.Type ? memberListStore.GetValue (selectedIter, 4) : typeListStore.GetValue (selectedIter, 4));
 					ITreeNavigator nav = SearchMember (member);
 					if (nav != null) {
 						nav.ExpandToNode ();
 						nav.Selected = true;
+					}
+					if (searchMode == SearchMode.Disassembler) {
+						this.notebook1.Page = 0;
+						int idx = DomMethodNodeBuilder.Disassemble ((DomCecilMethod)member, false).ToUpper ().IndexOf (searchEntry.Text.ToUpper ());
+						this.disassemblerLabel.Selectable = true;
+						this.disassemblerLabel.SelectRegion (idx, idx + searchEntry.Text.Length);
+					}
+					if (searchMode == SearchMode.Decompiler) {
+						this.notebook1.Page = 1;
+						int idx = DomMethodNodeBuilder.Decompile ((DomCecilMethod)member, false).ToUpper ().IndexOf (searchEntry.Text.ToUpper ());
+						this.disassemblerLabel.Selectable = true;
+						this.disassemblerLabel.SelectRegion (idx, idx + searchEntry.Text.Length);
 					}
 				}
 			};
@@ -173,7 +186,14 @@ namespace MonoDevelop.AssemblyBrowser
 			return null;
 		}
 		
-		bool searchMember = false;
+		enum SearchMode 
+		{
+			Type   = 0,
+			Member = 1,
+			Disassembler = 2,
+			Decompiler = 3
+		}
+		SearchMode searchMode = SearchMode.Type;
 		Gtk.ListStore memberListStore;
 		Gtk.ListStore typeListStore;
 		
@@ -183,7 +203,10 @@ namespace MonoDevelop.AssemblyBrowser
 				searchTreeview.RemoveColumn (column);
 			}
 			TreeViewColumn col;
-			if (searchMember) {
+			switch (searchMode) {
+			case SearchMode.Member:
+			case SearchMode.Disassembler:
+			case SearchMode.Decompiler:
 				col = searchTreeview.AppendColumn (null, new Gtk.CellRendererPixbuf (), "pixbuf", 0);
 				col = searchTreeview.AppendColumn (GettextCatalog.GetString ("Member"), new Gtk.CellRendererText (), "text", 1);
 				col.Resizable = true;
@@ -192,7 +215,8 @@ namespace MonoDevelop.AssemblyBrowser
 				col = searchTreeview.AppendColumn (GettextCatalog.GetString ("Assembly"), new Gtk.CellRendererText (), "text", 3);
 				col.Resizable = true;
 				searchTreeview.Model = memberListStore;
-			} else {
+				break;
+			case SearchMode.Type:
 				col = searchTreeview.AppendColumn (null, new Gtk.CellRendererPixbuf (), "pixbuf", 0);
 				col = searchTreeview.AppendColumn (GettextCatalog.GetString ("Type"), new Gtk.CellRendererText (), "text", 1);
 				col.Resizable = true;
@@ -201,8 +225,10 @@ namespace MonoDevelop.AssemblyBrowser
 				col = searchTreeview.AppendColumn (GettextCatalog.GetString ("Assembly"), new Gtk.CellRendererText (), "text", 3);
 				col.Resizable = true;
 				searchTreeview.Model = typeListStore;
+				break;
 			}
 		}
+			
 		public void StartSearch ()
 		{
 			uint timeoutHandler = 0;
@@ -219,8 +245,8 @@ namespace MonoDevelop.AssemblyBrowser
 		void StartSearchThread ()
 		{
 			string pattern = searchEntry.Text.ToUpper ();
-			
-			if (searchMember) {
+			switch (searchMode) {
+			case SearchMode.Member:
 				memberListStore.Clear ();
 				foreach (DomCecilCompilationUnit unit in this.definitions) {
 					foreach (IType type in unit.Types) {
@@ -235,7 +261,46 @@ namespace MonoDevelop.AssemblyBrowser
 						}
 					}
 				}
-			} else {
+				break;
+			case SearchMode.Disassembler:
+				memberListStore.Clear ();
+				foreach (DomCecilCompilationUnit unit in this.definitions) {
+					foreach (IType type in unit.Types) {
+						foreach (IMethod method in type.Methods) {
+							DomCecilMethod domMethod = method as DomCecilMethod;
+							if (domMethod == null)
+								continue;
+							if (DomMethodNodeBuilder.Disassemble (domMethod, false).ToUpper ().Contains (pattern)) {
+								memberListStore.AppendValues (method.Icon,
+								                              method.Name,
+								                              type.FullName,
+								                              unit.AssemblyDefinition.Name.FullName,
+								                              method);
+							}
+						}
+					}
+				}
+				break;
+			case SearchMode.Decompiler:
+				memberListStore.Clear ();
+				foreach (DomCecilCompilationUnit unit in this.definitions) {
+					foreach (IType type in unit.Types) {
+						foreach (IMethod method in type.Methods) {
+							DomCecilMethod domMethod = method as DomCecilMethod;
+							if (domMethod == null)
+								continue;
+							if (DomMethodNodeBuilder.Decompile (domMethod, false).ToUpper ().Contains (pattern)) {
+								memberListStore.AppendValues (method.Icon,
+								                              method.Name,
+								                              type.FullName,
+								                              unit.AssemblyDefinition.Name.FullName,
+								                              method);
+							}
+						}
+					}
+				}
+				break;
+			case SearchMode.Type:
 				typeListStore.Clear ();
 				foreach (DomCecilCompilationUnit unit in this.definitions) {
 					foreach (IType type in unit.Types) {
@@ -248,6 +313,7 @@ namespace MonoDevelop.AssemblyBrowser
 						}
 					}
 				}
+				break;
 			}
 		}
 		
@@ -307,7 +373,7 @@ namespace MonoDevelop.AssemblyBrowser
 		[CommandHandler (SearchCommands.Find)]
 		public void ShowSearchWidget ()
 		{
-			this.searchWidget.Visible = true;
+			//this.searchWidget.Visible = true;
 			this.notebook1.Page = 2;
 			this.searchEntry.GrabFocus ();
 		}

@@ -357,12 +357,11 @@ namespace MonoDevelop.AssemblyBrowser
 				return StackItem.StringValue;
 		}
 		
-		public string Decompile(MonoDevelop.Ide.Gui.Pads.ITreeNavigator navigator)
+		public string Decompile (DomCecilMethod method)
 		{
 			Statement current = new Statement();
 			StringBuilder result = new StringBuilder ();
 			Stack<Operand> stack = new Stack<Operand>();
-			DomCecilMethod method = navigator.DataItem as DomCecilMethod;
 			foreach (Instruction instruction in method.MethodDefinition.Body.Instructions) {
 				string arg1, arg2, name;
 				bool fullname = false;

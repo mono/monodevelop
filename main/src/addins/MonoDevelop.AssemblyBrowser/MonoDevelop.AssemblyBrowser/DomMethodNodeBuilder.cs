@@ -109,21 +109,19 @@ namespace MonoDevelop.AssemblyBrowser
 			return String.Format ("IL_{0:X4}", instruction.Offset);
 		}
 		
-		public string GetDecompiledCode (ITreeNavigator navigator)
+		
+		public static string Decompile (DomCecilMethod method, bool markup)
 		{
-			DomCecilMethod method = navigator.DataItem as DomCecilMethod;
-			if (method == null)
-				return "";
 			if (method.MethodDefinition.IsPInvokeImpl)
 				return GettextCatalog.GetString ("Method is P/Invoke");
 			if (method.MethodDefinition.Body == null) {
-				IType type = (IType)navigator.GetParentDataItem (typeof (IType), false);
+				IType type = method.DeclaringType;
 				return type == null || type.ClassType == ClassType.Interface ? GettextCatalog.GetString ("Interface method") : GettextCatalog.GetString ("Abstract method");
 			}
 			
 			StringBuilder result = new StringBuilder ();
 			try {
-				string decompiledCode = new Decompiler().Decompile (navigator);
+				string decompiledCode = new Decompiler().Decompile (method);
 				result.Append (Ambience.Format (decompiledCode));
 			} catch (Exception e) {
 				result.Append ("got exception while decompilation: \n" + e);
@@ -131,25 +129,32 @@ namespace MonoDevelop.AssemblyBrowser
 			return result.ToString ();
 		}
 		
-		string IAssemblyBrowserNodeBuilder.GetDisassembly (ITreeNavigator navigator)
+		public string GetDecompiledCode (ITreeNavigator navigator)
 		{
 			DomCecilMethod method = navigator.DataItem as DomCecilMethod;
 			if (method == null)
 				return "";
+			return Decompile (method, true);
+		}
+		
+		public static string Disassemble (DomCecilMethod method, bool markup)
+		{
 			if (method.MethodDefinition.IsPInvokeImpl)
 				return GettextCatalog.GetString ("Method is P/Invoke");
 			if (method.MethodDefinition.Body == null) {
-				IType type = (IType)navigator.GetParentDataItem (typeof (IType), false);
+				IType type = method.DeclaringType;
 				return type == null || type.ClassType == ClassType.Interface ? GettextCatalog.GetString ("Interface method") : GettextCatalog.GetString ("Abstract method");
 			}
 			
 			StringBuilder result = new StringBuilder ();
 			foreach (Instruction instruction in method.MethodDefinition.Body.Instructions ) {
-				result.Append ("<b>");
+				if (markup)
+					result.Append ("<b>");
 				result.Append (GetInstructionOffset (instruction));
-				result.Append (":</b> ");
+				result.Append (markup ? ":</b> " : ": ");
 				result.Append (instruction.OpCode);
-				result.Append ("<i>");
+				if (markup)
+					result.Append ("<i>");
 				if (instruction.Operand != null) {
 					result.Append (' ');
 					if (instruction.Operand is string) {
@@ -162,12 +167,21 @@ namespace MonoDevelop.AssemblyBrowser
 						result.Append (instruction.Operand);
 					}
 				}
-				result.Append ("</i>");
+				if (markup)
+					result.Append ("</i>");
 				result.AppendLine ();
 			}
 			result.AppendLine ();
 			
 			return result.ToString ();
+		}
+		
+		string IAssemblyBrowserNodeBuilder.GetDisassembly (ITreeNavigator navigator)
+		{
+			DomCecilMethod method = navigator.DataItem as DomCecilMethod;
+			if (method == null)
+				return "";
+			return Disassemble (method, true);
 		}
 		#endregion
 

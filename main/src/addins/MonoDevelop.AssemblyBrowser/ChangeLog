@@ -1,5 +1,12 @@
 2008-02-26  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.AssemblyBrowser/Decompiler.cs,
+	  MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs,
+	  MonoDevelop.AssemblyBrowser/DomMethodNodeBuilder.cs: Added search in
+	  disassembler/decompiler feature (helpful for compiler writers).
+
+2008-02-26  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs: added some gettext
 	  calls.
 
