@@ -325,6 +325,15 @@ namespace MonoDevelop.Ide.Gui
 		
 		internal Document OpenDocument (string fileName, int line, int column, bool bringToFront, string encoding, IDisplayBinding binding)
 		{
+			// Build navigation point for current document.
+			if (ActiveDocument != null) {
+				IEditableTextBuffer textBuffer = (IEditableTextBuffer) ActiveDocument.GetContent (typeof(IPositionable));
+				if (textBuffer != null) {
+					NavigationService.Log (NavigationService.BuildNavPoint (textBuffer));
+				} else {
+					NavigationService.Log (new DefaultNavigationPoint (ActiveDocument.FileName));
+				}
+			}
 			foreach (Document doc in Documents) {
 				IBaseViewContent vcFound = null;
 				int vcIndex = 0;

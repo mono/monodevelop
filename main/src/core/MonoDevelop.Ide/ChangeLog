@@ -1,5 +1,12 @@
 2008-02-26  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.Ide.Gui/TextNavigationPoint.cs,
+	  MonoDevelop.Ide.Gui/NavigationService.cs,
+	  MonoDevelop.Ide.Gui/Workbench.cs: Fixed Bug 364913 - Navigate
+	  Next/Previous not working.
+
+2008-02-26  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.Ide.Gui/DefaultWorkbench.cs: Added tab+control,
 	  tab+shift+control commands for next/prev window.
 

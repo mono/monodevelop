@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
+using MonoDevelop.Ide.Gui.Content;
 
 namespace MonoDevelop.Ide.Gui {
 	/// <summary>
@@ -83,6 +84,15 @@ namespace MonoDevelop.Ide.Gui {
 			get { return !loggingSuspended; }
 		}
 #endregion
+		
+		public static INavigationPoint BuildNavPoint (IEditableTextBuffer textBuffer)
+		{
+			int line, column;
+			textBuffer.GetLineColumnFromPosition (textBuffer.CursorPosition, out line, out column);
+			MonoDevelop.Ide.Gui.Search.IDocumentInformation docInfo = textBuffer as MonoDevelop.Ide.Gui.Search.IDocumentInformation;
+			return new TextNavigationPoint (textBuffer.Name, line, column, docInfo != null ? docInfo.GetLineTextAtOffset (textBuffer.CursorPosition) : "");
+		}
+		
 
 #region Public Methods
 		// TODO: FxCop says "find another way to do this" (ReviewVisibleEventHandlers)

@@ -320,6 +320,7 @@ FILES =  \
 	MonoDevelop.Ide.Gui/StartupInfo.cs \
 	MonoDevelop.Ide.Gui/StatusProgressMonitor.cs \
 	MonoDevelop.Ide.Gui/TextEditor.cs \
+	MonoDevelop.Ide.Gui/TextNavigationPoint.cs \
 	MonoDevelop.Ide.Gui/TipOfTheDayStartupHandler.cs \
 	MonoDevelop.Ide.Gui/ToolbarComboBox.cs \
 	MonoDevelop.Ide.Gui/ViewCommandHandlers.cs \
