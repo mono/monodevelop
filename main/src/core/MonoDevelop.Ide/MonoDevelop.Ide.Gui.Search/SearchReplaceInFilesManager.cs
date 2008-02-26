@@ -184,7 +184,9 @@ namespace MonoDevelop.Ide.Gui.Search
 				}
 			}
 			
-			FinishSearchInFiles ();
+			Application.Invoke (delegate {
+				FinishSearchInFiles ();
+			});
 		}
 		
 		public static void FindAll()
@@ -230,7 +232,9 @@ namespace MonoDevelop.Ide.Gui.Search
 				}
 			}
 			
-			FinishSearchInFiles ();
+			Application.Invoke (delegate {
+				FinishSearchInFiles ();
+			});
 		}
 		
 		public static void CancelSearch ()
