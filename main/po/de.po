@@ -6,7 +6,7 @@ msgstr ""
 "X-Poedit-Bookmarks: -1,1681,-1,-1,-1,-1,-1,-1,-1,-1\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2008-02-26 15:08:22+0100\n"
+"PO-Revision-Date: 2008-02-26 15:37:15+0100\n"
 "Language-Team: \n"
 "Project-Id-Version: Monodevelop\n"
 "MIME-Version: 1.0\n"
@@ -6457,11 +6457,10 @@ msgid "{0} ChangeLog file not found. Some changes will not be logged."
 msgid_plural "{0} ChangeLog files not found. Some changes will not be logged."
 msgstr[0] ""
 "{0} Änderungsprotokoll-Datei nicht gefunden. Einige Änderungen werden nicht "
-"\\n\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\nprotokolliert."
+"protokolliert."
 msgstr[1] ""
 "{0} Änderungsprotokoll-Dateien nicht gefunden. Einige Änderungen werden nicht "
-"\n"
-"\\n\\\\n\\\\\\\\n\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\nprotokolliert."
+"protokolliert."
 
 #: ../src/addins/ChangeLogAddIn/ChangeLogAddInOptionPanelWidget.cs:41
 msgid "Full Name"
@@ -6784,10 +6783,10 @@ msgid_plural ""
 "Added {0} members to CodeBehind classes. Saving updated source files."
 msgstr[0] ""
 "{0} Element zu CodeBehind-Klassen hinzugefügt. Speichere aktualisierte "
-"\\n\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\nQuelldateien."
+"Quelldateien."
 msgstr[1] ""
 "{0} Elemente zu CodeBehind-Klassen hinzugefügt. Speichere aktualisierte "
-"\\n\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\nQuelldateien."
+"Quelldateien. "
 
 #: ../src/addins/AspNetAddIn/Templates/MasterPage-CodeBehind.xft.xml:7
 #: ../src/addins/AspNetAddIn/Templates/MasterPage-CodeBehindNonPartial.xft.xml:7
@@ -9327,14 +9326,12 @@ msgid "Project settings"
 msgstr "Projekt-Einstellungen"
 
 #: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.Editor.CatalogHeadersWidget.cs:351
-#, fuzzy
 msgid "_Translator name:"
-msgstr "Übersetzer-Name:"
+msgstr "Übersetzer-_Name:"
 
 #: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.Editor.CatalogHeadersWidget.cs:361
-#, fuzzy
 msgid "T_ranslator e-mail:"
-msgstr "Übersetzer-E-Mail:"
+msgstr "Übersetzer-_E-Mail:"
 
 #: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.Editor.CatalogHeadersWidget.cs:373
 #, fuzzy
@@ -9465,7 +9462,7 @@ msgstr "Übersetzung"
 
 #: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:88
 msgid "Headers"
-msgstr "Headers"
+msgstr "Einstellungen"
 
 #: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:99
 msgid "Fuzzy"
@@ -9473,11 +9470,11 @@ msgstr "Unklar"
 
 #: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:103
 msgid "Original string"
-msgstr "Original-Zeichenkette"
+msgstr "Urtext"
 
 #: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:107
 msgid "Translated string"
-msgstr "Übersetzte Zeichenkette"
+msgstr "Übersetzung"
 
 #: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:147
 msgid "Show fuzzy translations"
@@ -9530,11 +9527,11 @@ msgstr "page1"
 
 #: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.POEditorWidget.cs:321
 msgid "Original (msgid):"
-msgstr "Original (msgid):"
+msgstr "Urtext (msgid):"
 
 #: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.POEditorWidget.cs:354
 msgid "Original plural (msgid_plural):"
-msgstr "Original Plural (msgid_plural):"
+msgstr "Urtext plural (msgid_plural):"
 
 #: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.POEditorWidget.cs:391
 msgid "F_ound in:"
