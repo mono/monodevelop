@@ -349,7 +349,7 @@ namespace MonoDevelop.Gettext
 		void MarkOwnerDirty ()
 		{
 			if (owner != null)
-				owner.MarkDirty (this);
+				owner.IsDirty = true;
 		}
 	}
 }

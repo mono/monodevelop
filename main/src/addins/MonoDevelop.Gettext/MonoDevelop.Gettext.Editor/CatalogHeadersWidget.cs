@@ -34,34 +34,23 @@ namespace MonoDevelop.Gettext.Editor
 	
 	partial class CatalogHeadersWidget : Bin
 	{
-		CatalogHeaders headers;
+		Catalog headers;
 		bool inUpdate = false;
 		public event EventHandler PluralDefinitionChanged;
 		
 		public CatalogHeadersWidget ()
 		{
 			this.Build ();
-			this.textviewComments.Buffer.Changed += delegate {
-				if (inUpdate)
-					return;
-				headers.CommentForGui = textviewComments.Buffer.Text;
-				Update ();
-			};
-			
-			headers = new CatalogHeaders (null);
+			this.textviewComments.Buffer.Changed += OnHeaderChanged;
 			UpdateGui ();
 		}
 
-		internal CatalogHeaders CatalogHeaders
-		{
-			get { return headers; }
-			set
-			{
-				if (value == null)
-					headers = new CatalogHeaders (null);
-				else
-					headers = value;
-				
+		internal Catalog CatalogHeaders {
+			get { 
+				return headers; 
+			}
+			set {
+				headers = value;
 				UpdateGui ();
 			}
 		}
@@ -69,6 +58,13 @@ namespace MonoDevelop.Gettext.Editor
 		void UpdateGui ()
 		{
 			inUpdate = true;
+			if (headers == null) {
+				inUpdate = false;
+				entryProjectName.Text = entryProjectVersion.Text = "";
+				entryPluralsForms.Text = entryBugzilla.Text = labelPotCreation.Text = labelPoLastModification.Text =  "";
+				return;
+			}
+			
 			// project tab
 			textviewComments.Buffer.Clear ();
 			textviewComments.Buffer.InsertAtCursor (headers.CommentForGui);
@@ -76,15 +72,12 @@ namespace MonoDevelop.Gettext.Editor
 			string project = String.Empty;
 			string version = String.Empty;
 			
-			if (! String.IsNullOrEmpty (headers.Project))
-			{
+			if (!String.IsNullOrEmpty (headers.Project)) {
 				int pos = headers.Project.LastIndexOf (' ');
-				if (pos != -1)
-				{
+				if (pos != -1) {
 					project = headers.Project.Substring (0, pos).TrimEnd (' ', '\t');
 					version = headers.Project.Substring (pos + 1);
-				} else
-				{
+				} else {
 					project = headers.Project;
 				}
 			}
@@ -107,11 +100,10 @@ namespace MonoDevelop.Gettext.Editor
 			
 			if (headers.HasHeader ("Plural-Forms"))
 				entryPluralsForms.Text = headers.GetHeader ("Plural-Forms");
-				
+			
 			//comboboxentryCharset.TextColumn.ActiveText = headers.Charset;
 			
 			// other headers
-			
 			this.ShowAll ();
 			inUpdate = false;
 		}
@@ -123,76 +115,55 @@ namespace MonoDevelop.Gettext.Editor
 
 		void OnHeaderChanged (object sender, System.EventArgs e)
 		{
-			if (sender == entryProjectName || sender == entryProjectVersion)
-			{
-				headers.Project = (entryProjectName.Text + ' ' + entryProjectVersion.Text).Trim ();
-			} else if (sender == entryBugzilla)
-			{
-				headers.SetHeader ("Report-Msgid-Bugs-To", entryBugzilla.Text);
-			} else if (sender == entryTranslatorName)
-			{
-				headers.Translator = entryTranslatorName.Text;
-			} else if (sender == entryTranslatorEmail)
-			{
-				headers.TranslatorEmail = entryTranslatorEmail.Text;
-			} else if (sender == entryLanguageGroupName)
-			{
-				headers.Team = entryLanguageGroupName.Text;
-			} else if (sender == entryLanguageGroupEmail)
-			{
-				headers.TeamEmail = entryLanguageGroupEmail.Text;
-			} else if (sender == entryPluralsForms)
-			{	
-				if (! String.IsNullOrEmpty (entryPluralsForms.Text))
-				{
-					PluralFormsCalculator calc = new PluralFormsCalculator ();
-					PluralFormsScanner scanner = new PluralFormsScanner (entryPluralsForms.Text);
-					PluralFormsParser parser = new PluralFormsParser (scanner);
-					bool wellFormed = parser.Parse (calc);
-					
-					if (wellFormed)
-					{
-						for (int i = 0; i < headers.Owner.PluralFormsCount; i++)
-						{
-							int example = 0;
-							for (example = 1; example < 1000; example++)
-							{
-								if (calc.Evaluate (example) == i)
-									break;
-							}
-
-							if (example == 1000 && calc.Evaluate (0) == i)
-								example = 0;
-							
-							if (i > 0 && (example == 0 || example == 1000))
-							{
-								wellFormed = false;
+			if (inUpdate)
+				return;
+			headers.CommentForGui = textviewComments.Buffer.Text;
+			headers.Project = (entryProjectName.Text + ' ' + entryProjectVersion.Text).Trim ();
+			headers.SetHeader ("Report-Msgid-Bugs-To", entryBugzilla.Text);
+			headers.Translator = entryTranslatorName.Text;
+			headers.TranslatorEmail = entryTranslatorEmail.Text;
+			headers.Team = entryLanguageGroupName.Text;
+			headers.TeamEmail = entryLanguageGroupEmail.Text;
+			
+			if (!String.IsNullOrEmpty (entryPluralsForms.Text)) {
+				PluralFormsCalculator calc = new PluralFormsCalculator ();
+				PluralFormsScanner scanner = new PluralFormsScanner (entryPluralsForms.Text);
+				PluralFormsParser parser = new PluralFormsParser (scanner);
+				bool wellFormed = parser.Parse (calc);
+				
+				if (wellFormed) {
+					for (int i = 0; i < headers.PluralFormsCount; i++) {
+						int example = 0;
+						for (example = 1; example < 1000; example++) {
+							if (calc.Evaluate (example) == i)
 								break;
-							}
+						}
+						
+						if (example == 1000 && calc.Evaluate (0) == i)
+							example = 0;
+						
+						if (i > 0 && (example == 0 || example == 1000)) {
+							wellFormed = false;
+							break;
 						}
 					}
-
-					Gdk.Color background = wellFormed ? new Gdk.Color (138, 226,52) : new Gdk.Color (204, 0, 0);
-					entryPluralsForms.ModifyBase (StateType.Normal, background); //from tango palete - 8ae234 green, cc0000 red
-					if (wellFormed)
-					{
-						headers.SetHeaderNotEmpty ("Plural-Forms", entryPluralsForms.Text);
-						OnPluralDefinitionChanged ();
-					}
-				} else
-				{
-					entryPluralsForms.ModifyBase (StateType.Normal);
+				}
+			
+				Gdk.Color background = wellFormed ? new Gdk.Color (138, 226,52) : new Gdk.Color (204, 0, 0);
+				entryPluralsForms.ModifyBase (StateType.Normal, background); //from tango palete - 8ae234 green, cc0000 red
+				if (wellFormed) {
 					headers.SetHeaderNotEmpty ("Plural-Forms", entryPluralsForms.Text);
 					OnPluralDefinitionChanged ();
 				}
+			} else {
+				entryPluralsForms.ModifyBase (StateType.Normal);
+				headers.SetHeaderNotEmpty ("Plural-Forms", entryPluralsForms.Text);
+				OnPluralDefinitionChanged ();
 			}
-			Update ();
+			headers.UpdateHeaderDict ();
+			headers.IsDirty = true;
 		}
-		void Update ()
-		{
-			headers.UpdateDict ();
-			headers.Owner.MarkDirty (this.headers);
-		}
+		
 		void OnPluralDefinitionChanged ()
 		{
 			if (PluralDefinitionChanged != null)

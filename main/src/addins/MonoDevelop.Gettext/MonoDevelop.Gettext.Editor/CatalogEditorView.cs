@@ -45,7 +45,7 @@ namespace MonoDevelop.Gettext.Editor
 		public CatalogEditorView (string poFile)
 		{
 			Load (poFile);
-			catalog.OnDirtyChanged += delegate (object sender, EventArgs args) {
+			catalog.DirtyChanged += delegate (object sender, EventArgs args) {
 				IsDirty = catalog.IsDirty;
 				if (sender is CatalogEntry)
 					this.poEditorWidget.UpdateEntry (sender as CatalogEntry);

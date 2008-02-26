@@ -44,10 +44,8 @@
     <File name="gtk-gui/MonoDevelop.Gettext.POEditorWidget.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Gettext/Catalog.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Gettext/CatalogEntry.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Gettext/CatalogHeaders.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Gettext/CatalogParser.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Gettext/CatalogDeletedEntry.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Gettext/PluralForms.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Gettext/IsoCodes.cs" subtype="Code" buildaction="Compile" />
     <File name="Makefile.am" subtype="Code" buildaction="Nothing" />
     <File name="MonoDevelop.Gettext/PropertyProvider.cs" subtype="Code" buildaction="Compile" />
@@ -68,6 +66,7 @@
     <File name="MonoDevelop.Gettext.ExtensionNodes/ExcludeRegex.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Gettext.ExtensionNodes/TransformExtensionNode.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Gettext/StringEscaping.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Gettext/PluralForms.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />

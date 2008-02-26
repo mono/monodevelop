@@ -44,7 +44,6 @@ FILES =  \
 	MonoDevelop.Gettext/Catalog.cs \
 	MonoDevelop.Gettext/CatalogDeletedEntry.cs \
 	MonoDevelop.Gettext/CatalogEntry.cs \
-	MonoDevelop.Gettext/CatalogHeaders.cs \
 	MonoDevelop.Gettext/CatalogParser.cs \
 	MonoDevelop.Gettext/GettextFeature.cs \
 	MonoDevelop.Gettext/GettextFeatureWidget.cs \

@@ -2,10 +2,12 @@
 // Catalog.cs
 //
 // Author:
-//   David Makovsk� <yakeen@sannyas-on.net>
+//   David Makovsk <yakeen@sannyas-on.net>
+//   Mike Krüger <mkrueger@novell.com>
 //
 // Copyright (C) 1999-2006 Vaclav Slavik (Code and design inspiration - poedit.org)
-// Copyright (C) 2007 David Makovsk�
+// Copyright (C) 2007 David Makovsk
+// Copyright (C) 2008 Novell, Inc (http://www.novell.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -39,54 +41,76 @@ namespace MonoDevelop.Gettext
 	public class Catalog : IEnumerable<CatalogEntry>
 	{
 		IDictionary<string, CatalogEntry> entriesDict;
-		List<CatalogEntry> entriesList;
+		List<CatalogEntry>        entriesList;
 		List<CatalogDeletedEntry> deletedEntriesList;
 		bool isOk;
 		string fileName;
-		CatalogHeaders headers;
 		string originalNewLine = Environment.NewLine;
 		bool isDirty;
 		int nplurals = 0;
 		
-		public event EventHandler OnDirtyChanged;
+		public bool IsDirty {
+			get { return this.isDirty; }
+			set {
+				this.isDirty = value;
+				OnDirtyChanged (EventArgs.Empty);
+			}
+		}
 		
-		 // Creates empty catalog, you have to call Load.
+		public string FileName {
+			get {
+				return fileName;
+			}
+		}
+		
+		/// <value>
+		/// The number of strings/translations in the catalog.
+		/// </value>
+		public int Count {
+			get { 
+				return entriesList.Count; 
+			}
+		}
+		
+		
+		/// <value>
+		/// Gets n-th item in the catalog (read-write access).
+		/// </value>
+		public CatalogEntry this[int index] {
+			get {
+				return index >= 0 && index < entriesList.Count ? entriesList[index] : null;
+			}
+		}
+		
+		/// <value>
+		/// Returns plural forms count: taken from Plural-Forms header if present, 0 otherwise
+		/// </value>
+		public int PluralFormsCount {
+			get {
+				if (nplurals == 0)
+					UpdatePluralsCount ();
+				return nplurals;
+			}
+		}
+		
+		/// <summary>
+		/// Creates empty catalog
+		/// </summary>
 		public Catalog ()
 		{
 			entriesDict = new Dictionary<string, CatalogEntry> ();
 			entriesList = new List<CatalogEntry> ();
 			deletedEntriesList = new List<CatalogDeletedEntry> ();
 			isOk = true;
-			headers = new CatalogHeaders (this);
+			this.CreateNewHeaders ();
 		}
-
-		// Creates new, empty header. Sets Charset to something meaningful ("UTF-8", currently).
-		public void CreateNewHeaders ()
-		{
-			CatalogHeaders dt = new CatalogHeaders (this);
-			dt.CreationDate = Catalog.GetDateTimeRfc822Format ();
-			dt.RevisionDate = dt.CreationDate;
-
-			dt.Language = String.Empty;
-			dt.Country = String.Empty;
-			dt.Project = String.Empty;
-			dt.Team = String.Empty;
-			dt.TeamEmail = String.Empty;
-			dt.Charset = "utf-8";
-			// TODO: join to MD property
-			dt.Translator = String.Empty;
-			// TODO: join to MD property
-			dt.TranslatorEmail = String.Empty;
-			//dt.SourceCodeCharset = String.Empty;
-			dt.UpdateDict ();
-		}
-
+		
+		
 		static string GetDateTimeRfc822Format ()
 		{
 			return DateTime.Now.ToString ("yyyy-MM-dd HH':'mm':'sszz00"); //rfc822 format
 		}
 		
-
 		//escapes string and lays it out to 80 cols
 		static void FormatMessageForFile (StringBuilder sb, string prefix, string message, string newlineChar)
 		{
@@ -161,7 +185,7 @@ namespace MonoDevelop.Gettext
 			}
 			return;
 		}
-
+		
 		// Clears the catalog, removes all entries from it.
 		void Clear ()
 		{
@@ -170,8 +194,10 @@ namespace MonoDevelop.Gettext
 			deletedEntriesList.Clear ();
 			isOk = true;
 		}
-
-		// Loads catalog from .po file.
+		
+		/// <summary>
+		/// Loads catalog from .po file.
+		/// </summary>
 		public bool Load (IProgressMonitor monitor, string poFile)
 		{
 			Clear ();
@@ -183,7 +209,7 @@ namespace MonoDevelop.Gettext
 			try {
 				CharsetInfoFinder charsetFinder = new CharsetInfoFinder (poFile);
 				charsetFinder.Parse ();
-				headers.Charset = charsetFinder.Charset;
+				Charset = charsetFinder.Charset;
 				originalNewLine = charsetFinder.NewLine;
 				finished = true;
 			} catch (Exception e) {
@@ -193,7 +219,7 @@ namespace MonoDevelop.Gettext
 			if (!finished)
 				return false;
 
-			LoadParser parser = new LoadParser (this, poFile, Catalog.GetEncoding (this.Headers.Charset));
+			LoadParser parser = new LoadParser (this, poFile, Catalog.GetEncoding (this.Charset));
 			if (!parser.Parse()) {
 				// TODO: use loging - GUI!
 				Console.WriteLine ("Error during parsing '{0}' file, file is probably corrupted.", poFile);
@@ -201,7 +227,7 @@ namespace MonoDevelop.Gettext
 			}
 
 			isOk = true;
-			isDirty = false;
+			IsDirty = false;
 			return true;
 		}
 		
@@ -223,46 +249,34 @@ namespace MonoDevelop.Gettext
 		{
 			StringBuilder sb = new StringBuilder ();
 			
-			// TODO: check directory
-			//if (! File.Exists (poFile))
-			//{
-			//    // TODO: log it
-			//    return false;
-			//}
-			
 			// Update information about last modification time:
-			headers.RevisionDate = Catalog.GetDateTimeRfc822Format ();
+			RevisionDate = Catalog.GetDateTimeRfc822Format ();
 			
 			// Save .po file
-			
-			string charset = headers.Charset;
-			if (String.IsNullOrEmpty (charset) || charset == "CHARSET")
-				charset = "utf-8";
-			
-			if (! CanEncodeToCharset (charset)) {
+			if (String.IsNullOrEmpty (Charset) || Charset == "CHARSET")
+				Charset = "utf-8";
+			if (!CanEncodeToCharset (Charset)) {
 				// TODO: log that we don't support such encoding, utf-8 would be used
-				charset = "utf-8";
+				Charset = "utf-8";
 			}
-			headers.Charset = charset;
-			Encoding encoding = Catalog.GetEncoding (charset);
-
-			if (headers.Comment != String.Empty)
-				Catalog.SaveMultiLines (sb, headers.Comment, originalNewLine);
+			
+			Encoding encoding = Catalog.GetEncoding (Charset);
+			
+			if (!String.IsNullOrEmpty (Comment))
+				Catalog.SaveMultiLines (sb, Comment, originalNewLine);
 			
 			sb.AppendFormat ("msgid \"\"{0}", originalNewLine);
 			sb.AppendFormat ("msgstr \"\"{0}", originalNewLine);
-
-			string pohdr = headers.ToString (originalNewLine);
+			
+			string pohdr = GetHeaderString (originalNewLine);
 			pohdr = pohdr.Substring (0, pohdr.Length - 1);
 			Catalog.SaveMultiLines (sb, pohdr, originalNewLine);
 			sb.Append (originalNewLine);
-
-			foreach (CatalogEntry data in entriesList)
-			{
+			
+			foreach (CatalogEntry data in entriesList) {
 				if (data.Comment != String.Empty)
 					SaveMultiLines (sb, data.Comment, originalNewLine);
-				foreach (string autoComment in data.AutoComments)
-				{
+				foreach (string autoComment in data.AutoComments) {
 					if (String.IsNullOrEmpty (autoComment))
 						sb.AppendFormat ("#.{0}", originalNewLine);
 					else
@@ -288,7 +302,7 @@ namespace MonoDevelop.Gettext
 				}
 				sb.Append (originalNewLine);
 			}
-
+			
 			// Write back deleted items in the file so that they're not lost
 			foreach (CatalogDeletedEntry deletedItem in deletedEntriesList) {
 				if (deletedItem.Comment != String.Empty)
@@ -309,7 +323,7 @@ namespace MonoDevelop.Gettext
 				}
 				sb.Append (originalNewLine);
 			}
-
+			
 			bool saved = false;
 			try {
 				// Write it as bytes, text writer includes BOF for utf-8,
@@ -317,29 +331,26 @@ namespace MonoDevelop.Gettext
 				byte[] content = encoding.GetBytes (sb.ToString ());
 				File.WriteAllBytes (poFile, content);
 				saved = true;
-			}
-			catch (Exception)
-			{
+			} catch (Exception) {
 				// TODO: log it
 			}
-			if (! saved)
+			if (!saved)
 				return false;
-
+			
 			fileName = poFile;
-			isDirty = false;
-				return true;
+			IsDirty = false;
+			return true;
 		}
-
+		
 		static void SaveMultiLines (StringBuilder sb, string text, string newLine)
 		{
-			if (text != null)
-			{
+			if (text != null) {
 				foreach (string line in text.Split (new string[] { "\n\r", "\r\n", "\r", "\n", "\r"}, StringSplitOptions.None)) {
 					sb.AppendFormat ("{0}{1}", line, newLine);
 				}
 			}
 		}
-
+		
 		static bool CanEncodeToCharset (string charset)
 		{
 			foreach (EncodingInfo info in Encoding.GetEncodings ())
@@ -359,7 +370,7 @@ namespace MonoDevelop.Gettext
 			}
 			return null;
 		}
-
+		
 		// Updates the catalog from POT file.
 		public bool UpdateFromPOT (IProgressMonitor mon, string potFile, bool summary)
 		{
@@ -378,7 +389,7 @@ namespace MonoDevelop.Gettext
 			//else
 			//	return false;
 		}
-
+		
 		// Adds translation into the catalog. Returns true on success or false
 		// if such key does not exist in the catalog
 		public bool Translate (string key, string translation)
@@ -393,16 +404,13 @@ namespace MonoDevelop.Gettext
 				return true;
 			}
 		}
-
+		
 		// Returns catalog item with key or null if such key is not available.
 		public CatalogEntry FindItem (string key)
 		{
-			if (entriesDict.ContainsKey (key))
-				return this.entriesDict[key];
-			else
-				return null;
+			return entriesDict.ContainsKey (key) ? this.entriesDict[key] : null;
 		}
-
+		
 		// Adds an item to the catalog if it isn't already there
 		public CatalogEntry AddItem (string original, string plural)
 		{
@@ -416,22 +424,11 @@ namespace MonoDevelop.Gettext
 			return result;
 		}
 
-		// Returns the number of strings/translations in the catalog.
-		public int Count
-		{
-			get { return entriesList.Count; }
-		}
-
 		// Returns number of all, fuzzy, badtokens and untranslated items.
 		public void GetStatistics (out int all, out int fuzzy, out int missing, out int badtokens, out int untranslated)
 		{
-			all = 0;
-			fuzzy = 0;
-			missing = 0;
-			badtokens = 0;
-			untranslated = 0;
-			for (int i = 0; i < this.Count; i++)
-			{
+			all = fuzzy = missing = badtokens = untranslated = 0;
+			for (int i = 0; i < this.Count; i++) {
 				all++;
 				if (this[i].IsFuzzy)
 					fuzzy++;
@@ -443,44 +440,14 @@ namespace MonoDevelop.Gettext
 					untranslated++;
 			}
 		}
-
-		// Gets n-th item in the catalog (read-write access).
-		public CatalogEntry this[int index]
-		{
-			get
-			{
-				if (index >= 0 && index < entriesList.Count)
-					return entriesList[index];
-				else
-					return null;
-			}
-		}
-
-		// Gets catalog header.
-		public CatalogHeaders Headers
-		{
-			get { return headers; }
-		}
-
-		// Returns plural forms count: taken from Plural-Forms header if present, 0 otherwise
-		public int PluralFormsCount
-		{
-			get
-			{
-				if (nplurals == 0)
-					UpdatePluralsCount ();
-				return nplurals;
-			}
-		}
-
+		
 		internal void UpdatePluralsCount ()
 		{
-			if (headers.HasHeader ("Plural-Forms"))
-			{
+			if (HasHeader ("Plural-Forms")) {
 				// e.g. "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ?
 				//       0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 
-				string form = headers.GetHeader ("Plural-Forms");
+				string form = GetHeader ("Plural-Forms");
 				int pos = form.IndexOf (';');
 				if (pos != -1)
 				{
@@ -503,29 +470,23 @@ namespace MonoDevelop.Gettext
 			nplurals = 2;
 		}
 
-		public string[] PluralFormsDescriptions
-		{
-			get
-			{
+		public string[] PluralFormsDescriptions {
+			get {
 				List<string> descriptions = new List<string> ();
 				
-				if (! Headers.HasHeader ("Plural-Forms"))
-				{
+				if (!HasHeader ("Plural-Forms")) {
 					descriptions.Add (GettextCatalog.GetString ("Singular"));
 					descriptions.Add (GettextCatalog.GetString ("Plural"));
 					return descriptions.ToArray ();
 				}
 
-				PluralFormsCalculator calc = PluralFormsCalculator.Make (Headers.GetHeader ("Plural-Forms"));
+				PluralFormsCalculator calc = PluralFormsCalculator.Make (GetHeader ("Plural-Forms"));
 				int cnt = PluralFormsCount;
-				for (int i = 0; i < cnt; i++)
-				{
+				for (int i = 0; i < cnt; i++) {
 					// find example number that would use this plural form:
 					int example = 0;
-					if (calc != null)
-					{
-						for (example = 1; example < 1000; example++)
-						{
+					if (calc != null) {
+						for (example = 1; example < 1000; example++) {
 							if (calc.Evaluate (example) == i)
 								break;
 						}
@@ -577,30 +538,25 @@ namespace MonoDevelop.Gettext
 						myDt.IsFuzzy = true;
 				}
 			}
-			isDirty = true;
+			IsDirty = true;
 		}
 
 		// Returns xx_YY ISO code of catalog's language.
-		public string LocaleCode
-		{
-			get
-			{
+		public string LocaleCode{
+			get {
 				string lang = String.Empty;
 
 				// was the language explicitly specified?
-				if (! String.IsNullOrEmpty (headers.Language))
-				{
-					lang = IsoCodes.LookupLanguageCode (headers.Language).Name;
-					if (! String.IsNullOrEmpty (headers.Country))
-					{
+				if (!String.IsNullOrEmpty (Language)) {
+					lang = IsoCodes.LookupLanguageCode (Language).Name;
+					if (!String.IsNullOrEmpty (Country)){
 						lang += '_';
-						lang += IsoCodes.LookupCountryCode (headers.Country);
+						lang += IsoCodes.LookupCountryCode (Country);
 					}
 				}
-
+				
 				// if not, can we deduce it from filename?
-				if (String.IsNullOrEmpty (lang) && ! String.IsNullOrEmpty (fileName))
-				{
+				if (String.IsNullOrEmpty (lang) && ! String.IsNullOrEmpty (fileName)) {
 					string name = Path.GetFileNameWithoutExtension (fileName);
 					if (name.Length == 2)
 					{
@@ -701,7 +657,7 @@ namespace MonoDevelop.Gettext
 			File.Delete (tmp3);
 
 			fileName = oldName;
-			isDirty = true;
+			IsDirty = true;
 			return succ;
 		}
 
@@ -726,24 +682,239 @@ namespace MonoDevelop.Gettext
 			obsoleteEntries = obsoleteEnt.ToArray ();
 		}
 		
-		public bool IsDirty
+		protected virtual void OnDirtyChanged (EventArgs e)
 		{
-			get { return isDirty; }
+			if (DirtyChanged != null)
+				DirtyChanged (this, e);
+		}
+		
+		public event EventHandler DirtyChanged;
+		
+		#region Header
+		Dictionary<string, string> headerEntries = new Dictionary<string, string> ();
+		
+		// Parsed values
+		public string Project = String.Empty, 
+		              CreationDate = String.Empty,
+		              RevisionDate = String.Empty, 
+		              Translator = String.Empty,
+		              TranslatorEmail = String.Empty, 
+		              Team = String.Empty,
+		              TeamEmail = String.Empty, 
+		              Charset = String.Empty,
+		              Language = String.Empty,
+		              Country = String.Empty, // lang + country not yet used
+					  Comment = String.Empty;
+		
+		// Creates new, empty header. Sets Charset to something meaningful ("UTF-8", currently).
+		void CreateNewHeaders ()
+		{
+			RevisionDate = CreationDate = Catalog.GetDateTimeRfc822Format ();
+			
+			Language = Country = Project = Team = TeamEmail = "";
+			
+			Charset = "utf-8";
+			Translator = PropertyService.Get<string> ("ChangeLogAddIn.Name");
+			TranslatorEmail = PropertyService.Get<string> ("ChangeLogAddIn.Email");
+			
+			//dt.SourceCodeCharset = String.Empty;
+			UpdateHeaderDict ();
+		}
+		
+		
+		// Initializes the headers from string that is in msgid "" format (i.e. list of key:value\n entries).
+		public void ParseHeaderString (string headers)
+		{
+			string hdr = StringEscaping.FromGettextFormat (headers);
+			string[] tokens = hdr.Split ('\n');
+			headerEntries.Clear ();
+			
+			foreach (string token in tokens) {
+				if (token != String.Empty) {
+					int pos = token.IndexOf (':');
+					if (pos == -1){
+						throw new Exception (String.Format ("Malformed header: '{0}'", token));
+					} else {
+						string key = token.Substring (0, pos).Trim ();
+						string value = token.Substring (pos + 1).Trim ();
+						headerEntries[key] = value;
+					}
+				}
+			}
+			ParseHeaderDict ();
 		}
 
-		public string FileName {
-			get {
-				return fileName;
+		// Converts the header into string representation that can be directly written to .po file as msgid ""
+		public string GetHeaderString (string lineDelimeter)
+		{
+			UpdateHeaderDict ();
+			StringBuilder sb = new StringBuilder ();
+
+			foreach (string key in headerEntries.Keys)
+			{
+				string value = String.Empty;
+				if (headerEntries[key] != null)
+					value = StringEscaping.ToGettextFormat (headerEntries[key]);
+				sb.AppendFormat ("\"{0}: {1}\\n\"{2}", key, value, lineDelimeter);
+
+			}
+			return sb.ToString ();
+		}
+
+		public string GetHeaderString ()
+		{
+			return GetHeaderString (Environment.NewLine);
+		}
+
+		// Updates headers list from parsed values entries below
+		public void UpdateHeaderDict ()
+		{
+			SetHeader ("Project-Id-Version", Project);
+			SetHeader ("POT-Creation-Date", CreationDate);
+			SetHeader ("PO-Revision-Date", RevisionDate);
+
+			if (String.IsNullOrEmpty (TranslatorEmail)) {
+				SetHeader ("Last-Translator", Translator);
+			} else {
+				SetHeader ("Last-Translator", String.Format ("{0} <{1}>", Translator, TranslatorEmail));
+			}
+			
+			if (String.IsNullOrEmpty (TeamEmail)) {
+				SetHeader ("Language-Team", Team);
+			} else {
+				SetHeader ("Language-Team", String.Format ("{0} <{1}>", Team, TeamEmail));
+			}
+
+			SetHeader ("MIME-Version", "1.0");
+			SetHeader ("Content-Type", "text/plain; charset=" + Charset);
+			SetHeader ("Content-Transfer-Encoding", "8bit");
+			
+			SetHeader ("X-Generator", "MonoDevelop Gettext addin");
+		}
+
+		// Reverse operation to UpdateDict
+		void ParseHeaderDict ()
+		{
+			string dummy;
+			
+			Project = GetHeader ("Project-Id-Version");
+			CreationDate = GetHeader ("POT-Creation-Date");
+			RevisionDate = GetHeader ("PO-Revision-Date");
+			
+			dummy = GetHeader ("Last-Translator");
+			if (!String.IsNullOrEmpty (dummy)) {
+				string[] tokens = dummy.Split ('<', '>');
+				if (tokens.Length < 2) {
+					Translator = dummy;
+					TranslatorEmail = String.Empty;
+				} else {
+					Translator = tokens[0].Trim ();
+					TranslatorEmail = tokens[1].Trim ();
+				}
+				System.Console.WriteLine(Translator + "//" + TranslatorEmail);
+			}
+
+			dummy = GetHeader ("Language-Team");
+			if (!String.IsNullOrEmpty (dummy)) {
+				string[] tokens = dummy.Split ('<', '>');
+				if (tokens.Length < 2) {
+					Team = dummy;
+					TeamEmail = String.Empty;
+				} else {
+					Team = tokens[0].Trim ();
+					TeamEmail = tokens[1].Trim ();
+				}
+			}
+
+			string ctype = GetHeader ("Content-Type");
+			int pos = ctype.IndexOf ("; charset=");
+			if (pos != -1) {
+				Charset = ctype.Substring (pos + "; charset=".Length).Trim ();
+			} else {
+				Charset = "iso-8859-1";
 			}
 		}
 		
-		public void MarkDirty (object sender)
+		// Returns value of header or empty string if missing.
+		public string GetHeader (string key)
 		{
-			isDirty = true;
-			if (OnDirtyChanged != null)
-				OnDirtyChanged (sender, EventArgs.Empty);
+			if (headerEntries.ContainsKey (key))
+				return headerEntries[key];
+			return String.Empty;
 		}
-
+		
+		// Returns true if given key is present in the header.
+		public bool HasHeader (string key)
+		{
+			return headerEntries.ContainsKey (key);
+		}
+		
+		// Sets header to given value. Overwrites old value if present, appends to header values otherwise.
+		public void SetHeader (string key, string value)
+		{
+			headerEntries[key] = value;
+			
+			if (key == "Plural-Forms")
+				UpdatePluralsCount ();
+		}
+		
+		// Like SetHeader, but deletes the header if value is empty
+		public void SetHeaderNotEmpty (string key, string value)
+		{
+			if (String.IsNullOrEmpty (value))
+				DeleteHeader (key);
+			else
+				SetHeader (key, value);
+			
+			if (key == "Plural-Forms")
+				UpdatePluralsCount ();
+		}
+		
+		// Removes given header entry
+		public void DeleteHeader (string key)
+		{
+			if (HasHeader (key)) {
+				headerEntries.Remove (key);
+			}
+		}
+		
+		public string CommentForGui {
+			get {
+				if (String.IsNullOrEmpty (Comment))
+					return string.Empty;
+				
+				StringBuilder sb = new StringBuilder ();
+				bool first = true;
+				foreach (string line in Comment.Split ('\n')) {
+					if (! first)
+						sb.Append ('\n');
+					else
+						first = false;
+					
+					if (line.StartsWith ("#"))
+						sb.Append (line.Substring (1).TrimStart (' ', '\t'));
+					else
+						sb.Append (line.TrimStart (' ', '\t'));
+				}
+				return sb.ToString ();
+			}
+			set {
+				if (String.IsNullOrEmpty (value)) {
+					Comment = String.Empty;
+					return;
+				}
+				
+				StringBuilder sb = new StringBuilder ();
+				foreach (string line in value.Split (new string[] {Environment.NewLine}, StringSplitOptions.None)) {
+					if (sb.Length != 0)
+						sb.AppendLine ();
+					sb.Append ("# " + line);
+				}
+				this.Comment = sb.ToString ();
+			}
+		}
+		#endregion
+		
 		#region IEnumerable<CatalogEntry> Members
 		public IEnumerator<CatalogEntry> GetEnumerator ()
 		{

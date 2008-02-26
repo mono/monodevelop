@@ -56,7 +56,7 @@ namespace MonoDevelop.Gettext
 			}
 			set {
 				catalog = value;
-				headersEditor.CatalogHeaders = catalog.Headers;
+				headersEditor.CatalogHeaders = catalog;
 				ClearTextview ();
 				AddTextview (0);
 				this.GetTextView (0).Buffer.Changed += delegate {
@@ -560,7 +560,7 @@ namespace MonoDevelop.Gettext
 		uint timeoutHandler = 0;
 		void UpdateFromCatalog ()
 		{
-			if (timeoutHandler != null)
+			if (timeoutHandler != 0)
 				GLib.Source.Remove (timeoutHandler);
 			timeoutHandler = GLib.Timeout.Add (100, delegate {
 				this.treeviewEntries.Model = null;

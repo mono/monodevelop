@@ -119,7 +119,6 @@ namespace MonoDevelop.Gettext
 		{
 			StringBuilder result = new StringBuilder (dummy.Substring (0, dummy.Length - 1));
 			
-			bool firstLine = true;
 			while ((line = fileLines[lineNumber++]) != String.Empty) {
 				if (line[0] == '\t') 
 					line = line.Substring (1);
@@ -131,7 +130,6 @@ namespace MonoDevelop.Gettext
 					result.Append (StringEscaping.FromGettextFormat (line.Substring (1, line.Length - 2)));
 				} else
 					break;
-				firstLine = false;
 			}
 			return result.ToString ();
 		}
@@ -375,8 +373,8 @@ namespace MonoDevelop.Gettext
 		{
 			if (String.IsNullOrEmpty (msgid)) {
 				// gettext header:
-				CatalogHeaders headers = new CatalogHeaders (null);
-				headers.FromString (translations[0]);
+				Catalog headers = new Catalog ();
+				headers.ParseHeaderString (translations[0]);
 				charset = headers.Charset;
 				if (charset == "CHARSET")
 					charset = "iso-8859-1";
@@ -403,8 +401,8 @@ namespace MonoDevelop.Gettext
 		{
 			if (String.IsNullOrEmpty (msgid) && ! headerParsed) {
 				// gettext header:
-				catalog.Headers.FromString (translations[0]);
-				catalog.Headers.Comment = comment;
+				catalog.ParseHeaderString (translations[0]);
+				catalog.Comment = comment;
 				headerParsed = true;
 			} else {
 				CatalogEntry d = new CatalogEntry (catalog, String.Empty, String.Empty);
