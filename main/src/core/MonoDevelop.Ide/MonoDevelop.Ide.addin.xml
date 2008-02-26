@@ -350,7 +350,7 @@
 				icon  = "gtk-delete" />
 		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.Options"
 				defaultHandler = "MonoDevelop.Ide.Commands.CombineEntryOptionsHandler"
-				_label = "Options" 
+				_label = "_Options" 
 				description = "Show options window"
 				icon  = "md-properties-icon" />
 		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.AddResource"
