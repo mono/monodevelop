@@ -1,19 +1,18 @@
-# benste <Benedict.Stein@gmail.com>, 2007.
-#
-#
+# benste <Benedict.Stein@gmail.com>, 2007
+# Mike Krüger <mkrueger@novell.com>, 2008
 msgid ""
 msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Poedit-Bookmarks: -1,1681,-1,-1,-1,-1,-1,-1,-1,-1\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2008-02-25 22:52:58+0100\n"
+"PO-Revision-Date: 2008-02-26 00:27:48+0100\n"
 "Language-Team: \n"
 "Project-Id-Version: Monodevelop\n"
 "MIME-Version: 1.0\n"
 "X-Generator: MonoDevelop.Gettext \n"
 "POT-Creation-Date: \n"
-"Last-Translator: \n"
+"Last-Translator: Mike Krüger <mkrueger@novell.com>\n"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Core/ServiceManager.cs:120
 msgid "Initializing service: "
@@ -65,13 +64,13 @@ msgstr "MITSCHNEIDEN"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:352
 #: ../src/addins/MonoDevelop.GtkCore/gui.glade:488
 #: ../src/addins/MonoDevelop.Autotools/MakefileGeneratorTool.cs:130
-#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWindow.cs:153
+#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWindow.cs:152
 msgid "Options"
 msgstr "Optionen"
 
 #: ../src/core/MonoDevelop.Core.Gui/Base.glade:88
 msgid "Cat_egories:"
-msgstr "Kat_egorien:"
+msgstr "_Kategorien:"
 
 #: ../src/core/MonoDevelop.Core.Gui/Base.glade:258
 msgid "label5"
@@ -146,9 +145,13 @@ msgstr "Installieren von:"
 
 #: ../src/core/MonoDevelop.Core.Gui/Base.glade:1424
 msgid ""
-"Show all packages\\nShow new versions only\\nShow updates only"
+"Show all packages\n"
+"Show new versions only\n"
+"Show updates only"
 msgstr ""
-"Zeige alle Pakete\\nNur neue zeigen\\nNur Updates zeigen"
+"Zeige alle Pakete\n"
+"Nur neue zeigen\n"
+"Nur Updates zeigen"
 
 #: ../src/core/MonoDevelop.Core.Gui/Base.glade:1460
 msgid "_Unselect All"
@@ -706,9 +709,12 @@ msgstr "Kommando Argumente für {0}"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ToolsCommands.cs:112
 msgid ""
-"External program execution failed.\\nError while starting:\\n '{0} {1}'"
+"External program execution failed.\n"
+"Error while starting:\n"
+" '{0} {1}'"
 msgstr ""
-"Fehler beim Ausführen von einem externen Programm.\\nFehler beim Starten:\\n "
+"Fehler beim Ausführen von einem externen Programm.\n"
+"Fehler beim Starten:\n"
 "'{0} {1}'"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ViewCommands.cs:81
@@ -760,11 +766,11 @@ msgstr "Kann Projektmappe nicht erstellen mit Typ: {0}"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Templates/CombineDescriptor.cs:105
 msgid ""
-"Solution file {0} already exists, do you want to overwrite\\nthe existing "
-"file?"
+"Solution file {0} already exists, do you want to overwrite\n"
+"the existing file?"
 msgstr ""
-"Projektmappe {0} existiert bereits, wollen Sie die bestehende\\nDatei "
-"überschreiben?"
+"Projektmappe {0} existiert bereits, wollen Sie die bestehende\n"
+"Datei überschreiben?"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Templates/ProjectDescriptor.cs:93
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Templates/CombineEntryDescriptor.cs:65
@@ -779,11 +785,11 @@ msgstr "Datei {0} kann nicht beschrieben werden."
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Templates/ProjectDescriptor.cs:138
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Templates/CombineEntryDescriptor.cs:86
 msgid ""
-"Project file {0} already exists. Do you want to overwrite\\nthe existing "
-"file?"
+"Project file {0} already exists. Do you want to overwrite\n"
+"the existing file?"
 msgstr ""
-"Projektdatei {0} existiert bereits, wollen sie die bestehende\\nDatei "
-"überschreiben?"
+"Projektdatei {0} existiert bereits, wollen sie die bestehende\n"
+"Datei überschreiben?"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Templates/ProjectDescriptor.cs:140
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs:123
@@ -802,9 +808,11 @@ msgstr "Die Datei '{0}' existiert bereits im Projekt."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs:121
 msgid ""
-"File {0} already exists. Do you want to overwrite\\nthe existing file?"
+"File {0} already exists. Do you want to overwrite\n"
+"the existing file?"
 msgstr ""
-"Datei {0} existiert bereits, wollen sie die bestehende\\nDatei überschreiben?"
+"Datei {0} existiert bereits, wollen sie die bestehende\n"
+"Datei überschreiben?"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/AbstractBaseViewContent.cs:47
 msgid "Abstract Content"
@@ -829,9 +837,9 @@ msgstr "Fertig"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/CommonAboutDialog.cs:122
 msgid ""
-"<b>Ported and developed by:</b>\\n"
+"<b>Ported and developed by:</b>\n"
 msgstr ""
-"<b>Entwickelt von:</b>\\n"
+"<b>Entwickelt von:</b>\n"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/CommonAboutDialog.cs:132
 msgid "translator-credits"
@@ -839,9 +847,13 @@ msgstr "Übersetzter-Credits"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/CommonAboutDialog.cs:135
 msgid ""
-"\\n\\n<b>Translated by:</b>\\n"
+"\n"
+"\n"
+"<b>Translated by:</b>\n"
 msgstr ""
-"\\n\\n<b>Übersetzt von:</b>\\n"
+"\n"
+"\n"
+"<b>Übersetzt von:</b>\n"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/CommonAboutDialog.cs:220
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/CommonAboutDialog.cs:233
@@ -892,17 +904,19 @@ msgstr "Dei Datei '{0}' konnte nicht geladen werden"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/NewProjectDialog.cs:353
 msgid ""
-"Illegal project name. \\nOnly use letters, digits, space, '.' or '_'."
+"Illegal project name. \n"
+"Only use letters, digits, space, '.' or '_'."
 msgstr ""
-"Ungütiger Projektname.\\nNur Buchstaben, Ziffern, Leerzeichen, '.' oder '_' "
-"sind erlaubt."
+"Ungütiger Projektname.\n"
+"Nur Buchstaben, Ziffern, Leerzeichen, '.' oder '_' sind erlaubt."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/NewProjectDialog.cs:361
 msgid ""
-"Illegal project name.\\nOnly use letters, digits, space, '.' or '_'."
+"Illegal project name.\n"
+"Only use letters, digits, space, '.' or '_'."
 msgstr ""
-"Ungütiger Projektname.\\nNur Buchstaben, Ziffern, Leerzeichen, '.' oder '_' "
-"sind erlaubt."
+"Ungütiger Projektname.\n"
+"Nur Buchstaben, Ziffern, Leerzeichen, '.' oder '_' sind erlaubt."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/NewProjectDialog.cs:366
 msgid "A Project with that name is already in your Project Space"
@@ -942,7 +956,7 @@ msgstr "Alle geöffneten Dateien"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ReplaceDialog.cs:174
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:754
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Logs.cs:212
-#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWindow.cs:295
+#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWindow.cs:292
 msgid "Replace"
 msgstr "Ersetzen"
 
@@ -993,9 +1007,11 @@ msgstr "Version"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SharpDevelopAboutPanels.cs:44
 msgid ""
-"<b>License</b>\\n    {0}"
+"<b>License</b>\n"
+"    {0}"
 msgstr ""
-"<b>Lizenz</b>\\n    {0}"
+"<b>Lizenz</b>\n"
+"    {0}"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SharpDevelopAboutPanels.cs:44
 msgid "Released under the GNU General Public license."
@@ -1003,11 +1019,13 @@ msgstr "Veröffentlicht unter der GNU General Public License."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SharpDevelopAboutPanels.cs:48
 msgid ""
-"<b>Copyright</b>\\n    (c) 2000-2003 by icsharpcode.net\\n    (c) 2004-{0} by "
-"MonoDevelop contributors"
+"<b>Copyright</b>\n"
+"    (c) 2000-2003 by icsharpcode.net\n"
+"    (c) 2004-{0} by MonoDevelop contributors"
 msgstr ""
-"<b>Copyright</b>\\n    (c) 2000-2003 bei icsharpcode.net\\n    (c) 2004-{0} "
-"bei MonoDevelop contributors"
+"<b>Copyright</b>\n"
+"    (c) 2000-2003 von icsharpcode.net\n"
+"    (c) 2004-{0} vom MonoDevelop team"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SharpDevelopAboutPanels.cs:65
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/OpenFileInSolutionDialog.cs:148
@@ -1127,11 +1145,11 @@ msgstr "Verzeichnis"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ProjectReferencePanel.cs:154
 msgid ""
-"(Projects referencing '{0}' are not shown,\\nsince cyclic dependencies are "
-"not allowed)"
+"(Projects referencing '{0}' are not shown,\n"
+"since cyclic dependencies are not allowed)"
 msgstr ""
-"(Projekte die auf '{0}' verweisen werden nicht angezeigt,\\nseit zyklische "
-"Abhängigkeiten nicht erlaubt sind)"
+"(Projekte die auf '{0}' verweisen werden nicht angezeigt,\n"
+"weil zyklische Abhängigkeiten nicht erlaubt sind)"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:144
 msgid "Reference"
@@ -1283,9 +1301,13 @@ msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:204
 msgid ""
-"Do you want to save the following files before the move operation?\\n\\n{0}"
+"Do you want to save the following files before the move operation?\n"
+"\n"
+"{0}"
 msgstr ""
-"Wollen sie folgende Dateien vor dem Verschieben speichern?\\n\\n{0}"
+"Wollen sie folgende Dateien vor dem Verschieben speichern?\n"
+"\n"
+"{0}"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:207
 msgid "Do you want to save the file '{0}' before the copy operation?"
@@ -1295,9 +1317,13 @@ msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:209
 msgid ""
-"Do you want to save the following files before the copy operation?\\n\\n{0}"
+"Do you want to save the following files before the copy operation?\n"
+"\n"
+"{0}"
 msgstr ""
-"Wollen sie folgende Dateien vor dem Kopieren speichern ?\\n\\n{0}"
+"Wollen sie folgende Dateien vor dem Kopieren speichern ?\n"
+"\n"
+"{0}"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:221
 msgid "Save operation failed."
@@ -1752,11 +1778,10 @@ msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/IdeStartup.cs:321
 msgid ""
-"Some packages installed in your system are not compatible with "
-"MonoDevelop:\\n"
+"Some packages installed in your system are not compatible with MonoDevelop:\n"
 msgstr ""
 "Einige Pakete die in ihrem System installiert sind, sind nicht kompatibel zu "
-"MonoDevelop:\\n"
+"MonoDevelop:\n"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/IdeStartup.cs:323
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/IdeStartup.cs:325
@@ -2545,7 +2570,6 @@ msgid "Go to Matching _Brace"
 msgstr "Gehe zu passender Klammer"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:883
-#, fuzzy
 msgid "Expand selection to the left"
 msgstr ""
 
@@ -2641,9 +2665,8 @@ msgid "Visual Studio"
 msgstr "MS Visual Studio"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:931
-#, fuzzy
 msgid "MonoDevelop 1.0"
-msgstr "MonoDevelop"
+msgstr "MonoDevelop 1.0"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:948
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1019
@@ -2949,7 +2972,7 @@ msgstr "Zeige Zeilenumbruchsansicht"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/InternalLogPad.cs:257
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:74
 #: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DotDesktopViewWidget.cs:67
-#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexLibraryWindow.cs:239
+#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexLibraryWindow.cs:238
 msgid "Description"
 msgstr "Beschreibung"
 
@@ -3805,15 +3828,12 @@ msgid "MonoDevelop Startup Directory"
 msgstr "MonoDevelop Start-Verzeichnis"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:332
-#, fuzzy
-msgid "The command of tool \\\\\\\"{0}\\\\\\\" is invalid."
+msgid "The command of tool \"{0}\" is invalid."
 msgstr "Der Befehl des Werkzeugs \"{0}\" ist ungültig."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:337
-#, fuzzy
-msgid "The working directory of tool \\\\\\\"{0}\\\\\\\" is invalid."
-msgstr ""
-"Das Arbeits-Verzeichnis des Werkzeugs \\\\\\\\\"{0}\\\\\\\\\" ist ungültig."
+msgid "The working directory of tool \"{0}\" is invalid."
+msgstr "Das Arbeitsverzeichnis des externen Programs \"{0}\" ist ungültig."
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.ExternalTools.ExternalToolPanelWidget.cs:171
 msgid "_Arguments:"
@@ -3925,13 +3945,12 @@ msgid "Building Solution {0}"
 msgstr "Erstelle Projektmappe {0}"
 
 #: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/Combine.cs:749
-#, fuzzy
 msgid ""
-"Cyclic dependencies can not be built with this version.\\nBut we are working "
-"on it."
+"Cyclic dependencies can not be built with this version.\n"
+"But we are working on it."
 msgstr ""
-"Periodische Abhängigkeiten können mit dieser Version nicht erzeugt "
-"werden.\\nAber wir arbeiten daran."
+"Zyklische Abhängigkeiten können mit dieser Version nicht erzeugt werden.\n"
+"Aber wir arbeiten daran."
 
 #: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/DotNetProject.cs:233
 msgid ""
@@ -3960,19 +3979,23 @@ msgstr "Kompiliere Quelle {0} mit {1}"
 
 #: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/DotNetProject.cs:420
 #: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/DotNetProject.cs:422
-#, fuzzy
 msgid ""
-"Error while trying to invoke '{0}' to compile resource '{1}' :\\n {2}"
+"Error while trying to invoke '{0}' to compile resource '{1}' :\n"
+" {2}"
 msgstr ""
-"Fehler beim Versuch '{0}' zur Quelle '{1} zu kompiliere :\\n {2}"
+"Fehler beim Versuch '{0}' zur Ressource '{1} zu kompiliere:\n"
+" {2}"
 
 #: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/DotNetProject.cs:435
 #: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/DotNetProject.cs:438
-#, fuzzy
 msgid ""
-"Unable to compile ({0}) {1} to .resources. \\nReason: \\n{2}\\n"
+"Unable to compile ({0}) {1} to .resources. \n"
+"Reason: \n"
+"{2}\n"
 msgstr ""
-"Unfähig {1} zu .resources zu kompilieren ({1}). \\nGrund: \\n{2}\\n"
+"Unfähig {1} zu .resources zu kompilieren ({1}). \n"
+"Grund: \n"
+"{2}\n"
 
 #: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/DotNetProject.cs:483
 msgid "Generating satellite assembly for '{0}' culture with {1}"
@@ -3983,7 +4006,8 @@ msgstr "Erzeuge Satelliten-Assembly für '{0}' Kultur mit {1}"
 #, fuzzy
 msgid ""
 "Error while trying to invoke '{0}' to generate satellite assembly for '{1}' "
-"culture:\\n {2}"
+"culture:\n"
+" {2}"
 msgstr ""
 "Fehler beim Versuch '{0}' einzubinden um einen Satelliten-Assembly zu "
 "erzeugen für '{1}' Kultur:\\n {2}"
@@ -3992,8 +4016,9 @@ msgstr ""
 #: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/DotNetProject.cs:509
 #, fuzzy
 msgid ""
-"Unable to generate satellite assemblies for '{0}' culture with {1}.\\nReason: "
-"\\n{2}\\n"
+"Unable to generate satellite assemblies for '{0}' culture with {1}.\n"
+"Reason: \n"
+"{2}\n"
 msgstr ""
 "Nicht dazu in der Lage Satelliten-Assembly für '{0}' Kultur mit {1} zu "
 "erzeugen.\\nGrund: \\n{2}\\n"
@@ -5694,7 +5719,8 @@ msgstr "Symbol löschen"
 #: ../src/addins/MonoDevelop.GtkCore/lib/stetic/libstetic/editor/ActionToolbar.cs:76
 #, fuzzy
 msgid ""
-"New\\nbutton"
+"New\n"
+"button"
 msgstr "Neuer Button"
 
 #: ../src/addins/MonoDevelop.GtkCore/lib/stetic/libstetic/editor/ActionToolbar.cs:78
@@ -5704,7 +5730,8 @@ msgstr "Neuer Button"
 #: ../src/addins/MonoDevelop.GtkCore/lib/stetic/libstetic/editor/ActionToolbar.cs:98
 #, fuzzy
 msgid ""
-"Empty\\ntoolbar"
+"Empty\n"
+"toolbar"
 msgstr "Leere Werkzeugleiste"
 
 #: ../src/addins/MonoDevelop.GtkCore/lib/stetic/libstetic/editor/ActionToolbar.cs:100
@@ -6065,8 +6092,8 @@ msgstr "Generiere partielle Klassen für {0} mit {1}"
 #: ../src/addins/prj2make-sharp-lib/MSBuildProjectServiceExtension.cs:103
 #, fuzzy
 msgid ""
-"Error while trying to invoke '{0}' to generate partial classes for '{1}' :\\n "
-"{2}"
+"Error while trying to invoke '{0}' to generate partial classes for '{1}' :\n"
+" {2}"
 msgstr ""
 "Fehler beim Versuch '{0}' einzubinden um partielle Klassen zu generieren für "
 "'{1}' :\\n {2}"
@@ -6075,7 +6102,9 @@ msgstr ""
 #: ../src/addins/prj2make-sharp-lib/MSBuildProjectServiceExtension.cs:118
 #, fuzzy
 msgid ""
-"Unable to generate partial classes ({0}) for {1}. \\nReason: \\n{2}\\n"
+"Unable to generate partial classes ({0}) for {1}. \n"
+"Reason: \n"
+"{2}\n"
 msgstr ""
 "Kann keine partiellen Klassen ({0}) für {1} generieren. \\nGrund: \\n{2}\\n"
 
@@ -6430,11 +6459,15 @@ msgstr "{0} Änderungsprotokoll-Dateien werden erneuert."
 msgid "{0} ChangeLog file not found. Some changes will not be logged."
 msgid_plural "{0} ChangeLog files not found. Some changes will not be logged."
 msgstr[0] ""
-"{0} Änderungsprotokoll-Datei nicht gefunden. Einige Änderungen werden nicht \n"
-"\\\\nprotokolliert."
+"{0} Änderungsprotokoll-Datei nicht gefunden. Einige Änderungen werden \n"
+"\\\\n\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\nnicht "
+"\n"
+"\\n\\\\n\\\\\\\\n\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\nprotokolliert."
 msgstr[1] ""
-"{0} Änderungsprotokoll-Dateien nicht gefunden. Einige Änderungen werden \n"
-"\\\\nnicht protokolliert."
+"{0} Änderungsprotokoll-Dateien nicht gefunden. Einige Änderungen werden "
+"\\n\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\nnicht "
+"\n"
+"\\n\\\\n\\\\\\\\n\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\nprotokolliert."
 
 #: ../src/addins/ChangeLogAddIn/ChangeLogAddInOptionPanelWidget.cs:41
 msgid "Full Name"
@@ -6469,7 +6502,7 @@ msgstr ""
 #, fuzzy
 msgid ""
 "To change the ChangeLog creation and update policies, open the options dialog "
-"of the project or solution and click on the 'ChangeLog Integration\\\\\\\" "
+"of the project or solution and click on the 'ChangeLog Integration\" "
 "section."
 msgstr ""
 "Um die Änderungsprotokollerzeugung und Updateverfahren zu ändern, öffnen Sie "
@@ -6505,8 +6538,8 @@ msgstr "Auswahlfeld2"
 #: ../src/addins/ChangeLogAddIn/gtk-gui/MonoDevelop.ChangeLogAddIn.ProjectOptionPanelWidget.cs:69
 #, fuzzy
 msgid ""
-"<b>Use parent solution policy</b>\\nApply the policy specified in the parent "
-"solution."
+"<b>Use parent solution policy</b>\n"
+"Apply the policy specified in the parent solution."
 msgstr ""
 "<b>Benutze übergeordnete Projektmappenrichtlinien</b>\\nWende die Richtlinien "
 "die in der übergeordneten Lösung sind an."
@@ -6518,8 +6551,8 @@ msgstr "Auswahlfeld1"
 #: ../src/addins/ChangeLogAddIn/gtk-gui/MonoDevelop.ChangeLogAddIn.ProjectOptionPanelWidget.cs:88
 #, fuzzy
 msgid ""
-"<b>Disable ChangeLog support</b>\\nNo ChangeLog entries will be generated for "
-"this project."
+"<b>Disable ChangeLog support</b>\n"
+"No ChangeLog entries will be generated for this project."
 msgstr ""
 "<b>Deaktiviere Änderungsprotokollunterstützung</b>\\nEs werden keine "
 "Änderungsprotokolleinträge für dieses Projekt erstellt."
@@ -6531,10 +6564,10 @@ msgstr "Benutzerdefinierte Vereinbarung"
 #: ../src/addins/ChangeLogAddIn/gtk-gui/MonoDevelop.ChangeLogAddIn.ProjectOptionPanelWidget.cs:108
 #, fuzzy
 msgid ""
-"<b>Update nearest ChangeLog</b>\\nThe nearest ChangeLog file in the directory "
-"hierarchy will be updated (below the commit directory). If none is found, a "
-"warning message will be shown. ChangeLog files will never be automatically "
-"created."
+"<b>Update nearest ChangeLog</b>\n"
+"The nearest ChangeLog file in the directory hierarchy will be updated (below "
+"the commit directory). If none is found, a warning message will be shown. "
+"ChangeLog files will never be automatically created."
 msgstr ""
 "<b>Aktualisiere nächstes Änderungsprotokoll</b>\\nDie nächste "
 "Änderungsprotokolldatei in der Verzeichnisebene wird erneuert (unter dem Commit-Verzeichnis "
@@ -6548,9 +6581,10 @@ msgstr "Ein Änderungsprotokoll im Wurzelverzeichnis des Projekts"
 #: ../src/addins/ChangeLogAddIn/gtk-gui/MonoDevelop.ChangeLogAddIn.ProjectOptionPanelWidget.cs:129
 #, fuzzy
 msgid ""
-"<b>Single project ChangeLog</b>\\nAll changes done in the project files will "
-"be logged in a single ChangeLog file, located at the project root directory. "
-"The ChangeLog file will be created if it doesn't exist."
+"<b>Single project ChangeLog</b>\n"
+"All changes done in the project files will be logged in a single ChangeLog "
+"file, located at the project root directory. The ChangeLog file will be "
+"created if it doesn't exist."
 msgstr ""
 "<b>Einzelnes Projekt Änderungsprotokoll</b>\\nAlle Änderungen in diesem "
 "Projekt werden in einer einzelnen Datei protokolliert, die in dem "
@@ -6563,9 +6597,9 @@ msgstr "Ein Änderungsprotokoll in jedem Verzeichnis"
 #: ../src/addins/ChangeLogAddIn/gtk-gui/MonoDevelop.ChangeLogAddIn.ProjectOptionPanelWidget.cs:150
 #, fuzzy
 msgid ""
-"<b>One ChangeLog in each directory</b>\\nFile changes will be logged in a "
-"ChangeLog located at the file's directory. The ChangeLog file will be created if "
-"it doesn't exist."
+"<b>One ChangeLog in each directory</b>\n"
+"File changes will be logged in a ChangeLog located at the file's directory. "
+"The ChangeLog file will be created if it doesn't exist."
 msgstr ""
 "<b>Ein Änderungsprotokoll in jedem Verzeichnis</b>\\nDateiänderungen werden "
 "in einem Änderungsprotokoll im Verzeichnis der Datei gespeichert. Die "
@@ -6755,11 +6789,11 @@ msgid "Added {0} member to CodeBehind classes. Saving updated source files."
 msgid_plural ""
 "Added {0} members to CodeBehind classes. Saving updated source files."
 msgstr[0] ""
-"{0} Mitglied zu CodeBehind-Klassen hinzugefügt. Speichere aktualisierte \n"
-"\\\\nQuelldateien."
+"{0} Mitglied zu CodeBehind-Klassen hinzugefügt. Speichere aktualisierte "
+"\\n\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\nQuelldateien."
 msgstr[1] ""
-"{0} Mitglieder zu CodeBehind-Klassen hinzugefügt. Speichere aktualisierte \n"
-"\\\\nQuelldateien."
+"{0} Mitglieder zu CodeBehind-Klassen hinzugefügt. Speichere aktualisierte "
+"\\n\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\nQuelldateien."
 
 #: ../src/addins/AspNetAddIn/Templates/MasterPage-CodeBehind.xft.xml:7
 #: ../src/addins/AspNetAddIn/Templates/MasterPage-CodeBehindNonPartial.xft.xml:7
@@ -7192,11 +7226,12 @@ msgstr ""
 "nicht unterstützt."
 
 #: ../src/addins/MonoDevelop.Autotools/SolutionMakefileHandler.cs:155
-#, fuzzy
 msgid ""
-"\\n# Include project specific makefile\\n"
+"\n"
+"# Include project specific makefile\n"
 msgstr ""
-"\\n# Einfüge Projekt spezifiziert Makefile\\n"
+"\n"
+"# Füge projektspezifisches Makefile ein\n"
 
 #: ../src/addins/MonoDevelop.Autotools/CustomMakefile.cs:252
 msgid "Makefile variable {0} not found in the file."
@@ -7225,14 +7260,15 @@ msgstr "Lade Projektmappen-Datei {0}"
 #: ../src/addins/MonoDevelop.Autotools/MakefileGeneratorTool.cs:54
 #, fuzzy
 msgid ""
-"Error: Makefile generation supported only for solutions.\\n"
+"Error: Makefile generation supported only for solutions.\n"
 msgstr ""
 "Fehler: Makefile-Erzeugung nur für Projektmappen unterstützt.\\n"
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileGeneratorTool.cs:59
 #, fuzzy
 msgid ""
-"\\nInvalid configuration {0}. Valid configurations : "
+"\n"
+"Invalid configuration {0}. Valid configurations : "
 msgstr ""
 "\\nUngültige Konfiguration {0}. Gültige Konfigurationen :"
 
@@ -7250,10 +7286,11 @@ msgstr ""
 #: ../src/addins/MonoDevelop.Autotools/MakefileGeneratorTool.cs:131
 #, fuzzy
 msgid ""
-" --simple-makefiles -s\\n\\tGenerates set of Makefiles with the most common "
-"targets, and a configuration script that does a basic check of package "
-"dependencies. Default is to generate Makefile structure based on Autotools with the "
-"standard targets and configuration scripts."
+" --simple-makefiles -s\n"
+"\tGenerates set of Makefiles with the most common targets, and a "
+"configuration script that does a basic check of package dependencies. Default is to "
+"generate Makefile structure based on Autotools with the standard targets and "
+"configuration scripts."
 msgstr ""
 " --simple-makefiles -s\\n\\tErzeugt eine Menge von Makefiles mit den "
 "häufigsten Zielen, und ein Konfigurationsskript das eine grundlegende Überprüfung von "
@@ -7264,9 +7301,10 @@ msgstr ""
 #: ../src/addins/MonoDevelop.Autotools/MakefileGeneratorTool.cs:133
 #, fuzzy
 msgid ""
-" -d:default-config\\n\\tConfiguration that the Makefile will build by "
-"default. Other configurations can be selected via the '--config' or '--enable-*' "
-"option of the generated configure script."
+" -d:default-config\n"
+"\tConfiguration that the Makefile will build by default. Other "
+"configurations can be selected via the '--config' or '--enable-*' option of the generated "
+"configure script."
 msgstr ""
 " -d: default-config\\n\\tKonfiguration die das Makefile standardmäßig "
 "erstellen wird. Andere Konfigurationen können mittels der '--config' oder "
@@ -7409,7 +7447,8 @@ msgstr ""
 #: ../src/addins/MonoDevelop.Autotools/MakefileData.cs:677
 #, fuzzy
 msgid ""
-"Error trying to read configure.in ('{0'}) for project '{1}':\\n{2}"
+"Error trying to read configure.in ('{0'}) for project '{1}':\n"
+"{2}"
 msgstr ""
 "Fehler beim Versuch configure.in ('{0}') zu lesen für Projekt '{1}':\\n {2}"
 
@@ -7680,8 +7719,9 @@ msgstr "Autotools-basiert"
 #: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.GenerateMakefilesDialog.cs:107
 #, fuzzy
 msgid ""
-"<b>Autotools based Makefile</b>\\nGenerates a Makefile structure based on "
-"Autotools, with the standard targets and configuration scripts."
+"<b>Autotools based Makefile</b>\n"
+"Generates a Makefile structure based on Autotools, with the standard targets "
+"and configuration scripts."
 msgstr ""
 "<b>Autotools-basiertes Makefile</b>\\nErzeugt eine auf den Autotools "
 "basierende Makefile-Struktur mit den Standard-Zielen und -Konfigurationsskripten."
@@ -7695,9 +7735,9 @@ msgstr "Einfach"
 #: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.GenerateMakefilesDialog.cs:86
 #, fuzzy
 msgid ""
-"<b>Simple Makefile</b>\\nGenerates set of Makefiles with the most common "
-"targets, and a configuration script that does a basic check of package "
-"dependencies."
+"<b>Simple Makefile</b>\n"
+"Generates set of Makefiles with the most common targets, and a configuration "
+"script that does a basic check of package dependencies."
 msgstr ""
 "<b>Einfaches Makefile</b>\\nErzeugt eine Menge von Makefiles mit den "
 "häufigsten Zielen, und ein Konfigurationsskript das eine grundlegende Überprüfung von "
@@ -7849,7 +7889,7 @@ msgstr "Lokales Dateisystem"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Targets/LocalFileCopyHandler.cs:80
 #, fuzzy
-msgid "Could not resolve target directory ID \\\\\\\"{0}\\\\\\\""
+msgid "Could not resolve target directory ID \"{0}\""
 msgstr "Kann Zielverzeichnis ID \\\\\\\\\"{0}\\\\\\\\\" nicht erfassen"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Targets/LocalFileCopyHandler.cs:96
@@ -8888,47 +8928,47 @@ msgstr "Test exe:"
 msgid "Working path:"
 msgstr "Arbeitsverzeichnis"
 
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs:491
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs:493
 msgid "Header"
 msgstr "Überschrift"
 
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs:503
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs:505
 msgid "Show in desktop menu"
 msgstr "Zeige im Desktop-Menü"
 
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs:526
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs:528
 msgid "Menu categories:"
 msgstr "Menü-Kategorien:"
 
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs:605
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs:607
 msgid "Select the environments that should display this desktop entry:"
 msgstr "Wählen Sie die Umgebung die diesen Desktopeintrag zeigen sollen:"
 
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs:612
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs:614
 msgid "Always show"
 msgstr "Immer zeigen"
 
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs:624
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs:625
 msgid "Only show in the following environments:"
 msgstr "Nur in den folgenden Umgebungen zeigen"
 
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs:635
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs:636
 msgid "Not show in the following environments:"
 msgstr "Nicht in den Folgenden Umgebungen zeigen:"
 
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs:671
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs:674
 msgid "Menu entry"
 msgstr "Menüeintrag"
 
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs:688
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs:691
 msgid "MIME types supported by this application:"
 msgstr "MIME-Typen die von dieser Anwendung unterstützt werden:"
 
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs:754
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs:758
 msgid "Mime types"
 msgstr "Mime-Typen"
 
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs:815
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs:820
 msgid "Other entries"
 msgstr "Andere Einträge"
 
@@ -9039,8 +9079,8 @@ msgstr "Markiere Text als Code"
 #: ../src/addins/CSharpBinding/Gui/CSharpTextEditorExtension.cs:1028
 #, fuzzy
 msgid ""
-"A description of the code sample.\\nCommonly, this would involve use of the "
-"&lt;code&gt; tag."
+"A description of the code sample.\n"
+"Commonly, this would involve use of the &lt;code&gt; tag."
 msgstr ""
 "Eine Beschreibung des Code Beispiels.\\nGewöhnlich schließt dies die "
 "Einbindung des &lt;code&gt; Tags ein."
@@ -9054,8 +9094,9 @@ msgstr ""
 #, fuzzy
 msgid ""
 "The &lt;include&gt; tag lets you refer to comments in another file that "
-"describe the types and members in your source code.\\nThis is an alternative to "
-"placing documentation comments directly in your source code file."
+"describe the types and members in your source code.\n"
+"This is an alternative to placing documentation comments directly in your "
+"source code file."
 msgstr ""
 "Das &lt;include&gt; Tag lässt Verweise zu Kommentaren in anderen Dateien zu, "
 "die Typ und Mitglieder ihres Quelltexts beschreiben\\nDas ist eine "
@@ -9205,7 +9246,8 @@ msgid "Invalid code page number."
 msgstr "Ungültige Codepage-Nummer."
 
 #: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.addin.xml:52
-msgid "Add Translation..."
+#, fuzzy
+msgid "_Add Translation..."
 msgstr "Übersetzung hinzufügen"
 
 #: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.addin.xml:53
@@ -9215,8 +9257,8 @@ msgstr ""
 "hinzufügen"
 
 #: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.addin.xml:55
-msgid "Update Translations"
-msgstr "Übersetzungen aktualisieren"
+msgid "_Update Translations"
+msgstr "Ü_bersetzungen aktualisieren"
 
 #: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.addin.xml:56
 msgid "Updates all translation files."
@@ -9400,8 +9442,7 @@ msgstr "Die Katalog-Initialisierungszeichenkette sollte so aussehen:"
 
 #: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.TranslationProjectOptionsDialog.cs:227
 #, fuzzy
-msgid ""
-"Mono.Unix.Catalog.Init (\\\\\\\"i18n\\\\\\\", \\\\\\\"./locale\\\\\\\");"
+msgid "Mono.Unix.Catalog.Init (\"i18n\", \"./locale\");"
 msgstr ""
 "Mono.Unix.Catalog.Init (\\\\\\\\\"i8n1\\\\\\\\\", "
 "\\\\\\\\\"./locale\\\\\\\\\");"
@@ -9520,7 +9561,7 @@ msgstr "Form {0}"
 
 #: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext/Catalog.cs:529
 #, fuzzy
-msgid "Form {0} (e.g. \\\\\\\"{1}\\\\\\\")"
+msgid "Form {0} (e.g. \"{1}\")"
 msgstr "Form {0} (bspw. \\\\\\\\\"{1}\\\\\\\\\")"
 
 #: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext/GettextFeature.cs:45
@@ -9628,10 +9669,11 @@ msgstr "\\040"
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:11
 #, fuzzy
 msgid ""
-"Matches an ASCII character as octal (up to three digits);\\nnumbers with no "
-"leading zero are backreferences if they have \\nonly one digit or if they "
-"correspond to a capturing group number. \\n(For more information, see "
-"Backreferences.) \\nFor example, the character \\040 represents a space."
+"Matches an ASCII character as octal (up to three digits);\n"
+"numbers with no leading zero are backreferences if they have \n"
+"only one digit or if they correspond to a capturing group number. \n"
+"(For more information, see Backreferences.) \n"
+"For example, the character \\040 represents a space."
 msgstr ""
 "Stimmt mit einem ASCII-Zeichen als oktal (bis zu drei Ziffern) "
 "überein;\\nNummern mit nur einer führenden Null sind Rückwärtsreferenzen wenn sie \\nnur "
@@ -9646,8 +9688,8 @@ msgstr "\\x20"
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:17
 #, fuzzy
 msgid ""
-"Matches an ASCII character using hexadecimal representation\\n(exactly two "
-"digits)."
+"Matches an ASCII character using hexadecimal representation\n"
+"(exactly two digits)."
 msgstr ""
 "Stimmt mit einem ASCII-Zeichen überein, benutzt hexadezimale "
 "Darstellung\\n(genau zwei Ziffern)."
@@ -9659,7 +9701,8 @@ msgstr "\\cC"
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:19
 #, fuzzy
 msgid ""
-"Matches an ASCII control character;\\nfor example, \\cC is control-C."
+"Matches an ASCII control character;\n"
+"for example, \\cC is control-C."
 msgstr ""
 "Stimmt mit einem ASCII-Kontroll-Zeichen überein;\\nzum Beispiel, \\\\cC ist "
 "Strg-C (control-C)."
@@ -9671,8 +9714,8 @@ msgstr "\\u0020"
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:21
 #, fuzzy
 msgid ""
-"Matches a Unicode character using hexadecimal representation\\n(exactly four "
-"digits)."
+"Matches a Unicode character using hexadecimal representation\n"
+"(exactly four digits)."
 msgstr ""
 "Stimmt mit einem Unicode-Zeichen überein, benutzt hexadezimale "
 "Darstellung\\n(genau vier Ziffern)."
@@ -9763,8 +9806,8 @@ msgstr "[zeichen_gruppe]"
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:37
 #, fuzzy
 msgid ""
-"Positive character group.\\nMatches any character in the specified character "
-"group."
+"Positive character group.\n"
+"Matches any character in the specified character group."
 msgstr ""
 "Positive Zeichen-Gruppe.\\nStimmt mit jedem in der Zeichen-Gruppe angegebenen "
 "Zeichen überein."
@@ -9776,8 +9819,8 @@ msgstr "[^zeichen_gruppe]"
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:39
 #, fuzzy
 msgid ""
-"Negative character group.\\nMatches any character not in the specified "
-"character group."
+"Negative character group.\n"
+"Matches any character not in the specified character group."
 msgstr ""
 "Negative Zeichen-Gruppe.\\nStimmt mit jedem nicht in der Zeichen-Gruppe "
 "angegebenen Zeichen überein."
@@ -9789,7 +9832,8 @@ msgstr "[erstesZeichen-letztesZeichen]"
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:41
 #, fuzzy
 msgid ""
-"Character range.\\nMatches any character in a range of characters."
+"Character range.\n"
+"Matches any character in a range of characters."
 msgstr ""
 "Zeichen-Abgrenzung.\\nStimmt mit jedem Zeichen in einer Abgrenzung von "
 "Zeichen überein."
@@ -9801,8 +9845,10 @@ msgstr "."
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:43
 #, fuzzy
 msgid ""
-"The period character.\\nMatches any character except \\n. \\nIf modified by "
-"the Singleline option, a period character matches any character."
+"The period character.\n"
+"Matches any character except \\n. \n"
+"If modified by the Singleline option, a period character matches any "
+"character."
 msgstr ""
 "Das Punkt-Zeichen.\\nStimmt mit jedem Zeichen überein außer \\\\n. \\nWenn "
 "von der Einzelzeilen-Option verändert, stimmt das Punkt-Zeichen mit jedem "
@@ -9815,8 +9861,9 @@ msgstr "\\p{name}"
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:46
 #, fuzzy
 msgid ""
-"Matches any character in the Unicode general category\\nor named block "
-"specified by name (for example, Ll, Nd, Z, IsGreek, and IsBoxDrawing)."
+"Matches any character in the Unicode general category\n"
+"or named block specified by name (for example, Ll, Nd, Z, IsGreek, and "
+"IsBoxDrawing)."
 msgstr ""
 "Stimmt mit jedem Zeichen der Unicode General-Kategorie überein\\noder "
 "benannten Block festgelegt durch Namen (zum Beispiel, Ll, Nd, Z, IsGreek und "
@@ -9829,8 +9876,8 @@ msgstr "\\P{name}"
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:49
 #, fuzzy
 msgid ""
-"Matches any character not in Unicode general category \\nor named block "
-"specified in name."
+"Matches any character not in Unicode general category \n"
+"or named block specified in name."
 msgstr ""
 "Stimmt mit jedem Zeichen nicht in der Unicode General-Kategorie überein "
 "\\noder benannten Block festgelegt im Namen."
@@ -9894,8 +9941,8 @@ msgstr "^"
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:61
 #, fuzzy
 msgid ""
-"Specifies that the match must occur at the beginning of \\nthe string or the "
-"beginning of the line."
+"Specifies that the match must occur at the beginning of \n"
+"the string or the beginning of the line."
 msgstr ""
 "Schreibt vor, dass die Übereinstimmung am Anfang der \\nZeichenkette oder am "
 "Anfang der Zeile auftreten muss."
@@ -9907,8 +9954,9 @@ msgstr "$"
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:64
 #, fuzzy
 msgid ""
-"Specifies that the match must occur at the end of the \\nstring, before \\n "
-"at the end of the string, or at the \\nend of the line."
+"Specifies that the match must occur at the end of the \n"
+"string, before \\n at the end of the string, or at the \n"
+"end of the line."
 msgstr ""
 "Schreibt vor, dass die Übereinstimmung am Anfang der \\nZeichenkette, vor "
 "\\\\n am Ende der Zeichenkette, oder an dem \\nEnde der Zeile."
@@ -9921,8 +9969,8 @@ msgstr "\\\\A"
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:68
 #, fuzzy
 msgid ""
-"Specifies that the match must occur at the beginning of \\nthe string "
-"(ignores the Multiline option)."
+"Specifies that the match must occur at the beginning of \n"
+"the string (ignores the Multiline option)."
 msgstr ""
 "Schreibt vor, dass die Übereinstimmung am Anfang der \\nZeichenkette "
 "auftreten muss (ignoriert die Mehrzeilen-Option)."
@@ -9935,8 +9983,9 @@ msgstr "\\\\Z"
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:71
 #, fuzzy
 msgid ""
-"Specifies that the match must occur at the end of the \\nstring or before \\n "
-"at the end of the string (ignores \\nthe Multiline option)."
+"Specifies that the match must occur at the end of the \n"
+"string or before \\n at the end of the string (ignores \n"
+"the Multiline option)."
 msgstr ""
 "Schreibt vor, dass die Übereinstimmung am Ende der \\nZeichenkette oder vor "
 "\\\\n am Ende der Zeichenkette (ignoriert \\ndie Mehrzeilen-Option)."
@@ -9949,8 +9998,8 @@ msgstr "\\\\z"
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:75
 #, fuzzy
 msgid ""
-"Specifies that the match must occur at the end of the \\nstring (ignores the "
-"Multiline option)."
+"Specifies that the match must occur at the end of the \n"
+"string (ignores the Multiline option)."
 msgstr ""
 "Schreibt vor, dass die Übereinstimmung am Ende der \\n Zeichenkette auftreten "
 "muss (ignoriert die Mehrzeilen-Option)."
@@ -9963,9 +10012,9 @@ msgstr "\\\\G"
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:78
 #, fuzzy
 msgid ""
-"Specifies that the match must occur at the point where \\nthe previous match "
-"ended. When used with Match.NextMatch(), \\nthis ensures that matches are all "
-"contiguous."
+"Specifies that the match must occur at the point where \n"
+"the previous match ended. When used with Match.NextMatch(), \n"
+"this ensures that matches are all contiguous."
 msgstr ""
 "Schreibt vor, dass die Übereinstimmung an dem Punkt wo die vorherige "
 "\\nÜbereinstimmung geendet hat auftreten muss. Wenn mit Match.NextMatch() benutzt "
@@ -9974,11 +10023,12 @@ msgstr ""
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:82
 #, fuzzy
 msgid ""
-"Specifies that the match must occur on a boundary \\nbetween \\w "
-"(alphanumeric) and \\W (nonalphanumeric) characters. \\nThe match must occur on word "
-"boundaries (that is, at the first \\nor last characters in words separated by any "
-"nonalphanumeric \\ncharacters). The match can also occur on a word boundary "
-"at \\nthe end of the string."
+"Specifies that the match must occur on a boundary \n"
+"between \\w (alphanumeric) and \\W (nonalphanumeric) characters. \n"
+"The match must occur on word boundaries (that is, at the first \n"
+"or last characters in words separated by any nonalphanumeric \n"
+"characters). The match can also occur on a word boundary at \n"
+"the end of the string."
 msgstr ""
 "Legt fest, dass die Übereinstimmung auf einer Grenze zwischen \\n\\\\w "
 "(alphanumerisch) und \\\\W (nicht alphanumerisch) Zeichen auftreten muss. \\nDie "
@@ -10010,8 +10060,8 @@ msgstr "*"
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:93
 #, fuzzy
 msgid ""
-"Specifies zero or more matches; \\nfor example, \\w* or (abc)*. Equivalent to "
-"{0,}."
+"Specifies zero or more matches; \n"
+"for example, \\w* or (abc)*. Equivalent to {0,}."
 msgstr ""
 "Schreibt null oder mehr Übereinstimmungen vor; \\nzum Beispiel, \\\\w* oder "
 "(abc)*. Gleichbedeutend mit {0,}."
@@ -10023,8 +10073,8 @@ msgstr "+"
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:96
 #, fuzzy
 msgid ""
-"Specifies one or more matches; \\nfor example, \\w+ or (abc)+. Equivalent to "
-"{1,}."
+"Specifies one or more matches; \n"
+"for example, \\w+ or (abc)+. Equivalent to {1,}."
 msgstr ""
 "Schreibt eine oder mehr Übereinstimmungen vor; \\nzum Beispiel, \\\\w+ oder "
 "(abc)+. Gleichbedeutend mit {1,}."
@@ -10036,8 +10086,8 @@ msgstr "?"
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:99
 #, fuzzy
 msgid ""
-"Specifies zero or one matches; \\nfor example, \\w? or (abc)?. Equivalent to "
-"{0,1}."
+"Specifies zero or one matches; \n"
+"for example, \\w? or (abc)?. Equivalent to {0,1}."
 msgstr ""
 "Schreibt null oder eine Übereinstimmung vor;zum Beispiel, \\\\w? oder (abc)?. "
 "Gleichbedeutend mit {0,1}."
@@ -10049,7 +10099,8 @@ msgstr "{n}"
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:102
 #, fuzzy
 msgid ""
-"Specifies exactly n matches; \\nfor example, (pizza){2}."
+"Specifies exactly n matches; \n"
+"for example, (pizza){2}."
 msgstr ""
 "Schreibt genau n Übereinstimmungen vor; \\nzum Beispiel, (pizza){2}."
 
@@ -10060,7 +10111,8 @@ msgstr "{n,}"
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:105
 #, fuzzy
 msgid ""
-"Specifies at least n matches;\\nfor example, (abc){2,}."
+"Specifies at least n matches;\n"
+"for example, (abc){2,}."
 msgstr ""
 "Schreibt mindesten n Übereinstimmungen vor;\\nzum Beispiel, (abc){2,}."
 
@@ -10079,8 +10131,8 @@ msgstr "*?"
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:109
 #, fuzzy
 msgid ""
-"Specifies the first match that consumes as few repeats \\nas possible "
-"(equivalent to lazy *)."
+"Specifies the first match that consumes as few repeats \n"
+"as possible (equivalent to lazy *)."
 msgstr ""
 "Schreibt die erste Übereinstimmung vor, die so wenige Wiederholungen benötigt "
 "\\nwie möglich (gleichbedeutend mit faul *)."
@@ -10092,8 +10144,8 @@ msgstr "+?"
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:112
 #, fuzzy
 msgid ""
-"Specifies as few repeats as possible, but at least one \\n(equivalent to lazy "
-"+)."
+"Specifies as few repeats as possible, but at least one \n"
+"(equivalent to lazy +)."
 msgstr ""
 "Schreibt so wenig Wiederholungen wie möglich vor, aber mindestens eine "
 "\\n(gleichbedeutend mit faul +)."
@@ -10121,7 +10173,8 @@ msgstr "{n,}?"
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:117
 #, fuzzy
 msgid ""
-"Specifies as few repeats as possible, \\nbut at least n (lazy {n,})."
+"Specifies as few repeats as possible, \n"
+"but at least n (lazy {n,})."
 msgstr ""
 "Schreibt so wenig Wiederholungen wie möglich vor, \\naber mindestens n (faul "
 "{n,})."
@@ -10133,7 +10186,8 @@ msgstr "{n,m}?"
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:120
 #, fuzzy
 msgid ""
-"Specifies as few repeats as possible \\nbetween n and m (lazy {n,m})."
+"Specifies as few repeats as possible \n"
+"between n and m (lazy {n,m})."
 msgstr ""
 "Schreibt so wenig Wiederholungen wie möglich vor \\nzwischen n und m (faul "
 "{n,m})."
@@ -10149,10 +10203,11 @@ msgstr "(Unter-Ausdruck)"
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:126
 #, fuzzy
 msgid ""
-"Captures the matched subexpression (or noncapturing group; \\nfor more "
-"information, see the ExplicitCapture option in \\nRegular Expression Options). "
-"Captures using () are numbered \\nautomatically based on the order of the opening "
-"parenthesis, \\nstarting from one. "
+"Captures the matched subexpression (or noncapturing group; \n"
+"for more information, see the ExplicitCapture option in \n"
+"Regular Expression Options). Captures using () are numbered \n"
+"automatically based on the order of the opening parenthesis, \n"
+"starting from one. "
 msgstr ""
 "Erfasst den übereinstimmenden Unter-Ausdruck (oder nichterfassende \\nGruppe; "
 "für mehr Informationen, siehe die ExplicitCapture Option in den "
@@ -10167,9 +10222,9 @@ msgstr "(?<Name> Unter-Ausdruck)"
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:132
 #, fuzzy
 msgid ""
-"Captures the matched subexpression into a group name or \\nnumber name. The "
-"string used for name must not contain \\nany punctuation and cannot begin with "
-"a number. "
+"Captures the matched subexpression into a group name or \n"
+"number name. The string used for name must not contain \n"
+"any punctuation and cannot begin with a number. "
 msgstr ""
 "Erfasst den übereinstimmenden Unter-Ausdruck in einen Gruppen-Namen \\noder "
 "einen Nummer-Namen. Die für den Namen verwendete Zeichenkette \\ndarf keine "
@@ -10182,9 +10237,9 @@ msgstr "(?<Name1-Name2> Unter-Ausdruck)"
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:136
 #, fuzzy
 msgid ""
-"Deletes the definition of the previously defined group name2 \\nand stores in "
-"group name1 the interval between the previously \\ndefined name2 group and "
-"the current group."
+"Deletes the definition of the previously defined group name2 \n"
+"and stores in group name1 the interval between the previously \n"
+"defined name2 group and the current group."
 msgstr ""
 "Entfernt die Definition der zuvor definierten Gruppe name2 \\nund speichert "
 "in Gruppe name1 das Intervall zwischen vorherig \\ndefinierter name2 Gruppe "
@@ -10197,8 +10252,8 @@ msgstr "(?: Unter-Ausdruck)"
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:140
 #, fuzzy
 msgid ""
-"Noncapturing group. \\nDoes not capture the substring matched by the "
-"subexpression."
+"Noncapturing group. \n"
+"Does not capture the substring matched by the subexpression."
 msgstr ""
 "Nicht-Besitzergreifende Gruppe. \\nNimmt nicht Besitz von der "
 "Unter-Zeichenketten die mit dem Unter-Ausdruck übereinstimmt."
@@ -10218,8 +10273,9 @@ msgstr "(?= Unter-Ausdruck)"
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:145
 #, fuzzy
 msgid ""
-"Zero-width positive lookahead assertion.\\nContinues match only if the "
-"subexpression matches at this \\nposition on the right."
+"Zero-width positive lookahead assertion.\n"
+"Continues match only if the subexpression matches at this \n"
+"position on the right."
 msgstr ""
 "Null-Weite positive Lookahead-Aussage.\\nFührt Vergleich lediglich fort wenn "
 "der Unter-Ausdruck\\nan dieser Position rechts übereinstimmt."
@@ -10231,9 +10287,10 @@ msgstr "(?! Unter-Ausdruck)"
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:149
 #, fuzzy
 msgid ""
-"Zero-width negative lookahead assertion.\\nContinues match only if the "
-"subexpression does not match\\nat this position on the right. \\nFor example, "
-"\\b(?!un)\\w+\\b matches words that do not begin with un."
+"Zero-width negative lookahead assertion.\n"
+"Continues match only if the subexpression does not match\n"
+"at this position on the right. \n"
+"For example, \\b(?!un)\\w+\\b matches words that do not begin with un."
 msgstr ""
 "Null-Weite negative Lookahead-Aussage.\\nFührt Vergleich lediglich fort wenn "
 "der Unter-Ausdruck nicht\\nan dieser Position rechts übereinstimmt. \\nZum "
@@ -10247,9 +10304,11 @@ msgstr "(?<= Unter-Ausdruck)"
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:154
 #, fuzzy
 msgid ""
-"Zero-width positive lookbehind assertion.\\nContinues match only if the "
-"subexpression matches at this\\nposition on the left. \\nFor example, (?<=19)99 "
-"matches instances of 99 that follow 19.\\nThis construct does not backtrack."
+"Zero-width positive lookbehind assertion.\n"
+"Continues match only if the subexpression matches at this\n"
+"position on the left. \n"
+"For example, (?<=19)99 matches instances of 99 that follow 19.\n"
+"This construct does not backtrack."
 msgstr ""
 "Null-Illegaler Projekt-Name. \\nNur Buchstaben, Ziffern, Leerzeichen, '.' "
 "oder '_' benutzen. Mit positiver Lookbehind-Aussage.\\nSetzt die Übereinstimmung "
@@ -10264,8 +10323,9 @@ msgstr "(?<! Unter-Ausdruck)"
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:160
 #, fuzzy
 msgid ""
-"Zero-width negative lookbehind assertion.\\nContinues match only if the "
-"subexpression does not \\nmatch at the position on the left."
+"Zero-width negative lookbehind assertion.\n"
+"Continues match only if the subexpression does not \n"
+"match at the position on the left."
 msgstr ""
 "Null-Weite negative Lookbehind-Aussage.\\nFührt Vergleich lediglich fort wenn "
 "der Unter-Ausdruck nicht \\nan der Position links übereinstimmt."
@@ -10277,10 +10337,10 @@ msgstr "(?> Unter-Ausdruck)"
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:164
 #, fuzzy
 msgid ""
-"Nonbacktracking subexpression (also known as a 'greedy' subexpression.)\\nThe "
-"subexpression is fully matched once, and then does not participate "
-"\\npiecemeal in backtracking. (That is, the subexpression matches only strings\\nthat "
-"would be matched by the subexpression alone.)"
+"Nonbacktracking subexpression (also known as a 'greedy' subexpression.)\n"
+"The subexpression is fully matched once, and then does not participate \n"
+"piecemeal in backtracking. (That is, the subexpression matches only strings\n"
+"that would be matched by the subexpression alone.)"
 msgstr ""
 "Nicht zurückverfolgender Unter-Ausdruck (auch bekannt als ein 'gieriger' "
 "Unter-Ausdruck.)\\nDer Unter-Ausdruck wird einmal voll verglichen und nimmt dann "
@@ -10301,7 +10361,8 @@ msgstr "\\\\Nummer"
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:172
 #, fuzzy
 msgid ""
-"Backreference. \\nFor example, (\\w)\\1 finds doubled word characters."
+"Backreference. \n"
+"For example, (\\w)\\1 finds doubled word characters."
 msgstr ""
 "Rückwärtsreferenz. \\nZum Beispiel, (\\\\w)\\\\1 findet doppelt Wort-Zeichen."
 
@@ -10313,9 +10374,10 @@ msgstr "\\\\k<name>"
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:175
 #, fuzzy
 msgid ""
-"Named backreference. \\nFor example, (?<char>\\w)\\k<char> finds doubled word "
-"characters. \\nThe expression (?<43>\\w)\\43 does the same. You can use "
-"single quotes\\n instead of angle brackets; for example, \\k'char'."
+"Named backreference. \n"
+"For example, (?<char>\\w)\\k<char> finds doubled word characters. \n"
+"The expression (?<43>\\w)\\43 does the same. You can use single quotes\n"
+" instead of angle brackets; for example, \\k'char'."
 msgstr ""
 "Genannte Rückwärtsreferenz. \\nZum Beispiel, (?<char>\\\\w)\\\\k<char> findet "
 "doppelte Wort-Zeichen. \\nDer Ausdruck (?<43>\\\\w)\\\\43 macht das gleiche. "
@@ -10333,8 +10395,8 @@ msgstr "|"
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:183
 #, fuzzy
 msgid ""
-"Matches any one of the terms separated by the | (vertical bar) character; "
-"\\nfor example, cat|dog|tiger. The leftmost successful match wins."
+"Matches any one of the terms separated by the | (vertical bar) character; \n"
+"for example, cat|dog|tiger. The leftmost successful match wins."
 msgstr ""
 "Stimmt mit jedem der durch | (vertikaler Balken) getrennten Begriffe überein; "
 "\\nzum Beispiel, katze|hund|tiger. Die am weitesten linke erfolgreiche "
@@ -10359,10 +10421,11 @@ msgstr "(?(Name)ja|nein)"
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:187
 #, fuzzy
 msgid ""
-"Matches the 'yes' part if the named capture string has a match; \\notherwise, "
-"matches the 'no' part. The 'no' part can be omitted.\\nIf the given name "
-"does not correspond to the name or number of a \\ncapturing group used in this "
-"expression, the alternation construct \\nis interpreted as an expression test."
+"Matches the 'yes' part if the named capture string has a match; \n"
+"otherwise, matches the 'no' part. The 'no' part can be omitted.\n"
+"If the given name does not correspond to the name or number of a \n"
+"capturing group used in this expression, the alternation construct \n"
+"is interpreted as an expression test."
 msgstr ""
 "Stimmt mit dem 'ja'-Teil überein wenn die genannte "
 "Erfassungs-Zeichenkette\\neine Übereinstimmung hat; \\nsonst stimmt der 'nein'-Teil überein. Der "
@@ -10381,8 +10444,8 @@ msgstr "(?imnsx-imnsx)"
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:196
 #, fuzzy
 msgid ""
-"Sets or disables options such as case insensitivity to be\\nturned on or off "
-"in the middle of a pattern."
+"Sets or disables options such as case insensitivity to be\n"
+"turned on or off in the middle of a pattern."
 msgstr ""
 "Aktiviert oder deaktiviert Optionen wie ob Case Insensitivity\\nin der Mitte "
 "von Mustern ein- oder ausgeschaltet sein soll."
@@ -10394,8 +10457,8 @@ msgstr "(?# )"
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:199
 #, fuzzy
 msgid ""
-"Inline comment inserted within a regular expression. \\nThe comment "
-"terminates at the first closing parenthesis character."
+"Inline comment inserted within a regular expression. \n"
+"The comment terminates at the first closing parenthesis character."
 msgstr ""
 "Inline-Kommentar in regulärem Ausdruck eingefügt. \\nDer Kommentar hört bei "
 "der ersten schließenden Klammer auf."
@@ -10407,8 +10470,8 @@ msgstr "# [bis zum Ende der Zeile]"
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:202
 #, fuzzy
 msgid ""
-"X-mode comment. The comment begins at an unescaped # and \\ncontinues to the "
-"end of the line."
+"X-mode comment. The comment begins at an unescaped # and \n"
+"continues to the end of the line."
 msgstr ""
 "X-mode Kommentar. Der Kommentar beginnt bei einem nicht escapeten # \\nund "
 "geht weiter bis zum Ende der Zeile."
@@ -10433,23 +10496,23 @@ msgstr "Werkzeuge für Reguläre Ausdrücke"
 msgid "Regular Expression"
 msgstr "Regulärer Ausdruck"
 
-#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWindow.cs:167
+#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWindow.cs:166
 msgid "Replace Regex"
 msgstr "Ersetze Regex"
 
-#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWindow.cs:197
+#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWindow.cs:196
 msgid "Input"
 msgstr "Eingabe"
 
-#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWindow.cs:230
+#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWindow.cs:229
 msgid "Regex Elements"
 msgstr "Regex-Elemente"
 
-#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWindow.cs:274
+#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWindow.cs:271
 msgid "Matches"
 msgstr "Übereinstimmungen"
 
-#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWindow.cs:325
+#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWindow.cs:322
 msgid "Regex Library"
 msgstr "Regex-Bibliothek"
 
@@ -10473,23 +10536,23 @@ msgstr "Suchen:"
 msgid "Expressions"
 msgstr "Ausdrücke"
 
-#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexLibraryWindow.cs:175
+#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexLibraryWindow.cs:174
 msgid "Source:"
 msgstr "Quelle:"
 
-#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexLibraryWindow.cs:198
+#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexLibraryWindow.cs:197
 msgid "Pattern:"
 msgstr "Muster:"
 
-#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexLibraryWindow.cs:208
+#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexLibraryWindow.cs:207
 msgid "Author:"
 msgstr "Autor:"
 
-#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexLibraryWindow.cs:270
+#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexLibraryWindow.cs:269
 msgid "Matching:"
 msgstr "Übereinstimmend:"
 
-#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexLibraryWindow.cs:288
+#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexLibraryWindow.cs:287
 msgid "Non Matching:"
 msgstr "Nicht Übereinstimmend:"
 
@@ -10558,7 +10621,7 @@ msgstr "Vorkompilieren der header"
 
 #: ../src/addins/CBinding/Compiler/GNUCompiler.cs:354
 #, fuzzy
-msgid "Generating binary \\\\\\\"{0}\\\\\\\" from object files"
+msgid "Generating binary \"{0}\" from object files"
 msgstr "Generiere Binary \\\\\\\\\"{0}\\\\\\\\\" aus den Objektdateien"
 
 #: ../src/addins/CBinding/Compiler/GNUCompiler.cs:374
@@ -10567,7 +10630,7 @@ msgstr "Generiere statische Bibliothek {0} aus den Objektdaten"
 
 #: ../src/addins/CBinding/Compiler/GNUCompiler.cs:413
 #, fuzzy
-msgid "Generating shared object \\\\\\\"{0}\\\\\\\" from object files"
+msgid "Generating shared object \"{0}\" from object files"
 msgstr ""
 "Generiere gemeinsam benutztes Objekt \\\\\\\\\"{0}\\\\\\\\\" aus den "
 "Objektdateien"
@@ -10774,22 +10837,20 @@ msgid "Microsoft Visual Studio color scheme."
 msgstr ""
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.GeneralOptionsPanel.cs:50
-#, fuzzy
 msgid "_Code completion"
-msgstr "Code-Vervollständigung aktivieren"
+msgstr "Co_de-Vervollständigung aktivieren"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.GeneralOptionsPanel.cs:62
 msgid "C_lass & Method quick finder"
-msgstr ""
+msgstr "_Klassen & Methoden Schnellfinder aktivieren"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.GeneralOptionsPanel.cs:74
 msgid "Code _folding"
-msgstr "_Gliederung aktivieren"
+msgstr "G_liederung aktivieren"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.GeneralOptionsPanel.cs:95
-#, fuzzy
 msgid "_Default monospace"
-msgstr "Standard Namespace:"
+msgstr "Vo_reingestellt (Gleichmässig)"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.GeneralOptionsPanel.cs:108
 msgid "_Custom"
@@ -10800,33 +10861,29 @@ msgid "<b>Font</b>"
 msgstr "<b>Schrift</b>"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.MarkerPanel.cs:60
-#, fuzzy
 msgid "_Show line numbers"
-msgstr "Zeige die Zeilennummern"
+msgstr "_Zeilennummern anzeigen"
 
+# 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.MarkerPanel.cs:72
 msgid "_Underline errors"
-msgstr "Fehler unterstreichen"
+msgstr "_Fehler unterstreichen"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.MarkerPanel.cs:84
-#, fuzzy
 msgid "_Highlight matching bracket"
-msgstr "Zusammengehörende Klammern hervorheben"
+msgstr "Z_usammengehörende Klammern hervorheben"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.MarkerPanel.cs:96
-#, fuzzy
 msgid "Highlight _current line"
-msgstr "Momentane Zeile hervorheben"
+msgstr "_Momentane Zeile hervorheben"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.MarkerPanel.cs:112
-#, fuzzy
 msgid "Show _column ruler, at column:"
-msgstr "Zeige das Spaltenlineal"
+msgstr "Ze_ige das Spaltenlineal, in Spalte:"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.MarkerPanel.cs:153
-#, fuzzy
 msgid "_Invalid lines"
-msgstr "Ungültiger Dateiname"
+msgstr "U_ngültige Zeilen"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.MarkerPanel.cs:165
 msgid "S_paces"
@@ -10837,42 +10894,36 @@ msgid "_Tabs"
 msgstr "_Tabulatoren"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.MarkerPanel.cs:189
-#, fuzzy
 msgid "_End of line"
-msgstr "Gehe zum Ende der Zeile"
+msgstr "Zeilenen_de"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.MarkerPanel.cs:201
 msgid "<b>Show Whitespaces</b>"
 msgstr "<b>Unsichtbare Zeichen anzeigen</b>"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:56
-#, fuzzy
 msgid "_Auto template insertion"
-msgstr "Automatisches Einfügen der Vorlagen"
+msgstr "A_utomatisches Einfügen der Vorlagen"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:68
-#, fuzzy
 msgid "A_uto insert matching brace"
-msgstr "A_utomatisch geschweifte Klammern einfügen"
+msgstr "Au_tomatisch Klammern einfügen"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:95
-#, fuzzy
 msgid "_Indentation:"
-msgstr "Einrückung"
+msgstr "_Einrückung:"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:122
-#, fuzzy
 msgid "_Tab and indentation size:"
-msgstr "Tab- und Einrückungsbreite"
+msgstr "Ta_b- und Einrückungsbreite"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:150
-#, fuzzy
 msgid "_Convert tabs to spaces"
-msgstr "K_onvertiere Tabulatoren in Leerzeichen"
+msgstr "Ko_nvertiere Tabulatoren in Leerzeichen"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:162
 msgid "<b>Tabs</b>"
-msgstr "<b>Reiter</b>"
+msgstr "<b>Tabulatoren</b>"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.HighlightingPanel.cs:72
 #, fuzzy
@@ -10890,9 +10941,8 @@ msgid "<b>Syntax highlighting</b>"
 msgstr "Syntax-Hervorhebung"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.HighlightingPanel.cs:172
-#, fuzzy
 msgid "<b>Color sheme</b>"
-msgstr "<b>Elemente</b>"
+msgstr "<b>Farbschema</b>"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/LanguageItemWindow.cs:44
 msgid "Parameter"
@@ -10932,9 +10982,8 @@ msgstr "Seite"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:1138
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:1167
-#, fuzzy
 msgid "Clipboard ring"
-msgstr "Programmieren"
+msgstr "Zwischenablagering"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:456
 msgid "This file has been changed outside of MonoDevelop"
@@ -10946,9 +10995,8 @@ msgstr "Ignorieren"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:1010
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:1026
-#, fuzzy
 msgid "Search pattern not found"
-msgstr "Suchbegriff nicht gefunden"
+msgstr "Ausdruck nicht gefunden"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:1012
 msgid "Reached bottom, continued from top"
@@ -10994,42 +11042,36 @@ msgstr "Ö_ffnen..."
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.SearchWidget.cs:65
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.SearchAndReplaceWidget.cs:284
 #: ../src/addins/MonoDevelop.AssemblyBrowser/gtk-gui/MonoDevelop.AssemblyBrowser.AssemblyBrowserWidget.cs:155
-#, fuzzy
 msgid "_Search:"
 msgstr "_Suchen"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.SearchWidget.cs:97
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.SearchAndReplaceWidget.cs:131
-#, fuzzy
 msgid "_Next"
-msgstr "_Nächster Tipp"
+msgstr "_Aufwärts"
 
+# b
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.SearchWidget.cs:124
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.SearchAndReplaceWidget.cs:158
-#, fuzzy
 msgid "_Previous"
-msgstr "Suche vorheriges"
+msgstr "Ab_wärts"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.SearchWidget.cs:151
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.SearchAndReplaceWidget.cs:185
-#, fuzzy
 msgid "_Options"
-msgstr "Optionen"
+msgstr "_Optionen"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.SearchAndReplaceWidget.cs:238
-#, fuzzy
 msgid "Replace _all"
 msgstr "All_e Ersetzen"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.SearchAndReplaceWidget.cs:259
-#, fuzzy
 msgid "as"
-msgstr "Tag"
+msgstr "als"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.SearchAndReplaceWidget.cs:295
-#, fuzzy
 msgid "R_eplace:"
-msgstr "Ersetzen:"
+msgstr "E_rsetzen:"
 
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:94
 msgid "Types"
@@ -11040,14 +11082,12 @@ msgid "Members"
 msgstr ""
 
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:103
-#, fuzzy
 msgid "Disassembler"
-msgstr "Deaktivieren"
+msgstr "Disassembler"
 
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:104
-#, fuzzy
 msgid "Decompiler"
-msgstr "Compiler"
+msgstr "Decompiler"
 
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyNodeBuilder.cs:81
 msgid "Assembly <b>{0}</b>, Version {1}"
@@ -11060,11 +11100,13 @@ msgstr "Kalender-Anwendung"
 
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyNodeBuilder.cs:107
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/DomTypeNodeBuilder.cs:110
-msgid "<b>Name:</b>\\t{0}"
+#, fuzzy
+msgid "<b>Name:</b>\t{0}"
 msgstr "<b>Name:</b>\\t{0}"
 
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyNodeBuilder.cs:110
-msgid "<b>Type:</b>\\t{0}"
+#, fuzzy
+msgid "<b>Type:</b>\t{0}"
 msgstr "<b>Typ</b>\\t{0}"
 
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/ModuleDefinitionNodeBuilder.cs:89
@@ -11072,11 +11114,12 @@ msgid "Module <b>{0}</b>"
 msgstr "Modul <b>{0}</b>"
 
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/ModuleDefinitionNodeBuilder.cs:101
-msgid "<b>Version:</b>\\t{0}"
+#, fuzzy
+msgid "<b>Version:</b>\t{0}"
 msgstr "<b>Version:</b>\\t{0}"
 
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/DomTypeNodeBuilder.cs:96
-msgid "<b>Assembly:</b>\\t{0}, Version={1}"
+msgid "<b>Assembly:</b>\t{0}, Version={1}"
 msgstr ""
 
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/DomTypeNodeBuilder.cs:152
@@ -11088,8 +11131,9 @@ msgid "Methods"
 msgstr "Methoden"
 
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/DomMethodNodeBuilder.cs:89
-msgid "<b>Declaring Type:</b>\\t{0}"
-msgstr ""
+#, fuzzy
+msgid "<b>Declaring Type:</b>\t{0}"
+msgstr "<b>Typ</b>\\t{0}"
 
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/DomMethodNodeBuilder.cs:117
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/DomMethodNodeBuilder.cs:139
@@ -11121,6 +11165,14 @@ msgstr "Typen"
 #: ../src/addins/MonoDevelop.AssemblyBrowser/gtk-gui/MonoDevelop.AssemblyBrowser.AssemblyBrowserWidget.cs:174
 msgid "_in:"
 msgstr "_in:"
+
+#, fuzzy
+#~ msgid "New\\nbutton"
+#~ msgstr "Neuer Button"
+
+#, fuzzy
+#~ msgid "Empty\\ntoolbar"
+#~ msgstr "Leere Werkzeugleiste"
 
 #~ msgid "C_omment Line(s)"
 #~ msgstr "_Zeile(n) in Kommentar umwandeln"
