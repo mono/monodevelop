@@ -327,7 +327,7 @@ namespace MonoDevelop.Ide.Gui
 		{
 			// Build navigation point for current document.
 			if (ActiveDocument != null) {
-				IEditableTextBuffer textBuffer = (IEditableTextBuffer) ActiveDocument.GetContent (typeof(IPositionable));
+				IEditableTextBuffer textBuffer = ActiveDocument.GetContent (typeof(IEditableTextBuffer)) as IEditableTextBuffer;
 				if (textBuffer != null) {
 					NavigationService.Log (NavigationService.BuildNavPoint (textBuffer));
 				} else {

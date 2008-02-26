@@ -1,3 +1,8 @@
+2008-02-27  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Ide.Gui/Workbench.cs: Fixed a bug (I accidentally broke some
+	  view bindings like the assembly browser). 
+
 2008-02-26  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Ide.Gui/DefaultWorkbench.cs: fixed tab broken bug.
