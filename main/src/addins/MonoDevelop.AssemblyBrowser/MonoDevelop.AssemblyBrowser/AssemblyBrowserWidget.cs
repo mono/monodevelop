@@ -159,7 +159,6 @@ namespace MonoDevelop.AssemblyBrowser
 			}
 			if (nav.DataItem is Namespace) {
 				if (!(typeName+fullName).StartsWith (((Namespace)nav.DataItem).Name)) {
-					System.Console.WriteLine("Skip " + ((Namespace)nav.DataItem).Name + " search for:" + (typeName+fullName));
 					return null;
 				}
 			}
@@ -186,20 +185,20 @@ namespace MonoDevelop.AssemblyBrowser
 			TreeViewColumn col;
 			if (searchMember) {
 				col = searchTreeview.AppendColumn (null, new Gtk.CellRendererPixbuf (), "pixbuf", 0);
-				col = searchTreeview.AppendColumn ("Member", new Gtk.CellRendererText (), "text", 1);
+				col = searchTreeview.AppendColumn (GettextCatalog.GetString ("Member"), new Gtk.CellRendererText (), "text", 1);
 				col.Resizable = true;
-				col = searchTreeview.AppendColumn ("Declaring Type", new Gtk.CellRendererText (), "text", 2);
+				col = searchTreeview.AppendColumn (GettextCatalog.GetString ("Declaring Type"), new Gtk.CellRendererText (), "text", 2);
 				col.Resizable = true;
-				col = searchTreeview.AppendColumn ("Assembly", new Gtk.CellRendererText (), "text", 3);
+				col = searchTreeview.AppendColumn (GettextCatalog.GetString ("Assembly"), new Gtk.CellRendererText (), "text", 3);
 				col.Resizable = true;
 				searchTreeview.Model = memberListStore;
 			} else {
 				col = searchTreeview.AppendColumn (null, new Gtk.CellRendererPixbuf (), "pixbuf", 0);
-				col = searchTreeview.AppendColumn ("Type", new Gtk.CellRendererText (), "text", 1);
+				col = searchTreeview.AppendColumn (GettextCatalog.GetString ("Type"), new Gtk.CellRendererText (), "text", 1);
 				col.Resizable = true;
-				col = searchTreeview.AppendColumn ("Namespace", new Gtk.CellRendererText (), "text", 2);
+				col = searchTreeview.AppendColumn (GettextCatalog.GetString ("Namespace"), new Gtk.CellRendererText (), "text", 2);
 				col.Resizable = true;
-				col = searchTreeview.AppendColumn ("Assembly", new Gtk.CellRendererText (), "text", 3);
+				col = searchTreeview.AppendColumn (GettextCatalog.GetString ("Assembly"), new Gtk.CellRendererText (), "text", 3);
 				col.Resizable = true;
 				searchTreeview.Model = typeListStore;
 			}
@@ -311,7 +310,6 @@ namespace MonoDevelop.AssemblyBrowser
 			this.searchWidget.Visible = true;
 			this.notebook1.Page = 2;
 			this.searchEntry.GrabFocus ();
-			
 		}
 	}
 }

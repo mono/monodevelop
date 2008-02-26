@@ -1,3 +1,8 @@
+2008-02-26  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs: added some gettext
+	  calls.
+
 2008-02-25  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.AssemblyBrowser.Dom/DomCecilCompilationUnit.cs,
