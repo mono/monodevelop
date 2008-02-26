@@ -650,8 +650,8 @@ namespace MonoDevelop.Ide.Gui
 					} else {
 						IdeApp.CommandService.DispatchCommand (MonoDevelop.Ide.Commands.WindowCommands.NextWindow);
 					}
+					return true;
 				}
-				return true;
 			}
 			return base.OnKeyPressEvent (evnt); 
 		}
