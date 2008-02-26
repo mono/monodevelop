@@ -61,8 +61,11 @@ namespace MonoDevelop.Gettext
 				AddTextview (0);
 				this.GetTextView (0).Buffer.Changed += delegate {
 					TreeIter iter = SelectedIter;
-					if (treeviewEntries.Selection.IterIsSelected (iter))
-						return store.SetValue (iter, (int)Columns.Translation, StringEscaping.ToGettextFormat (this.SelectedEntry.GetTranslation (0)));
+					if (treeviewEntries.Selection.IterIsSelected (iter)) {
+						store.SetValue (iter, (int)Columns.Stock, GetStockForEntry (SelectedEntry));
+						store.SetValue (iter, (int)Columns.Translation, StringEscaping.ToGettextFormat (this.SelectedEntry.GetTranslation (0)));
+						store.SetValue (iter, (int)Columns.RowColor, GetRowColorForEntry (SelectedEntry));
+					}
 				};
 				UpdateFromCatalog ();
 				UpdateProgressBar ();
