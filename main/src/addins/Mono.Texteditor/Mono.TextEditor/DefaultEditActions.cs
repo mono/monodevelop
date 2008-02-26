@@ -689,9 +689,7 @@ namespace Mono.TextEditor
 				data.DeleteSelectedText ();
 			}
 			data.Document.Insert (data.Caret.Offset, data.Document.EolMarker);
-			data.Document.CommitLineToEndUpdate (data.Caret.Line);
 			data.Caret.Column = 0;
-			
 			data.Caret.Line++;
 			data.Document.EndAtomicUndo ();
 		}
@@ -718,7 +716,6 @@ namespace Mono.TextEditor
 				LineSegment lineAbove = data.Document.GetLine (data.Caret.Line - 1);
 				data.Caret.Location = new DocumentLocation (data.Caret.Line - 1, lineAbove.EditableLength);
 				data.Document.Remove (lineAbove.EndOffset - lineAbove.DelimiterLength, lineAbove.DelimiterLength);
-				data.Document.CommitLineToEndUpdate (data.Caret.Line);
 			} else {
 				RemoveCharBeforCaret (data);
 			}
@@ -742,7 +739,6 @@ namespace Mono.TextEditor
 					if (line.EndOffset == data.Document.Length)
 						line.DelimiterLength = 0;
 				}
-				data.Document.CommitLineToEndUpdate (data.Caret.Line);
 			} else {
 				data.Document.Remove (data.Caret.Offset, 1); 
 				data.Document.CommitLineUpdate (data.Caret.Line);
@@ -1007,8 +1003,6 @@ namespace Mono.TextEditor
 				int oldLine = data.Caret.Line;
 				data.Caret.Offset += sb.Length;
 				data.Document.EndAtomicUndo ();
-				data.Document.RequestUpdate (oldLine != data.Caret.Line ? (DocumentUpdateRequest)new LineToEndUpdate (oldLine) : (DocumentUpdateRequest)new LineUpdate (oldLine));
-				data.Document.CommitDocumentUpdate ();
 			}
 		}
 		public static void PasteFromPrimary (TextEditorData data)

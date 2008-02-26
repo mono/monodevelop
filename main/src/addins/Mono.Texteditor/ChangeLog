@@ -1,3 +1,9 @@
+2008-02-27  Mike Krüger <mkrueger@novell.com> 
+
+	* Mono.TextEditor/DefaultEditActions.cs, Mono.TextEditor/Document.cs: Editor
+	  now updates automatically when inserting/removing lines. (internal
+	  change, does NOT affect users)
+
 2008-02-26  Mike Krüger <mkrueger@novell.com> 
 
 	* Mono.TextEditor/TextViewMargin.cs: Fixed possible exception in

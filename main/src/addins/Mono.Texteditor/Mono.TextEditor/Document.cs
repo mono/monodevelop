@@ -133,7 +133,7 @@ namespace Mono.TextEditor
 		{
 //			Debug.Assert (count >= 0);
 //			Debug.Assert (0 <= offset && offset + count <= Length);
-			
+			int oldLineCount = this.LineCount;
 			ReplaceEventArgs args = new ReplaceEventArgs (offset, count, value);
 			OnTextReplacing (args);
 			if (!isInUndo) {
@@ -157,6 +157,8 @@ namespace Mono.TextEditor
 			
 			if (this.syntaxMode != null)
 				Mono.TextEditor.Highlighting.SyntaxModeService.StartUpdate (this, this.syntaxMode, offset, offset + count);
+			if (oldLineCount != LineCount)
+				this.CommitLineToEndUpdate (this.OffsetToLocation (offset).Line);
 		}
 		
 		public string GetTextBetween (int startOffset, int endOffset)
