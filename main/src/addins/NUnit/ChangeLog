@@ -1,3 +1,12 @@
+2008-02-26  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelopNUnit.addin.xml, Services/NUnitService.cs: Put back the
+	  old results pad.
+	* Gui/TestResultsPad.cs: When double clicking a test, jump to the exact
+	  line that failed. When selecting a test, scroll the output view so
+	  it shows the test's output.
+	* Gui/TestPad.cs: Use a toolbar without labels.
+
 2008-02-23  Mike Krüger <mkrueger@novell.com> 
 
 	* Services/TestProgressMonitor.cs: Added tests finished message.

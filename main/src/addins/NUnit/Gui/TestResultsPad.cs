@@ -1,4 +1,3 @@
-/*
 //
 // TestResultsPad.cs
 //
@@ -29,7 +28,9 @@
 
 using System;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Collections;
+using System.Collections.Generic;
 using System.Threading;
 using Gtk;
 using Gdk;
@@ -63,6 +64,8 @@ namespace MonoDevelop.NUnit
 		TreeView failuresTreeView;
 		TreeStore failuresStore;
 		TextView outputView;
+		TextTag bold;
+		Dictionary<UnitTest,int> outIters = new Dictionary<UnitTest,int> ();
 		Widget outputViewScrolled;
 		VSeparator infoSep;
 		
@@ -179,6 +182,9 @@ namespace MonoDevelop.NUnit
 			
 			outputView = new TextView();
 			outputView.Editable = false;
+			bold = new TextTag ("bold");
+			bold.Weight = Pango.Weight.Bold;
+			outputView.Buffer.TagTable.Add (bold);
 			sw = new Gtk.ScrolledWindow ();
 			sw.Add(outputView);
 			frame = new Frame ();
@@ -217,6 +223,8 @@ namespace MonoDevelop.NUnit
 			buttonStop.Clicked += new EventHandler (OnStopClicked);
 			buttonRun.Clicked += new EventHandler (OnRunClicked);
 			failuresTreeView.ButtonReleaseEvent += new Gtk.ButtonReleaseEventHandler (OnPopupMenu);
+			failuresTreeView.RowActivated += OnRowActivated;
+			failuresTreeView.Selection.Changed += OnRowSelected;
 			
 			Control.ShowAll ();
 			
@@ -237,6 +245,7 @@ namespace MonoDevelop.NUnit
 			results.Clear ();
 			failuresStore.Clear ();
 			outputView.Buffer.Clear ();
+			outIters.Clear ();
 			progressBar.Fraction = 0;
 			progressBar.Text = "";
 			testsRun = 0;
@@ -297,6 +306,7 @@ namespace MonoDevelop.NUnit
 			
 			failuresStore.Clear ();
 			outputView.Buffer.Clear ();
+			outIters.Clear ();
 			cancel = false;
 			Running = true;
 			
@@ -373,11 +383,31 @@ namespace MonoDevelop.NUnit
 				IdeApp.CommandService.ShowContextMenu ("/MonoDevelop/NUnit/ContextMenu/TestResultsPad");
 			}
 		}
+
+		void OnRowActivated (object s, EventArgs a)
+		{
+			OnShowTest ();
+		}
+		
+		void OnRowSelected (object s, EventArgs a)
+		{
+			UnitTest test = GetSelectedTest ();
+			if (test != null) {
+				int offset;
+				if (outIters.TryGetValue (test, out offset)) {
+					TextIter it = outputView.Buffer.GetIterAtOffset (offset);
+					outputView.Buffer.MoveMark (outputView.Buffer.InsertMark, it);
+					outputView.Buffer.MoveMark (outputView.Buffer.SelectionBound, it);
+					outputView.ScrollToMark (outputView.Buffer.InsertMark, 0.0, true, 0.0, 0.0);
+				}
+			}
+		}
 		
 		[CommandHandler (TestCommands.SelectTestInTree)]
 		protected void OnSelectTestInTree ()
 		{
 			Pad pad = IdeApp.Workbench.GetPad<TestPad> ();
+			pad.BringToFront ();
 			TestPad content = (TestPad) pad.Content;
 			content.SelectTest (GetSelectedTest ());
 		}
@@ -395,7 +425,9 @@ namespace MonoDevelop.NUnit
 			UnitTest test = GetSelectedTest ();
 			if (test == null)
 				return;
-			SourceCodeLocation loc = test.SourceCodeLocation;
+			UnitTestResult res = test.GetLastResult ();
+			string stack = res != null ? res.StackTrace : null;
+			SourceCodeLocation loc = GetSourceCodeLocation (test, stack);
 			if (loc != null)
 				IdeApp.Workbench.OpenDocument (loc.FileName, loc.Line, loc.Column, true);
 		}
@@ -405,6 +437,22 @@ namespace MonoDevelop.NUnit
 		{
 			UnitTest test = GetSelectedTest ();
 			info.Enabled = test != null && test.SourceCodeLocation != null;
+		}
+		
+		SourceCodeLocation GetSourceCodeLocation (UnitTest test, string stackTrace)
+		{
+			if (!String.IsNullOrEmpty (stackTrace)) {
+				Match match = Regex.Match (stackTrace, @"\sin\s(.*?):(\d+)", RegexOptions.Multiline);
+				while (match.Success) {
+					try	{
+						int line = Int32.Parse (match.Groups[2].Value);
+						return new SourceCodeLocation (match.Groups[1].Value, line, 1);
+					} catch (Exception) {
+					}
+					match = match.NextMatch ();
+				}
+			}
+			return test.SourceCodeLocation;
 		}
 		
 		UnitTest GetSelectedTest ()
@@ -442,6 +490,7 @@ namespace MonoDevelop.NUnit
 		{
 			failuresStore.Clear ();
 			outputView.Buffer.Clear ();
+			outIters.Clear ();
 			AddStartMessage ();
 				
 			foreach (ResultRecord res in results) {
@@ -483,6 +532,11 @@ namespace MonoDevelop.NUnit
 					failuresStore.AppendValues (testRow, null, Escape (result.Message), test);
 				failuresTreeView.ScrollToCell (failuresStore.GetPath (testRow), null, false, 0, 0);
 			}
+			
+			string msg = GettextCatalog.GetString ("Running {0} ...", test.FullName);
+			TextIter it = outputView.Buffer.GetIterAtMark (outputView.Buffer.InsertMark);
+			outIters [test] = it.Offset;
+			outputView.Buffer.InsertWithTags (ref it, msg + "\n", bold);
 			if (result.ConsoleOutput != null)
 				outputView.Buffer.InsertAtCursor (result.ConsoleOutput);
 			if (result.ConsoleError != null)
@@ -580,4 +634,4 @@ namespace MonoDevelop.NUnit
 		}
 	}
 }
-*/
+

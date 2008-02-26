@@ -86,6 +86,7 @@ namespace MonoDevelop.NUnit
 			VBox vbox = new VBox ();
 			Toolbar topToolbar = new Toolbar ();
 			topToolbar.IconSize = IconSize.Menu;
+			topToolbar.ToolbarStyle = ToolbarStyle.Icons;
 			vbox.PackStart (topToolbar, false, false, 0);
 			
 			Gdk.Pixbuf pixbuf  = Gtk.IconTheme.Default.LoadIcon (Gtk.Stock.GoUp, 16, (Gtk.IconLookupFlags) 0);
