@@ -6,12 +6,12 @@ msgstr ""
 "X-Poedit-Bookmarks: -1,1681,-1,-1,-1,-1,-1,-1,-1,-1\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2008-02-26 15:48:59+0100\n"
+"PO-Revision-Date: 2008-02-26 16:30:29+0100\n"
 "Language-Team: \n"
 "Project-Id-Version: Monodevelop\n"
 "MIME-Version: 1.0\n"
 "X-Generator: MonoDevelop Gettext addin\n"
-"POT-Creation-Date: 2008-02-26 14:23:23+0100\n"
+"POT-Creation-Date: 2008-02-26 16:22:44+0100\n"
 "Last-Translator: Mike Krüger <mkrueger@novell.com>\n"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Core/ServiceManager.cs:120
@@ -58,15 +58,14 @@ msgstr "FEHLER BEHEBEN"
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Core.Logging/ConsoleLogger.cs:79
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Core.Logging/FileLogger.cs:72
 msgid "LOG"
-msgstr "MITSCHNEIDEN"
+msgstr "PROTOKOLL"
 
 #: ../src/core/MonoDevelop.Core.Gui/Base.glade:10
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:352
 #: ../src/addins/MonoDevelop.GtkCore/gui.glade:488
 #: ../src/addins/MonoDevelop.Autotools/MakefileGeneratorTool.cs:130
 #: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWindow.cs:152
 msgid "Options"
-msgstr "Optionen"
+msgstr "Einstellungen"
 
 #: ../src/core/MonoDevelop.Core.Gui/Base.glade:88
 msgid "Cat_egories:"
@@ -742,7 +741,7 @@ msgid "OVR"
 msgstr "ÜBS"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/StatusProgressMonitor.cs:137
-#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:254
+#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:264
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:1014
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:1030
 msgid "Ready"
@@ -1985,6 +1984,12 @@ msgstr "Vorhandene Projektmappe hinzufügen"
 msgid "_Remove From Project"
 msgstr "Entfe_rne von Projekt"
 
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:352
+#: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.SearchWidget.cs:151
+#: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.SearchAndReplaceWidget.cs:185
+msgid "_Options"
+msgstr "_Einstellungen"
+
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:360
 msgid "Edit References..."
 msgstr "Referenzen bearbeiten..."
@@ -2151,7 +2156,7 @@ msgstr "S_peichern unter..."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:518
 msgid "_Print..."
-msgstr "Drucken..."
+msgstr "_Drucken..."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:519
 msgid "Print current document"
@@ -2159,7 +2164,7 @@ msgstr "Momentanes Dokument drucken"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:523
 msgid "Print Previe_w"
-msgstr "Druckvorschau"
+msgstr "Druck_vorschau"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:530
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1295
@@ -2180,7 +2185,7 @@ msgstr "Liste der zuletzt geöffneten Projekte löschen"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:545
 msgid "_Quit"
-msgstr "Beenden"
+msgstr "_Beenden"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:550
 msgid "_Open in Terminal"
@@ -2264,7 +2269,7 @@ msgstr "Zeige Optionsliste"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:607
 msgid "Reset Options"
-msgstr "Optionen zurücksetzen"
+msgstr "Einstellungen zurücksetzen"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:609
 msgid "Refresh"
@@ -2568,11 +2573,11 @@ msgstr "Gehe zu passender Klammer"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:883
 msgid "Expand selection to the left"
-msgstr ""
+msgstr "Auswahl nach links erweitern"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:885
 msgid "Expand selection to the right"
-msgstr ""
+msgstr "Auswahl nach rechts erweitern"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:887
 msgid "Go to previous word"
@@ -2591,36 +2596,32 @@ msgid "Select next word"
 msgstr "Nächstes Wort auswählen"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:895
-#, fuzzy
 msgid "Expand selection to previous line"
-msgstr "Gehe zu vorheriger Zeile"
+msgstr "Auswahl zur vorheriger Zeile ausweiten"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:897
-#, fuzzy
 msgid "Expand selection to next line"
-msgstr "Gehe zur nächsten Zeile"
+msgstr "Auswahl zur nächsten Zeile ausweiten"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:899
-#, fuzzy
 msgid "Expand selection to line start"
-msgstr "Auswahl in Zwischenablage kopieren"
+msgstr "Auswahl zum Zeilenanfang ausweiten"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:901
-#, fuzzy
 msgid "Expand selection to line end"
-msgstr "Auswahl in Zwischenablage kopieren"
+msgstr "Auswahl zum Zeilenende ausweiten"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:903
 msgid "Expand selection to document start"
-msgstr ""
+msgstr "Auswahl zum Dokumentanfang erweitern"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:905
 msgid "Expand selection to document end"
-msgstr ""
+msgstr "Auswahl zum Dokumentende erweitern"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:907
 msgid "Switch caret mode"
-msgstr ""
+msgstr "Caretmodus umschalten"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:910
 msgid "Insert tab"
@@ -2636,22 +2637,19 @@ msgstr "Neue Zeile einfügen"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:916
 msgid "Delete previous word"
-msgstr ""
+msgstr "Vorheriges Wort löschen"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:918
-#, fuzzy
 msgid "Delete next word"
-msgstr "Auswahl löschen"
+msgstr "Nächstes Wort löschen"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:920
-#, fuzzy
 msgid "Expand selection to page down"
-msgstr "Auswahl in Zwischenablage kopieren"
+msgstr "Auswahl zu nächsten Seite erweitern."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:922
-#, fuzzy
 msgid "Expand selection to page up"
-msgstr "Auswahl in Zwischenablage kopieren"
+msgstr "Auswahl zur vorherigen Seite erweitern."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:929
 msgid "GNU/Emacs"
@@ -2702,7 +2700,7 @@ msgstr "Fehler"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1097
 msgid "Message Log"
-msgstr "Nachtichten Log"
+msgstr "Nachtichtenprotokoll"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1098
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1183
@@ -3205,7 +3203,7 @@ msgid ""
 msgstr ""
 "<small>Diese Liste zeigt eine Reihe von Funktionen die sie in diesem Projekt "
 "aktivieren können. Nach dem erstellen eines Projekts können sie die "
-"Funktionen in den Projektoptionen einstellen </small>"
+"Funktionen in den Projekteinstellungen ändern.</small>"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.FeatureSelectorDialog.cs:29
 msgid "New Project Features"
@@ -3441,7 +3439,7 @@ msgstr "Zeige das Aufgabenliste-Feld, wenn die Erzeugung fehlschlug"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.BuildPanelWidget.cs:71
 msgid "<b>File Save Options</b>"
-msgstr "<b>Datei-Speicher-Optionen</b>"
+msgstr "<b>Datei-Speicher-Einstellungen</b>"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.BuildPanelWidget.cs:99
 msgid "_Save changes to open documents"
@@ -3748,7 +3746,7 @@ msgstr "_Gehe zu Zeile"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/MonoDevelopTreeView.cs:1205
 msgid "Display Options"
-msgstr "Ansichts Optionen"
+msgstr "Ansichts Einstellungen"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:63
 msgid "Item Path"
@@ -4000,25 +3998,26 @@ msgstr "Erzeuge Satelliten-Assembly für '{0}' Kultur mit {1}"
 
 #: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/DotNetProject.cs:493
 #: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/DotNetProject.cs:495
-#, fuzzy
 msgid ""
 "Error while trying to invoke '{0}' to generate satellite assembly for '{1}' "
 "culture:\n"
 " {2}"
 msgstr ""
 "Fehler beim Versuch '{0}' einzubinden um einen Satelliten-Assembly zu "
-"erzeugen für '{1}' Kultur:\\n {2}"
+"erzeugen für '{1}' Sprache:\n"
+" {2}"
 
 #: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/DotNetProject.cs:506
 #: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/DotNetProject.cs:509
-#, fuzzy
 msgid ""
 "Unable to generate satellite assemblies for '{0}' culture with {1}.\n"
 "Reason: \n"
 "{2}\n"
 msgstr ""
-"Nicht dazu in der Lage Satelliten-Assembly für '{0}' Kultur mit {1} zu "
-"erzeugen.\\nGrund: \\n{2}\\n\n"
+"Nicht dazu in der Lage Satelliten-Assembly für '{0}' Sprache mit {1} zu "
+"erzeugen.\n"
+"Grund: \n"
+"{2}\n"
 
 #: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/DotNetProject.cs:649
 msgid "Removing all .resources files"
@@ -4575,7 +4574,7 @@ msgstr "Automatisch die gefundenen Dateien einbinden"
 
 #: ../src/addins/NUnit/nunit.glade:7
 msgid "NUnit Options"
-msgstr "NUnit Optionen"
+msgstr "NUnit Einstellungen"
 
 #: ../src/addins/NUnit/nunit.glade:29
 msgid "Use parent test settings"
@@ -4682,7 +4681,7 @@ msgstr "Kategorie"
 
 #: ../src/addins/NUnit/Gui/UnitTestOptionsDialog.cs:50
 msgid "Unit Test Options"
-msgstr "Unit Test-Optionen"
+msgstr "Unit Test-Einstellungen"
 
 #: ../src/addins/NUnit/Services/NUnitOptions.cs:79
 msgid "Exclude the following categories: "
@@ -4912,7 +4911,7 @@ msgstr "_Zurücksetzen"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:83
 msgid "Log"
-msgstr "Zeige _Log"
+msgstr "Zeige Ä_nderungsprotokoll"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:87
 msgid "Status/Commit..."
@@ -5725,11 +5724,12 @@ msgid "New button"
 msgstr "Neuer Button"
 
 #: ../src/addins/MonoDevelop.GtkCore/lib/stetic/libstetic/editor/ActionToolbar.cs:98
-#, fuzzy
 msgid ""
 "Empty\n"
 "toolbar"
-msgstr "Leere Werkzeugleiste"
+msgstr ""
+"Leere\n"
+"Werkzeugleiste"
 
 #: ../src/addins/MonoDevelop.GtkCore/lib/stetic/libstetic/editor/ActionToolbar.cs:100
 msgid "Empty toolbar"
@@ -6087,23 +6087,24 @@ msgstr "Generiere partielle Klassen für {0} mit {1}"
 
 #: ../src/addins/prj2make-sharp-lib/MSBuildProjectServiceExtension.cs:101
 #: ../src/addins/prj2make-sharp-lib/MSBuildProjectServiceExtension.cs:103
-#, fuzzy
 msgid ""
 "Error while trying to invoke '{0}' to generate partial classes for '{1}' :\n"
 " {2}"
 msgstr ""
 "Fehler beim Versuch '{0}' einzubinden um partielle Klassen zu generieren für "
-"'{1}' :\\n {2}"
+"'{1}' :\n"
+" {2}"
 
 #: ../src/addins/prj2make-sharp-lib/MSBuildProjectServiceExtension.cs:115
 #: ../src/addins/prj2make-sharp-lib/MSBuildProjectServiceExtension.cs:118
-#, fuzzy
 msgid ""
 "Unable to generate partial classes ({0}) for {1}. \n"
 "Reason: \n"
 "{2}\n"
 msgstr ""
-"Kann keine partiellen Klassen ({0}) für {1} generieren. \\nGrund: \\n{2}\\n\n"
+"Kann keine partiellen Klassen ({0}) für {1} generieren.\n"
+"Grund: \n"
+"{2}\n"
 
 #: ../src/addins/prj2make-sharp-lib/MSBuildProjectServiceExtension.cs:164
 msgid "Language '{0}' not supported for building resource ids."
@@ -6299,12 +6300,12 @@ msgstr "VB.NET-Dateien"
 
 #: ../src/addins/VBNetBinding/VBNetBinding.addin.xml:47
 msgid "Output Options"
-msgstr "Ausgabeoptionen"
+msgstr "Ausgabeeinstellungen"
 
 #: ../src/addins/VBNetBinding/VBNetBinding.addin.xml:54
 #: ../src/addins/CSharpBinding/CSharpBinding.addin.xml:77
 msgid "Runtime Options"
-msgstr "Laufzeit-Optionen"
+msgstr "Laufzeit-Einstellungen"
 
 #: ../src/addins/VBNetBinding/templates/AssemblyInfo.xft.xml:8
 #: ../src/addins/CSharpBinding/templates/AssemblyInfo.xft.xml:8
@@ -6345,7 +6346,7 @@ msgstr "Modul"
 #: ../src/addins/AspNetAddIn/gtk-gui/MonoDevelop.AspNet.Deployment.WebDeployTargetEditor.cs:62
 #: ../src/addins/CSharpBinding/gtk-gui/CSharpBinding.CodeGenerationPanelWidget.cs:87
 msgid "<b>General Options</b>"
-msgstr "<b>Allgemeine Optionen</b>"
+msgstr "<b>Allgemeine Einstellungen</b>"
 
 #: ../src/addins/VBNetBinding/gtk-gui/MonoDevelop.VBNetBinding.CodeGenerationPanelWidget.cs:135
 #: ../src/addins/CSharpBinding/gtk-gui/CSharpBinding.CompilerOptionsPanelWidget.cs:181
@@ -6380,7 +6381,7 @@ msgstr "Behandle Warnungen als Fehler"
 #: ../src/addins/VBNetBinding/gtk-gui/MonoDevelop.VBNetBinding.CodeGenerationPanelWidget.cs:285
 #: ../src/addins/CSharpBinding/gtk-gui/CSharpBinding.CodeGenerationPanelWidget.cs:311
 msgid "<b>Additional Options</b>"
-msgstr "<b>Zusätzliche Optionen</b>"
+msgstr "<b>Zusätzliche Einstellungen</b>"
 
 #: ../src/addins/VBNetBinding/gtk-gui/MonoDevelop.VBNetBinding.CodeGenerationPanelWidget.cs:315
 #: ../src/addins/CSharpBinding/gtk-gui/CSharpBinding.CodeGenerationPanelWidget.cs:115
@@ -6404,24 +6405,24 @@ msgstr "Zusätzliche Argumente:"
 
 #: ../src/addins/ChangeLogAddIn/ChangeLogAddIn.addin.xml:30
 msgid "Insert ChangeLog Entry"
-msgstr "Füge einen Veränderungsprotokoll-Eintrag hinzu"
+msgstr "Füge einen Änderungsprotokoll-Eintrag hinzu"
 
 #: ../src/addins/ChangeLogAddIn/ChangeLogAddIn.addin.xml:38
 msgid "ChangeLog Add-in"
-msgstr "Veränderungsprotokoll-Erweiterung"
+msgstr "Änderungsprotokoll-Erweiterung"
 
 #: ../src/addins/ChangeLogAddIn/ChangeLogAddIn.addin.xml:47
 #: ../src/addins/ChangeLogAddIn/ChangeLogAddIn.addin.xml:51
 msgid "ChangeLog Integration"
-msgstr "ChangeLog-Integration"
+msgstr "Änderungsprotokoll-Integration"
 
 #: ../src/addins/ChangeLogAddIn/CommitDialogExtensionWidget.cs:59
 msgid "View ChangeLog..."
-msgstr "Zeige Veränderungprotokoll"
+msgstr "Zeige Änderungprotokoll..."
 
 #: ../src/addins/ChangeLogAddIn/CommitDialogExtensionWidget.cs:62
 msgid "Options..."
-msgstr "Optionen..."
+msgstr "Einstellungen..."
 
 #: ../src/addins/ChangeLogAddIn/CommitDialogExtensionWidget.cs:104
 msgid "ChangeLog entries can't be generated."
@@ -6492,7 +6493,6 @@ msgstr ""
 "Die Änderungsprotokoll-Datei existiert nicht und wird <b>nicht</b> erstellt."
 
 #: ../src/addins/ChangeLogAddIn/gtk-gui/MonoDevelop.ChangeLogAddIn.AddLogEntryDialog.cs:238
-#, fuzzy
 msgid ""
 "To change the ChangeLog creation and update policies, open the options dialog "
 "of the project or solution and click on the 'ChangeLog Integration\" "
@@ -6529,74 +6529,71 @@ msgid "radiobutton2"
 msgstr "Auswahlfeld2"
 
 #: ../src/addins/ChangeLogAddIn/gtk-gui/MonoDevelop.ChangeLogAddIn.ProjectOptionPanelWidget.cs:69
-#, fuzzy
 msgid ""
 "<b>Use parent solution policy</b>\n"
 "Apply the policy specified in the parent solution."
 msgstr ""
-"<b>Benutze übergeordnete Projektmappenrichtlinien</b>\\nWende die Richtlinien "
-"die in der übergeordneten Lösung sind an."
+"<b>Benutze übergeordnete Projektmappenrichtlinien</b>\n"
+"Wende die Richtlinien die in der übergeordneten Lösung sind an."
 
 #: ../src/addins/ChangeLogAddIn/gtk-gui/MonoDevelop.ChangeLogAddIn.ProjectOptionPanelWidget.cs:78
 msgid "radiobutton1"
 msgstr "Auswahlfeld1"
 
 #: ../src/addins/ChangeLogAddIn/gtk-gui/MonoDevelop.ChangeLogAddIn.ProjectOptionPanelWidget.cs:88
-#, fuzzy
 msgid ""
 "<b>Disable ChangeLog support</b>\n"
 "No ChangeLog entries will be generated for this project."
 msgstr ""
-"<b>Deaktiviere Änderungsprotokollunterstützung</b>\\nEs werden keine "
-"Änderungsprotokolleinträge für dieses Projekt erstellt."
+"<b>Deaktiviere Änderungsprotokollunterstützung</b>\n"
+"Es werden keine Änderungsprotokolleinträge für dieses Projekt erstellt."
 
 #: ../src/addins/ChangeLogAddIn/gtk-gui/MonoDevelop.ChangeLogAddIn.ProjectOptionPanelWidget.cs:97
 msgid "Custom policy"
 msgstr "Benutzerdefinierte Vereinbarung"
 
 #: ../src/addins/ChangeLogAddIn/gtk-gui/MonoDevelop.ChangeLogAddIn.ProjectOptionPanelWidget.cs:108
-#, fuzzy
 msgid ""
 "<b>Update nearest ChangeLog</b>\n"
 "The nearest ChangeLog file in the directory hierarchy will be updated (below "
 "the commit directory). If none is found, a warning message will be shown. "
 "ChangeLog files will never be automatically created."
 msgstr ""
-"<b>Aktualisiere nächstes Änderungsprotokoll</b>\\nDie nächste "
-"Änderungsprotokolldatei in der Verzeichnisebene wird erneuert (unter dem Commit-Verzeichnis "
-"). Wenn keine gefunden wird, wird einen Warnmeldung angezeigt. "
-"Änderungsprotokolldateien werden niemals automatisch erstellt."
+"<b>Aktualisiere nächstes Änderungsprotokoll</b>\n"
+"Die nächste Änderungsprotokolldatei in der Verzeichnisebene wird erneuert "
+"(unter dem Commit-Verzeichnis ). Wenn keine gefunden wird, wird einen "
+"Warnmeldung angezeigt. Änderungsprotokolldateien werden niemals automatisch erstellt."
 
 #: ../src/addins/ChangeLogAddIn/gtk-gui/MonoDevelop.ChangeLogAddIn.ProjectOptionPanelWidget.cs:118
 msgid "One ChangeLog in the project root directory"
 msgstr "Ein Änderungsprotokoll im Wurzelverzeichnis des Projekts"
 
 #: ../src/addins/ChangeLogAddIn/gtk-gui/MonoDevelop.ChangeLogAddIn.ProjectOptionPanelWidget.cs:129
-#, fuzzy
 msgid ""
 "<b>Single project ChangeLog</b>\n"
 "All changes done in the project files will be logged in a single ChangeLog "
 "file, located at the project root directory. The ChangeLog file will be "
 "created if it doesn't exist."
 msgstr ""
-"<b>Einzelnes Projekt Änderungsprotokoll</b>\\nAlle Änderungen in diesem "
-"Projekt werden in einer einzelnen Datei protokolliert, die in dem "
-"Wurzelverzeichnis des Projekts liegt. Die Datei wird erstellt wenn sie noch nicht existiert"
+"<b>Einzelnes Projekt Änderungsprotokoll</b>\n"
+"Alle Änderungen in diesem Projekt werden in einer einzelnen Datei "
+"protokolliert, die in dem Wurzelverzeichnis des Projekts liegt. Die Datei wird erstellt "
+"wenn sie noch nicht existiert"
 
 #: ../src/addins/ChangeLogAddIn/gtk-gui/MonoDevelop.ChangeLogAddIn.ProjectOptionPanelWidget.cs:139
 msgid "One ChangeLog in each directory"
 msgstr "Ein Änderungsprotokoll in jedem Verzeichnis"
 
 #: ../src/addins/ChangeLogAddIn/gtk-gui/MonoDevelop.ChangeLogAddIn.ProjectOptionPanelWidget.cs:150
-#, fuzzy
 msgid ""
 "<b>One ChangeLog in each directory</b>\n"
 "File changes will be logged in a ChangeLog located at the file's directory. "
 "The ChangeLog file will be created if it doesn't exist."
 msgstr ""
-"<b>Ein Änderungsprotokoll in jedem Verzeichnis</b>\\nDateiänderungen werden "
-"in einem Änderungsprotokoll im Verzeichnis der Datei gespeichert. Die "
-"Änderungsprotokolldatei wird erstellt wenn sie nicht exisitiert."
+"<b>Ein Änderungsprotokoll in jedem Verzeichnis</b>\n"
+"Dateiänderungen werden in einem Änderungsprotokoll im Verzeichnis der Datei "
+"gespeichert. Die Änderungsprotokolldatei wird erstellt wenn sie nicht "
+"existiert."
 
 #: ../src/addins/MonoDeveloperExtensions/MonoDeveloperExtensions.addin.xml:39
 msgid "Install"
@@ -6616,7 +6613,7 @@ msgstr "Webverbreitungsziel:"
 
 #: ../src/addins/AspNetAddIn/AspNetAddIn.addin.xml:109
 msgid "ASP.NET Options"
-msgstr "ASP.NET-Optionen"
+msgstr "ASP.NET-Einstellungen"
 
 #: ../src/addins/AspNetAddIn/AspNetAddIn.addin.xml:133
 #: ../src/addins/AspNetAddIn/Templates/WebForm-Empty.xft.xml:9
@@ -7231,7 +7228,7 @@ msgstr "Makefile-Variable {0} nicht in der Datei gefunden."
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileGeneratorTool.cs:31
 msgid "Error: Unknown option {0}"
-msgstr "Fehler: Unbekannte Option {0}"
+msgstr "Fehler: Unbekannte Einstellung {0}"
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileGeneratorTool.cs:35
 msgid ""
@@ -7250,11 +7247,10 @@ msgid "Loading solution file {0}"
 msgstr "Lade Projektmappen-Datei {0}"
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileGeneratorTool.cs:54
-#, fuzzy
 msgid ""
 "Error: Makefile generation supported only for solutions.\n"
 msgstr ""
-"Fehler: Makefile-Erzeugung nur für Projektmappen unterstützt.\\n\n"
+"Fehler: Makefile-Erzeugung nur für Projektmappen unterstützt.\n"
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileGeneratorTool.cs:59
 msgid ""
@@ -7436,12 +7432,12 @@ msgstr ""
 "genommen."
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileData.cs:677
-#, fuzzy
 msgid ""
 "Error trying to read configure.in ('{0'}) for project '{1}':\n"
 "{2}"
 msgstr ""
-"Fehler beim Versuch configure.in ('{0}') zu lesen für Projekt '{1}':\\n {2}"
+"Fehler beim Versuch configure.in ('{0}') für Projekt '{1}' zu lesen:\n"
+" {2}"
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileData.cs:744
 msgid "Error in loading references: {0}. Skipping syncing of references"
@@ -7708,14 +7704,14 @@ msgstr "Autotools-basiert"
 
 #: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.TarballBuilderEditorWidget.cs:210
 #: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.GenerateMakefilesDialog.cs:107
-#, fuzzy
 msgid ""
 "<b>Autotools based Makefile</b>\n"
 "Generates a Makefile structure based on Autotools, with the standard targets "
 "and configuration scripts."
 msgstr ""
-"<b>Autotools-basiertes Makefile</b>\\nErzeugt eine auf den Autotools "
-"basierende Makefile-Struktur mit den Standard-Zielen und -Konfigurationsskripten."
+"<b>Autotools-basiertes Makefile</b>\n"
+"Erzeugt eine auf den Autotools basierende Makefile-Struktur mit den "
+"Standard-Zielen und -Konfigurationsskripten."
 
 #: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.TarballBuilderEditorWidget.cs:237
 #: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.GenerateMakefilesDialog.cs:75
@@ -7724,15 +7720,15 @@ msgstr "Einfach"
 
 #: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.TarballBuilderEditorWidget.cs:248
 #: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.GenerateMakefilesDialog.cs:86
-#, fuzzy
 msgid ""
 "<b>Simple Makefile</b>\n"
 "Generates set of Makefiles with the most common targets, and a configuration "
 "script that does a basic check of package dependencies."
 msgstr ""
-"<b>Einfaches Makefile</b>\\nErzeugt eine Menge von Makefiles mit den "
-"häufigsten Zielen, und ein Konfigurationsskript das eine grundlegende Überprüfung von "
-"Paket-Abhängigkeiten vornimmt."
+"<b>Einfaches Makefile</b>\n"
+"Erzeugt eine Menge von Makefiles mit den häufigsten Zielen, und ein "
+"Konfigurationsskript das eine grundlegende Überprüfung von Paket-Abhängigkeiten "
+"vornimmt."
 
 #: ../src/addins/MonoDevelop.Autotools/MonoDevelop.Autotools.addin.xml:49
 msgid "Autotools"
@@ -9054,7 +9050,7 @@ msgstr "Ressourcendateien"
 #: ../src/addins/CSharpBinding/CSharpBinding.addin.xml:65
 #: ../src/addins/CSharpBinding/CSharpBinding.addin.xml:80
 msgid "Compiler Options"
-msgstr "Compiler-Optionen"
+msgstr "Compiler-Einstellungen"
 
 #: ../src/addins/CSharpBinding/CSharpBinding.addin.xml:88
 msgid "Formatting"
@@ -9066,13 +9062,12 @@ msgid "Marks text as code."
 msgstr "Markiere Text als Code"
 
 #: ../src/addins/CSharpBinding/Gui/CSharpTextEditorExtension.cs:1028
-#, fuzzy
 msgid ""
 "A description of the code sample.\n"
 "Commonly, this would involve use of the &lt;code&gt; tag."
 msgstr ""
-"Eine Beschreibung des Code Beispiels.\\nGewöhnlich schließt dies die "
-"Einbindung des &lt;code&gt; Tags ein."
+"Eine Beschreibung des Code Beispiels.\n"
+"Gewöhnlich schließt dies die Einbindung des &lt;code&gt; Tags ein."
 
 #: ../src/addins/CSharpBinding/Gui/CSharpTextEditorExtension.cs:1029
 msgid "This tag lets you specify which exceptions can be thrown."
@@ -9224,7 +9219,7 @@ msgstr "Win32-Symbol:"
 
 #: ../src/addins/CSharpBinding/gtk-gui/CSharpBinding.CompilerOptionsPanelWidget.cs:223
 msgid "<b>Language Options</b>"
-msgstr "<b>Sprach-Optionen</b>"
+msgstr "<b>Sprach-Einstellungen</b>"
 
 #: ../src/addins/CSharpBinding/gtk-gui/CSharpBinding.CompilerOptionsPanelWidget.cs:266
 msgid "C# Language Version:"
@@ -9303,19 +9298,16 @@ msgid "_Comments:"
 msgstr "_Kommentare:"
 
 #: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.Editor.CatalogHeadersWidget.cs:162
-#, fuzzy
 msgid "_Project name:"
-msgstr "Projektname:"
+msgstr "_Projektname:"
 
 #: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.Editor.CatalogHeadersWidget.cs:174
-#, fuzzy
 msgid "P_roject version:"
-msgstr "Projekt-Version:"
+msgstr "P_rojekt-Version:"
 
 #: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.Editor.CatalogHeadersWidget.cs:186
-#, fuzzy
 msgid "_Bugzilla URL:"
-msgstr "Bugzilla-URL:"
+msgstr "_Bugzilla-URL:"
 
 #: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.Editor.CatalogHeadersWidget.cs:198
 msgid "Creation date:"
@@ -9334,23 +9326,20 @@ msgid "T_ranslator e-mail:"
 msgstr "Übersetzer-_E-Mail:"
 
 #: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.Editor.CatalogHeadersWidget.cs:373
-#, fuzzy
 msgid "_Language group:"
-msgstr "Sprachgruppe:"
+msgstr "_Sprachgruppe:"
 
 #: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.Editor.CatalogHeadersWidget.cs:385
-#, fuzzy
 msgid "L_anguage group e-mail:"
-msgstr "Sprachgruppen-E-Mail:"
+msgstr "S_prachgruppen-E-Mail:"
 
 #: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.Editor.CatalogHeadersWidget.cs:397
 msgid "_Charset:"
 msgstr "_Zeichensatz:"
 
 #: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.Editor.CatalogHeadersWidget.cs:409
-#, fuzzy
 msgid "_Plural forms:"
-msgstr "Plural-Formen:"
+msgstr "P_lural-Formen:"
 
 #: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.Editor.CatalogHeadersWidget.cs:423
 msgid "Language settings"
@@ -9421,7 +9410,7 @@ msgstr ""
 
 #: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.TranslationProjectOptionsDialog.cs:75
 msgid "Translation Options"
-msgstr "Übersetzungs-Optionen"
+msgstr "Übersetzungs-Einstellungen"
 
 #: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.TranslationProjectOptionsDialog.cs:101
 msgid "_Package name:"
@@ -9437,7 +9426,7 @@ msgstr "_Systempfad:"
 
 #: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.TranslationProjectOptionsDialog.cs:209
 msgid "The catalog initialization string should look like:"
-msgstr "Die Katalog-Initialisierungszeichenkette sollte so aussehen:"
+msgstr "Der Katalog-Initialisierungsaufruf sollte so aussehen:"
 
 #: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.TranslationProjectOptionsDialog.cs:227
 msgid "Mono.Unix.Catalog.Init (\"i18n\", \"./locale\");"
@@ -9445,7 +9434,7 @@ msgstr "Mono.Unix.Catalog.Init (\"i8n1\", \"./locale\");"
 
 #: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.TranslationProjectOptionsDialog.cs:239
 msgid "<b>Init String</b>"
-msgstr "<b>Initialisierungs-Zeichenkette</b>"
+msgstr "<b>Initialisierungs-Aufruf</b>"
 
 #: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.TranslationProjectOptionsDialog.cs:251
 msgid "Settings"
@@ -9455,40 +9444,40 @@ msgstr "Eigenschaften"
 msgid "Include in Projects"
 msgstr "In Projekten einfügen"
 
-#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:87
+#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:90
 #: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext/GettextFeature.cs:41
 msgid "Translation"
 msgstr "Übersetzung"
 
-#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:88
+#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:91
 msgid "Headers"
 msgstr "Einstellungen"
 
-#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:99
+#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:102
 msgid "Fuzzy"
 msgstr "Unklar"
 
-#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:103
+#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:106
 msgid "Original string"
 msgstr "Urtext"
 
-#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:107
+#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:110
 msgid "Translated string"
 msgstr "Übersetzung"
 
-#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:147
+#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:157
 msgid "Show fuzzy translations"
 msgstr "Unklare Übersetzungen anzeigen"
 
-#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:154
+#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:164
 msgid "Show missing translations"
 msgstr "Fehlende Übersetzungen anzeigen"
 
-#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:161
+#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:171
 msgid "Show valid translations"
 msgstr "Gültige Übersetzungen anzeigen"
 
-#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:308
+#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:318
 msgid ""
 "Do you really want to remove the translation string {0} (It will be removed "
 "from all translations)?"
@@ -9496,17 +9485,17 @@ msgstr ""
 "Wollen sie wirklich die Übersetzungszeichenkette {0} entfernen (sie wird aus "
 "allen Übersetzungen entfernt)?"
 
-#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:326
+#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:336
 msgid "{0:#00.00}% Translated"
 msgstr "{0:#00.00}% übersetzt"
 
-#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:331
+#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:341
 msgid "{0} Fuzzy Message"
 msgid_plural "{0} Fuzzy Messages"
 msgstr[0] "{0} Unklare Meldung"
 msgstr[1] "{0} Unklare Meldungen"
 
-#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:338
+#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:348
 msgid "{0} Missing Message"
 msgid_plural "{0} Missing Messages"
 msgstr[0] "{0} Fehlende Meldung"
@@ -9570,11 +9559,11 @@ msgstr ""
 
 #: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext/StringEscaping.cs:81
 msgid "Invalid character '{0}' in translatable string: '{1}'"
-msgstr ""
+msgstr "Ungültiges Zeichen '{0}' in Zeichenkette '{1}' gefunden"
 
 #: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext/StringEscaping.cs:119
 msgid "Invalid escape sequence '{0}' in string: '{1}'"
-msgstr ""
+msgstr "Ungültiges Escapezeichen '{0}' in Zeichenkette '{1}' gefunden"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/MonoDevelop.RegexToolkit.addin.xml:28
 msgid "_Regex Toolkit"
@@ -9922,13 +9911,12 @@ msgid "^"
 msgstr "^"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:61
-#, fuzzy
 msgid ""
 "Specifies that the match must occur at the beginning of \n"
 "the string or the beginning of the line."
 msgstr ""
-"Schreibt vor, dass die Übereinstimmung am Anfang der \\nZeichenkette oder am "
-"Anfang der Zeile auftreten muss."
+"Schreibt vor, dass die Übereinstimmung am Anfang der\n"
+"Zeichenkette oder am Anfang der Zeile auftreten muss."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:64
 msgid "$"
@@ -9949,13 +9937,12 @@ msgid "\\A"
 msgstr "\\A"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:68
-#, fuzzy
 msgid ""
 "Specifies that the match must occur at the beginning of \n"
 "the string (ignores the Multiline option)."
 msgstr ""
-"Schreibt vor, dass die Übereinstimmung am Anfang der \\nZeichenkette "
-"auftreten muss (ignoriert die Mehrzeilen-Option)."
+"Schreibt vor, dass die Übereinstimmung am Anfang der\n"
+"Zeichenkette auftreten muss (ignoriert die Mehrzeilen-Option)."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:71
 msgid "\\Z"
@@ -9976,28 +9963,26 @@ msgid "\\z"
 msgstr "\\z"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:75
-#, fuzzy
 msgid ""
 "Specifies that the match must occur at the end of the \n"
 "string (ignores the Multiline option)."
 msgstr ""
-"Schreibt vor, dass die Übereinstimmung am Ende der \\n Zeichenkette auftreten "
-"muss (ignoriert die Mehrzeilen-Option)."
+"Schreibt vor, dass die Übereinstimmung am Ende der\n"
+" Zeichenkette auftreten muss (ignoriert die Multiline-Option)."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:78
 msgid "\\G"
 msgstr "\\G"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:78
-#, fuzzy
 msgid ""
 "Specifies that the match must occur at the point where \n"
 "the previous match ended. When used with Match.NextMatch(), \n"
 "this ensures that matches are all contiguous."
 msgstr ""
-"Schreibt vor, dass die Übereinstimmung an dem Punkt wo die vorherige "
-"\\nÜbereinstimmung geendet hat auftreten muss. Wenn mit Match.NextMatch() benutzt "
-"\\nsichert dies, dass die Übereinstimmungen alle zusammenhängend sind."
+"Schreibt vor, dass die Übereinstimmung an dem Punkt wo die vorherige\n"
+"Übereinstimmung geendet hat auftreten muss. Wenn mit Match.NextMatch() "
+"benutzt \\nsichert dies, dass die Übereinstimmungen alle zusammenhängend sind."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:82
 msgid ""
@@ -10070,24 +10055,24 @@ msgid "{n}"
 msgstr "{n}"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:102
-#, fuzzy
 msgid ""
 "Specifies exactly n matches; \n"
 "for example, (pizza){2}."
 msgstr ""
-"Schreibt genau n Übereinstimmungen vor; \\nzum Beispiel, (pizza){2}."
+"Schreibt genau n Übereinstimmungen vor;\n"
+"zum Beispiel, (pizza){2}."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:105
 msgid "{n,}"
 msgstr "{n,}"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:105
-#, fuzzy
 msgid ""
 "Specifies at least n matches;\n"
 "for example, (abc){2,}."
 msgstr ""
-"Schreibt mindesten n Übereinstimmungen vor;\\nzum Beispiel, (abc){2,}."
+"Schreibt mindesten n Übereinstimmungen vor;\n"
+"zum Beispiel, (abc){2,}."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:108
 msgid "{n,m}"
@@ -10101,27 +10086,29 @@ msgstr "Schreibt mindestens n, aber nicht mehr als m, Übereinstimmungen vor."
 msgid "*?"
 msgstr "*?"
 
+# lazy kommt hier von lazy evaluation
+# lazy evaluation == Bedarfsauswertung oder verzögerte Auswertung
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:109
-#, fuzzy
 msgid ""
 "Specifies the first match that consumes as few repeats \n"
 "as possible (equivalent to lazy *)."
 msgstr ""
-"Schreibt die erste Übereinstimmung vor, die so wenige Wiederholungen benötigt "
-"\\nwie möglich (gleichbedeutend mit faul *)."
+"Schreibt die erste Übereinstimmung vor, die so wenige Wiederholungen benötigt\n"
+"wie möglich (gleichbedeutend mit verzögertem *)."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:112
 msgid "+?"
 msgstr "+?"
 
+# lazy kommt hier von lazy evaluation
+# lazy evaluation == Bedarfsauswertung oder verzögerte Auswertung
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:112
-#, fuzzy
 msgid ""
 "Specifies as few repeats as possible, but at least one \n"
 "(equivalent to lazy +)."
 msgstr ""
-"Schreibt so wenig Wiederholungen wie möglich vor, aber mindestens eine "
-"\\n(gleichbedeutend mit faul +)."
+"Schreibt so wenig Wiederholungen wie möglich vor, aber mindestens eine\n"
+"(gleichbedeutend mit verzögertem +)."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:115
 msgid "??"
@@ -10143,27 +10130,29 @@ msgstr "Gleichbedeutend mit {n} (faul {n})."
 msgid "{n,}?"
 msgstr "{n,}?"
 
+# lazy kommt hier von lazy evaluation
+# lazy evaluation == Bedarfsauswertung oder verzögerte Auswertung
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:117
-#, fuzzy
 msgid ""
 "Specifies as few repeats as possible, \n"
 "but at least n (lazy {n,})."
 msgstr ""
-"Schreibt so wenig Wiederholungen wie möglich vor, \\naber mindestens n (faul "
-"{n,})."
+"Schreibt so wenig Wiederholungen wie möglich vor, \n"
+"aber mindestens n (verzögert {n,})."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:120
 msgid "{n,m}?"
 msgstr "{n,m}?"
 
+# lazy kommt hier von lazy evaluation
+# lazy evaluation == Bedarfsauswertung oder verzögerte Auswertung
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:120
-#, fuzzy
 msgid ""
 "Specifies as few repeats as possible \n"
 "between n and m (lazy {n,m})."
 msgstr ""
-"Schreibt so wenig Wiederholungen wie möglich vor \\nzwischen n und m (faul "
-"{n,m})."
+"Schreibt so wenig Wiederholungen wie möglich vor\n"
+"zwischen n und m (verzögert {n,m})."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:125
 msgid "Grouping Constructs"
@@ -10207,15 +10196,14 @@ msgid "(?<name1-name2> subexpression)"
 msgstr "(?<Name1-Name2> Teilausdruck)"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:136
-#, fuzzy
 msgid ""
 "Deletes the definition of the previously defined group name2 \n"
 "and stores in group name1 the interval between the previously \n"
 "defined name2 group and the current group."
 msgstr ""
-"Entfernt die Definition der zuvor definierten Gruppe name2 \\nund speichert "
-"in Gruppe name1 das Intervall zwischen vorherig \\ndefinierter name2 Gruppe "
-"und der derzeitigen Gruppe."
+"Entfernt die Definition der zuvor definierten Gruppe name2\n"
+"und speichert in Gruppe name1 das Intervall zwischen vorherig\n"
+"definierter name2 Gruppe und der derzeitigen Gruppe."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:140
 msgid "(?: subexpression)"
@@ -10411,26 +10399,24 @@ msgid "(?imnsx-imnsx)"
 msgstr "(?imnsx-imnsx)"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:196
-#, fuzzy
 msgid ""
 "Sets or disables options such as case insensitivity to be\n"
 "turned on or off in the middle of a pattern."
 msgstr ""
-"Aktiviert oder deaktiviert Optionen wie ob Case Insensitivity\\nin der Mitte "
-"von Mustern ein- oder ausgeschaltet sein soll."
+"Aktiviert oder deaktiviert Optionen wie ob Case Insensitivity\n"
+"in der Mitte von Mustern ein- oder ausgeschaltet sein soll."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:199
 msgid "(?# )"
 msgstr "(?# )"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:199
-#, fuzzy
 msgid ""
 "Inline comment inserted within a regular expression. \n"
 "The comment terminates at the first closing parenthesis character."
 msgstr ""
-"Inline-Kommentar in regulärem Ausdruck eingefügt. \\nDer Kommentar hört bei "
-"der ersten schließenden Klammer auf."
+"Inline-Kommentar in regulärem Ausdruck eingefügt.\n"
+"Der Kommentar hört bei der ersten schließenden Klammer auf."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:202
 msgid "# [to end of line]"
@@ -10645,15 +10631,15 @@ msgstr "Definiere Symbole"
 
 #: ../src/addins/CBinding/gtk-gui/CBinding.CodeGenerationPanel.cs:327
 msgid "Extra Linker Options"
-msgstr "Extra Linker-Optionen"
+msgstr "Zusätzliche Linker-Einstellungen"
 
 #: ../src/addins/CBinding/gtk-gui/CBinding.CodeGenerationPanel.cs:338
 msgid "Extra Compiler Options"
-msgstr "Extracompiler Optionen"
+msgstr "Zusätzliche Compiler Einstellungen"
 
 #: ../src/addins/CBinding/gtk-gui/CBinding.CodeGenerationPanel.cs:380
 msgid "<b>Extra Options</b>"
-msgstr "<b>Extra-Optionen</b>"
+msgstr "<b>Zusatzeinstellungen</b>"
 
 #: ../src/addins/CBinding/gtk-gui/CBinding.CodeGenerationPanel.cs:415
 #: ../src/addins/CBinding/gtk-gui/CBinding.CodeGenerationPanel.cs:504
@@ -10783,7 +10769,7 @@ msgstr "Parse System-Tags"
 
 #: ../src/addins/Mono.Texteditor/C64Style.xml:24
 msgid "A Style style that uses the old Commodore 64 Styles"
-msgstr ""
+msgstr "Ein Farbschema das an den legänderen Heimcomputer C64 angelehnt ist"
 
 #: ../src/addins/Mono.Texteditor/OblivionStyle.xml:24
 msgid "Dark color scheme using tango colors."
@@ -10994,7 +10980,7 @@ msgstr "Syntax-Hervorhebung"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/MarkerOperationsHandler.cs:71
 msgid "_Write an e-mail to..."
-msgstr ""
+msgstr "_Eine E-Mail verfassen an..."
 
 # 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/MarkerOperationsHandler.cs:71
@@ -11017,11 +11003,6 @@ msgstr "_Aufwärts"
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.SearchAndReplaceWidget.cs:158
 msgid "_Previous"
 msgstr "Ab_wärts"
-
-#: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.SearchWidget.cs:151
-#: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.SearchAndReplaceWidget.cs:185
-msgid "_Options"
-msgstr "_Optionen"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.SearchAndReplaceWidget.cs:238
 msgid "Replace _all"
