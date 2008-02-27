@@ -300,8 +300,8 @@ namespace Mono.TextEditor
 			
 			protected virtual void OnRedoDone ()
 			{
-				if (UndoDone != null)
-					UndoDone (this, EventArgs.Empty);
+				if (RedoDone != null)
+					RedoDone (this, EventArgs.Empty);
 			}
 			public event EventHandler RedoDone;
 			
@@ -360,12 +360,12 @@ namespace Mono.TextEditor
 				}
 				OnRedoDone ();
 			}
-			
 		}
 		
 		class KeyboardStackUndo : AtomicUndoOperation
 		{
 			bool isClosed = false;
+			
 			public bool IsClosed {
 				get {
 					return isClosed;
@@ -374,11 +374,13 @@ namespace Mono.TextEditor
 					isClosed = value;
 				}
 			}
+			
 			public override string Text {
 				get {
 					return operations.Count > 0 ? operations [operations.Count - 1].Text : "";
 				}
 			}
+			
 			public override ReplaceEventArgs Args {
 				get {
 					return operations.Count > 0 ? operations [operations.Count - 1].Args : null;
@@ -397,23 +399,51 @@ namespace Mono.TextEditor
 			}
 		}
 		
+		UndoOperation[] savePoint = null;
+		public bool IsDirty {
+			get {
+				if (this.currentAtomicOperation != null)
+					return true;
+				if (savePoint == null)
+					return CanUndo;
+				if (undoStack.Count != savePoint.Length) 
+					return true;
+				UndoOperation[] currentStack = undoStack.ToArray ();
+				for (int i = 0; i < currentStack.Length; i++) {
+					if (savePoint[i] != currentStack[i])
+						return true;
+				}
+				return false;
+			}
+		}
+		
+		/// <summary>
+		/// Marks the document not dirty at this point (should be called after save).
+		/// </summary>
+		public void SetNotDirtyState ()
+		{
+			OptimizeTypedUndo ();
+			if (undoStack.Count > 0 && undoStack.Peek () is KeyboardStackUndo)
+				((KeyboardStackUndo)undoStack.Peek ()).IsClosed = true;
+			savePoint = undoStack.ToArray ();
+		}
+		
 		public void OptimizeTypedUndo ()
 		{
 			if (undoStack.Count == 0)
 				return;
 			UndoOperation top = undoStack.Pop ();
-			
-			if (top.Args == null || top.Args.Value == null || top.Args.Value.Length != 1) {
+			if (top.Args == null || top.Args.Value == null || top.Args.Value.Length != 1 || (top is KeyboardStackUndo && ((KeyboardStackUndo)top).IsClosed)) {
 				undoStack.Push (top);
 				return;
 			}
-			
-			if (undoStack.Count == 0 || !(undoStack.Peek () is KeyboardStackUndo) || ((KeyboardStackUndo)undoStack.Peek ()).IsClosed) {
+			if (undoStack.Count == 0 || !(undoStack.Peek () is KeyboardStackUndo)) 
 				undoStack.Push (new KeyboardStackUndo ());
-			}
-			
 			KeyboardStackUndo keyUndo = (KeyboardStackUndo)undoStack.Pop ();
-			
+			if (keyUndo.IsClosed) {
+				undoStack.Push (keyUndo);
+				keyUndo = new KeyboardStackUndo ();
+			}
 			if (keyUndo.Args != null && keyUndo.Args.Offset + 1 != top.Args.Offset) {
 				keyUndo.IsClosed = true;
 				undoStack.Push (keyUndo);
@@ -427,6 +457,7 @@ namespace Mono.TextEditor
 		{
 			if (undoStack.Count <= 0)
 				return;
+			System.Console.WriteLine (undoStack.Count);
 			isInUndo = true;
 			UndoOperation chunk = undoStack.Pop ();
 			redoStack.Push (chunk);

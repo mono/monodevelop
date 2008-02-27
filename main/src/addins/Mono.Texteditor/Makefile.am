@@ -12,7 +12,6 @@ REFS =  \
 FILES =  \
 	AssemblyInfo.cs \
 	gtk-gui/generated.cs \
-	Mono.TextEditor.Highlighting/Caret.cs \
 	Mono.TextEditor.Highlighting/Chunk.cs \
 	Mono.TextEditor.Highlighting/ChunkStyle.cs \
 	Mono.TextEditor.Highlighting/DefaultStyle.cs \
@@ -27,6 +26,7 @@ FILES =  \
 	Mono.TextEditor.Highlighting/SyntaxModeService.cs \
 	Mono.TextEditor.Highlighting/XmlReadHelper.cs \
 	Mono.TextEditor/BookmarkMargin.cs \
+	Mono.TextEditor/Caret.cs \
 	Mono.TextEditor/DefaultEditActions.cs \
 	Mono.TextEditor/Document.cs \
 	Mono.TextEditor/DocumentLocation.cs \

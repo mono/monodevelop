@@ -29,7 +29,7 @@ using Gtk;
 
 namespace Mono.TextEditor
 {
-	public class TextEditorData
+	public class TextEditorData : IDisposable
 	{
 		Document   document; 
 		Caret      caret;
@@ -66,10 +66,9 @@ namespace Mono.TextEditor
 			set {
 				this.document = value;
 				caret = new Caret (document);
-				caret.PositionChanged += delegate {
-					if (!caret.PreserveSelection)
-						this.ClearSelection ();
-				};
+				caret.PositionChanged += CaretPositionChanged;
+				this.document.BeginUndo += OnBeginUndo;
+				this.document.EndUndo += OnEndUndo;
 			}
 		}
 		
@@ -93,9 +92,127 @@ namespace Mono.TextEditor
 		{
 			if (String.IsNullOrEmpty (text))
 				return;
+			Document.BeginAtomicUndo ();
 			Document.Insert (Caret.Offset, text);
 			Caret.Offset += text.Length;
+			Document.EndAtomicUndo ();
 		}
+		
+		public void Dispose ()
+		{
+			if (this.states != null) {
+				foreach (IDisposable disposeable in this.states) {
+					disposeable.Dispose ();
+				}
+				this.states = null;
+			}
+			
+			if (document != null) {
+				document.BeginUndo -= OnBeginUndo;
+				document.EndUndo   -= OnEndUndo;
+				// DOCUMENT MUST NOT BE DISPOSED !!! (Split View shares document)
+				document = null;
+			}
+			if (caret != null) {
+				caret.PositionChanged -= CaretPositionChanged;
+				caret.Dispose ();
+				caret = null;
+			}
+		}
+		
+		void CaretPositionChanged (object sender, EventArgs args)
+		{
+			if (!caret.PreserveSelection)
+				this.ClearSelection ();
+		}
+		
+		#region undo/redo handling
+		int      savedCaretPos;
+		ISegment savedSelection;
+		List<TextEditorDataState> states = new List<TextEditorDataState> ();
+		
+		void OnBeginUndo (object sender, EventArgs args)
+		{
+			System.Console.WriteLine("begin undo" + Caret.Offset);
+			savedCaretPos  = Caret.Offset;
+			savedSelection = SelectionRange;
+		}
+		
+		void OnEndUndo (object sender, Document.UndoOperation operation)
+		{
+			System.Console.WriteLine("end undo" + Caret.Offset);
+			if (operation == null)
+				return;
+			TextEditorDataState state = new TextEditorDataState (this, operation, savedCaretPos, savedSelection);
+			state.Attach ();
+			states.Add (state);
+		}
+		
+		class TextEditorDataState : IDisposable
+		{
+			int      undoCaretPos;
+			ISegment undoSelection;
+			
+			int      redoCaretPos;
+			ISegment redoSelection;
+			
+			Document.UndoOperation operation;
+			TextEditorData editor;
+			
+			public TextEditorDataState (TextEditorData editor, Document.UndoOperation operation, int caretPos, ISegment selection)
+			{
+				this.editor        = editor;
+				this.undoCaretPos  = caretPos;
+				this.undoSelection = selection;
+				this.operation     = operation;
+				this.redoCaretPos  = editor.Caret.Offset;
+				this.redoSelection = editor.SelectionRange;
+				System.Console.WriteLine("redopos:" + this.redoCaretPos + " undoPos:" + this.undoCaretPos);
+				this.operation.Disposed += delegate {
+					if (editor != null)
+						editor.states.Remove (this);
+					Dispose ();
+				};
+			}
+			
+			public void Attach ()
+			{
+				if (operation == null)
+					return;
+				operation.UndoDone += UndoDone;
+				operation.RedoDone += RedoDone;
+			}
+			
+			public void Dispose ()
+			{
+				if (operation != null) {
+					operation.UndoDone -= UndoDone;
+					operation.RedoDone -= RedoDone;
+					operation = null;
+				}
+				editor = null;
+				undoSelection = redoSelection = null;
+			}
+			
+			void UndoDone (object sender, EventArgs args)
+			{
+				if (editor == null)
+					return;
+				System.Console.WriteLine("undo");
+				editor.Caret.Offset   = this.undoCaretPos;
+				editor.SelectionRange = this.undoSelection;
+			}
+			
+			void RedoDone (object sender, EventArgs args)
+			{
+				if (editor == null)
+					return;
+				System.Console.WriteLine("Redo");
+				editor.Caret.Offset   = this.redoCaretPos;
+				editor.SelectionRange = this.redoSelection;
+			}
+		}
+		#endregion
 		
 		#region Selection management
 		int      selectionAnchor = -1;

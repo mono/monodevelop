@@ -317,93 +317,8 @@ namespace Mono.TextEditor
 			this.Destroyed += delegate {
 				Dispose ();
 			};
-			this.Document.BeginUndo += OnBeginUndo;
-			this.Document.EndUndo += OnEndUndo;
 		}
 		
-		#region undo/redo handling
-		int      savedCaretPos;
-		ISegment savedSelection;
-		List<TextEditorDataState> states = new List<TextEditorDataState> ();
-		
-		void OnBeginUndo (object sender, EventArgs args)
-		{
-			savedCaretPos  = Caret.Offset;
-			savedSelection = SelectionRange;
-		}
-		
-		void OnEndUndo (object sender, Document.UndoOperation operation)
-		{
-			if (operation == null)
-				return;
-			TextEditorDataState state = new TextEditorDataState (this, operation, savedCaretPos, savedSelection);
-			state.Attach ();
-			states.Add (state);
-		}
-		
-		class TextEditorDataState : IDisposable
-		{
-			int      caretPos;
-			ISegment selection;
-			
-			int      oldPos;
-			ISegment oldSelection;
-			Document.UndoOperation operation;
-			TextEditor editor;
-			
-			public TextEditorDataState (TextEditor editor, Document.UndoOperation operation, int caretPos, ISegment selection)
-			{
-				this.editor    = editor;
-				this.caretPos  = caretPos;
-				this.selection = selection;
-				this.operation = operation;
-				this.operation.Disposed += delegate {
-					if (editor != null)
-						editor.states.Remove (this);
-					Dispose ();
-				};
-			}
-			
-			public void Attach ()
-			{
-				if (operation == null)
-					return;
-				operation.UndoDone += UndoDone;
-				operation.RedoDone += RedoDone;
-			}
-			
-			public void Dispose ()
-			{
-				if (operation != null) {
-					operation.UndoDone -= UndoDone;
-					operation.RedoDone -= RedoDone;
-					operation = null;
-				}
-				editor    = null;
-				selection = oldSelection = null;
-			}
-			
-			void UndoDone (object sender, EventArgs args)
-			{
-				if (editor == null)
-					return;
-				this.oldPos       = editor.Caret.Offset;
-				this.oldSelection = editor.SelectionRange;
-				
-				editor.Caret.Offset   = this.caretPos;
-				editor.SelectionRange = this.selection;
-			}
-			
-			void RedoDone (object sender, EventArgs args)
-			{
-				if (editor == null)
-					return;
-				editor.Caret.Offset   = this.oldPos;
-				editor.SelectionRange = this.oldSelection;
-			}
-			
-		}
-		#endregion
 		
 		void DocumentUpdatedHandler (object sender, EventArgs args)
 		{
@@ -446,22 +361,21 @@ namespace Mono.TextEditor
 			this.isDisposed = true;
 			
 			Document.DocumentUpdated -= DocumentUpdatedHandler;
-			Document.BeginUndo       -= OnBeginUndo;
-			Document.EndUndo         -= OnEndUndo;
 			
 			TextEditorOptions.Changed -= OptionsChanged;
 			
-			foreach (IDisposable disposeable in this.states) {
-				disposeable.Dispose ();
+			if (margins != null) {
+				foreach (IMargin margin in this.margins) {
+					if (margin is IDisposable)
+						((IDisposable)margin).Dispose ();
+				}
+				this.margins = null;
 			}
-			this.states = null;
 			
-			foreach (IMargin margin in this.margins) {
-				if (margin is IDisposable)
-					((IDisposable)margin).Dispose ();
+			if (this.textEditorData != null) {
+				this.textEditorData.Dispose ();
+				this.textEditorData = null;
 			}
-			this.margins = null;
-			
 //			if (buffer != null) {
 //				buffer.Dispose ();
 //				buffer = null;
@@ -568,11 +482,12 @@ namespace Mono.TextEditor
 			int keyCode = GetKeyCode (key, modifier);
 			if (keyBindings.ContainsKey (keyCode)) {
 				try {
+					Document.BeginAtomicUndo ();
 					keyBindings[keyCode].Run (this.textEditorData);
+					Document.EndAtomicUndo ();
 				} catch (Exception e) {
 					Console.WriteLine ("Error while executing " + keyBindings[keyCode] + " :" + e);
 				}
-				
 			} else if ((int)key < 65000 && (modifier & Gdk.ModifierType.ControlMask) != Gdk.ModifierType.ControlMask) {
 				Document.BeginAtomicUndo ();
 				this.textEditorData.DeleteSelectedText ();

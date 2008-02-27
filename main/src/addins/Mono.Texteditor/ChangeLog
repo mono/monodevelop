@@ -1,3 +1,13 @@
+2008-02-27  Mike Krüger <mkrueger@novell.com> 
+
+	* Mono.TextEditor/Document.cs, Mono.TextEditor/TextEditorData.cs,
+	  Mono.TextEditor/TextEditor.cs, Mono.TextEditor/Caret.cs,
+	  Mono.TextEditor.Tests/Mono.TextEditor.Tests/UndoRedoTests.cs,
+	  Mono.TextEditor.Highlighting/Caret.cs: Fixed Bug 362692 - Undoing all
+	  changes should clear the modified flag of the editor.
+	
+	  Refactored structure a bit. Added unit tests for undo/redo operations.
+
 2008-02-27  Aaron Bockover <abockover@novell.com>
 
 	* OblivionStyle.xml: Made some style changes to be less bland

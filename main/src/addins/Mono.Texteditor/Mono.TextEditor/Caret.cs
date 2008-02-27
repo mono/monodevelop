@@ -29,7 +29,7 @@ using System;
 
 namespace Mono.TextEditor
 {
-	public class Caret
+	public class Caret : IDisposable
 	{
 		DocumentLocation location;
 		bool preserveSelection = false;
@@ -141,6 +141,11 @@ namespace Mono.TextEditor
 			this.document = document;
 		}
 		
+		public void Dispose ()
+		{
+			this.document = null;
+		}
+		
 		void SetDesiredColumn ()
 		{
 			LineSegment curLine = this.document.GetLine (this.Line);
@@ -160,7 +165,7 @@ namespace Mono.TextEditor
 			                      this.Location,
 			                      this.isInInsertMode);
 		}
-
+		
 		protected virtual void OnPositionChanged (DocumentLocationEventArgs args)
 		{
 			bool needUpdate = false;
