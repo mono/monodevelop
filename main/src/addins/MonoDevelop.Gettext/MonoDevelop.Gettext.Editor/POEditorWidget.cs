@@ -29,12 +29,15 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 
 using Gtk;
 using Gdk;
 
 using MonoDevelop.Core;
+using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Commands;
 using MonoDevelop.Gettext.Editor;
 
 namespace MonoDevelop.Gettext
@@ -481,8 +484,8 @@ namespace MonoDevelop.Gettext
 		static string GetStockForEntry (CatalogEntry entry)
 		{
 			if (entry.References.Length == 0)
-				return Stock.DialogError;
-			return entry.IsFuzzy ? Stock.About : entry.IsTranslated ? Stock.Apply : Stock.Cancel;
+				return Gtk.Stock.DialogError;
+			return entry.IsFuzzy ? Gtk.Stock.About : entry.IsTranslated ? Gtk.Stock.Apply : Gtk.Stock.Cancel;
 		}
 		
 		static Color translated   = new Color (255, 255, 255);
@@ -567,24 +570,53 @@ namespace MonoDevelop.Gettext
 			return true;
 		}
 		
-		uint timeoutHandler = 0;
+		Thread updateThread = null;
+		
 		void UpdateFromCatalog ()
 		{
-			if (timeoutHandler != 0)
-				GLib.Source.Remove (timeoutHandler);
-			timeoutHandler = GLib.Timeout.Add (100, delegate {
-				this.treeviewEntries.Model = null;
-				store.Clear ();
-				string filter = entryFilter.Text.ToUpper ();
-				foreach (CatalogEntry entry in catalog) {
-					if (ShouldFilter (entry, filter)) 
-						continue;
-					store.AppendValues (GetStockForEntry (entry), entry.IsFuzzy, StringEscaping.ToGettextFormat (entry.String), StringEscaping.ToGettextFormat (entry.GetTranslation (0)), entry, GetRowColorForEntry (entry));
+			if (updateThread != null)
+				updateThread.Abort ();
+			
+			IdeApp.Workbench.StatusBar.BeginProgress (GettextCatalog.GetString ("Update catalog list..."));
+			updateThread = new Thread (UpdateWorkerThread);
+			updateThread.IsBackground = true;
+			updateThread.Priority = ThreadPriority.Lowest;
+			updateThread.Start ();
+		}
+		
+		public void UpdateWorkerThread ()
+		{
+			string filter = entryFilter.Text.ToUpper ();
+			int number = 1;
+			double count = catalog.Count;
+			List<CatalogEntry> foundEntries = new List<CatalogEntry> ();
+			try {
+				foreach (CatalogEntry curEntry in catalog) {
+					number++;
+					if (number % 50 == 0) {
+						DispatchService.GuiSyncDispatch (delegate {
+							if (number < 60)
+								store.Clear ();
+							IdeApp.Workbench.StatusBar.SetProgressFraction (number / count);
+							foreach (CatalogEntry entry in foundEntries) {
+								store.AppendValues (GetStockForEntry (entry), entry.IsFuzzy, StringEscaping.ToGettextFormat (entry.String), StringEscaping.ToGettextFormat (entry.GetTranslation (0)), entry, GetRowColorForEntry (entry));
+							}
+						});
+						foundEntries.Clear ();
+					}
+					if (!ShouldFilter (curEntry, filter)) 
+						foundEntries.Add (curEntry);
+					
 				}
-				this.treeviewEntries.Model = store;
-				timeoutHandler = 0;
-				return false;
-			});
+			} finally {
+				DispatchService.GuiSyncDispatch (delegate {
+					foreach (CatalogEntry entry in foundEntries) {
+						store.AppendValues (GetStockForEntry (entry), entry.IsFuzzy, StringEscaping.ToGettextFormat (entry.String), StringEscaping.ToGettextFormat (entry.GetTranslation (0)), entry, GetRowColorForEntry (entry));
+					}
+					IdeApp.Workbench.StatusBar.EndProgress ();
+				});
+				updateThread = null;
+			}
 		}
 #endregion
 		
