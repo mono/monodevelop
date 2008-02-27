@@ -1,3 +1,7 @@
+2008-02-26  Michael Hutchinson  <mhutchinson@novell.com> 
+
+	* GeckoWebBrowser.make: Use local package path.
+
 2008-01-25  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.WebBrowsers.GeckoWebBrowser.addin.xml: Update MD version.

@@ -38,8 +38,8 @@ using System.Web.UI;
 using System.ComponentModel;
 using AspNetEdit.Editor.ComponentModel;
 
-using AspNetAddIn.Parser.Internal;
-using AspNetAddIn.Parser.Tree;
+using MonoDevelop.AspNet.Parser.Internal;
+using MonoDevelop.AspNet.Parser.Dom;
 
 namespace AspNetEdit.Editor.Persistence
 {

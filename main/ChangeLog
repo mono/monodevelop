@@ -1,3 +1,7 @@
+2008-02-26  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* monodevelop-core-addins.pc.in: Update path for MonoDevelop.AspNet.
+
 2008-02-11  Mike Krüger <mkrueger@novell.com> 
 
 	* monodevelop-core-addins.pc.in: Removed source editor reference.

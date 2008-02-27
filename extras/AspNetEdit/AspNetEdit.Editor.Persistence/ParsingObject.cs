@@ -34,8 +34,8 @@ using System.Web.UI.Design;
 using System.Collections;
 using System.ComponentModel.Design;
 
-using AspNetAddIn.Parser.Internal;
-using AspNetAddIn.Parser.Tree;
+using MonoDevelop.AspNet.Parser.Internal;
+using MonoDevelop.AspNet.Parser.Dom;
 
 namespace AspNetEdit.Editor.Persistence
 {

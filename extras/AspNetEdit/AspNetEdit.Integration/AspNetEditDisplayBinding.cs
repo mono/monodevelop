@@ -36,7 +36,7 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Codons;
 using MonoDevelop.Projects;
 
-using AspNetAddIn;
+using MonoDevelop.AspNet;
 
 namespace AspNetEdit.Integration
 {
