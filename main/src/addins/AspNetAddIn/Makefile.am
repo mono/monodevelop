@@ -43,6 +43,7 @@ FILES =  \
 	Gui/AspNetConfigurationPanelWidget.cs \
 	Gui/XspOptionsPanel.cs \
 	Gui/XspOptionsPanelWidget.cs \
+	Parser/DebugStringVisitor.cs \
 	Parser/Document.cs \
 	Parser/DocumentReferenceManager.cs \
 	Parser/Internal/AspParser.cs \

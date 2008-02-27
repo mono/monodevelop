@@ -64,5 +64,11 @@ namespace AspNetAddIn.Parser.Tree
 		public TagAttributes Attributes {
 			get { return attributes; }
 		}
+		
+		public override string ToString ()
+		{
+			return string.Format ("[DirectiveNode Name='{0}' Attributes='{1}' Location='{2}']", Name, Attributes, Location);
+		}
+
 	}
 }

@@ -98,6 +98,7 @@
     <File name="Parser/DocumentReferenceManager.cs" subtype="Code" buildaction="Compile" />
     <File name="Parser/LocatedParserException.cs" subtype="Code" buildaction="Compile" />
     <File name="Project/IAspNetLanguageBinding.cs" subtype="Code" buildaction="Compile" />
+    <File name="Parser/DebugStringVisitor.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Components" />

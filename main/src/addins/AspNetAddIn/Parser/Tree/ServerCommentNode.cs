@@ -59,5 +59,11 @@ namespace AspNetAddIn.Parser.Tree
 				throw new ParseException (location, "Text has been added to this node already");
 			content = text;
 		}
+		
+		public override string ToString ()
+		{
+			return string.Format ("[ServerCommentNode Text='{0}' Location='{1}']", Text, Location);
+		}
+
 	}
 }

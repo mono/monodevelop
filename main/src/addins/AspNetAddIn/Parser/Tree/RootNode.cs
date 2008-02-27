@@ -39,10 +39,13 @@ namespace AspNetAddIn.Parser.Tree
 {
 	public class RootNode : ParentNode
 	{
+		string fileName;
+		
 		public RootNode (string fileName, StreamReader textStream)
 			: base (null)
 		{
 			Parse (fileName, textStream);
+			this.fileName = fileName;
 		}
 		
 		public RootNode ()
@@ -53,11 +56,16 @@ namespace AspNetAddIn.Parser.Tree
 		public override void AcceptVisit (Visitor visitor)
 		{
 			visitor.Visit (this);
-			
 			foreach (Node n in children)
 				n.AcceptVisit (visitor);
+			visitor.Leave (this);
 		}
 		
+		public override string ToString ()
+		{
+			return string.Format ("[RootNode Filename='{0}']", fileName);
+		}
+
 		
 		#region Parsing code
 		
@@ -84,6 +92,9 @@ namespace AspNetAddIn.Parser.Tree
 			case TagType.Close:
 				if ( !(currentTagId != tagId))
 					throw new ParseException (location, "Closing tag does not match opening tag " + tagId + ".");
+				TagNode tn = currentNode as TagNode;
+				if (tn != null)
+					tn.EndTagLocation = location;
 				currentNode = currentNode.Parent;
 				break;
 				

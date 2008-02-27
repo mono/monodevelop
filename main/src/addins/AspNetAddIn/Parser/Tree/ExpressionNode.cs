@@ -52,6 +52,11 @@ namespace AspNetAddIn.Parser.Tree
 		{
 			visitor.Visit (this);
 		}
+		
+		public override string ToString ()
+		{
+			return string.Format ("[ExpressionNode Expression='{0}' Location='{1}']", Expression, Location);
+		}
 
 	}
 }

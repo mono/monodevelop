@@ -30,14 +30,14 @@
 //
 
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using AspNetAddIn.Parser.Internal;
 
 namespace AspNetAddIn.Parser.Tree
 {
 	public abstract class ParentNode : Node
 	{
-		protected ArrayList children = new ArrayList ();
+		protected List<Node> children = new List<Node> ();
 		
 		public ParentNode (ILocation location)
 			: base (location)
@@ -53,6 +53,37 @@ namespace AspNetAddIn.Parser.Tree
 		public override void AddText (ILocation location, string text)
 		{
 			this.AddChild (new TextNode (location, text));
+		}
+		
+		public Node GetNodeAtPosition (int line, int col)
+		{
+			//check if position is before or within this node's definition
+			int positionMatch = ContainsPosition (line, col);
+			if (positionMatch < 0)
+				return null;
+			else if (positionMatch == 0)
+				return this;
+			
+			//binary search through children
+			int start = 0, end = children.Count - 1;
+			do {
+				int middle = (int) Math.Ceiling ((double) (start + end) / 2);
+				int middleMatches = children[middle].ContainsPosition (line, col);
+				if (middleMatches == 0)
+					return children[middle];
+				else if (middleMatches < 0)
+					start = middle;
+				else
+					end = middle;
+			} while (start < end);
+			
+			//position is after the node and its children
+			return null;
+		}
+		
+		public override string ToString ()
+		{
+			return string.Format ("[ParentNode Location='{0}']", Location);
 		}
 	}
 }

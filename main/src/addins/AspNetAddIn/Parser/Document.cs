@@ -66,6 +66,12 @@ namespace AspNetAddIn.Parser
 				if (sr != null)
 					sr.Close ();
 			}
+			
+			if (MonoDevelop.Core.LoggingService.IsLevelEnabled (MonoDevelop.Core.Logging.LogLevel.Debug)) {
+				DebugStringVisitor dbg = new DebugStringVisitor ();
+				rootNode.AcceptVisit (dbg);
+				MonoDevelop.Core.LoggingService.LogDebug (dbg.DebugString);
+			}
 		}
 		
 		public bool IsValid {

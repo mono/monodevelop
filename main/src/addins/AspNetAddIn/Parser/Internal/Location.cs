@@ -36,6 +36,10 @@ namespace AspNetAddIn.Parser.Internal
 	{
 		int beginLine, endLine, beginColumn, endColumn;
 		string fileName, plainText;
+		
+		internal Location ()
+		{	
+		}
 
 		public Location (ILocation location)
 		{
@@ -89,6 +93,12 @@ namespace AspNetAddIn.Parser.Internal
 		public string PlainText {
 			get { return plainText; }
 			set { plainText = value; }
+		}
+		
+		public override string ToString ()
+		{
+			return string.Format ("{0}({1},{2}-{3},{4})",
+			    System.IO.Path.GetFileName (Filename), BeginLine, BeginColumn, EndLine, EndColumn);
 		}
 	}
 }

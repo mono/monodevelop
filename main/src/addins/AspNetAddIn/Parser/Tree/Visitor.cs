@@ -62,5 +62,9 @@ namespace AspNetAddIn.Parser.Tree
 		public virtual void Visit (ServerIncludeNode node)
 		{
 		}
+		
+		public virtual void Leave (ParentNode node)
+		{
+		}
 	}
 }

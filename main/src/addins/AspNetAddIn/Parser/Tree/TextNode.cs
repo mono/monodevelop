@@ -52,5 +52,11 @@ namespace AspNetAddIn.Parser.Tree
 		{
 			visitor.Visit (this);
 		}
+		
+		public override string ToString ()
+		{
+			return string.Format ("[TextNode Text='{0}' Location='{1}']", Text.Replace ("\n", "\\n"), Location);
+		}
+
 	}
 }

@@ -41,7 +41,7 @@ namespace AspNetAddIn.Parser.Tree
 		
 		public Node (ILocation location)
 		{
-			this.location = location;
+			this.location = new Location (location);
 		}
 		
 		public Node Parent {
@@ -57,6 +57,20 @@ namespace AspNetAddIn.Parser.Tree
 		public virtual void AddText (ILocation location, string text)
 		{
 			throw new ParseException (location, "This parse tree node does not support internal text");
+		}
+		
+		public int ContainsPosition (int line, int col)
+		{
+			if (line < Location.BeginLine || (line == Location.BeginLine && col < Location.BeginColumn))
+				return -1;
+			if (line > Location.EndLine || (line == Location.EndLine && col > Location.EndLine))
+				return 1;
+			return 0;
+		}
+		
+		public override string ToString ()
+		{
+			return string.Format ("[Node Location='{0}']", Location);
 		}
 	}
 }

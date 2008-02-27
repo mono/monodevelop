@@ -32,12 +32,15 @@
 using System;
 using System.Collections;
 
+using AspNetAddIn.Parser.Internal;
+
 namespace AspNetAddIn.Parser.Tree
 {
 	public class TagNode : ParentNode
 	{
 		string tagName;
 		TagAttributes attributes;
+		ILocation endTagLocation; 
 		
 		internal TagNode (ILocation location, string name, TagAttributes attributes)
 			: base (location)
@@ -49,9 +52,9 @@ namespace AspNetAddIn.Parser.Tree
 		public override void AcceptVisit (Visitor visitor)
 		{
 			visitor.Visit (this);
-			
 			foreach (Node child in children)
 				child.AcceptVisit (visitor);
+			visitor.Leave (this);
 		}
 		
 		public string TagName {
@@ -61,5 +64,17 @@ namespace AspNetAddIn.Parser.Tree
 		public TagAttributes Attributes {
 			get { return attributes; }
 		}
+		
+		public ILocation EndTagLocation {
+			internal set { endTagLocation = new Location (value); }
+			get { return endTagLocation; }
+		}
+		
+		public override string ToString ()
+		{
+			return string.Format ("[TagNode Name='{0}' Attributes='{1}' Location='{2}' EndTagLocation='{3}']",
+			    TagName, Attributes, Location, EndTagLocation);
+		}
+
 	}
 }
