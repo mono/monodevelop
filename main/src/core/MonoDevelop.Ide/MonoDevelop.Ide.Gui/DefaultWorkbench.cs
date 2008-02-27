@@ -67,6 +67,13 @@ namespace MonoDevelop.Ide.Gui
 		
 		public Gtk.MenuBar TopMenu = null;
 		private Gtk.Toolbar[] toolbars = null;
+		MonoDevelopStatusBar statusBar = new MonoDevelop.Ide.MonoDevelopStatusBar ();
+		
+		public MonoDevelopStatusBar StatusBar {
+			get {
+				return statusBar;
+			}
+		}
 		
 		enum TargetList {
 			UriList = 100

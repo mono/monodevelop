@@ -6,7 +6,7 @@ msgstr ""
 "X-Poedit-Bookmarks: -1,1681,-1,-1,-1,-1,-1,-1,-1,-1\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2008-02-26 19:36:20+0100\n"
+"PO-Revision-Date: 2008-02-27 11:56:23+0100\n"
 "Language-Team: \n"
 "Project-Id-Version: Monodevelop\n"
 "MIME-Version: 1.0\n"
@@ -1729,7 +1729,7 @@ msgid ""
 "font_family='fixed'>{1,-3}</span> ch <span font_family='fixed'>{2,-3}</span> "
 msgstr ""
 "Z. <span font_family='fixed'>{0,-4}</span> Sp. <span "
-"font_family='fixed'>{1,-3}</span> ch <span font_family='fixed'>{2,-3}</span> "
+"font_family='fixed'>{1,-3}</span> Zei <span font_family='fixed'>{2,-3}</span> "
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProgressMonitors.cs:52
 msgid "Build Output"
@@ -2330,7 +2330,7 @@ msgstr "Werkzeugliste"
 #: ../src/addins/MonoDevelop.GtkCore/templates/Window.xft.xml:4
 #: ../src/addins/MonoDevelop.GtkCore/templates/WindowPartial.xft.xml:4
 msgid "Window"
-msgstr "_Fenster"
+msgstr "Fenster"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:669
 msgid "_Next Window"

@@ -495,8 +495,8 @@ namespace Mono.TextEditor
 				startOffset = SelectionRange.Offset;
 			
 			SearchResult result = SearchBackward ((startOffset + Document.Length - 1) % Document.Length);
-			result.SearchWrapped = result.Offset > startOffset;
 			if (result != null) {
+				result.SearchWrapped = result.Offset > startOffset;
 				Caret.Offset  = result.Offset + result.Length;
 				SelectionAnchor = Caret.Offset;
 				SelectionRange = new Segment (result.Offset, result.Length);

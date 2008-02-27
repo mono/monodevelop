@@ -262,10 +262,10 @@ namespace MonoDevelop.Gettext
 				try {
 					if (this.currentEntry != null)
 						this.currentEntry.SetTranslation (StringEscaping.FromGettextFormat (textView.Buffer.Text), index);
-					IdeApp.Workbench.StatusBar.ShowErrorMessage (MonoDevelop.Core.GettextCatalog.GetString ("Ready"));
+					IdeApp.Workbench.StatusBar.ShowReady ();
 					textView.ModifyBase (StateType.Normal, Style.Base (StateType.Normal));
 				} catch (Exception e) {
-					IdeApp.Workbench.StatusBar.ShowErrorMessage (e.Message);
+					IdeApp.Workbench.StatusBar.ShowError (e.Message);
 					textView.ModifyBase (StateType.Normal, errorColor);
 				}
 				UpdateProgressBar ();

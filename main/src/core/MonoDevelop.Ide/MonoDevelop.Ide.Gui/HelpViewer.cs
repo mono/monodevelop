@@ -82,7 +82,7 @@ namespace MonoDevelop.Ide.Gui
 
 		void onLinkMessage (object sender, StatusMessageChangedEventArgs args)
 		{
-			IdeApp.Workbench.StatusBar.SetMessage (args.Message ?? string.Empty);
+			IdeApp.Workbench.StatusBar.ShowMessage (args.Message ?? string.Empty);
 		}
 		
 		void LinkClicked (object o, LocationChangingEventArgs args)

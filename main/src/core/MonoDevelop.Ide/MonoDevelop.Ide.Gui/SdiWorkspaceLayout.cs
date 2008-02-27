@@ -187,10 +187,8 @@ namespace MonoDevelop.Ide.Gui
 			dit.DefaultVisible = false;
 
 			workbench.Add (fullViewVBox);
-			
-			fullViewVBox.PackEnd (IdeApp.Workbench.StatusBar.Control, false, true, 0);
 			fullViewVBox.ShowAll ();
-			IdeApp.Workbench.StatusBar.Control.ShowAll ();
+			fullViewVBox.PackEnd (IdeApp.Workbench.StatusBar, false, true, 0);
 			
 			foreach (IViewContent content in workbench.ViewContentCollection)
 				ShowView (content);

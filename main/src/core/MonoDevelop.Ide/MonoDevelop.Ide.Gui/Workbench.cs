@@ -54,7 +54,6 @@ namespace MonoDevelop.Ide.Gui
 		ProgressMonitorManager monitors = new ProgressMonitorManager ();
 		DefaultWorkbench workbench;
 		RecentOpen recentOpen = null;
-		IStatusBarService statusBarService;
 		DisplayBindingService displayBindingService;
 		
 		public event EventHandler ActiveDocumentChanged;
@@ -211,11 +210,9 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
-		public IStatusBarService StatusBar {
+		public MonoDevelopStatusBar StatusBar {
 			get {
-				if (statusBarService == null)
-					statusBarService = new DefaultStatusBarService ();
-				return statusBarService;
+				return workbench.StatusBar;
 			}
 		}
 		

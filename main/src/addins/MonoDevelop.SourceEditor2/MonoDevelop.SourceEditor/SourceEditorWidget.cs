@@ -110,7 +110,9 @@ namespace MonoDevelop.SourceEditor
 			this.mainsw.Child = this.TextEditor;
 			this.mainsw.ButtonPressEvent += PrepareEvent;
 			
-			this.textEditor.Caret.ModeChanged     += CaretModeChanged;
+			this.textEditor.Caret.ModeChanged     += delegate {
+				this.UpdateLineCol ();
+			};
 			this.textEditor.Caret.PositionChanged += CaretPositionChanged;
 			
 			// Setup the columns and column renders for the comboboxes
@@ -166,10 +168,8 @@ namespace MonoDevelop.SourceEditor
 			IdeApp.ProjectOperations.ParserDatabase.ParseInformationChanged += new ParseInformationEventHandler(UpdateClassBrowser);
 			
 			UpdateLineCol ();
-			CaretModeChanged (this, EventArgs.Empty);
 			this.Focused += delegate {
 				UpdateLineCol ();
-				CaretModeChanged (this, System.EventArgs.Empty);
 			};
 			IdeApp.ProjectOperations.ParserDatabase.ParseInformationChanged += OnParseInformationChanged;
 //			this.IsClassBrowserVisible = SourceEditorOptions.Options.EnableQuickFinder;
@@ -429,7 +429,9 @@ namespace MonoDevelop.SourceEditor
 			secondsw.ButtonPressEvent += PrepareEvent;
 			this.splittedTextEditor = new MonoDevelop.SourceEditor.ExtendibleTextEditor (view, textEditor.Document);
 			this.splittedTextEditor.Extension = textEditor.Extension;
-			this.splittedTextEditor.Caret.ModeChanged     += CaretModeChanged;
+			this.splittedTextEditor.Caret.ModeChanged += delegate {
+				this.UpdateLineCol ();
+			};
 			this.splittedTextEditor.Caret.PositionChanged += CaretPositionChanged;
 			
 			secondsw.Child = splittedTextEditor;
@@ -521,15 +523,10 @@ namespace MonoDevelop.SourceEditor
 			int offset = this.TextEditor.Caret.Offset;
 			if (offset < 0 || offset >= this.TextEditor.Document.Length)
 				return;
-			char ch = this.TextEditor.Document.GetCharAt (offset);
 			DocumentLocation location = this.TextEditor.Document.LogicalToVisualLocation (this.TextEditor.Caret.Location);
-			IdeApp.Workbench.StatusBar.SetCaretPosition (location.Line + 1, location.Column + 1, ch);
+			IdeApp.Workbench.StatusBar.ShowCaretState (location.Line + 1, location.Column + 1, this.TextEditor.Caret.Column, this.TextEditor.Caret.IsInInsertMode);
 		}
 		
-		void CaretModeChanged (object sender, EventArgs e)
-		{
-			IdeApp.Workbench.StatusBar.SetInsertMode (this.TextEditor.Caret.IsInInsertMode);
-		}
 		#endregion
 		
 		#region Class/Member combo handling
@@ -1008,11 +1005,11 @@ namespace MonoDevelop.SourceEditor
 			SearchResult result = TextEditor.FindNext ();
 			TextEditor.GrabFocus ();
 			if (result == null) {
-				IdeApp.Workbench.StatusBar.ShowErrorMessage (GettextCatalog.GetString ("Search pattern not found"));
+				IdeApp.Workbench.StatusBar.ShowError (GettextCatalog.GetString ("Search pattern not found"));
 			} else if (result.SearchWrapped) {
-				IdeApp.Workbench.StatusBar.SetMessage (new Image (Stock.Find, IconSize.Menu), GettextCatalog.GetString ("Reached bottom, continued from top"));
+				IdeApp.Workbench.StatusBar.ShowMessage (new Image (Stock.Find, IconSize.Menu), GettextCatalog.GetString ("Reached bottom, continued from top"));
 			} else {
-				IdeApp.Workbench.StatusBar.SetMessage (GettextCatalog.GetString ("Ready"));
+				IdeApp.Workbench.StatusBar.ShowReady ();
 			}
 			return result;
 		}
@@ -1024,11 +1021,11 @@ namespace MonoDevelop.SourceEditor
 			SearchResult result = TextEditor.FindPrevious ();
 			TextEditor.GrabFocus ();
 			if (result == null) {
-				IdeApp.Workbench.StatusBar.ShowErrorMessage (GettextCatalog.GetString ("Search pattern not found"));
+				IdeApp.Workbench.StatusBar.ShowError (GettextCatalog.GetString ("Search pattern not found"));
 			} else if (result.SearchWrapped) {
-				IdeApp.Workbench.StatusBar.SetMessage (new Image (Stock.Find, IconSize.Menu), GettextCatalog.GetString ("Reached top, continued from bottom"));
+				IdeApp.Workbench.StatusBar.ShowMessage (new Image (Stock.Find, IconSize.Menu), GettextCatalog.GetString ("Reached top, continued from bottom"));
 			} else {
-				IdeApp.Workbench.StatusBar.SetMessage (GettextCatalog.GetString ("Ready"));
+				IdeApp.Workbench.StatusBar.ShowMessage (GettextCatalog.GetString ("Ready"));
 			}
 			return result;
 		}

@@ -1,3 +1,7 @@
+2008-02-27  Mike Krüger <mkrueger@novell.com> 
+
+	* gtk-gui/gui.stetic: Refactored status bar.
+
 2008-02-25  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.VersionControl.Dialogs/EditRepositoryDialog.cs: Don't

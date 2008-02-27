@@ -38,8 +38,6 @@
     <File name="MonoDevelop.Ide.Commands/ViewCommands.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Commands/WindowCommands.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui/DisplayBindingService.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Ide.Gui/DefaultStatusBarService.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Ide.Gui/IStatusBarService.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui/BackgroundProgressMonitor.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui/OutputProgressMonitor.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui/StatusProgressMonitor.cs" subtype="Code" buildaction="Compile" />
@@ -208,8 +206,6 @@
     <File name="MonoDevelop.Ide.Gui/Pad.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui/ProjectOperations.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui/Workbench.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Ide.Gui/IStatusIcon.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Ide.Gui/SdStatusBar.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui/StartupInfo.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui/ProgressMonitors.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui/IdeStartup.cs" subtype="Code" buildaction="Compile" />
@@ -380,6 +376,9 @@
     <File name="gtk-gui/MonoDevelop.Ide.ExternalTools.ExternalToolPanelWidget.cs" subtype="Code" buildaction="Compile" />
     <File name="options/KeyBindingSchemeMonoDevelop1.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="MonoDevelop.Ide.Gui/TextNavigationPoint.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Ide.WindowSwitcher/WindowSwitcher.cs" subtype="Code" buildaction="Compile" />
+    <File name="gtk-gui/MonoDevelop.Ide.WindowSwitcher.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Ide.Gui/MonoDevelopStatusBar.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="False" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />

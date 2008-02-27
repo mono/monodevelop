@@ -49,7 +49,7 @@ namespace MonoDevelop.Ide.Gui
 	{
 		public static AggregatedProgressMonitor UpdateMonitor;
 		AddinRepositoryEntry[] updates;
-		static IStatusIcon updateIcon;
+		static MonoDevelopStatusBar.StatusIcon updateIcon;
 		
 		public static void HideAlert ()
 		{

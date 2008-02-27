@@ -41,12 +41,12 @@ REFS =  \
 	$(GTK_SHARP_LIBS) \
 	$(GTKSOURCEVIEW_SHARP_LIBS) \
 	$(MONO_ADDINS_LIBS) \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Components.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Core.Gui.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Ide.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Projects.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Projects.Gui.dll \
+	-r:$(top_srcdir)/build/bin/MonoDevelop.Components.dll \
+	-r:$(top_srcdir)/build/bin/MonoDevelop.Core.dll \
+	-r:$(top_srcdir)/build/bin/MonoDevelop.Core.Gui.dll \
+	-r:$(top_srcdir)/build/bin/MonoDevelop.Ide.dll \
+	-r:$(top_srcdir)/build/bin/MonoDevelop.Projects.dll \
+	-r:$(top_srcdir)/build/bin/MonoDevelop.Projects.Gui.dll \
 	-r:Mono.Cairo \
 	-r:System \
 	-r:System.Drawing \

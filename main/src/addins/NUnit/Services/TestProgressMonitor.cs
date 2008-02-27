@@ -66,7 +66,7 @@ namespace MonoDevelop.NUnit
 		{
 			if (monitor != null) {
 				IdeApp.Workbench.StatusBar.EndProgress ();
-				IdeApp.Workbench.StatusBar.SetMessage (GettextCatalog.GetString ("<b>Successful</b>: {0} <b>Failed</b>: {1} <b>Ignored</b>: {2}", this.success, this.failures, this.ignored));
+				IdeApp.Workbench.StatusBar.ShowMessage (GettextCatalog.GetString ("<b>Successful</b>: {0} <b>Failed</b>: {1} <b>Ignored</b>: {2}", this.success, this.failures, this.ignored));
 				monitor.Log.WriteLine ("");
 				monitor.Log.WriteLine (GettextCatalog.GetString ("Test run finished"));
 				monitor.Log.WriteLine (GettextCatalog.GetString ("Total seconds: {0:0.0}", (DateTime.Now - this.startTime).TotalSeconds));

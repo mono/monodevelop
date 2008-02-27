@@ -36,7 +36,7 @@ namespace MonoDevelop.Ide.Gui
 {
 	static class InternalLog
 	{
-		static IStatusIcon errorIcon;
+		static MonoDevelopStatusBar.StatusIcon errorIcon;
 		static bool errorNotificationEnabled;
 		
 		static InternalLogger logger;

@@ -54,7 +54,7 @@ namespace MonoDevelop.Ide.Gui
 			this.title = title;
 			icon = Services.Resources.GetImage (iconName, Gtk.IconSize.Menu);
 			IdeApp.Workbench.StatusBar.BeginProgress (title);
-			IdeApp.Workbench.StatusBar.SetMessage (icon, title);
+			IdeApp.Workbench.StatusBar.ShowMessage (icon, title);
 			if (lockGui)
 				IdeApp.Workbench.LockGui ();
 			monitorQueue.Add (this);
@@ -65,7 +65,7 @@ namespace MonoDevelop.Ide.Gui
 			if (monitorQueue [monitorQueue.Count - 1] != this)
 				return;
 			if (showTaskTitles)
-				IdeApp.Workbench.StatusBar.SetMessage (icon, CurrentTask);
+				IdeApp.Workbench.StatusBar.ShowMessage (icon, CurrentTask);
 			if (!UnknownWork)
 				IdeApp.Workbench.StatusBar.SetProgressFraction (GlobalWork);
 			DispatchService.RunPendingEvents ();
@@ -74,9 +74,9 @@ namespace MonoDevelop.Ide.Gui
 		public void UpdateStatusBar ()
 		{
 			if (showTaskTitles)
-				IdeApp.Workbench.StatusBar.SetMessage (icon, CurrentTask);
+				IdeApp.Workbench.StatusBar.ShowMessage (icon, CurrentTask);
 			else
-				IdeApp.Workbench.StatusBar.SetMessage (icon, title);
+				IdeApp.Workbench.StatusBar.ShowMessage (icon, title);
 			if (!UnknownWork)
 				IdeApp.Workbench.StatusBar.SetProgressFraction (GlobalWork);
 			else
@@ -107,7 +107,7 @@ namespace MonoDevelop.Ide.Gui
 				}
 				if (uniqueMonitor) {
 					Gtk.Image img = Services.Resources.GetImage (Stock.Error, Gtk.IconSize.Menu);
-					IdeApp.Workbench.StatusBar.SetMessage (img, Errors [Errors.Count - 1]);
+					IdeApp.Workbench.StatusBar.ShowMessage (img, Errors [Errors.Count - 1]);
 				}
 				base.OnCompleted ();
 				return;
@@ -124,7 +124,7 @@ namespace MonoDevelop.Ide.Gui
 				if (SuccessMessages.Count == 0) {
 					if (uniqueMonitor) {
 						Gtk.Image img = Services.Resources.GetImage (Stock.Warning, Gtk.IconSize.Menu);
-						IdeApp.Workbench.StatusBar.SetMessage (img, Warnings [Warnings.Count - 1]);
+						IdeApp.Workbench.StatusBar.ShowMessage (img, Warnings [Warnings.Count - 1]);
 					}
 					base.OnCompleted ();
 					return;
@@ -133,9 +133,9 @@ namespace MonoDevelop.Ide.Gui
 
 			if (uniqueMonitor) {
 				if (SuccessMessages.Count > 0)
-					IdeApp.Workbench.StatusBar.SetMessage (SuccessMessages [SuccessMessages.Count - 1]);
+					IdeApp.Workbench.StatusBar.ShowMessage (SuccessMessages [SuccessMessages.Count - 1]);
 				else
-					IdeApp.Workbench.StatusBar.SetMessage (GettextCatalog.GetString ("Ready"));
+					IdeApp.Workbench.StatusBar.ShowReady ();
 			}
 			
 			base.OnCompleted ();

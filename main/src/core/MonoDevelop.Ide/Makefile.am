@@ -55,6 +55,7 @@ FILES =  \
 	gtk-gui/MonoDevelop.Ide.SelectEncodingsDialog.cs \
 	gtk-gui/MonoDevelop.Ide.StandardHeaders.NewHeaderTemplateDialog.cs \
 	gtk-gui/MonoDevelop.Ide.StandardHeaders.StandardHeaderPanel.cs \
+	gtk-gui/MonoDevelop.Ide.WindowSwitcher.cs \
 	MonoDevelop.Ide.CodeTemplates/CodeTemplate.cs \
 	MonoDevelop.Ide.CodeTemplates/CodeTemplateGroup.cs \
 	MonoDevelop.Ide.CodeTemplates/CodeTemplatePanel.cs \
@@ -283,7 +284,6 @@ FILES =  \
 	MonoDevelop.Ide.Gui/ConfigurationComboBox.cs \
 	MonoDevelop.Ide.Gui/DefaultDisplayBinding.cs \
 	MonoDevelop.Ide.Gui/DefaultNavigationPoint.cs \
-	MonoDevelop.Ide.Gui/DefaultStatusBarService.cs \
 	MonoDevelop.Ide.Gui/DefaultWorkbench.cs \
 	MonoDevelop.Ide.Gui/DisplayBindingService.cs \
 	MonoDevelop.Ide.Gui/Document.cs \
@@ -300,13 +300,12 @@ FILES =  \
 	MonoDevelop.Ide.Gui/IPadContainer.cs \
 	MonoDevelop.Ide.Gui/IPadContent.cs \
 	MonoDevelop.Ide.Gui/ISecondaryViewContent.cs \
-	MonoDevelop.Ide.Gui/IStatusBarService.cs \
-	MonoDevelop.Ide.Gui/IStatusIcon.cs \
 	MonoDevelop.Ide.Gui/IViewContent.cs \
 	MonoDevelop.Ide.Gui/IWorkbench.cs \
 	MonoDevelop.Ide.Gui/IWorkbenchLayout.cs \
 	MonoDevelop.Ide.Gui/IWorkbenchWindow.cs \
 	MonoDevelop.Ide.Gui/LayoutComboBox.cs \
+	MonoDevelop.Ide.Gui/MonoDevelopStatusBar.cs \
 	MonoDevelop.Ide.Gui/MonoDevelopTreeView.cs \
 	MonoDevelop.Ide.Gui/NavigationHistory.cs \
 	MonoDevelop.Ide.Gui/NavigationService.cs \
@@ -316,7 +315,6 @@ FILES =  \
 	MonoDevelop.Ide.Gui/ProjectOperations.cs \
 	MonoDevelop.Ide.Gui/SdiWorkspaceLayout.cs \
 	MonoDevelop.Ide.Gui/SdiWorkspaceWindow.cs \
-	MonoDevelop.Ide.Gui/SdStatusBar.cs \
 	MonoDevelop.Ide.Gui/StartupInfo.cs \
 	MonoDevelop.Ide.Gui/StatusProgressMonitor.cs \
 	MonoDevelop.Ide.Gui/TextEditor.cs \
@@ -357,6 +355,7 @@ FILES =  \
 	MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs \
 	MonoDevelop.Ide.Templates/TextFileDescriptionTemplate.cs \
 	MonoDevelop.Ide.Templates/TextTemplate.cs \
+	MonoDevelop.Ide.WindowSwitcher/WindowSwitcher.cs \
 	MonoDevelop.Ide/Services.cs
 
 RES =  \

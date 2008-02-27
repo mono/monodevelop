@@ -1,3 +1,7 @@
+2008-02-27  Mike Krüger <mkrueger@novell.com> 
+
+	* WelcomePageView.cs: Refactored status bar.
+
 2008-02-23  Mike Krüger <mkrueger@novell.com> 
 
 	* WelcomePage.mdp, Makefile.am: Removed some unused glade and gnome-sharp
