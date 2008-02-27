@@ -1,5 +1,11 @@
 2008-02-27  Mike Krüger <mkrueger@novell.com> 
 
+	* Mono.TextEditor.Highlighting/SyntaxMode.cs,
+	  Mono.TextEditor.Highlighting/SyntaxModeService.cs: Support for escape
+	  chars.
+
+2008-02-27  Mike Krüger <mkrueger@novell.com> 
+
 	
 
 2008-02-27  Mike Krüger <mkrueger@novell.com> 

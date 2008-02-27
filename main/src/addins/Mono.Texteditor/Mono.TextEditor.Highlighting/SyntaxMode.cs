@@ -183,7 +183,11 @@ namespace Mono.TextEditor.Highlighting
 				for (int i = offset; i < maxEnd; i++) {
 					char ch = doc.GetCharAt (i);
 					if (curSpan != null && !String.IsNullOrEmpty (curSpan.End)) {
-						if (curSpan.End[endOffset] == ch) {
+						if (curSpan.Escape == ch && i + 1 < maxEnd && endOffset == 0 && doc.GetCharAt (i + 1) == curSpan.End[0]) {
+							curChunk.Length += 2;
+							i++;
+							continue;
+						} else if (curSpan.End[endOffset] == ch) {
 							endOffset++;
 							if (endOffset >= curSpan.End.Length) {
 								curChunk.Length -= curSpan.End.Length - 1;
