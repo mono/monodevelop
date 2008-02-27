@@ -130,7 +130,7 @@ namespace MonoDevelop.Ide.ExternalTools
 			toolListBox.Selection.Mode = SelectionMode.Multiple;
 			toolListBox.Model = toolListBoxStore;
 				 
-			toolListBox.AppendColumn (GettextCatalog.GetString ("_Tools"), new CellRendererText (), "text", 0);
+			toolListBox.AppendColumn (GettextCatalog.GetString ("Tools"), new CellRendererText (), "text", 0);
 
 			new MenuButtonEntry (argumentTextBox, argumentQuickInsertButton, argumentQuickInsertMenu);
 			new MenuButtonEntry (workingDirTextBox, workingDirQuickInsertButton, workingDirInsertMenu);
