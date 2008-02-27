@@ -46,7 +46,9 @@ namespace MonoDevelop.Ide.Gui
 		
 		string myUntitledTitle     = null;
 		string _titleHolder = "";
-
+		
+		string documentType;
+		
 		bool show_notification = false;
 		
 		ViewCommandHandlers commandHandler;
@@ -178,6 +180,15 @@ namespace MonoDevelop.Ide.Gui
 		public MonoDevelop.Ide.Gui.ViewCommandHandlers CommandHandler {
 			get {
 				return commandHandler;
+			}
+		}
+
+		public string DocumentType {
+			get {
+				return documentType;
+			}
+			set {
+				documentType = value;
 			}
 		}
 		

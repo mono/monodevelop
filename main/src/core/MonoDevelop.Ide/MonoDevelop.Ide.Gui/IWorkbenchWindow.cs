@@ -36,6 +36,11 @@ namespace MonoDevelop.Ide.Gui
 			get;
 			set;
 		}
+		
+		string DocumentType {
+			get;
+			set;
+		}
 
 		bool ShowNotification {
 			get;

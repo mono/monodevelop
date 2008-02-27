@@ -36,6 +36,13 @@ namespace MonoDevelop.Ide.Dom.Output
 	public abstract class Ambience
 	{
 		string name;
+		
+		public string Name {
+			get {
+				return name;
+			}
+		}
+		
 		protected Dictionary<Modifiers, string> modifiers = new Dictionary<Modifiers, string> ();
 		protected Dictionary<ClassType, string> classTypes = new Dictionary<ClassType, string> ();
 		protected Dictionary<ParameterModifiers, string> parameterModifiers = new Dictionary<ParameterModifiers, string> ();

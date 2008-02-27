@@ -1,5 +1,17 @@
 2008-02-27  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.Ide.Dom.Output/Ambience.cs,
+	  MonoDevelop.Ide.WindowSwitcher/WindowSwitcher.cs,
+	  gtk-gui/MonoDevelop.Ide.Gui.Dialogs.TipOfTheDayWindow.cs,
+	  gtk-gui/MonoDevelop.Ide.WindowSwitcher.cs,
+	  MonoDevelop.Ide.Gui/Workbench.cs,
+	  MonoDevelop.Ide.Gui/IWorkbenchWindow.cs,
+	  MonoDevelop.Ide.Gui/SdiWorkspaceWindow.cs,
+	  MonoDevelop.Ide.Gui/DefaultWorkbench.cs: Worked on document switcher
+	  (Ctrl+Tab).
+
+2008-02-27  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.Ide.mdp, gtk-gui/gui.stetic,
 	  gtk-gui/MonoDevelop.Ide.WindowSwitcher.cs, Makefile.am,
 	  MonoDevelop.Ide.Gui/DefaultStatusBarService.cs,

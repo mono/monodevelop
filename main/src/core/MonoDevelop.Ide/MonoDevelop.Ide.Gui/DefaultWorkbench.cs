@@ -652,11 +652,15 @@ namespace MonoDevelop.Ide.Gui
 			// Handle Tab+Control == NextWindow, Tab+Shift+Control == PrevWindow commands.
 			if (evnt.Key == Gdk.Key.Tab || evnt.Key == Gdk.Key.ISO_Left_Tab) {
 				if ((evnt.State & Gdk.ModifierType.ControlMask) == Gdk.ModifierType.ControlMask) {
-					if ((evnt.State & Gdk.ModifierType.ShiftMask) == Gdk.ModifierType.ShiftMask) {
-						IdeApp.CommandService.DispatchCommand (MonoDevelop.Ide.Commands.WindowCommands.PrevWindow);
-					} else {
-						IdeApp.CommandService.DispatchCommand (MonoDevelop.Ide.Commands.WindowCommands.NextWindow);
-					}
+					WindowSwitcher switcher = new WindowSwitcher ((evnt.State & Gdk.ModifierType.ShiftMask) != Gdk.ModifierType.ShiftMask);
+					switcher.Parent = this;
+					switcher.ShowAll ();
+					switcher.GrabFocus ();
+//					if () {
+////						IdeApp.CommandService.DispatchCommand (MonoDevelop.Ide.Commands.WindowCommands.PrevWindow);
+//					} else {
+//						//IdeApp.CommandService.DispatchCommand (MonoDevelop.Ide.Commands.WindowCommands.NextWindow);
+//					}
 					return true;
 				}
 			}

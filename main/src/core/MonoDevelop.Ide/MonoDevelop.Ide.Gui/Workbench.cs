@@ -763,6 +763,7 @@ namespace MonoDevelop.Ide.Gui
 
 			workbench.ShowView (newContent, fileInfo.BringToFront);
 			IdeApp.Workbench.DisplayBindings.AttachSubWindows(newContent.WorkbenchWindow);
+			newContent.WorkbenchWindow.DocumentType = binding.DisplayName;
 			
 			IPositionable ipos = (IPositionable) newContent.GetContent (typeof(IPositionable));
 			if (fileInfo.Line != -1 && ipos != null) {
