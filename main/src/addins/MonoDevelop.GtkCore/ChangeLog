@@ -1,3 +1,8 @@
+2008-02-27  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.GtkCore.GuiBuilder/ToolboxProvider.cs: Worked on category
+	  support for the toolbox service.
+
 2008-02-23  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.GtkCore.mdp, lib/libsteticui.mdp: Removed some unused glade

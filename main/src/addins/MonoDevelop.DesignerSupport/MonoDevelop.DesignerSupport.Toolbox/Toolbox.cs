@@ -200,10 +200,11 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		#endregion
 		
 		#region GUI population
-		public void Refresh ()
+		
+		Dictionary<string, Category> categories = new Dictionary<string, Category> ();
+		void AddItems (IEnumerable nodes)
 		{
-			Dictionary<string, Category> categories = new Dictionary<string, Category> ();
-			foreach (BaseToolboxNode node in toolboxService.GetCurrentToolboxItems ()) {
+			foreach (BaseToolboxNode node in nodes) {
 				if (node is ItemToolboxNode) {
 					ItemToolboxNode itbn = ((ItemToolboxNode)node);
 					Item newItem = new Item (itbn.ViewIcon, itbn.Label, String.IsNullOrEmpty (itbn.Description) ? itbn.Label : itbn.Description, itbn);
@@ -211,8 +212,19 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 						categories[itbn.Category] = new Category (itbn.Category);
 					if (newItem.Text != null)
 						categories[itbn.Category].Items.Add (newItem);
+				} else if (node is CategoryToolboxNode) {
+					CategoryToolboxNode category = node as CategoryToolboxNode;
+					categories[category.Label] = new Category (category);
+					AddItems (category.Children);
 				}
 			}
+		}
+		
+		public void Refresh ()
+		{
+			categories.Clear ();
+			AddItems (toolboxService.GetCurrentToolboxItems ());
+			
 			Drag.SourceUnset (toolboxWidget);
 			toolboxWidget.ClearCategories ();
 			foreach (Category category in categories.Values) {
@@ -223,6 +235,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			Gtk.TargetEntry[] targetTable = toolboxService.GetCurrentDragTargetTable ();
 			if (targetTable != null)
 				Drag.SourceSet (toolboxWidget, Gdk.ModifierType.Button1Mask, targetTable, Gdk.DragAction.Copy | Gdk.DragAction.Move);
+			compactModeToggleButton.Visible = toolboxWidget.CanIconizeToolboxCategories;
 		}
 		#endregion
 		

@@ -20,7 +20,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			Instance = this;
 		}
 		
-		public IList<ItemToolboxNode> GetDynamicItems (IToolboxConsumer consumer)
+		public IEnumerable<BaseToolboxNode> GetDynamicItems (IToolboxConsumer consumer)
 		{
 			GuiBuilderView view = consumer as GuiBuilderView;
 			if (view == null)
@@ -38,7 +38,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 					refs[FileService.GetFullPath (f)] = f;
 				}
 			
-			List<ItemToolboxNode> list = new List<ItemToolboxNode> ();
+			List<BaseToolboxNode> list = new List<BaseToolboxNode> ();
 			foreach (ComponentType type in types) {
 				if (type.Category == "window")
 					continue;

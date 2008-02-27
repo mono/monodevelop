@@ -311,7 +311,7 @@ namespace MonoDevelop.DesignerSupport
 		
 		public IList GetToolboxItems (IToolboxConsumer consumer)
 		{
-			List<ItemToolboxNode> arr = new List<ItemToolboxNode> ();
+			List<BaseToolboxNode> arr = new List<BaseToolboxNode> ();
 			Hashtable nodes = new Hashtable ();
 			
 			if (consumer != null) {
@@ -326,9 +326,9 @@ namespace MonoDevelop.DesignerSupport
 				
 				//merge the list of dynamic items from each provider
 				foreach (IToolboxDynamicProvider prov in dynamicProviders) {
-					IList<ItemToolboxNode> dynItems = prov.GetDynamicItems (consumer);
+					IEnumerable<BaseToolboxNode> dynItems = prov.GetDynamicItems (consumer);
 					if (dynItems != null) {
-						foreach (ItemToolboxNode node in dynItems) {
+						foreach (BaseToolboxNode node in dynItems) {
 							if (!nodes.Contains (node)) {
 								arr.Add (node);
 								nodes.Add (node, node);

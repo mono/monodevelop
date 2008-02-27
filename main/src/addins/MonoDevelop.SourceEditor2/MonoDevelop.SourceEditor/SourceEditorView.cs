@@ -1159,20 +1159,22 @@ namespace MonoDevelop.SourceEditor
 				ItemsChanged (this, EventArgs.Empty);
 		}
 		
-		public IList<ItemToolboxNode> GetDynamicItems (IToolboxConsumer consumer)
+		public IEnumerable<BaseToolboxNode> GetDynamicItems (IToolboxConsumer consumer)
 		{
-			List<ItemToolboxNode> result = new List<ItemToolboxNode> ();
+			CategoryToolboxNode category = new CategoryToolboxNode (GettextCatalog.GetString ("Clipboard ring"));
+			category.IsDropTarget    = false;
+			category.CanIconizeItems = false;
 			foreach (TextToolboxNode item in clipboardRing) {
-				result.Add (item);
+				category.Add (item);
 			}
 			
 			if (clipboardRing.Count == 0) {
 				TextToolboxNode item = new TextToolboxNode (null);
 				item.Category = GettextCatalog.GetString ("Clipboard ring");
 				item.Name = null;
-				result.Add (item);
+				category.Add (item);
 			}
-			return result;
+			return new BaseToolboxNode [] { category };
 		}
 		
 		public event EventHandler ItemsChanged;

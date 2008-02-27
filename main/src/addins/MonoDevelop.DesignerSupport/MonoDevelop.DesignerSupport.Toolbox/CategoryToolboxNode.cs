@@ -29,7 +29,7 @@
  */
 
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.Design;
 using System.Drawing.Design;
@@ -39,8 +39,34 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 {
 	public class CategoryToolboxNode : BaseToolboxNode
 	{
-		private ArrayList children = new ArrayList ();
-		private string name;
+		List<ItemToolboxNode> children = new List<ItemToolboxNode> ();
+		string name;
+		
+		public IEnumerable<ItemToolboxNode> Children {
+			get {
+				return children;
+			}
+		}
+		
+		bool canIconizeItems = true;
+		public bool CanIconizeItems {
+			get {
+				return canIconizeItems;
+			}
+			set {
+				canIconizeItems = value;
+			}
+		}
+		
+		bool isDropTarget    = false;
+		public bool IsDropTarget {
+			get {
+				return isDropTarget;
+			}
+			set {
+				isDropTarget = value;
+			}
+		}
 		
 		public CategoryToolboxNode (string name)
 		{
@@ -54,6 +80,10 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			OnChildAdded (child);
 		}
 		
+		public void RemoveAt (int i)
+		{
+			children.RemoveAt (0);
+		}
 		public void Remove (ItemToolboxNode child)
 		{
 			int pos = children.IndexOf (child);
@@ -139,7 +169,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
     	
     	public override int IndexOf (object o)
     	{
-    		return children.IndexOf (o);
+    		return children.IndexOf ((ItemToolboxNode)o);
     	}
 		
 		#endregion ITreeNode Members

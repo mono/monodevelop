@@ -1000,7 +1000,7 @@ namespace Mono.TextEditor
 				}
 				StringBuilder sb = new StringBuilder (clipboard.WaitForText ());
 				data.Document.Insert (data.Caret.Offset, sb);
-				int oldLine = data.Caret.Line;
+				//int oldLine = data.Caret.Line;
 				data.Caret.Offset += sb.Length;
 				data.Document.EndAtomicUndo ();
 			}

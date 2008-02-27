@@ -39,7 +39,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		List<Category> categories = new List<Category> ();
 		
 		bool showCategories = true;
-		bool listMode = false;
+		bool listMode       = false;
 		int mouseX, mouseY;
 		
 		public bool IsListMode {
@@ -50,6 +50,16 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				listMode = value;
 				this.QueueResize ();
 				this.ScrollToSelectedItem ();
+			}
+		}
+		
+		public bool CanIconizeToolboxCategories {
+			get {
+				foreach (Category category in categories) {
+					if (category.CanIconizeItems)
+						return true;
+				}
+				return false;
 			}
 		}
 		
@@ -100,6 +110,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			categories.Clear ();
 			iconSize = new Gdk.Size (24, 24);
 		}
+		
 		public void AddCategory (Category category)
 		{
 			categories.Add (category);
@@ -201,7 +212,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 					                                      itemDimension.Width - 1, 
 					                                      itemDimension.Height - 1));
 				}
-			}, delegate (Item item, Gdk.Size itemDimension) {
+			}, delegate (Category curCategory, Item item, Gdk.Size itemDimension) {
 				if (item == SelectedItem) {
 					draw.DrawRectangle (Style.BaseGC (StateType.Selected), 
 					                   true, 
@@ -210,7 +221,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 					                                      itemDimension.Width, 
 					                                      itemDimension.Height));
 				}
-				if (listMode) {
+				if (listMode || !curCategory.CanIconizeItems)  {
 					draw.DrawPixbuf (this.Style.ForegroundGC (StateType.Normal), 
 					                item.Icon, 0, 0, 
 					                xpos + spacing, 
@@ -385,7 +396,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 					mouseOverItem = category;
 					ShowTooltip (mouseOverItem, (int)e.X + 2, (int)e.Y + 16);
 				}
-			}, delegate (Item item, Gdk.Size itemDimension) {
+			}, delegate (Category curCategory, Item item, Gdk.Size itemDimension) {
 				if (xpos <= mouseX && mouseX <= xpos + itemDimension.Width + spacing  &&
 				    ypos <= mouseY && mouseY <= ypos + itemDimension.Height + spacing) {
 					mouseOverItem = item;
@@ -441,13 +452,11 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		Category GetCategory (Item item)
 		{
 			Category result = null;
-			Category cur = null;
 			int xpos = spacing, ypos = spacing;
 			Iterate (ref xpos, ref ypos, delegate (Category category, Gdk.Size itemDimension) {
-				cur = category;
-			}, delegate (Item innerItem, Gdk.Size itemDimension) {
+			}, delegate (Category curCategory, Item innerItem, Gdk.Size itemDimension) {
 				if (innerItem == item) 
-					result = cur;
+					result = curCategory;
 			});
 			return result;
 		}
@@ -461,7 +470,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				if (last == category) 
 					result = curCategory;
 				last = curCategory;
-			}, delegate (Item innerItem, Gdk.Size itemDimension) {
+			}, delegate (Category curCategory, Item innerItem, Gdk.Size itemDimension) {
 			});
 			return result;
 		}
@@ -472,7 +481,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			Gdk.Rectangle rect = GetItemExtends (item);
 			int xpos = spacing, ypos = spacing;
 			Iterate (ref xpos, ref ypos, delegate (Category category, Gdk.Size itemDimension) {
-			}, delegate (Item curItem, Gdk.Size itemDimension) {
+			}, delegate (Category curCategory, Item curItem, Gdk.Size itemDimension) {
 				if (xpos > rect.X && ypos == rect.Y && result == item)
 					result = curItem;
 			});
@@ -485,7 +494,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			Gdk.Rectangle rect = GetItemExtends (item);
 			int xpos = spacing, ypos = spacing;
 			Iterate (ref xpos, ref ypos, delegate (Category category, Gdk.Size itemDimension) {
-			}, delegate (Item curItem, Gdk.Size itemDimension) {
+			}, delegate (Category curCategory, Item curItem, Gdk.Size itemDimension) {
 				if (xpos < rect.X && ypos == rect.Y)
 					result = curItem;
 			});
@@ -495,14 +504,12 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		Item GetItemBelow (Item item)
 		{
 			Category itemCategory = GetCategory (item);
-			Category curCategory = GetCategory (item);
 						
 			Item result = item;
 			Gdk.Rectangle rect = GetItemExtends (item);
 			int xpos = spacing, ypos = spacing;
 			Iterate (ref xpos, ref ypos, delegate (Category category, Gdk.Size itemDimension) {
-				curCategory = category;
-			}, delegate (Item curItem, Gdk.Size itemDimension) {
+			}, delegate (Category curCategory, Item curItem, Gdk.Size itemDimension) {
 				if (ypos > rect.Y && xpos == rect.X && result == item && curCategory == itemCategory)
 					result = curItem;
 			});
@@ -512,13 +519,11 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		Item GetItemAbove (Item item)
 		{
 			Category itemCategory = GetCategory (item);
-			Category curCategory = GetCategory (item);
 			Item result = item;
 			Gdk.Rectangle rect = GetItemExtends (item);
 			int xpos = spacing, ypos = spacing;
 			Iterate (ref xpos, ref ypos, delegate (Category category, Gdk.Size itemDimension) {
-				curCategory = category;
-			}, delegate (Item curItem, Gdk.Size itemDimension) {
+			}, delegate (Category curCategory, Item curItem, Gdk.Size itemDimension) {
 				if (ypos < rect.Y && xpos == rect.X && curCategory == itemCategory)
 					result = curItem;
 			});
@@ -532,7 +537,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			Iterate (ref xpos, ref ypos, delegate (Category category, Gdk.Size itemDimension) {
 				if (item == category)
 					result = new Gdk.Rectangle (xpos, ypos, itemDimension.Width, itemDimension.Height);
-			}, delegate (Item curItem, Gdk.Size itemDimension) {
+			}, delegate (Category curCategory, Item curItem, Gdk.Size itemDimension) {
 				if (item == curItem)
 					result = new Gdk.Rectangle (xpos, ypos, itemDimension.Width, itemDimension.Height);
 			});
@@ -548,7 +553,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				if (currentItem == category && lastItem != null)
 					result = lastItem;
 				lastItem = category;
-			}, delegate (Item item, Gdk.Size itemDimension) {
+			}, delegate (Category curCategory, Item item, Gdk.Size itemDimension) {
 				if (currentItem == item && lastItem != null) 
 					result = lastItem;
 				lastItem = item;
@@ -567,7 +572,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 					result = category;
 				}
 				lastItem = category;
-			}, delegate (Item item, Gdk.Size itemDimension) {
+			}, delegate (Category curCategory, Item item, Gdk.Size itemDimension) {
 				if (lastItem == currentItem) {
 					result = item;
 				}
@@ -607,16 +612,16 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		
 		#region Item & Category iteration
 		delegate void CategoryAction (Category category, Gdk.Size categoryDimension);
-		delegate void ItemAction (Item item, Gdk.Size itemDimension);
+		delegate void ItemAction (Category curCategory, Item item, Gdk.Size itemDimension);
 		void IterateItems (Category category, ref int xpos, ref int ypos, ItemAction action)
 		{
-			if (listMode) {
+			if (listMode || !category.CanIconizeItems) {
 				foreach (Item item in category.Items) {
 					if (!item.IsVisible)
 						continue;
 					xpos = spacing;
 					if (action != null)
-						action (item, new Gdk.Size (Allocation.Width - spacing * 2, IconSize.Height));
+						action (category, item, new Gdk.Size (Allocation.Width - spacing * 2, IconSize.Height));
 					ypos += IconSize.Height + spacing;
 				}
 				return;
@@ -629,7 +634,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 					ypos += IconSize.Height;
 				}
 				if (action != null)
-					action (item, IconSize);
+					action (category, item, IconSize);
 				xpos += IconSize.Width;
 			}
 			ypos += IconSize.Height + spacing;
@@ -803,6 +808,32 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			get {
 				return items;
 			}
+		}
+		
+		bool canIconizeItems = true;
+		public bool CanIconizeItems {
+			get {
+				return canIconizeItems;
+			}
+			set {
+				canIconizeItems = value;
+			}
+		}
+		
+		bool isDropTarget    = false;
+		public bool IsDropTarget {
+			get {
+				return isDropTarget;
+			}
+			set {
+				isDropTarget = value;
+			}
+		}
+		
+		public Category (CategoryToolboxNode node) : base (node.Label)
+		{
+			this.canIconizeItems = node.CanIconizeItems;
+			this.isDropTarget    = node.IsDropTarget;
 		}
 		
 		public Category (string text) : base (text)
