@@ -43,31 +43,31 @@ FILES =  \
 	MonoDevelop.AspNet.Gui/AspNetConfigurationPanelWidget.cs \
 	MonoDevelop.AspNet.Gui/XspOptionsPanel.cs \
 	MonoDevelop.AspNet.Gui/XspOptionsPanelWidget.cs \
+	MonoDevelop.AspNet.Parser.Dom/DirectiveNode.cs \
+	MonoDevelop.AspNet.Parser.Dom/ExpressionNode.cs \
+	MonoDevelop.AspNet.Parser.Dom/ILocation.cs \
+	MonoDevelop.AspNet.Parser.Dom/Node.cs \
+	MonoDevelop.AspNet.Parser.Dom/ParentNode.cs \
+	MonoDevelop.AspNet.Parser.Dom/RootNode.cs \
+	MonoDevelop.AspNet.Parser.Dom/ServerCommentNode.cs \
+	MonoDevelop.AspNet.Parser.Dom/ServerIncludeNode.cs \
+	MonoDevelop.AspNet.Parser.Dom/TagNode.cs \
+	MonoDevelop.AspNet.Parser.Dom/TextNode.cs \
+	MonoDevelop.AspNet.Parser.Dom/Visitor.cs \
+	MonoDevelop.AspNet.Parser.Internal/AspParser.cs \
+	MonoDevelop.AspNet.Parser.Internal/AspTokenizer.cs \
+	MonoDevelop.AspNet.Parser.Internal/Directive.cs \
+	MonoDevelop.AspNet.Parser.Internal/Location.cs \
+	MonoDevelop.AspNet.Parser.Internal/ParseException.cs \
+	MonoDevelop.AspNet.Parser.Internal/StrUtils.cs \
+	MonoDevelop.AspNet.Parser.Internal/TagAttributes.cs \
+	MonoDevelop.AspNet.Parser.Internal/TagType.cs \
 	MonoDevelop.AspNet.Parser/DebugStringVisitor.cs \
 	MonoDevelop.AspNet.Parser/Document.cs \
 	MonoDevelop.AspNet.Parser/DocumentReferenceManager.cs \
-	MonoDevelop.AspNet.Parser/Internal/AspParser.cs \
-	MonoDevelop.AspNet.Parser/Internal/AspTokenizer.cs \
-	MonoDevelop.AspNet.Parser/Internal/Directive.cs \
-	MonoDevelop.AspNet.Parser/Internal/Location.cs \
-	MonoDevelop.AspNet.Parser/Internal/ParseException.cs \
-	MonoDevelop.AspNet.Parser/Internal/StrUtils.cs \
-	MonoDevelop.AspNet.Parser/Internal/TagAttributes.cs \
-	MonoDevelop.AspNet.Parser/Internal/TagType.cs \
 	MonoDevelop.AspNet.Parser/LocatedParserException.cs \
 	MonoDevelop.AspNet.Parser/MemberListVisitor.cs \
 	MonoDevelop.AspNet.Parser/PageInfoVisitor.cs \
-	MonoDevelop.AspNet.Parser/Tree/DirectiveNode.cs \
-	MonoDevelop.AspNet.Parser/Tree/ExpressionNode.cs \
-	MonoDevelop.AspNet.Parser/Tree/ILocation.cs \
-	MonoDevelop.AspNet.Parser/Tree/Node.cs \
-	MonoDevelop.AspNet.Parser/Tree/ParentNode.cs \
-	MonoDevelop.AspNet.Parser/Tree/RootNode.cs \
-	MonoDevelop.AspNet.Parser/Tree/ServerCommentNode.cs \
-	MonoDevelop.AspNet.Parser/Tree/ServerIncludeNode.cs \
-	MonoDevelop.AspNet.Parser/Tree/TagNode.cs \
-	MonoDevelop.AspNet.Parser/Tree/TextNode.cs \
-	MonoDevelop.AspNet.Parser/Tree/Visitor.cs \
 	MonoDevelop.AspNet.Parser/WebFormReferenceManager.cs \
 	MonoDevelop.AspNet/AspNetAppProject.cs \
 	MonoDevelop.AspNet/AspNetAppProjectBinding.cs \

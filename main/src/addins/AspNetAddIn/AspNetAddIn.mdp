@@ -27,25 +27,25 @@
     <File name="Templates/WebForm-CodeBehind.xft.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="Templates/WebHandler-CodeBehind.xft.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="Templates/WebApplication.xpt.xml" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="MonoDevelop.AspNet.Parser/Internal/AspParser.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.AspNet.Parser/Internal/AspTokenizer.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.AspNet.Parser/Internal/Location.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.AspNet.Parser/Internal/StrUtils.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.AspNet.Parser/Internal/ParseException.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.AspNet.Parser/Internal/Directive.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.AspNet.Parser/Internal/TagType.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.AspNet.Parser/Tree/DirectiveNode.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.AspNet.Parser/Tree/RootNode.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.AspNet.Parser/Tree/ExpressionNode.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.AspNet.Parser/Tree/TagNode.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.AspNet.Parser/Tree/Node.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.AspNet.Parser/Tree/Visitor.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.AspNet.Parser/Tree/ServerIncludeNode.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.AspNet.Parser/Tree/TextNode.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.AspNet.Parser/Tree/ParentNode.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.AspNet.Parser/Tree/ILocation.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.AspNet.Parser/Internal/TagAttributes.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.AspNet.Parser/Tree/ServerCommentNode.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.AspNet.Parser.Internal/AspParser.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.AspNet.Parser.Internal/AspTokenizer.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.AspNet.Parser.Internal/Location.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.AspNet.Parser.Internal/StrUtils.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.AspNet.Parser.Internal/ParseException.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.AspNet.Parser.Internal/Directive.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.AspNet.Parser.Internal/TagType.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.AspNet.Parser.Dom/DirectiveNode.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.AspNet.Parser.Dom/RootNode.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.AspNet.Parser.Dom/ExpressionNode.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.AspNet.Parser.Dom/TagNode.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.AspNet.Parser.Dom/Node.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.AspNet.Parser.Dom/Visitor.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.AspNet.Parser.Dom/ServerIncludeNode.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.AspNet.Parser.Dom/TextNode.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.AspNet.Parser.Dom/ParentNode.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.AspNet.Parser.Dom/ILocation.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.AspNet.Parser.Internal/TagAttributes.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.AspNet.Parser.Dom/ServerCommentNode.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.AspNet.Parser/MemberListVisitor.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.AspNet.Parser/PageInfoVisitor.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.AspNet.Parser/WebFormReferenceManager.cs" subtype="Code" buildaction="Compile" />

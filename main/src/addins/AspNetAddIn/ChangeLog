@@ -1,3 +1,14 @@
+2008-02-27  Michael Hutchinson  <mhutchinson@novell.com> 
+
+	* MonoDevelop.AspNet.Parser/Internal:
+	* MonoDevelop.AspNet.Parser/Tree:
+	* MonoDevelop.AspNet.Parser.Internal:
+	* MonoDevelop.AspNet.Parser.Dom:
+	* AspNetAddIn.mdp:
+	* Makefile.am: Finish restructuring directories to reflect namespaces.
+	
+	* MonoDevelop.AspNet.addin.xml: Clean up whitespace.
+
 2008-02-27  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* Deployment, MonoDevelop.AspNet, Gui, Parser,
