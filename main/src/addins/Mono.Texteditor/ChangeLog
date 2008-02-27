@@ -1,5 +1,9 @@
 2008-02-27  Mike Krüger <mkrueger@novell.com> 
 
+	* Mono.TextEditor/TextMarker.cs: Added background marker support.
+
+2008-02-27  Mike Krüger <mkrueger@novell.com> 
+
 	* Mono.TextEditor/Document.cs, Mono.TextEditor/TextEditorData.cs,
 	  Mono.TextEditor/TextEditor.cs, Mono.TextEditor/Caret.cs,
 	  Mono.TextEditor.Tests/Mono.TextEditor.Tests/UndoRedoTests.cs,

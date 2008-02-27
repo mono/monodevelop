@@ -66,6 +66,7 @@ FILES =  \
 
 RES =  \
 	BooSyntaxMode.xml \
+	BrownStyle.xml \
 	C64Style.xml \
 	CPPSyntaxMode.xml \
 	CSharpSyntaxMode.xml \
@@ -75,7 +76,6 @@ RES =  \
 	JavaSyntaxMode.xml \
 	OblivionStyle.xml \
 	TangoLightStyle.xml \
-	BrownStyle.xml \
 	VBNetSyntaxMode.xml \
 	VisualStudioStyle.xml \
 	XmlSyntaxMode.xml

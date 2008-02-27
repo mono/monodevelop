@@ -34,6 +34,11 @@ namespace Mono.TextEditor
 		Email
 	}
 	
+	public enum MarkerType {
+		Foreground,
+		Background
+	}
+	
 	public class UrlMarker : TextMarker
 	{
 		string url;
@@ -110,6 +115,16 @@ namespace Mono.TextEditor
 	public class TextMarker
 	{
 		LineSegment lineSegment;
+		MarkerType  markerType = MarkerType.Foreground;
+		
+		public MarkerType MarkerType {
+			get {
+				return markerType;
+			}
+			set {
+				markerType = value;
+			}
+		}
 		
 		public LineSegment LineSegment {
 			get {
