@@ -91,8 +91,11 @@ namespace MonoDevelop.SourceEditor
 			};
 			
 			widget.TextEditor.Document.TextReplaced += delegate {
-				this.IsDirty = Document.CanUndo;
+				this.IsDirty = Document.IsDirty;
 			};
+//			widget.TextEditor.Document.DocumentUpdated += delegate {
+//				this.IsDirty = Document.IsDirty;
+//			};
 			
 			widget.TextEditor.Caret.PositionChanged += delegate {
 				FireCompletionContextChanged ();
@@ -159,7 +162,7 @@ namespace MonoDevelop.SourceEditor
 			
 			ContentName = fileName; 
 			Document.MimeType = IdeApp.Services.PlatformService.GetMimeTypeForUri (fileName);
-			
+			Document.SetNotDirtyState ();
 			this.IsDirty = false;
 		}
 		
