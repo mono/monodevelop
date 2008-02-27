@@ -594,6 +594,10 @@ namespace Mono.TextEditor
 			return result;
 		}
 		
+		public List<FoldSegment> GetFoldingContaining (int lineNumber)
+		{
+			return GetFoldingContaining (this.GetLine (lineNumber));
+		}
 		public List<FoldSegment> GetFoldingContaining (LineSegment line)
 		{
 			List<FoldSegment> result = new List<FoldSegment> ();
@@ -607,6 +611,10 @@ namespace Mono.TextEditor
 			return result;
 		}
 		
+		public List<FoldSegment> GetStartFoldings (int lineNumber)
+		{
+			return GetStartFoldings (this.GetLine (lineNumber));
+		}
 		public List<FoldSegment> GetStartFoldings (LineSegment line)
 		{
 			List<FoldSegment> result = new List<FoldSegment> ();
@@ -619,6 +627,10 @@ namespace Mono.TextEditor
 			return result;
 		}
 		
+		public List<FoldSegment> GetEndFoldings (int lineNumber)
+		{
+			return GetEndFoldings (this.GetLine (lineNumber));
+		}
 		public List<FoldSegment> GetEndFoldings (LineSegment line)
 		{
 			List<FoldSegment> result = new List<FoldSegment> ();

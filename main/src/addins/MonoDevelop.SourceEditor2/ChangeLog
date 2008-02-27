@@ -1,5 +1,10 @@
 2008-02-27  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.SourceEditor/SourceEditorWidget.cs: Automatically unfold
+	  regions when you jump to them.
+
+2008-02-27  Mike Krüger <mkrueger@novell.com> 
+
 	* gtk-gui/MonoDevelop.SourceEditor.OptionPanels.GeneralOptionsPanel.cs,
 	  gtk-gui/gui.stetic, MonoDevelop.SourceEditor/SourceEditorWidget.cs:
 	  Refactored status bar.

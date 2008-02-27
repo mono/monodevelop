@@ -819,8 +819,14 @@ namespace MonoDevelop.SourceEditor
 				
 				// If we can we navigate to the line location of the IMember.
 				IViewContent content = (IViewContent)IdeApp.Workbench.ActiveDocument.GetContent(typeof(IViewContent));
-				if (content is IPositionable) 
-					((IPositionable)content).JumpTo (Math.Max (1, selectedRegion.BeginLine), 1);
+				if (content is IPositionable)  {
+					int line = Math.Max (1, selectedRegion.BeginLine);
+					((IPositionable)content).JumpTo (line, 1);
+					foreach (FoldSegment fold in this.textEditor.Document.GetStartFoldings (line - 1)) {
+						if (fold.FoldingType == FoldingType.Region)
+							fold.IsFolded = false;
+					}
+				}
 			}
 		}
 		
