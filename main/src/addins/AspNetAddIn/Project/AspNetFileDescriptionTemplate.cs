@@ -118,7 +118,7 @@ namespace AspNetAddIn
 			} else if (language == "VBNet") {
 				languageCode = "VB";
 			} else if (language != "C#") {
-				LoggingService.LogWarning ("The language binding '{0}' does not have explicit support for ASP.NET");
+				LoggingService.LogWarning ("The language binding '{0}' does not have explicit support for ASP.NET", language);
 			}
 			tags ["AspNetLanguage"] = languageCode;
 			

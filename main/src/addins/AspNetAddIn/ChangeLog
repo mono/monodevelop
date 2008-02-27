@@ -1,5 +1,9 @@
 2008-02-26  Michael Hutchinson <mhutchinson@novell.com> 
 
+	* Project/AspNetFileDescriptionTemplate.cs: Fix string formatting call.
+
+2008-02-26  Michael Hutchinson <mhutchinson@novell.com> 
+
 	* AspNetAddIn.mdp, Makefile.am, Parser/Tree/ParentNode.cs,
 	  Parser/Tree/ServerCommentNode.cs, Parser/Tree/Visitor.cs,
 	  Parser/Tree/TagNode.cs, Parser/Tree/DirectiveNode.cs,
