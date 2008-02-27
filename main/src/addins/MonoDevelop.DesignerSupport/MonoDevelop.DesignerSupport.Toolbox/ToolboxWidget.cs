@@ -624,7 +624,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			foreach (Item item in category.Items) {
 				if (!item.IsVisible)
 					continue;
-				if (xpos + IconSize.Width + spacing >= this.GdkWindow.VisibleRegion.Clipbox.Width) {
+				if (xpos + IconSize.Width + spacing >= this.Allocation.Width) {
 					xpos = spacing;
 					ypos += IconSize.Height;
 				}

@@ -1,3 +1,8 @@
+2008-02-27  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.DesignerSupport.Toolbox/ToolboxWidget.cs: Fixed
+	  nullrefexception.
+
 2008-02-24  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.DesignerSupport.Toolbox/Toolbox.cs,
