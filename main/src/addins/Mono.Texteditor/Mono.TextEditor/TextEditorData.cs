@@ -133,14 +133,12 @@ namespace Mono.TextEditor
 		
 		void OnBeginUndo (object sender, EventArgs args)
 		{
-			System.Console.WriteLine("begin undo" + Caret.Offset);
 			savedCaretPos  = Caret.Offset;
 			savedSelection = SelectionRange;
 		}
 		
 		void OnEndUndo (object sender, Document.UndoOperation operation)
 		{
-			System.Console.WriteLine("end undo" + Caret.Offset);
 			if (operation == null)
 				return;
 			TextEditorDataState state = new TextEditorDataState (this, operation, savedCaretPos, savedSelection);
@@ -167,7 +165,6 @@ namespace Mono.TextEditor
 				this.operation     = operation;
 				this.redoCaretPos  = editor.Caret.Offset;
 				this.redoSelection = editor.SelectionRange;
-				System.Console.WriteLine("redopos:" + this.redoCaretPos + " undoPos:" + this.undoCaretPos);
 				this.operation.Disposed += delegate {
 					if (editor != null)
 						editor.states.Remove (this);
@@ -198,7 +195,6 @@ namespace Mono.TextEditor
 			{
 				if (editor == null)
 					return;
-				System.Console.WriteLine("undo");
 				editor.Caret.Offset   = this.undoCaretPos;
 				editor.SelectionRange = this.undoSelection;
 			}
@@ -207,7 +203,6 @@ namespace Mono.TextEditor
 			{
 				if (editor == null)
 					return;
-				System.Console.WriteLine("Redo");
 				editor.Caret.Offset   = this.redoCaretPos;
 				editor.SelectionRange = this.redoSelection;
 			}

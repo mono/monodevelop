@@ -457,7 +457,6 @@ namespace Mono.TextEditor
 		{
 			if (undoStack.Count <= 0)
 				return;
-			System.Console.WriteLine (undoStack.Count);
 			isInUndo = true;
 			UndoOperation chunk = undoStack.Pop ();
 			redoStack.Push (chunk);
