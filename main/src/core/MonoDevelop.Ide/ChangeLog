@@ -1,5 +1,9 @@
 2008-02-27  Mike Krüger <mkrueger@novell.com> 
 
+	
+
+2008-02-27  Mike Krüger <mkrueger@novell.com> 
+
 	* gtk-gui/gui.stetic: Removed documentswitcher window title.
 
 2008-02-27  Mike Krüger <mkrueger@novell.com> 

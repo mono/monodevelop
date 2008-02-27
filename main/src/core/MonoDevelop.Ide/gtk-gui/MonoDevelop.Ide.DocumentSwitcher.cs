@@ -51,7 +51,7 @@ namespace MonoDevelop.Ide {
             Stetic.Gui.Initialize(this);
             // Widget MonoDevelop.Ide.DocumentSwitcher
             this.Name = "MonoDevelop.Ide.DocumentSwitcher";
-            this.Title = Mono.Unix.Catalog.GetString("WindowSwitcher");
+            this.Title = "";
             this.TypeHint = ((Gdk.WindowTypeHint)(4));
             this.WindowPosition = ((Gtk.WindowPosition)(4));
             this.BorderWidth = ((uint)(6));
