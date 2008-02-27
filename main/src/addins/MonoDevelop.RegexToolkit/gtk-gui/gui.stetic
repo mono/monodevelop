@@ -2,6 +2,7 @@
 <stetic-interface>
   <configuration>
     <images-root-path>..</images-root-path>
+    <target-gtk-version>2.10.2</target-gtk-version>
   </configuration>
   <import>
     <widget-library name="../../../../build/bin/MonoDevelop.Ide.dll" />
@@ -370,39 +371,6 @@
             <property name="MemberName" />
             <property name="Spacing">6</property>
             <child>
-              <widget class="Gtk.Button" id="buttonCancel">
-                <property name="MemberName" />
-                <property name="CanDefault">True</property>
-                <property name="CanFocus">True</property>
-                <property name="UseStock">True</property>
-                <property name="Type">StockItem</property>
-                <property name="StockId">gtk-close</property>
-                <property name="label">gtk-close</property>
-              </widget>
-              <packing>
-                <property name="Position">0</property>
-                <property name="AutoSize">True</property>
-                <property name="Expand">False</property>
-                <property name="Fill">False</property>
-              </packing>
-            </child>
-            <child>
-              <widget class="Gtk.Button" id="buttonLibrary">
-                <property name="MemberName" />
-                <property name="CanDefault">True</property>
-                <property name="CanFocus">True</property>
-                <property name="Type">TextOnly</property>
-                <property name="Label" translatable="yes">Regex Library</property>
-                <property name="UseUnderline">True</property>
-              </widget>
-              <packing>
-                <property name="Position">1</property>
-                <property name="AutoSize">True</property>
-                <property name="Expand">False</property>
-                <property name="Fill">False</property>
-              </packing>
-            </child>
-            <child>
               <widget class="Gtk.Button" id="buttonSearch">
                 <property name="MemberName" />
                 <property name="CanDefault">True</property>
@@ -413,7 +381,8 @@
                 <property name="label">gtk-find</property>
               </widget>
               <packing>
-                <property name="Position">2</property>
+                <property name="PackType">End</property>
+                <property name="Position">0</property>
                 <property name="AutoSize">True</property>
                 <property name="Expand">False</property>
                 <property name="Fill">False</property>
@@ -430,6 +399,42 @@
                 <property name="label">gtk-find-and-replace</property>
               </widget>
               <packing>
+                <property name="PackType">End</property>
+                <property name="Position">1</property>
+                <property name="AutoSize">True</property>
+                <property name="Expand">False</property>
+                <property name="Fill">False</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="Gtk.Button" id="buttonLibrary">
+                <property name="MemberName" />
+                <property name="CanDefault">True</property>
+                <property name="CanFocus">True</property>
+                <property name="Type">TextOnly</property>
+                <property name="Label" translatable="yes">Regex Library</property>
+                <property name="UseUnderline">True</property>
+              </widget>
+              <packing>
+                <property name="PackType">End</property>
+                <property name="Position">2</property>
+                <property name="AutoSize">True</property>
+                <property name="Expand">False</property>
+                <property name="Fill">False</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="Gtk.Button" id="buttonCancel">
+                <property name="MemberName" />
+                <property name="CanDefault">True</property>
+                <property name="CanFocus">True</property>
+                <property name="UseStock">True</property>
+                <property name="Type">StockItem</property>
+                <property name="StockId">gtk-close</property>
+                <property name="label">gtk-close</property>
+              </widget>
+              <packing>
+                <property name="PackType">End</property>
                 <property name="Position">3</property>
                 <property name="AutoSize">True</property>
                 <property name="Expand">False</property>

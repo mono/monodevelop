@@ -44,7 +44,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 {
 	[DataItem (Name = "item", FallbackType = typeof(UnknownToolboxNode))]
 	[Serializable]
-	public abstract class ItemToolboxNode : BaseToolboxNode, ICustomDataItem, IComparable<ItemToolboxNode>
+	public abstract class ItemToolboxNode : BaseToolboxNode, ICustomDataItem, IComparable, IComparable<ItemToolboxNode>
 	{
 		[NonSerialized]
 		Gdk.Pixbuf icon;
@@ -122,6 +122,12 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		public bool Equals (ItemToolboxNode node)
 		{
 			return (node != null) && (node.Name == this.Name) && (node.Category == this.Category) && (node.Description == this.Description);
+		}
+		
+		public virtual int CompareTo (object o)
+		{
+			ItemToolboxNode node = o as ItemToolboxNode;
+			return node != null ? CompareTo (node): 0;
 		}
 		
 		public virtual int CompareTo (ItemToolboxNode other)

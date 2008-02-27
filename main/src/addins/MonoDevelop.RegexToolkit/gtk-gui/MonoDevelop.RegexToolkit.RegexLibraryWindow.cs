@@ -140,6 +140,7 @@ namespace MonoDevelop.RegexToolkit {
             this.expressionsTreeview = new Gtk.TreeView();
             this.expressionsTreeview.CanFocus = true;
             this.expressionsTreeview.Name = "expressionsTreeview";
+            this.expressionsTreeview.HeadersClickable = true;
             this.scrolledwindow2.Add(this.expressionsTreeview);
             this.vbox6.Add(this.scrolledwindow2);
             Gtk.Box.BoxChild w6 = ((Gtk.Box.BoxChild)(this.vbox6[this.scrolledwindow2]));

@@ -1,5 +1,9 @@
 2008-02-27  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.DesignerSupport.Toolbox/ItemToolboxNode.cs: Fixed comparer bug
+
+2008-02-27  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.DesignerSupport/ToolboxService.cs,
 	  MonoDevelop.DesignerSupport.Toolbox/Toolbox.cs,
 	  MonoDevelop.DesignerSupport.Toolbox/CategoryToolboxNode.cs,

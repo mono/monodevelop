@@ -1,3 +1,9 @@
+2008-02-27  Mike Krüger <mkrueger@novell.com> 
+
+	* gtk-gui/MonoDevelop.RegexToolkit.RegexLibraryWindow.cs,
+	  gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWindow.cs: Moved some
+	  buttons.
+
 2008-02-09  Mike Krüger <mkrueger@novell.com> 
 
 	* Makefile.am: Managed texteditor is now standard - the gtksourceview1&2 are
