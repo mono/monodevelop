@@ -34,11 +34,6 @@ namespace Mono.TextEditor
 		Email
 	}
 	
-	public enum MarkerType {
-		Foreground,
-		Background
-	}
-	
 	public class UrlMarker : TextMarker
 	{
 		string url;
@@ -115,16 +110,6 @@ namespace Mono.TextEditor
 	public class TextMarker
 	{
 		LineSegment lineSegment;
-		MarkerType  markerType = MarkerType.Foreground;
-		
-		public MarkerType MarkerType {
-			get {
-				return markerType;
-			}
-			set {
-				markerType = value;
-			}
-		}
 		
 		public LineSegment LineSegment {
 			get {
@@ -133,6 +118,17 @@ namespace Mono.TextEditor
 			set {
 				lineSegment = value;
 			}
+		}
+		
+		/// <summary>
+		/// Draws the backround of a line part.
+		/// </summary>
+		/// <returns>
+		/// true, when the text view should draw the text, false when the text view should not draw the text.
+		/// </returns>
+		public virtual bool DrawBackground (TextEditor editor, Gdk.Drawable win, bool selected, int startOffset, int endOffset, int y, int startXPos, int endXPos)
+		{
+			return true;
 		}
 		
 		public virtual void Draw (TextEditor editor, Gdk.Drawable win, bool selected, int startOffset, int endOffset, int y, int startXPos, int endXPos)

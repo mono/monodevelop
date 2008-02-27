@@ -1,5 +1,10 @@
 2008-02-27  Mike Krüger <mkrueger@novell.com> 
 
+	* Mono.TextEditor/TextViewMargin.cs, Mono.TextEditor/TextMarker.cs: Added
+	  draw routine for a caret marker.
+
+2008-02-27  Mike Krüger <mkrueger@novell.com> 
+
 	* Mono.TextEditor/TextMarker.cs: Added background marker support.
 
 2008-02-27  Mike Krüger <mkrueger@novell.com> 
