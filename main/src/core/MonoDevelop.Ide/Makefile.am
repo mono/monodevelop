@@ -27,6 +27,7 @@ REFS =  \
 FILES =  \
 	gtk-gui/generated.cs \
 	gtk-gui/MonoDevelop.Ide.CodeTemplates.CodeTemplatePanelWidget.cs \
+	gtk-gui/MonoDevelop.Ide.DocumentSwitcher.cs \
 	gtk-gui/MonoDevelop.Ide.ExternalTools.ExternalToolPanelWidget.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.AddinLoadErrorDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.CombineEntryFeatureSelector.cs \
@@ -48,6 +49,7 @@ FILES =  \
 	gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.AddInsPanelWidget.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.BuildPanelWidget.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.CodeGenerationPanelWidget.cs \
+	gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.IDEStyleOptionsPanelWidget.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.KeyBindingsPanel.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.LoadSavePanelWidget.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.SelectStylePanelWidget.cs \
@@ -55,7 +57,6 @@ FILES =  \
 	gtk-gui/MonoDevelop.Ide.SelectEncodingsDialog.cs \
 	gtk-gui/MonoDevelop.Ide.StandardHeaders.NewHeaderTemplateDialog.cs \
 	gtk-gui/MonoDevelop.Ide.StandardHeaders.StandardHeaderPanel.cs \
-	gtk-gui/MonoDevelop.Ide.WindowSwitcher.cs \
 	MonoDevelop.Ide.CodeTemplates/CodeTemplate.cs \
 	MonoDevelop.Ide.CodeTemplates/CodeTemplateGroup.cs \
 	MonoDevelop.Ide.CodeTemplates/CodeTemplatePanel.cs \
@@ -189,9 +190,9 @@ FILES =  \
 	MonoDevelop.Ide.Gui.OptionPanels/AddInsOptionsPanel.cs \
 	MonoDevelop.Ide.Gui.OptionPanels/BuildPanel.cs \
 	MonoDevelop.Ide.Gui.OptionPanels/CodeGenerationPanel.cs \
+	MonoDevelop.Ide.Gui.OptionPanels/IDEStyleOptionsPanel.cs \
 	MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs \
 	MonoDevelop.Ide.Gui.OptionPanels/LoadSavePanel.cs \
-	MonoDevelop.Ide.Gui.OptionPanels/SelectStylePanel.cs \
 	MonoDevelop.Ide.Gui.OptionPanels/TasksOptionsPanel.cs \
 	MonoDevelop.Ide.Gui.Pads.ClassPad/ClassData.cs \
 	MonoDevelop.Ide.Gui.Pads.ClassPad/ClassNodeBuilder.cs \
@@ -287,6 +288,7 @@ FILES =  \
 	MonoDevelop.Ide.Gui/DefaultWorkbench.cs \
 	MonoDevelop.Ide.Gui/DisplayBindingService.cs \
 	MonoDevelop.Ide.Gui/Document.cs \
+	MonoDevelop.Ide.Gui/DocumentSwitcher.cs \
 	MonoDevelop.Ide.Gui/DragNotebook.cs \
 	MonoDevelop.Ide.Gui/ExitEventHandler.cs \
 	MonoDevelop.Ide.Gui/FileViewer.cs \
@@ -355,7 +357,6 @@ FILES =  \
 	MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs \
 	MonoDevelop.Ide.Templates/TextFileDescriptionTemplate.cs \
 	MonoDevelop.Ide.Templates/TextTemplate.cs \
-	MonoDevelop.Ide.WindowSwitcher/WindowSwitcher.cs \
 	MonoDevelop.Ide/Services.cs
 
 RES =  \

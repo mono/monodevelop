@@ -33,7 +33,7 @@ using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Ide
 {
-	public partial class WindowSwitcher : Gtk.Window
+	public partial class DocumentSwitcher : Gtk.Window
 	{
 		Gtk.ListStore padListStore;
 		Gtk.ListStore documentListStore;
@@ -51,7 +51,7 @@ namespace MonoDevelop.Ide
 			}
 		}
 		
-		public WindowSwitcher (bool startWithNext) : base(Gtk.WindowType.Toplevel)
+		public DocumentSwitcher (bool startWithNext) : base(Gtk.WindowType.Toplevel)
 		{
 			this.Build();
 			this.CanFocus = true;
@@ -118,12 +118,16 @@ namespace MonoDevelop.Ide
 		
 		Document GetNextDocument (Document doc)
 		{
+			if (IdeApp.Workbench.Documents.Count == 0)
+				return null;
 			int index = IdeApp.Workbench.Documents.IndexOf (doc);
 			return IdeApp.Workbench.Documents [(index + 1) % IdeApp.Workbench.Documents.Count];
 		}
 		
 		Document GetPrevDocument (Document doc)
 		{
+			if (IdeApp.Workbench.Documents.Count == 0)
+				return null;
 			int index = IdeApp.Workbench.Documents.IndexOf (doc);
 			return IdeApp.Workbench.Documents [(index + IdeApp.Workbench.Documents.Count - 1) % IdeApp.Workbench.Documents.Count];
 		}
@@ -142,6 +146,8 @@ namespace MonoDevelop.Ide
 		
 		Pad GetNextPad (Pad pad)
 		{
+			if (this.padListStore.NColumns == 0)
+				return null;
 			int index = IdeApp.Workbench.Pads.IndexOf (pad);
 			Pad result = IdeApp.Workbench.Pads [(index + 1) % IdeApp.Workbench.Pads.Count];
 			if (!result.Visible)
@@ -151,6 +157,8 @@ namespace MonoDevelop.Ide
 				
 		Pad GetPrevPad (Pad pad)
 		{
+			if (this.padListStore.NColumns == 0)
+				return null;
 			int index = IdeApp.Workbench.Pads.IndexOf (pad);
 			Pad result = IdeApp.Workbench.Pads [(index + IdeApp.Workbench.Pads.Count - 1) % IdeApp.Workbench.Pads.Count];
 			if (!result.Visible)

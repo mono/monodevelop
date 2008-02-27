@@ -1166,7 +1166,7 @@
 			             class = "MonoDevelop.Gui.Dialogs.OptionPanels.IDEOptionPanel"/>-->
 			<DialogPanel id = "SelectStyle"
 				         _label = "Visual Style"
-				         class = "MonoDevelop.Ide.Gui.OptionPanels.SelectStylePanel"/>
+				         class = "MonoDevelop.Ide.Gui.OptionPanels.IDEStyleOptionsPanel"/>
 			<DialogPanel id = "KeyBindings"
 				         _label = "Key Bindings"
 				         class = "MonoDevelop.Ide.Gui.OptionPanels.KeyBindingsPanel"/>				         

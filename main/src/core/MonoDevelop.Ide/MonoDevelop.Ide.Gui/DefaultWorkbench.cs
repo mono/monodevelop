@@ -36,7 +36,7 @@ using MonoDevelop.Core.Gui;
 using MonoDevelop.Core.Gui.Components;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Core.Gui.Dialogs;
-
+using MonoDevelop.Ide.Commands;
 using MonoDevelop.Ide.Codons;
 using MonoDevelop.Ide.Gui.Dialogs;
 
@@ -652,15 +652,15 @@ namespace MonoDevelop.Ide.Gui
 			// Handle Tab+Control == NextWindow, Tab+Shift+Control == PrevWindow commands.
 			if (evnt.Key == Gdk.Key.Tab || evnt.Key == Gdk.Key.ISO_Left_Tab) {
 				if ((evnt.State & Gdk.ModifierType.ControlMask) == Gdk.ModifierType.ControlMask) {
-					WindowSwitcher switcher = new WindowSwitcher ((evnt.State & Gdk.ModifierType.ShiftMask) != Gdk.ModifierType.ShiftMask);
-					switcher.Parent = this;
-					switcher.ShowAll ();
-					switcher.GrabFocus ();
-//					if () {
-////						IdeApp.CommandService.DispatchCommand (MonoDevelop.Ide.Commands.WindowCommands.PrevWindow);
-//					} else {
-//						//IdeApp.CommandService.DispatchCommand (MonoDevelop.Ide.Commands.WindowCommands.NextWindow);
-//					}
+					bool selectNext = (evnt.State & Gdk.ModifierType.ShiftMask) != Gdk.ModifierType.ShiftMask;
+					if (PropertyService.Get ("MonoDevelop.Core.Gui.EnableDocumentSwitchDialog", true)) {
+						DocumentSwitcher switcher = new DocumentSwitcher (selectNext);
+						switcher.Parent = this;
+						switcher.ShowAll ();
+						switcher.GrabFocus ();
+					} else {
+						IdeApp.CommandService.DispatchCommand (selectNext ? WindowCommands.NextWindow : WindowCommands.PrevWindow);
+					}
 					return true;
 				}
 			}

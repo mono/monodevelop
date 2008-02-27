@@ -11,7 +11,7 @@
 namespace MonoDevelop.Ide {
     
     
-    public partial class WindowSwitcher {
+    public partial class DocumentSwitcher {
         
         private Gtk.VBox vbox1;
         
@@ -49,13 +49,13 @@ namespace MonoDevelop.Ide {
         
         protected virtual void Build() {
             Stetic.Gui.Initialize(this);
-            // Widget MonoDevelop.Ide.WindowSwitcher
-            this.Name = "MonoDevelop.Ide.WindowSwitcher";
+            // Widget MonoDevelop.Ide.DocumentSwitcher
+            this.Name = "MonoDevelop.Ide.DocumentSwitcher";
             this.Title = Mono.Unix.Catalog.GetString("WindowSwitcher");
             this.TypeHint = ((Gdk.WindowTypeHint)(4));
             this.WindowPosition = ((Gtk.WindowPosition)(4));
             this.BorderWidth = ((uint)(6));
-            // Container child MonoDevelop.Ide.WindowSwitcher.Gtk.Container+ContainerChild
+            // Container child MonoDevelop.Ide.DocumentSwitcher.Gtk.Container+ContainerChild
             this.vbox1 = new Gtk.VBox();
             this.vbox1.Name = "vbox1";
             this.vbox1.Spacing = 6;
