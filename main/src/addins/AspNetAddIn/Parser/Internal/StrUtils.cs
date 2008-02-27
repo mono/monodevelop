@@ -32,7 +32,7 @@ using System;
 using System.Globalization;
 using System.Text;
 
-namespace AspNetAddIn.Parser.Internal
+namespace MonoDevelop.AspNet.Parser.Internal
 {
 	internal sealed class StrUtils {
 		static CultureInfo invariant = CultureInfo.InvariantCulture;

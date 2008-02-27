@@ -1,20 +1,20 @@
 <Project name="MonoDevelop.AspNet" fileversion="2.0" language="C#" clr-version="Net_2_0" ctype="DotNetProject">
   <Configurations active="Debug">
     <Configuration name="Debug" ctype="DotNetProjectConfiguration">
-      <Output directory="../../../build/AddIns/AspNetAddIn" assembly="MonoDevelop.AspNet" />
+      <Output directory="../../../build/AddIns/MonoDevelop.AspNet" assembly="MonoDevelop.AspNet" />
       <Build debugmode="True" target="Library" />
       <Execution runwithwarnings="True" consolepause="True" runtime="MsNet" clr-version="Net_2_0" />
       <CodeGeneration compiler="Csc" warninglevel="4" optimize="True" unsafecodeallowed="False" generateoverflowchecks="True" mainclass="" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
     </Configuration>
     <Configuration name="Release" ctype="DotNetProjectConfiguration">
-      <Output directory="../../../build/AddIns/AspNetAddIn" assembly="AspNetAddIn" />
-      <Build debugmode="False" target="Exe" />
+      <Output directory="../../../build/AddIns/MonoDevelop.AspNet" assembly="MonoDevelop.AspNet" />
+      <Build debugmode="False" target="Library" />
       <Execution runwithwarnings="True" consolepause="True" runtime="MsNet" clr-version="Net_2_0" />
       <CodeGeneration compiler="Csc" warninglevel="4" optimize="True" unsafecodeallowed="False" generateoverflowchecks="True" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
     </Configuration>
   </Configurations>
   <Contents>
-    <File name="AspNetAddIn.addin.xml" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="MonoDevelop.AspNet.addin.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="Project/AspNetAppProject.cs" subtype="Code" buildaction="Compile" />
     <File name="Project/AspNetAppProjectBinding.cs" subtype="Code" buildaction="Compile" />
     <File name="Project/AspNetAppProjectConfiguration.cs" subtype="Code" buildaction="Compile" />
@@ -64,7 +64,6 @@
     <File name="Project/CodeBehind.cs" subtype="Code" buildaction="Compile" />
     <File name="gtk-gui/gui.stetic" subtype="Code" buildaction="EmbedAsResource" />
     <File name="gtk-gui/objects.xml" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="gtk-gui/AspNetAddIn.AspNetConfigurationPanelWidget.cs" subtype="Code" buildaction="Compile" />
     <File name="Gui/AspNetConfigurationPanelWidget.cs" subtype="Code" buildaction="Compile" />
     <File name="ChangeLog" subtype="Code" buildaction="Nothing" />
     <File name="Templates/GlobalAsax-CodeBehind.xft.xml" subtype="Code" buildaction="EmbedAsResource" />
@@ -77,7 +76,6 @@
     <File name="Templates/WebConfig-SubDir.xft.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="Project/ProjectFolderNodeBuilderExtension.cs" subtype="Code" buildaction="Compile" />
     <File name="Project/AspNetCommands.cs" subtype="Code" buildaction="Compile" />
-    <File name="gtk-gui/AspNetAddIn.XspOptionsPanelWidget.cs" subtype="Code" buildaction="Compile" />
     <File name="Gui/XspOptionsPanelWidget.cs" subtype="Code" buildaction="Compile" />
     <File name="Deployment/WebDeployOptionsPanelWidget.cs" subtype="Code" buildaction="Compile" />
     <File name="Deployment/WebDeployOptionsPanel.cs" subtype="Code" buildaction="Compile" />
@@ -99,6 +97,8 @@
     <File name="Parser/LocatedParserException.cs" subtype="Code" buildaction="Compile" />
     <File name="Project/IAspNetLanguageBinding.cs" subtype="Code" buildaction="Compile" />
     <File name="Parser/DebugStringVisitor.cs" subtype="Code" buildaction="Compile" />
+    <File name="gtk-gui/MonoDevelop.AspNet.Gui.AspNetConfigurationPanelWidget.cs" subtype="Code" buildaction="Compile" />
+    <File name="gtk-gui/MonoDevelop.AspNet.Gui.XspOptionsPanelWidget.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Components" />

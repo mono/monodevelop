@@ -1,11 +1,11 @@
 //
-// DirectiveNode.cs: Represents a code render expression in an ASP.NET 
+// ExpressionNode.cs: Represents an expression in an ASP.NET 
 //     document tree
 //
 // Authors:
-//   Michael Hutchinson <m.j.hutchinson@gmail.com>
+//   Michael Hutchinson <mhutchinson@novell.com>
 //
-// Copyright (C) 2006 Michael Hutchinson
+// Copyright (C) 2008 Novell, Inc. (http://www.novell.com)
 //
 //
 // This source code is licenced under The MIT License:
@@ -32,7 +32,7 @@
 
 using System;
 
-namespace AspNetAddIn.Parser.Tree
+namespace MonoDevelop.AspNet.Parser.Dom
 {
 	
 	public class ExpressionNode : Node

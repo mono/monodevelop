@@ -1,5 +1,43 @@
 2008-02-26  Michael Hutchinson <mhutchinson@novell.com> 
 
+	* Deployment/WebDeployService.cs, Deployment/WebDeployCommands.cs,
+	  Deployment/WebDeployLaunchDialog.cs,
+	  Deployment/WebDeployOptionsPanel.cs,
+	  Deployment/WebDeployOptionsPanelWidget.cs,
+	  Gui/AspNetConfigurationPanel.cs, Gui/AspNetConfigurationPanelWidget.cs,
+	  Gui/XspOptionsPanel.cs, Gui/XspOptionsPanelWidget.cs,
+	  Project/AspNetDisplayBinding.cs, Project/AspNetCommands.cs,
+	  Project/ProjectFolderNodeBuilderExtension.cs,
+	  Project/AspNetAppProjectBinding.cs,
+	  Project/AspNetMSBuildProjectExtension.cs, Project/XspParameters.cs,
+	  Project/AspNetAppProject.cs, Project/CodeBehind.cs,
+	  Project/VerifyCodeBehindBuildStep.cs,
+	  Project/AspNetAppProjectConfiguration.cs,
+	  Project/AspNetCodeBehindProvider.cs,
+	  Project/AspNetFileDescriptionTemplate.cs, Project/WebTypeManager.cs,
+	  gtk-gui/MonoDevelop.AspNet.Gui.XspOptionsPanelWidget.cs,
+	  gtk-gui/AspNetAddIn.AspNetConfigurationPanelWidget.cs,
+	  gtk-gui/AspNetAddIn.XspOptionsPanelWidget.cs,
+	  gtk-gui/MonoDevelop.AspNet.Gui.AspNetConfigurationPanelWidget.cs,
+	  gtk-gui/gui.stetic, AspNetAddIn.addin.xml, AspNetAddIn.mdp, Makefile.am,
+	  Parser/Tree/ParentNode.cs, Parser/Tree/ServerCommentNode.cs,
+	  Parser/Tree/Visitor.cs, Parser/Tree/ServerIncludeNode.cs,
+	  Parser/Tree/ILocation.cs, Parser/Tree/TagNode.cs,
+	  Parser/Tree/DirectiveNode.cs, Parser/Tree/Node.cs,
+	  Parser/Tree/ExpressionNode.cs, Parser/Tree/RootNode.cs,
+	  Parser/Tree/TextNode.cs, Parser/WebFormReferenceManager.cs,
+	  Parser/DebugStringVisitor.cs, Parser/Document.cs,
+	  Parser/MemberListVisitor.cs, Parser/LocatedParserException.cs,
+	  Parser/Internal/TagType.cs, Parser/Internal/AspTokenizer.cs,
+	  Parser/Internal/Directive.cs, Parser/Internal/AspParser.cs,
+	  Parser/Internal/TagAttributes.cs, Parser/Internal/Location.cs,
+	  Parser/Internal/ParseException.cs, Parser/Internal/StrUtils.cs,
+	  Parser/DocumentReferenceManager.cs, Parser/PageInfoVisitor.cs,
+	  MonoDevelop.AspNet.addin.xml: Finish renaming AspNetAddIn and its
+	  corresponding namespaces to MonoDevelop.Aspnet.
+
+2008-02-26  Michael Hutchinson <mhutchinson@novell.com> 
+
 	* Project/AspNetFileDescriptionTemplate.cs: Fix string formatting call.
 
 2008-02-26  Michael Hutchinson <mhutchinson@novell.com> 

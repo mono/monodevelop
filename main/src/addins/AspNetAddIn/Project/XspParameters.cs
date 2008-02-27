@@ -32,7 +32,7 @@ using System;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects.Serialization;
 
-namespace AspNetAddIn
+namespace MonoDevelop.AspNet
 {
 	[DataItem ("XspParameters")]
 	public class XspParameters : ICloneable

@@ -32,7 +32,7 @@ using System;
 using System.Collections;
 using System.Globalization;
 
-namespace AspNetAddIn.Parser.Internal
+namespace MonoDevelop.AspNet.Parser.Internal
 {
 	sealed class Directive
 	{

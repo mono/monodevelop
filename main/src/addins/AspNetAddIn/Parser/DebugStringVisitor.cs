@@ -29,9 +29,9 @@
 using System;
 using System.Text;
 
-using AspNetAddIn.Parser.Tree;
+using MonoDevelop.AspNet.Parser.Dom;
 
-namespace AspNetAddIn.Parser
+namespace MonoDevelop.AspNet.Parser
 {
 	
 	internal class DebugStringVisitor : Visitor

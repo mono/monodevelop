@@ -1,4 +1,4 @@
-ADDIN_BUILD = $(top_builddir)/build/AddIns/AspNetAddIn
+ADDIN_BUILD = $(top_builddir)/build/AddIns/MonoDevelop.AspNet
 ASSEMBLY = $(ADDIN_BUILD)/MonoDevelop.AspNet.dll
 
 REFS =  \
@@ -32,13 +32,13 @@ FILES =  \
 	Deployment/WebDeployTargetCollection.cs \
 	Deployment/WebDeployTargetEditor.cs \
 	Deployment/WebTargetEditor.cs \
-	gtk-gui/AspNetAddIn.AspNetConfigurationPanelWidget.cs \
-	gtk-gui/AspNetAddIn.XspOptionsPanelWidget.cs \
 	gtk-gui/generated.cs \
 	gtk-gui/MonoDevelop.AspNet.Deployment.WebDeployLaunchDialog.cs \
 	gtk-gui/MonoDevelop.AspNet.Deployment.WebDeployOptionsPanelWidget.cs \
 	gtk-gui/MonoDevelop.AspNet.Deployment.WebDeployTargetEditor.cs \
 	gtk-gui/MonoDevelop.AspNet.Deployment.WebTargetEditor.cs \
+	gtk-gui/MonoDevelop.AspNet.Gui.AspNetConfigurationPanelWidget.cs \
+	gtk-gui/MonoDevelop.AspNet.Gui.XspOptionsPanelWidget.cs \
 	Gui/AspNetConfigurationPanel.cs \
 	Gui/AspNetConfigurationPanelWidget.cs \
 	Gui/XspOptionsPanel.cs \
@@ -85,9 +85,9 @@ FILES =  \
 	Project/XspParameters.cs
 
 RES =  \
-	AspNetAddIn.addin.xml \
 	gtk-gui/gui.stetic \
 	gtk-gui/objects.xml \
+	MonoDevelop.AspNet.addin.xml \
 	Templates/GlobalAsax-CodeBehind.xft.xml \
 	Templates/GlobalAsax-Empty.xft.xml \
 	Templates/MasterPage-CodeBehind.xft.xml \
@@ -123,7 +123,7 @@ $(ASSEMBLY): $(build_sources) $(build_resources)
 check: all
 
 if ENABLE_ASPNET
-csharpbindinglibdir = $(MD_ADDIN_DIR)/AspNetAddIn
+csharpbindinglibdir = $(MD_ADDIN_DIR)/MonoDevelop.AspNet
 csharpbindinglib_DATA = $(ASSEMBLY)
 endif
 

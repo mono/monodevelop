@@ -37,11 +37,11 @@ using System.Web;
 using System.Web.UI;
 using System.Web.UI.Design;
 
-using AspNetAddIn.Parser.Tree;
+using MonoDevelop.AspNet.Parser.Dom;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Gui;
 
-namespace AspNetAddIn.Parser
+namespace MonoDevelop.AspNet.Parser
 {
 	public class WebFormReferenceManager : DocumentReferenceManager, IWebFormReferenceManager
 	{

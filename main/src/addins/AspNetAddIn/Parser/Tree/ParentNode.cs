@@ -31,9 +31,10 @@
 
 using System;
 using System.Collections.Generic;
-using AspNetAddIn.Parser.Internal;
 
-namespace AspNetAddIn.Parser.Tree
+using MonoDevelop.AspNet.Parser.Internal;
+
+namespace MonoDevelop.AspNet.Parser.Dom
 {
 	public abstract class ParentNode : Node
 	{

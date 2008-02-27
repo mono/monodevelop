@@ -32,7 +32,7 @@
 
 using System;
 
-namespace AspNetAddIn.Parser.Tree
+namespace MonoDevelop.AspNet.Parser.Dom
 {
 	
 	public class ServerIncludeNode

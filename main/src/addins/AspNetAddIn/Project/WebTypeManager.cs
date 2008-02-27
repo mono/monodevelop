@@ -40,7 +40,7 @@ using MonoDevelop.Projects.Text;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects.Parser;
 
-namespace AspNetAddIn
+namespace MonoDevelop.AspNet
 {
 	
 	
@@ -180,7 +180,6 @@ namespace AspNetAddIn
 			default:
 				return htmc + "HtmlGenericControl";
 			}
-			return null;
 		}
 		
 		string lookupHtmlInput (string type)

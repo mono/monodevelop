@@ -35,10 +35,9 @@ using System.CodeDom;
 using System.Collections.Generic;
 
 using MonoDevelop.Core;
+using MonoDevelop.AspNet.Parser.Dom;
 
-using AspNetAddIn.Parser.Tree;
-
-namespace AspNetAddIn.Parser
+namespace MonoDevelop.AspNet.Parser
 {
 	//purpose is to find all named tags for code completion and compilation of base class
 	public class MemberListVisitor : Visitor

@@ -34,7 +34,7 @@ using System.IO;
 using System.Text;
 using System.Web;
 
-namespace AspNetAddIn.Parser.Internal
+namespace MonoDevelop.AspNet.Parser.Internal
 {
 	class Token
 	{

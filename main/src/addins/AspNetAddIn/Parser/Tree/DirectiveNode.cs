@@ -32,7 +32,7 @@
 using System;
 using System.Collections;
 
-namespace AspNetAddIn.Parser.Tree
+namespace MonoDevelop.AspNet.Parser.Dom
 {
 	public class DirectiveNode : Node
 	{

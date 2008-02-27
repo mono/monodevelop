@@ -32,10 +32,11 @@
 
 using System;
 using System.IO;
-using AspNetAddIn.Parser;
-using AspNetAddIn.Parser.Internal;
 
-namespace AspNetAddIn.Parser.Tree
+using MonoDevelop.AspNet.Parser;
+using MonoDevelop.AspNet.Parser.Internal;
+
+namespace MonoDevelop.AspNet.Parser.Dom
 {
 	public class RootNode : ParentNode
 	{

@@ -29,7 +29,7 @@ using Gtk;
 
 using MonoDevelop.Core.Gui.Dialogs;
 using MonoDevelop.Core;
-using AspNetAddIn;
+using MonoDevelop.AspNet;
 
 namespace MonoDevelop.AspNet.Deployment
 {

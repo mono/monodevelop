@@ -28,7 +28,7 @@ using System;
 using Gtk;
 
 using MonoDevelop.Core;
-using AspNetAddIn;
+using MonoDevelop.AspNet;
 
 namespace MonoDevelop.AspNet.Deployment
 {

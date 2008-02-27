@@ -42,9 +42,7 @@ using MonoDevelop.Ide.Templates;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.CodeGeneration;
 
-using MonoDevelop.AspNet;
-
-namespace AspNetAddIn
+namespace MonoDevelop.AspNet
 {
 	
 	public class AspNetFileDescriptionTemplate : SingleFileDescriptionTemplate

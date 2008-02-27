@@ -32,9 +32,9 @@ using System.Collections;
 using System.Globalization;
 using System.IO;
 using System.Text;
-using AspNetAddIn.Parser.Tree;
+using MonoDevelop.AspNet.Parser.Dom;
 
-namespace AspNetAddIn.Parser.Internal
+namespace MonoDevelop.AspNet.Parser.Internal
 {
 	public delegate void ParseErrorHandler (ILocation location, string message);
 	public delegate void TextParsedHandler (ILocation location, string text);

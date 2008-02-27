@@ -29,7 +29,7 @@ using Gtk;
 
 using MonoDevelop.Core;
 
-namespace AspNetAddIn
+namespace MonoDevelop.AspNet.Gui
 {
 	
 	

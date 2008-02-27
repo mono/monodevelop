@@ -41,11 +41,11 @@ using MonoDevelop.Projects.Parser;
 using MonoDevelop.Projects.Serialization;
 using MonoDevelop.Deployment;
 
-using AspNetAddIn.Parser.Tree;
-using AspNetAddIn.Parser;
+using MonoDevelop.AspNet.Parser;
+using MonoDevelop.AspNet.Parser.Dom;
 using MonoDevelop.AspNet.Deployment;
 
-namespace AspNetAddIn
+namespace MonoDevelop.AspNet
 {
 	[DataInclude (typeof(AspNetAppProjectConfiguration))]
 	public class AspNetAppProject : DotNetProject, IDeployable
@@ -70,7 +70,7 @@ namespace AspNetAddIn
 		//used true while the project is being loaded
 		bool loading = false;
 		
-		AspNetAddIn.WebTypeManager webTypeManager;
+		WebTypeManager webTypeManager;
 		
 		#region properties
 		
@@ -97,7 +97,7 @@ namespace AspNetAddIn
 			get { return webDeployTargets; }
 		}
 		
-		public AspNetAddIn.WebTypeManager WebTypeManager {
+		public WebTypeManager WebTypeManager {
 			get { return webTypeManager; }
 		}
 		

@@ -28,9 +28,9 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using AspNetAddIn.Parser.Tree;
+using MonoDevelop.AspNet.Parser.Dom;
 
-namespace AspNetAddIn.Parser.Internal
+namespace MonoDevelop.AspNet.Parser.Internal
 {
 	class Location : ILocation
 	{

@@ -30,9 +30,9 @@
 
 using System;
 using System.IO;
-using AspNetAddIn.Parser.Tree;
+using MonoDevelop.AspNet.Parser.Dom;
 
-namespace AspNetAddIn.Parser.Internal
+namespace MonoDevelop.AspNet.Parser.Internal
 {
 	public class ParseException : HtmlizedException
 	{

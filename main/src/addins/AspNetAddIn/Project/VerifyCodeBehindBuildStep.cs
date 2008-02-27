@@ -9,10 +9,9 @@ using MonoDevelop.Projects.CodeGeneration;
 using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Core;
 using MonoDevelop.DesignerSupport;
+using MonoDevelop.AspNet.Parser;
 
-using AspNetAddIn.Parser;
-
-namespace AspNetAddIn
+namespace MonoDevelop.AspNet
 {
 	
 	public class VerifyCodeBehindBuildStep : ProjectServiceExtension

@@ -34,7 +34,7 @@ using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.Ide.Gui.Pads.ProjectPad;
 using MonoDevelop.Components.Commands;
 
-namespace AspNetAddIn
+namespace MonoDevelop.AspNet
 {
 	
 	public class ProjectFolderNodeBuilderExtension: NodeBuilderExtension
@@ -53,7 +53,7 @@ namespace AspNetAddIn
 	class ProjectFolderCommandHandler: NodeCommandHandler
 	{
 		
-		[CommandHandler (AspNetAddIn.AspNetCommands.AddAspNetDirectory)]
+		[CommandHandler (AspNetCommands.AddAspNetDirectory)]
 		public void OnAddSpecialDirectory (object ob)
 		{
 			AspNetAppProject proj = CurrentNode.DataItem as AspNetAppProject;
@@ -62,7 +62,7 @@ namespace AspNetAddIn
 			proj.AddDirectory ((string) ob);
 		}
 		
-		[CommandUpdateHandler (AspNetAddIn.AspNetCommands.AddAspNetDirectory)]
+		[CommandUpdateHandler (AspNetCommands.AddAspNetDirectory)]
 		public void OnAddSpecialDirectoryUpdate (CommandArrayInfo info)
 		{
 			AspNetAppProject proj = CurrentNode.DataItem as AspNetAppProject;

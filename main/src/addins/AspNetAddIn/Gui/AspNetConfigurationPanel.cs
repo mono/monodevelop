@@ -35,7 +35,7 @@ using Gtk;
 using MonoDevelop.Core.Gui.Dialogs;
 using MonoDevelop.Core;
 
-namespace AspNetAddIn
+namespace MonoDevelop.AspNet.Gui
 {
 	
 	public class AspNetConfigurationPanel : AbstractOptionPanel

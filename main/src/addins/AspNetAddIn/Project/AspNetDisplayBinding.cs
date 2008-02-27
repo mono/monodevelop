@@ -4,7 +4,7 @@ using System;
 using MonoDevelop.Ide.Codons;
 using MonoDevelop.Ide.Gui;
 
-namespace AspNetAddIn
+namespace MonoDevelop.AspNet
 {
 	
 	

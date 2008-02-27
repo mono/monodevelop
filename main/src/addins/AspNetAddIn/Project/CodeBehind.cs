@@ -38,9 +38,9 @@ using MonoDevelop.Projects;
 using MonoDevelop.Projects.Parser;
 using MonoDevelop.DesignerSupport;
 
-using AspNetAddIn.Parser;
+using MonoDevelop.AspNet.Parser;
 
-namespace AspNetAddIn
+namespace MonoDevelop.AspNet
 {
 	
 	

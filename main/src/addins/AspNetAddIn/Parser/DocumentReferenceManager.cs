@@ -33,11 +33,11 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 
-using AspNetAddIn.Parser.Tree;
+using MonoDevelop.AspNet.Parser.Dom;
 using MonoDevelop.Projects.Parser;
 using MonoDevelop.Ide.Gui;
 
-namespace AspNetAddIn.Parser
+namespace MonoDevelop.AspNet.Parser
 {
 	
 	

@@ -29,7 +29,7 @@ using System;
 using MonoDevelop.Projects;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Gui;
-using AspNetAddIn;
+using MonoDevelop.AspNet;
 
 namespace MonoDevelop.AspNet.Deployment
 {

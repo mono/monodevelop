@@ -10,7 +10,7 @@
 
 using MonoDevelop.Core;
 
-namespace AspNetAddIn
+namespace MonoDevelop.AspNet.Gui
 {	
 	public partial class AspNetConfigurationPanelWidget : Gtk.Bin
 	{

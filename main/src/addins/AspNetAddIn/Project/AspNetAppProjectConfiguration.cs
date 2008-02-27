@@ -37,7 +37,7 @@ using MonoDevelop.Core.Gui;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Serialization;
 
-namespace AspNetAddIn
+namespace MonoDevelop.AspNet
 {
 	public class AspNetAppProjectConfiguration : DotNetProjectConfiguration 
 	{

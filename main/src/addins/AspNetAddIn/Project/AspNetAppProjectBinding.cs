@@ -36,7 +36,7 @@ using MonoDevelop.Projects;
 using MonoDevelop.Projects.Serialization;
 using System.Xml;
 
-namespace AspNetAddIn
+namespace MonoDevelop.AspNet
 {
 	//based heavily on DotNetProjectBinding
 	public class AspNetAppProjectBinding : IProjectBinding
@@ -75,7 +75,7 @@ namespace AspNetAddIn
 
 		public bool CanCreateSingleFileProject (string sourceFile)
 		{
-			WebSubtype type = AspNetAddIn.AspNetAppProject.DetermineWebSubtype (Path.GetExtension (sourceFile));
+			WebSubtype type = AspNetAppProject.DetermineWebSubtype (Path.GetExtension (sourceFile));
 			
 			return ((type == WebSubtype.WebForm)
 			           || (type == WebSubtype.WebHandler)

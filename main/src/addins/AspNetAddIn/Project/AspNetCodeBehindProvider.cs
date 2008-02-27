@@ -5,9 +5,9 @@ using System.Collections.Generic;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Parser;
 
-using AspNetAddIn.Parser;
+using MonoDevelop.AspNet.Parser;
 
-namespace AspNetAddIn
+namespace MonoDevelop.AspNet
 {
 	
 	public class AspNetCodeBehindProvider: MonoDevelop.DesignerSupport.CodeBehind.ICodeBehindProvider
@@ -15,7 +15,7 @@ namespace AspNetAddIn
 		
 		public string GetCodeBehindClassName (ProjectFile file)
 		{
-			return AspNetAddIn.CodeBehind.GetCodeBehindClassName (file);
+			return CodeBehind.GetCodeBehindClassName (file);
 		}
 	}
 }

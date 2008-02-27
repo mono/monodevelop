@@ -28,7 +28,7 @@ using System;
 
 using MonoDevelop.Components.Commands;
 
-namespace AspNetAddIn
+namespace MonoDevelop.AspNet
 {
 	
 	public enum AspNetCommands

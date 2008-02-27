@@ -32,7 +32,7 @@ using System.Xml;
 using MonoDevelop.Prj2Make;
 using MonoDevelop.Projects;
 
-namespace AspNetAddIn
+namespace MonoDevelop.AspNet
 {
 	public class AspNetMSBuildProjectExtension : MSBuildProjectExtension
 	{

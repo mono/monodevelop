@@ -1,4 +1,4 @@
-<Addin id          = "AspNetAddIn"
+<Addin id          = "AspNet"
        namespace   = "MonoDevelop"
        name        = "ASP.NET Project Support"
        author      = "Michael Hutchinson"
@@ -64,7 +64,7 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/FileTemplateTypes">
-		<FileTemplateType name = "AspNetFile" class = "AspNetAddIn.AspNetFileDescriptionTemplate"/>
+		<FileTemplateType name = "AspNetFile" class = "MonoDevelop.AspNet.AspNetFileDescriptionTemplate"/>
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/ProjectTemplates">
@@ -80,25 +80,25 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/ProjectBindings">
-		<ProjectBinding id = "AspNetApplication" class = "AspNetAddIn.AspNetAppProjectBinding" />
+		<ProjectBinding id = "AspNetApplication" class = "MonoDevelop.AspNet.AspNetAppProjectBinding" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/SerializableClasses">
-		<DataType class = "AspNetAddIn.AspNetAppProject" />
-		<DataType class = "AspNetAddIn.AspNetAppProjectConfiguration" />
+		<DataType class = "MonoDevelop.AspNet.AspNetAppProject" />
+		<DataType class = "MonoDevelop.AspNet.AspNetAppProjectConfiguration" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/Gui/ProjectOptions/GeneralOptions/Common">
 		<Condition id="activeproject" value="AspNetApp">
 			<DialogPanel id = "XspOptions"
 			             _label = "XSP Web Server"
-			             class = "AspNetAddIn.XspOptionsPanel"/>
+			             class = "MonoDevelop.AspNet.Gui.XspOptionsPanel"/>
 		</Condition>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/Gui/ProjectOptions/GeneralOptions/Deployment">
 		<Condition id="activeproject" value="AspNetApp">
-			<DialogPanel id = "AspNetAddin.Deployment"
+			<DialogPanel id = "MonoDevelop.AspNet.Deployment"
 			             _label = "Web Deployment Targets"
 			             class = "MonoDevelop.AspNet.Deployment.WebDeployOptionsPanel"/>
 		</Condition>
@@ -108,31 +108,31 @@
 		<Condition id="activeproject" value="AspNetApp">
 			<DialogPanel id = "AspNetConfiguration"
 			             _label = "ASP.NET Options"
-			             class = "AspNetAddIn.AspNetConfigurationPanel"/>
+			             class = "MonoDevelop.AspNet.Gui.AspNetConfigurationPanel"/>
 		</Condition>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/DesignerSupport/CodeBehindProviders">
-		<Class id="AspNetCodeBehindProvider" class="AspNetAddIn.AspNetCodeBehindProvider"/>
+		<Class id="AspNetCodeBehindProvider" class="MonoDevelop.AspNet.AspNetCodeBehindProvider"/>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/DisplayBindings">
 		<DisplayBinding id    = "AspNetDisplayBinding"
 		                supportedformats = "Source Code"
-		                class = "AspNetAddIn.AspNetDisplayBinding"/>
+		                class = "MonoDevelop.AspNet.AspNetDisplayBinding"/>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/ProjectServiceExtensions">
-		<Class class = "AspNetAddIn.VerifyCodeBehindBuildStep" />
+		<Class class = "MonoDevelop.AspNet.VerifyCodeBehindBuildStep" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Prj2Make/MSBuildProjectExtension">
-		<Class class="AspNetAddIn.AspNetMSBuildProjectExtension" />
+		<Class class="MonoDevelop.AspNet.AspNetMSBuildProjectExtension" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/Commands">
 		<Category _name = "ASP.NET" id = "AspNet">
-		<Command id = "AspNetAddIn.AspNetCommands.AddAspNetDirectory"
+		<Command id = "MonoDevelop.AspNet.AspNetCommands.AddAspNetDirectory"
 				_label = "ASP.NET Directory"
 				type="array" />
 		<Command id = "MonoDevelop.AspNet.Deployment.WebDeployCommands.DeployProject"
@@ -145,14 +145,14 @@
 		<Condition id="activeproject" value="AspNetApp">
 			<ItemSet id = "AspNetDirectories" _label = "ASP.NET Directory" insertafter = "MonoDevelop.Ide.Commands.ProjectCommands.NewFolder" autohide="True">
 				<CommandItem
-					id = "AspNetAddIn.AspNetCommands.AddAspNetDirectory"
+					id = "MonoDevelop.AspNet.AspNetCommands.AddAspNetDirectory"
 					/>
 				</ItemSet>
 		</Condition>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/Pads/ProjectPad">
-		<NodeBuilder id="AspNetAddIn.ProjectFolderNodeBuilderExtension" class = "AspNetAddIn.ProjectFolderNodeBuilderExtension"/>
+		<NodeBuilder id="MonoDevelop.AspNet.ProjectFolderNodeBuilderExtension" class = "MonoDevelop.AspNet.ProjectFolderNodeBuilderExtension"/>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/Project/Tools">

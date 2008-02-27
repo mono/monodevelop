@@ -31,9 +31,10 @@
 //
 
 using System;
-using AspNetAddIn.Parser.Tree;
+using MonoDevelop.AspNet.Parser.Dom;
+using MonoDevelop.AspNet;
 
-namespace AspNetAddIn.Parser
+namespace MonoDevelop.AspNet.Parser
 {
 	public class PageInfoVisitor : Visitor
 	{
@@ -41,7 +42,7 @@ namespace AspNetAddIn.Parser
 		private string codeBehindFile;
 		private string codeFile;
 		private string language;
-		private AspNetAddIn.WebSubtype type = WebSubtype.None;
+		private WebSubtype type = WebSubtype.None;
 		
 		public override void Visit (DirectiveNode node)
 		{
@@ -94,7 +95,7 @@ namespace AspNetAddIn.Parser
 			get { return language; }
 		}
 		
-		public AspNetAddIn.WebSubtype Subtype {
+		public WebSubtype Subtype {
 			get { return type; }
 		}
 	}

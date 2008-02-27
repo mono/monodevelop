@@ -30,10 +30,9 @@ using System;
 
 using MonoDevelop.Core;
 using MonoDevelop.DesignerSupport;
+using MonoDevelop.AspNet.Parser.Dom;
 
-using AspNetAddIn.Parser.Tree;
-
-namespace AspNetAddIn.Parser
+namespace MonoDevelop.AspNet.Parser
 {
 	
 	public class ParserException : ErrorInFileException

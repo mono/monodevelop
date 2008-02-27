@@ -32,9 +32,9 @@
 using System;
 using System.Collections;
 
-using AspNetAddIn.Parser.Internal;
+using MonoDevelop.AspNet.Parser.Internal;
 
-namespace AspNetAddIn.Parser.Tree
+namespace MonoDevelop.AspNet.Parser.Dom
 {
 	public class TagNode : ParentNode
 	{

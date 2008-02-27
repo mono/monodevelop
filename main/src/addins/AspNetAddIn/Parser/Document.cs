@@ -34,10 +34,10 @@ using System;
 using System.IO;
 using System.Collections.Generic;
 
-using AspNetAddIn.Parser.Tree;
+using MonoDevelop.AspNet.Parser.Dom;
 using MonoDevelop.Projects;
 
-namespace AspNetAddIn.Parser
+namespace MonoDevelop.AspNet.Parser
 {
 	public class Document
 	{
@@ -57,7 +57,7 @@ namespace AspNetAddIn.Parser
 			try {
 				sr = new StreamReader (file.FilePath);
 				rootNode.Parse (file.FilePath, sr);
-			} catch (AspNetAddIn.Parser.Internal.ParseException e) {
+			} catch (MonoDevelop.AspNet.Parser.Internal.ParseException e) {
 				errors.Add (new ParserException (e.Location, e.Message));
 			} catch (Exception e) {
 				MonoDevelop.Core.LoggingService.LogError ("Unhandled error parsing ASP.NET document", e);

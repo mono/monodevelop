@@ -33,7 +33,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.Gui.ProgressMonitoring;
 using MonoDevelop.Deployment;
 using MonoDevelop.Deployment.Gui;
-using AspNetAddIn;
+using MonoDevelop.AspNet;
 
 namespace MonoDevelop.AspNet.Deployment
 {
