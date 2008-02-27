@@ -1,3 +1,10 @@
+2008-02-27  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* Deployment, MonoDevelop.AspNet, Gui, Parser,
+	  MonoDevelop.AspNet.Deployment, MonoDevelop.AspNet.Gui, Project,
+	  AspNetAddIn.mdp, Makefile.am, MonoDevelop.AspNet.Parser: Restructure
+	  directories to reflect namespaces.
+
 2008-02-26  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* Deployment/WebDeployService.cs, Deployment/WebDeployCommands.cs,

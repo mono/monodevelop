@@ -22,16 +22,6 @@ REFS =  \
 	-r:System.Xml
 
 FILES =  \
-	Deployment/WebDeployCommands.cs \
-	Deployment/WebDeployLaunchDialog.cs \
-	Deployment/WebDeployOptionsPanel.cs \
-	Deployment/WebDeployOptionsPanelWidget.cs \
-	Deployment/WebDeployResolver.cs \
-	Deployment/WebDeployService.cs \
-	Deployment/WebDeployTarget.cs \
-	Deployment/WebDeployTargetCollection.cs \
-	Deployment/WebDeployTargetEditor.cs \
-	Deployment/WebTargetEditor.cs \
 	gtk-gui/generated.cs \
 	gtk-gui/MonoDevelop.AspNet.Deployment.WebDeployLaunchDialog.cs \
 	gtk-gui/MonoDevelop.AspNet.Deployment.WebDeployOptionsPanelWidget.cs \
@@ -39,50 +29,60 @@ FILES =  \
 	gtk-gui/MonoDevelop.AspNet.Deployment.WebTargetEditor.cs \
 	gtk-gui/MonoDevelop.AspNet.Gui.AspNetConfigurationPanelWidget.cs \
 	gtk-gui/MonoDevelop.AspNet.Gui.XspOptionsPanelWidget.cs \
-	Gui/AspNetConfigurationPanel.cs \
-	Gui/AspNetConfigurationPanelWidget.cs \
-	Gui/XspOptionsPanel.cs \
-	Gui/XspOptionsPanelWidget.cs \
-	Parser/DebugStringVisitor.cs \
-	Parser/Document.cs \
-	Parser/DocumentReferenceManager.cs \
-	Parser/Internal/AspParser.cs \
-	Parser/Internal/AspTokenizer.cs \
-	Parser/Internal/Directive.cs \
-	Parser/Internal/Location.cs \
-	Parser/Internal/ParseException.cs \
-	Parser/Internal/StrUtils.cs \
-	Parser/Internal/TagAttributes.cs \
-	Parser/Internal/TagType.cs \
-	Parser/LocatedParserException.cs \
-	Parser/MemberListVisitor.cs \
-	Parser/PageInfoVisitor.cs \
-	Parser/Tree/DirectiveNode.cs \
-	Parser/Tree/ExpressionNode.cs \
-	Parser/Tree/ILocation.cs \
-	Parser/Tree/Node.cs \
-	Parser/Tree/ParentNode.cs \
-	Parser/Tree/RootNode.cs \
-	Parser/Tree/ServerCommentNode.cs \
-	Parser/Tree/ServerIncludeNode.cs \
-	Parser/Tree/TagNode.cs \
-	Parser/Tree/TextNode.cs \
-	Parser/Tree/Visitor.cs \
-	Parser/WebFormReferenceManager.cs \
-	Project/AspNetAppProject.cs \
-	Project/AspNetAppProjectBinding.cs \
-	Project/AspNetAppProjectConfiguration.cs \
-	Project/AspNetCodeBehindProvider.cs \
-	Project/AspNetCommands.cs \
-	Project/AspNetDisplayBinding.cs \
-	Project/AspNetFileDescriptionTemplate.cs \
-	Project/AspNetMSBuildProjectExtension.cs \
-	Project/CodeBehind.cs \
-	Project/IAspNetLanguageBinding.cs \
-	Project/ProjectFolderNodeBuilderExtension.cs \
-	Project/VerifyCodeBehindBuildStep.cs \
-	Project/WebTypeManager.cs \
-	Project/XspParameters.cs
+	MonoDevelop.AspNet.Deployment/WebDeployCommands.cs \
+	MonoDevelop.AspNet.Deployment/WebDeployLaunchDialog.cs \
+	MonoDevelop.AspNet.Deployment/WebDeployOptionsPanel.cs \
+	MonoDevelop.AspNet.Deployment/WebDeployOptionsPanelWidget.cs \
+	MonoDevelop.AspNet.Deployment/WebDeployResolver.cs \
+	MonoDevelop.AspNet.Deployment/WebDeployService.cs \
+	MonoDevelop.AspNet.Deployment/WebDeployTarget.cs \
+	MonoDevelop.AspNet.Deployment/WebDeployTargetCollection.cs \
+	MonoDevelop.AspNet.Deployment/WebDeployTargetEditor.cs \
+	MonoDevelop.AspNet.Deployment/WebTargetEditor.cs \
+	MonoDevelop.AspNet.Gui/AspNetConfigurationPanel.cs \
+	MonoDevelop.AspNet.Gui/AspNetConfigurationPanelWidget.cs \
+	MonoDevelop.AspNet.Gui/XspOptionsPanel.cs \
+	MonoDevelop.AspNet.Gui/XspOptionsPanelWidget.cs \
+	MonoDevelop.AspNet.Parser/DebugStringVisitor.cs \
+	MonoDevelop.AspNet.Parser/Document.cs \
+	MonoDevelop.AspNet.Parser/DocumentReferenceManager.cs \
+	MonoDevelop.AspNet.Parser/Internal/AspParser.cs \
+	MonoDevelop.AspNet.Parser/Internal/AspTokenizer.cs \
+	MonoDevelop.AspNet.Parser/Internal/Directive.cs \
+	MonoDevelop.AspNet.Parser/Internal/Location.cs \
+	MonoDevelop.AspNet.Parser/Internal/ParseException.cs \
+	MonoDevelop.AspNet.Parser/Internal/StrUtils.cs \
+	MonoDevelop.AspNet.Parser/Internal/TagAttributes.cs \
+	MonoDevelop.AspNet.Parser/Internal/TagType.cs \
+	MonoDevelop.AspNet.Parser/LocatedParserException.cs \
+	MonoDevelop.AspNet.Parser/MemberListVisitor.cs \
+	MonoDevelop.AspNet.Parser/PageInfoVisitor.cs \
+	MonoDevelop.AspNet.Parser/Tree/DirectiveNode.cs \
+	MonoDevelop.AspNet.Parser/Tree/ExpressionNode.cs \
+	MonoDevelop.AspNet.Parser/Tree/ILocation.cs \
+	MonoDevelop.AspNet.Parser/Tree/Node.cs \
+	MonoDevelop.AspNet.Parser/Tree/ParentNode.cs \
+	MonoDevelop.AspNet.Parser/Tree/RootNode.cs \
+	MonoDevelop.AspNet.Parser/Tree/ServerCommentNode.cs \
+	MonoDevelop.AspNet.Parser/Tree/ServerIncludeNode.cs \
+	MonoDevelop.AspNet.Parser/Tree/TagNode.cs \
+	MonoDevelop.AspNet.Parser/Tree/TextNode.cs \
+	MonoDevelop.AspNet.Parser/Tree/Visitor.cs \
+	MonoDevelop.AspNet.Parser/WebFormReferenceManager.cs \
+	MonoDevelop.AspNet/AspNetAppProject.cs \
+	MonoDevelop.AspNet/AspNetAppProjectBinding.cs \
+	MonoDevelop.AspNet/AspNetAppProjectConfiguration.cs \
+	MonoDevelop.AspNet/AspNetCodeBehindProvider.cs \
+	MonoDevelop.AspNet/AspNetCommands.cs \
+	MonoDevelop.AspNet/AspNetDisplayBinding.cs \
+	MonoDevelop.AspNet/AspNetFileDescriptionTemplate.cs \
+	MonoDevelop.AspNet/AspNetMSBuildProjectExtension.cs \
+	MonoDevelop.AspNet/CodeBehind.cs \
+	MonoDevelop.AspNet/IAspNetLanguageBinding.cs \
+	MonoDevelop.AspNet/ProjectFolderNodeBuilderExtension.cs \
+	MonoDevelop.AspNet/VerifyCodeBehindBuildStep.cs \
+	MonoDevelop.AspNet/WebTypeManager.cs \
+	MonoDevelop.AspNet/XspParameters.cs
 
 RES =  \
 	gtk-gui/gui.stetic \
