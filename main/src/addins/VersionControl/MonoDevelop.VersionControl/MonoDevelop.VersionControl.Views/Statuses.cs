@@ -86,7 +86,7 @@ namespace MonoDevelop.VersionControl.Views
 			commandbar.IconSize = Gtk.IconSize.Menu;
 			main.PackStart(commandbar, false, false, 0);
 			
-			buttonCommit = new Gtk.ToolButton (new Gtk.Image ("vc-commit", Gtk.IconSize.Menu), "Commit...");
+			buttonCommit = new Gtk.ToolButton (new Gtk.Image ("vc-commit", Gtk.IconSize.Menu), GettextCatalog.GetString ("Commit..."));
 			buttonCommit.IsImportant = true;
 			buttonCommit.Clicked += new EventHandler(OnCommitClicked);
 			commandbar.Insert (buttonCommit, -1);
@@ -101,7 +101,7 @@ namespace MonoDevelop.VersionControl.Views
 			buttonRevert.Clicked += new EventHandler (OnRevert);
 			commandbar.Insert (buttonRevert, -1);
 			
-			showRemoteStatus = new Gtk.ToolButton (new Gtk.Image ("vc-remote-status", Gtk.IconSize.Menu), "Show Remote Status");
+			showRemoteStatus = new Gtk.ToolButton (new Gtk.Image ("vc-remote-status", Gtk.IconSize.Menu), GettextCatalog.GetString ("Show Remote Status"));
 			showRemoteStatus.IsImportant = true;
 			showRemoteStatus.Clicked += new EventHandler(OnShowRemoteStatusClicked);
 			commandbar.Insert (showRemoteStatus, -1);
