@@ -157,7 +157,6 @@ namespace MonoDevelop.Ide
 		#region Progress Monitor implementation
 		public void BeginProgress (string name)
 		{
-			Console.WriteLine (Environment.StackTrace);
 			ShowMessage (name);
 			this.progress.Visible = true;
 		}
