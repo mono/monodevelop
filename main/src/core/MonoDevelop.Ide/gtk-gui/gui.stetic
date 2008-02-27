@@ -5967,7 +5967,7 @@ Months</property>
   </widget>
   <widget class="Gtk.Window" id="MonoDevelop.Ide.DocumentSwitcher" design-size="400 300">
     <property name="MemberName" />
-    <property name="Title" translatable="yes">WindowSwitcher</property>
+    <property name="Title" translatable="yes" />
     <property name="TypeHint">Splashscreen</property>
     <property name="WindowPosition">CenterOnParent</property>
     <property name="BorderWidth">6</property>
