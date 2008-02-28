@@ -1,6 +1,6 @@
-2008-02-05  Lluis Sanchez Gual <lluis@novell.com> 
+2008-02-24  Enver ALTIN  <ealtin@gmail.com>
 
-	
+	* po/tr.po: Updated Turkish translation.
 
 2008-01-29  Ben Motmans <ben.motmans@gmail.com> 
 
@@ -38,7 +38,7 @@
 
 2008-01-24  David Makovský (Yakeen) <yakeen@sannyas-on.net>
 
-        * cs.po: Updated translation.
+	* cs.po: Updated translation.
 
 2008-01-23  Atsushi Enomoto  <atsushi@ximian.com>
 
@@ -62,7 +62,7 @@
 
 2007-12-29 David Makovský (Yakeen) <yakeen@sannyas-on.net>
 
-        * po/cs.po: updated translation
+	* po/cs.po: updated translation
 
 2007-12-19  Ben Motmans <ben.motmans@gmail.com> 
 
