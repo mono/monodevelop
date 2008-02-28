@@ -237,19 +237,19 @@ namespace MonoDevelop.Core.Gui.Components
 		{
 			// FIXME: port to Action API
 			Menu menu = new Menu ();
-			MenuItem openfilebrowser = new MenuItem (GettextCatalog.GetString ("Open with file browser"));
+			MenuItem openfilebrowser = new MenuItem (GettextCatalog.GetString ("_Open with file browser"));
 			openfilebrowser.Activated += new EventHandler (OpenFileBrowser);
 
-			MenuItem openterminal = new MenuItem (GettextCatalog.GetString ("Open with terminal"));
+			MenuItem openterminal = new MenuItem (GettextCatalog.GetString ("O_pen with terminal"));
 			openterminal.Activated += new EventHandler (OpenTerminal);
 
-			MenuItem rename = new MenuItem (GettextCatalog.GetString ("Rename"));
+			MenuItem rename = new MenuItem (GettextCatalog.GetString ("_Rename"));
 			rename.Activated += new EventHandler (OnDirRename);
 
-			MenuItem delete = new MenuItem (GettextCatalog.GetString ("Delete"));
+			MenuItem delete = new MenuItem (GettextCatalog.GetString ("_Delete"));
 			delete.Activated += new EventHandler (OnDirDelete);
 
-			MenuItem newfolder = new MenuItem (GettextCatalog.GetString ("Create new folder"));
+			MenuItem newfolder = new MenuItem (GettextCatalog.GetString ("_Create new folder"));
 			newfolder.Activated += new EventHandler (OnNewDir);
 
 			menu.Append (newfolder);
