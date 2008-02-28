@@ -193,7 +193,7 @@ namespace Stetic
 			resolvedCache = null;
 			fromCache = false;
 		}
-
+		
 		protected override ClassDescriptor LoadClassDescriptor (XmlElement element)
 		{
 			string name = element.GetAttribute ("type");
@@ -440,22 +440,7 @@ namespace Stetic
 					continue;
 					
 				string iconname = elem.GetAttribute ("icon");
-				Gdk.Pixbuf icon = null;
-				if (iconname.Length > 0) {
-					try {
-						// Using the pixbuf resource constructor generates a gdk warning.
-						res = GetResource (asm, iconname);
-						Gdk.PixbufLoader loader = new Gdk.PixbufLoader (res.Data);
-						icon = loader.Pixbuf;
-					} catch {
-						// Ignore
-					}
-				}
-				
-				if (icon == null) {
-					ClassDescriptor cc = Registry.LookupClassByName ("Gtk.Bin");
-					icon = cc.Icon;
-				}
+				Gdk.Pixbuf icon = GetEmbeddedIcon (asm, iconname);
 				
 				string targetGtkVersion = elem.GetAttribute ("gtk-version");
 				if (targetGtkVersion.Length == 0)
@@ -474,6 +459,32 @@ namespace Stetic
 			}
 			
 			return list;
+		}
+		
+		public Gdk.Pixbuf GetEmbeddedIcon (string iconname)
+		{
+			return GetEmbeddedIcon (assembly, iconname);
+		}
+		
+		static Gdk.Pixbuf GetEmbeddedIcon (AssemblyDefinition asm, string iconname)
+		{
+			Gdk.Pixbuf icon = null;
+			if (iconname != null && iconname.Length > 0) {
+				try {
+					// Using the pixbuf resource constructor generates a gdk warning.
+					EmbeddedResource res = GetResource (asm, iconname);
+					Gdk.PixbufLoader loader = new Gdk.PixbufLoader (res.Data);
+					icon = loader.Pixbuf;
+				} catch {
+					// Ignore
+				}
+			}
+			
+			if (icon == null) {
+				ClassDescriptor cc = Registry.LookupClassByName ("Gtk.Bin");
+				icon = cc.Icon;
+			}
+			return icon;
 		}
 		
 		static EmbeddedResource GetResource (AssemblyDefinition asm, string name)

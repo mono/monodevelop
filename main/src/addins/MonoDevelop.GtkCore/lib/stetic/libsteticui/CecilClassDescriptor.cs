@@ -59,8 +59,8 @@ namespace Stetic
 					widgetId = widgetId.Replace (".", "");
 			}
 			
-			ClassDescriptor cc = Registry.LookupClassByName ("Gtk.Bin");
-			icon = cc.Icon;
+			string iconName = element.GetAttribute ("icon");
+			icon = lib.GetEmbeddedIcon (iconName);
 			
 			// If the class is a custom widget created using stetic, it means that it has
 			// simple property and there is no custom logic, so it is safe to generate code

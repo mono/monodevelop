@@ -1,3 +1,9 @@
+2008-02-28  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* libsteticui/CecilClassDescriptor.cs,
+	  libsteticui/CecilWidgetLibrary.cs: Properly load icons from
+	  resurces.
+
 2008-02-25  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* libstetic/ErrorWidget.cs: Always write the ErrorWidget by reusing the
