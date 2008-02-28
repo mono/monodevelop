@@ -1,3 +1,8 @@
+2008-02-28  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Parser/CodeGenerator.cs: Fix line/column check. Positions are
+	  1-based.
+
 2008-01-25  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* CSharpBinding.addin.xml: Update MD version.
