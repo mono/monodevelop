@@ -697,6 +697,8 @@ namespace Mono.TextEditor
 					result += GetLineCount (foldSegment);
 					lastFoldingEnd = foldSegment.EndOffset;
 					line = GetLine (result);
+					if (line == null)
+						return result;
 				}
 			}
 			return result;

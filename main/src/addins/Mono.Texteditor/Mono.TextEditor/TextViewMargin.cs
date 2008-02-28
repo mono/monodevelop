@@ -814,7 +814,8 @@ namespace Mono.TextEditor
 		
 		public DocumentLocation VisualToDocumentLocation (int x, int y)
 		{
-			int lineNumber = Document.VisualToLogicalLine (System.Math.Min ((int)(y + textEditor.VAdjustment.Value) / LineHeight, Document.LineCount - 1));
+			int lineNumber = System.Math.Min (Document.VisualToLogicalLine ((int)(y + textEditor.VAdjustment.Value) / LineHeight), Document.LineCount - 1);
+			
 			LineSegment line = Document.GetLine (lineNumber);
 			int lineXPos  = 0;
 			int column;
