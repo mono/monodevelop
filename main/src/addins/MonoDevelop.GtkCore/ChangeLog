@@ -1,3 +1,7 @@
+2008-02-28  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* lib/libsteticui.mdp: Set correct makefile ver for files.
+
 2008-02-27  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.GtkCore.GuiBuilder/ToolboxProvider.cs: Worked on category
