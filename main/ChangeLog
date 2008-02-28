@@ -1,3 +1,7 @@
+2008-02-24  Enver ALTIN  <ealtin@gmail.com>
+ 
+	* po/tr.po: Updated Turkish translation.
+ 
 2008-01-30  Geoff Norton  <gnorton@novell.com>
 
 	* monodevelop.in: Work around a (broken?) behaviour in OSX 10.5 bash
