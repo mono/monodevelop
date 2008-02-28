@@ -163,5 +163,8 @@
 	<Extension path = "/MonoDevelop/ProjectModel/Gui/Icons">
 		<Icon extensions = ".aspx,.asax,.ascx,.ashx,.asmx" icon = "md-html-file-icon"/>
 	</Extension>
-
+	
+	<Extension path = "/MonoDevelop/Ide/TextEditorExtensions">
+		<Class class = "MonoDevelop.AspNet.Gui.AspNetEditorExtension" />
+	</Extension>
 </Addin>

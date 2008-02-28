@@ -39,8 +39,7 @@ namespace MonoDevelop.AspNet.Parser.Dom
 	public class TagNode : ParentNode
 	{
 		string tagName;
-		TagAttributes attributes;
-		ILocation endTagLocation; 
+		TagAttributes attributes; 
 		
 		internal TagNode (ILocation location, string name, TagAttributes attributes)
 			: base (location)
@@ -65,15 +64,10 @@ namespace MonoDevelop.AspNet.Parser.Dom
 			get { return attributes; }
 		}
 		
-		public ILocation EndTagLocation {
-			internal set { endTagLocation = new Location (value); }
-			get { return endTagLocation; }
-		}
-		
 		public override string ToString ()
 		{
 			return string.Format ("[TagNode Name='{0}' Attributes='{1}' Location='{2}' EndTagLocation='{3}']",
-			    TagName, Attributes, Location, EndTagLocation);
+			    TagName, Attributes, Location, EndLocation);
 		}
 
 	}

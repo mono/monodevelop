@@ -37,7 +37,7 @@ namespace MonoDevelop.AspNet.Parser.Dom
 	public abstract class Node
 	{
 		internal Node parent;
-		private ILocation location;
+		ILocation location;
 		
 		public Node (ILocation location)
 		{
@@ -59,11 +59,23 @@ namespace MonoDevelop.AspNet.Parser.Dom
 			throw new ParseException (location, "This parse tree node does not support internal text");
 		}
 		
-		public int ContainsPosition (int line, int col)
+		public virtual Node GetNodeAtPosition (int line, int col)
 		{
-			if (line < Location.BeginLine || (line == Location.BeginLine && col < Location.BeginColumn))
+			if (ContainsPosition (line, col) == 0)
+				return this;
+			return null;
+		}
+		
+		public virtual int ContainsPosition (int line, int col)
+		{
+			return LocationContainsPosition (Location, line, col);
+		}
+		
+		internal protected int LocationContainsPosition (ILocation loc, int line, int col)
+		{
+			if (line < loc.BeginLine || (line == loc.BeginLine && col < loc.BeginColumn))
 				return -1;
-			if (line > Location.EndLine || (line == Location.EndLine && col > Location.EndLine))
+			if (line > loc.EndLine || (line == loc.EndLine && col > loc.EndColumn))
 				return 1;
 			return 0;
 		}

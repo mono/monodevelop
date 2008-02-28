@@ -1,5 +1,17 @@
 2008-02-27  Michael Hutchinson  <mhutchinson@novell.com> 
 
+	* MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs, Makefile.am,
+	  AspNetAddIn.mdp, MonoDevelop.AspNet.addin.xml: Add the beginnings of a
+	  code completion system for ASP.NET.
+	* MonoDevelop.AspNet.Parser.Dom/ParentNode.cs,
+	  MonoDevelop.AspNet.Parser.Dom/TagNode.cs,
+	  MonoDevelop.AspNet.Parser.Dom/Node.cs,
+	  MonoDevelop.AspNet.Parser.Dom/RootNode.cs,
+	  MonoDevelop.AspNet.Parser/Document.cs: Improve error resilience. Improve
+	  debug messages. Finish the node search system.
+
+2008-02-27  Michael Hutchinson  <mhutchinson@novell.com> 
+
 	* MonoDevelop.AspNet.Parser/Internal:
 	* MonoDevelop.AspNet.Parser/Tree:
 	* MonoDevelop.AspNet.Parser.Internal:

@@ -99,6 +99,7 @@
     <File name="MonoDevelop.AspNet.Parser/DebugStringVisitor.cs" subtype="Code" buildaction="Compile" />
     <File name="gtk-gui/MonoDevelop.AspNet.Gui.AspNetConfigurationPanelWidget.cs" subtype="Code" buildaction="Compile" />
     <File name="gtk-gui/MonoDevelop.AspNet.Gui.XspOptionsPanelWidget.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Components" />
@@ -122,6 +123,7 @@
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.MsVisualStudio" />
     <ProjectReference type="Gac" localcopy="True" refto="Mono.Addins, Version=0.3.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Deployment" />
+    <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Projects.Gui" />
   </References>
   <GtkDesignInfo gettextClass="MonoDevelop.Core.GettextCatalog" gtkVersion="2.8.3" />
   <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="./Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="../../../">

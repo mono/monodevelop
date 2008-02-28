@@ -46,7 +46,7 @@ namespace MonoDevelop.AspNet.Parser
 		DocumentReferenceManager refMan;
 		PageInfoVisitor info;
 		MemberListVisitor memberList;
-		List<Exception> errors = new List<Exception> ();
+		List<ParserException> errors = new List<ParserException> ();
 		
 		public Document (ProjectFile file)
 		{
@@ -57,20 +57,29 @@ namespace MonoDevelop.AspNet.Parser
 			try {
 				sr = new StreamReader (file.FilePath);
 				rootNode.Parse (file.FilePath, sr);
-			} catch (MonoDevelop.AspNet.Parser.Internal.ParseException e) {
-				errors.Add (new ParserException (e.Location, e.Message));
-			} catch (Exception e) {
-				MonoDevelop.Core.LoggingService.LogError ("Unhandled error parsing ASP.NET document", e);
-				errors.Add (e);
+			} catch (Exception ex) {
+				MonoDevelop.Core.LoggingService.LogError ("Unhandled error parsing ASP.NET document", ex);
+				errors.Add (new ParserException (null, "Unhandled error parsing ASP.NET document: " + ex.ToString ()));
 			} finally {
 				if (sr != null)
 					sr.Close ();
 			}
 			
+			foreach (MonoDevelop.AspNet.Parser.Internal.ParseException ex in rootNode.ParseErrors)
+				errors.Add (new ParserException (ex.Location, ex.Message));
+			
 			if (MonoDevelop.Core.LoggingService.IsLevelEnabled (MonoDevelop.Core.Logging.LogLevel.Debug)) {
 				DebugStringVisitor dbg = new DebugStringVisitor ();
 				rootNode.AcceptVisit (dbg);
-				MonoDevelop.Core.LoggingService.LogDebug (dbg.DebugString);
+				System.Text.StringBuilder sb = new System.Text.StringBuilder ();
+				sb.AppendLine ("Parsed AspNet file:");
+				sb.AppendLine (dbg.DebugString);
+				if (errors.Count > 0) {
+					sb.AppendLine ("Errors:");
+					foreach (ParserException ex in errors)
+						sb.AppendLine (ex.ToString ());
+				}
+				MonoDevelop.Core.LoggingService.LogDebug (sb.ToString ());
 			}
 		}
 		
@@ -78,7 +87,7 @@ namespace MonoDevelop.AspNet.Parser
 			get { return errors.Count == 0; }
 		}
 		
-		public IList<Exception> ParseErrors {
+		public IList<ParserException> ParseErrors {
 			get { return errors; }
 		}
 		

@@ -32,6 +32,7 @@
 
 using System;
 using System.IO;
+using System.Collections.Generic;
 
 using MonoDevelop.AspNet.Parser;
 using MonoDevelop.AspNet.Parser.Internal;
@@ -41,6 +42,7 @@ namespace MonoDevelop.AspNet.Parser.Dom
 	public class RootNode : ParentNode
 	{
 		string fileName;
+		List<ParseException> errors = new List<ParseException> ();
 		
 		public RootNode (string fileName, StreamReader textStream)
 			: base (null)
@@ -52,6 +54,10 @@ namespace MonoDevelop.AspNet.Parser.Dom
 		public RootNode ()
 			: base (null)
 		{
+		}
+		
+		internal ICollection<ParseException> ParseErrors {
+			get { return errors; }
 		}
 		
 		public override void AcceptVisit (Visitor visitor)
@@ -66,12 +72,15 @@ namespace MonoDevelop.AspNet.Parser.Dom
 		{
 			return string.Format ("[RootNode Filename='{0}']", fileName);
 		}
-
+		
+		public override int ContainsPosition (int line, int col)
+		{
+			return 0;
+		}
 		
 		#region Parsing code
 		
 		Node currentNode;
-		string currentTagId;
 		
 		public void Parse (string fileName, StreamReader textStream)
 		{
@@ -91,22 +100,33 @@ namespace MonoDevelop.AspNet.Parser.Dom
 			switch (tagtype)
 			{
 			case TagType.Close:
-				if ( !(currentTagId != tagId))
-					throw new ParseException (location, "Closing tag does not match opening tag " + tagId + ".");
 				TagNode tn = currentNode as TagNode;
-				if (tn != null)
-					tn.EndTagLocation = location;
+				if (tn == null) {
+					errors.Add (new ParseException (location, "Closing tag '" + tagId +"'does not match an opening tag."));
+				} else {
+					if (tn.TagName != tagId)
+						errors.Add (new ParseException (location, "Closing tag '" + tagId +"'does not match opening tag '" + tn.TagName + "'."));
+					tn.EndLocation = location;
+				}
 				currentNode = currentNode.Parent;
 				break;
 				
 			case TagType.CodeRender:
 			case TagType.CodeRenderExpression:
 			case TagType.DataBinding:
-				AddtoCurrent (location, new ExpressionNode (location, tagId));
+				try {
+					AddtoCurrent (location, new ExpressionNode (location, tagId));
+				} catch (ParseException ex) {
+					errors.Add (ex);
+				}
 				break;
 				
 			case TagType.Directive:
-				AddtoCurrent (location, new DirectiveNode (location, tagId, attributes));
+				try {
+					AddtoCurrent (location, new DirectiveNode (location, tagId, attributes));
+				} catch (ParseException ex) {
+					errors.Add (ex);
+				}	
 				break;
 				
 			case TagType.Include:
@@ -117,13 +137,21 @@ namespace MonoDevelop.AspNet.Parser.Dom
 				throw new NotImplementedException ("Server comments have not yet been implemented: " + location.PlainText);
 				
 			case TagType.SelfClosing:
-				AddtoCurrent (location, new TagNode (location, tagId, attributes));
+				try {
+					AddtoCurrent (location, new TagNode (location, tagId, attributes));
+				} catch (ParseException ex) {
+					errors.Add (ex);
+				}
 				break;
 				
 			case TagType.Tag:
-				Node child = new TagNode (location, tagId, attributes);
-				AddtoCurrent (location, child);
-				currentNode = child;
+				try {
+					Node child = new TagNode (location, tagId, attributes);
+					AddtoCurrent (location, child);
+					currentNode = child;
+				} catch (ParseException ex) {
+					errors.Add (ex);
+				}
 				break;
 				
 			case TagType.Text:
