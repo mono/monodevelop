@@ -1,5 +1,9 @@
 2008-02-28  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.Ide.addin.xml: Added missing keyboard shortcut.
+
+2008-02-28  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.Ide.Gui.Pads.ProjectPad/SystemFileNodeBuilder.cs: Fixed
 	  duplicate error string. 
 
