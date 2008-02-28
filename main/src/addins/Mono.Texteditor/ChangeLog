@@ -1,3 +1,8 @@
+2008-02-29  Mike Krüger <mkrueger@novell.com> 
+
+	* Mono.TextEditor.Highlighting/SyntaxModeService.cs: No longer using
+	  Thread.Abort ().
+
 2008-02-28  Mike Krüger <mkrueger@novell.com> 
 
 	* Mono.TextEditor/TextEditorData.cs, Mono.TextEditor/TextEditor.cs: Worked

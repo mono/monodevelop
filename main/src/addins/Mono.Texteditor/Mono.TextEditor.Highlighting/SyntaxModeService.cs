@@ -165,8 +165,10 @@ namespace Mono.TextEditor.Highlighting
 			return true;
 		}
 		
+		static bool updateIsRunning = false;
 		static void Update (object o)
 		{
+			updateIsRunning = true;
 			object[] data   = (object[])o;
 			Document doc    = (Document)data[0];
 			SyntaxMode mode = (SyntaxMode)data[1];
@@ -197,7 +199,7 @@ namespace Mono.TextEditor.Highlighting
 				ScanSpans (doc, rule, spanStack, line.Offset, line.EndOffset);
 				while (spanStack.Count > 0 && spanStack.Peek ().StopAtEol)
 					spanStack.Pop ();
-			} while (iter.MoveNext ());
+			} while (updateIsRunning && iter.MoveNext ());
 			if (doUpdate) {
 				GLib.Timeout.Add (0, delegate {
 					doc.RequestUpdate (new UpdateAll ());
@@ -205,6 +207,7 @@ namespace Mono.TextEditor.Highlighting
 					return false;
 				});
 			}
+			updateIsRunning = false;
 		}
 		
 		static Thread updateThread = null;
@@ -215,8 +218,10 @@ namespace Mono.TextEditor.Highlighting
 		}
 		public static void StartUpdate (Document doc, SyntaxMode mode, int startOffset, int endOffset)
 		{
-			if (updateThread != null && updateThread.IsAlive)
-				updateThread.Abort ();
+			if (updateThread != null && updateThread.IsAlive) {
+				updateIsRunning = false;
+				updateThread.Join ();
+			}
 			updateThread = new Thread (new ParameterizedThreadStart (Update));
 			updateThread.Priority = ThreadPriority.Lowest;
 			updateThread.IsBackground = true;
