@@ -1,3 +1,14 @@
+2008-02-28  Mike Krüger <mkrueger@novell.com> 
+
+	* Mono.TextEditor/LineSplitter.cs, Mono.TextEditor/TextEditorData.cs,
+	  Mono.TextEditor/TextEditor.cs, Mono.TextEditor/GapBuffer.cs,
+	  Mono.TextEditor/GutterMargin.cs,
+	  Mono.TextEditor.Tests/Mono.TextEditor.Tests.pidb,
+	  Mono.TextEditor.Tests/Mono.TextEditor.Tests.mdp,
+	  Mono.TextEditor.Tests/Mono.TextEditor.Tests/LineSplitterTests.cs,
+	  Mono.TextEditor.Tests/Mono.TextEditor.Tests/SelectionTests.cs: Fixed Bug
+	  365570 - Crash in the editor.
+
 2008-02-27  Mike Krüger <mkrueger@novell.com> 
 
 	

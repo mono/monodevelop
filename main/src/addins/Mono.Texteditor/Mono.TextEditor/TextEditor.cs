@@ -557,19 +557,21 @@ namespace Mono.TextEditor
 			startingPos = -1;
 			return null;
 		}
-
+		
 		protected override bool OnButtonReleaseEvent (EventButton e)
 		{
 			int startPos;
 			IMargin margin = GetMarginAtX ((int)e.X, out startPos);
-			if (margin != null) {
+			if (margin != null)
 				margin.MouseReleased ((int)e.Button, (int)(e.X - startPos), (int)e.Y, e.State);
-			}
-			
+			ResetMouseState ();
+			return base.OnButtonReleaseEvent (e);
+		}
+		protected void ResetMouseState ()
+		{
 			mousePressed = false;
 			textViewMargin.inDrag = false;
 			textViewMargin.inSelectionDrag = false;
-			return base.OnButtonReleaseEvent (e);
 		}
 		
 		bool dragOver = false;
@@ -647,7 +649,7 @@ namespace Mono.TextEditor
 			Caret.PreserveSelection = false;
 			return true;
 		}
-
+		
 		IMargin oldMargin = null;
 		protected override bool OnMotionNotifyEvent (Gdk.EventMotion e)
 		{

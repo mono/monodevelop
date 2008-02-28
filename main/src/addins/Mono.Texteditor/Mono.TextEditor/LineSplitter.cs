@@ -36,7 +36,7 @@ namespace Mono.TextEditor
 	public class LineSplitter
 	{
 		LineSegmentTree lines = new LineSegmentTree ();
-
+		
 		public int LineCount {
 			get {
 				return lines.Count;
@@ -56,6 +56,7 @@ namespace Mono.TextEditor
 		{
 			lines.Clear ();
 		}
+		
 		public LineSplitter (IBuffer buffer)
 		{
 			lines.Clear ();
@@ -63,8 +64,7 @@ namespace Mono.TextEditor
 		
 		public LineSegment Get (int number)
 		{
-			LineSegmentTree.TreeNode node = lines.GetNode (number); 
-			return node != null ? node : new LineSegment(0, 0);
+			return lines.GetNode (number);
 		}
 		
 		public LineSegment GetLineByOffset (int offset)
@@ -73,7 +73,7 @@ namespace Mono.TextEditor
 		}
 		
 		
-		internal void TextReplaced (object sender, ReplaceEventArgs args)
+		public void TextReplaced (object sender, ReplaceEventArgs args)
 		{
 			if (args.Count > 0)
 				TextRemove (args.Offset, args.Count);
@@ -109,7 +109,7 @@ namespace Mono.TextEditor
 			} while (line != endNode);
 			lines.ChangeLength (startNode, startNode.Length - charsRemoved + charsLeft, endNode.DelimiterLength);
 		}
-
+		
 		void TextInsert (int offset, StringBuilder text)
 		{
 			if (text == null || text.Length == 0)

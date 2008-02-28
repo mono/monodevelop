@@ -188,6 +188,22 @@ data.Document.Text =
 			Assert.AreEqual (3, lines);
 		}
 		
+		[Test()]
+		public void TestSetSelectedLines ()
+		{
+			TextEditorData data = new Mono.TextEditor.TextEditorData  ();
+data.Document.Text = 
+@"1
+2
+3
+";
+			data.SetSelectLines (0, 3);
+			Assert.AreEqual (0, data.SelectionAnchor);
+			Assert.AreEqual (0, data.SelectionRange.Offset);
+			Assert.AreEqual (data.Document.Length, data.SelectionRange.EndOffset);
+		}
+		
+		
 		[TestFixtureSetUp] 
 		public void SetUp()
 		{

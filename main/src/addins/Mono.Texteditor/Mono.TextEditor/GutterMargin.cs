@@ -70,6 +70,8 @@ namespace Mono.TextEditor
 		
 		public override void MousePressed (int button, int x, int y, Gdk.EventType type, Gdk.ModifierType modifierState)
 		{
+			if (button != 1)
+				return;
 			int lineNumber       = editor.Document.VisualToLogicalLine ((int)(y + editor.VAdjustment.Value) / editor.LineHeight);
 			bool extendSelection = (modifierState & Gdk.ModifierType.ShiftMask) == Gdk.ModifierType.ShiftMask;
 			if (lineNumber < editor.Document.LineCount) {
@@ -110,7 +112,7 @@ namespace Mono.TextEditor
 				if (!editor.IsSomethingSelected) {
 					editor.SelectionAnchor = editor.Caret.Offset;
 				} 
-				int lineNumber = editor.Document.VisualToLogicalLine ((int)(y + editor.VAdjustment.Value) / editor.LineHeight);
+				int lineNumber = System.Math.Min (editor.Document.VisualToLogicalLine ((int)(y + editor.VAdjustment.Value) / editor.LineHeight), editor.Document.LineCount - 1);
 				editor.SetSelectLines (editor.SelectionAnchorLocation.Line, lineNumber);
 				editor.Caret.PreserveSelection = true;
 				editor.Caret.Location = new DocumentLocation (lineNumber, 0);

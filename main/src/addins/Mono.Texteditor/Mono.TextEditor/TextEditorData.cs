@@ -357,8 +357,10 @@ namespace Mono.TextEditor
 				from = to;
 				to = tmp;
 			}
-			LineSegment fromLine =Document.GetLine (from);
+			LineSegment fromLine = Document.GetLine (from);
 			LineSegment toLine = Document.GetLine (to);
+			if (this.SelectionAnchor < 0)
+				this.SelectionAnchor = fromLine.Offset;
 			SelectionRange = new Segment (fromLine.Offset, toLine.EndOffset - fromLine.Offset);
 		}
 		

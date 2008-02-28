@@ -25,6 +25,7 @@
     <File name="Mono.TextEditor.Tests.DefaultEditActions/SelectionSelectAllTests.cs" subtype="Code" buildaction="Compile" />
     <File name="Mono.TextEditor.Tests/SearchTests.cs" subtype="Code" buildaction="Compile" />
     <File name="Mono.TextEditor.Tests/UndoRedoTests.cs" subtype="Code" buildaction="Compile" />
+    <File name="Mono.TextEditor.Tests/LineSplitterTests.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Project" localcopy="True" refto="Mono.TextEditor" />
