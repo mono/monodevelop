@@ -427,7 +427,7 @@
 				_label = "Deployment" />
 		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.LocalCopyReference"
 				type="check"
-				_label = "C_opy Reference to Output Directory" />
+				_label = "_Local Copy" />
 		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.Stop"
 				defaultHandler = "MonoDevelop.Ide.Commands.StopHandler"
 				icon = "gtk-stop"

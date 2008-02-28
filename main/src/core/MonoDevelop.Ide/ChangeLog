@@ -1,3 +1,7 @@
+2008-02-29  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Ide.addin.xml: changed one menu entry.
+
 2008-02-28  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Ide.Commands/FileCommands.cs,
