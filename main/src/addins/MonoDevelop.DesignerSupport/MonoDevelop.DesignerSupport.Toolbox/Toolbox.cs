@@ -211,7 +211,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 					if (!categories.ContainsKey (itbn.Category))
 						categories[itbn.Category] = new Category (itbn.Category);
 					if (newItem.Text != null)
-						categories[itbn.Category].Items.Add (newItem);
+						categories[itbn.Category].Add (newItem);
 				} else if (node is CategoryToolboxNode) {
 					CategoryToolboxNode category = node as CategoryToolboxNode;
 					categories[category.Label] = new Category (category);

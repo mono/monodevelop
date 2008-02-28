@@ -28,6 +28,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using Gtk;
 using Pango;
 using Gdk;
@@ -330,7 +331,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				if (this.SelectedItem is Category) {
 					Category selectedCategory = ((Category)this.SelectedItem);
 					if (selectedCategory.IsExpanded) {
-						if (selectedCategory.Items.Count > 0)
+						if (selectedCategory.ItemCount > 0)
 							this.SelectedItem = selectedCategory.Items[0];
 					} else {
 						selectedCategory.IsExpanded = true;
@@ -804,9 +805,15 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		
 		List<Item> items = new List<Item> ();
 		
-		public List<Item> Items {
+		public int ItemCount {
 			get {
-				return items;
+				return items.Count;
+			}
+		}
+		
+		public ReadOnlyCollection<Item> Items {
+			get {
+				return items.AsReadOnly ();
 			}
 		}
 		
@@ -830,14 +837,44 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			}
 		}
 		
+		bool isSorted    = true;
+		public bool IsSorted {
+			get {
+				return isSorted;
+			}
+			set {
+				isSorted = value;
+			}
+		}
+		
 		public Category (CategoryToolboxNode node) : base (node.Label)
 		{
 			this.canIconizeItems = node.CanIconizeItems;
 			this.isDropTarget    = node.IsDropTarget;
+			this.isSorted        = node.IsDropTarget;
 		}
 		
 		public Category (string text) : base (text)
 		{
+		}
+		
+		public void Clear ()
+		{
+			this.items.Clear ();
+		}
+		
+		public void Add (Item item)
+		{
+			this.items.Add (item);
+			if (isSorted)
+				items.Sort ();
+		}
+		
+		public void Remove (Item item)
+		{
+			this.items.Remove (item);
+			if (isSorted)
+				items.Sort ();
 		}
 		
 		public override string ToString ()
@@ -846,7 +883,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		}
 	}
 	
-	public class Item
+	public class Item : IComparable<Item>
 	{
 		Gdk.Pixbuf icon;
 		string     text;
@@ -918,6 +955,14 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			this.tooltip = tooltip;
 			this.tag     = tag;
 		}
+		
+		public virtual int CompareTo (Item other)
+		{
+			if (other == null) 
+				return -1;
+			return Text.CompareTo (other.Text);
+		}
+		
 	}
 
 }

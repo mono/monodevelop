@@ -1,3 +1,10 @@
+2008-02-28  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.DesignerSupport.Toolbox/Toolbox.cs,
+	  MonoDevelop.DesignerSupport.Toolbox/ToolboxWidget.cs,
+	  MonoDevelop.DesignerSupport.Toolbox/CategoryToolboxNode.cs: Fixed "Bug
+	  365624 - Widget toolbox are shown unsorted".
+
 2008-02-27  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.DesignerSupport.Toolbox/ItemToolboxNode.cs: Fixed comparer bug

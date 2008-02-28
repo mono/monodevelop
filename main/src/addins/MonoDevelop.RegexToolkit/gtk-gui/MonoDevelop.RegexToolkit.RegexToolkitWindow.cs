@@ -75,13 +75,13 @@ namespace MonoDevelop.RegexToolkit {
         
         private Gtk.HBox hbox1;
         
-        private Gtk.Button buttonCancel;
-        
-        private Gtk.Button buttonLibrary;
-        
         private Gtk.Button buttonSearch;
         
         private Gtk.Button buttonSearchReplace;
+        
+        private Gtk.Button buttonLibrary;
+        
+        private Gtk.Button buttonCancel;
         
         protected virtual void Build() {
             Stetic.Gui.Initialize(this);
@@ -305,31 +305,6 @@ namespace MonoDevelop.RegexToolkit {
             this.hbox1.Name = "hbox1";
             this.hbox1.Spacing = 6;
             // Container child hbox1.Gtk.Box+BoxChild
-            this.buttonCancel = new Gtk.Button();
-            this.buttonCancel.CanDefault = true;
-            this.buttonCancel.CanFocus = true;
-            this.buttonCancel.Name = "buttonCancel";
-            this.buttonCancel.UseStock = true;
-            this.buttonCancel.UseUnderline = true;
-            this.buttonCancel.Label = "gtk-close";
-            this.hbox1.Add(this.buttonCancel);
-            Gtk.Box.BoxChild w28 = ((Gtk.Box.BoxChild)(this.hbox1[this.buttonCancel]));
-            w28.Position = 0;
-            w28.Expand = false;
-            w28.Fill = false;
-            // Container child hbox1.Gtk.Box+BoxChild
-            this.buttonLibrary = new Gtk.Button();
-            this.buttonLibrary.CanDefault = true;
-            this.buttonLibrary.CanFocus = true;
-            this.buttonLibrary.Name = "buttonLibrary";
-            this.buttonLibrary.UseUnderline = true;
-            this.buttonLibrary.Label = Mono.Unix.Catalog.GetString("Regex Library");
-            this.hbox1.Add(this.buttonLibrary);
-            Gtk.Box.BoxChild w29 = ((Gtk.Box.BoxChild)(this.hbox1[this.buttonLibrary]));
-            w29.Position = 1;
-            w29.Expand = false;
-            w29.Fill = false;
-            // Container child hbox1.Gtk.Box+BoxChild
             this.buttonSearch = new Gtk.Button();
             this.buttonSearch.CanDefault = true;
             this.buttonSearch.CanFocus = true;
@@ -338,10 +313,11 @@ namespace MonoDevelop.RegexToolkit {
             this.buttonSearch.UseUnderline = true;
             this.buttonSearch.Label = "gtk-find";
             this.hbox1.Add(this.buttonSearch);
-            Gtk.Box.BoxChild w30 = ((Gtk.Box.BoxChild)(this.hbox1[this.buttonSearch]));
-            w30.Position = 2;
-            w30.Expand = false;
-            w30.Fill = false;
+            Gtk.Box.BoxChild w28 = ((Gtk.Box.BoxChild)(this.hbox1[this.buttonSearch]));
+            w28.PackType = ((Gtk.PackType)(1));
+            w28.Position = 0;
+            w28.Expand = false;
+            w28.Fill = false;
             // Container child hbox1.Gtk.Box+BoxChild
             this.buttonSearchReplace = new Gtk.Button();
             this.buttonSearchReplace.CanDefault = true;
@@ -351,7 +327,35 @@ namespace MonoDevelop.RegexToolkit {
             this.buttonSearchReplace.UseUnderline = true;
             this.buttonSearchReplace.Label = "gtk-find-and-replace";
             this.hbox1.Add(this.buttonSearchReplace);
-            Gtk.Box.BoxChild w31 = ((Gtk.Box.BoxChild)(this.hbox1[this.buttonSearchReplace]));
+            Gtk.Box.BoxChild w29 = ((Gtk.Box.BoxChild)(this.hbox1[this.buttonSearchReplace]));
+            w29.PackType = ((Gtk.PackType)(1));
+            w29.Position = 1;
+            w29.Expand = false;
+            w29.Fill = false;
+            // Container child hbox1.Gtk.Box+BoxChild
+            this.buttonLibrary = new Gtk.Button();
+            this.buttonLibrary.CanDefault = true;
+            this.buttonLibrary.CanFocus = true;
+            this.buttonLibrary.Name = "buttonLibrary";
+            this.buttonLibrary.UseUnderline = true;
+            this.buttonLibrary.Label = Mono.Unix.Catalog.GetString("Regex Library");
+            this.hbox1.Add(this.buttonLibrary);
+            Gtk.Box.BoxChild w30 = ((Gtk.Box.BoxChild)(this.hbox1[this.buttonLibrary]));
+            w30.PackType = ((Gtk.PackType)(1));
+            w30.Position = 2;
+            w30.Expand = false;
+            w30.Fill = false;
+            // Container child hbox1.Gtk.Box+BoxChild
+            this.buttonCancel = new Gtk.Button();
+            this.buttonCancel.CanDefault = true;
+            this.buttonCancel.CanFocus = true;
+            this.buttonCancel.Name = "buttonCancel";
+            this.buttonCancel.UseStock = true;
+            this.buttonCancel.UseUnderline = true;
+            this.buttonCancel.Label = "gtk-close";
+            this.hbox1.Add(this.buttonCancel);
+            Gtk.Box.BoxChild w31 = ((Gtk.Box.BoxChild)(this.hbox1[this.buttonCancel]));
+            w31.PackType = ((Gtk.PackType)(1));
             w31.Position = 3;
             w31.Expand = false;
             w31.Fill = false;

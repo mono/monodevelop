@@ -1164,6 +1164,7 @@ namespace MonoDevelop.SourceEditor
 			CategoryToolboxNode category = new CategoryToolboxNode (GettextCatalog.GetString ("Clipboard ring"));
 			category.IsDropTarget    = false;
 			category.CanIconizeItems = false;
+			category.IsSorted        = false;
 			foreach (TextToolboxNode item in clipboardRing) {
 				category.Add (item);
 			}

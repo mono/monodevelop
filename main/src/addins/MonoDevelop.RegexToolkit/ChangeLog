@@ -1,3 +1,8 @@
+2008-02-28  Mike Krüger <mkrueger@novell.com> 
+
+	* gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWindow.cs: Fixed "Bug 365624
+	  - Widget toolbox are shown unsorted".
+
 2008-02-27  Mike Krüger <mkrueger@novell.com> 
 
 	* gtk-gui/MonoDevelop.RegexToolkit.RegexLibraryWindow.cs,

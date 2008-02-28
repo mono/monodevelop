@@ -68,6 +68,16 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			}
 		}
 		
+		bool isSorted    = true;
+		public bool IsSorted {
+			get {
+				return isSorted;
+			}
+			set {
+				isSorted = value;
+			}
+		}
+		
 		public CategoryToolboxNode (string name)
 		{
 			this.name = name;
