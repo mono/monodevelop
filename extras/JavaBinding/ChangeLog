@@ -1,3 +1,7 @@
+2008-02-24  Enver ALTIN  <ealtin@gmail.com>
+
+	* po/tr.po: Updated Turkish translation.
+
 2008-02-13  Geoff Norton  <gnorton@novell.com>
 
 	* JavaBinding.mdp:
@@ -21,7 +25,7 @@
 
 2008-01-24  David Makovský (Yakeen) <yakeen@sannyas-on.net>
 
-        * cs.po: Updated translation.
+	* cs.po: Updated translation.
 
 2008-01-23  Atsushi Enomoto  <atsushi@ximian.com>
 
@@ -64,7 +68,7 @@
 
 2007-12-29 David Makovský (Yakeen) <yakeen@sannyas-on.net>
 
-        * po/cs.po: updated translation
+	* po/cs.po: updated translation
 
 2007-12-18  Lluis Sanchez Gual <lluis@novell.com> 
 
@@ -281,7 +285,7 @@
 
 2006-03-12  David Makovský (Yakeen) <yakeen@sannyas-on.net>
 
-        * Java.glade: Marking some strings not to be translated. Not include balast in pot file.
+	* Java.glade: Marking some strings not to be translated. Not include balast in pot file.
 
 2006-01-30 Lluis Sanchez Gual  <lluis@novell.com>   
 

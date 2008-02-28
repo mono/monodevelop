@@ -1,17 +1,18 @@
 # Turkish translation of MonoDevelop
 # Copyright (C) 2004 Novell, Inc.
 # This file is distributed under the same license as the MonoDevelop package.
-# Enver ALTIN <skyblue@skyblue.gen.tr>, 2004.
+# Enver ALTIN <skyblue@skyblue.gen.tr>, 2004,
+# Enver ALTIN <ealtin@gmail.com>
 # , fuzzy
 # 
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: MonoDevelop 0.5\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: \n"
-"PO-Revision-Date: 2004-09-19 05:44+0300\n"
-"Last-Translator: Enver ALTIN <skyblue@skyblue.gen.tr>\n"
+"Project-Id-Version: MonoDevelop 1.0\n"
+"Report-Msgid-Bugs-To: ealtin@gmail.com\n"
+"POT-Creation-Date: 2008-02-24 00:28+0200\n"
+"PO-Revision-Date: 2008-02-24 00:36+0200\n"
+"Last-Translator: Enver ALTIN <ealtin@gmail.com>\n"
 "Language-Team: Turkish <gnome-turk@gnome.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -23,7 +24,7 @@ msgstr "Boş dosya"
 
 #: ../templates/EmptyJavaFile.xft.xml:6
 msgid "General"
-msgstr ""
+msgstr "Genel"
 
 #: ../templates/EmptyJavaFile.xft.xml:8
 msgid "Creates an empty Java file."
@@ -43,7 +44,7 @@ msgstr "Boş Proje"
 #: ../templates/JavaConsoleApplicationProject.xpt.xml:8
 #: ../JavaBinding.addin.xml:64
 msgid "Java"
-msgstr ""
+msgstr "Java"
 
 #: ../templates/EmptyJavaProject.xpt.xml:11
 msgid "Creates an empty Java solution."
@@ -82,54 +83,46 @@ msgid "Create a Gtk# Java project with IKVM"
 msgstr "IKVM kullanarak bir Gtk# Java projesi oluşturur."
 
 #: ../templates/IkvmLibraryProject.xpt.xml:7
-#, fuzzy
 msgid "IKVM Library"
-msgstr "Kütüphane"
+msgstr "IKVM Kütüphanesi"
 
 #: ../templates/IkvmLibraryProject.xpt.xml:11
-#, fuzzy
 msgid "Create a Java library with IKVM"
-msgstr "IKVM kullanarak bir Gtk# Java projesi oluşturur."
+msgstr "IKVM kullanarak Java kütüphanesi oluşturur."
 
 #: ../templates/JavaApplet.xft.xml:4
-#, fuzzy
 msgid "AWT Applet"
-msgstr "Java AWT Uygulamacığı"
+msgstr "AWT Uygulamacığı"
 
 #: ../templates/JavaApplet.xft.xml:6 ../templates/JavaApplication.xft.xml:6
 #: ../templates/JavaDialog.xft.xml:6 ../templates/JavaFrame.xft.xml:6
 #: ../templates/JavaOKDialog.xft.xml:6 ../templates/JavaPanel.xft.xml:6
 msgid "AWT"
-msgstr ""
+msgstr "AWT"
 
 #: ../templates/JavaApplet.xft.xml:8
-#, fuzzy
 msgid "Creates a Java AWT Applet"
 msgstr "Bir AWT uygulamacığı oluşturur"
 
 #: ../templates/JavaApplicationProject.xpt.xml:7
-#, fuzzy
 msgid "AWT Project"
-msgstr "Java AWT projesi"
+msgstr "AWT Projesi"
 
 #: ../templates/JavaApplicationProject.xpt.xml:11
-#, fuzzy
 msgid "Creates a Java AWT project."
-msgstr "Bir AWT projesi oluşturur."
+msgstr "Bir Java AWT projesi oluşturur."
 
 #: ../templates/JavaApplication.xft.xml:4
-#, fuzzy
 msgid "AWT Application"
-msgstr "Java AWT Uygulamacığı"
+msgstr "AWT Uygulaması"
 
 #: ../templates/JavaApplication.xft.xml:8
-#, fuzzy
 msgid "Creates a Java AWT application."
-msgstr "Bir AWT uygulaması oluşturur."
+msgstr "Bir Java AWT uygulaması oluşturur."
 
 #: ../templates/JavaConsoleApplicationProject.xpt.xml:7
 msgid "Console Project"
-msgstr "Konsol projesi"
+msgstr "Konsol Projesi"
 
 #: ../templates/JavaConsoleApplicationProject.xpt.xml:11
 msgid "Create a console Java project"
@@ -137,41 +130,35 @@ msgstr "Bir konsol Java projesi oluşturur"
 
 #: ../templates/JavaDialog.xft.xml:4
 msgid "Java AWT Dialog"
-msgstr "Java AWT diyaloğu"
+msgstr "Java AWT Diyaloğu"
 
 #: ../templates/JavaDialog.xft.xml:8
 msgid "Creates an AWT dialog."
 msgstr "Bir AWT diyaloğu oluşturur."
 
 #: ../templates/JavaFrame.xft.xml:4
-#, fuzzy
 msgid "AWT Frame"
-msgstr "Java AWT çerçevesi"
+msgstr "AWT çerçevesi"
 
 #: ../templates/JavaFrame.xft.xml:8
-#, fuzzy
 msgid "Creates a Java AWT Frame"
-msgstr "Bir AWT çerçevesi oluşturur"
+msgstr "Bir Java AWT çerçevesi oluşturur"
 
 #: ../templates/JavaOKDialog.xft.xml:4
-#, fuzzy
 msgid "AWT OK Dialog"
-msgstr "Java AWT OK diyaloğu"
+msgstr "AWT OK Diyaloğu"
 
 #: ../templates/JavaOKDialog.xft.xml:8
-#, fuzzy
 msgid "Creates a Java AWT OK Dialog."
-msgstr "Bir AWT OK diyaloğu oluşturur."
+msgstr "Bir Java AWT OK diyaloğu oluşturur."
 
 #: ../templates/JavaPanel.xft.xml:4
-#, fuzzy
 msgid "AWT Panel"
-msgstr "Java AWT Paneli"
+msgstr "AWT Paneli"
 
 #: ../templates/JavaPanel.xft.xml:8
-#, fuzzy
 msgid "Creates a Java AWT panel."
-msgstr "Bir AWT paneli oluşturur."
+msgstr "Bir Java AWT paneli oluşturur."
 
 #: ../Gui/ProjectConfigurationPropertyPanel.cs:60
 msgid "Executable"
@@ -183,20 +170,19 @@ msgstr "Kütüphane"
 
 #: ../Gui/GlobalOptionsPanel.cs:35
 msgid "Javac"
-msgstr ""
+msgstr "Javac"
 
 #: ../Gui/GlobalOptionsPanel.cs:36
 msgid "Gcj"
-msgstr ""
+msgstr "Gcj"
 
 #: ../JavaBinding.addin.xml:27
-#, fuzzy
 msgid "Java Files"
-msgstr "Boş Java dosyası"
+msgstr "Java Dosyaları"
 
 #: ../JavaBinding.addin.xml:55
 msgid "Code Generation"
-msgstr "Kod oluşturma"
+msgstr "Kod Üretme"
 
 #: ../JavaBinding.addin.xml:58
 msgid "Output"
@@ -204,97 +190,87 @@ msgstr "Çıktı"
 
 #: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:106
 #: ../gtk-gui/JavaBinding.GlobalOptionsPanelWidget.cs:171
-#, fuzzy
 msgid "<b>Code Generation</b>"
-msgstr "Kod oluşturma"
+msgstr "<b>Kod Üretme</b>"
 
 #: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:168
-#, fuzzy
 msgid "Compile _Target:"
-msgstr "Derleme hedefi"
+msgstr "Derleme _Hedefi:"
 
 #: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:178
-#, fuzzy
 msgid "Define S_ymbols:"
-msgstr "Sembelleri tanımla"
+msgstr "S_embolleri Tanımla:"
 
 #: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:190
-#, fuzzy
 msgid "_Main Class:"
-msgstr "Ana sınıf"
+msgstr "_Ana Sınıf:"
 
 #: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:202
 #: ../gtk-gui/JavaBinding.GlobalOptionsPanelWidget.cs:210
 msgid "Classpath:"
-msgstr ""
+msgstr "Sınıfyolu:"
 
 #: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:249
 #: ../gtk-gui/JavaBinding.GlobalOptionsPanelWidget.cs:64
-#, fuzzy
 msgid "<b>Compiler</b>"
-msgstr "<b>Şablon</b>"
+msgstr "<b>Derleyici</b>"
 
 #: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:277
 msgid "gcj"
-msgstr ""
+msgstr "gcj"
 
 #: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:289
 msgid "javac"
-msgstr ""
+msgstr "javac"
 
 #: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:331
-#, fuzzy
 msgid "<b>Options</b>"
-msgstr "<b>Genel seçenekler</b>"
+msgstr "<b>Seçenekler</b>"
 
 #: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:359
 msgid "Enable _optimizations"
-msgstr "Eniyilemelere izin ver"
+msgstr "_Eniyilemelere izin ver"
 
 #: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:370
 msgid "Emit _debugging information"
-msgstr "Hata ayıklama bilgisini ekle"
+msgstr "Hata _ayıklama bilgisini ekle"
 
 #: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:395
 msgid "<b>Warnings</b>"
 msgstr "<b>Uyarılar</b>"
 
 #: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:423
-#, fuzzy
 msgid "Generate warnings"
-msgstr "Makefile'ları oluştur"
+msgstr "Uyarı üret"
 
 #: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:434
-#, fuzzy
 msgid "Enable deprecation warnings"
-msgstr "Kod tamamlamaya izin ver"
+msgstr "İtiraz uyarılarını etkinleştir"
 
 #: ../gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs:445
 msgid "Treat warnings as _errors"
-msgstr "Uyarıları hata farzet"
+msgstr "Uyarıları hata _farzet"
 
 #: ../gtk-gui/JavaBinding.GlobalOptionsPanelWidget.cs:132
-#, fuzzy
 msgid "Compiler command:"
-msgstr "Derleme hedefi"
+msgstr "Derleyici komutu:"
 
 #: ../gtk-gui/JavaBinding.GlobalOptionsPanelWidget.cs:143
 msgid "IKVM path:"
-msgstr ""
+msgstr "IKVM yolu:"
 
 #: ../gtk-gui/JavaBinding.GlobalOptionsPanelWidget.cs:152
-#, fuzzy
 msgid "Java compiler:"
-msgstr "Boş Java dosyası"
+msgstr "Java derleyicisi:"
 
 #: ../IKVMCompilerManager.cs:134
 msgid "Generating {0} reference stub ..."
-msgstr ""
+msgstr "{0} atıf koçanı üretiliyor ..."
 
 #: ../IKVMCompilerManager.cs:165
 msgid "Generating assembly ..."
-msgstr ""
+msgstr "Çevirme üretiliyor ..."
 
 #: ../IKVMCompilerManager.cs:213
 msgid "Compiling Java source code ..."
-msgstr ""
+msgstr "Java kaynak kodu derleniyor ..."
