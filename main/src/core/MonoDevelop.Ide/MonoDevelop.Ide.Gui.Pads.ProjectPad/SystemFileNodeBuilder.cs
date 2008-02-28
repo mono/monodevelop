@@ -108,7 +108,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 						FileService.RenameFile (oldname, newName);
 					}
 				} catch (System.IO.IOException) {   // assume duplicate file
-					Services.MessageService.ShowError (GettextCatalog.GetString ("File or directory name is already in use, choose a different one."));
+					Services.MessageService.ShowError (GettextCatalog.GetString ("File or directory name is already in use. Please choose a different one."));
 				} catch (System.ArgumentException) { // new file name with wildcard (*, ?) characters in it
 					Services.MessageService.ShowError (GettextCatalog.GetString ("The file name you have chosen contains illegal characters. Please choose a different file name."));
 				}
