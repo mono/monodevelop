@@ -6,12 +6,12 @@ msgstr ""
 "X-Poedit-Bookmarks: -1,1681,-1,-1,-1,-1,-1,-1,-1,-1\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2008-02-28 16:19:02+0100\n"
+"PO-Revision-Date: 2008-02-28 16:31:24+0100\n"
 "Language-Team: \n"
 "Project-Id-Version: Monodevelop\n"
 "MIME-Version: 1.0\n"
 "X-Generator: MonoDevelop Gettext addin\n"
-"POT-Creation-Date: 2008-02-27 22:01:04+0100\n"
+"POT-Creation-Date: 2008-02-28 16:23:16+0100\n"
 "Last-Translator: Mike Krüger <mkrueger@novell.com>\n"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Core/ServiceManager.cs:120
@@ -919,7 +919,6 @@ msgstr "Geblocktes"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ReplaceDialog.cs:130
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ReplaceInFilesDialog.cs:147
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SearchAndReplaceWidget.cs:97
 msgid "Regular Expressions"
 msgstr "Regulärer Ausdruck"
 
@@ -1491,7 +1490,7 @@ msgstr[1] "Alle ersetzen abgeschlossen. {0} Übereinstimmungen gefunden."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/SdiWorkspaceLayout.cs:60
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:928
-#: ../src/addins/AspNetAddIn/Gui/XspOptionsPanelWidget.cs:54
+#: ../src/addins/AspNetAddIn/MonoDevelop.AspNet.Gui/XspOptionsPanelWidget.cs:54
 #: ../src/addins/CSharpBinding/Gui/CompilerOptionsPanelWidget.cs:90
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/HighlightingPanel.cs:126
 msgid "Default"
@@ -1797,7 +1796,6 @@ msgstr "Zeile"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/SearchResultPad.cs:357
 #: ../src/addins/MonoDevelop.GtkCore/lib/stetic/libstetic/stetic.glade:600
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SearchAndReplaceWidget.cs:96
 msgid "Text"
 msgstr "text"
 
@@ -1959,7 +1957,7 @@ msgstr "Entfe_rne von Projekt"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:352
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.SearchWidget.cs:151
-#: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.SearchAndReplaceWidget.cs:185
+#: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.SearchAndReplaceWidget.cs:147
 msgid "_Options"
 msgstr "_Einstellungen"
 
@@ -3470,7 +3468,7 @@ msgid "R_eplace All"
 msgstr "All_e Ersetzen"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.ReplaceDialog.cs:282
-#: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.SearchAndReplaceWidget.cs:222
+#: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.SearchAndReplaceWidget.cs:175
 msgid "_Replace"
 msgstr "Ersetzen"
 
@@ -4288,9 +4286,9 @@ msgstr "Konfiguration"
 #: ../src/core/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineStartupPanel.cs:132
 #: ../src/core/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineStartupPanel.cs:210
 #: ../src/core/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineStartupPanel.cs:224
-#: ../src/addins/AspNetAddIn/Gui/XspOptionsPanelWidget.cs:47
-#: ../src/addins/AspNetAddIn/Gui/XspOptionsPanelWidget.cs:60
-#: ../src/addins/AspNetAddIn/Gui/XspOptionsPanelWidget.cs:65
+#: ../src/addins/AspNetAddIn/MonoDevelop.AspNet.Gui/XspOptionsPanelWidget.cs:47
+#: ../src/addins/AspNetAddIn/MonoDevelop.AspNet.Gui/XspOptionsPanelWidget.cs:60
+#: ../src/addins/AspNetAddIn/MonoDevelop.AspNet.Gui/XspOptionsPanelWidget.cs:65
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/BehaviorPanel.cs:37
 msgid "None"
 msgstr "Nichts"
@@ -4627,20 +4625,18 @@ msgstr "Erzeugt eine NUnit Assembly Test-Sammlung"
 
 #: ../src/addins/NUnit/Gui/TestPad.cs:105
 #: ../src/addins/NUnit/Gui/TestPad.cs:106
-#, fuzzy
 msgid "Run all tests"
-msgstr "Führe Test aus"
+msgstr "Führe alle Tests aus"
 
 #: ../src/addins/NUnit/Gui/TestPad.cs:114
 #: ../src/addins/NUnit/Gui/TestPad.cs:115
-#, fuzzy
 msgid "Run test"
 msgstr "Führe Test aus"
 
 #: ../src/addins/NUnit/Gui/TestPad.cs:122
 #: ../src/addins/NUnit/Gui/TestPad.cs:123
 msgid "Cancel running test"
-msgstr ""
+msgstr "Testlauf abbrechen"
 
 #: ../src/addins/NUnit/Gui/TestPad.cs:261
 msgid "Summary"
@@ -4677,51 +4673,40 @@ msgstr "Keine fehlgeschlagenen Tests gefunden."
 #: ../src/addins/NUnit/Gui/TestResultsPad.cs:55
 #: ../src/addins/NUnit/Gui/TestResultsPad.cs:280
 #: ../src/addins/NUnit/Gui/TestResultsPad.cs:360
-#, fuzzy
 msgid "<b>Failed</b>: {0}"
-msgstr "<b>Name:</b>\t{0}"
+msgstr "<b>Fehlgeschlagen:</b> {0}"
 
 #: ../src/addins/NUnit/Gui/TestResultsPad.cs:56
 #: ../src/addins/NUnit/Gui/TestResultsPad.cs:281
 #: ../src/addins/NUnit/Gui/TestResultsPad.cs:361
-#, fuzzy
 msgid "<b>Ignored</b>: {0}"
-msgstr ""
-"<b>Lizenz</b>\n"
-"    {0}"
+msgstr "<b>Ignoriert:</b> {0}"
 
 #: ../src/addins/NUnit/Gui/TestResultsPad.cs:110
-#, fuzzy
 msgid "Successful Tests"
-msgstr "Zeige erfolgreiche Tests"
+msgstr "Erfolgreiche Tests"
 
 #: ../src/addins/NUnit/Gui/TestResultsPad.cs:115
-#, fuzzy
 msgid "Show Successful Tests"
 msgstr "Zeige erfolgreiche Tests"
 
 #: ../src/addins/NUnit/Gui/TestResultsPad.cs:119
-#, fuzzy
 msgid "Failed Tests"
 msgstr "Fehlgeschlagene Tests"
 
 #: ../src/addins/NUnit/Gui/TestResultsPad.cs:124
-#, fuzzy
 msgid "Show Failed Tests"
 msgstr "Zeige fehlgeschlagene Tests"
 
 #: ../src/addins/NUnit/Gui/TestResultsPad.cs:128
-#, fuzzy
 msgid "Ignored Tests"
-msgstr "Zeige ignorierte Tests"
+msgstr "Ignorierte Tests"
 
 #: ../src/addins/NUnit/Gui/TestResultsPad.cs:133
-#, fuzzy
 msgid "Show Ignored Tests"
 msgstr "Zeige ignorierte Tests"
 
 #: ../src/addins/NUnit/Gui/TestResultsPad.cs:142
-#, fuzzy
 msgid "Show Output"
 msgstr "Zeige Ausgabe"
 
@@ -4733,41 +4718,35 @@ msgstr "Führe Test aus"
 #: ../src/addins/NUnit/Gui/TestResultsPad.cs:260
 #: ../src/addins/NUnit/Services/NUnitService.cs:100
 #: ../src/addins/NUnit/MonoDevelopNUnit.addin.xml:84
-#, fuzzy
 msgid "Test results"
-msgstr "Lösche Ergebnisse"
+msgstr "Testergebnisse"
 
 #: ../src/addins/NUnit/Gui/TestResultsPad.cs:320
 msgid "Running tests for <b>{0}</b> configuration <b>{1}</b>"
-msgstr ""
+msgstr "Starte Tests für <b>{0}</b> Konfiguration <b>{1}</b>"
 
 #: ../src/addins/NUnit/Gui/TestResultsPad.cs:333
-#, fuzzy
 msgid "Internal error"
-msgstr "Internes Nachrichten Protokoll"
+msgstr "Interner Fehler"
 
 #: ../src/addins/NUnit/Gui/TestResultsPad.cs:340
 #: ../src/addins/NUnit/Gui/TestResultsPad.cs:521
 msgid "Stack Trace"
-msgstr ""
+msgstr "Stacktrace"
 
 #: ../src/addins/NUnit/Gui/TestResultsPad.cs:359
-#, fuzzy
 msgid "<b>Tests</b>: {0}"
-msgstr "<b>Typ</b>\t{0}"
+msgstr "<b>Tests:</b> {0}"
 
 #: ../src/addins/NUnit/Gui/TestResultsPad.cs:370
-#, fuzzy
 msgid "Test execution cancelled."
-msgstr "Operation abgebrochen"
+msgstr "Testlauf abgebrochen."
 
 #: ../src/addins/NUnit/Gui/TestResultsPad.cs:535
-#, fuzzy
 msgid "Running {0} ..."
-msgstr "Einsetzen {0}..."
+msgstr "Starte {0}..."
 
 #: ../src/addins/NUnit/Gui/TestResultsPad.cs:578
-#, fuzzy
 msgid "Running "
 msgstr "Ausführend"
 
@@ -4876,71 +4855,63 @@ msgid "Creates an NUnit library"
 msgstr "Erzeugt eine NUnit-Bibliothek"
 
 #: ../src/addins/NUnit/Services/TestProgressMonitor.cs:56
-#, fuzzy
 msgid "Test Output"
-msgstr "Übersetzer-Ausgabe"
+msgstr "Testausgabe"
 
 #: ../src/addins/NUnit/Services/TestProgressMonitor.cs:60
-#, fuzzy
 msgid "Running tests"
-msgstr "Ausführend"
+msgstr "Laufende Tests"
 
 #: ../src/addins/NUnit/Services/TestProgressMonitor.cs:68
 msgid "<b>Successful</b>: {0} <b>Failed</b>: {1} <b>Ignored</b>: {2}"
 msgstr ""
+"<b>Erfolgreich:</b> {0} <b>Fehlgeschlagen:</b> {1} <b>Ignoriert:</b> {2}"
 
 #: ../src/addins/NUnit/Services/TestProgressMonitor.cs:70
 msgid "Test run finished"
-msgstr ""
+msgstr "Testlauf beendet"
 
 #: ../src/addins/NUnit/Services/TestProgressMonitor.cs:71
 msgid "Total seconds: {0:0.0}"
-msgstr ""
+msgstr "Zeit: {0:0.0}s"
 
 #: ../src/addins/NUnit/Services/TestProgressMonitor.cs:94
 msgid "Run tests in suite {0}"
-msgstr ""
+msgstr "Starte Tests in Suite {0}"
 
 #: ../src/addins/NUnit/Services/TestProgressMonitor.cs:97
-#, fuzzy
 msgid "Run test {0}"
-msgstr "Führe Test aus"
+msgstr "Führe Test {0} aus"
 
 #: ../src/addins/NUnit/Services/TestProgressMonitor.cs:130
-#, fuzzy
 msgid "Test failed"
-msgstr "Speichern fehlgeschlagen."
+msgstr "Test fehlgeschlagen"
 
 #: ../src/addins/NUnit/Services/TestProgressMonitor.cs:133
-#, fuzzy
 msgid "Test ignored"
-msgstr "Test-Vorrichtung"
+msgstr "Test ignoriert"
 
 #: ../src/addins/NUnit/Services/TestProgressMonitor.cs:136
-#, fuzzy
 msgid "Test success"
-msgstr "Test-Ergebnisse"
+msgstr "Test erfolgreich"
 
 #: ../src/addins/NUnit/Services/TestProgressMonitor.cs:72
-#, fuzzy
 msgid "{0} was successfull, "
 msgid_plural "{0} tests were successful,"
-msgstr[0] "{0} wurden erfolgreich erzeugt."
-msgstr[1] "{0} wurden erfolgreich erzeugt."
+msgstr[0] "{0} Test war erfolgreich,"
+msgstr[1] "{0} Tests waren erfolgreich, "
 
 #: ../src/addins/NUnit/Services/TestProgressMonitor.cs:73
-#, fuzzy
 msgid " {0} failed,"
 msgid_plural " {0} failed,"
-msgstr[0] "in {0} Datei."
-msgstr[1] "in {0} Dateien."
+msgstr[0] " {0} fehlgeschagen,"
+msgstr[1] " {0} fehlgeschagen,"
 
 #: ../src/addins/NUnit/Services/TestProgressMonitor.cs:74
-#, fuzzy
 msgid " {0} ignored"
 msgid_plural " {0} ignored"
-msgstr[0] "{0} Binaries"
-msgstr[1] "{0} Binaries"
+msgstr[0] " {0} ignoriert"
+msgstr[1] " {0} ignoriert"
 
 #: ../src/addins/ILAsmBinding/ILAsmConsoleProject.xpt.xml:7
 #: ../src/addins/VBNetBinding/templates/VBConsoleApplicationProject.xpt.xml:7
@@ -6711,23 +6682,23 @@ msgstr ""
 msgid "Install"
 msgstr "Installieren"
 
-#: ../src/addins/AspNetAddIn/MonoDevelop.AspNet.addin.xml:77
+#: ../src/addins/AspNetAddIn/MonoDevelop.AspNet.addin.xml:76
 msgid "ASP.NET Files"
 msgstr "ASP.NET-Dateien hinzufügen"
 
-#: ../src/addins/AspNetAddIn/MonoDevelop.AspNet.addin.xml:93
+#: ../src/addins/AspNetAddIn/MonoDevelop.AspNet.addin.xml:92
 msgid "XSP Web Server"
 msgstr "XSP Web Server"
 
-#: ../src/addins/AspNetAddIn/MonoDevelop.AspNet.addin.xml:101
+#: ../src/addins/AspNetAddIn/MonoDevelop.AspNet.addin.xml:100
 msgid "Web Deployment Targets"
 msgstr "Webverbreitungsziel:"
 
-#: ../src/addins/AspNetAddIn/MonoDevelop.AspNet.addin.xml:109
+#: ../src/addins/AspNetAddIn/MonoDevelop.AspNet.addin.xml:108
 msgid "ASP.NET Options"
 msgstr "ASP.NET-Einstellungen"
 
-#: ../src/addins/AspNetAddIn/MonoDevelop.AspNet.addin.xml:133
+#: ../src/addins/AspNetAddIn/MonoDevelop.AspNet.addin.xml:132
 #: ../src/addins/AspNetAddIn/Templates/WebForm-Empty.xft.xml:9
 #: ../src/addins/AspNetAddIn/Templates/WebHandler-Empty.xft.xml:9
 #: ../src/addins/AspNetAddIn/Templates/WebControl-Empty.xft.xml:8
@@ -6750,16 +6721,16 @@ msgstr "ASP.NET-Einstellungen"
 msgid "ASP.NET"
 msgstr "ASP.NET"
 
-#: ../src/addins/AspNetAddIn/MonoDevelop.AspNet.addin.xml:135
-#: ../src/addins/AspNetAddIn/MonoDevelop.AspNet.addin.xml:145
+#: ../src/addins/AspNetAddIn/MonoDevelop.AspNet.addin.xml:134
+#: ../src/addins/AspNetAddIn/MonoDevelop.AspNet.addin.xml:144
 msgid "ASP.NET Directory"
 msgstr "ASP.NET-Verzeichnis:"
 
-#: ../src/addins/AspNetAddIn/MonoDevelop.AspNet.addin.xml:139
+#: ../src/addins/AspNetAddIn/MonoDevelop.AspNet.addin.xml:138
 msgid "Deploy to Web..."
 msgstr "Ins Web verbreiten..."
 
-#: ../src/addins/AspNetAddIn/Project/AspNetAppProject.cs:394
+#: ../src/addins/AspNetAddIn/MonoDevelop.AspNet/AspNetAppProject.cs:394
 msgid "Could not connect to webserver {0}"
 msgstr "Kann nicht mit dem Webserver verbinden {0}"
 
@@ -6823,15 +6794,15 @@ msgstr "Webanwendung"
 msgid "Creates a new ASP.NET Web Application project."
 msgstr "Erzeugt ein neues ASP.NET-Webanwengunsprojekt."
 
-#: ../src/addins/AspNetAddIn/Parser/MemberListVisitor.cs:63
+#: ../src/addins/AspNetAddIn/MonoDevelop.AspNet.Parser/MemberListVisitor.cs:63
 msgid "Tag ID must be unique within the document: '{0}'."
 msgstr "Die ID muss einmalig sein im Dokument: '{0}'."
 
-#: ../src/addins/AspNetAddIn/Parser/MemberListVisitor.cs:69
+#: ../src/addins/AspNetAddIn/MonoDevelop.AspNet.Parser/MemberListVisitor.cs:69
 msgid "Malformed tag name: '{0}'."
 msgstr "Falschgeformter Name: '{0}'."
 
-#: ../src/addins/AspNetAddIn/Parser/MemberListVisitor.cs:79
+#: ../src/addins/AspNetAddIn/MonoDevelop.AspNet.Parser/MemberListVisitor.cs:79
 msgid "The tag type '{0}{1}{2}' has not been registered."
 msgstr "Die Typen ' {0} {1} {2}' wurden nicht registriert."
 
@@ -6851,22 +6822,22 @@ msgstr "Web-Service mit CodeBehind"
 msgid "Creates an ASP.NET web service with a CodeBehind class."
 msgstr "Erstellt einen ASP.NET-Web-Servide mit einer CodeBehind-Klasse."
 
-#: ../src/addins/AspNetAddIn/Project/VerifyCodeBehindBuildStep.cs:40
+#: ../src/addins/AspNetAddIn/MonoDevelop.AspNet/VerifyCodeBehindBuildStep.cs:40
 msgid "Generating CodeBehind members..."
 msgstr "Generiere CodeBehind-Elemente..."
 
-#: ../src/addins/AspNetAddIn/Project/VerifyCodeBehindBuildStep.cs:42
+#: ../src/addins/AspNetAddIn/MonoDevelop.AspNet/VerifyCodeBehindBuildStep.cs:42
 msgid ""
 "Auto-generation of CodeBehind members is disabled for non-partial classes."
 msgstr ""
 "Automatisches Generieren von CodeBehind-Elementen ist deaktiviert für nicht "
 "partitielle Klassen."
 
-#: ../src/addins/AspNetAddIn/Project/VerifyCodeBehindBuildStep.cs:58
+#: ../src/addins/AspNetAddIn/MonoDevelop.AspNet/VerifyCodeBehindBuildStep.cs:58
 msgid "Cannot find CodeBehind class '{0}'."
 msgstr "Kann CodeBehind-Klasse '{0}' nicht finden."
 
-#: ../src/addins/AspNetAddIn/Project/VerifyCodeBehindBuildStep.cs:87
+#: ../src/addins/AspNetAddIn/MonoDevelop.AspNet/VerifyCodeBehindBuildStep.cs:87
 msgid ""
 "Parser failed with error {0}. CodeBehind members for this file will not be "
 "added."
@@ -6874,7 +6845,7 @@ msgstr ""
 "Parser fehlgeschlagen mit Fehler {0}. CodeBehind-Elemente für diese Datei "
 "werden nicht hinzugefügt."
 
-#: ../src/addins/AspNetAddIn/Project/VerifyCodeBehindBuildStep.cs:111
+#: ../src/addins/AspNetAddIn/MonoDevelop.AspNet/VerifyCodeBehindBuildStep.cs:111
 msgid ""
 "CodeBehind member generation failed with error {0}. Further CodeBehind "
 "members for this file will not be added."
@@ -6882,11 +6853,11 @@ msgstr ""
 "Das CodeBehind Element-Generation ist mit Fehler {0} fehlgeschlagen. Weitere "
 "CodeBehind-Mitglieder für diese Datei werden nicht hinzugefügt."
 
-#: ../src/addins/AspNetAddIn/Project/VerifyCodeBehindBuildStep.cs:147
+#: ../src/addins/AspNetAddIn/MonoDevelop.AspNet/VerifyCodeBehindBuildStep.cs:147
 msgid "No changes made to CodeBehind classes."
 msgstr "Keine Änderungen an CodeBehind-Klassen vorgenommen."
 
-#: ../src/addins/AspNetAddIn/Project/VerifyCodeBehindBuildStep.cs:134
+#: ../src/addins/AspNetAddIn/MonoDevelop.AspNet/VerifyCodeBehindBuildStep.cs:134
 msgid "Added {0} member to CodeBehind classes. Saving updated source files."
 msgid_plural ""
 "Added {0} members to CodeBehind classes. Saving updated source files."
@@ -6952,35 +6923,35 @@ msgstr "Erzeugt eine ASP.NET web.config-Datei."
 msgid "Creates an ASP.NET Web.config file."
 msgstr "Erzeugt eine ASP.NET Web.config-Datei."
 
-#: ../src/addins/AspNetAddIn/Gui/XspOptionsPanelWidget.cs:48
+#: ../src/addins/AspNetAddIn/MonoDevelop.AspNet.Gui/XspOptionsPanelWidget.cs:48
 msgid "Enabled"
 msgstr "Freigeschaltet"
 
-#: ../src/addins/AspNetAddIn/Gui/XspOptionsPanelWidget.cs:49
+#: ../src/addins/AspNetAddIn/MonoDevelop.AspNet.Gui/XspOptionsPanelWidget.cs:49
 msgid "Accept Client Certificates"
 msgstr "Akzeptiere Client Zertifikate"
 
-#: ../src/addins/AspNetAddIn/Gui/XspOptionsPanelWidget.cs:50
+#: ../src/addins/AspNetAddIn/MonoDevelop.AspNet.Gui/XspOptionsPanelWidget.cs:50
 msgid "Require Client Certificates"
 msgstr "Benötige Client-Zertifikate"
 
-#: ../src/addins/AspNetAddIn/Gui/XspOptionsPanelWidget.cs:66
+#: ../src/addins/AspNetAddIn/MonoDevelop.AspNet.Gui/XspOptionsPanelWidget.cs:66
 msgid "Ask"
 msgstr "Frage"
 
-#: ../src/addins/AspNetAddIn/Gui/XspOptionsPanelWidget.cs:67
+#: ../src/addins/AspNetAddIn/MonoDevelop.AspNet.Gui/XspOptionsPanelWidget.cs:67
 msgid "Store (insecure)"
 msgstr "Speichern (unsicher)"
 
-#: ../src/addins/AspNetAddIn/Deployment/WebDeployTargetCollection.cs:93
+#: ../src/addins/AspNetAddIn/MonoDevelop.AspNet.Deployment/WebDeployTargetCollection.cs:93
 msgid "Web Deploy Target {0}"
 msgstr "Webverbreitungsziel {0}"
 
-#: ../src/addins/AspNetAddIn/Deployment/WebDeployTarget.cs:67
+#: ../src/addins/AspNetAddIn/MonoDevelop.AspNet.Deployment/WebDeployTarget.cs:67
 msgid "Location: {0}"
 msgstr "Ort: {0}"
 
-#: ../src/addins/AspNetAddIn/Deployment/WebDeployTarget.cs:75
+#: ../src/addins/AspNetAddIn/MonoDevelop.AspNet.Deployment/WebDeployTarget.cs:75
 msgid "Not set"
 msgstr "Nicht gesetzt"
 
@@ -7016,16 +6987,16 @@ msgstr "_Editiere Ziele"
 msgid "_Deploy"
 msgstr "Verteilen"
 
-#: ../src/addins/AspNetAddIn/Deployment/WebDeployService.cs:66
+#: ../src/addins/AspNetAddIn/MonoDevelop.AspNet.Deployment/WebDeployService.cs:66
 msgid "Web Deployment Progress"
 msgstr "Webeinsetzungsprozess"
 
-#: ../src/addins/AspNetAddIn/Deployment/WebDeployService.cs:67
+#: ../src/addins/AspNetAddIn/MonoDevelop.AspNet.Deployment/WebDeployService.cs:67
 msgid "Deploying {0}..."
 msgstr "Einsetzen {0}..."
 
-#: ../src/addins/AspNetAddIn/Deployment/WebDeployService.cs:88
-#: ../src/addins/AspNetAddIn/Deployment/WebDeployService.cs:91
+#: ../src/addins/AspNetAddIn/MonoDevelop.AspNet.Deployment/WebDeployService.cs:88
+#: ../src/addins/AspNetAddIn/MonoDevelop.AspNet.Deployment/WebDeployService.cs:91
 msgid "Web deploy aborted."
 msgstr "Webverbreitung abgebrochen"
 
@@ -11060,6 +11031,7 @@ msgstr "Ignorieren"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:1013
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:1029
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:1068
 msgid "Search pattern not found"
 msgstr "Ausdruck nicht gefunden"
 
@@ -11070,6 +11042,12 @@ msgstr "Das Dokumentende wurde erreicht. Suche vom Dokumentanfang fortgesetzt."
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:1031
 msgid "Reached top, continued from bottom"
 msgstr "Der Dokumentanfang wurde erreicht. Suche am Dokumentende fortgesetzt."
+
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:1070
+msgid "Found and replaced one occurrence"
+msgid_plural "Found and replaced {0} occurrences"
+msgstr[0] "Eine Übereinstimmung gefunden und ersetzt"
+msgstr[1] "{0} Übereinstimmungen gefunden und ersetzt"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/BehaviorPanel.cs:38
 msgid "Automatic"
@@ -11105,33 +11083,29 @@ msgid "_Open URL..."
 msgstr "_URL öffnen..."
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.SearchWidget.cs:65
-#: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.SearchAndReplaceWidget.cs:284
+#: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.SearchAndReplaceWidget.cs:103
 #: ../src/addins/MonoDevelop.AssemblyBrowser/gtk-gui/MonoDevelop.AssemblyBrowser.AssemblyBrowserWidget.cs:155
 msgid "_Search:"
 msgstr "_Suchen:"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.SearchWidget.cs:97
-#: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.SearchAndReplaceWidget.cs:131
+#: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.SearchAndReplaceWidget.cs:246
 msgid "_Next"
 msgstr "_Aufwärts"
 
 # b
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.SearchWidget.cs:124
-#: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.SearchAndReplaceWidget.cs:158
+#: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.SearchAndReplaceWidget.cs:218
 msgid "_Previous"
 msgstr "Ab_wärts"
 
-#: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.SearchAndReplaceWidget.cs:238
-msgid "Replace _all"
-msgstr "All_e Ersetzen"
-
-#: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.SearchAndReplaceWidget.cs:259
-msgid "as"
-msgstr "als"
-
-#: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.SearchAndReplaceWidget.cs:295
+#: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.SearchAndReplaceWidget.cs:114
 msgid "R_eplace:"
 msgstr "E_rsetzen:"
+
+#: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.SearchAndReplaceWidget.cs:192
+msgid "Replace _all"
+msgstr "All_e Ersetzen"
 
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:96
 msgid "Types"
@@ -11248,6 +11222,9 @@ msgstr "Basistypen"
 #: ../src/addins/MonoDevelop.AssemblyBrowser/gtk-gui/MonoDevelop.AssemblyBrowser.AssemblyBrowserWidget.cs:174
 msgid "_in:"
 msgstr "_in:"
+
+#~ msgid "as"
+#~ msgstr "als"
 
 #, fuzzy
 #~ msgid "WindowSwitcher"
