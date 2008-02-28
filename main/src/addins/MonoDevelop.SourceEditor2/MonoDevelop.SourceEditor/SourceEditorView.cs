@@ -151,7 +151,7 @@ namespace MonoDevelop.SourceEditor
 			isInWrite = true;
 			try {
 				File.WriteAllText (fileName, Document.Text);
-				lastSaveTime = File.GetLastWriteTime (ContentName);
+				lastSaveTime = File.GetLastWriteTime (fileName);
 			} finally {
 				isInWrite = false;
 			}

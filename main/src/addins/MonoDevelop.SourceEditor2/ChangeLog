@@ -1,5 +1,11 @@
 2008-02-28  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.SourceEditor/SourceEditorView.cs: Fixed "Bug 365453 -
+	  Exception when attempting to save newly created file (not as part of a
+	  project)".
+
+2008-02-28  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.SourceEditor/SourceEditorView.cs: Fixed "Bug 365624 - Widget
 	  toolbox are shown unsorted".
 
