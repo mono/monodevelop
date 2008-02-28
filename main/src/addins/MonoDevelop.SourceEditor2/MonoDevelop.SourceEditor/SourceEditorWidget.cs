@@ -1064,11 +1064,14 @@ namespace MonoDevelop.SourceEditor
 		public void ReplaceAll ()
 		{
 			SetSearchOptions ();
-			TextEditor.ReplaceAll (searchAndReplaceWidget.ReplacePattern);
+			int number = TextEditor.ReplaceAll (searchAndReplaceWidget.ReplacePattern);
+			if (number == 0) {
+				IdeApp.Workbench.StatusBar.ShowError (GettextCatalog.GetString ("Search pattern not found"));
+			} else {
+				IdeApp.Workbench.StatusBar.ShowMessage (GettextCatalog.GetPluralString ("Found and replaced one occurrence", "Found and replaced {0} occurrences", number, number));
+			}
 			TextEditor.GrabFocus ();
 		}
-		
 		#endregion
-		
 	}
 }

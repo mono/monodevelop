@@ -520,22 +520,22 @@ namespace Mono.TextEditor
 			return FindNext () != null || result;
 		}
 		
-		public bool ReplaceAll (string withPattern)
+		public int ReplaceAll (string withPattern)
 		{
+			int result = 0;
 			Document.BeginAtomicUndo ();
-			bool foundAtLeastOnce = false;
 			for (int i = 0; i < Document.Length - compiledPattern.Length; i++) {
 				if (IsMatchAt (i)) {
-					foundAtLeastOnce = true;
 					Document.Replace (i, SearchPattern.Length, withPattern);
+					result++;
 					if (withPattern.Length > 0)
 						i += withPattern.Length - 1;
 				}
 			}
-			if (foundAtLeastOnce)
+			if (result > 0)
 				ClearSelection ();
 			Document.EndAtomicUndo ();
-			return foundAtLeastOnce;
+			return result;
 		}
 		#endregion
 	}

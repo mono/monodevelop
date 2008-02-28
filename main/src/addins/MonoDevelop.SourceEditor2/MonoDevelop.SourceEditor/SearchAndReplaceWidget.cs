@@ -94,9 +94,9 @@ namespace MonoDevelop.SourceEditor
 			this.buttonSearchMode.Clicked += delegate {
 				widget.ShowSearchWidget ();
 			};
-			this.comboboxSearchAs.AppendText (GettextCatalog.GetString ("Text"));
-			this.comboboxSearchAs.AppendText (GettextCatalog.GetString ("Regular Expressions"));
-			this.comboboxSearchAs.Active = 0;
+//			this.comboboxSearchAs.AppendText (GettextCatalog.GetString ("Text"));
+//			this.comboboxSearchAs.AppendText (GettextCatalog.GetString ("Regular Expressions"));
+//			this.comboboxSearchAs.Active = 0;
 			ReplacePatternChanged += UpdateReplacePattern;
 			#region Cut & Paste from SearchWidget
 			SearchWidget.SearchPatternChanged += UpdateSearchPattern;
@@ -157,6 +157,13 @@ namespace MonoDevelop.SourceEditor
 				replacePattern = ReplacePattern;
 				if (!inReplaceUpdate) 
 					FireReplacePatternChanged ();
+			};
+			
+			this.entryReplace.Entry.Activated += delegate {
+				UpdateSearchHistory (SearchPattern);
+				UpdateReplaceHistory (ReplacePattern);
+				widget.Replace ();
+				this.entryReplace.Entry.GrabFocus ();
 			};
 			
 			this.buttonReplace.Clicked += delegate {

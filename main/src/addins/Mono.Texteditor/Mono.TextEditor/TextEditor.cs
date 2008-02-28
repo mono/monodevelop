@@ -1040,7 +1040,7 @@ namespace Mono.TextEditor
 			return textEditorData.Replace (withPattern);
 		}
 		
-		public bool ReplaceAll (string withPattern)
+		public int ReplaceAll (string withPattern)
 		{
 			return textEditorData.ReplaceAll (withPattern);
 		}

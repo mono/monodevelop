@@ -1,5 +1,13 @@
 2008-02-28  Mike Krüger <mkrueger@novell.com> 
 
+	* gtk-gui/MonoDevelop.SourceEditor.SearchAndReplaceWidget.cs,
+	  gtk-gui/MonoDevelop.SourceEditor.SourceEditorWidget.cs,
+	  gtk-gui/gui.stetic, MonoDevelop.SourceEditor/SourceEditorWidget.cs,
+	  MonoDevelop.SourceEditor/SearchAndReplaceWidget.cs: Worked on
+	  search&replace. (Bug 365439 - Replace usability issues)
+
+2008-02-28  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.SourceEditor/ExtendibleTextEditor.cs: Fixed Bug 365570 - Crash
 	  in the editor
 

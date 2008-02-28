@@ -1,5 +1,10 @@
 2008-02-28  Mike Krüger <mkrueger@novell.com> 
 
+	* Mono.TextEditor/TextEditorData.cs, Mono.TextEditor/TextEditor.cs: Worked
+	  on search&replace. (Bug 365439 - Replace usability issues)
+
+2008-02-28  Mike Krüger <mkrueger@novell.com> 
+
 	* Mono.TextEditor/TextViewMargin.cs, Mono.TextEditor/Document.cs: Fixed some
 	  bugs caused by a former change.
 
