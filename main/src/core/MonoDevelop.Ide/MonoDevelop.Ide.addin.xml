@@ -5,12 +5,11 @@
        copyright   = "GPL"
        url         = "http://www.monodevelop.com"
        description = "The MonoDevelop IDE application."
-	   category    = "MonoDevelop Core"
-	   isroot      = "true"
+       category    = "MonoDevelop Core"
+       isroot      = "true"
        version     = "0.19.0"
        compatVersion = "0.19.0">
-
-
+	
 	<Runtime>
 		<Import assembly="MonoDevelop.Ide.dll"/>
 	</Runtime>
@@ -310,7 +309,7 @@
 				icon = "gtk-preferences"
 				description = "Show MonoDevelop preferences window" />
 		<Command id = "MonoDevelop.Ide.Commands.EditCommands.InsertStandardHeader"
-				_label = "Insert Standard Header" 
+				_label = "_Insert Standard Header" 
 				defaultHandler = "MonoDevelop.Ide.Commands.InsertStandardHeaderHandler"
 				description = "Add the user defined header to the top of the file"/>
 		
@@ -370,10 +369,10 @@
 				description = "Create a new folder"
 				icon  = "md-new-folder-icon" />
 		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.IncludeToProject"
-				_label = "Include To Project" />
+				_label = "_Include To Project" />
 		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.BuildSolution"
 				defaultHandler = "MonoDevelop.Ide.Commands.BuildSolutionHandler"
-				_label = "Buil_d Solution"
+				_label = "_Build Solution"
 				shortcut = "F8"
 				_description = "Build the solution"
 				icon  = "md-build-combine" />
@@ -385,11 +384,11 @@
 		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.RebuildSolution"
 				defaultHandler = "MonoDevelop.Ide.Commands.RebuildSolutionHandler"
 				shortcut = "Control|F8"
-				_label = "Rebuild Solution" />
+				_label = "_Rebuild Solution" />
 		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.Rebuild"
 				defaultHandler = "MonoDevelop.Ide.Commands.RebuildHandler"
 				shortcut = "Control|F7"
-				_label = "Rebuild" />
+				_label = "R_ebuild" />
 		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.SetAsStartupProject"
 				_label = "Set As Startup Project" />
 		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.Run"
@@ -416,13 +415,13 @@
 				_label = "Debug" />
 		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.Clean"
 				defaultHandler = "MonoDevelop.Ide.Commands.CleanHandler"
-				_label = "Clean" />
+				_label = "C_lean" />
 		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.CleanSolution"
 				defaultHandler = "MonoDevelop.Ide.Commands.CleanSolutionHandler"
-				_label = "Clean Solution" />
+				_label = "_Clean Solution" />
 		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.IncludeInBuild"
 				type="check"
-				_label = "Build" />
+				_label = "B_uild" />
 		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.IncludeInDeploy"
 				type="check"
 				_label = "Deployment" />
@@ -434,7 +433,7 @@
 				icon = "gtk-stop"
 				shortcut = "Shift|F5"
 				_description = "Stop current build or application execution"
-				_label = "Stop" />
+				_label = "_Stop" />
 		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.ConfigurationSelector"
 				type = "custom"
 				widget = "MonoDevelop.Ide.Gui.ConfigurationComboBox"
@@ -447,7 +446,7 @@
 				_label = "Reload" />
 		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.ExportProject"
 				defaultHandler = "MonoDevelop.Ide.Commands.ExportProjectHandler"
-				_label = "Export..." />
+				_label = "_Export..." />
 
 		</Category>
 
@@ -496,7 +495,7 @@
 				shortcut = "Control|W"/>
 		<Command id = "MonoDevelop.Ide.Commands.FileCommands.CloseAllFiles"
 				defaultHandler = "MonoDevelop.Ide.Commands.CloseAllFilesHandler"
-				_label = "Close All"
+				_label = "_Close All"
 				description = "Close All Files"
 				icon = "gtk-close"
 				shortcut = "Control|Shift|W" />
@@ -516,11 +515,13 @@
 				shortcut = "Control|Shift|S" 
 				description = "Save file as" />
 		<Command id = "MonoDevelop.Ide.Commands.FileCommands.PrintDocument"
+		        defaultHandler = "MonoDevelop.Ide.Commands.PrintHandler"
 				_label = "_Print..." 
 				_description = "Print current document" 
 				icon  = "gtk-print"
 				shortcut = "Control|P" />
 		<Command id = "MonoDevelop.Ide.Commands.FileCommands.PrintPreviewDocument"
+		        defaultHandler = "MonoDevelop.Ide.Commands.PrintPreviewHandler"
 				_label = "Print Previe_w" 
 				description = "Show print preview" 
 				icon  = "gtk-print-preview"
@@ -683,10 +684,13 @@
 				_label = "Window List" />
 
 		<Command id = "MonoDevelop.Ide.Commands.WindowCommands.SplitWindowVertically"
+				defaultHandler = "MonoDevelop.Ide.Commands.SplitWindowVertically"
 				_label = "Split _vertically" />
 		<Command id = "MonoDevelop.Ide.Commands.WindowCommands.SplitWindowHorizontally"
+				defaultHandler = "MonoDevelop.Ide.Commands.SplitWindowHorizontally"
 				_label = "Split _horizontally" />
 		<Command id = "MonoDevelop.Ide.Commands.WindowCommands.UnsplitWindow"
+				defaultHandler = "MonoDevelop.Ide.Commands.UnsplitWindow"
 				_label = "_Unsplit" />
 		</Category>
 				
@@ -787,29 +791,29 @@
 				shortcut = "Control|Shift|H" />
 				description = "Replace in files" />
 		
-		<Command id = "MonoDevelop.Ide.Commands.SearchCommands.GotoType"		
-		        defaultHandler = "MonoDevelop.Ide.Commands.GotoTypeHandler"
-				_label = "Go to Type..." 
-                shortcut = "Control|Shift|T" />
+		<Command id = "MonoDevelop.Ide.Commands.SearchCommands.GotoType"
+		         defaultHandler = "MonoDevelop.Ide.Commands.GotoTypeHandler"
+		         _label = "Go to Type..." 
+		         shortcut = "Control|Shift|T" />
 		<Command id = "MonoDevelop.Ide.Commands.SearchCommands.ToggleBookmark"
 				icon = "md-toggle-bookmark"
 				shortcut = "Control|F2"
 				_description = "Toggle bookmark"
-				_label = "Toggle Bookmark" />
+				_label = "_Toggle Bookmark" />
 		<Command id = "MonoDevelop.Ide.Commands.SearchCommands.PrevBookmark"
 				icon = "md-goto-prevbookmark"
 				shortcut = "Shift|F2"
 				_description = "Previous bookmark"
-				_label = "Previous Bookmark" />
+				_label = "Pre_vious Bookmark" />
 		<Command id = "MonoDevelop.Ide.Commands.SearchCommands.NextBookmark"
 				icon = "md-goto-nextbookmark"
 				shortcut = "F2"
 				_description = "Next bookmark"
-				_label = "Next Bookmark" />
+				_label = "Ne_xt Bookmark" />
 		<Command id = "MonoDevelop.Ide.Commands.SearchCommands.ClearBookmarks"
 				icon = "md-clear-all-bookmarks"
 				_description = "Clear bookmarks"
-				_label = "Clear Bookmarks" />
+				_label = "_Clear Bookmarks" />
 		<Command id = "MonoDevelop.Ide.Commands.SearchCommands.GotoLineNumber"
 				_label = "_Go to Line..." 
 				description = "Go to line"

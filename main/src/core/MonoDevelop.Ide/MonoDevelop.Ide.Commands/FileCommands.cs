@@ -21,6 +21,7 @@
 using System;
 using System.IO;
 using System.Collections;
+using System.Diagnostics;
 
 using Mono.Addins;
 using MonoDevelop.Core;
@@ -29,6 +30,7 @@ using MonoDevelop.Core.Gui;
 using MonoDevelop.Components;
 using MonoDevelop.Core.Gui.Dialogs;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Projects.Gui.Dialogs;
@@ -177,61 +179,41 @@ namespace MonoDevelop.Ide.Commands
 		}
 	}
 	
-	
 	internal class PrintHandler : CommandHandler
 	{
-		protected override void Run()
-		{/*
-			IWorkbenchWindow window = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow;
-			
-			if (window != null) {
-				if (window.ViewContent is IPrintable) {
-					PrintDocument pdoc = ((IPrintable)window.ViewContent).PrintDocument;
-					if (pdoc != null) {
-						using (PrintDialog ppd = new PrintDialog()) {
-							ppd.Document  = pdoc;
-							ppd.AllowSomePages = true;
-							if (ppd.ShowDialog() == DialogResult.OK) { // fixed by Roger Rubin
-								pdoc.Print();
-							}
-						}
-					} else {
-						IMessageService messageService =(IMessageService)ServiceManager.Services.GetService(typeof(IMessageService));
-						messageService.ShowError("Couldn't create PrintDocument");
-					}
-				} else {
-					IMessageService messageService =(IMessageService)ServiceManager.Services.GetService(typeof(IMessageService));
-					messageService.ShowError("Can't print this window content");
-				}
-			}*/
+		protected override void Update (CommandInfo info)
+		{
+			if (IdeApp.Workbench.ActiveDocument == null) {
+				info.Enabled = false;
+				return;
+			}
+			IPrintable printable = IdeApp.Workbench.ActiveDocument.GetContent <IPrintable> ();
+			info.Enabled = printable != null;
+		}
+		protected override void Run (object doc)
+		{
+			IPrintable printable = IdeApp.Workbench.ActiveDocument.GetContent <IPrintable> ();
+			Debug.Assert (printable != null);
+			printable.PrintDocument ();
 		}
 	}
 	
 	internal class PrintPreviewHandler : CommandHandler
 	{
-		protected override void Run()
+		protected override void Update (CommandInfo info)
 		{
-		/*	try {
-				IWorkbenchWindow window = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow;
-				
-				if (window != null) {
-					if (window.ViewContent is IPrintable) {
-						using (PrintDocument pdoc = ((IPrintable)window.ViewContent).PrintDocument) {
-							if (pdoc != null) {
-								PrintPreviewDialog ppd = new PrintPreviewDialog();
-								ppd.Owner     = (Form)WorkbenchSingleton.Workbench;
-								ppd.TopMost   = true;
-								ppd.Document  = pdoc;
-								ppd.Show();
-							} else {
-								IMessageService messageService =(IMessageService)ServiceManager.Services.GetService(typeof(IMessageService));
-								messageService.ShowError("Couldn't create PrintDocument");
-							}
-						}
-					}
-				}
-			} catch (System.Drawing.Printing.InvalidPrinterException) {
-			}*/
+			if (IdeApp.Workbench.ActiveDocument == null) {
+				info.Enabled = false;
+				return;
+			}
+			IPrintable printable = IdeApp.Workbench.ActiveDocument.GetContent <IPrintable> ();
+			info.Enabled = printable != null;
+		}
+		protected override void Run (object doc)
+		{
+			IPrintable printable = IdeApp.Workbench.ActiveDocument.GetContent <IPrintable> ();
+			Debug.Assert (printable != null);
+			printable.PrintPreviewDocument ();
 		}
 	}
 	

@@ -1,5 +1,16 @@
 2008-02-28  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.Ide.Commands/FileCommands.cs,
+	  MonoDevelop.Ide.Commands/ProjectCommands.cs,
+	  MonoDevelop.Ide.Commands/WindowCommands.cs, MonoDevelop.Ide.addin.xml,
+	  MonoDevelop.Ide.Gui/ViewCommandHandlers.cs: Worked on main menu: Added
+	  many missing shortcuts, splitting/printing is now done with a handler
+	  (no 
+	
+	  need to focus the document anymore).
+
+2008-02-28  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.Ide.addin.xml: Added missing keyboard shortcut.
 
 2008-02-28  Mike Krüger <mkrueger@novell.com> 

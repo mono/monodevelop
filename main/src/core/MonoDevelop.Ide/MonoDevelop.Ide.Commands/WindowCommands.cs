@@ -21,10 +21,13 @@
 using System;
 using System.Collections;
 using System.CodeDom.Compiler;
+using System.Diagnostics;
+
 using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Components.Commands;
+using MonoDevelop.Ide.Gui.Content;
 
 namespace MonoDevelop.Ide.Commands
 {
@@ -94,6 +97,63 @@ namespace MonoDevelop.Ide.Commands
 		protected override void Run (object doc)
 		{
 			((Document)doc).Select ();
+		}
+	}
+	
+	internal class SplitWindowVertically : CommandHandler
+	{
+		protected override void Update (CommandInfo info)
+		{
+			if (IdeApp.Workbench.ActiveDocument == null) {
+				info.Enabled = false;
+				return;
+			}
+			ISplittable split = IdeApp.Workbench.ActiveDocument.GetContent <ISplittable> ();
+			info.Enabled = split != null && split.EnableSplitHorizontally;
+		}
+		protected override void Run (object doc)
+		{
+			ISplittable split = IdeApp.Workbench.ActiveDocument.GetContent <ISplittable> ();
+			Debug.Assert (split != null);
+			split.SplitHorizontally ();
+		}
+	}
+	
+	internal class SplitWindowHorizontally : CommandHandler
+	{
+		protected override void Update (CommandInfo info)
+		{
+			if (IdeApp.Workbench.ActiveDocument == null) {
+				info.Enabled = false;
+				return;
+			}
+			ISplittable split = IdeApp.Workbench.ActiveDocument.GetContent <ISplittable> ();
+			info.Enabled = split != null && split.EnableSplitVertically;
+		}
+		protected override void Run (object doc)
+		{
+			ISplittable split = IdeApp.Workbench.ActiveDocument.GetContent <ISplittable> ();
+			Debug.Assert (split != null);
+			split.SplitVertically ();
+		}
+	}
+	
+	internal class UnsplitWindow : CommandHandler
+	{
+		protected override void Update (CommandInfo info)
+		{
+			if (IdeApp.Workbench.ActiveDocument == null) {
+				info.Enabled = false;
+				return;
+			}
+			ISplittable split = IdeApp.Workbench.ActiveDocument.GetContent <ISplittable> ();
+			info.Enabled = split != null && split.EnableUnsplit;
+		}
+		protected override void Run (object doc)
+		{
+			ISplittable split = IdeApp.Workbench.ActiveDocument.GetContent <ISplittable> ();
+			Debug.Assert (split != null);
+			split.Unsplit ();
 		}
 	}
 }
