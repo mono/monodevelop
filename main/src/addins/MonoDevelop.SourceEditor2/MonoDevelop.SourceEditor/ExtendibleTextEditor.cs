@@ -108,6 +108,7 @@ namespace MonoDevelop.SourceEditor
 					if (!this.IsSomethingSelected || !this.SelectionRange.Contains (Document.LocationToOffset (menuPopupLocation)))
 						Caret.Location = menuPopupLocation;
 					this.ShowPopup ();
+					base.ResetMouseState ();
 				}
 			};
 			this.Realized += delegate {
