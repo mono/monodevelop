@@ -1,5 +1,10 @@
 2008-02-28  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* libstetic/editor/ActionItem.cs: Properly handle drag event fired by
+	  the widget selection box. Fixes bug #363865.
+
+2008-02-28  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* libsteticui/CecilClassDescriptor.cs,
 	  libsteticui/CecilWidgetLibrary.cs: Properly load icons from
 	  resurces.

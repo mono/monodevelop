@@ -98,8 +98,7 @@ namespace Stetic.Editor
 
 		void HandleItemDrag (Gdk.EventMotion evt, int dx, int dy)
 		{
-			ActionPaletteItem item = new ActionPaletteItem (node);
-			DND.Drag (parentMenu.Widget, evt, item);
+			ProcessDragBegin (null, evt);
 		}
 		
 		protected IDesignArea GetDesignArea ()
