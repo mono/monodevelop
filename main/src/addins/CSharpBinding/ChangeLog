@@ -1,3 +1,8 @@
+2008-02-28  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Parser/CodeGenerator.cs: Fix line/column check. Positions are
+	  1-based.
+
 2008-02-23  Mike Krüger <mkrueger@novell.com> 
 
 	* CSharpBinding.mdp, Makefile.am: Removed some unused glade and gnome-sharp
