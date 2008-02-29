@@ -62,6 +62,9 @@ namespace MonoDevelop.SourceEditor {
             this.hbox3.Spacing = 6;
             // Container child hbox3.Gtk.Box+BoxChild
             this.table1 = new Gtk.Table(((uint)(2)), ((uint)(3)), false);
+            this.table1.Name = "table1";
+            this.table1.RowSpacing = ((uint)(6));
+            this.table1.ColumnSpacing = ((uint)(6));
             // Container child table1.Gtk.Table+TableChild
             this.closeButton = new Gtk.Button();
             this.closeButton.CanFocus = true;
@@ -128,6 +131,8 @@ namespace MonoDevelop.SourceEditor {
             // Container child hbox3.Gtk.Box+BoxChild
             this.table2 = new Gtk.Table(((uint)(2)), ((uint)(3)), false);
             this.table2.Name = "table2";
+            this.table2.RowSpacing = ((uint)(6));
+            this.table2.ColumnSpacing = ((uint)(6));
             // Container child table2.Gtk.Table+TableChild
             this.buttonOptions = new Gtk.Button();
             this.buttonOptions.CanFocus = true;

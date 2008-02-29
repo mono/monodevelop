@@ -21,6 +21,9 @@
           <widget class="Gtk.Table" id="classBrowser">
             <property name="MemberName" />
             <property name="NRows">1</property>
+            <property name="NColumns">3</property>
+            <property name="RowSpacing">6</property>
+            <property name="ColumnSpacing">6</property>
             <child>
               <widget class="Gtk.ComboBox" id="classCombo">
                 <property name="MemberName" />
@@ -969,6 +972,9 @@
           <widget class="Gtk.Table" id="table1">
             <property name="MemberName" />
             <property name="NRows">2</property>
+            <property name="NColumns">3</property>
+            <property name="RowSpacing">6</property>
+            <property name="ColumnSpacing">6</property>
             <child>
               <placeholder />
             </child>
@@ -1092,6 +1098,9 @@
           <widget class="Gtk.Table" id="table2">
             <property name="MemberName" />
             <property name="NRows">2</property>
+            <property name="NColumns">3</property>
+            <property name="RowSpacing">6</property>
+            <property name="ColumnSpacing">6</property>
             <child>
               <placeholder />
             </child>

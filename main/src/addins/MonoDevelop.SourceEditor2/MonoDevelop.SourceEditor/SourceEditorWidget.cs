@@ -165,12 +165,21 @@ namespace MonoDevelop.SourceEditor
 			regionCombo.Model = regionStore;	
 			regionCombo.Changed += new EventHandler (RegionChanged);
 			
+			editorBar.FocusChain = new Widget[] {
+				this.textEditor,
+				this.classCombo,
+				this.membersCombo,
+				this.regionCombo
+			};
+			
 			IdeApp.ProjectOperations.ParserDatabase.ParseInformationChanged += new ParseInformationEventHandler(UpdateClassBrowser);
 			
 			UpdateLineCol ();
+			
 			this.Focused += delegate {
 				UpdateLineCol ();
 			};
+			
 			IdeApp.ProjectOperations.ParserDatabase.ParseInformationChanged += OnParseInformationChanged;
 //			this.IsClassBrowserVisible = SourceEditorOptions.Options.EnableQuickFinder;
 			
@@ -178,6 +187,7 @@ namespace MonoDevelop.SourceEditor
 //				this.textEditor.Destroy ();
 //			};
 		}
+		
 		protected override void OnSizeAllocated (Gdk.Rectangle allocation)
 		{
 			classCombo.WidthRequest   = allocation.Width * 2 / 6 - 6;
