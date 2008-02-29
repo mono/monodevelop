@@ -21,6 +21,7 @@
 using System;
 using System.Collections;
 using System.CodeDom.Compiler;
+using System.Diagnostics;
 
 using MonoDevelop.Core;
 using Mono.Addins;
@@ -31,6 +32,7 @@ using MonoDevelop.Core.Gui.Dialogs;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Ide.Gui.Pads;
+using MonoDevelop.Ide.Gui.Content;
 
 namespace MonoDevelop.Ide.Commands
 {
@@ -49,7 +51,68 @@ namespace MonoDevelop.Ide.Commands
 		CollapseAllTreeNodes,
 		LayoutSelector,
 		ShowNext,
-		ShowPrevious
+		ShowPrevious,
+		
+		ZoomIn,
+		ZoomOut,
+		ZoomReset
+	}
+	
+	internal class ZoomIn: CommandHandler
+	{
+		protected override void Update (CommandInfo info)
+		{
+			if (IdeApp.Workbench.ActiveDocument == null) {
+				info.Enabled = false;
+				return;
+			}
+			IZoomable zoom = IdeApp.Workbench.ActiveDocument.GetContent <IZoomable> ();
+			info.Enabled = zoom != null && zoom.EnableZoomIn;
+		}
+		protected override void Run (object doc)
+		{
+			IZoomable zoom = IdeApp.Workbench.ActiveDocument.GetContent <IZoomable> ();
+			Debug.Assert (zoom != null);
+			zoom.ZoomIn ();
+		}
+	}
+	
+	internal class ZoomOut: CommandHandler
+	{
+		protected override void Update (CommandInfo info)
+		{
+			if (IdeApp.Workbench.ActiveDocument == null) {
+				info.Enabled = false;
+				return;
+			}
+			IZoomable zoom = IdeApp.Workbench.ActiveDocument.GetContent <IZoomable> ();
+			info.Enabled = zoom != null && zoom.EnableZoomOut;
+		}
+		protected override void Run (object doc)
+		{
+			IZoomable zoom = IdeApp.Workbench.ActiveDocument.GetContent <IZoomable> ();
+			Debug.Assert (zoom != null);
+			zoom.ZoomOut ();
+		}
+	}
+	
+	internal class ZoomReset: CommandHandler
+	{
+		protected override void Update (CommandInfo info)
+		{
+			if (IdeApp.Workbench.ActiveDocument == null) {
+				info.Enabled = false;
+				return;
+			}
+			IZoomable zoom = IdeApp.Workbench.ActiveDocument.GetContent <IZoomable> ();
+			info.Enabled = zoom != null && zoom.EnableZoomReset;
+		}
+		protected override void Run (object doc)
+		{
+			IZoomable zoom = IdeApp.Workbench.ActiveDocument.GetContent <IZoomable> ();
+			Debug.Assert (zoom != null);
+			zoom.ZoomReset ();
+		}
 	}
 	
 	internal class FullScreenHandler: CommandHandler

@@ -305,7 +305,7 @@
 				description = "Count words in a text file"/>
 		<Command id = "MonoDevelop.Ide.Commands.EditCommands.MonodevelopPreferences"
 				defaultHandler = "MonoDevelop.Ide.Commands.MonodevelopPreferencesHandler"
-				_label = "Pre_ferences"
+				_label = "Pr_eferences"
 				icon = "gtk-preferences"
 				description = "Show MonoDevelop preferences window" />
 		<Command id = "MonoDevelop.Ide.Commands.EditCommands.InsertStandardHeader"
@@ -646,6 +646,24 @@
 				shortcut = "Alt|Right"
 				_description = "Navigate Forward"/>
 
+		<Command id = "MonoDevelop.Ide.Commands.ViewCommands.ZoomIn"
+				defaultHandler = "MonoDevelop.Ide.Commands.ZoomIn"
+				_label = "_Zoom In"
+				icon = "gtk-zoom-in" 
+				shortcut = "Control|+"
+				_description = "Zooms view in" />
+		<Command id = "MonoDevelop.Ide.Commands.ViewCommands.ZoomOut"
+				defaultHandler = "MonoDevelop.Ide.Commands.ZoomOut"
+				_label = "Zoom _Out"
+				icon = "gtk-zoom-out" 
+				shortcut = "Control|-"
+				_description = "Zooms view out" />
+		<Command id = "MonoDevelop.Ide.Commands.ViewCommands.ZoomReset"
+				defaultHandler = "MonoDevelop.Ide.Commands.ZoomReset"
+				_label = "_Normal Size"
+				icon = "gtk-zoom-100" 
+				shortcut = "Control|0"
+				_description = "Resets zoom to default" />
 		</Category>
 		
 		<!-- ToolCommands -->
@@ -1364,11 +1382,9 @@
 				<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.DeleteCurrentLayout" />
 			</ItemSet>
 			<SeparatorItem id = "ViewItemsSeparator2" />
-			<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.ShowPrevious" />
-			<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.ShowNext" />
-			<SeparatorItem id = "ViewItemsSeparator3" />
-			<CommandItem id = "MonoDevelop.Ide.Commands.NavigationCommands.NavigateBack" />
-			<CommandItem id = "MonoDevelop.Ide.Commands.NavigationCommands.NavigateForward" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.ZoomIn" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.ZoomOut" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.ZoomReset" />
 			<SeparatorItem id = "ViewItemsSeparator4" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.FullScreen" />
 		</ItemSet>
@@ -1393,6 +1409,12 @@
 			<SeparatorItem id = "Separator2" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.GotoLineNumber" />
             <CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.GotoType" />
+			<SeparatorItem id = "ViewItemsSeparator3" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.NavigationCommands.NavigateBack" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.NavigationCommands.NavigateForward" />
+			<SeparatorItem id = "ViewItemsSeparator4" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.ShowPrevious" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.ShowNext" />
 			<SeparatorItem id = "Separator3" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.TextEditorCommands.GotoMatchingBrace" />
 		</ItemSet>
