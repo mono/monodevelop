@@ -639,6 +639,17 @@ namespace Mono.TextEditor
 			}
 		}
 		
+		public Gdk.Point LocationToDisplayCoordinates (DocumentLocation loc)
+		{
+			LineSegment line = Document.GetLine (loc.Line);
+			if (line == null)
+				return Gdk.Point.Zero;
+			int x = ColumnToVisualX (line, loc.Column) + this.XOffset;
+			int y = Document.LogicalToVisualLine (loc.Line) * this.LineHeight;
+			return new Gdk.Point (x - (int)this.textEditor.HAdjustment.Value, 
+			                      y - (int)this.textEditor.VAdjustment.Value);
+		}
+		
 		public int ColumnToVisualX (LineSegment line, int column)
 		{
 			if (line == null || line.EditableLength == 0)
