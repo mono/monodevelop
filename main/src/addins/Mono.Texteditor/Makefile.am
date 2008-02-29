@@ -24,6 +24,7 @@ FILES =  \
 	Mono.TextEditor.Highlighting/Style.cs \
 	Mono.TextEditor.Highlighting/SyntaxMode.cs \
 	Mono.TextEditor.Highlighting/SyntaxModeService.cs \
+	Mono.TextEditor.Highlighting/WorkerThread.cs \
 	Mono.TextEditor.Highlighting/XmlReadHelper.cs \
 	Mono.TextEditor/BookmarkMargin.cs \
 	Mono.TextEditor/Caret.cs \

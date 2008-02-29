@@ -165,67 +165,143 @@ namespace Mono.TextEditor.Highlighting
 			return true;
 		}
 		
+		class UpdateWorkerThread : WorkerThread
+		{
+			Document doc;
+			SyntaxMode mode;
+			int startOffset;
+			int endOffset;
+			
+			public UpdateWorkerThread (Document doc, SyntaxMode mode, int startOffset, int endOffset)
+			{
+				this.doc         = doc;
+				this.mode        = mode;
+				this.startOffset = startOffset;
+				this.endOffset   = endOffset;
+			}
+			
+			protected void ScanSpansThreaded (Document doc, Rule rule, Stack<Span> spanStack, int start, int end)
+			{
+				Dictionary<char, Rule.Pair<Span, object>> spanTree = rule.spanTree;
+				Rule.Pair<Span, object> spanPair = null;
+				int endOffset = 0;
+				end = System.Math.Min (end, doc.Length);
+				Span curSpan = spanStack.Count > 0 ? spanStack.Peek () : null;
+				Rule curRule = rule;
+				for (int offset = start; offset < end; offset++) {
+					if (IsStopping)
+						return;
+					char ch = doc.GetCharAt (offset);
+					if (curSpan != null && !String.IsNullOrEmpty (curSpan.End)) {
+						if (curSpan.Escape == ch && offset + 1 < end && endOffset == 0 && doc.GetCharAt (offset + 1) == curSpan.End[0]) {
+							offset++;
+							continue;
+						} else	if (curSpan.End[endOffset] == ch) {
+							endOffset++;
+							if (endOffset >= curSpan.End.Length) {
+								spanStack.Pop ();
+								curSpan = spanStack.Count > 0 ? spanStack.Peek () : null;
+								endOffset = 0;
+								continue;
+							}
+						} else if (endOffset != 0) {
+							endOffset = 0;
+							if (curSpan.End[endOffset] == ch) {
+								offset--;
+								continue;
+							}
+						}
+					}
+					if (spanTree != null && spanTree.ContainsKey (ch)) {
+						spanPair = spanTree[ch];
+						spanTree = (Dictionary<char, Rule.Pair<Span, object>>)spanPair.o2;
+						if (spanPair.o1 != null) {
+							Span span = spanPair.o1;
+							if (!String.IsNullOrEmpty(span.Constraint)) {
+								if (span.Constraint.Length == 2 && span.Constraint.StartsWith ("!") && offset + 1 < end) {
+									if (doc.GetCharAt (offset + 1) == span.Constraint [1]) 
+										goto skip;
+								}
+							}
+							spanStack.Push (span);
+							curSpan = span;
+							curRule = doc.SyntaxMode.GetRule (curSpan.Rule);
+							spanTree = curRule != null ? curRule.spanTree : null;
+							continue;
+						}
+					} else {
+						spanPair = null;
+						spanTree = curRule != null ? curRule.spanTree : null;
+					}
+				 skip:
+						;
+				}
+			}
+			
+			protected override void InnerRun ()
+			{
+				bool doUpdate = false;
+				RedBlackTree<LineSegmentTree.TreeNode>.RedBlackTreeIterator iter = doc.GetLineByOffset (startOffset).Iter;
+				Stack<Span> spanStack = iter.Current.StartSpan != null ? new Stack<Span> (iter.Current.StartSpan) : new Stack<Span> ();
+				
+				do {
+					LineSegment line = iter.Current;
+					if (line == null || line.Offset < 0)
+						break;
+					
+					Span[] newSpans = spanStack.ToArray ();
+					if (line.Offset > endOffset) {
+						bool equal = IsEqual (line.StartSpan, newSpans);
+						doUpdate |= !equal;
+						if (equal) 
+							break;
+					}
+					line.StartSpan = newSpans.Length > 0 ? newSpans : null;
+					Rule rule = mode;
+					if (spanStack.Count > 0 && !String.IsNullOrEmpty (spanStack.Peek ().Rule))
+						rule = mode.GetRule (spanStack.Peek ().Rule) ?? mode;
+					
+					ScanSpansThreaded (doc, rule, spanStack, line.Offset, line.EndOffset);
+					while (spanStack.Count > 0 && spanStack.Peek ().StopAtEol)
+						spanStack.Pop ();
+				} while (!IsStopping && iter.MoveNext ());
+				if (doUpdate) {
+					GLib.Timeout.Add (0, delegate {
+						doc.RequestUpdate (new UpdateAll ());
+						doc.CommitDocumentUpdate ();
+						return false;
+					});
+				}
+				base.Stop ();
+			}
+		}
+		
 		static bool updateIsRunning = false;
 		static void Update (object o)
 		{
-			updateIsRunning = true;
-			object[] data   = (object[])o;
-			Document doc    = (Document)data[0];
-			SyntaxMode mode = (SyntaxMode)data[1];
-			int startOffset = (int)data[2];
-			int endOffset   = (int)data[3];
-			bool doUpdate = false;
-			RedBlackTree<LineSegmentTree.TreeNode>.RedBlackTreeIterator iter = doc.GetLineByOffset (startOffset).Iter;
-			Stack<Span> spanStack = iter.Current.StartSpan != null ? new Stack<Span> (iter.Current.StartSpan) : new Stack<Span> ();
-			
-			do {
-				LineSegment line = iter.Current;
-				
-				if (line == null || line.Offset < 0)
-					break;
-				
-				Span[] newSpans = spanStack.ToArray ();
-				if (line.Offset > endOffset) {
-					bool equal = IsEqual (line.StartSpan, newSpans);
-					doUpdate |= !equal;
-					if (equal) 
-						break;
-				}
-				line.StartSpan = newSpans.Length > 0 ? newSpans : null;
-				Rule rule = mode;
-				if (spanStack.Count > 0 && !String.IsNullOrEmpty (spanStack.Peek ().Rule))
-					rule = mode.GetRule (spanStack.Peek ().Rule) ?? mode;
-				
-				ScanSpans (doc, rule, spanStack, line.Offset, line.EndOffset);
-				while (spanStack.Count > 0 && spanStack.Peek ().StopAtEol)
-					spanStack.Pop ();
-			} while (updateIsRunning && iter.MoveNext ());
-			if (doUpdate) {
-				GLib.Timeout.Add (0, delegate {
-					doc.RequestUpdate (new UpdateAll ());
-					doc.CommitDocumentUpdate ();
-					return false;
-				});
-			}
 			updateIsRunning = false;
 		}
 		
-		static Thread updateThread = null;
+		static readonly object syncObject = new object();
+		static UpdateWorkerThread updateThread = null;
+		
 		public static void WaitForUpdate ()
 		{
-			if (updateThread != null && updateThread.IsAlive)
-				updateThread.Join ();
+			lock (syncObject) {
+				if (updateThread != null)
+					updateThread.WaitForFinish ();
+			}
 		}
+		
 		public static void StartUpdate (Document doc, SyntaxMode mode, int startOffset, int endOffset)
 		{
-			if (updateThread != null && updateThread.IsAlive) {
-				updateIsRunning = false;
-				updateThread.Join ();
+			lock (syncObject) {
+				if (updateThread != null) 
+					updateThread.Stop ();
+				
+				updateThread = new UpdateWorkerThread (doc, mode, startOffset, endOffset);
+				updateThread.Start ();
 			}
-			updateThread = new Thread (new ParameterizedThreadStart (Update));
-			updateThread.Priority = ThreadPriority.Lowest;
-			updateThread.IsBackground = true;
-			updateThread.Start (new object[] {doc, mode, startOffset, endOffset});
 		}
 		
 		static string Scan (XmlTextReader reader, string attribute)
