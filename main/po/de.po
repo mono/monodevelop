@@ -6,7 +6,7 @@ msgstr ""
 "X-Poedit-Bookmarks: -1,1681,-1,-1,-1,-1,-1,-1,-1,-1\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2008-02-29 03:48:50+0100\n"
+"PO-Revision-Date: 2008-02-29 14:32:08+0100\n"
 "Language-Team: \n"
 "Project-Id-Version: Monodevelop\n"
 "MIME-Version: 1.0\n"
@@ -1066,7 +1066,7 @@ msgstr "Wörter"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/WordCountDialog.cs:234
 msgid "Lines"
-msgstr "Linien"
+msgstr "Zeilen"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/WordCountDialog.cs:243
 msgid "_Count where"
