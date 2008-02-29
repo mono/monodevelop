@@ -1,3 +1,7 @@
+2008-03-01  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderProject.cs: Fixed null ref.
+
 2008-02-29  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.GtkCore.GuiBuilder/CombinedDesignView.cs: Refactored content

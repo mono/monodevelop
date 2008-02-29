@@ -481,7 +481,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		public IParserContext GetParserContext ()
 		{
 			IParserContext ctx = IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (Project);
-			if (needsUpdate) {
+			if (ctx != null && needsUpdate) {
 				needsUpdate = false;
 				ctx.UpdateDatabase ();
 			}
