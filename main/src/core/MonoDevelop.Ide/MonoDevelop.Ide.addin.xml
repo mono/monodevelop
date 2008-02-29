@@ -460,12 +460,6 @@
 				shortcut = "Control|O"
 				_description = "Open file or solution"
 				icon  = "gtk-open" />
-		<Command id = "MonoDevelop.Ide.Commands.FileCommands.OpenFileInSolution"
-				defaultHandler = "MonoDevelop.Ide.Commands.OpenFileInSolutionHandler"
-				_label = "F_ile in Solution..." 
-				shortcut = "Alt|Shift|O"
-				_description = "Open a file in the current solution..."
-				icon  = "gtk-open" />
 		<Command id = "MonoDevelop.Ide.Commands.FileCommands.NewFile" 
 				defaultHandler = "MonoDevelop.Ide.Commands.NewFileHandler"
 				_label = "_File..."
@@ -816,6 +810,12 @@
 		         defaultHandler = "MonoDevelop.Ide.Commands.GotoTypeHandler"
 		         _label = "Go to Type..." 
 		         shortcut = "Control|Shift|T" />
+		<Command id = "MonoDevelop.Ide.Commands.SearchCommands.GotoFile"
+				defaultHandler = "MonoDevelop.Ide.Commands.GotoFileHandler"
+				_label = "Go to File..." 
+				shortcut = "Alt|Shift|O"
+				_description = "Jump to a file in the current workspace"
+				icon  = "gtk-open" />
 		<Command id = "MonoDevelop.Ide.Commands.SearchCommands.ToggleBookmark"
 				icon = "md-toggle-bookmark"
 				shortcut = "Control|F2"
@@ -1299,9 +1299,6 @@
 				<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.NewProject" />
 			</ItemSet>
 			<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.OpenFile" />
-<!--			<ItemSet id = "Open" _label = "_Open">
-				<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.OpenFileInSolution" />
-			</ItemSet>-->
 			<ItemSet id = "Close" _label = "_Close">
 				<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.CloseFile" _label = "_File" />
 				<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.CloseCombine" />
@@ -1412,6 +1409,7 @@
 			<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.ClearBookmarks" />
 			<SeparatorItem id = "Separator2" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.GotoLineNumber" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.GotoFile" />
             <CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.GotoType" />
 			<SeparatorItem id = "ViewItemsSeparator3" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.NavigationCommands.NavigateBack" />

@@ -55,7 +55,6 @@ namespace MonoDevelop.Ide.Commands
 		ClearRecentProjects,
 		Exit,
 		ClearCombine,
-		OpenFileInSolution,
 		OpenInTerminal,
 		OpenFolder,
 		OpenContainingFolder,
@@ -142,19 +141,6 @@ namespace MonoDevelop.Ide.Commands
 			finally {
 				fs.Destroy ();
 			}
-		}
-	}
-	
-	internal class OpenFileInSolutionHandler : CommandHandler
-	{
-		protected override void Run()
-		{
-			OpenFileInSolutionDialog.Show (true);
-		}
-		
-		protected override void Update (CommandInfo info)
-		{
-			info.Enabled = IdeApp.ProjectOperations.CurrentOpenCombine != null;
 		}
 	}
 	

@@ -47,7 +47,6 @@
 	<binding command="MonoDevelop.Ide.Commands.FileCommands.NewFile" shortcut="Control+N" />
 	<binding command="MonoDevelop.Ide.Commands.FileCommands.NewProject" shortcut="Control+Shift+N" />
 	<binding command="MonoDevelop.Ide.Commands.FileCommands.OpenFile" shortcut="Control+O" />
-	<binding command="MonoDevelop.Ide.Commands.FileCommands.OpenFileInSolution" shortcut="Alt+Shift+O" />
 	<binding command="MonoDevelop.Ide.Commands.FileCommands.RecentFileList" shortcut="" />
 	<binding command="MonoDevelop.Ide.Commands.FileCommands.RecentProjectList" shortcut="" />
 	<binding command="MonoDevelop.Ide.Commands.FileCommands.ReloadFile" shortcut="Control+U" />
@@ -97,6 +96,7 @@
 	<binding command="MonoDevelop.Ide.Commands.SearchCommands.FindNextSelection" shortcut="Control+F3" />
 	<binding command="MonoDevelop.Ide.Commands.SearchCommands.FindPrevious" shortcut="Shift+F3" />
 	<binding command="MonoDevelop.Ide.Commands.SearchCommands.FindPreviousSelection" shortcut="Control+Shift+F3" />
+	<binding command="MonoDevelop.Ide.Commands.SearchCommands.GotoFile" shortcut="Alt+Shift+O" />
 	<binding command="MonoDevelop.Ide.Commands.SearchCommands.GotoType" shortcut="Control+Shift+T" />
 	<binding command="MonoDevelop.Ide.Commands.SearchCommands.Replace" shortcut="Control+H" />
 	<binding command="MonoDevelop.Ide.Commands.SearchCommands.ReplaceInFiles" shortcut="Control+Shift+H" />

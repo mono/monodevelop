@@ -11,7 +11,7 @@
 namespace MonoDevelop.Ide.Gui.Dialogs {
     
     
-    public partial class OpenFileInSolutionDialog {
+    public partial class GoToDialog {
         
         private Gtk.VBox vbox2;
         
@@ -37,14 +37,14 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
         
         protected virtual void Build() {
             Stetic.Gui.Initialize(this);
-            // Widget MonoDevelop.Ide.Gui.Dialogs.OpenFileInSolutionDialog
+            // Widget MonoDevelop.Ide.Gui.Dialogs.GoToDialog
             this.Events = ((Gdk.EventMask)(256));
-            this.Name = "MonoDevelop.Ide.Gui.Dialogs.OpenFileInSolutionDialog";
-            this.Title = Mono.Unix.Catalog.GetString("Open File in Solution");
+            this.Name = "MonoDevelop.Ide.Gui.Dialogs.GoToDialog";
+            this.Title = Mono.Unix.Catalog.GetString("Go to File");
             this.WindowPosition = ((Gtk.WindowPosition)(4));
             this.BorderWidth = ((uint)(6));
             this.HasSeparator = false;
-            // Internal child MonoDevelop.Ide.Gui.Dialogs.OpenFileInSolutionDialog.VBox
+            // Internal child MonoDevelop.Ide.Gui.Dialogs.GoToDialog.VBox
             Gtk.VBox w1 = this.VBox;
             w1.Events = ((Gdk.EventMask)(256));
             w1.Name = "dialog_VBox";
@@ -132,14 +132,14 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             w1.Add(this.vbox2);
             Gtk.Box.BoxChild w10 = ((Gtk.Box.BoxChild)(w1[this.vbox2]));
             w10.Position = 0;
-            // Internal child MonoDevelop.Ide.Gui.Dialogs.OpenFileInSolutionDialog.ActionArea
+            // Internal child MonoDevelop.Ide.Gui.Dialogs.GoToDialog.ActionArea
             Gtk.HButtonBox w11 = this.ActionArea;
             w11.Events = ((Gdk.EventMask)(256));
-            w11.Name = "MonoDevelop.Ide.OpenFileInSolutionDialog_ActionArea";
+            w11.Name = "MonoDevelop.Ide.GoToDialog_ActionArea";
             w11.Spacing = 6;
             w11.BorderWidth = ((uint)(5));
             w11.LayoutStyle = ((Gtk.ButtonBoxStyle)(4));
-            // Container child MonoDevelop.Ide.OpenFileInSolutionDialog_ActionArea.Gtk.ButtonBox+ButtonBoxChild
+            // Container child MonoDevelop.Ide.GoToDialog_ActionArea.Gtk.ButtonBox+ButtonBoxChild
             this.cancelButton = new Gtk.Button();
             this.cancelButton.CanDefault = true;
             this.cancelButton.CanFocus = true;
@@ -151,7 +151,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             Gtk.ButtonBox.ButtonBoxChild w12 = ((Gtk.ButtonBox.ButtonBoxChild)(w11[this.cancelButton]));
             w12.Expand = false;
             w12.Fill = false;
-            // Container child MonoDevelop.Ide.OpenFileInSolutionDialog_ActionArea.Gtk.ButtonBox+ButtonBoxChild
+            // Container child MonoDevelop.Ide.GoToDialog_ActionArea.Gtk.ButtonBox+ButtonBoxChild
             this.openButton = new Gtk.Button();
             this.openButton.CanDefault = true;
             this.openButton.CanFocus = true;

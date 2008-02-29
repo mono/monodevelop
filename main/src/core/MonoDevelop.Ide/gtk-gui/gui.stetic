@@ -9,10 +9,10 @@
     <widget-library name="../../../../build/bin/MonoDevelop.Projects.Gui.dll" />
     <widget-library name="../../../../build/bin/MonoDevelop.Ide.dll" internal="true" />
   </import>
-  <widget class="Gtk.Dialog" id="MonoDevelop.Ide.Gui.Dialogs.OpenFileInSolutionDialog" design-size="750 579">
+  <widget class="Gtk.Dialog" id="MonoDevelop.Ide.Gui.Dialogs.GoToDialog" design-size="750 579">
     <property name="MemberName" />
     <property name="Events">ButtonPressMask</property>
-    <property name="Title" translatable="yes">Open File in Solution</property>
+    <property name="Title" translatable="yes">Go to File</property>
     <property name="WindowPosition">CenterOnParent</property>
     <property name="BorderWidth">6</property>
     <property name="Buttons">2</property>
@@ -146,7 +146,7 @@
       </widget>
     </child>
     <child internal-child="ActionArea">
-      <widget class="Gtk.HButtonBox" id="MonoDevelop.Ide.OpenFileInSolutionDialog_ActionArea">
+      <widget class="Gtk.HButtonBox" id="MonoDevelop.Ide.GoToDialog_ActionArea">
         <property name="MemberName" />
         <property name="Events">ButtonPressMask</property>
         <property name="Spacing">6</property>
@@ -6338,7 +6338,7 @@ Large</property>
                   <widget class="Gtk.HBox" id="hbox2">
                     <property name="MemberName" />
                     <property name="Spacing">6</property>
-                    <child>
+	    <child>
                       <widget class="Gtk.CheckButton" id="fontCheckbox">
                         <property name="MemberName" />
                         <property name="Label" translatable="yes">_Use a different font for pads:</property>

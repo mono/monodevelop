@@ -1,5 +1,5 @@
 //
-// OpenFileInSolutionDialog.cs
+// GoToDialog.cs
 //
 // Author:
 //   Zach Lute (zach.lute@gmail.com)
@@ -41,7 +41,7 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.Gui.Dialogs
 {
-	public partial class OpenFileInSolutionDialog : Gtk.Dialog
+	public partial class GoToDialog : Gtk.Dialog
 	{
 		public static readonly int COL_ICON = 0;
 		public static readonly int COL_FILE = 1;
@@ -50,11 +50,11 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		public static readonly int COL_LINE = 4;
 		public static readonly int COL_COLUMN = 5;
 		
-		static OpenFileInSolutionDialog dlg;
-		public static OpenFileInSolutionDialog Instance {
+		static GoToDialog dlg;
+		public static GoToDialog Instance {
 			get {
 				if(dlg == null)
-					dlg = new OpenFileInSolutionDialog (true);
+					dlg = new GoToDialog (true);
 				return dlg;
 			}
 		}
@@ -98,12 +98,16 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			set {
 				if (searchFiles != value) {
 					searchFiles = value;
+					if(searchFiles)
+						this.Title = GettextCatalog.GetString ("Go to File");
+					else
+						this.Title = GettextCatalog.GetString ("Go to Type");
 					UpdateList();
 				}
 			}
 		}
 		
-		public OpenFileInSolutionDialog (bool searchFiles)
+		public GoToDialog (bool searchFiles)
 		{	
 			this.Build ();
 			icons = new Dictionary<string, Pixbuf> ();
@@ -114,19 +118,19 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			
 			matchEntry.GrabFocus ();
 			
-			this.searchFiles = searchFiles;
-			UpdateList ();
+			this.SearchFiles = searchFiles;
 		}
 		
 	    public static void Show (bool searchFiles)
 		{
-			OpenFileInSolutionDialog od = OpenFileInSolutionDialog.Instance;
+			GoToDialog od = GoToDialog.Instance;
 			od.SearchFiles = searchFiles;
 			int response = od.Run();
 			od.Hide();
 			if (response == (int)Gtk.ResponseType.Ok)
 				IdeApp.Workbench.OpenDocument (od.Filename, od.FileLine, od.FileColumn, true);	
 	    }
+		
 		int cellHeight;
 		private void SetupTreeView ()
 		{
@@ -262,6 +266,34 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		
 		void SearchThread ()
 		{
+			foreach (Document doc in IdeApp.Workbench.Documents) {
+
+				// We only want to check it here if it's not part
+				// of the open combine.  Otherwise, it will get
+				// checked down below.
+				if(doc.Project != null)
+					continue;
+				
+				string toMatch;
+				lock (matchLock) {
+					toMatch = matchString;
+				}
+				
+				if (searchFiles) {
+					CheckFile (doc.FileName, toMatch);
+				} else {
+					IParserContext ctx = IdeApp.ProjectOperations.ParserDatabase.GetFileParserContext(doc.FileName);
+					if (ctx != null) {
+						IParseInformation info = ctx.ParseFile(doc.FileName);
+						if(info != null) {
+							foreach (IClass c in ((ICompilationUnit)info.MostRecentCompilationUnit).Classes) {
+								CheckType (c, toMatch);
+							}
+						}
+					}
+				}
+			}
+			
 			Combine s = IdeApp.ProjectOperations.CurrentOpenCombine;
 			if (s == null)
 				return;
@@ -275,25 +307,20 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				if (p == null)
 					continue;
 				
+				string toMatch;
+				lock (matchLock) {
+					toMatch = matchString;
+				}
+				
 				if (searchFiles) {
 					ProjectFileCollection files = p.ProjectFiles;
 					if (files.Count < 1)
 						continue;
-					
-					string toMatch;
-					lock (matchLock) {
-						toMatch = matchString;
-					}
 
 					foreach (ProjectFile file in files) {
 						CheckFile (file.FilePath, toMatch);
 					}
 				} else {
-					string toMatch;
-					lock (matchLock) {
-						toMatch = matchString;
-					}
-					
 					IParserContext ctx = IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (p);
 					foreach (IClass c in ctx.GetProjectContents()) {
 						CheckType (c, toMatch);
@@ -497,16 +524,16 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		{
 			if (updating)
 				return;
-			searchFiles = true;
-			UpdateList ();
+			this.SearchFiles = true;
+			matchEntry.GrabFocus ();
 		}
 
 		protected virtual void OnToggleTypesClicked(object sender, System.EventArgs e)
 		{
 			if (updating)
 				return;
-			searchFiles = false;
-			UpdateList ();
+			this.SearchFiles = false;
+			matchEntry.GrabFocus ();
 		}
 	}
 }

@@ -41,8 +41,9 @@ namespace MonoDevelop.Ide.Commands
 		FindPreviousSelection,
 		FindBox,
 		ReplaceInFiles,
-		GotoType,
 		
+		GotoType,
+		GotoFile,
 		GotoLineNumber,
 		
 		ToggleBookmark,
@@ -71,12 +72,25 @@ namespace MonoDevelop.Ide.Commands
 	{
 	    protected override void Run()
 		{
-			OpenFileInSolutionDialog.Show (false);
+			GoToDialog.Show (false);
 	    }
 	    
 	    protected override void Update(CommandInfo info)
 	    {
-	    	info.Enabled = (IdeApp.ProjectOperations.CurrentOpenCombine != null);
+	    	info.Enabled = (IdeApp.ProjectOperations.CurrentOpenCombine != null || IdeApp.Workbench.Documents.Count != 0);
+	    }
+	}
+	
+	internal class GotoFileHandler : CommandHandler
+	{
+	    protected override void Run()
+		{
+			GoToDialog.Show (true);
+	    }
+	    
+	    protected override void Update(CommandInfo info)
+	    {
+	    	info.Enabled = (IdeApp.ProjectOperations.CurrentOpenCombine != null || IdeApp.Workbench.Documents.Count != 0);
 	    }
 	}
 }

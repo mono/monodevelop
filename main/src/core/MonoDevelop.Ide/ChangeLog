@@ -1,3 +1,22 @@
+2008-02-29  Zach Lute <zach.lute@gmail.com> 
+
+	* MonoDevelop.Ide.Commands/FileCommands.cs,
+	  MonoDevelop.Ide.Commands/SearchCommands.cs,
+	  options/KeyBindingSchemeEmacs.xml,
+	  options/KeyBindingSchemeMonoDevelop1.xml,
+	  options/KeyBindingSchemeVisualStudio.xml,
+	  options/KeyBindingSchemeDefault.xml, MonoDevelop.Ide.addin.xml: Changed
+	  OpenFileInSolution command to GoToFile command and moved it into the
+	  search menu where it rightfully belongs.
+	* MonoDevelop.Ide.Gui.Dialogs/GoToDialog.cs: "Go to File" and "Go to Type"
+	  can now jump to any file or type in the workspace, not just those in the
+	  currently open solution.
+	* MonoDevelop.Ide.Gui.Dialogs/OpenFileInSolutionDialog.cs,
+	  MonoDevelop.Ide.mdp, gtk-gui/MonoDevelop.Ide.Gui.Dialogs.GoToDialog.cs,
+	  gtk-gui/MonoDevelop.Ide.Gui.Dialogs.OpenFileInSolutionDialog.cs,
+	  gtk-gui/gui.stetic, Makefile.am: Renamed OpenFileInSolutionDialog to
+	  GoToDialog to better match its usage.
+
 2008-02-29  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Ide.Gui.Content/IEditableTextBuffer.cs,
