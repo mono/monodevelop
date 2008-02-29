@@ -1,5 +1,10 @@
 2008-02-29  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.Ide.Gui/DefaultWorkbench.cs: Workbench now handles the
+	  alt+number key for window switching.
+
+2008-02-29  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.Ide.addin.xml: changed one menu entry.
 
 2008-02-28  Mike Krüger <mkrueger@novell.com> 

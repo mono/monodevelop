@@ -664,7 +664,60 @@ namespace MonoDevelop.Ide.Gui
 					return true;
 				}
 			}
+			
+			// Handle Alt+1-0 keys
+			if ((evnt.State & Gdk.ModifierType.Mod1Mask) == Gdk.ModifierType.Mod1Mask) {		
+				switch (evnt.Key) {
+				case Gdk.Key.KP_1:
+				case Gdk.Key.Key_1:
+					SwitchToDocument (0);
+					return true;
+				case Gdk.Key.KP_2:
+				case Gdk.Key.Key_2:
+					SwitchToDocument (1);
+					return true;
+				case Gdk.Key.KP_3:
+				case Gdk.Key.Key_3:
+					SwitchToDocument (2);
+					return true;
+				case Gdk.Key.KP_4:
+				case Gdk.Key.Key_4:
+					SwitchToDocument (3);
+					return true;
+				case Gdk.Key.KP_5:
+				case Gdk.Key.Key_5:
+					SwitchToDocument (4);
+					return true;
+				case Gdk.Key.KP_6:
+				case Gdk.Key.Key_6:
+					SwitchToDocument (5);
+					return true;
+				case Gdk.Key.KP_7:
+				case Gdk.Key.Key_7:
+					SwitchToDocument (6);
+					return true;
+				case Gdk.Key.KP_8:
+				case Gdk.Key.Key_8:
+					SwitchToDocument (7);
+					return true;
+				case Gdk.Key.KP_9:
+				case Gdk.Key.Key_9:
+					SwitchToDocument (8);
+					return true;
+				case Gdk.Key.KP_0:
+				case Gdk.Key.Key_0:
+					SwitchToDocument (9);
+					return true;
+				}
+			}
 			return base.OnKeyPressEvent (evnt); 
+		}
+		
+		void SwitchToDocument (int number)
+		{
+			if (number >= viewContentCollection.Count || number < 0)
+				return;
+			viewContentCollection[number].WorkbenchWindow.SelectWindow ();
 		}
 		
 		bool initializing;
