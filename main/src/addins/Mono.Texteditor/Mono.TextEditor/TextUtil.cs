@@ -121,5 +121,167 @@ namespace Mono.TextEditor
 			}
 			return -1;
 		}
+		
+		public enum CharacterClass {
+			Unknown,
+			Whitespace,
+			IdentifierPart
+		}
+		
+		public static CharacterClass GetCharacterClass (char ch)
+		{
+			if (Char.IsWhiteSpace (ch))
+				return CharacterClass.Whitespace;
+			if (Char.IsLetterOrDigit (ch) || ch == '_')
+				return CharacterClass.IdentifierPart;
+			return CharacterClass.Unknown;
+		}
+		
+		public static int FindNextWordOffset (Document document, int offset)
+		{
+			int lineNumber   = document.OffsetToLineNumber (offset);
+			LineSegment line = document.GetLine (lineNumber);
+			if (line == null)
+				return offset;
+			
+			int result    = offset;
+			int endOffset = line.Offset + line.EditableLength;
+			if (result == endOffset) {
+				line = document.GetLine (lineNumber + 1);
+				if (line != null)
+					result = line.Offset;
+				return result;
+			}
+				
+			CharacterClass startClass = GetCharacterClass (document.GetCharAt (result));
+			while (offset < endOffset && GetCharacterClass (document.GetCharAt (result)) == startClass) {
+				result++;
+			}
+			while (result < endOffset && GetCharacterClass (document.GetCharAt (result)) == CharacterClass.Whitespace) {
+				result++;
+			}
+			return result;
+		}
+		
+		public static int FindPrevWordOffset (Document document, int offset)
+		{
+			int lineNumber = document.OffsetToLineNumber (offset);
+			LineSegment line = document.GetLine (lineNumber);
+			if (line == null)
+				return offset;
+			
+			int result = offset;
+			if (result == line.Offset) {
+				line = document.GetLine (lineNumber - 1);
+				if (line != null)
+					result = line.Offset + line.EditableLength;
+				return result;
+			}
+			
+			CharacterClass startClass = GetCharacterClass (document.GetCharAt (result - 1));
+			while (result > line.Offset && GetCharacterClass (document.GetCharAt (result - 1)) == startClass) {
+				result--;
+			}
+			if (startClass == CharacterClass.Whitespace && result > line.Offset) {
+				startClass = GetCharacterClass (document.GetCharAt (result - 1));
+				while (result > line.Offset && GetCharacterClass (document.GetCharAt (result - 1)) == startClass) {
+					result--;
+				}
+			}
+			return result;
+		}
+		
+//gedit like routines
+//		public static int FindPrevWordOffset (Document document, int offset)
+//		{
+//			if (offset <= 0)
+//				return 0;
+//			int  result = offset - 1;
+//			bool crossedEol = false;
+//			while (result > 0 && !Char.IsLetterOrDigit (document.GetCharAt (result))) {
+//				crossedEol |= document.GetCharAt (result) == '\n';
+//				crossedEol |= document.GetCharAt (result) == '\r';
+//				result--;
+//			}
+//			
+//			bool isLetter = Char.IsLetter (document.GetCharAt (result));
+//			bool isDigit  = Char.IsDigit (document.GetCharAt (result));
+//			if (crossedEol && (isLetter || isDigit))
+//				return result + 1;
+//			while (result > 0) {
+//				char ch = document.GetCharAt (result);
+//				if (isLetter) {
+//					if (Char.IsLetter (ch)) 
+//						result--;
+//					else {
+//						result++;
+//						break;
+//					}
+//				} else if (isDigit) {
+//					if (Char.IsDigit (ch)) 
+//						result--;
+//					else {
+//						result++;
+//						break;
+//					}
+//				} else {
+//					if (Char.IsLetterOrDigit (ch)) {
+//						result++;
+//						break;
+//					} else 
+//						result--;
+//				}
+//			}
+//			foreach (FoldSegment segment in document.GetFoldingsFromOffset (result)) {
+//				if (segment.IsFolded)
+//					result = System.Math.Min (result, segment.StartLine.Offset + segment.Column);
+//			}
+//			return result;
+//		}
+//		public static int FindNextWordOffset (Document document, int offset)
+//		{
+//			if (offset + 1 >= document.Length)
+//				return document.Length;
+//			int result = offset + 1;
+//			bool crossedEol = false;
+//			while (result < document.Length && !Char.IsLetterOrDigit (document.GetCharAt (result))) {
+//				crossedEol |= document.GetCharAt (result) == '\n';
+//				crossedEol |= document.GetCharAt (result) == '\r';
+//				result++;
+//			}
+//			
+//			bool isLetter = Char.IsLetter (document.GetCharAt (result));
+//			bool isDigit  = Char.IsDigit (document.GetCharAt (result));
+//			if (crossedEol && (isLetter || isDigit))
+//				return result;
+//			while (result < document.Length) {
+//				char ch = document.GetCharAt (result);
+//				if (isLetter) {
+//					if (Char.IsLetter (ch)) 
+//						result++;
+//					else {
+//						break;
+//					}
+//				} else if (isDigit) {
+//					if (Char.IsDigit (ch)) 
+//						result++;
+//					else {
+//						break;
+//					}
+//				} else {
+//					if (Char.IsLetterOrDigit (ch)) {
+//						break;
+//					} else 
+//						result++;
+//				}
+//			}
+//			foreach (FoldSegment segment in document.GetFoldingsFromOffset (result)) {
+//				if (segment.IsFolded)
+//					result = System.Math.Max (result, segment.EndLine.Offset + segment.EndColumn);
+//			}
+//			return result;
+//		}
+
+		
 	}
 }
