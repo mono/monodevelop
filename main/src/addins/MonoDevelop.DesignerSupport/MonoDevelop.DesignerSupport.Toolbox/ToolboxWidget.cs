@@ -279,6 +279,15 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		{
 			Item nextItem;
 			
+			// Handle keyboard toolip popup
+			if ((evnt.Key == Gdk.Key.F1 && (evnt.State & Gdk.ModifierType.ControlMask) == Gdk.ModifierType.ControlMask)) {
+				if (this.SelectedItem != null) {
+					Gdk.Rectangle rect = GetItemExtends (SelectedItem);
+					ShowTooltip (SelectedItem, 0,rect.X, rect.Bottom);
+				}
+				return true;
+			}
+			
 			switch (evnt.Key) {
 			case Gdk.Key.KP_Enter:
 			case Gdk.Key.Return:
@@ -395,13 +404,13 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				if (xpos <= mouseX && mouseX <= xpos + itemDimension.Width + spacing  &&
 				    ypos <= mouseY && mouseY <= ypos + itemDimension.Height + spacing) {
 					mouseOverItem = category;
-					ShowTooltip (mouseOverItem, (int)e.X + 2, (int)e.Y + 16);
+					ShowTooltip (mouseOverItem, TipTimer, (int)e.X + 2, (int)e.Y + 16);
 				}
 			}, delegate (Category curCategory, Item item, Gdk.Size itemDimension) {
 				if (xpos <= mouseX && mouseX <= xpos + itemDimension.Width + spacing  &&
 				    ypos <= mouseY && mouseY <= ypos + itemDimension.Height + spacing) {
 					mouseOverItem = item;
-					ShowTooltip (mouseOverItem, (int)e.X + 2, (int)e.Y + 16);
+					ShowTooltip (mouseOverItem, TipTimer, (int)e.X + 2, (int)e.Y + 16);
 				}
 			});
 			
@@ -430,6 +439,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		public event EventHandler SelectedItemChanged;
 		protected virtual void OnSelectedItemChanged (EventArgs args)
 		{
+			HideTooltipWindow ();
 			if (SelectedItemChanged != null)
 				SelectedItemChanged (this, args);
 		}
@@ -731,14 +741,15 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			tooltipWindow.ShowAll ();
 			return false;
 		}
-		public void ShowTooltip (Item item, int x, int y)
+		
+		public void ShowTooltip (Item item, uint timer, int x, int y)
 		{
 			HideTooltipWindow ();
 			if (!String.IsNullOrEmpty (item.Tooltip)) {
 				tipItem = item;
 				tipX = x;
 				tipY = y;
-				tipTimeoutId = GLib.Timeout.Add (TipTimer, ShowTooltip);
+				tipTimeoutId = GLib.Timeout.Add (timer, ShowTooltip);
 			}
 		}
 		
