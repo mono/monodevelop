@@ -447,12 +447,13 @@ namespace Mono.TextEditor
 					}
 				}
 				if (IsWholeWordOnly) {
-					return TextUtil.IsWholeWordAt (Document, offset, compiledPattern.Length);
+					return Document.IsWholeWordAt (offset, compiledPattern.Length);
 				}
 				return true;
 			}
 			return false;
 		}
+
 		
 		public SearchResult SearchForward (int fromOffset)
 		{

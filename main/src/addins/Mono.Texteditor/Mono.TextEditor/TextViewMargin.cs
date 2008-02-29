@@ -136,7 +136,7 @@ namespace Mono.TextEditor
 		void UpdateBracketHighlighting ()
 		{
 			int offset = Caret.Offset - 1;
-			if (offset >= 0 && offset < Document.Length && !TextUtil.IsBracket (Document.GetCharAt (offset)))
+			if (offset >= 0 && offset < Document.Length && !Document.IsBracket (Document.GetCharAt (offset)))
 				offset++;
 			if (offset >= Document.Length) {
 				int old = highlightBracketOffset;
@@ -148,9 +148,9 @@ namespace Mono.TextEditor
 			if (offset < 0)
 				offset = 0;
 			int oldIndex = highlightBracketOffset;
-			highlightBracketOffset = TextUtil.GetMatchingBracketOffset (Document, offset);
+			highlightBracketOffset = Document.GetMatchingBracketOffset (offset);
 			if (highlightBracketOffset == Caret.Offset && offset + 1 < Document.Length)
-				highlightBracketOffset = TextUtil.GetMatchingBracketOffset (Document, offset + 1);
+				highlightBracketOffset = Document.GetMatchingBracketOffset (offset + 1);
 			if (highlightBracketOffset == Caret.Offset)
 				highlightBracketOffset = -1;
 			

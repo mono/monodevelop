@@ -66,7 +66,7 @@ namespace Mono.TextEditor
 	{
 		public override void Run (TextEditorData data)
 		{
-			data.Caret.Offset = TextUtil.FindPrevWordOffset (data.Document, data.Caret.Offset);
+			data.Caret.Offset = data.Document.FindPrevWordOffset (data.Caret.Offset);
 		}
 	}
 	
@@ -75,7 +75,7 @@ namespace Mono.TextEditor
 		public override void Run (TextEditorData data)
 		{
 			int oldLine = data.Caret.Line;
-			int offset = TextUtil.FindPrevWordOffset (data.Document, data.Caret.Offset);
+			int offset = data.Document.FindPrevWordOffset (data.Caret.Offset);
 			if (data.Caret.Offset != offset) {
 				data.Document.Remove (offset, data.Caret.Offset - offset);
 				data.Caret.Offset = offset;
@@ -90,7 +90,7 @@ namespace Mono.TextEditor
 	{
 		public override void Run (TextEditorData data)
 		{
-			int offset = TextUtil.FindNextWordOffset (data.Document, data.Caret.Offset);
+			int offset = data.Document.FindNextWordOffset (data.Caret.Offset);
 			if (data.Caret.Offset != offset) 
 				data.Document.Remove (data.Caret.Offset, offset - data.Caret.Offset);
 			data.Document.CommitLineToEndUpdate (data.Caret.Line);
@@ -148,7 +148,7 @@ namespace Mono.TextEditor
 	{
 		public override void Run (TextEditorData data)
 		{
-			data.Caret.Offset = TextUtil.FindNextWordOffset (data.Document, data.Caret.Offset);
+			data.Caret.Offset = data.Document.FindNextWordOffset (data.Caret.Offset);
 		}
 	}
 	
@@ -420,9 +420,9 @@ namespace Mono.TextEditor
 	{
 		public override void Run (TextEditorData data)
 		{
-			int matchingBracketOffset = TextUtil.GetMatchingBracketOffset (data.Document, data.Caret.Offset);
+			int matchingBracketOffset = data.Document.GetMatchingBracketOffset (data.Caret.Offset);
 			if (matchingBracketOffset == -1 && data.Caret.Offset > 0)
-				matchingBracketOffset = TextUtil.GetMatchingBracketOffset (data.Document, data.Caret.Offset - 1);
+				matchingBracketOffset = data.Document.GetMatchingBracketOffset (data.Caret.Offset - 1);
 			
 			if (matchingBracketOffset != -1)
 				data.Caret.Offset = matchingBracketOffset;
