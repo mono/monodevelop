@@ -276,11 +276,11 @@ namespace Mono.TextEditor.Highlighting
 			}
 		}
 		
-		static bool updateIsRunning = false;
-		static void Update (object o)
-		{
-			updateIsRunning = false;
-		}
+//		static bool updateIsRunning = false;
+//		static void Update (object o)
+//		{
+//			updateIsRunning = false;
+//		}
 		
 		static readonly object syncObject = new object();
 		static UpdateWorkerThread updateThread = null;

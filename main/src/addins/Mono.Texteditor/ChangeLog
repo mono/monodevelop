@@ -1,5 +1,11 @@
 2008-02-29  Mike Krüger <mkrueger@novell.com> 
 
+	* Mono.TextEditor/TextViewMargin.cs,
+	  Mono.TextEditor.Highlighting/SyntaxModeService.cs: Freed up some
+	  resources.
+
+2008-02-29  Mike Krüger <mkrueger@novell.com> 
+
 	* Mono.TextEditor/FoldMarkerMargin.cs, Mono.TextEditor/BookmarkMargin.cs:
 	  Fixed zooming bug.
 

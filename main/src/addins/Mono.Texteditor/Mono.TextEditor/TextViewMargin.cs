@@ -112,28 +112,26 @@ namespace Mono.TextEditor
 			invalidLineMarker.SetText ("~");
 			
 			ResetCaretBlink ();
-			Caret.PositionChanged += delegate (object sender, DocumentLocationEventArgs args) {
-				if (Caret.AutoScrollToCaret) {
-					textEditor.ScrollToCaret ();
-					if (args.Location.Line != Caret.Line) {
-						caretBlink = false;
-						textEditor.RedrawLine (args.Location.Line);
-					}
-					caretBlink = true;
-					textEditor.RedrawLine (Caret.Line);
-				}
-			};
-			
-			textEditor.Document.TextReplaced += delegate {
-				UpdateBracketHighlighting ();
-			};
-			Caret.PositionChanged += delegate {
-				UpdateBracketHighlighting ();
-			};
+			Caret.PositionChanged += CaretPositionChanged;
+			textEditor.Document.TextReplaced += UpdateBracketHighlighting;
+			Caret.PositionChanged += UpdateBracketHighlighting;
 			base.cursor = new Gdk.Cursor (Gdk.CursorType.Xterm);
 		}
 		
-		void UpdateBracketHighlighting ()
+		void CaretPositionChanged (object sender, DocumentLocationEventArgs args) 
+		{
+			if (Caret.AutoScrollToCaret) {
+				textEditor.ScrollToCaret ();
+				if (args.Location.Line != Caret.Line) {
+					caretBlink = false;
+					textEditor.RedrawLine (args.Location.Line);
+				}
+				caretBlink = true;
+				textEditor.RedrawLine (Caret.Line);
+			}
+		}
+		
+		void UpdateBracketHighlighting (object sender, EventArgs e)
 		{
 			int offset = Caret.Offset - 1;
 			if (offset >= 0 && offset < Document.Length && !Document.IsBracket (Document.GetCharAt (offset)))
@@ -191,6 +189,11 @@ namespace Mono.TextEditor
 		{
 			if (caretBlinkTimeoutId != 0)
 				GLib.Source.Remove (caretBlinkTimeoutId);
+			
+			Caret.PositionChanged -= CaretPositionChanged;
+			textEditor.Document.TextReplaced -= UpdateBracketHighlighting;
+			Caret.PositionChanged -= UpdateBracketHighlighting;
+						
 			DisposeGCs ();
 			if (layout != null) {
 				layout.Dispose ();
