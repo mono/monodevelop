@@ -36,6 +36,7 @@ namespace Mono.TextEditor
 	{
 		TextEditor editor;
 		LineSegment lineHover;
+		Pango.Layout layout;
 		
 		int foldSegmentSize = 8;
 		int marginWidth;
@@ -48,6 +49,7 @@ namespace Mono.TextEditor
 		public FoldMarkerMargin (TextEditor editor)
 		{
 			this.editor = editor;
+			layout = new Pango.Layout (editor.PangoContext);
 		}
 		
 		public override void MousePressed (int button, int x, int y, Gdk.EventType type, Gdk.ModifierType modifierState)
@@ -99,13 +101,22 @@ namespace Mono.TextEditor
 			foldToggleMarkerGC = new Gdk.GC (editor.GdkWindow);
 			foldToggleMarkerGC.RgbFgColor = editor.ColorStyle.FoldToggleMarker;
 			
-			marginWidth = editor.LineHeight * 8 / 10;
+			layout.FontDescription = TextEditorOptions.Options.Font;
+			layout.SetText ("!");
+			int tmp;
+			layout.GetPixelSize (out tmp, out this.marginWidth);
+			marginWidth *= 8;
+			marginWidth /= 10;
 		}
 		
 		Gdk.GC foldBgGC, foldLineGC, foldLineHighlightedGC, foldToggleMarkerGC;
 		
 		public override void Dispose ()
 		{
+			if (layout != null) {
+				layout.Dispose ();
+				layout = null;
+			}
 			DisposeGCs ();
 		}
 		

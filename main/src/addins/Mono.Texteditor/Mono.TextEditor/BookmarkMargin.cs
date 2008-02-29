@@ -36,11 +36,13 @@ namespace Mono.TextEditor
 		TextEditor editor;
 		Gdk.GC backgroundGC, seperatorGC;
 		Cairo.Color color1, color2;
+		Pango.Layout layout;
 		int marginWidth = 18;
 		
 		public BookmarkMargin (TextEditor editor)
 		{
 			this.editor = editor;
+			layout = new Pango.Layout (editor.PangoContext);
 		}
 		
 		public override int Width {
@@ -51,6 +53,10 @@ namespace Mono.TextEditor
 		
 		public override void Dispose ()
 		{
+			if (layout != null) {
+				layout.Dispose ();
+				layout = null;
+			}
 			DisposeGCs ();
 		}
 		
@@ -78,7 +84,12 @@ namespace Mono.TextEditor
 			color1 = Convert (editor.ColorStyle.BookmarkColor1);
 			color2 = Convert (editor.ColorStyle.BookmarkColor2);
 			
-			marginWidth = editor.LineHeight * 12 / 10;
+			layout.FontDescription = TextEditorOptions.Options.Font;
+			layout.SetText ("!");
+			int tmp;
+			layout.GetPixelSize (out tmp, out this.marginWidth);
+			marginWidth *= 12;
+			marginWidth /= 10;
 		}
 		
 		static Cairo.Color Convert (Gdk.Color color)

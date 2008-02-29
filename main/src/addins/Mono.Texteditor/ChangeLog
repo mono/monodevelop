@@ -1,5 +1,10 @@
 2008-02-29  Mike Krüger <mkrueger@novell.com> 
 
+	* Mono.TextEditor/FoldMarkerMargin.cs, Mono.TextEditor/BookmarkMargin.cs:
+	  Fixed zooming bug.
+
+2008-02-29  Mike Krüger <mkrueger@novell.com> 
+
 	* Mono.TextEditor/TextEditor.cs, Mono.TextEditor/TextEditorOptions.cs: Added
 	  zoom commands to main menu.
 
