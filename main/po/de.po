@@ -6,7 +6,7 @@ msgstr ""
 "X-Poedit-Bookmarks: -1,1681,-1,-1,-1,-1,-1,-1,-1,-1\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2008-02-29 00:07:31+0100\n"
+"PO-Revision-Date: 2008-02-29 03:48:50+0100\n"
 "Language-Team: \n"
 "Project-Id-Version: Monodevelop\n"
 "MIME-Version: 1.0\n"
@@ -2013,7 +2013,6 @@ msgid "Deployment"
 msgstr "Veröffentlichung"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:429
-#, fuzzy
 msgid "_Local Copy"
 msgstr "_Lokale Kopie"
 
