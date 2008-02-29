@@ -138,6 +138,9 @@
 	<binding command="MonoDevelop.Ide.Commands.WindowCommands.NextWindow" shortcut="Control+Next" />
 	<binding command="MonoDevelop.Ide.Commands.WindowCommands.OpenWindowList" shortcut="" />
 	<binding command="MonoDevelop.Ide.Commands.WindowCommands.PrevWindow" shortcut="Control+Prior" />
+	<binding command="MonoDevelop.Ide.Commands.WindowCommands.SplitWindowHorizontally" shortcut="Control+X|2"/>
+	<binding command="MonoDevelop.Ide.Commands.WindowCommands.SplitWindowVertically" shortcut="Control+X|3" />
+	<binding command="MonoDevelop.Ide.Commands.WindowCommands.SwitchSplitWindow" shortcut="Control+X|o"/>
 	<binding command="MonoDevelop.NUnit.Commands.NUnitProjectCommands.AddAssembly" shortcut="" />
 	<binding command="MonoDevelop.NUnit.Commands.TestChartCommands.ShowFailedTests" shortcut="" />
 	<binding command="MonoDevelop.NUnit.Commands.TestChartCommands.ShowIgnoredTests" shortcut="" />
