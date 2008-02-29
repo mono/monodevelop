@@ -45,7 +45,7 @@ using MonoDevelop.DesignerSupport.Toolbox;
 
 namespace MonoDevelop.SourceEditor
 {	
-	public class SourceEditorView : AbstractViewContent, IPositionable, IExtensibleTextEditor, IBookmarkBuffer, IClipboardHandler, ICompletionWidget, IDocumentInformation, ICodeStyleOperations, ISplittable, IFoldable, IToolboxDynamicProvider, IToolboxConsumer
+	public class SourceEditorView : AbstractViewContent, IPositionable, IExtensibleTextEditor, IBookmarkBuffer, IClipboardHandler, ICompletionWidget, IDocumentInformation, ICodeStyleOperations, ISplittable, IFoldable, IToolboxDynamicProvider, IToolboxConsumer, IZoomable
 #if GNOME_PRINT
 		, IPrintable
 #endif
@@ -1222,5 +1222,39 @@ namespace MonoDevelop.SourceEditor
 		}
 		#endregion
 		
+		#region IZoomable
+		bool IZoomable.EnableZoomIn {
+			get {
+				return SourceEditorOptions.Options.CanZoomIn;
+			}
+		}
+		
+		bool IZoomable.EnableZoomOut {
+			get {
+				return SourceEditorOptions.Options.CanZoomOut;
+			}
+		}
+		
+		bool IZoomable.EnableZoomReset {
+			get {
+				return SourceEditorOptions.Options.CanResetZoom;
+			}
+		}
+		
+		void IZoomable.ZoomIn ()
+		{
+			SourceEditorOptions.Options.ZoomIn ();
+		}
+		
+		void IZoomable.ZoomOut ()
+		{
+			SourceEditorOptions.Options.ZoomOut ();
+		}
+		
+		void IZoomable.ZoomReset ()
+		{
+			SourceEditorOptions.Options.ZoomReset ();
+		}
+		#endregion
 	}
 } 

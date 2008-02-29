@@ -116,7 +116,7 @@ namespace MonoDevelop.SourceEditor
 			this.textEditor.Caret.PositionChanged += CaretPositionChanged;
 			
 			// Setup the columns and column renders for the comboboxes
-			
+			System.Console.WriteLine(Stock.RevertToSaved);
 			CellRendererPixbuf pixr = new CellRendererPixbuf ();
 			pixr.Ypad = 0;
 			classCombo.PackStart (pixr, false);
