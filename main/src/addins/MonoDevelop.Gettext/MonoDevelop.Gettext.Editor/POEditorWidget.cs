@@ -604,6 +604,9 @@ namespace MonoDevelop.Gettext
 								store.Clear ();
 							IdeApp.Workbench.StatusBar.SetProgressFraction (number / count);
 							foreach (CatalogEntry entry in foundEntries) {
+								if (!updateIsRunning)
+									break;
+								
 								store.AppendValues (GetStockForEntry (entry), entry.IsFuzzy, StringEscaping.ToGettextFormat (entry.String), StringEscaping.ToGettextFormat (entry.GetTranslation (0)), entry, GetRowColorForEntry (entry));
 							}
 						});
@@ -612,6 +615,8 @@ namespace MonoDevelop.Gettext
 					if (!ShouldFilter (curEntry, filter)) 
 						foundEntries.Add (curEntry);
 				}
+			} catch (Exception) {
+				
 			} finally {
 				if (updateIsRunning) {
 					DispatchService.GuiSyncDispatch (delegate {

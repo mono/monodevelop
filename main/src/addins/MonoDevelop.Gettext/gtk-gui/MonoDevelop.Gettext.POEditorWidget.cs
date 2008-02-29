@@ -165,14 +165,14 @@ namespace MonoDevelop.Gettext {
             this.togglebuttonMissing.UseUnderline = true;
             // Container child togglebuttonMissing.Gtk.Container+ContainerChild
             Gtk.Alignment w15 = new Gtk.Alignment(0.5F, 0.5F, 0F, 0F);
-            // Container child GtkAlignment.Gtk.Container+ContainerChild
+            // Container child GtkAlignment1.Gtk.Container+ContainerChild
             Gtk.HBox w16 = new Gtk.HBox();
             w16.Spacing = 2;
-            // Container child GtkHBox.Gtk.Container+ContainerChild
+            // Container child GtkHBox1.Gtk.Container+ContainerChild
             Gtk.Image w17 = new Gtk.Image();
             w17.Pixbuf = Stetic.IconLoader.LoadIcon(this, "gtk-cancel", Gtk.IconSize.Menu, 16);
             w16.Add(w17);
-            // Container child GtkHBox.Gtk.Container+ContainerChild
+            // Container child GtkHBox1.Gtk.Container+ContainerChild
             Gtk.Label w19 = new Gtk.Label();
             w19.LabelProp = "";
             w16.Add(w19);
@@ -190,14 +190,14 @@ namespace MonoDevelop.Gettext {
             this.togglebuttonFuzzy.UseUnderline = true;
             // Container child togglebuttonFuzzy.Gtk.Container+ContainerChild
             Gtk.Alignment w24 = new Gtk.Alignment(0.5F, 0.5F, 0F, 0F);
-            // Container child GtkAlignment.Gtk.Container+ContainerChild
+            // Container child GtkAlignment2.Gtk.Container+ContainerChild
             Gtk.HBox w25 = new Gtk.HBox();
             w25.Spacing = 2;
-            // Container child GtkHBox.Gtk.Container+ContainerChild
+            // Container child GtkHBox2.Gtk.Container+ContainerChild
             Gtk.Image w26 = new Gtk.Image();
             w26.Pixbuf = Stetic.IconLoader.LoadIcon(this, "gtk-about", Gtk.IconSize.Menu, 16);
             w25.Add(w26);
-            // Container child GtkHBox.Gtk.Container+ContainerChild
+            // Container child GtkHBox2.Gtk.Container+ContainerChild
             Gtk.Label w28 = new Gtk.Label();
             w28.LabelProp = "";
             w25.Add(w28);

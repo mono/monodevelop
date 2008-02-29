@@ -1,6 +1,11 @@
 2008-02-29  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Gettext.Editor/POEditorWidget.cs,
+	  gtk-gui/MonoDevelop.Gettext.POEditorWidget.cs: Fixed bug in po editor.
+
+2008-02-29  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Gettext.Editor/POEditorWidget.cs,
 	  MonoDevelop.Gettext/Catalog.cs: Not longer using Thread.Abort
 
 2008-02-27  Mike Krüger <mkrueger@novell.com> 
