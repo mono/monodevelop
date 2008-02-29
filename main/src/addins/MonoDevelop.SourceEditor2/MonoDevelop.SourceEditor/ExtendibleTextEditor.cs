@@ -52,13 +52,7 @@ namespace MonoDevelop.SourceEditor
 		bool showTipScheduled;
 		int langTipX, langTipY;
 		uint tipTimeoutId;
-		DocumentLocation menuPopupLocation;
-		
-		public DocumentLocation MenuPopupLocation {
-			get {
-				return menuPopupLocation;
-			}
-		}
+		Gdk.Point menuPopupLocation;
 		
 		public ITextEditorExtension Extension {
 			get {
@@ -86,6 +80,7 @@ namespace MonoDevelop.SourceEditor
 				this.HideLanguageItemWindow ();
 			};
 			Caret.PositionChanged += delegate {
+				this.HideLanguageItemWindow ();
 				if (extension != null)
 					extension.CursorPositionChanged ();
 			};
@@ -95,18 +90,17 @@ namespace MonoDevelop.SourceEditor
 			};
 			keyBindings [GetKeyCode (Gdk.Key.Tab)] = new TabAction (this);
 			keyBindings [GetKeyCode (Gdk.Key.BackSpace)] = new AdvancedBackspaceAction ();
-			this.PopupMenu += delegate {
-				menuPopupLocation = Caret.Location;
-				this.ShowPopup ();
-			};
+			
 			this.ButtonPressEvent += delegate(object sender, Gtk.ButtonPressEventArgs args) {
 				if (args.Event.Button == 3) {
 					int textEditorXOffset = (int)args.Event.X - this.TextViewMargin.XOffset;
 					if (textEditorXOffset < 0)
 						return;
-					menuPopupLocation = this.TextViewMargin.VisualToDocumentLocation (textEditorXOffset, (int)args.Event.Y);
-					if (!this.IsSomethingSelected || !this.SelectionRange.Contains (Document.LocationToOffset (menuPopupLocation)))
-						Caret.Location = menuPopupLocation;
+					this.menuPopupLocation = new Gdk.Point ((int)args.Event.X, (int)args.Event.Y);
+					DocumentLocation loc= this.TextViewMargin.VisualToDocumentLocation (textEditorXOffset, (int)args.Event.Y);
+					if (!this.IsSomethingSelected || !this.SelectionRange.Contains (Document.LocationToOffset (loc)))
+						Caret.Location = loc;
+					
 					this.ShowPopup ();
 					base.ResetMouseState ();
 				}
@@ -131,9 +125,21 @@ namespace MonoDevelop.SourceEditor
 		{
 			bool result = true;
 			char ch = (char)evnt.Key;
-			if (evnt.Key == Gdk.Key.Menu) {
-				this.menuPopupLocation = Caret.Location;
+			
+			// Handle keyboard menu popup
+			if (evnt.Key == Gdk.Key.Menu || (evnt.Key == Gdk.Key.F10 && (evnt.State & Gdk.ModifierType.ShiftMask) == Gdk.ModifierType.ShiftMask)) {
+				this.menuPopupLocation = this.TextViewMargin.LocationToDisplayCoordinates (this.Caret.Location);
+				this.menuPopupLocation.Y += this.TextViewMargin.LineHeight;
 				this.ShowPopup ();
+				return true;
+			}
+			
+			// Handle keyboard toolip popup
+			if ((evnt.Key == Gdk.Key.F1 && (evnt.State & Gdk.ModifierType.ControlMask) == Gdk.ModifierType.ControlMask)) {
+				Gdk.Point p = this.TextViewMargin.LocationToDisplayCoordinates (this.Caret.Location);
+				this.mx = p.X;
+				this.my = p.Y;
+				this.ShowTooltip ();
 				return true;
 			}
 			if (evnt.Key == Gdk.Key.Escape) {
@@ -274,7 +280,6 @@ namespace MonoDevelop.SourceEditor
 			languageItemWindow = liw;
 			
 			int ox = 0, oy = 0;
-			
 			this.GdkWindow.GetOrigin (out ox, out oy);
 			int w = languageItemWindow.Child.SizeRequest ().Width;
 			languageItemWindow.Move (xloc + ox - (w/2), yloc + oy + 20);
@@ -363,12 +368,25 @@ namespace MonoDevelop.SourceEditor
 			HideLanguageItemWindow ();
 			CommandEntrySet cset = IdeApp.CommandService.CreateCommandEntrySet ("/MonoDevelop/SourceEditor2/ContextMenu/Editor");
 			Gtk.Menu menu = IdeApp.CommandService.CreateMenu (cset);
+			
 			menu.Destroyed += delegate {
 				this.QueueDraw ();
 			};
+			menu.Popup (null, null, new Gtk.MenuPositionFunc (PositionPopupMenu), 3, Gtk.Global.CurrentEventTime);
+			menu.Hidden += delegate {
+				menu.Destroy ();
+			};
+			
 			IdeApp.CommandService.ShowContextMenu (menu);
 		}
-		
+		void PositionPopupMenu (Menu menu, out int x, out int y, out bool pushIn) 
+		{
+			this.GdkWindow.GetOrigin (out x, out y);
+			x += this.menuPopupLocation.X;
+			y += this.menuPopupLocation.Y;
+			System.Console.WriteLine(x + "/" + y);
+			pushIn = true;
+		}
 		
 //		protected override void OnPopulatePopup (Menu menu)
 //		{
