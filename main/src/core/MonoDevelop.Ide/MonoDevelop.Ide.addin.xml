@@ -505,10 +505,9 @@
 				description = "Close solution"
 				icon = "md-close-combine-icon" />
 		<Command id = "MonoDevelop.Ide.Commands.FileCommands.ReloadFile"
-				_label = "_Reload File" 
-				shortcut = "Control|U"
+				_label = "_Revert" 
 				description = "Reload the file"
-				icon = "gtk-refresh" />
+				icon = "gtk-revert-to-saved" />
 		<Command id = "MonoDevelop.Ide.Commands.FileCommands.SaveAs"
 				_label = "Save _As..."
 				icon = "gtk-save-as"
@@ -1291,11 +1290,10 @@
 			<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.Save" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.SaveAs" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.SaveAll" />
-			<SeparatorItem id = "SaveSeparator" />
-			<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.PrintDocument" />
-			<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.PrintPreviewDocument" />
-			<SeparatorItem id = "PrintSeparator" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.ReloadFile" />
+			<SeparatorItem id = "SaveSeparator" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.PrintPreviewDocument" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.PrintDocument" />
 			<SeparatorItem id = "RecentSeparator" />
 			<ItemSet id = "RecentFiles" _label = "Recent _Files">
 				<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.RecentFileList" />

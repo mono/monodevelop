@@ -1,5 +1,10 @@
 2008-02-29  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.Ide.addin.xml: Changed the reload file command to match the
+	  gnome hig.
+
+2008-02-29  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.Ide.Gui/DefaultWorkbench.cs: Workbench now handles the
 	  alt+number key for window switching.
 
