@@ -124,6 +124,46 @@ namespace MonoDevelop.Gettext.NodeBuilders
 				}
 			}
 			
+			[CommandHandler (Commands.UpdateTranslation)]
+			public void OnUpdateTranslation ()
+			{
+				TranslationProject project     = CurrentNode.GetParentDataItem (typeof(TranslationProject), false) as TranslationProject;
+				Translation        translation = CurrentNode.DataItem as Translation;
+				if (project == null || translation == null)
+					return;
+				UpdateTranslations (project, translation);
+			}
+			
+			static IAsyncOperation currentUpdateTranslationOperation = MonoDevelop.Core.ProgressMonitoring.NullAsyncOperation.Success;
+			
+			void UpdateTranslationsAsync (object ob)
+			{
+				object[] data = (object[]) ob;
+				IProgressMonitor monitor = (IProgressMonitor) data [0];
+				TranslationProject project = (TranslationProject) data [1];
+				Translation        translation = (Translation) data [2];
+				try {
+					project.UpdateTranslations (monitor, translation);
+					Gtk.Application.Invoke (delegate {
+						POEditorWidget.ReloadWidgets ();
+					});
+				} catch (Exception ex) {
+					monitor.ReportError (GettextCatalog.GetString ("Translation update failed."), ex);
+				} finally {
+					monitor.Log.WriteLine ();
+					monitor.Log.WriteLine (GettextCatalog.GetString ("---------------------- Done ----------------------"));
+					monitor.Dispose ();
+				}
+			}
+
+			void UpdateTranslations (TranslationProject project, Translation translation)
+			{
+				if (currentUpdateTranslationOperation != null && !currentUpdateTranslationOperation.IsCompleted) 
+					return;
+				IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetBuildProgressMonitor ();
+				currentUpdateTranslationOperation = monitor.AsyncOperation;
+				DispatchService.BackgroundDispatch (new StatefulMessageHandler (UpdateTranslationsAsync), new object[] {monitor, project, translation});
+			}
 		}
 	}
 }

@@ -48,6 +48,7 @@ namespace MonoDevelop.Gettext
 	{
 		AddTranslation,
 		IncludeInTranslation,
-		UpdateTranslations
+		UpdateTranslations,
+		UpdateTranslation
 	}
 }

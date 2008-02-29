@@ -257,6 +257,11 @@ namespace MonoDevelop.Gettext
 		
 		public void UpdateTranslations (IProgressMonitor monitor)
 		{
+			UpdateTranslations (monitor, this.translations.ToArray ());
+		}
+		
+		public void UpdateTranslations (IProgressMonitor monitor, params Translation[] translations)
+		{
 			monitor.BeginTask (null, Translations.Count + 1);
 			
 			try {
@@ -277,7 +282,13 @@ namespace MonoDevelop.Gettext
 				return;
 			}
 			
+			Dictionary<string, bool> isIncluded = new Dictionary<string, bool> ();
+			foreach (Translation translation in translations) {
+				isIncluded[translation.IsoCode] = true;
+			}
 			foreach (Translation translation in this.Translations) {
+				if (!isIncluded.ContainsKey (translation.IsoCode))
+					continue;
 				string poFileName  = translation.PoFile;
 				monitor.BeginTask (GettextCatalog.GetString ("Updating {0}", translation.PoFile), 1);
 				try {

@@ -55,6 +55,9 @@
 		<Command id   = "MonoDevelop.Gettext.Commands.UpdateTranslations"
 		         _label = "U_pdate Translations"
 			     _description = "Updates all translation files." />
+		<Command id   = "MonoDevelop.Gettext.Commands.UpdateTranslation"
+		         _label = "_Update Translation"
+			     _description = "Updates this translation." />
 	</Extension>	
 	
 	<Extension path = "/MonoDevelop/Core/StockIcons" extension-nodes = "StockIcon" description = "Stock icons|Available from MonoDevelop.Gettext.Resources.">
@@ -99,6 +102,8 @@
 	
 	<Extension path = "/MonoDevelop/Deployment/ProjectBrowser/ContextMenu/Translation">
 		<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.Open" />
+		<SeparatorItem />
+		<CommandItem id = "MonoDevelop.Gettext.Commands.UpdateTranslation" />
 		<SeparatorItem />
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Delete" />
 	</Extension>

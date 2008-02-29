@@ -207,7 +207,6 @@ namespace MonoDevelop.Gettext.NodeBuilders
 				IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetBuildProgressMonitor ();
 				currentUpdateTranslationOperation = monitor.AsyncOperation;
 				DispatchService.BackgroundDispatch (new StatefulMessageHandler (UpdateTranslationsAsync), new object[] {monitor, project});
-				
 			}
 			
 			[CommandHandler (Commands.UpdateTranslations)]
