@@ -6,12 +6,12 @@ msgstr ""
 "X-Poedit-Bookmarks: -1,1681,-1,-1,-1,-1,-1,-1,-1,-1\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2008-02-29 17:10:52+0100\n"
+"PO-Revision-Date: 2008-02-29 17:48:24+0100\n"
 "Language-Team: \n"
 "Project-Id-Version: Monodevelop\n"
 "MIME-Version: 1.0\n"
 "X-Generator: MonoDevelop Gettext addin\n"
-"POT-Creation-Date: 2008-02-29 16:56:05+0100\n"
+"POT-Creation-Date: 2008-02-29 17:47:36+0100\n"
 "Last-Translator: Mike Krüger <mkrueger@novell.com>\n"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Core/ServiceManager.cs:120
@@ -1575,6 +1575,7 @@ msgstr "Speichere geänderte Dateien?"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:1232
 #: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.NodeBuilders/TranslationProjectNodeBuilder.cs:197
+#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.NodeBuilders/TranslationNodeBuilder.cs:153
 msgid "---------------------- Done ----------------------"
 msgstr "--------------------- Fertig ---------------------"
 
@@ -2037,7 +2038,7 @@ msgid "Custom command list"
 msgstr "Benutzerdefinierte Befehlsliste"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:445
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:472
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:475
 msgid "Reload"
 msgstr "Neu laden"
 
@@ -3830,7 +3831,7 @@ msgid "OVR"
 msgstr "ÜBS"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/MonoDevelopStatusBar.cs:102
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:1043
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:1059
 msgid "Ready"
 msgstr "Bereit"
 
@@ -9376,7 +9377,15 @@ msgstr "Ü_bersetzungen aktualisieren"
 msgid "Updates all translation files."
 msgstr "Aktualisiert alle Übersetzungs-Dateien."
 
-#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.addin.xml:74
+#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.addin.xml:58
+msgid "_Update Translation"
+msgstr "Ü_bersetzung aktualisieren"
+
+#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.addin.xml:59
+msgid "Updates this translation."
+msgstr "Aktualisiert ein einzelne Übersetzung."
+
+#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.addin.xml:77
 msgid "PO Files"
 msgstr "PO-Datein"
 
@@ -9486,36 +9495,36 @@ msgstr "Sprache '{0}' konnte nicht hinzugefügt werden:"
 msgid "Scanning project {0}..."
 msgstr "Scanne Projekt {0}..."
 
-#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext/TranslationProject.cs:267
+#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext/TranslationProject.cs:272
 msgid "Updating message catalog"
 msgstr "Aktualisiere Meldungen-Katalog"
 
-#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext/TranslationProject.cs:269
+#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext/TranslationProject.cs:274
 msgid "Done"
 msgstr "Fertig"
 
-#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext/TranslationProject.cs:275
-#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext/TranslationProject.cs:296
+#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext/TranslationProject.cs:280
+#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext/TranslationProject.cs:307
 msgid "Operation cancelled."
 msgstr "Operation abgebrochen"
 
-#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext/TranslationProject.cs:281
+#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext/TranslationProject.cs:292
 msgid "Updating {0}"
 msgstr "Aktualisiere {0}"
 
-#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext/TranslationProject.cs:290
+#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext/TranslationProject.cs:301
 msgid "Could not update file {0}"
 msgstr "Konnte Datei {0} nicht aktualisieren"
 
-#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext/TranslationProject.cs:344
+#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext/TranslationProject.cs:355
 msgid "Translation {0}: Compilation succeeded."
 msgstr "Übersetzung {0}: Kompilation erfolgreich."
 
-#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext/TranslationProject.cs:347
+#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext/TranslationProject.cs:358
 msgid "Translation {0}: Compilation failed. Reason: {1}"
 msgstr "Übersetzung {0}: Kompilation gescheitert. Grund: {1}"
 
-#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext/TranslationProject.cs:362
+#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext/TranslationProject.cs:373
 msgid "Removing all .mo files."
 msgstr "Entferne alle .mo-Dateien."
 
@@ -9529,6 +9538,7 @@ msgid "Translator Output"
 msgstr "Übersetzer-Ausgabe"
 
 #: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.NodeBuilders/TranslationProjectNodeBuilder.cs:194
+#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.NodeBuilders/TranslationNodeBuilder.cs:150
 msgid "Translation update failed."
 msgstr "Übersetzungsaktualisierung fehlgeschlagen."
 
@@ -11067,29 +11077,48 @@ msgstr "Seite"
 msgid "Clipboard ring"
 msgstr "Zwischenablagering"
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:468
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:157
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:885
+msgid "Type list"
+msgstr "Typen"
+
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:163
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:896
+msgid "Member list"
+msgstr "Elemente"
+
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:168
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:683
+msgid "Region list"
+msgstr "Regionen"
+
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:471
 msgid "This file has been changed outside of MonoDevelop"
 msgstr "Die Datei wurde außerhalb von MonoDevelop verändert"
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:476
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:479
 msgid "Ignore"
 msgstr "Ignorieren"
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:1023
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:677
+msgid "Region {0}"
+msgstr "Region {0}"
+
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:1039
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:1078
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:1055
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:1094
 msgid "Search pattern not found"
 msgstr "Ausdruck nicht gefunden"
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:1025
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:1041
 msgid "Reached bottom, continued from top"
 msgstr "Das Dokumentende wurde erreicht. Suche vom Dokumentanfang fortgesetzt."
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:1041
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:1057
 msgid "Reached top, continued from bottom"
 msgstr "Der Dokumentanfang wurde erreicht. Suche am Dokumentende fortgesetzt."
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:1080
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:1096
 msgid "Found and replaced one occurrence"
 msgid_plural "Found and replaced {0} occurrences"
 msgstr[0] "Eine Übereinstimmung gefunden und ersetzt"
