@@ -124,37 +124,44 @@ namespace Mono.TextEditor
 				}
 			};
 			
-			// Bracket highlighting
+			textEditor.Document.TextReplaced += delegate {
+				UpdateBracketHighlighting ();
+			};
 			Caret.PositionChanged += delegate {
-				int offset = Caret.Offset - 1;
-				if (offset >= 0 && offset < Document.Length && !TextUtil.IsBracket (Document.GetCharAt (offset)))
-					offset++;
-				if (offset >= Document.Length) {
-					int old = highlightBracketOffset;
-					highlightBracketOffset = -1;
-					if (old >= 0)
-						textEditor.RedrawLine (Document.OffsetToLineNumber (old));
-					return;
-				}
-				if (offset < 0)
-					offset = 0;
-				int oldIndex = highlightBracketOffset;
-				highlightBracketOffset = TextUtil.GetMatchingBracketOffset (Document, offset);
-				if (highlightBracketOffset == Caret.Offset && offset + 1 < Document.Length)
-					highlightBracketOffset = TextUtil.GetMatchingBracketOffset (Document, offset + 1);
-				if (highlightBracketOffset == Caret.Offset)
-					highlightBracketOffset = -1;
-				
-				if (highlightBracketOffset != oldIndex) {
-					int line1 = oldIndex >= 0 ? Document.OffsetToLineNumber (oldIndex) : -1;
-					int line2 = highlightBracketOffset >= 0 ? Document.OffsetToLineNumber (highlightBracketOffset) : -1;
-					if (line1 >= 0)
-						textEditor.RedrawLine (line1);
-					if (line1 != line2 && line2 >= 0)
-						textEditor.RedrawLine (line2);
-				}
+				UpdateBracketHighlighting ();
 			};
 			base.cursor = new Gdk.Cursor (Gdk.CursorType.Xterm);
+		}
+		
+		void UpdateBracketHighlighting ()
+		{
+			int offset = Caret.Offset - 1;
+			if (offset >= 0 && offset < Document.Length && !TextUtil.IsBracket (Document.GetCharAt (offset)))
+				offset++;
+			if (offset >= Document.Length) {
+				int old = highlightBracketOffset;
+				highlightBracketOffset = -1;
+				if (old >= 0)
+					textEditor.RedrawLine (Document.OffsetToLineNumber (old));
+				return;
+			}
+			if (offset < 0)
+				offset = 0;
+			int oldIndex = highlightBracketOffset;
+			highlightBracketOffset = TextUtil.GetMatchingBracketOffset (Document, offset);
+			if (highlightBracketOffset == Caret.Offset && offset + 1 < Document.Length)
+				highlightBracketOffset = TextUtil.GetMatchingBracketOffset (Document, offset + 1);
+			if (highlightBracketOffset == Caret.Offset)
+				highlightBracketOffset = -1;
+			
+			if (highlightBracketOffset != oldIndex) {
+				int line1 = oldIndex >= 0 ? Document.OffsetToLineNumber (oldIndex) : -1;
+				int line2 = highlightBracketOffset >= 0 ? Document.OffsetToLineNumber (highlightBracketOffset) : -1;
+				if (line1 >= 0)
+					textEditor.RedrawLine (line1);
+				if (line1 != line2 && line2 >= 0)
+					textEditor.RedrawLine (line2);
+			}
 		}
 		
 		public override void OptionsChanged ()

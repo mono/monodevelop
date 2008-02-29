@@ -1,5 +1,10 @@
 2008-02-29  Mike Krüger <mkrueger@novell.com> 
 
+	* Mono.TextEditor/TextViewMargin.cs, Mono.TextEditor/TextUtil.cs: Fixed
+	  Bracket highlighting on text operations.
+
+2008-02-29  Mike Krüger <mkrueger@novell.com> 
+
 	* Mono.TextEditor/DefaultEditActions.cs, Mono.TextEditor/TextUtil.cs:
 	  changed next/prev word behaviour.
 

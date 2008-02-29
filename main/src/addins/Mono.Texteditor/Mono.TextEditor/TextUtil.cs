@@ -152,7 +152,7 @@ namespace Mono.TextEditor
 					result = line.Offset;
 				return result;
 			}
-				
+			
 			CharacterClass startClass = GetCharacterClass (document.GetCharAt (result));
 			while (offset < endOffset && GetCharacterClass (document.GetCharAt (result)) == startClass) {
 				result++;
