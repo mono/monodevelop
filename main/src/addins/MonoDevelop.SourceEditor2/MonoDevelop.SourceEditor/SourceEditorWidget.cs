@@ -790,10 +790,9 @@ namespace MonoDevelop.SourceEditor
 				}
 				
 				// If we can we navigate to the line location of the IMember.
-				IViewContent content = (IViewContent) IdeApp.Workbench.ActiveDocument.GetContent(typeof(IViewContent));
-				if (content is IPositionable) {
-					((IPositionable)content).JumpTo (Math.Max (1, line), 1);
-				}
+				IExtensibleTextEditor content = (IExtensibleTextEditor) IdeApp.Workbench.ActiveDocument.GetContent(typeof(IExtensibleTextEditor));
+				if (content != null)
+					content.SetCaretTo (Math.Max (1, line), 1);
 			}
 		}
 		
@@ -813,10 +812,9 @@ namespace MonoDevelop.SourceEditor
 				}
 				
 				// If we can we navigate to the line location of the IMember.
-				IViewContent content = (IViewContent)IdeApp.Workbench.ActiveDocument.GetContent(typeof(IViewContent));
-				if (content is IPositionable) {
-					((IPositionable)content).JumpTo (Math.Max (1, line), 1);
-				}
+				IExtensibleTextEditor content = (IExtensibleTextEditor) IdeApp.Workbench.ActiveDocument.GetContent(typeof(IExtensibleTextEditor));
+				if (content != null)
+					content.SetCaretTo (Math.Max (1, line), 1);
 				
 				// check that selected "class" isn't a delegate
 				if (selectedClass.ClassType == ClassType.Delegate) {
@@ -842,10 +840,10 @@ namespace MonoDevelop.SourceEditor
 				}
 				
 				// If we can we navigate to the line location of the IMember.
-				IViewContent content = (IViewContent)IdeApp.Workbench.ActiveDocument.GetContent(typeof(IViewContent));
-				if (content is IPositionable)  {
+				IExtensibleTextEditor content = (IExtensibleTextEditor) IdeApp.Workbench.ActiveDocument.GetContent(typeof(IExtensibleTextEditor));
+				if (content != null) {
 					int line = Math.Max (1, selectedRegion.BeginLine);
-					((IPositionable)content).JumpTo (line, 1);
+					content.SetCaretTo (Math.Max (1, line), 1);
 					foreach (FoldSegment fold in this.textEditor.Document.GetStartFoldings (line - 1)) {
 						if (fold.FoldingType == FoldingType.Region)
 							fold.IsFolded = false;

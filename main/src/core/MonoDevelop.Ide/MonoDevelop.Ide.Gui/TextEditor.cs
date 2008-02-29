@@ -38,9 +38,8 @@ namespace MonoDevelop.Ide.Gui
 		ICodeStyleOperations codeStyleOperations;
 		IEditableTextBuffer textBuffer;
 		IEncodedTextContent encodedTextContent;
-		IPositionable positionable;
 		ICompletionWidget completionWidget;
-		
+		IClipboardHandler clipboardHandler;
 		// All line and column numbers are 1-based
 		
 		public static TextEditor GetTextEditor (IBaseViewContent content)
@@ -54,8 +53,8 @@ namespace MonoDevelop.Ide.Gui
 			ed.bookmarkBuffer = (IBookmarkBuffer) content.GetContent (typeof(IBookmarkBuffer));
 			ed.codeStyleOperations = (ICodeStyleOperations) content.GetContent (typeof(ICodeStyleOperations));
 			ed.encodedTextContent = (IEncodedTextContent) content.GetContent (typeof(IEncodedTextContent));
-			ed.positionable = (IPositionable) content.GetContent (typeof(IPositionable));
 			ed.completionWidget = (ICompletionWidget) content.GetContent (typeof(ICompletionWidget));
+			ed.clipboardHandler = (IClipboardHandler) content.GetContent (typeof(IClipboardHandler));
 			return ed;
 		}
 		
@@ -100,7 +99,7 @@ namespace MonoDevelop.Ide.Gui
 		}
 		
 		public IClipboardHandler ClipboardHandler {
-			get { return textBuffer.ClipboardHandler; }
+			get { return clipboardHandler; }
 		}
 		
 		public void Undo()
@@ -128,7 +127,7 @@ namespace MonoDevelop.Ide.Gui
 			set { textBuffer.SelectedText = value; }
 		}
 		
-		public event TextChangedEventHandler TextChanged {
+		public event EventHandler<TextChangedEventArgs> TextChanged {
 			add { textBuffer.TextChanged += value; }
 			remove { textBuffer.TextChanged -= value; }
 		}
@@ -233,8 +232,8 @@ namespace MonoDevelop.Ide.Gui
 		
 		public void JumpTo (int line, int col)
 		{
-			if (positionable != null)
-				positionable.JumpTo (line, col);
+			if (textBuffer != null)
+				textBuffer.SetCaretTo (line, col);
 			else {
 				int pos = GetPositionFromLineColumn (line, col);
 				CursorPosition = pos;

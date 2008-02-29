@@ -359,9 +359,9 @@ namespace MonoDevelop.Ide.Gui
 						doc.Window.SwitchView (vcIndex);
 					}
 					
-					IPositionable ipos = (IPositionable) vcFound.GetContent (typeof(IPositionable));
+					IEditableTextBuffer ipos = (IEditableTextBuffer) vcFound.GetContent (typeof(IEditableTextBuffer));
 					if (line >= 1 && ipos != null) {
-						ipos.JumpTo (line, column >= 1 ? column : 1);
+						ipos.SetCaretTo (line, column >= 1 ? column : 1);
 					}
 					
 					return doc;
@@ -639,9 +639,9 @@ namespace MonoDevelop.Ide.Gui
 					if (doc.FileName == fileName) {
 						if (oFileInfo.BringToFront) {
 							doc.Select ();
-							IPositionable ipos = doc.GetContent <IPositionable> ();
+							IEditableTextBuffer ipos = doc.GetContent <IEditableTextBuffer> ();
 							if (oFileInfo.Line != -1 && ipos != null) {
-								ipos.JumpTo (oFileInfo.Line, oFileInfo.Column != -1 ? oFileInfo.Column : 0);
+								ipos.SetCaretTo (oFileInfo.Line, oFileInfo.Column != -1 ? oFileInfo.Column : 0);
 							}
 						}
 						oFileInfo.NewContent = doc.Window.ViewContent;
@@ -765,7 +765,7 @@ namespace MonoDevelop.Ide.Gui
 			IdeApp.Workbench.DisplayBindings.AttachSubWindows(newContent.WorkbenchWindow);
 			newContent.WorkbenchWindow.DocumentType = binding.DisplayName;
 			
-			IPositionable ipos = (IPositionable) newContent.GetContent (typeof(IPositionable));
+			IEditableTextBuffer ipos = (IEditableTextBuffer) newContent.GetContent (typeof(IEditableTextBuffer));
 			if (fileInfo.Line != -1 && ipos != null) {
 				GLib.Timeout.Add (10, new GLib.TimeoutHandler (JumpToLine));
 			}
@@ -774,8 +774,8 @@ namespace MonoDevelop.Ide.Gui
 		
 		public bool JumpToLine ()
 		{
-			IPositionable ipos = (IPositionable) newContent.GetContent (typeof(IPositionable));
-			ipos.JumpTo (Math.Max(1, fileInfo.Line), Math.Max(1, fileInfo.Column));
+			IEditableTextBuffer ipos = (IEditableTextBuffer) newContent.GetContent (typeof(IEditableTextBuffer));
+			ipos.SetCaretTo (Math.Max(1, fileInfo.Line), Math.Max(1, fileInfo.Column));
 			return false;
 		}
 	}

@@ -45,7 +45,7 @@ using MonoDevelop.DesignerSupport.Toolbox;
 
 namespace MonoDevelop.SourceEditor
 {	
-	public class SourceEditorView : AbstractViewContent, IPositionable, IExtensibleTextEditor, IBookmarkBuffer, IClipboardHandler, ICompletionWidget, IDocumentInformation, ICodeStyleOperations, ISplittable, IFoldable, IToolboxDynamicProvider, IToolboxConsumer, IZoomable
+	public class SourceEditorView : AbstractViewContent, IExtensibleTextEditor, IBookmarkBuffer, IClipboardHandler, ICompletionWidget, IDocumentInformation, ICodeStyleOperations, ISplittable, IFoldable, IToolboxDynamicProvider, IToolboxConsumer, IZoomable
 #if GNOME_PRINT
 		, IPrintable
 #endif
@@ -278,12 +278,6 @@ namespace MonoDevelop.SourceEditor
 		#endregion
 		
 		#region IEditableTextBuffer
-		public IClipboardHandler ClipboardHandler {
-			get {
-				return this;
-			}
-		}
-		
 		public bool EnableUndo {
 			get {
 				return this.Document.CanUndo && widget.EditorHasFocus;
@@ -299,6 +293,22 @@ namespace MonoDevelop.SourceEditor
 			get {
 				return this.Document.CanRedo && widget.EditorHasFocus;
 			}
+		}
+		
+		public void SetCaretTo (int line, int column)
+		{
+			GLib.Timeout.Add (20,  delegate {
+				if (this.isDisposed)
+					return false;
+				line = Math.Min (line, Document.LineCount);
+				
+				widget.TextEditor.Caret.Location = new DocumentLocation (line - 1, column - 1);
+				
+				widget.TextEditor.GrabFocus ();
+				widget.TextEditor.ScrollToCaret ();
+				OnCaretPositionSet (EventArgs.Empty);
+				return false;
+			});
 		}
 		
 		public void Redo()
@@ -326,8 +336,13 @@ namespace MonoDevelop.SourceEditor
 				TextEditor.Caret.Offset += value.Length; 
 			}
 		}
-		
-		public event TextChangedEventHandler TextChanged;
+		protected virtual void OnCaretPositionSet (EventArgs args)
+		{
+			if (CaretPositionSet != null) 
+				CaretPositionSet (this, args);
+		}
+		public event EventHandler CaretPositionSet;
+		public event EventHandler<TextChangedEventArgs> TextChanged;
 		#endregion
 		
 		#region ITextBuffer
@@ -437,24 +452,6 @@ namespace MonoDevelop.SourceEditor
 		}
 		#endregion 
 		
-		#region IPositionable
-		public void JumpTo (int line, int column)
-		{
-			
-			GLib.Timeout.Add (20,  delegate {
-				if (this.isDisposed)
-					return false;
-				line = Math.Min (line, Document.LineCount);
-				
-				widget.TextEditor.Caret.Location = new DocumentLocation (line - 1, column - 1);
-				
-				widget.TextEditor.GrabFocus ();
-				widget.TextEditor.ScrollToCaret ();
-				return false;
-			});
-		}
-		#endregion
-		
 		#region IBookmarkBuffer
 		LineSegment GetLine (int position)
 		{
@@ -521,28 +518,28 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 		
-		public void Cut (object sender, EventArgs args)
+		public void Cut ()
 		{
 			TextEditor.RunAction (new CutAction ());
 		}
 		
-		public void Copy (object sender, EventArgs args)
+		public void Copy ()
 		{
 			TextEditor.RunAction (new CopyAction ());
 		}
 		
-		public void Paste (object sender, EventArgs args)
+		public void Paste ()
 		{
 			TextEditor.RunAction (new PasteAction ());
 		}
 		
-		public void Delete (object sender, EventArgs args)
+		public void Delete ()
 		{
 			if (TextEditor.IsSomethingSelected) 
 				TextEditor.DeleteSelectedText ();
 		}
 		
-		public void SelectAll (object sender, EventArgs args)
+		public void SelectAll ()
 		{
 			TextEditor.RunAction (new SelectionSelectAll ());
 		}

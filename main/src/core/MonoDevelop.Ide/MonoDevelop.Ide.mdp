@@ -84,9 +84,8 @@
     <File name="MonoDevelop.Ide.Gui.Content/IClipboardHandler.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui.Content/ICodeStyleOperations.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui.Content/ICustomizedCommands.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Ide.Gui.Content/IEditable.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Ide.Gui.Content/IEditableTextBuffer.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui.Content/IParsableContent.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Ide.Gui.Content/IPositionable.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui.Content/IPrintable.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui.Content/ITextBuffer.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui.Content/IViewHistory.cs" subtype="Code" buildaction="Compile" />

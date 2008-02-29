@@ -43,7 +43,7 @@ using Gdk;
 
 namespace MonoDevelop.GtkCore.GuiBuilder
 {
-	public class CombinedDesignView : AbstractViewContent, IPositionable
+	public class CombinedDesignView : AbstractViewContent
 	{
 		IViewContent content;
 		Gtk.Notebook notebook;
@@ -55,7 +55,11 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		public CombinedDesignView (IViewContent content)
 		{
 			this.content = content;
-			
+			if (content is IEditableTextBuffer) {
+				((IEditableTextBuffer)content).CaretPositionSet += delegate {
+					ShowPage (0);
+				};
+			}
 			content.ContentChanged += new EventHandler (OnTextContentChanged);
 			content.DirtyChanged += new EventHandler (OnTextDirtyChanged);
 			
@@ -245,15 +249,15 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		public override object GetContent (Type type)
 		{
-			if (type == typeof(IPositionable)) {
-				// Intercept the IPositionable interface, since we need to
-				// switch to the text editor when jumping to a line
-				if (content.GetContent (type) != null)
-					return this;
-				else
-					return null;
-			}
-			
+//			if (type == typeof(IEditableTextBuffer)) {
+//				// Intercept the IPositionable interface, since we need to
+//				// switch to the text editor when jumping to a line
+//				if (content.GetContent (type) != null)
+//					return this;
+//				else
+//					return null;
+//			}
+//			
 			object ob = base.GetContent (type);
 			if (ob == null)
 				return content.GetContent (type);
@@ -263,10 +267,10 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 
 		public void JumpTo (int line, int column)
 		{
-			IPositionable ip = (IPositionable) content.GetContent (typeof(IPositionable));
+			IEditableTextBuffer ip = (IEditableTextBuffer) content.GetContent (typeof(IEditableTextBuffer));
 			if (ip != null) {
 				ShowPage (0);
-				ip.JumpTo (line, column);
+				ip.SetCaretTo (line, column);
 			}
 		}
 	}

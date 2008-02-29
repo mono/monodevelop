@@ -1,5 +1,5 @@
 //
-// IClipboardHandler.cs
+// IEditableTextBuffer.cs
 //
 // Author:
 //   Mike Krüger <mkrueger@novell.com>
@@ -27,31 +27,51 @@
 //
 
 using System;
+using MonoDevelop.Projects.Text;
 
 namespace MonoDevelop.Ide.Gui.Content
 {
-	public interface IClipboardHandler
-	{
-		bool EnableCut {
+	public interface IEditableTextBuffer : ITextBuffer, IEditableTextFile
+	{	
+		bool EnableUndo {
 			get;
 		}
-		bool EnableCopy {
-			get;
-		}
-		bool EnablePaste {
-			get;
-		}
-		bool EnableDelete {
-			get;
-		}
-		bool EnableSelectAll {
+		bool EnableRedo {
 			get;
 		}
 		
-		void Cut ();
-		void Copy ();
-		void Paste ();
-		void Delete ();
-		void SelectAll ();
+		void SetCaretTo (int line, int column);
+		
+		void Undo();
+		void Redo();
+		
+		void BeginAtomicUndo ();
+		void EndAtomicUndo ();
+		
+		event EventHandler CaretPositionSet;
+		event EventHandler<TextChangedEventArgs> TextChanged;
+	}
+	
+	public class TextChangedEventArgs : System.EventArgs
+	{
+		int startIndex;
+		public int StartIndex {
+			get { 
+				return startIndex; 
+			}
+		}
+		
+		int endIndex;
+		public int EndIndex {
+			get { 
+				return endIndex; 
+			}
+		}
+		
+		public TextChangedEventArgs (int startIndex, int endIndex)
+		{
+			this.startIndex = startIndex;
+			this.endIndex   = endIndex;
+		}
 	}
 }

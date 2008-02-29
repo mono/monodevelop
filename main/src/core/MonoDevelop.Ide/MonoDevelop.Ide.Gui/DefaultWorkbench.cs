@@ -51,7 +51,7 @@ namespace MonoDevelop.Ide.Gui
 	{
 		readonly static string mainMenuPath    = "/MonoDevelop/Ide/MainMenu";
 		readonly static string viewContentPath = "/MonoDevelop/Ide/Pads";
-		readonly static string toolbarsPath = "/MonoDevelop/Ide/Toolbar";
+		readonly static string toolbarsPath    = "/MonoDevelop/Ide/Toolbar";
 		
 		List<PadCodon> padContentCollection      = new List<PadCodon> ();
 		List<IViewContent> viewContentCollection = new List<IViewContent> ();
@@ -298,12 +298,12 @@ namespace MonoDevelop.Ide.Gui
 			
 			if (bringToFront)
 				content.WorkbenchWindow.SelectWindow();
-
+			
 			RedrawAllComponents ();
 			
 			IEditableTextBuffer editor = (IEditableTextBuffer) content.GetContent (typeof(IEditableTextBuffer));
 			if (editor != null)
-				editor.TextChanged += new TextChangedEventHandler (OnViewTextChanged);
+				editor.TextChanged += OnViewTextChanged;
 		}
 		
 		public virtual void ShowPad (PadCodon content)

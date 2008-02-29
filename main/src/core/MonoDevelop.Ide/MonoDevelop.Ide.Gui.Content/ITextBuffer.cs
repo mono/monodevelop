@@ -32,7 +32,7 @@ namespace MonoDevelop.Ide.Gui.Content
 {
 	public interface ITextBuffer: ITextFile
 	{
-		string SelectedText { get; }
+		string SelectedText { get; set; }
 		
 		int CursorPosition { get; set; }
 

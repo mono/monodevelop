@@ -30,7 +30,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 {
 	public partial class GotoLineDialog : Gtk.Dialog
 	{
-		IPositionable positionable;
+		IEditableTextBuffer positionable;
 		
 		static GotoLineDialog instance = null;
 		public static bool CanShow {
@@ -39,7 +39,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			}
 		}
 		
-		public static void ShowDialog (IPositionable positionable)
+		public static void ShowDialog (IEditableTextBuffer positionable)
 		{
 			if (instance != null)
 				return;
@@ -47,7 +47,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			instance.ShowAll ();
 		}
 		
-		public GotoLineDialog (IPositionable positionable)
+		public GotoLineDialog (IEditableTextBuffer positionable)
 		{
 			this.positionable = positionable;
 			this.Build();
@@ -67,7 +67,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			this.buttonGoToLine.Clicked += delegate {
 				try {
 					int line = System.Math.Max (1, System.Int32.Parse (entryLineNumber.Text));
-					positionable.JumpTo (line, 1);
+					positionable.SetCaretTo (line, 1);
 				} catch (System.Exception) { 
 				}
 				this.Destroy ();

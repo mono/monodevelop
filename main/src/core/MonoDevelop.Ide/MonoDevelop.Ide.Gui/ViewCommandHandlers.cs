@@ -156,95 +156,95 @@ namespace MonoDevelop.Ide.Gui
 			info.Enabled = textBuffer != null && textBuffer.EnableRedo;
 		}
 		
-		[CommandHandler (EditCommands.Cut)]
-		protected void OnCut ()
-		{
-			IEditableTextBuffer editable = GetContent <IEditableTextBuffer> ();
-			if (editable != null)
-				editable.ClipboardHandler.Cut(null, null);
-		}
-		
-		[CommandUpdateHandler (EditCommands.Cut)]
-		protected void OnUpdateCut (CommandInfo info)
-		{
-			IEditableTextBuffer editable = GetContent <IEditableTextBuffer> ();
-			if (editable != null)
-				info.Enabled = editable.ClipboardHandler.EnableCut;
-			else
-				info.Bypass = true;
-		}
-		
-		[CommandHandler (EditCommands.Copy)]
-		protected void OnCopy ()
-		{
-			IEditableTextBuffer editable = GetContent <IEditableTextBuffer> ();
-			if (editable != null)
-				editable.ClipboardHandler.Copy(null, null);
-		}
-		
-		[CommandUpdateHandler (EditCommands.Copy)]
-		protected void OnUpdateCopy (CommandInfo info)
-		{
-			IEditableTextBuffer editable = GetContent <IEditableTextBuffer> ();
-			if (editable != null)
-				info.Enabled = editable.ClipboardHandler.EnableCopy;
-			else
-				info.Bypass = true;
-		}
-		
-		[CommandHandler (EditCommands.Paste)]
-		protected void OnPaste ()
-		{
-			IEditableTextBuffer editable = GetContent <IEditableTextBuffer> ();
-			if (editable != null)
-				editable.ClipboardHandler.Paste(null, null);
-		}
-		
-		[CommandUpdateHandler (EditCommands.Paste)]
-		protected void OnUpdatePaste (CommandInfo info)
-		{
-			IEditableTextBuffer editable = GetContent <IEditableTextBuffer> ();
-			if (editable != null)
-				info.Enabled = editable.ClipboardHandler.EnablePaste;
-			else
-				info.Bypass = true;
-		}
-		
-		[CommandHandler (EditCommands.Delete)]
-		protected void OnDelete ()
-		{
-			IEditableTextBuffer editable = GetContent <IEditableTextBuffer> ();
-			if (editable != null)
-				editable.ClipboardHandler.Delete(null, null);
-		}
-		
-		[CommandUpdateHandler (EditCommands.Delete)]
-		protected void OnUpdateDelete (CommandInfo info)
-		{
-			IEditableTextBuffer editable = GetContent <IEditableTextBuffer> ();
-			if (editable != null)
-				info.Enabled = editable.ClipboardHandler.EnableDelete;
-			else
-				info.Bypass = true;
-		}
-		
-		[CommandHandler (EditCommands.SelectAll)]
-		protected void OnSelectAll ()
-		{
-			IEditableTextBuffer editable = GetContent <IEditableTextBuffer> ();
-			if (editable != null)
-				editable.ClipboardHandler.SelectAll(null, null);
-		}
-		
-		[CommandUpdateHandler (EditCommands.SelectAll)]
-		protected void OnUpdateSelectAll (CommandInfo info)
-		{
-			IEditableTextBuffer editable = GetContent <IEditableTextBuffer> ();
-			if (editable != null)
-				info.Enabled = editable.ClipboardHandler.EnableSelectAll;
-			else
-				info.Bypass = true;
-		}
+//		[CommandHandler (EditCommands.Cut)]
+//		protected void OnCut ()
+//		{
+//			IEditableTextBuffer editable = GetContent <IEditableTextBuffer> ();
+//			if (editable != null)
+//				editable.ClipboardHandler.Cut ();
+//		}
+//		
+//		[CommandUpdateHandler (EditCommands.Cut)]
+//		protected void OnUpdateCut (CommandInfo info)
+//		{
+//			IClipboardHandler editable = GetContent <IClipboardHandler> ();
+//			if (editable != null)
+//				info.Enabled = editable.ClipboardHandler.EnableCut;
+//			else
+//				info.Bypass = true;
+//		}
+//		
+//		[CommandHandler (EditCommands.Copy)]
+//		protected void OnCopy ()
+//		{
+//			IEditableTextBuffer editable = GetContent <IEditableTextBuffer> ();
+//			if (editable != null)
+//				editable.ClipboardHandler.Copy ();
+//		}
+//		
+//		[CommandUpdateHandler (EditCommands.Copy)]
+//		protected void OnUpdateCopy (CommandInfo info)
+//		{
+//			IEditableTextBuffer editable = GetContent <IEditableTextBuffer> ();
+//			if (editable != null)
+//				info.Enabled = editable.ClipboardHandler.EnableCopy;
+//			else
+//				info.Bypass = true;
+//		}
+//		
+//		[CommandHandler (EditCommands.Paste)]
+//		protected void OnPaste ()
+//		{
+//			IEditableTextBuffer editable = GetContent <IEditableTextBuffer> ();
+//			if (editable != null)
+//				editable.ClipboardHandler.Paste ();
+//		}
+//		
+//		[CommandUpdateHandler (EditCommands.Paste)]
+//		protected void OnUpdatePaste (CommandInfo info)
+//		{
+//			IEditableTextBuffer editable = GetContent <IEditableTextBuffer> ();
+//			if (editable != null)
+//				info.Enabled = editable.ClipboardHandler.EnablePaste;
+//			else
+//				info.Bypass = true;
+//		}
+//		
+//		[CommandHandler (EditCommands.Delete)]
+//		protected void OnDelete ()
+//		{
+//			IEditableTextBuffer editable = GetContent <IEditableTextBuffer> ();
+//			if (editable != null)
+//				editable.ClipboardHandler.Delete ();
+//		}
+//		
+//		[CommandUpdateHandler (EditCommands.Delete)]
+//		protected void OnUpdateDelete (CommandInfo info)
+//		{
+//			IEditableTextBuffer editable = GetContent <IEditableTextBuffer> ();
+//			if (editable != null)
+//				info.Enabled = editable.ClipboardHandler.EnableDelete;
+//			else
+//				info.Bypass = true;
+//		}
+//		
+//		[CommandHandler (EditCommands.SelectAll)]
+//		protected void OnSelectAll ()
+//		{
+//			IEditableTextBuffer editable = GetContent <IEditableTextBuffer> ();
+//			if (editable != null)
+//				editable.ClipboardHandler.SelectAll ();
+//		}
+//		
+//		[CommandUpdateHandler (EditCommands.SelectAll)]
+//		protected void OnUpdateSelectAll (CommandInfo info)
+//		{
+//			IEditableTextBuffer editable = GetContent <IEditableTextBuffer> ();
+//			if (editable != null)
+//				info.Enabled = editable.ClipboardHandler.EnableSelectAll;
+//			else
+//				info.Bypass = true;
+//		}
 		
 		[CommandHandler (EditCommands.WordCount)]
 		protected void OnWordCount()
@@ -322,13 +322,13 @@ namespace MonoDevelop.Ide.Gui
 		[CommandUpdateHandler (SearchCommands.GotoLineNumber)]
 		void OnUpdateGotoLineNumber (CommandInfo info)
 		{
-			info.Enabled = GetContent <IPositionable> () != null && MonoDevelop.Ide.Gui.Dialogs.GotoLineDialog.CanShow;
+			info.Enabled = GetContent <IEditableTextBuffer> () != null && MonoDevelop.Ide.Gui.Dialogs.GotoLineDialog.CanShow;
 		}
 		
 		[CommandHandler (SearchCommands.GotoLineNumber)]
 		void OnGotoLineNumber ()
 		{
-			MonoDevelop.Ide.Gui.Dialogs.GotoLineDialog.ShowDialog (GetContent <IPositionable> ());
+			MonoDevelop.Ide.Gui.Dialogs.GotoLineDialog.ShowDialog (GetContent <IEditableTextBuffer> ());
 		}
 		
 		[CommandHandler (EditCommands.LowercaseSelection)]

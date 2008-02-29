@@ -1,5 +1,18 @@
 2008-02-29  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.Ide.Gui.Content/IEditableTextBuffer.cs,
+	  MonoDevelop.Ide.Gui.Content/IEditable.cs,
+	  MonoDevelop.Ide.Gui.Content/ITextBuffer.cs,
+	  MonoDevelop.Ide.Gui.Content/IPositionable.cs,
+	  MonoDevelop.Ide.Gui.Content/IClipboardHandler.cs,
+	  MonoDevelop.Ide.Gui.Dialogs/GotoLineDialog.cs, MonoDevelop.Ide.mdp,
+	  gtk-gui/MonoDevelop.Ide.Gui.Dialogs.TipOfTheDayWindow.cs, Makefile.am,
+	  MonoDevelop.Ide.Gui/ViewCommandHandlers.cs,
+	  MonoDevelop.Ide.Gui/TextEditor.cs, MonoDevelop.Ide.Gui/Workbench.cs,
+	  MonoDevelop.Ide.Gui/DefaultWorkbench.cs: Refactored content interfaces
+
+2008-02-29  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.Ide.Gui.Content/ISplittable.cs,
 	  MonoDevelop.Ide.Commands/WindowCommands.cs, MonoDevelop.Ide.addin.xml:
 	  Added command for switching between splits.

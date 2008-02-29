@@ -146,13 +146,12 @@ FILES =  \
 	MonoDevelop.Ide.Gui.Content/IClipboardHandler.cs \
 	MonoDevelop.Ide.Gui.Content/ICodeStyleOperations.cs \
 	MonoDevelop.Ide.Gui.Content/ICustomizedCommands.cs \
-	MonoDevelop.Ide.Gui.Content/IEditable.cs \
+	MonoDevelop.Ide.Gui.Content/IEditableTextBuffer.cs \
 	MonoDevelop.Ide.Gui.Content/IEncodedTextContent.cs \
 	MonoDevelop.Ide.Gui.Content/IExtensibleTextEditor.cs \
 	MonoDevelop.Ide.Gui.Content/IFoldable.cs \
 	MonoDevelop.Ide.Gui.Content/IndentStyle.cs \
 	MonoDevelop.Ide.Gui.Content/IParsableContent.cs \
-	MonoDevelop.Ide.Gui.Content/IPositionable.cs \
 	MonoDevelop.Ide.Gui.Content/IPrintable.cs \
 	MonoDevelop.Ide.Gui.Content/ISplittable.cs \
 	MonoDevelop.Ide.Gui.Content/ITextBuffer.cs \
