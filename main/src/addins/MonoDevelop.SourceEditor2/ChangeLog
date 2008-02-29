@@ -1,5 +1,10 @@
 2008-02-29  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.SourceEditor/SourceEditorWidget.cs: Worked on quick finder
+	  tooltips.
+
+2008-02-29  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.SourceEditor/SourceEditorWidget.cs,
 	  MonoDevelop.SourceEditor/SourceEditorView.cs: Added zoom commands to
 	  main menu.

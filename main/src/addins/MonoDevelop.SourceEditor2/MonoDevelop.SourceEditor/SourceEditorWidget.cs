@@ -155,15 +155,18 @@ namespace MonoDevelop.SourceEditor
 			classStore = new ListStore(typeof(Gdk.Pixbuf), typeof(string), typeof(IClass));
 			classCombo.Model = classStore;	
 			classCombo.Changed += new EventHandler (ClassChanged);
+			tips.SetTip (classCombo, GettextCatalog.GetString ("Type list"), null);
 			
 			memberStore = new ListStore(typeof(Gdk.Pixbuf), typeof(string), typeof(IMember));
 			memberStore.SetSortColumnId (1, Gtk.SortType.Ascending);
 			membersCombo.Model = memberStore;
 			membersCombo.Changed += new EventHandler (MemberChanged);
-			
+			tips.SetTip (membersCombo, GettextCatalog.GetString ("Member list"), null);
+
 			regionStore = new ListStore(typeof(Gdk.Pixbuf), typeof(string), typeof(IRegion));
 			regionCombo.Model = regionStore;	
 			regionCombo.Changed += new EventHandler (RegionChanged);
+			tips.SetTip (regionCombo, GettextCatalog.GetString ("Region list"), null);
 			
 			editorBar.FocusChain = new Widget[] {
 				this.textEditor,
@@ -565,8 +568,8 @@ namespace MonoDevelop.SourceEditor
 					classCombo.Active = -1;
 					membersCombo.Active = -1;
 					memberStore.Clear ();
-					UpdateComboTip (classCombo, null);
-					UpdateComboTip (membersCombo, null);
+					this.UpdateClassComboTip (null);
+					this.UpdateMemberComboTip (null);
 					return;
 				}
 				
@@ -584,13 +587,13 @@ namespace MonoDevelop.SourceEditor
 					IMember mem = (IMember) memberStore.GetValue (iter, 2);
 					if (IsMemberSelected (mem, line, column)) {
 						membersCombo.SetActiveIter (iter);
-						UpdateComboTip (membersCombo, mem);
+						this.UpdateMemberComboTip (mem);
 						return;
 					}
 				}
 				while (memberStore.IterNext (ref iter));
 				membersCombo.Active = -1;
-				UpdateComboTip (membersCombo, null);
+				this.UpdateMemberComboTip (null);
 			} finally {
 				loadingMembers = false;
 			}
@@ -652,7 +655,7 @@ namespace MonoDevelop.SourceEditor
 				} else {
 					// Sometimes there might be no classes e.g. AssemblyInfo.cs
 					classCombo.Active = -1;
-					UpdateComboTip (classCombo, null);
+					this.UpdateClassComboTip ( null);
 				}
 			} finally {
 				handlingParseEvent = false;
@@ -672,11 +675,13 @@ namespace MonoDevelop.SourceEditor
 				foreach (FoldingRegion region in cu.FoldingRegions) {
 					if (region.Region.BeginLine <= line && line <= region.Region.EndLine) {
 						regionCombo.Active = regionNumber;
+						tips.SetTip (regionCombo, GettextCatalog.GetString ("Region {0}", region.Name), null);
 						return;
 					}
 					regionNumber++;
 				}
 			}
+			tips.SetTip (regionCombo, GettextCatalog.GetString ("Region list"), null);
 			regionCombo.Active = -1;
 		}
 		
@@ -709,13 +714,13 @@ namespace MonoDevelop.SourceEditor
 			// find out where the current cursor position is and set the combos.
 			int line   = this.TextEditor.Caret.Line + 1;
 			int column = this.TextEditor.Caret.Column + 1;
-			UpdateComboTip (classCombo, c);
+			this.UpdateClassComboTip (c);
 			membersCombo.Changed -= new EventHandler (MemberChanged);
 			// Clear down all our local stores.
 			
 			membersCombo.Model = null;
 			memberStore.Clear();
-			UpdateComboTip (membersCombo, null);
+			this.UpdateMemberComboTip (null);
 				
 			//HybridDictionary methodMap = new HybridDictionary();
 			
@@ -746,7 +751,7 @@ namespace MonoDevelop.SourceEditor
 				
 				// Check if the current cursor position in inside this member
 				if (IsMemberSelected (mem, line, column)) {
-					UpdateComboTip (membersCombo, mem);
+					this.UpdateMemberComboTip (mem);
 					activeIndex = position;
 				}
 				
@@ -871,15 +876,26 @@ namespace MonoDevelop.SourceEditor
 			return new KeyValuePair<IClass, int> (result, foundIndex);
 		}
 		
-		void UpdateComboTip (ComboBox combo, ILanguageItem it)
+		void UpdateClassComboTip (ILanguageItem it)
 		{
-			MonoDevelop.Projects.Ambience.Ambience am = view.GetAmbience ();
-			string txt;
-			if (it != null)
-				txt = am.Convert (it, MonoDevelop.Projects.Ambience.ConversionFlags.All);
-			else
-				txt = null;
-			tips.SetTip (combo.Parent, txt, txt);
+			if (it != null) {
+				MonoDevelop.Projects.Ambience.Ambience am = view.GetAmbience ();
+				string txt = am.Convert (it, MonoDevelop.Projects.Ambience.ConversionFlags.All);
+				tips.SetTip (this.classCombo, txt, txt);
+			} else {
+				tips.SetTip (classCombo, GettextCatalog.GetString ("Type list"), null);
+			}
+		}
+		
+		void UpdateMemberComboTip (ILanguageItem it)
+		{
+			if (it != null) {
+				MonoDevelop.Projects.Ambience.Ambience am = view.GetAmbience ();
+				string txt = am.Convert (it, MonoDevelop.Projects.Ambience.ConversionFlags.All);
+				tips.SetTip (this.membersCombo, txt, txt);
+			} else {
+				tips.SetTip (membersCombo, GettextCatalog.GetString ("Member list"), null);
+			}
 		}
 		
 		bool IsMemberSelected (IMember mem, int line, int column)
