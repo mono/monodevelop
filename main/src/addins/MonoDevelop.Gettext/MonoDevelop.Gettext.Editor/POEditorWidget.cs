@@ -556,8 +556,6 @@ namespace MonoDevelop.Gettext
 				if (entry.IsTranslated && !this.togglebuttonOk.Active)
 					return true;
 			}
-				
-			
 			
 			if (String.IsNullOrEmpty (filter)) 
 				return false;
@@ -571,11 +569,16 @@ namespace MonoDevelop.Gettext
 		}
 		
 		Thread updateThread = null;
+		bool updateIsRunning = false;
+		string filter = "";
 		
 		void UpdateFromCatalog ()
 		{
-			if (updateThread != null)
-				updateThread.Abort ();
+			if (updateIsRunning)
+				updateIsRunning = false;
+			filter = this.entryFilter.Text;
+			if (filter != null)
+				filter = filter.ToUpper ();
 			
 			IdeApp.Workbench.StatusBar.BeginProgress (GettextCatalog.GetString ("Update catalog list..."));
 			updateThread = new Thread (UpdateWorkerThread);
@@ -586,12 +589,14 @@ namespace MonoDevelop.Gettext
 		
 		public void UpdateWorkerThread ()
 		{
-			string filter = entryFilter.Text.ToUpper ();
 			int number = 1;
 			double count = catalog.Count;
 			List<CatalogEntry> foundEntries = new List<CatalogEntry> ();
+			updateIsRunning = true;
 			try {
 				foreach (CatalogEntry curEntry in catalog) {
+					if (!updateIsRunning)
+						break;
 					number++;
 					if (number % 50 == 0) {
 						DispatchService.GuiSyncDispatch (delegate {
@@ -606,16 +611,17 @@ namespace MonoDevelop.Gettext
 					}
 					if (!ShouldFilter (curEntry, filter)) 
 						foundEntries.Add (curEntry);
-					
 				}
 			} finally {
-				DispatchService.GuiSyncDispatch (delegate {
-					foreach (CatalogEntry entry in foundEntries) {
-						store.AppendValues (GetStockForEntry (entry), entry.IsFuzzy, StringEscaping.ToGettextFormat (entry.String), StringEscaping.ToGettextFormat (entry.GetTranslation (0)), entry, GetRowColorForEntry (entry));
-					}
-					IdeApp.Workbench.StatusBar.EndProgress ();
-				});
-				updateThread = null;
+				if (updateIsRunning) {
+					DispatchService.GuiSyncDispatch (delegate {
+						foreach (CatalogEntry entry in foundEntries) {
+							store.AppendValues (GetStockForEntry (entry), entry.IsFuzzy, StringEscaping.ToGettextFormat (entry.String), StringEscaping.ToGettextFormat (entry.GetTranslation (0)), entry, GetRowColorForEntry (entry));
+						}
+						IdeApp.Workbench.StatusBar.EndProgress ();
+					});
+					updateIsRunning = false;
+				}
 			}
 		}
 #endregion
@@ -664,6 +670,8 @@ namespace MonoDevelop.Gettext
 		
 		public override void Dispose ()
 		{
+			updateIsRunning = false;
+			
 			widgets.Remove (this);
 			this.headersEditor.Destroy ();
 			this.headersEditor = null;

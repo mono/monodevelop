@@ -811,7 +811,6 @@ namespace MonoDevelop.Gettext
 					Translator = tokens[0].Trim ();
 					TranslatorEmail = tokens[1].Trim ();
 				}
-				System.Console.WriteLine(Translator + "//" + TranslatorEmail);
 			}
 
 			dummy = GetHeader ("Language-Team");
