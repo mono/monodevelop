@@ -1,5 +1,9 @@
 2008-02-29  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.DesignerSupport.Toolbox/ToolboxWidget.cs: fixes tooltip bug.
+
+2008-02-29  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.DesignerSupport.Toolbox/ToolboxWidget.cs: Ctrl+F1 work now in
 	  the toolbox.
 

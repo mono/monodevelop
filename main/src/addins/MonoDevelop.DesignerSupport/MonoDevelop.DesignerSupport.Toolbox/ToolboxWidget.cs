@@ -159,7 +159,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		{
 			Gdk.Drawable  draw = e.Window;
 			Gdk.Rectangle area = e.Area;
-			
 			if (this.categories.Count == 0) {
 				Pango.Layout messageLayout = new Pango.Layout (this.PangoContext);
 				messageLayout.Alignment = Pango.Alignment.Center;
@@ -173,7 +172,8 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			Cairo.Context cr = Gdk.CairoHelper.Create (e.Window);
 			draw.DrawRectangle (Style.BaseGC (StateType.Normal), true, area);
 			int xpos = spacing - (this.hAdjustement != null ? (int)this.hAdjustement.Value : 0);
-			int ypos = spacing - (this.vAdjustement != null ? (int)this.vAdjustement.Value : 0);
+			int vadjustment = (this.vAdjustement != null ? (int)this.vAdjustement.Value : 0);
+			int ypos = spacing - vadjustment;
 			Iterate (ref xpos, ref ypos, delegate (Category category, Gdk.Size itemDimension) {
 				const int foldSegmentHeight = 8;
 				
@@ -282,8 +282,9 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			// Handle keyboard toolip popup
 			if ((evnt.Key == Gdk.Key.F1 && (evnt.State & Gdk.ModifierType.ControlMask) == Gdk.ModifierType.ControlMask)) {
 				if (this.SelectedItem != null) {
+					int vadjustment = (this.vAdjustement != null ? (int)this.vAdjustement.Value : 0);
 					Gdk.Rectangle rect = GetItemExtends (SelectedItem);
-					ShowTooltip (SelectedItem, 0,rect.X, rect.Bottom);
+					ShowTooltip (SelectedItem, 0,rect.X, rect.Bottom - vadjustment );
 				}
 				return true;
 			}
