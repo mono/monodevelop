@@ -709,6 +709,10 @@
 		<Command id = "MonoDevelop.Ide.Commands.WindowCommands.UnsplitWindow"
 				defaultHandler = "MonoDevelop.Ide.Commands.UnsplitWindow"
 				_label = "_Unsplit" />
+		<Command id = "MonoDevelop.Ide.Commands.WindowCommands.SwitchSplitWindow"
+				defaultHandler = "MonoDevelop.Ide.Commands.SwitchSplitWindow"
+				shortcut = "Control|M"
+				_label = "_Switch between splits" />
 		</Category>
 				
 		<!-- HelpCommands -->
@@ -1468,6 +1472,7 @@
 			<CommandItem id = "MonoDevelop.Ide.Commands.WindowCommands.SplitWindowVertically" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.WindowCommands.SplitWindowHorizontally" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.WindowCommands.UnsplitWindow" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.WindowCommands.SwitchSplitWindow" />
 			<SeparatorItem id = "contentSep" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.WindowCommands.OpenWindowList" />
 		</ItemSet> 

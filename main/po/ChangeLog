@@ -1,5 +1,9 @@
 2008-02-29  Mike Krüger <mkrueger@novell.com> 
 
+	* messages.po, de.po: Added command for switching between splits.
+
+2008-02-29  Mike Krüger <mkrueger@novell.com> 
+
 	* de.po: Worked on german translation.
 
 2008-02-29  Mike Krüger <mkrueger@novell.com> 

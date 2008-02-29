@@ -888,6 +888,11 @@ namespace MonoDevelop.SourceEditor
 			widget.Unsplit ();
 		}
 		
+		public void SwitchWindow ()
+		{
+			widget.SwitchWindow ();
+		}
+		
 		#endregion
 		
 		#region IFoldable

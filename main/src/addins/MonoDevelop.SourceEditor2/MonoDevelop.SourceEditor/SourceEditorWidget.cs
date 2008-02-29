@@ -422,6 +422,15 @@ namespace MonoDevelop.SourceEditor
 			editorBar.ShowAll ();
 		}
 		
+		public void SwitchWindow ()
+		{
+			if (splittedTextEditor.HasFocus) {
+				this.textEditor.GrabFocus ();
+			} else {
+				this.splittedTextEditor.GrabFocus ();
+			}
+		}
+		
 		public void Split (bool vSplit)
 		{
  			if (splitContainer != null) 

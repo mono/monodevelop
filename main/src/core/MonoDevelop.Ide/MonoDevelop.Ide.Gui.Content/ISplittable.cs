@@ -45,5 +45,7 @@ namespace MonoDevelop.Ide.Gui.Content
 		void SplitHorizontally ();
 		void SplitVertically ();
 		void Unsplit ();
+		
+		void SwitchWindow ();
 	}
 }

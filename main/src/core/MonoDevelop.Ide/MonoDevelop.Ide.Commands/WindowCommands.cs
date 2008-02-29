@@ -39,6 +39,7 @@ namespace MonoDevelop.Ide.Commands
 		SplitWindowVertically,
 		SplitWindowHorizontally,
 		UnsplitWindow,
+		SwitchSplitWindow
 	}
 	
 	internal class NextWindowHandler: CommandHandler
@@ -154,6 +155,25 @@ namespace MonoDevelop.Ide.Commands
 			ISplittable split = IdeApp.Workbench.ActiveDocument.GetContent <ISplittable> ();
 			Debug.Assert (split != null);
 			split.Unsplit ();
+		}
+	}
+	
+	internal class SwitchSplitWindow : CommandHandler
+	{
+		protected override void Update (CommandInfo info)
+		{
+			if (IdeApp.Workbench.ActiveDocument == null) {
+				info.Enabled = false;
+				return;
+			}
+			ISplittable split = IdeApp.Workbench.ActiveDocument.GetContent <ISplittable> ();
+			info.Enabled = split != null && split.EnableUnsplit;
+		}
+		protected override void Run (object doc)
+		{
+			ISplittable split = IdeApp.Workbench.ActiveDocument.GetContent <ISplittable> ();
+			Debug.Assert (split != null);
+			split.SwitchWindow ();
 		}
 	}
 }
