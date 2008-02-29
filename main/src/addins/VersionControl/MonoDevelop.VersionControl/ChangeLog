@@ -1,3 +1,7 @@
+2008-02-29  Mike Krüger <mkrueger@novell.com> 
+
+	* VersionControl.addin.xml: Added many shortcuts.
+
 2008-02-27  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.VersionControl.Views/Statuses.cs: Added some gettext calls.

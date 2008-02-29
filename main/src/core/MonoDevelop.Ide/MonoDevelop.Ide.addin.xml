@@ -330,11 +330,11 @@
 		<Category _name = "Project" id = "Project">
 				
 		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.AddNewProject"
-				_label = "Add New Project..."
+				_label = "_Add New Project..."
 				description = "Add a new project to the selected solution"
 				icon  = "md-new-project-icon" />
 		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.AddNewCombine"
-				_label = "Add New Solution..." 
+				_label = "A_dd New Solution..." 
 				description = "Add a new solution to the selected solution"
 				icon  = "md-new-solution-icon" />
 		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.AddProject"
@@ -342,7 +342,7 @@
 				_label = "Add existing _Project" />
 		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.AddCombine"
 				description = "Add a solution to the selected solution"
-				_label = "Add existing Solution" />
+				_label = "Add existing _Solution" />
 		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.RemoveFromProject"
 				_label = "_Remove From Project"
 				description = "Remove an item from the project"
@@ -354,18 +354,18 @@
 				icon  = "md-properties-icon" />
 		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.AddResource"
 				description = "Add a resource to the project"
-				_label = "Add Resource" />
+				_label = "Add _Resource" />
 		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.AddReference"
 				description = "Edit project references"
-				_label = "Edit References..." />
+				_label = "_Edit References..." />
 		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.AddNewFiles"
 				_label = "New _File..." 
 				description = "Create a new file"
 				icon  = "gtk-new" />
 		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.AddFiles"
-				_label = "Add Files..." />
+				_label = "_Add Files..." />
 		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.NewFolder"
-				_label = "New Folder" 
+				_label = "New _Folder" 
 				description = "Create a new folder"
 				icon  = "md-new-folder-icon" />
 		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.IncludeToProject"
@@ -390,7 +390,7 @@
 				shortcut = "Control|F7"
 				_label = "R_ebuild" />
 		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.SetAsStartupProject"
-				_label = "Set As Startup Project" />
+				_label = "_Set As Startup Project" />
 		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.Run"
 				defaultHandler = "MonoDevelop.Ide.Commands.RunHandler"
 				icon = "gtk-execute"
@@ -407,12 +407,12 @@
 				icon = "gtk-execute"
 				shortcut = "Control|F5"
 				description = "Debug"
-				_label = "Debug" />
+				_label = "_Debug" />
 		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.DebugEntry"
 				defaultHandler = "MonoDevelop.Ide.Commands.DebugEntryHandler"
 				icon = "gtk-execute"
 				description = "Debug"
-				_label = "Debug" />
+				_label = "D_ebug" />
 		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.Clean"
 				defaultHandler = "MonoDevelop.Ide.Commands.CleanHandler"
 				_label = "C_lean" />
@@ -424,7 +424,7 @@
 				_label = "B_uild" />
 		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.IncludeInDeploy"
 				type="check"
-				_label = "Deployment" />
+				_label = "_Deployment" />
 		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.LocalCopyReference"
 				type="check"
 				_label = "_Local Copy" />
@@ -495,7 +495,7 @@
 				shortcut = "Control|W"/>
 		<Command id = "MonoDevelop.Ide.Commands.FileCommands.CloseAllFiles"
 				defaultHandler = "MonoDevelop.Ide.Commands.CloseAllFilesHandler"
-				_label = "_Close All"
+				_label = "Close _All"
 				description = "Close All Files"
 				icon = "gtk-close"
 				shortcut = "Control|Shift|W" />
@@ -554,18 +554,18 @@
 				_label = "_Open Folder" 
 				description = "Opens the folder in a file manager."/>
 		<Command id = "MonoDevelop.Ide.Commands.FileCommands.OpenContainingFolder"
-				_label = "_Open Containing Folder" 
+				_label = "O_pen Containing Folder" 
 				description = "Opens the folder that contains this file."/>
 		<Command id = "MonoDevelop.Ide.Commands.FileTabCommands.CloseAllButThis"
 		         defaultHandler = "MonoDevelop.Ide.Commands.CloseAllButThisHandler"
-				_label = "Close all but this"
+				_label = "C_lose all but this"
 				_description = "Closes all opened files except for the active file"/>
 		<Command id = "MonoDevelop.Ide.Commands.FileTabCommands.CopyPathName"
 		         defaultHandler = "MonoDevelop.Ide.Commands.CopyPathNameHandler"
-				_label = "Copy file path/name"/>
+				_label = "C_opy file path/name"/>
 		<Command id = "MonoDevelop.Ide.Commands.FileTabCommands.ToggleMaximize"
 		         defaultHandler = "MonoDevelop.Ide.Commands.ToggleMaximizeHandler"
-				_label = "Switch maximize/normal view"/>
+				_label = "S_witch maximize/normal view"/>
 		</Category>
 				
 		<!-- ViewCommands -->
@@ -600,7 +600,7 @@
 				icon = "gtk-fullscreen" 
 				_description = "Full Screen" />
 		<Command id = "MonoDevelop.Ide.Commands.ViewCommands.Open"
-				_label = "Open" />
+				_label = "_Open" />
 		<Command id = "MonoDevelop.Ide.Commands.ViewCommands.TreeDisplayOptionList"
 				type = "array|check"
 				_label = "Display Options List" />
@@ -959,7 +959,7 @@
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Clean" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Reload" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.CustomCommandList" />
-		<ItemSet id = "Tools" _label = "Tools" >
+		<ItemSet id = "Tools" _label = "_Tools" >
 			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.ExportProject" />
 			<SeparatorItem id = "ExportSeparator" />
 		</ItemSet>
@@ -967,7 +967,7 @@
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.RunEntry" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.DebugEntry" />
 		<SeparatorItem id = "CombineBuildGroupSeparator" />
-		<ItemSet id = "CombineAddMenu" _label = "Add" >
+		<ItemSet id = "CombineAddMenu" _label = "_Add" >
 			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.AddNewProject" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.AddNewCombine" />
 			<SeparatorItem id = "Separator1" />
@@ -1004,12 +1004,12 @@
         
 	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/ProjectFile">
 		<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.Open" />
-		<ItemSet id = "OpenWith" _label = "Open With">
+		<ItemSet id = "OpenWith" _label = "Open _With">
 			<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.OpenWithList" />
 		</ItemSet>
 		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.OpenContainingFolder" />
 		<SeparatorItem id = "OpenSeparator" />
-		<ItemSet id = "Include" _label = "Include">
+		<ItemSet id = "Include" _label = "_Include">
 			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.IncludeInBuild" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.IncludeInDeploy" />
 		</ItemSet>
@@ -1023,7 +1023,7 @@
 		
 	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/SystemFile">
 		<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.Open" />
-		<ItemSet id = "OpenWith" _label = "Open With">
+		<ItemSet id = "OpenWith" _label = "Open _With">
 			<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.OpenWithList" />
 		</ItemSet>
 		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.OpenContainingFolder" />
@@ -1038,7 +1038,7 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/Folder">
-		<ItemSet id = "Add" _label = "Add">
+		<ItemSet id = "Add" _label = "_Add">
 			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.AddNewFiles" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.AddFiles" />
 			<SeparatorItem id = "Separator1" />
@@ -1065,7 +1065,7 @@
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Clean" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Reload" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.CustomCommandList" />
-		<ItemSet id = "Tools" _label = "Tools" >
+		<ItemSet id = "Tools" _label = "_Tools" >
 			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.ExportProject" />
 			<SeparatorItem id="ExportSeparator"/>
 		</ItemSet>
@@ -1073,7 +1073,7 @@
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.RunEntry" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.DebugEntry" />
 		<SeparatorItem id = "BuildGroupSeparator" />
-		<ItemSet id = "Add" _label = "Add">
+		<ItemSet id = "Add" _label = "_Add">
 			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.AddNewFiles" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.AddFiles" />
 			<SeparatorItem id = "Separator1" />

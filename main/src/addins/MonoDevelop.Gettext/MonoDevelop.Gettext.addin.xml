@@ -53,7 +53,7 @@
 		         _label = "_Add Translation..."
 			     _description = "Add another translation (language) for a solution or project" />
 		<Command id   = "MonoDevelop.Gettext.Commands.UpdateTranslations"
-		         _label = "_Update Translations"
+		         _label = "U_pdate Translations"
 			     _description = "Updates all translation files." />
 	</Extension>	
 	

@@ -61,43 +61,43 @@
 	<Extension path = "/MonoDevelop/Ide/Commands">
 		<Category _name = "Version Control" id = "VersionControl">
 		<Command id = "MonoDevelop.VersionControl.Commands.Add" 
-			_label = "Add"
+			_label = "_Add"
 			icon = "vc-add-command"
 			description = "Add node to repository in the next commit."/>
 		<Command id = "MonoDevelop.VersionControl.Commands.Remove" 
-			_label = "Remove"
+			_label = "_Remove"
 			icon = "vc-remove-command"
 			description = "Remove node to repository in the next commit."/>
 		<Command id = "MonoDevelop.VersionControl.Commands.Commit" 
-			_label = "Commit"
+			_label = "_Commit"
 			icon = "vc-commit"
 			description = "Commits a file or directory into the repository."/>
 		<Command id = "MonoDevelop.VersionControl.Commands.Diff" 
-			_label = "Diff"
+			_label = "_Diff"
 			icon = "vc-diff"
 			description = "Show the changes made to the local copy since the last update."/>
 		<Command id = "MonoDevelop.VersionControl.Commands.Revert" 
-			_label = "Revert"
+			_label = "_Revert"
 			icon = "vc-revert-command"
 			description = "Restore pristine working copy file (undo most local edits)."/>
 		<Command id = "MonoDevelop.VersionControl.Commands.Log" 
-			_label = "Log"
+			_label = "_Log"
 			icon = "vc-log"
 			description = "Shows the commit history of the file or folder."/>
 		<Command id = "MonoDevelop.VersionControl.Commands.Status" 
-			_label = "Status/Commit..."
+			_label = "_Status/Commit..."
 			icon = "vc-status"
 			description = "Shows the status of files in the folder."/>
 		<Command id = "MonoDevelop.VersionControl.Commands.Update" 
-			_label = "Update"
+			_label = "_Update"
 			icon = "vc-update"
 			description = "Updates the local copy with remote changes."/>
 		<Command id = "MonoDevelop.VersionControl.Commands.Publish" 
-			_label = "Publish..."
+			_label = "_Publish..."
 			description = "Publish actual project into repository."/>
 		<Command id = "MonoDevelop.VersionControl.Commands.Checkout" 
 			defaultHandler = "MonoDevelop.VersionControl.CheckoutCommand"
-			_label = "Checkout..."
+			_label = "_Checkout..."
 			icon = "vc-update"
 			description = "Checkout a project from repository."/>
 		</Category>
@@ -109,7 +109,7 @@
 	</Extension>	
 
 	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/ProjectFile">
-		<ItemSet id = "VersionControl" _label = "Version Control" insertafter = "IncludeSeparator">
+		<ItemSet id = "VersionControl" _label = "_Version Control" insertafter = "IncludeSeparator">
 			<CommandItem id = "MonoDevelop.VersionControl.Commands.Add"/>
 			<CommandItem id = "MonoDevelop.VersionControl.Commands.Remove"/>
 			<CommandItem id = "MonoDevelop.VersionControl.Commands.Revert"/>
@@ -121,7 +121,7 @@
 		<SeparatorItem />
 	</Extension>
 	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/SystemFile">
-		<ItemSet id = "VersionControl" _label = "Version Control" insertafter = "IncludeToProjectSeparator">
+		<ItemSet id = "VersionControl" _label = "_Version Control" insertafter = "IncludeToProjectSeparator">
 			<CommandItem id = "MonoDevelop.VersionControl.Commands.Add"/>
 			<CommandItem id = "MonoDevelop.VersionControl.Commands.Remove"/>
 			<CommandItem id = "MonoDevelop.VersionControl.Commands.Revert"/>
@@ -133,7 +133,7 @@
 		<SeparatorItem />
 	</Extension>
 	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/Folder">
-		<ItemSet id = "VersionControl" _label = "Version Control" insertafter = "AddSeparator">
+		<ItemSet id = "VersionControl" _label = "_Version Control" insertafter = "AddSeparator">
 			<CommandItem id = "MonoDevelop.VersionControl.Commands.Add"/>
 			<CommandItem id = "MonoDevelop.VersionControl.Commands.Remove"/>
 			<CommandItem id = "MonoDevelop.VersionControl.Commands.Revert"/>
@@ -146,7 +146,7 @@
 		<SeparatorItem />
 	</Extension>
 	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/Project">
-		<ItemSet id = "VersionControl" _label = "Version Control" insertafter = "AddSeparator">
+		<ItemSet id = "VersionControl" _label = "_Version Control" insertafter = "AddSeparator">
 			<CommandItem id = "MonoDevelop.VersionControl.Commands.Publish"/>
 			<SeparatorItem id = "CommandSeparator1" />
 			<CommandItem id = "MonoDevelop.VersionControl.Commands.Revert"/>
@@ -159,7 +159,7 @@
 		<SeparatorItem />
 	</Extension>
 	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/Combine">
-		<ItemSet id = "VersionControl" _label = "Version Control" insertafter = "AddSeparator">
+		<ItemSet id = "VersionControl" _label = "_Version Control" insertafter = "AddSeparator">
 			<CommandItem id = "MonoDevelop.VersionControl.Commands.Publish"/>
 			<SeparatorItem id = "CommandSeparator1" />
 			<CommandItem id = "MonoDevelop.VersionControl.Commands.Revert"/>
