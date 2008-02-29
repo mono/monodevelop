@@ -1,5 +1,10 @@
 2008-02-29  Mike Krüger <mkrueger@novell.com> 
 
+	* Mono.TextEditor/TextEditor.cs, Mono.TextEditor/TextEditorOptions.cs: Added
+	  zoom commands to main menu.
+
+2008-02-29  Mike Krüger <mkrueger@novell.com> 
+
 	* Mono.TextEditor/TextViewMargin.cs: Added a function.
 
 2008-02-29  Mike Krüger <mkrueger@novell.com> 

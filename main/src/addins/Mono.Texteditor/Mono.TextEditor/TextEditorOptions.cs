@@ -77,6 +77,37 @@ namespace Mono.TextEditor
 				OnChanged (EventArgs.Empty);
 			}
 		}
+		public bool CanZoomIn {
+			get {
+				return zoom < 8.0;
+			}
+		}
+		public bool CanZoomOut {
+			get {
+				return zoom > 0.7;
+			}
+		}
+		public bool CanResetZoom {
+			get {
+				return zoom != 1.0;
+			}
+		}
+		public void ZoomIn ()
+		{
+			zoom *= 1.1;
+			Zoom = System.Math.Min (8.0, System.Math.Max (0.7, zoom));
+		}
+		
+		public void ZoomOut ()
+		{
+			zoom *= 0.9;
+			Zoom = System.Math.Min (8.0, System.Math.Max (0.7, zoom));
+		}
+		
+		public void ZoomReset ()
+		{
+			Zoom = 1.0;
+		}
 		
 		public string IndentationString {
 			get {

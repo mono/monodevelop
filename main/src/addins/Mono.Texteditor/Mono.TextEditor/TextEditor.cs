@@ -766,13 +766,10 @@ namespace Mono.TextEditor
 		protected override bool OnScrollEvent (EventScroll evnt)
 		{
 			if ((evnt.State & Gdk.ModifierType.ControlMask) == Gdk.ModifierType.ControlMask) {
-				double zoom;
 				if (evnt.Direction == ScrollDirection.Down)
-					zoom = TextEditorOptions.Options.Zoom * 1.1;
+					TextEditorOptions.Options.ZoomIn ();
 				else 
-					zoom = TextEditorOptions.Options.Zoom * 0.9;
-				zoom = System.Math.Min (8.0, System.Math.Max (0.7, zoom));
-				TextEditorOptions.Options.Zoom = zoom;
+					TextEditorOptions.Options.ZoomOut ();
 				return true;
 			}
 			return base.OnScrollEvent (evnt); 
