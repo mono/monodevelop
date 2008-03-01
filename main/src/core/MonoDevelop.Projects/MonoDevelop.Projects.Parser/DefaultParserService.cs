@@ -1014,12 +1014,16 @@ namespace MonoDevelop.Projects.Parser
 		
 		void ParserUpdateThread()
 		{
-			while (trackingFileChanges)
-			{
-				if (!parseEvent.WaitOne (5000, true))
-					CheckModifiedFiles ();
-				else if (trackingFileChanges)
-					ConsumeParsingQueue ();
+			try {
+				while (trackingFileChanges)
+				{
+					if (!parseEvent.WaitOne (5000, true))
+						CheckModifiedFiles ();
+					else if (trackingFileChanges)
+						ConsumeParsingQueue ();
+				}
+			} catch (Exception ex) {
+				LoggingService.LogError ("Unhandled error in parsing thread", ex);
 			}
 			lock (this) {
 				threadRunning = false;
