@@ -152,9 +152,8 @@ namespace MonoDevelop.Gettext
 				MonoDevelop.Ide.Gui.IdeApp.Workbench.OpenDocument (file, lineNr, 1, true);
 			};
 			this.notebookTranslated.RemovePage (0);
-			this.entryFilter.Text = PropertyService.Get ("Gettext.Filter", "");
+			this.entryFilter.Text = "";
 			entryFilter.Changed += delegate {
-				PropertyService.Set ("Gettext.Filter", this.entryFilter.Text);
 				UpdateFromCatalog ();
 			};
 			
