@@ -136,6 +136,10 @@ namespace Mono.TextEditor.Highlighting
 								if (doc.GetCharAt (offset + 1) == span.Constraint [1]) 
 									goto skip;
 							}
+							if (span.Constraint.Length == 4 && span.Constraint.StartsWith ("!") && offset + 2 < end) {
+								if (doc.GetCharAt (offset + 1) == span.Constraint [1] && doc.GetCharAt (offset + 2) == span.Constraint [3]) 
+									goto skip;
+							}
 						}
 						spanStack.Push (span);
 						curSpan = span;
@@ -220,6 +224,10 @@ namespace Mono.TextEditor.Highlighting
 							if (!String.IsNullOrEmpty(span.Constraint)) {
 								if (span.Constraint.Length == 2 && span.Constraint.StartsWith ("!") && offset + 1 < end) {
 									if (doc.GetCharAt (offset + 1) == span.Constraint [1]) 
+										goto skip;
+								}
+								if (span.Constraint.Length == 4 && span.Constraint.StartsWith ("!") && offset + 2 < end) {
+									if (doc.GetCharAt (offset + 1) == span.Constraint [1] && doc.GetCharAt (offset + 2) == span.Constraint [3]) 
 										goto skip;
 								}
 							}

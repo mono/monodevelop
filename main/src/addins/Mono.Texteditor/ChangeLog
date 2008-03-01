@@ -1,5 +1,10 @@
 2008-03-01  Mike Krüger <mkrueger@novell.com> 
 
+	* Mono.TextEditor.Highlighting/SyntaxModeService.cs: Fixed syntax
+	  highlighting bug
+
+2008-03-01  Mike Krüger <mkrueger@novell.com> 
+
 	* CSharpSyntaxMode.xml, Mono.TextEditor/TextViewMargin.cs,
 	  Mono.TextEditor.Highlighting/SyntaxMode.cs,
 	  Mono.TextEditor.Highlighting/Match.cs: Added support for regular
