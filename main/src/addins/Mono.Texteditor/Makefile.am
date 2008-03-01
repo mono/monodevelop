@@ -75,6 +75,7 @@ RES =  \
 	gtk-gui/objects.xml \
 	JavaSyntaxMode.xml \
 	OblivionStyle.xml \
+	PythonSyntaxMode.xml \
 	TangoLightStyle.xml \
 	VBNetSyntaxMode.xml \
 	VisualStudioStyle.xml \
