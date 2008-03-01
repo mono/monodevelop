@@ -30,6 +30,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading;
+using System.Text.RegularExpressions;
 
 using Gtk;
 using Gdk;
@@ -199,6 +200,7 @@ namespace MonoDevelop.Gettext
 				if (e.Event.Button == 3)
 					ShowPopup ();
 			};
+			this.buttonOptions.Clicked += ShowOptionsContextMenu;
 			widgets.Add (this);
 //			this.vpaned2.AcceptPosition += delegate {
 //				PropertyService.Set ("Gettext.SplitPosition", vpaned2.Position / (double)Allocation.Height);
@@ -217,6 +219,158 @@ namespace MonoDevelop.Gettext
 //				if (vpaned2.Position != newPosition)
 //					vpaned2.Position = newPosition;
 //			};
+		}
+		
+		#region Options
+		enum SearchIn {
+			Original,
+			Translated,
+			Both
+		}
+		
+		static bool isCaseSensitive;
+		static bool isWholeWordOnly;
+		static bool regexSearch;
+		static SearchIn searchIn;
+		
+		static POEditorWidget ()
+		{
+			isCaseSensitive = PropertyService.Get ("GettetAddin.Search.IsCaseSensitive", true);
+			isWholeWordOnly = PropertyService.Get ("GettetAddin.Search.IsWholeWordOnly", false);
+			regexSearch     = PropertyService.Get ("GettetAddin.Search.RegexSearch", false);
+			searchIn        = PropertyService.Get ("GettetAddin.Search.SearchIn", SearchIn.Both);
+		}
+		
+		static bool IsCaseSensitive {
+			get {
+				return isCaseSensitive;
+			}
+			set {
+				PropertyService.Set ("GettetAddin.Search.IsCaseSensitive", value);
+				isCaseSensitive = value;
+			}
+		}
+		
+		static bool IsWholeWordOnly {
+			get {
+				return isWholeWordOnly;
+			}
+			set {
+				PropertyService.Set ("GettetAddin.Search.IsWholeWordOnly", value);
+				isWholeWordOnly = value;
+			}
+		}
+		
+		static bool RegexSearch {
+			get {
+				return regexSearch;
+			}
+			set {
+				PropertyService.Set ("GettetAddin.Search.RegexSearch", value);
+				regexSearch = value;
+			}
+		}
+		
+		static SearchIn DoSearchIn {
+			get {
+				return searchIn;
+			}
+			set {
+				PropertyService.Set ("GettetAddin.Search.SearchIn", value);
+				searchIn = value;
+			}
+		}
+		#endregion
+		
+		public void ShowOptionsContextMenu (object sender, EventArgs args)
+		{
+			Menu menu = new Menu ();
+			
+			MenuItem searchInMenu = new MenuItem (GettextCatalog.GetString ("_Search in"));
+			Menu sub = new Menu ();
+			searchInMenu.Submenu = sub;
+			Gtk.RadioMenuItem  original = null, translated = null, both = null;
+			GLib.SList group = new GLib.SList (IntPtr.Zero);
+			original = new Gtk.RadioMenuItem (group, GettextCatalog.GetString ("_Original"));
+			group = original.Group;
+			original.ButtonPressEvent += delegate { original.Activate (); };
+			sub.Append (original);
+			
+			translated = new Gtk.RadioMenuItem (group, GettextCatalog.GetString ("_Translated"));
+			translated.ButtonPressEvent += delegate { translated.Activate (); };
+			group = translated.Group;
+			sub.Append (translated);
+			
+			both = new Gtk.RadioMenuItem (group, GettextCatalog.GetString ("_Both"));
+			both.ButtonPressEvent += delegate { both.Activate (); };
+			sub.Append (both);
+			switch (DoSearchIn) {
+			case SearchIn.Both:
+				both.Activate ();
+				break;
+			case SearchIn.Original:
+				original.Activate ();
+				break;
+			case SearchIn.Translated:
+				translated.Activate ();
+				break;
+			}
+			menu.Append (searchInMenu);
+			both.Activated += delegate {
+				if (DoSearchIn != SearchIn.Both) {
+					DoSearchIn = SearchIn.Both;
+					UpdateFromCatalog ();
+				}
+			};
+			original.Activated += delegate {
+				if (DoSearchIn != SearchIn.Original) {
+					DoSearchIn = SearchIn.Original;
+					UpdateFromCatalog ();
+				}
+			};
+			translated.Activated += delegate {
+				if (DoSearchIn != SearchIn.Translated) {
+					DoSearchIn = SearchIn.Translated;
+					UpdateFromCatalog ();
+				}
+			};
+			
+			Gtk.CheckMenuItem regexSearch = new Gtk.CheckMenuItem (MonoDevelop.Core.GettextCatalog.GetString ("_Regex search"));
+			regexSearch.Active = RegexSearch;
+			regexSearch.ButtonPressEvent += delegate { regexSearch.Toggle (); };
+			regexSearch.Toggled += delegate {
+				if (RegexSearch != regexSearch.Active) {
+					RegexSearch = regexSearch.Active;
+					UpdateFromCatalog ();
+				}
+			};
+			menu.Append (regexSearch);
+			
+			Gtk.CheckMenuItem caseSensitive = new Gtk.CheckMenuItem (MonoDevelop.Core.GettextCatalog.GetString ("_Case sensitive"));
+			caseSensitive.Active = IsCaseSensitive;
+			caseSensitive.ButtonPressEvent += delegate { caseSensitive.Toggle (); };
+			caseSensitive.Toggled += delegate {
+				if (IsCaseSensitive!= caseSensitive.Active) {
+					IsCaseSensitive = caseSensitive.Active;
+					UpdateFromCatalog ();
+				}
+			};
+			menu.Append (caseSensitive);
+			
+			Gtk.CheckMenuItem wholeWordsOnly = new Gtk.CheckMenuItem (MonoDevelop.Core.GettextCatalog.GetString ("_Whole words only"));
+			wholeWordsOnly.Active = IsWholeWordOnly;
+			wholeWordsOnly.Sensitive = !RegexSearch;
+			wholeWordsOnly.ButtonPressEvent += delegate { wholeWordsOnly.Toggle (); };
+			wholeWordsOnly.Toggled += delegate {
+				if (IsWholeWordOnly != wholeWordsOnly.Active) {
+					IsWholeWordOnly = wholeWordsOnly.Active;
+					UpdateFromCatalog ();
+				}
+			};
+			menu.Append (wholeWordsOnly);
+			
+			MonoDevelop.Ide.Gui.IdeApp.CommandService.ShowContextMenu (menu);
+			menu.ShowAll ();
 		}
 		
 		public static void ReloadWidgets ()
@@ -544,6 +698,24 @@ namespace MonoDevelop.Gettext
 			}
 		}
 		
+		bool IsMatch (string text, string filter)
+		{
+			if (RegexSearch)
+				return regex.IsMatch (text);
+		
+			if (!IsCaseSensitive)
+				text = text.ToUpper ();
+			int idx = text.IndexOf (filter);
+			if (idx >= 0) {
+				if (IsWholeWordOnly) {
+					return (idx == 0 || char.IsWhiteSpace (text[idx - 1])) &&
+						   (idx + filter.Length == text.Length || char.IsWhiteSpace (text[idx + 1]));
+				}
+				return true;
+			}
+			return false;
+		}
+		
 		bool ShouldFilter (CatalogEntry entry, string filter)
 		{
 			if (entry.IsFuzzy) {
@@ -559,11 +731,20 @@ namespace MonoDevelop.Gettext
 			
 			if (String.IsNullOrEmpty (filter)) 
 				return false;
-			if (entry.String.ToUpper ().Contains (filter))
-				return false;
-			for (int i = 0; i < entry.NumberOfTranslations; i++) {
-				if (entry.GetTranslation (i).ToUpper ().Contains (filter))
+			if (DoSearchIn != SearchIn.Translated) {
+				if (IsMatch (entry.String, filter))
 					return false;
+				if (entry.HasPlural) {
+					if (IsMatch (entry.PluralString, filter))
+						return false;
+				}
+			}
+			
+			if (DoSearchIn != SearchIn.Original) {
+				for (int i = 0; i < entry.NumberOfTranslations; i++) {
+					if (IsMatch (entry.GetTranslation (i), filter))
+						return false;
+				}
 			}
 			return true;
 		}
@@ -571,15 +752,28 @@ namespace MonoDevelop.Gettext
 		Thread updateThread = null;
 		bool updateIsRunning = false;
 		string filter = "";
+		Regex  regex = new Regex ("");
 		
 		void UpdateFromCatalog ()
 		{
 			if (updateIsRunning)
 				updateIsRunning = false;
 			filter = this.entryFilter.Text;
-			if (filter != null)
+			if (!IsCaseSensitive && filter != null)
 				filter = filter.ToUpper ();
-			
+			if (RegexSearch) {
+				try {
+					RegexOptions options = RegexOptions.Compiled;
+					if (!IsCaseSensitive)
+						options |= RegexOptions.IgnoreCase;
+					regex = new Regex (filter, options);
+				} catch (Exception e) {
+					IdeApp.Workbench.StatusBar.ShowError (e.Message);
+					this.entryFilter.ModifyBase (StateType.Normal, errorColor);
+					return;
+				}
+			}
+			this.entryFilter.ModifyBase (StateType.Normal, Style.Base (StateType.Normal));
 			IdeApp.Workbench.StatusBar.BeginProgress (GettextCatalog.GetString ("Update catalog list..."));
 			updateThread = new Thread (UpdateWorkerThread);
 			updateThread.IsBackground = true;

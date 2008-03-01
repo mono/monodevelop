@@ -1375,6 +1375,22 @@
                         <property name="Fill">False</property>
                       </packing>
                     </child>
+                    <child>
+                      <widget class="Gtk.Button" id="buttonOptions">
+                        <property name="MemberName" />
+                        <property name="CanFocus">True</property>
+                        <property name="Type">TextAndIcon</property>
+                        <property name="Icon">stock:gtk-properties Menu</property>
+                        <property name="Label" translatable="yes">_Options</property>
+                        <property name="UseUnderline">True</property>
+                      </widget>
+                      <packing>
+                        <property name="Position">5</property>
+                        <property name="AutoSize">True</property>
+                        <property name="Expand">False</property>
+                        <property name="Fill">False</property>
+                      </packing>
+                    </child>
                   </widget>
                   <packing>
                     <property name="Position">0</property>
