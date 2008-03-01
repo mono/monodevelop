@@ -32,22 +32,22 @@
 		<End>*/</End>
 	</Span>
 	
-	<Span color = "literal" rule="String" stopateol = "true" escape="\">
+	<Span color = "markup" rule="Comment">
 		<Begin>"""</Begin>
 		<End>"""</End>
 	</Span>
 	
-	<Span color = "literal" rule="String" stopateol = "true" escape="\">
+	<Span color = "markup" rule="Comment">
 		<Begin>'''</Begin>
 		<End>'''</End>
 	</Span>
 	
-	<Span color = "literal" rule="String" stopateol = "true" escape="\">
+	<Span color = "literal" rule="String" stopateol = "true" constraint='!"!"' escape="\">
 		<Begin>"</Begin>
 		<End>"</End>
 	</Span>
 	
-	<Span color = "literal" rule="String" stopateol = "true" escape="\">
+	<Span color = "literal" rule="String" stopateol = "true" constraint="!'!'" escape="\">
 		<Begin>'</Begin>
 		<End>'</End>
 	</Span>

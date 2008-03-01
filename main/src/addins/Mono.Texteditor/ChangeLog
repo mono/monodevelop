@@ -1,5 +1,10 @@
 2008-03-01  Mike Krüger <mkrueger@novell.com> 
 
+	* PythonSyntaxMode.xml, Mono.TextEditor.Highlighting/SyntaxMode.cs: fixed
+	  """, ''' pydocs
+
+2008-03-01  Mike Krüger <mkrueger@novell.com> 
+
 	* PythonSyntaxMode.xml: Added python syntax highlighting.
 
 2008-02-29  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com>

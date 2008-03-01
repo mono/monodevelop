@@ -213,10 +213,14 @@ namespace Mono.TextEditor.Highlighting
 						if (spanPair.o1 != null) {
 							Span span = spanPair.o1;
 							if (!String.IsNullOrEmpty(span.Constraint)) {
-								if (span.Constraint.Length == 2 && span.Constraint.StartsWith ("!") && i + 1 < maxEnd) 
-									if (doc.GetCharAt (i + 1) == span.Constraint [1]) {
+								if (span.Constraint.Length == 2 && span.Constraint.StartsWith ("!") && i + 1 < maxEnd) {
+									if (doc.GetCharAt (i + 1) == span.Constraint [1]) 
 										goto skip;
-									}
+								}
+								if (span.Constraint.Length == 4 && span.Constraint.StartsWith ("!") && i + 2 < maxEnd) {
+									if (doc.GetCharAt (i + 1) == span.Constraint [1] && doc.GetCharAt (i + 2) == span.Constraint [3]) 
+										goto skip;
+								}
 							}
 							spanStack.Push (span);
 							curChunk.Length -= span.Begin.Length - 1;
