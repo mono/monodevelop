@@ -26,6 +26,7 @@
 //
 
 using System;
+using System.Text.RegularExpressions;
 using System.Xml;
 
 namespace Mono.TextEditor
@@ -34,7 +35,7 @@ namespace Mono.TextEditor
 	{
 		string color;
 		string pattern;
-		
+		Regex  regex;
 		public string Color {
 			get {
 				return color;
@@ -49,7 +50,7 @@ namespace Mono.TextEditor
 		
 		public System.Text.RegularExpressions.Regex Regex {
 			get {
-				return new System.Text.RegularExpressions.Regex (pattern, System.Text.RegularExpressions.RegexOptions.Compiled);
+				return regex;
 			}
 		}
 		
@@ -57,14 +58,14 @@ namespace Mono.TextEditor
 		{
 			return String.Format ("[Match: Color={0}, Pattern={1}]", color, pattern);
 		}
-
 		
 		public const string Node = "Match";
 		public static Match Read (XmlReader reader)
 		{
-			Match result = new Match ();
-			result.color = reader.GetAttribute ("color");
-			result.pattern = reader.ReadElementString ();
+			Match result   = new Match ();
+			result.color   = reader.GetAttribute ("color");
+			result.pattern = "^" + reader.ReadElementString ();
+			result.regex   = new System.Text.RegularExpressions.Regex (result.pattern, RegexOptions.Compiled | RegexOptions.IgnoreCase);
 			return result;
 		}
 	}

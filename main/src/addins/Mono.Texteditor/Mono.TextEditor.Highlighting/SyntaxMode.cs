@@ -111,6 +111,16 @@ namespace Mono.TextEditor.Highlighting
 				}
 				return result;
 			}
+			ChunkStyle GetChunkStyleColor (Stack<Span> spanStack, string topColor)
+			{
+				ChunkStyle result ;
+				if (!String.IsNullOrEmpty (topColor)) {
+					result = style.GetChunkStyle (topColor);
+				} else {
+					result = spanStack.Count > 0 ? style.GetChunkStyle (spanStack.Peek ().Color) : ChunkStyle.Default;
+				}
+				return result;
+			}
 			
 			ChunkStyle GetSpanStyle (Stack<Span> spanStack)
 			{
@@ -179,9 +189,12 @@ namespace Mono.TextEditor.Highlighting
 				SetSpan (offset);
 				SetTree ();
 				bool isNoKeyword = false;
+				int len = maxEnd - offset;
+				string str = len > 0 ? doc.GetTextAt (offset, len) : null;
 //		bool isAfterSpan = false;
 				for (int i = offset; i < maxEnd; i++) {
-					char ch = doc.GetCharAt (i);
+					int textOffset = i - offset;
+					char ch = str [textOffset];
 					if (curSpan != null && !String.IsNullOrEmpty (curSpan.End)) {
 						if (curSpan.Escape == ch && i + 1 < maxEnd && endOffset == 0 && doc.GetCharAt (i + 1) == curSpan.End[0]) {
 							curChunk.Length += 2;
@@ -240,8 +253,29 @@ namespace Mono.TextEditor.Highlighting
 						;
 					if (!Char.IsLetterOrDigit (ch) && ch != '_' && pair != null && pair.o1 != null) {
 						curChunk.Length -= wordOffset;
+						
 						AddChunk (ref curChunk, wordOffset, GetChunkStyleColor (spanStack, pair.o1));
 						isNoKeyword = false;
+					}
+					
+					if (!isNoKeyword && curRule != null && wordOffset == 0) {
+						Match foundMatch = null;
+						int   foundMatchLength = -1;
+						string matchStr = str.Substring (textOffset);
+						foreach (Match ruleMatch in curRule.Matches) {
+							System.Text.RegularExpressions.Match match = ruleMatch.Regex.Match (matchStr);
+							if (match.Success) {
+								if (foundMatch == null || foundMatchLength < match.Length) {
+									foundMatch = ruleMatch;
+									foundMatchLength = match.Length;
+								}
+							}
+						}
+						if (foundMatch != null) {
+							AddChunk (ref curChunk, foundMatchLength, GetChunkStyleColor (spanStack, foundMatch.Color));
+							i += foundMatchLength - 1;
+							continue;
+						}
 					}
 					
 					if (tree != null) {
