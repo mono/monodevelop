@@ -69,10 +69,10 @@ namespace MonoDevelop.Ide
 			treeviewPads.HeadersVisible = false;
 			
 			treeviewPads.Selection.Changed += delegate {
-				TreeIter iter;
+				Gtk.TreeIter iter;
 				if (treeviewPads.Selection.GetSelected (out iter)) {
-					Pad pad = padListStore.GetValue (iter, 2) as Pad;
-					ShowType (IdeApp.Services.Resources.GetIcon (!String.IsNullOrEmpty (pad.Icon) ? pad.Icon : MonoDevelop.Core.Gui.Stock.MiscFiles, IconSize.Dialog),
+					MonoDevelop.Ide.Gui.Pad pad = padListStore.GetValue (iter, 2) as MonoDevelop.Ide.Gui.Pad;
+					ShowType (MonoDevelop.Ide.Gui.IdeApp.Services.Resources.GetIcon (!string.IsNullOrEmpty (pad.Icon) ? pad.Icon : MonoDevelop.Core.Gui.Stock.MiscFiles, Gtk.IconSize.Dialog),
 					          pad.Title,
 					          "",
 					          "");
@@ -84,9 +84,9 @@ namespace MonoDevelop.Ide
 			treeviewDocuments.AppendColumn ("text", new Gtk.CellRendererText (), "text", 1);
 			treeviewDocuments.HeadersVisible = false;
 			treeviewDocuments.Selection.Changed += delegate {
-				Document document = SelectedDocument;
+				MonoDevelop.Ide.Gui.Document document = SelectedDocument;
 				if (document != null) {
-					ShowType (IdeApp.Services.Resources.GetBitmap (String.IsNullOrEmpty (document.Window.ViewContent.StockIconId) ? MonoDevelop.Core.Gui.Stock.MiscFiles : document.Window.ViewContent.StockIconId, IconSize.Dialog),
+					ShowType (MonoDevelop.Ide.Gui.IdeApp.Services.Resources.GetBitmap (string.IsNullOrEmpty (document.Window.ViewContent.StockIconId) ? MonoDevelop.Core.Gui.Stock.MiscFiles : document.Window.ViewContent.StockIconId, Gtk.IconSize.Dialog),
 					          System.IO.Path.GetFileName (document.Title),
 					          document.Window.DocumentType,
 					          document.FileName);

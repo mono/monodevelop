@@ -1,3 +1,8 @@
+2008-03-02  Marcos David Marín Amador <MarcosMarin@gmail.com> 
+
+	* MonoDevelop.Ide.Gui/DocumentSwitcher.cs: Workaraound a bug in mono 1.2.4
+	  where anonymous delegates ignore usings.
+
 2008-02-29  Zach Lute <zach.lute@gmail.com> 
 
 	* MonoDevelop.Ide.Commands/FileCommands.cs,
