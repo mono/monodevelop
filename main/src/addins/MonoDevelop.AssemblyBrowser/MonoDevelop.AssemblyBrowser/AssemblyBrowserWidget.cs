@@ -128,23 +128,23 @@ namespace MonoDevelop.AssemblyBrowser
 				StartSearch ();
 			};
 			this.searchTreeview.RowActivated += delegate {
-				TreeIter selectedIter;
+				Gtk.TreeIter selectedIter;
 				if (searchTreeview.Selection.GetSelected (out selectedIter)) {
-					IMember member = (IMember)(searchMode != SearchMode.Type ? memberListStore.GetValue (selectedIter, 4) : typeListStore.GetValue (selectedIter, 4));
-					ITreeNavigator nav = SearchMember (member);
+					MonoDevelop.Ide.Dom.IMember member = (MonoDevelop.Ide.Dom.IMember)(searchMode != SearchMode.Type ? memberListStore.GetValue (selectedIter, 4) : typeListStore.GetValue (selectedIter, 4));
+					MonoDevelop.Ide.Gui.Pads.ITreeNavigator nav = SearchMember (member);
 					if (nav != null) {
 						nav.ExpandToNode ();
 						nav.Selected = true;
 					}
 					if (searchMode == SearchMode.Disassembler) {
 						this.notebook1.Page = 0;
-						int idx = DomMethodNodeBuilder.Disassemble ((DomCecilMethod)member, false).ToUpper ().IndexOf (searchEntry.Text.ToUpper ());
+						int idx = DomMethodNodeBuilder.Disassemble ((MonoDevelop.AssemblyBrowser.Dom.DomCecilMethod)member, false).ToUpper ().IndexOf (searchEntry.Text.ToUpper ());
 						this.disassemblerLabel.Selectable = true;
 						this.disassemblerLabel.SelectRegion (idx, idx + searchEntry.Text.Length);
 					}
 					if (searchMode == SearchMode.Decompiler) {
 						this.notebook1.Page = 1;
-						int idx = DomMethodNodeBuilder.Decompile ((DomCecilMethod)member, false).ToUpper ().IndexOf (searchEntry.Text.ToUpper ());
+						int idx = DomMethodNodeBuilder.Decompile ((MonoDevelop.AssemblyBrowser.Dom.DomCecilMethod)member, false).ToUpper ().IndexOf (searchEntry.Text.ToUpper ());
 						this.disassemblerLabel.Selectable = true;
 						this.disassemblerLabel.SelectRegion (idx, idx + searchEntry.Text.Length);
 					}
@@ -294,8 +294,8 @@ namespace MonoDevelop.AssemblyBrowser
 								}
 							}
 							DispatchService.GuiSyncDispatch (delegate {
-								IdeApp.Workbench.StatusBar.SetProgressFraction ((double)curType / types);
-								foreach (IMember member in members) {
+								MonoDevelop.Ide.Gui.IdeApp.Workbench.StatusBar.SetProgressFraction ((double)curType / types);
+								foreach (MonoDevelop.Ide.Dom.IMember member in members) {
 									memberListStore.AppendValues (member.Icon,
 									                              member.Name,
 									                              type.FullName,
@@ -321,8 +321,8 @@ namespace MonoDevelop.AssemblyBrowser
 								}
 							}
 							DispatchService.GuiSyncDispatch (delegate {
-								IdeApp.Workbench.StatusBar.SetProgressFraction ((double)curType / types);
-								foreach (IMember member in members) {
+								MonoDevelop.Ide.Gui.IdeApp.Workbench.StatusBar.SetProgressFraction ((double)curType / types);
+								foreach (MonoDevelop.Ide.Dom.IMember member in members) {
 									memberListStore.AppendValues (member.Icon,
 									                              member.Name,
 									                              type.FullName,
@@ -347,8 +347,8 @@ namespace MonoDevelop.AssemblyBrowser
 								}
 							}
 							DispatchService.GuiSyncDispatch (delegate {
-								IdeApp.Workbench.StatusBar.SetProgressFraction ((double)curType / types);
-								foreach (IMember member in members) {
+								MonoDevelop.Ide.Gui.IdeApp.Workbench.StatusBar.SetProgressFraction ((double)curType / types);
+								foreach (MonoDevelop.Ide.Dom.IMember member in members) {
 									memberListStore.AppendValues (member.Icon,
 									                              member.Name,
 									                              type.FullName,
@@ -364,7 +364,7 @@ namespace MonoDevelop.AssemblyBrowser
 						foreach (IType type in unit.Types) {
 							curType++;
 							DispatchService.GuiSyncDispatch (delegate {
-								IdeApp.Workbench.StatusBar.SetProgressFraction ((double)curType / types);
+								MonoDevelop.Ide.Gui.IdeApp.Workbench.StatusBar.SetProgressFraction ((double)curType / types);
 								if (type.FullName.ToUpper ().IndexOf (pattern) >= 0) {
 									typeListStore.AppendValues (type.Icon,
 									                            type.Name,
@@ -379,7 +379,7 @@ namespace MonoDevelop.AssemblyBrowser
 				}
 			} finally {
 				DispatchService.GuiSyncDispatch (delegate {
-					IdeApp.Workbench.StatusBar.EndProgress ();
+					MonoDevelop.Ide.Gui.IdeApp.Workbench.StatusBar.EndProgress ();
 				});
 				searchThread = null;
 			}
