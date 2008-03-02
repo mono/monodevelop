@@ -64,7 +64,7 @@ namespace MonoDevelop.Gettext
 				ClearTextview ();
 				AddTextview (0);
 				this.GetTextView (0).Buffer.Changed += delegate {
-					TreeIter iter = SelectedIter;
+					Gtk.TreeIter iter = SelectedIter;
 					if (treeviewEntries.Selection.IterIsSelected (iter)) {
 						store.SetValue (iter, (int)Columns.Stock, GetStockForEntry (SelectedEntry));
 						store.SetValue (iter, (int)Columns.Translation, StringEscaping.ToGettextFormat (this.SelectedEntry.GetTranslation (0)));
@@ -160,21 +160,21 @@ namespace MonoDevelop.Gettext
 			this.togglebuttonFuzzy.Active = PropertyService.Get ("Gettext.ShowFuzzy", true);
 			tooltips.SetTip (this.togglebuttonFuzzy, GettextCatalog.GetString ("Show fuzzy translations"), null);
 			this.togglebuttonFuzzy.Toggled += delegate {
-				PropertyService.Set ("Gettext.ShowFuzzy", this.togglebuttonFuzzy.Active);
+				MonoDevelop.Core.PropertyService.Set ("Gettext.ShowFuzzy", this.togglebuttonFuzzy.Active);
 				UpdateFromCatalog ();
 			};
 			
 			this.togglebuttonMissing.Active = PropertyService.Get ("Gettext.ShowMissing", true);
 			tooltips.SetTip (this.togglebuttonMissing, GettextCatalog.GetString ("Show missing translations"), null);
 			this.togglebuttonMissing.Toggled += delegate {
-				PropertyService.Set ("Gettext.ShowMissing", this.togglebuttonMissing.Active);
+				MonoDevelop.Core.PropertyService.Set ("Gettext.ShowMissing", this.togglebuttonMissing.Active);
 				UpdateFromCatalog ();
 			};
 			
 			this.togglebuttonOk.Active = PropertyService.Get ("Gettext.ShowTranslated", true);
 			tooltips.SetTip (this.togglebuttonOk, GettextCatalog.GetString ("Show valid translations"), null);
 			this.togglebuttonOk.Toggled += delegate {
-				PropertyService.Set ("Gettext.ShowTranslated", this.togglebuttonOk.Active);
+				MonoDevelop.Core.PropertyService.Set ("Gettext.ShowTranslated", this.togglebuttonOk.Active);
 				UpdateFromCatalog ();
 			};
 			
@@ -418,11 +418,11 @@ namespace MonoDevelop.Gettext
 				try {
 					if (this.currentEntry != null)
 						this.currentEntry.SetTranslation (StringEscaping.FromGettextFormat (textView.Buffer.Text), index);
-					IdeApp.Workbench.StatusBar.ShowReady ();
-					textView.ModifyBase (StateType.Normal, Style.Base (StateType.Normal));
-				} catch (Exception e) {
-					IdeApp.Workbench.StatusBar.ShowError (e.Message);
-					textView.ModifyBase (StateType.Normal, errorColor);
+					MonoDevelop.Ide.Gui.IdeApp.Workbench.StatusBar.ShowReady ();
+					textView.ModifyBase (Gtk.StateType.Normal, Style.Base (Gtk.StateType.Normal));
+				} catch (System.Exception e) {
+					MonoDevelop.Ide.Gui.IdeApp.Workbench.StatusBar.ShowError (e.Message);
+					textView.ModifyBase (Gtk.StateType.Normal, errorColor);
 				}
 				UpdateProgressBar ();
 			};
@@ -795,7 +795,7 @@ namespace MonoDevelop.Gettext
 						DispatchService.GuiSyncDispatch (delegate {
 							if (number < 60)
 								store.Clear ();
-							IdeApp.Workbench.StatusBar.SetProgressFraction (number / count);
+							MonoDevelop.Ide.Gui.IdeApp.Workbench.StatusBar.SetProgressFraction (number / count);
 							foreach (CatalogEntry entry in foundEntries) {
 								if (!updateIsRunning)
 									break;
@@ -812,11 +812,11 @@ namespace MonoDevelop.Gettext
 				
 			} finally {
 				if (updateIsRunning) {
-					DispatchService.GuiSyncDispatch (delegate {
+					MonoDevelop.Core.Gui.DispatchService.GuiSyncDispatch (delegate {
 						foreach (CatalogEntry entry in foundEntries) {
 							store.AppendValues (GetStockForEntry (entry), entry.IsFuzzy, StringEscaping.ToGettextFormat (entry.String), StringEscaping.ToGettextFormat (entry.GetTranslation (0)), entry, GetRowColorForEntry (entry));
 						}
-						IdeApp.Workbench.StatusBar.EndProgress ();
+						MonoDevelop.Ide.Gui.IdeApp.Workbench.StatusBar.EndProgress ();
 					});
 					updateIsRunning = false;
 				}

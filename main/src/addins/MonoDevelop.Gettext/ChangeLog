@@ -1,3 +1,8 @@
+2008-03-02  Marcos David Marín Amador <MarcosMarin@gmail.com> 
+
+	* MonoDevelop.Gettext.Editor/POEditorWidget.cs: Workaraound a bug in mono
+	  1.2.4 where anonymous delegates ignore usings.
+
 2008-03-01  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Gettext.Editor/POEditorWidget.cs: Filter is not preserved
