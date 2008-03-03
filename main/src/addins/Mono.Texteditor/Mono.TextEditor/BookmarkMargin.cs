@@ -129,7 +129,7 @@ namespace Mono.TextEditor
 		{
 			if (button != 1 || type != Gdk.EventType.ButtonPress)
 				return;
-			int lineNumber = editor.VisualToDocumentLocation (x, y).Line;
+			int lineNumber = editor.Document.VisualToLogicalLine ((int)((y + editor.VAdjustment.Value) / editor.LineHeight));
 			if (lineNumber < editor.Document.LineCount) {
 				LineSegment lineSegment = editor.Document.GetLine (lineNumber);
 				lineSegment.IsBookmarked = !lineSegment.IsBookmarked;

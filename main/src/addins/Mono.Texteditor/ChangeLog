@@ -1,5 +1,10 @@
 2008-03-03  Mike Krüger <mkrueger@novell.com> 
 
+	* Mono.TextEditor/BookmarkMargin.cs: Clicking on the bookmark margin on an
+	  invalid line no longer triggers the bookmark in the last line.
+
+2008-03-03  Mike Krüger <mkrueger@novell.com> 
+
 	* Mono.TextEditor.mdp, AspNetSyntaxMode.xml, Makefile.am: Started ASP.NET
 	  highlighting.
 
