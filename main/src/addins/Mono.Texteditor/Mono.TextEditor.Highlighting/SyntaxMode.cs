@@ -125,11 +125,7 @@ namespace Mono.TextEditor.Highlighting
 				pair    = null;
 				if (curSpan != null) { 
 					curRule = mode.GetRule (curSpan.Rule);
-					if (curRule == null) {
-						tree     = null;
-					} else {
-						tree     = curRule.parseTree;
-					}
+					tree     = curRule.parseTree;
 				} else {
 					tree     = curRule.parseTree;
 				}
@@ -139,19 +135,12 @@ namespace Mono.TextEditor.Highlighting
 			void SetSpan (int offset)
 			{
 				curSpan = spanStack.Count > 0 ? spanStack.Peek () : null;
-				if (curRule != null) {
-					foreach (SemanticRule semanticRule in curRule.SemanticRules) {
-						semanticRule.Analyze (this.doc, line, result, ruleStart, offset);
-					}
+				foreach (SemanticRule semanticRule in curRule.SemanticRules) {
+					semanticRule.Analyze (this.doc, line, result, ruleStart, offset);
 				}
 				if (curSpan != null) { 
-					curRule = mode.GetRule (curSpan.Rule);
-					if (curRule == null) {
-						curRule  = mode;
-						spanTree = null;
-					} else {
-						spanTree = curRule.spanTree;
-					}
+					curRule  = mode.GetRule (curSpan.Rule);
+					spanTree = curRule.spanTree;
 				} else {
 					curRule  = mode;
 					spanTree = curRule.spanTree;
@@ -181,7 +170,7 @@ namespace Mono.TextEditor.Highlighting
 				bool isNoKeyword = false;
 				int len = maxEnd - offset;
 				string str = len > 0 ? doc.GetTextAt (offset, len) : null;
-//		bool isAfterSpan = false;
+				
 				for (int i = offset; i < maxEnd; i++) {
 					int textOffset = i - offset;
 					char ch = str [textOffset];
@@ -238,7 +227,7 @@ namespace Mono.TextEditor.Highlighting
 						}
 					} else {
 						spanPair = null;
-						spanTree = curRule != null ? curRule.spanTree : null;
+						spanTree = curRule.spanTree;
 					}
 				 skip:
 						;
@@ -249,7 +238,7 @@ namespace Mono.TextEditor.Highlighting
 						isNoKeyword = false;
 					}
 					
-					if (!isNoKeyword && curRule != null && wordOffset == 0) {
+					if (!isNoKeyword && wordOffset == 0) {
 						Match foundMatch = null;
 						int   foundMatchLength = -1;
 						string matchStr = str.Substring (textOffset);
@@ -309,7 +298,7 @@ namespace Mono.TextEditor.Highlighting
 				if (rule.Name == name)
 					return rule;
 			}
-			return null;
+			return this;
 		}
 		
 		void AddSemanticRule (Rule rule, SemanticRule semanticRule)
