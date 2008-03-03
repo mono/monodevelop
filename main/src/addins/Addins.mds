@@ -23,6 +23,7 @@
       <Entry build="True" name="Mono.TextEditor" configuration="Debug" />
       <Entry build="True" name="MonoDevelop.SourceEditor2" configuration="Debug" />
       <Entry build="True" name="MonoDevelop.AssemblyBrowser" configuration="Debug" />
+      <Entry build="True" name="MonoDevelop.CodeMetrics" configuration="Debug" />
     </Configuration>
     <Configuration name="Release" ctype="CombineConfiguration">
       <Entry build="True" name="MonoDevelop.NUnit" configuration="Debug" />
@@ -47,6 +48,7 @@
       <Entry build="True" name="Mono.TextEditor" configuration="Release" />
       <Entry build="True" name="MonoDevelop.SourceEditor2" configuration="Release" />
       <Entry build="True" name="MonoDevelop.AssemblyBrowser" configuration="Release" />
+      <Entry build="True" name="MonoDevelop.CodeMetrics" configuration="Release" />
     </Configuration>
   </Configurations>
   <StartMode startupentry="MonoDevelop.NUnit" single="True">
@@ -77,6 +79,10 @@
     <Execute type="None" entry="Mono.TextEditor" />
     <Execute type="None" entry="MonoDevelop.SourceEditor2" />
     <Execute type="None" entry="MonoDevelop.AssemblyBrowser" />
+    <Execute type="None" entry="MonoDevelop.CodeStatistic" />
+    <Execute type="None" entry="MonoDevelop.CodeStatistic" />
+    <Execute type="None" entry="MonoDevelop.CodeStatistic" />
+    <Execute type="None" entry="MonoDevelop.CodeMetrics" />
   </StartMode>
   <Entries>
     <Entry filename="NUnit/MonoDevelop.NUnit.mdp" />
@@ -101,5 +107,6 @@
     <Entry filename="Mono.Texteditor/Mono.TextEditor.mdp" />
     <Entry filename="MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.mdp" />
     <Entry filename="MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser.mdp" />
+    <Entry filename="MonoDevelop.CodeMetrics/MonoDevelop.CodeMetrics.mdp" />
   </Entries>
 </Combine>

@@ -138,7 +138,7 @@ namespace MonoDevelop.SourceEditor
 			this.buttonOptions.Clicked += delegate {
 				Gtk.Menu menu = new Gtk.Menu ();
 				
-				Gtk.CheckMenuItem caseSensitive = new Gtk.CheckMenuItem (MonoDevelop.Core.GettextCatalog.GetString ("Case sensitive"));
+				Gtk.CheckMenuItem caseSensitive = new Gtk.CheckMenuItem (MonoDevelop.Core.GettextCatalog.GetString ("_Case sensitive"));
 				caseSensitive.Active = SearchWidget.IsCaseSensitive;
 				caseSensitive.Toggled += delegate {
 					SetIsCaseSensitive (caseSensitive.Active);
@@ -148,7 +148,7 @@ namespace MonoDevelop.SourceEditor
 				};
 				menu.Append (caseSensitive);
 				
-				Gtk.CheckMenuItem wholeWordsOnly = new Gtk.CheckMenuItem (MonoDevelop.Core.GettextCatalog.GetString ("Whole words only"));
+				Gtk.CheckMenuItem wholeWordsOnly = new Gtk.CheckMenuItem (MonoDevelop.Core.GettextCatalog.GetString ("_Whole words only"));
 				wholeWordsOnly.Active = SearchWidget.IsWholeWordOnly;
 				wholeWordsOnly.Toggled += delegate {
 					SetIsWholeWordOnly (wholeWordsOnly.Active);

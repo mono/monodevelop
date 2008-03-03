@@ -1,3 +1,7 @@
+2008-03-03  Mike Krüger <mkrueger@novell.com> 
+
+	* messages.po, de.po: Added code metrics start.
+
 2008-02-29  Mike Krüger <mkrueger@novell.com> 
 
 	* messages.po, de.po: Added command for switching between splits.
