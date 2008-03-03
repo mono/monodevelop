@@ -35,6 +35,7 @@ using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.AspNet;
 using MonoDevelop.AspNet.Parser;
 using MonoDevelop.AspNet.Parser.Dom;
+using MonoDevelop.Html;
 
 namespace MonoDevelop.AspNet.Gui
 {
@@ -50,48 +51,96 @@ namespace MonoDevelop.AspNet.Gui
 		public override bool ExtendsEditor (MonoDevelop.Ide.Gui.Document doc, IEditableTextBuffer editor)
 		{
 			string[] supportedExtensions = {".aspx", ".ascx", ".master"};
-			return Array.IndexOf (supportedExtensions, System.IO.Path.GetExtension (doc.Title)) > -1;
+			return (doc.Project is AspNetAppProject) && Array.IndexOf (supportedExtensions, System.IO.Path.GetExtension (doc.Title)) > -1;
 		}
 		
 		protected Document GetAspNetDocument ()
 		{
 			if (Document == null)
 				throw new InvalidOperationException ("Editor extension not yet initialized");
-			AspNetAppProject proj = Document.Project as AspNetAppProject;
-			if (proj != null) {
-				ProjectFile pf = proj.ProjectFiles.GetFile (Document.FileName);
-				return proj.GetDocument (pf);
-			} else {
-				throw new NotImplementedException ("ASP.NET code completion currently only works within projects");
-			}
+			ITextBuffer buffer = (ITextBuffer) Document.GetContent (typeof(ITextBuffer));
+			if (buffer != null)
+				return new Document (buffer, Document.Project, FileName);
+			else
+				throw new Exception ("Cannot retrieve ITextBuffer");
 		}
 		
 		public override ICompletionDataProvider HandleCodeCompletion (ICodeCompletionContext completionContext, char completionChar)
 		{
-			Document doc = GetAspNetDocument ();
+			Document doc;
+			try {
+				doc = GetAspNetDocument ();
+			} catch (Exception ex) {
+				MonoDevelop.Core.LoggingService.LogError ("Unhandled error in ASP.NET parser", ex);
+				return base.HandleCodeCompletion (completionContext, completionChar);
+			}
 			
-			//FIXME: rows in completionContext is zero-indexed, ILocation is 1-indexed. This could easily cause bugs.
-			Node n = doc.RootNode.GetNodeAtPosition (completionContext.TriggerLine + 1, completionContext.TriggerLineOffset);
-			if (n != null)
+			HtmlSchema schema = HtmlSchemaService.GetSchema (doc.Info.DocType);
+			
+			//FIXME: lines in completionContext are zero-indexed, but ILocation is 1-indexed. This could easily cause bugs.
+			int line = completionContext.TriggerLine + 1, col = completionContext.TriggerLineOffset;
+			
+			Node n = doc.RootNode.GetNodeAtPosition (line, col);
+			if (n != null) {
 				MonoDevelop.Core.LoggingService.LogDebug ("AspNetCompletion({0},{1}): {2}",
 				    completionContext.TriggerLine + 1,
 				    completionContext.TriggerLineOffset,
 				    n.ToString ());
+			}
 			
-			if (completionChar == '<')
-				return GetHtmlCompletionData ();
+			if (completionChar == '<') {
+				CodeCompletionDataProvider cp = new CodeCompletionDataProvider (null, GetAmbience ());
+				TagNode parent = null;
+				if (n != null)
+					parent = n.Parent as TagNode;
+				
+				AddHtmlTagCompletionData (cp, schema, parent);
+				AddAspBeginExpressions (cp);
+				return cp;
+			}
+			
+			TagNode tn = n as TagNode;
+			
+			//attributes within tags
+			if  (completionChar == ' ' && tn != null && tn.LocationContainsPosition (line, col) == 0) {
+				CodeCompletionDataProvider cp = new CodeCompletionDataProvider (null, GetAmbience ());
+				AddHtmlAttributeCompletionData (cp, schema, tn);
+				if (tn.Attributes ["runat"] == null)
+					cp.AddCompletionData (new CodeCompletionData ("runat=\"server\"", "md-literal"));
+				return cp;
+			}
+				
+			
 			return base.HandleCodeCompletion (completionContext, completionChar); 
 		}
-
-		//TODO: implement different HTML versions
-		//maybe get them from the web type manager
-		CodeCompletionDataProvider GetHtmlCompletionData ()
+		
+		void AddHtmlTagCompletionData (CodeCompletionDataProvider provider, HtmlSchema schema, TagNode parentTag)
 		{
-			string[] tags = {"html", "a", "em", "meta", "strong", "div", "span", "head", "title", "meta"};
-			CodeCompletionDataProvider cp = new CodeCompletionDataProvider (null, GetAmbience ());
-			foreach (string tag in tags)
-				cp.AddCompletionData (new CodeCompletionData (tag, "md-literal"));
-			return cp;
+			string parentTagId = string.Empty;
+			if (parentTag != null)
+				parentTagId = parentTag.TagName;
+			foreach (string tag in schema.GetValidChildren (parentTagId))
+				provider.AddCompletionData (new CodeCompletionData (tag, "md-literal"));			
+		}
+		
+		void AddHtmlAttributeCompletionData (CodeCompletionDataProvider provider, HtmlSchema schema, TagNode parentTag)
+		{
+			string parentTagId = string.Empty;
+				parentTagId = parentTag.TagName;
+			//add atts only if they're not aready in the tag
+			foreach (string att in schema.GetValidAttributes (parentTagId)) {
+				if (parentTag != null && parentTag.Attributes != null && parentTag.Attributes[att] == null)
+					provider.AddCompletionData (new CodeCompletionData (att, "md-literal"));
+			}
+		}
+		
+		void AddAspBeginExpressions (CodeCompletionDataProvider provider)
+		{
+			provider.AddCompletionData (new CodeCompletionData ("%", "md-literal"));  //render block
+			provider.AddCompletionData (new CodeCompletionData ("%=", "md-literal")); //render expression
+			provider.AddCompletionData (new CodeCompletionData ("%@", "md-literal")); //directive
+			provider.AddCompletionData (new CodeCompletionData ("%#", "md-literal")); //databinding
+			provider.AddCompletionData (new CodeCompletionData ("%$", "md-literal")); //resource FIXME 2.0 only
 		}
 	}
 }

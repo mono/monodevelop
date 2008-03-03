@@ -1,3 +1,23 @@
+2008-03-03  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs: Improve ASP.NET code
+	  completion. Now parser updates on-the-fly and suggestions are
+	  contextual.
+	* gtk-gui/gui.stetic, AspNetAddIn.mdp, Makefile.am: Updated.
+	* MonoDevelop.AspNet.Parser.Dom/ParentNode.cs,
+	  MonoDevelop.AspNet.Parser.Dom/Node.cs: Minor API name change.
+	* MonoDevelop.AspNet.Parser.Dom/RootNode.cs: Catch and collect
+	  parser-reported exceptions rather than blowing up.
+	* MonoDevelop.Html, MonoDevelop.Html/HtmlSchema.cs,
+	  MonoDevelop.Html/HtmlSchemaService.cs: Skeletion of system for
+	  schema-controlled HTML completion.
+	* MonoDevelop.AspNet.Parser/Document.cs,
+	  MonoDevelop.AspNet.Parser/DocumentReferenceManager.cs: Make it easier to
+	  build a parser document directly rather than going through the project.
+	* MonoDevelop.AspNet.Parser/Regexes.cs: Utility class, unused right now.
+	* MonoDevelop.AspNet.Parser/LocatedParserException.cs: Allow flagging error
+	  as a warning.
+
 2008-03-02  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.AspNet.Parser.Internal/ParseException.cs: Fix ILocation

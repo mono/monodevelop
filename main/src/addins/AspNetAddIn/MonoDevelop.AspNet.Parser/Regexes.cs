@@ -1,10 +1,10 @@
 // 
-// LocatedParserException.cs
+// QuickInfo.cs
 // 
 // Author:
 //   Michael Hutchinson <mhutchinson@novell.com>
 // 
-// Copyright (C) 2007 Novell, Inc (http://www.novell.com)
+// Copyright (C) 2008 Novell, Inc (http://www.novell.com)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -27,45 +27,37 @@
 //
 
 using System;
-
-using MonoDevelop.Core;
-using MonoDevelop.DesignerSupport;
-using MonoDevelop.AspNet.Parser.Dom;
+using System.Text.RegularExpressions;
 
 namespace MonoDevelop.AspNet.Parser
 {
 	
-	public class ParserException : ErrorInFileException
+	
+	public static class Regexes
 	{
-		string message;
-		bool isWarning;
-		
-		public ParserException (ILocation location, string message, bool warning)
-			: base (location==null? null: location.Filename,
-			        location==null? 0 : location.BeginLine,
-			        location==null? 0 : location.BeginColumn)
-		{
-			this.message = message;
-			this.isWarning = warning;
+		public static Regex DocType {
+			get {
+				return new Regex (@"<!DOCTYPE\s+(\w+)\s+PUBLIC\s+""(.+)""\s+""(.+)""\s*>",
+				    RegexOptions.Compiled | RegexOptions.Singleline);
+			}
 		}
 		
-		public ParserException (ILocation location, string message)
-			: this (location, message, false)
-		{
+		public static Regex Directive {
+			get {
+				return new Regex (@"<%@\s*(\w+)\s+(.*)%>", RegexOptions.Compiled | RegexOptions.Singleline);
+			}
 		}
 		
-		public override string Message {
-			get { return message; }
+		public static Regex Expression {
+			get {
+				return new Regex (@"<%\s*([=$#]?)(.*)%>", RegexOptions.Compiled | RegexOptions.Singleline);
+			}
 		}
 		
-		bool IsWarning {
-			get { return isWarning; }
-			set { isWarning = value; }
-		}
-		
-		public override string ToString ()
-		{
-			return string.Format ("{0}({1},{2}): {3}", System.IO.Path.GetFileName (FileName), Line, Column, message);
+		public static Regex ServerTag {
+			get {
+				return new Regex (@"<\s*(\w+:)?(\w+)(.*runat=""server"".*)>", RegexOptions.Compiled | RegexOptions.Singleline);
+			}
 		}
 	}
 }

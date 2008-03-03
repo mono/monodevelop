@@ -14,6 +14,7 @@ REFS =  \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Ide.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Projects.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Projects.Gui.dll \
+	-r:Commons.Xml.Relaxng \
 	-r:System \
 	-r:System.Configuration \
 	-r:System.Design \
@@ -70,6 +71,7 @@ FILES =  \
 	MonoDevelop.AspNet.Parser/LocatedParserException.cs \
 	MonoDevelop.AspNet.Parser/MemberListVisitor.cs \
 	MonoDevelop.AspNet.Parser/PageInfoVisitor.cs \
+	MonoDevelop.AspNet.Parser/Regexes.cs \
 	MonoDevelop.AspNet.Parser/WebFormReferenceManager.cs \
 	MonoDevelop.AspNet/AspNetAppProject.cs \
 	MonoDevelop.AspNet/AspNetAppProjectBinding.cs \
@@ -84,7 +86,9 @@ FILES =  \
 	MonoDevelop.AspNet/ProjectFolderNodeBuilderExtension.cs \
 	MonoDevelop.AspNet/VerifyCodeBehindBuildStep.cs \
 	MonoDevelop.AspNet/WebTypeManager.cs \
-	MonoDevelop.AspNet/XspParameters.cs
+	MonoDevelop.AspNet/XspParameters.cs \
+	MonoDevelop.Html/HtmlSchema.cs \
+	MonoDevelop.Html/HtmlSchemaService.cs
 
 RES =  \
 	gtk-gui/gui.stetic \

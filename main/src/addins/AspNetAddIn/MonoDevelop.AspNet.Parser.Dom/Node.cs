@@ -68,10 +68,15 @@ namespace MonoDevelop.AspNet.Parser.Dom
 		
 		public virtual int ContainsPosition (int line, int col)
 		{
-			return LocationContainsPosition (Location, line, col);
+			return ILocationContainsPosition (Location, line, col);
 		}
 		
-		internal protected int LocationContainsPosition (ILocation loc, int line, int col)
+		public int LocationContainsPosition (int line, int col)
+		{
+			return ILocationContainsPosition (Location, line, col);
+		}
+		
+		internal protected int ILocationContainsPosition (ILocation loc, int line, int col)
 		{
 			if (line < loc.BeginLine || (line == loc.BeginLine && col < loc.BeginColumn))
 				return -1;

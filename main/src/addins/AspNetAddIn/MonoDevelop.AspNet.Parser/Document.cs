@@ -34,29 +34,49 @@ using System;
 using System.IO;
 using System.Collections.Generic;
 
+using MonoDevelop.AspNet;
 using MonoDevelop.AspNet.Parser.Dom;
 using MonoDevelop.Projects;
+using MonoDevelop.Ide.Gui.Content;
 
 namespace MonoDevelop.AspNet.Parser
 {
 	public class Document
 	{
 		RootNode rootNode;
-		ProjectFile projectFile;
+		AspNetAppProject project;
+		string filePath;
 		DocumentReferenceManager refMan;
 		PageInfoVisitor info;
 		MemberListVisitor memberList;
 		List<ParserException> errors = new List<ParserException> ();
 		
-		public Document (ProjectFile file)
+		Document (Project project, string filePath)
 		{
-			this.projectFile = file;
-			rootNode = new RootNode ();
-			
+			this.filePath = filePath;
+			this.project = project as AspNetAppProject;
+		}
+		
+		public Document (ITextBuffer buffer, Project project, string filePath) : this (project, filePath)
+		{
+			using (StreamReader sr = new StreamReader (new MemoryStream (new System.Text.UTF8Encoding().GetBytes (buffer.Text)))) {
+				Init (sr);
+			}
+		}
+		
+		public Document (StreamReader sr, Project project, string filePath) : this (project, filePath)
+		{
+			this.filePath = filePath;
+			this.project = project as AspNetAppProject;
+			Init (sr);
+		}
+		
+		public Document (ProjectFile file) : this (file.Project, file.FilePath)
+		{
 			StreamReader sr = null;
 			try {
 				sr = new StreamReader (file.FilePath);
-				rootNode.Parse (file.FilePath, sr);
+				Init (sr);
 			} catch (Exception ex) {
 				MonoDevelop.Core.LoggingService.LogError ("Unhandled error parsing ASP.NET document", ex);
 				errors.Add (new ParserException (null, "Unhandled error parsing ASP.NET document: " + ex.ToString ()));
@@ -64,6 +84,12 @@ namespace MonoDevelop.AspNet.Parser
 				if (sr != null)
 					sr.Close ();
 			}
+		}
+		
+		void Init (StreamReader sr)
+		{
+			rootNode = new RootNode ();
+			rootNode.Parse (filePath, sr);
 			
 			foreach (MonoDevelop.AspNet.Parser.Internal.ParseException ex in rootNode.ParseErrors)
 				errors.Add (new ParserException (ex.Location, ex.Message));
@@ -114,11 +140,11 @@ namespace MonoDevelop.AspNet.Parser
 		}
 		
 		public AspNetAppProject Project {
-			get { return (AspNetAppProject) projectFile.Project; }
+			get { return project; }
 		}
 		
-		public ProjectFile ProjectFile {
-			get { return projectFile; }
+		public string FilePath {
+			get { return filePath; }
 		}
 		
 		public MemberListVisitor MemberList {

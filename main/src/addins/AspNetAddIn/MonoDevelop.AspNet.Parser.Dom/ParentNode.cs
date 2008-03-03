@@ -72,7 +72,7 @@ namespace MonoDevelop.AspNet.Parser.Dom
 			else if (positionMatch == 0)
 				return this;
 			else if (EndLocation != null) {
-				positionMatch = LocationContainsPosition (EndLocation, line, col);
+				positionMatch = ILocationContainsPosition (EndLocation, line, col);
 				if (positionMatch == 0)
 					return this;
 				else if (positionMatch > 0)
@@ -118,7 +118,7 @@ namespace MonoDevelop.AspNet.Parser.Dom
 			
 			//after this node's end, or after its last child?
 			if (EndLocation != null) {
-				if (LocationContainsPosition (EndLocation, line, col) > 0)
+				if (ILocationContainsPosition (EndLocation, line, col) > 0)
 					return 1;
 			} else if (children.Count < 1) {
 				return baseContains;

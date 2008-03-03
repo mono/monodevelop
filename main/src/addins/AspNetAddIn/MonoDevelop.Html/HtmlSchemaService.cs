@@ -1,10 +1,10 @@
 // 
-// LocatedParserException.cs
+// HtmlSchemaService.cs
 // 
 // Author:
 //   Michael Hutchinson <mhutchinson@novell.com>
 // 
-// Copyright (C) 2007 Novell, Inc (http://www.novell.com)
+// Copyright (C) 2008 Novell, Inc (http://www.novell.com)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -27,45 +27,33 @@
 //
 
 using System;
+using System.Collections.Generic;
 
-using MonoDevelop.Core;
-using MonoDevelop.DesignerSupport;
-using MonoDevelop.AspNet.Parser.Dom;
-
-namespace MonoDevelop.AspNet.Parser
+namespace MonoDevelop.Html
 {
 	
-	public class ParserException : ErrorInFileException
+	public static class HtmlSchemaService
 	{
-		string message;
-		bool isWarning;
+		static List<HtmlSchema> schemas;
 		
-		public ParserException (ILocation location, string message, bool warning)
-			: base (location==null? null: location.Filename,
-			        location==null? 0 : location.BeginLine,
-			        location==null? 0 : location.BeginColumn)
+		static void Initialise ()
 		{
-			this.message = message;
-			this.isWarning = warning;
+			//TODO: load all the schemas from addin points
+			//NOTE: the first ([0]) schema must be the default schema (HTML4 transitional)
+			schemas = new List<HtmlSchema> ();
+			schemas.Add (new HtmlSchema ("-//W3C//DTD XHTML 1.0 Strict//EN", null));
 		}
 		
-		public ParserException (ILocation location, string message)
-			: this (location, message, false)
+		public static HtmlSchema GetSchema (string docType)
 		{
-		}
-		
-		public override string Message {
-			get { return message; }
-		}
-		
-		bool IsWarning {
-			get { return isWarning; }
-			set { isWarning = value; }
-		}
-		
-		public override string ToString ()
-		{
-			return string.Format ("{0}({1},{2}): {3}", System.IO.Path.GetFileName (FileName), Line, Column, message);
+			if (schemas == null)
+				Initialise ();
+			
+			if (!string.IsNullOrEmpty (docType))
+				foreach (HtmlSchema schema in schemas)
+					if (docType.Contains (schema.Doctype))
+						return schema;
+			return schemas[0];
 		}
 	}
 }

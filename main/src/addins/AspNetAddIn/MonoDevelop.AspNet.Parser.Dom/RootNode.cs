@@ -86,7 +86,7 @@ namespace MonoDevelop.AspNet.Parser.Dom
 		Node currentNode;
 		static string[] implicitSelfClosing = { "hr", "br", "img" };
 		static string[] implicitCloseOnBlock = { "p" };
-		static string[] blockLevel = { "p", "div", "hr", "img", "blockquote", "html", "body" };
+		static string[] blockLevel = { "p", "div", "hr", "img", "blockquote", "html", "body", "form" };
 		
 		public void Parse (string fileName, StreamReader textStream)
 		{
@@ -201,7 +201,7 @@ namespace MonoDevelop.AspNet.Parser.Dom
 		
 		void ParseError (ILocation location, string message)
 		{
-			throw new ParseException (location, message);
+			errors.Add (new ParseException (location, message));
 		}
 		
 		#endregion

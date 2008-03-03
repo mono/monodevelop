@@ -82,14 +82,14 @@ namespace MonoDevelop.AspNet.Parser
 				
 				ControlRegisterDirective crd = directive as ControlRegisterDirective;
 				if (crd != null && crd.TagPrefix == tagPrefix) {
-					string fullName =  doc.Project.WebTypeManager.GetControlTypeName (doc.ProjectFile.FilePath, crd.Src);
+					string fullName =  doc.Project.WebTypeManager.GetControlTypeName (doc.FilePath, crd.Src);
 					if (fullName != null)
 						return fullName;
 				}
 			}
 			
 			string globalLookup = doc.Project.WebTypeManager.GetGloballyRegisteredTypeName 
-					(System.IO.Path.GetDirectoryName (doc.ProjectFile.FilePath), tagPrefix, tagName);
+					(System.IO.Path.GetDirectoryName (doc.FilePath), tagPrefix, tagName);
 			
 			//returns null if type not found
 			return globalLookup;
