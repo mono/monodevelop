@@ -262,11 +262,15 @@ namespace MonoDevelop.SourceEditor
 				if (widget.lastCu != null) {
 					List<FoldSegment> foldSegments = new List<FoldSegment> ();
 					foreach (MonoDevelop.Projects.Parser.FoldingRegion region in widget.lastCu.FoldingRegions) {
+						if (base.IsStopping)
+							return;
 						FoldSegment marker = widget.AddMarker (foldSegments, region.Name, region.Region, FoldingType.Region);
 						if (marker != null)
 							marker.IsFolded = !widget.TextEditor.Document.HasFoldSegments;
 					}
 					foreach (IClass cl in widget.lastCu.Classes) {
+						if (base.IsStopping)
+							return;
 						widget.AddClass (foldSegments, cl);
 					}
 					widget.TextEditor.Document.UpdateFoldSegments (foldSegments);
