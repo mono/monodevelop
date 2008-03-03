@@ -1,4 +1,4 @@
-<!-- CSyntaxMode.xml
+<!-- CPPSyntaxMode.xml
 
  Author:
    Mike Krüger <mkrueger@novell.com>
@@ -23,28 +23,8 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE. -->
  
-<SyntaxMode name = "C++" mimeTypes="text/x-c++src;text/x-c++hdr">
-	<EolSpan color = "preprocessor" rule="PreProcessor">#</EolSpan>
+<SyntaxMode name = "C++" mimeTypes="text/x-c++src;text/x-c++hdr" extends="text/x-csrc">
 	<EolSpan color = "comment" rule="Comment">//</EolSpan>
-	
-	<Span color = "comment" rule="Comment" tagColor="commenttag">
-		<Begin>/*</Begin>
-		<End>*/</End>
-	</Span>
-	
-	<Span color = "literal" stopateol = "true" escape="\">
-		<Begin>"</Begin>
-		<End>"</End>
-	</Span>
-
-	<Span color = "literal" stopateol = "true" escape="\">
-		<Begin>&apos;</Begin>
-		<End>&apos;</End>
-	</Span>
-	
-	<Match color = "literal">\d+(U|u|L|l|UL|Ul|uL|ul|LU|Lu|lU|lu)?</Match>
-	<Match color = "literal">0[xX][a-fA-F\d]+(U|u|L|l|UL|Ul|uL|ul|LU|Lu|lU|lu)?</Match>
-	<Match color = "literal">\d+(\.\d+)?([eE][+-]\d+)?[FfDdMm]?</Match>
 	
 	<Keywords color = "kw:access">
 		<Word>this</Word>
@@ -52,7 +32,6 @@
 	</Keywords>
 	
 	<Keywords color = "kw:operator">
-		<Word>sizeof</Word>
 		<Word>new</Word>
 		<Word>delete</Word>
 		
@@ -80,24 +59,12 @@
 	</Keywords>
 	
 	<Keywords color = "kw:selection">
-		<Word>else</Word>
-		<Word>if</Word>
-		<Word>switch</Word>
-		<Word>case</Word>
-		<Word>default</Word>
 	</Keywords>
 	
 	<Keywords color = "kw:iteration">
-		<Word>do</Word>
-		<Word>for</Word>
-		<Word>while</Word>
 	</Keywords>
 	
 	<Keywords color = "kw:jump">
-		<Word>break</Word>
-		<Word>continue</Word>
-		<Word>goto</Word>
-		<Word>return</Word>
 	</Keywords>
 	
 	<Keywords color = "kw:literals">
@@ -106,13 +73,6 @@
 	</Keywords>
 	
 	<Keywords color = "kw:modifiers">
-		<Word>const</Word>
-		<Word>extern</Word>
-		<Word>static</Word>
-		<Word>volatile</Word>
-		<Word>inline</Word>
-		<Word>register</Word>
-		
 		<Word>private</Word>
 		<Word>protected</Word>
 		<Word>public</Word>
@@ -127,18 +87,6 @@
 	</Keywords>
 	
 	<Keywords color = "kw:types">
-		<Word>bool</Word>
-		<Word>char</Word>
-		
-		<Word>double</Word>
-		<Word>float</Word>
-		
-		<Word>short</Word>
-		<Word>int</Word>
-		<Word>long</Word>
-		
-		<Word>signed</Word>
-		<Word>unsigned</Word>
 	</Keywords>
 	
 	<Keywords color = "kw:void">
@@ -146,10 +94,6 @@
 	</Keywords>
 	
 	<Keywords color = "kw:declarations">
-		<Word>enum</Word>
-		<Word>struct</Word>
-		<Word>union</Word>
-		<Word>typedef</Word>
 		<Word>class</Word>
 		<Word>template</Word>
 	</Keywords>
@@ -159,33 +103,6 @@
 	</Keywords>
 	
 	<Keywords color = "kw:misc">
-		<Word>asm</Word>
-		<Word>auto</Word>
-		<Word>_Bool</Word>
-		<Word>_Complex</Word>
-		<Word>_Pragma</Word>
-		<Word>_Imaginary</Word>
 	</Keywords>
-
-	<Rule name = "PreProcessor">
-		<Keywords color="preprocessorkw">
-			<Word>ifdef</Word>
-			<Word>ifndef</Word>
-			<Word>else</Word>
-			<Word>error</Word>
-			<Word>line</Word>
-			<Word>pragma</Word>
-			<Word>undef</Word>
-			<Word>warning</Word>
-		</Keywords>
-	</Rule>
 	
-	<Rule name = "Comment">
-		<Keywords color="todocomment" ignorecase="True">
-			<Word>TODO</Word>
-			<Word>FIXME</Word>
-			<Word>HACK</Word>
-			<Word>UNDONE</Word>
-		</Keywords>	
-	</Rule>
 </SyntaxMode>

@@ -36,15 +36,14 @@
 		<Begin>"</Begin>
 		<End>"</End>
 	</Span>
-
+	
 	<Span color = "literal" stopateol = "true" escape="\">
 		<Begin>&apos;</Begin>
 		<End>&apos;</End>
 	</Span>
 	
-	<Match color = "literal">\d+(U|u|L|l|UL|Ul|uL|ul|LU|Lu|lU|lu)?</Match>
-	<Match color = "literal">0[xX][a-fA-F\d]+(U|u|L|l|UL|Ul|uL|ul|LU|Lu|lU|lu)?</Match>
-	<Match color = "literal">\d+(\.\d+)?([eE][+-]\d+)?[FfDdMm]?</Match>
+	<Match color = "literal">(0x[a-f\d]+|\d+)(ul|lu|u|l)?</Match>
+	<Match color = "literal">\d*(\.\d+)?\d(e[+-]?\d+)?[fd]?</Match>
 	
 	<Keywords color = "kw:operator">
 		<Word>sizeof</Word>

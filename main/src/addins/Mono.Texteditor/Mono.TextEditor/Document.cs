@@ -65,7 +65,8 @@ namespace Mono.TextEditor
 				return mimeType;
 			}
 			set {
-				mimeType        = value;
+				mimeType = value;
+				System.Console.WriteLine ("Mime:" + mimeType);
 				this.SyntaxMode = SyntaxModeService.GetSyntaxMode (value);
 			}
 		}

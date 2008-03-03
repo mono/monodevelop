@@ -238,6 +238,7 @@ namespace Mono.TextEditor.Highlighting
 						isNoKeyword = false;
 					}
 					
+					// HACK: Add '&& (Char.IsDigit (ch) || ch == '.')' for extra speedup
 					if (!isNoKeyword && wordOffset == 0) {
 						Match foundMatch = null;
 						int   foundMatchLength = -1;
@@ -265,10 +266,7 @@ namespace Mono.TextEditor.Highlighting
 							tree = (Dictionary<char, Rule.Pair<Keywords, object>>)pair.o2;
 						} else {
 							SetTree ();
-							if (!Char.IsLetterOrDigit (ch) && ch != '_') {
-								isNoKeyword = false;
-							}  else 
-								isNoKeyword = true;
+							isNoKeyword = Char.IsLetterOrDigit (ch) || ch == '_';
 						}
 					} else {
 						SetTree ();
@@ -352,6 +350,10 @@ namespace Mono.TextEditor.Highlighting
 			XmlReadHelper.ReadList (reader, Node, delegate () {
 				switch (reader.LocalName) {
 				case Node:
+					string extends = reader.GetAttribute ("extends");
+					if (!String.IsNullOrEmpty (extends)) {
+						result = SyntaxModeService.GetSyntaxMode (extends);
+					}
 					result.name     = reader.GetAttribute ("name");
 					result.mimeType = reader.GetAttribute (MimeTypesAttribute);
 					return true;
