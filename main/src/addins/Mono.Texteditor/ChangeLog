@@ -1,5 +1,9 @@
 2008-03-03  Mike Krüger <mkrueger@novell.com> 
 
+	* Mono.TextEditor/Document.cs: Added some worker threads.
+
+2008-03-03  Mike Krüger <mkrueger@novell.com> 
+
 	* Mono.TextEditor/TextViewMargin.cs: Removed debug message.
 
 2008-03-01  Mike Krüger <mkrueger@novell.com> 

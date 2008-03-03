@@ -246,26 +246,54 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 		
+		class ParseInformationUpdaterWorkerThread : WorkerThread
+		{
+			SourceEditorWidget widget;
+			ParseInformationEventArgs args;
+			
+			public ParseInformationUpdaterWorkerThread (SourceEditorWidget widget, ParseInformationEventArgs args)
+			{
+				this.widget = widget;
+				this.args = args;
+			}
+			
+			protected override void InnerRun ()
+			{
+				if (widget.lastCu != null) {
+					List<FoldSegment> foldSegments = new List<FoldSegment> ();
+					foreach (MonoDevelop.Projects.Parser.FoldingRegion region in widget.lastCu.FoldingRegions) {
+						FoldSegment marker = widget.AddMarker (foldSegments, region.Name, region.Region, FoldingType.Region);
+						if (marker != null)
+							marker.IsFolded = !widget.TextEditor.Document.HasFoldSegments;
+					}
+					foreach (IClass cl in widget.lastCu.Classes) {
+						widget.AddClass (foldSegments, cl);
+					}
+					widget.TextEditor.Document.UpdateFoldSegments (foldSegments);
+				}
+					
+				widget.UpdateAutocorTimer ();
+				base.Stop ();
+			}
+		}
+		
+		readonly object syncObject = new object();
+		ParseInformationUpdaterWorkerThread parseInformationUpdaterWorkerThread = null;
+		
 		void OnParseInformationChanged (object sender, ParseInformationEventArgs args)
 		{
 			if (args == null || this.view.ContentName != args.FileName || this.TextEditor == null || this.TextEditor.Document == null)
 				return;
 			
-			lastCu = args.ParseInformation.MostRecentCompilationUnit as ICompilationUnit;
-			if (lastCu != null) {
-				List<FoldSegment> foldSegments = new List<FoldSegment> ();
-				foreach (MonoDevelop.Projects.Parser.FoldingRegion region in lastCu.FoldingRegions) {
-					FoldSegment marker = AddMarker (foldSegments, region.Name, region.Region, FoldingType.Region);
-					if (marker != null)
-						marker.IsFolded = !this.TextEditor.Document.HasFoldSegments;
-				}
-				foreach (IClass cl in lastCu.Classes) {
-					AddClass (foldSegments, cl);
-				}
-				this.TextEditor.Document.UpdateFoldSegments (foldSegments);
-			}
+			lock (syncObject) {
+				lastCu = args.ParseInformation.MostRecentCompilationUnit as ICompilationUnit;
 				
-			UpdateAutocorTimer ();
+				if (parseInformationUpdaterWorkerThread != null) 
+					parseInformationUpdaterWorkerThread.Stop ();
+				
+				parseInformationUpdaterWorkerThread = new ParseInformationUpdaterWorkerThread (this, args);
+				parseInformationUpdaterWorkerThread.Start ();
+			}
 		}
 		
 		void UpdateAutocorTimer ()

@@ -1,6 +1,12 @@
 2008-03-03  Mike Krüger <mkrueger@novell.com> 
 
 	* gtk-gui/MonoDevelop.SourceEditor.OptionPanels.GeneralOptionsPanel.cs,
+	  MonoDevelop.SourceEditor/SourceEditorWidget.cs: Added some worker
+	  threads.
+
+2008-03-03  Mike Krüger <mkrueger@novell.com> 
+
+	* gtk-gui/MonoDevelop.SourceEditor.OptionPanels.GeneralOptionsPanel.cs,
 	  MonoDevelop.SourceEditor/SearchWidget.cs: Added code metrics start.
 
 2008-02-29  Mike Krüger <mkrueger@novell.com> 

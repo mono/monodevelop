@@ -548,39 +548,73 @@ namespace Mono.TextEditor
 			}
 		}
 		
+		class FoldSegmentWorkerThread : WorkerThread
+		{
+			Document doc;
+			List<FoldSegment> newSegments;
+			
+			public FoldSegmentWorkerThread (Document doc, List<FoldSegment> newSegments)
+			{
+				this.doc = doc;
+				this.newSegments = newSegments;
+			}
+			
+			protected override void InnerRun ()
+			{
+				newSegments.Sort ();
+				foreach (FoldSegment foldSegment in newSegments) {
+					if (IsStopping)
+						return;
+					LineSegment startLine = doc.splitter.GetLineByOffset (foldSegment.Offset);
+					LineSegment endLine   = doc.splitter.GetLineByOffset (foldSegment.EndOffset);
+					foldSegment.EndColumn = foldSegment.EndOffset - endLine.Offset; 
+					foldSegment.Column    = foldSegment.Offset - startLine.Offset; 
+					foldSegment.EndLine   = endLine;
+					foldSegment.StartLine = startLine;
+				}
+				int i = 0, j = 0;
+				while (i < doc.foldSegments.Count && j < newSegments.Count) {
+					if (IsStopping)
+						return;
+					int cmp = doc.foldSegments[i].CompareTo (newSegments [j]);
+					if (cmp == 0) {
+						newSegments[j].IsFolded = doc.foldSegments[i].IsFolded;
+						i++;j++;
+					} else  if (cmp > 0) {
+						j++;
+					} else {
+						i++;
+					}
+				}
+				if (i < doc.foldSegments.Count)
+					newSegments.AddRange (doc.foldSegments.GetRange (i, doc.foldSegments.Count - i));
+				GLib.Timeout.Add (0, delegate {
+					bool needsUpdate = doc.foldSegments.Count != newSegments.Count;
+					doc.foldSegments = newSegments;
+					if (needsUpdate) {
+						doc.RequestUpdate (new UpdateAll ());
+						doc.CommitDocumentUpdate ();
+					}
+					return false;
+				});
+				base.Stop ();
+			}
+		}
+		
+		readonly object syncObject = new object();
+		FoldSegmentWorkerThread foldSegmentWorkerThread = null;
 		public void UpdateFoldSegments (List<FoldSegment> newSegments)
 		{
 			if (newSegments == null) {
 				return;
 			}
-			newSegments.Sort ();
-			foreach (FoldSegment foldSegment in newSegments) {
-				LineSegment startLine = splitter.GetLineByOffset (foldSegment.Offset);
-				LineSegment endLine   = splitter.GetLineByOffset (foldSegment.EndOffset);
-				foldSegment.EndColumn = foldSegment.EndOffset - endLine.Offset; 
-				foldSegment.Column    = foldSegment.Offset - startLine.Offset; 
-				foldSegment.EndLine   = endLine;
-				foldSegment.StartLine = startLine;
-			}
-			int i = 0, j = 0;
-			while (i < foldSegments.Count && j < newSegments.Count) {
-				int cmp = foldSegments[i].CompareTo (newSegments [j]);
-				if (cmp == 0) {
-					newSegments[j].IsFolded = foldSegments[i].IsFolded;
-					i++;j++;
-				} else  if (cmp > 0) {
-					j++;
-				} else {
-					i++;
-				}
-			}
-			if (i < foldSegments.Count)
-				newSegments.AddRange (foldSegments.GetRange (i, foldSegments.Count - i));
-			bool needsUpdate = foldSegments.Count != newSegments.Count;
-			foldSegments = newSegments;
-			if (needsUpdate) {
-				RequestUpdate (new UpdateAll ());
-				CommitDocumentUpdate ();
+			
+			lock (syncObject) {
+				if (foldSegmentWorkerThread != null) 
+					foldSegmentWorkerThread.Stop ();
+				
+				foldSegmentWorkerThread = new FoldSegmentWorkerThread (this, newSegments);
+				foldSegmentWorkerThread.Start ();
 			}
 		}
 		
