@@ -277,7 +277,6 @@ namespace Mono.TextEditor
 			int visibleColumn = 0;
 			
 			foreach (Chunk chunk in chunks) {
-				System.Console.WriteLine(chunk);
 				if (chunk.Offset >= selectionStart && chunk.EndOffset <= selectionEnd) {
 					DrawStyledText (win, line, true, chunk.Style, ref visibleColumn, ref xPos, y, chunk.Offset, chunk.EndOffset);
 				} else if (chunk.Offset >= selectionStart && chunk.Offset < selectionEnd && chunk.EndOffset > selectionEnd) {
