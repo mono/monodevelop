@@ -30,8 +30,6 @@ namespace Mono.TextEditor
 {
 	public class ChunkStyle
 	{
-		public static ChunkStyle Default = new ChunkStyle ();
-		
 		Gdk.Color color;
 		bool      bold;
 		bool      italic;

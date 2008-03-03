@@ -293,7 +293,7 @@ namespace Mono.TextEditor.Highlighting
 		public ChunkStyle GetChunkStyle (string name)
 		{
 			if (!styleLookupTable.ContainsKey (name)) 
-				return ChunkStyle.Default;
+				return null;
 			return this.styles [styleLookupTable[name]];
 		}
 		

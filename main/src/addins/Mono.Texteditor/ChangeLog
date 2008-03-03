@@ -1,5 +1,12 @@
 2008-03-03  Mike Krüger <mkrueger@novell.com> 
 
+	* Mono.TextEditor.Highlighting/SyntaxMode.cs,
+	  Mono.TextEditor.Highlighting/Style.cs,
+	  Mono.TextEditor.Highlighting/ChunkStyle.cs: Worked on the syntax
+	  highlighting algorithm.
+
+2008-03-03  Mike Krüger <mkrueger@novell.com> 
+
 	* Mono.TextEditor/Document.cs: Added some worker threads.
 
 2008-03-03  Mike Krüger <mkrueger@novell.com> 
