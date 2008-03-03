@@ -191,7 +191,10 @@ namespace MonoDevelop.Ide.Gui
 			
 			tree.ButtonReleaseEvent += new Gtk.ButtonReleaseEventHandler(OnButtonRelease);
 			tree.PopupMenu += new Gtk.PopupMenuHandler (OnPopupMenu);
-			
+			tree.KeyPressEvent += delegate (object sender, Gtk.KeyPressEventArgs args) {
+				if (args.Event.Key == Gdk.Key.F10 && (args.Event.State & Gdk.ModifierType.ShiftMask) == Gdk.ModifierType.ShiftMask)
+					ShowPopup ();
+			};
 			workNode = new TreeNodeNavigator (this);
 			compareNode1 = new TreeNodeNavigator (this);
 			compareNode2 = new TreeNodeNavigator (this);

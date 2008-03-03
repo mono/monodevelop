@@ -1,3 +1,10 @@
+2008-03-03  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Ide.Gui/ViewCommandHandlers.cs: Enabled clipoard handler
+	  commands.
+	* MonoDevelop.Ide.Gui/MonoDevelopTreeView.cs: Shift+F10 now works for
+	  context menu
+
 2008-03-02  Marcos David Marín Amador <MarcosMarin@gmail.com> 
 
 	* MonoDevelop.Ide.Gui/DocumentSwitcher.cs: Workaraound a bug in mono 1.2.4
