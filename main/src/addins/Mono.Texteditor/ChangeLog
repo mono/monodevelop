@@ -1,5 +1,10 @@
 2008-03-03  Mike Krüger <mkrueger@novell.com> 
 
+	* Mono.TextEditor.mdp, AspNetSyntaxMode.xml, Makefile.am: Started ASP.NET
+	  highlighting.
+
+2008-03-03  Mike Krüger <mkrueger@novell.com> 
+
 	* CPPSyntaxMode.xml, CSyntaxMode.xml, Mono.TextEditor/Document.cs,
 	  Mono.TextEditor.Highlighting/SyntaxMode.cs: It's now possible that
 	  syntax highlighting files inherit from each other (C<-C++).

@@ -65,6 +65,7 @@ FILES =  \
 	Mono.TextEditor.Tests/Mono.TextEditor.Tests.DefaultEditActions/CaretMoveTests.cs
 
 RES =  \
+	AspNetSyntaxMode.xml \
 	BooSyntaxMode.xml \
 	BrownStyle.xml \
 	C64Style.xml \
