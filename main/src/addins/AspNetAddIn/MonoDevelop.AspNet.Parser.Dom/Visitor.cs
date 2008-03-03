@@ -33,8 +33,22 @@ using System;
 
 namespace MonoDevelop.AspNet.Parser.Dom
 {
+	/// <summary>
+	/// If passed to a node, a visitor will be walked along the tree and one of these methods will be called 
+	/// for each node.
+	/// </summary>
 	public abstract class Visitor
 	{
+		bool quickExit = false;
+		
+		/// <value>
+		/// If false, the visitor will stop walking the data structure.
+		/// </value>
+		public bool QuickExit {
+			get { return quickExit; }
+			set { quickExit = true; }
+		}
+		
 		public virtual void Visit (DirectiveNode node)
 		{
 		}

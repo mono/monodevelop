@@ -38,11 +38,12 @@ namespace MonoDevelop.AspNet.Parser
 {
 	public class PageInfoVisitor : Visitor
 	{
-		private string inheritedClass;
-		private string codeBehindFile;
-		private string codeFile;
-		private string language;
-		private WebSubtype type = WebSubtype.None;
+		string inheritedClass;
+		string codeBehindFile;
+		string codeFile;
+		string language;
+		string docType;
+		WebSubtype type = WebSubtype.None;
 		
 		public override void Visit (DirectiveNode node)
 		{
@@ -70,6 +71,10 @@ namespace MonoDevelop.AspNet.Parser
 					return;
 			}
 			
+			//we have the info, stop walking
+			if (type != WebSubtype.WebForm && type != WebSubtype.MasterPage)
+				QuickExit = true;
+			
 			inheritedClass = node.Attributes ["inherits"] as string;
 			if (inheritedClass == null)
 				inheritedClass = node.Attributes ["class"] as string;
@@ -78,6 +83,24 @@ namespace MonoDevelop.AspNet.Parser
 			language = node.Attributes ["language"] as string;
 			codeFile = node.Attributes ["codefile"] as string;
 		}
+		
+		public override void Visit (TextNode node)
+		{
+			int start = node.Text.IndexOf ("<!DOCTYPE");
+			if (start < 0)
+				return;
+			int end = node.Text.IndexOf (">", start);
+			docType = node.Text.Substring (start, end - start + 1);
+			QuickExit = true;
+		}
+
+		
+		public override void Visit (TagNode node)
+		{
+			//as soon as tags are declared, doctypes and 
+			QuickExit = true;
+		}
+
 		
 		public string InheritedClass {
 			get { return inheritedClass; }
@@ -95,8 +118,20 @@ namespace MonoDevelop.AspNet.Parser
 			get { return language; }
 		}
 		
+		public string DocType {
+			get { return docType; }
+		}
+		
 		public WebSubtype Subtype {
 			get { return type; }
 		}
+		
+		public override string ToString ()
+		{
+			return string.Format ("[PageInfoVisitor WebSubtype='{0}' InheritedClass='{1}' CodeBehindFile='{2}' CodeFile='{3}' Language='{4}' DocType='{5}']",
+			    Subtype, InheritedClass, CodeBehindFile, CodeFile, Language, DocType
+			    );
+		}
+
 	}
 }

@@ -48,20 +48,23 @@ namespace MonoDevelop.AspNet.Parser.Dom
 			this.attributes = attributes;
 		}
 		
-		public override void AcceptVisit (Visitor visitor)
-		{
-			visitor.Visit (this);
-			foreach (Node child in children)
-				child.AcceptVisit (visitor);
-			visitor.Leave (this);
-		}
-		
 		public string TagName {
 			get {return tagName; }
 		}
 		
 		public TagAttributes Attributes {
 			get { return attributes; }
+		}
+		
+		public override void AcceptVisit (Visitor visitor)
+		{
+			visitor.Visit (this);
+			foreach (Node n in children) {
+				if (visitor.QuickExit)
+					break;
+				n.AcceptVisit (visitor);
+			}
+			visitor.Leave (this);
 		}
 		
 		public override string ToString ()

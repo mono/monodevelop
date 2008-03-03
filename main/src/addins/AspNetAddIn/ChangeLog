@@ -1,3 +1,19 @@
+2008-03-02  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.AspNet.Parser.Internal/ParseException.cs: Fix ILocation
+	  capturing.
+	* MonoDevelop.AspNet.Parser.Dom/ParentNode.cs,
+	  MonoDevelop.AspNet.Parser.Dom/Visitor.cs,
+	  MonoDevelop.AspNet.Parser.Dom/TagNode.cs: Implement QuickExit so that
+	  visitor can terminate early.
+	* MonoDevelop.AspNet.Parser.Dom/RootNode.cs: Add some support for implicit
+	  tag closing like in HTML4, making parser more robust with sloppy input.
+	  Implement QuickExit so that visitor can terminate early.
+	* MonoDevelop.AspNet.Parser/LocatedParserException.cs: Fix possible NREs.
+	  Override ToString().
+	* MonoDevelop.AspNet.Parser/PageInfoVisitor.cs: Capture doctype. Use quick
+	  exit when desired information found.
+
 2008-02-27  Michael Hutchinson  <mhutchinson@novell.com> 
 
 	* MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs, Makefile.am,

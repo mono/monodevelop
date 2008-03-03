@@ -63,8 +63,11 @@ namespace MonoDevelop.AspNet.Parser.Dom
 		public override void AcceptVisit (Visitor visitor)
 		{
 			visitor.Visit (this);
-			foreach (Node n in children)
+			foreach (Node n in children) {
+				if (visitor.QuickExit)
+					break;
 				n.AcceptVisit (visitor);
+			}
 			visitor.Leave (this);
 		}
 		
@@ -81,6 +84,9 @@ namespace MonoDevelop.AspNet.Parser.Dom
 		#region Parsing code
 		
 		Node currentNode;
+		static string[] implicitSelfClosing = { "hr", "br", "img" };
+		static string[] implicitCloseOnBlock = { "p" };
+		static string[] blockLevel = { "p", "div", "hr", "img", "blockquote", "html", "body" };
 		
 		public void Parse (string fileName, StreamReader textStream)
 		{
@@ -104,11 +110,15 @@ namespace MonoDevelop.AspNet.Parser.Dom
 				if (tn == null) {
 					errors.Add (new ParseException (location, "Closing tag '" + tagId +"'does not match an opening tag."));
 				} else {
-					if (tn.TagName != tagId)
+					if (tn.TagName == tagId) {
+						tn.EndLocation = location;
+						currentNode = currentNode.Parent;
+					} else {
 						errors.Add (new ParseException (location, "Closing tag '" + tagId +"'does not match opening tag '" + tn.TagName + "'."));
-					tn.EndLocation = location;
+						currentNode = currentNode.Parent;
+						TagParsed (location, TagType.Close, tagId, null);
+					}
 				}
-				currentNode = currentNode.Parent;
 				break;
 				
 			case TagType.CodeRender:
@@ -146,9 +156,25 @@ namespace MonoDevelop.AspNet.Parser.Dom
 				
 			case TagType.Tag:
 				try {
+					//HACK: implicit close on block level in HTML4
+					TagNode prevTag = currentNode as TagNode;
+					if (prevTag != null) {
+						if (Array.IndexOf (implicitCloseOnBlock, prevTag.TagName.ToLowerInvariant ()) > -1
+						    && Array.IndexOf (blockLevel, tagId.ToLowerInvariant ()) > -1) {
+							errors.Add (new ParseException (location, "Unclosed " + prevTag.TagName + " tag."));
+							currentNode = currentNode.Parent;
+						}
+					}
+				
 					Node child = new TagNode (location, tagId, attributes);
 					AddtoCurrent (location, child);
-					currentNode = child;
+					
+					//HACK: implicitly closing tags in HTML4
+					if (Array.IndexOf (implicitSelfClosing, tagId.ToLowerInvariant ()) > -1) {
+						errors.Add (new ParseException (location, "Unclosed " + tagId + " tag."));
+					} else {
+						currentNode = child;
+					}
 				} catch (ParseException ex) {
 					errors.Add (ex);
 				}

@@ -110,15 +110,24 @@ namespace MonoDevelop.AspNet.Parser.Dom
 		
 		public override int ContainsPosition (int line, int col)
 		{
+			int baseContains = base.ContainsPosition (line, col);
+			
+			//before this node?
+			if (baseContains < 0)
+				return -1;
+			
+			//after this node's end, or after its last child?
 			if (EndLocation != null) {
 				if (LocationContainsPosition (EndLocation, line, col) > 0)
 					return 1;
-				else if (base.ContainsPosition (line, col) < 0)
-					return -1;
-				else
-					return 0;
-			}
-			return base.ContainsPosition (line, col);
+			} else if (children.Count < 1) {
+				return baseContains;
+			} else if (children[children.Count - 1].ContainsPosition (line, col) > 0) {
+				return 1;
+			} 
+			
+			//not outside this node, must be within it
+			return 0;
 		}
 		
 		public override string ToString ()

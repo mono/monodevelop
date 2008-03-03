@@ -42,14 +42,13 @@ namespace MonoDevelop.AspNet.Parser.Internal
 		public ParseException (ILocation location, string message)
 			: this (location, message, null)
 		{
-			location = new Location (location);
 		}
 
 
 		public ParseException (ILocation location, string message, Exception inner)
 			: base (message, inner)
 		{
-			this.location = location;
+			this.location = new Location (location);
 		}
 
 		public override string Title {

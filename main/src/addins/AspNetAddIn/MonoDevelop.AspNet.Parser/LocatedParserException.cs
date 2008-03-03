@@ -40,7 +40,9 @@ namespace MonoDevelop.AspNet.Parser
 		string message;
 		
 		public ParserException (ILocation location, string message)
-			: base (location.Filename, location.BeginLine, location.BeginColumn)
+			: base (location==null? null: location.Filename,
+			        location==null? 0 : location.BeginLine,
+			        location==null? 0 : location.BeginColumn)
 		{
 			this.message = message;
 		}
@@ -51,7 +53,7 @@ namespace MonoDevelop.AspNet.Parser
 		
 		public override string ToString ()
 		{
-			return message;
+			return string.Format ("{0}({1},{2}): {3}", System.IO.Path.GetFileName (FileName), Line, Column, message);
 		}
 	}
 }
