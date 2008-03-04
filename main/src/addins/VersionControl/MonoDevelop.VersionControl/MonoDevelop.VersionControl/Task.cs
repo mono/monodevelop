@@ -44,7 +44,7 @@ namespace MonoDevelop.VersionControl
 		void BackgroundWorker() {
 			try {
 				Run();
-				tracker.ReportSuccess("Done.");
+				tracker.ReportSuccess(GettextCatalog.GetString ("Done."));
 			} catch (DllNotFoundException e) {
 				tracker.ReportError("The operation could not be completed because a shared library is missing: " + e.Message, null);
 			} catch (Exception e) {

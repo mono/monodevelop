@@ -40,7 +40,7 @@ namespace MonoDevelop.VersionControl
 		
 		protected override string GetDescription ()
 		{
-			return "Checkout " + path + "...";
+			return GettextCatalog.GetString ("Checkout {0}...", path);
 		}
 		
 		protected override void Run () 

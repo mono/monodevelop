@@ -72,7 +72,7 @@ namespace MonoDevelop.VersionControl
 			
 			protected override string GetDescription()
 			{
-				return "Committing " + changeSet.BaseLocalPath + "...";
+				return GettextCatalog.GetString ("Committing {0}...", changeSet.BaseLocalPath);
 			}
 			
 			protected override void Run ()

@@ -732,17 +732,17 @@ namespace MonoDevelop.VersionControl.Subversion {
 			bool notifyChange = false;
 			
 			switch (action) {
-			case LibSvnClient.NotifyAction.UpdateAdd: actiondesc = "Added"; break;
-			case LibSvnClient.NotifyAction.UpdateDelete: actiondesc = "Deleted"; break;
-			case LibSvnClient.NotifyAction.UpdateUpdate: actiondesc = "Updating"; notifyChange = true; break;
-			case LibSvnClient.NotifyAction.UpdateExternal: actiondesc = "External Updated"; break;
-			case LibSvnClient.NotifyAction.UpdateCompleted: actiondesc = "Finished"; break;
+			case LibSvnClient.NotifyAction.UpdateAdd: actiondesc = GettextCatalog.GetString ("Added"); break;
+			case LibSvnClient.NotifyAction.UpdateDelete: actiondesc = GettextCatalog.GetString ("Deleted"); break;
+			case LibSvnClient.NotifyAction.UpdateUpdate: actiondesc = GettextCatalog.GetString ("Updating"); notifyChange = true; break;
+			case LibSvnClient.NotifyAction.UpdateExternal: actiondesc = GettextCatalog.GetString ("External Updated"); break;
+			case LibSvnClient.NotifyAction.UpdateCompleted: actiondesc = GettextCatalog.GetString ("Finished"); break;
 				
-			case LibSvnClient.NotifyAction.CommitAdded: actiondesc = "Added"; break;
-			case LibSvnClient.NotifyAction.CommitDeleted: actiondesc = "Deleted"; break;
-			case LibSvnClient.NotifyAction.CommitModified: actiondesc = "Modified"; notifyChange = true; break;
-			case LibSvnClient.NotifyAction.CommitReplaced: actiondesc = "Replaced"; notifyChange = true; break;
-			case LibSvnClient.NotifyAction.CommitPostfixTxDelta: actiondesc = "Sending Content"; break;
+			case LibSvnClient.NotifyAction.CommitAdded: actiondesc = GettextCatalog.GetString ("Added"); break;
+			case LibSvnClient.NotifyAction.CommitDeleted: actiondesc = GettextCatalog.GetString ("Deleted"); break;
+			case LibSvnClient.NotifyAction.CommitModified: actiondesc = GettextCatalog.GetString ("Modified"); notifyChange = true; break;
+			case LibSvnClient.NotifyAction.CommitReplaced: actiondesc = GettextCatalog.GetString ("Replaced"); notifyChange = true; break;
+			case LibSvnClient.NotifyAction.CommitPostfixTxDelta: actiondesc = GettextCatalog.GetString ("Sending Content"); break;
 				/*Add,
 				 Copy,
 				 Delete,

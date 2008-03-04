@@ -1,5 +1,14 @@
 2008-03-04  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.VersionControl/Update.cs,
+	  MonoDevelop.VersionControl/CommitCommand.cs,
+	  MonoDevelop.VersionControl/AddRemoveMoveCommand.cs,
+	  MonoDevelop.VersionControl/Task.cs,
+	  MonoDevelop.VersionControl/Checkout.cs,
+	  MonoDevelop.VersionControl/Publish.cs: Added some getstring calls
+
+2008-03-04  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.VersionControl/RevertCommand.cs: Added secondary text to the
 	  revert dialog.
 

@@ -36,7 +36,7 @@ namespace MonoDevelop.VersionControl
 			}
 			
 			protected override string GetDescription() {
-				return "Updating " + path + "...";
+				return GettextCatalog.GetString ("Updating {0}...", path);
 			}
 			
 			protected override void Run ()

@@ -44,7 +44,7 @@ namespace MonoDevelop.VersionControl
 			
 			protected override string GetDescription()
 			{
-				return "Adding " + path + "...";
+				return GettextCatalog.GetString ("Adding {0}...", path);
 			}
 			
 			protected override void Run ()

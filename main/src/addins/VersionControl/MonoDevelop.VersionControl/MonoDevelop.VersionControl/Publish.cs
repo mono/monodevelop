@@ -92,7 +92,7 @@ namespace MonoDevelop.VersionControl
 
 		protected override string GetDescription ()
 		{
-			return "Publishing \"" + moduleName + "\" Project...";
+			return GettextCatalog.GetString ("Publishing \"{0}\" Project...", moduleName);
 		}
 		
 		protected override void Run ()
