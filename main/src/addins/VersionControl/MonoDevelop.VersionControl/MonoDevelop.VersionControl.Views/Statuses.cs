@@ -602,7 +602,8 @@ namespace MonoDevelop.VersionControl.Views
 			else if (files.Length == 1)
 				IdeApp.Workbench.OpenDocument (files [0], true);
 			else {
-				if (IdeApp.Services.MessageService.AskQuestion (GettextCatalog.GetString ("Do you want to open all {0} files?", files.Length))) {
+				AlertButton openAll = new AlertButton (GettextCatalog.GetString ("_Open All")); 
+				if (MessageService.AskQuestion (GettextCatalog.GetString ("Do you want to open all {0} files?", files.Length), AlertButton.Cancel, openAll) == openAll) {
 					for (int n=0; n<files.Length; n++)
 						IdeApp.Workbench.OpenDocument (files[n], n==0);
 				}
@@ -736,7 +737,7 @@ namespace MonoDevelop.VersionControl.Views
 			diffRunning = false;
 			
 			if (diffException != null) {
-				IdeApp.Services.MessageService.ShowError (diffException, GettextCatalog.GetString ("Could not get diff information. ") + diffException.Message);
+				MessageService.ShowException (diffException, GettextCatalog.GetString ("Could not get diff information. ") + diffException.Message);
 			}
 			
 			TreeIter it;

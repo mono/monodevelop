@@ -155,7 +155,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 		{
 			foreach (Widget control in controls) {				
 				if (control == null) {
-					Services.MessageService.ShowError(GettextCatalog.GetString ("Control not found!"));
+					MessageService.ShowError(GettextCatalog.GetString ("Control not found!"));
 				} else {
 					control.Sensitive = enabled;
 				}

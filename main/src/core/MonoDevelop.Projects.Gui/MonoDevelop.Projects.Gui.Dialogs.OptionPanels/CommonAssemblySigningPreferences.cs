@@ -27,6 +27,7 @@
 //
 
 using System;
+using MonoDevelop.Core.Gui;
 using MonoDevelop.Core.Gui.Dialogs;
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
@@ -135,7 +136,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 						break;
 				}
 			} catch (Exception ex) {
-				Services.MessageService.ShowError (ex);
+				MessageService.ShowException (ex);
 			}
 			
 			return true;

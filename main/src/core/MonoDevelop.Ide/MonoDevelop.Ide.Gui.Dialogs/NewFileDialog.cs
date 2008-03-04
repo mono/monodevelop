@@ -402,7 +402,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 					if (!item.Create (project, path, titem.Language, nameEntry.Text))
 						return;
 				} catch (Exception ex) {
-					Services.MessageService.ShowError (ex);
+					MessageService.ShowException (ex);
 					return;
 				}
 

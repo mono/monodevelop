@@ -128,14 +128,14 @@ namespace MonoDevelop.Ide.Gui.Search
 			try {
 				find.SearchStrategy.CompilePattern(searchOptions);
 			} catch {
-				Services.MessageService.ShowMessage (GettextCatalog.GetString ("Search pattern is invalid"), DialogPointer);
+				MessageService.ShowError (GettextCatalog.GetString ("Search pattern is invalid"));
 				return;
 			}
 			while (true) {
 				ISearchResult result = SearchReplaceManager.find.FindNext(searchOptions);
 				
 				if (result == null) {
-					Services.MessageService.ShowMessage(GettextCatalog.GetString ("Mark all completed"), DialogPointer ); 
+					MessageService.ShowMessage (GettextCatalog.GetString ("Mark all completed")); 
 					find.Reset();
 					return;
 				} else {
@@ -153,7 +153,7 @@ namespace MonoDevelop.Ide.Gui.Search
 			try {
 				find.SearchStrategy.CompilePattern(searchOptions);
 			} catch {
-				Services.MessageService.ShowMessage (GettextCatalog.GetString ("Search pattern is invalid"), DialogPointer);
+				MessageService.ShowMessage (DialogPointer, GettextCatalog.GetString ("Search pattern is invalid"));
 				return;
 			}
 			
@@ -162,7 +162,7 @@ namespace MonoDevelop.Ide.Gui.Search
 				
 				if (result == null) {
 					string message = string.Format(GettextCatalog.GetPluralString("Replace all finished. {0} match found.", "Replace all finished. {0} matches found.", find.MatchCount), find.MatchCount);
-					Services.MessageService.ShowMessage(message, DialogPointer);
+					MessageService.ShowMessage (DialogPointer, message);
 					find.Reset();
 					return;
 				} else {
@@ -208,7 +208,7 @@ namespace MonoDevelop.Ide.Gui.Search
 			try {
 				find.SearchStrategy.CompilePattern(searchOptions);
 			} catch {
-				Services.MessageService.ShowMessage (GettextCatalog.GetString ("Search pattern is invalid"), DialogPointer);
+				MessageService.ShowMessage (DialogPointer, GettextCatalog.GetString ("Search pattern is invalid"));
 				return;
 			}
 			
@@ -220,7 +220,7 @@ namespace MonoDevelop.Ide.Gui.Search
 			try {
 				find.SearchStrategy.CompilePattern(searchOptions);
 			} catch {
-				Services.MessageService.ShowMessage (GettextCatalog.GetString ("Search pattern is invalid"), DialogPointer);
+				MessageService.ShowMessage (DialogPointer, GettextCatalog.GetString ("Search pattern is invalid"));
 				return;
 			}
 
@@ -233,7 +233,7 @@ namespace MonoDevelop.Ide.Gui.Search
 			lastResult = result;
 			
 			if (result == null) {
-				Services.MessageService.ShowMessage (GettextCatalog.GetString ("Search string not found:") + "\n" + GLib.Markup.EscapeText (SearchOptions.SearchPattern), DialogPointer ); 
+				MessageService.ShowMessage (DialogPointer, GettextCatalog.GetString ("Search string not found:") + "\n" + GLib.Markup.EscapeText (SearchOptions.SearchPattern)); 
 				find.Reset();
 			} else {
 				ITextBuffer textArea = OpenView (result.FileName, typeof(ITextBuffer)) as ITextBuffer;

@@ -63,9 +63,7 @@
     <File name="icons/comment.png" subtype="Code" buildaction="EmbedAsResource" />
     <File name="icons/uncomment.png" subtype="Code" buildaction="EmbedAsResource" />
     <File name="icons/visual-studio.png" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="MonoDevelop.Core.Gui/IMessageService.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Core.Gui.Components/FileBrowser.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Core.Gui/MessageService.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Core.Gui/StockIcons.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Core.Gui/AsyncDispatchAttribute.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Core.Gui/DispatchService.cs" subtype="Code" buildaction="Compile" />
@@ -164,6 +162,8 @@
     <File name="icons/pad-task-list-16.png" subtype="Code" buildaction="EmbedAsResource" />
     <File name="icons/build-project-22.png" subtype="Code" buildaction="EmbedAsResource" />
     <File name="icons/build-solution-22.png" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="MonoDevelop.Core.Gui/MessageService.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Core.Gui/AlertDialog.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="False" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />

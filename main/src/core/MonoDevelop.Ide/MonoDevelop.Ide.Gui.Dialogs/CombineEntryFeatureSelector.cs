@@ -32,6 +32,7 @@ using Gtk;
 using MonoDevelop.Ide.Templates;
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Gui;
 
 namespace MonoDevelop.Ide.Gui.Dialogs
 {
@@ -165,7 +166,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				string msg = pf.Validate (parentCombine, entry, selectedEditors [n]);
 				if (!string.IsNullOrEmpty (msg)) {
 					msg = pf.Title + ": " + msg;
-					IdeApp.Services.MessageService.ShowError ((Gtk.Window) this.Toplevel, msg);
+					MessageService.ShowError ((Gtk.Window)this.Toplevel, msg);
 					return false;
 				}
 			}
@@ -180,7 +181,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 					pf.ApplyFeature (parentCombine, entry, selectedEditors [n]);
 				}
 				catch (Exception ex) {
-					IdeApp.Services.MessageService.ShowError (ex);
+					MessageService.ShowException (ex);
 				}
 			}
 		}

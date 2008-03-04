@@ -140,7 +140,7 @@ namespace MonoDevelop.SourceEditor
 
 			if (warnOverwrite) {
 				if (fileName == ContentName) {
-					if (!MonoDevelop.Core.Gui.Services.MessageService.AskQuestion (string.Format (GettextCatalog.GetString ("This file {0} has been changed outside of MonoDevelop. Are you sure you want to overwrite the file?"), fileName),"MonoDevelop"))
+					if (MonoDevelop.Core.Gui.MessageService.AskQuestion (GettextCatalog.GetString ("This file {0} has been changed outside of MonoDevelop. Are you sure you want to overwrite the file?", fileName), MonoDevelop.Core.Gui.AlertButton.Cancel, MonoDevelop.Core.Gui.AlertButton.OverwriteFile) != MonoDevelop.Core.Gui.AlertButton.OverwriteFile)
 						return;
 				}
 				warnOverwrite = false;
@@ -974,7 +974,7 @@ namespace MonoDevelop.SourceEditor
 			case (int)PrintButtons.Print:
 				int result = printJob.Print ();
 				if (result != 0)
-					IdeApp.Services.MessageService.ShowError (GettextCatalog.GetString ("Print operation failed."));
+					MessageService.ShowError (GettextCatalog.GetString ("Print operation failed."));
 				goto default;
 			case (int)PrintButtons.Preview:
 				PrintPreviewDocument ();
@@ -1036,7 +1036,7 @@ namespace MonoDevelop.SourceEditor
 			}
 			if (font == null) {
 				LoggingService.LogError ("Unable to load font." );
-				MonoDevelop.Core.Gui.Services.MessageService.ShowError ("Unable to initialize Font, aborting.");
+				MessageService.ShowError ("Unable to initialize Font, aborting.");
 				return;
 			}
 			Gnome.Font boldFont   =  Gnome.Font.FindFromFullName (font.FontName + " Bold " + ((int)font.Size));

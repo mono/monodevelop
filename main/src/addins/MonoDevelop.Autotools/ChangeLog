@@ -1,3 +1,10 @@
+2008-03-04  Mike Krüger <mkrueger@novell.com> 
+
+	* ImportMakefileDialog.cs, MakefileOptionPanelWidget.cs, Commands.cs,
+	  gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs,
+	  gtk-gui/gui.stetic, MakefileData.cs: Worked on gnome hig compliant
+	  alerts.
+
 2008-02-23  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Autotools.mdp, Makefile.am: Removed some unused glade and

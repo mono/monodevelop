@@ -1,3 +1,13 @@
+2008-03-04  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Deployment.NodeBuilders/PackageNodeBuilder.cs,
+	  MonoDevelop.Deployment.NodeBuilders/PackagingProjectNodeBuilder.cs,
+	  gtk-gui/MonoDevelop.Deployment.Gui.DeployDialog.cs, gtk-gui/gui.stetic,
+	  MonoDevelop.Deployment.Gui/DialogFileReplacePolicy.cs,
+	  MonoDevelop.Deployment.Gui/DeployDialog.cs,
+	  MonoDevelop.Deployment.Gui/EditPackageDialog.cs: Worked on gnome hig
+	  compliant alerts.
+
 2008-02-23  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Deployment.mdp, Makefile.am: Removed some unused glade and

@@ -139,7 +139,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             // Internal child MonoDevelop.Ide.Gui.Dialogs.AddinLoadErrorDialog.ActionArea
             Gtk.HButtonBox w11 = this.ActionArea;
             w11.Name = "GtkDialog_ActionArea";
-            w11.Spacing = 10;
+            w11.Spacing = 6;
             w11.BorderWidth = ((uint)(5));
             w11.LayoutStyle = ((Gtk.ButtonBoxStyle)(4));
             // Container child GtkDialog_ActionArea.Gtk.ButtonBox+ButtonBoxChild
@@ -180,7 +180,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             if ((this.Child != null)) {
                 this.Child.ShowAll();
             }
-            this.DefaultWidth = 573;
+            this.DefaultWidth = 575;
             this.labelFatal.Hide();
             this.labelWarning.Hide();
             this.closeButton.Hide();

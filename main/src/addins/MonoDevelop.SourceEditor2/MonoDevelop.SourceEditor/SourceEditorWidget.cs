@@ -32,6 +32,7 @@ using MonoDevelop.Projects.Parser;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Gui.Search;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Commands;
@@ -116,7 +117,7 @@ namespace MonoDevelop.SourceEditor
 			this.textEditor.Caret.PositionChanged += CaretPositionChanged;
 			
 			// Setup the columns and column renders for the comboboxes
-			System.Console.WriteLine(Stock.RevertToSaved);
+			System.Console.WriteLine(Gtk.Stock.RevertToSaved);
 			CellRendererPixbuf pixr = new CellRendererPixbuf ();
 			pixr.Ypad = 0;
 			classCombo.PackStart (pixr, false);
@@ -548,7 +549,7 @@ namespace MonoDevelop.SourceEditor
 //				view.VScroll = vscroll;
 				view.WorkbenchWindow.ShowNotification = false;
 			} catch (Exception ex) {
-				MonoDevelop.Core.Gui.Services.MessageService.ShowError (ex, "Could not reload the file.");
+				MessageService.ShowException (ex, "Could not reload the file.");
 			}
 		}
 		
@@ -736,7 +737,7 @@ namespace MonoDevelop.SourceEditor
 			if (cu == null || cu.FoldingRegions == null) 
 				return;
 			foreach (FoldingRegion region in cu.FoldingRegions) {
-				regionStore.AppendValues (IdeApp.Services.Resources.GetIcon(Stock.Add, IconSize.Menu), 
+				regionStore.AppendValues (IdeApp.Services.Resources.GetIcon(Gtk.Stock.Add, IconSize.Menu), 
 				                          region.Name, 
 				                          region.Region);
 			}
@@ -1078,7 +1079,7 @@ namespace MonoDevelop.SourceEditor
 			if (result == null) {
 				IdeApp.Workbench.StatusBar.ShowError (GettextCatalog.GetString ("Search pattern not found"));
 			} else if (result.SearchWrapped) {
-				IdeApp.Workbench.StatusBar.ShowMessage (new Image (Stock.Find, IconSize.Menu), GettextCatalog.GetString ("Reached bottom, continued from top"));
+				IdeApp.Workbench.StatusBar.ShowMessage (new Image (Gtk.Stock.Find, IconSize.Menu), GettextCatalog.GetString ("Reached bottom, continued from top"));
 			} else {
 				IdeApp.Workbench.StatusBar.ShowReady ();
 			}
@@ -1094,7 +1095,7 @@ namespace MonoDevelop.SourceEditor
 			if (result == null) {
 				IdeApp.Workbench.StatusBar.ShowError (GettextCatalog.GetString ("Search pattern not found"));
 			} else if (result.SearchWrapped) {
-				IdeApp.Workbench.StatusBar.ShowMessage (new Image (Stock.Find, IconSize.Menu), GettextCatalog.GetString ("Reached top, continued from bottom"));
+				IdeApp.Workbench.StatusBar.ShowMessage (new Image (Gtk.Stock.Find, IconSize.Menu), GettextCatalog.GetString ("Reached top, continued from bottom"));
 			} else {
 				IdeApp.Workbench.StatusBar.ShowMessage (GettextCatalog.GetString ("Ready"));
 			}

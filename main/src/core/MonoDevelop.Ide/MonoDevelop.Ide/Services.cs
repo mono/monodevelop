@@ -45,11 +45,7 @@ namespace MonoDevelop.Ide
 		static IDocumentationService documentationService;
 		static IDebuggingService debuggingService;
 		static TaskService taskService;
-	
-		public static MessageService MessageService {
-			get { return MonoDevelop.Core.Gui.Services.MessageService; }
-		}
-
+		
 		public static ResourceService Resources {
 			get { return MonoDevelop.Core.Gui.Services.Resources; }
 		}

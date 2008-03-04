@@ -108,9 +108,9 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 						FileService.RenameFile (oldname, newName);
 					}
 				} catch (System.IO.IOException) {   // assume duplicate file
-					Services.MessageService.ShowError (GettextCatalog.GetString ("File or directory name is already in use. Please choose a different one."));
+					MessageService.ShowError (GettextCatalog.GetString ("File or directory name is already in use. Please choose a different one."));
 				} catch (System.ArgumentException) { // new file name with wildcard (*, ?) characters in it
-					Services.MessageService.ShowError (GettextCatalog.GetString ("The file name you have chosen contains illegal characters. Please choose a different file name."));
+					MessageService.ShowError (GettextCatalog.GetString ("The file name you have chosen contains illegal characters. Please choose a different file name."));
 				}
 			}
 		}
@@ -125,13 +125,13 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		{
 			SystemFile file = CurrentNode.DataItem as SystemFile;
 			
-			bool yes = Services.MessageService.AskQuestion (GettextCatalog.GetString ("Are you sure you want to permanently delete the file {0}?", file.Path));
+			bool yes = MessageService.AskQuestion (GettextCatalog.GetString ("Are you sure you want to permanently delete the file {0}?", file.Path), AlertButton.Cancel, AlertButton.Delete) == AlertButton.Delete;
 			if (!yes) return;
 
 			try {
 				FileService.DeleteFile (file.Path);
 			} catch {
-				Services.MessageService.ShowError (GettextCatalog.GetString ("The file {0} could not be deleted", file.Path));
+				MessageService.ShowError (GettextCatalog.GetString ("The file {0} could not be deleted", file.Path));
 			}
 		}
 		

@@ -1,3 +1,9 @@
+2008-03-04  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.WebReferences.Commands/WebReferenceCommandHandler.cs,
+	  MonoDevelop.WebReferences.Dialogs/WebReferenceDialog.cs: Worked on gnome
+	  hig compliant alerts.
+
 2008-02-27  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.WebReferences.Commands/WebReferenceCommandHandler.cs:

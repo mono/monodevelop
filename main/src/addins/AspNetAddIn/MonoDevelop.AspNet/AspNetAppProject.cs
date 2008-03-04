@@ -34,6 +34,7 @@ using System.IO;
 using System.Xml;
 using System.Collections.Generic;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Gui;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Projects;
@@ -393,7 +394,7 @@ namespace MonoDevelop.AspNet
 						//last request has failed so show user the error
 						} else if (i >= (noOfRequests - 1)) {
 							string message = GettextCatalog.GetString ("Could not connect to webserver {0}", url);
-							MonoDevelop.Ide.Gui.IdeApp.Services.MessageService.ShowError (exp, message);
+							MessageService.ShowException (exp, message);
 							
 						//we still have requests to go, so cancel the current one and sleep for a bit
 						} else {

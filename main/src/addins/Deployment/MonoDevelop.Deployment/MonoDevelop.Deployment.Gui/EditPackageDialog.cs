@@ -43,7 +43,7 @@ namespace MonoDevelop.Deployment.Gui
 		{
 			string msg = target.Validate ();
 			if (!string.IsNullOrEmpty (msg)) {
-				IdeApp.Services.MessageService.ShowError (null, msg, this, true);
+				MonoDevelop.Core.Gui.MessageService.ShowError (this, msg);
 				return;
 			}
 			package.Name = entryName.Text;

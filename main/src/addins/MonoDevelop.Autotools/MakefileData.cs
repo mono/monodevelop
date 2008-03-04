@@ -35,6 +35,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 
 using MonoDevelop.Core;
+using MonoDevelop.Core.Gui;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Ide.Gui;
@@ -630,12 +631,11 @@ namespace MonoDevelop.Autotools
 
 			//FIXME: Improve the message
 			if (promptForRemoval) {
-				int choice = IdeApp.Services.MessageService.ShowCustomDialog (
-						GettextCatalog.GetString ("Enable Makefile integration"),
-						GettextCatalog.GetString ("Enabling Makefile integration. You can choose to have either the Project or the Makefile be used as the master copy. This is done only when enabling this feature. After this, the Makefile will be taken as the master copy."),
-						"Project", "Makefile");
-
-				if (choice == 0) {
+				AlertButton projectButton = new AlertButton ("_Project");
+				AlertButton makefileButton = new AlertButton ("_Makefile");
+				AlertButton choice = MessageService.AskQuestion (GettextCatalog.GetString ("Enabling Makefile integration. You can choose to have either the Project or the Makefile be used as the master copy. This is done only when enabling this feature. After this, the Makefile will be taken as the master copy."),
+				                                                 projectButton, makefileButton);
+				if (choice == projectButton) {
 					//Sync Project --> Makefile
 					dirty = true;
 					return;

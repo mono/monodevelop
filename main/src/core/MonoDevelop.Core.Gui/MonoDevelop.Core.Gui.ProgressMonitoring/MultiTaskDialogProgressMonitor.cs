@@ -179,14 +179,14 @@ namespace MonoDevelop.Core.Gui.ProgressMonitoring
 				string s = "";
 				foreach (string m in errorsMessages)
 					s += m + "\n";
-				Services.MessageService.ShowError (errorException, s);
+				MessageService.ShowException (errorException, s);
 			}
 			
 			if (warningMessages.Count > 0) {
 				string s = "";
 				foreach (string m in warningMessages)
 					s += m + "\n";
-				Services.MessageService.ShowWarning (s);
+				MessageService.ShowError (s);
 			}
 		}
 	}

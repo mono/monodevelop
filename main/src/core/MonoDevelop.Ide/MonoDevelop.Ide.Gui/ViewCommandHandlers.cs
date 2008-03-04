@@ -112,7 +112,7 @@ namespace MonoDevelop.Ide.Gui
 		[CommandHandler (FileCommands.ReloadFile)]
 		protected void OnReloadFile ()
 		{
-			if (Services.MessageService.AskQuestion(GettextCatalog.GetString ("Are you sure that you want to reload the file?")))
+			if (MessageService.AskQuestion (GettextCatalog.GetString ("Are you sure that you want to reload the file?"), AlertButton.Cancel, AlertButton.Reload) == AlertButton.Reload)
 				doc.Reload ();
 		}
 		

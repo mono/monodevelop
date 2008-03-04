@@ -93,7 +93,7 @@ namespace MonoDevelop.Core.Gui.Dialogs
 						break;
 				}
 			} catch (Exception ex) {
-				Services.MessageService.ShowError (ex);
+				MessageService.ShowException (ex);
 			}
 			
 			return true;

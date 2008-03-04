@@ -298,7 +298,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		public override void RenameItem (string newName)
 		{
 			if (newName.IndexOfAny (new char [] { '\'', '(', ')', '"', '{', '}', '|' } ) != -1) {
-				Services.MessageService.ShowError (GettextCatalog.GetString (
+				MessageService.ShowError (GettextCatalog.GetString (
 					"Project name may not contain any of the following characters: {0}", "', (, ), \", {, }, |"));
 				return;
 			}
@@ -330,8 +330,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			Combine cmb = CurrentNode.GetParentDataItem (typeof(Combine), false) as Combine;;
 			Project prj = CurrentNode.DataItem as Project;
 			
-			bool yes = Services.MessageService.AskQuestion (GettextCatalog.GetString (
-				"Do you really want to remove project {0} from solution {1}?", prj.Name, cmb.Name));
+			bool yes = MessageService.AskQuestion (GettextCatalog.GetString ("Do you really want to remove project {0} from solution {1}?", prj.Name, cmb.Name), AlertButton.Cancel, AlertButton.Remove) == AlertButton.Remove;
 
 			if (yes) {
 				cmb.RemoveEntry (prj);

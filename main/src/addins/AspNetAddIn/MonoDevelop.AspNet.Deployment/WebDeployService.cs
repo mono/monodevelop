@@ -95,7 +95,7 @@ namespace MonoDevelop.AspNet.Deployment
 				}
 			} catch (Exception e) {
 				MonoDevelop.Core.LoggingService.LogError ("Unhandled exception in the web deploy thread", e);
-				MonoDevelop.Core.Gui.Services.MessageService.ShowError (e, "Web deploy failed due to unhandled exception");
+				MonoDevelop.Core.Gui.MessageService.ShowException (e, "Web deploy failed due to unhandled exception");
 			} finally {
 				threadParams.Monitor.Dispose ();
 			}
@@ -104,7 +104,7 @@ namespace MonoDevelop.AspNet.Deployment
 		static public void DeployDialog (AspNetAppProject project)
 		{
 			WebDeployLaunchDialog dialog = new WebDeployLaunchDialog (project);
-			Gtk.Window rootWindow = MonoDevelop.Ide.Gui.IdeApp.Services.MessageService.RootWindow as Gtk.Window;
+			Gtk.Window rootWindow = MonoDevelop.Core.Gui.MessageService.RootWindow as Gtk.Window;
 			dialog.TransientFor = rootWindow;
 			dialog.Modal = true;
 			dialog.Show ();

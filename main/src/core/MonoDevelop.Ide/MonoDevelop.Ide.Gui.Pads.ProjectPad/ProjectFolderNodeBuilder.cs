@@ -160,9 +160,9 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 						IdeApp.ProjectOperations.SaveCombine();
 					}
 				} catch (System.IO.IOException) {   // assume duplicate file
-					Services.MessageService.ShowError(GettextCatalog.GetString ("File or directory name is already in use. Please choose a different one."));
+					MessageService.ShowError(GettextCatalog.GetString ("File or directory name is already in use. Please choose a different one."));
 				} catch (System.ArgumentException) { // new file name with wildcard (*, ?) characters in it
-					Services.MessageService.ShowError(GettextCatalog.GetString ("The file name you have chosen contains illegal characters. Please choose a different file name."));
+					MessageService.ShowError(GettextCatalog.GetString ("The file name you have chosen contains illegal characters. Please choose a different file name."));
 				}
 			}
 		}
@@ -174,17 +174,18 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			ProjectFile[] files = folder.Project.ProjectFiles.GetFilesInPath (folder.Path);
 			
 			if (files.Length == 0) {
-				bool yes = Services.MessageService.AskQuestion (GettextCatalog.GetString ("Are you sure you want to permanently delete the folder {0}?", folder.Path));
-				if (!yes) return;
+				bool yes = MessageService.AskQuestion (GettextCatalog.GetString ("Are you sure you want to permanently delete the folder {0}?", folder.Path), AlertButton.Cancel, AlertButton.Delete) == AlertButton.Delete;
+				if (!yes) 
+					return;
 
 				try {
 					FileService.DeleteDirectory (folder.Path);
 				} catch {
-					Services.MessageService.ShowError (GettextCatalog.GetString ("The folder {0} could not be deleted", folder.Path));
+					MessageService.ShowError (GettextCatalog.GetString ("The folder {0} could not be deleted", folder.Path));
 				}
 			}
 			else {
-				bool yes = Services.MessageService.AskQuestion (GettextCatalog.GetString ("Do you really want to remove folder {0}?", folder.Name));
+				bool yes = MessageService.AskQuestion (GettextCatalog.GetString ("Do you really want to remove folder {0}?", folder.Name), AlertButton.Cancel, AlertButton.Remove) == AlertButton.Remove;
 				if (!yes) return;
 				
 				ProjectFile[] inParentFolder = project.ProjectFiles.GetFilesInPath (Path.GetDirectoryName (folder.Path));

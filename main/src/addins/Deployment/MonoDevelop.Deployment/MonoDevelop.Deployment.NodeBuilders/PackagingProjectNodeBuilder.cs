@@ -112,7 +112,7 @@ namespace MonoDevelop.Deployment.NodeBuilders
 		public override void DeleteItem ()
 		{
 			PackagingProject project = CurrentNode.DataItem as PackagingProject;
-			if (IdeApp.Services.MessageService.AskQuestion (GettextCatalog.GetString ("Are you sure you want to delete the project '{0}'?", project.Name))) {
+			if (MessageService.AskQuestion (GettextCatalog.GetString ("Are you sure you want to delete the project '{0}'?", project.Name), AlertButton.Cancel, AlertButton.Delete) == AlertButton.Delete) {
 				Combine c = project.ParentCombine;
 				c.RemoveEntry (project);
 				project.Dispose ();

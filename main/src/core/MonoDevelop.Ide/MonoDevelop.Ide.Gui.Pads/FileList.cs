@@ -161,7 +161,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 		
 		private void OnDeleteFiles (object sender, EventArgs e)
 		{
-			if (Services.MessageService.AskQuestion(GettextCatalog.GetString ("Are you sure you want to delete this file?"), GettextCatalog.GetString ("Delete files")))
+			if (MessageService.AskQuestion(GettextCatalog.GetString ("Are you sure you want to delete this file?"), AlertButton.Cancel, AlertButton.Delete) == AlertButton.Delete)
 			{
 				try
 				{
@@ -170,7 +170,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 				}
 				catch (Exception ex)
 				{
-					Services.MessageService.ShowError (ex, "Could not delete file '" + System.IO.Path.GetFileName (selectedItem.FullName) + "'");
+					MessageService.ShowException (ex, "Could not delete file '" + System.IO.Path.GetFileName (selectedItem.FullName) + "'");
 				} 
 			}
 		}

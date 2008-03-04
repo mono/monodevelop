@@ -119,9 +119,9 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 						IdeApp.ProjectOperations.SaveCombine();
 					}
 				} catch (System.IO.IOException) {   // assume duplicate file
-					Services.MessageService.ShowError (GettextCatalog.GetString ("File or directory name is already in use. Please choose a different one."));
+					MessageService.ShowError (GettextCatalog.GetString ("File or directory name is already in use. Please choose a different one."));
 				} catch (System.ArgumentException) { // new file name with wildcard (*, ?) characters in it
-					Services.MessageService.ShowError (GettextCatalog.GetString ("The file name you have chosen contains illegal characters. Please choose a different file name."));
+					MessageService.ShowError (GettextCatalog.GetString ("The file name you have chosen contains illegal characters. Please choose a different file name."));
 				}
 			}
 		}
@@ -159,32 +159,26 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		{
 			ProjectFile file = CurrentNode.DataItem as ProjectFile;
 			Project project = CurrentNode.GetParentDataItem (typeof(Project), false) as Project;
+			AlertButton result = MessageService.AskQuestion (GettextCatalog.GetString ("Are you sure you want to remove file {0} from project {1}?", Path.GetFileName (file.Name), project.Name), AlertButton.Cancel, AlertButton.Delete, AlertButton.Remove);
+			if (result != AlertButton.Remove && result != AlertButton.Delete) 
+				return;
 			
-			DeleteFileDialog deleteDialog = new DeleteFileDialog (GettextCatalog.GetString (
-				"Are you sure you want to remove file {0} from project {1}?", Path.GetFileName (file.Name), project.Name));
-			try {
-				bool yes = deleteDialog.Run ();
-				if (!yes) return;
-
-				if (!file.IsExternalToProject) {
-					ProjectFile[] inFolder = project.ProjectFiles.GetFilesInPath (Path.GetDirectoryName (file.Name));
-					if (inFolder.Length == 1 && inFolder [0] == file) {
-						// This is the last project file in the folder. Make sure we keep
-						// a reference to the folder, so it is not deleted from the tree.
-						ProjectFile folderFile = new ProjectFile (Path.GetDirectoryName (file.Name));
-						folderFile.Subtype = Subtype.Directory;
-						project.ProjectFiles.Add (folderFile);
-					}
+			if (!file.IsExternalToProject) {
+				ProjectFile[] inFolder = project.ProjectFiles.GetFilesInPath (Path.GetDirectoryName (file.Name));
+				if (inFolder.Length == 1 && inFolder [0] == file) {
+					// This is the last project file in the folder. Make sure we keep
+					// a reference to the folder, so it is not deleted from the tree.
+					ProjectFile folderFile = new ProjectFile (Path.GetDirectoryName (file.Name));
+					folderFile.Subtype = Subtype.Directory;
+					project.ProjectFiles.Add (folderFile);
 				}
-				
-				project.ProjectFiles.Remove (file);
-				if (deleteDialog.DeleteFromDisk)
-					FileService.DeleteFile (file.Name);
-			
-				IdeApp.ProjectOperations.SaveProject (project);				
-			} finally {
-				deleteDialog.Destroy ();
 			}
+			
+			project.ProjectFiles.Remove (file);
+			if (result == AlertButton.Delete)
+				FileService.DeleteFile (file.Name);
+		
+			IdeApp.ProjectOperations.SaveProject (project);				
 		}
 		
 		[CommandUpdateHandler (EditCommands.Delete)]

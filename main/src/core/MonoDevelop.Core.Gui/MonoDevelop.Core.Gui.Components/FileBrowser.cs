@@ -205,7 +205,7 @@ namespace MonoDevelop.Core.Gui.Components
 			} catch (Exception ex) {
 				string message = GettextCatalog.GetString ("Could not access to directory: ") + CurrentDir;
 				LoggingService.LogError (message, ex);
-				Services.MessageService.ShowError (ex, message);
+				MessageService.ShowException (ex, message);
 			}
 		}
 
@@ -316,7 +316,7 @@ namespace MonoDevelop.Core.Gui.Components
 			} catch (Exception ex) {
 				string message = GettextCatalog.GetString ("Cannot enter '{0}' folder", entry.Text);
 				LoggingService.LogError (message, ex);
-				Services.MessageService.ShowError (message);
+				MessageService.ShowError (message);
 			}
 		}
 
@@ -344,40 +344,29 @@ namespace MonoDevelop.Core.Gui.Components
 					tv.Model.IterNthChild (out iter, Int32.Parse (args.Path));
 					string oldpath = (string) store.GetValue (iter, 1);
 
-					if (oldpath != args.NewText)
-					{
-    					try
-    					{
-    						System.IO.Directory.Move (System.IO.Path.Combine(CurrentDir, oldpath), System.IO.Path.Combine(CurrentDir, args.NewText));
-    					}
-    					catch (Exception ex)
-    					{
-						string message = GettextCatalog.GetString ("Could not rename folder '{0}' to '{1}'", oldpath, args.NewText);
-						LoggingService.LogError (message, ex);
-						Services.MessageService.ShowError (ex, message);
-    					}
-    					finally
-    					{
-    						Populate ();
-    					}
+					if (oldpath != args.NewText) {
+						try {
+							System.IO.Directory.Move (System.IO.Path.Combine(CurrentDir, oldpath), System.IO.Path.Combine(CurrentDir, args.NewText));
+						} catch (Exception ex) {
+							string message = GettextCatalog.GetString ("Could not rename folder '{0}' to '{1}'", oldpath, args.NewText);
+							LoggingService.LogError (message, ex);
+							MessageService.ShowException (ex, message);
+						} finally {
+							Populate ();
+						}
 					}
 
 					break;
 
 				case PerformingTask.CreatingNew:
 					System.IO.DirectoryInfo dirinfo = new DirectoryInfo (CurrentDir);
-					try
-					{
+					try {
 						dirinfo.CreateSubdirectory(args.NewText);
-					}
-					catch (Exception ex)
-					{
-					string message = GettextCatalog.GetString ("Could not create new folder '{0}'", args.NewText);
-					LoggingService.LogError (message, ex);
-					Services.MessageService.ShowError (ex, message);
-					}
-					finally
-					{
+					} catch (Exception ex) {
+						string message = GettextCatalog.GetString ("Could not create new folder '{0}'", args.NewText);
+						LoggingService.LogError (message, ex);
+						MessageService.ShowException (ex, message);
+					} finally {
 						Populate ();
 					}
 
@@ -396,22 +385,17 @@ namespace MonoDevelop.Core.Gui.Components
 			TreeIter iter;
 			TreeModel model;
 
-			if (Services.MessageService.AskQuestion (GettextCatalog.GetString ("Are you sure you want to delete this folder?"), GettextCatalog.GetString ("Delete folder")))
+			if (MessageService.AskQuestion (GettextCatalog.GetString ("Delete folder"), GettextCatalog.GetString ("Are you sure you want to delete this folder?"), AlertButton.Cancel, AlertButton.Delete) == AlertButton.Delete)
 			{
 				if (tv.Selection.GetSelected (out model, out iter))
 				{
-					try
-					{
+					try {
 						Directory.Delete (System.IO.Path.Combine (CurrentDir, (string) store.GetValue (iter, 1)), true);
-					}
-					catch (Exception ex)
-					{
+					} catch (Exception ex) {
 						string message = GettextCatalog.GetString ("Could not delete folder '{0}'", System.IO.Path.Combine (CurrentDir, (string) store.GetValue (iter, 1)));
 						LoggingService.LogError (message, ex);
-						Services.MessageService.ShowError (ex, message);
-					}
-					finally
-					{
+						MessageService.ShowException (ex, message);
+					} finally {
 						Populate ();
 					}
 				}

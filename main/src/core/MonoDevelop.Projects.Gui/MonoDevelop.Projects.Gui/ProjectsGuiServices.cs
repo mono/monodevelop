@@ -51,10 +51,6 @@ namespace MonoDevelop.Projects.Gui
 			get { return MonoDevelop.Projects.Services.ProjectService; }
 		}
 	
-		internal static MessageService MessageService {
-			get { return MonoDevelop.Core.Gui.Services.MessageService; }
-		}
-	
 		internal static ResourceService Resources {
 			get { return MonoDevelop.Core.Gui.Services.Resources; }
 		}

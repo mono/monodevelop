@@ -1,3 +1,18 @@
+2008-03-04  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Core.Gui.mdp,
+	  MonoDevelop.Core.Gui.Dialogs/AbstractOptionPanel.cs,
+	  MonoDevelop.Core.Gui.Components/FileBrowser.cs,
+	  MonoDevelop.Core.Gui/IMessageService.cs,
+	  MonoDevelop.Core.Gui/AlertDialog.cs,
+	  MonoDevelop.Core.Gui/MessageService.cs,
+	  MonoDevelop.Core.Gui/GuiService.cs,
+	  gtk-gui/MonoDevelop.Core.Gui.Dialogs.MultiTaskProgressDialog.cs,
+	  Makefile.am,
+	  MonoDevelop.Core.Gui.ProgressMonitoring/MessageDialogProgressMonitor.cs,
+	  MonoDevelop.Core.Gui.ProgressMonitoring/MultiTaskDialogProgressMonitor.cs:
+	  Worked on gnome hig compliant alerts.
+
 2008-02-28  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Core.Gui.Components/FileBrowser.cs: Added missing shortcut

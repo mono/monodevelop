@@ -103,7 +103,7 @@ namespace MonoDevelop.Ide.Gui
 					string s = "";
 					foreach (string m in Errors)
 						s += m + "\n";
-					Services.MessageService.ShowError (ErrorException, s);
+					MessageService.ShowException (ErrorException, s);
 				}
 				if (uniqueMonitor) {
 					Gtk.Image img = Services.Resources.GetImage (Stock.Error, Gtk.IconSize.Menu);
@@ -118,7 +118,7 @@ namespace MonoDevelop.Ide.Gui
 					string s = "";
 					foreach (string m in Warnings)
 						s += m + "\n";
-					Services.MessageService.ShowWarning (s);
+					MessageService.ShowWarning (s);
 				}
 				
 				if (SuccessMessages.Count == 0) {

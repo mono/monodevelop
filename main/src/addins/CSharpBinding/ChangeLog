@@ -1,3 +1,10 @@
+2008-03-04  Mike Krüger <mkrueger@novell.com> 
+
+	* Gui/CompilerOptionsPanelWidget.cs,
+	  gtk-gui/CSharpBinding.CodeGenerationPanelWidget.cs,
+	  gtk-gui/CSharpBinding.CompilerOptionsPanelWidget.cs: Worked on gnome hig
+	  compliant alerts.
+
 2008-02-28  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Parser/CodeGenerator.cs: Fix line/column check. Positions are

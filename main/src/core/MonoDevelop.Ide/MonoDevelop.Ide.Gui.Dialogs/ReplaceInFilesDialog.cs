@@ -320,29 +320,29 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			}
 
 			if (searchPattern == string.Empty) {
-				Services.MessageService.ShowError(GettextCatalog.GetString ("Empty search pattern"));
+				MessageService.ShowError (GettextCatalog.GetString ("Empty search pattern"));
 				return false;
 			}
 			
 			if (searchLocationComboBox.Active == 0) {
 				
 				if (directoryName == string.Empty) {
-					Services.MessageService.ShowError(GettextCatalog.GetString ("Empty directory name"));
+					MessageService.ShowError (GettextCatalog.GetString ("Empty directory name"));
 					return false;
 				}
 
 				if (!FileService.IsValidFileName(directoryName)) {
-					Services.MessageService.ShowErrorFormatted(GettextCatalog.GetString ("Invalid directory name: {0}"), directoryName);
+					MessageService.ShowError (GettextCatalog.GetString ("Invalid directory name: {0}", directoryName));
 					return false;
 				}
 				
 				if (!Directory.Exists(directoryName)) {
-					Services.MessageService.ShowErrorFormatted (GettextCatalog.GetString ("Invalid directory name: {0}"), directoryName);
+					MessageService.ShowError (GettextCatalog.GetString ("Invalid directory name: {0}, directoryName"));
 					return false;
 				}
 				
 				if (!FileService.IsValidFileName(fileMask) || fileMask.IndexOf('\\') >= 0) {
-					Services.MessageService.ShowErrorFormatted(GettextCatalog.GetString ("Invalid file mask: {0}"), fileMask);
+					MessageService.ShowError (GettextCatalog.GetString ("Invalid file mask: {0}", fileMask));
 					return false;
 				}
 			}

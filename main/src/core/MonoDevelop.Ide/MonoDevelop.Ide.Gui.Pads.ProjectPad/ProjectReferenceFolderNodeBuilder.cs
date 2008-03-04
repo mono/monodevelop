@@ -197,7 +197,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		bool ProjectReferencesProject (Project project, string targetProject)
 		{
 			if (project.Name == targetProject) {
-				IdeApp.Services.MessageService.ShowError (GettextCatalog.GetString ("Cyclic project references are not allowed."));
+				MessageService.ShowError (GettextCatalog.GetString ("Cyclic project references are not allowed."));
 				return true;
 			}
 			

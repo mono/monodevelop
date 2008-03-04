@@ -60,7 +60,6 @@ namespace MonoDevelop.Core.Gui.Dialogs {
             this.progressScroll.HeightRequest = 150;
             this.progressScroll.CanFocus = true;
             this.progressScroll.Name = "progressScroll";
-            this.progressScroll.VscrollbarPolicy = ((Gtk.PolicyType)(1));
             this.progressScroll.HscrollbarPolicy = ((Gtk.PolicyType)(2));
             this.progressScroll.ShadowType = ((Gtk.ShadowType)(1));
             // Container child progressScroll.Gtk.Container+ContainerChild
@@ -88,7 +87,6 @@ namespace MonoDevelop.Core.Gui.Dialogs {
             this.detailsScroll.HeightRequest = 120;
             this.detailsScroll.CanFocus = true;
             this.detailsScroll.Name = "detailsScroll";
-            this.detailsScroll.VscrollbarPolicy = ((Gtk.PolicyType)(1));
             this.detailsScroll.HscrollbarPolicy = ((Gtk.PolicyType)(2));
             this.detailsScroll.ShadowType = ((Gtk.ShadowType)(1));
             // Container child detailsScroll.Gtk.Container+ContainerChild

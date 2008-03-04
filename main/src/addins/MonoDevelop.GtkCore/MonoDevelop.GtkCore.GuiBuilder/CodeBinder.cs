@@ -32,6 +32,7 @@ using System.CodeDom;
 using System.Collections;
 
 using MonoDevelop.Core;
+using MonoDevelop.Core.Gui;
 using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Text;
@@ -301,7 +302,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 					}
 				}
 			} else {
-				IdeApp.Services.MessageService.ShowError (GettextCatalog.GetString ("The class bound to the component '{0}' could not be found. This may be due to syntax errors in the source code file.", GetObjectName(targetObject)));
+				MessageService.ShowError (GettextCatalog.GetString ("The class bound to the component '{0}' could not be found. This may be due to syntax errors in the source code file.", GetObjectName(targetObject)));
 			}
 			
 			return null;

@@ -124,9 +124,9 @@ namespace MonoDevelop.Ide.Commands
 				if (response == (int)Gtk.ResponseType.Ok) {
 					if (name == null) {
 						if (fs.Uri != null)
-							IdeApp.Services.MessageService.ShowError (GettextCatalog.GetString ("Only local files can be opened."));
+							MessageService.ShowError (GettextCatalog.GetString ("Only local files can be opened."));
 						else
-							IdeApp.Services.MessageService.ShowError (GettextCatalog.GetString ("The provided file could not be loaded."));
+							MessageService.ShowError (GettextCatalog.GetString ("The provided file could not be loaded."));
 						return;
 					}
 					IProjectService ps = MonoDevelop.Projects.Services.ProjectService;
@@ -208,8 +208,7 @@ namespace MonoDevelop.Ide.Commands
 		protected override void Run()
 		{			
 			try {
-				if (IdeApp.Workbench.RecentOpen.RecentFile != null && IdeApp.Workbench.RecentOpen.RecentFile.Length > 0 && Services.MessageService.AskQuestion(GettextCatalog.GetString ("Are you sure you want to clear recent files list?"), GettextCatalog.GetString ("Clear recent files")))
-				{
+				if (IdeApp.Workbench.RecentOpen.RecentFile != null && IdeApp.Workbench.RecentOpen.RecentFile.Length > 0 && MessageService.AskQuestion (GettextCatalog.GetString ("Clear recent files"), GettextCatalog.GetString ("Are you sure you want to clear recent files list?"), AlertButton.Cancel, AlertButton.Clear) == AlertButton.Clear) {
 					IdeApp.Workbench.RecentOpen.ClearRecentFiles();
 				}
 			} catch {}
@@ -227,7 +226,7 @@ namespace MonoDevelop.Ide.Commands
 		protected override void Run()
 		{			
 			try {
-				if (IdeApp.Workbench.RecentOpen.RecentProject != null && IdeApp.Workbench.RecentOpen.RecentProject.Length > 0 && Services.MessageService.AskQuestion(GettextCatalog.GetString ("Are you sure you want to clear recent projects list?"), GettextCatalog.GetString ("Clear recent projects")))
+				if (IdeApp.Workbench.RecentOpen.RecentProject != null && IdeApp.Workbench.RecentOpen.RecentProject.Length > 0 && MessageService.AskQuestion (GettextCatalog.GetString ("Clear recent projects"), GettextCatalog.GetString ("Are you sure you want to clear recent projects list?"), AlertButton.Cancel, AlertButton.Clear) == AlertButton.Clear)
 				{
 					IdeApp.Workbench.RecentOpen.ClearRecentProjects();
 				}
@@ -289,7 +288,7 @@ namespace MonoDevelop.Ide.Commands
 			try {
 				IdeApp.ProjectOperations.OpenCombine(filename);
 			} catch (Exception ex) {
-				Services.MessageService.ShowError (ex, "Could not load project or solution: " + filename);
+				MessageService.ShowException (ex, "Could not load project or solution: " + filename);
 			}
 		}
 	}

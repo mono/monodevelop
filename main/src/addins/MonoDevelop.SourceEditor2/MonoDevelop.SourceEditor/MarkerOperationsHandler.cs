@@ -49,7 +49,7 @@ namespace MonoDevelop.SourceEditor
 					System.Diagnostics.Process.Start (urlMarker.Url);
 				}
 			} catch (Exception) {
-				IdeApp.Services.MessageService.ShowError (GettextCatalog.GetString ("Could not open the url {0}", urlMarker.Url));
+				MonoDevelop.Core.Gui.MessageService.ShowError (GettextCatalog.GetString ("Could not open the url {0}", urlMarker.Url));
 			}
 		}
 		

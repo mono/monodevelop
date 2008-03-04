@@ -106,7 +106,7 @@ namespace MonoDevelop.Ide.Gui
 			ideServices = new IdeServices ();
 			
 			commandService.CommandError += delegate (object sender, CommandErrorArgs args) {
-				Services.MessageService.ShowError (args.Exception, args.ErrorMessage);
+				MessageService.ShowException (args.Exception, args.ErrorMessage);
 			};
 			
 			FileService.ErrorHandler = FileServiceErrorHandler;
@@ -131,7 +131,7 @@ namespace MonoDevelop.Ide.Gui
 			monitor.Step (1);
 			DispatchService.RunPendingEvents ();
 			
-			Services.MessageService.RootWindow = workbench.RootWindow;
+			MessageService.RootWindow = workbench.RootWindow;
 		
 			commandService.EnableIdleUpdate = true;
 			
@@ -149,7 +149,7 @@ namespace MonoDevelop.Ide.Gui
 					try {
 						IdeApp.ProjectOperations.OpenCombine (file).WaitForCompleted ();
 					} catch (Exception e) {
-						Services.MessageService.ShowError (e, "Could not load solution: " + file);
+						MessageService.ShowException (e, "Could not load solution: " + file);
 					}
 				} else {
 					try {
@@ -173,7 +173,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		static bool FileServiceErrorHandler (string message, Exception ex)
 		{
-			Services.MessageService.ShowError (ex, message);
+			MessageService.ShowException (ex, message);
 			return true;
 		}
 		
@@ -223,11 +223,7 @@ namespace MonoDevelop.Ide.Gui
 		IconService icons;
 		IDocumentationService documentationService;
 		IDebuggingService debuggingService;
-
-		public MessageService MessageService {
-			get { return MonoDevelop.Core.Gui.Services.MessageService; }
-		}
-
+		
 		public ResourceService Resources {
 			get { return MonoDevelop.Core.Gui.Services.Resources; }
 		}

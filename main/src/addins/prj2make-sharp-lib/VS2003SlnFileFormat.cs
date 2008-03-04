@@ -27,6 +27,7 @@
 //
 
 using MonoDevelop.Core;
+using MonoDevelop.Core.Gui;
 using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
@@ -82,33 +83,33 @@ namespace MonoDevelop.Prj2Make
 		{
 			//if (!CanReadFile (fileName))
 
-			int choice;
+			AlertButton choice;
+			AlertButton monodevelop = new AlertButton ("MonoDevelop");
+			AlertButton vs2005      = new AlertButton ("VS2005");
 			if (IdeApp.Services == null) {
 				// HACK, for mdtool
-				choice = 0;
+				choice = null;
 			} else {
-				choice = IdeApp.Services.MessageService.ShowCustomDialog (GettextCatalog.GetString ("Conversion required"),
-					GettextCatalog.GetString (
-							"The solution file {0} is a VS2003 solution. It must be converted to either a MonoDevelop " + 
-							"or a VS2005 solution. Converting to VS2005 format will overwrite existing files. Convert ?", fileName),
-							"MonoDevelop", "VS2005", "Cancel");
+				choice = MessageService.AskQuestion (GettextCatalog.GetString ("The solution file {0} is a VS2003 solution. It must be converted to either a MonoDevelop or a VS2005 solution", fileName),
+				                                     GettextCatalog.GetString ("Converting to VS2005 format will overwrite existing files."),
+				                                     AlertButton.Cancel, vs2005, monodevelop);
 			}
-		                                                      	
-			if (choice == 2)
-				throw new InvalidOperationException ("VS2003 solutions are not supported natively.");
+			
 
 			Combine combine = null;
-			if (choice == 0) {
+			if (choice == monodevelop) {
 				// Convert to MD solution
 				combine = ImportSln (fileName, true);
-			} else if (choice == 1) {
+			} else if (choice == vs2005) {
 				// Convert to vs2005 solution
 				combine = ImportSlnAsMSBuild (fileName);
 				combine.Save (monitor);
 
 				// Re-read to get a MSBuildSolution object
-				combine = Services.ProjectService.ReadCombineEntry (combine.FileName, monitor) as Combine;
-			}
+				combine = MonoDevelop.Projects.Services.ProjectService.ReadCombineEntry (combine.FileName, monitor) as Combine;
+			} else {
+				throw new InvalidOperationException ("VS2003 solutions are not supported natively.");
+			}				
 
 			return combine;
 		}

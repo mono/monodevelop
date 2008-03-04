@@ -428,8 +428,6 @@ namespace MonoDevelop.Autotools {
             w22.Expand = false;
             w22.Fill = false;
             this.notebook1.Add(this.vbox1);
-            Gtk.Notebook.NotebookChild w23 = ((Gtk.Notebook.NotebookChild)(this.notebook1[this.vbox1]));
-            w23.TabExpand = false;
             // Notebook tab
             this.label1 = new Gtk.Label();
             this.label1.Name = "label1";
@@ -666,7 +664,6 @@ namespace MonoDevelop.Autotools {
             this.notebook1.Add(this.vbox2);
             Gtk.Notebook.NotebookChild w43 = ((Gtk.Notebook.NotebookChild)(this.notebook1[this.vbox2]));
             w43.Position = 1;
-            w43.TabExpand = false;
             // Notebook tab
             this.label2 = new Gtk.Label();
             this.label2.Name = "label2";
@@ -901,7 +898,6 @@ namespace MonoDevelop.Autotools {
             this.notebook1.Add(this.vbox4);
             Gtk.Notebook.NotebookChild w63 = ((Gtk.Notebook.NotebookChild)(this.notebook1[this.vbox4]));
             w63.Position = 2;
-            w63.TabExpand = false;
             // Notebook tab
             this.label3 = new Gtk.Label();
             this.label3.Name = "label3";
@@ -1016,7 +1012,6 @@ namespace MonoDevelop.Autotools {
             this.notebook1.Add(this.vbox3);
             Gtk.Notebook.NotebookChild w73 = ((Gtk.Notebook.NotebookChild)(this.notebook1[this.vbox3]));
             w73.Position = 3;
-            w73.TabExpand = false;
             // Notebook tab
             this.label4 = new Gtk.Label();
             this.label4.Name = "label4";

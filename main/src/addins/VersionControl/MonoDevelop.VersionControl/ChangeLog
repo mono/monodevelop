@@ -1,3 +1,15 @@
+2008-03-04  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.VersionControl.Dialogs/CommitDialog.cs,
+	  MonoDevelop.VersionControl.Views/Statuses.cs,
+	  MonoDevelop.VersionControl.Views/Logs.cs,
+	  MonoDevelop.VersionControl/CommitCommand.cs,
+	  MonoDevelop.VersionControl/VersionControlNodeExtension.cs,
+	  MonoDevelop.VersionControl/RevertCommand.cs,
+	  MonoDevelop.VersionControl/Publish.cs,
+	  MonoDevelop.VersionControl/VersionControlService.cs: Worked on gnome hig
+	  compliant alerts.
+
 2008-02-29  Mike Krüger <mkrueger@novell.com> 
 
 	* VersionControl.addin.xml: Added many shortcuts.

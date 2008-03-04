@@ -294,7 +294,7 @@ namespace MonoDevelop.VersionControl
 				try {
 					PrepareCommit (null, new CommitEventArgs (repo, changeSet, false));
 				} catch (Exception ex) {
-					IdeApp.Services.MessageService.ShowError (ex);
+					MessageService.ShowException (ex);
 					return false;
 				}
 			}
@@ -307,7 +307,7 @@ namespace MonoDevelop.VersionControl
 				try {
 					BeginCommit (null, new CommitEventArgs (repo, changeSet, false));
 				} catch (Exception ex) {
-					IdeApp.Services.MessageService.ShowError (ex);
+					MessageService.ShowException (ex);
 					return false;
 				}
 			}
@@ -320,7 +320,7 @@ namespace MonoDevelop.VersionControl
 				try {
 					EndCommit (null, new CommitEventArgs (repo, changeSet, success));
 				} catch (Exception ex) {
-					IdeApp.Services.MessageService.ShowError (ex);
+					MessageService.ShowException (ex);
 					return false;
 				}
 			}
@@ -529,7 +529,7 @@ namespace MonoDevelop.VersionControl
 					return true;
 			}
 			
-			IdeApp.Services.MessageService.ShowError (GettextCatalog.GetString ("There isn't any supported version control system installed. You may need to install additional add-ins or packages."));
+			MessageService.ShowError (GettextCatalog.GetString ("There isn't any supported version control system installed. You may need to install additional add-ins or packages."));
 			return false;
 		}
 		

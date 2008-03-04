@@ -22,6 +22,7 @@ using System;
 using System.IO;
 using System.Collections;
 
+using MonoDevelop.Core.Gui;
 using MonoDevelop.Core.Gui.Dialogs;
 using MonoDevelop.Core;
 
@@ -86,7 +87,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			string projectPath = folderEntry.Path;
 			if (projectPath.Length > 0) {
 				if (!FileService.IsValidFileName(projectPath)) {
-					Services.MessageService.ShowError("Invalid project path specified");
+					MessageService.ShowError ("Invalid project path specified");
 					return false;
 				}
 			}

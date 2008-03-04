@@ -193,7 +193,7 @@ namespace MonoDevelop.WebReferences.Dialogs
 			if (sender.Equals(btnOK) && Directory.Exists(this.ReferencePath))
 			{
 				string message = GettextCatalog.GetString ("The reference name '{0}' already exists.", this.ReferenceName);
-				IdeApp.Services.MessageService.ShowWarning(message);
+				MessageService.ShowWarning(message);
 				return;	
 			}
 			else

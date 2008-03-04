@@ -44,6 +44,7 @@ FILES =  \
 	MonoDevelop.Core.Gui.WebBrowser/LocationChangingEventArgs.cs \
 	MonoDevelop.Core.Gui.WebBrowser/StatusMessageChangedEventArgs.cs \
 	MonoDevelop.Core.Gui.WebBrowser/TitleChangedEventArgs.cs \
+	MonoDevelop.Core.Gui/AlertDialog.cs \
 	MonoDevelop.Core.Gui/AsyncDispatchAttribute.cs \
 	MonoDevelop.Core.Gui/DefaultPlatformService.cs \
 	MonoDevelop.Core.Gui/DesktopApplication.cs \
@@ -54,7 +55,6 @@ FILES =  \
 	MonoDevelop.Core.Gui/GuiSyncContext.cs \
 	MonoDevelop.Core.Gui/GuiSyncObject.cs \
 	MonoDevelop.Core.Gui/IMementoCapable.cs \
-	MonoDevelop.Core.Gui/IMessageService.cs \
 	MonoDevelop.Core.Gui/ITextBufferStrategy.cs \
 	MonoDevelop.Core.Gui/MessageService.cs \
 	MonoDevelop.Core.Gui/PixbufList.cs \

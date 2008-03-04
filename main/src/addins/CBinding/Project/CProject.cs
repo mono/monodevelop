@@ -40,6 +40,7 @@ using System.CodeDom.Compiler;
 using Mono.Addins;
 
 using MonoDevelop.Core;
+using MonoDevelop.Core.Gui;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Projects;
@@ -300,7 +301,7 @@ namespace CBinding
 			IConsole console;
 			
 			if (conf.CompileTarget != CBinding.CompileTarget.Bin) {
-				IdeApp.Services.MessageService.ShowMessage ("Compile target is not an executable!");
+				MessageService.ShowMessage ("Compile target is not an executable!");
 				return;
 			}
 			

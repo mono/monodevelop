@@ -5,6 +5,7 @@ using System.Collections.Specialized;
 using MonoDevelop.VersionControl.Dialogs;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Gui;
 
 namespace MonoDevelop.VersionControl
 {
@@ -51,7 +52,7 @@ namespace MonoDevelop.VersionControl
 				if (test)
 					LoggingService.LogError (ex.ToString ());
 				else
-					IdeApp.Services.MessageService.ShowError (ex, GettextCatalog.GetString ("Version control command failed."));
+					MessageService.ShowException (ex, GettextCatalog.GetString ("Version control command failed."));
 				return false;
 			}
 		}

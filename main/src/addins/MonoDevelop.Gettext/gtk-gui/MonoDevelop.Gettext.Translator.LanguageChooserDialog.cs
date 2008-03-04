@@ -178,7 +178,6 @@ namespace MonoDevelop.Gettext.Translator {
             this.frame1.Add(this.GtkAlignment2);
             this.radiobuttonKnown = new Gtk.RadioButton(Mono.Unix.Catalog.GetString("_Known Language"));
             this.radiobuttonKnown.Name = "radiobuttonKnown";
-            this.radiobuttonKnown.Active = true;
             this.radiobuttonKnown.DrawIndicator = true;
             this.radiobuttonKnown.UseUnderline = true;
             this.radiobuttonKnown.Group = new GLib.SList(System.IntPtr.Zero);
@@ -284,8 +283,6 @@ namespace MonoDevelop.Gettext.Translator {
             }
             this.DefaultWidth = 466;
             this.DefaultHeight = 416;
-            this.label3.MnemonicWidget = this.languageTreeView;
-            this.label2.MnemonicWidget = this.entryLocale;
             this.Show();
             this.checkbuttonUseCoutry.Clicked += new System.EventHandler(this.ChangeSensitivity);
             this.entryLocale.Changed += new System.EventHandler(this.OnEntryLocaleChanged);

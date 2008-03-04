@@ -37,7 +37,6 @@ namespace MonoDevelop.Core.Gui
 	public class Services
 	{
 		static ResourceService resourceService;
-		static MessageService messageService;
 		static PlatformService platformService;
 		
 		static Services ()
@@ -60,14 +59,6 @@ namespace MonoDevelop.Core.Gui
 			}
 		}
 	
-		public static MessageService MessageService {
-			get {
-				if (messageService == null)
-					messageService = new MessageService ();
-				return messageService;
-			}
-		}
-		
 		public static PlatformService PlatformService {
 			get {
 				return platformService;

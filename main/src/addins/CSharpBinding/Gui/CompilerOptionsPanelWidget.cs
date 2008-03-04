@@ -29,6 +29,7 @@ using Gtk;
 
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Gui;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Parser;
 using MonoDevelop.Projects.Text;
@@ -116,7 +117,7 @@ namespace CSharpBinding
 					codePage = trialCodePage;
 				else {
 					if (!int.TryParse (codepageEntry.Entry.Text, out trialCodePage)) {
-						IdeApp.Services.MessageService.ShowError (GettextCatalog.GetString ("Invalid code page number."));
+						MessageService.ShowError (GettextCatalog.GetString ("Invalid code page number."));
 						return false;
 					}
 					codePage = trialCodePage;

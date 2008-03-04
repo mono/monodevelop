@@ -295,7 +295,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 					entry = Services.ProjectService.ReadCombineEntry (NewCombineEntryLocation, new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor ());
 				}
 				catch (Exception ex) {
-					Services.MessageService.ShowError (ex, GettextCatalog.GetString ("The file '{0}' could not be loaded.", NewCombineEntryLocation), this, true);
+					MessageService.ShowException (ex, GettextCatalog.GetString ("The file '{0}' could not be loaded.", NewCombineEntryLocation));
 					return;
 				}
 				if (parentCombine == null) {
@@ -351,7 +351,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 			
 			//The one below seemed to be failing sometimes.
 			if(solution.IndexOfAny("$#@!%^&*/?\\|'\";:}{".ToCharArray()) > -1) {
-				Services.MessageService.ShowError(this, GettextCatalog.GetString ("Illegal project name.\nOnly use letters, digits, space, '.' or '_'."));
+				MessageService.ShowError (GettextCatalog.GetString ("Illegal project name.\nOnly use letters, digits, space, '.' or '_'."));
 				return false;
 			}
 
@@ -359,12 +359,12 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 				&& (!FileService.IsValidFileName (solution) || solution.IndexOf(System.IO.Path.DirectorySeparatorChar) >= 0)) ||
 			    !FileService.IsValidFileName(name)     || name.IndexOf(System.IO.Path.DirectorySeparatorChar) >= 0 ||
 			    !FileService.IsValidFileName(location)) {
-				Services.MessageService.ShowError (this, GettextCatalog.GetString ("Illegal project name.\nOnly use letters, digits, space, '.' or '_'."));
+				MessageService.ShowError (GettextCatalog.GetString ("Illegal project name.\nOnly use letters, digits, space, '.' or '_'."));
 				return false;
 			}
 
 			if (parentCombine != null && parentCombine.RootCombine.FindProject (name) != null) {
-				Services.MessageService.ShowError (this, GettextCatalog.GetString ("A Project with that name is already in your Project Space"));
+				MessageService.ShowError (GettextCatalog.GetString ("A Project with that name is already in your Project Space"));
 				return false;
 			}
 			
@@ -377,18 +377,13 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 				
 			ProjectTemplate item = (ProjectTemplate) TemplateView.CurrentlySelected;
 			
-			try
-			{
+			try {
 				System.IO.Directory.CreateDirectory (ProjectLocation);
-			}
-			catch (IOException)
-			{
-				Services.MessageService.ShowError (this, GettextCatalog.GetString ("Could not create directory {0}. File already exists.", ProjectLocation));
+			} catch (IOException) {
+				MessageService.ShowError (GettextCatalog.GetString ("Could not create directory {0}. File already exists.", ProjectLocation));
 				return false;
-			}
-			catch (UnauthorizedAccessException)
-			{
-				Services.MessageService.ShowError (this, GettextCatalog.GetString ("You do not have permission to create to {0}", ProjectLocation));
+			} catch (UnauthorizedAccessException) {
+				MessageService.ShowError (GettextCatalog.GetString ("You do not have permission to create to {0}", ProjectLocation));
 				return false;
 			}
 			
@@ -408,7 +403,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 				else
 					NewCombineEntryLocation = item.CreateProject (cinfo);
 			} catch (Exception ex) {
-				Services.MessageService.ShowError (ex, GettextCatalog.GetString ("The project could not be created"), this, true);
+				MessageService.ShowException (ex, GettextCatalog.GetString ("The project could not be created"));
 				return false;
 			}
 			selectedItem = item;

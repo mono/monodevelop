@@ -472,8 +472,8 @@ namespace MonoDevelop.Gettext
 		
 		void RemoveEntry (CatalogEntry entry)
 		{
-			bool yes = MonoDevelop.Core.Gui.Services.MessageService.AskQuestion (GettextCatalog.GetString (
-				"Do you really want to remove the translation string {0} (It will be removed from all translations)?", entry.String));
+			bool yes = MonoDevelop.Core.Gui.MessageService.AskQuestion (GettextCatalog.GetString ("Do you really want to remove the translation string {0} (It will be removed from all translations)?", entry.String),
+			                                                            AlertButton.Cancel, AlertButton.Remove) == AlertButton.Remove;
 
 			if (yes) {
 				TranslationProject project = IdeApp.ProjectOperations.CurrentSelectedCombineEntry as TranslationProject;

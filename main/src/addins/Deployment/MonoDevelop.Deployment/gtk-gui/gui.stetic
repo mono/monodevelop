@@ -329,9 +329,6 @@
                       </packing>
                     </child>
                   </widget>
-                  <packing>
-                    <property name="TabExpand">False</property>
-                  </packing>
                 </child>
                 <child>
                   <widget class="Gtk.Label" id="label2">
@@ -397,7 +394,6 @@
                   </widget>
                   <packing>
                     <property name="Position">1</property>
-                    <property name="TabExpand">False</property>
                   </packing>
                 </child>
                 <child>
@@ -493,7 +489,6 @@
                   </widget>
                   <packing>
                     <property name="Position">2</property>
-                    <property name="TabExpand">False</property>
                   </packing>
                 </child>
                 <child>
@@ -621,7 +616,6 @@
                                 <property name="MemberName" />
                                 <property name="CanFocus">True</property>
                                 <property name="Label" translatable="yes">Save in a new Packaging Project</property>
-                                <property name="Active">True</property>
                                 <property name="DrawIndicator">True</property>
                                 <property name="HasLabel">True</property>
                                 <property name="UseUnderline">True</property>
@@ -843,7 +837,6 @@
                   </widget>
                   <packing>
                     <property name="Position">3</property>
-                    <property name="TabExpand">False</property>
                   </packing>
                 </child>
                 <child>
@@ -1355,9 +1348,6 @@
                       <placeholder />
                     </child>
                   </widget>
-                  <packing>
-                    <property name="TabExpand">False</property>
-                  </packing>
                 </child>
                 <child>
                   <widget class="Gtk.Label" id="label2">
@@ -1400,7 +1390,6 @@
                   </widget>
                   <packing>
                     <property name="Position">1</property>
-                    <property name="TabExpand">False</property>
                   </packing>
                 </child>
                 <child>
@@ -1430,7 +1419,6 @@
                   </widget>
                   <packing>
                     <property name="Position">2</property>
-                    <property name="TabExpand">False</property>
                   </packing>
                 </child>
                 <child>

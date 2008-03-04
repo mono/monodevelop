@@ -226,12 +226,12 @@ namespace MonoDevelop.Ide.Gui
 			}
 		
 			if (!FileService.IsValidFileName (filename)) {
-				Services.MessageService.ShowMessage (GettextCatalog.GetString ("File name {0} is invalid", filename));
+				MessageService.ShowMessage (GettextCatalog.GetString ("File name {0} is invalid", filename));
 				return;
 			}
 			// detect preexisting file
 			if(File.Exists(filename)){
-				if(!Services.MessageService.AskQuestion (GettextCatalog.GetString ("File {0} already exists.  Overwrite?", filename))){
+				if(MessageService.AskQuestion (GettextCatalog.GetString ("File {0} already exists. Overwrite?", filename), AlertButton.Cancel, AlertButton.OverwriteFile) == AlertButton.OverwriteFile){
 					return;
 				}
 			}

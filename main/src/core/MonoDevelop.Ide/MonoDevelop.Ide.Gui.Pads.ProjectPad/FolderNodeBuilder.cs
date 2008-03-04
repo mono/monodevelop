@@ -171,16 +171,18 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 						q = GettextCatalog.GetString ("Do you really want to move the folder '{0}' to the root folder of project '{1}'?", what, targetProject.Name);
 					else
 						q = GettextCatalog.GetString ("Do you really want to move the folder '{0}' to the folder '{1}'?", what, Path.GetFileName (targetPath));
+					if (MessageService.AskQuestion (q, AlertButton.Cancel, AlertButton.Move) == AlertButton.Move)
+						return;
 				}
 				else {
 					if (targetPath == targetProject.BaseDirectory)
 						q = GettextCatalog.GetString ("Do you really want to copy the folder '{0}' to the root folder of project '{1}'?", what, targetProject.Name);
 					else
 						q = GettextCatalog.GetString ("Do you really want to copy the folder '{0}' to the folder '{1}'?", what, Path.GetFileName (targetPath));
+					if (MessageService.AskQuestion (q, AlertButton.Cancel, AlertButton.Copy) == AlertButton.Copy)
+						return;
 				}
 
-				if (!Services.MessageService.AskQuestion (q))
-					return;
 			}
 			
 			ArrayList filesToSave = new ArrayList ();
@@ -209,20 +211,15 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 					else
 						question = GettextCatalog.GetString ("Do you want to save the following files before the copy operation?\n\n{0}", sb.ToString ());
 				}
-				
-				switch (Services.MessageService.AskQuestionWithCancel (question)) {
-					case QuestionResponse.Cancel:
-						return;
-					case QuestionResponse.Yes:
-						try {
-							foreach (Document doc in filesToSave) {
-								doc.Save ();
-							}
-						} catch (Exception ex) {
-							Services.MessageService.ShowError (ex, GettextCatalog.GetString ("Save operation failed."));
-							return;
+				if (MessageService.AskQuestion (question, AlertButton.Cancel, AlertButton.Save) == AlertButton.Save) { 
+					try {
+						foreach (Document doc in filesToSave) {
+							doc.Save ();
 						}
-						break;
+					} catch (Exception ex) {
+						MessageService.ShowException (ex, GettextCatalog.GetString ("Save operation failed."));
+						return;
+					}
 				}
 			}
 			

@@ -27,6 +27,7 @@
 //
 
 using MonoDevelop.Core;
+using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
 
@@ -90,25 +91,25 @@ namespace MonoDevelop.Prj2Make
 		public object ReadFile (string fileName, IProgressMonitor monitor)
 		{
 			//if (!CanReadFile (fileName))
+			
+			AlertButton monodevelop = new AlertButton ("MonoDevelop");
+			AlertButton vs2005      = new AlertButton ("VS2005");
 
-			int choice = IdeApp.Services.MessageService.ShowCustomDialog (GettextCatalog.GetString ("Conversion required"),
-					GettextCatalog.GetString (
-						"The project file {0} is a VS2003 project. It must be converted to either a MonoDevelop " + 
-						"or a VS2005 project. Converting to VS2005 format will overwrite existing files. Convert ?",
-						fileName), "MonoDevelop", "VS2005", "Cancel");
-
-			if (choice == 2)
-				throw new InvalidOperationException ("VS2003 projects are not supported natively.");
+			AlertButton choice = MessageService.AskQuestion (GettextCatalog.GetString ("The project file {0} is a VS2003 project. It must be converted to either a MonoDevelop or a VS2005 project.", fileName),
+			                                                 GettextCatalog.GetString ("Converting to VS2005 format will overwrite existing files."),
+			                                                 AlertButton.Cancel, vs2005, monodevelop);
 
 			DotNetProject project = null;
-			if (choice == 0) {
+			if (choice == monodevelop) {
 				// Convert to MD project
 				project = ImportCsproj (fileName, true);
-			} else if (choice == 1) {
+			} else if (choice == vs2005) {
 				// Convert to VS2005 project
 				project = ImportCsprojAsMSBuild (fileName);
 				// Re-read to get a MSBuildProject object
 				project = IdeApp.Services.ProjectService.ReadCombineEntry (project.FileName, monitor) as DotNetProject;
+			} else {
+				throw new InvalidOperationException ("VS2003 projects are not supported natively.");
 			}
 
 			return project;

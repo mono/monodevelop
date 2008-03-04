@@ -122,8 +122,8 @@ namespace MonoDevelop.Gettext.NodeBuilders
 				if (project == null)
 					return;
 				
-				bool yes = MonoDevelop.Core.Gui.Services.MessageService.AskQuestion (GettextCatalog.GetString (
-					"Do you really want to remove the translations from solution {0}?", project.ParentCombine.Name));
+				bool yes = MonoDevelop.Core.Gui.MessageService.AskQuestion (GettextCatalog.GetString (
+					"Do you really want to remove the translations from solution {0}?", project.ParentCombine.Name), AlertButton.Cancel, AlertButton.Remove) == AlertButton.Remove;
 
 				if (yes) {
 					project.ParentCombine.RemoveEntry (project);

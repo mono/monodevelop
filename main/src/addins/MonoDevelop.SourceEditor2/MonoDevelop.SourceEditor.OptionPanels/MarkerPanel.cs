@@ -96,7 +96,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 						break;
 				}
 			} catch (Exception ex) {
-				Services.MessageService.ShowError (ex);
+				MessageService.ShowException (ex);
 			}
 			
 			return true;

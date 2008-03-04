@@ -955,9 +955,8 @@ namespace MonoDevelop.Prj2Make
 			IFileFormat msformat = new MSBuildFileFormat ();
 
 			if (!msformat.CanReadFile (args.FileName)) {
-				if (!IdeApp.Services.MessageService.AskQuestion (GettextCatalog.GetString (
-					"The project file {0} must be converted to msbuild format to be added " +
-					"to a msbuild solution. Convert?", args.FileName), "Conversion required")) {
+				MonoDevelop.Core.Gui.AlertButton convertButton = new MonoDevelop.Core.Gui.AlertButton ("C_onvert");
+				if (MonoDevelop.Core.Gui.MessageService.AskQuestion (GettextCatalog.GetString ("The project file {0} must be converted to msbuild format to be added to a msbuild solution", args.FileName), MonoDevelop.Core.Gui.AlertButton.Cancel, convertButton) != convertButton) {
 					args.Cancel = true;
 					return;
 				}

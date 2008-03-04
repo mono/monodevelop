@@ -103,7 +103,7 @@ namespace MonoDevelop.Ide.Gui.Search
 			try {
 				find.SearchStrategy.CompilePattern(searchOptions);
 			} catch {
-				Services.MessageService.ShowMessage (GettextCatalog.GetString ("Search pattern is invalid"), DialogPointer);
+				MessageService.ShowError (GettextCatalog.GetString ("Search pattern is invalid"));
 				return false;
 			}
 			return true;
@@ -144,7 +144,8 @@ namespace MonoDevelop.Ide.Gui.Search
 		public static void ReplaceAll()
 		{
 			if (searching) {
-				if (!Services.MessageService.AskQuestion (GettextCatalog.GetString ("There is a search already in progress. Do you want to cancel it?")))
+				AlertButton cancelSearch = new AlertButton (GettextCatalog.GetString ("Cancel _Search"));
+				if (MessageService.AskQuestion (GettextCatalog.GetString ("There is a search already in progress. Do you want to cancel it?"), AlertButton.Cancel, cancelSearch) == cancelSearch)
 					return;
 				CancelSearch ();
 			}
@@ -192,7 +193,8 @@ namespace MonoDevelop.Ide.Gui.Search
 		public static void FindAll()
 		{
 			if (searching) {
-				if (!Services.MessageService.AskQuestion (GettextCatalog.GetString ("There is a search already in progress. Do you want to cancel it?")))
+				AlertButton cancelSearch = new AlertButton (GettextCatalog.GetString ("Cancel _Search"));
+				if (MessageService.AskQuestion (GettextCatalog.GetString ("There is a search already in progress. Do you want to cancel it?"), AlertButton.Cancel, cancelSearch) == cancelSearch)
 					return;
 				CancelSearch ();
 			}

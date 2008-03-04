@@ -22,6 +22,7 @@ using System;
 using System.IO;
 
 using MonoDevelop.Projects;
+using MonoDevelop.Core.Gui;
 using MonoDevelop.Core.Gui.Dialogs;
 using MonoDevelop.Components;
 using MonoDevelop.Core;
@@ -79,12 +80,12 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 			}
 			
 			if (!FileService.IsValidFileName (assemblyNameEntry.Text)) {
-				Services.MessageService.ShowError (null, GettextCatalog.GetString ("Invalid assembly name specified"), (Gtk.Window) Toplevel, true);
+				MessageService.ShowError (GettextCatalog.GetString ("Invalid assembly name specified"));
 				return false;
 			}
 
 			if (!FileService.IsValidFileName (outputPathEntry.Path)) {
-				Services.MessageService.ShowError (null, GettextCatalog.GetString ("Invalid output directory specified"), (Gtk.Window) Toplevel, true);
+				MessageService.ShowError (GettextCatalog.GetString ("Invalid output directory specified"));
 				return false;
 			}
 			

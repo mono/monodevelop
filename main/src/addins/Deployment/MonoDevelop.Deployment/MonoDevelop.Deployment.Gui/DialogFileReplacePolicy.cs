@@ -29,6 +29,7 @@
 using System;
 
 using MonoDevelop.Core;
+using MonoDevelop.Core.Gui;
 using MonoDevelop.Deployment;
 
 namespace MonoDevelop.Deployment.Gui
@@ -54,8 +55,7 @@ namespace MonoDevelop.Deployment.Gui
 			if (persistentMode != FileReplaceMode.NotSet)
 				return persistentMode;
 			
-			response = (FileReplaceDialog.ReplaceResponse)
-				MonoDevelop.Core.Gui.Services.MessageService.ShowCustomDialog (typeof (FileReplaceDialog), new object[] {response, source, sourceModified.ToString (), target, targetModified.ToString ()});
+			response = (FileReplaceDialog.ReplaceResponse)MessageService.ShowCustomDialog (new FileReplaceDialog (response, source, sourceModified.ToString (), target, targetModified.ToString ()));
 			
 			switch (response) {
 			case FileReplaceDialog.ReplaceResponse.Replace:

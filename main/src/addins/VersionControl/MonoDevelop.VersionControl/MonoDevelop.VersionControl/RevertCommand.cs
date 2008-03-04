@@ -32,7 +32,7 @@ namespace MonoDevelop.VersionControl
 					return true;
 				}
 
-				if (!IdeApp.Services.MessageService.AskQuestion (GettextCatalog.GetString ("Are you sure you want to revert the changes done in the selected files?")))
+				if (MessageService.AskQuestion (GettextCatalog.GetString ("Are you sure you want to revert the changes done in the selected files?"), AlertButton.Cancel, AlertButton.Revert) == AlertButton.Revert)
 					return false;
 
 				new RevertWorker(vc, path).Start();
@@ -42,7 +42,7 @@ namespace MonoDevelop.VersionControl
 				if (test)
 					LoggingService.LogError (ex.ToString ());
 				else
-					IdeApp.Services.MessageService.ShowError (ex, GettextCatalog.GetString ("Version control command failed."));
+					MessageService.ShowException (ex, GettextCatalog.GetString ("Version control command failed."));
 				return false;
 			}
 		}

@@ -63,7 +63,7 @@ namespace MonoDevelop.Ide.Templates
 			Type type = Type.GetType (typeName);
 			
 			if (type == null) {
-				Services.MessageService.ShowError (GettextCatalog.GetString ("Can't create project with type : {0}", typeName));
+				MessageService.ShowError (GettextCatalog.GetString ("Can't create project with type : {0}", typeName));
 				return String.Empty;
 			}
 			
@@ -84,9 +84,8 @@ namespace MonoDevelop.Ide.Templates
 			
 			using (IProgressMonitor monitor = new NullProgressMonitor ()) {
 				if (File.Exists (fileName)) {
-					if (Services.MessageService.AskQuestion (GettextCatalog.GetString (
-						"Project file {0} already exists. Do you want to overwrite\nthe existing file?", fileName),
-						GettextCatalog.GetString ("File already exists"))) {
+					if (MessageService.AskQuestion (GettextCatalog.GetString (
+						"Project file {0} already exists. Do you want to overwrite\nthe existing file?", fileName), AlertButton.Cancel, AlertButton.OverwriteFile) == AlertButton.OverwriteFile) {
 						entry.Save (fileName, monitor);
 					}
 				} else {

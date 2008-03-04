@@ -1,3 +1,8 @@
+2008-03-04  Mike Krüger <mkrueger@novell.com> 
+
+	* VS2003SlnFileFormat.cs, VS2003ProjectFileFormat.cs, SlnFileFormat.cs:
+	  Worked on gnome hig compliant alerts.
+
 2008-01-25  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* prj2make-sharp-lib.addin.xml: Update MD version.

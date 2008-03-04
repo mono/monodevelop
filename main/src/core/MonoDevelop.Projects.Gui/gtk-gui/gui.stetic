@@ -514,7 +514,6 @@ Custom Command</property>
               <widget class="Gtk.RadioButton" id="singleRadioButton">
                 <property name="MemberName" />
                 <property name="Label" translatable="yes">_Single Startup Project</property>
-                <property name="Active">True</property>
                 <property name="DrawIndicator">True</property>
                 <property name="HasLabel">True</property>
                 <property name="UseUnderline">True</property>

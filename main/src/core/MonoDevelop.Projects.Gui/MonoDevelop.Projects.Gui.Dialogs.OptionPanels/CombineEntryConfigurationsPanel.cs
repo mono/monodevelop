@@ -111,9 +111,9 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 				do {
 					if (dlg.Run () == (int) Gtk.ResponseType.Ok) {
 						if (dlg.ConfigName.Length == 0) {
-							Services.MessageService.ShowWarning (GettextCatalog.GetString ("Please enter a valid configuration name."));
+							MessageService.ShowWarning (GettextCatalog.GetString ("Please enter a valid configuration name."));
 						} else if (configData.Configurations [dlg.ConfigName] != null) {
-							Services.MessageService.ShowWarning (GettextCatalog.GetString ("A configuration with the name '{0}' already exists.", dlg.ConfigName));
+							MessageService.ShowWarning (GettextCatalog.GetString ("A configuration with the name '{0}' already exists.", dlg.ConfigName));
 						} else {
 							CombineConfiguration cc = (CombineConfiguration) configData.AddConfiguration (dlg.ConfigName, copyFrom, dlg.CreateChildren);
 							store.AppendValues (cc, cc.Name);
@@ -135,7 +135,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 				return;
 			
 			if (configData.Configurations.Count == 1) {
-				Services.MessageService.ShowWarning (GettextCatalog.GetString ("There must be at least one configuration."));
+				MessageService.ShowWarning (GettextCatalog.GetString ("There must be at least one configuration."));
 				return;
 			}
 			
@@ -168,9 +168,9 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 				do {
 					if (dlg.Run () == (int) Gtk.ResponseType.Ok) {
 						if (dlg.ConfigName.Length == 0) {
-							Services.MessageService.ShowWarning (GettextCatalog.GetString ("Please enter a valid configuration name."));
+							MessageService.ShowWarning (GettextCatalog.GetString ("Please enter a valid configuration name."));
 						} else if (configData.Configurations [dlg.ConfigName] != null) {
-							Services.MessageService.ShowWarning (GettextCatalog.GetString ("A configuration with the name '{0}' already exists.", dlg.ConfigName));
+							MessageService.ShowWarning (GettextCatalog.GetString ("A configuration with the name '{0}' already exists.", dlg.ConfigName));
 						} else {
 							configData.RenameConfiguration (cc.Name, dlg.ConfigName, dlg.RenameChildren);
 							store.SetValue (iter, 1, cc.Name);

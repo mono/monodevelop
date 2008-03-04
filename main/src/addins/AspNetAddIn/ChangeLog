@@ -1,3 +1,10 @@
+2008-03-04  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.AspNet.Deployment/WebDeployService.cs,
+	  MonoDevelop.AspNet/XspParameters.cs,
+	  MonoDevelop.AspNet/AspNetAppProject.cs: Worked on gnome hig compliant
+	  alerts.
+
 2008-03-03  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs: Improve ASP.NET code

@@ -546,27 +546,14 @@ namespace MonoDevelop.Ide.Gui
 		{
 			IWorkbenchWindow window = (IWorkbenchWindow) sender;
 			if (!args.Forced && window.ViewContent != null && window.ViewContent.IsDirty) {
-				
-				QuestionResponse response = Services.MessageService.AskQuestionWithCancel (GettextCatalog.GetString ("Do you want to save the current changes?"));
-				
-				if (response == QuestionResponse.Cancel) {
-					args.Cancel = true;
-					return;
-				}
-
-				if (response == QuestionResponse.Yes) {
+				AlertButton result = MessageService.GenericAlert (Stock.Warning,
+				                                                  GettextCatalog.GetString ("Save the changes to document \"{0}\" before closing?", window.ViewContent.IsUntitled ? window.ViewContent.UntitledName : System.IO.Path.GetFileName (window.ViewContent.ContentName)), 
+				                                                  GettextCatalog.GetString ("If you don't save, all changes will be permanently lost."),
+				                                                  AlertButton.CloseWithoutSave, AlertButton.Cancel, window.ViewContent.IsUntitled ? AlertButton.SaveAs : AlertButton.Save);
+				if (result == AlertButton.Save || result == AlertButton.SaveAs) {
 					if (window.ViewContent.ContentName == null) {
-						while (true) {
-							FindDocument (window).Save ();
-							if (window.ViewContent.IsDirty) {
-								if (Services.MessageService.AskQuestion(GettextCatalog.GetString ("Do you really want to discard your changes?"))) {
-									break;
-								}
-							} else {
-								break;
-							}
-						}
-						
+						FindDocument (window).Save ();
+						args.Cancel = window.ViewContent.IsDirty;
 					} else {
 						try {
 							if (window.ViewContent.IsFile)
@@ -576,9 +563,12 @@ namespace MonoDevelop.Ide.Gui
 						}
 						catch (Exception ex) {
 							args.Cancel = true;
-							IdeApp.Services.MessageService.ShowError (ex, GettextCatalog.GetString ("The document could not be saved."));
+							MessageService.ShowException (ex, GettextCatalog.GetString ("The document could not be saved."));
 						}
 					}
+				} else {
+					args.Cancel = result != AlertButton.CloseWithoutSave;
+					System.Console.WriteLine(result + " --- " + args.Cancel);
 				}
 			}
 		}

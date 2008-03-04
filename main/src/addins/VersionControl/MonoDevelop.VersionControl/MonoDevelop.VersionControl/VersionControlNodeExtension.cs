@@ -356,7 +356,7 @@ namespace MonoDevelop.VersionControl
 				if (test)
 					LoggingService.LogError (ex.ToString ());
 				else
-					IdeApp.Services.MessageService.ShowError (ex, GettextCatalog.GetString ("Version control command failed."));
+					MessageService.ShowException (ex, GettextCatalog.GetString ("Version control command failed."));
 				return TestResult.Disable;
 			}
 			

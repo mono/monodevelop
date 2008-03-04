@@ -34,6 +34,7 @@ using Gtk;
 using MonoDevelop.Components;
 using MonoDevelop.Ide.ExternalTools;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Gui;
 using MonoDevelop.Core.Gui.Components;
 using MonoDevelop.Core.Gui.Dialogs;
 
@@ -315,7 +316,7 @@ namespace MonoDevelop.Ide.ExternalTools
 				if (control != null) {
 					control.Sensitive = enabled;
 				} else {
-					Services.MessageService.ShowError (GettextCatalog.GetString ("Control not found!"));
+					MessageService.ShowError (GettextCatalog.GetString ("Control not found!"));
 				}
 			}
 		}
@@ -330,12 +331,12 @@ namespace MonoDevelop.Ide.ExternalTools
 					// loop through items in the tree
 					ExternalTool tool = toolListBox.Model.GetValue (current, 1) as ExternalTool;
 					if (!FileService.IsValidFileName (tool.Command)) {
-						Services.MessageService.ShowError (String.Format(GettextCatalog.GetString ("The command of tool \"{0}\" is invalid."), tool.MenuCommand));
+						MessageService.ShowError (String.Format(GettextCatalog.GetString ("The command of tool \"{0}\" is invalid."), tool.MenuCommand));
 						return false;
 					}
 					
 					if ((tool.InitialDirectory != "") && !FileService.IsValidFileName (tool.InitialDirectory)) {
-						Services.MessageService.ShowError (String.Format(GettextCatalog.GetString ("The working directory of tool \"{0}\" is invalid.") ,tool.MenuCommand));
+						MessageService.ShowError (String.Format(GettextCatalog.GetString ("The working directory of tool \"{0}\" is invalid.") ,tool.MenuCommand));
 						return false;
 					}
 					newlist.Add (tool);

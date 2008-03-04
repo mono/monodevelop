@@ -4,6 +4,7 @@ using System.Collections.Specialized;
 using System.Collections;
 using Gtk;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Gui;
 using Mono.Addins;
 
@@ -50,7 +51,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 			foreach (object ob in exts) {
 				CommitDialogExtension ext = ob as CommitDialogExtension;
 				if (ext == null) {
-					IdeApp.Services.MessageService.ShowError ("Commit extension type " + ob.GetType() + " must be a subclass of CommitDialogExtension");
+					MessageService.ShowError ("Commit extension type " + ob.GetType() + " must be a subclass of CommitDialogExtension");
 					continue;
 				}
 				vboxExtensions.PackEnd (ext, false, false, 0);
@@ -101,7 +102,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 					try {
 						res = ext.OnBeginCommit (changeSet);
 					} catch (Exception ex) {
-						IdeApp.Services.MessageService.ShowError (ex);
+						MessageService.ShowException (ex);
 						res = false;
 					}
 					

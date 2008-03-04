@@ -502,7 +502,8 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				pfile = prj.ProjectFiles.GetFile (files[0]);
 			}
 			if (pfile.BuildAction == BuildAction.EmbedAsResource) {
-				if (!IdeApp.Services.MessageService.AskQuestion (GettextCatalog.GetString ("You are requesting the file '{0}' to be used as source for an image. However, this file is already added to the project as a resource. Are you sure you want to continue (the file will have to be removed from the resource list)?")))
+				AlertButton embedButton = new AlertButton (GettextCatalog.GetString ("_Use as Source"));
+				if (MessageService.AskQuestion (GettextCatalog.GetString ("You are requesting the file '{0}' to be used as source for an image. However, this file is already added to the project as a resource. Are you sure you want to continue (the file will have to be removed from the resource list)?"), AlertButton.Cancel, embedButton) == embedButton)
 					return null;
 			}
 			pfile.BuildAction = BuildAction.FileCopy;

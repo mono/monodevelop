@@ -1,3 +1,8 @@
+2008-03-04  Mike Krüger <mkrueger@novell.com> 
+
+	* Parser/LanguageItem.cs, Project/CProject.cs, Compiler/CCompiler.cs: Worked
+	  on gnome hig compliant alerts.
+
 2008-02-20  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* ProjectPad/ProjectPackageNodeBuilder.cs: Handle the delete key in

@@ -1,3 +1,9 @@
+2008-03-04  Mike Krüger <mkrueger@novell.com> 
+
+	* Gui/CodeGenerationPanelWidget.cs,
+	  gtk-gui/MonoDevelop.VBNetBinding.CodeGenerationPanelWidget.cs: Worked on
+	  gnome hig compliant alerts.
+
 2008-02-23  Mike Krüger <mkrueger@novell.com> 
 
 	* VB.glade, Gui/CodeGenerationPanel.cs, Gui/CodeGenerationPanelWidget.cs,

@@ -1,312 +1,252 @@
-//  MessageService.cs
 //
-//  This file was derived from a file from #Develop. 
+// MessageService.cs
 //
-//  Copyright (C) 2001-2007 Mike Krüger <mkrueger@novell.com>
+// Author:
+//   Mike Krüger <mkrueger@novell.com>
+//
+// Copyright (C) 2008 Novell, Inc (http://www.novell.com)
+//
+// Permission is hereby granted, free of charge, to any person obtaining
+// a copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to
+// permit persons to whom the Software is furnished to do so, subject to
+// the following conditions:
 // 
-//  This program is free software; you can redistribute it and/or modify
-//  it under the terms of the GNU General Public License as published by
-//  the Free Software Foundation; either version 2 of the License, or
-//  (at your option) any later version.
+// The above copyright notice and this permission notice shall be
+// included in all copies or substantial portions of the Software.
 // 
-//  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-//  GNU General Public License for more details.
-//  
-//  You should have received a copy of the GNU General Public License
-//  along with this program; if not, write to the Free Software
-//  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+// NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+// LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+// OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+// WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+//
 
 using System;
-using System.IO;
-
-using MonoDevelop.Core.Gui;
-using MonoDevelop.Core.Gui.Dialogs;
-using Mono.Addins;
 using MonoDevelop.Core;
 using Gtk;
 
 namespace MonoDevelop.Core.Gui
 {
-	/// <summary>
-	/// This interface must be implemented by all services.
-	/// </summary>
-	public class MessageService : GuiSyncObject, IMessageService
+	public class AlertButton 
 	{
-		Window rootWindow;
+		public static AlertButton Cancel  = new AlertButton (Gtk.Stock.Cancel, true);
+		public static AlertButton Delete  = new AlertButton (Gtk.Stock.Delete, true);
+		public static AlertButton Remove  = new AlertButton (Gtk.Stock.Remove, true);
+		public static AlertButton Clear   = new AlertButton (Gtk.Stock.Clear, true);
+		public static AlertButton Reload  = new AlertButton (Gtk.Stock.Refresh, true);
+		public static AlertButton Revert  = new AlertButton (Gtk.Stock.RevertToSaved, true );
+		public static AlertButton Copy    = new AlertButton (Gtk.Stock.Copy, true);
+		public static AlertButton Move    = new AlertButton (GettextCatalog.GetString ("_Move"));
+		public static AlertButton Save    = new AlertButton (Gtk.Stock.Save, true);
+		public static AlertButton SaveAs  = new AlertButton (Gtk.Stock.SaveAs, true);
+		public static AlertButton CloseWithoutSave = new AlertButton (GettextCatalog.GetString ("Close _without Saving"));
+		public static AlertButton Discard = new AlertButton (GettextCatalog.GetString ("D_iscard"));
 		
-		public object RootWindow {
-			get { return rootWindow; }
-			set { rootWindow = (Window) value; }
+		public static AlertButton OverwriteFile = new AlertButton (GettextCatalog.GetString ("_Overwrite file"));
+		
+		string label;
+		string icon;
+		bool   isStockButton;
+		
+		public string Label {
+			get {
+				return label;
+			}
+			set {
+				label = value;
+			}
 		}
 		
-		public void ShowError(Exception ex)
-		{
-			ShowError(ex, null, rootWindow);
-		}
-		
-		public void ShowError(string message)
-		{
-			ShowError(null, message, rootWindow);
-		}
-
-		public void ShowError (Window parent, string message)
-		{
-			ShowError (null, message, parent);
-		}
-		
-		public void ShowErrorFormatted(string formatstring, params string[] formatitems)
-		{
-			ShowError(null, String.Format(StringParserService.Parse(formatstring), formatitems), rootWindow);
-		}
-
-		private struct ErrorContainer
-		{
-			public Exception ex;
-			public string message;
-
-			public ErrorContainer (Exception e, string msg)
-			{
-				ex = e;
-				message = msg;
+		public string Icon {
+			get {
+				return icon;
+			}
+			set {
+				icon = value;
 			}
 		}
 
-		public void ShowError (Exception ex, string message)
-		{
-			ShowError (ex, message, rootWindow);
-		}
-
-		public void ShowError (Exception ex, string message, Window parent)
-		{
-			ShowError (ex, message, parent, false);
+		public bool IsStockButton {
+			get {
+				return isStockButton;
+			}
+			set {
+				isStockButton = value;
+			}
 		}
 		
-		public void ShowError (Exception ex, string message, Window parent, bool modal)
+		public AlertButton (string label, string icon)
 		{
-			ErrorDialog dlg = new ErrorDialog (parent);
+			this.label = label;
+			this.icon = icon;
+		}
+		
+		public AlertButton (string label) : this (label, null)
+		{
+		}
+		public AlertButton (string label, bool isStockButton) : this (label)
+		{
+			this.isStockButton = isStockButton;
+		}
+	}
+	
+	public static class MessageService
+	{
+		static Gtk.Window rootWindow;
+		
+		public static Gtk.Window RootWindow {
+			get {
+				return rootWindow; 
+			}
 			
-			if (message == null) {
-				if (ex != null)
-					dlg.Message = GettextCatalog.GetString ("Exception occurred: {0}", ex.Message);
-				else {
-					dlg.Message = "An unknown error occurred";
-					dlg.AddDetails (Environment.StackTrace, false);
-				}
-			} else
-				dlg.Message = message;
-			
-			if (ex != null) {
-				UserException uex = ex as UserException;
-				if (uex != null) {
-					if (uex.Details != null)
-						dlg.AddDetails (uex.Details, true);
-				} else {
-					dlg.AddDetails (GettextCatalog.GetString ("Exception occurred: {0}", ex.Message) + "\n\n", true);
-					dlg.AddDetails (ex.ToString (), false);
-				}
-			}
-
-			if (modal) {
-				dlg.Run ();
-				dlg.Dispose ();
-			} else
-				dlg.Show ();
-		}
-
-		public void ShowWarning (string message)
-		{
-			ShowWarning (message, false);
-		}
-		
-		public void ShowWarning (string message, bool modal)
-		{
-			MessageDialog md = new MessageDialog (rootWindow, DialogFlags.Modal | DialogFlags.DestroyWithParent, MessageType.Warning, ButtonsType.Ok, EscapeBraces(message));
-			md.Response += new ResponseHandler(OnResponse);
-			md.Close += new EventHandler(OnClose);
-			
-			if (modal) {
-				md.Run ();
-				md.Dispose ();
-			} else
-				md.ShowAll ();
-		}		
-		
-		public void ShowWarningFormatted(string formatstring, params string[] formatitems)
-		{
-			ShowWarning(String.Format(StringParserService.Parse(formatstring), formatitems));
-		}
-		
-		public bool AskQuestion(string question, string caption)
-		{
-			MessageDialog md = new MessageDialog (rootWindow, DialogFlags.Modal | DialogFlags.DestroyWithParent, MessageType.Question, ButtonsType.YesNo, EscapeBraces(question));
-			try {
-				int response = md.Run ();
-				md.Hide ();
-				
-				if ((ResponseType) response == ResponseType.Yes)
-					return true;
-				else
-					return false;
-			} finally {
-				md.Destroy ();
+			set {
+				rootWindow = value;
 			}
 		}
 		
-		public bool AskQuestionFormatted(string caption, string formatstring, params string[] formatitems)
+		#region ShowException
+		public static void ShowException (Exception e, string primaryText)
 		{
-			return AskQuestion(String.Format(StringParserService.Parse(formatstring), formatitems), caption);
+			ShowException (RootWindow, e, primaryText);
 		}
 		
-		public bool AskQuestionFormatted(string formatstring, params string[] formatitems)
+		public static void ShowException (Exception e)
 		{
-			return AskQuestion(String.Format(StringParserService.Parse(formatstring), formatitems));
+			ShowException (RootWindow, e);
 		}
 		
-		public bool AskQuestion(string question)
+		public static void ShowException (Gtk.Window parent, Exception e)
 		{
-			return AskQuestion(StringParserService.Parse(question), GettextCatalog.GetString ("Question"));
+			ShowException (RootWindow, e, e.Message);
 		}
-
-		public QuestionResponse AskQuestionWithCancel(string question, string caption)
+		
+		public static void ShowException (Gtk.Window parent, Exception e, string primaryText)
 		{
-			MessageDialog md = new MessageDialog (rootWindow, DialogFlags.Modal | DialogFlags.DestroyWithParent, MessageType.Question, ButtonsType.None, EscapeBraces(question));
+			MonoDevelop.Core.Gui.Dialogs.ErrorDialog errorDialog = new MonoDevelop.Core.Gui.Dialogs.ErrorDialog (parent);
+			errorDialog.Message = primaryText;
+			errorDialog.AddDetails (e.ToString (), false);
+			errorDialog.Run ();
+			errorDialog.Dispose ();
+		}
+		#endregion
+		
+		#region ShowError
+		public static void ShowError (string primaryText)
+		{
+			ShowError (RootWindow, primaryText);
+		}
+		public static void ShowError (Gtk.Window parent, string primaryText)
+		{
+			ShowError (parent, primaryText, null);
+		}
+		public static void ShowError (string primaryText, string secondaryText)
+		{
+			ShowError (RootWindow, primaryText, secondaryText);
+		}
+		public static void ShowError (Gtk.Window parent, string primaryText, string secondaryText)
+		{
+			GenericAlert (Stock.Error, primaryText, secondaryText, AlertButton.Cancel);
+		}
+		#endregion
+		
+		#region ShowWarning
+		public static void ShowWarning (string primaryText)
+		{
+			ShowWarning (RootWindow, primaryText);
+		}
+		public static void ShowWarning (Gtk.Window parent, string primaryText)
+		{
+			ShowWarning (parent, primaryText, null);
+		}
+		public static void ShowWarning (string primaryText, string secondaryText)
+		{
+			ShowWarning (RootWindow, primaryText, secondaryText);
+		}
+		public static void ShowWarning (Gtk.Window parent, string primaryText, string secondaryText)
+		{
+			GenericAlert (Stock.Warning, primaryText, secondaryText, AlertButton.Cancel);
+		}
+		#endregion
+		
+		#region ShowWarning
+		public static void ShowMessage (string primaryText)
+		{
+			ShowMessage (RootWindow, primaryText);
+		}
+		public static void ShowMessage (Gtk.Window parent, string primaryText)
+		{
+			ShowMessage (parent, primaryText, null);
+		}
+		public static void ShowMessage (string primaryText, string secondaryText)
+		{
+			ShowMessage (RootWindow, primaryText, secondaryText);
+		}
+		public static void ShowMessage (Gtk.Window parent, string primaryText, string secondaryText)
+		{
+			GenericAlert (Stock.Information, primaryText, secondaryText, AlertButton.Cancel);
+		}
+		#endregion
+		
+		#region AskQuestion
+		public static AlertButton AskQuestion (string primaryText, params AlertButton[] buttons)
+		{
+			return AskQuestion (primaryText, null, buttons);
+		}
+		
+		public static AlertButton AskQuestion (string primaryText, string secondaryText, params AlertButton[] buttons)
+		{
+			return GenericAlert (Stock.Question, primaryText, secondaryText, buttons);
+		}
+		public static AlertButton AskQuestion (string primaryText, int defaultButton, params AlertButton[] buttons)
+		{
+			return AskQuestion (primaryText, null, defaultButton, buttons);
+		}
+		
+		public static AlertButton AskQuestion (string primaryText, string secondaryText, int defaultButton, params AlertButton[] buttons)
+		{
+			return GenericAlert (Stock.Question, primaryText, secondaryText, defaultButton, buttons);
+		}
+		#endregion
+		
+		public static int ShowCustomDialog (Gtk.Dialog dialog)
+		{
 			try {
-				md.AddActionWidget (new Button (Gtk.Stock.No), ResponseType.No);
-				md.AddActionWidget (new Button (Gtk.Stock.Cancel), ResponseType.Cancel);
-				md.AddActionWidget (new Button (Gtk.Stock.Yes), ResponseType.Yes);
-				md.ActionArea.ShowAll ();
-				
-				ResponseType response = (ResponseType)md.Run ();
-				md.Hide ();
-
-				if (response == ResponseType.Yes) {
-					return QuestionResponse.Yes;
-				}
-
-				if (response == ResponseType.No) {
-					return QuestionResponse.No;
-				}
-
-				if (response == ResponseType.Cancel) {
-					return QuestionResponse.Cancel;
-				}
-
-				return QuestionResponse.Cancel;
-			} finally {
-				md.Destroy ();
-			}
-		}
-		
-		public QuestionResponse AskQuestionFormattedWithCancel(string caption, string formatstring, params string[] formatitems)
-		{
-			return AskQuestionWithCancel(String.Format(StringParserService.Parse(formatstring), formatitems), caption);
-		}
-		
-		public QuestionResponse AskQuestionFormattedWithCancel(string formatstring, params string[] formatitems)
-		{
-			return AskQuestionWithCancel(String.Format(StringParserService.Parse(formatstring), formatitems));
-		}
-		
-		public QuestionResponse AskQuestionWithCancel(string question)
-		{
-			return AskQuestionWithCancel(StringParserService.Parse(question), GettextCatalog.GetString ("Question"));
-		}
-		
-		public int ShowCustomDialog(string caption, string dialogText, params string[] buttontexts)
-		{
-			MessageDialog md = new MessageDialog (rootWindow, DialogFlags.Modal | DialogFlags.DestroyWithParent, MessageType.Question, ButtonsType.None, EscapeBraces(dialogText));
-				
-			try {
-				for (int i = 0; i < buttontexts.Length; i++)
-					md.AddActionWidget (new Button (buttontexts[i]), i);
-
-				md.ActionArea.ShowAll ();
-				int response = md.Run ();
-				md.Hide ();
-
-				return response;
-			} finally {
-				md.Destroy ();
-			}
-		}
-		
-		public int ShowCustomDialog (System.Type dialogType, object[] args)
-		{
-			Gtk.Dialog dialog = null;
-			try {
-				dialog = (Gtk.Dialog) System.Activator.CreateInstance (dialogType, args);
-				dialog.Modal = true;
-				dialog.TransientFor = rootWindow;
+				dialog.Modal             = true;
+				dialog.TransientFor      = rootWindow;
 				dialog.DestroyWithParent = true;
-				
-				int response = dialog.Run ();
-				return response;
+				return dialog.Run ();
 			} finally {
 				if (dialog != null)
 					dialog.Destroy ();
 			}
 		}
 		
-		public void ShowMessage(string message)
+		public static AlertButton GenericAlert (string icon, string primaryText, string secondaryText, params AlertButton[] buttons)
 		{
-			ShowMessage(message, "MonoDevelop");
+			return GenericAlert (icon, primaryText, secondaryText, buttons.Length - 1, buttons);
+		}
+		public static AlertButton GenericAlert (string icon, string primaryText, string secondaryText, int defaultButton, params AlertButton[] buttons)
+		{
+			AlertDialog alertDialog = new AlertDialog (icon, primaryText, secondaryText, buttons);
+			alertDialog.FocusButton (defaultButton);
+			ShowCustomDialog (alertDialog);
+			return alertDialog.ResultButton;
 		}
 		
-		public void ShowMessageFormatted(string formatstring, params string[] formatitems)
+		public static string GetTextResponse (string question, string caption, string initialValue)
 		{
-			ShowMessage(String.Format(StringParserService.Parse(formatstring), formatitems));
+			return GetTextResponse (question, caption, initialValue, false);
 		}
-		
-		public void ShowMessageFormatted(string caption, string formatstring, params string[] formatitems)
+		public static string GetPassword (string question, string caption)
 		{
-			ShowMessage(String.Format(StringParserService.Parse(formatstring), formatitems), caption);
+			return GetTextResponse(question, caption, string.Empty, true);
 		}
-		
-		public void ShowMessage(string message, string caption)
-		{
-			MessageDialog md = new MessageDialog (rootWindow, DialogFlags.Modal | DialogFlags.DestroyWithParent, MessageType.Info, ButtonsType.Ok, EscapeBraces(message));
-			md.Response += new ResponseHandler(OnResponse);
-			md.Close += new EventHandler(OnClose);
-			md.ShowAll ();
-		}
-
-		public void ShowMessage(string message, Window parent)
-		{			
-			MessageDialog md = new MessageDialog (rootWindow, DialogFlags.Modal | DialogFlags.DestroyWithParent, MessageType.Info, ButtonsType.Ok, EscapeBraces(message));
-			
-			if (parent != null)			
-				md.TransientFor = parent;
-							
-			md.Response += new ResponseHandler(OnResponse);
-			md.Close += new EventHandler(OnClose);
-			md.ShowAll();
-		}
-
-		string EscapeBraces(string stringToEscape)
-		{
-			return stringToEscape.Replace("{", "{{").Replace("}", "}}");
-		}
-
-		void OnResponse (object o, ResponseArgs e)
-		{
-			((Dialog)o).Hide();
-		}
-		
-		void OnClose(object o, EventArgs e)
-		{
-			((Dialog)o).Hide();
-		} 
-		
-		// call this method to show a dialog and get a response value
-		// returns null if cancel is selected
-		public string GetTextResponse(string question, string caption, string initialValue)
-		{
-			return GetTextResponse(question, caption, initialValue, false);
-		}
-		
-		private string GetTextResponse (string question, string caption, string initialValue, bool isPassword)
+		static string GetTextResponse (string question, string caption, string initialValue, bool isPassword)
 		{
 			string returnValue = null;
 			
@@ -344,15 +284,6 @@ namespace MonoDevelop.Core.Gui
 				md.Destroy ();
 			}
 		}
-		
-		public string GetTextResponse(string question, string caption)
-		{
-			return GetTextResponse(question, caption, string.Empty, false);
-		}
-		
-		public string GetPassword (string question, string caption)
-		{
-			return GetTextResponse(question, caption, string.Empty, true);
-		}
+
 	}
 }

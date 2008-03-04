@@ -75,7 +75,7 @@ namespace MonoDevelop.Ide.Commands
 			string args = StringParserService.Parse(tool.Arguments);
 			// prompt for args if needed
 			if (tool.PromptForArguments) {
-				args = Services.MessageService.GetTextResponse (
+				args = MessageService.GetTextResponse (
 					GettextCatalog.GetString ("Enter any arguments you want to use while launching tool, {0}:", tool.MenuCommand),
 					GettextCatalog.GetString ("Command Arguments for {0}", tool.MenuCommand), args);
 					

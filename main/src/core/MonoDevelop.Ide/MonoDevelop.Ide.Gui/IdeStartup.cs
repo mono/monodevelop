@@ -167,10 +167,8 @@ namespace MonoDevelop.Ide.Gui
 			}
 			
 			if (error != null) {
-				ErrorDialog dialog = new ErrorDialog (null);
-				dialog.Message = GettextCatalog.GetString ("MonoDevelop failed to start. The following error has been reported: ") + error.Message;
-				dialog.AddDetails (error.ToString (), false);
-				dialog.Run ();
+				MessageService.ShowException (error,
+				                              GettextCatalog.GetString ("MonoDevelop failed to start. The following error has been reported: ") + error.Message);
 				return 1;
 			}
 
@@ -192,15 +190,15 @@ namespace MonoDevelop.Ide.Gui
 					// Socket already in use
 				}
 			}
-
-			initialized = true;
 			
+			initialized = true;
+			MessageService.RootWindow = IdeApp.Workbench.RootWindow;
 			IdeApp.Run ();
-
+			
 			// unloading services
 			if (null != socket_filename)
 				File.Delete (socket_filename);
-
+			
 			ServiceManager.UnloadAllServices ();
 			System.Environment.Exit (0);
 			return 0;
@@ -368,7 +366,7 @@ namespace MonoDevelop.Ide.Gui
 					break;
 				}
 			}
-			Services.MessageService.ShowError ((Exception) args.ExceptionObject, "Unhandled Exception", win, true);
+			MessageService.ShowException ((Exception) args.ExceptionObject, "Unhandled Exception");
 		}
 	}
 	

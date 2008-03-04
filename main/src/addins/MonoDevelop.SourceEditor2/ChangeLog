@@ -1,3 +1,16 @@
+2008-03-04  Mike Krüger <mkrueger@novell.com> 
+
+	* gtk-gui/MonoDevelop.SourceEditor.OptionPanels.GeneralOptionsPanel.cs,
+	  gtk-gui/gui.stetic,
+	  MonoDevelop.SourceEditor.OptionPanels/BehaviorPanel.cs,
+	  MonoDevelop.SourceEditor.OptionPanels/MarkerPanel.cs,
+	  MonoDevelop.SourceEditor.OptionPanels/HighlightingPanel.cs,
+	  MonoDevelop.SourceEditor.OptionPanels/GeneralOptionsPanel.cs,
+	  MonoDevelop.SourceEditor/SourceEditorWidget.cs,
+	  MonoDevelop.SourceEditor/SourceEditorView.cs,
+	  MonoDevelop.SourceEditor/MarkerOperationsHandler.cs: Worked on gnome hig
+	  compliant alerts.
+
 2008-03-03  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.SourceEditor/SourceEditorWidget.cs: Improved threading.

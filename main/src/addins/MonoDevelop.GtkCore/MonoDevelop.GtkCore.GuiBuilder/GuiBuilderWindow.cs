@@ -133,7 +133,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				}
 				return true;
 			} catch (Exception ex) {
-				IdeApp.Services.MessageService.ShowError (ex);
+				MessageService.ShowException (ex);
 				return false;
 			}
 		}

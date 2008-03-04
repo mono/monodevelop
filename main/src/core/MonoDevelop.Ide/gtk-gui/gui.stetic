@@ -354,132 +354,6 @@
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Dialog" id="MonoDevelop.Ide.Gui.Dialogs.DeleteFileDialog" design-size="373 161">
-    <property name="MemberName" />
-    <property name="Events">ButtonPressMask</property>
-    <property name="Title" translatable="yes">Delete File</property>
-    <property name="WindowPosition">CenterOnParent</property>
-    <property name="BorderWidth">6</property>
-    <property name="Buttons">2</property>
-    <property name="HelpButton">False</property>
-    <child internal-child="VBox">
-      <widget class="Gtk.VBox" id="dialog_VBox">
-        <property name="MemberName" />
-        <property name="Events">ButtonPressMask</property>
-        <property name="Spacing">6</property>
-        <child>
-          <widget class="Gtk.HBox" id="hbox1">
-            <property name="MemberName" />
-            <property name="Spacing">12</property>
-            <property name="BorderWidth">6</property>
-            <child>
-              <widget class="Gtk.Image" id="image1">
-                <property name="MemberName" />
-                <property name="Pixbuf">stock:gtk-dialog-question Dialog</property>
-              </widget>
-              <packing>
-                <property name="Position">0</property>
-                <property name="AutoSize">True</property>
-                <property name="Expand">False</property>
-                <property name="Fill">False</property>
-              </packing>
-            </child>
-            <child>
-              <widget class="Gtk.VBox" id="vbox3">
-                <property name="MemberName" />
-                <property name="Spacing">12</property>
-                <child>
-                  <widget class="Gtk.Label" id="QuestionLabel">
-                    <property name="MemberName" />
-                    <property name="LabelProp" translatable="yes">Are you sure you want to delete the file from project?</property>
-                    <property name="Wrap">True</property>
-                  </widget>
-                  <packing>
-                    <property name="Position">0</property>
-                    <property name="AutoSize">True</property>
-                    <property name="Expand">False</property>
-                    <property name="Fill">False</property>
-                  </packing>
-                </child>
-                <child>
-                  <widget class="Gtk.CheckButton" id="cbDeleteFromDisk">
-                    <property name="MemberName" />
-                    <property name="CanFocus">True</property>
-                    <property name="Label" translatable="yes">_Delete from disk</property>
-                    <property name="DrawIndicator">True</property>
-                    <property name="HasLabel">True</property>
-                    <property name="UseUnderline">True</property>
-                  </widget>
-                  <packing>
-                    <property name="Position">1</property>
-                    <property name="AutoSize">True</property>
-                    <property name="Expand">False</property>
-                    <property name="Fill">False</property>
-                  </packing>
-                </child>
-              </widget>
-              <packing>
-                <property name="Position">1</property>
-                <property name="AutoSize">True</property>
-                <property name="Expand">False</property>
-                <property name="Fill">False</property>
-              </packing>
-            </child>
-          </widget>
-          <packing>
-            <property name="Position">0</property>
-            <property name="AutoSize">True</property>
-            <property name="Expand">False</property>
-            <property name="Fill">False</property>
-          </packing>
-        </child>
-      </widget>
-    </child>
-    <child internal-child="ActionArea">
-      <widget class="Gtk.HButtonBox" id="MonoDevelop.Ide.DeleteFileDialog_ActionArea">
-        <property name="MemberName" />
-        <property name="Spacing">10</property>
-        <property name="BorderWidth">5</property>
-        <property name="Size">2</property>
-        <property name="LayoutStyle">End</property>
-        <child>
-          <widget class="Gtk.Button" id="NoButton">
-            <property name="MemberName" />
-            <property name="CanDefault">True</property>
-            <property name="CanFocus">True</property>
-            <property name="UseStock">True</property>
-            <property name="Type">StockItem</property>
-            <property name="StockId">gtk-no</property>
-            <property name="ResponseId">-9</property>
-            <signal name="Clicked" handler="OnNoButtonClicked" />
-            <property name="label">gtk-no</property>
-          </widget>
-          <packing>
-            <property name="Expand">False</property>
-            <property name="Fill">False</property>
-          </packing>
-        </child>
-        <child>
-          <widget class="Gtk.Button" id="YesButton">
-            <property name="MemberName" />
-            <property name="CanDefault">True</property>
-            <property name="CanFocus">True</property>
-            <property name="UseStock">True</property>
-            <property name="Type">StockItem</property>
-            <property name="StockId">gtk-yes</property>
-            <property name="ResponseId">-8</property>
-            <signal name="Clicked" handler="OnYesButtonClicked" />
-            <property name="label">gtk-yes</property>
-          </widget>
-          <packing>
-            <property name="Position">1</property>
-            <property name="Expand">False</property>
-            <property name="Fill">False</property>
-          </packing>
-        </child>
-      </widget>
-    </child>
-  </widget>
   <widget class="Gtk.Bin" id="MonoDevelop.Ide.Gui.Dialogs.CombineEntryFeatureSelector" design-size="513 356">
     <property name="MemberName" />
     <child>
@@ -5405,7 +5279,7 @@ Months</property>
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Dialog" id="MonoDevelop.Ide.Gui.Dialogs.AddinLoadErrorDialog" design-size="573 394">
+  <widget class="Gtk.Dialog" id="MonoDevelop.Ide.Gui.Dialogs.AddinLoadErrorDialog" design-size="575 394">
     <property name="MemberName" />
     <property name="GeneratePublic">False</property>
     <property name="Title">MonoDevelop</property>
@@ -5537,7 +5411,7 @@ Months</property>
     <child internal-child="ActionArea">
       <widget class="Gtk.HButtonBox" id="GtkDialog_ActionArea">
         <property name="MemberName" />
-        <property name="Spacing">10</property>
+        <property name="Spacing">6</property>
         <property name="BorderWidth">5</property>
         <property name="Size">3</property>
         <property name="LayoutStyle">End</property>

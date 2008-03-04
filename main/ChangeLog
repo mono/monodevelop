@@ -1,3 +1,7 @@
+2008-03-04  Mike Krüger <mkrueger@novell.com> 
+
+	* src/addins/Addins.mds: Worked on gnome hig compliant alerts.
+
 2008-03-03  Mike Krüger <mkrueger@novell.com> 
 
 	* src/addins/Addins.mds, src/addins/MonoDevelop.CodeMetrics,

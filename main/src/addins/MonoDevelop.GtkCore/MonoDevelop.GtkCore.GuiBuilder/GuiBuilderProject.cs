@@ -89,7 +89,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			try {
 				gproject.Load (fileName);
 			} catch (Exception ex) {
-				IdeApp.Services.MessageService.ShowError (ex, GettextCatalog.GetString ("The GUI designer project file '{0}' could not be loaded.", fileName));
+				MessageService.ShowException (ex, GettextCatalog.GetString ("The GUI designer project file '{0}' could not be loaded.", fileName));
 				hasError = true;
 			}
 
@@ -153,7 +153,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			}
 			
 			if (GuiBuilderService.HasOpenDesigners (project, true)) {
-				if (!IdeApp.Services.MessageService.AskQuestion (GettextCatalog.GetString ("The project '{0}' has been modified by an external application. Do you want to reload it? Unsaved changes in the open GTK designers will be lost.", project.Name)))
+				if (MessageService.AskQuestion (GettextCatalog.GetString ("The project '{0}' has been modified by an external application. Do you want to reload it?", project.Name), GettextCatalog.GetString ("Unsaved changes in the open GTK designers will be lost."), AlertButton.Cancel, AlertButton.Reload) != AlertButton.Reload)
 					return;
 			}
 			if (!disposed)

@@ -36,6 +36,7 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Search;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Components.Commands;
+using MonoDevelop.Core.Gui;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Text;
@@ -231,7 +232,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				codeBinder.UpdateField (args.Component, args.OldName);
 			}
 			catch (Exception ex) {
-				IdeApp.Services.MessageService.ShowError (ex);
+				MessageService.ShowException (ex);
 			}
 		}
 		

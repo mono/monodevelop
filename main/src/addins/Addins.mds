@@ -14,7 +14,6 @@
       <Entry build="True" name="MonoDevelop.DesignerSupport" configuration="Debug" />
       <Entry build="True" name="MonoDevelop.Autotools" configuration="Debug" />
       <Entry build="True" name="MonoDevelop.WebReferences" configuration="Debug" />
-      <Entry build="True" name="Deployment" configuration="" />
       <Entry build="True" name="CSharpBinding" configuration="" />
       <Entry build="True" name="MonoDevelop.Gettext" configuration="Debug" />
       <Entry build="True" name="MonoDevelop.RegexToolkit" configuration="Debug" />
@@ -24,6 +23,7 @@
       <Entry build="True" name="MonoDevelop.SourceEditor2" configuration="Debug" />
       <Entry build="True" name="MonoDevelop.AssemblyBrowser" configuration="Debug" />
       <Entry build="True" name="MonoDevelop.CodeMetrics" configuration="Debug" />
+      <Entry build="True" name="Deployment" configuration="Debug" />
     </Configuration>
     <Configuration name="Release" ctype="CombineConfiguration">
       <Entry build="True" name="MonoDevelop.NUnit" configuration="Debug" />
@@ -39,7 +39,6 @@
       <Entry build="True" name="MonoDevelop.DesignerSupport" configuration="Debug" />
       <Entry build="True" name="MonoDevelop.Autotools" configuration="Release" />
       <Entry build="True" name="MonoDevelop.WebReferences" configuration="Release" />
-      <Entry build="True" name="Deployment" configuration="" />
       <Entry build="True" name="CSharpBinding" configuration="" />
       <Entry build="True" name="MonoDevelop.Gettext" configuration="Release" />
       <Entry build="True" name="MonoDevelop.RegexToolkit" configuration="Release" />
@@ -49,6 +48,7 @@
       <Entry build="True" name="MonoDevelop.SourceEditor2" configuration="Release" />
       <Entry build="True" name="MonoDevelop.AssemblyBrowser" configuration="Release" />
       <Entry build="True" name="MonoDevelop.CodeMetrics" configuration="Release" />
+      <Entry build="True" name="Deployment" configuration="Release" />
     </Configuration>
   </Configurations>
   <StartMode startupentry="MonoDevelop.NUnit" single="True">
@@ -83,6 +83,7 @@
     <Execute type="None" entry="MonoDevelop.CodeStatistic" />
     <Execute type="None" entry="MonoDevelop.CodeStatistic" />
     <Execute type="None" entry="MonoDevelop.CodeMetrics" />
+    <Execute type="None" entry="Deployment" />
   </StartMode>
   <Entries>
     <Entry filename="NUnit/MonoDevelop.NUnit.mdp" />
@@ -98,7 +99,6 @@
     <Entry filename="MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.mdp" />
     <Entry filename="MonoDevelop.Autotools/MonoDevelop.Autotools.mdp" />
     <Entry filename="MonoDevelop.WebReferences/MonoDevelop.WebReferences.mdp" />
-    <Entry filename="Deployment/Deployment.mds" />
     <Entry filename="CSharpBinding/CSharpBinding.mds" />
     <Entry filename="MonoDevelop.Gettext/MonoDevelop.Gettext.mdp" />
     <Entry filename="MonoDevelop.RegexToolkit/MonoDevelop.RegexToolkit.mdp" />
@@ -108,5 +108,6 @@
     <Entry filename="MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.mdp" />
     <Entry filename="MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser.mdp" />
     <Entry filename="MonoDevelop.CodeMetrics/MonoDevelop.CodeMetrics.mdp" />
+    <Entry filename="Deployment/Deployment.mds" />
   </Entries>
 </Combine>

@@ -70,7 +70,7 @@ namespace MonoDevelop.Ide.Gui
 					"monodoc", "--help", "", outWriter, errWriter, 
 					delegate { 
 						if (pw.ExitCode != 0) 
-							IdeApp.Services.MessageService.ShowError (
+							MessageService.ShowError (
 								String.Format (
 								"MonoDoc exited with a exit code = {0}. Error : {1}", 
 								pw.ExitCode, errWriter.ToString ()));
@@ -82,12 +82,12 @@ namespace MonoDevelop.Ide.Gui
 					useExternalMonodoc = true;
 				pw = null;
 			} catch (Exception e) {
-				IdeApp.Services.MessageService.ShowError (String.Format (
+				MessageService.ShowError (String.Format (
 					"Could not start monodoc : {0}", e.ToString ()));
 			}
 
 			if (!useExternalMonodoc)
-				IdeApp.Services.MessageService.ShowError (
+				MessageService.ShowError (
 					GettextCatalog.GetString ("You need a newer monodoc to use it externally from monodevelop. Using the integrated help viewer now."));
 		}
 
@@ -103,7 +103,7 @@ namespace MonoDevelop.Ide.Gui
 							if (pw.ExitCode == 0)
 								return;
 
-							IdeApp.Services.MessageService.ShowError (
+							MessageService.ShowError (
 								String.Format (
 								"MonoDoc exited with a exit code = {0}. Integrated help viewer will be used now.\nError : {1}", 
 								pw.ExitCode, errWriter.ToString ()));
@@ -120,7 +120,7 @@ namespace MonoDevelop.Ide.Gui
 					Console.WriteLine (errWriter.ToString ());
 				}
 			} catch (Exception e) {
-				IdeApp.Services.MessageService.ShowError (e);
+				MessageService.ShowException (e);
 				useExternalMonodoc = false;
 			}
 		}

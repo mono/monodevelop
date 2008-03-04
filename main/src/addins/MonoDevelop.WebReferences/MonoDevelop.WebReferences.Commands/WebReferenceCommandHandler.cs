@@ -4,6 +4,7 @@ using System.IO;
 using System.Web.Services.Discovery;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.Ide.Gui.Pads.ProjectPad;
@@ -30,7 +31,8 @@ namespace MonoDevelop.WebReferences.Commands
 				question += "Web Service is not supported in this version.";
 				question += "Do you want switch the runtime environment for this project version 2.0 ?";
 				
-				if (IdeApp.Services.MessageService.AskQuestion(question))
+				AlertButton switchButton = new AlertButton ("_Switch to .NET2"); 
+				if (MessageService.AskQuestion(question, AlertButton.Cancel, switchButton) == switchButton)
 					dotProject.ClrVersion = ClrVersion.Net_2_0;					
 				else
 					return;
@@ -76,7 +78,7 @@ namespace MonoDevelop.WebReferences.Commands
 				}
 				catch(Exception exception)
 				{
-					IdeApp.Services.MessageService.ShowError(exception);
+					MessageService.ShowException (exception);
 				}
 			}
 		}

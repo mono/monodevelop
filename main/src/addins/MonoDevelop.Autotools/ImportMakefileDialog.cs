@@ -2,6 +2,7 @@
 using System;
 using Gtk;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Gui;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Gui;
 
@@ -58,7 +59,7 @@ namespace MonoDevelop.Autotools
 		public bool Store ()
 		{
 			if (nameEntry.Text.Length == 0) {
-				IdeApp.Services.MessageService.ShowError (GettextCatalog.GetString ("Please enter a valid project name"));
+				MessageService.ShowError (GettextCatalog.GetString ("Please enter a valid project name"));
 				return false;
 			}
 			project.Name = nameEntry.Text;

@@ -1,3 +1,13 @@
+2008-03-04  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Gettext.NodeBuilders/TranslationNodeBuilder.cs,
+	  MonoDevelop.Gettext.NodeBuilders/TranslationProjectNodeBuilder.cs,
+	  MonoDevelop.Gettext.Editor/POEditorWidget.cs,
+	  gtk-gui/MonoDevelop.Gettext.POEditorWidget.cs,
+	  gtk-gui/MonoDevelop.Gettext.Translator.LanguageChooserDialog.cs,
+	  gtk-gui/MonoDevelop.Gettext.Editor.CatalogHeadersWidget.cs: Worked on
+	  gnome hig compliant alerts.
+
 2008-03-02  Marcos David Marín Amador <MarcosMarin@gmail.com> 
 
 	* MonoDevelop.Gettext.Editor/POEditorWidget.cs: Workaraound a bug in mono

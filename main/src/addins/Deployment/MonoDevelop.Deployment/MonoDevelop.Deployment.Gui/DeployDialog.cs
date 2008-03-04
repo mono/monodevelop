@@ -221,7 +221,7 @@ namespace MonoDevelop.Deployment.Gui
 				break;
 			}
 			if (msg != null) {
-				IdeApp.Services.MessageService.ShowError (null, msg, this, true);
+				MonoDevelop.Core.Gui.MessageService.ShowError (this, msg);
 				return false;
 			}
 			else

@@ -473,7 +473,7 @@ namespace MonoDevelop.Ide.Gui
 					}
 				}
 				
-				if (!warn || IdeApp.Services.MessageService.AskQuestion (GettextCatalog.GetString ("The project '{0}' has been modified by an external application. Do you want to reload it? All project files will be closed.", entry.Name))) {
+				if (!warn || MessageService.AskQuestion (GettextCatalog.GetString ("The project '{0}' has been modified by an external application. Do you want to reload it? All project files will be closed.", entry.Name), AlertButton.Cancel, AlertButton.Reload) == AlertButton.Reload) {
 					if (entry == openCombine) {
 						string file = openCombine.FileName;
 						CloseCombine (true);
@@ -743,7 +743,7 @@ namespace MonoDevelop.Ide.Gui
 						res = AddCombineEntry (parentCombine, fdiag.Filename);
 					}
 					catch (Exception ex) {
-						Services.MessageService.ShowError (ex, GettextCatalog.GetString ("The file '{0}' could not be loaded.", fdiag.Filename));
+						MessageService.ShowException (ex, GettextCatalog.GetString ("The file '{0}' could not be loaded.", fdiag.Filename));
 					}
 				}
 			} finally {
@@ -1063,7 +1063,7 @@ namespace MonoDevelop.Ide.Gui
 				aop.Completed += new OperationHandler (h.Run);
 				return aop;
 			} else {
-				Services.MessageService.ShowError(GettextCatalog.GetString ("No runnable executable found."));
+				MessageService.ShowError(GettextCatalog.GetString ("No runnable executable found."));
 				return NullAsyncOperation.Failure;
 			}
 		}
@@ -1112,7 +1112,7 @@ namespace MonoDevelop.Ide.Gui
 				aop.Completed += new OperationHandler (h.Run);
 				return aop;
 			} else {
-				Services.MessageService.ShowError (GettextCatalog.GetString ("The file {0} can't be compiled.", file));
+				MessageService.ShowError (GettextCatalog.GetString ("The file {0} can't be compiled.", file));
 				return NullAsyncOperation.Failure;
 			}
 		}
@@ -1127,7 +1127,7 @@ namespace MonoDevelop.Ide.Gui
 				aop.Completed += new OperationHandler (h.Run);
 				return aop;
 			} else {
-				Services.MessageService.ShowError(GettextCatalog.GetString ("No runnable executable found."));
+				MessageService.ShowError(GettextCatalog.GetString ("No runnable executable found."));
 				return NullAsyncOperation.Failure;
 			}
 		}
@@ -1142,7 +1142,7 @@ namespace MonoDevelop.Ide.Gui
 				aop.Completed += new OperationHandler (h.Run);
 				return aop;
 			} else {
-				Services.MessageService.ShowError(GettextCatalog.GetString ("No runnable executable found."));
+				MessageService.ShowError(GettextCatalog.GetString ("No runnable executable found."));
 				return NullAsyncOperation.Failure;
 			}
 		}
@@ -1196,7 +1196,7 @@ namespace MonoDevelop.Ide.Gui
 				case BeforeCompileAction.PromptForSave:
 					foreach (Document doc in IdeApp.Workbench.Documents) {
 						if (doc.IsDirty) {
-							if (Services.MessageService.AskQuestion(GettextCatalog.GetString ("Save changed files?"))) {
+							if (MessageService.AskQuestion(GettextCatalog.GetString ("Save changed files?"), AlertButton.CloseWithoutSave, AlertButton.Save) == AlertButton.Save) {
 								MarkFileDirty (doc.FileName);
 								doc.Save ();
 							}
@@ -1329,7 +1329,7 @@ namespace MonoDevelop.Ide.Gui
 								newFileList.Add (nf);
 							}
 							catch (Exception ex) {
-								Services.MessageService.ShowError (ex, GettextCatalog.GetString ("An error occurred while attempt to move/copy that file. Please check your permissions."));
+								MessageService.ShowException (ex, GettextCatalog.GetString ("An error occurred while attempt to move/copy that file. Please check your permissions."));
 								newFileList.Add (null);
 							}
 						} finally {
@@ -1353,7 +1353,7 @@ namespace MonoDevelop.Ide.Gui
 
 			if (filename != newfilename) {
 				if (File.Exists (newfilename)) {
-					if (!Services.MessageService.AskQuestion (GettextCatalog.GetString ("The file '{0}' already exists. Do you want to replace it?", newfilename), "MonoDevelop"))
+					if (MessageService.AskQuestion (GettextCatalog.GetString ("The file '{0}' already exists. Do you want to replace it?", newfilename), AlertButton.Cancel, AlertButton.OverwriteFile) != AlertButton.OverwriteFile)
 						return null;
 				}
 				FileService.CopyFile (filename, newfilename);

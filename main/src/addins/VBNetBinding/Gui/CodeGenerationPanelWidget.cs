@@ -32,6 +32,7 @@ using MonoDevelop.Projects;
 using MonoDevelop.Projects.Parser;
 using MonoDevelop.Projects.Text;
 using MonoDevelop.Core.Gui.Dialogs;
+using MonoDevelop.Core.Gui;
 using MonoDevelop.Core;
 using Mono.Addins;
 using MonoDevelop.Components;
@@ -62,17 +63,17 @@ namespace MonoDevelop.VBNetBinding
 			
 			project = customizationObject.Get<DotNetProject> ("Project");
 			if (project == null) {
-				MonoDevelop.Ide.Gui.IdeApp.Services.MessageService.ShowError ("project == null. In CodeGenerationPanelWidget constructor (VB.NET binding).");
+				MessageService.ShowError ("project == null. In CodeGenerationPanelWidget constructor (VB.NET binding).");
 				return;
 			}
 			this.config = customizationObject.Get<DotNetProjectConfiguration> ("Config");
 			if (config == null) {
-				MonoDevelop.Ide.Gui.IdeApp.Services.MessageService.ShowError ("config == null. In CodeGenerationPanelWidget constructor (VB.NET binding).");
+				MessageService.ShowError ("config == null. In CodeGenerationPanelWidget constructor (VB.NET binding).");
 				return;
 			}
 			this.parameters = (VBCompilerParameters)config.CompilationParameters;
 			if (parameters == null) {
-				MonoDevelop.Ide.Gui.IdeApp.Services.MessageService.ShowError ("parameters == null. In CodeGenerationPanelWidget constructor (VB.NET binding).");
+				MessageService.ShowError ("parameters == null. In CodeGenerationPanelWidget constructor (VB.NET binding).");
 				return;
 			}
 			FillClasses ();

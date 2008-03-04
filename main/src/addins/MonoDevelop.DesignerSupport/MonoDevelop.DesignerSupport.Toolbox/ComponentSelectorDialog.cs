@@ -32,6 +32,7 @@ using System.Collections.Generic;
 using Gtk;
 using MonoDevelop.DesignerSupport;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Gui;
 using MonoDevelop.Core.Gui.ProgressMonitoring;
 using MonoDevelop.Components;
 using MonoDevelop.Ide.Gui;
@@ -217,7 +218,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 									currentItems.Add (it, it);
 							}
 							else
-								IdeApp.Services.MessageService.ShowWarning (GettextCatalog.GetString ("The file '{0}' does not contain any component.", s));
+								MessageService.ShowWarning (GettextCatalog.GetString ("The file '{0}' does not contain any component.", s));
 						}
 					}
 					Fill ();

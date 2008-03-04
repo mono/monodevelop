@@ -64,10 +64,10 @@ namespace MonoDevelop.Autotools
 			CombineEntry entry = (CombineEntry) CurrentNode.DataItem;
 			Combine combine = entry as Combine;
 			if (combine == null) {
-				if (MonoDevelop.Core.Gui.Services.MessageService.AskQuestion (
-						GettextCatalog.GetString ("Generating Makefiles is not supported for single projects. Do you want " +
-							"to generate them for the full solution - '{0}' ?", entry.RootCombine.Name),
-						GettextCatalog.GetString ("Generate Makefiles...")))
+				AlertButton generateMakefilesButton = new AlertButton (GettextCatalog.GetString ("_Generate Makefiles"));
+				if (MessageService.AskQuestion (GettextCatalog.GetString ("Generating Makefiles is not supported for single projects. Do you want to generate them for the full solution - '{0}' ?", entry.RootCombine.Name),
+				                                AlertButton.Cancel,
+				                                generateMakefilesButton) == generateMakefilesButton) 
 					combine = entry.RootCombine;
 				else
 					return;
@@ -85,7 +85,7 @@ namespace MonoDevelop.Autotools
 				if ( deployer.HasGeneratedFiles ( combine ) )
 				{
 					string msg = GettextCatalog.GetString ( "{0} already exist for this solution.  Would you like to overwrite them?", dialog.GenerateAutotools ? "Autotools files" : "Makefiles" );
-					if ( !MonoDevelop.Core.Gui.Services.MessageService.AskQuestion ( msg ) )
+					if (MonoDevelop.Core.Gui.MessageService.AskQuestion (msg, AlertButton.Cancel, AlertButton.OverwriteFile) != AlertButton.OverwriteFile)
 						return;
 				}
 

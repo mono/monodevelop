@@ -1,3 +1,10 @@
+2008-03-04  Mike Krüger <mkrueger@novell.com> 
+
+	* gtk-gui/MonoDevelop.DesignerSupport.Toolbox.ComponentSelectorDialog.cs,
+	  gtk-gui/gui.stetic,
+	  MonoDevelop.DesignerSupport.Toolbox/ComponentSelectorDialog.cs: Worked
+	  on gnome hig compliant alerts.
+
 2008-02-29  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.DesignerSupport.Toolbox/ToolboxWidget.cs: fixes tooltip bug.

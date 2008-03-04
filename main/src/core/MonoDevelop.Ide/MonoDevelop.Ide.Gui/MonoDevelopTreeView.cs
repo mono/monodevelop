@@ -830,7 +830,7 @@ namespace MonoDevelop.Ide.Gui
 				builder.Update ();
 			}
 			catch (Exception ex) {
-				IdeApp.Services.MessageService.ShowError (ex, "The item could not be renamed");
+				MessageService.ShowException (ex, "The item could not be renamed");
 			}
 		}
 		

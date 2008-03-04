@@ -32,6 +32,7 @@ using System.Xml;
 using System.Collections;
 
 using MonoDevelop.Core;
+using MonoDevelop.Core.Gui;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.StandardHeaders;
@@ -119,9 +120,9 @@ namespace MonoDevelop.Ide.Templates
 			string file = GetFileName (project, language, baseDirectory, entryName);
 			
 			if (File.Exists (file)) {
-				if (!Services.MessageService.AskQuestion (GettextCatalog.GetString (
-					"File {0} already exists. Do you want to overwrite\nthe existing file?", file),
-					GettextCatalog.GetString ("File already exists"))) {
+				if (MessageService.AskQuestion (GettextCatalog.GetString ("File already exists"),
+				                                GettextCatalog.GetString ("File {0} already exists. Do you want to overwrite\nthe existing file?", file),
+				                                AlertButton.Cancel, AlertButton.OverwriteFile) != AlertButton.OverwriteFile) {
 					return null;
 				}
 			}

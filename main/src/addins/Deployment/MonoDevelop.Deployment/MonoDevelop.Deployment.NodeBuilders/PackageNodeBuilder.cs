@@ -125,7 +125,7 @@ namespace MonoDevelop.Deployment.NodeBuilders
 		public override void DeleteItem ()
 		{
 			Package package = CurrentNode.DataItem as Package;
-			if (IdeApp.Services.MessageService.AskQuestion (GettextCatalog.GetString ("Are you sure you want to delete the package '{0}'?", package.Name))) {
+			if (MessageService.AskQuestion (GettextCatalog.GetString ("Are you sure you want to delete the package '{0}'?", package.Name), AlertButton.Cancel, AlertButton.Delete) == AlertButton.Delete) {
 				package.ParentProject.Packages.Remove (package);
 				IdeApp.ProjectOperations.SaveCombineEntry (package.ParentProject);
 			}

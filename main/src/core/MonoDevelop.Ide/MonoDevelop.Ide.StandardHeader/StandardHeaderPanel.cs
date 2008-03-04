@@ -30,6 +30,7 @@ using System;
 using System.IO;
 using System.Collections.Generic;
 
+using MonoDevelop.Core.Gui;
 using MonoDevelop.Core.Gui.Dialogs;
 using MonoDevelop.Core;
 
@@ -69,7 +70,7 @@ namespace MonoDevelop.Ide.StandardHeaders
 			this.removeButton.Clicked += delegate {
 				if (templateCombobox.Active < 0)
 					return;
-				if (Services.MessageService.AskQuestion (MonoDevelop.Core.GettextCatalog.GetString ("Are you sure to remove the custom header template '{0}'?", templateCombobox.ActiveText), "MonoDevelop")) {
+				if (MessageService.AskQuestion (MonoDevelop.Core.GettextCatalog.GetString ("Are you sure to remove the custom header template '{0}'?", templateCombobox.ActiveText), AlertButton.Cancel, AlertButton.Remove) == AlertButton.Remove) {
 					StandardHeaderService.RemoveTemplate (templateCombobox.ActiveText);
 					templateCombobox.RemoveText (templateCombobox.Active);
 				}
@@ -198,7 +199,7 @@ namespace MonoDevelop.Ide.StandardHeaders
 						break;
 				}
 			} catch (Exception ex) {
-				Services.MessageService.ShowError (ex);
+				MessageService.ShowException (ex);
 			}
 			
 			return true;

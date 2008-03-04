@@ -100,7 +100,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				Document doc = IdeApp.Workbench.ActiveDocument;
 				if (doc != null) {
 					if (doc.FileName == null) {
-						Services.MessageService.ShowWarning (GettextCatalog.GetString ("You must save the file"));
+						MessageService.ShowWarning (GettextCatalog.GetString ("You must save the file"));
 					} else {
 						Report r = GetReport (doc.FileName);
 						if (r != null) items.Add(r);
@@ -115,7 +115,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 					total = new Report (GettextCatalog.GetString ("total"), 0, 0, 0);
 					foreach (Document doc in IdeApp.Workbench.Documents) {
 						if (doc.FileName == null) {
-							Services.MessageService.ShowWarning (GettextCatalog.GetString ("You must save the file"));
+							MessageService.ShowWarning (GettextCatalog.GetString ("You must save the file"));
 							continue;
 						} else {
 							Report r = GetReport (doc.FileName);
@@ -128,14 +128,14 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 					}
 					
 					if (dirty) {
-						Services.MessageService.ShowWarning (GettextCatalog.GetString ("Unsaved changed to open files were not included in counting"));
+						MessageService.ShowWarning (GettextCatalog.GetString ("Unsaved changed to open files were not included in counting"));
 					}
 				}
 				break;
 			}
 			case 2: {// whole project
 				if (IdeApp.ProjectOperations.CurrentOpenCombine == null) {
-					Services.MessageService.ShowError (GettextCatalog.GetString ("You must be in project mode"));
+					MessageService.ShowError (GettextCatalog.GetString ("You must be in project mode"));
 					break;
 				}
 				total = new Report (GettextCatalog.GetString ("total"), 0, 0, 0);

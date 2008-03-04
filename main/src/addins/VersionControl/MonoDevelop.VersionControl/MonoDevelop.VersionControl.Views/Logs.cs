@@ -6,6 +6,7 @@ using Gtk;
 
 using MonoDevelop.Components;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.VersionControl.Views
@@ -72,7 +73,7 @@ namespace MonoDevelop.VersionControl.Views
 				this.vinfo = vc.GetVersionInfo (filepath, false);
 			}
 			catch (Exception ex) {
-				IdeApp.Services.MessageService.ShowError (ex, GettextCatalog.GetString ("Version control command failed."));
+				MessageService.ShowException (ex, GettextCatalog.GetString ("Version control command failed."));
 			}
 
 			// Widget setup

@@ -451,9 +451,6 @@
               </packing>
             </child>
           </widget>
-          <packing>
-            <property name="TabExpand">False</property>
-          </packing>
         </child>
         <child>
           <widget class="Gtk.Label" id="label1">
@@ -863,7 +860,6 @@
           </widget>
           <packing>
             <property name="Position">1</property>
-            <property name="TabExpand">False</property>
           </packing>
         </child>
         <child>
@@ -1274,7 +1270,6 @@
           </widget>
           <packing>
             <property name="Position">2</property>
-            <property name="TabExpand">False</property>
           </packing>
         </child>
         <child>
@@ -1465,7 +1460,6 @@
           </widget>
           <packing>
             <property name="Position">3</property>
-            <property name="TabExpand">False</property>
           </packing>
         </child>
         <child>
@@ -1526,7 +1520,6 @@
             <property name="MemberName" />
             <property name="CanFocus">True</property>
             <property name="Label" translatable="yes">Use existing Makefiles</property>
-            <property name="Active">True</property>
             <property name="DrawIndicator">True</property>
             <property name="HasLabel">True</property>
             <property name="UseUnderline">True</property>

@@ -37,6 +37,7 @@ using System.CodeDom.Compiler;
 using Mono.Addins;
 
 using MonoDevelop.Core;
+using MonoDevelop.Core.Gui;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
@@ -107,7 +108,7 @@ namespace CBinding
 				while ((line = proc.StandardOutput.ReadLine ()) != null)
 					output.WriteLine (line);
 			} catch (Exception ex) {
-				IdeApp.Services.MessageService.ShowError (ex, "You need to have pkg-config installed");
+				MessageService.ShowException (ex, "You need to have pkg-config installed");
 			} finally {
 				proc.Close ();
 			}
@@ -138,7 +139,7 @@ namespace CBinding
 				while ((line = proc.StandardOutput.ReadLine ()) != null)
 					output.WriteLine (line);
 			} catch (Exception ex) {
-				IdeApp.Services.MessageService.ShowError (ex, "You need to have pkg-config installed");
+				MessageService.ShowException (ex, "You need to have pkg-config installed");
 			} finally {
 				proc.Close ();
 			}

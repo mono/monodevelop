@@ -176,7 +176,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		public override void RenameItem (string newName)
 		{
 			if (newName.IndexOfAny (new char [] { '\'', '(', ')', '"', '{', '}', '|' } ) != -1) {
-				Services.MessageService.ShowError (GettextCatalog.GetString ("Solution name may not contain any of the following characters: {0}", "', (, ), \", {, }, |"));
+				MessageService.ShowError (GettextCatalog.GetString ("Solution name may not contain any of the following characters: {0}", "', (, ), \", {, }, |"));
 				return;
 			}
 			
@@ -212,7 +212,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			Combine parent = CurrentNode.GetParentDataItem (typeof(Combine), false) as Combine;
 			if (parent == null) return;
 			
-			bool yes = Services.MessageService.AskQuestion (GettextCatalog.GetString ("Do you really want to remove solution {0} from solution {1}?", combine.Name, parent.Name));
+			bool yes = MessageService.AskQuestion (GettextCatalog.GetString ("Do you really want to remove solution {0} from solution {1}?", combine.Name, parent.Name), AlertButton.Cancel, AlertButton.Remove) == AlertButton.Remove;
 			if (yes) {
 				parent.Entries.Remove (combine);
 				combine.Dispose ();

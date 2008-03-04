@@ -28,6 +28,7 @@
 
 using System;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Gui;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Gui;
@@ -113,8 +114,8 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			if (cmb == null)
 				return;
 			
-			bool yes = Services.MessageService.AskQuestion (GettextCatalog.GetString (
-				"Do you really want to remove project '{0}' from solution '{1}'", entry.FileName, cmb.Name));
+			bool yes = MessageService.AskQuestion (GettextCatalog.GetString (
+				"Do you really want to remove project '{0}' from solution '{1}'", entry.FileName, cmb.Name), AlertButton.Cancel, AlertButton.Remove) == AlertButton.Remove;
 
 			if (yes) {
 				cmb.RemoveEntry (entry);

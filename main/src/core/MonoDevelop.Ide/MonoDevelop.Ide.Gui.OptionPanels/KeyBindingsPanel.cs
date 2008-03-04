@@ -31,6 +31,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 using MonoDevelop.Core;
+using MonoDevelop.Core.Gui;
 using MonoDevelop.Core.Gui.Dialogs;
 using MonoDevelop.Components.Commands;
 using Mono.Addins;
@@ -339,7 +340,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels {
 					break;
 				}
 			} catch (Exception ex) {
-				Services.MessageService.ShowError (ex);
+				MessageService.ShowException (ex);
 			}
 			
 			return true;
