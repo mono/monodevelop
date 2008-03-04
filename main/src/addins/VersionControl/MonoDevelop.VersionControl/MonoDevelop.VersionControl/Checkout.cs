@@ -3,7 +3,7 @@ using System.IO;
 using System.Collections;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Gui;
-
+using MonoDevelop.Core;
 using MonoDevelop.VersionControl.Dialogs;
 
 namespace MonoDevelop.VersionControl

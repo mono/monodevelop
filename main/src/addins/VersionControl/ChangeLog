@@ -1,5 +1,9 @@
 2008-03-04  Mike Krüger <mkrueger@novell.com> 
 
+	
+
+2008-03-04  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:
 	  Added some getstring calls
 
