@@ -42,7 +42,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			foreach (ComponentType type in types) {
 				if (type.Category == "window")
 					continue;
-				if (type.ClassName == "Gtk.Action" || (String.IsNullOrEmpty (type.Library) && refs.Contains (FileService.GetFullPath (type.Library)))) {
+				if (type.ClassName == "Gtk.Action" || (!String.IsNullOrEmpty (type.Library) && refs.Contains (FileService.GetFullPath (type.Library)))) {
 					ComponentToolboxNode node = new ComponentToolboxNode (type);
 					list.Add (node);
 				}
