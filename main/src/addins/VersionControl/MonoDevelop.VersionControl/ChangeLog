@@ -1,5 +1,10 @@
 2008-03-04  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.VersionControl/RevertCommand.cs: Added secondary text to the
+	  revert dialog.
+
+2008-03-04  Mike Krüger <mkrueger@novell.com> 
+
 	* VersionControl.addin.xml: Changed file menu for hig.
 
 2008-03-04  Mike Krüger <mkrueger@novell.com> 

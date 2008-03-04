@@ -32,7 +32,9 @@ namespace MonoDevelop.VersionControl
 					return true;
 				}
 
-				if (MessageService.AskQuestion (GettextCatalog.GetString ("Are you sure you want to revert the changes done in the selected files?"), AlertButton.Cancel, AlertButton.Revert) == AlertButton.Revert)
+				if (MessageService.AskQuestion (GettextCatalog.GetString ("Are you sure you want to revert the changes done in the selected files?"), 
+				                                GettextCatalog.GetString ("All changes made to the selected files will be permanently lost."),
+				                                AlertButton.Cancel, AlertButton.Revert) != AlertButton.Revert)
 					return false;
 
 				new RevertWorker(vc, path).Start();
@@ -57,7 +59,7 @@ namespace MonoDevelop.VersionControl
 			}
 			
 			protected override string GetDescription() {
-				return "Reverting ...";
+				return GettextCatalog.GetString ("Reverting ...");
 			}
 			
 			protected override void Run ()
