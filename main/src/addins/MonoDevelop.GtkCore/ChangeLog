@@ -1,5 +1,10 @@
 2008-03-04  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.GtkCore.GuiBuilder/ToolboxProvider.cs: Fixed possible null
+	  reference exception.
+
+2008-03-04  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs,
 	  MonoDevelop.GtkCore.GuiBuilder/GuiBuilderProject.cs,
 	  MonoDevelop.GtkCore.GuiBuilder/GuiBuilderWindow.cs,
