@@ -6,12 +6,12 @@ msgstr ""
 "X-Poedit-Bookmarks: -1,1681,-1,-1,-1,-1,-1,-1,-1,-1\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2008-03-01 21:26:25+0100\n"
+"PO-Revision-Date: 2008-03-04 15:09:15+0100\n"
 "Language-Team: \n"
 "Project-Id-Version: Monodevelop\n"
 "MIME-Version: 1.0\n"
 "X-Generator: MonoDevelop Gettext addin\n"
-"POT-Creation-Date: 2008-03-01 20:19:39+0100\n"
+"POT-Creation-Date: 2008-03-04 15:03:13+0100\n"
 "Last-Translator: Mike Krüger <mkrueger@novell.com>\n"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Core/ServiceManager.cs:120
@@ -228,7 +228,7 @@ msgstr "Den persönlichen Ordner öffnen"
 
 #: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:71
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:154
-#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/ComponentSelectorDialog.cs:98
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/ComponentSelectorDialog.cs:99
 msgid "Location"
 msgstr "Ort"
 
@@ -273,35 +273,25 @@ msgstr "_Erstelle neuen Ordner"
 msgid "Cannot enter '{0}' folder"
 msgstr "Kann Ordner '{0}' nicht betreten"
 
-#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:354
+#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:350
 msgid "Could not rename folder '{0}' to '{1}'"
 msgstr "Kann Ordner '{0}' nicht zu '{1}' umbenennen"
 
-#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:374
+#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:365
 msgid "Could not create new folder '{0}'"
 msgstr "Kann den neuen Ordner '{0}' nicht anlegen"
 
-#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:398
-msgid "Are you sure you want to delete this folder?"
-msgstr "Sind Sie sich sicher, dass Sie den Ordner löschen wollen?"
-
-#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:398
+#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:387
 msgid "Delete folder"
 msgstr "Ordner Löschen"
 
-#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:408
+#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:387
+msgid "Are you sure you want to delete this folder?"
+msgstr "Sind Sie sich sicher, dass Sie den Ordner löschen wollen?"
+
+#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:394
 msgid "Could not delete folder '{0}'"
 msgstr "Kann Ordner '{0}' nicht löschen"
-
-#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui/MessageService.cs:91
-#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui/MessageService.cs:105
-msgid "Exception occurred: {0}"
-msgstr "Fehler aufgetreten: {0}"
-
-#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui/MessageService.cs:168
-#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui/MessageService.cs:213
-msgid "Question"
-msgstr "Frage"
 
 #: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/TreeViewOptions.cs:211
 msgid "MonoDevelop Preferences"
@@ -333,9 +323,26 @@ msgstr "FEHLER:"
 msgid "Progress"
 msgstr "Fortschritt"
 
-#: ../src/core/MonoDevelop.Core.Gui/gtk-gui/MonoDevelop.Core.Gui.Dialogs.MultiTaskProgressDialog.cs:78
+#: ../src/core/MonoDevelop.Core.Gui/gtk-gui/MonoDevelop.Core.Gui.Dialogs.MultiTaskProgressDialog.cs:77
 msgid "Details:"
 msgstr "Details:"
+
+#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui/MessageService.cs:43
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:1311
+msgid "_Move"
+msgstr "_Verschieben"
+
+#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui/MessageService.cs:46
+msgid "Close _without Saving"
+msgstr "_Nicht speichern"
+
+#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui/MessageService.cs:47
+msgid "D_iscard"
+msgstr "_Verwerfen"
+
+#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui/MessageService.cs:49
+msgid "_Overwrite file"
+msgstr "_Datei überschreiben"
 
 # German MonoDevelop translation.
 # Copyright (C) 2004 Gustav Schauwecker
@@ -550,26 +557,26 @@ msgid "The provided file could not be loaded."
 msgstr "Die bereitgestellte Datei konnte nicht geladen werden."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:210
+msgid "Clear recent files"
+msgstr "Liste der zuletzt genutzten Dateien löschen"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:210
 msgid "Are you sure you want to clear recent files list?"
 msgstr ""
 "Sind Sie sicher, dass sie die Liste der zulezt genutzten Dateien löschen "
 "wollen?"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:210
-msgid "Clear recent files"
-msgstr "Liste der zuletzt genutzten Dateien löschen"
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:228
+msgid "Clear recent projects"
+msgstr "Liste der zuletzt genutzten Projekte löschen"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:229
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:228
 msgid "Are you sure you want to clear recent projects list?"
 msgstr ""
 "Sind sie sicher, dass sie die Liste der zulezt genutzten Projekte löschen "
 "wollen?"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:229
-msgid "Clear recent projects"
-msgstr "Liste der zuletzt genutzten Projekte löschen"
-
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:276
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:275
 msgid "load solution {0}"
 msgstr "Lade Projektmappe {0}"
 
@@ -731,7 +738,7 @@ msgid "Activate this window"
 msgstr "Aktiviere das Fenster"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalTool.cs:111
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:281
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:282
 msgid "New Tool"
 msgstr "Neues Werkzeug"
 
@@ -765,6 +772,11 @@ msgid "File {0} could not be written."
 msgstr "In die Datei {0} konnte nicht geschrieben werden."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Templates/ProjectDescriptor.cs:138
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs:122
+msgid "File already exists"
+msgstr "Datei existiert bereits"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Templates/ProjectDescriptor.cs:139
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Templates/CombineEntryDescriptor.cs:86
 msgid ""
 "Project file {0} already exists. Do you want to overwrite\n"
@@ -772,22 +784,16 @@ msgid ""
 msgstr ""
 "Projektdatei {0} existiert bereits, wollen sie die diese überschreiben?"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Templates/ProjectDescriptor.cs:140
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs:123
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Templates/CombineEntryDescriptor.cs:88
-msgid "File already exists"
-msgstr "Datei existiert bereits"
-
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Templates/ProjectTemplate.cs:184
 msgid "Error loading template {0}"
 msgstr "Fehler beim Laden der Vorlage {0}"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs:98
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs:190
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs:99
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs:191
 msgid "The file '{0}' already exists in the project."
 msgstr "Die Datei '{0}' existiert bereits im Projekt."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs:121
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs:123
 msgid ""
 "File {0} already exists. Do you want to overwrite\n"
 "the existing file?"
@@ -894,15 +900,15 @@ msgstr ""
 msgid "A Project with that name is already in your Project Space"
 msgstr "Ein Projekt mit diesem Namen befindet sich bereits im Projektbereich."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/NewProjectDialog.cs:385
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/NewProjectDialog.cs:382
 msgid "Could not create directory {0}. File already exists."
 msgstr "Kann den Ordner {0} nicht erstellen. Es existiert bereits."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/NewProjectDialog.cs:390
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/NewProjectDialog.cs:385
 msgid "You do not have permission to create to {0}"
 msgstr "Sie haben kein Recht zum Erstellen in {0}"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/NewProjectDialog.cs:410
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/NewProjectDialog.cs:405
 msgid "The project could not be created"
 msgstr "Das Projekt konnte nicht erstellt werden"
 
@@ -926,7 +932,7 @@ msgstr "Alle geöffneten Dateien"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ReplaceDialog.cs:174
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:773
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Logs.cs:212
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Logs.cs:213
 #: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWindow.cs:295
 msgid "Replace"
 msgstr "Ersetzen"
@@ -962,8 +968,11 @@ msgid "Empty directory name"
 msgstr "Ordnername ist leer."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ReplaceInFilesDialog.cs:334
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ReplaceInFilesDialog.cs:339
 msgid "Invalid directory name: {0}"
+msgstr "Ungültiger Ordnername: {0}"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ReplaceInFilesDialog.cs:339
+msgid "Invalid directory name: {0}, directoryName"
 msgstr "Ungültiger Ordnername: {0}"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ReplaceInFilesDialog.cs:344
@@ -1000,7 +1009,7 @@ msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SharpDevelopAboutPanels.cs:65
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/GoToDialog.cs:152
-#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/ComponentSelectorDialog.cs:80
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/ComponentSelectorDialog.cs:81
 msgid "Name"
 msgstr "Name"
 
@@ -1052,7 +1061,7 @@ msgstr "Wort-Anzahl"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Tasks/CommentTasksView.cs:98
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Tasks/CommentTasksView.cs:260
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Statuses.cs:176
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Dialogs/CommitDialog.cs:40
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Dialogs/CommitDialog.cs:41
 msgid "File"
 msgstr "Datei"
 
@@ -1135,7 +1144,7 @@ msgid "Type"
 msgstr "Typ"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:161
-#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.DeployDialog.cs:465
+#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.DeployDialog.cs:464
 msgid "Packages"
 msgstr "Pakete"
 
@@ -1168,7 +1177,7 @@ msgstr "Projektmappe {0}"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/FileList.cs:49
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1120
 #: ../src/addins/MonoDevelop.GtkCore/lib/stetic/libstetic/stetic.glade:470
-#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:672
+#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:669
 #: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.EditPackageDialog.cs:168
 msgid "Files"
 msgstr "Dateien"
@@ -1185,10 +1194,6 @@ msgstr "Zuletzt geändert"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/FileList.cs:163
 msgid "Are you sure you want to delete this file?"
 msgstr "Sind Sie sicher, dass Sie diese Datei löschen wollen?"
-
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/FileList.cs:163
-msgid "Delete files"
-msgstr "Lösche Dateien"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/FileList.cs:192
 msgid "Delete file"
@@ -1254,7 +1259,7 @@ msgstr ""
 msgid "Do you really want to move the folder '{0}' to the folder '{1}'?"
 msgstr "Wollen sie wirklich den Ordner '{0}' in den Ordner '{1}' verschieben? "
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:176
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:178
 msgid ""
 "Do you really want to copy the folder '{0}' to the root folder of project "
 "'{1}'?"
@@ -1262,15 +1267,15 @@ msgstr ""
 "Wollen sie wirklich den Ordner '{0}' in den Wurzel-Ordner des Projekts '{1}' "
 "kopieren?"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:178
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:180
 msgid "Do you really want to copy the folder '{0}' to the folder '{1}'?"
 msgstr "Wollen sie wirklich den Ordner '{0}' in den Ordner '{1}' kopieren?"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:202
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:204
 msgid "Do you want to save the file '{0}' before the move operation?"
 msgstr "Wollen sie die Datei '{0}' vor dem Verschieben speichern?"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:204
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:206
 msgid ""
 "Do you want to save the following files before the move operation?\n"
 "\n"
@@ -1280,11 +1285,11 @@ msgstr ""
 "\n"
 "{0}"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:207
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:209
 msgid "Do you want to save the file '{0}' before the copy operation?"
 msgstr "Wollen sie die Datei '{0}' vor dem Kopieren speichern?"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:209
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:211
 msgid ""
 "Do you want to save the following files before the copy operation?\n"
 "\n"
@@ -1294,22 +1299,22 @@ msgstr ""
 "\n"
 "{0}"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:221
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:219
 msgid "Save operation failed."
 msgstr "Speichern fehlgeschlagen"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:228
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:225
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ShowAllFilesBuilderExtension.cs:344
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:1434
 msgid "Copying files..."
 msgstr "Kopiere Dateien..."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:241
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:238
 #: ../src/addins/NUnit/Gui/NUnitAssemblyGroupConfigurationNodeBuilder.cs:116
 msgid "Add files"
 msgstr "Dateien hinzufügen"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:285
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:282
 msgid "New Folder"
 msgstr "Neuer Ordner"
 
@@ -1332,12 +1337,12 @@ msgstr ""
 "Der gewünschte Dateiname enthält ungültige Zeichen. Bitte wählen Sie einen "
 "anderen Dateinamen."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:162
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:161
 msgid "Are you sure you want to remove file {0} from project {1}?"
 msgstr ""
-"Sind Sie sich sicher, dass Sie Datei {0} vom Projekt {1} löschen wollen?"
+"Sind Sie sich sicher, dass Sie die Datei {0} vom Projekt {1} löschen wollen?"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:192
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:186
 #: ../src/core/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs/ProjectOptionsDialog.cs:306
 #: ../src/addins/CBinding/gtk-gui/CBinding.CodeGenerationPanel.cs:469
 #: ../src/addins/CBinding/gtk-gui/CBinding.CodeGenerationPanel.cs:571
@@ -1350,11 +1355,11 @@ msgid "Are you sure you want to permanently delete the folder {0}?"
 msgstr ""
 "Sind Sie sich sicher, dass Sie den Ordner {0} dauerhaft löschen wollen?"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFolderNodeBuilder.cs:182
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFolderNodeBuilder.cs:183
 msgid "The folder {0} could not be deleted"
 msgstr "Der Ordner {0} konnte nicht gelöscht werden"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFolderNodeBuilder.cs:186
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFolderNodeBuilder.cs:187
 msgid "Do you really want to remove folder {0}?"
 msgstr "Wollen sie den Ordner {0} wirklich löschen?"
 
@@ -1372,7 +1377,7 @@ msgid "Do you really want to remove project {0} from solution {1}?"
 msgstr "Wollen Sie wirklich Projekt {0} von der Projektmappe {1} entfernen?"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectReferenceFolderNodeBuilder.cs:79
-#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:907
+#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:903
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/ReferenceFolderNodeBuilder.cs:61
 msgid "References"
 msgstr "Verweise"
@@ -1383,7 +1388,7 @@ msgstr "Zyklische Projektverweise sind nicht erlaubt."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ResourceFolderNodeBuilder.cs:64
 #: ../src/addins/MonoDevelop.GtkCore/lib/stetic/libstetic/stetic.glade:432
-#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:508
+#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:506
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/ResourceFolderNodeBuilder.cs:54
 msgid "Resources"
 msgstr "Ressourcen"
@@ -1433,15 +1438,20 @@ msgid "Search time: {0} seconds."
 msgstr "Suchzeit: {0} Sekunden."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Search/SearchReplaceInFilesManager.cs:146
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Search/SearchReplaceInFilesManager.cs:194
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Search/SearchReplaceInFilesManager.cs:195
+msgid "Cancel _Search"
+msgstr "_Suchen abbrechen"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Search/SearchReplaceInFilesManager.cs:147
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Search/SearchReplaceInFilesManager.cs:196
 msgid "There is a search already in progress. Do you want to cancel it?"
 msgstr "Es ist bereits eine Suche ausgeführt. Möchten Sie diese abbrechen?"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Search/SearchReplaceInFilesManager.cs:155
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Search/SearchReplaceInFilesManager.cs:156
 msgid "Replacing '{0}' in {1}."
 msgstr "Ersetze '{0}' in {1}."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Search/SearchReplaceInFilesManager.cs:203
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Search/SearchReplaceInFilesManager.cs:205
 msgid "Looking for '{0}' in {1}."
 msgstr "Suche nach '{0}' in {1}."
 
@@ -1474,7 +1484,7 @@ msgstr[1] "Alle ersetzen abgeschlossen. {0} Übereinstimmungen gefunden."
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/SdiWorkspaceLayout.cs:60
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:953
 #: ../src/addins/AspNetAddIn/MonoDevelop.AspNet.Gui/XspOptionsPanelWidget.cs:54
-#: ../src/addins/CSharpBinding/Gui/CompilerOptionsPanelWidget.cs:90
+#: ../src/addins/CSharpBinding/Gui/CompilerOptionsPanelWidget.cs:91
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/HighlightingPanel.cs:126
 msgid "Default"
 msgstr "Standard"
@@ -1493,7 +1503,7 @@ msgid "File name {0} is invalid"
 msgstr "Dateiname {0} ist ungültig"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Document.cs:233
-msgid "File {0} already exists.  Overwrite?"
+msgid "File {0} already exists. Overwrite?"
 msgstr "Datei {0} existiert bereits. Überschreiben?"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/HelpOperations.cs:90
@@ -1509,7 +1519,7 @@ msgid "Loading Workbench"
 msgstr "Lade Arbeitsfläche"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:377
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:632
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:622
 msgid "File not found: {0}"
 msgstr "Datei nicht gefunden: {0}"
 
@@ -1604,10 +1614,6 @@ msgstr "Benutze die selbe Aktion für alle ausgewählten Dateien."
 msgid "_Link"
 msgstr "_Link"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:1311
-msgid "_Move"
-msgstr "_Verschieben"
-
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:1331
 msgid ""
 "An error occurred while attempt to move/copy that file. Please check your "
@@ -1663,27 +1669,29 @@ msgid "Opening {0}"
 msgstr "Öffne {0}"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:549
-msgid "Do you want to save the current changes?"
-msgstr "Wollen sie die aktuellen Änderungen speichern?"
+msgid "Save the changes to document \"{0}\" before closing?"
+msgstr "Änderungen am Dokument \"{0}\" vor dem Schließen speichern?"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:561
-msgid "Do you really want to discard your changes?"
-msgstr "Wollen sie ihre Änderungen wirklich verwerfen?"
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:550
+msgid "If you don't save, all changes will be permanently lost."
+msgstr ""
+"Falls Sie nicht speichern, gehen alle vorgenommenen Änderungen unwideruflich "
+"verloren."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:578
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:565
 msgid "The document could not be saved."
 msgstr "Das Dokument konnte nicht gespeichert werden."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:602
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:592
 msgid "Invalid file name"
 msgstr "Ungültiger Dateiname"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:616
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:606
 msgid "{0} is a directory"
 msgstr "{0} ist ein Ordner"
 
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:736
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:746
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:756
 msgid "The file '{0}' could not be opened."
 msgstr "Datei '{0}' konnte nicht geöffnet werden."
 
@@ -1728,19 +1736,19 @@ msgstr ""
 "MonoDevelop konnte nicht gestartet werden. Der folgende Fehler wurde "
 "gemeldet: "
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/IdeStartup.cs:321
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/IdeStartup.cs:319
 msgid ""
 "Some packages installed in your system are not compatible with MonoDevelop:\n"
 msgstr ""
 "Einige Pakete die in ihrem System installiert sind, sind nicht kompatibel zu "
 "MonoDevelop:\n"
 
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/IdeStartup.cs:321
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/IdeStartup.cs:323
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/IdeStartup.cs:325
 msgid "version required: {0}"
 msgstr "Version benötigt: {0}"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/IdeStartup.cs:327
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/IdeStartup.cs:325
 msgid "You need to upgrade the previous packages to start using MonoDevelop."
 msgstr ""
 "Sie müssen die vorherigen Pakete aktualisieren bevor sie MonoDevelop benutzen "
@@ -2039,7 +2047,7 @@ msgid "Custom command list"
 msgstr "Benutzerdefinierte Befehlsliste"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:445
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:484
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:517
 msgid "Reload"
 msgstr "Neu laden"
 
@@ -2289,7 +2297,7 @@ msgstr "Setzt die Vergrösserung einer Sicht auf standard"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:663
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1222
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:132
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:133
 msgid "Tools"
 msgstr "Werkzeuge"
 
@@ -2422,14 +2430,12 @@ msgid "Go to Type..."
 msgstr "Gehe zu Typ..."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:814
-#, fuzzy
 msgid "Go to File..."
-msgstr "_Gehe zu Zeile..."
+msgstr "Gehe zu Datei..."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:816
-#, fuzzy
 msgid "Jump to a file in the current workspace"
-msgstr "Öffne eine Datei in der aktuellen Projektmappe..."
+msgstr "Zu einer geöffneten Datei springen"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:821
 msgid "Toggle bookmark"
@@ -2956,9 +2962,9 @@ msgstr "Zeige Zeilenumbruchsansicht"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Tasks/UserTasksView.cs:116
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/CodeTemplatePanel.cs:115
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/InternalLogPad.cs:257
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:74
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DotDesktopViewWidget.cs:67
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:75
 #: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexLibraryWindow.cs:239
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DotDesktopViewWidget.cs:67
 msgid "Description"
 msgstr "Beschreibung"
 
@@ -3054,31 +3060,29 @@ msgstr "Allgemeines Projekt"
 msgid "Creates a project which can contain any kind of file."
 msgstr "Kreire ein Projekt das jeden Dateityp beinhalten kann."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/UnknownEntryNodeBuilder.cs:58
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/UnknownEntryNodeBuilder.cs:59
 msgid "{0} <span foreground='red' size='small'>(Load failed)</span>"
 msgstr "{0} <span foreground='red' size='small'>(Laden fehlgechalgen)</span>"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/UnknownEntryNodeBuilder.cs:115
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/UnknownEntryNodeBuilder.cs:116
 msgid "Do you really want to remove project '{0}' from solution '{1}'"
 msgstr ""
 "Wollen Sie wirklich Projekt '{0}' von der Projektmappe '{1}' entfernen?"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/GoToDialog.cs:101
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.GoToDialog.cs:42
-#, fuzzy
 msgid "Go to File"
-msgstr "Gehe zu Zeile"
+msgstr "Gehe zur Datei"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/GoToDialog.cs:103
-#, fuzzy
 msgid "Go to Type"
-msgstr "Gehe zu Typ..."
+msgstr "Gehe zu Typ"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/GoToDialog.cs:163
 msgid "Full name"
 msgstr "Voller Name"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/CombineEntryFeatureSelector.cs:82
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/CombineEntryFeatureSelector.cs:83
 msgid "There are no additional features available for this project."
 msgstr "Es sind keine Zusatzfunktionen vorhanden für dieses Projekt"
 
@@ -3147,19 +3151,6 @@ msgstr "Dateiformat:"
 #: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.BinariesZipEditorWidget.cs:123
 msgid "Target folder:"
 msgstr "Zielordner"
-
-#: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.DeleteFileDialog.cs:34
-msgid "Delete File"
-msgstr "Datei löschen"
-
-#: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.DeleteFileDialog.cs:63
-msgid "Are you sure you want to delete the file from project?"
-msgstr ""
-"Sind Sie sich sicher, dass Sie die Datei vom Projekt entfernen möchten?"
-
-#: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.DeleteFileDialog.cs:74
-msgid "_Delete from disk"
-msgstr "_Lösche von Festplatte"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.NewProjectDialog.cs:117
 msgid "<b>Template</b>"
@@ -3247,7 +3238,7 @@ msgstr "_Extern"
 msgid "_All"
 msgstr "_Alles"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.StandardHeader/StandardHeaderPanel.cs:71
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.StandardHeader/StandardHeaderPanel.cs:72
 msgid "Are you sure to remove the custom header template '{0}'?"
 msgstr ""
 "Sind Sie sicher, dass Sie die modifizierte Header-Vorlage '{0}' entfernen "
@@ -3307,7 +3298,7 @@ msgid "Template"
 msgstr "Vorlage"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/CodeTemplatePanel.cs:157
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:317
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:318
 msgid "Control not found!"
 msgstr "Kontrolle nicht gefunden!"
 
@@ -3367,19 +3358,19 @@ msgstr "Zeit"
 msgid "{0} Debug"
 msgstr "{0} Debug"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:61
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:62
 msgid "Command"
 msgstr "Befehl"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:73
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:74
 msgid "Key Binding"
 msgstr "Tasten-Bindung"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:82
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:83
 msgid "Current"
 msgstr "Aktuell"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:148
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:149
 msgid "Other"
 msgstr "andere"
 
@@ -3712,89 +3703,89 @@ msgstr "Zeilennummer"
 msgid "_Go to Line"
 msgstr "_Gehe zu Zeile"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/MonoDevelopTreeView.cs:1205
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/MonoDevelopTreeView.cs:1208
 msgid "Display Options"
 msgstr "Ansichts Einstellungen"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:63
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:64
 msgid "Item Path"
 msgstr "Element-Pfad"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:64
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:87
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:65
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:88
 msgid "_Item Directory"
 msgstr "_Element-Ordner"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:65
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:66
 msgid "Item file name"
 msgstr "Elementdateiname"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:66
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:67
 msgid "Item extension"
 msgstr "Element-Erweiterung"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:68
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:69
 msgid "Current line"
 msgstr "Aktuelle Zeile"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:69
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:70
 msgid "Current column"
 msgstr "Aktuelle Spalte"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:70
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:71
 msgid "Current text"
 msgstr "Aktueller Text"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:72
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:73
 msgid "Target Path"
 msgstr "Zielpfad"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:73
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:89
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:74
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:90
 #: ../src/core/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CustomCommandWidget.cs:69
 msgid "_Target Directory"
 msgstr "Zielordner"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:74
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:90
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:75
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:91
 #: ../src/core/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CustomCommandWidget.cs:70
 msgid "Target Name"
 msgstr "Zielname"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:75
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:76
 msgid "Target Extension"
 msgstr "Ziel-Erweiterung"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:77
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:92
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:78
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:93
 #: ../src/core/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CustomCommandWidget.cs:72
 #: ../src/core/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CustomCommandWidget.cs:78
 msgid "_Project Directory"
 msgstr "_Projektordner"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:78
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:79
 msgid "Project file name"
 msgstr "_Projekt-Dateiname"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:80
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:94
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:81
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:95
 msgid "_Solution Directory"
 msgstr "_Projektmappen-Ordner"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:81
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:82
 msgid "Solution File Name"
 msgstr "Projektmappen-Dateiname"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:83
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:96
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:84
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:97
 msgid "MonoDevelop Startup Directory"
 msgstr "MonoDevelop Startordner"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:332
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:333
 msgid "The command of tool \"{0}\" is invalid."
 msgstr "Der Befehl des Werkzeugs \"{0}\" ist ungültig."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:337
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:338
 msgid "The working directory of tool \"{0}\" is invalid."
 msgstr "Der Arbeitsordner des externen Programs \"{0}\" ist ungültig."
 
@@ -3843,7 +3834,7 @@ msgid "OVR"
 msgstr "ÜBS"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/MonoDevelopStatusBar.cs:102
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:1066
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:1099
 msgid "Ready"
 msgstr "Bereit"
 
@@ -4298,7 +4289,7 @@ msgid "(Active)"
 msgstr "(Aktiv)"
 
 #: ../src/core/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs/ProjectOptionsDialog.cs:300
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Logs.cs:200
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Logs.cs:201
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlService.cs:145
 #: ../src/addins/CBinding/gtk-gui/CBinding.CodeGenerationPanel.cs:405
 #: ../src/addins/CBinding/gtk-gui/CBinding.CodeGenerationPanel.cs:515
@@ -4345,7 +4336,7 @@ msgid "Entry"
 msgstr "Eintrag"
 
 #: ../src/core/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineStartupPanel.cs:97
-#: ../src/core/MonoDevelop.Projects.Gui/gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CombineStartupPanelWidget.cs:200
+#: ../src/core/MonoDevelop.Projects.Gui/gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CombineStartupPanelWidget.cs:199
 #: ../src/addins/MonoDevelop.GtkCore/lib/stetic/libstetic/editor/ActionMenuItem.cs:342
 #: ../src/addins/MonoDevelop.GtkCore/lib/stetic/libstetic/editor/ActionToolItem.cs:219
 msgid "Action"
@@ -4363,11 +4354,11 @@ msgstr ""
 msgid "File {0} not found in {1}."
 msgstr "Datei {0} nicht gefunden in {1}."
 
-#: ../src/core/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/OutputOptionsPanel.cs:81
+#: ../src/core/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/OutputOptionsPanel.cs:82
 msgid "Invalid assembly name specified"
 msgstr "Ungültiger Assembly-Name angegeben"
 
-#: ../src/core/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/OutputOptionsPanel.cs:86
+#: ../src/core/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/OutputOptionsPanel.cs:87
 msgid "Invalid output directory specified"
 msgstr "Ungültiger Ausgabeordner angegeben"
 
@@ -4587,7 +4578,7 @@ msgstr "_Version"
 msgid "_Single Startup Project"
 msgstr "Einfaches Startprojekt"
 
-#: ../src/core/MonoDevelop.Projects.Gui/gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CombineStartupPanelWidget.cs:112
+#: ../src/core/MonoDevelop.Projects.Gui/gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CombineStartupPanelWidget.cs:111
 msgid "_Multiple Startup Project"
 msgstr "Mehrfaches Start-Projekt"
 
@@ -5049,73 +5040,73 @@ msgstr "_Auschecken..."
 msgid "_Version Control"
 msgstr "_Versionskontrolle"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Logs.cs:49
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Logs.cs:50
 msgid "Retrieving history for {0}..."
 msgstr "Erhalte Historie für {0}..."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Logs.cs:74
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/CommitCommand.cs:53
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Logs.cs:75
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/CommitCommand.cs:54
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/RevertCommand.cs:44
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlNodeExtension.cs:358
 msgid "Version control command failed."
 msgstr "Versions-Kontrol-Kommando fehlgeschlagen."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Logs.cs:91
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Logs.cs:92
 msgid "View Changes"
 msgstr "Zeige Änderungen"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Logs.cs:96
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Logs.cs:97
 msgid "View File"
 msgstr "Zeige Datei"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Logs.cs:134
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Logs.cs:135
 msgid "Revision"
 msgstr "Revision"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Logs.cs:135
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Logs.cs:136
 msgid "Date"
 msgstr "Datum"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Logs.cs:136
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Logs.cs:137
 msgid "Author"
 msgstr "Autor"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Logs.cs:137
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Logs.cs:138
 msgid "Message"
 msgstr "Meldung"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Logs.cs:152
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Logs.cs:153
 msgid "(No message)"
 msgstr "(Keine Meldung)"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Logs.cs:163
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Logs.cs:164
 msgid "Operation"
 msgstr "Operation"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Logs.cs:173
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Logs.cs:174
 msgid "File Path"
 msgstr "Datei-Pfad"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Logs.cs:204
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Logs.cs:205
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlService.cs:147
 #: ../src/addins/MonoDevelop.WebReferences/MonoDevelop.WebReferences.addin.xml:54
 msgid "Delete"
 msgstr "Löschen"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Logs.cs:208
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Logs.cs:209
 msgid "Modify"
 msgstr "Ändern"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Logs.cs:269
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Logs.cs:270
 msgid "Retreiving changes in {0} at revision {1}..."
 msgstr "Erhalte Änderungen in {0} zur Revision {1}..."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Logs.cs:273
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Logs.cs:281
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Logs.cs:274
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Logs.cs:282
 msgid "Getting text of {0} at revision {1}..."
 msgstr "Erhalte Text von {0} zur Revision {1}..."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Logs.cs:325
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Logs.cs:326
 msgid "Retreiving content of {0} at revision {1}..."
 msgstr "Erhalte Inhalt von {0} zur Revision {1}..."
 
@@ -5148,7 +5139,7 @@ msgid "Select None"
 msgstr "Nichts auswählen"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Statuses.cs:168
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Dialogs/CommitDialog.cs:31
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Dialogs/CommitDialog.cs:32
 msgid "Status"
 msgstr "Status"
 
@@ -5173,27 +5164,32 @@ msgstr "Commit-Nachricht für Datei '{0}':"
 msgid "Commit message (multiple selection):"
 msgstr "Commit-Nachricht (Mehrfach-Auswahl):"
 
+# 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Statuses.cs:604
+msgid "_Open All"
+msgstr "_Alles öffnen"
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Statuses.cs:605
 msgid "Do you want to open all {0} files?"
 msgstr "Möchten sie alle {0} Dateien öffnen?"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Statuses.cs:691
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Statuses.cs:692
 msgid "Loading data..."
 msgstr "Lade Daten..."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Statuses.cs:727
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Statuses.cs:728
 msgid "No differences found"
 msgstr "Keine Unterschiede gefunden"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Statuses.cs:738
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Statuses.cs:739
 msgid "Could not get diff information. "
 msgstr "kann keine differenzierten Informationen bekomemn. "
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/Publish.cs:37
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/Publish.cs:38
 msgid "Initial check-in of module {0}"
 msgstr "Initialisiere eine Einchecken des Moduls {0}"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/Publish.cs:40
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/Publish.cs:42
 msgid "Are you sure you want to publish the project to the repository '{0}'?"
 msgstr ""
 "Sind Sie sich sicher, dass Sie das Projekt im Repository '{0}' "
@@ -5344,9 +5340,9 @@ msgid "Please provide a path to the required certificate:"
 msgstr "Bitte geben Sie einen Pfad zum benötigten Zertifikat an:"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/gtk-gui/MonoDevelop.VersionControl.Subversion.Gui.ClientCertificateDialog.cs:90
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:1003
 #: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.SourcesZipEditorWidget.cs:115
 #: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.BinariesZipEditorWidget.cs:134
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:1003
 msgid "File:"
 msgstr "Datei:"
 
@@ -5478,11 +5474,14 @@ msgstr "Die GUI-Designer Projekt-Datei '{0}' konnte nicht geladen werden."
 #: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderProject.cs:155
 msgid ""
 "The project '{0}' has been modified by an external application. Do you want "
-"to reload it? Unsaved changes in the open GTK designers will be lost."
+"to reload it?"
 msgstr ""
-"Das Projekt '{0}' wurde von einer externen Anwendung verändert. Möchen sie es "
-"neu laden? Nicht gespeicherte Änderungen im offenen GTK-Designer werden "
-"verloren gehen."
+"Das Projekt '{0}' ist von einer anderen Anwendung verändert worden, Wollen "
+"sie es neu laden?"
+
+#: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderProject.cs:155
+msgid "Unsaved changes in the open GTK designers will be lost."
+msgstr "Ungespeicherte Änderungen im offenen GTK Designer gehen verloren."
 
 #: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/PropertiesWidget.cs:56
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.PropertyGrid/DefaultPropertyTab.cs:49
@@ -5522,7 +5521,12 @@ msgstr ""
 msgid "Generating GUI code for project '{0}'..."
 msgstr "Erstelle GUI-Code für Projekt '{0}'..."
 
+# 
 #: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs:504
+msgid "_Use as Source"
+msgstr "_Als Quelle benutzen"
+
+#: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs:505
 msgid ""
 "You are requesting the file '{0}' to be used as source for an image. However, "
 "this file is already added to the project as a resource. Are you sure you "
@@ -5533,13 +5537,13 @@ msgstr ""
 "sicher, dass Sie fortfahren wollen (die Datei wird aus der Ressourcen-Liste "
 "entfernt werden müssen)?"
 
-#: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderView.cs:90
-#: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderView.cs:114
+#: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderView.cs:91
+#: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderView.cs:115
 msgid "Designer"
 msgstr "Designer"
 
-#: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderView.cs:127
-#: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderView.cs:247
+#: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderView.cs:128
+#: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderView.cs:248
 #: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/ActionGroupView.cs:77
 #: ../src/addins/MonoDevelop.GtkCore/lib/stetic/libsteticui/PaletteBackend.cs:33
 #: ../src/addins/MonoDevelop.GtkCore/lib/stetic/libsteticui/PaletteBackend.cs:185
@@ -5615,7 +5619,7 @@ msgstr "Sind sie sicher, dass sie '{0}' löschen wollen?"
 msgid "Source Code"
 msgstr "Quelltext"
 
-#: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/CodeBinder.cs:303
+#: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/CodeBinder.cs:304
 msgid ""
 "The class bound to the component '{0}' could not be found. This may be due to "
 "syntax errors in the source code file."
@@ -6399,38 +6403,37 @@ msgstr "{0} ({1}) : Ungültiger Konfigurationsname '{2}'"
 msgid "Project with guid '{0}' not found."
 msgstr "Projekt mit guid '{0}' nicht gefunden."
 
-#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:957
+#: ../src/addins/prj2make-sharp-lib/SlnFileFormat.cs:958
 msgid ""
 "The project file {0} must be converted to msbuild format to be added to a "
-"msbuild solution. Convert?"
+"msbuild solution"
 msgstr ""
-"Die Projekt-Datei {0} muss ins MSBuild-Format konvertiert werden um zu einer "
-"MSBuild-Projektmappe hinzugefügt zu werden.Konvertieren?"
+"Die Projekt-Datei {0} muss ins MSBuild-Format konvertiert werden, um zu einer "
+"MSBuild-Projektmappe hinzugefügt zu werden"
 
-#: ../src/addins/prj2make-sharp-lib/VS2003SlnFileFormat.cs:89
-#: ../src/addins/prj2make-sharp-lib/VS2003ProjectFileFormat.cs:93
-msgid "Conversion required"
-msgstr "Umwandlung erforderlich"
-
-#: ../src/addins/prj2make-sharp-lib/VS2003SlnFileFormat.cs:90
+#: ../src/addins/prj2make-sharp-lib/VS2003SlnFileFormat.cs:92
 msgid ""
 "The solution file {0} is a VS2003 solution. It must be converted to either a "
-"MonoDevelop or a VS2005 solution. Converting to VS2005 format will overwrite "
-"existing files. Convert ?"
+"MonoDevelop or a VS2005 solution"
 msgstr ""
 "Die Projektmappendatei {0} ist eine VS2003-Projektmappe. Es muss entweder in "
 "eine MonoDevelop- oder eine VS2005-Projektmappe konvertiert werden. "
-"Konvertierung ins VS2005-Format wird bestehende Dateien überschreiben. Konvertieren?"
+"Konvertierung ins VS2005-Format wird bestehende Dateien überschreiben"
 
-#: ../src/addins/prj2make-sharp-lib/VS2003ProjectFileFormat.cs:94
+#: ../src/addins/prj2make-sharp-lib/VS2003SlnFileFormat.cs:93
+#: ../src/addins/prj2make-sharp-lib/VS2003ProjectFileFormat.cs:98
+msgid "Converting to VS2005 format will overwrite existing files."
+msgstr ""
+"Konvertierung in das VS2005 Format wird existierende Dateien überschreiben."
+
+#: ../src/addins/prj2make-sharp-lib/VS2003ProjectFileFormat.cs:97
 msgid ""
 "The project file {0} is a VS2003 project. It must be converted to either a "
-"MonoDevelop or a VS2005 project. Converting to VS2005 format will overwrite "
-"existing files. Convert ?"
+"MonoDevelop or a VS2005 project."
 msgstr ""
 "Die Projektdatei {0} ist ein VS2003-Projekt. Es muss entweder in ein "
 "MonoDevelop- oder ein VS2005-Projekt konvertiert werden. Konvertierung ins "
-"VS2005-Format wird bestehende Dateien überschreiben. Konvertieren?"
+"VS2005-Format wird bestehende Dateien überschreiben"
 
 #: ../src/addins/prj2make-sharp-lib/DefaultMSBuildProjectExtension.cs:120
 msgid "Expected 'Include' attribute not found for ItemGroup '{0}'"
@@ -6534,28 +6537,27 @@ msgstr "Assembly-Information"
 msgid "A file defining assembly information attributes."
 msgstr "Eine Assembly-Informationsattribute definierende Datei."
 
-#: ../src/addins/VBNetBinding/Gui/CodeGenerationPanelWidget.cs:52
-#: ../src/addins/CSharpBinding/Gui/CompilerOptionsPanelWidget.cs:53
+#: ../src/addins/VBNetBinding/Gui/CodeGenerationPanelWidget.cs:53
+#: ../src/addins/CSharpBinding/Gui/CompilerOptionsPanelWidget.cs:54
 #: ../src/addins/CBinding/gtk-gui/CBinding.CodeGenerationPanel.cs:200
 msgid "Executable"
 msgstr "Terminal Programm"
 
-#: ../src/addins/VBNetBinding/Gui/CodeGenerationPanelWidget.cs:53
-#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/ComponentSelectorDialog.cs:94
+#: ../src/addins/VBNetBinding/Gui/CodeGenerationPanelWidget.cs:54
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/ComponentSelectorDialog.cs:95
 #: ../src/addins/CSharpBinding/templates/Library.xpt.xml:7
-#: ../src/addins/CSharpBinding/Gui/CompilerOptionsPanelWidget.cs:54
+#: ../src/addins/CSharpBinding/Gui/CompilerOptionsPanelWidget.cs:55
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyNodeBuilder.cs:94
 msgid "Library"
 msgstr "Bibliothek"
 
-#: ../src/addins/VBNetBinding/Gui/CodeGenerationPanelWidget.cs:54
-#: ../src/addins/CSharpBinding/Gui/CompilerOptionsPanelWidget.cs:55
-#, fuzzy
+#: ../src/addins/VBNetBinding/Gui/CodeGenerationPanelWidget.cs:55
+#: ../src/addins/CSharpBinding/Gui/CompilerOptionsPanelWidget.cs:56
 msgid "Executable with GUI"
 msgstr "GUI Programm"
 
-#: ../src/addins/VBNetBinding/Gui/CodeGenerationPanelWidget.cs:55
-#: ../src/addins/CSharpBinding/Gui/CompilerOptionsPanelWidget.cs:56
+#: ../src/addins/VBNetBinding/Gui/CodeGenerationPanelWidget.cs:56
+#: ../src/addins/CSharpBinding/Gui/CompilerOptionsPanelWidget.cs:57
 msgid "Module"
 msgstr "Modul"
 
@@ -6864,7 +6866,7 @@ msgstr "ASP.NET-Ordner:"
 msgid "Deploy to Web..."
 msgstr "Ins Web verbreiten..."
 
-#: ../src/addins/AspNetAddIn/MonoDevelop.AspNet/AspNetAppProject.cs:394
+#: ../src/addins/AspNetAddIn/MonoDevelop.AspNet/AspNetAppProject.cs:395
 msgid "Could not connect to webserver {0}"
 msgstr "Kann nicht mit dem Webserver verbinden {0}"
 
@@ -7209,7 +7211,7 @@ msgid "Missing CodeBehind class {0}"
 msgstr "Vermisse CodeBehind-Klasse {0}"
 
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport/ToolboxService.cs:553
-#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/ComponentSelectorDialog.cs:209
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/ComponentSelectorDialog.cs:210
 msgid "Looking for components..."
 msgstr "Schaue nach Komponenten..."
 
@@ -7229,15 +7231,15 @@ msgstr "In Kategorien sortieren"
 msgid "Sort alphabetically"
 msgstr "Alphabetisch sortieren"
 
-#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/ComponentSelectorDialog.cs:121
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/ComponentSelectorDialog.cs:122
 msgid "All"
 msgstr "Alle"
 
-#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/ComponentSelectorDialog.cs:195
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/ComponentSelectorDialog.cs:196
 msgid "Add items to toolbox"
 msgstr "Elemente zu Werkzeugkasten hinzufügen"
 
-#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/ComponentSelectorDialog.cs:219
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/ComponentSelectorDialog.cs:220
 msgid "The file '{0}' does not contain any component."
 msgstr "Die Datei '{0}' enthält keine Komponente."
 
@@ -7253,7 +7255,7 @@ msgstr "Typ der Komponente:"
 msgid "Add Assembly..."
 msgstr "Assembly hinzufügen..."
 
-#: ../src/addins/MonoDevelop.DesignerSupport/gtk-gui/MonoDevelop.DesignerSupport.Toolbox.ComponentSelectorDialog.cs:132
+#: ../src/addins/MonoDevelop.DesignerSupport/gtk-gui/MonoDevelop.DesignerSupport.Toolbox.ComponentSelectorDialog.cs:130
 msgid "Group by component category"
 msgstr "Gruppiere nach Komponenten-Kategorie"
 
@@ -7274,6 +7276,10 @@ msgid "There are no tools available for the current document."
 msgstr ""
 "Für das aktuelle Dokument sind keine passenden Steuerelemente vorhanden."
 
+#: ../src/addins/MonoDevelop.Autotools/Commands.cs:66
+msgid "_Generate Makefiles"
+msgstr "_Makefiles erzeugen"
+
 #: ../src/addins/MonoDevelop.Autotools/Commands.cs:67
 msgid ""
 "Generating Makefiles is not supported for single projects. Do you want to "
@@ -7281,11 +7287,6 @@ msgid ""
 msgstr ""
 "Generierung von Makefiles ist für Einzel-Projekte nicht unterstützt. Möchten "
 "Sie sie für die Gesamt-Projektmappe generieren - '{0}' ?"
-
-#: ../src/addins/MonoDevelop.Autotools/Commands.cs:69
-#: ../src/addins/MonoDevelop.Autotools/MonoDevelop.Autotools.addin.xml:51
-msgid "Generate Makefiles..."
-msgstr "Makefiles erzeugen..."
 
 #: ../src/addins/MonoDevelop.Autotools/Commands.cs:86
 msgid "{0} already exist for this solution.  Would you like to overwrite them?"
@@ -7503,20 +7504,20 @@ msgstr ""
 "Konfigurationen können mittels der '--config' oder '--enable-*' Option des "
 "generierten configure-Skripts ausgewählt werden."
 
-#: ../src/addins/MonoDevelop.Autotools/MakefileOptionPanelWidget.cs:61
-#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:435
+#: ../src/addins/MonoDevelop.Autotools/MakefileOptionPanelWidget.cs:62
+#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:433
 msgid "Makefile"
 msgstr "Makefile"
 
-#: ../src/addins/MonoDevelop.Autotools/MakefileOptionPanelWidget.cs:206
+#: ../src/addins/MonoDevelop.Autotools/MakefileOptionPanelWidget.cs:207
 msgid "Specified makefile is invalid: {0}"
 msgstr "Angegebenes Makefile ist ungültig: {0}"
 
-#: ../src/addins/MonoDevelop.Autotools/MakefileOptionPanelWidget.cs:216
+#: ../src/addins/MonoDevelop.Autotools/MakefileOptionPanelWidget.cs:215
 msgid "Path specified for configure.in is invalid: {0}"
 msgstr "Für configure.in angegebener Pfad ist ungültig: {0}"
 
-#: ../src/addins/MonoDevelop.Autotools/MakefileOptionPanelWidget.cs:227
+#: ../src/addins/MonoDevelop.Autotools/MakefileOptionPanelWidget.cs:224
 msgid ""
 "'Sync References' is enabled, but one of Reference variables is not set. "
 "Please correct this."
@@ -7524,19 +7525,19 @@ msgstr ""
 "'Synchronisiere Verweise' ist aktiviert, aber eine der Verweis-Variablen ist "
 "nicht gesetzt. Bitte verbessern sie dies."
 
-#: ../src/addins/MonoDevelop.Autotools/MakefileOptionPanelWidget.cs:249
+#: ../src/addins/MonoDevelop.Autotools/MakefileOptionPanelWidget.cs:244
 msgid "Invalid regex for Error messages: {0}"
 msgstr "Ungültige RegEx für Fehler-Meldung: {0}"
 
-#: ../src/addins/MonoDevelop.Autotools/MakefileOptionPanelWidget.cs:258
+#: ../src/addins/MonoDevelop.Autotools/MakefileOptionPanelWidget.cs:251
 msgid "Invalid regex for Warning messages: {0}"
 msgstr "Ungültige RegEx für Warnungs-Meldung: {0}"
 
-#: ../src/addins/MonoDevelop.Autotools/MakefileOptionPanelWidget.cs:268
+#: ../src/addins/MonoDevelop.Autotools/MakefileOptionPanelWidget.cs:260
 msgid "Updating project"
 msgstr "Aktualisiere Projekt"
 
-#: ../src/addins/MonoDevelop.Autotools/MakefileOptionPanelWidget.cs:282
+#: ../src/addins/MonoDevelop.Autotools/MakefileOptionPanelWidget.cs:274
 msgid ""
 "File variable ({0}) is set for sync'ing, but no valid variable is selected. "
 "Either disable the sync'ing or select a variable name."
@@ -7545,15 +7546,15 @@ msgstr ""
 "Variable ist ausgewählt. Schalten sie die Synchronisation entweder aus oder "
 "wählen sie einen Variablen-Namen."
 
-#: ../src/addins/MonoDevelop.Autotools/MakefileOptionPanelWidget.cs:723
+#: ../src/addins/MonoDevelop.Autotools/MakefileOptionPanelWidget.cs:713
 msgid "Error while trying to read the specified Makefile"
 msgstr "Fehler beim Versuch das angegebene Makefile zu lesen"
 
-#: ../src/addins/MonoDevelop.Autotools/MakefileOptionPanelWidget.cs:731
+#: ../src/addins/MonoDevelop.Autotools/MakefileOptionPanelWidget.cs:720
 msgid "No variables found in the selected Makefile"
 msgstr "Keine Variablen in ausgewählten Makefile gefunden"
 
-#: ../src/addins/MonoDevelop.Autotools/MakefileOptionPanelWidget.cs:919
+#: ../src/addins/MonoDevelop.Autotools/MakefileOptionPanelWidget.cs:908
 msgid ""
 "Unable to find the specified Makefile. You need to specify the path to an "
 "existing Makefile for use with the 'Makefile Integration' feature."
@@ -7618,15 +7619,11 @@ msgstr "Die Anwendung beendete mit Code: {0}"
 msgid "Project could not be executed: "
 msgstr "Projekt konnte nicht ausgeführt werden:"
 
-#: ../src/addins/MonoDevelop.Autotools/MakefileData.cs:623
+#: ../src/addins/MonoDevelop.Autotools/MakefileData.cs:624
 msgid "Invalid Makefile '{0}'. Disabling Makefile integration."
 msgstr "Ungültiges Makefile '{0}'. Deaktiviere Makefile-Integration."
 
-#: ../src/addins/MonoDevelop.Autotools/MakefileData.cs:633
-msgid "Enable Makefile integration"
-msgstr "Aktiviere Makefile-Integration"
-
-#: ../src/addins/MonoDevelop.Autotools/MakefileData.cs:634
+#: ../src/addins/MonoDevelop.Autotools/MakefileData.cs:635
 msgid ""
 "Enabling Makefile integration. You can choose to have either the Project or "
 "the Makefile be used as the master copy. This is done only when enabling this "
@@ -7719,11 +7716,11 @@ msgstr ""
 msgid "Unable to find configure.in at '{0}'."
 msgstr "Unfähig configure.in in '{0}' zu finden."
 
-#: ../src/addins/MonoDevelop.Autotools/ImportMakefileDialog.cs:20
+#: ../src/addins/MonoDevelop.Autotools/ImportMakefileDialog.cs:21
 msgid "Makefile Project Import"
 msgstr "Makefile-Projekt-Import"
 
-#: ../src/addins/MonoDevelop.Autotools/ImportMakefileDialog.cs:30
+#: ../src/addins/MonoDevelop.Autotools/ImportMakefileDialog.cs:31
 msgid ""
 "MonoDevelop is going to create a project bound to a Makefile. Please enter "
 "the name you want to give to the new project."
@@ -7731,11 +7728,11 @@ msgstr ""
 "MonoDevelop wird ein an ein Makefile gebundenes Projekt erstellen. Bitte "
 "geben sie den Namen ein den sie dem neuen Projekt geben wollen."
 
-#: ../src/addins/MonoDevelop.Autotools/ImportMakefileDialog.cs:35
+#: ../src/addins/MonoDevelop.Autotools/ImportMakefileDialog.cs:36
 msgid "Project Name:"
 msgstr "Projektname:"
 
-#: ../src/addins/MonoDevelop.Autotools/ImportMakefileDialog.cs:60
+#: ../src/addins/MonoDevelop.Autotools/ImportMakefileDialog.cs:61
 msgid "Please enter a valid project name"
 msgstr "Bitte einen gültigen Projekt-Namen eingeben"
 
@@ -7780,23 +7777,23 @@ msgstr "Makefile-Pfad:"
 msgid "Output directory variable:"
 msgstr "Ausgabeordner Variable:"
 
-#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:447
+#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:445
 msgid "Enable project file synchronization"
 msgstr "Aktiviere Projekt-Datei Synchronisation"
 
-#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:472
+#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:470
 msgid "Deployment files"
 msgstr "Verteilungsdateien"
 
-#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:484
+#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:482
 msgid "Source code files"
 msgstr "Quelltext-Dateien"
 
-#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:496
+#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:494
 msgid "Other Files"
 msgstr "Andere Dateien"
 
-#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:626
+#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:624
 msgid ""
 "Select the kind of files you want to synchronize with the makefile. For each "
 "file kind please specify the makefile variable that holds the list and "
@@ -7806,25 +7803,25 @@ msgstr ""
 "wollen. Bitte geben sie für jede Dateiart die Makefile-Variable an die die Liste "
 "und optional einen Präfix der vor jeden Dateinamen vorangestellt wird enthält."
 
-#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:638
-#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:840
+#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:636
+#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:837
 msgid "Makefile variable name:"
 msgstr "Makefile Variablen-Name:"
 
-#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:651
-#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:853
+#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:649
+#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:850
 msgid "Prefix:"
 msgstr "Präfix:"
 
-#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:684
+#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:681
 msgid "Enable references synchronization"
 msgstr "Aktiviere Verweis-Synchronisation"
 
-#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:708
+#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:705
 msgid "Look for packages in configure.in"
 msgstr "Schaue nach Paketen in configure.in"
 
-#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:817
+#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:814
 msgid ""
 "Select the kind of references you want to synchronize with the makefile. For "
 "each reference type please specify the makefile variable that holds the list, "
@@ -7836,23 +7833,23 @@ msgstr ""
 "Liste und optional einen Präfix der vor jeden Dateinamen vorangestellt wird "
 "enthält. Sie können den selben Variablen-Namen für mehrere Verweistypen angeben."
 
-#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:829
+#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:826
 msgid "Assembly References"
 msgstr "Assembly-Verweise"
 
-#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:866
+#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:863
 msgid "Path for configure.in"
 msgstr "Pfad für configure.in"
 
-#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:877
+#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:874
 msgid "Package References"
 msgstr "Paket-Verweise"
 
-#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:888
+#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:885
 msgid "Project References"
 msgstr "Projekt-Verweise"
 
-#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:919
+#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:915
 msgid ""
 "Select the Compiler message format for parsing the compiler errors and "
 "warnings. You can either select one of the built-in options, or specify custom "
@@ -7866,19 +7863,19 @@ msgstr ""
 "Ausdruck muss ein .net-artiger RegEx sein. Die folgenden Gruppen sind "
 "relevant : Datei, Zeile, Spalte, Nummer (Fehler-Nummer) und Nachricht."
 
-#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:985
+#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:981
 msgid "Error regex :"
 msgstr "Fehler-RegEx :"
 
-#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:996
+#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:992
 msgid "Compiler :"
 msgstr "Compiler :"
 
-#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:1005
+#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:1001
 msgid "Warnings regex :"
 msgstr "Warnungen Regex:"
 
-#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:1022
+#: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:1017
 msgid "Messages Regex"
 msgstr "Meldungen-RegEx"
 
@@ -7939,6 +7936,10 @@ msgstr ""
 #: ../src/addins/MonoDevelop.Autotools/MonoDevelop.Autotools.addin.xml:49
 msgid "Autotools"
 msgstr "Autotools"
+
+#: ../src/addins/MonoDevelop.Autotools/MonoDevelop.Autotools.addin.xml:51
+msgid "Generate Makefiles..."
+msgstr "Makefiles erzeugen..."
 
 #: ../src/addins/MonoDevelop.Autotools/MonoDevelop.Autotools.addin.xml:55
 msgid "Include in Synchronized Makefile"
@@ -8030,1169 +8031,6 @@ msgstr "Namensraum:"
 #: ../src/addins/MonoDevelop.WebReferences/gtk-gui/MonoDevelop.WebReferences.Dialogs.WebReferenceDialog.cs:150
 msgid "Reference: "
 msgstr "Verweis:"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment/UnknownPackageBuilder.cs:46
-msgid "Unknown package type"
-msgstr "Unbekannter Paketyp"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Gui/DeployDialog.cs:184
-msgid "Please select a package type."
-msgstr "Wählen sie einen Pakettyp."
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Gui/DeployDialog.cs:186
-#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Gui/DeployDialog.cs:212
-msgid "Project name not provided."
-msgstr "Projektname nicht bereitgestellt."
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Gui/DeployDialog.cs:195
-msgid "Please select a project or solution."
-msgstr "Bitte wählen sie ein Projekt oder eine Projektmappe."
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Gui/DeployDialog.cs:208
-msgid "Package name not provided."
-msgstr "Paketname nicht bereitgestellt."
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Gui/DeployDialog.cs:214
-msgid "Solution where to create the project not selected."
-msgstr "Projektmappe in der das Projekt erstellt werden soll nicht ausgewählt."
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Gui/DeployDialog.cs:217
-msgid "Packaging project not selected."
-msgstr "Paketierungsprojekt nicht ausgewählt."
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Gui/DeployDialog.cs:265
-msgid "Create"
-msgstr "Erstelle"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Targets/CommandPackageBuilder.cs:47
-msgid "Execute command"
-msgstr "Befehl ausführen"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Targets/CommandPackageBuilder.cs:96
-msgid "(in external terminal)"
-msgstr "(im externen Terminal)"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Targets/CommandPackageBuilder.cs:102
-msgid "Executing: {0} {1} {2}"
-msgstr "Entpacke: {0} {1} {2}"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Targets/LocalFileCopyHandler.cs:45
-msgid "Local Filesystem"
-msgstr "Lokales Dateisystem"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Targets/LocalFileCopyHandler.cs:80
-msgid "Could not resolve target directory ID \"{0}\""
-msgstr "Kann Zielordner ID \"{0}\" nicht erfassen"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Targets/LocalFileCopyHandler.cs:96
-msgid "Deployment aborted: target file {0} already exists."
-msgstr "Verbreitung gestoppt. Zieldaten {0} existieren bereits."
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Targets/LocalFileCopyHandler.cs:135
-msgid "Skipped {0}: file exists."
-msgstr "{0} übersprungen: Datei existiert bereits."
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Targets/LocalFileCopyHandler.cs:140
-msgid "Replaced {0}."
-msgstr "{0} ersetzt."
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Targets/LocalFileCopyHandler.cs:145
-msgid "Replacing {0}: existing file is older."
-msgstr "Ersetze {0}: existierende Datei ist älter."
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Targets/LocalFileCopyHandler.cs:148
-msgid "Skipped {0}: existing file is the same age."
-msgstr "{0} übersprungen: existierende Datei ist gleich alt."
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Targets/LocalFileCopyHandler.cs:150
-msgid "Skipped {0}: existing file is newer."
-msgstr "{0} übersprungen: existierende Datei ist neuer."
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Targets/LocalFileCopyHandler.cs:158
-msgid "Deployed file {0}."
-msgstr "Veröffentlichte Datei {0}."
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Targets/BinariesZipPackageBuilder.cs:88
-#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Targets/SourcesZipPackageBuilder.cs:90
-msgid "Created file: {0}"
-msgstr "Erstellte Datei: {0}"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Targets/BinariesZipPackageBuilder.cs:108
-msgid "{0} Binaries"
-msgstr "{0} Binaries"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Targets/SourcesZipPackageBuilder.cs:103
-msgid "Target file name not provided."
-msgstr "Zieldateiname nicht bereitgestellt."
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Targets/SourcesZipPackageBuilder.cs:105
-msgid "File format not provided."
-msgstr "Dateiformat nicht bereitgestellt."
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Targets/SourcesZipPackageBuilder.cs:126
-msgid "{0} Sources"
-msgstr "{0} Quellen"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment/InstallResolver.cs:77
-msgid "Deploying file {0}."
-msgstr "Veröffentliche Datei {0}."
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.NodeBuilders/PackagingProjectNodeBuilder.cs:114
-msgid "Are you sure you want to delete the project '{0}'?"
-msgstr "Sind Sie sich sicher, dass Sie das Projekt '{0}' entfernen wollen?"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.NodeBuilders/PackageNodeBuilder.cs:127
-msgid "Are you sure you want to delete the package '{0}'?"
-msgstr "Sind sie sich sicher, dass Sie das Paket '{0}' entfernen wollen?"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment/templates/PackagingProject.xpt.xml:5
-msgid "Packaging project"
-msgstr "Packaging-Projekt"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment/templates/PackagingProject.xpt.xml:6
-#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Gui/PackagingFeature.cs:12
-msgid "Packaging"
-msgstr "Verpacke"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment/templates/PackagingProject.xpt.xml:8
-msgid "Create a project which can generate packages for a solution"
-msgstr "Erstelle ein Projekt das Pakete für eine Projektmappe generieren kann"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Gui/DeployOperations.cs:31
-msgid "Packaging Output"
-msgstr "Verpackausgang"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Gui/PackagingFeatureWidget.cs:28
-msgid "Create packages for this project in a new Packaging Project"
-msgstr "Erstelle Pakete für dieses Projekt in einem neuen Paketierungsprojekt."
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Gui/PackagingFeatureWidget.cs:34
-msgid "Select packages to add to the new Packaging Project"
-msgstr ""
-"Wählen sie die Pakete die dem neuen Paketierungsprojekt hinzugefügt werden "
-"sollen"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Gui/PackagingFeatureWidget.cs:62
-msgid "Add the new project to the Packaging Project '{0}'"
-msgstr "Füge das neue Projekt dem Paketierungsprojekt '{0}' hinzu"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Gui/PackagingFeatureWidget.cs:77
-msgid "Add the project to existing packages"
-msgstr "Füge das Projekt zu existierenden Paketen hinzu"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Gui/PackagingFeatureWidget.cs:103
-msgid "Create new packages for the project"
-msgstr "Erstelle neue Pakete für das Projekt"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Gui/PackagingFeatureWidget.cs:107
-msgid "Add new packages for this project in the packaging project '{0}'"
-msgstr "Füge neue Pakete für dieses Projekt im Paketierungsprojekt '{0}' hinzu"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Gui/PackagingFeature.cs:16
-msgid ""
-"Add a Packaging Project to the solution for generating different kinds of "
-"packages for the new project."
-msgstr ""
-"Füge ein Paketierungsprojekt zur Projektmappe hinzu um verschiedene Type von "
-"Paketen für das neue Projekt zu erstellen."
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment/DeployProjectServiceExtension.cs:34
-msgid "File '{0}' not found"
-msgstr "Datei '{0}' nicht gefunden"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.FileCopyConfigurationSelector.cs:45
-#: ../src/addins/CBinding/gtk-gui/CBinding.CodeGenerationPanel.cs:176
-msgid "Target:"
-msgstr "Ziele:"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.CommandDeployEditorWidget.cs:64
-msgid "Arguments:"
-msgstr "Argumente:"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.CommandDeployEditorWidget.cs:85
-msgid "Run in external console"
-msgstr "In externer Konsole ausführen"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.CommandDeployEditorWidget.cs:96
-msgid "Dispose console after running"
-msgstr "Beseitige Konsole nach Ausführung"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.DeployDialog.cs:126
-msgid "Create Package"
-msgstr "Paket erzeugen"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.DeployDialog.cs:171
-msgid "<big><b>Package Type</b></big>"
-msgstr "<big><b>Paket-Typ</b></big>"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.DeployDialog.cs:190
-msgid "Select the type of package to create:"
-msgstr "Wähle den Typ des zu erstellenden Pakets:"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.DeployDialog.cs:225
-msgid "<big><b>Select Project</b></big>"
-msgstr "<big><b>Wähle Projekt</b></big>"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.DeployDialog.cs:244
-msgid "Select the project or solution for which you want to create a package:"
-msgstr ""
-"Wählen Sie das Projekt oder die Projektmappe für die Sie ein Paket erstellen "
-"wollen:"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.DeployDialog.cs:274
-msgid "<big><b>Package Settings</b></big>"
-msgstr "<big><b>Paket-Einstellungen</b></big>"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.DeployDialog.cs:311
-msgid "Save this package configuration in the solution"
-msgstr "Speichere diese Paket-Konfiguration in der Projektmappe"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.DeployDialog.cs:341
-msgid "<big><b>Save Package Configuration</b></big>"
-msgstr "<big><b>Speichere Pakte-Konfiguration</b></big>"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.DeployDialog.cs:364
-msgid "Enter the name you want to give to this package configuration:"
-msgstr ""
-"Geben Sie den Namen ein den Sie dieser Paket-Konfiguration geben möchten:"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.DeployDialog.cs:414
-msgid "Where do you want to save this configuration?"
-msgstr "Wo möchten Sie diese Konfiguration speichern?"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.DeployDialog.cs:421
-msgid "Save in a new Packaging Project"
-msgstr "In neuem Paket-Projekt speichern"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.DeployDialog.cs:480
-msgid "Project name:"
-msgstr "Projektname:"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.DeployDialog.cs:490
-msgid "Create in solution:"
-msgstr "In Projektmappe erzeugen:"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.DeployDialog.cs:506
-msgid "Add to existing Packaging Project"
-msgstr "Zu vorhandenem Paket-Projekt hinzufügen"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.DeployDialog.cs:534
-msgid "Project:"
-msgstr "Projekt:"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.InstallDialog.cs:36
-msgid "Install Project"
-msgstr "Projekt installieren"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.InstallDialog.cs:53
-msgid "Directory prefix:"
-msgstr "Ordner-Präfix:"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.InstallDialog.cs:72
-msgid ""
-"Application name (to use as subdirectory name in the installation prefix):"
-msgstr ""
-"Anwendungsname (als Unterordnername für den Installations-Präfix verwendet):"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.SourcesZipEditorWidget.cs:51
-msgid "Select the archive file name and format:"
-msgstr "Wähle den Archiv-Namen und das Format:"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.EditPackageDialog.cs:116
-msgid "Package Settings"
-msgstr "Pakte-Einstellungen"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.EditPackageDialog.cs:128
-msgid "Select the projects and solutions you want to include in the package:"
-msgstr ""
-"Wählen Sie die Projekte und Projektmappen die Sie in dieses Paket einbeziehen "
-"möchten:"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.EditPackageDialog.cs:147
-msgid "Projects/Solutions"
-msgstr "Projekte/-mappen"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.BinariesZipEditorWidget.cs:51
-msgid "Select the archive file name and location:"
-msgstr "Wählen sie den Archiv-Dateinamen und -Ort:"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.BinariesZipEditorWidget.cs:114
-msgid "Target platform:"
-msgstr "Ziel-Plattform:"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.DeployFileListWidget.cs:38
-msgid "The following files will be included in the package:"
-msgstr "Die folgenden Dateien werden im Paket enthalten sein:"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.addin.xml:21
-#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.addin.xml:175
-#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.addin.xml:179
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/app.desktop.xft.xml:6
-msgid "Deployment"
-msgstr "Veröffentlichung"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.addin.xml:24
-msgid "Create Package..."
-msgstr "Paket erzeugen..."
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.addin.xml:27
-msgid "Add Package..."
-msgstr "Füge Paket hinzu..."
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.addin.xml:30
-msgid "Install..."
-msgstr "Installiere..."
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.addin.xml:187
-msgid "Program files"
-msgstr "Programmdateien"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.addin.xml:188
-msgid "Program files root folder"
-msgstr "Programmdateien Wurzelordner"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.addin.xml:189
-msgid "Binaries"
-msgstr "Binaries"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.addin.xml:190
-msgid "Global Assembly Cache"
-msgstr "Globaler Assembly-Cache"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.addin.xml:191
-msgid "Shared application data"
-msgstr "Geteilte Anwendungsdaten"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.addin.xml:192
-msgid "Shared application data root folder"
-msgstr "Geteilter Anwendungsdaten Wurzelordner"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.addin.xml:196
-msgid "Linux"
-msgstr "Linux"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Gui/FileReplaceDialog.cs:43
-msgid "<b>_Replace with source file</b>"
-msgstr "<b>E_rsetze mit Quelldatei</b>"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Gui/FileReplaceDialog.cs:44
-msgid "<b>_Keep existing target file</b>"
-msgstr "<b>Behalte existierende Zieldatei</b>"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Gui/FileReplaceDialog.cs:45
-msgid "<b>Use the _newest file</b>"
-msgstr "<b>Benutze die _neuste Datei</b>"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.FileReplaceDialog.cs:95
-msgid "Replace existing file?"
-msgstr "Bestehende Datei ersetzen?"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.FileReplaceDialog.cs:131
-msgid ""
-"<b><big>Deploy file already exists. Do you want to replace it?</big></b>"
-msgstr ""
-"<b><big>Verteilungsdatei existiert bereits Wollen Sie dieses "
-"ersetzen?</big></b>"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.FileReplaceDialog.cs:153
-msgid ""
-"There is already a file in the target directory that has the same name as the "
-"source file. You can keep the existing target file, or overwrite it with the "
-"source file."
-msgstr ""
-"Es existiert Bereits eine Datei im Zielordner die den selben Namen hat wie "
-"die Quelldatei. Sie könne die aktuelel datei beibehalten oder diese mit der "
-"Quelldatei Überschreiben."
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.FileReplaceDialog.cs:244
-#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.FileReplaceDialog.cs:338
-msgid "Modified:"
-msgstr "Geändert:"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.FileReplaceDialog.cs:397
-msgid ""
-"The source file will replace the existing target file if it has been modified "
-"more recently."
-msgstr ""
-"Die Quelldatei wird die existierende Zieldatei ersetzen wenn sie vor kürzerer "
-"Zeit geändert wurde."
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.FileReplaceDialog.cs:415
-msgid "Apply this decision to _all files in this operation"
-msgstr "Wende diese Operation für _alle Daten in diesem Vorgang an"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.FileReplaceDialog.cs:460
-msgid "_Cancel deployment"
-msgstr "Abbre_chen der Verbreitung"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Targets/BaseFuseFileCopyHandler.cs:51
-msgid "Could not create temporary directory."
-msgstr "Konnte temporären Ordner nicht erstellen."
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Targets/BaseFuseFileCopyHandler.cs:58
-msgid "Could not mount FUSE filesystem."
-msgstr "Kann das FUSE Dateisystemnicht einbinden."
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Targets/BaseFuseFileCopyHandler.cs:70
-msgid "Could not unmount FUSE filesystem."
-msgstr "Kann das FUSE Dateisystem nicht abbinden."
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Targets/SshFuseFileCopyHandler.cs:37
-msgid "MonoDevelop.Deployment.SshFuseFileCopyHandler"
-msgstr "MonoDevelop.Deployment.SshFuseFileCopyHandler"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.SshFuseFileCopyConfigurationEditorWidget.cs:82
-msgid "Host name:"
-msgstr "Hostname:"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.SshFuseFileCopyConfigurationEditorWidget.cs:102
-msgid "Username:"
-msgstr "Benutzername:"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.SshFuseFileCopyConfigurationEditorWidget.cs:112
-msgid ""
-"Note: the SSH key for this host must be installed on your system. If it is "
-"password protected, the password must be loaded into a running SSH "
-"authentication daemon, such as <i>ssh-agent</i> or <i>seahorse-agent</i>."
-msgstr ""
-"Anmerkung: Der SSH-Schlüssel für diesen Host muss auf ihrem System "
-"installiert sein. Wenn er passwort-geschützt ist muss das Passwort in einen laufenden "
-"SSH-Authentifizierungs-Daemon, wie <i>ssh-agent</i> oder "
-"<i>seahorse-agent</i>, geladen werden."
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/BasicOptionPanelWidget.cs:40
-msgid "Script name not provided"
-msgstr "Skriptname nicht unterstützt"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DotDesktopViewWidget.cs:66
-msgid "Mime Type"
-msgstr "Mime TYp"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DotDesktopViewWidget.cs:77
-msgid "Key"
-msgstr "Schlüssel"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DotDesktopViewWidget.cs:106
-msgid "<Default>"
-msgstr "<Standard>"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:3
-msgid "A multimedia (audio/video) application"
-msgstr "Eine Multimediaanwendeung"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:4
-msgid "An audio application"
-msgstr "Eine Audio-Anwendung"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:5
-msgid "A video application"
-msgstr "Eine Video-Anwendung"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:6
-msgid "An application for development"
-msgstr "Eine Anwendung zur Entwicklung"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:7
-msgid "Educational software"
-msgstr "Schulsoftware"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:8
-msgid "A game"
-msgstr "Ein Spiel"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:9
-msgid "Graphical application"
-msgstr "Graphische Anwendung"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:10
-msgid "Network application such as a web browser"
-msgstr "Netzwerkprogramme wie z.B. Web-Browser"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:11
-msgid "An office type application"
-msgstr "Eine Office Anwendung"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:12
-msgid "Settings applications"
-msgstr "Einstellungs-Anwendungen"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:13
-msgid ""
-"System application, 'System Tools' such as say a log viewer or network "
-"monitor"
-msgstr "Systemprogramme wie Netzwerkstatus oder ein Loganzeiger"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:14
-msgid "Small utility application, 'Accessories'"
-msgstr "Kleine Anwendungen 'Acessoires'"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:15
-msgid "A tool to build applications"
-msgstr "Eine Programm zum Erstellen von Anwendungen"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:16
-msgid "A tool to debug applications"
-msgstr "Ein Tool zum Fehlerbeheben in Anwendungen"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:17
-msgid "IDE application"
-msgstr "IDE-Anwendung"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:18
-msgid "A GUI designer application"
-msgstr "Eine GUI designer Anwendeung"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:19
-msgid "A profiling tool"
-msgstr "Ein Profilingwerkzeug"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:20
-msgid "Applications like cvs or subversion"
-msgstr "CVS oder Unterversion Ähnliches Programm"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:21
-msgid "A translation tool"
-msgstr "Ein Übersetzungswerkzeug"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:22
-msgid "Calendar application"
-msgstr "Kalender-Anwendung"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:23
-msgid "E.g. an address book"
-msgstr "z.B. ein Adressbuch"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:24
-msgid "Application to manage a database"
-msgstr "Anwendung zur datenbankverwaltung"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:25
-msgid "A dictionary"
-msgstr "Ein Wörterbuch"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:26
-msgid "Chart application"
-msgstr "Diagramm-Anwendung"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:27
-msgid "Email application"
-msgstr "E-mail Programm"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:28
-msgid "Application to manage your finance"
-msgstr "Anwendung zum Finanz-Management "
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:29
-msgid "A flowchart application"
-msgstr "Eine Flussdiagramm-Anwendung"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:30
-msgid "Tool to manage your PDA"
-msgstr "Anwendung zum managen eines P/MDA"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:31
-msgid "Project management application"
-msgstr "Projekt-Management-Anwendung"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:32
-msgid "Presentation software"
-msgstr "Präsentationssoftware"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:33
-msgid "A spreadsheet"
-msgstr "Eine Tabelle"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:34
-msgid "A word processor"
-msgstr "Ein Textverarbeitungsprogramm"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:35
-msgid "2D based graphical application"
-msgstr "2d basierendes Programm"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:36
-msgid "Vector based graphical application"
-msgstr "Vektor Grafik Anwendung"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:37
-msgid "Raster based graphical application"
-msgstr "Rastergrafik-Anwendung"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:38
-msgid "3D based graphical application"
-msgstr "3d basierendes Programm"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:39
-msgid "Tool to scan a file/text"
-msgstr "Suchtool"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:40
-msgid "Optical character recognition application"
-msgstr "Texterkennungssoftware"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:41
-msgid "Camera tools, etc."
-msgstr "Kameratools ..."
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:42
-msgid "Desktop Publishing applications and Color Management tools"
-msgstr "Desktoppublishing-Anwendung und Farbmanagement-Werkzeuge "
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:43
-msgid "Tool to view e.g. a graphic or pdf file"
-msgstr "Tool zum anzeigen von svg oder pdf Dokumenten/ Bildern"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:44
-msgid "A text tool utility"
-msgstr "Ein Schreibprogramm"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:45
-msgid "Configuration tool for the GUI"
-msgstr "GUI-Konfigurationswerkzeug"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:46
-msgid ""
-"A tool to manage hardware components, like sound cards, video cards or "
-"printers"
-msgstr "Ein Hardwareverwaltungsanwendung"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:47
-msgid "A tool to manage printers"
-msgstr "Eine Druckerverwaltung"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:48
-msgid "A package manager application"
-msgstr "Ein Paketmanager"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:49
-msgid "A dial-up program"
-msgstr "Ein Einwahlprogramm"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:50
-msgid "An instant messaging client"
-msgstr "Ein IM Client"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:51
-msgid "A chat client"
-msgstr "Ein Chat Client"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:52
-msgid "An IRC client"
-msgstr "Ein IRC Client"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:53
-msgid "Tools like FTP or P2P programs"
-msgstr "P2P und FTP Programme"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:54
-msgid "HAM radio software"
-msgstr "HAM Radiosoftware"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:55
-msgid "A news reader or a news ticker"
-msgstr "Ein Nachrichtenleser"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:56
-msgid "A P2P program"
-msgstr "Ein P2P Programm"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:57
-msgid "A tool to remotely manage your PC"
-msgstr "Ein Werkzeug für Remote-Desktop-Verbindungen"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:58
-msgid "Telephony via PC"
-msgstr "IP-Tel."
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:59
-msgid "Telephony tools, to dial a number, manage PBX, ..."
-msgstr "Telefonsoftware, zum wählen einer Nummer, managen von PBX, ..."
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:60
-msgid "Video Conference software"
-msgstr "Videokonferenz Software"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:61
-msgid "A web browser"
-msgstr "Ein Webbrowser"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:62
-msgid "A tool for web developers"
-msgstr "Eine Anwendung für Webentwickler"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:63
-msgid "An app related to MIDI"
-msgstr "Eine MIDI abhängige Anwendung"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:64
-msgid "Just a mixer"
-msgstr "Nur ein MIxer"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:65
-msgid "A sequencer"
-msgstr "Ein Sequenzer"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:66
-msgid "A tuner"
-msgstr "Ein Tuner"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:67
-msgid "A TV application"
-msgstr "Eine TV-Anwendung"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:68
-msgid "Application to edit audio/video files"
-msgstr "Anwendung zum Editieren von Audio-/Videodateien"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:69
-msgid "Application to play audio/video files"
-msgstr "Multimediaplayer"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:70
-msgid "Application to record audio/video files"
-msgstr "Anwendung zum Aufnehmen von Audio-/Videodateien"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:71
-msgid "Application to burn a disc"
-msgstr "Anwendung zum CD-Brennen"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:72
-msgid "An action game"
-msgstr "Ein Actionspiel"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:73
-msgid "Adventure style game"
-msgstr "Adventureartiges Spiel"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:74
-msgid "Arcade style game"
-msgstr "Arcarde Spiel"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:75
-msgid "A board game"
-msgstr "Ein Brettspiel"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:76
-msgid "Falling blocks game"
-msgstr "Blockfallende Spiele"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:77
-msgid "A card game"
-msgstr "Ein Kartenspiel"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:78
-msgid "A game for kids"
-msgstr "Ein Kinderspiel"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:79
-msgid "Logic games like puzzles, etc"
-msgstr "Logische Spiele z.B. puzzle"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:80
-msgid "A role playing game"
-msgstr "Ein Rollenspiel"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:81
-msgid "A simulation game"
-msgstr "Ein Simulationsspiel"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:82
-msgid "A sports game"
-msgstr "Ein sportliches Spiel"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:83
-msgid "A strategy game"
-msgstr "Ein Strategiespiel"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:84
-msgid "Software to teach arts"
-msgstr "Software zum Unterichten von Kunst"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:85
-msgid "Construction"
-msgstr "Konstruktion"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:86
-msgid "Musical software"
-msgstr "Musiksoftware"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:87
-msgid "Software to learn foreign languages"
-msgstr "Software zum erlernen einer Sprache"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:88
-msgid "Scientific software"
-msgstr "Wissenschaftliche Software"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:89
-msgid "Artificial Intelligence software"
-msgstr "Artifische inteligente Software"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:90
-msgid "Astronomy software"
-msgstr "Astronomisch Software"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:91
-msgid "Biology software"
-msgstr "Biologische Software"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:92
-msgid "Chemistry software"
-msgstr "Chemische Software"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:93
-msgid "ComputerSience software"
-msgstr "Informatiksoftware"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:94
-msgid "Data visualization software"
-msgstr "Datenvisualisierungssoftware"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:95
-msgid "Economy software"
-msgstr "Wirtschaftssoftware"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:96
-msgid "Electricity software"
-msgstr "Elektrischesoftware"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:97
-msgid "Geography software"
-msgstr "Geographische Software"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:98
-msgid "Geology software"
-msgstr "Geologische software"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:99
-msgid "Geoscience software"
-msgstr "Geowissenschaftliche Software"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:100
-msgid "History software"
-msgstr "Protokollsoftware"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:101
-msgid "Image Processing software"
-msgstr "Bildbearbeitungssoftware"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:102
-msgid "Literature software"
-msgstr "Literarische Software"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:103
-msgid "Math software"
-msgstr "Mathematische Software"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:104
-msgid "Numerical analysis software"
-msgstr "Numerische Analysis-Software"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:105
-msgid "Medical software"
-msgstr "Medizinische Software"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:106
-msgid "Physics software"
-msgstr "Physikalische software"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:107
-msgid "Robotics software"
-msgstr "Roboter Software"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:108
-msgid "Sports software"
-msgstr "Sportliche Software"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:109
-msgid "Parallel computing software"
-msgstr "Multitaskingsoftware"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:110
-msgid "A simple amusement"
-msgstr "Eine einfach Belustigung"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:111
-msgid "A tool to archive/backup data"
-msgstr "Ein Widerherstellungstool"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:112
-msgid "A tool to manage compressed data/archives"
-msgstr "Ein Programm zum Erstellen von Archiven"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:113
-msgid "Electronics software, e.g. a circuit designer"
-msgstr "Elektronische Software z.b. Schalplanzeichner"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:114
-msgid "Emulator of another platform, such as a DOS emulator"
-msgstr "Emulator für eine andere Plattform, z.B. ein DOS-Emulator"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:115
-msgid "Engineering software, e.g. CAD programs"
-msgstr "Arbeitprogramme wie z.B. CAD Programme"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:116
-msgid "A file tool utility"
-msgstr "Ein Dateibearbeitungsprogramm"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:117
-msgid "A file manager"
-msgstr "Ein Dateimanager"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:118
-msgid "A terminal emulator application"
-msgstr "Eine Terminalemulationsanwendung"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:119
-msgid "A file system tool"
-msgstr "Ein Dateisystemtool"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:120
-msgid "Monitor application/applet that monitors some resource or activity"
-msgstr ""
-"Überwachungsanwendung/Applet das einige Ressourcen oder Aktivitäten überwacht"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:121
-msgid "A security tool"
-msgstr "Ein Sicherheitstool"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:122
-msgid "Accessibility"
-msgstr "Zugriffsmöglichkeiten"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:123
-msgid "A calculator"
-msgstr "Ein TAschenrechenr"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:124
-msgid "A clock application/applet"
-msgstr "Eine Uhr"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:125
-msgid "A text editor"
-msgstr "Ein Texteditor"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:126
-msgid "Help or documentation"
-msgstr "Hilfe oder Dokumentation"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:127
-msgid ""
-"Important application, core to the desktop such as a file manager or a help "
-"browser"
-msgstr "Wichtiges Programm des Systems z.B. Dateibrowser und HilfeBrowser"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:128
-msgid "Application based on KDE libraries"
-msgstr "Ein Anwendung die auf KDE Bibliotheken basiert"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:129
-msgid "Application based on GNOME libraries"
-msgstr "Anwendung die auf GNOME Bibliotheken basiert"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:130
-msgid "Application based on GTK+ libraries "
-msgstr "Ein Anwendung die auf GTK+ Bibliotheken aufabut "
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:131
-msgid "Application based on Qt libraries "
-msgstr "Ein Anwendung die auf Qt Bibliotheken basiert "
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:132
-msgid "Application based on Motif libraries"
-msgstr "Eine auf den Motif-Bibliotheken basierende Anwendung"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:133
-msgid "Application based on Java GUI libraries, such as AWT or Swing"
-msgstr ""
-"Ein Anwendung die auf Java GUI Bibliotheken aufbaut, z.B. AWT oder Swing"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:134
-msgid ""
-"Application that only works inside a terminal (text-based or command line "
-"application)"
-msgstr ""
-"Anwendung die nur in einem Terminal funktioniert (Text basierend oder "
-"Kommandozeilenprogramm)"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:138
-msgid "GNOME Desktop"
-msgstr "GNOME Desktop"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:139
-msgid "KDE Desktop"
-msgstr "KDE Desktop"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:140
-msgid "ROX Desktop"
-msgstr "ROX Desktop"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:141
-msgid "XFCE Desktop"
-msgstr "XFCE Desktop"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:142
-msgid "Legacy menu systems"
-msgstr "Veraltetes Menüsystem"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/MenuCategorySelectorDialog.cs:43
-msgid "Additional categories"
-msgstr "Zusätzliche Kategorien"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/LinuxDeployExtension.cs:62
-msgid "Launch script for {0}"
-msgstr "Starte Skript für {0}"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/LinuxDeployExtension.cs:84
-msgid "pkg-config file for {0}"
-msgstr "pkg-config-Datei für {0}"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/LinuxIntegrationProjectFeature.cs:12
-msgid "Unix Integration"
-msgstr "Unix Integration"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/LinuxIntegrationProjectFeature.cs:16
-msgid ""
-"Set options for generating files to better integrate the application or "
-"library in a Unix system."
-msgstr ""
-"Setze Optionen zum generieren von Dateien zum besseren integrieren con "
-"Anwendungen oder Bibliotheken in einem Unix System"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.BasicOptionPanelWidget.cs:55
-msgid "Generate launch script"
-msgstr "Erstelle ein Startskript"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.BasicOptionPanelWidget.cs:81
-msgid "Script name:"
-msgstr "Skriptname:"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.BasicOptionPanelWidget.cs:105
-msgid "Generate .desktop file"
-msgstr ".desktop-Datei erzeugen"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.BasicOptionPanelWidget.cs:125
-msgid "Generate .pc file for the library"
-msgstr "Generiere eine .pc-Datei für die Bibliothek"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs:186
-msgid "Desktop Entry Type:"
-msgstr "Desktopeintragtyp"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs:194
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyNodeBuilder.cs:96
-msgid "Application"
-msgstr "Anwendung"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs:195
-msgid "Link"
-msgstr "Link"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs:225
-msgid "Show strings for locale:"
-msgstr "Zeige Zeichenketten für Locale:"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs:243
-msgid "New locale..."
-msgstr "Neue Locale..."
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs:315
-msgid "Icon:"
-msgstr "Zeichen:"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs:326
-msgid "Generic name:"
-msgstr "Allgemeiner Name:"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs:337
-msgid "Comment:"
-msgstr "Kommentar"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs:375
-msgid "Run in terminal"
-msgstr "In Terminal ausführen"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs:434
-msgid "Test exe:"
-msgstr "Test exe:"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs:445
-msgid "Working path:"
-msgstr "Arbeitsordner:"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs:493
-msgid "Header"
-msgstr "Überschrift"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs:505
-msgid "Show in desktop menu"
-msgstr "Zeige im Desktop-Menü"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs:528
-msgid "Menu categories:"
-msgstr "Menü-Kategorien:"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs:607
-msgid "Select the environments that should display this desktop entry:"
-msgstr "Wählen Sie die Umgebung die diesen Desktopeintrag zeigen sollen:"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs:614
-msgid "Always show"
-msgstr "Immer zeigen"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs:625
-msgid "Only show in the following environments:"
-msgstr "Nur in den folgenden Umgebungen zeigen"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs:636
-msgid "Not show in the following environments:"
-msgstr "Nicht in den Folgenden Umgebungen zeigen:"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs:674
-msgid "Menu entry"
-msgstr "Menüeintrag"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs:691
-msgid "MIME types supported by this application:"
-msgstr "MIME-Typen die von dieser Anwendung unterstützt werden:"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs:758
-msgid "Mime types"
-msgstr "Mime-Typen"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs:820
-msgid "Other entries"
-msgstr "Andere Einträge"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.MenuCategorySelectorDialog.cs:32
-msgid "Menu Category Selection"
-msgstr "Menu-Kategorie-Auswahl"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.MenuCategorySelectorDialog.cs:48
-msgid "Select the categories you want to assign to the desktop entry:"
-msgstr "Wählen Sie die Kategorien der sie den Desktopeintrag zuweisen wollen:"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux.addin.xml:56
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux.addin.xml:60
-msgid "Linux Deployment Settings"
-msgstr "Linux Veröffentlichungseinstellungen"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux.addin.xml:73
-msgid "pkg-config folder"
-msgstr "pkg.config Ordner"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux.addin.xml:74
-msgid ".desktop application folder"
-msgstr ".desktop Anwendungsordner"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/app.desktop.xft.xml:4
-msgid "Desktop Application Launcher"
-msgstr "Desktop-Anwendungsstarter"
-
-#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/app.desktop.xft.xml:7
-msgid "Creates a Desktop Entry file."
-msgstr "Erzeugt eine Desktop-Eintrag-Datei."
 
 #: ../src/addins/CSharpBinding/templates/ConsoleProject.xpt.xml:11
 msgid "Creates a new C# console project."
@@ -9433,7 +8271,7 @@ msgstr "<b>Sprach-Einstellungen</b>"
 msgid "C# Language Version:"
 msgstr "C# Sprach-Version:"
 
-#: ../src/addins/CSharpBinding/Gui/CompilerOptionsPanelWidget.cs:118
+#: ../src/addins/CSharpBinding/Gui/CompilerOptionsPanelWidget.cs:119
 msgid "Invalid code page number."
 msgstr "Ungültige Codepage-Nummer."
 
@@ -9496,11 +8334,11 @@ msgstr "Benutze Länder-Code"
 msgid "_Known Language"
 msgstr "Bekannte Sprache"
 
-#: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.Translator.LanguageChooserDialog.cs:204
+#: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.Translator.LanguageChooserDialog.cs:203
 msgid "L_ocale:"
 msgstr "L_ocale:"
 
-#: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.Translator.LanguageChooserDialog.cs:222
+#: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.Translator.LanguageChooserDialog.cs:221
 msgid "_User Defined Locale"
 msgstr "Ben_utzerdefinierte Locale"
 
@@ -10850,6 +9688,11 @@ msgstr "Warnstufe:"
 msgid "Optimization Level:"
 msgstr "Optimierungsstufe:"
 
+#: ../src/addins/CBinding/gtk-gui/CBinding.CodeGenerationPanel.cs:176
+#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.FileCopyConfigurationSelector.cs:45
+msgid "Target:"
+msgstr "Ziele:"
+
 #: ../src/addins/CBinding/gtk-gui/CBinding.CodeGenerationPanel.cs:201
 #: ../src/addins/CBinding/templates/StaticLibraryCProject.xpt.xml:8
 #: ../src/addins/CBinding/templates/StaticLibraryCppProject.xpt.xml:8
@@ -11185,48 +10028,48 @@ msgstr "Seite"
 msgid "Clipboard ring"
 msgstr "Zwischenablagering"
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:157
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:892
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:158
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:925
 msgid "Type list"
 msgstr "Typen"
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:163
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:903
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:164
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:936
 msgid "Member list"
 msgstr "Elemente"
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:168
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:692
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:169
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:725
 msgid "Region list"
 msgstr "Regionen"
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:480
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:513
 msgid "This file has been changed outside of MonoDevelop"
 msgstr "Die Datei wurde außerhalb von MonoDevelop verändert"
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:488
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:521
 msgid "Ignore"
 msgstr "Ignorieren"
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:686
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:719
 msgid "Region {0}"
 msgstr "Region {0}"
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:1046
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:1062
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:1101
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:1079
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:1095
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:1134
 msgid "Search pattern not found"
 msgstr "Ausdruck nicht gefunden"
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:1048
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:1081
 msgid "Reached bottom, continued from top"
 msgstr "Das Dokumentende wurde erreicht. Suche vom Dokumentanfang fortgesetzt."
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:1064
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:1097
 msgid "Reached top, continued from bottom"
 msgstr "Der Dokumentanfang wurde erreicht. Suche am Dokumentende fortgesetzt."
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:1103
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:1136
 msgid "Found and replaced one occurrence"
 msgid_plural "Found and replaced {0} occurrences"
 msgstr[0] "Eine Übereinstimmung gefunden und ersetzt"
@@ -11345,6 +10188,11 @@ msgstr "Assembly <b>{0}</b>, Version {1}"
 msgid "Console application"
 msgstr "Terminalanwendung"
 
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyNodeBuilder.cs:96
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs:194
+msgid "Application"
+msgstr "Anwendung"
+
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyNodeBuilder.cs:107
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/DomTypeNodeBuilder.cs:110
 msgid "<b>Name:</b>\t{0}"
@@ -11405,6 +10253,1198 @@ msgstr "Basistypen"
 #: ../src/addins/MonoDevelop.AssemblyBrowser/gtk-gui/MonoDevelop.AssemblyBrowser.AssemblyBrowserWidget.cs:174
 msgid "_in:"
 msgstr "_in:"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment/UnknownPackageBuilder.cs:46
+msgid "Unknown package type"
+msgstr "Unbekannter Paketyp"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Gui/DeployDialog.cs:184
+msgid "Please select a package type."
+msgstr "Wählen sie einen Pakettyp."
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Gui/DeployDialog.cs:186
+#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Gui/DeployDialog.cs:212
+msgid "Project name not provided."
+msgstr "Projektname nicht bereitgestellt."
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Gui/DeployDialog.cs:195
+msgid "Please select a project or solution."
+msgstr "Bitte wählen sie ein Projekt oder eine Projektmappe."
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Gui/DeployDialog.cs:208
+msgid "Package name not provided."
+msgstr "Paketname nicht bereitgestellt."
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Gui/DeployDialog.cs:214
+msgid "Solution where to create the project not selected."
+msgstr "Projektmappe in der das Projekt erstellt werden soll nicht ausgewählt."
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Gui/DeployDialog.cs:217
+msgid "Packaging project not selected."
+msgstr "Paketierungsprojekt nicht ausgewählt."
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Gui/DeployDialog.cs:265
+msgid "Create"
+msgstr "Erstelle"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Targets/CommandPackageBuilder.cs:47
+msgid "Execute command"
+msgstr "Befehl ausführen"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Targets/CommandPackageBuilder.cs:96
+msgid "(in external terminal)"
+msgstr "(im externen Terminal)"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Targets/CommandPackageBuilder.cs:102
+msgid "Executing: {0} {1} {2}"
+msgstr "Entpacke: {0} {1} {2}"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Targets/LocalFileCopyHandler.cs:45
+msgid "Local Filesystem"
+msgstr "Lokales Dateisystem"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Targets/LocalFileCopyHandler.cs:80
+msgid "Could not resolve target directory ID \"{0}\""
+msgstr "Kann Zielordner ID \"{0}\" nicht erfassen"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Targets/LocalFileCopyHandler.cs:96
+msgid "Deployment aborted: target file {0} already exists."
+msgstr "Verbreitung gestoppt. Zieldaten {0} existieren bereits."
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Targets/LocalFileCopyHandler.cs:135
+msgid "Skipped {0}: file exists."
+msgstr "{0} übersprungen: Datei existiert bereits."
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Targets/LocalFileCopyHandler.cs:140
+msgid "Replaced {0}."
+msgstr "{0} ersetzt."
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Targets/LocalFileCopyHandler.cs:145
+msgid "Replacing {0}: existing file is older."
+msgstr "Ersetze {0}: existierende Datei ist älter."
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Targets/LocalFileCopyHandler.cs:148
+msgid "Skipped {0}: existing file is the same age."
+msgstr "{0} übersprungen: existierende Datei ist gleich alt."
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Targets/LocalFileCopyHandler.cs:150
+msgid "Skipped {0}: existing file is newer."
+msgstr "{0} übersprungen: existierende Datei ist neuer."
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Targets/LocalFileCopyHandler.cs:158
+msgid "Deployed file {0}."
+msgstr "Veröffentlichte Datei {0}."
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Targets/BinariesZipPackageBuilder.cs:88
+#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Targets/SourcesZipPackageBuilder.cs:90
+msgid "Created file: {0}"
+msgstr "Erstellte Datei: {0}"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Targets/BinariesZipPackageBuilder.cs:108
+msgid "{0} Binaries"
+msgstr "{0} Binaries"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Targets/SourcesZipPackageBuilder.cs:103
+msgid "Target file name not provided."
+msgstr "Zieldateiname nicht bereitgestellt."
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Targets/SourcesZipPackageBuilder.cs:105
+msgid "File format not provided."
+msgstr "Dateiformat nicht bereitgestellt."
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Targets/SourcesZipPackageBuilder.cs:126
+msgid "{0} Sources"
+msgstr "{0} Quellen"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment/InstallResolver.cs:77
+msgid "Deploying file {0}."
+msgstr "Veröffentliche Datei {0}."
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.NodeBuilders/PackagingProjectNodeBuilder.cs:114
+msgid "Are you sure you want to delete the project '{0}'?"
+msgstr "Sind Sie sich sicher, dass Sie das Projekt '{0}' entfernen wollen?"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.NodeBuilders/PackageNodeBuilder.cs:127
+msgid "Are you sure you want to delete the package '{0}'?"
+msgstr "Sind sie sich sicher, dass Sie das Paket '{0}' entfernen wollen?"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment/templates/PackagingProject.xpt.xml:5
+msgid "Packaging project"
+msgstr "Packaging-Projekt"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment/templates/PackagingProject.xpt.xml:6
+#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Gui/PackagingFeature.cs:12
+msgid "Packaging"
+msgstr "Verpacke"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment/templates/PackagingProject.xpt.xml:8
+msgid "Create a project which can generate packages for a solution"
+msgstr "Erstelle ein Projekt das Pakete für eine Projektmappe generieren kann"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Gui/DeployOperations.cs:31
+msgid "Packaging Output"
+msgstr "Verpackausgang"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Gui/PackagingFeatureWidget.cs:28
+msgid "Create packages for this project in a new Packaging Project"
+msgstr "Erstelle Pakete für dieses Projekt in einem neuen Paketierungsprojekt."
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Gui/PackagingFeatureWidget.cs:34
+msgid "Select packages to add to the new Packaging Project"
+msgstr ""
+"Wählen sie die Pakete die dem neuen Paketierungsprojekt hinzugefügt werden "
+"sollen"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Gui/PackagingFeatureWidget.cs:62
+msgid "Add the new project to the Packaging Project '{0}'"
+msgstr "Füge das neue Projekt dem Paketierungsprojekt '{0}' hinzu"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Gui/PackagingFeatureWidget.cs:77
+msgid "Add the project to existing packages"
+msgstr "Füge das Projekt zu existierenden Paketen hinzu"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Gui/PackagingFeatureWidget.cs:103
+msgid "Create new packages for the project"
+msgstr "Erstelle neue Pakete für das Projekt"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Gui/PackagingFeatureWidget.cs:107
+msgid "Add new packages for this project in the packaging project '{0}'"
+msgstr "Füge neue Pakete für dieses Projekt im Paketierungsprojekt '{0}' hinzu"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Gui/PackagingFeature.cs:16
+msgid ""
+"Add a Packaging Project to the solution for generating different kinds of "
+"packages for the new project."
+msgstr ""
+"Füge ein Paketierungsprojekt zur Projektmappe hinzu um verschiedene Type von "
+"Paketen für das neue Projekt zu erstellen."
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment/DeployProjectServiceExtension.cs:34
+msgid "File '{0}' not found"
+msgstr "Datei '{0}' nicht gefunden"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.CommandDeployEditorWidget.cs:64
+msgid "Arguments:"
+msgstr "Argumente:"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.CommandDeployEditorWidget.cs:85
+msgid "Run in external console"
+msgstr "In externer Konsole ausführen"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.CommandDeployEditorWidget.cs:96
+msgid "Dispose console after running"
+msgstr "Beseitige Konsole nach Ausführung"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.DeployDialog.cs:126
+msgid "Create Package"
+msgstr "Paket erzeugen"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.DeployDialog.cs:171
+msgid "<big><b>Package Type</b></big>"
+msgstr "<big><b>Paket-Typ</b></big>"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.DeployDialog.cs:190
+msgid "Select the type of package to create:"
+msgstr "Wähle den Typ des zu erstellenden Pakets:"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.DeployDialog.cs:225
+msgid "<big><b>Select Project</b></big>"
+msgstr "<big><b>Wähle Projekt</b></big>"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.DeployDialog.cs:244
+msgid "Select the project or solution for which you want to create a package:"
+msgstr ""
+"Wählen Sie das Projekt oder die Projektmappe für die Sie ein Paket erstellen "
+"wollen:"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.DeployDialog.cs:274
+msgid "<big><b>Package Settings</b></big>"
+msgstr "<big><b>Paket-Einstellungen</b></big>"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.DeployDialog.cs:311
+msgid "Save this package configuration in the solution"
+msgstr "Speichere diese Paket-Konfiguration in der Projektmappe"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.DeployDialog.cs:341
+msgid "<big><b>Save Package Configuration</b></big>"
+msgstr "<big><b>Speichere Pakte-Konfiguration</b></big>"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.DeployDialog.cs:364
+msgid "Enter the name you want to give to this package configuration:"
+msgstr ""
+"Geben Sie den Namen ein den Sie dieser Paket-Konfiguration geben möchten:"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.DeployDialog.cs:414
+msgid "Where do you want to save this configuration?"
+msgstr "Wo möchten Sie diese Konfiguration speichern?"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.DeployDialog.cs:421
+msgid "Save in a new Packaging Project"
+msgstr "In neuem Paket-Projekt speichern"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.DeployDialog.cs:479
+msgid "Project name:"
+msgstr "Projektname:"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.DeployDialog.cs:489
+msgid "Create in solution:"
+msgstr "In Projektmappe erzeugen:"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.DeployDialog.cs:505
+msgid "Add to existing Packaging Project"
+msgstr "Zu vorhandenem Paket-Projekt hinzufügen"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.DeployDialog.cs:533
+msgid "Project:"
+msgstr "Projekt:"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.InstallDialog.cs:36
+msgid "Install Project"
+msgstr "Projekt installieren"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.InstallDialog.cs:53
+msgid "Directory prefix:"
+msgstr "Ordner-Präfix:"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.InstallDialog.cs:72
+msgid ""
+"Application name (to use as subdirectory name in the installation prefix):"
+msgstr ""
+"Anwendungsname (als Unterordnername für den Installations-Präfix verwendet):"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.SourcesZipEditorWidget.cs:51
+msgid "Select the archive file name and format:"
+msgstr "Wähle den Archiv-Namen und das Format:"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.EditPackageDialog.cs:116
+msgid "Package Settings"
+msgstr "Pakte-Einstellungen"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.EditPackageDialog.cs:128
+msgid "Select the projects and solutions you want to include in the package:"
+msgstr ""
+"Wählen Sie die Projekte und Projektmappen die Sie in dieses Paket einbeziehen "
+"möchten:"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.EditPackageDialog.cs:147
+msgid "Projects/Solutions"
+msgstr "Projekte/-mappen"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.BinariesZipEditorWidget.cs:51
+msgid "Select the archive file name and location:"
+msgstr "Wählen sie den Archiv-Dateinamen und -Ort:"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.BinariesZipEditorWidget.cs:114
+msgid "Target platform:"
+msgstr "Ziel-Plattform:"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.DeployFileListWidget.cs:38
+msgid "The following files will be included in the package:"
+msgstr "Die folgenden Dateien werden im Paket enthalten sein:"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.addin.xml:21
+#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.addin.xml:175
+#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.addin.xml:179
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/app.desktop.xft.xml:6
+msgid "Deployment"
+msgstr "Veröffentlichung"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.addin.xml:24
+msgid "Create Package..."
+msgstr "Paket erzeugen..."
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.addin.xml:27
+msgid "Add Package..."
+msgstr "Füge Paket hinzu..."
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.addin.xml:30
+msgid "Install..."
+msgstr "Installiere..."
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.addin.xml:187
+msgid "Program files"
+msgstr "Programmdateien"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.addin.xml:188
+msgid "Program files root folder"
+msgstr "Programmdateien Wurzelordner"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.addin.xml:189
+msgid "Binaries"
+msgstr "Binaries"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.addin.xml:190
+msgid "Global Assembly Cache"
+msgstr "Globaler Assembly-Cache"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.addin.xml:191
+msgid "Shared application data"
+msgstr "Geteilte Anwendungsdaten"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.addin.xml:192
+msgid "Shared application data root folder"
+msgstr "Geteilter Anwendungsdaten Wurzelordner"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.addin.xml:196
+msgid "Linux"
+msgstr "Linux"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Gui/FileReplaceDialog.cs:43
+msgid "<b>_Replace with source file</b>"
+msgstr "<b>E_rsetze mit Quelldatei</b>"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Gui/FileReplaceDialog.cs:44
+msgid "<b>_Keep existing target file</b>"
+msgstr "<b>Behalte existierende Zieldatei</b>"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Gui/FileReplaceDialog.cs:45
+msgid "<b>Use the _newest file</b>"
+msgstr "<b>Benutze die _neuste Datei</b>"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.FileReplaceDialog.cs:95
+msgid "Replace existing file?"
+msgstr "Bestehende Datei ersetzen?"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.FileReplaceDialog.cs:131
+msgid ""
+"<b><big>Deploy file already exists. Do you want to replace it?</big></b>"
+msgstr ""
+"<b><big>Verteilungsdatei existiert bereits Wollen Sie dieses "
+"ersetzen?</big></b>"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.FileReplaceDialog.cs:153
+msgid ""
+"There is already a file in the target directory that has the same name as the "
+"source file. You can keep the existing target file, or overwrite it with the "
+"source file."
+msgstr ""
+"Es existiert Bereits eine Datei im Zielordner die den selben Namen hat wie "
+"die Quelldatei. Sie könne die aktuelel datei beibehalten oder diese mit der "
+"Quelldatei Überschreiben."
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.FileReplaceDialog.cs:244
+#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.FileReplaceDialog.cs:338
+msgid "Modified:"
+msgstr "Geändert:"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.FileReplaceDialog.cs:397
+msgid ""
+"The source file will replace the existing target file if it has been modified "
+"more recently."
+msgstr ""
+"Die Quelldatei wird die existierende Zieldatei ersetzen wenn sie vor kürzerer "
+"Zeit geändert wurde."
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.FileReplaceDialog.cs:415
+msgid "Apply this decision to _all files in this operation"
+msgstr "Wende diese Operation für _alle Daten in diesem Vorgang an"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.FileReplaceDialog.cs:460
+msgid "_Cancel deployment"
+msgstr "Abbre_chen der Verbreitung"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Targets/BaseFuseFileCopyHandler.cs:51
+msgid "Could not create temporary directory."
+msgstr "Konnte temporären Ordner nicht erstellen."
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Targets/BaseFuseFileCopyHandler.cs:58
+msgid "Could not mount FUSE filesystem."
+msgstr "Kann das FUSE Dateisystemnicht einbinden."
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Targets/BaseFuseFileCopyHandler.cs:70
+msgid "Could not unmount FUSE filesystem."
+msgstr "Kann das FUSE Dateisystem nicht abbinden."
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Targets/SshFuseFileCopyHandler.cs:37
+msgid "MonoDevelop.Deployment.SshFuseFileCopyHandler"
+msgstr "MonoDevelop.Deployment.SshFuseFileCopyHandler"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.SshFuseFileCopyConfigurationEditorWidget.cs:82
+msgid "Host name:"
+msgstr "Hostname:"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.SshFuseFileCopyConfigurationEditorWidget.cs:102
+msgid "Username:"
+msgstr "Benutzername:"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.SshFuseFileCopyConfigurationEditorWidget.cs:112
+msgid ""
+"Note: the SSH key for this host must be installed on your system. If it is "
+"password protected, the password must be loaded into a running SSH "
+"authentication daemon, such as <i>ssh-agent</i> or <i>seahorse-agent</i>."
+msgstr ""
+"Anmerkung: Der SSH-Schlüssel für diesen Host muss auf ihrem System "
+"installiert sein. Wenn er passwort-geschützt ist muss das Passwort in einen laufenden "
+"SSH-Authentifizierungs-Daemon, wie <i>ssh-agent</i> oder "
+"<i>seahorse-agent</i>, geladen werden."
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/BasicOptionPanelWidget.cs:40
+msgid "Script name not provided"
+msgstr "Skriptname nicht unterstützt"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DotDesktopViewWidget.cs:66
+msgid "Mime Type"
+msgstr "Mime TYp"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DotDesktopViewWidget.cs:77
+msgid "Key"
+msgstr "Schlüssel"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DotDesktopViewWidget.cs:106
+msgid "<Default>"
+msgstr "<Standard>"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:3
+msgid "A multimedia (audio/video) application"
+msgstr "Eine Multimediaanwendeung"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:4
+msgid "An audio application"
+msgstr "Eine Audio-Anwendung"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:5
+msgid "A video application"
+msgstr "Eine Video-Anwendung"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:6
+msgid "An application for development"
+msgstr "Eine Anwendung zur Entwicklung"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:7
+msgid "Educational software"
+msgstr "Schulsoftware"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:8
+msgid "A game"
+msgstr "Ein Spiel"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:9
+msgid "Graphical application"
+msgstr "Graphische Anwendung"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:10
+msgid "Network application such as a web browser"
+msgstr "Netzwerkprogramme wie z.B. Web-Browser"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:11
+msgid "An office type application"
+msgstr "Eine Office Anwendung"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:12
+msgid "Settings applications"
+msgstr "Einstellungs-Anwendungen"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:13
+msgid ""
+"System application, 'System Tools' such as say a log viewer or network "
+"monitor"
+msgstr "Systemprogramme wie Netzwerkstatus oder ein Loganzeiger"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:14
+msgid "Small utility application, 'Accessories'"
+msgstr "Kleine Anwendungen 'Acessoires'"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:15
+msgid "A tool to build applications"
+msgstr "Eine Programm zum Erstellen von Anwendungen"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:16
+msgid "A tool to debug applications"
+msgstr "Ein Tool zum Fehlerbeheben in Anwendungen"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:17
+msgid "IDE application"
+msgstr "IDE-Anwendung"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:18
+msgid "A GUI designer application"
+msgstr "Eine GUI designer Anwendeung"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:19
+msgid "A profiling tool"
+msgstr "Ein Profilingwerkzeug"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:20
+msgid "Applications like cvs or subversion"
+msgstr "CVS oder Unterversion Ähnliches Programm"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:21
+msgid "A translation tool"
+msgstr "Ein Übersetzungswerkzeug"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:22
+msgid "Calendar application"
+msgstr "Kalender-Anwendung"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:23
+msgid "E.g. an address book"
+msgstr "z.B. ein Adressbuch"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:24
+msgid "Application to manage a database"
+msgstr "Anwendung zur datenbankverwaltung"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:25
+msgid "A dictionary"
+msgstr "Ein Wörterbuch"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:26
+msgid "Chart application"
+msgstr "Diagramm-Anwendung"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:27
+msgid "Email application"
+msgstr "E-mail Programm"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:28
+msgid "Application to manage your finance"
+msgstr "Anwendung zum Finanz-Management "
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:29
+msgid "A flowchart application"
+msgstr "Eine Flussdiagramm-Anwendung"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:30
+msgid "Tool to manage your PDA"
+msgstr "Anwendung zum managen eines P/MDA"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:31
+msgid "Project management application"
+msgstr "Projekt-Management-Anwendung"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:32
+msgid "Presentation software"
+msgstr "Präsentationssoftware"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:33
+msgid "A spreadsheet"
+msgstr "Eine Tabelle"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:34
+msgid "A word processor"
+msgstr "Ein Textverarbeitungsprogramm"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:35
+msgid "2D based graphical application"
+msgstr "2d basierendes Programm"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:36
+msgid "Vector based graphical application"
+msgstr "Vektor Grafik Anwendung"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:37
+msgid "Raster based graphical application"
+msgstr "Rastergrafik-Anwendung"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:38
+msgid "3D based graphical application"
+msgstr "3d basierendes Programm"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:39
+msgid "Tool to scan a file/text"
+msgstr "Suchtool"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:40
+msgid "Optical character recognition application"
+msgstr "Texterkennungssoftware"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:41
+msgid "Camera tools, etc."
+msgstr "Kameratools ..."
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:42
+msgid "Desktop Publishing applications and Color Management tools"
+msgstr "Desktoppublishing-Anwendung und Farbmanagement-Werkzeuge "
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:43
+msgid "Tool to view e.g. a graphic or pdf file"
+msgstr "Tool zum anzeigen von svg oder pdf Dokumenten/ Bildern"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:44
+msgid "A text tool utility"
+msgstr "Ein Schreibprogramm"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:45
+msgid "Configuration tool for the GUI"
+msgstr "GUI-Konfigurationswerkzeug"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:46
+msgid ""
+"A tool to manage hardware components, like sound cards, video cards or "
+"printers"
+msgstr "Ein Hardwareverwaltungsanwendung"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:47
+msgid "A tool to manage printers"
+msgstr "Eine Druckerverwaltung"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:48
+msgid "A package manager application"
+msgstr "Ein Paketmanager"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:49
+msgid "A dial-up program"
+msgstr "Ein Einwahlprogramm"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:50
+msgid "An instant messaging client"
+msgstr "Ein IM Client"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:51
+msgid "A chat client"
+msgstr "Ein Chat Client"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:52
+msgid "An IRC client"
+msgstr "Ein IRC Client"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:53
+msgid "Tools like FTP or P2P programs"
+msgstr "P2P und FTP Programme"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:54
+msgid "HAM radio software"
+msgstr "HAM Radiosoftware"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:55
+msgid "A news reader or a news ticker"
+msgstr "Ein Nachrichtenleser"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:56
+msgid "A P2P program"
+msgstr "Ein P2P Programm"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:57
+msgid "A tool to remotely manage your PC"
+msgstr "Ein Werkzeug für Remote-Desktop-Verbindungen"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:58
+msgid "Telephony via PC"
+msgstr "IP-Tel."
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:59
+msgid "Telephony tools, to dial a number, manage PBX, ..."
+msgstr "Telefonsoftware, zum wählen einer Nummer, managen von PBX, ..."
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:60
+msgid "Video Conference software"
+msgstr "Videokonferenz Software"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:61
+msgid "A web browser"
+msgstr "Ein Webbrowser"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:62
+msgid "A tool for web developers"
+msgstr "Eine Anwendung für Webentwickler"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:63
+msgid "An app related to MIDI"
+msgstr "Eine MIDI abhängige Anwendung"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:64
+msgid "Just a mixer"
+msgstr "Nur ein MIxer"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:65
+msgid "A sequencer"
+msgstr "Ein Sequenzer"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:66
+msgid "A tuner"
+msgstr "Ein Tuner"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:67
+msgid "A TV application"
+msgstr "Eine TV-Anwendung"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:68
+msgid "Application to edit audio/video files"
+msgstr "Anwendung zum Editieren von Audio-/Videodateien"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:69
+msgid "Application to play audio/video files"
+msgstr "Multimediaplayer"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:70
+msgid "Application to record audio/video files"
+msgstr "Anwendung zum Aufnehmen von Audio-/Videodateien"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:71
+msgid "Application to burn a disc"
+msgstr "Anwendung zum CD-Brennen"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:72
+msgid "An action game"
+msgstr "Ein Actionspiel"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:73
+msgid "Adventure style game"
+msgstr "Adventureartiges Spiel"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:74
+msgid "Arcade style game"
+msgstr "Arcarde Spiel"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:75
+msgid "A board game"
+msgstr "Ein Brettspiel"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:76
+msgid "Falling blocks game"
+msgstr "Blockfallende Spiele"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:77
+msgid "A card game"
+msgstr "Ein Kartenspiel"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:78
+msgid "A game for kids"
+msgstr "Ein Kinderspiel"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:79
+msgid "Logic games like puzzles, etc"
+msgstr "Logische Spiele z.B. puzzle"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:80
+msgid "A role playing game"
+msgstr "Ein Rollenspiel"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:81
+msgid "A simulation game"
+msgstr "Ein Simulationsspiel"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:82
+msgid "A sports game"
+msgstr "Ein sportliches Spiel"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:83
+msgid "A strategy game"
+msgstr "Ein Strategiespiel"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:84
+msgid "Software to teach arts"
+msgstr "Software zum Unterichten von Kunst"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:85
+msgid "Construction"
+msgstr "Konstruktion"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:86
+msgid "Musical software"
+msgstr "Musiksoftware"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:87
+msgid "Software to learn foreign languages"
+msgstr "Software zum erlernen einer Sprache"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:88
+msgid "Scientific software"
+msgstr "Wissenschaftliche Software"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:89
+msgid "Artificial Intelligence software"
+msgstr "Artifische inteligente Software"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:90
+msgid "Astronomy software"
+msgstr "Astronomisch Software"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:91
+msgid "Biology software"
+msgstr "Biologische Software"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:92
+msgid "Chemistry software"
+msgstr "Chemische Software"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:93
+msgid "ComputerSience software"
+msgstr "Informatiksoftware"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:94
+msgid "Data visualization software"
+msgstr "Datenvisualisierungssoftware"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:95
+msgid "Economy software"
+msgstr "Wirtschaftssoftware"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:96
+msgid "Electricity software"
+msgstr "Elektrischesoftware"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:97
+msgid "Geography software"
+msgstr "Geographische Software"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:98
+msgid "Geology software"
+msgstr "Geologische software"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:99
+msgid "Geoscience software"
+msgstr "Geowissenschaftliche Software"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:100
+msgid "History software"
+msgstr "Protokollsoftware"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:101
+msgid "Image Processing software"
+msgstr "Bildbearbeitungssoftware"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:102
+msgid "Literature software"
+msgstr "Literarische Software"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:103
+msgid "Math software"
+msgstr "Mathematische Software"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:104
+msgid "Numerical analysis software"
+msgstr "Numerische Analysis-Software"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:105
+msgid "Medical software"
+msgstr "Medizinische Software"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:106
+msgid "Physics software"
+msgstr "Physikalische software"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:107
+msgid "Robotics software"
+msgstr "Roboter Software"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:108
+msgid "Sports software"
+msgstr "Sportliche Software"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:109
+msgid "Parallel computing software"
+msgstr "Multitaskingsoftware"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:110
+msgid "A simple amusement"
+msgstr "Eine einfach Belustigung"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:111
+msgid "A tool to archive/backup data"
+msgstr "Ein Widerherstellungstool"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:112
+msgid "A tool to manage compressed data/archives"
+msgstr "Ein Programm zum Erstellen von Archiven"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:113
+msgid "Electronics software, e.g. a circuit designer"
+msgstr "Elektronische Software z.b. Schalplanzeichner"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:114
+msgid "Emulator of another platform, such as a DOS emulator"
+msgstr "Emulator für eine andere Plattform, z.B. ein DOS-Emulator"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:115
+msgid "Engineering software, e.g. CAD programs"
+msgstr "Arbeitprogramme wie z.B. CAD Programme"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:116
+msgid "A file tool utility"
+msgstr "Ein Dateibearbeitungsprogramm"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:117
+msgid "A file manager"
+msgstr "Ein Dateimanager"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:118
+msgid "A terminal emulator application"
+msgstr "Eine Terminalemulationsanwendung"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:119
+msgid "A file system tool"
+msgstr "Ein Dateisystemtool"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:120
+msgid "Monitor application/applet that monitors some resource or activity"
+msgstr ""
+"Überwachungsanwendung/Applet das einige Ressourcen oder Aktivitäten überwacht"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:121
+msgid "A security tool"
+msgstr "Ein Sicherheitstool"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:122
+msgid "Accessibility"
+msgstr "Zugriffsmöglichkeiten"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:123
+msgid "A calculator"
+msgstr "Ein TAschenrechenr"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:124
+msgid "A clock application/applet"
+msgstr "Eine Uhr"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:125
+msgid "A text editor"
+msgstr "Ein Texteditor"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:126
+msgid "Help or documentation"
+msgstr "Hilfe oder Dokumentation"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:127
+msgid ""
+"Important application, core to the desktop such as a file manager or a help "
+"browser"
+msgstr "Wichtiges Programm des Systems z.B. Dateibrowser und HilfeBrowser"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:128
+msgid "Application based on KDE libraries"
+msgstr "Ein Anwendung die auf KDE Bibliotheken basiert"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:129
+msgid "Application based on GNOME libraries"
+msgstr "Anwendung die auf GNOME Bibliotheken basiert"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:130
+msgid "Application based on GTK+ libraries "
+msgstr "Ein Anwendung die auf GTK+ Bibliotheken aufabut "
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:131
+msgid "Application based on Qt libraries "
+msgstr "Ein Anwendung die auf Qt Bibliotheken basiert "
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:132
+msgid "Application based on Motif libraries"
+msgstr "Eine auf den Motif-Bibliotheken basierende Anwendung"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:133
+msgid "Application based on Java GUI libraries, such as AWT or Swing"
+msgstr ""
+"Ein Anwendung die auf Java GUI Bibliotheken aufbaut, z.B. AWT oder Swing"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:134
+msgid ""
+"Application that only works inside a terminal (text-based or command line "
+"application)"
+msgstr ""
+"Anwendung die nur in einem Terminal funktioniert (Text basierend oder "
+"Kommandozeilenprogramm)"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:138
+msgid "GNOME Desktop"
+msgstr "GNOME Desktop"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:139
+msgid "KDE Desktop"
+msgstr "KDE Desktop"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:140
+msgid "ROX Desktop"
+msgstr "ROX Desktop"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:141
+msgid "XFCE Desktop"
+msgstr "XFCE Desktop"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:142
+msgid "Legacy menu systems"
+msgstr "Veraltetes Menüsystem"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/MenuCategorySelectorDialog.cs:43
+msgid "Additional categories"
+msgstr "Zusätzliche Kategorien"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/LinuxDeployExtension.cs:62
+msgid "Launch script for {0}"
+msgstr "Starte Skript für {0}"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/LinuxDeployExtension.cs:84
+msgid "pkg-config file for {0}"
+msgstr "pkg-config-Datei für {0}"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/LinuxIntegrationProjectFeature.cs:12
+msgid "Unix Integration"
+msgstr "Unix Integration"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/LinuxIntegrationProjectFeature.cs:16
+msgid ""
+"Set options for generating files to better integrate the application or "
+"library in a Unix system."
+msgstr ""
+"Setze Optionen zum generieren von Dateien zum besseren integrieren con "
+"Anwendungen oder Bibliotheken in einem Unix System"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.BasicOptionPanelWidget.cs:55
+msgid "Generate launch script"
+msgstr "Erstelle ein Startskript"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.BasicOptionPanelWidget.cs:81
+msgid "Script name:"
+msgstr "Skriptname:"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.BasicOptionPanelWidget.cs:105
+msgid "Generate .desktop file"
+msgstr ".desktop-Datei erzeugen"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.BasicOptionPanelWidget.cs:125
+msgid "Generate .pc file for the library"
+msgstr "Generiere eine .pc-Datei für die Bibliothek"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs:186
+msgid "Desktop Entry Type:"
+msgstr "Desktopeintragtyp"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs:195
+msgid "Link"
+msgstr "Link"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs:225
+msgid "Show strings for locale:"
+msgstr "Zeige Zeichenketten für Locale:"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs:243
+msgid "New locale..."
+msgstr "Neue Locale..."
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs:315
+msgid "Icon:"
+msgstr "Zeichen:"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs:326
+msgid "Generic name:"
+msgstr "Allgemeiner Name:"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs:337
+msgid "Comment:"
+msgstr "Kommentar"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs:375
+msgid "Run in terminal"
+msgstr "In Terminal ausführen"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs:434
+msgid "Test exe:"
+msgstr "Test exe:"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs:445
+msgid "Working path:"
+msgstr "Arbeitsordner:"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs:493
+msgid "Header"
+msgstr "Überschrift"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs:505
+msgid "Show in desktop menu"
+msgstr "Zeige im Desktop-Menü"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs:528
+msgid "Menu categories:"
+msgstr "Menü-Kategorien:"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs:607
+msgid "Select the environments that should display this desktop entry:"
+msgstr "Wählen Sie die Umgebung die diesen Desktopeintrag zeigen sollen:"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs:614
+msgid "Always show"
+msgstr "Immer zeigen"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs:625
+msgid "Only show in the following environments:"
+msgstr "Nur in den folgenden Umgebungen zeigen"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs:636
+msgid "Not show in the following environments:"
+msgstr "Nicht in den Folgenden Umgebungen zeigen:"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs:674
+msgid "Menu entry"
+msgstr "Menüeintrag"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs:691
+msgid "MIME types supported by this application:"
+msgstr "MIME-Typen die von dieser Anwendung unterstützt werden:"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs:758
+msgid "Mime types"
+msgstr "Mime-Typen"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs:820
+msgid "Other entries"
+msgstr "Andere Einträge"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.MenuCategorySelectorDialog.cs:32
+msgid "Menu Category Selection"
+msgstr "Menu-Kategorie-Auswahl"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.MenuCategorySelectorDialog.cs:48
+msgid "Select the categories you want to assign to the desktop entry:"
+msgstr "Wählen Sie die Kategorien der sie den Desktopeintrag zuweisen wollen:"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux.addin.xml:56
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux.addin.xml:60
+msgid "Linux Deployment Settings"
+msgstr "Linux Veröffentlichungseinstellungen"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux.addin.xml:73
+msgid "pkg-config folder"
+msgstr "pkg.config Ordner"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux.addin.xml:74
+msgid ".desktop application folder"
+msgstr ".desktop Anwendungsordner"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/app.desktop.xft.xml:4
+msgid "Desktop Application Launcher"
+msgstr "Desktop-Anwendungsstarter"
+
+#: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/app.desktop.xft.xml:7
+msgid "Creates a Desktop Entry file."
+msgstr "Erzeugt eine Desktop-Eintrag-Datei."
+
+#~ msgid "Exception occurred: {0}"
+#~ msgstr "Fehler aufgetreten: {0}"
+
+#~ msgid "Question"
+#~ msgstr "Frage"
+
+#~ msgid "Delete files"
+#~ msgstr "Lösche Dateien"
+
+#~ msgid "Do you want to save the current changes?"
+#~ msgstr "Wollen sie die aktuellen Änderungen speichern?"
+
+#~ msgid "Do you really want to discard your changes?"
+#~ msgstr "Wollen sie ihre Änderungen wirklich verwerfen?"
+
+#~ msgid "Delete File"
+#~ msgstr "Datei löschen"
+
+#~ msgid "Are you sure you want to delete the file from project?"
+#~ msgstr ""
+#~ "Sind Sie sich sicher, dass Sie die Datei vom Projekt entfernen möchten?"
+
+#~ msgid "_Delete from disk"
+#~ msgstr "_Lösche von Festplatte"
+
+#~ msgid ""
+#~ "The project '{0}' has been modified by an external application. Do you "
+#~ "want to reload it? Unsaved changes in the open GTK designers will be lost."
+#~ msgstr ""
+#~ "Das Projekt '{0}' wurde von einer externen Anwendung verändert. Möchen "
+#~ "sie es neu laden? Nicht gespeicherte Änderungen im offenen GTK-Designer "
+#~ "werden verloren gehen."
+
+#~ msgid "Conversion required"
+#~ msgstr "Umwandlung erforderlich"
+
+#~ msgid "Enable Makefile integration"
+#~ msgstr "Aktiviere Makefile-Integration"
 
 #~ msgid "F_ile in Solution..."
 #~ msgstr "Öffne D_atei in Projektmappe..."
