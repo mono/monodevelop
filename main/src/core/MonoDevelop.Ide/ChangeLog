@@ -1,5 +1,9 @@
 2008-03-04  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.Ide.addin.xml: Changed file menu for hig.
+
+2008-03-04  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.Ide.Gui/ViewCommandHandlers.cs,
 	  MonoDevelop.Ide.Gui/Workbench.cs: Fixed some dialogs for hig compliance.
 

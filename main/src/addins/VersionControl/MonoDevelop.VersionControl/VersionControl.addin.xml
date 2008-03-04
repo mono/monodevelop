@@ -97,14 +97,14 @@
 			description = "Publish actual project into repository."/>
 		<Command id = "MonoDevelop.VersionControl.Commands.Checkout" 
 			defaultHandler = "MonoDevelop.VersionControl.CheckoutCommand"
-			_label = "_Checkout..."
+			_label = "C_heckout..."
 			icon = "vc-update"
 			description = "Checkout a project from repository."/>
 		</Category>
 	</Extension>
 	
 	<Extension path="/MonoDevelop/Ide/MainMenu/File">
-		<SeparatorItem id = "CheckoutSep" insertafter="Close" />
+		<SeparatorItem id = "CheckoutSep" insertafter="MonoDevelop.Ide.Commands.FileCommands.OpenFile" />
 		<CommandItem id="MonoDevelop.VersionControl.Commands.Checkout" />
 	</Extension>	
 

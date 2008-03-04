@@ -1,5 +1,9 @@
 2008-03-04  Mike Krüger <mkrueger@novell.com> 
 
+	* VersionControl.addin.xml: Changed file menu for hig.
+
+2008-03-04  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.VersionControl.Dialogs/CommitDialog.cs,
 	  MonoDevelop.VersionControl.Views/Statuses.cs,
 	  MonoDevelop.VersionControl.Views/Logs.cs,

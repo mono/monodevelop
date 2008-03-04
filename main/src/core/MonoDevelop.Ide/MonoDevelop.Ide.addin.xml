@@ -495,7 +495,7 @@
 				shortcut = "Control|Shift|W" />
 		<Command id = "MonoDevelop.Ide.Commands.FileCommands.CloseCombine"
 				defaultHandler = "MonoDevelop.Ide.Commands.CloseCombineHandler"
-				_label = "_Solution" 
+				_label = "C_lose Solution" 
 				description = "Close solution"
 				icon = "md-close-combine-icon" />
 		<Command id = "MonoDevelop.Ide.Commands.FileCommands.ReloadFile"
@@ -508,13 +508,13 @@
 				shortcut = "Control|Shift|S" 
 				description = "Save file as" />
 		<Command id = "MonoDevelop.Ide.Commands.FileCommands.PrintDocument"
-		        defaultHandler = "MonoDevelop.Ide.Commands.PrintHandler"
+				defaultHandler = "MonoDevelop.Ide.Commands.PrintHandler"
 				_label = "_Print..." 
 				_description = "Print current document" 
 				icon  = "gtk-print"
 				shortcut = "Control|P" />
 		<Command id = "MonoDevelop.Ide.Commands.FileCommands.PrintPreviewDocument"
-		        defaultHandler = "MonoDevelop.Ide.Commands.PrintPreviewHandler"
+				defaultHandler = "MonoDevelop.Ide.Commands.PrintPreviewHandler"
 				_label = "Print Previe_w" 
 				description = "Show print preview" 
 				icon  = "gtk-print-preview"
@@ -525,7 +525,8 @@
 				_label = "Recent _Files" />
 		<Command id = "MonoDevelop.Ide.Commands.FileCommands.ClearRecentFiles" 
 				defaultHandler = "MonoDevelop.Ide.Commands.ClearRecentFilesHandler"
-				_label = "_Clear Recent Files" 
+				_label = "_Clear" 
+				icon  = "gtk-clear"
 				description = "Clear recent files" />
 		<Command id = "MonoDevelop.Ide.Commands.FileCommands.RecentProjectList"
 				defaultHandler = "MonoDevelop.Ide.Commands.RecentProjectListHandler"
@@ -533,7 +534,8 @@
 				_label = "Recent Pro_jects" />
 		<Command id = "MonoDevelop.Ide.Commands.FileCommands.ClearRecentProjects"
 				defaultHandler = "MonoDevelop.Ide.Commands.ClearRecentProjectsHandler"
-				_label = "_Clear Recent Solutions" 
+				_label = "_Clear" 
+				icon  = "gtk-clear"
 				description = "Clear recent solutions" />
 		<Command id = "MonoDevelop.Ide.Commands.FileCommands.Exit"
 				defaultHandler = "MonoDevelop.Ide.Commands.ExitHandler"
@@ -1299,11 +1301,6 @@
 				<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.NewProject" />
 			</ItemSet>
 			<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.OpenFile" />
-			<ItemSet id = "Close" _label = "_Close">
-				<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.CloseFile" _label = "_File" />
-				<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.CloseCombine" />
-			</ItemSet>
-				
 
 			<SeparatorItem id = "OpenSep" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.Save" />
@@ -1327,6 +1324,8 @@
 			</ItemSet>
 			
 			<SeparatorItem id = "ExitSeparator" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.CloseCombine" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.CloseFile" _label = "_Close" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.Exit" />
 		</ItemSet>
 	        
