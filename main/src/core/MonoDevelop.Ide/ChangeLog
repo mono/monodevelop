@@ -1,5 +1,10 @@
 2008-03-04  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.Ide.Gui/ViewCommandHandlers.cs,
+	  MonoDevelop.Ide.Gui/Workbench.cs: Fixed some dialogs for hig compliance.
+
+2008-03-04  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.Ide.CodeTemplates/CodeTemplatePanel.cs,
 	  MonoDevelop.Ide.Templates/CombineDescriptor.cs,
 	  MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs,

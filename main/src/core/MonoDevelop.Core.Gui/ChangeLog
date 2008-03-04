@@ -1,5 +1,10 @@
 2008-03-04  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.Core.Gui/MessageService.cs: Fixed some dialogs for hig
+	  compliance.
+
+2008-03-04  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.Core.Gui.mdp,
 	  MonoDevelop.Core.Gui.Dialogs/AbstractOptionPanel.cs,
 	  MonoDevelop.Core.Gui.Components/FileBrowser.cs,

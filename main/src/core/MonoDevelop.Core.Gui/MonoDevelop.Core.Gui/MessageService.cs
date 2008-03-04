@@ -38,7 +38,7 @@ namespace MonoDevelop.Core.Gui
 		public static AlertButton Delete  = new AlertButton (Gtk.Stock.Delete, true);
 		public static AlertButton Remove  = new AlertButton (Gtk.Stock.Remove, true);
 		public static AlertButton Clear   = new AlertButton (Gtk.Stock.Clear, true);
-		public static AlertButton Reload  = new AlertButton (Gtk.Stock.Refresh, true);
+		public static AlertButton Reload  = new AlertButton (GettextCatalog.GetString ("_Reload"), Gtk.Stock.Refresh);
 		public static AlertButton Revert  = new AlertButton (Gtk.Stock.RevertToSaved, true );
 		public static AlertButton Copy    = new AlertButton (Gtk.Stock.Copy, true);
 		public static AlertButton Move    = new AlertButton (GettextCatalog.GetString ("_Move"));

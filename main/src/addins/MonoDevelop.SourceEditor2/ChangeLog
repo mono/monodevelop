@@ -1,6 +1,13 @@
 2008-03-04  Mike Krüger <mkrueger@novell.com> 
 
 	* gtk-gui/MonoDevelop.SourceEditor.OptionPanels.GeneralOptionsPanel.cs,
+	  gtk-gui/MonoDevelop.SourceEditor.SearchAndReplaceWidget.cs,
+	  gtk-gui/MonoDevelop.SourceEditor.SearchWidget.cs: Fixed some dialogs for
+	  hig compliance.
+
+2008-03-04  Mike Krüger <mkrueger@novell.com> 
+
+	* gtk-gui/MonoDevelop.SourceEditor.OptionPanels.GeneralOptionsPanel.cs,
 	  gtk-gui/gui.stetic,
 	  MonoDevelop.SourceEditor.OptionPanels/BehaviorPanel.cs,
 	  MonoDevelop.SourceEditor.OptionPanels/MarkerPanel.cs,

@@ -547,7 +547,7 @@ namespace MonoDevelop.Ide.Gui
 			IWorkbenchWindow window = (IWorkbenchWindow) sender;
 			if (!args.Forced && window.ViewContent != null && window.ViewContent.IsDirty) {
 				AlertButton result = MessageService.GenericAlert (Stock.Warning,
-				                                                  GettextCatalog.GetString ("Save the changes to document \"{0}\" before closing?", window.ViewContent.IsUntitled ? window.ViewContent.UntitledName : System.IO.Path.GetFileName (window.ViewContent.ContentName)), 
+				                                                  GettextCatalog.GetString ("Save the changes to document '{0}' before closing?", window.ViewContent.IsUntitled ? window.ViewContent.UntitledName : System.IO.Path.GetFileName (window.ViewContent.ContentName)), 
 				                                                  GettextCatalog.GetString ("If you don't save, all changes will be permanently lost."),
 				                                                  AlertButton.CloseWithoutSave, AlertButton.Cancel, window.ViewContent.IsUntitled ? AlertButton.SaveAs : AlertButton.Save);
 				if (result == AlertButton.Save || result == AlertButton.SaveAs) {

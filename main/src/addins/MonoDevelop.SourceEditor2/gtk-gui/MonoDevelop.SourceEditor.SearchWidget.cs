@@ -23,11 +23,29 @@ namespace MonoDevelop.SourceEditor {
         
         private Gtk.ComboBoxEntry entrySearch;
         
-        private Gtk.Button buttonSearchForward;
-        
         private Gtk.Button buttonSearchBackward;
         
+        private Gtk.HBox hbox2;
+        
+        private Gtk.Arrow arrow2;
+        
+        private Gtk.Label label2;
+        
+        private Gtk.Button buttonSearchForward;
+        
+        private Gtk.HBox hbox3;
+        
+        private Gtk.Arrow arrow3;
+        
+        private Gtk.Label label3;
+        
         private Gtk.Button buttonOptions;
+        
+        private Gtk.HBox hbox4;
+        
+        private Gtk.Label label4;
+        
+        private Gtk.Arrow arrow4;
         
         private Gtk.Fixed fixed2;
         
@@ -63,7 +81,7 @@ namespace MonoDevelop.SourceEditor {
             // Container child hbox1.Gtk.Box+BoxChild
             this.label1 = new Gtk.Label();
             this.label1.Name = "label1";
-            this.label1.LabelProp = Mono.Unix.Catalog.GetString("_Search:");
+            this.label1.LabelProp = Mono.Unix.Catalog.GetString("Find:");
             this.label1.UseUnderline = true;
             this.hbox1.Add(this.label1);
             Gtk.Box.BoxChild w3 = ((Gtk.Box.BoxChild)(this.hbox1[this.label1]));
@@ -79,93 +97,111 @@ namespace MonoDevelop.SourceEditor {
             w4.Expand = false;
             w4.Fill = false;
             // Container child hbox1.Gtk.Box+BoxChild
-            this.buttonSearchForward = new Gtk.Button();
-            this.buttonSearchForward.CanFocus = true;
-            this.buttonSearchForward.Name = "buttonSearchForward";
-            this.buttonSearchForward.UseUnderline = true;
-            this.buttonSearchForward.Relief = ((Gtk.ReliefStyle)(2));
-            // Container child buttonSearchForward.Gtk.Container+ContainerChild
-            Gtk.Alignment w5 = new Gtk.Alignment(0.5F, 0.5F, 0F, 0F);
-            // Container child GtkAlignment.Gtk.Container+ContainerChild
-            Gtk.HBox w6 = new Gtk.HBox();
-            w6.Spacing = 2;
-            // Container child GtkHBox.Gtk.Container+ContainerChild
-            Gtk.Image w7 = new Gtk.Image();
-            w7.Pixbuf = Stetic.IconLoader.LoadIcon(this, "gtk-go-forward", Gtk.IconSize.Menu, 16);
-            w6.Add(w7);
-            // Container child GtkHBox.Gtk.Container+ContainerChild
-            Gtk.Label w9 = new Gtk.Label();
-            w9.LabelProp = Mono.Unix.Catalog.GetString("_Next");
-            w9.UseUnderline = true;
-            w6.Add(w9);
-            w5.Add(w6);
-            this.buttonSearchForward.Add(w5);
-            this.hbox1.Add(this.buttonSearchForward);
-            Gtk.Box.BoxChild w13 = ((Gtk.Box.BoxChild)(this.hbox1[this.buttonSearchForward]));
-            w13.Position = 3;
-            w13.Expand = false;
-            w13.Fill = false;
-            // Container child hbox1.Gtk.Box+BoxChild
             this.buttonSearchBackward = new Gtk.Button();
             this.buttonSearchBackward.CanFocus = true;
             this.buttonSearchBackward.Name = "buttonSearchBackward";
-            this.buttonSearchBackward.UseUnderline = true;
             this.buttonSearchBackward.Relief = ((Gtk.ReliefStyle)(2));
             // Container child buttonSearchBackward.Gtk.Container+ContainerChild
-            Gtk.Alignment w14 = new Gtk.Alignment(0.5F, 0.5F, 0F, 0F);
-            // Container child GtkAlignment.Gtk.Container+ContainerChild
-            Gtk.HBox w15 = new Gtk.HBox();
-            w15.Spacing = 2;
-            // Container child GtkHBox.Gtk.Container+ContainerChild
-            Gtk.Image w16 = new Gtk.Image();
-            w16.Pixbuf = Stetic.IconLoader.LoadIcon(this, "gtk-go-back", Gtk.IconSize.Menu, 16);
-            w15.Add(w16);
-            // Container child GtkHBox.Gtk.Container+ContainerChild
-            Gtk.Label w18 = new Gtk.Label();
-            w18.LabelProp = Mono.Unix.Catalog.GetString("_Previous");
-            w18.UseUnderline = true;
-            w15.Add(w18);
-            w14.Add(w15);
-            this.buttonSearchBackward.Add(w14);
+            this.hbox2 = new Gtk.HBox();
+            this.hbox2.Name = "hbox2";
+            this.hbox2.Spacing = 6;
+            // Container child hbox2.Gtk.Box+BoxChild
+            this.arrow2 = new Gtk.Arrow(((Gtk.ArrowType)(2)), ((Gtk.ShadowType)(2)));
+            this.arrow2.Name = "arrow2";
+            this.hbox2.Add(this.arrow2);
+            Gtk.Box.BoxChild w5 = ((Gtk.Box.BoxChild)(this.hbox2[this.arrow2]));
+            w5.Position = 0;
+            w5.Expand = false;
+            w5.Fill = false;
+            // Container child hbox2.Gtk.Box+BoxChild
+            this.label2 = new Gtk.Label();
+            this.label2.Name = "label2";
+            this.label2.LabelProp = Mono.Unix.Catalog.GetString("Find Previous");
+            this.hbox2.Add(this.label2);
+            Gtk.Box.BoxChild w6 = ((Gtk.Box.BoxChild)(this.hbox2[this.label2]));
+            w6.Position = 1;
+            w6.Expand = false;
+            w6.Fill = false;
+            this.buttonSearchBackward.Add(this.hbox2);
+            this.buttonSearchBackward.Label = null;
             this.hbox1.Add(this.buttonSearchBackward);
-            Gtk.Box.BoxChild w22 = ((Gtk.Box.BoxChild)(this.hbox1[this.buttonSearchBackward]));
-            w22.Position = 4;
-            w22.Expand = false;
-            w22.Fill = false;
+            Gtk.Box.BoxChild w8 = ((Gtk.Box.BoxChild)(this.hbox1[this.buttonSearchBackward]));
+            w8.Position = 3;
+            w8.Expand = false;
+            w8.Fill = false;
+            // Container child hbox1.Gtk.Box+BoxChild
+            this.buttonSearchForward = new Gtk.Button();
+            this.buttonSearchForward.CanFocus = true;
+            this.buttonSearchForward.Name = "buttonSearchForward";
+            this.buttonSearchForward.Relief = ((Gtk.ReliefStyle)(2));
+            // Container child buttonSearchForward.Gtk.Container+ContainerChild
+            this.hbox3 = new Gtk.HBox();
+            this.hbox3.Name = "hbox3";
+            this.hbox3.Spacing = 6;
+            // Container child hbox3.Gtk.Box+BoxChild
+            this.arrow3 = new Gtk.Arrow(((Gtk.ArrowType)(3)), ((Gtk.ShadowType)(2)));
+            this.arrow3.Name = "arrow3";
+            this.hbox3.Add(this.arrow3);
+            Gtk.Box.BoxChild w9 = ((Gtk.Box.BoxChild)(this.hbox3[this.arrow3]));
+            w9.Position = 0;
+            w9.Expand = false;
+            w9.Fill = false;
+            // Container child hbox3.Gtk.Box+BoxChild
+            this.label3 = new Gtk.Label();
+            this.label3.Name = "label3";
+            this.label3.LabelProp = Mono.Unix.Catalog.GetString("Find Next");
+            this.hbox3.Add(this.label3);
+            Gtk.Box.BoxChild w10 = ((Gtk.Box.BoxChild)(this.hbox3[this.label3]));
+            w10.Position = 1;
+            w10.Expand = false;
+            w10.Fill = false;
+            this.buttonSearchForward.Add(this.hbox3);
+            this.buttonSearchForward.Label = null;
+            this.hbox1.Add(this.buttonSearchForward);
+            Gtk.Box.BoxChild w12 = ((Gtk.Box.BoxChild)(this.hbox1[this.buttonSearchForward]));
+            w12.Position = 4;
+            w12.Expand = false;
+            w12.Fill = false;
             // Container child hbox1.Gtk.Box+BoxChild
             this.buttonOptions = new Gtk.Button();
             this.buttonOptions.CanFocus = true;
             this.buttonOptions.Name = "buttonOptions";
-            this.buttonOptions.UseUnderline = true;
             this.buttonOptions.Relief = ((Gtk.ReliefStyle)(2));
             // Container child buttonOptions.Gtk.Container+ContainerChild
-            Gtk.Alignment w23 = new Gtk.Alignment(0.5F, 0.5F, 0F, 0F);
-            // Container child GtkAlignment.Gtk.Container+ContainerChild
-            Gtk.HBox w24 = new Gtk.HBox();
-            w24.Spacing = 2;
-            // Container child GtkHBox.Gtk.Container+ContainerChild
-            Gtk.Image w25 = new Gtk.Image();
-            w25.Pixbuf = Stetic.IconLoader.LoadIcon(this, "gtk-preferences", Gtk.IconSize.Menu, 16);
-            w24.Add(w25);
-            // Container child GtkHBox.Gtk.Container+ContainerChild
-            Gtk.Label w27 = new Gtk.Label();
-            w27.LabelProp = Mono.Unix.Catalog.GetString("_Options");
-            w27.UseUnderline = true;
-            w24.Add(w27);
-            w23.Add(w24);
-            this.buttonOptions.Add(w23);
+            this.hbox4 = new Gtk.HBox();
+            this.hbox4.Name = "hbox4";
+            this.hbox4.Spacing = 6;
+            // Container child hbox4.Gtk.Box+BoxChild
+            this.label4 = new Gtk.Label();
+            this.label4.Name = "label4";
+            this.label4.LabelProp = Mono.Unix.Catalog.GetString("Options");
+            this.hbox4.Add(this.label4);
+            Gtk.Box.BoxChild w13 = ((Gtk.Box.BoxChild)(this.hbox4[this.label4]));
+            w13.Position = 0;
+            w13.Expand = false;
+            w13.Fill = false;
+            // Container child hbox4.Gtk.Box+BoxChild
+            this.arrow4 = new Gtk.Arrow(((Gtk.ArrowType)(1)), ((Gtk.ShadowType)(2)));
+            this.arrow4.Name = "arrow4";
+            this.hbox4.Add(this.arrow4);
+            Gtk.Box.BoxChild w14 = ((Gtk.Box.BoxChild)(this.hbox4[this.arrow4]));
+            w14.Position = 1;
+            w14.Expand = false;
+            w14.Fill = false;
+            this.buttonOptions.Add(this.hbox4);
+            this.buttonOptions.Label = null;
             this.hbox1.Add(this.buttonOptions);
-            Gtk.Box.BoxChild w31 = ((Gtk.Box.BoxChild)(this.hbox1[this.buttonOptions]));
-            w31.Position = 5;
-            w31.Expand = false;
-            w31.Fill = false;
+            Gtk.Box.BoxChild w16 = ((Gtk.Box.BoxChild)(this.hbox1[this.buttonOptions]));
+            w16.Position = 5;
+            w16.Expand = false;
+            w16.Fill = false;
             // Container child hbox1.Gtk.Box+BoxChild
             this.fixed2 = new Gtk.Fixed();
             this.fixed2.Name = "fixed2";
             this.fixed2.HasWindow = false;
             this.hbox1.Add(this.fixed2);
-            Gtk.Box.BoxChild w32 = ((Gtk.Box.BoxChild)(this.hbox1[this.fixed2]));
-            w32.Position = 6;
+            Gtk.Box.BoxChild w17 = ((Gtk.Box.BoxChild)(this.hbox1[this.fixed2]));
+            w17.Position = 6;
             // Container child hbox1.Gtk.Box+BoxChild
             this.buttonReplaceMode = new Gtk.Button();
             this.buttonReplaceMode.CanFocus = true;
@@ -177,10 +213,10 @@ namespace MonoDevelop.SourceEditor {
             this.buttonReplaceMode.Add(this.arrow1);
             this.buttonReplaceMode.Label = null;
             this.hbox1.Add(this.buttonReplaceMode);
-            Gtk.Box.BoxChild w34 = ((Gtk.Box.BoxChild)(this.hbox1[this.buttonReplaceMode]));
-            w34.Position = 7;
-            w34.Expand = false;
-            w34.Fill = false;
+            Gtk.Box.BoxChild w19 = ((Gtk.Box.BoxChild)(this.hbox1[this.buttonReplaceMode]));
+            w19.Position = 7;
+            w19.Expand = false;
+            w19.Fill = false;
             this.Add(this.hbox1);
             if ((this.Child != null)) {
                 this.Child.ShowAll();

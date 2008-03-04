@@ -186,6 +186,7 @@
                         <property name="MemberName" />
                         <property name="CanFocus">True</property>
                         <property name="Label" translatable="yes">_Default monospace</property>
+                        <property name="Active">True</property>
                         <property name="DrawIndicator">True</property>
                         <property name="HasLabel">True</property>
                         <property name="UseUnderline">True</property>
@@ -824,7 +825,7 @@
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Bin" id="MonoDevelop.SourceEditor.SearchWidget" design-size="571 30">
+  <widget class="Gtk.Bin" id="MonoDevelop.SourceEditor.SearchWidget" design-size="581 29">
     <property name="MemberName" />
     <child>
       <widget class="Gtk.HBox" id="hbox1">
@@ -853,7 +854,7 @@
         <child>
           <widget class="Gtk.Label" id="label1">
             <property name="MemberName" />
-            <property name="LabelProp" translatable="yes">_Search:</property>
+            <property name="LabelProp" translatable="yes">Find:</property>
             <property name="UseUnderline">True</property>
           </widget>
           <packing>
@@ -877,14 +878,41 @@
           </packing>
         </child>
         <child>
-          <widget class="Gtk.Button" id="buttonSearchForward">
+          <widget class="Gtk.Button" id="buttonSearchBackward">
             <property name="MemberName" />
             <property name="CanFocus">True</property>
-            <property name="Type">TextAndIcon</property>
-            <property name="Icon">stock:gtk-go-forward Menu</property>
-            <property name="Label" translatable="yes">_Next</property>
-            <property name="UseUnderline">True</property>
+            <property name="Type">Custom</property>
             <property name="Relief">None</property>
+            <child>
+              <widget class="Gtk.HBox" id="hbox2">
+                <property name="MemberName" />
+                <property name="Spacing">6</property>
+                <child>
+                  <widget class="Gtk.Arrow" id="arrow2">
+                    <property name="MemberName" />
+                    <property name="ArrowType">Left</property>
+                  </widget>
+                  <packing>
+                    <property name="Position">0</property>
+                    <property name="AutoSize">True</property>
+                    <property name="Expand">False</property>
+                    <property name="Fill">False</property>
+                  </packing>
+                </child>
+                <child>
+                  <widget class="Gtk.Label" id="label2">
+                    <property name="MemberName" />
+                    <property name="LabelProp" translatable="yes">Find Previous</property>
+                  </widget>
+                  <packing>
+                    <property name="Position">1</property>
+                    <property name="AutoSize">True</property>
+                    <property name="Expand">False</property>
+                    <property name="Fill">False</property>
+                  </packing>
+                </child>
+              </widget>
+            </child>
           </widget>
           <packing>
             <property name="Position">3</property>
@@ -894,14 +922,40 @@
           </packing>
         </child>
         <child>
-          <widget class="Gtk.Button" id="buttonSearchBackward">
+          <widget class="Gtk.Button" id="buttonSearchForward">
             <property name="MemberName" />
             <property name="CanFocus">True</property>
-            <property name="Type">TextAndIcon</property>
-            <property name="Icon">stock:gtk-go-back Menu</property>
-            <property name="Label" translatable="yes">_Previous</property>
-            <property name="UseUnderline">True</property>
+            <property name="Type">Custom</property>
             <property name="Relief">None</property>
+            <child>
+              <widget class="Gtk.HBox" id="hbox3">
+                <property name="MemberName" />
+                <property name="Spacing">6</property>
+                <child>
+                  <widget class="Gtk.Arrow" id="arrow3">
+                    <property name="MemberName" />
+                  </widget>
+                  <packing>
+                    <property name="Position">0</property>
+                    <property name="AutoSize">True</property>
+                    <property name="Expand">False</property>
+                    <property name="Fill">False</property>
+                  </packing>
+                </child>
+                <child>
+                  <widget class="Gtk.Label" id="label3">
+                    <property name="MemberName" />
+                    <property name="LabelProp" translatable="yes">Find Next</property>
+                  </widget>
+                  <packing>
+                    <property name="Position">1</property>
+                    <property name="AutoSize">True</property>
+                    <property name="Expand">False</property>
+                    <property name="Fill">False</property>
+                  </packing>
+                </child>
+              </widget>
+            </child>
           </widget>
           <packing>
             <property name="Position">4</property>
@@ -914,11 +968,38 @@
           <widget class="Gtk.Button" id="buttonOptions">
             <property name="MemberName" />
             <property name="CanFocus">True</property>
-            <property name="Type">TextAndIcon</property>
-            <property name="Icon">stock:gtk-preferences Menu</property>
-            <property name="Label" translatable="yes">_Options</property>
-            <property name="UseUnderline">True</property>
+            <property name="Type">Custom</property>
             <property name="Relief">None</property>
+            <child>
+              <widget class="Gtk.HBox" id="hbox4">
+                <property name="MemberName" />
+                <property name="Spacing">6</property>
+                <child>
+                  <widget class="Gtk.Label" id="label4">
+                    <property name="MemberName" />
+                    <property name="LabelProp" translatable="yes">Options</property>
+                  </widget>
+                  <packing>
+                    <property name="Position">0</property>
+                    <property name="AutoSize">True</property>
+                    <property name="Expand">False</property>
+                    <property name="Fill">False</property>
+                  </packing>
+                </child>
+                <child>
+                  <widget class="Gtk.Arrow" id="arrow4">
+                    <property name="MemberName" />
+                    <property name="ArrowType">Down</property>
+                  </widget>
+                  <packing>
+                    <property name="Position">1</property>
+                    <property name="AutoSize">True</property>
+                    <property name="Expand">False</property>
+                    <property name="Fill">False</property>
+                  </packing>
+                </child>
+              </widget>
+            </child>
           </widget>
           <packing>
             <property name="Position">5</property>
@@ -1046,9 +1127,9 @@
               </packing>
             </child>
             <child>
-              <widget class="Gtk.Label" id="label2">
+              <widget class="Gtk.Label" id="label1">
                 <property name="MemberName" />
-                <property name="LabelProp" translatable="yes">_Search:</property>
+                <property name="LabelProp" translatable="yes">Find:</property>
                 <property name="UseUnderline">True</property>
               </widget>
               <packing>
@@ -1068,7 +1149,7 @@
             <child>
               <widget class="Gtk.Label" id="label3">
                 <property name="MemberName" />
-                <property name="LabelProp" translatable="yes">R_eplace:</property>
+                <property name="LabelProp" translatable="yes">Replace:</property>
                 <property name="UseUnderline">True</property>
               </widget>
               <packing>
@@ -1107,11 +1188,38 @@
               <widget class="Gtk.Button" id="buttonOptions">
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
-                <property name="Type">TextAndIcon</property>
-                <property name="Icon">stock:gtk-preferences Menu</property>
-                <property name="Label" translatable="yes">_Options</property>
-                <property name="UseUnderline">True</property>
+                <property name="Type">Custom</property>
                 <property name="Relief">None</property>
+                <child>
+                  <widget class="Gtk.HBox" id="hbox4">
+                    <property name="MemberName" />
+                    <property name="Spacing">6</property>
+                    <child>
+                      <widget class="Gtk.Label" id="label4">
+                        <property name="MemberName" />
+                        <property name="LabelProp" translatable="yes">Options</property>
+                      </widget>
+                      <packing>
+                        <property name="Position">0</property>
+                        <property name="AutoSize">True</property>
+                        <property name="Expand">False</property>
+                        <property name="Fill">False</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <widget class="Gtk.Arrow" id="arrow5">
+                        <property name="MemberName" />
+                        <property name="ArrowType">Down</property>
+                      </widget>
+                      <packing>
+                        <property name="Position">1</property>
+                        <property name="AutoSize">True</property>
+                        <property name="Expand">False</property>
+                        <property name="Fill">False</property>
+                      </packing>
+                    </child>
+                  </widget>
+                </child>
               </widget>
               <packing>
                 <property name="LeftAttach">2</property>
@@ -1133,7 +1241,7 @@
                 <property name="CanFocus">True</property>
                 <property name="Type">TextAndIcon</property>
                 <property name="Icon">stock:gtk-find-and-replace Menu</property>
-                <property name="Label" translatable="yes">_Replace</property>
+                <property name="Label" translatable="yes">Replace</property>
                 <property name="UseUnderline">True</property>
                 <property name="Relief">None</property>
               </widget>
@@ -1156,7 +1264,7 @@
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
                 <property name="Type">TextOnly</property>
-                <property name="Label" translatable="yes">Replace _all</property>
+                <property name="Label" translatable="yes">Replace all</property>
                 <property name="UseUnderline">True</property>
                 <property name="Relief">None</property>
               </widget>
@@ -1180,15 +1288,40 @@
               <widget class="Gtk.Button" id="buttonSearchBackward">
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
-                <property name="Type">TextAndIcon</property>
-                <property name="Icon">stock:gtk-go-back Menu</property>
-                <property name="Label" translatable="yes">_Previous</property>
-                <property name="UseUnderline">True</property>
+                <property name="Type">Custom</property>
                 <property name="Relief">None</property>
+                <child>
+                  <widget class="Gtk.HBox" id="hbox2">
+                    <property name="MemberName" />
+                    <property name="Spacing">6</property>
+                    <child>
+                      <widget class="Gtk.Arrow" id="arrow2">
+                        <property name="MemberName" />
+                        <property name="ArrowType">Left</property>
+                      </widget>
+                      <packing>
+                        <property name="Position">0</property>
+                        <property name="AutoSize">True</property>
+                        <property name="Expand">False</property>
+                        <property name="Fill">False</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <widget class="Gtk.Label" id="label5">
+                        <property name="MemberName" />
+                        <property name="LabelProp" translatable="yes">Find Previous</property>
+                      </widget>
+                      <packing>
+                        <property name="Position">1</property>
+                        <property name="AutoSize">True</property>
+                        <property name="Expand">False</property>
+                        <property name="Fill">False</property>
+                      </packing>
+                    </child>
+                  </widget>
+                </child>
               </widget>
               <packing>
-                <property name="LeftAttach">1</property>
-                <property name="RightAttach">2</property>
                 <property name="AutoSize">True</property>
                 <property name="XOptions">Fill</property>
                 <property name="YOptions">Fill</property>
@@ -1204,13 +1337,41 @@
               <widget class="Gtk.Button" id="buttonSearchForward">
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
-                <property name="Type">TextAndIcon</property>
-                <property name="Icon">stock:gtk-go-forward Menu</property>
-                <property name="Label" translatable="yes">_Next</property>
-                <property name="UseUnderline">True</property>
+                <property name="Type">Custom</property>
                 <property name="Relief">None</property>
+                <child>
+                  <widget class="Gtk.HBox" id="hbox5">
+                    <property name="MemberName" />
+                    <property name="Spacing">6</property>
+                    <child>
+                      <widget class="Gtk.Arrow" id="arrow3">
+                        <property name="MemberName" />
+                      </widget>
+                      <packing>
+                        <property name="Position">0</property>
+                        <property name="AutoSize">True</property>
+                        <property name="Expand">False</property>
+                        <property name="Fill">False</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <widget class="Gtk.Label" id="label6">
+                        <property name="MemberName" />
+                        <property name="LabelProp" translatable="yes">Find Next</property>
+                      </widget>
+                      <packing>
+                        <property name="Position">1</property>
+                        <property name="AutoSize">True</property>
+                        <property name="Expand">False</property>
+                        <property name="Fill">False</property>
+                      </packing>
+                    </child>
+                  </widget>
+                </child>
               </widget>
               <packing>
+                <property name="LeftAttach">1</property>
+                <property name="RightAttach">2</property>
                 <property name="AutoSize">True</property>
                 <property name="XOptions">Fill</property>
                 <property name="YOptions">Fill</property>
