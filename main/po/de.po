@@ -6,12 +6,12 @@ msgstr ""
 "X-Poedit-Bookmarks: -1,1681,-1,-1,-1,-1,-1,-1,-1,-1\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2008-03-04 16:53:05+0100\n"
+"PO-Revision-Date: 2008-03-04 19:53:30+0100\n"
 "Language-Team: \n"
 "Project-Id-Version: Monodevelop\n"
 "MIME-Version: 1.0\n"
 "X-Generator: MonoDevelop Gettext addin\n"
-"POT-Creation-Date: 2008-03-04 16:22:21+0100\n"
+"POT-Creation-Date: 2008-03-04 19:50:12+0100\n"
 "Last-Translator: Mike Krüger <mkrueger@novell.com>\n"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Core/ServiceManager.cs:120
@@ -822,7 +822,7 @@ msgstr ""
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ViewCommandHandlers.cs:116
 msgid "All changes made to the document will be permanently lost."
 msgstr ""
-"Falls Sie nicht speichern, gehen alle vorgenommenen Änderungen unwideruflich "
+"Falls Sie nicht speichern, gehen alle vorgenommenen Änderungen unwiderruflich "
 "verloren."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.BrowserDisplayBinding/BrowserDisplayBinding.cs:34
@@ -831,6 +831,7 @@ msgid "Web Browser"
 msgstr "Webbrowser"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.BrowserDisplayBinding/HtmlViewPane.cs:220
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/Task.cs:46
 msgid "Done."
 msgstr "Fertig"
 
@@ -1690,7 +1691,7 @@ msgstr "Änderungen am Dokument '{0}' vor dem Schließen speichern?"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:550
 msgid "If you don't save, all changes will be permanently lost."
 msgstr ""
-"Falls Sie nicht speichern, gehen alle vorgenommenen Änderungen unwideruflich "
+"Falls Sie nicht speichern, gehen alle vorgenommenen Änderungen unwiderruflich "
 "verloren."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:565
@@ -3381,7 +3382,7 @@ msgstr "Aktuell"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:149
 msgid "Other"
-msgstr "andere"
+msgstr "Sonstige"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.KeyBindingsPanel.cs:52
 msgid "Scheme:"
@@ -5057,7 +5058,7 @@ msgstr "Erhalte Historie für {0}..."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Logs.cs:75
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/CommitCommand.cs:54
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/RevertCommand.cs:44
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/RevertCommand.cs:46
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlNodeExtension.cs:358
 msgid "Version control command failed."
 msgstr "Versions-Kontrol-Kommando fehlgeschlagen."
@@ -5196,6 +5197,18 @@ msgstr "Keine Unterschiede gefunden"
 msgid "Could not get diff information. "
 msgstr "kann keine differenzierten Informationen bekomemn. "
 
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/AddRemoveMoveCommand.cs:46
+msgid "Adding {0}..."
+msgstr "Hinzufügen {0}..."
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/Checkout.cs:42
+msgid "Checkout {0}..."
+msgstr "Checke {0} aus..."
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/CommitCommand.cs:74
+msgid "Committing {0}..."
+msgstr "Übertrage {0}..."
+
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/Publish.cs:38
 msgid "Initial check-in of module {0}"
 msgstr "Initialisiere eine Einchecken des Moduls {0}"
@@ -5206,11 +5219,29 @@ msgstr ""
 "Sind Sie sich sicher, dass Sie das Projekt im Repository '{0}' "
 "veröffentlichen wollen?"
 
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/Publish.cs:94
+msgid "Publishing \"{0}\" Project..."
+msgstr "Veröffentliche Projekt \"{0}\"..."
+
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/RevertCommand.cs:34
 msgid "Are you sure you want to revert the changes done in the selected files?"
 msgstr ""
 "Sind Sie sich sicher, dass Sie die in der Datei vorgenommenen Änderungen "
 "zurücksetzen wollen?"
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/RevertCommand.cs:35
+msgid "All changes made to the selected files will be permanently lost."
+msgstr ""
+"Alle vorgenommenen Änderungen in den ausgewählten Dateien gehen "
+"unwiderruflich verloren."
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/RevertCommand.cs:61
+msgid "Reverting ..."
+msgstr "Nehme Änderungen zurück..."
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/Update.cs:38
+msgid "Updating {0}..."
+msgstr "Aktualisiere {0}..."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlNodeExtension.cs:277
 msgid "This project or folder is not under version control"
@@ -5218,6 +5249,7 @@ msgstr ""
 "Dieser Ordner oder diese Datei wird nicht von der Versionkontrolle beobachtet"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlService.cs:141
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:742
 msgid "Modified"
 msgstr "Geändert"
 
@@ -5310,6 +5342,40 @@ msgstr "Dateien comitten"
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/gtk-gui/MonoDevelop.VersionControl.Dialogs.CommitDialog.cs:58
 msgid "Select the files to commit:"
 msgstr "Wählen Sie die Dateien die committet werden sollen:"
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:549
+msgid "Revision: {0}"
+msgstr "Revision: {0}"
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:734
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:740
+msgid "Added"
+msgstr "Hinzugefügt"
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:735
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:741
+msgid "Deleted"
+msgstr "Gelöscht"
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:736
+msgid "Updating"
+msgstr "Aktualisiere"
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:737
+msgid "External Updated"
+msgstr "Auserhalb aktualisiert"
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:738
+msgid "Finished"
+msgstr "Abgeschlossen"
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:743
+msgid "Replaced"
+msgstr "Ersetzt"
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:744
+msgid "Sending Content"
+msgstr "Sende Daten"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion.Gui/ClientCertificateDialog.cs:12
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion.Gui/ClientCertificatePasswordDialog.cs:12
