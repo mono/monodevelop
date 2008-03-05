@@ -22,7 +22,7 @@
 <![CDATA[<Canvas x:Name="root"
         xmlns="http://schemas.microsoft.com/client/2007"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        x:Class="${Namespace}.${Name};assembly=bin/${ProjectName}.dll">
+        x:Class="${Namespace}.${Name};assembly=ClientBin/${ProjectName}.dll">
 	<Canvas Width="200" Height="40" Background="Blue">
 		<TextBlock>Hello Moon</TextBlock>
 	</Canvas>

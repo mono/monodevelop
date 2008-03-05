@@ -1,5 +1,11 @@
 2008-03-05  Michael Hutchinson <mhutchinson@novell.com> 
 
+	* MonoDevelop.Moonlight/MoonlightProject.cs,
+	  Templates/Moonlight-XamlWithCodeBehind.xft.xml: Change "bin" to
+	  "ClientBin", which seems to be more conventional.
+
+2008-03-05  Michael Hutchinson <mhutchinson@novell.com> 
+
 	* MonoDevelop.Moonlight/MoonlightProject.cs: Avoid NRE because BaseDirectory
 	  isn't set during project creation.
 
