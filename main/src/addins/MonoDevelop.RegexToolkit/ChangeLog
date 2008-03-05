@@ -2,6 +2,12 @@
 
 	* MonoDevelop.RegexToolkit/RegexToolkitWindow.cs,
 	  gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWindow.cs,
+	  gtk-gui/gui.stetic: Changed start position.
+
+2008-03-05  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.RegexToolkit/RegexToolkitWindow.cs,
+	  gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWindow.cs,
 	  gtk-gui/generated.cs, gtk-gui/gui.stetic: Overworked regex toolkit
 	  window.
 

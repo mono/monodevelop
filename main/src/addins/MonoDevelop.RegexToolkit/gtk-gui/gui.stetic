@@ -87,7 +87,7 @@
   <widget class="Gtk.Window" id="MonoDevelop.RegexToolkit.RegexToolkitWindow" design-size="653 481">
     <property name="MemberName" />
     <property name="Title" translatable="yes">Regular Expression Toolkit</property>
-    <property name="WindowPosition">CenterOnParent</property>
+    <property name="WindowPosition">Center</property>
     <property name="BorderWidth">6</property>
     <child>
       <widget class="Gtk.VBox" id="vbox2">
@@ -103,7 +103,7 @@
               <widget class="Gtk.HPaned" id="hpaned1">
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
-                <property name="Position">356</property>
+                <property name="Position">297</property>
                 <child>
                   <widget class="Gtk.VBox" id="vbox6">
                     <property name="MemberName" />

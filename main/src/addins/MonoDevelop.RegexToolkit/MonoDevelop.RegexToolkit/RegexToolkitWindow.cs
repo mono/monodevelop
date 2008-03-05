@@ -31,6 +31,7 @@ using System.IO;
 using System.Text.RegularExpressions;
 using System.Xml;
 using MonoDevelop.Core;
+using MonoDevelop.Ide.Gui;
 
 using Gdk;
 using Gtk;
@@ -46,6 +47,8 @@ namespace MonoDevelop.RegexToolkit
 		
 		public RegexToolkitWindow() : base (Gtk.WindowType.Toplevel)
 		{
+			this.Parent = IdeApp.Workbench.RootWindow;
+
 			this.Build();
 			this.Events = Gdk.EventMask.AllEventsMask;
 			this.TransientFor = MonoDevelop.Ide.Gui.IdeApp.Workbench.RootWindow;

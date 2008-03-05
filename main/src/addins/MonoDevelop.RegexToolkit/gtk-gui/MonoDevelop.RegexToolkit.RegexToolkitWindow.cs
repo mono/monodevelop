@@ -88,7 +88,7 @@ namespace MonoDevelop.RegexToolkit {
             // Widget MonoDevelop.RegexToolkit.RegexToolkitWindow
             this.Name = "MonoDevelop.RegexToolkit.RegexToolkitWindow";
             this.Title = Mono.Unix.Catalog.GetString("Regular Expression Toolkit");
-            this.WindowPosition = ((Gtk.WindowPosition)(4));
+            this.WindowPosition = ((Gtk.WindowPosition)(1));
             this.BorderWidth = ((uint)(6));
             // Container child MonoDevelop.RegexToolkit.RegexToolkitWindow.Gtk.Container+ContainerChild
             this.vbox2 = new Gtk.VBox();
@@ -104,7 +104,7 @@ namespace MonoDevelop.RegexToolkit {
             this.hpaned1 = new Gtk.HPaned();
             this.hpaned1.CanFocus = true;
             this.hpaned1.Name = "hpaned1";
-            this.hpaned1.Position = 356;
+            this.hpaned1.Position = 297;
             // Container child hpaned1.Gtk.Paned+PanedChild
             this.vbox6 = new Gtk.VBox();
             this.vbox6.Name = "vbox6";
@@ -318,7 +318,6 @@ namespace MonoDevelop.RegexToolkit {
             this.notebook2.CanFocus = true;
             this.notebook2.Name = "notebook2";
             this.notebook2.CurrentPage = 0;
-            this.notebook2.BorderWidth = ((uint)(6));
             // Container child notebook2.Gtk.Notebook+NotebookChild
             this.scrolledwindow2 = new Gtk.ScrolledWindow();
             this.scrolledwindow2.CanFocus = true;
