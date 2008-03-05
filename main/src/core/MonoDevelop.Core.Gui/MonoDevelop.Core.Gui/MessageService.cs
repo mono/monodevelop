@@ -213,17 +213,25 @@ namespace MonoDevelop.Core.Gui
 		}
 		#endregion
 		
+		class ThreadSafeDialog : GuiSyncObject
+		{
+			public int Run (Gtk.Dialog dialog)
+			{
+				try {
+					dialog.Modal             = true;
+					dialog.TransientFor      = rootWindow;
+					dialog.DestroyWithParent = true;
+					return dialog.Run ();
+				} finally {
+					if (dialog != null)
+						dialog.Destroy ();
+				}
+			}
+		}
+		
 		public static int ShowCustomDialog (Gtk.Dialog dialog)
 		{
-			try {
-				dialog.Modal             = true;
-				dialog.TransientFor      = rootWindow;
-				dialog.DestroyWithParent = true;
-				return dialog.Run ();
-			} finally {
-				if (dialog != null)
-					dialog.Destroy ();
-			}
+			return new ThreadSafeDialog ().Run (dialog);
 		}
 		
 		public static AlertButton GenericAlert (string icon, string primaryText, string secondaryText, params AlertButton[] buttons)
