@@ -48,32 +48,33 @@ namespace MonoDevelop.Core.Logging
 			case LogLevel.Fatal:
 				header = GettextCatalog.GetString ("FATAL ERROR");
 				if (useColour) {
-					Console.ForegroundColor = ConsoleColor.Red;
+					ConsoleCrayon.ForegroundColor = ConsoleColor.Yellow;
+					ConsoleCrayon.BackgroundColor = ConsoleColor.Red;
 				}
 				break;
 			case LogLevel.Error:
 				header = GettextCatalog.GetString ("ERROR");
 				if (useColour) {
-					Console.ForegroundColor = ConsoleColor.Red;
-					Console.BackgroundColor = ConsoleColor.Yellow;
+					ConsoleCrayon.ForegroundColor = ConsoleColor.Red;
+					ConsoleCrayon.BackgroundColor = ConsoleColor.Yellow;
 				}
 				break;
 			case LogLevel.Warn:
 				header = GettextCatalog.GetString ("WARNING");
 				if (useColour) {
-					Console.ForegroundColor = ConsoleColor.Red;
+					ConsoleCrayon.ForegroundColor = ConsoleColor.Red;
 				}
 				break;
 			case LogLevel.Info:
 				header = GettextCatalog.GetString ("INFO");
 				if (useColour) {
-					Console.ForegroundColor = ConsoleColor.Green;
+					ConsoleCrayon.ForegroundColor = ConsoleColor.Green;
 				}
 				break;
 			case LogLevel.Debug:
 				header = GettextCatalog.GetString ("DEBUG");
 				if (useColour) {
-					Console.ForegroundColor = ConsoleColor.Blue;
+					ConsoleCrayon.ForegroundColor = ConsoleColor.Blue;
 				}
 				break;
 			default:
@@ -82,7 +83,7 @@ namespace MonoDevelop.Core.Logging
 			}
 			
 			Console.Write ("{0} [{1}]:", header, DateTime.Now.ToString ("u"));
-			if (useColour) Console.ResetColor ();
+			if (useColour) ConsoleCrayon.ResetColor ();
 			Console.WriteLine (" " + message);
 		}
 		
@@ -100,10 +101,10 @@ namespace MonoDevelop.Core.Logging
 			set {
 				useColour = false;
 				if (value) try {
-					Console.ForegroundColor = ConsoleColor.Red;
-					Console.ResetColor ();
+					ConsoleCrayon.ForegroundColor = ConsoleColor.Red;
+					ConsoleCrayon.ResetColor ();
 					useColour = true;
-				} catch {}
+				} catch (Exception ex) { }
 			}
 		}
 	}

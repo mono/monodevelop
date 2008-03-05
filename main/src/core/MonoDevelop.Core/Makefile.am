@@ -29,6 +29,7 @@ FILES =  \
 	MonoDevelop.Core.Execution/RemoteProcessObject.cs \
 	MonoDevelop.Core.FileSystem/DefaultFileSystemExtension.cs \
 	MonoDevelop.Core.FileSystem/FileSystemExtension.cs \
+	MonoDevelop.Core.Logging/ConsoleCrayon.cs \
 	MonoDevelop.Core.Logging/ConsoleLogger.cs \
 	MonoDevelop.Core.Logging/FileLogger.cs \
 	MonoDevelop.Core.Logging/ILogger.cs \

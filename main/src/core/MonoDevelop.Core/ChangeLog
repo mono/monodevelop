@@ -1,3 +1,13 @@
+2008-03-05  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Core.Logging/ConsoleCrayon.cs,
+	  MonoDevelop.Core.Logging/ConsoleLogger.cs, Makefile.am,
+	  MonoDevelop.Core.mdp, MonoDevelop.Core/LoggingService.cs: Enable console
+	  logging in colour by default. Thanks to Aaron Bockover for the
+	  ConsoleCrayon workaround -- we now "manually" handle emitting console
+	  colour codes on Mono, because its terminfo driver can leave the console
+	  unusable if the app crashes.
+
 2008-02-20  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Core/SystemAssemblyService.cs: Don't install packages provided

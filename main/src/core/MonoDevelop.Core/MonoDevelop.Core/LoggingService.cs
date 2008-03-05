@@ -51,10 +51,10 @@ namespace MonoDevelop.Core
 			}
 			
 			string consoleLogUseColourEnv = System.Environment.GetEnvironmentVariable ("MONODEVELOP_CONSOLE_LOG_USE_COLOUR");
-			if (!string.IsNullOrEmpty (consoleLogUseColourEnv) && consoleLogUseColourEnv.ToLower () == "true") {
-				consoleLogger.UseColour = true;
-			} else {
+			if (!string.IsNullOrEmpty (consoleLogUseColourEnv) && consoleLogUseColourEnv.ToLower () == "false") {
 				consoleLogger.UseColour = false;
+			} else {
+				consoleLogger.UseColour = true;
 			}
 			
 			string logFileEnv = System.Environment.GetEnvironmentVariable ("MONODEVELOP_LOG_FILE");
