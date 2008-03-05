@@ -1,5 +1,10 @@
 2008-03-05  Michael Hutchinson <mhutchinson@novell.com> 
 
+	* MonoDevelop.Moonlight/MoonlightProject.cs: Avoid NRE because BaseDirectory
+	  isn't set during project creation.
+
+2008-03-05  Michael Hutchinson <mhutchinson@novell.com> 
+
 	* MonoDevelop.Moonlight.mdp: Fix build paths and disable local copy of
 	  project refs.
 	* MonoDevelop.Moonlight/MoonlightCodebehindProvider.cs: Make regex actually

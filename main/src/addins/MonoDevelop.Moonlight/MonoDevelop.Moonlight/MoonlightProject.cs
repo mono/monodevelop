@@ -53,7 +53,7 @@ namespace MonoDevelop.Moonlight
 			//set parameters to ones required for Moonlight build
 			ClrVersion = MonoDevelop.Core.ClrVersion.Clr_2_1;
 			foreach (DotNetProjectConfiguration parameter in Configurations) {
-				parameter.OutputDirectory = Path.Combine (BaseDirectory, "bin");
+				parameter.OutputDirectory = Path.Combine (".", "bin");
 				parameter.CompileTarget = CompileTarget.Library;
 			}
 		}
