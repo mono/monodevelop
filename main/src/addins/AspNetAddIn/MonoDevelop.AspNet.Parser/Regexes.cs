@@ -56,7 +56,7 @@ namespace MonoDevelop.AspNet.Parser
 		
 		public static Regex ServerTag {
 			get {
-				return new Regex (@"<\s*(\w+:)?(\w+)(.*runat=""server"".*)>", RegexOptions.Compiled | RegexOptions.Singleline);
+				return new Regex (@"<\s*(?<prefix>\w+:)?(?<name>\w+)(?<attributes>(?:[^"">']|""[^""]*""|'[^']*')*runat\s*=\s*""server""(?:[^"">']|""[^""]*""|'[^']*')*>)", RegexOptions.Compiled | RegexOptions.Singleline);
 			}
 		}
 	}

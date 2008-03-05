@@ -45,6 +45,7 @@ using MonoDevelop.Deployment;
 using MonoDevelop.AspNet.Parser;
 using MonoDevelop.AspNet.Parser.Dom;
 using MonoDevelop.AspNet.Deployment;
+using MonoDevelop.AspNet.Gui;
 
 namespace MonoDevelop.AspNet
 {
@@ -267,14 +268,27 @@ namespace MonoDevelop.AspNet
 				operationMonitor.AddOperation (op); //handles cancellation
 				
 				//launch a separate thread to detect the running server and launch a web browser
-				System.Threading.Thread t = new System.Threading.Thread (new System.Threading.ParameterizedThreadStart (LaunchWebBrowser));
-				op.Completed += delegate (IAsyncOperation dummy) {if (t.IsAlive) t.Abort ();};
 				string url = String.Format ("http://{0}:{1}", this.XspParameters.Address, this.XspParameters.Port);
-				if (!op.IsCompleted)
-					t.Start (url);
+				BrowserLauncherOperation browserLauncher = BrowserLauncher.LaunchWhenReady (url);
+				operationMonitor.AddOperation (browserLauncher);
+				
+				//report errors from the browser launcher
+				browserLauncher.Completed += delegate (IAsyncOperation blop) {
+					if (!blop.Success)
+						MessageService.ShowError (
+						    GettextCatalog.GetString ("Error launching web browser"),
+						    ((BrowserLauncherOperation)blop).Error.ToString ()
+						);
+				};
 				
 				op.WaitForCompleted ();
 				monitor.Log.WriteLine ("The web server exited with code: {0}", op.ExitCode);
+				
+				//if server shut down before browser launched, abort browser launch
+				if (!browserLauncher.IsCompleted) {
+					browserLauncher.Cancel ();
+					browserLauncher.WaitForCompleted ();
+				}
 			} catch (Exception ex) {
 				monitor.ReportError ("Could not launch web server.", ex);
 			} finally {
@@ -358,60 +372,6 @@ namespace MonoDevelop.AspNet
 		#endregion
 		
 		#region special files
-		
-		#endregion
-		
-		#region server/browser-related
-		
-		//confirm we can connect to server before opening browser; wait up to ten seconds
-		private static void LaunchWebBrowser (object o)
-		{
-			try {
-				string url = (string) o;
-				
-				//wait a bit for server to start
-				System.Threading.Thread.Sleep (2000);
-				
-				//try to contact web server several times, because server may take a while to start
-				int noOfRequests = 5;
-				int timeout = 8000; //ms
-				int wait = 1000; //ms
-				
-				for (int i = 0; i < noOfRequests; i++) {
-					System.Net.WebRequest req = null;
-					System.Net.WebResponse resp = null;
-					
-					try {
-						req = System.Net.HttpWebRequest.Create (url);
-						req.Timeout = timeout;
-						resp = req.GetResponse ();
-					} catch (System.Net.WebException exp) {
-						
-						// server has returned 404, 500 etc, which user will still want to see
-						if (exp.Status == System.Net.WebExceptionStatus.ProtocolError) {
-							resp = exp.Response;
-							
-						//last request has failed so show user the error
-						} else if (i >= (noOfRequests - 1)) {
-							string message = GettextCatalog.GetString ("Could not connect to webserver {0}", url);
-							MessageService.ShowException (exp, message);
-							
-						//we still have requests to go, so cancel the current one and sleep for a bit
-						} else {
-							req.Abort ();
-							System.Threading.Thread.Sleep (wait);
-							continue;
-						}
-					}
-				
-					if (resp != null) {
-						//TODO: a choice of browsers
-						MonoDevelop.Core.Gui.Services.PlatformService.ShowUrl (url);
-						break;
-					}
-				}
-			} catch (System.Threading.ThreadAbortException) {}
-		}
 		
 		#endregion
 		

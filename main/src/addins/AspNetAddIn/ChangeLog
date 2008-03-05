@@ -1,3 +1,11 @@
+2008-03-04  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.AspNet/AspNetAppProject.cs: Improve browser launching code.
+	* MonoDevelop.AspNet.Gui/BrowserLauncher.cs: Move browser launcher code and
+	  make it into a re-usable IAsyncOperation.
+	* AspNetAddIn.mdp, Makefile.am: Updated.
+	* MonoDevelop.AspNet.Parser/Regexes.cs: Improve server tag regex.
+
 2008-03-04  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.AspNet.Deployment/WebDeployService.cs,
