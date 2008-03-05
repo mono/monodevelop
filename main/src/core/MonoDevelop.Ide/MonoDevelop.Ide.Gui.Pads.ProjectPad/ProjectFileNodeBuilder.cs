@@ -159,8 +159,11 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		{
 			ProjectFile file = CurrentNode.DataItem as ProjectFile;
 			Project project = CurrentNode.GetParentDataItem (typeof(Project), false) as Project;
-			AlertButton result = MessageService.AskQuestion (GettextCatalog.GetString ("Are you sure you want to remove file {0} from project {1}?", Path.GetFileName (file.Name), project.Name), AlertButton.Cancel, AlertButton.Delete, AlertButton.Remove);
-			if (result != AlertButton.Remove && result != AlertButton.Delete) 
+			AlertButton removeFromProject = new AlertButton (GettextCatalog.GetString ("_Remove from Project"), Gtk.Stock.Remove);
+			AlertButton result = MessageService.AskQuestion (GettextCatalog.GetString ("Are you sure you want to remove file {0} from project {1}?", Path.GetFileName (file.Name), project.Name), 
+			                                                 GettextCatalog.GetString ("Delete physically removes the file from disc."), 
+			                                                 AlertButton.Delete, AlertButton.Cancel, removeFromProject);
+			if (result != removeFromProject && result != AlertButton.Delete) 
 				return;
 			
 			if (!file.IsExternalToProject) {
