@@ -79,6 +79,9 @@ run: runmd
 runmd: $(PROGRAM)
 	$(MD_LAUNCH) --debug $(MD_BIN_PATH)/MonoDevelop.exe
 
+run-debug: $(PROGRAM)
+	MONODEVELOP_CONSOLE_LOG_LEVEL=All $(MD_LAUNCH) --debug $(MD_BIN_PATH)/MonoDevelop.exe
+
 run-profile: $(PROGRAM)
 	$(MD_LAUNCH) -O=inline --profile $(MD_BIN_PATH)/MonoDevelop.exe
 
