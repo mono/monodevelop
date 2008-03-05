@@ -24,6 +24,7 @@
       <Entry build="True" name="MonoDevelop.AssemblyBrowser" configuration="Debug" />
       <Entry build="True" name="MonoDevelop.CodeMetrics" configuration="Debug" />
       <Entry build="True" name="Deployment" configuration="Debug" />
+      <Entry build="True" name="MonoDevelop.Moonlight" configuration="Debug" />
     </Configuration>
     <Configuration name="Release" ctype="CombineConfiguration">
       <Entry build="True" name="MonoDevelop.NUnit" configuration="Debug" />
@@ -49,6 +50,7 @@
       <Entry build="True" name="MonoDevelop.AssemblyBrowser" configuration="Release" />
       <Entry build="True" name="MonoDevelop.CodeMetrics" configuration="Release" />
       <Entry build="True" name="Deployment" configuration="Release" />
+      <Entry build="True" name="MonoDevelop.Moonlight" configuration="Release" />
     </Configuration>
   </Configurations>
   <StartMode startupentry="MonoDevelop.NUnit" single="True">
@@ -84,6 +86,7 @@
     <Execute type="None" entry="MonoDevelop.CodeStatistic" />
     <Execute type="None" entry="MonoDevelop.CodeMetrics" />
     <Execute type="None" entry="Deployment" />
+    <Execute type="None" entry="MonoDevelop.Moonlight" />
   </StartMode>
   <Entries>
     <Entry filename="NUnit/MonoDevelop.NUnit.mdp" />
@@ -109,5 +112,6 @@
     <Entry filename="MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser.mdp" />
     <Entry filename="MonoDevelop.CodeMetrics/MonoDevelop.CodeMetrics.mdp" />
     <Entry filename="Deployment/Deployment.mds" />
+    <Entry filename="MonoDevelop.Moonlight/MonoDevelop.Moonlight.mdp" />
   </Entries>
 </Combine>

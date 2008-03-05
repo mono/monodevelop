@@ -371,6 +371,7 @@ src/addins/MacPlatform/Makefile
 src/addins/MonoDevelop.AssemblyBrowser/Makefile
 src/addins/Mono.Texteditor/Makefile
 src/addins/MonoDevelop.SourceEditor2/Makefile
+src/addins/MonoDevelop.Moonlight/Makefile
 Makefile
 monodevelop
 mdtool
