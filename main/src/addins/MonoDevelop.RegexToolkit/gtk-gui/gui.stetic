@@ -87,7 +87,8 @@
   <widget class="Gtk.Window" id="MonoDevelop.RegexToolkit.RegexToolkitWindow" design-size="653 481">
     <property name="MemberName" />
     <property name="Title" translatable="yes">Regular Expression Toolkit</property>
-    <property name="WindowPosition">Center</property>
+    <property name="TypeHint">Dialog</property>
+    <property name="WindowPosition">CenterOnParent</property>
     <property name="BorderWidth">6</property>
     <child>
       <widget class="Gtk.VBox" id="vbox2">

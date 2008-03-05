@@ -51,6 +51,8 @@ namespace MonoDevelop.RegexToolkit
 
 			this.Build();
 			this.Events = Gdk.EventMask.AllEventsMask;
+			this.Parent = MonoDevelop.Ide.Gui.IdeApp.Workbench.RootWindow;
+			this.ParentWindow = MonoDevelop.Ide.Gui.IdeApp.Workbench.RootWindow.GdkWindow;
 			this.TransientFor = MonoDevelop.Ide.Gui.IdeApp.Workbench.RootWindow;
 			optionsStore = new ListStore (typeof (bool), typeof (string), typeof (Options));
 			resultStore = new Gtk.TreeStore (typeof (string), typeof (string), typeof (int), typeof (int));

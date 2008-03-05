@@ -88,7 +88,8 @@ namespace MonoDevelop.RegexToolkit {
             // Widget MonoDevelop.RegexToolkit.RegexToolkitWindow
             this.Name = "MonoDevelop.RegexToolkit.RegexToolkitWindow";
             this.Title = Mono.Unix.Catalog.GetString("Regular Expression Toolkit");
-            this.WindowPosition = ((Gtk.WindowPosition)(1));
+            this.TypeHint = ((Gdk.WindowTypeHint)(1));
+            this.WindowPosition = ((Gtk.WindowPosition)(4));
             this.BorderWidth = ((uint)(6));
             // Container child MonoDevelop.RegexToolkit.RegexToolkitWindow.Gtk.Container+ContainerChild
             this.vbox2 = new Gtk.VBox();
