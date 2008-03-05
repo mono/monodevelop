@@ -1,5 +1,10 @@
 2008-03-05  Mike Krüger <mkrueger@novell.com> 
 
+	* Mono.TextEditor/TextEditor.cs: Improved the scrolling speed (should be
+	  visible on old machines).
+
+2008-03-05  Mike Krüger <mkrueger@novell.com> 
+
 	* Mono.TextEditor/TextEditor.cs: Window split now removes the split that
 	  doesn't have the focus. (intelligent split)
 
