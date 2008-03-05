@@ -44,7 +44,8 @@ namespace MonoDevelop.Moonlight
 		
 		public MoonlightCodebehindProvider ()
 		{
-			rx = new Regex (@"<\s*Canvas\s+(?:[^"">']|""[^""]*""|'[^']*')*(?:x:Class\s*=\s*""([\w.]*)[;""]|>)",
+			//FIXME: this isn't 100% accurate, e.g. if ">\w*<" exists in one of the first element's attributes
+			rx = new Regex (@"(?:x:Class\s*=\s*""([\w.]*)[;""]|>\s*<)",
 			    RegexOptions.Compiled | RegexOptions.Singleline);
 		}
 		
@@ -56,8 +57,9 @@ namespace MonoDevelop.Moonlight
 			ITextFile tf = OpenDocumentFileProvider.Instance.GetEditableTextFile (file.FilePath);
 			if (tf == null)
 				tf = new TextFile (file.FilePath);
+			
 			Match match = rx.Match (tf.Text);
-			if (match.Groups.Count == 1) {
+			if (match.Groups.Count == 2) {
 				string val = match.Groups [1].Value;
 				if (!string.IsNullOrEmpty (val))
 					return val;

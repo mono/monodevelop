@@ -20,8 +20,7 @@
 	
 	<!-- Template Content -->
 	<TemplateFiles>
-		<AspNetFile name="js/CreateSilverlight.js" DefaultExtension=".js" BuildAction="FileCopy">
-			<FileText><![CDATA[
+		<File name="js/CreateSilverlight.js" DefaultExtension=".js" BuildAction="FileCopy"><![CDATA[
 function createSilverlightEx()
 {  
     Silverlight.createObjectEx({
@@ -41,7 +40,6 @@ function createSilverlightEx()
             onLoad:null},
         initParams:null,
         context:null});
-}]]></FileText>
-		</AspNetFile>
+}]]></File>
 	</TemplateFiles>
 </Template>

@@ -1,3 +1,19 @@
+2008-03-05  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Moonlight.mdp: Fix build paths and disable local copy of
+	  project refs.
+	* MonoDevelop.Moonlight/MoonlightCodebehindProvider.cs: Make regex actually
+	  work.
+	* MonoDevelop.Moonlight/MoonlightProject.cs: Set default properties and
+	  paths needed for new Moonlight projects to work.
+	* Templates/Moonlight-XamlWithCodeBehind.xft.xml: Use text file template
+	  rather than ASP.NET file template. Add some default XAML. Reference the
+	  actual codebehind dll and class.
+	* Templates/Moonlight-CreateSilverlightJs.xft.xml: Use text file template
+	  rather than ASP.NET file template.
+	* Templates/Moonlight-Xaml.xft.xml: Use text file template rather than
+	  ASP.NET file template. Add some default XAML.
+
 2008-03-04  Michael Hutchinson  <mhutchinson@novell.com> 
 
 	* *.*: Initial commit of unfinished Moonlight addin.

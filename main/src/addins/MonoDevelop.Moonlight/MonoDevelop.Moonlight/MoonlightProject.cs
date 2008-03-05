@@ -50,7 +50,12 @@ namespace MonoDevelop.Moonlight
 		public MoonlightProject (string languageName, ProjectCreateInformation info, XmlElement projectOptions)
 			: base (languageName, info, projectOptions)
 		{
+			//set parameters to ones required for Moonlight build
 			ClrVersion = MonoDevelop.Core.ClrVersion.Clr_2_1;
+			foreach (DotNetProjectConfiguration parameter in Configurations) {
+				parameter.OutputDirectory = Path.Combine (BaseDirectory, "bin");
+				parameter.CompileTarget = CompileTarget.Library;
+			}
 		}
 		
 		public override string ProjectType {

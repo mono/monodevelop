@@ -18,10 +18,14 @@
 	
 	<!-- Template Content -->
 	<TemplateFiles>
-		<AspNetFile name="${Name}.xaml" DefaultExtension=".xaml" BuildAction="FileCopy">
-			<FileText>
-				<![CDATA[]]>
-			</FileText>
-		</AspNetFile>
+		<File name="${Name}.xaml" DefaultExtension=".xaml" BuildAction="FileCopy">
+<![CDATA[<Canvas x:Name="root"
+        xmlns="http://schemas.microsoft.com/client/2007"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+	<Canvas Width="200" Height="40" Background="Blue">
+		<TextBlock>Hello Moon</TextBlock>
+	</Canvas>
+</Canvas>
+]]></File>
 	</TemplateFiles>
 </Template>
