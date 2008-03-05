@@ -1,3 +1,9 @@
+2008-03-05  Mike Krüger <mkrueger@novell.com> 
+
+	* gtk-gui/MonoDevelop.SourceEditor.SearchAndReplaceWidget.cs,
+	  MonoDevelop.SourceEditor/SourceEditorWidget.cs: Window split now removes
+	  the split that doesn't have the focus. (intelligent split)
+
 2008-03-04  Mike Krüger <mkrueger@novell.com> 
 
 	* gtk-gui/MonoDevelop.SourceEditor.OptionPanels.GeneralOptionsPanel.cs,

@@ -56,9 +56,12 @@ namespace MonoDevelop.SourceEditor
 		
 		MonoDevelop.SourceEditor.ExtendibleTextEditor textEditor;
 		MonoDevelop.SourceEditor.ExtendibleTextEditor splittedTextEditor;
+		MonoDevelop.SourceEditor.ExtendibleTextEditor lastActiveEditor;
+		
 		public MonoDevelop.SourceEditor.ExtendibleTextEditor TextEditor {
 			get {
-				return this.splittedTextEditor != null && this.splittedTextEditor.HasFocus ? this.splittedTextEditor : this.textEditor;
+				lastActiveEditor = this.splittedTextEditor != null && this.splittedTextEditor.HasFocus ? this.splittedTextEditor : this.textEditor;
+				return lastActiveEditor;
 			}
 		}
 		
@@ -442,15 +445,23 @@ namespace MonoDevelop.SourceEditor
 			if (splitContainer == null)
 				return;
 			
-			splittedTextEditor.Destroy ();
-			splittedTextEditor = null;
 			
 			splitContainer.Remove (mainsw);
+			if (this.textEditor == lastActiveEditor) {
+				secondsw.Destroy ();
+				secondsw           = null;
+				splittedTextEditor = null;
+			} else {
+				this.mainsw.Destroy ();
+				this.mainsw = secondsw;
+				splitContainer.Remove (secondsw);
+				lastActiveEditor = this.textEditor = splittedTextEditor;
+				splittedTextEditor = null;
+			}
 			editorBar.Remove (splitContainer);
-			
 			splitContainer.Destroy ();
-			splitContainer.Dispose ();
 			splitContainer = null;
+			
 			editorBar.PackEnd (mainsw);
 			editorBar.ShowAll ();
 		}
@@ -463,7 +474,7 @@ namespace MonoDevelop.SourceEditor
 				this.splittedTextEditor.GrabFocus ();
 			}
 		}
-		
+		ScrolledWindow secondsw;
 		public void Split (bool vSplit)
 		{
  			if (splitContainer != null) 
@@ -480,7 +491,7 @@ namespace MonoDevelop.SourceEditor
 					Unsplit (); 
 				}
 			};
-			ScrolledWindow secondsw = new ScrolledWindow ();
+			secondsw = new ScrolledWindow ();
 			secondsw.ButtonPressEvent += PrepareEvent;
 			this.splittedTextEditor = new MonoDevelop.SourceEditor.ExtendibleTextEditor (view, textEditor.Document);
 			this.splittedTextEditor.Extension = textEditor.Extension;
@@ -575,6 +586,7 @@ namespace MonoDevelop.SourceEditor
 		
 		void UpdateLineCol ()
 		{
+			
 			int offset = this.TextEditor.Caret.Offset;
 			if (offset < 0 || offset >= this.TextEditor.Document.Length)
 				return;

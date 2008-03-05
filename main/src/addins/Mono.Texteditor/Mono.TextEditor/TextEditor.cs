@@ -93,18 +93,12 @@ namespace Mono.TextEditor
 //			}
 //		}
 		
-		protected override void OnSetScrollAdjustments (Adjustment hAdjustement, Adjustment vAdjustement)
+		void HAdjustmentValueChanged (object sender, EventArgs args)
 		{
-			this.textEditorData.HAdjustment = hAdjustement;
-			this.textEditorData.VAdjustment = vAdjustement;
-			
-			if (hAdjustement == null || vAdjustement == null)
-				return;
-			
-			this.textEditorData.HAdjustment.ValueChanged += delegate {
-				this.QueueDrawArea (this.textViewMargin.XOffset, 0, this.Allocation.Width - this.textViewMargin.XOffset, this.Allocation.Height);
-			};
-			this.textEditorData.VAdjustment.ValueChanged += delegate {
+			this.QueueDrawArea (this.textViewMargin.XOffset, 0, this.Allocation.Width - this.textViewMargin.XOffset, this.Allocation.Height);
+		}
+		void VAdjustmentValueChanged (object sender, EventArgs args)
+		{
 				this.QueueDraw ();
 				return;
 //				if (this.textEditorData.VAdjustment.Value != System.Math.Ceiling (this.textEditorData.VAdjustment.Value)) {
@@ -145,7 +139,18 @@ namespace Mono.TextEditor
 //				                        0, 0, 
 //				                        0, 0, 
 //				                        Allocation.Width, Allocation.Height);
-			};
+		}
+		
+		protected override void OnSetScrollAdjustments (Adjustment hAdjustement, Adjustment vAdjustement)
+		{
+			this.textEditorData.HAdjustment = hAdjustement;
+			this.textEditorData.VAdjustment = vAdjustement;
+			
+			if (hAdjustement == null || vAdjustement == null)
+				return;
+			
+			this.textEditorData.HAdjustment.ValueChanged += HAdjustmentValueChanged; 
+			this.textEditorData.VAdjustment.ValueChanged += VAdjustmentValueChanged;
 		}
 		
 		public TextEditor (Document doc)
@@ -359,10 +364,20 @@ namespace Mono.TextEditor
 			if (isDisposed)
 				return;
 			this.isDisposed = true;
-			
+			System.Console.WriteLine("Dispose !!!!");
 			Document.DocumentUpdated -= DocumentUpdatedHandler;
-			
 			TextEditorOptions.Changed -= OptionsChanged;
+			
+			if (this.textEditorData.HAdjustment != null) {
+				System.Console.WriteLine("Remove hadjustment");
+				this.textEditorData.HAdjustment.ValueChanged -= HAdjustmentValueChanged; 
+				this.textEditorData.HAdjustment = null;
+			}
+			if (this.textEditorData.VAdjustment!= null) {
+				System.Console.WriteLine("Remove vadjustment");
+				this.textEditorData.VAdjustment.ValueChanged -= VAdjustmentValueChanged;
+				this.textEditorData.VAdjustment = null;
+			}
 			
 			if (margins != null) {
 				foreach (IMargin margin in this.margins) {
@@ -376,15 +391,6 @@ namespace Mono.TextEditor
 				this.textEditorData.Dispose ();
 				this.textEditorData = null;
 			}
-//			if (buffer != null) {
-//				buffer.Dispose ();
-//				buffer = null;
-//			}
-//			if (flipBuffer != null) {
-//				flipBuffer.Dispose ();
-//				flipBuffer = null;
-//			}
-//			
 			base.Dispose ();
 		}
 		
