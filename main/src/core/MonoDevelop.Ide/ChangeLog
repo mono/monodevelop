@@ -1,3 +1,10 @@
+2008-03-04  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Ide.Templates/CodeTranslationFileDescriptionTemplate.cs: Log
+	  some info when a template is unparseable.
+	* MonoDevelop.Ide.Templates/FileTemplateReference.cs: Allow basic string
+	  substitutions in the present name in a FileTemplateReference.
+
 2008-03-04  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Ide.addin.xml: Changed file menu for hig.

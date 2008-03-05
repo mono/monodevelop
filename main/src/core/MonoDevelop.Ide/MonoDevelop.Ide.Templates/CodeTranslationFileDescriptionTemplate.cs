@@ -99,6 +99,9 @@ namespace MonoDevelop.Ide.Templates
 				} catch (NotImplementedException) {
 					throw new InvalidOperationException ("Invalid Code Translation template: the CodeDomProvider of the source language '"
 					                                     + language + "' has not implemented the Parse method.");
+				} catch (Exception ex) {
+					LoggingService.LogError ("Unparseable template: '" + tempSubstitutedContent + "'.", ex);
+					throw;
 				}
 			}
 			

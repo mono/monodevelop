@@ -58,10 +58,16 @@ namespace MonoDevelop.Ide.Templates
 			get { return name;}
 		}
 		
-		public override void AddToProject (Project project, string language, string directory, string nameNotUsed)
+		public override void AddToProject (Project project, string language, string directory, string entryName)
 		{
+			string[,] customTags = new string[,] {
+				{"ProjectName", project.Name},
+				{"EntryName", entryName}
+			};
+			string substName = MonoDevelop.Core.StringParserService.Parse (this.name, customTags);
+			
 			foreach (FileDescriptionTemplate fdt in innerTemplate.Files)
-				fdt.AddToProject (project, language, directory, this.name);
+				fdt.AddToProject (project, language, directory, substName);
 		}
 		
 		public override void Show ()
