@@ -1,3 +1,10 @@
+2008-03-05  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.RegexToolkit/RegexToolkitWindow.cs,
+	  gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWindow.cs,
+	  gtk-gui/generated.cs, gtk-gui/gui.stetic: Overworked regex toolkit
+	  window.
+
 2008-02-28  Mike Krüger <mkrueger@novell.com> 
 
 	* gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWindow.cs: Fixed "Bug 365624

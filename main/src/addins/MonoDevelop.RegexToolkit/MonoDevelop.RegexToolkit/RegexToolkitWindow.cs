@@ -60,20 +60,12 @@ namespace MonoDevelop.RegexToolkit
 				this.Destroy ();
 			};
 			
-			this.buttonSearch.Clicked += delegate {
-				PerformQuery (this.inputTextview.Buffer.Text,
-				              this.regExTextview.Buffer.Text,
-				              null,
+			this.buttonStart.Clicked += delegate {
+				PerformQuery (inputTextview.Buffer.Text,
+				              this.entryRegEx.Text,
+				              this.entryReplace.Text,
 				              GetOptions ());
-				SetFindMode (true);
-			};
-			
-			this.buttonSearchReplace.Clicked += delegate {
-				PerformQuery (this.inputTextview.Buffer.Text,
-				              this.regExTextview.Buffer.Text,
-				              this.replaceTextview.Buffer.Text,
-				              GetOptions ());
-				SetFindMode (false);
+				SetFindMode (!checkbuttonReplace.Active);
 			};
 			
 			this.buttonLibrary.Clicked  += delegate {
@@ -161,11 +153,14 @@ namespace MonoDevelop.RegexToolkit
 				if (elementsStore.GetIter (out iter, e.Path)) {
 					string text = elementsStore.GetValue (iter, 3) as string;
 					if (!System.String.IsNullOrEmpty (text)) {
-						this.regExTextview.Buffer.InsertAtCursor (text);
+						this.entryRegEx.InsertText (text);
 					}
 				}
 			};
-			
+			this.entryReplace.Sensitive = this.checkbuttonReplace.Active = false;
+			this.checkbuttonReplace.Toggled += delegate {
+				this.entryReplace.Sensitive = this.checkbuttonReplace.Active;
+			};
 			FillElementsBox ();
 		}
 		
@@ -360,7 +355,7 @@ namespace MonoDevelop.RegexToolkit
 				new Options (RegexOptions.RightToLeft, "Right to left")
 			};
 			foreach (Options option in options) {
-				this.optionsStore.AppendValues (false, option.Name, option);				
+				this.optionsStore.AppendValues (false, option.Name, option);
 			}
 		}
 		
