@@ -1,3 +1,8 @@
+2008-03-06  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Database.ConnectionManager.addin.xml: Bump version to
+	  1.0. Yay!
+
 2008-01-25  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Database.ConnectionManager.addin.xml: Update MD version.
