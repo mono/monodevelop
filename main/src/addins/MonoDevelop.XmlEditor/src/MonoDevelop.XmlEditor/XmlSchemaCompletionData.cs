@@ -29,6 +29,7 @@ namespace MonoDevelop.XmlEditor
 		XmlSchema schema;
 		string fileName = String.Empty;
 		bool readOnly = false;
+		bool compiled = false;
 		
 		/// <summary>
 		/// Stores attributes that have been prohibited whilst the code
@@ -82,6 +83,7 @@ namespace MonoDevelop.XmlEditor
 		/// </summary>
 		public XmlSchema Schema {
 			get {
+				CompileSchema();
 				return schema;
 			}
 		}
@@ -142,6 +144,7 @@ namespace MonoDevelop.XmlEditor
 		/// </summary>
 		public ICompletionData[] GetElementCompletionData()
 		{
+			CompileSchema();
 			return GetElementCompletionData(String.Empty);
 		}
 		
@@ -150,6 +153,7 @@ namespace MonoDevelop.XmlEditor
 		/// </summary>
 		public ICompletionData[] GetElementCompletionData(string namespacePrefix)
 		{
+			CompileSchema();
 			XmlCompletionDataCollection data = new XmlCompletionDataCollection();
 			
 			foreach (XmlSchemaElement element in schema.Elements.Values) {
@@ -169,6 +173,7 @@ namespace MonoDevelop.XmlEditor
 		/// </summary>
 		public ICompletionData[] GetAttributeCompletionData(XmlElementPath path)
 		{
+			CompileSchema();
 			XmlCompletionDataCollection data = new XmlCompletionDataCollection();
 					
 			// Locate matching element.
@@ -189,6 +194,7 @@ namespace MonoDevelop.XmlEditor
 		/// </summary>
 		public ICompletionData[] GetChildElementCompletionData(XmlElementPath path)
 		{
+			CompileSchema();
 			XmlCompletionDataCollection data = new XmlCompletionDataCollection();
 		
 			// Locate matching element.
@@ -207,6 +213,7 @@ namespace MonoDevelop.XmlEditor
 		/// </summary>
 		public ICompletionData[] GetAttributeValueCompletionData(XmlElementPath path, string name)
 		{
+			CompileSchema();
 			XmlCompletionDataCollection data = new XmlCompletionDataCollection();
 			
 			// Locate matching element.
@@ -234,9 +241,7 @@ namespace MonoDevelop.XmlEditor
 		void ReadSchema(XmlReader reader)
 		{
 			try {
-				schema = XmlSchema.Read(reader, new ValidationEventHandler(SchemaValidation));
-				schema.Compile(new ValidationEventHandler(SchemaValidation));
-			
+				schema = XmlSchema.Read(reader, new ValidationEventHandler(SchemaValidation));			
 				namespaceUri = schema.TargetNamespace;
 			} finally {
 				reader.Close();
@@ -1264,6 +1269,19 @@ namespace MonoDevelop.XmlEditor
 			}
 			
 			return matchedElement;
+		}
+		
+		/// <summary>
+		/// Compile the schema the first time it is used - this
+		/// improves the XmlEditor startup time (4x quicker) since 
+		/// the XmlSchemaManager does not need to compile the schemas.
+		/// </summary>
+		void CompileSchema()
+		{
+			if (!compiled) {
+				schema.Compile(new ValidationEventHandler(SchemaValidation));
+				compiled = true;
+			}
 		}
 	}
 }
