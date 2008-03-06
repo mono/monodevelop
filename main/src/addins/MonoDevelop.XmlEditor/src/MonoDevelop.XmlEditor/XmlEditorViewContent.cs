@@ -11,6 +11,7 @@ using GtkSourceView;
 using MonoDevelop.Core.Properties;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
+using MonoDevelop.Ide.Gui.Search;
 using MonoDevelop.Projects.Text;
 using MonoDevelop.SourceEditor.Properties;
 using System;
@@ -18,7 +19,7 @@ using System.IO;
 
 namespace MonoDevelop.XmlEditor
 {
-	public class XmlEditorViewContent : AbstractViewContent, IEditableTextBuffer
+	public class XmlEditorViewContent : AbstractViewContent, IEditableTextBuffer, IDocumentInformation, IPositionable
 	{
 		XmlEditorWindow xmlEditorWindow;
 		SourceBuffer buffer;
@@ -257,77 +258,138 @@ namespace MonoDevelop.XmlEditor
 		
 		public string SelectedText {
 			get {
-				return String.Empty;
+				return view.GetSelectedText();
 			}
 			set { 
+				int offset = view.GetLowerSelectionBounds ();
+				((IClipboardHandler)view).Delete (null, null);
+				TextIter iter = buffer.GetIterAtOffset (offset);
+				buffer.Insert (ref iter, value);
+				buffer.PlaceCursor(iter);
+				view.ScrollMarkOnscreen (buffer.InsertMark);
 			}
 		}
 		
 		public int GetPositionFromLineColumn (int line, int column)
 		{
+			Console.WriteLine("GetPositionFromLineColumn");
 			return -1;
 		}
 		
 		public void InsertText (int position, string text)
 		{
+			Console.WriteLine("InsertText");
 		}
 		
 		public void DeleteText (int pos, int length)
 		{
+			Console.WriteLine("DeleteText");
 		}
 		
 		public event EventHandler TextChanged {
 			add {
+				buffer.Changed += value;
 			}
 			remove {
+				buffer.Changed -= value;
 			}
 		}
 		
 		public int CursorPosition {
 			get { 
-				return -1;
+				return buffer.GetIterAtMark(buffer.InsertMark).Offset;
 			}
 			set { 
+				Console.WriteLine("CursorPosition set");
 			}
 		}
-		
+				
 		public void GetLineColumnFromPosition (int position, out int line, out int column)
 		{
+			Console.WriteLine("GetLineColumnFromPosition");
 			column = -1;
 			line = -1;
 		}
 		
 		public void ShowPosition (int position)
 		{
+			view.ScrollToIter (buffer.GetIterAtOffset (position), 0.3, false, 0, 0);
 		}
 		
 		public string GetText (int startPosition, int endPosition)
 		{
+			Console.WriteLine("GetText");
 			return String.Empty;
 		}
 		
 		int ITextFile.Length {
 			get { 
+				Console.WriteLine("ITextFile.Length");
 				return 0;
 			}
 		}
 		
 		public void Select (int startPosition, int endPosition)
 		{
+			buffer.MoveMark (buffer.InsertMark, buffer.GetIterAtOffset (startPosition));
+			buffer.MoveMark (buffer.SelectionBound, buffer.GetIterAtOffset (endPosition));
 		}
 		
 		public int SelectionStartPosition {
 			get {
-				return -1;
+				TextIter p1 = buffer.GetIterAtMark (buffer.InsertMark);
+				TextIter p2 = buffer.GetIterAtMark (buffer.SelectionBound);
+				if (p1.Offset < p2.Offset) return p1.Offset;
+				else return p2.Offset;
 			}
 		}
 		
 		public int SelectionEndPosition {
 			get {
-				return -1;
+				TextIter p1 = buffer.GetIterAtMark (buffer.InsertMark);
+				TextIter p2 = buffer.GetIterAtMark (buffer.SelectionBound);
+				if (p1.Offset > p2.Offset) return p1.Offset;
+				else return p2.Offset;
 			}
 		}		
 
-		#endregion    
+		#endregion
+		
+		#region IDocumentInformation
+	
+		string IDocumentInformation.FileName {
+			get { return ContentName != null ? ContentName : UntitledName; }
+		}
+		
+		public ITextIterator GetTextIterator ()
+		{
+			int startOffset = buffer.GetIterAtMark (buffer.InsertMark).Offset;
+			return new SourceViewTextIterator (this, view, startOffset);
+		}
+		
+		public string GetLineTextAtOffset (int offset)
+		{
+			TextIter resultIter = buffer.GetIterAtOffset (offset);
+			TextIter start_line = resultIter, end_line = resultIter;
+			start_line.LineOffset = 0;
+			end_line.ForwardToLineEnd ();
+			return view.GetText (start_line.Offset, end_line.Offset - start_line.Offset);
+		}
+
+		#endregion
+		
+		#region IPositionable
+		
+		public void JumpTo(int line, int column)
+		{
+			TextIter iter = buffer.GetIterAtLine (line - 1);
+			iter.LineOffset = column - 1;
+
+			buffer.PlaceCursor (iter);		
+			//buffer.HighlightLine (line - 1);	
+			view.ScrollToMark (buffer.InsertMark, 0.3, false, 0, 0);
+		}
+		
+		#endregion
 	}
 }

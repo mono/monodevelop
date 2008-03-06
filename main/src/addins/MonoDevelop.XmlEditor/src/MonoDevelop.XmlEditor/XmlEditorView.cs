@@ -8,8 +8,13 @@
 using Gdk;
 using Gtk;
 using GtkSourceView;
+using MonoDevelop.Components.Commands;
+using MonoDevelop.Ide.Commands;
 using MonoDevelop.Ide.Gui.Content;
+using MonoDevelop.Ide.Gui.Search;
 using MonoDevelop.Projects.Gui.Completion;
+using MonoDevelop.SourceEditor;
+using MonoDevelop.SourceEditor.Gui.Dialogs;
 using System;
 using System.Text;
 
@@ -277,7 +282,7 @@ namespace MonoDevelop.XmlEditor
 				return Style.Copy();
 			}
 		}
-#endregion
+		#endregion
 
 		void InitSyntaxHighlighting()
 		{
@@ -546,6 +551,82 @@ namespace MonoDevelop.XmlEditor
 			if (!VisibleRect.Contains (GetIterLocation(iter))) {
 				ScrollToMark (buffer.InsertMark, 0.1, false, 0, 0);
 			}
+		}
+		
+		/// <summary>
+		/// Search methods taken from SourceEditorWidget
+		/// </summary>
+		public void SetSearchPattern ()
+		{
+			string selectedText = GetSelectedText ();
+			if (selectedText != null && selectedText.Length > 0) {
+				SearchReplaceManager.SearchOptions.SearchPattern = selectedText.Split ('\n')[0];
+			}
+		}
+		
+		[CommandHandler (SearchCommands.Find)]
+		public void Find()
+		{
+			SetSearchPattern();
+			SearchReplaceManager.ShowFindWindow ();
+		}
+		
+		[CommandHandler (SearchCommands.FindNext)]
+		public void FindNext ()
+		{
+			SearchReplaceManager.FindNext ();
+		}
+	
+		[CommandHandler (SearchCommands.FindPrevious)]
+		public void FindPrevious ()
+		{
+			SearchReplaceManager.FindPrevious ();
+		}
+	
+		[CommandHandler (SearchCommands.FindNextSelection)]
+		public void FindNextSelection ()
+		{
+			SetSearchPattern();
+			SearchReplaceManager.FindNext ();
+		}
+	
+		[CommandHandler (SearchCommands.FindPreviousSelection)]
+		public void FindPreviousSelection ()
+		{
+			SetSearchPattern();
+			SearchReplaceManager.FindPrevious ();
+		}
+	
+		[CommandHandler (SearchCommands.Replace)]
+		public void Replace ()
+		{ 
+			SetSearchPattern ();
+			SearchReplaceManager.ShowFindReplaceWindow ();
+		} 
+		
+		public string GetText (int start, int length)
+		{
+			TextIter begin_iter = buffer.GetIterAtOffset (start);
+			TextIter end_iter = buffer.GetIterAtOffset (start + length);
+			return buffer.GetText (begin_iter, end_iter, true);
+		}
+		
+		public int GetLowerSelectionBounds ()
+		{
+			TextIter start;
+			TextIter end;
+			if (buffer.GetSelectionBounds (out start, out end)) {
+				return start.Offset < end.Offset ? start.Offset : end.Offset;
+			}
+			return 0;
+		}
+		
+		[CommandHandler (EditorCommands.GotoLineNumber)]
+		public void GotoLineNumber ()
+		{
+			if (!GotoLineNumberDialog.IsVisible)
+				using (GotoLineNumberDialog gnd = new GotoLineNumberDialog ())
+					gnd.Run ();
 		}
 	}
 }

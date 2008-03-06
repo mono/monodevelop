@@ -27,6 +27,7 @@ FILES = \
 	QualifiedNameCollection.cs \
 	QualifiedName.cs \
 	SelectXmlSchemaDialog.cs \
+	SourceViewTextIterator.cs \
 	ValidateXmlCommand.cs \
 	XmlCompletionDataCollection.cs \
 	XmlCompletionData.cs \

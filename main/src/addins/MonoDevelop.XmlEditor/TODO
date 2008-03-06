@@ -23,7 +23,6 @@ This list should be moved to the SourceForge issues tracker.
   used/not used.  Unable to get this working.
 * Typing a space character inside attribute quotes displays the attribute completion
   list.  Known issue that affects SharpDevelop XML editor too.
-* Searching not implemented.
 * Mixed namespace handling is limited.  The element completion list is based on the
   parent element at the current location.  Really this should take into account any
   other available namespaces that are allowed at that location.
@@ -33,11 +32,12 @@ This list should be moved to the SourceForge issues tracker.
 * The completion window does not move to the correct item when typing in the ":" 
   character.  This is an issue for the namespace completion and for element completion
   when the XML document is using prefixes (e.g. <xs:schema>).
-* Double clicking a task list error does not seem to move the cursor to the correct 
-  line.
 * Comments get autocompleted.  When you type in the last greater than character the
   XML editor adds "</!-->".
 * The "Show Schema Annotation" XML Editor option does nothing.  Schema annotation
   is always displayed if available.
+* Attribute value completion works for pretty much any character so you get the
+  completion list window displayed when you use the cursor keys, for example, which
+  is incorrect.
 
 
