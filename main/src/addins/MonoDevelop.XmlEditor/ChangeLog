@@ -1,3 +1,77 @@
+2007-06-09 17:03  mrward
+
+	* trunk/src/MonoDevelop.XmlEditor/XmlCompletionListWindow.cs: The
+	  completion list window now selects the matching list item when
+	  the user types in a special xml character (e.g. colon).
+
+2007-06-09 15:34  mrward
+
+	* trunk/src/MonoDevelop.XmlEditor.Tests/FindSchemaObject/AttributeGroupReferenceSelectedTestFixture.cs,
+	  trunk/src/MonoDevelop.XmlEditor.Tests/FindSchemaObject/AttributeReferenceSelectedTestFixture.cs,
+	  trunk/src/MonoDevelop.XmlEditor.Tests/FindSchemaObject/AttributeSelectedTestFixture.cs,
+	  trunk/src/MonoDevelop.XmlEditor.Tests/FindSchemaObject/AttributeTypeSelectedTestFixture.cs,
+	  trunk/src/MonoDevelop.XmlEditor.Tests/FindSchemaObject/ElementReferenceSelectedTestFixture.cs,
+	  trunk/src/MonoDevelop.XmlEditor.Tests/FindSchemaObject/ElementReferenceWithPrefixSelectedTestFixture.cs,
+	  trunk/src/MonoDevelop.XmlEditor.Tests/FindSchemaObject/ElementSelectedTestFixture.cs,
+	  trunk/src/MonoDevelop.XmlEditor.Tests/FindSchemaObject/ElementTypeSelectedTestFixture.cs,
+	  trunk/src/MonoDevelop.XmlEditor.Tests/FindSchemaObject/ElementTypeWithPrefixSelectedTestFixture.cs,
+	  trunk/src/MonoDevelop.XmlEditor.Tests/FindSchemaObject/GroupReferenceSelectedTestFixture.cs,
+	  trunk/src/MonoDevelop.XmlEditor.Tests/Schema/GetSchemaFromFileNameTestFixture.cs,
+	  trunk/src/MonoDevelop.XmlEditor/GoToSchemaDefinitionCommand.cs,
+	  trunk/src/MonoDevelop.XmlEditor/ICompletionData.cs,
+	  trunk/src/MonoDevelop.XmlEditor/ICompletionDataProvider.cs,
+	  trunk/src/MonoDevelop.XmlEditor/ICompletionWidget.cs,
+	  trunk/src/MonoDevelop.XmlEditor/Makefile.am,
+	  trunk/src/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor.addin.xml,
+	  trunk/src/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor.mdp,
+	  trunk/src/MonoDevelop.XmlEditor/XmlCompletionDataProvider.cs,
+	  trunk/src/MonoDevelop.XmlEditor/XmlCompletionListWindow.cs,
+	  trunk/src/MonoDevelop.XmlEditor/XmlEditorListWindow.cs,
+	  trunk/src/MonoDevelop.XmlEditor/XmlEditorView.cs: Removed the
+	  ICompletionData, ICompletionDataProvider and the
+	  ICompletionWidget files. The XML editor now uses these interfaces
+	  from MonoDevelop. The 0.14 MonoDevelop assemblies are now
+	  referenced in the addin xml file.
+
+2007-05-28 11:58  mrward
+
+	* trunk/configure.in,
+	  trunk/src/MonoDevelop.XmlEditor.Tests/AssemblyInfo.cs,
+	  trunk/src/MonoDevelop.XmlEditor/AssemblyInfo.cs,
+	  trunk/src/MonoDevelop.XmlEditor/CreateSchemaCommand.cs,
+	  trunk/src/MonoDevelop.XmlEditor/FormatXmlCommand.cs,
+	  trunk/src/MonoDevelop.XmlEditor/Makefile.am,
+	  trunk/src/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor.addin.xml,
+	  trunk/src/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor.mdp,
+	  trunk/src/MonoDevelop.XmlEditor/OpenXPathQueryPadCommand.cs,
+	  trunk/src/MonoDevelop.XmlEditor/XmlEditorService.cs,
+	  trunk/src/MonoDevelop.XmlEditor/XmlEditorViewContent.cs,
+	  trunk/src/MonoDevelop.XmlEditor/XmlFileExtensionCodon.cs,
+	  trunk/src/MonoDevelop.XmlEditor/XmlFileExtensionNode.cs,
+	  trunk/src/MonoDevelop.XmlEditor/XmlFileExtensions.cs: XML Editor
+	  can now be compiled against MonoDevelop revision 77999. Updated
+	  MonoDevelop.XmlEditor.addin.xml so it uses the new format and
+	  extension points. Fixed compilation errors due to namespace
+	  changes in MonoDevelop and its use of Mono.Addins.
+
+2007-04-08 19:04  mrward
+
+	* trunk/src/MonoDevelop.XmlEditor.Tests/MimeTypeHandledTests.cs,
+	  trunk/src/MonoDevelop.XmlEditor.Tests/MonoDevelop.XmlEditor.Tests.mdp,
+	  trunk/src/MonoDevelop.XmlEditor/XmlEditorViewContent.cs: The XML
+	  editor now supports the 'application/xml' mime type.
+
+2007-04-08 18:46  mrward
+
+	* trunk/src/MonoDevelop.XmlEditor/XmlEditorViewContent.cs:
+	  XmlEditorViewContent now implements the new ITextFile's GetCharAt
+	  method.
+
+2007-02-23 18:21  mrward
+
+	* trunk/ChangeLog: Updated changelog ready for a snapshot release
+	  0.3 that builds against MonoDevelop 0.13
+
 2007-02-23 18:17  mrward
 
 	* trunk/src/MonoDevelop.XmlEditor.Tests/AssemblyInfo.cs,
@@ -48,8 +122,8 @@
 	  interfaces into the XML Editor project from MonoDevelop 0.12. Due
 	  to changes in the code completion infrastructure in the latest
 	  version of MonoDevelop the XML Editor would not compile. The old
-	  versions of the completion interfaces have been used as an interim
-	  fix before attempting to use the new infrastructure.
+	  versions of the completion interfaces have been used as an
+	  interim fix before attempting to use the new infrastructure.
 
 2006-12-26 22:55  mrward
 
@@ -74,11 +148,12 @@
 	  workaround used in MonoDevelop.SourceEditor to fix a problem with
 	  the gtk treeview stealing focus. The workaround changes the focus
 	  back to the editor and scrolls to the cursor position again after
-	  a short timeout. Without this workaround the XML editor would fail
-	  to scroll to the correct line when opening a large xml file for
-	  the first time. For example, when selecting the Goto Schema
-	  Definition menu item, with the schema file not already open, would
-	  fail to scroll the editor so the correct line was displayed.
+	  a short timeout. Without this workaround the XML editor would
+	  fail to scroll to the correct line when opening a large xml file
+	  for the first time. For example, when selecting the Goto Schema
+	  Definition menu item, with the schema file not already open,
+	  would fail to scroll the editor so the correct line was
+	  displayed.
 
 2006-10-13 20:43  mrward
 
@@ -122,9 +197,9 @@
 
 2006-10-13 18:14  mrward
 
-	* trunk/src/MonoDevelop.XmlEditor/XPathQueryWidget.cs: When an XPath
-	  query is executed the notebook page showing the results is made
-	  the current page.
+	* trunk/src/MonoDevelop.XmlEditor/XPathQueryWidget.cs: When an
+	  XPath query is executed the notebook page showing the results is
+	  made the current page.
 
 2006-10-07 19:40  mrward
 
@@ -244,10 +319,10 @@
 
 2006-04-17 14:12  mrward
 
-	* trunk/src/MonoDevelop.XmlEditor/XmlSchemaCompletionData.cs: An XML
-	  schema is now only compiled the first time it is used in the XML
-	  editor. This improves the time taken to display the XML Schema
-	  options dialog for the first time by a factor of 4.
+	* trunk/src/MonoDevelop.XmlEditor/XmlSchemaCompletionData.cs: An
+	  XML schema is now only compiled the first time it is used in the
+	  XML editor. This improves the time taken to display the XML
+	  Schema options dialog for the first time by a factor of 4.
 
 2006-04-17 11:44  mrward
 
@@ -313,13 +388,14 @@
 	  trunk/src/MonoDevelop.XmlEditor/XmlEditorService.cs,
 	  trunk/src/MonoDevelop.XmlEditor/XmlEditorViewContent.cs,
 	  trunk/src/MonoDevelop.XmlEditor/XslOutputViewContent.cs: Added
-	  support for running XSL transforms. Changing the schema associated
-	  with a file extension now updates any xml files that are currently
-	  open.
+	  support for running XSL transforms. Changing the schema
+	  associated with a file extension now updates any xml files that
+	  are currently open.
 
 2006-03-09 16:34  mrward
 
-	* trunk/TODO, trunk/src/MonoDevelop.XmlEditor/ValidateXmlCommand.cs,
+	* trunk/TODO,
+	  trunk/src/MonoDevelop.XmlEditor/ValidateXmlCommand.cs,
 	  trunk/src/MonoDevelop.XmlEditor/XmlEditorView.cs: Can now indent
 	  multiple lines using the tab key.
 
