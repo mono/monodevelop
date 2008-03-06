@@ -63,6 +63,8 @@
     <File name="./XPathNodeMatch.cs" subtype="Code" buildaction="Compile" />
     <File name="./XPathNodeTextMarker.cs" subtype="Code" buildaction="Compile" />
     <File name="./RemoveXPathHighlightingCommand.cs" subtype="Code" buildaction="Compile" />
+    <File name="./XPathHistoryList.cs" subtype="Code" buildaction="Compile" />
+    <File name="./XPathNamespaceList.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="gtksourceview-sharp, Version=1.0.0.2, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />

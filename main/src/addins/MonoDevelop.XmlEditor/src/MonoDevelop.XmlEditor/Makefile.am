@@ -58,6 +58,8 @@ FILES = \
 	XmlFileExtensions.cs \
 	XmlEditorService.cs \
 	XmlFileExtensionCodon.cs \
+	XPathHistoryList.cs \
+	XPathNamespaceList.cs \
 	XPathNodeMatch.cs \
 	XPathNodeTextMarker.cs \
 	XPathQueryPad.cs \

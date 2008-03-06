@@ -89,6 +89,14 @@ namespace MonoDevelop.XmlEditor
 		void LoadProperties()
 		{
 			xpathQueryWidget.Query = XPathQueryPadOptions.LastXPathQuery;
+		
+			foreach (string xpath in XPathQueryPadOptions.XPathHistory.GetXPaths()) {
+				xpathQueryWidget.AddXPath(xpath);
+			}
+			
+			foreach (XmlNamespace ns in XPathQueryPadOptions.Namespaces.GetNamespaces()) {
+				xpathQueryWidget.AddNamespace(ns.Prefix, ns.Uri);
+			}
 		}
 		
 		/// <summary>
@@ -97,6 +105,18 @@ namespace MonoDevelop.XmlEditor
 		void SaveProperties()
 		{
 			XPathQueryPadOptions.LastXPathQuery = xpathQueryWidget.Query;
+			
+			XPathHistoryList history = new XPathHistoryList();
+			foreach (string xpath in xpathQueryWidget.GetXPathHistory()) {
+				history.Add(xpath);
+			}
+			XPathQueryPadOptions.XPathHistory = history;
+			
+			XPathNamespaceList namespaces = new XPathNamespaceList();
+			foreach (XmlNamespace ns in xpathQueryWidget.GetNamespaces()) {
+				namespaces.Add(ns.Prefix, ns.Uri);
+			}
+			XPathQueryPadOptions.Namespaces = namespaces;
 		}
 	}
 }

@@ -47,6 +47,12 @@ namespace MonoDevelop.XmlEditor
 		/// </summary>
 		const int xpathQueryHistoryLimit = 20;
 		int xpathHistoryListCount;
+		
+		/// <summary>
+		/// The number of namespaces we have added to the
+		/// grid.
+		/// </summary>
+		int namespaceCount;
 
 		enum MoveCaret {
 			ByJumping = 1,
@@ -99,7 +105,10 @@ namespace MonoDevelop.XmlEditor
 		/// </summary>
 		public void AddNamespace(string prefix, string uri)
 		{
-			namespacesList.AppendValues(prefix, uri);
+			TreeIter iter = namespacesList.Insert(namespaceCount);
+			namespacesList.SetValue(iter, prefixColumnNumber, prefix);
+			namespacesList.SetValue(iter, namespaceColumnNumber, uri);
+			namespaceCount++;
 		}
 		
 		/// <summary>

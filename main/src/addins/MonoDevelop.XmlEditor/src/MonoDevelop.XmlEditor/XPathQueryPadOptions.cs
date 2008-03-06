@@ -20,7 +20,6 @@ namespace MonoDevelop.XmlEditor
 		public const string NamespacesProperty = "Namespaces";
 		public const string LastXPathQueryProperty = "LastXPathQuery";
 		public const string XPathHistoryProperty = "XPathQueryHistory";
-
 		static IProperties properties;
 
 		static XPathQueryPadOptions()
@@ -40,10 +39,34 @@ namespace MonoDevelop.XmlEditor
 		/// </summary>
 		public static string LastXPathQuery {
 			get {
-				return Properties.GetProperty(XPathHistoryProperty, String.Empty);
+				return Properties.GetProperty(LastXPathQueryProperty, String.Empty);
+			}
+			set {
+				Properties.SetProperty(LastXPathQueryProperty, value);
+			}
+		}
+		
+		/// <summary>
+		/// Gets or sets the xpath history.
+		/// </summary>
+		public static XPathHistoryList XPathHistory {
+			get {
+				return (XPathHistoryList)Properties.GetProperty(XPathHistoryProperty, new XPathHistoryList());
 			}
 			set {
 				Properties.SetProperty(XPathHistoryProperty, value);
+			}
+		}
+		
+		/// <summary>
+		/// Gets or sets the xpath namespaces used.
+		/// </summary>
+		public static XPathNamespaceList Namespaces {
+			get {
+				return (XPathNamespaceList)Properties.GetProperty(NamespacesProperty, new XPathNamespaceList());
+			}
+			set {
+				Properties.SetProperty(NamespacesProperty, value);
 			}
 		}
 	}
