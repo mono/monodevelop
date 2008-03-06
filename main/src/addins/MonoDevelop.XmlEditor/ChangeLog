@@ -1,0 +1,217 @@
+2006-04-12 18:34  mrward
+
+	* trunk/src/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor.addin.xml:
+	  Add-In configuration file changed to support MonoDevelop 0.10
+
+2006-03-19 13:25  mrward
+
+	* trunk/TODO, trunk/src/MonoDevelop.XmlEditor/XmlEditorView.cs:
+	  Attribute value completion no longer triggered when pressing keys
+	  such as page up, page down and the cursor keys.
+
+2006-03-19 12:37  mrward
+
+	* trunk/TODO, trunk/src/MonoDevelop.XmlEditor/XmlEditorView.cs:
+	  Comments no longer get autocompleted when typing in the greater
+	  than sign character.
+
+2006-03-19 12:28  mrward
+
+	* trunk/src/MonoDevelop.XmlEditor.Tests/MonoDevelop.XmlEditor.Tests.mdp,
+	  trunk/src/MonoDevelop.XmlEditor.Tests/Schema/MissingSchemaElementTestFixture.cs,
+	  trunk/src/MonoDevelop.XmlEditor/XmlSchemaCompletionData.cs: Fixed
+	  null reference exception that occurred when generated the
+	  completion data if the schema referenced an element that was not
+	  defined in the schema.
+
+2006-03-19 12:19  mrward
+
+	* trunk/TODO,
+	  trunk/src/MonoDevelop.XmlEditor/AssignStylesheetCommand.cs,
+	  trunk/src/MonoDevelop.XmlEditor/Commands.cs,
+	  trunk/src/MonoDevelop.XmlEditor/Makefile.am,
+	  trunk/src/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor.addin.xml,
+	  trunk/src/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor.mdp,
+	  trunk/src/MonoDevelop.XmlEditor/OpenStylesheetCommand.cs,
+	  trunk/src/MonoDevelop.XmlEditor/RunXslTransformCommand.cs,
+	  trunk/src/MonoDevelop.XmlEditor/XmlEditorService.cs,
+	  trunk/src/MonoDevelop.XmlEditor/XmlEditorViewContent.cs,
+	  trunk/src/MonoDevelop.XmlEditor/XslOutputViewContent.cs: Added
+	  support for running XSL transforms. Changing the schema associated
+	  with a file extension now updates any xml files that are currently
+	  open.
+
+2006-03-09 16:34  mrward
+
+	* trunk/TODO, trunk/src/MonoDevelop.XmlEditor/ValidateXmlCommand.cs,
+	  trunk/src/MonoDevelop.XmlEditor/XmlEditorView.cs: Can now indent
+	  multiple lines using the tab key.
+
+2006-03-09 14:54  mrward
+
+	* trunk/TODO, trunk/src/MonoDevelop.XmlEditor/Makefile.am,
+	  trunk/src/MonoDevelop.XmlEditor/ValidateXmlCommand.cs,
+	  trunk/src/MonoDevelop.XmlEditor/XmlEditorListWindow.cs,
+	  trunk/src/MonoDevelop.XmlEditor/XmlEditorViewContent.cs,
+	  trunk/src/MonoDevelop.XmlEditor/schemas/MonoDevelopAddIn.xsd,
+	  trunk/src/MonoDevelop.XmlEditor/schemas/readme.txt: Validation of
+	  .xsd files is now done using the XmlSchema class which provides
+	  better error information. Added a schema for MonoDevelop add-in
+	  xml files.
+
+2006-03-08 16:55  mrward
+
+	* trunk/TODO, trunk/src/MonoDevelop.XmlEditor/Makefile.am,
+	  trunk/src/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor.mdp,
+	  trunk/src/MonoDevelop.XmlEditor/XmlCompletionListWindow.cs,
+	  trunk/src/MonoDevelop.XmlEditor/XmlEditorListWindow.cs,
+	  trunk/src/MonoDevelop.XmlEditor/XmlEditorViewContent.cs: The
+	  completion list now matches strings that contain punctuation
+	  characters, for those characters considered valid for xml element
+	  names, attribute values and namespaces.
+
+2006-03-08 15:38  mrward
+
+	* trunk/src/MonoDevelop.XmlEditor/XmlEditorViewContent.cs: Xml
+	  editor now uses the same font as the source editor.
+
+2006-03-06 18:10  mrward
+
+	* trunk/TODO, trunk/src/MonoDevelop.XmlEditor/Makefile.am,
+	  trunk/src/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor.mdp,
+	  trunk/src/MonoDevelop.XmlEditor/SourceViewTextIterator.cs,
+	  trunk/src/MonoDevelop.XmlEditor/XmlEditorView.cs,
+	  trunk/src/MonoDevelop.XmlEditor/XmlEditorViewContent.cs,
+	  trunk/src/MonoDevelop.XmlEditor/postbuild.sh: Added support for
+	  search/replace and goto line.
+
+2006-03-03 15:29  mrward
+
+	* trunk/src/Makefile.am,
+	  trunk/src/MonoDevelop.XmlEditor/Makefile.am: Xml Editor makefile
+	  no longer tries to build the code when running the uninstall
+	  target. Fixed incorrect src/Makefile that had been imported.
+
+2006-03-03 15:15  mrward
+
+	* trunk/src/MonoDevelop.XmlEditor.Tests/bin: Removed test assembly
+	  binaries.
+
+2006-03-03 15:08  mrward
+
+	* trunk, trunk/AUTHORS, trunk/COPYING, trunk/ChangeLog,
+	  trunk/INSTALL, trunk/Makefile.am, trunk/NEWS, trunk/README,
+	  trunk/TODO, trunk/autogen.sh, trunk/configure.in, trunk/src,
+	  trunk/src/Makefile.am, trunk/src/MonoDevelop.XmlEditor,
+	  trunk/src/MonoDevelop.XmlEditor.Tests,
+	  trunk/src/MonoDevelop.XmlEditor.Tests/AssemblyInfo.cs,
+	  trunk/src/MonoDevelop.XmlEditor.Tests/CompletionData,
+	  trunk/src/MonoDevelop.XmlEditor.Tests/CompletionData/XmlCompletionDataImageTestFixture.cs,
+	  trunk/src/MonoDevelop.XmlEditor.Tests/CompletionData/XmlCompletionDataStringTestFixture.cs,
+	  trunk/src/MonoDevelop.XmlEditor.Tests/MonoDevelop.XmlEditor.Tests.mdp,
+	  trunk/src/MonoDevelop.XmlEditor.Tests/Parser,
+	  trunk/src/MonoDevelop.XmlEditor.Tests/Parser/ActiveElementStartPathTestFixture.cs,
+	  trunk/src/MonoDevelop.XmlEditor.Tests/Parser/AttributeNameTestFixture.cs,
+	  trunk/src/MonoDevelop.XmlEditor.Tests/Parser/NamespaceDeclarationTestFixture.cs,
+	  trunk/src/MonoDevelop.XmlEditor.Tests/Parser/ParentElementPathTestFixture.cs,
+	  trunk/src/MonoDevelop.XmlEditor.Tests/Parser/QualifiedNameTestFixture.cs,
+	  trunk/src/MonoDevelop.XmlEditor.Tests/Paths,
+	  trunk/src/MonoDevelop.XmlEditor.Tests/Paths/NoElementPathTestFixture.cs,
+	  trunk/src/MonoDevelop.XmlEditor.Tests/Paths/SingleElementPathTestFixture.cs,
+	  trunk/src/MonoDevelop.XmlEditor.Tests/Paths/TwoElementPathTestFixture.cs,
+	  trunk/src/MonoDevelop.XmlEditor.Tests/Resources,
+	  trunk/src/MonoDevelop.XmlEditor.Tests/Resources/XMLSchema.xsd,
+	  trunk/src/MonoDevelop.XmlEditor.Tests/Resources/xhtml1-strict-modified.xsd,
+	  trunk/src/MonoDevelop.XmlEditor.Tests/Schema,
+	  trunk/src/MonoDevelop.XmlEditor.Tests/Schema.Includes,
+	  trunk/src/MonoDevelop.XmlEditor.Tests/Schema.Includes/AttributeGroupRefSchemaIncludeTestFixture.cs,
+	  trunk/src/MonoDevelop.XmlEditor.Tests/Schema.Includes/TwoElementSchemaIncludeTestFixture.cs,
+	  trunk/src/MonoDevelop.XmlEditor.Tests/Schema.Uri,
+	  trunk/src/MonoDevelop.XmlEditor.Tests/Schema.Uri/GetUriTestFixture.cs,
+	  trunk/src/MonoDevelop.XmlEditor.Tests/Schema/AbstractElementTestFixture.cs,
+	  trunk/src/MonoDevelop.XmlEditor.Tests/Schema/AttributeAnnotationTestFixture.cs,
+	  trunk/src/MonoDevelop.XmlEditor.Tests/Schema/AttributeGroupRefTestFixture.cs,
+	  trunk/src/MonoDevelop.XmlEditor.Tests/Schema/AttributeRefTestFixture.cs,
+	  trunk/src/MonoDevelop.XmlEditor.Tests/Schema/AttributeValueAnnotationTestFixture.cs,
+	  trunk/src/MonoDevelop.XmlEditor.Tests/Schema/ChildElementAttributesTestFixture.cs,
+	  trunk/src/MonoDevelop.XmlEditor.Tests/Schema/ChoiceTestFixture.cs,
+	  trunk/src/MonoDevelop.XmlEditor.Tests/Schema/ComplexContentExtensionTestFixture.cs,
+	  trunk/src/MonoDevelop.XmlEditor.Tests/Schema/DuplicateElementTestFixture.cs,
+	  trunk/src/MonoDevelop.XmlEditor.Tests/Schema/ElementAnnotationTestFixture.cs,
+	  trunk/src/MonoDevelop.XmlEditor.Tests/Schema/ElementRefAnnotationTestFixture.cs,
+	  trunk/src/MonoDevelop.XmlEditor.Tests/Schema/ElementWithAttributeSchemaTestFixture.cs,
+	  trunk/src/MonoDevelop.XmlEditor.Tests/Schema/EnumAttributeValueTestFixture.cs,
+	  trunk/src/MonoDevelop.XmlEditor.Tests/Schema/ExtensionElementTestFixture.cs,
+	  trunk/src/MonoDevelop.XmlEditor.Tests/Schema/GroupRefCompositorTestFixture.cs,
+	  trunk/src/MonoDevelop.XmlEditor.Tests/Schema/GroupRefTestFixture.cs,
+	  trunk/src/MonoDevelop.XmlEditor.Tests/Schema/NamespaceCompletionTestFixture.cs,
+	  trunk/src/MonoDevelop.XmlEditor.Tests/Schema/NestedAttributeGroupRefTestFixture.cs,
+	  trunk/src/MonoDevelop.XmlEditor.Tests/Schema/NestedChoiceTestFixture.cs,
+	  trunk/src/MonoDevelop.XmlEditor.Tests/Schema/NestedElementSchemaTestFixture.cs,
+	  trunk/src/MonoDevelop.XmlEditor.Tests/Schema/NestedSequenceTestFixture.cs,
+	  trunk/src/MonoDevelop.XmlEditor.Tests/Schema/ReferencedElementsTestFixture.cs,
+	  trunk/src/MonoDevelop.XmlEditor.Tests/Schema/RestrictionElementTestFixture.cs,
+	  trunk/src/MonoDevelop.XmlEditor.Tests/Schema/SchemaTestFixtureBase.cs,
+	  trunk/src/MonoDevelop.XmlEditor.Tests/Schema/SequencedChoiceTestFixture.cs,
+	  trunk/src/MonoDevelop.XmlEditor.Tests/Schema/SimpleContentWithAttributeTestFixture.cs,
+	  trunk/src/MonoDevelop.XmlEditor.Tests/Schema/SingleElementSchemaTestFixture.cs,
+	  trunk/src/MonoDevelop.XmlEditor.Tests/Schema/TwoElementSchemaTestFixture.cs,
+	  trunk/src/MonoDevelop.XmlEditor.Tests/Schema/XhtmlStrictSchemaTestFixture.cs,
+	  trunk/src/MonoDevelop.XmlEditor.Tests/Schema/XsdSchemaTestFixture.cs,
+	  trunk/src/MonoDevelop.XmlEditor.Tests/Utils,
+	  trunk/src/MonoDevelop.XmlEditor.Tests/Utils/ResourceManager.cs,
+	  trunk/src/MonoDevelop.XmlEditor.Tests/Utils/SchemaIncludeTestFixtureHelper.cs,
+	  trunk/src/MonoDevelop.XmlEditor.Tests/bin,
+	  trunk/src/MonoDevelop.XmlEditor.Tests/bin/Debug,
+	  trunk/src/MonoDevelop.XmlEditor.Tests/bin/Debug/MonoDevelop.Projects.Gui.dll,
+	  trunk/src/MonoDevelop.XmlEditor.Tests/bin/Debug/MonoDevelop.XmlEditor.Tests.dll,
+	  trunk/src/MonoDevelop.XmlEditor.Tests/bin/Debug/MonoDevelop.XmlEditor.Tests.dll.mdb,
+	  trunk/src/MonoDevelop.XmlEditor.Tests/bin/Debug/MonoDevelop.XmlEditor.dll,
+	  trunk/src/MonoDevelop.XmlEditor.Tests/bin/Debug/MonoDevelop.XmlEditor.dll.mdb,
+	  trunk/src/MonoDevelop.XmlEditor.mds,
+	  trunk/src/MonoDevelop.XmlEditor/AssemblyInfo.cs,
+	  trunk/src/MonoDevelop.XmlEditor/Commands.cs,
+	  trunk/src/MonoDevelop.XmlEditor/CreateSchemaCommand.cs,
+	  trunk/src/MonoDevelop.XmlEditor/EncodedStringWriter.cs,
+	  trunk/src/MonoDevelop.XmlEditor/FormatXmlCommand.cs,
+	  trunk/src/MonoDevelop.XmlEditor/Makefile.am,
+	  trunk/src/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor.addin.xml,
+	  trunk/src/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor.mdp,
+	  trunk/src/MonoDevelop.XmlEditor/QualifiedName.cs,
+	  trunk/src/MonoDevelop.XmlEditor/QualifiedNameCollection.cs,
+	  trunk/src/MonoDevelop.XmlEditor/SelectXmlSchemaDialog.cs,
+	  trunk/src/MonoDevelop.XmlEditor/ValidateXmlCommand.cs,
+	  trunk/src/MonoDevelop.XmlEditor/XmlCompletionData.cs,
+	  trunk/src/MonoDevelop.XmlEditor/XmlCompletionDataCollection.cs,
+	  trunk/src/MonoDevelop.XmlEditor/XmlCompletionDataProvider.cs,
+	  trunk/src/MonoDevelop.XmlEditor/XmlCompletionListWindow.cs,
+	  trunk/src/MonoDevelop.XmlEditor/XmlDisplayBinding.cs,
+	  trunk/src/MonoDevelop.XmlEditor/XmlEditor.glade,
+	  trunk/src/MonoDevelop.XmlEditor/XmlEditorAddInOptions.cs,
+	  trunk/src/MonoDevelop.XmlEditor/XmlEditorCommandBase.cs,
+	  trunk/src/MonoDevelop.XmlEditor/XmlEditorOptionsPanel.cs,
+	  trunk/src/MonoDevelop.XmlEditor/XmlEditorOptionsPanelWidget.cs,
+	  trunk/src/MonoDevelop.XmlEditor/XmlEditorService.cs,
+	  trunk/src/MonoDevelop.XmlEditor/XmlEditorView.cs,
+	  trunk/src/MonoDevelop.XmlEditor/XmlEditorViewContent.cs,
+	  trunk/src/MonoDevelop.XmlEditor/XmlEditorWindow.cs,
+	  trunk/src/MonoDevelop.XmlEditor/XmlElementPath.cs,
+	  trunk/src/MonoDevelop.XmlEditor/XmlFileExtensionCodon.cs,
+	  trunk/src/MonoDevelop.XmlEditor/XmlFileExtensions.cs,
+	  trunk/src/MonoDevelop.XmlEditor/XmlParser.cs,
+	  trunk/src/MonoDevelop.XmlEditor/XmlSchemaAssociation.cs,
+	  trunk/src/MonoDevelop.XmlEditor/XmlSchemaCompletionData.cs,
+	  trunk/src/MonoDevelop.XmlEditor/XmlSchemaCompletionDataCollection.cs,
+	  trunk/src/MonoDevelop.XmlEditor/XmlSchemaManager.cs,
+	  trunk/src/MonoDevelop.XmlEditor/XmlSchemasPanel.cs,
+	  trunk/src/MonoDevelop.XmlEditor/XmlSchemasPanelWidget.cs,
+	  trunk/src/MonoDevelop.XmlEditor/postbuild.sh,
+	  trunk/src/MonoDevelop.XmlEditor/schemas,
+	  trunk/src/MonoDevelop.XmlEditor/schemas/W3C-License.html,
+	  trunk/src/MonoDevelop.XmlEditor/schemas/XMLSchema.xsd,
+	  trunk/src/MonoDevelop.XmlEditor/schemas/appconfig.xsd,
+	  trunk/src/MonoDevelop.XmlEditor/schemas/manifest.xsd,
+	  trunk/src/MonoDevelop.XmlEditor/schemas/nant.xsd,
+	  trunk/src/MonoDevelop.XmlEditor/schemas/readme.txt,
+	  trunk/src/MonoDevelop.XmlEditor/schemas/xslt.xsd: Initial import.
+
