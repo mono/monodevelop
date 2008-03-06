@@ -6,7 +6,7 @@ ASSEMBLY = MonoDevelop.XmlEditor.dll
 DLLS = -r:System \
 	-r:System.Data \
 	-r:System.Xml \
-	-r:$(MD_ASSEMBLY_DIR)/MonoDevelop.Components.dll \
+	-r:$(MD_ADDIN_DIR)/MonoDevelop.Components.dll \
 	-r:$(MD_ASSEMBLY_DIR)/MonoDevelop.Core.dll \
 	-r:$(MD_ADDIN_DIR)/MonoDevelop.Core.Gui.dll \
 	-r:$(MD_ADDIN_DIR)/MonoDevelop.Ide.dll \

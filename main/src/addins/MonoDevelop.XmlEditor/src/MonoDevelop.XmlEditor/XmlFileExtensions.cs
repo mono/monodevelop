@@ -27,7 +27,7 @@ namespace MonoDevelop.XmlEditor
 					XmlFileExtensionCodon[] xmlFileExtensionCodons = (XmlFileExtensionCodon[])Runtime.AddInService.GetTreeItems("/MonoDevelop/XmlEditor/XmlFileExtensions", typeof(XmlFileExtensionCodon));
 					extensions = new StringCollection();
 					foreach (XmlFileExtensionCodon codon in xmlFileExtensionCodons) {
-						extensions.Add(codon.Extension);
+						extensions.Add(codon.FileExtension);
 					}
 				}
 				return extensions;

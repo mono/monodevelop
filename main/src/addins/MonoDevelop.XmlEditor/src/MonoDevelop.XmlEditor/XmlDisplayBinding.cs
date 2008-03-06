@@ -19,6 +19,15 @@ namespace MonoDevelop.XmlEditor
 		public XmlDisplayBinding()
 		{
 		}		
+		
+		/// <summary>
+		/// The name of the binding
+		/// </summary>
+		public string DisplayName {
+			get {
+				return "XML Editor";
+			}
+		}
 			
 		/// <summary>
 		/// Can create content for 'XML' mime types.

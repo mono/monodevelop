@@ -13,14 +13,14 @@ namespace MonoDevelop.XmlEditor
 	internal class XmlFileExtensionCodon : AbstractCodon
 	{
 		[XmlMemberAttribute("extension", IsRequired = true)]
-		string extension;
+		string fileExtension;
 		
-		public string Extension {
+		public string FileExtension {
 			get {
-				return extension;
+				return fileExtension;
 			}
 			set {
-				extension = value;
+				fileExtension = value;
 			}
 		}
 		

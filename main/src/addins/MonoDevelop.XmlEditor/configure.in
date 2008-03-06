@@ -5,7 +5,7 @@ AM_MAINTAINER_MODE
 ASSEMBLY_VERSION=0.1.0.0
 
 AC_PATH_PROG(MONO, mono)
-AC_PATH_PROG(MCS, mcs)
+AC_PATH_PROG(MCS, gmcs)
 
 if test "x$MONO" = "x" ; then
   AC_PATH_PROG(MINT, mint)
@@ -42,19 +42,19 @@ fi
 if test "x$has_mono" = "xtrue"; then
     if test `uname -s` = "Darwin"; then
 	AC_PATH_PROG(RUNTIME, mono, no)
-	AC_PATH_PROG(CSC, mcs, no)
+	AC_PATH_PROG(CSC, gmcs, no)
 	LIB_PREFIX=
 	LIB_SUFFIX=.dylib
     else
 	AC_PATH_PROG(RUNTIME, mono, no)
-	AC_PATH_PROG(CSC, mcs, no)
+	AC_PATH_PROG(CSC, gmcs, no)
 	LIB_PREFIX=.so
 	LIB_SUFFIX=
     fi
 else
     if test "x$has_mint" = "xtrue"; then
 	AC_PATH_PROG(RUNTIME, mint, no)
-	AC_PATH_PROG(CSC, mcs, no)
+	AC_PATH_PROG(CSC, gmcs, no)
 	LIB_PREFIX=.so
 	LIB_SUFFIX=
     fi
