@@ -8,6 +8,8 @@
 using Gnome.Vfs;
 using Gtk;
 using GtkSourceView;
+using MonoDevelop.Core;
+using MonoDevelop.Core.Gui;
 using MonoDevelop.Core.Properties;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
@@ -26,6 +28,8 @@ namespace MonoDevelop.XmlEditor
 		XmlEditorView view;
 		const string XmlMimeType = "text/xml";
 		string fileName = String.Empty;
+		PropertyEventHandler propertyChangedHandler;
+		IProperties sourceEditorProperties;
 		
 		public XmlEditorViewContent()
 		{
@@ -36,6 +40,13 @@ namespace MonoDevelop.XmlEditor
 			view.SchemaCompletionDataItems = XmlSchemaManager.SchemaCompletionDataItems;
 			SetInitialValues();	 
 			
+			// Watch for changes to the source editor properties.
+			DispatchService service = (DispatchService)ServiceManager.GetService(typeof(DispatchService));
+			propertyChangedHandler = (PropertyEventHandler)service.GuiDispatch(new PropertyEventHandler(SourceEditorPropertyChanged));
+			PropertyService propertyService = (PropertyService)ServiceManager.GetService(typeof(PropertyService));
+			sourceEditorProperties = ((IProperties)propertyService.GetProperty("MonoDevelop.TextEditor.Document.Document.DefaultDocumentAggregatorProperties", new DefaultProperties()));
+			sourceEditorProperties.PropertyChanged += propertyChangedHandler;
+
 			buffer.ModifiedChanged += new EventHandler (OnModifiedChanged);
 			XmlEditorAddInOptions.PropertyChanged += new PropertyEventHandler(XmlEditorPropertyChanged);
 			
@@ -130,9 +141,10 @@ namespace MonoDevelop.XmlEditor
 		
 		public override void Dispose()
 		{
-			XmlEditorAddInOptions.PropertyChanged -= XmlEditorPropertyChanged;
+			XmlEditorAddInOptions.PropertyChanged -= new PropertyEventHandler(XmlEditorPropertyChanged);
 			XmlSchemaManager.UserSchemaAdded -= new EventHandler(UserSchemaAdded);
 			XmlSchemaManager.UserSchemaRemoved -= new EventHandler(UserSchemaRemoved);
+			sourceEditorProperties.PropertyChanged -= propertyChangedHandler;
 			xmlEditorWindow.Dispose();
 		}
 		
@@ -153,6 +165,7 @@ namespace MonoDevelop.XmlEditor
 		/// </summary>
 		void SetInitialValues()
 		{
+			view.ModifyFont(TextEditorProperties.Font);
 			view.ShowLineNumbers = TextEditorProperties.ShowLineNumbers;
 			view.InsertSpacesInsteadOfTabs = TextEditorProperties.ConvertTabsToSpaces;
 			view.ShowSchemaAnnotation = XmlEditorAddInOptions.ShowSchemaAnnotation;
@@ -178,8 +191,24 @@ namespace MonoDevelop.XmlEditor
 				case "ShowSchemaAnnotation":
 					view.ShowSchemaAnnotation = XmlEditorAddInOptions.ShowSchemaAnnotation;
 					break;
+				case "DefaultFont":
+					view.ModifyFont(TextEditorProperties.Font);
+					break;
 				default:
 					Console.WriteLine("XmlEditor: Unhandled property change: " + e.Key);
+					break;
+			}
+		}
+		
+		void SourceEditorPropertyChanged(object o, PropertyEventArgs e)
+		{
+			switch (e.Key) {
+				case "DefaultFont":
+					Console.WriteLine("DefaultFont changed.");
+					view.ModifyFont(TextEditorProperties.Font);
+					break;
+				default:
+					Console.WriteLine("XmlEditor: Unhandled source editor property change: " + e.Key);
 					break;
 			}
 		}
