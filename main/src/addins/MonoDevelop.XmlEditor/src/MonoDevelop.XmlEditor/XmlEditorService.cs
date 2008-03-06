@@ -12,6 +12,8 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.Tasks;
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Text;
 using System.Xml;
@@ -64,16 +66,16 @@ namespace MonoDevelop.XmlEditor
 			return null;
 		}
 		
-		public static ViewContentCollection OpenXmlEditorViews {
+		public static ReadOnlyCollection<IViewContent> OpenXmlEditorViews {
 			get {
-				ViewContentCollection views = new ViewContentCollection();
+				List<IViewContent> views = new List<IViewContent>();
 				foreach (Document doc in IdeApp.Workbench.Documents) {
 					XmlEditorViewContent view = doc.GetContent<XmlEditorViewContent>();
 					if (view != null) {
 						views.Add(view);
 					}
 				}
-				return views;
+				return views.AsReadOnly();
 			}
 		}
 		

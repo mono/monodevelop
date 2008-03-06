@@ -43,7 +43,7 @@ namespace MonoDevelop.XmlEditor
 		/// <summary>
 		/// Raised when any xml editor property is changed.
 		/// </summary>
-		public static event PropertyEventHandler PropertyChanged {
+		public static event EventHandler<PropertyEventArgs> PropertyChanged {
 			add {
 				Properties.PropertyChanged += value;
 			}

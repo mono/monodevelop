@@ -5,7 +5,7 @@
        url         = "http://md-xed.sourceforge.net"
        description = "XML Editor"
 	   category    = "IDE extensions"
-       version     = "0.4.0">	<Runtime>
+       version     = "0.5.0">	<Runtime>
 		<Import assembly="MonoDevelop.XmlEditor.dll"/>
 		<Import file="schemas/appconfig.xsd" />
 		<Import file="schemas/MonoDevelopAddIn.xsd" />
@@ -18,12 +18,12 @@
 	</Runtime>
 	
 	<Dependencies>
-		<Addin id="MonoDevelop.Core" version="0.14.0"/>
-		<Addin id="MonoDevelop.Core.Gui" version="0.14.0"/>
-		<Addin id="MonoDevelop.Ide" version="0.14.0"/>
-		<Addin id="MonoDevelop.Projects" version="0.14.0"/>
-		<Addin id="MonoDevelop.Projects.Gui" version="0.14.0"/>
-		<Addin id="MonoDevelop.SourceEditor" version="0.14.0"/>
+		<Addin id="MonoDevelop.Core" version="0.15.0"/>
+		<Addin id="MonoDevelop.Core.Gui" version="0.15.0"/>
+		<Addin id="MonoDevelop.Ide" version="0.15.0"/>
+		<Addin id="MonoDevelop.Projects" version="0.15.0"/>
+		<Addin id="MonoDevelop.Projects.Gui" version="0.15.0"/>
+		<Addin id="MonoDevelop.SourceEditor" version="0.15.0"/>
 	</Dependencies>
 
 	<!-- Defines the Xml file extension node -->

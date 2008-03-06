@@ -2,7 +2,7 @@
 // MonoDevelop XML Editor
 //
 // Copyright (C) 2007 Matthew Ward
-// Copyright (C) 2004-2006 MonoDevelop Team
+// Copyright (C) 2004-2007 MonoDevelop Team
 //
 
 using Gnome.Vfs;
@@ -28,7 +28,7 @@ namespace MonoDevelop.XmlEditor
 		const string TextXmlMimeType = "text/xml";
 		const string ApplicationXmlMimeType = "application/xml";
 		string fileName = String.Empty;
-		PropertyEventHandler propertyChangedHandler;
+		EventHandler<PropertyEventArgs> propertyChangedHandler;
 		IProperties sourceEditorProperties;
 		string stylesheetFileName;
 		
@@ -43,13 +43,13 @@ namespace MonoDevelop.XmlEditor
 			
 			// Watch for changes to the source editor properties.
 			DispatchService service = (DispatchService)ServiceManager.GetService(typeof(DispatchService));
-			propertyChangedHandler = (PropertyEventHandler)service.GuiDispatch(new PropertyEventHandler(SourceEditorPropertyChanged));
+			propertyChangedHandler = (EventHandler<PropertyEventArgs>)service.GuiDispatch(new EventHandler<PropertyEventArgs>(SourceEditorPropertyChanged));
 			PropertyService propertyService = (PropertyService)ServiceManager.GetService(typeof(PropertyService));
 			sourceEditorProperties = ((IProperties)propertyService.GetProperty("MonoDevelop.TextEditor.Document.Document.DefaultDocumentAggregatorProperties", new DefaultProperties()));
 			sourceEditorProperties.PropertyChanged += propertyChangedHandler;
 
 			buffer.ModifiedChanged += new EventHandler (OnModifiedChanged);
-			XmlEditorAddInOptions.PropertyChanged += new PropertyEventHandler(XmlEditorPropertyChanged);
+			XmlEditorAddInOptions.PropertyChanged += new EventHandler<PropertyEventArgs>(XmlEditorPropertyChanged);
 			
 			XmlSchemaManager.UserSchemaAdded += new EventHandler(UserSchemaAdded);
 			XmlSchemaManager.UserSchemaRemoved += new EventHandler(UserSchemaRemoved);
@@ -178,7 +178,7 @@ namespace MonoDevelop.XmlEditor
 		
 		public override void Dispose()
 		{
-			XmlEditorAddInOptions.PropertyChanged -= new PropertyEventHandler(XmlEditorPropertyChanged);
+			XmlEditorAddInOptions.PropertyChanged -= new EventHandler<PropertyEventArgs>(XmlEditorPropertyChanged);
 			XmlSchemaManager.UserSchemaAdded -= new EventHandler(UserSchemaAdded);
 			XmlSchemaManager.UserSchemaRemoved -= new EventHandler(UserSchemaRemoved);
 			sourceEditorProperties.PropertyChanged -= propertyChangedHandler;
@@ -284,6 +284,16 @@ namespace MonoDevelop.XmlEditor
         
         #region IEditableTextBuffer
         
+		public void BeginAtomicUndo ()
+		{
+			//Buffer.BeginUserAction ();
+		}
+		
+		public void EndAtomicUndo ()
+		{
+			//Buffer.EndUserAction ();
+		}
+		
 		public IClipboardHandler ClipboardHandler {
 			get { 
 				return view;

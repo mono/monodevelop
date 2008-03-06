@@ -260,6 +260,11 @@ namespace MonoDevelop.XmlEditor
 			}
 		}
 		
+		public void InsertTextAtCursor(string text)
+		{
+			Buffer.InsertAtCursor(text);
+		}
+		
 		#region ICompletionWidget
 		
 		void NotifyCompletionContextChanged ()
@@ -286,9 +291,9 @@ namespace MonoDevelop.XmlEditor
 			Buffer.Delete (ref offsetIter, ref endIter);
 			Buffer.InsertAtCursor (complete_word);
 			ScrollMarkOnscreen (Buffer.InsertMark);
-		}
-				
-		ICodeCompletionContext ICompletionWidget.CreateCodeCompletionContext (int triggerOffset)
+		}				
+		
+		CodeCompletionContext ICompletionWidget.CreateCodeCompletionContext (int triggerOffset)
 		{
 			TextIter iter = Buffer.GetIterAtOffset (triggerOffset);
 			Gdk.Rectangle rect = GetIterLocation (iter);
@@ -306,12 +311,8 @@ namespace MonoDevelop.XmlEditor
 			ctx.TriggerTextHeight = rect.Height;
 			return ctx;
 		}
-	
-		void ICompletionWidget.InsertAtCursor (string text)
-		{
-			Buffer.InsertAtCursor (text);
-		}
 		
+			
 		int ICompletionWidget.TextLength {
 			get	{
 				return Buffer.EndIter.Offset + 1;

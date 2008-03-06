@@ -1,7 +1,7 @@
 //
 // MonoDevelop XML Editor
 //
-// Copyright (C) 2005-2006 Matthew Ward
+// Copyright (C) 2005-2007 Matthew Ward
 //
 
 using Gdk;
@@ -93,16 +93,16 @@ namespace MonoDevelop.XmlEditor
 		{
 			XmlEditorView view = widget as XmlEditorView;
 			if (view != null) {
-				TextEditor editor = new TextEditor(view.ViewContent);
+				TextEditor editor = TextEditor.GetTextEditor(view.ViewContent);
 				editor.DeleteText(completionContext.TriggerOffset, editor.CursorPosition - completionContext.TriggerOffset);
 	
 				if ((dataType == DataType.XmlElement) || (dataType == DataType.XmlAttributeValue)) {
-					widget.InsertAtCursor(text);
+					view.InsertTextAtCursor(text);
 				} else if (dataType == DataType.NamespaceUri) {
-					widget.InsertAtCursor(String.Concat("\"", text, "\""));					
+					view.InsertTextAtCursor(String.Concat("\"", text, "\""));					
 				} else {
 					// Insert an attribute.
-					widget.InsertAtCursor(String.Concat(text, "=\"\""));
+					view.InsertTextAtCursor(String.Concat(text, "=\"\""));
 					
 					// Move caret into the middle of the attribute quotes.
 					editor.CursorPosition--;
