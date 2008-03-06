@@ -18,8 +18,8 @@
 	</Runtime>
 	
 	<Dependencies>
-		<AddIn id="MonoDevelop.Ide" version="0.12.0"/>
-		<AddIn id="MonoDevelop.SourceEditor" version="0.12.0"/>
+		<AddIn id="MonoDevelop.Ide" version="0.13.0"/>
+		<AddIn id="MonoDevelop.SourceEditor" version="0.13.0"/>
 	</Dependencies>
 
 	<!-- Xml Editor View -->
