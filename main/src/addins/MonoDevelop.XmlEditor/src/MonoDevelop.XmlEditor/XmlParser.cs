@@ -112,6 +112,7 @@ namespace MonoDevelop.XmlEditor
 			try {
 				StringReader reader = new StringReader(xml);
 				XmlTextReader xmlReader = new XmlTextReader(reader);
+				xmlReader.XmlResolver = null;
 				while (xmlReader.Read()) {
 					switch (xmlReader.NodeType) {
 						case XmlNodeType.Element:
