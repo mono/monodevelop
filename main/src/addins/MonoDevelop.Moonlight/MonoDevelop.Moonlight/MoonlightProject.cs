@@ -64,10 +64,16 @@ namespace MonoDevelop.Moonlight
 		
 		protected override void DoExecute (IProgressMonitor monitor, ExecutionContext context)
 		{
-			string testPage = Path.Combine (BaseDirectory, "TestPage.html");
-			if (!File.Exists (testPage)) {
-				monitor.ReportError (GettextCatalog.GetString ("Could not find test HTML file '{0}'.", testPage), null);
-				return;
+			string[] pages = { (Name??"TestPage") + ".html", "TestPage.html", "Default.html", "default.html", "Index.html", "index.html" };
+			string testPage = null;
+			for (int i = 0; i < pages.Length; i++) {
+				testPage = Path.Combine (BaseDirectory, pages[i]);
+				if (File.Exists (testPage)) {
+					break;
+				}else if (i + 1 >= pages.Length) {
+					monitor.ReportError (GettextCatalog.GetString ("Could not find test HTML file '{0}'.", testPage), null);
+					return;
+				}
 			}
 			
 			using (AggregatedOperationMonitor operationMonitor = new AggregatedOperationMonitor (monitor)) {
