@@ -28,5 +28,13 @@ This list should be moved to the SourceForge issues tracker.
   bugs.
 * The "Show Schema Annotation" XML Editor option does nothing.  Schema annotation
   is always displayed if available.
+* Goto Schema Definition does not scroll to the correct line the first time the
+  schema is opened. The XmlEditorView.JumpTo method is called correctly, but
+  for some reason it does not scroll.
+* Fix 7 obsolete methods/classes used warnings due to moving to .NET 2.0. The
+  "Use XmlReader created by XmlReader.Create() method" is easy to fix. The
+  "XmlSchema.Compile' is obsolete: `Use XmlSchemaSet.Compile() instead." might not 
+  be fixed since the XmlSchemaSet.Compile broke a lot of the unit tests when I
+  tried the same thing with SharpDevelop.
 
 

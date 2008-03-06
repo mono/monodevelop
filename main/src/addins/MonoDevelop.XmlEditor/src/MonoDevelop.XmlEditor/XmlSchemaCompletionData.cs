@@ -90,7 +90,6 @@ namespace MonoDevelop.XmlEditor
 			get {
 				return readOnly;
 			}
-			
 			set {
 				readOnly = value;
 			}
@@ -221,6 +220,165 @@ namespace MonoDevelop.XmlEditor
 			return data.ToArray();
 		}
 		
+ 		/// <summary>
+		/// Finds the element that exists at the specified path.
+		/// </summary>
+		/// <remarks>This method is not used when generating completion data,
+		/// but is a useful method when locating an element so we can jump
+		/// to its schema definition.</remarks>
+		/// <returns><see langword="null"/> if no element can be found.</returns>
+		public XmlSchemaElement FindElement(XmlElementPath path)
+		{
+			CompileSchema();
+			
+			XmlSchemaElement element = null;
+			for (int i = 0; i < path.Elements.Count; ++i) {
+				QualifiedName name = path.Elements[i];
+				if (i == 0) {
+					// Look for root element.
+					element = FindElement(name);
+					if (element == null) {
+						break;
+					}
+				} else {
+					element = FindChildElement(element, name);
+					if (element == null) {
+						break;
+					}
+				}
+			}
+			return element;
+		}
+		
+		/// <summary>
+		/// Finds an element in the schema.
+		/// </summary>
+		/// <remarks>
+		/// Only looks at the elements that are defined in the 
+		/// root of the schema so it will not find any elements
+		/// that are defined inside any complex types.
+		/// </remarks>
+		public XmlSchemaElement FindElement(QualifiedName name)
+		{
+			CompileSchema();
+
+			foreach (XmlSchemaElement element in schema.Elements.Values) {
+				Console.WriteLine("Element: " + element.QualifiedName.Name);
+				if (name.Equals(element.QualifiedName)) {
+					return element;
+				}
+			}
+			return null;
+		}		
+		
+		/// <summary>
+		/// Finds the complex type with the specified name.
+		/// </summary>
+		public XmlSchemaComplexType FindComplexType(QualifiedName name)
+		{
+			CompileSchema();
+
+			XmlQualifiedName qualifiedName = new XmlQualifiedName(name.Name, name.Namespace);
+			return FindNamedType(schema, qualifiedName);
+		}
+		
+		/// <summary>
+		/// Finds the specified attribute name given the element.
+		/// </summary>
+		/// <remarks>This method is not used when generating completion data,
+		/// but is a useful method when locating an attribute so we can jump
+		/// to its schema definition.</remarks>
+		/// <returns><see langword="null"/> if no attribute can be found.</returns>
+		public XmlSchemaAttribute FindAttribute(XmlSchemaElement element, string name)
+		{
+			CompileSchema();
+
+			XmlSchemaAttribute attribute = null;
+			XmlSchemaComplexType complexType = GetElementAsComplexType(element);
+			if (complexType != null) {
+				attribute = FindAttribute(complexType, name);
+			}
+			return attribute;
+		}
+		
+		/// <summary>
+		/// Finds the attribute group with the specified name.
+		/// </summary>
+		public XmlSchemaAttributeGroup FindAttributeGroup(string name)
+		{
+			CompileSchema();
+			return FindAttributeGroup(schema, name);
+		}
+		
+		/// <summary>
+		/// Finds the simple type with the specified name.
+		/// </summary>
+		public XmlSchemaSimpleType FindSimpleType(string name)
+		{
+			CompileSchema();
+			XmlQualifiedName qualifiedName = new XmlQualifiedName(name, namespaceUri);
+			return FindSimpleType(qualifiedName);
+		}
+		
+		/// <summary>
+		/// Finds the specified attribute in the schema. This method only checks
+		/// the attributes defined in the root of the schema.
+		/// </summary>
+		public XmlSchemaAttribute FindAttribute(string name)
+		{
+			CompileSchema();
+			foreach (XmlSchemaAttribute attribute in schema.Attributes.Values) {
+				if (attribute.Name == name) {
+					return attribute;
+				}
+			}
+			return null;
+		}
+		
+		/// <summary>
+		/// Finds the schema group with the specified name.
+		/// </summary>
+		public XmlSchemaGroup FindGroup(string name)
+		{
+			CompileSchema();
+			if (name != null) {
+				foreach (XmlSchemaObject schemaObject in schema.Groups.Values) {
+					XmlSchemaGroup group = schemaObject as XmlSchemaGroup;
+					if (group != null) {
+						if (group.Name == name) {
+							return group;
+						}						
+					}
+				}
+			}
+			return null;
+		}	
+		
+		/// <summary>
+		/// Takes the name and creates a qualified name using the namespace of this
+		/// schema.
+		/// </summary>
+		/// <remarks>If the name is of the form myprefix:mytype then the correct 
+		/// namespace is determined from the prefix. If the name is not of this
+		/// form then no prefix is added.</remarks>
+		public QualifiedName CreateQualifiedName(string name)
+		{
+			int index = name.IndexOf(":");
+			if (index >= 0) {
+				string prefix = name.Substring(0, index);
+				name = name.Substring(index + 1);
+				CompileSchema();
+				foreach (XmlQualifiedName xmlQualifiedName in schema.Namespaces.ToArray()) {
+					if (xmlQualifiedName.Name == prefix) {
+						return new QualifiedName(name, xmlQualifiedName.Namespace, prefix);
+					}
+				}
+			}
+			
+			// Default behaviour just return the name with the namespace uri.
+			return new QualifiedName(name, namespaceUri);
+		}		
+
 		/// <summary>
 		/// Handler for schema validation errors.
 		/// </summary>
@@ -254,27 +412,7 @@ namespace MonoDevelop.XmlEditor
 			xmlReader.XmlResolver = null;
 			ReadSchema(xmlReader);
 		}			
-		
-		/// <summary>
-		/// Finds an element in the schema.
-		/// </summary>
-		/// <remarks>
-		/// Only looks at the elements that are defined in the 
-		/// root of the schema so it will not find any elements
-		/// that are defined inside any complex types.
-		/// </remarks>
-		XmlSchemaElement FindElement(QualifiedName name)
-		{
-			XmlSchemaElement matchedElement = null;
-			foreach (XmlSchemaElement element in schema.Elements.Values) {
-				if (name.Equals(element.QualifiedName)) {
-					matchedElement = element;
-					break;
-				}
-			}
 			
-			return matchedElement;
-		}		
 			
 		/// <summary>
 		/// Finds an element in the schema.
@@ -423,7 +561,7 @@ namespace MonoDevelop.XmlEditor
 		{
 			XmlCompletionDataCollection data = new XmlCompletionDataCollection();
 
-			XmlSchemaGroup group = FindNamedGroup(groupRef.RefName.Name);
+			XmlSchemaGroup group = FindGroup(groupRef.RefName.Name);
 			if (group != null) {
 				XmlSchemaSequence sequence = group.Particle as XmlSchemaSequence;
 				XmlSchemaChoice choice = group.Particle as XmlSchemaChoice;
@@ -534,33 +672,7 @@ namespace MonoDevelop.XmlEditor
 			return documentation;
 		}
 		
-		/// <summary>
-		/// Finds the element that exists at the specified path.
-		/// </summary>
-		XmlSchemaElement FindElement(XmlElementPath path)
-		{
-			XmlSchemaElement element = null;
-			
-			for (int i = 0; i < path.Elements.Count; ++i) {
-				
-				QualifiedName name = path.Elements[i];
-				if (i == 0) {
-					// Look for root element.
-					element = FindElement(name);
-					if (element == null) {
-						break;
-					}
-				} else {
-					element = FindChildElement(element, name);
-					if (element == null) {
-						break;
-					}
-				}
-			}
-			
-			return element;
-		}
-		
+
 		XmlCompletionDataCollection GetAttributeCompletionData(XmlSchemaElement element)
 		{
 			XmlCompletionDataCollection data = new XmlCompletionDataCollection();
@@ -914,7 +1026,7 @@ namespace MonoDevelop.XmlEditor
 		{
 			XmlSchemaElement matchedElement = null;
 			
-			XmlSchemaGroup group = FindNamedGroup(groupRef.RefName.Name);
+			XmlSchemaGroup group = FindGroup(groupRef.RefName.Name);
 			if (group != null) {
 				XmlSchemaSequence sequence = group.Particle as XmlSchemaSequence;
 				XmlSchemaChoice choice = group.Particle as XmlSchemaChoice;
@@ -960,25 +1072,6 @@ namespace MonoDevelop.XmlEditor
 			
 			return matchedGroup;
 		}
-		
-		XmlSchemaGroup FindNamedGroup(string name)
-		{
-			XmlSchemaGroup matchedGroup = null;
-			
-			if (name != null) {
-				foreach (XmlSchemaObject schemaObject in schema.Groups.Values) {
-					XmlSchemaGroup group = schemaObject as XmlSchemaGroup;
-					if (group != null) {
-						if (group.Name == name) {
-							matchedGroup = group;
-							break;
-						}						
-					}
-				}
-			}
-			
-			return matchedGroup;
-		}	
 		
 		XmlCompletionDataCollection GetAttributeValueCompletionData(XmlSchemaElement element, string name)
 		{
@@ -1170,9 +1263,7 @@ namespace MonoDevelop.XmlEditor
 		
 		XmlSchemaAttribute FindAttribute(XmlSchemaComplexContentExtension extension, string name)
 		{
-			XmlSchemaAttribute matchedAttribute = FindAttribute(extension.Attributes, name);
-			
-			return matchedAttribute;			
+			return FindAttribute(extension.Attributes, name);	
 		}			
 		
 		XmlSchemaAttribute FindAttribute(XmlSchemaComplexContentRestriction restriction, string name)

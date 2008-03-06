@@ -206,6 +206,20 @@ namespace MonoDevelop.XmlEditor
 		}
 		
 		/// <summary>
+		/// Gets the schema completion data with the same filename.
+		/// </summary>
+		/// <returns><see langword="null"/> if no matching schema found.</returns>
+		public XmlSchemaCompletionData GetSchemaFromFileName(string fileName)
+		{
+			foreach (XmlSchemaCompletionData schema in this) {
+				if (schema.FileName == fileName) {
+					return schema;
+				}
+			}
+			return null;
+		}
+		
+		/// <summary>
 		///   Enumerator that can iterate through a XmlSchemaCompletionDataCollection.
 		/// </summary>
 		/// <seealso cref='IEnumerator'/>

@@ -1,12 +1,13 @@
 //
 // MonoDevelop XML Editor
 //
-// Copyright (C) 2005 Matthew Ward
+// Copyright (C) 2005, 2006 Matthew Ward
 //
 
 using System;
 using System.Collections;
 using System.IO;
+using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
@@ -85,7 +86,7 @@ namespace MonoDevelop.XmlEditor
 				QualifiedName elementName = GetElementName(elementText);
 				NamespaceURI elementNamespace = GetElementNamespace(elementText);
 							
-				path = GetParentElementPath(xml, index);
+				path = GetParentElementPath(xml.Substring(0, index));
 				if (elementNamespace.Namespace.Length == 0) {
 					if (path.Elements.Count > 0) {
 						QualifiedName parentName = path.Elements[path.Elements.Count - 1];
@@ -94,18 +95,44 @@ namespace MonoDevelop.XmlEditor
 					}
 				}
 				
-				path.Elements.Add(new QualifiedName(elementName.Name, elementNamespace.Namespace, elementNamespace.Prefix));
+				path.Elements.Add(new QualifiedName(elementName.Name, elementNamespace.Namespace, elementNamespace.Prefix));		
+				path.Compact();
 			}
 			
-			path.Compact();
-			
 			return path;
-		}				
+		}
+		
+		/// <summary>
+		/// Gets path of the xml element start tag that the specified 
+		/// <paramref name="index"/> is currently located. This is different to the
+		/// GetActiveElementStartPath method since the index can be inside the element 
+		/// name.
+		/// </summary>
+		/// <remarks>If the index outside the start tag then an empty path
+		/// is returned.</remarks>
+		public static XmlElementPath GetActiveElementStartPathAtIndex(string xml, int index)
+		{
+			// Find first non xml element name character to the right of the index.
+			index = GetCorrectedIndex(xml.Length, index);
+			int currentIndex = index;
+			for (; currentIndex < xml.Length; ++currentIndex) {
+				char ch = xml[currentIndex];
+				if (!IsXmlNameChar(ch)) {
+					break;
+				}
+			}
+		
+			string elementText = GetElementNameAtIndex(xml, currentIndex);
+			if (elementText != null) {
+				return GetActiveElementStartPath(xml, currentIndex, elementText);
+			}
+			return new XmlElementPath();
+		}
 		
 		/// <summary>
 		/// Gets the parent element path based on the index position.
 		/// </summary>
-		public static XmlElementPath GetParentElementPath(string xml, int index)
+		public static XmlElementPath GetParentElementPath(string xml)
 		{
 			XmlElementPath path = new XmlElementPath();
 			
@@ -127,6 +154,8 @@ namespace MonoDevelop.XmlEditor
 					}
 				}
 			} catch (XmlException) { 
+				// Do nothing.
+			} catch (WebException) {
 				// Do nothing.
 			}
 			
@@ -202,61 +231,53 @@ namespace MonoDevelop.XmlEditor
 			
 			index = GetCorrectedIndex(xml.Length, index);
 			
-			string name = String.Empty;
-			
-			// From the end of the string work backwards until we have
-			// picked out the attribute name.
-			StringBuilder reversedAttributeName = new StringBuilder();
+			return GetAttributeName(xml, index, true, true, true);
+		}
+		
+		/// <summary>
+		/// Gets the name of the attribute at the specified index. The index
+		/// can be anywhere inside the attribute name or in the attribute value.
+		/// </summary>
+		public static string GetAttributeNameAtIndex(string xml, int index)
+		{
+			index = GetCorrectedIndex(xml.Length, index);
 			
 			bool ignoreWhitespace = true;
-			bool ignoreQuote = true;
-			bool ignoreEqualsSign = true;
-			int currentIndex = index;
-			bool invalidString = true;
+			bool ignoreEqualsSign = false;
+			bool ignoreQuote = false;
 			
-			for (int i = 0; i <= index; ++i) {
-				
-				char currentChar = xml[currentIndex];
-				
-				if (Char.IsLetterOrDigit(currentChar)) {
-					if (!ignoreEqualsSign) {
-						ignoreWhitespace = false;
-						reversedAttributeName.Append(currentChar);
-					} 
-				} else if (Char.IsWhiteSpace(currentChar)) {
-					if (ignoreWhitespace == false) {
-						// Reached the start of the attribute name.
-						invalidString = false;
-						break;
-					}
-				} else if ((currentChar == '\'') || (currentChar == '\"')) {
-					if (ignoreQuote) {
-						ignoreQuote = false;
-					} else {
-						break;
-					}
-				} else if (currentChar == '='){
-					if (ignoreEqualsSign) {
-						ignoreEqualsSign = false;
-					} else {
-						break;
-					}
-				} else if (IsAttributeValueChar(currentChar)) {
-					if (!ignoreQuote) {
-						break;
-					}
-				} else {
-					break;
+			if (IsInsideAttributeValue(xml, index)) {
+				// Find attribute name start.
+				int elementStartIndex = GetActiveElementStartIndex(xml, index);
+				if (elementStartIndex == -1) {
+					return String.Empty;
 				}
 				
-				--currentIndex;
+				// Find equals sign.
+				for (int i = index; i > elementStartIndex; --i) {
+					char ch = xml[i];
+					if (ch == '=') {
+						index = i;
+						ignoreEqualsSign = true;
+						break;
+					}
+				}
+			} else {
+				// Find end of attribute name.
+				for (; index < xml.Length; ++index) {
+					char ch = xml[index];
+					if (!Char.IsLetterOrDigit(ch)) {
+						if (ch == '\'' || ch == '\"') {
+							ignoreQuote = true;
+							ignoreEqualsSign = true;
+						}
+						break;
+					}
+				}
+				--index;
 			}
-
-			if (!invalidString) {
-				name = ReverseString(reversedAttributeName.ToString());
-			}
-			
-			return name;
+								
+			return GetAttributeName(xml, index, ignoreWhitespace, ignoreQuote, ignoreEqualsSign);
 		}
 		
 		/// <summary>
@@ -305,10 +326,12 @@ namespace MonoDevelop.XmlEditor
 				return false;
 			}
 			
-			index = GetCorrectedIndex(xml.Length, index);
+			if (index > xml.Length) {
+				index = xml.Length;
+			}
 						
 			int elementStartIndex = GetActiveElementStartIndex(xml, index);
-			if (elementStartIndex == - 1) {
+			if (elementStartIndex == -1) {
 				return false;
 			}
 			
@@ -319,7 +342,7 @@ namespace MonoDevelop.XmlEditor
 			int doubleQuotesCount = 0;
 			int singleQuotesCount = 0;
 			char lastQuoteChar = ' ';
-			for (int i = index; i > elementStartIndex; --i) {
+			for (int i = index - 1; i > elementStartIndex; --i) {
 				char ch = xml[i];
 				if (ch == '=') {
 					foundEqualsSign = true;
@@ -346,7 +369,65 @@ namespace MonoDevelop.XmlEditor
 			
 			return isInside;
 		}
-				
+		
+		/// <summary>
+		/// Gets the attribute value at the specified index.
+		/// </summary>
+		/// <returns>An empty string if no attribute value can be found.</returns>
+		public static string GetAttributeValueAtIndex(string xml, int index)
+		{
+			if (!IsInsideAttributeValue(xml, index)) {
+				return String.Empty;
+			}
+			
+			index = GetCorrectedIndex(xml.Length, index);
+						
+			int elementStartIndex = GetActiveElementStartIndex(xml, index);
+			if (elementStartIndex == -1) {
+				return String.Empty;
+			}
+			
+			// Find equals sign.
+			int equalsSignIndex = -1;
+			for (int i = index; i > elementStartIndex; --i) {
+				char ch = xml[i];
+				if (ch == '=') {
+					equalsSignIndex = i;
+					break;
+				}
+			}
+			
+			if (equalsSignIndex == -1) {
+				return String.Empty;
+			}
+			
+			// Find attribute value.
+			char quoteChar = ' ';
+			bool foundQuoteChar = false;
+			StringBuilder attributeValue = new StringBuilder();
+			for (int i = equalsSignIndex; i < xml.Length; ++i) {
+				char ch = xml[i];
+				if (!foundQuoteChar) {
+					if (ch == '\"' || ch == '\'') {
+						quoteChar = ch;
+						foundQuoteChar = true;
+					}
+				} else {
+					if (ch == quoteChar) {
+						// End of attribute value.
+						return attributeValue.ToString();
+					} else if (IsAttributeValueChar(ch) || (ch == '\"' || ch == '\'')) {
+						attributeValue.Append(ch);
+					} else {
+						// Invalid character found.
+						return String.Empty;
+					}
+				}
+			}
+			
+			return String.Empty;
+		}
+		
 		/// <summary>
 		/// Gets the text of the xml element start tag that the index is 
 		/// currently inside.
@@ -357,17 +438,14 @@ namespace MonoDevelop.XmlEditor
 		static string GetActiveElementStartText(string xml, int index)
 		{
 			int elementStartIndex = GetActiveElementStartIndex(xml, index);
-			
 			if (elementStartIndex >= 0) {
 				if (elementStartIndex < index) {
-					int elementEndIndex = GetActiveElementEndIndex(xml, index);
-					
+					int elementEndIndex = GetActiveElementEndIndex(xml, index);		
 					if (elementEndIndex >= index) {
 						return xml.Substring(elementStartIndex, elementEndIndex - elementStartIndex);
 					}
 				}
 			}
-			
 			return null;
 		}
 		
@@ -441,6 +519,8 @@ namespace MonoDevelop.XmlEditor
 			int index = xml.IndexOf(' ');
 			if (index > 0) {
 				name = xml.Substring(1, index - 1);
+			} else {
+				name = xml.Substring(1);
 			}
 			
 			QualifiedName qualifiedName = new QualifiedName();
@@ -507,6 +587,101 @@ namespace MonoDevelop.XmlEditor
 				index = length - 1;
 			}
 			return index;
+		}
+		
+		/// <summary>
+		/// Gets the active element path given the element text.
+		/// </summary>
+		static XmlElementPath GetActiveElementStartPath(string xml, int index, string elementText)
+		{
+			QualifiedName elementName = GetElementName(elementText);
+			NamespaceURI elementNamespace = GetElementNamespace(elementText);
+						
+			XmlElementPath path = GetParentElementPath(xml.Substring(0, index));
+			if (elementNamespace.Namespace.Length == 0) {
+				if (path.Elements.Count > 0) {
+					QualifiedName parentName = path.Elements[path.Elements.Count - 1];
+					elementNamespace.Namespace = parentName.Namespace;
+					elementNamespace.Prefix = parentName.Prefix;
+				}
+			}
+			path.Elements.Add(new QualifiedName(elementName.Name, elementNamespace.Namespace, elementNamespace.Prefix));
+			path.Compact();
+			return path;
+		}
+		
+		static string GetAttributeName(string xml, int index, bool ignoreWhitespace, bool ignoreQuote, bool ignoreEqualsSign)
+		{
+			string name = String.Empty;
+			
+			// From the end of the string work backwards until we have
+			// picked out the attribute name.
+			StringBuilder reversedAttributeName = new StringBuilder();
+			
+			int currentIndex = index;
+			bool invalidString = true;
+			
+			for (int i = 0; i <= index; ++i) {
+				
+				char currentChar = xml[currentIndex];
+				
+				if (Char.IsLetterOrDigit(currentChar)) {
+					if (!ignoreEqualsSign) {
+						ignoreWhitespace = false;
+						reversedAttributeName.Append(currentChar);
+					} 
+				} else if (Char.IsWhiteSpace(currentChar)) {
+					if (ignoreWhitespace == false) {
+						// Reached the start of the attribute name.
+						invalidString = false;
+						break;
+					}
+				} else if ((currentChar == '\'') || (currentChar == '\"')) {
+					if (ignoreQuote) {
+						ignoreQuote = false;
+					} else {
+						break;
+					}
+				} else if (currentChar == '='){
+					if (ignoreEqualsSign) {
+						ignoreEqualsSign = false;
+					} else {
+						break;
+					}
+				} else if (IsAttributeValueChar(currentChar)) {
+					if (!ignoreQuote) {
+						break;
+					}
+				} else {
+					break;
+				}
+				
+				--currentIndex;
+			}
+
+			if (!invalidString) {
+				name = ReverseString(reversedAttributeName.ToString());
+			}
+			
+			return name;
+		}
+		
+		/// <summary>
+		/// Gets the element name at the specified index.
+		/// </summary>
+		static string GetElementNameAtIndex(string xml, int index)
+		{
+			int elementStartIndex = GetActiveElementStartIndex(xml, index);
+			if (elementStartIndex >= 0 && elementStartIndex < index) {
+				int elementEndIndex = GetActiveElementEndIndex(xml, index);
+				if (elementEndIndex == -1) {
+					elementEndIndex = xml.IndexOf(' ', elementStartIndex);
+				}
+				if (elementEndIndex >= elementStartIndex) {
+					return xml.Substring(elementStartIndex, elementEndIndex - elementStartIndex);
+				}
+			}
+			return null;
 		}
 	}
 }

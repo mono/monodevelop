@@ -62,7 +62,7 @@ namespace MonoDevelop.XmlEditor
 					
 				case '<':
 					// Child element intellisense.
-					XmlElementPath parentPath = XmlParser.GetParentElementPath(text, text.Length);
+					XmlElementPath parentPath = XmlParser.GetParentElementPath(text);
 					if (parentPath.Elements.Count > 0) {
 						return GetChildElementCompletionData(parentPath);
 					} else if (defaultSchemaCompletionData != null) {
@@ -99,6 +99,49 @@ namespace MonoDevelop.XmlEditor
 			return null;
 		}
 		
+		/// <summary>
+		/// Finds the schema given the xml element path.
+		/// </summary>
+		public XmlSchemaCompletionData FindSchema(XmlElementPath path)
+		{
+			if (path.Elements.Count > 0) {
+				string namespaceUri = path.Elements[0].Namespace;
+				if (namespaceUri.Length > 0) {
+					return schemaCompletionDataItems[namespaceUri];
+				} else if (defaultSchemaCompletionData != null) {
+					
+					// Use the default schema namespace if none
+					// specified in a xml element path, otherwise
+					// we will not find any attribute or element matches
+					// later.
+					foreach (QualifiedName name in path.Elements) {
+						if (name.Namespace.Length == 0) {
+							name.Namespace = defaultSchemaCompletionData.NamespaceUri;
+						}
+					}
+					return defaultSchemaCompletionData;
+				}
+			}
+			return null;
+		}
+		
+		/// <summary>
+		/// Finds the schema given a namespace URI.
+		/// </summary>
+		public XmlSchemaCompletionData FindSchema(string namespaceUri)
+		{
+			return schemaCompletionDataItems[namespaceUri];
+		}
+		
+		/// <summary>
+		/// Gets the schema completion data that was created from the specified 
+		/// schema filename.
+		/// </summary>
+		public XmlSchemaCompletionData FindSchemaFromFileName(string fileName)
+		{
+			return schemaCompletionDataItems.GetSchemaFromFileName(fileName);
+		}				
+		
 		ICompletionData[] GetChildElementCompletionData(XmlElementPath path)
 		{
 			ICompletionData[] completionData = null;
@@ -134,41 +177,5 @@ namespace MonoDevelop.XmlEditor
 			
 			return completionData;
 		}		
-		
-		XmlSchemaCompletionData FindSchema(XmlElementPath path)
-		{
-			XmlSchemaCompletionData schemaData = null;
-			
-			if (path.Elements.Count > 0) {
-				string namespaceUri = path.Elements[0].Namespace;
-				if (namespaceUri.Length > 0) {
-					schemaData = schemaCompletionDataItems[namespaceUri];
-				} else if (defaultSchemaCompletionData != null) {
-					
-					// Use the default schema namespace if none
-					// specified in a xml element path, otherwise
-					// we will not find any attribute or element matches
-					// later.
-					foreach (QualifiedName name in path.Elements) {
-						if (name.Namespace.Length == 0) {
-							name.Namespace = defaultSchemaCompletionData.NamespaceUri;
-						}
-					}
-					schemaData = defaultSchemaCompletionData;
-				}
-			}
-			
-			return schemaData;
-		}	
-		
-//		string GetTextFromStartToEndOfCurrentLine(TextArea textArea)
-//		{
-//			LineSegment line = textArea.Document.GetLineSegment(textArea.Document.GetLineNumberForOffset(textArea.Caret.Offset));
-//			if (line != null) {
-//				return textArea.Document.GetText(0, line.Offset + line.Length);
-//			}
-//				
-//			return String.Empty;//textArea.Document.GetText(0, textArea.Caret.Offset);
-//		}
 	}
 }

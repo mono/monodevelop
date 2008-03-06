@@ -72,14 +72,14 @@ namespace MonoDevelop.XmlEditor.Tests.Parser
 		public void FailureTest3()
 		{
 			string text = "a";
-			Assert.AreEqual(String.Empty, XmlParser.GetAttributeName(text, text.Length), "Should have retrieved the attribute name 'foo'");
+			Assert.AreEqual(String.Empty, XmlParser.GetAttributeName(text, text.Length));
 		}	
 		
 		[Test]
 		public void FailureTest4()
 		{
 			string text = " a";
-			Assert.AreEqual(String.Empty, XmlParser.GetAttributeName(text, text.Length), "Should have retrieved the attribute name 'foo'");
+			Assert.AreEqual(String.Empty, XmlParser.GetAttributeName(text, text.Length));
 		}	
 		
 		[Test]

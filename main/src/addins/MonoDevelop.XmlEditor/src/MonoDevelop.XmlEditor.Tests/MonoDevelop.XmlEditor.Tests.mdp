@@ -79,6 +79,23 @@
     <File name="./XPathQuery/RunXPathQueryTests.cs" subtype="Code" buildaction="Compile" />
     <File name="./XPathQuery/XPathHistoryListTests.cs" subtype="Code" buildaction="Compile" />
     <File name="./XPathQuery/XPathNamespaceListTests.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Schema/XmlSchemaNamespaceTests.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Schema/FindAttributeFromComplexTypeTestFixture.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Schema/GetSchemaFromFileNameTestFixture.cs" subtype="Code" buildaction="Compile" />
+    <File name="./FindSchemaObject" subtype="Directory" buildaction="Compile" />
+    <File name="./FindSchemaObject/AttributeGroupReferenceSelectedTestFixture.cs" subtype="Code" buildaction="Compile" />
+    <File name="./FindSchemaObject/AttributeReferenceSelectedTestFixture.cs" subtype="Code" buildaction="Compile" />
+    <File name="./FindSchemaObject/AttributeSelectedTestFixture.cs" subtype="Code" buildaction="Compile" />
+    <File name="./FindSchemaObject/AttributeTypeSelectedTestFixture.cs" subtype="Code" buildaction="Compile" />
+    <File name="./FindSchemaObject/ElementReferenceSelectedTestFixture.cs" subtype="Code" buildaction="Compile" />
+    <File name="./FindSchemaObject/ElementReferenceWithPrefixSelectedTestFixture.cs" subtype="Code" buildaction="Compile" />
+    <File name="./FindSchemaObject/ElementSelectedTestFixture.cs" subtype="Code" buildaction="Compile" />
+    <File name="./FindSchemaObject/ElementTypeSelectedTestFixture.cs" subtype="Code" buildaction="Compile" />
+    <File name="./FindSchemaObject/ElementTypeWithPrefixSelectedTestFixture.cs" subtype="Code" buildaction="Compile" />
+    <File name="./FindSchemaObject/GroupReferenceSelectedTestFixture.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Parser/ActiveElementUnderCursorTests.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Parser/AttributeNameUnderCursorTests.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Parser/AttributeValueUnderCursorTests.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.XmlEditor" />

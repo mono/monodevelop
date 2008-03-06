@@ -20,7 +20,7 @@ namespace MonoDevelop.XmlEditor.Tests.Schema
 		{
 			XmlElementPath path = new XmlElementPath();
 			path.Elements.Add(new QualifiedName("note", "http://www.w3schools.com"));
-			
+						
 			attributeCompletionData = SchemaCompletionData.GetAttributeCompletionData(path);
 			attributeName = attributeCompletionData[0].Text;
 		}

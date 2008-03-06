@@ -25,6 +25,7 @@ FILES = \
 	CreateSchemaCommand.cs \
 	EncodedStringWriter.cs \
 	FormatXmlCommand.cs \
+	GoToSchemaDefinitionCommand.cs \
 	OpenStylesheetCommand.cs \
 	OpenXPathQueryPadCommand.cs \
 	QualifiedNameCollection.cs \

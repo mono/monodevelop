@@ -72,6 +72,10 @@
 				_label = "Run XSL_T"
 				shortcut = "Alt|Control|T"
 				description = "Runs an XSL transform"/>				
+		<Command id = "MonoDevelop.XmlEditor.Commands.GoToSchemaDefinition"
+				defaultHandler = "MonoDevelop.XmlEditor.GoToSchemaDefinitionCommand"
+				_label = "_Goto Schema Definition"
+				description = "Jumps to the schema definition"/>
 		<Command id = "MonoDevelop.XmlEditor.Commands.Format"
 				defaultHandler = "MonoDevelop.XmlEditor.FormatXmlCommand"
 				_label = "_Format"
@@ -85,6 +89,7 @@
 			         insertbefore = "Tools" 
 			         _label = "_XML" >
 				<CommandItem id = "MonoDevelop.XmlEditor.Commands.CreateSchema" />
+				<CommandItem id = "MonoDevelop.XmlEditor.Commands.GoToSchemaDefinition" />
 				<CommandItem id = "MonoDevelop.XmlEditor.Commands.Validate" />
 				<SeparatorItem id = "XPathCommandsSeparator"/>
 				<CommandItem id = "MonoDevelop.XmlEditor.Commands.OpenXPathQueryPad" />				

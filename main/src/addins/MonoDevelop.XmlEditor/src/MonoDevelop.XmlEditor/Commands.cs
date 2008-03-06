@@ -20,6 +20,7 @@ namespace MonoDevelop.XmlEditor
 		RunXslTransform,
 		Format,
 		OpenXPathQueryPad,
-		RemoveXPathHighlighting
+		RemoveXPathHighlighting,
+		GoToSchemaDefinition
 	}
 }

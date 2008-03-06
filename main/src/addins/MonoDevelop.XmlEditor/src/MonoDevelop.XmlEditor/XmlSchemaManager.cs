@@ -18,13 +18,15 @@ namespace MonoDevelop.XmlEditor
 	/// </summary>
 	public class XmlSchemaManager
 	{
-		static XmlSchemaCompletionDataCollection schemas = null;
-		static XmlSchemaManager manager = null;
+		public const string XmlSchemaNamespace = "http://www.w3.org/2001/XMLSchema";
 		
 		public static event EventHandler UserSchemaAdded;
 		
 		public static event EventHandler UserSchemaRemoved;
 		
+		static XmlSchemaCompletionDataCollection schemas = null;
+		static XmlSchemaManager manager = null;
+
 		XmlSchemaManager()
 		{
 		}
@@ -110,7 +112,16 @@ namespace MonoDevelop.XmlEditor
 			} else {
 				Console.WriteLine(String.Concat("Trying to add a schema that already exists.  Namespace=", schemaData.NamespaceUri));
 			}
-		}		
+		}	
+		
+		/// <summary>
+		/// Determines whether the specified namespace is actually the W3C namespace for
+		/// XSD files.
+		/// </summary>
+		public static bool IsXmlSchemaNamespace(string schemaNamespace)
+		{
+			return schemaNamespace == XmlSchemaNamespace;
+		}	
 		
 		/// <summary>
 		/// Reads the system and user added schemas.
