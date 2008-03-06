@@ -453,6 +453,21 @@ namespace MonoDevelop.XmlEditor
 			buffer.PlaceCursor (iter);		
 			//buffer.HighlightLine (line - 1);	
 			view.ScrollToMark (buffer.InsertMark, 0.3, false, 0, 0);
+			GLib.Timeout.Add (20, new GLib.TimeoutHandler (changeFocus));		
+		}
+
+		// This code exists to workaround a gtk+ 2.4 regression/bug.
+		// Without this workaround in place scrolling to text off 
+		// screen in a large file does not work.
+		//
+		// The gtk+ 2.4 treeview steals focus with double clicked
+		// row_activated.
+		// http://bugzilla.gnome.org/show_bug.cgi?id=138458
+		bool changeFocus ()
+		{
+			view.GrabFocus ();
+			view.ScrollToMark (buffer.InsertMark, 0.3, false, 0, 0);
+			return false;
 		}
 		
 		#endregion
