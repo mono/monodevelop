@@ -22,8 +22,8 @@ GNU General Public License.
 NAnt.xsd
 --------
 
-NAnt 0.85 RC 3 schema.
-http://nant.sourceforge.net/release/0.85-rc3/nant.xsd
+NAnt 0.85 schema.
+http://nant.sourceforge.net/release/0.85/nant.xsd
 GNU General Public License.
 
 XMLSchema.xsd

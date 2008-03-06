@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
-<xs:schema xmlns:nant="http://nant.sf.net/release/0.85-rc3/nant.xsd" elementFormDefault="qualified" targetNamespace="http://nant.sf.net/release/0.85-rc3/nant.xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+<xs:schema xmlns:nant="http://nant.sf.net/release/0.85/nant.xsd" elementFormDefault="qualified" targetNamespace="http://nant.sf.net/release/0.85/nant.xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema">
   <xs:annotation>
-    <xs:documentation>NAnt schema generated at 04/16/2005 15:40:39</xs:documentation>
+    <xs:documentation>NAnt schema generated at 10/14/2006 16:12:51</xs:documentation>
   </xs:annotation>
   <xs:complexType name="NAnt.Core.TaskContainer">
     <xs:sequence minOccurs="0" maxOccurs="unbounded">
@@ -35,6 +35,7 @@
         <xs:element name="cvs-update" type="nant:NAnt.SourceControl.Tasks.UpdateTask" />
         <xs:element name="aximp" type="nant:NAnt.Win32.Tasks.AxImpTask" />
         <xs:element name="readregistry" type="nant:NAnt.Win32.Tasks.ReadRegistryTask" />
+        <xs:element name="regasm" type="nant:NAnt.Win32.Tasks.RegAsmTask" />
         <xs:element name="tlbexp" type="nant:NAnt.Win32.Tasks.TlbExpTask" />
         <xs:element name="tlbimp" type="nant:NAnt.Win32.Tasks.TlbImpTask" />
         <xs:element name="cl" type="nant:NAnt.VisualCpp.Tasks.ClTask" />
@@ -81,12 +82,15 @@
         <xs:element name="xmlpoke" type="nant:NAnt.Core.Tasks.XmlPokeTask" />
         <xs:element name="ildasm" type="nant:NAnt.MSNet.Tasks.IldasmTask" />
         <xs:element name="servicecontroller" type="nant:NAnt.MSNet.Tasks.ServiceControllerTask" />
+        <xs:any minOccurs="0" maxOccurs="unbounded" namespace="##other" processContents="strict" />
+        <xs:any minOccurs="0" maxOccurs="unbounded" namespace="##local" processContents="strict" />
       </xs:choice>
     </xs:sequence>
     <xs:attribute name="failonerror" use="optional" />
     <xs:attribute name="verbose" use="optional" />
     <xs:attribute name="if" use="optional" />
     <xs:attribute name="unless" use="optional" />
+    <xs:anyAttribute namespace="##other" processContents="skip" />
   </xs:complexType>
   <xs:complexType name="NAnt.Core.Types.FileSet-Include">
     <xs:attribute name="asis" use="optional" />
@@ -94,11 +98,13 @@
     <xs:attribute name="name" use="required" />
     <xs:attribute name="if" use="optional" />
     <xs:attribute name="unless" use="optional" />
+    <xs:anyAttribute namespace="##other" processContents="skip" />
   </xs:complexType>
   <xs:complexType name="NAnt.Core.Types.FileSet-Exclude">
     <xs:attribute name="name" use="required" />
     <xs:attribute name="if" use="optional" />
     <xs:attribute name="unless" use="optional" />
+    <xs:anyAttribute namespace="##other" processContents="skip" />
   </xs:complexType>
   <xs:complexType name="NAnt.Core.Types.FileSet-IncludesFile">
     <xs:attribute name="asis" use="optional" />
@@ -106,11 +112,13 @@
     <xs:attribute name="if" use="optional" />
     <xs:attribute name="unless" use="optional" />
     <xs:attribute name="name" use="required" />
+    <xs:anyAttribute namespace="##other" processContents="skip" />
   </xs:complexType>
   <xs:complexType name="NAnt.Core.Types.FileSet-ExcludesFile">
     <xs:attribute name="if" use="optional" />
     <xs:attribute name="unless" use="optional" />
     <xs:attribute name="name" use="required" />
+    <xs:anyAttribute namespace="##other" processContents="skip" />
   </xs:complexType>
   <xs:complexType name="NAnt.DotNet.Types.LibDirectorySet">
     <xs:sequence minOccurs="0" maxOccurs="unbounded">
@@ -126,6 +134,7 @@
     <xs:attribute name="defaultexcludes" use="optional" />
     <xs:attribute name="id" use="optional" />
     <xs:attribute name="refid" use="optional" />
+    <xs:anyAttribute namespace="##other" processContents="skip" />
   </xs:complexType>
   <xs:complexType name="NAnt.DotNet.Types.AssemblyFileSet">
     <xs:sequence minOccurs="0" maxOccurs="unbounded">
@@ -143,12 +152,14 @@
     <xs:attribute name="basedir" use="optional" />
     <xs:attribute name="id" use="optional" />
     <xs:attribute name="refid" use="optional" />
+    <xs:anyAttribute namespace="##other" processContents="skip" />
   </xs:complexType>
   <xs:complexType name="NAnt.DotNet.Types.NamespaceImport">
     <xs:attribute name="name" use="optional" />
     <xs:attribute name="namespace" use="optional" />
     <xs:attribute name="if" use="optional" />
     <xs:attribute name="unless" use="optional" />
+    <xs:anyAttribute namespace="##other" processContents="skip" />
   </xs:complexType>
   <xs:complexType name="NAnt.DotNet.Types.NamespaceImportCollection">
     <xs:sequence minOccurs="0" maxOccurs="unbounded">
@@ -156,6 +167,7 @@
     </xs:sequence>
     <xs:attribute name="id" use="optional" />
     <xs:attribute name="refid" use="optional" />
+    <xs:anyAttribute namespace="##other" processContents="skip" />
   </xs:complexType>
   <xs:complexType name="NAnt.DotNet.Types.ResourceFileSet">
     <xs:sequence minOccurs="0" maxOccurs="unbounded">
@@ -174,11 +186,13 @@
     <xs:attribute name="basedir" use="optional" />
     <xs:attribute name="id" use="optional" />
     <xs:attribute name="refid" use="optional" />
+    <xs:anyAttribute namespace="##other" processContents="skip" />
   </xs:complexType>
   <xs:complexType name="NAnt.DotNet.Types.CompilerWarning">
     <xs:attribute name="number" use="required" />
     <xs:attribute name="if" use="optional" />
     <xs:attribute name="unless" use="optional" />
+    <xs:anyAttribute namespace="##other" processContents="skip" />
   </xs:complexType>
   <xs:complexType name="NAnt.DotNet.Types.WarningAsError">
     <xs:sequence minOccurs="0" maxOccurs="unbounded">
@@ -187,6 +201,7 @@
     </xs:sequence>
     <xs:attribute name="id" use="optional" />
     <xs:attribute name="refid" use="optional" />
+    <xs:anyAttribute namespace="##other" processContents="skip" />
   </xs:complexType>
   <xs:complexType name="NAnt.Compression.Types.TarFileSet">
     <xs:sequence minOccurs="0" maxOccurs="unbounded">
@@ -210,6 +225,7 @@
     <xs:attribute name="basedir" use="optional" />
     <xs:attribute name="id" use="optional" />
     <xs:attribute name="refid" use="optional" />
+    <xs:anyAttribute namespace="##other" processContents="skip" />
   </xs:complexType>
   <xs:complexType name="NAnt.Compression.Types.ZipFileSet">
     <xs:sequence minOccurs="0" maxOccurs="unbounded">
@@ -227,19 +243,22 @@
     <xs:attribute name="basedir" use="optional" />
     <xs:attribute name="id" use="optional" />
     <xs:attribute name="refid" use="optional" />
+    <xs:anyAttribute namespace="##other" processContents="skip" />
   </xs:complexType>
   <xs:complexType name="NAnt.NUnit2.Types.Category">
     <xs:attribute name="name" use="required" />
     <xs:attribute name="if" use="optional" />
     <xs:attribute name="unless" use="optional" />
+    <xs:anyAttribute namespace="##other" processContents="skip" />
   </xs:complexType>
-  <xs:complexType name="NAnt.NUnit2.Types.CategorySet">
+  <xs:complexType name="NAnt.NUnit2.Types.Categories">
     <xs:sequence minOccurs="0" maxOccurs="unbounded">
       <xs:element minOccurs="0" maxOccurs="1" name="include" type="nant:NAnt.NUnit2.Types.Category" />
       <xs:element minOccurs="0" maxOccurs="1" name="exclude" type="nant:NAnt.NUnit2.Types.Category" />
     </xs:sequence>
     <xs:attribute name="id" use="optional" />
     <xs:attribute name="refid" use="optional" />
+    <xs:anyAttribute namespace="##other" processContents="skip" />
   </xs:complexType>
   <xs:complexType name="NAnt.SourceControl.Types.CvsFileSet">
     <xs:sequence minOccurs="0" maxOccurs="unbounded">
@@ -257,10 +276,12 @@
     <xs:attribute name="basedir" use="optional" />
     <xs:attribute name="id" use="optional" />
     <xs:attribute name="refid" use="optional" />
+    <xs:anyAttribute namespace="##other" processContents="skip" />
   </xs:complexType>
   <xs:complexType name="NAnt.Core.Filters.Filter">
     <xs:attribute name="if" use="optional" />
     <xs:attribute name="unless" use="optional" />
+    <xs:anyAttribute namespace="##other" processContents="skip" />
   </xs:complexType>
   <xs:complexType name="NAnt.Core.Filters.FilterChain">
     <xs:sequence minOccurs="0" maxOccurs="unbounded">
@@ -269,6 +290,7 @@
     <xs:attribute name="encoding" use="optional" />
     <xs:attribute name="id" use="optional" />
     <xs:attribute name="refid" use="optional" />
+    <xs:anyAttribute namespace="##other" processContents="skip" />
   </xs:complexType>
   <xs:complexType name="NAnt.Core.Types.Credential">
     <xs:attribute name="domain" use="optional" />
@@ -278,6 +300,7 @@
     <xs:attribute name="unless" use="optional" />
     <xs:attribute name="id" use="optional" />
     <xs:attribute name="refid" use="optional" />
+    <xs:anyAttribute namespace="##other" processContents="skip" />
   </xs:complexType>
   <xs:complexType name="NAnt.Core.Types.FileSet">
     <xs:sequence minOccurs="0" maxOccurs="unbounded">
@@ -294,6 +317,7 @@
     <xs:attribute name="basedir" use="optional" />
     <xs:attribute name="id" use="optional" />
     <xs:attribute name="refid" use="optional" />
+    <xs:anyAttribute namespace="##other" processContents="skip" />
   </xs:complexType>
   <xs:complexType name="NAnt.Core.Types.DirSet">
     <xs:sequence minOccurs="0" maxOccurs="unbounded">
@@ -310,6 +334,7 @@
     <xs:attribute name="basedir" use="optional" />
     <xs:attribute name="id" use="optional" />
     <xs:attribute name="refid" use="optional" />
+    <xs:anyAttribute namespace="##other" processContents="skip" />
   </xs:complexType>
   <xs:complexType name="NAnt.Core.Types.PathElement">
     <xs:attribute name="file" use="optional" />
@@ -317,6 +342,7 @@
     <xs:attribute name="path" use="optional" />
     <xs:attribute name="if" use="optional" />
     <xs:attribute name="unless" use="optional" />
+    <xs:anyAttribute namespace="##other" processContents="skip" />
   </xs:complexType>
   <xs:complexType name="NAnt.Core.Types.PathSet">
     <xs:sequence minOccurs="0" maxOccurs="unbounded">
@@ -325,6 +351,7 @@
     </xs:sequence>
     <xs:attribute name="id" use="optional" />
     <xs:attribute name="refid" use="optional" />
+    <xs:anyAttribute namespace="##other" processContents="skip" />
   </xs:complexType>
   <xs:complexType name="NAnt.Core.Types.Proxy">
     <xs:sequence minOccurs="0" maxOccurs="unbounded">
@@ -337,6 +364,7 @@
     <xs:attribute name="unless" use="optional" />
     <xs:attribute name="id" use="optional" />
     <xs:attribute name="refid" use="optional" />
+    <xs:anyAttribute namespace="##other" processContents="skip" />
   </xs:complexType>
   <xs:complexType name="NAnt.DotNet.Types.AssemblyAttribute">
     <xs:attribute name="type" use="required" />
@@ -344,6 +372,7 @@
     <xs:attribute name="asis" use="optional" />
     <xs:attribute name="if" use="optional" />
     <xs:attribute name="unless" use="optional" />
+    <xs:anyAttribute namespace="##other" processContents="skip" />
   </xs:complexType>
   <xs:complexType name="NAnt.DotNet.Tasks.AssemblyInfoTask">
     <xs:sequence minOccurs="0" maxOccurs="unbounded">
@@ -363,6 +392,7 @@
     <xs:attribute name="verbose" use="optional" />
     <xs:attribute name="if" use="optional" />
     <xs:attribute name="unless" use="optional" />
+    <xs:anyAttribute namespace="##other" processContents="skip" />
   </xs:complexType>
   <xs:complexType name="NAnt.Core.Types.Argument">
     <xs:sequence minOccurs="0" maxOccurs="unbounded">
@@ -370,10 +400,12 @@
     </xs:sequence>
     <xs:attribute name="value" use="optional" />
     <xs:attribute name="file" use="optional" />
+    <xs:attribute name="dir" use="optional" />
     <xs:attribute name="path" use="optional" />
     <xs:attribute name="line" use="optional" />
     <xs:attribute name="if" use="optional" />
     <xs:attribute name="unless" use="optional" />
+    <xs:anyAttribute namespace="##other" processContents="skip" />
   </xs:complexType>
   <xs:complexType name="NAnt.DotNet.Tasks.AssemblyLinkerTask">
     <xs:sequence minOccurs="0" maxOccurs="unbounded">
@@ -408,11 +440,13 @@
     <xs:attribute name="verbose" use="optional" />
     <xs:attribute name="if" use="optional" />
     <xs:attribute name="unless" use="optional" />
+    <xs:anyAttribute namespace="##other" processContents="skip" />
   </xs:complexType>
   <xs:complexType name="NAnt.DotNet.Types.Package">
     <xs:attribute name="name" use="required" />
     <xs:attribute name="if" use="optional" />
     <xs:attribute name="unless" use="optional" />
+    <xs:anyAttribute namespace="##other" processContents="skip" />
   </xs:complexType>
   <xs:complexType name="NAnt.DotNet.Tasks.CscTask">
     <xs:sequence minOccurs="0" maxOccurs="unbounded">
@@ -446,7 +480,9 @@
     <xs:attribute name="noconfig" use="optional" />
     <xs:attribute name="checked" use="optional" />
     <xs:attribute name="unsafe" use="optional" />
+    <xs:attribute name="langversion" use="optional" />
     <xs:attribute name="optimize" use="optional" />
+    <xs:attribute name="platform" use="optional" />
     <xs:attribute name="warninglevel" use="optional" />
     <xs:attribute name="codepage" use="optional" />
     <xs:attribute name="output" use="required" />
@@ -457,11 +493,14 @@
     <xs:attribute name="nowarn" use="optional" />
     <xs:attribute name="rebuild" use="optional" />
     <xs:attribute name="main" use="optional" />
+    <xs:attribute name="keycontainer" use="optional" />
+    <xs:attribute name="keyfile" use="optional" />
     <xs:attribute name="timeout" use="optional" />
     <xs:attribute name="failonerror" use="optional" />
     <xs:attribute name="verbose" use="optional" />
     <xs:attribute name="if" use="optional" />
     <xs:attribute name="unless" use="optional" />
+    <xs:anyAttribute namespace="##other" processContents="skip" />
   </xs:complexType>
   <xs:complexType name="NAnt.DotNet.Tasks.DelaySignTask">
     <xs:sequence minOccurs="0" maxOccurs="unbounded">
@@ -475,6 +514,7 @@
     <xs:attribute name="verbose" use="optional" />
     <xs:attribute name="if" use="optional" />
     <xs:attribute name="unless" use="optional" />
+    <xs:anyAttribute namespace="##other" processContents="skip" />
   </xs:complexType>
   <xs:complexType name="NAnt.DotNet.Tasks.IlasmTask">
     <xs:sequence minOccurs="0" maxOccurs="unbounded">
@@ -500,6 +540,7 @@
     <xs:attribute name="verbose" use="optional" />
     <xs:attribute name="if" use="optional" />
     <xs:attribute name="unless" use="optional" />
+    <xs:anyAttribute namespace="##other" processContents="skip" />
   </xs:complexType>
   <xs:complexType name="NAnt.DotNet.Tasks.JscTask">
     <xs:sequence minOccurs="0" maxOccurs="unbounded">
@@ -516,6 +557,7 @@
       <xs:element minOccurs="1" maxOccurs="1" name="sources" type="nant:NAnt.Core.Types.FileSet" />
       <xs:element minOccurs="0" maxOccurs="1" name="arg" type="nant:NAnt.Core.Types.Argument" />
     </xs:sequence>
+    <xs:attribute name="platform" use="optional" />
     <xs:attribute name="warninglevel" use="optional" />
     <xs:attribute name="codepage" use="optional" />
     <xs:attribute name="debug" use="optional" />
@@ -531,6 +573,7 @@
     <xs:attribute name="verbose" use="optional" />
     <xs:attribute name="if" use="optional" />
     <xs:attribute name="unless" use="optional" />
+    <xs:anyAttribute namespace="##other" processContents="skip" />
   </xs:complexType>
   <xs:complexType name="NAnt.DotNet.Tasks.LicenseTask">
     <xs:sequence minOccurs="0" maxOccurs="unbounded">
@@ -545,8 +588,11 @@
     <xs:attribute name="verbose" use="optional" />
     <xs:attribute name="if" use="optional" />
     <xs:attribute name="unless" use="optional" />
+    <xs:anyAttribute namespace="##other" processContents="skip" />
   </xs:complexType>
-  <xs:complexType name="NAnt.Core.Types.RawXml" />
+  <xs:complexType name="NAnt.Core.Types.RawXml">
+    <xs:anyAttribute namespace="##other" processContents="skip" />
+  </xs:complexType>
   <xs:complexType name="NAnt.DotNet.Tasks.NDocTask">
     <xs:sequence minOccurs="0" maxOccurs="unbounded">
       <xs:element minOccurs="1" maxOccurs="1" name="assemblies" type="nant:NAnt.DotNet.Types.AssemblyFileSet" />
@@ -558,6 +604,7 @@
     <xs:attribute name="verbose" use="optional" />
     <xs:attribute name="if" use="optional" />
     <xs:attribute name="unless" use="optional" />
+    <xs:anyAttribute namespace="##other" processContents="skip" />
   </xs:complexType>
   <xs:complexType name="NAnt.DotNet.Tasks.RegsvcsTask">
     <xs:sequence minOccurs="0" maxOccurs="unbounded">
@@ -577,6 +624,7 @@
     <xs:attribute name="verbose" use="optional" />
     <xs:attribute name="if" use="optional" />
     <xs:attribute name="unless" use="optional" />
+    <xs:anyAttribute namespace="##other" processContents="skip" />
   </xs:complexType>
   <xs:complexType name="NAnt.DotNet.Tasks.ResGenTask">
     <xs:sequence minOccurs="0" maxOccurs="unbounded">
@@ -594,6 +642,7 @@
     <xs:attribute name="verbose" use="optional" />
     <xs:attribute name="if" use="optional" />
     <xs:attribute name="unless" use="optional" />
+    <xs:anyAttribute namespace="##other" processContents="skip" />
   </xs:complexType>
   <xs:complexType name="NAnt.DotNet.Tasks.ScriptTask">
     <xs:sequence minOccurs="0" maxOccurs="unbounded">
@@ -608,6 +657,7 @@
     <xs:attribute name="verbose" use="optional" />
     <xs:attribute name="if" use="optional" />
     <xs:attribute name="unless" use="optional" />
+    <xs:anyAttribute namespace="##other" processContents="skip" />
   </xs:complexType>
   <xs:complexType name="NAnt.DotNet.Tasks.VbcTask">
     <xs:sequence minOccurs="0" maxOccurs="unbounded">
@@ -638,10 +688,12 @@
     <xs:attribute name="debug" use="optional" />
     <xs:attribute name="doc" use="optional" />
     <xs:attribute name="imports" use="optional" />
+    <xs:attribute name="nostdlib" use="optional" />
     <xs:attribute name="optioncompare" use="optional" />
     <xs:attribute name="optionexplicit" use="optional" />
     <xs:attribute name="optionoptimize" use="optional" />
     <xs:attribute name="optionstrict" use="optional" />
+    <xs:attribute name="platform" use="optional" />
     <xs:attribute name="removeintchecks" use="optional" />
     <xs:attribute name="rootnamespace" use="optional" />
     <xs:attribute name="output" use="required" />
@@ -652,11 +704,14 @@
     <xs:attribute name="nowarn" use="optional" />
     <xs:attribute name="rebuild" use="optional" />
     <xs:attribute name="main" use="optional" />
+    <xs:attribute name="keycontainer" use="optional" />
+    <xs:attribute name="keyfile" use="optional" />
     <xs:attribute name="timeout" use="optional" />
     <xs:attribute name="failonerror" use="optional" />
     <xs:attribute name="verbose" use="optional" />
     <xs:attribute name="if" use="optional" />
     <xs:attribute name="unless" use="optional" />
+    <xs:anyAttribute namespace="##other" processContents="skip" />
   </xs:complexType>
   <xs:complexType name="NAnt.DotNet.Tasks.VjcTask">
     <xs:sequence minOccurs="0" maxOccurs="unbounded">
@@ -688,11 +743,14 @@
     <xs:attribute name="nowarn" use="optional" />
     <xs:attribute name="rebuild" use="optional" />
     <xs:attribute name="main" use="optional" />
+    <xs:attribute name="keycontainer" use="optional" />
+    <xs:attribute name="keyfile" use="optional" />
     <xs:attribute name="timeout" use="optional" />
     <xs:attribute name="failonerror" use="optional" />
     <xs:attribute name="verbose" use="optional" />
     <xs:attribute name="if" use="optional" />
     <xs:attribute name="unless" use="optional" />
+    <xs:anyAttribute namespace="##other" processContents="skip" />
   </xs:complexType>
   <xs:complexType name="NAnt.Compression.Tasks.GUnzip">
     <xs:attribute name="src" use="required" />
@@ -701,6 +759,7 @@
     <xs:attribute name="verbose" use="optional" />
     <xs:attribute name="if" use="optional" />
     <xs:attribute name="unless" use="optional" />
+    <xs:anyAttribute namespace="##other" processContents="skip" />
   </xs:complexType>
   <xs:complexType name="NAnt.Compression.Tasks.TarTask">
     <xs:sequence minOccurs="0" maxOccurs="unbounded">
@@ -713,14 +772,17 @@
     <xs:attribute name="verbose" use="optional" />
     <xs:attribute name="if" use="optional" />
     <xs:attribute name="unless" use="optional" />
+    <xs:anyAttribute namespace="##other" processContents="skip" />
   </xs:complexType>
   <xs:complexType name="NAnt.Compression.Tasks.UnZipTask">
     <xs:attribute name="zipfile" use="required" />
     <xs:attribute name="todir" use="optional" />
+    <xs:attribute name="encoding" use="optional" />
     <xs:attribute name="failonerror" use="optional" />
     <xs:attribute name="verbose" use="optional" />
     <xs:attribute name="if" use="optional" />
     <xs:attribute name="unless" use="optional" />
+    <xs:anyAttribute namespace="##other" processContents="skip" />
   </xs:complexType>
   <xs:complexType name="NAnt.Compression.Tasks.ZipTask">
     <xs:sequence minOccurs="0" maxOccurs="unbounded">
@@ -731,10 +793,13 @@
     <xs:attribute name="stampdatetime" use="optional" />
     <xs:attribute name="ziplevel" use="optional" />
     <xs:attribute name="includeemptydirs" use="optional" />
+    <xs:attribute name="duplicate" use="optional" />
+    <xs:attribute name="encoding" use="optional" />
     <xs:attribute name="failonerror" use="optional" />
     <xs:attribute name="verbose" use="optional" />
     <xs:attribute name="if" use="optional" />
     <xs:attribute name="unless" use="optional" />
+    <xs:anyAttribute namespace="##other" processContents="skip" />
   </xs:complexType>
   <xs:complexType name="NAnt.NUnit1.Types.NUnitTest">
     <xs:attribute name="outfile" use="optional" />
@@ -745,12 +810,14 @@
     <xs:attribute name="haltonerror" use="optional" />
     <xs:attribute name="haltonfailure" use="optional" />
     <xs:attribute name="appconfig" use="optional" />
+    <xs:anyAttribute namespace="##other" processContents="skip" />
   </xs:complexType>
   <xs:complexType name="NAnt.NUnit.Types.FormatterElement">
     <xs:attribute name="type" use="required" />
     <xs:attribute name="extension" use="optional" />
     <xs:attribute name="usefile" use="optional" />
     <xs:attribute name="outputdir" use="optional" />
+    <xs:anyAttribute namespace="##other" processContents="skip" />
   </xs:complexType>
   <xs:complexType name="NAnt.NUnit1.Tasks.NUnitTask">
     <xs:sequence minOccurs="0" maxOccurs="unbounded">
@@ -764,17 +831,19 @@
     <xs:attribute name="verbose" use="optional" />
     <xs:attribute name="if" use="optional" />
     <xs:attribute name="unless" use="optional" />
+    <xs:anyAttribute namespace="##other" processContents="skip" />
   </xs:complexType>
   <xs:complexType name="NAnt.NUnit2.Types.NUnit2Test">
     <xs:sequence minOccurs="0" maxOccurs="unbounded">
       <xs:element minOccurs="0" maxOccurs="1" name="assemblies" type="nant:NAnt.DotNet.Types.AssemblyFileSet" />
-      <xs:element minOccurs="0" maxOccurs="1" name="categories" type="nant:NAnt.NUnit2.Types.CategorySet" />
+      <xs:element minOccurs="0" maxOccurs="1" name="categories" type="nant:NAnt.NUnit2.Types.Categories" />
     </xs:sequence>
     <xs:attribute name="assemblyname" use="optional" />
     <xs:attribute name="testname" use="optional" />
     <xs:attribute name="haltonfailure" use="optional" />
     <xs:attribute name="transformfile" use="optional" />
     <xs:attribute name="appconfig" use="optional" />
+    <xs:anyAttribute namespace="##other" processContents="skip" />
   </xs:complexType>
   <xs:complexType name="NAnt.NUnit2.Tasks.NUnit2Task">
     <xs:sequence minOccurs="0" maxOccurs="unbounded">
@@ -786,6 +855,7 @@
     <xs:attribute name="verbose" use="optional" />
     <xs:attribute name="if" use="optional" />
     <xs:attribute name="unless" use="optional" />
+    <xs:anyAttribute namespace="##other" processContents="skip" />
   </xs:complexType>
   <xs:complexType name="NAnt.SourceControl.Tasks.ChangeLogTask">
     <xs:sequence minOccurs="0" maxOccurs="unbounded">
@@ -813,6 +883,7 @@
     <xs:attribute name="verbose" use="optional" />
     <xs:attribute name="if" use="optional" />
     <xs:attribute name="unless" use="optional" />
+    <xs:anyAttribute namespace="##other" processContents="skip" />
   </xs:complexType>
   <xs:complexType name="NAnt.SourceControl.Tasks.CheckoutTask">
     <xs:sequence minOccurs="0" maxOccurs="unbounded">
@@ -843,6 +914,7 @@
     <xs:attribute name="verbose" use="optional" />
     <xs:attribute name="if" use="optional" />
     <xs:attribute name="unless" use="optional" />
+    <xs:anyAttribute namespace="##other" processContents="skip" />
   </xs:complexType>
   <xs:complexType name="NAnt.SourceControl.Tasks.CvsPass">
     <xs:attribute name="password" use="required" />
@@ -852,6 +924,7 @@
     <xs:attribute name="verbose" use="optional" />
     <xs:attribute name="if" use="optional" />
     <xs:attribute name="unless" use="optional" />
+    <xs:anyAttribute namespace="##other" processContents="skip" />
   </xs:complexType>
   <xs:complexType name="NAnt.SourceControl.Tasks.CvsTask">
     <xs:sequence minOccurs="0" maxOccurs="unbounded">
@@ -878,6 +951,7 @@
     <xs:attribute name="verbose" use="optional" />
     <xs:attribute name="if" use="optional" />
     <xs:attribute name="unless" use="optional" />
+    <xs:anyAttribute namespace="##other" processContents="skip" />
   </xs:complexType>
   <xs:complexType name="NAnt.SourceControl.Tasks.ExportTask">
     <xs:sequence minOccurs="0" maxOccurs="unbounded">
@@ -909,6 +983,7 @@
     <xs:attribute name="verbose" use="optional" />
     <xs:attribute name="if" use="optional" />
     <xs:attribute name="unless" use="optional" />
+    <xs:anyAttribute namespace="##other" processContents="skip" />
   </xs:complexType>
   <xs:complexType name="NAnt.SourceControl.Tasks.RTagTask">
     <xs:sequence minOccurs="0" maxOccurs="unbounded">
@@ -941,6 +1016,7 @@
     <xs:attribute name="verbose" use="optional" />
     <xs:attribute name="if" use="optional" />
     <xs:attribute name="unless" use="optional" />
+    <xs:anyAttribute namespace="##other" processContents="skip" />
   </xs:complexType>
   <xs:complexType name="NAnt.SourceControl.Tasks.TagTask">
     <xs:sequence minOccurs="0" maxOccurs="unbounded">
@@ -973,6 +1049,7 @@
     <xs:attribute name="verbose" use="optional" />
     <xs:attribute name="if" use="optional" />
     <xs:attribute name="unless" use="optional" />
+    <xs:anyAttribute namespace="##other" processContents="skip" />
   </xs:complexType>
   <xs:complexType name="NAnt.SourceControl.Tasks.UpdateTask">
     <xs:sequence minOccurs="0" maxOccurs="unbounded">
@@ -1005,6 +1082,7 @@
     <xs:attribute name="verbose" use="optional" />
     <xs:attribute name="if" use="optional" />
     <xs:attribute name="unless" use="optional" />
+    <xs:anyAttribute namespace="##other" processContents="skip" />
   </xs:complexType>
   <xs:complexType name="NAnt.Win32.Tasks.AxImpTask">
     <xs:sequence minOccurs="0" maxOccurs="unbounded">
@@ -1023,6 +1101,7 @@
     <xs:attribute name="verbose" use="optional" />
     <xs:attribute name="if" use="optional" />
     <xs:attribute name="unless" use="optional" />
+    <xs:anyAttribute namespace="##other" processContents="skip" />
   </xs:complexType>
   <xs:complexType name="NAnt.Win32.Tasks.ReadRegistryTask">
     <xs:attribute name="property" use="optional" />
@@ -1033,6 +1112,26 @@
     <xs:attribute name="verbose" use="optional" />
     <xs:attribute name="if" use="optional" />
     <xs:attribute name="unless" use="optional" />
+    <xs:anyAttribute namespace="##other" processContents="skip" />
+  </xs:complexType>
+  <xs:complexType name="NAnt.Win32.Tasks.RegAsmTask">
+    <xs:sequence minOccurs="0" maxOccurs="unbounded">
+      <xs:element minOccurs="0" maxOccurs="1" name="assemblies" type="nant:NAnt.DotNet.Types.AssemblyFileSet" />
+      <xs:element minOccurs="0" maxOccurs="1" name="references" type="nant:NAnt.DotNet.Types.AssemblyFileSet" />
+      <xs:element minOccurs="0" maxOccurs="1" name="arg" type="nant:NAnt.Core.Types.Argument" />
+    </xs:sequence>
+    <xs:attribute name="assembly" use="optional" />
+    <xs:attribute name="regfile" use="optional" />
+    <xs:attribute name="codebase" use="optional" />
+    <xs:attribute name="registered" use="optional" />
+    <xs:attribute name="typelib" use="optional" />
+    <xs:attribute name="unregister" use="optional" />
+    <xs:attribute name="timeout" use="optional" />
+    <xs:attribute name="failonerror" use="optional" />
+    <xs:attribute name="verbose" use="optional" />
+    <xs:attribute name="if" use="optional" />
+    <xs:attribute name="unless" use="optional" />
+    <xs:anyAttribute namespace="##other" processContents="skip" />
   </xs:complexType>
   <xs:complexType name="NAnt.Win32.Tasks.TlbExpTask">
     <xs:sequence minOccurs="0" maxOccurs="unbounded">
@@ -1046,6 +1145,7 @@
     <xs:attribute name="verbose" use="optional" />
     <xs:attribute name="if" use="optional" />
     <xs:attribute name="unless" use="optional" />
+    <xs:anyAttribute namespace="##other" processContents="skip" />
   </xs:complexType>
   <xs:complexType name="NAnt.Win32.Tasks.TlbImpTask">
     <xs:sequence minOccurs="0" maxOccurs="unbounded">
@@ -1062,6 +1162,7 @@
     <xs:attribute name="keycontainer" use="optional" />
     <xs:attribute name="strictref" use="optional" />
     <xs:attribute name="sysarray" use="optional" />
+    <xs:attribute name="transform" use="optional" />
     <xs:attribute name="typelib" use="required" />
     <xs:attribute name="unsafe" use="optional" />
     <xs:attribute name="timeout" use="optional" />
@@ -1069,12 +1170,14 @@
     <xs:attribute name="verbose" use="optional" />
     <xs:attribute name="if" use="optional" />
     <xs:attribute name="unless" use="optional" />
+    <xs:anyAttribute namespace="##other" processContents="skip" />
   </xs:complexType>
   <xs:complexType name="NAnt.Core.Types.Option">
     <xs:attribute name="name" use="required" />
     <xs:attribute name="value" use="optional" />
     <xs:attribute name="if" use="optional" />
     <xs:attribute name="unless" use="optional" />
+    <xs:anyAttribute namespace="##other" processContents="skip" />
   </xs:complexType>
   <xs:complexType name="NAnt.VisualCpp.Tasks.ClTask">
     <xs:sequence minOccurs="0" maxOccurs="unbounded">
@@ -1112,16 +1215,19 @@
     <xs:attribute name="verbose" use="optional" />
     <xs:attribute name="if" use="optional" />
     <xs:attribute name="unless" use="optional" />
+    <xs:anyAttribute namespace="##other" processContents="skip" />
   </xs:complexType>
   <xs:complexType name="NAnt.VisualCpp.Types.Symbol">
     <xs:attribute name="name" use="required" />
     <xs:attribute name="if" use="optional" />
     <xs:attribute name="unless" use="optional" />
+    <xs:anyAttribute namespace="##other" processContents="skip" />
   </xs:complexType>
   <xs:complexType name="NAnt.VisualCpp.Types.Library">
     <xs:attribute name="name" use="required" />
     <xs:attribute name="if" use="optional" />
     <xs:attribute name="unless" use="optional" />
+    <xs:anyAttribute namespace="##other" processContents="skip" />
   </xs:complexType>
   <xs:complexType name="NAnt.VisualCpp.Tasks.LibTask">
     <xs:sequence minOccurs="0" maxOccurs="unbounded">
@@ -1151,9 +1257,11 @@
     <xs:attribute name="verbose" use="optional" />
     <xs:attribute name="if" use="optional" />
     <xs:attribute name="unless" use="optional" />
+    <xs:anyAttribute namespace="##other" processContents="skip" />
   </xs:complexType>
   <xs:complexType name="NAnt.VisualCpp.Tasks.LinkTask">
     <xs:sequence minOccurs="0" maxOccurs="unbounded">
+      <xs:element minOccurs="0" maxOccurs="1" name="delayloaded" type="nant:NAnt.Core.Types.FileSet" />
       <xs:element minOccurs="0" maxOccurs="1" name="sources" type="nant:NAnt.Core.Types.FileSet" />
       <xs:element minOccurs="0" maxOccurs="1" name="libdirs" type="nant:NAnt.Core.Types.FileSet" />
       <xs:element minOccurs="0" maxOccurs="1" name="modules" type="nant:NAnt.Core.Types.FileSet" />
@@ -1182,6 +1290,7 @@
     <xs:attribute name="verbose" use="optional" />
     <xs:attribute name="if" use="optional" />
     <xs:attribute name="unless" use="optional" />
+    <xs:anyAttribute namespace="##other" processContents="skip" />
   </xs:complexType>
   <xs:complexType name="NAnt.VisualCpp.Tasks.McTask">
     <xs:sequence minOccurs="0" maxOccurs="unbounded">
@@ -1196,6 +1305,7 @@
     <xs:attribute name="verbose" use="optional" />
     <xs:attribute name="if" use="optional" />
     <xs:attribute name="unless" use="optional" />
+    <xs:anyAttribute namespace="##other" processContents="skip" />
   </xs:complexType>
   <xs:complexType name="NAnt.VisualCpp.Tasks.MidlTask">
     <xs:sequence minOccurs="0" maxOccurs="unbounded">
@@ -1242,6 +1352,7 @@
     <xs:attribute name="verbose" use="optional" />
     <xs:attribute name="if" use="optional" />
     <xs:attribute name="unless" use="optional" />
+    <xs:anyAttribute namespace="##other" processContents="skip" />
   </xs:complexType>
   <xs:complexType name="NAnt.VisualCpp.Tasks.RcTask">
     <xs:sequence minOccurs="0" maxOccurs="unbounded">
@@ -1264,6 +1375,7 @@
     <xs:attribute name="verbose" use="optional" />
     <xs:attribute name="if" use="optional" />
     <xs:attribute name="unless" use="optional" />
+    <xs:anyAttribute namespace="##other" processContents="skip" />
   </xs:complexType>
   <xs:complexType name="NAnt.VSNet.Types.WebMap">
     <xs:attribute name="url" use="required" />
@@ -1271,6 +1383,7 @@
     <xs:attribute name="casesensitive" use="optional" />
     <xs:attribute name="if" use="optional" />
     <xs:attribute name="unless" use="optional" />
+    <xs:anyAttribute namespace="##other" processContents="skip" />
   </xs:complexType>
   <xs:complexType name="NAnt.VSNet.Tasks.SolutionTask">
     <xs:sequence minOccurs="0" maxOccurs="unbounded">
@@ -1295,22 +1408,26 @@
     <xs:attribute name="verbose" use="optional" />
     <xs:attribute name="if" use="optional" />
     <xs:attribute name="unless" use="optional" />
+    <xs:anyAttribute namespace="##other" processContents="skip" />
   </xs:complexType>
   <xs:complexType name="Tests.NAnt.Core.Util.XmlLoggerTest-TestTask">
     <xs:attribute name="failonerror" use="optional" />
     <xs:attribute name="verbose" use="optional" />
     <xs:attribute name="if" use="optional" />
     <xs:attribute name="unless" use="optional" />
+    <xs:anyAttribute namespace="##other" processContents="skip" />
   </xs:complexType>
   <xs:complexType name="Tests.NAnt.Core.ElementTest1Task">
     <xs:sequence minOccurs="0" maxOccurs="unbounded">
       <xs:element minOccurs="0" maxOccurs="1" name="fileset" type="nant:NAnt.Core.Types.FileSet" />
     </xs:sequence>
     <xs:attribute name="type" use="optional" />
+    <xs:attribute name="uri" use="optional" />
     <xs:attribute name="failonerror" use="optional" />
     <xs:attribute name="verbose" use="optional" />
     <xs:attribute name="if" use="optional" />
     <xs:attribute name="unless" use="optional" />
+    <xs:anyAttribute namespace="##other" processContents="skip" />
   </xs:complexType>
   <xs:complexType name="Tests.NAnt.Core.TestTask">
     <xs:attribute name="fail" use="optional" />
@@ -1320,6 +1437,7 @@
     <xs:attribute name="verbose" use="optional" />
     <xs:attribute name="if" use="optional" />
     <xs:attribute name="unless" use="optional" />
+    <xs:anyAttribute namespace="##other" processContents="skip" />
   </xs:complexType>
   <xs:complexType name="NAnt.Core.Tasks.AttribTask">
     <xs:sequence minOccurs="0" maxOccurs="unbounded">
@@ -1335,6 +1453,7 @@
     <xs:attribute name="verbose" use="optional" />
     <xs:attribute name="if" use="optional" />
     <xs:attribute name="unless" use="optional" />
+    <xs:anyAttribute namespace="##other" processContents="skip" />
   </xs:complexType>
   <xs:complexType name="NAnt.Core.Tasks.AvailableTask">
     <xs:attribute name="resource" use="required" />
@@ -1344,6 +1463,7 @@
     <xs:attribute name="verbose" use="optional" />
     <xs:attribute name="if" use="optional" />
     <xs:attribute name="unless" use="optional" />
+    <xs:anyAttribute namespace="##other" processContents="skip" />
   </xs:complexType>
   <xs:complexType name="NAnt.Core.Tasks.CallTask">
     <xs:attribute name="target" use="required" />
@@ -1353,6 +1473,7 @@
     <xs:attribute name="verbose" use="optional" />
     <xs:attribute name="if" use="optional" />
     <xs:attribute name="unless" use="optional" />
+    <xs:anyAttribute namespace="##other" processContents="skip" />
   </xs:complexType>
   <xs:complexType name="NAnt.Core.Tasks.CopyTask">
     <xs:sequence minOccurs="0" maxOccurs="unbounded">
@@ -1371,6 +1492,7 @@
     <xs:attribute name="verbose" use="optional" />
     <xs:attribute name="if" use="optional" />
     <xs:attribute name="unless" use="optional" />
+    <xs:anyAttribute namespace="##other" processContents="skip" />
   </xs:complexType>
   <xs:complexType name="NAnt.Core.Tasks.DeleteTask">
     <xs:sequence minOccurs="0" maxOccurs="unbounded">
@@ -1379,16 +1501,18 @@
     <xs:attribute name="file" use="optional" />
     <xs:attribute name="dir" use="optional" />
     <xs:attribute name="includeemptydirs" use="optional" />
-    <xs:attribute name="failonerror" use="optional" />
     <xs:attribute name="verbose" use="optional" />
+    <xs:attribute name="failonerror" use="optional" />
     <xs:attribute name="if" use="optional" />
     <xs:attribute name="unless" use="optional" />
+    <xs:anyAttribute namespace="##other" processContents="skip" />
   </xs:complexType>
   <xs:complexType name="NAnt.Core.Tasks.DescriptionTask">
     <xs:attribute name="failonerror" use="optional" />
     <xs:attribute name="verbose" use="optional" />
     <xs:attribute name="if" use="optional" />
     <xs:attribute name="unless" use="optional" />
+    <xs:anyAttribute namespace="##other" processContents="skip" />
   </xs:complexType>
   <xs:complexType name="NAnt.Core.Tasks.EchoTask">
     <xs:attribute name="message" use="optional" />
@@ -1399,6 +1523,7 @@
     <xs:attribute name="verbose" use="optional" />
     <xs:attribute name="if" use="optional" />
     <xs:attribute name="unless" use="optional" />
+    <xs:anyAttribute namespace="##other" processContents="skip" />
   </xs:complexType>
   <xs:complexType name="NAnt.Core.Types.EnvironmentVariable">
     <xs:sequence minOccurs="0" maxOccurs="unbounded">
@@ -1411,12 +1536,14 @@
     <xs:attribute name="path" use="optional" />
     <xs:attribute name="if" use="optional" />
     <xs:attribute name="unless" use="optional" />
+    <xs:anyAttribute namespace="##other" processContents="skip" />
   </xs:complexType>
   <xs:complexType name="NAnt.Core.Types.EnvironmentSet">
     <xs:sequence minOccurs="0" maxOccurs="unbounded">
       <xs:element minOccurs="0" maxOccurs="1" name="option" type="nant:NAnt.Core.Types.Option" />
       <xs:element minOccurs="0" maxOccurs="1" name="variable" type="nant:NAnt.Core.Types.EnvironmentVariable" />
     </xs:sequence>
+    <xs:anyAttribute namespace="##other" processContents="skip" />
   </xs:complexType>
   <xs:complexType name="NAnt.Core.Tasks.ExecTask">
     <xs:sequence minOccurs="0" maxOccurs="unbounded">
@@ -1436,6 +1563,7 @@
     <xs:attribute name="verbose" use="optional" />
     <xs:attribute name="if" use="optional" />
     <xs:attribute name="unless" use="optional" />
+    <xs:anyAttribute namespace="##other" processContents="skip" />
   </xs:complexType>
   <xs:complexType name="NAnt.Core.Tasks.FailTask">
     <xs:attribute name="message" use="optional" />
@@ -1443,6 +1571,7 @@
     <xs:attribute name="verbose" use="optional" />
     <xs:attribute name="if" use="optional" />
     <xs:attribute name="unless" use="optional" />
+    <xs:anyAttribute namespace="##other" processContents="skip" />
   </xs:complexType>
   <xs:complexType name="NAnt.Core.Tasks.GetTask">
     <xs:sequence minOccurs="0" maxOccurs="unbounded">
@@ -1460,6 +1589,7 @@
     <xs:attribute name="verbose" use="optional" />
     <xs:attribute name="if" use="optional" />
     <xs:attribute name="unless" use="optional" />
+    <xs:anyAttribute namespace="##other" processContents="skip" />
   </xs:complexType>
   <xs:complexType name="NAnt.Core.Tasks.IfTask">
     <xs:sequence minOccurs="0" maxOccurs="unbounded">
@@ -1495,6 +1625,7 @@
         <xs:element name="cvs-update" type="nant:NAnt.SourceControl.Tasks.UpdateTask" />
         <xs:element name="aximp" type="nant:NAnt.Win32.Tasks.AxImpTask" />
         <xs:element name="readregistry" type="nant:NAnt.Win32.Tasks.ReadRegistryTask" />
+        <xs:element name="regasm" type="nant:NAnt.Win32.Tasks.RegAsmTask" />
         <xs:element name="tlbexp" type="nant:NAnt.Win32.Tasks.TlbExpTask" />
         <xs:element name="tlbimp" type="nant:NAnt.Win32.Tasks.TlbImpTask" />
         <xs:element name="cl" type="nant:NAnt.VisualCpp.Tasks.ClTask" />
@@ -1541,6 +1672,8 @@
         <xs:element name="xmlpoke" type="nant:NAnt.Core.Tasks.XmlPokeTask" />
         <xs:element name="ildasm" type="nant:NAnt.MSNet.Tasks.IldasmTask" />
         <xs:element name="servicecontroller" type="nant:NAnt.MSNet.Tasks.ServiceControllerTask" />
+        <xs:any minOccurs="0" maxOccurs="unbounded" namespace="##other" processContents="strict" />
+        <xs:any minOccurs="0" maxOccurs="unbounded" namespace="##local" processContents="strict" />
       </xs:choice>
     </xs:sequence>
     <xs:attribute name="uptodatefile" use="optional" />
@@ -1553,6 +1686,7 @@
     <xs:attribute name="verbose" use="optional" />
     <xs:attribute name="if" use="optional" />
     <xs:attribute name="unless" use="optional" />
+    <xs:anyAttribute namespace="##other" processContents="skip" />
   </xs:complexType>
   <xs:complexType name="NAnt.Core.Tasks.IfNotTask">
     <xs:sequence minOccurs="0" maxOccurs="unbounded">
@@ -1588,6 +1722,7 @@
         <xs:element name="cvs-update" type="nant:NAnt.SourceControl.Tasks.UpdateTask" />
         <xs:element name="aximp" type="nant:NAnt.Win32.Tasks.AxImpTask" />
         <xs:element name="readregistry" type="nant:NAnt.Win32.Tasks.ReadRegistryTask" />
+        <xs:element name="regasm" type="nant:NAnt.Win32.Tasks.RegAsmTask" />
         <xs:element name="tlbexp" type="nant:NAnt.Win32.Tasks.TlbExpTask" />
         <xs:element name="tlbimp" type="nant:NAnt.Win32.Tasks.TlbImpTask" />
         <xs:element name="cl" type="nant:NAnt.VisualCpp.Tasks.ClTask" />
@@ -1634,6 +1769,8 @@
         <xs:element name="xmlpoke" type="nant:NAnt.Core.Tasks.XmlPokeTask" />
         <xs:element name="ildasm" type="nant:NAnt.MSNet.Tasks.IldasmTask" />
         <xs:element name="servicecontroller" type="nant:NAnt.MSNet.Tasks.ServiceControllerTask" />
+        <xs:any minOccurs="0" maxOccurs="unbounded" namespace="##other" processContents="strict" />
+        <xs:any minOccurs="0" maxOccurs="unbounded" namespace="##local" processContents="strict" />
       </xs:choice>
     </xs:sequence>
     <xs:attribute name="uptodatefile" use="optional" />
@@ -1646,6 +1783,7 @@
     <xs:attribute name="verbose" use="optional" />
     <xs:attribute name="if" use="optional" />
     <xs:attribute name="unless" use="optional" />
+    <xs:anyAttribute namespace="##other" processContents="skip" />
   </xs:complexType>
   <xs:complexType name="NAnt.Core.Tasks.IncludeTask">
     <xs:attribute name="buildfile" use="required" />
@@ -1653,6 +1791,7 @@
     <xs:attribute name="verbose" use="optional" />
     <xs:attribute name="if" use="optional" />
     <xs:attribute name="unless" use="optional" />
+    <xs:anyAttribute namespace="##other" processContents="skip" />
   </xs:complexType>
   <xs:complexType name="NAnt.Core.Tasks.LoadFileTask">
     <xs:sequence minOccurs="0" maxOccurs="unbounded">
@@ -1665,6 +1804,7 @@
     <xs:attribute name="verbose" use="optional" />
     <xs:attribute name="if" use="optional" />
     <xs:attribute name="unless" use="optional" />
+    <xs:anyAttribute namespace="##other" processContents="skip" />
   </xs:complexType>
   <xs:complexType name="NAnt.Core.Tasks.LoadTasksTask">
     <xs:sequence minOccurs="0" maxOccurs="unbounded">
@@ -1676,11 +1816,13 @@
     <xs:attribute name="verbose" use="optional" />
     <xs:attribute name="if" use="optional" />
     <xs:attribute name="unless" use="optional" />
+    <xs:anyAttribute namespace="##other" processContents="skip" />
   </xs:complexType>
   <xs:complexType name="NAnt.Core.Tasks.InElement">
     <xs:sequence minOccurs="0" maxOccurs="unbounded">
       <xs:element minOccurs="0" maxOccurs="1" name="items" type="nant:NAnt.Core.Types.FileSet" />
     </xs:sequence>
+    <xs:anyAttribute namespace="##other" processContents="skip" />
   </xs:complexType>
   <xs:complexType name="NAnt.Core.Tasks.LoopTask">
     <xs:sequence minOccurs="0" maxOccurs="unbounded">
@@ -1716,6 +1858,7 @@
         <xs:element name="cvs-update" type="nant:NAnt.SourceControl.Tasks.UpdateTask" />
         <xs:element name="aximp" type="nant:NAnt.Win32.Tasks.AxImpTask" />
         <xs:element name="readregistry" type="nant:NAnt.Win32.Tasks.ReadRegistryTask" />
+        <xs:element name="regasm" type="nant:NAnt.Win32.Tasks.RegAsmTask" />
         <xs:element name="tlbexp" type="nant:NAnt.Win32.Tasks.TlbExpTask" />
         <xs:element name="tlbimp" type="nant:NAnt.Win32.Tasks.TlbImpTask" />
         <xs:element name="cl" type="nant:NAnt.VisualCpp.Tasks.ClTask" />
@@ -1762,6 +1905,8 @@
         <xs:element name="xmlpoke" type="nant:NAnt.Core.Tasks.XmlPokeTask" />
         <xs:element name="ildasm" type="nant:NAnt.MSNet.Tasks.IldasmTask" />
         <xs:element name="servicecontroller" type="nant:NAnt.MSNet.Tasks.ServiceControllerTask" />
+        <xs:any minOccurs="0" maxOccurs="unbounded" namespace="##other" processContents="strict" />
+        <xs:any minOccurs="0" maxOccurs="unbounded" namespace="##local" processContents="strict" />
       </xs:choice>
     </xs:sequence>
     <xs:attribute name="property" use="required" />
@@ -1773,6 +1918,7 @@
     <xs:attribute name="verbose" use="optional" />
     <xs:attribute name="if" use="optional" />
     <xs:attribute name="unless" use="optional" />
+    <xs:anyAttribute namespace="##other" processContents="skip" />
   </xs:complexType>
   <xs:complexType name="NAnt.Core.Tasks.MailTask">
     <xs:sequence minOccurs="0" maxOccurs="unbounded">
@@ -1791,6 +1937,7 @@
     <xs:attribute name="verbose" use="optional" />
     <xs:attribute name="if" use="optional" />
     <xs:attribute name="unless" use="optional" />
+    <xs:anyAttribute namespace="##other" processContents="skip" />
   </xs:complexType>
   <xs:complexType name="NAnt.Core.Tasks.MkDirTask">
     <xs:attribute name="dir" use="required" />
@@ -1798,6 +1945,7 @@
     <xs:attribute name="verbose" use="optional" />
     <xs:attribute name="if" use="optional" />
     <xs:attribute name="unless" use="optional" />
+    <xs:anyAttribute namespace="##other" processContents="skip" />
   </xs:complexType>
   <xs:complexType name="NAnt.Core.Tasks.MoveTask">
     <xs:sequence minOccurs="0" maxOccurs="unbounded">
@@ -1816,6 +1964,7 @@
     <xs:attribute name="verbose" use="optional" />
     <xs:attribute name="if" use="optional" />
     <xs:attribute name="unless" use="optional" />
+    <xs:anyAttribute namespace="##other" processContents="skip" />
   </xs:complexType>
   <xs:complexType name="NAnt.Core.Tasks.NAntSchemaTask">
     <xs:attribute name="output" use="required" />
@@ -1825,6 +1974,7 @@
     <xs:attribute name="verbose" use="optional" />
     <xs:attribute name="if" use="optional" />
     <xs:attribute name="unless" use="optional" />
+    <xs:anyAttribute namespace="##other" processContents="skip" />
   </xs:complexType>
   <xs:complexType name="NAnt.Core.Tasks.PropertyTask">
     <xs:attribute name="name" use="required" />
@@ -1836,6 +1986,7 @@
     <xs:attribute name="verbose" use="optional" />
     <xs:attribute name="if" use="optional" />
     <xs:attribute name="unless" use="optional" />
+    <xs:anyAttribute namespace="##other" processContents="skip" />
   </xs:complexType>
   <xs:complexType name="NAnt.Core.Tasks.NAntTask">
     <xs:sequence minOccurs="0" maxOccurs="unbounded">
@@ -1856,6 +2007,7 @@
     <xs:attribute name="verbose" use="optional" />
     <xs:attribute name="if" use="optional" />
     <xs:attribute name="unless" use="optional" />
+    <xs:anyAttribute namespace="##other" processContents="skip" />
   </xs:complexType>
   <xs:complexType name="NAnt.Core.Tasks.RegexTask">
     <xs:attribute name="pattern" use="required" />
@@ -1865,6 +2017,7 @@
     <xs:attribute name="verbose" use="optional" />
     <xs:attribute name="if" use="optional" />
     <xs:attribute name="unless" use="optional" />
+    <xs:anyAttribute namespace="##other" processContents="skip" />
   </xs:complexType>
   <xs:complexType name="NAnt.Core.Tasks.SetEnvTask">
     <xs:sequence minOccurs="0" maxOccurs="unbounded">
@@ -1879,6 +2032,7 @@
     <xs:attribute name="verbose" use="optional" />
     <xs:attribute name="if" use="optional" />
     <xs:attribute name="unless" use="optional" />
+    <xs:anyAttribute namespace="##other" processContents="skip" />
   </xs:complexType>
   <xs:complexType name="NAnt.Core.Tasks.SleepTask">
     <xs:attribute name="hours" use="optional" />
@@ -1889,6 +2043,7 @@
     <xs:attribute name="verbose" use="optional" />
     <xs:attribute name="if" use="optional" />
     <xs:attribute name="unless" use="optional" />
+    <xs:anyAttribute namespace="##other" processContents="skip" />
   </xs:complexType>
   <xs:complexType name="NAnt.Core.Types.XsltParameter">
     <xs:attribute name="name" use="required" />
@@ -1896,6 +2051,7 @@
     <xs:attribute name="value" use="required" />
     <xs:attribute name="if" use="optional" />
     <xs:attribute name="unless" use="optional" />
+    <xs:anyAttribute namespace="##other" processContents="skip" />
   </xs:complexType>
   <xs:complexType name="NAnt.Core.Types.XsltExtensionObject">
     <xs:attribute name="namespaceuri" use="optional" />
@@ -1903,6 +2059,7 @@
     <xs:attribute name="assembly" use="required" />
     <xs:attribute name="if" use="optional" />
     <xs:attribute name="unless" use="optional" />
+    <xs:anyAttribute namespace="##other" processContents="skip" />
   </xs:complexType>
   <xs:complexType name="NAnt.Core.Tasks.StyleTask">
     <xs:sequence minOccurs="0" maxOccurs="unbounded">
@@ -1921,6 +2078,7 @@
           </xs:sequence>
         </xs:complexType>
       </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="proxy" type="nant:NAnt.Core.Types.Proxy" />
     </xs:sequence>
     <xs:attribute name="destdir" use="optional" />
     <xs:attribute name="extension" use="optional" />
@@ -1931,6 +2089,7 @@
     <xs:attribute name="verbose" use="optional" />
     <xs:attribute name="if" use="optional" />
     <xs:attribute name="unless" use="optional" />
+    <xs:anyAttribute namespace="##other" processContents="skip" />
   </xs:complexType>
   <xs:complexType name="NAnt.Core.Tasks.SysInfoTask">
     <xs:attribute name="prefix" use="optional" />
@@ -1938,12 +2097,14 @@
     <xs:attribute name="verbose" use="optional" />
     <xs:attribute name="if" use="optional" />
     <xs:attribute name="unless" use="optional" />
+    <xs:anyAttribute namespace="##other" processContents="skip" />
   </xs:complexType>
   <xs:complexType name="NAnt.Core.Types.Formatter">
     <xs:attribute name="property" use="required" />
     <xs:attribute name="pattern" use="required" />
     <xs:attribute name="if" use="optional" />
     <xs:attribute name="unless" use="optional" />
+    <xs:anyAttribute namespace="##other" processContents="skip" />
   </xs:complexType>
   <xs:complexType name="NAnt.Core.Tasks.TStampTask">
     <xs:sequence minOccurs="0" maxOccurs="unbounded">
@@ -1955,6 +2116,7 @@
     <xs:attribute name="verbose" use="optional" />
     <xs:attribute name="if" use="optional" />
     <xs:attribute name="unless" use="optional" />
+    <xs:anyAttribute namespace="##other" processContents="skip" />
   </xs:complexType>
   <xs:complexType name="NAnt.Core.Tasks.TouchTask">
     <xs:sequence minOccurs="0" maxOccurs="unbounded">
@@ -1967,6 +2129,7 @@
     <xs:attribute name="verbose" use="optional" />
     <xs:attribute name="if" use="optional" />
     <xs:attribute name="unless" use="optional" />
+    <xs:anyAttribute namespace="##other" processContents="skip" />
   </xs:complexType>
   <xs:complexType name="NAnt.Core.Tasks.UpToDateTask">
     <xs:sequence minOccurs="0" maxOccurs="unbounded">
@@ -1978,12 +2141,14 @@
     <xs:attribute name="verbose" use="optional" />
     <xs:attribute name="if" use="optional" />
     <xs:attribute name="unless" use="optional" />
+    <xs:anyAttribute namespace="##other" processContents="skip" />
   </xs:complexType>
   <xs:complexType name="NAnt.Core.Types.XmlNamespace">
     <xs:attribute name="prefix" use="required" />
     <xs:attribute name="uri" use="required" />
     <xs:attribute name="if" use="optional" />
     <xs:attribute name="unless" use="optional" />
+    <xs:anyAttribute namespace="##other" processContents="skip" />
   </xs:complexType>
   <xs:complexType name="NAnt.Core.Tasks.XmlPeekTask">
     <xs:sequence minOccurs="0" maxOccurs="unbounded">
@@ -2003,6 +2168,7 @@
     <xs:attribute name="verbose" use="optional" />
     <xs:attribute name="if" use="optional" />
     <xs:attribute name="unless" use="optional" />
+    <xs:anyAttribute namespace="##other" processContents="skip" />
   </xs:complexType>
   <xs:complexType name="NAnt.Core.Tasks.XmlPokeTask">
     <xs:sequence minOccurs="0" maxOccurs="unbounded">
@@ -2021,6 +2187,7 @@
     <xs:attribute name="verbose" use="optional" />
     <xs:attribute name="if" use="optional" />
     <xs:attribute name="unless" use="optional" />
+    <xs:anyAttribute namespace="##other" processContents="skip" />
   </xs:complexType>
   <xs:complexType name="NAnt.MSNet.Tasks.IldasmTask">
     <xs:sequence minOccurs="0" maxOccurs="unbounded">
@@ -2049,6 +2216,7 @@
     <xs:attribute name="verbose" use="optional" />
     <xs:attribute name="if" use="optional" />
     <xs:attribute name="unless" use="optional" />
+    <xs:anyAttribute namespace="##other" processContents="skip" />
   </xs:complexType>
   <xs:complexType name="NAnt.MSNet.Tasks.ServiceControllerTask">
     <xs:attribute name="service" use="required" />
@@ -2059,6 +2227,7 @@
     <xs:attribute name="verbose" use="optional" />
     <xs:attribute name="if" use="optional" />
     <xs:attribute name="unless" use="optional" />
+    <xs:anyAttribute namespace="##other" processContents="skip" />
   </xs:complexType>
   <xs:complexType name="Target">
     <xs:choice minOccurs="0" maxOccurs="unbounded">
@@ -2091,6 +2260,7 @@
       <xs:element name="cvs-update" type="nant:NAnt.SourceControl.Tasks.UpdateTask" />
       <xs:element name="aximp" type="nant:NAnt.Win32.Tasks.AxImpTask" />
       <xs:element name="readregistry" type="nant:NAnt.Win32.Tasks.ReadRegistryTask" />
+      <xs:element name="regasm" type="nant:NAnt.Win32.Tasks.RegAsmTask" />
       <xs:element name="tlbexp" type="nant:NAnt.Win32.Tasks.TlbExpTask" />
       <xs:element name="tlbimp" type="nant:NAnt.Win32.Tasks.TlbImpTask" />
       <xs:element name="cl" type="nant:NAnt.VisualCpp.Tasks.ClTask" />
@@ -2143,7 +2313,7 @@
       <xs:element name="warnaserror" type="nant:NAnt.DotNet.Types.WarningAsError" />
       <xs:element name="tarfileset" type="nant:NAnt.Compression.Types.TarFileSet" />
       <xs:element name="zipfileset" type="nant:NAnt.Compression.Types.ZipFileSet" />
-      <xs:element name="categoryset" type="nant:NAnt.NUnit2.Types.CategorySet" />
+      <xs:element name="categories" type="nant:NAnt.NUnit2.Types.Categories" />
       <xs:element name="cvsfileset" type="nant:NAnt.SourceControl.Types.CvsFileSet" />
       <xs:element name="filterchain" type="nant:NAnt.Core.Filters.FilterChain" />
       <xs:element name="credential" type="nant:NAnt.Core.Types.Credential" />
@@ -2151,6 +2321,8 @@
       <xs:element name="dirset" type="nant:NAnt.Core.Types.DirSet" />
       <xs:element name="path" type="nant:NAnt.Core.Types.PathSet" />
       <xs:element name="proxy" type="nant:NAnt.Core.Types.Proxy" />
+      <xs:any minOccurs="0" maxOccurs="unbounded" namespace="##other" processContents="strict" />
+      <xs:any minOccurs="0" maxOccurs="unbounded" namespace="##local" processContents="strict" />
     </xs:choice>
     <xs:attribute name="name" use="required" />
     <xs:attribute name="depends" use="optional" />
@@ -2190,6 +2362,7 @@
         <xs:element name="cvs-update" type="nant:NAnt.SourceControl.Tasks.UpdateTask" />
         <xs:element name="aximp" type="nant:NAnt.Win32.Tasks.AxImpTask" />
         <xs:element name="readregistry" type="nant:NAnt.Win32.Tasks.ReadRegistryTask" />
+        <xs:element name="regasm" type="nant:NAnt.Win32.Tasks.RegAsmTask" />
         <xs:element name="tlbexp" type="nant:NAnt.Win32.Tasks.TlbExpTask" />
         <xs:element name="tlbimp" type="nant:NAnt.Win32.Tasks.TlbImpTask" />
         <xs:element name="cl" type="nant:NAnt.VisualCpp.Tasks.ClTask" />
@@ -2242,7 +2415,7 @@
         <xs:element name="warnaserror" type="nant:NAnt.DotNet.Types.WarningAsError" />
         <xs:element name="tarfileset" type="nant:NAnt.Compression.Types.TarFileSet" />
         <xs:element name="zipfileset" type="nant:NAnt.Compression.Types.ZipFileSet" />
-        <xs:element name="categoryset" type="nant:NAnt.NUnit2.Types.CategorySet" />
+        <xs:element name="categories" type="nant:NAnt.NUnit2.Types.Categories" />
         <xs:element name="cvsfileset" type="nant:NAnt.SourceControl.Types.CvsFileSet" />
         <xs:element name="filterchain" type="nant:NAnt.Core.Filters.FilterChain" />
         <xs:element name="credential" type="nant:NAnt.Core.Types.Credential" />
@@ -2251,6 +2424,8 @@
         <xs:element name="path" type="nant:NAnt.Core.Types.PathSet" />
         <xs:element name="proxy" type="nant:NAnt.Core.Types.Proxy" />
         <xs:element name="target" type="nant:Target" />
+        <xs:any minOccurs="0" maxOccurs="unbounded" namespace="##other" processContents="strict" />
+        <xs:any minOccurs="0" maxOccurs="unbounded" namespace="##local" processContents="strict" />
       </xs:choice>
       <xs:attribute name="name" use="required" />
       <xs:attribute name="default" use="optional" />
