@@ -326,6 +326,14 @@ namespace MonoDevelop.XmlEditor
 			view.UndoChange();
 		}
 		
+		public bool EnableUndo {
+			get { return buffer.CanUndo(); }
+		}
+		
+		public bool EnableRedo {
+			get { return buffer.CanRedo(); }
+		}
+		
 		public void Redo ()
 		{
 			view.RedoChange();
