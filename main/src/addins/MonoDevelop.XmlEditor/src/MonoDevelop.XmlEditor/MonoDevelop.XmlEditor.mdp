@@ -1,0 +1,71 @@
+<Project name="MonoDevelop.XmlEditor" fileversion="2.0" language="C#" ctype="DotNetProject">
+  <Configurations active="Debug">
+    <Configuration name="Debug" ctype="DotNetProjectConfiguration">
+      <Output directory="../../build/AddIns/XmlEditor" assembly="MonoDevelop.XmlEditor" />
+      <Build executeAfterBuild="./postbuild.sh" debugmode="True" target="Library" />
+      <Execution runwithwarnings="True" consolepause="False" runtime="MsNet" />
+      <CodeGeneration compiler="Csc" warninglevel="4" optimize="True" unsafecodeallowed="False" generateoverflowchecks="True" mainclass="" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
+    </Configuration>
+    <Configuration name="Release" ctype="DotNetProjectConfiguration">
+      <Output directory="../../build/AddIns/XmlEditor" assembly="MonoDevelop.XmlEditor" />
+      <Build executeAfterBuild="./postbuild.sh" debugmode="False" target="Library" />
+      <Execution runwithwarnings="True" consolepause="False" runtime="MsNet" />
+      <CodeGeneration compiler="Csc" warninglevel="4" optimize="True" unsafecodeallowed="False" generateoverflowchecks="True" mainclass="" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
+    </Configuration>
+  </Configurations>
+  <DeploymentInformation strategy="File">
+    <excludeFiles />
+  </DeploymentInformation>
+  <Contents>
+    <File name="./AssemblyInfo.cs" subtype="Code" buildaction="Compile" />
+    <File name="./EncodedStringWriter.cs" subtype="Code" buildaction="Compile" />
+    <File name="./QualifiedNameCollection.cs" subtype="Code" buildaction="Compile" />
+    <File name="./QualifiedName.cs" subtype="Code" buildaction="Compile" />
+    <File name="./XmlCompletionDataCollection.cs" subtype="Code" buildaction="Compile" />
+    <File name="./XmlCompletionData.cs" subtype="Code" buildaction="Compile" />
+    <File name="./XmlCompletionDataProvider.cs" subtype="Code" buildaction="Compile" />
+    <File name="./XmlElementPath.cs" subtype="Code" buildaction="Compile" />
+    <File name="./XmlParser.cs" subtype="Code" buildaction="Compile" />
+    <File name="./XmlSchemaCompletionDataCollection.cs" subtype="Code" buildaction="Compile" />
+    <File name="./XmlSchemaCompletionData.cs" subtype="Code" buildaction="Compile" />
+    <File name="./XmlSchemaManager.cs" subtype="Code" buildaction="Compile" />
+    <File name="./XmlSchemaAssociation.cs" subtype="Code" buildaction="Compile" />
+    <File name="./XmlEditorAddInOptions.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.XmlEditor.addin.xml" subtype="Code" buildaction="Nothing" />
+    <File name="./XmlDisplayBinding.cs" subtype="Code" buildaction="Compile" />
+    <File name="./XmlEditorView.cs" subtype="Code" buildaction="Compile" />
+    <File name="./XmlEditorWindow.cs" subtype="Code" buildaction="Compile" />
+    <File name="./XmlCompletionListWindow.cs" subtype="Code" buildaction="Compile" />
+    <File name="./XmlEditorViewContent.cs" subtype="Code" buildaction="Compile" />
+    <File name="./XmlEditorOptionsPanel.cs" subtype="Code" buildaction="Compile" />
+    <File name="./XmlEditorOptionsPanelWidget.cs" subtype="Code" buildaction="Compile" />
+    <File name="./XmlEditor.glade" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="./XmlSchemasPanel.cs" subtype="Code" buildaction="Compile" />
+    <File name="./XmlSchemasPanelWidget.cs" subtype="Code" buildaction="Compile" />
+    <File name="./SelectXmlSchemaDialog.cs" subtype="Code" buildaction="Compile" />
+    <File name="./XmlFileExtensions.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Commands.cs" subtype="Code" buildaction="Compile" />
+    <File name="./CreateSchemaCommand.cs" subtype="Code" buildaction="Compile" />
+    <File name="./ValidateXmlCommand.cs" subtype="Code" buildaction="Compile" />
+    <File name="./XmlEditorService.cs" subtype="Code" buildaction="Compile" />
+    <File name="./FormatXmlCommand.cs" subtype="Code" buildaction="Compile" />
+    <File name="./XmlFileExtensionCodon.cs" subtype="Code" buildaction="Compile" />
+  </Contents>
+  <References>
+    <ProjectReference type="Gac" localcopy="True" refto="System, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+    <ProjectReference type="Gac" localcopy="True" refto="System.Xml, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+    <ProjectReference type="Gac" localcopy="True" refto="gtk-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <ProjectReference type="Gac" localcopy="True" refto="gtksourceview-sharp, Version=1.0.0.2, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <ProjectReference type="Gac" localcopy="True" refto="gdk-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <ProjectReference type="Gac" localcopy="True" refto="gnome-vfs-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <ProjectReference type="Gac" localcopy="True" refto="glade-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <ProjectReference type="Gac" localcopy="True" refto="System.Data, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+    <ProjectReference type="Assembly" localcopy="False" refto="../../../../lib/monodevelop/bin/MonoDevelop.Core.dll" />
+    <ProjectReference type="Assembly" localcopy="False" refto="../../../../lib/monodevelop/AddIns/MonoDevelop.Core.Gui.dll" />
+    <ProjectReference type="Assembly" localcopy="False" refto="../../../../lib/monodevelop/AddIns/MonoDevelop.Projects.Gui.dll" />
+    <ProjectReference type="Assembly" localcopy="False" refto="../../../../lib/monodevelop/AddIns/MonoDevelop.SourceEditor.dll" />
+    <ProjectReference type="Assembly" localcopy="False" refto="../../../../lib/monodevelop/AddIns/MonoDevelop.Ide.dll" />
+    <ProjectReference type="Assembly" localcopy="False" refto="../../../../lib/monodevelop/AddIns/MonoDevelop.Projects.dll" />
+    <ProjectReference type="Assembly" localcopy="False" refto="../../../../lib/monodevelop/bin/MonoDevelop.Components.dll" />
+  </References>
+</Project>

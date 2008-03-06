@@ -1,0 +1,77 @@
+<AddIn name        = "Xml Editor"
+       id          = "MonoDevelop.XmlEditor"
+       author      = "Matt Ward"
+       copyright   = "LGPL"
+       url         = "http://md-xed.sourceforge.net"
+       description = "Xml Editor"
+	   category    = "IDE extensions"
+       version     = "0.1.0">	<Runtime>
+		<Import assembly="MonoDevelop.XmlEditor.dll"/>
+	</Runtime>
+	
+	<Dependencies>
+		<AddIn id="MonoDevelop.Ide" version="0.9.0"/>
+		<AddIn id="MonoDevelop.SourceEditor" version="0.9.0"/>
+	</Dependencies>
+
+	<!-- Xml Editor View -->
+	<Extension path = "/SharpDevelop/Workbench/DisplayBindings">
+		<DisplayBinding id = "XmlEditor"
+		                insertbefore = "NewText"
+		                supportedformats = "Text Files,Source Files"
+		                class = "MonoDevelop.XmlEditor.XmlDisplayBinding"/>
+	</Extension>
+
+	<!-- File extensions that will be opened in the XML editor -->
+	<Extension path = "/MonoDevelop/XmlEditor/XmlFileExtensions">
+		<XmlFileExtension extension = ".build"/>
+		<XmlFileExtension extension = ".config"/>
+		<XmlFileExtension extension = ".xml"/> 
+		<XmlFileExtension extension = ".xsd"/> 
+		<XmlFileExtension extension = ".xsl"/> 
+		<XmlFileExtension extension = ".xslt"/> 
+	</Extension>
+
+	<!-- Commands -->
+	<Extension path = "/SharpDevelop/Commands">	
+		<Command id = "MonoDevelop.XmlEditor.Commands.CreateSchema"
+				defaultHandler = "MonoDevelop.XmlEditor.CreateSchemaCommand"
+				_label = "Create _Schema"
+				description = "Creates a schema from XML"/>
+		<Command id = "MonoDevelop.XmlEditor.Commands.Validate"
+				defaultHandler = "MonoDevelop.XmlEditor.ValidateXmlCommand"
+				_label = "_Validate"
+				description = "Validates the XML against a schema"/>
+		<Command id = "MonoDevelop.XmlEditor.Commands.Format"
+				defaultHandler = "MonoDevelop.XmlEditor.FormatXmlCommand"
+				_label = "_Format"
+				description = "Pretty prints the XML"/>
+	</Extension>
+
+	<!-- XML menu -->
+	<Extension path = "/SharpDevelop/Workbench/MainMenu">
+			<ItemSet id = "XmlMenu" 
+			         insertafter = "Run" 
+			         insertbefore = "Tools" 
+			         _label = "_XML" >
+				<CommandItem id = "MonoDevelop.XmlEditor.Commands.CreateSchema" />
+				<CommandItem id = "MonoDevelop.XmlEditor.Commands.Validate" />
+				<SeparatorItem id = "FormatSeparator"/>
+				<CommandItem id = "MonoDevelop.XmlEditor.Commands.Format" />				
+			</ItemSet>
+	</Extension>
+	<!-- Options panel -->
+	<Extension path = "/SharpDevelop/Dialogs/OptionsDialog">
+		<DialogPanel id = "XmlEditorOptions"
+		             _label = "XML Editor"
+		             insertafter = "WelcomPageOptions">
+			<DialogPanel id = "XmlEditorOptionsPanel"
+		                 _label = "General"
+		                 class = "MonoDevelop.XmlEditor.XmlEditorOptionsPanel" />
+			<DialogPanel id = "XmlSchemasPanel"
+		                 _label = "XML Schemas"
+		                 class = "MonoDevelop.XmlEditor.XmlSchemasPanel" />
+		</DialogPanel>
+	</Extension>
+
+</AddIn>

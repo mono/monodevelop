@@ -1,0 +1,20 @@
+<Combine name="MonoDevelop.XmlEditor" fileversion="2.0">
+  <Configurations active="Debug">
+    <Configuration name="Debug" ctype="CombineConfiguration">
+      <Entry configuration="Debug" build="True" name="MonoDevelop.XmlEditor.Tests" />
+      <Entry configuration="Debug" build="True" name="MonoDevelop.XmlEditor" />
+    </Configuration>
+    <Configuration name="Release" ctype="CombineConfiguration">
+      <Entry configuration="Debug" build="True" name="MonoDevelop.XmlEditor.Tests" />
+      <Entry configuration="Debug" build="True" name="MonoDevelop.XmlEditor" />
+    </Configuration>
+  </Configurations>
+  <StartMode startupentry="MonoDevelop.XmlEditor" single="True">
+    <Execute type="None" entry="MonoDevelop.XmlEditor.Tests" />
+    <Execute type="None" entry="MonoDevelop.XmlEditor" />
+  </StartMode>
+  <Entries>
+    <Entry filename="./MonoDevelop.XmlEditor.Tests/MonoDevelop.XmlEditor.Tests.mdp" />
+    <Entry filename="./MonoDevelop.XmlEditor/MonoDevelop.XmlEditor.mdp" />
+  </Entries>
+</Combine>

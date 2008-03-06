@@ -1,0 +1,43 @@
+MonoDevelop XML Editor Issues and TODO list
+-------------------------------------------
+
+This list should be moved to the SourceForge issues tracker.
+
+* Cannot create an XML file with any extension other than .xml.  MonoDevelop problem.
+* XML Editor has a list of file extensions that it recognises as XML content.  Really
+  this should be using the mime type.  The XML editor add-in should install extra
+  types into the mime type database.
+* At the moment it only recognises the mime type "text/xml".  XSL files, for example,
+  have a mime type of "text/xsl".  However, the XML editor checks the file extension
+  as well so an XSL file will be opened in the XML editor.
+* 11 unit tests are currently not working.  Atsushi Eno has been fixing issues as 
+  quick as I can report them, so a lot of these unit tests should work under the
+  next release of Mono.
+* Autocompletion of elements, after typing in the greater than sign, is over zealous.
+* The autocompletion list requires an icon.  I would prefer not to have to one for
+  XML completion, but at the moment it is using the stock forward icon.
+* When validating XML documents errors are added to the task list by creating a 
+  CompilerResult object.  There is no other way to create an error task.
+* The XML menu option is displayed all the time.  In SharpDevelop I used the 
+  activewindow property to show/hide the menu when the XML editor is being 
+  used/not used.  Unable to get this working.
+* Typing a space character inside attribute quotes displays the attribute completion
+  list.  Known issue that affects SharpDevelop XML editor too.
+* Searching not implemented.
+* Mixed namespace handling is limited.  The element completion list is based on the
+  parent element at the current location.  Really this should take into account any
+  other available namespaces that are allowed at that location.
+* Running XSL transforms.
+* Commenting out regions of XML.  SharpDevelop implements this, but there are a few
+  bugs.
+* The completion window does not move to the correct item when typing in the ":" 
+  character.  This is an issue for the namespace completion and for element completion
+  when the XML document is using prefixes (e.g. <xs:schema>).
+* Double clicking a task list error does not seem to move the cursor to the correct 
+  line.
+* Comments get autocompleted.  When you type in the last greater than character the
+  XML editor adds "</!-->".
+* The "Show Schema Annotation" XML Editor option does nothing.  Schema annotation
+  is always displayed if available.
+
+
