@@ -78,7 +78,7 @@
 				description = "Runs an XSL transform"/>				
 		<Command id = "MonoDevelop.XmlEditor.Commands.GoToSchemaDefinition"
 				defaultHandler = "MonoDevelop.XmlEditor.GoToSchemaDefinitionCommand"
-				_label = "_Goto Schema Definition"
+				_label = "_Go to Schema Definition"
 				description = "Jumps to the schema definition"/>
 		<Command id = "MonoDevelop.XmlEditor.Commands.Format"
 				defaultHandler = "MonoDevelop.XmlEditor.FormatXmlCommand"
