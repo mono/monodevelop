@@ -59,6 +59,7 @@ namespace MonoDevelop.XmlEditor
 						return schemaCompletionDataItems.GetNamespaceCompletionData();;
 					}
 					break;
+					
 				case '<':
 					// Child element intellisense.
 					XmlElementPath parentPath = XmlParser.GetParentElementPath(text, text.Length);
@@ -71,9 +72,11 @@ namespace MonoDevelop.XmlEditor
 					
 				case ' ':
 					// Attribute intellisense.
-					XmlElementPath path = XmlParser.GetActiveElementStartPath(text, text.Length);
-					if (path.Elements.Count > 0) {
-						return GetAttributeCompletionData(path);
+					if (!XmlParser.IsInsideAttributeValue(text, text.Length)) {
+						XmlElementPath path = XmlParser.GetActiveElementStartPath(text, text.Length);
+						if (path.Elements.Count > 0) {
+							return GetAttributeCompletionData(path);
+						}
 					}
 					break;
 					

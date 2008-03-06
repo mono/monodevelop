@@ -144,9 +144,7 @@ namespace MonoDevelop.XmlEditor
 				return false;	
 			}
 			
-			if (index >= xml.Length) {
-				index = xml.Length - 1;
-			}
+			index = GetCorrectedIndex(xml.Length, index);
 		
 			// Move back one character if the last character is an '='
 			if (xml[index] == '=') {
@@ -201,9 +199,7 @@ namespace MonoDevelop.XmlEditor
 				return String.Empty;
 			}
 			
-			if (index >= xml.Length) {
-				index = xml.Length - 1;
-			}
+			index = GetCorrectedIndex(xml.Length, index);
 			
 			string name = String.Empty;
 			
@@ -298,6 +294,58 @@ namespace MonoDevelop.XmlEditor
 			
 			return false;
 		}
+		
+		/// <summary>
+		/// Determines whether the specified index is inside an attribute value.
+		/// </summary>
+		public static bool IsInsideAttributeValue(string xml, int index)
+		{
+			if (xml.Length == 0) {
+				return false;
+			}
+			
+			index = GetCorrectedIndex(xml.Length, index);
+						
+			int elementStartIndex = GetActiveElementStartIndex(xml, index);
+			if (elementStartIndex == - 1) {
+				return false;
+			}
+			
+			// Count the number of double quotes and single quotes that exist
+			// before the first equals sign encountered going backwards to
+			// the start of the active element.
+			bool foundEqualsSign = false;
+			int doubleQuotesCount = 0;
+			int singleQuotesCount = 0;
+			char lastQuoteChar = ' ';
+			for (int i = index; i > elementStartIndex; --i) {
+				char ch = xml[i];
+				if (ch == '=') {
+					foundEqualsSign = true;
+					break;
+				} else if (ch == '\"') {
+					lastQuoteChar = ch;
+					++doubleQuotesCount;
+				} else if (ch == '\'') {
+					lastQuoteChar = ch;
+					++singleQuotesCount;
+				}
+			}
+			
+			bool isInside = false;
+			
+			if (foundEqualsSign) {
+				// Odd number of quotes?
+				if ((lastQuoteChar == '\"') && ((doubleQuotesCount % 2) > 0)) {
+					isInside = true;
+				} else if ((lastQuoteChar == '\'') && ((singleQuotesCount %2) > 0)) {
+					isInside = true;
+				}
+			}
+			
+			return isInside;
+		}
+				
 		/// <summary>
 		/// Gets the text of the xml element start tag that the index is 
 		/// currently inside.
@@ -442,6 +490,22 @@ namespace MonoDevelop.XmlEditor
 			}
 			
 			return reversedString.ToString();
+		}
+		
+		/// <summary>
+		/// Ensures that the index is on the last character if it is
+		/// too large.
+		/// </summary>
+		/// <param name="length">The length of the string.</param>
+		/// <param name="index">The current index.</param>
+		/// <returns>The index unchanged if the index is smaller than the
+		/// length of the string; otherwise it returns length - 1.</returns>
+		static int GetCorrectedIndex(int length, int index)
+		{
+			if (index >= length) {
+				index = length - 1;
+			}
+			return index;
 		}
 	}
 }
