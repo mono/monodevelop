@@ -265,6 +265,11 @@ namespace MonoDevelop.XmlEditor
 			}
 		}
 		
+		protected override bool IsValidCompletionChar (char c)
+		{
+			return XmlParser.IsXmlNameChar(c);
+		}
+
 		void ListSizeChanged (object obj, SizeAllocatedArgs args)
 		{
 			UpdateDeclarationView ();
