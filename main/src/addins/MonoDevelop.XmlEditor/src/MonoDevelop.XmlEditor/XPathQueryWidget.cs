@@ -63,6 +63,7 @@ namespace MonoDevelop.XmlEditor
 		[Widget] TreeView namespacesTreeView;
 		[Widget] Button queryButton;
 		[Widget] ComboBoxEntry xpathComboBoxEntry;
+		[Widget] Notebook notebook;
 		
 		// Results List: xpath result, line number, XPathNodeMatch or Exception.
 		const int xpathMatchColumnNumber = 0;
@@ -286,7 +287,7 @@ namespace MonoDevelop.XmlEditor
 			} catch (XmlException xmlEx) {
 				AddErrorResult(xmlEx);
 			} finally {
-//				view.TextEditorControl.Refresh();
+				notebook.CurrentPage = 0;
 			}
 		}
 	
