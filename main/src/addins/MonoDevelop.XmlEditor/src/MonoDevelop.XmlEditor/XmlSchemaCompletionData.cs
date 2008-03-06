@@ -17,12 +17,6 @@ namespace MonoDevelop.XmlEditor
 	/// <summary>
 	/// Holds the completion (intellisense) data for an xml schema.
 	/// </summary>
-	/// <remarks>
-	/// The XmlSchema class throws an exception if we attempt to load 
-	/// the xhtml1-strict.xsd schema.  It does not like the fact that
-	/// this schema redefines the xml namespace, even though this is
-	/// allowed by the w3.org specification.
-	/// </remarks>
 	public class XmlSchemaCompletionData
 	{
 		string namespaceUri = String.Empty;
@@ -798,6 +792,7 @@ namespace MonoDevelop.XmlEditor
 			XmlSchemaSequence sequence = complexType.Particle as XmlSchemaSequence;
 			XmlSchemaChoice choice = complexType.Particle as XmlSchemaChoice;
 			XmlSchemaGroupRef groupRef = complexType.Particle as XmlSchemaGroupRef;
+			XmlSchemaAll all = complexType.Particle as XmlSchemaAll;
 			XmlSchemaComplexContent complexContent = complexType.ContentModel as XmlSchemaComplexContent;
 
 			if (sequence != null) {
@@ -814,6 +809,8 @@ namespace MonoDevelop.XmlEditor
 				}
 			} else if (groupRef != null) {
 				matchedElement = FindElement(groupRef, name);
+			} else if (all != null) {
+				matchedElement = FindElement(all.Items, name);
 			}
 			
 			return matchedElement;
