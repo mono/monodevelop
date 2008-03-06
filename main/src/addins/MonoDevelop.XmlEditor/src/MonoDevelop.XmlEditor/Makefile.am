@@ -29,6 +29,7 @@ FILES = \
 	OpenXPathQueryPadCommand.cs \
 	QualifiedNameCollection.cs \
 	QualifiedName.cs \
+	RemoveXPathHighlightingCommand.cs \
 	RunXslTransformCommand.cs \
 	SelectXmlSchemaDialog.cs \
 	SourceViewTextIterator.cs \

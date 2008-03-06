@@ -55,6 +55,10 @@
 				defaultHandler = "MonoDevelop.XmlEditor.OpenXPathQueryPadCommand"
 				_label = "_XPath Query..."
 				description = "Opens XPath Query window"/>
+		<Command id = "MonoDevelop.XmlEditor.Commands.RemoveXPathHighlighting"
+				defaultHandler = "MonoDevelop.XmlEditor.RemoveXPathHighlightingCommand"
+				_label = "Remove XPath _Highlighting"
+				description = "Removes the highlighted XPath matches."/>
 		<Command id = "MonoDevelop.XmlEditor.Commands.AssignStylesheet"
 				defaultHandler = "MonoDevelop.XmlEditor.AssignStylesheetCommand"
 				_label = "_Assign XSLT..."
@@ -82,7 +86,9 @@
 			         _label = "_XML" >
 				<CommandItem id = "MonoDevelop.XmlEditor.Commands.CreateSchema" />
 				<CommandItem id = "MonoDevelop.XmlEditor.Commands.Validate" />
+				<SeparatorItem id = "XPathCommandsSeparator"/>
 				<CommandItem id = "MonoDevelop.XmlEditor.Commands.OpenXPathQueryPad" />				
+				<CommandItem id = "MonoDevelop.XmlEditor.Commands.RemoveXPathHighlighting" />				
 				<SeparatorItem id = "StylesheetCommandsSeparator"/>
 				<CommandItem id = "MonoDevelop.XmlEditor.Commands.AssignStylesheet"/>
 				<CommandItem id = "MonoDevelop.XmlEditor.Commands.OpenStylesheet"/>

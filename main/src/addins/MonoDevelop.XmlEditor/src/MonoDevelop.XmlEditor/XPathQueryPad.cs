@@ -76,12 +76,7 @@ namespace MonoDevelop.XmlEditor
 				SaveProperties();
 			}
 		}
-		
-		public void RemoveXPathHighlighting()
-		{
-			//xpathQueryWidget.RemoveXPathNodeTextMarkers();
-		}
-		
+				
 		void ActiveDocumentChanged(object source, EventArgs e)
 		{
 			xpathQueryWidget.UpdateQueryButtonState();
