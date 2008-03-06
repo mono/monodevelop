@@ -71,7 +71,10 @@ namespace MonoDevelop.Platform
 
 		public override string GetMimeTypeForUri (string uri)
 		{
-			return Gnome.Vfs.MimeType.GetMimeTypeForUri (uri);
+			string baseMime = base.GetMimeTypeForUri (uri);
+			if (baseMime == "text/plain")
+				return Gnome.Vfs.MimeType.GetMimeTypeForUri (uri);
+			return baseMime;
 		}
 
 		public override void ShowUrl (string url)

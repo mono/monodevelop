@@ -1,3 +1,9 @@
+2008-03-05  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* GnomePlatform.cs: Try to use the base implementation of GetMimeTypeForUri
+	  to get a useful value, before falling back to GnomeVFS. Allows finding
+	  mimetypes not registered on the system.
+
 2008-02-14  Geoff Norton  <gnorton@novell.com>
 
 	* GnomePlatform.cs: Expose the Name property.
