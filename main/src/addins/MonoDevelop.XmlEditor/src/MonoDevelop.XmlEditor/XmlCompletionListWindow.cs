@@ -375,7 +375,17 @@ namespace MonoDevelop.XmlEditor
 		
 		public string GetCompletionText (int n)
 		{
-			return completionData[n].CompletionString;
+			ICompletionData item = completionData[n];
+			XmlCompletionData xmlCompletionData = item as XmlCompletionData;
+			if (xmlCompletionData != null) {
+				switch (xmlCompletionData.XmlCompletionDataType) {
+				case XmlCompletionData.DataType.NamespaceUri:
+				case XmlCompletionData.DataType.XmlAttribute:
+					return xmlCompletionData.Text[0];
+					break;
+				}
+			}
+			return item.CompletionString;
 		}
 		
 		public Gdk.Pixbuf GetIcon (int n)
