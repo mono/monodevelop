@@ -1,3 +1,59 @@
+2006-08-22 10:27  mrward
+
+	* trunk/configure.in,
+	  trunk/src/MonoDevelop.XmlEditor.Tests/MonoDevelop.XmlEditor.Tests.mdp,
+	  trunk/src/MonoDevelop.XmlEditor.mds,
+	  trunk/src/MonoDevelop.XmlEditor/Makefile.am,
+	  trunk/src/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor.mdp,
+	  trunk/src/MonoDevelop.XmlEditor/XmlDisplayBinding.cs,
+	  trunk/src/MonoDevelop.XmlEditor/XmlFileExtensionCodon.cs,
+	  trunk/src/MonoDevelop.XmlEditor/XmlFileExtensions.cs: XML Editor
+	  now compiled with gmcs. Added DisplayName to XmlDisplayBinding.
+	  XmlFileExtensionCodon now has a FileExtension property instead of
+	  an Extension property which clashed with the AbstractCodon base
+	  class.
+
+2006-05-02 12:10  mrward
+
+	* trunk/src/MonoDevelop.XmlEditor.Tests/MonoDevelop.XmlEditor.Tests.mdp,
+	  trunk/src/MonoDevelop.XmlEditor.Tests/Schema/AllElementTestFixture.cs,
+	  trunk/src/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor.mdp,
+	  trunk/src/MonoDevelop.XmlEditor/XmlSchemaCompletionData.cs: XML
+	  completion now working for complex types defined inside an xs:all
+	  element.
+
+2006-04-17 14:12  mrward
+
+	* trunk/src/MonoDevelop.XmlEditor/XmlSchemaCompletionData.cs: An XML
+	  schema is now only compiled the first time it is used in the XML
+	  editor. This improves the time taken to display the XML Schema
+	  options dialog for the first time by a factor of 4.
+
+2006-04-17 11:44  mrward
+
+	* trunk/TODO,
+	  trunk/src/MonoDevelop.XmlEditor.Tests/MonoDevelop.XmlEditor.Tests.mdp,
+	  trunk/src/MonoDevelop.XmlEditor.Tests/Parser/InsideAttributeValueTestFixture.cs,
+	  trunk/src/MonoDevelop.XmlEditor/XmlCompletionDataProvider.cs,
+	  trunk/src/MonoDevelop.XmlEditor/XmlParser.cs: XML completion
+	  window no longer displayed when typing in space characters inside
+	  the attribute value.
+
+2006-04-17 11:29  mrward
+
+	* trunk/src/MonoDevelop.XmlEditor.Tests/MonoDevelop.XmlEditor.Tests.mdp,
+	  trunk/src/MonoDevelop.XmlEditor.Tests/Parser/AttributeNameTestFixture.cs,
+	  trunk/src/MonoDevelop.XmlEditor.Tests/Schema/AllElementTestFixture.cs,
+	  trunk/src/MonoDevelop.XmlEditor.Tests/Schema/XsdSchemaTestFixture.cs,
+	  trunk/src/MonoDevelop.XmlEditor.mds,
+	  trunk/src/MonoDevelop.XmlEditor/XmlSchemaCompletionData.cs: XML
+	  element completion now working for xs:all child elements.
+
+2006-04-15 18:21  mrward
+
+	* trunk/ChangeLog: Updated changelog ready for source code snapshot
+	  release for MonoDevelop 0.10
+
 2006-04-12 18:34  mrward
 
 	* trunk/src/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor.addin.xml:
