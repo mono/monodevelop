@@ -1,8 +1,8 @@
 AC_INIT(README)
-AM_INIT_AUTOMAKE(md-xmleditor, 0.2)
+AM_INIT_AUTOMAKE(md-xmleditor, 0.3)
 AM_MAINTAINER_MODE
 
-ASSEMBLY_VERSION=0.2.0.0
+ASSEMBLY_VERSION=0.3.0.0
 
 AC_PATH_PROG(MONO, mono)
 AC_PATH_PROG(MCS, gmcs)
@@ -61,8 +61,8 @@ else
 fi
 
 
-MONODEVELOP_REQUIRED_VERSION=0.12
-PKG_CHECK_MODULES(MONODEVELOP,monodevelop >= $MONODEVELOP_REQUIRED_VERSION, has_monodevelop=true, has_develop=false)
+MONODEVELOP_REQUIRED_VERSION=0.13
+PKG_CHECK_MODULES(MONODEVELOP,monodevelop >= $MONODEVELOP_REQUIRED_VERSION, has_monodevelop=true, has_monodevelop=false)
 
 if test "x$has_monodevelop" = "xfalse"; then
      AC_MSG_ERROR([Please install monodevelop version $MONODEVELOP_REQUIRED_VERSION or later to install MonoDevelop.XmlEditor.
