@@ -1,3 +1,11 @@
+2008-03-06  Michael Hutchinson  <mhutchinson@novell.com> 
+
+	* configure.in:
+	* src/addins/Addins.mds:
+	* src/addins/Makefile.am: Build the XmlEditor when the old 
+	  SourceEditor is enabled, pending port to TextEditorExtension. 
+	  Remove the GtkSourceView1-based editor from the build. 
+
 2008-03-05  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* configure.in, src/addins/Addins.mds, src/addins/Makefile.am: Enable

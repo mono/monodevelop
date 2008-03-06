@@ -25,6 +25,7 @@
       <Entry build="True" name="MonoDevelop.CodeMetrics" configuration="Debug" />
       <Entry build="True" name="Deployment" configuration="Debug" />
       <Entry build="True" name="MonoDevelop.Moonlight" configuration="Debug" />
+      <Entry build="True" name="MonoDevelop.XmlEditor" configuration="Debug" />
     </Configuration>
     <Configuration name="Release" ctype="CombineConfiguration">
       <Entry build="True" name="MonoDevelop.NUnit" configuration="Debug" />
@@ -51,6 +52,7 @@
       <Entry build="True" name="MonoDevelop.CodeMetrics" configuration="Release" />
       <Entry build="True" name="Deployment" configuration="Release" />
       <Entry build="True" name="MonoDevelop.Moonlight" configuration="Release" />
+      <Entry build="True" name="MonoDevelop.XmlEditor" configuration="Release" />
     </Configuration>
   </Configurations>
   <StartMode startupentry="MonoDevelop.NUnit" single="True">
@@ -87,6 +89,7 @@
     <Execute type="None" entry="MonoDevelop.CodeMetrics" />
     <Execute type="None" entry="Deployment" />
     <Execute type="None" entry="MonoDevelop.Moonlight" />
+    <Execute type="None" entry="MonoDevelop.XmlEditor" />
   </StartMode>
   <Entries>
     <Entry filename="NUnit/MonoDevelop.NUnit.mdp" />
@@ -113,5 +116,6 @@
     <Entry filename="MonoDevelop.CodeMetrics/MonoDevelop.CodeMetrics.mdp" />
     <Entry filename="Deployment/Deployment.mds" />
     <Entry filename="MonoDevelop.Moonlight/MonoDevelop.Moonlight.mdp" />
+    <Entry filename="MonoDevelop.XmlEditor/MonoDevelop.XmlEditor.mds" />
   </Entries>
 </Combine>
