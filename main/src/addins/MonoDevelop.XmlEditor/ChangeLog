@@ -1,3 +1,8 @@
+2008-03-06  Michael Hutchinson  <mhutchinson@novell.com> 
+
+	* Makefile.am: Update for the trunk build system and file 
+	  layout changes.
+
 2007-09-13 21:18  mrward
 
 	* trunk/configure.in,
