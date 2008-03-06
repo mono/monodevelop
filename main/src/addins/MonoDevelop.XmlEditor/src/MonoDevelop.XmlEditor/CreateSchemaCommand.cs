@@ -31,12 +31,15 @@ namespace MonoDevelop.XmlEditor
 			XmlEditorViewContent view = XmlEditorService.GetActiveView();
 			if (view != null) {			
 				try {
-					// Create a schema based on the xml.
-					string schema = CreateSchema(view.Text, Encoding.UTF8, TextEditorProperties.ConvertTabsToSpaces, TextEditorProperties.TabIndent);
-					
-					// Create a new file and display the generated schema.
-					string fileName = GenerateSchemaFileName(Path.GetFileName(view.FileName));
-					OpenNewXmlFile(fileName, schema);
+					XmlEditorService.TaskService.ClearTasks();
+					string xml = view.Text;
+					if (XmlEditorService.IsWellFormed(xml, view.FileName)) {							// Create a schema based on the xml.
+						string schema = CreateSchema(xml);
+						
+						// Create a new file and display the generated schema.
+						string fileName = GenerateSchemaFileName(Path.GetFileName(view.FileName));
+						OpenNewXmlFile(fileName, schema);
+					}
 				} catch (Exception ex) {
 					XmlEditorService.MessageService.ShowError(ex.Message);
 				}
@@ -52,31 +55,17 @@ namespace MonoDevelop.XmlEditor
 		/// Creates a schema based on the xml content.
 		/// </summary>
 		/// <returns>A generated schema.</returns>
-		string CreateSchema(string xml, Encoding encoding, bool convertTabsToSpaces, int tabIndent)
+		string CreateSchema(string xml)
 		{
-			string schema = String.Empty;
-			
 			using (DataSet dataSet = new DataSet()) {
 				dataSet.ReadXml(new StringReader(xml), XmlReadMode.InferSchema);
-				EncodedStringWriter writer = new EncodedStringWriter(encoding);
-				XmlTextWriter xmlWriter = new XmlTextWriter(writer);
-				
-				xmlWriter.Formatting = Formatting.Indented;
-				if (convertTabsToSpaces) {
-					xmlWriter.Indentation = tabIndent;
-					xmlWriter.IndentChar = ' ';
-				} else {
-					xmlWriter.Indentation = 1;
-					xmlWriter.IndentChar = '\t';
+				using (EncodedStringWriter writer = new EncodedStringWriter(Encoding.UTF8)) {
+					using (XmlTextWriter xmlWriter = XmlEditorService.CreateXmlTextWriter(writer)) {				
+						dataSet.WriteXmlSchema(xmlWriter);
+						return writer.ToString();
+					}
 				}
-				
-				dataSet.WriteXmlSchema(xmlWriter);
-				schema = writer.ToString();
-				writer.Close();
-				xmlWriter.Close();
 			}
-			
-			return schema;
 		}
 		
 		/// <summary>

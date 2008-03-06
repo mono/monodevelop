@@ -158,25 +158,35 @@ namespace MonoDevelop.XmlEditor
 				XmlTextReader reader = new XmlTextReader(new StringReader(xml));
 				reader.WhitespaceHandling = WhitespaceHandling.None;
 
-				StringWriter indentedXmlWriter = new StringWriter();
-				XmlTextWriter writer = new XmlTextWriter(indentedXmlWriter);
-				if (TextEditorProperties.ConvertTabsToSpaces) {
-					writer.Indentation = TextEditorProperties.TabIndent;
-					writer.IndentChar = ' ';
-				} else {
-					writer.Indentation = 1;
-					writer.IndentChar = '\t';
+				using (StringWriter indentedXmlWriter = new StringWriter()) {
+					using (XmlTextWriter writer = CreateXmlTextWriter(indentedXmlWriter)) {
+						writer.WriteNode(reader, false);
+						writer.Flush();
+						indentedText = indentedXmlWriter.ToString();
+					}
 				}
-				writer.Formatting = Formatting.Indented;
-				writer.WriteNode(reader, false);
-				writer.Flush();
-
-				indentedText = indentedXmlWriter.ToString();
-			}
-			catch(Exception) {
+			} catch(Exception) {
 				indentedText = xml;
 			}
 			return indentedText;
+		}
+		
+		/// <summary>
+		/// Creates a XmlTextWriter using the current text editor
+		/// properties for indentation.
+		/// </summary>
+		public static XmlTextWriter CreateXmlTextWriter(TextWriter textWriter)
+		{
+			XmlTextWriter xmlWriter = new XmlTextWriter(textWriter);
+			xmlWriter.Formatting = Formatting.Indented;
+			if (TextEditorProperties.ConvertTabsToSpaces) {
+				xmlWriter.Indentation = TextEditorProperties.TabIndent;
+				xmlWriter.IndentChar = ' ';
+			} else {
+				xmlWriter.Indentation = 1;
+				xmlWriter.IndentChar = '\t';
+			}
+			return xmlWriter;
 		}
 		
 		/// <summary>

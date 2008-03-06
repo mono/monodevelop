@@ -46,5 +46,4 @@ namespace MonoDevelop.XmlEditor
 			}
 		}
 	}
-	
 }
