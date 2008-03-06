@@ -12,6 +12,13 @@ Schema for .manifest files.
 Created by Matt Ward
 GNU General Public License.
 
+MonoDevelopAddIn.xsd
+-------------
+
+Schema for MonoDevelop add-in files.
+Based on the SharpDevelop add-in schema created by Ivo Kovacka.
+GNU General Public License.
+
 NAnt.xsd
 --------
 

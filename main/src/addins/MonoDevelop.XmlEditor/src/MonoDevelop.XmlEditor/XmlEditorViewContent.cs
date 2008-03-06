@@ -123,6 +123,18 @@ namespace MonoDevelop.XmlEditor
 			}
 		}
 		
+		public bool IsSchema {
+			get {
+				if (fileName != null) {
+					string extension = Path.GetExtension(fileName);
+					if (extension != null) {
+						return String.Compare(extension, ".xsd", true) == 0;
+					}
+				}
+				return false;
+			}
+		}
+		
 		public override void Load(string fileName)
 		{
 			using (StreamReader reader = System.IO.File.OpenText(fileName)) {

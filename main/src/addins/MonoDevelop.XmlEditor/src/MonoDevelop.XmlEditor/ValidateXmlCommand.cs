@@ -21,6 +21,7 @@ namespace MonoDevelop.XmlEditor
 	public class ValidateXmlCommand : CommandHandler
 	{		
 		IProgressMonitor monitor;
+		string fileName = String.Empty;
 		
 		public ValidateXmlCommand()
 		{
@@ -36,7 +37,11 @@ namespace MonoDevelop.XmlEditor
 			if (view != null) {
 				// Validate the xml.
 				using (monitor = XmlEditorService.GetMonitor()) {
-					ValidateXml(view.Text, view.FileName);
+					if (view.IsSchema) {
+						ValidateSchema(view.Text, view.FileName);
+					} else {
+						ValidateXml(view.Text, view.FileName);
+					}
 				}
 			}	
 		}
@@ -46,7 +51,6 @@ namespace MonoDevelop.XmlEditor
 			info.Enabled = XmlEditorService.IsXmlEditorViewContentActive;
 		}
 
-	
 		/// <summary>
 		/// Validates the xml against known schemas.
 		/// </summary>		
@@ -69,7 +73,8 @@ namespace MonoDevelop.XmlEditor
 						reader.Schemas.Add(schemaData.Schema);
 					}
 				} catch (XmlSchemaException ex) {
-					DisplayValidationError(schemaData.FileName, ex.Message, ex.LinePosition, ex.LineNumber);
+					ShowValidationError(schemaData.FileName, ex.Message, ex.LinePosition, ex.LineNumber);
+					ShowValidationFailedMessage();
 					return;
 				}
 				XmlDocument doc = new XmlDocument();
@@ -79,27 +84,76 @@ namespace MonoDevelop.XmlEditor
 				OutputWindowWriteLine("XML is valid.");
 						
 			} catch (XmlSchemaException ex) {
-				DisplayValidationError(fileName, ex.Message, ex.LinePosition, ex.LineNumber);
+				ShowValidationError(fileName, ex.Message, ex.LinePosition, ex.LineNumber);
+				ShowValidationFailedMessage();
 			} catch (XmlException ex) {
-				DisplayValidationError(fileName, ex.Message, ex.LinePosition, ex.LineNumber);
+				ShowValidationError(fileName, ex.Message, ex.LinePosition, ex.LineNumber);
+				ShowValidationFailedMessage();
 			}
 		}
 				
 		/// <summary>
-        /// Displays the validation error.
-        /// </summary>
-        void DisplayValidationError(string fileName, string message, int column, int line)
-        {
-        	OutputWindowWriteLine(String.Empty);
-        	OutputWindowWriteLine(message);
+		/// Displays the validation failed message.
+		/// </summary>
+		void ShowValidationFailedMessage()
+		{
 			OutputWindowWriteLine(String.Empty);
 			OutputWindowWriteLine("Validation failed.");
-			XmlEditorService.AddTask(fileName, message, column, line, TaskType.Error);
-       	}
+		}
        	
-       	void OutputWindowWriteLine(string message)
-        {
-  			monitor.Log.WriteLine(message);
-       	}
+		void ShowValidationError(string fileName, string message, int column, int line)
+		{
+			OutputWindowWriteLine(message);
+			XmlEditorService.AddTask(fileName, message, column, line, TaskType.Error);
+		}
+       	
+		void ShowValidationWarning(string fileName, string message, int line, int column)
+		{
+			OutputWindowWriteLine(message);
+			XmlEditorService.AddTask(fileName, message, column, line, TaskType.Warning);
+		}       	
+       	
+		void OutputWindowWriteLine(string message)
+		{
+			monitor.Log.WriteLine(message);
+		}
+       	
+		/// <summary>
+		/// Validates the schema.
+		/// </summary>		
+		void ValidateSchema(string xml, string fileName)
+		{
+			XmlEditorService.TaskService.ClearTasks();
+			OutputWindowWriteLine("Validating schema...");
+
+			try {
+				StringReader stringReader = new StringReader(xml);
+				XmlTextReader xmlReader = new XmlTextReader(stringReader);
+				xmlReader.XmlResolver = null;
+				this.fileName = fileName;
+				XmlSchema schema = XmlSchema.Read(xmlReader, new ValidationEventHandler(SchemaValidation));
+				schema.Compile(new ValidationEventHandler(SchemaValidation));
+			} catch (XmlSchemaException ex) {
+				ShowValidationError(fileName, ex.Message, ex.LinePosition, ex.LineNumber);
+			} catch (XmlException ex) {
+				ShowValidationError(fileName, ex.Message, ex.LinePosition, ex.LineNumber);
+			}
+			
+			if (XmlEditorService.TaskService.SomethingWentWrong) {
+				ShowValidationFailedMessage();
+			} else {
+				OutputWindowWriteLine(String.Empty);
+				OutputWindowWriteLine("Schema is valid.");
+			}
+		}
+		
+		void SchemaValidation(object source, ValidationEventArgs e)
+		{
+			if (e.Severity == XmlSeverityType.Warning) {
+				ShowValidationWarning(fileName, e.Message, e.Exception.LinePosition, e.Exception.LineNumber);				
+			} else {
+				ShowValidationError(fileName, e.Message, e.Exception.LinePosition, e.Exception.LineNumber);				
+			}
+		}
 	}
 }

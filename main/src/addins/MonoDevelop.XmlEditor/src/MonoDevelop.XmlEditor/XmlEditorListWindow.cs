@@ -186,7 +186,6 @@ namespace MonoDevelop.XmlEditor
 				return KeyAction.Process;
 			} 
 			else if ((System.Char.IsPunctuation (c) || c == ' ') && !list.SelectionDisabled) {
-				Console.WriteLine("IsPunctuation");
 				return KeyAction.Complete | KeyAction.Process | KeyAction.CloseWindow;
 			}
 			

@@ -36,5 +36,6 @@ This list should be moved to the SourceForge issues tracker.
 * Attribute value completion works for pretty much any character so you get the
   completion list window displayed when you use the cursor keys, for example, which
   is incorrect.
+* Cannot tab indent multiple lines.  Doing so deletes all the text.
 
 

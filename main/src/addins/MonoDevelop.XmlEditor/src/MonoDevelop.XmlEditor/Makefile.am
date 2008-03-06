@@ -55,6 +55,7 @@ FILES = \
 
 DATA_FILES = \
 	schemas/appconfig.xsd \
+	schemas/MonoDevelopAddIn.xsd \
 	schemas/manifest.xsd \
 	schemas/nant.xsd \
 	schemas/readme.txt \
