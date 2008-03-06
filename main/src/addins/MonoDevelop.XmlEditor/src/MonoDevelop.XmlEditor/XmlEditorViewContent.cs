@@ -1,7 +1,7 @@
 //
 // MonoDevelop XML Editor
 //
-// Copyright (C) 2006 Matthew Ward
+// Copyright (C) 2007 Matthew Ward
 // Copyright (C) 2004-2006 MonoDevelop Team
 //
 
@@ -26,7 +26,8 @@ namespace MonoDevelop.XmlEditor
 		XmlEditorWindow xmlEditorWindow;
 		SourceBuffer buffer;
 		XmlEditorView view;
-		const string XmlMimeType = "text/xml";
+		const string TextXmlMimeType = "text/xml";
+		const string ApplicationXmlMimeType = "application/xml";
 		string fileName = String.Empty;
 		PropertyEventHandler propertyChangedHandler;
 		IProperties sourceEditorProperties;
@@ -60,8 +61,10 @@ namespace MonoDevelop.XmlEditor
 		public static bool IsMimeTypeHandled(string mimeType)
 		{
 			Console.WriteLine("mimeType: " + mimeType);
-			if (mimeType != null && mimeType == XmlMimeType) {
-				return true;
+			if (mimeType != null) {
+				if (mimeType == TextXmlMimeType || mimeType == ApplicationXmlMimeType) {
+					return true;
+				}
 			}
 			return false;
 		}
