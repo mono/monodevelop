@@ -14,7 +14,7 @@
     <Execute type="None" entry="MonoDevelop.XmlEditor" />
   </StartMode>
   <Entries>
-    <Entry filename="./MonoDevelop.XmlEditor.Tests/MonoDevelop.XmlEditor.Tests.mdp" />
-    <Entry filename="./MonoDevelop.XmlEditor/MonoDevelop.XmlEditor.mdp" />
+    <Entry filename="MonoDevelop.XmlEditor.Tests/MonoDevelop.XmlEditor.Tests.mdp" />
+    <Entry filename="MonoDevelop.XmlEditor/MonoDevelop.XmlEditor.mdp" />
   </Entries>
 </Combine>
