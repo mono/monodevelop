@@ -53,13 +53,16 @@ namespace MonoDevelop.Core.Gui
 			FileInfo file = new FileInfo (uri);
 
 			switch (file.Extension) {
-				case ".cs":
-					return "text/x-csharp";
-				case ".boo":
-					return "text/x-boo";
-				case ".xml":
-					return "application/xml";
+			case ".cs":
+				return "text/x-csharp";
+			case ".boo":
+				return "text/x-boo";
+			case ".xml":
+				return "application/xml";
+			case ".xaml":
+				return "application/xaml+xml";
 			}
+			
 			switch (file.Name.ToLower ()) {
 				case "changelog":
 					return "text/x-changelog";
