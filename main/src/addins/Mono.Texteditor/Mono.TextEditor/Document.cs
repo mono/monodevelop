@@ -772,15 +772,18 @@ namespace Mono.TextEditor
 
 		public void RequestUpdate (DocumentUpdateRequest request)
 		{
-			//System.Console.WriteLine(request);
-			updateRequests.Add (request);
+			lock (syncObject) {
+				updateRequests.Add (request);
+			}
 		}
 		
 		public void CommitDocumentUpdate ()
 		{
-			if (DocumentUpdated != null)
-				DocumentUpdated (this, EventArgs.Empty);
-			updateRequests.Clear ();
+			lock (syncObject) {
+				if (DocumentUpdated != null)
+					DocumentUpdated (this, EventArgs.Empty);
+				updateRequests.Clear ();
+			}
 		}
 		
 		public void CommitLineToEndUpdate (int line)

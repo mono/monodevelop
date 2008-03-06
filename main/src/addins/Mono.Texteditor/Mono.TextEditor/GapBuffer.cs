@@ -127,7 +127,7 @@ namespace Mono.TextEditor
 			if (gapLength < minLength) {
 				CreateBuffer (newOffset, minLength);
 				return;
-			} 
+			}
 			
 			int delta = gapBegin - newOffset;
 			if (delta > 0) {

@@ -844,7 +844,7 @@ namespace Mono.TextEditor
 		
 		void CopyData (TextEditorData data, ISegment segment)
 		{
-			if (segment != null) {
+			if (segment != null && data != null && data.Document != null) {
 				try {
 					text = data.Document.GetTextAt (segment);
 				} catch (Exception) {
