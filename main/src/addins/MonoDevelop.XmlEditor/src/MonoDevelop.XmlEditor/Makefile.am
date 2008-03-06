@@ -26,6 +26,7 @@ FILES = \
 	EncodedStringWriter.cs \
 	FormatXmlCommand.cs \
 	OpenStylesheetCommand.cs \
+	OpenXPathQueryPadCommand.cs \
 	QualifiedNameCollection.cs \
 	QualifiedName.cs \
 	RunXslTransformCommand.cs \
@@ -36,6 +37,7 @@ FILES = \
 	XmlCompletionData.cs \
 	XmlCompletionDataProvider.cs \
 	XmlElementPath.cs \
+	XmlNamespace.cs \
 	XmlParser.cs \
 	XmlSchemaCompletionDataCollection.cs \
 	XmlSchemaCompletionData.cs \
@@ -55,6 +57,11 @@ FILES = \
 	XmlFileExtensions.cs \
 	XmlEditorService.cs \
 	XmlFileExtensionCodon.cs \
+	XPathNodeMatch.cs \
+	XPathNodeTextMarker.cs \
+	XPathQueryPad.cs \
+	XPathQueryPadOptions.cs \
+	XPathQueryWidget.cs \
 	XslOutputViewContent.cs
 
 DATA_FILES = \

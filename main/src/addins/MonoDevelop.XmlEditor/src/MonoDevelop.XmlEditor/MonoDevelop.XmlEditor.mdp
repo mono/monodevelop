@@ -54,9 +54,16 @@
     <File name="./RunXslTransformCommand.cs" subtype="Code" buildaction="Compile" />
     <File name="./XslOutputViewContent.cs" subtype="Code" buildaction="Compile" />
     <File name="./AssignStylesheetCommand.cs" subtype="Code" buildaction="Compile" />
+    <File name="./XPathQueryWidget.cs" subtype="Code" buildaction="Compile" />
+    <File name="./XPathQueryPad.cs" subtype="Code" buildaction="Compile" />
+    <File name="./XPathQueryPad.png" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="./OpenXPathQueryPadCommand.cs" subtype="Code" buildaction="Compile" />
+    <File name="./XmlNamespace.cs" subtype="Code" buildaction="Compile" />
+    <File name="./XPathQueryPadOptions.cs" subtype="Code" buildaction="Compile" />
+    <File name="./XPathNodeMatch.cs" subtype="Code" buildaction="Compile" />
+    <File name="./XPathNodeTextMarker.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
-    <ProjectReference type="Gac" localcopy="True" refto="gtk-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="gtksourceview-sharp, Version=1.0.0.2, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="gdk-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="gnome-vfs-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
@@ -71,6 +78,7 @@
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
     <ProjectReference type="Gac" localcopy="True" refto="System.Xml, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
     <ProjectReference type="Gac" localcopy="True" refto="System.Data, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+    <ProjectReference type="Gac" localcopy="True" refto="gtk-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
   </References>
   <DeploymentInformation strategy="File">
     <excludeFiles />

@@ -28,9 +28,13 @@ namespace MonoDevelop.XmlEditor
 		
 		bool changed;
 		bool ignoreNamespacePrefixTextChanges;
+		
+		// Schema list: Namespace, TextColour, Schema.
 		ListStore schemaList = new ListStore(typeof(string), typeof(string), typeof(XmlSchemaCompletionData));
 		XmlSchemaCompletionDataCollection addedSchemas = new XmlSchemaCompletionDataCollection();
 		StringCollection removedSchemaNamespaces = new StringCollection();
+		
+		// File Extension list: File extension, Namespace, Prefix, Association changed flag.
 		ListStore fileExtensionList = new ListStore(typeof(string), typeof(string), typeof(string), typeof(bool));
 		
 		public XmlSchemasPanelWidget() : base ("XmlEditor.glade", "XmlSchemasPanel")

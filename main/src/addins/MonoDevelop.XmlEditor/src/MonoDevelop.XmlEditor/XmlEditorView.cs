@@ -16,7 +16,12 @@ using MonoDevelop.Projects.Gui.Completion;
 using MonoDevelop.SourceEditor;
 using MonoDevelop.SourceEditor.Gui.Dialogs;
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.IO;
 using System.Text;
+using System.Xml;
+using System.Xml.XPath;
 
 namespace MonoDevelop.XmlEditor
 {
@@ -29,10 +34,12 @@ namespace MonoDevelop.XmlEditor
 		bool showSchemaAnnotation = true;
 		SourceBuffer buffer;
 		Gtk.Clipboard clipboard = Gtk.Clipboard.Get(Gdk.Atom.Intern("CLIPBOARD", false));
-
+		XPathNodeTextMarker xpathNodeTextMarker;
+		
 		public XmlEditorView()
 		{
 			InitSyntaxHighlighting();
+			xpathNodeTextMarker = new XPathNodeTextMarker(buffer);
 		}
 		
 		/// <summary>
@@ -71,8 +78,7 @@ namespace MonoDevelop.XmlEditor
 		public XmlSchemaCompletionData DefaultSchemaCompletionData {
 			get {
 				return defaultSchemaCompletionData;
-			}
-			
+			}
 			set {
 				defaultSchemaCompletionData = value;
 			}
@@ -94,6 +100,71 @@ namespace MonoDevelop.XmlEditor
 			set {
 				showSchemaAnnotation = value;
 			}
+		}
+		
+		/// <summary>
+		/// Finds the xml nodes that match the specified xpath.
+		/// </summary>
+		/// <returns>An array of XPathNodeMatch items. These include line number 
+		/// and line position information aswell as the node found.</returns>
+		public static XPathNodeMatch[] SelectNodes(string xml, string xpath, ReadOnlyCollection<XmlNamespace> namespaces)
+		{
+			XmlTextReader xmlReader = new XmlTextReader(new StringReader(xml));
+			xmlReader.XmlResolver = null;
+			XPathDocument doc = new XPathDocument(xmlReader);
+			XPathNavigator navigator = doc.CreateNavigator();
+			
+			// Add namespaces.
+			XmlNamespaceManager namespaceManager = new XmlNamespaceManager(navigator.NameTable);
+			foreach (XmlNamespace xmlNamespace in namespaces) {
+				namespaceManager.AddNamespace(xmlNamespace.Prefix, xmlNamespace.Uri);
+			}
+	
+			// Run the xpath query.                                                        
+			XPathNodeIterator iterator = navigator.Select(xpath, namespaceManager);
+			
+			List<XPathNodeMatch> nodes = new List<XPathNodeMatch>();
+			while (iterator.MoveNext()) {
+				nodes.Add(new XPathNodeMatch(iterator.Current));
+			}			
+			return nodes.ToArray();
+		}
+		
+		/// <summary>
+		/// Finds the xml nodes that match the specified xpath.
+		/// </summary>
+		/// <returns>An array of XPathNodeMatch items. These include line number 
+		/// and line position information aswell as the node found.</returns>
+		public static XPathNodeMatch[] SelectNodes(string xml, string xpath)
+		{
+			List<XmlNamespace> list = new List<XmlNamespace>();
+			return SelectNodes(xml, xpath, new ReadOnlyCollection<XmlNamespace>(list));
+		}
+		
+		/// <summary>
+		/// Finds the xml nodes in the current document that match the specified xpath.
+		/// </summary>
+		/// <returns>An array of XPathNodeMatch items. These include line number 
+		/// and line position information aswell as the node found.</returns>
+		public XPathNodeMatch[] SelectNodes(string xpath, ReadOnlyCollection<XmlNamespace> namespaces)
+		{
+			return SelectNodes(Buffer.Text, xpath, namespaces);
+		}
+		
+		/// <summary>
+		/// Highlights the xpath matches in the xml.
+		/// </summary>
+		public void AddXPathMarkers(XPathNodeMatch[] nodes)
+		{
+			xpathNodeTextMarker.AddMarkers(nodes);
+		}
+		
+		/// <summary>
+		/// Removes the xpath match highlighting.
+		/// </summary>
+		public void RemoveXPathMarkers()
+		{
+			xpathNodeTextMarker.RemoveMarkers();
 		}
 		
 		public void UndoChange()

@@ -71,9 +71,7 @@ namespace MonoDevelop.XmlEditor
 		/// the xml editor.
 		/// </summary>
 		public static bool IsFileNameHandled(string fileName)
-		{
-			Console.WriteLine("FileName: " + fileName);
-			
+		{			
 			if (fileName == null) {
 				return false;
 			}
@@ -88,6 +86,12 @@ namespace MonoDevelop.XmlEditor
 			}
 			
 			return XmlFileExtensions.IsXmlFileExtension(Path.GetExtension(fileName));
+		}
+		
+		public XmlEditorView XmlEditorView {
+			get {
+				return view;
+			}
 		}
 		
 		public override Gtk.Widget Control {

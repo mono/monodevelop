@@ -5,7 +5,7 @@
        url         = "http://md-xed.sourceforge.net"
        description = "Xml Editor"
 	   category    = "IDE extensions"
-       version     = "0.2.0">	<Runtime>
+       version     = "0.3.0">	<Runtime>
 		<Import assembly="MonoDevelop.XmlEditor.dll"/>
 		<Import file="schemas/appconfig.xsd" />
 		<Import file="schemas/MonoDevelopAddIn.xsd" />
@@ -51,6 +51,10 @@
 				defaultHandler = "MonoDevelop.XmlEditor.ValidateXmlCommand"
 				_label = "_Validate"
 				description = "Validates the XML against a schema"/>
+		<Command id = "MonoDevelop.XmlEditor.Commands.OpenXPathQueryPad"
+				defaultHandler = "MonoDevelop.XmlEditor.OpenXPathQueryPadCommand"
+				_label = "_XPath Query..."
+				description = "Opens XPath Query window"/>
 		<Command id = "MonoDevelop.XmlEditor.Commands.AssignStylesheet"
 				defaultHandler = "MonoDevelop.XmlEditor.AssignStylesheetCommand"
 				_label = "_Assign XSLT..."
@@ -78,6 +82,7 @@
 			         _label = "_XML" >
 				<CommandItem id = "MonoDevelop.XmlEditor.Commands.CreateSchema" />
 				<CommandItem id = "MonoDevelop.XmlEditor.Commands.Validate" />
+				<CommandItem id = "MonoDevelop.XmlEditor.Commands.OpenXPathQueryPad" />				
 				<SeparatorItem id = "StylesheetCommandsSeparator"/>
 				<CommandItem id = "MonoDevelop.XmlEditor.Commands.AssignStylesheet"/>
 				<CommandItem id = "MonoDevelop.XmlEditor.Commands.OpenStylesheet"/>
@@ -99,5 +104,15 @@
 		                 class = "MonoDevelop.XmlEditor.XmlSchemasPanel" />
 		</DialogPanel>
 	</Extension>
-
+	
+	<!-- XPath Query pad -->
+	<!-- <Extension path = "/SharpDevelop/Workbench/Pads">
+		<Pad id = "MonoDevelop.XmlEditor.XPathQueryPad" 
+		     class = "MonoDevelop.XmlEditor.XPathQueryPad"
+		     insertafter = "MonoDevelop.GtkCore.GuiBuilder.GuiBuilderProjectPad"/>
+	</Extension> -->
+	
+	<Extension path = "/SharpDevelop/Workbench/StockIcons">
+		<StockIcon stockid = "MonoDevelop.XmlEditor.XPathQueryPad" resource = "XPathQueryPad.png" />
+	</Extension>
 </AddIn>
