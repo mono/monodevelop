@@ -1,11 +1,11 @@
-<AddIn name        = "Xml Editor"
+<Addin name        = "XML Editor"
        id          = "MonoDevelop.XmlEditor"
        author      = "Matt Ward"
        copyright   = "LGPL"
        url         = "http://md-xed.sourceforge.net"
-       description = "Xml Editor"
+       description = "XML Editor"
 	   category    = "IDE extensions"
-       version     = "0.3.0">	<Runtime>
+       version     = "0.4.0">	<Runtime>
 		<Import assembly="MonoDevelop.XmlEditor.dll"/>
 		<Import file="schemas/appconfig.xsd" />
 		<Import file="schemas/MonoDevelopAddIn.xsd" />
@@ -18,13 +18,18 @@
 	</Runtime>
 	
 	<Dependencies>
-		<AddIn id="MonoDevelop.Core" version="0.13.0"/>
-		<AddIn id="MonoDevelop.Core.Gui" version="0.13.0"/>
-		<AddIn id="MonoDevelop.Ide" version="0.13.0"/>
-		<AddIn id="MonoDevelop.Projects" version="0.13.0"/>
-		<AddIn id="MonoDevelop.Projects.Gui" version="0.13.0"/>
-		<AddIn id="MonoDevelop.SourceEditor" version="0.13.0"/>
+		<Addin id="MonoDevelop.Core" version="0.13.0"/>
+		<Addin id="MonoDevelop.Core.Gui" version="0.13.0"/>
+		<Addin id="MonoDevelop.Ide" version="0.13.0"/>
+		<Addin id="MonoDevelop.Projects" version="0.13.0"/>
+		<Addin id="MonoDevelop.Projects.Gui" version="0.13.0"/>
+		<Addin id="MonoDevelop.SourceEditor" version="0.13.0"/>
 	</Dependencies>
+
+	<!-- Defines the Xml file extension node -->
+	<ExtensionPoint path = "/MonoDevelop/XmlEditor/XmlFileExtensions">
+		<ExtensionNode name = "XmlFileExtension" type = "MonoDevelop.XmlEditor.XmlFileExtension"/>
+	</ExtensionPoint>
 
 	<!-- Xml Editor View -->
 	<Extension path = "/SharpDevelop/Workbench/DisplayBindings">
@@ -35,7 +40,8 @@
 	</Extension>
 
 	<!-- File extensions that will be opened in the XML editor -->
-	<Extension path = "/MonoDevelop/XmlEditor/XmlFileExtensions">
+	<Extension path = "/MonoDevelop/XmlEditor/XmlFileExtensions"
+	           extension-nodes = "XmlFileExtension">
 		<XmlFileExtension extension = ".build"/>
 		<XmlFileExtension extension = ".config"/>
 		<XmlFileExtension extension = ".stetic"/> 
@@ -121,13 +127,19 @@
 	</Extension>
 	
 	<!-- XPath Query pad -->
-	<!-- <Extension path = "/SharpDevelop/Workbench/Pads">
+	<Extension path = "/SharpDevelop/Workbench/Pads">
 		<Pad id = "MonoDevelop.XmlEditor.XPathQueryPad" 
 		     class = "MonoDevelop.XmlEditor.XPathQueryPad"
-		     insertafter = "MonoDevelop.GtkCore.GuiBuilder.GuiBuilderProjectPad"/>
-	</Extension> -->
+		     defaultPlacement = "Bottom"
+		     _label = "XPath Query"/>
+	</Extension>
+	
+	<!-- Put the XPath Query pad in the View menu -->
+	<Extension path = "/SharpDevelop/Workbench/Contexts/Edit">
+		<ContextPad id = "MonoDevelop.XmlEditor.XPathQueryPad"/>
+	</Extension>
 	
 	<Extension path = "/SharpDevelop/Workbench/StockIcons">
 		<StockIcon stockid = "MonoDevelop.XmlEditor.XPathQueryPad" resource = "XPathQueryPad.png" />
 	</Extension>
-</AddIn>
+</Addin>

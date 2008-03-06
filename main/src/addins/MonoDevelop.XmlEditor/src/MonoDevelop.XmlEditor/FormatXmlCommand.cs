@@ -7,7 +7,6 @@
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
-using MonoDevelop.SourceEditor.Properties;
 using System;
 using System.IO;
 using System.Text;

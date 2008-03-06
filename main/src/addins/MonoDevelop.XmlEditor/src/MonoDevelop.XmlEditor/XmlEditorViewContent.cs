@@ -15,7 +15,6 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.Gui.Search;
 using MonoDevelop.Projects.Text;
-using MonoDevelop.SourceEditor.Properties;
 using System;
 using System.IO;
 

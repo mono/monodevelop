@@ -1,7 +1,7 @@
 //
 // MonoDevelop XML Editor
 //
-// Copyright (C) 2006 Matthew Ward
+// Copyright (C) 2006-2007 Matthew Ward
 //
 
 using MonoDevelop.Components.Commands;
@@ -9,8 +9,8 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.Tasks;
-using MonoDevelop.SourceEditor.Properties;
 using System;
 using System.IO;
 using System.Text;

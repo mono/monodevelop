@@ -1,7 +1,7 @@
 //
 // MonoDevelop XML Editor
 //
-// Copyright (C) 2006 Matthew Ward
+// Copyright (C) 2006-2007 Matthew Ward
 //
 
 using MonoDevelop.Components.Commands;
@@ -18,8 +18,9 @@ namespace MonoDevelop.XmlEditor
 		protected override void Run()
 		{
 			if (pad == null) {
-				pad = IdeApp.Workbench.ShowPad(new XPathQueryPad());
-			} else {
+				GetXPathQueryPad();
+			}
+			if (pad != null) {
 				pad.BringToFront();
 			}
 		}
@@ -27,6 +28,16 @@ namespace MonoDevelop.XmlEditor
 		protected override void Update(CommandInfo info)
 		{
 			info.Enabled = XmlEditorService.IsXmlEditorViewContentActive;
+		}
+		
+		void GetXPathQueryPad()
+		{
+			foreach (Pad currentPad in IdeApp.Workbench.Pads) {
+				if (currentPad.Id == "MonoDevelop.XmlEditor.XPathQueryPad") {
+					pad = currentPad;
+					break;
+				}
+			}
 		}
 	}
 }

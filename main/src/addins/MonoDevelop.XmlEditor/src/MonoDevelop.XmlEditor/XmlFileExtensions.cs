@@ -1,9 +1,10 @@
 //
 // MonoDevelop XML Editor
 //
-// Copyright (C) 2006 Matthew Ward
+// Copyright (C) 2006-2007 Matthew Ward
 //
 
+using Mono.Addins;
 using MonoDevelop.Core;
 using System;
 using System.Collections.Specialized;
@@ -24,10 +25,12 @@ namespace MonoDevelop.XmlEditor
 		public static StringCollection Extensions {
 			get {
 				if (extensions == null) {
-					XmlFileExtensionCodon[] xmlFileExtensionCodons = (XmlFileExtensionCodon[])Runtime.AddInService.GetTreeItems("/MonoDevelop/XmlEditor/XmlFileExtensions", typeof(XmlFileExtensionCodon));
 					extensions = new StringCollection();
-					foreach (XmlFileExtensionCodon codon in xmlFileExtensionCodons) {
-						extensions.Add(codon.FileExtension);
+					foreach (ExtensionNode node in AddinManager.GetExtensionNodes("/MonoDevelop/XmlEditor/XmlFileExtensions")) {
+						XmlFileExtensionNode xmlFileExtensionNode = node as XmlFileExtensionNode;
+						if (xmlFileExtensionNode != null) {
+							extensions.Add(xmlFileExtensionNode.FileExtension);
+						}
 					}
 				}
 				return extensions;
