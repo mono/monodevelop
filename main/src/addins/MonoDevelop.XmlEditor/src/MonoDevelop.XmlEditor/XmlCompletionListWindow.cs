@@ -1,7 +1,7 @@
 //
 // MonoDevelop XML Editor
 //
-// Copyright (C) 2004-2006 MonoDevelop Team
+// Copyright (C) 2004-2007 MonoDevelop Team
 //
 
 using System;
@@ -9,6 +9,7 @@ using System.Collections;
 
 using Gtk;
 using MonoDevelop.Projects;
+using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Projects.Gui.Completion;
 
@@ -17,11 +18,20 @@ namespace MonoDevelop.XmlEditor
 	public class XmlCompletionListWindow : XmlEditorListWindow, IListDataProvider
 	{
 		ICompletionWidget completionWidget;
+		ICodeCompletionContext completionContext;
 		ICompletionData[] completionData;
 		DeclarationViewWindow declarationviewwindow = new DeclarationViewWindow ();
 		ICompletionData currentData;
+		ICompletionDataProvider provider;
+		IMutableCompletionDataProvider mutableProvider;
+		Widget parsingMessage;
+		char firstChar;
+		CompletionDelegate closedDelegate;
+		
 		const int declarationWindowMargin = 3;
 		static DataComparer dataComparer = new DataComparer ();
+		
+		public static event EventHandler WindowClosed;
 		
 		class DataComparer: IComparer
 		{
@@ -40,53 +50,84 @@ namespace MonoDevelop.XmlEditor
 			wnd = new XmlCompletionListWindow ();
 		}
 		
-		public XmlCompletionListWindow ()
+		internal XmlCompletionListWindow ()
 		{
 			SizeAllocated += new SizeAllocatedHandler (ListSizeChanged);
 		}
 		
-		public static void ShowWindow (char firstChar, ICompletionDataProvider provider, ICompletionWidget completionWidget)
+		public static void ShowWindow (char firstChar, ICompletionDataProvider provider, ICompletionWidget completionWidget, ICodeCompletionContext completionContext, CompletionDelegate closedDelegate)
 		{
 			try {
-				if (!wnd.ShowListWindow (firstChar, provider,  completionWidget))
+				if (!wnd.ShowListWindow (firstChar, provider,  completionWidget, completionContext, closedDelegate)) {
+					provider.Dispose ();
 					return;
+				}
 				
 				// makes control-space in midle of words to work
-				string text = wnd.completionWidget.CompletionText;
-				if (text.Length == 0)
+				string text = wnd.completionWidget.GetCompletionText (completionContext);
+				if (text.Length == 0) {
+					text = provider.DefaultCompletionString;
+					if (text != null && text.Length > 0)
+						wnd.SelectEntry (text);
 					return;
+				}
 				
 				wnd.PartialWord = text; 
 				//if there is only one matching result we take it by default
-				if (wnd.IsUniqueMatch)
+				if (wnd.IsUniqueMatch && !wnd.IsChanging)
 				{	
+					wnd.UpdateWord ();
 					wnd.Hide ();
 				}
 				
-				wnd.UpdateWord ();
-				
-				wnd.PartialWord = wnd.CompleteWord;
 			} catch (Exception ex) {
 				Console.WriteLine (ex);
 			}
 		}
 		
-		bool ShowListWindow (char firstChar, ICompletionDataProvider provider, ICompletionWidget completionWidget)
+		bool ShowListWindow (char firstChar, ICompletionDataProvider provider, ICompletionWidget completionWidget, ICodeCompletionContext completionContext, CompletionDelegate closedDelegate)
 		{
-			this.completionWidget = completionWidget;
+			if (mutableProvider != null) {
+				mutableProvider.CompletionDataChanging -= OnCompletionDataChanging;
+				mutableProvider.CompletionDataChanged -= OnCompletionDataChanged;
+			}
 			
-			completionData = provider.GenerateCompletionData (completionWidget, firstChar);
+			this.provider = provider;
+			this.completionContext = completionContext;
+			this.closedDelegate = closedDelegate;
+			mutableProvider = provider as IMutableCompletionDataProvider;
+			
+			if (mutableProvider != null) {
+				mutableProvider.CompletionDataChanging += OnCompletionDataChanging;
+				mutableProvider.CompletionDataChanged += OnCompletionDataChanged;
+			
+				if (mutableProvider.IsChanging)
+					OnCompletionDataChanging (null, null);
+			}
+			
+			this.completionWidget = completionWidget;
+			this.firstChar = firstChar;
 
-			if (completionData == null || completionData.Length == 0) return false;
+			return FillList ();
+		}
+		
+		bool FillList ()
+		{
+			completionData = provider.GenerateCompletionData (completionWidget, firstChar);
+			if ((completionData == null || completionData.Length == 0) && !IsChanging)
+				return false;
 			
 			this.Style = completionWidget.GtkStyle;
 			
-			Array.Sort (completionData, dataComparer);
+			if (completionData == null)
+				completionData = new ICompletionData [0];
+			else
+				Array.Sort (completionData, dataComparer);
 			
 			DataProvider = this;
 
-			int x = completionWidget.TriggerXCoord;
-			int y = completionWidget.TriggerYCoord;
+			int x = completionContext.TriggerXCoord;
+			int y = completionContext.TriggerYCoord;
 			
 			int w, h;
 			GetSize (out w, out h);
@@ -96,7 +137,7 @@ namespace MonoDevelop.XmlEditor
 			
 			if ((y + h) > Screen.Height)
 			{
-				y = y - completionWidget.TriggerTextHeight - h;
+				y = y - completionContext.TriggerTextHeight - h;
 			}
 
 			Move (x, y);
@@ -109,7 +150,6 @@ namespace MonoDevelop.XmlEditor
 			if (firstChar == '=') {
 				this.Resize(this.List.WidthRequest + 220, this.List.HeightRequest);
 			}
-			
 			return true;
 		}
 		
@@ -185,7 +225,7 @@ namespace MonoDevelop.XmlEditor
 			XmlCompletionData data = (XmlCompletionData)completionData[List.Selection];
 
 			string completeWord = data.CompletionString;
-			completionWidget.SetCompletionText(wnd.PartialWord, completeWord);
+			completionWidget.SetCompletionText(completionContext, wnd.PartialWord, completeWord);
 			if (data.XmlCompletionDataType == XmlCompletionData.DataType.XmlAttribute) {
 				// Position cursor inside attribute value string.
 				XmlEditorView view = (XmlEditorView)completionWidget;
@@ -196,10 +236,33 @@ namespace MonoDevelop.XmlEditor
 			//completionWidget.SetCompletionText(wnd.PartialWord, wnd.CompleteWord);
 		}
 		
+//		void UpdateWord ()
+//		{
+//			string word = wnd.CompleteWord;
+//			if (word != null) {
+//				if (wnd.Selection != -1) {
+//					IActionCompletionData ac = completionData [wnd.Selection] as IActionCompletionData;
+//					if (ac != null) {
+//						ac.InsertAction (completionWidget, completionContext);
+//						return;
+//					}
+//				}
+//				completionWidget.SetCompletionText (completionContext, wnd.PartialWord, word);
+//			}
+//		}
+		
 		public new void Hide ()
 		{
 			base.Hide ();
 			declarationviewwindow.HideAll ();
+			if (provider != null) {
+				provider.Dispose ();
+				provider = null;
+			}
+			if (closedDelegate != null) {
+				closedDelegate ();
+				closedDelegate = null;
+			}
 		}
 		
 		void ListSizeChanged (object obj, SizeAllocatedArgs args)
@@ -211,8 +274,8 @@ namespace MonoDevelop.XmlEditor
 		{
 			bool ret = base.OnButtonPressEvent (evnt);
 			if (evnt.Button == 1 && evnt.Type == Gdk.EventType.TwoButtonPress) {
-				wnd.Hide ();
 				wnd.UpdateWord ();
+				wnd.Hide ();
 			}
 			return ret;
 		}
@@ -225,7 +288,7 @@ namespace MonoDevelop.XmlEditor
 		
 		void UpdateDeclarationView ()
 		{
-			if (completionData == null || List.Selection >= completionData.Length)
+			if (completionData == null || List.Selection >= completionData.Length || List.Selection == -1)
 				return;
 
 			if (List.GdkWindow == null) return;
@@ -246,7 +309,7 @@ namespace MonoDevelop.XmlEditor
 
 			ICompletionData data = completionData[List.Selection];
 			ICompletionDataWithMarkup datawMarkup = data as ICompletionDataWithMarkup;
-			//CodeCompletionData ccdata = (CodeCompletionData) data;
+			XmlCompletionData ccdata = (XmlCompletionData) data;
 
 			string descMarkup = datawMarkup != null ? datawMarkup.DescriptionPango : data.Description;
 
@@ -258,10 +321,10 @@ namespace MonoDevelop.XmlEditor
 	
 				declarationviewwindow.AddOverload (descMarkup);
 
-//				foreach (CodeCompletionData odata in ccdata.GetOverloads ()) {
-//					ICompletionDataWithMarkup odatawMarkup = odata as ICompletionDataWithMarkup;
-//					declarationviewwindow.AddOverload (odatawMarkup == null ? odata.Description : odatawMarkup.DescriptionPango);
-//				}
+				//foreach (CodeCompletionData odata in ccdata.GetOverloads ()) {
+				//	ICompletionDataWithMarkup odatawMarkup = odata as ICompletionDataWithMarkup;
+				//	declarationviewwindow.AddOverload (odatawMarkup == null ? odata.Description : odatawMarkup.DescriptionPango);
+				//}
 			}
 			
 			currentData = data;
@@ -315,12 +378,36 @@ namespace MonoDevelop.XmlEditor
 			return RenderIcon (completionData[n].Image, Gtk.IconSize.Menu, "");
 		}
 		
-		protected override bool IsValidCompletionChar(char c)
+		internal bool IsChanging {
+			get { return mutableProvider != null && mutableProvider.IsChanging; }
+		}
+		
+		void OnCompletionDataChanging (object s, EventArgs args)
 		{
-			if (XmlParser.IsXmlNameChar(c) || XmlParser.IsAttributeValueChar(c)) {
-				return true;
+			if (parsingMessage == null) {
+				VBox box = new VBox ();
+				box.PackStart (new Gtk.HSeparator (), false, false, 0);
+				HBox hbox = new HBox ();
+				hbox.BorderWidth = 3;
+				hbox.PackStart (new Gtk.Image ("md-parser", Gtk.IconSize.Menu), false, false, 0);
+				Gtk.Label lab = new Gtk.Label (GettextCatalog.GetString ("Gathering class information..."));
+				lab.Xalign = 0;
+				hbox.PackStart (lab, true, true, 3);
+				hbox.ShowAll ();
+				parsingMessage = hbox;
 			}
-			return false;
+			wnd.ShowFooter (parsingMessage);
+		}
+		
+		void OnCompletionDataChanged (object s, EventArgs args)
+		{
+			wnd.HideFooter ();
+			if (Visible) {
+				Reset ();
+				FillList ();
+			}
 		}
 	}
+	
+	public delegate void CompletionDelegate ();
 }

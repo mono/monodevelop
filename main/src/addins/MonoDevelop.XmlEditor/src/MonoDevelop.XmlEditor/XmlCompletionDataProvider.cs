@@ -19,14 +19,16 @@ namespace MonoDevelop.XmlEditor
 	{
 		XmlSchemaCompletionDataCollection schemaCompletionDataItems;
 		XmlSchemaCompletionData defaultSchemaCompletionData;
+		ICodeCompletionContext completionContext;
 		string defaultNamespacePrefix = String.Empty;
 		string preSelection = null;
 		
-		public XmlCompletionDataProvider(XmlSchemaCompletionDataCollection schemaCompletionDataItems, XmlSchemaCompletionData defaultSchemaCompletionData, string defaultNamespacePrefix)
+		public XmlCompletionDataProvider(XmlSchemaCompletionDataCollection schemaCompletionDataItems, XmlSchemaCompletionData defaultSchemaCompletionData, string defaultNamespacePrefix, ICodeCompletionContext completionContext)
 		{
 			this.schemaCompletionDataItems = schemaCompletionDataItems;
 			this.defaultSchemaCompletionData = defaultSchemaCompletionData;
 			this.defaultNamespacePrefix = defaultNamespacePrefix;
+			this.completionContext = completionContext;
 		}
 		
 //		public ImageList ImageList {
@@ -35,6 +37,10 @@ namespace MonoDevelop.XmlEditor
 //				return XmlCompletionDataImageList.GetImageList();
 //			}
 //		}
+		
+		public void Dispose()
+		{
+		}
 		
 		/// <summary>
 		/// Gets the preselected text.
@@ -47,11 +53,15 @@ namespace MonoDevelop.XmlEditor
 			}
 		}
 		
+		public string DefaultCompletionString {
+			get { return null; }
+		}
+
 		public ICompletionData[] GenerateCompletionData(ICompletionWidget widget, char charTyped)
 		{	
 			preSelection = null;
-			string text = widget.GetText (0, widget.TriggerOffset);
-			
+			string text = widget.GetText (0, completionContext.TriggerOffset);
+
 			switch (charTyped) {
 				case '=':
 					// Namespace intellisense.

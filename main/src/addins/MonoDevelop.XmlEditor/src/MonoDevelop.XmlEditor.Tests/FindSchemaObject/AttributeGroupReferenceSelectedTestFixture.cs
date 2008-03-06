@@ -24,7 +24,7 @@ namespace MonoDevelop.XmlEditor.Tests.FindSchemaObject
 			schemas.Add(SchemaCompletionData);
 			XmlSchemaCompletionData xsdSchemaCompletionData = new XmlSchemaCompletionData(ResourceManager.GetXsdSchema());
 			schemas.Add(xsdSchemaCompletionData);
-			XmlCompletionDataProvider provider = new XmlCompletionDataProvider(schemas, xsdSchemaCompletionData, String.Empty);
+			XmlCompletionDataProvider provider = new XmlCompletionDataProvider(schemas, xsdSchemaCompletionData, String.Empty, null);
 			
 			string xml = GetSchema();			
 			int index = xml.IndexOf("ref=\"coreattrs\"");

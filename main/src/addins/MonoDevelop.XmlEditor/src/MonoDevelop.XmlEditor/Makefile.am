@@ -27,9 +27,6 @@ FILES = \
 	EncodedStringWriter.cs \
 	FormatXmlCommand.cs \
 	GoToSchemaDefinitionCommand.cs \
-	ICompletionData.cs \
-	ICompletionDataProvider.cs \
-	ICompletionWidget.cs \
 	OpenStylesheetCommand.cs \
 	OpenXPathQueryPadCommand.cs \
 	QualifiedNameCollection.cs \

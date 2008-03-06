@@ -18,17 +18,17 @@
 	</Runtime>
 	
 	<Dependencies>
-		<Addin id="MonoDevelop.Core" version="0.13.0"/>
-		<Addin id="MonoDevelop.Core.Gui" version="0.13.0"/>
-		<Addin id="MonoDevelop.Ide" version="0.13.0"/>
-		<Addin id="MonoDevelop.Projects" version="0.13.0"/>
-		<Addin id="MonoDevelop.Projects.Gui" version="0.13.0"/>
-		<Addin id="MonoDevelop.SourceEditor" version="0.13.0"/>
+		<Addin id="MonoDevelop.Core" version="0.14.0"/>
+		<Addin id="MonoDevelop.Core.Gui" version="0.14.0"/>
+		<Addin id="MonoDevelop.Ide" version="0.14.0"/>
+		<Addin id="MonoDevelop.Projects" version="0.14.0"/>
+		<Addin id="MonoDevelop.Projects.Gui" version="0.14.0"/>
+		<Addin id="MonoDevelop.SourceEditor" version="0.14.0"/>
 	</Dependencies>
 
 	<!-- Defines the Xml file extension node -->
 	<ExtensionPoint path = "/MonoDevelop/XmlEditor/XmlFileExtensions">
-		<ExtensionNode name = "XmlFileExtension" type = "MonoDevelop.XmlEditor.XmlFileExtension"/>
+		<ExtensionNode name = "XmlFileExtension" type = "MonoDevelop.XmlEditor.XmlFileExtensionNode"/>
 	</ExtensionPoint>
 
 	<!-- Xml Editor View -->
@@ -50,7 +50,13 @@
 		<XmlFileExtension extension = ".xsl"/> 
 		<XmlFileExtension extension = ".xslt"/> 
 	</Extension>
-
+	
+	<!-- Defines the XmlTextEditorExtension
+	<Extension path = "/MonoDevelop/Workbench/TextEditorExtensions">
+		<Class class = "MonoDevelop.XmlEditor.XmlTextEditorExtension" />
+	</Extension>
+	-->
+	s
 	<!-- Commands -->
 	<Extension path = "/SharpDevelop/Commands">	
 		<Command id = "MonoDevelop.XmlEditor.Commands.CreateSchema"

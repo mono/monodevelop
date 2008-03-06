@@ -1,7 +1,7 @@
 //
 // MonoDevelop XML Editor
 //
-// Copyright (C) 2004-2006 MonoDevelop Team
+// Copyright (C) 2004-2007 MonoDevelop Team
 //
 
 using Gtk;
@@ -28,6 +28,8 @@ namespace MonoDevelop.XmlEditor
 		VScrollbar scrollbar;
 		XmlEditorListWidget list;
 		IListDataProvider provider;
+		Widget footer;
+		VBox vbox;
 		
 		StringBuilder word;
 		int curPos;
@@ -35,10 +37,11 @@ namespace MonoDevelop.XmlEditor
 		[Flags]
 		public enum KeyAction { Process=1, Ignore=2, CloseWindow=4, Complete=8 } 
 
-		public XmlEditorListWindow() : base (Gtk.WindowType.Popup)
+		public XmlEditorListWindow (): base (Gtk.WindowType.Popup)
 		{
-			HBox box = new HBox ();
+			vbox = new VBox ();
 			
+			HBox box = new HBox ();
 			list = new XmlEditorListWidget (this);
 			list.SelectionChanged += new EventHandler (OnSelectionChanged);
 			list.ScrollEvent += new ScrollEventHandler (OnScrolled);
@@ -49,7 +52,9 @@ namespace MonoDevelop.XmlEditor
 			scrollbar.ValueChanged += new EventHandler (OnScrollChanged); 
 			box.PackStart (scrollbar, false, false, 0);
 			
-			Add (box);
+			vbox.PackStart (box, true, true, 0);
+			Add (vbox);
+			
 			this.TypeHint = WindowTypeHint.Menu;
 		}
 		
@@ -59,11 +64,28 @@ namespace MonoDevelop.XmlEditor
 			Reset ();
 		}
 		
+		public void ShowFooter (Widget w)
+		{
+			HideFooter ();
+			vbox.PackStart (w, false, false, 0);
+			footer = w;
+		}
+		
+		public void HideFooter ()
+		{
+			if (footer != null) {
+				vbox.Remove (footer);
+				footer = null;
+			}
+		}
+		
 		public void Reset ()
 		{
 			word = new StringBuilder ();
 			curPos = 0;
 			list.Reset ();
+			if (provider == null)
+				return;
 
 			if (list.VisibleRows >= provider.ItemCount) {
 				this.scrollbar.Hide();
@@ -86,7 +108,16 @@ namespace MonoDevelop.XmlEditor
 		
 		public string CompleteWord
 		{
-			get { return provider.GetText (list.Selection);	}
+			get { 
+				if (list.Selection != -1)
+					return provider.GetCompletionText (list.Selection);
+				else
+					return null;
+			}
+		}
+		
+		public int Selection {
+			get { return list.Selection; }
 		}
 		
 		public string PartialWord
@@ -109,7 +140,7 @@ namespace MonoDevelop.XmlEditor
 			get
 			{
 				int pos = list.Selection + 1;
-				if (provider.ItemCount > pos && provider.GetText (pos).ToLower ().StartsWith (PartialWord.ToLower ()) || !(provider.GetText (list.Selection).ToLower ().StartsWith (PartialWord.ToLower ())))
+				if (provider.ItemCount > pos && provider.GetCompletionText (pos).ToLower ().StartsWith (PartialWord.ToLower ()) || !(provider.GetCompletionText (list.Selection).ToLower ().StartsWith (PartialWord.ToLower ())))
 					return false;
 				
 				return true;	
@@ -192,20 +223,19 @@ namespace MonoDevelop.XmlEditor
 			return KeyAction.CloseWindow | KeyAction.Process;
 		}
 		
-		protected virtual bool IsValidCompletionChar(char c)
-		{
-			return false;
-		}
-		
 		void UpdateWordSelection ()
 		{
-			string s = word.ToString ();
+			SelectEntry (word.ToString ());
+		}
+		
+		public void SelectEntry (string s)
+		{
 			int max = (provider == null ? 0 : provider.ItemCount);
 			
 			int bestMatch = -1;
 			for (int n=0; n<max; n++) 
 			{
-				string txt = provider.GetText (n);
+				string txt = provider.GetCompletionText (n);
 				if (txt.StartsWith (s)) {
 					list.Selection = n;
 					return;
@@ -245,6 +275,12 @@ namespace MonoDevelop.XmlEditor
 		{
 		}
 		
+		protected virtual bool IsValidCompletionChar(char c)
+		{
+			return false;
+		}
+		
+		
 		protected override bool OnExposeEvent (Gdk.EventExpose args)
 		{
 			base.OnExposeEvent (args);
@@ -281,7 +317,16 @@ namespace MonoDevelop.XmlEditor
 		
 		public void Reset ()
 		{
-			selection = 0;
+			if (win.DataProvider == null) {
+				selection = -1;
+				return;
+			}
+			
+			if (win.DataProvider.ItemCount == 0)
+				selection = -1;
+			else
+				selection = 0;
+
 			page = 0;
 			disableSelection = false;
 			UpdateStyle ();
@@ -298,7 +343,7 @@ namespace MonoDevelop.XmlEditor
 			set {
 				if (value < 0)
 					value = 0;
-				else if (value >= win.DataProvider.ItemCount)
+				if (value >= win.DataProvider.ItemCount)
 					value = win.DataProvider.ItemCount - 1;
 					
 				if (value != selection) 
@@ -395,7 +440,7 @@ namespace MonoDevelop.XmlEditor
 			int n = 0;
 			while (ypos < winHeight - margin && (page + n) < win.DataProvider.ItemCount)
 			{
-				layout.SetMarkup (win.DataProvider.GetText (page + n));
+				layout.SetText (win.DataProvider.GetText (page + n));
 				Gdk.Pixbuf icon = win.DataProvider.GetIcon (page + n);
 				
 				int wi, he, typos, iypos;
@@ -452,7 +497,7 @@ namespace MonoDevelop.XmlEditor
 			int lvWidth, lvHeight;
 			int rowWidth;
 			
-			this.GdkWindow.GetSize (out lvWidth, out lvHeight);
+			this.GetSizeRequest (out lvWidth, out lvHeight);
 
 			layout.GetPixelSize (out rowWidth, out rowHeight);
 			rowHeight += padding;
@@ -467,7 +512,7 @@ namespace MonoDevelop.XmlEditor
 			
 			if (lvWidth != listWidth || lvHeight != newHeight)
 				this.SetSizeRequest (listWidth, newHeight);
-		} 
+		} 			
 
 		protected override void OnRealized ()
 		{
@@ -485,5 +530,13 @@ namespace MonoDevelop.XmlEditor
 			layout.FontDescription = des;
 			CalcVisibleRows ();
 		}
+	}
+
+	public interface IListDataProvider
+	{
+		int ItemCount { get; }
+		string GetText (int n);
+		string GetCompletionText (int n);
+		Gdk.Pixbuf GetIcon (int n);
 	}
 }

@@ -18,7 +18,7 @@ namespace MonoDevelop.XmlEditor.Tests.FindSchemaObject
 		{
 			XmlSchemaCompletionDataCollection schemas = new XmlSchemaCompletionDataCollection();
 			schemas.Add(SchemaCompletionData);
-			XmlCompletionDataProvider provider = new XmlCompletionDataProvider(schemas, SchemaCompletionData, String.Empty);
+			XmlCompletionDataProvider provider = new XmlCompletionDataProvider(schemas, SchemaCompletionData, String.Empty, null);
 			string xml = "<note xmlns='http://www.w3schools.com'></note>";
 			schemaElement = (XmlSchemaElement)XmlEditorView.GetSchemaObjectSelected(xml, xml.IndexOf("note xmlns"), provider);
 		}

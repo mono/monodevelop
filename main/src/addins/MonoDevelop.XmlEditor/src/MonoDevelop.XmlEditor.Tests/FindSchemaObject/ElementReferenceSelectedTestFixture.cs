@@ -25,7 +25,7 @@ namespace MonoDevelop.XmlEditor.Tests.FindSchemaObject
 			schemas.Add(SchemaCompletionData);
 			XmlSchemaCompletionData xsdSchemaCompletionData = new XmlSchemaCompletionData(ResourceManager.GetXsdSchema());
 			schemas.Add(xsdSchemaCompletionData);
-			XmlCompletionDataProvider provider = new XmlCompletionDataProvider(schemas, xsdSchemaCompletionData, String.Empty);
+			XmlCompletionDataProvider provider = new XmlCompletionDataProvider(schemas, xsdSchemaCompletionData, String.Empty, null);
 			
 			string xml = GetSchema();
 			schemaAttribute = (XmlSchemaAttribute)XmlEditorView.GetSchemaObjectSelected(xml, xml.IndexOf("ref=\"name"), provider, SchemaCompletionData);

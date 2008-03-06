@@ -22,7 +22,7 @@ namespace MonoDevelop.XmlEditor.Tests.Schema
 			completionData.FileName = @"/home/Schemas/MySchema.xsd";
 			schemas.Add(completionData);
 			
-			provider = new XmlCompletionDataProvider(schemas, completionData, String.Empty);
+			provider = new XmlCompletionDataProvider(schemas, completionData, String.Empty, null);
 		}
 		
 		[Test]

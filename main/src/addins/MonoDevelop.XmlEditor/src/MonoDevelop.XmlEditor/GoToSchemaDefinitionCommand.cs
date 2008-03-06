@@ -8,6 +8,7 @@ using MonoDevelop.Components.Commands;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
+using MonoDevelop.Projects.Gui.Completion;
 using System;
 using System.Xml.Schema;
 
@@ -40,7 +41,8 @@ namespace MonoDevelop.XmlEditor
 		public void GoToSchemaDefinition(string fileName, XmlEditorView xmlEditor)
 		{
 			// Find schema object for selected xml element or attribute.
-			XmlCompletionDataProvider provider = new XmlCompletionDataProvider(xmlEditor.SchemaCompletionDataItems, xmlEditor.DefaultSchemaCompletionData, xmlEditor.DefaultNamespacePrefix);
+			ICompletionWidget completionWidget = xmlEditor as ICompletionWidget;
+			XmlCompletionDataProvider provider = new XmlCompletionDataProvider(xmlEditor.SchemaCompletionDataItems, xmlEditor.DefaultSchemaCompletionData, xmlEditor.DefaultNamespacePrefix, completionWidget.CreateCodeCompletionContext(xmlEditor.CursorOffset));
 			XmlSchemaCompletionData currentSchemaCompletionData = provider.FindSchemaFromFileName(fileName);						
 			XmlSchemaObject schemaObject = XmlEditorView.GetSchemaObjectSelected(xmlEditor.Buffer.Text, xmlEditor.CursorOffset, provider, currentSchemaCompletionData);
 			

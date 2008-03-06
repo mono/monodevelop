@@ -1,8 +1,8 @@
 //
 // MonoDevelop XML Editor
 //
-// Copyright (C) 2006 Matthew Ward
-// Copyright (C) 2004-2006 MonoDevelop Team
+// Copyright (C) 2006-2007 Matthew Ward
+// Copyright (C) 2004-2007 MonoDevelop Team
 //
 
 using Gdk;
@@ -12,7 +12,7 @@ using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.Gui.Search;
-//using MonoDevelop.Projects.Gui.Completion;
+using MonoDevelop.Projects.Gui.Completion;
 using MonoDevelop.SourceEditor;
 using MonoDevelop.SourceEditor.Gui.Dialogs;
 using System;
@@ -36,11 +36,15 @@ namespace MonoDevelop.XmlEditor
 		SourceBuffer buffer;
 		Gtk.Clipboard clipboard = Gtk.Clipboard.Get(Gdk.Atom.Intern("CLIPBOARD", false));
 		XPathNodeTextMarker xpathNodeTextMarker;
+		event EventHandler completionContextChanged;
+		ICodeCompletionContext completionContext;
 		
 		public XmlEditorView()
 		{
 			InitSyntaxHighlighting();
 			xpathNodeTextMarker = new XPathNodeTextMarker(buffer);
+			Buffer.Changed += BufferChanged;
+
 		}
 		
 		/// <summary>
@@ -246,56 +250,57 @@ namespace MonoDevelop.XmlEditor
 		}
 		
 		#region ICompletionWidget
-
-		int completionX;
-		int ICompletionWidget.TriggerXCoord {
-			get	{
-				return completionX;
-			}
-		}
-
-		int completionY;
-		int ICompletionWidget.TriggerYCoord {
-			get	{
-				return completionY;
-			}
-		}
-
-		int textHeight;
-		int ICompletionWidget.TriggerTextHeight {
-			get	{
-				return textHeight;
-			}
-		}
-
-		string ICompletionWidget.CompletionText {
-			get	{
-				string completionText = Buffer.GetText (Buffer.GetIterAtMark (triggerMark), Buffer.GetIterAtMark (Buffer.InsertMark), false);
-				return completionText;
-			}
-		}
-
-		void ICompletionWidget.SetCompletionText (string partial_word, string complete_word)
+		
+		void NotifyCompletionContextChanged ()
 		{
-			TextIter offsetIter = Buffer.GetIterAtMark(triggerMark);
-        	TextIter endIter = Buffer.GetIterAtOffset (offsetIter.Offset + partial_word.Length);
-        	Buffer.MoveMark (Buffer.InsertMark, offsetIter);
-        	Buffer.Delete (ref offsetIter, ref endIter);
-        	Buffer.InsertAtCursor (complete_word);
+			if (completionContextChanged != null)
+				completionContextChanged (this, EventArgs.Empty);
 		}
 
+		event EventHandler ICompletionWidget.CompletionContextChanged {
+			add { completionContextChanged += value; }
+			remove { completionContextChanged -= value; }
+		}
+		
+		string ICompletionWidget.GetCompletionText (ICodeCompletionContext ctx)
+		{
+			return Buffer.GetText (Buffer.GetIterAtOffset (ctx.TriggerOffset), Buffer.GetIterAtMark (Buffer.InsertMark), false);
+		}
+
+		void ICompletionWidget.SetCompletionText (ICodeCompletionContext ctx, string partial_word, string complete_word)
+		{
+			TextIter offsetIter = Buffer.GetIterAtOffset (ctx.TriggerOffset);
+			TextIter endIter = Buffer.GetIterAtOffset (offsetIter.Offset + partial_word.Length);
+			Buffer.MoveMark (Buffer.InsertMark, offsetIter);
+			Buffer.Delete (ref offsetIter, ref endIter);
+			Buffer.InsertAtCursor (complete_word);
+			ScrollMarkOnscreen (Buffer.InsertMark);
+		}
+				
+		ICodeCompletionContext ICompletionWidget.CreateCodeCompletionContext (int triggerOffset)
+		{
+			TextIter iter = Buffer.GetIterAtOffset (triggerOffset);
+			Gdk.Rectangle rect = GetIterLocation (iter);
+			int wx, wy;
+			BufferToWindowCoords (Gtk.TextWindowType.Widget, rect.X, rect.Y + rect.Height, out wx, out wy);
+			int tx, ty;
+			GdkWindow.GetOrigin (out tx, out ty);
+
+			CodeCompletionContext ctx = new CodeCompletionContext ();
+			ctx.TriggerOffset = iter.Offset;
+			ctx.TriggerLine = iter.Line;
+			ctx.TriggerLineOffset = iter.LineOffset;
+			ctx.TriggerXCoord = tx + wx;
+			ctx.TriggerYCoord = ty + wy;
+			ctx.TriggerTextHeight = rect.Height;
+			return ctx;
+		}
+	
 		void ICompletionWidget.InsertAtCursor (string text)
 		{
 			Buffer.InsertAtCursor (text);
 		}
 		
-		string ICompletionWidget.Text {
-			get	{
-				string text = Buffer.Text;
-				return text;
-			}
-		}
-
 		int ICompletionWidget.TextLength {
 			get	{
 				return Buffer.EndIter.Offset + 1;
@@ -311,25 +316,6 @@ namespace MonoDevelop.XmlEditor
 		{
 			string text = Buffer.GetText(Buffer.GetIterAtOffset (startOffset), Buffer.GetIterAtOffset(endOffset), true);
 			return text;
-		}
-
-		TextMark triggerMark;
-		int ICompletionWidget.TriggerOffset {
-			get	{
-				return Buffer.GetIterAtMark (triggerMark).Offset;
-			}
-		}
-
-		int ICompletionWidget.TriggerLine {
-			get	{
-				return Buffer.GetIterAtMark (triggerMark).Line;
-			}
-		}
-
-		int ICompletionWidget.TriggerLineOffset {
-			get	{
-				return Buffer.GetIterAtMark (triggerMark).LineOffset;
-			}
 		}
 
 		Gtk.Style ICompletionWidget.GtkStyle {
@@ -482,14 +468,20 @@ namespace MonoDevelop.XmlEditor
 		#endregion	
 
 		protected override bool OnFocusOutEvent(EventFocus e)
-		{
+		{			
+			NotifyCompletionContextChanged();
 			XmlCompletionListWindow.HideWindow();
 			return base.OnFocusOutEvent(e);
 		}
-
+		
+		void BufferChanged (object s, EventArgs args)
+		{
+			NotifyCompletionContextChanged ();
+		}
+		
 		protected override bool OnKeyPressEvent (Gdk.EventKey evnt)
 		{
-			if (XmlCompletionListWindow.ProcessKeyEvent (evnt))
+			if (XmlCompletionListWindow.ProcessKeyEvent(evnt))
 				return true;
 									
 			try {
@@ -544,7 +536,7 @@ namespace MonoDevelop.XmlEditor
 		void ShowCompletionWindow(char key)
 		{
 			PrepareCompletionDetails (Buffer.GetIterAtMark (Buffer.InsertMark));
-			XmlCompletionListWindow.ShowWindow(key, GetCompletionDataProvider(), this);
+			XmlCompletionListWindow.ShowWindow(key, GetCompletionDataProvider(), this, completionContext, null);
 			//if (EnableCodeCompletion && PeekCharIsWhitespace ()) {
 			//	PrepareCompletionDetails (buf.GetIterAtMark (buf.InsertMark));
 			//	CompletionListWindow.ShowWindow (key, GetCodeCompletionDataProvider (false), this);
@@ -553,21 +545,13 @@ namespace MonoDevelop.XmlEditor
 		
 		ICompletionDataProvider GetCompletionDataProvider()
 		{
-			return new XmlCompletionDataProvider(schemaCompletionDataItems, defaultSchemaCompletionData, defaultNamespacePrefix);
+			return new XmlCompletionDataProvider(schemaCompletionDataItems, defaultSchemaCompletionData, defaultNamespacePrefix, completionContext);
 		}
 		
 		void PrepareCompletionDetails(TextIter iter)
 		{
-			Gdk.Rectangle rect = GetIterLocation (Buffer.GetIterAtMark (Buffer.InsertMark));
-			int wx, wy;
-			BufferToWindowCoords (Gtk.TextWindowType.Widget, rect.X, rect.Y + rect.Height, out wx, out wy);
-			int tx, ty;
-			GdkWindow.GetOrigin (out tx, out ty);
-
-			this.completionX = tx + wx;
-			this.completionY = ty + wy;
-			this.textHeight = rect.Height;
-			this.triggerMark = Buffer.CreateMark (null, iter, true);
+			ICompletionWidget completionWidget = this as ICompletionWidget;
+			completionContext = completionWidget.CreateCodeCompletionContext(iter.Offset);
 		}
 		
 		void InitSyntaxHighlighting()
