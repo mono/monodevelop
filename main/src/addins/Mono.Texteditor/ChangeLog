@@ -1,3 +1,7 @@
+2008-03-05  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* XmlSyntaxMode.xml: Apply XML highlighting to XAML , HTML and XHTML.
+
 2008-03-05  Mike Krüger <mkrueger@novell.com> 
 
 	* Mono.TextEditor/TextEditor.cs: Improved the scrolling speed (should be
