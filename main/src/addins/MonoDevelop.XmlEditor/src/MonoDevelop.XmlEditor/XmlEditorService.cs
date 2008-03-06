@@ -59,7 +59,7 @@ namespace MonoDevelop.XmlEditor
 		{
 			Document doc = IdeApp.Workbench.ActiveDocument;
 			if (doc != null) {
-				return doc.Content as XmlEditorViewContent;
+				return doc.GetContent<XmlEditorViewContent>();
 			}
 			return null;
 		}
@@ -68,7 +68,7 @@ namespace MonoDevelop.XmlEditor
 			get {
 				ViewContentCollection views = new ViewContentCollection();
 				foreach (Document doc in IdeApp.Workbench.Documents) {
-					XmlEditorViewContent view = doc.Content as XmlEditorViewContent;
+					XmlEditorViewContent view = doc.GetContent<XmlEditorViewContent>();
 					if (view != null) {
 						views.Add(view);
 					}
@@ -80,7 +80,7 @@ namespace MonoDevelop.XmlEditor
 		public static XmlEditorViewContent GetOpenDocument(string fileName)
 		{
 			foreach (Document doc in IdeApp.Workbench.Documents) {
-				XmlEditorViewContent view = doc.Content as XmlEditorViewContent;
+				XmlEditorViewContent view = doc.GetContent<XmlEditorViewContent>();
 				if (view != null) {
 					if (view.FileName != null && doc.FileName == fileName) {
 						return view;

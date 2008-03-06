@@ -13,7 +13,6 @@
       <CodeGeneration compiler="Csc" warninglevel="4" optimize="True" unsafecodeallowed="False" generateoverflowchecks="True" mainclass="" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
     </Configuration>
   </Configurations>
-  <DeployTargets />
   <Contents>
     <File name="./AssemblyInfo.cs" subtype="Code" buildaction="Compile" />
     <File name="./EncodedStringWriter.cs" subtype="Code" buildaction="Compile" />
@@ -66,6 +65,9 @@
     <File name="./XPathHistoryList.cs" subtype="Code" buildaction="Compile" />
     <File name="./XPathNamespaceList.cs" subtype="Code" buildaction="Compile" />
     <File name="./GoToSchemaDefinitionCommand.cs" subtype="Code" buildaction="Compile" />
+    <File name="./ICompletionWidget.cs" subtype="Code" buildaction="Compile" />
+    <File name="./ICompletionDataProvider.cs" subtype="Code" buildaction="Compile" />
+    <File name="./ICompletionData.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="gtksourceview-sharp, Version=1.0.0.2, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />

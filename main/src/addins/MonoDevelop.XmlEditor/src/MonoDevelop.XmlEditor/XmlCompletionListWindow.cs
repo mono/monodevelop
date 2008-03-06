@@ -305,6 +305,11 @@ namespace MonoDevelop.XmlEditor
 			return completionData[n].Text[0];
 		}
 		
+		public string GetCompletionText (int n)
+		{
+			return completionData[n].CompletionString;
+		}
+		
 		public Gdk.Pixbuf GetIcon (int n)
 		{
 			return RenderIcon (completionData[n].Image, Gtk.IconSize.Menu, "");
