@@ -880,7 +880,7 @@ namespace MonoDevelop.XmlEditor
 						} else {
 							// Abstract element?
 							XmlSchemaElement abstractElement = FindElement(element.RefName);
-							if (abstractElement.IsAbstract) {
+							if (abstractElement != null && abstractElement.IsAbstract) {
 								matchedElement = FindSubstitutionGroupElement(abstractElement.QualifiedName, name);
 							}
 						}
