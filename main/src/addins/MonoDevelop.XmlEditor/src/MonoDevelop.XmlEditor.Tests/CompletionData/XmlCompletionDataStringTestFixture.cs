@@ -23,14 +23,14 @@ namespace MonoDevelop.XmlEditor.Tests.CompletionData
 		public void NamespaceUriCompletionString()
 		{
 			XmlCompletionData data = new XmlCompletionData("foo", XmlCompletionData.DataType.NamespaceUri);
-			Assert.AreEqual("\"foo\"", data.CompletionString);
+			Assert.AreEqual("foo", data.CompletionString);
 		}
 		
 		[Test]
 		public void AttributeCompletionString()
 		{
 			XmlCompletionData data = new XmlCompletionData("foo", XmlCompletionData.DataType.XmlAttribute);
-			Assert.AreEqual("foo=\"\"", data.CompletionString);
+			Assert.AreEqual("foo", data.CompletionString);
 		}
 		
 		[Test]

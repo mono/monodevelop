@@ -38,13 +38,24 @@ namespace MonoDevelop.XmlEditor
 		XPathNodeTextMarker xpathNodeTextMarker;
 		event EventHandler completionContextChanged;
 		ICodeCompletionContext completionContext;
+		XmlEditorViewContent viewContent;
 		
-		public XmlEditorView()
+		public XmlEditorView() : this(null)
 		{
+		}
+		
+		public XmlEditorView(XmlEditorViewContent viewContent)
+		{
+			this.viewContent = viewContent;
 			InitSyntaxHighlighting();
 			xpathNodeTextMarker = new XPathNodeTextMarker(buffer);
 			Buffer.Changed += BufferChanged;
-
+		}
+		
+		public XmlEditorViewContent ViewContent {
+			get {
+				return viewContent;
+			}
 		}
 		
 		/// <summary>

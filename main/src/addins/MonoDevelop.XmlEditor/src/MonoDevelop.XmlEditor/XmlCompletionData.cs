@@ -4,6 +4,10 @@
 // Copyright (C) 2005-2006 Matthew Ward
 //
 
+using Gdk;
+using Gtk;
+using GtkSourceView;
+using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects.Gui.Completion;
 using System;
 
@@ -13,7 +17,7 @@ namespace MonoDevelop.XmlEditor
 	/// Holds the text for  namespace, child element or attribute 
 	/// autocomplete (intellisense).
 	/// </summary>
-	public class XmlCompletionData : ICompletionData
+	public class XmlCompletionData : ICompletionData, IActionCompletionData
 	{
 		string text;
 		DataType dataType = DataType.XmlElement;
@@ -70,13 +74,8 @@ namespace MonoDevelop.XmlEditor
 		}
 		
 		public string CompletionString {
-			get {
-				if (dataType == DataType.NamespaceUri) {
-					return String.Concat("\"", text, "\"");
-				} else if (dataType == DataType.XmlAttribute) {
-					return String.Concat(text, "=\"\"");
-				}
-				return text;
+			get { 
+				return text; 
 			}
 		}
 		
@@ -90,26 +89,28 @@ namespace MonoDevelop.XmlEditor
 			}
 		}
 		
-		public void InsertAction(ICompletionWidget widget)
+		public void InsertAction(ICompletionWidget widget, ICodeCompletionContext completionContext)
 		{
-			Console.WriteLine("InsertAction");
-//			XmlEditorControl xmlEditorControl = (XmlEditorControl)control;
-//			TextArea textArea = xmlEditorControl.ActiveTextAreaControl.TextArea;
-//			
-			if ((dataType == DataType.XmlElement) || (dataType == DataType.XmlAttributeValue)) {
-				widget.InsertAtCursor(text);
-			} else if (dataType == DataType.NamespaceUri) {
-				//widget.InsertAtCursor(String.Concat("\"", text, "\""));
-			} else {
-				// Insert an attribute.
-//				Caret caret = textArea.Caret;
-				widget.InsertAtCursor(String.Concat(text, "=\"\""));
-//				
-//				// Move caret into the middle of the attribute quotes.
-//				caret.Position = xmlEditorControl.Document.OffsetToPosition(caret.Offset - 1);
+			XmlEditorView view = widget as XmlEditorView;
+			if (view != null) {
+				TextEditor editor = new TextEditor(view.ViewContent);
+				editor.DeleteText(completionContext.TriggerOffset, editor.CursorPosition - completionContext.TriggerOffset);
+	
+				if ((dataType == DataType.XmlElement) || (dataType == DataType.XmlAttributeValue)) {
+					widget.InsertAtCursor(text);
+				} else if (dataType == DataType.NamespaceUri) {
+					widget.InsertAtCursor(String.Concat("\"", text, "\""));					
+				} else {
+					// Insert an attribute.
+					widget.InsertAtCursor(String.Concat(text, "=\"\""));
+					
+					// Move caret into the middle of the attribute quotes.
+					editor.CursorPosition--;
+					editor.Select(editor.CursorPosition, editor.CursorPosition);
+				}
 			}
 		}
-		
+
 		public int CompareTo(object obj)
 		{
 			if ((obj == null) || !(obj is XmlCompletionData)) {

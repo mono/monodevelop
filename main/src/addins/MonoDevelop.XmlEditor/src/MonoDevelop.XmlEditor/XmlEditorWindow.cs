@@ -13,9 +13,13 @@ namespace MonoDevelop.XmlEditor
 	{	
 		XmlEditorView xmlEditorView;
 		
-		public XmlEditorWindow()
+		public XmlEditorWindow() : this(null)
 		{
-			xmlEditorView = new XmlEditorView();
+		}
+		
+		public XmlEditorWindow(XmlEditorViewContent viewContent)
+		{
+			xmlEditorView = new XmlEditorView(viewContent);
 			Add(xmlEditorView);
 			ShowAll();
 		}

@@ -34,7 +34,7 @@ namespace MonoDevelop.XmlEditor
 		
 		public XmlEditorViewContent()
 		{
-			xmlEditorWindow = new XmlEditorWindow();
+			xmlEditorWindow = new XmlEditorWindow(this);
 			view = xmlEditorWindow.View;
 			buffer = (SourceBuffer)view.Buffer;
 
@@ -350,7 +350,9 @@ namespace MonoDevelop.XmlEditor
 		
 		public void DeleteText (int pos, int length)
 		{
-			Console.WriteLine("DeleteText");
+			TextIter start = buffer.GetIterAtOffset (pos);
+			TextIter end = buffer.GetIterAtOffset (pos + length);
+			buffer.Delete (ref start, ref end);
 		}
 		
 		public event EventHandler TextChanged {
@@ -367,7 +369,7 @@ namespace MonoDevelop.XmlEditor
 				return buffer.GetIterAtMark(buffer.InsertMark).Offset;
 			}
 			set { 
-				Console.WriteLine("CursorPosition set");
+				buffer.MoveMark (buffer.InsertMark, buffer.GetIterAtOffset (value));
 			}
 		}
 				
@@ -397,8 +399,7 @@ namespace MonoDevelop.XmlEditor
 				
 		public string GetText (int startPosition, int endPosition)
 		{
-			Console.WriteLine("GetText");
-			return String.Empty;
+			return buffer.GetText (buffer.GetIterAtOffset (startPosition), buffer.GetIterAtOffset (endPosition), true);
 		}
 		
 		int ITextFile.Length {

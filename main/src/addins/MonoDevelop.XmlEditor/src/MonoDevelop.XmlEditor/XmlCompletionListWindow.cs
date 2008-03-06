@@ -220,36 +220,36 @@ namespace MonoDevelop.XmlEditor
 		/// the XmlEditorView and XmlCompletionData directly (The
 		/// XmlCompletionData.InsertAction is not used in MonoDevelop).
 		/// </summary>
-		void UpdateWord ()
-		{
-			XmlCompletionData data = (XmlCompletionData)completionData[List.Selection];
-
-			string completeWord = data.CompletionString;
-			completionWidget.SetCompletionText(completionContext, wnd.PartialWord, completeWord);
-			if (data.XmlCompletionDataType == XmlCompletionData.DataType.XmlAttribute) {
-				// Position cursor inside attribute value string.
-				XmlEditorView view = (XmlEditorView)completionWidget;
-				TextIter iter = view.Buffer.GetIterAtMark(view.Buffer.InsertMark);
-				iter.Offset--;
-				view.Buffer.PlaceCursor(iter);	
-			}
-			//completionWidget.SetCompletionText(wnd.PartialWord, wnd.CompleteWord);
-		}
-		
 //		void UpdateWord ()
 //		{
-//			string word = wnd.CompleteWord;
-//			if (word != null) {
-//				if (wnd.Selection != -1) {
-//					IActionCompletionData ac = completionData [wnd.Selection] as IActionCompletionData;
-//					if (ac != null) {
-//						ac.InsertAction (completionWidget, completionContext);
-//						return;
-//					}
-//				}
-//				completionWidget.SetCompletionText (completionContext, wnd.PartialWord, word);
+//			XmlCompletionData data = (XmlCompletionData)completionData[List.Selection];
+//
+//			string completeWord = data.CompletionString;
+//			completionWidget.SetCompletionText(completionContext, wnd.PartialWord, completeWord);
+//			if (data.XmlCompletionDataType == XmlCompletionData.DataType.XmlAttribute) {
+//				// Position cursor inside attribute value string.
+//				XmlEditorView view = (XmlEditorView)completionWidget;
+//				TextIter iter = view.Buffer.GetIterAtMark(view.Buffer.InsertMark);
+//				iter.Offset--;
+//				view.Buffer.PlaceCursor(iter);	
 //			}
+//			//completionWidget.SetCompletionText(wnd.PartialWord, wnd.CompleteWord);
 //		}
+		
+		void UpdateWord ()
+		{
+			string word = wnd.CompleteWord;
+			if (word != null) {
+				if (wnd.Selection != -1) {
+					IActionCompletionData ac = completionData [wnd.Selection] as IActionCompletionData;
+					if (ac != null) {
+						ac.InsertAction (completionWidget, completionContext);
+						return;
+					}
+				}
+				completionWidget.SetCompletionText (completionContext, wnd.PartialWord, word);
+			}
+		}
 		
 		public new void Hide ()
 		{
@@ -375,17 +375,7 @@ namespace MonoDevelop.XmlEditor
 		
 		public string GetCompletionText (int n)
 		{
-			ICompletionData item = completionData[n];
-			XmlCompletionData xmlCompletionData = item as XmlCompletionData;
-			if (xmlCompletionData != null) {
-				switch (xmlCompletionData.XmlCompletionDataType) {
-				case XmlCompletionData.DataType.NamespaceUri:
-				case XmlCompletionData.DataType.XmlAttribute:
-					return xmlCompletionData.Text[0];
-					break;
-				}
-			}
-			return item.CompletionString;
+			return completionData[n].CompletionString;
 		}
 		
 		public Gdk.Pixbuf GetIcon (int n)
