@@ -34,6 +34,7 @@
 	<Extension path = "/MonoDevelop/XmlEditor/XmlFileExtensions">
 		<XmlFileExtension extension = ".build"/>
 		<XmlFileExtension extension = ".config"/>
+		<XmlFileExtension extension = ".stetic"/> 
 		<XmlFileExtension extension = ".xml"/> 
 		<XmlFileExtension extension = ".xsd"/> 
 		<XmlFileExtension extension = ".xsl"/> 
