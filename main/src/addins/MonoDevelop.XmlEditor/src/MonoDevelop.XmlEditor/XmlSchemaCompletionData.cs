@@ -233,15 +233,12 @@ namespace MonoDevelop.XmlEditor
 		/// </summary>
 		void ReadSchema(XmlReader reader)
 		{
-			try
-			{
+			try {
 				schema = XmlSchema.Read(reader, new ValidationEventHandler(SchemaValidation));
 				schema.Compile(new ValidationEventHandler(SchemaValidation));
 			
 				namespaceUri = schema.TargetNamespace;
-			}
-			finally
-			{
+			} finally {
 				reader.Close();
 			}
 		}
@@ -322,6 +319,7 @@ namespace MonoDevelop.XmlEditor
 			XmlSchemaChoice choice = complexType.Particle as XmlSchemaChoice;
 			XmlSchemaGroupRef groupRef = complexType.Particle as XmlSchemaGroupRef;
 			XmlSchemaComplexContent complexContent = complexType.ContentModel as XmlSchemaComplexContent;
+			XmlSchemaAll all = complexType.Particle as XmlSchemaAll;
 			
 			if (sequence != null) {
 				data = GetChildElementCompletionData(sequence.Items, prefix);
@@ -331,6 +329,8 @@ namespace MonoDevelop.XmlEditor
 				data = GetChildElementCompletionData(complexContent, prefix);								
 			} else if (groupRef != null) {
 				data = GetChildElementCompletionData(groupRef, prefix);
+			} else if (all != null) {
+				data = GetChildElementCompletionData(all.Items, prefix);
 			}
 				
 			return data;
@@ -447,12 +447,15 @@ namespace MonoDevelop.XmlEditor
 			if (restriction.Particle != null) {
 				XmlSchemaSequence sequence = restriction.Particle as XmlSchemaSequence;
 				XmlSchemaChoice choice = restriction.Particle as XmlSchemaChoice;
+				XmlSchemaGroupRef groupRef = restriction.Particle as XmlSchemaGroupRef;
 				
 				if(sequence != null) {
 					data = GetChildElementCompletionData(sequence.Items, prefix);
 				} else if (choice != null) {
 					data = GetChildElementCompletionData(choice.Items, prefix);
-				} 
+				} else if (groupRef != null) {
+					data = GetChildElementCompletionData(groupRef, prefix);
+				}
 			}
 			
 			return data;
@@ -848,10 +851,13 @@ namespace MonoDevelop.XmlEditor
 		{
 			XmlSchemaElement matchedElement = null;		
 			XmlSchemaSequence sequence = restriction.Particle as XmlSchemaSequence;
+			XmlSchemaGroupRef groupRef = restriction.Particle as XmlSchemaGroupRef;
 				
 			if (sequence != null) {
 				matchedElement = FindElement(sequence.Items, name);
-			} 
+			} else if (groupRef != null) {
+				matchedElement = FindElement(groupRef, name);
+			}
 
 			return matchedElement;
 		}		

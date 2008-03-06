@@ -20,6 +20,8 @@ namespace MonoDevelop.XmlEditor.Tests.Schema
 		XmlElementPath elementPath;
 		XmlElementPath simpleEnumPath;
 		XmlElementPath enumPath;
+		XmlElementPath allElementPath;
+		XmlElementPath allElementAnnotationPath;
 		ICompletionData[] choiceAttributes;
 		ICompletionData[] elementAttributes;
 		ICompletionData[] simpleEnumElements;
@@ -29,6 +31,8 @@ namespace MonoDevelop.XmlEditor.Tests.Schema
 		ICompletionData[] finalDefaultAttributeValues;
 		ICompletionData[] mixedAttributeValues;
 		ICompletionData[] maxOccursAttributeValues;
+		ICompletionData[] allElementChildElements;
+		ICompletionData[] allElementAnnotationChildElements;
 		
 		string namespaceURI = "http://www.w3.org/2001/XMLSchema";
 		string prefix = "xs";
@@ -84,6 +88,27 @@ namespace MonoDevelop.XmlEditor.Tests.Schema
 			
 			// Get attributes.
 			enumAttributes = schemaCompletionData.GetAttributeCompletionData(enumPath);
+			
+			// Set up xs:all path.
+			allElementPath = new XmlElementPath();
+			allElementPath.Elements.Add(new QualifiedName("schema", namespaceURI, prefix));
+			allElementPath.Elements.Add(new QualifiedName("element", namespaceURI, prefix));
+			allElementPath.Elements.Add(new QualifiedName("complexType", namespaceURI, prefix));
+			allElementPath.Elements.Add(new QualifiedName("all", namespaceURI, prefix));
+		
+			// Get child elements of the xs:all element.
+			allElementChildElements = schemaCompletionData.GetChildElementCompletionData(allElementPath);
+			
+			// Set up the path to the annotation element that is a child of xs:all.
+			allElementAnnotationPath = new XmlElementPath();
+			allElementAnnotationPath.Elements.Add(new QualifiedName("schema", namespaceURI, prefix));
+			allElementAnnotationPath.Elements.Add(new QualifiedName("element", namespaceURI, prefix));
+			allElementAnnotationPath.Elements.Add(new QualifiedName("complexType", namespaceURI, prefix));
+			allElementAnnotationPath.Elements.Add(new QualifiedName("all", namespaceURI, prefix));
+			allElementAnnotationPath.Elements.Add(new QualifiedName("annotation", namespaceURI, prefix));
+			
+			// Get the xs:all annotation child element.
+			allElementAnnotationChildElements = schemaCompletionData.GetChildElementCompletionData(allElementAnnotationPath);
 		}
 		
 		[Test]
@@ -200,6 +225,27 @@ namespace MonoDevelop.XmlEditor.Tests.Schema
 		{
 			Assert.IsTrue(SchemaTestFixtureBase.Contains(maxOccursAttributeValues, "unbounded"),
 			              "Attribute value 'unbounded' missing.");
+		}
+		
+		[Test]
+		public void AllElementHasAnnotationChildElement()
+		{
+			Assert.IsTrue(SchemaTestFixtureBase.Contains(allElementChildElements, "xs:annotation"),
+			              "Should have an annotation child element.");
+		}
+		
+		[Test]
+		public void AllElementHasElementChildElement()
+		{
+			Assert.IsTrue(SchemaTestFixtureBase.Contains(allElementChildElements, "xs:element"),
+			              "Should have an child element called 'element'.");
+		}
+		
+		[Test]
+		public void AllElementAnnotationHasDocumentationChildElement()
+		{
+			Assert.IsTrue(SchemaTestFixtureBase.Contains(allElementAnnotationChildElements, "xs:documentation"),
+			              "Should have documentation child element.");
 		}				
 	}
 }
