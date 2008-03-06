@@ -52,6 +52,10 @@
     <File name="./XmlFileExtensionCodon.cs" subtype="Code" buildaction="Compile" />
     <File name="./SourceViewTextIterator.cs" subtype="Code" buildaction="Compile" />
     <File name="./XmlEditorListWindow.cs" subtype="Code" buildaction="Compile" />
+    <File name="./OpenStylesheetCommand.cs" subtype="Code" buildaction="Compile" />
+    <File name="./RunXslTransformCommand.cs" subtype="Code" buildaction="Compile" />
+    <File name="./XslOutputViewContent.cs" subtype="Code" buildaction="Compile" />
+    <File name="./AssignStylesheetCommand.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />

@@ -20,12 +20,15 @@ DLLS = -r:System \
 
 FILES = \
 	AssemblyInfo.cs \
+	AssignStylesheetCommand.cs \
 	Commands.cs \
 	CreateSchemaCommand.cs \
 	EncodedStringWriter.cs \
 	FormatXmlCommand.cs \
+	OpenStylesheetCommand.cs \
 	QualifiedNameCollection.cs \
 	QualifiedName.cs \
+	RunXslTransformCommand.cs \
 	SelectXmlSchemaDialog.cs \
 	SourceViewTextIterator.cs \
 	ValidateXmlCommand.cs \
@@ -51,7 +54,8 @@ FILES = \
 	XmlSchemasPanelWidget.cs \
 	XmlFileExtensions.cs \
 	XmlEditorService.cs \
-	XmlFileExtensionCodon.cs
+	XmlFileExtensionCodon.cs \
+	XslOutputViewContent.cs
 
 DATA_FILES = \
 	schemas/appconfig.xsd \

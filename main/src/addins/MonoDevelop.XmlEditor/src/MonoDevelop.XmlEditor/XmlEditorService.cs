@@ -13,9 +13,11 @@ using MonoDevelop.Ide.Tasks;
 using MonoDevelop.SourceEditor.Properties;
 using System;
 using System.IO;
+using System.Text;
 using System.Xml;
-using System.Xml.Xsl;
+using System.Xml.Schema;
 using System.Xml.XPath;
+using System.Xml.Xsl;
 
 namespace MonoDevelop.XmlEditor
 {
@@ -49,6 +51,10 @@ namespace MonoDevelop.XmlEditor
         	}
         }
         
+        public static void ShowView(IViewContent view)
+        {
+        	IdeApp.Workbench.OpenDocument(view, true);
+        }
         		
 		public static XmlEditorViewContent GetActiveView()
 		{
@@ -59,9 +65,42 @@ namespace MonoDevelop.XmlEditor
 			return null;
 		}
 		
+		public static ViewContentCollection OpenXmlEditorViews {
+			get {
+				ViewContentCollection views = new ViewContentCollection();
+				foreach (Document doc in IdeApp.Workbench.Documents) {
+					XmlEditorViewContent view = doc.Content as XmlEditorViewContent;
+					if (view != null) {
+						views.Add(view);
+					}
+				}
+				return views;
+			}
+		}
+		
+		public static XmlEditorViewContent GetOpenDocument(string fileName)
+		{
+			foreach (Document doc in IdeApp.Workbench.Documents) {
+				XmlEditorViewContent view = doc.Content as XmlEditorViewContent;
+				if (view != null) {
+					if (view.FileName != null && doc.FileName == fileName) {
+						return view;
+					}
+				}
+			}
+			return null;
+		}
+		
 		public static bool IsXmlEditorViewContentActive {
 			get {
 				return GetActiveView() != null;
+			}
+		}
+		
+		public static bool IsXslOutputViewContentActive {
+			get {
+				XmlEditorViewContent view = GetActiveView();
+				return (view as XslOutputViewContent) != null;
 			}
 		}
 		
@@ -138,6 +177,33 @@ namespace MonoDevelop.XmlEditor
 				indentedText = xml;
 			}
 			return indentedText;
+		}
+		
+		/// <summary>
+		/// Runs an XSL transform on the input xml.
+		/// </summary>
+		/// <param name="input">The input xml to transform.</param>
+		/// <param name="transform">The transform xml.</param>
+		/// <returns>The output of the transform.</returns>
+		public static string Transform(string input, string transform)
+		{
+			StringReader inputString = new StringReader(input);
+			XPathDocument sourceDocument = new XPathDocument(inputString);
+
+			StringReader transformString = new StringReader(transform);
+			XPathDocument transformDocument = new XPathDocument(transformString);
+
+			XslTransform xslTransform = new XslTransform();
+			xslTransform.Load(transformDocument, new XmlUrlResolver(), null);
+			
+			MemoryStream outputStream = new MemoryStream();
+			XmlTextWriter writer = new XmlTextWriter(outputStream, Encoding.UTF8);
+			
+			xslTransform.Transform(sourceDocument, null, writer, new XmlUrlResolver());
+
+			int preambleLength = Encoding.UTF8.GetPreamble().Length;
+			byte[] outputBytes = outputStream.ToArray();
+			return UTF8Encoding.UTF8.GetString(outputBytes, preambleLength, outputBytes.Length - preambleLength);
 		}
 	}
 }

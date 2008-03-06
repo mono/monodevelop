@@ -30,6 +30,7 @@ namespace MonoDevelop.XmlEditor
 		string fileName = String.Empty;
 		PropertyEventHandler propertyChangedHandler;
 		IProperties sourceEditorProperties;
+		string stylesheetFileName;
 		
 		public XmlEditorViewContent()
 		{
@@ -117,9 +118,27 @@ namespace MonoDevelop.XmlEditor
 			}
 		}
 		
+		public override string TabPageLabel {
+			get { 
+				return "XML";
+			}
+		}
+		
 		public string FileName {
 			get {
 				return fileName;
+			}
+		}
+		
+		/// <summary>
+		/// Gets or sets the stylesheet associated with this xml file.
+		/// </summary>
+		public string StylesheetFileName {
+			get {
+				return stylesheetFileName;
+			}
+			set {
+				stylesheetFileName = value;
 			}
 		}
 		
@@ -204,7 +223,12 @@ namespace MonoDevelop.XmlEditor
 					view.ShowSchemaAnnotation = XmlEditorAddInOptions.ShowSchemaAnnotation;
 					break;
 				default:
-					Console.WriteLine("XmlEditor: Unhandled property change: " + e.Key);
+					string extension = Path.GetExtension(fileName).ToLower();
+					if (e.Key == extension) {
+						SetDefaultSchema(extension);
+					} else {
+						Console.WriteLine("XmlEditor: Unhandled property change: " + e.Key);
+					}
 					break;
 			}
 		}

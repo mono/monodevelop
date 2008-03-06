@@ -26,7 +26,6 @@ This list should be moved to the SourceForge issues tracker.
 * Mixed namespace handling is limited.  The element completion list is based on the
   parent element at the current location.  Really this should take into account any
   other available namespaces that are allowed at that location.
-* Running XSL transforms.
 * Commenting out regions of XML.  SharpDevelop implements this, but there are a few
   bugs.
 * Comments get autocompleted.  When you type in the last greater than character the

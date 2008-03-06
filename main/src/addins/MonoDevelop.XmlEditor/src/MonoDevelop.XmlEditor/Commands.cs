@@ -15,6 +15,9 @@ namespace MonoDevelop.XmlEditor
 	{	
 		CreateSchema,
 		Validate,
+		AssignStylesheet,
+		OpenStylesheet,
+		RunXslTransform,
 		Format
 	}
 }

@@ -42,6 +42,19 @@
 				defaultHandler = "MonoDevelop.XmlEditor.ValidateXmlCommand"
 				_label = "_Validate"
 				description = "Validates the XML against a schema"/>
+		<Command id = "MonoDevelop.XmlEditor.Commands.AssignStylesheet"
+				defaultHandler = "MonoDevelop.XmlEditor.AssignStylesheetCommand"
+				_label = "_Assign XSLT..."
+				description = "Assigns a stylesheet to the current xml document"/>
+		<Command id = "MonoDevelop.XmlEditor.Commands.OpenStylesheet"
+				defaultHandler = "MonoDevelop.XmlEditor.OpenStylesheetCommand"
+				_label = "_Open XSLT"
+				description = "Opens the assigned stylesheet"/>
+		<Command id = "MonoDevelop.XmlEditor.Commands.RunXslTransform"
+				defaultHandler = "MonoDevelop.XmlEditor.RunXslTransformCommand"
+				_label = "Run XSL_T"
+				shortcut = "Alt|Control|T"
+				description = "Runs an XSL transform"/>				
 		<Command id = "MonoDevelop.XmlEditor.Commands.Format"
 				defaultHandler = "MonoDevelop.XmlEditor.FormatXmlCommand"
 				_label = "_Format"
@@ -56,6 +69,10 @@
 			         _label = "_XML" >
 				<CommandItem id = "MonoDevelop.XmlEditor.Commands.CreateSchema" />
 				<CommandItem id = "MonoDevelop.XmlEditor.Commands.Validate" />
+				<SeparatorItem id = "StylesheetCommandsSeparator"/>
+				<CommandItem id = "MonoDevelop.XmlEditor.Commands.AssignStylesheet"/>
+				<CommandItem id = "MonoDevelop.XmlEditor.Commands.OpenStylesheet"/>
+				<CommandItem id = "MonoDevelop.XmlEditor.Commands.RunXslTransform"/>				
 				<SeparatorItem id = "FormatSeparator"/>
 				<CommandItem id = "MonoDevelop.XmlEditor.Commands.Format" />				
 			</ItemSet>
