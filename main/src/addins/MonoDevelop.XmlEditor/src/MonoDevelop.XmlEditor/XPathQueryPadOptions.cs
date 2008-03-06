@@ -1,11 +1,10 @@
 //
 // MonoDevelop XML Editor
 //
-// Copyright (C) 2006 Matthew Ward
+// Copyright (C) 2006-2007 Matthew Ward
 //
 
 using MonoDevelop.Core;
-using MonoDevelop.Core.Properties;
 using System;
 using System.Xml;
 
@@ -20,14 +19,14 @@ namespace MonoDevelop.XmlEditor
 		public const string NamespacesProperty = "Namespaces";
 		public const string LastXPathQueryProperty = "LastXPathQuery";
 		public const string XPathHistoryProperty = "XPathQueryHistory";
-		static IProperties properties;
+		static Properties properties;
 
 		static XPathQueryPadOptions()
  		{
- 			properties = (IProperties)Runtime.Properties.GetProperty(OptionsProperty, new DefaultProperties());
+ 			properties = PropertyService.Get(OptionsProperty, new Properties());
 		}
 
- 		static IProperties Properties {
+ 		static Properties Properties {
 			get {
 				return properties;
  			}
@@ -39,10 +38,10 @@ namespace MonoDevelop.XmlEditor
 		/// </summary>
 		public static string LastXPathQuery {
 			get {
-				return Properties.GetProperty(LastXPathQueryProperty, String.Empty);
+				return Properties.Get(LastXPathQueryProperty, String.Empty);
 			}
 			set {
-				Properties.SetProperty(LastXPathQueryProperty, value);
+				Properties.Set(LastXPathQueryProperty, value);
 			}
 		}
 		
@@ -51,10 +50,10 @@ namespace MonoDevelop.XmlEditor
 		/// </summary>
 		public static XPathHistoryList XPathHistory {
 			get {
-				return (XPathHistoryList)Properties.GetProperty(XPathHistoryProperty, new XPathHistoryList());
+				return (XPathHistoryList)Properties.Get(XPathHistoryProperty, new XPathHistoryList());
 			}
 			set {
-				Properties.SetProperty(XPathHistoryProperty, value);
+				Properties.Set(XPathHistoryProperty, value);
 			}
 		}
 		
@@ -63,10 +62,10 @@ namespace MonoDevelop.XmlEditor
 		/// </summary>
 		public static XPathNamespaceList Namespaces {
 			get {
-				return (XPathNamespaceList)Properties.GetProperty(NamespacesProperty, new XPathNamespaceList());
+				return (XPathNamespaceList)Properties.Get(NamespacesProperty, new XPathNamespaceList());
 			}
 			set {
-				Properties.SetProperty(NamespacesProperty, value);
+				Properties.Set(NamespacesProperty, value);
 			}
 		}
 	}

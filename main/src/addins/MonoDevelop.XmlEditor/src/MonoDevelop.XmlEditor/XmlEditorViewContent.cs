@@ -10,7 +10,6 @@ using Gtk;
 using GtkSourceView;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
-using MonoDevelop.Core.Properties;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.Gui.Search;
@@ -28,8 +27,7 @@ namespace MonoDevelop.XmlEditor
 		const string TextXmlMimeType = "text/xml";
 		const string ApplicationXmlMimeType = "application/xml";
 		string fileName = String.Empty;
-		EventHandler<PropertyEventArgs> propertyChangedHandler;
-		IProperties sourceEditorProperties;
+		EventHandler<PropertyChangedEventArgs> propertyChangedHandler;
 		string stylesheetFileName;
 		
 		public XmlEditorViewContent()
@@ -37,19 +35,17 @@ namespace MonoDevelop.XmlEditor
 			xmlEditorWindow = new XmlEditorWindow(this);
 			view = xmlEditorWindow.View;
 			buffer = (SourceBuffer)view.Buffer;
+			buffer.Changed += BufferChanged;
 
 			view.SchemaCompletionDataItems = XmlSchemaManager.SchemaCompletionDataItems;
 			SetInitialValues();	 
 			
 			// Watch for changes to the source editor properties.
-			DispatchService service = (DispatchService)ServiceManager.GetService(typeof(DispatchService));
-			propertyChangedHandler = (EventHandler<PropertyEventArgs>)service.GuiDispatch(new EventHandler<PropertyEventArgs>(SourceEditorPropertyChanged));
-			PropertyService propertyService = (PropertyService)ServiceManager.GetService(typeof(PropertyService));
-			sourceEditorProperties = ((IProperties)propertyService.GetProperty("MonoDevelop.TextEditor.Document.Document.DefaultDocumentAggregatorProperties", new DefaultProperties()));
-			sourceEditorProperties.PropertyChanged += propertyChangedHandler;
+			propertyChangedHandler = (EventHandler<PropertyChangedEventArgs>)DispatchService.GuiDispatch(new EventHandler<PropertyChangedEventArgs>(SourceEditorPropertyChanged));
+			TextEditorProperties.Properties.PropertyChanged += propertyChangedHandler;
 
 			buffer.ModifiedChanged += new EventHandler (OnModifiedChanged);
-			XmlEditorAddInOptions.PropertyChanged += new EventHandler<PropertyEventArgs>(XmlEditorPropertyChanged);
+			XmlEditorAddInOptions.PropertyChanged += new EventHandler<PropertyChangedEventArgs>(XmlEditorPropertyChanged);
 			
 			XmlSchemaManager.UserSchemaAdded += new EventHandler(UserSchemaAdded);
 			XmlSchemaManager.UserSchemaRemoved += new EventHandler(UserSchemaRemoved);
@@ -178,10 +174,10 @@ namespace MonoDevelop.XmlEditor
 		
 		public override void Dispose()
 		{
-			XmlEditorAddInOptions.PropertyChanged -= new EventHandler<PropertyEventArgs>(XmlEditorPropertyChanged);
+			XmlEditorAddInOptions.PropertyChanged -= new EventHandler<PropertyChangedEventArgs>(XmlEditorPropertyChanged);
 			XmlSchemaManager.UserSchemaAdded -= new EventHandler(UserSchemaAdded);
 			XmlSchemaManager.UserSchemaRemoved -= new EventHandler(UserSchemaRemoved);
-			sourceEditorProperties.PropertyChanged -= propertyChangedHandler;
+			TextEditorProperties.Properties.PropertyChanged -= propertyChangedHandler;
 			xmlEditorWindow.Dispose();
 		}
 		
@@ -219,7 +215,7 @@ namespace MonoDevelop.XmlEditor
 			base.IsDirty = view.Buffer.Modified;
 		}
 		
-		void XmlEditorPropertyChanged(object o, PropertyEventArgs e)
+		void XmlEditorPropertyChanged(object o, PropertyChangedEventArgs e)
  		{
 			switch (e.Key) {
 				case "AutoCompleteElements":
@@ -239,7 +235,7 @@ namespace MonoDevelop.XmlEditor
 			}
 		}
 		
-		void SourceEditorPropertyChanged(object o, PropertyEventArgs e)
+		void SourceEditorPropertyChanged(object o, PropertyChangedEventArgs e)
 		{
 			switch (e.Key) {
 				case "DefaultFont":
@@ -284,6 +280,8 @@ namespace MonoDevelop.XmlEditor
         
         #region IEditableTextBuffer
         
+		public event TextChangedEventHandler TextChanged;
+		
 		public void BeginAtomicUndo ()
 		{
 			//Buffer.BeginUserAction ();
@@ -364,16 +362,7 @@ namespace MonoDevelop.XmlEditor
 			TextIter end = buffer.GetIterAtOffset (pos + length);
 			buffer.Delete (ref start, ref end);
 		}
-		
-		public event EventHandler TextChanged {
-			add {
-				buffer.Changed += value;
-			}
-			remove {
-				buffer.Changed -= value;
-			}
-		}
-		
+				
 		public int CursorPosition {
 			get { 
 				return buffer.GetIterAtMark(buffer.InsertMark).Offset;
@@ -496,5 +485,12 @@ namespace MonoDevelop.XmlEditor
 		}
 		
 		#endregion
+		
+		void BufferChanged(object source, EventArgs e)
+		{
+			if (TextChanged != null) {
+				TextChanged(this, new TextChangedEventArgs(0, 0));
+			}
+		}
 	}
 }

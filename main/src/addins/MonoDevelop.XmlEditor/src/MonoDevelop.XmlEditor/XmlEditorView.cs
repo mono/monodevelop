@@ -312,7 +312,12 @@ namespace MonoDevelop.XmlEditor
 			return ctx;
 		}
 		
-			
+		int ICompletionWidget.SelectedLength { 
+			get { 
+				return GetSelectedText().Length; 
+			}
+		}
+	
 		int ICompletionWidget.TextLength {
 			get	{
 				return Buffer.EndIter.Offset + 1;
@@ -334,7 +339,7 @@ namespace MonoDevelop.XmlEditor
 			get	{
 				return Style.Copy();
 			}
-		}
+		}		
 		#endregion
 	
 		public string GetSelectedText ()

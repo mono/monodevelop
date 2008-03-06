@@ -1,7 +1,7 @@
 //
 // MonoDevelop XML Editor
 //
-// Copyright (C) 2006 Matthew Ward
+// Copyright (C) 2006-2007 Matthew Ward
 //
 
 using Glade;
@@ -12,7 +12,6 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Core.Gui.Components;
 using MonoDevelop.Core.Gui.Dialogs;
-using MonoDevelop.Core.Properties;
 using System;
 using System.Collections;
 using System.Collections.Generic;

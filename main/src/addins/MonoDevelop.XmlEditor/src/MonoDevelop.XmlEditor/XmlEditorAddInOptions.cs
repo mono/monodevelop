@@ -1,11 +1,10 @@
 //
 // MonoDevelop XML Editor
 //
-// Copyright (C) 2005-2006 Matthew Ward
+// Copyright (C) 2005-2007 Matthew Ward
 //
 
 using MonoDevelop.Core;
-using MonoDevelop.Core.Properties;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -24,14 +23,14 @@ namespace MonoDevelop.XmlEditor
 		public static readonly string ShowSchemaAnnotationPropertyName = "ShowSchemaAnnotation";
 		public static readonly string AutoCompleteElementsPropertyName = "AutoCompleteElements";
 		
-		static IProperties properties;
+		static Properties properties;
 
 		static XmlEditorAddInOptions()
  		{
- 			properties = (IProperties)Runtime.Properties.GetProperty(OptionsProperty, new DefaultProperties());
+ 			properties = PropertyService.Get(OptionsProperty, new Properties());
 		}
 
- 		static IProperties Properties {
+ 		static Properties Properties {
 			get {
 				Debug.Assert(properties != null);
 				return properties;
@@ -43,7 +42,7 @@ namespace MonoDevelop.XmlEditor
 		/// <summary>
 		/// Raised when any xml editor property is changed.
 		/// </summary>
-		public static event EventHandler<PropertyEventArgs> PropertyChanged {
+		public static event EventHandler<PropertyChangedEventArgs> PropertyChanged {
 			add {
 				Properties.PropertyChanged += value;
 			}
@@ -86,14 +85,7 @@ namespace MonoDevelop.XmlEditor
 		/// </remarks>
 		public static XmlSchemaAssociation GetSchemaAssociation(string extension)
 		{			
-			object property = Properties.GetProperty(extension);
-			
-			XmlSchemaAssociation association = property as XmlSchemaAssociation;
-			XmlElement element = property as XmlElement;
-			
-			if (element != null) {
-				association = XmlSchemaAssociation.ConvertFromXmlElement(element) as XmlSchemaAssociation;
-			}
+			XmlSchemaAssociation association = Properties.Get<XmlSchemaAssociation>(extension);
 			
 			// Use default?
 			if (association == null) {
@@ -105,7 +97,7 @@ namespace MonoDevelop.XmlEditor
 		
 		public static void SetSchemaAssociation(XmlSchemaAssociation association)
 		{
-			Properties.SetProperty(association.Extension, association);
+			Properties.Set(association.Extension, association);
 		}
 		
 //		public static bool ShowAttributesWhenFolded {
@@ -120,21 +112,21 @@ namespace MonoDevelop.XmlEditor
 		
 		public static bool ShowSchemaAnnotation {
 			get {
-				return Properties.GetProperty(ShowSchemaAnnotationPropertyName, true);
+				return Properties.Get(ShowSchemaAnnotationPropertyName, true);
 			}
 			
 			set {
-				Properties.SetProperty(ShowSchemaAnnotationPropertyName, value);
+				Properties.Set(ShowSchemaAnnotationPropertyName, value);
 			}
 		}
 		
 		public static bool AutoCompleteElements {
 			get {
-				return Properties.GetProperty(AutoCompleteElementsPropertyName, true);
+				return Properties.Get(AutoCompleteElementsPropertyName, true);
 			}
 			
 			set {
-				Properties.SetProperty(AutoCompleteElementsPropertyName, value);
+				Properties.Set(AutoCompleteElementsPropertyName, value);
 			}
 		}			
 		

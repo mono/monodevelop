@@ -1,17 +1,17 @@
 //
 // MonoDevelop XML Editor
 //
-// Copyright (C) 2006 Matthew Ward
+// Copyright (C) 2006-2007 Matthew Ward
 //
 
-using MonoDevelop.Core.Properties;
+using MonoDevelop.Core;
 using System;
 using System.Collections.Generic;
 using System.Xml;
 
 namespace MonoDevelop.XmlEditor
 {
-	public class XPathHistoryList : IXmlConvertable
+	public class XPathHistoryList : ICustomXmlSerializer
 	{
 		const string xpathHistoryListElementName = "XPathHistoryList";
 		const string xpathElementName = "XPath";
@@ -37,41 +37,41 @@ namespace MonoDevelop.XmlEditor
 		{
 			return xpaths.ToArray();
 		}
-		
-		/// <summary>
-		/// Creates an xml element from this XPathHistoryList.
-		/// </summary>
-		public XmlElement ToXmlElement(XmlDocument doc)
-		{	
-			XmlElement element = doc.CreateElement(xpathHistoryListElementName);
-			foreach (string xpath in xpaths) {
-				XmlElement xpathElement = doc.CreateElement(xpathElementName); 
-				xpathElement.InnerText = xpath;
-				element.AppendChild(xpathElement);
-			}
-			return element;	
-		}
-		
+				
 		/// <summary>
 		/// Creates an XPathHistoryList from the saved xml.
 		/// </summary>
-		public object FromXmlElement(XmlElement element)
+		public ICustomXmlSerializer ReadFrom(XmlReader reader)
 		{
-			XPathHistoryList list = null;
-			if (element != null) {
-				if (element.Name == xpathHistoryListElementName) {
-					list = new XPathHistoryList();
-					foreach (XmlNode node in element.ChildNodes) {
-						XmlElement xpathElement = node as XmlElement;
-						if (xpathElement != null) {
-							list.Add(xpathElement.InnerText);
+			XPathHistoryList list = new XPathHistoryList();
+			bool finished = false;
+			while (reader.Read() && !finished) {
+				switch (reader.NodeType) {
+					case XmlNodeType.Element:
+						if (reader.Name == xpathElementName) {
+							list.Add(reader.ReadElementString());
 						}
-					}
-				} else {
-					throw new UnknownPropertyNodeException(element.Name);
-				}					
+						break;
+					case XmlNodeType.EndElement:
+						if (reader.Name != xpathElementName) {
+							finished = true;
+						}
+						break;
+				}
 			}
 			return list;
 		}
+
+		/// <summary>
+		/// Creates an xml element from this XPathHistoryList.
+		/// </summary>
+		public void WriteTo(XmlWriter writer)
+		{
+			writer.WriteStartElement(xpathHistoryListElementName);
+			foreach (string xpath in xpaths) {
+				writer.WriteElementString(xpathElementName, xpath);
+			}
+			writer.WriteEndElement();
+		}		
 	}
 }

@@ -6,14 +6,14 @@ ASSEMBLY = MonoDevelop.XmlEditor.dll
 DLLS = -r:System \
 	-r:System.Data \
 	-r:System.Xml \
-	-r:$(MD_ASSEMBLY_DIR)/Mono.Addins.dll \
-	-r:$(MD_ADDIN_DIR)/MonoDevelop.Components.dll \
+	-r:$(MD_ASSEMBLY_DIR)/MonoDevelop.Components.dll \
 	-r:$(MD_ASSEMBLY_DIR)/MonoDevelop.Core.dll \
-	-r:$(MD_ADDIN_DIR)/MonoDevelop.Core.Gui.dll \
-	-r:$(MD_ADDIN_DIR)/MonoDevelop.Ide.dll \
-	-r:$(MD_ADDIN_DIR)/MonoDevelop.Projects.dll \
-	-r:$(MD_ADDIN_DIR)/MonoDevelop.Projects.Gui.dll \
+	-r:$(MD_ASSEMBLY_DIR)/MonoDevelop.Core.Gui.dll \
+	-r:$(MD_ASSEMBLY_DIR)/MonoDevelop.Ide.dll \
+	-r:$(MD_ASSEMBLY_DIR)/MonoDevelop.Projects.dll \
+	-r:$(MD_ASSEMBLY_DIR)/MonoDevelop.Projects.Gui.dll \
 	-r:$(MD_ADDIN_DIR)/MonoDevelop.SourceEditor.dll \
+	$(MONO_ADDINS_LIBS) \
 	$(GTK_SHARP_LIBS) \
 	$(GNOME_VFS_SHARP_LIBS) \
 	$(GLADE_SHARP_LIBS) \
@@ -24,6 +24,7 @@ FILES = \
 	AssignStylesheetCommand.cs \
 	Commands.cs \
 	CreateSchemaCommand.cs \
+	DeclarationViewWindow.cs \
 	EncodedStringWriter.cs \
 	FormatXmlCommand.cs \
 	GoToSchemaDefinitionCommand.cs \
@@ -81,31 +82,26 @@ DATA_FILES = \
 
 DATA_FILE_BUILD = $(addprefix $(ADDIN_BUILD)/, $(DATA_FILES))
 
-RES = XmlEditor.glade
-
-ADDIN = MonoDevelop.XmlEditor.addin.xml
+RES = \
+	XmlEditor.glade \
+	MonoDevelop.XmlEditor.addin.xml \
+	XPathQueryPad.png
 
 MD_XML_ADDIN_DIR = $(MD_ADDIN_DIR)/XmlEditor
 MD_XML_ADDIN_DATA_DIR = $(MD_XML_ADDIN_DIR)/schemas
 
 all: $(ADDIN_BUILD)/$(ASSEMBLY) $(ADDIN_BUILD)/$(ADDIN) $(DATA_FILE_BUILD)
 
-install: $(ADDIN_BUILD)/$(ASSEMBLY) $(ADDIN_BUILD)/$(ADDIN) $(DATA_FILE_BUILD)
+install: $(ADDIN_BUILD)/$(ASSEMBLY) $(DATA_FILE_BUILD)
 	mkdir -p $(MD_XML_ADDIN_DIR)
 	mkdir -p $(MD_XML_ADDIN_DATA_DIR)
 	cp $(ADDIN_BUILD)/$(ASSEMBLY) $(MD_XML_ADDIN_DIR)
-	cp $(ADDIN_BUILD)/$(ADDIN) $(MD_XML_ADDIN_DIR)
 	cp $(DATA_DIR)/* $(MD_XML_ADDIN_DATA_DIR)
 
 uninstall:
 	-rm $(MD_XML_ADDIN_DIR)/$(ASSEMBLY) 
-	-rm $(MD_XML_ADDIN_DIR)/$(ADDIN) 
 
 build_sources = $(addprefix $(srcdir)/, $(FILES))
-
-$(ADDIN_BUILD)/$(ADDIN): $(srcdir)/$(ADDIN)
-	mkdir -p $(ADDIN_BUILD)
-	cp $(srcdir)/$(ADDIN) $(ADDIN_BUILD)/.
 
 $(DATA_FILE_BUILD): $(srcdir)/schemas/$(notdir $@)
 	mkdir -p $(ADDIN_BUILD)
@@ -116,8 +112,8 @@ $(ADDIN_BUILD)/$(ASSEMBLY): $(FILES) $(RES)
 	mkdir -p $(ADDIN_BUILD)
 	$(CSC) $(CSC_FLAGS) $(DLLS) $(RES:%=/resource:%) $(build_sources) -out:$@ -target:library
 
-CLEANFILES = $(ADDIN_BUILD)/$(ASSEMBLY) $(ADDIN_BUILD)/$(ASSEMBLY).mdb $(ADDIN_BUILD)/$(ADDIN) $(DATA_FILE_BUILD) 
-EXTRA_DIST = $(FILES) $(ADDIN) $(RES) $(DATA_FILES)
+CLEANFILES = $(ADDIN_BUILD)/$(ASSEMBLY) $(ADDIN_BUILD)/$(ASSEMBLY).mdb $(DATA_FILE_BUILD) 
+EXTRA_DIST = $(FILES) $(RES) $(DATA_FILES)
 
 
 

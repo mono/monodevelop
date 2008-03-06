@@ -1,8 +1,8 @@
 AC_INIT(README)
-AM_INIT_AUTOMAKE(md-xmleditor, 0.5)
+AM_INIT_AUTOMAKE(md-xmleditor, 0.6)
 AM_MAINTAINER_MODE
 
-ASSEMBLY_VERSION=0.5.0.0
+ASSEMBLY_VERSION=0.6.0.0
 
 AC_PATH_PROG(MONO, mono)
 AC_PATH_PROG(MCS, gmcs)
@@ -61,13 +61,18 @@ else
 fi
 
 
-MONODEVELOP_REQUIRED_VERSION=0.15
+MONODEVELOP_REQUIRED_VERSION=0.18
 PKG_CHECK_MODULES(MONODEVELOP,monodevelop >= $MONODEVELOP_REQUIRED_VERSION, has_monodevelop=true, has_monodevelop=false)
 
 if test "x$has_monodevelop" = "xfalse"; then
      AC_MSG_ERROR([Please install monodevelop version $MONODEVELOP_REQUIRED_VERSION or later to install MonoDevelop.XmlEditor.
   Please see http://www.monodevelop.com/ to download latest monodevelop sources or packages])
 fi
+
+MONOADDINS_REQUIRED_VERSION=0.3
+
+PKG_CHECK_MODULES(MONO_ADDINS, mono-addins >= $MONOADDINS_REQUIRED_VERSION)
+AC_SUBST(MONO_ADDINS_LIBS)
 
 
 GTKSHARP_REQUIRED_VERSION=2.8.0

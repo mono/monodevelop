@@ -1,7 +1,7 @@
 //
 // MonoDevelop XML Editor
 //
-// Copyright (C) 2005-2006 Matthew Ward
+// Copyright (C) 2005-2007 Matthew Ward
 //
 
 using MonoDevelop.Core;
@@ -198,8 +198,7 @@ namespace MonoDevelop.XmlEditor
 		/// </summary>
 		static string UserSchemaFolder {
 			get {
-				PropertyService propertyService = (PropertyService)ServiceManager.GetService(typeof(PropertyService));
-				return Path.Combine(propertyService.ConfigDirectory, "schemas");				
+				return Path.Combine(PropertyService.ConfigPath, "schemas");				
 			}
 		}
 		

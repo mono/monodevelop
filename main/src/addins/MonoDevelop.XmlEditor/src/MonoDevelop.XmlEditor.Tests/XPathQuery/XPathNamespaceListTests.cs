@@ -1,7 +1,9 @@
 
-using MonoDevelop.Core.Properties;
+using MonoDevelop.Core;
 using NUnit.Framework;
 using System;
+using System.IO;
+using System.Text;
 using System.Xml;
 
 namespace MonoDevelop.XmlEditor.Tests.XPathQuery
@@ -9,60 +11,68 @@ namespace MonoDevelop.XmlEditor.Tests.XPathQuery
 	[TestFixture]
 	public class XPathNamespaceListTests
 	{
-		[Test]
-		public void ToXmlElementNoItems()
+		StringBuilder xml;
+		XmlWriter writer;
+		
+		[SetUp]
+		public void Init()
 		{
-			XmlDocument doc = new XmlDocument();
-			XPathNamespaceList list = new XPathNamespaceList();
-			XmlElement element = list.ToXmlElement(doc);
-			Assert.AreEqual("XPathNamespaceList", element.LocalName);
-			Assert.AreEqual(0, element.ChildNodes.Count);
+			xml = new StringBuilder();
+			XmlWriterSettings settings = new XmlWriterSettings();
+			settings.Indent = true;
+			settings.OmitXmlDeclaration = true;
+			settings.IndentChars = "\t";
+			writer = XmlWriter.Create(xml, settings);
 		}
 		
 		[Test]
-		public void ToXmlElementOneItem()
+		public void ToXmlNoItems()
 		{
-			XmlDocument doc = new XmlDocument();
 			XPathNamespaceList list = new XPathNamespaceList();
-			list.Add("n", "http://mono-project.com");
-			XmlElement element = list.ToXmlElement(doc);
-			Assert.AreEqual(1, element.ChildNodes.Count);
-			XmlElement namespaceElement = (XmlElement)element.ChildNodes[0];
-			Assert.AreEqual("Namespace", namespaceElement.LocalName);
-			XmlNamespace xmlNs = new XmlNamespace("n", "http://mono-project.com");
-			Assert.AreEqual(xmlNs.ToString(), namespaceElement.InnerText);
-		}
-		
-		[Test]
-		public void FromXmlElementNoItems()
-		{
-			XmlDocument doc = new XmlDocument();
-			XPathNamespaceList list = new XPathNamespaceList();
-			XmlElement namespaceListElement = list.ToXmlElement(doc);
+			list.WriteTo(writer);
+			string expectedXml = "<XPathNamespaceList />";
 			
+			Assert.AreEqual(expectedXml, xml.ToString());
+		}
+		
+		[Test]
+		public void ToXmlOneItem()
+		{
+			XPathNamespaceList list = new XPathNamespaceList();
+			list.Add("n", "http://mono-project.com");			
+			list.WriteTo(writer);
+			string expectedXml = "<XPathNamespaceList>\n" +
+				"\t<Namespace>Prefix [n] Uri [http://mono-project.com]</Namespace>\n" +
+				"</XPathNamespaceList>";
+			
+			Assert.AreEqual(expectedXml, xml.ToString());			
+		}
+		
+		[Test]
+		public void FromXmlNoItems()
+		{
+			XPathNamespaceList list = new XPathNamespaceList();
+			list.WriteTo(writer);
+			
+			string propertiesXml = "<SerializedNode>" + xml.ToString() + "</SerializedNode>";
+			XmlTextReader reader = new XmlTextReader(new StringReader(propertiesXml));
 			list = new XPathNamespaceList();
-			list = (XPathNamespaceList)list.FromXmlElement(namespaceListElement);
+			list = (XPathNamespaceList)list.ReadFrom(reader);
 			
 			Assert.AreEqual(0, list.GetNamespaces().Length);
 		}
-		
+				
 		[Test]
-		public void FromNullXmlElement()
+		public void FromXmlOneItem()
 		{
-			XPathNamespaceList list = new XPathNamespaceList();
-			Assert.IsNull(list.FromXmlElement(null));
-		}
-		
-		[Test]
-		public void FromXmlElementOneItem()
-		{
-			XmlDocument doc = new XmlDocument();
 			XPathNamespaceList list = new XPathNamespaceList();
 			list.Add("n", "http://mono-project.com");
-			XmlElement namespaceListElement = list.ToXmlElement(doc);
+			list.WriteTo(writer);
 			
+			string propertiesXml = "<SerializedNode>" + xml.ToString() + "</SerializedNode>";
+			XmlTextReader reader = new XmlTextReader(new StringReader(propertiesXml));
 			list = new XPathNamespaceList();
-			list = (XPathNamespaceList)list.FromXmlElement(namespaceListElement);
+			list = (XPathNamespaceList)list.ReadFrom(reader);
 			
 			XmlNamespace[] namespaces = list.GetNamespaces();
 			Assert.AreEqual(1, namespaces.Length);
@@ -71,16 +81,17 @@ namespace MonoDevelop.XmlEditor.Tests.XPathQuery
 		}
 		
 		[Test]
-		public void FromXmlElementTwoItems()
+		public void FromXmlTwoItems()
 		{
-			XmlDocument doc = new XmlDocument();
 			XPathNamespaceList list = new XPathNamespaceList();
 			list.Add("a", "Namespace-a");
 			list.Add("b", "Namespace-b");
-			XmlElement namespaceListElement = list.ToXmlElement(doc);
+			list.WriteTo(writer);
 			
+			string propertiesXml = "<SerializedNode>" + xml.ToString() + "</SerializedNode>";
+			XmlTextReader reader = new XmlTextReader(new StringReader(propertiesXml));
 			list = new XPathNamespaceList();
-			list = (XPathNamespaceList)list.FromXmlElement(namespaceListElement);
+			list = (XPathNamespaceList)list.ReadFrom(reader);
 			
 			XmlNamespace[] namespaces = list.GetNamespaces();
 			Assert.AreEqual(2, namespaces.Length);
@@ -89,16 +100,31 @@ namespace MonoDevelop.XmlEditor.Tests.XPathQuery
 		}		
 		
 		[Test]
-		[ExpectedException(typeof(UnknownPropertyNodeException))]
-		public void FromInvalidXPathHistoryXmlElement()
+		public void InvalidNamespace()
 		{
-			XmlDocument doc = new XmlDocument();
-			XmlElement namespaceListElement = doc.CreateElement("Test");
-			XmlElement namespaceElement = doc.CreateElement("Namespace");
-			namespaceListElement.AppendChild(namespaceElement);
-						
+			string xml = "<XPathNamespaceList>\n" +
+				"\t<Namespace>Prefix [n] Uri [http://mono-project.com]</Namespace>\n" +
+				"\t<Namespace></Namespace>\n" +
+				"</XPathNamespaceList>";
+
+			string propertiesXml = "<SerializedNode>" + xml.ToString() + "</SerializedNode>";
+			XmlTextReader reader = new XmlTextReader(new StringReader(propertiesXml));
 			XPathNamespaceList list = new XPathNamespaceList();
-			list = (XPathNamespaceList)list.FromXmlElement(namespaceListElement);
+			list = (XPathNamespaceList)list.ReadFrom(reader);
+			
+			XmlNamespace[] namespaces = list.GetNamespaces();
+			Assert.AreEqual(2, namespaces.Length);
+			Assert.AreEqual("http://mono-project.com", namespaces[0].Uri);
+			Assert.AreEqual(String.Empty, namespaces[1].Uri);
 		}
+		
+		[Test]
+		public void FromXmlContainingNoXPathNamespaceList()
+		{
+			XPathNamespaceList list = new XPathNamespaceList();
+			XmlTextReader reader = new XmlTextReader(new StringReader("<SerializedNode/>"));
+			list = (XPathNamespaceList)list.ReadFrom(reader);
+			Assert.AreEqual(0, list.GetNamespaces().Length);
+		}		
 	}
 }

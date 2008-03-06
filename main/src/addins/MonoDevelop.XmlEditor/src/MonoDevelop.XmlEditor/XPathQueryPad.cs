@@ -1,12 +1,11 @@
 //
 // MonoDevelop XML Editor
 //
-// Copyright (C) 2006 Matthew Ward
+// Copyright (C) 2006-2007 Matthew Ward
 //
 
 using Gtk;
 using MonoDevelop.Core;
-using MonoDevelop.Core.Properties;
 using MonoDevelop.Ide.Gui;
 using System;
 

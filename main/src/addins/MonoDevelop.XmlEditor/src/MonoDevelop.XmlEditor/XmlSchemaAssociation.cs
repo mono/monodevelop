@@ -1,10 +1,10 @@
 //
 // MonoDevelop XML Editor
 //
-// Copyright (C) 2005-2006 Matthew Ward
+// Copyright (C) 2005-2007 Matthew Ward
 //
 
-using MonoDevelop.Core.Properties;
+using MonoDevelop.Core;
 using System;
 using System.Xml;
 
@@ -13,7 +13,7 @@ namespace MonoDevelop.XmlEditor
 	/// <summary>
 	/// Represents an association between an xml schema and a file extension.
 	/// </summary>
-	public class XmlSchemaAssociation : IXmlConvertable
+	public class XmlSchemaAssociation : ICustomXmlSerializer
 	{
 		string namespaceUri = String.Empty;
 		string extension = String.Empty;
@@ -24,6 +24,11 @@ namespace MonoDevelop.XmlEditor
 		static readonly string namespaceAttributeName = "namespace";
 		static readonly string prefixAttributeName = "prefix";
 		
+		public XmlSchemaAssociation()
+			: this(String.Empty)
+		{
+		}			
+
 		public XmlSchemaAssociation(string extension)
 			: this(extension, String.Empty, String.Empty)
 		{
@@ -137,43 +142,32 @@ namespace MonoDevelop.XmlEditor
 		/// <summary>
 		/// Creates an XmlSchemaAssociation from the saved xml.
 		/// </summary>
-		public object FromXmlElement(XmlElement element)
+		public ICustomXmlSerializer ReadFrom(XmlReader reader)
 		{
-			return XmlSchemaAssociation.ConvertFromXmlElement(element);
-		}
+			while (reader.Read()) {
+				if (reader.NodeType == XmlNodeType.Element && 
+					reader.Name == schemaAssociationElementName) {
+					
+					string ext = reader.GetAttribute(extensionAttributeName);
+					string ns = reader.GetAttribute(namespaceAttributeName);
+					string prefix = reader.GetAttribute(prefixAttributeName);
 		
-		/// <summary>
-		/// Creates an XmlSchemaAssociation from the saved xml.
-		/// </summary>
-		public static object ConvertFromXmlElement(XmlElement element)
-		{
-			XmlSchemaAssociation association = null;
-			
-			if (element.ChildNodes.Count == 1) {
-				XmlElement childElement = element.ChildNodes[0] as XmlElement;
-				if (childElement != null) {
-					if (childElement.Name == schemaAssociationElementName) {
-						association = new XmlSchemaAssociation(childElement.GetAttribute(extensionAttributeName), childElement.GetAttribute(namespaceAttributeName), childElement.GetAttribute(prefixAttributeName));
-					} else {
-						throw new UnknownPropertyNodeException(childElement.Name);
-					}					
+					return new XmlSchemaAssociation(ext, ns, prefix);
 				}
 			}
-			return association;
+			return null;
 		}
-		
+						
 		/// <summary>
 		/// Creates an xml element from an XmlSchemaAssociation.
 		/// </summary>
-		public XmlElement ToXmlElement(XmlDocument doc)
-		{	
-			XmlElement element = doc.CreateElement(schemaAssociationElementName);
-			
-			element.SetAttribute(extensionAttributeName, extension);
-			element.SetAttribute(namespaceAttributeName, namespaceUri);
-			element.SetAttribute(prefixAttributeName, namespacePrefix);
-			
-			return element;	
-		}
+		public void WriteTo(XmlWriter writer)
+		{
+			writer.WriteStartElement(schemaAssociationElementName);
+			writer.WriteAttributeString(extensionAttributeName, extension);
+			writer.WriteAttributeString(namespaceAttributeName, namespaceUri);
+			writer.WriteAttributeString(prefixAttributeName, namespacePrefix);
+			writer.WriteEndElement();
+		}		
 	}
 }

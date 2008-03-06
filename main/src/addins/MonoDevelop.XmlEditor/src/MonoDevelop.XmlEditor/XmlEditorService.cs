@@ -48,7 +48,7 @@ namespace MonoDevelop.XmlEditor
        	
        	public static TaskService TaskService {
         	get {
-        		return (TaskService)ServiceManager.GetService(typeof(TaskService));
+        		return IdeApp.Services.TaskService;
         	}
         }
         
