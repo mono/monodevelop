@@ -1,3 +1,223 @@
+2007-02-23 18:17  mrward
+
+	* trunk/src/MonoDevelop.XmlEditor.Tests/AssemblyInfo.cs,
+	  trunk/src/MonoDevelop.XmlEditor/AssemblyInfo.cs: Updated Xml
+	  Editor addin assembly version to 0.3
+
+2007-02-23 18:15  mrward
+
+	* trunk/configure.in: Updated configure to check for MonoDevelop
+	  0.13. Xml Editor addin version set to 0.3.
+
+2007-02-23 17:43  mrward
+
+	* trunk/src/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor.addin.xml:
+	  Renamed menu item to 'Go to Schema Definition' to be consistent
+	  with MonoDevelop which has 'Go to' as two separate words.
+
+2007-02-23 17:39  mrward
+
+	* trunk/src/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor.addin.xml:
+	  Added missing addin dependencies to
+	  MonoDevelop.XmlEditor.addin.xml file.
+
+2007-02-19 18:35  mrward
+
+	* trunk/src/MonoDevelop.XmlEditor.Tests/Parser/QualifiedNameTestFixture.cs:
+	  Added unit test for QualifiedName.GetHashCode()
+
+2007-02-19 18:31  mrward
+
+	* trunk/src/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor.addin.xml:
+	  Updated the version number of the MonoDevelop dependencies to
+	  0.13.0
+
+2007-02-17 21:13  mrward
+
+	* trunk/src/MonoDevelop.XmlEditor.Tests/MonoDevelop.XmlEditor.Tests.mdp,
+	  trunk/src/MonoDevelop.XmlEditor.mds,
+	  trunk/src/MonoDevelop.XmlEditor/ICompletionData.cs,
+	  trunk/src/MonoDevelop.XmlEditor/ICompletionDataProvider.cs,
+	  trunk/src/MonoDevelop.XmlEditor/ICompletionWidget.cs,
+	  trunk/src/MonoDevelop.XmlEditor/Makefile.am,
+	  trunk/src/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor.mdp,
+	  trunk/src/MonoDevelop.XmlEditor/XmlCompletionListWindow.cs,
+	  trunk/src/MonoDevelop.XmlEditor/XmlEditorService.cs,
+	  trunk/src/MonoDevelop.XmlEditor/XmlEditorView.cs: Copied the
+	  ICompletionData, ICompletionDataProvider and ICompletionWidget
+	  interfaces into the XML Editor project from MonoDevelop 0.12. Due
+	  to changes in the code completion infrastructure in the latest
+	  version of MonoDevelop the XML Editor would not compile. The old
+	  versions of the completion interfaces have been used as an interim
+	  fix before attempting to use the new infrastructure.
+
+2006-12-26 22:55  mrward
+
+	* trunk/src, trunk/src/MonoDevelop.XmlEditor/schemas/nant.xsd,
+	  trunk/src/MonoDevelop.XmlEditor/schemas/readme.txt: Updated the
+	  NAnt 0.85 schema.
+
+2006-12-06 00:49  mrward
+
+	* trunk/TODO,
+	  trunk/src/MonoDevelop.XmlEditor/CreateSchemaCommand.cs,
+	  trunk/src/MonoDevelop.XmlEditor/FormatXmlCommand.cs,
+	  trunk/src/MonoDevelop.XmlEditor/RunXslTransformCommand.cs,
+	  trunk/src/MonoDevelop.XmlEditor/ValidateXmlCommand.cs,
+	  trunk/src/MonoDevelop.XmlEditor/XmlEditorService.cs: Fixed
+	  compilation errors due to methods being renamed in MonoDevelop's
+	  TaskService class.
+
+2006-10-23 14:53  mrward
+
+	* trunk/src/MonoDevelop.XmlEditor/XmlEditorViewContent.cs: Added
+	  workaround used in MonoDevelop.SourceEditor to fix a problem with
+	  the gtk treeview stealing focus. The workaround changes the focus
+	  back to the editor and scrolls to the cursor position again after
+	  a short timeout. Without this workaround the XML editor would fail
+	  to scroll to the correct line when opening a large xml file for
+	  the first time. For example, when selecting the Goto Schema
+	  Definition menu item, with the schema file not already open, would
+	  fail to scroll the editor so the correct line was displayed.
+
+2006-10-13 20:43  mrward
+
+	* trunk/TODO,
+	  trunk/src/MonoDevelop.XmlEditor.Tests/FindSchemaObject,
+	  trunk/src/MonoDevelop.XmlEditor.Tests/FindSchemaObject/AttributeGroupReferenceSelectedTestFixture.cs,
+	  trunk/src/MonoDevelop.XmlEditor.Tests/FindSchemaObject/AttributeReferenceSelectedTestFixture.cs,
+	  trunk/src/MonoDevelop.XmlEditor.Tests/FindSchemaObject/AttributeSelectedTestFixture.cs,
+	  trunk/src/MonoDevelop.XmlEditor.Tests/FindSchemaObject/AttributeTypeSelectedTestFixture.cs,
+	  trunk/src/MonoDevelop.XmlEditor.Tests/FindSchemaObject/ElementReferenceSelectedTestFixture.cs,
+	  trunk/src/MonoDevelop.XmlEditor.Tests/FindSchemaObject/ElementReferenceWithPrefixSelectedTestFixture.cs,
+	  trunk/src/MonoDevelop.XmlEditor.Tests/FindSchemaObject/ElementSelectedTestFixture.cs,
+	  trunk/src/MonoDevelop.XmlEditor.Tests/FindSchemaObject/ElementTypeSelectedTestFixture.cs,
+	  trunk/src/MonoDevelop.XmlEditor.Tests/FindSchemaObject/ElementTypeWithPrefixSelectedTestFixture.cs,
+	  trunk/src/MonoDevelop.XmlEditor.Tests/FindSchemaObject/GroupReferenceSelectedTestFixture.cs,
+	  trunk/src/MonoDevelop.XmlEditor.Tests/MonoDevelop.XmlEditor.Tests.mdp,
+	  trunk/src/MonoDevelop.XmlEditor.Tests/Parser/ActiveElementUnderCursorTests.cs,
+	  trunk/src/MonoDevelop.XmlEditor.Tests/Parser/AttributeNameTestFixture.cs,
+	  trunk/src/MonoDevelop.XmlEditor.Tests/Parser/AttributeNameUnderCursorTests.cs,
+	  trunk/src/MonoDevelop.XmlEditor.Tests/Parser/AttributeValueUnderCursorTests.cs,
+	  trunk/src/MonoDevelop.XmlEditor.Tests/Parser/InsideAttributeValueTestFixture.cs,
+	  trunk/src/MonoDevelop.XmlEditor.Tests/Parser/ParentElementPathTestFixture.cs,
+	  trunk/src/MonoDevelop.XmlEditor.Tests/Schema/ElementWithAttributeSchemaTestFixture.cs,
+	  trunk/src/MonoDevelop.XmlEditor.Tests/Schema/FindAttributeFromComplexTypeTestFixture.cs,
+	  trunk/src/MonoDevelop.XmlEditor.Tests/Schema/GetSchemaFromFileNameTestFixture.cs,
+	  trunk/src/MonoDevelop.XmlEditor.Tests/Schema/XmlSchemaNamespaceTests.cs,
+	  trunk/src/MonoDevelop.XmlEditor/Commands.cs,
+	  trunk/src/MonoDevelop.XmlEditor/GoToSchemaDefinitionCommand.cs,
+	  trunk/src/MonoDevelop.XmlEditor/Makefile.am,
+	  trunk/src/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor.addin.xml,
+	  trunk/src/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor.mdp,
+	  trunk/src/MonoDevelop.XmlEditor/XmlCompletionDataProvider.cs,
+	  trunk/src/MonoDevelop.XmlEditor/XmlEditorView.cs,
+	  trunk/src/MonoDevelop.XmlEditor/XmlParser.cs,
+	  trunk/src/MonoDevelop.XmlEditor/XmlSchemaCompletionData.cs,
+	  trunk/src/MonoDevelop.XmlEditor/XmlSchemaCompletionDataCollection.cs,
+	  trunk/src/MonoDevelop.XmlEditor/XmlSchemaManager.cs: Added Goto
+	  Schema Definition menu item. This allows the user to select an
+	  element, attribute or attribute value and jump to the
+	  corresponding schema definition.
+
+2006-10-13 18:14  mrward
+
+	* trunk/src/MonoDevelop.XmlEditor/XPathQueryWidget.cs: When an XPath
+	  query is executed the notebook page showing the results is made
+	  the current page.
+
+2006-10-07 19:40  mrward
+
+	* trunk/src/MonoDevelop.XmlEditor.Tests/MonoDevelop.XmlEditor.Tests.mdp,
+	  trunk/src/MonoDevelop.XmlEditor.Tests/XPathQuery/XPathHistoryListTests.cs,
+	  trunk/src/MonoDevelop.XmlEditor.Tests/XPathQuery/XPathNamespaceListTests.cs,
+	  trunk/src/MonoDevelop.XmlEditor/Makefile.am,
+	  trunk/src/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor.mdp,
+	  trunk/src/MonoDevelop.XmlEditor/XPathHistoryList.cs,
+	  trunk/src/MonoDevelop.XmlEditor/XPathNamespaceList.cs,
+	  trunk/src/MonoDevelop.XmlEditor/XPathQueryPad.cs,
+	  trunk/src/MonoDevelop.XmlEditor/XPathQueryPadOptions.cs,
+	  trunk/src/MonoDevelop.XmlEditor/XPathQueryWidget.cs: The XPath
+	  query window saves the xpath history and any namespaces entered
+	  and restores them on restarting MonoDevelop.
+
+2006-10-07 17:30  mrward
+
+	* trunk, trunk/src, trunk/src/MonoDevelop.XmlEditor,
+	  trunk/src/MonoDevelop.XmlEditor.Tests,
+	  trunk/src/MonoDevelop.XmlEditor/Commands.cs,
+	  trunk/src/MonoDevelop.XmlEditor/Makefile.am,
+	  trunk/src/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor.addin.xml,
+	  trunk/src/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor.mdp,
+	  trunk/src/MonoDevelop.XmlEditor/RemoveXPathHighlightingCommand.cs,
+	  trunk/src/MonoDevelop.XmlEditor/XPathQueryPad.cs: Added Remove
+	  XPath Highlighting menu item which will remove the xpath matches
+	  highlighted in the XML editor.
+
+2006-10-07 16:25  mrward
+
+	* trunk/src/MonoDevelop.XmlEditor/XPathQueryWidget.cs: Pressing the
+	  return key inside the xpath ComboBoxEntry now executes the xpath
+	  query. Added basic pop-up auto-completion to the xpath
+	  ComboBoxEntry.
+
+2006-09-27 21:17  mrward
+
+	* trunk/src/MonoDevelop.XmlEditor.Tests/MonoDevelop.XmlEditor.Tests.mdp,
+	  trunk/src/MonoDevelop.XmlEditor.Tests/XPathQuery,
+	  trunk/src/MonoDevelop.XmlEditor.Tests/XPathQuery/RunXPathQueryTests.cs,
+	  trunk/src/MonoDevelop.XmlEditor.Tests/XPathQuery/XmlNamespaceTests.cs,
+	  trunk/src/MonoDevelop.XmlEditor.Tests/XPathQuery/XmlNamespaceToStringTests.cs,
+	  trunk/src/MonoDevelop.XmlEditor/Commands.cs,
+	  trunk/src/MonoDevelop.XmlEditor/Makefile.am,
+	  trunk/src/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor.addin.xml,
+	  trunk/src/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor.mdp,
+	  trunk/src/MonoDevelop.XmlEditor/OpenXPathQueryPadCommand.cs,
+	  trunk/src/MonoDevelop.XmlEditor/XPathNodeMatch.cs,
+	  trunk/src/MonoDevelop.XmlEditor/XPathNodeTextMarker.cs,
+	  trunk/src/MonoDevelop.XmlEditor/XPathQueryPad.cs,
+	  trunk/src/MonoDevelop.XmlEditor/XPathQueryPad.png,
+	  trunk/src/MonoDevelop.XmlEditor/XPathQueryPadOptions.cs,
+	  trunk/src/MonoDevelop.XmlEditor/XPathQueryWidget.cs,
+	  trunk/src/MonoDevelop.XmlEditor/XmlEditor.glade,
+	  trunk/src/MonoDevelop.XmlEditor/XmlEditorView.cs,
+	  trunk/src/MonoDevelop.XmlEditor/XmlEditorViewContent.cs,
+	  trunk/src/MonoDevelop.XmlEditor/XmlNamespace.cs,
+	  trunk/src/MonoDevelop.XmlEditor/XmlSchemasPanelWidget.cs: Added
+	  XPath Query pad. Allows the user to run XPath queries on the
+	  active XML document and highlights the results.
+
+2006-09-19 17:48  mrward
+
+	* trunk/src/MonoDevelop.XmlEditor/CreateSchemaCommand.cs,
+	  trunk/src/MonoDevelop.XmlEditor/FormatXmlCommand.cs,
+	  trunk/src/MonoDevelop.XmlEditor/XmlEditorService.cs: The XML is
+	  checked to see if it is well formed before attempting to create a
+	  schema from it. Any errors are displayed in the output window and
+	  the task list.
+
+2006-09-19 16:54  mrward
+
+	* trunk/src/MonoDevelop.XmlEditor/XmlParser.cs: Editing an XML file
+	  with a url dtd reference (e.g. a .glade file) whilst having no
+	  network connection would hang MonoDevelop. Fixed this by setting
+	  the XmlResolver to null when reading the xml into the
+	  XmlTextReader.
+
+2006-09-09 09:23  mrward
+
+	* trunk/ChangeLog, trunk/configure.in,
+	  trunk/src/MonoDevelop.XmlEditor.Tests/AssemblyInfo.cs,
+	  trunk/src/MonoDevelop.XmlEditor/AssemblyInfo.cs,
+	  trunk/src/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor.addin.xml:
+	  Updated version numbers for a snapshot release compatible with
+	  MonoDevelop 0.12.
+
+2006-08-22 12:53  mrward
+
+	* trunk/src/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor.addin.xml:
+	  Stetic files (.stetic) are now opened in the XML editor.
+
 2006-08-22 10:27  mrward
 
 	* trunk/configure.in,
