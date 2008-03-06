@@ -381,6 +381,18 @@ namespace MonoDevelop.XmlEditor
 			view.ScrollToIter (buffer.GetIterAtOffset (position), 0.3, false, 0, 0);
 		}
 		
+		public char GetCharAt (int offset)
+		{
+			if (offset < 0)
+				offset = 0;
+			TextIter iter = buffer.GetIterAtOffset (offset);
+			if (iter.Equals (TextIter.Zero))
+				return ' ';
+			if (iter.Char == null || iter.Char.Length == 0)
+				return ' ';
+			return iter.Char[0];
+		}
+				
 		public string GetText (int startPosition, int endPosition)
 		{
 			Console.WriteLine("GetText");
