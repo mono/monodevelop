@@ -29,9 +29,6 @@ This list should be moved to the SourceForge issues tracker.
 * Running XSL transforms.
 * Commenting out regions of XML.  SharpDevelop implements this, but there are a few
   bugs.
-* The completion window does not move to the correct item when typing in the ":" 
-  character.  This is an issue for the namespace completion and for element completion
-  when the XML document is using prefixes (e.g. <xs:schema>).
 * Comments get autocompleted.  When you type in the last greater than character the
   XML editor adds "</!-->".
 * The "Show Schema Annotation" XML Editor option does nothing.  Schema annotation

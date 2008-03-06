@@ -191,9 +191,6 @@ namespace MonoDevelop.XmlEditor
 				case "ShowSchemaAnnotation":
 					view.ShowSchemaAnnotation = XmlEditorAddInOptions.ShowSchemaAnnotation;
 					break;
-				case "DefaultFont":
-					view.ModifyFont(TextEditorProperties.Font);
-					break;
 				default:
 					Console.WriteLine("XmlEditor: Unhandled property change: " + e.Key);
 					break;
@@ -204,7 +201,6 @@ namespace MonoDevelop.XmlEditor
 		{
 			switch (e.Key) {
 				case "DefaultFont":
-					Console.WriteLine("DefaultFont changed.");
 					view.ModifyFont(TextEditorProperties.Font);
 					break;
 				default:

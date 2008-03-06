@@ -43,6 +43,7 @@ FILES = \
 	XmlEditorView.cs \
 	XmlEditorWindow.cs \
 	XmlCompletionListWindow.cs \
+	XmlEditorListWindow.cs \
 	XmlEditorViewContent.cs \
 	XmlEditorOptionsPanel.cs \
 	XmlEditorOptionsPanelWidget.cs \

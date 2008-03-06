@@ -14,7 +14,7 @@ using MonoDevelop.Projects.Gui.Completion;
 
 namespace MonoDevelop.XmlEditor
 {
-	public class XmlCompletionListWindow : ListWindow, IListDataProvider
+	public class XmlCompletionListWindow : XmlEditorListWindow, IListDataProvider
 	{
 		ICompletionWidget completionWidget;
 		ICompletionData[] completionData;
@@ -126,15 +126,15 @@ namespace MonoDevelop.XmlEditor
 		{
 			if (!wnd.Visible) return false;
 			
-			ListWindow.KeyAction ka = wnd.ProcessKey (e);
+			XmlEditorListWindow.KeyAction ka = wnd.ProcessKey (e);
 			
-			if ((ka & ListWindow.KeyAction.CloseWindow) != 0) {
+			if ((ka & XmlEditorListWindow.KeyAction.CloseWindow) != 0) {
 				if (e.Key == Gdk.Key.Escape || e.Key == Gdk.Key.BackSpace || !System.Char.IsPunctuation((char)e.KeyValue)) {
 					wnd.Hide ();
 				} 
 			}
 			
-			if ((ka & ListWindow.KeyAction.Complete) != 0) {
+			if ((ka & XmlEditorListWindow.KeyAction.Complete) != 0) {
 				switch (e.Key) {
 					case Gdk.Key.Tab:
 					case Gdk.Key.Return:
@@ -149,10 +149,10 @@ namespace MonoDevelop.XmlEditor
 				}
 			}
 			
-			if ((ka & ListWindow.KeyAction.Ignore) != 0)
+			if ((ka & XmlEditorListWindow.KeyAction.Ignore) != 0)
 				return true;
 
-			if ((ka & ListWindow.KeyAction.Process) != 0) {
+			if ((ka & XmlEditorListWindow.KeyAction.Process) != 0) {
 				if (e.Key == Gdk.Key.Left) {
 					if (wnd.declarationviewwindow.Multiple) {
 						wnd.declarationviewwindow.OverloadLeft ();
@@ -308,6 +308,14 @@ namespace MonoDevelop.XmlEditor
 		public Gdk.Pixbuf GetIcon (int n)
 		{
 			return RenderIcon (completionData[n].Image, Gtk.IconSize.Menu, "");
+		}
+		
+		protected override bool IsValidCompletionChar(char c)
+		{
+			if (XmlParser.IsXmlNameChar(c) || XmlParser.IsAttributeValueChar(c)) {
+				return true;
+			}
+			return false;
 		}
 	}
 }
