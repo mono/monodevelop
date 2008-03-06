@@ -61,7 +61,7 @@ else
 fi
 
 
-MONODEVELOP_REQUIRED_VERSION=0.13
+MONODEVELOP_REQUIRED_VERSION=0.14
 PKG_CHECK_MODULES(MONODEVELOP,monodevelop >= $MONODEVELOP_REQUIRED_VERSION, has_monodevelop=true, has_monodevelop=false)
 
 if test "x$has_monodevelop" = "xfalse"; then
