@@ -41,9 +41,8 @@ namespace MonoDevelop.XmlEditor
 			
 			//Task task = new Task(fileName, message, column, line);
 			Task task = new Task(null, error);
- 			TaskService.AddTask(task);
-			TaskService.NotifyTaskChange();
-        }
+ 			TaskService.Add(task);
+       }
        	
        	public static TaskService TaskService {
         	get {
@@ -131,6 +130,7 @@ namespace MonoDevelop.XmlEditor
 					monitor.Log.WriteLine("XML is not well formed.");
 				}
 				AddTask(fileName, ex.Message, ex.LinePosition, ex.LineNumber, TaskType.Error);
+				TaskService.ShowErrors();
 			}
 			return false;
 		}

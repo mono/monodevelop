@@ -31,7 +31,7 @@ namespace MonoDevelop.XmlEditor
 			XmlEditorViewContent view = XmlEditorService.GetActiveView();
 			if (view != null) {			
 				try {
-					XmlEditorService.TaskService.ClearTasks();
+					XmlEditorService.TaskService.ClearExceptCommentTasks();
 					string xml = view.Text;
 					if (XmlEditorService.IsWellFormed(xml, view.FileName)) {							// Create a schema based on the xml.
 						string schema = CreateSchema(xml);

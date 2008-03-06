@@ -56,7 +56,7 @@ namespace MonoDevelop.XmlEditor
 		/// </summary>		
 		void ValidateXml(string xml, string fileName)
 		{
-			XmlEditorService.TaskService.ClearTasks();
+			XmlEditorService.TaskService.ClearExceptCommentTasks();
 			OutputWindowWriteLine("Validating XML...");
 
 			try {
@@ -89,6 +89,10 @@ namespace MonoDevelop.XmlEditor
 			} catch (XmlException ex) {
 				ShowValidationError(fileName, ex.Message, ex.LinePosition, ex.LineNumber);
 				ShowValidationFailedMessage();
+			}
+			
+			if (XmlEditorService.TaskService.SomethingWentWrong) {
+				XmlEditorService.TaskService.ShowErrors();
 			}
 		}
 				
@@ -123,7 +127,7 @@ namespace MonoDevelop.XmlEditor
 		/// </summary>		
 		void ValidateSchema(string xml, string fileName)
 		{
-			XmlEditorService.TaskService.ClearTasks();
+			XmlEditorService.TaskService.ClearExceptCommentTasks();
 			OutputWindowWriteLine("Validating schema...");
 
 			try {
@@ -141,6 +145,7 @@ namespace MonoDevelop.XmlEditor
 			
 			if (XmlEditorService.TaskService.SomethingWentWrong) {
 				ShowValidationFailedMessage();
+				XmlEditorService.TaskService.ShowErrors();
 			} else {
 				OutputWindowWriteLine(String.Empty);
 				OutputWindowWriteLine("Schema is valid.");

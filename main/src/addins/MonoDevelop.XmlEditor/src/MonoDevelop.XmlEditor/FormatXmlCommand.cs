@@ -38,7 +38,7 @@ namespace MonoDevelop.XmlEditor
 		/// </summary>
 		public void FormatXml(XmlEditorViewContent view)
 		{
-			XmlEditorService.TaskService.ClearTasks();			
+			XmlEditorService.TaskService.ClearExceptCommentTasks();			
 			string xml = view.Text;
 			if (XmlEditorService.IsWellFormed(xml, view.FileName)) {
 				string formattedXml = XmlEditorService.SimpleFormat(XmlEditorService.IndentedFormat(xml));

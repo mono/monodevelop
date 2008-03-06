@@ -36,5 +36,29 @@ This list should be moved to the SourceForge issues tracker.
   "XmlSchema.Compile' is obsolete: `Use XmlSchemaSet.Compile() instead." might not 
   be fixed since the XmlSchemaSet.Compile broke a lot of the unit tests when I
   tried the same thing with SharpDevelop.
+* Hold off switching to using XmlReader.Create. Doing this we hit an error in
+  Mono (1.1.15):
+
+	System.NullReferenceException: Object reference not set to an instance of an object
+	in <0x0006d> Mono.Xml.Schema.XmlSchemaValidatingReader:get_Prefix ()
+	in <0x0004f> System.Xml.XmlDocument:ReadAttributeNode (System.Xml.XmlReader reader)
+	in <0x00253> System.Xml.XmlDocument:ReadNodeCore (System.Xml.XmlReader reader)
+	in <0x000be> System.Xml.XmlDocument:ReadNode (System.Xml.XmlReader reader)
+	in <0x00044> System.Xml.XmlDocument:Load (System.Xml.XmlReader xmlReader)
+
+ Loading an xml schema using code:
+
+	StringReader stringReader = new StringReader(xml);
+	XmlTextReader xmlReader = new XmlTextReader(stringReader);
+	xmlReader.XmlResolver = null;
+	XmlReaderSettings settings = new XmlReaderSettings();
+	settings.ValidationType = ValidationType.Schema;
+	settings.ValidationFlags = XmlSchemaValidationFlags.None;
+	settings.XmlResolver = null;
+	settings.Schemas.Add(schema);
+	XmlReader reader = XmlReader.Create(xmlReader, settings);
+	XmlDocument doc = new XmlDocument();
+	doc.Load(reader);
+
 
 

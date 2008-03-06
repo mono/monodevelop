@@ -104,7 +104,7 @@ namespace MonoDevelop.XmlEditor
 		/// </summary>
 		void RunXslTransform(string fileName, string xml, string xslFileName, string xsl)
 		{
-			XmlEditorService.TaskService.ClearTasks();				
+			XmlEditorService.TaskService.ClearExceptCommentTasks();				
 			if (IsWellFormed(fileName, xml)) {
 				if (IsValidXsl(xslFileName, xsl)) {
 					string transformedXml = XmlEditorService.Transform(xml, xsl);
