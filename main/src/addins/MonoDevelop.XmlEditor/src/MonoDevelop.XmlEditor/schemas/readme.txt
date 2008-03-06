@@ -22,7 +22,7 @@ GNU General Public License.
 NAnt.xsd
 --------
 
-NAnt 0.85 schema.
+NAnt 0.85 schema created by Hannes Kuppelwieser.
 http://nant.sourceforge.net/release/0.85/nant.xsd
 GNU General Public License.
 
