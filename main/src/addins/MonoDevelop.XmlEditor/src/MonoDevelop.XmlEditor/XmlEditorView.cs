@@ -486,11 +486,12 @@ namespace MonoDevelop.XmlEditor
 			}		
 			int elementEndOffset = iter.Offset + 1;
 
-			// Ignore if is empty element or element
-			// has no name.
-			if (iter.Char == "/" || iter.Char == "<") {
+			// Ignore if is empty element, element
+			// has no name or if comment.
+			if (iter.Char == "/" || iter.Char == "<" || iter.Char == "-") {
 				return;
 			}
+			
 					
 			// Work backwards and try to find the
 			// element start.

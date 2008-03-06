@@ -28,8 +28,6 @@ This list should be moved to the SourceForge issues tracker.
   other available namespaces that are allowed at that location.
 * Commenting out regions of XML.  SharpDevelop implements this, but there are a few
   bugs.
-* Comments get autocompleted.  When you type in the last greater than character the
-  XML editor adds "</!-->".
 * The "Show Schema Annotation" XML Editor option does nothing.  Schema annotation
   is always displayed if available.
 * Attribute value completion works for pretty much any character so you get the
