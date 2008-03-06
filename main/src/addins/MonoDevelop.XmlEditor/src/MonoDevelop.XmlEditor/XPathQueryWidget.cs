@@ -81,16 +81,17 @@ namespace MonoDevelop.XmlEditor
 			InitResultsList();
 			InitNamespaceList();
 					
+			queryButton.Clicked += QueryButtonClicked;
+
+			EntryCompletion completion = new EntryCompletion();
+			completion.Model = xpathHistoryList;
+			completion.TextColumn = 0;
+			
 			xpathComboBoxEntry.Model = xpathHistoryList;
 			xpathComboBoxEntry.TextColumn = 0;
+			xpathComboBoxEntry.Entry.Completion = completion;
 			xpathComboBoxEntry.Entry.Changed += XPathComboBoxEntryChanged;
-			xpathComboBoxEntry.Entry.ActivatesDefault = true;
-			
-			// Do not seem to be able to make the button
-			// the default widget.
-			queryButton.Clicked += QueryButtonClicked;
-			queryButton.CanDefault = true;
-			queryButton.GrabDefault();
+			xpathComboBoxEntry.Entry.Activated += XPathComboBoxEntryActivated;
 		}
 				
 		/// <summary>
@@ -475,5 +476,10 @@ namespace MonoDevelop.XmlEditor
 		{
 			ScrollTo(fileName, line, column, 0);
 		}	
+		
+		void XPathComboBoxEntryActivated(object source, EventArgs e)
+		{
+			RunXPathQuery();
+		}
 	}
 }
