@@ -21,7 +21,7 @@ namespace MonoDevelop.XmlEditor
 	public class ValidateXmlCommand : CommandHandler
 	{		
 		IProgressMonitor monitor;
-		string fileName = String.Empty;
+		string schemaFileName = String.Empty;
 		
 		public ValidateXmlCommand()
 		{
@@ -130,7 +130,7 @@ namespace MonoDevelop.XmlEditor
 				StringReader stringReader = new StringReader(xml);
 				XmlTextReader xmlReader = new XmlTextReader(stringReader);
 				xmlReader.XmlResolver = null;
-				this.fileName = fileName;
+				schemaFileName = fileName;
 				XmlSchema schema = XmlSchema.Read(xmlReader, new ValidationEventHandler(SchemaValidation));
 				schema.Compile(new ValidationEventHandler(SchemaValidation));
 			} catch (XmlSchemaException ex) {
@@ -150,9 +150,9 @@ namespace MonoDevelop.XmlEditor
 		void SchemaValidation(object source, ValidationEventArgs e)
 		{
 			if (e.Severity == XmlSeverityType.Warning) {
-				ShowValidationWarning(fileName, e.Message, e.Exception.LinePosition, e.Exception.LineNumber);				
+				ShowValidationWarning(schemaFileName, e.Message, e.Exception.LinePosition, e.Exception.LineNumber);				
 			} else {
-				ShowValidationError(fileName, e.Message, e.Exception.LinePosition, e.Exception.LineNumber);				
+				ShowValidationError(schemaFileName, e.Message, e.Exception.LinePosition, e.Exception.LineNumber);				
 			}
 		}
 	}

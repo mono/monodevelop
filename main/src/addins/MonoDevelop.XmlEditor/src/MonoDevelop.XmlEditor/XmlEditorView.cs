@@ -112,84 +112,6 @@ namespace MonoDevelop.XmlEditor
 			}
 		}
 		
-		protected override bool OnFocusOutEvent(EventFocus e)
-		{
-			XmlCompletionListWindow.HideWindow();
-			return base.OnFocusOutEvent(e);
-		}
-
-		protected override bool OnKeyPressEvent (Gdk.EventKey evnt)
-		{
-			if (XmlCompletionListWindow.ProcessKeyEvent (evnt))
-				return true;
-									
-			try {
-				bool result;
-				switch (evnt.Key) {
-					case Gdk.Key.less:
-					case Gdk.Key.space:
-					case Gdk.Key.equal:
-						result = base.OnKeyPressEvent(evnt);
-						ShowCompletionWindow((char)evnt.KeyValue);
-						return result;
-					case Gdk.Key.greater:
-						result = base.OnKeyPressEvent(evnt);
-						if (autoCompleteElements) {
-							AutoCompleteElement();
-						}
-						return result;
-					case Gdk.Key.Return:
-						result = base.OnKeyPressEvent(evnt);
-						IndentLine();
-						return result;
-					default:
-						if (XmlParser.IsAttributeValueChar((char)evnt.KeyValue)) {
-							if (IsInsideQuotes()) {
-								// Show the completion window then get it to
-								// process the key event so it selects the list item
-								// that starts with the character just typed in.
-								ShowCompletionWindow((char)evnt.KeyValue);
-								XmlCompletionListWindow.ProcessKeyEvent(evnt);
-								return base.OnKeyPressEvent(evnt);;
-							}
-						}
-						break;
-				}
-			} catch (Exception ex) {
-				Console.WriteLine(String.Concat("EXCEPTION: ", ex));
-			}
-			return base.OnKeyPressEvent(evnt);
-		}
-		
-		void ShowCompletionWindow(char key)
-		{
-			PrepareCompletionDetails (Buffer.GetIterAtMark (Buffer.InsertMark));
-			XmlCompletionListWindow.ShowWindow(key, GetCompletionDataProvider(), this);
-			//if (EnableCodeCompletion && PeekCharIsWhitespace ()) {
-			//	PrepareCompletionDetails (buf.GetIterAtMark (buf.InsertMark));
-			//	CompletionListWindow.ShowWindow (key, GetCodeCompletionDataProvider (false), this);
-			//}
-		}
-		
-		ICompletionDataProvider GetCompletionDataProvider()
-		{
-			return new XmlCompletionDataProvider(schemaCompletionDataItems, defaultSchemaCompletionData, defaultNamespacePrefix);
-		}
-		
-		void PrepareCompletionDetails(TextIter iter)
-		{
-			Gdk.Rectangle rect = GetIterLocation (Buffer.GetIterAtMark (Buffer.InsertMark));
-			int wx, wy;
-			BufferToWindowCoords (Gtk.TextWindowType.Widget, rect.X, rect.Y + rect.Height, out wx, out wy);
-			int tx, ty;
-			GdkWindow.GetOrigin (out tx, out ty);
-
-			this.completionX = tx + wx;
-			this.completionY = ty + wy;
-			this.textHeight = rect.Height;
-			this.triggerMark = Buffer.CreateMark (null, iter, true);
-		}
-		
 		#region ICompletionWidget
 
 		int completionX;
@@ -283,7 +205,238 @@ namespace MonoDevelop.XmlEditor
 			}
 		}
 		#endregion
+	
+		public string GetSelectedText ()
+		{
+			TextIter start;
+			TextIter end;
+			if (buffer.GetSelectionBounds (out start, out end)) {
+				return buffer.GetText(start, end, true);
+			}
+			return String.Empty;
+		}
+		
+		/// <summary>
+		/// Search methods taken from SourceEditorWidget
+		/// </summary>
+		public void SetSearchPattern ()
+		{
+			string selectedText = GetSelectedText ();
+			if (selectedText != null && selectedText.Length > 0) {
+				SearchReplaceManager.SearchOptions.SearchPattern = selectedText.Split ('\n')[0];
+			}
+		}
+		
+		[CommandHandler (SearchCommands.Find)]
+		public void Find()
+		{
+			SetSearchPattern();
+			SearchReplaceManager.ShowFindWindow ();
+		}
+		
+		[CommandHandler (SearchCommands.FindNext)]
+		public void FindNext ()
+		{
+			SearchReplaceManager.FindNext ();
+		}
+	
+		[CommandHandler (SearchCommands.FindPrevious)]
+		public void FindPrevious ()
+		{
+			SearchReplaceManager.FindPrevious ();
+		}
+	
+		[CommandHandler (SearchCommands.FindNextSelection)]
+		public void FindNextSelection ()
+		{
+			SetSearchPattern();
+			SearchReplaceManager.FindNext ();
+		}
+	
+		[CommandHandler (SearchCommands.FindPreviousSelection)]
+		public void FindPreviousSelection ()
+		{
+			SetSearchPattern();
+			SearchReplaceManager.FindPrevious ();
+		}
+	
+		[CommandHandler (SearchCommands.Replace)]
+		public void Replace ()
+		{ 
+			SetSearchPattern ();
+			SearchReplaceManager.ShowFindReplaceWindow ();
+		} 
+		
+		public string GetText (int start, int length)
+		{
+			TextIter begin_iter = buffer.GetIterAtOffset (start);
+			TextIter end_iter = buffer.GetIterAtOffset (start + length);
+			return buffer.GetText (begin_iter, end_iter, true);
+		}
+		
+		public int GetLowerSelectionBounds ()
+		{
+			TextIter start;
+			TextIter end;
+			if (buffer.GetSelectionBounds (out start, out end)) {
+				return start.Offset < end.Offset ? start.Offset : end.Offset;
+			}
+			return 0;
+		}
+		
+		[CommandHandler (EditorCommands.GotoLineNumber)]
+		public void GotoLineNumber ()
+		{
+			if (!GotoLineNumberDialog.IsVisible)
+				using (GotoLineNumberDialog gnd = new GotoLineNumberDialog ())
+					gnd.Run ();
+		}
+		
+		#region IClipboardHandler
 
+		bool IClipboardHandler.EnableCut {
+			get { return true; }
+		}
+
+		bool IClipboardHandler.EnableCopy {
+			get { return true; }
+		}
+		
+		bool IClipboardHandler.EnablePaste {
+			get { return true; }
+		}
+		
+		bool IClipboardHandler.EnableDelete	{
+			get { return true; }
+		}
+		
+		bool IClipboardHandler.EnableSelectAll{
+			get { return true; }
+		}
+		
+		void IClipboardHandler.Cut (object sender, EventArgs e)
+		{
+			if (HasSelection)
+				buffer.CutClipboard(clipboard, true);
+		}
+		
+		void IClipboardHandler.Copy (object sender, EventArgs e)
+		{
+			if (HasSelection)
+				buffer.CopyClipboard(clipboard);
+		}
+		
+		void IClipboardHandler.Paste (object sender, EventArgs e)
+		{
+			if (clipboard.WaitIsTextAvailable()) {
+				buffer.PasteClipboard(clipboard);
+				ScrollMarkOnscreen(buffer.InsertMark);
+			}
+		}
+		
+		void IClipboardHandler.Delete (object sender, EventArgs e)
+		{
+			if (HasSelection)
+				buffer.DeleteSelection(true, true);
+		}
+		
+		void IClipboardHandler.SelectAll(object sender, EventArgs e)
+		{			
+			buffer.MoveMark("insert", buffer.StartIter);
+			buffer.MoveMark("selection_bound", buffer.EndIter);
+		}
+
+		#endregion	
+
+		protected override bool OnFocusOutEvent(EventFocus e)
+		{
+			XmlCompletionListWindow.HideWindow();
+			return base.OnFocusOutEvent(e);
+		}
+
+		protected override bool OnKeyPressEvent (Gdk.EventKey evnt)
+		{
+			if (XmlCompletionListWindow.ProcessKeyEvent (evnt))
+				return true;
+									
+			try {
+				bool result;
+				switch (evnt.Key) {
+					case Gdk.Key.less:
+					case Gdk.Key.space:
+					case Gdk.Key.equal:
+						result = base.OnKeyPressEvent(evnt);
+						ShowCompletionWindow((char)evnt.KeyValue);
+						return result;
+					case Gdk.Key.greater:
+						result = base.OnKeyPressEvent(evnt);
+						if (autoCompleteElements) {
+							AutoCompleteElement();
+						}
+						return result;
+					case Gdk.Key.Return:
+						result = base.OnKeyPressEvent(evnt);
+						IndentLine();
+						return result;
+					case Gdk.Key.ISO_Left_Tab:
+						bool unindent = IsShiftPressed(evnt.State);
+						if (IndentSelection(unindent)) {
+							return true;
+						}
+						break;
+					case Gdk.Key.Tab:
+						if (IndentSelection(false)) {
+							return true;
+						}
+						break;
+					default:
+						if (XmlParser.IsAttributeValueChar((char)evnt.KeyValue)) {
+							if (IsInsideQuotes()) {
+								// Show the completion window then get it to
+								// process the key event so it selects the list item
+								// that starts with the character just typed in.
+								ShowCompletionWindow((char)evnt.KeyValue);
+								XmlCompletionListWindow.ProcessKeyEvent(evnt);
+								return base.OnKeyPressEvent(evnt);;
+							}
+						}
+						break;
+				}
+			} catch (Exception ex) {
+				Console.WriteLine(String.Concat("EXCEPTION: ", ex));
+			}
+			return base.OnKeyPressEvent(evnt);
+		}
+		
+		void ShowCompletionWindow(char key)
+		{
+			PrepareCompletionDetails (Buffer.GetIterAtMark (Buffer.InsertMark));
+			XmlCompletionListWindow.ShowWindow(key, GetCompletionDataProvider(), this);
+			//if (EnableCodeCompletion && PeekCharIsWhitespace ()) {
+			//	PrepareCompletionDetails (buf.GetIterAtMark (buf.InsertMark));
+			//	CompletionListWindow.ShowWindow (key, GetCodeCompletionDataProvider (false), this);
+			//}
+		}
+		
+		ICompletionDataProvider GetCompletionDataProvider()
+		{
+			return new XmlCompletionDataProvider(schemaCompletionDataItems, defaultSchemaCompletionData, defaultNamespacePrefix);
+		}
+		
+		void PrepareCompletionDetails(TextIter iter)
+		{
+			Gdk.Rectangle rect = GetIterLocation (Buffer.GetIterAtMark (Buffer.InsertMark));
+			int wx, wy;
+			BufferToWindowCoords (Gtk.TextWindowType.Widget, rect.X, rect.Y + rect.Height, out wx, out wy);
+			int tx, ty;
+			GdkWindow.GetOrigin (out tx, out ty);
+
+			this.completionX = tx + wx;
+			this.completionY = ty + wy;
+			this.textHeight = rect.Height;
+			this.triggerMark = Buffer.CreateMark (null, iter, true);
+		}
+		
 		void InitSyntaxHighlighting()
 		{
 			buffer = new SourceBuffer(new SourceTagTable());
@@ -396,7 +549,7 @@ namespace MonoDevelop.XmlEditor
 		/// <summary>
 		/// Taken straight from the SourceEditorView code
 		/// </summary>
-		public void IndentLine ()
+		void IndentLine ()
 		{
 			TextIter iter = Buffer.GetIterAtMark (Buffer.InsertMark);
 
@@ -471,80 +624,6 @@ namespace MonoDevelop.XmlEditor
 			Buffer.Insert (ref begin, txt);
 		}
 		
-		#region IClipboardHandler
-
-		bool HasSelection {
-			get {
-				TextIter start;
-				TextIter end;
-				return buffer.GetSelectionBounds(out start, out end);
-			}
-		}
-
-		public string GetSelectedText ()
-		{
-			TextIter start;
-			TextIter end;
-			if (buffer.GetSelectionBounds (out start, out end)) {
-				return buffer.GetText(start, end, true);
-			}
-			return String.Empty;
-		}
-		
-		bool IClipboardHandler.EnableCut {
-			get { return true; }
-		}
-
-		bool IClipboardHandler.EnableCopy {
-			get { return true; }
-		}
-		
-		bool IClipboardHandler.EnablePaste {
-			get { return true; }
-		}
-		
-		bool IClipboardHandler.EnableDelete	{
-			get { return true; }
-		}
-		
-		bool IClipboardHandler.EnableSelectAll{
-			get { return true; }
-		}
-		
-		void IClipboardHandler.Cut (object sender, EventArgs e)
-		{
-			if (HasSelection)
-				buffer.CutClipboard(clipboard, true);
-		}
-		
-		void IClipboardHandler.Copy (object sender, EventArgs e)
-		{
-			if (HasSelection)
-				buffer.CopyClipboard(clipboard);
-		}
-		
-		void IClipboardHandler.Paste (object sender, EventArgs e)
-		{
-			if (clipboard.WaitIsTextAvailable()) {
-				buffer.PasteClipboard(clipboard);
-				ScrollMarkOnscreen(buffer.InsertMark);
-			}
-		}
-		
-		void IClipboardHandler.Delete (object sender, EventArgs e)
-		{
-			if (HasSelection)
-				buffer.DeleteSelection(true, true);
-		}
-		
-		void IClipboardHandler.SelectAll(object sender, EventArgs e)
-		{			
-			buffer.MoveMark("insert", buffer.StartIter);
-			buffer.MoveMark("selection_bound", buffer.EndIter);
-		}
-
-		#endregion	
-		
 		void ScrollToCursor()
 		{
 			TextIter iter = buffer.GetIterAtMark (buffer.InsertMark);
@@ -553,80 +632,98 @@ namespace MonoDevelop.XmlEditor
 			}
 		}
 		
-		/// <summary>
-		/// Search methods taken from SourceEditorWidget
-		/// </summary>
-		public void SetSearchPattern ()
+		bool HasSelection {
+			get {
+				TextIter start;
+				TextIter end;
+				return buffer.GetSelectionBounds(out start, out end);
+			}
+		}
+
+		bool IsShiftPressed(Gdk.ModifierType modifierType)
 		{
-			string selectedText = GetSelectedText ();
-			if (selectedText != null && selectedText.Length > 0) {
-				SearchReplaceManager.SearchOptions.SearchPattern = selectedText.Split ('\n')[0];
+			return (modifierType & Gdk.ModifierType.ShiftMask) != 0;
+		}
+		
+		bool IndentSelection (bool unindent)
+		{
+			TextIter begin, end;
+			if (!buffer.GetSelectionBounds (out begin, out end))
+				return false;
+			
+			int y0 = begin.Line, y1 = end.Line;
+
+			// If last line isn't selected, it's illogical to indent it.
+			if (end.StartsLine())
+				y1--;
+
+			if (y0 == y1)
+				return false;
+			
+			try {
+				buffer.BeginUserAction();
+				if (unindent)
+					UnIndentLines (y0, y1);
+				else
+					IndentLines (y0, y1);
+				SelectLines (y0, y1);
+			} finally {
+				buffer.EndUserAction();
+			}
+			
+			return true;
+		}
+		
+		void IndentLines (int y0, int y1)
+		{
+			IndentLines (y0, y1, InsertSpacesInsteadOfTabs ? new string (' ', (int) TabsWidth) : "\t");
+		}
+
+		void IndentLines (int y0, int y1, string indent)
+		{
+			for (int l = y0; l <= y1; l ++) {
+				TextIter it = Buffer.GetIterAtLine (l);
+				if (!it.EndsLine())
+					Buffer.Insert (ref it, indent);
 			}
 		}
 		
-		[CommandHandler (SearchCommands.Find)]
-		public void Find()
+		void UnIndentLines (int y0, int y1)
 		{
-			SetSearchPattern();
-			SearchReplaceManager.ShowFindWindow ();
-		}
-		
-		[CommandHandler (SearchCommands.FindNext)]
-		public void FindNext ()
-		{
-			SearchReplaceManager.FindNext ();
-		}
-	
-		[CommandHandler (SearchCommands.FindPrevious)]
-		public void FindPrevious ()
-		{
-			SearchReplaceManager.FindPrevious ();
-		}
-	
-		[CommandHandler (SearchCommands.FindNextSelection)]
-		public void FindNextSelection ()
-		{
-			SetSearchPattern();
-			SearchReplaceManager.FindNext ();
-		}
-	
-		[CommandHandler (SearchCommands.FindPreviousSelection)]
-		public void FindPreviousSelection ()
-		{
-			SetSearchPattern();
-			SearchReplaceManager.FindPrevious ();
-		}
-	
-		[CommandHandler (SearchCommands.Replace)]
-		public void Replace ()
-		{ 
-			SetSearchPattern ();
-			SearchReplaceManager.ShowFindReplaceWindow ();
-		} 
-		
-		public string GetText (int start, int length)
-		{
-			TextIter begin_iter = buffer.GetIterAtOffset (start);
-			TextIter end_iter = buffer.GetIterAtOffset (start + length);
-			return buffer.GetText (begin_iter, end_iter, true);
-		}
-		
-		public int GetLowerSelectionBounds ()
-		{
-			TextIter start;
-			TextIter end;
-			if (buffer.GetSelectionBounds (out start, out end)) {
-				return start.Offset < end.Offset ? start.Offset : end.Offset;
+			for (int l = y0; l <= y1; l ++) {
+				TextIter start = Buffer.GetIterAtLine (l);
+				TextIter end = start;
+				
+				char c = start.Char[0];
+				
+				if (c == '\t') {
+					end.ForwardChar ();
+					buffer.Delete (ref start, ref end);
+					
+				} else if (c == ' ') {
+					int cnt = 0;
+					int max = (int) TabsWidth;
+					
+					while (cnt <= max && end.Char[0] == ' ' && ! end.EndsLine ()) {
+						cnt ++;
+						end.ForwardChar ();
+					}
+					
+					if (cnt == 0)
+						return;
+					
+					buffer.Delete (ref start, ref end);
+				}
 			}
-			return 0;
 		}
 		
-		[CommandHandler (EditorCommands.GotoLineNumber)]
-		public void GotoLineNumber ()
+		void SelectLines (int y0, int y1)
 		{
-			if (!GotoLineNumberDialog.IsVisible)
-				using (GotoLineNumberDialog gnd = new GotoLineNumberDialog ())
-					gnd.Run ();
+			buffer.PlaceCursor (buffer.GetIterAtLine (y0));
+			
+			TextIter end = buffer.GetIterAtLine (y1);
+			end.ForwardToLineEnd ();
+			buffer.MoveMark ("selection_bound", end);
 		}
 	}
 }
