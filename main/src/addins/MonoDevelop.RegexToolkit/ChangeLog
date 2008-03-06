@@ -1,3 +1,8 @@
+2008-03-06  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.RegexToolkit.addin.xml, Makefile.am: Bump version to 1.0.
+	  Yay!
+
 2008-01-29  Marcos David Marín Amador <MarcosMarin@gmail.com> 
 
 	* MonoDevelop.RegexToolkit/RegexToolkitWindow.cs: Small workaround to be

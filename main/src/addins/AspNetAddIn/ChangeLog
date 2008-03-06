@@ -1,3 +1,7 @@
+2008-03-06  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* AspNetAddIn.addin.xml: Bump version to 1.0. Yay!
+
 2008-02-26  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* Project/AspNetFileDescriptionTemplate.cs: Fix string formatting call.
