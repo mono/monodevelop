@@ -10,11 +10,7 @@ namespace MonoDevelop.SourceEditor
 	class Services
 	{
 		static IDebuggingService debuggingService;
-
-		public static MessageService MessageService {
-			get { return MonoDevelop.Core.Gui.Services.MessageService; }
-		}
-	
+		
 		public static ResourceService Resources {
 			get { return MonoDevelop.Core.Gui.Services.Resources; }
 		}

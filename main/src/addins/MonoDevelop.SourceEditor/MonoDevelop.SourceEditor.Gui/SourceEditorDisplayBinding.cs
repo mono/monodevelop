@@ -37,7 +37,7 @@ namespace MonoDevelop.SourceEditor.Gui
 		}
 
 		public string DisplayName {
-			get { return "Source Code Editor"; }
+			get { return "GtkSourceView Source Code Editor"; }
 		}
 		
 		public virtual bool CanCreateContentForFile (string fileName)
@@ -89,7 +89,7 @@ namespace MonoDevelop.SourceEditor.Gui
 	}
 	
 	public class SourceEditorDisplayBindingWrapper : AbstractViewContent,
-		IExtensibleTextEditor, IPositionable, ICodeStyleOperations, IDocumentInformation, IEncodedTextContent, IViewHistory
+		IExtensibleTextEditor, ICodeStyleOperations, IDocumentInformation, IEncodedTextContent, IViewHistory, IClipboardHandler
 		//FIXME GTKSV2 IDebuggableEditor, IBookmarkBuffer, IPrintable
 	{
 		VBox mainBox;
@@ -298,7 +298,7 @@ namespace MonoDevelop.SourceEditor.Gui
 				return base.GetContent (type);
 		}
 		
-		public void JumpTo (int line, int column)
+		public void SetCaretTo (int line, int column)
 		{
 			// NOTE: 1 based!			
 			TextIter itr = se.Buffer.GetIterAtLine (line - 1);
@@ -310,6 +310,13 @@ namespace MonoDevelop.SourceEditor.Gui
 			se.View.ScrollToMark (se.Buffer.InsertMark, 0.3, false, 0, 0);
 			GLib.Timeout.Add (20, new GLib.TimeoutHandler (changeFocus));
 		}
+		
+		protected virtual void OnCaretPositionSet (EventArgs args)
+		{
+			if (CaretPositionSet != null) 
+				CaretPositionSet (this, args);
+		}
+		public event EventHandler CaretPositionSet;
 
 		//This code exists to workaround a gtk+ 2.4 regression/bug
 		//
@@ -322,6 +329,7 @@ namespace MonoDevelop.SourceEditor.Gui
 				return false;
 			se.View.GrabFocus ();
 			se.View.ScrollToMark (se.Buffer.InsertMark, 0.3, false, 0, 0);
+			OnCaretPositionSet (EventArgs.Empty);
 			return false;
 		}
 		
@@ -392,7 +400,7 @@ namespace MonoDevelop.SourceEditor.Gui
 		{
 			if (warnOverwrite) {
 				if (fileName == ContentName) {
-					if (!Services.MessageService.AskQuestion (string.Format (GettextCatalog.GetString ("This file {0} has been changed outside of MonoDevelop. Are you sure you want to overwrite the file?"), fileName),"MonoDevelop"))
+					if (MonoDevelop.Core.Gui.MessageService.AskQuestion (GettextCatalog.GetString ("This file {0} has been changed outside of MonoDevelop. Are you sure you want to overwrite the file?", fileName), MonoDevelop.Core.Gui.AlertButton.Cancel, MonoDevelop.Core.Gui.AlertButton.OverwriteFile) != MonoDevelop.Core.Gui.AlertButton.OverwriteFile)
 						return;
 				}
 				warnOverwrite = false;
@@ -699,9 +707,9 @@ namespace MonoDevelop.SourceEditor.Gui
 				}
 				
 				// If we can we navigate to the line location of the IMember.
-				IViewContent content = (IViewContent) IdeApp.Workbench.ActiveDocument.GetContent(typeof(IViewContent));
-				if (content is IPositionable) {
-					((IPositionable)content).JumpTo (Math.Max (1, line), 1);
+				IEditableTextBuffer content = IdeApp.Workbench.ActiveDocument.GetContent<IEditableTextBuffer> ();
+				if (content != null) {
+					content.SetCaretTo (Math.Max (1, line), 1);
 				}
 			}
 		}
@@ -722,10 +730,9 @@ namespace MonoDevelop.SourceEditor.Gui
 				}
 				
 				// If we can we navigate to the line location of the IMember.
-				IViewContent content = (IViewContent)IdeApp.Workbench.ActiveDocument.GetContent(typeof(IViewContent));
-				if (content is IPositionable) {
-					((IPositionable)content).JumpTo (Math.Max (1, line), 1);
-				}
+				IEditableTextBuffer content = IdeApp.Workbench.ActiveDocument.GetContent <IEditableTextBuffer> ();
+				if (content != null)
+					content.SetCaretTo (Math.Max (1, line), 1);
 				
 				// check that selected "class" isn't a delegate
 				if (selectedClass.ClassType == ClassType.Delegate) {
@@ -833,7 +840,8 @@ namespace MonoDevelop.SourceEditor.Gui
 				se.View.VScroll = vscroll;
 				WorkbenchWindow.ShowNotification = false;
 			} catch (Exception ex) {
-				Services.MessageService.ShowError (ex, "Could not reload the file.");
+				LoggingService.LogError ("Could not reload the file.", ex);
+				MessageService.ShowError ("Could not reload the file.", ex.ToString ());
 			}
 		}
 		
@@ -891,10 +899,61 @@ namespace MonoDevelop.SourceEditor.Gui
 		}
 #endregion
 */		
-#region IEditableTextBuffer
-		public IClipboardHandler ClipboardHandler {
-			get { return se.Buffer; }
+
+		#region IClipboardHandler
+		public bool EnableCut {
+			get {
+				return ((IClipboardHandler)se.Buffer).EnableCut;
+			}
 		}
+		public bool EnableCopy {
+			get {
+				return ((IClipboardHandler)se.Buffer).EnableCopy;
+			}
+		}
+		public bool EnablePaste {
+			get {
+				return ((IClipboardHandler)se.Buffer).EnablePaste;
+			}
+		}
+		public bool EnableDelete {
+			get {
+				return ((IClipboardHandler)se.Buffer).EnableDelete;
+			}
+		}
+		public bool EnableSelectAll {
+			get {
+				return ((IClipboardHandler)se.Buffer).EnableSelectAll;
+			}
+		}
+		
+		public void Cut ()
+		{
+			((IClipboardHandler)se.Buffer).Cut ();
+		}
+		
+		public void Copy ()
+		{
+			((IClipboardHandler)se.Buffer).Copy ();
+		}
+		
+		public void Paste ()
+		{
+			((IClipboardHandler)se.Buffer).Paste ();
+		}
+		
+		public void Delete ()
+		{
+			((IClipboardHandler)se.Buffer).Delete ();
+		}
+		
+		public void SelectAll ()
+		{
+			((IClipboardHandler)se.Buffer).SelectAll ();
+		}
+		#endregion
+
+#region IEditableTextBuffer
 		
 		public string Name {
 			get { return ContentName; }
@@ -975,7 +1034,7 @@ namespace MonoDevelop.SourceEditor.Gui
 			}
 			set {
 				int offset = se.Buffer.GetLowerSelectionBounds ();
-				((IClipboardHandler)se.Buffer).Delete (null, null);
+				((IClipboardHandler)se.Buffer).Delete ();
 				se.Buffer.Insert (offset, value);
 				se.Buffer.PlaceCursor (se.Buffer.GetIterAtOffset (offset + value.Length));
 				se.View.ScrollMarkOnscreen (se.Buffer.InsertMark);
@@ -1011,7 +1070,7 @@ namespace MonoDevelop.SourceEditor.Gui
 			se.Buffer.Delete (pos, length);
 		}
 		
-		public event TextChangedEventHandler TextChanged {
+		public event EventHandler<TextChangedEventArgs> TextChanged {
 			add { se.Buffer.TextChanged += value; }
 			remove { se.Buffer.TextChanged -= value; }
 		}
@@ -1073,14 +1132,15 @@ namespace MonoDevelop.SourceEditor.Gui
 				iter.ForwardChar ();
 			}
 			
-			IdeApp.Workbench.StatusBar.SetCaretPosition (iter.Line + 1, col, chr);
+			//FIXME: show logical column too
+			IdeApp.Workbench.StatusBar.ShowCaretState (iter.Line + 1,  col, chr, insert_mode);
 		}
 		
 		// This is false because we at first `toggle' it to set it to true
 		bool insert_mode = false; // TODO: is this always the default
 		void CaretModeChanged (object sender, EventArgs e)
 		{
-			IdeApp.Workbench.StatusBar.SetInsertMode (insert_mode = ! insert_mode);
+			UpdateLineCol ();
 		}
 #endregion
 #region ICodeStyleOperations

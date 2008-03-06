@@ -148,7 +148,7 @@ namespace MonoDevelop.SourceEditor.Gui
 			}
 		}
 		
-		public event TextChangedEventHandler TextChanged;
+		public event EventHandler<TextChangedEventArgs> TextChanged;
 		
 		public delegate void LineCountChange (int line, int count, int column);
 		public event LineCountChange LineCountChanged;
@@ -369,19 +369,19 @@ namespace MonoDevelop.SourceEditor.Gui
 			get { return true; }
 		}
 		
-		void IClipboardHandler.Cut (object sender, EventArgs e)
+		void IClipboardHandler.Cut ()
 		{
 			if (_HasSelection)
 				CutClipboard (clipboard, true);
 		}
 		
-		void IClipboardHandler.Copy (object sender, EventArgs e)
+		void IClipboardHandler.Copy ()
 		{
 			if (_HasSelection)
 				CopyClipboard (clipboard);
 		}
 		
-		void IClipboardHandler.Paste (object sender, EventArgs e)
+		void IClipboardHandler.Paste ()
 		{
 			if (clipboard.WaitIsTextAvailable ()) {
 				PasteClipboard (clipboard);
@@ -389,7 +389,7 @@ namespace MonoDevelop.SourceEditor.Gui
 			}
 		}
 		
-		void IClipboardHandler.Delete (object sender, EventArgs e)
+		void IClipboardHandler.Delete ()
 		{
 			if (_HasSelection)
 				DeleteSelection (true, true);
@@ -397,7 +397,7 @@ namespace MonoDevelop.SourceEditor.Gui
 				this.Delete (GetIterAtMark (InsertMark).Offset, 1);
 		}
 		
-		void IClipboardHandler.SelectAll (object sender, EventArgs e)
+		void IClipboardHandler.SelectAll ()
 		{
 			// Sadly, this is not in our version of the bindings:
 			//

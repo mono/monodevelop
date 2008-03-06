@@ -66,10 +66,10 @@ namespace MonoDevelop.SourceEditor.Gui.Dialogs
 		protected void on_btn_go_to_line_clicked (object sender, EventArgs e)
 		{
 			try {
-				IPositionable view = IdeApp.Workbench.ActiveDocument.GetContent<IPositionable> ();
+				IEditableTextBuffer view = IdeApp.Workbench.ActiveDocument.GetContent<IEditableTextBuffer> ();
 				if (view != null) {			
 					int l = Math.Max (1, Int32.Parse(line_number_entry.Text));
-					view.JumpTo (l, 1);
+					view.SetCaretTo (l, 1);
 				}
 			} catch (Exception) {
 				
