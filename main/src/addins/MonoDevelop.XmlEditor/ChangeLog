@@ -1,3 +1,44 @@
+2007-09-13 21:18  mrward
+
+	* trunk/configure.in,
+	  trunk/src/MonoDevelop.XmlEditor.Tests/AssemblyInfo.cs,
+	  trunk/src/MonoDevelop.XmlEditor/AssemblyInfo.cs,
+	  trunk/src/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor.addin.xml,
+	  trunk/src/MonoDevelop.XmlEditor/XmlCompletionData.cs,
+	  trunk/src/MonoDevelop.XmlEditor/XmlEditorAddInOptions.cs,
+	  trunk/src/MonoDevelop.XmlEditor/XmlEditorService.cs,
+	  trunk/src/MonoDevelop.XmlEditor/XmlEditorView.cs,
+	  trunk/src/MonoDevelop.XmlEditor/XmlEditorViewContent.cs: XML
+	  Editor now compiles and works with MonoDevelop 0.15
+
+2007-06-13 22:31  mrward
+
+	* trunk/configure.in: Configure now checks the MonoDevelop version
+	  is 0.14
+
+2007-06-13 22:23  mrward
+
+	* trunk/ChangeLog: Updated changelog ready for a snapshot release
+	  0.4 that builds against MonoDevelop 0.14
+
+2007-06-10 10:50  mrward
+
+	* trunk/src/MonoDevelop.XmlEditor.Tests/CompletionData/XmlCompletionDataStringTestFixture.cs,
+	  trunk/src/MonoDevelop.XmlEditor/XmlCompletionData.cs,
+	  trunk/src/MonoDevelop.XmlEditor/XmlCompletionListWindow.cs,
+	  trunk/src/MonoDevelop.XmlEditor/XmlEditorView.cs,
+	  trunk/src/MonoDevelop.XmlEditor/XmlEditorViewContent.cs,
+	  trunk/src/MonoDevelop.XmlEditor/XmlEditorWindow.cs:
+	  XmlCompletionData now implements the IActionCompletionData
+	  interface. All xml completion is now done via the InsertAction
+	  method.
+
+2007-06-09 17:51  mrward
+
+	* trunk/src/MonoDevelop.XmlEditor/XmlCompletionListWindow.cs: The
+	  completion list window now selects the matching namespace during
+	  namespace completion.
+
 2007-06-09 17:03  mrward
 
 	* trunk/src/MonoDevelop.XmlEditor/XmlCompletionListWindow.cs: The
