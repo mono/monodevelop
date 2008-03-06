@@ -30,8 +30,5 @@ This list should be moved to the SourceForge issues tracker.
   bugs.
 * The "Show Schema Annotation" XML Editor option does nothing.  Schema annotation
   is always displayed if available.
-* Attribute value completion works for pretty much any character so you get the
-  completion list window displayed when you use the cursor keys, for example, which
-  is incorrect.
 
 

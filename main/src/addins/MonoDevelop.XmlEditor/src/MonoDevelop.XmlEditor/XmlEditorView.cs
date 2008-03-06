@@ -390,7 +390,7 @@ namespace MonoDevelop.XmlEditor
 						}
 						break;
 					default:
-						if (XmlParser.IsAttributeValueChar((char)evnt.KeyValue)) {
+						if (IsXmlAttributeValueChar(evnt.KeyValue)) {
 							if (IsInsideQuotes()) {
 								// Show the completion window then get it to
 								// process the key event so it selects the list item
@@ -725,6 +725,20 @@ namespace MonoDevelop.XmlEditor
 			TextIter end = buffer.GetIterAtLine (y1);
 			end.ForwardToLineEnd ();
 			buffer.MoveMark ("selection_bound", end);
+		}
+		
+		/// <summary>
+		/// Check the key is a valid char for an xml attribute value.
+		/// We cannot just pass the EventKey.KeyValue to the
+		/// Char.IsLetterOrDigit method since special keys, for
+		/// example the cursor keys, map to valid letters.
+		/// </summary>
+		static bool IsXmlAttributeValueChar(uint keyValue)
+		{
+			if (keyValue >= 0 && keyValue <= 0xFD00) {
+				return XmlParser.IsAttributeValueChar((char)keyValue);
+			}
+			return false;
 		}
 	}
 }
