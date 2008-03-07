@@ -5,24 +5,23 @@ using MonoDevelop.Core.Gui.Dialogs;
 
 namespace MonoDevelop.WelcomePage
 {
-	public class WelcomePageOptionPanel : AbstractOptionPanel
+	public class WelcomePageOptionPanel : OptionsPanel
 	{
 		CheckButton showOnStartCheckButton = new CheckButton();
 		
-		public override void LoadPanelContents()
+		public override Widget CreatePanelWidget ()
 		{
 			VBox vbox = new VBox();
-			this.Add(vbox);
-			
 			showOnStartCheckButton.Label = GettextCatalog.GetString ("Show welcome page on startup");
 			showOnStartCheckButton.Active = PropertyService.Get("WelcomePage.ShowOnStartup", true);
 			vbox.PackStart(showOnStartCheckButton, false, false, 0);
+			vbox.ShowAll ();
+			return vbox;
 		}
 		
-		public override bool StorePanelContents()
+		public override void ApplyChanges ()
 		{
 			PropertyService.Set("WelcomePage.ShowOnStartup", showOnStartCheckButton.Active);
-			return true;
 		}
 	}
 

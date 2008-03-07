@@ -1,3 +1,8 @@
+2008-03-07  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* WelcomePage.addin.xml, WelcomePageOptionPanel.cs: Use new options
+	  dialog infrastructure.
+
 2008-02-27  Mike Krüger <mkrueger@novell.com> 
 
 	* WelcomePageView.cs: Refactored status bar.

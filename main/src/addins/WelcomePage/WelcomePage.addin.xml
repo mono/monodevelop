@@ -39,7 +39,7 @@
 		<Class class="MonoDevelop.WelcomePage.ShowWelcomePageOnStartUpHandler" />
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/Ide/OptionsDialogPanels/Other">
-		<DialogPanel _label = "Welcome Page" class = "MonoDevelop.WelcomePage.WelcomePageOptionPanel" />
+	<Extension path = "/MonoDevelop/Ide/GlobalOptionsDialog/Preferences/Style">
+		<Panel _label = "Welcome Page" class = "MonoDevelop.WelcomePage.WelcomePageOptionPanel" />
 	</Extension>
 </Addin>
