@@ -183,7 +183,6 @@ FILES =  \
 	MonoDevelop.Ide.Gui.Dialogs/SharpDevelopAboutPanels.cs \
 	MonoDevelop.Ide.Gui.Dialogs/SplashScreen.cs \
 	MonoDevelop.Ide.Gui.Dialogs/TipOfTheDay.cs \
-	MonoDevelop.Ide.Gui.Dialogs/WordCountDialog.cs \
 	MonoDevelop.Ide.Gui.OptionPanels/AddInsOptionsPanel.cs \
 	MonoDevelop.Ide.Gui.OptionPanels/BuildPanel.cs \
 	MonoDevelop.Ide.Gui.OptionPanels/CodeGenerationPanel.cs \

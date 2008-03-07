@@ -300,9 +300,6 @@
 				shortcut = "Control|Shift|L"
 				description = "Lowecase code" 
 				_label = "_Lowercase Selection" />
-		<Command id = "MonoDevelop.Ide.Commands.EditCommands.WordCount"
-				_label = "_Word Count..." 
-				description = "Count words in a text file"/>
 		<Command id = "MonoDevelop.Ide.Commands.EditCommands.MonodevelopPreferences"
 				defaultHandler = "MonoDevelop.Ide.Commands.MonodevelopPreferencesHandler"
 				_label = "Pr_eferences"
@@ -1341,7 +1338,6 @@
 			<CommandItem id = "MonoDevelop.Ide.Commands.TextEditorCommands.ShowCompletionWindow" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.TextEditorCommands.ShowParameterCompletionWindow" />
 			<SeparatorItem id = "Separator5" />
-			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.WordCount" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.InsertStandardHeader" />
 			
 			<SeparatorItem id = "optionssep5" />

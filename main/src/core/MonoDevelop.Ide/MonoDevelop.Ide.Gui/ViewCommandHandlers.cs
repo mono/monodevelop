@@ -248,14 +248,6 @@ namespace MonoDevelop.Ide.Gui
 				info.Bypass = true;
 		}
 		
-		[CommandHandler (EditCommands.WordCount)]
-		protected void OnWordCount()
-		{
-			WordCountDialog wcd = new WordCountDialog ();
-			wcd.Run ();
-			wcd.Hide ();
-		}
-		
 		[CommandUpdateHandler (EditCommands.ToggleCodeComment)]
 		protected void OnUpdateCommentCode (CommandInfo info)
 		{

@@ -51,7 +51,6 @@ namespace MonoDevelop.Ide.Commands
 		UnIndentSelection,
 		UppercaseSelection,
 		LowercaseSelection,
-		WordCount,
 		MonodevelopPreferences,
 		InsertStandardHeader,
 		

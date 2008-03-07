@@ -1,3 +1,11 @@
+2008-03-07  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Ide.Gui.Dialogs/WordCountDialog.cs,
+	  MonoDevelop.Ide.Gui/ViewCommandHandlers.cs,
+	  MonoDevelop.Ide.addin.xml,
+	  MonoDevelop.Ide.Commands/EditCommands.cs: Removed word count
+	  dialog.
+
 2008-03-07  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.CodeTemplates/CodeTemplatePanel.cs,
