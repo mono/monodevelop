@@ -44,13 +44,12 @@ namespace MonoDevelop.ChangeLogAddIn
 			integrationCheck.Active = PropertyService.Get ("ChangeLogAddIn.VersionControlIntegration", true);
 		}
 		
-		public bool StorePanelContents()
+		public void StorePanelContents()
 		{
 			PropertyService.Set("ChangeLogAddIn.Name", nameEntry.Text);
 			PropertyService.Set("ChangeLogAddIn.Email", emailEntry.Text);
 			PropertyService.Set("ChangeLogAddIn.VersionControlIntegration", integrationCheck.Active);
 			PropertyService.SaveProperties ();
-			return true;
 		}
 	}
 }

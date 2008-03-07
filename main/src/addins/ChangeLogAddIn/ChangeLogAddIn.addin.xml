@@ -35,8 +35,8 @@
 		<CommandItem id="MonoDevelop.ChangeLogAddIn.ChangeLogCommands.InsertEntry" insertafter="Separator5"/>
 	</Extension>
 
-	<Extension path = "/MonoDevelop/Ide/OptionsDialogPanels/Other">
-		<DialogPanel id = "ChangeLogAddInOptions" _label = "ChangeLog Add-in" class = "MonoDevelop.ChangeLogAddIn.ChangeLogAddInOptionPanel" />
+	<Extension path = "/MonoDevelop/Ide/GlobalOptionsDialog/VersionControl">
+		<Section id = "ChangeLogAddInOptions" _label = "ChangeLog Add-in" class = "MonoDevelop.ChangeLogAddIn.ChangeLogAddInOptionPanel" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/ExtendedProperties">

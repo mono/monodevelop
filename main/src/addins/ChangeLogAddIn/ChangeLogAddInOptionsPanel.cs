@@ -32,20 +32,20 @@ using MonoDevelop.Core.Gui.Dialogs;
 
 namespace MonoDevelop.ChangeLogAddIn
 {
-	public class ChangeLogAddInOptionPanel : AbstractOptionPanel
+	public class ChangeLogAddInOptionPanel : OptionsPanel
 	{
 		ChangeLogAddInOptionPanelWidget widget;
 		
-		public override void LoadPanelContents()
+		public override Widget CreatePanelWidget ()
 		{
 			widget = new ChangeLogAddInOptionPanelWidget ();
-			Add (widget);
 			widget.LoadPanelContents ();
+			return widget;
 		}
 		
-		public override bool StorePanelContents()
+		public override void ApplyChanges ()
 		{
-			return widget.StorePanelContents ();
+			widget.StorePanelContents ();
 		}
 	}
 }

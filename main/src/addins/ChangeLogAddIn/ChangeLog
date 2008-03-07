@@ -1,3 +1,11 @@
+2008-03-07  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* ChangeLogAddInOptionsPanel.cs, ChangeLogAddIn.addin.xml,
+	  ChangeLogAddInOptionPanelWidget.cs: Use new options dialog
+	  infrastructure.
+	* CommitDialogExtensionWidget.cs: Reduce width of comments, so it fits
+	  in 80 cols with tabsize 8.
+
 2008-02-26  Mike Krüger <mkrueger@novell.com> 
 
 	

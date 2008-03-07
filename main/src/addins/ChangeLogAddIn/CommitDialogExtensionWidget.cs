@@ -249,7 +249,7 @@ namespace MonoDevelop.ChangeLogAddIn
 			
 			foreach (ChangeLogEntry entry in entries.Values) {
 				string path = System.IO.Path.GetDirectoryName (entry.File);
-				string msg = cset.GeneratePathComment (path, entry.Items, 75);
+				string msg = cset.GeneratePathComment (path, entry.Items, 70);
 
 				string name = PropertyService.Get ("ChangeLogAddIn.Name", "");
 				string email = PropertyService.Get ("ChangeLogAddIn.Email", "");
