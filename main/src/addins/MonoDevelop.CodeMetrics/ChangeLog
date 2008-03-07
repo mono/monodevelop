@@ -1,0 +1,4 @@
+2008-03-07  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.CodeMetrics/CodeMetricsWidget.cs: Added getstring call.
+

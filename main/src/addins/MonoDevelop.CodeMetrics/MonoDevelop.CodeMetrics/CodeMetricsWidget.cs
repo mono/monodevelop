@@ -158,7 +158,7 @@ namespace MonoDevelop.CodeMetrics
 			
 			string GetLicense (Mono.TextEditor.Document document)
 			{
-				string result = "unknown";
+				string result = GettextCatalog.GetString ("Unknown");
 				//string possibleHeader = document.GetTextAt (0, Math.Min (this.longestHeader, document.Length));
 				
 				if (!String.IsNullOrEmpty (last)) {

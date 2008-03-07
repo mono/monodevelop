@@ -7,8 +7,9 @@
   <import>
     <widget-library name="../../../../build/bin/MonoDevelop.Ide.dll" />
     <widget-library name="../../../../build/bin/MonoDevelop.Components.dll" />
-    <widget-library name="../../../../build/AddIns/MonoDevelop.CodeMetrics.dll" internal="true" />
+    <widget-library name="../../../../build/bin/MonoDevelop.Projects.Gui.dll" />
     <widget-library name="../../../../build/bin/Mono.TextEditor.dll" />
+    <widget-library name="../../../../build/AddIns/MonoDevelop.CodeMetrics.dll" internal="true" />
   </import>
   <widget class="Gtk.Bin" id="MonoDevelop.CodeMetrics.CodeMetricsWidget" design-size="300 300">
     <property name="MemberName" />
