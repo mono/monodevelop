@@ -1,3 +1,8 @@
+2008-03-06  Michael Hutchinson  <mhutchinson@novell.com> 
+
+	* Templates/WebConfig-SubDir.xft.xml:
+	* Templates/WebConfig-Application.xft.xml: Improve descriptions.
+
 2008-03-04  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.AspNet/AspNetAppProject.cs: Improve browser launching code.

@@ -6,13 +6,13 @@
 
 	<!-- Template Header -->
 	<TemplateConfiguration>
-		<_Name>Web Configuration</_Name>
+		<_Name>Subdirectory Web Configuration</_Name>
 		<_Category>ASP.NET</_Category>
 		<Icon>md-html-file-icon</Icon>
 		<LanguageName>*</LanguageName>
 		<ProjectType>AspNetApp</ProjectType>
 		<DefaultFilename IsFixed="True">web.config</DefaultFilename>
-		<_Description>Creates an ASP.NET Web.config file.</_Description>
+		<_Description>Creates an ASP.NET web.config file for a subdirectory.</_Description>
 	</TemplateConfiguration>
 	
 	<Conditions>
