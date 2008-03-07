@@ -9,20 +9,19 @@ using MonoDevelop.Core;
 
 namespace JavaBinding
 {
-	public class GlobalOptionsPanelPanel : AbstractOptionPanel
+	public class GlobalOptionsPanelPanel : OptionsPanel
 	{
 		GlobalOptionsPanelWidget widget;
 		
-		public override void LoadPanelContents()
+		public override Widget CreatePanelWidget ()
 		{
-			Add (widget = new  GlobalOptionsPanelWidget ());
+			widget = new GlobalOptionsPanelWidget();
+			return widget;
 		}
 		
-		public override bool StorePanelContents()
+		public override void ApplyChanges ()
 		{
-			bool result = true;
-			result = widget.Store ();
- 			return result;
+			widget.Store ();
 		}
 	}
 

@@ -61,8 +61,8 @@
     </Condition>
   </Extension>
 
-  <Extension path = "/MonoDevelop/Ide/OptionsDialogPanels/Other">
-	<DialogPanel _label = "Java" class = "JavaBinding.GlobalOptionsPanelPanel" />
+  <Extension path = "/MonoDevelop/Ide/GlobalOptionsDialog/Other">
+  	<Section id = "JavaOptions" insertbefore = "Formatting" _label = "Java" fill="true" class = "JavaBinding.GlobalOptionsPanelPanel"/>
   </Extension>
 
   <Extension path = "/MonoDevelop/ProjectModel/Gui/Icons">
