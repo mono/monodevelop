@@ -1,3 +1,8 @@
+2008-03-07  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.CodeGeneration/CodeRefactorer.cs: Don't crash if
+	  a project file doesn't exist when doing refactoring operations.
+
 2008-02-29  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Projects.Parser/DefaultParserService.cs: Catch and log 
