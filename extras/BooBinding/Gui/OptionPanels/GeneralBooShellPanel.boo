@@ -36,9 +36,3 @@ public class GeneralBooShellPanel(GeneralShellPanel):
 	public Properties as ShellProperties:
 		get:
 			return BooShellProperties()
-
-	public override def LoadPanelContents() as void:
-		super()
-
-	public override def StorePanelContents() as bool:
-		return super()

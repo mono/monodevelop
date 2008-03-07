@@ -31,7 +31,7 @@ import MonoDevelop.Core.Properties
 
 import BooBinding.Properties
 
-public class GeneralShellPanel(AbstractOptionPanel):
+public class GeneralShellPanel(OptionsPanel):
 	private generalOptionsLabel = Gtk.Label ()
 	private autoIndentCheckButton = Gtk.CheckButton ()
 	private resetClearsScrollbackCheckButton = Gtk.CheckButton ()
@@ -62,8 +62,8 @@ public class GeneralShellPanel(AbstractOptionPanel):
 		customFontRadio.Toggled += ItemToggled
 
 
-	
-	public override def LoadPanelContents() as void:
+
+	public override def CreatePanelWidget( ) as Widget:
 		InitializeComponent ()
 		vbox = VBox ()
 		hboxTmp = HBox()
@@ -91,7 +91,6 @@ public class GeneralShellPanel(AbstractOptionPanel):
 		hboxTmp.PackStart (customFontRadio, false, false, 6)
 		hboxTmp.PackStart (fontButton, false, false, 0)
 		vbox.PackStart (hboxTmp, false, false, 0)
-		Add (vbox)
 
 		s = Properties.FontName
 
@@ -106,9 +105,12 @@ public class GeneralShellPanel(AbstractOptionPanel):
 		resetClearsScrollbackCheckButton.Active = Properties.ResetClearsScrollback
 		resetClearsHistoryCheckButton.Active = Properties.ResetClearsHistory
 		loadAssemblyCheckButton.Active =  Properties.LoadAssemblyAfterBuild
+		vbox.ShowAll ()
+		System.Console.WriteLine ("returned")
+		return vbox
 
 
-	public override def StorePanelContents() as bool:
+	public override def ApplyChanges () as void:
 		if customFontRadio.Active:
 			Properties.FontName =  fontButton.FontName
 		elif defaultMonoRadio.Active:
@@ -123,7 +125,6 @@ public class GeneralShellPanel(AbstractOptionPanel):
 			Properties.ResetClearsHistory = resetClearsHistoryCheckButton.Active
 		if Properties.LoadAssemblyAfterBuild != loadAssemblyCheckButton.Active:
 			Properties.LoadAssemblyAfterBuild = loadAssemblyCheckButton.Active
-		return true
 	
 	private def ItemToggled (o, args as EventArgs):
 		fontButton.Sensitive = customFontRadio.Active
