@@ -1,3 +1,8 @@
+2008-03-07  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Gui/GeneralOptionsPanel.cs, CBinding.addin.xml: Use new options
+	  dialog infrastructure.
+
 2008-03-04  Mike Krüger <mkrueger@novell.com> 
 
 	* Parser/LanguageItem.cs, Project/CProject.cs, Compiler/CCompiler.cs: Worked

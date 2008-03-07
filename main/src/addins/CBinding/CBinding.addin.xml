@@ -80,8 +80,8 @@
 		    class = "CBinding.CppLanguageBinding"/>
     </Extension>
     
-	<Extension path = "/MonoDevelop/Ide/OptionsDialogPanels/Other">
-		<DialogPanel
+	<Extension path = "/MonoDevelop/Ide/GlobalOptionsDialog/Other">
+		<Section
 			id = "CBindingOptions"
 			_label = "C/C++"
 			class = "CBinding.GeneralOptionsPanelBinding"/>

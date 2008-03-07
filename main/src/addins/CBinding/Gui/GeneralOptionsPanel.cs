@@ -160,19 +160,19 @@ namespace CBinding
 		}
 	}
 	
-	public class GeneralOptionsPanelBinding : AbstractOptionPanel
+	public class GeneralOptionsPanelBinding : OptionsPanel
 	{
 		private GeneralOptionsPanel panel;
 		
-		public override void LoadPanelContents ()
+		public override Gtk.Widget CreatePanelWidget ()
 		{
 			panel = new GeneralOptionsPanel ();
-			Add (panel);
+			return panel;
 		}
 		
-		public override bool StorePanelContents ()
+		public override void ApplyChanges ()
 		{
-			return panel.Store ();
+			panel.Store ();
 		}
 	}
 }
