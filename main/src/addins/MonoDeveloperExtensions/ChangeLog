@@ -1,3 +1,7 @@
+2008-03-07  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDeveloperExtensions.mdp: Removed unneeded dependencies.
+
 2008-02-23  Mike Krüger <mkrueger@novell.com> 
 
 	* Makefile.am, MonoDeveloperExtensions.mdp: Removed some unused glade and
