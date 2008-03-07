@@ -36,20 +36,20 @@ namespace MonoDevelop.SourceEditor.Gui.OptionPanels
 	/// Summary description for Form9.
 	/// </summary>
 
-	class MarkersTextEditorPanel : AbstractOptionPanel
+	class MarkersTextEditorPanel : OptionsPanel
 	{
 		MarkersTextEditorPanelWidget widget;
 		
-		public override void LoadPanelContents()
+		public override Widget CreatePanelWidget ()
 		{
 			// set up the form controls instance
-			Add (widget = new MarkersTextEditorPanelWidget ());	
+			widget = new MarkersTextEditorPanelWidget ();
+			return widget;	
 		}
 		
-		public override bool StorePanelContents()
+		public override void ApplyChanges ()
 		{
 			widget.Store ();
-			return true;
 		}
 
 		class MarkersTextEditorPanelWidget : GladeWidgetExtract 

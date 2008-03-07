@@ -40,19 +40,19 @@ namespace MonoDevelop.SourceEditor.Gui.OptionPanels
 	/// <summary>
 	/// Summary description for Form8.
 	/// </summary>
-	public class BehaviorTextEditorPanel : AbstractOptionPanel
+	public class BehaviorTextEditorPanel : OptionsPanel
 	{
 		BehaviorTextEditorPanelWidget widget;
 		
-		public override void LoadPanelContents ()
+		public override Widget CreatePanelWidget ()
 		{
-			Add (widget = new BehaviorTextEditorPanelWidget ());
+			widget = new BehaviorTextEditorPanelWidget ();
+			return widget;
 		}
 		
-		public override bool StorePanelContents ()
+		public override void ApplyChanges ()
 		{
 			widget.Store ();
-			return true;
 		}
 		
 		sealed class BehaviorTextEditorPanelWidget : GladeWidgetExtract 

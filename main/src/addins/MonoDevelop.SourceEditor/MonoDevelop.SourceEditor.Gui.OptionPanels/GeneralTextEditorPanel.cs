@@ -38,19 +38,19 @@ namespace MonoDevelop.SourceEditor.Gui.OptionPanels
 	/// <summary>
 	/// General texteditor options panelS.
 	/// </summary>
-	class GeneralTextEditorPanel : AbstractOptionPanel
+	class GeneralTextEditorPanel : OptionsPanel
 	{
 		GeneralTextEditorPanelWidget widget;
 		
-		public override void LoadPanelContents()
+		public override Widget CreatePanelWidget ()
 		{
-			Add (widget = new GeneralTextEditorPanelWidget ());
+			widget = new GeneralTextEditorPanelWidget ();
+			return widget;
 		}
 		
-		public override bool StorePanelContents()
+		public override void ApplyChanges ()
 		{
 			widget.Store ();
-			return true;
 		}
 	
 		class GeneralTextEditorPanelWidget : GladeWidgetExtract 

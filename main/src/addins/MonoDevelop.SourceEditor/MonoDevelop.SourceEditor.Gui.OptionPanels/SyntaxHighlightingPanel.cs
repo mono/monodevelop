@@ -16,19 +16,19 @@ using MonoDevelop.Ide.Gui.Content;
 
 namespace MonoDevelop.SourceEditor.Gui.OptionPanels
 {
-	class SyntaxHighlightingPanel : AbstractOptionPanel
+	class SyntaxHighlightingPanel : OptionsPanel
 	{
 		SyntaxHighlightingPanelWidget widget;
 		
-		public override void LoadPanelContents()
+		public override Widget CreatePanelWidget ()
 		{
-			Add (widget = new SyntaxHighlightingPanelWidget ());
+			widget = new SyntaxHighlightingPanelWidget ();
+			return widget;
 		}
 		
-		public override bool StorePanelContents()
+		public override void ApplyChanges ()
 		{
 			widget.Store ();
-			return true;
 		}
 	
 		class SyntaxHighlightingPanelWidget : GladeWidgetExtract 

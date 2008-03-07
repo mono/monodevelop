@@ -1,3 +1,11 @@
+2008-03-07  Michael Hutchinson  <mhutchinson@novell.com> 
+
+	* MonoDevelop.SourceEditor.Gui.OptionPanels/BehaviorTextEditorPanel.cs:
+	* MonoDevelop.SourceEditor.Gui.OptionPanels/SyntaxHighlightingPanel.cs:
+	* MonoDevelop.SourceEditor.Gui.OptionPanels/MarkersTextEditorPanel.cs:
+	* MonoDevelop.SourceEditor.Gui.OptionPanels/GeneralTextEditorPanel.cs:
+	* MonoDevelop.SourceEditor.addin.xml: Track options panel API changes.
+
 2008-03-06  Michael Hutchinson  <mhutchinson@novell.com> 
 
 	* MonoDevelop.SourceEditor.Gui/SourceEditorBuffer.cs:
