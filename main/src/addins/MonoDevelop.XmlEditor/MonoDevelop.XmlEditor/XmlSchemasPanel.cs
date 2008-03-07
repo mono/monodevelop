@@ -42,7 +42,8 @@ namespace MonoDevelop.XmlEditor
 				try {
 					return SaveSchemaChanges();
 				} catch (Exception ex) {
-					XmlEditorService.MessageService.ShowError(ex, "Unable to save schema changes.");
+					MonoDevelop.Core.LoggingService.LogError ("Could not open document.", ex);
+					MonoDevelop.Core.Gui.MessageService.ShowError ("Could not open document.", ex.ToString());
 					return false;
 				}
 			}

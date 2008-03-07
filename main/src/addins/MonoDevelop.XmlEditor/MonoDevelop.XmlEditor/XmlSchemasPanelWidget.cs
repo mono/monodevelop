@@ -184,8 +184,8 @@ namespace MonoDevelop.XmlEditor
 					changed = AddSchema(schemaFileName);
 				}
 			} catch (Exception ex) {
-				IMessageService messageService = (IMessageService)ServiceManager.GetService(typeof(IMessageService));
-				messageService.ShowError(ex, "Failed to add the schema.");
+				MonoDevelop.Core.LoggingService.LogError ("Failed to add the schema.", ex);
+				MonoDevelop.Core.Gui.MessageService.ShowError ("Failed to add the schema.", ex.ToString());
 			}
 		}
 		
@@ -234,16 +234,14 @@ namespace MonoDevelop.XmlEditor
 			XmlSchemaCompletionData schema = new XmlSchemaCompletionData(fileName);
 			
 			// Make sure the schema has a target namespace.
-			if (schema.NamespaceUri == null) {
-				IMessageService messageService =(IMessageService)ServiceManager.GetService(typeof(IMessageService));
-				messageService.ShowError(String.Concat("Schema has no target namespace: ", System.IO.Path.GetFileName(schema.FileName)));
+			if (schema.NamespaceUri == null) {
+				MonoDevelop.Core.Gui.MessageService.ShowError ("Schema has no target namespace: " + System.IO.Path.GetFileName (schema.FileName));
 				return false;
 			}
 			
 			// Check that the schema does not exist.
-			if (SchemaNamespaceExists(schema.NamespaceUri)) {	
-				IMessageService messageService =(IMessageService)ServiceManager.GetService(typeof(IMessageService));
-				messageService.ShowError(String.Concat("A schema already exists with this namespace: ", schema.NamespaceUri));
+			if (SchemaNamespaceExists(schema.NamespaceUri)) {
+				MonoDevelop.Core.Gui.MessageService.ShowError ("A schema already exists with this namespace: " + schema.NamespaceUri);
 				return false;
 			} 
 

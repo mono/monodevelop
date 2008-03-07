@@ -19,7 +19,7 @@ using System.IO;
 
 namespace MonoDevelop.XmlEditor
 {
-	public class XmlEditorViewContent : AbstractViewContent, IEditableTextBuffer, IDocumentInformation, IPositionable
+	public class XmlEditorViewContent : AbstractViewContent, IEditableTextBuffer, IDocumentInformation, IClipboardHandler
 	{
 		XmlEditorWindow xmlEditorWindow;
 		SourceBuffer buffer;
@@ -198,21 +198,44 @@ namespace MonoDevelop.XmlEditor
 		/// </summary>
 		void SetInitialValues()
 		{
-			view.ModifyFont(TextEditorProperties.Font);
-			view.ShowLineNumbers = TextEditorProperties.ShowLineNumbers;
-			view.InsertSpacesInsteadOfTabs = TextEditorProperties.ConvertTabsToSpaces;
 			view.ShowSchemaAnnotation = XmlEditorAddInOptions.ShowSchemaAnnotation;
 			view.AutoCompleteElements = XmlEditorAddInOptions.AutoCompleteElements;
+			
+			view.ModifyFont (TextEditorProperties.Font);
+			view.ShowLineNumbers = TextEditorProperties.ShowLineNumbers;
+			((SourceBuffer)view.Buffer).HighlightMatchingBrackets = TextEditorProperties.ShowMatchingBracket;
+			view.ShowRightMargin = TextEditorProperties.ShowVerticalRuler;
+			view.InsertSpacesInsteadOfTabs = TextEditorProperties.ConvertTabsToSpaces;
+			view.AutoIndent = (TextEditorProperties.IndentStyle == IndentStyle.Auto);
+			view.HighlightCurrentLine = TextEditorProperties.HighlightCurrentLine;
+			((SourceBuffer)view.Buffer).HighlightSyntax = TextEditorProperties.SyntaxHighlight;
 
 			if (TextEditorProperties.TabIndent > -1)
-				view.TabsWidth = (uint) TextEditorProperties.TabIndent;
+				view.TabWidth = (uint) TextEditorProperties.TabIndent;
 			else
-				view.TabsWidth = (uint) 4;
+				view.TabWidth = (uint) 4;
+			
+			if (TextEditorProperties.VerticalRulerRow > -1)
+				view.RightMarginPosition = (uint) TextEditorProperties.VerticalRulerRow;
+			else
+				view.RightMarginPosition = 80;
+			
+			UpdateStyleScheme ();
 		}
 		
 		void OnModifiedChanged (object o, EventArgs e)
 		{
 			base.IsDirty = view.Buffer.Modified;
+		}
+		
+		void UpdateStyleScheme ()
+		{
+			string id = TextEditorProperties.Properties.Get<string> ("GtkSourceViewStyleScheme", "classic");
+			SourceStyleScheme scheme = GtkSourceView.SourceStyleSchemeManager.Default.GetScheme (id);
+			if (scheme == null)
+				MonoDevelop.Core.LoggingService.LogWarning ("GTKSourceView style scheme '" + id + "' is missing.");
+			else
+				((SourceBuffer)view.Buffer).StyleScheme = scheme;
 		}
 		
 		void XmlEditorPropertyChanged(object o, PropertyChangedEventArgs e)
@@ -241,11 +264,97 @@ namespace MonoDevelop.XmlEditor
 				case "DefaultFont":
 					view.ModifyFont(TextEditorProperties.Font);
 					break;
+				case "ShowLineNumbers":
+					view.ShowLineNumbers = TextEditorProperties.ShowLineNumbers;
+					break;
+				case "ConvertTabsToSpaces":
+					view.InsertSpacesInsteadOfTabs = TextEditorProperties.ConvertTabsToSpaces;
+					break;
+				case "ShowBracketHighlight":
+					((SourceBuffer)view.Buffer).HighlightMatchingBrackets = TextEditorProperties.ShowMatchingBracket;
+					break;
+				case "ShowVRuler":
+					view.ShowRightMargin = TextEditorProperties.ShowVerticalRuler;
+					break;
+				case "VRulerRow":
+					if (TextEditorProperties.VerticalRulerRow > -1)
+						view.RightMarginPosition = (uint) TextEditorProperties.VerticalRulerRow;
+					else
+						view.RightMarginPosition = 80;
+					break;
+				case "TabIndent":
+					if (TextEditorProperties.TabIndent > -1)
+						view.TabWidth = (uint) TextEditorProperties.TabIndent;
+					else
+						view.TabWidth = (uint) 4;
+					break;
+				case "IndentStyle":
+					view.AutoIndent = (TextEditorProperties.IndentStyle == IndentStyle.Auto);
+					break;
+				case "HighlightCurrentLine":
+					view.HighlightCurrentLine = TextEditorProperties.HighlightCurrentLine;
+					break;
+				case "GtkSourceViewStyleScheme":
+					UpdateStyleScheme ();
+					break;
 				default:
-					Console.WriteLine("XmlEditor: Unhandled source editor property change: " + e.Key);
+					MonoDevelop.Core.LoggingService.LogWarning ("XmlEditor: Unhandled source editor property change: " + e.Key);
 					break;
 			}
 		}
+		
+		#region IClipboardHandler
+		public bool EnableCut {
+			get {
+				return ((IClipboardHandler)view).EnableCut;
+			}
+		}
+		public bool EnableCopy {
+			get {
+				return ((IClipboardHandler)view).EnableCopy;
+			}
+		}
+		public bool EnablePaste {
+			get {
+				return ((IClipboardHandler)view).EnablePaste;
+			}
+		}
+		public bool EnableDelete {
+			get {
+				return ((IClipboardHandler)view).EnableDelete;
+			}
+		}
+		public bool EnableSelectAll {
+			get {
+				return ((IClipboardHandler)view).EnableSelectAll;
+			}
+		}
+		
+		public void Cut ()
+		{
+			((IClipboardHandler)view).Cut ();
+		}
+		
+		public void Copy ()
+		{
+			((IClipboardHandler)view).Copy ();
+		}
+		
+		public void Paste ()
+		{
+			((IClipboardHandler)view).Paste ();
+		}
+		
+		public void Delete ()
+		{
+			((IClipboardHandler)view).Delete ();
+		}
+		
+		public void SelectAll ()
+		{
+			((IClipboardHandler)view).SelectAll ();
+		}
+		#endregion
 		
 		/// <summary>
         /// Sets the default schema and namespace prefix that the xml editor will use.
@@ -280,7 +389,7 @@ namespace MonoDevelop.XmlEditor
         
         #region IEditableTextBuffer
         
-		public event TextChangedEventHandler TextChanged;
+		public event EventHandler<TextChangedEventArgs> TextChanged;
 		
 		public void BeginAtomicUndo ()
 		{
@@ -290,12 +399,6 @@ namespace MonoDevelop.XmlEditor
 		public void EndAtomicUndo ()
 		{
 			//Buffer.EndUserAction ();
-		}
-		
-		public IClipboardHandler ClipboardHandler {
-			get { 
-				return view;
-			}
 		}
 		
 		public string Name {
@@ -327,11 +430,11 @@ namespace MonoDevelop.XmlEditor
 		}
 		
 		public bool EnableUndo {
-			get { return buffer.CanUndo(); }
+			get { return buffer.CanUndo; }
 		}
 		
 		public bool EnableRedo {
-			get { return buffer.CanRedo(); }
+			get { return buffer.CanRedo; }
 		}
 		
 		public void Redo ()
@@ -345,7 +448,7 @@ namespace MonoDevelop.XmlEditor
 			}
 			set { 
 				int offset = view.GetLowerSelectionBounds ();
-				((IClipboardHandler)view).Delete (null, null);
+				((IClipboardHandler)view).Delete ();
 				TextIter iter = buffer.GetIterAtOffset (offset);
 				buffer.Insert (ref iter, value);
 				buffer.PlaceCursor(iter);
@@ -467,28 +570,36 @@ namespace MonoDevelop.XmlEditor
 		
 		#region IPositionable
 		
-		public void JumpTo(int line, int column)
+		public void SetCaretTo (int line, int column)
 		{
-			TextIter iter = buffer.GetIterAtLine (line - 1);
-			iter.LineOffset = column - 1;
+			// NOTE: 1 based!			
+			TextIter itr = view.Buffer.GetIterAtLine (line - 1);
+			itr.LineOffset = column - 1;
 
-			buffer.PlaceCursor (iter);		
-			//buffer.HighlightLine (line - 1);	
-			view.ScrollToMark (buffer.InsertMark, 0.3, false, 0, 0);
-			GLib.Timeout.Add (20, new GLib.TimeoutHandler (changeFocus));		
+			view.Buffer.PlaceCursor (itr);	
+			view.ScrollToMark (view.Buffer.InsertMark, 0.3, false, 0, 0);
+			GLib.Timeout.Add (20, new GLib.TimeoutHandler (changeFocus));
 		}
+		
+		protected virtual void OnCaretPositionSet (EventArgs args)
+		{
+			if (CaretPositionSet != null) 
+				CaretPositionSet (this, args);
+		}
+		public event EventHandler CaretPositionSet;
 
-		// This code exists to workaround a gtk+ 2.4 regression/bug.
-		// Without this workaround in place scrolling to text off 
-		// screen in a large file does not work.
+		//This code exists to workaround a gtk+ 2.4 regression/bug
 		//
-		// The gtk+ 2.4 treeview steals focus with double clicked
-		// row_activated.
+		//The gtk+ 2.4 treeview steals focus with double clicked
+		//row_activated.
 		// http://bugzilla.gnome.org/show_bug.cgi?id=138458
 		bool changeFocus ()
 		{
+			if (!view.IsRealized)
+				return false;
 			view.GrabFocus ();
-			view.ScrollToMark (buffer.InsertMark, 0.3, false, 0, 0);
+			view.ScrollToMark (view.Buffer.InsertMark, 0.3, false, 0, 0);
+			OnCaretPositionSet (EventArgs.Empty);
 			return false;
 		}
 		

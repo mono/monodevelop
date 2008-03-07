@@ -22,7 +22,8 @@ namespace MonoDevelop.XmlEditor
 					try {
 						IdeApp.Workbench.OpenDocument(view.StylesheetFileName);
 					} catch (Exception ex) {
-						XmlEditorService.MessageService.ShowError(ex);
+						MonoDevelop.Core.LoggingService.LogError ("Could not open document.", ex);
+						MonoDevelop.Core.Gui.MessageService.ShowError ("Could not open document.", ex.ToString());
 					}
 				}
 			}

@@ -70,14 +70,19 @@ FILES = \
 	MonoDevelop.XmlEditor.XPath/XPathQueryWidget.cs
 
 DATA_FILES = \
-	Schemas/appconfig.xsd \
-	Schemas/MonoDevelopAddIn.xsd \
-	Schemas/manifest.xsd \
-	Schemas/nant.xsd \
-	Schemas/readme.txt \
-	Schemas/W3C-License.html \
-	Schemas/XMLSchema.xsd \
-	Schemas/xslt.xsd
+	schemas/appconfig.xsd \
+	schemas/MonoDevelopAddIn.xsd \
+	schemas/manifest.xsd \
+	schemas/nant.xsd \
+	schemas/readme.txt \
+	schemas/W3C-License.html \
+	schemas/XMLSchema.xsd \
+	schemas/xslt.xsd
+
+RES =  \
+	MonoDevelop.XmlEditor.addin.xml \
+	XmlEditor.glade \
+	Icons/XPathQueryPad.png
 
 
 DATA_FILE_BUILD = $(addprefix $(ADDIN_BUILD)/schemas/, $(notdir $(DATA_FILES)))
@@ -85,8 +90,8 @@ DATA_FILE_BUILD = $(addprefix $(ADDIN_BUILD)/schemas/, $(notdir $(DATA_FILES)))
 all: $(ASSEMBLY) $(DATA_FILE_BUILD)
 
 $(DATA_FILE_BUILD): $(srcdir)$(subst $(ADDIN_BUILD),, $@)
-	mkdir -p $(ADDIN_BUILD)
-	cp $(srcdir)/Schemas$(subst $(ADDIN_BUILD),,$@) $@
+	mkdir -p $(ADDIN_BUILD)/schemas
+	cp $(srcdir)/$(subst $(ADDIN_BUILD),,$@) $@
 
 $(ASSEMBLY): $(FILES) $(build_resources)
 	mkdir -p $(ADDIN_BUILD)

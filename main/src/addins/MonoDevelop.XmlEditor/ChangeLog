@@ -1,5 +1,24 @@
 2008-03-06  Michael Hutchinson  <mhutchinson@novell.com> 
 
+	* MonoDevelop.XmlEditor/Schemas: Move to schemas.
+	* MonoDevelop.XmlEditor/schemas: Moved from Schemas.
+	
+	* Makefile.am: Fix build.
+	
+	* MonoDevelop.XmlEditor/RunXslTransformCommand.cs:
+	* MonoDevelop.XmlEditor/XmlSchemasPanelWidget.cs:
+	* MonoDevelop.XmlEditor/XmlEditorViewContent.cs:
+	* MonoDevelop.XmlEditor/XmlEditorView.cs:
+	* MonoDevelop.XmlEditor/CreateSchemaCommand.cs:
+	* MonoDevelop.XmlEditor/XmlSchemasPanel.cs:
+	* MonoDevelop.XmlEditor/XmlEditorService.cs:
+	* MonoDevelop.XmlEditor/OpenStylesheetCommand.cs:
+	* MonoDevelop.XmlEditor.addin.xml:
+	Quick and dirty port to MD trunk and GtkSourceView 2, just to get 
+	it working before I port it to a TextEditorExtension.
+
+2008-03-06  Michael Hutchinson  <mhutchinson@novell.com> 
+
 	* Makefile.am: Update for the trunk build system and file 
 	  layout changes.
 

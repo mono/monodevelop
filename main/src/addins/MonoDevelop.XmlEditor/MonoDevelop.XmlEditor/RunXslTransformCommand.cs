@@ -57,7 +57,8 @@ namespace MonoDevelop.XmlEditor
 							RunXslTransform(view.FileName, view.Text, view.StylesheetFileName, GetStylesheetContent(view.StylesheetFileName));
 						}
 					} catch (Exception ex) {
-						XmlEditorService.MessageService.ShowError(ex);
+						MonoDevelop.Core.LoggingService.LogError ("Could not run transform.", ex);
+						MonoDevelop.Core.Gui.MessageService.ShowError ("Could not run transform.", ex.ToString());
 					}
 				}
 			}
@@ -135,7 +136,7 @@ namespace MonoDevelop.XmlEditor
 			} else {
 				// Transform output window already opened.
 				view.LoadContent(xml);
-				view.JumpTo(1, 1);
+				view.SetCaretTo(1, 1);
 				view.WorkbenchWindow.SelectWindow();
 			}
 		}

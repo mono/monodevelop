@@ -383,7 +383,7 @@ namespace MonoDevelop.XmlEditor
 		{
 			XmlEditorViewContent view = viewProvider.View;
 			if (view != null && IsFileNameMatch(view)) {
-				view.JumpTo(line, column);
+				view.SetCaretTo(line, column);
 				SourceBuffer buffer = (SourceBuffer)view.XmlEditorView.Buffer;
 				if (length > 0 && line < buffer.LineCount) {
 					TextIter lineIter = buffer.GetIterAtLine(line);

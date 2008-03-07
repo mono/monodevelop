@@ -40,7 +40,7 @@ namespace MonoDevelop.XmlEditor
 						OpenNewXmlFile(fileName, schema);
 					}
 				} catch (Exception ex) {
-					XmlEditorService.MessageService.ShowError(ex.Message);
+					MonoDevelop.Core.Gui.MessageService.ShowError(ex.Message);
 				}
 			}
 		}

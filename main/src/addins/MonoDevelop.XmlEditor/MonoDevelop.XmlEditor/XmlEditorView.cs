@@ -44,7 +44,7 @@ namespace MonoDevelop.XmlEditor
 		{
 		}
 		
-		public XmlEditorView(XmlEditorViewContent viewContent)
+		public XmlEditorView (XmlEditorViewContent viewContent)
 		{
 			this.viewContent = viewContent;
 			InitSyntaxHighlighting();
@@ -185,7 +185,7 @@ namespace MonoDevelop.XmlEditor
 		
 		public void UndoChange()
 		{
-			if (buffer.CanUndo()) {
+			if (buffer.CanUndo) {
 				buffer.Undo();
 				ScrollToCursor();
 			}	
@@ -193,7 +193,7 @@ namespace MonoDevelop.XmlEditor
 			
 		public void RedoChange()
 		{
-			if (buffer.CanRedo()) {
+			if (buffer.CanRedo) {
 				buffer.Redo();
 				ScrollToCursor();
 			}
@@ -420,14 +420,6 @@ namespace MonoDevelop.XmlEditor
 			return 0;
 		}
 		
-		[CommandHandler (EditorCommands.GotoLineNumber)]
-		public void GotoLineNumber ()
-		{
-			if (!GotoLineNumberDialog.IsVisible)
-				using (GotoLineNumberDialog gnd = new GotoLineNumberDialog ())
-					gnd.Run ();
-		}
-		
 		#region IClipboardHandler
 
 		bool IClipboardHandler.EnableCut {
@@ -450,19 +442,19 @@ namespace MonoDevelop.XmlEditor
 			get { return true; }
 		}
 		
-		void IClipboardHandler.Cut (object sender, EventArgs e)
+		void IClipboardHandler.Cut ()
 		{
 			if (HasSelection)
 				buffer.CutClipboard(clipboard, true);
 		}
 		
-		void IClipboardHandler.Copy (object sender, EventArgs e)
+		void IClipboardHandler.Copy ()
 		{
 			if (HasSelection)
 				buffer.CopyClipboard(clipboard);
 		}
 		
-		void IClipboardHandler.Paste (object sender, EventArgs e)
+		void IClipboardHandler.Paste ()
 		{
 			if (clipboard.WaitIsTextAvailable()) {
 				buffer.PasteClipboard(clipboard);
@@ -470,13 +462,13 @@ namespace MonoDevelop.XmlEditor
 			}
 		}
 		
-		void IClipboardHandler.Delete (object sender, EventArgs e)
+		void IClipboardHandler.Delete ()
 		{
 			if (HasSelection)
 				buffer.DeleteSelection(true, true);
 		}
 		
-		void IClipboardHandler.SelectAll(object sender, EventArgs e)
+		void IClipboardHandler.SelectAll()
 		{			
 			buffer.MoveMark("insert", buffer.StartIter);
 			buffer.MoveMark("selection_bound", buffer.EndIter);
@@ -573,11 +565,10 @@ namespace MonoDevelop.XmlEditor
 		
 		void InitSyntaxHighlighting()
 		{
-			buffer = new SourceBuffer(new SourceTagTable());
-			buffer.Highlight = true;
+			buffer = new SourceBuffer (new TextTagTable ());
+			buffer.HighlightSyntax = true;
 			
-			SourceLanguagesManager slm = new SourceLanguagesManager();
-			SourceLanguage lang = slm.GetLanguageFromMimeType ("text/xml");
+			SourceLanguage lang = MonoDevelop.SourceEditor.SourceViewService.GetLanguageFromMimeType ("text/xml");
 			if (lang != null) {
 				buffer.Language = lang;
 			}
@@ -811,7 +802,7 @@ namespace MonoDevelop.XmlEditor
 		
 		void IndentLines (int y0, int y1)
 		{
-			IndentLines (y0, y1, InsertSpacesInsteadOfTabs ? new string (' ', (int) TabsWidth) : "\t");
+			IndentLines (y0, y1, InsertSpacesInsteadOfTabs ? new string (' ', (int) TabWidth) : "\t");
 		}
 
 		void IndentLines (int y0, int y1, string indent)
@@ -837,7 +828,7 @@ namespace MonoDevelop.XmlEditor
 					
 				} else if (c == ' ') {
 					int cnt = 0;
-					int max = (int) TabsWidth;
+					int max = (int) TabWidth;
 					
 					while (cnt <= max && end.Char[0] == ' ' && ! end.EndsLine ()) {
 						cnt ++;

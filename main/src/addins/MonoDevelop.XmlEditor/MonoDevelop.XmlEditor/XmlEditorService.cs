@@ -110,12 +110,6 @@ namespace MonoDevelop.XmlEditor
 			return IdeApp.Workbench.ProgressMonitors.GetOutputProgressMonitor("XML", "XmlFileIcon", true, true);
 		}
 		
-		public static IMessageService MessageService {
-			get {
-				return (IMessageService)ServiceManager.GetService(typeof(IMessageService));
-			}
-		}
-		
 		/// <summary>
 		/// Checks that the xml in this view is well-formed.
 		/// </summary>
