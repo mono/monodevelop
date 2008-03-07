@@ -1,3 +1,8 @@
+2008-03-07  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.DesignerSupport.Toolbox/ToolboxWidget.cs: Properly handle
+	  the leave event. Should fix bug #366131.
+
 2008-03-04  Mike Krüger <mkrueger@novell.com> 
 
 	* gtk-gui/MonoDevelop.DesignerSupport.Toolbox.ComponentSelectorDialog.cs,

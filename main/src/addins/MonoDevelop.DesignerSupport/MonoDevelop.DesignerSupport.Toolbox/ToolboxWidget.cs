@@ -362,8 +362,10 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		
 		protected override bool OnLeaveNotifyEvent (Gdk.EventCrossing evnt)		
 		{
-			HideTooltipWindow ();
-			ClearMouseOverItem ();
+			if (evnt.Mode == CrossingMode.Normal) {
+				HideTooltipWindow ();
+				ClearMouseOverItem ();
+			}
 			return base.OnLeaveNotifyEvent (evnt);
 		}
 		
