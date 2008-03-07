@@ -6,41 +6,31 @@
 
 using MonoDevelop.Core;
 using MonoDevelop.Core.Gui.Dialogs;
+
 using System;
+using Gtk;
 
 namespace MonoDevelop.XmlEditor
 {
 	/// <summary>
 	/// Configuration settings for the xml editor.
 	/// </summary>
-	public class XmlEditorOptionsPanel : AbstractOptionPanel
+	public class XmlEditorOptionsPanel : OptionsPanel
 	{
 		XmlEditorOptionsPanelWidget widget;
-				
-		public XmlEditorOptionsPanel()
-		{
-		}
 		
-		/// <summary>
-		/// Initialises the panel.
-		/// </summary>
-		public override void LoadPanelContents()
+		public override Widget CreatePanelWidget ()
 		{
 			widget = new XmlEditorOptionsPanelWidget();
-			Add(widget);
 			widget.AutoCompleteElements = XmlEditorAddInOptions.AutoCompleteElements;
 			widget.ShowSchemaAnnotation = XmlEditorAddInOptions.ShowSchemaAnnotation;
+			return widget;
 		}
-
-		/// <summary>
-		/// Saves any changes.
-		/// </summary>
-		public override bool StorePanelContents()
+		
+		public override void ApplyChanges ()
 		{
 			XmlEditorAddInOptions.AutoCompleteElements = widget.AutoCompleteElements;
 			XmlEditorAddInOptions.ShowSchemaAnnotation = widget.ShowSchemaAnnotation;
-			
-			return true;
 		}
 	}
 }

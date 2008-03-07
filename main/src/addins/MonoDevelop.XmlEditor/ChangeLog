@@ -1,3 +1,9 @@
+2008-03-07  Michael Hutchinson  <mhutchinson@novell.com> 
+
+        * MonoDevelop.XmlEditor/XmlSchemasPanel.cs:
+        * MonoDevelop.XmlEditor/XmlEditorOptionsPanel.cs:
+        * MonoDevelop.XmlEditor.addin.xml: Track options panel API changes. 
+
 2008-03-06  Michael Hutchinson  <mhutchinson@novell.com> 
 
 	* MonoDevelop.XmlEditor/Schemas: Move to schemas.

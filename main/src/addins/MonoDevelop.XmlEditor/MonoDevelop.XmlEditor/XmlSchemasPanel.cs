@@ -7,64 +7,56 @@
 using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Core.Gui.Dialogs;
+
 using System;
 using System.Collections;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.IO;
+using Gtk;
 
 namespace MonoDevelop.XmlEditor
 {
 	/// <summary>
 	/// Shows the xml schemas that MonoDevelop knows about.
 	/// </summary>
-	public class XmlSchemasPanel : AbstractOptionPanel
+	public class XmlSchemasPanel : OptionsPanel
 	{		
-		XmlSchemasPanelWidget widget;	
+		XmlSchemasPanelWidget widget;
 		
-		/// <summary>
-		/// Initialises the panel.
-		/// </summary>
-		public override void LoadPanelContents()
+		public override Widget CreatePanelWidget ()
 		{
 			widget = new XmlSchemasPanelWidget();
 			widget.AddSchemas(XmlSchemaManager.SchemaCompletionDataItems);
 			widget.AddFileExtensions(XmlFileExtensions.Extensions);
-			Add(widget);
+			return widget;
 		}
-
-		/// <summary>
-		/// Saves any changes to the configured schemas.
-		/// </summary>
-		public override bool StorePanelContents()
+		
+		public override void ApplyChanges ()
 		{
 			if (widget.IsChanged) {
 				try {
-					return SaveSchemaChanges();
+					SaveSchemaChanges();
 				} catch (Exception ex) {
 					MonoDevelop.Core.LoggingService.LogError ("Could not open document.", ex);
 					MonoDevelop.Core.Gui.MessageService.ShowError ("Could not open document.", ex.ToString());
-					return false;
 				}
+				return;
 			}
-
+			
 			// Update schema associations after we have added any new schemas to
 			// the schema manager.
 			UpdateSchemaAssociations();
-		
-			return true;
 		}
 
 		/// <summary>
 		/// Saves any changes to the configured schemas.
 		/// </summary>
 		/// <returns></returns>
-		bool SaveSchemaChanges()
+		void SaveSchemaChanges()
 		{
 			RemoveUserSchemas();
 			AddUserSchemas();
-
-			return true;
 		}
 	
 		/// <summary>

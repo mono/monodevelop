@@ -122,19 +122,13 @@
 			<SeparatorItem id = "FormatSeparator"/>
 			<CommandItem id = "MonoDevelop.XmlEditor.Commands.Format" />				
 		</ItemSet>
-	</Extension>
-	<!-- Options panel -->
-	<Extension path = "/MonoDevelop/Ide/OptionsDialogPanels">
-		<DialogPanel id = "XmlEditorOptions"
-		             _label = "XML Editor"
-		             insertafter = "WelcomPageOptions">
-			<DialogPanel id = "XmlEditorOptionsPanel"
-		                 _label = "General"
-		                 class = "MonoDevelop.XmlEditor.XmlEditorOptionsPanel" />
-			<DialogPanel id = "XmlSchemasPanel"
-		                 _label = "XML Schemas"
-		                 class = "MonoDevelop.XmlEditor.XmlSchemasPanel" />
-		</DialogPanel>
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/Ide/GlobalOptionsDialog">
+		<Section id = "XmlEditor" _label = "XML Editor">
+			<Section id = "XmlEditorOptions" insertbefore="Formatting" _label = "General" icon="md-text-editor" fill="true" class = "MonoDevelop.XmlEditor.XmlEditorOptionsPanel"/>
+			<Section id = "XmlSchemas" _label = "XML Schemas" class = "MonoDevelop.XmlEditor.XmlSchemasPanel"/>
+		</Section>
 	</Extension>
 	
 	<!-- XPath Query pad -->
