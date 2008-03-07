@@ -21,7 +21,10 @@ REFS =  \
 FILES =  \
 	gtk-gui/generated.cs \
 	gtk-gui/MonoDevelop.Core.Gui.Dialogs.MultiTaskProgressDialog.cs \
+	gtk-gui/MonoDevelop.Core.Gui.Dialogs.OptionsDialog.cs \
 	MonoDevelop.Core.Gui.Codons/DialogPanelCodon.cs \
+	MonoDevelop.Core.Gui.Codons/OptionsDialogSection.cs \
+	MonoDevelop.Core.Gui.Codons/OptionsPanelNode.cs \
 	MonoDevelop.Core.Gui.Codons/StockIconCodon.cs \
 	MonoDevelop.Core.Gui.Components/FileBrowser.cs \
 	MonoDevelop.Core.Gui.Components/MenuButtonEntry.cs \
@@ -30,7 +33,10 @@ FILES =  \
 	MonoDevelop.Core.Gui.Dialogs/ErrorDialog.cs \
 	MonoDevelop.Core.Gui.Dialogs/IDialogPanel.cs \
 	MonoDevelop.Core.Gui.Dialogs/IDialogPanelDescriptor.cs \
+	MonoDevelop.Core.Gui.Dialogs/IOptionsPanel.cs \
 	MonoDevelop.Core.Gui.Dialogs/MultiTaskProgressDialog.cs \
+	MonoDevelop.Core.Gui.Dialogs/OptionsDialog.cs \
+	MonoDevelop.Core.Gui.Dialogs/OptionsPanel.cs \
 	MonoDevelop.Core.Gui.Dialogs/ProgressDialog.cs \
 	MonoDevelop.Core.Gui.Dialogs/SetupApp.cs \
 	MonoDevelop.Core.Gui.Dialogs/TreeViewOptions.cs \
@@ -145,6 +151,7 @@ RES =  \
 	icons/package-x-generic.png \
 	icons/package-x-generic_22.png \
 	icons/pad-task-list-16.png \
+	icons/pad-task-list-24.png \
 	icons/plugin-16.png \
 	icons/plugin-22.png \
 	icons/plugin-32.png \

@@ -23,6 +23,10 @@
 		</ExtensionNode>
 	</ExtensionNodeSet>
 	
+	<ExtensionNodeSet id="MonoDevelop.Core.Gui.OptionsDialogSection">
+		<ExtensionNode name="Section" type="MonoDevelop.Core.Gui.Codons.OptionsDialogSection" />
+	</ExtensionNodeSet>
+	
 	<ExtensionPoint path = "/MonoDevelop/Core/PlatformService" name = "Platform Service">
 		<Description>Implementations of platform-dependent code wrapped in a platform-agnostic API. Specified classes must inherit from MonoDevelop.Core.PlatformService.</Description>
 		<ExtensionNode name="Class" />
@@ -138,6 +142,7 @@
 		<StockIcon stockid = "md-split-window" resource = "Icons.16x16.SplitWindow" />
 		<StockIcon stockid = "md-struct" resource = "element-structure-16.png" />
 		<StockIcon stockid = "md-task-list-icon" resource = "pad-task-list-16.png" size="Menu"/>
+		<StockIcon stockid = "md-task-list-icon" resource = "pad-task-list-24.png" />
 		<StockIcon stockid = "md-text-file-icon" resource = "Icons.16x16.TextFileIcon" size = "Menu" />
 		<StockIcon stockid = "md-text-file-icon" resource = "Icons.32x32.TextFileIcon" size = "Dnd" />
 		<StockIcon stockid = "md-html-file-icon" icon = "md-text-file-icon|res:web-overlay-32.png" size = "Dnd" />
