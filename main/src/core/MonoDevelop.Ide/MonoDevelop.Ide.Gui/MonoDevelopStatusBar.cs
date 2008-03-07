@@ -88,9 +88,9 @@ namespace MonoDevelop.Ide
 			progress.Visible = false;
 		}
 		
-		[AsyncDispatch]
 		public void ShowCaretState (int line, int visibleColumn, int logicalColumn, bool isInInsertMode)
 		{
+			DispatchService.AssertGuiThread ();
 			cursorStatusBarPanel.ShowAll ();
 			cursorLabel.Markup = GettextCatalog.GetString (" ln <span font_family='fixed'>{0,-4}</span> col <span font_family='fixed'>{1,-3}</span> ch <span font_family='fixed'>{2,-3}</span> ", line, visibleColumn, logicalColumn);
 			modeStatusBarPanel.ShowAll ();
@@ -103,21 +103,20 @@ namespace MonoDevelop.Ide
 			ShowMessage (GettextCatalog.GetString ("Ready"));	
 		}
 		
-		[AsyncDispatch]
 		public void ShowError (string error)
 		{
 			ShowMessage (new Image (MonoDevelop.Core.Gui.Stock.Error, IconSize.Menu), error);
 		}
 		
-		[AsyncDispatch]
 		public void ShowWarning (string warning)
 		{
-			ShowMessage (new Image (MonoDevelop.Core.Gui.Stock.Warning, IconSize.Menu), warning);
+			DispatchService.AssertGuiThread ();
+			ShowMessage (new Gtk.Image (MonoDevelop.Core.Gui.Stock.Warning, IconSize.Menu), warning);
 		}
 		
-		[AsyncDispatch]
 		public void ShowMessage (string message)
 		{
+			DispatchService.AssertGuiThread ();
 			if (currentStatusImage != null) {
 				statusBox.Remove (currentStatusImage);
 				currentStatusImage = null;
@@ -125,9 +124,9 @@ namespace MonoDevelop.Ide
 			statusLabel.Markup = !String.IsNullOrEmpty (message) ? " " + message.Replace ("\n", " ") : "";
 		}
 		
-		[AsyncDispatch]
 		public void ShowMessage (Image image, string message)
 		{
+			DispatchService.AssertGuiThread ();
 			if (currentStatusImage != image) {
 				if (currentStatusImage != null) 
 					statusBox.Remove (currentStatusImage);
@@ -141,6 +140,7 @@ namespace MonoDevelop.Ide
 		
 		public StatusIcon ShowStatusIcon (Gdk.Pixbuf image)
 		{
+			DispatchService.AssertGuiThread ();
 			EventBox eventBox = new EventBox ();
 			eventBox.Child = new Gtk.Image (image);
 			statusBox.PackEnd (eventBox, false, false, 2);
@@ -160,6 +160,7 @@ namespace MonoDevelop.Ide
 			ShowMessage (name);
 			this.progress.Visible = true;
 		}
+		
 		public void BeginProgress (Image image, string name)
 		{
 			ShowMessage (image, name);
@@ -168,6 +169,7 @@ namespace MonoDevelop.Ide
 
 		public void SetProgressFraction (double work)
 		{
+			DispatchService.AssertGuiThread ();
 			this.progress.Fraction = work;
 		}
 		
@@ -180,6 +182,7 @@ namespace MonoDevelop.Ide
 
 		public void Pulse ()
 		{
+			DispatchService.AssertGuiThread ();
 			this.progress.Visible = true;
 			this.progress.Pulse ();
 		}		

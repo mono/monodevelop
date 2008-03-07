@@ -1,3 +1,14 @@
+2008-03-07  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Ide.Gui/MonoDevelopStatusBar.cs: Remove redundant
+	  AsyncDispatchAttributes, and add GUI thread asserts, as the class
+	  that this replaced was a GuiSyncObject. It probably doesn't need to
+	  be thread safe, as most out-of-GUI-thread accesses will come from
+	  StatusProgressMonitor, which is a GuiSyncObject. Anyhow, the
+	  asserts should catch any problems.
+	* MonoDevelop.Ide.Gui.BrowserDisplayBinding/HtmlViewPane.cs: Remove
+	  redundant field.
+
 2008-03-07  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Ide.Gui.Dialogs/WordCountDialog.cs,

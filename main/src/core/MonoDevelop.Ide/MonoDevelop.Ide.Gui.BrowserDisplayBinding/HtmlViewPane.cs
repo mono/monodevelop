@@ -145,7 +145,6 @@ namespace MonoDevelop.Ide.Gui.BrowserDisplayBinding
 	public class HtmlViewPane : Gtk.Frame
 	{
 		IWebBrowser htmlControl = null;
-		MonoDevelopStatusBar status;
 		
 		VBox topPanel = new VBox (false, 2);
 		Navbar nav = new Navbar ();
@@ -162,7 +161,6 @@ namespace MonoDevelop.Ide.Gui.BrowserDisplayBinding
 		{
 			Shadow = Gtk.ShadowType.In;
 			VBox mainbox = new VBox (false, 2);
-			status = IdeApp.Workbench.StatusBar;
 			
 			if (showNavigation) {
 				
@@ -213,11 +211,11 @@ namespace MonoDevelop.Ide.Gui.BrowserDisplayBinding
 		bool Pulse ()
 		{
 			if (loading) {
-				status.Pulse ();
+				IdeApp.Workbench.StatusBar.Pulse ();
 				System.Threading.Thread.Sleep (100);
 				return true;
 			}
-			status.EndProgress ();
+			IdeApp.Workbench.StatusBar.EndProgress ();
 			IdeApp.Workbench.StatusBar.ShowMessage (GettextCatalog.GetString ("Done."));
 			return false;
 		}
