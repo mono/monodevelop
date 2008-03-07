@@ -29,80 +29,14 @@ using MonoDevelop.Core.Gui;
 
 namespace MonoDevelop.SourceEditor.OptionPanels
 {
-	public partial class MarkerPanel : Gtk.Bin, IDialogPanel
+	public partial class MarkerPanel : Gtk.Bin, IOptionsPanel
 	{
 		public MarkerPanel()
 		{
 			this.Build();
 		}
-		bool   wasActivated = false;
-		bool   isFinished   = true;
-		object customizationObject = null;
 		
-		public Gtk.Widget Control {
-			get {
-				return this;
-			}
-		}
-
-		public virtual Gtk.Image Icon {
-			get {
-				return null;
-			}
-		}
-		
-		public bool WasActivated {
-			get {
-				return wasActivated;
-			}
-		}
-		
-		public virtual object CustomizationObject {
-			get {
-				return customizationObject;
-			}
-			set {
-				customizationObject = value;
-				OnCustomizationObjectChanged();
-			}
-		}
-		
-		public virtual bool EnableFinish {
-			get {
-				return isFinished;
-			}
-			set {
-				if (isFinished != value) {
-					isFinished = value;
-					OnEnableFinishChanged();
-				}
-			}
-		}
-		
-		public virtual bool ReceiveDialogMessage(DialogMessage message)
-		{
-			try {
-				switch (message) {
-					case DialogMessage.Activated:
-						if (!wasActivated) {
-							LoadPanelContents();
-							wasActivated = true;
-						}
-						break;
-					case DialogMessage.OK:
-						if (wasActivated) {
-							return StorePanelContents();
-						}
-						break;
-				}
-			} catch (Exception ex) {
-				MessageService.ShowException (ex);
-			}
-			
-			return true;
-		}
-		
-		public virtual void LoadPanelContents()
+		public virtual Gtk.Widget CreatePanelWidget ()
 		{
 			this.showLineNumbersCheckbutton.Active = SourceEditorOptions.Options.ShowLineNumberMargin;
 			this.underlineErrorsCheckbutton.Active = SourceEditorOptions.Options.UnderlineErrors;
@@ -114,9 +48,10 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			this.showSpacesCheckbutton.Active = SourceEditorOptions.Options.ShowSpaces;
 			this.showTabsCheckbutton.Active = SourceEditorOptions.Options.ShowTabs;
 			this.showEolCheckbutton.Active = SourceEditorOptions.Options.ShowEolMarkers;
+			return this;
 		}
 		
-		public virtual bool StorePanelContents()
+		public virtual void ApplyChanges ()
 		{
 			SourceEditorOptions.Options.ShowLineNumberMargin = this.showLineNumbersCheckbutton.Active;
 			SourceEditorOptions.Options.UnderlineErrors = this.underlineErrorsCheckbutton.Active;
@@ -128,24 +63,21 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			SourceEditorOptions.Options.ShowSpaces = this.showSpacesCheckbutton.Active;
 			SourceEditorOptions.Options.ShowTabs = this.showTabsCheckbutton.Active;
 			SourceEditorOptions.Options.ShowEolMarkers = this.showEolCheckbutton.Active;
+		}
+
+		public void Initialize (OptionsDialog dialog, object dataObject)
+		{
+		}
+
+		public bool IsVisible ()
+		{
 			return true;
 		}
-		
-		protected virtual void OnEnableFinishChanged()
+
+		public bool ValidateChanges ()
 		{
-			if (EnableFinishChanged != null) {
-				EnableFinishChanged(this, null);
-			}
+			return true;
 		}
-		protected virtual void OnCustomizationObjectChanged()
-		{
-			if (CustomizationObjectChanged != null) {
-				CustomizationObjectChanged(this, null);
-			}
-		}
-		
-		public event EventHandler CustomizationObjectChanged;
-		public event EventHandler EnableFinishChanged;
 	}
 	
 }

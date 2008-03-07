@@ -30,7 +30,7 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.SourceEditor.OptionPanels
 {
-	public partial class BehaviorPanel : Gtk.Bin, IDialogPanel
+	public partial class BehaviorPanel : Gtk.Bin, IOptionsPanel
 	{
 		public BehaviorPanel ()
 		{
@@ -40,108 +40,37 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			indentationCombobox.InsertText (2, GettextCatalog.GetString ("Smart"));
 		}
 		
-		bool   wasActivated = false;
-		bool   isFinished   = true;
-		object customizationObject = null;
-		
-		public Gtk.Widget Control {
-			get {
-				return this;
-			}
-		}
-
-		public virtual Gtk.Image Icon {
-			get {
-				return null;
-			}
-		}
-		
-		public bool WasActivated {
-			get {
-				return wasActivated;
-			}
-		}
-		
-		public virtual object CustomizationObject {
-			get {
-				return customizationObject;
-			}
-			set {
-				customizationObject = value;
-				OnCustomizationObjectChanged();
-			}
-		}
-		
-		public virtual bool EnableFinish {
-			get {
-				return isFinished;
-			}
-			set {
-				if (isFinished != value) {
-					isFinished = value;
-					OnEnableFinishChanged();
-				}
-			}
-		}
-		
-		public virtual bool ReceiveDialogMessage(DialogMessage message)
-		{
-			try {
-				switch (message) {
-					case DialogMessage.Activated:
-						if (!wasActivated) {
-							LoadPanelContents();
-							wasActivated = true;
-						}
-						break;
-					case DialogMessage.OK:
-						if (wasActivated) {
-							return StorePanelContents();
-						}
-						break;
-				}
-			} catch (Exception ex) {
-				MessageService.ShowException (ex);
-			}
-			
-			return true;
-		}
-		
-		public virtual void LoadPanelContents ()
+		public virtual Gtk.Widget CreatePanelWidget ()
 		{
 			this.autoInsertTemplateCheckbutton.Active  = SourceEditorOptions.Options.AutoInsertTemplates;
 			this.convertTabsToSpacesCheckbutton.Active = SourceEditorOptions.Options.TabsToSpaces;
 			this.autoInsertBraceCheckbutton.Active = SourceEditorOptions.Options.AutoInsertMatchingBracket;
 			this.indentationCombobox.Active = (int)SourceEditorOptions.Options.IndentStyle;
 			this.indentAndTabSizeSpinbutton.Value = SourceEditorOptions.Options.TabSize;
+			return this;
 		}
 		
-		public virtual bool StorePanelContents ()
+		public virtual void ApplyChanges ()
 		{
 			SourceEditorOptions.Options.AutoInsertTemplates = this.autoInsertTemplateCheckbutton.Active;
 			SourceEditorOptions.Options.TabsToSpaces = this.convertTabsToSpacesCheckbutton.Active;
 			SourceEditorOptions.Options.AutoInsertMatchingBracket = this.autoInsertBraceCheckbutton.Active;
 			SourceEditorOptions.Options.IndentStyle = (MonoDevelop.Ide.Gui.Content.IndentStyle)this.indentationCombobox.Active;
 			SourceEditorOptions.Options.TabSize = (int)this.indentAndTabSizeSpinbutton.Value;
+		}
+
+		public void Initialize (OptionsDialog dialog, object dataObject)
+		{
+		}
+
+		public bool IsVisible ()
+		{
 			return true;
 		}
-		
-		protected virtual void OnEnableFinishChanged()
+
+		public bool ValidateChanges ()
 		{
-			if (EnableFinishChanged != null) {
-				EnableFinishChanged(this, null);
-			}
+			return true;
 		}
-		
-		protected virtual void OnCustomizationObjectChanged()
-		{
-			if (CustomizationObjectChanged != null) {
-				CustomizationObjectChanged(this, null);
-			}
-		}
-		
-		public event EventHandler CustomizationObjectChanged;
-		public event EventHandler EnableFinishChanged;
-		
 	}
 }

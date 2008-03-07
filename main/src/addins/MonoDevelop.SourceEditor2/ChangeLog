@@ -1,3 +1,13 @@
+2008-03-07  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* gtk-gui/objects.xml,
+	  MonoDevelop.SourceEditor.OptionPanels/BehaviorPanel.cs,
+	  MonoDevelop.SourceEditor.OptionPanels/MarkerPanel.cs,
+	  MonoDevelop.SourceEditor.OptionPanels/HighlightingPanel.cs,
+	  MonoDevelop.SourceEditor.OptionPanels/GeneralOptionsPanel.cs,
+	  MonoDevelop.SourceEditor.addin.xml: Use new options dialog
+	  infrastructure.
+
 2008-03-05  Mike Krüger <mkrueger@novell.com> 
 
 	* gtk-gui/MonoDevelop.SourceEditor.SearchAndReplaceWidget.cs,

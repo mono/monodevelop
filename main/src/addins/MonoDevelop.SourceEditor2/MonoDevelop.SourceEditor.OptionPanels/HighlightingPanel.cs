@@ -34,7 +34,7 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.SourceEditor.OptionPanels
 {
-	public partial class HighlightingPanel : Gtk.Bin, IDialogPanel
+	public partial class HighlightingPanel : Gtk.Bin, IOptionsPanel
 	{
 		ListStore styleStore = new ListStore (typeof (string), typeof (string));
 		
@@ -45,79 +45,12 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			styleTreeview.Model = styleStore;
 		}
 		
-		bool   wasActivated = false;
-		bool   isFinished   = true;
-		object customizationObject = null;
-		
-		public Gtk.Widget Control {
-			get {
-				return this;
-			}
-		}
-
-		public virtual Gtk.Image Icon {
-			get {
-				return null;
-			}
-		}
-		
-		public bool WasActivated {
-			get {
-				return wasActivated;
-			}
-		}
-		
-		public virtual object CustomizationObject {
-			get {
-				return customizationObject;
-			}
-			set {
-				customizationObject = value;
-				OnCustomizationObjectChanged();
-			}
-		}
-		
-		public virtual bool EnableFinish {
-			get {
-				return isFinished;
-			}
-			set {
-				if (isFinished != value) {
-					isFinished = value;
-					OnEnableFinishChanged();
-				}
-			}
-		}
-		
-		public virtual bool ReceiveDialogMessage(DialogMessage message)
-		{
-			try {
-				switch (message) {
-					case DialogMessage.Activated:
-						if (!wasActivated) {
-							LoadPanelContents();
-							wasActivated = true;
-						}
-						break;
-					case DialogMessage.OK:
-						if (wasActivated) {
-							return StorePanelContents();
-						}
-						break;
-				}
-			} catch (Exception ex) {
-				MessageService.ShowException (ex);
-			}
-			
-			return true;
-		}
-		
 		string GetMarkup (string name, string description)
 		{
 			return String.Format ("<b>{0}</b> - {1}", name, description);
 		}
-		
-		public virtual void LoadPanelContents()
+
+		public virtual Gtk.Widget CreatePanelWidget ()
 		{
 			this.enableHighlightingCheckbutton.Active = SourceEditorOptions.Options.EnableSyntaxHighlighting;
 			this.enableSemanticHighlightingCheckbutton.Active = SourceEditorOptions.Options.EnableSemanticHighlighting;
@@ -132,6 +65,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 					selectedIter = iter;
 			}
 			styleTreeview.Selection.SelectIter (selectedIter); 
+			return this;
 		}
 		
 		void EnableHighlightingCheckbuttonToggled (object sender, EventArgs e)
@@ -139,7 +73,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			this.enableSemanticHighlightingCheckbutton.Sensitive = this.enableHighlightingCheckbutton.Active;
 		}
 		
-		public virtual bool StorePanelContents()
+		public virtual void ApplyChanges ()
 		{
 			SourceEditorOptions.Options.EnableSyntaxHighlighting = this.enableHighlightingCheckbutton.Active;
 			SourceEditorOptions.Options.EnableSemanticHighlighting = this.enableSemanticHighlightingCheckbutton.Active;
@@ -147,23 +81,20 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			if (styleTreeview.Selection.GetSelected (out selectedIter)) {
 				SourceEditorOptions.Options.ColorSheme = (string)this.styleStore.GetValue (selectedIter, 1);
 			}
+		}
+
+		public void Initialize (OptionsDialog dialog, object dataObject)
+		{
+		}
+
+		public bool IsVisible ()
+		{
 			return true;
 		}
-		
-		protected virtual void OnEnableFinishChanged()
+
+		public bool ValidateChanges ()
 		{
-			if (EnableFinishChanged != null) {
-				EnableFinishChanged(this, null);
-			}
+			return true;
 		}
-		protected virtual void OnCustomizationObjectChanged()
-		{
-			if (CustomizationObjectChanged != null) {
-				CustomizationObjectChanged(this, null);
-			}
-		}
-		
-		public event EventHandler CustomizationObjectChanged;
-		public event EventHandler EnableFinishChanged;
 	}
 }

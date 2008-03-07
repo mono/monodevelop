@@ -29,7 +29,7 @@ using MonoDevelop.Core.Gui;
 
 namespace MonoDevelop.SourceEditor.OptionPanels
 {
-	public partial class GeneralOptionsPanel : Gtk.Bin, IDialogPanel
+	public partial class GeneralOptionsPanel : Gtk.Bin, IOptionsPanel
 	{
 		public GeneralOptionsPanel()
 		{
@@ -43,74 +43,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			this.fontselection.Sensitive = this.radiobutton2.Active;
 		}
 		
-		bool   wasActivated = false;
-		bool   isFinished   = true;
-		object customizationObject = null;
-		
-		public Gtk.Widget Control {
-			get {
-				return this;
-			}
-		}
-
-		public virtual Gtk.Image Icon {
-			get {
-				return null;
-			}
-		}
-		
-		public bool WasActivated {
-			get {
-				return wasActivated;
-			}
-		}
-		
-		public virtual object CustomizationObject {
-			get {
-				return customizationObject;
-			}
-			set {
-				customizationObject = value;
-				OnCustomizationObjectChanged();
-			}
-		}
-		
-		public virtual bool EnableFinish {
-			get {
-				return isFinished;
-			}
-			set {
-				if (isFinished != value) {
-					isFinished = value;
-					OnEnableFinishChanged();
-				}
-			}
-		}
-		
-		public virtual bool ReceiveDialogMessage(DialogMessage message)
-		{
-			try {
-				switch (message) {
-					case DialogMessage.Activated:
-						if (!wasActivated) {
-							LoadPanelContents();
-							wasActivated = true;
-						}
-						break;
-					case DialogMessage.OK:
-						if (wasActivated) {
-							return StorePanelContents();
-						}
-						break;
-				}
-			} catch (Exception ex) {
-				MessageService.ShowException (ex);
-			}
-			
-			return true;
-		}
-		
-		public virtual void LoadPanelContents()
+		public virtual Gtk.Widget CreatePanelWidget ()
 		{
 			this.codeCompletioncheckbutton.Active = SourceEditorOptions.Options.EnableCodeCompletion;
 			this.quickFinderCheckbutton.Active    = SourceEditorOptions.Options.EnableQuickFinder;
@@ -119,32 +52,30 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			this.radiobutton2.Active              = SourceEditorOptions.Options.EditorFontType == EditorFontType.UserSpecified;
 			this.fontselection.FontName           = SourceEditorOptions.Options.FontName;
 			CheckFontSelection (this, EventArgs.Empty);
+			return this;
 		}
 		
-		public virtual bool StorePanelContents()
+		public virtual void ApplyChanges ()
 		{
 			SourceEditorOptions.Options.EnableCodeCompletion = this.codeCompletioncheckbutton.Active;
 			SourceEditorOptions.Options.EnableQuickFinder    = this.quickFinderCheckbutton.Active;
 			SourceEditorOptions.Options.ShowFoldMargin       = this.foldingCheckbutton.Active;
 			SourceEditorOptions.Options.EditorFontType       = this.radiobutton1.Active ? EditorFontType.DefaultMonospace : EditorFontType.UserSpecified;
 			SourceEditorOptions.Options.FontName             = this.fontselection.FontName;
+		}
+
+		public void Initialize (OptionsDialog dialog, object dataObject)
+		{
+		}
+
+		public bool IsVisible ()
+		{
 			return true;
 		}
-		
-		protected virtual void OnEnableFinishChanged()
+
+		public bool ValidateChanges ()
 		{
-			if (EnableFinishChanged != null) {
-				EnableFinishChanged(this, null);
-			}
+			return true;
 		}
-		protected virtual void OnCustomizationObjectChanged()
-		{
-			if (CustomizationObjectChanged != null) {
-				CustomizationObjectChanged(this, null);
-			}
-		}
-		
-		public event EventHandler CustomizationObjectChanged;
-		public event EventHandler EnableFinishChanged;
 	}
 }
