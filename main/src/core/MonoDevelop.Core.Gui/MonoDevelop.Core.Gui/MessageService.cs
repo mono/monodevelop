@@ -95,6 +95,8 @@ namespace MonoDevelop.Core.Gui
 		}
 	}
 	
+	//all "static void" methods are safe to be called from any thread
+	//all other static methods must be called from the GUI thread
 	public static class MessageService
 	{
 		static Gtk.Window rootWindow;
@@ -127,11 +129,17 @@ namespace MonoDevelop.Core.Gui
 		
 		public static void ShowException (Gtk.Window parent, Exception e, string primaryText)
 		{
-			MonoDevelop.Core.Gui.Dialogs.ErrorDialog errorDialog = new MonoDevelop.Core.Gui.Dialogs.ErrorDialog (parent);
-			errorDialog.Message = primaryText;
-			errorDialog.AddDetails (e.ToString (), false);
-			errorDialog.Run ();
-			errorDialog.Dispose ();
+			Application.Invoke (delegate {
+				MonoDevelop.Core.Gui.Dialogs.ErrorDialog errorDialog = new MonoDevelop.Core.Gui.Dialogs.ErrorDialog (parent);
+				try {
+					errorDialog.Message = primaryText;
+					errorDialog.AddDetails (e.ToString (), false);
+					errorDialog.Run ();
+				} finally {
+					if (errorDialog != null)
+						errorDialog.Dispose ();
+				}
+			});
 		}
 		#endregion
 		
@@ -150,7 +158,9 @@ namespace MonoDevelop.Core.Gui
 		}
 		public static void ShowError (Gtk.Window parent, string primaryText, string secondaryText)
 		{
-			GenericAlert (Stock.Error, primaryText, secondaryText, AlertButton.Cancel);
+			Application.Invoke (delegate {
+				GenericAlert (Stock.Error, primaryText, secondaryText, AlertButton.Cancel);
+			});
 		}
 		#endregion
 		
@@ -169,11 +179,13 @@ namespace MonoDevelop.Core.Gui
 		}
 		public static void ShowWarning (Gtk.Window parent, string primaryText, string secondaryText)
 		{
-			GenericAlert (Stock.Warning, primaryText, secondaryText, AlertButton.Cancel);
+			Application.Invoke (delegate {
+				GenericAlert (Stock.Warning, primaryText, secondaryText, AlertButton.Cancel);
+			});
 		}
 		#endregion
 		
-		#region ShowWarning
+		#region ShowMessage
 		public static void ShowMessage (string primaryText)
 		{
 			ShowMessage (RootWindow, primaryText);
@@ -188,7 +200,9 @@ namespace MonoDevelop.Core.Gui
 		}
 		public static void ShowMessage (Gtk.Window parent, string primaryText, string secondaryText)
 		{
-			GenericAlert (Stock.Information, primaryText, secondaryText, AlertButton.Cancel);
+			Application.Invoke (delegate {
+				GenericAlert (Stock.Information, primaryText, secondaryText, AlertButton.Cancel);
+			});
 		}
 		#endregion
 		
@@ -213,25 +227,18 @@ namespace MonoDevelop.Core.Gui
 		}
 		#endregion
 		
-		class ThreadSafeDialog : GuiSyncObject
-		{
-			public int Run (Gtk.Dialog dialog)
-			{
-				try {
-					dialog.Modal             = true;
-					dialog.TransientFor      = rootWindow;
-					dialog.DestroyWithParent = true;
-					return dialog.Run ();
-				} finally {
-					if (dialog != null)
-						dialog.Destroy ();
-				}
-			}
-		}
-		
 		public static int ShowCustomDialog (Gtk.Dialog dialog)
 		{
-			return new ThreadSafeDialog ().Run (dialog);
+			MonoDevelop.Core.Gui.DispatchService.AssertGuiThread ();
+			try {
+				dialog.Modal             = true;
+				dialog.TransientFor      = rootWindow;
+				dialog.DestroyWithParent = true;
+				return dialog.Run ();
+			} finally {
+				if (dialog != null)
+					dialog.Destroy ();
+			}
 		}
 		
 		public static AlertButton GenericAlert (string icon, string primaryText, string secondaryText, params AlertButton[] buttons)
@@ -240,6 +247,7 @@ namespace MonoDevelop.Core.Gui
 		}
 		public static AlertButton GenericAlert (string icon, string primaryText, string secondaryText, int defaultButton, params AlertButton[] buttons)
 		{
+			MonoDevelop.Core.Gui.DispatchService.AssertGuiThread ();
 			AlertDialog alertDialog = new AlertDialog (icon, primaryText, secondaryText, buttons);
 			alertDialog.FocusButton (defaultButton);
 			ShowCustomDialog (alertDialog);
@@ -256,6 +264,7 @@ namespace MonoDevelop.Core.Gui
 		}
 		static string GetTextResponse (string question, string caption, string initialValue, bool isPassword)
 		{
+			MonoDevelop.Core.Gui.DispatchService.AssertGuiThread ();
 			string returnValue = null;
 			
 			Dialog md = new Dialog (caption, rootWindow, DialogFlags.Modal | DialogFlags.DestroyWithParent);
