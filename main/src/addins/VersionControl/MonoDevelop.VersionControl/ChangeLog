@@ -1,3 +1,11 @@
+2008-03-07  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* gtk-gui/generated.cs,
+	  gtk-gui/MonoDevelop.VersionControl.Dialogs.CommitDialog.cs,
+	  gtk-gui/gui.stetic: Use commit icon in the ok button of the commit
+	  dialog.
+	* MonoDevelop.VersionControl/Publish.cs: Improved message dialog.
+
 2008-03-04  Mike Krüger <mkrueger@novell.com> 
 
 	

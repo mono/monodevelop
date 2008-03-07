@@ -119,7 +119,7 @@ namespace MonoDevelop.VersionControl.Dialogs {
             Gtk.HButtonBox w10 = this.ActionArea;
             w10.Events = ((Gdk.EventMask)(256));
             w10.Name = "VersionControlAddIn.CommitDialog_ActionArea";
-            w10.Spacing = 10;
+            w10.Spacing = 6;
             w10.BorderWidth = ((uint)(5));
             w10.LayoutStyle = ((Gtk.ButtonBoxStyle)(4));
             // Container child VersionControlAddIn.CommitDialog_ActionArea.Gtk.ButtonBox+ButtonBoxChild
@@ -139,14 +139,28 @@ namespace MonoDevelop.VersionControl.Dialogs {
             this.button31.CanDefault = true;
             this.button31.CanFocus = true;
             this.button31.Name = "button31";
-            this.button31.UseStock = true;
             this.button31.UseUnderline = true;
-            this.button31.Label = "gtk-ok";
+            // Container child button31.Gtk.Container+ContainerChild
+            Gtk.Alignment w12 = new Gtk.Alignment(0.5F, 0.5F, 0F, 0F);
+            // Container child GtkAlignment1.Gtk.Container+ContainerChild
+            Gtk.HBox w13 = new Gtk.HBox();
+            w13.Spacing = 2;
+            // Container child GtkHBox1.Gtk.Container+ContainerChild
+            Gtk.Image w14 = new Gtk.Image();
+            w14.Pixbuf = Stetic.IconLoader.LoadIcon(this, "vc-commit", Gtk.IconSize.Menu, 16);
+            w13.Add(w14);
+            // Container child GtkHBox1.Gtk.Container+ContainerChild
+            Gtk.Label w16 = new Gtk.Label();
+            w16.LabelProp = Mono.Unix.Catalog.GetString("Commit");
+            w16.UseUnderline = true;
+            w13.Add(w16);
+            w12.Add(w13);
+            this.button31.Add(w12);
             this.AddActionWidget(this.button31, -5);
-            Gtk.ButtonBox.ButtonBoxChild w12 = ((Gtk.ButtonBox.ButtonBoxChild)(w10[this.button31]));
-            w12.Position = 1;
-            w12.Expand = false;
-            w12.Fill = false;
+            Gtk.ButtonBox.ButtonBoxChild w20 = ((Gtk.ButtonBox.ButtonBoxChild)(w10[this.button31]));
+            w20.Position = 1;
+            w20.Expand = false;
+            w20.Fill = false;
             if ((this.Child != null)) {
                 this.Child.ShowAll();
             }

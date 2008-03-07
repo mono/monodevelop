@@ -40,7 +40,7 @@ namespace MonoDevelop.VersionControl
 				do {
 					if (dlg.Run () == (int) Gtk.ResponseType.Ok && dlg.Repository != null) {
 						AlertButton publishButton = new AlertButton ("_Publish");					
-						if (MessageService.AskQuestion (GettextCatalog.GetString ("Are you sure you want to publish the project to the repository '{0}'?", dlg.Repository.Name), AlertButton.Cancel, publishButton) == publishButton) {
+						if (MessageService.AskQuestion (GettextCatalog.GetString ("Are you sure you want to publish the project?"), GettextCatalog.GetString ("The project will be published to the repository '{0}', module '{1}'.", dlg.Repository.Name, dlg.ModuleName), AlertButton.Cancel, publishButton) == publishButton) {
 							PublishWorker w = new PublishWorker (dlg.Repository, dlg.ModuleName, localPath, (string[]) files.ToArray (typeof(string)), dlg.Message);
 							w.Start ();
 							break;
