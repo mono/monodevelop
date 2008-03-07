@@ -83,14 +83,8 @@
 		</Condition>
 	</Extension>
 
-	<Extension path = "/MonoDevelop/Ide/OptionsDialogPanels/TextEditorOptions">
-		<Condition id="activelanguage" value="C#">
-			<DialogPanel id = "Formatting"
-			             _label = "Formatting"
-			             insertafter = "Behavior"
-			             insertbefore = "SyntaxHighlighting"
-			             class = "CSharpBinding.FormattingPanel"/>
-		</Condition>
+	<Extension path = "/MonoDevelop/Ide/GlobalOptionsDialog/TextEditor/Formatting">
+		<Section _label = "C#" class = "CSharpBinding.FormattingPanel"/>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/Gui/Icons">

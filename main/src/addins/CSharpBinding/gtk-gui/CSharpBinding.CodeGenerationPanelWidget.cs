@@ -366,6 +366,10 @@ namespace CSharpBinding {
             if ((this.Child != null)) {
                 this.Child.ShowAll();
             }
+            this.label87.MnemonicWidget = this.symbolsEntry;
+            this.label85.MnemonicWidget = this.warningLevelSpinButton;
+            this.label86.MnemonicWidget = this.warningLevelSpinButton;
+            this.label88.MnemonicWidget = this.warningLevelSpinButton;
             this.Show();
         }
     }

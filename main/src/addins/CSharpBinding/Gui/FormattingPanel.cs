@@ -31,7 +31,7 @@ namespace CSharpBinding {
 			}
 		}
 		
-		public bool Store ()
+		public void Store ()
 		{
 			FormattingProperties.IndentCaseLabels = indentCaseLabels.Active;
 			
@@ -41,22 +41,21 @@ namespace CSharpBinding {
 				FormattingProperties.GotoLabelIndentStyle = GotoLabelIndentStyle.OneLess;
 			else if (indentGotoLabelsNormally.Active)
 				FormattingProperties.GotoLabelIndentStyle = GotoLabelIndentStyle.Normal;
-			
-			return true;
 		}
 	}
 	
-	public class FormattingPanel : AbstractOptionPanel {
+	public class FormattingPanel : OptionsPanel
+	{
 		FormattingPanelWidget widget;
 		
-		public override void LoadPanelContents ()
+		public override Widget CreatePanelWidget ()
 		{
-			Add (widget = new FormattingPanelWidget ());
+			return (widget = new FormattingPanelWidget ());
 		}
-		
-		public override bool StorePanelContents ()
+
+		public override void ApplyChanges ()
 		{
-			return widget.Store ();
+			widget.Store ();
 		}
 	}
 }

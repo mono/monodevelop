@@ -1,3 +1,11 @@
+2008-03-07  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Gui/FormattingPanel.cs, CSharpBinding.addin.xml,
+	  gtk-gui/CSharpBinding.CodeGenerationPanelWidget.cs,
+	  gtk-gui/CSharpBinding.CompilerOptionsPanelWidget.cs,
+	  gtk-gui/CSharpBinding.FormattingPanelWidget.cs: Use new options
+	  dialog infrastructure.
+
 2008-03-04  Mike Krüger <mkrueger@novell.com> 
 
 	* Gui/CompilerOptionsPanelWidget.cs,
