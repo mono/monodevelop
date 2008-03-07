@@ -447,15 +447,18 @@ namespace MonoDevelop.Ide.Gui
 			if (parentWindow == null)
 				parentWindow = IdeApp.Workbench.RootWindow;
 
-			TreeViewOptions ops = new TreeViewOptions (
+			OptionsDialog ops = new OptionsDialog (
 				parentWindow,
 				TextEditorProperties.Properties,
-				AddinManager.GetExtensionNode ("/MonoDevelop/Ide/OptionsDialogPanels"));
+				"/MonoDevelop/Ide/GlobalOptionsDialog");
 
 			if (panelId != null)
 				ops.SelectPanel (panelId);
-			if (ops.Run () == (int) Gtk.ResponseType.Ok)
+			if (ops.Run () == (int) Gtk.ResponseType.Ok) {
+				Console.WriteLine ("pp saved: ");
 				PropertyService.SaveProperties ();
+			}
+			ops.Destroy ();
 		}
 		
 		internal void ShowNext ()

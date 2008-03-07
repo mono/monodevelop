@@ -11,7 +11,7 @@
 namespace MonoDevelop.Ide.Gui.OptionPanels {
     
     
-    public partial class TasksPanelWidget {
+    internal partial class TasksPanelWidget {
         
         private Gtk.VBox vbox6;
         

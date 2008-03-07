@@ -39,15 +39,28 @@ using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide.StandardHeaders
 {
-	internal partial class StandardHeaderPanel : Gtk.Bin, IDialogPanel
+	internal partial class StandardHeaderPanel : Gtk.Bin, IOptionsPanel
 	{
 		public StandardHeaderPanel()
 		{
 			this.Build();
 		}
 		
+		public bool ValidateChanges ()
+		{
+			return true;
+		}
 		
-		public void LoadPanelContents()
+		public bool IsVisible ()
+		{
+			return true;
+		}
+		
+		public void Initialize (OptionsDialog dialog, object dataObject)
+		{
+		}
+		
+		public Gtk.Widget CreatePanelWidget ()
 		{
 			this.headerTextview.Buffer.Text         = StandardHeaderService.Header;
 			this.generateCommentsCheckbutton.Active = StandardHeaderService.GenerateComments;
@@ -85,7 +98,9 @@ namespace MonoDevelop.Ide.StandardHeaders
 				this.addButton.Sensitive    = templateCombobox.Active < 0;
 				this.removeButton.Sensitive = !addButton.Sensitive && templateCombobox.Active < StandardHeaderService.CustomTemplates.Count;
 			};
+			return this;
 		}
+		
 		int textCount = 0;
 		void FillTemplateCombobox ()
 		{
@@ -128,100 +143,12 @@ namespace MonoDevelop.Ide.StandardHeaders
 			this.setHeaderButton.Sensitive = false;
 		}
 		
-		public bool StorePanelContents()
+		public void ApplyChanges ()
 		{
 			StandardHeaderService.Header           = headerTextview.Buffer.Text;
 			StandardHeaderService.GenerateComments = generateCommentsCheckbutton.Active;
 			StandardHeaderService.EmitStandardHeader = emitstandardHeaderCheckbutton.Active;
 			StandardHeaderService.CommitChanges ();
-			return true;
 		}
-		
-#region Cut & Paste from abstract option panel
-		bool   wasActivated = false;
-		bool   isFinished   = true;
-		object customizationObject = null;
-		
-		public Widget Control {
-			get {
-				return this;
-			}
-		}
-
-		public virtual Gtk.Image Icon {
-			get {
-				return null;
-			}
-		}
-		
-		public bool WasActivated {
-			get {
-				return wasActivated;
-			}
-		}
-		
-		public virtual object CustomizationObject {
-			get {
-				return customizationObject;
-			}
-			set {
-				customizationObject = value;
-				OnCustomizationObjectChanged();
-			}
-		}
-		
-		public virtual bool EnableFinish {
-			get {
-				return isFinished;
-			}
-			set {
-				if (isFinished != value) {
-					isFinished = value;
-					OnEnableFinishChanged();
-				}
-			}
-		}
-
-		public virtual bool ReceiveDialogMessage(DialogMessage message)
-		{
-			try {
-				switch (message) {
-					case DialogMessage.Activated:
-						if (!wasActivated) {
-							LoadPanelContents();
-							wasActivated = true;
-						}
-						break;
-					case DialogMessage.OK:
-						if (wasActivated) {
-							return StorePanelContents();
-						}
-						break;
-				}
-			} catch (Exception ex) {
-				MessageService.ShowException (ex);
-			}
-			
-			return true;
-		}
-		
-		
-		protected virtual void OnEnableFinishChanged()
-		{
-			if (EnableFinishChanged != null) {
-				EnableFinishChanged(this, null);
-			}
-		}
-		protected virtual void OnCustomizationObjectChanged()
-		{
-			if (CustomizationObjectChanged != null) {
-				CustomizationObjectChanged(this, null);
-			}
-		}
-		
-		public event EventHandler CustomizationObjectChanged;
-		public event EventHandler EnableFinishChanged;
-#endregion
 	}
-	
 }

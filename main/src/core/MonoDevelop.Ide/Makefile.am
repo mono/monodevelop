@@ -361,6 +361,8 @@ RES =  \
 	gtk-gui/objects.xml \
 	icons/Icons.16x16.LinkOverlay.png \
 	icons/Icons.AboutImage \
+	icons/keyboard-shortcuts-16.png \
+	icons/keyboard-shortcuts-22.png \
 	icons/mono-powered.png \
 	icons/navigate-next.png \
 	icons/navigate-previous.png \
@@ -369,6 +371,8 @@ RES =  \
 	icons/pinup.png \
 	icons/SplashScreen.png \
 	icons/system-file-manager.png \
+	icons/text-editor-16.png \
+	icons/text-editor-22.png \
 	MonoDevelop.Ide.addin.xml \
 	MonoDevelop.Ide.StandardHeader/StandardHeaderTemplates.xml \
 	options/KeyBindingSchemeDefault.xml \

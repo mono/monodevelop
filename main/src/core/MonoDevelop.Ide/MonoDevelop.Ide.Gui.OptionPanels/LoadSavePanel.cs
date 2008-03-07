@@ -37,22 +37,27 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 	/// Summary description for Form1.
 	/// </summary>
 	
-	internal class LoadSavePanel : AbstractOptionPanel
+	internal class LoadSavePanel : OptionsPanel
 	{
 		//FIXME: Add mneumonics for Window, Macintosh and Unix Radio Buttons. 
 		//       Remove mneumonic from terminator label.
 
 		LoadSavePanelWidget widget;
 		
-		public override void LoadPanelContents()
+		public override Widget CreatePanelWidget ()
 		{
-			Add (widget = new LoadSavePanelWidget ());
+			return widget = new LoadSavePanelWidget ();
 		}
 		
-		public override bool StorePanelContents()
-		{			
-			bool succes = widget.Store();
-			return succes;
+		public override bool ValidateChanges ()
+		{
+			return widget.ValidateChanges ();
+		}
+
+		
+		public override void ApplyChanges ()
+		{
+			widget.Store();
 		}
 	}
 
@@ -77,12 +82,8 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 				"SharpDevelop.LoadPrevProjectOnStartup", false);
 		}
 		
-		public bool Store () 
+		public bool ValidateChanges ()
 		{
-			PropertyService.Set("SharpDevelop.LoadPrevProjectOnStartup", loadPrevProjectCheckButton.Active);
-			PropertyService.Set ("SharpDevelop.LoadDocumentProperties",  loadUserDataCheckButton.Active);
-			PropertyService.Set ("SharpDevelop.CreateBackupCopy",        createBackupCopyCheckButton.Active);
-			
 			// check for correct settings
 			string projectPath = folderEntry.Path;
 			if (projectPath.Length > 0) {
@@ -91,9 +92,15 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 					return false;
 				}
 			}
-			IdeApp.ProjectOperations.ProjectsDefaultPath = projectPath;
-			
 			return true;
+		}
+		
+		public void Store () 
+		{
+			PropertyService.Set("SharpDevelop.LoadPrevProjectOnStartup", loadPrevProjectCheckButton.Active);
+			PropertyService.Set ("SharpDevelop.LoadDocumentProperties",  loadUserDataCheckButton.Active);
+			PropertyService.Set ("SharpDevelop.CreateBackupCopy",        createBackupCopyCheckButton.Active);
+			IdeApp.ProjectOperations.ProjectsDefaultPath = folderEntry.Path;
 		}
 	}
 }

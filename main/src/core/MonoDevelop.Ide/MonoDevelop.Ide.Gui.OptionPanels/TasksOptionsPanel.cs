@@ -185,7 +185,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			colorbuttonLowPrio.Color = StringToColor ((string)PropertyService.Get ("Monodevelop.UserTasksLowPrioColor", ""));
 		}
 		
-		public bool Store ()
+		public void Store ()
 		{
 			StringBuilder sb = new StringBuilder ();
 			foreach (object[] row in tokensStore)
@@ -201,8 +201,6 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			PropertyService.Set ("Monodevelop.UserTasksHighPrioColor", ColorToString (colorbuttonHighPrio.Color));
 			PropertyService.Set ("Monodevelop.UserTasksNormalPrioColor", ColorToString (colorbuttonNormalPrio.Color));
 			PropertyService.Set ("Monodevelop.UserTasksLowPrioColor", ColorToString (colorbuttonLowPrio.Color));
-
-			return true;
 		}
 		
 		static string ColorToString (Gdk.Color color)
@@ -230,22 +228,20 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		}
 	}
 	
-	internal class TasksOptionsPanel : AbstractOptionPanel
+	internal class TasksOptionsPanel : OptionsPanel
 	{
 		TasksPanelWidget widget;
 		
-		public override void LoadPanelContents ()
+		public override Widget CreatePanelWidget ()
 		{
 			widget = new TasksPanelWidget ();
 			widget.Load ();
-			Add (widget);
+			return widget;
 		}
 
-		public override bool StorePanelContents ()
+		public override void ApplyChanges ()
 		{
-			bool result = true;
-			result = widget.Store ();
-			return result;
+			widget.Store ();
 		}
 	}
 }

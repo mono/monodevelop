@@ -42,19 +42,23 @@ using MonoDevelop.Core.Gui.Dialogs;
 
 namespace MonoDevelop.Ide.ExternalTools
 {
-	internal class ExternalToolPane : AbstractOptionPanel
+	internal class ExternalToolPane : OptionsPanel
 	{
 		ExternalToolPanelWidget widget;
 
-		public override void LoadPanelContents ()
+		public override Widget CreatePanelWidget ()
 		{
-			widget = new ExternalToolPanelWidget ();
-			Add (widget);
+			return widget = new ExternalToolPanelWidget ();
+		}
+		
+		public override bool ValidateChanges ()
+		{
+			return widget.Validate ();
 		}
 
-		public override bool StorePanelContents ()
+		public override void ApplyChanges ()
 		{
-			return widget.Store ();
+			widget.Store ();
 		}
 	}
 	
@@ -321,7 +325,7 @@ namespace MonoDevelop.Ide.ExternalTools
 			}
 		}
 
-		public bool Store ()
+		public bool Validate ()
 		{
 			List<ExternalTool> newlist = new List<ExternalTool> ();
 			TreeIter first;
@@ -339,6 +343,20 @@ namespace MonoDevelop.Ide.ExternalTools
 						MessageService.ShowError (String.Format(GettextCatalog.GetString ("The working directory of tool \"{0}\" is invalid.") ,tool.MenuCommand));
 						return false;
 					}
+				} while (toolListBox.Model.IterNext (ref current));
+			}
+			return true;
+		}
+		
+		public bool Store ()
+		{
+			List<ExternalTool> newlist = new List<ExternalTool> ();
+			TreeIter first;
+			if (toolListBox.Model.GetIterFirst (out first)) {
+				TreeIter current = first;
+				do {
+					// loop through items in the tree
+					ExternalTool tool = toolListBox.Model.GetValue (current, 1) as ExternalTool;
 					newlist.Add (tool);
 				} while (toolListBox.Model.IterNext (ref current));
 			}

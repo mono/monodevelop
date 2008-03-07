@@ -47,10 +47,6 @@ namespace MonoDevelop.Ide.Gui.OptionPanels {
         
         private Gtk.Label GtkLabel6;
         
-        private Gtk.HBox hbox50;
-        
-        private Gtk.Label label115;
-        
         protected virtual void Build() {
             Stetic.Gui.Initialize(this);
             // Widget MonoDevelop.Ide.Gui.OptionPanels.IDEStyleOptionsPanelWidget
@@ -192,23 +188,6 @@ namespace MonoDevelop.Ide.Gui.OptionPanels {
             w14.Position = 3;
             w14.Expand = false;
             w14.Fill = false;
-            // Container child vbox13.Gtk.Box+BoxChild
-            this.hbox50 = new Gtk.HBox();
-            this.hbox50.Name = "hbox50";
-            // Container child hbox50.Gtk.Box+BoxChild
-            this.label115 = new Gtk.Label();
-            this.label115.Name = "label115";
-            this.label115.LabelProp = "      ";
-            this.hbox50.Add(this.label115);
-            Gtk.Box.BoxChild w15 = ((Gtk.Box.BoxChild)(this.hbox50[this.label115]));
-            w15.Position = 0;
-            w15.Expand = false;
-            w15.Fill = false;
-            this.vbox13.Add(this.hbox50);
-            Gtk.Box.BoxChild w16 = ((Gtk.Box.BoxChild)(this.vbox13[this.hbox50]));
-            w16.Position = 4;
-            w16.Expand = false;
-            w16.Fill = false;
             this.Add(this.vbox13);
             if ((this.Child != null)) {
                 this.Child.ShowAll();

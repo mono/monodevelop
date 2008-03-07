@@ -39,19 +39,18 @@ using Gtk;
 
 namespace MonoDevelop.Ide.Gui.OptionPanels
 {
-	internal class IDEStyleOptionsPanel : AbstractOptionPanel
+	internal class IDEStyleOptionsPanel : OptionsPanel
 	{
 		IDEStyleOptionsPanelWidget widget;
 
-		public override void LoadPanelContents()
+		public override Widget CreatePanelWidget ()
 		{
-			Add (widget = new IDEStyleOptionsPanelWidget ());
+			return widget = new IDEStyleOptionsPanelWidget ();
 		}
 		
-		public override bool StorePanelContents()
+		public override void ApplyChanges ()
 		{
 			widget.Store ();
-			return true;
 		}
 	}
 	

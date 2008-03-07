@@ -156,9 +156,9 @@
 		</ExtensionNode>
 	</ExtensionPoint>
 	
-	<ExtensionPoint path = "/MonoDevelop/Ide/OptionsDialogPanels" name = "Global options panels">
+	<ExtensionPoint path = "/MonoDevelop/Ide/GlobalOptionsDialog" name = "Global options panels">
 		<Description>Dialog panels for global MonoDevelop options.</Description>
-		<ExtensionNodeSet id="MonoDevelop.Core.Gui.DialogPanel"/>
+		<ExtensionNodeSet id="MonoDevelop.Core.Gui.OptionsDialogSection"/>
 	</ExtensionPoint>
 	
 	<ExtensionPoint path = "/MonoDevelop/Ide/ProjectFileFilters" name = "Combine file filters">
@@ -1185,52 +1185,32 @@
 		</WorkbenchContext>
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/Ide/OptionsDialogPanels">
-		<DialogPanel id    = "UIOptions"
-		             _label = "Preferences">
-<!--			<DialogPanel id = "SelectCulture"
-			             _label = "${res:Dialog.Options.IDEOptions.SelectCulture.PanelName}"
-			             class = "MonoDevelop.Gui.Dialogs.OptionPanels.IDEOptionPanel"/>-->
-			<DialogPanel id = "SelectStyle"
-				         _label = "Visual Style"
-				         class = "MonoDevelop.Ide.Gui.OptionPanels.IDEStyleOptionsPanel"/>
-			<DialogPanel id = "KeyBindings"
-				         _label = "Key Bindings"
-				         class = "MonoDevelop.Ide.Gui.OptionPanels.KeyBindingsPanel"/>				         
-			<DialogPanel id = "LoadSave"
-			             _label = "Load/Save"
-			             class = "MonoDevelop.Ide.Gui.OptionPanels.LoadSavePanel"/>
-			<!--  i8n the file -->
-			<DialogPanel id = "Build"
-			             _label = "Build"
-			             class = "MonoDevelop.Ide.Gui.OptionPanels.BuildPanel"/>
-			<DialogPanel id = "AddIns"
-			             _label = "Add-ins"
-			             class = "MonoDevelop.Ide.Gui.OptionPanels.AddInsOptionsPanel"/>
-			<DialogPanel id = "TaskList"
-			             _label = "Task List"
-			             class = "MonoDevelop.Ide.Gui.OptionPanels.TasksOptionsPanel"/>
-		</DialogPanel>
-		<DialogPanel id    = "CodingOptions"
-		             _label = "Coding">
-			<DialogPanel id = "CodeGeneration"
-			             _label = "Code Generation"
-			             class = "MonoDevelop.Ide.Gui.OptionPanels.CodeGenerationPanel"/>
-			<DialogPanel id = "EditStandardHeaders"
-			             _label = "Standard Header"
-			             class = "MonoDevelop.Ide.StandardHeaders.StandardHeaderPanel"/>
-		</DialogPanel>
-		
-		<DialogPanel id    = "ToolsOptions"
-		             _label = "Tools">
-			<DialogPanel id = "ExternalTools"
-			             _label = "External Tools"
-			             class = "MonoDevelop.Ide.ExternalTools.ExternalToolPane"/>
-		</DialogPanel>
-		<DialogPanel id = "Other"
-		             _label = "Other Settings">
-		</DialogPanel>
+	<Extension path = "/MonoDevelop/Ide/GlobalOptionsDialog">
+		<Section id = "Preferences" _label = "Preferences">
+			<Section id = "Style" _label = "Visual Style" icon="gtk-preferences" class = "MonoDevelop.Ide.Gui.OptionPanels.IDEStyleOptionsPanel" />
+			<Section id = "KeyBindings" _label = "Key Bindings" fill="true" icon="md-keyboard-shortcuts" class = "MonoDevelop.Ide.Gui.OptionPanels.KeyBindingsPanel" />
+			<Section id = "LoadSave" _label = "Load/Save" icon="gtk-harddisk" class = "MonoDevelop.Ide.Gui.OptionPanels.LoadSavePanel" />
+			<Section id = "Build" _label = "Build" icon="md-build-current-selected-project" class = "MonoDevelop.Ide.Gui.OptionPanels.BuildPanel" />
+			<Section id = "AddIns" _label = "Add-ins" icon="md-addin" class = "MonoDevelop.Ide.Gui.OptionPanels.AddInsOptionsPanel" />
+			<Section id = "TaskList" _label = "Task List" icon="md-task-list-icon" fill="true" class = "MonoDevelop.Ide.Gui.OptionPanels.TasksOptionsPanel" />
+			<Section id = "ExternalTools" _label = "External Tools" fill="true" class = "MonoDevelop.Ide.ExternalTools.ExternalToolPane" />
+		</Section>
+
+		<Section id = "Coding" _label = "Coding">
+			<Section id = "CodeGeneration" _label = "Code Generation" class = "MonoDevelop.Ide.Gui.OptionPanels.CodeGenerationPanel" />
+			<Section id = "EditStandardHeaders" _label = "Standard Header" fill="true" class = "MonoDevelop.Ide.StandardHeaders.StandardHeaderPanel" />
+			<Section id = "CodeTemplates" _label = "Code Templates" fill="true" class = "MonoDevelop.Ide.CodeTemplates.CodeTemplatePane"/>
+		</Section>
+
+		<Section id = "TextEditor" _label = "Text Editor">
+			<Section id = "Formatting" _label = "Formatting" />
+		</Section>
+
+		<Section id = "VersionControl" _label = "Version Control" />
+
+		<Section id = "Other" _label = "Other" />
 	</Extension>
+
 
 	<Extension path = "/MonoDevelop/Ide/ProjectFileFilters">
 		<FileFilter id = "Combine"
@@ -1539,14 +1519,12 @@
 		<StockIcon stockid = "system-file-manager" resource = "system-file-manager.png" />
 		<StockIcon stockid = "md-navigate-back" resource = "navigate-previous.png" />
 		<StockIcon stockid = "md-navigate-forward" resource = "navigate-next.png" />
+		<StockIcon stockid = "md-keyboard-shortcuts" resource = "keyboard-shortcuts-16.png" size="Menu"/>
+		<StockIcon stockid = "md-keyboard-shortcuts" resource = "keyboard-shortcuts-22.png" />
+		<StockIcon stockid = "md-text-editor" resource = "text-editor-16.png" size="Menu"/>
+		<StockIcon stockid = "md-text-editor" resource = "text-editor-22.png" />
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/Ide/OptionsDialogPanels/CodingOptions">
-		<DialogPanel id = "CodeTemplates"
-		             _label = "Code Templates"
-		             class = "MonoDevelop.Ide.CodeTemplates.CodeTemplatePane"/>
-	</Extension>
-
 	<Extension path = "/MonoDevelop/Ide/ContextMenu/DocumentTab">
 		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.CloseFile" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.CloseAllFiles" />

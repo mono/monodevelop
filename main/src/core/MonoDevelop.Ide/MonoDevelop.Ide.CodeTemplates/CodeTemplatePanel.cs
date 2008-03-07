@@ -381,24 +381,22 @@ namespace MonoDevelop.Ide.CodeTemplates
 		}
 	}
 
-	internal class CodeTemplatePane : AbstractOptionPanel
+	internal class CodeTemplatePane : OptionsPanel
 	{
-		
 		CodeTemplatePanelWidget widget;
-		
-		public override void LoadPanelContents()
+
+		public override Widget CreatePanelWidget ()
 		{
 			// create a new CodeTemplatePanelWidget using glade files and add it
 			// pass in the template groups that it needs
-			this.Add (widget = new CodeTemplatePanelWidget (CodeTemplateService.TemplateGroups));
+			return (widget = new CodeTemplatePanelWidget (CodeTemplateService.TemplateGroups));
 		}
-			
-		public override bool StorePanelContents()
+
+		public override void ApplyChanges ()
 		{
 			// get template groups from widhet and save them
 			CodeTemplateService.TemplateGroups = widget.TemplateGroups;
 			CodeTemplateService.SaveTemplates();
-			return true;
 		}		
 	}
 }

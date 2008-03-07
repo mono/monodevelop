@@ -66,19 +66,18 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		}
 	}
 	
-	public class CodeGenerationPanel : AbstractOptionPanel
+	public class CodeGenerationPanel : OptionsPanel
 	{
 		CodeGenerationPanelWidget widget;
 		
-		public override void LoadPanelContents ()
+		public override Widget CreatePanelWidget ()
 		{
-			Add (widget = new CodeGenerationPanelWidget ());
+			return (widget = new CodeGenerationPanelWidget ());
 		}
 		
-		public override bool StorePanelContents ()
+		public override void ApplyChanges ()
 		{
 			widget.Store ();
-			return true;
 		}
 	}
 }

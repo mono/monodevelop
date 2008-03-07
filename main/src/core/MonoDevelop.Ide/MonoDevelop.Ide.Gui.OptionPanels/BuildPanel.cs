@@ -33,20 +33,18 @@ using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide.Gui.OptionPanels
 {
-	internal class BuildPanel : AbstractOptionPanel
+	internal class BuildPanel : OptionsPanel
 	{
-
 		BuildPanelWidget widget;
 
-		public override void LoadPanelContents()
+		public override Widget CreatePanelWidget ()
 		{
-			Add (widget = new  BuildPanelWidget ());
+			return (widget = new  BuildPanelWidget ());
 		}
-		
-		public override bool StorePanelContents()
+
+		public override void ApplyChanges ()
 		{
 			widget.Store ();
-			return true;
 		}
 	}
 	

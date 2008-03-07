@@ -55,7 +55,6 @@ namespace MonoDevelop.Ide.Gui
 		
 		public SdiWorkspaceWindow (IWorkbench workbench, IViewContent content, Notebook tabControl, TabLabel tabLabel) : base ()
 		{
-			System.Console.WriteLine("content:" + content);
 			this.workbench = workbench;
 			this.tabControl = tabControl;
 			this.content = content;

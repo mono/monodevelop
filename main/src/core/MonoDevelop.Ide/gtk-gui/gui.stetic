@@ -2658,7 +2658,6 @@
                   <widget class="Gtk.RadioButton" id="saveChangesRadioButton">
                     <property name="MemberName" />
                     <property name="Label" translatable="yes">_Save changes to open documents</property>
-                    <property name="Active">True</property>
                     <property name="DrawIndicator">True</property>
                     <property name="HasLabel">True</property>
                     <property name="UseUnderline">True</property>
@@ -3620,7 +3619,7 @@
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Dialog" id="MonoDevelop.Ide.Gui.Dialogs.ReplaceInFilesDialog" design-size="518 397">
+  <widget class="Gtk.Dialog" id="MonoDevelop.Ide.Gui.Dialogs.ReplaceInFilesDialog" design-size="518 411">
     <property name="MemberName" />
     <property name="GeneratePublic">False</property>
     <property name="Title">Replace in Files</property>
@@ -4015,7 +4014,7 @@
     <child internal-child="ActionArea">
       <widget class="Gtk.HButtonBox" id="dialog-action_area2">
         <property name="MemberName" />
-        <property name="Spacing">10</property>
+        <property name="Spacing">6</property>
         <property name="BorderWidth">5</property>
         <property name="Size">4</property>
         <property name="LayoutStyle">End</property>
@@ -4214,6 +4213,7 @@ Months</property>
   </widget>
   <widget class="Gtk.Bin" id="MonoDevelop.Ide.Gui.OptionPanels.TasksPanelWidget">
     <property name="MemberName" />
+    <property name="GeneratePublic">False</property>
     <child>
       <widget class="Gtk.VBox" id="vbox6">
         <property name="MemberName" />
@@ -6068,7 +6068,7 @@ Months</property>
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Bin" id="MonoDevelop.Ide.Gui.OptionPanels.IDEStyleOptionsPanelWidget" design-size="300 300">
+  <widget class="Gtk.Bin" id="MonoDevelop.Ide.Gui.OptionPanels.IDEStyleOptionsPanelWidget" design-size="315 194">
     <property name="MemberName" />
     <child>
       <widget class="Gtk.VBox" id="vbox13">
@@ -6212,7 +6212,7 @@ Large</property>
                   <widget class="Gtk.HBox" id="hbox2">
                     <property name="MemberName" />
                     <property name="Spacing">6</property>
-	    <child>
+                    <child>
                       <widget class="Gtk.CheckButton" id="fontCheckbox">
                         <property name="MemberName" />
                         <property name="Label" translatable="yes">_Use a different font for pads:</property>
@@ -6256,29 +6256,6 @@ Large</property>
           <packing>
             <property name="Position">3</property>
             <property name="AutoSize">True</property>
-            <property name="Expand">False</property>
-            <property name="Fill">False</property>
-          </packing>
-        </child>
-        <child>
-          <widget class="Gtk.HBox" id="hbox50">
-            <property name="MemberName" />
-            <child>
-              <widget class="Gtk.Label" id="label115">
-                <property name="MemberName" />
-                <property name="LabelProp">      </property>
-              </widget>
-              <packing>
-                <property name="Position">0</property>
-                <property name="AutoSize">False</property>
-                <property name="Expand">False</property>
-                <property name="Fill">False</property>
-              </packing>
-            </child>
-          </widget>
-          <packing>
-            <property name="Position">4</property>
-            <property name="AutoSize">False</property>
             <property name="Expand">False</property>
             <property name="Fill">False</property>
           </packing>

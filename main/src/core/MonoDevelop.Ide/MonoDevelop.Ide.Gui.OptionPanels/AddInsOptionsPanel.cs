@@ -41,19 +41,18 @@ using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide.Gui.OptionPanels
 {
-	internal class AddInsOptionsPanel : AbstractOptionPanel
+	internal class AddInsOptionsPanel : OptionsPanel
 	{
 		AddInsPanelWidget widget;
 
-		public override void LoadPanelContents()
+		public override Widget CreatePanelWidget ()
 		{
-			Add (widget = new  AddInsPanelWidget ());
+			return widget = new  AddInsPanelWidget ();
 		}
-		
-		public override bool StorePanelContents()
+
+		public override void ApplyChanges ()
 		{
 			widget.Store ();
-			return true;
 		}
 	}
 		

@@ -1,3 +1,29 @@
+2008-03-07  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.CodeTemplates/CodeTemplatePanel.cs,
+	  MonoDevelop.Ide.Gui.OptionPanels/AddInsOptionsPanel.cs,
+	  MonoDevelop.Ide.Gui.OptionPanels/LoadSavePanel.cs,
+	  MonoDevelop.Ide.Gui.OptionPanels/IDEStyleOptionsPanel.cs,
+	  MonoDevelop.Ide.Gui.OptionPanels/BuildPanel.cs,
+	  MonoDevelop.Ide.Gui.OptionPanels/TasksOptionsPanel.cs,
+	  MonoDevelop.Ide.Gui.OptionPanels/CodeGenerationPanel.cs,
+	  MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs,
+	  MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs,
+	  MonoDevelop.Ide.StandardHeader/StandardHeaderPanel.cs,
+	  MonoDevelop.Ide.addin.xml,
+	  gtk-gui/MonoDevelop.Ide.Gui.Dialogs.EncapsulateFieldDialog.cs,
+	  gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.IDEStyleOptionsPanelWidget.cs,
+	  gtk-gui/gui.stetic, gtk-gui/objects.xml,
+	  gtk-gui/MonoDevelop.Ide.Gui.Dialogs.ReplaceInFilesDialog.cs,
+	  MonoDevelop.Ide.Gui/Workbench.cs: Use the new options dialog
+	  infrastructure.
+	* MonoDevelop.Ide.mdp, Makefile.am, icons/text-editor-16.png,
+	  icons/keyboard-shortcuts-22.png, icons/keyboard-shortcuts-16.png,
+	  icons/text-editor-22.png: Added new icons.
+	* gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.TasksPanelWidget.cs: This
+	  class doesn't need to be public.
+	* MonoDevelop.Ide.Gui/SdiWorkspaceWindow.cs: Remove debug code.
+
 2008-03-05  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs: Changed

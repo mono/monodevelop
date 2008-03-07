@@ -37,8 +37,10 @@ using MonoDevelop.Components.Commands;
 using Mono.Addins;
 using Gtk;
 
-namespace MonoDevelop.Ide.Gui.OptionPanels {
-	public partial class KeyBindingsPanel : Gtk.Bin, IDialogPanel {
+namespace MonoDevelop.Ide.Gui.OptionPanels
+{
+	public partial class KeyBindingsPanel : Gtk.Bin, IOptionsPanel
+	{
 		static readonly int commandCol = 0;
 		static readonly int labelCol = 1;
 		static readonly int bindingCol = 2;
@@ -89,14 +91,14 @@ namespace MonoDevelop.Ide.Gui.OptionPanels {
 			schemeCombo.Changed += new EventHandler (OnKeyBindingSchemeChanged);
 		}
 		
-		public bool StorePanelContents ()
+		public void ApplyChanges ()
 		{
 			TreeModel model = (TreeModel) keyStore;
 			Command command;
 			TreeIter iter;
 			
 			if (!model.GetIterFirst (out iter))
-				return true;
+				return;
 			
 			do {
 				TreeIter citer;
@@ -109,11 +111,9 @@ namespace MonoDevelop.Ide.Gui.OptionPanels {
 			} while (model.IterNext (ref iter));
 			
 			KeyBindingService.SaveCurrentBindings ();
-			
-			return true;
 		}
-		
-		public void LoadPanelContents ()
+
+		public Gtk.Widget CreatePanelWidget ()
 		{
 			SortedDictionary<string, Command> commands = new SortedDictionary<string, Command> ();
 			List<string> catNames = new List<string> ();
@@ -161,6 +161,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels {
 				TreeIter icat = categories [cmd.Category];
 				keyStore.AppendValues (icat, cmd, label, cmd.AccelKey != null ? cmd.AccelKey : String.Empty, cmd.Description, (int) Pango.Weight.Normal, cmd.Icon, true);
 			}
+			return this;
 		}
 		
 		void OnKeyBindingSchemeChanged (object sender, EventArgs e)
@@ -289,77 +290,18 @@ namespace MonoDevelop.Ide.Gui.OptionPanels {
 				keyStore.SetValue (iter, bindingCol, accelEntry.Text);
 		}
 		
-#region Cut & Paste from abstract option panel
-		object customizationObject = null;
-		bool wasActivated = false;
-		bool isFinished = true;
-		
-		public Widget Control {
-			get { return this; }
-		}
-		
-		public virtual Gtk.Image Icon {
-			get { return null; }
-		}
-		
-		public bool WasActivated {
-			get { return wasActivated; }
-		}
-		
-		public virtual object CustomizationObject {
-			get { return customizationObject; }
-			set {
-				customizationObject = value;
-				OnCustomizationObjectChanged ();
-			}
-		}
-		
-		public virtual bool EnableFinish {
-			get { return isFinished; }
-			set {
-				if (isFinished != value) {
-					isFinished = value;
-					OnEnableFinishChanged ();
-				}
-			}
-		}
-		
-		public virtual bool ReceiveDialogMessage (DialogMessage message)
+		public bool ValidateChanges ()
 		{
-			try {
-				switch (message) {
-				case DialogMessage.Activated:
-					if (!wasActivated) {
-						LoadPanelContents ();
-						wasActivated = true;
-					}
-					break;
-				case DialogMessage.OK:
-					if (wasActivated)
-						return StorePanelContents ();
-					break;
-				}
-			} catch (Exception ex) {
-				MessageService.ShowException (ex);
-			}
-			
 			return true;
 		}
 		
-		protected virtual void OnEnableFinishChanged ()
+		public bool IsVisible ()
 		{
-			if (EnableFinishChanged != null)
-				EnableFinishChanged (this, null);
+			return true;
 		}
 		
-		protected virtual void OnCustomizationObjectChanged ()
+		public void Initialize (OptionsDialog dialog, object dataObject)
 		{
-			if (CustomizationObjectChanged != null)
-				CustomizationObjectChanged (this, null);
 		}
-		
-		public event EventHandler CustomizationObjectChanged;
-		public event EventHandler EnableFinishChanged;
-#endregion
 	}
 }
