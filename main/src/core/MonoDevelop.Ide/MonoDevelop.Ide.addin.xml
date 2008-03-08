@@ -1354,13 +1354,18 @@
 	
 	<Extension path = "/MonoDevelop/Core/StockIcons">
 		<StockIcon stockid = "md-parser" resource = "parsing.png" />
-		<StockIcon stockid = "md-navigate-next" resource = "navigate-next.png" />
-		<StockIcon stockid = "md-navigate-previous" resource = "navigate-previous.png" />
+		<!-- for some reason both pairs next/previous and forward/back are in use -->
+		<StockIcon stockid = "md-navigate-forward" resource = "navigate-next-16.png" size="Menu" />
+		<StockIcon stockid = "md-navigate-forward" resource = "navigate-next-24.png" />
+		<StockIcon stockid = "md-navigate-back" resource = "navigate-previous-16.png" size="Menu" />
+		<StockIcon stockid = "md-navigate-back" resource = "navigate-previous-24.png" />
+		<StockIcon stockid = "md-navigate-next" resource = "navigate-next-16.png" size="Menu" />
+		<StockIcon stockid = "md-navigate-next" resource = "navigate-next-24.png" />
+		<StockIcon stockid = "md-navigate-previous" resource = "navigate-previous-16.png" size="Menu" />
+		<StockIcon stockid = "md-navigate-previous" resource = "navigate-previous-24.png" />
 		<StockIcon stockid = "md-pin-up" resource = "pinup.png" />
 		<StockIcon stockid = "md-pin-down" resource = "pindown.png" />
 		<StockIcon stockid = "system-file-manager" resource = "system-file-manager.png" />
-		<StockIcon stockid = "md-navigate-back" resource = "navigate-previous.png" />
-		<StockIcon stockid = "md-navigate-forward" resource = "navigate-next.png" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/OptionsDialogPanels/CodingOptions">
