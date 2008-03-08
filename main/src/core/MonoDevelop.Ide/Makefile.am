@@ -363,8 +363,10 @@ RES =  \
 	icons/keyboard-shortcuts-16.png \
 	icons/keyboard-shortcuts-22.png \
 	icons/mono-powered.png \
-	icons/navigate-next.png \
-	icons/navigate-previous.png \
+	icons/navigate-next-16.png \
+	icons/navigate-next-24.png \
+	icons/navigate-previous-16.png \
+	icons/navigate-previous-24.png \
 	icons/parsing.png \
 	icons/pindown.png \
 	icons/pinup.png \

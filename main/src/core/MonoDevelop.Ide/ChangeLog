@@ -1,3 +1,10 @@
+2008-03-07  Michael Hutchinson  <mhutchinson@novell.com> 
+
+	* MonoDevelop.Ide.addin.xml:
+	* icons/navigate-previous*.png:
+	* icons/navigate-next*.png: 
+	* Makefile.am: Sharpen up the prev/next icons for 16x16 px menus. 
+
 2008-03-07  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Ide.Gui/MonoDevelopStatusBar.cs: Remove redundant
