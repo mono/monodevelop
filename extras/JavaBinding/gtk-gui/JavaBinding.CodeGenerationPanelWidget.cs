@@ -467,6 +467,9 @@ namespace JavaBinding {
             if ((this.Child != null)) {
                 this.Child.ShowAll();
             }
+            this.label87.MnemonicWidget = this.symbolsEntry;
+            this.label88.MnemonicWidget = this.mainClassEntry;
+            this.label91.MnemonicWidget = this.classPathEntry;
             this.Show();
         }
     }

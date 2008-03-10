@@ -62,7 +62,7 @@
   </Extension>
 
   <Extension path = "/MonoDevelop/Ide/GlobalOptionsDialog/Other">
-  	<Section id = "JavaOptions" insertbefore = "Formatting" _label = "Java" fill="true" class = "JavaBinding.GlobalOptionsPanelPanel"/>
+	<Section _label = "Java" icon="md-java" class = "JavaBinding.GlobalOptionsPanelPanel" />
   </Extension>
 
   <Extension path = "/MonoDevelop/ProjectModel/Gui/Icons">
@@ -78,6 +78,11 @@
   
 	<Extension path = "/MonoDevelop/ProjectModel/SerializableClasses">
 		<DataType class = "JavaBinding.JavaCompilerParameters" />
+	</Extension>
+
+	<Extension path = "/MonoDevelop/Core/StockIcons">
+		<StockIcon stockid = "md-java" resource = "java-16.png" icon="Menu" />
+		<StockIcon stockid = "md-java" resource = "java-22.png" />
 	</Extension>
 
 </Addin>

@@ -58,6 +58,8 @@ DATA_FILES =
 RESOURCES =  \
 	gtk-gui/gui.stetic \
 	icons/Java.FileIcon \
+	icons/java-16.png \
+	icons/java-22.png \
 	icons/java-icon-32.png \
 	JavaBinding.addin.xml \
 	templates/EmptyJavaFile.xft.xml \

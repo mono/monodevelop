@@ -1,3 +1,10 @@
+2008-03-10  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* JavaBinding.make, JavaBinding.addin.xml, JavaBinding.mdp,
+	  gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs,
+	  gtk-gui/gui.stetic, icons/java-22.png, icons/java-16.png: Added
+	  icons to the options pad.
+
 2008-03-07  Michael Hutchinson  <mhutchinson@novell.com> 
 
 	* Gui/GlobalOptionsPanel.cs:
