@@ -136,7 +136,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 			
 			// tell the user we encountered and worked around an issue
 			Gtk.Application.Invoke (delegate {
-				MessageService.ShowError (MonoDevelop.Core.GettextCatalog.GetString ("The Solution Execute Definitions for this Solution were invalid. A new empty set of Execute Definitions has been created."));
+				MonoDevelop.Core.Gui.MessageService.ShowError (MonoDevelop.Core.GettextCatalog.GetString ("The Solution Execute Definitions for this Solution were invalid. A new empty set of Execute Definitions has been created."));
 			});
 		}
 				

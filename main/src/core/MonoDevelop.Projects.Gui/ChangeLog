@@ -1,3 +1,9 @@
+2008-03-10  Marcos David Marín Amador <MarcosMarin@gmail.com> 
+
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.GeneralProjectOptionsWidget.cs:
+	  Workaround for bug in Mono 1.2.4 where usings are ignored in anonymous
+	  methods.
+
 2008-03-04  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Gui/ProjectsGuiServices.cs,

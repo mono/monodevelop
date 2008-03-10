@@ -108,7 +108,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels {
             this.descriptionLabel = new Gtk.Label();
             this.descriptionLabel.Name = "descriptionLabel";
             this.descriptionLabel.Xalign = 0F;
-            this.descriptionLabel.Yalign = 0.01F;
+            this.descriptionLabel.Yalign = 1F;
             this.descriptionLabel.LabelProp = MonoDevelop.Core.GettextCatalog.GetString("_Description:");
             this.descriptionLabel.UseUnderline = true;
             this.table11.Add(this.descriptionLabel);
