@@ -1,3 +1,9 @@
+2008-03-10  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Deployment.Gui/DialogFileReplacePolicy.cs: Message
+	  service is no longer GUI-thread synched, so handle that here
+	  instead.
+
 2008-03-04  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Deployment.NodeBuilders/PackageNodeBuilder.cs,

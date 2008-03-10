@@ -50,12 +50,22 @@ namespace MonoDevelop.Deployment.Gui
 			}
 		}
 		
+		delegate int DialogDelegate ();
+		
 		public FileReplaceMode GetReplaceAction (string source, DateTime sourceModified, string target, DateTime targetModified)
 		{
 			if (persistentMode != FileReplaceMode.NotSet)
 				return persistentMode;
 			
-			response = (FileReplaceDialog.ReplaceResponse)MessageService.ShowCustomDialog (new FileReplaceDialog (response, source, sourceModified.ToString (), target, targetModified.ToString ()));
+			//IFileReplacePolicy is not likely to be running in the GUI thread
+			//so use some DispatchService magic to synchronously call the dialog in the GUI thread
+			DialogDelegate del = delegate {
+				return MessageService.ShowCustomDialog (new FileReplaceDialog (response, source, sourceModified.ToString (), target, targetModified.ToString ()));
+			};
+			if (!DispatchService.IsGuiThread)
+				response = (FileReplaceDialog.ReplaceResponse) DispatchService.GuiDispatch (del).DynamicInvoke ();
+			else
+				response = (FileReplaceDialog.ReplaceResponse) del.DynamicInvoke ();
 			
 			switch (response) {
 			case FileReplaceDialog.ReplaceResponse.Replace:
