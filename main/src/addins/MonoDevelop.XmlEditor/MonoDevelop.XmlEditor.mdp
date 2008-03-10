@@ -15,76 +15,95 @@
   </Configurations>
   <Contents>
     <File name="AssemblyInfo.cs" subtype="Code" buildaction="Compile" />
-    <File name="EncodedStringWriter.cs" subtype="Code" buildaction="Compile" />
-    <File name="QualifiedNameCollection.cs" subtype="Code" buildaction="Compile" />
-    <File name="QualifiedName.cs" subtype="Code" buildaction="Compile" />
-    <File name="XmlCompletionDataCollection.cs" subtype="Code" buildaction="Compile" />
-    <File name="XmlCompletionData.cs" subtype="Code" buildaction="Compile" />
-    <File name="XmlCompletionDataProvider.cs" subtype="Code" buildaction="Compile" />
-    <File name="XmlElementPath.cs" subtype="Code" buildaction="Compile" />
-    <File name="XmlParser.cs" subtype="Code" buildaction="Compile" />
-    <File name="XmlSchemaCompletionDataCollection.cs" subtype="Code" buildaction="Compile" />
-    <File name="XmlSchemaCompletionData.cs" subtype="Code" buildaction="Compile" />
-    <File name="XmlSchemaManager.cs" subtype="Code" buildaction="Compile" />
-    <File name="XmlSchemaAssociation.cs" subtype="Code" buildaction="Compile" />
-    <File name="XmlEditorAddInOptions.cs" subtype="Code" buildaction="Compile" />
-    <File name="XmlDisplayBinding.cs" subtype="Code" buildaction="Compile" />
-    <File name="XmlEditorView.cs" subtype="Code" buildaction="Compile" />
-    <File name="XmlEditorWindow.cs" subtype="Code" buildaction="Compile" />
-    <File name="XmlCompletionListWindow.cs" subtype="Code" buildaction="Compile" />
-    <File name="XmlEditorViewContent.cs" subtype="Code" buildaction="Compile" />
-    <File name="XmlEditorOptionsPanel.cs" subtype="Code" buildaction="Compile" />
-    <File name="XmlEditorOptionsPanelWidget.cs" subtype="Code" buildaction="Compile" />
     <File name="XmlEditor.glade" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="XmlSchemasPanel.cs" subtype="Code" buildaction="Compile" />
-    <File name="XmlSchemasPanelWidget.cs" subtype="Code" buildaction="Compile" />
-    <File name="SelectXmlSchemaDialog.cs" subtype="Code" buildaction="Compile" />
-    <File name="XmlFileExtensions.cs" subtype="Code" buildaction="Compile" />
-    <File name="Commands.cs" subtype="Code" buildaction="Compile" />
-    <File name="CreateSchemaCommand.cs" subtype="Code" buildaction="Compile" />
-    <File name="ValidateXmlCommand.cs" subtype="Code" buildaction="Compile" />
-    <File name="XmlEditorService.cs" subtype="Code" buildaction="Compile" />
-    <File name="FormatXmlCommand.cs" subtype="Code" buildaction="Compile" />
-    <File name="SourceViewTextIterator.cs" subtype="Code" buildaction="Compile" />
-    <File name="XmlEditorListWindow.cs" subtype="Code" buildaction="Compile" />
-    <File name="OpenStylesheetCommand.cs" subtype="Code" buildaction="Compile" />
-    <File name="RunXslTransformCommand.cs" subtype="Code" buildaction="Compile" />
-    <File name="XslOutputViewContent.cs" subtype="Code" buildaction="Compile" />
-    <File name="AssignStylesheetCommand.cs" subtype="Code" buildaction="Compile" />
-    <File name="XPathQueryWidget.cs" subtype="Code" buildaction="Compile" />
-    <File name="XPathQueryPad.cs" subtype="Code" buildaction="Compile" />
-    <File name="XPathQueryPad.png" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="OpenXPathQueryPadCommand.cs" subtype="Code" buildaction="Compile" />
-    <File name="XmlNamespace.cs" subtype="Code" buildaction="Compile" />
-    <File name="XPathQueryPadOptions.cs" subtype="Code" buildaction="Compile" />
-    <File name="XPathNodeMatch.cs" subtype="Code" buildaction="Compile" />
-    <File name="XPathNodeTextMarker.cs" subtype="Code" buildaction="Compile" />
-    <File name="RemoveXPathHighlightingCommand.cs" subtype="Code" buildaction="Compile" />
-    <File name="XPathHistoryList.cs" subtype="Code" buildaction="Compile" />
-    <File name="XPathNamespaceList.cs" subtype="Code" buildaction="Compile" />
-    <File name="GoToSchemaDefinitionCommand.cs" subtype="Code" buildaction="Compile" />
-    <File name="XmlFileExtensionNode.cs" subtype="Code" buildaction="Compile" />
-    <File name="DeclarationViewWindow.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.XmlEditor.addin.xml" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="MonoDevelop.XmlEditor/AssignStylesheetCommand.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.XmlEditor/Commands.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.XmlEditor/CreateSchemaCommand.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.XmlEditor/DeclarationViewWindow.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.XmlEditor/EncodedStringWriter.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.XmlEditor/FormatXmlCommand.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.XmlEditor/GoToSchemaDefinitionCommand.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.XmlEditor/OpenStylesheetCommand.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.XmlEditor/OpenXPathQueryPadCommand.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.XmlEditor/QualifiedNameCollection.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.XmlEditor/QualifiedName.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.XmlEditor/RemoveXPathHighlightingCommand.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.XmlEditor/RunXslTransformCommand.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.XmlEditor/SelectXmlSchemaDialog.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.XmlEditor/SourceViewTextIterator.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.XmlEditor/ValidateXmlCommand.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.XmlEditor/XmlCompletionDataCollection.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.XmlEditor/XmlCompletionData.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.XmlEditor/XmlCompletionDataProvider.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.XmlEditor/XmlElementPath.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.XmlEditor/XmlNamespace.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.XmlEditor/XmlParser.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.XmlEditor/XmlSchemaCompletionDataCollection.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.XmlEditor/XmlSchemaCompletionData.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.XmlEditor/XmlSchemaManager.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.XmlEditor/XmlSchemaAssociation.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.XmlEditor/XmlEditorAddInOptions.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.XmlEditor/XmlDisplayBinding.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.XmlEditor/XmlEditorView.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.XmlEditor/XmlEditorWindow.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.XmlEditor/XmlCompletionListWindow.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.XmlEditor/XmlEditorListWindow.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.XmlEditor/XmlEditorViewContent.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.XmlEditor/XmlEditorOptionsPanel.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.XmlEditor/XmlEditorOptionsPanelWidget.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.XmlEditor/XmlSchemasPanel.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.XmlEditor/XmlSchemasPanelWidget.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.XmlEditor/XmlFileExtensions.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.XmlEditor/XmlEditorService.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.XmlEditor/XmlFileExtensionNode.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.XmlEditor/XslOutputViewContent.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.XmlEditor.XPath/XPathHistoryList.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.XmlEditor.XPath/XPathNamespaceList.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.XmlEditor.XPath/XPathNodeMatch.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.XmlEditor.XPath/XPathNodeTextMarker.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.XmlEditor.XPath/XPathQueryPad.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.XmlEditor.XPath/XPathQueryPadOptions.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.XmlEditor.XPath/XPathQueryWidget.cs" subtype="Code" buildaction="Compile" />
+    <File name="schemas/appconfig.xsd" subtype="Code" buildaction="FileCopy" />
+    <File name="schemas/MonoDevelopAddIn.xsd" subtype="Code" buildaction="FileCopy" />
+    <File name="schemas/manifest.xsd" subtype="Code" buildaction="FileCopy" />
+    <File name="schemas/nant.xsd" subtype="Code" buildaction="FileCopy" />
+    <File name="schemas/readme.txt" subtype="Code" buildaction="FileCopy" />
+    <File name="schemas/W3C-License.html" subtype="Code" buildaction="FileCopy" />
+    <File name="schemas/XMLSchema.xsd" subtype="Code" buildaction="FileCopy" />
+    <File name="schemas/xslt.xsd" subtype="Code" buildaction="FileCopy" />
+    <File name="Icons/XPathQueryPad.png" subtype="Code" buildaction="EmbedAsResource" />
   </Contents>
   <References>
-    <ProjectReference type="Gac" localcopy="True" refto="gtksourceview-sharp, Version=1.0.0.2, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="gdk-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="gnome-vfs-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="glade-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <ProjectReference type="Assembly" localcopy="False" refto="../../../../lib/monodevelop/bin/MonoDevelop.Core.dll" />
-    <ProjectReference type="Assembly" localcopy="False" refto="../../../../lib/monodevelop/AddIns/MonoDevelop.SourceEditor.dll" />
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
     <ProjectReference type="Gac" localcopy="True" refto="System.Xml, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
     <ProjectReference type="Gac" localcopy="True" refto="System.Data, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
     <ProjectReference type="Gac" localcopy="True" refto="gtk-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="Mono.Addins, Version=0.3.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
-    <ProjectReference type="Assembly" localcopy="True" refto="../../../../lib/monodevelop/bin/MonoDevelop.Components.dll" />
-    <ProjectReference type="Assembly" localcopy="True" refto="../../../../lib/monodevelop/bin/MonoDevelop.Core.Gui.dll" />
-    <ProjectReference type="Assembly" localcopy="True" refto="../../../../lib/monodevelop/bin/MonoDevelop.Ide.dll" />
-    <ProjectReference type="Assembly" localcopy="True" refto="../../../../lib/monodevelop/bin/MonoDevelop.Projects.dll" />
-    <ProjectReference type="Assembly" localcopy="True" refto="../../../../lib/monodevelop/bin/MonoDevelop.Projects.Gui.dll" />
+    <ProjectReference type="Gac" localcopy="True" refto="pango-sharp, Version=2.10.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <ProjectReference type="Gac" localcopy="True" refto="atk-sharp, Version=2.10.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <ProjectReference type="Gac" localcopy="True" refto="gtksourceview2-sharp, Version=2.0.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Core" />
+    <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Projects" />
+    <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Components" />
+    <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Core.Gui" />
+    <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Projects.Gui" />
+    <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Ide" />
+    <ProjectReference type="Assembly" localcopy="False" refto="../../../build/AddIns/MonoDevelop.SourceEditor.dll" />
   </References>
+  <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="../../..">
+    <BuildFilesVar Sync="True" Name="FILES" />
+    <DeployFilesVar Sync="True" Name="DATA_FILES" />
+    <ResourcesVar Sync="True" Name="RES" />
+    <OthersVar />
+    <GacRefVar Sync="True" Name="REFS" Prefix="-r:" />
+    <AsmRefVar Sync="True" Name="REFS" Prefix="-r:" />
+    <ProjectRefVar Sync="True" Name="REFS" Prefix="-r:" />
+  </MonoDevelop.Autotools.MakefileInfo>
   <DeploymentInformation strategy="File">
     <excludeFiles />
   </DeploymentInformation>
