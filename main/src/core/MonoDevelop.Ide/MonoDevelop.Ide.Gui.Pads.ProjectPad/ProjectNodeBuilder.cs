@@ -330,7 +330,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			Combine cmb = CurrentNode.GetParentDataItem (typeof(Combine), false) as Combine;;
 			Project prj = CurrentNode.DataItem as Project;
 			
-			bool yes = MessageService.AskQuestion (GettextCatalog.GetString ("Do you really want to remove project {0} from solution {1}?", prj.Name, cmb.Name), AlertButton.Cancel, AlertButton.Remove) == AlertButton.Remove;
+			bool yes = MessageService.Confirm (GettextCatalog.GetString ("Do you really want to remove project {0} from solution {1}?", prj.Name, cmb.Name), AlertButton.Remove);
 
 			if (yes) {
 				cmb.RemoveEntry (prj);

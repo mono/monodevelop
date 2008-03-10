@@ -473,7 +473,7 @@ namespace MonoDevelop.Ide.Gui
 					}
 				}
 				
-				if (!warn || MessageService.AskQuestion (GettextCatalog.GetString ("The project '{0}' has been modified by an external application. Do you want to reload it? All project files will be closed.", entry.Name), AlertButton.Cancel, AlertButton.Reload) == AlertButton.Reload) {
+				if (!warn || MessageService.Confirm (GettextCatalog.GetString ("The project '{0}' has been modified by an external application. Do you want to reload it? All project files will be closed.", entry.Name), AlertButton.Reload)) {
 					if (entry == openCombine) {
 						string file = openCombine.FileName;
 						CloseCombine (true);
@@ -1353,7 +1353,7 @@ namespace MonoDevelop.Ide.Gui
 
 			if (filename != newfilename) {
 				if (File.Exists (newfilename)) {
-					if (MessageService.AskQuestion (GettextCatalog.GetString ("The file '{0}' already exists. Do you want to replace it?", newfilename), AlertButton.Cancel, AlertButton.OverwriteFile) != AlertButton.OverwriteFile)
+					if (!MessageService.Confirm (GettextCatalog.GetString ("The file '{0}' already exists. Do you want to replace it?", newfilename), AlertButton.OverwriteFile))
 						return null;
 				}
 				FileService.CopyFile (filename, newfilename);

@@ -114,8 +114,8 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			if (cmb == null)
 				return;
 			
-			bool yes = MessageService.AskQuestion (GettextCatalog.GetString (
-				"Do you really want to remove project '{0}' from solution '{1}'", entry.FileName, cmb.Name), AlertButton.Cancel, AlertButton.Remove) == AlertButton.Remove;
+			bool yes = MessageService.Confirm (GettextCatalog.GetString (
+				"Do you really want to remove project '{0}' from solution '{1}'", entry.FileName, cmb.Name), AlertButton.Remove);
 
 			if (yes) {
 				cmb.RemoveEntry (entry);

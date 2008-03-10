@@ -171,7 +171,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 						q = GettextCatalog.GetString ("Do you really want to move the folder '{0}' to the root folder of project '{1}'?", what, targetProject.Name);
 					else
 						q = GettextCatalog.GetString ("Do you really want to move the folder '{0}' to the folder '{1}'?", what, Path.GetFileName (targetPath));
-					if (MessageService.AskQuestion (q, AlertButton.Cancel, AlertButton.Move) == AlertButton.Move)
+					if (!MessageService.Confirm (q, AlertButton.Move))
 						return;
 				}
 				else {
@@ -179,7 +179,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 						q = GettextCatalog.GetString ("Do you really want to copy the folder '{0}' to the root folder of project '{1}'?", what, targetProject.Name);
 					else
 						q = GettextCatalog.GetString ("Do you really want to copy the folder '{0}' to the folder '{1}'?", what, Path.GetFileName (targetPath));
-					if (MessageService.AskQuestion (q, AlertButton.Cancel, AlertButton.Copy) == AlertButton.Copy)
+					if (!MessageService.Confirm (q, AlertButton.Copy))
 						return;
 				}
 
@@ -211,7 +211,11 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 					else
 						question = GettextCatalog.GetString ("Do you want to save the following files before the copy operation?\n\n{0}", sb.ToString ());
 				}
-				if (MessageService.AskQuestion (question, AlertButton.Cancel, AlertButton.Save) == AlertButton.Save) { 
+				AlertButton noSave = new AlertButton (GettextCatalog.GetString ("Don't Save"));
+				AlertButton res = MessageService.AskQuestion (question, AlertButton.Cancel, noSave, AlertButton.Save);
+				if (res == AlertButton.Cancel)
+					return;
+				else if (res == AlertButton.Save) { 
 					try {
 						foreach (Document doc in filesToSave) {
 							doc.Save ();

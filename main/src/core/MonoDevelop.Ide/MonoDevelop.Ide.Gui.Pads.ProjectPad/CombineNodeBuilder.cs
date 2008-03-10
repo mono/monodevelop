@@ -212,7 +212,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			Combine parent = CurrentNode.GetParentDataItem (typeof(Combine), false) as Combine;
 			if (parent == null) return;
 			
-			bool yes = MessageService.AskQuestion (GettextCatalog.GetString ("Do you really want to remove solution {0} from solution {1}?", combine.Name, parent.Name), AlertButton.Cancel, AlertButton.Remove) == AlertButton.Remove;
+			bool yes = MessageService.Confirm (GettextCatalog.GetString ("Do you really want to remove solution {0} from solution {1}?", combine.Name, parent.Name), AlertButton.Remove);
 			if (yes) {
 				parent.Entries.Remove (combine);
 				combine.Dispose ();

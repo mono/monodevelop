@@ -208,7 +208,7 @@ namespace MonoDevelop.Ide.Commands
 		protected override void Run()
 		{			
 			try {
-				if (IdeApp.Workbench.RecentOpen.RecentFile != null && IdeApp.Workbench.RecentOpen.RecentFile.Length > 0 && MessageService.AskQuestion (GettextCatalog.GetString ("Clear recent files"), GettextCatalog.GetString ("Are you sure you want to clear recent files list?"), AlertButton.Cancel, AlertButton.Clear) == AlertButton.Clear) {
+				if (IdeApp.Workbench.RecentOpen.RecentFile != null && IdeApp.Workbench.RecentOpen.RecentFile.Length > 0 && MessageService.Confirm (GettextCatalog.GetString ("Clear recent files"), GettextCatalog.GetString ("Are you sure you want to clear recent files list?"), AlertButton.Clear)) {
 					IdeApp.Workbench.RecentOpen.ClearRecentFiles();
 				}
 			} catch {}
@@ -226,7 +226,7 @@ namespace MonoDevelop.Ide.Commands
 		protected override void Run()
 		{			
 			try {
-				if (IdeApp.Workbench.RecentOpen.RecentProject != null && IdeApp.Workbench.RecentOpen.RecentProject.Length > 0 && MessageService.AskQuestion (GettextCatalog.GetString ("Clear recent projects"), GettextCatalog.GetString ("Are you sure you want to clear recent projects list?"), AlertButton.Cancel, AlertButton.Clear) == AlertButton.Clear)
+				if (IdeApp.Workbench.RecentOpen.RecentProject != null && IdeApp.Workbench.RecentOpen.RecentProject.Length > 0 && MessageService.Confirm (GettextCatalog.GetString ("Clear recent projects"), GettextCatalog.GetString ("Are you sure you want to clear recent projects list?"), AlertButton.Clear))
 				{
 					IdeApp.Workbench.RecentOpen.ClearRecentProjects();
 				}

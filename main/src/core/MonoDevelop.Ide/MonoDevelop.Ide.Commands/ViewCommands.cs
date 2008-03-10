@@ -142,7 +142,7 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Run ()
 		{
-			if (MessageService.AskQuestion (GettextCatalog.GetString ("Are you sure you want to delete the active layout?"), AlertButton.Cancel, AlertButton.Delete) == AlertButton.Delete) {
+			if (MessageService.Confirm (GettextCatalog.GetString ("Are you sure you want to delete the active layout?"), AlertButton.Delete)) {
 				string clayout = IdeApp.Workbench.CurrentLayout;
 				IdeApp.Workbench.CurrentLayout = "Default";
 				IdeApp.Workbench.DeleteLayout (clayout);

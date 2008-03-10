@@ -161,7 +161,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 		
 		private void OnDeleteFiles (object sender, EventArgs e)
 		{
-			if (MessageService.AskQuestion(GettextCatalog.GetString ("Are you sure you want to delete this file?"), AlertButton.Cancel, AlertButton.Delete) == AlertButton.Delete)
+			if (MessageService.Confirm (GettextCatalog.GetString ("Are you sure you want to delete this file?"), AlertButton.Delete))
 			{
 				try
 				{

@@ -144,8 +144,7 @@ namespace MonoDevelop.Ide.Gui.Search
 		public static void ReplaceAll()
 		{
 			if (searching) {
-				AlertButton cancelSearch = new AlertButton (GettextCatalog.GetString ("Cancel _Search"));
-				if (MessageService.AskQuestion (GettextCatalog.GetString ("There is a search already in progress. Do you want to cancel it?"), AlertButton.Cancel, cancelSearch) == cancelSearch)
+				if (!MessageService.Confirm (GettextCatalog.GetString ("There is a search already in progress. Do you want to stop it?"), AlertButton.Stop))
 					return;
 				CancelSearch ();
 			}
@@ -193,8 +192,7 @@ namespace MonoDevelop.Ide.Gui.Search
 		public static void FindAll()
 		{
 			if (searching) {
-				AlertButton cancelSearch = new AlertButton (GettextCatalog.GetString ("Cancel _Search"));
-				if (MessageService.AskQuestion (GettextCatalog.GetString ("There is a search already in progress. Do you want to cancel it?"), AlertButton.Cancel, cancelSearch) == cancelSearch)
+				if (!MessageService.Confirm (GettextCatalog.GetString ("There is a search already in progress. Do you want to stop it?"), AlertButton.Stop))
 					return;
 				CancelSearch ();
 			}

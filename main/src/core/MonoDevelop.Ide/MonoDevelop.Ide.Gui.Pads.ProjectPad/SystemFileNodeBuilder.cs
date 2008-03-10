@@ -125,7 +125,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		{
 			SystemFile file = CurrentNode.DataItem as SystemFile;
 			
-			bool yes = MessageService.AskQuestion (GettextCatalog.GetString ("Are you sure you want to permanently delete the file {0}?", file.Path), AlertButton.Cancel, AlertButton.Delete) == AlertButton.Delete;
+			bool yes = MessageService.Confirm (GettextCatalog.GetString ("Are you sure you want to permanently delete the file {0}?", file.Path), AlertButton.Delete);
 			if (!yes) return;
 
 			try {

@@ -174,7 +174,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			ProjectFile[] files = folder.Project.ProjectFiles.GetFilesInPath (folder.Path);
 			
 			if (files.Length == 0) {
-				bool yes = MessageService.AskQuestion (GettextCatalog.GetString ("Are you sure you want to permanently delete the folder {0}?", folder.Path), AlertButton.Cancel, AlertButton.Delete) == AlertButton.Delete;
+				bool yes = MessageService.Confirm (GettextCatalog.GetString ("Are you sure you want to permanently delete the folder {0}?", folder.Path), AlertButton.Delete);
 				if (!yes) 
 					return;
 
@@ -185,7 +185,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				}
 			}
 			else {
-				bool yes = MessageService.AskQuestion (GettextCatalog.GetString ("Do you really want to remove folder {0}?", folder.Name), AlertButton.Cancel, AlertButton.Remove) == AlertButton.Remove;
+				bool yes = MessageService.Confirm (GettextCatalog.GetString ("Do you really want to remove folder {0}?", folder.Name), AlertButton.Remove);
 				if (!yes) return;
 				
 				ProjectFile[] inParentFolder = project.ProjectFiles.GetFilesInPath (Path.GetDirectoryName (folder.Path));

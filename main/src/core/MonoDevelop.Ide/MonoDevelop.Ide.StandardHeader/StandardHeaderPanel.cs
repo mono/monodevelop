@@ -83,7 +83,7 @@ namespace MonoDevelop.Ide.StandardHeaders
 			this.removeButton.Clicked += delegate {
 				if (templateCombobox.Active < 0)
 					return;
-				if (MessageService.AskQuestion (MonoDevelop.Core.GettextCatalog.GetString ("Are you sure to remove the custom header template '{0}'?", templateCombobox.ActiveText), AlertButton.Cancel, AlertButton.Remove) == AlertButton.Remove) {
+				if (MessageService.Confirm (MonoDevelop.Core.GettextCatalog.GetString ("Are you sure to remove the custom header template '{0}'?", templateCombobox.ActiveText), AlertButton.Remove)) {
 					StandardHeaderService.RemoveTemplate (templateCombobox.ActiveText);
 					templateCombobox.RemoveText (templateCombobox.Active);
 				}
