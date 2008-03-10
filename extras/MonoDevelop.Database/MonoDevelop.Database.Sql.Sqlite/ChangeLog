@@ -1,5 +1,9 @@
 2008-03-10  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* gtk-gui/gui.stetic: Remove unused dialog.
+
+2008-03-10  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* SqliteSchemaProvider.cs: Track changes in the MessageService class.
 
 2008-01-30  Ben Motmans <ben.motmans@gmail.com> 
