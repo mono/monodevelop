@@ -169,6 +169,9 @@ namespace MonoDevelop.Ide.Gui
 					IdeApp.ProjectOperations.OpenCombine(recentOpen.RecentProject[0].ToString()).WaitForCompleted ();
 				}
 			}
+			
+			commandService.CommandSelected += OnCommandSelected;
+			commandService.CommandDeselected += OnCommandDeselected;
 		}
 		
 		static bool FileServiceErrorHandler (string message, Exception ex)
@@ -186,6 +189,22 @@ namespace MonoDevelop.Ide.Gui
 					LoggingService.LogError (ex.ToString ());
 				}
 			}
+		}
+		
+		static void OnCommandSelected (object s, CommandSelectedEventArgs args)
+		{
+			string msg = args.CommandInfo.Description;
+			if (string.IsNullOrEmpty (msg)) {
+				msg = args.CommandInfo.Text;
+				msg = msg.Replace ("_", "");
+			}
+			if (!string.IsNullOrEmpty (msg))
+				Workbench.StatusBar.ShowMessage (msg);
+		}
+			
+		static void OnCommandDeselected (object s, EventArgs args)
+		{
+			Workbench.StatusBar.ShowReady ();
 		}
 			
 		public static void Run ()

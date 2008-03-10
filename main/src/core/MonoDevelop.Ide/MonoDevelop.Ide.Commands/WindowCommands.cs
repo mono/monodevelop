@@ -86,7 +86,7 @@ namespace MonoDevelop.Ide.Commands
 				}
 				
 				item.Checked = (IdeApp.Workbench.ActiveDocument == doc);
-				item.Description = GettextCatalog.GetString ("Activate this window");
+				item.Description = GettextCatalog.GetString ("Activate window '{0}'", escapedWindowTitle);
 				
 				if (i + 1 <= 9)
 					item.AccelKey = "Alt|" + (i+1);

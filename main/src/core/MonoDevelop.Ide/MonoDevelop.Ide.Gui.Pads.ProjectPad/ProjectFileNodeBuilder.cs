@@ -244,7 +244,8 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			foreach (FileViewer fv in IdeApp.Workbench.GetFileViewers (finfo.Name)) {
 				if (prev != null && fv.IsExternal != prev.IsExternal)
 					info.AddSeparator ();
-				info.Add (fv.Title, fv);
+				CommandInfo ci = info.Add (fv.Title, fv);
+				ci.Description = GettextCatalog.GetString ("Open with '{0}'", fv.Title);
 				prev = fv;
 			}
 		}

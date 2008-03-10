@@ -251,6 +251,7 @@ namespace MonoDevelop.Ide.Commands
 					RecentItem ri = recentOpen.RecentFile[i];
 					string label = ((ri.Private == null || ri.Private.Length < 1) ? Path.GetFileName (ri.ToString ()) : ri.Private);
 					CommandInfo cmd = new CommandInfo (accelaratorKeyPrefix + label.Replace ("_", "__"));
+					cmd.Description = GettextCatalog.GetString ("Open {0}", ri.ToString ());
 					info.Add (cmd, ri);
 				}
 			}
@@ -273,7 +274,7 @@ namespace MonoDevelop.Ide.Commands
 					RecentItem ri = recentOpen.RecentProject[i];
 					string label = ((ri.Private == null || ri.Private.Length < 1) ? Path.GetFileNameWithoutExtension (ri.ToString ()) : ri.Private);
 					CommandInfo cmd = new CommandInfo (accelaratorKeyPrefix + label.Replace ("_", "__"));
-					cmd.Description = GettextCatalog.GetString ("load solution {0}", ri.ToString ());
+					cmd.Description = GettextCatalog.GetString ("Load solution {0}", ri.ToString ());
 					info.Add (cmd, ri);
 				}
 			}

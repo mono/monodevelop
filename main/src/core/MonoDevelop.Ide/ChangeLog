@@ -1,3 +1,15 @@
+2008-03-10  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Commands/ViewCommands.cs,
+	  MonoDevelop.Ide.Commands/FileCommands.cs,
+	  MonoDevelop.Ide.Commands/ProjectCommands.cs,
+	  MonoDevelop.Ide.Commands/WindowCommands.cs,
+	  MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs: Set
+	  better descriptions for dynamically generated menu items.
+	* MonoDevelop.Ide.addin.xml: Updated command descriptions.
+	* MonoDevelop.Ide.Gui/Ide.cs: Show menu item descriptions in the status
+	  bar.
+
 2008-03-07  Michael Hutchinson  <mhutchinson@novell.com> 
 
 	* MonoDevelop.Ide.addin.xml:

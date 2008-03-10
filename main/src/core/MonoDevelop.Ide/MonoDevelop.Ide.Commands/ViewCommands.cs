@@ -163,6 +163,7 @@ namespace MonoDevelop.Ide.Commands
 				CommandInfo cmd = new CommandInfo (pad.Title);
 				cmd.Icon = pad.Icon;
 				cmd.UseMarkup = true;
+				cmd.Description = GettextCatalog.GetString ("Show {0}", pad.Title);
 				info.Add (cmd, pad);
 			}
 		}
@@ -184,6 +185,7 @@ namespace MonoDevelop.Ide.Commands
 			foreach (string layout in layouts) {
 				CommandInfo cmd = new CommandInfo (GettextCatalog.GetString (layout));
 				cmd.Checked = (layout == IdeApp.Workbench.CurrentLayout);
+				cmd.Description = GettextCatalog.GetString ("Switch to layout '{0}'", cmd.Text);
 				info.Add (cmd, layout);
 			}
 		}
