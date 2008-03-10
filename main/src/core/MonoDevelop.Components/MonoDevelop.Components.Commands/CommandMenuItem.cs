@@ -43,6 +43,7 @@ namespace MonoDevelop.Components.Commands
 		string overrideLabel;
 		bool wasButtonActivation;
 		object initialTarget;
+		CommandInfo lastCmdInfo;
 		
 		public CommandMenuItem (object commandId, CommandManager commandManager, string overrideLabel): base ("")
 		{
@@ -113,8 +114,23 @@ namespace MonoDevelop.Components.Commands
 			}
 		}
 		
+		protected override void OnSelected ()
+		{
+			if (commandManager != null)
+				commandManager.NotifySelected (lastCmdInfo);
+			base.OnSelected ();
+		}
+		
+		protected override void OnDeselected ()
+		{
+			if (commandManager != null)
+				commandManager.NotifyDeselected ();
+			base.OnDeselected ();
+		}
+		
 		void Update (CommandInfo cmdInfo)
 		{
+			lastCmdInfo = cmdInfo;
 			if (isArray && !isArrayItem) {
 				this.Visible = false;
 				Gtk.Menu menu = (Gtk.Menu) Parent;  

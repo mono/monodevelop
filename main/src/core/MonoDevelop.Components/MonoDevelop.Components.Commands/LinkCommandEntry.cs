@@ -28,6 +28,7 @@
 
 using System;
 using System.Diagnostics;
+using Mono.Addins;
 using MonoDevelop.Core;
 
 namespace MonoDevelop.Components.Commands
@@ -67,7 +68,7 @@ namespace MonoDevelop.Components.Commands
 			try {
 				System.Diagnostics.Process.Start (url);
 			} catch (Exception) {
-				string msg = GettextCatalog.GetString ("Could not open the url {0}", url);
+				string msg = AddinManager.CurrentLocalizer.GetString ("Could not open the url {0}", url);
 				Gtk.MessageDialog md = new Gtk.MessageDialog (null, Gtk.DialogFlags.Modal | Gtk.DialogFlags.DestroyWithParent, Gtk.MessageType.Error, Gtk.ButtonsType.Ok, msg);
 				md.Run ();
 				md.Hide ();
@@ -79,6 +80,15 @@ namespace MonoDevelop.Components.Commands
 			Gtk.ImageMenuItem item = new Gtk.ImageMenuItem (text != null ? text : url);
 			item.Image = new Gtk.Image (icon, Gtk.IconSize.Menu);
 			item.Activated += new EventHandler (HandleActivation);
+			item.Selected += delegate {
+				CommandInfo ci = new CommandInfo (Text);
+				ci.Icon = icon;
+				ci.Description = AddinManager.CurrentLocalizer.GetString ("Open {0}", Url);
+				manager.NotifySelected (ci);
+			};
+			item.Deselected += delegate {
+				manager.NotifyDeselected ();
+			};
 			return item;
 		}
 

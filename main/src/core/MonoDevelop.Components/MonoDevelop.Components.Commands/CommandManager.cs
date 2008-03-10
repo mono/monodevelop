@@ -647,6 +647,20 @@ namespace MonoDevelop.Components.Commands
 			}
 		}
 		
+		internal void NotifySelected (CommandInfo cmdInfo)
+		{
+			if (CommandSelected != null) {
+				CommandSelectedEventArgs args = new CommandSelectedEventArgs (cmdInfo);
+				CommandSelected (this, args);
+			}
+		}
+		
+		internal void NotifyDeselected ()
+		{
+			if (CommandDeselected != null)
+				CommandDeselected (this, EventArgs.Empty);
+		}
+		
 		HandlerTypeInfo GetTypeHandlerInfo (object cmdTarget)
 		{
 			HandlerTypeInfo typeInfo = (HandlerTypeInfo) handlerInfo [cmdTarget.GetType ()];
@@ -797,6 +811,8 @@ namespace MonoDevelop.Components.Commands
 		}
 		
 		public event CommandErrorHandler CommandError;
+		public event EventHandler<CommandSelectedEventArgs> CommandSelected;
+		public event EventHandler CommandDeselected;
 	}
 	
 	internal class HandlerTypeInfo

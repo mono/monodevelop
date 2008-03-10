@@ -39,6 +39,7 @@ namespace MonoDevelop.Components.Commands
 		object arrayDataItem;
 		object initialTarget;
 		string overrideLabel;
+		CommandInfo lastCmdInfo;
 		
 		public CommandCheckMenuItem (object commandId, CommandManager commandManager, string overrideLabel): base ("")
 		{
@@ -99,8 +100,24 @@ namespace MonoDevelop.Components.Commands
 			commandManager.DispatchCommand (commandId, arrayDataItem, initialTarget);
 		}
 		
+		protected override void OnSelected ()
+		{
+			if (commandManager != null)
+				commandManager.NotifySelected (lastCmdInfo);
+			base.OnSelected ();
+		}
+		
+		protected override void OnDeselected ()
+		{
+			if (commandManager != null)
+				commandManager.NotifyDeselected ();
+			base.OnDeselected ();
+		}
+		
 		void Update (CommandInfo cmdInfo)
 		{
+			lastCmdInfo = cmdInfo;
+			
 			Gtk.Widget child = Child;
 			if (child == null)
 				return;

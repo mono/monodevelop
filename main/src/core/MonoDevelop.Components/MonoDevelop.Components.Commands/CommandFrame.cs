@@ -27,6 +27,7 @@
 //
 
 using System;
+using Mono.Addins;
 using MonoDevelop.Components.DockToolbars;
 
 namespace MonoDevelop.Components.Commands
@@ -54,6 +55,7 @@ namespace MonoDevelop.Components.Commands
 			foreach (IDockToolbar bar in Toolbars) {
 				CommandInfo cmd = new CommandInfo (bar.Title);
 				cmd.Checked = bar.Visible;
+				cmd.Description = AddinManager.CurrentLocalizer.GetString ("Show toolbar '{0}'", bar.Title);
 				info.Add (cmd, bar);
 			}
 		}

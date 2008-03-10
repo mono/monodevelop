@@ -50,6 +50,7 @@ FILES =  \
 	MonoDevelop.Components.Commands/CommandMenuBar.cs \
 	MonoDevelop.Components.Commands/CommandMenuItem.cs \
 	MonoDevelop.Components.Commands/CommandRouterContainer.cs \
+	MonoDevelop.Components.Commands/CommandSelectedEventArgs.cs \
 	MonoDevelop.Components.Commands/CommandSystemCommands.cs \
 	MonoDevelop.Components.Commands/CommandToggleToolButton.cs \
 	MonoDevelop.Components.Commands/CommandToolbar.cs \
