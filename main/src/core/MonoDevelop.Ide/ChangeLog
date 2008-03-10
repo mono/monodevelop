@@ -1,5 +1,9 @@
 2008-03-10  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Ide.mdp: Updated.
+
+2008-03-10  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Ide.Commands/ViewCommands.cs,
 	  MonoDevelop.Ide.Commands/FileCommands.cs,
 	  MonoDevelop.Ide.Commands/ProjectCommands.cs,
