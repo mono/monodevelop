@@ -1,3 +1,7 @@
+2008-03-10  Michael Hutchinson  <mhutchinson@novell.com> 
+
+	* options/TipsOfTheDay.xml: Add some tips.
+
 2008-03-10  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Gui.Dialogs/CommonAboutDialog.cs: Added missing
