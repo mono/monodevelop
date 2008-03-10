@@ -4,7 +4,7 @@
 	<!-- Template Header -->
 	<TemplateConfiguration>
 		<_Name>Add-in Project</_Name>
-		<Category>Add-ins</Category>
+		<_Category>Add-ins</_Category>
 		<_Description>Creates an add-in</_Description>
 		<LanguageName>*</LanguageName>
 	</TemplateConfiguration>

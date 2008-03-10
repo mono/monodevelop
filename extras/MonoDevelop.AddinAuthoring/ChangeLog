@@ -1,5 +1,9 @@
 2008-03-10  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* templates/AddinProject.xpt.xml: Fix attribute name.
+
+2008-03-10  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.AddinAuthoring/AddinDescriptionView.cs,
 	  MonoDevelop.AddinAuthoring/AddinOptionPanelWidget.cs,
 	  MonoDevelop.AddinAuthoring/SelectRepositoryDialog.cs,
