@@ -107,7 +107,7 @@ namespace MonoDevelop.Profiling.HeapShot
 			if (FileService.IsValidFileName (newName))
 				snapshot.Name = newName;
 			else
-				Services.MessageService.ShowError (GettextCatalog.GetString ("Invalid filename"));
+				MessageService.ShowError (GettextCatalog.GetString ("Invalid filename"));
 		}
 		
 		public override void DeleteItem ()

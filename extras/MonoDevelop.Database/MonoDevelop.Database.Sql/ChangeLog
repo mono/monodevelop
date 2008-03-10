@@ -1,3 +1,7 @@
+2008-03-10  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* QueryService.cs: Track changes in the MessageService class.
+
 2008-01-31  Ben Motmans <ben.motmans@gmail.com> 
 
 	* AlterSchema/AbstractAlterSchema.cs, AlterSchema/TriggerAlterSchema.cs,

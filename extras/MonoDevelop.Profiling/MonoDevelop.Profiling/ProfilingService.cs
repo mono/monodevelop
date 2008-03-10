@@ -151,7 +151,7 @@ namespace MonoDevelop.Profiling
 					return;
 				}
 			}
-			Services.MessageService.ShowErrorFormatted (GettextCatalog.GetString ("Unable to load profiling snapshot '{0}'."), filename);
+			MessageService.ShowError (GettextCatalog.GetString ("Unable to load profiling snapshot '{0}'."), filename);
 		}
 		
 		public static IProfilingSnapshot LoadSnapshot (string filename)
@@ -169,24 +169,22 @@ namespace MonoDevelop.Profiling
 				}
 			}
 			
-			Services.MessageService.ShowErrorFormatted (GettextCatalog.GetString ("Unable to load profiling snapshot '{0}'."), filename);
+			MessageService.ShowError (GettextCatalog.GetString ("Unable to load profiling snapshot '{0}'."), filename);
 			return null;
 		}
 		
 		public static void RemoveSnapshot (IProfilingSnapshot snapshot)
 		{
-			DeleteFileDialog deleteDialog = new DeleteFileDialog (GettextCatalog.GetString (
-				"Are you sure you want to remove snapshot '{0}'?", snapshot.Name));
-			try {
-				bool yes = deleteDialog.Run ();
-				if (yes) {
-					ProfilingService.ProfilingSnapshots.Remove (snapshot);
-					if (deleteDialog.DeleteFromDisk && File.Exists (snapshot.FileName))
-						FileService.DeleteFile (snapshot.FileName);
-				}		
-			} finally {
-				deleteDialog.Destroy ();
-			}
+			AlertButton removeFromProject = new AlertButton (GettextCatalog.GetString ("_Remove from Project"), Gtk.Stock.Remove);
+			AlertButton result = MessageService.AskQuestion (GettextCatalog.GetString ("Are you sure you want to remove snapshot '{0}'?", snapshot.Name),
+			                                                 GettextCatalog.GetString ("Delete physically removes the file from disc."), 
+			                                                 AlertButton.Delete, AlertButton.Cancel, removeFromProject);
+			
+			if (result != AlertButton.Cancel) {
+				ProfilingService.ProfilingSnapshots.Remove (snapshot);
+				if (result == AlertButton.Delete && File.Exists (snapshot.FileName))
+					FileService.DeleteFile (snapshot.FileName);
+			}		
 		}
 		
 		private static void HandleSnapshotTaken (object sender, ProfilingSnapshotEventArgs args)
@@ -199,7 +197,7 @@ namespace MonoDevelop.Profiling
 		
 		private static void HandleSnapshotFailed (object sender, EventArgs args)
 		{
-			Services.MessageService.ShowError (GettextCatalog.GetString ("Unable to take a profiling snapshot."));
+			MessageService.ShowError (GettextCatalog.GetString ("Unable to take a profiling snapshot."));
 			
 			if (SnapshotFailed != null)
 				SnapshotFailed (sender, args);

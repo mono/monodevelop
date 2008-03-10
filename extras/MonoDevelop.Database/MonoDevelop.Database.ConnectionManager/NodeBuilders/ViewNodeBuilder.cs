@@ -138,7 +138,7 @@ namespace MonoDevelop.Database.ConnectionManager
 				node.Refresh ();
 			} else {
 				DispatchService.GuiDispatch (delegate () {
-					Services.MessageService.ShowError (String.Format (
+					MessageService.ShowError (String.Format (
 						"Unable to rename view '{0}' to '{1}'!",
 						node.View.Name, newName
 					));
@@ -185,9 +185,10 @@ namespace MonoDevelop.Database.ConnectionManager
 		protected void OnDropView ()
 		{
 			ViewNode node = (ViewNode)CurrentNode.DataItem;
-			if (Services.MessageService.AskQuestion (
+			AlertButton dropButton = new AlertButton (AddinCatalog.GetString ("Drop"), Gtk.Stock.Delete);
+			if (MessageService.Confirm (
 				AddinCatalog.GetString ("Are you sure you want to drop view '{0}'", node.View.Name),
-				AddinCatalog.GetString ("Drop View")
+				dropButton
 			)) {
 				ThreadPool.QueueUserWorkItem (new WaitCallback (OnDropViewThreaded), CurrentNode.DataItem);
 			}

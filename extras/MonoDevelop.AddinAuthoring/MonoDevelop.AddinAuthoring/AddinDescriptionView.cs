@@ -2,6 +2,7 @@
 using System;
 using System.IO;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.Gui;
 using Mono.Addins;
@@ -107,7 +108,7 @@ namespace MonoDevelop.AddinAuthoring
 				return;
 			if (IsDirty) {
 				string q = AddinManager.CurrentLocalizer.GetString ("The add-in manifest for project '{0}' has been modified. Do you want to reload it? (unsaved changes will be lost)", data.Project.Name);
-				if (!IdeApp.Services.MessageService.AskQuestion (q))
+				if (!MessageService.Confirm (q, AlertButton.Reload))
 					return;
 			}
 			Reload ();

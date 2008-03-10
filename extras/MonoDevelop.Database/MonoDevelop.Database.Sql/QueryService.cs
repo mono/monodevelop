@@ -1,4 +1,4 @@
-﻿//
+//
 // Authors:
 //   Christian Hergert <chris@mosaix.net>
 //   Ben Motmans  <ben.motmans@gmail.com>
@@ -42,13 +42,13 @@ namespace MonoDevelop.Database.Sql
 	{
 		public static void RaiseException (Exception exception)
 		{
-			Services.MessageService.ShowError (exception);
+			MessageService.ShowException (exception);
 			LoggingService.LogError ("Database Exception", exception);
 		}
 		
 		public static void RaiseException (string message, Exception exception)
 		{
-			Services.MessageService.ShowError (exception, message);
+			MessageService.ShowException (exception, message);
 			LoggingService.LogError ("Database Exception", exception);
 		}
 		
@@ -72,7 +72,7 @@ namespace MonoDevelop.Database.Sql
 			bool requiresPassword = true;
 			
 			if (!context.ConnectionSettings.SavePassword && String.IsNullOrEmpty (context.ConnectionSettings.Password) && requiresPassword) {
-				string password = Services.MessageService.GetPassword (
+				string password = MessageService.GetPassword (
 					AddinCatalog.GetString ("Please enter the password for connection '{0}'",
 					context.ConnectionSettings.Name),
 					AddinCatalog.GetString ("Enter Password")

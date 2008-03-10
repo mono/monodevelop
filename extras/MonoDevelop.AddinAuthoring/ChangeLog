@@ -1,3 +1,11 @@
+2008-03-10  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.AddinAuthoring/AddinDescriptionView.cs,
+	  MonoDevelop.AddinAuthoring/AddinOptionPanelWidget.cs,
+	  MonoDevelop.AddinAuthoring/SelectRepositoryDialog.cs,
+	  MonoDevelop.AddinAuthoring.NodeBuilders/AddinReferenceNodeBuilder.cs:
+	  Track changes in the MessageService class.
+
 2008-02-20  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.AddinAuthoring.NodeBuilders/AddinReferenceNodeBuilder.cs:

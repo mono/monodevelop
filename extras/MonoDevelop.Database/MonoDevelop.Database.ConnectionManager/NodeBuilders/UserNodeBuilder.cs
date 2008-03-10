@@ -119,7 +119,7 @@ namespace MonoDevelop.Database.ConnectionManager
 				node.Refresh ();
 			} else {
 				DispatchService.GuiDispatch (delegate () {
-					Services.MessageService.ShowError (String.Format (
+					MessageService.ShowError (String.Format (
 						"Unable to rename user '{0}' to '{1}'!",
 						node.User.Name, newName
 					));
@@ -166,9 +166,10 @@ namespace MonoDevelop.Database.ConnectionManager
 		protected void OnDropUser ()
 		{
 			UserNode node = (UserNode)CurrentNode.DataItem;
-			if (Services.MessageService.AskQuestion (
+			AlertButton dropButton = new AlertButton (AddinCatalog.GetString ("Drop"), Gtk.Stock.Delete);
+			if (MessageService.Confirm (
 				AddinCatalog.GetString ("Are you sure you want to drop user '{0}'", node.User.Name),
-				AddinCatalog.GetString ("Drop User")
+				dropButton
 			)) {
 				ThreadPool.QueueUserWorkItem (new WaitCallback (OnDropUserThreaded), CurrentNode.DataItem);
 			}

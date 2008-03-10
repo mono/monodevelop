@@ -182,9 +182,9 @@ namespace MonoDevelop.Database.Designer
 			if (listTriggers.Selection.GetSelected (out iter)) {
 				TriggerSchema trigger = store.GetValue (iter, colObjIndex) as TriggerSchema;
 				
-				if (Services.MessageService.AskQuestion (
+				if (MessageService.Confirm (
 					AddinCatalog.GetString ("Are you sure you want to remove trigger '{0}'?", trigger.Name),
-					AddinCatalog.GetString ("Remove Trigger")
+					AlertButton.Remove
 				)) {
 					store.Remove (ref iter);
 					triggers.Remove (trigger);

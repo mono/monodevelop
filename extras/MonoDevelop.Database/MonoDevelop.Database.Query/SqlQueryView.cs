@@ -1,4 +1,4 @@
-﻿//
+//
 // Authors:
 //   Christian Hergert <chris@mosaix.net>
 //   Daniel Morgan <danielmorgan@verizon.net>
@@ -167,7 +167,7 @@ namespace MonoDevelop.Database.Query
 		private void ExecuteQueryCallback (DatabaseConnectionContext context, bool connected, object state)
 		{
 			if (!connected) {
-				Services.MessageService.ShowErrorFormatted (
+				MessageService.ShowError (
 					AddinCatalog.GetString ("Unable to connect to database '{0}'"), context.ConnectionSettings.Name);
 				return;
 			}

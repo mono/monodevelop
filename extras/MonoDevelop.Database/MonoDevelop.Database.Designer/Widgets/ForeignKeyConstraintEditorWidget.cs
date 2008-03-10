@@ -196,9 +196,9 @@ namespace MonoDevelop.Database.Designer
 			if (listFK.Selection.GetSelected (out iter)) {
 				ForeignKeyConstraintSchema fk = store.GetValue (iter, colObjIndex) as ForeignKeyConstraintSchema;
 				
-				if (Services.MessageService.AskQuestion (
+				if (MessageService.Confirm (
 					AddinCatalog.GetString ("Are you sure you want to remove constraint '{0}'?", fk.Name),
-					AddinCatalog.GetString ("Remove Constraint")
+					AlertButton.Remove
 				)) {
 					store.Remove (ref iter);
 					constraints.Remove (fk);

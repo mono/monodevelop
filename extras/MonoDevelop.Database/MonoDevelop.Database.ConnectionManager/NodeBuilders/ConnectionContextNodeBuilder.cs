@@ -85,7 +85,7 @@ namespace MonoDevelop.Database.ConnectionManager
 					icon = Context.GetIcon ("md-db-database-ok");
 				} else if (pool.HasErrors) {
 					icon = Context.GetIcon ("md-db-database-error");
-					Services.MessageService.ShowError (AddinCatalog.GetString ("Unable to connect:") + Environment.NewLine + pool.Error);
+					MessageService.ShowError (AddinCatalog.GetString ("Unable to connect:") + Environment.NewLine + pool.Error);
 				} else {
 					icon = Context.GetIcon ("md-db-database");
 				}
@@ -149,7 +149,7 @@ namespace MonoDevelop.Database.ConnectionManager
 			DatabaseConnectionContext context = (DatabaseConnectionContext) CurrentNode.DataItem;
 			if (context.ConnectionSettings.Name != newName) {
 				if (ConnectionContextService.DatabaseConnections.Contains (newName)) {
-					Services.MessageService.ShowError (String.Format (
+					MessageService.ShowError (String.Format (
 						"Unable to rename connection '{0}' to '{1}'! (duplicate name)",
 						context.ConnectionSettings.Name, newName
 					));
@@ -164,9 +164,9 @@ namespace MonoDevelop.Database.ConnectionManager
 		protected void OnRemoveConnection ()
 		{
 			DatabaseConnectionContext context = (DatabaseConnectionContext) CurrentNode.DataItem;
-			if (Services.MessageService.AskQuestion (
+			if (MessageService.Confirm (
 				AddinCatalog.GetString ("Are you sure you want to remove connection '{0}'?", context.ConnectionSettings.Name),
-				AddinCatalog.GetString ("Remove Connection"))) {
+				AlertButton.Remove)) {
 				ConnectionContextService.RemoveDatabaseConnectionContext (context);
 			}
 		}
@@ -243,9 +243,10 @@ namespace MonoDevelop.Database.ConnectionManager
 		protected void OnDropDatabase ()
 		{
 			DatabaseConnectionContext context = (DatabaseConnectionContext) CurrentNode.DataItem;
-			if (Services.MessageService.AskQuestion (
+			AlertButton dropButton = new AlertButton (AddinCatalog.GetString ("Drop"), Gtk.Stock.Delete);
+			if (MessageService.Confirm (
 				AddinCatalog.GetString ("Are you sure you want to drop database '{0}'", context.ConnectionSettings.Database),
-				AddinCatalog.GetString ("Drop Database")
+				dropButton
 			)) {
 				ThreadPool.QueueUserWorkItem (new WaitCallback (OnDropDatabaseThreaded), CurrentNode.DataItem);
 			}

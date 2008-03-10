@@ -65,9 +65,10 @@ namespace MonoDevelop.Profiling.HeapBuddy
 		
 		public override void TakeSnapshot ()
 		{
-			bool terminate = Services.MessageService.AskQuestion (
+			AlertButton button = new AlertButton (GettextCatalog.GetString ("Terminate"));
+			bool terminate = MessageService.Confirm (
 				GettextCatalog.GetString ("Heap-Buddy requires the application to terminate cleanly.\nAre you sure you want to terminate the application (this might result in the loss of some profiling data)?")
-				, GettextCatalog.GetString ("Take snapshot")
+				, button
 			);
 
 			if (terminate) {

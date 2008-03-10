@@ -153,9 +153,9 @@ namespace MonoDevelop.Database.Designer
 			if (listCheck.Selection.GetSelected (out iter)) {
 				CheckConstraintSchema check = store.GetValue (iter, colObjIndex) as CheckConstraintSchema;
 				
-				if (Services.MessageService.AskQuestion (
+				if (MessageService.Confirm (
 					AddinCatalog.GetString ("Are you sure you want to remove constraint '{0}'?", check.Name),
-					AddinCatalog.GetString ("Remove Constraint")
+					AlertButton.Remove
 				)) {
 					store.Remove (ref iter);
 					constraints.Remove (check);

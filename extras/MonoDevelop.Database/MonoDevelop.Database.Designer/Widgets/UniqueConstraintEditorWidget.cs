@@ -190,9 +190,9 @@ namespace MonoDevelop.Database.Designer
 			if (listUnique.Selection.GetSelected (out iter)) {
 				UniqueConstraintSchema uni = store.GetValue (iter, colObjIndex) as UniqueConstraintSchema;
 				
-				if (Services.MessageService.AskQuestion (
+				if (MessageService.Confirm (
 					AddinCatalog.GetString ("Are you sure you want to remove constraint '{0}'?", uni.Name),
-					AddinCatalog.GetString ("Remove Constraint")
+					AlertButton.Remove
 				)) {
 					store.Remove (ref iter);
 					constraints.Remove (uni);

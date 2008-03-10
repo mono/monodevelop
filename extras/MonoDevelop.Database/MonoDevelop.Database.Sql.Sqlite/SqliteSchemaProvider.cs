@@ -1,4 +1,4 @@
-﻿//
+//
 // Authors:
 //   Christian Hergert	<chris@mosaix.net>
 //   Ankit Jain  <radical@corewars.org>
@@ -232,7 +232,7 @@ namespace MonoDevelop.Database.Sql.Sqlite
 		public override void CreateDatabase (DatabaseSchema database)
 		{
 			if (System.IO.File.Exists (database.Name)) {
-				MonoDevelop.Core.Gui.Services.MessageService.ShowError (
+				MonoDevelop.Core.Gui.MessageService.ShowError (
 					AddinCatalog.GetString ("Database '{0}' already exists.", database.Name)
 				);
 				return;

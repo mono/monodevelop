@@ -137,7 +137,7 @@ namespace MonoDevelop.Database.ConnectionManager
 				node.Refresh ();
 			} else {
 				DispatchService.GuiDispatch (delegate () {
-					Services.MessageService.ShowError (String.Format (
+					MessageService.ShowError (String.Format (
 						"Unable to rename procedure '{0}' to '{1}'!",
 						node.Procedure.Name, newName
 					));
@@ -184,9 +184,10 @@ namespace MonoDevelop.Database.ConnectionManager
 		protected void OnDropProcedure ()
 		{
 			ProcedureNode node = (ProcedureNode)CurrentNode.DataItem;
-			if (Services.MessageService.AskQuestion (
+			AlertButton dropButton = new AlertButton (AddinCatalog.GetString ("Drop"), Gtk.Stock.Delete);
+			if (MessageService.Confirm (
 				AddinCatalog.GetString ("Are you sure you want to drop procedure '{0}'", node.Procedure.Name),
-				AddinCatalog.GetString ("Drop Procedure")
+				dropButton
 			)) {
 				ThreadPool.QueueUserWorkItem (new WaitCallback (OnDropProcedureThreaded), CurrentNode.DataItem);
 			}

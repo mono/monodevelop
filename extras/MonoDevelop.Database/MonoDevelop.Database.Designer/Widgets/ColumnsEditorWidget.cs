@@ -220,9 +220,9 @@ namespace MonoDevelop.Database.Designer
 				
 				//TODO: also check for attached constraints
 				
-				bool result = Services.MessageService.AskQuestion (
+				bool result = MessageService.Confirm (
 					AddinCatalog.GetString ("Are you sure you want to remove column '{0}'", column.Name),
-					AddinCatalog.GetString ("Remove Column")
+					AlertButton.Remove
 				);
 				
 				if (result) {

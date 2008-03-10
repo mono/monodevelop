@@ -163,7 +163,7 @@ namespace MonoDevelop.Database.ConnectionManager
 				node.Refresh ();
 			} else {
 				DispatchService.GuiDispatch (delegate () {
-					Services.MessageService.ShowError (String.Format (
+					MessageService.ShowError (String.Format (
 						"Unable to rename table '{0}' to '{1}'!",
 						node.Table.Name, newName
 					));
@@ -248,9 +248,10 @@ namespace MonoDevelop.Database.ConnectionManager
 		{
 			TableNode node = (TableNode)CurrentNode.DataItem;
 
-			if (Services.MessageService.AskQuestion (
+			AlertButton emptyButton = new AlertButton (AddinCatalog.GetString ("Empty Table"));
+			if (MessageService.Confirm (
 				AddinCatalog.GetString ("Are you sure you want to empty table '{0}'", node.Table.Name),
-				AddinCatalog.GetString ("Empty Table")
+				emptyButton
 			)) {
 				IdentifierExpression tableId = new IdentifierExpression (node.Table.Name);
 				DeleteStatement del = new DeleteStatement (new FromTableClause (tableId));
@@ -266,7 +267,7 @@ namespace MonoDevelop.Database.ConnectionManager
 			connection.Release ();
 
 			DispatchService.GuiDispatch (delegate () {
-				IdeApp.Workbench.StatusBar.SetMessage (AddinCatalog.GetString ("Table emptied"));
+				IdeApp.Workbench.StatusBar.ShowMessage (AddinCatalog.GetString ("Table emptied"));
 			});
 		}
 		
@@ -274,9 +275,10 @@ namespace MonoDevelop.Database.ConnectionManager
 		protected void OnDropTable ()
 		{
 			TableNode node = (TableNode)CurrentNode.DataItem;
-			if (Services.MessageService.AskQuestion (
+			AlertButton dropButton = new AlertButton (AddinCatalog.GetString ("Drop"), Gtk.Stock.Delete);
+			if (MessageService.Confirm (
 				AddinCatalog.GetString ("Are you sure you want to drop table '{0}'", node.Table.Name),
-				AddinCatalog.GetString ("Drop Table")
+				dropButton
 			)) {
 				ThreadPool.QueueUserWorkItem (new WaitCallback (OnDropTableThreaded), CurrentNode.DataItem);
 			}

@@ -171,9 +171,9 @@ namespace MonoDevelop.Database.Designer
 			if (listPK.Selection.GetSelected (out iter)) {
 				PrimaryKeyConstraintSchema pk = store.GetValue (iter, colObjIndex) as PrimaryKeyConstraintSchema;
 				
-				if (Services.MessageService.AskQuestion (
+				if (MessageService.Confirm (
 					AddinCatalog.GetString ("Are you sure you want to remove constraint '{0}'?", pk.Name),
-					AddinCatalog.GetString ("Remove Constraint")
+					AlertButton.Remove
 				)) {
 					store.Remove (ref iter);
 					constraints.Remove (pk);

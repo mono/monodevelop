@@ -3,6 +3,7 @@ using System;
 using Gtk;
 using Mono.Addins;
 using MonoDevelop.Components;
+using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.AddinAuthoring
@@ -106,7 +107,7 @@ namespace MonoDevelop.AddinAuthoring
 		protected virtual void OnButtonRemoveClicked (object sender, System.EventArgs e)
 		{
 			string q = AddinManager.CurrentLocalizer.GetString ("Are you sure you want to remove this registry reference?");
-			if (IdeApp.Services.MessageService.AskQuestion (q)) {
+			if (MessageService.Confirm (q, AlertButton.Remove)) {
 				TreeIter it;
 				tree.Selection.GetSelected (out it);
 				RegistryExtensionNode reg = (RegistryExtensionNode) store.GetValue (it, 3);

@@ -33,7 +33,7 @@ namespace MonoDevelop.AddinAuthoring
 			if (checkEnable.Active) {
 				string msg = optionsWidget.Validate ();
 				if (msg != null) {
-					IdeApp.Services.MessageService.ShowError ((Gtk.Window) this.Toplevel, msg);
+					MessageService.ShowError ((Gtk.Window) this.Toplevel, msg);
 					return false;
 				}
 				AddinFeature f = new AddinFeature ();

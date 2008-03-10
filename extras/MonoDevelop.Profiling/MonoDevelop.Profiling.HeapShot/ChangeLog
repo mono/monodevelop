@@ -1,3 +1,8 @@
+2008-03-10  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Gui/HeapShotProfilingSnapshotNodeBuilder.cs: Track changes in the
+	  MessageService class.
+
 2008-02-20  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Gui/HeapShotProfilingSnapshotNodeBuilder.cs: Handle the delete key in

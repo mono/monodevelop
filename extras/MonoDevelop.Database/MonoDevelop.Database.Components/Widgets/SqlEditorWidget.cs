@@ -144,9 +144,8 @@ namespace MonoDevelop.Database.Components
 
 			if (dlg.Run () == (int)ResponseType.Accept) {
 				if (File.Exists (dlg.Filename)) {
-					bool overwrite = Services.MessageService.AskQuestion (
-						AddinCatalog.GetString ("Are you sure you want to overwrite the file '{0}'?", dlg.Filename), 
-						AddinCatalog.GetString ("Overwrite?"));
+					bool overwrite = MessageService.Confirm (
+						AddinCatalog.GetString ("Are you sure you want to overwrite the file '{0}'?", dlg.Filename), AlertButton.OverwriteFile);
 					if (overwrite) {
 						using (FileStream stream = File.Open (dlg.Filename, FileMode.Create)) {
 							using (StreamWriter writer = new StreamWriter (stream)) {

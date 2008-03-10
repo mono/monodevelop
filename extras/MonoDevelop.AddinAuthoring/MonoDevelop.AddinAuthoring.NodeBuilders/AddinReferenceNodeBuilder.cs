@@ -28,6 +28,7 @@
 using System;
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.Ide.Gui.Pads.ProjectPad;
@@ -77,7 +78,7 @@ namespace MonoDevelop.AddinAuthoring
 			AddinProjectReference adep = (AddinProjectReference) CurrentNode.DataItem;
 			
 			string q = AddinManager.CurrentLocalizer.GetString ("Are you sure you want to remove the reference to add-in '{0}'?", Addin.GetIdName (adep.Reference));
-			if (IdeApp.Services.MessageService.AskQuestion (q)) {
+			if (MessageService.Confirm (q, AlertButton.Remove)) {
 				AddinAuthoringService.RemoveReferences (data, new string[] { adep.Reference });
 			}
 		}
