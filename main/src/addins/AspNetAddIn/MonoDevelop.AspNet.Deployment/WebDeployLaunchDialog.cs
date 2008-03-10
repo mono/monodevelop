@@ -121,7 +121,7 @@ namespace MonoDevelop.AspNet.Deployment
 		
 		protected virtual void editTargetsClicked (object sender, System.EventArgs e)
 		{
-			MonoDevelop.Ide.Gui.IdeApp.ProjectOperations.ShowOptions (project, "AspNetAddin.Deployment");
+			MonoDevelop.Ide.Gui.IdeApp.ProjectOperations.ShowOptions (project, "MonoDevelop.AspNet.Deployment");
 			targetStore.Clear ();
 			fillStore ();
 		}
