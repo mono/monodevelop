@@ -62,7 +62,6 @@ public class GeneralShellPanel(OptionsPanel):
 		customFontRadio.Toggled += ItemToggled
 
 
-
 	public override def CreatePanelWidget( ) as Widget:
 		InitializeComponent ()
 		vbox = VBox ()
@@ -106,7 +105,6 @@ public class GeneralShellPanel(OptionsPanel):
 		resetClearsHistoryCheckButton.Active = Properties.ResetClearsHistory
 		loadAssemblyCheckButton.Active =  Properties.LoadAssemblyAfterBuild
 		vbox.ShowAll ()
-		System.Console.WriteLine ("returned")
 		return vbox
 
 

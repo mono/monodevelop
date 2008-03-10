@@ -1,3 +1,9 @@
+2008-03-10  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Gui/OptionPanels/GeneralShellPanel.boo, BooBinding.mdp,
+	  BooBinding.addin.xml: Added icon to options panel. Removed unused
+	  file.
+
 2008-03-07  Michael Hutchinson  <mhutchinson@novell.com> 
 
 	* Gui/OptionPanels/GeneralShellPanel.boo :

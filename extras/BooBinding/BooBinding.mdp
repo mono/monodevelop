@@ -23,7 +23,6 @@
     <File name="icons/Boo.File.EmptyFile" subtype="Code" buildaction="EmbedAsResource" />
     <File name="icons/Boo.File.Form" subtype="Code" buildaction="EmbedAsResource" />
     <File name="icons/Boo.FileIcon" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="FormattingStrategy/BooFormattingStrategy.boo" subtype="Code" buildaction="Compile" />
     <File name="Gui/ShellTextView.boo" subtype="Code" buildaction="Compile" />
     <File name="Gui/IShellModel.boo" subtype="Code" buildaction="Compile" />
     <File name="Gui/BooShellModel.boo" subtype="Code" buildaction="Compile" />

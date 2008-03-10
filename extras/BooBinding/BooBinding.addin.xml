@@ -54,10 +54,6 @@
     </Condition>
   </Extension>
 
-  <Extension path = "/MonoDevelop/SourceEditor/Formatters">
-    <Class id ="boo" class = "BooBinding.FormattingStrategy.BooFormattingStrategy" />
-  </Extension>
-
   <Extension path = "/MonoDevelop/ProjectModel/Gui/Icons">
     <Icon language = "Boo" icon = "res:Boo.ProjectIcon"/>
     <Icon extensions = ".boo" icon = "res:Boo.FileIcon"/>
@@ -87,10 +83,11 @@
   </Extension>
 
   <Extension path = "/MonoDevelop/Ide/GlobalOptionsDialog/Other">
-  	<Section id = "GeneralBooShellPanel" _label = "Boo Shell" fill="true" class = "BooBinding.Gui.OptionPanels.GeneralBooShellPanel"/>
+  	<Section id = "GeneralBooShellPanel" _label = "Boo Shell" icon = "boo-icon" class = "BooBinding.Gui.OptionPanels.GeneralBooShellPanel"/>
   </Extension>
   
 	<Extension path = "/MonoDevelop/Core/StockIcons">
+		<StockIcon stockid = "boo-icon" resource = "BooBinding.Base" />
 		<StockIcon stockid = "boo-project-icon" resource = "Boo.ProjectIcon" />
 	</Extension>
 
