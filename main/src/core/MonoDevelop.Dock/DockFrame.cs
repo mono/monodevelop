@@ -303,6 +303,10 @@ namespace MonoDevelop.Components.Docking
 				return;
 			
 			gitem.ParentGroup.UpdateTitle (item);
+			dockBarTop.UpdateTitle (item);
+			dockBarBottom.UpdateTitle (item);
+			dockBarLeft.UpdateTitle (item);
+			dockBarRight.UpdateTitle (item);
 		}
 		
 		internal void Present (DockItem item)

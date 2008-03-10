@@ -1,3 +1,8 @@
+2008-03-10  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* DockFrame.cs: Update autohide buttons when the title of an item
+	  changes. Fixes bug #368436 - Build Output autohide button missing.
+
 2008-01-22  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* DockContainer.cs: Added missing null check.
