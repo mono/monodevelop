@@ -46,6 +46,7 @@ namespace MonoDevelop.Core.Gui
 		public static AlertButton SaveAs  = new AlertButton (Gtk.Stock.SaveAs, true);
 		public static AlertButton CloseWithoutSave = new AlertButton (GettextCatalog.GetString ("Close _without Saving"));
 		public static AlertButton Discard = new AlertButton (GettextCatalog.GetString ("D_iscard"));
+		public static AlertButton Stop    = new AlertButton (Gtk.Stock.Stop, true);
 		
 		public static AlertButton OverwriteFile = new AlertButton (GettextCatalog.GetString ("_Overwrite file"));
 		
@@ -203,6 +204,27 @@ namespace MonoDevelop.Core.Gui
 			Application.Invoke (delegate {
 				GenericAlert (Stock.Information, primaryText, secondaryText, AlertButton.Cancel);
 			});
+		}
+		#endregion
+		
+		#region Confirm
+		public static bool Confirm (string primaryText, AlertButton button)
+		{
+			return Confirm (primaryText, null, button);
+		}
+		
+		public static bool Confirm (string primaryText, string secondaryText, AlertButton button)
+		{
+			return GenericAlert (Stock.Question, primaryText, secondaryText, AlertButton.Cancel, button) == button;
+		}
+		public static bool Confirm (string primaryText, AlertButton button, bool confirmIsDefault)
+		{
+			return Confirm (primaryText, null, button, confirmIsDefault);
+		}
+		
+		public static bool Confirm (string primaryText, string secondaryText, AlertButton button, bool confirmIsDefault)
+		{
+			return GenericAlert (Stock.Question, primaryText, secondaryText, confirmIsDefault ? 0 : 1, AlertButton.Cancel, button) == button;
 		}
 		#endregion
 		
