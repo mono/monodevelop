@@ -1,3 +1,7 @@
+2008-03-11  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* options/TipsOfTheDay.xml: Add tips.
+
 2008-03-10  Marcos David Marín Amador <MarcosMarin@gmail.com> 
 
 	* MonoDevelop.Ide.StandardHeader/StandardHeaderPanel.cs: Workaround for bug
