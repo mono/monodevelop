@@ -96,8 +96,7 @@ namespace MonoDevelop.Core.Gui
 		}
 	}
 	
-	//all "static void" methods are safe to be called from any thread
-	//all other static methods must be called from the GUI thread
+	//all methods are synchronously invoked on the GUI thread, except those which take GTK# objects as arguments
 	public static class MessageService
 	{
 		static Gtk.Window rootWindow;
@@ -130,17 +129,7 @@ namespace MonoDevelop.Core.Gui
 		
 		public static void ShowException (Gtk.Window parent, Exception e, string primaryText)
 		{
-			Application.Invoke (delegate {
-				MonoDevelop.Core.Gui.Dialogs.ErrorDialog errorDialog = new MonoDevelop.Core.Gui.Dialogs.ErrorDialog (parent);
-				try {
-					errorDialog.Message = primaryText;
-					errorDialog.AddDetails (e.ToString (), false);
-					errorDialog.Run ();
-				} finally {
-					if (errorDialog != null)
-						errorDialog.Dispose ();
-				}
-			});
+			messageService.ShowException (parent, e, primaryText);
 		}
 		#endregion
 		
@@ -159,9 +148,7 @@ namespace MonoDevelop.Core.Gui
 		}
 		public static void ShowError (Gtk.Window parent, string primaryText, string secondaryText)
 		{
-			Application.Invoke (delegate {
-				GenericAlert (Stock.Error, primaryText, secondaryText, AlertButton.Cancel);
-			});
+			GenericAlert (Stock.Error, primaryText, secondaryText, AlertButton.Cancel);
 		}
 		#endregion
 		
@@ -180,9 +167,7 @@ namespace MonoDevelop.Core.Gui
 		}
 		public static void ShowWarning (Gtk.Window parent, string primaryText, string secondaryText)
 		{
-			Application.Invoke (delegate {
-				GenericAlert (Stock.Warning, primaryText, secondaryText, AlertButton.Cancel);
-			});
+			GenericAlert (Stock.Warning, primaryText, secondaryText, AlertButton.Cancel);
 		}
 		#endregion
 		
@@ -201,9 +186,7 @@ namespace MonoDevelop.Core.Gui
 		}
 		public static void ShowMessage (Gtk.Window parent, string primaryText, string secondaryText)
 		{
-			Application.Invoke (delegate {
-				GenericAlert (Stock.Information, primaryText, secondaryText, AlertButton.Cancel);
-			});
+			GenericAlert (Stock.Information, primaryText, secondaryText, AlertButton.Cancel);
 		}
 		#endregion
 		
@@ -269,11 +252,7 @@ namespace MonoDevelop.Core.Gui
 		}
 		public static AlertButton GenericAlert (string icon, string primaryText, string secondaryText, int defaultButton, params AlertButton[] buttons)
 		{
-			MonoDevelop.Core.Gui.DispatchService.AssertGuiThread ();
-			AlertDialog alertDialog = new AlertDialog (icon, primaryText, secondaryText, buttons);
-			alertDialog.FocusButton (defaultButton);
-			ShowCustomDialog (alertDialog);
-			return alertDialog.ResultButton;
+			return messageService.GenericAlert (icon, primaryText, secondaryText, defaultButton, buttons);
 		}
 		
 		public static string GetTextResponse (string question, string caption, string initialValue)
@@ -286,43 +265,83 @@ namespace MonoDevelop.Core.Gui
 		}
 		static string GetTextResponse (string question, string caption, string initialValue, bool isPassword)
 		{
-			MonoDevelop.Core.Gui.DispatchService.AssertGuiThread ();
-			string returnValue = null;
-			
-			Dialog md = new Dialog (caption, rootWindow, DialogFlags.Modal | DialogFlags.DestroyWithParent);
-			try {
-				// add a label with the question
-				Label questionLabel = new Label(question);
-				questionLabel.UseMarkup = true;
-				questionLabel.Xalign = 0.0F;
-				md.VBox.PackStart(questionLabel, true, false, 6);
-				
-				// add an entry with initialValue
-				Entry responseEntry = (initialValue != null) ? new Entry(initialValue) : new Entry();
-				md.VBox.PackStart(responseEntry, false, true, 6);
-				responseEntry.Visibility = !isPassword;
-				
-				// add action widgets
-				md.AddActionWidget(new Button(Gtk.Stock.Cancel), ResponseType.Cancel);
-				md.AddActionWidget(new Button(Gtk.Stock.Ok), ResponseType.Ok);
-				
-				md.VBox.ShowAll();
-				md.ActionArea.ShowAll();
-				md.HasSeparator = false;
-				md.BorderWidth = 6;
-				
-				int response = md.Run ();
-				md.Hide ();
-				
-				if ((ResponseType) response == ResponseType.Ok) {
-					returnValue =  responseEntry.Text;
-				}
-
-				return returnValue;
-			} finally {
-				md.Destroy ();
+			return messageService.GetTextResponse (question, caption, initialValue, isPassword);
+		}
+		
+		#region Internal GUI object
+		static InternalMessageService mso;
+		static InternalMessageService messageService
+		{
+			get {
+				if (mso == null)
+					mso = new InternalMessageService ();
+				return mso;
 			}
 		}
-
+		
+		//The real GTK# code is wrapped in a GuiSyncObject to make calls synchronous on the GUI thread
+		private class InternalMessageService : GuiSyncObject
+		{
+			public void ShowException (Gtk.Window parent, Exception e, string primaryText)
+			{
+				MonoDevelop.Core.Gui.Dialogs.ErrorDialog errorDialog = new MonoDevelop.Core.Gui.Dialogs.ErrorDialog (parent);
+				try {
+					errorDialog.Message = primaryText;
+					errorDialog.AddDetails (e.ToString (), false);
+					errorDialog.Run ();
+				} finally {
+					if (errorDialog != null)
+						errorDialog.Dispose ();
+				}
+			}
+			
+			public AlertButton GenericAlert (string icon, string primaryText, string secondaryText, int defaultButton, params AlertButton[] buttons)
+			{
+				AlertDialog alertDialog = new AlertDialog (icon, primaryText, secondaryText, buttons);
+				alertDialog.FocusButton (defaultButton);
+				ShowCustomDialog (alertDialog);
+				return alertDialog.ResultButton;
+			}
+			
+			public string GetTextResponse (string question, string caption, string initialValue, bool isPassword)
+			{
+				string returnValue = null;
+				
+				Dialog md = new Dialog (caption, rootWindow, DialogFlags.Modal | DialogFlags.DestroyWithParent);
+				try {
+					// add a label with the question
+					Label questionLabel = new Label(question);
+					questionLabel.UseMarkup = true;
+					questionLabel.Xalign = 0.0F;
+					md.VBox.PackStart(questionLabel, true, false, 6);
+					
+					// add an entry with initialValue
+					Entry responseEntry = (initialValue != null) ? new Entry(initialValue) : new Entry();
+					md.VBox.PackStart(responseEntry, false, true, 6);
+					responseEntry.Visibility = !isPassword;
+					
+					// add action widgets
+					md.AddActionWidget(new Button(Gtk.Stock.Cancel), ResponseType.Cancel);
+					md.AddActionWidget(new Button(Gtk.Stock.Ok), ResponseType.Ok);
+					
+					md.VBox.ShowAll();
+					md.ActionArea.ShowAll();
+					md.HasSeparator = false;
+					md.BorderWidth = 6;
+					
+					int response = md.Run ();
+					md.Hide ();
+					
+					if ((ResponseType) response == ResponseType.Ok) {
+						returnValue =  responseEntry.Text;
+					}
+					
+					return returnValue;
+				} finally {
+					md.Destroy ();
+				}
+			}
+		}
+		#endregion
 	}
 }
