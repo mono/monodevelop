@@ -791,9 +791,8 @@ namespace MonoDevelop.SourceEditor
 			
 			// Add items to the member drop down 
 			
-			foreach (IMember mem in members)
-			{
-				pix = IdeApp.Services.Resources.GetIcon(IdeApp.Services.Icons.GetIcon (mem), IconSize.Menu); 
+			foreach (IMember mem in members) {
+				pix = IdeApp.Services.Resources.GetIcon (IdeApp.Services.Icons.GetIcon (mem), IconSize.Menu); 
 				
 				// Add the member to the list
 				MonoDevelop.Projects.Ambience.Ambience am = view.GetAmbience ();
@@ -954,7 +953,8 @@ namespace MonoDevelop.SourceEditor
 		{
 			if (mem is IMethod) {
 				IMethod method = (IMethod) mem;
-				return (method.BodyRegion != null && method.BodyRegion.BeginLine <= line && line <= method.BodyRegion.EndLine);
+				return (method.BodyRegion != null && method.BodyRegion.BeginLine <= line && line <= method.BodyRegion.EndLine || 
+				       (method.BodyRegion.BeginLine == line && 0 == method.BodyRegion.EndLine));
 			} else if (mem is IProperty) {
 				IProperty property = (IProperty) mem;
 				return (property.BodyRegion != null && property.BodyRegion.BeginLine <= line && line <= property.BodyRegion.EndLine);
