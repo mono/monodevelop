@@ -1,3 +1,8 @@
+2008-03-12  Jonathan Pobst  <monkey@jpobst.com>
+
+	* configure.in: Add enable-windowsplatform.
+	* src/addins/Makefile.am: Add WindowsPlatform.
+
 2008-03-07  Mike Krüger <mkrueger@novell.com> 
 
 	* configure.in,

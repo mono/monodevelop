@@ -1,3 +1,7 @@
+2008-03-12  Jonathan Pobst  <monkey@jpobst.com>
+
+	* windows: Add a windows profile.
+
 2008-02-13  Geoff Norton  <gnorton@novell.com>
 
 	* mac: Enable the VersionControl addin, but disable subversion for now.

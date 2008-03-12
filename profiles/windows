@@ -1,0 +1,1 @@
+main --disable-subversion --disable-update-mimedb --disable-update-desktopdb --disable-gnomeplatform --enable-windowsplatform
