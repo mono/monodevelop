@@ -1029,6 +1029,26 @@ namespace MonoDevelop.SourceEditor
 			return result;
 		}
 		
+		[CommandHandler (SearchCommands.EmacsFindNext)]
+		public void EmacsFindNext ()
+		{
+			if (searchWidget == null) {
+				ShowSearchWidget ();
+			} else {
+				this.FindNext ();
+			}
+		}
+		
+		[CommandHandler (SearchCommands.EmacsFindPrevious)]
+		public void EmacsFindPrevious ()
+		{
+			if (searchWidget == null) {
+				ShowSearchWidget ();
+			} else {
+				this.FindPrevious ();
+			}
+		}
+		
 		[CommandHandler (SearchCommands.Find)]
 		public void ShowSearchWidget ()
 		{

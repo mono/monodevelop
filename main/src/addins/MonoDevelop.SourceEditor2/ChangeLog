@@ -1,3 +1,8 @@
+2008-03-12  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.SourceEditor/SourceEditorWidget.cs: added emacs find
+	  next/prev
+
 2008-03-07  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* gtk-gui/objects.xml,
