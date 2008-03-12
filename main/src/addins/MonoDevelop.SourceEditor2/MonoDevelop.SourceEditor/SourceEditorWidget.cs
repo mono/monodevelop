@@ -253,12 +253,12 @@ namespace MonoDevelop.SourceEditor
 		class ParseInformationUpdaterWorkerThread : WorkerThread
 		{
 			SourceEditorWidget widget;
-			ParseInformationEventArgs args;
+			//ParseInformationEventArgs args;
 			
 			public ParseInformationUpdaterWorkerThread (SourceEditorWidget widget, ParseInformationEventArgs args)
 			{
 				this.widget = widget;
-				this.args = args;
+				//this.args = args;
 			}
 			
 			protected override void InnerRun ()

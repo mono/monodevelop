@@ -1,5 +1,9 @@
 2008-03-12  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.SourceEditor/SourceEditorWidget.cs: fixed warning.
+
+2008-03-12  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.SourceEditor/SourceEditorWidget.cs: added emacs find
 	  next/prev
 
