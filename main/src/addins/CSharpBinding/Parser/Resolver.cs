@@ -707,13 +707,16 @@ namespace CSharpBinding.Parser
 			}
 			
 			// Don't look in interfaces, unless the base type is already an interface.
-			
-			foreach (IReturnType baseType in curType.BaseTypes) {
-				IClass c = parserContext.GetClass (baseType.FullyQualifiedName, baseType.GenericArguments, true, true);
-				if (c != null && (c.ClassType != ClassType.Interface || curType.ClassType == ClassType.Interface)) {
-					if (SearchClassMember (visited, qualifierClass, c, memberName, includeMethods, out resultType, out member))
-						return true;
+			try {
+				foreach (IReturnType baseType in curType.BaseTypes) {
+					IClass c = parserContext.GetClass (baseType.FullyQualifiedName, baseType.GenericArguments, true, true);
+					if (c != null && (c.ClassType != ClassType.Interface || curType.ClassType == ClassType.Interface)) {
+						if (SearchClassMember (visited, qualifierClass, c, memberName, includeMethods, out resultType, out member))
+							return true;
+					}
 				}
+			} catch (Exeception e) {
+				LoggingService.LogError (e.Message);
 			}
 			
 			member = null;
