@@ -35,6 +35,8 @@ namespace MonoDevelop.Ide.Commands
 		Find,
 		FindNext,
 		FindPrevious,
+		EmacsFindNext,
+		EmacsFindPrevious,
 		Replace,
 		FindInFiles,
 		FindNextSelection,

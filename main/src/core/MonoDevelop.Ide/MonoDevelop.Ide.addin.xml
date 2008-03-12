@@ -800,6 +800,14 @@
 				_description = "Search backwards for the same text" 
 				shortcut = "Control|Shift|G" />
 
+		<Command id = "MonoDevelop.Ide.Commands.SearchCommands.EmacsFindNext"
+				_label = "Find _Next" 
+				icon = "md-find-next-icon" 
+				_description = "Search forwards for the same text with emacs behavior"/>
+		<Command id = "MonoDevelop.Ide.Commands.SearchCommands.EmacsFindPrevious"
+				_label = "Find _Previous" 
+				_description = "Search backwards for the same textwith emacs behavior"/>
+
 		<Command id = "MonoDevelop.Ide.Commands.SearchCommands.FindNextSelection"
 				_label = "Find Next Selection" 
 				_description = "Search forwards for the selected text" 
