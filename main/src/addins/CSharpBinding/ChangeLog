@@ -1,5 +1,9 @@
 2008-03-13  Mike Krüger <mkrueger@novell.com> 
 
+	* Parser/Resolver.cs: fixed typo.
+
+2008-03-13  Mike Krüger <mkrueger@novell.com> 
+
 	* Parser/Resolver.cs: Fixed Bug 367270 - MD crash.
 
 2008-03-12  Mike Krüger <mkrueger@novell.com> 

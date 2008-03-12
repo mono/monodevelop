@@ -715,7 +715,7 @@ namespace CSharpBinding.Parser
 							return true;
 					}
 				}
-			} catch (Exeception e) {
+			} catch (Exception e) {
 				LoggingService.LogError (e.Message);
 			}
 			
