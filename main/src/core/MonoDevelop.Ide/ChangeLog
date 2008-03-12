@@ -1,3 +1,9 @@
+2008-03-13  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Ide.Dom/IMember.cs,
+	  MonoDevelop.Ide.Dom/AbstractMember.cs: Added IsObsolete flag to the
+	  new dom (Bug 367716 - Code completion shows obsolete functions).
+
 2008-03-12  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Ide.Commands/SearchCommands.cs,

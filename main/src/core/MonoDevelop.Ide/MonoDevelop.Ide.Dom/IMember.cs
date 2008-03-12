@@ -77,6 +77,11 @@ namespace MonoDevelop.Ide.Dom
 			get;
 		}
 		
+		bool IsObsolete {
+			get;
+			set;
+		}
+		
 		#region ModifierAccessors
 		bool IsPrivate   { get; }
 		bool IsInternal  { get; }

@@ -91,6 +91,16 @@ namespace MonoDevelop.Ide.Dom
 			}
 		}
 		
+		bool isObsolete = false;
+		public bool IsObsolete {
+			get {
+				return isObsolete;
+			}
+			set {
+				isObsolete = value;
+			}
+		}
+		
 		public System.Collections.Generic.IEnumerable<IAttribute> Attributes {
 			get {
 				return attributes;
