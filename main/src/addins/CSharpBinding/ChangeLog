@@ -1,3 +1,10 @@
+2008-03-12  Mike Krüger <mkrueger@novell.com> 
+
+	* Gui/CodeGenerationPanel.cs, Parser/Resolver.cs,
+	  Parser/ExpressionFinder.cs,
+	  gtk-gui/CSharpBinding.FormattingPanelWidget.cs: Fixed compiler
+	  warnings, fixed Bug 369476 - NRE in C# binding crashed text editor.
+
 2008-03-07  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Gui/FormattingPanel.cs, CSharpBinding.addin.xml,

@@ -48,7 +48,7 @@ namespace CSharpBinding.Parser
 		IMethod callingMethod;
 		IIndexer callingIndexer;
 		IProperty callingProperty;
-		bool callingClassChecked;
+		//bool callingClassChecked;
 		bool callingMethodChecked;
 		bool callingIndexerChecked;
 		bool callingPropertyChecked;
@@ -100,7 +100,8 @@ namespace CSharpBinding.Parser
 			callingMethod = null;
 			callingIndexer = null;
 			callingProperty = null;
-			callingClassChecked = callingPropertyChecked = callingMethodChecked = callingIndexerChecked = false;
+			//callingClassChecked =
+			callingPropertyChecked = callingMethodChecked = callingIndexerChecked = false;
 		}
 		
 		public IReturnType internalResolve (string expression, int caretLineNumber, int caretColumn, string fileName, string fileContent)
@@ -486,6 +487,8 @@ namespace CSharpBinding.Parser
 		
 		bool IsAccessible (IClass qualifier, IClass c, IDecoration member)
 		{
+			if (member == null || c == null || qualifier == null) 
+				return false;
 //			Console.WriteLine("member.Modifiers = " + member.Modifiers);
 			if ((member.Modifiers & ModifierEnum.Internal) == ModifierEnum.Internal) {
 				return callingClass.SourceProject == c.SourceProject;
@@ -494,13 +497,13 @@ namespace CSharpBinding.Parser
 //				Console.WriteLine("IsAccessible");
 				return true;
 			}
+			
 			if ((member.Modifiers & ModifierEnum.Protected) == ModifierEnum.Protected && IsClassInInheritanceTree (callingClass, qualifier)) {
 //				Console.WriteLine("IsAccessible");
 				return true;
 			}
 			if (callingClass == null)
 				return false;
-
 			return c.FullyQualifiedName == callingClass.FullyQualifiedName;
 		}
 		

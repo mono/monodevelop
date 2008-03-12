@@ -37,7 +37,7 @@ namespace CSharpBinding
 {
 	partial class CodeGenerationPanelWidget : Gtk.Bin 
 	{
-		Project project;
+		//Project project;
 		DotNetProjectConfiguration configuration;
 		CSharpCompilerParameters compilerParameters = null;
 
@@ -47,7 +47,7 @@ namespace CSharpBinding
 			Build ();
 			
 			configuration = ((Properties)CustomizationObject).Get<DotNetProjectConfiguration> ("Config");
-			project = ((Properties)CustomizationObject).Get<Project> ("Project");
+			//project = ((Properties)CustomizationObject).Get<Project> ("Project");
 			compilerParameters = (CSharpCompilerParameters) configuration.CompilationParameters;
 			
 			symbolsEntry.Text                          = compilerParameters.DefineSymbols;

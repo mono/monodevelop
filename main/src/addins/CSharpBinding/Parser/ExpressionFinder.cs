@@ -623,17 +623,17 @@ namespace CSharpBinding.Parser
 		static int Digit   = 9;
 		int curTokenType;
 		
-		readonly static string[] tokenStateName = new string[] {
-			"Err", "Dot", "StrLit", "Ident", "New", "Bracket", "Paren", "Curly", "Using", "Digit"
-		};
-		
+//		readonly static string[] tokenStateName = new string[] {
+//			"Err", "Dot", "StrLit", "Ident", "New", "Bracket", "Paren", "Curly", "Using", "Digit"
+//		};
+//		
 		/// <summary>
 		/// used to control whether an expression is in a ObjectCreation context (new *expr*),
 		/// or is in the default context (e.g. "new MainForm().Show()", 'new ' is there part of the expression
 		/// </summary>
 		bool hadParenthesis;
 		
-		string lastIdentifier;
+		//string lastIdentifier;
 		
 		void ReadNextToken()
 		{
@@ -703,7 +703,7 @@ namespace CSharpBinding.Parser
 									break;
 								default:
 									curTokenType = Ident;
-									lastIdentifier = ident;
+									//lastIdentifier = ident;
 									break;
 							}
 						}
@@ -851,18 +851,18 @@ namespace CSharpBinding.Parser
 		readonly static int ACCEPTNOMORE = 8;
 		readonly static int ACCEPT2 = 9;
 		
-		readonly static string[] stateName = new string[] {
-			"ERROR",
-			"START",
-			"DOT",
-			"MORE",
-			"CURLY",
-			"CURLY2",
-			"CURLY3",
-			"ACCEPT",
-			"ACCEPTNOMORE",
-			"ACCEPT2"
-		};
+//		readonly static string[] stateName = new string[] {
+//			"ERROR",
+//			"START",
+//			"DOT",
+//			"MORE",
+//			"CURLY",
+//			"CURLY2",
+//			"CURLY3",
+//			"ACCEPT",
+//			"ACCEPTNOMORE",
+//			"ACCEPT2"
+//		};
 		
 		int state = 0;
 		int lastAccept = 0;
