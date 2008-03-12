@@ -41,8 +41,6 @@ namespace MonoDevelop.AssemblyBrowser
 {
 	public class DomFieldNodeBuilder : TypeNodeBuilder, IAssemblyBrowserNodeBuilder
 	{
-		static readonly string[] iconTable = {Stock.Field, Stock.PrivateField, Stock.ProtectedField, Stock.InternalField};
-		
 		public override Type NodeDataType {
 			get { return typeof(IField); }
 		}

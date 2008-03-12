@@ -1,3 +1,7 @@
+2008-03-12  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.AssemblyBrowser/DomFieldNodeBuilder.cs: fixed warning.
+
 2008-03-02  Marcos David Marín Amador <MarcosMarin@gmail.com> 
 
 	* MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs: Workaraound a bug in
