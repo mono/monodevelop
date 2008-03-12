@@ -1,3 +1,8 @@
+2008-03-12  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* Mono.TextEditor/DefaultEditActions.cs: Implement AutoIndent
+	  behaviour.
+
 2008-03-07  Mike Krüger <mkrueger@novell.com> 
 
 	* Mono.TextEditor/Document.cs: Added some thread locks for the update logic.

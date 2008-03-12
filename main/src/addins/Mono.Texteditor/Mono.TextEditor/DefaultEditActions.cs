@@ -586,21 +586,28 @@ namespace Mono.TextEditor
 	{
 		public override void Run (TextEditorData data)
 		{
-/*			if (TextEditorOptions.Options.AutoIndent) {
-				LineSegment line = data.Document.GetLine (data.Caret.Line);
-				for (int i = 0; i < line.EditableLength; i++) {
-					char ch = data.Document.GetCharAt (line.Offset + i);
-					if (!Char.IsWhiteSpace (ch))
-						break;
-					newLine.Append (ch);
-				}
-			}*/
 			data.Document.BeginAtomicUndo ();
 			if (data.IsSomethingSelected) {
 				data.DeleteSelectedText ();
 			}
-			data.Document.Insert (data.Caret.Offset, data.Document.EolMarker);
-			data.Caret.Column = 0;
+			
+			string newLine = data.Document.EolMarker;
+			int caretColumnOffset = 0;
+			
+			if (TextEditorOptions.Options.AutoIndent) {
+				LineSegment line = data.Document.GetLine (data.Caret.Line);
+				int i;
+				for (i = 0; i < line.EditableLength; i++) {
+					char ch = data.Document.GetCharAt (line.Offset + i);
+					if (!Char.IsWhiteSpace (ch))
+						break;
+				}
+				caretColumnOffset = i;
+				newLine += data.Document.GetTextBetween (line.Offset, line.Offset + i);
+			}
+			
+			data.Document.Insert (data.Caret.Offset, newLine);
+			data.Caret.Column = caretColumnOffset;
 			data.Caret.Line++;
 			data.Document.EndAtomicUndo ();
 		}
