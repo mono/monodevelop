@@ -85,7 +85,7 @@ namespace MonoDevelop.CodeMetrics
 				
 			CodeMetricsWidget widget;
 			
-			int[,] num;
+			//int[,] num;
 			public MetricsWorkerThread (CodeMetricsWidget widget)
 			{
 				this.widget = widget;
@@ -95,7 +95,7 @@ namespace MonoDevelop.CodeMetrics
 					headers[header.Key] = newDoc;
 					longestHeader = Math.Max (longestHeader, header.Value.Length);
 				}
-				num = new int [longestHeader, longestHeader];
+			//	num = new int [longestHeader, longestHeader];
 			}
 			/* real lcs takes too long, but we can fake it.
 			int LongestCommonSubstring (string str1, string str2)
