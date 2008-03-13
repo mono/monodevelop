@@ -453,8 +453,14 @@ namespace Mono.TextEditor
 					}
 					xPos += delta;
 				} else {
-					if (offset == caretOffset) 
-						drawCaretAt = xPos + wordBuilder.Length * this.charWidth;
+					if (offset == caretOffset) {
+						layout.SetText (wordBuilder.ToString ());
+						
+						int width, height;
+						layout.GetPixelSize (out width, out height);
+						
+						drawCaretAt = xPos + width;
+					}
 					wordBuilder.Append (ch);
 				}
 			}

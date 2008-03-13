@@ -1,5 +1,10 @@
 2008-03-13  Mike Krüger <mkrueger@novell.com> 
 
+	* Mono.TextEditor/TextViewMargin.cs: Possible fix: 'Bug 368597 - Wrong
+	  location of caret in the new managed editor'.
+
+2008-03-13  Mike Krüger <mkrueger@novell.com> 
+
 	* Mono.TextEditor/TextEditor.cs: Fixed Bug 370133 - When jumping to a
 	  line, caret should be placed in the middle of the window
 
