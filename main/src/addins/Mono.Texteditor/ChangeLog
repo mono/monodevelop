@@ -1,5 +1,12 @@
 2008-03-13  Mike Krüger <mkrueger@novell.com> 
 
+	* Mono.TextEditor/Document.cs,
+	  Mono.TextEditor.Highlighting/SyntaxMode.cs,
+	  Mono.TextEditor.Highlighting/SyntaxModeService.cs: fixed Bug 370135
+	  - XML comment highlighting not working
+
+2008-03-13  Mike Krüger <mkrueger@novell.com> 
+
 	* ValaSyntaxMode.xml: Added vala syntax mode from levi bard.
 
 2008-03-12  Michael Hutchinson <mhutchinson@novell.com> 

@@ -199,6 +199,11 @@ namespace Mono.TextEditor.Highlighting
 								continue;
 							}
 						}
+						if (String.IsNullOrEmpty (curSpan.Rule)) {
+							curChunk.Length++;
+							continue;
+						}
+							
 					}
 					if (spanTree != null && spanTree.ContainsKey (ch)) {
 						spanPair = spanTree[ch];

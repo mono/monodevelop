@@ -157,7 +157,7 @@ namespace Mono.TextEditor
 			splitter.TextReplaced (this, args);
 			
 			if (this.syntaxMode != null)
-				Mono.TextEditor.Highlighting.SyntaxModeService.StartUpdate (this, this.syntaxMode, offset, offset + count);
+				Mono.TextEditor.Highlighting.SyntaxModeService.StartUpdate (this, this.syntaxMode, offset, value != null ? offset + value.Length : offset + count);
 			if (oldLineCount != LineCount)
 				this.CommitLineToEndUpdate (this.OffsetToLocation (offset).Line);
 		}

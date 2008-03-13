@@ -125,6 +125,8 @@ namespace Mono.TextEditor.Highlighting
 							continue;
 						}
 					}
+					if (String.IsNullOrEmpty (curSpan.Rule))
+						continue;
 				}
 				if (spanTree != null && spanTree.ContainsKey (ch)) {
 					spanPair = spanTree[ch];
@@ -215,6 +217,9 @@ namespace Mono.TextEditor.Highlighting
 								continue;
 							}
 						}
+						if (String.IsNullOrEmpty (curSpan.Rule))
+							continue;
+						
 					}
 					if (spanTree != null && spanTree.ContainsKey (ch)) {
 						spanPair = spanTree[ch];
