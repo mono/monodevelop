@@ -196,11 +196,11 @@ namespace MonoDevelop.SourceEditor {
             // Container child GtkAlignment.Gtk.Container+ContainerChild
             Gtk.HBox w13 = new Gtk.HBox();
             w13.Spacing = 2;
-            // Container child GtkHBox.Gtk.Container+ContainerChild
+            // Container child GtkHBox2.Gtk.Container+ContainerChild
             Gtk.Image w14 = new Gtk.Image();
             w14.Pixbuf = Stetic.IconLoader.LoadIcon(this, "gtk-find-and-replace", Gtk.IconSize.Menu, 16);
             w13.Add(w14);
-            // Container child GtkHBox.Gtk.Container+ContainerChild
+            // Container child GtkHBox2.Gtk.Container+ContainerChild
             Gtk.Label w16 = new Gtk.Label();
             w16.LabelProp = Mono.Unix.Catalog.GetString("Replace");
             w16.UseUnderline = true;

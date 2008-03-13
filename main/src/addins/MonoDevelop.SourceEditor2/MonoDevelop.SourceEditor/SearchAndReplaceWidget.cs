@@ -107,12 +107,7 @@ namespace MonoDevelop.SourceEditor
 					SearchWidget.searchPattern = SearchPattern;
 					SearchWidget.FireSearchPatternChanged ();
 				}
-				SearchResult result = widget.TextEditor.SearchForward (widget.TextEditor.Caret.Offset);
-				if (result == null && !String.IsNullOrEmpty (SearchPattern)) {
-					this.entrySearch.Entry.ModifyBase (Gtk.StateType.Normal, GotoLineNumberWidget.errorColor);
-				} else {
-					this.entrySearch.Entry.ModifyBase (Gtk.StateType.Normal, Style.Base (Gtk.StateType.Normal));
-				}
+				UpdateSearchEntry ();
 			};
 			this.entrySearch.Entry.Activated += delegate {
 				UpdateSearchHistory (SearchPattern);
@@ -133,6 +128,7 @@ namespace MonoDevelop.SourceEditor
 				caseSensitive.Active = SearchWidget.IsCaseSensitive;
 				caseSensitive.Toggled += delegate {
 					SetIsCaseSensitive (caseSensitive.Active);
+					UpdateSearchEntry ();
 				};
 				caseSensitive.ButtonPressEvent += delegate {
 					caseSensitive.Toggle ();
@@ -143,6 +139,7 @@ namespace MonoDevelop.SourceEditor
 				wholeWordsOnly.Active = SearchWidget.IsWholeWordOnly;
 				wholeWordsOnly.Toggled += delegate {
 					SetIsWholeWordOnly (wholeWordsOnly.Active);
+					UpdateSearchEntry ();
 				};
 				wholeWordsOnly.ButtonPressEvent += delegate {
 					wholeWordsOnly.Toggle ();
@@ -232,6 +229,15 @@ namespace MonoDevelop.SourceEditor
 			this.entrySearch.Entry.Text = SearchWidget.searchPattern;
 		}
 		
+		void UpdateSearchEntry ()
+		{
+			SearchResult result = widget.TextEditor.SearchForward (widget.TextEditor.Caret.Offset);
+			if (result == null && !String.IsNullOrEmpty (SearchPattern)) {
+				this.entrySearch.Entry.ModifyBase (Gtk.StateType.Normal, GotoLineNumberWidget.errorColor);
+			} else {
+				this.entrySearch.Entry.ModifyBase (Gtk.StateType.Normal, Style.Base (Gtk.StateType.Normal));
+			}
+		}
 		#endregion
 		
 		void UpdateReplaceHistory (string item)
