@@ -1,6 +1,14 @@
 2008-03-13  Mike Krüger <mkrueger@novell.com> 
 
 	* gtk-gui/MonoDevelop.SourceEditor.SearchAndReplaceWidget.cs,
+	  MonoDevelop.SourceEditor/GotoLineNumberWidget.cs,
+	  MonoDevelop.SourceEditor/SourceEditorView.cs: Fixed Bug 370133 -
+	  When jumping to a line, caret should be placed in the middle of the
+	  window
+
+2008-03-13  Mike Krüger <mkrueger@novell.com> 
+
+	* gtk-gui/MonoDevelop.SourceEditor.SearchAndReplaceWidget.cs,
 	  MonoDevelop.SourceEditor/SearchAndReplaceWidget.cs,
 	  MonoDevelop.SourceEditor/SearchWidget.cs: Fixed Bug 370139 - Search
 	  entry shown in red backround even if there is a match.

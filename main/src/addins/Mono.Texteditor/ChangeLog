@@ -1,5 +1,10 @@
 2008-03-13  Mike Krüger <mkrueger@novell.com> 
 
+	* Mono.TextEditor/TextEditor.cs: Fixed Bug 370133 - When jumping to a
+	  line, caret should be placed in the middle of the window
+
+2008-03-13  Mike Krüger <mkrueger@novell.com> 
+
 	* Mono.TextEditor/Document.cs,
 	  Mono.TextEditor.Highlighting/SyntaxMode.cs,
 	  Mono.TextEditor.Highlighting/SyntaxModeService.cs: fixed Bug 370135

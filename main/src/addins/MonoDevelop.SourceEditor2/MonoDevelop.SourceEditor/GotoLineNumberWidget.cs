@@ -116,7 +116,7 @@ namespace MonoDevelop.SourceEditor
 		{
 			try {
 				widget.TextEditor.Caret.Line = TargetLine;
-				widget.TextEditor.ScrollToCaret ();
+				widget.TextEditor.CenterToCaret ();
 			} catch (System.Exception) { 
 			}
 		}
@@ -140,6 +140,7 @@ namespace MonoDevelop.SourceEditor
 					this.entryLineNumber.ModifyBase (Gtk.StateType.Normal, Style.Base (Gtk.StateType.Normal));
 				}
 				widget.TextEditor.Caret.Line = targetLine;
+				widget.TextEditor.CenterToCaret ();
 			} catch (System.Exception) { 
 				this.entryLineNumber.ModifyBase (Gtk.StateType.Normal, errorColor);
 			}

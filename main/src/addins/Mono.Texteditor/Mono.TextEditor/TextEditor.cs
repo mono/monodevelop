@@ -739,6 +739,22 @@ namespace Mono.TextEditor
 			return this.textViewMargin.VisualToDocumentLocation (x, y);
 		}
 		
+		public void CenterToCaret ()
+		{
+			if (Caret.Line < 0 || Caret.Line >= Document.LineCount)
+				return;
+			int yMargin = 1 * this.LineHeight;
+			int xMargin = 10 * this.textViewMargin.CharWidth;
+			int caretPosition = Document.LogicalToVisualLine (Caret.Line) * this.LineHeight;
+			this.textEditorData.VAdjustment.Value = caretPosition - this.textEditorData.VAdjustment.PageSize / 2;
+			int caretX = textViewMargin.ColumnToVisualX (Document.GetLine (Caret.Line), Caret.Column);
+			if (this.textEditorData.HAdjustment.Value > caretX) {
+				this.textEditorData.HAdjustment.Value = caretX ;
+			} else if (this.textEditorData.HAdjustment.Value + this.textEditorData.HAdjustment.PageSize - 60 < caretX + xMargin) {
+				this.textEditorData.HAdjustment.Value = caretX - this.textEditorData.HAdjustment.PageSize + 60 + xMargin;
+			}
+		}
+		
 		public void ScrollToCaret ()
 		{
 			if (Caret.Line < 0 || Caret.Line >= Document.LineCount)
@@ -757,7 +773,6 @@ namespace Mono.TextEditor
 			} else if (this.textEditorData.HAdjustment.Value + this.textEditorData.HAdjustment.PageSize - 60 < caretX + xMargin) {
 				this.textEditorData.HAdjustment.Value = caretX - this.textEditorData.HAdjustment.PageSize + 60 + xMargin;
 			}
-			
 		}
 		
 		protected override void OnSizeAllocated (Gdk.Rectangle allocation)

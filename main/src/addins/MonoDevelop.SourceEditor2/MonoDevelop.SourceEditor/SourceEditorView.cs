@@ -305,7 +305,7 @@ namespace MonoDevelop.SourceEditor
 				widget.TextEditor.Caret.Location = new DocumentLocation (line - 1, column - 1);
 				
 				widget.TextEditor.GrabFocus ();
-				widget.TextEditor.ScrollToCaret ();
+				widget.TextEditor.CenterToCaret ();
 				OnCaretPositionSet (EventArgs.Empty);
 				return false;
 			});
