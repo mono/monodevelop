@@ -450,8 +450,6 @@ namespace MonoDevelop.XmlEditor
 		
 		XmlCompletionDataCollection GetChildElementCompletionData(XmlSchemaComplexType complexType, string prefix)
 		{
-			XmlCompletionDataCollection data = new XmlCompletionDataCollection();
-			
 			XmlSchemaSequence sequence = complexType.Particle as XmlSchemaSequence;
 			XmlSchemaChoice choice = complexType.Particle as XmlSchemaChoice;
 			XmlSchemaGroupRef groupRef = complexType.Particle as XmlSchemaGroupRef;
@@ -459,18 +457,18 @@ namespace MonoDevelop.XmlEditor
 			XmlSchemaAll all = complexType.Particle as XmlSchemaAll;
 			
 			if (sequence != null) {
-				data = GetChildElementCompletionData(sequence.Items, prefix);
+				return GetChildElementCompletionData(sequence.Items, prefix);
 			} else if (choice != null) {
-				data = GetChildElementCompletionData(choice.Items, prefix);				
+				return GetChildElementCompletionData(choice.Items, prefix);				
 			} else if (complexContent != null) {
-				data = GetChildElementCompletionData(complexContent, prefix);								
+				return GetChildElementCompletionData(complexContent, prefix);								
 			} else if (groupRef != null) {
-				data = GetChildElementCompletionData(groupRef, prefix);
+				return GetChildElementCompletionData(groupRef, prefix);
 			} else if (all != null) {
-				data = GetChildElementCompletionData(all.Items, prefix);
+				return GetChildElementCompletionData(all.Items, prefix);
+			} else {
+				return new XmlCompletionDataCollection ();
 			}
-				
-			return data;
 		}
 		
 		XmlCompletionDataCollection GetChildElementCompletionData(XmlSchemaObjectCollection items, string prefix)
@@ -515,19 +513,16 @@ namespace MonoDevelop.XmlEditor
 		
 		XmlCompletionDataCollection GetChildElementCompletionData(XmlSchemaComplexContent complexContent, string prefix)
 		{
-			XmlCompletionDataCollection data = new XmlCompletionDataCollection();
-			
 			XmlSchemaComplexContentExtension extension = complexContent.Content as XmlSchemaComplexContentExtension;
 			if (extension != null) {
-				data = GetChildElementCompletionData(extension, prefix);
+				return GetChildElementCompletionData(extension, prefix);
 			} else {
 				XmlSchemaComplexContentRestriction restriction = complexContent.Content as XmlSchemaComplexContentRestriction;
 				if (restriction != null) {
-					data = GetChildElementCompletionData(restriction, prefix);
+					return GetChildElementCompletionData(restriction, prefix);
 				}
 			}
-			
-			return data;
+			return new XmlCompletionDataCollection();
 		}
 		
 		XmlCompletionDataCollection GetChildElementCompletionData(XmlSchemaComplexContentExtension extension, string prefix)

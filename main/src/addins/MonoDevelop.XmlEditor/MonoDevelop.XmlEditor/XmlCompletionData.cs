@@ -6,7 +6,6 @@
 
 using Gdk;
 using Gtk;
-using GtkSourceView;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects.Gui.Completion;
 using System;
@@ -91,23 +90,23 @@ namespace MonoDevelop.XmlEditor
 		
 		public void InsertAction(ICompletionWidget widget, ICodeCompletionContext completionContext)
 		{
-			XmlEditorView view = widget as XmlEditorView;
-			if (view != null) {
-				TextEditor editor = TextEditor.GetTextEditor(view.ViewContent);
-				editor.DeleteText(completionContext.TriggerOffset, editor.CursorPosition - completionContext.TriggerOffset);
-	
+			MonoDevelop.Ide.Gui.Content.IEditableTextBuffer buf = widget as MonoDevelop.Ide.Gui.Content.IEditableTextBuffer;
+			if (buf != null) {
+				buf.BeginAtomicUndo ();
+				buf.DeleteText (completionContext.TriggerOffset, buf.CursorPosition - completionContext.TriggerOffset);
 				if ((dataType == DataType.XmlElement) || (dataType == DataType.XmlAttributeValue)) {
-					view.InsertTextAtCursor(text);
+					buf.InsertText (buf.CursorPosition, text);
 				} else if (dataType == DataType.NamespaceUri) {
-					view.InsertTextAtCursor(String.Concat("\"", text, "\""));					
+					buf.InsertText (buf.CursorPosition,String.Concat("\"", text, "\""));					
 				} else {
 					// Insert an attribute.
-					view.InsertTextAtCursor(String.Concat(text, "=\"\""));
+					buf.InsertText (buf.CursorPosition,String.Concat(text, "=\"\""));
 					
 					// Move caret into the middle of the attribute quotes.
-					editor.CursorPosition--;
-					editor.Select(editor.CursorPosition, editor.CursorPosition);
+					buf.CursorPosition--;
+					buf.Select (buf.CursorPosition, buf.CursorPosition);
 				}
+				buf.EndAtomicUndo ();
 			}
 		}
 

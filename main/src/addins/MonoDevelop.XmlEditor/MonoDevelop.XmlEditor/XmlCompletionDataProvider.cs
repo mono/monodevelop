@@ -21,7 +21,7 @@ namespace MonoDevelop.XmlEditor
 		XmlSchemaCompletionData defaultSchemaCompletionData;
 		ICodeCompletionContext completionContext;
 		string defaultNamespacePrefix = String.Empty;
-		string preSelection = null;
+		string defaultCompletionString;
 		
 		public XmlCompletionDataProvider(XmlSchemaCompletionDataCollection schemaCompletionDataItems, XmlSchemaCompletionData defaultSchemaCompletionData, string defaultNamespacePrefix, ICodeCompletionContext completionContext)
 		{
@@ -31,35 +31,17 @@ namespace MonoDevelop.XmlEditor
 			this.completionContext = completionContext;
 		}
 		
-//		public ImageList ImageList {
-//			get
-//			{
-//				return XmlCompletionDataImageList.GetImageList();
-//			}
-//		}
-		
-		public void Dispose()
+		public void Dispose ()
 		{
 		}
 		
-		/// <summary>
-		/// Gets the preselected text.
-		/// </summary>
-		/// <remarks>Not used in MonoDevelop</remarks>
-		public string PreSelection {
-			get
-			{
-				return preSelection;
-			}
-		}
-		
 		public string DefaultCompletionString {
-			get { return null; }
+			get { return defaultCompletionString; }
+			set { defaultCompletionString = value; }
 		}
 
 		public ICompletionData[] GenerateCompletionData(ICompletionWidget widget, char charTyped)
 		{	
-			preSelection = null;
 			string text = widget.GetText (0, completionContext.TriggerOffset);
 
 			switch (charTyped) {
@@ -98,7 +80,7 @@ namespace MonoDevelop.XmlEditor
 						if (attributeName.Length > 0) {
 							XmlElementPath elementPath = XmlParser.GetActiveElementStartPath(text, text.Length);
 							if (elementPath.Elements.Count > 0) {
-								preSelection = charTyped.ToString();
+								defaultCompletionString = charTyped.ToString();
 								return GetAttributeValueCompletionData(elementPath, attributeName);
 							}
 						}

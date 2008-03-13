@@ -29,19 +29,25 @@ namespace MonoDevelop.XmlEditor
 		
 		protected override void Update(CommandInfo info)
 		{
+			
 			info.Enabled = XmlEditorService.IsXmlEditorViewContentActive;
 		}
 		
 		/// <summary>
 		/// Pretty prints the xml.
 		/// </summary>
-		public void FormatXml(XmlEditorViewContent view)
+		public void FormatXml (MonoDevelop.Ide.Gui.Content.IEditableTextBuffer buffer)
 		{
-			XmlEditorService.TaskService.ClearExceptCommentTasks();			
-			string xml = view.Text;
-			if (XmlEditorService.IsWellFormed(xml, view.FileName)) {
-				string formattedXml = XmlEditorService.SimpleFormat(XmlEditorService.IndentedFormat(xml));
-				view.Text = formattedXml;
+			XmlEditorService.TaskService.ClearExceptCommentTasks ();
+			
+			if (XmlEditorService.IsWellFormed (buffer.Text, buffer.Name)) {
+				bool selection = (buffer.SelectionEndPosition == buffer.SelectionStartPosition);
+				string xml = selection? buffer.SelectedText : buffer.Text;
+				string formattedXml = XmlEditorService.SimpleFormat (XmlEditorService.IndentedFormat (xml));
+				if (selection)
+					buffer.SelectedText = formattedXml;
+				else
+					buffer.Text = formattedXml;
 			}
 		}
 	}

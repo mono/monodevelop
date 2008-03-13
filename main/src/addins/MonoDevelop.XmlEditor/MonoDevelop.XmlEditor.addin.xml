@@ -26,21 +26,12 @@
 		<Addin id="Projects.Gui" version="0.19.0"/>
 		<Addin id="Ide" version="0.19.0"/>
 		<Addin id="Components" version="0.19.0"/>
-		<Addin id="SourceEditor" version="0.19.0"/>
 	</Dependencies>
 
 	<!-- Defines the Xml file extension node -->
 	<ExtensionPoint path = "/MonoDevelop/XmlEditor/XmlFileExtensions">
 		<ExtensionNode name = "XmlFileExtension" type = "MonoDevelop.XmlEditor.XmlFileExtensionNode"/>
 	</ExtensionPoint>
-
-	<!-- Xml Editor View -->
-	<Extension path = "/MonoDevelop/Ide/DisplayBindings">
-		<DisplayBinding id = "XmlEditor"
-		                insertbefore = "NewText"
-		                supportedformats = "Text Files,Source Files"
-		                class = "MonoDevelop.XmlEditor.XmlDisplayBinding"/>
-	</Extension>
 
 	<!-- File extensions that will be opened in the XML editor -->
 	<Extension path = "/MonoDevelop/XmlEditor/XmlFileExtensions"
@@ -54,15 +45,13 @@
 		<XmlFileExtension extension = ".xslt"/> 
 	</Extension>
 	
-	<!-- Defines the XmlTextEditorExtension
-	<Extension path = "/MonoDevelop/Workbench/TextEditorExtensions">
+	<Extension path = "/MonoDevelop/Ide/TextEditorExtensions">
 		<Class class = "MonoDevelop.XmlEditor.XmlTextEditorExtension" />
 	</Extension>
-	-->
 	
 	<!-- Commands -->
 	<Extension path = "/MonoDevelop/Ide/Commands">
-		<Category _name = "XmlEditor" id="XmlEditor">
+		<Category _name = "XmlEditor" id="XmlEditor"><!--
 			<Command id = "MonoDevelop.XmlEditor.Commands.CreateSchema"
 					defaultHandler = "MonoDevelop.XmlEditor.CreateSchemaCommand"
 					_label = "Create _Schema"
@@ -99,11 +88,11 @@
 			<Command id = "MonoDevelop.XmlEditor.Commands.Format"
 					defaultHandler = "MonoDevelop.XmlEditor.FormatXmlCommand"
 					_label = "_Format"
-					description = "Pretty prints the XML"/>
+					description = "Pretty prints the XML"/>-->
 		</Category>
 	</Extension>
 
-	<!-- XML menu -->
+	<!-- XML menu --><!--
 	<Extension path = "/MonoDevelop/Ide/MainMenu">
 		<ItemSet id = "XmlMenu" 
 		         insertafter = "Run" 
@@ -122,13 +111,13 @@
 			<SeparatorItem id = "FormatSeparator"/>
 			<CommandItem id = "MonoDevelop.XmlEditor.Commands.Format" />				
 		</ItemSet>
-	</Extension>
+	</Extension>-->
 	
-	<Extension path = "/MonoDevelop/Ide/GlobalOptionsDialog">
-		<Section id = "XmlEditor" _label = "XML Editor">
-			<Section id = "XmlEditorOptions" insertbefore="Formatting" _label = "General" icon="md-text-editor" fill="true" class = "MonoDevelop.XmlEditor.XmlEditorOptionsPanel"/>
-			<Section id = "XmlSchemas" _label = "XML Schemas" class = "MonoDevelop.XmlEditor.XmlSchemasPanel"/>
-		</Section>
+	<Extension path = "/MonoDevelop/Ide/GlobalOptionsDialog/TextEditor/Formatting">
+		<Section id = "XmlFormattingOptions" insertbefore="Formatting" _label = "XML" fill="true" class = "MonoDevelop.XmlEditor.XmlEditorOptionsPanel"/>
+	</Extension>
+	<Extension path = "/MonoDevelop/Ide/GlobalOptionsDialog/Other">
+		<Section id = "XmlSchemas" _label = "XML Schemas" class = "MonoDevelop.XmlEditor.XmlSchemasPanel"/>
 	</Extension>
 	
 	<!-- XPath Query pad -->

@@ -1,3 +1,28 @@
+2008-03-13  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.XmlEditor/XmlSchemaManager.cs: Make class static. Change
+	  console messages to log messages.
+	* MonoDevelop.XmlEditor/XmlCompletionData.cs: Port to use
+	  IEditableTextBuffer rather than XmlEditorView.
+	* MonoDevelop.XmlEditor/XmlCompletionDataProvider.cs: Track MD APIs.
+	* MonoDevelop.XmlEditor/XmlTextEditorExtension.cs: Port code completion
+	  functionality from XmlEditorView to a TextEditorExtension that will
+	  work with all editors.
+	* MonoDevelop.XmlEditor/XmlDisplayBinding.cs: Unneeded.
+	* MonoDevelop.XmlEditor/XmlEditorService.cs: Replace
+	  XmlEditorViewContent accessors with XmlTextEditorExtension
+	  accessors (which won't do anything until I commit a MonoDevelop.Ide
+	  patch). Also many cosmetic tweaks.
+	* MonoDevelop.XmlEditor/XmlSchemaCompletionData.cs: Remove some
+	  unnecessary instantiations.
+	* MonoDevelop.XmlEditor/FormatXmlCommand.cs: Port to
+	  IEditableTextBuffer. Make it operate on the selection if there is
+	  one.
+	* Makefile.am, MonoDevelop.XmlEditor.addin.xml,
+	  MonoDevelop.XmlEditor.mdp: Disable all of the files and extensions
+	  that are not yet ported. Remove the GtkSourceView and SourceEditor
+	  dependencies.
+
 2008-03-10  Michael Hutchinson  <mhutchinson@novell.com> 
 
 	* Makefile.am:

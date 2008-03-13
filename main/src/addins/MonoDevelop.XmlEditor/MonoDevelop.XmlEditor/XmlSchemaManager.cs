@@ -16,7 +16,7 @@ namespace MonoDevelop.XmlEditor
 	/// Keeps track of all the schemas that the Xml Editor is aware
 	/// of.
 	/// </summary>
-	public class XmlSchemaManager
+	public static class XmlSchemaManager
 	{
 		public const string XmlSchemaNamespace = "http://www.w3.org/2001/XMLSchema";
 		
@@ -25,11 +25,6 @@ namespace MonoDevelop.XmlEditor
 		public static event EventHandler UserSchemaRemoved;
 		
 		static XmlSchemaCompletionDataCollection schemas = null;
-		static XmlSchemaManager manager = null;
-
-		XmlSchemaManager()
-		{
-		}
 	
 		/// <summary>
 		/// Gets the schemas that SharpDevelop knows about.
@@ -38,8 +33,7 @@ namespace MonoDevelop.XmlEditor
 			get {
 				if (schemas == null) {
 					schemas = new XmlSchemaCompletionDataCollection();
-					manager = new XmlSchemaManager();
-					manager.ReadSchemas();
+					ReadSchemas();
 				}
 				return schemas;
 			}
@@ -110,7 +104,7 @@ namespace MonoDevelop.XmlEditor
 				SchemaCompletionDataItems.Add(schemaData);
 				OnUserSchemaAdded();
 			} else {
-				Console.WriteLine(String.Concat("Trying to add a schema that already exists.  Namespace=", schemaData.NamespaceUri));
+				LoggingService.LogWarning ("XmlSchemaManager cannot register two schemas with the same namespace '{0}'.", schemaData.NamespaceUri);
 			}
 		}	
 		
@@ -126,7 +120,7 @@ namespace MonoDevelop.XmlEditor
 		/// <summary>
 		/// Reads the system and user added schemas.
 		/// </summary>
-		void ReadSchemas()
+		static void ReadSchemas()
 		{
 			ReadSchemas(SchemaFolder, true);
 			ReadSchemas(UserSchemaFolder, false);
@@ -135,7 +129,7 @@ namespace MonoDevelop.XmlEditor
 		/// <summary>
 		/// Reads all .xsd files in the specified folder.
 		/// </summary>
-		void ReadSchemas(string folder, bool readOnly)
+		static void ReadSchemas(string folder, bool readOnly)
 		{
 			Console.WriteLine("Reading schemas from: " + folder);
 			if (Directory.Exists(folder)) {
@@ -144,7 +138,7 @@ namespace MonoDevelop.XmlEditor
 					ReadSchema(fileName, readOnly);
 					++count;
 				}
-				Console.WriteLine("Found {0} schemas.", count);
+				LoggingService.LogInfo ("XmlSchemaManager found {0} schemas.", count);
 			}
 		}
 		
@@ -154,7 +148,7 @@ namespace MonoDevelop.XmlEditor
 		/// <remarks>
 		/// If the schema namespace exists in the collection it is not added.
 		/// </remarks>
-		void ReadSchema(string fileName, bool readOnly)
+		static void ReadSchema(string fileName, bool readOnly)
 		{
 			try {
 				string baseUri = XmlSchemaCompletionData.GetUri(fileName);
@@ -165,14 +159,14 @@ namespace MonoDevelop.XmlEditor
 						schemas.Add(data);
 					} else {
 						// Namespace already exists.
-						Console.WriteLine(String.Concat("Ignoring duplicate schema namespace ", data.NamespaceUri));
+						LoggingService.LogWarning ("XmlSchemaManager is ignoring schema with duplicate namespace '{0}'.", data.NamespaceUri);
 					} 
 				} else {
 					// Namespace is null.
-					Console.WriteLine(String.Concat("Ignoring schema with no namespace ", data.FileName));
+					LoggingService.LogWarning ("XmlSchemaManager is ignoring schema with no namespace, from file '{0}'.", data.FileName);
 				}
 			} catch (Exception ex) {
-				Console.WriteLine(String.Concat("Unable to read schema '", fileName, "'. ", ex.Message));
+				LoggingService.LogWarning ("XmlSchemaManager is unable to read schema '{0}', because of the following error: {1}", fileName, ex.Message);
 			}
 		}
 		
@@ -208,7 +202,7 @@ namespace MonoDevelop.XmlEditor
 		static void OnUserSchemaAdded()
 		{
 			if (UserSchemaAdded != null) {
-				UserSchemaAdded(manager, new EventArgs());
+				UserSchemaAdded (null, EventArgs.Empty);
 			}
 		}
 		
@@ -218,7 +212,7 @@ namespace MonoDevelop.XmlEditor
 		static void OnUserSchemaRemoved()
 		{
 			if (UserSchemaRemoved != null) {
-				UserSchemaRemoved(manager, new EventArgs());
+				UserSchemaRemoved (null, EventArgs.Empty);
 			}
 		}
 	}

@@ -11,6 +11,7 @@ using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.Tasks;
+
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -23,18 +24,15 @@ using System.Xml.Xsl;
 
 namespace MonoDevelop.XmlEditor
 {
-	public class XmlEditorService
-	{		
-		XmlEditorService()
-		{
-		}
-		
+	public static class XmlEditorService
+	{
+		#region Task management
 		public static void AddTask(string fileName, string message, int column, int line, TaskType taskType)
-        {
-        	// HACK: Use a compiler error since we cannot add an error
-        	// task otherwise (task type property is read-only and
-        	// no constructors usable).
-        	System.CodeDom.Compiler.CompilerError error = new System.CodeDom.Compiler.CompilerError();
+		{
+			// HACK: Use a compiler error since we cannot add an error
+			// task otherwise (task type property is read-only and
+			// no constructors usable).
+			System.CodeDom.Compiler.CompilerError error = new System.CodeDom.Compiler.CompilerError();
 			error.Column = column;
 			error.Line = line;
 			error.ErrorText = message;
@@ -43,53 +41,31 @@ namespace MonoDevelop.XmlEditor
 			
 			//Task task = new Task(fileName, message, column, line);
 			Task task = new Task(null, error);
- 			TaskService.Add(task);
-       }
-       	
-       	public static TaskService TaskService {
-        	get {
-        		return IdeApp.Services.TaskService;
-        	}
-        }
-        
-        public static void ShowView(IViewContent view)
-        {
-        	IdeApp.Workbench.OpenDocument(view, true);
-        }
-        		
-		public static XmlEditorViewContent GetActiveView()
-		{
-			Document doc = IdeApp.Workbench.ActiveDocument;
-			if (doc != null) {
-				return doc.GetContent<XmlEditorViewContent>();
+			IdeApp.Services.TaskService.Add(task);
+		}
+		#endregion
+		
+		#region View tracking
+		
+		public static XmlTextEditorExtension ActiveEditor {
+			get {
+				Document doc = IdeApp.Workbench.ActiveDocument;
+				if (doc != null)
+					return doc.GetContent<XmlTextEditorExtension>();
+				return null;
 			}
-			return null;
 		}
 		
-		public static ReadOnlyCollection<IViewContent> OpenXmlEditorViews {
+		public static ReadOnlyCollection<XmlTextEditorExtension> OpenXmlEditorViews {
 			get {
-				List<IViewContent> views = new List<IViewContent>();
+				List<XmlTextEditorExtension> views = new List<XmlTextEditorExtension> ();				
 				foreach (Document doc in IdeApp.Workbench.Documents) {
-					XmlEditorViewContent view = doc.GetContent<XmlEditorViewContent>();
-					if (view != null) {
-						views.Add(view);
-					}
+					XmlEditorViewContent view = doc.GetContent<XmlTextEditorExtension>();
+					if (view != null)
+						views.Add (view);
 				}
 				return views.AsReadOnly();
 			}
-		}
-		
-		public static XmlEditorViewContent GetOpenDocument(string fileName)
-		{
-			foreach (Document doc in IdeApp.Workbench.Documents) {
-				XmlEditorViewContent view = doc.GetContent<XmlEditorViewContent>();
-				if (view != null) {
-					if (view.FileName != null && doc.FileName == fileName) {
-						return view;
-					}
-				}
-			}
-			return null;
 		}
 		
 		public static bool IsXmlEditorViewContentActive {
@@ -97,17 +73,19 @@ namespace MonoDevelop.XmlEditor
 				return GetActiveView() != null;
 			}
 		}
+		#endregion
 		
+		/*
 		public static bool IsXslOutputViewContentActive {
 			get {
 				XmlEditorViewContent view = GetActiveView();
 				return (view as XslOutputViewContent) != null;
 			}
-		}
+		}*/
 		
-		public static IProgressMonitor GetMonitor()
+		public static IProgressMonitor GetMonitor ()
 		{
-			return IdeApp.Workbench.ProgressMonitors.GetOutputProgressMonitor("XML", "XmlFileIcon", true, true);
+			return IdeApp.Workbench.ProgressMonitors.GetOutputProgressMonitor ("XML", "XmlFileIcon", true, true);
 		}
 		
 		/// <summary>
@@ -115,14 +93,14 @@ namespace MonoDevelop.XmlEditor
 		/// </summary>
 		public static bool IsWellFormed(string xml, string fileName)
 		{
-			try	{
+			try {
 				XmlDocument Document = new XmlDocument();
 				Document.LoadXml(xml);
 				return true;
-			} catch(XmlException ex) {
+			} catch (XmlException ex) {
 				using (IProgressMonitor monitor = GetMonitor()) {
 					monitor.Log.WriteLine(ex.Message);
-					monitor.Log.WriteLine(String.Empty);
+					monitor.Log.WriteLine();
 					monitor.Log.WriteLine("XML is not well formed.");
 				}
 				AddTask(fileName, ex.Message, ex.LinePosition, ex.LineNumber, TaskType.Error);
