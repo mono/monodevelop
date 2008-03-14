@@ -27,7 +27,7 @@
 
 	<EolSpan color = "preprocessor" rule="PreProcessor">#</EolSpan>
 	<EolSpan color = "comment" rule="XmlDocumentation" tagColor="commenttag">///</EolSpan>
-	<EolSpan color = "comment" rule="Comment" constraint="!/" tagColor="commenttag">//</EolSpan>
+	<EolSpan color = "comment" rule="Comment" tagColor="commenttag">//</EolSpan>
 	
 	<Span color = "comment" rule="Comment" tagColor="commenttag">
 		<Begin>/*</Begin>

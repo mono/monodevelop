@@ -24,6 +24,12 @@
  THE SOFTWARE. -->
  
 <SyntaxMode name = "C" mimeTypes="text/x-csrc;text/x-chdr">
+	
+	<Span color = "comment" rule="Comment" tagColor="commenttag">
+		<Begin>#if 0</Begin>
+		<End>#endif</End>
+	</Span>
+	
 	<EolSpan color = "preprocessor" rule="PreProcessor">#</EolSpan>
 	<EolSpan color = "comment" rule="Comment">//</EolSpan>
 	
@@ -121,8 +127,8 @@
 
 	<Rule name = "PreProcessor">
 		<Keywords color="preprocessorkw">
-			<Word>ifdef</Word>
-			<Word>ifndef</Word>
+			<Word>if</Word>
+			<Word>ifn</Word>
 			<Word>else</Word>
 			<Word>error</Word>
 			<Word>line</Word>

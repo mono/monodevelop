@@ -78,6 +78,7 @@ RES =  \
 	OblivionStyle.xml \
 	PythonSyntaxMode.xml \
 	TangoLightStyle.xml \
+	ValaSyntaxMode.xml \
 	VBNetSyntaxMode.xml \
 	VisualStudioStyle.xml \
 	XmlSyntaxMode.xml

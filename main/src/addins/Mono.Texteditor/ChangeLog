@@ -1,5 +1,17 @@
 2008-03-14  Mike Krüger <mkrueger@novell.com> 
 
+	* Mono.TextEditor.mdp, CSharpSyntaxMode.xml, CSyntaxMode.xml,
+	  Mono.TextEditor.Highlighting/SyntaxMode.cs,
+	  Mono.TextEditor.Highlighting/SyntaxModeService.cs,
+	  Mono.TextEditor.Highlighting/Rule.cs, Makefile.am: Fixed Bug 370303
+	  - '#if 0' blocks should be coloured as comments.
+	
+	  Changed the way spans are scanned. The order of the span definition
+	  is now important - no more constraints. The first defined span is
+	  used first - so define /// before // for example.
+
+2008-03-14  Mike Krüger <mkrueger@novell.com> 
+
 	* Mono.TextEditor/TextEditor.cs: fixed Bug 363951 - Numeric keyboard
 	  does not work
 

@@ -98,8 +98,7 @@ namespace Mono.TextEditor.Highlighting
 		
 		public static void ScanSpans (Document doc, Rule rule, Stack<Span> spanStack, int start, int end)
 		{
-			Dictionary<char, Rule.Pair<Span, object>> spanTree = rule.spanTree;
-			Rule.Pair<Span, object> spanPair = null;
+			Dictionary<char, List<Span>> spanTree = rule.spanStarts;
 			int endOffset = 0;
 			end = System.Math.Min (end, doc.Length);
 			Span curSpan = spanStack.Count > 0 ? spanStack.Peek () : null;
@@ -128,30 +127,32 @@ namespace Mono.TextEditor.Highlighting
 					if (String.IsNullOrEmpty (curSpan.Rule))
 						continue;
 				}
+				
 				if (spanTree != null && spanTree.ContainsKey (ch)) {
-					spanPair = spanTree[ch];
-					spanTree = (Dictionary<char, Rule.Pair<Span, object>>)spanPair.o2;
-					if (spanPair.o1 != null) {
-						Span span = spanPair.o1;
-						if (!String.IsNullOrEmpty(span.Constraint)) {
-							if (span.Constraint.Length == 2 && span.Constraint.StartsWith ("!") && offset + 1 < end) {
-								if (doc.GetCharAt (offset + 1) == span.Constraint [1]) 
-									goto skip;
-							}
-							if (span.Constraint.Length == 4 && span.Constraint.StartsWith ("!") && offset + 2 < end) {
-								if (doc.GetCharAt (offset + 1) == span.Constraint [1] && doc.GetCharAt (offset + 2) == span.Constraint [3]) 
-									goto skip;
+					bool found = false;
+					foreach (Span span in spanTree[ch]) {
+						bool mismatch = false;
+						for (int j = 1; j < span.Begin.Length; j++) {
+							if (span.Begin [j] != doc.GetCharAt (offset + j)) {
+								mismatch = true;
+								break;
 							}
 						}
-						spanStack.Push (span);
-						curSpan = span;
-						curRule = doc.SyntaxMode.GetRule (curSpan.Rule);
-						spanTree = curRule != null ? curRule.spanTree : null;
-						continue;
+						
+						if (!mismatch) {
+							spanStack.Push (span);
+							curSpan = span;
+							curRule = doc.SyntaxMode.GetRule (curSpan.Rule);
+							spanTree = curRule != null ? curRule.spanStarts : null;
+							found = true; 
+							offset += span.Begin.Length - 1;
+							break;
+						}
 					}
+					if (found) 
+						continue;
 				} else {
-					spanPair = null;
-					spanTree = curRule != null ? curRule.spanTree : null;
+					spanTree = curRule != null ? curRule.spanStarts : null;
 				}
 			 skip:
 					;
@@ -188,8 +189,7 @@ namespace Mono.TextEditor.Highlighting
 			
 			protected void ScanSpansThreaded (Document doc, Rule rule, Stack<Span> spanStack, int start, int end)
 			{
-				Dictionary<char, Rule.Pair<Span, object>> spanTree = rule.spanTree;
-				Rule.Pair<Span, object> spanPair = null;
+				Dictionary<char, List<Span>> spanTree = rule.spanStarts;
 				int endOffset = 0;
 				end = System.Math.Min (end, doc.Length);
 				Span curSpan = spanStack.Count > 0 ? spanStack.Peek () : null;
@@ -222,29 +222,31 @@ namespace Mono.TextEditor.Highlighting
 						
 					}
 					if (spanTree != null && spanTree.ContainsKey (ch)) {
-						spanPair = spanTree[ch];
-						spanTree = (Dictionary<char, Rule.Pair<Span, object>>)spanPair.o2;
-						if (spanPair.o1 != null) {
-							Span span = spanPair.o1;
-							if (!String.IsNullOrEmpty(span.Constraint)) {
-								if (span.Constraint.Length == 2 && span.Constraint.StartsWith ("!") && offset + 1 < end) {
-									if (doc.GetCharAt (offset + 1) == span.Constraint [1]) 
-										goto skip;
-								}
-								if (span.Constraint.Length == 4 && span.Constraint.StartsWith ("!") && offset + 2 < end) {
-									if (doc.GetCharAt (offset + 1) == span.Constraint [1] && doc.GetCharAt (offset + 2) == span.Constraint [3]) 
-										goto skip;
+						bool found = false;
+						foreach (Span span in spanTree[ch]) {
+							bool mismatch = false;
+							for (int j = 1; j < span.Begin.Length; j++) {
+								if (span.Begin [j] != doc.GetCharAt (offset + j)) {
+									mismatch = true;
+									break;
 								}
 							}
-							spanStack.Push (span);
-							curSpan = span;
-							curRule = doc.SyntaxMode.GetRule (curSpan.Rule);
-							spanTree = curRule != null ? curRule.spanTree : null;
-							continue;
+							
+							if (!mismatch) {
+								spanStack.Push (span);
+								curSpan = span;
+								curRule = doc.SyntaxMode.GetRule (curSpan.Rule);
+								spanTree = curRule != null ? curRule.spanStarts : null;
+								offset += span.Begin.Length - 1;
+
+								found = true; 
+								break;
+							}
 						}
+						if (found) 
+							continue;
 					} else {
-						spanPair = null;
-						spanTree = curRule != null ? curRule.spanTree : null;
+						spanTree = curRule != null ? curRule.spanStarts : null;
 					}
 				 skip:
 						;

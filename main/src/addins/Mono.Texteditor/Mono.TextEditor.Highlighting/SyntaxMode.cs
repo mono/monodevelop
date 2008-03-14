@@ -72,9 +72,8 @@ namespace Mono.TextEditor.Highlighting
 			readonly ChunkStyle defaultStyle;
 			List<Chunk> result = new List<Chunk> ();
 			Dictionary<char, Rule.Pair<Keywords, object>> tree;
-			Dictionary<char, Pair<Span, object>> spanTree;			
+			Dictionary<char, List<Span>> spanTree;
 			Rule.Pair<Keywords, object> pair     = null;
-			Rule.Pair<Span, object>   spanPair = null;
 			
 			Span curSpan;
 			int ruleStart;
@@ -140,10 +139,10 @@ namespace Mono.TextEditor.Highlighting
 				}
 				if (curSpan != null) { 
 					curRule  = mode.GetRule (curSpan.Rule);
-					spanTree = curRule.spanTree;
+					spanTree = curRule.spanStarts;
 				} else {
 					curRule  = mode;
-					spanTree = curRule.spanTree;
+					spanTree = curRule.spanStarts;
 				}
 				
 				ruleStart = offset;
@@ -206,33 +205,32 @@ namespace Mono.TextEditor.Highlighting
 							
 					}
 					if (spanTree != null && spanTree.ContainsKey (ch)) {
-						spanPair = spanTree[ch];
-						spanTree = (Dictionary<char, Rule.Pair<Span, object>>)spanPair.o2;
-						if (spanPair.o1 != null) {
-							Span span = spanPair.o1;
-							if (!String.IsNullOrEmpty(span.Constraint)) {
-								if (span.Constraint.Length == 2 && span.Constraint.StartsWith ("!") && i + 1 < maxEnd) {
-									if (doc.GetCharAt (i + 1) == span.Constraint [1]) 
-										goto skip;
-								}
-								if (span.Constraint.Length == 4 && span.Constraint.StartsWith ("!") && i + 2 < maxEnd) {
-									if (doc.GetCharAt (i + 1) == span.Constraint [1] && doc.GetCharAt (i + 2) == span.Constraint [3]) 
-										goto skip;
+						bool found = false;
+						foreach (Span span in spanTree[ch]) {
+							bool mismatch = false;
+							for (int j = 1; j < span.Begin.Length; j++) {
+								if (span.Begin [j] != doc.GetCharAt (i + j)) {
+									mismatch = true;
+									break;
 								}
 							}
-							spanStack.Push (span);
-							curChunk.Length -= span.Begin.Length - 1;
 							
-							AddChunk (ref curChunk, span.Begin.Length, !String.IsNullOrEmpty (span.TagColor) ? style.GetChunkStyle (span.TagColor) : GetSpanStyle ());
-							SetSpan (i);
-							SetTree ();
-							if (!String.IsNullOrEmpty (span.NextColor))
-								curChunk.Style = style.GetChunkStyle (span.NextColor);
-							continue;
+							if (!mismatch) {
+								spanStack.Push (span);
+//								curChunk.Length -= span.Begin.Length - 1;
+								
+								AddChunk (ref curChunk, span.Begin.Length, !String.IsNullOrEmpty (span.TagColor) ? style.GetChunkStyle (span.TagColor) : GetSpanStyle ());
+								SetSpan (i);
+								SetTree ();
+								if (!String.IsNullOrEmpty (span.NextColor))
+									curChunk.Style = style.GetChunkStyle (span.NextColor);
+								i += span.Begin.Length - 1;
+								found = true; 
+								break;
+							}
 						}
-					} else {
-						spanPair = null;
-						spanTree = curRule.spanTree;
+						if (found) 
+							continue;
 					}
 				 skip:
 						;
