@@ -428,6 +428,15 @@ namespace MonoDevelop.Gettext.Editor {
             if ((this.Child != null)) {
                 this.Child.ShowAll();
             }
+            this.label5.MnemonicWidget = this.textviewComments;
+            this.label6.MnemonicWidget = this.entryProjectName;
+            this.label7.MnemonicWidget = this.entryProjectVersion;
+            this.label8.MnemonicWidget = this.entryBugzilla;
+            this.label10.MnemonicWidget = this.entryTranslatorName;
+            this.label11.MnemonicWidget = this.entryTranslatorEmail;
+            this.label12.MnemonicWidget = this.entryLanguageGroupName;
+            this.label13.MnemonicWidget = this.entryLanguageGroupEmail;
+            this.label15.MnemonicWidget = this.entryPluralsForms;
             this.Show();
             this.entryProjectVersion.Changed += new System.EventHandler(this.OnHeaderChanged);
             this.entryProjectName.Changed += new System.EventHandler(this.OnHeaderChanged);

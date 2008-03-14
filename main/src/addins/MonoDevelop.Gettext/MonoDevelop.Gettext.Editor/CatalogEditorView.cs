@@ -56,6 +56,7 @@ namespace MonoDevelop.Gettext.Editor
 		{
 			if (this.poEditorWidget != null) {
 				this.poEditorWidget.Destroy ();
+				this.poEditorWidget.Dispose (); // Destroy () doesn't call Dispose () - really
 				this.poEditorWidget = null;
 			}
 			base.Dispose ();

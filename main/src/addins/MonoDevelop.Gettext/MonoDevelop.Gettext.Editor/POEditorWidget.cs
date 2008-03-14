@@ -40,6 +40,7 @@ using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Gettext.Editor;
+using MonoDevelop.Ide.Tasks;
 
 namespace MonoDevelop.Gettext
 {
@@ -73,6 +74,7 @@ namespace MonoDevelop.Gettext
 				};
 				UpdateFromCatalog ();
 				UpdateProgressBar ();
+				UpdateTasks ();
 			}
 		}
 		
@@ -130,7 +132,6 @@ namespace MonoDevelop.Gettext
 			treeviewEntries.GetColumn (3).SortColumnId = (int)Columns.Translation;
 			treeviewEntries.GetColumn (3).Resizable = true;
 			treeviewEntries.GetColumn (3).Expand = true;
-						
 			// found in tree view
 			foundInStore = new ListStore (typeof (string), typeof (string), typeof (string));
 			this.treeviewFoundIn.Model = foundInStore;
@@ -201,6 +202,7 @@ namespace MonoDevelop.Gettext
 			};
 			this.buttonOptions.Clicked += ShowOptionsContextMenu;
 			widgets.Add (this);
+			UpdateTasks ();
 //			this.vpaned2.AcceptPosition += delegate {
 //				PropertyService.Set ("Gettext.SplitPosition", vpaned2.Position / (double)Allocation.Height);
 //				inMove = false;
@@ -780,6 +782,32 @@ namespace MonoDevelop.Gettext
 			updateThread.Start ();
 		}
 		
+		
+		public void SelectEntry (CatalogEntry entry)
+		{
+			if (updateIsRunning)
+				return;
+			
+			TreeIter iter;
+			if (store.GetIterFirst (out iter)) {
+				do {
+					CatalogEntry curEntry = store.GetValue (iter, 4) as CatalogEntry;
+					if (entry == curEntry) {
+						this.treeviewEntries.Selection.SelectIter (iter);
+						return;
+					}
+				} while (store.IterNext (ref iter));
+			}
+			store.AppendValues (GetStockForEntry (entry), 
+			                    entry.IsFuzzy,
+			                    StringEscaping.ToGettextFormat (entry.String), 
+			                    StringEscaping.ToGettextFormat (entry.GetTranslation (0)), 
+			                    entry,
+			                    GetRowColorForEntry (entry));
+			SelectEntry (entry);
+				
+		}
+		
 		public void UpdateWorkerThread ()
 		{
 			int number = 1;
@@ -800,7 +828,12 @@ namespace MonoDevelop.Gettext
 								if (!updateIsRunning)
 									break;
 								
-								store.AppendValues (GetStockForEntry (entry), entry.IsFuzzy, StringEscaping.ToGettextFormat (entry.String), StringEscaping.ToGettextFormat (entry.GetTranslation (0)), entry, GetRowColorForEntry (entry));
+								store.AppendValues (GetStockForEntry (entry), 
+										            entry.IsFuzzy,
+										            StringEscaping.ToGettextFormat (entry.String), 
+										            StringEscaping.ToGettextFormat (entry.GetTranslation (0)), 
+										            entry,
+										            GetRowColorForEntry (entry));
 							}
 						});
 						foundEntries.Clear ();
@@ -871,10 +904,78 @@ namespace MonoDevelop.Gettext
 			updateIsRunning = false;
 			
 			widgets.Remove (this);
-			this.headersEditor.Destroy ();
-			this.headersEditor = null;
-			
+			if (this.headersEditor != null) {
+				this.headersEditor.Destroy ();
+				this.headersEditor = null;
+			}
+			ClearTasks ();
 			base.Dispose ();
 		}
+#region Tasks
+		public class TranslationTask : Task
+		{
+			POEditorWidget widget;
+			CatalogEntry entry;
+			
+			public TranslationTask (POEditorWidget widget, CatalogEntry entry, string description) : base (widget.poFileName,
+			                                                                           description, 0, 0,
+			                                                                           TaskType.Error)
+			{
+				this.widget = widget;
+				this.entry  = entry;
+			}
+			
+			public override void JumpToPosition ()
+			{
+				widget.SelectEntry (entry);
+			}
+		}
+		
+		void ClearTasks ()
+		{
+			System.Console.WriteLine("clear");
+			IdeApp.Services.TaskService.ClearExceptCommentTasks ();
+			/*foreach (TranslationTask task in tasks) {
+				IdeApp.Services.TaskService.Remove (task);
+			}*/
+			tasks.Clear ();
+		}
+		
+		List<TranslationTask> tasks = new List<TranslationTask> ();
+		void UpdateTasks ()
+		{
+			ClearTasks ();
+			if (catalog == null)
+				return;
+			System.Console.WriteLine("update");
+			foreach (CatalogEntry entry in catalog) {
+				if (String.IsNullOrEmpty (entry.String) || String.IsNullOrEmpty (entry.GetTranslation (0)))
+					continue;
+				
+				if (entry.String.EndsWith (".") && !entry.GetTranslation (0).EndsWith (".")) {
+					tasks.Add (new TranslationTask (this,
+					                                entry,
+					                                GettextCatalog.GetString ("'{0}' has . mismatch", entry.String)));
+				}
+				if (char.IsLetter (entry.String[0]) && char.IsLetter (entry.GetTranslation (0)[0])  &&
+				    char.IsUpper (entry.String[0]) && !char.IsUpper (entry.GetTranslation (0)[0])) {
+					tasks.Add (new TranslationTask (this,
+					                                entry,
+					                                GettextCatalog.GetString ("Casing mismatch in '{0}'", entry.String)));
+				}
+				if (entry.String.Contains ("_") && !entry.GetTranslation (0).Contains ("_")) {
+					tasks.Add (new TranslationTask (this,
+					                                entry,
+					                                GettextCatalog.GetString ("Original string '{0}' contains '_', translation doesn't.", entry.String)));
+				}
+				
+			}
+			
+			foreach (TranslationTask task in tasks) {
+				IdeApp.Services.TaskService.Add (task);
+			}
+			
+		}
+#endregion
 	}
 }

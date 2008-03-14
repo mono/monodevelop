@@ -489,6 +489,9 @@ namespace MonoDevelop.Gettext {
                 this.Child.ShowAll();
             }
             w1.SetUiManager(w2);
+            this.label6.MnemonicWidget = this.textviewComments;
+            this.label7.MnemonicWidget = this.notebookTranslated;
+            this.label4.MnemonicWidget = this.treeviewFoundIn;
             this.Show();
         }
     }

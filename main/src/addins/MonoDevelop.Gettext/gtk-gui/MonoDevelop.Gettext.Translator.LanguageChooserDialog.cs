@@ -53,8 +53,6 @@ namespace MonoDevelop.Gettext.Translator {
         
         private Gtk.RadioButton radiobuttonCustom;
         
-        private Gtk.HSeparator hseparator2;
-        
         private Gtk.Button button1;
         
         private Gtk.Button buttonOK;
@@ -64,7 +62,7 @@ namespace MonoDevelop.Gettext.Translator {
             // Widget MonoDevelop.Gettext.Translator.LanguageChooserDialog
             this.Events = ((Gdk.EventMask)(256));
             this.Name = "MonoDevelop.Gettext.Translator.LanguageChooserDialog";
-            this.Title = Mono.Unix.Catalog.GetString("Create new localization");
+            this.Title = Mono.Unix.Catalog.GetString("Create New Localization");
             this.Icon = Gdk.Pixbuf.LoadFromResource("locale_16x16.png");
             this.TypeHint = ((Gdk.WindowTypeHint)(1));
             this.WindowPosition = ((Gtk.WindowPosition)(4));
@@ -178,6 +176,7 @@ namespace MonoDevelop.Gettext.Translator {
             this.frame1.Add(this.GtkAlignment2);
             this.radiobuttonKnown = new Gtk.RadioButton(Mono.Unix.Catalog.GetString("_Known Language"));
             this.radiobuttonKnown.Name = "radiobuttonKnown";
+            this.radiobuttonKnown.Active = true;
             this.radiobuttonKnown.DrawIndicator = true;
             this.radiobuttonKnown.UseUnderline = true;
             this.radiobuttonKnown.Group = new GLib.SList(System.IntPtr.Zero);
@@ -238,21 +237,12 @@ namespace MonoDevelop.Gettext.Translator {
             w19.Position = 0;
             w19.Expand = false;
             w19.Fill = false;
-            // Container child dialog_VBox.Gtk.Box+BoxChild
-            this.hseparator2 = new Gtk.HSeparator();
-            this.hseparator2.Name = "hseparator2";
-            w1.Add(this.hseparator2);
-            Gtk.Box.BoxChild w20 = ((Gtk.Box.BoxChild)(w1[this.hseparator2]));
-            w20.PackType = ((Gtk.PackType)(1));
-            w20.Position = 2;
-            w20.Expand = false;
-            w20.Fill = false;
             // Internal child MonoDevelop.Gettext.Translator.LanguageChooserDialog.ActionArea
-            Gtk.HButtonBox w21 = this.ActionArea;
-            w21.Name = "MonoDevelop.Gettext.LanguageChooserDialog_ActionArea";
-            w21.Spacing = 6;
-            w21.BorderWidth = ((uint)(5));
-            w21.LayoutStyle = ((Gtk.ButtonBoxStyle)(4));
+            Gtk.HButtonBox w20 = this.ActionArea;
+            w20.Name = "MonoDevelop.Gettext.LanguageChooserDialog_ActionArea";
+            w20.Spacing = 6;
+            w20.BorderWidth = ((uint)(5));
+            w20.LayoutStyle = ((Gtk.ButtonBoxStyle)(4));
             // Container child MonoDevelop.Gettext.LanguageChooserDialog_ActionArea.Gtk.ButtonBox+ButtonBoxChild
             this.button1 = new Gtk.Button();
             this.button1.CanDefault = true;
@@ -262,9 +252,9 @@ namespace MonoDevelop.Gettext.Translator {
             this.button1.UseUnderline = true;
             this.button1.Label = "gtk-cancel";
             this.AddActionWidget(this.button1, -6);
-            Gtk.ButtonBox.ButtonBoxChild w22 = ((Gtk.ButtonBox.ButtonBoxChild)(w21[this.button1]));
-            w22.Expand = false;
-            w22.Fill = false;
+            Gtk.ButtonBox.ButtonBoxChild w21 = ((Gtk.ButtonBox.ButtonBoxChild)(w20[this.button1]));
+            w21.Expand = false;
+            w21.Fill = false;
             // Container child MonoDevelop.Gettext.LanguageChooserDialog_ActionArea.Gtk.ButtonBox+ButtonBoxChild
             this.buttonOK = new Gtk.Button();
             this.buttonOK.CanDefault = true;
@@ -272,17 +262,19 @@ namespace MonoDevelop.Gettext.Translator {
             this.buttonOK.Name = "buttonOK";
             this.buttonOK.UseStock = true;
             this.buttonOK.UseUnderline = true;
-            this.buttonOK.Label = "gtk-ok";
-            this.AddActionWidget(this.buttonOK, -5);
-            Gtk.ButtonBox.ButtonBoxChild w23 = ((Gtk.ButtonBox.ButtonBoxChild)(w21[this.buttonOK]));
-            w23.Position = 1;
-            w23.Expand = false;
-            w23.Fill = false;
+            this.buttonOK.Label = "gtk-add";
+            this.AddActionWidget(this.buttonOK, 0);
+            Gtk.ButtonBox.ButtonBoxChild w22 = ((Gtk.ButtonBox.ButtonBoxChild)(w20[this.buttonOK]));
+            w22.Position = 1;
+            w22.Expand = false;
+            w22.Fill = false;
             if ((this.Child != null)) {
                 this.Child.ShowAll();
             }
             this.DefaultWidth = 466;
-            this.DefaultHeight = 416;
+            this.DefaultHeight = 401;
+            this.label3.MnemonicWidget = this.languageTreeView;
+            this.label2.MnemonicWidget = this.entryLocale;
             this.Show();
             this.checkbuttonUseCoutry.Clicked += new System.EventHandler(this.ChangeSensitivity);
             this.entryLocale.Changed += new System.EventHandler(this.OnEntryLocaleChanged);
