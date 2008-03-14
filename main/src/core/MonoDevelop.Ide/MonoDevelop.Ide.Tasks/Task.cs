@@ -185,7 +185,7 @@ namespace MonoDevelop.Ide.Tasks
 			errorNumber = error.ErrorNumber;
 		}
 		
-		public void JumpToPosition()
+		public virtual void JumpToPosition()
 		{
 			if (fileName != null && fileName.Length > 0) {
 				IdeApp.Workbench.OpenDocument (fileName, Math.Max (1, line), Math.Max (1, column), true);
