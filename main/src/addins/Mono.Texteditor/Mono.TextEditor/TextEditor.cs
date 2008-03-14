@@ -435,6 +435,7 @@ namespace Mono.TextEditor
 		
 		public void SimulateKeyPress (Gdk.Key key, Gdk.ModifierType modifier)
 		{
+			System.Console.WriteLine(key);
 			// quick keypad key hack (I haven't found a better way)
 			switch (key) {
 			case Gdk.Key.KP_0:
@@ -471,13 +472,13 @@ namespace Mono.TextEditor
 				key = Gdk.Key.plus;
 				break;
 			case Gdk.Key.KP_Divide:
-				key = Gdk.Key.division;
+				key = Gdk.Key.slash;
 				break;
 			case Gdk.Key.KP_Subtract:
 				key = Gdk.Key.minus;
 				break;
 			case Gdk.Key.KP_Multiply:
-				key = Gdk.Key.multiply;
+				key = Gdk.Key.asterisk;
 				break;
 			case Gdk.Key.KP_Decimal:
 				key = Gdk.Key.period;
