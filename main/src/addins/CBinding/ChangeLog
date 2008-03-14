@@ -1,3 +1,8 @@
+2008-03-14  Marcos David Marín Amador <MarcosMarin@gmail.com> 
+
+	* Compiler/GNUCompiler.cs: Insert into front of list instead of at the end,
+	  fixes bug 368478: "Multi-line build errors are displayed out of order ".
+
 2008-03-07  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Gui/GeneralOptionsPanel.cs, CBinding.addin.xml: Use new options

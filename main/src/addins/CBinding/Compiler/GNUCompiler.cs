@@ -583,7 +583,7 @@ namespace CBinding
 			while ((next = reader.ReadLine ()) != null) {
 				CompilerError error = CreateErrorFromErrorString (next);
 				if (error != null)
-					cr.Errors.Add (error);
+					cr.Errors.Insert (0, error);
 			}
 			
 			reader.Close ();
@@ -639,7 +639,7 @@ namespace CBinding
 			while ((next = reader.ReadLine ()) != null) {
 				CompilerError error = CreateLinkerErrorFromErrorString (next);
 				if (error != null)
-					cr.Errors.Add (error);
+					cr.Errors.Insert (0, error);
 			}
 			
 			reader.Close ();
