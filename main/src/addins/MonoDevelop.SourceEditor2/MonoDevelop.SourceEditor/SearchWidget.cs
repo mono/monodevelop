@@ -82,6 +82,7 @@ namespace MonoDevelop.SourceEditor
 		{
 			this.Build();
 			this.widget = widget;
+			
 			if (String.IsNullOrEmpty (widget.TextEditor.SearchPattern)) {
 				widget.TextEditor.SearchPattern = SearchWidget.searchPattern;
 			} else if (widget.TextEditor.SearchPattern != SearchWidget.searchPattern) {
@@ -101,7 +102,9 @@ namespace MonoDevelop.SourceEditor
 			
 			// if you change something here don"t forget the SearchAndReplaceWidget
 			SearchWidget.SearchPatternChanged += UpdateSearchPattern;
-			
+			this.FocusChildSet += delegate {
+				StoreWidgetState ();
+			};
 			this.closeButton.Clicked += delegate {
 				widget.RemoveSearchWidget ();
 			};
@@ -119,7 +122,7 @@ namespace MonoDevelop.SourceEditor
 			};
 			this.entrySearch.Entry.Activated += delegate {
 				UpdateSearchHistory (SearchPattern);
-				widget.FindNext ();
+				widget.TextEditor.GrabFocus ();
 			};
 			this.buttonSearchForward.Clicked += delegate {
 				UpdateSearchHistory (SearchPattern);
@@ -158,6 +161,32 @@ namespace MonoDevelop.SourceEditor
 				menu.ShowAll ();
 			};
 		}
+		
+		#region search preview
+		//double vSave, hSave;
+		DocumentLocation caretSave;
+		
+		void StoreWidgetState ()
+		{
+			//this.vSave  = widget.TextEditor.VAdjustment.Value;
+			//this.hSave  = widget.TextEditor.HAdjustment.Value;
+			this.caretSave =  widget.TextEditor.Caret.Location;
+		}
+		
+		void GotoResult (SearchResult result)
+		{
+			try {
+				if (result == null) {
+					widget.TextEditor.ClearSelection ();
+					return;
+				}
+				widget.TextEditor.Caret.Offset = result.EndOffset;
+				widget.TextEditor.SelectionRange = result;
+				widget.TextEditor.CenterToCaret ();
+			} catch (System.Exception) { 
+			}
+		}		
+		#endregion
 		
 		public override void Dispose ()
 		{
@@ -210,12 +239,14 @@ namespace MonoDevelop.SourceEditor
 		
 		void UpdateSearchEntry ()
 		{
-			SearchResult result = widget.TextEditor.SearchForward (widget.TextEditor.Caret.Offset);
+			widget.SetSearchOptions ();
+			SearchResult result = widget.TextEditor.SearchForward (widget.TextEditor.Document.LocationToOffset (caretSave));
 			if (result == null && !String.IsNullOrEmpty (SearchPattern)) {
 				this.entrySearch.Entry.ModifyBase (Gtk.StateType.Normal, GotoLineNumberWidget.errorColor);
 			} else {
 				this.entrySearch.Entry.ModifyBase (Gtk.StateType.Normal, Style.Base (Gtk.StateType.Normal));
 			}
+			GotoResult (result);
 		}
 		
 		void UpdateSearchPattern (object sender, EventArgs args)

@@ -100,7 +100,9 @@ namespace MonoDevelop.SourceEditor
 			ReplacePatternChanged += UpdateReplacePattern;
 			#region Cut & Paste from SearchWidget
 			SearchWidget.SearchPatternChanged += UpdateSearchPattern;
-			
+			this.FocusChildSet += delegate {
+				StoreWidgetState ();
+			};
 			this.entrySearch.Changed += delegate {
 				widget.TextEditor.SearchPattern = SearchPattern;
 				if (!SearchWidget.inSearchUpdate) {
@@ -111,7 +113,7 @@ namespace MonoDevelop.SourceEditor
 			};
 			this.entrySearch.Entry.Activated += delegate {
 				UpdateSearchHistory (SearchPattern);
-				widget.FindNext ();
+				widget.TextEditor.GrabFocus ();
 			};
 			this.buttonSearchForward.Clicked += delegate {
 				UpdateSearchHistory (SearchPattern);
@@ -198,6 +200,31 @@ namespace MonoDevelop.SourceEditor
 			this.entrySearch.GrabFocus ();
 		}
 		#region Cut & Paste from SearchWidget
+		#region search preview
+		//double vSave, hSave;
+		DocumentLocation caretSave;
+		
+		void StoreWidgetState ()
+		{
+			//this.vSave  = widget.TextEditor.VAdjustment.Value;
+			//this.hSave  = widget.TextEditor.HAdjustment.Value;
+			this.caretSave =  widget.TextEditor.Caret.Location;
+		}
+		
+		void GotoResult (SearchResult result)
+		{
+			try {
+				if (result == null) {
+					widget.TextEditor.ClearSelection ();
+					return;
+				}
+				widget.TextEditor.Caret.Offset = result.EndOffset;
+				widget.TextEditor.SelectionRange = result;
+				widget.TextEditor.CenterToCaret ();
+			} catch (System.Exception) { 
+			}
+		}		
+		#endregion
 		void UpdateSearchHistory (string item)
 		{
 			SearchWidget.UpdateHistory (SearchWidget.seachHistoryProperty, item);
@@ -231,12 +258,14 @@ namespace MonoDevelop.SourceEditor
 		
 		void UpdateSearchEntry ()
 		{
-			SearchResult result = widget.TextEditor.SearchForward (widget.TextEditor.Caret.Offset);
+			widget.SetSearchOptions ();
+			SearchResult result = widget.TextEditor.SearchForward (widget.TextEditor.Document.LocationToOffset (caretSave));
 			if (result == null && !String.IsNullOrEmpty (SearchPattern)) {
 				this.entrySearch.Entry.ModifyBase (Gtk.StateType.Normal, GotoLineNumberWidget.errorColor);
 			} else {
 				this.entrySearch.Entry.ModifyBase (Gtk.StateType.Normal, Style.Base (Gtk.StateType.Normal));
 			}
+			GotoResult (result);
 		}
 		#endregion
 		

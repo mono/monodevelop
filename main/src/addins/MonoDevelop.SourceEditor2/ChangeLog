@@ -1,3 +1,9 @@
+2008-03-14  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.SourceEditor/SearchAndReplaceWidget.cs,
+	  MonoDevelop.SourceEditor/SearchWidget.cs: Search is now more
+	  interactive.
+
 2008-03-13  Mike Krüger <mkrueger@novell.com> 
 
 	* gtk-gui/MonoDevelop.SourceEditor.SearchAndReplaceWidget.cs,
