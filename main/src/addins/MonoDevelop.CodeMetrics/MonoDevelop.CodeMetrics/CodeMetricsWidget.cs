@@ -73,7 +73,7 @@ namespace MonoDevelop.CodeMetrics
 				Gtk.TreeIter selectedIter;
 				if (treeviewMetrics.Selection.GetSelected (out selectedIter)) {
 					string fileName = (string)store.GetValue (selectedIter, 0);
-					IdeApp.Workbench.OpenDocument (fileName);
+					MonoDevelop.Ide.Gui.IdeApp.Workbench.OpenDocument (fileName);
 				}
 			};
 		}
