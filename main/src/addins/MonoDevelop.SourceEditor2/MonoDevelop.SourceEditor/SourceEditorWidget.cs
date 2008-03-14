@@ -172,12 +172,7 @@ namespace MonoDevelop.SourceEditor
 			regionCombo.Changed += new EventHandler (RegionChanged);
 			tips.SetTip (regionCombo, GettextCatalog.GetString ("Region list"), null);
 			
-			editorBar.FocusChain = new Widget[] {
-				this.textEditor,
-				this.classCombo,
-				this.membersCombo,
-				this.regionCombo
-			};
+			ResetFocusChain ();
 			
 			IdeApp.ProjectOperations.ParserDatabase.ParseInformationChanged += new ParseInformationEventHandler(UpdateClassBrowser);
 			
@@ -193,6 +188,16 @@ namespace MonoDevelop.SourceEditor
 //			this.d += delegate {
 //				this.textEditor.Destroy ();
 //			};
+		}
+		
+		void ResetFocusChain ()
+		{
+			this.editorBar.FocusChain = new Widget[] {
+				this.textEditor,
+				this.classCombo,
+				this.membersCombo,
+				this.regionCombo
+			};
 		}
 		
 		protected override void OnSizeAllocated (Gdk.Rectangle allocation)
@@ -1019,6 +1024,7 @@ namespace MonoDevelop.SourceEditor
 				result = true;
 			}
 			this.TextEditor.HighlightSearchPattern = false;
+			ResetFocusChain ();
 			return result;
 		}
 		
@@ -1061,6 +1067,14 @@ namespace MonoDevelop.SourceEditor
 				editorBar.SetChildPacking(searchWidget, false, true, 0, PackType.End);
 				searchWidget.ShowAll ();
 				this.TextEditor.HighlightSearchPattern = true;
+				this.editorBar.FocusChain = new Widget[] {
+					this.textEditor,
+					this.searchWidget,
+					this.classCombo,
+					this.membersCombo,
+					this.regionCombo,
+				};
+
 			}
 			searchWidget.Focus ();
 		}
@@ -1077,6 +1091,14 @@ namespace MonoDevelop.SourceEditor
 				editorBar.SetChildPacking(searchAndReplaceWidget, false, true, 0, PackType.End);
 				searchAndReplaceWidget.ShowAll ();
 				this.TextEditor.HighlightSearchPattern = true;
+				this.editorBar.FocusChain = new Widget[] {
+					this.textEditor,
+					this.searchAndReplaceWidget,
+					this.classCombo,
+					this.membersCombo,
+					this.regionCombo,
+				};
+				
 			}
 			searchAndReplaceWidget.Focus ();
 		}
@@ -1090,6 +1112,14 @@ namespace MonoDevelop.SourceEditor
 				editorBar.Add (gotoLineNumberWidget);
 				editorBar.SetChildPacking(gotoLineNumberWidget, false, true, 0, PackType.End);
 				gotoLineNumberWidget.ShowAll ();
+				this.editorBar.FocusChain = new Widget[] {
+					this.textEditor,
+					this.gotoLineNumberWidget,
+					this.classCombo,
+					this.membersCombo,
+					this.regionCombo,
+				};
+				
 			}
 			gotoLineNumberWidget.Focus ();
 		}

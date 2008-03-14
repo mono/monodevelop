@@ -1,5 +1,10 @@
 2008-03-14  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.SourceEditor/SourceEditorWidget.cs: fixed Bug 370134 -
+	  Replace box: can't navigate through controls using the Tab key.
+
+2008-03-14  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.SourceEditor/SearchAndReplaceWidget.cs,
 	  MonoDevelop.SourceEditor/SearchWidget.cs: Search is now more
 	  interactive.
