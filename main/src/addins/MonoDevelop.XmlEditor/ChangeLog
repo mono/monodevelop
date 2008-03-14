@@ -1,3 +1,7 @@
+2008-03-14  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* Makefile.am: fix install location of schemas.
+
 2008-03-13  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.XmlEditor/XmlSchemaManager.cs: Make class static. Change
