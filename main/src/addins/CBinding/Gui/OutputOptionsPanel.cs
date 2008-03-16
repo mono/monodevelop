@@ -54,6 +54,9 @@ namespace CBinding
 			outputPathTextEntry.Text = configuration.OutputDirectory;
 			parametersTextEntry.Text = configuration.CommandLineParameters;
 			
+			if (externalConsoleCheckbox.Active)
+				pauseCheckbox.Sensitive = true;
+			
 			externalConsoleCheckbox.Active = configuration.ExternalConsole;
 			pauseCheckbox.Active = configuration.PauseConsoleOutput;
 		}

@@ -1,3 +1,8 @@
+2008-03-16  Marcos David Marín Amador <MarcosMarin@gmail.com> 
+
+	* Gui/OutputOptionsPanel.cs: Fix bug where the pauseCheckbox control could
+	  be greyed out when it should be souldn't.
+
 2008-03-14  Marcos David Marín Amador <MarcosMarin@gmail.com> 
 
 	* Compiler/GNUCompiler.cs: Insert into front of list instead of at the end,
