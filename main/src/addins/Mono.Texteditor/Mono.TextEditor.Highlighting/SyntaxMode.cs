@@ -209,7 +209,7 @@ namespace Mono.TextEditor.Highlighting
 						foreach (Span span in spanTree[ch]) {
 							bool mismatch = false;
 							for (int j = 1; j < span.Begin.Length; j++) {
-								if (span.Begin [j] != doc.GetCharAt (i + j)) {
+								if (i + j >= doc.Length || span.Begin [j] != doc.GetCharAt (i + j)) {
 									mismatch = true;
 									break;
 								}
