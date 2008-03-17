@@ -368,12 +368,10 @@ namespace Mono.TextEditor
 			TextEditorOptions.Changed -= OptionsChanged;
 			
 			if (this.textEditorData.HAdjustment != null) {
-				System.Console.WriteLine("Remove hadjustment");
 				this.textEditorData.HAdjustment.ValueChanged -= HAdjustmentValueChanged; 
 				this.textEditorData.HAdjustment = null;
 			}
 			if (this.textEditorData.VAdjustment!= null) {
-				System.Console.WriteLine("Remove vadjustment");
 				this.textEditorData.VAdjustment.ValueChanged -= VAdjustmentValueChanged;
 				this.textEditorData.VAdjustment = null;
 			}
@@ -435,7 +433,6 @@ namespace Mono.TextEditor
 		
 		public void SimulateKeyPress (Gdk.Key key, Gdk.ModifierType modifier)
 		{
-			System.Console.WriteLine(key);
 			// quick keypad key hack (I haven't found a better way)
 			switch (key) {
 			case Gdk.Key.KP_0:

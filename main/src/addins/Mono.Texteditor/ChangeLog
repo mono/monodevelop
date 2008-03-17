@@ -1,5 +1,9 @@
 2008-03-18  Mike Krüger <mkrueger@novell.com> 
 
+	* Mono.TextEditor/TextEditor.cs: Removed some debug messages.
+
+2008-03-18  Mike Krüger <mkrueger@novell.com> 
+
 	* Mono.TextEditor.Highlighting/SyntaxMode.cs,
 	  Mono.TextEditor.Highlighting/SyntaxModeService.cs: Fixed Bug 371702
 	  - XmlEditor - crash with empty file.
