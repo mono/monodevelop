@@ -1,3 +1,8 @@
+2008-03-18  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.SourceEditor/EditActions.cs: Fixed Bug 371703 - Unable to
+	  delete {.
+
 2008-03-14  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.SourceEditor/SourceEditorWidget.cs: fixed Bug 370134 -
