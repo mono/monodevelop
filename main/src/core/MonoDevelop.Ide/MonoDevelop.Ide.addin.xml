@@ -806,7 +806,7 @@
 				_description = "Search forwards for the same text with emacs behavior"/>
 		<Command id = "MonoDevelop.Ide.Commands.SearchCommands.EmacsFindPrevious"
 				_label = "Find _Previous" 
-				_description = "Search backwards for the same textwith emacs behavior"/>
+				_description = "Search backwards for the same tex twith emacs behavior"/>
 
 		<Command id = "MonoDevelop.Ide.Commands.SearchCommands.FindNextSelection"
 				_label = "Find Next Selection" 

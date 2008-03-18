@@ -1,3 +1,7 @@
+2008-03-18  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Ide.addin.xml: fixed typo
+
 2008-03-14  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Ide.Tasks/Task.cs: Make Task.JumpToPosition() virtual. 
