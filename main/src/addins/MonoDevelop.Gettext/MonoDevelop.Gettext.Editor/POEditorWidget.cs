@@ -41,6 +41,7 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Gettext.Editor;
 using MonoDevelop.Ide.Tasks;
+using Mono.TextEditor;
 
 namespace MonoDevelop.Gettext
 {
@@ -427,6 +428,7 @@ namespace MonoDevelop.Gettext
 					textView.ModifyBase (Gtk.StateType.Normal, errorColor);
 				}
 				UpdateProgressBar ();
+				UpdateTasks ();
 			};
 			
 			Label label = new Label ();
@@ -933,48 +935,79 @@ namespace MonoDevelop.Gettext
 		
 		void ClearTasks ()
 		{
-			System.Console.WriteLine("clear");
 			IdeApp.Services.TaskService.ClearExceptCommentTasks ();
 			/*foreach (TranslationTask task in tasks) {
 				IdeApp.Services.TaskService.Remove (task);
 			}*/
-			tasks.Clear ();
 		}
 		
-		List<TranslationTask> tasks = new List<TranslationTask> ();
+		class UpdateTaskWorkerThread : WorkerThread
+		{
+			POEditorWidget widget;
+			
+			public UpdateTaskWorkerThread (POEditorWidget widget)
+			{
+				this.widget = widget;
+			}
+			
+			List<Task> tasks = new List<Task> ();
+			protected override void InnerRun ()
+			{
+				if (widget.catalog == null) {
+					widget.ClearTasks ();
+					return;
+				}
+				try {
+					foreach (CatalogEntry entry in widget.catalog) {
+						if (IsStopping)
+							return;
+						if (String.IsNullOrEmpty (entry.String) || String.IsNullOrEmpty (entry.GetTranslation (0)))
+							continue;
+						
+						if (entry.String.EndsWith (".") && !entry.GetTranslation (0).EndsWith (".")) {
+							tasks.Add (new TranslationTask (widget,
+							                                entry,
+							                                GettextCatalog.GetString ("Translation for '{0}' doesn't end with '.'.", entry.String)));
+						}
+						if (char.IsLetter (entry.String[0]) && char.IsLetter (entry.GetTranslation (0)[0])  &&
+						    char.IsUpper (entry.String[0]) && !char.IsUpper (entry.GetTranslation (0)[0])) {
+							tasks.Add (new TranslationTask (widget,
+							                                entry,
+							                                GettextCatalog.GetString ("Casing mismatch in '{0}'", entry.String)));
+						}
+						if (entry.String.Contains ("_") && !entry.GetTranslation (0).Contains ("_")) {
+							tasks.Add (new TranslationTask (widget,
+							                                entry,
+							                                GettextCatalog.GetString ("Original string '{0}' contains '_', translation doesn't.", entry.String)));
+						}
+						foreach (System.Text.RegularExpressions.Match match in Regex.Matches (entry.String, @"\{.\}", RegexOptions.None))  {
+							if (!entry.GetTranslation (0).Contains (match.Value)) {
+								tasks.Add (new TranslationTask (widget,
+								                                entry,
+								                                GettextCatalog.GetString ("Original string '{0}' contains '{1}', translation doesn't.", entry.String, match.Value)));
+							}
+						}
+					}
+				} catch (Exception e) {
+					System.Console.WriteLine (e);
+					Stop ();
+					return;
+				}
+				
+				widget.ClearTasks ();
+				IdeApp.Services.TaskService.AddRange (tasks);
+				Stop ();
+			}
+		}
+		
+		UpdateTaskWorkerThread updateTaskThread = null;
 		void UpdateTasks ()
 		{
-			ClearTasks ();
-			if (catalog == null)
-				return;
-			System.Console.WriteLine("update");
-			foreach (CatalogEntry entry in catalog) {
-				if (String.IsNullOrEmpty (entry.String) || String.IsNullOrEmpty (entry.GetTranslation (0)))
-					continue;
-				
-				if (entry.String.EndsWith (".") && !entry.GetTranslation (0).EndsWith (".")) {
-					tasks.Add (new TranslationTask (this,
-					                                entry,
-					                                GettextCatalog.GetString ("'{0}' has . mismatch", entry.String)));
-				}
-				if (char.IsLetter (entry.String[0]) && char.IsLetter (entry.GetTranslation (0)[0])  &&
-				    char.IsUpper (entry.String[0]) && !char.IsUpper (entry.GetTranslation (0)[0])) {
-					tasks.Add (new TranslationTask (this,
-					                                entry,
-					                                GettextCatalog.GetString ("Casing mismatch in '{0}'", entry.String)));
-				}
-				if (entry.String.Contains ("_") && !entry.GetTranslation (0).Contains ("_")) {
-					tasks.Add (new TranslationTask (this,
-					                                entry,
-					                                GettextCatalog.GetString ("Original string '{0}' contains '_', translation doesn't.", entry.String)));
-				}
-				
-			}
+			if (updateTaskThread != null) 
+				updateTaskThread.Stop ();
 			
-			foreach (TranslationTask task in tasks) {
-				IdeApp.Services.TaskService.Add (task);
-			}
-			
+			updateTaskThread = new UpdateTaskWorkerThread (this);
+			updateTaskThread.Start ();
 		}
 #endregion
 	}
