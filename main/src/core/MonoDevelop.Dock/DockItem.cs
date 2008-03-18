@@ -362,6 +362,7 @@ namespace MonoDevelop.Components.Docking
 			// Dockable menuitem
 			citem = new CheckMenuItem (Catalog.GetString("Dockable"));
 			citem.Active = Status == DockItemStatus.Dockable;
+			citem.DrawAsRadio = true;
 			citem.Toggled += delegate { Status = DockItemStatus.Dockable; };
 			menu.Append (citem);
 
@@ -369,6 +370,7 @@ namespace MonoDevelop.Components.Docking
 			if ((Behavior & DockItemBehavior.NeverFloating) == 0) {
 				citem = new CheckMenuItem (Catalog.GetString("Floating"));
 				citem.Active = Status == DockItemStatus.Floating;
+				citem.DrawAsRadio = true;
 				citem.Toggled += delegate { Status = DockItemStatus.Floating; };
 				menu.Append (citem);
 			}
@@ -377,6 +379,7 @@ namespace MonoDevelop.Components.Docking
 			if ((Behavior & DockItemBehavior.CantAutoHide) == 0) {
 				citem = new CheckMenuItem (Catalog.GetString("Auto Hide"));
 				citem.Active = Status == DockItemStatus.AutoHide;
+				citem.DrawAsRadio = true;
 				citem.Toggled += delegate { Status = DockItemStatus.AutoHide; };
 				menu.Append (citem);
 			}

@@ -1,3 +1,9 @@
+2008-03-17  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* DockItem.cs: Draw dockable/floating/autohide options as radio
+	  buttons, as they behave this way. Thanks to Gabriel Burt for this
+	  patch.
+
 2008-03-10  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* DockFrame.cs: Update autohide buttons when the title of an item
