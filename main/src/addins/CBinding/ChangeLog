@@ -1,3 +1,8 @@
+2008-03-18  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* Gui/CTextEditorExtension.cs: Only smart-indent when smart-indenting
+	  is enabled. Respect tabs/spaces setting.
+
 2008-03-16  Marcos David Marín Amador <MarcosMarin@gmail.com> 
 
 	* Gui/OutputOptionsPanel.cs: Fix bug where the pauseCheckbox control could

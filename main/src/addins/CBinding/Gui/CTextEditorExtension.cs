@@ -70,17 +70,21 @@ namespace CBinding
 			Editor.GetLineColumnFromPosition (Editor.CursorPosition, out line, out column);
 			string lineText = Editor.GetLineText (line);
 			
-			// Formatting Strategy
-			if (key == Gdk.Key.Return) {
-				if (lineText.TrimEnd ().EndsWith ("{")) {
-					Editor.InsertText (Editor.CursorPosition, "\n\t" + GetIndent (Editor, line));
+			// smart formatting strategy
+			if (TextEditorProperties.IndentStyle == IndentStyle.Smart) {
+				if (key == Gdk.Key.Return) {
+					if (lineText.TrimEnd ().EndsWith ("{")) {
+						Editor.InsertText (Editor.CursorPosition, 
+						    "\n" + TextEditorProperties.IndentString + GetIndent (Editor, line));
+						return false;
+					}
+				} else if (key == Gdk.Key.braceright && AllWhiteSpace (lineText) 
+				    && lineText.StartsWith (TextEditorProperties.IndentString)) {
+					if (lineText.Length > 0)
+						lineText = lineText.Substring (TextEditorProperties.IndentString.Length);
+					Editor.ReplaceLine (line, lineText + "}");
 					return false;
 				}
-			} else if (key == Gdk.Key.braceright && AllWhiteSpace (lineText)) {
-				if (lineText.Length > 0)
-					lineText = lineText.Substring (1);
-				Editor.ReplaceLine (line, lineText + "}");
-				return false;
 			}
 			
 			return base.KeyPress (key, modifier);
