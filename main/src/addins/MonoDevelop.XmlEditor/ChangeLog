@@ -1,5 +1,14 @@
 2008-03-18  Michael Hutchinson <mhutchinson@novell.com> 
 
+	* MonoDevelop.XmlEditor.mdp: Updated.
+	* gtk-gui, gtk-gui/generated.cs,
+	  gtk-gui/MonoDevelop.XmlEditor.Gui.XmlEditorOptionsPanelWidget.cs,
+	  gtk-gui/gui.stetic,
+	  gtk-gui/MonoDevelop.XmlEditor.Gui.XmlSchemasPanelWidget.cs,
+	  gtk-gui/objects.xml: Add stetic-generated files.
+
+2008-03-18  Michael Hutchinson <mhutchinson@novell.com> 
+
 	* MonoDevelop.XmlEditor/XmlCompletionDataProvider.cs: Track API.
 
 2008-03-18  Michael Hutchinson <mhutchinson@novell.com> 
