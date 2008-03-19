@@ -26,6 +26,7 @@ FILES =  \
 	MonoDevelop.XmlEditor.Gui/XmlEditorOptionsPanelWidget.cs \
 	MonoDevelop.XmlEditor.Gui/XmlSchemasPanel.cs \
 	MonoDevelop.XmlEditor.Gui/XmlSchemasPanelWidget.cs \
+	MonoDevelop.XmlEditor/ClosingBracketCompletionDataProvider.cs \
 	MonoDevelop.XmlEditor/QualifiedName.cs \
 	MonoDevelop.XmlEditor/QualifiedNameCollection.cs \
 	MonoDevelop.XmlEditor/XmlCompletionData.cs \

@@ -71,6 +71,13 @@ namespace MonoDevelop.XmlEditor
 		
 		#region Code completion
 		
+		IEditableTextBuffer GetBuffer ()
+		{
+			IEditableTextBuffer buf = Document.GetContent<IEditableTextBuffer> ();
+			System.Diagnostics.Debug.Assert (buf != null);
+			return buf;
+		}
+		
 		public override ICompletionDataProvider HandleCodeCompletion (ICodeCompletionContext completionContext, char completionChar)
 		{
 			switch (completionChar) {
@@ -81,6 +88,11 @@ namespace MonoDevelop.XmlEditor
 			case '\'':
 				IXmlSchemaCompletionDataCollection schemaCompletionDataItems = XmlSchemaManager.SchemaCompletionDataItems;
 				return new XmlCompletionDataProvider (schemaCompletionDataItems, defaultSchemaCompletionData, defaultNamespacePrefix, completionContext);
+			case '>':
+				//this is "optional" autocompletion of elements, so disable if fully automatic completion enabled
+				if (!autoCompleteElements)
+					return new ClosingBracketCompletionDataProvider (GetBuffer ());
+				return null;
 			default:
 				return null;
 			}
@@ -137,54 +149,7 @@ namespace MonoDevelop.XmlEditor
 			return GetSchemaObjectSelected(xml, index, provider, null);
 		}*/
 		
-		// Greater than key just pressed so try and auto-close the xml element.
-		void AutoCloseElement ()
-		{
-			// Move to char before '>'
-			int index = Editor.CursorPosition - 1;
-			int elementEnd = index;
 
-			// Ignore if is empty element, element has no name or if comment.
-			char c = Editor.GetCharAt (index);
-			if (c == '/' || c == '<' || c == '-')
-				return;
-					
-			// Work backwards and try to find the
-			// element start.
-			while (--index > -1) {
-				c = Editor.GetCharAt (index);
-				if (c != '<')
-					continue;
-				
-				//have found start of tag, so work out its name
-				string elementName = GetElementNameFromStartElement (Editor.GetText (index + 1, elementEnd));
-				if (string.IsNullOrEmpty (elementName))
-					return;
-				
-				Editor.InsertText (Editor.CursorPosition, String.Concat ("</", elementName, ">"));
-				Editor.CursorPosition = elementEnd + 1;
-				return;
-			}
-		}
-		
-		// Tries to get the element name from an element start tag string.  The element start tag 
-		// string in this case means the text inside the start tag.
-		string GetElementNameFromStartElement (string text)
-		{
-			string name = text.Trim ();
-			// A forward slash means we are in an element so ignore it.
-			if (name.Length == 0 || name[0] == '/') {
-				return null;
-			}
-			
-			// Ignore any attributes.
-			int index = name.IndexOf (' ');
-			if (index > 0) {
-				name = name.Substring (0, index);
-			}
-			
-			return name.Length != 0? name: null;
-		}
 		
 		#endregion
 		
@@ -270,7 +235,7 @@ namespace MonoDevelop.XmlEditor
 		/// Determines whether the file can be displayed by
 		/// the xml editor.
 		/// </summary>
-		public static bool IsFileNameHandled(string fileName)
+		public static bool IsFileNameHandled (string fileName)
 		{			
 			if (fileName == null)
 				return false;
@@ -439,7 +404,11 @@ namespace MonoDevelop.XmlEditor
 			
 			if ((char)(uint)key == '>' && autoCompleteElements) {
 				result = base.KeyPress (key, modifier);
-				AutoCloseElement ();
+				string autoClose = ClosingBracketCompletionDataProvider.GetAutoCloseElement (GetBuffer ());
+				if (autoClose != null) {
+					Editor.InsertText (Editor.CursorPosition, autoClose);
+					Editor.CursorPosition -= autoClose.Length;
+				}
 				return result;
 			}
 			

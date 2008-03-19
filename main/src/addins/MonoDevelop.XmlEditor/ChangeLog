@@ -1,3 +1,11 @@
+2008-03-19  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.XmlEditor/ClosingBracketCompletionDataProvider.cs,
+	  MonoDevelop.XmlEditor/XmlTextEditorExtension.cs: Move bracket
+	  autocompletion into a completion provider, so that the user can
+	  escape bracket completion.
+	* Makefile.am, MonoDevelop.XmlEditor.mdp: Updated.
+
 2008-03-18  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.XmlEditor.mdp: Updated.
