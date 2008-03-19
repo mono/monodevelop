@@ -1,3 +1,8 @@
+2008-03-19  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* Gui/CSharpTextEditorExtension.cs: Fix CS0136 error with csc (see gmcs
+	  "Bug 370414 - Missing CS0136").
+
 2008-03-13  Mike Krüger <mkrueger@novell.com> 
 
 	* Parser/Resolver.cs: fixed typo.

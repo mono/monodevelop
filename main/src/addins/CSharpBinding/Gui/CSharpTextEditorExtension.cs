@@ -318,12 +318,11 @@ namespace CSharpBinding
 		{
 			int cursor;
 			int newCursorOffset = 0;
-			
+			int lin, col;
 			switch (key) {
 			case Gdk.Key.greater:	
 				cursor = Editor.SelectionStartPosition;
 				if (IsInsideDocumentationComment (Editor.SelectionStartPosition)) {
-					int lin, col;
 					Editor.GetLineColumnFromPosition (Editor.CursorPosition, out lin, out col);
 					string lineText = Editor.GetLineText (lin);
 					int startIndex = Math.Min (col - 1, lineText.Length - 1);
@@ -355,7 +354,6 @@ namespace CSharpBinding
 				cursor = Editor.SelectionStartPosition;
 				if (cursor < 2)
 					break;
-				int lin, col;
 				Editor.GetLineColumnFromPosition (Editor.CursorPosition, out lin, out col);
 				
 				if (MayNeedComment (lin, cursor)) {
