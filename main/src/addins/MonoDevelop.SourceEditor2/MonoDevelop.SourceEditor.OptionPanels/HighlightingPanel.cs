@@ -57,7 +57,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			this.enableHighlightingCheckbutton.Toggled += EnableHighlightingCheckbuttonToggled;
 			EnableHighlightingCheckbuttonToggled (this, EventArgs.Empty);
 			styleStore.Clear ();
-			TreeIter selectedIter = styleStore.AppendValues (GetMarkup (GettextCatalog.GetString ("Default"), GettextCatalog.GetString ("The default color sheme.")), "Default");
+			TreeIter selectedIter = styleStore.AppendValues (GetMarkup (GettextCatalog.GetString ("Default"), GettextCatalog.GetString ("The default color scheme.")), "Default");
 			foreach (string styleName in SyntaxModeService.Styles) {
 				Mono.TextEditor.Highlighting.Style style = SyntaxModeService.GetColorStyle (null, styleName);
 				TreeIter iter = styleStore.AppendValues (GetMarkup (GettextCatalog.GetString (style.Name), GettextCatalog.GetString (style.Description)), style.Name);
