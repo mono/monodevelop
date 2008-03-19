@@ -1,5 +1,9 @@
 2008-03-18  Michael Hutchinson <mhutchinson@novell.com> 
 
+	* MonoDevelop.XmlEditor/XmlCompletionDataProvider.cs: Track API.
+
+2008-03-18  Michael Hutchinson <mhutchinson@novell.com> 
+
 	* schemas/MonoDevelopAddIn.xsd, schemas/manifest.xsd,
 	  schemas/appconfig.xsd: Make XML valid, so the mime type is picked
 	  up correctly.

@@ -17,13 +17,13 @@ namespace MonoDevelop.XmlEditor
 	/// </summary>
 	public class XmlCompletionDataProvider : ICompletionDataProvider
 	{
-		XmlSchemaCompletionDataCollection schemaCompletionDataItems;
+		IXmlSchemaCompletionDataCollection schemaCompletionDataItems;
 		XmlSchemaCompletionData defaultSchemaCompletionData;
 		ICodeCompletionContext completionContext;
 		string defaultNamespacePrefix = String.Empty;
 		string defaultCompletionString;
 		
-		public XmlCompletionDataProvider(XmlSchemaCompletionDataCollection schemaCompletionDataItems, XmlSchemaCompletionData defaultSchemaCompletionData, string defaultNamespacePrefix, ICodeCompletionContext completionContext)
+		public XmlCompletionDataProvider(IXmlSchemaCompletionDataCollection schemaCompletionDataItems, XmlSchemaCompletionData defaultSchemaCompletionData, string defaultNamespacePrefix, ICodeCompletionContext completionContext)
 		{
 			this.schemaCompletionDataItems = schemaCompletionDataItems;
 			this.defaultSchemaCompletionData = defaultSchemaCompletionData;
