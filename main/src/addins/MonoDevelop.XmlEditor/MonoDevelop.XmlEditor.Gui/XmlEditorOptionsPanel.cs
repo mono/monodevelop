@@ -10,7 +10,7 @@ using MonoDevelop.Core.Gui.Dialogs;
 using System;
 using Gtk;
 
-namespace MonoDevelop.XmlEditor
+namespace MonoDevelop.XmlEditor.Gui
 {
 	/// <summary>
 	/// Configuration settings for the xml editor.

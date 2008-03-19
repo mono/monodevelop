@@ -1,3 +1,38 @@
+2008-03-18  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* schemas/MonoDevelopAddIn.xsd, schemas/manifest.xsd,
+	  schemas/appconfig.xsd: Make XML valid, so the mime type is picked
+	  up correctly.
+	* MonoDevelop.XmlEditor.addin.xml, Makefile.am,
+	  MonoDevelop.XmlEditor.mdp: Updated.
+	* MonoDevelop.XmlEditor.Gui/XmlSchemasPanel.cs,
+	  MonoDevelop.XmlEditor.Gui/XmlSchemasPanelWidget.cs: New UI for
+	  schema and filetype settings. Now allows overriding built-in
+	  schemas and defining additional handled filetypes.
+	* MonoDevelop.XmlEditor.Gui/XmlEditorOptionsPanel.cs,
+	  MonoDevelop.XmlEditor.Gui/XmlEditorOptionsPanelWidget.cs: New UI
+	  using Stetic.
+	* MonoDevelop.XmlEditor/SelectXmlSchemaDialog.cs,
+	  MonoDevelop.XmlEditor/XslOutputViewContent.cs,
+	  MonoDevelop.XmlEditor/XmlSchemasPanelWidget.cs,
+	  MonoDevelop.XmlEditor/XmlEditorListWindow.cs: No longer needed.
+	* MonoDevelop.XmlEditor/XmlSchemasPanel.cs,
+	  MonoDevelop.XmlEditor/XmlEditorOptionsPanel.cs: Moved.
+	* MonoDevelop.XmlEditor/XmlTextEditorExtension.cs: Track API.
+	* MonoDevelop.XmlEditor/XmlSchemaManager.cs: Support overriding of
+	  built-in schemas with user schemas.
+	* MonoDevelop.XmlEditor/XmlSchemaCompletionDataCollection.cs: Use
+	  generic collections. Separate completion functions into an
+	  interface and implement a "merge" collection.
+	* MonoDevelop.XmlEditor/XmlSchemaAssociation.cs: Use LowerInvariant for
+	  extensions.
+	* MonoDevelop.XmlEditor/XmlFileExtensions.cs: Use generics. Allow
+	  adding xml file extensions.
+	* MonoDevelop.XmlEditor/XmlEditorOptionsPanelWidget.cs: Replaced by
+	  stetic version.
+	* MonoDevelop.XmlEditor/XmlEditorAddInOptions.cs: Allow adding xml file
+	  extensions.
+
 2008-03-14  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* Makefile.am: fix install location of schemas.

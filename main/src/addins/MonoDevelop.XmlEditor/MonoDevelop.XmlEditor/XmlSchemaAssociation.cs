@@ -93,7 +93,7 @@ namespace MonoDevelop.XmlEditor
 		{
 			XmlSchemaAssociation association = null;
 			
-			switch (extension.ToLower()) {
+			switch (extension.ToLowerInvariant ()) {
 				case ".config":
 					association = new XmlSchemaAssociation(extension, @"urn:app-config");
 					break;

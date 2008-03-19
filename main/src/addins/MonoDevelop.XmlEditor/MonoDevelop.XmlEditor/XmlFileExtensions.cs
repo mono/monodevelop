@@ -7,47 +7,49 @@
 using Mono.Addins;
 using MonoDevelop.Core;
 using System;
-using System.Collections.Specialized;
+using System.Collections.Generic;
 
 namespace MonoDevelop.XmlEditor
 {
 	/// <summary>
 	/// The extensions that will be edited using the xml editor.
 	/// </summary>
-	public class XmlFileExtensions
+	public static class XmlFileExtensions
 	{
-		static StringCollection extensions;
-
-		XmlFileExtensions()
-		{
-		}
+		//note: these are all stored as LowerInvariant strings
+		static List<string> extensions;
 		
-		public static StringCollection Extensions {
+		public static IEnumerable<string> Extensions {
 			get {
 				if (extensions == null) {
-					extensions = new StringCollection();
+					extensions = new List<string> ();
 					foreach (ExtensionNode node in AddinManager.GetExtensionNodes("/MonoDevelop/XmlEditor/XmlFileExtensions")) {
 						XmlFileExtensionNode xmlFileExtensionNode = node as XmlFileExtensionNode;
-						if (xmlFileExtensionNode != null) {
-							extensions.Add(xmlFileExtensionNode.FileExtension);
-						}
+						if (xmlFileExtensionNode != null)
+							extensions.Add (xmlFileExtensionNode.FileExtension.ToLowerInvariant ());
 					}
 				}
-				return extensions;
+				
+				//get user-registered extensions stored in the properties service but don't duplicate built-in ones
+				//note: XmlEditorAddInOptions returns LowerInvariant strings
+				foreach (string prop in XmlEditorAddInOptions.RegisteredFileExtensions)
+					if (!extensions.Contains (prop))
+						yield return prop;
+				
+				foreach (string s in extensions)
+					yield return s;
 			}
 		}
 		
-		public static bool IsXmlFileExtension(string extension)
+		public static bool IsXmlFileExtension (string extension)
 		{
-			if (extension == null) {
+			if (string.IsNullOrEmpty (extension))
 				return false;
-			}
 			
-			foreach (string knownExtension in Extensions) {
-				if (String.Compare(extension, knownExtension, true) == 0) {
+			string ext = extension.ToLowerInvariant ();
+			foreach (string knownExtension in Extensions)
+				if (ext == knownExtension)
 					return true;
-				}
-			}
 			return false;
 		}
 	}

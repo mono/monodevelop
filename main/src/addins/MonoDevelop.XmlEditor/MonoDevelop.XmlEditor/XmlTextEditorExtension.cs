@@ -79,7 +79,7 @@ namespace MonoDevelop.XmlEditor
 			case '<':
 			case '"':
 			case '\'':
-				XmlSchemaCompletionDataCollection schemaCompletionDataItems = XmlSchemaManager.SchemaCompletionDataItems;
+				IXmlSchemaCompletionDataCollection schemaCompletionDataItems = XmlSchemaManager.SchemaCompletionDataItems;
 				return new XmlCompletionDataProvider (schemaCompletionDataItems, defaultSchemaCompletionData, defaultNamespacePrefix, completionContext);
 			default:
 				return null;
@@ -406,6 +406,28 @@ namespace MonoDevelop.XmlEditor
 			}
 			return null;
 		}
+		
+		/// <summary>
+		/// Checks whether the caret is inside a set of quotes (" or ').
+		/// </summary>
+		bool IsInsideQuotes()
+		{
+			// Get character at cursor.
+			TextIter iter = Buffer.GetIterAtMark(Buffer.InsertMark);			
+			string charAfter = iter.Char;
+			
+			// Get character before cursor
+			if (!iter.BackwardChar()) {
+				return false;
+			}
+			string charBefore = iter.Char;
+				
+			if (((charBefore == "\'") && (charAfter == "\'")) ||
+				((charBefore == "\"") && (charAfter == "\""))) {
+				return true;
+			}
+			return false;
+		}			
 		*/
 		#endregion
 		

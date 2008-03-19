@@ -12,21 +12,26 @@ REFS =  \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Ide.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Projects.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Projects.Gui.dll \
+	-r:Mono.Posix \
 	-r:System \
 	-r:System.Data \
 	-r:System.Xml
 
 FILES =  \
 	AssemblyInfo.cs \
+	gtk-gui/generated.cs \
+	gtk-gui/MonoDevelop.XmlEditor.Gui.XmlEditorOptionsPanelWidget.cs \
+	gtk-gui/MonoDevelop.XmlEditor.Gui.XmlSchemasPanelWidget.cs \
+	MonoDevelop.XmlEditor.Gui/XmlEditorOptionsPanel.cs \
+	MonoDevelop.XmlEditor.Gui/XmlEditorOptionsPanelWidget.cs \
+	MonoDevelop.XmlEditor.Gui/XmlSchemasPanel.cs \
+	MonoDevelop.XmlEditor.Gui/XmlSchemasPanelWidget.cs \
 	MonoDevelop.XmlEditor/QualifiedName.cs \
 	MonoDevelop.XmlEditor/QualifiedNameCollection.cs \
-	MonoDevelop.XmlEditor/SelectXmlSchemaDialog.cs \
 	MonoDevelop.XmlEditor/XmlCompletionData.cs \
 	MonoDevelop.XmlEditor/XmlCompletionDataCollection.cs \
 	MonoDevelop.XmlEditor/XmlCompletionDataProvider.cs \
 	MonoDevelop.XmlEditor/XmlEditorAddInOptions.cs \
-	MonoDevelop.XmlEditor/XmlEditorOptionsPanel.cs \
-	MonoDevelop.XmlEditor/XmlEditorOptionsPanelWidget.cs \
 	MonoDevelop.XmlEditor/XmlElementPath.cs \
 	MonoDevelop.XmlEditor/XmlFileExtensionNode.cs \
 	MonoDevelop.XmlEditor/XmlFileExtensions.cs \
@@ -36,8 +41,6 @@ FILES =  \
 	MonoDevelop.XmlEditor/XmlSchemaCompletionData.cs \
 	MonoDevelop.XmlEditor/XmlSchemaCompletionDataCollection.cs \
 	MonoDevelop.XmlEditor/XmlSchemaManager.cs \
-	MonoDevelop.XmlEditor/XmlSchemasPanel.cs \
-	MonoDevelop.XmlEditor/XmlSchemasPanelWidget.cs \
 	MonoDevelop.XmlEditor/XmlTextEditorExtension.cs
 
 DATA_FILES =  \
@@ -51,6 +54,8 @@ DATA_FILES =  \
 	schemas/xslt.xsd
 
 RES =  \
+	gtk-gui/gui.stetic \
+	gtk-gui/objects.xml \
 	Icons/XPathQueryPad.png \
 	MonoDevelop.XmlEditor.addin.xml \
 	XmlEditor.glade

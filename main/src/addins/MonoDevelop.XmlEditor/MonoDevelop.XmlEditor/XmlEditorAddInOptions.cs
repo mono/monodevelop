@@ -6,6 +6,7 @@
 
 using MonoDevelop.Core;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
@@ -19,9 +20,9 @@ namespace MonoDevelop.XmlEditor
 	public class XmlEditorAddInOptions
 	{
 		public static readonly string OptionsProperty = "XmlEditor.AddIn.Options";
-		//public static readonly string ShowAttributesWhenFoldedPropertyName = "ShowAttributesWhenFolded";
 		public static readonly string ShowSchemaAnnotationPropertyName = "ShowSchemaAnnotation";
 		public static readonly string AutoCompleteElementsPropertyName = "AutoCompleteElements";
+		public static readonly string AssociationPrefix = "Association";
 		
 		static Properties properties;
 
@@ -83,32 +84,36 @@ namespace MonoDevelop.XmlEditor
 		/// way is not as flexible since it requires the user to locate
 		/// the schema and change the association manually.</para>
 		/// </remarks>
-		public static XmlSchemaAssociation GetSchemaAssociation(string extension)
-		{			
-			XmlSchemaAssociation association = Properties.Get<XmlSchemaAssociation>(extension);
+		public static XmlSchemaAssociation GetSchemaAssociation (string extension)
+		{
+			XmlSchemaAssociation association = Properties.Get<XmlSchemaAssociation> (AssociationPrefix + extension.ToLowerInvariant ());
 			
-			// Use default?
-			if (association == null) {
-				association = XmlSchemaAssociation.GetDefaultAssociation(extension);
-			}
+			if (association == null)
+				association = XmlSchemaAssociation.GetDefaultAssociation (extension);
 			
 			return association;
 		}
 		
-		public static void SetSchemaAssociation(XmlSchemaAssociation association)
+		public static void RemoveSchemaAssociation (string extension)
 		{
-			Properties.Set(association.Extension, association);
+			Properties.Set (AssociationPrefix + extension.ToLowerInvariant (), null); 
 		}
 		
-//		public static bool ShowAttributesWhenFolded {
-//			get {
-//				return Properties.GetProperty(ShowAttributesWhenFoldedPropertyName, false);
-//			}
-//			
-//			set {
-//				Properties.SetProperty(ShowAttributesWhenFoldedPropertyName, value);
-//			}
-//		}
+		public static void SetSchemaAssociation (XmlSchemaAssociation association)
+		{
+			Properties.Set (AssociationPrefix + association.Extension.ToLowerInvariant (), association);
+		}
+		
+		public static IEnumerable<string> RegisteredFileExtensions
+		{
+			get {
+				//for some reason we get an out of sync error unless we copy the list
+				List<string> tempList = new List<string> (Properties.Keys);
+				foreach (string key in tempList)
+					if (key.StartsWith (AssociationPrefix))
+						yield return key.Substring (AssociationPrefix.Length);
+			}
+		}
 		
 		public static bool ShowSchemaAnnotation {
 			get {
