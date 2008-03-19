@@ -43,6 +43,9 @@ namespace MonoDevelop.Components
 		public FileSelector (string title) : this (title, FileChooserAction.Open)
 		{
 		}
+		
+		//for some reason GTK# needs this to create wrapper objects
+		protected FileSelector (IntPtr ptr) : base (ptr) {}
 
 		public FileSelector (string title, FileChooserAction action) : base (title, null, action)
 		{
@@ -100,8 +103,8 @@ namespace MonoDevelop.Components
 		
 		public override void Dispose ()
 		{
-			base.Dispose ();
 			Destroy ();
+			base.Dispose ();
 		}
 	}
 }

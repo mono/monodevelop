@@ -1,3 +1,7 @@
+2008-03-18  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Components/FileSelector.cs: Fix disposal issues.
+
 2008-03-10  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Makefile.am, MonoDevelop.Components.mdp,
