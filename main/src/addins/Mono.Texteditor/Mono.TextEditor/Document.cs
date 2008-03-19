@@ -619,6 +619,15 @@ namespace Mono.TextEditor
 			}
 		}
 		
+		public void ClearFoldSegments ()
+		{
+			lock (syncObject) {
+				if (foldSegmentWorkerThread != null) 
+					foldSegmentWorkerThread.Stop ();
+				foldSegments.Clear ();
+			}
+		}
+		
 		public List<FoldSegment> GetFoldingsFromOffset (int offset)
 		{
 			List<FoldSegment> result = new List<FoldSegment> ();

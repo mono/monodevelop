@@ -268,7 +268,7 @@ namespace MonoDevelop.SourceEditor
 			
 			protected override void InnerRun ()
 			{
-				if (widget.lastCu != null) {
+				if (SourceEditorOptions.Options.ShowFoldMargin && widget.lastCu != null) {
 					List<FoldSegment> foldSegments = new List<FoldSegment> ();
 					foreach (MonoDevelop.Projects.Parser.FoldingRegion region in widget.lastCu.FoldingRegions) {
 						if (base.IsStopping)
