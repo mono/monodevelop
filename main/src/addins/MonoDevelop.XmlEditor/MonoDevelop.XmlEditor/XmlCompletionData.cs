@@ -16,7 +16,7 @@ namespace MonoDevelop.XmlEditor
 	/// Holds the text for  namespace, child element or attribute 
 	/// autocomplete (intellisense).
 	/// </summary>
-	public class XmlCompletionData : ICompletionData, IActionCompletionData
+	public class XmlCompletionData : IActionCompletionData
 	{
 		string text;
 		DataType dataType = DataType.XmlElement;

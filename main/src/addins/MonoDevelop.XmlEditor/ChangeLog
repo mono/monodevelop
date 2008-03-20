@@ -1,3 +1,22 @@
+2008-03-20  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.XmlEditor/XmlSchemaManager.cs: Actually use merged schema
+	  collection.
+	* MonoDevelop.XmlEditor/XmlCompletionData.cs: Remove unnecessary
+	  reference to inherited interface.
+	* MonoDevelop.XmlEditor/GoToSchemaDefinitionCommand.cs,
+	  MonoDevelop.XmlEditor/CreateSchemaCommand.cs,
+	  MonoDevelop.XmlEditor/FormatXmlCommand.cs,
+	  MonoDevelop.XmlEditor/ValidateXmlCommand.cs: Moved implementation
+	  into XmlEditorService and XmlTextEditorExtension.
+	* MonoDevelop.XmlEditor/XmlTextEditorExtension.cs: Implement XMl
+	  commands, based on code from command classes.
+	* MonoDevelop.XmlEditor/XmlSchemaCompletionDataCollection.cs: Add
+	  IEnumerable implementation to merged collection.
+	* MonoDevelop.XmlEditor/XmlEditorService.cs: Move much of command
+	  implementations to editor service and refactor heavily.
+	* Makefile.am, MonoDevelop.XmlEditor.mdp: Updated.
+
 2008-03-19  Marcos David Marín Amador <MarcosMarin@gmail.com> 
 
 	* MonoDevelop.XmlEditor.Gui/XmlSchemasPanelWidget.cs: Workaround bug in mono

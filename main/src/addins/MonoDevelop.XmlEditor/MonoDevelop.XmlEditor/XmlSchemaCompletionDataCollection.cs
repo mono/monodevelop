@@ -10,7 +10,7 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.XmlEditor
 {
-	public interface IXmlSchemaCompletionDataCollection
+	public interface IXmlSchemaCompletionDataCollection: IEnumerable<XmlSchemaCompletionData>
 	{
 		XmlSchemaCompletionData this [string namespaceUri] { get; }
 		XmlCompletionData[] GetNamespaceCompletionData ();
@@ -81,9 +81,24 @@ namespace MonoDevelop.XmlEditor
 
 		public XmlSchemaCompletionData GetSchemaFromFileName (string fileName)
 		{
-			throw new NotImplementedException();
+			XmlSchemaCompletionData data = user.GetSchemaFromFileName (fileName);
+			if (data == null)
+				data = builtin.GetSchemaFromFileName (fileName);
+			return data;
+		}
+		
+		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator ()
+		{
+			return GetEnumerator ();
 		}
 
-		
+		public IEnumerator<XmlSchemaCompletionData> GetEnumerator ()
+		{
+			foreach (XmlSchemaCompletionData x in builtin)
+				if (user[x.NamespaceUri] != null)
+					yield return x;
+			foreach (XmlSchemaCompletionData x in user)
+				yield return x;
+		}
 	}
 }

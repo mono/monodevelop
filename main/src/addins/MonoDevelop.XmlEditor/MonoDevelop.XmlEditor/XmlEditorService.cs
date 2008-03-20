@@ -60,7 +60,7 @@ namespace MonoDevelop.XmlEditor
 			get {
 				List<XmlTextEditorExtension> views = new List<XmlTextEditorExtension> ();				
 				foreach (Document doc in IdeApp.Workbench.Documents) {
-					XmlEditorViewContent view = doc.GetContent<XmlTextEditorExtension>();
+					XmlTextEditorExtension view = doc.GetContent<XmlTextEditorExtension>();
 					if (view != null)
 						views.Add (view);
 				}
@@ -70,7 +70,7 @@ namespace MonoDevelop.XmlEditor
 		
 		public static bool IsXmlEditorViewContentActive {
 			get {
-				return GetActiveView() != null;
+				return ActiveEditor != null;
 			}
 		}
 		#endregion
@@ -91,30 +91,32 @@ namespace MonoDevelop.XmlEditor
 		/// <summary>
 		/// Checks that the xml in this view is well-formed.
 		/// </summary>
-		public static bool IsWellFormed(string xml, string fileName)
+		public static bool IsWellFormed (string xml, string fileName)
 		{
 			try {
-				XmlDocument Document = new XmlDocument();
-				Document.LoadXml(xml);
+				XmlDocument Document = new XmlDocument ();
+				Document.LoadXml (xml);
 				return true;
 			} catch (XmlException ex) {
-				using (IProgressMonitor monitor = GetMonitor()) {
-					monitor.Log.WriteLine(ex.Message);
-					monitor.Log.WriteLine();
-					monitor.Log.WriteLine("XML is not well formed.");
+				using (IProgressMonitor monitor = GetMonitor ()) {
+					monitor.Log.WriteLine (ex.Message);
+					monitor.Log.WriteLine ();
+					monitor.Log.WriteLine ("XML is not well formed.");
 				}
-				AddTask(fileName, ex.Message, ex.LinePosition, ex.LineNumber, TaskType.Error);
-				TaskService.ShowErrors();
+				AddTask (fileName, ex.Message, ex.LinePosition, ex.LineNumber, TaskType.Error);
+				IdeApp.Services.TaskService.ShowErrors ();
 			}
 			return false;
 		}
 		
+		#region Formatting utilities
+		
 		/// <summary>
 		/// Returns a formatted xml string using a simple formatting algorithm.
 		/// </summary>
-		public static string SimpleFormat(string xml)
+		public static string SimpleFormat (string xml)
 		{
-			return xml.Replace("><", ">\r\n<");
+			return xml.Replace ("><", string.Concat (">", Environment.NewLine, "<"));
 		}
 		
 		/// <summary>
@@ -124,32 +126,30 @@ namespace MonoDevelop.XmlEditor
 		/// <returns>A pretty print version of the specified xml.  If the
 		/// string is not well formed xml the original string is returned.
 		/// </returns>
-		public static string IndentedFormat(string xml)
+		public static string IndentedFormat (string xml)
 		{
-			string indentedText = String.Empty;
-
-			try	{
-				XmlTextReader reader = new XmlTextReader(new StringReader(xml));
+			try {
+				XmlTextReader reader = new XmlTextReader (new StringReader (xml));
 				reader.WhitespaceHandling = WhitespaceHandling.None;
 
-				using (StringWriter indentedXmlWriter = new StringWriter()) {
-					using (XmlTextWriter writer = CreateXmlTextWriter(indentedXmlWriter)) {
-						writer.WriteNode(reader, false);
-						writer.Flush();
-						indentedText = indentedXmlWriter.ToString();
+				using (StringWriter indentedXmlWriter = new StringWriter ()) {
+					using (XmlTextWriter writer = CreateXmlTextWriter (indentedXmlWriter)) {
+						writer.WriteNode (reader, false);
+						writer.Flush ();
 					}
+					return indentedXmlWriter.ToString ();
 				}
-			} catch(Exception) {
-				indentedText = xml;
+			} catch (Exception ex) {
+				LoggingService.LogError ("Error handling validated XML.", ex);
+				return xml;
 			}
-			return indentedText;
 		}
 		
 		/// <summary>
 		/// Creates a XmlTextWriter using the current text editor
 		/// properties for indentation.
 		/// </summary>
-		public static XmlTextWriter CreateXmlTextWriter(TextWriter textWriter)
+		public static XmlTextWriter CreateXmlTextWriter (TextWriter textWriter)
 		{
 			XmlTextWriter xmlWriter = new XmlTextWriter(textWriter);
 			xmlWriter.Formatting = Formatting.Indented;
@@ -162,6 +162,8 @@ namespace MonoDevelop.XmlEditor
 			}
 			return xmlWriter;
 		}
+		
+		#endregion
 		
 		/// <summary>
 		/// Runs an XSL transform on the input xml.
@@ -189,5 +191,116 @@ namespace MonoDevelop.XmlEditor
 			byte[] outputBytes = outputStream.ToArray();
 			return UTF8Encoding.UTF8.GetString(outputBytes, preambleLength, outputBytes.Length - preambleLength);
 		}
+		
+		public static string CreateSchema (string xml)
+		{
+			using (System.Data.DataSet dataSet = new System.Data.DataSet()) {
+				dataSet.ReadXml(new StringReader(xml), System.Data.XmlReadMode.InferSchema);
+				using (EncodedStringWriter writer = new EncodedStringWriter(Encoding.UTF8)) {
+					using (XmlTextWriter xmlWriter = XmlEditorService.CreateXmlTextWriter(writer)) {				
+						dataSet.WriteXmlSchema(xmlWriter);
+						return writer.ToString();
+					}
+				}
+			}
+		}
+		
+		public static string GenerateSchemaFileName (string xmlFileName)
+		{
+			string baseFileName = Path.GetFileNameWithoutExtension (xmlFileName);
+			string schemaFileName = string.Concat (baseFileName, ".xsd");
+			int count = 1;
+			while (File.Exists(schemaFileName)) {
+				schemaFileName = String.Concat(baseFileName, count.ToString(), ".xsd");
+				++count;
+			}
+			return schemaFileName;
+		}
+		
+		#region Validation
+		
+		/// <summary>
+		/// Validates the xml against known schemas.
+		/// </summary>		
+		public static void ValidateXml (IProgressMonitor monitor, string xml, string fileName)
+		{
+			monitor.BeginTask (GettextCatalog.GetString ("Validating XML..."), 1);
+
+			try {
+				StringReader stringReader = new StringReader (xml);
+				XmlTextReader xmlReader = new XmlTextReader (stringReader);
+				xmlReader.XmlResolver = null;
+				XmlValidatingReader reader = new XmlValidatingReader (xmlReader);
+				reader.XmlResolver = null;
+				
+				XmlSchemaCompletionData schemaData = null;
+				foreach (XmlSchemaCompletionData sd in XmlSchemaManager.SchemaCompletionDataItems) {
+					schemaData = sd;
+					reader.Schemas.Add (schemaData.Schema);
+				}
+				
+				XmlDocument doc = new XmlDocument();
+				doc.Load (reader);
+				
+			} catch (XmlSchemaException ex) {
+				monitor.ReportError (ex.Message, ex);
+				AddTask (fileName, ex.Message, ex.LinePosition, ex.LineNumber,TaskType.Error);
+			}
+			catch (XmlException ex) {
+				monitor.ReportError (ex.Message, ex);
+				AddTask (fileName, ex.Message, ex.LinePosition, ex.LineNumber,TaskType.Error);
+			}
+			
+			if (IdeApp.Services.TaskService.SomethingWentWrong) {
+				monitor.Log.WriteLine (GettextCatalog.GetString ("Validation failed."));
+				IdeApp.Services.TaskService.ShowErrors();
+			} else {
+				monitor.ReportSuccess (GettextCatalog.GetString ("XML is valid."));
+			}
+			monitor.EndTask ();
+		}
+		
+		/// <summary>
+		/// Validates the schema.
+		/// </summary>		
+		public static void ValidateSchema (IProgressMonitor monitor, string xml, string fileName)
+		{
+			monitor.BeginTask (GettextCatalog.GetString ("Validating schema..."), 1);
+
+			try {
+				StringReader stringReader = new StringReader (xml);
+				XmlTextReader xmlReader = new XmlTextReader (stringReader);
+				xmlReader.XmlResolver = null;
+				
+				ValidationEventHandler callback = delegate (object source, ValidationEventArgs args) {
+					if (args.Severity == XmlSeverityType.Warning)
+						monitor.ReportWarning (args.Message);
+					else
+						monitor.ReportError (args.Message, args.Exception);
+					AddTask (fileName, args.Message, args.Exception.LinePosition, args.Exception.LineNumber,
+					    (args.Severity == XmlSeverityType.Warning)? TaskType.Warning : TaskType.Error);
+				};
+				XmlSchema schema = XmlSchema.Read (xmlReader, callback);
+				schema.Compile (callback);
+			} 
+			catch (XmlSchemaException ex) {
+				monitor.ReportError (ex.Message, ex);
+				AddTask (fileName, ex.Message, ex.LinePosition, ex.LineNumber,TaskType.Error);
+			}
+			catch (XmlException ex) {
+				monitor.ReportError (ex.Message, ex);
+				AddTask (fileName, ex.Message, ex.LinePosition, ex.LineNumber,TaskType.Error);
+			}
+			
+			if (IdeApp.Services.TaskService.SomethingWentWrong) {
+				monitor.Log.WriteLine (GettextCatalog.GetString ("Validation failed."));
+				IdeApp.Services.TaskService.ShowErrors();
+			} else {
+				monitor.ReportSuccess (GettextCatalog.GetString ("Schema is valid."));
+			}
+			monitor.EndTask ();
+		}
+		
+		#endregion Validation
 	}
 }

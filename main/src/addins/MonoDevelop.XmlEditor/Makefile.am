@@ -27,12 +27,15 @@ FILES =  \
 	MonoDevelop.XmlEditor.Gui/XmlSchemasPanel.cs \
 	MonoDevelop.XmlEditor.Gui/XmlSchemasPanelWidget.cs \
 	MonoDevelop.XmlEditor/ClosingBracketCompletionDataProvider.cs \
+	MonoDevelop.XmlEditor/Commands.cs \
+	MonoDevelop.XmlEditor/EncodedStringWriter.cs \
 	MonoDevelop.XmlEditor/QualifiedName.cs \
 	MonoDevelop.XmlEditor/QualifiedNameCollection.cs \
 	MonoDevelop.XmlEditor/XmlCompletionData.cs \
 	MonoDevelop.XmlEditor/XmlCompletionDataCollection.cs \
 	MonoDevelop.XmlEditor/XmlCompletionDataProvider.cs \
 	MonoDevelop.XmlEditor/XmlEditorAddInOptions.cs \
+	MonoDevelop.XmlEditor/XmlEditorService.cs \
 	MonoDevelop.XmlEditor/XmlElementPath.cs \
 	MonoDevelop.XmlEditor/XmlFileExtensionNode.cs \
 	MonoDevelop.XmlEditor/XmlFileExtensions.cs \

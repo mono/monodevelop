@@ -23,14 +23,13 @@ namespace MonoDevelop.XmlEditor
 		
 		static XmlSchemaCompletionDataCollection userSchemas;
 		static XmlSchemaCompletionDataCollection builtinSchemas;
-		static XmlSchemaCompletionDataCollection mergedSchemas;
+		static IXmlSchemaCompletionDataCollection mergedSchemas;
 	
 		// Gets the schemas that MonoDevelop knows about.
 		public static IXmlSchemaCompletionDataCollection SchemaCompletionDataItems {
 			get {
 				if (mergedSchemas == null) {
-					mergedSchemas = new XmlSchemaCompletionDataCollection ();
-					//UpdatedMergedSchemas ();
+					mergedSchemas = new MergedXmlSchemaCompletionDataCollection (BuiltinSchemas, UserSchemas);
 				}
 				return mergedSchemas;
 			}
@@ -63,7 +62,7 @@ namespace MonoDevelop.XmlEditor
 			XmlSchemaAssociation association = XmlEditorAddInOptions.GetSchemaAssociation (fileExtension);
 			if (association != null)
 				if (association.NamespaceUri.Length > 0)
-					data = SchemaCompletionDataItems[association.NamespaceUri];
+					data = SchemaCompletionDataItems [association.NamespaceUri];
 			
 			return data;
 		}
