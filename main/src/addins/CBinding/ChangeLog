@@ -1,3 +1,8 @@
+2008-03-19  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com>
+
+	* Parser/TagDatabaseManager.cs: Search project include paths 
+	for relatively-pathed includes.
+
 2008-03-18  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* Gui/CTextEditorExtension.cs: Only smart-indent when smart-indenting

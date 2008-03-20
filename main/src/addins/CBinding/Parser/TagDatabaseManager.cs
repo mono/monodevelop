@@ -105,8 +105,8 @@ namespace CBinding.Parser
 					ctagsInstalled = false;
 			}
 		}
-
-		private string[] Headers (string filename, bool with_system)
+		
+		private string[] Headers (Project project, string filename, bool with_system)
 		{
 			string option = (with_system ? "-M" : "-MM");
 			ProcessWrapper p;
@@ -139,11 +139,73 @@ namespace CBinding.Parser
 					string depfile = files[j].Trim ();
 					
 					if (!string.IsNullOrEmpty (depfile))
-						headers.Add (depfile);
+						headers.Add (findFileInIncludes (project, depfile));
 				}
 			}
 			
 			return headers.ToArray ();
+		}
+		
+		/// <summary>
+		/// Finds a file in a project's include path(s)
+		/// </summary>
+		/// <param name="project">
+		/// The project whose include path is to be searched
+		/// <see cref="Project"/>
+		/// </param>
+		/// <param name="filename">
+		/// A portion of a full file path
+		/// <see cref="System.String"/>
+		/// </param>
+		/// <returns>
+		/// The full found path, or filename if not found
+		/// <see cref="System.String"/>
+		/// </returns>
+		private static string findFileInIncludes (Project project, string filename) {
+			CProjectConfiguration conf = project.ActiveConfiguration as CProjectConfiguration;
+			string fullpath = string.Empty;
+			
+			if (!Path.IsPathRooted (filename)) {
+				foreach (string p in conf.Includes) {
+					fullpath = findFileInPath (filename, p);
+					if (string.Empty != fullpath) return fullpath;
+				}
+			}
+			
+			return filename;
+		}
+		
+		/// <summary>
+		/// Finds a file in a subdirectory of a given path
+		/// </summary>
+		/// <param name="relativeFilename">
+		/// A portion of a full file path
+		/// <see cref="System.String"/>
+		/// </param>
+		/// <param name="path">
+		/// The path beneath which to look for relativeFilename
+		/// <see cref="System.String"/>
+		/// </param>
+		/// <returns>
+		/// The full path, or string.Empty if not found
+		/// <see cref="System.String"/>
+		/// </returns>
+		private static string findFileInPath (string relativeFilename, string path) {
+			string tmp = Path.Combine (path, relativeFilename);
+			
+			if (Path.IsPathRooted (relativeFilename))
+				return relativeFilename;
+			else if (File.Exists (tmp))
+				return tmp;
+			
+			if (Directory.Exists (path)) {
+				foreach (string subdir in Directory.GetDirectories (path)) {
+					tmp = findFileInPath (relativeFilename, subdir);
+					if (string.Empty != tmp) return tmp;
+				}
+			}
+			
+			return string.Empty;
 		}
 		
 		private void UpdateSystemTags (Project project, string filename, string[] includedFiles)
@@ -276,11 +338,11 @@ namespace CBinding.Parser
 		{
 			if (!DepsInstalled)
 				return;
-			
-			string[] headers = Headers (filename, false);
+
+			string[] headers = Headers (project, filename, false);
 			string ctags_options = "--C++-kinds=+p+u --fields=+a-f+S --language-force=C++ --excmd=pattern -f - " + filename + " " + string.Join (" ", headers);
 			
-			string[] system_headers = diff (Headers (filename, true), headers);
+			string[] system_headers = diff (Headers (project, filename, true), headers);
 			
 			ProcessWrapper p = null;
 			System.IO.StringWriter output = null, error = null;
