@@ -40,6 +40,7 @@ namespace MonoDevelop.Ide.Gui
 		IEncodedTextContent encodedTextContent;
 		ICompletionWidget completionWidget;
 		IClipboardHandler clipboardHandler;
+		string newLine = null;
 		// All line and column numbers are 1-based
 		
 		public static TextEditor GetTextEditor (IBaseViewContent content)
@@ -265,6 +266,25 @@ namespace MonoDevelop.Ide.Gui
 		{
 			if (codeStyleOperations != null)
 				codeStyleOperations.UnIndentSelection ();
+		}
+		
+		public string NewLine
+		{
+			get {
+				if (newLine == null) {
+					int pos1 = GetPositionFromLineColumn (1, 1);
+					if (pos1 > 1)
+						newLine = GetCharAt (pos1 - 1).ToString ();
+					if (pos1 > 2) {
+						char c1 = GetCharAt (pos1 - 2);
+						if (c1 == '\n' || c1 == '\r')
+							newLine = c1 + newLine;
+					}
+					if (newLine == null)
+						newLine = Environment.NewLine;
+				}
+				return newLine;
+			}
 		}
 		
 		public int GetLineLength (int line)

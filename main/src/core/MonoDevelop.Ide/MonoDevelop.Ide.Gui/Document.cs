@@ -57,7 +57,19 @@ namespace MonoDevelop.Ide.Gui
 		
 		public object GetContent (Type type)
 		{
-			return Window.ViewContent.GetContent (type);
+			//check whether the ViewContent can return the type directly
+			object ret = Window.ViewContent.GetContent (type);
+			if (ret != null)
+				return ret;
+			
+			//no, so look through the TexteditorExtensions as well
+			TextEditorExtension nextExtension = editorExtension;
+			while (nextExtension != null) {
+				if (type.IsAssignableFrom (nextExtension.GetType ()))
+					return nextExtension;
+				nextExtension = nextExtension.Next as TextEditorExtension;
+			}
+			return null;
 		}
 		
 		public T GetContent <T>()
