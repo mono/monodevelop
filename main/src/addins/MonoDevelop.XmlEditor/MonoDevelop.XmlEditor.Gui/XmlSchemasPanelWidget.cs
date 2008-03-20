@@ -60,15 +60,15 @@ namespace MonoDevelop.XmlEditor.Gui
 			
 			registeredSchemasView.AppendColumn ("Namespace", textRenderer,
 			    delegate (TreeViewColumn col, CellRenderer cell, TreeModel model, TreeIter iter) {
-				((CellRendererText)cell).Text = ((XmlSchemaCompletionData)model.GetValue (iter, 0)).NamespaceUri;
+				((Gtk.CellRendererText)cell).Text = ((XmlSchemaCompletionData)model.GetValue (iter, 0)).NamespaceUri;
 			});
 			
 			registeredSchemasView.AppendColumn ("Type", textRenderer,
 			    delegate (TreeViewColumn col, CellRenderer cell, TreeModel model, TreeIter iter) {
 				bool builtIn = ((XmlSchemaCompletionData)model.GetValue (iter, 0)).ReadOnly;
-				((CellRendererText)cell).Text = builtIn? 
-					  GettextCatalog.GetString ("Built in") 
-					: GettextCatalog.GetString ("User schema");
+				((Gtk.CellRendererText)cell).Text = builtIn? 
+					  MonoDevelop.Core.GettextCatalog.GetString ("Built in") 
+					: MonoDevelop.Core.GettextCatalog.GetString ("User schema");
 			});
 			
 			registeredSchemasStore.SetSortFunc (0, 
