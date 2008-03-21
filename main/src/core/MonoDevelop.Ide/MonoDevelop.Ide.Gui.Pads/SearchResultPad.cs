@@ -461,7 +461,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 		{
 			bool hasNext, hasSel;
 			TreeIter iter;
-			TreeIter selIter;
+			TreeIter selIter = TreeIter.Zero;
 			TreeIter prevIter = TreeIter.Zero;
 			
 			TreePath[] rows = view.Selection.GetSelectedRows ();

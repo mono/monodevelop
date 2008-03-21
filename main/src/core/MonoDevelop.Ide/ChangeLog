@@ -1,5 +1,11 @@
 2008-03-20  Michael Hutchinson <mhutchinson@novell.com> 
 
+	* MonoDevelop.Ide.Gui.Pads/SearchResultPad.cs,
+	  MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs: Fix error CS0165 with csc
+	  (its flow analysis isn't good enough; the code is fine).
+
+2008-03-20  Michael Hutchinson <mhutchinson@novell.com> 
+
 	* MonoDevelop.Ide.Gui/TextEditor.cs: Add a convenience method for
 	  discovering the newline style.
 	* MonoDevelop.Ide.Gui/Document.cs: Make GetContent search through
