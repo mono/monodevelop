@@ -1,3 +1,8 @@
+2008-03-21  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Ide.Gui/IdeStartup.cs: Hook GLib/Gtk errors into logging
+	  service, and remove redundant code.
+
 2008-03-20  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Ide.Gui.Pads/SearchResultPad.cs,

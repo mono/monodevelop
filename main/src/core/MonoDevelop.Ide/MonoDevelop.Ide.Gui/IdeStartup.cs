@@ -64,6 +64,12 @@ namespace MonoDevelop.Ide.Gui
 		{
 			SetupExceptionManager ();
 			
+			try {
+				MonoDevelop.Core.Gui.GLibLogging.Enabled = true;
+			} catch (Exception ex) {
+				LoggingService.LogError ("Error initialising GLib logging.", ex);
+			}
+			
 			//OSXFIXME
 			Gtk.Application.Init ();
 			InternalLog.Initialize ();
@@ -356,17 +362,10 @@ namespace MonoDevelop.Ide.Gui
 		
 		internal void OnUnhandledException (UnhandledExceptionEventArgs args)
 		{
-			Console.WriteLine ("Unhandled Exception: ");
-			Console.WriteLine (args.ExceptionObject);
-			Gtk.Window[] wins = Gtk.Window.ListToplevels ();
-			Gtk.Window win = IdeApp.Workbench != null && IdeApp.Workbench.RootWindow != null ? IdeApp.Workbench.RootWindow : null;
-			foreach (Gtk.Window w in wins) {
-				if (w.IsActive && w.Visible && w.Type == Gtk.WindowType.Toplevel) {
-					win = w;
-					break;
-				}
-			}
 			MessageService.ShowException ((Exception) args.ExceptionObject, "Unhandled Exception");
+			//Type ueeType = typeof(GLib.Object).Assembly.GetType ("GLib.UnhandledExceptionArgs");
+			//PropertyInfo ueeProp = ueeType.GetProperty ("ExitApplication");
+			//ueeProp.SetValue (args, (object) false, null);
 		}
 	}
 	
