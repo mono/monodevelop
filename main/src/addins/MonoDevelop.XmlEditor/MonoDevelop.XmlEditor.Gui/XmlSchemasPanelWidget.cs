@@ -105,7 +105,7 @@ namespace MonoDevelop.XmlEditor.Gui
 			comboEditor.EditingStarted += delegate (object sender, EditingStartedArgs args) {
 				registeredSchemasComboModel.Clear ();
 				registeredSchemasComboModel.AppendValues (string.Empty);
-				foreach (TreeIter iter in WalkStore (registeredSchemasStore))
+				foreach (Gtk.TreeIter iter in WalkStore (registeredSchemasStore))
 					registeredSchemasComboModel.AppendValues (
 					    ((XmlSchemaCompletionData)registeredSchemasStore.GetValue (iter, 0)).NamespaceUri
 					);
@@ -136,7 +136,7 @@ namespace MonoDevelop.XmlEditor.Gui
 			
 			//update state of "remove" button depending on whether anything's slected
 			defaultAssociationsView.Selection.Changed += delegate {
-				TreeIter iter;
+				Gtk.TreeIter iter;
 				defaultAssociationsRemoveButton.Sensitive =
 					defaultAssociationsView.Selection.GetSelected (out iter);
 			};
