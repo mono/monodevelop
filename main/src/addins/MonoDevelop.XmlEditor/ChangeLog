@@ -1,3 +1,11 @@
+2008-03-21  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.XmlEditor/XmlTextEditorExtension.cs: When
+	  Document.FileName is null or empty, try using Document.Title.
+	  Enables XML extension on dynamically created documents.
+	* MonoDevelop.XmlEditor.addin.xml: Add back a menu separator.
+	* MonoDevelop.XmlEditor/XmlEditorService.cs: Remove unused variable.
+
 2008-03-20  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.XmlEditor.Gui/XmlSchemasPanelWidget.cs: Move dialog to

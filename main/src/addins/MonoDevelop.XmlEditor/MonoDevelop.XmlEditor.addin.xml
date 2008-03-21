@@ -96,8 +96,8 @@
 			<CommandItem id = "MonoDevelop.XmlEditor.Commands.Validate" /><!--
 			<SeparatorItem id = "XPathCommandsSeparator"/>
 			<CommandItem id = "MonoDevelop.XmlEditor.Commands.OpenXPathQueryPad" />				
-			<CommandItem id = "MonoDevelop.XmlEditor.Commands.RemoveXPathHighlighting" />			
-			<SeparatorItem id = "StylesheetCommandsSeparator"/>-->
+			<CommandItem id = "MonoDevelop.XmlEditor.Commands.RemoveXPathHighlighting" />-->			
+			<SeparatorItem id = "StylesheetCommandsSeparator"/>
 			<CommandItem id = "MonoDevelop.XmlEditor.Commands.AssignStylesheet"/>
 			<CommandItem id = "MonoDevelop.XmlEditor.Commands.OpenStylesheet"/>
 			<CommandItem id = "MonoDevelop.XmlEditor.Commands.RunXslTransform"/>				

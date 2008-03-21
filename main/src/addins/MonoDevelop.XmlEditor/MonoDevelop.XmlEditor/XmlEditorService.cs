@@ -348,8 +348,6 @@ namespace MonoDevelop.XmlEditor
 				xslt.Load (doc, new XmlUrlResolver (), null);
 				error = false;
 			} catch (XsltCompileException ex) {
-				string message = (ex.InnerException != null)?
-					message = ex.InnerException.Message : ex.ToString ();
 				monitor.ReportError (ex.Message, ex);
 				AddTask (fileName, ex.Message, ex.LinePosition, ex.LineNumber,TaskType.Error);
 			}

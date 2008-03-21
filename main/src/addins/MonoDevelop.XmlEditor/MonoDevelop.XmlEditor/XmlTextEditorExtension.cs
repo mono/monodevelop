@@ -46,7 +46,7 @@ namespace MonoDevelop.XmlEditor
 		{
 			if (doc == null)
 				return false;
-			return IsFileNameHandled (doc.FileName);
+			return IsFileNameHandled (string.IsNullOrEmpty (doc.FileName)? doc.Title : doc.FileName );
 		}
 		
 		public override void Initialize ()
@@ -67,6 +67,14 @@ namespace MonoDevelop.XmlEditor
 				XmlSchemaManager.UserSchemaAdded -= UserSchemaAdded;
 				XmlSchemaManager.UserSchemaRemoved -= UserSchemaRemoved;
 				base.Dispose ();
+			}
+		}
+		
+		string FileName {
+			get {
+				if (!string.IsNullOrEmpty (Document.FileName))
+					return Document.FileName;
+				return Document.Title;
 			}
 		}
 		
@@ -317,11 +325,9 @@ namespace MonoDevelop.XmlEditor
 		
 		public bool IsSchema {
 			get {
-				if (Document.FileName != null) {
-					string extension = System.IO.Path.GetExtension (Document.FileName);
-					if (extension != null)
-						return String.Compare (extension, ".xsd", true) == 0;
-				}
+				string extension = System.IO.Path.GetExtension (FileName);
+				if (extension != null)
+					return String.Compare (extension, ".xsd", true) == 0;
 				return false;
 			}
 		}
@@ -335,10 +341,12 @@ namespace MonoDevelop.XmlEditor
 			if (fileName == null)
 				return false;
 			
-			string vfsname = fileName.Replace ("%", "%25").Replace ("#", "%23").Replace ("?", "%3F");
-			string mimeType = MonoDevelop.Core.Gui.Services.PlatformService.GetMimeTypeForUri (vfsname);
-			if (IsMimeTypeHandled (mimeType))
-				return true;
+			if (System.IO.Path.IsPathRooted (fileName)) {
+				string vfsname = fileName.Replace ("%", "%25").Replace ("#", "%23").Replace ("?", "%3F");
+				string mimeType = MonoDevelop.Core.Gui.Services.PlatformService.GetMimeTypeForUri (vfsname);
+				if (IsMimeTypeHandled (mimeType))
+					return true;
+			}
 			
 			return XmlFileExtensions.IsXmlFileExtension (System.IO.Path.GetExtension (fileName));
 		}
@@ -490,7 +498,7 @@ namespace MonoDevelop.XmlEditor
 			using (IProgressMonitor monitor = XmlEditorService.GetMonitor ()) {
 				bool selection = (Editor.SelectionEndPosition - Editor.SelectionStartPosition) > 0;
 				string xml = selection? Editor.SelectedText : Editor.Text;
-				XmlDocument doc = XmlEditorService.ValidateWellFormedness (monitor, xml, Document.FileName);
+				XmlDocument doc = XmlEditorService.ValidateWellFormedness (monitor, xml, FileName);
 				if (doc == null)
 					return;
 				
@@ -536,13 +544,13 @@ namespace MonoDevelop.XmlEditor
 				MonoDevelop.Ide.Gui.IdeApp.Services.TaskService.ClearExceptCommentTasks ();
 				string xml = Editor.Text;
 				using (IProgressMonitor monitor = XmlEditorService.GetMonitor ()) {
-					XmlDocument doc = XmlEditorService.ValidateWellFormedness (monitor, xml, Document.FileName);
+					XmlDocument doc = XmlEditorService.ValidateWellFormedness (monitor, xml, FileName);
 					if (doc == null)
 						return;
 					monitor.BeginTask (GettextCatalog.GetString ("Creating schema..."), 0);
 					try {
 						string schema = XmlEditorService.CreateSchema (xml);
-						string fileName = XmlEditorService.GenerateFileName (Document.FileName, "{0}.xsd");
+						string fileName = XmlEditorService.GenerateFileName (FileName, "{0}.xsd");
 						MonoDevelop.Ide.Gui.IdeApp.Workbench.NewDocument (fileName, "application/xml", schema);
 						monitor.ReportSuccess (GettextCatalog.GetString ("Schema created."));
 					} catch (Exception ex) {
@@ -586,7 +594,7 @@ namespace MonoDevelop.XmlEditor
 				    defaultSchemaCompletionData,
 				    defaultNamespacePrefix,
 				    completionWidget.CreateCodeCompletionContext (Editor.CursorPosition));
-				XmlSchemaCompletionData currentSchemaCompletionData = provider.FindSchemaFromFileName (Document.FileName);						
+				XmlSchemaCompletionData currentSchemaCompletionData = provider.FindSchemaFromFileName (FileName);						
 				XmlSchemaObject schemaObject = GetSchemaObjectSelected (
 				    Editor.Text, Editor.CursorPosition, provider, currentSchemaCompletionData);
 				
@@ -610,9 +618,9 @@ namespace MonoDevelop.XmlEditor
 			MonoDevelop.Ide.Gui.IdeApp.Services.TaskService.ClearExceptCommentTasks ();
 			using (IProgressMonitor monitor = XmlEditorService.GetMonitor()) {
 				if (IsSchema)
-					XmlEditorService.ValidateSchema (monitor, Editor.Text, Document.FileName);
+					XmlEditorService.ValidateSchema (monitor, Editor.Text, FileName);
 				else
-					XmlEditorService.ValidateXml (monitor, Editor.Text, Document.FileName);
+					XmlEditorService.ValidateXml (monitor, Editor.Text, FileName);
 			}
 		}
 		
@@ -649,11 +657,11 @@ namespace MonoDevelop.XmlEditor
 					if (xslt == null)
 						return;
 					
-					XmlDocument doc = XmlEditorService.ValidateXml (monitor, Editor.Text, Document.FileName);
+					XmlDocument doc = XmlEditorService.ValidateXml (monitor, Editor.Text, FileName);
 					if (doc == null)
 						return;
 					
-					string newFileName = XmlEditorService.GenerateFileName (Document.FileName, "-transformed{0}.xml");
+					string newFileName = XmlEditorService.GenerateFileName (FileName, "-transformed{0}.xml");
 					
 					monitor.BeginTask (GettextCatalog.GetString ("Executing transform..."), 1);
 					using (XmlTextWriter output = XmlEditorService.CreateXmlTextWriter()) {
