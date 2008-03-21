@@ -1,5 +1,21 @@
 2008-03-20  Michael Hutchinson <mhutchinson@novell.com> 
 
+	* MonoDevelop.XmlEditor.Gui/XmlSchemasPanelWidget.cs: Move dialog to
+	  XmlEditorService.
+	* MonoDevelop.XmlEditor/RunXslTransformCommand.cs,
+	  MonoDevelop.XmlEditor/AssignStylesheetCommand.cs: Moved
+	  implementation into XmlEditorService and XmlTextEditorExtension.
+	* MonoDevelop.XmlEditor/ClosingBracketCompletionDataProvider.cs: Fix
+	  previous character index.
+	* MonoDevelop.XmlEditor/XmlTextEditorExtension.cs: Implement commands,
+	  based on code from command classes.
+	* MonoDevelop.XmlEditor/XmlEditorService.cs: Move more command
+	  implementations to editor service and refactor heavily.
+	* Makefile.am, MonoDevelop.XmlEditor.mdp: Updated.
+	* MonoDevelop.XmlEditor.addin.xml: Enable most of the XML commands.
+
+2008-03-20  Michael Hutchinson <mhutchinson@novell.com> 
+
 	* MonoDevelop.XmlEditor/XmlSchemaManager.cs: Actually use merged schema
 	  collection.
 	* MonoDevelop.XmlEditor/XmlCompletionData.cs: Remove unnecessary

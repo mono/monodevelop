@@ -60,7 +60,7 @@ namespace MonoDevelop.XmlEditor
 		public static string GetAutoCloseElement (IEditableTextBuffer buffer)
 		{
 			// Move to char before '>'
-			int index = buffer.CursorPosition - 1;
+			int index = buffer.CursorPosition - 2;
 			int elementEnd = index;
 
 			// Ignore if is empty element, element has no name or if comment.

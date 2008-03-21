@@ -88,27 +88,6 @@ namespace MonoDevelop.XmlEditor
 			return IdeApp.Workbench.ProgressMonitors.GetOutputProgressMonitor ("XML", "XmlFileIcon", true, true);
 		}
 		
-		/// <summary>
-		/// Checks that the xml in this view is well-formed.
-		/// </summary>
-		public static bool IsWellFormed (string xml, string fileName)
-		{
-			try {
-				XmlDocument Document = new XmlDocument ();
-				Document.LoadXml (xml);
-				return true;
-			} catch (XmlException ex) {
-				using (IProgressMonitor monitor = GetMonitor ()) {
-					monitor.Log.WriteLine (ex.Message);
-					monitor.Log.WriteLine ();
-					monitor.Log.WriteLine ("XML is not well formed.");
-				}
-				AddTask (fileName, ex.Message, ex.LinePosition, ex.LineNumber, TaskType.Error);
-				IdeApp.Services.TaskService.ShowErrors ();
-			}
-			return false;
-		}
-		
 		#region Formatting utilities
 		
 		/// <summary>
@@ -163,6 +142,11 @@ namespace MonoDevelop.XmlEditor
 			return xmlWriter;
 		}
 		
+		public static XmlTextWriter CreateXmlTextWriter ()
+		{
+			return CreateXmlTextWriter (new EncodedStringWriter (System.Text.Encoding.UTF8));
+		}
+		
 		#endregion
 		
 		/// <summary>
@@ -171,7 +155,7 @@ namespace MonoDevelop.XmlEditor
 		/// <param name="input">The input xml to transform.</param>
 		/// <param name="transform">The transform xml.</param>
 		/// <returns>The output of the transform.</returns>
-		public static string Transform(string input, string transform)
+		public static string Transform (string input, string transform)
 		{
 			StringReader inputString = new StringReader(input);
 			XPathDocument sourceDocument = new XPathDocument(inputString);
@@ -195,9 +179,9 @@ namespace MonoDevelop.XmlEditor
 		public static string CreateSchema (string xml)
 		{
 			using (System.Data.DataSet dataSet = new System.Data.DataSet()) {
-				dataSet.ReadXml(new StringReader(xml), System.Data.XmlReadMode.InferSchema);
-				using (EncodedStringWriter writer = new EncodedStringWriter(Encoding.UTF8)) {
-					using (XmlTextWriter xmlWriter = XmlEditorService.CreateXmlTextWriter(writer)) {				
+				dataSet.ReadXml(new StringReader (xml), System.Data.XmlReadMode.InferSchema);
+				using (EncodedStringWriter writer = new EncodedStringWriter (Encoding.UTF8)) {
+					using (XmlTextWriter xmlWriter = XmlEditorService.CreateXmlTextWriter (writer)) {				
 						dataSet.WriteXmlSchema(xmlWriter);
 						return writer.ToString();
 					}
@@ -205,27 +189,67 @@ namespace MonoDevelop.XmlEditor
 			}
 		}
 		
-		public static string GenerateSchemaFileName (string xmlFileName)
+		public static string GenerateFileName (string sourceName, string extensionFormat)
 		{
-			string baseFileName = Path.GetFileNameWithoutExtension (xmlFileName);
-			string schemaFileName = string.Concat (baseFileName, ".xsd");
+			return GenerateFileName (
+			    Path.Combine (Path.GetDirectoryName (sourceName), Path.GetFileNameWithoutExtension (sourceName)) + 
+			    extensionFormat);
+		}
+		
+		// newNameFormat should be a string format for the new filename such as 
+		// "/some/path/oldname{0}.xsd", where {0} is the index that will be incremented until a
+		// non-existing file is found.
+		public static string GenerateFileName (string newNameFormat)
+		{
+			string generatedFilename = string.Format (newNameFormat, "");
 			int count = 1;
-			while (File.Exists(schemaFileName)) {
-				schemaFileName = String.Concat(baseFileName, count.ToString(), ".xsd");
+			while (File.Exists (generatedFilename)) {
+				generatedFilename = string.Format (newNameFormat, count);
 				++count;
 			}
-			return schemaFileName;
+			return generatedFilename;
 		}
 		
 		#region Validation
 		
 		/// <summary>
-		/// Validates the xml against known schemas.
-		/// </summary>		
-		public static void ValidateXml (IProgressMonitor monitor, string xml, string fileName)
+		/// Checks that the xml in this view is well-formed.
+		/// </summary>
+		public static XmlDocument ValidateWellFormedness (IProgressMonitor monitor, string xml, string fileName)
 		{
 			monitor.BeginTask (GettextCatalog.GetString ("Validating XML..."), 1);
-
+			bool error = false;
+			XmlDocument doc = null;
+			
+			try {
+				doc = new XmlDocument ();
+				doc.LoadXml (xml);
+			} catch (XmlException ex) {
+				monitor.ReportError (ex.Message, ex);
+				AddTask (fileName, ex.Message, ex.LinePosition, ex.LineNumber,TaskType.Error);
+				error = true;
+			}
+			
+			if (error) {
+				monitor.Log.WriteLine (GettextCatalog.GetString ("Validation failed."));
+				IdeApp.Services.TaskService.ShowErrors ();
+			} else {
+				monitor.Log.WriteLine (GettextCatalog.GetString ("XML is valid."));
+			}
+			
+			monitor.EndTask ();
+			return error? null: doc;
+		}
+		
+		/// <summary>
+		/// Validates the xml against known schemas.
+		/// </summary>		
+		public static XmlDocument ValidateXml (IProgressMonitor monitor, string xml, string fileName)
+		{
+			monitor.BeginTask (GettextCatalog.GetString ("Validating XML..."), 1);
+			bool error = true;
+			XmlDocument doc = null;
+			
 			try {
 				StringReader stringReader = new StringReader (xml);
 				XmlTextReader xmlReader = new XmlTextReader (stringReader);
@@ -239,8 +263,9 @@ namespace MonoDevelop.XmlEditor
 					reader.Schemas.Add (schemaData.Schema);
 				}
 				
-				XmlDocument doc = new XmlDocument();
+				doc = new XmlDocument();
 				doc.Load (reader);
+				error = false;
 				
 			} catch (XmlSchemaException ex) {
 				monitor.ReportError (ex.Message, ex);
@@ -251,39 +276,84 @@ namespace MonoDevelop.XmlEditor
 				AddTask (fileName, ex.Message, ex.LinePosition, ex.LineNumber,TaskType.Error);
 			}
 			
-			if (IdeApp.Services.TaskService.SomethingWentWrong) {
+			if (error) {
 				monitor.Log.WriteLine (GettextCatalog.GetString ("Validation failed."));
-				IdeApp.Services.TaskService.ShowErrors();
+				IdeApp.Services.TaskService.ShowErrors ();
 			} else {
-				monitor.ReportSuccess (GettextCatalog.GetString ("XML is valid."));
+				monitor.Log.WriteLine  (GettextCatalog.GetString ("XML is valid."));
 			}
+			
 			monitor.EndTask ();
+			return error? null: doc;
 		}
 		
 		/// <summary>
 		/// Validates the schema.
 		/// </summary>		
-		public static void ValidateSchema (IProgressMonitor monitor, string xml, string fileName)
+		public static XmlSchema ValidateSchema (IProgressMonitor monitor, string xml, string fileName)
 		{
 			monitor.BeginTask (GettextCatalog.GetString ("Validating schema..."), 1);
-
+			bool error = false;
+			XmlSchema schema = null;
 			try {
 				StringReader stringReader = new StringReader (xml);
 				XmlTextReader xmlReader = new XmlTextReader (stringReader);
 				xmlReader.XmlResolver = null;
 				
 				ValidationEventHandler callback = delegate (object source, ValidationEventArgs args) {
-					if (args.Severity == XmlSeverityType.Warning)
+					if (args.Severity == XmlSeverityType.Warning) {
 						monitor.ReportWarning (args.Message);
-					else
+					} else {
 						monitor.ReportError (args.Message, args.Exception);
+						error = true;
+					}
 					AddTask (fileName, args.Message, args.Exception.LinePosition, args.Exception.LineNumber,
 					    (args.Severity == XmlSeverityType.Warning)? TaskType.Warning : TaskType.Error);
 				};
-				XmlSchema schema = XmlSchema.Read (xmlReader, callback);
+				schema = XmlSchema.Read (xmlReader, callback);
 				schema.Compile (callback);
 			} 
 			catch (XmlSchemaException ex) {
+				monitor.ReportError (ex.Message, ex);
+				AddTask (fileName, ex.Message, ex.LinePosition, ex.LineNumber,TaskType.Error);
+				error = true;
+			}
+			catch (XmlException ex) {
+				monitor.ReportError (ex.Message, ex);
+				AddTask (fileName, ex.Message, ex.LinePosition, ex.LineNumber,TaskType.Error);
+				error = true;
+			}
+			
+			if (error) {
+				monitor.Log.WriteLine (GettextCatalog.GetString ("Validation failed."));
+				IdeApp.Services.TaskService.ShowErrors ();
+			} else {
+				monitor.Log.WriteLine  (GettextCatalog.GetString ("Schema is valid."));
+			}
+			
+			monitor.EndTask ();
+			return error? null: schema;
+		}
+		
+		public static XslTransform ValidateStylesheet (IProgressMonitor monitor, string xml, string fileName)
+		{
+			monitor.BeginTask (GettextCatalog.GetString ("Validating stylesheet..."), 1);
+			bool error = true;
+			XslTransform xslt = null;
+			
+			try {
+				StringReader reader = new StringReader (xml);
+				XPathDocument doc = new XPathDocument (reader);
+				xslt = new XslTransform ();
+				xslt.Load (doc, new XmlUrlResolver (), null);
+				error = false;
+			} catch (XsltCompileException ex) {
+				string message = (ex.InnerException != null)?
+					message = ex.InnerException.Message : ex.ToString ();
+				monitor.ReportError (ex.Message, ex);
+				AddTask (fileName, ex.Message, ex.LinePosition, ex.LineNumber,TaskType.Error);
+			}
+			catch (XsltException ex) {
 				monitor.ReportError (ex.Message, ex);
 				AddTask (fileName, ex.Message, ex.LinePosition, ex.LineNumber,TaskType.Error);
 			}
@@ -292,15 +362,78 @@ namespace MonoDevelop.XmlEditor
 				AddTask (fileName, ex.Message, ex.LinePosition, ex.LineNumber,TaskType.Error);
 			}
 			
-			if (IdeApp.Services.TaskService.SomethingWentWrong) {
+			if (error) {
 				monitor.Log.WriteLine (GettextCatalog.GetString ("Validation failed."));
-				IdeApp.Services.TaskService.ShowErrors();
+				IdeApp.Services.TaskService.ShowErrors ();
 			} else {
-				monitor.ReportSuccess (GettextCatalog.GetString ("Schema is valid."));
+				monitor.Log.WriteLine (GettextCatalog.GetString ("Stylesheet is valid."));
 			}
-			monitor.EndTask ();
+			return error? null: xslt;
 		}
 		
-		#endregion Validation
+		#endregion
+		
+		#region File browsing utilities
+		
+		public static string BrowseForStylesheetFile ()
+		{
+			using (MonoDevelop.Components.FileSelector fs =
+			    new MonoDevelop.Components.FileSelector (GettextCatalog.GetString ("Select XSLT Stylesheet")))
+			{
+				Gtk.FileFilter xmlFiles = new Gtk.FileFilter ();
+				xmlFiles.Name = "XML Files";
+				xmlFiles.AddMimeType("text/xml");
+				fs.AddFilter(xmlFiles);
+				
+				Gtk.FileFilter xslFiles = new Gtk.FileFilter ();
+				xslFiles.Name = "XSL Files";
+				xslFiles.AddMimeType("text/x-xslt");
+				xslFiles.AddPattern("*.xslt;*.xsl");
+				fs.AddFilter(xslFiles);
+				
+				return browseCommon (fs);
+			}
+		}
+		
+		//Allows the user to browse the file system for a schema. Returns the schema file 
+		//name the user selected; otherwise an empty string.
+		public static string BrowseForSchemaFile ()
+		{
+			using (MonoDevelop.Components.FileSelector fs =
+			    new MonoDevelop.Components.FileSelector (GettextCatalog.GetString ("Select XML Schema")))
+			{
+				Gtk.FileFilter xmlFiles = new Gtk.FileFilter ();
+				xmlFiles.Name = "XML Files";
+				xmlFiles.AddMimeType("text/xml");
+				xmlFiles.AddMimeType("application/xml");
+				xmlFiles.AddPattern ("*.xsd");
+				fs.AddFilter (xmlFiles);
+				
+				return browseCommon (fs);
+			}
+		}
+		
+		static string browseCommon (MonoDevelop.Components.FileSelector fs)
+		{
+			fs.SelectMultiple = false;
+			
+			Gtk.FileFilter allFiles = new Gtk.FileFilter ();
+			allFiles.Name = "All Files";
+			allFiles.AddPattern ("*");
+			fs.AddFilter(allFiles);
+			
+			fs.Modal = true;
+			fs.TransientFor = MessageService.RootWindow;
+			fs.DestroyWithParent = true;
+			int response = fs.Run ();
+			
+			if (response == (int)Gtk.ResponseType.Ok) {
+				return fs.Filename;
+			} else {
+				return null;
+			}
+		}
+		
+		#endregion
 	}
 }

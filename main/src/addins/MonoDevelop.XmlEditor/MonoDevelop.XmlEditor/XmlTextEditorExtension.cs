@@ -302,15 +302,15 @@ namespace MonoDevelop.XmlEditor
 		#endregion
 		
 		#region Stylesheet handling
-		/*
+		
 		/// <summary>
 		/// Gets or sets the stylesheet associated with this xml file.
 		/// </summary>
 		public string StylesheetFileName {
 			get { return stylesheetFileName; }
 			set { stylesheetFileName = value; }
-		}*/
-				
+		}
+						
 		#endregion
 		
 		#region Filetype/schema detection		
@@ -450,13 +450,36 @@ namespace MonoDevelop.XmlEditor
 			return indent;
 		}
 		
+		//gets the indent of the line containing this position, up to the position index
+		string GetPositionIndent (int position)
+		{
+			int indentEnd = position;
+			int i = position - 1;
+			while (i > 0) {
+				char c = Editor.GetCharAt (i);
+				if (c == '\n' || c == '\r')
+					return Editor.GetText (i + 1, indentEnd);
+				if (!char.IsWhiteSpace (c))
+					indentEnd--;
+				i--;
+			}
+			return null;
+		}
+		
 		#endregion
 		
 		#region Command handlers
 		
-		void FixFormatting (string s)
+		[CommandUpdateHandler (MonoDevelop.Ide.Commands.EditCommands.ToggleCodeComment)]
+		protected void ToggleCodeCommentCommandUpdate (CommandInfo info)
 		{
-			
+			info.Enabled = false;
+		}
+		
+		[CommandHandler (MonoDevelop.Ide.Commands.EditCommands.ToggleCodeComment)]
+		public void ToggleCodeCommentCommand ()
+		{
+			//FIXME: implement
 		}
 		
 		[CommandHandler (Commands.Format)]
@@ -464,25 +487,17 @@ namespace MonoDevelop.XmlEditor
 		{
 			MonoDevelop.Ide.Gui.IdeApp.Services.TaskService.ClearExceptCommentTasks ();
 			
-			if (XmlEditorService.IsWellFormed (Editor.Text, Document.FileName)) {
+			using (IProgressMonitor monitor = XmlEditorService.GetMonitor ()) {
 				bool selection = (Editor.SelectionEndPosition - Editor.SelectionStartPosition) > 0;
 				string xml = selection? Editor.SelectedText : Editor.Text;
+				XmlDocument doc = XmlEditorService.ValidateWellFormedness (monitor, xml, Document.FileName);
+				if (doc == null)
+					return;
 				
-				//if there's a "pure indent" at the current location, prepend that to all new lines
+				//if there's a line indent at the current location, prepend that to all new lines
 				string extraIndent = null;
-				if (selection) {
-					int i = Editor.SelectionStartPosition - 1;
-					while (i > 0) {
-						char c = Editor.GetCharAt (i);
-						if (c == '\n' || c == '\r') {
-							extraIndent = Editor.GetText (i + 1, Editor.SelectionStartPosition);
-							break;
-						}
-						if (!char.IsWhiteSpace (c))
-							break;
-						i--;
-					}
-				}
+				if (selection)
+					extraIndent = GetPositionIndent (Editor.SelectionStartPosition);
 				
 				string formattedXml = XmlEditorService.IndentedFormat (xml);
 				
@@ -520,11 +535,21 @@ namespace MonoDevelop.XmlEditor
 			try {
 				MonoDevelop.Ide.Gui.IdeApp.Services.TaskService.ClearExceptCommentTasks ();
 				string xml = Editor.Text;
-				if (XmlEditorService.IsWellFormed (xml, Document.FileName)) {
-					string schema = XmlEditorService.CreateSchema (xml);
-					string fileName = XmlEditorService.GenerateSchemaFileName (
-					    System.IO.Path.GetFileName (Document.FileName));
-					MonoDevelop.Ide.Gui.IdeApp.Workbench.NewDocument (fileName, "application/xml", schema);
+				using (IProgressMonitor monitor = XmlEditorService.GetMonitor ()) {
+					XmlDocument doc = XmlEditorService.ValidateWellFormedness (monitor, xml, Document.FileName);
+					if (doc == null)
+						return;
+					monitor.BeginTask (GettextCatalog.GetString ("Creating schema..."), 0);
+					try {
+						string schema = XmlEditorService.CreateSchema (xml);
+						string fileName = XmlEditorService.GenerateFileName (Document.FileName, "{0}.xsd");
+						MonoDevelop.Ide.Gui.IdeApp.Workbench.NewDocument (fileName, "application/xml", schema);
+						monitor.ReportSuccess (GettextCatalog.GetString ("Schema created."));
+					} catch (Exception ex) {
+						string msg = GettextCatalog.GetString ("Error creating XML schema.");
+						LoggingService.LogError (msg, ex);
+						monitor.ReportError (msg, ex);
+					}
 				}
 			} catch (Exception ex) {
 				MonoDevelop.Core.Gui.MessageService.ShowError(ex.Message);
@@ -590,6 +615,73 @@ namespace MonoDevelop.XmlEditor
 					XmlEditorService.ValidateXml (monitor, Editor.Text, Document.FileName);
 			}
 		}
+		
+		[CommandHandler (Commands.AssignStylesheet)]
+		public void AssignStylesheetCommand ()
+		{
+			// Prompt user for filename.
+			string fileName = XmlEditorService.BrowseForStylesheetFile ();
+			if (!string.IsNullOrEmpty (stylesheetFileName))
+				stylesheetFileName = fileName;
+		}
+		
+		[CommandHandler (Commands.RunXslTransform)]
+		public void RunXslTransformCommand ()
+		{
+			if (string.IsNullOrEmpty (stylesheetFileName)) {
+				stylesheetFileName = XmlEditorService.BrowseForStylesheetFile ();
+				if (string.IsNullOrEmpty (stylesheetFileName))
+					return;
+			}
+			
+			using (IProgressMonitor monitor = XmlEditorService.GetMonitor()) {
+				try {
+					string xsltContent;
+					try {
+						xsltContent = GetFileContent (stylesheetFileName);	
+					} catch (System.IO.IOException) {
+						monitor.ReportError (
+						    GettextCatalog.GetString ("Error reading file '{0}'.", stylesheetFileName), null);
+						return;
+					}
+					System.Xml.Xsl.XslTransform xslt = 
+						XmlEditorService.ValidateStylesheet (monitor, xsltContent, stylesheetFileName);
+					if (xslt == null)
+						return;
+					
+					XmlDocument doc = XmlEditorService.ValidateXml (monitor, Editor.Text, Document.FileName);
+					if (doc == null)
+						return;
+					
+					string newFileName = XmlEditorService.GenerateFileName (Document.FileName, "-transformed{0}.xml");
+					
+					monitor.BeginTask (GettextCatalog.GetString ("Executing transform..."), 1);
+					using (XmlTextWriter output = XmlEditorService.CreateXmlTextWriter()) {
+						xslt.Transform (doc, null, output);
+						MonoDevelop.Ide.Gui.IdeApp.Workbench.NewDocument (
+						    newFileName, "application/xml", output.ToString ());
+					}
+					monitor.ReportSuccess (GettextCatalog.GetString ("Transform completed."));
+					monitor.EndTask ();
+				} catch (Exception ex) {
+					string msg = GettextCatalog.GetString ("Could not run transform.");
+					monitor.ReportError (msg, ex);
+					monitor.EndTask ();
+				}
+			}
+		}
+		
+		string GetFileContent (string fileName)
+		{
+			MonoDevelop.Projects.Text.IEditableTextFile tf =
+				MonoDevelop.DesignerSupport.OpenDocumentFileProvider.Instance.GetEditableTextFile (fileName);
+			if (tf != null)
+				return tf.Text;
+			System.IO.StreamReader reader = new System.IO.StreamReader (fileName, true);
+			return reader.ReadToEnd();
+		}
+		
+		
 		
 		#endregion
 		

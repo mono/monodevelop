@@ -367,7 +367,7 @@ namespace MonoDevelop.XmlEditor.Gui
 
 		protected virtual void addRegisteredSchema (object sender, System.EventArgs args)
 		{
-			string fileName = BrowseForSchema ();
+			string fileName = XmlEditorService.BrowseForSchemaFile ();
 			if (string.IsNullOrEmpty (fileName))
 				return;
 			
@@ -423,38 +423,6 @@ namespace MonoDevelop.XmlEditor.Gui
 			if (!registeredSchemasView.Selection.GetSelected (out model, out iter))
 				return;
 			view.ScrollToCell (model.GetPath (iter), null, false, 0, 0);
-		}
-		
-		//Allows the user to browse the file system for a schema. Returns the schema file 
-		//name the user selected; otherwise an empty string.
-		string BrowseForSchema ()
-		{
-			using (MonoDevelop.Components.FileSelector fs = new MonoDevelop.Components.FileSelector ()) {
-				fs.SelectMultiple = false;
-				
-				FileFilter xmlFiles = new FileFilter ();
-				xmlFiles.Name = "XML Files";
-				xmlFiles.AddMimeType("text/xml");
-				xmlFiles.AddMimeType("application/xml");
-				xmlFiles.AddPattern ("*.xsd");
-				fs.AddFilter (xmlFiles);
-				
-				FileFilter allFiles = new FileFilter ();
-				allFiles.Name = "All Files";
-				allFiles.AddPattern ("*");
-				fs.AddFilter(allFiles);
-				
-				fs.Modal = true;
-				fs.TransientFor = MessageService.RootWindow;
-				fs.DestroyWithParent = true;
-				int response = fs.Run ();
-				
-				if (response == (int)Gtk.ResponseType.Ok) {
-					return fs.Filename;
-				} else {
-					return String.Empty;
-				}
-			}
 		}
 		
 		#endregion

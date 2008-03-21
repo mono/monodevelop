@@ -51,15 +51,13 @@
 	
 	<!-- Commands -->
 	<Extension path = "/MonoDevelop/Ide/Commands">
-		<Category _name = "XmlEditor" id="XmlEditor"><!--
+		<Category _name = "XmlEditor" id="XmlEditor">
 			<Command id = "MonoDevelop.XmlEditor.Commands.CreateSchema"
-					defaultHandler = "MonoDevelop.XmlEditor.CreateSchemaCommand"
 					_label = "Create _Schema"
 					description = "Creates a schema from XML"/>
 			<Command id = "MonoDevelop.XmlEditor.Commands.Validate"
-					defaultHandler = "MonoDevelop.XmlEditor.ValidateXmlCommand"
 					_label = "_Validate"
-					description = "Validates the XML against a schema"/>
+					description = "Validates the XML against a schema"/><!--
 			<Command id = "MonoDevelop.XmlEditor.Commands.OpenXPathQueryPad"
 					defaultHandler = "MonoDevelop.XmlEditor.OpenXPathQueryPadCommand"
 					_label = "_XPath Query..."
@@ -67,32 +65,27 @@
 			<Command id = "MonoDevelop.XmlEditor.Commands.RemoveXPathHighlighting"
 					defaultHandler = "MonoDevelop.XmlEditor.RemoveXPathHighlightingCommand"
 					_label = "Remove XPath _Highlighting"
-					description = "Removes the highlighted XPath matches."/>
+					description = "Removes the highlighted XPath matches."/>-->
 			<Command id = "MonoDevelop.XmlEditor.Commands.AssignStylesheet"
-					defaultHandler = "MonoDevelop.XmlEditor.AssignStylesheetCommand"
 					_label = "_Assign XSLT..."
 					description = "Assigns a stylesheet to the current xml document"/>
 			<Command id = "MonoDevelop.XmlEditor.Commands.OpenStylesheet"
-					defaultHandler = "MonoDevelop.XmlEditor.OpenStylesheetCommand"
 					_label = "_Open XSLT"
 					description = "Opens the assigned stylesheet"/>
 			<Command id = "MonoDevelop.XmlEditor.Commands.RunXslTransform"
-					defaultHandler = "MonoDevelop.XmlEditor.RunXslTransformCommand"
 					_label = "Run XSL_T"
 					shortcut = "Alt|Control|T"
-					description = "Runs an XSL transform"/>				
+					description = "Runs an XSL transform"/>
 			<Command id = "MonoDevelop.XmlEditor.Commands.GoToSchemaDefinition"
-					defaultHandler = "MonoDevelop.XmlEditor.GoToSchemaDefinitionCommand"
 					_label = "_Go to Schema Definition"
 					description = "Jumps to the schema definition"/>
 			<Command id = "MonoDevelop.XmlEditor.Commands.Format"
-					defaultHandler = "MonoDevelop.XmlEditor.FormatXmlCommand"
 					_label = "_Format"
-					description = "Pretty prints the XML"/>-->
+					description = "Pretty prints the XML"/>
 		</Category>
 	</Extension>
 
-	<!-- XML menu --><!--
+	<!-- XML menu -->
 	<Extension path = "/MonoDevelop/Ide/MainMenu">
 		<ItemSet id = "XmlMenu" 
 		         insertafter = "Run" 
@@ -100,18 +93,18 @@
 		         _label = "_XML" >
 			<CommandItem id = "MonoDevelop.XmlEditor.Commands.CreateSchema" />
 			<CommandItem id = "MonoDevelop.XmlEditor.Commands.GoToSchemaDefinition" />
-			<CommandItem id = "MonoDevelop.XmlEditor.Commands.Validate" />
+			<CommandItem id = "MonoDevelop.XmlEditor.Commands.Validate" /><!--
 			<SeparatorItem id = "XPathCommandsSeparator"/>
 			<CommandItem id = "MonoDevelop.XmlEditor.Commands.OpenXPathQueryPad" />				
-			<CommandItem id = "MonoDevelop.XmlEditor.Commands.RemoveXPathHighlighting" />				
-			<SeparatorItem id = "StylesheetCommandsSeparator"/>
+			<CommandItem id = "MonoDevelop.XmlEditor.Commands.RemoveXPathHighlighting" />			
+			<SeparatorItem id = "StylesheetCommandsSeparator"/>-->
 			<CommandItem id = "MonoDevelop.XmlEditor.Commands.AssignStylesheet"/>
 			<CommandItem id = "MonoDevelop.XmlEditor.Commands.OpenStylesheet"/>
 			<CommandItem id = "MonoDevelop.XmlEditor.Commands.RunXslTransform"/>				
 			<SeparatorItem id = "FormatSeparator"/>
-			<CommandItem id = "MonoDevelop.XmlEditor.Commands.Format" />				
+			<CommandItem id = "MonoDevelop.XmlEditor.Commands.Format" />
 		</ItemSet>
-	</Extension>-->
+	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/GlobalOptionsDialog/TextEditor/Formatting">
 		<Section id = "XmlFormattingOptions" insertbefore="Formatting" _label = "XML" fill="true" class = "MonoDevelop.XmlEditor.Gui.XmlEditorOptionsPanel"/>
