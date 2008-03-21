@@ -57,6 +57,8 @@ namespace MonoDevelop.Core.Gui
 				return "text/x-csharp";
 			case ".boo":
 				return "text/x-boo";
+			case ".vb":
+				return "text/x-vb";
 			case ".xml":
 				return "application/xml";
 			case ".xaml":
