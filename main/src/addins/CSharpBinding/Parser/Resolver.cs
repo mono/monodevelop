@@ -403,7 +403,13 @@ namespace CSharpBinding.Parser
 		
 		LanguageItemCollection _ListMembers (LanguageItemCollection members, IClass qualifierClass, IClass curType)
 		{
-			if (alreadyListed.ContainsKey (curType))
+			bool isListed = false;
+			try {
+				isListed = alreadyListed.ContainsKey (curType);
+			} catch (Exception) {
+				isListed = true;
+			}
+			if (isListed)
 				return members;
 			alreadyListed [curType] = true;
 			

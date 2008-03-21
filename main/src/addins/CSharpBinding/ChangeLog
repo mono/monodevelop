@@ -1,3 +1,7 @@
+2008-03-21  Mike Krüger <mkrueger@novell.com> 
+
+	* Parser/Resolver.cs: fixed Bug 372380 - MD crash.
+
 2008-03-19  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* Gui/CSharpTextEditorExtension.cs: Fix CS0136 error with csc (see gmcs
