@@ -158,8 +158,10 @@ namespace Mono.TextEditor
 			int offset = node.left != null ? node.left.value.totalLength : 0;
 			while (node.parent != null) {
 				if (node == node.parent.right) {
-					offset += node.parent.left != null ? node.parent.left.value.totalLength : 0;
-					offset += node.parent.value.Length;
+					if (node.parent.left != null && node.parent.left.value != null)
+						offset += node.parent.left.value.totalLength;
+					if (node.parent.value != null)
+						offset += node.parent.value.Length;
 				}
 				node = node.parent;
 			}

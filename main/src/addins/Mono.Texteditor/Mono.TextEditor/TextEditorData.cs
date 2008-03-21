@@ -481,7 +481,6 @@ namespace Mono.TextEditor
 			if (IsSomethingSelected && IsMatchAt (startOffset)) {
 				startOffset = SelectionRange.EndOffset;
 			}
-			
 			SearchResult result = SearchForward (startOffset);
 			if (result != null) {
 				Caret.Offset = result.Offset + result.Length;
