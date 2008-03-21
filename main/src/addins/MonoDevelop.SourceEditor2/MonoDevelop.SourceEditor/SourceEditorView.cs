@@ -739,7 +739,10 @@ namespace MonoDevelop.SourceEditor
 		public void ToggleCodeComment ()
 		{
 			bool comment = false;
-			string commentTag = Services.Languages.GetBindingPerFileName (this.ContentName).CommentTag ?? "//";
+			ILanguageBinding binding = Services.Languages.GetBindingPerFileName (this.ContentName);
+			if (binding == null)
+				return;
+			string commentTag = binding.CommentTag ?? "//";
 			foreach (LineSegment line in TextEditor.SelectedLines) {
 				string text = Document.GetTextAt (line);
 				string trimmedText = text.TrimStart ();
