@@ -1,3 +1,11 @@
+2008-03-21  Marcos David Marín Amador <MarcosMarin@gmail.com> 
+
+	* Compiler/GNUCompiler.cs: Instead of having the Include and Lib Paths
+	  marked as ProjectPathItemProperty now mark them as regular
+	  ItemProperties and instead added functionality to insert and parse
+	  macros like ${ProjectDir} and ${CombineDir} in the Include and Lib
+	  Paths.
+
 2008-03-19  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com>
 
 	* Parser/TagDatabaseManager.cs: Search project include paths 

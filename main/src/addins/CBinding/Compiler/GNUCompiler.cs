@@ -80,7 +80,7 @@ namespace CBinding
 			
 			CompilerResults cr = new CompilerResults (new TempFileCollection ());
 			bool success = true;
-			string compilerArgs = GetCompilerFlags (configuration) + " " + GeneratePkgCompilerArgs (packages);;
+			string compilerArgs = GetCompilerFlags (configuration) + " " + GeneratePkgCompilerArgs (packages);
 			
 			string outputName = Path.Combine (configuration.OutputDirectory,
 			                                  configuration.CompiledOutputName);
@@ -119,16 +119,13 @@ namespace CBinding
 				switch (configuration.CompileTarget)
 				{
 				case CBinding.CompileTarget.Bin:
-					MakeBin (
-						projectFiles, packages, configuration, cr, monitor, outputName);
+					MakeBin (projectFiles, packages, configuration, cr, monitor, outputName);
 					break;
 				case CBinding.CompileTarget.StaticLibrary:
-					MakeStaticLibrary (
-						projectFiles, monitor, outputName);
+					MakeStaticLibrary (projectFiles, monitor, outputName);
 					break;
 				case CBinding.CompileTarget.SharedLibrary:
-					MakeSharedLibrary (
-						projectFiles, packages, configuration, cr, monitor, outputName);
+					MakeSharedLibrary (projectFiles, packages, configuration, cr, monitor, outputName);
 					break;
 				}
 			}
@@ -185,7 +182,7 @@ namespace CBinding
 			
 			if (configuration.Includes != null)
 				foreach (string inc in configuration.Includes)
-					args.Append ("-I\"" + inc + "\" ");
+					args.Append ("-I\"" + StringParserService.Parse (inc) + "\" ");
 			
 			if (configuration.PrecompileHeaders) {
 				string precdir = Path.Combine (configuration.SourceDirectory, ".prec");
@@ -333,8 +330,7 @@ namespace CBinding
 			string objectFiles = string.Join (" ", ObjectFiles (projectFiles, true));
 			string pkgargs = GeneratePkgLinkerArgs (packages);
 			StringBuilder args = new StringBuilder ();
-			CCompilationParameters cp =
-				(CCompilationParameters)configuration.CompilationParameters;
+			CCompilationParameters cp = (CCompilationParameters)configuration.CompilationParameters;
 			
 			if (cp.ExtraLinkerArguments != null && cp.ExtraLinkerArguments.Length > 0) {
 				string extraLinkerArgs = ExpandBacktickedParameters(cp.ExtraLinkerArguments.Replace ('\n', ' '));
@@ -343,7 +339,7 @@ namespace CBinding
 			
 			if (configuration.LibPaths != null)
 				foreach (string libpath in configuration.LibPaths)
-					args.Append ("-L\"" + libpath + "\" ");
+					args.Append ("-L\"" + StringParserService.Parse (libpath) + "\" ");
 			
 			if (configuration.Libs != null)
 				foreach (string lib in configuration.Libs)
@@ -402,7 +398,7 @@ namespace CBinding
 			
 			if (configuration.LibPaths != null)
 				foreach (string libpath in configuration.LibPaths)
-					args.Append ("-L\"" + libpath + "\" ");
+					args.Append ("-L\"" + StringParserService.Parse (libpath) + "\" ");
 			
 			if (configuration.Libs != null)
 				foreach (string lib in configuration.Libs)

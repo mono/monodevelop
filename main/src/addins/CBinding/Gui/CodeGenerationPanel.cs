@@ -37,6 +37,7 @@ using Mono.Addins;
 
 using MonoDevelop.Core;
 using MonoDevelop.Core.Gui.Dialogs;
+using MonoDevelop.Core.Gui.Components;
 
 namespace CBinding
 {
@@ -47,6 +48,11 @@ namespace CBinding
 		private Gtk.ListStore libStore = new Gtk.ListStore (typeof(string));
 		private Gtk.ListStore libPathStore = new Gtk.ListStore (typeof(string));
 		private Gtk.ListStore includePathStore = new Gtk.ListStore (typeof(string));
+		
+		static string[,] quickPathInsertMenu = new string[,] {
+			{GettextCatalog.GetString ("_Project Directory"), "${ProjectDir}"},
+			{GettextCatalog.GetString ("_Root Solution Directory"), "${CombineDir}"},
+		};
 		
 		public CodeGenerationPanel (Properties customizationObject)
 		{
@@ -113,6 +119,10 @@ namespace CBinding
 			
 			foreach (string includePath in configuration.Includes)
 				includePathStore.AppendValues (includePath);
+			
+			
+			new MenuButtonEntry (libPathEntry, quickInsertLibButton, quickPathInsertMenu);
+			new MenuButtonEntry (includePathEntry, quickInsertIncludeButton, quickPathInsertMenu);
 		}
 		
 		private void OnIncludePathAdded (object sender, EventArgs e)
