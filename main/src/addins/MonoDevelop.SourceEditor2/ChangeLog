@@ -1,3 +1,10 @@
+2008-03-21  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* gtk-gui/gui.stetic: Set target GTK# version to 2.8.
+	* MonoDevelop.SourceEditor/SourceEditorWidget.cs: Ignore multiple
+	  Dispose calls. Don't try to alter focus while widget is being
+	  disposed. Fixes two Gtk-Criticals.
+
 2008-03-21  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.SourceEditor/SourceEditorWidget.cs,

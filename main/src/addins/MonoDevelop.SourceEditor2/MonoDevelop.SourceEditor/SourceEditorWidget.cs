@@ -397,6 +397,8 @@ namespace MonoDevelop.SourceEditor
 		
 		public override void Dispose ()
 		{
+			if (isDisposed)
+				return;
 			isDisposed = true;
 			Unsplit ();
 			RemoveReloadBar ();
@@ -1028,7 +1030,8 @@ namespace MonoDevelop.SourceEditor
 			this.textEditor.HighlightSearchPattern = false;
 			if (this.splittedTextEditor != null) 
 				this.splittedTextEditor.HighlightSearchPattern = false;
-			ResetFocusChain ();
+			if (!isDisposed)
+				ResetFocusChain ();
 			return result;
 		}
 		
@@ -1042,7 +1045,8 @@ namespace MonoDevelop.SourceEditor
 		internal bool RemoveSearchWidget ()
 		{
 			bool result = KillWidgets ();
-			TextEditor.GrabFocus ();
+			if (!isDisposed)
+				TextEditor.GrabFocus ();
 			return result;
 		}
 		
