@@ -104,7 +104,7 @@ namespace MonoDevelop.SourceEditor
 				StoreWidgetState ();
 			};
 			this.entrySearch.Changed += delegate {
-				widget.TextEditor.SearchPattern = SearchPattern;
+				widget.SetSearchPattern (SearchPattern);
 				if (!SearchWidget.inSearchUpdate) {
 					SearchWidget.searchPattern = SearchPattern;
 					SearchWidget.FireSearchPatternChanged ();
@@ -256,8 +256,12 @@ namespace MonoDevelop.SourceEditor
 			this.entrySearch.Entry.Text = SearchWidget.searchPattern;
 		}
 		
+		string oldPattern = null;
 		void UpdateSearchEntry ()
 		{
+			if (oldPattern == SearchPattern)
+				return;
+			oldPattern = SearchPattern;
 			widget.SetSearchOptions ();
 			SearchResult result = widget.TextEditor.SearchForward (widget.TextEditor.Document.LocationToOffset (caretSave));
 			if (result == null && !String.IsNullOrEmpty (SearchPattern)) {

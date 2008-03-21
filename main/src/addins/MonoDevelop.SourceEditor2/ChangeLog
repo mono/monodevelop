@@ -1,3 +1,11 @@
+2008-03-21  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.SourceEditor/SourceEditorWidget.cs,
+	  MonoDevelop.SourceEditor/SearchAndReplaceWidget.cs,
+	  MonoDevelop.SourceEditor/SearchWidget.cs: Fixed "Bug 372817 - With
+	  windows split, search always jumps to match in first window
+	  regardless of focus".
+
 2008-03-20  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.SourceEditor/SourceEditorView.cs: Don't try to comment

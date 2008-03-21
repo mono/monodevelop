@@ -60,7 +60,10 @@ namespace MonoDevelop.SourceEditor
 		
 		public MonoDevelop.SourceEditor.ExtendibleTextEditor TextEditor {
 			get {
-				lastActiveEditor = this.splittedTextEditor != null && this.splittedTextEditor.HasFocus ? this.splittedTextEditor : this.textEditor;
+				if (this.splittedTextEditor != null && this.splittedTextEditor.Parent != null && this.splittedTextEditor.HasFocus)
+					lastActiveEditor = this.splittedTextEditor;
+				if (this.textEditor != null && this.textEditor.Parent != null && this.textEditor.HasFocus)
+					lastActiveEditor = this.textEditor;
 				return lastActiveEditor;
 			}
 		}
@@ -110,7 +113,7 @@ namespace MonoDevelop.SourceEditor
 			this.view = view;
 			this.SetSizeRequest (32, 32);
 			this.Build();
-			this.textEditor = new MonoDevelop.SourceEditor.ExtendibleTextEditor (view);
+			this.lastActiveEditor = this.textEditor = new MonoDevelop.SourceEditor.ExtendibleTextEditor (view);
 			this.mainsw.Child = this.TextEditor;
 			this.mainsw.ButtonPressEvent += PrepareEvent;
 			
@@ -450,7 +453,6 @@ namespace MonoDevelop.SourceEditor
 			if (splitContainer == null)
 				return;
 			
-			
 			splitContainer.Remove (mainsw);
 			if (this.textEditor == lastActiveEditor) {
 				secondsw.Destroy ();
@@ -467,7 +469,7 @@ namespace MonoDevelop.SourceEditor
 			splitContainer.Destroy ();
 			splitContainer = null;
 			
-			editorBar.PackEnd (mainsw);
+			editorBar.PackStart (mainsw);
 			editorBar.ShowAll ();
 		}
 		
@@ -507,7 +509,7 @@ namespace MonoDevelop.SourceEditor
 			
 			secondsw.Child = splittedTextEditor;
 			splitContainer.Add2 (secondsw);
-			editorBar.PackEnd (splitContainer);
+			editorBar.PackStart (splitContainer);
 			this.splitContainer.Position = (vSplit ? this.Allocation.Height : this.Allocation.Width) / 2;
 			editorBar.ShowAll ();
 			
@@ -993,7 +995,7 @@ namespace MonoDevelop.SourceEditor
 			string selectedText = this.TextEditor.SelectedText;
 			
 			if (!String.IsNullOrEmpty (selectedText)) {
-				TextEditor.SearchPattern = selectedText;
+				this.SetSearchPattern (selectedText);
 				SearchWidget.searchPattern = selectedText;
 				SearchWidget.FireSearchPatternChanged ();
 			}
@@ -1023,9 +1025,18 @@ namespace MonoDevelop.SourceEditor
 				gotoLineNumberWidget = null;
 				result = true;
 			}
-			this.TextEditor.HighlightSearchPattern = false;
+			this.textEditor.HighlightSearchPattern = false;
+			if (this.splittedTextEditor != null) 
+				this.splittedTextEditor.HighlightSearchPattern = false;
 			ResetFocusChain ();
 			return result;
+		}
+		
+		public void SetSearchPattern (string searchPattern)
+		{
+			this.textEditor.SearchPattern = searchPattern;
+			if (this.splittedTextEditor != null)
+				this.splittedTextEditor.SearchPattern = searchPattern;
 		}
 		
 		internal bool RemoveSearchWidget ()
@@ -1063,10 +1074,12 @@ namespace MonoDevelop.SourceEditor
 				if (TextEditor.IsSomethingSelected)
 					TextEditor.SearchPattern = TextEditor.SelectedText;
 				searchWidget = new SearchWidget (this);
-				editorBar.Add (searchWidget);
-				editorBar.SetChildPacking(searchWidget, false, true, 0, PackType.End);
+				editorBar.PackEnd (searchWidget);
+				editorBar.SetChildPacking (searchWidget, false, true, 0, PackType.End);
 				searchWidget.ShowAll ();
-				this.TextEditor.HighlightSearchPattern = true;
+				this.textEditor.HighlightSearchPattern = true;
+				if (this.splittedTextEditor != null) 
+					this.splittedTextEditor.HighlightSearchPattern = true;
 				this.editorBar.FocusChain = new Widget[] {
 					this.textEditor,
 					this.searchWidget,
@@ -1087,10 +1100,12 @@ namespace MonoDevelop.SourceEditor
 				if (TextEditor.IsSomethingSelected)
 					TextEditor.SearchPattern = TextEditor.SelectedText;
 				searchAndReplaceWidget = new SearchAndReplaceWidget (this);
-				editorBar.Add (searchAndReplaceWidget);
-				editorBar.SetChildPacking(searchAndReplaceWidget, false, true, 0, PackType.End);
+				editorBar.PackEnd (searchAndReplaceWidget);
+				editorBar.SetChildPacking (searchAndReplaceWidget, false, true, 0, PackType.End);
 				searchAndReplaceWidget.ShowAll ();
-				this.TextEditor.HighlightSearchPattern = true;
+				this.textEditor.HighlightSearchPattern = true;
+				if (this.splittedTextEditor != null) 
+					this.splittedTextEditor.HighlightSearchPattern = true;
 				this.editorBar.FocusChain = new Widget[] {
 					this.textEditor,
 					this.searchAndReplaceWidget,
@@ -1126,10 +1141,16 @@ namespace MonoDevelop.SourceEditor
 		
 		internal void SetSearchOptions ()
 		{
-			TextEditor.IsCaseSensitive = SearchWidget.IsCaseSensitive;
-			TextEditor.IsWholeWordOnly = SearchWidget.IsWholeWordOnly;
-			TextEditor.SearchPattern = SearchWidget.searchPattern;
-			TextEditor.QueueDraw ();
+			this.textEditor.IsCaseSensitive = SearchWidget.IsCaseSensitive;
+			this.textEditor.IsWholeWordOnly = SearchWidget.IsWholeWordOnly;
+			this.textEditor.SearchPattern = SearchWidget.searchPattern;
+			this.textEditor.QueueDraw ();
+			if (this.splittedTextEditor != null) {
+				this.splittedTextEditor.IsCaseSensitive = SearchWidget.IsCaseSensitive;
+				this.splittedTextEditor.IsWholeWordOnly = SearchWidget.IsWholeWordOnly;
+				this.splittedTextEditor.SearchPattern = SearchWidget.searchPattern;
+				this.splittedTextEditor.QueueDraw ();
+			}
 		}
 		
 		[CommandHandler (SearchCommands.FindNext)]
