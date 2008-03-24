@@ -70,14 +70,6 @@ namespace MonoDevelop.XmlEditor
 			}
 		}
 		
-		string FileName {
-			get {
-				if (!string.IsNullOrEmpty (Document.FileName))
-					return Document.FileName;
-				return Document.Title;
-			}
-		}
-		
 		#region Code completion
 		
 		IEditableTextBuffer GetBuffer ()
