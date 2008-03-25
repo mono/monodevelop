@@ -64,26 +64,24 @@ namespace MonoDevelop.Core.Gui
 		
 		static void LoggingServiceLogFunc (string logDomain, GLib.LogLevelFlags logLevel, string message)
 		{
-			string trace = System.Environment.StackTrace;
-			int realTraceBegins = trace.LastIndexOf (" MonoDevelop.Core.Gui.GLibLogging.LoggingServiceLogFunc");
-			realTraceBegins = trace.IndexOf ('\n', realTraceBegins);
-			trace = trace.Substring (realTraceBegins + 1);
-			string fmtMsg = string.Format ("{0}-{1}: {2}\n{3}", logDomain, logLevel, message, trace);
+			System.Diagnostics.StackTrace trace = new System.Diagnostics.StackTrace (2, true);
+			string msg = string.Format ("{0}-{1}: {2}\nStack trace: \n{3}", 
+			    logDomain, logLevel, message, trace.ToString ());
 			
 			switch (logLevel) {
 			case GLib.LogLevelFlags.Debug:
-				LoggingService.LogDebug (fmtMsg);
+				LoggingService.LogDebug (msg);
 				break;
 			case GLib.LogLevelFlags.Info:
-				LoggingService.LogInfo (fmtMsg);
+				LoggingService.LogInfo (msg);
 				break;
 			case GLib.LogLevelFlags.Warning:
-				LoggingService.LogWarning (fmtMsg);
+				LoggingService.LogWarning (msg);
 				break;
 			case GLib.LogLevelFlags.Error:
 			case GLib.LogLevelFlags.Critical:
 			default:
-				LoggingService.LogError (fmtMsg);
+				LoggingService.LogError (msg);
 				break;
 			}	
 		}

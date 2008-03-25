@@ -1,3 +1,7 @@
+2008-03-25  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Core.Gui/GLibLogging.cs: Improve stack trace.
+
 2008-03-21  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Core.Gui.mdp, Makefile.am: Updated.
