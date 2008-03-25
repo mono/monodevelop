@@ -1,6 +1,7 @@
 # %%WARNING%%
 
 %%CONFIG_VARS%%
+RESGEN=%%RESGEN%%
 	
 all: $(ASSEMBLY) %%DEPLOY_FILE_VARS%%
 
@@ -23,13 +24,11 @@ include $(top_srcdir)/Makefile.include
 %%COPY_DEPLOY_FILES_VARS%%
 %%COPY_DEPLOY_FILES_TARGETS%%
 
+$(eval $(call emit_resgen_targets))
 $(build_xamlg_list): %.xaml.g.cs: %.xaml
 	xamlg '$<'
 
-$(build_resx_resources) : %.resources: %.resx
-	%%RESGEN%% '$<' '$@'
-
 $(ASSEMBLY) $(ASSEMBLY_MDB): $(build_sources) $(build_resources) $(build_datafiles) $(DLL_REFERENCES) $(PROJECT_REFERENCES) $(build_xamlg_list) $(build_satellite_assembly_list)
-	mkdir -p $(dir $(ASSEMBLY))
+	mkdir -p $(shell dirname $(ASSEMBLY))
 	$(ASSEMBLY_COMPILER_COMMAND) $(ASSEMBLY_COMPILER_FLAGS) -out:$(ASSEMBLY) -target:$(COMPILE_TARGET) $(build_sources_embed) $(build_resources_embed) $(build_references_ref)
 

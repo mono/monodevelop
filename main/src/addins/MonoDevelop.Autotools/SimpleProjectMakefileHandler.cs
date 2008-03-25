@@ -150,12 +150,12 @@ namespace MonoDevelop.Autotools
 						case BuildAction.Compile:
 							
 							if ( projectFile.Subtype != Subtype.Code ) continue;
-							files.AppendFormat ( "\\\n\t{0} ", pfpath );
+							files.AppendFormat ( "\\\n\t{0} ", EscapeSpace (pfpath));
 							break;
 
 						case BuildAction.Nothing:
 							
-							extras.AppendFormat ( "\\\n\t{0} ", pfpath );
+							extras.AppendFormat ( "\\\n\t{0} ", EscapeSpace (pfpath));
 							break;
 
 						case BuildAction.EmbedAsResource:
@@ -171,15 +171,15 @@ namespace MonoDevelop.Autotools
 								pfpath = FileService.NormalizeRelativePath (pfpath);
 							}
 							if (!String.IsNullOrEmpty (projectFile.ResourceId) && projectFile.ResourceId != Path.GetFileName (pfpath))
-								res_files.AppendFormat ( "\\\n\t{0},{1} ", pfpath, projectFile.ResourceId);
+								res_files.AppendFormat ( "\\\n\t{0},{1} ", EscapeSpace (pfpath), EscapeSpace (projectFile.ResourceId));
 							else
-								res_files.AppendFormat ( "\\\n\t{0} ", pfpath);
+								res_files.AppendFormat ( "\\\n\t{0} ", EscapeSpace (pfpath));
  
 							break;
 
 						case BuildAction.FileCopy:
 						
-							datafiles.AppendFormat ("\\\n\t{0} ", pfpath);
+							datafiles.AppendFormat ("\\\n\t{0} ", EscapeSpace (pfpath));
 							break;
 					}
 				}
@@ -198,13 +198,14 @@ namespace MonoDevelop.Autotools
 					programFilesDir = TranslateDir (programFilesDir);
 					installDirs.Add (programFilesDir);
 					installTarget.Append ("\tmake pre-install-local-hook prefix=$(prefix)\n");
-					installTarget.AppendFormat ("\tmkdir -p $(DESTDIR){0}\n", programFilesDir);
-					installTarget.AppendFormat ("\tcp $(ASSEMBLY) $(ASSEMBLY_MDB) $(DESTDIR){0}\n", programFilesDir);
+					installTarget.AppendFormat ("\tmkdir -p '$(DESTDIR){0}'\n", programFilesDir);
+					installTarget.AppendFormat ("\t$(call cp,$(ASSEMBLY),$(DESTDIR){0})\n", programFilesDir);
+					installTarget.AppendFormat ("\t$(call cp,$(ASSEMBLY_MDB),$(DESTDIR){0})\n", programFilesDir);
 
 					//remove dir?
 					uninstallTarget.Append ("\tmake pre-uninstall-local-hook prefix=$(prefix)\n");
-					uninstallTarget.AppendFormat ("\trm -f $(DESTDIR){0}/$(notdir $(ASSEMBLY))\n", programFilesDir);
-					uninstallTarget.AppendFormat ("\ttest -z '$(ASSEMBLY_MDB)' || rm -f $(DESTDIR){0}/$(notdir $(ASSEMBLY_MDB))\n", programFilesDir);
+					uninstallTarget.AppendFormat ("\t$(call rm,$(ASSEMBLY),$(DESTDIR){0})\n", programFilesDir);
+					uninstallTarget.AppendFormat ("\t$(call rm,$(ASSEMBLY_MDB),$(DESTDIR){0})\n", programFilesDir);
 
 					installDeps.Append (" $(ASSEMBLY) $(ASSEMBLY_MDB)");
 
@@ -298,7 +299,7 @@ namespace MonoDevelop.Autotools
 							project.GetRelativeChildPath ( dnpc.CompiledOutputName ) :
 							project.GetRelativeChildPath ( dnpc.CompiledOutputName ).Replace("\\","/");
 
-						projectReferences.Write ( pref );
+						projectReferences.Write (EscapeSpace (pref));
 					}
 					configSection.BuildVariablesBuilder.AppendFormat ( "PROJECT_REFERENCES = {0}\n", projectReferences.ToString() );
 
@@ -363,9 +364,10 @@ namespace MonoDevelop.Autotools
 						if (configSection.DeployFileVars.ContainsKey (targetDeployVar)) {
 							//use the dfile from the config section
 							DeployFile dfile = configSection.DeployFileVars [targetDeployVar];
-							string fname = FileService.AbsoluteToRelativePath (
-									Path.GetFullPath (project.BaseDirectory),
-									Path.GetFullPath (dfile.SourcePath));
+							string fname = EscapeSpace (
+									FileService.AbsoluteToRelativePath (
+										Path.GetFullPath (project.BaseDirectory),
+										Path.GetFullPath (dfile.SourcePath)));
 
 							conf_vars.AppendFormat ("{0}_SOURCE={1}\n", targetDeployVar, fname);
 
@@ -374,7 +376,7 @@ namespace MonoDevelop.Autotools
 								conf_vars.AppendFormat ("{0}=$(BUILD_DIR){1}{2}\n",
 										targetDeployVar,
 										Path.DirectorySeparatorChar,
-										dfile.RelativeTargetPath);
+										EscapeSpace (dfile.RelativeTargetPath));
 							}
 						} else {
 							// not common and not part of @configSection
@@ -396,7 +398,7 @@ namespace MonoDevelop.Autotools
 						deployFileCopyVars.AppendFormat ("{0} = $(BUILD_DIR){1}{2}\n",
 									pair.Key,
 									Path.DirectorySeparatorChar,
-									pair.Value.RelativeTargetPath);
+									EscapeSpace (pair.Value.RelativeTargetPath));
 					}
 				}
 
@@ -504,10 +506,10 @@ namespace MonoDevelop.Autotools
 					dllRefWriter.WriteLine (" \\");
 					dllRefWriter.Write ("\t");
 
-					ctx.AddGlobalReferencedFile (FileService.AbsoluteToRelativePath (
-						Path.GetFullPath (ctx.BaseDirectory), assemblyPath));
-					dllRefWriter.Write (FileService.AbsoluteToRelativePath (
-						project.BaseDirectory, assemblyPath));
+					ctx.AddGlobalReferencedFile (EscapeSpace (FileService.AbsoluteToRelativePath (
+						Path.GetFullPath (ctx.BaseDirectory), assemblyPath)));
+					dllRefWriter.Write (EscapeSpace (FileService.AbsoluteToRelativePath (
+						project.BaseDirectory, assemblyPath)));
 
 				} 
 				else if (reference.ReferenceType == ReferenceType.Project)
@@ -568,14 +570,14 @@ namespace MonoDevelop.Autotools
 				fname = FileService.NormalizeRelativePath (
 						FileService.AbsoluteToRelativePath (ctx.TargetCombine.BaseDirectory, full_fname));
 				infname = fname + ".in";
-				ctx.AddAutoconfFile (fname);
+				ctx.AddAutoconfFile (EscapeSpace (fname));
 				ctx.AddGeneratedFile (full_fname + ".in");
 
 				//Path relative to project
 				fname = FileService.NormalizeRelativePath (
 						FileService.AbsoluteToRelativePath (project.BaseDirectory, full_fname));
 				infname = fname + ".in";
-				extras.AppendFormat ( "\\\n\t{0} ", infname);
+				extras.AppendFormat ( "\\\n\t{0} ", EscapeSpace (infname));
 
 				//dependencyDeployFile here should be filename relative to the project
 				dependencyDeployFile = fname;
@@ -588,7 +590,7 @@ namespace MonoDevelop.Autotools
 			if (dfile.ContainsPathReferences)
 				deployFileCopyTargets.AppendFormat ("$(eval $(call emit-deploy-wrapper,{0},{1}{2}))\n",
 					targetDeployVar,
-					dependencyDeployFile,
+					EscapeSpace (dependencyDeployFile),
 					(dfile.FileAttributes & DeployFileAttributes.Executable) != 0 ? ",x" : String.Empty);
 			else
 				deployFileCopyTargets.AppendFormat ("$(eval $(call emit-deploy-target,{0}))\n", targetDeployVar);
@@ -623,14 +625,12 @@ namespace MonoDevelop.Autotools
 				installDir = TranslateDir (installDir);
 
 				if (!installDirs.Contains (installDir)) {
-					installTarget.AppendFormat ("\tmkdir -p $(DESTDIR){0}\n", installDir);
+					installTarget.AppendFormat ("\tmkdir -p '$(DESTDIR){0}'\n", installDir);
 					installDirs.Add (installDir);
 				}
 
-				installTarget.AppendFormat ("\ttest -z '$({0})' || cp $({0}) $(DESTDIR){1}\n", targetDeployVar, installDir);
-				installDeps.AppendFormat (" $({0})", targetDeployVar);
-
-				uninstallTarget.AppendFormat ("\ttest -z '$({1})' || rm -f $(DESTDIR){0}/$(notdir $({1}))\n", installDir, targetDeployVar);
+				installTarget.AppendFormat ("\t$(call cp,$({0}),$(DESTDIR){1})\n", targetDeployVar, installDir);
+				uninstallTarget.AppendFormat ("\t$(call rm,$({1}),$(DESTDIR){0})\n", installDir, targetDeployVar);
 			}
 		}
 		
@@ -741,7 +741,12 @@ namespace MonoDevelop.Autotools
 			
 			return refp;
 		}
-		
+
+		static string EscapeSpace (string str)
+		{
+			return str.Replace (" ", "\\ ");
+		}
+
 	}
 }
 

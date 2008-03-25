@@ -60,6 +60,7 @@ namespace MonoDevelop.Autotools
 					solutionTop.AppendFormat ("top_srcdir={0}\n", FileService.AbsoluteToRelativePath (
 							entry.BaseDirectory, ctx.TargetCombine.BaseDirectory));
 					solutionTop.Append ("include $(top_srcdir)/config.make\n");
+					solutionTop.Append ("include $(top_srcdir)/Makefile.include\n");
 					solutionTop.Append ("include $(top_srcdir)/rules.make\n\n");
 					solutionTop.Append ("#include $(top_srcdir)/custom-hooks.make\n\n");
 				}

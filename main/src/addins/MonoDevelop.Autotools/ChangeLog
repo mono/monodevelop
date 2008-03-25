@@ -1,3 +1,19 @@
+2008-03-26  Ankit Jain  <jankit@novell.com>
+
+	Add support for handling paths containing spaces.
+	Fix bug #353979.
+	* SimpleMakefileHandler.cs (EscapeSpace): New.
+	Escape and quote paths appropriately.
+	* SolutionMakefileHandler.cs: Include Makefile.include also.
+	* templates/Makefile.noauto.project.template:
+	* templates/Makefile.am.project.template: Use emit_resgen_targets macro.
+	Use '$(shell dirname ' instead of '$(dir ' as it can't handle paths with
+	spaces.
+	* templates/Makefile.include:
+	* templates/make-dist.targets:
+	* templates/Makefile.solution.template:
+	* templates/rules.make: Add the necessary changes for the support.
+
 2008-03-04  Mike Krüger <mkrueger@novell.com> 
 
 	* ImportMakefileDialog.cs, MakefileOptionPanelWidget.cs, Commands.cs,

@@ -2,17 +2,17 @@ dist: $(CONFIG_MAKE)
 	rm -rf $(PACKAGE)-$(VERSION)
 	mkdir $(PACKAGE)-$(VERSION)
 	make pre-dist-hook distdir=$$distdir
-	for dir in $(SUBDIRS); do \
+	for dir in $(call quote_each,SUBDIRS); do \
 		pkgdir=`pwd`/$(PACKAGE)-$(VERSION); \
-		mkdir $$pkgdir/$$dir || true; \
+		mkdir "$$pkgdir/$$dir" || true; \
 		case $$dir in \
-		.) make dist-local distdir=$$pkgdir || exit 1;; \
-		*) (cd $$dir; make dist-local distdir=$$pkgdir/$$dir) || exit 1;; \
+		.) make dist-local "distdir=$$pkgdir" || exit 1;; \
+		*) (cd "$$dir"; make dist-local "distdir=$$pkgdir/$$dir") || exit 1;; \
 		esac \
 	done
 	(make dist-local distdir=$(PACKAGE)-$(VERSION))
 	make
-	make post-dist-hook distsir=$$distdir
+	make post-dist-hook "distsir=$$distdir"
 	tar czvf $(PACKAGE)-$(VERSION).tar.gz $(PACKAGE)-$(VERSION)
 	rm -rf $(PACKAGE)-$(VERSION)
 	@echo "=========================================="
