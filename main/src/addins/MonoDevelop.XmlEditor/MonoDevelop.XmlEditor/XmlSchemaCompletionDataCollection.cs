@@ -95,7 +95,7 @@ namespace MonoDevelop.XmlEditor
 		public IEnumerator<XmlSchemaCompletionData> GetEnumerator ()
 		{
 			foreach (XmlSchemaCompletionData x in builtin)
-				if (user[x.NamespaceUri] != null)
+				if (user[x.NamespaceUri] == null)
 					yield return x;
 			foreach (XmlSchemaCompletionData x in user)
 				yield return x;

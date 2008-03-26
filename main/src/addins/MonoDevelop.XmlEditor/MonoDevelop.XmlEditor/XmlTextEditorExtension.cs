@@ -56,6 +56,16 @@ namespace MonoDevelop.XmlEditor
 			XmlSchemaManager.UserSchemaAdded += UserSchemaAdded;
 			XmlSchemaManager.UserSchemaRemoved += UserSchemaRemoved;
 			SetInitialValues();
+			
+			MonoDevelop.SourceEditor.SourceEditorView view = 
+				Document.GetContent<MonoDevelop.SourceEditor.SourceEditorView> ();
+			if (view != null && view.Document.SyntaxMode == null) {
+				Mono.TextEditor.Highlighting.SyntaxMode mode = Mono.TextEditor.Highlighting.SyntaxModeService.GetSyntaxMode (ApplicationXmlMimeType);
+				if (mode != null)
+					view.Document.SyntaxMode = mode;
+				else
+					LoggingService.LogWarning ("XmlTextEditorExtension could not get SyntaxMode for mimetype '" + ApplicationXmlMimeType + "'.");
+			}
 		}
 		
 		bool disposed;
