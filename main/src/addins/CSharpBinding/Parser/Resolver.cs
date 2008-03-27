@@ -387,7 +387,8 @@ namespace CSharpBinding.Parser
 			ListMembers(members, returnClass, returnClass);
 			if (returnClass.ClassType == ClassType.Interface) {
 				IClass objType = SearchType ("System.Object", null, null);
-				ListMembers (members, objType, objType);
+				if (objType != null)
+					ListMembers (members, objType, objType);
 			}
 			
 			return new ResolveResult(returnClass, members);
