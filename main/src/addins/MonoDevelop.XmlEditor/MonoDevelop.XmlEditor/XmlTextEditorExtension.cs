@@ -57,6 +57,7 @@ namespace MonoDevelop.XmlEditor
 			XmlSchemaManager.UserSchemaRemoved += UserSchemaRemoved;
 			SetInitialValues();
 			
+/* FIXME: this causes build breakage
 			MonoDevelop.SourceEditor.SourceEditorView view = 
 				Document.GetContent<MonoDevelop.SourceEditor.SourceEditorView> ();
 			if (view != null && view.Document.SyntaxMode == null) {
@@ -66,6 +67,7 @@ namespace MonoDevelop.XmlEditor
 				else
 					LoggingService.LogWarning ("XmlTextEditorExtension could not get SyntaxMode for mimetype '" + ApplicationXmlMimeType + "'.");
 			}
+*/
 		}
 		
 		bool disposed;
