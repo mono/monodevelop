@@ -526,6 +526,8 @@ namespace MonoDevelop.SourceEditor
 		HBox reloadBar = null;
 		public void ShowFileChangedWarning ()
 		{
+			RemoveReloadBar ();
+			
 			if (reloadBar == null) {
 				reloadBar = new HBox ();
 				reloadBar.BorderWidth = 3;
@@ -543,6 +545,7 @@ namespace MonoDevelop.SourceEditor
 				box.PackStart (b2, false, false, 5);
 				b2.Clicked += new EventHandler (ClickedIgnore);
 			}
+			
 			view.WarnOverwrite = true;
 			editorBar.PackStart (reloadBar, false, true, 0);
 			editorBar.ReorderChild (reloadBar, this.isClassBrowserVisible ? 1 : 0);
@@ -565,11 +568,12 @@ namespace MonoDevelop.SourceEditor
 			try {
 //				double vscroll = view.VScroll;
 				view.Load (view.ContentName);
-				RemoveReloadBar ();
 //				view.VScroll = vscroll;
 				view.WorkbenchWindow.ShowNotification = false;
 			} catch (Exception ex) {
 				MessageService.ShowException (ex, "Could not reload the file.");
+			} finally {
+				RemoveReloadBar ();
 			}
 		}
 		

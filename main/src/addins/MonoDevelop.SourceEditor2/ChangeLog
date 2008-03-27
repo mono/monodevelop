@@ -1,3 +1,9 @@
+2008-03-27  Mike Krüger <mkrueger@novell.com> 
+
+	* gtk-gui/MonoDevelop.SourceEditor.OptionPanels.GeneralOptionsPanel.cs,
+	  gtk-gui/gui.stetic, MonoDevelop.SourceEditor/SourceEditorWidget.cs:
+	  Fixed Bug 373702 - Null reference errors in source editor.
+
 2008-03-21  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* gtk-gui/gui.stetic: Set target GTK# version to 2.8.
