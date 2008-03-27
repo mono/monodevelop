@@ -1,3 +1,12 @@
+2008-03-27  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.XmlEditor.Gui/XmlSchemasPanelWidget.cs: Remove debug
+	  code.
+	* MonoDevelop.XmlEditor/XmlTextEditorExtension.cs: Re-enable syntax
+	  highlighting.
+	* gtk-gui/gui.stetic, Makefile.am, MonoDevelop.XmlEditor.addin.xml,
+	  MonoDevelop.XmlEditor.mdp: Add SourceEditor2 dependency.
+
 2008-03-27  Atsushi Enomoto  <atsushi@ximian.com>
 
 	* MonoDevelop.XmlEditor/XmlTextEditorExtension.cs : quick build fix.

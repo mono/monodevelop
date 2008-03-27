@@ -82,12 +82,14 @@
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Projects.Gui" />
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Ide" />
     <ProjectReference type="Gac" localcopy="True" refto="Mono.Posix, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
+    <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.DesignerSupport" />
+    <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.SourceEditor2" />
+    <ProjectReference type="Project" localcopy="False" refto="Mono.TextEditor" />
     <ProjectReference type="Gac" localcopy="True" refto="glade-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="pango-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="atk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="gdk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="gtk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.DesignerSupport" />
   </References>
   <GtkDesignInfo isWidgetLibrary="True" gtkVersion="2.8.3">
     <ExportedWidgets>

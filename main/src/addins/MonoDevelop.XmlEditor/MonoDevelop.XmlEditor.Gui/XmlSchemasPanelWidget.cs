@@ -225,9 +225,7 @@ namespace MonoDevelop.XmlEditor.Gui
 		{
 			foreach (TreeIter iter in WalkStore (defaultAssociationsStore)) {
 				string ext = (string)defaultAssociationsStore.GetValue (iter, (int)DACols.Extension);
-				System.Console.WriteLine("walking {0}", ext);
 				if (!string.IsNullOrEmpty (ext) && (bool)defaultAssociationsStore.GetValue (iter, (int)DACols.Changed)) {
-					System.Console.WriteLine("returning {0}", ext);
 					yield return new XmlSchemaAssociation (
 						ext,
 						((string)defaultAssociationsStore.GetValue (iter, (int)DACols.Namespace)) ?? string.Empty,

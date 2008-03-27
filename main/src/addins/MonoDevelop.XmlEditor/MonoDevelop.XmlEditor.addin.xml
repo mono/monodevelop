@@ -26,6 +26,8 @@
 		<Addin id="Projects.Gui" version="0.19.0"/>
 		<Addin id="Ide" version="0.19.0"/>
 		<Addin id="Components" version="0.19.0"/>
+		<Addin id="DesignerSupport" version="0.19.0"/>
+		<Addin id="SourceEditor2" version="0.19.0"/>
 	</Dependencies>
 
 	<!-- Defines the Xml file extension node -->
@@ -96,8 +98,8 @@
 			<CommandItem id = "MonoDevelop.XmlEditor.Commands.Validate" /><!--
 			<SeparatorItem id = "XPathCommandsSeparator"/>
 			<CommandItem id = "MonoDevelop.XmlEditor.Commands.OpenXPathQueryPad" />				
-			<CommandItem id = "MonoDevelop.XmlEditor.Commands.RemoveXPathHighlighting" />-->			
-			<SeparatorItem id = "StylesheetCommandsSeparator"/>
+			<CommandItem id = "MonoDevelop.XmlEditor.Commands.RemoveXPathHighlighting" />			
+			<SeparatorItem id = "StylesheetCommandsSeparator"/>-->
 			<CommandItem id = "MonoDevelop.XmlEditor.Commands.AssignStylesheet"/>
 			<CommandItem id = "MonoDevelop.XmlEditor.Commands.OpenStylesheet"/>
 			<CommandItem id = "MonoDevelop.XmlEditor.Commands.RunXslTransform"/>				
