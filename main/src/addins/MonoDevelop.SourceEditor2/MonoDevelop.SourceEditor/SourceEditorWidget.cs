@@ -402,11 +402,11 @@ namespace MonoDevelop.SourceEditor
 			isDisposed = true;
 			Unsplit ();
 			RemoveReloadBar ();
-			RemoveSearchWidget ();
 			if (this.textEditor != null) {
 				this.textEditor.Dispose ();
 				this.textEditor = null;
 			}
+			RemoveSearchWidget ();
 			IdeApp.ProjectOperations.ParserDatabase.ParseInformationChanged -= new ParseInformationEventHandler(UpdateClassBrowser);
 		}
 		
@@ -1011,27 +1011,31 @@ namespace MonoDevelop.SourceEditor
 		{
 			bool result = false;
 			if (searchWidget != null) {
-				editorBar.Remove (searchWidget);
+				if (searchWidget.Parent != null)
+					editorBar.Remove (searchWidget);
 				searchWidget.Destroy ();
 				searchWidget.Dispose ();
 				searchWidget = null;
 				result = true;
 			} 
 			if (searchAndReplaceWidget != null) {
-				editorBar.Remove (searchAndReplaceWidget);
+				if (searchAndReplaceWidget.Parent != null)
+					editorBar.Remove (searchAndReplaceWidget);
 				searchAndReplaceWidget.Destroy ();
 				searchAndReplaceWidget.Dispose ();
 				searchAndReplaceWidget = null;
 				result = true;
 			}
 			if (gotoLineNumberWidget != null) {
-				editorBar.Remove (gotoLineNumberWidget);
+				if (gotoLineNumberWidget.Parent != null)
+					editorBar.Remove (gotoLineNumberWidget);
 				gotoLineNumberWidget.Destroy ();
 				gotoLineNumberWidget.Dispose ();
 				gotoLineNumberWidget = null;
 				result = true;
 			}
-			this.textEditor.HighlightSearchPattern = false;
+			if (this.textEditor != null) 
+				this.textEditor.HighlightSearchPattern = false;
 			if (this.splittedTextEditor != null) 
 				this.splittedTextEditor.HighlightSearchPattern = false;
 			if (!isDisposed)

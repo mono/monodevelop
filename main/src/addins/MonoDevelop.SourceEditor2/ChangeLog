@@ -1,5 +1,10 @@
 2008-03-27  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.SourceEditor/SourceEditorWidget.cs: fixed Bug 373709 - 2
+	  Gtk-Criticals when closing source editor.
+
+2008-03-27  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.SourceEditor/SourceEditorWidget.cs: fixed Bug 373056 -
 	  Random MD crash.
 
