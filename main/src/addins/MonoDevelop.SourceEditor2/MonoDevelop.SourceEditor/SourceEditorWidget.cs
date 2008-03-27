@@ -298,7 +298,7 @@ namespace MonoDevelop.SourceEditor
 		
 		void OnParseInformationChanged (object sender, ParseInformationEventArgs args)
 		{
-			if (args == null || this.view.ContentName != args.FileName || this.TextEditor == null || this.TextEditor.Document == null)
+			if (args == null || this.view == null || this.view.ContentName != args.FileName || this.TextEditor == null || this.TextEditor.Document == null)
 				return;
 			
 			lock (syncObject) {

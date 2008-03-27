@@ -1,5 +1,10 @@
 2008-03-27  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.SourceEditor/SourceEditorWidget.cs: fixed Bug 373056 -
+	  Random MD crash.
+
+2008-03-27  Mike Krüger <mkrueger@novell.com> 
+
 	* gtk-gui/MonoDevelop.SourceEditor.OptionPanels.GeneralOptionsPanel.cs,
 	  gtk-gui/gui.stetic, MonoDevelop.SourceEditor/SourceEditorWidget.cs:
 	  Fixed Bug 373702 - Null reference errors in source editor.
