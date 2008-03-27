@@ -123,7 +123,6 @@ namespace MonoDevelop.SourceEditor
 			this.textEditor.Caret.PositionChanged += CaretPositionChanged;
 			
 			// Setup the columns and column renders for the comboboxes
-			System.Console.WriteLine(Gtk.Stock.RevertToSaved);
 			CellRendererPixbuf pixr = new CellRendererPixbuf ();
 			pixr.Ypad = 0;
 			classCombo.PackStart (pixr, false);
@@ -177,14 +176,13 @@ namespace MonoDevelop.SourceEditor
 			
 			ResetFocusChain ();
 			
-			IdeApp.ProjectOperations.ParserDatabase.ParseInformationChanged += new ParseInformationEventHandler(UpdateClassBrowser);
+			IdeApp.ProjectOperations.ParserDatabase.ParseInformationChanged += UpdateClassBrowser;
 			
 			UpdateLineCol ();
 			
 			this.Focused += delegate {
 				UpdateLineCol ();
 			};
-			
 			IdeApp.ProjectOperations.ParserDatabase.ParseInformationChanged += OnParseInformationChanged;
 //			this.IsClassBrowserVisible = SourceEditorOptions.Options.EnableQuickFinder;
 			
@@ -298,17 +296,20 @@ namespace MonoDevelop.SourceEditor
 		
 		void OnParseInformationChanged (object sender, ParseInformationEventArgs args)
 		{
-			if (args == null || this.view == null || this.view.ContentName != args.FileName || this.TextEditor == null || this.TextEditor.Document == null)
+			if (args == null || args.ParseInformation == null || this.view == null  || this.view.ContentName != args.FileName)
 				return;
-			
+			MonoDevelop.SourceEditor.ExtendibleTextEditor editor = this.TextEditor;
+			if (editor == null || editor.Document == null)
+				return;
 			lock (syncObject) {
 				lastCu = args.ParseInformation.MostRecentCompilationUnit as ICompilationUnit;
-				
 				if (parseInformationUpdaterWorkerThread != null) 
 					parseInformationUpdaterWorkerThread.Stop ();
 				
-				parseInformationUpdaterWorkerThread = new ParseInformationUpdaterWorkerThread (this, args);
-				parseInformationUpdaterWorkerThread.Start ();
+				if (lastCu != null) {
+					parseInformationUpdaterWorkerThread = new ParseInformationUpdaterWorkerThread (this, args);
+					parseInformationUpdaterWorkerThread.Start ();
+				}
 			}
 		}
 		
@@ -406,8 +407,11 @@ namespace MonoDevelop.SourceEditor
 				this.textEditor.Dispose ();
 				this.textEditor = null;
 			}
+			this.lastActiveEditor = null;
+			this.splittedTextEditor = null;
 			RemoveSearchWidget ();
-			IdeApp.ProjectOperations.ParserDatabase.ParseInformationChanged -= new ParseInformationEventHandler(UpdateClassBrowser);
+			IdeApp.ProjectOperations.ParserDatabase.ParseInformationChanged -= UpdateClassBrowser;
+			IdeApp.ProjectOperations.ParserDatabase.ParseInformationChanged -= OnParseInformationChanged;
 		}
 		
 		void UpdateClassBrowser (object sender, ParseInformationEventArgs args)

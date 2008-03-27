@@ -1,5 +1,11 @@
 2008-03-27  Mike Krüger <mkrueger@novell.com> 
 
+	* gtk-gui/MonoDevelop.SourceEditor.OptionPanels.GeneralOptionsPanel.cs,
+	  MonoDevelop.SourceEditor/SourceEditorWidget.cs: Fixed resource
+	  deallocation (the real source of the ParseInformation update bug).
+
+2008-03-27  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.SourceEditor/SourceEditorWidget.cs: fixed Bug 373709 - 2
 	  Gtk-Criticals when closing source editor.
 
