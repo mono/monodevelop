@@ -1,3 +1,10 @@
+2008-03-27  Ankit Jain  <jankit@novell.com>
+
+	* templates/Makefile.solution.template:
+	* templates/make-dist.targets:
+	* templates/rules.make: Remove evil bash arrays.
+	Fixes from Raja Harinath.
+
 2008-03-26  Ankit Jain  <jankit@novell.com>
 
 	Add support for handling paths containing spaces.

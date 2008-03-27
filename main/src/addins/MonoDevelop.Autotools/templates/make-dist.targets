@@ -2,7 +2,7 @@ dist: $(CONFIG_MAKE)
 	rm -rf $(PACKAGE)-$(VERSION)
 	mkdir $(PACKAGE)-$(VERSION)
 	make pre-dist-hook distdir=$$distdir
-	for dir in $(call quote_each,SUBDIRS); do \
+	for dir in $(call quote_each,$(SUBDIRS)); do \
 		pkgdir=`pwd`/$(PACKAGE)-$(VERSION); \
 		mkdir "$$pkgdir/$$dir" || true; \
 		case $$dir in \
