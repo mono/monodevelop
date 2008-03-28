@@ -110,7 +110,7 @@ namespace MonoDevelop.XmlEditor.Gui
 					    ((XmlSchemaCompletionData)registeredSchemasStore.GetValue (iter, 0)).NamespaceUri
 					);
 				args.RetVal = true;
-				registeredSchemasComboModel.SetSortColumnId (0, SortType.Ascending);
+				registeredSchemasComboModel.SetSortColumnId (0, Gtk.SortType.Ascending);
 			};
 			
 			//set up tree view for associations
