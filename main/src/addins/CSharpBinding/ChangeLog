@@ -1,3 +1,8 @@
+2008-03-28  Peter Johanson <peter@peterjohanson.com>
+
+	* Parser/Resolver.cs: Make "value" resolve properly to System.Array
+	  when in the setter for a property that's an array type.
+
 2008-03-27  Mike Krüger <mkrueger@novell.com> 
 
 	* Parser/Resolver.cs: Added patch from Jan Oravec  to fix Bug 372380 -

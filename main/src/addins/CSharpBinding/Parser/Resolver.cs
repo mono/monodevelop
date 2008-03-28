@@ -313,7 +313,11 @@ namespace CSharpBinding.Parser
 					foreach (IProperty p in callingClass.Properties) {
 						if (p.CanSet && p.SetterRegion != null && p.SetterRegion.IsInside (caretLineNumber, caretColumn)) {
 							LanguageItemCollection membersResult = new LanguageItemCollection ();
-							IClass propertyType = SearchType (p.ReturnType, currentUnit);
+							IClass propertyType = null;
+							if (p.ReturnType.ArrayDimensions != null && p.ReturnType.ArrayDimensions.Length > 0)
+								propertyType = SearchType ("System.Array", null, null);
+							else
+								propertyType = SearchType (p.ReturnType, currentUnit);
 							ListMembers (membersResult, propertyType, propertyType);
 							return new ResolveResult (propertyType, membersResult);
 						}
