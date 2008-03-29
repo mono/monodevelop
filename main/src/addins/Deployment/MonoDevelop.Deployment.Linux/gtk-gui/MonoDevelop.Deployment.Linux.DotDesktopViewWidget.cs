@@ -486,8 +486,6 @@ namespace MonoDevelop.Deployment.Linux {
             w1.Add(this.vbox4);
             this.scrolledwindow1.Add(w1);
             this.notebook.Add(this.scrolledwindow1);
-            Gtk.Notebook.NotebookChild w33 = ((Gtk.Notebook.NotebookChild)(this.notebook[this.scrolledwindow1]));
-            w33.TabExpand = false;
             // Notebook tab
             this.label7 = new Gtk.Label();
             this.label7.Name = "label7";
@@ -615,6 +613,7 @@ namespace MonoDevelop.Deployment.Linux {
             this.radioAlwaysShow = new Gtk.RadioButton(Mono.Unix.Catalog.GetString("Always show"));
             this.radioAlwaysShow.CanFocus = true;
             this.radioAlwaysShow.Name = "radioAlwaysShow";
+            this.radioAlwaysShow.Active = true;
             this.radioAlwaysShow.DrawIndicator = true;
             this.radioAlwaysShow.Group = new GLib.SList(System.IntPtr.Zero);
             this.boxMenu.Add(this.radioAlwaysShow);
@@ -648,7 +647,6 @@ namespace MonoDevelop.Deployment.Linux {
             this.frame1 = new Gtk.Frame();
             this.frame1.Name = "frame1";
             this.frame1.ShadowType = ((Gtk.ShadowType)(1));
-            this.frame1.LabelXalign = 0F;
             // Container child frame1.Gtk.Container+ContainerChild
             this.GtkAlignment4 = new Gtk.Alignment(0F, 0F, 1F, 1F);
             this.GtkAlignment4.Name = "GtkAlignment4";
@@ -667,7 +665,6 @@ namespace MonoDevelop.Deployment.Linux {
             this.notebook.Add(this.boxMenu);
             Gtk.Notebook.NotebookChild w52 = ((Gtk.Notebook.NotebookChild)(this.notebook[this.boxMenu]));
             w52.Position = 1;
-            w52.TabExpand = false;
             // Notebook tab
             this.label2 = new Gtk.Label();
             this.label2.CanFocus = true;
@@ -751,7 +748,6 @@ namespace MonoDevelop.Deployment.Linux {
             this.notebook.Add(this.tableMimeTypes);
             Gtk.Notebook.NotebookChild w60 = ((Gtk.Notebook.NotebookChild)(this.notebook[this.tableMimeTypes]));
             w60.Position = 2;
-            w60.TabExpand = false;
             // Notebook tab
             this.label8 = new Gtk.Label();
             this.label8.CanFocus = true;
@@ -814,7 +810,6 @@ namespace MonoDevelop.Deployment.Linux {
             this.notebook.Add(this.hbox4);
             Gtk.Notebook.NotebookChild w66 = ((Gtk.Notebook.NotebookChild)(this.notebook[this.hbox4]));
             w66.Position = 3;
-            w66.TabExpand = false;
             // Notebook tab
             this.label5 = new Gtk.Label();
             this.label5.Name = "label5";

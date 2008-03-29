@@ -152,6 +152,12 @@ namespace CBinding
 		
 		public void AddCompletionData (ICompletionData data)
 		{
+			// Don't add duplicates
+			foreach (ICompletionData icd in completionData) {
+				if (icd.Text[0] == data.Text[0])
+					return;
+			}
+			
 			completionData.Add (data);
 		}
 		

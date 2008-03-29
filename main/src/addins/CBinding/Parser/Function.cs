@@ -46,39 +46,46 @@ namespace CBinding.Parser
 			signature = tag.Signature;
 			ParseSignature (tag.Signature);
 			
-			if (tag.Kind == TagKind.Prototype) {
-				Access = tag.Access;
-				if (GetNamespace (tag, ctags_output)) return;
-				if (GetClass (tag, ctags_output)) return;
-				if (GetStructure (tag, ctags_output)) return;
-				if (GetUnion (tag, ctags_output)) return;
-			} else {
-				// If it is not a prototype tag, we attempt to get the prototype tag
-				// we need the prototype tag because the implementation tag
-				// marks the belonging namespace as a if it were a class
-				// and it does not have the access field.
-				Tag prototypeTag = TagDatabaseManager.Instance.FindTag (Name, TagKind.Prototype, ctags_output);
-				
-				if (prototypeTag == null) {
-					// It does not have a prototype tag which means it is inline
-					// and when it is inline it does have all the info we need
-					
-					if (GetNamespace (tag, ctags_output)) return;
-					if (GetClass (tag, ctags_output)) return;
-					if (GetStructure (tag, ctags_output)) return;
-					if (GetUnion (tag, ctags_output)) return;
-					
-					return;
-				}
-				
-				// we need to re-get the access
-				Access = prototypeTag.Access;
-				
-				if (GetNamespace (prototypeTag, ctags_output)) return;
-				if (GetClass (prototypeTag, ctags_output)) return;
-				if (GetStructure (prototypeTag, ctags_output)) return;
-				if (GetUnion (prototypeTag, ctags_output)) return;
-			}
+			if (GetNamespace (tag, ctags_output)) return;
+			if (GetClass (tag, ctags_output)) return;
+			if (GetStructure (tag, ctags_output)) return;
+			if (GetUnion (tag, ctags_output)) return;
+
+			// TODO: Remove all this when sure it is no longer needed
+			// (because we no longer generate prototype tags).
+//			if (tag.Kind == TagKind.Prototype) {
+//				Access = tag.Access;
+//				if (GetNamespace (tag, ctags_output)) return;
+//				if (GetClass (tag, ctags_output)) return;
+//				if (GetStructure (tag, ctags_output)) return;
+//				if (GetUnion (tag, ctags_output)) return;
+//			} else {
+//				// If it is not a prototype tag, we attempt to get the prototype tag
+//				// we need the prototype tag because the implementation tag
+//				// marks the belonging namespace as a if it were a class
+//				// and it does not have the access field.
+//				Tag prototypeTag = TagDatabaseManager.Instance.FindTag (Name, TagKind.Prototype, ctags_output);
+//				
+//				if (prototypeTag == null) {
+//					// It does not have a prototype tag which means it is inline
+//					// and when it is inline it does have all the info we need
+//					
+//					if (GetNamespace (tag, ctags_output)) return;
+//					if (GetClass (tag, ctags_output)) return;
+//					if (GetStructure (tag, ctags_output)) return;
+//					if (GetUnion (tag, ctags_output)) return;
+//					
+//					return;
+//				}
+//				
+//				// we need to re-get the access
+//				Access = prototypeTag.Access;
+//				
+//				if (GetNamespace (prototypeTag, ctags_output)) return;
+//				if (GetClass (prototypeTag, ctags_output)) return;
+//				if (GetStructure (prototypeTag, ctags_output)) return;
+//				if (GetUnion (prototypeTag, ctags_output)) return;
+//			}
 		}
 		
 		private void ParseSignature (string signature)

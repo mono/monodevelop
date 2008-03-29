@@ -1,3 +1,15 @@
+2008-03-29  Marcos David Marín Amador <MarcosMarin@gmail.com>
+
+	* Parser/Function.cs: No longer attempt to find prototypes.
+	* Parser/TagDatabaseManager.cs: No longer generate prototype tags.
+	* Gui/GeneralOptionsPanel.cs: changed completion for local variables
+	  and memeber to on by default.
+
+2008-03-29  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com>
+
+	* Parser/*: Add best-guess completion for members and 
+	(optionally, default off) local variables.
+
 2008-03-21  Marcos David Marín Amador <MarcosMarin@gmail.com> 
 
 	* Compiler/GNUCompiler.cs: Instead of having the Include and Lib Paths

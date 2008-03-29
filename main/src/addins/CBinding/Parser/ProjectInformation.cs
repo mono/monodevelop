@@ -53,6 +53,7 @@ namespace CBinding.Parser
 		protected List<Enumerator> enumerators = new List<Enumerator> ();
 		protected List<Union> unions = new List<Union> ();
 		protected List<Typedef> typedefs = new List<Typedef> ();
+		protected List<Local> locals = new List<Local> ();
 		
 		private string file_name;
 		private bool is_filled = false;
@@ -82,6 +83,7 @@ namespace CBinding.Parser
 			enumerators.Clear ();
 			unions.Clear ();
 			typedefs.Clear ();
+			locals.Clear ();
 		}
 		
 		public IEnumerable<LanguageItem> Containers ()
@@ -100,6 +102,16 @@ namespace CBinding.Parser
 			
 			foreach (Union u in unions)
 				yield return u;
+		}
+		
+		// Functions, fields
+		public IEnumerable<LanguageItem> InstanceMembers ()
+		{
+			foreach (Function f in functions)
+				yield return f;
+			
+			foreach (Member m in members)
+				yield return m;
 		}
 		
 		// All items except macros
@@ -134,6 +146,9 @@ namespace CBinding.Parser
 			
 			foreach (Typedef t in typedefs)
 				yield return t;
+			
+			foreach (Local lo in locals)
+				yield return lo;
 		}
 		
 		public Project Project {
@@ -182,6 +197,10 @@ namespace CBinding.Parser
 		
 		public List<Typedef> Typedefs {
 			get { return typedefs; }
+		}
+		
+		public List<Local> Locals {
+			get { return locals; }
 		}
 		
 		public string FileName {

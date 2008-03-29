@@ -248,7 +248,12 @@ namespace CBinding.Parser
 			string tagFileName = Path.GetFileName (fileInfo.FileName) + ".tag";
 			string tagdir = Path.Combine (confdir, "system-tags");
 			string tagFullFileName = Path.Combine (tagdir, tagFileName);
-			string ctags_options = "--C++-kinds=+p+u --fields=+a-f+S --language-force=C++ --excmd=pattern -f '" + tagFullFileName + "' " + fileInfo.FileName;
+			string ctags_kinds = "--C++-kinds=+u";
+			
+			if (PropertyService.Get<bool> ("CBinding.ParseLocalVariables", false))
+				ctags_kinds += "+l";
+			
+			string ctags_options = ctags_kinds + " --fields=+a-f+S --language-force=C++ --excmd=pattern -f - " + tagFullFileName + "' " + fileInfo.FileName;
 			
 			if (!Directory.Exists (tagdir))
 				Directory.CreateDirectory (tagdir);
@@ -330,6 +335,7 @@ namespace CBinding.Parser
 			if (parsingThread == null || !parsingThread.IsAlive) {
 				parsingThread = new Thread (ParsingThread);
 				parsingThread.IsBackground = true;
+				parsingThread.Priority = ThreadPriority.Lowest;
 				parsingThread.Start();
 			}
 		}
@@ -340,7 +346,12 @@ namespace CBinding.Parser
 				return;
 
 			string[] headers = Headers (project, filename, false);
-			string ctags_options = "--C++-kinds=+p+u --fields=+a-f+S --language-force=C++ --excmd=pattern -f - " + filename + " " + string.Join (" ", headers);
+			string ctags_kinds = "--C++-kinds=+u";
+			
+			if (PropertyService.Get<bool> ("CBinding.ParseLocalVariables", true))
+				ctags_kinds += "+l";
+			
+			string ctags_options = ctags_kinds + " --fields=+a-f+S --language-force=C++ --excmd=pattern -f - " + filename + " " + string.Join (" ", headers);
 			
 			string[] system_headers = diff (Headers (project, filename, true), headers);
 			
@@ -419,6 +430,9 @@ namespace CBinding.Parser
 					info.Functions.Add (f);
 				break;
 			case TagKind.Local:
+				Local lo = new Local (tag, info.Project, ctags_output);
+				if(!info.Locals.Contains (lo))
+					info.Locals.Add (lo);
 				break;
 			case TagKind.Macro:
 				Macro m = new Macro (tag, info.Project);

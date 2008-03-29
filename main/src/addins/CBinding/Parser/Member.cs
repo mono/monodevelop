@@ -30,6 +30,7 @@
 //
 
 using System;
+using System.Text.RegularExpressions;
 
 using MonoDevelop.Projects;
 
@@ -37,11 +38,57 @@ namespace CBinding.Parser
 {
 	public class Member : LanguageItem
 	{
+		public string InstanceType {
+			get{ return instanceType; }
+		}
+		protected string instanceType;
+		
+		public bool IsPointer {
+			get{ return isPointer; }
+		}
+		protected bool isPointer;
+		
 		public Member (Tag tag, Project project, string ctags_output) : base (tag, project)
 		{
+			GetInstanceType (tag);
+			
 			if (GetClass (tag, ctags_output)) return;
 			if (GetStructure (tag, ctags_output)) return;
 			if (GetUnion (tag, ctags_output)) return;
+		}
+		
+		/// <summary>
+		/// Regex for deriving the type of a variable, 
+		/// and whether it's a pointer, 
+		/// from an expression, e.g. 
+		/// static Foo::bar<string> *blah = NULL;
+		/// </summary>
+		public static Regex InstanceTypeExpression = new Regex (
+		  @"^\s*((static|friend|const|mutable|extern|struct|union|\w*::|<[\w><:]*>)\s*)*(?<type>\w[\w\d]*)\s*(<.*>)?\s*(?<pointer>[*])?", 
+		  RegexOptions.Compiled);
+		
+		/// <summary>
+		/// Populates an instance's instanceType and isPointer fields 
+		/// by matching its pattern against InstanceTypeExpression
+		/// </summary>
+		/// <param name="tag">
+		/// The partially-populated tag of an instance
+		/// <see cref="Tag"/>
+		/// </param>
+		/// <returns>
+		/// Whether the regex was successfully matched
+		/// <see cref="System.Boolean"/>
+		/// </returns>
+		protected bool GetInstanceType (Tag tag) {
+			Match m = InstanceTypeExpression.Match (tag.Pattern);
+			
+			if (null == m)
+				return false;
+			
+			instanceType = m.Groups["type"].Value;
+			isPointer = m.Groups["pointer"].Success;
+			
+			return true;
 		}
 	}
 }

@@ -32,6 +32,7 @@
 using System;
 using System.IO;
 using System.Text;
+using System.Collections.Generic;
 
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
@@ -53,6 +54,21 @@ namespace CBinding
 		private static char[] allowedCharsMinusColon = new char[] {
 			'.', ' ', '\t', '=', '*', '+', '-', '/', '%', ',', '&', '|',
 			'^', '{', '}', '[', ']', '(', ')', '\n', '!', '?', '<', '>'
+		};
+		
+		/// <summary>
+		/// A delegate for getting completion data 
+		/// </summary>
+		private delegate CompletionDataProvider GetMembersForExtension (CTextEditorExtension self, string completionExtension, string completionText);
+		
+		/// <summary>
+		/// An associative array containing each completion-triggering extension 
+		/// and its respective callback
+		/// </summary>
+		private static KeyValuePair<string, GetMembersForExtension>[] completionExtensions = new KeyValuePair<string, GetMembersForExtension>[] {
+			new KeyValuePair<string, GetMembersForExtension>("::", GetItemMembers),
+			new KeyValuePair<string, GetMembersForExtension>("->", GetInstanceMembers),
+			new KeyValuePair<string, GetMembersForExtension>(".", GetInstanceMembers)
 		};
 		
 		public override bool ExtendsEditor (Document doc, IEditableTextBuffer editor)
@@ -95,20 +111,19 @@ namespace CBinding
 		{
 			string lineText = Editor.GetLineText (completionContext.TriggerLine + 1);
 			
-			if (lineText.EndsWith ("::")) {
-				// remove the trailing '::'
-				lineText = lineText.Substring (0, lineText.Length - 2);
-				
-				int nameStart = lineText.LastIndexOfAny (allowedCharsMinusColon);
-
-				nameStart++;
-				
-				string itemName = lineText.Substring (nameStart).Trim ();
-				
-				if (string.IsNullOrEmpty (itemName))
-					return null;
-				
-				return GetMembersOfItem (itemName);
+			// If the line ends with a matched extension, invoke its handler
+			foreach (KeyValuePair<string, GetMembersForExtension> pair in completionExtensions) {
+				if (lineText.EndsWith(pair.Key)) {
+					lineText = lineText.Substring (0, lineText.Length - pair.Key.Length);
+					
+					int nameStart = lineText.LastIndexOfAny (allowedCharsMinusColon) + 1;
+					string itemName = lineText.Substring (nameStart).Trim ();
+					
+					if (string.IsNullOrEmpty (itemName))
+						return null;
+					
+					return pair.Value (this, pair.Key, itemName);
+				}
 			}
 			
 			return null;
@@ -122,12 +137,63 @@ namespace CBinding
 			Editor.GetLineColumnFromPosition (Editor.CursorPosition, out line, out column);
 			string lineText = Editor.GetLineText (line);
 			
-			if (!lineText.Contains (".") &&
-			    !lineText.Contains ("::") &&
-			    !lineText.Contains ("->"))
-			    return GlobalComplete ();
-			
-			return HandleCodeCompletion (completionContext, Editor.GetText (pos - 1, pos)[0]);
+			foreach (KeyValuePair<string, GetMembersForExtension> pair in completionExtensions) {
+				if(lineText.Contains (pair.Key)) {
+					return HandleCodeCompletion (completionContext, Editor.GetCharAt (pos));
+				}
+			}
+
+			return GlobalComplete ();
+		}
+		
+		/// <summary>
+		/// Gets contained members for a namespace or class
+		/// </summary>
+		/// <param name="self">
+		/// The current CTextEditorExtension
+		/// <see cref="CTextEditorExtension"/>
+		/// </param>
+		/// <param name="completionExtension">
+		/// The extension that triggered the completion 
+		/// (e.g. "::")
+		/// <see cref="System.String"/>
+		/// </param>
+		/// <param name="completionText">
+		/// The identifier that triggered the completion
+		/// (e.g. "Foo::")
+		/// <see cref="System.String"/>
+		/// </param>
+		/// <returns>
+		/// Completion data for the namespace or class
+		/// <see cref="CompletionDataProvider"/>
+		/// </returns>
+		private static CompletionDataProvider GetItemMembers (CTextEditorExtension self, string completionExtension, string completionText) {
+			return self.GetMembersOfItem (completionText);
+		}
+		
+		/// <summary>
+		/// Gets contained members for an instance
+		/// </summary>
+		/// <param name="self">
+		/// The current CTextEditorExtension
+		/// <see cref="CTextEditorExtension"/>
+		/// </param>
+		/// <param name="completionExtension">
+		/// The extension that triggered the completion 
+		/// (e.g. "->")
+		/// <see cref="System.String"/>
+		/// </param>
+		/// <param name="completionText">
+		/// The identifier that triggered the completion
+		/// (e.g. "blah->")
+		/// <see cref="System.String"/>
+		/// </param>
+		/// <returns>
+		/// Completion data for the instance
+		/// <see cref="CompletionDataProvider"/>
+		/// </returns>
+		private static CompletionDataProvider GetInstanceMembers (CTextEditorExtension self, string completionExtension, string completionText) {
+			return self.GetMembersOfInstance (completionText, ("->" == completionExtension));
 		}
 		
 		private CompletionDataProvider GetMembersOfItem (string itemFullName)
@@ -165,22 +231,139 @@ namespace CBinding
 				return null;
 			
 			if (in_project) {
-				foreach (LanguageItem li in info.AllItems ()) {
-					if (li.Parent != null && li.Parent.Equals (container))
-						provider.AddCompletionData (new CompletionData (li));
-				}
+				AddItemsWithParent (provider, info.AllItems (), container);
 			} else {
 				foreach (FileInformation fi in info.IncludedFiles[currentFileName]) {
-					foreach (LanguageItem li in fi.AllItems ()) {
-						if (li.Parent != null && li.Parent.Equals (container))
-							provider.AddCompletionData (new CompletionData (li));
-					}
+					AddItemsWithParent (provider, fi.AllItems (), container);
 				}
 			}
 			
 			return provider;
 		}
 		
+		/// <summary>
+		/// Adds completion data for children to a provider
+		/// </summary>
+		/// <param name="provider">
+		/// The provider to which completion data will be added
+		/// <see cref="CompletionDataProvider"/>
+		/// </param>
+		/// <param name="items">
+		/// A list of items to search
+		/// <see cref="IEnumerable"/>
+		/// </param>
+		/// <param name="parent">
+		/// The parent that will be matched
+		/// </param>
+		public static void AddItemsWithParent(CompletionDataProvider provider, IEnumerable<LanguageItem> items, LanguageItem parent) {
+			foreach (LanguageItem li in items) {
+				if (li.Parent != null && li.Parent.Equals (parent))
+					provider.AddCompletionData (new CompletionData (li));
+			}
+		}
+
+		
+		/// <summary>
+		/// Gets completion data for a given instance
+		/// </summary>
+		/// <param name="instanceName">
+		/// The identifier of the instance
+		/// <see cref="System.String"/>
+		/// </param>
+		/// <param name="isPointer">
+		/// Whether the instance in question is a pointer
+		/// <see cref="System.Boolean"/>
+		/// </param>
+		/// <returns>
+		/// Completion data for the instance
+		/// <see cref="CompletionDataProvider"/>
+		/// </returns>
+		private CompletionDataProvider GetMembersOfInstance (string instanceName, bool isPointer)
+		{
+			CProject project = Document.Project as CProject;
+			
+			if (project == null)
+				return null;
+				
+			ProjectInformation info = ProjectInformationManager.Instance.Get (project);
+			CompletionDataProvider provider = new CompletionDataProvider ();
+			
+			string container = null;
+			
+			string currentFileName = Document.FileName;
+			bool in_project = false;
+			
+			// Find the typename of the instance
+			foreach (Member li in info.Members ) {
+				if (instanceName == li.Name && li.IsPointer == isPointer) {
+					container = li.InstanceType;
+					in_project = true;
+					break;
+				}
+			}
+			
+			// Search included files
+			if (!in_project && info.IncludedFiles.ContainsKey (currentFileName)) {
+				foreach (FileInformation fi in info.IncludedFiles[currentFileName]) {
+					foreach (Member li in fi.Members) {
+						if (instanceName == li.Name && li.IsPointer == isPointer) {
+							container = li.InstanceType;
+							break;
+						}
+					}
+				}
+			}
+			
+			if (null == container) {
+				// Search locals
+				foreach (Local li in info.Locals ) {
+					if (instanceName == li.Name && li.IsPointer == isPointer && currentFileName == li.File) {
+						container = li.InstanceType;
+						in_project = true;
+						break;
+					}
+				}
+			}
+			
+			// Not found
+			if (container == null)
+				return null;
+			
+			// Get the LanguageItem corresponding to the typename 
+			// and populate completion data accordingly
+			if (in_project) {
+				AddMembersWithParent (provider, info.InstanceMembers (), container);
+			} else {
+				foreach (FileInformation fi in info.IncludedFiles[currentFileName]) {
+					AddMembersWithParent (provider, fi.InstanceMembers (), container);
+				}
+			}
+			
+			return provider;
+		}
+		
+		/// <summary>
+		/// Adds completion data for children to a provider
+		/// </summary>
+		/// <param name="provider">
+		/// The provider to which completion data will be added
+		/// <see cref="CompletionDataProvider"/>
+		/// </param>
+		/// <param name="items">
+		/// A list of items to search
+		/// <see cref="IEnumerable"/>
+		/// </param>
+		/// <param name="parentName">
+		/// The name of the parent that will be matched
+		/// <see cref="System.String"/>
+		/// </param>
+		public static void AddMembersWithParent(CompletionDataProvider provider, IEnumerable<LanguageItem> items, string parentName) {
+				foreach (LanguageItem li in items) {
+					if (li.Parent != null && li.Parent.Name.EndsWith (parentName))
+						provider.AddCompletionData (new CompletionData (li));
+				}
+		}
+
 		private ICompletionDataProvider GlobalComplete ()
 		{
 			CProject project = Document.Project as CProject;

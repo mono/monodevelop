@@ -422,6 +422,7 @@ namespace MonoDevelop.Deployment.Gui {
             this.radioCreateProject = new Gtk.RadioButton(Mono.Unix.Catalog.GetString("Save in a new Packaging Project"));
             this.radioCreateProject.CanFocus = true;
             this.radioCreateProject.Name = "radioCreateProject";
+            this.radioCreateProject.Active = true;
             this.radioCreateProject.DrawIndicator = true;
             this.radioCreateProject.UseUnderline = true;
             this.radioCreateProject.Group = new GLib.SList(System.IntPtr.Zero);

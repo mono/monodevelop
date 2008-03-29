@@ -23,6 +23,8 @@ namespace CBinding {
         
         private Gtk.Label label2;
         
+        private Gtk.CheckButton parseLocalVariablesCheck;
+        
         private Gtk.CheckButton parseSystemTagsCheck;
         
         protected virtual void Build() {
@@ -31,7 +33,7 @@ namespace CBinding {
             Stetic.BinContainer.Attach(this);
             this.Name = "CBinding.GeneralOptionsPanel";
             // Container child CBinding.GeneralOptionsPanel.Gtk.Container+ContainerChild
-            this.table1 = new Gtk.Table(((uint)(3)), ((uint)(3)), false);
+            this.table1 = new Gtk.Table(((uint)(4)), ((uint)(3)), false);
             this.table1.Name = "table1";
             this.table1.RowSpacing = ((uint)(6));
             this.table1.ColumnSpacing = ((uint)(6));
@@ -81,6 +83,20 @@ namespace CBinding {
             w5.XOptions = ((Gtk.AttachOptions)(4));
             w5.YOptions = ((Gtk.AttachOptions)(4));
             // Container child table1.Gtk.Table+TableChild
+            this.parseLocalVariablesCheck = new Gtk.CheckButton();
+            this.parseLocalVariablesCheck.CanFocus = true;
+            this.parseLocalVariablesCheck.Name = "parseLocalVariablesCheck";
+            this.parseLocalVariablesCheck.Label = Mono.Unix.Catalog.GetString("Parse Local Variables");
+            this.parseLocalVariablesCheck.DrawIndicator = true;
+            this.parseLocalVariablesCheck.UseUnderline = true;
+            this.table1.Add(this.parseLocalVariablesCheck);
+            Gtk.Table.TableChild w6 = ((Gtk.Table.TableChild)(this.table1[this.parseLocalVariablesCheck]));
+            w6.TopAttach = ((uint)(3));
+            w6.BottomAttach = ((uint)(4));
+            w6.XPadding = ((uint)(10));
+            w6.XOptions = ((Gtk.AttachOptions)(4));
+            w6.YOptions = ((Gtk.AttachOptions)(4));
+            // Container child table1.Gtk.Table+TableChild
             this.parseSystemTagsCheck = new Gtk.CheckButton();
             w1.SetTip(this.parseSystemTagsCheck, "Choose whether you want to parse system tags or not, if you do you will get completion for things like printf, but the tag parsing process will take considerably longer.", "Choose whether you want to parse system tags or not, if you do you will get completion for things like printf, but the tag parsing process will take considerably longer.");
             this.parseSystemTagsCheck.CanFocus = true;
@@ -89,12 +105,12 @@ namespace CBinding {
             this.parseSystemTagsCheck.DrawIndicator = true;
             this.parseSystemTagsCheck.UseUnderline = true;
             this.table1.Add(this.parseSystemTagsCheck);
-            Gtk.Table.TableChild w6 = ((Gtk.Table.TableChild)(this.table1[this.parseSystemTagsCheck]));
-            w6.TopAttach = ((uint)(2));
-            w6.BottomAttach = ((uint)(3));
-            w6.XPadding = ((uint)(10));
-            w6.XOptions = ((Gtk.AttachOptions)(4));
-            w6.YOptions = ((Gtk.AttachOptions)(4));
+            Gtk.Table.TableChild w7 = ((Gtk.Table.TableChild)(this.table1[this.parseSystemTagsCheck]));
+            w7.TopAttach = ((uint)(2));
+            w7.BottomAttach = ((uint)(3));
+            w7.XPadding = ((uint)(10));
+            w7.XOptions = ((Gtk.AttachOptions)(4));
+            w7.YOptions = ((Gtk.AttachOptions)(4));
             this.Add(this.table1);
             if ((this.Child != null)) {
                 this.Child.ShowAll();

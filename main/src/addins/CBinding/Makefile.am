@@ -66,6 +66,7 @@ FILES =  \
 	Parser/Enumerator.cs \
 	Parser/Function.cs \
 	Parser/LanguageItem.cs \
+	Parser/Local.cs \
 	Parser/Macro.cs \
 	Parser/Member.cs \
 	Parser/Namespace.cs \
