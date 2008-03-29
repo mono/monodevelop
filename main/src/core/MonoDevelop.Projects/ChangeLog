@@ -1,3 +1,9 @@
+2008-03-29  Zach Lute <zach.lute@gmail.com> 
+
+	* MonoDevelop.Projects.CodeGeneration/CodeRefactorer.cs: Added support
+	  for 'Find references' for local variables and parameters. (Bug
+	  #351015)
+
 2008-03-07  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Projects.CodeGeneration/CodeRefactorer.cs: Don't crash if

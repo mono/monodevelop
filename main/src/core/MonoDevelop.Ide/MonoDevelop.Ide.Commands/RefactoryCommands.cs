@@ -209,7 +209,7 @@ namespace MonoDevelop.Ide.Commands
 			if (IdeApp.ProjectOperations.CanJumpToDeclaration (item))
 				ciset.CommandInfos.Add (GettextCatalog.GetString ("_Go to declaration"), new RefactoryOperation (refactorer.GoToDeclaration));
 			
-			if ((item is IMember) && !(item is IClass))
+			if ((item is IMember || item is LocalVariable || item is IParameter) && !(item is IClass))
 				ciset.CommandInfos.Add (GettextCatalog.GetString ("_Find references"), new RefactoryOperation (refactorer.FindReferences));
 			
 			// We can rename local variables (always), method params (always), 
@@ -390,6 +390,10 @@ namespace MonoDevelop.Ide.Commands
 					}
 				} else if (item is IClass) {
 					references = refactorer.FindClassReferences (monitor, (IClass)item, RefactoryScope.Solution);
+				} else if (item is LocalVariable) {
+					references = refactorer.FindVariableReferences (monitor, (LocalVariable)item);
+				} else if (item is IParameter) {
+					references = refactorer.FindParameterReferences (monitor, (IParameter)item);
 				}
 				
 				if (references != null) {

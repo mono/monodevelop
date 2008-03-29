@@ -127,6 +127,20 @@ namespace MonoDevelop.Projects.CodeGeneration
 			return refs;
 		}
 		
+		public MemberReferenceCollection FindVariableReferences (IProgressMonitor monitor, LocalVariable var)
+		{
+			MemberReferenceCollection refs = new MemberReferenceCollection ();
+			Refactor (monitor, var, new RefactorDelegate (new RefactorFindVariableReferences (var, refs).Refactor));
+			return refs;
+		}
+		
+		public MemberReferenceCollection FindParameterReferences (IProgressMonitor monitor, IParameter param)
+		{
+			MemberReferenceCollection refs = new MemberReferenceCollection ();
+			Refactor (monitor, param, new RefactorDelegate (new RefactorFindParameterReferences (param, refs).Refactor));
+			return refs;
+		}
+		
 		public IMember AddMember (IClass cls, CodeTypeMember member)
 		{
 			RefactorerContext gctx = GetGeneratorContext (cls);

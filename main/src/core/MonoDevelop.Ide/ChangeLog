@@ -1,3 +1,8 @@
+2008-03-29  Zach Lute <zach.lute@gmail.com> 
+
+	* MonoDevelop.Ide.Commands/RefactoryCommands.cs: Added support for
+	  'Find references' for local variables and parameters. (Bug #351015)
+
 2008-03-21  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Ide.Gui/IdeStartup.cs: Hook GLib/Gtk errors into logging
