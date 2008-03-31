@@ -80,6 +80,45 @@ namespace CSharpBinding.Parser
 						}
 						end: ;
 					}
+				} else {
+					ICSharpCode.NRefactory.Comment comment = tracker.CurrentSpecials[i] as ICSharpCode.NRefactory.Comment;
+					if (comment == null)
+						continue;
+					
+					switch (comment.CommentType) {
+					case CommentType.Block:
+						if (comment.StartPosition.Line == comment.EndPosition.Line)
+							break;
+						cu.FoldingRegions.Add(new FoldingRegion ("/* */", 
+						                                        new DefaultRegion(comment.StartPosition.Line,
+						                                                          comment.StartPosition.Column - 2,
+						                                                          comment.EndPosition.Line,
+						                                                          comment.EndPosition.Column)));
+						break;
+					case CommentType.Documentation:
+					case CommentType.SingleLine:
+						int j = i;
+						int curLine = comment.StartPosition.Line - 1;
+						Location end = comment.EndPosition;
+						
+						for (; j < tracker.CurrentSpecials.Count; ++j) {
+							ICSharpCode.NRefactory.Comment curComment  = tracker.CurrentSpecials[j] as ICSharpCode.NRefactory.Comment;
+							if (curComment == null || curComment.CommentType != comment.CommentType || curLine + 1 != curComment.StartPosition.Line)
+								break;
+							end     = curComment.EndPosition;
+							curLine = curComment.StartPosition.Line;
+						}
+						if (j != i) {
+							cu.FoldingRegions.Add(new FoldingRegion (comment.CommentType == CommentType.SingleLine ? "//..." : "///...", 
+							                                        new DefaultRegion(comment.StartPosition.Line,
+							                                                          comment.StartPosition.Column - 2,
+							                                                          end.Line,
+							                                                          end.Column)));
+							i = j - 1;
+							continue;
+						}
+						break;
+					}
 				}
 			}
 		}

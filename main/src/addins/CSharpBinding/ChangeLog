@@ -1,3 +1,7 @@
+2008-03-31  Mike Krüger <mkrueger@novell.com> 
+
+	* Parser/Parser.cs: Added folding regions for comments.
+
 2008-03-28  Peter Johanson <peter@peterjohanson.com>
 
 	* Parser/Resolver.cs: Make "value" resolve properly to System.Array
