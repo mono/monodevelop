@@ -35,13 +35,18 @@ namespace CSharpBinding.Parser
 			return cu;
 		}
 		
-		public override object VisitUsing(ICSharpCode.NRefactory.Ast.Using usingDeclaration, object data)
+		public override object VisitUsingDeclaration(ICSharpCode.NRefactory.Ast.UsingDeclaration usingDeclaration, object data)
 		{
 			DefaultUsing u = new DefaultUsing();
-			if (usingDeclaration.IsAlias)
-				u.Aliases [usingDeclaration.Name] = new ReturnType (usingDeclaration.Alias);
-			else
-				u.Usings.Add(usingDeclaration.Name);
+			System.Console.WriteLine("usings" + usingDeclaration.StartLocation);
+			System.Console.WriteLine("usinge" + usingDeclaration.EndLocation);
+			u.Region = GetRegion(usingDeclaration.StartLocation, usingDeclaration.EndLocation);
+			foreach (ICSharpCode.NRefactory.Ast.Using us in usingDeclaration.Usings) {
+				if (us.IsAlias)
+					u.Aliases [us.Name] = new ReturnType (us.Alias);
+				else
+					u.Usings.Add(us.Name);
+			}
 			cu.Usings.Add(u);
 			return data;
 		}

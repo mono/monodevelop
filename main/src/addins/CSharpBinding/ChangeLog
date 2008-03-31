@@ -1,5 +1,10 @@
 2008-03-31  Mike Krüger <mkrueger@novell.com> 
 
+	* Parser/CSharpVisitor.cs: added location information for using
+	  statements.
+
+2008-03-31  Mike Krüger <mkrueger@novell.com> 
+
 	* Parser/Parser.cs: Added folding regions for comments.
 
 2008-03-28  Peter Johanson <peter@peterjohanson.com>
