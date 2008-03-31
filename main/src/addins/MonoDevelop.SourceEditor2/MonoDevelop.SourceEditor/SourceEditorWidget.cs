@@ -256,6 +256,19 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 		
+		
+		void AddUsings (List<FoldSegment> foldSegments, ICompilationUnit cu)
+		{
+			if (cu.Usings == null || cu.Usings.Count == 1)
+				return;
+			IUsing first = cu.Usings[0];
+			IUsing last = cu.Usings[cu.Usings.Count - 1];
+			int startOffset = this.TextEditor.Document.LocationToOffset (first.Region.BeginLine - 1,  first.Region.BeginColumn - 1);
+			int endOffset   = this.TextEditor.Document.LocationToOffset (last.Region.EndLine - 1,  last.Region.EndColumn - 1);
+			foldSegments.Add (new FoldSegment ("...", startOffset, endOffset - startOffset, FoldingType.TypeMember));
+		}
+			
+		
 		class ParseInformationUpdaterWorkerThread : WorkerThread
 		{
 			SourceEditorWidget widget;
@@ -271,6 +284,7 @@ namespace MonoDevelop.SourceEditor
 			{
 				if (SourceEditorOptions.Options.ShowFoldMargin && widget.lastCu != null) {
 					List<FoldSegment> foldSegments = new List<FoldSegment> ();
+					widget.AddUsings (foldSegments, widget.lastCu);
 					foreach (MonoDevelop.Projects.Parser.FoldingRegion region in widget.lastCu.FoldingRegions) {
 						if (base.IsStopping)
 							return;
