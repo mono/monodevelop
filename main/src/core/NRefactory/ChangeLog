@@ -1,3 +1,7 @@
+2008-03-31  Mike Krüger <mkrueger@novell.com> 
+
+	* Project/Src/Lexer/CSharp/Lexer.cs: Corrected comment end position.
+
 2007-11-16  Mike Krüger <mkrueger@novell.com> 
 
 	* Project/Src/Parser/CSharp/cs.ATG, Project/Src/Parser/CSharp/Parser.cs,

@@ -880,7 +880,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 					if (specialCommentHash.ContainsKey(tag)) {
 						Location p = new Location(Col, Line);
 						string comment = ch + ReadToEndOfLine();
-						this.TagComments.Add(new TagComment(tag, comment, p, new Location(Col, Line)));
+						this.TagComments.Add(new TagComment(tag, comment, p, new Location(p.Column + comment.Length, p.Line)));
 						sb.Append(comment);
 						break;
 					}
@@ -894,9 +894,12 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 			if (this.SkipAllComments) {
 				SkipToEndOfLine();
 			} else {
-				specialTracker.StartComment(commentType, new Location(Col, Line));
-				specialTracker.AddString(ReadCommentToEOL());
-				specialTracker.FinishComment(new Location(Col, Line));
+				int col = Col;
+				int line = Line;
+				specialTracker.StartComment(commentType, new Location(col, line));
+				string comment = ReadCommentToEOL();
+				specialTracker.AddString(comment);
+				specialTracker.FinishComment(new Location(col + comment.Length, line));
 			}
 		}
 		
