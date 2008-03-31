@@ -37,6 +37,9 @@ namespace MonoDevelop.Projects.Parser
 			get {
 				return region;
 			}
+			set {
+				this.region = value;
+			}
 		}
 		
 		public List<string> Usings {
