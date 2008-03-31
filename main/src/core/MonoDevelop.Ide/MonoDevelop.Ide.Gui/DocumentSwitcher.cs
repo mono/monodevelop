@@ -51,6 +51,29 @@ namespace MonoDevelop.Ide
 			}
 		}
 		
+		void ShowSelectedPad ()
+		{
+			Gtk.TreeIter iter;
+			if (treeviewPads.Selection.GetSelected (out iter)) {
+				MonoDevelop.Ide.Gui.Pad pad = padListStore.GetValue (iter, 2) as MonoDevelop.Ide.Gui.Pad;
+				ShowType (MonoDevelop.Ide.Gui.IdeApp.Services.Resources.GetIcon (!string.IsNullOrEmpty (pad.Icon) ? pad.Icon : MonoDevelop.Core.Gui.Stock.MiscFiles, Gtk.IconSize.Dialog),
+				          pad.Title,
+				          "",
+				          "");
+			}
+		}
+		
+		void ShowSelectedDocument ()
+		{
+			MonoDevelop.Ide.Gui.Document document = SelectedDocument;
+			if (document != null) {
+				ShowType (MonoDevelop.Ide.Gui.IdeApp.Services.Resources.GetBitmap (string.IsNullOrEmpty (document.Window.ViewContent.StockIconId) ? MonoDevelop.Core.Gui.Stock.MiscFiles : document.Window.ViewContent.StockIconId, Gtk.IconSize.Dialog),
+				          System.IO.Path.GetFileName (document.Title),
+				          document.Window.DocumentType,
+				          document.FileName);
+			}
+		}
+		
 		public DocumentSwitcher (bool startWithNext) : base(Gtk.WindowType.Toplevel)
 		{
 			this.Build();
@@ -69,14 +92,7 @@ namespace MonoDevelop.Ide
 			treeviewPads.HeadersVisible = false;
 			
 			treeviewPads.Selection.Changed += delegate {
-				Gtk.TreeIter iter;
-				if (treeviewPads.Selection.GetSelected (out iter)) {
-					MonoDevelop.Ide.Gui.Pad pad = padListStore.GetValue (iter, 2) as MonoDevelop.Ide.Gui.Pad;
-					ShowType (MonoDevelop.Ide.Gui.IdeApp.Services.Resources.GetIcon (!string.IsNullOrEmpty (pad.Icon) ? pad.Icon : MonoDevelop.Core.Gui.Stock.MiscFiles, Gtk.IconSize.Dialog),
-					          pad.Title,
-					          "",
-					          "");
-				}
+				ShowSelectedPad ();
 			};
 			documentListStore = new Gtk.ListStore (typeof (Gdk.Pixbuf), typeof (string), typeof (Document));
 			treeviewDocuments.Model = documentListStore;
@@ -84,17 +100,11 @@ namespace MonoDevelop.Ide
 			treeviewDocuments.AppendColumn ("text", new Gtk.CellRendererText (), "text", 1);
 			treeviewDocuments.HeadersVisible = false;
 			treeviewDocuments.Selection.Changed += delegate {
-				MonoDevelop.Ide.Gui.Document document = SelectedDocument;
-				if (document != null) {
-					ShowType (MonoDevelop.Ide.Gui.IdeApp.Services.Resources.GetBitmap (string.IsNullOrEmpty (document.Window.ViewContent.StockIconId) ? MonoDevelop.Core.Gui.Stock.MiscFiles : document.Window.ViewContent.StockIconId, Gtk.IconSize.Dialog),
-					          System.IO.Path.GetFileName (document.Title),
-					          document.Window.DocumentType,
-					          document.FileName);
-				}
+				ShowSelectedDocument ();
 			};
 			
 			FillLists ();
-			
+			this.labelFileName.Ellipsize = Pango.EllipsizeMode.Start;
 			if (IdeApp.Workbench.ActiveDocument != null) {
 				SelectDocument (startWithNext ? GetNextDocument (IdeApp.Workbench.ActiveDocument) : GetPrevDocument (IdeApp.Workbench.ActiveDocument));
 				SwitchToDocument ();
@@ -102,18 +112,31 @@ namespace MonoDevelop.Ide
 				SwitchToPad ();
 			}
 		}
+		bool documentFocus = true;
+		Gtk.TreeIter selectedPadIter, selectedDocumentIter;
 		
 		void SwitchToDocument ()
 		{
-			this.treeviewPads.Sensitive = false;
-			this.treeviewDocuments.Sensitive = true;
+			this.treeviewPads.Selection.GetSelected (out selectedPadIter);
+			this.treeviewPads.Selection.UnselectAll ();
+			this.treeviewDocuments.Selection.SelectIter (selectedDocumentIter);
+//			this.treeviewPads.Sensitive = false;
+//			this.treeviewDocuments.Sensitive = true;
+			documentFocus = true;
 			treeviewDocuments.GrabFocus ();
+			ShowSelectedDocument ();
 		}
+		
 		void SwitchToPad ()
 		{
-			this.treeviewPads.Sensitive = true;
-			this.treeviewDocuments.Sensitive = false;
+			this.treeviewDocuments.Selection.GetSelected (out selectedDocumentIter);
+			this.treeviewDocuments.Selection.UnselectAll ();
+			this.treeviewPads.Selection.SelectIter (selectedPadIter);
+//			this.treeviewPads.Sensitive = true;
+//			this.treeviewDocuments.Sensitive = false;
+			documentFocus = false;
 			treeviewPads.GrabFocus ();
+			ShowSelectedPad ();
 		}
 		
 		Document GetNextDocument (Document doc)
@@ -134,7 +157,7 @@ namespace MonoDevelop.Ide
 		
 		Document SelectedDocument {
 			get {
-				if (!this.treeviewDocuments.Sensitive)
+				if (!documentFocus)
 					return null;
 				TreeIter iter;
 				if (treeviewDocuments.Selection.GetSelected (out iter)) {
@@ -168,7 +191,7 @@ namespace MonoDevelop.Ide
 		
 		Pad SelectedPad {
 			get {
-				if (!this.treeviewPads.Sensitive)
+				if (documentFocus)
 					return null;
 				TreeIter iter;
 				if (this.treeviewPads.Selection.GetSelected (out iter)) {
@@ -208,10 +231,14 @@ namespace MonoDevelop.Ide
 		
 		void ShowType (Gdk.Pixbuf image, string title, string type, string fileName)
 		{
-			this.imageType.Pixbuf  = image;
-			this.labelTitel.Markup =  "<span size=\"xx-large\" weight=\"bold\">" +title + "</span>";
+//			this.imageType.Pixbuf  = image;
+			this.labelTitle.Markup = "<span size=\"xx-large\" weight=\"bold\">" +title + "</span>";
 			this.labelType.Markup =  "<span size=\"small\">" +type + "</span>";
-			this.labelFileName.Text = fileName;
+			string name = fileName;
+			if (name.Length > 40) {
+				name = "..." + fileName.Substring (name.Length - 40);
+			}
+			this.labelFileName.Text = name;
 		}
 		
 		void FillLists ()
@@ -233,7 +260,7 @@ namespace MonoDevelop.Ide
 		protected override bool OnKeyPressEvent (Gdk.EventKey evnt)
 		{
 			bool next = (evnt.State & Gdk.ModifierType.ShiftMask) != ModifierType.ShiftMask;
-			System.Console.WriteLine (evnt.Key + " -- " + evnt.State);
+//			System.Console.WriteLine (evnt.Key + " -- " + evnt.State);
 			switch (evnt.Key) {
 			case Gdk.Key.Left:
 				SwitchToPad ();
@@ -242,14 +269,14 @@ namespace MonoDevelop.Ide
 				SwitchToDocument ();
 				break;
 			case Gdk.Key.Up:
-				if (treeviewDocuments.Sensitive) {
+				if (documentFocus) {
 					SelectDocument (GetPrevDocument (SelectedDocument));
 				} else {
 					SelectPad (GetPrevPad (SelectedPad));
 				}
 				break;
 			case Gdk.Key.Down:
-				if (treeviewDocuments.Sensitive) {
+				if (documentFocus) {
 					SelectDocument (GetNextDocument (SelectedDocument));
 				} else {
 					SelectPad (GetNextPad (SelectedPad));
@@ -257,7 +284,7 @@ namespace MonoDevelop.Ide
 				break;
 			case Gdk.Key.ISO_Left_Tab:
 			case Gdk.Key.Tab:
-				if (treeviewDocuments.Sensitive) {
+				if (documentFocus) {
 					SelectDocument (next ? GetNextDocument (SelectedDocument) : GetPrevDocument (SelectedDocument));
 				} else  {
 					SelectPad (next ? GetNextPad (SelectedPad) : GetPrevPad (SelectedPad));

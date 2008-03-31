@@ -1,3 +1,9 @@
+2008-03-31  Mike Krüger <mkrueger@novell.com> 
+
+	* gtk-gui/MonoDevelop.Ide.DocumentSwitcher.cs,
+	  MonoDevelop.Ide.Gui/DocumentSwitcher.cs: Worked on document
+	  switcher. (373578)
+
 2008-03-29  Zach Lute <zach.lute@gmail.com> 
 
 	* MonoDevelop.Ide.Commands/RefactoryCommands.cs: Added support for

@@ -2658,6 +2658,7 @@
                   <widget class="Gtk.RadioButton" id="saveChangesRadioButton">
                     <property name="MemberName" />
                     <property name="Label" translatable="yes">_Save changes to open documents</property>
+                    <property name="Active">True</property>
                     <property name="DrawIndicator">True</property>
                     <property name="HasLabel">True</property>
                     <property name="UseUnderline">True</property>
@@ -5839,7 +5840,7 @@ Months</property>
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Window" id="MonoDevelop.Ide.DocumentSwitcher" design-size="400 300">
+  <widget class="Gtk.Window" id="MonoDevelop.Ide.DocumentSwitcher" design-size="400 299">
     <property name="MemberName" />
     <property name="Title" translatable="yes" />
     <property name="TypeHint">Splashscreen</property>
@@ -5854,23 +5855,13 @@ Months</property>
             <property name="MemberName" />
             <property name="Spacing">6</property>
             <child>
-              <widget class="Gtk.Image" id="imageType">
-                <property name="MemberName" />
-              </widget>
-              <packing>
-                <property name="Position">0</property>
-                <property name="AutoSize">True</property>
-                <property name="Expand">False</property>
-                <property name="Fill">False</property>
-              </packing>
-            </child>
-            <child>
               <widget class="Gtk.VBox" id="vbox4">
                 <property name="MemberName" />
                 <property name="Spacing">6</property>
                 <child>
-                  <widget class="Gtk.Label" id="labelTitel">
+                  <widget class="Gtk.Label" id="labelTitle">
                     <property name="MemberName" />
+                    <property name="Xalign">0</property>
                     <property name="LabelProp" translatable="yes" />
                   </widget>
                   <packing>
@@ -5895,7 +5886,7 @@ Months</property>
                 </child>
               </widget>
               <packing>
-                <property name="Position">1</property>
+                <property name="Position">0</property>
                 <property name="AutoSize">False</property>
               </packing>
             </child>
