@@ -22,23 +22,13 @@
     <File name="MonoDevelop.XmlEditor/EncodedStringWriter.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.XmlEditor/OpenStylesheetCommand.cs" subtype="Code" buildaction="Nothing" />
     <File name="MonoDevelop.XmlEditor/OpenXPathQueryPadCommand.cs" subtype="Code" buildaction="Nothing" />
-    <File name="MonoDevelop.XmlEditor/QualifiedNameCollection.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.XmlEditor/QualifiedName.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.XmlEditor/RemoveXPathHighlightingCommand.cs" subtype="Code" buildaction="Nothing" />
     <File name="MonoDevelop.XmlEditor/SourceViewTextIterator.cs" subtype="Code" buildaction="Nothing" />
-    <File name="MonoDevelop.XmlEditor/XmlCompletionDataCollection.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.XmlEditor/XmlCompletionData.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.XmlEditor/XmlCompletionDataProvider.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.XmlEditor/XmlElementPath.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.XmlEditor/XmlNamespace.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.XmlEditor/XmlParser.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.XmlEditor/XmlSchemaCompletionDataCollection.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.XmlEditor/XmlSchemaCompletionData.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.XmlEditor/XmlSchemaManager.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.XmlEditor/XmlSchemaAssociation.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.XmlEditor/XmlEditorAddInOptions.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.XmlEditor/XmlEditorWindow.cs" subtype="Code" buildaction="Nothing" />
-    <File name="MonoDevelop.XmlEditor/XmlCompletionListWindow.cs" subtype="Code" buildaction="Nothing" />
     <File name="MonoDevelop.XmlEditor/XmlFileExtensions.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.XmlEditor/XmlEditorService.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.XmlEditor/XmlFileExtensionNode.cs" subtype="Code" buildaction="Compile" />
@@ -69,6 +59,16 @@
     <File name="gtk-gui/MonoDevelop.XmlEditor.Gui.XmlSchemasPanelWidget.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.XmlEditor.Gui/XmlSchemasPanel.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.XmlEditor/ClosingBracketCompletionDataProvider.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.XmlEditor.Completion/XmlSchemaCompletionData.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.XmlEditor.Completion/XmlSchemaCompletionDataCollection.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.XmlEditor.Completion/XmlCompletionDataProvider.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.XmlEditor.Completion/XmlCompletionDataCollection.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.XmlEditor.Completion/XmlCompletionData.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.XmlEditor.Completion/IXmlCompletionProvider.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.XmlEditor/QualifiedName.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.XmlEditor/XmlElementPath.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.XmlEditor/QualifiedNameCollection.cs" subtype="Code" buildaction="Compile" />
+    <File name="Makefile.am" subtype="Code" buildaction="Nothing" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />

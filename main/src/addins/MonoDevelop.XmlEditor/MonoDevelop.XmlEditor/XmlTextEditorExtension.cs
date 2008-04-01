@@ -22,6 +22,7 @@ using MonoDevelop.Components.Commands;
 using MonoDevelop.Projects.Gui;
 using MonoDevelop.Projects.Gui.Completion;
 using MonoDevelop.Ide.Gui.Content;
+using MonoDevelop.XmlEditor.Completion;
 
 namespace MonoDevelop.XmlEditor
 {

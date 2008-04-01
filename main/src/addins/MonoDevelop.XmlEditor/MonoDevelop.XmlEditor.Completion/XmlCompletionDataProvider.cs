@@ -8,8 +8,9 @@ using MonoDevelop.Projects.Gui.Completion;
 using System;
 using System.Collections;
 using System.Xml;
+using MonoDevelop.XmlEditor;
 
-namespace MonoDevelop.XmlEditor
+namespace MonoDevelop.XmlEditor.Completion
 {
 	/// <summary>
 	/// Provides the autocomplete (intellisense) data for an

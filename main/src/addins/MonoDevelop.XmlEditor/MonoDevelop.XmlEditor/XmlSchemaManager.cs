@@ -10,6 +10,7 @@ using System.IO;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Xml;
+using MonoDevelop.XmlEditor.Completion;
 
 namespace MonoDevelop.XmlEditor
 {

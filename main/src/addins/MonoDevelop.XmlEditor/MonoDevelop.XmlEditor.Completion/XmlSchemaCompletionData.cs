@@ -12,12 +12,12 @@ using System.Text;
 using System.Xml;
 using System.Xml.Schema;
 
-namespace MonoDevelop.XmlEditor
+namespace MonoDevelop.XmlEditor.Completion
 {
 	/// <summary>
 	/// Holds the completion (intellisense) data for an xml schema.
 	/// </summary>
-	public class XmlSchemaCompletionData
+	public class XmlSchemaCompletionData : IXmlCompletionProvider
 	{
 		string namespaceUri = String.Empty;
 		XmlSchema schema;
@@ -30,6 +30,8 @@ namespace MonoDevelop.XmlEditor
 		/// generates the attribute completion data.
 		/// </summary>
 		XmlSchemaObjectCollection prohibitedAttributes = new XmlSchemaObjectCollection();
+		
+		#region Constructors
 		
 		public XmlSchemaCompletionData()
 		{
@@ -70,51 +72,34 @@ namespace MonoDevelop.XmlEditor
 			StreamReader reader = new StreamReader(fileName, true);
 			ReadSchema(baseUri, reader);
 			this.fileName = fileName;
-		}		
+		}
 		
-		/// <summary>
-		/// Gets the schema.
-		/// </summary>
+		#endregion
+		
+		#region Properties
+		
 		public XmlSchema Schema {
 			get {
-				CompileSchema();
+				CompileSchema ();
 				return schema;
 			}
 		}
 		
-		/// <summary>
-		/// Read only schemas are those that are installed with 
-		/// SharpDevelop.
-		/// </summary>
 		public bool ReadOnly {
-			get {
-				return readOnly;
-			}
-			set {
-				readOnly = value;
-			}
+			get { return readOnly; }
+			set { readOnly = value; }
 		}
 		
-		/// <summary>
-		/// Gets or sets the schema's file name.
-		/// </summary>
 		public string FileName {
-			get {
-				return fileName;
-			}
-			set {
-				fileName = value;
-			}
+			get { return fileName; }
+			set { fileName = value; }
 		}
 		
-		/// <summary>
-		/// Gets the namespace URI for the schema.
-		/// </summary>
 		public string NamespaceUri {
-			get {
-				return namespaceUri;
-			}
+			get { return namespaceUri; }
 		}
+		
+		#endregion
 		
 		/// <summary>
 		/// Converts the filename into a valid Uri.
@@ -131,6 +116,58 @@ namespace MonoDevelop.XmlEditor
 			
 			return uri;
 		}
+		
+		#region Simplified API, useful for e.g. HTML
+		
+		public ICompletionData[] GetChildElementCompletionData (string tagName)
+		{
+			CompileSchema();
+			
+			XmlSchemaElement element = FindElement (tagName);
+			if (element != null)
+				return GetChildElementCompletionData (element, string.Empty).ToArray ();
+			else
+				return new ICompletionData[0];
+		}
+		
+		public ICompletionData[] GetAttributeCompletionData (string tagName)
+		{
+			CompileSchema();
+			
+			XmlSchemaElement element = FindElement (tagName);
+			if (element != null) {
+				prohibitedAttributes.Clear();
+				return GetAttributeCompletionData (element).ToArray ();
+			} else {
+				return new ICompletionData[0];
+			}
+		}
+		
+		public ICompletionData[] GetAttributeValueCompletionData (string tagName, string name)
+		{
+			CompileSchema();
+			
+			XmlSchemaElement element = FindElement (tagName);
+			if (element != null)
+				return GetAttributeValueCompletionData (element, name).ToArray ();
+			else
+				return new ICompletionData[0];
+		}
+		
+		XmlElementPath CreateSimplePath (string tagName)
+		{
+			CompileSchema();
+			XmlElementPath path = new XmlElementPath ();
+			System.Console.WriteLine(schema.TargetNamespace);
+			foreach (XmlSchemaElement element in schema.Elements.Values) {
+				System.Console.WriteLine(element.QualifiedName.Namespace);
+			}
+				
+			path.Elements.Add (new QualifiedName (tagName, schema.TargetNamespace));
+			return path;
+		}
+		
+		#endregion
 
 		/// <summary>
 		/// Gets the possible root elements for an xml document using this schema.
@@ -263,13 +300,25 @@ namespace MonoDevelop.XmlEditor
 			CompileSchema();
 
 			foreach (XmlSchemaElement element in schema.Elements.Values) {
-				Console.WriteLine("Element: " + element.QualifiedName.Name);
 				if (name.Equals(element.QualifiedName)) {
 					return element;
 				}
 			}
+			MonoDevelop.Core.LoggingService.LogDebug ("XmlSchemaDataObject did not find element '{0}' in the schema", name.Name);
 			return null;
-		}		
+		}
+		
+		public XmlSchemaElement FindElement(string name)
+		{
+			CompileSchema();
+
+			foreach (XmlSchemaElement element in schema.Elements.Values)
+				if (element.QualifiedName.Name == name)
+					return element;
+			
+			MonoDevelop.Core.LoggingService.LogDebug ("XmlSchemaDataObject did not find element '{0}' in the schema", name);
+			return null;
+		}
 		
 		/// <summary>
 		/// Finds the complex type with the specified name.
@@ -1092,17 +1141,11 @@ namespace MonoDevelop.XmlEditor
 				if (simpleTypeRestriction != null) {
 					data.AddRange(GetAttributeValueCompletionData(simpleTypeRestriction));
 				}
-			} else if (attribute.AttributeType != null) {
-				XmlSchemaSimpleType simpleType = attribute.AttributeType as XmlSchemaSimpleType;
-				XmlSchemaDatatype dataType = attribute.AttributeType as XmlSchemaDatatype;
-				
-				if (simpleType != null) {
-					data.AddRange(GetAttributeValueCompletionData(simpleType));
-				} else if (dataType != null) {
-					if (dataType.ValueType == typeof(bool)) {
-						data.AddRange(GetBooleanAttributeValueCompletionData());
-					}
-				}
+			} else if (attribute.AttributeSchemaType != null) {
+				if (attribute.AttributeSchemaType.TypeCode == XmlTypeCode.Boolean)
+					data.AddRange (GetBooleanAttributeValueCompletionData ());
+				else
+					data.AddRange (GetAttributeValueCompletionData (attribute.AttributeSchemaType));
 			}
 			
 			return data;
@@ -1136,20 +1179,15 @@ namespace MonoDevelop.XmlEditor
 			return data;
 		}		
 		
-		XmlCompletionDataCollection GetAttributeValueCompletionData(XmlSchemaSimpleType simpleType)
+		XmlCompletionDataCollection GetAttributeValueCompletionData (XmlSchemaSimpleType simpleType)
 		{
-			XmlCompletionDataCollection data = new XmlCompletionDataCollection();
-			
-			XmlSchemaSimpleTypeRestriction simpleTypeRestriction = simpleType.Content as XmlSchemaSimpleTypeRestriction;
-			XmlSchemaSimpleTypeUnion union = simpleType.Content as XmlSchemaSimpleTypeUnion;
-			XmlSchemaSimpleTypeList list = simpleType.Content as XmlSchemaSimpleTypeList;
-						
-			if (simpleTypeRestriction != null) {
-				data.AddRange(GetAttributeValueCompletionData(simpleTypeRestriction));
-			} else if (union != null) {
-				data.AddRange(GetAttributeValueCompletionData(union));
-			} else if (list != null) {
-				data.AddRange(GetAttributeValueCompletionData(list));
+			XmlCompletionDataCollection data = new XmlCompletionDataCollection ();	
+			if (simpleType.Content is XmlSchemaSimpleTypeRestriction) {
+				data.AddRange (GetAttributeValueCompletionData ((XmlSchemaSimpleTypeRestriction)simpleType.Content));
+			} else if (simpleType.Content is XmlSchemaSimpleTypeUnion) {
+				data.AddRange (GetAttributeValueCompletionData ((XmlSchemaSimpleTypeUnion)simpleType.Content));
+			} else if (simpleType.Content is XmlSchemaSimpleTypeList) {
+				data.AddRange (GetAttributeValueCompletionData ((XmlSchemaSimpleTypeList) simpleType.Content));
 			}
 
 			return data;
@@ -1354,15 +1392,10 @@ namespace MonoDevelop.XmlEditor
 			return matchedElement;
 		}
 		
-		/// <summary>
-		/// Compile the schema the first time it is used - this
-		/// improves the XmlEditor startup time (4x quicker) since 
-		/// the XmlSchemaManager does not need to compile the schemas.
-		/// </summary>
-		void CompileSchema()
+		void CompileSchema ()
 		{
 			if (!compiled) {
-				schema.Compile(new ValidationEventHandler(SchemaValidation));
+				schema.Compile (new ValidationEventHandler (SchemaValidation));
 				compiled = true;
 			}
 		}

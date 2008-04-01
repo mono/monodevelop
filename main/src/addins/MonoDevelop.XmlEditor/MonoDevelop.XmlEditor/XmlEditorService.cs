@@ -11,6 +11,7 @@ using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.Tasks;
+using MonoDevelop.XmlEditor.Completion;
 
 using System;
 using System.Collections.Generic;
@@ -247,33 +248,53 @@ namespace MonoDevelop.XmlEditor
 		public static XmlDocument ValidateXml (IProgressMonitor monitor, string xml, string fileName)
 		{
 			monitor.BeginTask (GettextCatalog.GetString ("Validating XML..."), 1);
-			bool error = true;
+			bool error = false;
 			XmlDocument doc = null;
+			StringReader stringReader = new StringReader (xml);
+			
+			XmlReaderSettings settings = new XmlReaderSettings ();
+			settings.ValidationFlags = XmlSchemaValidationFlags.ProcessIdentityConstraints
+					| XmlSchemaValidationFlags.ProcessInlineSchema
+					| XmlSchemaValidationFlags.ProcessSchemaLocation
+					| XmlSchemaValidationFlags.ReportValidationWarnings;
+			settings.ValidationType = ValidationType.Schema;
+			settings.ProhibitDtd = false;
+			
+			ValidationEventHandler validationHandler = delegate (object sender, System.Xml.Schema.ValidationEventArgs args) {
+				if (args.Severity == XmlSeverityType.Warning) {
+					monitor.Log.WriteLine (args.Message);
+					AddTask (fileName, args.Exception.Message, args.Exception.LinePosition, args.Exception.LineNumber,TaskType.Warning);
+				} else {
+					AddTask (fileName, args.Exception.Message, args.Exception.LinePosition, args.Exception.LineNumber,TaskType.Error);
+					monitor.Log.WriteLine (args.Message);
+					error = true;
+				}	
+			};
+			settings.ValidationEventHandler += validationHandler;
 			
 			try {
-				StringReader stringReader = new StringReader (xml);
-				XmlTextReader xmlReader = new XmlTextReader (stringReader);
-				xmlReader.XmlResolver = null;
-				XmlValidatingReader reader = new XmlValidatingReader (xmlReader);
-				reader.XmlResolver = null;
+				foreach (XmlSchemaCompletionData sd in XmlSchemaManager.SchemaCompletionDataItems)
+					settings.Schemas.Add (sd.Schema);
+				settings.Schemas.Compile ();
 				
-				XmlSchemaCompletionData schemaData = null;
-				foreach (XmlSchemaCompletionData sd in XmlSchemaManager.SchemaCompletionDataItems) {
-					schemaData = sd;
-					reader.Schemas.Add (schemaData.Schema);
-				}
-				
+				XmlReader reader = XmlReader.Create (stringReader, settings);
 				doc = new XmlDocument();
 				doc.Load (reader);
-				error = false;
 				
 			} catch (XmlSchemaException ex) {
 				monitor.ReportError (ex.Message, ex);
 				AddTask (fileName, ex.Message, ex.LinePosition, ex.LineNumber,TaskType.Error);
+				error = true;
 			}
 			catch (XmlException ex) {
 				monitor.ReportError (ex.Message, ex);
 				AddTask (fileName, ex.Message, ex.LinePosition, ex.LineNumber,TaskType.Error);
+				error = true;
+			}
+			finally {
+				if (stringReader != null)
+					stringReader.Dispose ();
+				settings.ValidationEventHandler -= validationHandler;
 			}
 			
 			if (error) {

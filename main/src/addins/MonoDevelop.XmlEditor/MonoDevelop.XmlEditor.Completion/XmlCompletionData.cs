@@ -9,8 +9,9 @@ using Gtk;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects.Gui.Completion;
 using System;
+using MonoDevelop.XmlEditor;
 
-namespace MonoDevelop.XmlEditor
+namespace MonoDevelop.XmlEditor.Completion
 {
 	/// <summary>
 	/// Holds the text for  namespace, child element or attribute 
@@ -55,27 +56,19 @@ namespace MonoDevelop.XmlEditor
 		}		
 		
 		public DataType XmlCompletionDataType {
-			get {
-				return dataType;
-			}
+			get { return dataType; }
 		}
 		
 		public string Image {
-			get {
-				return Gtk.Stock.GoForward;
-			}
+			get { return Gtk.Stock.GoForward; }
 		}
 		
 		public string[] Text {
-			get {
-				return new string[] { text };
-			}
+			get { return new string[] { text }; }
 		}
 		
 		public string CompletionString {
-			get { 
-				return text; 
-			}
+			get { return text; }
 		}
 		
 		/// <summary>
@@ -83,9 +76,7 @@ namespace MonoDevelop.XmlEditor
 		/// the xs:annotation/xs:documentation element.
 		/// </summary>
 		public string Description {
-			get {
-				return description;
-			}
+			get { return description; }
 		}
 		
 		public void InsertAction(ICompletionWidget widget, ICodeCompletionContext completionContext)

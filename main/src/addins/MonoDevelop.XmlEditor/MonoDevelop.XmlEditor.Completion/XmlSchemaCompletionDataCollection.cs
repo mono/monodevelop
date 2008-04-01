@@ -8,7 +8,7 @@ using MonoDevelop.Projects.Gui.Completion;
 using System;
 using System.Collections.Generic;
 
-namespace MonoDevelop.XmlEditor
+namespace MonoDevelop.XmlEditor.Completion
 {
 	public interface IXmlSchemaCompletionDataCollection: IEnumerable<XmlSchemaCompletionData>
 	{

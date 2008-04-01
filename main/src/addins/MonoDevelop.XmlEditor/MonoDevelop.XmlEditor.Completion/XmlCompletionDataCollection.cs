@@ -8,7 +8,7 @@ using MonoDevelop.Projects.Gui.Completion;
 using System;
 using System.Collections;
 
-namespace MonoDevelop.XmlEditor
+namespace MonoDevelop.XmlEditor.Completion
 {
 	/// <summary>
 	///   A collection that stores <see cref='XmlCompletionData'/> objects.

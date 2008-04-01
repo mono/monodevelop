@@ -1,3 +1,30 @@
+2008-04-01  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.XmlEditor.Gui/XmlSchemasPanelWidget.cs, Makefile.am,
+	  MonoDevelop.XmlEditor.mdp: Updated.
+	* MonoDevelop.XmlEditor/XmlSchemaManager.cs,
+	  MonoDevelop.XmlEditor/XmlTextEditorExtension.cs: Track namespace
+	  changes.
+	* MonoDevelop.XmlEditor/XmlSchemaCompletionDataCollection.cs,
+	  MonoDevelop.XmlEditor/XmlCompletionData.cs,
+	  MonoDevelop.XmlEditor/XmlCompletionDataProvider.cs,
+	  MonoDevelop.XmlEditor/XmlCompletionDataCollection.cs,
+	  MonoDevelop.XmlEditor/XmlSchemaCompletionData.cs: Moved to
+	  MonoDevelop.XmlEditor.Completion namespace.
+	* MonoDevelop.XmlEditor/XmlEditorService.cs: Track namespace changes.
+	  Improve validation verbosity. Reduce use of deprecated APIs.
+	* MonoDevelop.XmlEditor/XmlEditorWindow.cs: No longer needed.
+	* MonoDevelop.XmlEditor.Completion/IXmlCompletionProvider.cs,
+	  MonoDevelop.XmlEditor.Completion/XmlSchemaCompletionData.cs:
+	  Factored out an interface so that XML completion doesn't explicitly
+	  depend on xsd schemas. Added some alternate (namespaceless) lookups
+	  that will be used for HTML completion in ASP.NET. Misc tidying.
+	* MonoDevelop.XmlEditor.Completion/XmlCompletionDataProvider.cs,
+	  MonoDevelop.XmlEditor.Completion/XmlCompletionDataCollection.cs,
+	  MonoDevelop.XmlEditor.Completion/XmlSchemaCompletionDataCollection.cs:
+	  Move and change namespace.
+	* MonoDevelop.XmlEditor.Completion/XmlCompletionData.cs: Tidied up.
+
 2008-03-28  Marcos David Marín Amador <MarcosMarin@gmail.com> 
 
 	* MonoDevelop.XmlEditor.Gui/XmlSchemasPanelWidget.cs: Workaround for bug in

@@ -29,6 +29,7 @@
 //
 
 using MonoDevelop.XmlEditor;
+using MonoDevelop.XmlEditor.Completion;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
 

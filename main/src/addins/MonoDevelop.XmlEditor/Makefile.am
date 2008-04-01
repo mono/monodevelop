@@ -25,6 +25,12 @@ FILES =  \
 	gtk-gui/generated.cs \
 	gtk-gui/MonoDevelop.XmlEditor.Gui.XmlEditorOptionsPanelWidget.cs \
 	gtk-gui/MonoDevelop.XmlEditor.Gui.XmlSchemasPanelWidget.cs \
+	MonoDevelop.XmlEditor.Completion/IXmlCompletionProvider.cs \
+	MonoDevelop.XmlEditor.Completion/XmlCompletionData.cs \
+	MonoDevelop.XmlEditor.Completion/XmlCompletionDataCollection.cs \
+	MonoDevelop.XmlEditor.Completion/XmlCompletionDataProvider.cs \
+	MonoDevelop.XmlEditor.Completion/XmlSchemaCompletionData.cs \
+	MonoDevelop.XmlEditor.Completion/XmlSchemaCompletionDataCollection.cs \
 	MonoDevelop.XmlEditor.Gui/XmlEditorOptionsPanel.cs \
 	MonoDevelop.XmlEditor.Gui/XmlEditorOptionsPanelWidget.cs \
 	MonoDevelop.XmlEditor.Gui/XmlSchemasPanel.cs \
@@ -34,9 +40,6 @@ FILES =  \
 	MonoDevelop.XmlEditor/EncodedStringWriter.cs \
 	MonoDevelop.XmlEditor/QualifiedName.cs \
 	MonoDevelop.XmlEditor/QualifiedNameCollection.cs \
-	MonoDevelop.XmlEditor/XmlCompletionData.cs \
-	MonoDevelop.XmlEditor/XmlCompletionDataCollection.cs \
-	MonoDevelop.XmlEditor/XmlCompletionDataProvider.cs \
 	MonoDevelop.XmlEditor/XmlEditorAddInOptions.cs \
 	MonoDevelop.XmlEditor/XmlEditorService.cs \
 	MonoDevelop.XmlEditor/XmlElementPath.cs \
@@ -45,8 +48,6 @@ FILES =  \
 	MonoDevelop.XmlEditor/XmlNamespace.cs \
 	MonoDevelop.XmlEditor/XmlParser.cs \
 	MonoDevelop.XmlEditor/XmlSchemaAssociation.cs \
-	MonoDevelop.XmlEditor/XmlSchemaCompletionData.cs \
-	MonoDevelop.XmlEditor/XmlSchemaCompletionDataCollection.cs \
 	MonoDevelop.XmlEditor/XmlSchemaManager.cs \
 	MonoDevelop.XmlEditor/XmlTextEditorExtension.cs
 
