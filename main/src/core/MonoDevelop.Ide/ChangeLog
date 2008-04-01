@@ -1,3 +1,8 @@
+2008-04-01  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Ide.Gui/MonoDevelopTreeView.cs: fixed Bug 375387 -
+	  Sigsegv when 'reloading file'
+
 2008-03-31  Mike Krüger <mkrueger@novell.com> 
 
 	* gtk-gui/MonoDevelop.Ide.DocumentSwitcher.cs,

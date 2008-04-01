@@ -1446,8 +1446,10 @@ namespace MonoDevelop.Ide.Gui
 				set {
 					if (value != Selected) {
 						ExpandToNode ();
-						tree.Selection.SelectIter (currentIter);
-						tree.SetCursor (store.GetPath (currentIter), pad.CompleteColumn, false);
+						try {
+							tree.Selection.SelectIter (currentIter);
+							tree.SetCursor (store.GetPath (currentIter), pad.CompleteColumn, false);
+						} catch (Exception) {}
 //						tree.ScrollToCell (store.GetPath (currentIter), null, false, 0, 0);
 					}
 				}
