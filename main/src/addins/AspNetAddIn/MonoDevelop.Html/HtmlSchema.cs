@@ -29,61 +29,65 @@
 using System;
 using System.Xml;
 using System.Collections.Generic;
-
-using Commons.Xml.Relaxng;
+using MonoDevelop.XmlEditor.Completion;
 
 namespace MonoDevelop.Html
 {
 	
 	public class HtmlSchema
 	{
-		string doctype;
-		XmlReader schema;
-		RelaxngGrammar grammar;
+		string docType;
+		string name;
+		string substituteProvider;
+		IXmlCompletionProvider provider;
 		
-		public HtmlSchema (string doctype, XmlReader schema)
+		public HtmlSchema (string name, string docType, IXmlCompletionProvider provider)
 		{
-			this.doctype = doctype;
-			this.schema = schema;
+			this.docType = docType;
+			this.name = name;
+			this.provider = provider;
 		}
 		
-		public string Doctype {
-			get { return doctype; }
-		}
-				
-		internal bool IsInitialised {
-			get { return grammar == null; }
-		}
-		
-		void Initialise ()
+		public HtmlSchema (string name, string docType, string substituteProvider)
+			: this (name, docType, (IXmlCompletionProvider) null)
 		{
-			/*
-			if (IsInitialised)
-				throw new Exception ("Already intialised");
-			/*
-			RelaxngPattern pattern = RelaxngPattern.Read (schema);
-			pattern.Compile ();
-			grammar = pattern as RelaxngGrammar;
-			if (grammar == null)
-				throw new Exception ("Html schema must be a valid RELAX NG grammar");
-			*/
+			this.substituteProvider = string.IsNullOrEmpty (substituteProvider)? null : substituteProvider;
 		}
 		
-		public ICollection<string> GetValidChildren (string parentTag)
-		{
-			//FIXME: pull these from the schema
-			string[] tags = { "html", "a", "em", "meta", "strong", "div", "span", "head", "title", "meta"};
-			return tags;
+		public string DocType {
+			get { return docType; }
 		}
 		
-		public ICollection<string> GetValidAttributes (string tag)
+		public string Name {
+			get { return name; }
+		}
+		
+		public IXmlCompletionProvider CompletionProvider {
+			get {
+				if (provider != null)
+					return provider;
+				else if (substituteProvider != null)
+					TryResolveProvider ();
+					
+				return provider;
+			}
+		}
+		
+		void TryResolveProvider ()
 		{
-			//FIXME: pull these from the schema
-			string[] atts = { "id", "class" };
-			string[] imgAtts = { "id", "class", "src", "alt", "title" };
-			if (tag == "img")
-				return imgAtts;
-			return atts;
+			try {
+				provider = HtmlSchemaService.GetCompletionProvider (substituteProvider);
+			} catch (StackOverflowException ex) {
+				MonoDevelop.Core.LoggingService.LogWarning (
+				    "HTML doctype '{0}' contains a substitute schema reference that is either cyclical or too deep, and hence cannot be resolved.'", 
+				    name);
+				substituteProvider = null;
+			}
+			if (provider == null) {
+				MonoDevelop.Core.LoggingService.LogWarning (
+				    "HTML doctype '{0}' cannot find substitute schema '{1}'", name, substituteProvider);
+				substituteProvider = null;
+			}
 		}
 	}
 }

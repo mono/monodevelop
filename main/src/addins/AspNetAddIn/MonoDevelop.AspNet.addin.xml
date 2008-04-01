@@ -8,6 +8,12 @@
        category    = "Web Development"
        version     = "0.19.0">
 	
+	<Runtime>
+		<Import file="Schemas/xhtml1-strict.xsd" />
+		<Import file="Schemas/xhtml1-transitional.xsd" />
+		<Import file="Schemas/xhtml1-frameset.xsd" />
+	</Runtime>
+	
 	<Dependencies>
 		<Addin id="Core" version="0.19.0"/>
 		<Addin id="Core.Gui" version="0.19.0"/>
@@ -17,7 +23,12 @@
 		<Addin id="DesignerSupport" version="0.19.0"/>
 		<Addin id="Deployment" version="0.19.0"/>
 		<Addin id="Prj2Make" version="0.19.0" />
+		<Addin id="XmlEditor" version="0.19.0" />
 	</Dependencies>
+	
+	<ExtensionPoint path = "/MonoDevelop/Html/DocTypes">
+		<ExtensionNode name = "DocType" type = "MonoDevelop.Html.DocTypeExtensionNode" />
+	</ExtensionPoint>
 
 	<Extension path = "/MonoDevelop/Ide/FileTemplates">
 		<FileTemplate id       = "WebForm-Empty"
@@ -166,5 +177,24 @@
 	
 	<Extension path = "/MonoDevelop/Ide/TextEditorExtensions">
 		<Class class = "MonoDevelop.AspNet.Gui.AspNetEditorExtension" />
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/Html/DocTypes">
+		<DocType name = "XHTML 1.0 Strict" 
+		         fullName = "&lt;!DOCTYPE html PUBLIC &quot;-//W3C//DTD XHTML 1.0 Strict//EN&quot;
+&quot;http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd&quot;>" 
+		         xsdFile = "xhtml1-strict.xsd" />
+		<DocType name = "XHTML 1.0 Transitional" 
+		         fullName = "&lt;!DOCTYPE html PUBLIC &quot;-//W3C//DTD XHTML 1.0 Transitional//EN&quot;
+&quot;http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd&quot;>" 
+		         xsdFile = "xhtml1-transitional.xsd" />
+		<DocType name = "XHTML 1.0 Frameset"
+		         fullName = "&lt;!DOCTYPE html PUBLIC &quot;-//W3C//DTD XHTML 1.0 Frameset//EN&quot;
+&quot;http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd&quot;>" 
+		         xsdFile = "xhtml1-frameset.xsd" />
+		<DocType name = "HTML 4.01 Transitional"
+		         fullName = "&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.01 Transitional//EN&quot;
+&quot;http://www.w3.org/TR/html4/loose.dtd&quot;>" 
+		         completionDocTypeName = "XHTML 1.0 Transitional" />
 	</Extension>
 </Addin>

@@ -28,32 +28,87 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
+
+using MonoDevelop.Core;
+using MonoDevelop.Projects.Gui.Completion;
+using MonoDevelop.XmlEditor.Completion;
 
 namespace MonoDevelop.Html
 {
 	
 	public static class HtmlSchemaService
 	{
-		static List<HtmlSchema> schemas;
+		static Dictionary<string, HtmlSchema> schemas;
 		
 		static void Initialise ()
 		{
+			schemas = new Dictionary<string, HtmlSchema> ();
+			
 			//TODO: load all the schemas from addin points
 			//NOTE: the first ([0]) schema must be the default schema (HTML4 transitional)
-			schemas = new List<HtmlSchema> ();
-			schemas.Add (new HtmlSchema ("-//W3C//DTD XHTML 1.0 Strict//EN", null));
+			string schemaDir = Path.GetDirectoryName (System.Reflection.Assembly.GetExecutingAssembly ().Location);
+			schemaDir = Path.Combine (schemaDir, "Schemas");
+			
+			foreach (DocTypeExtensionNode node in Mono.Addins.AddinManager.GetExtensionNodes ("/MonoDevelop/Html/DocTypes")) {
+				if (schemas.ContainsKey (node.Name))
+					LoggingService.LogWarning (
+					    "HtmlSchemaService cannot register duplicate doctype with the name '{0}'", node.Name);
+				
+				if (!string.IsNullOrEmpty (node.XsdFile)) {
+					string path = Path.Combine (schemaDir, node.XsdFile);
+					try {
+						IXmlCompletionProvider provider = new XmlSchemaCompletionData (path);
+						schemas.Add (node.Name, new HtmlSchema (node.Name, node.FullName, provider));
+					} catch (Exception ex) {
+						LoggingService.LogWarning (
+						    "HtmlSchemaService encountered an error registering the schema '" + path + "'", ex);
+					}
+				} else {
+					schemas.Add (node.Name, new HtmlSchema (node.Name, node.FullName, node.CompletionDocTypeName));
+				}
+			}
+		}
+		
+		public static string DefaultDocTypeName {
+			get { return "HTML 4.01 Transitional"; }
+		}
+		
+		public static HtmlSchema DefaultDocType {
+			get {
+				if (schemas == null) Initialise ();
+				return schemas[DefaultDocTypeName];
+			}
+		}
+		
+		public static IXmlCompletionProvider GetCompletionProvider (string docTypeName)
+		{
+			if (schemas == null) Initialise ();
+			
+			if (schemas.ContainsKey (docTypeName))
+				return (schemas [docTypeName].CompletionProvider);
+			return DefaultDocType.CompletionProvider;
 		}
 		
 		public static HtmlSchema GetSchema (string docType)
 		{
-			if (schemas == null)
-				Initialise ();
+			if (schemas == null) Initialise ();
 			
 			if (!string.IsNullOrEmpty (docType))
-				foreach (HtmlSchema schema in schemas)
-					if (docType.Contains (schema.Doctype))
+				foreach (HtmlSchema schema in schemas.Values)
+					if (docType.Contains (schema.Name))
 						return schema;
-			return schemas[0];
+			return null;
+		}
+		
+		public static ICompletionData[] GetDocTypeCompletionData ()
+		{
+			if (schemas == null) Initialise ();
+			
+			List<ICompletionData> list = new List<ICompletionData> ();
+			foreach (HtmlSchema item in schemas.Values)
+				list.Add (new DocTypeCompletionData (item.Name, item.DocType));
+			return list.ToArray ();
 		}
 	}
 }

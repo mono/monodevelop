@@ -56,29 +56,67 @@ namespace MonoDevelop.AspNet.Gui
 		
 		protected Document GetAspNetDocument ()
 		{
-			if (Document == null)
-				throw new InvalidOperationException ("Editor extension not yet initialized");
-			ITextBuffer buffer = (ITextBuffer) Document.GetContent (typeof(ITextBuffer));
-			if (buffer != null)
-				return new Document (buffer, Document.Project, FileName);
-			else
-				throw new Exception ("Cannot retrieve ITextBuffer");
+			return new Document (Buffer, Document.Project, FileName);
+		}
+		
+		protected ITextBuffer Buffer {
+			get {
+				if (Document == null)
+					throw new InvalidOperationException ("Editor extension not yet initialized");
+				return (ITextBuffer) Document.GetContent (typeof(ITextBuffer));
+			}
 		}
 		
 		public override ICompletionDataProvider HandleCodeCompletion (ICodeCompletionContext completionContext, char completionChar)
 		{
+			//FIXME: lines in completionContext are zero-indexed, but ILocation is 1-indexed. This could easily cause bugs.
+			int line = completionContext.TriggerLine + 1, col = completionContext.TriggerLineOffset;
+			
+			ITextBuffer buf = this.Buffer;
+			
+			//FIXME: the char from completionChar isn't converted 100% accurately from GDK, so better to fetch from buffer
+			// and the TriggerOffset seems unreliable too
+			int currentPosition = buf.CursorPosition - 1;
+			char currentChar = buf.GetCharAt (currentPosition);
+			char previousChar = buf.GetCharAt (currentPosition - 1);
+			
+			//doctype completion
+			if (line <= 5 && currentChar ==' ' && previousChar == 'E') {
+				int start = currentPosition - 9;
+				if (start >= 0) {
+					string readback = Buffer.GetText (start, currentPosition);
+					if (string.Compare (readback, "<!DOCTYPE", System.StringComparison.InvariantCulture) == 0)
+						return new DocTypeCompletionDataProvider ();
+				}
+			}
+			
+			//decide whether completion will be activated, to avoid unnecessary
+			//parsing, which hurts editor responsiveness
+			switch (currentChar) {
+			case '<':
+				break;
+			case ' ':
+				if (!char.IsWhiteSpace (previousChar))
+					break;
+				else
+					goto default;
+			case '"':
+			case '\'':
+				if (previousChar == '=' || char.IsWhiteSpace (previousChar))
+					break;
+				else
+					goto default;
+			default:
+				return base.HandleCodeCompletion (completionContext, currentChar);
+			}
+			
 			Document doc;
 			try {
 				doc = GetAspNetDocument ();
 			} catch (Exception ex) {
 				MonoDevelop.Core.LoggingService.LogError ("Unhandled error in ASP.NET parser", ex);
-				return base.HandleCodeCompletion (completionContext, completionChar);
+				return base.HandleCodeCompletion (completionContext, currentChar);
 			}
-			
-			HtmlSchema schema = HtmlSchemaService.GetSchema (doc.Info.DocType);
-			
-			//FIXME: lines in completionContext are zero-indexed, but ILocation is 1-indexed. This could easily cause bugs.
-			int line = completionContext.TriggerLine + 1, col = completionContext.TriggerLineOffset;
 			
 			Node n = doc.RootNode.GetNodeAtPosition (line, col);
 			if (n != null) {
@@ -88,7 +126,11 @@ namespace MonoDevelop.AspNet.Gui
 				    n.ToString ());
 			}
 			
-			if (completionChar == '<') {
+			HtmlSchema schema = HtmlSchemaService.GetSchema (doc.Info.DocType);
+			if (schema == null)
+				schema = HtmlSchemaService.DefaultDocType;
+			
+			if (currentChar == '<') {
 				CodeCompletionDataProvider cp = new CodeCompletionDataProvider (null, GetAmbience ());
 				TagNode parent = null;
 				if (n != null)
@@ -96,42 +138,98 @@ namespace MonoDevelop.AspNet.Gui
 				
 				AddHtmlTagCompletionData (cp, schema, parent);
 				AddAspBeginExpressions (cp);
+				
+				if (line < 4 && string.IsNullOrEmpty (doc.Info.DocType))
+					cp.AddCompletionData (new CodeCompletionData ("!DOCTYPE", "md-literal"));
 				return cp;
 			}
-			
-			TagNode tn = n as TagNode;
 			
 			//attributes within tags
-			if  (completionChar == ' ' && tn != null && tn.LocationContainsPosition (line, col) == 0) {
+			TagNode tn = n as TagNode;
+			if (tn != null && tn.LocationContainsPosition (line, col) == 0) {
 				CodeCompletionDataProvider cp = new CodeCompletionDataProvider (null, GetAmbience ());
-				AddHtmlAttributeCompletionData (cp, schema, tn);
-				if (tn.Attributes ["runat"] == null)
-					cp.AddCompletionData (new CodeCompletionData ("runat=\"server\"", "md-literal"));
+				
+				//attributes
+				if (currentChar == ' ') {
+					AddHtmlAttributeCompletionData (cp, schema, tn);
+					if (tn.Attributes ["runat"] == null)
+						cp.AddCompletionData (new CodeCompletionData ("runat=\"server\"", "md-literal"));
+					return cp;
+				
+				//attribute values
+				} else if ((currentChar == '"' || currentChar == '\'')
+				    && currentPosition + 1 < buf.Length && buf.GetCharAt (currentPosition + 1) == currentChar)
+				{
+					string att = GetAttributeName (buf, currentPosition);
+					if (!string.IsNullOrEmpty (att))
+						AddHtmlAttributeValueCompletionData (cp, schema, tn, att);
+				}
 				return cp;
 			}
-				
 			
-			return base.HandleCodeCompletion (completionContext, completionChar); 
+			return base.HandleCodeCompletion (completionContext, currentChar); 
+		}
+		
+		static string GetAttributeName (ITextBuffer buf, int offset)
+		{
+			int start = -1, end = -1;
+			int i = offset;
+			for (; i > 0; i++) {
+				char c = buf.GetCharAt (i);
+				if (!char.IsWhiteSpace (c) && c != '=') {
+					end = i;
+					break;
+				}
+			}
+			i++;
+			for (; i > 0; i++) {
+				char c = buf.GetCharAt (i);
+				if (!char.IsLetterOrDigit (c)) {
+					start = i;
+					break;
+				}
+			}
+			
+			if (end - start > 0)
+				return (buf.GetText (start, end));
+			return null;
 		}
 		
 		void AddHtmlTagCompletionData (CodeCompletionDataProvider provider, HtmlSchema schema, TagNode parentTag)
 		{
-			string parentTagId = string.Empty;
-			if (parentTag != null)
-				parentTagId = parentTag.TagName;
-			foreach (string tag in schema.GetValidChildren (parentTagId))
-				provider.AddCompletionData (new CodeCompletionData (tag, "md-literal"));			
+			if (schema == null || schema.CompletionProvider == null)
+				return;
+			
+			ICompletionData[] data = null;
+			if (parentTag == null || string.IsNullOrEmpty (parentTag.TagName)) {
+				data = schema.CompletionProvider.GetElementCompletionData ();
+			} else {
+				data = schema.CompletionProvider.GetChildElementCompletionData (parentTag.TagName);
+			}
+			
+			foreach (ICompletionData datum in data)
+				provider.AddCompletionData (datum);			
 		}
 		
 		void AddHtmlAttributeCompletionData (CodeCompletionDataProvider provider, HtmlSchema schema, TagNode parentTag)
 		{
-			string parentTagId = string.Empty;
-				parentTagId = parentTag.TagName;
+			if (schema.CompletionProvider == null || parentTag == null || string.IsNullOrEmpty (parentTag.TagName))
+				return;
+			
 			//add atts only if they're not aready in the tag
-			foreach (string att in schema.GetValidAttributes (parentTagId)) {
-				if (parentTag != null && parentTag.Attributes != null && parentTag.Attributes[att] == null)
-					provider.AddCompletionData (new CodeCompletionData (att, "md-literal"));
-			}
+			foreach (ICompletionData datum in schema.CompletionProvider.GetAttributeCompletionData (parentTag.TagName))
+				if (parentTag != null && parentTag.Attributes != null && parentTag.Attributes[datum.Text[0]] == null)
+					provider.AddCompletionData (datum);
+		}
+		
+		void AddHtmlAttributeValueCompletionData (CodeCompletionDataProvider provider, HtmlSchema schema, TagNode parentTag, string attributeName)
+		{
+			if (schema.CompletionProvider == null || parentTag == null || string.IsNullOrEmpty (parentTag.TagName))
+				return;
+			
+			//add atts only if they're not aready in the tag
+			foreach (ICompletionData datum in schema.CompletionProvider.GetAttributeValueCompletionData (parentTag.TagName, attributeName))
+				provider.AddCompletionData (datum);
 		}
 		
 		void AddAspBeginExpressions (CodeCompletionDataProvider provider)

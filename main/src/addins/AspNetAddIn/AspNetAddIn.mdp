@@ -104,6 +104,14 @@
     <File name="MonoDevelop.Html/HtmlSchema.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.AspNet.Parser/Regexes.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.AspNet.Gui/BrowserLauncher.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Html/DocTypeExtensionNode.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Html/DocTypeCompletionData.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Html/DocTypeCompletionDataProvider.cs" subtype="Code" buildaction="Compile" />
+    <File name="Schemas/xhtml1-frameset.xsd" subtype="Code" buildaction="FileCopy" DeployService.UseProjectRelativePath="True" />
+    <File name="Schemas/xhtml1-strict.xsd" subtype="Code" buildaction="FileCopy" DeployService.UseProjectRelativePath="True" />
+    <File name="Schemas/xhtml1-transitional.xsd" subtype="Code" buildaction="FileCopy" DeployService.UseProjectRelativePath="True" />
+    <File name="Schemas/readme.txt" subtype="Code" buildaction="FileCopy" />
+    <File name="Schemas/W3C-License.html" subtype="Code" buildaction="FileCopy" />
   </Contents>
   <References>
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Components" />
@@ -123,7 +131,7 @@
     <ProjectReference type="Gac" localcopy="True" refto="Mono.Addins, Version=0.3.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Deployment" />
     <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Projects.Gui" />
-    <ProjectReference type="Gac" localcopy="True" refto="Commons.Xml.Relaxng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
+    <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.XmlEditor" />
     <ProjectReference type="Gac" localcopy="True" refto="glib-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="pango-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="atk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
@@ -131,9 +139,9 @@
     <ProjectReference type="Gac" localcopy="True" refto="gtk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
   </References>
   <GtkDesignInfo gettextClass="MonoDevelop.Core.GettextCatalog" gtkVersion="2.8.3" />
-  <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="./Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="../../../">
+  <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="../../../">
     <BuildFilesVar Sync="True" Name="FILES" />
-    <DeployFilesVar />
+    <DeployFilesVar Sync="True" Name="DATA_FILES" />
     <ResourcesVar Sync="True" Name="RES" />
     <OthersVar />
     <GacRefVar Sync="True" Name="REFS" Prefix="-r:" />

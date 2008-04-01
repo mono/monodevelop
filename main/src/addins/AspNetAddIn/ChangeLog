@@ -1,3 +1,24 @@
+2008-04-01  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* Schemas, Schemas/xhtml1-transitional.xsd, Schemas/W3C-License.html,
+	  Schemas/xhtml1-strict.xsd, Schemas/readme.txt,
+	  Schemas/xhtml1-frameset.xsd: Add W3C XHTML 1.0 schemas.
+	* MonoDevelop.Html/DocTypeCompletionData.cs,
+	  MonoDevelop.Html/DocTypeCompletionDataProvider.cs: Implement
+	  completion provider for doctype declarations.
+	* MonoDevelop.Html/HtmlSchema.cs: Change to an association between an
+	  doctype and an IXmlCompletionProvider from the XmlEditor.
+	* MonoDevelop.Html/HtmlSchemaService.cs: Load doctypes and associated
+	  schemas from extension point. Expose default doctypes, and
+	  mechanisms for getting completion providers for any registered
+	  doctype, as well as a completion provider for doctypes themselves.
+	* MonoDevelop.Html/DocTypeExtensionNode.cs,
+	  MonoDevelop.AspNet.addin.xml: Added HTML(/SGML/XML) doctypes as an
+	  extension point.
+	* MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs: Implement HTML code
+	  completion for aspx files.
+	* Makefile.am, AspNetAddIn.mdp: Updated.
+
 2008-03-10  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.AspNet.Deployment/WebDeployLaunchDialog.cs: Fix namespace

@@ -8,13 +8,13 @@ REFS =  \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Deployment/MonoDevelop.Deployment.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.MsVisualStudio/MonoDevelop.MsVisualStudio.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Components.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Core.Gui.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Ide.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Projects.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Projects.Gui.dll \
-	-r:Commons.Xml.Relaxng \
 	-r:System \
 	-r:System.Configuration \
 	-r:System.Design \
@@ -88,6 +88,9 @@ FILES =  \
 	MonoDevelop.AspNet/VerifyCodeBehindBuildStep.cs \
 	MonoDevelop.AspNet/WebTypeManager.cs \
 	MonoDevelop.AspNet/XspParameters.cs \
+	MonoDevelop.Html/DocTypeCompletionData.cs \
+	MonoDevelop.Html/DocTypeCompletionDataProvider.cs \
+	MonoDevelop.Html/DocTypeExtensionNode.cs \
 	MonoDevelop.Html/HtmlSchema.cs \
 	MonoDevelop.Html/HtmlSchemaService.cs
 
@@ -115,9 +118,17 @@ RES =  \
 	Templates/WebService-CodeBehind.xft.xml \
 	Templates/WebService-Empty.xft.xml
 
+DATA_FILES =  \
+	Schemas/readme.txt \
+	Schemas/W3C-License.html \
+	Schemas/xhtml1-frameset.xsd \
+	Schemas/xhtml1-strict.xsd \
+	Schemas/xhtml1-transitional.xsd 
+
+DATA_FILE_BUILD = $(addprefix $(ADDIN_BUILD)/Schemas/, $(notdir $(DATA_FILES)))
 
 if ENABLE_ASPNET
-all: $(ASSEMBLY)
+all: $(ASSEMBLY) $(DATA_FILE_BUILD)
 else
 all:
 endif
@@ -127,16 +138,22 @@ $(ASSEMBLY): $(build_sources) $(build_resources)
 	$(CSC) $(CSC_FLAGS) -debug -out:$@ -target:library $(REFS) \
 		$(build_resources:%=/resource:%) $(build_sources)
 
+$(DATA_FILE_BUILD): $(srcdir)$(subst $(ADDIN_BUILD),, $@)
+	mkdir -p $(ADDIN_BUILD)/Schemas
+	cp $(srcdir)/$(subst $(ADDIN_BUILD),,$@) $@
+
 check: all
 
 if ENABLE_ASPNET
-csharpbindinglibdir = $(MD_ADDIN_DIR)/MonoDevelop.AspNet
-csharpbindinglib_DATA = $(ASSEMBLY)
+assemblydir = $(MD_ADDIN_DIR)/MonoDevelop.AspNet
+assembly_DATA = $(ASSEMBLY)
+
+schemadir = $(MD_ADDIN_DIR)/MonoDevelop.AspNet/Schemas
+schema_DATA = $(DATA_FILES)
 endif
 
-CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb
-
-EXTRA_DIST = $(FILES) $(RES)
+CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb $(DATA_FILE_BUILD)
+EXTRA_DIST = $(FILES) $(RES) $(DATA_FILES)
 
 include $(top_srcdir)/Makefile.include
 
