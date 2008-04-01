@@ -1,3 +1,8 @@
+2008-04-01  Mike Krüger <mkrueger@novell.com> 
+
+	* Parser/Parser.cs: No longer generating folding regions for single
+	  line comments.
+
 2008-03-31  Mike Krüger <mkrueger@novell.com> 
 
 	* Parser/CSharpVisitor.cs: added location information for using
