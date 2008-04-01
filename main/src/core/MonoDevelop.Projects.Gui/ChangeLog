@@ -1,3 +1,15 @@
+2008-04-01  Aaron Bockover <abockover@novell.com>
+
+	* gtk-gui/gui.stetic:
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.GeneralProjectOptionsWidget.cs:
+	Added a 'use parent directory as namespace' check box under the default
+	namespace entry
+
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/GeneralProjectOptions.cs:
+	Connect the UseParentDirectoryAsNamespace project property to the new
+	check box; make the default namespace entry insensitive if use parent
+	directory is enabled
+
 2008-03-10  Marcos David Marín Amador <MarcosMarin@gmail.com> 
 
 	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.GeneralProjectOptionsWidget.cs:

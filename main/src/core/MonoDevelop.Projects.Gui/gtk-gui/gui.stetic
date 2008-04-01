@@ -2,7 +2,7 @@
 <stetic-interface>
   <configuration>
     <images-root-path>..</images-root-path>
-    <target-gtk-version>2.10.2</target-gtk-version>
+    <target-gtk-version>2.8.3</target-gtk-version>
   </configuration>
   <import>
     <widget-library name="../../../../build/bin/MonoDevelop.Components.dll" />
@@ -514,6 +514,7 @@ Custom Command</property>
               <widget class="Gtk.RadioButton" id="singleRadioButton">
                 <property name="MemberName" />
                 <property name="Label" translatable="yes">_Single Startup Project</property>
+                <property name="Active">True</property>
                 <property name="DrawIndicator">True</property>
                 <property name="HasLabel">True</property>
                 <property name="UseUnderline">True</property>
@@ -1576,7 +1577,7 @@ Custom Command</property>
               <widget class="Gtk.Label" id="descLabel">
                 <property name="MemberName" />
                 <property name="Xalign">0</property>
-                <property name="Yalign">0,01</property>
+                <property name="Yalign">1</property>
                 <property name="LabelProp" translatable="yes">_Description:</property>
                 <property name="UseUnderline">True</property>
                 <property name="MnemonicWidget">scrolledwindow14</property>
@@ -1721,15 +1722,18 @@ Custom Command</property>
                     <child>
                       <widget class="Gtk.Table" id="table11">
                         <property name="MemberName" />
-                        <property name="NRows">3</property>
+                        <property name="NRows">4</property>
                         <property name="NColumns">2</property>
                         <property name="RowSpacing">6</property>
                         <property name="ColumnSpacing">6</property>
                         <child>
+                          <placeholder />
+                        </child>
+                        <child>
                           <widget class="Gtk.Label" id="descriptionLabel">
                             <property name="MemberName" />
                             <property name="Xalign">0</property>
-                            <property name="Yalign">0,01</property>
+                            <property name="Yalign">1</property>
                             <property name="LabelProp" translatable="yes">_Description:</property>
                             <property name="UseUnderline">True</property>
                             <property name="MnemonicWidget">scrolledwindow5</property>
@@ -1781,6 +1785,31 @@ Custom Command</property>
                             <property name="XShrink">False</property>
                             <property name="YExpand">False</property>
                             <property name="YFill">False</property>
+                            <property name="YShrink">False</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <widget class="Gtk.CheckButton" id="parentDirectoryNamespaceCheckButton">
+                            <property name="MemberName" />
+                            <property name="CanFocus">True</property>
+                            <property name="Label" translatable="yes">Use parent directory name as namespace</property>
+                            <property name="DrawIndicator">True</property>
+                            <property name="HasLabel">True</property>
+                            <property name="UseUnderline">True</property>
+                          </widget>
+                          <packing>
+                            <property name="TopAttach">3</property>
+                            <property name="BottomAttach">4</property>
+                            <property name="LeftAttach">1</property>
+                            <property name="RightAttach">2</property>
+                            <property name="AutoSize">True</property>
+                            <property name="XOptions">Fill</property>
+                            <property name="YOptions">Fill</property>
+                            <property name="XExpand">False</property>
+                            <property name="XFill">True</property>
+                            <property name="XShrink">False</property>
+                            <property name="YExpand">False</property>
+                            <property name="YFill">True</property>
                             <property name="YShrink">False</property>
                           </packing>
                         </child>

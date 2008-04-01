@@ -65,6 +65,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 
 			projectNameEntry.Text = project.Name;
 			projectDefaultNamespaceEntry.Text = project.DefaultNamespace;
+			parentDirectoryNamespaceCheckButton.Active = project.UseParentDirectoryAsNamespace;
 			projectDescriptionTextView.Buffer.Text = project.Description;
 			
 			switch (project.NewFileSearch) 
@@ -84,7 +85,9 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 			}
 			
 			newFilesOnLoadCheckButton.Clicked += new EventHandler(AutoLoadCheckBoxCheckedChangeEvent);
+			parentDirectoryNamespaceCheckButton.Clicked += new EventHandler(ParentDirectoryNamespaceCheckButtonChangeEvent);
 			AutoLoadCheckBoxCheckedChangeEvent(null, null);
+			ParentDirectoryNamespaceCheckButtonChangeEvent(null, null);
 		}			
 
 		void AutoLoadCheckBoxCheckedChangeEvent(object sender, EventArgs e)
@@ -94,12 +97,18 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 				autoInsertNewFilesCheckButton.Active = false;
 			}
 		}
+		
+		void ParentDirectoryNamespaceCheckButtonChangeEvent(object sender, EventArgs e)
+		{
+			projectDefaultNamespaceEntry.Sensitive = !parentDirectoryNamespaceCheckButton.Active;
+		}
 
 		public void  Store (Properties CustomizationObject)
 		{
-			project.Name                 = projectNameEntry.Text;
-			project.DefaultNamespace     = projectDefaultNamespaceEntry.Text;
-			project.Description          = projectDescriptionTextView.Buffer.Text;
+			project.Name                          = projectNameEntry.Text;
+			project.DefaultNamespace              = projectDefaultNamespaceEntry.Text;
+			project.UseParentDirectoryAsNamespace = parentDirectoryNamespaceCheckButton.Active;
+			project.Description                   = projectDescriptionTextView.Buffer.Text;
 			
 			if (newFilesOnLoadCheckButton.Active) {
 				project.NewFileSearch = autoInsertNewFilesCheckButton.Active ?  NewFileSearch.OnLoadAutoInsert : NewFileSearch.OnLoad;
