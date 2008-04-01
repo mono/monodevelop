@@ -621,6 +621,15 @@ namespace MonoDevelop.Projects
 		
 		public virtual string GetDefaultNamespace (string fileName)
 		{
+			if (UseParentDirectoryAsNamespace) {
+				try {
+					DirectoryInfo directory = new DirectoryInfo (Path.GetDirectoryName (fileName));
+					if (directory != null) 
+						return directory.Name;
+				} catch {
+				}
+			}
+			
 			if (!string.IsNullOrEmpty (DefaultNamespace))
 				return DefaultNamespace;
 			

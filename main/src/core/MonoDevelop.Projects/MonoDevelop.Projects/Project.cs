@@ -56,6 +56,9 @@ namespace MonoDevelop.Projects
 		[ItemProperty ("DefaultNamespace", DefaultValue="")]
 		protected string defaultNamespace = String.Empty;
 
+		[ItemProperty ("UseParentDirectoryAsNamespace", DefaultValue=false)]
+		protected bool useParentDirectoryAsNamespace = false;
+
 		[ItemProperty ("newfilesearch", DefaultValue = NewFileSearch.None)]
 		protected NewFileSearch newFileSearch  = NewFileSearch.None;
 
@@ -89,6 +92,14 @@ namespace MonoDevelop.Projects
 			get { return defaultNamespace; }
 		        set {
 				defaultNamespace = value;
+				NotifyModified ();
+			}
+		}
+		
+		public bool UseParentDirectoryAsNamespace {
+			get { return useParentDirectoryAsNamespace; }
+			set { 
+				useParentDirectoryAsNamespace = value; 
 				NotifyModified ();
 			}
 		}

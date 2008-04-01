@@ -1,3 +1,11 @@
+2008-04-01  Aaron Bockover <abockover@novell.com>
+
+	* MonoDevelop.Projects/DotNetProject.cs: If UseParentDirectoryAsNamespace
+	is set, extract the parent directory name from the file and return it
+	as the namespace for the template for the file
+
+	* MonoDevelop.Projects/Project.cs: Added UseParentDirectoryAsNamespace
+
 2008-03-31  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Parser/AbstractUsing.cs: added setter for using
