@@ -91,7 +91,7 @@ namespace CSharpBinding.Parser
 							break;
 						cu.FoldingRegions.Add(new FoldingRegion ("/* */", 
 						                                        new DefaultRegion(comment.StartPosition.Line,
-						                                                          comment.StartPosition.Column - 2,
+						                                                          comment.StartPosition.Column,
 						                                                          comment.EndPosition.Line,
 						                                                          comment.EndPosition.Column)));
 						break;
@@ -111,7 +111,7 @@ namespace CSharpBinding.Parser
 						if (j - i > 1) {
 							cu.FoldingRegions.Add(new FoldingRegion (comment.CommentType == CommentType.SingleLine ? "//..." : "///...", 
 							                                        new DefaultRegion(comment.StartPosition.Line,
-							                                                          comment.StartPosition.Column - ((comment.CommentType == CommentType.SingleLine) ? 2 : 3),
+							                                                          comment.StartPosition.Column),
 							                                                          end.Line,
 							                                                          end.Column)));
 							i = j - 1;
