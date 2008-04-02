@@ -375,21 +375,21 @@ namespace MonoDevelop.SourceEditor
 			menu.Destroyed += delegate {
 				this.QueueDraw ();
 			};
-			menu.Popup (null, null, new Gtk.MenuPositionFunc (PositionPopupMenu), 3, Gtk.Global.CurrentEventTime);
-			menu.Hidden += delegate {
-				menu.Destroy ();
-			};
+			//menu.Popup (null, null, new Gtk.MenuPositionFunc (PositionPopupMenu), 3, Gtk.Global.CurrentEventTime);
+			//menu.Hidden += delegate {
+//					menu.Destroy ();
+//				};
 			
 			IdeApp.CommandService.ShowContextMenu (menu);
 		}
-		void PositionPopupMenu (Menu menu, out int x, out int y, out bool pushIn) 
+		
+/*		void PositionPopupMenu (Menu menu, out int x, out int y, out bool pushIn) 
 		{
 			this.GdkWindow.GetOrigin (out x, out y);
 			x += this.menuPopupLocation.X;
 			y += this.menuPopupLocation.Y;
-			System.Console.WriteLine(x + "/" + y);
 			pushIn = true;
-		}
+		}*/
 		
 //		protected override void OnPopulatePopup (Menu menu)
 //		{
