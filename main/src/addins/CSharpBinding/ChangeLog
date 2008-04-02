@@ -1,5 +1,9 @@
 2008-04-02  Mike Krüger <mkrueger@novell.com> 
 
+	* Parser/Resolver.cs: Fixed namespace bug.
+
+2008-04-02  Mike Krüger <mkrueger@novell.com> 
+
 	* Parser/Parser.cs: fixed typo
 
 2008-04-02  Mike Krüger <mkrueger@novell.com> 

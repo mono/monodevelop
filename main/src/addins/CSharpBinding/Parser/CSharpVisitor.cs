@@ -28,24 +28,23 @@ namespace CSharpBinding.Parser
 			}
 		}
 		
-		public override object VisitCompilationUnit(CompilationUnit compilationUnit, object data)
+		public override object VisitCompilationUnit (CompilationUnit compilationUnit, object data)
 		{
 			//TODO: usings, Comments
 			compilationUnit.AcceptChildren(this, data);
 			return cu;
 		}
 		
-		public override object VisitUsingDeclaration(ICSharpCode.NRefactory.Ast.UsingDeclaration usingDeclaration, object data)
+		public override object VisitUsingDeclaration (ICSharpCode.NRefactory.Ast.UsingDeclaration usingDeclaration, object data)
 		{
 			DefaultUsing u = new DefaultUsing();
-			System.Console.WriteLine("usings" + usingDeclaration.StartLocation);
-			System.Console.WriteLine("usinge" + usingDeclaration.EndLocation);
 			u.Region = GetRegion(usingDeclaration.StartLocation, usingDeclaration.EndLocation);
 			foreach (ICSharpCode.NRefactory.Ast.Using us in usingDeclaration.Usings) {
+				System.Console.WriteLine(us);
 				if (us.IsAlias)
 					u.Aliases [us.Name] = new ReturnType (us.Alias);
 				else
-					u.Usings.Add(us.Name);
+					u.Usings.Add (us.Name);
 			}
 			cu.Usings.Add(u);
 			return data;

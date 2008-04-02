@@ -1028,7 +1028,7 @@ namespace CSharpBinding.Parser
 				return null;
 			}
 			foreach (IUsing u in unit.Usings) {
-				if (u != null && (u.Region == null || u.Region.IsInside(caretLine, caretColumn))) {
+				if (u != null) {
 					string nameSpace = parserContext.SearchNamespace (u, name);
 					if (nameSpace != null) {
 						return nameSpace;
@@ -1137,7 +1137,7 @@ namespace CSharpBinding.Parser
 			
 			if (unit != null) {
 				foreach (IUsing u in unit.Usings) {
-					if (u != null && (u.Region == null || u.Region.IsInside(caretLine, caretColumn))) {
+					if (u != null) {
 						c = parserContext.SearchType (u, name, genericArguments);
 						if (c != null)
 							return c;
@@ -1168,7 +1168,7 @@ namespace CSharpBinding.Parser
 				return null;
 				
 			foreach (IUsing u in unit.Usings) {
-				if (u != null && (u.Region == null || u.Region.IsInside(caretLine, caretColumn))) {
+				if (u != null) {
 					IReturnType rt = u.GetAlias (name);
 					if (rt != null)
 						return rt;
@@ -1510,7 +1510,7 @@ namespace CSharpBinding.Parser
 			
 			// Add contents of imported namespaces
 			foreach (IUsing u in currentUnit.Usings) {
-				if (u != null && (u.Region == null || u.Region.IsInside(caretLine, caretColumn))) {
+				if (u != null) {
 					foreach (string name in u.Usings) {
 						result.AddRange(parserContext.GetNamespaceContents (name, true));
 					}
