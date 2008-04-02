@@ -4227,9 +4227,9 @@ public TypeReferenceExpression(string typeName) : this(new TypeReference(typeNam
 			Usings = usings;
 		}
 		
-public UsingDeclaration(string @namespace, TypeReference alias) { usings = new List<Using>(1); usings.Add(new Using(@namespace, alias)); }
+		public UsingDeclaration(string @namespace, TypeReference alias) { usings = new List<Using>(1); usings.Add(new Using(@namespace, alias)); }
 		
-public UsingDeclaration(string @namespace) : this(@namespace, null) {}
+		public UsingDeclaration(string @namespace) : this(@namespace, null) {}
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
 			return visitor.VisitUsingDeclaration(this, data);

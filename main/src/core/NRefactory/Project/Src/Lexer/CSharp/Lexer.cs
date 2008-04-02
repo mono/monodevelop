@@ -837,16 +837,17 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 		
 		void ReadComment()
 		{
+			int col = Col - 1;
 			switch (ReaderRead()) {
 				case '*':
-					ReadMultiLineComment();
+					ReadMultiLineComment (col);
 					break;
 				case '/':
 					if (ReaderPeek() == '/') {
 						ReaderRead();
-						ReadSingleLineComment(CommentType.Documentation);
+						ReadSingleLineComment (col, CommentType.Documentation);
 					} else {
-						ReadSingleLineComment(CommentType.SingleLine);
+						ReadSingleLineComment (col, CommentType.SingleLine);
 					}
 					break;
 				default:
@@ -889,21 +890,21 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 			return sb.ToString();
 		}
 		
-		void ReadSingleLineComment(CommentType commentType)
+		void ReadSingleLineComment(int startCol, CommentType commentType)
 		{
 			if (this.SkipAllComments) {
 				SkipToEndOfLine();
 			} else {
 				int col = Col;
 				int line = Line;
-				specialTracker.StartComment(commentType, new Location(col, line));
+				specialTracker.StartComment(commentType, new Location(startCol, line));
 				string comment = ReadCommentToEOL();
 				specialTracker.AddString(comment);
 				specialTracker.FinishComment(new Location(col + comment.Length, line));
 			}
 		}
 		
-		void ReadMultiLineComment()
+		void ReadMultiLineComment(int startCol)
 		{
 			int nextChar;
 			if (this.SkipAllComments) {
@@ -917,7 +918,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 					}
 				}
 			} else {
-				specialTracker.StartComment(CommentType.Block, new Location(Col, Line));
+				specialTracker.StartComment(CommentType.Block, new Location (startCol, Line));
 				
 				// sc* = special comment handling (TO DO markers)
 				string scTag = null; // is set to non-null value when we are inside a comment marker

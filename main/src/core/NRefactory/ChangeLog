@@ -1,3 +1,8 @@
+2008-04-02  Mike Krüger <mkrueger@novell.com> 
+
+	* Project/Src/Lexer/CSharp/Lexer.cs, Project/Src/Ast/Generated.cs:
+	  fixed comment positioning.
+
 2008-03-31  Mike Krüger <mkrueger@novell.com> 
 
 	* Project/Src/Lexer/CSharp/Lexer.cs: Corrected comment end position.
