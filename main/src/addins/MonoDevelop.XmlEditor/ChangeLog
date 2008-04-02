@@ -1,3 +1,9 @@
+2008-04-02  Michael Hutchinson  <mhutchinson@novell.com> 
+
+	* MonoDevelop.XmlEditor.addin.xml: Bump version to 0.19 to match 
+	  other addins. Fixes dependency resolution on Mono HEAD (but wasn't 
+	  a problem on 1.9, not sure why).
+
 2008-04-01  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.XmlEditor.Gui/XmlSchemasPanelWidget.cs, Makefile.am,

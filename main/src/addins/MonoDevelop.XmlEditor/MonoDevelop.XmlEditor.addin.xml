@@ -6,7 +6,7 @@
        url         = "http://md-xed.sourceforge.net"
        description = "XML Editor"
        category    = "IDE extensions"
-       version     = "0.6.0">
+       version     = "0.19.0">
 	<Runtime>
 		<Import assembly="MonoDevelop.XmlEditor.dll" />
 		<Import file="schemas/appconfig.xsd" />
