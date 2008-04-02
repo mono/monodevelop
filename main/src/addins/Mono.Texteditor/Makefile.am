@@ -28,6 +28,7 @@ FILES =  \
 	Mono.TextEditor.Highlighting/XmlReadHelper.cs \
 	Mono.TextEditor/BookmarkMargin.cs \
 	Mono.TextEditor/Caret.cs \
+	Mono.TextEditor/CodeSegmentPreviewWindow.cs \
 	Mono.TextEditor/DefaultEditActions.cs \
 	Mono.TextEditor/Document.cs \
 	Mono.TextEditor/DocumentLocation.cs \

@@ -831,6 +831,10 @@ namespace Mono.TextEditor
 			} else {
 				endLine++;
 			}
+			foreach (IMargin margin in this.margins) {
+				if (margin.IsVisible) 
+					margin.BeginRender ();
+			}
 			
 			int startY = startLine * this.LineHeight - reminder;
 			int curY = startY;
@@ -850,6 +854,11 @@ namespace Mono.TextEditor
 				if (curY > area.Bottom)
 					break;
 			}
+			foreach (IMargin margin in this.margins) {
+				if (margin.IsVisible) 
+					margin.EndRender ();
+			}
+			
 		}
 		
 		double oldVadjustment = 0;

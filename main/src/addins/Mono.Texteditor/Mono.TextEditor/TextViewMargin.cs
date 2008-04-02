@@ -179,6 +179,7 @@ namespace Mono.TextEditor
 		
 		void DisposeGCs ()
 		{
+			ShowTooltip (null, Gdk.Rectangle.Zero);
 			if (gc != null) {
 				gc.Dispose ();
 				gc = null;
@@ -609,10 +610,47 @@ namespace Mono.TextEditor
 			return System.Math.Min (line.EndOffset - 1, System.Math.Max (line.Offset, offset + (forwardDirection ? 0 : 1)));
 		}
 		
+		CodeSegmentPreviewWindow previewWindow = null;
+		void ShowTooltip (ISegment segment, Rectangle hintRectangle)
+		{
+			if (previewWindow != null) {
+				previewWindow.Destroy ();
+				previewWindow = null;
+			}
+			if (segment == null) {
+				return;
+			}
+			previewWindow = new CodeSegmentPreviewWindow (this.textEditor, segment);
+			int ox = 0, oy = 0;
+			this.textEditor.GdkWindow.GetOrigin (out ox, out oy);
+			
+			int x = hintRectangle.Right;
+			int y = hintRectangle.Bottom;
+			int w = previewWindow.SizeRequest ().Width;
+			int h = previewWindow.SizeRequest ().Height;
+			if (x + ox + w > this.textEditor.GdkWindow.Screen.Width) 
+				x = hintRectangle.Left - w;
+			if (y + oy + h > this.textEditor.GdkWindow.Screen.Height) 
+				y = hintRectangle.Top - h;
+			previewWindow.Move (ox + x, oy + y);
+			previewWindow.ShowAll ();
+		}
+		
 		public override void MouseHover (int x, int y, bool buttonPressed)
 		{
-			if (!buttonPressed)
+			if (!buttonPressed) {
+				int lineNr = (int)((y + this.textEditor.VAdjustment.Value) / this.LineHeight);
+				if (shownFoldings.ContainsKey (lineNr)) {
+					foreach (KeyValuePair<Rectangle, FoldSegment> shownFolding in shownFoldings [lineNr]) {
+						if (shownFolding.Key.Contains (x + this.XOffset, y)) {
+							ShowTooltip (shownFolding.Value, shownFolding.Key);
+							return;
+						}
+					}
+				}
+				ShowTooltip (null, Gdk.Rectangle.Zero);
 				return;
+			}
 			if (inSelectionDrag) {
 				DocumentLocation loc = VisualToDocumentLocation (x, y);
 				Caret.PreserveSelection = true;
@@ -724,10 +762,12 @@ namespace Mono.TextEditor
 		}
 		
 		List<ISegment> selectedRegions = new List<ISegment> ();
-		
+		Dictionary <int, List<KeyValuePair<Rectangle, FoldSegment>>> shownFoldings = new Dictionary <int, List<KeyValuePair<Rectangle, FoldSegment>>> ();
 		Gdk.Color      defaultBgColor;
+		
 		public override void Draw (Gdk.Drawable win, Gdk.Rectangle area, int lineNr, int x, int y)
 		{
+			shownFoldings [lineNr] = new System.Collections.Generic.List<System.Collections.Generic.KeyValuePair<Gdk.Rectangle,FoldSegment>> ();
 			this.caretX = -1;
 			layout.Alignment = Pango.Alignment.Left;
 			LineSegment line = lineNr < Document.LineCount ? Document.GetLine (lineNr) : null;
@@ -786,9 +826,12 @@ namespace Mono.TextEditor
 					layout.GetPixelSize (out width, out height);
 					bool isFoldingSelected = textEditor.IsSomethingSelected && textEditor.SelectionRange.Contains (folding);
 					gc.RgbFgColor = isFoldingSelected ? ColorStyle.SelectedBg : defaultBgColor;
-					win.DrawRectangle (gc, true, new Rectangle (xPos, y, width - 1, this.LineHeight - 1));
+					Rectangle foldingRectangle = new Rectangle (xPos, y, width - 1, this.LineHeight - 1);
+					win.DrawRectangle (gc, true, foldingRectangle);
 					gc.RgbFgColor = isFoldingSelected ? ColorStyle.SelectedFg : ColorStyle.FoldLine;
-					win.DrawRectangle (gc, false, new Rectangle (xPos, y, width - 1, this.LineHeight - 1));
+					win.DrawRectangle (gc, false, foldingRectangle);
+					
+					shownFoldings [lineNr].Add (new KeyValuePair<Rectangle, FoldSegment> (foldingRectangle, folding));
 					
 					gc.RgbFgColor = isFoldingSelected ? ColorStyle.SelectedFg : ColorStyle.FoldLine;
 					win.DrawLayout (gc, xPos, y, layout);
@@ -837,6 +880,7 @@ namespace Mono.TextEditor
 		
 		public override void MouseLeft ()
 		{
+			ShowTooltip (null, Gdk.Rectangle.Zero);
 		}
 		
 		public DocumentLocation VisualToDocumentLocation (int x, int y)

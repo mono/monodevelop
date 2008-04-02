@@ -1,3 +1,12 @@
+2008-04-02  Mike Krüger <mkrueger@novell.com> 
+
+	* Mono.TextEditor.mdp, Mono.TextEditor/TextViewMargin.cs,
+	  Mono.TextEditor/IMargin.cs,
+	  Mono.TextEditor/CodeSegmentPreviewWindow.cs,
+	  Mono.TextEditor/LineSegmentTree.cs, Mono.TextEditor/TextEditor.cs,
+	  Mono.TextEditor.Highlighting/SyntaxMode.cs, Makefile.am: Added
+	  preview window for collapsed regions (feature request 363639).
+
 2008-03-27  Mike Krüger <mkrueger@novell.com> 
 
 	* Mono.TextEditor/Document.cs: Removed debug message.

@@ -28,6 +28,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
 
@@ -59,6 +60,35 @@ namespace Mono.TextEditor.Highlighting
 		public Chunk[] GetChunks (Document doc, Style style, LineSegment line, int offset, int length)
 		{
 			return new ChunkParser (doc, style, this, line).GetChunks (offset, length);
+		}
+		
+		public string GetMarkup (Document doc, Style style, int offset, int length)
+		{
+			int curOffset = offset;
+			StringBuilder result = new StringBuilder ();
+			while (curOffset < offset + length) {
+				LineSegment line = doc.GetLineByOffset (curOffset);
+				int toOffset = System.Math.Min (line.Offset + line.EditableLength, offset + length);
+				Chunk[] chunks = GetChunks (doc, style, line, curOffset, toOffset - curOffset);
+				foreach (Chunk chunk in chunks) {
+					result.Append("<span foreground=\"");
+					result.Append(String.Format ("#{0:X2}{1:X2}{2:X2}", 
+					                             chunk.Style.Color.Red   >> 8,
+					                             chunk.Style.Color.Green >> 8,
+					                             chunk.Style.Color.Blue  >> 8));
+					result.Append("\">");
+					string text = doc.GetTextAt (chunk);
+					text = text.Replace ("&", "&amp;");
+					text = text.Replace ("<", "&lt;");
+					text = text.Replace (">", "&gt;");
+					result.Append(text);
+					result.Append("</span>");
+				}
+				curOffset = line.EndOffset + 1;
+				if (curOffset < offset + length)
+					result.AppendLine ();
+			}
+			return result.ToString ();
 		}
 		
 		class ChunkParser
