@@ -108,13 +108,14 @@ namespace MonoDevelop.AspNet.Parser.Dom
 			case TagType.Close:
 				TagNode tn = currentNode as TagNode;
 				if (tn == null) {
-					errors.Add (new ParseException (location, "Closing tag '" + tagId +"'does not match an opening tag."));
+					errors.Add (new ParseException (location, "Closing tag '" + tagId +"' does not match an opening tag."));
 				} else {
 					if (tn.TagName == tagId) {
 						tn.EndLocation = location;
 						currentNode = currentNode.Parent;
+						tn.Close ();
 					} else {
-						errors.Add (new ParseException (location, "Closing tag '" + tagId +"'does not match opening tag '" + tn.TagName + "'."));
+						errors.Add (new ParseException (location, "Closing tag '" + tagId +"' does not match opening tag '" + tn.TagName + "'."));
 						currentNode = currentNode.Parent;
 						TagParsed (location, TagType.Close, tagId, null);
 					}
@@ -148,7 +149,9 @@ namespace MonoDevelop.AspNet.Parser.Dom
 				
 			case TagType.SelfClosing:
 				try {
-					AddtoCurrent (location, new TagNode (location, tagId, attributes));
+					tn = new TagNode (location, tagId, attributes);
+					AddtoCurrent (location, tn);
+					tn.Close ();
 				} catch (ParseException ex) {
 					errors.Add (ex);
 				}
@@ -172,6 +175,7 @@ namespace MonoDevelop.AspNet.Parser.Dom
 					//HACK: implicitly closing tags in HTML4
 					if (Array.IndexOf (implicitSelfClosing, tagId.ToLowerInvariant ()) > -1) {
 						errors.Add (new ParseException (location, "Unclosed " + tagId + " tag."));
+						tn.Close ();
 					} else {
 						currentNode = child;
 					}

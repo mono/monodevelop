@@ -28,6 +28,7 @@
 
 using System;
 
+using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Gui.Completion;
 using MonoDevelop.Ide.Gui.Content;
@@ -69,7 +70,7 @@ namespace MonoDevelop.AspNet.Gui
 		
 		public override ICompletionDataProvider HandleCodeCompletion (ICodeCompletionContext completionContext, char completionChar)
 		{
-			//FIXME: lines in completionContext are zero-indexed, but ILocation is 1-indexed. This could easily cause bugs.
+			//FIXME: lines in completionContext are zero-indexed, but ILocation and buffer are 1-indexed. This could easily cause bugs.
 			int line = completionContext.TriggerLine + 1, col = completionContext.TriggerLineOffset;
 			
 			ITextBuffer buf = this.Buffer;
@@ -79,6 +80,10 @@ namespace MonoDevelop.AspNet.Gui
 			int currentPosition = buf.CursorPosition - 1;
 			char currentChar = buf.GetCharAt (currentPosition);
 			char previousChar = buf.GetCharAt (currentPosition - 1);
+			
+			//don't trigger on arrow keys
+			if (currentChar != completionChar)
+				return base.HandleCodeCompletion (completionContext, currentChar);
 			
 			//doctype completion
 			if (line <= 5 && currentChar ==' ' && previousChar == 'E') {
@@ -93,6 +98,7 @@ namespace MonoDevelop.AspNet.Gui
 			//decide whether completion will be activated, to avoid unnecessary
 			//parsing, which hurts editor responsiveness
 			switch (currentChar) {
+			case '>':
 			case '<':
 				break;
 			case ' ':
@@ -114,17 +120,12 @@ namespace MonoDevelop.AspNet.Gui
 			try {
 				doc = GetAspNetDocument ();
 			} catch (Exception ex) {
-				MonoDevelop.Core.LoggingService.LogError ("Unhandled error in ASP.NET parser", ex);
+				LoggingService.LogError ("Unhandled error in ASP.NET parser", ex);
 				return base.HandleCodeCompletion (completionContext, currentChar);
 			}
 			
 			Node n = doc.RootNode.GetNodeAtPosition (line, col);
-			if (n != null) {
-				MonoDevelop.Core.LoggingService.LogDebug ("AspNetCompletion({0},{1}): {2}",
-				    completionContext.TriggerLine + 1,
-				    completionContext.TriggerLineOffset,
-				    n.ToString ());
-			}
+			LoggingService.LogDebug ("AspNetCompletion({0},{1}): {2}", line, col, n==null? "(not found)" : n.ToString ());
 			
 			HtmlSchema schema = HtmlSchemaService.GetSchema (doc.Info.DocType);
 			if (schema == null)
@@ -144,8 +145,26 @@ namespace MonoDevelop.AspNet.Gui
 				return cp;
 			}
 			
+			//closing tag completion
+			if (currentPosition - 1 > 0 && currentChar == '>') {
+				//get previous node in document
+				int linePrev, colPrev;
+				buf.GetLineColumnFromPosition (currentPosition - 1, out linePrev, out colPrev);
+				TagNode tnPrev = doc.RootNode.GetNodeAtPosition (linePrev, colPrev) as TagNode;
+				LoggingService.LogDebug ("AspNetCompletionPrev({0},{1}): {2}", linePrev, colPrev, tnPrev==null? "(not found)" : tnPrev.ToString ());
+				
+				if (tnPrev != null && !string.IsNullOrEmpty (tnPrev.TagName) && !tnPrev.IsClosed) {
+					CodeCompletionDataProvider cp = new CodeCompletionDataProvider (null, GetAmbience ());
+					cp.AddCompletionData (
+					    new MonoDevelop.XmlEditor.Completion.ClosingBracketCompletionData (
+					        String.Concat ("</", tnPrev.TagName, ">"), currentPosition)
+					    );
+					return cp;
+				}
+			}
+			
 			//attributes within tags
-			TagNode tn = n as TagNode;
+			MonoDevelop.AspNet.Parser.Dom.TagNode tn = n as TagNode;
 			if (tn != null && tn.LocationContainsPosition (line, col) == 0) {
 				CodeCompletionDataProvider cp = new CodeCompletionDataProvider (null, GetAmbience ());
 				

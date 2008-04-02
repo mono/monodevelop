@@ -40,6 +40,7 @@ namespace MonoDevelop.AspNet.Parser.Dom
 	{
 		protected List<Node> children = new List<Node> ();
 		ILocation endLocation;
+		bool isClosed = false;
 		
 		public ParentNode (ILocation location)
 			: base (location)
@@ -48,19 +49,35 @@ namespace MonoDevelop.AspNet.Parser.Dom
 		
 		public void AddChild (Node child)
 		{
+			System.Diagnostics.Debug.Assert (isClosed != true);
 			children.Add (child);
 			child.parent = this;
 		}
 		
 		public override void AddText (ILocation location, string text)
 		{
+			System.Diagnostics.Debug.Assert (isClosed != true);
 			this.AddChild (new TextNode (location, text));
 		}
 		
 		//if the tag has an end tag, this is the location of the end tag
 		public ILocation EndLocation {
-			internal set { endLocation = new Location (value); }
+			internal set {
+				System.Diagnostics.Debug.Assert (value != null);
+				endLocation = new Location (value);
+				isClosed = true;
+			}
 			get { return endLocation; }
+		}
+		
+		public bool IsClosed {
+			get { return isClosed; }
+		}
+		
+		public void Close ()
+		{
+			System.Diagnostics.Debug.Assert (isClosed != true);
+			isClosed = true;
 		}
 		
 		public override Node GetNodeAtPosition (int line, int col)
@@ -94,7 +111,7 @@ namespace MonoDevelop.AspNet.Parser.Dom
 				else
 					end = middle;
 				
-				//special-cas ethe end so that gaps in the ILocation continuum can't cause an infinite loop
+				//special-case the end so that gaps in the ILocation continuum can't cause an infinite loop
 				if (end - start == 1) {
 					Node n = (middle == start)? children[end] : children[start];
 					if (n.ContainsPosition (line, col) == 0)

@@ -1,3 +1,13 @@
+2008-04-02  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.AspNet.Parser.Dom/ParentNode.cs,
+	  MonoDevelop.AspNet.Parser.Dom/RootNode.cs: Add a mechanism for
+	  determining/indicating whether a tag has been closed.
+	* MonoDevelop.Html/DocTypeCompletionData.cs: Remove debug message.
+	* MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs: Implement closing
+	  tag completion for unclosed tags. Reduce spurious completion
+	  triggering.
+
 2008-04-01  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* Schemas, Schemas/xhtml1-transitional.xsd, Schemas/W3C-License.html,

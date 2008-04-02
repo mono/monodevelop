@@ -79,7 +79,6 @@ namespace MonoDevelop.Html
 					int start = context.TriggerOffset - docTypeStart.Length;
 					if (start >= 0) {
 						string readback = buf.GetText (start, context.TriggerOffset);
-						System.Console.WriteLine("'{0}'", readback);
 						if (string.Compare (readback, docTypeStart, System.StringComparison.InvariantCulture) == 0)
 							deleteStartOffset -= docTypeStart.Length;
 					}
