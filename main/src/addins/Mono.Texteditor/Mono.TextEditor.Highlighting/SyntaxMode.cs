@@ -76,7 +76,12 @@ namespace Mono.TextEditor.Highlighting
 					                             chunk.Style.Color.Red   >> 8,
 					                             chunk.Style.Color.Green >> 8,
 					                             chunk.Style.Color.Blue  >> 8));
-					result.Append("\">");
+					result.Append("\"");
+					if (chunk.Style.Bold)
+						result.Append(" weight=\"bold\"");
+					if (chunk.Style.Italic)
+						result.Append(" style=\"italic\"");
+					result.Append(">");
 					string text = doc.GetTextAt (chunk);
 					text = text.Replace ("&", "&amp;");
 					text = text.Replace ("<", "&lt;");

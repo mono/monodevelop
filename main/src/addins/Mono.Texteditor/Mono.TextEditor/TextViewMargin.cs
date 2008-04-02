@@ -611,12 +611,16 @@ namespace Mono.TextEditor
 		}
 		
 		CodeSegmentPreviewWindow previewWindow = null;
+		ISegment previewSegment = null;
 		void ShowTooltip (ISegment segment, Rectangle hintRectangle)
 		{
+			if (previewSegment == segment)
+				return;
 			if (previewWindow != null) {
 				previewWindow.Destroy ();
 				previewWindow = null;
 			}
+			previewSegment = segment;
 			if (segment == null) {
 				return;
 			}
@@ -639,12 +643,14 @@ namespace Mono.TextEditor
 		public override void MouseHover (int x, int y, bool buttonPressed)
 		{
 			if (!buttonPressed) {
-				int lineNr = (int)((y + this.textEditor.VAdjustment.Value) / this.LineHeight);
-				if (shownFoldings.ContainsKey (lineNr)) {
-					foreach (KeyValuePair<Rectangle, FoldSegment> shownFolding in shownFoldings [lineNr]) {
-						if (shownFolding.Key.Contains (x + this.XOffset, y)) {
-							ShowTooltip (shownFolding.Value, shownFolding.Key);
-							return;
+				int lineNr = y / this.LineHeight;
+				for (int l = lineNr - 1; l < lineNr + 1; l++) {
+					if (shownFoldings.ContainsKey (l)) {
+						foreach (KeyValuePair<Rectangle, FoldSegment> shownFolding in shownFoldings [l]) {
+							if (shownFolding.Key.Contains (x + this.XOffset, y)) {
+								ShowTooltip (shownFolding.Value, shownFolding.Key);
+								return;
+							}
 						}
 					}
 				}
@@ -767,7 +773,8 @@ namespace Mono.TextEditor
 		
 		public override void Draw (Gdk.Drawable win, Gdk.Rectangle area, int lineNr, int x, int y)
 		{
-			shownFoldings [lineNr] = new System.Collections.Generic.List<System.Collections.Generic.KeyValuePair<Gdk.Rectangle,FoldSegment>> ();
+			int visibleLine = y / this.LineHeight;
+			shownFoldings [visibleLine] = new System.Collections.Generic.List<System.Collections.Generic.KeyValuePair<Gdk.Rectangle,FoldSegment>> ();
 			this.caretX = -1;
 			layout.Alignment = Pango.Alignment.Left;
 			LineSegment line = lineNr < Document.LineCount ? Document.GetLine (lineNr) : null;
@@ -831,7 +838,7 @@ namespace Mono.TextEditor
 					gc.RgbFgColor = isFoldingSelected ? ColorStyle.SelectedFg : ColorStyle.FoldLine;
 					win.DrawRectangle (gc, false, foldingRectangle);
 					
-					shownFoldings [lineNr].Add (new KeyValuePair<Rectangle, FoldSegment> (foldingRectangle, folding));
+					shownFoldings [visibleLine].Add (new KeyValuePair<Rectangle, FoldSegment> (foldingRectangle, folding));
 					
 					gc.RgbFgColor = isFoldingSelected ? ColorStyle.SelectedFg : ColorStyle.FoldLine;
 					win.DrawLayout (gc, xPos, y, layout);

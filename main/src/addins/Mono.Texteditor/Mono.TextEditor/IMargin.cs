@@ -56,9 +56,6 @@ namespace Mono.TextEditor
 		void MouseReleased (int button, int x, int y, Gdk.ModifierType modifierState);
 		void MouseHover (int x, int y, bool buttonPressed);
 		void MouseLeft ();
-		
-		void BeginRender ();
-		void EndRender ();
 	}
 	
 	public abstract class AbstractMargin : IMargin, IDisposable
@@ -112,14 +109,6 @@ namespace Mono.TextEditor
 		}
 		
 		public virtual void MouseLeft ()
-		{
-			
-		}
-		
-		public virtual void BeginRender ()
-		{
-		}
-		public virtual void EndRender ()
 		{
 		}
 		

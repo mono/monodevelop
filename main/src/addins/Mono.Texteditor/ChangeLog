@@ -1,5 +1,12 @@
 2008-04-02  Mike Krüger <mkrueger@novell.com> 
 
+	* Mono.TextEditor/TextViewMargin.cs, Mono.TextEditor/IMargin.cs,
+	  Mono.TextEditor/TextEditor.cs,
+	  Mono.TextEditor.Highlighting/SyntaxMode.cs: Optimized preview
+	  window a bit.
+
+2008-04-02  Mike Krüger <mkrueger@novell.com> 
+
 	* Mono.TextEditor.mdp, Mono.TextEditor/TextViewMargin.cs,
 	  Mono.TextEditor/IMargin.cs,
 	  Mono.TextEditor/CodeSegmentPreviewWindow.cs,
