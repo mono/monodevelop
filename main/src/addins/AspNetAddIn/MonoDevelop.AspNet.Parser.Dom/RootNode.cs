@@ -164,21 +164,24 @@ namespace MonoDevelop.AspNet.Parser.Dom
 					if (prevTag != null) {
 						if (Array.IndexOf (implicitCloseOnBlock, prevTag.TagName.ToLowerInvariant ()) > -1
 						    && Array.IndexOf (blockLevel, tagId.ToLowerInvariant ()) > -1) {
-							errors.Add (new ParseException (location, "Unclosed " + prevTag.TagName + " tag."));
+							errors.Add (new ParseException (location, "Unclosed " + prevTag.TagName + " tag. Assuming implicitly closed by block level tag."));
+							prevTag.Close ();
 							currentNode = currentNode.Parent;
 						}
 					}
-				
-					Node child = new TagNode (location, tagId, attributes);
+					
+					//create and add the new tag
+					TagNode child = new TagNode (location, tagId, attributes);
 					AddtoCurrent (location, child);
 					
 					//HACK: implicitly closing tags in HTML4
 					if (Array.IndexOf (implicitSelfClosing, tagId.ToLowerInvariant ()) > -1) {
-						errors.Add (new ParseException (location, "Unclosed " + tagId + " tag."));
-						tn.Close ();
+						errors.Add (new ParseException (location, "Unclosed " + tagId + " tag. Assuming implicitly closed."));
+						child.Close ();
 					} else {
 						currentNode = child;
 					}
+					
 				} catch (ParseException ex) {
 					errors.Add (ex);
 				}

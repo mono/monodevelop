@@ -1,5 +1,10 @@
 2008-04-02  Michael Hutchinson <mhutchinson@novell.com> 
 
+	* MonoDevelop.AspNet.Parser.Dom/RootNode.cs: Fix build and close
+	  correct tags.
+
+2008-04-02  Michael Hutchinson <mhutchinson@novell.com> 
+
 	* MonoDevelop.AspNet.Parser.Dom/ParentNode.cs,
 	  MonoDevelop.AspNet.Parser.Dom/RootNode.cs: Add a mechanism for
 	  determining/indicating whether a tag has been closed.
