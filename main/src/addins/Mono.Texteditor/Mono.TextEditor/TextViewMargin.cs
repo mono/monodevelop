@@ -381,7 +381,7 @@ namespace Mono.TextEditor
 			
 			for (int offset = startOffset; offset < endOffset; offset++) {
 				char ch = Document.GetCharAt (offset);
-				if (TextEditorOptions.Options.HighlightMatchingBracket && offset == this.highlightBracketOffset) {
+				if (TextEditorOptions.Options.HighlightMatchingBracket && offset == this.highlightBracketOffset && (!this.textEditor.IsSomethingSelected || this.textEditor.SelectionRange.Length == 0)) {
 					OutputWordBuilder (win, line, selected, style, ref visibleColumn, ref xPos, y, offset);
 					
 					bool drawText = true;

@@ -1,5 +1,10 @@
 2008-04-02  Mike Krüger <mkrueger@novell.com> 
 
+	* Mono.TextEditor/TextViewMargin.cs: fixed 'Bug 324272 - in search and
+	  replace, parenthesis matching should be disabled'
+
+2008-04-02  Mike Krüger <mkrueger@novell.com> 
+
 	* Mono.TextEditor/TextEditorData.cs: worked on  bug 'Bug 376136 - Array
 	  out of bounds selecting text'.
 
