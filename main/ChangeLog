@@ -1,3 +1,8 @@
+2008-04-02  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* src/addins/Makefile.am: Update build order to take account of new 
+	  dependencies. 
+
 2008-03-21  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* monodevelop.pc.in: Include Mono.TextEditor.dll, so that the compiler
