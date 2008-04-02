@@ -1,3 +1,10 @@
+2008-04-02  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.XmlEditor.Completion/ClosingBracketCompletionDataProvider.cs,
+	  MonoDevelop.XmlEditor/ClosingBracketCompletionDataProvider.cs:
+	  Moved and made the data object public.
+	* Makefile.am, MonoDevelop.XmlEditor.mdp: Updated.
+
 2008-04-02  Michael Hutchinson  <mhutchinson@novell.com> 
 
 	* MonoDevelop.XmlEditor.addin.xml: Bump version to 0.19 to match 

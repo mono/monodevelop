@@ -25,6 +25,7 @@ FILES =  \
 	gtk-gui/generated.cs \
 	gtk-gui/MonoDevelop.XmlEditor.Gui.XmlEditorOptionsPanelWidget.cs \
 	gtk-gui/MonoDevelop.XmlEditor.Gui.XmlSchemasPanelWidget.cs \
+	MonoDevelop.XmlEditor.Completion/ClosingBracketCompletionDataProvider.cs \
 	MonoDevelop.XmlEditor.Completion/IXmlCompletionProvider.cs \
 	MonoDevelop.XmlEditor.Completion/XmlCompletionData.cs \
 	MonoDevelop.XmlEditor.Completion/XmlCompletionDataCollection.cs \
@@ -35,7 +36,6 @@ FILES =  \
 	MonoDevelop.XmlEditor.Gui/XmlEditorOptionsPanelWidget.cs \
 	MonoDevelop.XmlEditor.Gui/XmlSchemasPanel.cs \
 	MonoDevelop.XmlEditor.Gui/XmlSchemasPanelWidget.cs \
-	MonoDevelop.XmlEditor/ClosingBracketCompletionDataProvider.cs \
 	MonoDevelop.XmlEditor/Commands.cs \
 	MonoDevelop.XmlEditor/EncodedStringWriter.cs \
 	MonoDevelop.XmlEditor/QualifiedName.cs \

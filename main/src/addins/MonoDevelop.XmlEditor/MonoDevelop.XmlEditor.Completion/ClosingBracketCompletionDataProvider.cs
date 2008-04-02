@@ -19,7 +19,7 @@ using System;
 using MonoDevelop.Projects.Gui.Completion;
 using MonoDevelop.Ide.Gui.Content;
 
-namespace MonoDevelop.XmlEditor
+namespace MonoDevelop.XmlEditor.Completion
 {
 	
 	
@@ -105,7 +105,7 @@ namespace MonoDevelop.XmlEditor
 		}
 	}
 	
-	class ClosingBracketCompletionData : IActionCompletionData
+	public class ClosingBracketCompletionData : IActionCompletionData
 	{
 		string closingElement;
 		int cursorOffset;
@@ -139,7 +139,7 @@ namespace MonoDevelop.XmlEditor
 			if (buf != null) {
 				buf.BeginAtomicUndo ();
 				buf.InsertText (buf.CursorPosition, closingElement);
-				// Move caret into the middle of the attribute quotes.
+				// Move caret into the middle of the tags
 				buf.CursorPosition = context.TriggerOffset + cursorOffset;
 				buf.Select (buf.CursorPosition, buf.CursorPosition);
 				buf.EndAtomicUndo ();
