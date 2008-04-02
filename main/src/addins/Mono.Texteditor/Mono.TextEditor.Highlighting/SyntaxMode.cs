@@ -86,11 +86,12 @@ namespace Mono.TextEditor.Highlighting
 					text = text.Replace ("&", "&amp;");
 					text = text.Replace ("<", "&lt;");
 					text = text.Replace (">", "&gt;");
+					text = text.Replace ("\t", new string (' ', TextEditorOptions.Options.TabSize));
 					result.Append(text);
 					result.Append("</span>");
 				}
 				curOffset = line.EndOffset + 1;
-				if (curOffset < offset + length)
+				if (result.Length > 0 && curOffset < offset + length)
 					result.AppendLine ();
 			}
 			return result.ToString ();
