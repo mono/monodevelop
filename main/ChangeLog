@@ -1,3 +1,9 @@
+2008-04-02  Michael Hutchinson  <mhutchinson@novell.com> 
+
+	* monodevelop-core-addins.pc.in: Include MonoDevelop.XmlEditor.dll, 
+	  so that the compiler can resolve dependencies when compiling external 
+	  addins.
+
 2008-04-02  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* src/addins/Makefile.am: Update build order to take account of new 
