@@ -1,3 +1,8 @@
+2008-04-03  Marcos David Marín Amador <MarcosMarin@gmail.com> 
+
+	* MonoDevelop.XmlEditor.Gui/XmlSchemasPanelWidget.cs: Workaround bug in mono
+	  1.2.4 where usings are ignored inside anonymous methods.
+
 2008-04-02  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.XmlEditor.Completion/ClosingBracketCompletionDataProvider.cs,

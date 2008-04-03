@@ -61,12 +61,12 @@ namespace MonoDevelop.XmlEditor.Gui
 			
 			registeredSchemasView.AppendColumn ("Namespace", textRenderer,
 			    delegate (TreeViewColumn col, CellRenderer cell, TreeModel model, TreeIter iter) {
-				((Gtk.CellRendererText)cell).Text = ((XmlSchemaCompletionData)model.GetValue (iter, 0)).NamespaceUri;
+				((Gtk.CellRendererText)cell).Text = ((MonoDevelop.XmlEditor.Completion.XmlSchemaCompletionData)model.GetValue (iter, 0)).NamespaceUri;
 			});
 			
 			registeredSchemasView.AppendColumn ("Type", textRenderer,
 			    delegate (TreeViewColumn col, CellRenderer cell, TreeModel model, TreeIter iter) {
-				bool builtIn = ((XmlSchemaCompletionData)model.GetValue (iter, 0)).ReadOnly;
+				bool builtIn = ((MonoDevelop.XmlEditor.Completion.XmlSchemaCompletionData)model.GetValue (iter, 0)).ReadOnly;
 				((Gtk.CellRendererText)cell).Text = builtIn? 
 					  MonoDevelop.Core.GettextCatalog.GetString ("Built in") 
 					: MonoDevelop.Core.GettextCatalog.GetString ("User schema");
@@ -75,15 +75,15 @@ namespace MonoDevelop.XmlEditor.Gui
 			registeredSchemasStore.SetSortFunc (0, 
 			    delegate (TreeModel model, TreeIter a, TreeIter b) {
 				return string.Compare (
-				    ((XmlSchemaCompletionData) model.GetValue (a, 0)).NamespaceUri,
-				    ((XmlSchemaCompletionData) model.GetValue (b, 0)).NamespaceUri
+				    ((MonoDevelop.XmlEditor.Completion.XmlSchemaCompletionData) model.GetValue (a, 0)).NamespaceUri,
+				    ((MonoDevelop.XmlEditor.Completion.XmlSchemaCompletionData) model.GetValue (b, 0)).NamespaceUri
 				);
 			});
 			registeredSchemasStore.SetSortColumnId (0, SortType.Ascending);
 			
 			//update state of "remove" button depending on whether schema is read-only and anything's slected
 			registeredSchemasView.Selection.Changed += delegate {
-				XmlSchemaCompletionData data = GetSelectedSchema ();
+				MonoDevelop.XmlEditor.Completion.XmlSchemaCompletionData data = GetSelectedSchema ();
 				registeredSchemasRemoveButton.Sensitive = (data != null && !data.ReadOnly);
 			};
 			registeredSchemasRemoveButton.Sensitive = false;
@@ -108,7 +108,7 @@ namespace MonoDevelop.XmlEditor.Gui
 				registeredSchemasComboModel.AppendValues (string.Empty);
 				foreach (Gtk.TreeIter iter in WalkStore (registeredSchemasStore))
 					registeredSchemasComboModel.AppendValues (
-					    ((XmlSchemaCompletionData)registeredSchemasStore.GetValue (iter, 0)).NamespaceUri
+					    ((MonoDevelop.XmlEditor.Completion.XmlSchemaCompletionData)registeredSchemasStore.GetValue (iter, 0)).NamespaceUri
 					);
 				args.RetVal = true;
 				registeredSchemasComboModel.SetSortColumnId (0, Gtk.SortType.Ascending);
