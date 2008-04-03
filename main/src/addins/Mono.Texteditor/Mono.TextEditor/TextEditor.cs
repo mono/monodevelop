@@ -535,7 +535,8 @@ namespace Mono.TextEditor
 				} else {
 					lastTime = 0;
 				}
-				mousePressed = true;
+				if (e.Button == 1)
+					mousePressed = true;
 				int startPos;
 				IMargin margin = GetMarginAtX ((int)e.X, out startPos);
 				if (margin != null) {

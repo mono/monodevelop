@@ -528,6 +528,9 @@ namespace Mono.TextEditor
 		{
 			inSelectionDrag = false;
 			inDrag = false;
+			ISegment selection = textEditor.SelectionRange;
+			int anchor         = textEditor.SelectionAnchor;
+			int oldOffset      = textEditor.Caret.Offset;
 			if (button == 1 || button == 2) {
 				clickLocation = VisualToDocumentLocation (x, y);
 				if (!textEditor.IsSomethingSelected) {
@@ -539,6 +542,11 @@ namespace Mono.TextEditor
 					textEditor.RunAction (new CaretMoveToDocumentEnd ());
 					return;
 				}
+				if (button == 2 && selection != null && selection.Contains (offset)) {
+					textEditor.ClearSelection ();
+					return;
+				}
+					
 				if (type == EventType.TwoButtonPress) {
 					int start = ScanWord (offset, false);
 					int end   = ScanWord (offset, true);
@@ -574,8 +582,17 @@ namespace Mono.TextEditor
 					this.caretBlink = false;
 				}
 			}
-			if (button == 2) 
-				PasteAction.PasteFromPrimary (textEditor.GetTextEditorData ());
+			if (button == 2)  {
+				int length = PasteAction.PasteFromPrimary (textEditor.GetTextEditorData ());
+				if (selection != null) {
+					if (textEditor.Caret.Offset < selection.Offset) {
+						anchor   += length;
+						selection = new Segment (selection.Offset + length, selection.Length);
+					}
+					textEditor.SelectionAnchor = anchor;
+					textEditor.SelectionRange  = selection;
+				}
+			}
 		}
 		
 		public override void MouseReleased (int button, int x, int y, ModifierType modifierState)

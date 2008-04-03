@@ -909,8 +909,9 @@ namespace Mono.TextEditor
 	
 	public class PasteAction : EditAction
 	{
-		static void PasteFrom (Clipboard clipboard, TextEditorData data)
+		static int PasteFrom (Clipboard clipboard, TextEditorData data)
 		{
+			int result = -1;
 			if (clipboard.WaitIsTextAvailable ()) {
 				data.Document.BeginAtomicUndo ();
 				if (data.IsSomethingSelected) {
@@ -919,13 +920,15 @@ namespace Mono.TextEditor
 				StringBuilder sb = new StringBuilder (clipboard.WaitForText ());
 				data.Document.Insert (data.Caret.Offset, sb);
 				//int oldLine = data.Caret.Line;
+				result = sb.Length;
 				data.Caret.Offset += sb.Length;
 				data.Document.EndAtomicUndo ();
 			}
+			return result;
 		}
-		public static void PasteFromPrimary (TextEditorData data)
+		public static int PasteFromPrimary (TextEditorData data)
 		{
-			PasteFrom (Clipboard.Get (CopyAction.PRIMARYCLIPBOARD_ATOM), data);
+			return PasteFrom (Clipboard.Get (CopyAction.PRIMARYCLIPBOARD_ATOM), data);
 		}
 		public override void Run (TextEditorData data)
 		{
