@@ -1,3 +1,7 @@
+2008-04-03  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com>
+
+	* Parser/TagDatabaseManager.cs: Fixed mismatched single-quote.
+
 2008-03-29  Marcos David Marín Amador <MarcosMarin@gmail.com>
 
 	* Parser/Function.cs: No longer attempt to find prototypes.

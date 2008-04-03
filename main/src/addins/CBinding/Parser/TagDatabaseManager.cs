@@ -253,7 +253,7 @@ namespace CBinding.Parser
 			if (PropertyService.Get<bool> ("CBinding.ParseLocalVariables", false))
 				ctags_kinds += "+l";
 			
-			string ctags_options = ctags_kinds + " --fields=+a-f+S --language-force=C++ --excmd=pattern -f - " + tagFullFileName + "' " + fileInfo.FileName;
+			string ctags_options = ctags_kinds + " --fields=+a-f+S --language-force=C++ --excmd=pattern -f - '" + tagFullFileName + "' " + fileInfo.FileName;
 			
 			if (!Directory.Exists (tagdir))
 				Directory.CreateDirectory (tagdir);
@@ -351,7 +351,7 @@ namespace CBinding.Parser
 			if (PropertyService.Get<bool> ("CBinding.ParseLocalVariables", true))
 				ctags_kinds += "+l";
 			
-			string ctags_options = ctags_kinds + " --fields=+a-f+S --language-force=C++ --excmd=pattern -f - " + filename + " " + string.Join (" ", headers);
+			string ctags_options = ctags_kinds + " --fields=+a-f+S --language-force=C++ --excmd=pattern -f - '" + filename + "' " + string.Join (" ", headers);
 			
 			string[] system_headers = diff (Headers (project, filename, true), headers);
 			
