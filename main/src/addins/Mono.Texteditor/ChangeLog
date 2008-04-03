@@ -1,3 +1,10 @@
+2008-04-03  Mike Krüger <mkrueger@novell.com> 
+
+	* Mono.TextEditor/CodeSegmentPreviewWindow.cs,
+	  Mono.TextEditor/LineSegment.cs,
+	  Mono.TextEditor.Highlighting/SyntaxMode.cs: fixed 'Bug 376329 -
+	  Folded region tooltip readability issues'
+
 2008-04-02  Mike Krüger <mkrueger@novell.com> 
 
 	* Mono.TextEditor/TextViewMargin.cs: fixed 'Bug 324272 - in search and

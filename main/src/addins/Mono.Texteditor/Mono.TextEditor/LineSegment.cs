@@ -26,6 +26,7 @@
 //
 
 using System;
+using System.Text;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
@@ -155,6 +156,27 @@ namespace Mono.TextEditor
 			}
 		}
 		
+		/// <summary>
+		/// This method gets the line indentation.
+		/// </summary>
+		/// <param name="doc">
+		/// The <see cref="Document"/> the line belongs to.
+		/// </param>
+		/// <returns>
+		/// The indentation of the line (all whitespace chars up to the first non ws char).
+		/// </returns>
+		public string GetIndentation (Document doc)
+		{
+			StringBuilder result = new StringBuilder ();
+			for (int i = Offset; i < this.EndOffset; i++) {
+				char ch = doc.GetCharAt (i);
+				if (!char.IsWhiteSpace (ch))
+					break;
+				result.Append (ch);
+			}
+			return result.ToString ();
+		}
+		
 		public int GetLogicalColumn (IBuffer doc, int visualColumn)
 		{
 			int curVisualColumn = 0;
@@ -183,7 +205,6 @@ namespace Mono.TextEditor
 			return result;
 		}
 		
-
 		
 		public bool Contains (int offset)
 		{

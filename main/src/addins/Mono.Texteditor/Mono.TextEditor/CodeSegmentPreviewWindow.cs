@@ -51,7 +51,8 @@ namespace Mono.TextEditor
 			layout.SetMarkup (editor.Document.SyntaxMode.GetMarkup (editor.Document, 
 			                                                        editor.ColorStyle,
 			                                                        segment.Offset,
-			                                                        segment.Length));
+			                                                        segment.Length,
+			                                                        true));
 			int width, height;
 			layout.GetPixelSize (out width, out height);
 			this.SetSizeRequest (System.Math.Min (width, MaxWidth), 
@@ -62,17 +63,22 @@ namespace Mono.TextEditor
 		
 		protected override bool OnExposeEvent (Gdk.EventExpose ev)
 		{
-			ev.Window.DrawRectangle (Style.BaseGC (StateType.Normal), true, ev.Area);
+			Gdk.GC gc = new Gdk.GC (ev.Window);
+			gc.RgbFgColor = editor.ColorStyle.Background;
+			ev.Window.DrawRectangle (gc, true, ev.Area);
 			Pango.Layout layout = new Pango.Layout (this.PangoContext);
 			layout.FontDescription = TextEditorOptions.Options.Font;
 			layout.Ellipsize = Pango.EllipsizeMode.End;
 			layout.SetMarkup (editor.Document.SyntaxMode.GetMarkup (editor.Document, 
 			                                                        editor.ColorStyle,
 			                                                        segment.Offset,
-			                                                        segment.Length));
+			                                                        segment.Length,
+			                                                        true));
 			ev.Window.DrawLayout (Style.TextGC (StateType.Normal), 0, 0, layout);
 			layout.Dispose ();
-			ev.Window.DrawRectangle (Style.MidGC (StateType.Normal), false, 0, 0, this.Allocation.Width - 1, this.Allocation.Height - 1);
+			gc.RgbFgColor = editor.ColorStyle.FoldLine;
+			ev.Window.DrawRectangle (gc, false, 0, 0, this.Allocation.Width - 1, this.Allocation.Height - 1);
+			gc.Dispose ();
 			return true;
 		}
 	}

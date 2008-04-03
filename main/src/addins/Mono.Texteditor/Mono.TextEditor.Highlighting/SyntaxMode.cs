@@ -62,9 +62,17 @@ namespace Mono.TextEditor.Highlighting
 			return new ChunkParser (doc, style, this, line).GetChunks (offset, length);
 		}
 		
-		public string GetMarkup (Document doc, Style style, int offset, int length)
+		public string GetMarkup (Document doc, Style style, int offset, int length, bool removeIndent)
 		{
 			int curOffset = offset;
+			int indentLength = int.MaxValue;
+			while (curOffset < offset + length) {
+				LineSegment line = doc.GetLineByOffset (curOffset);
+				indentLength = System.Math.Min (indentLength, line.GetIndentation (doc).Length);
+				curOffset = line.EndOffset + 1;
+			}
+			curOffset = offset;
+			
 			StringBuilder result = new StringBuilder ();
 			while (curOffset < offset + length) {
 				LineSegment line = doc.GetLineByOffset (curOffset);
@@ -90,7 +98,9 @@ namespace Mono.TextEditor.Highlighting
 					result.Append(text);
 					result.Append("</span>");
 				}
-				curOffset = line.EndOffset + 1;
+				curOffset = line.EndOffset;
+				if (removeIndent)
+					curOffset += indentLength;
 				if (result.Length > 0 && curOffset < offset + length)
 					result.AppendLine ();
 			}
