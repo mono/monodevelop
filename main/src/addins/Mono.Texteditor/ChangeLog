@@ -1,5 +1,10 @@
 2008-04-03  Mike Krüger <mkrueger@novell.com> 
 
+	* Mono.TextEditor/DefaultEditActions.cs: fixed some selection issues in
+	  some commands.
+
+2008-04-03  Mike Krüger <mkrueger@novell.com> 
+
 	* Mono.TextEditor/DefaultEditActions.cs,
 	  Mono.TextEditor/TextViewMargin.cs, Mono.TextEditor/TextEditor.cs:
 	  fixed 'Bug 376331 - Middle-click paste should not change

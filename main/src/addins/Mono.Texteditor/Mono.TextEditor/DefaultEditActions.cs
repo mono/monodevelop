@@ -185,6 +185,8 @@ namespace Mono.TextEditor
 		
 		public override void Run (TextEditorData data)
 		{
+			if (!data.Caret.PreserveSelection)
+				data.ClearSelection ();
 			DocumentLocation newLocation = data.Caret.Location;
 			LineSegment line = data.Document.GetLine (data.Caret.Line);
 			int homeMark = GetHomeMark (data.Document, line);
@@ -198,6 +200,8 @@ namespace Mono.TextEditor
 	{
 		public override void Run (TextEditorData data)
 		{
+			if (!data.Caret.PreserveSelection)
+				data.ClearSelection ();
 			DocumentLocation newLocation = data.Caret.Location;
 			LineSegment line = data.Document.GetLine (data.Caret.Line);
 			newLocation.Column = line.EditableLength;
@@ -210,6 +214,8 @@ namespace Mono.TextEditor
 	{
 		public override void Run (TextEditorData data)
 		{
+			if (!data.Caret.PreserveSelection)
+				data.ClearSelection ();
 			data.Caret.Location = new DocumentLocation (0, 0);
 		}
 	}
@@ -218,6 +224,8 @@ namespace Mono.TextEditor
 	{
 		public override void Run (TextEditorData data)
 		{
+			if (!data.Caret.PreserveSelection)
+				data.ClearSelection ();
 			data.Caret.Offset = data.Document.Length;
 		}
 	}
