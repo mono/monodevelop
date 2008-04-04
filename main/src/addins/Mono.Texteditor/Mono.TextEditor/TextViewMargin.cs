@@ -660,15 +660,11 @@ namespace Mono.TextEditor
 		public override void MouseHover (int x, int y, bool buttonPressed)
 		{
 			if (!buttonPressed) {
-				int lineNr = y / this.LineHeight;
-				for (int l = lineNr - 1; l < lineNr + 1; l++) {
-					if (shownFoldings.ContainsKey (l)) {
-						foreach (KeyValuePair<Rectangle, FoldSegment> shownFolding in shownFoldings [l]) {
-							if (shownFolding.Key.Contains (x + this.XOffset, y)) {
-								ShowTooltip (shownFolding.Value, shownFolding.Key);
-								return;
-							}
-						}
+				int lineNr = Document.VisualToLogicalLine ((int)((y + textEditor.VAdjustment.Value) / this.LineHeight));
+				foreach (KeyValuePair<Rectangle, FoldSegment> shownFolding in GetFoldRectangles (lineNr)) {
+					if (shownFolding.Key.Contains (x + this.XOffset, y)) {
+						ShowTooltip (shownFolding.Value, shownFolding.Key);
+						return;
 					}
 				}
 				ShowTooltip (null, Gdk.Rectangle.Zero);
@@ -784,14 +780,57 @@ namespace Mono.TextEditor
 			win.DrawRectangle (gc, true, area);
 		}
 		
+		List<System.Collections.Generic.KeyValuePair<Gdk.Rectangle,FoldSegment>> GetFoldRectangles (int lineNr)
+		{
+			List<System.Collections.Generic.KeyValuePair<Gdk.Rectangle,FoldSegment>> result = new List<System.Collections.Generic.KeyValuePair<Gdk.Rectangle,FoldSegment>> ();
+			layout.Alignment = Pango.Alignment.Left;
+			LineSegment line = lineNr < Document.LineCount ? Document.GetLine (lineNr) : null;
+			int xStart = XOffset;
+			int y      = (int)(Document.LogicalToVisualLine (lineNr) * LineHeight - textEditor.VAdjustment.Value);
+			Gdk.Rectangle lineArea = new Gdk.Rectangle (XOffset, y, textEditor.Allocation.Width - XOffset, LineHeight);
+			int width, height;
+			int xPos = (int)(XOffset - textEditor.HAdjustment.Value);
+			
+			if (line == null) {
+				return result;
+			}
+			
+			List<FoldSegment> foldings = Document.GetStartFoldings (line);
+			int offset = line.Offset;
+			int caretOffset = Caret.Offset;
+			for (int i = 0; i < foldings.Count; ++i) {
+				FoldSegment folding = foldings[i];
+				int foldOffset = folding.StartLine.Offset + folding.Column;
+				if (foldOffset < offset)
+					continue;
+				
+				if (folding.IsFolded) {
+					layout.SetText (Document.GetTextAt (offset, foldOffset - offset).Replace ("\t", new string (' ', TextEditorOptions.Options.TabSize)));
+					layout.GetPixelSize (out width, out height);
+					xPos += width;
+					offset = folding.EndLine.Offset + folding.EndColumn;
+					
+					layout.SetText (folding.Description);
+					layout.GetPixelSize (out width, out height);
+					Rectangle foldingRectangle = new Rectangle (xPos, y, width - 1, this.LineHeight - 1);
+					result.Add (new KeyValuePair<Rectangle, FoldSegment> (foldingRectangle, folding));
+					xPos += width;
+					if (folding.EndLine != line) {
+						line   = folding.EndLine;
+						foldings = Document.GetStartFoldings (line);
+						i = -1;
+					}
+				}
+			}
+			return result;
+		}
+		
 		List<ISegment> selectedRegions = new List<ISegment> ();
-		Dictionary <int, List<KeyValuePair<Rectangle, FoldSegment>>> shownFoldings = new Dictionary <int, List<KeyValuePair<Rectangle, FoldSegment>>> ();
 		Gdk.Color      defaultBgColor;
 		
 		public override void Draw (Gdk.Drawable win, Gdk.Rectangle area, int lineNr, int x, int y)
 		{
 			int visibleLine = y / this.LineHeight;
-			shownFoldings [visibleLine] = new System.Collections.Generic.List<System.Collections.Generic.KeyValuePair<Gdk.Rectangle,FoldSegment>> ();
 			this.caretX = -1;
 			layout.Alignment = Pango.Alignment.Left;
 			LineSegment line = lineNr < Document.LineCount ? Document.GetLine (lineNr) : null;
@@ -837,10 +876,10 @@ namespace Mono.TextEditor
 					continue;
 				
 				if (folding.IsFolded) {
-					layout.SetText (Document.GetTextAt (offset, foldOffset - offset));
-					gc.RgbFgColor = ColorStyle.FoldLine;
+//					layout.SetText (Document.GetTextAt (offset, foldOffset - offset));
+//					gc.RgbFgColor = ColorStyle.FoldLine;
 //					win.DrawLayout (gc, xPos, y, layout);
-					layout.GetPixelSize (out width, out height);
+//					layout.GetPixelSize (out width, out height);
 					
 					DrawLinePart (win, line, offset, foldOffset - offset, ref xPos, y);
 //					xPos += width;
@@ -854,8 +893,6 @@ namespace Mono.TextEditor
 					win.DrawRectangle (gc, true, foldingRectangle);
 					gc.RgbFgColor = isFoldingSelected ? ColorStyle.SelectedFg : ColorStyle.FoldLine;
 					win.DrawRectangle (gc, false, foldingRectangle);
-					
-					shownFoldings [visibleLine].Add (new KeyValuePair<Rectangle, FoldSegment> (foldingRectangle, folding));
 					
 					gc.RgbFgColor = isFoldingSelected ? ColorStyle.SelectedFg : ColorStyle.FoldLine;
 					win.DrawLayout (gc, xPos, y, layout);

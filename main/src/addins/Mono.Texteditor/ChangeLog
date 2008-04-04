@@ -1,3 +1,8 @@
+2008-04-04  Mike Krüger <mkrueger@novell.com> 
+
+	* Mono.TextEditor/TextViewMargin.cs: Optimized text editor drawing a
+	  bit. Worked on folding preview.
+
 2008-04-03  Mike Krüger <mkrueger@novell.com> 
 
 	* Mono.TextEditor/DefaultEditActions.cs: fixed some selection issues in
