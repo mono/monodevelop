@@ -192,9 +192,5 @@
 		         fullName = "&lt;!DOCTYPE html PUBLIC &quot;-//W3C//DTD XHTML 1.0 Frameset//EN&quot;
 &quot;http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd&quot;>" 
 		         xsdFile = "xhtml1-frameset.xsd" />
-		<DocType name = "HTML 4.01 Transitional"
-		         fullName = "&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.01 Transitional//EN&quot;
-&quot;http://www.w3.org/TR/html4/loose.dtd&quot;>" 
-		         completionDocTypeName = "XHTML 1.0 Transitional" />
 	</Extension>
 </Addin>

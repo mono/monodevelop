@@ -80,7 +80,7 @@ namespace MonoDevelop.AspNet
 			foreach (TagPrefixInfo tpxInfo in pages.Controls) {
 				if (tpxInfo.TagPrefix != tagPrefix)
 					continue;
-				string fullName = AssemblyTypeLookup (tagName, tpxInfo.Namespace, tpxInfo.Assembly);
+				string fullName = AssemblyTypeNameLookup (tagName, tpxInfo.Namespace, tpxInfo.Assembly);
 				if (fullName != null)
 					return fullName;
 				//user controls don't make sense in machine.config; ignore them
@@ -113,7 +113,7 @@ namespace MonoDevelop.AspNet
 							if (reader.MoveToAttribute ("namespace")) {
 								string _namespace = reader.Value;
 								string _assembly = reader.MoveToAttribute ("assembly")? reader.Value : null;
-								string fullName = AssemblyTypeLookup (tagName, _namespace, _assembly);
+								string fullName = AssemblyTypeNameLookup (tagName, _namespace, _assembly);
 								if (fullName != null)
 									return fullName;
 							}
@@ -138,12 +138,14 @@ namespace MonoDevelop.AspNet
 			return null;
 		}
 		
-		public string HtmlControlLookup (string tagName)
+		#region System type lookups
+		
+		public static string HtmlControlLookup (string tagName)
 		{
 			return HtmlControlLookup (tagName, null);
 		}
 		
-		public string HtmlControlLookup (string tagName, string typeAttribute)
+		public static string HtmlControlLookup (string tagName, string typeAttribute)
 		{
 			string htmc = "System.Web.UI.HtmlControls.";
 			switch (tagName.ToLower ()) {
@@ -182,7 +184,7 @@ namespace MonoDevelop.AspNet
 			}
 		}
 		
-		string lookupHtmlInput (string type)
+		static string lookupHtmlInput (string type)
 		{
 			switch (type != null? type.ToLower () : null)
 			{
@@ -209,14 +211,102 @@ namespace MonoDevelop.AspNet
 			}
 		}
 		
-		public string SystemWebControlLookup (string tagName)
+		public static string SystemWebControlLookup (string tagName, MonoDevelop.Core.ClrVersion clrVersion)
 		{
+			//FIXME respect clr version
 			System.Reflection.Assembly assem = typeof(System.Web.UI.WebControls.WebControl).Assembly;
 			System.Type type = assem.GetType ("System.Web.UI.WebControls." + tagName, false, true);
 			return (type != null)? type.FullName : null;
 		}
 		
-		public string AssemblyTypeLookup (string tagName, string namespac, string assem)
+		public static string AssemblyTypeNameLookup (string tagName, string namespac, string assem)
+		{
+			IClass cls = AssemblyTypeLookup (tagName, namespac, assem);
+			return cls != null? cls.FullyQualifiedName : null;
+		}
+		
+		public static IClass AssemblyTypeLookup (string tagName, string namespac, string assem)
+		{
+			IParserContext ctx = IdeApp.ProjectOperations.ParserDatabase.GetAssemblyParserContext (assem);
+			if (ctx == null)
+				return null;
+			ctx.UpdateDatabase ();
+			return ctx.GetClass (namespac + "." + tagName, true, false);
+		}
+		
+		#endregion
+		
+		#region Systen type listings
+		
+		public static IEnumerable<IClass> ListSystemControlClasses (MonoDevelop.Core.ClrVersion version)
+		{
+			//FIXME respect versions
+			return ListControlClasses ("System.Web");
+		}
+		
+		public static IEnumerable<IClass> ListControlClasses (string assem)
+		{
+			
+			IParserContext ctx = IdeApp.ProjectOperations.ParserDatabase.GetAssemblyParserContext (assem);
+			if (ctx == null)
+				yield break;
+			
+			ctx.UpdateDatabase ();
+			
+			foreach (IClass cls in allClasses (ctx, "System.Web.UI"))
+				if (IsAspTag (ctx, cls))
+					yield return cls;
+		}
+		
+		static IEnumerable<IClass> allClasses (IParserContext ctx, string rootNamespace)
+		{
+			foreach (string namespac in ctx.GetNamespaceList (rootNamespace, true, true))
+				foreach (IClass c in allClasses (ctx, rootNamespace + "." + namespac))
+					yield return c;
+			
+			foreach (string clsStr in ctx.GetClassList (rootNamespace, true, true)) {
+				IClass cls = ctx.GetClass (rootNamespace + "." + clsStr);
+				if (cls != null)
+					yield return cls;
+			}
+		}
+		
+		static bool IsAspTag (IParserContext ctx, IClass cls)
+		{
+			if (cls.IsAbstract || !cls.IsPublic)
+				return false;
+			System.Console.WriteLine(cls.FullyQualifiedName);
+			IClass swc = ctx.GetClass ("System.Web.UI.Control");
+			if (swc == null)
+				throw new Exception ("Could not find IClass for System.Web.UI.Control");
+			
+			return FindBaseClass (ctx, cls, swc);
+		}
+		
+		static bool FindBaseClass (IParserContext ctx, IClass cls, IClass lookingFor)
+		{
+			if (cls == lookingFor)
+				return true;
+			
+			foreach (IReturnType rt in cls.BaseTypes) {
+				if (!rt.IsRootType) {
+					IClass c2 = ctx.GetClass (rt.FullyQualifiedName);
+					if (FindBaseClass (ctx, c2, lookingFor))
+						return true;
+				}
+			}
+			return false;
+		}
+		
+		#endregion
+		
+		public string ProjectTypeNameLookup (string tagName, string namespac, string assem)
+		{
+			IClass cls = ProjectTypeLookup (tagName, namespac, assem);
+			return cls != null? cls.FullyQualifiedName : null;
+		}
+		
+		public IClass ProjectTypeLookup (string tagName, string namespac, string assem)
 		{
 			IClass cls = null;
 			IParserContext ctx = null;
@@ -228,7 +318,7 @@ namespace MonoDevelop.AspNet
 				ctx.UpdateDatabase ();
 				cls = ctx.GetClass (namespac + "." + tagName, true, false);
 			}
-			return cls != null? cls.FullyQualifiedName : null;
+			return cls;
 		}
 		
 		public string GetControlTypeName (string fileName, string relativeToPath)

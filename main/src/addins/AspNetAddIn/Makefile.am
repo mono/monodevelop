@@ -66,6 +66,7 @@ FILES =  \
 	MonoDevelop.AspNet.Parser.Internal/StrUtils.cs \
 	MonoDevelop.AspNet.Parser.Internal/TagAttributes.cs \
 	MonoDevelop.AspNet.Parser.Internal/TagType.cs \
+	MonoDevelop.AspNet.Parser/AspNetIndentStack.cs \
 	MonoDevelop.AspNet.Parser/DebugStringVisitor.cs \
 	MonoDevelop.AspNet.Parser/Document.cs \
 	MonoDevelop.AspNet.Parser/DocumentReferenceManager.cs \
@@ -73,6 +74,7 @@ FILES =  \
 	MonoDevelop.AspNet.Parser/MemberListVisitor.cs \
 	MonoDevelop.AspNet.Parser/PageInfoVisitor.cs \
 	MonoDevelop.AspNet.Parser/Regexes.cs \
+	MonoDevelop.AspNet.Parser/SuggestedHandlerCompletionData.cs \
 	MonoDevelop.AspNet.Parser/WebFormReferenceManager.cs \
 	MonoDevelop.AspNet/AspNetAppProject.cs \
 	MonoDevelop.AspNet/AspNetAppProjectBinding.cs \

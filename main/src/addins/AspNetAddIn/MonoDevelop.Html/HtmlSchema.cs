@@ -64,30 +64,29 @@ namespace MonoDevelop.Html
 		
 		public IXmlCompletionProvider CompletionProvider {
 			get {
-				if (provider != null)
-					return provider;
-				else if (substituteProvider != null)
-					TryResolveProvider ();
-					
+				if (substituteProvider != null)
+					ResolveProvider ();
 				return provider;
 			}
 		}
 		
-		void TryResolveProvider ()
+		void ResolveProvider ()
 		{
 			try {
-				provider = HtmlSchemaService.GetCompletionProvider (substituteProvider);
+				HtmlSchema hs = HtmlSchemaService.GetSchema (substituteProvider);
+				if (hs != null)
+					provider = hs.CompletionProvider;
 			} catch (StackOverflowException ex) {
 				MonoDevelop.Core.LoggingService.LogWarning (
 				    "HTML doctype '{0}' contains a substitute schema reference that is either cyclical or too deep, and hence cannot be resolved.'", 
 				    name);
-				substituteProvider = null;
 			}
 			if (provider == null) {
+				provider = new EmptyXmlCompletionProvider ();
 				MonoDevelop.Core.LoggingService.LogWarning (
 				    "HTML doctype '{0}' cannot find substitute schema '{1}'", name, substituteProvider);
-				substituteProvider = null;
 			}
+			substituteProvider = null;
 		}
 	}
 }

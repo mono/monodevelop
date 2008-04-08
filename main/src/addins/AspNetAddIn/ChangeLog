@@ -1,3 +1,29 @@
+2008-04-08  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.AspNet/CodeBehind.cs: Add method for getting a
+	  non-designer class.
+	* MonoDevelop.AspNet/WebTypeManager.cs,
+	  MonoDevelop.AspNet.Parser/DocumentReferenceManager.cs: Add various
+	  control lookup methods, including listing of ASP.NET controls.
+	* MonoDevelop.Html/HtmlSchema.cs: Minor cleanup.
+	* MonoDevelop.Html/HtmlSchemaService.cs: Improve lazy loading. Allow
+	  forced preloading in a thread.
+	* MonoDevelop.AspNet.addin.xml: Remove HTML 4 Transitional doctype
+	  extension, as it's a hardcoded default.
+	* MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs: Track API. Implement
+	  ASP.NET control and attribute completion. Implement attribute value
+	  completion (and handler stubbing) for events. Improve completion
+	  triggering accuracy. Add documentation for completion items.
+	  Implement close tag completion for parent tags. Lazily load HTML
+	  schemas, and use default schema while they load. Force HTML schema
+	  service to load in background when docuement opened.
+	* AspNetAddIn.mdp, Makefile.am: Updated.
+	* MonoDevelop.AspNet.Parser/SuggestedHandlerCompletionData.cs:
+	  Completion data type that inserts a method into a class if it's
+	  picked.
+	* MonoDevelop.AspNet.Parser/AspNetIndentStack.cs: Partial (still
+	  unused) implementation of indenter stack.
+
 2008-04-02  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.AspNet.Parser.Dom/RootNode.cs: Fix build and close

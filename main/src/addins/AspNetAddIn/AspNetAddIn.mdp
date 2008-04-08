@@ -1,4 +1,4 @@
-<Project name="MonoDevelop.AspNet" fileversion="2.0" language="C#" clr-version="Net_2_0" ctype="DotNetProject">
+<Project name="MonoDevelop.AspNet" fileversion="2.0" UseParentDirectoryAsNamespace="True" language="C#" clr-version="Net_2_0" ctype="DotNetProject">
   <Configurations active="Debug">
     <Configuration name="Debug" ctype="DotNetProjectConfiguration">
       <Output directory="../../../build/AddIns/MonoDevelop.AspNet" assembly="MonoDevelop.AspNet" />
@@ -112,6 +112,8 @@
     <File name="Schemas/xhtml1-transitional.xsd" subtype="Code" buildaction="FileCopy" DeployService.UseProjectRelativePath="True" />
     <File name="Schemas/readme.txt" subtype="Code" buildaction="FileCopy" />
     <File name="Schemas/W3C-License.html" subtype="Code" buildaction="FileCopy" />
+    <File name="MonoDevelop.AspNet.Parser/AspNetIndentStack.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.AspNet.Parser/SuggestedHandlerCompletionData.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Components" />

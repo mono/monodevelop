@@ -75,5 +75,18 @@ namespace MonoDevelop.AspNet
 			return null;
 		}
 		
+		public static IClass GetNonDesignerClass (IClass cls)
+		{
+			if (cls.Parts.Length <= 1)
+				return null;
+			
+			string designerEnding = ".designer" + Path.GetExtension (cls.Region.FileName);
+			
+			foreach (IClass c in cls.Parts)
+				if (!c.Region.FileName.EndsWith (designerEnding))
+				    return c;
+			
+			return null;
+		}
 	}
 }

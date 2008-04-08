@@ -67,15 +67,21 @@ namespace MonoDevelop.AspNet.Parser
 		public string GetTypeName (string tagPrefix, string tagName, string htmlTypeAttribute)
 		{
 			if (tagPrefix == null || tagPrefix.Length < 1)
-				return doc.Project.WebTypeManager.HtmlControlLookup (tagName, htmlTypeAttribute);
+				return WebTypeManager.HtmlControlLookup (tagName, htmlTypeAttribute);
 			
 			if (0 == string.Compare (tagPrefix, "asp", true, CultureInfo.InvariantCulture))
-				return doc.Project.WebTypeManager.SystemWebControlLookup (tagName);
+				return WebTypeManager.SystemWebControlLookup (tagName,
+				    doc.Project == null? MonoDevelop.Core.ClrVersion.Default : doc.Project.ClrVersion);
 			
 			foreach (RegisterDirective directive in pageRefsList) {
 				AssemblyRegisterDirective ard = directive as AssemblyRegisterDirective;
 				if (ard != null && ard.TagPrefix == tagPrefix) {
-					string fullName = doc.Project.WebTypeManager.AssemblyTypeLookup (tagName, ard.Namespace, ard.Assembly);
+					string fullName;
+					if (doc.Project != null) 
+						fullName = doc.Project.WebTypeManager.ProjectTypeNameLookup (tagName, ard.Namespace, ard.Assembly);
+					else
+						fullName = WebTypeManager.AssemblyTypeNameLookup (tagName, ard.Namespace, ard.Assembly);
+					
 					if (fullName != null)
 						return fullName;
 				}
@@ -93,6 +99,25 @@ namespace MonoDevelop.AspNet.Parser
 			
 			//returns null if type not found
 			return globalLookup;
+		}
+		
+		public IEnumerable<IClass> ListControlClasses ()
+		{
+			MonoDevelop.Core.ClrVersion clrVersion = 
+				doc.Project == null? MonoDevelop.Core.ClrVersion.Default : doc.Project.ClrVersion;
+			foreach (IClass cls in WebTypeManager.ListSystemControlClasses (clrVersion))
+			    yield return cls;
+			
+			//FIXME: return other refernced controls
+		}
+		
+		public IClass GetControlType (string tagPrefix, string tagName)
+		{
+			if (0 == string.Compare (tagPrefix, "asp", true, CultureInfo.InvariantCulture))
+				return WebTypeManager.AssemblyTypeLookup (tagName, "System.Web.UI.WebControls", "System.Web");
+			
+			//FIXME: Implement for non-builtins
+			return null;
 		}
 		
 		#region directive classes
