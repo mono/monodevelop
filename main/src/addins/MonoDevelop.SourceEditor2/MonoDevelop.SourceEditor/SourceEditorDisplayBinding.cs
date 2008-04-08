@@ -71,7 +71,7 @@ namespace MonoDevelop.SourceEditor
 			foreach (DesktopApplication app in IdeApp.Services.PlatformService.GetAllApplications (mimetype))
 				if (app.Command == "gedit")
 					return true;
-			return true;
+			return false;
 		}
 
 		MonoDevelop.Ide.Gui.IViewContent IDisplayBinding.CreateContentForMimeType (string mimeType, System.IO.Stream content)
