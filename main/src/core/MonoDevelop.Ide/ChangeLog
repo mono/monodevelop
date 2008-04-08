@@ -1,3 +1,7 @@
+2008-04-08  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Ide.Gui/SdiWorkspaceWindow.cs: Remove debug code.
+
 2008-04-01  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Ide.Gui/MonoDevelopTreeView.cs: fixed Bug 375387 -

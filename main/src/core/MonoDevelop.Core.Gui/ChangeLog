@@ -1,3 +1,8 @@
+2008-04-08  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Core.Gui/GLibLogging.cs: Log GDK messages too, and
+	  correct a typo.
+
 2008-03-25  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Core.Gui/GLibLogging.cs: Improve stack trace.

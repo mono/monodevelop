@@ -38,8 +38,11 @@ namespace MonoDevelop.Core.Gui
 	{
 		
 		static bool enabled;
-		static uint glibLogHandle;
+		
 		static uint gtkLogHandle;
+		static uint gdkLogHandle;
+		static uint glibLogHandle;
+		
 		static Delegate exceptionManagerHook;
 		
 		public static bool Enabled
@@ -52,17 +55,19 @@ namespace MonoDevelop.Core.Gui
 				enabled = value;
 				if (value) {
 					HookExceptionManager ();
-					gtkLogHandle = GLib.Log.SetLogHandler ("Gtk", GLib.LogLevelFlags.All, LoggingServiceLogFunc);
-					gtkLogHandle = GLib.Log.SetLogHandler ("GLib", GLib.LogLevelFlags.All, LoggingServiceLogFunc);
+					gtkLogHandle  = GLib.Log.SetLogHandler ("Gtk",  GLib.LogLevelFlags.All, LogFunc);
+					gdkLogHandle  = GLib.Log.SetLogHandler ("Gdk",  GLib.LogLevelFlags.All, LogFunc);
+					glibLogHandle = GLib.Log.SetLogHandler ("GLib", GLib.LogLevelFlags.All, LogFunc);
 				} else {
 					UnhookExceptionManager ();
 					GLib.Log.RemoveLogHandler ("Gtk", gtkLogHandle);
+					GLib.Log.RemoveLogHandler ("Gdk", gdkLogHandle);
 					GLib.Log.RemoveLogHandler ("GLib", glibLogHandle);
 				}
 			}
 		}
 		
-		static void LoggingServiceLogFunc (string logDomain, GLib.LogLevelFlags logLevel, string message)
+		static void LogFunc (string logDomain, GLib.LogLevelFlags logLevel, string message)
 		{
 			System.Diagnostics.StackTrace trace = new System.Diagnostics.StackTrace (2, true);
 			string msg = string.Format ("{0}-{1}: {2}\nStack trace: \n{3}", 

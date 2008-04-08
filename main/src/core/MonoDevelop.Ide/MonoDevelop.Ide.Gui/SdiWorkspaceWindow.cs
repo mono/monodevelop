@@ -453,7 +453,6 @@ namespace MonoDevelop.Ide.Gui
 		
 		protected virtual void OnActiveViewContentChanged (ActiveViewContentEventArgs e)
 		{
-			System.Console.WriteLine("cc1");
 			if (ActiveViewContentChanged != null)
 				ActiveViewContentChanged (this, e);
 		}
