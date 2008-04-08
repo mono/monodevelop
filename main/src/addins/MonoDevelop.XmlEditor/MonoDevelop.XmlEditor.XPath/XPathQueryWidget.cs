@@ -21,7 +21,7 @@ using System.Xml;
 using System.Xml.XPath;
 
 namespace MonoDevelop.XmlEditor
-{
+{/*
 	/// <summary>
 	/// The XPathQueryWidget uses this interface to
 	/// access the currently active XmlEditorViewContent and
@@ -490,5 +490,5 @@ namespace MonoDevelop.XmlEditor
 		{
 			RunXPathQuery();
 		}
-	}
+	}*/
 }

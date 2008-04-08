@@ -10,7 +10,7 @@ using MonoDevelop.Ide.Gui;
 using System;
 
 namespace MonoDevelop.XmlEditor
-{
+{/*
 	public class XPathQueryPad : IPadContent, IXmlEditorViewContentProvider
 	{		
 		XPathQueryWidget xpathQueryWidget;
@@ -23,15 +23,6 @@ namespace MonoDevelop.XmlEditor
 			
 			IdeApp.Workbench.ActiveDocumentChanged += ActiveDocumentChanged;
 			LoadProperties();
-		}
-		
-		/// <summary>
-		/// Gets the active XmlEditorViewContent.
-		/// </summary>
-		public XmlEditorViewContent View {
-			get {
-				return XmlEditorService.GetActiveView();
-			}
 		}
 		
 		public void JumpTo(string fileName, int line, int column)
@@ -117,5 +108,5 @@ namespace MonoDevelop.XmlEditor
 			}
 			XPathQueryPadOptions.Namespaces = namespaces;
 		}
-	}
+	}*/
 }

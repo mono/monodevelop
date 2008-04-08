@@ -1,3 +1,16 @@
+2008-04-08  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.XmlEditor.Completion/XmlTagCompletionData.cs,
+	  MonoDevelop.XmlEditor.Completion/ClosingBracketCompletionDataProvider.cs:
+	  Split the completion data class into a separated file and
+	  generalised it a little.
+	* MonoDevelop.XmlEditor.Completion/ILazilyLoadedProvider.cs,
+	  MonoDevelop.XmlEditor.Completion/XmlSchemaCompletionData.cs: Rework
+	  lazy loading, with forced advance-loading via an interface.
+	* MonoDevelop.XmlEditor.Completion/EmptyXmlCompletionProvider.cs:
+	  Implemented an empty completion provider.
+	* Makefile.am, MonoDevelop.XmlEditor.mdp: Updated.
+
 2008-04-03  Marcos David Marín Amador <MarcosMarin@gmail.com> 
 
 	* MonoDevelop.XmlEditor.Gui/XmlSchemasPanelWidget.cs: Workaround bug in mono

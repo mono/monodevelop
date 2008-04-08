@@ -52,7 +52,7 @@ namespace MonoDevelop.XmlEditor.Completion
 				return null;
 			
 			return new ICompletionData[] {
-				new ClosingBracketCompletionData (autoClose, 0),
+				new XmlTagCompletionData (autoClose, 0, true),
 			};
 		}
 		
@@ -103,49 +103,5 @@ namespace MonoDevelop.XmlEditor.Completion
 			
 			return name.Length != 0? name: null;
 		}
-	}
-	
-	public class ClosingBracketCompletionData : IActionCompletionData
-	{
-		string closingElement;
-		int cursorOffset;
-		
-		public ClosingBracketCompletionData (string closingElement, int cursorOffset)
-		{
-			this.cursorOffset = cursorOffset;
-			this.closingElement = closingElement;
-		}
-		
-		public string Image {
-			get { return Gtk.Stock.GoForward; }
-		}
-
-		public string[] Text {
-			get { return new string [] { closingElement }; }
-		}
-
-		public string Description {
-			get { return null; }
-		}
-
-		public string CompletionString {
-			get { return closingElement; }
-		}
-
-		
-		public void InsertAction (ICompletionWidget widget, ICodeCompletionContext context)
-		{
-			MonoDevelop.Ide.Gui.Content.IEditableTextBuffer buf = widget as MonoDevelop.Ide.Gui.Content.IEditableTextBuffer;
-			if (buf != null) {
-				buf.BeginAtomicUndo ();
-				buf.InsertText (buf.CursorPosition, closingElement);
-				// Move caret into the middle of the tags
-				buf.CursorPosition = context.TriggerOffset + cursorOffset;
-				buf.Select (buf.CursorPosition, buf.CursorPosition);
-				buf.EndAtomicUndo ();
-			}
-		}
-
-		
 	}
 }

@@ -1,4 +1,4 @@
-<Project name="MonoDevelop.XmlEditor" fileversion="2.0" language="C#" clr-version="Net_2_0" ctype="DotNetProject">
+<Project name="MonoDevelop.XmlEditor" fileversion="2.0" UseParentDirectoryAsNamespace="True" language="C#" clr-version="Net_2_0" ctype="DotNetProject">
   <Configurations active="Debug">
     <Configuration name="Debug" ctype="DotNetProjectConfiguration">
       <Output directory="../../../build/AddIns/MonoDevelop.XmlEditor" assembly="MonoDevelop.XmlEditor" />
@@ -69,6 +69,9 @@
     <File name="MonoDevelop.XmlEditor/QualifiedNameCollection.cs" subtype="Code" buildaction="Compile" />
     <File name="Makefile.am" subtype="Code" buildaction="Nothing" />
     <File name="MonoDevelop.XmlEditor.Completion/ClosingBracketCompletionDataProvider.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.XmlEditor.Completion/ILazilyLoadedProvider.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.XmlEditor.Completion/EmptyXmlCompletionProvider.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.XmlEditor.Completion/XmlTagCompletionData.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />

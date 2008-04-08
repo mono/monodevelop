@@ -21,6 +21,7 @@ namespace MonoDevelop.XmlEditor
 		Format,
 		OpenXPathQueryPad,
 		RemoveXPathHighlighting,
-		GoToSchemaDefinition
+		GoToSchemaDefinition,
+		ContextualMainMenu
 	}
 }

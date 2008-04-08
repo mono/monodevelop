@@ -17,13 +17,14 @@ namespace MonoDevelop.XmlEditor.Completion
 	/// <summary>
 	/// Holds the completion (intellisense) data for an xml schema.
 	/// </summary>
-	public class XmlSchemaCompletionData : IXmlCompletionProvider
+	public class XmlSchemaCompletionData : IXmlCompletionProvider, ILazilyLoadedProvider
 	{
 		string namespaceUri = String.Empty;
-		XmlSchema schema;
+		XmlSchema schema = null;
 		string fileName = String.Empty;
+		string baseUri = string.Empty;
 		bool readOnly = false;
-		bool compiled = false;
+		bool loaded = false;
 		
 		/// <summary>
 		/// Stores attributes that have been prohibited whilst the code
@@ -59,7 +60,7 @@ namespace MonoDevelop.XmlEditor.Completion
 		/// <summary>
 		/// Creates the completion data from the specified schema file.
 		/// </summary>
-		public XmlSchemaCompletionData(string fileName) : this(String.Empty, fileName)
+		public XmlSchemaCompletionData (string fileName) : this (String.Empty, fileName)
 		{
 		}
 		
@@ -67,11 +68,19 @@ namespace MonoDevelop.XmlEditor.Completion
 		/// Creates the completion data from the specified schema file and uses
 		/// the specified baseUri to resolve any referenced schemas.
 		/// </summary>
-		public XmlSchemaCompletionData(string baseUri, string fileName)
+		public XmlSchemaCompletionData (string baseUri, string fileName) : this (baseUri, fileName, false)
 		{
-			StreamReader reader = new StreamReader(fileName, true);
-			ReadSchema(baseUri, reader);
+		}
+		
+		//lazyLoadFile should not be used when the namespace property needs to be read
+		public XmlSchemaCompletionData (string baseUri, string fileName, bool lazyLoadFile)
+		{
 			this.fileName = fileName;
+			this.baseUri = baseUri;
+			
+			if (!lazyLoadFile)
+				using (StreamReader reader = new StreamReader (fileName, true))
+					ReadSchema (baseUri, reader);
 		}
 		
 		#endregion
@@ -80,7 +89,7 @@ namespace MonoDevelop.XmlEditor.Completion
 		
 		public XmlSchema Schema {
 			get {
-				CompileSchema ();
+				EnsureLoaded ();
 				return schema;
 			}
 		}
@@ -117,11 +126,31 @@ namespace MonoDevelop.XmlEditor.Completion
 			return uri;
 		}
 		
+		#region ILazilyLoadedProvider implementation
+		
+		public bool IsLoaded {
+			get { return loaded; }
+		}
+		
+		public void EnsureLoaded ()
+		{
+			if (loaded)
+				return;
+			
+			if (schema == null)
+				using (StreamReader reader = new StreamReader (fileName, true))
+					ReadSchema (baseUri, reader);
+			
+			schema.Compile (new ValidationEventHandler (SchemaValidation));
+			loaded = true;
+		}
+		#endregion
+		
 		#region Simplified API, useful for e.g. HTML
 		
 		public ICompletionData[] GetChildElementCompletionData (string tagName)
 		{
-			CompileSchema();
+			EnsureLoaded();
 			
 			XmlSchemaElement element = FindElement (tagName);
 			if (element != null)
@@ -132,7 +161,7 @@ namespace MonoDevelop.XmlEditor.Completion
 		
 		public ICompletionData[] GetAttributeCompletionData (string tagName)
 		{
-			CompileSchema();
+			EnsureLoaded();
 			
 			XmlSchemaElement element = FindElement (tagName);
 			if (element != null) {
@@ -145,7 +174,7 @@ namespace MonoDevelop.XmlEditor.Completion
 		
 		public ICompletionData[] GetAttributeValueCompletionData (string tagName, string name)
 		{
-			CompileSchema();
+			EnsureLoaded();
 			
 			XmlSchemaElement element = FindElement (tagName);
 			if (element != null)
@@ -156,7 +185,7 @@ namespace MonoDevelop.XmlEditor.Completion
 		
 		XmlElementPath CreateSimplePath (string tagName)
 		{
-			CompileSchema();
+			EnsureLoaded();
 			XmlElementPath path = new XmlElementPath ();
 			System.Console.WriteLine(schema.TargetNamespace);
 			foreach (XmlSchemaElement element in schema.Elements.Values) {
@@ -174,7 +203,7 @@ namespace MonoDevelop.XmlEditor.Completion
 		/// </summary>
 		public ICompletionData[] GetElementCompletionData()
 		{
-			CompileSchema();
+			EnsureLoaded();
 			return GetElementCompletionData(String.Empty);
 		}
 		
@@ -183,7 +212,7 @@ namespace MonoDevelop.XmlEditor.Completion
 		/// </summary>
 		public ICompletionData[] GetElementCompletionData(string namespacePrefix)
 		{
-			CompileSchema();
+			EnsureLoaded();
 			XmlCompletionDataCollection data = new XmlCompletionDataCollection();
 			
 			foreach (XmlSchemaElement element in schema.Elements.Values) {
@@ -203,7 +232,7 @@ namespace MonoDevelop.XmlEditor.Completion
 		/// </summary>
 		public ICompletionData[] GetAttributeCompletionData(XmlElementPath path)
 		{
-			CompileSchema();
+			EnsureLoaded();
 			XmlCompletionDataCollection data = new XmlCompletionDataCollection();
 					
 			// Locate matching element.
@@ -224,7 +253,7 @@ namespace MonoDevelop.XmlEditor.Completion
 		/// </summary>
 		public ICompletionData[] GetChildElementCompletionData(XmlElementPath path)
 		{
-			CompileSchema();
+			EnsureLoaded();
 			XmlCompletionDataCollection data = new XmlCompletionDataCollection();
 		
 			// Locate matching element.
@@ -243,7 +272,7 @@ namespace MonoDevelop.XmlEditor.Completion
 		/// </summary>
 		public ICompletionData[] GetAttributeValueCompletionData(XmlElementPath path, string name)
 		{
-			CompileSchema();
+			EnsureLoaded();
 			XmlCompletionDataCollection data = new XmlCompletionDataCollection();
 			
 			// Locate matching element.
@@ -266,7 +295,7 @@ namespace MonoDevelop.XmlEditor.Completion
 		/// <returns><see langword="null"/> if no element can be found.</returns>
 		public XmlSchemaElement FindElement(XmlElementPath path)
 		{
-			CompileSchema();
+			EnsureLoaded();
 			
 			XmlSchemaElement element = null;
 			for (int i = 0; i < path.Elements.Count; ++i) {
@@ -297,7 +326,7 @@ namespace MonoDevelop.XmlEditor.Completion
 		/// </remarks>
 		public XmlSchemaElement FindElement(QualifiedName name)
 		{
-			CompileSchema();
+			EnsureLoaded();
 
 			foreach (XmlSchemaElement element in schema.Elements.Values) {
 				if (name.Equals(element.QualifiedName)) {
@@ -310,7 +339,7 @@ namespace MonoDevelop.XmlEditor.Completion
 		
 		public XmlSchemaElement FindElement(string name)
 		{
-			CompileSchema();
+			EnsureLoaded();
 
 			foreach (XmlSchemaElement element in schema.Elements.Values)
 				if (element.QualifiedName.Name == name)
@@ -325,7 +354,7 @@ namespace MonoDevelop.XmlEditor.Completion
 		/// </summary>
 		public XmlSchemaComplexType FindComplexType(QualifiedName name)
 		{
-			CompileSchema();
+			EnsureLoaded();
 
 			XmlQualifiedName qualifiedName = new XmlQualifiedName(name.Name, name.Namespace);
 			return FindNamedType(schema, qualifiedName);
@@ -340,7 +369,7 @@ namespace MonoDevelop.XmlEditor.Completion
 		/// <returns><see langword="null"/> if no attribute can be found.</returns>
 		public XmlSchemaAttribute FindAttribute(XmlSchemaElement element, string name)
 		{
-			CompileSchema();
+			EnsureLoaded();
 
 			XmlSchemaAttribute attribute = null;
 			XmlSchemaComplexType complexType = GetElementAsComplexType(element);
@@ -355,7 +384,7 @@ namespace MonoDevelop.XmlEditor.Completion
 		/// </summary>
 		public XmlSchemaAttributeGroup FindAttributeGroup(string name)
 		{
-			CompileSchema();
+			EnsureLoaded();
 			return FindAttributeGroup(schema, name);
 		}
 		
@@ -364,7 +393,7 @@ namespace MonoDevelop.XmlEditor.Completion
 		/// </summary>
 		public XmlSchemaSimpleType FindSimpleType(string name)
 		{
-			CompileSchema();
+			EnsureLoaded();
 			XmlQualifiedName qualifiedName = new XmlQualifiedName(name, namespaceUri);
 			return FindSimpleType(qualifiedName);
 		}
@@ -375,7 +404,7 @@ namespace MonoDevelop.XmlEditor.Completion
 		/// </summary>
 		public XmlSchemaAttribute FindAttribute(string name)
 		{
-			CompileSchema();
+			EnsureLoaded();
 			foreach (XmlSchemaAttribute attribute in schema.Attributes.Values) {
 				if (attribute.Name == name) {
 					return attribute;
@@ -389,7 +418,7 @@ namespace MonoDevelop.XmlEditor.Completion
 		/// </summary>
 		public XmlSchemaGroup FindGroup(string name)
 		{
-			CompileSchema();
+			EnsureLoaded();
 			if (name != null) {
 				foreach (XmlSchemaObject schemaObject in schema.Groups.Values) {
 					XmlSchemaGroup group = schemaObject as XmlSchemaGroup;
@@ -416,7 +445,7 @@ namespace MonoDevelop.XmlEditor.Completion
 			if (index >= 0) {
 				string prefix = name.Substring(0, index);
 				name = name.Substring(index + 1);
-				CompileSchema();
+				EnsureLoaded();
 				foreach (XmlQualifiedName xmlQualifiedName in schema.Namespaces.ToArray()) {
 					if (xmlQualifiedName.Name == prefix) {
 						return new QualifiedName(name, xmlQualifiedName.Namespace, prefix);
@@ -433,7 +462,7 @@ namespace MonoDevelop.XmlEditor.Completion
 		/// </summary>
 		void SchemaValidation(object source, ValidationEventArgs e)
 		{
-			// Do nothing.
+			MonoDevelop.Core.LoggingService.LogWarning ("Validation error loading schema '{0}': {1}", this.fileName, e.Message);
 		}
 		
 		/// <summary>
@@ -1390,14 +1419,6 @@ namespace MonoDevelop.XmlEditor.Completion
 			}
 			
 			return matchedElement;
-		}
-		
-		void CompileSchema ()
-		{
-			if (!compiled) {
-				schema.Compile (new ValidationEventHandler (SchemaValidation));
-				compiled = true;
-			}
 		}
 	}
 }
