@@ -1,3 +1,8 @@
+2008-04-08  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.DesignerSupport/BindingService.cs: Add methods for
+	  getting CodeMemberMethod signatures from MD's parser DOM.
+
 2008-03-07  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.DesignerSupport.Toolbox/ToolboxWidget.cs: Properly handle

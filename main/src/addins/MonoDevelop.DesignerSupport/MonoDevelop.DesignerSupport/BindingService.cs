@@ -308,7 +308,56 @@ namespace MonoDevelop.DesignerSupport
 			foreach (ParameterInfo pi in pinfos) {
 				CodeParameterDeclarationExpression newPar = new CodeParameterDeclarationExpression (pi.ParameterType.FullName, pi.Name);
 				if (pi.IsIn) newPar.Direction = FieldDirection.In;
-				if (pi.IsOut) newPar.Direction = FieldDirection.Out;
+				else if (pi.IsOut) newPar.Direction = FieldDirection.Out;
+				newMethod.Parameters.Add (newPar);
+			}
+			
+			return newMethod;
+		}
+		
+		public static System.CodeDom.CodeMemberMethod MDDomToCodeDomMethod (IEvent ev, IParserContext context)
+		{
+			IClass cls = context.GetClass (ev.ReturnType.FullyQualifiedName, ev.ReturnType.GenericArguments, true, false);
+			foreach(IMethod m in cls.Methods)
+				if (m.Name == "Invoke")
+					return MDDomToCodeDomMethod (m);
+			return null;
+		}
+		
+		public static System.CodeDom.CodeMemberMethod MDDomToCodeDomMethod (IMethod mi)
+		{
+			CodeMemberMethod newMethod = new CodeMemberMethod ();
+			newMethod.Name = mi.Name;
+			newMethod.ReturnType = new System.CodeDom.CodeTypeReference (mi.ReturnType.FullyQualifiedName);
+			
+			newMethod.Attributes = System.CodeDom.MemberAttributes.Private;
+			switch (mi.Modifiers) {
+			case ModifierEnum.Internal:
+				newMethod.Attributes |= System.CodeDom.MemberAttributes.Assembly;
+				break;
+			case ModifierEnum.ProtectedAndInternal:
+				newMethod.Attributes |= System.CodeDom.MemberAttributes.FamilyAndAssembly;
+				break;
+			case ModifierEnum.Protected:
+				newMethod.Attributes |= System.CodeDom.MemberAttributes.Family;
+				break;
+			case ModifierEnum.ProtectedOrInternal:
+				newMethod.Attributes |= System.CodeDom.MemberAttributes.FamilyAndAssembly;
+				break;
+			case ModifierEnum.Public:
+				newMethod.Attributes |= System.CodeDom.MemberAttributes.Public;
+				break;
+			case ModifierEnum.Static:
+				newMethod.Attributes |= System.CodeDom.MemberAttributes.Static;
+				break;
+			}
+			
+			foreach (IParameter p in mi.Parameters) {
+				CodeParameterDeclarationExpression newPar = new CodeParameterDeclarationExpression (p.ReturnType.FullyQualifiedName, p.Name);
+				if (p.IsRef) newPar.Direction = FieldDirection.Ref;
+				else if (p.IsOut) newPar.Direction = FieldDirection.Out;
+				else newPar.Direction = FieldDirection.In;
+				
 				newMethod.Parameters.Add (newPar);
 			}
 			
