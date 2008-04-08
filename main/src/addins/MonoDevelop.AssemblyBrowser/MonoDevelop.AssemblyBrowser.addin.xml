@@ -21,7 +21,7 @@
 	
 	<!-- Extensions -->
 	<Extension path = "/MonoDevelop/Ide/DisplayBindings">
-		<DisplayBinding id = "AssemblyBrowser" insertbefore ="NewText" supportedformats = ".NET Assemblies" class = "MonoDevelop.AssemblyBrowser.DisplayBinding" />
+		<DisplayBinding id = "AssemblyBrowser" insertbefore ="NewText2" supportedformats = ".NET Assemblies" class = "MonoDevelop.AssemblyBrowser.DisplayBinding" />
 	</Extension>
 	
 </Addin>
