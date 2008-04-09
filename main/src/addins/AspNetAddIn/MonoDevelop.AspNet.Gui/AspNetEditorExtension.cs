@@ -27,6 +27,7 @@
 //
 
 using System;
+using System.Collections.Generic;
 
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
@@ -400,22 +401,13 @@ namespace MonoDevelop.AspNet.Gui
 		void AddControlMembers (CodeCompletionDataProvider provider, MonoDevelop.Projects.Parser.IParserContext ctx, Document doc, MonoDevelop.Projects.Parser.IClass controlClass, TagNode parentTag)
 		{
 			//add atts only if they're not already in the tag
-			foreach (MonoDevelop.Projects.Parser.IProperty prop in controlClass.Properties)
+			foreach (MonoDevelop.Projects.Parser.IProperty prop in GetAllProperties (ctx, controlClass))
 				if (prop.IsPublic && parentTag.Attributes[prop.Name] == null)
 					provider.AddCompletionData (new CodeCompletionData (prop.Name, "md-property", prop.Documentation));
 			
-			foreach (MonoDevelop.Projects.Parser.IEvent eve in controlClass.Events)
+			foreach (MonoDevelop.Projects.Parser.IEvent eve in GetAllEvents (ctx, controlClass))
 				if (eve.IsPublic && parentTag.Attributes[eve.Name] == null)
 					provider.AddCompletionData (new CodeCompletionData ("On" + eve.Name, "md-event", eve.Documentation));
-			
-			//walk down into base classes
-			foreach (MonoDevelop.Projects.Parser.IReturnType rt in controlClass.BaseTypes) {
-				if (rt.IsRootType)
-					continue;
-				MonoDevelop.Projects.Parser.IClass cls = ctx.GetClass (rt.FullyQualifiedName);
-				if (cls != null)
-					AddControlMembers (provider, ctx, doc, cls, parentTag);
-			}
 		}
 		
 		void AddAspAttributeValueCompletionData (CodeCompletionDataProvider provider, Document doc, string prefix, string name, string attrib, TagNode parentTag)
@@ -425,9 +417,12 @@ namespace MonoDevelop.AspNet.Gui
 			
 			MonoDevelop.Projects.Parser.IClass controlClass = doc.ReferenceManager.GetControlType (prefix, name);
 			if (controlClass == null) {
-				MonoDevelop.Projects.Parser.IParserContext context = 
-					MonoDevelop.Ide.Gui.IdeApp.ProjectOperations.ParserDatabase.GetAssemblyParserContext ("System.Web");
-				controlClass = context.GetClass ("System.Web.UI.WebControls.WebControl");
+				//FIXME: respect runtime version
+				MonoDevelop.Projects.Parser.IParserContext sysWebContext = MonoDevelop.Ide.Gui.IdeApp.ProjectOperations.ParserDatabase.GetAssemblyParserContext ("System.Web");
+				if (sysWebContext == null)
+					return;
+				
+				controlClass = sysWebContext.GetClass ("System.Web.UI.WebControls.WebControl");
 				if (controlClass == null)
 					LoggingService.LogWarning ("Could not obtain IClass for System.Web.UI.WebControls.WebControl");
 			}
@@ -443,7 +438,7 @@ namespace MonoDevelop.AspNet.Gui
 			//if it's an event, suggest compatible methods 
 			if (codeBehindClass != null && attrib.StartsWith ("On")) {
 				string eventName = attrib.Substring (2);
-				foreach (MonoDevelop.Projects.Parser.IEvent ev in controlClass.Events) {
+				foreach (MonoDevelop.Projects.Parser.IEvent ev in GetAllEvents (projectContext, controlClass)) {
 					if (ev.Name == eventName) {
 						System.CodeDom.CodeMemberMethod domMethod = BindingService.MDDomToCodeDomMethod (ev, projectContext);
 						if (domMethod == null)
@@ -467,9 +462,72 @@ namespace MonoDevelop.AspNet.Gui
 				}
 			}
 			
+			//FIXME: respect runtime version
+			if (projectContext == null)
+				projectContext = MonoDevelop.Ide.Gui.IdeApp.ProjectOperations.ParserDatabase.GetAssemblyParserContext ("System.Web");
+			if (projectContext == null)
+				return;
+			
 			//if it's a property and is an enum or bool, suggest valid values
-//			foreach (MonoDevelop.Projects.Parser.IProperty prop in controlClass.Properties) {
-//			}
+			foreach (MonoDevelop.Projects.Parser.IProperty prop in GetAllProperties (projectContext, controlClass)) {
+				if (prop.Name != attrib)
+					continue;
+				
+				//boolean completion
+				if (prop.ReturnType.FullyQualifiedName == "System.Boolean") {
+					AddBooleanCompletionData (provider);
+					return;
+				}
+				
+				//color completion
+				if (prop.ReturnType.FullyQualifiedName == "System.Drawing.Color") {
+					System.Drawing.ColorConverter conv = new System.Drawing.ColorConverter ();
+					foreach (System.Drawing.Color c in conv.GetStandardValues (null))
+						provider.AddCompletionData (new CodeCompletionData (c.Name, "md-literal"));
+					return;
+				}
+				
+				//enum completion
+				MonoDevelop.Projects.Parser.IClass retCls = projectContext.GetClass (prop.ReturnType.FullyQualifiedName, true, false);
+				if (retCls != null && retCls.ClassType == MonoDevelop.Projects.Parser.ClassType.Enum) {
+					foreach (MonoDevelop.Projects.Parser.IField enumVal in retCls.Fields)
+						if (enumVal.IsPublic && enumVal.IsStatic)
+							provider.AddCompletionData (new CodeCompletionData (enumVal.Name, "md-literal", enumVal.Documentation));
+					return;
+				}
+			}
+		}
+		
+		IEnumerable<MonoDevelop.Projects.Parser.IProperty> GetAllProperties (MonoDevelop.Projects.Parser.IParserContext ctx, MonoDevelop.Projects.Parser.IClass cls)
+		{
+			foreach (MonoDevelop.Projects.Parser.IProperty prop in cls.Properties)
+				yield return prop;
+			
+			foreach (MonoDevelop.Projects.Parser.IReturnType rt in cls.BaseTypes) {
+				MonoDevelop.Projects.Parser.IClass baseCls = ctx.GetClass (rt.FullyQualifiedName);
+				if (baseCls != null)
+					foreach (MonoDevelop.Projects.Parser.IProperty prop in GetAllProperties (ctx, baseCls))
+					    yield return prop;
+			}
+		}
+		
+		IEnumerable<MonoDevelop.Projects.Parser.IEvent> GetAllEvents (MonoDevelop.Projects.Parser.IParserContext ctx, MonoDevelop.Projects.Parser.IClass cls)
+		{
+			foreach (MonoDevelop.Projects.Parser.IEvent ev in cls.Events)
+				yield return ev;
+			
+			foreach (MonoDevelop.Projects.Parser.IReturnType rt in cls.BaseTypes) {
+				MonoDevelop.Projects.Parser.IClass baseCls = ctx.GetClass (rt.FullyQualifiedName, true, false);
+				if (baseCls != null)
+					foreach (MonoDevelop.Projects.Parser.IEvent ev in GetAllEvents (ctx, baseCls))
+					    yield return ev;
+			}
+		}
+		
+		void AddBooleanCompletionData (CodeCompletionDataProvider provider)
+		{
+			provider.AddCompletionData (new CodeCompletionData ("true", "md-literal"));
+			provider.AddCompletionData (new CodeCompletionData ("false", "md-literal"));
 		}
 		
 		#endregion

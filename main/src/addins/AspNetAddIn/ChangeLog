@@ -1,5 +1,11 @@
 2008-04-08  Michael Hutchinson <mhutchinson@novell.com> 
 
+	* MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs: Add completion for
+	  colours, enums and booleans. Walk into base members when attempting
+	  attribute completion.
+
+2008-04-08  Michael Hutchinson <mhutchinson@novell.com> 
+
 	* MonoDevelop.AspNet/CodeBehind.cs: Add method for getting a
 	  non-designer class.
 	* MonoDevelop.AspNet/WebTypeManager.cs,
