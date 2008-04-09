@@ -1,3 +1,9 @@
+2008-04-09  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Ide.Dom.Parser/ProjectParserService.cs,
+	  MonoDevelop.Ide.Dom.Parser/IParser.cs: Changed parser interface a
+	  bit.
+
 2008-04-08  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Ide.Gui/SdiWorkspaceWindow.cs: Remove debug code.

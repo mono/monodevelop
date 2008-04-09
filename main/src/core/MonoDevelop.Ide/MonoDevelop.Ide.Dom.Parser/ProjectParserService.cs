@@ -87,7 +87,7 @@ namespace MonoDevelop.Ide.Dom.Parser
 					
 				ProjectDom dom = GetDom (project);
 				foreach (ProjectFile file in project.ProjectFiles) {
-					dom.UpdateCompilationUnit (parser.Parse (file.FilePath));
+					dom.UpdateCompilationUnit (parser.Parse (file.FilePath, System.IO.File.ReadAllText (file.FilePath)));
 				}
 			}
 		}

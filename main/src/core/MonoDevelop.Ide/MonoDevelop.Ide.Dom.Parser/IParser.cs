@@ -33,7 +33,6 @@ namespace MonoDevelop.Ide.Dom.Parser
 	public interface IParser
 	{
 		ICompilationUnit Parse (string fileName, string content);
-		ICompilationUnit Parse (string fileName);
 		
 		bool CanParseMimeType (string mimeType);
 		bool CanParseProjectType (string projectType);
