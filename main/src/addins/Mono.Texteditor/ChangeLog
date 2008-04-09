@@ -1,3 +1,10 @@
+2008-04-08  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* Mono.TextEditor/TextViewMargin.cs: Restore caret position after a
+	  middle-click insertion, and restore selection when the insertion is
+	  within the offset range space previously occupied by the selection.
+	  Fixes "Bug 378188 - Strange selection deletion behaviour".
+
 2008-04-04  Mike Krüger <mkrueger@novell.com> 
 
 	* Mono.TextEditor/TextViewMargin.cs: Optimized text editor drawing a
