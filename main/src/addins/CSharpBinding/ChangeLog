@@ -1,5 +1,9 @@
 2008-04-11  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* Parser/CodeGenerator.cs: Fix potential infinite loop.
+
+2008-04-11  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* CSharpBinding.addin.xml: Use the new mime type extension to register
 	  new file types.
 	* Parser/CSharpVisitor.cs: Remove debug code.

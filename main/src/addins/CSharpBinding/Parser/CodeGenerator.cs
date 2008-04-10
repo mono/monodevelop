@@ -33,6 +33,7 @@ using System.IO;
 using System.Drawing;
 using System.CodeDom;
 using System.Collections;
+using System.Collections.Generic;
 using System.CodeDom.Compiler;
 using System.Text.RegularExpressions;
 using Microsoft.CSharp;
@@ -485,13 +486,23 @@ namespace CSharpBinding.Parser
 		
 		bool IsExpectedClass (IClass type)
 		{
+			return IsExpectedClass (type, new Dictionary<string,string> ());
+		}
+		
+		bool IsExpectedClass (IClass type, Dictionary<string,string> checkedTypes)
+		{
+			if (checkedTypes.ContainsKey (type.FullyQualifiedName))
+				return false;
+			
 			if (type.FullyQualifiedName == declaringType.FullyQualifiedName)
 				return true;
+			
+			checkedTypes [type.FullyQualifiedName] = type.FullyQualifiedName;
 			
 			if (type.BaseTypes != null) {
 				foreach (IReturnType bc in type.BaseTypes) {
 					IClass bcls = ctx.ParserContext.GetClass (bc.FullyQualifiedName, bc.GenericArguments, true, true);
-					if (bcls != null && IsExpectedClass (bcls))
+					if (bcls != null && IsExpectedClass (bcls, checkedTypes))
 						return true;
 				}
 			}
