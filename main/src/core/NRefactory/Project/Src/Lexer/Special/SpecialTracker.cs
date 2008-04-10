@@ -18,6 +18,7 @@ namespace ICSharpCode.NRefactory.Parser
 		CommentType   currentCommentType;
 		StringBuilder sb = new StringBuilder();
 		Location         startPosition;
+		bool commentStartsLine;
 		
 		public List<ISpecial> CurrentSpecials {
 			get {
@@ -51,10 +52,11 @@ namespace ICSharpCode.NRefactory.Parser
 		}
 		
 		// used for comment tracking
-		public void StartComment(CommentType commentType, Location startPosition)
+		public void StartComment(CommentType commentType, bool commentStartsLine, Location startPosition)
 		{
 			this.currentCommentType = commentType;
 			this.startPosition      = startPosition;
+			this.commentStartsLine  = commentStartsLine;
 			this.sb.Length          = 0;
 		}
 		
@@ -70,7 +72,7 @@ namespace ICSharpCode.NRefactory.Parser
 		
 		public void FinishComment(Location endPosition)
 		{
-			currentSpecials.Add(new Comment(currentCommentType, sb.ToString(), startPosition, endPosition));
+			currentSpecials.Add(new Comment(currentCommentType, commentStartsLine, sb.ToString(), startPosition, endPosition));
 		}
 	}
 }

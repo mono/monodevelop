@@ -13,6 +13,7 @@ namespace ICSharpCode.NRefactory
 	{
 		CommentType   commentType;
 		string        comment;
+		bool          commentStartsLine;
 		
 		public CommentType CommentType {
 			get {
@@ -31,11 +32,21 @@ namespace ICSharpCode.NRefactory
 				comment = value;
 			}
 		}
+
+		public bool CommentStartsLine {
+			get {
+				return commentStartsLine;
+			}
+			set {
+				commentStartsLine = value;
+			}
+		}
 		
-		public Comment(CommentType commentType, string comment, Location startPosition, Location endPosition)
+		public Comment(CommentType commentType, bool commentStartsLine, string comment, Location startPosition, Location endPosition)
 			: base(startPosition, endPosition)
 		{
 			this.commentType   = commentType;
+			this.commentStartsLine = commentStartsLine;
 			this.comment       = comment;
 		}
 		

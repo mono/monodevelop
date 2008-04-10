@@ -548,11 +548,11 @@ namespace ICSharpCode.NRefactory.Parser.VB
 				if (missingApostrophes > 0) {
 					if (ch == '\'' || ch == '\u2018' || ch == '\u2019') {
 						if (--missingApostrophes == 0) {
-							specialTracker.StartComment(CommentType.Documentation, startPos);
+							specialTracker.StartComment(CommentType.Documentation, true, startPos);
 							sb.Length = 0;
 						}
 					} else {
-						specialTracker.StartComment(CommentType.SingleLine, startPos);
+						specialTracker.StartComment(CommentType.SingleLine, true, startPos);
 						missingApostrophes = 0;
 					}
 				}
@@ -566,7 +566,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 						if (specialCommentHash.ContainsKey(tag)) {
 							Location p = new Location(Col, Line);
 							string comment = ch + ReadToEndOfLine();
-							this.TagComments.Add(new TagComment(tag, comment, p, new Location(Col, Line)));
+							this.TagComments.Add(new TagComment(tag, true, comment, p, new Location(Col, Line)));
 							sb.Append(comment);
 							break;
 						}
@@ -574,7 +574,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 				}
 			}
 			if (missingApostrophes > 0) {
-				specialTracker.StartComment(CommentType.SingleLine, startPos);
+				specialTracker.StartComment(CommentType.SingleLine, true, startPos);
 			}
 			specialTracker.AddString(sb.ToString());
 			specialTracker.FinishComment(new Location(Col, Line));
