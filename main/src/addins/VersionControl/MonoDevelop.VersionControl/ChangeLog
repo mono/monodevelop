@@ -1,3 +1,7 @@
+2008-04-11  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.VersionControl.mdp: Removed unneeded reference.
+
 2008-03-07  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* gtk-gui/generated.cs,
