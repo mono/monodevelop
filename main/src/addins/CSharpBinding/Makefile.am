@@ -157,7 +157,7 @@ all: $(ASSEMBLY)
 
 $(ASSEMBLY): $(build_sources) $(build_resources)
 	mkdir -p $(ADDIN_BUILD)
-	$(CSC) $(CSC_FLAGS) -debug -out:$@ -target:library $(REFS) \
+	$(CSC) $(CSC_FLAGS) -define:GMCS_SOURCE -debug -out:$@ -target:library $(REFS) \
 		$(build_resources:%=/resource:%) $(build_sources)
 
 #check: all $(TESTASSEMBLY)
@@ -165,7 +165,7 @@ $(ASSEMBLY): $(build_sources) $(build_resources)
 
 
 $(TESTASSEMBLY) : $(build_test_sources) $(build_resources)
-	$(CSC) $(CSC_FLAGS) -debug -codepage:utf8 -out:$@ -target:library $(DLLS) $(TESTDLLS) $(REFS) /r:$(ASSEMBLY) \
+	$(CSC) $(CSC_FLAGS) -debug -define:GMCS_SOURCE -codepage:utf8 -out:$@ -target:library $(DLLS) $(TESTDLLS) $(REFS) /r:$(ASSEMBLY) \
 	$(monodoc_libflags) $(build_resources:%=/resource:%) $(build_test_sources)
 
 parse: $(PARSE)

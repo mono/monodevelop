@@ -1,5 +1,9 @@
 2008-04-10  Mike Krüger <mkrueger@novell.com> 
 
+	* Makefile.am: updated makefile.am
+
+2008-04-10  Mike Krüger <mkrueger@novell.com> 
+
 	* Parser/mcs/typemanager.cs: fixes compilation error.
 
 2008-04-10  Mike Krüger <mkrueger@novell.com> 
