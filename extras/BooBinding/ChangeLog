@@ -1,3 +1,8 @@
+2008-04-11  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* BooBinding.addin.xml: Use the new mime type extension to register new
+	  file types.
+
 2008-03-10  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Gui/OptionPanels/GeneralShellPanel.boo, BooBinding.mdp,
