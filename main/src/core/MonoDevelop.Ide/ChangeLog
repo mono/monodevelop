@@ -1,3 +1,8 @@
+2008-04-10  Andres G. Aragoneses <aaragoneses@novell.com>
+
+	* MonoDevelop.Ide.Gui.Dialogs/ReplaceInFilesDialog.cs: Improved string
+	(redo r66359: http://lists.ximian.com/pipermail/mono-patches/2006-October/081256.html ).
+
 2008-04-10  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Ide.Dom.Parser/ProjectParserService.cs,

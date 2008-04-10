@@ -155,7 +155,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			store = new ListStore (typeof (string));
 			store.AppendValues (GettextCatalog.GetString ("Directories"));
 			store.AppendValues (GettextCatalog.GetString ("All open files"));
-			store.AppendValues (GettextCatalog.GetString ("Whole project"));
+			store.AppendValues (GettextCatalog.GetString ("Whole solution"));
 			searchLocationComboBox.Model = store;
 			searchLocationComboBox.PackStart (cr, true);
 			searchLocationComboBox.AddAttribute (cr, "text", 0);
