@@ -1,3 +1,8 @@
+2008-04-11  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.AspNet.addin.xml: Use the new mime type extension to
+	  register new file types.
+
 2008-04-08  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs: Add completion for

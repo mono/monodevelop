@@ -171,8 +171,10 @@
 		<CommandItem id = "MonoDevelop.AspNet.Deployment.WebDeployCommands.DeployProject" insertafter="MonoDevelop.Ide.Commands.ProjectCommands.ExportProject"/>
 	</Extension>
 
-	<Extension path = "/MonoDevelop/ProjectModel/Gui/Icons">
-		<Icon extensions = ".aspx,.asax,.ascx,.ashx,.asmx" icon = "md-html-file-icon"/>
+	<Extension path = "/MonoDevelop/Core/MimeTypes">
+		<MimeType id="text/html" _description="Java source code" icon="md-html-file-icon">
+			<File pattern="*.aspx|*.asax|*.ascx|*.ashx|*.asmx" />
+		</MimeType>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/TextEditorExtensions">
