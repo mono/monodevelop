@@ -27,16 +27,6 @@ namespace MonoDevelop.Platform
 			return new DesktopApplication ();
 		}
 
-		public override string GetIconForFile (string filename)
-		{
-			return "gnome-fs-regular";
-		}
-
-		public override string GetMimeTypeDescription (string mt)
-		{
-			return string.Empty;
-		}
-		
 		public override string Name {
 			get { return "Windows"; }
 		}
