@@ -29,11 +29,13 @@
 using System;
 using System.IO;
 using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
 
 using Mono.Addins;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Gui.Codons;
 
 namespace MonoDevelop.Core.Gui
 {
@@ -44,91 +46,168 @@ namespace MonoDevelop.Core.Gui
 		
 		public abstract DesktopApplication GetDefaultApplication (string mimetype);
 		public abstract DesktopApplication [] GetAllApplications (string mimetype);
-		public abstract string GetMimeTypeDescription (string mt);
 		public abstract string DefaultMonospaceFont { get; }
 		public abstract string Name { get; }
-		public abstract string GetIconForFile (string filename);
 		
-		public virtual string GetMimeTypeForUri (string uri) {
-			FileInfo file = new FileInfo (uri);
-
-			switch (file.Extension) {
-			case ".cs":
-				return "text/x-csharp";
-			case ".boo":
-				return "text/x-boo";
-			case ".vb":
-				return "text/x-vb";
-			case ".xml":
-				return "application/xml";
-			case ".xaml":
-				return "application/xaml+xml";
-			}
-			
-			switch (file.Name.ToLower ()) {
-				case "changelog":
-					return "text/x-changelog";
-			}
-			return "text/plain";
-		}
-
 		public virtual void ShowUrl (string url)
 		{
 			Process.Start (url);
 		}
 
-		public virtual Gdk.Pixbuf DefaultFileIcon {
-			get {
-				if (defaultIcon == null)
-					defaultIcon = new Gdk.Pixbuf (typeof(PlatformService).Assembly, "gnome-fs-regular.png");
-				return defaultIcon;
-			}
-		}
-		
-		public virtual Gdk.Pixbuf GetPixbufForFile (string filename, int size)
+		public string GetMimeTypeForUri (string uri)
 		{
-			if (filename == "Documentation") {
-				return GetPixbufForType ("gnome-fs-regular", size);
-			} else if (Directory.Exists (filename)) {
-				return GetPixbufForType ("gnome-fs-directory", size);
-			} else if (File.Exists (filename)) {
-				foreach (char c in filename) {
-					// FIXME: This is a temporary workaround. In some systems, files with
-					// accented characters make LookupSync crash. Still trying to find out why.
-					if ((int)c < 32 || (int)c > 127)
-						return GetPixbufForType ("gnome-fs-regular", size);
-				}
-				filename = filename.Replace ("%", "%25");
-				filename = filename.Replace ("#", "%23");
-				filename = filename.Replace ("?", "%3F");
-				string icon = null;
-				try {
-					icon = GetIconForFile (filename);
-				} catch {}
-				if (icon == null || icon.Length == 0)
-					return GetPixbufForType ("gnome-fs-regular", size);
-				else
-					return GetPixbufForType (icon, size);
-			}
-
-			return GetPixbufForType ("gnome-fs-regular", size);
+			FileInfo file = new FileInfo (uri);
+			MimeTypeNode mt = FindMimeTypeForFile (file.Name);
+			if (mt != null)
+				return mt.Id;
+			else
+				return OnGetMimeTypeForUri (uri) ?? "text/plain";
 		}
 		
-		public virtual Gdk.Pixbuf GetPixbufForType (string type, int size)
+		public string GetMimeTypeDescription (string mimeType)
+		{
+			MimeTypeNode mt = FindMimeType (mimeType);
+			if (mt != null && mt.Description != null)
+				return mt.Description;
+			else
+				return OnGetMimeTypeDescription (mimeType) ?? string.Empty;
+		}
+		
+		public Gdk.Pixbuf GetPixbufForFile (string filename, Gtk.IconSize size)
+		{
+			Gdk.Pixbuf pic = null;
+			
+			string icon = GetIconForFile (filename);
+			if (icon != null)
+				pic = Services.Resources.GetBitmap (icon, size);
+			
+			if (pic == null)
+				pic = OnGetPixbufForFile (filename, size);
+			
+			if (pic == null) {
+				string mt = GetMimeTypeForUri (filename);
+				if (mt != null)
+					pic = GetPixbufForType (mt, size);
+			}
+			return pic ?? GetDefaultIcon (size);
+		}
+		
+		public Gdk.Pixbuf GetPixbufForType (string type, Gtk.IconSize size)
 		{
 			Gdk.Pixbuf bf = (Gdk.Pixbuf) iconHash [type+size];
+			if (bf != null)
+				return bf;
+			
+			// Try getting an icon name for the type
+			string icon = GetIconForType (type);
+			if (icon != null)
+				bf = Services.Resources.GetBitmap (icon, size);
+			
 			if (bf == null) {
-				try {
-					bf = Gtk.IconTheme.Default.LoadIcon (type, size, (Gtk.IconLookupFlags) 0);
-				}
-				catch {
-					bf = DefaultFileIcon;
-					if (bf.Height > size)
-						bf = bf.ScaleSimple (size, size, Gdk.InterpType.Bilinear);
-				}
-				iconHash [type+size] = bf;
+				// Try getting a pixbuff
+				bf = OnGetPixbufForType (type, size);
 			}
+			
+			if (bf == null) {
+				bf = Services.Resources.GetBitmap (type, size);
+				if (bf == null)
+					bf = GetDefaultIcon (size);
+			}
+			iconHash [type+size] = bf;
 			return bf;
+		}
+		
+		Gdk.Pixbuf GetDefaultIcon (Gtk.IconSize size)
+		{
+			string id = "__default" + size;
+			Gdk.Pixbuf bf = (Gdk.Pixbuf) iconHash [id];
+			if (bf != null)
+				return bf;
+
+			string icon = DefaultFileIcon;
+			if (icon != null)
+				bf = Services.Resources.GetBitmap (icon, size);
+			if (bf == null)
+				bf = OnGetDefaultFileIcon (size);
+			if (bf == null)
+				bf = Services.Resources.GetBitmap ("md-regular-file", size);
+			iconHash [id] = bf;
+			return bf;
+		}
+		
+		string GetIconForFile (string fileName)
+		{
+			MimeTypeNode mt = FindMimeTypeForFile (fileName);
+			if (mt != null)
+				return mt.Icon;
+			else
+				return OnGetIconForFile (fileName);
+		}
+		
+		string GetIconForType (string type)
+		{
+			MimeTypeNode mt = FindMimeType (type);
+			if (mt != null)
+				return mt.Icon;
+			else
+				return OnGetIconForType (type);
+		}
+		
+		MimeTypeNode FindMimeTypeForFile (string fileName)
+		{
+			foreach (MimeTypeNode mt in AddinManager.GetExtensionNodes ("/MonoDevelop/Core/MimeTypes")) {
+				if (mt.SupportsFile (fileName))
+					return mt;
+			}
+			return null;
+		}
+		
+		MimeTypeNode FindMimeType (string type)
+		{
+			foreach (MimeTypeNode mt in AddinManager.GetExtensionNodes ("/MonoDevelop/Core/MimeTypes")) {
+				if (mt.Id == type)
+					return mt;
+			}
+			return null;
+		}
+		
+		protected virtual string OnGetMimeTypeForUri (string uri)
+		{
+			return null;
+		}
+
+		protected virtual string OnGetMimeTypeDescription (string mimeType)
+		{
+			return null;
+		}
+		
+		protected virtual string OnGetIconForFile (string filename)
+		{
+			return null;
+		}
+		
+		protected virtual string OnGetIconForType (string type)
+		{
+			return null;
+		}
+		
+		protected virtual Gdk.Pixbuf OnGetPixbufForFile (string filename, Gtk.IconSize size)
+		{
+			return null;
+		}
+		
+		protected virtual Gdk.Pixbuf OnGetPixbufForType (string type, Gtk.IconSize size)
+		{
+			return null;
+		}
+		
+		protected virtual string DefaultFileIcon {
+			get { return null; }
+		}
+		
+		protected virtual Gdk.Pixbuf OnGetDefaultFileIcon (Gtk.IconSize size)
+		{
+			return null;
 		}
 	}
 }

@@ -23,6 +23,7 @@ FILES =  \
 	gtk-gui/MonoDevelop.Core.Gui.Dialogs.MultiTaskProgressDialog.cs \
 	gtk-gui/MonoDevelop.Core.Gui.Dialogs.OptionsDialog.cs \
 	MonoDevelop.Core.Gui.Codons/DialogPanelCodon.cs \
+	MonoDevelop.Core.Gui.Codons/MimeTypeNode.cs \
 	MonoDevelop.Core.Gui.Codons/OptionsDialogSection.cs \
 	MonoDevelop.Core.Gui.Codons/OptionsPanelNode.cs \
 	MonoDevelop.Core.Gui.Codons/StockIconCodon.cs \

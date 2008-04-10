@@ -1,3 +1,15 @@
+2008-04-11  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Core.Gui.mdp,
+	  MonoDevelop.Core.Gui.Codons/MimeTypeNode.cs,
+	  MonoDevelop.Core.Gui.Components/FileBrowser.cs,
+	  MonoDevelop.Core.Gui/PlatformService.cs,
+	  MonoDevelop.Core.Gui/DefaultPlatformService.cs, Makefile.am,
+	  MonoDevelop.Core.Gui.addin.xml: Added extension point for
+	  registering new mime types.
+	* MonoDevelop.Core.Gui/ResourceService.cs: Make GetIcon work for stock
+	  gnome icons.
+
 2008-04-08  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Core.Gui/GLibLogging.cs: Log GDK messages too, and

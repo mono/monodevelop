@@ -41,22 +41,12 @@ namespace MonoDevelop.Core.Gui
 			return new DesktopApplication [0];
 		}
 		
-		public override string GetMimeTypeDescription (string mt)
-		{
-			return string.Empty;
-		}
-		
 		public override string DefaultMonospaceFont {
 			get { return string.Empty; }
 		}
 
 		public override string Name {
 			get { return "Default"; }
-		}
-		
-		public override string GetIconForFile (string filename)
-		{
-			return null;
 		}
 	}
 }

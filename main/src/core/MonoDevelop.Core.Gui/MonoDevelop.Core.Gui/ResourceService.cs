@@ -183,6 +183,12 @@ namespace MonoDevelop.Core.Gui
 					return iconset.RenderIcon (Gtk.Widget.DefaultStyle, Gtk.TextDirection.None, Gtk.StateType.Normal, size, null, null);
 				}
 			}
+			try {
+				int w, h;
+				Gtk.Icon.SizeLookup (size, out w, out h);
+				return Gtk.IconTheme.Default.LoadIcon (stockid, h, (Gtk.IconLookupFlags) 0);
+			} catch { 
+			}
 			
 			return null;
 		}

@@ -41,6 +41,11 @@
 		<Description>Used optionally to provides a web browser widget. Must implement MonoDevelop.Core.Gui.WebBrowser.IWebBrowserLoader</Description>
 		<ExtensionNode name="Class" />
 	</ExtensionPoint>
+	
+	<ExtensionPoint path = "/MonoDevelop/Core/MimeTypes" name = "Mime types">
+		<Description>Mime type to file extension mappings. Mime types defined here override the ones provided by the operating system.</Description>
+		<ExtensionNode name="MimeType" type="MonoDevelop.Core.Gui.Codons.MimeTypeNode"/>
+	</ExtensionPoint>
 
 	<!-- Extensions -->
 	
@@ -175,8 +180,21 @@
 		<StockIcon stockid = "md-addin" resource = "plugin-32.png" size = "LargeToolbar"/>
 		<StockIcon stockid = "md-workspace" resource = "workspace-16.png" size="Menu"/>
 		<StockIcon stockid = "md-workspace" resource = "workspace-32.png" size="Dnd" />
+		<StockIcon stockid = "md-regular-file" resource = "gnome-fs-regular.png" />
 	</Extension>
-	
 
-
+	<Extension path = "/MonoDevelop/Core/MimeTypes">
+		<MimeType id="text/x-resource" _description=".NET resource" icon="md-resource-file-icon">
+			<File pattern="*.resources" />
+		</MimeType>
+		<MimeType id="application/x-resource" _description=".NET resource" icon="md-resource-file-icon">
+			<File pattern="*.resx" />
+		</MimeType>
+		<MimeType id="application/xml" _description="XML document" icon="md-xml-file-icon">
+			<File pattern="*.xml" />
+		</MimeType>
+		<MimeType id="text/x-changelog" _description="ChangeLog document">
+			<File pattern="ChangeLog|Changelog|CHANGELOG|Changelog" />
+		</MimeType>
+	</Extension>
 </Addin>
