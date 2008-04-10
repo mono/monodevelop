@@ -72,7 +72,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			if (ic != Stock.MiscFiles || !File.Exists (file.Path))
 				icon = Context.GetIcon (ic);
 			else
-				icon = IdeApp.Services.PlatformService.GetPixbufForFile (file.Path, 16);
+				icon = IdeApp.Services.PlatformService.GetPixbufForFile (file.Path, Gtk.IconSize.Menu);
 			
 			if (file.ShowTransparent) {
 				Gdk.Pixbuf gicon = Context.GetComposedIcon (icon, "fade");

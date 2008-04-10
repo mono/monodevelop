@@ -1,3 +1,12 @@
+2008-04-11  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ProjectPad/SystemFileNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads/FileListItem.cs,
+	  gtk-gui/MonoDevelop.Ide.Gui.Dialogs.TipOfTheDayWindow.cs,
+	  MonoDevelop.Ide.Gui/SdiWorkspaceWindow.cs,
+	  MonoDevelop.Ide.Gui/SdiWorkspaceLayout.cs: Track api changes.
+
 2008-04-10  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Ide.Gui.Pads.ClassPad/ProjectNodeBuilder.cs: Removed some

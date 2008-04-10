@@ -78,7 +78,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			if (ic != Stock.MiscFiles || !File.Exists (file.FilePath))
 				icon = Context.GetIcon (ic);
 			else
-				icon = IdeApp.Services.PlatformService.GetPixbufForFile (file.FilePath, 16);
+				icon = IdeApp.Services.PlatformService.GetPixbufForFile (file.FilePath, Gtk.IconSize.Menu);
 		}
 		
 		public override object GetParentObject (object dataObject)
