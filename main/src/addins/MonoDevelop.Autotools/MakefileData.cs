@@ -492,6 +492,11 @@ namespace MonoDevelop.Autotools
 				@"^\s*(?<file>[^:]*):(?<line>\d*){1}(:(?<column>\d*))?\s*:\s*error\s*:\s(?<message>.*)",
 				@"^\s*(?<file>[^:]*):(?<line>\d*){1}(:(?<column>\d*))?\s*:\s*warning\s*:\s(?<message>.*)"
 			};
+			
+			compilerMessageRegex ["Boo"] = new string [] {
+				@"(^\s*(?<file>.*)\((?<line>\d*){1}(,(?<column>\d*[\+]*))?\)(:|)\s+)*(?=BCE)(?<number>.*?):\s(?<message>.*)",
+				@"(^\s*(?<file>.*)\((?<line>\d*){1}(,(?<column>\d*[\+]*))?\)(:|)\s+)*(?=BCW)(?<number>.*?):\sWARNING:\s(?<message>.*)"
+			};
 		}
 
 		void InitBuildVars ()

@@ -1,3 +1,8 @@
+2008-04-11  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* gtk-gui/MonoDevelop.Autotools.TarballBuilderEditorWidget.cs: Updated.
+	* MakefileData.cs: Added regex for boo messages.
+
 2008-03-27  Ankit Jain  <jankit@novell.com>
 
 	* templates/Makefile.solution.template:
