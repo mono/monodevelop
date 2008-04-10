@@ -1145,7 +1145,7 @@ namespace MonoDevelop.SourceEditor
 					item.Description += line;
 				}
 				item.Category = GettextCatalog.GetString ("Clipboard ring");
-				item.Icon = IdeApp.Services.PlatformService.GetPixbufForFile ("test.txt", 16);
+				item.Icon = IdeApp.Services.PlatformService.GetPixbufForFile ("test.txt", Gtk.IconSize.Menu);
 				item.Name = text.Length > 16 ? text.Substring (0, 16) + "..." : text;
 				item.Name = item.Name.Replace ("\t", "\\t");
 				item.Name = item.Name.Replace ("\n", "\\n");
