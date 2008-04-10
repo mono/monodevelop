@@ -68,8 +68,17 @@
 
   <Extension path = "/MonoDevelop/ProjectModel/Gui/Icons">
     <Icon language = "VBNet" icon = "res:VB.ProjectIcon"/>
-    <Icon extensions = ".vb" icon = "res:VB.FileIcon"/>
   </Extension>
+	
+	<Extension path = "/MonoDevelop/Core/StockIcons">
+		<StockIcon stockid = "md-vb-file" resource = "VB.FileIcon" />
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/Core/MimeTypes">
+		<MimeType id="text/x-vb" _description="Visual Basic source code" icon="md-vb-file">
+			<File pattern="*.vb" />
+		</MimeType>
+	</Extension>
 	
 	<!-- <Extension path = "/AddIns/DefaultTextEditor/Formatter">  
   		<Condition textcontent = "VBNet">

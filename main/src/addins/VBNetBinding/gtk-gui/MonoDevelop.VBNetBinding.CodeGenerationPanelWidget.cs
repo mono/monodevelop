@@ -385,6 +385,10 @@ namespace MonoDevelop.VBNetBinding {
             if ((this.Child != null)) {
                 this.Child.ShowAll();
             }
+            this.label87.MnemonicWidget = this.symbolsEntry;
+            this.label89.MnemonicWidget = this.mainClassEntry;
+            this.label85.MnemonicWidget = this.warningLevelSpinButton;
+            this.label88.MnemonicWidget = this.warningLevelSpinButton;
             this.Show();
         }
     }
