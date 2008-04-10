@@ -1,3 +1,8 @@
+2008-04-10  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Ide.Gui.Pads.ClassPad/ProjectNodeBuilder.cs: Removed some
+	  debug code. 
+
 2008-04-10  Andres G. Aragoneses <aaragoneses@novell.com>
 
 	* MonoDevelop.Ide.Gui.Dialogs/ReplaceInFilesDialog.cs: Improved string
