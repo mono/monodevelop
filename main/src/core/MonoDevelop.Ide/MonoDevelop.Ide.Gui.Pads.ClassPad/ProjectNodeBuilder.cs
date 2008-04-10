@@ -90,6 +90,8 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 		{
 			bool publicOnly = builder.Options ["PublicApiOnly"];
 			
+			MonoDevelop.Ide.Dom.Parser.ProjectDomService.GetDom (project);
+			
 			IParserContext ctx = IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (project);
 			LanguageItemCollection list = ctx.GetNamespaceContents ("", false);
 			foreach (ILanguageItem ob in list) {

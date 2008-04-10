@@ -30,6 +30,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using MonoDevelop.Projects;
+using Mono.Addins;
 
 namespace MonoDevelop.Ide.Dom.Parser
 {
@@ -46,6 +47,16 @@ namespace MonoDevelop.Ide.Dom.Parser
 
 		static ProjectDomService ()
 		{
+			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Ide/DomParser", delegate(object sender, ExtensionNodeEventArgs args) {
+				switch (args.Change) {
+				case ExtensionChange.Add:
+					parsers.Add ((IParser) args.ExtensionObject);
+					break;
+				case ExtensionChange.Remove:
+					parsers.Remove ((IParser) args.ExtensionObject);
+					break;
+				}
+			});
 			MonoDevelop.Ide.Gui.IdeApp.ProjectOperations.CombineOpened += delegate {
 				LoadWholeSolution ();
 			};
@@ -61,13 +72,13 @@ namespace MonoDevelop.Ide.Dom.Parser
 			return null;
 		}
 		
-		static ProjectDom GetDom (Project project)
+		public static ProjectDom GetDom (Project project)
 		{
 			Debug.Assert (project != null);
 			return GetDom (project.FileName);
 		}
 		
-		static ProjectDom GetDom (string fileName)
+		public static ProjectDom GetDom (string fileName)
 		{
 			Debug.Assert (!String.IsNullOrEmpty (fileName));
 			if (!doms.ContainsKey (fileName))

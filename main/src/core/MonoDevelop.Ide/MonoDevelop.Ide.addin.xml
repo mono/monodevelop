@@ -214,6 +214,10 @@
 		<Description>The context menu for all open files.</Description>
 		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
 	</ExtensionPoint>
+	
+	<ExtensionPoint path = "/MonoDevelop/Ide/DomParser" name = "Parsers">
+		<ExtensionNode name="Class"/>
+	</ExtensionPoint>
 		
 	<!-- Extensions -->
 
