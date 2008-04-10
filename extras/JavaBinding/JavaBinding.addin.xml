@@ -67,8 +67,17 @@
 
   <Extension path = "/MonoDevelop/ProjectModel/Gui/Icons">
     <Icon language = "Java" icon = "res:Java.ProjectIcon"/>
-    <Icon extensions = ".java" icon = "res:Java.FileIcon"/>
   </Extension>
+	
+	<Extension path = "/MonoDevelop/Core/StockIcons">
+		<StockIcon stockid = "md-java-file" resource = "Java.FileIcon" />
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/Core/MimeTypes">
+		<MimeType id="text/x-java" _description="Java source code" icon="md-java-file">
+			<File pattern="*.java" />
+		</MimeType>
+	</Extension>
 
   <Extension path = "/MonoDevelop/ProjectModel/LanguageBindings">
     <LanguageBinding id = "Java"
