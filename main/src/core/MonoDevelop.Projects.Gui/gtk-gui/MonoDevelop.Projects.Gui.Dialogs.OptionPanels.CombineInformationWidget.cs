@@ -44,7 +44,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels {
             this.descLabel = new Gtk.Label();
             this.descLabel.Name = "descLabel";
             this.descLabel.Xalign = 0F;
-            this.descLabel.Yalign = 0.01F;
+            this.descLabel.Yalign = 1F;
             this.descLabel.LabelProp = MonoDevelop.Core.GettextCatalog.GetString("_Description:");
             this.descLabel.UseUnderline = true;
             this.table14.Add(this.descLabel);

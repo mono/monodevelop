@@ -69,6 +69,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels {
             // Container child vbox58.Gtk.Box+BoxChild
             this.singleRadioButton = new Gtk.RadioButton(MonoDevelop.Core.GettextCatalog.GetString("_Single Startup Project"));
             this.singleRadioButton.Name = "singleRadioButton";
+            this.singleRadioButton.Active = true;
             this.singleRadioButton.DrawIndicator = true;
             this.singleRadioButton.UseUnderline = true;
             this.singleRadioButton.Group = new GLib.SList(System.IntPtr.Zero);

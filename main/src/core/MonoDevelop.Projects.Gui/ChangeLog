@@ -1,3 +1,11 @@
+2008-04-11  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Gui.addin.xml: Use the new mime type extension
+	  to register new file types.
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CombineStartupPanelWidget.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CombineInformationWidget.cs:
+	  Updated.
+
 2008-04-01  Aaron Bockover <abockover@novell.com>
 
 	* gtk-gui/gui.stetic:

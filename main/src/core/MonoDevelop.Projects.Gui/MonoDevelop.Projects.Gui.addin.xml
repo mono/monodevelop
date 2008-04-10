@@ -90,9 +90,4 @@
 		             _label = "Custom Commands"
 		             class = "MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CustomCommandPanel"/>
 	</Extension>
-	
-	<Extension path = "/MonoDevelop/ProjectModel/Gui/Icons">
-		<Icon extensions = ".xml" icon = "md-xml-file-icon" />
-		<Icon extensions = ".txt,.doc" icon = "md-text-file-icon"/>
-	</Extension>
 </Addin>
