@@ -420,7 +420,7 @@ namespace CBinding
 			string line;
 			
 			while ((line = reader.ReadLine ()) != null) {
-				if (line.StartsWith ("Cflags:", true, null)) {
+				if (line.StartsWith ("Libs:", true, null) && line.Contains (" -l")) {
 					valid = true;
 					break;
 				}

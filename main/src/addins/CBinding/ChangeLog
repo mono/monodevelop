@@ -1,3 +1,8 @@
+2008-04-10  Marcos David Marín Amador <MarcosMarin@gmail.com> 
+
+	* Gui/EditPackagesDialog.cs: Fixed bug 368755: "MD should not guess if a
+	  reference is managed or unmanaged relying on cflags"
+
 2008-04-11  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* CBinding.addin.xml: Use the new mime type extension to register new
