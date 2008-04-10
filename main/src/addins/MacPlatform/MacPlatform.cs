@@ -53,18 +53,14 @@ namespace MonoDevelop.Platform
 			return new DesktopApplication [] {new DesktopApplication ()};
 		}
 
-		public override string GetMimeTypeDescription (string mt) {
-			return string.Empty;
-		}
-
-		public override string GetMimeTypeForUri (string uri)
+		protected override string OnGetMimeTypeForUri (string uri)
 		{
 			FileInfo file = new FileInfo (uri);
 			
 			if (mimemap.ContainsKey (file.Extension))
 				return mimemap [file.Extension];
 
-			return base.GetMimeTypeForUri (uri);
+			return null;
 		}
 
 		public override void ShowUrl (string url)
@@ -80,11 +76,6 @@ namespace MonoDevelop.Platform
 			get { return "OSX"; }
 		}
 		
-		public override string GetIconForFile (string filename)
-		{
-			return "gnome-fs-regular";
-		}
-
 		private static void LoadMimeMap () {
 			// All recent Macs should have this file; if not we'll just die silently
 			try {
