@@ -1,3 +1,33 @@
+2008-04-10  Mike Krüger <mkrueger@novell.com> 
+
+	* CSharpBinding.addin.xml, CSharpBinding.mdp, Parser/DomParser.cs,
+	  Parser/mcs, Parser/mcs/report.cs, Parser/mcs/generic.cs,
+	  Parser/mcs/support.cs, Parser/mcs/typemanager.cs,
+	  Parser/mcs/cs-tokenizer.cs, Parser/mcs/External,
+	  Parser/mcs/External/MonoSymbolWriter.cs,
+	  Parser/mcs/External/MonoSymbolFile.cs,
+	  Parser/mcs/External/CryptoConvert.cs,
+	  Parser/mcs/External/MonoSymbolTable.cs,
+	  Parser/mcs/doc-bootstrap.cs, Parser/mcs/lambda.cs,
+	  Parser/mcs/parameter.cs, Parser/mcs/modifiers.cs,
+	  Parser/mcs/pending.cs, Parser/mcs/rootcontext.cs,
+	  Parser/mcs/namespace.cs, Parser/mcs/literal.cs,
+	  Parser/mcs/ecore.cs, Parser/mcs/linq.cs, Parser/mcs/class.cs,
+	  Parser/mcs/decl.cs, Parser/mcs/location.cs,
+	  Parser/mcs/roottypes.cs, Parser/mcs/delegate.cs,
+	  Parser/mcs/flowanalysis.cs, Parser/mcs/iterators.cs,
+	  Parser/mcs/cs-parser.jay, Parser/mcs/convert.cs,
+	  Parser/mcs/assign.cs, Parser/mcs/const.cs, Parser/mcs/cfold.cs,
+	  Parser/mcs/anonymous.cs, Parser/mcs/constant.cs,
+	  Parser/mcs/driver.cs, Parser/mcs/AssemblyInfo.cs,
+	  Parser/mcs/generic-mcs.cs, Parser/mcs/nullable.cs,
+	  Parser/mcs/cs-parser.cs, Parser/mcs/expression.cs,
+	  Parser/mcs/symbolwriter.cs, Parser/mcs/attribute.cs,
+	  Parser/mcs/enum.cs, Parser/mcs/statement.cs, Parser/mcs/doc.cs,
+	  Makefile.am, Parser/mcs/codegen.cs: Worked on mcs parser layer
+	* Parser/Parser.cs: fixed 'Bug 378432 - Comments should not fold if
+	  they are not the first text on the line'.
+
 2008-04-02  Mike Krüger <mkrueger@novell.com> 
 
 	* Parser/Resolver.cs: Fixed namespace bug.

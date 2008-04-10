@@ -107,6 +107,10 @@
 		<Class class = "CSharpBinding.CSharpTextEditorExtension" />
 	</Extension>
 	
+	<Extension path = "/MonoDevelop/Ide/DomParser">
+		<Class class = "MonoDevelop.CSharpBinding.DomParser" />
+	</Extension>
+	
 	<Module>
 	    <Runtime>
 	        <Import assembly="MonoDevelop.CSharpBinding.Autotools.dll"/>

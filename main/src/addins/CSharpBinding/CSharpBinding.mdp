@@ -1,16 +1,16 @@
 <Project name="MonoDevelop.CSharpBinding" fileversion="2.0" language="C#" clr-version="Net_2_0" ctype="DotNetProject">
   <Configurations active="Debug">
     <Configuration name="Debug" ctype="DotNetProjectConfiguration">
-      <Output directory="../../../build/AddIns/BackendBindings/" assembly="MonoDevelop.CSharpBinding" />
+      <Output directory="../../../build/AddIns/BackendBindings/" assemblyKeyFile="." assembly="MonoDevelop.CSharpBinding" />
       <Build debugmode="True" target="Library" />
       <Execution runwithwarnings="True" consolepause="True" runtime="MsNet" clr-version="Net_2_0" />
-      <CodeGeneration compiler="Csc" warninglevel="3" optimize="False" unsafecodeallowed="False" generateoverflowchecks="True" mainclass="" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
+      <CodeGeneration compiler="Csc" warninglevel="3" optimize="False" unsafecodeallowed="False" generateoverflowchecks="True" mainclass="" definesymbols="GMCS_SOURCE" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
     </Configuration>
     <Configuration name="Release" ctype="DotNetProjectConfiguration">
-      <Output directory="../../../build/AddIns/BackendBindings/" assembly="MonoDevelop.CSharpBinding" />
+      <Output directory="../../../build/AddIns/BackendBindings/" assemblyKeyFile="." assembly="MonoDevelop.CSharpBinding" />
       <Build debugmode="False" target="Library" />
       <Execution runwithwarnings="True" consolepause="True" runtime="MsNet" clr-version="Net_2_0" />
-      <CodeGeneration compiler="Csc" warninglevel="4" optimize="True" unsafecodeallowed="False" generateoverflowchecks="True" mainclass="" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
+      <CodeGeneration compiler="Csc" warninglevel="4" optimize="True" unsafecodeallowed="False" generateoverflowchecks="True" mainclass="" definesymbols="GMCS_SOURCE" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
     </Configuration>
   </Configurations>
   <Contents>
@@ -61,6 +61,52 @@
     <File name="gtk-gui/objects.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="Gui/CompilerOptionsPanelWidget.cs" subtype="Code" buildaction="Compile" />
     <File name="templates/AssemblyInfo.xft.xml" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="Parser/mcs/anonymous.cs" subtype="Code" buildaction="Compile" />
+    <File name="Parser/mcs/AssemblyInfo.cs" subtype="Code" buildaction="Compile" />
+    <File name="Parser/mcs/assign.cs" subtype="Code" buildaction="Compile" />
+    <File name="Parser/mcs/attribute.cs" subtype="Code" buildaction="Compile" />
+    <File name="Parser/mcs/cfold.cs" subtype="Code" buildaction="Compile" />
+    <File name="Parser/mcs/class.cs" subtype="Code" buildaction="Compile" />
+    <File name="Parser/mcs/codegen.cs" subtype="Code" buildaction="Compile" />
+    <File name="Parser/mcs/const.cs" subtype="Code" buildaction="Compile" />
+    <File name="Parser/mcs/constant.cs" subtype="Code" buildaction="Compile" />
+    <File name="Parser/mcs/convert.cs" subtype="Code" buildaction="Compile" />
+    <File name="Parser/mcs/cs-parser.cs" subtype="Code" buildaction="Compile" />
+    <File name="Parser/mcs/cs-parser.jay" subtype="Code" buildaction="Nothing" />
+    <File name="Parser/mcs/cs-tokenizer.cs" subtype="Code" buildaction="Compile" />
+    <File name="Parser/mcs/decl.cs" subtype="Code" buildaction="Compile" />
+    <File name="Parser/mcs/delegate.cs" subtype="Code" buildaction="Compile" />
+    <File name="Parser/mcs/doc.cs" subtype="Code" buildaction="Compile" />
+    <File name="Parser/mcs/doc-bootstrap.cs" subtype="Code" buildaction="Compile" />
+    <File name="Parser/mcs/driver.cs" subtype="Code" buildaction="Compile" />
+    <File name="Parser/mcs/ecore.cs" subtype="Code" buildaction="Compile" />
+    <File name="Parser/mcs/enum.cs" subtype="Code" buildaction="Compile" />
+    <File name="Parser/mcs/expression.cs" subtype="Code" buildaction="Compile" />
+    <File name="Parser/mcs/flowanalysis.cs" subtype="Code" buildaction="Compile" />
+    <File name="Parser/mcs/generic.cs" subtype="Code" buildaction="Compile" />
+    <File name="Parser/mcs/generic-mcs.cs" subtype="Code" buildaction="Nothing" />
+    <File name="Parser/mcs/iterators.cs" subtype="Code" buildaction="Compile" />
+    <File name="Parser/mcs/lambda.cs" subtype="Code" buildaction="Compile" />
+    <File name="Parser/mcs/linq.cs" subtype="Code" buildaction="Compile" />
+    <File name="Parser/mcs/literal.cs" subtype="Code" buildaction="Compile" />
+    <File name="Parser/mcs/location.cs" subtype="Code" buildaction="Compile" />
+    <File name="Parser/mcs/modifiers.cs" subtype="Code" buildaction="Compile" />
+    <File name="Parser/mcs/namespace.cs" subtype="Code" buildaction="Compile" />
+    <File name="Parser/mcs/nullable.cs" subtype="Code" buildaction="Compile" />
+    <File name="Parser/mcs/parameter.cs" subtype="Code" buildaction="Compile" />
+    <File name="Parser/mcs/pending.cs" subtype="Code" buildaction="Compile" />
+    <File name="Parser/mcs/report.cs" subtype="Code" buildaction="Compile" />
+    <File name="Parser/mcs/rootcontext.cs" subtype="Code" buildaction="Compile" />
+    <File name="Parser/mcs/roottypes.cs" subtype="Code" buildaction="Compile" />
+    <File name="Parser/mcs/statement.cs" subtype="Code" buildaction="Compile" />
+    <File name="Parser/mcs/support.cs" subtype="Code" buildaction="Compile" />
+    <File name="Parser/mcs/symbolwriter.cs" subtype="Code" buildaction="Compile" />
+    <File name="Parser/mcs/typemanager.cs" subtype="Code" buildaction="Compile" />
+    <File name="Parser/mcs/External/CryptoConvert.cs" subtype="Code" buildaction="Compile" />
+    <File name="Parser/mcs/External/MonoSymbolFile.cs" subtype="Code" buildaction="Compile" />
+    <File name="Parser/mcs/External/MonoSymbolTable.cs" subtype="Code" buildaction="Compile" />
+    <File name="Parser/mcs/External/MonoSymbolWriter.cs" subtype="Code" buildaction="Compile" />
+    <File name="Parser/DomParser.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Core" />

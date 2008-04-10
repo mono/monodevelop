@@ -41,8 +41,52 @@ FILES =  \
 	Gui/OverrideCompletionData.cs \
 	Parser/CodeGenerator.cs \
 	Parser/CSharpVisitor.cs \
+	Parser/DomParser.cs \
 	Parser/ExpressionFinder.cs \
 	Parser/LanguageItemVisitor.cs \
+	Parser/mcs/anonymous.cs \
+	Parser/mcs/AssemblyInfo.cs \
+	Parser/mcs/assign.cs \
+	Parser/mcs/attribute.cs \
+	Parser/mcs/cfold.cs \
+	Parser/mcs/class.cs \
+	Parser/mcs/codegen.cs \
+	Parser/mcs/const.cs \
+	Parser/mcs/constant.cs \
+	Parser/mcs/convert.cs \
+	Parser/mcs/cs-parser.cs \
+	Parser/mcs/cs-tokenizer.cs \
+	Parser/mcs/decl.cs \
+	Parser/mcs/delegate.cs \
+	Parser/mcs/doc.cs \
+	Parser/mcs/doc-bootstrap.cs \
+	Parser/mcs/driver.cs \
+	Parser/mcs/ecore.cs \
+	Parser/mcs/enum.cs \
+	Parser/mcs/expression.cs \
+	Parser/mcs/External/CryptoConvert.cs \
+	Parser/mcs/External/MonoSymbolFile.cs \
+	Parser/mcs/External/MonoSymbolTable.cs \
+	Parser/mcs/External/MonoSymbolWriter.cs \
+	Parser/mcs/flowanalysis.cs \
+	Parser/mcs/generic.cs \
+	Parser/mcs/iterators.cs \
+	Parser/mcs/lambda.cs \
+	Parser/mcs/linq.cs \
+	Parser/mcs/literal.cs \
+	Parser/mcs/location.cs \
+	Parser/mcs/modifiers.cs \
+	Parser/mcs/namespace.cs \
+	Parser/mcs/nullable.cs \
+	Parser/mcs/parameter.cs \
+	Parser/mcs/pending.cs \
+	Parser/mcs/report.cs \
+	Parser/mcs/rootcontext.cs \
+	Parser/mcs/roottypes.cs \
+	Parser/mcs/statement.cs \
+	Parser/mcs/support.cs \
+	Parser/mcs/symbolwriter.cs \
+	Parser/mcs/typemanager.cs \
 	Parser/Parser.cs \
 	Parser/Resolver.cs \
 	Parser/SharpDevelopTree/AttributeSection.cs \
