@@ -70,6 +70,16 @@
 		<StockIcon stockid = "md-gettext-project" icon = "md-project|res:gettext-overlay-32.png" size = "Dialog" />
 	</Extension>
 	
+	<Extension path = "/MonoDevelop/Core/StockIcons">
+		<StockIcon stockid = "md-po-file" resource = "locale.svg" />
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/Core/MimeTypes">
+		<MimeType id="text/x-gettext-translation" icon="md-po-file">
+			<File pattern="*.po" />
+		</MimeType>
+	</Extension>
+	
 	<Extension path = "/MonoDevelop/ProjectModel/Gui/Icons">
 		<Icon extensions = ".po" icon = "res:locale.svg"/>
 	</Extension>

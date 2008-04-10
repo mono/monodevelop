@@ -1,3 +1,8 @@
+2008-04-11  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Gettext.addin.xml: Use the new mime type extension to
+	  register new file types.
+
 2008-03-18  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Gettext.Editor/POEditorWidget.cs: POEditor has a new rule
