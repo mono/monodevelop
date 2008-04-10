@@ -65,16 +65,14 @@ namespace MonoDevelop.Platform
 			return (DesktopApplication[]) list.ToArray (typeof(DesktopApplication));
 		}
 
-		public override string GetMimeTypeDescription (string mt) {
+		protected override string OnGetMimeTypeDescription (string mt)
+		{
 			return Mime.GetDescription (mt);
 		}
 
-		public override string GetMimeTypeForUri (string uri)
+		protected override string OnGetMimeTypeForUri (string uri)
 		{
-			string baseMime = base.GetMimeTypeForUri (uri);
-			if (baseMime == "text/plain")
-				return Gnome.Vfs.MimeType.GetMimeTypeForUri (uri);
-			return baseMime;
+			return Gnome.Vfs.MimeType.GetMimeTypeForUri (uri);
 		}
 
 		public override void ShowUrl (string url)
@@ -90,10 +88,49 @@ namespace MonoDevelop.Platform
 			get { return "Gnome"; }
 		}
 
-		public override string GetIconForFile (string filename)
+		protected override string OnGetIconForFile (string filename)
 		{
 			Gnome.IconLookupResultFlags result;
 			return Gnome.Icon.LookupSync (IconTheme.Default, thumbnailFactory, filename, null, Gnome.IconLookupFlags.None, out result);
+		}
+		
+		protected override Gdk.Pixbuf OnGetPixbufForFile (string filename, Gtk.IconSize size)
+		{
+			if (filename == "Documentation") {
+				return GetGnomeIcon ("gnome-fs-regular", size);
+			} 
+			if (System.IO.Directory.Exists (filename)) {
+				return GetPixbufForType ("gnome-fs-directory", size);
+			} else if (System.IO.File.Exists (filename)) {
+				foreach (char c in filename) {
+					// FIXME: This is a temporary workaround. In some systems, files with
+					// accented characters make LookupSync crash. Still trying to find out why.
+					if ((int)c < 32 || (int)c > 127)
+						return GetGnomeIcon ("gnome-fs-regular", size);
+				}
+				filename = filename.Replace ("%", "%25");
+				filename = filename.Replace ("#", "%23");
+				filename = filename.Replace ("?", "%3F");
+				string icon = null;
+				try {
+					icon = OnGetIconForFile (filename);
+				} catch {}
+				if (icon == null || icon.Length == 0)
+					return GetGnomeIcon ("gnome-fs-regular", size);
+				else
+					return GetPixbufForType (icon, size);
+			}			
+			return GetGnomeIcon ("gnome-fs-regular", size);
+		}
+		
+		Gdk.Pixbuf GetGnomeIcon (string name, Gtk.IconSize size)
+		{
+			try {
+				return Gtk.IconTheme.Default.LoadIcon (name, 16, (Gtk.IconLookupFlags) 0);
+			}
+			catch {
+				return null;
+			}
 		}
 	}
 }
