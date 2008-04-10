@@ -1,3 +1,8 @@
+2008-04-11  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.DesignerSupport.Projects/ProjectFileDescriptor.cs: Show
+	  mime type description in the properties pad.
+
 2008-04-08  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.DesignerSupport/BindingService.cs: Add methods for

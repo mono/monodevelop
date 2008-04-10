@@ -55,6 +55,15 @@ namespace MonoDevelop.DesignerSupport
 			get { return file.FilePath; }
 		}
 		
+		[DisplayName ("Type")]
+		[Description ("Type of the file.")]
+		public string FileType {
+			get {
+				string type = MonoDevelop.Core.Gui.Services.PlatformService.GetMimeTypeForUri (file.Name);
+				return MonoDevelop.Core.Gui.Services.PlatformService.GetMimeTypeDescription (type); 
+			}
+		}
+		
 		[Category ("Build")]
 		[DisplayName ("Build action")]
 		[Description ("Action to perform when building this file.")]
