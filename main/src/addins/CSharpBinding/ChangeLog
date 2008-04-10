@@ -1,5 +1,9 @@
 2008-04-10  Mike Krüger <mkrueger@novell.com> 
 
+	* Parser/mcs/typemanager.cs: fixes compilation error.
+
+2008-04-10  Mike Krüger <mkrueger@novell.com> 
+
 	* CSharpBinding.addin.xml, CSharpBinding.mdp, Parser/DomParser.cs,
 	  Parser/mcs, Parser/mcs/report.cs, Parser/mcs/generic.cs,
 	  Parser/mcs/support.cs, Parser/mcs/typemanager.cs,
