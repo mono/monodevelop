@@ -40,7 +40,6 @@ namespace CSharpBinding.Parser
 			DefaultUsing u = new DefaultUsing();
 			u.Region = GetRegion(usingDeclaration.StartLocation, usingDeclaration.EndLocation);
 			foreach (ICSharpCode.NRefactory.Ast.Using us in usingDeclaration.Usings) {
-				System.Console.WriteLine(us);
 				if (us.IsAlias)
 					u.Aliases [us.Name] = new ReturnType (us.Alias);
 				else

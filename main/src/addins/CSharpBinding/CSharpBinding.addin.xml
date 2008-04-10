@@ -89,8 +89,6 @@
 	
 	<Extension path = "/MonoDevelop/ProjectModel/Gui/Icons">
 		<Icon language = "C#" icon = "res:C#.ProjectIcon"/>
-		<Icon extensions = ".cs" icon = "res:C#.FileIcon"/>
-		<Icon extensions = ".resources,.resx" icon = "md-resource-file-icon" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/ProjectModel/LanguageBindings">
@@ -109,6 +107,16 @@
 	
 	<Extension path = "/MonoDevelop/Ide/DomParser">
 		<Class class = "MonoDevelop.CSharpBinding.DomParser" />
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/Core/StockIcons">
+		<StockIcon stockid = "md-csharp-file" resource = "C#.FileIcon" />
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/Core/MimeTypes">
+		<MimeType id="text/x-csharp" _description="C# source code" icon="md-csharp-file">
+			<File pattern="*.cs" />
+		</MimeType>
 	</Extension>
 	
 	<Module>
