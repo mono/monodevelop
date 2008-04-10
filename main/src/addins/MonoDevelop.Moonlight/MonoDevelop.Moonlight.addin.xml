@@ -54,8 +54,10 @@
 	<Extension path = "/MonoDevelop/DesignerSupport/CodeBehindProviders">
 		<Class id="MoonlightCodeBehindProvider" class="MonoDevelop.Moonlight.MoonlightCodebehindProvider"/>
 	</Extension>
-
-	<Extension path = "/MonoDevelop/ProjectModel/Gui/Icons">
-		<Icon extensions = ".xaml" icon = "md-xml-file-icon"/>
+	
+	<Extension path = "/MonoDevelop/Core/MimeTypes">
+		<MimeType id="application/xaml+xml" _description="XAML document" icon="md-xml-file-icon">
+			<File pattern="*.xaml" />
+		</MimeType>
 	</Extension>
 </Addin>
