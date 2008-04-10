@@ -569,7 +569,6 @@ namespace MonoDevelop.Ide.Gui
 					NodeCommandHandler handler = b.CommandHandler;
 					handler.SetCurrentNode (node);
 					if (handler.CanDeleteItem ()) {
-						Console.WriteLine ("pp deleting: ");
 						node.MoveToPosition (pos);
 						handler.DeleteItem ();
 					}
@@ -1270,11 +1269,32 @@ namespace MonoDevelop.Ide.Gui
 			tree.CollapseAll();
 		}
 		
+		[GLib.ConnectBefore]
 		void OnKeyPress (object o, Gtk.KeyPressEventArgs args)
 		{
-			Console.WriteLine ("pp key: ");
 			if (args.Event.Key == Gdk.Key.Delete || args.Event.Key == Gdk.Key.KP_Delete)
 				DeleteCurrentItem ();
+			
+			//HACK: to work around "Bug 377810 - Many errors when expanding MonoDevelop treeviews with keyboard"
+			//  The shift-right combo recursively expands all child nodes but the OnTestExpandRow callback
+			//  modifies tree and successive calls get passed an invalid iter. Using the path to regenerate the iter 
+			//  causes a Gtk-Fatal.
+			//NOTE: Also changing behaviour to only expand current node because these views are lazy loaded and tend 
+			//  to be very big.
+			bool shift = (args.Event.State & Gdk.ModifierType.ShiftMask) != 0;
+			if (shift && (args.Event.Key == Gdk.Key.Right || args.Event.Key == Gdk.Key.KP_Right)) {
+				Gtk.TreeModel foo;
+				Gtk.TreeIter iter;
+				if (tree.Selection.GetSelected (out foo, out iter)) {
+					TreeBuilder tb = new TreeBuilder (this, iter);
+					if (tb.HasChildren ()) {
+						tb.MoveToFirstChild ();
+						tb.ExpandToNode ();
+					}
+					args.RetVal = true;
+				}
+			}
+			
 		}
 			
 		void OnPopupMenu (object o, Gtk.PopupMenuArgs args)
