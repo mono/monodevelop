@@ -23,6 +23,9 @@
 		<StockIcon stockid = "md-union" resource = "Icons.16x16.Union"/>
 		<StockIcon stockid = "md-protected-union" resource = "Icons.16x16.ProtectedUnion"/>
 		<StockIcon stockid = "md-private-union" resource = "Icons.16x16.PrivateUnion"/>
+		<StockIcon stockid = "md-c-file" resource = "text-x-csrc.16x16.png" />
+		<StockIcon stockid = "md-h-file" resource = "text-x-chdr.16x16.png" />
+		<StockIcon stockid = "md-cpp-file" resource = "text-x-c++src.16x16.png" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/FileFilters">
@@ -59,10 +62,16 @@
 		<ProjectTemplate id = "ConsoleCppProject" resource = "ConsoleCppProject.xpt.xml"/>
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/ProjectModel/Gui/Icons">
-    	<Icon extensions = ".h" icon = "res:text-x-chdr.16x16.png"/>
-		<Icon extensions = ".c" icon = "res:text-x-csrc.16x16.png"/>
-		<Icon extensions = ".cpp,.cxx,.c++" icon = "res:text-x-c++src.16x16.png"/>
+	<Extension path = "/MonoDevelop/Core/MimeTypes">
+		<MimeType id="text/x-csrc" icon="md-c-file">
+			<File pattern="*.c" />
+		</MimeType>
+		<MimeType id="text/x-chdr" icon="md-h-file">
+			<File pattern="*.h" />
+		</MimeType>
+		<MimeType id="text/x-c++src" icon="md-cpp-file">
+			<File pattern="*.cpp" />
+		</MimeType>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/ProjectBindings">

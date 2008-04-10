@@ -1,3 +1,8 @@
+2008-04-11  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* CBinding.addin.xml: Use the new mime type extension to register new
+	  file types.
+
 2008-04-03  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com>
 
 	* Parser/TagDatabaseManager.cs: Fixed mismatched single-quote.
