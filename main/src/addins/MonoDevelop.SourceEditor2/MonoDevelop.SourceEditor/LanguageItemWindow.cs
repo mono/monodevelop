@@ -105,6 +105,9 @@ namespace MonoDevelop.SourceEditor
 			lab.Xpad = 3;
 			lab.Ypad = 3;
 			Add (lab);
+			
+			//make this go semitransparent when control pressed
+			new MonoDevelop.Projects.Gui.Completion.WindowTransparencyDecorator (this);
 		}
 		
 		protected override bool OnExposeEvent (Gdk.EventExpose ev)

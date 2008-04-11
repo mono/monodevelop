@@ -284,25 +284,29 @@ namespace MonoDevelop.SourceEditor
 			
 			protected override void InnerRun ()
 			{
-				if (SourceEditorOptions.Options.ShowFoldMargin && widget.lastCu != null) {
-					List<FoldSegment> foldSegments = new List<FoldSegment> ();
-					widget.AddUsings (foldSegments, widget.lastCu);
-					foreach (MonoDevelop.Projects.Parser.FoldingRegion region in widget.lastCu.FoldingRegions) {
-						if (base.IsStopping)
-							return;
-						FoldSegment marker = widget.AddMarker (foldSegments, region.Name, region.Region, FoldingType.Region);
-						if (marker != null)
-							marker.IsFolded = !widget.TextEditor.Document.HasFoldSegments;
+				try {
+					if (SourceEditorOptions.Options.ShowFoldMargin && widget.lastCu != null) {
+						List<FoldSegment> foldSegments = new List<FoldSegment> ();
+						widget.AddUsings (foldSegments, widget.lastCu);
+						foreach (MonoDevelop.Projects.Parser.FoldingRegion region in widget.lastCu.FoldingRegions) {
+							if (base.IsStopping)
+								return;
+							FoldSegment marker = widget.AddMarker (foldSegments, region.Name, region.Region, FoldingType.Region);
+							if (marker != null)
+								marker.IsFolded = !widget.TextEditor.Document.HasFoldSegments;
+						}
+						foreach (IClass cl in widget.lastCu.Classes) {
+							if (base.IsStopping)
+								return;
+							widget.AddClass (foldSegments, cl);
+						}
+						widget.TextEditor.Document.UpdateFoldSegments (foldSegments);
 					}
-					foreach (IClass cl in widget.lastCu.Classes) {
-						if (base.IsStopping)
-							return;
-						widget.AddClass (foldSegments, cl);
-					}
-					widget.TextEditor.Document.UpdateFoldSegments (foldSegments);
-				}
 					
-				widget.UpdateAutocorTimer ();
+					widget.UpdateAutocorTimer ();
+				} catch (Exception ex) {
+					LoggingService.LogError ("Unhandled exception in ParseInformationUpdaterWorkerThread", ex);
+				}
 				base.Stop ();
 			}
 		}

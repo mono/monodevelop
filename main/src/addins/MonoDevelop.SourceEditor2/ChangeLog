@@ -1,3 +1,11 @@
+2008-04-10  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* gtk-gui/gui.stetic: Set GTK version to 2.8.3.
+	* MonoDevelop.SourceEditor/SourceEditorWidget.cs: Catch and log errors
+	  in worker thread to avoid crashing whole app.
+	* MonoDevelop.SourceEditor/LanguageItemWindow.cs: Make tooltips
+	  semi-transparent when Ctrl key is held down.
+
 2008-04-11  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.SourceEditor/SourceEditorWidget.cs: Added missing null
