@@ -1,3 +1,16 @@
+2008-04-10  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Projects.Gui.mdp, Makefile.am: Updated.
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs,
+	  MonoDevelop.Projects.Gui.Completion/DeclarationViewWindow.cs: Make
+	  completion window semi-transparent when Ctrl key is held down.
+	* MonoDevelop.Projects.Gui.Completion/WindowTransparencyDecorator.cs:
+	  Decorator class that makes the attached GTK window semi-transparent
+	  when the Control key is held down. Set
+	  MONODEVELOP_ENABLE_UNSTABLE_TRANSPARENCY to enable it. Requires
+	  GTK+ 2.12 and a compositing window manager, but degrades
+	  transparently (ha!) if these aren't available.
+
 2008-04-11  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Projects.Gui.addin.xml: Use the new mime type extension

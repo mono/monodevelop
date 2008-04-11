@@ -181,6 +181,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 			Frame frame = new Frame ();
 			frame.Add (vb2);
 			
+			new WindowTransparencyDecorator (this);
 			this.Add (frame);
 		}
 	}

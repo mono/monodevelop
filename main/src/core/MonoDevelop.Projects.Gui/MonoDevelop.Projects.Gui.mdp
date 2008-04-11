@@ -1,4 +1,4 @@
-<Project name="MonoDevelop.Projects.Gui" fileversion="2.0" language="C#" clr-version="Net_2_0" ctype="DotNetProject">
+<Project name="MonoDevelop.Projects.Gui" fileversion="2.0" UseParentDirectoryAsNamespace="True" language="C#" clr-version="Net_2_0" ctype="DotNetProject">
   <Configurations active="Debug">
     <Configuration name="Debug" ctype="DotNetProjectConfiguration">
       <Output directory="../../../build/bin" assembly="MonoDevelop.Projects.Gui" />
@@ -69,6 +69,7 @@
     <File name="gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.RuntimeOptionsPanelWidget.cs" subtype="Code" buildaction="Compile" />
     <File name="gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CombineConfigurationPanelWidget.cs" subtype="Code" buildaction="Compile" />
     <File name="gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.GeneralProjectOptionsWidget.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Projects.Gui.Completion/WindowTransparencyDecorator.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="False" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
@@ -85,7 +86,7 @@
     <ProjectReference type="Gac" localcopy="True" refto="gdk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="gtk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
   </References>
-  <GtkDesignInfo isWidgetLibrary="True" gettextClass="MonoDevelop.Core.GettextCatalog">
+  <GtkDesignInfo isWidgetLibrary="True" gettextClass="MonoDevelop.Core.GettextCatalog" gtkVersion="2.8.3">
     <ExportedWidgets>
       <Widget>MonoDevelop.Projects.Gui.Deployment.DirectoryDeployEditorWidget</Widget>
       <Widget>MonoDevelop.Projects.Gui.Deployment.InstallDeployEditorWidget</Widget>
