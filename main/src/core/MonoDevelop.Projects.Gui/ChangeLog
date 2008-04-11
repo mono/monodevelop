@@ -1,5 +1,10 @@
 2008-04-10  Michael Hutchinson <mhutchinson@novell.com> 
 
+	* MonoDevelop.Projects.Gui.Completion/WindowTransparencyDecorator.cs:
+	  Work around GTK# crasher bug and enable transparency by default.
+
+2008-04-10  Michael Hutchinson <mhutchinson@novell.com> 
+
 	* MonoDevelop.Projects.Gui.mdp, Makefile.am: Updated.
 	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs,
 	  MonoDevelop.Projects.Gui.Completion/DeclarationViewWindow.cs: Make
