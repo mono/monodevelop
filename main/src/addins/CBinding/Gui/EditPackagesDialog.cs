@@ -82,6 +82,10 @@ namespace CBinding
 			projectPackageListStore.SetSortColumnId (ProjectPackageNameID, Gtk.SortType.Ascending);
 			selectedPackageListStore.SetSortColumnId (SelectedPackageNameID, Gtk.SortType.Ascending);
 			
+			normalPackageTreeView.SearchColumn = NormalPackageNameID;
+			projectPackageTreeView.SearchColumn = ProjectPackageNameID;
+			selectedPackageTreeView.SearchColumn = SelectedPackageNameID;
+			
 			// <!-- Normal packages -->
 			
 			Gtk.CellRendererToggle normalPackageToggleRenderer = new Gtk.CellRendererToggle ();
@@ -129,10 +133,10 @@ namespace CBinding
 			selectedPackageColumn.PackStart (textRenderer, true);
 			selectedPackageColumn.AddAttribute (textRenderer, "text", SelectedPackageNameID);
 			
-			selectedPackagesTreeView.Model = selectedPackageListStore;
-			selectedPackagesTreeView.HeadersVisible = true;
-			selectedPackagesTreeView.AppendColumn (selectedPackageColumn);
-			selectedPackagesTreeView.AppendColumn ("Version", textRenderer, "text", SelectedPackageVersionID);
+			selectedPackageTreeView.Model = selectedPackageListStore;
+			selectedPackageTreeView.HeadersVisible = true;
+			selectedPackageTreeView.AppendColumn (selectedPackageColumn);
+			selectedPackageTreeView.AppendColumn ("Version", textRenderer, "text", SelectedPackageVersionID);
 			
 			// Fill up the project tree view
 			projectPackages = ProjectPackages (project);
@@ -263,7 +267,7 @@ namespace CBinding
 		{
 			Gtk.TreeIter iter;
 			
-			selectedPackagesTreeView.Selection.GetSelected (out iter);
+			selectedPackageTreeView.Selection.GetSelected (out iter);
 			
 			if (!selectedPackageListStore.IterIsValid (iter)) return;
 			

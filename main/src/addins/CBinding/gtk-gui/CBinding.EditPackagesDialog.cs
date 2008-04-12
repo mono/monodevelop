@@ -35,7 +35,7 @@ namespace CBinding {
         
         private Gtk.ScrolledWindow scrolledwindow2;
         
-        private Gtk.TreeView selectedPackagesTreeView;
+        private Gtk.TreeView selectedPackageTreeView;
         
         private Gtk.VBox vbox2;
         
@@ -127,11 +127,11 @@ namespace CBinding {
             this.scrolledwindow2.Name = "scrolledwindow2";
             this.scrolledwindow2.ShadowType = ((Gtk.ShadowType)(1));
             // Container child scrolledwindow2.Gtk.Container+ContainerChild
-            this.selectedPackagesTreeView = new Gtk.TreeView();
-            this.selectedPackagesTreeView.CanFocus = true;
-            this.selectedPackagesTreeView.Name = "selectedPackagesTreeView";
-            this.selectedPackagesTreeView.HeadersClickable = true;
-            this.scrolledwindow2.Add(this.selectedPackagesTreeView);
+            this.selectedPackageTreeView = new Gtk.TreeView();
+            this.selectedPackageTreeView.CanFocus = true;
+            this.selectedPackageTreeView.Name = "selectedPackageTreeView";
+            this.selectedPackageTreeView.HeadersClickable = true;
+            this.scrolledwindow2.Add(this.selectedPackageTreeView);
             this.table1.Add(this.scrolledwindow2);
             Gtk.Table.TableChild w9 = ((Gtk.Table.TableChild)(this.table1[this.scrolledwindow2]));
             w9.TopAttach = ((uint)(1));
@@ -222,7 +222,7 @@ namespace CBinding {
             this.Show();
             this.removeButton.Clicked += new System.EventHandler(this.OnRemoveButtonClicked);
             this.removeButton.Clicked += new System.EventHandler(this.OnRemoveButtonClick);
-            this.selectedPackagesTreeView.CursorChanged += new System.EventHandler(this.OnSelectedPackagesTreeViewCursorChanged);
+            this.selectedPackageTreeView.CursorChanged += new System.EventHandler(this.OnSelectedPackagesTreeViewCursorChanged);
             this.buttonCancel.Clicked += new System.EventHandler(this.OnCancelButtonClick);
             this.buttonOk.Clicked += new System.EventHandler(this.OnOkButtonClick);
         }

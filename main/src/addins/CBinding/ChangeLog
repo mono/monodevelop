@@ -1,5 +1,11 @@
 2008-04-12  Marcos David Marín Amador <MarcosMarin@gmail.com> 
 
+	* Gui/EditPackagesDialog.cs, gtk-gui/CBinding.EditPackagesDialog.cs,
+	  gtk-gui/gui.stetic: Fixed bug 369688 - Find as you type doesn't work in
+	  the dialog where you select the project references.
+
+2008-04-12  Marcos David Marín Amador <MarcosMarin@gmail.com> 
+
 	* Gui/EditPackagesDialog.cs: Alphabetically sort the list of packages and
 	  did some formatting.
 

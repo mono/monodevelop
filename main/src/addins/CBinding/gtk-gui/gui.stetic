@@ -1343,7 +1343,7 @@ Example:
                     <property name="CanFocus">True</property>
                     <property name="ShadowType">In</property>
                     <child>
-                      <widget class="Gtk.TreeView" id="selectedPackagesTreeView">
+                      <widget class="Gtk.TreeView" id="selectedPackageTreeView">
                         <property name="MemberName" />
                         <property name="CanFocus">True</property>
                         <property name="HeadersClickable">True</property>
