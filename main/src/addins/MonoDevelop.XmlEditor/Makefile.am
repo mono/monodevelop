@@ -80,7 +80,7 @@ $(DATA_FILE_BUILD): $(srcdir)$(subst $(ADDIN_BUILD),, $@)
 	mkdir -p $(ADDIN_BUILD)/schemas
 	cp $(srcdir)/$(subst $(ADDIN_BUILD),,$@) $@
 
-$(ASSEMBLY): $(FILES) $(build_resources)
+$(ASSEMBLY): $(FILES) $(build_resources) $(top_builddir)/build/AddIns/MonoDevelop.SourceEditor2.dll
 	mkdir -p $(ADDIN_BUILD)
 	$(CSC) $(CSC_FLAGS) $(REFS) $(build_resources:%=/resource:%) $(build_sources) -out:$@ -target:library
 

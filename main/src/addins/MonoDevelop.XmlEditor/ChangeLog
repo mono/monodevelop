@@ -1,3 +1,8 @@
+2008-04-11  Michael Hutchinson <mhutchinson@novell.com>
+
+	* Makefile.am: Depend on MonoDevelop.SourceEditor2.dll; its build number 
+	  auto-increments, so whenever it changes, we need to rebuild this.
+
 2008-04-08  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.XmlEditor.Completion/XmlTagCompletionData.cs,
