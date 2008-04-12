@@ -155,8 +155,15 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/Commands">
-		<Command id = "CBinding.CProjectCommands.AddPackage" _label = "Edit Packages..."/>
-		<Command id = "CBinding.CProjectCommands.UpdateClassPad" _label = "Update class pad" icon = "res:update"/>
+		<Category _name = "C/C++" id = "C/C++">
+			<Command id = "CBinding.CProjectCommands.AddPackage" _label = "Edit Packages..." />
+			<Command id = "CBinding.CProjectCommands.UpdateClassPad" _label = "Update class pad" icon = "res:update" />
+			<Command id = "CBinding.CProjectCommands.SwapSourceHeader" 
+				_label = "Swap Source/Header"
+				shortcut = "Shift|F12"
+				_description = "Swap source/header file display"
+			/>
+		</Category>
 	</Extension>
 	
 	<Extension path = "/CBinding/Views/ProjectBrowser/ContextMenu/PackagesFolderNode">
@@ -172,6 +179,14 @@
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Copy"/>
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Delete"/>
 	</Extension>
+
+	<Extension path="/MonoDevelop/Ide/ContextMenu/DocumentTab">
+		<CommandItem id = "CBinding.CProjectCommands.SwapSourceHeader" />
+	</Extension>	
+
+	<Extension path="/MonoDevelop/Ide/SourceEditor/ContextMenu">
+		<CommandItem id = "CBinding.CProjectCommands.SwapSourceHeader" />
+	</Extension>	
 	
 	<Extension path = "/MonoDevelop/ProjectModel/ProjectServiceExtensions">
 		<Class id = "ExtraSteps" class = "CBinding.CProjectServiceExtension"/>

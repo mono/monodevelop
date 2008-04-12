@@ -60,7 +60,8 @@ namespace CBinding
 	
 	public enum CProjectCommands {
 		AddPackage,
-		UpdateClassPad
+		UpdateClassPad,
+		SwapSourceHeader
 	}
 	
 	[DataInclude(typeof(CProjectConfiguration))]
@@ -76,6 +77,16 @@ namespace CBinding
 		
 		public event ProjectPackageEventHandler PackageAddedToProject;
 		public event ProjectPackageEventHandler PackageRemovedFromProject;
+
+		/// <summary>
+		/// Extensions for C/C++ source files
+		/// </summary>
+		public static string[] SourceExtensions = { ".C", ".CC", ".CPP", ".CXX" };
+		
+		/// <summary>
+		/// Extensions for C/C++ header files
+		/// </summary>
+		public static string[] HeaderExtensions = { ".H", ".HH", ".HPP", ".HXX" };
 		
 		private void Init ()
 		{
@@ -167,13 +178,12 @@ namespace CBinding
 		
 		public override bool IsCompileable (string fileName)
 		{
+			string ext = Path.GetExtension (fileName.ToUpper ());
+			
 			if (language == Language.C) {
-				return (Path.GetExtension (fileName.ToUpper ()) == ".C");
+				return (ext == ".C");
 			} else {
-				return (Path.GetExtension (fileName.ToUpper ()) == ".CPP" ||
-				        Path.GetExtension (fileName.ToUpper ()) == ".CXX" ||
-				        Path.GetExtension (fileName.ToUpper ()) == ".C"   ||
-				        Path.GetExtension (fileName.ToUpper ()) == ".CC");
+				return (0 <= Array.IndexOf (SourceExtensions, ext));
 			}
 		}
 		
@@ -199,8 +209,7 @@ namespace CBinding
 		
 		public static bool IsHeaderFile (string filename)
 		{
-			return (Path.GetExtension (filename.ToUpper ()) == ".H" ||
-			        Path.GetExtension (filename.ToUpper ()) == ".HPP");
+			return (0 <= Array.IndexOf (HeaderExtensions, Path.GetExtension (filename.ToUpper ())));
 		}
 		
 		/// <summary>
@@ -474,6 +483,31 @@ namespace CBinding
 			}
 			
 			return deployFiles;
+		}
+		
+		/// <summary>
+		/// Finds the corresponding source or header file
+		/// </summary>
+		/// <param name="sourceFile">
+		/// The name of the file to be matched
+		/// <see cref="System.String"/>
+		/// </param>
+		/// <returns>
+		/// The corresponding file, or null if not found
+		/// <see cref="System.String"/>
+		/// </returns>
+		public string MatchingFile (string sourceFile) {
+			string filenameStub = Path.GetFileNameWithoutExtension (sourceFile);
+			bool wantHeader = !CProject.IsHeaderFile (sourceFile);
+			
+			foreach (ProjectFile file in this.ProjectFiles) {
+				if (filenameStub == Path.GetFileNameWithoutExtension (file.Name) 
+				   && (wantHeader == IsHeaderFile (file.Name))) {
+					return file.Name;
+				}
+			}
+			
+			return null;
 		}
 	}
 }

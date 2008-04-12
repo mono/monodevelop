@@ -37,6 +37,7 @@ using System.Collections.Generic;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Projects.Gui.Completion;
+using MonoDevelop.Components.Commands;
 
 using CBinding.Parser;
 
@@ -73,11 +74,8 @@ namespace CBinding
 		
 		public override bool ExtendsEditor (Document doc, IEditableTextBuffer editor)
 		{
-			return (Path.GetExtension (doc.Title).ToUpper () == ".C"   ||
-			        Path.GetExtension (doc.Title).ToUpper () == ".CPP" ||
-			        Path.GetExtension (doc.Title).ToUpper () == ".CXX" ||
-			        Path.GetExtension (doc.Title).ToUpper () == ".H"   ||
-			        Path.GetExtension (doc.Title).ToUpper () == ".HPP");
+			return (CProject.IsHeaderFile (doc.Title) || 
+			        (0 <= Array.IndexOf(CProject.SourceExtensions, Path.GetExtension(doc.Title).ToUpper ())));
 		}
 		
 		public override bool KeyPress (Gdk.Key key, Gdk.ModifierType modifier)
@@ -464,6 +462,45 @@ namespace CBinding
 			}
 			
 			return whitespaces.ToString ();
+		}
+		
+		/// <summary>
+		/// Swaps the source/header for the active view
+		/// </summary>
+		[CommandHandler (CBinding.CProjectCommands.SwapSourceHeader)]
+		public void SwapSourceHeader ()
+		{
+			CProject cp = Document.Project as CProject;
+			
+			if (null != cp) { 
+				string match = cp.MatchingFile (Document.FileName);
+				
+				if (null != match)
+					IdeApp.Workbench.OpenDocument(match);
+			}
+		}
+		
+		/// <summary>
+		/// Determine whether the SwapSourceHeader command should be enabled
+		/// </summary>
+		/// <param name="info">
+		/// The command
+		/// <see cref="CommandInfo"/>
+		/// </param>
+		[CommandUpdateHandler (CBinding.CProjectCommands.SwapSourceHeader)]
+		protected void OnSwapSourceHeader (CommandInfo info)
+		{
+			CProject cp = Document.Project as CProject;
+			info.Visible = false;
+			
+			if (null != cp) {
+				string filename = Document.FileName;
+				
+				if (CProject.IsHeaderFile (filename) || cp.IsCompileable (filename)) {
+					info.Visible = true;
+					info.Enabled = (null != cp.MatchingFile (Document.FileName));
+				}
+			}
 		}
 	}
 }

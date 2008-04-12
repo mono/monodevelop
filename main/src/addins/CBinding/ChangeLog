@@ -1,3 +1,9 @@
+2008-04-11  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com>
+
+	* CBinding.addin.xml, Gui/CTextEditorExtension.cs,
+	  Project/CProject.cs: Enable source/header swapping with a keybinding
+	  and menu items
+
 2008-04-10  Marcos David Marín Amador <MarcosMarin@gmail.com> 
 
 	* Gui/EditPackagesDialog.cs: Fixed bug 368755: "MD should not guess if a
