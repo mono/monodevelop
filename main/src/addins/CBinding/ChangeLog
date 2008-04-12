@@ -1,3 +1,8 @@
+2008-04-12  Marcos David Marín Amador <MarcosMarin@gmail.com> 
+
+	* Gui/EditPackagesDialog.cs: Alphabetically sort the list of packages and
+	  did some formatting.
+
 2008-04-11  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com>
 
 	* CBinding.addin.xml, Gui/CTextEditorExtension.cs,
