@@ -1,3 +1,10 @@
+2008-04-11  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* gtk-gui/objects.xml, Makefile.am, MonoDevelop.Components.mdp:
+	  Updated.
+	* MonoDevelop.Components/MenuButton.cs: New button that drops down a
+	  menu.
+
 2008-03-18  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Components/FileSelector.cs: Fix disposal issues.

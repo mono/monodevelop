@@ -92,6 +92,7 @@ FILES =  \
 	MonoDevelop.Components/FolderEntry.cs \
 	MonoDevelop.Components/GladeWidgetExtract.cs \
 	MonoDevelop.Components/IconView.cs \
+	MonoDevelop.Components/MenuButton.cs \
 	MonoDevelop.Components/Navbar.cs \
 	MonoDevelop.Components/NotebookButtonBar.cs \
 	MonoDevelop.Components/TabLabel.cs \

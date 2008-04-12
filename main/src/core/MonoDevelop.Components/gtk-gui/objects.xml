@@ -40,4 +40,12 @@
     <itemgroups />
     <signals />
   </object>
+  <object type="MonoDevelop.Components.MenuButton" palette-category="MonoDevelop.Components" allow-children="false" base-type="Gtk.Button">
+    <itemgroups>
+      <itemgroup label="MenuButton Properties">
+        <property name="Label" />
+      </itemgroup>
+    </itemgroups>
+    <signals />
+  </object>
 </objects>
