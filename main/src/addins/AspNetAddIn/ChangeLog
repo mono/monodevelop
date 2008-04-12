@@ -1,5 +1,12 @@
 2008-04-11  Michael Hutchinson <mhutchinson@novell.com> 
 
+	* MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs: Add server-side
+	  comments to completion list.
+	* MonoDevelop.AspNet.Parser/AspNetIndentStack.cs: Add more states,
+	  document all the states' meaning, and handle closing some states.
+
+2008-04-11  Michael Hutchinson <mhutchinson@novell.com> 
+
 	* MonoDevelop.Html/HtmlSchema.cs: Avoid unused variable warning.
 	* gtk-gui/gui.stetic: Updated.
 	* MonoDevelop.AspNet.Parser/AspNetIndentStack.cs: Woked on indent

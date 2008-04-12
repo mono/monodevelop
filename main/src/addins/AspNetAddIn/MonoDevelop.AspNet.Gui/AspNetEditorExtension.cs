@@ -352,6 +352,9 @@ namespace MonoDevelop.AspNet.Gui
 			provider.AddCompletionData (
 			    new CodeCompletionData ("%#", "md-literal", GettextCatalog.GetString ("ASP.NET databinding expression"))
 			    );
+			provider.AddCompletionData (
+			    new CodeCompletionData ("%--", "md-literal", GettextCatalog.GetString ("ASP.NET server-side comment"))
+			    );
 			
 			//valid on 2.0 runtime only
 			if (doc.Project == null || doc.Project.ClrVersion == ClrVersion.Net_2_0

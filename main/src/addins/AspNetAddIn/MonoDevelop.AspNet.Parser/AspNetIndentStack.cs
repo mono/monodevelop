@@ -39,21 +39,24 @@ namespace MonoDevelop.AspNet.Parser
 		Stack<AspNetStackTag> stack;
 		AspNetStackMode mode;
 		int position;
-		StringBuilder buffer;
+		
+		//we only need a couple of chars of state backwards
+		char charBackOne;
+		char charBackTwo;
 		
 		private AspNetIndentStack (AspNetIndentStack copyFrom)
 		{
 			stack = new Stack<AspNetStackTag> (copyFrom.stack);
 			mode = copyFrom.mode;
-			buffer = new System.Text.StringBuilder (copyFrom.buffer.ToString ());
 			position = copyFrom.position;
+			charBackOne = copyFrom.charBackOne;
+			charBackTwo = copyFrom.charBackTwo;
 		}
 		
 		public AspNetIndentStack ()
 		{
 			stack = new Stack<AspNetStackTag> ();
 			mode = AspNetStackMode.Free;
-			buffer = new StringBuilder ();
 			position = 0;
 		}
 
@@ -77,21 +80,39 @@ namespace MonoDevelop.AspNet.Parser
 		
 		#endregion
 		
-		public void PushChar (char c)
+		public void PushChar (char charCurrent)
 		{
 			position++;
+			charBackTwo = charBackOne;
+			charBackOne = charCurrent;
 			
 			//in xml, the < char opens a new element amywhere except in a CDATA or comment section
-			if (c == '<' && mode != AspNetStackMode.Comment && mode != AspNetStackMode.CData) {
+			if (charCurrent == '<' && mode != AspNetStackMode.Comment && mode != AspNetStackMode.CData) {
 				mode = AspNetStackMode.TagName;
 				stack.Push (new AspNetStackTag (position));
 				return;
 			}
 			
+			//XML entities
+			if (charCurrent == '&') {
+				switch (mode) {
+				case AspNetStackMode.Free:
+				case AspNetStackMode.AttributeDoubleQuotes:
+				case AspNetStackMode.AttributeQuotes:
+				case AspNetStackMode.Tag:
+				case AspNetStackMode.TagName:
+				case AspNetStackMode.ClosingTag:
+				case AspNetStackMode.ClosingTagName:
+					throw new System.NotImplementedException ();
+				default:
+					break;
+				}
+			}
+			
 			switch (mode) {
 			
 			case AspNetStackMode.Tag:
-				switch (c) {
+				switch (charCurrent) {
 				case '"':
 					mode = AspNetStackMode.AttributeDoubleQuotes;
 					return;
@@ -105,21 +126,21 @@ namespace MonoDevelop.AspNet.Parser
 				return;
 			
 			case AspNetStackMode.AttributeDoubleQuotes:
-				if (c == '"') {
+				if (charCurrent == '"') {
 					mode = AspNetStackMode.Tag;
 					return;
 				}
 				break;
 			
 			case AspNetStackMode.AttributeQuotes:
-				if (c == '\'') {
+				if (charCurrent == '\'') {
 					mode = AspNetStackMode.Tag;
 					return;
 				}
 				break;
 			
 			case AspNetStackMode.TagName:
-				if (char.IsWhiteSpace (c)) {
+				if (char.IsWhiteSpace (charCurrent)) {
 					//look for tag name, and switch into other modes (comment, ClosingTag etc) if appropriate
 					throw new System.NotImplementedException ();
 					//return;?
@@ -130,26 +151,20 @@ namespace MonoDevelop.AspNet.Parser
 				throw new System.NotImplementedException ();
 				
 			case AspNetStackMode.Comment:
-				if (c == '>') {
-					//look backwards for end comment
-					throw new System.NotImplementedException ();
-					//return;?
-				}
-				break;
-			
+				if (charCurrent == '>' && charBackOne == '-' && charBackTwo == '-')
+					mode = AspNetStackMode.Free;
+				return;
+				
 			case AspNetStackMode.CData:
-				if (c == '>') {
-					//look backwards to check if end
-					throw new System.NotImplementedException ();
-					//return;?
-				}
-				break;
-			
+				if (charCurrent == '>' && charBackOne == ']' && charBackTwo == ']')
+					mode = AspNetStackMode.Free;
+				return;
+				
 			case AspNetStackMode.Free:
-				break;
+				return;
 				
 			default:
-				throw new System.InvalidOperationException ("Unknown mode " + mode);
+				throw new System.InvalidOperationException ("Unknown mode " + mode.ToString ());
 			}
 		}
 		
@@ -222,21 +237,52 @@ namespace MonoDevelop.AspNet.Parser
 		}
 	}
 	
+	/// <summary>
+	/// Defines the nature of the current location within the document.
+	/// </summary>
 	public enum AspNetStackMode
 	{
-		Free,                  //not within a tag
-		Tag,                   //within a tag
-		ClosingTag,            //within a closing tag
-		TagName,               //within a tag name string
-		ClosingTagName,        //within the name of a closing tag
-		AttributeQuotes,       //within an attribute's quotes
-		AttributeDoubleQuotes, //within an attribute's quotes
-		Comment,               //within a comment
-		CData,                 //within a CDATA section
+		/// <summary>Not within a tag definition or special section</summary>
+		Free,
 		
+		//parts of tag definitions
+		
+		/// <summary>An opening tag's declaration.</summary>
+		Tag,
+		/// <summary>A closing tag's declaration.</summary>
+		ClosingTag,
+		/// <summary>A tag's name.</summary>
+		TagName,
+		/// <summary>A closing tag's name.</summary>
+		ClosingTagName,
+		/// <summary>An attribute name.</summary>
+		AttributeName,
+		/// <summary>A single-quoted attribute value.</summary>
+		AttributeQuotes,
+		/// <summary>A double-quoted attribute value.</summary>
+		AttributeDoubleQuotes,
+		
+		//special XML sections
+		
+		/// <summary>An XML/HTML comment.</summary>
+		Comment,
+		/// <summary>A CDATA section.</summary>
+		CData,
+		/// <summary>An XML/HTML character entity.</summary>
+		Entity,
+		
+		//ASP.NET expressions
+		
+		/// <summary>An ASP.NET databinding expression.</summary>
 		AspNetDataExpression,
+		/// <summary>An ASP.NET render expression.</summary>
 		AspNetRenderExpression,
+		/// <summary>An ASP.NET render block.</summary>
 		AspNetRenderBlock,
+		/// <summary>An ASP.NET directive.</summary>
 		AspNetDirective,
+		/// <summary>An ASP.NET resource expression.</summary>
+		AspNetResourceExpression,
+		/// <summary>An ASP.NET server-side comment.</summary>
 	}
 }
