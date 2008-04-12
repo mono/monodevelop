@@ -29,9 +29,11 @@ namespace MonoDevelop.SourceEditor.OptionPanels {
         
         private Gtk.RadioButton radiobutton1;
         
+        private Gtk.HBox hbox1;
+        
         private Gtk.RadioButton radiobutton2;
         
-        private Gtk.FontSelection fontselection;
+        private Gtk.FontButton fontselection;
         
         private Gtk.Label GtkLabel13;
         
@@ -106,25 +108,33 @@ namespace MonoDevelop.SourceEditor.OptionPanels {
             w4.Expand = false;
             w4.Fill = false;
             // Container child vbox3.Gtk.Box+BoxChild
+            this.hbox1 = new Gtk.HBox();
+            this.hbox1.Name = "hbox1";
+            this.hbox1.Spacing = 12;
+            // Container child hbox1.Gtk.Box+BoxChild
             this.radiobutton2 = new Gtk.RadioButton(Mono.Unix.Catalog.GetString("_Custom"));
             this.radiobutton2.CanFocus = true;
             this.radiobutton2.Name = "radiobutton2";
             this.radiobutton2.DrawIndicator = true;
             this.radiobutton2.UseUnderline = true;
             this.radiobutton2.Group = this.radiobutton1.Group;
-            this.vbox3.Add(this.radiobutton2);
-            Gtk.Box.BoxChild w5 = ((Gtk.Box.BoxChild)(this.vbox3[this.radiobutton2]));
-            w5.Position = 1;
+            this.hbox1.Add(this.radiobutton2);
+            Gtk.Box.BoxChild w5 = ((Gtk.Box.BoxChild)(this.hbox1[this.radiobutton2]));
+            w5.Position = 0;
             w5.Expand = false;
             w5.Fill = false;
-            // Container child vbox3.Gtk.Box+BoxChild
-            this.fontselection = new Gtk.FontSelection();
+            // Container child hbox1.Gtk.Box+BoxChild
+            this.fontselection = new Gtk.FontButton();
+            this.fontselection.CanFocus = true;
             this.fontselection.Name = "fontselection";
-            this.fontselection.FontName = "Sans 10";
-            this.fontselection.PreviewText = "";
-            this.vbox3.Add(this.fontselection);
-            Gtk.Box.BoxChild w6 = ((Gtk.Box.BoxChild)(this.vbox3[this.fontselection]));
-            w6.Position = 2;
+            this.hbox1.Add(this.fontselection);
+            Gtk.Box.BoxChild w6 = ((Gtk.Box.BoxChild)(this.hbox1[this.fontselection]));
+            w6.Position = 1;
+            this.vbox3.Add(this.hbox1);
+            Gtk.Box.BoxChild w7 = ((Gtk.Box.BoxChild)(this.vbox3[this.hbox1]));
+            w7.Position = 1;
+            w7.Expand = false;
+            w7.Fill = false;
             this.GtkAlignment1.Add(this.vbox3);
             this.frame2.Add(this.GtkAlignment1);
             this.GtkLabel13 = new Gtk.Label();
@@ -133,8 +143,8 @@ namespace MonoDevelop.SourceEditor.OptionPanels {
             this.GtkLabel13.UseMarkup = true;
             this.frame2.LabelWidget = this.GtkLabel13;
             this.vbox1.Add(this.frame2);
-            Gtk.Box.BoxChild w9 = ((Gtk.Box.BoxChild)(this.vbox1[this.frame2]));
-            w9.Position = 3;
+            Gtk.Box.BoxChild w10 = ((Gtk.Box.BoxChild)(this.vbox1[this.frame2]));
+            w10.Position = 3;
             this.Add(this.vbox1);
             if ((this.Child != null)) {
                 this.Child.ShowAll();

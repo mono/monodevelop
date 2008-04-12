@@ -113,7 +113,7 @@
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Bin" id="MonoDevelop.SourceEditor.OptionPanels.GeneralOptionsPanel" design-size="446 484">
+  <widget class="Gtk.Bin" id="MonoDevelop.SourceEditor.OptionPanels.GeneralOptionsPanel" design-size="452 484">
     <property name="MemberName" />
     <child>
       <widget class="Gtk.VBox" id="vbox1">
@@ -200,14 +200,39 @@
                       </packing>
                     </child>
                     <child>
-                      <widget class="Gtk.RadioButton" id="radiobutton2">
+                      <widget class="Gtk.HBox" id="hbox1">
                         <property name="MemberName" />
-                        <property name="CanFocus">True</property>
-                        <property name="Label" translatable="yes">_Custom</property>
-                        <property name="DrawIndicator">True</property>
-                        <property name="HasLabel">True</property>
-                        <property name="UseUnderline">True</property>
-                        <property name="Group">group1</property>
+                        <property name="Spacing">12</property>
+                        <child>
+                          <widget class="Gtk.RadioButton" id="radiobutton2">
+                            <property name="MemberName" />
+                            <property name="CanFocus">True</property>
+                            <property name="Label" translatable="yes">_Custom</property>
+                            <property name="DrawIndicator">True</property>
+                            <property name="HasLabel">True</property>
+                            <property name="UseUnderline">True</property>
+                            <property name="Group">group1</property>
+                          </widget>
+                          <packing>
+                            <property name="Position">0</property>
+                            <property name="AutoSize">False</property>
+                            <property name="Expand">False</property>
+                            <property name="Fill">False</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <widget class="Gtk.FontButton" id="fontselection">
+                            <property name="MemberName" />
+                            <property name="CanFocus">True</property>
+                          </widget>
+                          <packing>
+                            <property name="Position">1</property>
+                            <property name="AutoSize">False</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <placeholder />
+                        </child>
                       </widget>
                       <packing>
                         <property name="Position">1</property>
@@ -217,15 +242,7 @@
                       </packing>
                     </child>
                     <child>
-                      <widget class="Gtk.FontSelection" id="fontselection">
-                        <property name="MemberName" />
-                        <property name="FontName">Sans 10</property>
-                        <property name="PreviewText" translatable="yes" />
-                      </widget>
-                      <packing>
-                        <property name="Position">2</property>
-                        <property name="AutoSize">True</property>
-                      </packing>
+                      <placeholder />
                     </child>
                   </widget>
                 </child>
@@ -825,7 +842,7 @@
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Bin" id="MonoDevelop.SourceEditor.SearchWidget" design-size="581 29">
+  <widget class="Gtk.Bin" id="MonoDevelop.SourceEditor.SearchWidget" design-size="670 36">
     <property name="MemberName" />
     <child>
       <widget class="Gtk.HBox" id="hbox1">
@@ -965,41 +982,13 @@
           </packing>
         </child>
         <child>
-          <widget class="Gtk.Button" id="buttonOptions">
+          <widget class="MonoDevelop.Components.MenuButton" id="optionsButton">
             <property name="MemberName" />
             <property name="CanFocus">True</property>
-            <property name="Type">Custom</property>
+            <property name="Type">TextOnly</property>
+            <property name="Label" />
+            <property name="UseUnderline">True</property>
             <property name="Relief">None</property>
-            <child>
-              <widget class="Gtk.HBox" id="hbox4">
-                <property name="MemberName" />
-                <property name="Spacing">6</property>
-                <child>
-                  <widget class="Gtk.Label" id="label4">
-                    <property name="MemberName" />
-                    <property name="LabelProp" translatable="yes">Options</property>
-                  </widget>
-                  <packing>
-                    <property name="Position">0</property>
-                    <property name="AutoSize">True</property>
-                    <property name="Expand">False</property>
-                    <property name="Fill">False</property>
-                  </packing>
-                </child>
-                <child>
-                  <widget class="Gtk.Arrow" id="arrow4">
-                    <property name="MemberName" />
-                    <property name="ArrowType">Down</property>
-                  </widget>
-                  <packing>
-                    <property name="Position">1</property>
-                    <property name="AutoSize">True</property>
-                    <property name="Expand">False</property>
-                    <property name="Fill">False</property>
-                  </packing>
-                </child>
-              </widget>
-            </child>
           </widget>
           <packing>
             <property name="Position">5</property>
@@ -1042,7 +1031,7 @@
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Bin" id="MonoDevelop.SourceEditor.SearchAndReplaceWidget" design-size="700 62">
+  <widget class="Gtk.Bin" id="MonoDevelop.SourceEditor.SearchAndReplaceWidget" design-size="703 66">
     <property name="MemberName" />
     <child>
       <widget class="Gtk.HBox" id="hbox3">
@@ -1185,57 +1174,6 @@
               <placeholder />
             </child>
             <child>
-              <widget class="Gtk.Button" id="buttonOptions">
-                <property name="MemberName" />
-                <property name="CanFocus">True</property>
-                <property name="Type">Custom</property>
-                <property name="Relief">None</property>
-                <child>
-                  <widget class="Gtk.HBox" id="hbox4">
-                    <property name="MemberName" />
-                    <property name="Spacing">6</property>
-                    <child>
-                      <widget class="Gtk.Label" id="label4">
-                        <property name="MemberName" />
-                        <property name="LabelProp" translatable="yes">Options</property>
-                      </widget>
-                      <packing>
-                        <property name="Position">0</property>
-                        <property name="AutoSize">True</property>
-                        <property name="Expand">False</property>
-                        <property name="Fill">False</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <widget class="Gtk.Arrow" id="arrow5">
-                        <property name="MemberName" />
-                        <property name="ArrowType">Down</property>
-                      </widget>
-                      <packing>
-                        <property name="Position">1</property>
-                        <property name="AutoSize">True</property>
-                        <property name="Expand">False</property>
-                        <property name="Fill">False</property>
-                      </packing>
-                    </child>
-                  </widget>
-                </child>
-              </widget>
-              <packing>
-                <property name="LeftAttach">2</property>
-                <property name="RightAttach">3</property>
-                <property name="AutoSize">True</property>
-                <property name="XOptions">Fill</property>
-                <property name="YOptions">Fill</property>
-                <property name="XExpand">False</property>
-                <property name="XFill">True</property>
-                <property name="XShrink">False</property>
-                <property name="YExpand">False</property>
-                <property name="YFill">True</property>
-                <property name="YShrink">False</property>
-              </packing>
-            </child>
-            <child>
               <widget class="Gtk.Button" id="buttonReplace">
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
@@ -1372,6 +1310,29 @@
               <packing>
                 <property name="LeftAttach">1</property>
                 <property name="RightAttach">2</property>
+                <property name="AutoSize">True</property>
+                <property name="XOptions">Fill</property>
+                <property name="YOptions">Fill</property>
+                <property name="XExpand">False</property>
+                <property name="XFill">True</property>
+                <property name="XShrink">False</property>
+                <property name="YExpand">False</property>
+                <property name="YFill">True</property>
+                <property name="YShrink">False</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="MonoDevelop.Components.MenuButton" id="optionsButton">
+                <property name="MemberName" />
+                <property name="CanFocus">True</property>
+                <property name="Type">TextOnly</property>
+                <property name="Label" />
+                <property name="UseUnderline">True</property>
+                <property name="Relief">None</property>
+              </widget>
+              <packing>
+                <property name="LeftAttach">2</property>
+                <property name="RightAttach">3</property>
                 <property name="AutoSize">True</property>
                 <property name="XOptions">Fill</property>
                 <property name="YOptions">Fill</property>

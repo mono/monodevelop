@@ -31,14 +31,6 @@ namespace MonoDevelop.SourceEditor {
         
         private Gtk.Table table2;
         
-        private Gtk.Button buttonOptions;
-        
-        private Gtk.HBox hbox4;
-        
-        private Gtk.Label label4;
-        
-        private Gtk.Arrow arrow5;
-        
         private Gtk.Button buttonReplace;
         
         private Gtk.Button buttonReplaceAll;
@@ -58,6 +50,8 @@ namespace MonoDevelop.SourceEditor {
         private Gtk.Arrow arrow3;
         
         private Gtk.Label label6;
+        
+        private MonoDevelop.Components.MenuButton optionsButton;
         
         private Gtk.VBox vbox3;
         
@@ -152,67 +146,33 @@ namespace MonoDevelop.SourceEditor {
             this.table2.RowSpacing = ((uint)(6));
             this.table2.ColumnSpacing = ((uint)(6));
             // Container child table2.Gtk.Table+TableChild
-            this.buttonOptions = new Gtk.Button();
-            this.buttonOptions.CanFocus = true;
-            this.buttonOptions.Name = "buttonOptions";
-            this.buttonOptions.Relief = ((Gtk.ReliefStyle)(2));
-            // Container child buttonOptions.Gtk.Container+ContainerChild
-            this.hbox4 = new Gtk.HBox();
-            this.hbox4.Name = "hbox4";
-            this.hbox4.Spacing = 6;
-            // Container child hbox4.Gtk.Box+BoxChild
-            this.label4 = new Gtk.Label();
-            this.label4.Name = "label4";
-            this.label4.LabelProp = Mono.Unix.Catalog.GetString("Options");
-            this.hbox4.Add(this.label4);
-            Gtk.Box.BoxChild w8 = ((Gtk.Box.BoxChild)(this.hbox4[this.label4]));
-            w8.Position = 0;
-            w8.Expand = false;
-            w8.Fill = false;
-            // Container child hbox4.Gtk.Box+BoxChild
-            this.arrow5 = new Gtk.Arrow(((Gtk.ArrowType)(1)), ((Gtk.ShadowType)(2)));
-            this.arrow5.Name = "arrow5";
-            this.hbox4.Add(this.arrow5);
-            Gtk.Box.BoxChild w9 = ((Gtk.Box.BoxChild)(this.hbox4[this.arrow5]));
-            w9.Position = 1;
-            w9.Expand = false;
-            w9.Fill = false;
-            this.buttonOptions.Add(this.hbox4);
-            this.buttonOptions.Label = null;
-            this.table2.Add(this.buttonOptions);
-            Gtk.Table.TableChild w11 = ((Gtk.Table.TableChild)(this.table2[this.buttonOptions]));
-            w11.LeftAttach = ((uint)(2));
-            w11.RightAttach = ((uint)(3));
-            w11.XOptions = ((Gtk.AttachOptions)(4));
-            w11.YOptions = ((Gtk.AttachOptions)(4));
-            // Container child table2.Gtk.Table+TableChild
             this.buttonReplace = new Gtk.Button();
             this.buttonReplace.CanFocus = true;
             this.buttonReplace.Name = "buttonReplace";
             this.buttonReplace.UseUnderline = true;
             this.buttonReplace.Relief = ((Gtk.ReliefStyle)(2));
             // Container child buttonReplace.Gtk.Container+ContainerChild
-            Gtk.Alignment w12 = new Gtk.Alignment(0.5F, 0.5F, 0F, 0F);
+            Gtk.Alignment w8 = new Gtk.Alignment(0.5F, 0.5F, 0F, 0F);
             // Container child GtkAlignment.Gtk.Container+ContainerChild
-            Gtk.HBox w13 = new Gtk.HBox();
-            w13.Spacing = 2;
-            // Container child GtkHBox.Gtk.Container+ContainerChild
-            Gtk.Image w14 = new Gtk.Image();
-            w14.Pixbuf = Stetic.IconLoader.LoadIcon(this, "gtk-find-and-replace", Gtk.IconSize.Menu, 16);
-            w13.Add(w14);
-            // Container child GtkHBox.Gtk.Container+ContainerChild
-            Gtk.Label w16 = new Gtk.Label();
-            w16.LabelProp = Mono.Unix.Catalog.GetString("Replace");
-            w16.UseUnderline = true;
-            w13.Add(w16);
-            w12.Add(w13);
-            this.buttonReplace.Add(w12);
+            Gtk.HBox w9 = new Gtk.HBox();
+            w9.Spacing = 2;
+            // Container child GtkHBox2.Gtk.Container+ContainerChild
+            Gtk.Image w10 = new Gtk.Image();
+            w10.Pixbuf = Stetic.IconLoader.LoadIcon(this, "gtk-find-and-replace", Gtk.IconSize.Menu, 16);
+            w9.Add(w10);
+            // Container child GtkHBox2.Gtk.Container+ContainerChild
+            Gtk.Label w12 = new Gtk.Label();
+            w12.LabelProp = Mono.Unix.Catalog.GetString("Replace");
+            w12.UseUnderline = true;
+            w9.Add(w12);
+            w8.Add(w9);
+            this.buttonReplace.Add(w8);
             this.table2.Add(this.buttonReplace);
-            Gtk.Table.TableChild w20 = ((Gtk.Table.TableChild)(this.table2[this.buttonReplace]));
-            w20.TopAttach = ((uint)(1));
-            w20.BottomAttach = ((uint)(2));
-            w20.XOptions = ((Gtk.AttachOptions)(4));
-            w20.YOptions = ((Gtk.AttachOptions)(4));
+            Gtk.Table.TableChild w16 = ((Gtk.Table.TableChild)(this.table2[this.buttonReplace]));
+            w16.TopAttach = ((uint)(1));
+            w16.BottomAttach = ((uint)(2));
+            w16.XOptions = ((Gtk.AttachOptions)(4));
+            w16.YOptions = ((Gtk.AttachOptions)(4));
             // Container child table2.Gtk.Table+TableChild
             this.buttonReplaceAll = new Gtk.Button();
             this.buttonReplaceAll.CanFocus = true;
@@ -221,13 +181,13 @@ namespace MonoDevelop.SourceEditor {
             this.buttonReplaceAll.Relief = ((Gtk.ReliefStyle)(2));
             this.buttonReplaceAll.Label = Mono.Unix.Catalog.GetString("Replace all");
             this.table2.Add(this.buttonReplaceAll);
-            Gtk.Table.TableChild w21 = ((Gtk.Table.TableChild)(this.table2[this.buttonReplaceAll]));
-            w21.TopAttach = ((uint)(1));
-            w21.BottomAttach = ((uint)(2));
-            w21.LeftAttach = ((uint)(1));
-            w21.RightAttach = ((uint)(2));
-            w21.XOptions = ((Gtk.AttachOptions)(4));
-            w21.YOptions = ((Gtk.AttachOptions)(4));
+            Gtk.Table.TableChild w17 = ((Gtk.Table.TableChild)(this.table2[this.buttonReplaceAll]));
+            w17.TopAttach = ((uint)(1));
+            w17.BottomAttach = ((uint)(2));
+            w17.LeftAttach = ((uint)(1));
+            w17.RightAttach = ((uint)(2));
+            w17.XOptions = ((Gtk.AttachOptions)(4));
+            w17.YOptions = ((Gtk.AttachOptions)(4));
             // Container child table2.Gtk.Table+TableChild
             this.buttonSearchBackward = new Gtk.Button();
             this.buttonSearchBackward.CanFocus = true;
@@ -241,25 +201,25 @@ namespace MonoDevelop.SourceEditor {
             this.arrow2 = new Gtk.Arrow(((Gtk.ArrowType)(2)), ((Gtk.ShadowType)(2)));
             this.arrow2.Name = "arrow2";
             this.hbox2.Add(this.arrow2);
-            Gtk.Box.BoxChild w22 = ((Gtk.Box.BoxChild)(this.hbox2[this.arrow2]));
-            w22.Position = 0;
-            w22.Expand = false;
-            w22.Fill = false;
+            Gtk.Box.BoxChild w18 = ((Gtk.Box.BoxChild)(this.hbox2[this.arrow2]));
+            w18.Position = 0;
+            w18.Expand = false;
+            w18.Fill = false;
             // Container child hbox2.Gtk.Box+BoxChild
             this.label5 = new Gtk.Label();
             this.label5.Name = "label5";
             this.label5.LabelProp = Mono.Unix.Catalog.GetString("Find Previous");
             this.hbox2.Add(this.label5);
-            Gtk.Box.BoxChild w23 = ((Gtk.Box.BoxChild)(this.hbox2[this.label5]));
-            w23.Position = 1;
-            w23.Expand = false;
-            w23.Fill = false;
+            Gtk.Box.BoxChild w19 = ((Gtk.Box.BoxChild)(this.hbox2[this.label5]));
+            w19.Position = 1;
+            w19.Expand = false;
+            w19.Fill = false;
             this.buttonSearchBackward.Add(this.hbox2);
             this.buttonSearchBackward.Label = null;
             this.table2.Add(this.buttonSearchBackward);
-            Gtk.Table.TableChild w25 = ((Gtk.Table.TableChild)(this.table2[this.buttonSearchBackward]));
-            w25.XOptions = ((Gtk.AttachOptions)(4));
-            w25.YOptions = ((Gtk.AttachOptions)(4));
+            Gtk.Table.TableChild w21 = ((Gtk.Table.TableChild)(this.table2[this.buttonSearchBackward]));
+            w21.XOptions = ((Gtk.AttachOptions)(4));
+            w21.YOptions = ((Gtk.AttachOptions)(4));
             // Container child table2.Gtk.Table+TableChild
             this.buttonSearchForward = new Gtk.Button();
             this.buttonSearchForward.CanFocus = true;
@@ -273,32 +233,45 @@ namespace MonoDevelop.SourceEditor {
             this.arrow3 = new Gtk.Arrow(((Gtk.ArrowType)(3)), ((Gtk.ShadowType)(2)));
             this.arrow3.Name = "arrow3";
             this.hbox5.Add(this.arrow3);
-            Gtk.Box.BoxChild w26 = ((Gtk.Box.BoxChild)(this.hbox5[this.arrow3]));
-            w26.Position = 0;
-            w26.Expand = false;
-            w26.Fill = false;
+            Gtk.Box.BoxChild w22 = ((Gtk.Box.BoxChild)(this.hbox5[this.arrow3]));
+            w22.Position = 0;
+            w22.Expand = false;
+            w22.Fill = false;
             // Container child hbox5.Gtk.Box+BoxChild
             this.label6 = new Gtk.Label();
             this.label6.Name = "label6";
             this.label6.LabelProp = Mono.Unix.Catalog.GetString("Find Next");
             this.hbox5.Add(this.label6);
-            Gtk.Box.BoxChild w27 = ((Gtk.Box.BoxChild)(this.hbox5[this.label6]));
-            w27.Position = 1;
-            w27.Expand = false;
-            w27.Fill = false;
+            Gtk.Box.BoxChild w23 = ((Gtk.Box.BoxChild)(this.hbox5[this.label6]));
+            w23.Position = 1;
+            w23.Expand = false;
+            w23.Fill = false;
             this.buttonSearchForward.Add(this.hbox5);
             this.buttonSearchForward.Label = null;
             this.table2.Add(this.buttonSearchForward);
-            Gtk.Table.TableChild w29 = ((Gtk.Table.TableChild)(this.table2[this.buttonSearchForward]));
-            w29.LeftAttach = ((uint)(1));
-            w29.RightAttach = ((uint)(2));
-            w29.XOptions = ((Gtk.AttachOptions)(4));
-            w29.YOptions = ((Gtk.AttachOptions)(4));
+            Gtk.Table.TableChild w25 = ((Gtk.Table.TableChild)(this.table2[this.buttonSearchForward]));
+            w25.LeftAttach = ((uint)(1));
+            w25.RightAttach = ((uint)(2));
+            w25.XOptions = ((Gtk.AttachOptions)(4));
+            w25.YOptions = ((Gtk.AttachOptions)(4));
+            // Container child table2.Gtk.Table+TableChild
+            this.optionsButton = new MonoDevelop.Components.MenuButton();
+            this.optionsButton.CanFocus = true;
+            this.optionsButton.Name = "optionsButton";
+            this.optionsButton.UseUnderline = true;
+            this.optionsButton.Relief = ((Gtk.ReliefStyle)(2));
+            this.optionsButton.Label = "";
+            this.table2.Add(this.optionsButton);
+            Gtk.Table.TableChild w26 = ((Gtk.Table.TableChild)(this.table2[this.optionsButton]));
+            w26.LeftAttach = ((uint)(2));
+            w26.RightAttach = ((uint)(3));
+            w26.XOptions = ((Gtk.AttachOptions)(4));
+            w26.YOptions = ((Gtk.AttachOptions)(4));
             this.hbox3.Add(this.table2);
-            Gtk.Box.BoxChild w30 = ((Gtk.Box.BoxChild)(this.hbox3[this.table2]));
-            w30.Position = 1;
-            w30.Expand = false;
-            w30.Fill = false;
+            Gtk.Box.BoxChild w27 = ((Gtk.Box.BoxChild)(this.hbox3[this.table2]));
+            w27.Position = 1;
+            w27.Expand = false;
+            w27.Fill = false;
             // Container child hbox3.Gtk.Box+BoxChild
             this.vbox3 = new Gtk.VBox();
             this.vbox3.Name = "vbox3";
@@ -312,8 +285,8 @@ namespace MonoDevelop.SourceEditor {
             this.fixed1.Name = "fixed1";
             this.fixed1.HasWindow = false;
             this.hbox7.Add(this.fixed1);
-            Gtk.Box.BoxChild w31 = ((Gtk.Box.BoxChild)(this.hbox7[this.fixed1]));
-            w31.Position = 0;
+            Gtk.Box.BoxChild w28 = ((Gtk.Box.BoxChild)(this.hbox7[this.fixed1]));
+            w28.Position = 0;
             // Container child hbox7.Gtk.Box+BoxChild
             this.buttonSearchMode = new Gtk.Button();
             this.buttonSearchMode.CanFocus = true;
@@ -325,18 +298,18 @@ namespace MonoDevelop.SourceEditor {
             this.buttonSearchMode.Add(this.arrow4);
             this.buttonSearchMode.Label = null;
             this.hbox7.Add(this.buttonSearchMode);
-            Gtk.Box.BoxChild w33 = ((Gtk.Box.BoxChild)(this.hbox7[this.buttonSearchMode]));
-            w33.Position = 1;
-            w33.Expand = false;
-            w33.Fill = false;
+            Gtk.Box.BoxChild w30 = ((Gtk.Box.BoxChild)(this.hbox7[this.buttonSearchMode]));
+            w30.Position = 1;
+            w30.Expand = false;
+            w30.Fill = false;
             this.vbox3.Add(this.hbox7);
-            Gtk.Box.BoxChild w34 = ((Gtk.Box.BoxChild)(this.vbox3[this.hbox7]));
-            w34.Position = 0;
-            w34.Expand = false;
-            w34.Fill = false;
+            Gtk.Box.BoxChild w31 = ((Gtk.Box.BoxChild)(this.vbox3[this.hbox7]));
+            w31.Position = 0;
+            w31.Expand = false;
+            w31.Fill = false;
             this.hbox3.Add(this.vbox3);
-            Gtk.Box.BoxChild w35 = ((Gtk.Box.BoxChild)(this.hbox3[this.vbox3]));
-            w35.Position = 2;
+            Gtk.Box.BoxChild w32 = ((Gtk.Box.BoxChild)(this.hbox3[this.vbox3]));
+            w32.Position = 2;
             this.Add(this.hbox3);
             if ((this.Child != null)) {
                 this.Child.ShowAll();
