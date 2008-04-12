@@ -1,3 +1,8 @@
+2008-04-11  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* Base.glade: Remove some default generated names from labels. They
+	  were showing up for some users.
+
 2008-04-11  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Core.Gui.mdp,
