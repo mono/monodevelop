@@ -76,7 +76,7 @@ namespace MonoDevelop.Html
 				HtmlSchema hs = HtmlSchemaService.GetSchema (substituteProvider);
 				if (hs != null)
 					provider = hs.CompletionProvider;
-			} catch (StackOverflowException ex) {
+			} catch (StackOverflowException) {
 				MonoDevelop.Core.LoggingService.LogWarning (
 				    "HTML doctype '{0}' contains a substitute schema reference that is either cyclical or too deep, and hence cannot be resolved.'", 
 				    name);

@@ -56,6 +56,8 @@ namespace MonoDevelop.AspNet.Parser
 			buffer = new StringBuilder ();
 			position = 0;
 		}
+
+		#region Properties
 		
 		public AspNetStackMode Mode {
 			get { return mode; }
@@ -65,28 +67,90 @@ namespace MonoDevelop.AspNet.Parser
 			get { return stack.Peek (); }
 		}
 		
-		public AspNetStackTag[] GetTagParentsList ()
-		{
-			return stack.ToArray ();
+		public int Position {
+			get { return position; }
 		}
+		
+		public AspNetStackTag[] TagParentsList {
+			get { return stack.ToArray (); }
+		}
+		
+		#endregion
 		
 		public void PushChar (char c)
 		{
-			//in xml, the < char opens a new element amywhere except in a CDATA section
-			if (c == '<') {
-				switch (mode) {
-					
-				default:
-					break;
-				}
+			position++;
+			
+			//in xml, the < char opens a new element amywhere except in a CDATA or comment section
+			if (c == '<' && mode != AspNetStackMode.Comment && mode != AspNetStackMode.CData) {
+				mode = AspNetStackMode.TagName;
+				stack.Push (new AspNetStackTag (position));
+				return;
 			}
 			
 			switch (mode) {
+			
+			case AspNetStackMode.Tag:
+				switch (c) {
+				case '"':
+					mode = AspNetStackMode.AttributeDoubleQuotes;
+					return;
+				case '\'':
+					mode = AspNetStackMode.AttributeQuotes;
+					return;
+				case '>':
+					stack.Pop ().Close (this.Position);
+					return;
+				}
+				return;
+			
+			case AspNetStackMode.AttributeDoubleQuotes:
+				if (c == '"') {
+					mode = AspNetStackMode.Tag;
+					return;
+				}
+				break;
+			
+			case AspNetStackMode.AttributeQuotes:
+				if (c == '\'') {
+					mode = AspNetStackMode.Tag;
+					return;
+				}
+				break;
+			
+			case AspNetStackMode.TagName:
+				if (char.IsWhiteSpace (c)) {
+					//look for tag name, and switch into other modes (comment, ClosingTag etc) if appropriate
+					throw new System.NotImplementedException ();
+					//return;?
+				}
+				break;
+			
+			case AspNetStackMode.ClosingTag:
+				throw new System.NotImplementedException ();
+				
+			case AspNetStackMode.Comment:
+				if (c == '>') {
+					//look backwards for end comment
+					throw new System.NotImplementedException ();
+					//return;?
+				}
+				break;
+			
+			case AspNetStackMode.CData:
+				if (c == '>') {
+					//look backwards to check if end
+					throw new System.NotImplementedException ();
+					//return;?
+				}
+				break;
+			
 			case AspNetStackMode.Free:
 				break;
+				
+			default:
+				throw new System.InvalidOperationException ("Unknown mode " + mode);
 			}
-			
-			throw new NotImplementedException ();
 		}
 		
 		public void Push (string text)
@@ -94,11 +158,15 @@ namespace MonoDevelop.AspNet.Parser
 			foreach (char c in text)
 				PushChar (c);
 		}
-
+		
+		#region ICloneable
+		
 		public object Clone ()
 		{
 			return new AspNetIndentStack (this);
 		}
+		
+		#endregion
 		
 		public override string ToString ()
 		{
@@ -108,7 +176,7 @@ namespace MonoDevelop.AspNet.Parser
 			if (stack.Count > 0) {
 				foreach (AspNetStackTag t in stack) {
 					s.AppendLine ();
-					s.AppendFormat ("\t[{0}({1})]\n", t.Name, t.Position);
+					s.AppendFormat ("\t[{0}({1})]\n", t.Name, t.Start);
 				}
 				s.AppendLine ();
 			}
@@ -122,42 +190,53 @@ namespace MonoDevelop.AspNet.Parser
 	public class AspNetStackTag
 	{
 		string name;
-		int position;
-		bool closed;
-		bool error;
+		int start;
+		int end = -1;
 		
-		public AspNetStackTag (int position)
+		public AspNetStackTag (int start)
 		{
-			this.position = position;
+			this.start = start;
 		}
 		
 		public string Name {
 			get { return name; }
 		}
 		
-		public int Position {
-			get { return position; }
+		public int Start {
+			get { return start; }
 		}
 		
-		public bool Closed {
-			get { return closed; }
+		public int End {
+			get { return end; }
 		}
 		
-		public bool Error {
-			get { return error; }
+		public bool Complete {
+			get { return end > -1; }
 		}
 		
+		public void Close (int endLocation)
+		{
+			if (this.end == -1)
+				throw new System.InvalidOperationException ("Tag already closed");
+			this.end = endLocation;
+		}
 	}
 	
 	public enum AspNetStackMode
 	{
-		Free,
-		OpenBracket,
-		Tag,
-		TagName,
-		Attribute,
-		AttributeQuotes,
-		Comment,
-		CData,
+		Free,                  //not within a tag
+		Tag,                   //within a tag
+		ClosingTag,            //within a closing tag
+		TagName,               //within a tag name string
+		ClosingTagName,        //within the name of a closing tag
+		AttributeQuotes,       //within an attribute's quotes
+		AttributeDoubleQuotes, //within an attribute's quotes
+		Comment,               //within a comment
+		CData,                 //within a CDATA section
+		
+		AspNetDataExpression,
+		AspNetRenderExpression,
+		AspNetRenderBlock,
+		AspNetDirective,
 	}
 }
