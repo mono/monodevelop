@@ -98,7 +98,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 		internal CompletionListWindow ()
 		{
 			SizeAllocated += new SizeAllocatedHandler (ListSizeChanged);
-			new WindowTransparencyDecorator (this);
+			WindowTransparencyDecorator.Attach (this);
 		}
 		
 		public bool ProcessKeyEvent (Gdk.Key key, Gdk.ModifierType modifier)

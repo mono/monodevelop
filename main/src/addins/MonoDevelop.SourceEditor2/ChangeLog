@@ -1,5 +1,9 @@
 2008-04-11  Michael Hutchinson <mhutchinson@novell.com> 
 
+	* MonoDevelop.SourceEditor/LanguageItemWindow.cs: Track API.
+
+2008-04-11  Michael Hutchinson <mhutchinson@novell.com> 
+
 	* gtk-gui/MonoDevelop.SourceEditor.OptionPanels.GeneralOptionsPanel.cs:
 	  Use a fontbutton instead of a fontselection. Makes UI more compact
 	  and gets rid of a failed GTK critical assert.

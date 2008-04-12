@@ -63,6 +63,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 			mainBox.PackStart (desc, true, true, 0);
 			mainBox.ShowAll ();
 			this.Add (mainBox);
+			WindowTransparencyDecorator.Attach (this);
 		}
 		
 		public Gtk.Requisition ShowParameterInfo (IParameterDataProvider provider, int overload, int currentParam)

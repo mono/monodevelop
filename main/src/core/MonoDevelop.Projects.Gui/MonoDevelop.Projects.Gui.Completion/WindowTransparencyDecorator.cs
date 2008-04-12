@@ -46,7 +46,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 		const double opacity = 0.2;
 		Delegate snoopFunc;
 		
-		public WindowTransparencyDecorator (Gtk.Window window)
+		WindowTransparencyDecorator (Gtk.Window window)
 		{
 			this.window = window;
 			snoopFunc = TryBindGtkInternals (this);
@@ -60,6 +60,27 @@ namespace MonoDevelop.Projects.Gui.Completion
 				snoopFunc = null;
 				window = null;
 			}
+		}
+		
+		public static WindowTransparencyDecorator Attach (Gtk.Window window)
+		{
+			return new WindowTransparencyDecorator (window);
+		}
+		
+		public void Detach ()
+		{
+			if (window == null)
+			return;
+			
+			//remove the snooper
+			HiddenHandler (null,  null);
+			
+			//annul allreferences between this and the window
+			window.Shown -= ShownHandler;
+			window.Hidden -= HiddenHandler;
+			window.Destroyed -= DestroyedHandler;
+			snoopFunc = null;
+			window = null;
 		}
 		
 		void ShownHandler (object sender, EventArgs args)
@@ -80,15 +101,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 		
 		void DestroyedHandler (object sender, EventArgs args)
 		{
-			//remove the snooper
-			HiddenHandler (null,  null);
-			
-			//annul allreferences between this and the window
-			window.Shown -= ShownHandler;
-			window.Hidden -= HiddenHandler;
-			window.Destroyed -= DestroyedHandler;
-			snoopFunc = null;
-			window = null;
+			Detach ();
 		}
 		
 		#pragma warning disable 0169
