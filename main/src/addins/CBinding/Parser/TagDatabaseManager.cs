@@ -253,7 +253,7 @@ namespace CBinding.Parser
 			if (PropertyService.Get<bool> ("CBinding.ParseLocalVariables", false))
 				ctags_kinds += "+l";
 			
-			string ctags_options = ctags_kinds + " --fields=+a-f+S --language-force=C++ --excmd=pattern -f - '" + tagFullFileName + "' " + fileInfo.FileName;
+			string ctags_options = ctags_kinds + " --fields=+a-f+S --language-force=C++ --excmd=pattern -f \"" + tagFullFileName + "\" " + fileInfo.FileName;
 			
 			if (!Directory.Exists (tagdir))
 				Directory.CreateDirectory (tagdir);
@@ -264,10 +264,10 @@ namespace CBinding.Parser
 				try {
 					output = new System.IO.StringWriter ();
 					
-					p = Runtime.ProcessService.StartProcess ("ctags", ctags_options, null, output, output, null);
+					p = Runtime.ProcessService.StartProcess ("ctags", ctags_options, null, null, output, null);
 					p.WaitForOutput (10000);
 					if (p.ExitCode != 0 || !File.Exists (tagFullFileName)) {
-						LoggingService.LogError ("Ctags did not successfully populate the tags database '{0}' from '{1}' within ten seconds.\nOutput: {2}", tagFullFileName, output.ToString ());
+						LoggingService.LogError ("Ctags did not successfully populate the tags database '{0}' within ten seconds.\nOutput: {1}", tagFullFileName, output.ToString ());
 						return;
 					}
 				} catch (Exception ex) {

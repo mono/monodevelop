@@ -1,5 +1,10 @@
 2008-04-13  Marcos David Marín Amador <MarcosMarin@gmail.com> 
 
+	* Parser/TagDatabaseManager.cs: Fixed bug that prevented system tags from
+	  being written and parsed.
+
+2008-04-13  Marcos David Marín Amador <MarcosMarin@gmail.com> 
+
 	* Gui/EditPackagesDialog.cs, gtk-gui/CBinding.EditPackagesDialog.cs,
 	  gtk-gui/gui.stetic: Made details button unsensitive until a package is
 	  selected.
