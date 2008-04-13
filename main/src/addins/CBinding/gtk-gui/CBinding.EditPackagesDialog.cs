@@ -77,7 +77,7 @@ namespace CBinding {
             this.notebook1 = new Gtk.Notebook();
             this.notebook1.CanFocus = true;
             this.notebook1.Name = "notebook1";
-            this.notebook1.CurrentPage = 1;
+            this.notebook1.CurrentPage = 0;
             // Container child notebook1.Gtk.Notebook+NotebookChild
             this.scrolledwindow1 = new Gtk.ScrolledWindow();
             this.scrolledwindow1.CanFocus = true;
@@ -137,6 +137,7 @@ namespace CBinding {
             this.detailsButton = new Gtk.Button();
             this.detailsButton.WidthRequest = 33;
             this.detailsButton.HeightRequest = 33;
+            this.detailsButton.Sensitive = false;
             this.detailsButton.CanFocus = true;
             this.detailsButton.Name = "detailsButton";
             this.detailsButton.UseUnderline = true;
@@ -267,6 +268,8 @@ namespace CBinding {
             this.DefaultWidth = 580;
             this.DefaultHeight = 449;
             this.Show();
+            this.normalPackageTreeView.CursorChanged += new System.EventHandler(this.OnNonSelectedPackageCursorChanged);
+            this.projectPackageTreeView.CursorChanged += new System.EventHandler(this.OnNonSelectedPackageCursorChanged);
             this.detailsButton.Clicked += new System.EventHandler(this.OnDetailsButtonClicked);
             this.removeButton.Clicked += new System.EventHandler(this.OnRemoveButtonClicked);
             this.removeButton.Clicked += new System.EventHandler(this.OnRemoveButtonClick);

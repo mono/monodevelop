@@ -1,5 +1,11 @@
 2008-04-13  Marcos David Marín Amador <MarcosMarin@gmail.com> 
 
+	* Gui/EditPackagesDialog.cs, gtk-gui/CBinding.EditPackagesDialog.cs,
+	  gtk-gui/gui.stetic: Made details button unsensitive until a package is
+	  selected.
+
+2008-04-13  Marcos David Marín Amador <MarcosMarin@gmail.com> 
+
 	* Gui/EditPackagesDialog.cs, CBinding.addin.xml,
 	  ProjectPad/ProjectPackageNodeBuilder.cs, Project/CProject.cs: Added a
 	  command to the Package context menu to see the details on the package

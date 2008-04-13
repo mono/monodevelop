@@ -519,5 +519,10 @@ namespace CBinding
 			details.Modal = true;
 			details.Show ();
 		}
+		
+		protected virtual void OnNonSelectedPackageCursorChanged (object o, EventArgs e)
+		{
+			detailsButton.Sensitive = true;
+		}
 	}
 }

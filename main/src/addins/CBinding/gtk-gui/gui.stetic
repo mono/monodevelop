@@ -1258,7 +1258,7 @@ Example:
                   <widget class="Gtk.Notebook" id="notebook1">
                     <property name="MemberName" />
                     <property name="CanFocus">True</property>
-                    <property name="CurrentPage">1</property>
+                    <property name="CurrentPage">0</property>
                     <child>
                       <widget class="Gtk.ScrolledWindow" id="scrolledwindow1">
                         <property name="MemberName" />
@@ -1269,6 +1269,7 @@ Example:
                             <property name="MemberName" />
                             <property name="CanFocus">True</property>
                             <property name="HeadersClickable">True</property>
+                            <signal name="CursorChanged" handler="OnNonSelectedPackageCursorChanged" />
                           </widget>
                         </child>
                       </widget>
@@ -1292,6 +1293,7 @@ Example:
                             <property name="MemberName" />
                             <property name="CanFocus">True</property>
                             <property name="HeadersClickable">True</property>
+                            <signal name="CursorChanged" handler="OnNonSelectedPackageCursorChanged" />
                           </widget>
                         </child>
                       </widget>
@@ -1336,6 +1338,7 @@ Example:
                         <property name="MemberName" />
                         <property name="WidthRequest">33</property>
                         <property name="HeightRequest">33</property>
+                        <property name="Sensitive">False</property>
                         <property name="CanFocus">True</property>
                         <property name="Type">TextOnly</property>
                         <property name="Label" translatable="yes">...</property>
