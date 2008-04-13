@@ -99,7 +99,7 @@ namespace CBinding.ProjectPad
 		{
 			ProjectPackageCollection packages = (ProjectPackageCollection)dataObject;
 			
-			foreach (ProjectPackage p in packages)
+			foreach (Package p in packages)
 				treeBuilder.AddChild (p);
 		}
 		
@@ -145,7 +145,7 @@ namespace CBinding.ProjectPad
 		// Currently only accepts packages and projects that compile into a static library
 		public override bool CanDropNode (object dataObject, DragOperation operation)
 		{
-			if (dataObject is ProjectPackage)
+			if (dataObject is Package)
 				return true;
 			
 			if (dataObject is CProject) {
@@ -170,8 +170,8 @@ namespace CBinding.ProjectPad
 		
 		public override void OnNodeDrop (object dataObject, DragOperation operation)
 		{
-			if (dataObject is ProjectPackage) {
-				ProjectPackage package = (ProjectPackage)dataObject;
+			if (dataObject is Package) {
+				Package package = (Package)dataObject;
 				ITreeNavigator nav = CurrentNode;
 				
 				CProject dest = nav.GetParentDataItem (typeof(CProject), true) as CProject;
@@ -191,7 +191,7 @@ namespace CBinding.ProjectPad
 				
 				draggedProject.WriteMDPkgPackage ();
 				
-				ProjectPackage package = new ProjectPackage (draggedProject);
+				Package package = new Package (draggedProject);
 				
 				if (!destProject.Packages.Contains (package)) {				
 					destProject.Packages.Add (package);

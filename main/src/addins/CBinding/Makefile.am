@@ -34,6 +34,7 @@ FILES =  \
 	gtk-gui/CBinding.EditPackagesDialog.cs \
 	gtk-gui/CBinding.GeneralOptionsPanel.cs \
 	gtk-gui/CBinding.OutputOptionsPanel.cs \
+	gtk-gui/CBinding.PackageDetails.cs \
 	gtk-gui/generated.cs \
 	Gui/AddLibraryDialog.cs \
 	Gui/AddPathDialog.cs \
@@ -44,6 +45,7 @@ FILES =  \
 	Gui/EditPackagesDialog.cs \
 	Gui/GeneralOptionsPanel.cs \
 	Gui/OutputOptionsPanel.cs \
+	Gui/PackageDetails.cs \
 	Navigation/ClassNodeBuilder.cs \
 	Navigation/ClassPadEventArgs.cs \
 	Navigation/EnumerationNodeBuilder.cs \
@@ -83,7 +85,7 @@ FILES =  \
 	Project/CProjectBinding.cs \
 	Project/CProjectConfiguration.cs \
 	Project/CProjectServiceExtension.cs \
-	Project/ProjectPackage.cs \
+	Project/Package.cs \
 	Project/ProjectPackageCollection.cs \
 	Project/ProjectPackageEventArgs.cs \
 	ProjectPad/ProjectNodeExtension.cs \

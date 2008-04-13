@@ -35,12 +35,12 @@ namespace CBinding
 {
 	public delegate void ProjectPackageEventHandler (object sender, ProjectPackageEventArgs e);
 	
-	public class ProjectPackageEventArgs
+	public class ProjectPackageEventArgs : EventArgs
 	{
 		CProject project;
-		ProjectPackage package;
+		Package package;
 		
-		public ProjectPackageEventArgs(CProject project, ProjectPackage package)
+		public ProjectPackageEventArgs(CProject project, Package package)
 		{
 			this.project = project;
 			this.package = package;
@@ -50,7 +50,7 @@ namespace CBinding
 			get { return project; }
 		}
 		
-		public ProjectPackage Package {
+		public Package Package {
 			get { return package; }
 		}
 	}

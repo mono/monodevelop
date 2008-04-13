@@ -47,6 +47,7 @@ namespace CBinding
 		private CProject project;
 		private ProjectPackageCollection selectedPackages = new ProjectPackageCollection ();
 		private ProjectPackageCollection projectPackages;
+		private List<Package> packages = new List<Package> ();
 		
 		
 		// Column IDs
@@ -139,11 +140,13 @@ namespace CBinding
 			selectedPackageTreeView.AppendColumn ("Version", textRenderer, "text", SelectedPackageVersionID);
 			
 			// Fill up the project tree view
-			projectPackages = ProjectPackages (project);
+			projectPackages = GetProjectPackages (project);
 			
-			foreach (ProjectPackage p in projectPackages) {
+			foreach (Package p in projectPackages) {
 				if (p.Name == project.Name) continue;
-				string version = GetPackageVersion (p.File);
+				
+				packages.Add (p);
+				string version = p.Version;
 				bool inProject = IsInProject (p.File);
 
 				if (!IsPackageInStore (projectPackageListStore, p.Name, version, ProjectPackageNameID, ProjectPackageVersionID)) {
@@ -164,8 +167,13 @@ namespace CBinding
 						if (!IsValidPackage (f.FullName)) { 
 							continue;
 						}
-						string name = f.Name.Substring (0, f.Name.LastIndexOf ('.'));
-						string version = GetPackageVersion (f.FullName);
+						
+						Package package = new Package (f.FullName);
+						
+						packages.Add (package);
+						
+						string name = package.Name;
+						string version = package.Version;
 						bool inProject = IsInProject (name);
 						
 						if (!IsPackageInStore (normalPackageListStore, name, version, NormalPackageNameID, NormalPackageVersionID)) {
@@ -179,7 +187,7 @@ namespace CBinding
 			}
 		}
 		
-		private ProjectPackageCollection ProjectPackages (Project project)
+		private ProjectPackageCollection GetProjectPackages (Project project)
 		{
 			ProjectPackageCollection packages = new ProjectPackageCollection ();
 			
@@ -189,7 +197,7 @@ namespace CBinding
 					CProjectConfiguration conf = (CProjectConfiguration)cproj.ActiveConfiguration;
 					if (conf.CompileTarget != CBinding.CompileTarget.Bin) {
 						cproj.WriteMDPkgPackage ();
-						packages.Add (new ProjectPackage (cproj));
+						packages.Add (new Package (cproj));
 					}
 				}
 			}
@@ -274,7 +282,7 @@ namespace CBinding
 			string package = (string)selectedPackageListStore.GetValue (iter, SelectedPackageNameID);
 			bool isProject = false;
 			
-			foreach (ProjectPackage p in selectedPackages) {
+			foreach (Package p in selectedPackages) {
 				if (p.Name == package) {
 					isProject = p.IsProject;
 					selectedPackages.Remove (p);
@@ -338,7 +346,7 @@ namespace CBinding
 			
 			if (old == false) {
 				selectedPackageListStore.AppendValues (name, version);
-				selectedPackages.Add (new ProjectPackage (name));
+				selectedPackages.Add (new Package (name));
 			} else {
 				Gtk.TreeIter search_iter;
 				bool has_elem = selectedPackageListStore.GetIterFirst (out search_iter);
@@ -349,7 +357,7 @@ namespace CBinding
 						
 						if (current.Equals (name)) {
 							selectedPackageListStore.Remove (ref search_iter);
-							foreach (ProjectPackage p in selectedPackages) {
+							foreach (Package p in selectedPackages) {
 								if (p.Name == name) {
 									selectedPackages.Remove (p);
 									break;
@@ -384,7 +392,7 @@ namespace CBinding
 			if (old == false) {
 				selectedPackageListStore.AppendValues (name, version);
 				
-				foreach (ProjectPackage p in projectPackages) {
+				foreach (Package p in projectPackages) {
 					if (p.Name == name) {
 						selectedPackages.Add (p);
 						break;
@@ -401,7 +409,7 @@ namespace CBinding
 						
 						if (current.Equals (name)) {
 							selectedPackageListStore.Remove (ref search_iter);
-							foreach (ProjectPackage p in selectedPackages) {
+							foreach (Package p in selectedPackages) {
 								if (p.Name == name) {
 									selectedPackages.Remove (p);
 									break;
@@ -416,24 +424,6 @@ namespace CBinding
 					}
 				}
 			}
-		}
-		
-		private string GetPackageVersion (string package)
-		{
-			StreamReader reader = new StreamReader (package);
-			
-			string line;
-			string version = string.Empty;
-			
-			while ((line = reader.ReadLine ()) != null) {
-				if (line.StartsWith ("Version:", true, null)) {
-					version = line.Split(':')[1].TrimStart ();
-				}
-			}
-			
-			reader.Close ();
-			
-			return version;
 		}
 		
 		private bool IsValidPackage (string package)
@@ -458,7 +448,7 @@ namespace CBinding
 		{
 			bool exists = false;
 			
-			foreach (ProjectPackage p in project.Packages) {
+			foreach (Package p in project.Packages) {
 				if (package.Equals (p.File)) {
 					exists = true;
 					break;
@@ -497,6 +487,42 @@ namespace CBinding
 		protected virtual void OnRemoveButtonClicked (object sender, System.EventArgs e)
 		{
 			removeButton.Sensitive = false;
+		}
+
+		protected virtual void OnDetailsButtonClicked (object sender, System.EventArgs e)
+		{
+			Gtk.TreeIter iter;
+			Gtk.Widget active_tab = notebook1.Children [notebook1.Page];
+			string tab_label = notebook1.GetTabLabelText (active_tab);
+			string name = string.Empty;
+			string version = string.Empty;
+			Package package = null;
+			
+			if (tab_label == "System Packages") {
+				normalPackageTreeView.Selection.GetSelected (out iter);
+				name = (string)normalPackageListStore.GetValue (iter, NormalPackageNameID);
+				version = (string)normalPackageListStore.GetValue (iter, NormalPackageVersionID);
+			} else if (tab_label == "Project Packages") {
+				projectPackageTreeView.Selection.GetSelected (out iter);
+				name = (string)projectPackageListStore.GetValue (iter, ProjectPackageNameID);
+				version = (string)projectPackageListStore.GetValue (iter, ProjectPackageVersionID);
+			} else {
+				return;
+			}
+			
+			foreach (Package p in packages) {
+				if (p.Name == name && p.Version == version) {
+					package = p;
+					break;
+				}
+			}
+			
+			if (package == null)
+				return;
+			
+			PackageDetails details = new PackageDetails (package);
+			details.Modal = true;
+			details.Show ();
 		}
 	}
 }

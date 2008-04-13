@@ -45,7 +45,7 @@ namespace CBinding.ProjectPad
 	public class ProjectPackageNodeBuilder : TypeNodeBuilder
 	{
 		public override Type NodeDataType {
-			get { return typeof(ProjectPackage); }
+			get { return typeof(Package); }
 		}
 		
 		public override Type CommandHandlerType {
@@ -54,7 +54,7 @@ namespace CBinding.ProjectPad
 		
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
 		{
-			return ((ProjectPackage)dataObject).File;
+			return ((Package)dataObject).File;
 		}
 		
 		public override string ContextMenuAddinPath {
@@ -67,9 +67,9 @@ namespace CBinding.ProjectPad
 		                                ref Gdk.Pixbuf icon,
 		                                ref Gdk.Pixbuf closedIcon)
 		{
-			label = ((ProjectPackage)dataObject).Name;
+			label = ((Package)dataObject).Name;
 			
-			if (((ProjectPackage)dataObject).IsProject)
+			if (((Package)dataObject).IsProject)
 				icon = new Gdk.Pixbuf (Assembly.GetExecutingAssembly (), "Icons.16x16.ProjectReference");
 			else
 				icon = Context.GetIcon (Stock.Reference);
@@ -80,7 +80,7 @@ namespace CBinding.ProjectPad
 	{
 		public override void DeleteItem ()
 		{
-			ProjectPackage package = (ProjectPackage)CurrentNode.DataItem;
+			Package package = (Package)CurrentNode.DataItem;
 			CProject project = (CProject)CurrentNode.GetParentDataItem (
 			    typeof(CProject), false);
 			

@@ -202,7 +202,7 @@
 		<DataType class = "CBinding.CProject"/>
 		<DataType class = "CBinding.GccCompiler"/>
 		<DataType class = "CBinding.GppCompiler"/>
-		<DataType class = "CBinding.ProjectPackage"/>
+		<DataType class = "CBinding.Package"/>
 	</Extension>
 <!-- Current Autotools AddIn is very .NET specific
 	<Module>

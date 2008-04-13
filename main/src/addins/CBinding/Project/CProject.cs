@@ -192,7 +192,7 @@ namespace CBinding
 			List<string> project_names = new List<string> ();
 			List<CProject> projects = new List<CProject> ();
 			
-			foreach (ProjectPackage p in Packages) {
+			foreach (Package p in Packages) {
 				if (p.IsProject && p.Name != Name) {
 					project_names.Add (p.Name);
 				}
@@ -430,12 +430,12 @@ namespace CBinding
 				TagDatabaseManager.Instance.UpdateFileTags (p, f.Name);
 		}
 		
-		internal void NotifyPackageRemovedFromProject (ProjectPackage package)
+		internal void NotifyPackageRemovedFromProject (Package package)
 		{
 			PackageRemovedFromProject (this, new ProjectPackageEventArgs (this, package));
 		}
 		
-		internal void NotifyPackageAddedToProject (ProjectPackage package)
+		internal void NotifyPackageAddedToProject (Package package)
 		{
 			PackageAddedToProject (this, new ProjectPackageEventArgs (this, package));
 		}

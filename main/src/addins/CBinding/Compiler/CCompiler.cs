@@ -92,7 +92,7 @@ namespace CBinding
 			
 			StringBuilder libs = new StringBuilder ();
 			
-			foreach (ProjectPackage p in packages)
+			foreach (Package p in packages)
 				libs.Append (p.File + " ");
 			
 			string args = string.Format ("--libs {0}", libs.ToString ().Trim ());
@@ -123,7 +123,7 @@ namespace CBinding
 			
 			StringBuilder libs = new StringBuilder ();
 			
-			foreach (ProjectPackage p in packages)
+			foreach (Package p in packages)
 				libs.Append (p.File + " ");
 			
 			string args = string.Format ("--cflags {0}", libs.ToString ().Trim ());

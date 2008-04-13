@@ -1,5 +1,19 @@
 2008-04-12  Marcos David Marín Amador <MarcosMarin@gmail.com> 
 
+	* Gui/PackageDetails.cs, Gui/EditPackagesDialog.cs, CBinding.addin.xml,
+	  ProjectPad/ProjectPackagesFolderNodeBuilder.cs,
+	  ProjectPad/ProjectPackageNodeBuilder.cs, CBinding.mdp,
+	  Project/Package.cs, Project/ProjectPackageCollection.cs,
+	  Project/ProjectPackageEventArgs.cs, Project/ProjectPackage.cs,
+	  Project/CProject.cs, gtk-gui/CBinding.PackageDetails.cs,
+	  gtk-gui/CBinding.EditPackagesDialog.cs,
+	  gtk-gui/CBinding.CodeGenerationPanel.cs, gtk-gui/gui.stetic,
+	  Makefile.am, Compiler/CCompiler.cs: Changed the class ProjectPackage to
+	  just Package and created a package details dialog that can be seen from
+	  the EditPackagesDialog.
+
+2008-04-12  Marcos David Marín Amador <MarcosMarin@gmail.com> 
+
 	* Gui/EditPackagesDialog.cs, gtk-gui/CBinding.EditPackagesDialog.cs,
 	  gtk-gui/gui.stetic: Fixed bug 369688 - Find as you type doesn't work in
 	  the dialog where you select the project references.
