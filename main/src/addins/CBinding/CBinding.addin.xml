@@ -183,10 +183,13 @@
 	<Extension path="/MonoDevelop/Ide/ContextMenu/DocumentTab">
 		<CommandItem id = "CBinding.CProjectCommands.SwapSourceHeader" />
 	</Extension>	
-
+	
+	<!-- FIXME: find correct extension point. -->
+	<!-- Wrong extension point
 	<Extension path="/MonoDevelop/Ide/SourceEditor/ContextMenu">
 		<CommandItem id = "CBinding.CProjectCommands.SwapSourceHeader" />
 	</Extension>	
+	-->
 	
 	<Extension path = "/MonoDevelop/ProjectModel/ProjectServiceExtensions">
 		<Class id = "ExtraSteps" class = "CBinding.CProjectServiceExtension"/>

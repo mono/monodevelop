@@ -1,3 +1,8 @@
+2008-04-13  Marcos David Marín Amador <MarcosMarin@gmail.com> 
+
+	* CBinding.addin.xml: Commented out a wrong extension point. Will find the
+	  correct one later.
+
 2008-04-12  Marcos David Marín Amador <MarcosMarin@gmail.com> 
 
 	* Gui/PackageDetails.cs, Gui/EditPackagesDialog.cs, CBinding.addin.xml,
