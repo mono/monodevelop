@@ -1,5 +1,12 @@
 2008-04-13  Marcos David Marín Amador <MarcosMarin@gmail.com> 
 
+	* Gui/EditPackagesDialog.cs, CBinding.addin.xml,
+	  ProjectPad/ProjectPackageNodeBuilder.cs, Project/CProject.cs: Added a
+	  command to the Package context menu to see the details on the package
+	  and fixed a bug where packages could not be added to a project.
+
+2008-04-13  Marcos David Marín Amador <MarcosMarin@gmail.com> 
+
 	* CBinding.addin.xml: Commented out a wrong extension point. Will find the
 	  correct one later.
 

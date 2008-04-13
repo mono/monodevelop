@@ -93,5 +93,16 @@ namespace CBinding.ProjectPad
 		{
 			return DragOperation.Copy;
 		}
+		
+		[CommandHandler (CBinding.CProjectCommands.ShowPackageDetails)]
+		public void ShowPackageDetails ()
+		{
+			Package package = (Package)CurrentNode.DataItem;
+			
+			package.ParsePackage ();
+			
+			PackageDetails details = new CBinding.PackageDetails (package);
+			details.Show ();
+		}
 	}
 }

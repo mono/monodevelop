@@ -163,6 +163,7 @@
 				shortcut = "Shift|F12"
 				_description = "Swap source/header file display"
 			/>
+			<Command id = "CBinding.CProjectCommands.ShowPackageDetails" _label = "Details..." />
 		</Category>
 	</Extension>
 	
@@ -176,6 +177,8 @@
 	</Extension>
 	
 	<Extension path = "/CBinding/Views/ProjectBrowser/ContextMenu/PackageNode">
+		<CommandItem id = "CBinding.CProjectCommands.ShowPackageDetails"/>
+		<SeparatorItem id = "Separator1" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Copy"/>
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Delete"/>
 	</Extension>

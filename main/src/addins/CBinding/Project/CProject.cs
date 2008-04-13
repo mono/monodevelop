@@ -61,7 +61,8 @@ namespace CBinding
 	public enum CProjectCommands {
 		AddPackage,
 		UpdateClassPad,
-		SwapSourceHeader
+		SwapSourceHeader,
+		ShowPackageDetails
 	}
 	
 	[DataInclude(typeof(CProjectConfiguration))]

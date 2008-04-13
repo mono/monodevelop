@@ -46,9 +46,8 @@ namespace CBinding
 		private Gtk.ListStore selectedPackageListStore = new Gtk.ListStore (typeof(string), typeof(string));
 		private CProject project;
 		private ProjectPackageCollection selectedPackages = new ProjectPackageCollection ();
-		private ProjectPackageCollection projectPackages;
-		private List<Package> packages = new List<Package> ();
-		
+		private List<Package> packagesOfProjects;
+		private List<Package> packages = new List<Package> ();		
 		
 		// Column IDs
 		const int NormalPackageToggleID = 0;
@@ -68,6 +67,7 @@ namespace CBinding
 			
 			this.project = project;
 			
+			selectedPackages.Project = project;
 			selectedPackages.AddRange (project.Packages);
 			
 			Gtk.CellRendererText textRenderer = new Gtk.CellRendererText ();
@@ -140,14 +140,14 @@ namespace CBinding
 			selectedPackageTreeView.AppendColumn ("Version", textRenderer, "text", SelectedPackageVersionID);
 			
 			// Fill up the project tree view
-			projectPackages = GetProjectPackages (project);
+			packagesOfProjects = GetPackagesOfProjects (project);
 			
-			foreach (Package p in projectPackages) {
+			foreach (Package p in packagesOfProjects) {
 				if (p.Name == project.Name) continue;
 				
 				packages.Add (p);
 				string version = p.Version;
-				bool inProject = IsInProject (p.File);
+				bool inProject = selectedPackages.Contains (p);
 
 				if (!IsPackageInStore (projectPackageListStore, p.Name, version, ProjectPackageNameID, ProjectPackageVersionID)) {
 				    projectPackageListStore.AppendValues (inProject, p.Name, version);
@@ -174,7 +174,7 @@ namespace CBinding
 						
 						string name = package.Name;
 						string version = package.Version;
-						bool inProject = IsInProject (name);
+						bool inProject = selectedPackages.Contains (package);
 						
 						if (!IsPackageInStore (normalPackageListStore, name, version, NormalPackageNameID, NormalPackageVersionID)) {
 							normalPackageListStore.AppendValues (inProject, name, version);
@@ -187,9 +187,10 @@ namespace CBinding
 			}
 		}
 		
-		private ProjectPackageCollection GetProjectPackages (Project project)
+		private List<Package> GetPackagesOfProjects (Project project)
 		{
-			ProjectPackageCollection packages = new ProjectPackageCollection ();
+			List<Package> packages = new List<Package>();
+			Package package;
 			
 			foreach (CombineEntry c in project.ParentCombine.Entries) {
 				if (c is CProject) {
@@ -197,7 +198,8 @@ namespace CBinding
 					CProjectConfiguration conf = (CProjectConfiguration)cproj.ActiveConfiguration;
 					if (conf.CompileTarget != CBinding.CompileTarget.Bin) {
 						cproj.WriteMDPkgPackage ();
-						packages.Add (new Package (cproj));
+						package = new Package (cproj);
+						packages.Add (package);
 					}
 				}
 			}
@@ -346,7 +348,14 @@ namespace CBinding
 			
 			if (old == false) {
 				selectedPackageListStore.AppendValues (name, version);
-				selectedPackages.Add (new Package (name));
+				
+				foreach (Package package in packages) {
+					if (package.Name == name && package.Version == version) {
+						selectedPackages.Add (package);
+						break;
+					}
+				}
+				
 			} else {
 				Gtk.TreeIter search_iter;
 				bool has_elem = selectedPackageListStore.GetIterFirst (out search_iter);
@@ -392,7 +401,7 @@ namespace CBinding
 			if (old == false) {
 				selectedPackageListStore.AppendValues (name, version);
 				
-				foreach (Package p in projectPackages) {
+				foreach (Package p in packagesOfProjects) {
 					if (p.Name == name) {
 						selectedPackages.Add (p);
 						break;
@@ -442,20 +451,6 @@ namespace CBinding
 			reader.Close ();
 			
 			return valid;
-		}
-		
-		private bool IsInProject (string package)
-		{
-			bool exists = false;
-			
-			foreach (Package p in project.Packages) {
-				if (package.Equals (p.File)) {
-					exists = true;
-					break;
-				}
-			}
-			
-			return exists;
 		}
 		
 		int NormalPackageCompareNodes (Gtk.TreeModel model, Gtk.TreeIter a, Gtk.TreeIter b)
