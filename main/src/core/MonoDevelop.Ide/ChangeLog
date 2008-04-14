@@ -1,5 +1,10 @@
 2008-04-14  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.Ide.Dom/DomRegion.cs, MonoDevelop.Ide.Dom/DomLocation.cs:
+	  Changed the region/location model.
+
+2008-04-14  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.Ide.Dom/DomType.cs, MonoDevelop.Ide.Dom/DomMethod.cs,
 	  MonoDevelop.Ide.Dom/DomField.cs,
 	  MonoDevelop.Ide.Dom/DomProperty.cs: Worked on some dom classes.

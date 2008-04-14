@@ -1,5 +1,5 @@
 //
-// DomRegion.cs
+// DomLocation.cs
 //
 // Author:
 //   Mike Krüger <mkrueger@novell.com>
@@ -28,58 +28,34 @@
 
 using System;
 
-namespace MonoDevelop.Ide.Dom
+namespace MonoDevelop.Ide
 {
-	public struct DomRegion
+	public struct DomLocation
 	{
-		public readonly static DomRegion Empty = new DomRegion (-1, -1, -1, -1);
+		int line, column;
 		
-		DomLocation start, end;
-		
-		public bool IsEmpty {
+		public int Line {
 			get {
-				return Start.Line < 0;
+				return line;
+			}
+			set {
+				line = value;
 			}
 		}
 
-		public MonoDevelop.Ide.DomLocation Start {
+		public int Column {
 			get {
-				return start;
+				return column;
 			}
 			set {
-				start = value;
-			}
-		}
-
-		public MonoDevelop.Ide.DomLocation End {
-			get {
-				return end;
-			}
-			set {
-				end = value;
+				column = value;
 			}
 		}
 		
-		public DomRegion (int startLine, int endLine) : this (startLine, -1, endLine, -1)
+		public DomLocation (int line, int column)
 		{
-		}
-		
-		public DomRegion (int startLine, int startColumn, int endLine, int endColumn)
-		{
-			this.start = new DomLocation (startLine, startColumn);
-			this.end   = new DomLocation (endLine, endColumn);
-		}
-		
-		public override string ToString ()
-		{
-			if (this.IsEmpty)
-				return string.Format ("[DomRegion: Empty]");
-			
-			return string.Format ("[DomRegion:{0}/{1} - {2}/{3}]",
-			                      Start.Line,
-			                      Start.Column,
-			                      End.Line,
-			                      End.Column);
+			this.line   = line;
+			this.column = column;
 		}
 	}
 }

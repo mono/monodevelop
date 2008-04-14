@@ -112,6 +112,7 @@ FILES =  \
 	MonoDevelop.Ide.Dom/DomAttribute.cs \
 	MonoDevelop.Ide.Dom/DomEvent.cs \
 	MonoDevelop.Ide.Dom/DomField.cs \
+	MonoDevelop.Ide.Dom/DomLocation.cs \
 	MonoDevelop.Ide.Dom/DomMethod.cs \
 	MonoDevelop.Ide.Dom/DomParameter.cs \
 	MonoDevelop.Ide.Dom/DomProperty.cs \
