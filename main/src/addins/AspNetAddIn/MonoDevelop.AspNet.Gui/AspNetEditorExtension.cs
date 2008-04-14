@@ -246,16 +246,19 @@ namespace MonoDevelop.AspNet.Gui
 						            "for the corresponding variable name in the CodeBehind.")
 						    ));
 					return cp;
-				
+					
 				//attribute values
-				} else if (isInQuotes && (previousChar == '"' || previousChar == '\'') && (
-				    (forced && currentPosition + 1 < buf.Length && buf.GetCharAt (currentPosition + 1) == currentChar)
-				    || (currentPosition + 2 < buf.Length && buf.GetCharAt (currentPosition + 2) == currentChar)
-				)) {
+				//determine whether to trigger completion within attribute values quotes
+				} else if (isInQuotes && 
+				       (forced && (currentChar == '"' || currentChar == '\'') 
+				            && currentPosition + 1 < buf.Length && buf.GetCharAt (currentPosition + 1) == currentChar)
+				    || ((previousChar == '"' || previousChar == '\'') 
+				            && currentPosition + 1 < buf.Length && buf.GetCharAt (currentPosition + 1) == previousChar)
+				) {
 					if (!forced)
 						triggerWordLength = 1;
 					
-					string att = GetAttributeName (buf, currentPosition - 1);
+					string att = GetAttributeName (buf, currentPosition - (forced? 1 : 2));
 					if (!string.IsNullOrEmpty (att)) {
 						LoggingService.LogDebug ("Triggered attribute value completion for '{0}'", att);
 						
