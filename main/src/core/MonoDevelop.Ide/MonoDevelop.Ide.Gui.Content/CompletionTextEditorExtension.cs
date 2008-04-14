@@ -69,8 +69,13 @@ namespace MonoDevelop.Ide.Gui.Content
 			
 			if (completionWidget != null && currentCompletionContext == null) {
 				currentCompletionContext = completionWidget.CreateCodeCompletionContext (Editor.CursorPosition);
-				ICompletionDataProvider cp = HandleCodeCompletion (currentCompletionContext, (char)(uint)key);
-					
+				
+				int triggerWordLength = currentCompletionContext.TriggerWordLength;
+				ICompletionDataProvider cp = HandleCodeCompletion (currentCompletionContext, (char)(uint)key, ref triggerWordLength);
+				if (triggerWordLength > 0 && triggerWordLength < Editor.CursorPosition) {
+					currentCompletionContext = completionWidget.CreateCodeCompletionContext (Editor.CursorPosition - triggerWordLength);	
+					currentCompletionContext.TriggerWordLength = triggerWordLength;
+				}
 				if (cp != null)
 					CompletionWindowManager.ShowWindow ((char)(uint)key, cp, completionWidget, currentCompletionContext, OnCompletionWindowClosed);
 				else
@@ -161,6 +166,12 @@ namespace MonoDevelop.Ide.Gui.Content
 		public virtual bool CanRunParameterCompletionCommand ()
 		{
 			return (completionWidget != null && !ParameterInformationWindowManager.IsWindowVisible);
+		}
+		
+		
+		public virtual ICompletionDataProvider HandleCodeCompletion (ICodeCompletionContext completionContext, char completionChar, ref int triggerWordLength)
+		{
+			return HandleCodeCompletion (completionContext, completionChar);
 		}
 		
 		public virtual ICompletionDataProvider HandleCodeCompletion (ICodeCompletionContext completionContext, char completionChar)

@@ -1,3 +1,10 @@
+2008-04-14  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Ide.Gui.Content/CompletionTextEditorExtension.cs: Add
+	  ability for HandleCodeCompletion to alter the trigger word length.
+	  Allows completions to 'grab' text behind them, including the
+	  character that was typed.
+
 2008-04-14  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Ide.Dom/DomRegion.cs, MonoDevelop.Ide.Dom/DomLocation.cs:
