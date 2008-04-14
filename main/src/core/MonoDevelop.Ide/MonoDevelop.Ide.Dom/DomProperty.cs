@@ -74,6 +74,15 @@ namespace MonoDevelop.Ide.Dom
 			}
 		}
 		
+		protected DomProperty ()
+		{
+		}
+		
+		public DomProperty (string name)
+		{
+			base.name = name;
+		}
+
 		public override string ToString ()
 		{
 			return string.Format ("[DomProperty:Name={0}, Modifiers={1}, ReturnType={2}, Region={3}]",

@@ -1,3 +1,9 @@
+2008-04-14  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Ide.Dom/DomType.cs, MonoDevelop.Ide.Dom/DomMethod.cs,
+	  MonoDevelop.Ide.Dom/DomField.cs,
+	  MonoDevelop.Ide.Dom/DomProperty.cs: Worked on some dom classes.
+
 2008-04-11  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs,

@@ -152,6 +152,20 @@ namespace MonoDevelop.Ide.Dom
 			}
 		}
 		
+		protected DomType ()
+		{
+		}
+		
+		public DomType (ClassType classType, string name, string namesp, DomRegion region, List<IMember> members)
+		{
+			this.classType   = classType;
+			this.name        = name;
+			this.namesp      = namesp;
+			this.region      = region;
+			this.members     = members;
+		}
+		
+		
 		public override object AcceptVisitior (IDomVisitor visitor, object data)
 		{
 			return visitor.Visit (this, data);

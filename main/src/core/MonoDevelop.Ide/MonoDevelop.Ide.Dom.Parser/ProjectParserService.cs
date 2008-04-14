@@ -29,6 +29,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Threading;
 using MonoDevelop.Projects;
 using Mono.Addins;
 
@@ -86,21 +87,28 @@ namespace MonoDevelop.Ide.Dom.Parser
 			return doms [fileName];
 		}
 		
-		static void LoadWholeSolution ()
+		static void LoadWholeSolutionThread ()
 		{
-			if (MonoDevelop.Ide.Gui.IdeApp.ProjectOperations.CurrentOpenCombine == null)
-				return;
 			foreach (CombineEntry entry in MonoDevelop.Ide.Gui.IdeApp.ProjectOperations.CurrentOpenCombine.GetAllProjects ()) {
 				Project project = (Project)entry;
 				IParser parser = GetParser (project.ProjectType);
 				if (parser == null)
 					continue;
-					
+				
 				ProjectDom dom = GetDom (project);
 				foreach (ProjectFile file in project.ProjectFiles) {
 					dom.UpdateCompilationUnit (parser.Parse (file.FilePath, System.IO.File.ReadAllText (file.FilePath)));
 				}
 			}
+		}
+		static void LoadWholeSolution ()
+		{
+			if (MonoDevelop.Ide.Gui.IdeApp.ProjectOperations.CurrentOpenCombine == null)
+				return;
+			Thread t = new Thread (new ThreadStart (LoadWholeSolutionThread));
+			t.IsBackground = true;
+			t.Priority     = ThreadPriority.Lowest;
+			t.Start ();
 		}
 	}
 }

@@ -56,6 +56,17 @@ namespace MonoDevelop.Ide.Dom
 			}
 		}
 		
+		protected DomMethod ()
+		{
+		}
+		
+		public DomMethod (string name, DomRegion region, DomRegion bodyRegion)
+		{
+			this.name       = name;
+			this.region     = region;
+			this.bodyRegion = bodyRegion;
+		}
+		
 		public override string ToString ()
 		{
 			return string.Format ("[DomMethod:Name={0}, Modifiers={1}, ReturnType={2}, Region={3}]",

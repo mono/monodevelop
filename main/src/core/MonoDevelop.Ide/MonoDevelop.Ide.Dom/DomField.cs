@@ -50,6 +50,15 @@ namespace MonoDevelop.Ide.Dom
 			                      Region);
 		}
 		
+		protected DomField ()
+		{
+		}
+		
+		public DomField (string name)
+		{
+			base.name = name;
+		}
+		
 		public override object AcceptVisitior (IDomVisitor visitor, object data)
 		{
 			return visitor.Visit (this, data);
