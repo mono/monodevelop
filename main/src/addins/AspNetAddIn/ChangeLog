@@ -1,3 +1,10 @@
+2008-04-14  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.AspNet/WebTypeManager.cs: Remove debug code.
+	* MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs: Greatly improve
+	  completion triggering behaviour. Most noticeable with tag
+	  attributes.
+
 2008-04-11  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs: Add server-side

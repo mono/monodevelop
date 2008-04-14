@@ -78,22 +78,40 @@ namespace MonoDevelop.AspNet.Gui
 			}
 		}
 		
-		public override ICompletionDataProvider HandleCodeCompletion (ICodeCompletionContext completionContext, char completionChar)
+		public override ICompletionDataProvider CodeCompletionCommand (ICodeCompletionContext completionContext)
+		{
+			int pos = completionContext.TriggerOffset;
+			string txt = Editor.GetText (pos - 1, pos);
+			int triggerWordLength = 0;
+			ICompletionDataProvider cp = null;
+			if (txt.Length > 0)
+				cp = HandleCodeCompletion ((CodeCompletionContext) completionContext, true, ref triggerWordLength);
+			
+			return cp;
+		}
+		
+		public override ICompletionDataProvider HandleCodeCompletion (ICodeCompletionContext completionContext, char completionChar, ref int triggerWordLength)
+		{
+			int pos = completionContext.TriggerOffset;
+			if (pos > 0 && Editor.GetCharAt (pos - 1) == completionChar) {
+				return HandleCodeCompletion ((CodeCompletionContext) completionContext, false, ref triggerWordLength);
+			}
+			return null;
+		}
+		
+		ICompletionDataProvider HandleCodeCompletion (CodeCompletionContext completionContext, bool forced, ref int triggerWordLength)
 		{
 			//FIXME: lines in completionContext are zero-indexed, but ILocation and buffer are 1-indexed. This could easily cause bugs.
 			int line = completionContext.TriggerLine + 1, col = completionContext.TriggerLineOffset;
 			
 			ITextBuffer buf = this.Buffer;
 			
-			//FIXME: the char from completionChar isn't converted 100% accurately from GDK, so better to fetch from buffer
-			// and the TriggerOffset seems unreliable too
+			// completionChar may be a space even if the current char isn't, when ctrl-space is fired t
 			int currentPosition = buf.CursorPosition - 1;
 			char currentChar = buf.GetCharAt (currentPosition);
 			char previousChar = buf.GetCharAt (currentPosition - 1);
 			
-			//don't trigger on arrow keys, but don't block triggering on ctrl-space
-			if (currentChar != completionChar && completionChar != ' ')
-				return base.HandleCodeCompletion (completionContext, currentChar);
+			LoggingService.LogDebug ("Attempting ASP.NET completion for previousChar='{0}', currentChar='{1}', forced='{2}'", previousChar, currentChar, forced);
 			
 			//doctype completion
 			if (line <= 5 && currentChar ==' ' && previousChar == 'E') {
@@ -107,23 +125,18 @@ namespace MonoDevelop.AspNet.Gui
 			
 			//decide whether completion will be activated, to avoid unnecessary
 			//parsing, which hurts editor responsiveness
-			switch (currentChar) {
-			case '>':
-			case '<':
-				break;
-			case ' ':
-				if (previousChar != ' ')
+			if (!forced) {
+				switch (currentChar) {
+				case '>':
+				case '<':
 					break;
-				else
-					goto default;
-			case '"':
-			case '\'':
-				if (previousChar == '=' || char.IsWhiteSpace (previousChar))
-					break;
-				else
-					goto default;
-			default:
-				return base.HandleCodeCompletion (completionContext, currentChar);
+				default:
+					if (char.IsLetterOrDigit (currentChar) &&
+					    (previousChar == '"' || previousChar =='\'' || previousChar == '<' || char.IsWhiteSpace (previousChar)))
+						break;
+					else
+						return null;
+				}
 			}
 			
 			Document doc;
@@ -131,7 +144,7 @@ namespace MonoDevelop.AspNet.Gui
 				doc = GetAspNetDocument ();
 			} catch (Exception ex) {
 				LoggingService.LogError ("Unhandled error in ASP.NET parser", ex);
-				return base.HandleCodeCompletion (completionContext, currentChar);
+				return null;
 			}
 			
 			//lazily load the schema to avoid a multi-second interruption when a schema
@@ -200,7 +213,11 @@ namespace MonoDevelop.AspNet.Gui
 				CodeCompletionDataProvider cp = new CodeCompletionDataProvider (null, GetAmbience ());
 				
 				//attributes
-				if (!isInQuotes && currentChar == ' ') {
+				if (!isInQuotes && (forced ||
+				    (char.IsWhiteSpace (previousChar) && (char.IsLetter (currentChar)))
+				)) {
+					if (!forced)
+						triggerWordLength = 1;
 					
 					if (splitTagName.Length == 1) {
 						AddHtmlAttributeCompletionData (cp, schema, tn);
@@ -208,7 +225,7 @@ namespace MonoDevelop.AspNet.Gui
 						AddAspAttributeCompletionData (cp, doc, splitTagName[0], splitTagName[1], tn);
 					} else {
 						//do nothing, tag is not valid
-						base.HandleCodeCompletion (completionContext, currentChar);
+						return null;
 					}
 					
 					if (tn.Attributes ["runat"] == null)
@@ -231,9 +248,13 @@ namespace MonoDevelop.AspNet.Gui
 					return cp;
 				
 				//attribute values
-				} else if (isInQuotes && (currentChar == '"' || currentChar == '\'')
-				    && currentPosition + 1 < buf.Length && buf.GetCharAt (currentPosition + 1) == currentChar)
-				{
+				} else if (isInQuotes && (previousChar == '"' || previousChar == '\'') && (
+				    (forced && currentPosition + 1 < buf.Length && buf.GetCharAt (currentPosition + 1) == currentChar)
+				    || (currentPosition + 2 < buf.Length && buf.GetCharAt (currentPosition + 2) == currentChar)
+				)) {
+					if (!forced)
+						triggerWordLength = 1;
+					
 					string att = GetAttributeName (buf, currentPosition - 1);
 					if (!string.IsNullOrEmpty (att)) {
 						LoggingService.LogDebug ("Triggered attribute value completion for '{0}'", att);
@@ -244,7 +265,7 @@ namespace MonoDevelop.AspNet.Gui
 							AddAspAttributeValueCompletionData (cp, doc, splitTagName[0], splitTagName[1], att, tn);
 						} else {
 							//do nothing, tag is not valid
-							base.HandleCodeCompletion (completionContext, currentChar);
+							return null;
 						}
 					}
 				}
@@ -252,7 +273,7 @@ namespace MonoDevelop.AspNet.Gui
 				return cp;
 			}
 			
-			return base.HandleCodeCompletion (completionContext, currentChar); 
+			return null; 
 		}
 		
 		#region String processing
@@ -403,14 +424,22 @@ namespace MonoDevelop.AspNet.Gui
 		
 		void AddControlMembers (CodeCompletionDataProvider provider, MonoDevelop.Projects.Parser.IParserContext ctx, Document doc, MonoDevelop.Projects.Parser.IClass controlClass, TagNode parentTag)
 		{
-			//add atts only if they're not already in the tag
-			foreach (MonoDevelop.Projects.Parser.IProperty prop in GetAllProperties (ctx, controlClass))
-				if (prop.IsPublic && parentTag.Attributes[prop.Name] == null)
-					provider.AddCompletionData (new CodeCompletionData (prop.Name, "md-property", prop.Documentation));
+			Dictionary <string, bool> existingItems = new Dictionary<string,bool> ();
 			
-			foreach (MonoDevelop.Projects.Parser.IEvent eve in GetAllEvents (ctx, controlClass))
-				if (eve.IsPublic && parentTag.Attributes[eve.Name] == null)
+			//add atts only if they're not already in the tag
+			foreach (MonoDevelop.Projects.Parser.IProperty prop in GetAllProperties (ctx, controlClass)) {
+				if (prop.IsPublic && parentTag.Attributes[prop.Name] == null && !existingItems.ContainsKey (prop.Name)) {
+					existingItems[prop.Name] = true;
+					provider.AddCompletionData (new CodeCompletionData (prop.Name, "md-property", prop.Documentation));
+				}
+			}
+			
+			foreach (MonoDevelop.Projects.Parser.IEvent eve in GetAllEvents (ctx, controlClass)) {
+				if (eve.IsPublic && parentTag.Attributes[eve.Name] == null && !existingItems.ContainsKey (eve.Name)) {
+					existingItems[eve.Name] = true;
 					provider.AddCompletionData (new CodeCompletionData ("On" + eve.Name, "md-event", eve.Documentation));
+				}
+			}
 		}
 		
 		void AddAspAttributeValueCompletionData (CodeCompletionDataProvider provider, Document doc, string prefix, string name, string attrib, TagNode parentTag)

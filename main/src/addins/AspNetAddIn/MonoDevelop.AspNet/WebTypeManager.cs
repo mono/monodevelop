@@ -275,7 +275,6 @@ namespace MonoDevelop.AspNet
 		{
 			if (cls.IsAbstract || !cls.IsPublic)
 				return false;
-			System.Console.WriteLine(cls.FullyQualifiedName);
 			IClass swc = ctx.GetClass ("System.Web.UI.Control");
 			if (swc == null)
 				throw new Exception ("Could not find IClass for System.Web.UI.Control");
