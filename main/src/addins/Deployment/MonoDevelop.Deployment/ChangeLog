@@ -1,3 +1,10 @@
+2008-04-15  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Deployment.Targets/LocalFileCopyHandler.cs: Remove extra
+	  copy operation, thereby avoiding re-copying entire file every 1 kb,
+	  and vastly improving performance on large files. Thanks to
+	  firegrass on #MonoDevelop IRC for catching this bug.
+
 2008-03-10  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Deployment.Gui/DialogFileReplacePolicy.cs: Message

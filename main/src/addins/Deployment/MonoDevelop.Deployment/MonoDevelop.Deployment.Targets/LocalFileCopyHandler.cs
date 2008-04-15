@@ -208,14 +208,14 @@ namespace MonoDevelop.Deployment.Targets
 				do {
 					count = inStream.Read (buffer, 0, bytesPerLoop);
 					outStream.Write (buffer, 0, count);
-					File.Copy (source, target, true);
+					//outStream.Flush (); //? buffer likely to flush every 4kb anyway
 					report (count);
 				} while (count > 0);
 			} finally {
 				if (inStream != null)
-					inStream.Dispose ();
+					inStream.Close ();
 				if (outStream != null)
-					outStream.Dispose ();
+					outStream.Close ();
 			}
 			
 		}
