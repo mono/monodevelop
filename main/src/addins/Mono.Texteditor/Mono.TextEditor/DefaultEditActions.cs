@@ -191,6 +191,19 @@ namespace Mono.TextEditor
 			LineSegment line = data.Document.GetLine (data.Caret.Line);
 			int homeMark = GetHomeMark (data.Document, line);
 			newLocation.Column = newLocation.Column == homeMark ? 0 : homeMark;
+			
+			// handle folding
+			List<FoldSegment> foldings = data.Document.GetEndFoldings (line);
+			FoldSegment segment = null;
+			foreach (FoldSegment folding in foldings) {
+				if (folding.IsFolded && folding.Contains (data.Document.LocationToOffset (newLocation))) {
+					segment = folding;
+					break;
+				}
+			}
+			if (segment != null) 
+				newLocation = data.Document.OffsetToLocation (segment.StartLine.Offset); 
+			
 			if (newLocation != data.Caret.Location) 
 				data.Caret.Location = newLocation;
 		}
@@ -205,8 +218,21 @@ namespace Mono.TextEditor
 			DocumentLocation newLocation = data.Caret.Location;
 			LineSegment line = data.Document.GetLine (data.Caret.Line);
 			newLocation.Column = line.EditableLength;
+			
+			// handle folding
+			List<FoldSegment> foldings = data.Document.GetStartFoldings (line);
+			FoldSegment segment = null;
+			foreach (FoldSegment folding in foldings) {
+				if (folding.IsFolded && folding.Contains (data.Document.LocationToOffset (newLocation))) {
+					segment = folding;
+					break;
+				}
+			}
+			if (segment != null) 
+				newLocation = data.Document.OffsetToLocation (segment.EndLine.Offset + segment.EndColumn); 
 			if (newLocation != data.Caret.Location) 
 				data.Caret.Location = newLocation;
+			
 		}
 	}
 

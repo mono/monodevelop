@@ -1,5 +1,10 @@
 2008-04-15  Mike Krüger <mkrueger@novell.com> 
 
+	* Mono.TextEditor/DefaultEditActions.cs: fixed Bug 379236 - Pressing
+	  "end" on a folded code block doesn't move to end
+
+2008-04-15  Mike Krüger <mkrueger@novell.com> 
+
 	* Mono.TextEditor/TextViewMargin.cs: fixed Bug 378195 - Text editor has
 	  visible caret when there is a selection
 
