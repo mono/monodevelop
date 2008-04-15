@@ -110,7 +110,8 @@ namespace CSharpBinding.Parser
 							curLine = curComment.StartPosition.Line;
 						}
 						if (j - i > 1) {
-							cu.FoldingRegions.Add(new FoldingRegion (comment.CommentType == CommentType.SingleLine ? "//..." : "///...", 
+							
+							cu.FoldingRegions.Add(new FoldingRegion (comment.CommentType == CommentType.SingleLine ? "//..." : "/// " + comment.CommentText + "...", 
 							                                        new DefaultRegion(comment.StartPosition.Line,
 							                                                          comment.StartPosition.Column,
 							                                                          end.Line,
