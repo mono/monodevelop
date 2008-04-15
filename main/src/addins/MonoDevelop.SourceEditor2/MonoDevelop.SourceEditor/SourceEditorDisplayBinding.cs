@@ -57,7 +57,7 @@ namespace MonoDevelop.SourceEditor
 		{
 			if (String.IsNullOrEmpty (mimetype))
 				return false;
-			if (mimetype.StartsWith ("text"))
+			if (mimetype.StartsWith ("text") || mimetype.EndsWith ("+xml"))
 				return true;
 			switch (mimetype) {
 			case "application/x-python":
