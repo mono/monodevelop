@@ -70,7 +70,8 @@ namespace MonoDevelop.Core.Gui.Codons
 				string pattern = Regex.Escape (file.Pattern);
 				pattern = pattern.Replace ("\\*",".*");
 				pattern = pattern.Replace ("\\?",".");
-				pattern = pattern.Replace ("\\|","|");
+				pattern = pattern.Replace ("\\|","$|^");
+				pattern = "^" + pattern + "$";
 				if (globalPattern.Length > 0)
 					globalPattern.Append ('|');
 				globalPattern.Append (pattern);

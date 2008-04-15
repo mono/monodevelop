@@ -161,8 +161,9 @@
 		<StockIcon stockid = "md-toggle-bookmark" resource = "Icons.16x16.ToggleBookmark" size="Menu"/>
 		<StockIcon stockid = "md-toggle-bookmark" resource = "Icons.22x22.ToggleBookmark.png" />
 		<StockIcon stockid = "md-web-search-icon" resource = "Icons.16x16.WebSearchIcon" />
-		<StockIcon stockid = "md-xml-file-icon" resource = "Icons.16x16.XMLFileIcon" size = "Menu" />
+		<StockIcon stockid = "md-xml-file-icon" resource = "file-xml-16.png" size = "Menu" />
 		<StockIcon stockid = "md-xml-file-icon" resource = "file-xml-32.png" size = "Dnd" />
+		<StockIcon stockid = "md-addin-file" resource = "file-addin-16.png" size = "Menu" />
 		<StockIcon stockid = "md-package" resource = "package-x-generic_22.png" />
 		<StockIcon stockid = "md-package" resource = "package-x-generic.png" size = "Dialog" />
 		<StockIcon stockid = "md-select-all" resource = "edit-select-all_22.png" />
@@ -190,8 +191,13 @@
 		<MimeType id="application/x-resource" _description=".NET resource" icon="md-resource-file-icon">
 			<File pattern="*.resx" />
 		</MimeType>
+		<MimeType id="application/x-addin+xml" _description="Add-in manifest" icon="md-addin-file">
+			<File pattern="*.addin.xml" />
+			<File pattern="*.addin" />
+		</MimeType>
 		<MimeType id="application/xml" _description="XML document" icon="md-xml-file-icon">
 			<File pattern="*.xml" />
+			<File pattern="*.config" />
 		</MimeType>
 		<MimeType id="text/x-changelog" _description="ChangeLog document">
 			<File pattern="ChangeLog|Changelog|CHANGELOG|Changelog" />

@@ -1,3 +1,12 @@
+2008-04-15  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Core.Gui.mdp, Makefile.am, icons/Icons.16x16.XMLFileIcon,
+	  icons/file-xml-16.png, icons/file-addin-16.png,
+	  MonoDevelop.Core.Gui.addin.xml: Added new icon for xml files. Added
+	  icon and mime type for add-in manifests.
+	* MonoDevelop.Core.Gui.Codons/MimeTypeNode.cs: Fix file pattern
+	  matching.
+
 2008-04-11  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* Base.glade: Remove some default generated names from labels. They

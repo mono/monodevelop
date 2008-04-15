@@ -100,10 +100,12 @@ RES =  \
 	icons/element-property-16.png \
 	icons/element-structure-16.png \
 	icons/ExecutionMarker.png \
+	icons/file-addin-16.png \
 	icons/file-class-32.png \
 	icons/file-enum-32.png \
 	icons/file-interface-32.png \
 	icons/file-struct-32.png \
+	icons/file-xml-16.png \
 	icons/file-xml-32.png \
 	icons/GeneralWizardBackground \
 	icons/gnome-fs-regular.png \
@@ -137,7 +139,6 @@ RES =  \
 	icons/Icons.16x16.TipOfTheDay \
 	icons/Icons.16x16.ToggleBookmark \
 	icons/Icons.16x16.WebSearchIcon \
-	icons/Icons.16x16.XMLFileIcon \
 	icons/Icons.22x22.ClearAllBookmarks.png \
 	icons/Icons.22x22.GotoNextbookmark.png \
 	icons/Icons.22x22.GotoPrevbookmark.png \

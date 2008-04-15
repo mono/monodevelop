@@ -47,7 +47,6 @@
     <File name="icons/Icons.16x16.TipOfTheDay" subtype="Code" buildaction="EmbedAsResource" />
     <File name="icons/Icons.16x16.ToggleBookmark" subtype="Code" buildaction="EmbedAsResource" />
     <File name="icons/Icons.16x16.WebSearchIcon" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="icons/Icons.16x16.XMLFileIcon" subtype="Code" buildaction="EmbedAsResource" />
     <File name="icons/Icons.32x32.EmptyFileIcon" subtype="Code" buildaction="EmbedAsResource" />
     <File name="icons/Icons.32x32.HTMLFileIcon" subtype="Code" buildaction="EmbedAsResource" />
     <File name="icons/Icons.32x32.ResourceFileIcon" subtype="Code" buildaction="EmbedAsResource" />
@@ -173,6 +172,8 @@
     <File name="icons/pad-task-list-24.png" subtype="Code" buildaction="EmbedAsResource" />
     <File name="MonoDevelop.Core.Gui/GLibLogging.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Core.Gui.Codons/MimeTypeNode.cs" subtype="Code" buildaction="Compile" />
+    <File name="icons/file-xml-16.png" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="icons/file-addin-16.png" subtype="Code" buildaction="EmbedAsResource" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="False" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
