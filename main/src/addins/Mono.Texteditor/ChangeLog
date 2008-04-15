@@ -1,3 +1,8 @@
+2008-04-15  Mike Krüger <mkrueger@novell.com> 
+
+	* Mono.TextEditor/TextViewMargin.cs: fixed Bug 378195 - Text editor has
+	  visible caret when there is a selection
+
 2008-04-08  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* Mono.TextEditor/TextViewMargin.cs: Restore caret position after a

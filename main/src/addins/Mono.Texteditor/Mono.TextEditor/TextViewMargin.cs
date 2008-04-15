@@ -940,7 +940,7 @@ namespace Mono.TextEditor
 			if (caretOffset == line.Offset + line.EditableLength)
 				SetVisibleCaretPosition (win, TextEditorOptions.Options.ShowEolMarkers ? eolMarkerChar : ' ', xPos, y);
 			
-			if (this.caretX >= 0)
+			if (this.caretX >= 0 && (!this.textEditor.IsSomethingSelected || this.textEditor.SelectionRange.Length == 0))
 				this.DrawCaret (win);
 		}
 		
