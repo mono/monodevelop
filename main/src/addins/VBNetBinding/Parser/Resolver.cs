@@ -1006,7 +1006,7 @@ namespace VBBinding.Parser
 				return parserContext.SearchNamespace(null,name,false); //, unit, caretLine, caretColumn, false);
 			}
 			foreach (IUsing u in unit.Usings) {
-				if (u != null && (u.Region == null || u.Region.IsInside(caretLine, caretColumn))) {
+				if (u != null) {
 					string nameSpace = parserContext.SearchNamespace (u, name);
 					if (nameSpace != null) {
 						return nameSpace;
@@ -1043,7 +1043,7 @@ namespace VBBinding.Parser
 			if (unit != null) {
 				//Console.WriteLine(unit.Usings.Count + " Usings");
 				foreach (IUsing u in unit.Usings) {
-					if (u != null && (u.Region == null || u.Region.IsInside(caretLine, caretColumn))) {
+					if (u != null) {
 //						Console.WriteLine("In UsingRegion");
 						c = parserContext.SearchType(u, name);
 						if (c != null) {
@@ -1130,7 +1130,7 @@ namespace VBBinding.Parser
 			string n = "";
 			result.AddRange(parserContext.GetNamespaceContents(n, true,false));
 			foreach (IUsing u in cu.Usings) {
-				if (u != null && (u.Region == null || u.Region.IsInside(caretLine, caretColumn))) {
+				if (u != null) {
 					foreach (string name in u.Usings) {
 						result.AddRange(parserContext.GetNamespaceContents(name,true, false));
 					}

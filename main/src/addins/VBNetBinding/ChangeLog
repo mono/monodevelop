@@ -1,3 +1,8 @@
+2008-04-15  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Parser/Resolver.cs: Don't check using's region, since it is the
+	  region of the using declaration only.
+
 2008-04-11  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* VBNetBinding.addin.xml: Use the new mime type extension to register
