@@ -1,3 +1,9 @@
+2008-04-15  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Parser/TypeNameResolver.cs: Don't check using's
+	  region, since it is the region of the using declaration only. Fixes
+	  bug #379879.
+
 2008-04-01  Aaron Bockover <abockover@novell.com>
 
 	* MonoDevelop.Projects/DotNetProject.cs: If UseParentDirectoryAsNamespace

@@ -62,7 +62,7 @@ namespace MonoDevelop.Projects.Parser
 			}
 			
 			foreach (IUsing u in unit.Usings) {
-				if (u != null && (u.Region == null || u.Region.IsInside(caretLine, caretColumn))) {
+				if (u != null) {
 					foreach (string us in u.Usings)
 						AddName (us, "");
 				}
@@ -70,7 +70,7 @@ namespace MonoDevelop.Projects.Parser
 			
 			// Namespace aliases
 			foreach (IUsing u in unit.Usings) {
-				if (u != null && (u.Region == null || u.Region.IsInside(caretLine, caretColumn))) {
+				if (u != null) {
 					foreach (string e in u.Aliases)
 						AddName (u.GetAlias (e).FullyQualifiedName, e);
 				}
