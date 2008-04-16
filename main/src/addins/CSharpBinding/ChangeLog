@@ -1,3 +1,9 @@
+2008-04-16  Marek Safar <marek.safar@gmail.com> 
+
+	* Parser/mcs/cs-parser.cs: Sync with /mcs/mcs
+
+	* Makefile.am: Updated.
+
 2008-04-15  Mike Krüger <mkrueger@novell.com> 
 
 	* Parser/Parser.cs: fixed Bug 379224 - Folded XML-comment should
