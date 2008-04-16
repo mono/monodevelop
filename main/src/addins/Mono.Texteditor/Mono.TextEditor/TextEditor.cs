@@ -431,57 +431,8 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		public void SimulateKeyPress (Gdk.Key key, Gdk.ModifierType modifier)
+		public void SimulateKeyPress (Gdk.Key key, uint unicodeKey, Gdk.ModifierType modifier)
 		{
-			// quick keypad key hack (I haven't found a better way)
-			switch (key) {
-			case Gdk.Key.KP_0:
-				key = Gdk.Key.Key_0;
-				break;
-			case Gdk.Key.KP_1:
-				key = Gdk.Key.Key_1;
-				break;
-			case Gdk.Key.KP_2:
-				key = Gdk.Key.Key_2;
-				break;
-			case Gdk.Key.KP_3:
-				key = Gdk.Key.Key_3;
-				break;
-			case Gdk.Key.KP_4:
-				key = Gdk.Key.Key_4;
-				break;
-			case Gdk.Key.KP_5:
-				key = Gdk.Key.Key_5;
-				break;
-			case Gdk.Key.KP_6:
-				key = Gdk.Key.Key_6;
-				break;
-			case Gdk.Key.KP_7:
-				key = Gdk.Key.Key_7;
-				break;
-			case Gdk.Key.KP_8:
-				key = Gdk.Key.Key_8;
-				break;
-			case Gdk.Key.KP_9:
-				key = Gdk.Key.Key_9;
-				break;
-			case Gdk.Key.KP_Add:
-				key = Gdk.Key.plus;
-				break;
-			case Gdk.Key.KP_Divide:
-				key = Gdk.Key.slash;
-				break;
-			case Gdk.Key.KP_Subtract:
-				key = Gdk.Key.minus;
-				break;
-			case Gdk.Key.KP_Multiply:
-				key = Gdk.Key.asterisk;
-				break;
-			case Gdk.Key.KP_Decimal:
-				key = Gdk.Key.period;
-				break;
-			}
-			
 			int keyCode = GetKeyCode (key, modifier);
 			if (keyBindings.ContainsKey (keyCode)) {
 				try {
@@ -491,10 +442,10 @@ namespace Mono.TextEditor
 				} catch (Exception e) {
 					Console.WriteLine ("Error while executing " + keyBindings[keyCode] + " :" + e);
 				}
-			} else if ((int)key < 65000 && (modifier & Gdk.ModifierType.ControlMask) != Gdk.ModifierType.ControlMask) {
+			} else if (unicodeKey != 0) {
 				Document.BeginAtomicUndo ();
 				this.textEditorData.DeleteSelectedText ();
-				char ch = (char)key;
+				char ch = (char)unicodeKey;
 				if (!char.IsControl (ch)) {
 					LineSegment line = Document.GetLine (Caret.Line);
 					if (Caret.IsInInsertMode || Caret.Column >= line.EditableLength) {
@@ -516,13 +467,12 @@ namespace Mono.TextEditor
 			textViewMargin.ResetCaretBlink ();
 		}
 		
-		protected override bool OnKeyPressEvent (Gdk.EventKey evnt)
+		protected override bool OnKeyPressEvent (Gdk.EventKey evt)
 		{
-			Gdk.Key key = evnt.Key;
-			
-			SimulateKeyPress (key, evnt.State);
+			SimulateKeyPress (evt.Key, Gdk.Keyval.ToUnicode (evt.KeyValue), evt.State);
 			return true;
 		}
+
 		
 		bool mousePressed = false;
 		uint lastTime;

@@ -1,3 +1,7 @@
+2008-04-16  Mike Krüger <mkrueger@novell.com> 
+
+	* Mono.TextEditor/TextEditor.cs: Removed work around.
+
 2008-04-15  Mike Krüger <mkrueger@novell.com> 
 
 	* Mono.TextEditor/DefaultEditActions.cs: fixed Bug 379236 - Pressing

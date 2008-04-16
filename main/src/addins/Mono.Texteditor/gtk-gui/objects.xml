@@ -2,10 +2,10 @@
   <object type="Mono.TextEditor.TextEditor" palette-category="Mono.TextEditor" allow-children="false" base-type="Gtk.DrawingArea">
     <itemgroups>
       <itemgroup label="TextEditor Properties">
+        <property name="SelectionAnchor" />
+        <property name="SelectedText" />
         <property name="SearchPattern" />
         <property name="HighlightSearchPattern" />
-        <property name="SelectedText" />
-        <property name="SelectionAnchor" />
         <property name="IsCaseSensitive" />
         <property name="IsWholeWordOnly" />
       </itemgroup>
