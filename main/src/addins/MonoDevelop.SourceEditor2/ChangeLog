@@ -1,3 +1,10 @@
+2008-04-16  Mike Krüger <mkrueger@novell.com> 
+
+	* gtk-gui/MonoDevelop.SourceEditor.SearchAndReplaceWidget.cs,
+	  MonoDevelop.SourceEditor/SourceEditorWidget.cs,
+	  MonoDevelop.SourceEditor/ExtendibleTextEditor.cs: Removed work
+	  around.
+
 2008-04-15  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.SourceEditor/SourceEditorDisplayBinding.cs: Handle mime

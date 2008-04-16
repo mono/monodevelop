@@ -187,7 +187,7 @@ namespace MonoDevelop.SourceEditor
 						extension.KeyPress (Gdk.Key.Return, Gdk.ModifierType.None);
 					} else {
 						result = base.OnKeyPressEvent (evnt);
-						base.SimulateKeyPress (Gdk.Key.Return, Gdk.ModifierType.None);
+						base.SimulateKeyPress (Gdk.Key.Return, 0, Gdk.ModifierType.None);
 						Document.Insert (Caret.Offset, "}");
 					}
 					break;
