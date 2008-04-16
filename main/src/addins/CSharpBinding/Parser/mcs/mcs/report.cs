@@ -160,9 +160,7 @@ namespace Mono.CSharp {
 
 		public interface IMessageRecorder
 		{
-			void EndSession ();
 			void AddMessage (AbstractMessage msg);
-			bool PrintMessages ();
 		}
 
 		//
@@ -170,7 +168,7 @@ namespace Mono.CSharp {
 		// Common messages: messages reported in all sessions.
 		// Merged messages: union of all messages in all sessions. 
 		//		
-		public struct MessageRecorder : IMessageRecorder
+		public class MessageRecorder : IMessageRecorder
 		{
 			ArrayList session_messages;
 			//

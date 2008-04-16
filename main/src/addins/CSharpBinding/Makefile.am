@@ -85,6 +85,7 @@ FILES =  \
 	Parser/mcs/mcs/symbolwriter.cs \
 	Parser/mcs/mcs/typemanager.cs \
 	Parser/mcs/cs-parser.cs \
+	Parser/mcs/dom.cs \
 	Parser/Parser.cs \
 	Parser/Resolver.cs \
 	Parser/SharpDevelopTree/AttributeSection.cs \

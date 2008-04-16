@@ -111,6 +111,7 @@ namespace Mono.CSharp
 		bool params_modifiers_not_allowed;
 		bool arglist_allowed;
 
+		readonly CompilationUnit cu;
 %}
 
 %token EOF
@@ -424,8 +425,9 @@ namespace_declaration
 		if (name.TypeArguments != null)
 			syntax_error (lexer.Location, "namespace name expected");
 
-		current_namespace = new NamespaceEntry (
-			current_namespace, file, name.GetName ());
+		current_namespace = new NamespaceEntry (current_namespace, file, name.GetName ());
+		cu.AddNamespace (current_namespace);		
+		
 		current_class = current_namespace.SlaveDeclSpace;
 		current_container = current_class.PartialContainer;
 	  } 
@@ -2749,6 +2751,7 @@ enum_declaration
 		}
 
 		current_container.AddTypeContainer (e);
+		current_namespace.AddType (e);
 		$$ = e;
 
 	  }
@@ -2851,6 +2854,7 @@ delegate_declaration
 		}
 
 		current_container.AddDelegate (del);
+		current_namespace.AddDelegate (del);
 		current_delegate = del;
 		lexer.ConstraintsParsing = true;
 	  }
@@ -5740,6 +5744,8 @@ void push_current_class (TypeContainer tc, object partial_token)
 		current_container = current_container.AddPartial (tc);
 	else
 		current_container = current_container.AddTypeContainer (tc);
+		
+	current_namespace.AddType (tc);
 	current_class = tc;
 }
 
@@ -5894,10 +5900,12 @@ static CSharpParser ()
 	oob_stack = new Stack ();
 }
 
-public CSharpParser (SeekableStreamReader reader, SourceFile file, ArrayList defines)
+public CSharpParser (SeekableStreamReader reader, SourceFile file, ArrayList defines, CompilationUnit cu)
 {
 	this.file = file;
-	current_namespace = new NamespaceEntry (null, file, null);
+	this.cu = cu;
+	
+	current_namespace = cu.DefaultNamespace;
 	current_class = current_namespace.SlaveDeclSpace;
 	current_container = current_class.PartialContainer; // == RootContest.ToplevelTypes
 	oob_stack.Clear ();

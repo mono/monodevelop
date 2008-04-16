@@ -63,7 +63,7 @@ namespace Mono.CSharp {
 	/// <summary>
 	///   This is the base class for structs and classes.  
 	/// </summary>
-	public abstract class TypeContainer : DeclSpace, IMemberContainer {
+	public abstract class TypeContainer : DeclSpace, IMemberContainer, Dom.IType {
 
  		public class MemberCoreArrayList: ArrayList
  		{

@@ -62,7 +62,7 @@ namespace Mono.CSharp {
 	///
 	///   http://lists.ximian.com/pipermail/mono-devel-list/2004-December/009508.html
 	/// </remarks>
-	public struct Location {
+	public struct Location : Dom.ILocation {
 		int token; 
 
 		struct Checkpoint {

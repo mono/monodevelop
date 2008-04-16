@@ -53,25 +53,9 @@ namespace MonoDevelop.CSharpBinding
 		
 		public ICompilationUnit Parse (string fileName, string content)
 		{
-			CompilationUnit result = new CompilationUnit (fileName);
-//			MemoryStream input = new MemoryStream (Encoding.UTF8.GetBytes (content));
-//			SeekableStreamReader reader = new SeekableStreamReader (input, Encoding.UTF8);
-//			
-//			ArrayList defines = new ArrayList ();
-//			SourceFile file = new Mono.CSharp.SourceFile (Path.GetFileName (fileName),
-//			                                              Path.GetDirectoryName (fileName), 
-//			                                              0);
-//			CSharpParser parser = new CSharpParser (reader, file, defines);
-//			
-//			try {
-//				parser.parse ();
-//			} finally {
-//				input.Close ();
-//			}
-//			foreach (object o in RootContext.ToplevelTypes.Types) {
-//				System.Console.WriteLine (o);
-//			}
-			return result;
+			Mono.CSharp.Dom.ICompilationUnit cu = CompilerCallableEntryPoint.Parse (new string[] { fileName }, null) [0];
+			
+			return null;
 		}
 	}
 }

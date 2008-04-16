@@ -122,6 +122,13 @@ namespace Mono.CSharp {
 			Reset ();
 		}
 
+		readonly CompilationUnit [] compilation_units;
+
+		internal RootContext (CompilationUnit [] units)
+		{
+			this.compilation_units = units;
+		}
+
 		public static void Reset ()
 		{
 			root = new RootTypes ();
@@ -159,24 +166,18 @@ namespace Mono.CSharp {
 		//   It creates the TypeBuilder's as it processes the user defined
 		//   types.  
 		// </remarks>
-		static public void ResolveTree ()
+		public void CreateTypes ()
 		{
-			//
-			// Interfaces are processed next, as classes and
-			// structs might inherit from an object or implement
-			// a set of interfaces, we need to be able to tell
-			// them appart by just using the TypeManager.
-			//
-			foreach (TypeContainer tc in root.Types)
-				tc.CreateType ();
-
-			foreach (TypeContainer tc in root.Types)
-				tc.DefineType ();
-
-			if (root.Delegates != null)
-				foreach (Delegate d in root.Delegates) 
-					d.DefineType ();
+			foreach (CompilationUnit cu in compilation_units)
+				cu.CreateTypes ();
 		}
+
+		public void ResolveNamespaces ()
+		{
+			foreach (CompilationUnit cu in compilation_units)
+				cu.ResolveNamespaces ();
+		}
+
 
 		// <summary>
 		//   Closes all open types
@@ -399,6 +400,87 @@ namespace Mono.CSharp {
 					"Unsafe code requires the `unsafe' command line option to be specified");
 			}
 		}
+	}
+
+	// TODO: Do something about CommonAssemblyModulClass
+	public class CompilationUnit : Dom.ICompilationUnit
+	{
+		NamespaceEntry[] namespaces;
+		Attributes global_attributes;
+
+		NamespaceEntry default_namespace;
+
+		public CompilationUnit (SourceFile file)
+		{
+			default_namespace = new NamespaceEntry (null, file, null);
+		}
+
+		public void AddNamespace (NamespaceEntry ns)
+		{
+			int length;
+			if (namespaces == null) {
+				length = 0;
+				namespaces = new NamespaceEntry [1];
+			} else {
+				length = namespaces.Length;
+				NamespaceEntry [] temp = new NamespaceEntry [length + 1];
+				Array.Copy (namespaces, temp, length);
+				namespaces = temp;
+			}
+
+			namespaces [length] = ns;
+		}
+
+		public NamespaceEntry DefaultNamespace {
+			get {
+				return default_namespace;
+			}
+		}
+
+		public void CreateTypes ()
+		{
+			default_namespace.CreateTypes ();
+			default_namespace.ResolveUsingAlias ();
+			if (namespaces == null)
+				return;
+
+			foreach (NamespaceEntry ne in namespaces) {
+				ne.CreateTypes ();
+				ne.ResolveUsingAlias ();
+			}
+		}
+
+		public void ResolveNamespaces ()
+		{
+			default_namespace.ResolveUsing ();
+			if (namespaces == null)
+				return;
+
+			foreach (NamespaceEntry ne in namespaces) {
+				ne.ResolveUsing ();
+			}
+		}
+
+		#region ICompilationUnit Members
+
+		public Dom.IUsingBlock UsingBlock {
+			get { return default_namespace; }
+		}
+
+		public Dom.IType[] Types {
+			get { return default_namespace.Types; }
+		}
+
+		public Dom.INamespace[] Namespaces {
+			get {
+				if (namespaces == null)
+					return null;
+
+				return namespaces;
+			}
+		}
+
+		#endregion
 	}
 }
 	      

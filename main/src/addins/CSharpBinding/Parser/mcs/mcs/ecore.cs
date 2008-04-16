@@ -4074,7 +4074,7 @@ namespace Mono.CSharp {
 			//
 			// Enable message recording, it's used mainly by lambda expressions
 			//
-			Report.IMessageRecorder msg_recorder = new Report.MessageRecorder ();
+			Report.MessageRecorder msg_recorder = new Report.MessageRecorder ();
 			Report.IMessageRecorder prev_recorder = Report.SetMessageRecorder (msg_recorder);
 
 			//

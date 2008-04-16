@@ -180,7 +180,7 @@ namespace Mono.CSharp
 		}
 
 		// MonoTODO("Change error code for aborted compilation to something reasonable")]		
-		void Parse (SourceFile file)
+		CompilationUnit Parse (SourceFile file)
 		{
 			CSharpParser parser;
 			Stream input;
@@ -189,7 +189,7 @@ namespace Mono.CSharp
 				input = File.OpenRead (file.Name);
 			} catch {
 				Report.Error (2001, "Source file `" + file.Name + "' could not be found");
-				return;
+				return null;
 			}
 
 			SeekableStreamReader reader = new SeekableStreamReader (input, encoding);
@@ -198,11 +198,14 @@ namespace Mono.CSharp
 			if (reader.Read () == 77 && reader.Read () == 90) {
 				Report.Error (2015, "Source file `{0}' is a binary file and not a text file", file.Name);
 				input.Close ();
-				return;
+				return null;
 			}
 
 			reader.Position = 0;
-			parser = new CSharpParser (reader, file, defines);
+
+			CompilationUnit cu = new CompilationUnit (file);
+
+			parser = new CSharpParser (reader, file, defines, cu);
 			parser.ErrorOutput = Report.Stderr;
 			try {
 				parser.parse ();
@@ -213,6 +216,8 @@ namespace Mono.CSharp
 			} finally {
 				input.Close ();
 			}
+
+			return cu;
 		}
 
 		static void OtherFlags ()
@@ -676,18 +681,21 @@ namespace Mono.CSharp
 			return true;
 		}
 
-		public void Parse ()
+		public CompilationUnit[] Parse ()
 		{
 			Location.Initialize ();
 
-			int files_count = Location.SourceFiles.Length;
-			for (int i = 0; i < files_count; ++i) {
+			CompilationUnit[] units = new CompilationUnit [Location.SourceFiles.Length];
+
+			for (int i = 0; i < units.Length; ++i) {
 				if (tokenize) {
 					tokenize_file (Location.SourceFiles [i]);
 				} else {
-					Parse (Location.SourceFiles [i]);
+					units [i] = Parse (Location.SourceFiles [i]);
 				}
 			}
+
+			return units;
 		}
 
 		void ProcessSourceFiles (string spec, bool recurse)
@@ -1568,12 +1576,14 @@ namespace Mono.CSharp
 		//
 		public bool Compile ()
 		{
-			Parse ();
+			CompilationUnit[] parsed_files = Parse ();
 			if (Report.Errors > 0)
 				return false;
 
 			if (tokenize || parse_only)
 				return true;
+
+			RootContext rc = new RootContext (parsed_files);
 
 			if (RootContext.ToplevelTypes.NamespaceEntry != null)
 				throw new InternalErrorException ("who set it?");
@@ -1647,6 +1657,8 @@ namespace Mono.CSharp
 			if (timestamps)
 				ShowTime ("   Core Types done");
 
+			rc.ResolveNamespaces ();
+
 			CodeGen.Module.Resolve ();
 
 			//
@@ -1654,7 +1666,8 @@ namespace Mono.CSharp
 			//
 			if (timestamps)
 				ShowTime ("Resolving tree");
-			RootContext.ResolveTree ();
+
+			rc.CreateTypes ();
 
 			if (Report.Errors > 0)
 				return false;
@@ -1671,15 +1684,6 @@ namespace Mono.CSharp
 				!RootContext.Documentation.OutputDocComment (
 					output_file))
 				return false;
-
-			//
-			// Verify using aliases now
-			//
-			NamespaceEntry.VerifyAllUsing ();
-			
-			if (Report.Errors > 0){
-				return false;
-			}
 
 			CodeGen.Assembly.Resolve ();
 			
@@ -1948,6 +1952,22 @@ namespace Mono.CSharp
 			}
 		}
 
+		public static Dom.ICompilationUnit[] Parse (string [] args, Report.IMessageRecorder recorder)
+		{
+			Reset ();
+
+			Driver d = Driver.Create (args);
+			if (d == null)
+				return null;
+
+			try {
+				Report.SetMessageRecorder (recorder);
+				return d.Parse ();
+			} finally {
+				Report.SetMessageRecorder (null);
+			}
+		}
+
 		public static int[] AllWarningNumbers {
 			get {
 				return Report.AllWarnings;
@@ -1964,7 +1984,6 @@ namespace Mono.CSharp
 			TypeManager.Reset ();
 			TypeHandle.Reset ();
 			RootNamespace.Reset ();
-			NamespaceEntry.Reset ();
 			CodeGen.Reset ();
 			Attribute.Reset ();
 			AttributeTester.Reset ();

@@ -1,4 +1,12 @@
-2008-04-16  Marek Safar <marek.safar@gmail.com> 
+2008-04-16  Marek Safar <marek.safar@gmail.com>
+
+	* Parser/mcs/**: Initial top level DOM support.
+	
+	* Parser/DomParser.cs: Updated.
+
+	* Makefile.am: Updated.
+
+2008-04-16  Marek Safar <marek.safar@gmail.com>
 
 	* Parser/mcs/cs-parser.cs: Sync with /mcs/mcs
 

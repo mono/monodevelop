@@ -571,9 +571,9 @@ namespace Mono.CSharp {
 	//
 	// Namespace container as created by the parser
 	//
-	public class NamespaceEntry : IResolveContext {
+	public class NamespaceEntry : IResolveContext, Dom.INamespace {
 
-		class UsingEntry {
+		class UsingEntry: Dom.INamespaceImport {
 			readonly MemberName name;
 			Namespace resolved;
 			
@@ -620,7 +620,7 @@ namespace Mono.CSharp {
 			}
 		}
 
-		class UsingAliasEntry {
+		class UsingAliasEntry : Dom.INamespaceImportAlias {
 			public readonly string Alias;
 			public Location Location;
 
@@ -641,6 +641,18 @@ namespace Mono.CSharp {
 
 				return fne;
 			}
+
+			#region INamespaceImportAlias Members
+
+			public virtual string Value {
+				get { return null; }
+			}
+
+			public string Name {
+				get { return Alias; }
+			}
+
+			#endregion
 		}
 
 		class LocalUsingAliasEntry : UsingAliasEntry {
@@ -675,6 +687,14 @@ namespace Mono.CSharp {
 
 				return (FullNamedExpression)resolved;
 			}
+
+			#region INamespaceImportAlias Members
+
+			public override string Value {
+				get { return value.FullName; }
+			}
+
+			#endregion
 		}
 
 		Namespace ns;
@@ -693,18 +713,12 @@ namespace Mono.CSharp {
 		static readonly Namespace [] empty_namespaces = new Namespace [0];
 		Namespace [] namespace_using_table;
 
-		static ArrayList entries = new ArrayList ();
-
-		public static void Reset ()
-		{
-			entries = new ArrayList ();
-		}
+		ArrayList types, delegates;
 
 		public NamespaceEntry (NamespaceEntry parent, SourceFile file, string name)
 		{
 			this.parent = parent;
 			this.file = file;
-			entries.Add (this);
 
 			if (parent != null)
 				ns = parent.NS.GetNamespace (name, true);
@@ -846,6 +860,46 @@ namespace Mono.CSharp {
 			using_aliases.Add (uae);
 		}
 
+		public void AddType (TypeContainer tc)
+		{
+			if (types == null)
+				types = new ArrayList (4);
+
+			types.Add (tc);
+		}
+
+		public void AddDelegate (Delegate d)
+		{
+			if (delegates == null)
+				delegates = new ArrayList (2);
+
+			delegates.Add (d);
+		}
+
+		public void CreateTypes ()
+		{
+			if (types != null) {
+				foreach (TypeContainer tc in types) {
+					if (tc.PartialContainer != null && tc.PartialContainer != tc)
+						continue;
+
+					tc.CreateType ();
+				}
+
+				foreach (TypeContainer tc in types) {
+					if (tc.PartialContainer != null && tc.PartialContainer != tc)
+						continue;
+
+					tc.DefineType ();
+				}
+			}
+
+			if (delegates != null) {
+				foreach (Delegate d in delegates)
+					d.DefineType ();
+			}
+		}
+
 		///
 		/// Does extension methods look up to find a method which matches name and extensionType.
 		/// Search starts from this namespace and continues hierarchically up to top level.
@@ -859,7 +913,7 @@ namespace Mono.CSharp {
 					return new ExtensionMethodGroupExpr (candidates, this, extensionType, loc);
 			}
 
-			foreach (Namespace n in GetUsingTable ()) {
+			foreach (Namespace n in namespace_using_table) {
 				ArrayList a = n.LookupExtensionMethod (extensionType, null, name, this);
 				if (a == null)
 					continue;
@@ -940,7 +994,7 @@ namespace Mono.CSharp {
 			// Check using entries.
 			//
 			FullNamedExpression match = null;
-			foreach (Namespace using_ns in GetUsingTable ()) {
+			foreach (Namespace using_ns in namespace_using_table) {
 				match = using_ns.Lookup (ds, name, loc);
 				if (match == null || !(match is TypeExpr))
 					continue;
@@ -953,30 +1007,6 @@ namespace Mono.CSharp {
 			}
 
 			return fne;
-		}
-
-		Namespace [] GetUsingTable ()
-		{
-			if (namespace_using_table != null)
-				return namespace_using_table;
-
-			if (using_clauses == null) {
-				namespace_using_table = empty_namespaces;
-				return namespace_using_table;
-			}
-
-			ArrayList list = new ArrayList (using_clauses.Count);
-
-			foreach (UsingEntry ue in using_clauses) {
-				Namespace using_ns = ue.Resolve (Doppelganger);
-				if (using_ns == null)
-					continue;
-
-				list.Add (using_ns);
-			}
-
-			namespace_using_table = (Namespace[])list.ToArray (typeof (Namespace));
-			return namespace_using_table;
 		}
 
 		static readonly string [] empty_using_list = new string [0];
@@ -1046,27 +1076,31 @@ namespace Mono.CSharp {
 		///   Used to validate that all the using clauses are correct
 		///   after we are finished parsing all the files.  
 		/// </summary>
-		void VerifyUsing ()
+		public void ResolveUsing ()
+		{
+			if (using_clauses == null) {
+				namespace_using_table = empty_namespaces;
+				return;
+			}
+
+			ArrayList list = new ArrayList (using_clauses.Count);
+			foreach (UsingEntry ue in using_clauses) {
+				Namespace using_ns = ue.Resolve (Doppelganger);
+				if (using_ns == null)
+					continue;
+
+				list.Add (using_ns);
+			}
+
+			namespace_using_table = (Namespace []) list.ToArray (typeof (Namespace));
+		}
+
+		public void ResolveUsingAlias ()
 		{
 			if (using_aliases != null) {
 				foreach (UsingAliasEntry ue in using_aliases)
 					ue.Resolve (Doppelganger);
 			}
-
-			if (using_clauses != null) {
-				foreach (UsingEntry ue in using_clauses)
-					ue.Resolve (Doppelganger);
-			}
-		}
-
-		/// <summary>
-		///   Used to validate that all the using clauses are correct
-		///   after we are finished parsing all the files.  
-		/// </summary>
-		static public void VerifyAllUsing ()
-		{
-			foreach (NamespaceEntry entry in entries)
-				entry.VerifyUsing ();
 		}
 
 		public string GetSignatureForError ()
@@ -1095,6 +1129,58 @@ namespace Mono.CSharp {
 
 		public DeclSpace GenericDeclContainer {
 			get { return SlaveDeclSpace; }
+		}
+
+		#endregion
+
+		#region INamespace Members
+
+		public Dom.ILocationBlock LocationBlock {
+			get {
+				Location start;
+				if (using_aliases != null)
+					start = ((UsingAliasEntry) using_aliases [0]).Location;
+				else if (using_clauses != null)
+					start = ((UsingEntry) using_clauses [0]).Location;
+				else
+					return null;
+
+				Location end;
+				if (using_clauses != null)
+					end = ((UsingEntry) using_clauses [using_clauses.Count - 1]).Location;
+				else
+					end = ((UsingAliasEntry) using_aliases [using_aliases.Count - 1]).Location;
+				
+				return new Dom.LocationBlock (start, end);
+			}
+		}
+
+		public Dom.INamespaceImport[] Usings {
+			get {
+				if (using_clauses == null)
+					return null;
+
+				return (Dom.INamespaceImport[]) using_clauses.ToArray (typeof (Dom.INamespaceImport));
+			}
+		}
+
+		public Dom.INamespaceImportAlias[] Aliases {
+			get {
+				if (using_aliases == null)
+					return null;
+
+				return (Dom.INamespaceImportAlias []) using_clauses.ToArray (typeof (Dom.INamespaceImportAlias));
+			}
+		}
+
+
+		public Dom.IType[] Types {
+			get {
+				if (types == null)
+					return null;
+
+				return (Dom.IType[]) types.ToArray (typeof (Dom.IType));
+			}
 		}
 
 		#endregion
