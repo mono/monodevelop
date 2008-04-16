@@ -1,3 +1,9 @@
+2008-04-16  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* Gui/CSharpTextEditorExtension.cs: Track API change. Remove char code
+	  translation hack.
+	* Gui/CompilerOptionsPanelWidget.cs: Fix minor GTK warning.
+
 2008-04-16  Marek Safar <marek.safar@gmail.com>
 
 	* Parser/mcs/**: Initial top level DOM support.

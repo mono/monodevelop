@@ -418,12 +418,12 @@ namespace MonoDevelop.XmlEditor
 		
 		#region Smart indent
 		
-		public override bool KeyPress (Gdk.Key key, Gdk.ModifierType modifier)
+		public override bool KeyPress (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
 		{
 			bool result;
 			
-			if ((char)(uint)key == '>' && autoCompleteElements) {
-				result = base.KeyPress (key, modifier);
+			if (keyChar == '>' && autoCompleteElements) {
+				result = base.KeyPress (key, keyChar, modifier);
 				string autoClose = ClosingBracketCompletionDataProvider.GetAutoCloseElement (GetBuffer ());
 				if (autoClose != null) {
 					Editor.InsertText (Editor.CursorPosition, autoClose);
@@ -433,11 +433,11 @@ namespace MonoDevelop.XmlEditor
 			}
 			
 			if (TextEditorProperties.IndentStyle == IndentStyle.Smart && key == Gdk.Key.Return) {
-				result = base.KeyPress (key, modifier);
+				result = base.KeyPress (key, keyChar, modifier);
 				SmartIndentLine (Editor.CursorLine);
 				return result;
 			}
-			return base.KeyPress (key, modifier);
+			return base.KeyPress (key, keyChar, modifier);
 		}
 		
 		void SmartIndentLine (int line)

@@ -189,9 +189,9 @@ namespace CSharpBinding
 			base.TextChanged (startIndex, endIndex);
 		}
 		
-		public override bool KeyPress (Gdk.Key key, Gdk.ModifierType modifier)
+		public override bool KeyPress (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
 		{
-			if ((char)(uint)key == ',') {
+			if (keyChar == ',') {
 				// Parameter completion
 				if (CanRunParameterCompletionCommand ())
 					RunParameterCompletionCommand ();
@@ -209,13 +209,12 @@ namespace CSharpBinding
 				bool hadSelection = Editor.SelectionEndPosition != Editor.SelectionStartPosition;
 				
 				//pass through to the base class, which actually inserts the character
-				bool retval = base.KeyPress (key, modifier);
+				bool retval = base.KeyPress (key, keyChar, modifier);
 				UpdateSmartIndentEngine ();
 				
 				//handle inserted characters
 				bool reIndent = false;
-				char lastCharInserted = KeyToChar (key);
-				//System.Console.WriteLine (lastCharInserted);
+				char lastCharInserted = TranslateKeyCharForIndenter (key, keyChar, Editor.GetCharAt (Editor.CursorPosition - 1));
 				if (!(oldLine == Editor.CursorLine && lastCharInserted == '\n') && (oldBufLen != Editor.TextLength || lastCharInserted != '\0'))
 					DoPostInsertionSmartIndent (lastCharInserted, hadSelection, out reIndent);
 				
@@ -227,20 +226,24 @@ namespace CSharpBinding
 					DoReSmartIndent ();
 				return retval;
 			}
-			return base.KeyPress (key, modifier);
+			return base.KeyPress (key, keyChar, modifier);
 		}
 		
-		char KeyToChar (Gdk.Key key)
+		static char TranslateKeyCharForIndenter (Gdk.Key key, char keyChar, char docChar)
 		{
+			char c = keyChar;
 			switch (key) {
+			case Gdk.Key.Return:
+			case Gdk.Key.KP_Enter:
+				return '\n';
 			case Gdk.Key.Tab:
 				return '\t';
-			case Gdk.Key.KP_Enter:
-			case Gdk.Key.Return:
-				return '\n';
 			default:
-				return (char) Gdk.Keyval.ToUnicode ((uint)key);
+				if (docChar == keyChar)
+					return keyChar;
+				break;
 			}
+			return '\0';
 		}
 		
 		void ResetSmartIndentEngineToCursor (int cursor)

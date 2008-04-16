@@ -44,7 +44,7 @@ namespace MonoDevelop.Ide.Gui.Content
 		
 		// When a key is pressed, and before the key is processed by the editor, this method will be invoked.
 		// Return true if the key press should be processed by the editor.
-		public override bool KeyPress (Gdk.Key key, Gdk.ModifierType modifier)
+		public override bool KeyPress (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
 		{
 			bool res;
 			
@@ -63,7 +63,7 @@ namespace MonoDevelop.Ide.Gui.Content
 				autoHideCompletionWindow = false;
 			}
 			
-			res = base.KeyPress (key, modifier);
+			res = base.KeyPress (key, keyChar, modifier);
 
 			// Handle code completion
 			
@@ -71,13 +71,13 @@ namespace MonoDevelop.Ide.Gui.Content
 				currentCompletionContext = completionWidget.CreateCodeCompletionContext (Editor.CursorPosition);
 				
 				int triggerWordLength = currentCompletionContext.TriggerWordLength;
-				ICompletionDataProvider cp = HandleCodeCompletion (currentCompletionContext, (char)(uint)key, ref triggerWordLength);
+				ICompletionDataProvider cp = HandleCodeCompletion (currentCompletionContext, keyChar, ref triggerWordLength);
 				if (triggerWordLength > 0 && triggerWordLength < Editor.CursorPosition) {
 					currentCompletionContext = completionWidget.CreateCodeCompletionContext (Editor.CursorPosition - triggerWordLength);	
 					currentCompletionContext.TriggerWordLength = triggerWordLength;
 				}
 				if (cp != null)
-					CompletionWindowManager.ShowWindow ((char)(uint)key, cp, completionWidget, currentCompletionContext, OnCompletionWindowClosed);
+					CompletionWindowManager.ShowWindow (keyChar, cp, completionWidget, currentCompletionContext, OnCompletionWindowClosed);
 				else
 					currentCompletionContext = null;
 			}
@@ -89,7 +89,7 @@ namespace MonoDevelop.Ide.Gui.Content
 
 			if (completionWidget != null) {
 				ICodeCompletionContext ctx = completionWidget.CreateCodeCompletionContext (Editor.CursorPosition);
-				IParameterDataProvider paramProvider = HandleParameterCompletion (ctx, (char)(uint)key);
+				IParameterDataProvider paramProvider = HandleParameterCompletion (ctx, keyChar);
 				if (paramProvider != null)
 					ParameterInformationWindowManager.ShowWindow (ctx, paramProvider);
 			}

@@ -99,14 +99,14 @@ namespace MonoDevelop.Ide.Gui.Content
 		
 		// When a key is pressed, and before the key is processed by the editor, this method will be invoked.
 		// Return true if the key press should be processed by the editor.
-		public virtual bool KeyPress (Gdk.Key key, Gdk.ModifierType modifier)
+		public virtual bool KeyPress (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
 		{
 			CheckInitialized ();
 			
 			if (Next == null)
 				return true;
 			else
-				return Next.KeyPress (key, modifier);
+				return Next.KeyPress (key, keyChar, modifier);
 		}
 		
 		public virtual void CursorPositionChanged ()
@@ -159,7 +159,7 @@ namespace MonoDevelop.Ide.Gui.Content
 	
 	public interface ITextEditorExtension
 	{
-		bool KeyPress (Gdk.Key key, Gdk.ModifierType modifier);
+		bool KeyPress (Gdk.Key key, char keyChar, Gdk.ModifierType modifier);
 		void CursorPositionChanged ();
 		void TextChanged (int startIndex, int endIndex);
 		

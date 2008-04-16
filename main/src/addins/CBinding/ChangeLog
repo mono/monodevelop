@@ -1,3 +1,7 @@
+2008-04-16  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* Gui/CTextEditorExtension.cs: Track API change.
+
 2008-04-13  Marcos David Marín Amador <MarcosMarin@gmail.com> 
 
 	* Parser/TagDatabaseManager.cs: Fixed bug that prevented system tags from

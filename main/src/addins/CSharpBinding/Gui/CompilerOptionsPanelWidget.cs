@@ -66,7 +66,7 @@ namespace CSharpBinding
 			classListStore = new ListStore (typeof(string));
 			mainClassEntry.Model = classListStore;
 			mainClassEntry.TextColumn = 0;
-			((Entry)mainClassEntry.Child).Text = compilerParameters.MainClass;
+			((Entry)mainClassEntry.Child).Text = compilerParameters.MainClass ?? string.Empty;
 			
 			UpdateTarget ();
 			

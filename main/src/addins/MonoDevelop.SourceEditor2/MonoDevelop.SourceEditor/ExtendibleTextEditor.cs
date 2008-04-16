@@ -127,7 +127,7 @@ namespace MonoDevelop.SourceEditor
 		protected override bool OnKeyPressEvent (Gdk.EventKey evnt)
 		{
 			bool result = true;
-			char ch = (char)evnt.Key;
+			char ch = (char)Gdk.Keyval.ToUnicode (evnt.KeyValue);
 			
 			// Handle keyboard menu popup
 			if (evnt.Key == Gdk.Key.Menu || (evnt.Key == Gdk.Key.F10 && (evnt.State & Gdk.ModifierType.ShiftMask) == Gdk.ModifierType.ShiftMask)) {
@@ -146,7 +146,7 @@ namespace MonoDevelop.SourceEditor
 				return true;
 			}
 			if (evnt.Key == Gdk.Key.Escape) {
-				bool b = extension.KeyPress (evnt.Key, evnt.State);
+				bool b = extension.KeyPress (evnt.Key, ch, evnt.State);
 				if (b) {
 					view.SourceEditorWidget.RemoveSearchWidget ();
 					return true;
@@ -168,7 +168,7 @@ namespace MonoDevelop.SourceEditor
 			}
 			Document.BeginAtomicUndo ();
 			if (extension != null) {
-				if (extension.KeyPress (evnt.Key, evnt.State)) 
+				if (extension.KeyPress (evnt.Key, ch, evnt.State)) 
 					result = base.OnKeyPressEvent (evnt);
 			} else {
 				result = base.OnKeyPressEvent (evnt);
@@ -181,10 +181,10 @@ namespace MonoDevelop.SourceEditor
 				case '{':
 					if (extension != null) {
 						int offset = Caret.Offset;
-						extension.KeyPress (Gdk.Key.Return, Gdk.ModifierType.None);
-						extension.KeyPress ((Gdk.Key)'}', Gdk.ModifierType.None);
+						extension.KeyPress (Gdk.Key.Return, (char)0, Gdk.ModifierType.None);
+						extension.KeyPress (Gdk.Key.braceright, '}', Gdk.ModifierType.None);
 						Caret.Offset = offset;
-						extension.KeyPress (Gdk.Key.Return, Gdk.ModifierType.None);
+						extension.KeyPress (Gdk.Key.Return, (char)0, Gdk.ModifierType.None);
 					} else {
 						result = base.OnKeyPressEvent (evnt);
 						base.SimulateKeyPress (Gdk.Key.Return, 0, Gdk.ModifierType.None);

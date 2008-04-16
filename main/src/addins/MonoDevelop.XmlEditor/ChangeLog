@@ -1,3 +1,8 @@
+2008-04-16  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.XmlEditor/XmlTextEditorExtension.cs: Track API change.
+	  Remove char code translation hack.
+
 2008-04-11  Michael Hutchinson <mhutchinson@novell.com>
 
 	* Makefile.am: Depend on MonoDevelop.SourceEditor2.dll; its build number 

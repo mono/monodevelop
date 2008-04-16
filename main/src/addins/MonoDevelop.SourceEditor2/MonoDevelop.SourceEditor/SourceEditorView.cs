@@ -45,7 +45,9 @@ using MonoDevelop.DesignerSupport.Toolbox;
 
 namespace MonoDevelop.SourceEditor
 {	
-	public class SourceEditorView : AbstractViewContent, IExtensibleTextEditor, IBookmarkBuffer, IClipboardHandler, ICompletionWidget, IDocumentInformation, ICodeStyleOperations, ISplittable, IFoldable, IToolboxDynamicProvider, IToolboxConsumer, IZoomable
+	public class SourceEditorView : AbstractViewContent, IExtensibleTextEditor, IBookmarkBuffer, IClipboardHandler, 
+		ICompletionWidget, IDocumentInformation, ICodeStyleOperations, ISplittable, IFoldable, IToolboxDynamicProvider, 
+		IToolboxConsumer, IZoomable
 #if GNOME_PRINT
 		, IPrintable
 #endif

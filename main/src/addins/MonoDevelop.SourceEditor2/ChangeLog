@@ -1,3 +1,11 @@
+2008-04-16  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.SourceEditor/SourceEditorWidget.cs,
+	  MonoDevelop.SourceEditor/ExtendibleTextEditor.cs: Track API change.
+	  Remove char code translation hack.
+	* MonoDevelop.SourceEditor/SourceEditorView.cs: Break up overly long
+	  line.
+
 2008-04-16  Mike Krüger <mkrueger@novell.com> 
 
 	* gtk-gui/MonoDevelop.SourceEditor.SearchAndReplaceWidget.cs,

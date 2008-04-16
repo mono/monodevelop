@@ -94,11 +94,11 @@ namespace MonoDevelop.SourceEditor
 		{
 		}
 
-		bool ITextEditorExtension.KeyPress (Gdk.Key key, Gdk.ModifierType modifier)
+		bool ITextEditorExtension.KeyPress (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
 		{
 			if (key == Gdk.Key.Escape)
 				return true;
-			this.TextEditor.SimulateKeyPress (key, Gdk.Keyval.ToUnicode ((uint)key), modifier);
+			this.TextEditor.SimulateKeyPress (key, (uint)keyChar, modifier);
 			return false;
 		}
 		#endregion

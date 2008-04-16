@@ -78,7 +78,7 @@ namespace CBinding
 			        (0 <= Array.IndexOf(CProject.SourceExtensions, Path.GetExtension(doc.Title).ToUpper ())));
 		}
 		
-		public override bool KeyPress (Gdk.Key key, Gdk.ModifierType modifier)
+		public override bool KeyPress (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
 		{
 			int line, column;
 			Editor.GetLineColumnFromPosition (Editor.CursorPosition, out line, out column);
@@ -101,7 +101,7 @@ namespace CBinding
 				}
 			}
 			
-			return base.KeyPress (key, modifier);
+			return base.KeyPress (key, keyChar, modifier);
 		}
 		
 		public override ICompletionDataProvider HandleCodeCompletion (
