@@ -1,4 +1,4 @@
-<Project name="MonoDevelop.Ide" fileversion="2.0" language="C#" clr-version="Net_2_0" ctype="DotNetProject">
+<Project name="MonoDevelop.Ide" fileversion="2.0" UseParentDirectoryAsNamespace="True" language="C#" clr-version="Net_2_0" ctype="DotNetProject">
   <Configurations active="Debug">
     <Configuration name="Debug" ctype="DotNetProjectConfiguration">
       <Output directory="../../../build/bin" assembly="MonoDevelop.Ide" />
@@ -383,6 +383,7 @@
     <File name="icons/navigate-previous-16.png" subtype="Code" buildaction="EmbedAsResource" />
     <File name="icons/navigate-previous-24.png" subtype="Code" buildaction="EmbedAsResource" />
     <File name="MonoDevelop.Ide.Dom/DomLocation.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Ide.Gui.Content/DocumentStateTracker.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="False" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />

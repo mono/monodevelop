@@ -33,7 +33,7 @@ using MonoDevelop.Ide.Gui.Content;
 using CSharpBinding.FormattingStrategy.Properties;
 
 namespace CSharpBinding.FormattingStrategy {
-	public partial class CSharpIndentEngine : ICloneable {
+	public partial class CSharpIndentEngine : ICloneable, IDocumentStateEngine {
 		IndentStack stack;
 		
 		// Ponder: should linebuf be dropped in favor of a
@@ -78,7 +78,7 @@ namespace CSharpBinding.FormattingStrategy {
 		}
 		
 		// Properties
-		public int Cursor {
+		public int Position {
 			get { return cursor; }
 		}
 		

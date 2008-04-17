@@ -1,3 +1,11 @@
+2008-04-17  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* FormattingStrategy/CSharpIndentEngine.cs: Implement
+	  IDocumentStateEngine so that state tracking logic can be moved into
+	  MonoDevelop.Ide.
+	* Gui/CSharpTextEditorExtension.cs: Move state tracking logic into
+	  MonoDevelop.Ide. Tidy some things into regions.
+
 2008-04-17  Marek Safar <marek.safar@gmail.com>
 
 	* Parser/mcs/**

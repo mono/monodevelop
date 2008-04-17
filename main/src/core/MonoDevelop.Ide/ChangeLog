@@ -1,3 +1,9 @@
+2008-04-17  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Ide.Gui.Content/DocumentStateTracker.cs: Move document
+	  state tracking logic from CSharpBinding to MonoDevelop.Ide.
+	* Makefile.am, MonoDevelop.Ide.mdp: Updated.
+
 2008-04-16  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Ide.Gui.Content/CompletionTextEditorExtension.cs: Track
