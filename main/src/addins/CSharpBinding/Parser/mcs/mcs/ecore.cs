@@ -590,6 +590,12 @@ namespace Mono.CSharp {
 			ec.ig.Emit (on_true ? OpCodes.Brtrue : OpCodes.Brfalse, target);
 		}
 
+		public virtual void EmitSideEffect (EmitContext ec)
+		{
+			Emit (ec);
+			ec.ig.Emit (OpCodes.Pop);
+		}
+
 		/// <summary>
 		///   Protected constructor.  Only derivate types should
 		///   be able to be created
@@ -1302,6 +1308,11 @@ namespace Mono.CSharp {
 		///   Emit that will always leave a value on the stack).
 		/// </summary>
 		public abstract void EmitStatement (EmitContext ec);
+
+		public override void EmitSideEffect (EmitContext ec)
+		{
+			EmitStatement (ec);
+		}
 	}
 
 	/// <summary>
@@ -1316,25 +1327,16 @@ namespace Mono.CSharp {
 	///   would be "unsigned int".
 	///
 	/// </summary>
-	public class EmptyCast : Expression
+	public abstract class TypeCast : Expression
 	{
 		protected Expression child;
 
-		protected EmptyCast (Expression child, Type return_type)
+		protected TypeCast (Expression child, Type return_type)
 		{
 			eclass = child.eclass;
 			loc = child.Location;
 			type = return_type;
 			this.child = child;
-		}
-		
-		public static Expression Create (Expression child, Type type)
-		{
-			Constant c = child as Constant;
-			if (c != null)
-				return new EmptyConstantCast (c, type);
-
-			return new EmptyCast (child, type);
 		}
 
 		public override Expression CreateExpressionTree (EmitContext ec)
@@ -1365,16 +1367,43 @@ namespace Mono.CSharp {
 
 		protected override void CloneTo (CloneContext clonectx, Expression t)
 		{
-			EmptyCast target = (EmptyCast) t;
+			TypeCast target = (TypeCast) t;
 
 			target.child = child.Clone (clonectx);
 		}
 	}
 
+	public class EmptyCast : TypeCast {
+		EmptyCast (Expression child, Type target_type)
+			: base (child, target_type)
+		{
+		}
+		
+		public static Expression Create (Expression child, Type type)
+		{
+			Constant c = child as Constant;
+			if (c != null)
+				return new EmptyConstantCast (c, type);
+
+			return new EmptyCast (child, type);
+		}
+
+		public override void EmitBranchable (EmitContext ec, Label label, bool on_true)
+		{
+			child.EmitBranchable (ec, label, on_true);
+		}
+
+		public override void EmitSideEffect (EmitContext ec)
+		{
+			child.EmitSideEffect (ec);
+		}
+
+	}
+
 	/// <summary>
 	///    Performs a cast using an operator (op_Explicit or op_Implicit)
 	/// </summary>
-	public class OperatorCast : EmptyCast {
+	public class OperatorCast : TypeCast {
 		MethodInfo conversion_operator;
 		bool find_explicit;
 			
@@ -1431,7 +1460,7 @@ namespace Mono.CSharp {
 	/// <summary>
 	/// 	This is a numeric cast to a Decimal
 	/// </summary>
-	public class CastToDecimal : EmptyCast {
+	public class CastToDecimal : TypeCast {
 		MethodInfo conversion_operator;
 
 		public CastToDecimal (Expression child)
@@ -1478,7 +1507,7 @@ namespace Mono.CSharp {
 	/// <summary>
 	/// 	This is an explicit numeric cast from a Decimal
 	/// </summary>
-	public class CastFromDecimal : EmptyCast
+	public class CastFromDecimal : TypeCast
 	{
 		static IDictionary operators;
 
@@ -1587,6 +1616,16 @@ namespace Mono.CSharp {
 			child.Emit (ec);
 		}
 
+		public override void EmitBranchable (EmitContext ec, Label label, bool on_true)
+		{
+			child.EmitBranchable (ec, label, on_true);
+		}
+
+		public override void EmitSideEffect (EmitContext ec)
+		{
+			child.EmitSideEffect (ec);
+		}
+
 		public override Constant ConvertImplicitly (Type target_type)
 		{
 			// FIXME: Do we need to check user conversions?
@@ -1622,6 +1661,16 @@ namespace Mono.CSharp {
 		public override void Emit (EmitContext ec)
 		{
 			Child.Emit (ec);
+		}
+
+		public override void EmitBranchable (EmitContext ec, Label label, bool on_true)
+		{
+			Child.EmitBranchable (ec, label, on_true);
+		}
+
+		public override void EmitSideEffect (EmitContext ec)
+		{
+			Child.EmitSideEffect (ec);
 		}
 
 		public override bool GetAttributableValue (Type value_type, out object value)
@@ -1715,7 +1764,7 @@ namespace Mono.CSharp {
 	///   The effect of it is to box the value type emitted by the previous
 	///   operation.
 	/// </summary>
-	public class BoxedCast : EmptyCast {
+	public class BoxedCast : TypeCast {
 
 		public BoxedCast (Expression expr, Type target_type)
 			: base (expr, target_type)
@@ -1737,9 +1786,20 @@ namespace Mono.CSharp {
 			
 			ec.ig.Emit (OpCodes.Box, child.Type);
 		}
+
+		public override void EmitSideEffect (EmitContext ec)
+		{
+			// boxing is side-effectful, since it involves runtime checks, except when boxing to Object or ValueType
+			// so, we need to emit the box+pop instructions in most cases
+			if (child.Type.IsValueType &&
+			    (type == TypeManager.object_type || type == TypeManager.value_type))
+				child.EmitSideEffect (ec);
+			else
+				base.EmitSideEffect (ec);
+		}
 	}
 
-	public class UnboxCast : EmptyCast {
+	public class UnboxCast : TypeCast {
 		public UnboxCast (Expression expr, Type return_type)
 			: base (expr, return_type)
 		{
@@ -1786,7 +1846,7 @@ namespace Mono.CSharp {
 	///   context, so they should generate the conv.ovf opcodes instead of
 	///   conv opcodes.
 	/// </summary>
-	public class ConvCast : EmptyCast {
+	public class ConvCast : TypeCast {
 		public enum Mode : byte {
 			I1_U1, I1_U2, I1_U4, I1_U8, I1_CH,
 			U1_I1, U1_CH,
@@ -1994,7 +2054,7 @@ namespace Mono.CSharp {
 		}
 	}
 	
-	public class OpcodeCast : EmptyCast {
+	public class OpcodeCast : TypeCast {
 		OpCode op, op2;
 		bool second_valid;
 		
@@ -2041,7 +2101,7 @@ namespace Mono.CSharp {
 	///   This kind of cast is used to encapsulate a child and cast it
 	///   to the class requested
 	/// </summary>
-	public class ClassCast : EmptyCast {
+	public class ClassCast : TypeCast {
 		public ClassCast (Expression child, Type return_type)
 			: base (child, return_type)
 			
@@ -2185,37 +2245,67 @@ namespace Mono.CSharp {
 			expr.EmitBranchable (ec, target, on_true);
 		}
 	}
+
+	//
+	// Unresolved type name expressions
+	//
+	public abstract class ATypeNameExpression : Expression
+	{
+		public readonly string Name;
+		protected TypeArguments targs;
+
+		protected ATypeNameExpression (string name, Location l)
+		{
+			Name = name;
+			loc = l;
+		}
+
+		protected ATypeNameExpression (string name, TypeArguments targs, Location l)
+		{
+			Name = name;
+			this.targs = targs;
+			loc = l;
+		}
+
+		public override void Emit (EmitContext ec)
+		{
+			throw new InternalErrorException ("ATypeNameExpression found in resolved tree");
+		}
+
+		public override string GetSignatureForError ()
+		{
+			if (targs != null) {
+				return TypeManager.RemoveGenericArity (Name) + "<" +
+					targs.GetSignatureForError () + ">";
+			}
+
+			return Name;
+		}
+	}
 	
 	/// <summary>
 	///   SimpleName expressions are formed of a single word and only happen at the beginning 
 	///   of a dotted-name.
 	/// </summary>
-	public class SimpleName : Expression {
-		public readonly string Name;
-		public readonly TypeArguments Arguments;
+	public class SimpleName : ATypeNameExpression {
 		bool in_transit;
 
 		public SimpleName (string name, Location l)
+			: base (name, l)
 		{
-			Name = name;
-			loc = l;
 		}
 
 		public SimpleName (string name, TypeArguments args, Location l)
+			: base (name, args, l)
 		{
-			Name = name;
-			Arguments = args;
-			loc = l;
 		}
 
 		public SimpleName (string name, TypeParameter[] type_params, Location l)
+			: base (name, l)
 		{
-			Name = name;
-			loc = l;
-
-			Arguments = new TypeArguments (l);
+			targs = new TypeArguments (l);
 			foreach (TypeParameter type_param in type_params)
-				Arguments.Add (new TypeParameterExpr (type_param, l));
+				targs.Add (new TypeParameterExpr (type_param, l));
 		}
 
 		public static string RemoveGenericArity (string name)
@@ -2248,7 +2338,7 @@ namespace Mono.CSharp {
 
 		public SimpleName GetMethodGroup ()
 		{
-			return new SimpleName (RemoveGenericArity (Name), Arguments, loc);
+			return new SimpleName (RemoveGenericArity (Name), targs, loc);
 		}
 
 		public static void Error_ObjectRefRequired (EmitContext ec, Location l, string name)
@@ -2312,7 +2402,7 @@ namespace Mono.CSharp {
 
 			Type[] gen_params = TypeManager.GetTypeArguments (t);
 
-			int arg_count = Arguments != null ? Arguments.Count : 0;
+			int arg_count = targs != null ? targs.Count : 0;
 
 			for (; (ds != null) && ds.IsGeneric; ds = ds.Parent) {
 				if (arg_count + ds.CountTypeParameters == gen_params.Length) {
@@ -2320,8 +2410,8 @@ namespace Mono.CSharp {
 					foreach (TypeParameter param in ds.TypeParameters)
 						new_args.Add (new TypeParameterExpr (param, loc));
 
-					if (Arguments != null)
-						new_args.Add (Arguments);
+					if (targs != null)
+						new_args.Add (targs);
 
 					return new ConstructedType (t, new_args, loc);
 				}
@@ -2347,8 +2437,8 @@ namespace Mono.CSharp {
 				if (nested != null)
 					return nested.ResolveAsTypeStep (ec, false);
 
-				if (Arguments != null) {
-					ConstructedType ct = new ConstructedType (fne, Arguments, loc);
+				if (targs != null) {
+					ConstructedType ct = new ConstructedType (fne, targs, loc);
 					return ct.ResolveAsTypeStep (ec, false);
 				}
 
@@ -2387,7 +2477,7 @@ namespace Mono.CSharp {
 				return;
 			}
 
-			if (Arguments != null) {
+			if (targs != null) {
 				FullNamedExpression retval = ec.DeclContainer.LookupNamespaceOrType (SimpleName.RemoveGenericArity (Name), loc, true);
 				if (retval != null) {
 					Namespace.Error_TypeArgumentsCannotBeUsed (retval.Type, loc);
@@ -2464,7 +2554,7 @@ namespace Mono.CSharp {
 			if (current_block != null){
 				LocalInfo vi = current_block.GetLocalInfo (Name);
 				if (vi != null){
-					if (Arguments != null) {
+					if (targs != null) {
 						Report.Error (307, loc,
 							      "The variable `{0}' cannot be used with type arguments",
 							      Name);
@@ -2484,7 +2574,7 @@ namespace Mono.CSharp {
 
 				ParameterReference pref = current_block.Toplevel.GetParameterReference (Name, loc);
 				if (pref != null) {
-					if (Arguments != null) {
+					if (targs != null) {
 						Report.Error (307, loc,
 							      "The variable `{0}' cannot be used with type arguments",
 							      Name);
@@ -2570,11 +2660,11 @@ namespace Mono.CSharp {
 			}
 
 			if (e is TypeExpr) {
-				if (Arguments == null)
+				if (targs == null)
 					return e;
 
 				ConstructedType ct = new ConstructedType (
-					(FullNamedExpression) e, Arguments, loc);
+					(FullNamedExpression) e, targs, loc);
 				return ct.ResolveAsTypeStep (ec, false);
 			}
 
@@ -2612,9 +2702,9 @@ namespace Mono.CSharp {
 				if (me == null)
 					return null;
 
-				if (Arguments != null) {
-					Arguments.Resolve (ec);
-					me.SetTypeArguments (Arguments);
+				if (targs != null) {
+					targs.Resolve (ec);
+					me.SetTypeArguments (targs);
 				}
 
 				if (!me.IsStatic && (me.InstanceExpression != null) &&
@@ -2635,26 +2725,6 @@ namespace Mono.CSharp {
 			return e;
 		}
 		
-		public override void Emit (EmitContext ec)
-		{
-			throw new InternalErrorException ("The resolve phase was not executed");
-		}
-
-		public override string ToString ()
-		{
-			return Name;
-		}
-
-		public override string GetSignatureForError ()
-		{
-			if (Arguments != null) {
-				return TypeManager.RemoveGenericArity (Name) + "<" +
-					Arguments.GetSignatureForError () + ">";
-			}
-
-			return Name;
-		}
-
 		protected override void CloneTo (CloneContext clonectx, Expression target)
 		{
 			// CloneTo: Nothing, we do not keep any state on this expression
@@ -2980,11 +3050,11 @@ namespace Mono.CSharp {
 		}
 
 		public override string Name {
-			get { return name.FullName; }
+			get { return name.PrettyName; }
 		}
 
 		public override string FullName {
-			get { return name.FullName; }
+			get { return name.FullyQualifiedName; }
 		}
 	}
 
@@ -4852,9 +4922,14 @@ namespace Mono.CSharp {
 			return this;
 		}
 
+		bool is_marshal_by_ref ()
+		{
+			return !IsStatic && Type.IsValueType && TypeManager.mbr_type != null && TypeManager.IsSubclassOf (DeclaringType, TypeManager.mbr_type);
+		}
+
 		public override void CheckMarshalByRefAccess (EmitContext ec)
 		{
-			if (!IsStatic && Type.IsValueType && !(InstanceExpression is This) && TypeManager.mbr_type != null && TypeManager.IsSubclassOf (DeclaringType, TypeManager.mbr_type)) {
+			if (is_marshal_by_ref () && !(InstanceExpression is This)) {
 				Report.SymbolRelatedToPreviousError (DeclaringType);
 				Report.Warning (1690, 1, loc, "Cannot call methods, properties, or indexers on `{0}' because it is a value type member of a marshal-by-reference class",
 						GetSignatureForError ());
@@ -4982,6 +5057,15 @@ namespace Mono.CSharp {
 		public override void Emit (EmitContext ec)
 		{
 			Emit (ec, false);
+		}
+
+		public override void EmitSideEffect (EmitContext ec)
+		{
+			FieldBase f = TypeManager.GetField (FieldInfo);
+			bool is_volatile = f != null && (f.ModFlags & Modifiers.VOLATILE) != 0;
+
+			if (is_volatile || is_marshal_by_ref ())
+				base.EmitSideEffect (ec);
 		}
 
 		public void AddressOf (EmitContext ec, AddressOp mode)

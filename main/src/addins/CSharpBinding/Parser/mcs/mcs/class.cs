@@ -249,7 +249,7 @@ namespace Mono.CSharp {
 		TypeExpr[] iface_exprs;
 		Type GenericType;
 
-		ArrayList type_bases;
+		protected ArrayList type_bases;
 
 		bool members_resolved;
 		bool members_resolved_ok;
@@ -358,20 +358,6 @@ namespace Mono.CSharp {
 				Report.Error (262, next_part.Location,
 					"Partial declarations of `{0}' have conflicting accessibility modifiers",
 					next_part.GetSignatureForError ());
-			}
-
-			if (tc.MemberName.IsGeneric) {
-				TypeParameter[] tc_names = tc.TypeParameters;
-				TypeParameterName[] part_names = next_part.MemberName.TypeArguments.GetDeclarations ();
-
-				for (int i = 0; i < tc_names.Length; ++i) {
-					if (tc_names[i].Name == part_names[i].Name)
-						continue;
-
-					Report.SymbolRelatedToPreviousError (part_names[i].Location, "");
-					Report.Error (264, tc.Location, "Partial declarations of `{0}' must have the same type parameter names in the same order",
-						tc.GetSignatureForError ());
-				}
 			}
 
 			if (tc.partial_parts == null)
@@ -633,16 +619,6 @@ namespace Mono.CSharp {
 				return TypeBuilder.BaseType;
 			}
 		}
-		
-		public ArrayList Bases {
-			get {
-				return type_bases;
-			}
-
-			set {
-				type_bases = value;
-			}
-		}
 
 		public ArrayList Fields {
 			get {
@@ -845,20 +821,20 @@ namespace Mono.CSharp {
 		{
 			// FIXME: get rid of partial_parts and store lists of bases of each part here
 			// assumed, not verified: 'part' is in 'partial_parts' 
-			((TypeContainer) part).Bases = bases;
+			((TypeContainer) part).type_bases = bases;
 		}
 
 		TypeExpr[] GetNormalBases (out TypeExpr base_class)
 		{
 			base_class = null;
-			if (Bases == null)
+			if (type_bases == null)
 				return null;
 
-			int count = Bases.Count;
+			int count = type_bases.Count;
 			int start = 0, i, j;
 
 			if (Kind == Kind.Class){
-				TypeExpr name = ((Expression) Bases [0]).ResolveAsBaseTerminal (this, false);
+				TypeExpr name = ((Expression) type_bases [0]).ResolveAsBaseTerminal (this, false);
 
 				if (name == null){
 					return null;
@@ -875,7 +851,7 @@ namespace Mono.CSharp {
 			TypeExpr [] ifaces = new TypeExpr [count-start];
 			
 			for (i = start, j = 0; i < count; i++, j++){
-				TypeExpr resolved = ((Expression) Bases [i]).ResolveAsBaseTerminal (this, false);
+				TypeExpr resolved = ((Expression) type_bases [i]).ResolveAsBaseTerminal (this, false);
 				if (resolved == null) {
 					return null;
 				}
@@ -1279,47 +1255,40 @@ namespace Mono.CSharp {
 			return true;
 		}
 
-		Constraints [] constraints;
 		public override void SetParameterInfo (ArrayList constraints_list)
 		{
-			if (PartialContainer == this) {
-				base.SetParameterInfo (constraints_list);
-				return;
-			}
+			base.SetParameterInfo (constraints_list);
 
-			if (constraints_list == null)
+			if (!is_generic || PartialContainer == this)
 				return;
 
-			constraints = new Constraints [PartialContainer.CountCurrentTypeParameters];
-
-			TypeParameter[] current_params = PartialContainer.CurrentTypeParameters;
-			for (int i = 0; i < constraints.Length; i++) {
-				foreach (Constraints constraint in constraints_list) {
-					if (constraint.TypeParameter == current_params [i].Name) {
-						constraints [i] = constraint;
-						break;
-					}
+			TypeParameter[] tc_names = PartialContainer.TypeParameters;
+			for (int i = 0; i < tc_names.Length; ++i) {
+				if (tc_names [i].Name != type_params [i].Name) {
+					Report.SymbolRelatedToPreviousError (PartialContainer.Location, "");
+					Report.Error (264, Location, "Partial declarations of `{0}' must have the same type parameter names in the same order",
+						GetSignatureForError ());
+					break;
 				}
 			}
 		}
 
-		bool UpdateTypeParameterConstraints ()
+		void UpdateTypeParameterConstraints (TypeContainer part)
 		{
-			if (constraints == null)
-				return true;
-
-			TypeParameter[] current_params = PartialContainer.CurrentTypeParameters;
+			TypeParameter[] current_params = CurrentTypeParameters;
 			for (int i = 0; i < current_params.Length; i++) {
-				if (!current_params [i].UpdateConstraints (this, constraints [i])) {
-					Report.SymbolRelatedToPreviousError (Location, "");
-					Report.Error (265, PartialContainer.Location,
-						"Partial declarations of `{0}' have inconsistent constraints for type parameter `{1}'",
-						PartialContainer.GetSignatureForError (), current_params [i].Name);
-					return false;
-				}
-			}
+				Constraints c = part.CurrentTypeParameters [i].Constraints;
+				if (c == null)
+					continue;
 
-			return true;
+				if (current_params [i].UpdateConstraints (part, c))
+					continue;
+
+				Report.SymbolRelatedToPreviousError (Location, "");
+				Report.Error (265, part.Location,
+					"Partial declarations of `{0}' have inconsistent constraints for type parameter `{1}'",
+					GetSignatureForError (), current_params [i].GetSignatureForError ());
+			}
 		}
 
 		public bool ResolveType ()
@@ -1359,13 +1328,9 @@ namespace Mono.CSharp {
 				}
 			}
 
-			if (partial_parts != null) {
-				foreach (TypeContainer part in partial_parts) {
-					if (!part.UpdateTypeParameterConstraints ()) {
-						error = true;
-						return false;
-					}
-				}
+			if (partial_parts != null && is_generic) {
+				foreach (TypeContainer part in partial_parts)
+					UpdateTypeParameterConstraints (part);
 			}
 
 			foreach (TypeParameter type_param in TypeParameters) {
@@ -3045,11 +3010,6 @@ namespace Mono.CSharp {
 						689, base_class.Location,
 						"Cannot derive from `{0}' because it is a type parameter",
 						base_class.GetSignatureForError ());
-					return ifaces;
-				}
-
-				if (base_class.Type.IsArray || base_class.Type.IsPointer) {
-					Report.Error (1521, base_class.Location, "Invalid base type");
 					return ifaces;
 				}
 
@@ -8223,7 +8183,8 @@ namespace Mono.CSharp {
 		{
 			StringBuilder sb = new StringBuilder ();
 			if (OperatorType == OpType.Implicit || OperatorType == OpType.Explicit) {
-				sb.AppendFormat ("{0}.{1} operator {2}", Parent.GetSignatureForError (), GetName (OperatorType), Type.Type == null ? Type.ToString () : TypeManager.CSharpName (Type.Type));
+				sb.AppendFormat ("{0}.{1} operator {2}",
+					Parent.GetSignatureForError (), GetName (OperatorType), Type.GetSignatureForError ());
 			}
 			else {
 				sb.AppendFormat ("{0}.operator {1}", Parent.GetSignatureForError (), GetName (OperatorType));

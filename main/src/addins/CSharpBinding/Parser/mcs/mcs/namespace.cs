@@ -587,18 +587,17 @@ namespace Mono.CSharp {
 				return name.GetSignatureForError ();
 			}
 
-			public string GetTypeName ()
-			{
-				return name.GetTypeName ();
-			}
-
 			public Location Location {
 				get { return name.Location; }
 			}
+
+			public MemberName MemberName {
+				get { return name; }
+			}
 			
 			public string Name {
-				get { return name.FullName; }
-			}			
+				get { return GetSignatureForError (); }
+			}
 
 			public Namespace Resolve (IResolveContext rc)
 			{
@@ -691,7 +690,7 @@ namespace Mono.CSharp {
 			#region INamespaceImportAlias Members
 
 			public override string Value {
-				get { return value.FullName; }
+				get { return value.GetSignatureForError (); }
 			}
 
 			#endregion
@@ -793,7 +792,7 @@ namespace Mono.CSharp {
 				using_clauses = new ArrayList ();
 			} else {
 				foreach (UsingEntry old_entry in using_clauses) {
-					if (name.FullName == old_entry.Name) {
+					if (name.Equals (old_entry.MemberName)) {
 						Report.SymbolRelatedToPreviousError (old_entry.Location, old_entry.GetSignatureForError ());
 						Report.Warning (105, 3, loc, "The using directive for `{0}' appeared previously in this namespace", name.GetSignatureForError ());
 						return;
@@ -1020,7 +1019,7 @@ namespace Mono.CSharp {
 					if (using_clauses != null) {
 						using_list = new string [using_clauses.Count];
 						for (int i = 0; i < using_clauses.Count; i++)
-							using_list [i] = ((UsingEntry) using_clauses [i]).GetTypeName ();
+							using_list [i] = ((UsingEntry) using_clauses [i]).MemberName.GetTypeName ();
 					}
 
 					symfile_id = SymbolWriter.DefineNamespace (ns.Name, file.SourceFileEntry, using_list, parent_id);

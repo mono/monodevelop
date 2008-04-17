@@ -142,7 +142,7 @@ namespace Mono.CSharp {
 			if (is_double_colon) {
 				if (Left.Left != null)
 					throw new InternalErrorException ("The left side of a :: should be an identifier");
-				return new QualifiedAliasMember (Left.Name, Basename, Location);
+				return new QualifiedAliasMember (Left.Name, Name, TypeArguments, Location);
 			}
 
 			Expression lexpr = Left.GetTypeExpression ();
@@ -164,31 +164,34 @@ namespace Mono.CSharp {
 			}
 		}
 
-		public string FullName {
-			get {
-				if (TypeArguments != null)
-					return Name + "<" + TypeArguments.ToString () + ">";
-				else
-					return Name;
-			}
+		[Obsolete ("Use GetSignatureForError ()")]
+		public string PrettyName {
+			get { return TypeArguments == null ? Name : MethodName + "<" + TypeArguments.ToString () + ">"; }
 		}
 
 		public string MethodName {
 			get {
 				string connect = is_double_colon ? "::" : ".";
 				if (Left != null)
-					return Left.FullName + connect + Name;
+					return Left.FullyQualifiedName + connect + Name;
 				else
 					return Name;
 			}
 		}
-		
+
+		// Please use this only for error reporting.   For normal uses, just use the Equals and GetHashCode methods that make
+		// MemberName a proper hash key, and avoid tons of memory allocations
+		public string FullyQualifiedName {
+			get { return TypeArguments == null ? MethodName : MethodName + "<" + TypeArguments.ToString () + ">"; }
+		}
+
 		public string GetSignatureForError ()
 		{
-			if (TypeArguments != null)
-				return MethodName + "<" + TypeArguments.GetSignatureForError () + ">";
-
-			return MethodName;
+			string append = TypeArguments == null ? "" : "<" + TypeArguments.GetSignatureForError () + ">";
+			if (Left == null)
+				return Name + append;
+			string connect = is_double_colon ? "::" : ".";
+			return Left.GetSignatureForError () + connect + Name + append;
 		}
 
 		public override bool Equals (object other)
@@ -883,9 +886,8 @@ namespace Mono.CSharp {
 
 		public TypeContainer PartialContainer;		
 
-		readonly bool is_generic;
+		protected readonly bool is_generic;
 		readonly int count_type_params;
-		readonly int count_current_type_params;
 
 		//
 		// Whether we are Generic
@@ -913,7 +915,7 @@ namespace Mono.CSharp {
 			PartialContainer = null;
 			if (name.TypeArguments != null) {
 				is_generic = true;
-				count_type_params = count_current_type_params = name.TypeArguments.Count;
+				count_type_params = name.TypeArguments.Count;
 			}
 			if (parent != null)
 				count_type_params += parent.count_type_params;
@@ -1036,7 +1038,7 @@ namespace Mono.CSharp {
 		public override string GetSignatureForError ()
 		{	
 			if (IsGeneric) {
-				return SimpleName.RemoveGenericArity (Name) + TypeParameter.GetSignatureForError (CurrentTypeParameters);
+				return SimpleName.RemoveGenericArity (Name) + TypeParameter.GetSignatureForError (type_params);
 			}
 			// Parent.GetSignatureForError
 			return Name;
@@ -1267,21 +1269,8 @@ namespace Mono.CSharp {
 		//
 		// Extensions for generics
 		//
-		TypeParameter[] type_params;
+		protected TypeParameter[] type_params;
 		TypeParameter[] type_param_list;
-
-		protected string GetInstantiationName ()
-		{
-			StringBuilder sb = new StringBuilder (Name);
-			sb.Append ("<");
-			for (int i = 0; i < type_param_list.Length; i++) {
-				if (i > 0)
-					sb.Append (",");
-				sb.Append (type_param_list [i].Name);
-			}
-			sb.Append (">");
-			return sb.ToString ();
-		}
 
 		bool check_type_parameter (ArrayList list, int start, string name)
 		{
@@ -1405,24 +1394,18 @@ namespace Mono.CSharp {
 			get {
 				if (!IsGeneric)
 					throw new InvalidOperationException ();
-				if ((PartialContainer != null) && (PartialContainer != this))
-					return PartialContainer.CurrentTypeParameters;
-				if (type_params != null)
-					return type_params;
-				else
+
+				// TODO: Something is seriously broken here
+				if (type_params == null)
 					return new TypeParameter [0];
+
+				return type_params;
 			}
 		}
 
 		public int CountTypeParameters {
 			get {
 				return count_type_params;
-			}
-		}
-
-		public int CountCurrentTypeParameters {
-			get {
-				return count_current_type_params;
 			}
 		}
 

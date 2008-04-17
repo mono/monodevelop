@@ -1,3 +1,62 @@
+2008-04-17  Marek Safar  <marek.safar@gmail.com>
+
+	* decl.cs, class.cs, generic.cs: Verify partial parts type parameters and
+	constraints.
+
+2008-04-17  Marek Safar  <marek.safar@gmail.com>
+
+	* decl.cs, class.cs, cs-parser.jay, ecore.cs, expression.cs: Unify all type
+	name expressions.
+	Also fixes #340463.
+
+2008-04-17  Raja R Harinath  <harinath@hurrynot.org>
+
+	Hook up 'EmitSideEffect'
+	* constant.cs (Constant.EmitSideEffect): New.
+	(SideEffectConstant.Emit): Simplify.  Use EmitSideEffect.
+	(SideEffectConstant.EmitSideEffect): New.
+	* ecore.cs (BoxedCast.EmitBranchable): Remove.  We can't use an
+	unconditional branch in EmitBranchable.
+	(FieldExpr.EmitBranchable): New.
+	* expression.cs (Unary.EmitSideEffect): New.
+	(Binary.EmitSideEffect): New.
+	(VariableReference.EmitSideEffect): New.  Do nothing.
+
+2008-04-16  Raja R Harinath  <harinath@hurrynot.org>
+
+	Introduce 'EmitSideEffect'
+	* ecore.cs (Expression.EmitSideEffect): New.
+	(TypeCast): Rename from EmptyCast.
+	(EmptyCast): New.
+	(EmptyCast.EmitBranchable, EmptyCast.EmitSideEffect): Implement.
+	(BoxedCast.EmitBranchable, BoxedCast.EmitSideEffect): Implement.
+	* convert.cs, nullable.cs: Update to changes.
+
+2008-04-16  Marek Safar  <marek.safar@gmail.com>
+
+	* class.cs, cs-parser.jay: Early check for base types expression.
+
+2008-04-16  Marek Safar  <marek.safar@gmail.com>
+
+	* decl.cs (MemberName): Declare PrettyName as obsolete.
+
+2008-04-16  Marek Safar  <marek.safar@gmail.com>
+
+	* namespace.cs: Use MemberName comparison.
+
+2008-04-16  Raja R Harinath  <harinath@hurrynot.org>
+
+	Fix build break
+	* decl.cs (MemberName.PrettyName): New.  Replaces the misnamed
+	FullName.
+	(MemberName.MethodName, MemberName.GetSignatureForError): Improve.
+	(MemberName.FullyQualifiedName): New.  Provides the functionality
+	that users assume FullName would have.
+	* ecore.cs, namespace.cs: Update to changes.
+
+	* statement.cs (Using.assign): Make into ExpressionStatement.
+	(Using.EmitPreTryBody): Simplify.
+
 2008-04-16  Marek Safar  <marek.safar@gmail.com>
 
 	* report.cs: ColorFormat is protected.
