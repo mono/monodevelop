@@ -467,9 +467,21 @@ namespace Mono.TextEditor
 			textViewMargin.ResetCaretBlink ();
 		}
 		
+		
+		IMMulticontext context = null;
 		protected override bool OnKeyPressEvent (Gdk.EventKey evt)
 		{
-			SimulateKeyPress (evt.Key, Gdk.Keyval.ToUnicode (evt.KeyValue), evt.State);
+			if (context == null) {
+				context = new IMMulticontext ();
+				context.ClientWindow = this.GdkWindow;
+				context.Commit += delegate (object sender, Gtk.CommitArgs ca) {
+					foreach (char ch in ca.Str) {
+						SimulateKeyPress (evt.Key, (uint)ch, evt.State);
+					}
+				};
+			}
+			if (!context.FilterKeypress (evt)) 
+				SimulateKeyPress (evt.Key, Gdk.Keyval.ToUnicode (evt.KeyValue), evt.State);
 			return true;
 		}
 
