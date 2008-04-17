@@ -2715,6 +2715,35 @@ namespace Mono.CSharp {
 				return base_cache;
 			}
 		}
+
+		#region IType Members
+
+		public Dom.ITypeName [] BaseTypes {
+			get {
+				return type_bases == null ? null :
+					(Dom.ITypeName [])type_bases.ToArray (typeof (Dom.ITypeName));
+			}
+		}
+
+		string Dom.IType.Name {
+			get { return MemberName.Name; }
+		}
+
+		public Kind ContainerType {
+			get { return Kind; }
+		}
+
+		public Dom.ILocationBlock LocationBlock {
+			get { return new Dom.LocationBlock (Location, null); }
+		}
+
+		Dom.ITypeParameter [] Dom.IType.TypeParameters {
+			get {
+				return type_params;
+			}
+		}
+
+		#endregion
 	}
 
 	public abstract class ClassOrStruct : TypeContainer {

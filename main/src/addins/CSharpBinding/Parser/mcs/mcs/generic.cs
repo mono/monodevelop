@@ -134,10 +134,20 @@ namespace Mono.CSharp {
 	/// <summary>
 	///   Tracks the constraints for a type parameter from a generic type definition.
 	/// </summary>
-	public class Constraints : GenericConstraints {
+	public class Constraints : GenericConstraints, Dom.ITypeParameterConstraints {
 		string name;
 		ArrayList constraints;
 		Location loc;
+		GenericParameterAttributes attrs;
+		TypeExpr class_constraint;
+		ArrayList iface_constraints;
+		ArrayList type_param_constraints;
+		int num_constraints;
+		Type class_constraint_type;
+		Type [] iface_constraint_types;
+		Type effective_base_type;
+		bool resolved;
+		bool resolved_types;
 		
 		//
 		// name is the identifier, constraints is an arraylist of
@@ -161,17 +171,6 @@ namespace Mono.CSharp {
 		{
 			return new Constraints (name, constraints, loc);
 		}
-
-		GenericParameterAttributes attrs;
-		TypeExpr class_constraint;
-		ArrayList iface_constraints;
-		ArrayList type_param_constraints;
-		int num_constraints;
-		Type class_constraint_type;
-		Type[] iface_constraint_types;
-		Type effective_base_type;
-		bool resolved;
-		bool resolved_types;
 
 		/// <summary>
 		///   Resolve the constraints - but only resolve things into Expression's, not
@@ -597,12 +596,21 @@ namespace Mono.CSharp {
 			Report.Warning (3024, 1, loc, "Constraint type `{0}' is not CLS-compliant",
 				TypeManager.CSharpName (t));
 		}
+
+		#region ITypeParameterConstraint Members
+
+		public Mono.CSharp.Dom.ITypeName Types
+		{
+			get { throw new NotImplementedException (); }
+		}
+
+		#endregion
 	}
 
 	/// <summary>
 	///   A type parameter from a generic type definition.
 	/// </summary>
-	public class TypeParameter : MemberCore, IMemberContainer
+	public class TypeParameter : MemberCore, IMemberContainer, Dom.ITypeParameter
 	{
 		static readonly string[] attribute_target = new string [] { "type parameter" };
 		
@@ -888,10 +896,6 @@ namespace Mono.CSharp {
 		// IMemberContainer
 		//
 
-		string IMemberContainer.Name {
-			get { return Name; }
-		}
-
 		MemberCache IMemberContainer.BaseCache {
 			get {
 				if (gc == null)
@@ -995,6 +999,19 @@ namespace Mono.CSharp {
 		{
 			return false;
 		}
+
+		#region ITypeParameter Members
+
+		Dom.ITypeParameterConstraints Dom.ITypeParameter.Constraints {
+		    get {
+				return constraints;
+		    }
+		}
+
+		
+
+		#endregion
+
 
 		protected class InflatedConstraints : GenericConstraints
 		{
@@ -1218,6 +1235,12 @@ namespace Mono.CSharp {
 		public Type[] Arguments {
 			get {
 				return atypes;
+			}
+		}
+
+		public ArrayList ArgumentsExpression {
+			get {
+				return args;
 			}
 		}
 

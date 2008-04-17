@@ -83,10 +83,41 @@ namespace Mono.CSharp.Dom
 	{
 		IType[] Types { get; }
 
-		//IDelegate[] Deleagates { get; }
+		//IDelegate[] Delegates { get; }
 	}
 
 	public interface IType
 	{
+		ITypeName [] BaseTypes { get; }
+		Kind ContainerType { get; }
+		string Name { get; }
+		ILocationBlock LocationBlock { get; }
+		int ModFlags { get; }
+		ITypeParameter [] TypeParameters { get; }
+	}
+
+	public interface ITypeMember
+	{
+		// TODO:
+	}
+
+	public interface ITypeName
+	{
+		string Name { get; }
+		ITypeName [] TypeArguments { get; }
+	}
+
+	public interface ITypeParameter
+	{
+		//IAttributes [] Attributes { get; }
+		ITypeParameterConstraints Constraints { get; }
+		string Name { get; }
+	}
+
+	public interface ITypeParameterConstraints
+	{
+		ITypeName Types { get; }
+
+		// TODO: bool IsClass, IsNew, etc.
 	}
 }

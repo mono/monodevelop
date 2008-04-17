@@ -2249,20 +2249,20 @@ namespace Mono.CSharp {
 	//
 	// Unresolved type name expressions
 	//
-	public abstract class ATypeNameExpression : Expression
+	public abstract class ATypeNameExpression : Expression, Dom.ITypeName
 	{
-		public readonly string Name;
+		readonly string name;
 		protected TypeArguments targs;
 
 		protected ATypeNameExpression (string name, Location l)
 		{
-			Name = name;
+			this.name = name;
 			loc = l;
 		}
 
 		protected ATypeNameExpression (string name, TypeArguments targs, Location l)
 		{
-			Name = name;
+			this.name = name;
 			this.targs = targs;
 			loc = l;
 		}
@@ -2279,8 +2279,23 @@ namespace Mono.CSharp {
 					targs.GetSignatureForError () + ">";
 			}
 
-			return Name;
+			return name;
 		}
+
+		public string Name {
+			get { return name; }
+		}
+
+
+		#region ITypeName Members
+
+		public Dom.ITypeName[] TypeArguments {
+			get { return targs == null ? null :
+				(Dom.ITypeName[]) targs.ArgumentsExpression.ToArray (typeof (Dom.ITypeName));
+			}
+		}
+
+		#endregion
 	}
 	
 	/// <summary>
