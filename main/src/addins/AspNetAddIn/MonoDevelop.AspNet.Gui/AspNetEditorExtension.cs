@@ -40,12 +40,16 @@ using MonoDevelop.AspNet.Parser.Dom;
 using MonoDevelop.Html;
 using MonoDevelop.DesignerSupport;
 
+using MonoDevelop.Xml.StateEngine;
+using MonoDevelop.AspNet.StateEngine;
+
 namespace MonoDevelop.AspNet.Gui
 {
 	
 	
 	public class AspNetEditorExtension : CompletionTextEditorExtension
 	{
+		DocumentStateTracker<Parser<AspNetFreeState>> tracker;
 		
 		public AspNetEditorExtension () : base ()
 		{
@@ -61,7 +65,9 @@ namespace MonoDevelop.AspNet.Gui
 		{
 			base.Initialize ();
 			
-			//ensure that the schema service is intialised, or code completion may take a couple of seconds to trigger
+			tracker = new DocumentStateTracker<Parser<AspNetFreeState>> (Editor);
+			
+			//ensure that the schema service is initialised, or code completion may take a couple of seconds to trigger
 			HtmlSchemaService.Initialise (false);
 		}
 		
@@ -101,6 +107,8 @@ namespace MonoDevelop.AspNet.Gui
 		
 		ICompletionDataProvider HandleCodeCompletion (CodeCompletionContext completionContext, bool forced, ref int triggerWordLength)
 		{
+			tracker.UpdateEngine ();
+			
 			//FIXME: lines in completionContext are zero-indexed, but ILocation and buffer are 1-indexed. This could easily cause bugs.
 			int line = completionContext.TriggerLine + 1, col = completionContext.TriggerLineOffset;
 			
@@ -111,7 +119,7 @@ namespace MonoDevelop.AspNet.Gui
 			char currentChar = buf.GetCharAt (currentPosition);
 			char previousChar = buf.GetCharAt (currentPosition - 1);
 			
-			LoggingService.LogDebug ("Attempting ASP.NET completion for previousChar='{0}', currentChar='{1}', forced='{2}'", previousChar, currentChar, forced);
+			LoggingService.LogDebug ("Attempting ASP.NET completion for state '{0}', previousChar='{1}', currentChar='{2}', forced='{3}'", tracker.Engine.CurrentState, previousChar, currentChar, forced);
 			
 			//doctype completion
 			if (line <= 5 && currentChar ==' ' && previousChar == 'E') {
@@ -207,73 +215,75 @@ namespace MonoDevelop.AspNet.Gui
 				}
 			}
 			
-			//attributes within tags
-			if (tn != null && tn.LocationContainsPosition (line, col) == 0) {
-				string[] splitTagName = tn.TagName.Split (':');
-				CodeCompletionDataProvider cp = new CodeCompletionDataProvider (null, GetAmbience ());
+			//attributes names within tags
+			if (tracker.Engine.CurrentState is XmlTagState && forced || 
+			    tracker.Engine.CurrentState is XmlAttributeState)
+			{
+				XmlTagState tagState = (XmlTagState) ((tracker.Engine.CurrentState is XmlAttributeState)? 
+					tracker.Engine.CurrentState.Parent : 
+					tracker.Engine.CurrentState);
 				
 				//attributes
-				if (!isInQuotes && (forced ||
-				    (char.IsWhiteSpace (previousChar) && (char.IsLetter (currentChar)))
-				)) {
+				if (!string.IsNullOrEmpty (tagState.Name.Name)
+				    && (forced || (char.IsWhiteSpace (previousChar) && char.IsLetter (currentChar))))
+				{
+					CodeCompletionDataProvider cp = new CodeCompletionDataProvider (null, GetAmbience ());
 					if (!forced)
 						triggerWordLength = 1;
 					
-					if (splitTagName.Length == 1) {
-						AddHtmlAttributeCompletionData (cp, schema, tn);
-					} else if (splitTagName.Length == 2) {
-						AddAspAttributeCompletionData (cp, doc, splitTagName[0], splitTagName[1], tn);
+					if (string.IsNullOrEmpty (tagState.Name.Namespace)) {
+						AddHtmlAttributeCompletionData (cp, schema, tagState.Name.Name, null);
 					} else {
-						//do nothing, tag is not valid
-						return null;
+						AddAspAttributeCompletionData (cp, doc, tagState.Name.Namespace, tagState.Name.Name, null);
 					}
 					
-					if (tn.Attributes ["runat"] == null)
-						cp.AddCompletionData (new CodeCompletionData ("runat=\"server\"", "md-literal",
-						    GettextCatalog.GetString ("Required for ASP.NET controls.\n") +
-						    GettextCatalog.GetString (
-						        "Indicates that this tag should be able to be\n" +
-						        "manipulated programmatically on the web server.")
-						    ));
+//					if (tn.Attributes ["runat"] == null)
+//						cp.AddCompletionData (new CodeCompletionData ("runat=\"server\"", "md-literal",
+//						    GettextCatalog.GetString ("Required for ASP.NET controls.\n") +
+//						    GettextCatalog.GetString (
+//						        "Indicates that this tag should be able to be\n" +
+//						        "manipulated programmatically on the web server.")
+//						    ));
 					
-					if (tn.Attributes["id"] == null)
-						cp.AddCompletionData (
-						    new CodeCompletionData ("id", "md-literal",
-						        GettextCatalog.GetString ("Unique identifier.\n") +
-						        GettextCatalog.GetString (
-						            "An identifier that is unique within the document.\n" + 
-						            "If the tag is a server control, this will be used \n" +
-						            "for the corresponding variable name in the CodeBehind.")
-						    ));
+//					if (tn.Attributes["id"] == null)
+//						cp.AddCompletionData (
+//						    new CodeCompletionData ("id", "md-literal",
+//						        GettextCatalog.GetString ("Unique identifier.\n") +
+//						        GettextCatalog.GetString (
+//						            "An identifier that is unique within the document.\n" + 
+//						            "If the tag is a server control, this will be used \n" +
+//						            "for the corresponding variable name in the CodeBehind.")
+//						    ));
 					return cp;
 					
 				//attribute values
 				//determine whether to trigger completion within attribute values quotes
-				} else if (isInQuotes && 
-				       (forced && (currentChar == '"' || currentChar == '\'') 
-				            && currentPosition + 1 < buf.Length && buf.GetCharAt (currentPosition + 1) == currentChar)
+				}
+			}
+			
+			if (tracker.Engine.CurrentState is XmlAttributeValueState) {
+				XmlAttributeValueState valstate = (XmlAttributeValueState) tracker.Engine.CurrentState;
+				
+				if ((forced && (currentChar == '"' || currentChar == '\'') 
+				    && currentPosition + 1 < buf.Length && buf.GetCharAt (currentPosition + 1) == currentChar)
 				    || ((previousChar == '"' || previousChar == '\'') 
-				            && currentPosition + 1 < buf.Length && buf.GetCharAt (currentPosition + 1) == previousChar)
-				) {
+				        && currentPosition + 1 < buf.Length && buf.GetCharAt (currentPosition + 1) == previousChar))
+				{
 					if (!forced)
 						triggerWordLength = 1;
 					
-					string att = GetAttributeName (buf, currentPosition - (forced? 1 : 2));
-					if (!string.IsNullOrEmpty (att)) {
-						LoggingService.LogDebug ("Triggered attribute value completion for '{0}'", att);
-						
-						if (splitTagName.Length == 1) {
-							AddHtmlAttributeValueCompletionData (cp, schema, tn, att);
-						} else if (splitTagName.Length == 2) {
-							AddAspAttributeValueCompletionData (cp, doc, splitTagName[0], splitTagName[1], att, tn);
-						} else {
-							//do nothing, tag is not valid
-							return null;
-						}
+					string att = valstate.AttributeName;
+					IXmlName tagName = valstate.TagName;
+					if (!string.IsNullOrEmpty (att) && !string.IsNullOrEmpty (tagName.Name))
+					{
+						CodeCompletionDataProvider cp = new CodeCompletionDataProvider (null, GetAmbience ());
+						if (string.IsNullOrEmpty (tagName.Namespace))
+							AddHtmlAttributeValueCompletionData (cp, schema, valstate.TagName.Name, att);
+						else
+							AddAspAttributeValueCompletionData (cp, doc, valstate.TagName.Namespace, valstate.TagName.Name, att, null);
+						return cp;
 					}
 				}
-				
-				return cp;
 			}
 			
 			return null; 
@@ -337,24 +347,24 @@ namespace MonoDevelop.AspNet.Gui
 				provider.AddCompletionData (datum);			
 		}
 		
-		void AddHtmlAttributeCompletionData (CodeCompletionDataProvider provider, HtmlSchema schema, TagNode parentTag)
+		void AddHtmlAttributeCompletionData (CodeCompletionDataProvider provider, HtmlSchema schema, string tagName, Dictionary<string, bool> existingAtts)
 		{
-			if (schema.CompletionProvider == null || parentTag == null || string.IsNullOrEmpty (parentTag.TagName))
-				return;
+			System.Diagnostics.Debug.Assert (!string.IsNullOrEmpty (tagName));
+			System.Diagnostics.Debug.Assert (schema != null);
+			System.Diagnostics.Debug.Assert (schema.CompletionProvider != null);
 			
 			//add atts only if they're not aready in the tag
-			foreach (ICompletionData datum in schema.CompletionProvider.GetAttributeCompletionData (parentTag.TagName))
-				if (parentTag != null && parentTag.Attributes != null && parentTag.Attributes[datum.Text[0]] == null)
+			foreach (ICompletionData datum in schema.CompletionProvider.GetAttributeCompletionData (tagName))
+				if (existingAtts == null || existingAtts.ContainsKey (datum.Text[0]))
 					provider.AddCompletionData (datum);
 		}
 		
-		void AddHtmlAttributeValueCompletionData (CodeCompletionDataProvider provider, HtmlSchema schema, TagNode parentTag, string attributeName)
+		void AddHtmlAttributeValueCompletionData (CodeCompletionDataProvider provider, HtmlSchema schema, string tagName, string attributeName)
 		{
-			if (schema.CompletionProvider == null || parentTag == null || string.IsNullOrEmpty (parentTag.TagName))
-				return;
+			System.Diagnostics.Debug.Assert (!string.IsNullOrEmpty (tagName));
+			System.Diagnostics.Debug.Assert (schema.CompletionProvider != null);
 			
-			//add atts only if they're not aready in the tag
-			foreach (ICompletionData datum in schema.CompletionProvider.GetAttributeValueCompletionData (parentTag.TagName, attributeName))
+			foreach (ICompletionData datum in schema.CompletionProvider.GetAttributeValueCompletionData (tagName, attributeName))
 				provider.AddCompletionData (datum);
 		}
 		
@@ -391,15 +401,15 @@ namespace MonoDevelop.AspNet.Gui
 		
 		void AddAspTags (CodeCompletionDataProvider provider, Document doc, string parentTag)
 		{
-			foreach (MonoDevelop.Projects.Parser.IClass cls in doc.ReferenceManager.ListControlClasses ()) {
+			foreach (MonoDevelop.Projects.Parser.IClass cls in doc.ReferenceManager.ListControlClasses ())
 				provider.AddCompletionData (new CodeCompletionData ("asp:" + cls.Name, Gtk.Stock.GoForward, cls.Documentation));
-			}
 		}
 		
-		void AddAspAttributeCompletionData (CodeCompletionDataProvider provider, Document doc, string prefix, string name, TagNode parentTag)
+		void AddAspAttributeCompletionData (CodeCompletionDataProvider provider, Document doc, string prefix, string name, Dictionary<string, string> existingAtts)
 		{
-			if (parentTag == null || string.IsNullOrEmpty (name) || string.IsNullOrEmpty (prefix))
-				return;
+			System.Diagnostics.Debug.Assert (!string.IsNullOrEmpty (name));
+			System.Diagnostics.Debug.Assert (!string.IsNullOrEmpty (prefix));
+			System.Diagnostics.Debug.Assert (doc != null);
 			
 			//get a parser context
 			MonoDevelop.Projects.Parser.IParserContext ctx = null;
@@ -422,35 +432,30 @@ namespace MonoDevelop.AspNet.Gui
 				}
 			}
 			
-			AddControlMembers (provider, ctx, doc, controlClass, parentTag);
+			AddControlMembers (provider, ctx, doc, controlClass, existingAtts);
 		}
 		
-		void AddControlMembers (CodeCompletionDataProvider provider, MonoDevelop.Projects.Parser.IParserContext ctx, Document doc, MonoDevelop.Projects.Parser.IClass controlClass, TagNode parentTag)
+		void AddControlMembers (CodeCompletionDataProvider provider, MonoDevelop.Projects.Parser.IParserContext ctx, Document doc, MonoDevelop.Projects.Parser.IClass controlClass, Dictionary<string, string> existingAtts)
 		{
-			Dictionary <string, bool> existingItems = new Dictionary<string,bool> ();
-			
 			//add atts only if they're not already in the tag
-			foreach (MonoDevelop.Projects.Parser.IProperty prop in GetAllProperties (ctx, controlClass)) {
-				if (prop.IsPublic && parentTag.Attributes[prop.Name] == null && !existingItems.ContainsKey (prop.Name)) {
-					existingItems[prop.Name] = true;
+			foreach (MonoDevelop.Projects.Parser.IProperty prop in GetUniqueMembers<MonoDevelop.Projects.Parser.IProperty> (GetAllProperties (ctx, controlClass)))
+				if (prop.IsPublic && (existingAtts == null || existingAtts.ContainsKey (prop.Name)))
 					provider.AddCompletionData (new CodeCompletionData (prop.Name, "md-property", prop.Documentation));
-				}
-			}
 			
-			foreach (MonoDevelop.Projects.Parser.IEvent eve in GetAllEvents (ctx, controlClass)) {
-				if (eve.IsPublic && parentTag.Attributes[eve.Name] == null && !existingItems.ContainsKey (eve.Name)) {
-					existingItems[eve.Name] = true;
-					provider.AddCompletionData (new CodeCompletionData ("On" + eve.Name, "md-event", eve.Documentation));
-				}
+			//similarly add events
+			foreach (MonoDevelop.Projects.Parser.IEvent eve in GetUniqueMembers<MonoDevelop.Projects.Parser.IEvent> (GetAllEvents (ctx, controlClass))) {
+				string eveName = "On" + eve.Name;
+				if (eve.IsPublic && (existingAtts == null || existingAtts.ContainsKey (eveName)))
+					provider.AddCompletionData (new CodeCompletionData (eveName, "md-event", eve.Documentation));
 			}
 		}
 		
-		void AddAspAttributeValueCompletionData (CodeCompletionDataProvider provider, Document doc, string prefix, string name, string attrib, TagNode parentTag)
+		void AddAspAttributeValueCompletionData (CodeCompletionDataProvider provider, Document doc, string tagNamePrefix, string tagName, string attrib, Dictionary<string, string> existingAtts)
 		{
-			if (string.IsNullOrEmpty (attrib) || string.IsNullOrEmpty (name) || string.IsNullOrEmpty (prefix))
+			if (string.IsNullOrEmpty (attrib) || string.IsNullOrEmpty (tagName) || string.IsNullOrEmpty (tagNamePrefix))
 				return;
 			
-			MonoDevelop.Projects.Parser.IClass controlClass = doc.ReferenceManager.GetControlType (prefix, name);
+			MonoDevelop.Projects.Parser.IClass controlClass = doc.ReferenceManager.GetControlType (tagNamePrefix, tagName);
 			if (controlClass == null) {
 				//FIXME: respect runtime version
 				MonoDevelop.Projects.Parser.IParserContext sysWebContext = MonoDevelop.Ide.Gui.IdeApp.ProjectOperations.ParserDatabase.GetAssemblyParserContext ("System.Web");
@@ -484,8 +489,8 @@ namespace MonoDevelop.AspNet.Gui
 							    "A compatible method in the CodeBehind class"));
 						
 						string suggestedIdentifier = ev.Name;
-						if (parentTag != null && !string.IsNullOrEmpty ((string)parentTag.Attributes ["id"]))
-							suggestedIdentifier = parentTag.Attributes ["id"] + "_" + suggestedIdentifier;
+						if (existingAtts != null && !existingAtts.ContainsKey ("id") && !string.IsNullOrEmpty (existingAtts["id"]))
+							suggestedIdentifier = existingAtts["id"] + "_" + suggestedIdentifier;
 							
 						domMethod.Name = BindingService.GenerateIdentifierUniqueInClass (codeBehindClass, suggestedIdentifier);
 						provider.AddCompletionData (
@@ -530,6 +535,17 @@ namespace MonoDevelop.AspNet.Gui
 							provider.AddCompletionData (new CodeCompletionData (enumVal.Name, "md-literal", enumVal.Documentation));
 					return;
 				}
+			}
+		}
+		
+		IEnumerable<T> GetUniqueMembers<T> (IEnumerable<T> members) where T : MonoDevelop.Projects.Parser.IMember
+		{
+			Dictionary <string, bool> existingItems = new Dictionary<string,bool> ();
+			foreach (T item in members) {
+				if (existingItems.ContainsKey (item.Name))
+					continue;
+				existingItems[item.Name] = true;
+				yield return item;
 			}
 		}
 		

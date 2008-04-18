@@ -1,3 +1,15 @@
+2008-04-18  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.AspNet.StateEngine/AspNetSpecialState.cs,
+	  MonoDevelop.AspNet.StateEngine/AspNetFreeState.cs: Minimal states
+	  for ASP.NET parsing. Still need to handle expressions within
+	  attribute values.
+	* MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs: Use new state engine
+	  for triggering completion. Haven't exorcised full document parse
+	  yet -- need it for doctype etc. Also need it (but low-priority,
+	  threaded?) for filtering existing attributes. 
+	* Makefile.am, AspNetAddIn.mdp: Updated.
+
 2008-04-14  Michael Hutchinson <mhutchinson@novell.com> 
 
 	
