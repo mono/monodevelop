@@ -596,7 +596,7 @@ namespace Mono.CSharp {
 			}
 		}
 
-		public MemberCoreArrayList Methods {
+		public ArrayList Methods {
 			get {
 				return methods;
 			}
@@ -2733,7 +2733,7 @@ namespace Mono.CSharp {
 			get { return Kind; }
 		}
 
-		public Dom.ILocationBlock LocationBlock {
+		public Dom.LocationBlock LocationBlock {
 			get { return new Dom.LocationBlock (Location, null); }
 		}
 
@@ -3319,7 +3319,7 @@ namespace Mono.CSharp {
 	}
 
 
-	public abstract class MethodCore : InterfaceMemberBase
+	public abstract class MethodCore : InterfaceMemberBase, Dom.IMethod
 	{
 		public readonly Parameters Parameters;
 		protected ToplevelBlock block;
@@ -3445,9 +3445,17 @@ namespace Mono.CSharp {
 			return true;
 		}
 
+
+		#region IMethod Members
+
+		Dom.IParameter [] Dom.IMethod.Parameters {
+			get { return Parameters.FixedParameters; }
+		}
+
+		#endregion
 	}
 
-	public abstract class InterfaceMemberBase : MemberBase {
+	public abstract class InterfaceMemberBase : MemberBase, Dom.ITypeMember {
 		//
 		// Whether this is an interface member.
 		//
@@ -3860,6 +3868,17 @@ namespace Mono.CSharp {
 			get { return IsExplicitImpl || base.IsUsed; }
 		}
 
+		#region ITypeMember Members
+
+		public Dom.IType DeclaringType {
+			get { return (TypeContainer) Parent; }
+		}
+
+		public Dom.ITypeName ReturnTypeName {
+			get { return (Dom.ITypeName) Type; }
+		}
+
+		#endregion
 	}
 
 	public abstract class MethodOrOperator : MethodCore, IMethodData
@@ -5569,7 +5588,7 @@ namespace Mono.CSharp {
 	//
 	// Abstract class for all fields
 	//
-	abstract public class FieldBase : MemberBase {
+	abstract public class FieldBase : MemberBase, Dom.ITypeMember {
 		public FieldBuilder FieldBuilder;
 		public Status status;
 		protected Expression initializer;
@@ -5760,6 +5779,18 @@ namespace Mono.CSharp {
 		{
 			caching_flags |= Flags.IsAssigned;
 		}
+
+		#region ITypeMember Members
+
+		public Dom.IType DeclaringType {
+			get { return (TypeContainer) Parent; }
+		}
+
+		public Dom.ITypeName ReturnTypeName {
+			get { return (Dom.ITypeName) Type; }
+		}
+
+		#endregion
 	}
 
 	interface IFixedBuffer
@@ -6122,7 +6153,7 @@ namespace Mono.CSharp {
 
 	// Ooouh Martin, templates are missing here.
 	// When it will be possible move here a lot of child code and template method type.
-	public abstract class AbstractPropertyEventMethod : MemberCore, IMethodData {
+	public abstract class AbstractPropertyEventMethod : MemberCore, IMethodData, Dom.IAccessor {
 		protected MethodData method_data;
 		protected ToplevelBlock block;
 		protected ListDictionary declarative_security;
@@ -6351,13 +6382,21 @@ namespace Mono.CSharp {
 
 		void IMethodData.EmitExtraSymbolInfo ()
 		{ }
+
+		#region IAccessor Members
+
+		public Dom.LocationBlock LocationBlock {
+			get { return new Dom.LocationBlock (Location, null); }
+		}
+
+		#endregion
 	}
 
 	//
 	// Properties and Indexers both generate PropertyBuilders, we use this to share 
 	// their common bits.
 	//
-	abstract public class PropertyBase : PropertyBasedMember {
+	abstract public class PropertyBase : PropertyBasedMember, Dom.IProperty {
 
 		public class GetMethod : PropertyMethod
 		{
@@ -6861,6 +6900,19 @@ namespace Mono.CSharp {
 		public override string DocCommentHeader {
 			get { return "P:"; }
 		}
+
+		#region IProperty Members
+
+		public Dom.IAccessor GetAccessor {
+			get { return Get.IsDummy ? null : Get; }
+		}
+
+		public Dom.IAccessor SetAccessor {
+			get { return Set.IsDummy ? null : Set; }
+		}
+
+		#endregion
+
 	}
 			
 	public class Property : PropertyBase {
@@ -7376,7 +7428,7 @@ namespace Mono.CSharp {
 		}
 	}
 
-	public abstract class Event : PropertyBasedMember {
+	public abstract class Event : PropertyBasedMember, Dom.IEvent {
 		public abstract class AEventAccessor : AbstractPropertyEventMethod
 		{
 			protected readonly Event method;
@@ -7622,10 +7674,22 @@ namespace Mono.CSharp {
 		public override string DocCommentHeader {
 			get { return "E:"; }
 		}
+
+		#region IEvent Members
+
+		public Dom.IAccessor AddAccessor {
+			get { return Add; }
+		}
+
+		public Dom.IAccessor RemoveAccessor {
+			get { return Remove; }
+		}
+
+		#endregion
 	}
 
  
-	public class Indexer : PropertyBase
+	public class Indexer : PropertyBase, Dom.IIndexer
 	{
 		class GetIndexerMethod : GetMethod
 		{
@@ -7860,6 +7924,14 @@ namespace Mono.CSharp {
 			parameters.VerifyClsCompliance ();
 			return true;
 		}
+
+		#region IIndexer Members
+
+		Dom.IParameter[] Dom.IIndexer.Parameters {
+			get { return parameters.FixedParameters; }
+		}
+
+		#endregion
 	}
 
 	public class Operator : MethodOrOperator, IAnonymousHost {

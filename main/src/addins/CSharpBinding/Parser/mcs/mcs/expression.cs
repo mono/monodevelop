@@ -8571,7 +8571,7 @@ namespace Mono.CSharp {
 	//   the type specification, we just use this to construct the type
 	//   one bit at a time.
 	// </summary>
-	public class ComposedCast : TypeExpr {
+	public class ComposedCast : TypeExpr, Dom.ITypeName {
 		Expression left;
 		string dim;
 		
@@ -8664,6 +8664,22 @@ namespace Mono.CSharp {
 
 			target.left = left.Clone (clonectx);
 		}
+
+		#region ITypeName Members
+
+		public bool IsNullable {
+			get { return dim == "?"; }
+		}
+
+		public bool IsPointer {
+			get { return dim == "*"; }
+		}
+
+		public Dom.ITypeName [] TypeArguments {
+			get { throw new NotImplementedException (); }
+		}
+
+		#endregion
 	}
 
 	public class FixedBufferPtr : Expression {

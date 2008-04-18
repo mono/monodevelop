@@ -221,7 +221,7 @@ namespace Mono.CSharp {
 	/// <summary>
 	///   Represents a single method parameter
 	/// </summary>
-	public class Parameter : ParameterBase {
+	public class Parameter : ParameterBase, Dom.IParameter {
 		[Flags]
 		public enum Modifier : byte {
 			NONE    = 0,
@@ -238,12 +238,12 @@ namespace Mono.CSharp {
 
 		static string[] attribute_targets = new string [] { "param" };
 
-		Expression TypeName;
+		Expression typeName;
 		public Modifier modFlags;
-		public string Name;
+		string name;
 		public bool IsCaptured;
 		protected Type parameter_type;
-		public readonly Location Location;
+		readonly Location loc;
 
 		IResolveContext resolve_context;
 		LocalVariableReference expr_tree_variable;
@@ -275,16 +275,16 @@ namespace Mono.CSharp {
 			if (type == TypeManager.system_void_expr)
 				Report.Error (1536, loc, "Invalid parameter type `void'");
 			
-			TypeName = type;
+			this.typeName = type;
 		}
 
 		public Parameter (Type type, string name, Modifier mod, Attributes attrs, Location loc)
 			: base (attrs)
 		{
-			Name = name;
+			this.name = name;
 			modFlags = mod;
 			parameter_type = type;
-			Location = loc;
+			this.loc = loc;
 		}
 
 		public override void ApplyAttributeBuilder (Attribute a, CustomAttributeBuilder cb)
@@ -367,7 +367,7 @@ namespace Mono.CSharp {
 			if (parameter_type != null)
 				return true;
 
-			TypeExpr texpr = TypeName.ResolveAsTypeTerminal (ec, false);
+			TypeExpr texpr = typeName.ResolveAsTypeTerminal (ec, false);
 			if (texpr == null)
 				return false;
 
@@ -426,8 +426,18 @@ namespace Mono.CSharp {
 			get { return (modFlags & Modifier.This) != 0; }
 		}
 
+		public Location Location {
+			get { return loc; }
+		}
+
+		// TODO: Remove ~.This for DOM
 		public Modifier ModFlags {
 			get { return modFlags & ~Modifier.This; }
+		}
+
+		public string Name {
+			get { return name; }
+			set { name = value; }
 		}
 
 		public Type ParameterType {
@@ -481,11 +491,7 @@ namespace Mono.CSharp {
 
 		public virtual string GetSignatureForError ()
 		{
-			string type_name;
-			if (parameter_type != null)
-				type_name = TypeManager.CSharpName (parameter_type);
-			else
-				type_name = TypeName.GetSignatureForError ();
+			string type_name = typeName.GetSignatureForError ();
 
 			string mod = GetModifierSignature (modFlags);
 			if (mod.Length > 0)
@@ -613,7 +619,7 @@ namespace Mono.CSharp {
 
 		public Parameter Clone ()
 		{
-			Parameter p = new Parameter (parameter_type, Name, ModFlags, attributes, Location);
+			Parameter p = new Parameter (parameter_type, name, modFlags, attributes, Location);
 			p.IsTypeParameter = IsTypeParameter;
 
 			return p;
@@ -634,7 +640,7 @@ namespace Mono.CSharp {
 			ArrayList arguments = new ArrayList (2);
 			arguments.Add (new Argument (new TypeOf (
 				new TypeExpression (parameter_type, Location), Location)));
-			arguments.Add (new Argument (new StringConstant (Name, Location)));
+			arguments.Add (new Argument (new StringConstant (name, Location)));
 			return new Assign (ExpressionTreeVariableReference (),
 				Expression.CreateExpressionFactoryCall ("Parameter", null, arguments, Location));
 		}
@@ -663,6 +669,14 @@ namespace Mono.CSharp {
 
 			return parameter_expr_tree_type;
 		}
+
+		#region IParameter Members
+
+		public Dom.ITypeName TypeName {
+			get { return (Dom.ITypeName) typeName; }
+		}
+
+		#endregion
 	}
 
 	/// <summary>

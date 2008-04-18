@@ -23,7 +23,7 @@ namespace Mono.CSharp {
 	/// <summary>
 	///   Holds Delegates
 	/// </summary>
-	public class Delegate : DeclSpace, IMemberContainer
+	public class Delegate : DeclSpace, IMemberContainer, Dom.IDelegate
 	{
  		public Expression ReturnType;
 		public Parameters      Parameters;
@@ -644,6 +644,22 @@ namespace Mono.CSharp {
 		MemberList IMemberContainer.GetMembers (MemberTypes mt, BindingFlags bf)
 		{
 			throw new NotImplementedException ();
+		}
+
+		#endregion
+
+		#region IDelegate Members
+
+		Dom.IParameter[] Dom.IDelegate.Parameters {
+			get { return Parameters.FixedParameters; }
+		}
+
+		public Mono.CSharp.Dom.IType DeclaringType {
+			get { return (Dom.IType)Parent; }
+		}
+
+		public Dom.ITypeName ReturnTypeName {
+			get { return (Dom.ITypeName) ReturnType; }
 		}
 
 		#endregion

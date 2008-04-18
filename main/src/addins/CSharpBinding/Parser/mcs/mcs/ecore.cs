@@ -2295,6 +2295,14 @@ namespace Mono.CSharp {
 			}
 		}
 
+		public bool IsNullable {
+			get { return false; }
+		}
+
+		public bool IsPointer {
+			get { return false; }
+		}
+
 		#endregion
 	}
 	

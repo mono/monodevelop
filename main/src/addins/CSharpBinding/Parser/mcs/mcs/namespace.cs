@@ -1134,7 +1134,7 @@ namespace Mono.CSharp {
 
 		#region INamespace Members
 
-		public Dom.ILocationBlock LocationBlock {
+		public Dom.LocationBlock LocationBlock {
 			get {
 				Location start;
 				if (using_aliases != null)
@@ -1142,7 +1142,7 @@ namespace Mono.CSharp {
 				else if (using_clauses != null)
 					start = ((UsingEntry) using_clauses [0]).Location;
 				else
-					return null;
+					throw new NotSupportedException ();
 
 				Location end;
 				if (using_clauses != null)

@@ -9,6 +9,7 @@
 //
 
 using System;
+using System.Collections;
 
 namespace Mono.CSharp.Dom
 {
@@ -18,13 +19,7 @@ namespace Mono.CSharp.Dom
 		int Column { get; }
 	}
 
-	public interface ILocationBlock
-	{
-		ILocation Start { get; }
-		ILocation End { get; }
-	}
-
-	struct LocationBlock : ILocationBlock
+	public struct LocationBlock
 	{
 		readonly ILocation start, end;
 		public LocationBlock (ILocation start, ILocation end)
@@ -63,7 +58,7 @@ namespace Mono.CSharp.Dom
 
 	public interface IUsingBlock
 	{
-		ILocationBlock LocationBlock { get; }
+		LocationBlock LocationBlock { get; }
 
 		INamespaceImport[] Usings { get; }
 		INamespaceImportAlias[] Aliases { get; }
@@ -91,18 +86,30 @@ namespace Mono.CSharp.Dom
 		ITypeName [] BaseTypes { get; }
 		Kind ContainerType { get; }
 		string Name { get; }
-		ILocationBlock LocationBlock { get; }
+		LocationBlock LocationBlock { get; }
 		int ModFlags { get; }
 		ITypeParameter [] TypeParameters { get; }
-	}
 
-	public interface ITypeMember
-	{
-		// TODO:
+		// And the ugly
+		ArrayList Constants { get; }
+		ArrayList Events { get; }
+		ArrayList Fields { get; }
+		ArrayList Indexers { get; }
+		ArrayList Operators { get; }
+		ArrayList Properties { get; }
+		ArrayList Methods { get; }
+		ArrayList Types { get; }
+
+		ArrayList InstanceConstructors { get; }
+		ArrayList Delegates { get; }
 	}
 
 	public interface ITypeName
 	{
+		bool IsNullable { get; }
+		bool IsPointer { get; }
+		//bool IsArray { get; }
+
 		string Name { get; }
 		ITypeName [] TypeArguments { get; }
 	}
@@ -119,5 +126,61 @@ namespace Mono.CSharp.Dom
 		ITypeName Types { get; }
 
 		// TODO: bool IsClass, IsNew, etc.
+	}
+
+	public interface ITypeMember
+	{
+		// IAttributes[] Attributes { get; }
+		IType DeclaringType { get; }
+		int ModFlags { get; }
+		string Name { get; }
+		ITypeName ReturnTypeName { get; }
+	}
+
+	public interface IMethod : ITypeMember
+	{
+		IParameter [] Parameters { get; }
+	}
+
+	public interface IConstructor : ITypeMember
+	{
+	}
+
+	public interface IDelegate : ITypeMember
+	{
+		IParameter [] Parameters { get; }
+	}
+
+	public interface IProperty : ITypeMember
+	{
+		IAccessor GetAccessor { get; }
+		IAccessor SetAccessor { get; }
+	}
+
+	public interface IIndexer : IProperty
+	{
+		IParameter[] Parameters { get; }
+	}
+
+	public interface IEvent : ITypeMember
+	{
+		IAccessor AddAccessor { get; }
+		IAccessor RemoveAccessor { get; }
+	}
+
+	public interface IAccessor
+	{
+		LocationBlock LocationBlock { get; }
+		int ModFlags { get; }
+	}
+
+	public interface IParameter
+	{
+//		IAttribute [] Attributes { get; }
+
+		string Name { get; }
+		Location Location { get; }
+		Parameter.Modifier ModFlags { get; }
+		ITypeName TypeName { get; }
 	}
 }
