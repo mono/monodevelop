@@ -72,6 +72,19 @@
     <File name="MonoDevelop.XmlEditor.Completion/ILazilyLoadedProvider.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.XmlEditor.Completion/EmptyXmlCompletionProvider.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.XmlEditor.Completion/XmlTagCompletionData.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Xml.StateEngine" subtype="Directory" buildaction="Compile" />
+    <File name="MonoDevelop.Xml.StateEngine/Parser.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Xml.StateEngine/State.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Xml.StateEngine/CDataState.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Xml.StateEngine/XmlAttributeState.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Xml.StateEngine/XmlAttributeValueState.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Xml.StateEngine/XmlClosingTagState.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Xml.StateEngine/XmlCommentState.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Xml.StateEngine/XmlFreeState.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Xml.StateEngine/XmlMalformedTagState.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Xml.StateEngine/XmlSpecialTagState.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Xml.StateEngine/XmlTagNameState.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Xml.StateEngine/XmlTagState.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />

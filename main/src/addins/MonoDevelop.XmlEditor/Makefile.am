@@ -25,6 +25,18 @@ FILES =  \
 	gtk-gui/generated.cs \
 	gtk-gui/MonoDevelop.XmlEditor.Gui.XmlEditorOptionsPanelWidget.cs \
 	gtk-gui/MonoDevelop.XmlEditor.Gui.XmlSchemasPanelWidget.cs \
+	MonoDevelop.Xml.StateEngine/CDataState.cs \
+	MonoDevelop.Xml.StateEngine/Parser.cs \
+	MonoDevelop.Xml.StateEngine/State.cs \
+	MonoDevelop.Xml.StateEngine/XmlAttributeState.cs \
+	MonoDevelop.Xml.StateEngine/XmlAttributeValueState.cs \
+	MonoDevelop.Xml.StateEngine/XmlClosingTagState.cs \
+	MonoDevelop.Xml.StateEngine/XmlCommentState.cs \
+	MonoDevelop.Xml.StateEngine/XmlFreeState.cs \
+	MonoDevelop.Xml.StateEngine/XmlMalformedTagState.cs \
+	MonoDevelop.Xml.StateEngine/XmlSpecialTagState.cs \
+	MonoDevelop.Xml.StateEngine/XmlTagNameState.cs \
+	MonoDevelop.Xml.StateEngine/XmlTagState.cs \
 	MonoDevelop.XmlEditor.Completion/ClosingBracketCompletionDataProvider.cs \
 	MonoDevelop.XmlEditor.Completion/EmptyXmlCompletionProvider.cs \
 	MonoDevelop.XmlEditor.Completion/ILazilyLoadedProvider.cs \
