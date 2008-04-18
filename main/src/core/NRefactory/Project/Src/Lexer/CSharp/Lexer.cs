@@ -871,7 +871,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 			if (specialCommentHash == null) {
 				return ReadToEndOfLine();
 			}
-			sb.Length = 0;
+			StringBuilder sb2 = new StringBuilder ();
 			StringBuilder curWord = new StringBuilder();
 			
 			int nextChar;
@@ -882,7 +882,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 					break;
 				}
 				
-				sb.Append(ch);
+				sb2.Append(ch);
 				if (IsIdentifierPart(nextChar)) {
 					curWord.Append(ch);
 				} else {
@@ -890,14 +890,14 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 					curWord.Length = 0;
 					if (specialCommentHash.ContainsKey(tag)) {
 						Location p = new Location(Col, Line);
-						string comment = ch + ReadToEndOfLine();
+						string comment = ReadToEndOfLine();
 						this.TagComments.Add(new TagComment(tag, isBegin, comment, p, new Location(p.Column + comment.Length, p.Line)));
-						sb.Append(comment);
-						break;
+						sb2.Append(comment);
+						return sb2.ToString ();
 					}
 				}
 			}
-			return sb.ToString();
+			return sb2.ToString();
 		}
 		
 		void ReadSingleLineComment(int startCol, CommentType commentType)
@@ -909,6 +909,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 				int line = Line;
 				specialTracker.StartComment(commentType, isBegin, new Location(startCol, line));
 				string comment = ReadCommentToEOL();
+				System.Console.WriteLine("'" + comment + "'");
 				specialTracker.AddString(comment);
 				specialTracker.FinishComment(new Location(col + comment.Length, line));
 			}
