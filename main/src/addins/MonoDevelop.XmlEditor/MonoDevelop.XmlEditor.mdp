@@ -72,7 +72,6 @@
     <File name="MonoDevelop.XmlEditor.Completion/ILazilyLoadedProvider.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.XmlEditor.Completion/EmptyXmlCompletionProvider.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.XmlEditor.Completion/XmlTagCompletionData.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Xml.StateEngine" subtype="Directory" buildaction="Compile" />
     <File name="MonoDevelop.Xml.StateEngine/Parser.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Xml.StateEngine/State.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Xml.StateEngine/CDataState.cs" subtype="Code" buildaction="Compile" />

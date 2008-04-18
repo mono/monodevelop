@@ -1,3 +1,10 @@
+2008-04-18  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Xml.StateEngine/XmlAttributeValueState.cs,
+	  MonoDevelop.Xml.StateEngine/XmlAttributeState.cs: Add convenience
+	  members.
+	* MonoDevelop.XmlEditor.mdp: Updated.
+
 2008-04-17  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Xml.StateEngine/Parser.cs,

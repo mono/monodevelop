@@ -37,7 +37,7 @@ namespace MonoDevelop.Xml.StateEngine
 		char startChar;
 		bool done;
 
-		public XmlAttributeValueState (State parent, int position)
+		public XmlAttributeValueState (XmlAttributeState parent, int position)
 			: base (parent, position)
 		{
 		}
@@ -76,6 +76,14 @@ namespace MonoDevelop.Xml.StateEngine
 				break;
 			}
 			return null;
+		}
+		
+		public string AttributeName {
+			get { return ((XmlAttributeState)Parent).Name; }
+		}
+		
+		public IXmlName TagName {
+			get { return ((XmlAttributeState)Parent).TagName; }
 		}
 
 		public override string ToString ()

@@ -39,7 +39,7 @@ namespace MonoDevelop.Xml.StateEngine
 		string name;
 		Mode mode = Mode.Naming;
 		
-		public XmlAttributeState (State parent, int position)
+		public XmlAttributeState (XmlTagState parent, int position)
 			: base (parent, position)
 		{
 			nameBuilder = new StringBuilder ();
@@ -120,6 +120,10 @@ namespace MonoDevelop.Xml.StateEngine
 				else
 					return name?? string.Empty;
 			}
+		}
+		
+		public IXmlName TagName {
+			get { return ((XmlTagState)Parent).Name; }
 		}
 		
 		enum Mode {
