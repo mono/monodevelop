@@ -1,3 +1,8 @@
+2008-04-18  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.RegexToolkit/RegexToolkitWindow.cs: fixed Bug 379472 -
+	  GTK warnings caused by regex toolkit window.
+
 2008-03-05  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.RegexToolkit/RegexToolkitWindow.cs,

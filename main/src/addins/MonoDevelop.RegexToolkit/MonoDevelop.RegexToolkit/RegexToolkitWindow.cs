@@ -47,12 +47,7 @@ namespace MonoDevelop.RegexToolkit
 		
 		public RegexToolkitWindow() : base (Gtk.WindowType.Toplevel)
 		{
-			this.Parent = IdeApp.Workbench.RootWindow;
-
 			this.Build();
-			this.Events = Gdk.EventMask.AllEventsMask;
-			this.Parent = MonoDevelop.Ide.Gui.IdeApp.Workbench.RootWindow;
-			this.ParentWindow = MonoDevelop.Ide.Gui.IdeApp.Workbench.RootWindow.GdkWindow;
 			this.TransientFor = MonoDevelop.Ide.Gui.IdeApp.Workbench.RootWindow;
 			optionsStore = new ListStore (typeof (bool), typeof (string), typeof (Options));
 			resultStore = new Gtk.TreeStore (typeof (string), typeof (string), typeof (int), typeof (int));
@@ -122,7 +117,6 @@ namespace MonoDevelop.RegexToolkit
 			
 			elementsStore = new Gtk.TreeStore (typeof (string), typeof (string), typeof (string), typeof (string));
 			this.elementsTreeview.Model = this.elementsStore;
-			this.elementsTreeview.Events = Gdk.EventMask.AllEventsMask;
 			this.elementsTreeview.HeadersVisible = false;
 			this.elementsTreeview.AppendColumn (String.Empty, new CellRendererPixbuf (), "stock_id", 0);
 			cellRendText = new CellRendererText ();
@@ -132,7 +126,6 @@ namespace MonoDevelop.RegexToolkit
 			this.elementsTreeview.Selection.Changed += delegate {
 				ShowTooltipForSelectedEntry ();			
 			};
-			this.elementsTreeview.Events = Gdk.EventMask.AllEventsMask;
 			this.LeaveNotifyEvent += delegate {
 				this.HideTooltipWindow ();
 			};
@@ -220,7 +213,7 @@ namespace MonoDevelop.RegexToolkit
 		{
 			HideTooltipWindow (); 
 			tooltipWindow = new CustomTooltipWindow ();
-			tooltipWindow.Parent = this;
+			tooltipWindow.TransientFor = this;
 			tooltipWindow.DestroyWithParent = true;
 			tooltipWindow.Tooltip = text;
 			int ox, oy;
