@@ -1,5 +1,10 @@
 2008-04-18  Michael Hutchinson <mhutchinson@novell.com> 
 
+	* MonoDevelop.AspNet.StateEngine/AspNetFreeState.cs: Add support for
+	  XML processing instructions.
+
+2008-04-18  Michael Hutchinson <mhutchinson@novell.com> 
+
 	* MonoDevelop.AspNet.StateEngine/AspNetSpecialState.cs,
 	  MonoDevelop.AspNet.StateEngine/AspNetFreeState.cs: Minimal states
 	  for ASP.NET parsing. Still need to handle expressions within

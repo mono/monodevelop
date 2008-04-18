@@ -76,6 +76,8 @@ namespace MonoDevelop.AspNet.StateEngine
 					return new XmlSpecialTagState (this, location);
 				else if (c =='%')
 					return new AspNetSpecialState (this, location);
+				else if (c == '?')
+					return new XmlProcessingInstructionState (this, location);
 				else if (char.IsLetter (c))
 					return new XmlTagState (this, location);
 				else
