@@ -434,6 +434,8 @@ namespace Mono.TextEditor
 		public void SimulateKeyPress (Gdk.Key key, uint unicodeKey, Gdk.ModifierType modifier)
 		{
 			int keyCode = GetKeyCode (key, modifier);
+			if ((modifier & Gdk.ModifierType.ControlMask) == Gdk.ModifierType.ControlMask) 
+				unicodeKey = 0;
 			if (keyBindings.ContainsKey (keyCode)) {
 				try {
 					Document.BeginAtomicUndo ();
