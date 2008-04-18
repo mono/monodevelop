@@ -1,5 +1,5 @@
 // 
-// XmlSpecialTagState.cs
+// XmlProcessingInstructionState.cs
 // 
 // Author:
 //   Michael Hutchinson <mhutchinson@novell.com>
@@ -27,91 +27,45 @@
 //
 
 using System;
-using System.Text;
 
 namespace MonoDevelop.Xml.StateEngine
 {
 	
 	
-	public class XmlSpecialTagState : State
+	public class XmlProcessingInstructionState : State
 	{
-		Mode mode = Mode.None;
 		
-		const string cdata = "[CDATA[";
+		char backOne;
 		
-		public XmlSpecialTagState (State parent, int position)
+		public XmlProcessingInstructionState (State parent, int position)
 			: base (parent, position)
 		{
 		}
 		
-		protected XmlSpecialTagState (XmlSpecialTagState copyFrom)
+		protected XmlProcessingInstructionState (XmlProcessingInstructionState copyFrom)
 			: base (copyFrom)
 		{
-			mode = copyFrom.mode;
+			backOne = copyFrom.backOne;
 		}
 
 		public override State PushChar (char c, int position)
 		{
-			int index = position - StartLocation;
-			
-			if (c == '<' || c == '>')
+			if (c == '>' && backOne == '?') {
+				Close (position);
 				return Parent;
-			
-			switch (index) {
-			case 0:
-				if (c== '!') {
-					mode = Mode.Exclam;
-					return null;
-				} else if (char.IsLetter (c)) {
-					return new XmlTagState (this, position);
-				} else if (c == '?') {
-					return new XmlProcessingInstructionState (this, position);
-				}
-				break;
-			case 1:
-				if (mode == Mode.Exclam) {
-					if (c == '-') {
-						mode = Mode.Comment;
-						return null;
-					} else if (c == '[') {
-						mode = Mode.CData;
-						return null;
-					}
-				}
-				break;
-			case 2:
-				if (mode == Mode.Comment && c== '-')
-					return new XmlCommentState (this, position);
-				else goto default;
-			default:
-				if (mode == Mode.CData && c == cdata [index - 1]) {
-					if (index > cdata.Length)
-						return new CDataState (this, position);
-					else
-						return null;
-				}
-				break;
 			}
-			
-			return new XmlMalformedTagState (this, position);
-		}
-		
-		enum Mode {
-			None,
-			Exclam,
-			CData,
-			Comment
+			backOne = c;
+			return null;
 		}
 
 		public override string ToString ()
 		{
-			return string.Format ("[XmlSpecialTag]");
+			return "[XmlProcessingInstruction]";
 		}
 		
 		public override State DeepCopy ()
 		{
-			return new XmlSpecialTagState (this);
+			return new XmlProcessingInstructionState (this);
 		}
-
 	}
 }

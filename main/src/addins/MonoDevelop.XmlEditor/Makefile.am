@@ -34,6 +34,7 @@ FILES =  \
 	MonoDevelop.Xml.StateEngine/XmlCommentState.cs \
 	MonoDevelop.Xml.StateEngine/XmlFreeState.cs \
 	MonoDevelop.Xml.StateEngine/XmlMalformedTagState.cs \
+	MonoDevelop.Xml.StateEngine/XmlProcessingInstructionState.cs \
 	MonoDevelop.Xml.StateEngine/XmlSpecialTagState.cs \
 	MonoDevelop.Xml.StateEngine/XmlTagNameState.cs \
 	MonoDevelop.Xml.StateEngine/XmlTagState.cs \

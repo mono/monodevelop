@@ -1,5 +1,12 @@
 2008-04-18  Michael Hutchinson <mhutchinson@novell.com> 
 
+	* MonoDevelop.Xml.StateEngine/XmlSpecialTagState.cs,
+	  MonoDevelop.Xml.StateEngine/XmlProcessingInstructionState.cs: Add
+	  support for processing instructions.
+	* Makefile.am, MonoDevelop.XmlEditor.mdp: Updated.
+
+2008-04-18  Michael Hutchinson <mhutchinson@novell.com> 
+
 	* MonoDevelop.Xml.StateEngine/XmlAttributeValueState.cs,
 	  MonoDevelop.Xml.StateEngine/XmlAttributeState.cs: Add convenience
 	  members.
