@@ -1,4 +1,7 @@
 2008-04-19 Rafael Teixeira <monoman@gmail.com>
+	* pt_BR.po: fixed translated errors pointed by MonoDevelop.Gettext
+
+2008-04-19 Rafael Teixeira <monoman@gmail.com>
 	* pt_BR.po: after make update-po added more missing translations and improved some fuzzy and bad translated ones
 
 2008-04-19 Rafael Teixeira <monoman@gmail.com>
