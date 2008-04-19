@@ -1,3 +1,6 @@
+2008-04-19 Rafael Teixeira <monoman@gmail.com>
+	* pt_BR.po: added missing translations and improved some fuzzy ones
+
 2008-03-18  Mike Krüger <mkrueger@novell.com> 
 
 	* messages.po, de.po: Worked on german translation
