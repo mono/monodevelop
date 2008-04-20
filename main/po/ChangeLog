@@ -1,4 +1,7 @@
-2008-04-19 Rafael Teixeira <monoman@gmail.com>
+2008-04-20 Rafael Teixeira <monoman@gmail.com>
+	* pt_BR.po: manually reinstated some translations
+
+2008-04-20 Rafael Teixeira <monoman@gmail.com>
 	* . : svn:ignore *.mo
 
 2008-04-19 Rafael Teixeira <monoman@gmail.com>
