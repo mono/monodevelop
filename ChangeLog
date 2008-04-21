@@ -1,3 +1,7 @@
+2008-04-20  Geoff Norton  <gnorton@novell.com>
+
+	* profiles/mac: Remove gtksourceview2 from the mac trunk build.
+
 2007-12-20  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* configure: Add a more verbose help message explaining the new 

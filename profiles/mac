@@ -1,1 +1,1 @@
-main --enable-gtksourceview2 --disable-subversion --disable-update-mimedb --disable-update-desktopdb --disable-gnomeplatform --enable-macplatform
+main --disable-subversion --disable-update-mimedb --disable-update-desktopdb --disable-gnomeplatform --enable-macplatform
