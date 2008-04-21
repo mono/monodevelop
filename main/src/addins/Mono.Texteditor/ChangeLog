@@ -1,3 +1,7 @@
+2008-04-21  Mike Krüger <mkrueger@novell.com> 
+
+	* Mono.TextEditor/TextEditor.cs: fixed keyboard input.
+
 2008-04-18  Mike Krüger <mkrueger@novell.com> 
 
 	* Mono.TextEditor/TextEditor.cs: fixed 'Bug 381115 - Ctrl+s prints an s

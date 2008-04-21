@@ -468,10 +468,8 @@ namespace Mono.TextEditor
 			}
 			textViewMargin.ResetCaretBlink ();
 		}
-		
-		
 		IMMulticontext context = null;
-		protected override bool OnKeyPressEvent (Gdk.EventKey evt)
+		public void HandleKeyPress (Gdk.EventKey evt)
 		{
 			if (context == null) {
 				context = new IMMulticontext ();
@@ -482,8 +480,15 @@ namespace Mono.TextEditor
 					}
 				};
 			}
+			
 			if (!context.FilterKeypress (evt)) 
 				SimulateKeyPress (evt.Key, Gdk.Keyval.ToUnicode (evt.KeyValue), evt.State);
+		}
+		
+		
+		protected override bool OnKeyPressEvent (Gdk.EventKey evt)
+		{
+			HandleKeyPress (evt);
 			return true;
 		}
 
