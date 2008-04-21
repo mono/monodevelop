@@ -124,8 +124,10 @@ namespace MonoDevelop.SourceEditor
 			base.OptionsChanged (sender, args);
 		}
 		
+		internal Gdk.EventKey lastEventKey;
 		protected override bool OnKeyPressEvent (Gdk.EventKey evnt)
 		{
+			this.lastEventKey = evnt;
 			bool result = true;
 			char ch = (char)Gdk.Keyval.ToUnicode (evnt.KeyValue);
 			

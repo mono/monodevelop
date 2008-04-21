@@ -1,3 +1,9 @@
+2008-04-21  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.SourceEditor/SourceEditorWidget.cs,
+	  MonoDevelop.SourceEditor/ExtendibleTextEditor.cs: fixed keyboard
+	  input.
+
 2008-04-16  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.SourceEditor/SourceEditorWidget.cs,
