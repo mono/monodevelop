@@ -1,3 +1,8 @@
+2008-04-21  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* Gui/CSharpTextEditorExtension.cs: Fix indexer range crasher. Thanks
+	  to Atsushi Eno and Joseph Lombrozo for spotting this.
+
 2008-04-18  Marek Safar <marek.safar@gmail.com>
 
 	* Parser/mcs/**: Exposed most of the type container members.

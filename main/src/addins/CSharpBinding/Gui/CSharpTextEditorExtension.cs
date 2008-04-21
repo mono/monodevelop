@@ -297,6 +297,9 @@ namespace CSharpBinding
 				stateTracker.UpdateEngine ();
 				
 				//handle inserted characters
+				if (Editor.CursorPosition <= 0)
+					return retval;
+				
 				bool reIndent = false;
 				char lastCharInserted = TranslateKeyCharForIndenter (key, keyChar, Editor.GetCharAt (Editor.CursorPosition - 1));
 				if (!(oldLine == Editor.CursorLine && lastCharInserted == '\n') && (oldBufLen != Editor.TextLength || lastCharInserted != '\0'))
