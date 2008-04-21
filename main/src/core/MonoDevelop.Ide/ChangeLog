@@ -1,3 +1,8 @@
+2008-04-21 Rafael Teixeira <monoman@gmail.com>
+	* MonoDevelop.Ide.Gui.Content/DocumentStateTracker.cs: Make ConsoleWrite 
+	  more robust, because it was causing MonoDevelop to bomb on any keypress.
+	  Also fixed the specific bad call that was doing MD bomb this time (line 117).
+
 2008-04-17  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Ide.Gui.Content/DocumentStateTracker.cs: Move document

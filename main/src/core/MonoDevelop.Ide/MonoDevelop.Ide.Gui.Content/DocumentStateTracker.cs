@@ -114,7 +114,7 @@ namespace MonoDevelop.Ide.Gui.Content
 					if (endCut > position)
 						endCut = position;
 					string buffer = editor.GetText (currentEngine.Position, endCut);
-					ConsoleWrite ("getting buffer between {0} and {1}");// : '{2}'", currentEngine.Position, endCut - 1, buffer);
+					ConsoleWrite ("getting buffer between {0} and {1}" /* '{2}'"*/, currentEngine.Position, endCut - 1, buffer);
 					foreach (char ch in buffer) {
 						currentEngine.Push (ch);
 						//ConsoleWrite ("pushing character '{0}'", ch);
@@ -132,7 +132,12 @@ namespace MonoDevelop.Ide.Gui.Content
 		void ConsoleWrite (string message, params object[] args)
 		{
 			System.Console.Write ("DocumentStateTracker: ");
-			System.Console.WriteLine (message, args);
+			try {
+				System.Console.WriteLine (message, args);
+			} catch (Exception e) {
+				System.Console.WriteLine("\nError: Exception while formatting '{0}' for an array with {1} elements", message, args == null ? 0 : args.Length);
+				System.Console.WriteLine(e);
+			}
 		}
 	}
 	
