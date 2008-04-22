@@ -909,7 +909,6 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 				int line = Line;
 				specialTracker.StartComment(commentType, isBegin, new Location(startCol, line));
 				string comment = ReadCommentToEOL();
-				System.Console.WriteLine("'" + comment + "'");
 				specialTracker.AddString(comment);
 				specialTracker.FinishComment(new Location(col + comment.Length, line));
 			}

@@ -1,3 +1,7 @@
+2008-04-22  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Project/Src/Lexer/CSharp/Lexer.cs: Remove debug console write. 
+
 2008-04-18  Mike Krüger <mkrueger@novell.com> 
 
 	* Project/Src/Lexer/CSharp/Lexer.cs: fixed 'Bug 379219 - Code folding
