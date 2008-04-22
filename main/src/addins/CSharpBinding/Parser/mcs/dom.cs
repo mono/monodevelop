@@ -76,9 +76,10 @@ namespace Mono.CSharp.Dom
 
 	public interface INamespace : IUsingBlock
 	{
-		IType[] Types { get; }
+		string Name { get; }
 
-		//IDelegate[] Delegates { get; }
+		IDelegate[] Delegates { get; }
+		IType[] Types { get; }
 	}
 
 	public interface IType

@@ -1154,6 +1154,10 @@ namespace Mono.CSharp {
 			}
 		}
 
+		public string Name {
+			get { return ns.Name; }
+		}
+
 		public Dom.INamespaceImport[] Usings {
 			get {
 				if (using_clauses == null)
@@ -1172,6 +1176,14 @@ namespace Mono.CSharp {
 			}
 		}
 
+		public Dom.IDelegate[] Delegates {
+			get {
+				if (delegates == null)
+					return null;
+
+				return (Dom.IDelegate []) delegates.ToArray (typeof (Dom.IDelegate));
+			}
+		}
 
 		public Dom.IType[] Types {
 			get {
