@@ -1,3 +1,10 @@
+2008-04-21  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.SourceEditor/ExtendibleTextEditor.cs,
+	  MonoDevelop.SourceEditor/SourceEditorWidget.cs: Attempt to fix
+	  major "Bug 382141 - ALL keypresses are intepreted as newlines" by
+	  reworking input method context handling.
+
 2008-04-21  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.SourceEditor/SourceEditorWidget.cs,

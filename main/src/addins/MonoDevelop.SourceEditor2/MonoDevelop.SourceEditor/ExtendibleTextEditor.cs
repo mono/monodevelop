@@ -124,13 +124,8 @@ namespace MonoDevelop.SourceEditor
 			base.OptionsChanged (sender, args);
 		}
 		
-		internal Gdk.EventKey lastEventKey;
 		protected override bool OnKeyPressEvent (Gdk.EventKey evnt)
 		{
-			this.lastEventKey = evnt;
-			bool result = true;
-			char ch = (char)Gdk.Keyval.ToUnicode (evnt.KeyValue);
-			
 			// Handle keyboard menu popup
 			if (evnt.Key == Gdk.Key.Menu || (evnt.Key == Gdk.Key.F10 && (evnt.State & Gdk.ModifierType.ShiftMask) == Gdk.ModifierType.ShiftMask)) {
 				this.menuPopupLocation = this.TextViewMargin.LocationToDisplayCoordinates (this.Caret.Location);
@@ -147,8 +142,20 @@ namespace MonoDevelop.SourceEditor
 				this.ShowTooltip ();
 				return true;
 			}
+			
+			return base.OnKeyPressEvent (evnt);
+		}
+		
+		protected override bool OnIMProcessedKeyPressEvent (Gdk.EventKey evnt, char ch)
+		{
+			bool result = true;
+			
 			if (evnt.Key == Gdk.Key.Escape) {
-				bool b = extension.KeyPress (evnt.Key, ch, evnt.State);
+				bool b;
+				if (extension != null)
+					b = extension.KeyPress (evnt.Key, ch, evnt.State);
+				else
+					b = base.OnIMProcessedKeyPressEvent (evnt, ch);
 				if (b) {
 					view.SourceEditorWidget.RemoveSearchWidget ();
 					return true;
@@ -171,9 +178,9 @@ namespace MonoDevelop.SourceEditor
 			Document.BeginAtomicUndo ();
 			if (extension != null) {
 				if (extension.KeyPress (evnt.Key, ch, evnt.State)) 
-					result = base.OnKeyPressEvent (evnt);
+					result = base.OnIMProcessedKeyPressEvent (evnt, ch);
 			} else {
-				result = base.OnKeyPressEvent (evnt);
+				result = base.OnIMProcessedKeyPressEvent (evnt, ch);
 			}
 			
 			if (SourceEditorOptions.Options.AutoInsertTemplates && IsTemplateKnown ())
@@ -188,7 +195,7 @@ namespace MonoDevelop.SourceEditor
 						Caret.Offset = offset;
 						extension.KeyPress (Gdk.Key.Return, (char)0, Gdk.ModifierType.None);
 					} else {
-						result = base.OnKeyPressEvent (evnt);
+						result = base.OnIMProcessedKeyPressEvent (evnt, ch);
 						base.SimulateKeyPress (Gdk.Key.Return, 0, Gdk.ModifierType.None);
 						Document.Insert (Caret.Offset, "}");
 					}

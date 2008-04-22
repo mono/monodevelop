@@ -55,6 +55,10 @@ namespace Mono.TextEditor
 		
 		bool isDisposed = false;
 		
+		IMMulticontext imContext;
+		Gdk.EventKey lastIMEvent;
+		bool imContextActive;
+		
 		public Document Document {
 			get {
 				return textEditorData.Document;
@@ -68,6 +72,10 @@ namespace Mono.TextEditor
 			get {
 				return textEditorData.Caret;
 			}
+		}
+		
+		protected IMMulticontext IMContext {
+			get { return imContext; }
 		}
 		
 		public TextEditor () : this (new Document ())
@@ -322,8 +330,39 @@ namespace Mono.TextEditor
 			this.Destroyed += delegate {
 				Dispose ();
 			};
+			
+			imContext = new IMMulticontext ();
+			imContext.UsePreedit = false;
+			imContext.Commit += delegate (object sender, Gtk.CommitArgs ca) {
+				foreach (char ch in ca.Str)
+					OnIMProcessedKeyPressEvent (lastIMEvent, ch);
+				ResetIMContext ();
+			};
+			Caret.PositionChanged += delegate (object sender, DocumentLocationEventArgs args) {
+				ResetIMContext ();
+			};
 		}
 		
+		void ResetIMContext ()
+		{
+			if (imContextActive) {
+				imContext.Reset ();
+				imContextActive = false;
+			}
+		}
+		
+		protected override void OnRealized ()
+		{
+			base.OnRealized ();
+			imContext.ClientWindow = this.GdkWindow;
+		}
+		
+		protected override void OnUnrealized ()
+		{
+			imContext.ClientWindow = null;
+			base.OnUnrealized ();
+		}
+
 		
 		void DocumentUpdatedHandler (object sender, EventArgs args)
 		{
@@ -468,30 +507,46 @@ namespace Mono.TextEditor
 			}
 			textViewMargin.ResetCaretBlink ();
 		}
-		IMMulticontext context = null;
-		public void HandleKeyPress (Gdk.EventKey evt)
-		{
-			if (context == null) {
-				context = new IMMulticontext ();
-				context.ClientWindow = this.GdkWindow;
-				context.Commit += delegate (object sender, Gtk.CommitArgs ca) {
-					foreach (char ch in ca.Str) {
-						SimulateKeyPress (evt.Key, (uint)ch, evt.State);
-					}
-				};
-			}
-			
-			if (!context.FilterKeypress (evt)) 
-				SimulateKeyPress (evt.Key, Gdk.Keyval.ToUnicode (evt.KeyValue), evt.State);
-		}
 		
+		bool IMFilterKeyPress (Gdk.EventKey evt)
+		{
+			if (lastIMEvent == evt)
+				return false;
+			
+			if (evt.Type == EventType.KeyPress)
+				lastIMEvent = evt;
+			
+			if (imContext.FilterKeypress (evt)) {
+				imContextActive = true;
+				return true;
+			} else {
+				return false;
+			}
+		}
 		
 		protected override bool OnKeyPressEvent (Gdk.EventKey evt)
 		{
-			HandleKeyPress (evt);
+			if (!IMFilterKeyPress (evt)) {
+				return OnIMProcessedKeyPressEvent (evt, (char)Gdk.Keyval.ToUnicode (evt.KeyValue));
+			}
 			return true;
 		}
-
+		
+		/// <<remarks>
+		/// The EventKey may not correspond to the char, but in such cases, the char is the correct value.
+		/// </remarks>
+		protected virtual bool OnIMProcessedKeyPressEvent (Gdk.EventKey evt, char ch)
+		{
+			SimulateKeyPress (evt.Key, ch, evt.State);
+			return true;
+		}
+		
+		protected override bool OnKeyReleaseEvent (EventKey evnt)
+		{
+			if (IMFilterKeyPress (evnt))
+				imContextActive = true;
+			return true;
+		}
 		
 		bool mousePressed = false;
 		uint lastTime;

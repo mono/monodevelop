@@ -98,12 +98,7 @@ namespace MonoDevelop.SourceEditor
 		{
 			if (key == Gdk.Key.Escape)
 				return true;
-			if (this.textEditor.lastEventKey != null) {
-				this.TextEditor.HandleKeyPress (this.textEditor.lastEventKey);
-				this.textEditor.lastEventKey = null;
-			} else {
-				this.TextEditor.SimulateKeyPress (key, (uint)keyChar, modifier);
-			}
+			this.TextEditor.SimulateKeyPress (key, (uint)keyChar, modifier);
 			return false;
 		}
 		#endregion
