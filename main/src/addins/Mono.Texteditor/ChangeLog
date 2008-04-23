@@ -1,3 +1,8 @@
+2008-04-23  Mike Krüger <mkrueger@novell.com> 
+
+	* Mono.TextEditor/TextViewMargin.cs: Replaced old some old coordination
+	  translation code.
+
 2008-04-21  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* Mono.TextEditor/TextEditor.cs: Attempt to fix major "Bug 382141 - ALL

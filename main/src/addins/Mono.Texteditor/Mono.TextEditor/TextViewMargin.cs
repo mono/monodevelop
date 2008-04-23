@@ -949,34 +949,123 @@ namespace Mono.TextEditor
 			ShowTooltip (null, Gdk.Rectangle.Zero);
 		}
 		
-		public DocumentLocation VisualToDocumentLocation (int x, int y)
+		public DocumentLocation VisualToDocumentLocation (int xp, int yp)
 		{
-			int lineNumber = System.Math.Min (Document.VisualToLogicalLine ((int)(y + textEditor.VAdjustment.Value) / LineHeight), Document.LineCount - 1);
+			int lineNumber = System.Math.Min (Document.VisualToLogicalLine ((int)(yp + textEditor.VAdjustment.Value) / LineHeight), Document.LineCount - 1);
 			
-			LineSegment line = Document.GetLine (lineNumber);
-			int lineXPos  = 0;
-			int column;
+			layout.Alignment = Pango.Alignment.Left;
+			LineSegment line = lineNumber < Document.LineCount ? Document.GetLine (lineNumber) : null;
+			int xStart = XOffset;
+			int y      = (int)(Document.LogicalToVisualLine (lineNumber) * LineHeight - textEditor.VAdjustment.Value);
+			Gdk.Rectangle lineArea = new Gdk.Rectangle (XOffset, y, textEditor.Allocation.Width - XOffset, LineHeight);
+			int width, height;
+			int xPos = 0;
+			int column = 0;
 			int visibleColumn = 0;
-			int visualXPos = x + (int)textEditor.HAdjustment.Value;
-			for (column = 0; column < line.EditableLength; column++) {
-				int delta;
-				if (this.Document.GetCharAt (line.Offset + column) == '\t') {
-					int newColumn = GetNextTabstop (visibleColumn);
-					delta = (newColumn - visibleColumn) * this.charWidth;
-					visibleColumn = newColumn;
-				} else {
-					delta = this.charWidth;
-					visibleColumn++;
-				}
-				int nextXPosition = lineXPos + delta;
-				if (nextXPosition >= visualXPos) {
-					if (!IsNearX1 (visualXPos, lineXPos, nextXPosition))
+			if (line == null) 
+				return DocumentLocation.Empty;
+			
+			List<FoldSegment> foldings = Document.GetStartFoldings (line);
+			int offset = line.Offset;
+			int caretOffset = Caret.Offset;
+			int index, trailing;
+			int visualXPos = xp + (int)textEditor.HAdjustment.Value;
+			for (int i = 0; i < foldings.Count; ++i) {
+				FoldSegment folding = foldings[i];
+				int foldOffset = folding.StartLine.Offset + folding.Column;
+				if (foldOffset < offset)
+					continue;
+				
+				if (folding.IsFolded) {
+					for (int o = offset; o < foldOffset; o++) {
+						char ch = Document.GetCharAt (o);
+						int delta;
+						System.Console.WriteLine(ch);
+						if (ch == '\t') {
+							int newColumn = GetNextTabstop (visibleColumn);
+							delta = (newColumn - visibleColumn) * this.charWidth;
+							visibleColumn = newColumn;
+						} else {
+							layout.SetText (ch.ToString ());
+							layout.GetPixelSize (out delta, out height);
+							visibleColumn++;
+						}
+						int nextXPosition = xPos + delta;
+						if (nextXPosition >= visualXPos) {
+							if (!IsNearX1 (visualXPos, xPos, nextXPosition))
+								column++;
+							break;
+						}
 						column++;
-					break;
+						xPos = nextXPosition;
+					}
+					
+					offset = folding.EndLine.Offset + folding.EndColumn;
+					
+					layout.SetText (folding.Description);
+					layout.GetPixelSize (out width, out height);
+					xPos += width;
+					if (folding.EndLine != line) {
+						line   = folding.EndLine;
+						foldings = Document.GetStartFoldings (line);
+						i = -1;
+					}
 				}
-				lineXPos = nextXPosition;
+				
+//				i1 (!IsNearX1 (xp, xPos, nextXPosition))
+//					column++;
 			}
+
+			if (line.EndOffset - offset > 0) {
+				for (int o = offset; o < line.Offset + line.EditableLength; o++) {
+					char ch = Document.GetCharAt (o);
+					int delta;
+					if (ch == '\t') {
+						int newColumn = GetNextTabstop (visibleColumn);
+						delta = (newColumn - visibleColumn) * this.charWidth;
+						visibleColumn = newColumn;
+					} else {
+						layout.SetText (ch.ToString ());
+						layout.GetPixelSize (out delta, out height);
+						visibleColumn++;
+					}
+					int nextXPosition = xPos + delta;
+					if (nextXPosition >= visualXPos) {
+						if (!IsNearX1 (visualXPos, xPos, nextXPosition))
+							column++;
+						break;
+					}
+					column++;
+					xPos = nextXPosition;
+				}
+			}
+			
 			return new DocumentLocation (lineNumber, column);
+//			int lineNumber = System.Math.Min (Document.VisualToLogicalLine ((int)(y + textEditor.VAdjustment.Value) / LineHeight), Document.LineCount - 1);
+//			LineSegment line = Document.GetLine (lineNumber);
+//			int lineXPos  = 0;
+//			int column;
+//			int visibleColumn = 0;
+//			int visualXPos = x + (int)textEditor.HAdjustment.Value;
+//			for (column = 0; column < line.EditableLength; column++) {
+//				int delta;
+//				if (this.Document.GetCharAt (line.Offset + column) == '\t') {
+//					int newColumn = GetNextTabstop (visibleColumn);
+//					delta = (newColumn - visibleColumn) * this.charWidth;
+//					visibleColumn = newColumn;
+//				} else {
+//					delta = this.charWidth;
+//					visibleColumn++;
+//				}
+//				int nextXPosition = lineXPos + delta;
+//				if (nextXPosition >= visualXPos) {
+//					if (!IsNearX1 (visualXPos, lineXPos, nextXPosition))
+//						column++;
+//					break;
+//				}
+//				lineXPos = nextXPosition;
+//			}			
+//			return new DocumentLocation (lineNumber, column);
 		}
 		
 		static bool IsNearX1 (int pos, int x1, int x2)
