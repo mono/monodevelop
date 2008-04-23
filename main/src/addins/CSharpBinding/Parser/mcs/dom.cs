@@ -134,6 +134,7 @@ namespace Mono.CSharp.Dom
 		// IAttributes[] Attributes { get; }
 		IType DeclaringType { get; }
 		int ModFlags { get; }
+		Location Location { get; }
 		string Name { get; }
 		ITypeName ReturnTypeName { get; }
 	}
