@@ -5,7 +5,8 @@
 //   Miguel de Icaza (miguel@ximian.com)
 //   Marek Safar (marek.safar@seznam.cz)
 //
-// (C) 2001, 2002, 2003 Ximian, Inc.
+// Copyright 2001, 2002, 2003 Ximian, Inc.
+// Copyright 2003-2008 Novell, Inc.
 //
 //
 
@@ -2249,7 +2250,7 @@ namespace Mono.CSharp {
 	//
 	// Unresolved type name expressions
 	//
-	public abstract class ATypeNameExpression : Expression, Dom.ITypeName
+	public abstract class ATypeNameExpression : FullNamedExpression, Dom.ITypeName
 	{
 		readonly string name;
 		protected TypeArguments targs;
@@ -2267,9 +2268,10 @@ namespace Mono.CSharp {
 			loc = l;
 		}
 
-		public override void Emit (EmitContext ec)
-		{
-			throw new InternalErrorException ("ATypeNameExpression found in resolved tree");
+		public bool HasTypeArguments {
+			get {
+				return targs != null;
+			}
 		}
 
 		public override string GetSignatureForError ()
@@ -2687,7 +2689,7 @@ namespace Mono.CSharp {
 					return e;
 
 				ConstructedType ct = new ConstructedType (
-					(FullNamedExpression) e, targs, loc);
+					e.Type, targs, loc);
 				return ct.ResolveAsTypeStep (ec, false);
 			}
 
@@ -2764,8 +2766,10 @@ namespace Mono.CSharp {
 			return this;
 		}
 
-		public abstract string FullName {
-			get;
+		public override void Emit (EmitContext ec)
+		{
+			throw new InternalErrorException ("FullNamedExpression `{0}' found in resolved tree",
+				GetSignatureForError ());
 		}
 	}
 	
@@ -2786,11 +2790,6 @@ namespace Mono.CSharp {
 		override public Expression DoResolve (EmitContext ec)
 		{
 			return ResolveAsTypeTerminal (ec, false);
-		}
-
-		override public void Emit (EmitContext ec)
-		{
-			throw new Exception ("Should never be called");
 		}
 
 		public virtual bool CheckAccessLevel (DeclSpace ds)
@@ -2833,10 +2832,6 @@ namespace Mono.CSharp {
 
 		protected abstract TypeExpr DoResolveAsTypeStep (IResolveContext ec);
 
-		public abstract string Name {
-			get;
-		}
-
 		public override bool Equals (object obj)
 		{
 			TypeExpr tobj = obj as TypeExpr;
@@ -2849,11 +2844,6 @@ namespace Mono.CSharp {
 		public override int GetHashCode ()
 		{
 			return Type.GetHashCode ();
-		}
-		
-		public override string ToString ()
-		{
-			return Name;
 		}
 	}
 
@@ -2876,14 +2866,6 @@ namespace Mono.CSharp {
 		public override TypeExpr ResolveAsTypeTerminal (IResolveContext ec, bool silent)
 		{
 			return this;
-		}
-
-		public override string Name {
-			get { return Type.ToString (); }
-		}
-
-		public override string FullName {
-			get { return Type.FullName; }
 		}
 	}
 
@@ -3018,14 +3000,6 @@ namespace Mono.CSharp {
 			return this;
 		}
 
-		public override string Name {
-			get { return name; }
-		}
-
-		public override string FullName {
-			get { return name; }
-		}
-
 		protected override void CloneTo (CloneContext clonectx, Expression target)
 		{
 			// CloneTo: Nothing, we do not keep any state on this expression
@@ -3071,21 +3045,12 @@ namespace Mono.CSharp {
 			type = fne.Type;
 			return new TypeExpression (type, loc);
 		}
-
-		public override string Name {
-			get { return name.PrettyName; }
-		}
-
-		public override string FullName {
-			get { return name.FullyQualifiedName; }
-		}
 	}
 
 	public class TypeAliasExpression : TypeExpr {
 		FullNamedExpression alias;
 		TypeExpr texpr;
 		TypeArguments args;
-		string name;
 
 		public TypeAliasExpression (FullNamedExpression alias, TypeArguments args, Location l)
 		{
@@ -3094,18 +3059,6 @@ namespace Mono.CSharp {
 			loc = l;
 
 			eclass = ExprClass.Type;
-			if (args != null)
-				name = alias.FullName + "<" + args.ToString () + ">";
-			else
-				name = alias.FullName;
-		}
-
-		public override string Name {
-			get { return alias.FullName; }
-		}
-
-		public override string FullName {
-			get { return name; }
 		}
 
 		protected override TypeExpr DoResolveAsTypeStep (IResolveContext ec)

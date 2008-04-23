@@ -4,9 +4,9 @@
 // Author:
 //	Atsushi Enomoto <atsushi@ximian.com>
 //
-// Licensed under the terms of the GNU GPL
+// Dual licensed under the terms of the MIT X11 or GNU GPL
 //
-// (C) 2004 Novell, Inc.
+// Copyright 2004 Novell, Inc.
 //
 //
 #if ! BOOTSTRAP_WITH_OLDLIB
@@ -760,7 +760,7 @@ namespace Mono.CSharp {
 			// It still might be part of namespace name.
 			Namespace ns = ds.NamespaceEntry.NS.GetNamespace (name, false);
 			if (ns != null) {
-				xref.SetAttribute ("cref", "N:" + ns.FullName);
+				xref.SetAttribute ("cref", "N:" + ns.GetSignatureForError ());
 				return; // a namespace
 			}
 			if (RootNamespace.Global.IsNamespace (name)) {

@@ -5,9 +5,10 @@
 //         Ravi Pratap     (ravi@ximian.com)
 //         Marek Safar     (marek.safar@seznam.cz)
 //
-// Licensed under the terms of the GNU GPL
+// Dual licensed under the terms of the MIT X11 or GNU GPL
 //
-// (C) 2001 Ximian, Inc (http://www.ximian.com)
+// Copyright 2001 Ximian, Inc (http://www.ximian.com)
+// Copyright 2003-2003 Novell, Inc (http://www.novell.com)
 //
 
 using System;
@@ -52,14 +53,6 @@ namespace Mono.CSharp {
 			public override TypeExpr ResolveAsTypeTerminal (IResolveContext ec, bool silent)
 			{
 				return DoResolveAsTypeStep (ec);
-			}
-
-			public override string Name {
-				get { return Enum.Name; }
-			}
-
-			public override string FullName {
-				get { return Enum.Name; }
 			}
 		}
 
@@ -131,7 +124,7 @@ namespace Mono.CSharp {
 	{
 		public static readonly string UnderlyingValueField = "value__";
 
-		Expression base_type;
+		FullNamedExpression base_type;
 
 		public Type UnderlyingType;
 
@@ -142,7 +135,7 @@ namespace Mono.CSharp {
 			Modifiers.INTERNAL |
 			Modifiers.PRIVATE;
 
-		public Enum (NamespaceEntry ns, DeclSpace parent, Expression type,
+		public Enum (NamespaceEntry ns, DeclSpace parent, FullNamedExpression type,
 			     int mod_flags, MemberName name, Attributes attrs)
 			: base (ns, parent, name, attrs, Kind.Enum)
 		{

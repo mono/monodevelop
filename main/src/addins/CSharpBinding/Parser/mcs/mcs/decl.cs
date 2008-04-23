@@ -4,10 +4,10 @@
 // Author: Miguel de Icaza (miguel@gnu.org)
 //         Marek Safar (marek.safar@seznam.cz)
 //
-// Licensed under the terms of the GNU GPL
+// Dual licensed under the terms of the MIT X11 or GNU GPL
 //
-// (C) 2001 Ximian, Inc (http://www.ximian.com)
-// (C) 2004 Novell, Inc
+// Copyright 2001 Ximian, Inc (http://www.ximian.com)
+// Copyright 2004-2008 Novell, Inc
 //
 // TODO: Move the method verification stuff from the class.cs and interface.cs here
 //
@@ -164,11 +164,6 @@ namespace Mono.CSharp {
 			}
 		}
 
-		[Obsolete ("Use GetSignatureForError ()")]
-		public string PrettyName {
-			get { return TypeArguments == null ? Name : MethodName + "<" + TypeArguments.ToString () + ">"; }
-		}
-
 		public string MethodName {
 			get {
 				string connect = is_double_colon ? "::" : ".";
@@ -181,8 +176,8 @@ namespace Mono.CSharp {
 
 		// Please use this only for error reporting.   For normal uses, just use the Equals and GetHashCode methods that make
 		// MemberName a proper hash key, and avoid tons of memory allocations
-		public string FullyQualifiedName {
-			get { return TypeArguments == null ? MethodName : MethodName + "<" + TypeArguments.ToString () + ">"; }
+		string FullyQualifiedName {
+			get { return TypeArguments == null ? MethodName : MethodName + "<" + TypeArguments.GetSignatureForError () + ">"; }
 		}
 
 		public string GetSignatureForError ()
@@ -1033,6 +1028,19 @@ namespace Mono.CSharp {
 			Report.Error (260, type.Location,
 				"Missing partial modifier on declaration of type `{0}'. Another partial declaration of this type exists",
 				type.GetSignatureForError ());
+		}
+
+		public override void Emit ()
+		{
+#if GMCS_SOURCE
+			if (type_params != null) {
+				int offset = count_type_params - type_params.Length;
+				for (int i = offset; i < type_params.Length; i++)
+					CurrentTypeParameters [i - offset].Emit ();
+			}
+#endif
+
+			base.Emit ();
 		}
 
 		public override string GetSignatureForError ()

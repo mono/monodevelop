@@ -4,7 +4,7 @@
 // Author:
 //   Raja R Harinath <rharinath@novell.com>
 //
-// (C) 2006 Novell, Inc.
+// Copyright 2006 Novell, Inc.
 //
 using System;
 using System.Reflection;
@@ -175,14 +175,6 @@ namespace Mono.CSharp
 
 	public class TypeParameterExpr : TypeExpr
 	{
-		public override string Name {
-			get { throw new NotImplementedException (); }
-		}
-
-		public override string FullName {
-			get { throw new NotImplementedException (); }
-		}
-
 		public TypeParameterExpr (TypeParameter type_parameter, Location loc)
 		{
 			throw new NotImplementedException ();
@@ -226,14 +218,6 @@ namespace Mono.CSharp
 		public ConstructedType (Type t, TypeArguments args, Location l)
 		{
 			throw new NotImplementedException ();
-		}
-
-		public override string Name {
-			get { throw new NotImplementedException (); }
-		}
-
-		public override string FullName {
-			get { throw new NotImplementedException (); }
 		}
 
 		protected override TypeExpr DoResolveAsTypeStep (IResolveContext ec)

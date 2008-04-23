@@ -6,7 +6,8 @@
 //   Ravi Pratap (ravi@ximian.com)
 //   Marek Safar (marek.safar@gmail.com)
 //
-// (C) 2001, 2002, 2003 Ximian, Inc.
+// Copyright 2001, 2002, 2003 Ximian, Inc.
+// Copyright 2003-2008 Novell, Inc.
 //
 
 namespace Mono.CSharp {
@@ -1290,6 +1291,10 @@ namespace Mono.CSharp {
 				Type target = TypeManager.GetTypeArguments (target_type) [0];
 
 				if (TypeManager.IsNullableType (expr.Type)) {
+					Type etype = TypeManager.GetTypeArguments (expr.Type) [0];
+					if (TypeManager.IsEqual (etype, target))
+						return expr;
+
 					e = new Nullable.LiftedConversion (
 						expr, target_type, false, false, loc).Resolve (ec);
 					if (e != null)

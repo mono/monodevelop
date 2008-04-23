@@ -5,7 +5,8 @@
 //   Miguel de Icaza (miguel@ximain.com)
 //   Marek Safar (marek.safar@gmail.com)
 //
-// (C) 2003, 2004 Novell, Inc.
+// Dual licensed under the terms of the MIT X11 or GNU GPL
+// Copyright 2003-2008 Novell, Inc.
 //
 // TODO: Ideally, we should have the helper classes emited as a hierarchy to map
 // their nesting, and have the visibility set to private, instead of NestedAssembly
@@ -1207,7 +1208,7 @@ namespace Mono.CSharp {
 
 		public virtual bool HasExplicitParameters {
 			get {
-				return true;
+				return Parameters != null;
 			}
 		}
 
@@ -1479,6 +1480,12 @@ namespace Mono.CSharp {
 
 			if ((Parameters != null) && !Parameters.Resolve (ec))
 				return null;
+
+			// FIXME: The emitted code isn't very careful about reachability
+			// so, ensure we have a 'ret' at the end
+			if (ec.CurrentBranching != null &&
+			    ec.CurrentBranching.CurrentUsageVector.IsUnreachable)
+				ec.NeedReturnLabel ();
 
 			return this;
 		}

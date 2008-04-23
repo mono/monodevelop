@@ -4,10 +4,10 @@
 // Author: Miguel de Icaza (miguel@gnu.org)
 //         Marek Safar (marek.safar@seznam.cz)
 //
-// Licensed under the terms of the GNU GPL
+// Dual licensed under the terms of the MIT X11 or GNU GPL
 //
-// (C) 2001 Ximian, Inc (http://www.ximian.com)
-//
+// Copyright 2001-2003 Ximian, Inc (http://www.ximian.com)
+// Copyright 2003-2008 Novell, Inc. 
 //
 //
 using System;
@@ -157,7 +157,7 @@ namespace Mono.CSharp {
 	}
 
 	public class ParamsParameter : Parameter {
-		public ParamsParameter (Expression type, string name, Attributes attrs, Location loc):
+		public ParamsParameter (FullNamedExpression type, string name, Attributes attrs, Location loc):
 			base (type, name, Parameter.Modifier.PARAMS, attrs, loc)
 		{
 		}
@@ -238,8 +238,8 @@ namespace Mono.CSharp {
 
 		static string[] attribute_targets = new string [] { "param" };
 
-		Expression typeName;
-		public Modifier modFlags;
+		FullNamedExpression typeName;
+		readonly Modifier modFlags;
 		string name;
 		public bool IsCaptured;
 		protected Type parameter_type;
@@ -256,7 +256,6 @@ namespace Mono.CSharp {
 
 #if GMCS_SOURCE
 		public bool IsTypeParameter;
-		GenericConstraints constraints;
 #else
 	    	public bool IsTypeParameter {
 			get {
@@ -269,7 +268,7 @@ namespace Mono.CSharp {
 		}
 #endif
 		
-		public Parameter (Expression type, string name, Modifier mod, Attributes attrs, Location loc)
+		public Parameter (FullNamedExpression type, string name, Modifier mod, Attributes attrs, Location loc)
 			: this (type.Type, name, mod, attrs, loc)
 		{
 			if (type == TypeManager.system_void_expr)
@@ -377,7 +376,6 @@ namespace Mono.CSharp {
 			TypeParameterExpr tparam = texpr as TypeParameterExpr;
 			if (tparam != null) {
 				IsTypeParameter = true;
-				constraints = tparam.TypeParameter.Constraints;
 				return true;
 			}
 #endif
@@ -449,14 +447,6 @@ namespace Mono.CSharp {
 				IsTypeParameter = false;
 			}
 		}
-
-#if GMCS_SOURCE
-		public GenericConstraints GenericConstraints {
-			get {
-				return constraints;
-			}
-		}
-#endif
 
 		ParameterAttributes Attributes {
 			get {

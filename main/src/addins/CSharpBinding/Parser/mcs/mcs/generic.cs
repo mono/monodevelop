@@ -5,10 +5,10 @@
 //          Miguel de Icaza (miguel@ximian.com)
 //          Marek Safar (marek.safar@gmail.com)
 //
-// Licensed under the terms of the GNU GPL
+// Dual licensed under the terms of the MIT X11 or GNU GPL
 //
-// (C) 2001, 2002, 2003 Ximian, Inc (http://www.ximian.com)
-// (C) 2004 Novell, Inc
+// Copyright 2001, 2002, 2003 Ximian, Inc (http://www.ximian.com)
+// Copyright 2004-2008 Novell, Inc
 //
 using System;
 using System.Reflection;
@@ -259,7 +259,7 @@ namespace Mono.CSharp {
 					Report.Error (406, loc,
 						      "`{0}': the class constraint for `{1}' " +
 						      "must come before any other constraints.",
-						      expr.Name, name);
+						      expr.GetSignatureForError (), name);
 					return false;
 				} else if (HasReferenceTypeConstraint || HasValueTypeConstraint) {
 					Report.Error (450, loc, "`{0}': cannot specify both " +
@@ -371,7 +371,7 @@ namespace Mono.CSharp {
 				if (seen.Contains (expr.TypeParameter)) {
 					Report.Error (454, loc, "Circular constraint " +
 						      "dependency involving `{0}' and `{1}'",
-						      tparam.Name, expr.Name);
+						      tparam.Name, expr.GetSignatureForError ());
 					return false;
 				}
 
@@ -618,7 +618,6 @@ namespace Mono.CSharp {
 		DeclSpace decl;
 		GenericConstraints gc;
 		Constraints constraints;
-		Location loc;
 		GenericTypeParameterBuilder type;
 		MemberCache member_cache;
 
@@ -629,7 +628,6 @@ namespace Mono.CSharp {
 			this.name = name;
 			this.decl = decl;
 			this.constraints = constraints;
-			this.loc = loc;
 		}
 
 		public GenericConstraints GenericConstraints {
@@ -739,7 +737,7 @@ namespace Mono.CSharp {
 
 			if (implementing != null) {
 				if (is_override && (constraints != null)) {
-					Report.Error (460, loc,
+					Report.Error (460, Location,
 						"`{0}': Cannot specify constraints for overrides or explicit interface implementation methods",
 						TypeManager.CSharpSignature (builder));
 					return false;
@@ -771,7 +769,7 @@ namespace Mono.CSharp {
 					Report.SymbolRelatedToPreviousError (implementing);
 
 					Report.Error (
-						425, loc, "The constraints for type " +
+						425, Location, "The constraints for type " +
 						"parameter `{0}' of method `{1}' must match " +
 						"the constraints for type parameter `{2}' " +
 						"of interface method `{3}'. Consider using " +
@@ -1107,18 +1105,6 @@ namespace Mono.CSharp {
 	public class TypeParameterExpr : TypeExpr {
 		TypeParameter type_parameter;
 
-		public override string Name {
-			get {
-				return type_parameter.Name;
-			}
-		}
-
-		public override string FullName {
-			get {
-				return type_parameter.Name;
-			}
-		}
-
 		public TypeParameter TypeParameter {
 			get {
 				return type_parameter;
@@ -1145,11 +1131,6 @@ namespace Mono.CSharp {
 		public override bool CheckAccessLevel (DeclSpace ds)
 		{
 			return true;
-		}
-
-		public void Error_CannotUseAsUnmanagedType (Location loc)
-		{
-			Report.Error (-203, loc, "Can not use type parameter as unmanaged type");
 		}
 	}
 
@@ -1215,7 +1196,7 @@ namespace Mono.CSharp {
 					continue;
 				}
 				SimpleName sn = args [i] as SimpleName;
-				if (sn != null) {
+				if (sn != null && !sn.HasTypeArguments) {
 					ret [i] = new TypeParameterName (sn.Name, null, sn.Location);
 					continue;
 				}
@@ -1370,7 +1351,6 @@ namespace Mono.CSharp {
 	///   An instantiation of a generic type.
 	/// </summary>	
 	public class ConstructedType : TypeExpr {
-		string full_name;
 		FullNamedExpression name;
 		TypeArguments args;
 		Type[] gen_params, atypes;
@@ -1386,38 +1366,22 @@ namespace Mono.CSharp {
 			this.args = args;
 
 			eclass = ExprClass.Type;
-			full_name = name + "<" + args.ToString () + ">";
-		}
-
-		protected ConstructedType (TypeArguments args, Location l)
-		{
-			loc = l;
-			this.args = args;
-
-			eclass = ExprClass.Type;
-		}
-
-		protected ConstructedType (TypeParameter[] type_params, Location l)
-		{
-			loc = l;
-
-			args = new TypeArguments (l);
-			foreach (TypeParameter type_param in type_params)
-				args.Add (new TypeParameterExpr (type_param, l));
-
-			eclass = ExprClass.Type;
 		}
 
 		/// <summary>
 		///   This is used to construct the `this' type inside a generic type definition.
 		/// </summary>
 		public ConstructedType (Type t, TypeParameter[] type_params, Location l)
-			: this (type_params, l)
 		{
 			gt = t.GetGenericTypeDefinition ();
 
+			args = new TypeArguments (l);
+			foreach (TypeParameter type_param in type_params)
+				args.Add (new TypeParameterExpr (type_param, l));
+
+			this.loc = l;
 			this.name = new TypeExpression (gt, l);
-			full_name = gt.FullName + "<" + args.ToString () + ">";
+			eclass = ExprClass.Type;
 		}
 
 		/// <summary>
@@ -1426,12 +1390,10 @@ namespace Mono.CSharp {
 		///   generic type.
 		/// </summary>		
 		public ConstructedType (Type t, TypeArguments args, Location l)
-			: this (args, l)
+			: this ((FullNamedExpression)null, args, l)
 		{
 			gt = t.GetGenericTypeDefinition ();
-
 			this.name = new TypeExpression (gt, l);
-			full_name = gt.FullName + "<" + args.ToString () + ">";
 		}
 
 		public TypeArguments TypeArguments {
@@ -1475,7 +1437,7 @@ namespace Mono.CSharp {
 			Type t = name.Type;
 
 			if (t == null) {
-				Report.Error (246, loc, "Cannot find type `{0}'<...>", Name);
+				Report.Error (246, loc, "Cannot find type `{0}'<...>", GetSignatureForError ());
 				return false;
 			}
 
@@ -1570,18 +1532,6 @@ namespace Mono.CSharp {
 		public override int GetHashCode ()
 		{
 			return base.GetHashCode ();
-		}
-
-		public override string Name {
-			get {
-				return full_name;
-			}
-		}
-
-		public override string FullName {
-			get {
-				return full_name;
-			}
 		}
 	}
 
@@ -1881,11 +1831,11 @@ namespace Mono.CSharp {
 	/// </summary>
 	public class GenericMethod : DeclSpace
 	{
-		Expression return_type;
+		FullNamedExpression return_type;
 		Parameters parameters;
 
 		public GenericMethod (NamespaceEntry ns, DeclSpace parent, MemberName name,
-				      Expression return_type, Parameters parameters)
+				      FullNamedExpression return_type, Parameters parameters)
 			: base (ns, parent, name, null)
 		{
 			this.return_type = return_type;

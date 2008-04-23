@@ -1,3 +1,74 @@
+2008-04-22  Marek Safar  <marek.safar@gmail.com>
+
+	* expression.cs: Implemented NegateChecked and New expressions.
+
+2008-04-22  Marek Safar  <marek.safar@gmail.com>
+
+	* convert.cs, nullable.cs, expression.cs: Implemented Negate expression.
+
+2008-04-22  Raja R Harinath  <harinath@hurrynot.org>
+
+	Fix #351102
+	* anonymous.cs (AnonymousMethodExpression.DoResolve): Mark as
+	needing final 'ret' instruction.
+
+2008-04-22  Marek Safar  <marek.safar@gmail.com>
+
+	* expression.cs: Disabled lifted binary conversion on ISO-1 profiles.
+
+2008-04-21  Marek Safar  <marek.safar@gmail.com>
+
+	* expression.cs: Emit ldnull and not null expression as an instance argument
+	 of static method expression calls.
+
+2008-04-21  Marek Safar  <marek.safar@gmail.com>
+
+	A fix for bug #378200
+	* expression.cs: Fixed crash when creating parameterless expression tree
+	method call.
+
+2008-04-21  Marek Safar  <marek.safar@gmail.com>
+
+	A fix for bug #375297
+	* anonymous.cs: Fixed crash when inferring from null argument anonymous
+	method.
+
+2008-04-21  Marek Safar  <marek.safar@gmail.com>
+
+	A fix for bug #377596
+	* decl.cs, class.cs: Emit delegate type argument attributes.
+
+2008-04-21  Marek Safar  <marek.safar@gmail.com>
+
+	A fix for bug #365314
+	* generic.cs, ecore.cs: Type parameter declaration cannot be of generic type
+	
+2008-04-21  Marek Safar  <marek.safar@gmail.com>
+
+	* cs-parser.jay, expression.cs: ComposedCast can work with type expressions
+	only.
+
+2008-04-21  Marek Safar  <marek.safar@gmail.com>
+
+	* generic.cs (TypeParameter): Removed redundant location.
+
+2008-04-19  Marek Safar  <marek.safar@gmail.com>
+
+	* generic.cs, parameter.cs, namespace.cs, ecore.cs, class.cs, decl.cs,
+	delegate.cs, iterators.cs, cs-parser.jay, const.cs, enum.cs: Use
+	FullNamedExpression in all declaration type expression, statements will come
+	later.
+
+2008-04-18  Marek Safar  <marek.safar@gmail.com>
+
+	* generic.cs, namespace.cs, ecore.cs, class.cs, decl.cs, generic-mcs.cs,
+	nullable.cs, expression.cs, enum.cs, doc.cs: Cleaning up type expressions.
+
+2008-04-18  Marek Safar  <marek.safar@gmail.com>
+
+	* parameter.cs, delegate.cs, cs-parser.jay, expression.cs: Removed unused
+	code.
+
 2008-04-17  Marek Safar  <marek.safar@gmail.com>
 
 	* decl.cs, class.cs, generic.cs: Verify partial parts type parameters and

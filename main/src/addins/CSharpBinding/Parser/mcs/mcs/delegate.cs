@@ -6,10 +6,10 @@
 //     Miguel de Icaza (miguel@ximian.com)
 //     Marek Safar (marek.safar@gmail.com)
 //
-// Licensed under the terms of the GNU GPL
+// Dual licensed under the terms of the MIT X11 or GNU GPL
 //
-// (C) 2001 Ximian, Inc (http://www.ximian.com)
-//
+// Copyright 2001 Ximian, Inc (http://www.ximian.com)
+// Copyright 2003-2008 Novell, Inc (http://www.ximian.com)
 //
 
 using System;
@@ -25,7 +25,7 @@ namespace Mono.CSharp {
 	/// </summary>
 	public class Delegate : DeclSpace, IMemberContainer, Dom.IDelegate
 	{
- 		public Expression ReturnType;
+ 		FullNamedExpression ReturnType;
 		public Parameters      Parameters;
 
 		public ConstructorBuilder ConstructorBuilder;
@@ -54,7 +54,7 @@ namespace Mono.CSharp {
 		        Modifiers.UNSAFE |
 			Modifiers.PRIVATE;
 
- 		public Delegate (NamespaceEntry ns, DeclSpace parent, Expression type,
+ 		public Delegate (NamespaceEntry ns, DeclSpace parent, FullNamedExpression type,
 				 int mod_flags, MemberName name, Parameters param_list,
 				 Attributes attrs)
 			: base (ns, parent, name, attrs)

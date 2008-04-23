@@ -5,8 +5,8 @@
 //   Miguel de Icaza (miguel@ximian.com)
 //   Marek Safar (marek.safar@seznam.cz)
 //
-// (C) 2001, 2002, 2003 Ximian, Inc.
-// (C) 2003, 2004 Novell, Inc.
+// Copyright 2001, 2002, 2003 Ximian, Inc.
+// Copyright 2003-2008 Novell, Inc.
 //
 #define USE_OLD
 
@@ -45,7 +45,7 @@ namespace Mono.CSharp {
 				return expr_tree (ec, mg);
 
 			ArrayList args = new ArrayList (arguments.Count + 1);
-			args.Add (new Argument (new NullLiteral (loc).CreateExpressionTree (ec)));
+			args.Add (new Argument (new NullLiteral (loc)));
 			args.Add (new Argument (mg.CreateExpressionTree (ec)));
 			foreach (Argument a in arguments) {
 				args.Add (new Argument (a.Expr.CreateExpressionTree (ec)));
@@ -314,7 +314,7 @@ namespace Mono.CSharp {
 			throw new Exception ("Can not constant fold: " + Oper.ToString());
 		}
 
-		Expression ResolveOperator (EmitContext ec, Expression expr)
+		protected Expression ResolveOperator (EmitContext ec, Expression expr)
 		{
 			if (predefined_operators == null)
 				CreatePredefinedOperatorsTable ();
@@ -358,10 +358,13 @@ namespace Mono.CSharp {
 
 		Expression CreateExpressionTree (EmitContext ec, MethodGroupExpr user_op)
 		{
-			string method_name; 
+			string method_name;
 			switch (Oper) {
 			case Operator.UnaryNegation:
-				method_name = "Negate";
+				if (ec.CheckState && user_op == null && !IsFloat (type))
+					method_name = "NegateChecked";
+				else
+					method_name = "Negate";
 				break;
 			case Operator.LogicalNot:
 				method_name = "Not";
@@ -454,10 +457,8 @@ namespace Mono.CSharp {
 			if (Expr == null)
 				return null;
 
-#if GMCS_SOURCE
 			if (TypeManager.IsNullableValueType (Expr.Type))
 				return new Nullable.LiftedUnaryOperator (Oper, Expr, loc).Resolve (ec);
-#endif
 
 			//
 			// Attempt to use a constant folding operation.
@@ -489,6 +490,11 @@ namespace Mono.CSharp {
 
 		public override void Emit (EmitContext ec)
 		{
+			EmitOperator (ec, type);
+		}
+
+		protected void EmitOperator (EmitContext ec, Type type)
+		{
 			ILGenerator ig = ec.ig;
 
 			switch (Oper) {
@@ -496,7 +502,7 @@ namespace Mono.CSharp {
 				throw new Exception ("This should be caught by Resolve");
 				
 			case Operator.UnaryNegation:
-				if (ec.CheckState && type != TypeManager.float_type && type != TypeManager.double_type) {
+				if (ec.CheckState && !IsFloat (type)) {
 					ig.Emit (OpCodes.Ldc_I4_0);
 					if (type == TypeManager.int64_type)
 						ig.Emit (OpCodes.Conv_U8);
@@ -547,6 +553,11 @@ namespace Mono.CSharp {
 		{
 			Report.Error (23, loc, "The `{0}' operator cannot be applied to operand of type `{1}'",
 				oper, TypeManager.CSharpName (t));
+		}
+
+		static bool IsFloat (Type t)
+		{
+			return t == TypeManager.float_type || t == TypeManager.double_type;
 		}
 
 		//
@@ -634,28 +645,36 @@ namespace Mono.CSharp {
 		}
 
 		//
+		// Perform user-operator overload resolution
+		//
+		protected virtual Expression ResolveUserOperator (EmitContext ec, Expression expr)
+		{
+			string op_name = oper_names [(int) Oper];
+			MethodGroupExpr user_op = MemberLookup (ec.ContainerType, expr.Type, op_name, MemberTypes.Method, AllBindingFlags, expr.Location) as MethodGroupExpr;
+			if (user_op == null)
+				return null;
+
+			ArrayList args = new ArrayList (1);
+			args.Add (new Argument (expr));
+			user_op = user_op.OverloadResolve (ec, ref args, false, expr.Location);
+
+			if (user_op == null)
+				return null;
+
+			Expr = ((Argument) args [0]).Expr;
+			return new UserOperatorCall (user_op, args, CreateExpressionTree, expr.Location);
+		}
+
+		//
 		// Unary user type overload resolution
 		//
 		Expression ResolveUserType (EmitContext ec, Expression expr)
 		{
-			//
-			// Perform user-operator overload resolution
-			//
-			string op_name = oper_names [(int) Oper];
-			MethodGroupExpr user_op = MemberLookup (ec.ContainerType, expr.Type, op_name, MemberTypes.Method, AllBindingFlags, expr.Location) as MethodGroupExpr;
-			if (user_op != null) {
-				ArrayList args = new ArrayList (1);
-				args.Add (new Argument (expr));
-				user_op = user_op.OverloadResolve (ec, ref args, false, expr.Location);
-
-				if (user_op != null) {
-					Expr = ((Argument) args [0]).Expr;
-					return new UserOperatorCall (user_op, args, CreateExpressionTree, expr.Location);
-				}
-			}
+			Expression best_expr = ResolveUserOperator (ec, expr);
+			if (best_expr != null)
+				return best_expr;
 
 			Type[] predefined = predefined_operators [(int) Oper];
-			Expression best_expr = null;
 			foreach (Type t in predefined) {
 				Expression oper_expr = Convert.UserDefinedConversion (ec, expr, t, expr.Location, false);
 				if (oper_expr == null)
@@ -2358,7 +2377,8 @@ namespace Mono.CSharp {
 				CheckUselessComparison (rc, left.Type);
 			}
 
-			if ((TypeManager.IsNullableType (left.Type) || TypeManager.IsNullableType (right.Type) ||
+			if (RootContext.Version >= LanguageVersion.ISO_2 &&
+				(TypeManager.IsNullableType (left.Type) || TypeManager.IsNullableType (right.Type) ||
 				(left is NullLiteral && right.Type.IsValueType) || (right is NullLiteral && left.Type.IsValueType)))
 				return new Nullable.LiftedBinaryOperator (oper, left, right, loc).Resolve (ec);
 
@@ -3261,7 +3281,7 @@ namespace Mono.CSharp {
 			
 			switch (oper) {
 			case Operator.Addition:
-				if (method == null && ec.CheckState && !IsFloat (left.Type))
+				if (method == null && ec.CheckState && !IsFloat (type))
 					method_name = "AddChecked";
 				else
 					method_name = "Add";
@@ -3315,7 +3335,7 @@ namespace Mono.CSharp {
 				method_name = "Modulo";
 				break;
 			case Operator.Multiply:
-				if (method == null && ec.CheckState && !IsFloat (left.Type))
+				if (method == null && ec.CheckState && !IsFloat (type))
 					method_name = "MultiplyChecked";
 				else
 					method_name = "Multiply";
@@ -3324,7 +3344,7 @@ namespace Mono.CSharp {
 				method_name = "RightShift";
 				break;
 			case Operator.Subtraction:
-				if (method == null && ec.CheckState && !IsFloat (left.Type))
+				if (method == null && ec.CheckState && !IsFloat (type))
 					method_name = "SubtractChecked";
 				else
 					method_name = "Subtract";
@@ -4503,17 +4523,19 @@ namespace Mono.CSharp {
 				return CreateExpressionFactoryCall ("Quote", args);
 			}
 
-			args = new ArrayList (Arguments.Count + 3);
+			args = new ArrayList (Arguments == null ? 2 : Arguments.Count + 2);
 			if (mg.IsInstance)
 				args.Add (new Argument (mg.InstanceExpression.CreateExpressionTree (ec)));
 			else
-				args.Add (new Argument (new NullLiteral (loc).CreateExpressionTree (ec)));
+				args.Add (new Argument (new NullLiteral (loc)));
 
 			args.Add (new Argument (mg.CreateExpressionTree (ec)));
-			foreach (Argument a in Arguments) {
-				Expression e = a.Expr.CreateExpressionTree (ec);
-				if (e != null)
-					args.Add (new Argument (e));
+			if (Arguments != null) {
+				foreach (Argument a in Arguments) {
+					Expression e = a.Expr.CreateExpressionTree (ec);
+					if (e != null)
+						args.Add (new Argument (e));
+				}
 			}
 
 			return CreateExpressionFactoryCall ("Call", args);
@@ -5159,13 +5181,17 @@ namespace Mono.CSharp {
 			ArrayList args = Arguments == null ?
 				new ArrayList (1) : new ArrayList (Arguments.Count + 1);
 
-			args.Add (new Argument (method.CreateExpressionTree (ec)));
-			if (Arguments != null) {
-				Expression expr;
-				foreach (Argument a in Arguments) {
-					expr = a.Expr.CreateExpressionTree (ec);
-					if (expr != null)
-						args.Add (new Argument (expr));
+			if (method == null) {
+				args.Add (new Argument (new TypeOf (new TypeExpression (type, loc), loc)));
+			} else {
+				args.Add (new Argument (method.CreateExpressionTree (ec)));
+				if (Arguments != null) {
+					Expression expr;
+					foreach (Argument a in Arguments) {
+						expr = a.Expr.CreateExpressionTree (ec);
+						if (expr != null)
+							args.Add (new Argument (expr));
+					}
 				}
 			}
 
@@ -5503,7 +5529,7 @@ namespace Mono.CSharp {
 	///   specified but where initialization data is mandatory.
 	/// </remarks>
 	public class ArrayCreation : Expression {
-		Expression requested_base_type;
+		FullNamedExpression requested_base_type;
 		ArrayList initializers;
 
 		//
@@ -5526,7 +5552,7 @@ namespace Mono.CSharp {
 		int const_initializers_count;
 		bool only_constant_initializers;
 		
-		public ArrayCreation (Expression requested_base_type, ArrayList exprs, string rank, ArrayList initializers, Location l)
+		public ArrayCreation (FullNamedExpression requested_base_type, ArrayList exprs, string rank, ArrayList initializers, Location l)
 		{
 			this.requested_base_type = requested_base_type;
 			this.initializers = initializers;
@@ -5541,7 +5567,7 @@ namespace Mono.CSharp {
 			}
 		}
 
-		public ArrayCreation (Expression requested_base_type, string rank, ArrayList initializers, Location l)
+		public ArrayCreation (FullNamedExpression requested_base_type, string rank, ArrayList initializers, Location l)
 		{
 			this.requested_base_type = requested_base_type;
 			this.initializers = initializers;
@@ -5554,19 +5580,6 @@ namespace Mono.CSharp {
 			//
 			//dimensions = tmp.Length - 1;
 			expect_initializers = true;
-		}
-
-		public Expression FormArrayType (Expression base_type, int idx_count, string rank)
-		{
-			StringBuilder sb = new StringBuilder (rank);
-			
-			sb.Append ("[");
-			for (int i = 1; i < idx_count; i++)
-				sb.Append (",");
-			
-			sb.Append ("]");
-
-			return new ComposedCast (base_type, sb.ToString (), loc);
 		}
 
 		void Error_IncorrectArrayInitializer ()
@@ -6170,7 +6183,7 @@ namespace Mono.CSharp {
 			ArrayCreation target = (ArrayCreation) t;
 
 			if (requested_base_type != null)
-				target.requested_base_type = requested_base_type.Clone (clonectx);
+				target.requested_base_type = (FullNamedExpression)requested_base_type.Clone (clonectx);
 
 			if (arguments != null){
 				target.arguments = new ArrayList (arguments.Count);
@@ -6833,13 +6846,6 @@ namespace Mono.CSharp {
 			if (texpr == null)
 				return null;
 
-#if GMCS_SOURCE
-			if (texpr is TypeParameterExpr){
-				((TypeParameterExpr)texpr).Error_CannotUseAsUnmanagedType (loc);
-				return null;
-			}
-#endif
-
 			type_queried = texpr.Type;
 			if (TypeManager.IsEnumType (type_queried))
 				type_queried = TypeManager.GetEnumUnderlyingType (type_queried);
@@ -6854,14 +6860,14 @@ namespace Mono.CSharp {
 				return new IntConstant (size_of, loc);
 			}
 
-			if (!ec.InUnsafe) {
-				Report.Error (233, loc, "`{0}' does not have a predefined size, therefore sizeof can only be used in an unsafe context (consider using System.Runtime.InteropServices.Marshal.SizeOf)",
-					 TypeManager.CSharpName (type_queried));
+			if (!TypeManager.VerifyUnManaged (type_queried, loc)){
 				return null;
 			}
 
-			if (!TypeManager.VerifyUnManaged (type_queried, loc)){
-				return null;
+			if (!ec.InUnsafe) {
+				Report.Error (233, loc,
+					"`{0}' does not have a predefined size, therefore sizeof can only be used in an unsafe context (consider using System.Runtime.InteropServices.Marshal.SizeOf)",
+					TypeManager.CSharpName (type_queried));
 			}
 			
 			type = TypeManager.int32_type;
@@ -8572,15 +8578,15 @@ namespace Mono.CSharp {
 	//   one bit at a time.
 	// </summary>
 	public class ComposedCast : TypeExpr, Dom.ITypeName {
-		Expression left;
+		FullNamedExpression left;
 		string dim;
 		
-		public ComposedCast (Expression left, string dim)
+		public ComposedCast (FullNamedExpression left, string dim)
 			: this (left, dim, left.Location)
 		{
 		}
 
-		public ComposedCast (Expression left, string dim, Location l)
+		public ComposedCast (FullNamedExpression left, string dim, Location l)
 		{
 			this.left = left;
 			this.dim = dim;
@@ -8645,14 +8651,6 @@ namespace Mono.CSharp {
 			return this;
 		}
 
-		public override string Name {
-			get { return left + dim; }
-		}
-
-		public override string FullName {
-			get { return type.FullName; }
-		}
-
 		public override string GetSignatureForError ()
 		{
 			return left.GetSignatureForError () + dim;
@@ -8662,10 +8660,14 @@ namespace Mono.CSharp {
 		{
 			ComposedCast target = (ComposedCast) t;
 
-			target.left = left.Clone (clonectx);
+			target.left = (FullNamedExpression)left.Clone (clonectx);
 		}
 
 		#region ITypeName Members
+
+		public string Name {
+			get { throw new NotImplementedException (); }
+		}
 
 		public bool IsNullable {
 			get { return dim == "?"; }
