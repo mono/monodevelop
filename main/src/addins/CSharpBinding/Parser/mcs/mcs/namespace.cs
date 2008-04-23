@@ -542,7 +542,7 @@ namespace Mono.CSharp {
 		/// <summary>
 		///   The qualified name of the current namespace
 		/// </summary>
-		public string Name {
+		public override string Name {
 			get { return fullname; }
 		}
 

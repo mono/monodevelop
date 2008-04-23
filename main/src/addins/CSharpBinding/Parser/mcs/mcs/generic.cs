@@ -1128,6 +1128,10 @@ namespace Mono.CSharp {
 			get { return false; }
 		}
 
+		public override string Name {
+			get { return type_parameter.Name; }
+		}
+
 		public override bool CheckAccessLevel (DeclSpace ds)
 		{
 			return true;

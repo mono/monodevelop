@@ -2250,7 +2250,7 @@ namespace Mono.CSharp {
 	//
 	// Unresolved type name expressions
 	//
-	public abstract class ATypeNameExpression : FullNamedExpression, Dom.ITypeName
+	public abstract class ATypeNameExpression : FullNamedExpression
 	{
 		readonly string name;
 		protected TypeArguments targs;
@@ -2284,25 +2284,16 @@ namespace Mono.CSharp {
 			return name;
 		}
 
-		public string Name {
+		public override string Name {
 			get { return name; }
 		}
 
-
 		#region ITypeName Members
 
-		public Dom.ITypeName[] TypeArguments {
+		public override Dom.ITypeName[] TypeArguments {
 			get { return targs == null ? null :
 				(Dom.ITypeName[]) targs.ArgumentsExpression.ToArray (typeof (Dom.ITypeName));
 			}
-		}
-
-		public bool IsNullable {
-			get { return false; }
-		}
-
-		public bool IsPointer {
-			get { return false; }
 		}
 
 		#endregion
@@ -2760,7 +2751,7 @@ namespace Mono.CSharp {
 	///   Represents a namespace or a type.  The name of the class was inspired by
 	///   section 10.8.1 (Fully Qualified Names).
 	/// </summary>
-	public abstract class FullNamedExpression : Expression {
+	public abstract class FullNamedExpression : Expression, Dom.ITypeName {
 		public override FullNamedExpression ResolveAsTypeStep (IResolveContext ec, bool silent)
 		{
 			return this;
@@ -2771,6 +2762,25 @@ namespace Mono.CSharp {
 			throw new InternalErrorException ("FullNamedExpression `{0}' found in resolved tree",
 				GetSignatureForError ());
 		}
+
+		#region ITypeName Members
+
+		public virtual bool IsNullable {
+			get { return false; }
+		}
+
+		public virtual bool IsPointer {
+			get { return false; }
+		}
+
+		// TODO: GetSignatureForError should use this to ensure proper testing
+		public abstract string Name { get; }
+
+		public virtual Dom.ITypeName [] TypeArguments {
+			get { return null; }
+		}
+
+		#endregion
 	}
 	
 	/// <summary>
@@ -2845,6 +2855,11 @@ namespace Mono.CSharp {
 		{
 			return Type.GetHashCode ();
 		}
+
+		// TODO: Remove and finish implementation in upstream
+		public override string Name {
+			get { throw new NotImplementedException (); }
+		}
 	}
 
 	/// <summary>
@@ -2861,6 +2876,11 @@ namespace Mono.CSharp {
 		protected override TypeExpr DoResolveAsTypeStep (IResolveContext ec)
 		{
 			return this;
+		}
+
+		// TODO: It loses C# schematic
+		public override string Name {
+			get { return type.Name; }
 		}
 
 		public override TypeExpr ResolveAsTypeTerminal (IResolveContext ec, bool silent)
@@ -3012,6 +3032,10 @@ namespace Mono.CSharp {
 
 			return base.GetSignatureForError ();
 		}
+
+		public override string Name {
+			get { return name; }
+		}
 	}
 
 	/// <summary>
@@ -3045,8 +3069,12 @@ namespace Mono.CSharp {
 			type = fne.Type;
 			return new TypeExpression (type, loc);
 		}
-	}
 
+		public override string Name {
+			get { return name.Name; }
+		}
+	}
+/*
 	public class TypeAliasExpression : TypeExpr {
 		FullNamedExpression alias;
 		TypeExpr texpr;
@@ -3118,7 +3146,7 @@ namespace Mono.CSharp {
 			get { return texpr.IsSealed; }
 		}
 	}
-
+*/
 	/// <summary>
 	///   This class denotes an expression which evaluates to a member
 	///   of a struct or a class.

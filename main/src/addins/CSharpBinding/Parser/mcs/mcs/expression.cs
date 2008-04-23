@@ -8577,7 +8577,7 @@ namespace Mono.CSharp {
 	//   the type specification, we just use this to construct the type
 	//   one bit at a time.
 	// </summary>
-	public class ComposedCast : TypeExpr, Dom.ITypeName {
+	public class ComposedCast : TypeExpr {
 		FullNamedExpression left;
 		string dim;
 		
@@ -8665,20 +8665,20 @@ namespace Mono.CSharp {
 
 		#region ITypeName Members
 
-		public string Name {
-			get { throw new NotImplementedException (); }
+		public override string Name {
+			get { return left.Name; }
 		}
 
-		public bool IsNullable {
+		public override bool IsNullable {
 			get { return dim == "?"; }
 		}
 
-		public bool IsPointer {
+		public override bool IsPointer {
 			get { return dim == "*"; }
 		}
 
-		public Dom.ITypeName [] TypeArguments {
-			get { throw new NotImplementedException (); }
+		public override Dom.ITypeName [] TypeArguments {
+			get { return left.TypeArguments; }
 		}
 
 		#endregion
