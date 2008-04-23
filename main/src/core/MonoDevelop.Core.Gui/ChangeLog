@@ -1,3 +1,9 @@
+2008-04-23  Zach Lute <zach.lute@gmail.com> 
+
+	* MonoDevelop.Core.Gui.Dialogs/TreeViewOptions.cs: Project Options (and
+	  other TreeView options) will now correctly select the first element
+	  for display. (Bug #379227)
+
 2008-04-15  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Core.Gui.mdp, Makefile.am, icons/Icons.16x16.XMLFileIcon,

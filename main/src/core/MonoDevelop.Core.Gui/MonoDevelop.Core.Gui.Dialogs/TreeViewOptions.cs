@@ -225,6 +225,9 @@ namespace MonoDevelop.Core.Gui.Dialogs {
 		protected void SelectFirstNode ()
 		{
 			TreeView.GrabFocus ();
+			Gtk.TreeIter iter;
+			if (TreeView.Model != null && TreeView.Model.GetIterFirst (out iter))
+				TreeView.Selection.SelectIter (iter);
 			SelectNode (null, null);
 		}
 		
