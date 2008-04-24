@@ -44,6 +44,12 @@ FILES =  \
 	Parser/DomParser.cs \
 	Parser/ExpressionFinder.cs \
 	Parser/LanguageItemVisitor.cs \
+	Parser/mcs/cs-parser.cs \
+	Parser/mcs/dom.cs \
+	Parser/mcs/External/CryptoConvert.cs \
+	Parser/mcs/External/MonoSymbolFile.cs \
+	Parser/mcs/External/MonoSymbolTable.cs \
+	Parser/mcs/External/MonoSymbolWriter.cs \
 	Parser/mcs/mcs/anonymous.cs \
 	Parser/mcs/mcs/assign.cs \
 	Parser/mcs/mcs/attribute.cs \
@@ -61,10 +67,6 @@ FILES =  \
 	Parser/mcs/mcs/ecore.cs \
 	Parser/mcs/mcs/enum.cs \
 	Parser/mcs/mcs/expression.cs \
-	Parser/mcs/External/CryptoConvert.cs \
-	Parser/mcs/External/MonoSymbolFile.cs \
-	Parser/mcs/External/MonoSymbolTable.cs \
-	Parser/mcs/External/MonoSymbolWriter.cs \
 	Parser/mcs/mcs/flowanalysis.cs \
 	Parser/mcs/mcs/generic.cs \
 	Parser/mcs/mcs/iterators.cs \
@@ -84,8 +86,6 @@ FILES =  \
 	Parser/mcs/mcs/support.cs \
 	Parser/mcs/mcs/symbolwriter.cs \
 	Parser/mcs/mcs/typemanager.cs \
-	Parser/mcs/cs-parser.cs \
-	Parser/mcs/dom.cs \
 	Parser/Parser.cs \
 	Parser/Resolver.cs \
 	Parser/SharpDevelopTree/AttributeSection.cs \

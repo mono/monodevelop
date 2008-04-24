@@ -28,6 +28,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using MonoDevelop.Ide.Dom;
@@ -51,11 +52,182 @@ namespace MonoDevelop.CSharpBinding
 			return true;
 		}
 		
+		static DomRegion Block2Region (Mono.CSharp.Dom.LocationBlock block)
+		{
+			int startLine;
+			int startColumn;
+			if (block.Start != null) {
+				startLine   = block.Start.Row;
+				startColumn = block.Start.Column;
+			} else {
+				startLine = startColumn = -1;
+			}
+			
+			int endLine;
+			int endColumn;
+			if (block.End != null) {
+				endLine   = block.End.Row;
+				endColumn = block.End.Column;
+			} else {
+				endLine = endColumn = -1;
+			}
+			
+			return new DomRegion (startLine, startColumn, endLine, endColumn);
+		}
+		
+		static MonoDevelop.Ide.Dom.IReturnType TypeName2ReturnType (Mono.CSharp.Dom.ITypeName name)
+		{
+			List<IReturnType> typeParameters = new List<IReturnType> ();
+			if (name.TypeArguments != null) {
+				foreach (Mono.CSharp.Dom.ITypeName parameter in name.TypeArguments) {
+					typeParameters.Add (TypeName2ReturnType (parameter));
+				}
+			}
+			return new DomReturnType (name.Name,
+			                          name.IsNullable,
+			                          typeParameters);
+			
+		}
+		
+		static MonoDevelop.Ide.DomLocation Location2DomLocation (Mono.CSharp.Dom.ILocation location)
+		{
+			return new MonoDevelop.Ide.DomLocation (location.Row, location.Column);
+		}
+		
+		static List<MonoDevelop.Ide.Dom.IParameter> ParseParams (Mono.CSharp.Dom.IParameter[] p)
+		{
+			List<MonoDevelop.Ide.Dom.IParameter> result = new List<MonoDevelop.Ide.Dom.IParameter> ();
+			
+			foreach (Mono.CSharp.Dom.IParameter para in p) {
+				result.Add (new DomParameter (para.Name, TypeName2ReturnType (para.TypeName)));
+			}
+			
+			return result;
+		}
+		
+		
+		static MonoDevelop.Ide.Dom.IType ConvertType (MonoDevelop.Ide.Dom.CompilationUnit unit, string nsName, Mono.CSharp.Dom.IType type)
+		{
+			List<MonoDevelop.Ide.Dom.IMember> members = new List<MonoDevelop.Ide.Dom.IMember> ();
+			if (type.Properties != null) {
+				foreach (Mono.CSharp.Dom.IProperty property in type.Properties) {
+					
+					members.Add (new DomProperty (property.Name,
+					                              TypeName2ReturnType (property.ReturnTypeName)));
+					
+				}
+			}
+			
+			if (type.Methods != null) {
+				foreach (Mono.CSharp.Dom.IMethod method in type.Methods) {
+					
+					members.Add (new DomMethod (method.Name,
+					                            Location2DomLocation (method.Location),
+					                            TypeName2ReturnType (method.ReturnTypeName),
+					                            ParseParams (method.Parameters)
+					                            ));
+				}
+			}
+			if (type.Delegates != null) {
+				foreach (Mono.CSharp.Dom.IDelegate deleg in type.Delegates) {
+					members.Add (DomType.CreateDelegate (unit, deleg.Name, Location2DomLocation (deleg.Location), TypeName2ReturnType (deleg.ReturnTypeName), ParseParams (deleg.Parameters)));
+				}
+			}
+			
+			if (type.Events != null) {
+				foreach (Mono.CSharp.Dom.IEvent evt in type.Events) {
+					members.Add (new DomEvent (evt.Name, Location2DomLocation (evt.Location), TypeName2ReturnType (evt.ReturnTypeName)));
+				}
+			}
+			
+			if (type.Fields != null) {
+				foreach (Mono.CSharp.Dom.ITypeMember field in type.Fields) {
+					members.Add (new DomField (field.Name, Location2DomLocation (field.Location), TypeName2ReturnType (field.ReturnTypeName)));
+				}
+			}
+			
+			if (type.Types != null) {
+				foreach (Mono.CSharp.Dom.IType t in type.Types) {
+					members.Add (ConvertType (unit, "", t));
+				}
+			}
+			
+			return new MonoDevelop.Ide.Dom.DomType (unit,
+			                                        ClassType.Class,
+			                                        type.Name,
+			                                        Location2DomLocation (type.LocationBlock.Start), 
+			                                        nsName, 
+			                                        Block2Region (type.LocationBlock),
+			                                        members);
+		}
+		
 		public ICompilationUnit Parse (string fileName, string content)
 		{
-			Mono.CSharp.Dom.ICompilationUnit cu = CompilerCallableEntryPoint.Parse (new string[] { fileName }, null) [0];
+//			MemoryStream input = new MemoryStream (Encoding.UTF8.GetBytes (content));
+//			SeekableStreamReader reader = new SeekableStreamReader (input, Encoding.UTF8);
+//			
+//			ArrayList defines = new ArrayList ();
+//			SourceFile file = new Mono.CSharp.SourceFile (Path.GetFileName (fileName),
+//			                                              Path.GetDirectoryName (fileName), 
+//			                                              0);
+//			CSharpParser parser = new CSharpParser (reader, file, defines);
+//			
+//			try {
+//				parser.parse ();
+//			} finally {
+//				input.Close ();
+//			}
+//			foreach (object o in RootContext.ToplevelTypes.Types) {
+//				Mono.CSharp.Class c = (Mono.CSharp.Class)o;
+//				if (c != null) {
+//					result.Add (ConvertType (c));
+//					continue;
+//				}
+//				Mono.CSharp.Interface i = (Mono.CSharp.Interface)o;
+//				if (i != null) {
+//					result.Add (ConvertType (i));
+//					continue;
+//				}
+//				
+//				Mono.CSharp.Struct s = (Mono.CSharp.Struct)o;
+//				if (s != null) {
+//					result.Add (ConvertType (s));
+//					continue;
+//				}
+//				
+//				Mono.CSharp.Delegate d = (Mono.CSharp.Delegate)o;
+//				if (d != null) {
+//					result.Add (ConvertType (d));
+//					continue;
+//				}
+//				Mono.CSharp.Enum e = (Mono.CSharp.Enum)o;
+//				if (e != null) {
+//					result.Add (ConvertType (e));
+//					continue;
+//				}
+//				
+//				System.Console.WriteLine ("Unknown:" + o);
+//			}
 			
-			return null;
+			MonoDevelop.Ide.Dom.CompilationUnit result = new MonoDevelop.Ide.Dom.CompilationUnit (fileName);
+			Mono.CSharp.Dom.ICompilationUnit cu = CompilerCallableEntryPoint.Parse (new string[] { fileName }, null) [0];
+			if (cu.Types != null) {
+				foreach (Mono.CSharp.Dom.IType type in cu.Types) {
+					result.Add (ConvertType (result, "", type));
+				}
+			}
+			
+			if (cu.Namespaces != null) {
+				foreach (Mono.CSharp.Dom.INamespace namesp in cu.Namespaces) {
+					if (namesp.Types != null) {
+						foreach (Mono.CSharp.Dom.IType type in namesp.Types) {
+							result.Add (ConvertType (result, namesp.Name, type));
+						}
+					}
+				}
+			}
+			
+			return result;
 		}
 	}
 }
