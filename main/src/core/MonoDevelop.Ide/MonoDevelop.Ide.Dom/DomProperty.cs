@@ -82,16 +82,21 @@ namespace MonoDevelop.Ide.Dom
 		{
 			base.name = name;
 		}
-
+		
+		public DomProperty (string name, IReturnType returnType)
+		{
+			base.name       = name;
+			base.returnType = returnType;
+		}
+		
 		public override string ToString ()
 		{
-			return string.Format ("[DomProperty:Name={0}, Modifiers={1}, ReturnType={2}, Region={3}]",
+			return string.Format ("[DomProperty:Name={0}, Modifiers={1}, ReturnType={2}, Location={3}]",
 			                      Name,
 			                      Modifiers,
 			                      ReturnType,
-			                      Region);
+			                      Location);
 		}
-		
 		
 		public override object AcceptVisitior (IDomVisitor visitor, object data)
 		{

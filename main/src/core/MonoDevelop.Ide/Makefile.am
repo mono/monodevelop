@@ -52,6 +52,7 @@ FILES =  \
 	gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.KeyBindingsPanel.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.LoadSavePanelWidget.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.TasksPanelWidget.cs \
+	gtk-gui/MonoDevelop.Ide.Gui.Pads.ClassBrowser.ClassBrowserPadWidget.cs \
 	gtk-gui/MonoDevelop.Ide.SelectEncodingsDialog.cs \
 	gtk-gui/MonoDevelop.Ide.StandardHeaders.NewHeaderTemplateDialog.cs \
 	gtk-gui/MonoDevelop.Ide.StandardHeaders.StandardHeaderPanel.cs \
@@ -102,6 +103,7 @@ FILES =  \
 	MonoDevelop.Ide.Dom.Parser/AbstractParser.cs \
 	MonoDevelop.Ide.Dom.Parser/IParser.cs \
 	MonoDevelop.Ide.Dom.Parser/ProjectDom.cs \
+	MonoDevelop.Ide.Dom.Parser/ProjectDomEventArgs.cs \
 	MonoDevelop.Ide.Dom.Parser/ProjectParserService.cs \
 	MonoDevelop.Ide.Dom/AbstractMember.cs \
 	MonoDevelop.Ide.Dom/AttributeTarget.cs \
@@ -192,6 +194,13 @@ FILES =  \
 	MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs \
 	MonoDevelop.Ide.Gui.OptionPanels/LoadSavePanel.cs \
 	MonoDevelop.Ide.Gui.OptionPanels/TasksOptionsPanel.cs \
+	MonoDevelop.Ide.Gui.Pads.ClassBrowser/ClassBrowserPad.cs \
+	MonoDevelop.Ide.Gui.Pads.ClassBrowser/ClassBrowserPadWidget.cs \
+	MonoDevelop.Ide.Gui.Pads.ClassBrowser/MemberNodeBuilder.cs \
+	MonoDevelop.Ide.Gui.Pads.ClassBrowser/ProjectNamespaceBuilder.cs \
+	MonoDevelop.Ide.Gui.Pads.ClassBrowser/ProjectNodeBuilder.cs \
+	MonoDevelop.Ide.Gui.Pads.ClassBrowser/SolutionNodeBuilder.cs \
+	MonoDevelop.Ide.Gui.Pads.ClassBrowser/TypeNodeBuilder.cs \
 	MonoDevelop.Ide.Gui.Pads.ClassPad/ClassData.cs \
 	MonoDevelop.Ide.Gui.Pads.ClassPad/ClassNodeBuilder.cs \
 	MonoDevelop.Ide.Gui.Pads.ClassPad/CombineNodeBuilder.cs \

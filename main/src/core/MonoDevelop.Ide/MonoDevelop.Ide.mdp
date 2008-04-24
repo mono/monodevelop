@@ -384,6 +384,15 @@
     <File name="icons/navigate-previous-24.png" subtype="Code" buildaction="EmbedAsResource" />
     <File name="MonoDevelop.Ide.Dom/DomLocation.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui.Content/DocumentStateTracker.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Ide.Gui.Pads.ClassBrowser/SolutionNodeBuilder.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Ide.Gui.Pads.ClassBrowser/ProjectNodeBuilder.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Ide.Gui.Pads.ClassBrowser/TypeNodeBuilder.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Ide.Gui.Pads.ClassBrowser/ProjectNamespaceBuilder.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Ide.Gui.Pads.ClassBrowser/MemberNodeBuilder.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Ide.Dom.Parser/ProjectDomEventArgs.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Ide.Gui.Pads.ClassBrowser/ClassBrowserPad.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Ide.Gui.Pads.ClassBrowser/ClassBrowserPadWidget.cs" subtype="Code" buildaction="Compile" />
+    <File name="gtk-gui/MonoDevelop.Ide.Gui.Pads.ClassBrowser.ClassBrowserPadWidget.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="False" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
@@ -417,6 +426,7 @@
       <Widget>MonoDevelop.Ide.Gui.Dialogs.CombineEntryFeatureSelector</Widget>
       <Widget>MonoDevelop.Ide.StandardHeaders.StandardHeaderPanel</Widget>
       <Widget>MonoDevelop.Ide.Gui.OptionPanels.KeyBindingsPanel</Widget>
+      <Widget>MonoDevelop.Ide.Gui.Pads.ClassBrowser.ClassBrowserPadWidget</Widget>
     </ExportedWidgets>
   </GtkDesignInfo>
   <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="./Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="../../../">

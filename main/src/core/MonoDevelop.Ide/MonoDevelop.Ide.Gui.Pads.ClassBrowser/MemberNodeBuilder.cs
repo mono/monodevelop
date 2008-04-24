@@ -1,5 +1,5 @@
 //
-// ProjectDom.cs
+// MemberNodeBuilder.cs
 //
 // Author:
 //   Mike Krüger <mkrueger@novell.com>
@@ -27,43 +27,48 @@
 //
 
 using System;
-using System.Collections.Generic;
+using MonoDevelop.Ide.Dom;
+using MonoDevelop.Ide.Dom.Parser;
+using MonoDevelop.Ide.Dom.Output;
 
-namespace MonoDevelop.Ide.Dom.Parser
+namespace MonoDevelop.Ide.Gui.Pads.ClassBrowser
 {
-	public class ProjectDom
+	public class MemberNodeBuilder  : MonoDevelop.Ide.Gui.Pads.TypeNodeBuilder
 	{
-		Dictionary<string, ICompilationUnit> compilationUnits = new Dictionary<string, ICompilationUnit> ();
-			
-		public IEnumerable<ICompilationUnit> CompilationUnits {
-			get {
-				return compilationUnits.Values;
-			}
+		public override Type NodeDataType {
+			get { return typeof(MonoDevelop.Ide.Dom.IMember); }
 		}
 		
-		public void RemoveCompilationUnit (string fileName)
+		public override string ContextMenuAddinPath {
+			get { return "/MonoDevelop/Ide/ContextMenu/ClassPad/Member"; }
+		}
+		
+		public override Type CommandHandlerType {
+			get { return typeof(MemberNodeCommandHandler); }
+		}
+		
+		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
 		{
-			if (compilationUnits.ContainsKey (fileName)) {
-				compilationUnits[fileName].Dispose ();
-				compilationUnits.Remove (fileName);
-			}
+			IMember member = dataObject as IMember;
+			return member.Name;
 		}
 		
-		public void UpdateCompilationUnit (ICompilationUnit compilationUnit)
+		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
 		{
-			if (compilationUnits.ContainsKey (compilationUnit.FileName)) {
-				compilationUnits[compilationUnit.FileName].Dispose ();
-			}
-			compilationUnits[compilationUnit.FileName] = compilationUnit;
+			IMember member = dataObject as IMember;
+			label = AmbienceService.Default.GetString (member, OutputFlags.ClassBrowserEntries);
+			icon  = member.Icon;
 		}
 		
-		internal void FireLoaded ()
+		internal class MemberNodeCommandHandler: NodeCommandHandler
 		{
-			if (Loaded != null) {
-				Loaded (this, EventArgs.Empty);
+			public override void ActivateItem ()
+			{			
+				IMember member = CurrentNode.DataItem  as IMember;
+				if (member.DeclaringType != null) {
+					member.JumpToDeclaration ();
+				}
 			}
 		}
-		
-		public event EventHandler Loaded;
 	}
 }

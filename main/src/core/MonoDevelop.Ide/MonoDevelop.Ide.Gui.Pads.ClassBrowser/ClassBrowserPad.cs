@@ -1,5 +1,5 @@
 //
-// DomLocation.cs
+// ClassBrowserPad.cs
 //
 // Author:
 //   Mike Krüger <mkrueger@novell.com>
@@ -28,40 +28,26 @@
 
 using System;
 
-namespace MonoDevelop.Ide
+using MonoDevelop.Core.Gui.Components;
+using MonoDevelop.Core;
+using MonoDevelop.Ide.Gui;
+using MonoDevelop.Projects;
+using MonoDevelop.Core.Gui;
+
+namespace MonoDevelop.Ide.Gui.Pads.ClassBrowser
 {
-	public struct DomLocation
+	public class ClassBrowserPad : AbstractPadContent
 	{
-		int line, column;
-		
-		public int Line {
+		ClassBrowserPadWidget widget; 
+		public override Gtk.Widget Control {
 			get {
-				return line;
-			}
-			set {
-				line = value;
-			}
-		}
-
-		public int Column {
-			get {
-				return column;
-			}
-			set {
-				column = value;
+				return widget;
 			}
 		}
 		
-		public DomLocation (int line, int column)
+		public ClassBrowserPad () : base ("Classes")
 		{
-			this.line   = line;
-			this.column = column;
+			this.widget = new ClassBrowserPadWidget (); 
 		}
-		
-		public override string ToString ()
-		{
-			return String.Format ("[DomLocation: Line={0}, Column={1}]", Line, Column);
-		}
-
 	}
 }

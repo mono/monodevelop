@@ -37,9 +37,13 @@ namespace MonoDevelop.Ide.Dom
 		protected List<IReturnType> explicitInterfaces = new List<IReturnType> ();
 		
 		protected IType  declaringType;
+		
 		public IType DeclaringType {
 			get {
 				return declaringType;
+			}
+			set {
+				this.declaringType = value;
 			}
 		}
 		
@@ -61,9 +65,10 @@ namespace MonoDevelop.Ide.Dom
 				return explicitInterfaces;
 			}
 		}
+		
 		protected string name;
-		protected DomRegion region;
 		protected DomRegion bodyRegion;
+		protected DomLocation location;
 		protected Modifiers modifiers;
 		protected List<IAttribute> attributes = new List<IAttribute> ();
 		
@@ -73,12 +78,13 @@ namespace MonoDevelop.Ide.Dom
 			}
 		}
 		
-		public DomRegion Region {
+		public MonoDevelop.Ide.DomLocation Location {
 			get {
-				return region;
+				return location;
 			}
 		}
-
+		
+		
 		public DomRegion BodyRegion {
 			get {
 				return bodyRegion;
@@ -299,5 +305,15 @@ namespace MonoDevelop.Ide.Dom
 		
 		public abstract object AcceptVisitior (IDomVisitor visitor, object data);
 		
+		
+		public virtual void JumpToDeclaration ()
+		{
+			if (DeclaringType != null) {
+				MonoDevelop.Ide.Gui.IdeApp.Workbench.OpenDocument (DeclaringType.CompilationUnit.FileName, 
+				                                                   Location.Line,
+				                                                   Location.Column,
+				                                                   true);
+			}
+		}
 	}
 }

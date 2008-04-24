@@ -1,5 +1,5 @@
 //
-// DomLocation.cs
+// ClassBrowserPadWidget.cs
 //
 // Author:
 //   Mike Krüger <mkrueger@novell.com>
@@ -28,40 +28,44 @@
 
 using System;
 
-namespace MonoDevelop.Ide
+using MonoDevelop.Projects;
+using MonoDevelop.Core.Gui;
+using MonoDevelop.Core;
+using MonoDevelop.Ide.Gui;
+
+namespace MonoDevelop.Ide.Gui.Pads.ClassBrowser
 {
-	public struct DomLocation
+	public partial class ClassBrowserPadWidget : Gtk.Bin
 	{
-		int line, column;
+		MonoDevelopTreeView treeView;
 		
-		public int Line {
-			get {
-				return line;
-			}
-			set {
-				line = value;
-			}
-		}
-
-		public int Column {
-			get {
-				return column;
-			}
-			set {
-				column = value;
-			}
-		}
-		
-		public DomLocation (int line, int column)
+		public ClassBrowserPadWidget()
 		{
-			this.line   = line;
-			this.column = column;
+			this.Build();
+			
+			treeView = new MonoDevelopTreeView (new NodeBuilder[] { 
+				new SolutionNodeBuilder (),
+				new ProjectNodeBuilder (),
+				new TypeNodeBuilder (),
+				new ProjectNamespaceNodeBuilder (),
+				new MemberNodeBuilder ()
+				}, new TreePadOption [] {});
+			
+			scrolledwindow1.Add (treeView);
+			scrolledwindow1.ShowAll ();
+				
+			IdeApp.ProjectOperations.CombineOpened += (CombineEventHandler) DispatchService.GuiDispatch (new CombineEventHandler (OnOpenCombine));
+			IdeApp.ProjectOperations.CombineClosed += (CombineEventHandler) DispatchService.GuiDispatch (new CombineEventHandler (OnCloseCombine));
+		}
+			
+		void OnOpenCombine (object sender, CombineEventArgs e)
+		{
+			treeView.LoadTree (e.Combine);
 		}
 		
-		public override string ToString ()
+		void OnCloseCombine (object sender, CombineEventArgs e)
 		{
-			return String.Format ("[DomLocation: Line={0}, Column={1}]", Line, Column);
-		}
-
+			treeView.Clear ();
+		}		
 	}
 }

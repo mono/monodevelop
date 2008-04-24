@@ -35,7 +35,7 @@ namespace MonoDevelop.Ide.Dom
 	public class DomType : AbstractMember, IType
 	{
 		protected object sourceProject;
-		protected List<ICompilationUnit> compilationUnits = new List<ICompilationUnit> ();
+		protected ICompilationUnit compilationUnit;
 		protected IReturnType baseType;
 		protected List<TypeParameter> typeParameters = new List<TypeParameter> ();
 		protected List<IMember> members = new List<IMember> ();
@@ -61,9 +61,9 @@ namespace MonoDevelop.Ide.Dom
 			}
 		}
 
-		public IEnumerable<ICompilationUnit> CompilationUnits {
+		public ICompilationUnit CompilationUnit {
 			get {
-				return compilationUnits;
+				return compilationUnit;
 			}
 		}
 		
@@ -156,15 +156,39 @@ namespace MonoDevelop.Ide.Dom
 		{
 		}
 		
-		public DomType (ClassType classType, string name, string namesp, DomRegion region, List<IMember> members)
+		public DomType (ICompilationUnit compilationUnit, ClassType classType, string name, DomLocation location, string namesp, DomRegion region, List<IMember> members)
 		{
+			this.compilationUnit = compilationUnit;
 			this.classType   = classType;
 			this.name        = name;
 			this.namesp      = namesp;
-			this.region      = region;
+			this.bodyRegion  = region;
 			this.members     = members;
+			this.location    = location;
+			
+			foreach (IMember member in members) {
+				member.DeclaringType = this;
+			}
 		}
 		
+		public static DomType CreateDelegate (ICompilationUnit compilationUnit, string name, DomLocation location, IReturnType type, List<IParameter> parameters)
+		{
+			DomType result = new DomType ();
+			result.compilationUnit = compilationUnit;
+			result.name = name;
+			result.classType = MonoDevelop.Ide.Dom.ClassType.Delegate;
+			result.members.Add (new DomMethod ("Invoke", location, type, parameters));
+			return result;
+		}
+		
+		public override void JumpToDeclaration ()
+		{
+			System.Console.WriteLine(Location);
+			MonoDevelop.Ide.Gui.IdeApp.Workbench.OpenDocument (CompilationUnit.FileName, 
+			                                                   Location.Line,
+			                                                   Location.Column,
+			                                                   true);
+		}
 		
 		public override object AcceptVisitior (IDomVisitor visitor, object data)
 		{

@@ -1,5 +1,5 @@
 //
-// DomLocation.cs
+// ProjectDomEventArgs.cs
 //
 // Author:
 //   Mike Krüger <mkrueger@novell.com>
@@ -28,40 +28,15 @@
 
 using System;
 
-namespace MonoDevelop.Ide
+namespace MonoDevelop.Ide.Dom.Parser
 {
-	public struct DomLocation
+	public class ProjectDomEventArgs : System.EventArgs
 	{
-		int line, column;
+		ProjectDom dom;
 		
-		public int Line {
-			get {
-				return line;
-			}
-			set {
-				line = value;
-			}
-		}
-
-		public int Column {
-			get {
-				return column;
-			}
-			set {
-				column = value;
-			}
-		}
-		
-		public DomLocation (int line, int column)
+		public ProjectDomEventArgs (ProjectDom dom)
 		{
-			this.line   = line;
-			this.column = column;
+			this.dom = dom;
 		}
-		
-		public override string ToString ()
-		{
-			return String.Format ("[DomLocation: Line={0}, Column={1}]", Line, Column);
-		}
-
 	}
 }

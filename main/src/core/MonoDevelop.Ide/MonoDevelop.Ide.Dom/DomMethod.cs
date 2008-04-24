@@ -60,20 +60,28 @@ namespace MonoDevelop.Ide.Dom
 		{
 		}
 		
-		public DomMethod (string name, DomRegion region, DomRegion bodyRegion)
+		public DomMethod (string name, DomLocation location, DomRegion bodyRegion)
 		{
 			this.name       = name;
-			this.region     = region;
+			this.location   = location;
 			this.bodyRegion = bodyRegion;
+		}
+		
+		public DomMethod (string name, DomLocation location, IReturnType returnType, List<IParameter> parameters)
+		{
+			this.name       = name;
+			this.location   = location;
+			this.returnType = returnType;
+			this.parameters = parameters;
 		}
 		
 		public override string ToString ()
 		{
-			return string.Format ("[DomMethod:Name={0}, Modifiers={1}, ReturnType={2}, Region={3}]",
+			return string.Format ("[DomMethod:Name={0}, Modifiers={1}, ReturnType={2}, Location={3}]",
 			                      Name,
 			                      Modifiers,
 			                      ReturnType,
-			                      Region);
+			                      Location);
 		}
 		
 		public override object AcceptVisitior (IDomVisitor visitor, object data)

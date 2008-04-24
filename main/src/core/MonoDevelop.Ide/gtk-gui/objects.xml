@@ -17,4 +17,8 @@
     <signals>
     </signals>
   </object>
+  <object type="MonoDevelop.Ide.Gui.Pads.ClassBrowser.ClassBrowserPadWidget" palette-category="MonoDevelop.Ide" allow-children="false" base-type="Gtk.Bin">
+    <itemgroups />
+    <signals />
+  </object>
 </objects>

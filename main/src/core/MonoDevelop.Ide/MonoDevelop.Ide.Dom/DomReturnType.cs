@@ -37,6 +37,7 @@ namespace MonoDevelop.Ide.Dom
 		protected string nspace;
 		protected int pointerNestingLevel;
 		protected int arrayDimensions;
+		protected bool isNullable;
 		protected List<IReturnType> typeParameters = new List<IReturnType> ();
 			
 		public string FullName {
@@ -67,11 +68,28 @@ namespace MonoDevelop.Ide.Dom
 				return arrayDimensions;
 			}
 		}
-
+		
+		public bool IsNullable {
+			get {
+				return this.isNullable;
+			}
+		}
+		
 		public System.Collections.Generic.IEnumerable<IReturnType> TypeParameters {
 			get {
 				return typeParameters;
 			}
+		}
+		
+		protected DomReturnType ()
+		{
+		}
+		
+		public DomReturnType (string name, bool isNullable, List<IReturnType> typeParameters)
+		{
+			this.name           = name;
+			this.isNullable     = isNullable;
+			this.typeParameters = typeParameters;
 		}
 		
 		public object AcceptVisitior (IDomVisitor visitor, object data)

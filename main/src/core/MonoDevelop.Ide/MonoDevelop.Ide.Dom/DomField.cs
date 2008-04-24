@@ -43,11 +43,11 @@ namespace MonoDevelop.Ide.Dom
 		
 		public override string ToString ()
 		{
-			return string.Format ("[DomField:Name={0}, Modifiers={1}, ReturnType={2}, Region={3}]",
+			return string.Format ("[DomField:Name={0}, Modifiers={1}, ReturnType={2}, Location={3}]",
 			                      Name,
 			                      Modifiers,
 			                      ReturnType,
-			                      Region);
+			                      Location);
 		}
 		
 		protected DomField ()
@@ -58,6 +58,14 @@ namespace MonoDevelop.Ide.Dom
 		{
 			base.name = name;
 		}
+		
+		public DomField (string name, DomLocation location, IReturnType returnType)
+		{
+			this.location   = location;
+			this.name       = name;
+			this.returnType = returnType;
+		}
+		
 		
 		public override object AcceptVisitior (IDomVisitor visitor, object data)
 		{

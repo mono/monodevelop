@@ -52,6 +52,17 @@ namespace MonoDevelop.Ide.Dom
 			}
 		}
 		
+		protected DomEvent ()
+		{
+		}
+		
+		public DomEvent (string name, DomLocation location, IReturnType returnType)
+		{
+			this.name = name;
+			this.location = location;
+			this.returnType = returnType;
+		}
+		
 		static readonly string[] iconTable = {Stock.Event, Stock.PrivateEvent, Stock.ProtectedEvent, Stock.InternalEvent};
 		public override string StockIcon {
 			get {
@@ -61,11 +72,11 @@ namespace MonoDevelop.Ide.Dom
 		
 		public override string ToString ()
 		{
-			return string.Format ("[DomEvent:Name={0}, Modifiers={1}, ReturnType={2}, Region={3}]",
+			return string.Format ("[DomEvent:Name={0}, Modifiers={1}, ReturnType={2}, Location={3}]",
 			                      Name,
 			                      Modifiers,
 			                      ReturnType,
-			                      Region);
+			                      Location);
 		}
 		
 		public override object AcceptVisitior (IDomVisitor visitor, object data)

@@ -68,6 +68,17 @@ namespace MonoDevelop.Ide.Dom
 				return region;
 			}
 		}
+		
+		protected DomParameter ()
+		{
+		}
+		
+		public DomParameter (string name, IReturnType returnType)
+		{
+			this.name       = name;
+			this.returnType = returnType;
+		}
+		
 		public override string ToString ()
 		{
 			return string.Format ("[DomParameter:Name={0}, ParameterModifiers={1}, ReturnType={2}, Region={3}]",

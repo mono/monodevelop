@@ -1174,6 +1174,7 @@
 			<PadOption id = "GroupByAccess" _label = "Group members by access" defaultValue = "False" />
 			<PadOption id = "GroupByType" _label = "Group members by member type" defaultValue = "True" />
 			<PadOption id = "PublicApiOnly" _label = "Show public members only" defaultValue = "False" />
+						
 			<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.ClassPad.CombineNodeBuilder"/>
 			<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.ClassPad.ProjectNodeBuilder"/>
 			<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.ClassPad.NamespaceNodeBuilder"/>
@@ -1183,7 +1184,9 @@
 			<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.ClassPad.MethodNodeBuilder"/>
 			<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.ClassPad.PropertyNodeBuilder"/>
 		</SolutionPad>
-
+		
+<!---		<Pad id = "ClassPad" defaultPlacement = "Left" _label = "Classes" class = "MonoDevelop.Ide.Gui.Pads.ClassBrowser.ClassBrowserPad"/> -->
+			
 <!--			   
 		<Pad id = "SideBar" class = "MonoDevelop.Ide.Gui.Pads.SideBarView"/>
 		<Pad id = "PropertyPad" class = "MonoDevelop.Ide.Gui.Pads.PropertyPad"/>

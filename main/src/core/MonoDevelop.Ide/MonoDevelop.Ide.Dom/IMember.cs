@@ -43,6 +43,7 @@ namespace MonoDevelop.Ide.Dom
 		
 		IType DeclaringType {
 			get;
+			set;
 		}
 		
 		IEnumerable<IReturnType> ExplicitInterfaces {
@@ -53,7 +54,7 @@ namespace MonoDevelop.Ide.Dom
 			get;
 		}
 		
-		DomRegion Region {
+		MonoDevelop.Ide.DomLocation Location {
 			get;
 		}
 		
@@ -112,5 +113,7 @@ namespace MonoDevelop.Ide.Dom
 		bool IsFinal       { get; }
 		bool IsLiteral     { get; }
 		#endregion		
+		
+		void JumpToDeclaration ();
 	}
 }

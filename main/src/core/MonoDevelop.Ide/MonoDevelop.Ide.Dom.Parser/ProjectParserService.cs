@@ -35,6 +35,7 @@ using Mono.Addins;
 
 namespace MonoDevelop.Ide.Dom.Parser
 {
+	
 	public static class ProjectDomService
 	{
 		static Dictionary<string, ProjectDom> doms = new Dictionary<string, ProjectDom> ();
@@ -97,10 +98,17 @@ namespace MonoDevelop.Ide.Dom.Parser
 				
 				ProjectDom dom = GetDom (project);
 				foreach (ProjectFile file in project.ProjectFiles) {
+					if (file.BuildAction != BuildAction.Compile)
+						continue;
 					dom.UpdateCompilationUnit (parser.Parse (file.FilePath, System.IO.File.ReadAllText (file.FilePath)));
+				}
+				dom.FireLoaded ();
+				if (DomUpdated != null) {
+					DomUpdated (null, new ProjectDomEventArgs (dom));
 				}
 			}
 		}
+		
 		static void LoadWholeSolution ()
 		{
 			if (MonoDevelop.Ide.Gui.IdeApp.ProjectOperations.CurrentOpenCombine == null)
@@ -110,5 +118,7 @@ namespace MonoDevelop.Ide.Dom.Parser
 			t.Priority     = ThreadPriority.Lowest;
 			t.Start ();
 		}
+		
+		public static event EventHandler<ProjectDomEventArgs> DomUpdated;
 	}
 }

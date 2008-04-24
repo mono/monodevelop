@@ -41,7 +41,7 @@ namespace MonoDevelop.Ide.Dom
 			get;
 		}
 		
-		IEnumerable<ICompilationUnit> CompilationUnits {
+		ICompilationUnit CompilationUnit {
 			get;
 		}
 		

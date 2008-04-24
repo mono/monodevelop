@@ -1,3 +1,27 @@
+2008-04-24  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Ide.Gui.Pads.ClassBrowser,
+	  MonoDevelop.Ide.Gui.Pads.ClassBrowser/TypeNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassBrowser/ClassBrowserPad.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassBrowser/ClassBrowserPadWidget.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassBrowser/ProjectNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassBrowser/MemberNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassBrowser/SolutionNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassBrowser/ProjectNamespaceBuilder.cs,
+	  MonoDevelop.Ide.Dom.Parser/ProjectParserService.cs,
+	  MonoDevelop.Ide.Dom.Parser/ProjectDomEventArgs.cs,
+	  MonoDevelop.Ide.Dom.Parser/ProjectDom.cs,
+	  MonoDevelop.Ide.Dom/IMember.cs,
+	  MonoDevelop.Ide.Dom/DomReturnType.cs,
+	  MonoDevelop.Ide.Dom/DomType.cs, MonoDevelop.Ide.Dom/DomMethod.cs,
+	  MonoDevelop.Ide.Dom/DomParameter.cs,
+	  MonoDevelop.Ide.Dom/DomEvent.cs, MonoDevelop.Ide.Dom/DomField.cs,
+	  MonoDevelop.Ide.Dom/DomProperty.cs, MonoDevelop.Ide.Dom/IType.cs,
+	  MonoDevelop.Ide.Dom/AbstractMember.cs,
+	  MonoDevelop.Ide.Dom/DomLocation.cs, MonoDevelop.Ide.mdp,
+	  gtk-gui/MonoDevelop.Ide.Gui.Pads.ClassBrowser.ClassBrowserPadWidget.cs:
+	  Worked on mcs integration/class browser
+
 2008-04-21 Rafael Teixeira <monoman@gmail.com>
 	* MonoDevelop.Ide.Gui.Content/DocumentStateTracker.cs: Make ConsoleWrite 
 	  more robust, because it was causing MonoDevelop to bomb on any keypress.
