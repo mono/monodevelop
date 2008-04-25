@@ -38,7 +38,7 @@ using MonoDevelop.Projects.Parser;
 
 namespace MonoDevelop.SourceEditor
 {
-	public class LanguageItemWindow: Gtk.Window
+	public class LanguageItemWindow: MonoDevelop.Projects.Gui.Completion.TooltipWindow
 	{
 		static ConversionFlags WindowConversionFlags = ConversionFlags.StandardConversionFlags | ConversionFlags.IncludePangoMarkup;
 		
@@ -48,10 +48,8 @@ namespace MonoDevelop.SourceEditor
 		static string propertyStr = GettextCatalog.GetString ("Property");
 		
 		public LanguageItemWindow (ILanguageItem item, IParserContext ctx, Ambience ambience,
-		                           string errorInformations) : base (WindowType.Popup)
+		                           string errorInformations)
 		{
-			Name = "gtk-tooltips";
-			
 			// Approximate value for usual case
 			StringBuilder s = new StringBuilder(150);
 			
@@ -99,23 +97,24 @@ namespace MonoDevelop.SourceEditor
 				s.Append ("</small>");
 			}
 			
-			Label lab = new Label ();
+			MonoDevelop.Components.FixedWidthWrapLabel lab = new MonoDevelop.Components.FixedWidthWrapLabel ();
+			lab.Wrap = Pango.WrapMode.WordChar;
+			lab.Indent = -20;
+			lab.BreakOnCamelCasing = true;
+			lab.BreakOnPunctuation = true;
 			lab.Markup = s.ToString ();
-			lab.Xalign = 0;
-			lab.Xpad = 3;
-			lab.Ypad = 3;
+			this.BorderWidth = 3;
 			Add (lab);
 			
-			//make this go semitransparent when control pressed
-			MonoDevelop.Projects.Gui.Completion.WindowTransparencyDecorator.Attach (this);
+			EnableTransparencyControl = true;
 		}
 		
-		protected override bool OnExposeEvent (Gdk.EventExpose ev)
+		//return the real width
+		public int SetMaxWidth (int maxWidth)
 		{
-			base.OnExposeEvent (ev);
-			Gtk.Requisition req = SizeRequest ();
-			Gtk.Style.PaintFlatBox (this.Style, this.GdkWindow, Gtk.StateType.Normal, Gtk.ShadowType.Out, Gdk.Rectangle.Zero, this, "tooltip", 0, 0, req.Width, req.Height);
-			return true;
+			MonoDevelop.Components.FixedWidthWrapLabel l = (MonoDevelop.Components.FixedWidthWrapLabel)Child;
+			l.MaxWidth = maxWidth;
+			return l.RealWidth;
 		}
 		
 		public static string GetDocumentation (string doc)

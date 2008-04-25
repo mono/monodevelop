@@ -293,8 +293,17 @@ namespace MonoDevelop.SourceEditor
 			
 			int ox = 0, oy = 0;
 			this.GdkWindow.GetOrigin (out ox, out oy);
-			int w = languageItemWindow.Child.SizeRequest ().Width;
-			languageItemWindow.Move (xloc + ox - (w/2), yloc + oy + 20);
+			
+			int screenW = Screen.Width;
+			int w = languageItemWindow.SetMaxWidth (screenW);
+
+			int x = xloc + ox - (w/2);
+			if (x + w >= screenW)
+				x = screenW - w;
+			if (x < 0)
+				x = 0;
+			    
+			languageItemWindow.Move (x, yloc + oy + 20);
 			languageItemWindow.ShowAll ();
 		}
 		

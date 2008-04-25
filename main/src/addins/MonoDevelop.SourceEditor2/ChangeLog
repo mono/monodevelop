@@ -1,3 +1,11 @@
+2008-04-24  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.SourceEditor/ExtendibleTextEditor.cs: Wrap info comments
+	  if they are wider than the screen, and move them inwards if they 
+	  extend offscreen.
+	* MonoDevelop.SourceEditor/LanguageItemWindow.cs: Use TooltipWindow and
+	  FixedWidthWrapLabel.
+
 2008-04-21  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.SourceEditor/ExtendibleTextEditor.cs,
