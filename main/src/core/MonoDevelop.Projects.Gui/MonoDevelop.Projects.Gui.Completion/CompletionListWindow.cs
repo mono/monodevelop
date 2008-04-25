@@ -117,10 +117,17 @@ namespace MonoDevelop.Projects.Gui.Completion
 
 			if ((ka & ListWindow.KeyAction.Process) != 0) {
 				if (key == Gdk.Key.Left || key == Gdk.Key.Right) {
-					if (modifier != 0) {
+					// Close if there's a modifier active EXCEPT lock keys and Modifiers
+					// Makes an exception for Mod1Mask (usually alt), shift and control
+					// This prevents the window from closing if the num/scroll/caps lock are active
+					// FIXME: modifier mappings depend on X server settings
+					if ((modifier & ~(Gdk.ModifierType.LockMask | (Gdk.ModifierType.ModifierMask 
+					    & ~Gdk.ModifierType.Mod1Mask & ~Gdk.ModifierType.ControlMask & ~Gdk.ModifierType.ShiftMask))
+					) != 0) {
 						Hide ();
 						return false;
 					}
+					
 					if (declarationviewwindow.Multiple) {
 						if (key == Gdk.Key.Left)
 							declarationviewwindow.OverloadLeft ();

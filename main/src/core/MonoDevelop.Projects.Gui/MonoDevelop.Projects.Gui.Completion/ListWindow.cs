@@ -197,6 +197,11 @@ namespace MonoDevelop.Projects.Gui.Completion
 					//if (curPos == word.Length) return KeyAction.CloseWindow | KeyAction.Process;
 					//curPos++;
 					return KeyAction.Process;
+				
+				case Gdk.Key.Caps_Lock:
+				case Gdk.Key.Num_Lock:
+				case Gdk.Key.Scroll_Lock:
+					return KeyAction.Ignore;
 					
 				case Gdk.Key.Tab:
 				case Gdk.Key.Return:
