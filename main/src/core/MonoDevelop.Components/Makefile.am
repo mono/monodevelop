@@ -88,6 +88,7 @@ FILES =  \
 	MonoDevelop.Components/DataGrid.cs \
 	MonoDevelop.Components/FileEntry.cs \
 	MonoDevelop.Components/FileSelector.cs \
+	MonoDevelop.Components/FixedWidthWrapLabel.cs \
 	MonoDevelop.Components/FolderDialog.cs \
 	MonoDevelop.Components/FolderEntry.cs \
 	MonoDevelop.Components/GladeWidgetExtract.cs \
