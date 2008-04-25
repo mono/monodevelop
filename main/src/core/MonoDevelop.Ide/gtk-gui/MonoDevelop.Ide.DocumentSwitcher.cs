@@ -50,8 +50,9 @@ namespace MonoDevelop.Ide {
             // Widget MonoDevelop.Ide.DocumentSwitcher
             this.Name = "MonoDevelop.Ide.DocumentSwitcher";
             this.Title = "";
-            this.TypeHint = ((Gdk.WindowTypeHint)(4));
+            this.TypeHint = ((Gdk.WindowTypeHint)(2));
             this.WindowPosition = ((Gtk.WindowPosition)(4));
+            this.Modal = true;
             this.BorderWidth = ((uint)(6));
             // Container child MonoDevelop.Ide.DocumentSwitcher.Gtk.Container+ContainerChild
             this.vbox1 = new Gtk.VBox();

@@ -1,3 +1,12 @@
+2008-04-24  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* gtk-gui/gui.stetic, gtk-gui/MonoDevelop.Ide.DocumentSwitcher.cs,
+	  MonoDevelop.Ide.Gui/DefaultWorkbench.cs,
+	  MonoDevelop.Ide.Gui/DocumentSwitcher.cs: Fix several GLib warnings
+	  in the document switcher. Fix the parenting and hinting so it's
+	  positioned correctly on Compiz. Draw a border so it stands out on
+	  Metacity and other "flat" window managers.
+
 2008-04-24  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Ide.Gui.Pads.ClassBrowser,

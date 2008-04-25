@@ -74,11 +74,19 @@ namespace MonoDevelop.Ide
 			}
 		}
 		
-		public DocumentSwitcher (bool startWithNext) : base(Gtk.WindowType.Toplevel)
+		public DocumentSwitcher (Gtk.Window parent, bool startWithNext) : base(Gtk.WindowType.Toplevel)
 		{
-			this.Build();
+			this.TransientFor = parent;
 			this.CanFocus = true;
-			this.Modal = true;
+			this.Decorated = false;
+			this.DestroyWithParent = true;
+			//the following are specified using stetic, but documenting them here too
+			//this.Modal = true;
+			//this.WindowPosition = Gtk.WindowPosition.CenterOnParent;
+			//this.TypeHint = WindowTypeHint.Menu;
+			
+			this.Build ();
+			
 			treeviewPads = new MyTreeView ();
 			scrolledwindow1.Child = treeviewPads;
 			
@@ -119,7 +127,11 @@ namespace MonoDevelop.Ide
 		{
 			this.treeviewPads.Selection.GetSelected (out selectedPadIter);
 			this.treeviewPads.Selection.UnselectAll ();
-			this.treeviewDocuments.Selection.SelectIter (selectedDocumentIter);
+			if (documentListStore.IterIsValid (selectedDocumentIter))
+				this.treeviewDocuments.Selection.SelectIter (selectedDocumentIter);
+			else
+				this.treeviewDocuments.Selection.SelectPath (new TreePath ("0"));
+			
 //			this.treeviewPads.Sensitive = false;
 //			this.treeviewDocuments.Sensitive = true;
 			documentFocus = true;
@@ -131,7 +143,11 @@ namespace MonoDevelop.Ide
 		{
 			this.treeviewDocuments.Selection.GetSelected (out selectedDocumentIter);
 			this.treeviewDocuments.Selection.UnselectAll ();
-			this.treeviewPads.Selection.SelectIter (selectedPadIter);
+			if (padListStore.IterIsValid (selectedPadIter))
+				this.treeviewPads.Selection.SelectIter (selectedPadIter);
+			else
+				this.treeviewPads.Selection.SelectPath (new TreePath ("0"));
+			
 //			this.treeviewPads.Sensitive = true;
 //			this.treeviewDocuments.Sensitive = false;
 			documentFocus = false;
@@ -296,6 +312,7 @@ namespace MonoDevelop.Ide
 		
 		protected override bool OnKeyReleaseEvent (Gdk.EventKey evnt)
 		{
+			bool ret;
 			if (evnt.Key == Gdk.Key.Control_L || evnt.Key == Gdk.Key.Control_R) {
 				Document doc = SelectedDocument;
 				if (doc != null) {
@@ -310,9 +327,23 @@ namespace MonoDevelop.Ide
 						});
 					}
 				}
+				ret = base.OnKeyReleaseEvent (evnt);
 				this.Destroy ();
+			} else {
+				ret = base.OnKeyReleaseEvent (evnt);
 			}
-			return base.OnKeyReleaseEvent (evnt); 
+			return ret;
 		}
+		
+		protected override bool OnExposeEvent (EventExpose evnt)
+		{
+			base.OnExposeEvent (evnt);
+			
+			int winWidth, winHeight;
+			this.GetSize (out winWidth, out winHeight);
+			this.GdkWindow.DrawRectangle (this.Style.ForegroundGC (StateType.Insensitive), false, 0, 0, winWidth-1, winHeight-1);
+			return false;
+		}
+
 	}
 }

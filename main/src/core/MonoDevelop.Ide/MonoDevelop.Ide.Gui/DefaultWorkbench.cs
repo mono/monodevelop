@@ -654,8 +654,7 @@ namespace MonoDevelop.Ide.Gui
 				if ((evnt.State & Gdk.ModifierType.ControlMask) == Gdk.ModifierType.ControlMask) {
 					bool selectNext = (evnt.State & Gdk.ModifierType.ShiftMask) != Gdk.ModifierType.ShiftMask;
 					if (PropertyService.Get ("MonoDevelop.Core.Gui.EnableDocumentSwitchDialog", true)) {
-						DocumentSwitcher switcher = new DocumentSwitcher (selectNext);
-						switcher.Parent = this;
+						DocumentSwitcher switcher = new DocumentSwitcher (this, selectNext);
 						switcher.ShowAll ();
 						switcher.GrabFocus ();
 					} else {

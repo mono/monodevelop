@@ -5843,8 +5843,9 @@ Months</property>
   <widget class="Gtk.Window" id="MonoDevelop.Ide.DocumentSwitcher" design-size="400 299">
     <property name="MemberName" />
     <property name="Title" translatable="yes" />
-    <property name="TypeHint">Splashscreen</property>
+    <property name="TypeHint">Menu</property>
     <property name="WindowPosition">CenterOnParent</property>
+    <property name="Modal">True</property>
     <property name="BorderWidth">6</property>
     <child>
       <widget class="Gtk.VBox" id="vbox1">
