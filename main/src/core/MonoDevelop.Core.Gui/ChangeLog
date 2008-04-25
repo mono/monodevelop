@@ -1,3 +1,8 @@
+2008-04-24  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Core.Gui/GLibLogging.cs: Install some more GLib log
+	  handlers.
+
 2008-04-23  Zach Lute <zach.lute@gmail.com> 
 
 	* MonoDevelop.Core.Gui.Dialogs/TreeViewOptions.cs: Project Options (and

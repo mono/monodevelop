@@ -36,33 +36,27 @@ namespace MonoDevelop.Core.Gui
 	
 	public static class GLibLogging
 	{
-		
-		static bool enabled;
-		
-		static uint gtkLogHandle;
-		static uint gdkLogHandle;
-		static uint glibLogHandle;
+		static readonly string[] domains = new string[] {"Gtk", "Gdk", "GLib", "GObject", "Pango"};
+		static uint[] handles;
 		
 		static Delegate exceptionManagerHook;
 		
 		public static bool Enabled
 		{
-			get { return enabled; }
+			get { return handles == null; }
 			set {
-				if (enabled == value)
+				if ((handles == null) == value)
 					return;
 				
-				enabled = value;
 				if (value) {
+					handles = new uint[domains.Length];
 					HookExceptionManager ();
-					gtkLogHandle  = GLib.Log.SetLogHandler ("Gtk",  GLib.LogLevelFlags.All, LogFunc);
-					gdkLogHandle  = GLib.Log.SetLogHandler ("Gdk",  GLib.LogLevelFlags.All, LogFunc);
-					glibLogHandle = GLib.Log.SetLogHandler ("GLib", GLib.LogLevelFlags.All, LogFunc);
+					for (int i = 0; i < domains.Length; i++)
+						handles[i] = GLib.Log.SetLogHandler (domains[i],  GLib.LogLevelFlags.All, LogFunc);
 				} else {
 					UnhookExceptionManager ();
-					GLib.Log.RemoveLogHandler ("Gtk", gtkLogHandle);
-					GLib.Log.RemoveLogHandler ("Gdk", gdkLogHandle);
-					GLib.Log.RemoveLogHandler ("GLib", glibLogHandle);
+					for (int i = 0; i < domains.Length; i++)
+						GLib.Log.RemoveLogHandler (domains[i], handles[i]);
 				}
 			}
 		}
