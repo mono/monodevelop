@@ -1,5 +1,10 @@
 2008-04-24  Michael Hutchinson <mhutchinson@novell.com> 
 
+	* MonoDevelop.Core.Gui/GLibLogging.cs: Fix a logic error introduced in
+	  the last commit.
+
+2008-04-24  Michael Hutchinson <mhutchinson@novell.com> 
+
 	* MonoDevelop.Core.Gui/GLibLogging.cs: Install some more GLib log
 	  handlers.
 
