@@ -33,7 +33,7 @@ using Gtk;
 
 namespace MonoDevelop.Projects.Gui.Completion
 {
-	class ParameterInformationWindow: Gtk.Window
+	class ParameterInformationWindow: TooltipWindow
 	{
 		Gtk.Label desc;
 		Gtk.Label count;
@@ -41,14 +41,8 @@ namespace MonoDevelop.Projects.Gui.Completion
 		Gtk.Arrow goNext;
 		HBox mainBox;
 		
-		public ParameterInformationWindow(): base (WindowType.Popup)
+		public ParameterInformationWindow()
 		{
-			this.SkipPagerHint = true;
-			this.SkipTaskbarHint = true;
-			this.Decorated = false;
-			this.BorderWidth = 2;
-			this.TypeHint = Gdk.WindowTypeHint.Dialog;
-
 			desc = new Gtk.Label ("");
 			desc.Xalign = 0;
 			count = new Gtk.Label ("");
@@ -63,7 +57,8 @@ namespace MonoDevelop.Projects.Gui.Completion
 			mainBox.PackStart (desc, true, true, 0);
 			mainBox.ShowAll ();
 			this.Add (mainBox);
-			WindowTransparencyDecorator.Attach (this);
+			
+			EnableTransparencyControl = true;
 		}
 		
 		public Gtk.Requisition ShowParameterInfo (IParameterDataProvider provider, int overload, int currentParam)
@@ -94,16 +89,6 @@ namespace MonoDevelop.Projects.Gui.Completion
 			Gtk.Requisition req = mainBox.SizeRequest ();
 			Resize (req.Width, req.Height);
 			return req;
-		}
-		
-		protected override bool OnExposeEvent (Gdk.EventExpose args)
-		{
-			base.OnExposeEvent (args);
-			
-			int winWidth, winHeight;
-			this.GetSize (out winWidth, out winHeight);
-			this.GdkWindow.DrawRectangle (this.Style.ForegroundGC (StateType.Insensitive), false, 0, 0, winWidth-1, winHeight-1);
-			return false;
 		}		
 	}
 }

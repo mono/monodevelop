@@ -43,6 +43,7 @@ FILES =  \
 	MonoDevelop.Projects.Gui.Completion/ParameterInformationWindow.cs \
 	MonoDevelop.Projects.Gui.Completion/ParameterInformationWindowManager.cs \
 	MonoDevelop.Projects.Gui.Completion/TextUtilities.cs \
+	MonoDevelop.Projects.Gui.Completion/TooltipWindow.cs \
 	MonoDevelop.Projects.Gui.Completion/WindowTransparencyDecorator.cs \
 	MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineBuildOptions.cs \
 	MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineConfigurationPanel.cs \

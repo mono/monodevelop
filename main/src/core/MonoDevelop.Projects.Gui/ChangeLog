@@ -1,3 +1,14 @@
+2008-04-24  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Projects.Gui.mdp, Makefile.am: Updated.
+	* MonoDevelop.Projects.Gui.Completion/ParameterInformationWindow.cs:
+	  Use TooltipWindow.
+	* MonoDevelop.Projects.Gui.Completion/TooltipWindow.cs: Share some
+	  behaviours commons to tooltip-like windows.
+	* MonoDevelop.Projects.Gui.Completion/DeclarationViewWindow.cs: Use
+	  TooltipWindow and FixedWidthWrapLabel. Wrapping is now somewhat
+	  improved.
+
 2008-04-11  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Projects.Gui.Completion/DeclarationViewWindow.cs,

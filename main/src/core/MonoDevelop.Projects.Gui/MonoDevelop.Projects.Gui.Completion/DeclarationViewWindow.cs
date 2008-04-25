@@ -26,16 +26,16 @@ using Gtk;
 
 namespace MonoDevelop.Projects.Gui.Completion
 {
-	internal class DeclarationViewWindow : Window
+	internal class DeclarationViewWindow : TooltipWindow
 	{
 		static char[] newline = {'\n'};
 		static char[] whitespace = {' '};
 
 		ArrayList overloads;
 		int current_overload;
-
-		HeaderWidget headlabel;
-		Label bodylabel, helplabel;
+		
+		MonoDevelop.Components.FixedWidthWrapLabel headlabel, bodylabel;
+		Label helplabel;
 		Arrow left, right;
 		VBox helpbox;
 		
@@ -126,29 +126,34 @@ namespace MonoDevelop.Projects.Gui.Completion
 		public void SetFixedWidth (int w)
 		{
 			if (w != -1) {
-				int boxMargin = SizeRequest().Width - headlabel.SizeRequest().Width;
-				w -= boxMargin;
-				headlabel.Width = w > 0 ? w : 1;
+				w -= (SizeRequest ().Width - headlabel.SizeRequest ().Width);//  otherWidths ();
+				headlabel.MaxWidth = w > 0 ? w : 1;
 			} else {
-				headlabel.Width = -1;
+				headlabel.MaxWidth = -1;
 			}
-			bodylabel.WidthRequest = headlabel.SizeRequest().Width;
+			bodylabel.MaxWidth = headlabel.RealWidth;
+			QueueResize ();
 		}
 
-		public DeclarationViewWindow () : base (WindowType.Popup)
+		public DeclarationViewWindow () : base ()
 		{
 			overloads = new ArrayList ();
 			this.AllowShrink = false;
 			this.AllowGrow = false;
-
-			headlabel = new HeaderWidget ();
-//			headlabel.LineWrap = true;
-//			headlabel.Xalign = 0;
 			
-			bodylabel = new Label ("");
-			bodylabel.LineWrap = true;
-			bodylabel.Xalign = 0;
-
+			EnableTransparencyControl = true;
+			
+			headlabel = new MonoDevelop.Components.FixedWidthWrapLabel ();
+			headlabel.Indent = -20;
+			headlabel.Wrap = Pango.WrapMode.WordChar;
+			headlabel.BreakOnCamelCasing = true;
+			headlabel.BreakOnPunctuation = true;
+			
+			bodylabel = new MonoDevelop.Components.FixedWidthWrapLabel ();
+			bodylabel.Wrap = Pango.WrapMode.WordChar;
+			bodylabel.BreakOnCamelCasing = true;
+			bodylabel.BreakOnPunctuation = true;
+			
 			VBox vb = new VBox (false, 0);
 			vb.PackStart (headlabel, true, true, 0);
 			vb.PackStart (bodylabel, true, true, 3);
@@ -162,85 +167,20 @@ namespace MonoDevelop.Projects.Gui.Completion
 			hb.PackStart (vb, true, true, 0);
 			hb.PackStart (right, false, true, 0);
 
-			helplabel = new Label ("");
-			helplabel.Xpad = 2;
-			helplabel.Ypad = 2;
+			helplabel = new Label (string.Empty);
 			helplabel.Xalign = 1;
-			helplabel.UseMarkup = true;
-			helplabel.Markup = "";
 			
 			helpbox = new VBox (false, 0);
 			helpbox.PackStart (new HSeparator (), false, true, 0);
 			helpbox.PackStart (helplabel, false, true, 0);
+			helpbox.BorderWidth = 2;
 			
 			VBox vb2 = new VBox (false, 0);
 			vb2.Spacing = 4;
 			vb2.PackStart (hb, true, true, 0);
 			vb2.PackStart (helpbox, false, true, 0);
-
-			Frame frame = new Frame ();
-			frame.Add (vb2);
 			
-			WindowTransparencyDecorator.Attach (this);
-			this.Add (frame);
-		}
-	}
-	
-	class HeaderWidget: Gtk.DrawingArea
-	{
-		string text;
-		Pango.Layout layout;
-		int width;
-		
-		public HeaderWidget ()
-		{
-			layout = new Pango.Layout (this.PangoContext);
-			layout.Indent = (int) (-20 * Pango.Scale.PangoScale);
-			layout.Wrap = Pango.WrapMode.WordChar;
-		}
-		
-		public string Markup {
-			get { return text; }
-			set {
-				layout.SetMarkup (value);
-				text = value;
-				QueueResize ();
-				QueueDraw ();
-			}
-		}
-		
-		public string Text {
-			get { return Markup; }
-			set { Markup = value; }
-		}
-		
-		public int Width {
-			get { return width; }
-			set {
-				width = value;
-				if (width == -1)
-					layout.Width = int.MaxValue;
-				else
-					layout.Width = (int)(width * Pango.Scale.PangoScale);
-				QueueResize ();
-			}
-		}
-		
-		protected override bool OnExposeEvent (Gdk.EventExpose args)
-		{
-			base.OnExposeEvent (args);
-			
-			this.GdkWindow.DrawLayout (Style.TextGC (StateType.Normal), 0, 0, layout);
-	  		return true;
-		}
-		
-		protected override void OnSizeRequested (ref Requisition req)
-		{
-			int w, h;
-			layout.GetPixelSize (out w, out h);
-			
-			req.Width = w;
-			req.Height = h;
+			this.Add (vb2);
 		}
 	}
 }
