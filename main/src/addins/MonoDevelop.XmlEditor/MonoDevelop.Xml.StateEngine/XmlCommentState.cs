@@ -42,8 +42,8 @@ namespace MonoDevelop.Xml.StateEngine
 		{
 		}
 		
-		protected XmlCommentState (XmlCommentState copyFrom)
-			: base (copyFrom)
+		protected XmlCommentState (XmlCommentState copyFrom, bool copyParents)
+			: base (copyFrom, copyParents)
 		{
 			backOne = copyFrom.backOne;
 			backTwo = copyFrom.backTwo;
@@ -65,9 +65,9 @@ namespace MonoDevelop.Xml.StateEngine
 			return "[XmlComment]";
 		}
 		
-		public override State DeepCopy ()
+		public override State DeepCopy (bool copyParents)
 		{
-			return new XmlCommentState (this);
+			return new XmlCommentState (this, copyParents);
 		}
 	}
 }

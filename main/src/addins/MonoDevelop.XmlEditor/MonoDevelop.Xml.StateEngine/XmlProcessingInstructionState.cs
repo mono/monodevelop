@@ -42,8 +42,8 @@ namespace MonoDevelop.Xml.StateEngine
 		{
 		}
 		
-		protected XmlProcessingInstructionState (XmlProcessingInstructionState copyFrom)
-			: base (copyFrom)
+		protected XmlProcessingInstructionState (XmlProcessingInstructionState copyFrom, bool copyParents)
+			: base (copyFrom, copyParents)
 		{
 			backOne = copyFrom.backOne;
 		}
@@ -63,9 +63,9 @@ namespace MonoDevelop.Xml.StateEngine
 			return "[XmlProcessingInstruction]";
 		}
 		
-		public override State DeepCopy ()
+		public override State DeepCopy (bool copyParents)
 		{
-			return new XmlProcessingInstructionState (this);
+			return new XmlProcessingInstructionState (this, copyParents);
 		}
 	}
 }

@@ -46,9 +46,13 @@ namespace MonoDevelop.Xml.StateEngine
 			this.startLocation = startLocation;
 		}
 		
-		protected State (State copyFrom)
+		protected State (State copyFrom, bool copyParents)
 		{
-			parent = copyFrom.Parent.DeepCopy ();
+			if (copyParents && copyFrom.Parent != null) {
+				parent = copyFrom.Parent.DeepCopy (copyParents);
+			} else {
+				parent = copyFrom.Parent;
+			}
 			startLocation = copyFrom.startLocation;
 			endLocation = copyFrom.endLocation;
 		}
@@ -99,6 +103,6 @@ namespace MonoDevelop.Xml.StateEngine
 			this.endLocation = endLocation;
 		}
 		
-		public abstract State DeepCopy ();
+		public abstract State DeepCopy (bool copyParents);
 	}
 }

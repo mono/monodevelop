@@ -44,8 +44,8 @@ namespace MonoDevelop.Xml.StateEngine
 		{
 		}
 		
-		protected XmlSpecialTagState (XmlSpecialTagState copyFrom)
-			: base (copyFrom)
+		protected XmlSpecialTagState (XmlSpecialTagState copyFrom, bool copyParents)
+			: base (copyFrom, copyParents)
 		{
 			mode = copyFrom.mode;
 		}
@@ -108,9 +108,9 @@ namespace MonoDevelop.Xml.StateEngine
 			return string.Format ("[XmlSpecialTag]");
 		}
 		
-		public override State DeepCopy ()
+		public override State DeepCopy (bool copyParents)
 		{
-			return new XmlSpecialTagState (this);
+			return new XmlSpecialTagState (this, copyParents);
 		}
 
 	}

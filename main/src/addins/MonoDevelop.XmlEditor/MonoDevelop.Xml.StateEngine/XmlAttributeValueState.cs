@@ -42,8 +42,8 @@ namespace MonoDevelop.Xml.StateEngine
 		{
 		}
 		
-		public XmlAttributeValueState (XmlAttributeValueState copyFrom)
-			: base (copyFrom)
+		public XmlAttributeValueState (XmlAttributeValueState copyFrom, bool copyParents)
+			: base (copyFrom, copyParents)
 		{
 			startChar = copyFrom.startChar;
 			done = copyFrom.done;
@@ -91,9 +91,9 @@ namespace MonoDevelop.Xml.StateEngine
 			return "[XmlAttributeValue]";
 		}
 		
-		public override State DeepCopy ()
+		public override State DeepCopy (bool copyParents)
 		{
-			return new XmlAttributeValueState (this);
+			return new XmlAttributeValueState (this, copyParents);
 		}
 	}
 }

@@ -45,8 +45,8 @@ namespace MonoDevelop.Xml.StateEngine
 			nameBuilder = new StringBuilder ();
 		}
 		
-		protected XmlAttributeState (XmlAttributeState copyFrom)
-			: base (copyFrom)
+		protected XmlAttributeState (XmlAttributeState copyFrom, bool copyParents)
+			: base (copyFrom, copyParents)
 		{
 			if (copyFrom.nameBuilder != null)
 				nameBuilder = new StringBuilder (copyFrom.nameBuilder.ToString ());
@@ -138,9 +138,9 @@ namespace MonoDevelop.Xml.StateEngine
 			return string.Format ("[XmlAttribute({0})]", Name);
 		}
 		
-		public override State DeepCopy ()
+		public override State DeepCopy (bool copyParents)
 		{
-			return new XmlAttributeState (this);
+			return new XmlAttributeState (this, copyParents);
 		}
 
 	}

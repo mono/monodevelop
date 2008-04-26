@@ -46,8 +46,8 @@ namespace MonoDevelop.Xml.StateEngine
 		{
 		}
 		
-		protected XmlFreeState (XmlFreeState copyFrom)
-			: base (copyFrom)
+		protected XmlFreeState (XmlFreeState copyFrom, bool copyParents)
+			: base (copyFrom, copyParents)
 		{
 			openTag = copyFrom.openTag;
 		}
@@ -85,7 +85,7 @@ namespace MonoDevelop.Xml.StateEngine
 			return "[XmlFree]";
 		}
 		
-		public override State DeepCopy ()
+		public override State DeepCopy (bool copyParents)
 		{
 			return new XmlFreeState ();
 		}

@@ -45,8 +45,8 @@ namespace MonoDevelop.Xml.StateEngine
 			nameBuilder = new StringBuilder ();
 		}
 		
-		protected XmlTagNameState (XmlTagNameState copyFrom)
-			: base (copyFrom)
+		protected XmlTagNameState (XmlTagNameState copyFrom, bool copyParents)
+			: base (copyFrom, copyParents)
 		{
 			if (copyFrom.nameBuilder != null)
 				nameBuilder = new StringBuilder (copyFrom.nameBuilder.ToString ());
@@ -59,7 +59,7 @@ namespace MonoDevelop.Xml.StateEngine
 			if (position == StartLocation && !char.IsLetter (c))
 				throw new InvalidOperationException ("First character pushed to a XmlTagNameState must be a letter.");
 			
-			if (c == '<' || c == '>' || c == '/')
+			if (c == '<')
 				return Parent;
 			
 			if (c == ':' && namespc == null) {
@@ -68,7 +68,7 @@ namespace MonoDevelop.Xml.StateEngine
 				return null;
 			}
 			
-			if (char.IsWhiteSpace (c)) {
+			if (char.IsWhiteSpace (c) || c == '>' || c == '/') {
 				name = nameBuilder.ToString ();
 				nameBuilder = null;
 				return Parent;
@@ -112,11 +112,10 @@ namespace MonoDevelop.Xml.StateEngine
 			return string.Format ("[XmlTagName({0})]", FullName);
 		}
 		
-		public override State DeepCopy ()
+		public override State DeepCopy (bool copyParents)
 		{
-			return new XmlTagNameState (this);
+			return new XmlTagNameState (this, copyParents);
 		}
-
 	}
 	
 	public interface IXmlName {

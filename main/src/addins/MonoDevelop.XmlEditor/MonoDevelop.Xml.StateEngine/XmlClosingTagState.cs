@@ -42,11 +42,11 @@ namespace MonoDevelop.Xml.StateEngine
 		{
 		}
 		
-		protected XmlClosingTagState (XmlClosingTagState copyFrom)
-			: base (copyFrom)
+		protected XmlClosingTagState (XmlClosingTagState copyFrom, bool copyParents)
+			: base (copyFrom, copyParents)
 		{
 			if (copyFrom.name != null)
-				name = (XmlTagNameState) copyFrom.name.DeepCopy ();
+				name = (XmlTagNameState) copyFrom.name.DeepCopy (false);
 		}
 
 		public override State PushChar (char c, int position)
@@ -105,9 +105,9 @@ namespace MonoDevelop.Xml.StateEngine
 			return string.Format ("[XmlClosingTag({0})]", name != null? name.ToString () : string.Empty);
 		}
 		
-		public override State DeepCopy ()
+		public override State DeepCopy (bool copyParents)
 		{
-			return new XmlClosingTagState (this);
+			return new XmlClosingTagState (this, copyParents);
 		}
 
 	}

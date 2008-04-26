@@ -44,8 +44,8 @@ namespace MonoDevelop.AspNet.StateEngine
 		{
 		}
 		
-		protected AspNetSpecialState (AspNetSpecialState copyFrom)
-			: base (copyFrom)
+		protected AspNetSpecialState (AspNetSpecialState copyFrom, bool copyParents)
+			: base (copyFrom, copyParents)
 		{
 			mode = copyFrom.mode;
 		}
@@ -74,9 +74,9 @@ namespace MonoDevelop.AspNet.StateEngine
 			return string.Format ("[AspNetSpecial]");
 		}
 		
-		public override State DeepCopy ()
+		public override State DeepCopy (bool copyParents)
 		{
-			return new AspNetSpecialState (this);
+			return new AspNetSpecialState (this, copyParents);
 		}
 	}
 }

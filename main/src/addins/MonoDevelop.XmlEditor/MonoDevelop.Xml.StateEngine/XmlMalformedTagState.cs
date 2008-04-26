@@ -39,8 +39,8 @@ namespace MonoDevelop.Xml.StateEngine
 		{
 		}
 		
-		protected XmlMalformedTagState (XmlMalformedTagState copyFrom)
-			: base (copyFrom)
+		protected XmlMalformedTagState (XmlMalformedTagState copyFrom, bool copyParents)
+			: base (copyFrom, copyParents)
 		{
 		}
 
@@ -57,9 +57,9 @@ namespace MonoDevelop.Xml.StateEngine
 			return "[XmlMalformedTag]";
 		}
 		
-		public override State DeepCopy ()
+		public override State DeepCopy (bool copyParents)
 		{
-			return new XmlMalformedTagState (this);
+			return new XmlMalformedTagState (this, copyParents);
 		}
 
 	}

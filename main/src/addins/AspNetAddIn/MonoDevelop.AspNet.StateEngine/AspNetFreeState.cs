@@ -49,8 +49,8 @@ namespace MonoDevelop.AspNet.StateEngine
 		{
 		}
 		
-		protected AspNetFreeState (AspNetFreeState copyFrom)
-			: base (copyFrom)
+		protected AspNetFreeState (AspNetFreeState copyFrom, bool copyParents)
+			: base (copyFrom, copyParents)
 		{
 			openTag = copyFrom.openTag;
 		}
@@ -92,9 +92,9 @@ namespace MonoDevelop.AspNet.StateEngine
 			return "[AspNetFree]";
 		}
 		
-		public override State DeepCopy ()
+		public override State DeepCopy (bool copyParents)
 		{
-			return new AspNetFreeState ();
+			return new AspNetFreeState (this, copyParents);
 		}
 	}
 }

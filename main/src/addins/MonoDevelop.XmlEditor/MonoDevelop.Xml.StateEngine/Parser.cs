@@ -48,7 +48,7 @@ namespace MonoDevelop.Xml.StateEngine
 		
 		private Parser (Parser<T> old)
 		{
-			currentState = old.CurrentState.DeepCopy ();
+			currentState = old.CurrentState.DeepCopy (true);
 			position = old.position;
 		}
 		

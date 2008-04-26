@@ -42,8 +42,8 @@ namespace MonoDevelop.Xml.StateEngine
 		{
 		}
 		
-		protected CDataState (CDataState copyFrom)
-			: base (copyFrom)
+		protected CDataState (CDataState copyFrom, bool copyParents)
+			: base (copyFrom, copyParents)
 		{
 			backOne = copyFrom.backOne;
 			backTwo = copyFrom.backTwo;
@@ -65,9 +65,9 @@ namespace MonoDevelop.Xml.StateEngine
 			return "[CData]";
 		}
 		
-		public override State DeepCopy ()
+		public override State DeepCopy (bool copyParents)
 		{
-			return new CDataState (this);
+			return new CDataState (this, copyParents);
 		}
 
 	}
