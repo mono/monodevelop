@@ -66,7 +66,6 @@ FILES =  \
 	MonoDevelop.AspNet.Parser.Internal/StrUtils.cs \
 	MonoDevelop.AspNet.Parser.Internal/TagAttributes.cs \
 	MonoDevelop.AspNet.Parser.Internal/TagType.cs \
-	MonoDevelop.AspNet.Parser/AspNetIndentStack.cs \
 	MonoDevelop.AspNet.Parser/DebugStringVisitor.cs \
 	MonoDevelop.AspNet.Parser/Document.cs \
 	MonoDevelop.AspNet.Parser/DocumentReferenceManager.cs \

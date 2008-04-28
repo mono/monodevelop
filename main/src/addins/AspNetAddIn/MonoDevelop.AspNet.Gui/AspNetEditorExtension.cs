@@ -47,7 +47,7 @@ namespace MonoDevelop.AspNet.Gui
 {
 	
 	
-	public class AspNetEditorExtension : CompletionTextEditorExtension
+	public class AspNetEditorExtension : CompletionTextEditorExtension, IPathedDocument
 	{
 		DocumentStateTracker<Parser<AspNetFreeState>> tracker;
 		
@@ -80,10 +80,18 @@ namespace MonoDevelop.AspNet.Gui
 			get {
 				if (Document == null)
 					throw new InvalidOperationException ("Editor extension not yet initialized");
-				return (ITextBuffer) Document.GetContent (typeof(ITextBuffer));
+				return Document.GetContent<ITextBuffer> ();
 			}
 		}
 		
+		protected IEditableTextBuffer EditableBuffer {
+			get {
+				if (Document == null)
+					throw new InvalidOperationException ("Editor extension not yet initialized");
+				return Document.GetContent<IEditableTextBuffer> ();
+			}
+		}
+			
 		public override ICompletionDataProvider CodeCompletionCommand (ICodeCompletionContext completionContext)
 		{
 			int pos = completionContext.TriggerOffset;
@@ -237,13 +245,13 @@ namespace MonoDevelop.AspNet.Gui
 						AddAspAttributeCompletionData (cp, doc, tagState.Name.Namespace, tagState.Name.Name, null);
 					}
 					
-//					if (tn.Attributes ["runat"] == null)
-//						cp.AddCompletionData (new CodeCompletionData ("runat=\"server\"", "md-literal",
-//						    GettextCatalog.GetString ("Required for ASP.NET controls.\n") +
-//						    GettextCatalog.GetString (
-//						        "Indicates that this tag should be able to be\n" +
-//						        "manipulated programmatically on the web server.")
-//						    ));
+					if (true)
+						cp.AddCompletionData (new CodeCompletionData ("runat=\"server\"", "md-literal",
+						    GettextCatalog.GetString ("Required for ASP.NET controls.\n") +
+						    GettextCatalog.GetString (
+						        "Indicates that this tag should be able to be\n" +
+						        "manipulated programmatically on the web server.")
+						    ));
 					
 //					if (tn.Attributes["id"] == null)
 //						cp.AddCompletionData (
@@ -598,5 +606,93 @@ namespace MonoDevelop.AspNet.Gui
 				node = node.Parent;
 			}
 		}
+		
+		public override void CursorPositionChanged ()
+		{
+			UpdatePath ();
+		}
+
+		
+		#region IPathedDocument
+		
+		string[] currentPath;
+		int selectedPathIndex;
+
+		public void SelectPath (int depth)
+		{
+			throw new NotImplementedException();
+		}
+
+		public void SelectPathContents (int depth)
+		{
+			throw new NotImplementedException();
+		}
+
+		
+		public event EventHandler<DocumentPathChangedEventArgs> PathChanged;
+		
+		protected void OnPathChanged (string[] oldPath, int oldSelectedIndex)
+		{
+			if (PathChanged != null)
+				PathChanged (this, new DocumentPathChangedEventArgs (oldPath, oldSelectedIndex));
+		}
+		
+		void UpdatePath ()
+		{
+			this.tracker.UpdateEngine ();
+			List<string> path = new List<string> ();
+			
+			//if current state is a name, walk onwards to complete it
+			State s = this.tracker.Engine.CurrentState;
+			if (s is XmlTagNameState) {
+				XmlTagNameState tns = (XmlTagNameState) s.DeepCopy (false);
+				int pos = this.tracker.Engine.Position;
+				while (true) {
+					char c = Editor.GetCharAt (pos);
+					//text editor may update cursor before inserting chars, so avoid exceptions
+					if (tns.StartLocation == pos && !char.IsLetter (c))
+						break;
+					State ret = tns.PushChar (c, pos);
+					pos++;
+					if (tns.Complete) {
+						path.Add (tns.FullName);
+						//skip beyond the parent XmlTagState, as it's incomplete
+						while (s != null && !(s is XmlTagState)) {
+							s = s.Parent;
+						}
+						s = s.Parent;
+						break;
+					}
+					if (ret != null && ret != tns)
+						break;
+				}
+			}
+			
+			//walk up named parents, addin to list
+			while (s != null) {
+				if (s is XmlTagState)
+					path.Add (((XmlTagState)s).Name.FullName);
+				s = s.Parent;
+			}
+			
+			path.Reverse ();
+			
+			string[] oldPath = currentPath;
+			int oldIndex = selectedPathIndex;
+			currentPath = path.ToArray ();
+			selectedPathIndex = currentPath.Length - 1;
+			
+			OnPathChanged (oldPath, oldIndex);
+		}
+		
+		public string[] CurrentPath {
+			get { return currentPath; }
+		}
+		
+		public int SelectedIndex {
+			get { return selectedPathIndex; }
+		}
+		
+		#endregion
 	}
 }

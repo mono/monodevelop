@@ -112,7 +112,6 @@
     <File name="Schemas/xhtml1-transitional.xsd" subtype="Code" buildaction="FileCopy" DeployService.UseProjectRelativePath="True" />
     <File name="Schemas/readme.txt" subtype="Code" buildaction="FileCopy" />
     <File name="Schemas/W3C-License.html" subtype="Code" buildaction="FileCopy" />
-    <File name="MonoDevelop.AspNet.Parser/AspNetIndentStack.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.AspNet.Parser/SuggestedHandlerCompletionData.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.AspNet.StateEngine/AspNetFreeState.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.AspNet.StateEngine/AspNetSpecialState.cs" subtype="Code" buildaction="Compile" />
