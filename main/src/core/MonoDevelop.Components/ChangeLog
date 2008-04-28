@@ -1,3 +1,8 @@
+2008-04-28  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Components/MenuButton.cs: Fix destruction of menu. Add
+	  property for arrow direction/presence. Add properties for markup.
+
 2008-04-24  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* Makefile.am, MonoDevelop.Components.mdp,

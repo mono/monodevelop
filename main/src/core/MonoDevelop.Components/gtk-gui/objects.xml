@@ -44,6 +44,7 @@
     <itemgroups>
       <itemgroup label="MenuButton Properties">
         <property name="Label" />
+        <property name="UseMarkup" />
       </itemgroup>
     </itemgroups>
     <signals />

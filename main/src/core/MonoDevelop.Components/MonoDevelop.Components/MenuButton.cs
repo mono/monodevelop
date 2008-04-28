@@ -37,6 +37,7 @@ namespace MonoDevelop.Components
 	{
 		MenuCreator creator;
 		Label label;
+		Arrow arrow;
 		
 		public MenuButton ()
 			: base ()
@@ -47,8 +48,7 @@ namespace MonoDevelop.Components
 			
 			label = new Label ();
 			box.PackStart (label, false, false, 0);
-			Arrow arrow = new Arrow (ArrowType.Down, ShadowType.Out);
-			box.PackEnd (arrow, false, false, 0);
+			ArrowType = ArrowType.Down;
 			base.Label = null;
 		}
 		
@@ -87,9 +87,14 @@ namespace MonoDevelop.Components
 						this.Relief = oldRelief ;
 						this.StateChanged -= h;
 						this.State = StateType.Normal;
-						menu.Destroy ();
+						
+						//FIXME: for some reason the menu's children don't get activated if we destroy 
+						//directly here, so use a timeout to delay it
+						GLib.Timeout.Add (100, delegate {
+							menu.Destroy ();
+							return false;
+						});
 					};
-					
 					menu.Popup (null, null, PositionFunc, 0, Gtk.Global.CurrentEventTime);
 				}
 			}
@@ -113,6 +118,26 @@ namespace MonoDevelop.Components
 			push_in = true;
 		}
 		
+		public ArrowType ArrowType {
+			get { return arrow == null? ArrowType.None : arrow.ArrowType; }
+			set {
+				if (value == ArrowType.None) {
+					if (arrow != null) {
+						((HBox)arrow.Parent).Remove (arrow);
+						arrow.Destroy ();
+						arrow = null;
+					}
+				} else {
+					if (arrow == null ) {
+						arrow = new Arrow (ArrowType.Down, ShadowType.Out);
+						arrow.Show ();
+						((HBox)label.Parent).PackEnd (arrow, false, false, 0);
+					}
+					arrow.ArrowType = value;
+				}
+			}
+		}
+		
 		protected override void OnDestroyed ()
 		{
 			creator = null;
@@ -122,6 +147,16 @@ namespace MonoDevelop.Components
 		public new string Label {
 			get { return label.Text; }
 			set { label.Text = value; }
+		}
+		
+		public new bool UseMarkup
+		{
+			get { return label.UseMarkup; }
+			set { label.UseMarkup = value; }
+		}
+		
+		public new string Markup {
+			set { label.Markup = value; }
 		}
 	}
 	
