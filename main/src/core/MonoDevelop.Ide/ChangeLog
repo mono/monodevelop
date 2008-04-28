@@ -1,3 +1,11 @@
+2008-04-28  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Ide.Gui.Content/IPathedDocument.cs: Add API for path bar 
+	* MonoDevelop.Ide.mdp, Makefile.am: Updated.
+	* MonoDevelop.Ide.Gui/Document.cs: Use path bar if document supports
+	  it. Fix looking up content types in text editor extensions.
+	* MonoDevelop.Ide.Gui/SdiWorkspaceWindow.cs: Implement path bar.
+
 2008-04-24  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* gtk-gui/gui.stetic, gtk-gui/MonoDevelop.Ide.DocumentSwitcher.cs,

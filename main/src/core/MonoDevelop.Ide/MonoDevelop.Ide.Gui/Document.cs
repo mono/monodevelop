@@ -74,7 +74,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		public T GetContent <T>()
 		{
-			return (T) Window.ViewContent.GetContent (typeof(T));
+			return (T) GetContent (typeof(T));
 		}
 		
 		internal Document (IWorkbenchWindow window)
@@ -318,6 +318,8 @@ namespace MonoDevelop.Ide.Gui
 		
 		void OnClosed (object s, EventArgs a)
 		{
+			if (window is SdiWorkspaceWindow)
+				((SdiWorkspaceWindow)window).DetachFromPathedDocument ();
 			window.Closed -= OnClosed;
 			window.ActiveViewContentChanged -= OnActiveViewContentChanged;
 			IdeApp.ProjectOperations.EntryRemovedFromCombine -= OnEntryRemoved;
@@ -371,6 +373,9 @@ namespace MonoDevelop.Ide.Gui
 			}
 			if (editorExtension != null)
 				last.Next = editor.AttachExtension (editorExtension);
+			
+			if (window is SdiWorkspaceWindow)
+				((SdiWorkspaceWindow)window).AttachToPathedDocument (GetContent<MonoDevelop.Ide.Gui.Content.IPathedDocument> ());
 		}
 		
 		internal object ExtendedCommandTargetChain {
