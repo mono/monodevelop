@@ -1,5 +1,10 @@
 2008-04-28  Michael Hutchinson <mhutchinson@novell.com> 
 
+	* MonoDevelop.Ide.Gui.Pads/InternalLogPad.cs,
+	  MonoDevelop.Ide.Gui/InternalLog.cs: Avoid re-registering ILoggers.
+
+2008-04-28  Michael Hutchinson <mhutchinson@novell.com> 
+
 	* MonoDevelop.Ide.Gui.Content/IPathedDocument.cs: Add API for path bar 
 	* MonoDevelop.Ide.mdp, Makefile.am: Updated.
 	* MonoDevelop.Ide.Gui/Document.cs: Use path bar if document supports

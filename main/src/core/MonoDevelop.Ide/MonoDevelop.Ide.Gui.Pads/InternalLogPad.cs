@@ -304,6 +304,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 
 		public void Dispose ()
 		{
+			LoggingService.RemoveLogger (((ILogger)this).Name);
 		}
 		
 		void FilterChanged (object sender, EventArgs e)

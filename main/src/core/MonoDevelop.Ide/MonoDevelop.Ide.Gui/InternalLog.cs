@@ -54,8 +54,22 @@ namespace MonoDevelop.Ide.Gui
 		
 		public static void Initialize ()
 		{
-			logger = new InternalLogger ();
-			LoggingService.AddLogger (logger);
+			if (!Initialized) {
+				logger = new InternalLogger ();
+				LoggingService.AddLogger (logger);
+			}
+		}
+		
+		public static bool Initialized {
+			get { return logger != null; }
+		}
+		
+		public static void Dispose ()
+		{
+			if (Initialized) {
+				LoggingService.RemoveLogger (logger.Name);
+				logger = null;
+			}
 		}
 		
 		public static EnabledLoggingLevel EnabledLoggingLevel {
