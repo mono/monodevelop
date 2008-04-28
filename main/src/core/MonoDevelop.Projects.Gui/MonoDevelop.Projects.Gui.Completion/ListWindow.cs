@@ -212,9 +212,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 					
 				case Gdk.Key.Escape:
 					return KeyAction.CloseWindow | KeyAction.Ignore;
-					
-				case Gdk.Key.KP_Divide:
-				case Gdk.Key.slash:
+				
 				case Gdk.Key.Home:
 				case Gdk.Key.End:
 					return KeyAction.CloseWindow | KeyAction.Process;
@@ -232,11 +230,23 @@ namespace MonoDevelop.Projects.Gui.Completion
 			char c = (char)(uint)key;
 			
 			if (System.Char.IsLetterOrDigit (c) || c == '_') {
-				word.Insert (curPos++, c);
+				word.Insert (curPos, c);
+				curPos++;
 				UpdateWordSelection ();
 				return KeyAction.Process;
-			} else if ((System.Char.IsPunctuation (c) || c == ' ') && !list.SelectionDisabled) {
-				return KeyAction.Complete | KeyAction.Process | KeyAction.CloseWindow;
+			} else if (System.Char.IsPunctuation (c) || c == ' ') {
+				
+				//punctuation is only accepted if it actually matches an item in the list
+				word.Insert (curPos, c);
+				int match = findMatchedEntry (word.ToString ());
+				if (match >= 0) {
+					curPos++;
+					SelectEntry (match);
+					return KeyAction.Process;
+				} else {
+					word.Remove (curPos, 1);
+					return KeyAction.Complete | KeyAction.Process | KeyAction.CloseWindow;
+				}
 			}
 			
 			return KeyAction.CloseWindow | KeyAction.Process;
@@ -247,28 +257,37 @@ namespace MonoDevelop.Projects.Gui.Completion
 			SelectEntry (word.ToString ());
 		}
 		
-		public void SelectEntry (string s)
+		int findMatchedEntry (string s)
 		{
 			int max = (provider == null ? 0 : provider.ItemCount);
+			string sLower = s.ToLower ();
 			
 			int bestMatch = -1;
 			for (int n=0; n<max; n++) 
 			{
 				string txt = provider.GetText (n);
 				if (txt.StartsWith (s)) {
-					list.Selection = n;
-					return;
+					return n;
 				}
-				else if (bestMatch == -1 && txt.ToLower().StartsWith (s.ToLower()))
+				else if (bestMatch == -1 && txt.ToLower().StartsWith (sLower))
 					bestMatch = n;
 			}
-			
-			if (bestMatch != -1) {
-				list.Selection = bestMatch;
-				return;
+			return bestMatch;
+		}
+		
+		void SelectEntry (int n)
+		{
+			if (n < 0) {
+				list.SelectionDisabled = true;
+			} else {
+				list.Selection = n;
 			}
-			
-			list.SelectionDisabled = true;
+		}
+		
+		public void SelectEntry (string s)
+		{
+			int n = findMatchedEntry (s);
+			SelectEntry (n);
 		}
 		
 		void OnScrollChanged (object o, EventArgs args)
