@@ -1,0 +1,6 @@
+Name: DebuggerLibrary
+Description: DebuggerLibrary
+Version: 0.1
+
+Requires: 
+Libs: -r:@expanded_libdir@/@PACKAGE@/DebuggerLibrary.dll
