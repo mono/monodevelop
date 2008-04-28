@@ -26,12 +26,6 @@
 	                    class = "MonoDevelop.Debugger.DebuggingService"/>
         </Extension>
 	
-	<Extension path = "/MonoDevelop/Ide/ProjectFileFilters">
-		<FileFilter id = "FooFiles"
-		            _label = "foo files"
-		            extensions = "*.foo"/>
-	</Extension>
-	
 	<Extension path = "/MonoDevelop/Ide/Pads">
 		<Pad id = "MonoDevelop.Debugger.StackTracePad" class = "MonoDevelop.Debugger.StackTracePad" _label="Stack Trace Pad" />
 	</Extension>
