@@ -333,11 +333,7 @@ namespace Mono.TextEditor
 			
 			imContext = new IMMulticontext ();
 			imContext.UsePreedit = false;
-			imContext.Commit += delegate (object sender, Gtk.CommitArgs ca) {
-				foreach (char ch in ca.Str)
-					OnIMProcessedKeyPressEvent (lastIMEvent, ch);
-				ResetIMContext ();
-			};
+			imContext.Commit += IMCommit;
 			Caret.PositionChanged += delegate (object sender, DocumentLocationEventArgs args) {
 				ResetIMContext ();
 			};
@@ -349,6 +345,14 @@ namespace Mono.TextEditor
 				imContext.Reset ();
 				imContextActive = false;
 			}
+		}
+		
+		void IMCommit (object sender, Gtk.CommitArgs ca)
+		{
+			if (IsRealized)
+				foreach (char ch in ca.Str)
+					OnIMProcessedKeyPressEvent (lastIMEvent, ch);
+			ResetIMContext ();
 		}
 		
 		protected override void OnRealized ()
@@ -405,6 +409,8 @@ namespace Mono.TextEditor
 			this.isDisposed = true;
 			Document.DocumentUpdated -= DocumentUpdatedHandler;
 			TextEditorOptions.Changed -= OptionsChanged;
+			imContext.Commit -= IMCommit;
+			imContext.Dispose ();
 			
 			if (this.textEditorData.HAdjustment != null) {
 				this.textEditorData.HAdjustment.ValueChanged -= HAdjustmentValueChanged; 
