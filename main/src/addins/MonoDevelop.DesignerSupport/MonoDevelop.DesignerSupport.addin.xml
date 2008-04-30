@@ -87,11 +87,18 @@
 			_label="Properties"
 			icon = "md-properties-pad"
 			defaultPlacement="MonoDevelop.DesignerSupport.ToolboxPad/bottom; right" />
+		<Pad id = "MonoDevelop.DesignerSupport.DocumentOutlinePad" 
+			class = "MonoDevelop.DesignerSupport.DocumentOutlinePad" 
+			_label="Document Outline"
+			icon="md-pad-document-outline"
+			defaultPlacement="MonoDevelop.DesignerSupport.PropertyPad/center; bottom"
+			/>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/WorkbenchContexts/Edit">
 		<ContextPad id = "MonoDevelop.DesignerSupport.ToolboxPad" />
 		<ContextPad id = "MonoDevelop.DesignerSupport.PropertyPad" />
+		<ContextPad id = "MonoDevelop.DesignerSupport.DocumentOutlinePad" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/Pads/ProjectPad">
@@ -105,6 +112,7 @@
 		<StockIcon stockid = "md-design-listboxtoggle" resource = "md-design-listboxtoggle.png" />
 		<StockIcon stockid = "md-properties-pad" resource = "properties-pad-16.png" />
 		<StockIcon stockid = "md-toolbox-pad" resource = "toolbox-pad-16.png" />
+		<StockIcon stockid = "md-pad-document-outline" resource = "pad-document-outline-16.png" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/Pads/ProjectPad">

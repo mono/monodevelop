@@ -1,3 +1,13 @@
+2008-04-30  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.DesignerSupport.addin.xml,
+	  MonoDevelop.DesignerSupport.mdp,
+	  MonoDevelop.DesignerSupport/IOutlinedDocument.cs,
+	  MonoDevelop.DesignerSupport/DocumentOutlinePad.cs, Makefile.am,
+	  icons/pad-document-outline-16.png: Add document outline pad that
+	  will display an outline widget from documents that implement
+	  IOutlinedDocument.
+
 2008-04-11  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.DesignerSupport.Projects/ProjectFileDescriptor.cs: Show

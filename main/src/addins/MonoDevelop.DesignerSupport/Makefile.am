@@ -88,7 +88,9 @@ FILES =  \
 	MonoDevelop.DesignerSupport/Commands.cs \
 	MonoDevelop.DesignerSupport/CustomDescriptor.cs \
 	MonoDevelop.DesignerSupport/DesignerSupportService.cs \
+	MonoDevelop.DesignerSupport/DocumentOutlinePad.cs \
 	MonoDevelop.DesignerSupport/ErrorInFileException.cs \
+	MonoDevelop.DesignerSupport/IOutlinedDocument.cs \
 	MonoDevelop.DesignerSupport/IPropertyProvider.cs \
 	MonoDevelop.DesignerSupport/MemberExistsException.cs \
 	MonoDevelop.DesignerSupport/OpenDocumentFileProvider.cs \
@@ -106,6 +108,7 @@ RES =  \
 	icons/MonoDevelop.DesignerSupport.PropertyGrid.DefaultPropertyTab.bmp \
 	icons/MonoDevelop.DesignerSupport.PropertyGrid.EventPropertyTab.bmp \
 	icons/MonoDevelop.DesignerSupport.PropertyGrid.SortByCat.png \
+	icons/pad-document-outline-16.png \
 	icons/properties-pad-16.png \
 	icons/toolbox-pad-16.png \
 	MonoDevelop.DesignerSupport.addin.xml
