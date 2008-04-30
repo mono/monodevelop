@@ -61,6 +61,8 @@ namespace Mono.TextEditor
 		
 		public Document Document {
 			get {
+				if (textEditorData == null)
+					return null;
 				return textEditorData.Document;
 			}
 			set {
@@ -70,6 +72,8 @@ namespace Mono.TextEditor
 		
 		public Mono.TextEditor.Caret Caret {
 			get {
+				if (textEditorData == null)
+					return null;
 				return textEditorData.Caret;
 			}
 		}

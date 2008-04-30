@@ -1,3 +1,8 @@
+2008-04-30  Mike Krüger <mkrueger@novell.com> 
+
+	* Mono.TextEditor/TextEditor.cs: Fixed possible null ref exception when
+	  accessing disposed text editor.
+
 2008-04-29  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* Mono.TextEditor/TextEditor.cs: Dispose the IMContext, and check that
