@@ -1,5 +1,10 @@
 2008-04-30  Mike Krüger <mkrueger@novell.com> 
 
+	* Mono.TextEditor/TextEditor.cs: Fixed an error in keyboard input when
+	  multiple text editors are open.
+
+2008-04-30  Mike Krüger <mkrueger@novell.com> 
+
 	* Mono.TextEditor/TextEditor.cs: Fixed possible null ref exception when
 	  accessing disposed text editor.
 

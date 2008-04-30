@@ -55,9 +55,15 @@ namespace Mono.TextEditor
 		
 		bool isDisposed = false;
 		
-		IMMulticontext imContext;
-		Gdk.EventKey lastIMEvent;
-		bool imContextActive;
+		static IMMulticontext imContext;
+		static Gdk.EventKey lastIMEvent;
+		static bool imContextActive;
+		
+		static TextEditor ()
+		{
+			imContext = new IMMulticontext ();
+			imContext.UsePreedit = false;
+		}
 		
 		public Document Document {
 			get {
@@ -335,12 +341,13 @@ namespace Mono.TextEditor
 				Dispose ();
 			};
 			
-			imContext = new IMMulticontext ();
-			imContext.UsePreedit = false;
 			imContext.Commit += IMCommit;
-			Caret.PositionChanged += delegate (object sender, DocumentLocationEventArgs args) {
-				ResetIMContext ();
-			};
+			Caret.PositionChanged += CaretPositionChanged;
+		}
+		
+		void CaretPositionChanged (object sender, DocumentLocationEventArgs args)
+		{
+			ResetIMContext ();
 		}
 		
 		void ResetIMContext ()
@@ -353,9 +360,13 @@ namespace Mono.TextEditor
 		
 		void IMCommit (object sender, Gtk.CommitArgs ca)
 		{
-			if (IsRealized)
-				foreach (char ch in ca.Str)
+			if (!this.IsFocus)
+				return;
+			if (IsRealized) {
+				foreach (char ch in ca.Str) {
 					OnIMProcessedKeyPressEvent (lastIMEvent, ch);
+				}
+			}
 			ResetIMContext ();
 		}
 		
@@ -413,6 +424,7 @@ namespace Mono.TextEditor
 			this.isDisposed = true;
 			Document.DocumentUpdated -= DocumentUpdatedHandler;
 			TextEditorOptions.Changed -= OptionsChanged;
+			Caret.PositionChanged -= CaretPositionChanged;
 			imContext.Commit -= IMCommit;
 			imContext.Dispose ();
 			
@@ -529,9 +541,9 @@ namespace Mono.TextEditor
 			if (imContext.FilterKeypress (evt)) {
 				imContextActive = true;
 				return true;
-			} else {
-				return false;
 			}
+			
+			return false;
 		}
 		
 		protected override bool OnKeyPressEvent (Gdk.EventKey evt)
