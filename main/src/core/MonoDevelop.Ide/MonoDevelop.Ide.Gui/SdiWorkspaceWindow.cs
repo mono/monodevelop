@@ -413,7 +413,7 @@ namespace MonoDevelop.Ide.Gui
 			
 			for (int i = 0; i < pathDoc.CurrentPath.Length; i++) {
 				PathMenuButton button = new PathMenuButton (pathDoc, i);
-				button.ArrowType = (i + 1 < pathDoc.CurrentPath.Length)? ArrowType.Right : ArrowType.None;
+				button.ArrowType = (i + 1 < pathDoc.CurrentPath.Length)? ArrowType.Right : (ArrowType?) null;
 				if (i == pathDoc.SelectedIndex)
 					button.Markup = string.Concat ("<b>", pathDoc.CurrentPath[i] ,"</b>");
 				else

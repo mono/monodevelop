@@ -48,7 +48,7 @@ namespace MonoDevelop.Components
 			
 			label = new Label ();
 			box.PackStart (label, false, false, 0);
-			ArrowType = ArrowType.Down;
+			ArrowType = Gtk.ArrowType.Down;
 			base.Label = null;
 		}
 		
@@ -118,10 +118,10 @@ namespace MonoDevelop.Components
 			push_in = true;
 		}
 		
-		public ArrowType ArrowType {
-			get { return arrow == null? ArrowType.None : arrow.ArrowType; }
+		public ArrowType? ArrowType {
+			get { return arrow == null? (Gtk.ArrowType?) null : arrow.ArrowType; }
 			set {
-				if (value == ArrowType.None) {
+				if (value == null) {
 					if (arrow != null) {
 						((HBox)arrow.Parent).Remove (arrow);
 						arrow.Destroy ();
@@ -129,11 +129,11 @@ namespace MonoDevelop.Components
 					}
 				} else {
 					if (arrow == null ) {
-						arrow = new Arrow (ArrowType.Down, ShadowType.Out);
+						arrow = new Arrow (Gtk.ArrowType.Down, ShadowType.Out);
 						arrow.Show ();
 						((HBox)label.Parent).PackEnd (arrow, false, false, 0);
 					}
-					arrow.ArrowType = value;
+					arrow.ArrowType = value?? Gtk.ArrowType.Down;
 				}
 			}
 		}

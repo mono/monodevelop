@@ -1,3 +1,7 @@
+2008-04-30  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Core.Gui.mdp: Fix GTK# version to 2.8.
+
 2008-04-24  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Core.Gui/GLibLogging.cs: Fix a logic error introduced in

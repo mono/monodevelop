@@ -1,3 +1,8 @@
+2008-04-30  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Ide.mdp: Fix GTK# version to 2.8.
+	* MonoDevelop.Ide.Gui/SdiWorkspaceWindow.cs: Use GTK 2.8 API, not 2.10.
+
 2008-04-28  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Ide.Gui.Pads/InternalLogPad.cs,
