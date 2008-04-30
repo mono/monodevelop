@@ -11,6 +11,7 @@ FILES =  \
 	MonoDevelop.Core.Execution/BreakpointEventHandler.cs \
 	MonoDevelop.Core.Execution/DefaultExecutionHandlerFactory.cs \
 	MonoDevelop.Core.Execution/ExternalConsoleFactory.cs \
+	MonoDevelop.Core.Execution/ExternalConsoleLocator.cs \
 	MonoDevelop.Core.Execution/IBreakpoint.cs \
 	MonoDevelop.Core.Execution/IConsole.cs \
 	MonoDevelop.Core.Execution/IConsoleFactory.cs \

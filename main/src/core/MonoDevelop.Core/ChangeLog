@@ -1,3 +1,21 @@
+2008-04-29  Aaron Bockover  <abock@gnome.org>
+
+	* MonoDevelop.Core.Execution/ProcessService.cs: Use the new 
+	ExternalConsoleLocator instead of hardcoding xterm when running builds
+	on an external console
+
+	* MonoDevelop.Core.Execution/ExternalConsoleLocator.cs: First pass at
+	reasonably resolving a working and preferred terminal for Linux users;
+	currently only uses GNOME Terminal if running under GNOME, xterm otherwise;
+	can be easily extended for Konsole, but it was acting strange when I tried,
+	so someone else needs to do this if there's interest; also this is sort
+	of a temporary measure in part until the external console stuff can be
+	properly moved into the platform service layer so it'll work on Windows
+	and OS X along with various Linux/DE flavors
+
+	* Makefile.am:
+	* MonoDevelop.Core.mdp: Updated build with new file
+
 2008-03-05  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Core.Logging/ConsoleCrayon.cs,

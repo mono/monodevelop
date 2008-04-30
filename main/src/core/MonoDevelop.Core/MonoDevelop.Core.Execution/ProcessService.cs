@@ -178,25 +178,9 @@ namespace MonoDevelop.Core.Execution
 		public ProcessWrapper StartConsoleProcess (string command, string arguments, string workingDirectory, IDictionary<string, string> environmentVariables, IConsole console, EventHandler exited)
 		{
 			if (console == null || (console is ExternalConsole)) {
-				string additionalCommands = "";
-				if (!console.CloseOnDispose)
-					additionalCommands = @"echo; read -p 'Press any key to continue...' -n1;";
-				string xtermCommand = String.Format (
-					@" -title ""{4}"" -e ""cd {3} ; '{0}' {1} ; {2}""",
-					command,
-					arguments.Replace ("\\", "\\\\").Replace ("\"", "\\\""),
-					additionalCommands,
-					workingDirectory.Replace (" ", "\\ "),
-				    GettextCatalog.GetString ("MonoDevelop External Console")
-				);
-				ProcessStartInfo psi = new ProcessStartInfo("xterm",xtermCommand);
-				psi.UseShellExecute = false;
-				
-				if (workingDirectory != null)
-					psi.WorkingDirectory = workingDirectory;
+				ProcessStartInfo psi = ExternalConsoleLocator.GetConsoleProcess (command, arguments, workingDirectory, 
+				    GettextCatalog.GetString ("MonoDevelop External Console"), !console.CloseOnDispose);
 
-				psi.UseShellExecute  =  false;
-				
 				if (environmentVariables != null)
 					foreach (KeyValuePair<string, string> kvp in environmentVariables)
 						psi.EnvironmentVariables [kvp.Key] = kvp.Value;
