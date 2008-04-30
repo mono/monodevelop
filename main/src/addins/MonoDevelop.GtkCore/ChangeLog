@@ -1,3 +1,14 @@
+2008-04-30  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.GtkCore.addin.xml, MonoDevelop.GtkCore.mdp, gtk-gui,
+	  gtk-gui/generated.cs, gtk-gui/gui.stetic, Makefile.am,
+	  icons/pad-widget-tree-16.png,
+	  MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs,
+	  MonoDevelop.GtkCore.GuiBuilder/GuiBuilderView.cs,
+	  MonoDevelop.GtkCore.GuiBuilder/GuiBuilderDocumentOutline.cs,
+	  MonoDevelop.GtkCore.GuiBuilder/GuiBuilderProjectPad.cs: Implement
+	  IOutlinedDocument instead of custom pad. Set GTK# version to 2.8.
+
 2008-03-07  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.GtkCore.mdp: Removed unneeded dependency.

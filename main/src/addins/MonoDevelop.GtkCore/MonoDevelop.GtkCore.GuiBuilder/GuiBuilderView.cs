@@ -50,7 +50,7 @@ using Gdk;
 
 namespace MonoDevelop.GtkCore.GuiBuilder
 {
-	public class GuiBuilderView : CombinedDesignView, IToolboxConsumer
+	public class GuiBuilderView : CombinedDesignView, IToolboxConsumer, MonoDevelop.DesignerSupport.IOutlinedDocument
 	{
 		Stetic.WidgetDesigner designer;
 		Stetic.ActionGroupDesigner actionsBox;
@@ -452,6 +452,16 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 						return;
 				}
 				gproject.Project.ProjectReferences.Add (pref);
+		}
+		
+		Widget MonoDevelop.DesignerSupport.IOutlinedDocument.GetOutlineWidget ()
+		{
+			return GuiBuilderDocumentOutline.Instance;
+		}
+
+		void MonoDevelop.DesignerSupport.IOutlinedDocument.ReleaseOutlineWidget ()
+		{
+			//Do nothing. We keep the instance to avoid creation cost when switching documents.
 		}
 
 		Gtk.TargetEntry[] targets = new Gtk.TargetEntry[] {

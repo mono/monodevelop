@@ -41,15 +41,6 @@
 	<ExtensionPoint path = "/MonoDevelop/GtkCore/ContextMenu/ProjectPad/StockIcons">
 		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
 	</ExtensionPoint>
-	
-	<Extension path = "/MonoDevelop/Ide/Pads">
-		<Pad id = "MonoDevelop.GtkCore.GuiBuilder.GuiBuilderProjectPad" 
-			class = "MonoDevelop.GtkCore.GuiBuilder.GuiBuilderProjectPad" 
-			_label="Widget Tree"
-			icon="md-gtkcore-pad-widget-tree"
-			defaultPlacement="MonoDevelop.DesignerSupport.PropertyPad/center; bottom"
-			/>
-	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/WorkbenchContexts/Edit">
 		<ContextPad id = "MonoDevelop.GtkCore.GuiBuilder.GuiBuilderProjectPad" />
@@ -176,7 +167,6 @@
 		<StockIcon stockid = "md-gtkcore-dialog" resource = "dialog.png" />
 		<StockIcon stockid = "md-gtkcore-widget" resource = "widget.png" />
 		<StockIcon stockid = "md-gtkcore-actiongroup" resource = "actiongroup.png" />
-		<StockIcon stockid = "md-gtkcore-pad-widget-tree" resource = "pad-widget-tree-16.png" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/ProjectServiceExtensions">

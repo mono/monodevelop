@@ -49,7 +49,6 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 {
 	class GuiBuilderService
 	{
-		static GuiBuilderProjectPad widgetTreePad;
 		static string GuiBuilderLayout = "GUI Builder";
 		
 #if DUMMY_STRINGS_FOR_TRANSLATION_DO_NOT_COMPILE
@@ -86,11 +85,6 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 					steticApp.Dispose ();
 				}
 			};
-		}
-		
-		internal static GuiBuilderProjectPad WidgetTreePad {
-			get { return widgetTreePad; }
-			set { widgetTreePad = value; }
 		}
 		
 		public static Stetic.Application SteticApp {

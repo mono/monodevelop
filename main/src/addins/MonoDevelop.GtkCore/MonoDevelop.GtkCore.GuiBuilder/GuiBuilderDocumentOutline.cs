@@ -36,22 +36,24 @@ using MonoDevelop.DesignerSupport.PropertyGrid;
 
 namespace MonoDevelop.GtkCore.GuiBuilder
 {
-	public class GuiBuilderProjectPad: AbstractPadContent, ICustomPropertyPadProvider
+	internal class GuiBuilderDocumentOutline: MonoDevelop.Components.InvisibleFrame, ICustomPropertyPadProvider
 	{
-		Stetic.WidgetTree pview;
+		static GuiBuilderDocumentOutline instance;
 		
-		public GuiBuilderProjectPad ()
+		GuiBuilderDocumentOutline ()
 		{
-			pview = GuiBuilderService.SteticApp.WidgetTreeWidget;
-			pview.ShowAll ();
+			BorderWidth = 0;
+			GuiBuilderService.SteticApp.WidgetTreeWidget.BorderWidth = 0;
+			Add (GuiBuilderService.SteticApp.WidgetTreeWidget);
+			ShowAll ();
 		}
 		
-		public override Gtk.Widget Control {
-			get { return pview; }
-		}
-		
-		public void Fill (object o)
-		{
+		internal static GuiBuilderDocumentOutline Instance {
+			get {
+				if (instance == null)
+					instance = new GuiBuilderDocumentOutline ();
+				return instance;
+			}
 		}
 		
 		Gtk.Widget ICustomPropertyPadProvider.GetCustomPropertyWidget ()

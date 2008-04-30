@@ -27,6 +27,7 @@ REFS =  \
 	-r:System.Xml
 
 FILES =  \
+	gtk-gui/generated.cs \
 	MonoDevelop.GtkCore.Commands/GladeCommands.cs \
 	MonoDevelop.GtkCore.Dialogs/BindDesignDialog.cs \
 	MonoDevelop.GtkCore.Dialogs/ConfirmWindowDeleteDialog.cs \
@@ -40,8 +41,8 @@ FILES =  \
 	MonoDevelop.GtkCore.GuiBuilder/CombinedDesignView.cs \
 	MonoDevelop.GtkCore.GuiBuilder/GtkProjectServiceExtension.cs \
 	MonoDevelop.GtkCore.GuiBuilder/GuiBuilderDisplayBinding.cs \
+	MonoDevelop.GtkCore.GuiBuilder/GuiBuilderDocumentOutline.cs \
 	MonoDevelop.GtkCore.GuiBuilder/GuiBuilderProject.cs \
-	MonoDevelop.GtkCore.GuiBuilder/GuiBuilderProjectPad.cs \
 	MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs \
 	MonoDevelop.GtkCore.GuiBuilder/GuiBuilderView.cs \
 	MonoDevelop.GtkCore.GuiBuilder/GuiBuilderWindow.cs \
@@ -61,10 +62,10 @@ FILES =  \
 	MonoDevelop.GtkCore/WidgetFileDescriptionTemplate.cs
 
 RES =  \
+	gtk-gui/gui.stetic \
 	gui.glade \
 	icons/actiongroup.png \
 	icons/image-x-generic.png \
-	icons/pad-widget-tree-16.png \
 	icons/widget.png \
 	MonoDevelop.GtkCore.addin.xml \
 	templates/ActionGroup.xft.xml \
