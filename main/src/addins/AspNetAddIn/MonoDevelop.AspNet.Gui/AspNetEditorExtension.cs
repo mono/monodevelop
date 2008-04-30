@@ -606,28 +606,90 @@ namespace MonoDevelop.AspNet.Gui
 				node = node.Parent;
 			}
 		}
-		
-		public override void CursorPositionChanged ()
-		{
-			UpdatePath ();
-		}
 
 		
 		#region IPathedDocument
 		
 		string[] currentPath;
 		int selectedPathIndex;
+		
+		
+		public override void CursorPositionChanged ()
+		{
+			UpdatePath ();
+		}
 
 		public void SelectPath (int depth)
 		{
-			throw new NotImplementedException();
+			SelectPath (depth, false);
 		}
 
 		public void SelectPathContents (int depth)
 		{
-			throw new NotImplementedException();
+			SelectPath (depth, true);
 		}
-
+		
+		void SelectPath (int depth, bool contents)
+		{
+			XmlTagState start = GetCompleteTag (depth);
+			if (start == null) {
+				MonoDevelop.Core.LoggingService.LogWarning ("Could not find path item in order to select it.");
+				return;
+			}
+			
+			State end = start.ClosingTag;
+			if (end != null) {
+				MonoDevelop.Core.LoggingService.LogDebug ("Selecting start {0}:{1}, end {2}:{3}",
+				    start.StartLocation, start.EndLocation, end.StartLocation, end.EndLocation);
+				
+				//pick out the locations, with some offsets to account for the parsing model
+				int s = contents? start.EndLocation + 1 : start.StartLocation - 2;
+				int e = contents? end.StartLocation - 1 : end.EndLocation + 1;
+				if (contents && end is XmlTagState)
+					e--;
+				
+				if (s > -1 && e > s)
+					Editor.Select (s, e);
+			} else {
+				
+				MonoDevelop.Core.LoggingService.LogDebug ("Selecting start {0}:{1}, end (null)",
+				    start.StartLocation, start.EndLocation);
+			}
+		}
+		
+		XmlTagState GetCompleteTag (int index)
+		{
+			List<State> path = GetCurrentPath ();
+			XmlTagState start = (XmlTagState) path[index].DeepCopy (true);
+			int pos = start.EndLocation;
+			if (pos < 0)
+				pos = tracker.Engine.Position;
+			
+			State current = start;
+			while (pos < Editor.TextLength) {
+				char c = Editor.GetCharAt (pos);
+				State ret = null;
+				
+				//parser logic from parser.cs
+				State next = null;
+				do {
+					next = current.PushChar (c, pos);
+					//System.Console.WriteLine("{0} {1}", c, current.ToString ());
+					//when end tag found, return it (skip the / to let the tag finish closing
+					//if (start.ClosingTag != null && c != '/')
+					//	return start;
+					if (next == start.Parent)
+						return start;
+					
+					if (next == current)
+						next = null;
+					if (next != null)
+						current = next;
+				} while (next != null);
+				pos++;
+			}
+			return start;
+		}
 		
 		public event EventHandler<DocumentPathChangedEventArgs> PathChanged;
 		
@@ -637,49 +699,67 @@ namespace MonoDevelop.AspNet.Gui
 				PathChanged (this, new DocumentPathChangedEventArgs (oldPath, oldSelectedIndex));
 		}
 		
-		void UpdatePath ()
+		void CompleteNameTag (XmlTagNameState tns)
+		{
+			int pos = this.tracker.Engine.Position;
+			while (true) {
+				char c = Editor.GetCharAt (pos);
+				//text editor may update cursor before inserting chars, so avoid exceptions
+				if (tns.StartLocation == pos && !char.IsLetter (c))
+					break;
+				State ret = tns.PushChar (c, pos);
+				pos++;
+				if (tns.Complete || (ret != null && ret != tns))
+					break;
+			}
+		}
+		
+		List<State> GetCurrentPath ()
 		{
 			this.tracker.UpdateEngine ();
-			List<string> path = new List<string> ();
+			List<State> path = new List<State> ();
 			
 			//if current state is a name, walk onwards to complete it
 			State s = this.tracker.Engine.CurrentState;
 			if (s is XmlTagNameState) {
 				XmlTagNameState tns = (XmlTagNameState) s.DeepCopy (false);
-				int pos = this.tracker.Engine.Position;
-				while (true) {
-					char c = Editor.GetCharAt (pos);
-					//text editor may update cursor before inserting chars, so avoid exceptions
-					if (tns.StartLocation == pos && !char.IsLetter (c))
-						break;
-					State ret = tns.PushChar (c, pos);
-					pos++;
-					if (tns.Complete) {
-						path.Add (tns.FullName);
-						//skip beyond the parent XmlTagState, as it's incomplete
-						while (s != null && !(s is XmlTagState)) {
-							s = s.Parent;
-						}
+				CompleteNameTag (tns);
+				if (tns.Complete) {
+					path.Add (tns);
+					//skip beyond the parent XmlTagState, as it's incomplete
+					while (s != null && !(s is XmlTagState)) {
 						s = s.Parent;
-						break;
 					}
-					if (ret != null && ret != tns)
-						break;
+					s = s.Parent;
 				}
 			}
 			
-			//walk up named parents, addin to list
-			while (s != null) {
+			//walk up named parents, adding to list
+			do {
 				if (s is XmlTagState)
-					path.Add (((XmlTagState)s).Name.FullName);
+					path.Add ((XmlTagState)s);
 				s = s.Parent;
-			}
+			} while (s != null);
 			
 			path.Reverse ();
+			return path;
+		}
+		
+		void UpdatePath ()
+		{
+			List<State> l = GetCurrentPath ();
+			string[] path = new string[l.Count];
+			for (int i = 0; i < l.Count; i++) {
+				XmlTagState ts = l[i] as XmlTagState;
+				if (l[i] is XmlTagState)
+					path[i] = ((XmlTagState)l[i]).Name.FullName;
+				else if (l[i] is XmlTagNameState)
+					path[i] = ((XmlTagNameState)l[i]).FullName;
+			}
 			
 			string[] oldPath = currentPath;
 			int oldIndex = selectedPathIndex;
-			currentPath = path.ToArray ();
+			currentPath = path;
 			selectedPathIndex = currentPath.Length - 1;
 			
 			OnPathChanged (oldPath, oldIndex);
