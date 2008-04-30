@@ -989,6 +989,7 @@
             <property name="Label" />
             <property name="UseUnderline">True</property>
             <property name="Relief">None</property>
+            <property name="UseMarkup">False</property>
           </widget>
           <packing>
             <property name="Position">5</property>
@@ -1329,6 +1330,7 @@
                 <property name="Label" />
                 <property name="UseUnderline">True</property>
                 <property name="Relief">None</property>
+                <property name="UseMarkup">False</property>
               </widget>
               <packing>
                 <property name="LeftAttach">2</property>

@@ -260,6 +260,7 @@ namespace MonoDevelop.SourceEditor {
             this.optionsButton.Name = "optionsButton";
             this.optionsButton.UseUnderline = true;
             this.optionsButton.Relief = ((Gtk.ReliefStyle)(2));
+            this.optionsButton.UseMarkup = false;
             this.optionsButton.Label = "";
             this.table2.Add(this.optionsButton);
             Gtk.Table.TableChild w26 = ((Gtk.Table.TableChild)(this.table2[this.optionsButton]));

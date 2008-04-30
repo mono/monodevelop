@@ -316,7 +316,7 @@ namespace MonoDevelop.SourceEditor
 		
 		void OnParseInformationChanged (object sender, ParseInformationEventArgs args)
 		{
-			if (args == null || args.ParseInformation == null || this.view == null  || this.view.ContentName != args.FileName)
+			if (this.isDisposed || args == null || args.ParseInformation == null || this.view == null  || this.view.ContentName != args.FileName)
 				return;
 			MonoDevelop.SourceEditor.ExtendibleTextEditor editor = this.TextEditor;
 			if (editor == null || editor.Document == null)
@@ -402,6 +402,8 @@ namespace MonoDevelop.SourceEditor
 		}
 		void UnderLineError (ErrorInfo info)
 		{
+			if (this.isDisposed)
+				return;
 			// Adjust the line to Gtk line representation
 			info.Line -= 1;
 			
@@ -421,6 +423,11 @@ namespace MonoDevelop.SourceEditor
 			if (isDisposed)
 				return;
 			isDisposed = true;
+			if (parseInformationUpdaterWorkerThread != null) {
+				parseInformationUpdaterWorkerThread.Stop ();
+				parseInformationUpdaterWorkerThread.WaitForFinish ();
+			}
+			
 			Unsplit ();
 			RemoveReloadBar ();
 			if (this.textEditor != null) {

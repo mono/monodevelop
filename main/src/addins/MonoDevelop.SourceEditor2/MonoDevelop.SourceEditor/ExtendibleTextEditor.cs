@@ -175,6 +175,8 @@ namespace MonoDevelop.SourceEditor
 					}
 				}
 			}
+			if (Document == null)
+				return true;
 			Document.BeginAtomicUndo ();
 			if (extension != null) {
 				if (extension.KeyPress (evnt.Key, ch, evnt.State)) 

@@ -162,6 +162,7 @@ namespace MonoDevelop.SourceEditor {
             this.optionsButton.Name = "optionsButton";
             this.optionsButton.UseUnderline = true;
             this.optionsButton.Relief = ((Gtk.ReliefStyle)(2));
+            this.optionsButton.UseMarkup = false;
             this.optionsButton.Label = "";
             this.hbox1.Add(this.optionsButton);
             Gtk.Box.BoxChild w13 = ((Gtk.Box.BoxChild)(this.hbox1[this.optionsButton]));
