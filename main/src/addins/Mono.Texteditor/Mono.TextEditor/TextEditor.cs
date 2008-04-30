@@ -426,7 +426,7 @@ namespace Mono.TextEditor
 			TextEditorOptions.Changed -= OptionsChanged;
 			Caret.PositionChanged -= CaretPositionChanged;
 			imContext.Commit -= IMCommit;
-			imContext.Dispose ();
+			//imContext.Dispose ();
 			
 			if (this.textEditorData.HAdjustment != null) {
 				this.textEditorData.HAdjustment.ValueChanged -= HAdjustmentValueChanged; 
