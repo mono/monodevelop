@@ -36,6 +36,7 @@ namespace MonoDevelop.Xml.StateEngine
 	{
 		XmlTagNameState name;
 		bool closing = false;
+		State closingTag;
 		
 		public XmlTagState (State parent, int position)
 			: base (parent, position)
@@ -57,13 +58,20 @@ namespace MonoDevelop.Xml.StateEngine
 				return name;
 			}
 			
-			if (c == '<')
+			if (c == '<') {
+				if (EndLocation < 0)
+					Close (position);
 				return Parent;
+			}
 			
-			if (c == '>')
+			if (c == '>') {
+				if (EndLocation < 0)
+					Close (position);
 				return closing? Parent : new XmlFreeState (this, position);
+			}
 			
 			if (c == '/') {
+				ClosingTag = this;
 				closing = true;
 				return null;
 			}
@@ -83,7 +91,24 @@ namespace MonoDevelop.Xml.StateEngine
 		
 		public bool Closing {
 			get { return closing; }
-			set { closing = value; }
+			set {
+#if DEBUG
+				if (!value || closing)
+					throw new InvalidOperationException ("The tag can only be closed once");
+#endif
+				closing = value;
+			}
+		}
+		
+		public State ClosingTag {
+			get { return closingTag; }
+			set {
+#if DEBUG
+				if (closingTag != null)
+					throw new InvalidOperationException ("The closing tag has already been assigned");
+#endif
+				closingTag = value;
+			}
 		}
 		
 		public IXmlName Name {

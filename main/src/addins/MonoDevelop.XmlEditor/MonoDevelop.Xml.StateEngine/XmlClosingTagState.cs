@@ -65,6 +65,7 @@ namespace MonoDevelop.Xml.StateEngine
 					
 					//when found, walk back up closing all tags
 					if (ts.Name.FullName == this.Name.FullName) {
+						ts.ClosingTag = this;
 						foreach (XmlTagState ts2 in TagParents) {
 							ts2.Closing = true;
 							if (ts == ts2)
@@ -75,8 +76,11 @@ namespace MonoDevelop.Xml.StateEngine
 				}
 			}
 			
-			if (c == '<' || c == '>')
+			if (c == '<' || c == '>') {
+				if (EndLocation < 0)
+					Close (position);
 				return Parent;
+			}
 			
 			if (position == StartLocation + 1 && char.IsLetter (c)) {
 				name = new XmlTagNameState (this, position);

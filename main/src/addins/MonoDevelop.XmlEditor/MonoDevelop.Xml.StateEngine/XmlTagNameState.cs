@@ -56,11 +56,14 @@ namespace MonoDevelop.Xml.StateEngine
 
 		public override State PushChar (char c, int position)
 		{
+#if DEBUG
 			if (position == StartLocation && !char.IsLetter (c))
 				throw new InvalidOperationException ("First character pushed to a XmlTagNameState must be a letter.");
-			
-			if (c == '<')
+#endif		
+			if (c == '<') {
+				Close (position);
 				return Parent;
+			}
 			
 			if (c == ':' && namespc == null) {
 				namespc = nameBuilder.ToString ();
@@ -71,6 +74,7 @@ namespace MonoDevelop.Xml.StateEngine
 			if (char.IsWhiteSpace (c) || c == '>' || c == '/') {
 				name = nameBuilder.ToString ();
 				nameBuilder = null;
+				Close (position);
 				return Parent;
 			}
 			

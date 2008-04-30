@@ -1,3 +1,15 @@
+2008-04-30  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Xml.StateEngine/Parser.cs,
+	  MonoDevelop.Xml.StateEngine/XmlClosingTagState.cs,
+	  MonoDevelop.Xml.StateEngine/XmlTagState.cs,
+	  MonoDevelop.Xml.StateEngine/XmlTagNameState.cs,
+	  MonoDevelop.Xml.StateEngine/XmlAttributeValueState.cs,
+	  MonoDevelop.Xml.StateEngine/XmlFreeState.cs,
+	  MonoDevelop.Xml.StateEngine/XmlMalformedTagState.cs,
+	  MonoDevelop.Xml.StateEngine/XmlAttributeState.cs: Make sure more
+	  states have closing positions.
+
 2008-04-25  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Xml.StateEngine/Parser.cs,

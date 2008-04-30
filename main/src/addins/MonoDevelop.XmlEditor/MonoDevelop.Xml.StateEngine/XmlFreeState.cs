@@ -61,8 +61,10 @@ namespace MonoDevelop.Xml.StateEngine
 			
 			if (c == '>') {
 				XmlTagState tsParent = Parent as XmlTagState;
-				if (tsParent != null && tsParent.Closing)
+				if (tsParent != null && tsParent.Closing) {
+					Close (location);
 					return Parent;
+				}
 			}
 			
 			if (openTag) {

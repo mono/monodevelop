@@ -51,8 +51,10 @@ namespace MonoDevelop.Xml.StateEngine
 
 		public override State PushChar (char c, int position)
 		{
-			if (c == '<' || done)
+			if (c == '<' || done) {
+				Close (position);
 				return Parent;
+			}
 			
 			if (position == StartLocation) {
 				if (c == '\'' || c == '"' || char.IsLetterOrDigit (c)) {

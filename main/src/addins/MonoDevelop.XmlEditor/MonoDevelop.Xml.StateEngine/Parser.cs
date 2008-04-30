@@ -77,9 +77,9 @@ namespace MonoDevelop.Xml.StateEngine
 			do {
 				System.Diagnostics.Debug.Assert (currentState != null);
 				newState = currentState.PushChar (c, position);
-				if (newState == currentState || newState == null) {
+				if (newState == currentState) {
 					newState = null;
-				} else {
+				} else if (newState != null) {
 					currentState = newState;
 				}
 				
