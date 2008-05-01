@@ -1,3 +1,21 @@
+2008-05-01  Aaron Bockover <abockover@novell.com>
+
+	* MonoDevelop.Ide.Gui.Dialogs/GoToDialog.cs: Got rid of absolutely insane
+	threading; previously a thread would be spawned by every single character
+	change in the search, also the previous thread would first be _aborted_;
+	this caused frequent complete lockups (often leading to data loss), 
+	excessive resource drain, and suboptimal performance
+
+	Replaced with a single thread that uses an AutoResetEvent to wait until
+	search work is requested, and never abort this thread - allow search
+	iterations to exit safely and return to the wait; also destroy the dialog
+	and exit the single thread safely when the dialog is dismissed instead
+	of just hiding and reusing it - there's no reason for that other than
+	wasting resources and increasing code complexity; some general clean up
+
+	* MonoDevelop.Ide.Commands/SearchCommands.cs: Reflected to use the new
+	.Run method, what used to be .Show
+
 2008-04-30  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Ide.mdp: Fix GTK# version to 2.8.

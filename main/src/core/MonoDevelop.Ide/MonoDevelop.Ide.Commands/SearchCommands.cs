@@ -74,7 +74,7 @@ namespace MonoDevelop.Ide.Commands
 	{
 	    protected override void Run()
 		{
-			GoToDialog.Show (false);
+			GoToDialog.Run (false);
 	    }
 	    
 	    protected override void Update(CommandInfo info)
@@ -87,7 +87,7 @@ namespace MonoDevelop.Ide.Commands
 	{
 	    protected override void Run()
 		{
-			GoToDialog.Show (true);
+			GoToDialog.Run (true);
 	    }
 	    
 	    protected override void Update(CommandInfo info)

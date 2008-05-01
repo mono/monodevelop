@@ -3,9 +3,11 @@
 //
 // Author:
 //   Zach Lute (zach.lute@gmail.com)
+//   Aaron Bockover (abockover@novell.com)
 //   Jacob Ilsø Christensen
 //   Lluis Sanchez
 //
+// Copyright (C) 2008 Novell, Inc.
 // Copyright (C) 2007 Zach Lute
 //
 // Permission is hereby granted, free of charge, to any person obtaining
@@ -43,23 +45,15 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 {
 	public partial class GoToDialog : Gtk.Dialog
 	{
-		public static readonly int COL_ICON = 0;
-		public static readonly int COL_FILE = 1;
-		public static readonly int COL_PATH = 2;
-		public static readonly int COL_FILEPATH = 3;
-		public static readonly int COL_LINE = 4;
-		public static readonly int COL_COLUMN = 5;
+		const int COL_ICON = 0;
+		const int COL_FILE = 1;
+		const int COL_PATH = 2;
+		const int COL_FILEPATH = 3;
+		const int COL_LINE = 4;
+		const int COL_COLUMN = 5;
 		
-		static GoToDialog dlg;
-		public static GoToDialog Instance {
-			get {
-				if(dlg == null)
-					dlg = new GoToDialog (true);
-				return dlg;
-			}
-		}
-		
-		private Dictionary<string, Pixbuf> icons;
+		Dictionary<string, Pixbuf> icons;
+		int cellHeight;
 		
 		ListStore list;
 		TreeModelSort model;
@@ -67,7 +61,12 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		object matchLock;
 		string matchString;
 		
+		// Thread management
 		Thread searchThread;
+		AutoResetEvent searchThreadWait;
+		bool searchCycleActive;
+		bool searchThreadDispose;
+		
 		bool searchFiles;
 		bool updating;
 		bool userSelecting;
@@ -78,72 +77,71 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		int fileLine;
 		int fileCol;
 		
-		public string Filename {
+		protected string Filename {
 			get { return filename; }
 			set { filename = value; }
 		}
 		
-		public int FileLine {
+		protected int FileLine {
 			get { return fileLine; }
 		}
 		
-		public int FileColumn {
+		protected int FileColumn {
 			get { return fileCol; }
 		}
 		
-		public bool SearchFiles {
-			get {
-				return searchFiles; 
-			}
+		protected bool SearchFiles {
+			get { return searchFiles; }
 			set {
-				if (searchFiles != value) {
-					searchFiles = value;
-					if(searchFiles)
-						this.Title = GettextCatalog.GetString ("Go to File");
-					else
-						this.Title = GettextCatalog.GetString ("Go to Type");
-					UpdateList();
+				if (searchFiles == value) {
+					return;
 				}
+				
+				searchFiles = value;
+				Title = searchFiles 
+					? GettextCatalog.GetString ("Go to File")
+					: GettextCatalog.GetString ("Go to Type");
+				
+				UpdateList ();
 			}
 		}
 		
-		public GoToDialog (bool searchFiles)
+		protected GoToDialog (bool searchFiles)
 		{	
-			this.Build ();
-			icons = new Dictionary<string, Pixbuf> ();
-			SetupTreeView ();
-		
-			matchLock = new System.Object ();
-			matchString = "";
+			this.searchFiles = searchFiles;
 			
+			matchLock = new object ();
+			matchString = String.Empty;
+			
+			icons = new Dictionary<string, Pixbuf> ();
+			
+			Build ();
+			SetupTreeView ();
 			matchEntry.GrabFocus ();
 			
-			this.SearchFiles = searchFiles;
+			SearchFiles = searchFiles;
 		}
 		
-	    public static void Show (bool searchFiles)
+	    public static void Run (bool searchFiles)
 		{
-			GoToDialog od = GoToDialog.Instance;
-			od.SearchFiles = searchFiles;
-			int response = od.Run();
-			od.Hide();
-			if (response == (int)Gtk.ResponseType.Ok)
-				IdeApp.Workbench.OpenDocument (od.Filename, od.FileLine, od.FileColumn, true);	
+			GoToDialog dialog = new GoToDialog (searchFiles);
+			try {
+				if ((ResponseType)dialog.Run () == ResponseType.Ok) {
+					IdeApp.Workbench.OpenDocument (dialog.Filename, dialog.FileLine, dialog.FileColumn, true);
+				}
+			} finally {
+				dialog.Destroy ();
+			}
 	    }
 		
-		int cellHeight;
 		private void SetupTreeView ()
 		{
-			Type[] types = new Type[] {
-				typeof (Pixbuf),
+			list = new ListStore (typeof (Pixbuf),
 				typeof (string),
 				typeof (string),
 				typeof (string),
 				typeof (int),
-				typeof (int)
-			};
-				
-			list = new ListStore (types);
+				typeof (int));
 			
 			model = new TreeModelSort (list);
 			tree.Model = model;
@@ -169,13 +167,13 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			tree.AppendColumn (pathColumn);
 			model.SetSortColumnId (COL_FILE, SortType.Ascending);
 			model.ChangeSortColumn ();
-			this.cellHeight = 29;
+			cellHeight = 29;
 			tree.Selection.Changed += OnSelectionChanged;
 		}
 		
 		void OnSelectionChanged (object ob, EventArgs args)
 		{
-			openButton.Sensitive = (tree.Selection.GetSelectedRows ().Length != 0);
+			openButton.Sensitive = tree.Selection.CountSelectedRows () > 0;
 		}
 		
 		protected void HandleShown (object sender, System.EventArgs e)
@@ -188,19 +186,17 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			matchEntry.GrabFocus ();
 		}
 
-		protected virtual void HandleOpen (object sender, EventArgs e)
+		protected virtual void HandleOpen (object o, EventArgs args)
 		{
 			OpenFile ();
 		}
 		
-		protected virtual void HandleRowActivate (object o, 
-		                                          RowActivatedArgs args)
+		protected virtual void HandleRowActivate (object o, RowActivatedArgs args)
 		{
 			OpenFile ();
 		}
 		
-		protected virtual void HandleEntryActivate (object o, 
-		                                            EventArgs args)
+		protected virtual void HandleEntryActivate (object o, EventArgs args)
 		{
 			OpenFile ();
 		}
@@ -216,36 +212,57 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				Filename = o as string;
 				fileLine = (int) model.GetValue (iter, COL_LINE);
 				fileCol = (int) model.GetValue (iter, COL_COLUMN);
-				this.Respond (ResponseType.Ok);
+				Respond (ResponseType.Ok);
 			} else {
-				Filename = "";
-				this.Respond (ResponseType.Cancel);
+				Filename = String.Empty;
+				Respond (ResponseType.Cancel);
 			}
 		}
 
-		protected virtual void HandleEntryChanged (object sender, 
-		                                           System.EventArgs e)
+		protected virtual void HandleEntryChanged (object sender, System.EventArgs e)
 		{
 			// Find the matching files and display them in the tree.
 			PerformSearch ();
 		}
 		
-		private void PerformSearch ()
+		protected override void OnShown ()
 		{
-			if (list == null)
-				return;
+			base.OnShown ();
+			UpdateList ();
+		}
+		
+		public override void Destroy ()
+		{
+			// Set the thread into a dispose state and wake it up so it can exit
+			if (searchCycleActive && searchThread != null && searchThreadWait != null) {
+				searchCycleActive = false;
+				searchThreadDispose = true;
+				searchThreadWait.Set ();
+			}
 			
+			base.Destroy ();
+		}
+		
+		void StopActiveSearch ()
+		{
+			// Tell the thread's search code that it should stop working and 
+			// then have the thread wait on the handle until told to resume
+			if (searchCycleActive && searchThread != null && searchThreadWait != null) {
+				searchCycleActive = false;
+				searchThreadWait.Reset ();
+			}
+		}
+		
+		void PerformSearch ()
+		{
 			userSelecting = false;
+			
+			StopActiveSearch ();
 			
 			string toMatch = matchEntry.Text.ToLower ();
 				
 			lock (matchLock) {
 				matchString = toMatch;
-			}
-			
-			if (searchThread != null) {
-				searchThread.Abort ();
-				searchThread = null;
 			}
 			
 			lock (searchResult) {
@@ -255,19 +272,49 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 
 			// Queuing this seems to prevent things getting
 			// added from queued events after the clear.
-			DispatchService.GuiDispatch (list.Clear);
+			if (list != null) {
+				DispatchService.GuiDispatch (list.Clear);
+			}
 			
-			ThreadStart start = new ThreadStart (SearchThread);
-			searchThread = new Thread (start);
-			searchThread.IsBackground = true;
-			searchThread.Priority = ThreadPriority.Lowest;
-			searchThread.Start ();
+			if (searchThread == null) {
+				// Create the handle the search thread will wait on when there is nothing to do
+				searchThreadWait = new AutoResetEvent (false);
+				
+				// Only a single thread will be used for searching
+				ThreadStart start = new ThreadStart (SearchThread);
+				searchThread = new Thread (start);
+				searchThread.IsBackground = true;
+				searchThread.Priority = ThreadPriority.Lowest;
+				searchThread.Start ();
+			}
+			
+			// Wake the handle up so the search thread can do some work
+			searchCycleActive = true;
+			searchThreadWait.Set ();
 		}
 		
 		void SearchThread ()
 		{
+			// The thread will remain active until the dialog goes away
+			while (true) {
+				searchThreadWait.WaitOne ();
+				if (searchThreadDispose) {
+					return;
+				}
+				
+				SearchThreadCycle ();
+			}
+		}
+		
+		void SearchThreadCycle ()
+		{
+			// This is the inner thread worker; it actually does the searching
+			// Any where we enter loop, a check is added to see if the search
+			// should be aborted entirely so we can return to the wait handle
+			
 			foreach (Document doc in IdeApp.Workbench.Documents) {
-
+				if (!searchCycleActive) return;
+				
 				// We only want to check it here if it's not part
 				// of the open combine.  Otherwise, it will get
 				// checked down below.
@@ -287,6 +334,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 						IParseInformation info = ctx.ParseFile(doc.FileName);
 						if(info != null) {
 							foreach (IClass c in ((ICompilationUnit)info.MostRecentCompilationUnit).Classes) {
+								if (!searchCycleActive) return;
 								CheckType (c, toMatch);
 							}
 						}
@@ -303,6 +351,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				return;
 
 			foreach (CombineEntry entry in projects) {
+				if (!searchCycleActive) return;
+				
 				Project p = entry as Project;
 				if (p == null)
 					continue;
@@ -318,11 +368,13 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 						continue;
 
 					foreach (ProjectFile file in files) {
+						if (!searchCycleActive) return;
 						CheckFile (file.FilePath, toMatch);
 					}
 				} else {
 					IParserContext ctx = IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (p);
 					foreach (IClass c in ctx.GetProjectContents()) {
+						if (!searchCycleActive) return;
 						CheckType (c, toMatch);
 					}
 				}
@@ -336,9 +388,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				return;
 					
 			string icon = Services.Icons.GetImageForFile (path);
-						
-			object[] data = new object[] { icon, name, path, path, -1, -1 };
-			AddItem (data);
+			AddItem (icon, name, path, path, -1, -1);
 		}
 		
 		void CheckType (IClass c, string toMatch)
@@ -351,11 +401,11 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			
 			string icon = Services.Icons.GetIcon (c);
 			
-			object[] data = new object [] { icon, c.Name, c.FullyQualifiedName, c.Region.FileName, c.Region.BeginLine, c.Region.BeginColumn };
-			AddItem (data);
+			AddItem (icon, c.Name, c.FullyQualifiedName, c.Region.FileName, 
+				c.Region.BeginLine, c.Region.BeginColumn);
 		}
 
-		void AddItem (object[] data)
+		void AddItem (params object[] data)
 		{
 			// Add the result to the results list, and asychronously call the
 			// AddItemGui method which will be in charge of adding them to the tree.
@@ -405,7 +455,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		{
 			if (!icons.ContainsKey (id)) {
 				IconSize size = IconSize.Menu;
-				Pixbuf icon = tree.RenderIcon (id, size, ""); 
+				Pixbuf icon = tree.RenderIcon (id, size, String.Empty); 
 				icons.Add (id, icon);
 			}
 			return icons [id];
