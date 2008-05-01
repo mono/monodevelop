@@ -299,11 +299,20 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			while (true) {
 				searchThreadWait.WaitOne ();
 				if (searchThreadDispose) {
-					return;
+					break;
 				}
 				
 				SearchThreadCycle ();
 			}
+			
+			// Reset all thread state even though this shouldn't be
+			// necessary since we destroy and never reuse the dialog
+			searchCycleActive = false;
+			searchThreadDispose = false;
+			
+			searchThreadWait.Close ();
+			searchThreadWait = null;
+			searchThread = null;
 		}
 		
 		void SearchThreadCycle ()

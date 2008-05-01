@@ -1,5 +1,11 @@
 2008-05-01  Aaron Bockover <abockover@novell.com>
 
+	* MonoDevelop.Ide.Gui.Dialogs/GoToDialog.cs: Fully reset the thread state
+	just to be thorough even though it shouldn't matter because the dialog
+	doesn't get reused
+
+2008-05-01  Aaron Bockover <abockover@novell.com>
+
 	* MonoDevelop.Ide.Gui.Dialogs/GoToDialog.cs: Got rid of absolutely insane
 	threading; previously a thread would be spawned by every single character
 	change in the search, also the previous thread would first be _aborted_;
