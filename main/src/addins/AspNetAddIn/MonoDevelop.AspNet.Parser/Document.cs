@@ -59,12 +59,12 @@ namespace MonoDevelop.AspNet.Parser
 		
 		public Document (ITextBuffer buffer, Project project, string filePath) : this (project, filePath)
 		{
-			using (StreamReader sr = new StreamReader (new MemoryStream (new System.Text.UTF8Encoding().GetBytes (buffer.Text)))) {
+			using (TextReader sr = new StreamReader (new MemoryStream (new System.Text.UTF8Encoding().GetBytes (buffer.Text)))) {
 				Init (sr);
 			}
 		}
 		
-		public Document (StreamReader sr, Project project, string filePath) : this (project, filePath)
+		public Document (TextReader sr, Project project, string filePath) : this (project, filePath)
 		{
 			this.filePath = filePath;
 			this.project = project as AspNetAppProject;
@@ -73,7 +73,7 @@ namespace MonoDevelop.AspNet.Parser
 		
 		public Document (ProjectFile file) : this (file.Project, file.FilePath)
 		{
-			StreamReader sr = null;
+			TextReader sr = null;
 			try {
 				sr = new StreamReader (file.FilePath);
 				Init (sr);
@@ -86,7 +86,7 @@ namespace MonoDevelop.AspNet.Parser
 			}
 		}
 		
-		void Init (StreamReader sr)
+		void Init (TextReader sr)
 		{
 			rootNode = new RootNode ();
 			rootNode.Parse (filePath, sr);

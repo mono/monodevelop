@@ -115,6 +115,12 @@
     <File name="MonoDevelop.AspNet.Parser/SuggestedHandlerCompletionData.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.AspNet.StateEngine/AspNetFreeState.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.AspNet.StateEngine/AspNetSpecialState.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Html/HtmlCompletionDataProvider.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.AspNet/AspNetLanguageBinding.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.AspNet.Parser/AspNetParser.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.AspNet.Parser/AspNetCompilationUnit.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.AspNet.Parser/AspNetExpressionFinder.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.AspNet.Parser/CompilationUnitVisitor.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Components" />

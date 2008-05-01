@@ -66,6 +66,10 @@ FILES =  \
 	MonoDevelop.AspNet.Parser.Internal/StrUtils.cs \
 	MonoDevelop.AspNet.Parser.Internal/TagAttributes.cs \
 	MonoDevelop.AspNet.Parser.Internal/TagType.cs \
+	MonoDevelop.AspNet.Parser/AspNetCompilationUnit.cs \
+	MonoDevelop.AspNet.Parser/AspNetExpressionFinder.cs \
+	MonoDevelop.AspNet.Parser/AspNetParser.cs \
+	MonoDevelop.AspNet.Parser/CompilationUnitVisitor.cs \
 	MonoDevelop.AspNet.Parser/DebugStringVisitor.cs \
 	MonoDevelop.AspNet.Parser/Document.cs \
 	MonoDevelop.AspNet.Parser/DocumentReferenceManager.cs \
@@ -84,6 +88,7 @@ FILES =  \
 	MonoDevelop.AspNet/AspNetCommands.cs \
 	MonoDevelop.AspNet/AspNetDisplayBinding.cs \
 	MonoDevelop.AspNet/AspNetFileDescriptionTemplate.cs \
+	MonoDevelop.AspNet/AspNetLanguageBinding.cs \
 	MonoDevelop.AspNet/AspNetMSBuildProjectExtension.cs \
 	MonoDevelop.AspNet/CodeBehind.cs \
 	MonoDevelop.AspNet/IAspNetLanguageBinding.cs \
@@ -94,6 +99,7 @@ FILES =  \
 	MonoDevelop.Html/DocTypeCompletionData.cs \
 	MonoDevelop.Html/DocTypeCompletionDataProvider.cs \
 	MonoDevelop.Html/DocTypeExtensionNode.cs \
+	MonoDevelop.Html/HtmlCompletionDataProvider.cs \
 	MonoDevelop.Html/HtmlSchema.cs \
 	MonoDevelop.Html/HtmlSchemaService.cs
 

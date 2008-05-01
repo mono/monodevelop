@@ -88,7 +88,7 @@ namespace MonoDevelop.AspNet.Parser.Dom
 		static string[] implicitCloseOnBlock = { "p" };
 		static string[] blockLevel = { "p", "div", "hr", "img", "blockquote", "html", "body", "form" };
 		
-		public void Parse (string fileName, StreamReader textStream)
+		public void Parse (string fileName, TextReader textStream)
 		{
 			AspParser parser = new AspParser (fileName, textStream);
 			

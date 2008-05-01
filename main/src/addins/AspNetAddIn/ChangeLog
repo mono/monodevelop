@@ -1,5 +1,19 @@
 2008-04-30  Michael Hutchinson <mhutchinson@novell.com> 
 
+	* MonoDevelop.AspNet/AspNetLanguageBinding.cs,
+	  MonoDevelop.Html/HtmlCompletionDataProvider.cs,
+	  MonoDevelop.AspNet.addin.xml, Makefile.am, AspNetAddIn.mdp,
+	  MonoDevelop.AspNet.Parser/Document.cs,
+	  MonoDevelop.AspNet.Parser/CompilationUnitVisitor.cs,
+	  MonoDevelop.AspNet.Parser/AspNetExpressionFinder.cs,
+	  MonoDevelop.AspNet.Parser/AspNetParser.cs,
+	  MonoDevelop.AspNet.Parser/AspNetCompilationUnit.cs: Add support for
+	  simple folding and error underlining in ASP.NET pages.
+	* MonoDevelop.AspNet.Parser.Dom/RootNode.cs: Add support for simple
+	  folding and error underlining in ASP.NET pages. Fix mimetypes.
+
+2008-04-30  Michael Hutchinson <mhutchinson@novell.com> 
+
 	* MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs: Add ability to
 	  select paths (partially working).
 

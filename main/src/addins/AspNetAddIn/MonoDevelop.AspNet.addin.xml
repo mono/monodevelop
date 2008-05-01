@@ -93,6 +93,12 @@
 		<ProjectBinding id = "AspNetApplication" class = "MonoDevelop.AspNet.AspNetAppProjectBinding" />
 	</Extension>
 	
+	<Extension path = "/MonoDevelop/ProjectModel/LanguageBindings">
+		<LanguageBinding id    = "ASP.NET"
+		                 supportedextensions = ".aspx,.ascx,.master"
+		                 class = "MonoDevelop.AspNet.AspNetLanguageBinding" />
+	</Extension>
+	
 	<Extension path = "/MonoDevelop/ProjectModel/SerializableClasses">
 		<DataType class = "MonoDevelop.AspNet.AspNetAppProject" />
 		<DataType class = "MonoDevelop.AspNet.AspNetAppProjectConfiguration" />
@@ -172,8 +178,26 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Core/MimeTypes">
-		<MimeType id="text/html" _description="Java source code" icon="md-html-file-icon">
-			<File pattern="*.aspx|*.asax|*.ascx|*.ashx|*.asmx" />
+		<MimeType id="application/x-aspx" _description="ASP.NET page" icon="md-html-file-icon">
+			<File pattern="*.aspx" />
+		</MimeType>
+		<MimeType id="application/x-ascx" _description="ASP.NET user control" icon="md-html-file-icon">
+			<File pattern="*.ascx" />
+		</MimeType>
+		<MimeType id="application/x-asax" _description="ASP.NET global application class" icon="md-html-file-icon">
+			<File pattern="*.asax" />
+		</MimeType>
+		<MimeType id="application/x-ashx" _description="ASP.NET handler" icon="md-html-file-icon">
+			<File pattern="*.ashx" />
+		</MimeType>
+		<MimeType id="application/x-asmx" _description="ASP.NET web service" icon="md-html-file-icon">
+			<File pattern="*.asmx" />
+		</MimeType>
+		<MimeType id="application/x-asix" _description="ASP.NET image generator" icon="md-html-file-icon">
+			<File pattern="*.asix" />
+		</MimeType>
+		<MimeType id="application/x-master-page" _description="ASP.NET master page" icon="md-html-file-icon">
+			<File pattern="*.master" />
 		</MimeType>
 	</Extension>
 	
