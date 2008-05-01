@@ -1,3 +1,9 @@
+2008-05-01  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* Mono.TextEditor/TextEditor.cs: Add focus in and focus out calls to
+	  IMContext. Revert static IMContext changes., which for some reason
+	  also fixes crash on double-click.
+
 2008-04-30  Mike Krüger <mkrueger@novell.com> 
 
 	* Mono.TextEditor/TextEditor.cs: fixed resource deallocation.

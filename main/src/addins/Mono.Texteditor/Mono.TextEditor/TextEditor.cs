@@ -55,20 +55,12 @@ namespace Mono.TextEditor
 		
 		bool isDisposed = false;
 		
-		static IMMulticontext imContext;
-		static Gdk.EventKey lastIMEvent;
-		static bool imContextActive;
-		
-		static TextEditor ()
-		{
-			imContext = new IMMulticontext ();
-			imContext.UsePreedit = false;
-		}
+		IMMulticontext imContext;
+		Gdk.EventKey lastIMEvent;
+		bool imContextActive;
 		
 		public Document Document {
 			get {
-				if (textEditorData == null)
-					return null;
 				return textEditorData.Document;
 			}
 			set {
@@ -78,8 +70,6 @@ namespace Mono.TextEditor
 		
 		public Mono.TextEditor.Caret Caret {
 			get {
-				if (textEditorData == null)
-					return null;
 				return textEditorData.Caret;
 			}
 		}
@@ -341,13 +331,12 @@ namespace Mono.TextEditor
 				Dispose ();
 			};
 			
+			imContext = new IMMulticontext ();
+			imContext.UsePreedit = false;
 			imContext.Commit += IMCommit;
-			Caret.PositionChanged += CaretPositionChanged;
-		}
-		
-		void CaretPositionChanged (object sender, DocumentLocationEventArgs args)
-		{
-			ResetIMContext ();
+			Caret.PositionChanged += delegate (object sender, DocumentLocationEventArgs args) {
+				ResetIMContext ();
+			};
 		}
 		
 		void ResetIMContext ()
@@ -360,14 +349,22 @@ namespace Mono.TextEditor
 		
 		void IMCommit (object sender, Gtk.CommitArgs ca)
 		{
-			if (!this.IsFocus)
-				return;
-			if (IsRealized) {
-				foreach (char ch in ca.Str) {
+			if (IsRealized && IsFocus)
+				foreach (char ch in ca.Str)
 					OnIMProcessedKeyPressEvent (lastIMEvent, ch);
-				}
-			}
 			ResetIMContext ();
+		}
+		
+		protected override bool OnFocusInEvent (EventFocus evnt)
+		{
+			IMContext.FocusIn ();
+			return base.OnFocusInEvent (evnt);
+		}
+		
+		protected override bool OnFocusOutEvent (EventFocus evnt)
+		{
+			imContext.FocusOut ();
+			return base.OnFocusOutEvent (evnt);
 		}
 		
 		protected override void OnRealized ()
@@ -424,9 +421,8 @@ namespace Mono.TextEditor
 			this.isDisposed = true;
 			Document.DocumentUpdated -= DocumentUpdatedHandler;
 			TextEditorOptions.Changed -= OptionsChanged;
-			Caret.PositionChanged -= CaretPositionChanged;
 			imContext.Commit -= IMCommit;
-			//imContext.Dispose ();
+			imContext.Dispose ();
 			
 			if (this.textEditorData.HAdjustment != null) {
 				this.textEditorData.HAdjustment.ValueChanged -= HAdjustmentValueChanged; 
@@ -541,9 +537,9 @@ namespace Mono.TextEditor
 			if (imContext.FilterKeypress (evt)) {
 				imContextActive = true;
 				return true;
+			} else {
+				return false;
 			}
-			
-			return false;
 		}
 		
 		protected override bool OnKeyPressEvent (Gdk.EventKey evt)
