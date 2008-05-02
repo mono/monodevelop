@@ -1,5 +1,10 @@
 2008-05-02  Michael Hutchinson <mhutchinson@novell.com> 
 
+	* MonoDevelop.DesignerSupport/CodeBehindService.cs: Remove unneeded
+	  code; the parser service seems to handle parsing at startup.
+
+2008-05-02  Michael Hutchinson <mhutchinson@novell.com> 
+
 	* MonoDevelop.DesignerSupport.CodeBehind/ICodeBehindProvider.cs,
 	  MonoDevelop.DesignerSupport/CodeBehindService.cs,
 	  MonoDevelop.DesignerSupport/DesignerSupportService.cs,

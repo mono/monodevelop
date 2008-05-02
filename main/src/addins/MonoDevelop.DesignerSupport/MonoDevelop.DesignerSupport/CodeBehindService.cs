@@ -57,7 +57,6 @@ namespace MonoDevelop.DesignerSupport
 		{
 			IdeApp.ProjectOperations.FileRemovedFromProject += onFileEvent;
 			IdeApp.ProjectOperations.CombineClosed += onCombineClosed;
-			IdeApp.ProjectOperations.CombineOpened += onCombineOpened;
 			
 			IdeApp.ProjectOperations.ParserDatabase.ParseInformationChanged += onParseInformationChanged;
 			IdeApp.ProjectOperations.ParserDatabase.ClassInformationChanged += onClassInformationChanged;
@@ -71,7 +70,6 @@ namespace MonoDevelop.DesignerSupport
 				
 				IdeApp.ProjectOperations.FileRemovedFromProject -= onFileEvent;
 				IdeApp.ProjectOperations.CombineClosed -= onCombineClosed;
-				IdeApp.ProjectOperations.CombineOpened -= onCombineOpened;
 				
 				IdeApp.ProjectOperations.ParserDatabase.ParseInformationChanged -= onParseInformationChanged;
 				IdeApp.ProjectOperations.ParserDatabase.ClassInformationChanged -= onClassInformationChanged;
@@ -167,17 +165,6 @@ namespace MonoDevelop.DesignerSupport
 					System.Console.WriteLine ("Added affected file {0}", pf.FilePath);
 #endif					
 				}
-			}
-		}
-		
-		void onCombineOpened (object sender, CombineEventArgs e)
-		{
-			//loop through all project files in all combines and check for CodeBehind
-			foreach (CombineEntry entry in e.Combine.Entries) {
-				Project proj = entry as Project;
-				if (proj != null)
-					foreach (ProjectFile pf in proj.ProjectFiles)
-						updateCodeBehind (pf);
 			}
 		}
 		
