@@ -848,12 +848,17 @@ namespace Mono.TextEditor
 				if (maxY < allocation.Height) 
 					this.textEditorData.VAdjustment.Value = 0;
 			}
-			if (longestLine != null && this.textEditorData.HAdjustment != null)
+			if (longestLine != null && this.textEditorData.HAdjustment != null) {
+				int maxX = this.TextViewMargin.GetWidth (this.Document.GetTextAt (this.longestLine)) + 10 * this.textViewMargin.CharWidth;
 				this.textEditorData.HAdjustment.SetBounds (0, 
-				                       (longestLine.Length + 100) * this.textViewMargin.CharWidth, 
-				                       this.textViewMargin.CharWidth,
-				                       allocation.Width,
-				                       allocation.Width);
+				                                           maxX, 
+				                                           this.textViewMargin.CharWidth,
+				                                           allocation.Width,
+				                                           allocation.Width);
+				if (maxX < allocation.Width) 
+					this.textEditorData.HAdjustment.Value = 0;
+				
+			}
 		}
 		
 		public int GetWidth (string text)

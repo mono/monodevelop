@@ -1,5 +1,10 @@
 2008-05-02  Mike Krüger <mkrueger@novell.com> 
 
+	* Mono.TextEditor/TextEditor.cs: Fixed Bug 385737 - Text editor shows
+	  unnecessary horizontal scrollbar
+
+2008-05-02  Mike Krüger <mkrueger@novell.com> 
+
 	* Mono.TextEditor/TextViewMargin.cs: fixed Bug 382556 - Text editor
 	  should respect GTK settings.
 
