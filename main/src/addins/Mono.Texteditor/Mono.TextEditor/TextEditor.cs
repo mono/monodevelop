@@ -1038,13 +1038,15 @@ namespace Mono.TextEditor
 		#endregion
 		
 		#region Search & Replace
+		
 		bool highlightSearchPattern = false;
+		
 		public string SearchPattern {
 			get {
-				return this.textEditorData.SearchPattern;
+				return this.textEditorData.SearchEngine.SearchPattern;
 			}
 			set {
-				this.textEditorData.SearchPattern = value;
+				this.textEditorData.SearchEngine.SearchPattern = value;
 				this.QueueDraw ();
 			}
 		}

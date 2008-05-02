@@ -41,6 +41,7 @@ FILES =  \
 	Mono.TextEditor/GutterMargin.cs \
 	Mono.TextEditor/IBuffer.cs \
 	Mono.TextEditor/IMargin.cs \
+	Mono.TextEditor/ISearchEngine.cs \
 	Mono.TextEditor/ISegment.cs \
 	Mono.TextEditor/LineEventArgs.cs \
 	Mono.TextEditor/LineSegment.cs \

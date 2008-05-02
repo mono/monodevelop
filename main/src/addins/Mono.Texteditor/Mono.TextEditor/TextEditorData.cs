@@ -57,6 +57,7 @@ namespace Mono.TextEditor
 		public TextEditorData ()
 		{
 			Document = new Document ();
+			this.SearchEngine = new BasicSearchEngine ();
 		}
 		
 		public Document Document {
@@ -391,20 +392,19 @@ namespace Mono.TextEditor
 		#endregion
 		
 		#region Search & Replace
-		string searchPattern = "";
-		string compiledPattern = "";
-		bool isCaseSensitive = true;
-		bool isWholeWordOnly = false;
-		
-		public string SearchPattern {
+		ISearchEngine searchEngine;
+		public ISearchEngine SearchEngine {
 			get {
-				return searchPattern;
+				return searchEngine;
 			}
 			set {
-				searchPattern = value;
-				CompilePattern ();
+				value.TextEditorData = this;
+				searchEngine = value;
 			}
 		}
+		
+		bool isCaseSensitive = true;
+		bool isWholeWordOnly = false;
 		
 		public bool IsCaseSensitive {
 			get {
@@ -412,7 +412,7 @@ namespace Mono.TextEditor
 			}
 			set {
 				isCaseSensitive = value;
-				CompilePattern ();
+				searchEngine.CompilePattern ();
 			}
 		}
 		
@@ -423,56 +423,23 @@ namespace Mono.TextEditor
 			
 			set {
 				isWholeWordOnly = value;
-				CompilePattern ();
+				searchEngine.CompilePattern ();
 			}
 		}
 		
-		void CompilePattern ()
+		public bool IsMatchAt (int offset)
 		{
-			compiledPattern = IsCaseSensitive ? SearchPattern : SearchPattern.ToUpper ();
+			return searchEngine.IsMatchAt (offset);
 		}
-		
-		internal bool IsMatchAt (int offset)
-		{
-			if (offset + SearchPattern.Length <= Document.Length && compiledPattern.Length > 0) {
-				if (IsCaseSensitive) {
-					for (int i = 0; i < compiledPattern.Length; i++) {
-						if (Document.GetCharAt (offset + i) != compiledPattern[i]) 
-							return false;
-					}
-				} else {
-					for (int i = 0; i < compiledPattern.Length; i++) {
-						if (System.Char.ToUpper (Document.GetCharAt (offset + i)) != compiledPattern[i]) 
-							return false;
-					}
-				}
-				if (IsWholeWordOnly) {
-					return Document.IsWholeWordAt (offset, compiledPattern.Length);
-				}
-				return true;
-			}
-			return false;
-		}
-
-		
+			
 		public SearchResult SearchForward (int fromOffset)
 		{
-			for (int i = 0; i < Document.Length - this.SearchPattern.Length; i++) {
-				int offset = (fromOffset + i) % Document.Length;
-				if (IsMatchAt (offset))
-					return new SearchResult (offset, this.SearchPattern.Length, offset < fromOffset);
-			}
-			return null;
+			return searchEngine.SearchForward (fromOffset);
 		}
 		
 		public SearchResult SearchBackward (int fromOffset)
 		{
-			for (int i = 0; i < Document.Length - this.SearchPattern.Length; i++) {
-				int offset = (fromOffset + Document.Length * 2 - 1- i) % Document.Length;
-				if (IsMatchAt (offset))
-					return new SearchResult (offset, this.SearchPattern.Length, offset > fromOffset);
-			}
-			return null;
+			return searchEngine.SearchBackward (fromOffset);
 		}
 		
 		public SearchResult FindNext ()
@@ -511,7 +478,7 @@ namespace Mono.TextEditor
 			bool result = false;
 			if (this.IsSomethingSelected) {
 				ISegment selection = this.SelectionRange;
-				if (IsMatchAt (selection.Offset) && selection.Length == compiledPattern.Length) {
+				if (searchEngine.IsMatchAt (selection.Offset, selection.Length)) {
 					SelectedText = withPattern;
 					ClearSelection ();
 					result = true;
@@ -524,19 +491,22 @@ namespace Mono.TextEditor
 		{
 			int result = 0;
 			Document.BeginAtomicUndo ();
-			for (int i = 0; i < Document.Length - compiledPattern.Length; i++) {
-				if (IsMatchAt (i)) {
-					Document.Replace (i, SearchPattern.Length, withPattern);
-					result++;
-					if (withPattern.Length > 0)
-						i += withPattern.Length - 1;
-				}
+			int offset = 0;
+			SearchResult searchResult; 
+			while (true) {
+				searchResult = SearchForward (offset);
+				if (searchResult == null || searchResult.SearchWrapped)
+					break;
+				Document.Replace (searchResult.Offset, searchResult.Length, withPattern);
+				offset = searchResult.EndOffset;
+				result++;
 			}
 			if (result > 0)
 				ClearSelection ();
 			Document.EndAtomicUndo ();
 			return result;
 		}
+		
 		#endregion
 	}
 }
