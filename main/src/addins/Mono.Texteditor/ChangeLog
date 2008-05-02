@@ -1,3 +1,8 @@
+2008-05-02  Mike Krüger <mkrueger@novell.com> 
+
+	* Mono.TextEditor/TextViewMargin.cs: fixed Bug 382556 - Text editor
+	  should respect GTK settings.
+
 2008-05-01  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* Mono.TextEditor/TextEditor.cs: Add focus in and focus out calls to

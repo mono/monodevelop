@@ -47,7 +47,6 @@ namespace Mono.TextEditor
 		int charWidth;
 		int caretBlinkStatus;
 		uint caretBlinkTimeoutId = 0;
-		const int CaretBlinkTime = 800;
 		
 		int lineHeight = 16;
 		int highlightBracketOffset = -1;
@@ -224,7 +223,8 @@ namespace Mono.TextEditor
 			if (caretBlinkTimeoutId != 0)
 				GLib.Source.Remove (caretBlinkTimeoutId);
 			caretBlinkStatus = 0;
-			caretBlinkTimeoutId = GLib.Timeout.Add (CaretBlinkTime / 2, new GLib.TimeoutHandler (CaretThread));
+			caretBlinkTimeoutId = GLib.Timeout.Add ((uint)Gtk.Settings.Default.CursorBlinkTime / 2, 
+			                                        new GLib.TimeoutHandler (CaretThread));
 		}
 		
 		bool CaretThread ()
@@ -251,7 +251,9 @@ namespace Mono.TextEditor
 		
 		void DrawCaret (Gdk.Drawable win)
 		{
-			if (!Caret.IsVisible || !caretBlink || !textEditor.IsFocus) 
+			if (!textEditor.IsFocus )
+				return;
+			if (Settings.Default.CursorBlink && (!Caret.IsVisible || !caretBlink)) 
 				return;
 			gc.RgbFgColor = ColorStyle.Caret;
 			if (Caret.IsInInsertMode) {
