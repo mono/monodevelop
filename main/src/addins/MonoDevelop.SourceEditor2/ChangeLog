@@ -1,3 +1,8 @@
+2008-05-02  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.SourceEditor/EditActions.cs: fixed Bug 383946 – Text
+	  editor deletes "matching" braces
+
 2008-04-30  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.SourceEditor/SourceEditorWidget.cs,
