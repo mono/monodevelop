@@ -47,11 +47,14 @@ namespace MonoDevelop.AspNet.Gui
 {
 	
 	
-	public class AspNetEditorExtension : CompletionTextEditorExtension, IPathedDocument
+	public class AspNetEditorExtension : CompletionTextEditorExtension, IPathedDocument, IOutlinedDocument
 	{
 		object lockObj = new object ();
 		DocumentStateTracker<Parser<AspNetFreeState>> tracker;
 		MonoDevelop.AspNet.Parser.AspNetCompilationUnit lastCU = null;
+		
+		Gtk.TreeView outlineTreeView;
+		Gtk.TreeStore outlineTreeStore;
 		
 		public AspNetEditorExtension () : base ()
 		{
@@ -90,6 +93,7 @@ namespace MonoDevelop.AspNet.Gui
 			if (args.FileName == FileName)
 				lastCU = args.ParseInformation.MostRecentCompilationUnit
 					as MonoDevelop.AspNet.Parser.AspNetCompilationUnit;
+			RefreshOutline ();
 		}
 		
 		MonoDevelop.AspNet.Parser.AspNetCompilationUnit CU {
@@ -780,6 +784,124 @@ namespace MonoDevelop.AspNet.Gui
 		
 		public int SelectedIndex {
 			get { return selectedPathIndex; }
+		}
+		
+		#endregion
+		
+		#region IOutlinedDocument
+		
+		bool refreshingOutline = false;
+		
+		Gtk.Widget IOutlinedDocument.GetOutlineWidget ()
+		{
+			if (outlineTreeView != null)
+				return outlineTreeView;
+			
+			outlineTreeStore = new Gtk.TreeStore (typeof (string), typeof (Node));
+			outlineTreeView = new Gtk.TreeView (outlineTreeStore);
+			outlineTreeView.AppendColumn ("Node", new Gtk.CellRendererText (), "text", 0);
+			outlineTreeView.HeadersVisible = false;
+			outlineTreeView.Realized += delegate { refillOutlineStore (); };
+			outlineTreeView.Selection.Changed += delegate {
+				Gtk.TreeIter iter;
+				if (!outlineTreeView.Selection.GetSelected (out iter))
+					return;
+				Node n = (Node) outlineTreeStore.GetValue (iter, 1);
+				SelectNode (n);
+			};
+			refillOutlineStore ();
+			
+			Gtk.ScrolledWindow sw = new Gtk.ScrolledWindow ();
+			sw.Add (outlineTreeView);
+			sw.ShowAll ();
+			return sw;
+		}
+		
+		void SelectNode (Node n)
+		{
+			ILocation start = n.Location, end;
+			TagNode tn = n as TagNode;
+			if (tn != null && tn.EndLocation != null)
+				end = tn.EndLocation;
+			else
+				end = start;
+			int s = Editor.GetPositionFromLineColumn (start.BeginLine, start.BeginColumn + 1);
+			int e = Editor.GetPositionFromLineColumn (end.EndLine, end.EndColumn + 1);
+			if (e > s && s > -1)
+				Editor.Select (s, e);
+		}
+		
+		void RefreshOutline ()
+		{
+			if (refreshingOutline || outlineTreeView == null )
+				return;
+			refreshingOutline = true;
+			GLib.Timeout.Add (3000, refillOutlineStoreIdleHandler);
+		}
+		
+		bool refillOutlineStoreIdleHandler ()
+		{
+			refreshingOutline = false;
+			refillOutlineStore ();
+			return false;
+		}
+		
+		void refillOutlineStore ()
+		{
+			MonoDevelop.Core.Gui.DispatchService.AssertGuiThread ();
+			Gdk.Threads.Enter ();
+			refreshingOutline = false;
+			if (outlineTreeStore == null || !outlineTreeView.IsRealized)
+				return;
+			
+			outlineTreeStore.Clear ();
+			if (lastCU == null)
+				return;
+			
+			DateTime start = DateTime.Now;
+			ParentNode p = lastCU.Document.RootNode;
+			Gtk.TreeIter iter = outlineTreeStore.AppendValues (System.IO.Path.GetFileName (lastCU.Document.FilePath), p);
+			BuildTreeChildren (outlineTreeStore, iter, p);
+			outlineTreeView.ExpandAll ();
+			
+			LoggingService.LogDebug ("Built ASP.NET outline in {0}ms", (DateTime.Now - start).Milliseconds);
+			Gdk.Threads.Leave ();
+		}
+		
+		static void BuildTreeChildren (Gtk.TreeStore store, Gtk.TreeIter parent, ParentNode p)
+		{
+			foreach (Node n in p) {
+				string name = null;
+				TagNode tn = n as TagNode;
+				if (tn != null) {
+					name = tn.TagName;
+					string att = tn.Attributes["id"] as string;
+					if (att != null)
+						name = name + "#" + att;
+				}
+				
+				if (string.IsNullOrEmpty (name))
+					continue;
+				Gtk.TreeIter childIter = store.AppendValues (parent, name, n);
+				ParentNode pChild = n as ParentNode;
+				if (pChild != null)
+					BuildTreeChildren (store, childIter, pChild);
+			}
+		}
+
+		void IOutlinedDocument.ReleaseOutlineWidget ()
+		{
+			if (outlineTreeView == null)
+				return;
+			
+			Gtk.ScrolledWindow w = (Gtk.ScrolledWindow) outlineTreeView.Parent;
+			w.Destroy ();
+			w.Dispose ();
+			outlineTreeView.Destroy ();
+			outlineTreeView.Dispose ();
+			outlineTreeStore.Dispose ();
+			outlineTreeStore = null;
+			outlineTreeView = null;
 		}
 		
 		#endregion

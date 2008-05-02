@@ -36,7 +36,7 @@ using MonoDevelop.AspNet.Parser.Internal;
 
 namespace MonoDevelop.AspNet.Parser.Dom
 {
-	public abstract class ParentNode : Node
+	public abstract class ParentNode : Node, IEnumerable<Node>
 	{
 		protected List<Node> children = new List<Node> ();
 		ILocation endLocation;
@@ -150,6 +150,16 @@ namespace MonoDevelop.AspNet.Parser.Dom
 		public override string ToString ()
 		{
 			return string.Format ("[ParentNode Location='{0}']", Location);
+		}
+
+		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator ()
+		{
+			return children.GetEnumerator ();
+		}
+
+		IEnumerator<Node> IEnumerable<Node>.GetEnumerator ()
+		{
+			return children.GetEnumerator ();
 		}
 	}
 }
