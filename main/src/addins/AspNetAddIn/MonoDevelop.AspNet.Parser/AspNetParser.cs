@@ -69,10 +69,18 @@ namespace MonoDevelop.AspNet.Parser
 		AspNetCompilationUnit BuildCU (Document doc)
 		{
 			AspNetCompilationUnit cu = new AspNetCompilationUnit ();
-			CompilationUnitVisitor visitor = new CompilationUnitVisitor (cu);
-			doc.RootNode.AcceptVisit (visitor);
-			cu.ErrorInformation = GetErrors (doc);
-			cu.ErrorsDuringCompile = cu.ErrorInformation != null  && cu.ErrorInformation.Length > 0;
+			cu.Document = doc;
+			cu.PageInfo = new PageInfo ();
+			
+			CompilationUnitVisitor cuVisitor = new CompilationUnitVisitor (cu);
+			doc.RootNode.AcceptVisit (cuVisitor);
+			
+			PageInfoVisitor piVisitor = new PageInfoVisitor (cu.PageInfo);
+			doc.RootNode.AcceptVisit (piVisitor);
+			
+			foreach (ParserException pe in doc.ParseErrors)
+				cu.AddError (new ErrorInfo (pe.Line, pe.Column, pe.Message));
+			cu.CompileErrors ();
 			return cu;
 		}
 		

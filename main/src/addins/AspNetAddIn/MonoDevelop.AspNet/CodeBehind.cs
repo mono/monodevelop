@@ -53,12 +53,15 @@ namespace MonoDevelop.AspNet
 			if (proj == null)
 				return null;
 			
-			Document doc = proj.GetDocument (file);
+			IProjectParserContext ppc = 
+				MonoDevelop.Ide.Gui.IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (file.Project);
+			IParseInformation pi = ppc.GetParseInformation (file.FilePath);
+			AspNetCompilationUnit cu = pi.MostRecentCompilationUnit as AspNetCompilationUnit;
 			
-			if (doc == null || string.IsNullOrEmpty (doc.Info.InheritedClass))
+			if (cu != null && string.IsNullOrEmpty (cu.PageInfo.InheritedClass))
+				return cu.PageInfo.InheritedClass;
+			else
 				return null;
-			
-			return doc.Info.InheritedClass;
 		}
 		
 		public static IClass GetDesignerClass (IClass cls)

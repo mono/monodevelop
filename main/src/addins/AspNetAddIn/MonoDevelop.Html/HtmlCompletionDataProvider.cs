@@ -33,11 +33,31 @@ namespace MonoDevelop.Html
 {
 	
 	
-	public class HtmlCompletionDataProvider
+	public class HtmlCompletionDataProvider : IMutableCompletionDataProvider
 	{
 		
-		public HtmlCompletionDataProvider()
+		public string DefaultCompletionString {
+			get { return null; }
+		}
+
+		public bool IsChanging {
+			get {
+				throw new NotImplementedException();
+			}
+		}
+		
+		public void Dispose ()
 		{
 		}
+
+		public ICompletionData[] GenerateCompletionData (ICompletionWidget widget, char charTyped)
+		{
+			return HtmlSchemaService.GetDocTypeCompletionData ();
+		}
+
+		
+		public event EventHandler CompletionDataChanging;
+
+		public event EventHandler CompletionDataChanged;
 	}
 }

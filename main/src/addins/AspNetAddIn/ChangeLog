@@ -1,5 +1,22 @@
 2008-05-02  Michael Hutchinson <mhutchinson@novell.com> 
 
+	* MonoDevelop.AspNet/AspNetAppProject.cs,
+	  MonoDevelop.AspNet/CodeBehind.cs,
+	  MonoDevelop.AspNet/VerifyCodeBehindBuildStep.cs,
+	  MonoDevelop.AspNet.Parser/Document.cs,
+	  MonoDevelop.AspNet.Parser/CompilationUnitVisitor.cs,
+	  MonoDevelop.AspNet.Parser/AspNetParser.cs,
+	  MonoDevelop.AspNet.Parser/PageInfoVisitor.cs,
+	  MonoDevelop.AspNet.Parser/PageInfo.cs,
+	  MonoDevelop.AspNet.Parser/AspNetCompilationUnit.cs: Replace
+	  direscrt use of the ASP.NET docuemnt parser with use of the parser
+	  service. Flesh out the parsed compilation units.
+	* MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs: Use compilation
+	  units from parser service instead of parsing on every keystroke.
+	* AspNetAddIn.mdp, Makefile.am: Updated
+
+2008-05-02  Michael Hutchinson <mhutchinson@novell.com> 
+
 	* MonoDevelop.AspNet.addin.xml,
 	  MonoDevelop.AspNet/AspNetCodeBehindProvider.cs: Remove use of
 	  removed extension point.

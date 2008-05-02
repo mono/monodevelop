@@ -47,7 +47,6 @@ namespace MonoDevelop.AspNet.Parser
 		AspNetAppProject project;
 		string filePath;
 		DocumentReferenceManager refMan;
-		PageInfoVisitor info;
 		MemberListVisitor memberList;
 		List<ParserException> errors = new List<ParserException> ();
 		
@@ -126,16 +125,6 @@ namespace MonoDevelop.AspNet.Parser
 				if (refMan == null)
 					refMan = new DocumentReferenceManager (this);
 				return refMan;
-			}
-		}
-		
-		public PageInfoVisitor Info {
-			get {
-				if (info == null) {
-					info = new PageInfoVisitor ();
-					rootNode.AcceptVisit (info);
-				}
-				return info;
 			}
 		}
 		

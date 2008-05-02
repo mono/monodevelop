@@ -49,7 +49,9 @@ namespace MonoDevelop.AspNet.Gui
 	
 	public class AspNetEditorExtension : CompletionTextEditorExtension, IPathedDocument
 	{
+		object lockObj = new object ();
 		DocumentStateTracker<Parser<AspNetFreeState>> tracker;
+		MonoDevelop.AspNet.Parser.AspNetCompilationUnit lastCU = null;
 		
 		public AspNetEditorExtension () : base ()
 		{
@@ -66,14 +68,33 @@ namespace MonoDevelop.AspNet.Gui
 			base.Initialize ();
 			
 			tracker = new DocumentStateTracker<Parser<AspNetFreeState>> (Editor);
+			MonoDevelop.Ide.Gui.IdeApp.ProjectOperations.ParserDatabase.ParseInformationChanged 
+				+= OnParseInformationChanged;
 			
 			//ensure that the schema service is initialised, or code completion may take a couple of seconds to trigger
 			HtmlSchemaService.Initialise (false);
 		}
 		
-		protected Document GetAspNetDocument ()
+		public override void Dispose ()
 		{
-			return new Document (Buffer, Document.Project, FileName);
+			if (tracker != null) {
+				tracker = null;
+				MonoDevelop.Ide.Gui.IdeApp.ProjectOperations.ParserDatabase.ParseInformationChanged 
+					-= OnParseInformationChanged;
+				base.Dispose ();
+			}
+		}
+		
+		void OnParseInformationChanged (object sender, MonoDevelop.Projects.Parser.ParseInformationEventArgs args)
+		{
+			if (args.FileName == FileName)
+				lastCU = args.ParseInformation.MostRecentCompilationUnit
+					as MonoDevelop.AspNet.Parser.AspNetCompilationUnit;
+		}
+		
+		MonoDevelop.AspNet.Parser.AspNetCompilationUnit CU {
+			get { lock (lockObj) { return lastCU; } }
+			set { lock (lockObj) { lastCU = value; } }
 		}
 		
 		protected ITextBuffer Buffer {
@@ -116,6 +137,7 @@ namespace MonoDevelop.AspNet.Gui
 		ICompletionDataProvider HandleCodeCompletion (CodeCompletionContext completionContext, bool forced, ref int triggerWordLength)
 		{
 			tracker.UpdateEngine ();
+			MonoDevelop.AspNet.Parser.AspNetCompilationUnit CU = this.CU;
 			
 			//FIXME: lines in completionContext are zero-indexed, but ILocation and buffer are 1-indexed. This could easily cause bugs.
 			int line = completionContext.TriggerLine + 1, col = completionContext.TriggerLineOffset;
@@ -155,69 +177,54 @@ namespace MonoDevelop.AspNet.Gui
 				}
 			}
 			
-			Document doc;
-			try {
-				doc = GetAspNetDocument ();
-			} catch (Exception ex) {
-				LoggingService.LogError ("Unhandled error in ASP.NET parser", ex);
-				return null;
-			}
-			
 			//lazily load the schema to avoid a multi-second interruption when a schema
 			//is first used. While loading, fall back to the default schema (which is pre-loaded) so that
 			//the user still gets completion
 			HtmlSchema schema = null;
-			if (!string.IsNullOrEmpty (doc.Info.DocType)) {
-				schema = HtmlSchemaService.GetSchema (doc.Info.DocType, true);
+			string doctype = CU != null ? CU.PageInfo.DocType : null;
+			if (!string.IsNullOrEmpty (doctype)) {
+				schema = HtmlSchemaService.GetSchema (doctype, true);
 			}
 			if (schema == null)
 				schema = HtmlSchemaService.DefaultDocType;
 			LoggingService.LogDebug ("AspNetCompletion using completion for doctype {0}", schema.Name);
 			
-			//determine the code at the current location
-			Node n = doc.RootNode.GetNodeAtPosition (line, col);
-			LoggingService.LogDebug ("AspNetCompletion({0},{1}): {2}", line, col, n==null? "(not found)" : n.ToString ());
+			//determine the node at the current location
+//			Node n = doc.RootNode.GetNodeAtPosition (line, col);
+//			LoggingService.LogDebug ("AspNetCompletion({0},{1}): {2}", line, col, n==null? "(not found)" : n.ToString ());
 			
 			//tag completion
 			if (currentChar == '<') {
 				CodeCompletionDataProvider cp = new CodeCompletionDataProvider (null, GetAmbience ());
 				TagNode parent = null;
-				if (n != null)
-					parent = n.Parent as TagNode;
+//				if (n != null)
+//					parent = n.Parent as TagNode;
 				
 				AddHtmlTagCompletionData (cp, schema, parent);
-				AddAspTags (cp, doc, parent == null? null : parent.TagName);
+				AddAspTags (cp, CU == null? null : CU.Document, parent == null? null : parent.TagName);
 				AddParentCloseTags (cp, parent);
-				AddAspBeginExpressions (cp, doc);
+				AddAspBeginExpressions (cp, CU == null? null : CU.Document);
 				
-				if (line < 4 && string.IsNullOrEmpty (doc.Info.DocType))
+				if (line < 4 && string.IsNullOrEmpty (doctype))
 					cp.AddCompletionData (new CodeCompletionData ("!DOCTYPE", "md-literal"));
 				return cp;
 			}
 			
-			TagNode tn = n as TagNode;
-			
-			//determine whether we're in an attribute's quotes
-			bool isInQuotes = false;
-			if (tn != null && tn.LocationContainsPosition (line, col) == 0) {
-				int startPosition = buf.GetPositionFromLineColumn (tn.Location.BeginLine, tn.Location.BeginColumn);
-				if (startPosition > -1)
-					isInQuotes = IsInOpenQuotes (buf, startPosition + 1, currentPosition);
-			}
+//			TagNode tn = n as TagNode;
 			
 			//closing tag completion
-			if (!isInQuotes && currentPosition - 1 > 0 && currentChar == '>') {
+			if (tracker.Engine.CurrentState is XmlTagState && currentPosition - 1 > 0 && currentChar == '>') {
 				//get previous node in document
 				int linePrev, colPrev;
 				buf.GetLineColumnFromPosition (currentPosition - 1, out linePrev, out colPrev);
-				TagNode tnPrev = doc.RootNode.GetNodeAtPosition (linePrev, colPrev) as TagNode;
-				LoggingService.LogDebug ("AspNetCompletionPrev({0},{1}): {2}", linePrev, colPrev, tnPrev==null? "(not found)" : tnPrev.ToString ());
-				
-				if (tnPrev != null && !string.IsNullOrEmpty (tnPrev.TagName) && !tnPrev.IsClosed) {
+//				TagNode tnPrev = doc.RootNode.GetNodeAtPosition (linePrev, colPrev) as TagNode;
+//				LoggingService.LogDebug ("AspNetCompletionPrev({0},{1}): {2}", linePrev, colPrev, tnPrev==null? "(not found)" : tnPrev.ToString ());
+				XmlTagState ts = (XmlTagState)tracker.Engine.CurrentState;
+				if (!string.IsNullOrEmpty (ts.Name.FullName) && ts.ClosingTag == null) {
 					CodeCompletionDataProvider cp = new CodeCompletionDataProvider (null, GetAmbience ());
 					cp.AddCompletionData (
 					    new MonoDevelop.XmlEditor.Completion.XmlTagCompletionData (
-					        String.Concat ("</", tnPrev.TagName, ">"), 0, true)
+					        String.Concat ("</", ts.Name.FullName, ">"), 0, true)
 					    );
 					return cp;
 				}
@@ -242,7 +249,7 @@ namespace MonoDevelop.AspNet.Gui
 					if (string.IsNullOrEmpty (tagState.Name.Namespace)) {
 						AddHtmlAttributeCompletionData (cp, schema, tagState.Name.Name, null);
 					} else {
-						AddAspAttributeCompletionData (cp, doc, tagState.Name.Namespace, tagState.Name.Name, null);
+						AddAspAttributeCompletionData (cp, CU == null? null : CU.Document, tagState.Name.Namespace, tagState.Name.Name, null);
 					}
 					
 					if (true)
@@ -288,7 +295,7 @@ namespace MonoDevelop.AspNet.Gui
 						if (string.IsNullOrEmpty (tagName.Namespace))
 							AddHtmlAttributeValueCompletionData (cp, schema, valstate.TagName.Name, att);
 						else
-							AddAspAttributeValueCompletionData (cp, doc, valstate.TagName.Namespace, valstate.TagName.Name, att, null);
+							AddAspAttributeValueCompletionData (cp, CU, valstate.TagName.Namespace, valstate.TagName.Name, att, null);
 						return cp;
 					}
 				}
@@ -380,7 +387,7 @@ namespace MonoDevelop.AspNet.Gui
 		
 		#region ASP.NET data
 		
-		void AddAspBeginExpressions (CodeCompletionDataProvider provider, Document doc)
+		static void AddAspBeginExpressions (CodeCompletionDataProvider provider, Document doc)
 		{
 			provider.AddCompletionData (
 			    new CodeCompletionData ("%",  "md-literal", GettextCatalog.GetString ("ASP.NET render block"))
@@ -407,13 +414,13 @@ namespace MonoDevelop.AspNet.Gui
 			}
 		}
 		
-		void AddAspTags (CodeCompletionDataProvider provider, Document doc, string parentTag)
+		static void AddAspTags (CodeCompletionDataProvider provider, Document doc, string parentTag)
 		{
 			foreach (MonoDevelop.Projects.Parser.IClass cls in doc.ReferenceManager.ListControlClasses ())
 				provider.AddCompletionData (new CodeCompletionData ("asp:" + cls.Name, Gtk.Stock.GoForward, cls.Documentation));
 		}
 		
-		void AddAspAttributeCompletionData (CodeCompletionDataProvider provider, Document doc, string prefix, string name, Dictionary<string, string> existingAtts)
+		static void AddAspAttributeCompletionData (CodeCompletionDataProvider provider, Document doc, string prefix, string name, Dictionary<string, string> existingAtts)
 		{
 			System.Diagnostics.Debug.Assert (!string.IsNullOrEmpty (name));
 			System.Diagnostics.Debug.Assert (!string.IsNullOrEmpty (prefix));
@@ -443,7 +450,7 @@ namespace MonoDevelop.AspNet.Gui
 			AddControlMembers (provider, ctx, doc, controlClass, existingAtts);
 		}
 		
-		void AddControlMembers (CodeCompletionDataProvider provider, MonoDevelop.Projects.Parser.IParserContext ctx, Document doc, MonoDevelop.Projects.Parser.IClass controlClass, Dictionary<string, string> existingAtts)
+		static void AddControlMembers (CodeCompletionDataProvider provider, MonoDevelop.Projects.Parser.IParserContext ctx, Document doc, MonoDevelop.Projects.Parser.IClass controlClass, Dictionary<string, string> existingAtts)
 		{
 			//add atts only if they're not already in the tag
 			foreach (MonoDevelop.Projects.Parser.IProperty prop in GetUniqueMembers<MonoDevelop.Projects.Parser.IProperty> (GetAllProperties (ctx, controlClass)))
@@ -458,12 +465,14 @@ namespace MonoDevelop.AspNet.Gui
 			}
 		}
 		
-		void AddAspAttributeValueCompletionData (CodeCompletionDataProvider provider, Document doc, string tagNamePrefix, string tagName, string attrib, Dictionary<string, string> existingAtts)
+		static void AddAspAttributeValueCompletionData (CodeCompletionDataProvider provider, MonoDevelop.AspNet.Parser.AspNetCompilationUnit cu, string tagNamePrefix, string tagName, string attrib, Dictionary<string, string> existingAtts)
 		{
 			if (string.IsNullOrEmpty (attrib) || string.IsNullOrEmpty (tagName) || string.IsNullOrEmpty (tagNamePrefix))
 				return;
 			
-			MonoDevelop.Projects.Parser.IClass controlClass = doc.ReferenceManager.GetControlType (tagNamePrefix, tagName);
+			MonoDevelop.Projects.Parser.IClass controlClass = null;
+			if (cu != null)
+				cu.Document.ReferenceManager.GetControlType (tagNamePrefix, tagName);
 			if (controlClass == null) {
 				//FIXME: respect runtime version
 				MonoDevelop.Projects.Parser.IParserContext sysWebContext = MonoDevelop.Ide.Gui.IdeApp.ProjectOperations.ParserDatabase.GetAssemblyParserContext ("System.Web");
@@ -478,10 +487,10 @@ namespace MonoDevelop.AspNet.Gui
 			//find the codebehind class
 			MonoDevelop.Projects.Parser.IClass codeBehindClass = null;
 			MonoDevelop.Projects.Parser.IParserContext projectContext = null;
-			if (doc.Project != null)
-				projectContext = MonoDevelop.Ide.Gui.IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (doc.Project);
-			if (projectContext != null && !string.IsNullOrEmpty (doc.Info.InheritedClass))
-				codeBehindClass = projectContext.GetClass (doc.Info.InheritedClass);
+			if (cu != null && cu.Document.Project != null)
+				projectContext = MonoDevelop.Ide.Gui.IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (cu.Document.Project);
+			if (projectContext != null && !string.IsNullOrEmpty (cu.PageInfo.InheritedClass))
+				codeBehindClass = projectContext.GetClass (cu.PageInfo.InheritedClass);
 			
 			//if it's an event, suggest compatible methods 
 			if (codeBehindClass != null && attrib.StartsWith ("On")) {
@@ -502,7 +511,7 @@ namespace MonoDevelop.AspNet.Gui
 							
 						domMethod.Name = BindingService.GenerateIdentifierUniqueInClass (codeBehindClass, suggestedIdentifier);
 						provider.AddCompletionData (
-						    new SuggestedHandlerCompletionData (doc.Project, domMethod, codeBehindClass,
+						    new SuggestedHandlerCompletionData (cu.Document.Project, domMethod, codeBehindClass,
 						        MonoDevelop.AspNet.CodeBehind.GetNonDesignerClass (codeBehindClass))
 						    );
 						return;
@@ -546,7 +555,7 @@ namespace MonoDevelop.AspNet.Gui
 			}
 		}
 		
-		IEnumerable<T> GetUniqueMembers<T> (IEnumerable<T> members) where T : MonoDevelop.Projects.Parser.IMember
+		static IEnumerable<T> GetUniqueMembers<T> (IEnumerable<T> members) where T : MonoDevelop.Projects.Parser.IMember
 		{
 			Dictionary <string, bool> existingItems = new Dictionary<string,bool> ();
 			foreach (T item in members) {
@@ -557,7 +566,7 @@ namespace MonoDevelop.AspNet.Gui
 			}
 		}
 		
-		IEnumerable<MonoDevelop.Projects.Parser.IProperty> GetAllProperties (MonoDevelop.Projects.Parser.IParserContext ctx, MonoDevelop.Projects.Parser.IClass cls)
+		static IEnumerable<MonoDevelop.Projects.Parser.IProperty> GetAllProperties (MonoDevelop.Projects.Parser.IParserContext ctx, MonoDevelop.Projects.Parser.IClass cls)
 		{
 			foreach (MonoDevelop.Projects.Parser.IProperty prop in cls.Properties)
 				yield return prop;
@@ -570,7 +579,7 @@ namespace MonoDevelop.AspNet.Gui
 			}
 		}
 		
-		IEnumerable<MonoDevelop.Projects.Parser.IEvent> GetAllEvents (MonoDevelop.Projects.Parser.IParserContext ctx, MonoDevelop.Projects.Parser.IClass cls)
+		static IEnumerable<MonoDevelop.Projects.Parser.IEvent> GetAllEvents (MonoDevelop.Projects.Parser.IParserContext ctx, MonoDevelop.Projects.Parser.IClass cls)
 		{
 			foreach (MonoDevelop.Projects.Parser.IEvent ev in cls.Events)
 				yield return ev;
@@ -583,7 +592,7 @@ namespace MonoDevelop.AspNet.Gui
 			}
 		}
 		
-		void AddBooleanCompletionData (CodeCompletionDataProvider provider)
+		static void AddBooleanCompletionData (CodeCompletionDataProvider provider)
 		{
 			provider.AddCompletionData (new CodeCompletionData ("true", "md-literal"));
 			provider.AddCompletionData (new CodeCompletionData ("false", "md-literal"));
@@ -592,7 +601,7 @@ namespace MonoDevelop.AspNet.Gui
 		#endregion
 		
 		//walk up parents to root node, and add close tags for unclosed parents
-		void AddParentCloseTags (CodeCompletionDataProvider provider, Node parentTag)
+		static void AddParentCloseTags (CodeCompletionDataProvider provider, Node parentTag)
 		{
 			Node node = parentTag;
 			while (node != null) {

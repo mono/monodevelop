@@ -27,7 +27,7 @@
 //
 
 using System;
-using System.Collections;
+using System.Collections.Generic;
 
 using MonoDevelop.Projects.Parser;
 
@@ -35,8 +35,50 @@ namespace MonoDevelop.AspNet.Parser
 {
 	
 	
-	public class AspNetCompilationUnit : DefaultCompilationUnit
+	public class AspNetCompilationUnit : DefaultCompilationUnit, MonoDevelop.DesignerSupport.CodeBehind.ICodeBehindParent
 	{
+		PageInfo pageInfo;
+		Document doc;
+		List<ErrorInfo> errors;
+		
+		public AspNetCompilationUnit ()
+		{
+		}
+		
+		public PageInfo PageInfo {
+			get { return pageInfo; }
+			set { pageInfo = value; }
+		}
+		
+		public Document Document {
+			get { return doc; }
+			set { doc = value; }
+		}
+		
+		public void AddError (ErrorInfo error)
+		{
+			if (errors == null) errors = new List<ErrorInfo> ();
+			errors.Add (error);
+		}
+		
+		public void AddWarning (ErrorInfo error)
+		{
+			if (errors == null) errors = new List<ErrorInfo> ();
+			errors.Add (error);
+		}
+		
+		public void CompileErrors ()
+		{
+			ErrorsDuringCompile = errors != null && errors.Count > 0;
+			ErrorInformation = ErrorsDuringCompile?
+				errors.ToArray ()
+				: null;
+		}
+		
+		public string CodeBehindClassName {
+			get { return PageInfo.InheritedClass; }
+		}
+
 		
 	}
 }

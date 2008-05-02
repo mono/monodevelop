@@ -52,10 +52,6 @@ namespace MonoDevelop.AspNet
 	[DataInclude (typeof(AspNetAppProjectConfiguration))]
 	public class AspNetAppProject : DotNetProject, IDeployable
 	{
-		//caching to avoid too much reparsing
-		//may have to drop at some point to avoid memory issues
-		private Dictionary<ProjectFile, Document> cachedDocuments = new Dictionary<ProjectFile, Document> ();
-		
 		[ItemProperty("XspParameters")]
 		protected XspParameters xspParameters = new XspParameters ();
 		
@@ -302,27 +298,6 @@ namespace MonoDevelop.AspNet
 		
 		#region File utility methods
 		
-		public Document GetDocument (ProjectFile file)
-		{
-			Document doc = null;
-			if (cachedDocuments.TryGetValue (file, out doc))
-				return doc;
-			
-			switch (DetermineWebSubtype (file)) {
-				case WebSubtype.WebForm:
-				case WebSubtype.MasterPage:
-				case WebSubtype.WebHandler:
-				case WebSubtype.WebControl:
-				case WebSubtype.WebService:
-				case WebSubtype.Global:
-					doc = new Document (file);
-					this.cachedDocuments [file] = doc;
-					return doc;
-				default:
-					return null;
-			}
-		}
-		
 		public WebSubtype DetermineWebSubtype (ProjectFile file)
 		{
 			if (LanguageBinding != null && LanguageBinding.IsSourceCodeFile (file.FilePath))
@@ -335,37 +310,38 @@ namespace MonoDevelop.AspNet
 		{
 			extension = extension.ToLower ().TrimStart ('.');
 			
-			//FIXME: No way to identify WebSubtype.Code
+			//NOTE: No way to identify WebSubtype.Code from here
+			//use the instance method for that
 			switch (extension)
 			{
-				case "aspx":
-					return WebSubtype.WebForm;
-				case "master":
-					return WebSubtype.MasterPage;
-				case "ashx":
-					return WebSubtype.WebHandler;
-				case "ascx":
-					return WebSubtype.WebControl;
-				case "asmx":
-					return WebSubtype.WebService;
-				case "asax":
-					return WebSubtype.Global;
-				case "gif":
+			case "aspx":
+				return WebSubtype.WebForm;
+			case "master":
+				return WebSubtype.MasterPage;
+			case "ashx":
+				return WebSubtype.WebHandler;
+			case "ascx":
+				return WebSubtype.WebControl;
+			case "asmx":
+				return WebSubtype.WebService;
+			case "asax":
+				return WebSubtype.Global;
+			case "gif":
 				case "png":
-				case "jpg":
-					return WebSubtype.WebImage;
-				case "skin":
-					return WebSubtype.WebSkin;
-				case "config":
-					return WebSubtype.Config;
-				case "browser":
-					return WebSubtype.BrowserDefinition;
-				case "axd":
-					return WebSubtype.Axd;
-				case "sitemap":
-					return WebSubtype.Sitemap;
-				default:
-					return WebSubtype.None;
+			case "jpg":
+				return WebSubtype.WebImage;
+			case "skin":
+				return WebSubtype.WebSkin;
+			case "config":
+				return WebSubtype.Config;
+			case "browser":
+				return WebSubtype.BrowserDefinition;
+			case "axd":
+				return WebSubtype.Axd;
+			case "sitemap":
+				return WebSubtype.Sitemap;
+			default:
+				return WebSubtype.None;
 			}
 		}
 		
@@ -542,31 +518,11 @@ namespace MonoDevelop.AspNet
 			}
 			
 			SetDefaultBuildAction (e.ProjectFile);
-			InvalidateDocumentCache (e.ProjectFile);
 			
 			if (Path.GetFullPath (e.ProjectFile.FilePath) == Path.GetFullPath (WebConfigPath))
 				UpdateWebConfigRefs ();
 			
 			base.OnFileAddedToProject (e);
-		}
-		
-		protected override void OnFileChangedInProject (ProjectFileEventArgs e)
-		{
-			if (!loading) {
-				InvalidateDocumentCache (e.ProjectFile);
-			}
-			base.OnFileChangedInProject (e);
-		}
-		
-		//protected override void OnFilePropertyChangedInProject (ProjectFileEventArgs e)
-		//{
-		//	base.OnFilePropertyChangedInProject (e);
-		//}
-		
-		void InvalidateDocumentCache (ProjectFile file)
-		{
-			if (cachedDocuments.ContainsKey (file))
-				cachedDocuments.Remove (file);
 		}
 		
 		void SetDefaultBuildAction (ProjectFile file)

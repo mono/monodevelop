@@ -49,7 +49,28 @@ namespace MonoDevelop.AspNet
 				if ((type != WebSubtype.WebForm) && (type != WebSubtype.WebControl) && (type != WebSubtype.MasterPage))
 						continue;
 				
-				string className = CodeBehind.GetCodeBehindClassName (file);
+				IParseInformation pi = ctx.GetParseInformation (file.FilePath);
+				AspNetCompilationUnit cu = pi.MostRecentCompilationUnit as AspNetCompilationUnit;
+				if (cu == null || cu.Document == null)
+					continue;
+				
+				if (cu.ErrorsDuringCompile) {
+					foreach (Exception e in cu.Document.ParseErrors) {
+						CodeBehindWarning cbw;
+						ErrorInFileException eife = e as ErrorInFileException;
+						if (eife != null)
+							cbw = new CodeBehindWarning (eife);
+						else
+							cbw = new CodeBehindWarning (
+							    GettextCatalog.GetString ("Parser failed with error {0}. CodeBehind members for this file will not be added.", e.ToString ()),
+							    file.FilePath
+							    );
+						monitor.Log.WriteLine (cbw.ToString ());
+						errors.Add (cbw);
+					}
+				}
+				
+				string className = cu.PageInfo.InheritedClass;
 				if (className == null)
 					continue;
 				
@@ -74,47 +95,30 @@ namespace MonoDevelop.AspNet
 				}
 				
 				//parse the ASP document 
-				Document doc = aspProject.GetDocument (file);
+				Document doc = cu.Document;
 				
-				if (!doc.IsValid) {
-					//handle parse errors
-					foreach (Exception e in doc.ParseErrors) {
-						CodeBehindWarning cbw;
-						ErrorInFileException eife = e as ErrorInFileException;
-						if (eife != null)
-							cbw = new CodeBehindWarning (eife);
-						else
-							cbw = new CodeBehindWarning (
-								GettextCatalog.GetString ("Parser failed with error {0}. CodeBehind members for this file will not be added.", e.ToString ()),
-					  			file.FilePath
-							);
-						monitor.Log.WriteLine (cbw.ToString ());
-						errors.Add (cbw);
-					}
-				} else {
-					//collect the members to be added
-					try {
-						foreach (System.CodeDom.CodeMemberField member in doc.MemberList.Members.Values) {
-							try {
-								MonoDevelop.Projects.Parser.IMember existingMember = BindingService.GetCompatibleMemberInClass (cls, member);
-								if (existingMember == null) {
-									classesForMembers.Add (partToAddTo);
-									membersToAdd.Add (member);
-								}
-							} catch (ErrorInFileException ex) {
-								CodeBehindWarning cbw = new CodeBehindWarning (ex);
-								monitor.Log.WriteLine (cbw.ToString ());
-								errors.Add (cbw);
+				//collect the members to be added
+				try {
+					foreach (System.CodeDom.CodeMemberField member in doc.MemberList.Members.Values) {
+						try {
+							MonoDevelop.Projects.Parser.IMember existingMember = BindingService.GetCompatibleMemberInClass (cls, member);
+							if (existingMember == null) {
+								classesForMembers.Add (partToAddTo);
+								membersToAdd.Add (member);
 							}
+						} catch (ErrorInFileException ex) {
+							CodeBehindWarning cbw = new CodeBehindWarning (ex);
+							monitor.Log.WriteLine (cbw.ToString ());
+							errors.Add (cbw);
 						}
-					} catch (Exception e) {
-						CodeBehindWarning cbw = new CodeBehindWarning (
-							GettextCatalog.GetString ("CodeBehind member generation failed with error {0}. Further CodeBehind members for this file will not be added.", e.ToString ()),
-							file.FilePath
-						);
-						monitor.Log.WriteLine (cbw.ToString ());
-						errors.Add (cbw);
 					}
+				} catch (Exception e) {
+					CodeBehindWarning cbw = new CodeBehindWarning (
+					    GettextCatalog.GetString ("CodeBehind member generation failed with error {0}. Further CodeBehind members for this file will not be added.", e.ToString ()),
+					    file.FilePath
+					    );
+					monitor.Log.WriteLine (cbw.ToString ());
+					errors.Add (cbw);
 				}
 			}
 			
@@ -122,20 +126,20 @@ namespace MonoDevelop.AspNet
 			//documents may be open, so needs to run in GUI thread
 			MonoDevelop.Core.Gui.DispatchService.GuiSyncDispatch (delegate {
 				for (int i = 0; i < membersToAdd.Count; i++)
-					try {
-						BindingService.GetCodeGenerator (project).AddMember (classesForMembers[i], membersToAdd[i]);
-					} catch (MemberExistsException m) {
-						CodeBehindWarning cbw = new CodeBehindWarning (m);
-						monitor.Log.WriteLine (cbw.ToString ());
-						errors.Add (cbw);
-					}
+				try {
+					BindingService.GetCodeGenerator (project).AddMember (classesForMembers[i], membersToAdd[i]);
+				} catch (MemberExistsException m) {
+					CodeBehindWarning cbw = new CodeBehindWarning (m);
+					monitor.Log.WriteLine (cbw.ToString ());
+					errors.Add (cbw);
+				}
 			});
 			
 			if (membersToAdd.Count > 0) {
 				monitor.Log.WriteLine (GettextCatalog.GetPluralString (
-					"Added {0} member to CodeBehind classes. Saving updated source files.",
-					"Added {0} members to CodeBehind classes. Saving updated source files.",
-					membersToAdd.Count, membersToAdd.Count
+				    "Added {0} member to CodeBehind classes. Saving updated source files.",
+				    "Added {0} members to CodeBehind classes. Saving updated source files.",
+				    membersToAdd.Count, membersToAdd.Count
 				));
 				
 				//make sure updated files are saved before compilation

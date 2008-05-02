@@ -75,6 +75,7 @@ FILES =  \
 	MonoDevelop.AspNet.Parser/DocumentReferenceManager.cs \
 	MonoDevelop.AspNet.Parser/LocatedParserException.cs \
 	MonoDevelop.AspNet.Parser/MemberListVisitor.cs \
+	MonoDevelop.AspNet.Parser/PageInfo.cs \
 	MonoDevelop.AspNet.Parser/PageInfoVisitor.cs \
 	MonoDevelop.AspNet.Parser/Regexes.cs \
 	MonoDevelop.AspNet.Parser/SuggestedHandlerCompletionData.cs \
@@ -84,7 +85,6 @@ FILES =  \
 	MonoDevelop.AspNet/AspNetAppProject.cs \
 	MonoDevelop.AspNet/AspNetAppProjectBinding.cs \
 	MonoDevelop.AspNet/AspNetAppProjectConfiguration.cs \
-	MonoDevelop.AspNet/AspNetCodeBehindProvider.cs \
 	MonoDevelop.AspNet/AspNetCommands.cs \
 	MonoDevelop.AspNet/AspNetDisplayBinding.cs \
 	MonoDevelop.AspNet/AspNetFileDescriptionTemplate.cs \

@@ -50,24 +50,49 @@ namespace MonoDevelop.AspNet.Parser
 		
 		public override void Visit (TagNode node)
 		{
-			if (node.EndLocation == null && node.Location.BeginLine >= node.Location.EndLine || 
-			    (node.EndLocation != null && node.EndLocation.EndLine <= node.Location.BeginLine))
-				return;
+			BuildRegion (node);
+		}
+		
+		#region Region-building
+		
+		void BuildRegion (TagNode node)
+		{
+			if (!IsMultiLine (node.Location, node.EndLocation))
+			    return;
 			
 			string id = (string) node.Attributes["id"];
 			string name;
-			if (id == null)
-				name = string.Concat ("<", node.TagName, ">...<", node.TagName, ">");
+			if (id != null)
+				name = string.Concat ("<", node.TagName, "#", id);
 			else
-				name = string.Concat ("<", node.TagName, "#", id, ">...<", node.TagName, ">");
+				name = string.Concat ("<", node.TagName);
+				
 			
-			DefaultRegion region;
-			if (node.EndLocation == null)
-				region = new DefaultRegion (node.Location.BeginLine, node.Location.BeginColumn + 1, node.Location.EndLine, node.Location.EndColumn + 1);
+			if (node.EndLocation != null)
+				name = string.Concat (name, ">...</", node.TagName, ">");
 			else
-				region = new DefaultRegion (node.Location.BeginLine, node.Location.BeginColumn + 1, node.EndLocation.EndLine, node.EndLocation.EndColumn + 1);
+				name = string.Concat (name, " />");
+			
+			AddRegion (name, node.Location, node.EndLocation);
+		}
+		
+		void AddRegion (string name, ILocation startLocation, ILocation endLocation)
+		{
+			DefaultRegion region;
+			if (endLocation == null)
+				region = new DefaultRegion (startLocation.BeginLine, startLocation.BeginColumn + 1, startLocation.EndLine, startLocation.EndColumn + 1);
+			else
+				region = new DefaultRegion (startLocation.BeginLine, startLocation.BeginColumn + 1, endLocation.EndLine, endLocation.EndColumn + 1);
 			
 			cu.FoldingRegions.Add (new FoldingRegion (name, region));
 		}
+		
+		bool IsMultiLine (ILocation startLocation, ILocation endLocation)
+		{
+			return (startLocation.BeginLine < startLocation.EndLine || 
+			    (endLocation != null && endLocation.EndLine > startLocation.BeginLine));
+		}
+		
+		#endregion
 	}
 }

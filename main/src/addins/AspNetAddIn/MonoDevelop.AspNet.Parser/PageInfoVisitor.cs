@@ -38,50 +38,28 @@ namespace MonoDevelop.AspNet.Parser
 {
 	public class PageInfoVisitor : Visitor
 	{
-		string inheritedClass;
-		string codeBehindFile;
-		string codeFile;
-		string language;
-		string docType;
-		WebSubtype type = WebSubtype.None;
+		PageInfo info;
+		
+		public PageInfoVisitor (PageInfo info)
+		{
+			this.info = info;
+		}
 		
 		public override void Visit (DirectiveNode node)
 		{
-			switch (node.Name.ToLower ()) {
-				case "page":
-					type = WebSubtype.WebForm;
-					break;
-				case "control":
-					type = WebSubtype.WebControl;
-					break;
-				case "webservice":
-					type = WebSubtype.WebService;
-					break;
-				case "webhandler":
-					type = WebSubtype.WebHandler;
-					break;
-				case "application":
-					type = WebSubtype.Global;
-					break;
-				case "master":
-					type = WebSubtype.MasterPage;
-					break;
-				default:
-					type = WebSubtype.None;
-					return;
-			}
+			info.SetSubtypeFromDirective (node.Name);
 			
 			//we have the info, stop walking
-			if (type != WebSubtype.WebForm && type != WebSubtype.MasterPage)
+			if (info.Subtype != WebSubtype.WebForm && info.Subtype != WebSubtype.MasterPage)
 				QuickExit = true;
 			
-			inheritedClass = node.Attributes ["inherits"] as string;
-			if (inheritedClass == null)
-				inheritedClass = node.Attributes ["class"] as string;
+			info.InheritedClass = node.Attributes ["inherits"] as string;
+			if (info.InheritedClass == null)
+				info.InheritedClass = node.Attributes ["class"] as string;
 			
-			codeBehindFile = node.Attributes ["codebehind"] as string;
-			language = node.Attributes ["language"] as string;
-			codeFile = node.Attributes ["codefile"] as string;
+			info.CodeBehindFile = node.Attributes ["codebehind"] as string;
+			info.Language = node.Attributes ["language"] as string;
+			info.CodeFile = node.Attributes ["codefile"] as string;
 		}
 		
 		public override void Visit (TextNode node)
@@ -90,48 +68,25 @@ namespace MonoDevelop.AspNet.Parser
 			if (start < 0)
 				return;
 			int end = node.Text.IndexOf (">", start);
-			docType = node.Text.Substring (start, end - start + 1);
+			info.DocType = node.Text.Substring (start, end - start + 1);
 			QuickExit = true;
 		}
 
 		
 		public override void Visit (TagNode node)
 		{
-			//as soon as tags are declared, doctypes and 
+			//as soon as tags are declared, doctypes and the page directive must been set
 			QuickExit = true;
 		}
 
 		
-		public string InheritedClass {
-			get { return inheritedClass; }
-		}
-		
-		public string CodeBehindFile {
-			get { return codeBehindFile; }
-		}
-		
-		public string CodeFile {
-			get { return codeFile; }
-		}
-		
-		public string Language {
-			get { return language; }
-		}
-		
-		public string DocType {
-			get { return docType; }
-		}
-		
-		public WebSubtype Subtype {
-			get { return type; }
+		public PageInfo Info {
+			get { return info; }
 		}
 		
 		public override string ToString ()
 		{
-			return string.Format ("[PageInfoVisitor WebSubtype='{0}' InheritedClass='{1}' CodeBehindFile='{2}' CodeFile='{3}' Language='{4}' DocType='{5}']",
-			    Subtype, InheritedClass, CodeBehindFile, CodeFile, Language, DocType
-			    );
+			return info.ToString ();
 		}
-
 	}
 }
