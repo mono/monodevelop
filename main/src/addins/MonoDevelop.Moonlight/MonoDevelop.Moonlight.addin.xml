@@ -51,10 +51,6 @@
 		<DataType class = "MonoDevelop.Moonlight.MoonlightProjectConfiguration" />
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/DesignerSupport/CodeBehindProviders">
-		<Class id="MoonlightCodeBehindProvider" class="MonoDevelop.Moonlight.MoonlightCodebehindProvider"/>
-	</Extension>
-	
 	<Extension path = "/MonoDevelop/Core/MimeTypes">
 		<MimeType id="application/xaml+xml" _description="XAML document" icon="md-xml-file-icon">
 			<File pattern="*.xaml" />

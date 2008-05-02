@@ -33,11 +33,6 @@
 		<ExtensionNode name="Class" />
 	</ExtensionPoint>
 	
-	<ExtensionPoint path = "/MonoDevelop/DesignerSupport/CodeBehindProviders" name = "Code-behind providers">
-		<Description>Used to load bind CodeBehind files to their associated files.</Description>
-		<ExtensionNode name="Class" />
-	</ExtensionPoint>
-	
 	<ExtensionPoint path = "/MonoDevelop/DesignerSupport/PropertyProviders" name = "Providers for the property grid">
 		<ExtensionNode name="Class" />
 	</ExtensionPoint>

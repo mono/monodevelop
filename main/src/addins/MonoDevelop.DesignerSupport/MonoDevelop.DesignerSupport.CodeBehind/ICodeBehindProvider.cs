@@ -37,10 +37,10 @@ using MonoDevelop.Projects.Parser;
 
 namespace MonoDevelop.DesignerSupport.CodeBehind
 {
-	public interface ICodeBehindProvider
+	public interface ICodeBehindParent : ICompilationUnit
 	{
 		//return null if there's an error, or the project or file is unsupported
-		//returns fully qualified class name
-		string GetCodeBehindClassName (ProjectFile file);
+		//if successful, returns fully qualified class name
+		string CodeBehindClassName { get; }
 	}
 }

@@ -38,7 +38,7 @@ using MonoDevelop.DesignerSupport.CodeBehind;
 namespace MonoDevelop.Moonlight
 {
 	
-	public class MoonlightCodebehindProvider : ICodeBehindProvider 
+	public class MoonlightCodebehindProvider// : ICodeBehindProvider 
 	{
 		Regex rx;
 		

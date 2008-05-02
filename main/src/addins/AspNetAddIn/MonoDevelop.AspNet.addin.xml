@@ -128,10 +128,6 @@
 		</Condition>
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/DesignerSupport/CodeBehindProviders">
-		<Class id="AspNetCodeBehindProvider" class="MonoDevelop.AspNet.AspNetCodeBehindProvider"/>
-	</Extension>
-	
 	<Extension path = "/MonoDevelop/Ide/DisplayBindings">
 		<DisplayBinding id    = "AspNetDisplayBinding"
 		                supportedformats = "Source Code"

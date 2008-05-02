@@ -46,65 +46,41 @@ namespace MonoDevelop.DesignerSupport
 {
 	
 	
-	public class CodeBehindService
+	public class CodeBehindService : IDisposable
 	{
 		
 		Dictionary<ProjectFile, string> codeBehindBindings = new Dictionary<ProjectFile, string> ();
 		
 		#region Extension loading
 		
-		readonly static string codeBehindProviderPath = "/MonoDevelop/DesignerSupport/CodeBehindProviders";
-		List<ICodeBehindProvider> providers = new List<ICodeBehindProvider> ();
-		
-		internal CodeBehindService ()
-		{
-			AddinManager.AddExtensionNodeHandler (codeBehindProviderPath, OnProviderExtensionChanged);
-		}
-		
 		internal void Initialise ()
 		{
-			IdeApp.ProjectOperations.FileAddedToProject += onFileEvent;
-			IdeApp.ProjectOperations.FileChangedInProject += onFileEvent;
 			IdeApp.ProjectOperations.FileRemovedFromProject += onFileEvent;
-			
 			IdeApp.ProjectOperations.CombineClosed += onCombineClosed;
 			IdeApp.ProjectOperations.CombineOpened += onCombineOpened;
 			
+			IdeApp.ProjectOperations.ParserDatabase.ParseInformationChanged += onParseInformationChanged;
 			IdeApp.ProjectOperations.ParserDatabase.ClassInformationChanged += onClassInformationChanged;
 		}
 		
-		void OnProviderExtensionChanged (object s, ExtensionNodeEventArgs args)
+		public void Dispose ()
 		{
-			if (args.ExtensionObject == null)
-				throw new Exception ("One of the CodeBehindProvider extension classes is missing");
-			
-			if (args.Change == ExtensionChange.Add)
-				providers.Add ((ICodeBehindProvider) args.ExtensionObject);
-			
-			if (args.Change == ExtensionChange.Remove)
-				providers.Remove ((ICodeBehindProvider) args.ExtensionObject);
-			
-			if (IdeApp.ProjectOperations != null && IdeApp.ProjectOperations.CurrentOpenCombine != null) {
-				CombineEventArgs rootCombineArgs = new CombineEventArgs (IdeApp.ProjectOperations.CurrentOpenCombine);
-				if (codeBehindBindings.Count > 0) {
-					onCombineClosed (this, rootCombineArgs);
-					codeBehindBindings.Clear ();
-				}
-				onCombineOpened (this, rootCombineArgs);
+			//FIXME: clear up all the codeBehindBindings
+			if (codeBehindBindings != null) {
+				codeBehindBindings = null;
+				
+				IdeApp.ProjectOperations.FileRemovedFromProject -= onFileEvent;
+				IdeApp.ProjectOperations.CombineClosed -= onCombineClosed;
+				IdeApp.ProjectOperations.CombineOpened -= onCombineOpened;
+				
+				IdeApp.ProjectOperations.ParserDatabase.ParseInformationChanged -= onParseInformationChanged;
+				IdeApp.ProjectOperations.ParserDatabase.ClassInformationChanged -= onClassInformationChanged;
 			}
 		}
 		
 		~CodeBehindService ()
 		{
-			AddinManager.RemoveExtensionNodeHandler (codeBehindProviderPath, OnProviderExtensionChanged);
-			
-			IdeApp.ProjectOperations.FileAddedToProject -= onFileEvent;
-			IdeApp.ProjectOperations.FileChangedInProject -= onFileEvent;
-			IdeApp.ProjectOperations.FileRemovedFromProject -= onFileEvent;
-			
-			IdeApp.ProjectOperations.CombineClosed -= onCombineClosed;
-			IdeApp.ProjectOperations.CombineOpened -= onCombineOpened;
-			IdeApp.ProjectOperations.ParserDatabase.ClassInformationChanged -= onClassInformationChanged;
+			Dispose ();
 		}
 		
 		#endregion
@@ -156,7 +132,7 @@ namespace MonoDevelop.DesignerSupport
 				
 				if (affected) {
 #if DEBUGCODEBEHINDGROUPING
-					System.Console.WriteLine("File affected {0}", kvp.Key.FilePath);
+					System.Console.WriteLine ("File affected {0}", kvp.Key.FilePath);
 #endif
 					affectedParents.Add (kvp.Key);
 				}
@@ -167,6 +143,20 @@ namespace MonoDevelop.DesignerSupport
 			
 		}
 		
+		void onParseInformationChanged (object sender, ParseInformationEventArgs args)
+		{
+			ICodeBehindParent parent = args.ParseInformation.BestCompilationUnit as ICodeBehindParent;
+			if (parent == null)
+				return;
+			
+			Project prj = IdeApp.ProjectOperations.GetProjectContaining (args.FileName);
+			if (prj != null) {
+				ProjectFile file = prj.ProjectFiles.GetFile (args.FileName);
+				IParserContext ctx = IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (file.Project);
+				updateCodeBehind (file, parent.CodeBehindClassName, ctx);
+			}
+		}
+		
 		void AddAffectedFilesFromClass (Project project, IClass cls, List<ProjectFile> list)
 		{
 			foreach (IClass part in cls.Parts) {
@@ -174,7 +164,7 @@ namespace MonoDevelop.DesignerSupport
 				if (pf != null && !list.Contains (pf)) {
 					list.Add (pf);
 #if DEBUGCODEBEHINDGROUPING
-					System.Console.WriteLine("Added affected file {0}", pf.FilePath);
+					System.Console.WriteLine ("Added affected file {0}", pf.FilePath);
 #endif					
 				}
 			}
@@ -211,18 +201,21 @@ namespace MonoDevelop.DesignerSupport
 				return;
 			
 			string newCodeBehind = null;
-			string oldCodeBehind = null;
-			
-			codeBehindBindings.TryGetValue (file, out oldCodeBehind);
-			
-			//get the fully-qualified name of the codebehind class if present
-			foreach (ICodeBehindProvider provider in providers) {
-				string name = provider.GetCodeBehindClassName (file);
-				if (name != null) {
-					newCodeBehind = name;
-					break;
-				}
+			IParserContext ctx = IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (file.Project);
+			IParseInformation pi = ctx.GetParseInformation (file.FilePath);
+			if (pi != null) {
+				ICodeBehindParent parent = pi.BestCompilationUnit as ICodeBehindParent;
+				if (parent != null)
+					newCodeBehind = parent.CodeBehindClassName;
 			}
+			
+			updateCodeBehind (file, newCodeBehind, ctx);
+		}
+		
+		void updateCodeBehind (ProjectFile file, string newCodeBehind, IParserContext ctx)
+		{
+			string oldCodeBehind = null;
+			codeBehindBindings.TryGetValue (file, out oldCodeBehind);
 			
 			//if no changes have happened, bail early
 			if (newCodeBehind == oldCodeBehind)
@@ -236,14 +229,13 @@ namespace MonoDevelop.DesignerSupport
 			
 			//build a list of affected "child" files
 			List<ProjectFile> affectedChildren = new List<ProjectFile> ();
-			IParserContext ctx = IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (file.Project);
 			if (newCodeBehind != null) {
 				IClass cls = ctx.GetClass (newCodeBehind);
 				if (cls != null)
 					AddAffectedFilesFromClass (file.Project, cls, affectedChildren);
 			}
 			if (oldCodeBehind != null) {
-				IClass cls = ctx.GetClass (newCodeBehind);
+				IClass cls = ctx.GetClass (oldCodeBehind);
 				if (cls != null)
 					AddAffectedFilesFromClass (file.Project, cls, affectedChildren);
 			}
