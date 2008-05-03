@@ -32,24 +32,11 @@ using Gtk;
 namespace MonoDevelop.Components
 {
 	
-	public class InvisibleFrame : Bin
+	public class InvisibleFrame : Alignment
 	{
-		public InvisibleFrame()
+		public InvisibleFrame ()
+			: base (0, 0, 1, 1)
 		{
-		}
-		
-		protected override void OnSizeRequested (ref Requisition requisition)
-		{
-			Widget c = Child;
-			if (c != null)
-				c.GetSizeRequest (out requisition.Width, out requisition.Height);
-		}
-		
-		protected override void OnSizeAllocated (Gdk.Rectangle allocation)
-		{
-			Widget c = Child;
-			if (c != null)
-				c.SizeAllocate (allocation);
 		}
 		
 		public Widget ReplaceChild (Widget widget)
