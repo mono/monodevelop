@@ -63,7 +63,8 @@ namespace MonoDevelop.AspNet.Gui
 		public override bool ExtendsEditor (MonoDevelop.Ide.Gui.Document doc, IEditableTextBuffer editor)
 		{
 			string[] supportedExtensions = {".aspx", ".ascx", ".master"};
-			return (doc.Project is AspNetAppProject) && Array.IndexOf (supportedExtensions, System.IO.Path.GetExtension (doc.Title)) > -1;
+			return (doc.Project is AspNetAppProject) 
+				&& Array.IndexOf (supportedExtensions, System.IO.Path.GetExtension (doc.Title)) > -1;
 		}
 		
 		public override void Initialize ()
@@ -129,7 +130,8 @@ namespace MonoDevelop.AspNet.Gui
 			return cp;
 		}
 		
-		public override ICompletionDataProvider HandleCodeCompletion (ICodeCompletionContext completionContext, char completionChar, ref int triggerWordLength)
+		public override ICompletionDataProvider HandleCodeCompletion (
+		    ICodeCompletionContext completionContext, char completionChar, ref int triggerWordLength)
 		{
 			int pos = completionContext.TriggerOffset;
 			if (pos > 0 && Editor.GetCharAt (pos - 1) == completionChar) {
@@ -138,12 +140,14 @@ namespace MonoDevelop.AspNet.Gui
 			return null;
 		}
 		
-		ICompletionDataProvider HandleCodeCompletion (CodeCompletionContext completionContext, bool forced, ref int triggerWordLength)
+		ICompletionDataProvider HandleCodeCompletion (
+		    CodeCompletionContext completionContext, bool forced, ref int triggerWordLength)
 		{
 			tracker.UpdateEngine ();
 			MonoDevelop.AspNet.Parser.AspNetCompilationUnit CU = this.CU;
 			
-			//FIXME: lines in completionContext are zero-indexed, but ILocation and buffer are 1-indexed. This could easily cause bugs.
+			//FIXME: lines in completionContext are zero-indexed, but ILocation and buffer are 1-indexed.
+			//This could easily cause bugs.
 			int line = completionContext.TriggerLine + 1, col = completionContext.TriggerLineOffset;
 			
 			ITextBuffer buf = this.Buffer;
@@ -153,7 +157,8 @@ namespace MonoDevelop.AspNet.Gui
 			char currentChar = buf.GetCharAt (currentPosition);
 			char previousChar = buf.GetCharAt (currentPosition - 1);
 			
-			LoggingService.LogDebug ("Attempting ASP.NET completion for state '{0}', previousChar='{1}', currentChar='{2}', forced='{3}'", tracker.Engine.CurrentState, previousChar, currentChar, forced);
+			LoggingService.LogDebug ("Attempting ASP.NET completion for state '{0}', previousChar='{1}'," 
+			    + " currentChar='{2}', forced='{3}'", tracker.Engine.CurrentState, previousChar, currentChar, forced);
 			
 			//doctype completion
 			if (line <= 5 && currentChar ==' ' && previousChar == 'E') {
@@ -174,7 +179,8 @@ namespace MonoDevelop.AspNet.Gui
 					break;
 				default:
 					if (char.IsLetterOrDigit (currentChar) &&
-					    (previousChar == '"' || previousChar =='\'' || previousChar == '<' || char.IsWhiteSpace (previousChar)))
+					    (previousChar == '"' || previousChar =='\'' || previousChar == '<' 
+					        || char.IsWhiteSpace (previousChar)))
 						break;
 					else
 						return null;
@@ -253,7 +259,8 @@ namespace MonoDevelop.AspNet.Gui
 					if (string.IsNullOrEmpty (tagState.Name.Namespace)) {
 						AddHtmlAttributeCompletionData (cp, schema, tagState.Name.Name, null);
 					} else {
-						AddAspAttributeCompletionData (cp, CU == null? null : CU.Document, tagState.Name.Namespace, tagState.Name.Name, null);
+						AddAspAttributeCompletionData (cp, CU == null? null : CU.Document, 
+						    tagState.Name.Namespace, tagState.Name.Name, null);
 					}
 					
 					if (true)
@@ -299,7 +306,8 @@ namespace MonoDevelop.AspNet.Gui
 						if (string.IsNullOrEmpty (tagName.Namespace))
 							AddHtmlAttributeValueCompletionData (cp, schema, valstate.TagName.Name, att);
 						else
-							AddAspAttributeValueCompletionData (cp, CU, valstate.TagName.Namespace, valstate.TagName.Name, att, null);
+							AddAspAttributeValueCompletionData (cp, CU, valstate.TagName.Namespace, 
+							    valstate.TagName.Name, att, null);
 						return cp;
 					}
 				}
@@ -366,7 +374,8 @@ namespace MonoDevelop.AspNet.Gui
 				provider.AddCompletionData (datum);			
 		}
 		
-		void AddHtmlAttributeCompletionData (CodeCompletionDataProvider provider, HtmlSchema schema, string tagName, Dictionary<string, bool> existingAtts)
+		void AddHtmlAttributeCompletionData (CodeCompletionDataProvider provider, HtmlSchema schema, 
+		    string tagName, Dictionary<string, bool> existingAtts)
 		{
 			System.Diagnostics.Debug.Assert (!string.IsNullOrEmpty (tagName));
 			System.Diagnostics.Debug.Assert (schema != null);
@@ -378,13 +387,17 @@ namespace MonoDevelop.AspNet.Gui
 					provider.AddCompletionData (datum);
 		}
 		
-		void AddHtmlAttributeValueCompletionData (CodeCompletionDataProvider provider, HtmlSchema schema, string tagName, string attributeName)
+		void AddHtmlAttributeValueCompletionData (CodeCompletionDataProvider provider, HtmlSchema schema, 
+		    string tagName, string attributeName)
 		{
 			System.Diagnostics.Debug.Assert (!string.IsNullOrEmpty (tagName));
 			System.Diagnostics.Debug.Assert (schema.CompletionProvider != null);
 			
-			foreach (ICompletionData datum in schema.CompletionProvider.GetAttributeValueCompletionData (tagName, attributeName))
+			foreach (ICompletionData datum 
+			    in schema.CompletionProvider.GetAttributeValueCompletionData (tagName, attributeName))
+			{
 				provider.AddCompletionData (datum);
+			}
 		}
 		
 		#endregion
@@ -421,10 +434,12 @@ namespace MonoDevelop.AspNet.Gui
 		static void AddAspTags (CodeCompletionDataProvider provider, Document doc, string parentTag)
 		{
 			foreach (MonoDevelop.Projects.Parser.IClass cls in doc.ReferenceManager.ListControlClasses ())
-				provider.AddCompletionData (new CodeCompletionData ("asp:" + cls.Name, Gtk.Stock.GoForward, cls.Documentation));
+				provider.AddCompletionData (
+				    new CodeCompletionData ("asp:" + cls.Name, Gtk.Stock.GoForward, cls.Documentation));
 		}
 		
-		static void AddAspAttributeCompletionData (CodeCompletionDataProvider provider, Document doc, string prefix, string name, Dictionary<string, string> existingAtts)
+		static void AddAspAttributeCompletionData (CodeCompletionDataProvider provider,
+		    Document doc, string prefix, string name, Dictionary<string, string> existingAtts)
 		{
 			System.Diagnostics.Debug.Assert (!string.IsNullOrEmpty (name));
 			System.Diagnostics.Debug.Assert (!string.IsNullOrEmpty (prefix));
@@ -454,22 +469,29 @@ namespace MonoDevelop.AspNet.Gui
 			AddControlMembers (provider, ctx, doc, controlClass, existingAtts);
 		}
 		
-		static void AddControlMembers (CodeCompletionDataProvider provider, MonoDevelop.Projects.Parser.IParserContext ctx, Document doc, MonoDevelop.Projects.Parser.IClass controlClass, Dictionary<string, string> existingAtts)
+		static void AddControlMembers (CodeCompletionDataProvider provider,
+		    MonoDevelop.Projects.Parser.IParserContext ctx, Document doc,
+		    MonoDevelop.Projects.Parser.IClass controlClass, Dictionary<string, string> existingAtts)
 		{
 			//add atts only if they're not already in the tag
-			foreach (MonoDevelop.Projects.Parser.IProperty prop in GetUniqueMembers<MonoDevelop.Projects.Parser.IProperty> (GetAllProperties (ctx, controlClass)))
+			foreach (MonoDevelop.Projects.Parser.IProperty prop 
+			    in GetUniqueMembers<MonoDevelop.Projects.Parser.IProperty> (GetAllProperties (ctx, controlClass)))
 				if (prop.IsPublic && (existingAtts == null || existingAtts.ContainsKey (prop.Name)))
 					provider.AddCompletionData (new CodeCompletionData (prop.Name, "md-property", prop.Documentation));
 			
 			//similarly add events
-			foreach (MonoDevelop.Projects.Parser.IEvent eve in GetUniqueMembers<MonoDevelop.Projects.Parser.IEvent> (GetAllEvents (ctx, controlClass))) {
+			foreach (MonoDevelop.Projects.Parser.IEvent eve 
+			    in GetUniqueMembers<MonoDevelop.Projects.Parser.IEvent> (GetAllEvents (ctx, controlClass))) {
 				string eveName = "On" + eve.Name;
 				if (eve.IsPublic && (existingAtts == null || existingAtts.ContainsKey (eveName)))
 					provider.AddCompletionData (new CodeCompletionData (eveName, "md-event", eve.Documentation));
 			}
 		}
 		
-		static void AddAspAttributeValueCompletionData (CodeCompletionDataProvider provider, MonoDevelop.AspNet.Parser.AspNetCompilationUnit cu, string tagNamePrefix, string tagName, string attrib, Dictionary<string, string> existingAtts)
+		static void AddAspAttributeValueCompletionData (CodeCompletionDataProvider provider,
+		    MonoDevelop.AspNet.Parser.AspNetCompilationUnit cu,
+		    string tagNamePrefix, string tagName, string attrib,
+		    Dictionary<string, string> existingAtts)
 		{
 			if (string.IsNullOrEmpty (attrib) || string.IsNullOrEmpty (tagName) || string.IsNullOrEmpty (tagNamePrefix))
 				return;
@@ -479,7 +501,8 @@ namespace MonoDevelop.AspNet.Gui
 				cu.Document.ReferenceManager.GetControlType (tagNamePrefix, tagName);
 			if (controlClass == null) {
 				//FIXME: respect runtime version
-				MonoDevelop.Projects.Parser.IParserContext sysWebContext = MonoDevelop.Ide.Gui.IdeApp.ProjectOperations.ParserDatabase.GetAssemblyParserContext ("System.Web");
+				MonoDevelop.Projects.Parser.IParserContext sysWebContext =
+					MonoDevelop.Ide.Gui.IdeApp.ProjectOperations.ParserDatabase.GetAssemblyParserContext ("System.Web");
 				if (sysWebContext == null)
 					return;
 				
@@ -492,7 +515,9 @@ namespace MonoDevelop.AspNet.Gui
 			MonoDevelop.Projects.Parser.IClass codeBehindClass = null;
 			MonoDevelop.Projects.Parser.IParserContext projectContext = null;
 			if (cu != null && cu.Document.Project != null)
-				projectContext = MonoDevelop.Ide.Gui.IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (cu.Document.Project);
+				projectContext = 
+					MonoDevelop.Ide.Gui.IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (
+					    cu.Document.Project);
 			if (projectContext != null && !string.IsNullOrEmpty (cu.PageInfo.InheritedClass))
 				codeBehindClass = projectContext.GetClass (cu.PageInfo.InheritedClass);
 			
@@ -501,19 +526,27 @@ namespace MonoDevelop.AspNet.Gui
 				string eventName = attrib.Substring (2);
 				foreach (MonoDevelop.Projects.Parser.IEvent ev in GetAllEvents (projectContext, controlClass)) {
 					if (ev.Name == eventName) {
-						System.CodeDom.CodeMemberMethod domMethod = BindingService.MDDomToCodeDomMethod (ev, projectContext);
+						System.CodeDom.CodeMemberMethod domMethod = 
+							BindingService.MDDomToCodeDomMethod (ev, projectContext);
 						if (domMethod == null)
 							return;
 						
-						foreach (string meth in BindingService.GetCompatibleMethodsInClass (codeBehindClass, domMethod))
+						foreach (string meth 
+						    in BindingService.GetCompatibleMethodsInClass (codeBehindClass, domMethod))
+						{
 							provider.AddCompletionData (new CodeCompletionData (meth, "md-method",
 							    "A compatible method in the CodeBehind class"));
+						}
 						
 						string suggestedIdentifier = ev.Name;
-						if (existingAtts != null && !existingAtts.ContainsKey ("id") && !string.IsNullOrEmpty (existingAtts["id"]))
+						if (existingAtts != null && !existingAtts.ContainsKey ("id") 
+						    && !string.IsNullOrEmpty (existingAtts["id"]))
+						{
 							suggestedIdentifier = existingAtts["id"] + "_" + suggestedIdentifier;
+						}
 							
-						domMethod.Name = BindingService.GenerateIdentifierUniqueInClass (codeBehindClass, suggestedIdentifier);
+						domMethod.Name = BindingService.GenerateIdentifierUniqueInClass
+							(codeBehindClass, suggestedIdentifier);
 						provider.AddCompletionData (
 						    new SuggestedHandlerCompletionData (cu.Document.Project, domMethod, codeBehindClass,
 						        MonoDevelop.AspNet.CodeBehind.GetNonDesignerClass (codeBehindClass))
@@ -525,7 +558,9 @@ namespace MonoDevelop.AspNet.Gui
 			
 			//FIXME: respect runtime version
 			if (projectContext == null)
-				projectContext = MonoDevelop.Ide.Gui.IdeApp.ProjectOperations.ParserDatabase.GetAssemblyParserContext ("System.Web");
+				projectContext = 
+					MonoDevelop.Ide.Gui.IdeApp.ProjectOperations.
+					ParserDatabase.GetAssemblyParserContext ("System.Web");
 			if (projectContext == null)
 				return;
 			
@@ -549,11 +584,13 @@ namespace MonoDevelop.AspNet.Gui
 				}
 				
 				//enum completion
-				MonoDevelop.Projects.Parser.IClass retCls = projectContext.GetClass (prop.ReturnType.FullyQualifiedName, true, false);
+				MonoDevelop.Projects.Parser.IClass retCls = 
+					projectContext.GetClass (prop.ReturnType.FullyQualifiedName, true, false);
 				if (retCls != null && retCls.ClassType == MonoDevelop.Projects.Parser.ClassType.Enum) {
 					foreach (MonoDevelop.Projects.Parser.IField enumVal in retCls.Fields)
 						if (enumVal.IsPublic && enumVal.IsStatic)
-							provider.AddCompletionData (new CodeCompletionData (enumVal.Name, "md-literal", enumVal.Documentation));
+							provider.AddCompletionData (
+							    new CodeCompletionData (enumVal.Name, "md-literal", enumVal.Documentation));
 					return;
 				}
 			}
@@ -570,7 +607,9 @@ namespace MonoDevelop.AspNet.Gui
 			}
 		}
 		
-		static IEnumerable<MonoDevelop.Projects.Parser.IProperty> GetAllProperties (MonoDevelop.Projects.Parser.IParserContext ctx, MonoDevelop.Projects.Parser.IClass cls)
+		static IEnumerable<MonoDevelop.Projects.Parser.IProperty> GetAllProperties (
+		    MonoDevelop.Projects.Parser.IParserContext ctx,
+		    MonoDevelop.Projects.Parser.IClass cls)
 		{
 			foreach (MonoDevelop.Projects.Parser.IProperty prop in cls.Properties)
 				yield return prop;
@@ -583,7 +622,9 @@ namespace MonoDevelop.AspNet.Gui
 			}
 		}
 		
-		static IEnumerable<MonoDevelop.Projects.Parser.IEvent> GetAllEvents (MonoDevelop.Projects.Parser.IParserContext ctx, MonoDevelop.Projects.Parser.IClass cls)
+		static IEnumerable<MonoDevelop.Projects.Parser.IEvent> GetAllEvents (
+		    MonoDevelop.Projects.Parser.IParserContext ctx,
+		    MonoDevelop.Projects.Parser.IClass cls)
 		{
 			foreach (MonoDevelop.Projects.Parser.IEvent ev in cls.Events)
 				yield return ev;
@@ -797,24 +838,65 @@ namespace MonoDevelop.AspNet.Gui
 			if (outlineTreeView != null)
 				return outlineTreeView;
 			
-			outlineTreeStore = new Gtk.TreeStore (typeof (string), typeof (Node));
+			outlineTreeStore = new Gtk.TreeStore (typeof (Node));
 			outlineTreeView = new Gtk.TreeView (outlineTreeStore);
-			outlineTreeView.AppendColumn ("Node", new Gtk.CellRendererText (), "text", 0);
+			
+			System.Reflection.PropertyInfo prop = typeof (Gtk.TreeView).GetProperty ("EnableTreeLines");
+			if (prop != null)
+				prop.SetValue (outlineTreeView, true, null);
+			
+			Gtk.CellRendererText crt = new Gtk.CellRendererText ();
+			crt.Xpad = 0;
+			crt.Ypad = 0;
+			outlineTreeView.AppendColumn ("Node", crt, new Gtk.TreeCellDataFunc (outlineTreeDataFunc));
 			outlineTreeView.HeadersVisible = false;
+			
 			outlineTreeView.Realized += delegate { refillOutlineStore (); };
 			outlineTreeView.Selection.Changed += delegate {
 				Gtk.TreeIter iter;
 				if (!outlineTreeView.Selection.GetSelected (out iter))
 					return;
-				Node n = (Node) outlineTreeStore.GetValue (iter, 1);
+				Node n = (Node) outlineTreeStore.GetValue (iter, 0);
 				SelectNode (n);
 			};
+			
 			refillOutlineStore ();
 			
 			Gtk.ScrolledWindow sw = new Gtk.ScrolledWindow ();
 			sw.Add (outlineTreeView);
 			sw.ShowAll ();
 			return sw;
+		}
+		
+		void outlineTreeDataFunc (Gtk.TreeViewColumn column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
+		{
+			Gtk.CellRendererText txtRenderer = (Gtk.CellRendererText) cell;
+			Node n = (Node) model.GetValue (iter, 0);
+			string name = null;
+			if (n is TagNode) {
+				TagNode tn = (TagNode) n;
+				name = tn.TagName;
+				string att = tn.Attributes["id"] as string;
+				if (att != null)
+					name = "<" + name + "#" + att + ">";
+				else
+					name = name = "<" + name + ">";
+			} else if (n is DirectiveNode) {
+				DirectiveNode dn = (DirectiveNode) n;
+				name = "<%@ " + dn.Name + " %>";
+			} else if (n is ExpressionNode) {
+				ExpressionNode en = (ExpressionNode) n;
+				string expr = en.Expression;
+				if (string.IsNullOrEmpty (expr)) {
+					name = "<% %>";
+				} else {
+					if (expr.Length > 10)
+						expr = expr.Substring (0, 10) + "...";
+					name = "<% " + expr + "%>";
+				}
+			}
+			if (name != null)
+				txtRenderer.Text = name;
 		}
 		
 		void SelectNode (Node n)
@@ -860,8 +942,8 @@ namespace MonoDevelop.AspNet.Gui
 			
 			DateTime start = DateTime.Now;
 			ParentNode p = lastCU.Document.RootNode;
-			Gtk.TreeIter iter = outlineTreeStore.AppendValues (System.IO.Path.GetFileName (lastCU.Document.FilePath), p);
-			BuildTreeChildren (outlineTreeStore, iter, p);
+//			Gtk.TreeIter iter = outlineTreeStore.AppendValues (System.IO.Path.GetFileName (lastCU.Document.FilePath), p);
+			BuildTreeChildren (outlineTreeStore, Gtk.TreeIter.Zero, p);
 			outlineTreeView.ExpandAll ();
 			
 			LoggingService.LogDebug ("Built ASP.NET outline in {0}ms", (DateTime.Now - start).Milliseconds);
@@ -871,18 +953,13 @@ namespace MonoDevelop.AspNet.Gui
 		static void BuildTreeChildren (Gtk.TreeStore store, Gtk.TreeIter parent, ParentNode p)
 		{
 			foreach (Node n in p) {
-				string name = null;
-				TagNode tn = n as TagNode;
-				if (tn != null) {
-					name = tn.TagName;
-					string att = tn.Attributes["id"] as string;
-					if (att != null)
-						name = name + "#" + att;
-				}
-				
-				if (string.IsNullOrEmpty (name))
+				if ( !(n is TagNode || n is DirectiveNode || n is ExpressionNode))
 					continue;
-				Gtk.TreeIter childIter = store.AppendValues (parent, name, n);
+				Gtk.TreeIter childIter;
+				if (!parent.Equals (Gtk.TreeIter.Zero))
+					childIter = store.AppendValues (parent, n);
+				else
+					childIter = store.AppendValues (n);
 				ParentNode pChild = n as ParentNode;
 				if (pChild != null)
 					BuildTreeChildren (store, childIter, pChild);
