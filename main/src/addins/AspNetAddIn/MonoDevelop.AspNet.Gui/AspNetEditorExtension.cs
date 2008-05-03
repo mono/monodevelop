@@ -907,8 +907,12 @@ namespace MonoDevelop.AspNet.Gui
 				end = tn.EndLocation;
 			else
 				end = start;
-			int s = Editor.GetPositionFromLineColumn (start.BeginLine, start.BeginColumn + 1);
-			int e = Editor.GetPositionFromLineColumn (end.EndLine, end.EndColumn + 1);
+			
+			//FIXME: why is this offset necessary
+			int offset = n is TagNode? 1 : 0;
+			
+			int s = Editor.GetPositionFromLineColumn (start.BeginLine, start.BeginColumn + offset);
+			int e = Editor.GetPositionFromLineColumn (end.EndLine, end.EndColumn + offset);
 			if (e > s && s > -1)
 				Editor.Select (s, e);
 		}
