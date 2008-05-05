@@ -1,3 +1,7 @@
+2008-05-05  Mike Krüger <mkrueger@novell.com> 
+
+	* Mono.TextEditor/ISearchEngine.cs: worked on regex search.
+
 2008-05-02  Mike Krüger <mkrueger@novell.com> 
 
 	* Mono.TextEditor/TextEditorData.cs, Mono.TextEditor/TextEditor.cs,
