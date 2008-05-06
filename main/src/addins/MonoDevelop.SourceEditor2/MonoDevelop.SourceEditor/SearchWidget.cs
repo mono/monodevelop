@@ -56,6 +56,13 @@ namespace MonoDevelop.SourceEditor
 				return PropertyService.Get ("IsWholeWordOnly", false);
 			}
 		}
+		public const string DefaultSearchEngine = "default";
+		public const string RegexSearchEngine   = "regex";
+		public static string SearchEngine {
+			get {
+				return PropertyService.Get ("BufferSearchEngine", DefaultSearchEngine);
+			}
+		}
 		
 		void SetIsCaseSensitive (bool value)
 		{
@@ -66,6 +73,13 @@ namespace MonoDevelop.SourceEditor
 		void SetIsWholeWordOnly (bool value)
 		{
 			PropertyService.Set ("IsWholeWordOnly", value);
+			widget.SetSearchOptions ();
+		}
+
+		void SetIsRegexSearch (bool value)
+		{
+			PropertyService.Set ("BufferSearchEngine", value ? RegexSearchEngine : 
+			                                                   DefaultSearchEngine);
 			widget.SetSearchOptions ();
 		}
 		
@@ -134,7 +148,7 @@ namespace MonoDevelop.SourceEditor
 			};
 			
 			optionsButton.Label = MonoDevelop.Core.GettextCatalog.GetString ("Options");
-			optionsButton.MenuCreator =  delegate {
+			optionsButton.MenuCreator = delegate {
 				Gtk.Menu menu = new Gtk.Menu ();
 				
 				Gtk.CheckMenuItem caseSensitive = new Gtk.CheckMenuItem (MonoDevelop.Core.GettextCatalog.GetString ("_Case sensitive"));
@@ -158,6 +172,20 @@ namespace MonoDevelop.SourceEditor
 					wholeWordsOnly.Toggle ();
 				};
 				menu.Append (wholeWordsOnly);
+				
+				Gtk.CheckMenuItem regexSearch = new Gtk.CheckMenuItem (MonoDevelop.Core.GettextCatalog.GetString ("_Regex search"));
+				regexSearch.Active = SearchEngine == RegexSearchEngine;
+				regexSearch.Toggled += delegate {
+					SetIsRegexSearch (regexSearch.Active);
+					UpdateSearchEntry ();
+				};
+				regexSearch.ButtonPressEvent += delegate {
+					regexSearch.Toggle ();
+				};
+				menu.Append (regexSearch);
+				menu.Hidden += delegate {
+					menu.Destroy ();
+				};
 				menu.ShowAll ();
 				return menu;
 			};
@@ -246,7 +274,16 @@ namespace MonoDevelop.SourceEditor
 			oldPattern = SearchPattern;
 			widget.SetSearchOptions ();
 			SearchResult result = widget.TextEditor.SearchForward (widget.TextEditor.Document.LocationToOffset (caretSave));
-			if (result == null && !String.IsNullOrEmpty (SearchPattern)) {
+			bool error = result == null && !String.IsNullOrEmpty (SearchPattern);
+			string errorMsg;
+			bool valid = widget.TextEditor.SearchEngine.IsValidPattern (searchPattern, out errorMsg);
+			error |= !valid;
+			if (!valid) {
+				IdeApp.Workbench.StatusBar.ShowError (errorMsg);
+			} else {
+				IdeApp.Workbench.StatusBar.ShowReady ();
+			}
+			if (error) {
 				this.entrySearch.Entry.ModifyBase (Gtk.StateType.Normal, GotoLineNumberWidget.errorColor);
 			} else {
 				this.entrySearch.Entry.ModifyBase (Gtk.StateType.Normal, Style.Base (Gtk.StateType.Normal));

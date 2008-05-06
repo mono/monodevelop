@@ -37,7 +37,6 @@ using MonoDevelop.Ide.Gui.Search;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Commands;
 
-
 namespace MonoDevelop.SourceEditor
 {
 	public partial class SourceEditorWidget : Gtk.Bin, ITextEditorExtension
@@ -1184,14 +1183,23 @@ namespace MonoDevelop.SourceEditor
 		
 		internal void SetSearchOptions ()
 		{
+			this.textEditor.SearchEngine    = SearchWidget.SearchEngine == SearchWidget.DefaultSearchEngine ? (ISearchEngine)new BasicSearchEngine () : (ISearchEngine)new RegexSearchEngine ();
 			this.textEditor.IsCaseSensitive = SearchWidget.IsCaseSensitive;
 			this.textEditor.IsWholeWordOnly = SearchWidget.IsWholeWordOnly;
-			this.textEditor.SearchPattern = SearchWidget.searchPattern;
+			
+			string error;
+			bool valid = this.textEditor.SearchEngine.IsValidPattern (SearchWidget.searchPattern, out error);
+			
+			if (valid) {
+				this.textEditor.SearchPattern = SearchWidget.searchPattern;
+			}
 			this.textEditor.QueueDraw ();
 			if (this.splittedTextEditor != null) {
 				this.splittedTextEditor.IsCaseSensitive = SearchWidget.IsCaseSensitive;
 				this.splittedTextEditor.IsWholeWordOnly = SearchWidget.IsWholeWordOnly;
-				this.splittedTextEditor.SearchPattern = SearchWidget.searchPattern;
+				if (valid) {
+					this.splittedTextEditor.SearchPattern = SearchWidget.searchPattern;
+				}
 				this.splittedTextEditor.QueueDraw ();
 			}
 		}
@@ -1223,7 +1231,7 @@ namespace MonoDevelop.SourceEditor
 			} else if (result.SearchWrapped) {
 				IdeApp.Workbench.StatusBar.ShowMessage (new Image (Gtk.Stock.Find, IconSize.Menu), GettextCatalog.GetString ("Reached top, continued from bottom"));
 			} else {
-				IdeApp.Workbench.StatusBar.ShowMessage (GettextCatalog.GetString ("Ready"));
+				IdeApp.Workbench.StatusBar.ShowReady ();
 			}
 			return result;
 		}
