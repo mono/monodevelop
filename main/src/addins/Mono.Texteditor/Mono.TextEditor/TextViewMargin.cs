@@ -304,17 +304,22 @@ namespace Mono.TextEditor
 		void OutputWordBuilder (Gdk.Drawable win, LineSegment line, bool selected, ChunkStyle style, ref int visibleColumn, ref int xPos, int y, int curOffset)
 		{
 			bool drawText = true;
+			bool drawBg   = true;
 			int oldxPos = xPos;
 			int startOffset = curOffset - wordBuilder.Length;
 				
 			if (line.Markers != null) {
-				foreach (TextMarker marker in line.Markers) 
-					drawText &= marker.DrawBackground (textEditor, win, selected, startOffset, curOffset, y, oldxPos, xPos);
+				foreach (TextMarker marker in line.Markers)  {
+					if (!marker.CanDrawBackground)
+						continue;
+					drawBg = false;
+					drawText &= marker.DrawBackground (textEditor, win, selected, startOffset, curOffset, y, oldxPos, oldxPos + xPos);
+				}
 			}
 			if (drawText) {
 				string text = wordBuilder.ToString ();
 				if (selected) {
-					DrawText (win, text, ColorStyle.SelectedFg, ColorStyle.SelectedBg, ref xPos, y);
+					DrawText (win, text, ColorStyle.SelectedFg, drawBg, ColorStyle.SelectedBg, ref xPos, y);
 				} else {
 					ISegment firstSearch;
 					int offset = startOffset;
@@ -323,19 +328,19 @@ namespace Mono.TextEditor
 						// Draw text before the search result (if any)
 						if (firstSearch.Offset > offset) {
 							s = offset - startOffset;
-							DrawText (win, text.Substring (s, firstSearch.Offset - offset), style.Color, defaultBgColor, ref xPos, y);
+							DrawText (win, text.Substring (s, firstSearch.Offset - offset), style.Color, drawBg, defaultBgColor, ref xPos, y);
 							offset += firstSearch.Offset - offset;
 						}
 						// Draw text within the search result
 						s = offset - startOffset;
 						int len = System.Math.Min (firstSearch.EndOffset - offset, text.Length - s);
 						if (len > 0)
-							DrawText (win, text.Substring (s, len), style.Color, ColorStyle.SearchTextBg, ref xPos, y);
+							DrawText (win, text.Substring (s, len), style.Color, drawBg, ColorStyle.SearchTextBg, ref xPos, y);
 						offset = System.Math.Max (firstSearch.EndOffset, offset + 1);
 					}
 					s = offset - startOffset;
 					if (s < wordBuilder.Length) {
-						DrawText (win, text.Substring (s, wordBuilder.Length - s), style.Color, defaultBgColor, ref xPos, y);
+						DrawText (win, text.Substring (s, wordBuilder.Length - s), style.Color, drawBg, defaultBgColor, ref xPos, y);
 					}
 				}
 			}
@@ -387,16 +392,23 @@ namespace Mono.TextEditor
 					OutputWordBuilder (win, line, selected, style, ref visibleColumn, ref xPos, y, offset);
 					
 					bool drawText = true;
+					bool drawBg   = true;
 					if (line.Markers != null) {
-						foreach (TextMarker marker in line.Markers) 
+						foreach (TextMarker marker in line.Markers)  {
+							if (!marker.CanDrawBackground)
+								continue;
+							drawBg = false;
 							drawText &= marker.DrawBackground (textEditor, win, selected, offset, offset + 1, y, xPos, xPos + charWidth);
+						}
 					}
 					if (drawText) {
-						Gdk.Rectangle bracketMatch = new Gdk.Rectangle (xPos, y, charWidth - 1, LineHeight - 1);
-						gc.RgbFgColor = selected ? this.ColorStyle.SelectedBg : this.ColorStyle.BracketHighlightBg;
-						win.DrawRectangle (gc, true, bracketMatch);
-						gc.RgbFgColor = this.ColorStyle.BracketHighlightRectangle;
-						win.DrawRectangle (gc, false, bracketMatch);
+						if (drawBg) {
+							Gdk.Rectangle bracketMatch = new Gdk.Rectangle (xPos, y, charWidth - 1, LineHeight - 1);
+							gc.RgbFgColor = selected ? this.ColorStyle.SelectedBg : this.ColorStyle.BracketHighlightBg;
+							win.DrawRectangle (gc, true, bracketMatch);
+							gc.RgbFgColor = this.ColorStyle.BracketHighlightRectangle;
+							win.DrawRectangle (gc, false, bracketMatch);
+						}
 						
 						layout.SetText (ch.ToString ());
 						gc.RgbFgColor = selected ? ColorStyle.SelectedFg : style.Color;
@@ -412,12 +424,18 @@ namespace Mono.TextEditor
 				} else if (ch == ' ') {
 					OutputWordBuilder (win, line, selected, style, ref visibleColumn, ref xPos, y, offset);
 					bool drawText = true;
+					bool drawBg   = true;
 					if (line.Markers != null) {
-						foreach (TextMarker marker in line.Markers) 
+						foreach (TextMarker marker in line.Markers)  {
+							if (!marker.CanDrawBackground)
+								continue;
+							drawBg = false;
 							drawText &= marker.DrawBackground (textEditor, win, selected, offset, offset + 1, y, xPos, xPos + charWidth);
+						}
 					}
 					if (drawText) {
-						DrawRectangleWithRuler (win, this.XOffset, new Gdk.Rectangle (xPos, y, charWidth, LineHeight), selected ? ColorStyle.SelectedBg : (IsSearchResultAt (offset) ? ColorStyle.SearchTextBg : defaultBgColor));
+						if (drawBg)
+							DrawRectangleWithRuler (win, this.XOffset, new Gdk.Rectangle (xPos, y, charWidth, LineHeight), selected ? ColorStyle.SelectedBg : (IsSearchResultAt (offset) ? ColorStyle.SearchTextBg : defaultBgColor));
 						
 						if (TextEditorOptions.Options.ShowSpaces) 
 							DrawSpaceMarker (win, selected, xPos, y);
@@ -438,12 +456,18 @@ namespace Mono.TextEditor
 					int delta = (newColumn - visibleColumn) * this.charWidth;
 					visibleColumn = newColumn;
 					bool drawText = true;
+					bool drawBg   = true;
 					if (line.Markers != null) {
-						foreach (TextMarker marker in line.Markers) 
+						foreach (TextMarker marker in line.Markers)  {
+							if (!marker.CanDrawBackground)
+								continue;
+							drawBg = false;
 							drawText &= marker.DrawBackground (textEditor, win, selected, offset, offset + 1, y, xPos, xPos + charWidth);
+						}
 					}
 					if (drawText) {
-						DrawRectangleWithRuler (win, this.XOffset, new Gdk.Rectangle (xPos, y, delta, LineHeight), selected ? ColorStyle.SelectedBg : (IsSearchResultAt (offset) ? ColorStyle.SearchTextBg : defaultBgColor));
+						if (drawBg)
+							DrawRectangleWithRuler (win, this.XOffset, new Gdk.Rectangle (xPos, y, delta, LineHeight), selected ? ColorStyle.SelectedBg : (IsSearchResultAt (offset) ? ColorStyle.SearchTextBg : defaultBgColor));
 						if (TextEditorOptions.Options.ShowTabs) 
 							DrawTabMarker (win, selected, xPos, y);
 						if (offset == caretOffset) 
@@ -479,13 +503,14 @@ namespace Mono.TextEditor
 				SetVisibleCaretPosition (win, Document.Contains (caretOffset) ? Document.GetCharAt (caretOffset) : ' ', drawCaretAt, y);
 		}
 		
-		void DrawText (Gdk.Drawable win, string text, Gdk.Color foreColor, Gdk.Color backgroundColor, ref int xPos, int y)
+		void DrawText (Gdk.Drawable win, string text, Gdk.Color foreColor, bool drawBg, Gdk.Color backgroundColor, ref int xPos, int y)
 		{
 			layout.SetText (text);
 			
 			int width, height;
 			layout.GetPixelSize (out width, out height);
-			DrawRectangleWithRuler (win, this.XOffset, new Gdk.Rectangle (xPos, y, width, height), backgroundColor);
+			if (drawBg) 
+				DrawRectangleWithRuler (win, this.XOffset, new Gdk.Rectangle (xPos, y, width, height), backgroundColor);
 			
 			gc.RgbFgColor = foreColor;
 			win.DrawLayout (gc, xPos, y, layout);

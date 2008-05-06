@@ -120,6 +120,12 @@ namespace Mono.TextEditor
 			}
 		}
 		
+		public virtual bool CanDrawBackground {
+			get {
+				return false;
+			}
+		}
+		
 		/// <summary>
 		/// Draws the backround of a line part.
 		/// </summary>
@@ -133,7 +139,7 @@ namespace Mono.TextEditor
 		
 		public virtual void Draw (TextEditor editor, Gdk.Drawable win, bool selected, int startOffset, int endOffset, int y, int startXPos, int endXPos)
 		{
-			using (Gdk.GC gc = new Gdk.GC (win)) {
+			/*using (Gdk.GC gc = new Gdk.GC (win)) {
 				gc.RgbFgColor = new Color (255, 0, 0);
 				int drawY    = y + editor.LineHeight - 1;
 				const int length = 6;
@@ -142,7 +148,7 @@ namespace Mono.TextEditor
 					win.DrawLine (gc, i, drawY, i + length / 2, drawY - height);
 					win.DrawLine (gc, i + length / 2, drawY - height, i + length, drawY);
 				}
-			}
+			}*/
 		}
 	}
 }

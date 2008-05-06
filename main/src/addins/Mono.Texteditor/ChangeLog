@@ -1,5 +1,10 @@
 2008-05-06  Mike Krüger <mkrueger@novell.com> 
 
+	* Mono.TextEditor/TextViewMargin.cs, Mono.TextEditor/TextMarker.cs:
+	  Worked on text markers.
+
+2008-05-06  Mike Krüger <mkrueger@novell.com> 
+
 	* Mono.TextEditor/TextViewMargin.cs, Mono.TextEditor/TextEditorData.cs,
 	  Mono.TextEditor/TextEditor.cs, Mono.TextEditor/ISearchEngine.cs:
 	  Worked on regex search.
