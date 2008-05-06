@@ -148,6 +148,20 @@ namespace MonoDevelop.SourceEditor
 					wholeWordsOnly.Toggle ();
 				};
 				menu.Append (wholeWordsOnly);
+				Gtk.CheckMenuItem regexSearch = new Gtk.CheckMenuItem (MonoDevelop.Core.GettextCatalog.GetString ("_Regex search"));
+				regexSearch.Active = SearchWidget.SearchEngine == SearchWidget.RegexSearchEngine;
+				regexSearch.Toggled += delegate {
+					SetIsRegexSearch (regexSearch.Active);
+					UpdateSearchEntry ();
+				};
+				regexSearch.ButtonPressEvent += delegate {
+					regexSearch.Toggle ();
+				};
+				menu.Append (regexSearch);
+				menu.Hidden += delegate {
+					menu.Destroy ();
+				};
+				
 				menu.ShowAll ();
 				return menu;
 			};
@@ -250,6 +264,13 @@ namespace MonoDevelop.SourceEditor
 		void SetIsWholeWordOnly (bool value)
 		{
 			PropertyService.Set ("IsWholeWordOnly", value);
+			widget.SetSearchOptions ();
+		}
+		
+		void SetIsRegexSearch (bool value)
+		{
+			PropertyService.Set ("BufferSearchEngine", value ? SearchWidget.RegexSearchEngine : 
+			                                                   SearchWidget.DefaultSearchEngine);
 			widget.SetSearchOptions ();
 		}
 		

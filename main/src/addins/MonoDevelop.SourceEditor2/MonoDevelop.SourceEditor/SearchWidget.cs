@@ -174,7 +174,7 @@ namespace MonoDevelop.SourceEditor
 				menu.Append (wholeWordsOnly);
 				
 				Gtk.CheckMenuItem regexSearch = new Gtk.CheckMenuItem (MonoDevelop.Core.GettextCatalog.GetString ("_Regex search"));
-				regexSearch.Active = SearchEngine == RegexSearchEngine;
+				regexSearch.Active = SearchWidget.SearchEngine == SearchWidget.RegexSearchEngine;
 				regexSearch.Toggled += delegate {
 					SetIsRegexSearch (regexSearch.Active);
 					UpdateSearchEntry ();

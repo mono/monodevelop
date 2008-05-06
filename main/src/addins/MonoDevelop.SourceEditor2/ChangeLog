@@ -1,5 +1,13 @@
 2008-05-06  Mike Krüger <mkrueger@novell.com> 
 
+	* gtk-gui/MonoDevelop.SourceEditor.SearchAndReplaceWidget.cs,
+	  MonoDevelop.SourceEditor/SearchAndReplaceWidget.cs,
+	  MonoDevelop.SourceEditor/SearchWidget.cs: implemented Bug 383067 -
+	  Find/Replace Bar in managed editor should support regular
+	  expression find/replace
+
+2008-05-06  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.SourceEditor/SourceEditorWidget.cs,
 	  MonoDevelop.SourceEditor/SearchWidget.cs: Worked on regex search.
 
