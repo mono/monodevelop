@@ -45,71 +45,11 @@ namespace Mono.TextEditor
 		bool IsValidPattern (string pattern, out string error);
 		bool IsMatchAt (int offset);
 		bool IsMatchAt (int offset, int length);
+		SearchResult GetMatchAt (int offset);
+		SearchResult GetMatchAt (int offset, int length);
 		
 		SearchResult SearchForward (int fromOffset);
 		SearchResult SearchBackward (int fromOffset);
-	}
-	
-	public class BasicSearchEngine : AbstractSearchEngine
-	{
-		string compiledPattern = "";
-		public override void CompilePattern ()
-		{
-			compiledPattern = data.IsCaseSensitive ? SearchPattern : SearchPattern.ToUpper ();
-		}
-		
-		public override bool IsValidPattern (string pattern, out string error)
-		{
-			error = "";
-			return pattern != null;
-		}
-		
-		public override bool IsMatchAt (int offset, int length)
-		{
-			return IsMatchAt (offset) && compiledPattern.Length == length;
-		}
-		
-		public override bool IsMatchAt (int offset)
-		{
-			if (offset + SearchPattern.Length <= data.Document.Length && compiledPattern.Length > 0) {
-				if (data.IsCaseSensitive) {
-					for (int i = 0; i < compiledPattern.Length; i++) {
-						if (data.Document.GetCharAt (offset + i) != compiledPattern[i]) 
-							return false;
-					}
-				} else {
-					for (int i = 0; i < compiledPattern.Length; i++) {
-						if (System.Char.ToUpper (data.Document.GetCharAt (offset + i)) != compiledPattern[i]) 
-							return false;
-					}
-				}
-				if (data.IsWholeWordOnly) {
-					return data.Document.IsWholeWordAt (offset, compiledPattern.Length);
-				}
-				return true;
-			}
-			return false;
-		}
-		
-		public override SearchResult SearchForward (int fromOffset)
-		{
-			for (int i = 0; i < data.Document.Length - this.SearchPattern.Length; i++) {
-				int offset = (fromOffset + i) % data.Document.Length;
-				if (IsMatchAt (offset))
-					return new SearchResult (offset, this.SearchPattern.Length, offset < fromOffset);
-			}
-			return null;
-		}
-		
-		public override SearchResult SearchBackward (int fromOffset)
-		{
-			for (int i = 0; i < data.Document.Length - this.SearchPattern.Length; i++) {
-				int offset = (fromOffset + data.Document.Length * 2 - 1- i) % data.Document.Length;
-				if (IsMatchAt (offset))
-					return new SearchResult (offset, this.SearchPattern.Length, offset > fromOffset);
-			}
-			return null;
-		}
 	}
 	
 	public abstract class AbstractSearchEngine : ISearchEngine
@@ -136,14 +76,92 @@ namespace Mono.TextEditor
 			}
 		}
 		
+		public bool IsMatchAt (int offset)
+		{
+			return GetMatchAt (offset) != null;
+		}
+		
+		public bool IsMatchAt (int offset, int length)
+		{
+			return GetMatchAt (offset, length) != null;
+		}
+		
 		public abstract void CompilePattern ();
 		
 		public abstract bool IsValidPattern (string pattern, out string error);
-		public abstract bool IsMatchAt (int offset);
-		public abstract bool IsMatchAt (int offset, int length);
+		public abstract SearchResult GetMatchAt (int offset);
+		public abstract SearchResult GetMatchAt (int offset, int length);
 		
 		public abstract SearchResult SearchForward (int fromOffset);
 		public abstract SearchResult SearchBackward (int fromOffset);
+	}
+	
+	public class BasicSearchEngine : AbstractSearchEngine
+	{
+		string compiledPattern = "";
+		public override void CompilePattern ()
+		{
+			compiledPattern = data.IsCaseSensitive ? SearchPattern : SearchPattern.ToUpper ();
+		}
+		
+		public override bool IsValidPattern (string pattern, out string error)
+		{
+			error = "";
+			return pattern != null;
+		}
+		
+		public override SearchResult GetMatchAt (int offset, int length)
+		{
+			if (compiledPattern.Length == length) {
+				SearchResult match = GetMatchAt (offset);
+				if (match != null)
+					return match;
+			}
+			return null;
+		}
+		
+		public override SearchResult GetMatchAt (int offset)
+		{
+			if (offset + SearchPattern.Length <= data.Document.Length && compiledPattern.Length > 0) {
+				if (data.IsCaseSensitive) {
+					for (int i = 0; i < compiledPattern.Length; i++) {
+						if (data.Document.GetCharAt (offset + i) != compiledPattern[i]) 
+							return null;
+					}
+				} else {
+					for (int i = 0; i < compiledPattern.Length; i++) {
+						if (System.Char.ToUpper (data.Document.GetCharAt (offset + i)) != compiledPattern[i]) 
+							return null;
+					}
+				}
+				if (data.IsWholeWordOnly) {
+					if (!data.Document.IsWholeWordAt (offset, compiledPattern.Length))
+						return null;
+				}
+				return new SearchResult (offset, compiledPattern.Length, false);
+			}
+			return null;
+		}
+		
+		public override SearchResult SearchForward (int fromOffset)
+		{
+			for (int i = 0; i < data.Document.Length - this.SearchPattern.Length; i++) {
+				int offset = (fromOffset + i) % data.Document.Length;
+				if (IsMatchAt (offset))
+					return new SearchResult (offset, this.SearchPattern.Length, offset < fromOffset);
+			}
+			return null;
+		}
+		
+		public override SearchResult SearchBackward (int fromOffset)
+		{
+			for (int i = 0; i < data.Document.Length - this.SearchPattern.Length; i++) {
+				int offset = (fromOffset + data.Document.Length * 2 - 1- i) % data.Document.Length;
+				if (IsMatchAt (offset))
+					return new SearchResult (offset, this.SearchPattern.Length, offset > fromOffset);
+			}
+			return null;
+		}
 	}
 	
 	public class RegexSearchEngine : AbstractSearchEngine
@@ -152,7 +170,11 @@ namespace Mono.TextEditor
 		
 		public override void CompilePattern ()
 		{
-			regex = new Regex (this.searchPattern, RegexOptions.Compiled);
+			try {
+				regex = new Regex (this.searchPattern, RegexOptions.Compiled);
+			} catch (Exception) {
+				regex = null;
+			}
 		}
 		
 		public override bool IsValidPattern (string pattern, out string error)
@@ -167,20 +189,32 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		public override bool IsMatchAt (int offset)
+		public override SearchResult GetMatchAt (int offset)
 		{
+			if (regex == null || String.IsNullOrEmpty (this.searchPattern))
+				return null;
 			System.Text.RegularExpressions.Match match = regex.Match (data.Document.Text, offset);
-			return match != null && match.Success && match.Index == offset;
+			if (match != null && match.Success && match.Index == offset) {
+				return new SearchResult (offset, match.Length, false);
+			}
+			return null;
 		}
 		
-		public override bool IsMatchAt (int offset, int length)
+		public override SearchResult GetMatchAt (int offset, int length)
 		{
+			if (regex == null || String.IsNullOrEmpty (this.searchPattern))
+				return null;
 			System.Text.RegularExpressions.Match match = regex.Match (data.Document.Text, offset, length);
-			return match != null && match.Success && match.Index == offset;
+			if (match != null && match.Success && match.Index == offset) {
+				return new SearchResult (offset, match.Length, false);
+			}
+			return null;
 		}
 		
 		public override SearchResult SearchForward (int fromOffset)
 		{
+			if (regex == null)
+				return null;
 			System.Text.RegularExpressions.Match match = regex.Match (data.Document.Text, fromOffset);
 			if (match.Success) {
 				return new SearchResult (match.Index, 
@@ -193,8 +227,27 @@ namespace Mono.TextEditor
 			}
 			return null;
 		}
+		
 		public override SearchResult SearchBackward (int fromOffset)
 		{
+			if (regex == null)
+				return null;
+			System.Text.RegularExpressions.Match found = null; 
+			System.Text.RegularExpressions.Match last = null; 
+			foreach (System.Text.RegularExpressions.Match match in regex.Matches (data.Document.Text)) {
+				if (match.Index < fromOffset) {
+					found = match;
+				}
+				last = match;
+			}
+			bool wrapped = false;
+			if (found == null) {
+				found = last;
+				wrapped = true;
+			}
+			if (found != null) {
+				return new SearchResult (found.Index, found.Length, wrapped);
+			}
 			return null;
 		}
 	}

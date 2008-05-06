@@ -431,6 +431,11 @@ namespace Mono.TextEditor
 		{
 			return searchEngine.IsMatchAt (offset);
 		}
+		
+		public SearchResult GetMatchAt (int offset)
+		{
+			return searchEngine.GetMatchAt (offset);
+		}
 			
 		public SearchResult SearchForward (int fromOffset)
 		{

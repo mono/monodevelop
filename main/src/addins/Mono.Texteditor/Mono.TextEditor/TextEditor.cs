@@ -1051,6 +1051,17 @@ namespace Mono.TextEditor
 			}
 		}
 		
+		public ISearchEngine SearchEngine {
+			get {
+				return this.textEditorData.SearchEngine;
+			}
+			set {
+				Debug.Assert (value != null);
+				this.textEditorData.SearchEngine = value;
+				this.QueueDraw ();
+			}
+		}
+		
 		public bool HighlightSearchPattern {
 			get {
 				return highlightSearchPattern;

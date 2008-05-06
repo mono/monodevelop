@@ -868,8 +868,9 @@ namespace Mono.TextEditor
 			selectedRegions.Clear ();
 			if (textEditor.HighlightSearchPattern) {
 				for (int i = line.Offset; i < line.EndOffset; i++) {
-					if (this.textEditor.GetTextEditorData ().IsMatchAt (i))
-						selectedRegions.Add (new Segment (i, textEditor.SearchPattern.Length));
+					SearchResult result = this.textEditor.GetTextEditorData ().GetMatchAt (i);
+					if (result != null) 
+						selectedRegions.Add (new Segment (i, result.Length));
 				}
 			}
 			
