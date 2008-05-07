@@ -47,7 +47,7 @@ namespace MonoDevelop.SourceEditor
 {	
 	public class SourceEditorView : AbstractViewContent, IExtensibleTextEditor, IBookmarkBuffer, IClipboardHandler, 
 		ICompletionWidget, IDocumentInformation, ICodeStyleOperations, ISplittable, IFoldable, IToolboxDynamicProvider, 
-		IToolboxConsumer, IZoomable
+		ICustomFilteringToolboxConsumer, IZoomable
 #if GNOME_PRINT
 		, IPrintable
 #endif
@@ -1189,28 +1189,64 @@ namespace MonoDevelop.SourceEditor
 		
 		void IToolboxConsumer.ConsumeItem (ItemToolboxNode item)
 		{
-			TextToolboxNode textNode = item as TextToolboxNode;
-			if (textNode == null)
+			string text = GetText (item);
+			if (string.IsNullOrEmpty (text))
 				return;
-			TextEditor.InsertAtCaret (textNode.Text);
+			TextEditor.InsertAtCaret (text);
 			TextEditor.GrabFocus ();
 		}
 		
 		void IToolboxConsumer.DragItem (ItemToolboxNode item, Gtk.Widget source, Gdk.DragContext ctx)
 		{
-			TextToolboxNode textNode = item as TextToolboxNode;
-			if (textNode == null)
+			string text = GetText (item);
+			if (string.IsNullOrEmpty (text))
 				return;
-			TextEditor.BeginDrag (textNode.Text, source, ctx);
+			TextEditor.BeginDrag (text, source, ctx);
+		}
+		
+		string GetText (ItemToolboxNode item)
+		{
+			ITextToolboxNode tn = item as ITextToolboxNode;
+			if (tn == null) {
+				LoggingService.LogWarning ("Cannot use non-ITextToolboxNode toolbox items in the text editor.");
+				return null;
+			}
+			string filename = this.IsUntitled ? UntitledName : ContentName;
+			return tn.GetTextForFile (filename, this.Project);
 		}
 		
 		System.ComponentModel.ToolboxItemFilterAttribute[] IToolboxConsumer.ToolboxFilterAttributes {
 			get {
-				return new System.ComponentModel.ToolboxItemFilterAttribute[] {
-					
-				};
+				return new System.ComponentModel.ToolboxItemFilterAttribute[] {};
 			}
 		}
+			
+		bool ICustomFilteringToolboxConsumer.SupportsItem (ItemToolboxNode item)
+		{
+			ITextToolboxNode textNode = item as ITextToolboxNode;
+			if (textNode == null)
+				return false;
+			
+			string filename = this.IsUntitled ? UntitledName : ContentName;
+			int i = filename.LastIndexOf ('.');
+			string ext = i < 0? null : filename.Substring (i + 1);
+			
+			if (textNode.AllowedExtensions != null)
+				foreach (string s in textNode.AllowedExtensions)
+					if (s == ext || s == "*")
+						return true;
+			
+			//FIXME: cache mimetypes before enabling this
+//			if (textNode.AllowedMimetypes != null) {
+//				string mime = MonoDevelop.Core.Gui.Services.PlatformService.GetMimeTypeForUri (filename);
+//				foreach (string s in textNode.AllowedMimetypes)
+//					if (s == mime || s == "text/plain")
+//						return true;
+//			}
+			return false;
+		}
+
+		
 		public Gtk.TargetEntry[] DragTargets { 
 			get {
 				return (Gtk.TargetEntry[])CopyAction.TargetList;

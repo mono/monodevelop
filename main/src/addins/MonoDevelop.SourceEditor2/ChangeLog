@@ -1,3 +1,8 @@
+2008-05-07  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.SourceEditor/SourceEditorView.cs: Enable support for
+	  ITextToolboxNodes.
+
 2008-05-06  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.SourceEditor/ExtendibleTextEditor.cs: Trap and report
