@@ -1,5 +1,10 @@
 2008-05-07  Mike Krüger <mkrueger@novell.com> 
 
+	* Mono.TextEditor/TextEditorData.cs, Mono.TextEditor/ISearchEngine.cs:
+	  implemented replace regex groups.
+
+2008-05-07  Mike Krüger <mkrueger@novell.com> 
+
 	* Mono.TextEditor/TextEditor.cs: fixed Bug 387321 - Crash when Select
 	  All + Copy + Select All + Paste.
 

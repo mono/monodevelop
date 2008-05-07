@@ -45,11 +45,14 @@ namespace Mono.TextEditor
 		bool IsValidPattern (string pattern, out string error);
 		bool IsMatchAt (int offset);
 		bool IsMatchAt (int offset, int length);
+		
 		SearchResult GetMatchAt (int offset);
 		SearchResult GetMatchAt (int offset, int length);
 		
 		SearchResult SearchForward (int fromOffset);
 		SearchResult SearchBackward (int fromOffset);
+		
+		void Replace (SearchResult result, string pattern);
 	}
 	
 	public abstract class AbstractSearchEngine : ISearchEngine
@@ -94,6 +97,7 @@ namespace Mono.TextEditor
 		
 		public abstract SearchResult SearchForward (int fromOffset);
 		public abstract SearchResult SearchBackward (int fromOffset);
+		public abstract void Replace (SearchResult result, string pattern);
 	}
 	
 	public class BasicSearchEngine : AbstractSearchEngine
@@ -161,6 +165,11 @@ namespace Mono.TextEditor
 					return new SearchResult (offset, this.SearchPattern.Length, offset > fromOffset);
 			}
 			return null;
+		}
+		
+		public override void Replace (SearchResult result, string pattern)
+		{
+			data.Document.Replace (result.Offset, result.Length, pattern);
 		}
 	}
 	
@@ -245,11 +254,19 @@ namespace Mono.TextEditor
 				found = last;
 				wrapped = true;
 			}
+			
 			if (found != null) {
 				return new SearchResult (found.Index, found.Length, wrapped);
 			}
 			return null;
 		}
+		
+		public override void Replace (SearchResult result, string pattern)
+		{
+			string text = data.Document.GetTextAt (result);
+			data.Document.Replace (result.Offset, result.Length, regex.Replace (text, pattern));
+		}
+		
 	}
 	
 }

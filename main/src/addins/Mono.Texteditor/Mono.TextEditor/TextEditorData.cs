@@ -286,7 +286,7 @@ namespace Mono.TextEditor
 				ISegment selection = this.SelectionRange;
 				Document.Replace (selection.Offset, selection.Length, value);
 				if (this.Caret.Offset > selection.Offset)
-					this.Caret.Offset   = selection.Offset + value.Length;
+					this.Caret.Offset = selection.Offset + value.Length;
 				this.SelectionRange = new Segment(selection.Offset, value.Length);
 			}
 		}
@@ -483,9 +483,11 @@ namespace Mono.TextEditor
 			bool result = false;
 			if (this.IsSomethingSelected) {
 				ISegment selection = this.SelectionRange;
-				if (searchEngine.IsMatchAt (selection.Offset, selection.Length)) {
-					SelectedText = withPattern;
+				SearchResult match = searchEngine.GetMatchAt (selection.Offset, selection.Length);
+				if (match != null) {
+					searchEngine.Replace (match, withPattern);
 					ClearSelection ();
+					Caret.Offset = selection.Offset + withPattern.Length;
 					result = true;
 				}
 			}
@@ -502,7 +504,7 @@ namespace Mono.TextEditor
 				searchResult = SearchForward (offset);
 				if (searchResult == null || searchResult.SearchWrapped)
 					break;
-				Document.Replace (searchResult.Offset, searchResult.Length, withPattern);
+				searchEngine.Replace (searchResult, withPattern);
 				offset = searchResult.EndOffset;
 				result++;
 			}
