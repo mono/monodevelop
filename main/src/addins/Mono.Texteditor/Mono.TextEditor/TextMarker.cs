@@ -107,6 +107,28 @@ namespace Mono.TextEditor
 		}
 	}
 	
+	/// <summary>
+	/// A specialized text marker interface to draw icons in the bookmark margin.
+	/// </summary>
+	public interface IIconBarMarker
+	{
+		void DrawIcon (TextEditor editor, Gdk.Drawable win, LineSegment line, int lineNumber, int xPos, int yPos);
+	}
+	
+	/// <summary>
+	/// A specialized interface to draw text backgrounds.
+	/// </summary>
+	public interface IBackgroundMarker
+	{
+		/// <summary>
+		/// Draws the backround of a line part.
+		/// </summary>
+		/// <returns>
+		/// true, when the text view should draw the text, false when the text view should not draw the text.
+		/// </returns>
+		bool DrawBackground (TextEditor editor, Gdk.Drawable win, bool selected, int startOffset, int endOffset, int y, int startXPos, int endXPos);
+	}
+	
 	public class TextMarker
 	{
 		LineSegment lineSegment;
@@ -118,23 +140,6 @@ namespace Mono.TextEditor
 			set {
 				lineSegment = value;
 			}
-		}
-		
-		public virtual bool CanDrawBackground {
-			get {
-				return false;
-			}
-		}
-		
-		/// <summary>
-		/// Draws the backround of a line part.
-		/// </summary>
-		/// <returns>
-		/// true, when the text view should draw the text, false when the text view should not draw the text.
-		/// </returns>
-		public virtual bool DrawBackground (TextEditor editor, Gdk.Drawable win, bool selected, int startOffset, int endOffset, int y, int startXPos, int endXPos)
-		{
-			return true;
 		}
 		
 		public virtual void Draw (TextEditor editor, Gdk.Drawable win, bool selected, int startOffset, int endOffset, int y, int startXPos, int endXPos)

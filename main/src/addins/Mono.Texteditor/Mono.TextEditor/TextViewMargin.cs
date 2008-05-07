@@ -310,10 +310,11 @@ namespace Mono.TextEditor
 				
 			if (line.Markers != null) {
 				foreach (TextMarker marker in line.Markers)  {
-					if (!marker.CanDrawBackground)
+					IBackgroundMarker bgMarker = marker as IBackgroundMarker;
+					if (bgMarker == null) 
 						continue;
 					drawBg = false;
-					drawText &= marker.DrawBackground (textEditor, win, selected, startOffset, curOffset, y, oldxPos, oldxPos + xPos);
+					drawText &= bgMarker.DrawBackground (textEditor, win, selected, startOffset, curOffset, y, oldxPos, oldxPos + xPos);
 				}
 			}
 			if (drawText) {
@@ -395,10 +396,11 @@ namespace Mono.TextEditor
 					bool drawBg   = true;
 					if (line.Markers != null) {
 						foreach (TextMarker marker in line.Markers)  {
-							if (!marker.CanDrawBackground)
+							IBackgroundMarker bgMarker = marker as IBackgroundMarker;
+							if (bgMarker == null) 
 								continue;
 							drawBg = false;
-							drawText &= marker.DrawBackground (textEditor, win, selected, offset, offset + 1, y, xPos, xPos + charWidth);
+							drawText &= bgMarker.DrawBackground (textEditor, win, selected, offset, offset + 1, y, xPos, xPos + charWidth);
 						}
 					}
 					if (drawText) {
@@ -427,10 +429,11 @@ namespace Mono.TextEditor
 					bool drawBg   = true;
 					if (line.Markers != null) {
 						foreach (TextMarker marker in line.Markers)  {
-							if (!marker.CanDrawBackground)
+							IBackgroundMarker bgMarker = marker as IBackgroundMarker;
+							if (bgMarker == null) 
 								continue;
 							drawBg = false;
-							drawText &= marker.DrawBackground (textEditor, win, selected, offset, offset + 1, y, xPos, xPos + charWidth);
+							drawText &= bgMarker.DrawBackground (textEditor, win, selected, offset, offset + 1, y, xPos, xPos + charWidth);
 						}
 					}
 					if (drawText) {
@@ -459,10 +462,11 @@ namespace Mono.TextEditor
 					bool drawBg   = true;
 					if (line.Markers != null) {
 						foreach (TextMarker marker in line.Markers)  {
-							if (!marker.CanDrawBackground)
+							IBackgroundMarker bgMarker = marker as IBackgroundMarker;
+							if (bgMarker == null) 
 								continue;
 							drawBg = false;
-							drawText &= marker.DrawBackground (textEditor, win, selected, offset, offset + 1, y, xPos, xPos + charWidth);
+							drawText &= bgMarker.DrawBackground (textEditor, win, selected, offset, offset + 1, y, xPos, xPos + charWidth);
 						}
 					}
 					if (drawText) {

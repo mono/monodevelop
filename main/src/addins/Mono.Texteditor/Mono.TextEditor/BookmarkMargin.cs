@@ -146,6 +146,7 @@ namespace Mono.TextEditor
 			win.DrawLine (seperatorGC, x + Width - 1, drawArea.Top, x + Width - 1, drawArea.Bottom);
 			if (line < editor.Document.LineCount) {
 				LineSegment lineSegment = editor.Document.GetLine (line);
+				
 				if (lineSegment.IsBookmarked) {
 					Cairo.Context cr = Gdk.CairoHelper.Create (win);
 					DrawRoundRectangle (cr, x + 1, y + 1, 8, Width - 4, editor.LineHeight - 4);
@@ -161,6 +162,11 @@ namespace Mono.TextEditor
 					cr.Pattern = pat;
 					cr.Stroke ();
 					((IDisposable)cr).Dispose();
+				}
+				
+				foreach (TextMarker marker in lineSegment.Markers) {
+					if (marker is IIconBarMarker) 
+						((IIconBarMarker)marker).DrawIcon (editor, win, lineSegment, line, x, y);
 				}
 			}
 		}
