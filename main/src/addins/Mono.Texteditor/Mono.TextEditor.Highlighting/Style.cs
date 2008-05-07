@@ -245,6 +245,7 @@ namespace Mono.TextEditor.Highlighting
 			bookmarkColor1 = new Gdk.Color (255, 255, 255);
 			bookmarkColor2 = new Gdk.Color (105, 156, 235);
 			
+			SetStyle ("default", new Mono.TextEditor.ChunkStyle (def, false, false));
 			SetStyle ("comment", new Mono.TextEditor.ChunkStyle (new Gdk.Color (0, 0, 255), false, false));
 			SetStyle ("altcomment", new Mono.TextEditor.ChunkStyle (new Gdk.Color (128, 128, 128), true, false));
 			SetStyle ("todocomment", new Mono.TextEditor.ChunkStyle (new Gdk.Color (0, 0, 255), true, false));
@@ -355,6 +356,7 @@ namespace Mono.TextEditor.Highlighting
 			switch (name) {
 			case "default":
 				this.def = color;
+				SetStyle ("default", new Mono.TextEditor.ChunkStyle (color, false, false));
 				break;
 			case "caret":
 				this.caret = color;

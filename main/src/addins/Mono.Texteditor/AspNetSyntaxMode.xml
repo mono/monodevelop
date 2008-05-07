@@ -23,6 +23,81 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE. -->
  
-<SyntaxMode name = "Asp.Net" mimeTypes="application/x-aspx;application/x-ashx;application/x-ascx" extends="application/xml">
+<SyntaxMode name = "Asp.Net" mimeTypes="application/x-aspx;application/x-ashx;application/x-ascx">
+	<!-- directives -->
+	<Span color = "kw:literals" rule = "InTag">
+		<Begin>&lt;%@</Begin>
+		<End>%&gt;</End>
+	</Span>
 	
+	<!-- expressions -->
+	<Span color = "kw:literals" constraint="!@" >
+		<Begin>&lt;%</Begin>
+		<End>%&gt;</End>
+	</Span>
+	
+	<Span color = "comment" stopateol = "false" >
+		<Begin>&lt;!--</Begin>
+		<End>--&gt;</End>
+	</Span>
+	
+	<!-- entities -->
+	<Span color = "preprocessor">
+		<Begin>&amp;</Begin>
+		<End>;</End>
+	</Span>
+	
+	<!-- CDATA section -->
+	<Span tagColor = "kw:declarations" color="default">
+		<Begin>&lt;![CDATA[</Begin>
+		<End>]]&gt;</End>
+	</Span>
+	
+	<!-- processing instructions -->
+	<Span tagColor = "kw:declarations" color = "markup" rule = "InTag">
+		<Begin>&lt;?</Begin>
+		<End>?&gt;</End>
+	</Span>
+	
+	<!-- tags -->
+	<Span color = "markup" rule = "InTag" constraint="!!" >
+		<Begin>&lt;</Begin>
+		<End>&gt;</End>
+	</Span>
+	
+	<!-- tag definitions -->
+	<Rule name = "InTag">
+		<Span color = "literal" rule="InLiteral">
+			<Begin>&quot;</Begin>
+			<End>&quot;</End>
+		</Span>
+		
+		<Span color = "literal" rule="InLiteral">
+			<Begin>&apos;</Begin>
+			<End>&apos;</End>
+		</Span>
+		
+		<!-- attributes -->
+		<Match color = "kw:types">[A-Za-z0-9]*[\s\n\r]*=</Match>
+		
+		<!-- expressions -->
+		<Span color = "kw:literals" constraint="!@" >
+			<Begin>&lt;%</Begin>
+			<End>%&gt;</End>
+		</Span>
+	</Rule>
+	
+	<Rule name = "InLiteral">
+		<!-- entities -->
+		<Span color = "preprocessor">
+			<Begin>&amp;</Begin>
+			<End>;</End>
+		</Span>
+		
+		<!-- expressions -->
+		<Span color = "kw:literals" constraint="!@" >
+			<Begin>&lt;%</Begin>
+			<End>%&gt;</End>
+		</Span>
+	</Rule>
 </SyntaxMode>

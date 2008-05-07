@@ -349,10 +349,13 @@ namespace Mono.TextEditor
 		
 		void IMCommit (object sender, Gtk.CommitArgs ca)
 		{
-			if (IsRealized && IsFocus)
-				foreach (char ch in ca.Str)
-					OnIMProcessedKeyPressEvent (lastIMEvent, ch);
-			ResetIMContext ();
+			try {
+				if (IsRealized && IsFocus)
+					foreach (char ch in ca.Str)
+						OnIMProcessedKeyPressEvent (lastIMEvent, ch);
+			} finally {
+				ResetIMContext ();
+			}
 		}
 		
 		protected override bool OnFocusInEvent (EventFocus evnt)

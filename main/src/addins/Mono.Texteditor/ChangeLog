@@ -1,3 +1,12 @@
+2008-05-06  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* Mono.TextEditor/TextEditor.cs: Reset the IMContext even when there's
+	  an exception during a commit.
+	* AspNetSyntaxMode.xml, XmlSyntaxMode.xml: Improve highlighting
+	  schemes.
+	* Mono.TextEditor.Highlighting/Style.cs: Allow highlighting schemes to
+	  access the "default" colour.
+
 2008-05-06  Mike Krüger <mkrueger@novell.com> 
 
 	* Mono.TextEditor/TextViewMargin.cs, Mono.TextEditor/TextMarker.cs:
