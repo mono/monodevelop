@@ -852,15 +852,20 @@ namespace Mono.TextEditor
 					this.textEditorData.VAdjustment.Value = 0;
 			}
 			if (longestLine != null && this.textEditorData.HAdjustment != null) {
-				int maxX = this.TextViewMargin.GetWidth (this.Document.GetTextAt (this.longestLine)) + 10 * this.textViewMargin.CharWidth;
-				this.textEditorData.HAdjustment.SetBounds (0, 
-				                                           maxX, 
-				                                           this.textViewMargin.CharWidth,
-				                                           allocation.Width,
-				                                           allocation.Width);
-				if (maxX < allocation.Width) 
-					this.textEditorData.HAdjustment.Value = 0;
-				
+				LineSegment curLine = this.Document.GetLineByOffset (this.longestLine.Offset);
+				// check if the longestLine is still valid
+				if (curLine == null || curLine.Offset != this.longestLine.Offset || curLine.Length != this.longestLine.Length) {
+					longestLine = null;
+				} else {
+					int maxX = this.TextViewMargin.GetWidth (this.Document.GetTextAt (this.longestLine)) + 10 * this.textViewMargin.CharWidth;
+					this.textEditorData.HAdjustment.SetBounds (0, 
+					                                           maxX, 
+					                                           this.textViewMargin.CharWidth,
+					                                           allocation.Width,
+					                                           allocation.Width);
+					if (maxX < allocation.Width) 
+						this.textEditorData.HAdjustment.Value = 0;
+				}
 			}
 		}
 		

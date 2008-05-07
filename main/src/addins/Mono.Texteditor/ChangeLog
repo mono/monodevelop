@@ -1,3 +1,8 @@
+2008-05-07  Mike Krüger <mkrueger@novell.com> 
+
+	* Mono.TextEditor/TextEditor.cs: fixed Bug 387321 - Crash when Select
+	  All + Copy + Select All + Paste.
+
 2008-05-06  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* Mono.TextEditor/TextEditor.cs: Reset the IMContext even when there's
