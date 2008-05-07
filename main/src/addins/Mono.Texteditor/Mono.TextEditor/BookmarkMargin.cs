@@ -168,7 +168,69 @@ namespace Mono.TextEditor
 					if (marker is IIconBarMarker) 
 						((IIconBarMarker)marker).DrawIcon (editor, win, lineSegment, line, x, y);
 				}
+				if (DrawEvent != null) 
+					DrawEvent (this, new BookmarkMarginDrawEventArgs (editor, win, lineSegment, line, x, y));
+				
+			}
+			
+		}
+		
+		public EventHandler<BookmarkMarginDrawEventArgs> DrawEvent;
+	}
+	
+	public class BookmarkMarginDrawEventArgs : EventArgs
+	{
+		TextEditor editor;
+		Gdk.Drawable win;
+		LineSegment lineSegment;
+		int line;
+		int x;
+		int y;
+		
+		public TextEditor Editor {
+			get {
+				return editor;
 			}
 		}
+
+		public Drawable Win {
+			get {
+				return win;
+			}
+		}
+
+		public int Line {
+			get {
+				return line;
+			}
+		}
+
+		public int X {
+			get {
+				return x;
+			}
+		}
+
+		public int Y {
+			get {
+				return y;
+			}
+		}
+
+		public LineSegment LineSegment {
+			get {
+				return lineSegment;
+			}
+		}
+		public BookmarkMarginDrawEventArgs (TextEditor editor, Gdk.Drawable win, LineSegment line, int lineNumber, int xPos, int yPos)
+		{
+			this.editor = editor;
+			this.win    = win;
+			this.lineSegment = line;
+			this.line   = lineNumber;
+			this.x      = x;
+			this.y      = y;
+		}
 	}
+	
 }

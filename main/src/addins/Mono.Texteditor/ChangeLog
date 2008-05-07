@@ -1,5 +1,10 @@
 2008-05-07  Mike Krüger <mkrueger@novell.com> 
 
+	* Mono.TextEditor/BookmarkMargin.cs: Bookmark margin now exposes it's
+	  draw event.
+
+2008-05-07  Mike Krüger <mkrueger@novell.com> 
+
 	* Mono.TextEditor/TextViewMargin.cs, Mono.TextEditor/TextMarker.cs,
 	  Mono.TextEditor/BookmarkMargin.cs: Worked on text markers.
 
