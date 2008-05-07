@@ -6,6 +6,7 @@
 //   Michael Hutchinson <m.j.hutchinson@gmail.com>
 //
 // Copyright (C) 2006 Michael Hutchinson
+// Copyright (C) 2008 Novell, Inc (http://www.novell.com)
 //
 //
 // This source code is licenced under The MIT License:
@@ -39,7 +40,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 {
 	
 	
-	public class ToolboxItemToolboxLoader : IToolboxLoader
+	public abstract class ToolboxItemToolboxLoader : IToolboxLoader
 	{
 		static string[] fileTypes = new string[] {"dll"};
 		bool initialized;
@@ -59,72 +60,55 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			return Load (scanAssem);
 		}
 		
-		public IList<ItemToolboxNode> Load (System.Reflection.Assembly assem)
+		public abstract IList<ItemToolboxNode> Load (System.Reflection.Assembly assem);
+		
+		protected IEnumerable<Type> AccessibleToolboxTypes (System.Reflection.Assembly assem)
 		{
 			if (!initialized) {
 				Gtk.Application.Init ();
 				initialized = true;
 			}
 			
-			List<ItemToolboxNode> nodes = new List<ItemToolboxNode> ();
-			
 			Type[] types = assem.GetTypes ();
 
 			foreach (Type t in types)
 			{
 				//skip inaccessible types
-				if (t.IsAbstract || t.IsNotPublic) continue;
-				if (t.GetConstructor (new Type[] {}) == null) continue;
+				if (t.IsAbstract || !t.IsPublic || !t.IsClass) continue;
+				
+				//note: toolbox items can create types with non-empty constructors
+				//if (t.GetConstructor (new Type[] {}) == null) continue;
 				
 				//get the ToolboxItemAttribute if present
-				AttributeCollection atts = TypeDescriptor.GetAttributes (t);
+				object[] atts = t.GetCustomAttributes (typeof (ToolboxItemAttribute), true);
+				if (atts == null || atts.Length == 0)
+					continue;
 				
-				bool containsAtt = false;
-				foreach (Attribute a in atts)
-					 if (a.GetType() == typeof (ToolboxItemAttribute))
-					 	containsAtt = true;
-				if (!containsAtt) continue;
-				
-				ToolboxItemAttribute tba = (ToolboxItemAttribute) atts[typeof(ToolboxItemAttribute)];
-				if (tba.Equals (ToolboxItemAttribute.None)) continue;
-				
-				Type toolboxItemType = (tba.ToolboxItemType == null) ? typeof (ToolboxItem) : tba.ToolboxItemType;				
-				//FIXME: fix WebControlToolboxItem so that this isn't necessary
-				if (typeof (System.Web.UI.Design.WebControlToolboxItem) == toolboxItemType)
-					toolboxItemType = typeof (ToolboxItem);
-				
-				//create the ToolboxItem. The ToolboxItemToolboxNode will destry it, but need to
-				//be able to extract data from it first.
-				ToolboxItem item = (ToolboxItem) Activator.CreateInstance (toolboxItemType, new object[] {t});
-				
-				ToolboxItemToolboxNode node = new ToolboxItemToolboxNode (item);
-				
-				//Technically CategoryAttribute shouldn't be used for this purpose (intended for properties in the PropertyGrid)
-				//but I can see no harm in doing this.
-				CategoryAttribute ca = atts[typeof(CategoryAttribute)] as CategoryAttribute;
-				node.Category = (ca != null)? ca.Category : "General";
-				
-				//FIXME: this shouldn't be hard coded, remove when we ship a default toolbox with categories predefined
-				if (t.IsSubclassOf (typeof (System.Web.UI.WebControls.BaseValidator)))
-					node.Category = "Validation";
-				else if (t.Namespace == "System.Web.UI.HtmlControls"  && t.IsSubclassOf (typeof (System.Web.UI.HtmlControls.HtmlControl)))
-					node.Category = "Html Elements";
-				else if (t.IsSubclassOf (typeof (System.Web.UI.WebControls.BaseDataList)))
-					node.Category = "Data Controls";
-				else if (t.IsSubclassOf (typeof (System.Web.UI.WebControls.WebControl)))
-					node.Category = "Web Controls";
-				
-				nodes.Add (node);
+				ToolboxItemAttribute tba = (ToolboxItemAttribute) atts[0];
+				if (!tba.Equals (ToolboxItemAttribute.None))
+					yield return t;
 			}
+		}
+		
+		//Technically CategoryAttribute shouldn't be used for this purpose (intended for properties in the PropertyGrid)
+		//but I can see no harm in doing this.
+		protected CategoryAttribute GetCategoryAttribute (Type type)
+		{
+			object[] atts = type.GetCustomAttributes (typeof (CategoryAttribute), true);
+			if (atts != null && atts.Length > 0)
+				return (CategoryAttribute)atts[0];
+			else
+				return null;
+		}
+		
+		protected void SetFullPath (TypeToolboxNode node, System.Reflection.Assembly assem)
+		{
 			
 			//if assembly wasn't loaded from the GAC, record the path too
 			if (!assem.GlobalAssemblyCache) {
 				string path = assem.Location;
-				foreach (TypeToolboxNode n in nodes)
-					n.Type.AssemblyLocation = path;
+					node.Type.AssemblyLocation = path;
 			}
-			
-			return (nodes);
 		}
 	}
 }

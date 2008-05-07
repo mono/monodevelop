@@ -58,4 +58,10 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		// when this consumer is active.
 		string DefaultItemDomain { get; }
 	}
+	
+	//allows consumer to fully override all filtering
+	public interface ICustomFilteringToolboxConsumer : IToolboxConsumer
+	{
+		bool SupportsItem (ItemToolboxNode item);
+	}
 }

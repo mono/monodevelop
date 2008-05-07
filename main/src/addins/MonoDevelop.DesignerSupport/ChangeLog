@@ -1,3 +1,28 @@
+2008-05-07  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.DesignerSupport.addin.xml: Removed default ToolboxItem
+	  loader.
+	* MonoDevelop.DesignerSupport.mdp, Makefile.am: Updated.
+	* MonoDevelop.DesignerSupport/ToolboxService.cs: Catch exceptions in
+	  drag handlers so that they don't prevent the drag from completing.
+	  Allow toolbox consumers to fully override filtering.
+	* MonoDevelop.DesignerSupport.Toolbox/IToolboxConsumer.cs: Add new
+	  ICustomFilteringToolboxConsumer interface for consumers that want
+	  to override the filtering completely.
+	* MonoDevelop.DesignerSupport.Toolbox/ItemToolboxNode.cs: Make
+	  ItemFilters generic.
+	* MonoDevelop.DesignerSupport.Toolbox/ToolboxItemToolboxNode.cs:
+	  Reqimplemented Equals. Fixes a NRE.
+	* MonoDevelop.DesignerSupport.Toolbox/TypeReference.cs: Add convenience
+	  method for getting a ProjectReference.
+	* MonoDevelop.DesignerSupport.Toolbox/TextToolboxNode.cs: Implement
+	  ITextToolboxNode.
+	* MonoDevelop.DesignerSupport.Toolbox/ToolboxItemToolboxLoader.cs: Make
+	  this a convenience base class.
+	* MonoDevelop.DesignerSupport.Toolbox/ITextToolboxNode.cs: Add
+	  interface for toolbox items that can provide text to a text editor,
+	  filtered by file extension or mimetype.
+
 2008-05-02  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.DesignerSupport/CodeBehindService.cs: Remove unneeded

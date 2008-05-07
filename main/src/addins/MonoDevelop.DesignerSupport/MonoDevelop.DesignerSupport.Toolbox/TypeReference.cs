@@ -40,11 +40,11 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 	{
 		//private serialisable fields
 		[ItemProperty ("location")]
-		string assemblyLocation = "";
+		string assemblyLocation = string.Empty;
 		[ItemProperty ("assembly")]
-		string assemblyName = "";
+		string assemblyName = string.Empty;
 		[ItemProperty ("name")]
-		string typeName = "";
+		string typeName = string.Empty;
 		
 		//for deserialisation
 		public TypeReference ()
@@ -136,6 +136,19 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			Type type = assem.GetType (typeName, true);
 			
 			return type;
+		}
+		
+		public MonoDevelop.Projects.ProjectReference GetProjectReference ()
+		{
+			if (string.IsNullOrEmpty (assemblyLocation)) {
+				return new MonoDevelop.Projects.ProjectReference (
+				    MonoDevelop.Projects.ReferenceType.Gac,
+				    assemblyName);
+			} else {
+				return new MonoDevelop.Projects.ProjectReference (
+				    MonoDevelop.Projects.ReferenceType.Assembly,
+				    assemblyLocation);
+			}
 		}
 	}
 }

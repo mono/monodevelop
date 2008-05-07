@@ -86,11 +86,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		
 		public override bool Equals (object obj)
 		{
-			ToolboxItemToolboxNode other = obj as ToolboxItemToolboxNode;
-			
-			return (other != null)
-			    && (this.toolboxItemType == null? other.toolboxItemType == null : this.toolboxItemType.Equals (other.toolboxItemType))
-		        && base.Equals (other);
+			return Equals (obj as ToolboxItemToolboxNode);
 		}
 		
 		public override int GetHashCode ()
@@ -104,7 +100,9 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		
 		public bool Equals (ToolboxItemToolboxNode other)
 		{
-			return (other != null) && (this.toolboxItemType.Equals (other.toolboxItemType)) && base.Equals (other);
+			return (other != null)
+			    && (this.toolboxItemType == null? other.toolboxItemType == null : this.toolboxItemType.Equals (other.toolboxItemType))
+		        && base.Equals (other);
 		}
 		
 		public ToolboxItem GetToolboxItem ()

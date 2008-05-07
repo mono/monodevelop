@@ -386,8 +386,17 @@ namespace MonoDevelop.DesignerSupport
 			if ((CurrentConsumer == null) || (selectedItem == null))
 				return;
 			
-			CurrentConsumer.DragItem (selectedItem, source, ctx);
-			OnToolboxUsed (CurrentConsumer, selectedItem);
+			try {
+				CurrentConsumer.DragItem (selectedItem, source, ctx);
+				OnToolboxUsed (CurrentConsumer, selectedItem);
+			} catch (Exception ex) {
+				MonoDevelop.Core.LoggingService.LogError ("Error dragging toolbox item.", ex);
+				//run this dialog on a timeout so it doesn't block the drag completing
+				GLib.Timeout.Add (100, delegate {
+					MonoDevelop.Core.Gui.MessageService.ShowException (ex, "Error dragging toolbox item.");
+					return false;
+				});
+			}
 		}
 		
 		#endregion
@@ -464,8 +473,11 @@ namespace MonoDevelop.DesignerSupport
 		
 		#region Filtering
 		
-		public virtual bool IsSupported (ItemToolboxNode node, IToolboxConsumer consumer)
+		public bool IsSupported (ItemToolboxNode node, IToolboxConsumer consumer)
 		{
+			if (consumer is ICustomFilteringToolboxConsumer)
+				return ((ICustomFilteringToolboxConsumer)consumer).SupportsItem (node);
+			
 			//if something has no filters it is more useful and efficient
 			//to show it for everything than to show it for nothing
 			if (node.ItemFilters == null || node.ItemFilters.Count == 0)
@@ -490,7 +502,8 @@ namespace MonoDevelop.DesignerSupport
 		}
 		
 		//evaluate a filter attribute against a list, and check whether permitted
-		private bool FilterPermitted (ItemToolboxNode node, ToolboxItemFilterAttribute desFa, ICollection filterAgainst, IToolboxConsumer consumer)
+		private bool FilterPermitted (ItemToolboxNode node, ToolboxItemFilterAttribute desFa, 
+		    ICollection<ToolboxItemFilterAttribute> filterAgainst, IToolboxConsumer consumer)
 		{
 			switch (desFa.FilterType) {
 				case ToolboxItemFilterType.Allow:

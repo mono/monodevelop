@@ -49,10 +49,6 @@
 		       class = "MonoDevelop.DesignerSupport.DesignerSupportService"/>
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/DesignerSupport/ToolboxLoaders">
-		<Class id="ToolboxItemLoader" class="MonoDevelop.DesignerSupport.Toolbox.ToolboxItemToolboxLoader"/>
-	</Extension>
-	
 	<Extension path = "/MonoDevelop/DesignerSupport/PropertyProviders" extension-nodes="Class">
 		<Class class = "MonoDevelop.DesignerSupport.Projects.ProjectItemPropertyProvider"/>
 		<Class class = "MonoDevelop.DesignerSupport.Projects.CombineEntryPropertyProvider"/>

@@ -29,17 +29,20 @@
  */
 
 using System;
+using System.ComponentModel;
 
 namespace MonoDevelop.DesignerSupport.Toolbox
 {
 	[Serializable]
-	public class TextToolboxNode : ItemToolboxNode
+	public class TextToolboxNode : ItemToolboxNode, ITextToolboxNode
 	{
 		private string text = "";
+		string domain = MonoDevelop.Core.GettextCatalog.GetString ("Text Snippets");
 		
 		public TextToolboxNode (string text)
 		{
 			Text = text;
+			ItemFilters.Add (new ToolboxItemFilterAttribute ("text/plain", ToolboxItemFilterType.Allow));
 		}
 		
 		public override bool Filter (string keyword)
@@ -52,5 +55,22 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			get { return text; }
 			set { text = value; }
 		}
-	}	
+		
+		public virtual string GetTextForFile (string path, MonoDevelop.Projects.Project project)
+		{
+			return text;
+		}
+		
+		public override string ItemDomain {
+			get { return domain; }
+		}
+
+		public virtual string[] AllowedMimetypes {
+			get { return new string[] { "text/plain" }; }
+		}
+
+		public string[] AllowedExtensions {
+			get { return new string[] { "*" }; }
+		}
+	}
 }

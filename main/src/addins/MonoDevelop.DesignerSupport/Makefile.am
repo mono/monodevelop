@@ -69,6 +69,7 @@ FILES =  \
 	MonoDevelop.DesignerSupport.Toolbox/CategoryToolboxNode.cs \
 	MonoDevelop.DesignerSupport.Toolbox/ComponentSelectorDialog.cs \
 	MonoDevelop.DesignerSupport.Toolbox/ItemToolboxNode.cs \
+	MonoDevelop.DesignerSupport.Toolbox/ITextToolboxNode.cs \
 	MonoDevelop.DesignerSupport.Toolbox/IToolboxConsumer.cs \
 	MonoDevelop.DesignerSupport.Toolbox/IToolboxLoader.cs \
 	MonoDevelop.DesignerSupport.Toolbox/IToolboxProvider.cs \

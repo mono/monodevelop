@@ -105,6 +105,7 @@
     <File name="MonoDevelop.DesignerSupport/DocumentOutlinePad.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.DesignerSupport/IOutlinedDocument.cs" subtype="Code" buildaction="Compile" />
     <File name="icons/pad-document-outline-16.png" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="MonoDevelop.DesignerSupport.Toolbox/ITextToolboxNode.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="False" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />

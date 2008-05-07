@@ -89,7 +89,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		}
 		
 		//collection of ToolboxItemFilterAttribute
-		public virtual IList ItemFilters {
+		public virtual IList<ToolboxItemFilterAttribute> ItemFilters {
 			get { return itemFilters; }
 		}
 		
