@@ -1,5 +1,10 @@
 2008-05-07  Michael Hutchinson <mhutchinson@novell.com> 
 
+	* MonoDevelop.DesignerSupport.Toolbox/ToolboxWidget.cs: Use tooltip
+	  window base class.
+
+2008-05-07  Michael Hutchinson <mhutchinson@novell.com> 
+
 	* MonoDevelop.DesignerSupport.addin.xml: Removed default ToolboxItem
 	  loader.
 	* MonoDevelop.DesignerSupport.mdp, Makefile.am: Updated.

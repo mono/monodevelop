@@ -139,6 +139,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		
 		public override void Dispose ()
 		{
+			HideTooltipWindow ();
 			if (this.layout != null) {
 				this.layout.Dispose ();
 				this.layout = null;
@@ -379,6 +380,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		protected override bool OnButtonPressEvent (Gdk.EventButton e)
 		{
 			this.GrabFocus ();
+			HideTooltipWindow ();
 			if (this.mouseOverItem is Category) {
 				if (e.Button == 1) {
 					Category mouseOverCateogry = (Category)this.mouseOverItem;
@@ -756,7 +758,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			}
 		}
 		
-		public class CustomTooltipWindow : Gtk.Window
+		class CustomTooltipWindow : MonoDevelop.Projects.Gui.Completion.TooltipWindow
 		{
 			string tooltip;
 			public string Tooltip {
@@ -770,9 +772,8 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			}
 			
 			Label label = new Label ();
-			public CustomTooltipWindow () : base (Gtk.WindowType.Popup)
+			public CustomTooltipWindow ()
 			{
-				Name = "gtk-tooltips";
 				label.Xalign = 0;
 				label.Xpad = 3;
 				label.Ypad = 3;
@@ -786,19 +787,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 					label = null;
 				}
 				base.Dispose ();
-			}
-			
-			protected override bool OnExposeEvent (Gdk.EventExpose ev)
-			{
-				base.OnExposeEvent (ev);
-				Gtk.Requisition req = SizeRequest ();
-				Gtk.Style.PaintFlatBox (this.Style, 
-				                        this.GdkWindow, 
-				                        Gtk.StateType.Normal, 
-				                        Gtk.ShadowType.Out, 
-				                        Gdk.Rectangle.Zero, 
-				                        this, "tooltip", 0, 0, req.Width, req.Height);
-				return true;
 			}
 		}
 		#endregion
