@@ -1,3 +1,7 @@
+2008-05-07  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.GtkCore.GuiBuilder/ToolboxProvider.cs: Track API.
+
 2008-04-30  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.GtkCore.addin.xml, MonoDevelop.GtkCore.mdp, gtk-gui,

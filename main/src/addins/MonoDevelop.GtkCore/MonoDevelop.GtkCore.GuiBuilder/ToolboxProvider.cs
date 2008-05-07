@@ -112,7 +112,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			gtkVersion = type.TargetGtkVersion;
 		}
 		
-		public override IList ItemFilters {
+		public override IList<ToolboxItemFilterAttribute> ItemFilters {
 			get { return attributes; }
 		}
 		
