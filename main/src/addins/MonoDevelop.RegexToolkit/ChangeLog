@@ -1,3 +1,9 @@
+2008-05-07  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.RegexToolkit/RegexToolkitWindow.cs: Use base tooltip
+	  window.
+	* gtk-gui/gui.stetic: Set target GTK version to 2.8.
+
 2008-04-18  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.RegexToolkit/RegexToolkitWindow.cs: fixed Bug 379472 -
