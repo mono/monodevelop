@@ -81,12 +81,23 @@ namespace MonoDevelop.SourceEditor
 			};
 			Caret.PositionChanged += delegate {
 				this.HideLanguageItemWindow ();
-				if (extension != null)
-					extension.CursorPositionChanged ();
+				if (extension != null) {
+					try {
+						extension.CursorPositionChanged ();
+					} catch (Exception ex) {
+						ReportExtensionError (ex);
+					}
+				}
 			};
 			Document.TextReplaced += delegate (object sender, ReplaceEventArgs args) {
-				if (extension != null)
-					extension.TextChanged (args.Offset, args.Offset + Math.Max (args.Count, args.Value != null ? args.Value.Length : 0));
+				if (extension != null) {
+					try {
+						extension.TextChanged (args.Offset, 
+						    args.Offset + Math.Max (args.Count, args.Value != null ? args.Value.Length : 0));
+					} catch (Exception ex) {
+						ReportExtensionError (ex);
+					}
+				}
 			};
 			keyBindings [GetKeyCode (Gdk.Key.Tab)] = new TabAction (this);
 			keyBindings [GetKeyCode (Gdk.Key.BackSpace)] = new AdvancedBackspaceAction ();
@@ -146,6 +157,21 @@ namespace MonoDevelop.SourceEditor
 			return base.OnKeyPressEvent (evnt);
 		}
 		
+		bool ExtensionKeyPress (Gdk.Key key, char ch, Gdk.ModifierType state)
+		{
+			try {
+				return extension.KeyPress (key, ch, state);
+			} catch (Exception ex) {
+				ReportExtensionError (ex);
+			}
+			return false;
+		}
+		
+		void ReportExtensionError (Exception ex) {
+			MonoDevelop.Core.LoggingService.LogError ("Error in text editor extension chain", ex);
+			MonoDevelop.Core.Gui.MessageService.ShowException (ex, "Error in text editor extension chain");
+		}
+		
 		protected override bool OnIMProcessedKeyPressEvent (Gdk.EventKey evnt, char ch)
 		{
 			bool result = true;
@@ -153,7 +179,7 @@ namespace MonoDevelop.SourceEditor
 			if (evnt.Key == Gdk.Key.Escape) {
 				bool b;
 				if (extension != null)
-					b = extension.KeyPress (evnt.Key, ch, evnt.State);
+					b = ExtensionKeyPress (evnt.Key, ch, evnt.State);
 				else
 					b = base.OnIMProcessedKeyPressEvent (evnt, ch);
 				if (b) {
@@ -179,7 +205,7 @@ namespace MonoDevelop.SourceEditor
 				return true;
 			Document.BeginAtomicUndo ();
 			if (extension != null) {
-				if (extension.KeyPress (evnt.Key, ch, evnt.State)) 
+				if (ExtensionKeyPress (evnt.Key, ch, evnt.State)) 
 					result = base.OnIMProcessedKeyPressEvent (evnt, ch);
 			} else {
 				result = base.OnIMProcessedKeyPressEvent (evnt, ch);
@@ -192,10 +218,10 @@ namespace MonoDevelop.SourceEditor
 				case '{':
 					if (extension != null) {
 						int offset = Caret.Offset;
-						extension.KeyPress (Gdk.Key.Return, (char)0, Gdk.ModifierType.None);
-						extension.KeyPress (Gdk.Key.braceright, '}', Gdk.ModifierType.None);
+						ExtensionKeyPress (Gdk.Key.Return, (char)0, Gdk.ModifierType.None);
+						ExtensionKeyPress (Gdk.Key.braceright, '}', Gdk.ModifierType.None);
 						Caret.Offset = offset;
-						extension.KeyPress (Gdk.Key.Return, (char)0, Gdk.ModifierType.None);
+						ExtensionKeyPress (Gdk.Key.Return, (char)0, Gdk.ModifierType.None);
 					} else {
 						result = base.OnIMProcessedKeyPressEvent (evnt, ch);
 						base.SimulateKeyPress (Gdk.Key.Return, 0, Gdk.ModifierType.None);

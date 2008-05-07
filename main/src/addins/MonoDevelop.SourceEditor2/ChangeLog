@@ -1,3 +1,8 @@
+2008-05-06  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.SourceEditor/ExtendibleTextEditor.cs: Trap and report
+	  errors from the text editor extension chain.
+
 2008-05-06  Mike Krüger <mkrueger@novell.com> 
 
 	* gtk-gui/MonoDevelop.SourceEditor.SearchAndReplaceWidget.cs,
