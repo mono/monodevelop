@@ -37,7 +37,7 @@ namespace MonoDevelop.Xml.StateEngine
 	{
 		Mode mode = Mode.None;
 		
-		const string cdata = "[CDATA[";
+		const string cdata = "CDATA[";
 		
 		public XmlSpecialTagState (State parent, int position)
 			: base (parent, position)
