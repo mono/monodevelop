@@ -1,5 +1,9 @@
 2008-05-07  Mike Krüger <mkrueger@novell.com> 
 
+	* Mono.TextEditor/BookmarkMargin.cs: fixed null ref exception.
+
+2008-05-07  Mike Krüger <mkrueger@novell.com> 
+
 	* Mono.TextEditor/BookmarkMargin.cs: Bookmark margin now exposes it's
 	  draw event.
 

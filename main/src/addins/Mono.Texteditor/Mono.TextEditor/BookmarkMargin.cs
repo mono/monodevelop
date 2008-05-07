@@ -164,9 +164,11 @@ namespace Mono.TextEditor
 					((IDisposable)cr).Dispose();
 				}
 				
-				foreach (TextMarker marker in lineSegment.Markers) {
-					if (marker is IIconBarMarker) 
-						((IIconBarMarker)marker).DrawIcon (editor, win, lineSegment, line, x, y);
+				if (lineSegment.Markers != null) {
+					foreach (TextMarker marker in lineSegment.Markers) {
+						if (marker is IIconBarMarker) 
+							((IIconBarMarker)marker).DrawIcon (editor, win, lineSegment, line, x, y);
+					}
 				}
 				if (DrawEvent != null) 
 					DrawEvent (this, new BookmarkMarginDrawEventArgs (editor, win, lineSegment, line, x, y));
