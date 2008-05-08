@@ -75,7 +75,7 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Core/MimeTypes">
-		<MimeType id="text/x-gettext-translation" icon="md-po-file">
+		<MimeType id="text/x-gettext-translation" icon="md-po-file" isText="true">
 			<File pattern="*.po" />
 		</MimeType>
 	</Extension>

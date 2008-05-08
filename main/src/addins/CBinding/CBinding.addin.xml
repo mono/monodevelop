@@ -63,13 +63,13 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Core/MimeTypes">
-		<MimeType id="text/x-csrc" icon="md-c-file">
+		<MimeType id="text/x-csrc" icon="md-c-file" isText="true">
 			<File pattern="*.c" />
 		</MimeType>
-		<MimeType id="text/x-chdr" icon="md-h-file">
+		<MimeType id="text/x-chdr" icon="md-h-file" isText="true">
 			<File pattern="*.h" />
 		</MimeType>
-		<MimeType id="text/x-c++src" icon="md-cpp-file">
+		<MimeType id="text/x-c++src" icon="md-cpp-file" isText="true">
 			<File pattern="*.cpp" />
 		</MimeType>
 	</Extension>

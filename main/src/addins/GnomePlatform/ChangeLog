@@ -1,3 +1,8 @@
+2008-05-08  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* GnomePlatform.cs: Moved the code here that uses the gedit file
+	  association to check whether a file is text.
+
 2008-04-11  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* GnomePlatform.mdp: Remove unneeded reference.

@@ -73,6 +73,18 @@ namespace MonoDevelop.Core.Gui
 				return OnGetMimeTypeDescription (mimeType) ?? string.Empty;
 		}
 		
+		public bool GetMimeTypeIsText (string mimeType)
+		{
+			if (mimeType.StartsWith ("text") || mimeType.EndsWith ("+xml"))
+				return true;
+			
+			MimeTypeNode mt = FindMimeType (mimeType);
+			if (mt != null)
+				return mt.IsText;
+			else
+				return OnGetMimeTypeIsText (mimeType);
+		}
+		
 		public Gdk.Pixbuf GetPixbufForFile (string filename, Gtk.IconSize size)
 		{
 			Gdk.Pixbuf pic = null;
@@ -179,6 +191,11 @@ namespace MonoDevelop.Core.Gui
 		protected virtual string OnGetMimeTypeDescription (string mimeType)
 		{
 			return null;
+		}
+		
+		protected virtual bool OnGetMimeTypeIsText (string mimeType)
+		{
+			return false;
 		}
 		
 		protected virtual string OnGetIconForFile (string filename)

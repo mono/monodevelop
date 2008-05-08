@@ -52,7 +52,7 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Core/MimeTypes">
-		<MimeType id="application/xaml+xml" _description="XAML document" icon="md-xml-file-icon">
+		<MimeType id="application/xaml+xml" _description="XAML document" icon="md-xml-file-icon"  isText="true">
 			<File pattern="*.xaml" />
 		</MimeType>
 	</Extension>

@@ -57,21 +57,7 @@ namespace MonoDevelop.SourceEditor
 		{
 			if (String.IsNullOrEmpty (mimetype))
 				return false;
-			if (mimetype.StartsWith ("text") || mimetype.EndsWith ("+xml"))
-				return true;
-			switch (mimetype) {
-			case "application/x-python":
-			case "application/x-config":
-			case "application/x-aspx":
-			case "application/x-ascx":
-			case "application/x-web-config":
-				return true;
-			}
-			// If gedit can open the file, this editor also can do it
-			foreach (DesktopApplication app in IdeApp.Services.PlatformService.GetAllApplications (mimetype))
-				if (app.Command == "gedit")
-					return true;
-			return false;
+			return IdeApp.Services.PlatformService.GetMimeTypeIsText (mimetype);
 		}
 
 		MonoDevelop.Ide.Gui.IViewContent IDisplayBinding.CreateContentForMimeType (string mimeType, System.IO.Stream content)

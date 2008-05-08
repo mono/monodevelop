@@ -1,3 +1,8 @@
+2008-05-08  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* CSharpBinding.addin.xml: Set "isText" attribute on the mimetype
+	  definitions.
+
 2008-04-24  Mike Krüger <mkrueger@novell.com> 
 
 	* Parser/DomParser.cs: Worked on mcs integration.

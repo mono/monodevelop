@@ -42,6 +42,9 @@ namespace MonoDevelop.Core.Gui.Codons
 		[NodeAttribute ("_description", Localizable=true)]
 		string description;
 		
+		[NodeAttribute (Required=false)]
+		bool isText = false;
+		
 		Regex regex;
 		
 		public string Icon {
@@ -60,6 +63,11 @@ namespace MonoDevelop.Core.Gui.Codons
 			set {
 				description = value;
 			}
+		}
+		
+		public bool IsText {
+			set { isText = value; }
+			get { return isText; }
 		}
 		
 		Regex CreateRegex ()

@@ -185,22 +185,22 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Core/MimeTypes">
-		<MimeType id="text/x-resource" _description=".NET resource" icon="md-resource-file-icon">
+		<MimeType id="text/x-resource" _description=".NET resource" icon="md-resource-file-icon" isText="true">
 			<File pattern="*.resources" />
 		</MimeType>
-		<MimeType id="application/x-resource" _description=".NET resource" icon="md-resource-file-icon">
+		<MimeType id="application/x-resource" _description=".NET resource" icon="md-resource-file-icon" isText="true">
 			<File pattern="*.resx" />
 		</MimeType>
-		<MimeType id="application/x-addin+xml" _description="Add-in manifest" icon="md-addin-file">
+		<MimeType id="application/x-addin+xml" _description="Add-in manifest" icon="md-addin-file" isText="true">
 			<File pattern="*.addin.xml" />
 			<File pattern="*.addin" />
 		</MimeType>
-		<MimeType id="application/xml" _description="XML document" icon="md-xml-file-icon">
+		<MimeType id="application/xml" _description="XML document" icon="md-xml-file-icon" isText="true">
 			<File pattern="*.xml" />
 			<File pattern="*.config" />
 		</MimeType>
-		<MimeType id="text/x-changelog" _description="ChangeLog document">
-			<File pattern="ChangeLog|Changelog|CHANGELOG|Changelog" />
+		<MimeType id="text/x-changelog" _description="ChangeLog document" isText="true">
+			<File pattern="ChangeLog|Changelog|CHANGELOG|Changelog"/>
 		</MimeType>
 	</Extension>
 </Addin>

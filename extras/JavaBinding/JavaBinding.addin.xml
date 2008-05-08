@@ -74,7 +74,7 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Core/MimeTypes">
-		<MimeType id="text/x-java" _description="Java source code" icon="md-java-file">
+		<MimeType id="text/x-java" _description="Java source code" icon="md-java-file" isText="true">
 			<File pattern="*.java" />
 		</MimeType>
 	</Extension>

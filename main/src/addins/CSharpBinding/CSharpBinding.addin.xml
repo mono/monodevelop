@@ -114,7 +114,7 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Core/MimeTypes">
-		<MimeType id="text/x-csharp" _description="C# source code" icon="md-csharp-file">
+		<MimeType id="text/x-csharp" _description="C# source code" icon="md-csharp-file" isText="true">
 			<File pattern="*.cs" />
 		</MimeType>
 	</Extension>

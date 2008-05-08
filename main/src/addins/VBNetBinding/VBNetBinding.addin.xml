@@ -75,7 +75,7 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Core/MimeTypes">
-		<MimeType id="text/x-vb" _description="Visual Basic source code" icon="md-vb-file">
+		<MimeType id="text/x-vb" _description="Visual Basic source code" icon="md-vb-file" isText="true">
 			<File pattern="*.vb" />
 		</MimeType>
 	</Extension>
