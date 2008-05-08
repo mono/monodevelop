@@ -887,7 +887,7 @@ namespace Mono.TextEditor
 		{
 			if (segment != null && data != null && data.Document != null) {
 				try {
-					text = data.Document.GetTextAt (segment);
+					text = segment.Length > 0 ? data.Document.GetTextAt (segment) : "";
 				} catch (Exception) {
 					System.Console.WriteLine("Copy data failed - unable to get text at:" + segment);
 					throw;
@@ -924,6 +924,12 @@ namespace Mono.TextEditor
 			Clipboard clipboard = Clipboard.Get (CopyAction.PRIMARYCLIPBOARD_ATOM);
 			clipboard.SetWithData ((Gtk.TargetEntry[])TargetList, ClipboardGetFuncLazy, ClipboardClearFunc);
 		}
+		public void ClearPrimary ()
+		{
+			Clipboard clipboard = Clipboard.Get (CopyAction.PRIMARYCLIPBOARD_ATOM);
+			clipboard.Clear ();
+		}
+		
 		
 		public override void Run (TextEditorData data)
 		{

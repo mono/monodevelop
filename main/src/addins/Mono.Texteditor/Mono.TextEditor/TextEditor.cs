@@ -281,8 +281,12 @@ namespace Mono.TextEditor
 			margins.Add (textViewMargin);
 			ISegment oldSelection = null;
 			this.textEditorData.SelectionChanged += delegate {
-				if (IsSomethingSelected && SelectionRange.Offset >= 0 && SelectionRange.EndOffset < Document.Length)
+				if (IsSomethingSelected && SelectionRange.Offset >= 0 && SelectionRange.EndOffset < Document.Length) {
 					new CopyAction ().CopyToPrimary (this.textEditorData);
+				} else {
+					new CopyAction ().ClearPrimary ();
+				}
+					
 				
 				// Handle redraw
 				ISegment selection = SelectionRange;
@@ -316,7 +320,8 @@ namespace Mono.TextEditor
 					} 
 				}
 				oldSelection = selection != null ? new Segment (selection.Offset, selection.Length) : null;
-				this.RedrawLines (System.Math.Min (from, to) - 1, System.Math.Max (from, to));
+				this.RedrawLines (System.Math.Max (0, System.Math.Min (from, to) - 1), 
+				                  System.Math.Max (from, to));
 				OnSelectionChanged (EventArgs.Empty);
 			};
 			

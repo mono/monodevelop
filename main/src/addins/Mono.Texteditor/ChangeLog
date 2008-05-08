@@ -1,3 +1,8 @@
+2008-05-08  Mike Krüger <mkrueger@novell.com> 
+
+	* Mono.TextEditor/DefaultEditActions.cs, Mono.TextEditor/TextEditor.cs:
+	  fixed "Bug 387778 - MD Crash on Mouse Paste".
+
 2008-05-07  Mike Krüger <mkrueger@novell.com> 
 
 	* Mono.TextEditor/BookmarkMargin.cs: fixed null ref exception.
