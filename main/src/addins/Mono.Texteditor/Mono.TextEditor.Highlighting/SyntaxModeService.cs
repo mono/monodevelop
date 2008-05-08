@@ -114,6 +114,8 @@ namespace Mono.TextEditor.Highlighting
 						if (endOffset >= curSpan.End.Length) {
 							spanStack.Pop ();
 							curSpan = spanStack.Count > 0 ? spanStack.Peek () : null;
+							curRule = curSpan != null ? doc.SyntaxMode.GetRule (curSpan.Rule) : rule;
+							spanTree = curRule != null ? curRule.spanStarts : null;
 							endOffset = 0;
 							continue;
 						}
@@ -207,6 +209,8 @@ namespace Mono.TextEditor.Highlighting
 							if (endOffset >= curSpan.End.Length) {
 								spanStack.Pop ();
 								curSpan = spanStack.Count > 0 ? spanStack.Peek () : null;
+								curRule = curSpan != null ? doc.SyntaxMode.GetRule (curSpan.Rule) : rule;
+								spanTree = curRule != null ? curRule.spanStarts : null;
 								endOffset = 0;
 								continue;
 							}

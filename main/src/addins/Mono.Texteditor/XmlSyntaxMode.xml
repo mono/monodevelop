@@ -51,18 +51,18 @@
 	</Span>
 	
 	<Rule name = "InTag">
-		<Span color = "literal" stopateol = "true"  rule="InLiteral">
+		<Span color = "literal" rule="InLiteral">
 			<Begin>&quot;</Begin>
 			<End>&quot;</End>
 		</Span>
 		
-		<Span color = "literal" stopateol = "true"  rule="InLiteral">
+		<Span color = "literal" rule="InLiteral">
 			<Begin>&apos;</Begin>
 			<End>&apos;</End>
 		</Span>
 		
 		<!-- attributes -->
-		<Match color = "kw:types">[A-Za-z0-9]*[\s\n\r]*=</Match>
+		<Match color = "kw:types">[_A-Za-z0-9]*[\s\n\r]*=</Match>
 	</Rule>
 	
 	<Rule name = "InLiteral">
