@@ -51,12 +51,12 @@
 	</Span>
 	
 	<Rule name = "InTag">
-		<Span color = "literal" rule="InLiteral">
+		<Span color = "literal" stopateol = "true"  rule="InLiteral">
 			<Begin>&quot;</Begin>
 			<End>&quot;</End>
 		</Span>
 		
-		<Span color = "literal" rule="InLiteral">
+		<Span color = "literal" stopateol = "true"  rule="InLiteral">
 			<Begin>&apos;</Begin>
 			<End>&apos;</End>
 		</Span>
