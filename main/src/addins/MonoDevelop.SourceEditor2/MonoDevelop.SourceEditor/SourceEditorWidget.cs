@@ -116,11 +116,13 @@ namespace MonoDevelop.SourceEditor
 			this.mainsw.Child = this.TextEditor;
 			this.mainsw.ButtonPressEvent += PrepareEvent;
 			
-			this.textEditor.Caret.ModeChanged     += delegate {
+			this.textEditor.Caret.ModeChanged += delegate {
 				this.UpdateLineCol ();
 			};
 			this.textEditor.Caret.PositionChanged += CaretPositionChanged;
-			
+			this.textEditor.SelectionChanged += delegate {
+				this.UpdateLineCol ();
+			};
 			// Setup the columns and column renders for the comboboxes
 			CellRendererPixbuf pixr = new CellRendererPixbuf ();
 			pixr.Ypad = 0;
@@ -537,6 +539,9 @@ namespace MonoDevelop.SourceEditor
 			this.splittedTextEditor.Caret.ModeChanged += delegate {
 				this.UpdateLineCol ();
 			};
+			this.splittedTextEditor.SelectionChanged += delegate {
+				this.UpdateLineCol ();
+			};
 			this.splittedTextEditor.Caret.PositionChanged += CaretPositionChanged;
 			
 			secondsw.Child = splittedTextEditor;
@@ -634,7 +639,7 @@ namespace MonoDevelop.SourceEditor
 			if (offset < 0 || offset >= this.TextEditor.Document.Length)
 				return;
 			DocumentLocation location = this.TextEditor.Document.LogicalToVisualLocation (this.TextEditor.Caret.Location);
-			IdeApp.Workbench.StatusBar.ShowCaretState (location.Line + 1, location.Column + 1, this.TextEditor.Caret.Column, this.TextEditor.Caret.IsInInsertMode);
+			IdeApp.Workbench.StatusBar.ShowCaretState (location.Line + 1, location.Column + 1, this.textEditor.IsSomethingSelected ? this.TextEditor.SelectionRange.Length : 0, this.TextEditor.Caret.IsInInsertMode);
 		}
 		
 		#endregion

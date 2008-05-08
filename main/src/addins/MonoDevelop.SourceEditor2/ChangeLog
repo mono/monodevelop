@@ -1,3 +1,8 @@
+2008-05-08  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.SourceEditor/SourceEditorWidget.cs: Fixed 'Bug 387448 -
+	  New text editor always show same value for "col" and "ch"'
+
 2008-05-07  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.SourceEditor/SourceEditorView.cs: Enable support for

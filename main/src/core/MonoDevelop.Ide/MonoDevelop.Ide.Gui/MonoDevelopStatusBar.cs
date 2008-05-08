@@ -88,11 +88,15 @@ namespace MonoDevelop.Ide
 			progress.Visible = false;
 		}
 		
-		public void ShowCaretState (int line, int visibleColumn, int logicalColumn, bool isInInsertMode)
+		public void ShowCaretState (int line, int column, int selectedChars, bool isInInsertMode)
 		{
 			DispatchService.AssertGuiThread ();
 			cursorStatusBarPanel.ShowAll ();
-			cursorLabel.Markup = GettextCatalog.GetString (" ln <span font_family='fixed'>{0,-4}</span> col <span font_family='fixed'>{1,-3}</span> ch <span font_family='fixed'>{2,-3}</span> ", line, visibleColumn, logicalColumn);
+			if (selectedChars > 0) {
+				cursorLabel.Text = String.Format ("{0,3} : {1,-3} - {2}", line, column, selectedChars);
+			} else {
+				cursorLabel.Text = String.Format ("{0,3} : {1,-3}", line, column);
+			}
 			modeStatusBarPanel.ShowAll ();
 			string status = isInInsertMode ? GettextCatalog.GetString ("INS") : GettextCatalog.GetString ("OVR");
 			modeLabel.Text = " " + status + " ";
