@@ -1,5 +1,10 @@
 2008-05-09  Michael Hutchinson <mhutchinson@novell.com> 
 
+	* AspNetSyntaxMode.xml, XmlSyntaxMode.xml: Highlight doctypes. Fix
+	  attribute highlighting.
+
+2008-05-09  Michael Hutchinson <mhutchinson@novell.com> 
+
 	* AspNetSyntaxMode.xml, XmlSyntaxMode.xml: Improve attribute regex.
 
 2008-05-09  Mike Krüger <mkrueger@novell.com> 

@@ -34,6 +34,11 @@
 		<End>;</End>
 	</Span>
 	
+	<Span tagColor = "kw:declarations" color = "markup" rule = "InTag">
+		<Begin>&lt;!DOCTYPE</Begin>
+		<End>&gt;</End>
+	</Span>
+	
 	<Span tagColor = "kw:exceptions" color = "comment">
 		<Begin>&lt;![CDATA[</Begin>
 		<End>]]-&gt;</End>
@@ -62,7 +67,7 @@
 		</Span>
 		
 		<!-- attributes -->
-		<Match color = "kw:types">[\s\n\r][A-Za-z0-9_]+(:[A-Za-z0-9_]+)?[\s\n\r]*=</Match>
+		<Match color = "kw:types">[A-Za-z0-9_]+(:[A-Za-z0-9_]+)?[\s\n\r]*=</Match>
 	</Rule>
 	
 	<Rule name = "InLiteral">
