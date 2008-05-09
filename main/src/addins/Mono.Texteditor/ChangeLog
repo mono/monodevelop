@@ -1,3 +1,7 @@
+2008-05-09  Mike Krüger <mkrueger@novell.com> 
+
+	* Mono.TextEditor/Document.cs: Fixed highlighting update bug.
+
 2008-05-08  Mike Krüger <mkrueger@novell.com> 
 
 	* Mono.TextEditor.Highlighting/SyntaxModeService.cs, XmlSyntaxMode.xml:

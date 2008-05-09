@@ -85,6 +85,7 @@ namespace Mono.TextEditor
 			}
 			set {
 				syntaxMode = value;
+				UpdateHighlighting ();
 			}
 		}
 		
@@ -111,11 +112,17 @@ namespace Mono.TextEditor
 				ReplaceEventArgs args = new ReplaceEventArgs (0, oldLength, new StringBuilder (value));
 				this.OnTextReplacing (args);
 				this.buffer.Text = value;
+				UpdateHighlighting ();
 				splitter.TextReplaced (this, args);
-				if (this.syntaxMode != null)
-					Mono.TextEditor.Highlighting.SyntaxModeService.StartUpdate (this, this.syntaxMode, 0, value.Length);
-				Mono.TextEditor.Highlighting.SyntaxModeService.WaitForUpdate ();
 				this.OnTextReplaced (args);
+			}
+		}
+		
+		void UpdateHighlighting ()
+		{
+			if (this.syntaxMode != null) {
+				Mono.TextEditor.Highlighting.SyntaxModeService.StartUpdate (this, this.syntaxMode, 0, buffer.Length);
+				Mono.TextEditor.Highlighting.SyntaxModeService.WaitForUpdate ();
 			}
 		}
 		
