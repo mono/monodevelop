@@ -77,6 +77,12 @@ namespace MonoDevelop.Components.Commands {
 				return Char.ToUpper (c).ToString ();
 			}
 			
+			//HACK: Page_Down and Next are synonyms for the same enum value, but alphabetically, Next gets returned 
+			// first by enum ToString(). Similarly, Page_Up and Prior are synonyms, but Page_Up is returned. Hence the 
+			// default pairing is Next and Page_Up, which is confusingly inconsistent, so we fix this here.
+			if (key == Gdk.Key.Next)
+				return "Page_Down";
+			
 			return key.ToString ();
 		}
 		

@@ -1,3 +1,9 @@
+2008-05-09  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Components.Commands/KeyBindingManager.cs: Fix "Bug 381499
+	  - Inconsistent keybindings." by forcing Gdk.Key.Next to Page_Down.
+	  Comments explain reasons.
+
 2008-05-02  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Components/InvisibleFrame.cs: Fix broken size behaviour
