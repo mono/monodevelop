@@ -1,3 +1,29 @@
+2008-05-09  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.AspNet/AspNetDisplayBinding.cs: Remove unneeded display
+	  binding.
+	* MonoDevelop.AspNet/AspNetAppProject.cs: Remove bound WebTypeManager
+	  instance.
+	* MonoDevelop.AspNet/VerifyCodeBehindBuildStep.cs: Add copyright.
+	* MonoDevelop.AspNet/AspNetToolboxLoader.cs,
+	  MonoDevelop.AspNet/AspNetToolboxNode.cs: Toolbox loader for ASP.NET
+	  toolbox items that makes then available to the text editor too.
+	* MonoDevelop.AspNet/AspNetParserService.cs: A place for parser-access
+	  convenience methods.
+	* MonoDevelop.AspNet/WebTypeManager.cs: Make static. Take project as
+	  argument rather than being bound to it.
+	* MonoDevelop.AspNet.addin.xml: Register new toolbox loader. Update
+	  mimetypes. Remove unneeded display binding.
+	* MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs: Prevent some NREs.
+	* AspNetAddIn.mdp, Makefile.am: Updated.
+	* MonoDevelop.AspNet.Parser/Document.cs: If bound project is null, look
+	  it up.
+	* MonoDevelop.AspNet.Parser/CompilationUnitVisitor.cs: Prevent possible
+	  NRE.
+	* MonoDevelop.AspNet.Parser/DocumentReferenceManager.cs: Add
+	  functionality for looking up and generating prefixes, for text
+	  toolbox nodes.
+
 2008-05-02  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs: Fix positions when

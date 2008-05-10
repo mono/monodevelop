@@ -44,17 +44,13 @@ namespace MonoDevelop.AspNet
 {
 	
 	
-	public class WebTypeManager
+	public static class WebTypeManager
 	{
-		AspNetAppProject project;
-		
-		internal WebTypeManager (AspNetAppProject project)
+		public static string GetRegisteredTypeName (AspNetAppProject project, string webDirectory, string tagPrefix, string tagName)
 		{
-			this.project = project;
-		}
-		
-		public string GetGloballyRegisteredTypeName (string webDirectory, string tagPrefix, string tagName)
-		{
+			if (project == null)
+				return GetMachineRegisteredTypeName (tagPrefix, tagName);
+			
 			//global control registration not possible in ASP.NET 1.1
 			if (project.ClrVersion == MonoDevelop.Core.ClrVersion.Net_1_1)
 				return null;
@@ -73,6 +69,11 @@ namespace MonoDevelop.AspNet
 				dir = dir.Parent;
 			}
 			
+			return GetMachineRegisteredTypeName (tagPrefix, tagName);
+		}
+		
+		public static string GetMachineRegisteredTypeName (string tagPrefix, string tagName)
+		{
 			//check in machine.config
 			Configuration config = ConfigurationManager.OpenMachineConfiguration ();
 			PagesSection pages = (PagesSection) config.GetSection ("system.web/pages");
@@ -88,7 +89,7 @@ namespace MonoDevelop.AspNet
 			return null;
 		}
 		
-		string GetFullTypeNameFromConfig (string configFile, string tagPrefix, string tagName)
+		static string GetFullTypeNameFromConfig (string configFile, string tagPrefix, string tagName)
 		{
 			XmlTextReader reader = null;
 			try {
@@ -138,7 +139,7 @@ namespace MonoDevelop.AspNet
 			return null;
 		}
 		
-		#region System type lookups
+		#region HTML type lookups
 		
 		public static string HtmlControlLookup (string tagName)
 		{
@@ -211,12 +212,22 @@ namespace MonoDevelop.AspNet
 			}
 		}
 		
+		
+		#endregion 
+		
+		#region Control type lookups
+		
 		public static string SystemWebControlLookup (string tagName, MonoDevelop.Core.ClrVersion clrVersion)
 		{
-			//FIXME respect clr version
-			System.Reflection.Assembly assem = typeof(System.Web.UI.WebControls.WebControl).Assembly;
-			System.Type type = assem.GetType ("System.Web.UI.WebControls." + tagName, false, true);
-			return (type != null)? type.FullName : null;
+			IAssemblyParserContext assem = GetSystemWebAssemblyContext (clrVersion);
+			IClass cls = assem.GetClass ("System.Web.UI.WebControls." + tagName, true, false);
+			return cls != null? cls.FullyQualifiedName : null;
+		}
+		
+		static IAssemblyParserContext GetSystemWebAssemblyContext (MonoDevelop.Core.ClrVersion clrVersion)
+		{
+			string assem = MonoDevelop.Core.Runtime.SystemAssemblyService.GetAssemblyNameForVersion ("System.Web", clrVersion);
+			return MonoDevelop.Ide.Gui.IdeApp.ProjectOperations.ParserDatabase.GetAssemblyParserContext (assem);
 		}
 		
 		public static string AssemblyTypeNameLookup (string tagName, string namespac, string assem)
@@ -236,7 +247,7 @@ namespace MonoDevelop.AspNet
 		
 		#endregion
 		
-		#region Systen type listings
+		#region System type listings
 		
 		public static IEnumerable<IClass> ListSystemControlClasses (MonoDevelop.Core.ClrVersion version)
 		{
@@ -299,28 +310,40 @@ namespace MonoDevelop.AspNet
 		
 		#endregion
 		
-		public string ProjectTypeNameLookup (string tagName, string namespac, string assem)
+		public static string TypeNameLookup (AspNetAppProject project, string tagName, string namespac, string assem)
 		{
-			IClass cls = ProjectTypeLookup (tagName, namespac, assem);
+			IClass cls = TypeLookup (project, tagName, namespac, assem);
 			return cls != null? cls.FullyQualifiedName : null;
 		}
 		
-		public IClass ProjectTypeLookup (string tagName, string namespac, string assem)
+		public static IClass TypeLookup (AspNetAppProject project, string tagName, string namespac, string assem)
 		{
 			IClass cls = null;
 			IParserContext ctx = null;
 			if (!string.IsNullOrEmpty (namespac)) {
 				if (!string.IsNullOrEmpty (assem))
 					ctx = IdeApp.ProjectOperations.ParserDatabase.GetAssemblyParserContext (assem);
-				else
+				else if (project != null)
 					ctx = IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (project);
+				else
+					ctx = GetSystemWebAssemblyContext (MonoDevelop.Core.ClrVersion.Default);
 				ctx.UpdateDatabase ();
 				cls = ctx.GetClass (namespac + "." + tagName, true, false);
 			}
 			return cls;
 		}
 		
-		public string GetControlTypeName (string fileName, string relativeToPath)
+		public static string GetControlPrefix (AspNetAppProject project, IClass control)
+		{
+			if (control.Namespace == "System.Web.UI.WebControls")
+				return "asp";
+			else if (control.Namespace == "System.Web.UI.HtmlControls")
+				return string.Empty;
+			
+			throw new NotImplementedException ();
+		}
+		
+		public static string GetControlTypeName (string fileName, string relativeToPath)
 		{
 			//FIXME: actually look up the type
 			//or maybe it's not necessary, as the compilers can't handle the types because

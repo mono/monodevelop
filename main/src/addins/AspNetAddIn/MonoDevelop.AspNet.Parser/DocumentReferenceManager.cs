@@ -77,10 +77,7 @@ namespace MonoDevelop.AspNet.Parser
 				AssemblyRegisterDirective ard = directive as AssemblyRegisterDirective;
 				if (ard != null && ard.TagPrefix == tagPrefix) {
 					string fullName;
-					if (doc.Project != null) 
-						fullName = doc.Project.WebTypeManager.ProjectTypeNameLookup (tagName, ard.Namespace, ard.Assembly);
-					else
-						fullName = WebTypeManager.AssemblyTypeNameLookup (tagName, ard.Namespace, ard.Assembly);
+					fullName = WebTypeManager.TypeNameLookup (doc.Project, tagName, ard.Namespace, ard.Assembly);
 					
 					if (fullName != null)
 						return fullName;
@@ -88,14 +85,15 @@ namespace MonoDevelop.AspNet.Parser
 				
 				ControlRegisterDirective crd = directive as ControlRegisterDirective;
 				if (crd != null && crd.TagPrefix == tagPrefix) {
-					string fullName =  doc.Project.WebTypeManager.GetControlTypeName (doc.FilePath, crd.Src);
+					string fullName =  WebTypeManager.GetControlTypeName (doc.FilePath, crd.Src);
 					if (fullName != null)
 						return fullName;
 				}
 			}
 			
-			string globalLookup = doc.Project.WebTypeManager.GetGloballyRegisteredTypeName 
-					(System.IO.Path.GetDirectoryName (doc.FilePath), tagPrefix, tagName);
+			string globalLookup = WebTypeManager.GetRegisteredTypeName (doc.Project, 
+			    System.IO.Path.GetDirectoryName (doc.FilePath), tagPrefix, tagName);
+			
 			
 			//returns null if type not found
 			return globalLookup;
@@ -106,19 +104,128 @@ namespace MonoDevelop.AspNet.Parser
 			MonoDevelop.Core.ClrVersion clrVersion = 
 				doc.Project == null? MonoDevelop.Core.ClrVersion.Default : doc.Project.ClrVersion;
 			foreach (IClass cls in WebTypeManager.ListSystemControlClasses (clrVersion))
-			    yield return cls;
+				yield return cls;
 			
 			//FIXME: return other refernced controls
 		}
 		
 		public IClass GetControlType (string tagPrefix, string tagName)
 		{
-			if (0 == string.Compare (tagPrefix, "asp", true, CultureInfo.InvariantCulture))
+			if (0 == string.Compare (tagPrefix, "asp", StringComparison.InvariantCultureIgnoreCase))
 				return WebTypeManager.AssemblyTypeLookup (tagName, "System.Web.UI.WebControls", "System.Web");
 			
 			//FIXME: Implement for non-builtins
 			return null;
 		}
+		
+		public string GetTagPrefix (IClass control)
+		{
+			string globalPrefix = WebTypeManager.GetControlPrefix (doc.Project, control);
+			if (globalPrefix != null)
+				return globalPrefix;
+			
+			foreach (RegisterDirective rd in pageRefsList) {
+				AssemblyRegisterDirective ard = rd as AssemblyRegisterDirective;
+				if (ard != null && ard.Namespace == control.Namespace)
+					return ard.TagPrefix;
+			}
+			
+			return null;
+		}
+		
+		IEnumerable<RegisterDirective> GetDirectivesForPrefix (string prefix)
+		{
+			foreach (RegisterDirective rd in pageRefsList)
+				if (string.Equals (rd.TagPrefix, prefix, StringComparison.InvariantCultureIgnoreCase))
+					yield return rd;
+		}
+		
+		#region "Refactoring" operations -- things that modify the file
+		
+		public string AddReference (IClass control)
+		{
+			string prefix = GetTagPrefix (control);
+			if (prefix != null)
+				return prefix;
+			return InsertReference (control, GetPrefix (control));
+		}
+		
+		public string AddReference (IClass control, string desiredPrefix)
+		{
+			string existingPrefix = GetTagPrefix (control);
+			if (existingPrefix != null)
+				return existingPrefix;
+			return InsertReference (control, desiredPrefix);
+		}
+		
+		string GetPrefix (IClass control)
+		{
+			//FIXME: make this work 
+			/*
+			foreach (IAttributeSection attSec in control.CompilationUnit.Attributes) {
+				foreach (IAttribute att in attSec.Attributes) {
+					if (att.PositionalArguments != null && att.PositionalArguments.Length == 2
+					    && ExprToStr (att.PositionalArguments[0]) == control.Namespace) {
+						string prefix = ExprToStr (att.PositionalArguments [1]);
+						if (prefix != null)
+							return prefix;
+					}
+					
+					if (att.Name == "System.Web.UI.TagPrefixAttribute") {
+						bool match = false;
+						foreach (NamedAttributeArgument arg in att.NamedArguments) {
+							if (arg.Name == "NamespaceName"
+							    && ExprToStr (arg.Expression) == control.Namespace) {
+								match = true;
+								break;
+							}
+						}
+						foreach (NamedAttributeArgument arg in att.NamedArguments) {
+							if (arg.Name == "TagPrefix") {
+								string prefix = ExprToStr (arg.Expression);
+								if (prefix != null)
+									return prefix;
+							}
+						}
+					}
+				}
+			}
+			*/
+			//generate a new prefix base on initials of namespace
+			string[] namespaces = control.Namespace.Split ('.');
+			char[] charr = new char[namespaces.Length];
+			for (int i = 0; i < charr.Length; i++)
+				charr[i] = char.ToLower (namespaces[i][0]);
+			
+			//find a variant that doesn't match an existing prefix
+			string trialPrefix = charr.ToString ();
+			int trialSuffix = 1;
+			string trial = trialPrefix;
+			bool foundMatch = false;
+			do {
+				foundMatch = false;
+				foreach (RegisterDirective r in GetDirectivesForPrefix (trial)) {
+					foundMatch = true;
+					trialSuffix++;
+					trial = trialPrefix + trialSuffix;
+					break;
+				}
+			} while (foundMatch);
+			return trial;
+		}
+		
+		string ExprToStr (System.CodeDom.CodeExpression expr)
+		{
+			System.CodeDom.CodePrimitiveExpression p = expr as System.CodeDom.CodePrimitiveExpression;
+			return p != null? p.Value as string : null;
+		}
+		
+		string InsertReference (IClass control, string prefix)
+		{
+			throw new NotImplementedException ();
+		}
+		
+		#endregion
 		
 		#region directive classes
 		

@@ -86,10 +86,12 @@ FILES =  \
 	MonoDevelop.AspNet/AspNetAppProjectBinding.cs \
 	MonoDevelop.AspNet/AspNetAppProjectConfiguration.cs \
 	MonoDevelop.AspNet/AspNetCommands.cs \
-	MonoDevelop.AspNet/AspNetDisplayBinding.cs \
 	MonoDevelop.AspNet/AspNetFileDescriptionTemplate.cs \
 	MonoDevelop.AspNet/AspNetLanguageBinding.cs \
 	MonoDevelop.AspNet/AspNetMSBuildProjectExtension.cs \
+	MonoDevelop.AspNet/AspNetParserService.cs \
+	MonoDevelop.AspNet/AspNetToolboxLoader.cs \
+	MonoDevelop.AspNet/AspNetToolboxNode.cs \
 	MonoDevelop.AspNet/CodeBehind.cs \
 	MonoDevelop.AspNet/IAspNetLanguageBinding.cs \
 	MonoDevelop.AspNet/ProjectFolderNodeBuilderExtension.cs \

@@ -129,7 +129,12 @@ namespace MonoDevelop.AspNet.Parser
 		}
 		
 		public AspNetAppProject Project {
-			get { return project; }
+			get {
+				if (project == null)
+					project = MonoDevelop.Ide.Gui.IdeApp.ProjectOperations.GetProjectContaining (filePath)
+						as AspNetAppProject;
+				return project;
+			}
 		}
 		
 		public string FilePath {

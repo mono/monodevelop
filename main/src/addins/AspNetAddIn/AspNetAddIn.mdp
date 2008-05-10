@@ -54,7 +54,6 @@
     <File name="MonoDevelop.AspNet.Gui/XspOptionsPanel.cs" subtype="Code" buildaction="Compile" />
     <File name="Templates/WebService-Empty.xft.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="Templates/WebService-CodeBehind.xft.xml" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="MonoDevelop.AspNet/AspNetDisplayBinding.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.AspNet/VerifyCodeBehindBuildStep.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.AspNet.Gui/AspNetConfigurationPanel.cs" subtype="Code" buildaction="Compile" />
     <File name="Templates/MasterPage-CodeBehind.xft.xml" subtype="Code" buildaction="EmbedAsResource" />
@@ -121,6 +120,9 @@
     <File name="MonoDevelop.AspNet.Parser/AspNetExpressionFinder.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.AspNet.Parser/CompilationUnitVisitor.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.AspNet.Parser/PageInfo.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.AspNet/AspNetToolboxLoader.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.AspNet/AspNetToolboxNode.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.AspNet/AspNetParserService.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Components" />

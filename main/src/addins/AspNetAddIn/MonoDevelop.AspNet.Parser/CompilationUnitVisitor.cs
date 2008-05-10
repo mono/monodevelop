@@ -60,7 +60,10 @@ namespace MonoDevelop.AspNet.Parser
 			if (!IsMultiLine (node.Location, node.EndLocation))
 			    return;
 			
-			string id = (string) node.Attributes["id"];
+			string id = null;
+			if (node.Attributes != null)
+				id = (string) node.Attributes["id"];
+			
 			string name;
 			if (id != null)
 				name = string.Concat ("<", node.TagName, "#", id);

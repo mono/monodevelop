@@ -146,6 +146,10 @@ namespace MonoDevelop.AspNet.Gui
 			tracker.UpdateEngine ();
 			MonoDevelop.AspNet.Parser.AspNetCompilationUnit CU = this.CU;
 			
+			//FIXME: these may be null at startup, but we should still provive some completion
+			if (CU == null || CU.Document == null)
+				return null;
+			
 			//FIXME: lines in completionContext are zero-indexed, but ILocation and buffer are 1-indexed.
 			//This could easily cause bugs.
 			int line = completionContext.TriggerLine + 1, col = completionContext.TriggerLineOffset;
@@ -908,7 +912,7 @@ namespace MonoDevelop.AspNet.Gui
 			else
 				end = start;
 			
-			//FIXME: why is this offset necessary
+			//FIXME: why is this offset necessary?
 			int offset = n is TagNode? 1 : 0;
 			
 			int s = Editor.GetPositionFromLineColumn (start.BeginLine, start.BeginColumn + offset);

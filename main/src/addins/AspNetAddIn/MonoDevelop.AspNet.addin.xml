@@ -102,6 +102,7 @@
 	<Extension path = "/MonoDevelop/ProjectModel/SerializableClasses">
 		<DataType class = "MonoDevelop.AspNet.AspNetAppProject" />
 		<DataType class = "MonoDevelop.AspNet.AspNetAppProjectConfiguration" />
+		<DataType class = "MonoDevelop.AspNet.AspNetToolboxNode" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/Gui/ProjectOptions/GeneralOptions/Common">
@@ -128,18 +129,16 @@
 		</Condition>
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/Ide/DisplayBindings">
-		<DisplayBinding id    = "AspNetDisplayBinding"
-		                supportedformats = "Source Code"
-		                class = "MonoDevelop.AspNet.AspNetDisplayBinding"/>
-	</Extension>
-	
 	<Extension path = "/MonoDevelop/ProjectModel/ProjectServiceExtensions">
 		<Class class = "MonoDevelop.AspNet.VerifyCodeBehindBuildStep" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Prj2Make/MSBuildProjectExtension">
 		<Class class="MonoDevelop.AspNet.AspNetMSBuildProjectExtension" />
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/DesignerSupport/ToolboxLoaders">
+		<Class id="AspNetToolboxLoader" class="MonoDevelop.AspNet.AspNetToolboxLoader"/>
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/Commands">
@@ -174,25 +173,25 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Core/MimeTypes">
-		<MimeType id="application/x-aspx" _description="ASP.NET page" icon="md-html-file-icon">
+		<MimeType id="application/x-aspx" _description="ASP.NET page" icon="md-html-file-icon" isText="true">
 			<File pattern="*.aspx" />
 		</MimeType>
-		<MimeType id="application/x-ascx" _description="ASP.NET user control" icon="md-html-file-icon">
+		<MimeType id="application/x-ascx" _description="ASP.NET user control" icon="md-html-file-icon" isText="true">
 			<File pattern="*.ascx" />
 		</MimeType>
-		<MimeType id="application/x-asax" _description="ASP.NET global application class" icon="md-html-file-icon">
+		<MimeType id="application/x-asax" _description="ASP.NET global application class" icon="md-html-file-icon" isText="true">
 			<File pattern="*.asax" />
 		</MimeType>
-		<MimeType id="application/x-ashx" _description="ASP.NET handler" icon="md-html-file-icon">
+		<MimeType id="application/x-ashx" _description="ASP.NET handler" icon="md-html-file-icon" isText="true">
 			<File pattern="*.ashx" />
 		</MimeType>
-		<MimeType id="application/x-asmx" _description="ASP.NET web service" icon="md-html-file-icon">
+		<MimeType id="application/x-asmx" _description="ASP.NET web service" icon="md-html-file-icon" isText="true">
 			<File pattern="*.asmx" />
 		</MimeType>
-		<MimeType id="application/x-asix" _description="ASP.NET image generator" icon="md-html-file-icon">
+		<MimeType id="application/x-asix" _description="ASP.NET image generator" icon="md-html-file-icon" isText="true">
 			<File pattern="*.asix" />
 		</MimeType>
-		<MimeType id="application/x-master-page" _description="ASP.NET master page" icon="md-html-file-icon">
+		<MimeType id="application/x-master-page" _description="ASP.NET master page" icon="md-html-file-icon" isText="true">
 			<File pattern="*.master" />
 		</MimeType>
 	</Extension>
