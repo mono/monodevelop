@@ -122,6 +122,24 @@ namespace Mono.CSharp
 			if (!d.ParseArguments (args))
 				return null;
 
+			//
+			// If we are an exe, require a source file for the entry point
+			//
+			if (RootContext.Target == Target.Exe || RootContext.Target == Target.WinExe || RootContext.Target == Target.Module) {
+				if (d.first_source == null) {
+					Report.Error (2008, "No files to compile were specified");
+					return null;
+				}
+			}
+
+			//
+			// If there is nothing to put in the assembly, and we are not a library
+			//
+			if (d.first_source == null && embedded_resources == null) {
+				Report.Error (2008, "No files to compile were specified");
+				return null;
+			}
+
 			return d;
 		}
 
@@ -206,7 +224,7 @@ namespace Mono.CSharp
 			return cu;
 		}	
 		
-		CompilationUnit Parse (SeekableStreamReader reader, SourceFile file)
+		public CompilationUnit Parse (SeekableStreamReader reader, SourceFile file)
 		{
 			CompilationUnit cu = new CompilationUnit (file);
 
@@ -586,7 +604,7 @@ namespace Mono.CSharp
 			Location.AddFile (f);
 		}
 
-		bool ParseArguments (string[] args)
+		public bool ParseArguments (string[] args)
 		{
 			references = new ArrayList ();
 			external_aliases = new Hashtable ();
@@ -660,25 +678,6 @@ namespace Mono.CSharp
 				}
 
 				ProcessSourceFiles (arg, false);
-			}
-
-			//
-			// If we are an exe, require a source file for the entry point
-			//
-			if (RootContext.Target == Target.Exe || RootContext.Target == Target.WinExe || RootContext.Target == Target.Module) {
-				if (first_source == null) {
-					Report.Error (2008, "No files to compile were specified");
-					return false;
-				}
-
-			}
-
-			//
-			// If there is nothing to put in the assembly, and we are not a library
-			//
-			if (first_source == null && embedded_resources == null) {
-				Report.Error (2008, "No files to compile were specified");
-				return false;
 			}
 
 			return true;
@@ -1512,6 +1511,12 @@ namespace Mono.CSharp
 			Report.Error (2007, "Unrecognized command-line option: `{0}'", option);
 		}
 
+		public Encoding Encoding {
+			get {
+				return encoding;
+			}
+		}
+
 		static string [] AddArgs (string [] args, string [] extra_args)
 		{
 			string [] new_args;
@@ -1959,13 +1964,36 @@ namespace Mono.CSharp
 		{
 			Reset ();
 
-			Driver d = Driver.Create (args);
-			if (d == null)
-				return null;
+			try {
+				Report.SetMessageRecorder (recorder);
+				Driver d = Driver.Create (args);
+				if (d == null)
+					return null;
+
+				return d.Parse ();
+			} finally {
+				Report.SetMessageRecorder (null);
+			}
+		}
+
+		//
+		// Parses stream
+		//
+		public static Dom.ICompilationUnit ParseStream (Stream stream, string fileName, string [] args, Report.IMessageRecorder recorder)
+		{
+			Reset ();
 
 			try {
 				Report.SetMessageRecorder (recorder);
-				return d.Parse ();
+				Driver d = new Driver ();
+				if (!d.ParseArguments (args))
+					return null;
+
+				Location.AddFile (fileName);
+				Location.Initialize ();
+
+				SeekableStreamReader reader = new SeekableStreamReader (stream, d.Encoding);
+				return d.Parse (reader, Location.SourceFiles [0]);
 			} finally {
 				Report.SetMessageRecorder (null);
 			}
