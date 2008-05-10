@@ -43,6 +43,7 @@ namespace Mono.CSharp {
 		
 		public override Expression CreateExpressionTree (EmitContext ec)
 		{
+			// HACK: change type to be object
 			type = TypeManager.object_type;
 			return base.CreateExpressionTree (ec);
 		}		
@@ -82,8 +83,16 @@ namespace Mono.CSharp {
 
 		public override Constant ConvertImplicitly (Type targetType)
 		{
+			// FIXME: Null literal should be of object type
+			//if (targetType == TypeManager.object_type)
+			//	return this;
+		
 			if (targetType.IsPointer)
 				return new EmptyConstantCast (NullPointer.Null, targetType);
+
+			// Exlude internal compiler types
+			if (targetType == TypeManager.anonymous_method_type)
+				return null;
 
 			if (TypeManager.IsReferenceType (targetType))
 				return new EmptyConstantCast (this, targetType);
@@ -106,8 +115,11 @@ namespace Mono.CSharp {
 			get { return true; }
 		}
 
-		public override bool IsNegative 
-		{
+		public override bool IsLiteral {
+			get { return true; }
+		}
+
+		public override bool IsNegative {
 			get { return false; }
 		}
 
@@ -115,8 +127,7 @@ namespace Mono.CSharp {
 			get { return true; }
 		}
 
-		public override bool IsZeroInteger 
-		{
+		public override bool IsZeroInteger {
 			get { return true; }
 		}
 
@@ -161,6 +172,10 @@ namespace Mono.CSharp {
 			type = TypeManager.bool_type;
 			return this;
 		}
+
+		public override bool IsLiteral {
+			get { return true; }
+		}
 	}
 
 	public class CharLiteral : CharConstant {
@@ -172,6 +187,10 @@ namespace Mono.CSharp {
 		{
 			type = TypeManager.char_type;
 			return this;
+		}
+
+		public override bool IsLiteral {
+			get { return true; }
 		}
 	}
 
@@ -201,6 +220,9 @@ namespace Mono.CSharp {
 			return base.ConvertImplicitly (type);
 		}
 
+		public override bool IsLiteral {
+			get { return true; }
+		}
 	}
 
 	public class UIntLiteral : UIntConstant {
@@ -213,6 +235,10 @@ namespace Mono.CSharp {
 			type = TypeManager.uint32_type;
 			return this;
 		}
+
+		public override bool IsLiteral {
+			get { return true; }
+		}
 	}
 	
 	public class LongLiteral : LongConstant {
@@ -223,8 +249,11 @@ namespace Mono.CSharp {
 		public override Expression DoResolve (EmitContext ec)
 		{
 			type = TypeManager.int64_type;
-
 			return this;
+		}
+
+		public override bool IsLiteral {
+			get { return true; }
 		}
 	}
 
@@ -237,6 +266,10 @@ namespace Mono.CSharp {
 		{
 			type = TypeManager.uint64_type;
 			return this;
+		}
+
+		public override bool IsLiteral {
+			get { return true; }
 		}
 	}
 	
@@ -251,6 +284,11 @@ namespace Mono.CSharp {
 			type = TypeManager.float_type;
 			return this;
 		}
+
+		public override bool IsLiteral {
+			get { return true; }
+		}
+
 	}
 
 	public class DoubleLiteral : DoubleConstant {
@@ -286,6 +324,11 @@ namespace Mono.CSharp {
 				"Literal of type double cannot be implicitly converted to type `{0}'. Add suffix `{1}' to create a literal of this type",
 				type, suffix);
 		}
+
+		public override bool IsLiteral {
+			get { return true; }
+		}
+
 	}
 
 	public class DecimalLiteral : DecimalConstant {
@@ -297,6 +340,10 @@ namespace Mono.CSharp {
 		{
 			type = TypeManager.decimal_type;
 			return this;
+		}
+
+		public override bool IsLiteral {
+			get { return true; }
 		}
 	}
 
@@ -311,5 +358,10 @@ namespace Mono.CSharp {
 
 			return this;
 		}
+
+		public override bool IsLiteral {
+			get { return true; }
+		}
+
 	}
 }

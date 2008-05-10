@@ -646,6 +646,11 @@ namespace Mono.CSharp {
 				get { return scope; }
 			}
 
+			public override Expression CreateExpressionTree (EmitContext ec)
+			{
+				throw new NotSupportedException ("ET");
+			}
+
 			public override Expression DoResolve (EmitContext ec)
 			{
 				if (scope_ctor != null)
@@ -1216,9 +1221,8 @@ namespace Mono.CSharp {
 		// Returns true if the body of lambda expression can be implicitly
 		// converted to the delegate of type `delegate_type'
 		//
-		public bool ImplicitStandardConversionExists (Type delegate_type)
+		public bool ImplicitStandardConversionExists (EmitContext ec, Type delegate_type)
 		{
-			EmitContext ec = EmitContext.TempEc;
 			using (ec.Set (EmitContext.Flags.ProbingMode)) {
 				return Compatible (ec, delegate_type) != null;
 			}
@@ -1423,6 +1427,11 @@ namespace Mono.CSharp {
 		}
 
 		protected virtual Expression CreateExpressionTree (EmitContext ec, Type delegate_type)
+		{
+			return CreateExpressionTree (ec);
+		}
+
+		public override Expression CreateExpressionTree (EmitContext ec)
 		{
 			Report.Error (1946, loc, "An anonymous method cannot be converted to an expression tree");
 			return null;
@@ -1643,6 +1652,9 @@ namespace Mono.CSharp {
 			
 			if (ec.IsInFieldInitializer)
 				flags |= EmitContext.Flags.InFieldInitializer;
+
+			if (ec.IsInUnsafeScope)
+				flags |= EmitContext.Flags.InUnsafe;
 			
 			// HACK: Flag with 0 cannot be set 
 			if (flags != 0)
@@ -1789,6 +1801,12 @@ namespace Mono.CSharp {
 		public override string GetSignatureForError ()
 		{
 			return TypeManager.CSharpName (DelegateType);
+		}
+
+		public override Expression CreateExpressionTree (EmitContext ec)
+		{
+			Report.Error (1945, loc, "An expression tree cannot contain an anonymous method expression");
+			return null;
 		}
 
 		//
@@ -1938,6 +1956,11 @@ namespace Mono.CSharp {
 			this.am = am;
 		}
 
+		public override Expression CreateExpressionTree (EmitContext ec)
+		{
+			return am.CreateExpressionTree (ec);
+		}
+
 		public override Expression DoResolve (EmitContext ec)
 		{
 			eclass = ExprClass.Value;
@@ -2042,7 +2065,7 @@ namespace Mono.CSharp {
 				}
 
 				c.Block.AddStatement (new StatementExpression (
-					new Assign (new MemberAccess (new This (p.Location), f.Name),
+					new SimpleAssign (new MemberAccess (new This (p.Location), f.Name),
 						c.Block.GetParameterReference (p.Name, p.Location))));
 
 				ToplevelBlock get_block = new ToplevelBlock (p.Location);
@@ -2164,7 +2187,7 @@ namespace Mono.CSharp {
 			// Equals (object obj) override
 			//
 			equals_block.AddStatement (new StatementExpression (
-				new Assign (other_variable,
+				new SimpleAssign (other_variable,
 					new As (equals_block.GetParameterReference ("obj", loc),
 						current_type, loc), loc)));
 
@@ -2202,7 +2225,7 @@ namespace Mono.CSharp {
 			hashcode_block.AddVariable (TypeManager.system_int32_expr, "hash", loc);
 			LocalVariableReference hash_variable = new LocalVariableReference (hashcode_block, "hash", loc);
 			hashcode_block.AddStatement (new StatementExpression (
-				new Assign (hash_variable, rs_hashcode)));
+				new SimpleAssign (hash_variable, rs_hashcode)));
 
 			hashcode_block.AddStatement (new StatementExpression (
 				new CompoundAssign (Binary.Operator.Addition, hash_variable,

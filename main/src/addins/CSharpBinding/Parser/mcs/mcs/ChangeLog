@@ -1,3 +1,284 @@
+2008-05-10  Marek Safar  <marek.safar@gmail.com>
+
+	* driver.cs: Split Parse.
+	
+	* location.cs (LookupFile): Uses string.Empty.
+
+2008-05-07  Marek Safar  <marek.safar@gmail.com>
+
+	* expression.cs, parameter.cs: Small ParameterReference clean up.
+
+2008-05-07  Marek Safar  <marek.safar@gmail.com>
+
+	* anonymous.cs, codegen.cs, convert.cs, ecore.cs: Removed uber ugly TempEc
+	hack. Fixes #387502.
+
+2008-05-06  Martin Baulig  <martin@ximian.com>
+
+	* class.cs (Constructor.Emit): Fix the logic whether to emit
+	symbol information.
+
+2008-05-06  Raja R Harinath  <harinath@hurrynot.org>
+
+	Fix #385503
+	* iterators.cs (Iterator.CurrentBlock.DoEmit): Don't emit
+	InvalidOperationException when the iterator is before the start or
+	after the end.
+
+2008-05-06  Marek Safar  <marek.safar@gmail.com>
+
+	* nullable.cs (NullCoalescingOperator): Result is underlying type of left,
+	when left is nullable type.
+
+2008-05-06  Marek Safar  <marek.safar@gmail.com>
+
+	A fix for bug #386628
+	* expression.cs (LocalVariableReference): Continue in resolving when
+	variable is not assigned.
+
+2008-05-05  Marek Safar  <marek.safar@gmail.com>
+
+	* nullable.cs, statement.cs (Unwrap): Store non-variable expression in all
+	nullable operations.
+
+2008-05-04  Marek Safar  <marek.safar@gmail.com>
+
+	* nullable.cs, statement.cs (Unwrap): Don't duplicate variable expressions,
+	it saves many redundant temporary variables for nullable operations.
+
+2008-05-03  Marek Safar  <marek.safar@gmail.com>
+
+	* assign.cs: EventAddOrRemove is a statement and cannot have a type.
+	
+	* cfold.cs, constant.cs, expression.cs: Share Error_OperatorCannotBeApplied
+	method.
+	
+	* nullable.cs: Constant coalescing operator optimizations.
+
+2008-05-03  Marek Safar  <marek.safar@gmail.com>
+
+	* constant.cs: Use unsigned conversion for values which are unsigned only.
+
+2008-05-03  Marek Safar  <marek.safar@gmail.com>
+
+	* convert.cs, literal.cs, nullabel.cs, typemanager.cs: Implemeted null 
+	coalescing operator as it should be.
+
+2008-05-02  Marek Safar  <marek.safar@gmail.com>
+
+	A fix for bug #371016
+	* expression.cs: All predefined delegate operators require implicit method
+	group conversion.
+	
+2008-05-02  Marek Safar  <marek.safar@gmail.com>
+
+	* constant.cs: Emit long constant as uint when fits the range.
+	
+	* convert.cs, expression.cs: Fixed few unsafe conversions.
+
+2008-05-02  Marek Safar  <marek.safar@gmail.com>
+
+	* convert.cs, literal.cs: Don't wrap implicit reference conversion to object
+
+2008-05-02  Raja R Harinath  <harinath@hurrynot.org>
+
+	Fix #385758
+	* convert.cs (ImplicitNumericConversion): Don't modify the type of
+	'expr'.
+	* ecore.cs (EmptyCast.Create): Flatten nested EmptyCasts.
+
+2008-05-01  Marek Safar  <marek.safar@gmail.com>
+
+	* constant.cs, literal.cs: IsLiteral property for error reporting.
+	
+	* ecore.cs, expression.cs: Implemented Property expression.
+
+2008-05-01  Marek Safar  <marek.safar@gmail.com>
+
+	* class.cs, modifiers.cs, flowanalysis.cs: New BACKING_FIELD flag.
+	
+	* nullable.cs: Implemented nullable coalescing null operator.
+
+	* ecore.cs, expression.cs: Expression trees work.
+
+2008-05-01  Marek Safar  <marek.safar@gmail.com>
+
+	* ecore.cs: CreateExpressionTree is finally abstract.
+
+	* expression.cs, linq.cs: Updated.
+
+2008-05-01  Marek Safar  <marek.safar@gmail.com>
+
+	* expression.cs, ecore.cs: Block base access expression inside expression
+	tree.
+
+2008-05-01  Marek Safar  <marek.safar@gmail.com>
+
+	A fix for bug #385058
+	* expression.cs: User-defined operator implementations always take
+	precedence over predefined operator implementations.
+
+2008-04-30  Marek Safar  <marek.safar@gmail.com>
+
+	* assign.cs, anonymous.cs, lambda.cs, nullable.cs, ecore.cs, linq.cs,
+	class.cs, iterators.cs, expression.cs, attribute.cs: Filled a few more
+	expression tree conversions.
+	
+2008-04-30  Marek Safar  <marek.safar@gmail.com>
+
+	* typemanager.cs, ecore.cs, class.cs, expression.cs, doc.cs: Merged all
+	operators method details to Operator class.
+
+2008-04-30  Marek Safar  <marek.safar@gmail.com>
+
+	* anonymous.cs: Pass unsafe flags to anonymous container.
+	
+	* ecore.cs, expression.cs, statement.cs: Block unsafe pointer operations
+	inside expression tree.
+
+2008-04-29  Martin Baulig  <martin@ximian.com>
+
+	* cs-tokenizer.cs (Tokenizer.Position): Added `line'.
+	(Tokenizer.PopPosition): Also restore the `line'.
+
+2008-04-29  Marek Safar  <marek.safar@gmail.com>
+
+	* delegate.cs: Implemented Invoke expression.
+
+2008-04-29  Marek Safar  <marek.safar@gmail.com>
+
+	* expression.cs: Fixed equality reference comparison regression.
+
+2008-04-29  Marek Safar  <marek.safar@gmail.com>
+
+	* ecore.cs: Clean up EmptyCast hack.
+	
+	* expression.cs, nullable.cs: Implemented enum binary and unary operations
+	using correct conversion rules. Also fixes #383993.
+
+2008-04-28  Martin Baulig  <martin@ximian.com>
+
+	* class.cs (Constructor.Emit): Don't emit debugging information
+	for generated default .ctor's.
+
+2008-04-28  Marek Safar  <marek.safar@gmail.com>
+
+	* convert.cs: Empty-cast ushort to int conversion.
+
+2008-04-28  Marek Safar  <marek.safar@gmail.com>
+
+	A fix for bug #384191
+	* ecore.cs, expression.cs: Fixed expression cloning.
+
+2008-04-28  Marek Safar  <marek.safar@gmail.com>
+
+	* ecore.cs, delegate.cs, assign.cs: Few tweaks for recent changes.
+
+2008-04-28  Raja R Harinath  <harinath@hurrynot.org>
+
+	Fix #381559, test-638.cs, test-639.cs
+	* assign.cs (CompoundAssign.Helper): New wrapper.
+	(CompoundAssign.DoResolve): Use it to wrap the nested 'target'
+	access.
+	* ecore.cs (MethodGroupExpr.VerifyArgumentsCompat) <params arguments>:
+	Pass unconverted expressions to the params array creation expression.
+	(FieldExpr.EmitAssign): Don't special-case StringConcat.
+	(PropertyExpr.EmitAssign): Likewise.
+	* expression.cs (ArrayCreation.ResolveArrayElement): Keep track of the
+	element if it is of kind CompoundAssign.Helper.
+	(ArrayCreation.Emit): If we saw a CompoundAssign.Helper, emit it
+	first before anything else.
+	(ArrayAccess.EmitAssign): Don't special-case StringConcat.
+	(ArrayAccess.LoadArrayAndArguments): Simplify.
+
+2008-04-27  Marek Safar  <marek.safar@gmail.com>
+
+	* expression.cs: Fixed cloning of typeof(void).
+
+2008-04-27  Raja R Harinath  <harinath@hurrynot.org>
+
+	* assign.cs (Assign.DoResolve): Remove support for EventExprs.
+	(Assign.Emit): Likewise.  Move it to ...
+	(CompoundAssign.DoResolve): ... here and ...
+	(CompoundAssign.Emit): ... here.
+	(EventAddOrRemove): New helper to handle += and -= on events, and
+	avoid the use of BinaryDelegates.
+	* ecore.cs (EventExpr.DoResolveLValue): Emit CS0070 unconditionally.
+	(EventExpr.EmitAddOrRemove): Improve.
+	* delegate.cs (DelegateInvocation.DoResolve): Simplify slightly.
+
+	* cs-parser.jay (type) <namespace_or_type_name variant>: Don't
+	create VarExprs for 'foo.bar.var'.
+	* ecore.cs (VarExpr.InferType): Rename from DoResolveLValue, which
+	is a highly inappropriate name for its functionality.
+
+2008-04-26  Raja R Harinath  <harinath@hurrynot.org>
+
+	Simplify handling of multiple assignments
+	* assign.cs (Assign): Clear out all 'embedded assign' gunk.  Make
+	inheritable-only.
+	(SimpleAssign): New.  Class to be used for normal assignments.
+	* anonymous.cs, class.cs, cs-parser.jay: Update to changes.
+	* expression.cs, parameter.cs, statement.cs: Likewise.
+
+2008-04-25  Marek Safar  <marek.safar@gmail.com>
+
+	* ecore.cs, expression.cs, nullable.cs: Implemeted enum binary add operation
+	for incompatible underlying types, more to come, uff.
+
+2008-04-26  Raja R Harinath  <harinath@hurrynot.org>
+
+	Fix gtest-388.cs
+	* expression.cs (VariableReference.EmitAssign) <source is NewInstance>:
+	Handle 'leave_copy'.
+
+2008-04-25  Marek Safar  <marek.safar@gmail.com>
+
+	* expression.cs, nullable.cs: Implemented UnaryPlus expression.
+
+2008-04-24  Raja R Harinath  <harinath@hurrynot.org>
+
+	Fix test-636.cs.  Sprinkle a few more 'EmitSideEffect's around
+	* expression.cs (Unary.TryReduceConstant): Unwrap SideEffectConstant.
+	* statement.cs (While, Do, For): Allow test to have side effects.
+	(For.DoEmit): Always emit InitStatement.
+
+	Fix test-635.cs
+	* expression.cs (Binary.DoResolve) <BitwiseAnd with zero constant>:
+	Always create SideEffectConstant.
+	(Binary.EnumLiftUp): Don't assume that the enumeration constant is
+	of type EnumConstant.
+
+	* expression.cs (Binary.EmitBranchable) <Equality with constant>:
+	Handle 'right' being SideEffectConstant of type 'bool'.
+
+	* expression.cs (Binary.EmitBranchable) <Equality with constant>:
+	Use left.EmitBranchable instead of open coding it, so as to
+	improve optimization opportunities.
+
+	* constant.cs (SideEffectConstant.EmitSideEffect): Simplify slightly.
+
+	* ecore.cs (Expression.EmitBranchable): Document some non-obvious
+	assumptions.
+	(Expression.EmitSideEffect): Document.
+
+2008-04-23  Marek Safar  <marek.safar@gmail.com>
+
+	* expression.cs: Implemented NewArrayBounds, TypeIs, and TypeAs expressions.
+
+2008-04-23  Marek Safar  <marek.safar@gmail.com>
+
+	* constant.cs, statement.cs: Use EmitSideEffect for constant if statement.
+
+2008-04-23  Marek Safar  <marek.safar@gmail.com>
+
+	* ecore.cs, expression.cs, delegate.cs: Implemeted delegate instantiation
+	conversion to expression tree.
+
+2008-04-23  Marek Safar  <marek.safar@gmail.com>
+
+	* ecore.cs: Removed unused expression.
+
 2008-04-22  Marek Safar  <marek.safar@gmail.com>
 
 	* expression.cs: Implemented NegateChecked and New expressions.

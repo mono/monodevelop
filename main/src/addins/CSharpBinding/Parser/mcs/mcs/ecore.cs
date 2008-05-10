@@ -393,12 +393,6 @@ namespace Mono.CSharp {
 				return;
 			}
 
-			if (Type != TypeManager.string_type && this is Constant && !(this is EmptyConstantCast)) {
-				Report.Error (31, loc, "Constant value `{0}' cannot be converted to a `{1}'",
-					((Constant)(this)).GetValue ().ToString (), TypeManager.CSharpName (target));
-				return;
-			}
-
 			Report.Error (29, loc, "Cannot implicitly convert type `{0}' to `{1}'",
 				TypeManager.CSharpName (type),
 				TypeManager.CSharpName (target));
@@ -585,12 +579,19 @@ namespace Mono.CSharp {
 		/// </remarks>
 		public abstract void Emit (EmitContext ec);
 
+		// Emit code to branch to @target if this expression is equivalent to @on_true.
+		// The default implementation is to emit the value, and then emit a brtrue or brfalse.
+		// Subclasses can provide more efficient implementations, but those MUST be equivalent,
+		// including the use of conditional branches.  Note also that a branch MUST be emitted
 		public virtual void EmitBranchable (EmitContext ec, Label target, bool on_true)
 		{
 			Emit (ec);
 			ec.ig.Emit (on_true ? OpCodes.Brtrue : OpCodes.Brfalse, target);
 		}
 
+		// Emit this expression for its side effects, not for its value.
+		// The default implementation is to emit the value, and then throw it away.
+		// Subclasses can provide more efficient implementations, but those MUST be equivalent
 		public virtual void EmitSideEffect (EmitContext ec)
 		{
 			Emit (ec);
@@ -907,6 +908,11 @@ namespace Mono.CSharp {
 			throw new NotImplementedException ();
 		}
 
+		protected void Error_PointerInsideExpressionTree ()
+		{
+			Report.Error (1944, loc, "An expression tree cannot contain an unsafe pointer operation");
+		}
+
 		/// <summary>
 		///   Returns an expression that can be used to invoke operator true
 		///   on the expression if it exists.
@@ -928,7 +934,8 @@ namespace Mono.CSharp {
 		static Expression GetOperatorTrueOrFalse (EmitContext ec, Expression e, bool is_true, Location loc)
 		{
 			MethodGroupExpr operator_group;
-			operator_group = MethodLookup (ec.ContainerType, e.Type, is_true ? "op_True" : "op_False", loc) as MethodGroupExpr;
+			string mname = Operator.GetMetadataName (is_true ? Operator.OpType.True : Operator.OpType.False);
+			operator_group = MethodLookup (ec.ContainerType, e.Type, mname, loc) as MethodGroupExpr;
 			if (operator_group == null)
 				return null;
 
@@ -1244,11 +1251,10 @@ namespace Mono.CSharp {
 			return cloned;
 		}
 
-		public virtual Expression CreateExpressionTree (EmitContext ec)
-		{
-			throw new NotImplementedException (
-				"Expression tree conversion not implemented for " + GetType ());
-		}
+		//
+		// Implementation of expression to expression tree conversion
+		//
+		public abstract Expression CreateExpressionTree (EmitContext ec);
 
 		protected Expression CreateExpressionFactoryCall (string name, ArrayList args)
 		{
@@ -1345,6 +1351,10 @@ namespace Mono.CSharp {
 			ArrayList args = new ArrayList (2);
 			args.Add (new Argument (child.CreateExpressionTree (ec)));
 			args.Add (new Argument (new TypeOf (new TypeExpression (type, loc), loc)));
+
+			if (type.IsPointer || child.Type.IsPointer)
+				Error_PointerInsideExpressionTree ();
+
 			return CreateExpressionFactoryCall (ec.CheckState ? "ConvertChecked" : "Convert", args);
 		}
 
@@ -1372,6 +1382,10 @@ namespace Mono.CSharp {
 
 			target.child = child.Clone (clonectx);
 		}
+
+		public override bool IsNull {
+			get { return child.IsNull; }
+		}
 	}
 
 	public class EmptyCast : TypeCast {
@@ -1379,12 +1393,16 @@ namespace Mono.CSharp {
 			: base (child, target_type)
 		{
 		}
-		
+
 		public static Expression Create (Expression child, Type type)
 		{
 			Constant c = child as Constant;
 			if (c != null)
 				return new EmptyConstantCast (c, type);
+
+			EmptyCast e = child as EmptyCast;
+			if (e != null)
+				return new EmptyCast (e.child, type);
 
 			return new EmptyCast (child, type);
 		}
@@ -1398,7 +1416,6 @@ namespace Mono.CSharp {
 		{
 			child.EmitSideEffect (ec);
 		}
-
 	}
 
 	/// <summary>
@@ -1588,6 +1605,9 @@ namespace Mono.CSharp {
 			ArrayList args = new ArrayList (2);
 			args.Add (new Argument (child.CreateExpressionTree (ec)));
 			args.Add (new Argument (new TypeOf (new TypeExpression (type, loc), loc)));
+			if (type.IsPointer)
+				Error_PointerInsideExpressionTree ();
+
 			return CreateExpressionFactoryCall ("Convert", args);
 		}
 
@@ -2752,6 +2772,12 @@ namespace Mono.CSharp {
 	///   section 10.8.1 (Fully Qualified Names).
 	/// </summary>
 	public abstract class FullNamedExpression : Expression, Dom.ITypeName {
+
+		public override Expression CreateExpressionTree (EmitContext ec)
+		{
+			throw new NotSupportedException ("ET");
+		}
+
 		public override FullNamedExpression ResolveAsTypeStep (IResolveContext ec, bool silent)
 		{
 			return this;
@@ -3052,6 +3078,11 @@ namespace Mono.CSharp {
 			loc = l;
 		}
 
+		protected override void CloneTo (CloneContext clonectx, Expression target)
+		{
+			// Nothing to clone
+		}
+
 		protected override TypeExpr DoResolveAsTypeStep (IResolveContext ec)
 		{
 			Expression expr;
@@ -3074,79 +3105,7 @@ namespace Mono.CSharp {
 			get { return name.Name; }
 		}
 	}
-/*
-	public class TypeAliasExpression : TypeExpr {
-		FullNamedExpression alias;
-		TypeExpr texpr;
-		TypeArguments args;
 
-		public TypeAliasExpression (FullNamedExpression alias, TypeArguments args, Location l)
-		{
-			this.alias = alias;
-			this.args = args;
-			loc = l;
-
-			eclass = ExprClass.Type;
-		}
-
-		protected override TypeExpr DoResolveAsTypeStep (IResolveContext ec)
-		{
-			texpr = alias.ResolveAsTypeTerminal (ec, false);
-			if (texpr == null)
-				return null;
-
-			Type type = texpr.Type;
-			int num_args = TypeManager.GetNumberOfTypeArguments (type);
-
-			if (args != null) {
-				if (num_args == 0) {
-					Report.Error (308, loc,
-						      "The non-generic type `{0}' cannot " +
-						      "be used with type arguments.",
-						      TypeManager.CSharpName (type));
-					return null;
-				}
-
-				ConstructedType ctype = new ConstructedType (type, args, loc);
-				return ctype.ResolveAsTypeTerminal (ec, false);
-			} else if (num_args > 0) {
-				Report.Error (305, loc,
-					      "Using the generic type `{0}' " +
-					      "requires {1} type arguments",
-					      TypeManager.CSharpName (type), num_args.ToString ());
-				return null;
-			}
-
-			return texpr;
-		}
-
-		public override bool CheckAccessLevel (DeclSpace ds)
-		{
-			return texpr.CheckAccessLevel (ds);
-		}
-
-		public override bool AsAccessible (DeclSpace ds)
-		{
-			return texpr.AsAccessible (ds);
-		}
-
-		public override bool IsClass {
-			get { return texpr.IsClass; }
-		}
-
-		public override bool IsValueType {
-			get { return texpr.IsValueType; }
-		}
-
-		public override bool IsInterface {
-			get { return texpr.IsInterface; }
-		}
-
-		public override bool IsSealed {
-			get { return texpr.IsSealed; }
-		}
-	}
-*/
 	/// <summary>
 	///   This class denotes an expression which evaluates to a member
 	///   of a struct or a class.
@@ -3201,6 +3160,11 @@ namespace Mono.CSharp {
 		{
 			Report.Error (176, loc, "Static member `{0}' cannot be accessed " +
 				      "with an instance reference, qualify it with a type name instead", name);
+		}
+
+		public static void Error_BaseAccessInExpressionTree (Location loc)
+		{
+			Report.Error (831, loc, "An expression tree may not contain a base access");
 		}
 
 		// TODO: possible optimalization
@@ -3721,10 +3685,20 @@ namespace Mono.CSharp {
 
 		public override Expression CreateExpressionTree (EmitContext ec)
 		{
-			Type t = best_candidate.IsConstructor ?
-				typeof (ConstructorInfo) : typeof (MethodInfo);
+			if (best_candidate == null) {
+				Report.Error (1953, loc, "An expression tree cannot contain an expression with method group");
+				return null;
+			}
 
-			return new Cast (new TypeExpression (t, loc), new TypeOfMethod (best_candidate, loc));
+			if (best_candidate.IsConstructor)
+				return new TypeOfConstructorInfo (best_candidate, loc);
+
+			IMethodData md = TypeManager.GetMethod (best_candidate);
+			if (md != null && md.IsExcluded ())
+				Report.Error (765, loc,
+					"Partial methods with only a defining declaration or removed conditional methods cannot be used in an expression tree");
+			
+			return new TypeOfMethodInfo (best_candidate, loc);
 		}
 		
 		override public Expression DoResolve (EmitContext ec)
@@ -3942,21 +3916,13 @@ namespace Mono.CSharp {
 				return 0;
 			}
 
-			// FIXME: Kill this abomination (EmitContext.TempEc)
-			EmitContext prevec = EmitContext.TempEc;
-			EmitContext.TempEc = ec;
-			try {
-				if (delegate_type != null ?
-					!Delegate.IsTypeCovariant (argument.Expr, parameter) :
-					!Convert.ImplicitConversionExists (ec, argument.Expr, parameter))
-					return 2;
+			if (delegate_type != null ?
+				!Delegate.IsTypeCovariant (argument.Expr, parameter) :
+				!Convert.ImplicitConversionExists (ec, argument.Expr, parameter))
+				return 2;
 
-				if (arg_mod != param_mod)
-					return 1;
-
-			} finally {
-				EmitContext.TempEc = prevec;
-			}
+			if (arg_mod != param_mod)
+				return 1;
 
 			return 0;
 		}
@@ -4519,7 +4485,7 @@ namespace Mono.CSharp {
 
 					continue;
 				}
-		
+
 				Expression conv;
 				if (TypeManager.IsEqual (a.Type, pt)) {
 					conv = a.Expr;
@@ -4533,12 +4499,14 @@ namespace Mono.CSharp {
 				// Convert params arguments to an array initializer
 				//
 				if (params_initializers != null) {
-					params_initializers.Add (conv);
+					// we choose to use 'a.Expr' rather than 'conv' so that
+					// we don't hide the kind of expression we have (esp. CompoundAssign.Helper)
+					params_initializers.Add (a.Expr);
 					arguments.RemoveAt (a_idx--);
 					--arg_count;
 					continue;
 				}
-				
+
 				// Update the argument with the implicit conversion
 				a.Expr = conv;
 			}
@@ -4625,7 +4593,7 @@ namespace Mono.CSharp {
 
 		public override Expression CreateExpressionTree (EmitContext ec)
 		{
-			throw new NotSupportedException ();
+			throw new NotSupportedException ("ET");
 		}
 
 		public override Expression DoResolve (EmitContext ec)
@@ -5024,10 +4992,7 @@ namespace Mono.CSharp {
 				return;
 			}
 
-			//
-			// String concatenation creates a new string instance 
-			//
-			prepared = prepare_for_load && !(source is StringConcat);
+			prepared = prepare_for_load;
 			EmitInstance (ec, prepared);
 
 			source.Emit (ec);			
@@ -5176,23 +5141,30 @@ namespace Mono.CSharp {
 
 		public override Expression CreateExpressionTree (EmitContext ec)
 		{
+			ArrayList args;
 			if (IsSingleDimensionalArrayLength ()) {
-				ArrayList args = new ArrayList (1);
+				args = new ArrayList (1);
 				args.Add (new Argument (InstanceExpression.CreateExpressionTree (ec)));
 				return CreateExpressionFactoryCall ("ArrayLength", args);
 			}
 
-			// TODO: it's waiting for PropertyExpr refactoring
-			//ArrayList args = new ArrayList (2);
-			//args.Add (new Argument (InstanceExpression.CreateExpressionTree (ec)));
-			//args.Add (getter expression);
-			//return CreateExpressionFactoryCall ("Property", args);
-			return base.CreateExpressionTree (ec);
+			if (is_base) {
+				Error_BaseAccessInExpressionTree (loc);
+				return null;
+			}
+
+			args = new ArrayList (2);
+			if (InstanceExpression == null)
+				args.Add (new Argument (new NullLiteral (loc)));
+			else
+				args.Add (new Argument (InstanceExpression.CreateExpressionTree (ec)));
+			args.Add (new Argument (new TypeOfMethodInfo (getter, loc)));
+			return CreateExpressionFactoryCall ("Property", args);
 		}
 
 		public Expression CreateSetterTypeOfExpression ()
 		{
-			return new Cast (new TypeExpression (typeof (MethodInfo), loc), new TypeOfMethod (setter, loc));
+			return new TypeOfMethodInfo (setter, loc);
 		}
 
 		public override Type DeclaringType {
@@ -5508,14 +5480,9 @@ namespace Mono.CSharp {
 			Expression my_source = source;
 
 			if (prepare_for_load) {
-				if (source is StringConcat)
-					EmitInstance (ec, false);
-				else
-					prepared = true;					
-
+				prepared = true;
 				source.Emit (ec);
 				
-				prepared = true;
 				if (leave_copy) {
 					ec.ig.Emit (OpCodes.Dup);
 					if (!is_static) {
@@ -5632,7 +5599,6 @@ namespace Mono.CSharp {
 			return base.ResolveMemberAccess (ec, left, loc, original);
 		}
 
-
 		bool InstanceResolve (EmitContext ec, bool must_do_cs1540_check)
 		{
 			if (is_static) {
@@ -5678,12 +5644,14 @@ namespace Mono.CSharp {
 
 		public override Expression CreateExpressionTree (EmitContext ec)
 		{
-			throw new NotSupportedException ();
+			throw new NotSupportedException ("ET");
 		}
 
 		public override Expression DoResolveLValue (EmitContext ec, Expression right_side)
 		{
-			return DoResolve (ec);
+			// contexts where an LValue is valid have already devolved to FieldExprs
+			Error_CannotAssign ();
+			return null;
 		}
 
 		public override Expression DoResolve (EmitContext ec)
@@ -5698,14 +5666,25 @@ namespace Mono.CSharp {
 
 			if (!InstanceResolve (ec, must_do_cs1540_check))
 				return null;
+
+			if (!ec.IsInCompoundAssignment) {
+				Error_CannotAssign ();
+				return null;
+			}
 			
 			return this;
 		}		
 
 		public override void Emit (EmitContext ec)
 		{
-			Report.Error (70, loc, "The event `{0}' can only appear on the left hand side of += or -= "+
-				      "(except on the defining type)", GetSignatureForError ());
+			Error_CannotAssign ();
+		}
+
+		public void Error_CannotAssign ()
+		{
+			Report.Error (70, loc,
+				"The event `{0}' can only appear on the left hand side of += or -= when used outside of the type `{1}'",
+				GetSignatureForError (), TypeManager.CSharpName (EventInfo.DeclaringType));
 		}
 
 		public override string GetSignatureForError ()
@@ -5713,26 +5692,11 @@ namespace Mono.CSharp {
 			return TypeManager.CSharpSignature (EventInfo);
 		}
 
-		public void EmitAddOrRemove (EmitContext ec, Expression source)
+		public void EmitAddOrRemove (EmitContext ec, bool is_add, Expression source)
 		{
-			BinaryDelegate source_del = source as BinaryDelegate;
-			if (source_del == null) {
-				Emit (ec);
-				return;
-			}
-			Expression handler = source_del.Right;
-			
-			Argument arg = new Argument (handler, Argument.AType.Expression);
-			ArrayList args = new ArrayList ();
-				
-			args.Add (arg);
-			
-			if (source_del.IsAddition)
-				Invocation.EmitCall (
-					ec, IsBase, InstanceExpression, add_accessor, args, loc);
-			else
-				Invocation.EmitCall (
-					ec, IsBase, InstanceExpression, remove_accessor, args, loc);
+			ArrayList args = new ArrayList (1);
+			args.Add (new Argument (source, Argument.AType.Expression));
+			Invocation.EmitCall (ec, IsBase, InstanceExpression, is_add ? add_accessor : remove_accessor, args, loc);
 		}
 	}
 
@@ -5746,6 +5710,11 @@ namespace Mono.CSharp {
 			this.type = type;
 			this.loc = loc;
 			eclass = ExprClass.Value;
+		}
+
+		public override Expression CreateExpressionTree (EmitContext ec)
+		{
+			throw new NotSupportedException ("ET");
 		}
 		
 		public override Expression DoResolve (EmitContext ec)
@@ -5826,7 +5795,7 @@ namespace Mono.CSharp {
 			}
 		}
 
-		public override Expression DoResolveLValue (EmitContext ec, Expression right_side)
+		public bool InferType (EmitContext ec, Expression right_side)
 		{
 			if (type != null)
 				throw new InternalErrorException ("An implicitly typed local variable could not be redefined");
@@ -5835,11 +5804,11 @@ namespace Mono.CSharp {
 			if (type == TypeManager.null_type || type == TypeManager.void_type || type == TypeManager.anonymous_method_type) {
 				Report.Error (815, loc, "An implicitly typed local variable declaration cannot be initialized with `{0}'",
 				              right_side.GetSignatureForError ());
-				return null;
+				return false;
 			}
 
 			eclass = ExprClass.Variable;
-			return this;
+			return true;
 		}
 
 		protected override void Error_TypeOrNamespaceNotFound (IResolveContext ec)

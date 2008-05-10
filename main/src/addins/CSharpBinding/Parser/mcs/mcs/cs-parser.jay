@@ -3004,7 +3004,7 @@ type
 		if ((bool) $2) {
 			$$ = new ComposedCast (name.GetTypeExpression (), "?", lexer.Location);
 		} else {
-			if (RootContext.Version > LanguageVersion.ISO_2 && name.Name == "var")
+			if (RootContext.Version > LanguageVersion.ISO_2 && name.Left == null && name.Name == "var")
 				$$ = new VarExpr (name.Location);
 			else
 				$$ = name.GetTypeExpression ();
@@ -4120,7 +4120,7 @@ conditional_expression
 assignment_expression
 	: prefixed_unary_expression ASSIGN expression
 	  {
-		$$ = new Assign ((Expression) $1, (Expression) $3);
+		$$ = new SimpleAssign ((Expression) $1, (Expression) $3);
 	  }
 	| prefixed_unary_expression OP_MULT_ASSIGN expression
 	  {
@@ -4887,7 +4887,7 @@ for_statement
 				var = new LocalVariableReference (assign_block, decl.identifier, l);
 
 				if (expr != null) {
-					Assign a = new Assign (var, expr, decl.Location);
+					Assign a = new SimpleAssign (var, expr, decl.Location);
 					
 					assign_block.AddStatement (new StatementExpression (a));
 				}
@@ -5335,7 +5335,7 @@ using_statement
 
 			vars.Push (new DictionaryEntry (var, expr));
 
-			// Assign a = new Assign (var, expr, decl.Location);
+			// Assign a = new SimpleAssign (var, expr, decl.Location);
 			// assign_block.AddStatement (new StatementExpression (a));
 		}
 
@@ -5837,7 +5837,7 @@ Block declare_local_variables (Expression type, ArrayList variable_declarators, 
 		LocalVariableReference var;
 		var = new LocalVariableReference (implicit_block, decl.identifier, loc);
 
-		assign = new Assign (var, expr, decl.Location);
+		assign = new SimpleAssign (var, expr, decl.Location);
 
 		implicit_block.AddStatement (new StatementExpression (assign));
 	}

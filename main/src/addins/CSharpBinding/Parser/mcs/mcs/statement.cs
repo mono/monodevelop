@@ -305,35 +305,17 @@ namespace Mono.CSharp {
 			// If we're a boolean constant, Resolve() already
 			// eliminated dead code for us.
 			//
-			if (expr is Constant){
-				
-				//
-				// Simple bool constant
-				//
-				if (expr is BoolConstant) {
-					bool take = ((BoolConstant) expr).Value;
+			Constant c = expr as Constant;
+			if (c != null){
+				c.EmitSideEffect (ec);
 
-					if (take)
-						TrueStatement.Emit (ec);
-					else if (FalseStatement != null)
-						FalseStatement.Emit (ec);
-					
-					return;
-				}
-
-				//
-				// Bool constant with side-effects
-				//
-				expr.Emit (ec);
-				ig.Emit (OpCodes.Pop);
-
-				if (TrueStatement != null)
+				if (!c.IsDefaultValue)
 					TrueStatement.Emit (ec);
-				if (FalseStatement != null)
+				else if (FalseStatement != null)
 					FalseStatement.Emit (ec);
 
 				return;
-			}
+			}			
 			
 			expr.EmitBranchable (ec, false_target, false);
 			
@@ -400,8 +382,8 @@ namespace Mono.CSharp {
 			expr = Expression.ResolveBoolean (ec, expr, loc);
 			if (expr == null)
 				ok = false;
-			else if (expr is BoolConstant){
-				bool res = ((BoolConstant) expr).Value;
+			else if (expr is Constant){
+				bool res = !((Constant) expr).IsDefaultValue;
 
 				if (res)
 					infinite = true;
@@ -431,9 +413,10 @@ namespace Mono.CSharp {
 			//
 			// Dead code elimination
 			//
-			if (expr is BoolConstant){
-				bool res = ((BoolConstant) expr).Value;
+			if (expr is Constant){
+				bool res = !((Constant) expr).IsDefaultValue;
 
+				expr.EmitSideEffect (ec);
 				if (res)
 					ec.ig.Emit (OpCodes.Br, loop); 
 			} else
@@ -477,10 +460,10 @@ namespace Mono.CSharp {
 			//
 			// Inform whether we are infinite or not
 			//
-			if (expr is BoolConstant){
-				BoolConstant bc = (BoolConstant) expr;
+			if (expr is Constant){
+				bool value = !((Constant) expr).IsDefaultValue;
 
-				if (bc.Value == false){
+				if (value == false){
 					if (!Statement.ResolveUnreachable (ec, true))
 						return false;
 					empty = true;
@@ -508,8 +491,10 @@ namespace Mono.CSharp {
 		
 		protected override void DoEmit (EmitContext ec)
 		{
-			if (empty)
+			if (empty) {
+				expr.EmitSideEffect (ec);
 				return;
+			}
 
 			ILGenerator ig = ec.ig;
 			Label old_begin = ec.LoopBegin;
@@ -521,8 +506,10 @@ namespace Mono.CSharp {
 			//
 			// Inform whether we are infinite or not
 			//
-			if (expr is BoolConstant){
+			if (expr is Constant){
+				// expr is 'true', since the 'empty' case above handles the 'false' case
 				ig.MarkLabel (ec.LoopBegin);
+				expr.EmitSideEffect (ec);
 				Statement.Emit (ec);
 				ig.Emit (OpCodes.Br, ec.LoopBegin);
 					
@@ -598,10 +585,10 @@ namespace Mono.CSharp {
 				Test = Expression.ResolveBoolean (ec, Test, loc);
 				if (Test == null)
 					ok = false;
-				else if (Test is BoolConstant){
-					BoolConstant bc = (BoolConstant) Test;
+				else if (Test is Constant){
+					bool value = !((Constant) Test).IsDefaultValue;
 
-					if (bc.Value == false){
+					if (value == false){
 						if (!Statement.ResolveUnreachable (ec, true))
 							return false;
 						if ((Increment != null) &&
@@ -646,17 +633,19 @@ namespace Mono.CSharp {
 		
 		protected override void DoEmit (EmitContext ec)
 		{
-			if (empty)
+			if (InitStatement != null && InitStatement != EmptyStatement.Value)
+				InitStatement.Emit (ec);
+
+			if (empty) {
+				Test.EmitSideEffect (ec);
 				return;
+			}
 
 			ILGenerator ig = ec.ig;
 			Label old_begin = ec.LoopBegin;
 			Label old_end = ec.LoopEnd;
 			Label loop = ig.DefineLabel ();
 			Label test = ig.DefineLabel ();
-			
-			if (InitStatement != null && InitStatement != EmptyStatement.Value)
-				InitStatement.Emit (ec);
 
 			ec.LoopBegin = ig.DefineLabel ();
 			ec.LoopEnd = ig.DefineLabel ();
@@ -677,13 +666,15 @@ namespace Mono.CSharp {
 			if (Test != null){
 				//
 				// The Resolve code already catches the case for
-				// Test == BoolConstant (false) so we know that
+				// Test == Constant (false) so we know that
 				// this is true
 				//
-				if (Test is BoolConstant)
+				if (Test is Constant) {
+					Test.EmitSideEffect (ec);
 					ig.Emit (OpCodes.Br, loop);
-				else
+				} else {
 					Test.EmitBranchable (ec, loop, true);
+				}
 				
 			} else
 				ig.Emit (OpCodes.Br, loop);
@@ -3797,6 +3788,7 @@ namespace Mono.CSharp {
 		}
 	}
 
+	// Base class for statements that are implemented in terms of try...finally
 	public abstract class ExceptionStatement : ResumableStatement
 	{
 		bool code_follows;
@@ -4168,6 +4160,48 @@ namespace Mono.CSharp {
 		}
 
 		class StringEmitter : Emitter {
+			class StringPtr : Expression
+			{
+				LocalBuilder b;
+
+				public StringPtr (LocalBuilder b, Location l)
+				{
+					this.b = b;
+					eclass = ExprClass.Value;
+					type = TypeManager.char_ptr_type;
+					loc = l;
+				}
+
+				public override Expression CreateExpressionTree (EmitContext ec)
+				{
+					throw new NotSupportedException ("ET");
+				}
+
+				public override Expression DoResolve (EmitContext ec)
+				{
+					// This should never be invoked, we are born in fully
+					// initialized state.
+
+					return this;
+				}
+
+				public override void Emit (EmitContext ec)
+				{
+					if (TypeManager.int_get_offset_to_string_data == null) {
+						// TODO: Move to resolve !!
+						TypeManager.int_get_offset_to_string_data = TypeManager.GetPredefinedMethod (
+							TypeManager.runtime_helpers_type, "get_OffsetToStringData", loc, Type.EmptyTypes);
+					}
+
+					ILGenerator ig = ec.ig;
+
+					ig.Emit (OpCodes.Ldloc, b);
+					ig.Emit (OpCodes.Conv_I);
+					ig.Emit (OpCodes.Call, TypeManager.int_get_offset_to_string_data);
+					ig.Emit (OpCodes.Add);
+				}
+			}
+
 			LocalBuilder pinned_string;
 			Location loc;
 
@@ -4838,7 +4872,7 @@ namespace Mono.CSharp {
 
 		bool ResolveVariable (EmitContext ec)
 		{
-			ExpressionStatement a = new Assign (var, init, loc);
+			ExpressionStatement a = new SimpleAssign (var, init, loc);
 			a = a.ResolveStatement (ec);
 			if (a == null)
 				return false;
@@ -5693,7 +5727,7 @@ namespace Mono.CSharp {
 				if (conv == null)
 					return false;
 
-				assign = new Assign (variable, conv, loc);
+				assign = new SimpleAssign (variable, conv, loc);
 				if (assign.Resolve (ec) == null)
 					return false;
 

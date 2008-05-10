@@ -3914,7 +3914,7 @@ case 358:
 		if ((bool) yyVals[0+yyTop]) {
 			yyVal = new ComposedCast (name.GetTypeExpression (), "?", lexer.Location);
 		} else {
-			if (RootContext.Version > LanguageVersion.ISO_2 && name.Name == "var")
+			if (RootContext.Version > LanguageVersion.ISO_2 && name.Left == null && name.Name == "var")
 				yyVal = new VarExpr (name.Location);
 			else
 				yyVal = name.GetTypeExpression ();
@@ -5119,7 +5119,7 @@ case 579:
 case 580:
 #line 4122 "cs-parser.jay"
   {
-		yyVal = new Assign ((Expression) yyVals[-2+yyTop], (Expression) yyVals[0+yyTop]);
+		yyVal = new SimpleAssign ((Expression) yyVals[-2+yyTop], (Expression) yyVals[0+yyTop]);
 	  }
   break;
 case 581:
@@ -5892,7 +5892,7 @@ case 719:
 				var = new LocalVariableReference (assign_block, decl.identifier, l);
 
 				if (expr != null) {
-					Assign a = new Assign (var, expr, decl.Location);
+					Assign a = new SimpleAssign (var, expr, decl.Location);
 					
 					assign_block.AddStatement (new StatementExpression (a));
 				}
@@ -6327,7 +6327,7 @@ case 778:
 
 			vars.Push (new DictionaryEntry (var, expr));
 
-			/* Assign a = new Assign (var, expr, decl.Location);*/
+			/* Assign a = new SimpleAssign (var, expr, decl.Location);*/
 			/* assign_block.AddStatement (new StatementExpression (a));*/
 		}
 
@@ -9886,7 +9886,7 @@ Block declare_local_variables (Expression type, ArrayList variable_declarators, 
 		LocalVariableReference var;
 		var = new LocalVariableReference (implicit_block, decl.identifier, loc);
 
-		assign = new Assign (var, expr, decl.Location);
+		assign = new SimpleAssign (var, expr, decl.Location);
 
 		implicit_block.AddStatement (new StatementExpression (assign));
 	}

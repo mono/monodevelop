@@ -704,6 +704,25 @@ namespace Mono.CSharp {
 			return delegate_arguments;
 		}
 
+		public override Expression CreateExpressionTree (EmitContext ec)
+		{
+			MemberAccess ma = new MemberAccess (new MemberAccess (new QualifiedAliasMember ("global", "System", loc), "Delegate", loc), "CreateDelegate", loc);
+
+			ArrayList args = new ArrayList (3);
+			args.Add (new Argument (new TypeOf (new TypeExpression (type, loc), loc)));
+			args.Add (new Argument (new NullLiteral (loc)));
+			args.Add (new Argument (new TypeOfMethodInfo (delegate_method, loc)));
+			Expression e = new Invocation (ma, args).Resolve (ec);
+			if (e == null)
+				return null;
+
+			e = Convert.ExplicitConversion (ec, e, type, loc);
+			if (e == null)
+				return null;
+
+			return e.CreateExpressionTree (ec);
+		}
+
 		public override Expression DoResolve (EmitContext ec)
 		{
 			constructor_method = Delegate.GetConstructor (ec.ContainerType, type);
@@ -932,33 +951,30 @@ namespace Mono.CSharp {
 			this.Arguments = args;
 			this.loc = loc;
 		}
+		
+		public override Expression CreateExpressionTree (EmitContext ec)
+		{
+			ArrayList args;
+			if (Arguments == null)
+				args = new ArrayList (1);
+			else
+				args = new ArrayList (Arguments.Count + 1);
+
+			args.Add (new Argument (InstanceExpr.CreateExpressionTree (ec)));
+			if (Arguments != null) {
+				foreach (Argument a in Arguments)
+					args.Add (new Argument (a.Expr.CreateExpressionTree (ec)));
+			}
+
+			return CreateExpressionFactoryCall ("Invoke", args);
+		}
 
 		public override Expression DoResolve (EmitContext ec)
 		{
 			if (InstanceExpr is EventExpr) {
-				
-				EventInfo ei = ((EventExpr) InstanceExpr).EventInfo;
-				
-				Expression ml = MemberLookup (
-					ec.ContainerType, ec.ContainerType, ei.Name,
-					MemberTypes.Event, AllBindingFlags | BindingFlags.DeclaredOnly, loc);
-
-				if (ml == null) {
-				        //
-					// If this is the case, then the Event does not belong 
-					// to this Type and so, according to the spec
-					// cannot be accessed directly
-					//
-					// Note that target will not appear as an EventExpr
-					// in the case it is being referenced within the same type container;
-					// it will appear as a FieldExpr in that case.
-					//
-					
-					Assign.error70 (ei, loc);
-					return null;
-				}
+				((EventExpr) InstanceExpr).Error_CannotAssign ();
+				return null;
 			}
-			
 			
 			Type del_type = InstanceExpr.Type;
 			if (del_type == null)

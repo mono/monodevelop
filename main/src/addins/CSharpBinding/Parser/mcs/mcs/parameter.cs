@@ -236,6 +236,79 @@ namespace Mono.CSharp {
 			This	= 128
 		}
 
+		class ParameterVariable : Variable
+		{
+			readonly Parameter Parameter;
+			readonly int Idx;
+
+			public ParameterVariable (Parameter par, int idx)
+			{
+				this.Parameter = par;
+				this.Idx = idx;
+			}
+
+			public override Type Type
+			{
+				get { return Parameter.ParameterType; }
+			}
+
+			public override bool HasInstance
+			{
+				get { return false; }
+			}
+
+			public override bool NeedsTemporary
+			{
+				get { return false; }
+			}
+
+			public override void EmitInstance (EmitContext ec)
+			{
+			}
+
+			public override void Emit (EmitContext ec)
+			{
+				int arg_idx = Idx;
+				if (!ec.MethodIsStatic)
+					arg_idx++;
+
+				ParameterReference.EmitLdArg (ec.ig, arg_idx);
+			}
+
+			public override void EmitAssign (EmitContext ec)
+			{
+				int arg_idx = Idx;
+				if (!ec.MethodIsStatic)
+					arg_idx++;
+
+				if (arg_idx <= 255)
+					ec.ig.Emit (OpCodes.Starg_S, (byte) arg_idx);
+				else
+					ec.ig.Emit (OpCodes.Starg, arg_idx);
+			}
+
+			public override void EmitAddressOf (EmitContext ec)
+			{
+				int arg_idx = Idx;
+
+				if (!ec.MethodIsStatic)
+					arg_idx++;
+
+				bool is_ref = (Parameter.ModFlags & Parameter.Modifier.ISBYREF) != 0;
+				if (is_ref) {
+					if (arg_idx <= 255)
+						ec.ig.Emit (OpCodes.Ldarg_S, (byte) arg_idx);
+					else
+						ec.ig.Emit (OpCodes.Ldarg, arg_idx);
+				} else {
+					if (arg_idx <= 255)
+						ec.ig.Emit (OpCodes.Ldarga_S, (byte) arg_idx);
+					else
+						ec.ig.Emit (OpCodes.Ldarga, arg_idx);
+				}
+			}
+		}
+
 		static string[] attribute_targets = new string [] { "param" };
 
 		FullNamedExpression typeName;
@@ -536,77 +609,6 @@ namespace Mono.CSharp {
 			}
 		}
 
-		protected class ParameterVariable : Variable
-		{
-			public readonly Parameter Parameter;
-			public readonly int Idx;
-			public readonly bool IsRef;
-
-			public ParameterVariable (Parameter par, int idx)
-			{
-				this.Parameter = par;
-				this.Idx = idx;
-				this.IsRef = (par.ModFlags & Parameter.Modifier.ISBYREF) != 0;
-			}
-
-			public override Type Type {
-				get { return Parameter.ParameterType; }
-			}
-
-			public override bool HasInstance {
-				get { return false; }
-			}
-
-			public override bool NeedsTemporary {
-				get { return false; }
-			}
-
-			public override void EmitInstance (EmitContext ec)
-			{
-			}
-
-			public override void Emit (EmitContext ec)
-			{
-				int arg_idx = Idx;
-				if (!ec.MethodIsStatic)
-					arg_idx++;
-
-				ParameterReference.EmitLdArg (ec.ig, arg_idx);
-			}
-
-			public override void EmitAssign (EmitContext ec)
-			{
-				int arg_idx = Idx;
-				if (!ec.MethodIsStatic)
-					arg_idx++;
-
-				if (arg_idx <= 255)
-					ec.ig.Emit (OpCodes.Starg_S, (byte) arg_idx);
-				else
-					ec.ig.Emit (OpCodes.Starg, arg_idx);
-			}
-
-			public override void EmitAddressOf (EmitContext ec)
-			{
-				int arg_idx = Idx;
-
-				if (!ec.MethodIsStatic)
-					arg_idx++;
-
-				if (IsRef) {
-					if (arg_idx <= 255)
-						ec.ig.Emit (OpCodes.Ldarg_S, (byte) arg_idx);
-					else
-						ec.ig.Emit (OpCodes.Ldarg, arg_idx);
-				} else {
-					if (arg_idx <= 255)
-						ec.ig.Emit (OpCodes.Ldarga_S, (byte) arg_idx);
-					else
-						ec.ig.Emit (OpCodes.Ldarga, arg_idx);
-				}
-			}
-		}
-
 		public Parameter Clone ()
 		{
 			Parameter p = new Parameter (parameter_type, name, modFlags, attributes, Location);
@@ -631,7 +633,7 @@ namespace Mono.CSharp {
 			arguments.Add (new Argument (new TypeOf (
 				new TypeExpression (parameter_type, Location), Location)));
 			arguments.Add (new Argument (new StringConstant (name, Location)));
-			return new Assign (ExpressionTreeVariableReference (),
+			return new SimpleAssign (ExpressionTreeVariableReference (),
 				Expression.CreateExpressionFactoryCall ("Parameter", null, arguments, Location));
 		}
 

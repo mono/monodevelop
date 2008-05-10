@@ -257,7 +257,7 @@ namespace Mono.CSharp {
 		}
 
 		static EmptyExpression MyEmptyExpr;
-		static public Expression ImplicitReferenceConversion (Expression expr, Type target_type)
+		static Expression ImplicitReferenceConversion (Expression expr, Type target_type, bool explicit_cast)
 		{
 			Type expr_type = expr.Type;
 
@@ -281,8 +281,15 @@ namespace Mono.CSharp {
 				return nl.ConvertImplicitly(target_type);
 			}
 
-			if (ImplicitReferenceConversionCore (expr, target_type))
+			if (ImplicitReferenceConversionCore (expr, target_type)) {
+				// 
+				// Reduce implicit reference conversion to object
+				//
+				if (!explicit_cast && target_type == TypeManager.object_type)
+					return expr;
+
 				return EmptyCast.Create (expr, target_type);
+			}
 
 			bool use_class_cast;
 			if (ImplicitBoxingConversionExists (expr, target_type, out use_class_cast)) {
@@ -464,7 +471,7 @@ namespace Mono.CSharp {
 
 			// from the null type to any reference-type.
 			if (expr_type == TypeManager.null_type){
-				return true;
+				return target_type != TypeManager.anonymous_method_type;
 			}
 
 			if (TypeManager.IsGenericParameter (expr_type))
@@ -510,10 +517,8 @@ namespace Mono.CSharp {
 				//
 				// From byte to short, ushort, int, uint, long, ulong, float, double, decimal
 				//
-				if ((real_target_type == TypeManager.short_type) ||
-				    (real_target_type == TypeManager.ushort_type) ||
-				    (real_target_type == TypeManager.int32_type) ||
-				    (real_target_type == TypeManager.uint32_type))
+				if (real_target_type == TypeManager.int32_type || real_target_type == TypeManager.uint32_type ||
+				    real_target_type == TypeManager.short_type || real_target_type == TypeManager.ushort_type)
 					return EmptyCast.Create (expr, target_type);
 
 				if (real_target_type == TypeManager.uint64_type)
@@ -546,13 +551,11 @@ namespace Mono.CSharp {
 				//
 				// From ushort to int, uint, long, ulong, float, double, decimal
 				//
-				if (real_target_type == TypeManager.uint32_type)
+				if (real_target_type == TypeManager.int32_type || real_target_type == TypeManager.uint32_type)
 					return EmptyCast.Create (expr, target_type);
-
+				
 				if (real_target_type == TypeManager.uint64_type)
 					return new OpcodeCast (expr, target_type, OpCodes.Conv_U8);
-				if (real_target_type == TypeManager.int32_type)
-					return new OpcodeCast (expr, target_type, OpCodes.Conv_I4);
 				if (real_target_type == TypeManager.int64_type)
 					return new OpcodeCast (expr, target_type, OpCodes.Conv_I8);
 				if (real_target_type == TypeManager.double_type)
@@ -657,6 +660,15 @@ namespace Mono.CSharp {
 #endif
 			if (ImplicitStandardConversionExists (expr, target_type))
 				return true;
+
+			if (expr.Type == TypeManager.anonymous_method_type) {
+				if (!TypeManager.IsDelegateType (target_type) &&
+					TypeManager.DropGenericTypeArguments (target_type) != TypeManager.expression_type)
+					return false;
+
+				AnonymousMethodExpression ame = (AnonymousMethodExpression) expr;
+				return ame.ImplicitStandardConversionExists (ec, target_type);
+			}
 
 			return ImplicitUserConversion (ec, expr, target_type, Location.Null) != null;
 		}
@@ -874,15 +886,6 @@ namespace Mono.CSharp {
 
 			if (target_type == TypeManager.void_ptr_type && expr_type.IsPointer)
 				return true;
-
-			if (expr_type == TypeManager.anonymous_method_type){
-				if (!TypeManager.IsDelegateType (target_type) &&
-					TypeManager.DropGenericTypeArguments (target_type) != TypeManager.expression_type)
-					return false;
-				
-				AnonymousMethodExpression ame = (AnonymousMethodExpression) expr;
-				return ame.ImplicitStandardConversionExists (target_type);
-			}
 
 			return false;
 		}
@@ -1277,6 +1280,11 @@ namespace Mono.CSharp {
 		static public Expression ImplicitConversionStandard (EmitContext ec, Expression expr,
 								     Type target_type, Location loc)
 		{
+			return ImplicitConversionStandard (ec, expr, target_type, loc, false);
+		}
+
+		static Expression ImplicitConversionStandard (EmitContext ec, Expression expr, Type target_type, Location loc, bool explicit_cast)
+		{
 			Type expr_type = expr.Type;
 			Expression e;
 			
@@ -1290,15 +1298,13 @@ namespace Mono.CSharp {
 				
 				Type target = TypeManager.GetTypeArguments (target_type) [0];
 
-				if (TypeManager.IsNullableType (expr.Type)) {
-					Type etype = TypeManager.GetTypeArguments (expr.Type) [0];
+				if (TypeManager.IsNullableType (expr_type)) {
+					Type etype = TypeManager.GetTypeArguments (expr_type) [0];
 					if (TypeManager.IsEqual (etype, target))
 						return expr;
 
-					e = new Nullable.LiftedConversion (
+					return new Nullable.LiftedConversion (
 						expr, target_type, false, false, loc).Resolve (ec);
-					if (e != null)
-						return e;
 				} else {
 					e = ImplicitConversion (ec, expr, target, loc);
 					if (e != null)
@@ -1351,7 +1357,7 @@ namespace Mono.CSharp {
 			if (e != null)
 				return e;
 
-			e = ImplicitReferenceConversion (expr, target_type);
+			e = ImplicitReferenceConversion (expr, target_type, explicit_cast);
 			if (e != null)
 				return e;
 
@@ -1914,7 +1920,7 @@ namespace Mono.CSharp {
 			Type expr_type = expr.Type;
 
 			// Explicit conversion includes implicit conversion and it used for enum underlying types too
-			Expression ne = ImplicitConversionStandard (ec, expr, target_type, loc);
+			Expression ne = ImplicitConversionStandard (ec, expr, target_type, loc, true);
 			if (ne != null)
 				return ne;
 
@@ -1987,13 +1993,12 @@ namespace Mono.CSharp {
 
 				if (expr_type == TypeManager.sbyte_type ||
 					expr_type == TypeManager.short_type ||
-					expr_type == TypeManager.int32_type ||
-					expr_type == TypeManager.int64_type)
+					expr_type == TypeManager.int32_type)
 					return new OpcodeCast (expr, target_type, OpCodes.Conv_I);
 
 				if (expr_type == TypeManager.ushort_type ||
 					expr_type == TypeManager.uint32_type ||
-					expr_type == TypeManager.uint64_type ||
+					expr_type == TypeManager.uint64_type || expr_type == TypeManager.int64_type ||
 					expr_type == TypeManager.byte_type)
 					return new OpcodeCast (expr, target_type, OpCodes.Conv_U);
 			}
@@ -2011,11 +2016,8 @@ namespace Mono.CSharp {
 					return new OpcodeCast (expr, target_type, OpCodes.Conv_I4);
 				else if (target_type == TypeManager.uint32_type)
 					return new OpcodeCast (expr, target_type, OpCodes.Conv_U4);
-				else if (target_type == TypeManager.uint64_type)
+				else if (target_type == TypeManager.uint64_type || target_type == TypeManager.int64_type)
 					return new OpcodeCast (expr, target_type, OpCodes.Conv_U8);
-				else if (target_type == TypeManager.int64_type){
-					return new OpcodeCast (expr, target_type, OpCodes.Conv_I8);
-				}
 			}
 			return null;
 		}

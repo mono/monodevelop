@@ -142,6 +142,12 @@ namespace Mono.CSharp.Linq
 				t.next = (AQueryClause)next.Clone (clonectx);
 		}
 
+		public override Expression CreateExpressionTree (EmitContext ec)
+		{
+			// Should not be reached
+			throw new NotSupportedException ("ET");
+		}
+
 		public override Expression DoResolve (EmitContext ec)
 		{
 			return expr.DoResolve (ec);
@@ -194,7 +200,7 @@ namespace Mono.CSharp.Linq
 			LambdaExpression selector = new LambdaExpression (
 				null, null, (TypeContainer)ec.TypeContainer, p, ec.CurrentBlock, loc);
 			selector.Block = new SelectorBlock (ec.CurrentBlock, p, ti, loc);
-			selector.Block.AddStatement (new Return (expr, loc));
+			selector.Block.AddStatement (new ContextualReturn (expr));
 
 			if (!ec.IsInProbingMode) {
 				selector.CreateAnonymousHelpers ();
@@ -662,6 +668,11 @@ namespace Mono.CSharp.Linq
 			protected override void CloneTo (CloneContext clonectx, Expression target)
 			{
 				// Nothing to clone
+			}
+
+			public override Expression CreateExpressionTree (EmitContext ec)
+			{
+				throw new NotSupportedException ();
 			}
 
 			public override Expression DoResolve (EmitContext ec)
