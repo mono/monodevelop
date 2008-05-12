@@ -47,8 +47,8 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 						TextToolboxNode n = new TextToolboxNode (ct.Text);
 						n.Description = ct.Description;
 						n.Name = ct.Shortcut;
-						Category = category;
-						yield return new CodeTemplateToolboxNode (ct);
+						n.Category = category;
+						yield return new TextToolboxNode (ct.Text);
 					}
 			}
 		}

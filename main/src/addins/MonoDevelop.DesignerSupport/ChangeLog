@@ -1,5 +1,10 @@
 2008-05-12  Michael Hutchinson <mhutchinson@novell.com> 
 
+	* MonoDevelop.DesignerSupport.Toolbox/CodeTemplateToolboxProvider.cs:
+	  Fix compilation.
+
+2008-05-12  Michael Hutchinson <mhutchinson@novell.com> 
+
 	* MonoDevelop.DesignerSupport.addin.xml,
 	  MonoDevelop.DesignerSupport.mdp,
 	  MonoDevelop.DesignerSupport.Toolbox/CodeTemplateToolboxProvider.cs,
