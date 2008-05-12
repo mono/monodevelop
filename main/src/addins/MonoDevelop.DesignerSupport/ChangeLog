@@ -1,3 +1,11 @@
+2008-05-12  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.DesignerSupport.addin.xml,
+	  MonoDevelop.DesignerSupport.mdp,
+	  MonoDevelop.DesignerSupport.Toolbox/CodeTemplateToolboxProvider.cs,
+	  Makefile.am: Add toolbox snippet provider that shows valid snippets
+	  for text files.
+
 2008-05-07  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.DesignerSupport.mdp, Makefile.am: Updated.

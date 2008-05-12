@@ -128,4 +128,8 @@
 	<Extension path = "/MonoDevelop/Ide/TextEditorExtensions">
 		<Class class = "MonoDevelop.DesignerSupport.Projects.PropertyPadTextEditorExtension" />
 	</Extension>
+	
+	<Extension path = "/MonoDevelop/DesignerSupport/ToolboxProviders">
+		<Class class="MonoDevelop.DesignerSupport.Toolbox.CodeTemplateToolboxProvider" />
+	</Extension>
 </Addin>

@@ -68,6 +68,7 @@ FILES =  \
 	MonoDevelop.DesignerSupport.PropertyGrid/SurrogateUITypeEditorAttribute.cs \
 	MonoDevelop.DesignerSupport.Toolbox/BaseToolboxNode.cs \
 	MonoDevelop.DesignerSupport.Toolbox/CategoryToolboxNode.cs \
+	MonoDevelop.DesignerSupport.Toolbox/CodeTemplateToolboxProvider.cs \
 	MonoDevelop.DesignerSupport.Toolbox/ComponentSelectorDialog.cs \
 	MonoDevelop.DesignerSupport.Toolbox/ItemToolboxNode.cs \
 	MonoDevelop.DesignerSupport.Toolbox/ITextToolboxNode.cs \
