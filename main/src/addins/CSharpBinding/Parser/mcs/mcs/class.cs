@@ -2731,6 +2731,21 @@ namespace Mono.CSharp {
 			}
 		}
 
+		public Dom.IMethod [] Constructors {
+			get {
+				ArrayList ctors = new ArrayList (instance_constructors.Count + 1);
+				if (default_static_constructor != null && !default_static_constructor.IsCompilerGenerated)
+					ctors.Add (default_static_constructor);
+
+				foreach (Constructor c in instance_constructors) {
+					if (!c.IsCompilerGenerated)
+						ctors.Add (c);
+				}
+
+				return (Dom.IMethod[]) ctors.ToArray (typeof (Dom.IMethod));
+			}
+		}
+
 		#endregion
 	}
 
@@ -3435,6 +3450,10 @@ namespace Mono.CSharp {
 
 
 		#region IMethod Members
+
+		public Dom.LocationBlock LocationBlock {
+			get { return block.LocationBlock; }
+		}
 
 		Dom.IParameter [] Dom.IMethod.Parameters {
 			get { return Parameters.FixedParameters; }
@@ -4758,6 +4777,10 @@ namespace Mono.CSharp {
 			return Parameters.Empty &&
 					(Initializer is ConstructorBaseInitializer) &&
 					(Initializer.Arguments == null);
+		}
+
+		public bool IsCompilerGenerated {
+			get { return Initializer is GeneratedBaseInitializer; }
 		}
 
 		public override void ApplyAttributeBuilder (Attribute a, CustomAttributeBuilder cb)
@@ -6392,7 +6415,7 @@ namespace Mono.CSharp {
 		#region IAccessor Members
 
 		public Dom.LocationBlock LocationBlock {
-			get { return new Dom.LocationBlock (Location, null); }
+			get { return block.LocationBlock; }
 		}
 
 		#endregion

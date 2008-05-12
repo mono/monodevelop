@@ -2769,6 +2769,10 @@ namespace Mono.CSharp {
 			return this_variable == null || this_variable.IsThisAssigned (ec);
 		}
 
+		public Dom.LocationBlock LocationBlock {
+			get { return new Dom.LocationBlock (StartLocation, EndLocation); }
+		}
+
 		public bool ResolveMeta (EmitContext ec, Parameters ip)
 		{
 			int errors = Report.Errors;

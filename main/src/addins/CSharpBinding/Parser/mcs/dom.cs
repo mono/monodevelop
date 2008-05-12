@@ -91,6 +91,8 @@ namespace Mono.CSharp.Dom
 		int ModFlags { get; }
 		ITypeParameter [] TypeParameters { get; }
 
+		IMethod [] Constructors { get; }
+
 		// And the ugly
 		ArrayList Constants { get; }
 		ArrayList Events { get; }
@@ -141,11 +143,8 @@ namespace Mono.CSharp.Dom
 
 	public interface IMethod : ITypeMember
 	{
+		LocationBlock LocationBlock { get; }
 		IParameter [] Parameters { get; }
-	}
-
-	public interface IConstructor : ITypeMember
-	{
 	}
 
 	public interface IDelegate : ITypeMember
