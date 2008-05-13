@@ -226,6 +226,13 @@ namespace Mono.TextEditor.Highlighting
 							i++;
 							continue;
 						} else if (curSpan.End[endOffset] == ch) {
+							// check if keyword is before span end
+							if (pair != null && pair.o1 != null) {
+								curChunk.Length -= wordOffset;
+								AddChunk (ref curChunk, wordOffset, GetChunkStyleColor (pair.o1.Color));
+								isNoKeyword = false;
+							}
+							
 							endOffset++;
 							if (endOffset >= curSpan.End.Length) {
 								curChunk.Length -= curSpan.End.Length - 1;
@@ -282,7 +289,6 @@ namespace Mono.TextEditor.Highlighting
 						;
 					if (!Char.IsLetterOrDigit (ch) && ch != '_' && pair != null && pair.o1 != null) {
 						curChunk.Length -= wordOffset;
-						
 						AddChunk (ref curChunk, wordOffset, GetChunkStyleColor (pair.o1.Color));
 						isNoKeyword = false;
 					}

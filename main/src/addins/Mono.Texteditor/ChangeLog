@@ -1,3 +1,9 @@
+2008-05-13  Mike Krüger <mkrueger@novell.com> 
+
+	* CSharpSyntaxMode.xml, Mono.TextEditor.Highlighting/SyntaxMode.cs:
+	  Worked on c# syntax mode. Fixed syntax highlighting bug (keyword
+	  before span end now highlights correct).
+
 2008-05-09  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* AspNetSyntaxMode.xml, XmlSyntaxMode.xml: Highlight doctypes. Fix

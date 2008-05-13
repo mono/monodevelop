@@ -221,6 +221,13 @@
 	</Rule>
 	
 	<Rule name = "XmlDocumentation">
+		<Span color = "comment" rule = "XmlDocumentationTag">
+			<Begin>&lt;</Begin>
+			<End>&gt;</End>
+		</Span>
+	</Rule>
+
+	<Rule name = "XmlDocumentationTag">
 		<Span color = "literal" stopateol = "true" escape="\">
 			<Begin>"</Begin>
 			<End>"</End>
@@ -250,4 +257,5 @@
 			<Word>listheader</Word>
 		</Keywords>
 	</Rule>
+
 </SyntaxMode>
