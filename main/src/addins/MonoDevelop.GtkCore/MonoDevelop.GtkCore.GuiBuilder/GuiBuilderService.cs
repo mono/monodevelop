@@ -90,7 +90,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		public static Stetic.Application SteticApp {
 			get {
 				if (steticApp == null) {
-					steticApp = new Stetic.Application (IsolationMode);
+					steticApp = Stetic.ApplicationFactory.CreateApplication (Stetic.IsolationMode.None);
 					steticApp.AllowInProcLibraries = false;
 					steticApp.ShowNonContainerWarning = PropertyService.Get ("MonoDevelop.GtkCore.ShowNonContainerWarning", true);
 					steticApp.WidgetLibraryResolver = OnAssemblyResolve;
@@ -515,7 +515,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		{
 			Gtk.Application.Init ();
 			
-			Stetic.Application app = new Stetic.Application (Stetic.IsolationMode.None);
+			Stetic.Application app = Stetic.ApplicationFactory.CreateApplication (Stetic.IsolationMode.None);
 			
 			Stetic.Project[] projects = new Stetic.Project [projectFiles.Count];
 			for (int n=0; n < projectFiles.Count; n++) {
