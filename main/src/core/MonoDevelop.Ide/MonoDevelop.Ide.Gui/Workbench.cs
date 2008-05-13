@@ -75,11 +75,6 @@ namespace MonoDevelop.Ide.Gui
 				((Gtk.Window)workbench).Visible = false;
 				workbench.ActiveWorkbenchWindowChanged += new EventHandler (OnDocumentChanged);
 				PropertyService.PropertyChanged += new EventHandler<PropertyChangedEventArgs> (TrackPropertyChanges);
-				
-				if (Services.DebuggingService != null) {
-					Services.DebuggingService.PausedEvent += (EventHandler) DispatchService.GuiDispatch (new EventHandler (OnDebuggerPaused));
-				}
-				
 				FileService.FileRemoved += (EventHandler<FileEventArgs>) DispatchService.GuiDispatch (new EventHandler<FileEventArgs> (IdeApp.Workbench.RecentOpen.FileRemoved));
 				FileService.FileRenamed += (EventHandler<FileCopyEventArgs>) DispatchService.GuiDispatch (new EventHandler<FileCopyEventArgs> (IdeApp.Workbench.RecentOpen.FileRenamed));
 				
@@ -668,15 +663,6 @@ namespace MonoDevelop.Ide.Gui
 						RecentOpen.AddLastFile (fileName, null);
 					}
 				}
-			}
-		}
-		
-		void OnDebuggerPaused (object o, EventArgs e)
-		{
-			IDebuggingService dbgr = Services.DebuggingService;
-			if (dbgr != null) {
-				if (dbgr.CurrentFilename != String.Empty)
-					IdeApp.Workbench.OpenDocument (dbgr.CurrentFilename);
 			}
 		}
 		

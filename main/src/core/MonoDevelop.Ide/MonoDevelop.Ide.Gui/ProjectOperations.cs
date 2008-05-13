@@ -1021,28 +1021,23 @@ namespace MonoDevelop.Ide.Gui
 		
 		public IAsyncOperation Debug (CombineEntry entry)
 		{
-			if (Services.DebuggingService == null)
-				return NullAsyncOperation.Failure;
-			
 			if (currentRunOperation != null && !currentRunOperation.IsCompleted)
 				return currentRunOperation;
 			
 			guiHelper.SetWorkbenchContext (WorkbenchContext.Debug);
 
 			IProgressMonitor monitor = new MessageDialogProgressMonitor ();
-			ExecutionContext context = new ExecutionContext (Services.DebuggingService.GetExecutionHandlerFactory (), IdeApp.Workbench.ProgressMonitors);
+			ExecutionContext context = new ExecutionContext (IdeApp.Services.DebuggingService.GetExecutionHandlerFactory (), IdeApp.Workbench.ProgressMonitors);
 			
-			DispatchService.ThreadDispatch (new StatefulMessageHandler (DebugCombineEntryAsync), new object[] {entry, monitor, context});
+			DispatchService.ThreadDispatch (delegate {
+				DebugCombineEntryAsync (monitor, entry, context, null);
+			}, null);
 			currentRunOperation = monitor.AsyncOperation;
 			return currentRunOperation;
 		}
 		
-		void DebugCombineEntryAsync (object ob)
+		void DebugCombineEntryAsync (IProgressMonitor monitor, CombineEntry entry, ExecutionContext context, WorkbenchContext oldContext)
 		{
-			object[] data = (object[]) ob;
-			CombineEntry entry = (CombineEntry) data[0];
-			IProgressMonitor monitor = (IProgressMonitor) data[1];
-			ExecutionContext context = (ExecutionContext) data[2];
 			try {
 				entry.Execute (monitor, context);
 			} catch (Exception ex) {
@@ -1058,9 +1053,7 @@ namespace MonoDevelop.Ide.Gui
 			Project tempProject = projectService.CreateSingleFileProject (file);
 			if (tempProject != null) {
 				IAsyncOperation aop = Debug (tempProject);
-				ProjectOperationHandler h = new ProjectOperationHandler ();
-				h.Project = tempProject;
-				aop.Completed += new OperationHandler (h.Run);
+				aop.Completed += delegate { tempProject.Dispose (); };
 				return aop;
 			} else {
 				MessageService.ShowError(GettextCatalog.GetString ("No runnable executable found."));
@@ -1071,30 +1064,18 @@ namespace MonoDevelop.Ide.Gui
 		public IAsyncOperation DebugApplication (string executableFile)
 		{
 			if (currentRunOperation != null && !currentRunOperation.IsCompleted) return currentRunOperation;
-			if (Services.DebuggingService == null) return NullAsyncOperation.Failure;
 			
 			guiHelper.SetWorkbenchContext (WorkbenchContext.Debug);
 
 			IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetRunProgressMonitor ();
 
-			Services.DebuggingService.Run ((IConsole) monitor, new string[] { executableFile });
-			
-			DebugApplicationStopper disposer = new DebugApplicationStopper ();
-			disposer.Monitor = monitor;
-			Services.DebuggingService.StoppedEvent += new EventHandler (disposer.Run);
+			IAsyncOperation oper = IdeApp.Services.DebuggingService.Run (executableFile, (IConsole) monitor);
+			oper.Completed += delegate {
+				monitor.Dispose ();
+			};
 			
 			currentRunOperation = monitor.AsyncOperation;
 			return currentRunOperation;
-		}
-		
-		class DebugApplicationStopper {
-			public IProgressMonitor Monitor;
-			public void Run (object sender, EventArgs e) { Monitor.Dispose (); }
-		}
-		
-		class ProjectOperationHandler {
-			public Project Project;
-			public void Run (IAsyncOperation op) { Project.Dispose (); }
 		}
 		
 		public void Clean (CombineEntry entry)
@@ -1107,9 +1088,7 @@ namespace MonoDevelop.Ide.Gui
 			Project tempProject = projectService.CreateSingleFileProject (file);
 			if (tempProject != null) {
 				IAsyncOperation aop = Build (tempProject);
-				ProjectOperationHandler h = new ProjectOperationHandler ();
-				h.Project = tempProject;
-				aop.Completed += new OperationHandler (h.Run);
+				aop.Completed += delegate { tempProject.Dispose (); };
 				return aop;
 			} else {
 				MessageService.ShowError (GettextCatalog.GetString ("The file {0} can't be compiled.", file));
@@ -1122,9 +1101,7 @@ namespace MonoDevelop.Ide.Gui
 			Project tempProject = projectService.CreateSingleFileProject (file);
 			if (tempProject != null) {
 				IAsyncOperation aop = Execute (tempProject);
-				ProjectOperationHandler h = new ProjectOperationHandler ();
-				h.Project = tempProject;
-				aop.Completed += new OperationHandler (h.Run);
+				aop.Completed += delegate { tempProject.Dispose (); };
 				return aop;
 			} else {
 				MessageService.ShowError(GettextCatalog.GetString ("No runnable executable found."));
@@ -1137,9 +1114,7 @@ namespace MonoDevelop.Ide.Gui
 			Project tempProject = projectService.CreateSingleFileProject (file);
 			if (tempProject != null) {
 				IAsyncOperation aop = Execute (tempProject, context);
-				ProjectOperationHandler h = new ProjectOperationHandler ();
-				h.Project = tempProject;
-				aop.Completed += new OperationHandler (h.Run);
+				aop.Completed += delegate { tempProject.Dispose (); };
 				return aop;
 			} else {
 				MessageService.ShowError(GettextCatalog.GetString ("No runnable executable found."));

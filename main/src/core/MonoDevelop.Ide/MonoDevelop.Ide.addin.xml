@@ -774,6 +774,7 @@
 				shortcut = "Shift|F11" />
 		<Command id = "MonoDevelop.Ide.Commands.DebugCommands.ToggleBreakpoint"
 				_label = "Toggle Breakpoint"
+				defaultHandler = "MonoDevelop.Ide.Commands.ToggleBreakpointHandler"
 				shortcut = "F9" />
 		<Command id = "MonoDevelop.Ide.Commands.DebugCommands.ClearAllBreakpoints"
 				defaultHandler = "MonoDevelop.Ide.Commands.ClearAllBreakpointsHandler"

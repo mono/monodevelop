@@ -1,0 +1,53 @@
+<Project name="Mono.Debugging" language="C#" clr-version="Net_2_0" fileversion="2.0" ctype="DotNetProject">
+  <Configurations active="Debug">
+    <Configuration name="Debug" ctype="DotNetProjectConfiguration">
+      <Output directory="../../../../build/bin" assembly="Mono.Debugging" />
+      <Build debugmode="True" target="Library" />
+      <Execution runwithwarnings="True" consolepause="False" clr-version="Net_2_0" runtime="MsNet" />
+      <CodeGeneration warninglevel="4" optimize="False" unsafecodeallowed="False" generateoverflowchecks="False" definesymbols="DEBUG" generatexmldocumentation="False" compiler="Mcs" ctype="CSharpCompilerParameters" />
+    </Configuration>
+    <Configuration name="Release" ctype="DotNetProjectConfiguration">
+      <Output directory="bin/Release" assembly="Mono" />
+      <Build debugmode="False" target="Library" />
+      <Execution runwithwarnings="True" consolepause="False" clr-version="Net_2_0" runtime="MsNet" />
+      <CodeGeneration warninglevel="4" optimize="False" unsafecodeallowed="False" generateoverflowchecks="False" generatexmldocumentation="False" compiler="Mcs" ctype="CSharpCompilerParameters" />
+    </Configuration>
+  </Configurations>
+  <Contents>
+    <File name="Mono.Debugging.Client/Breakpoint.cs" subtype="Code" buildaction="Compile" />
+    <File name="Mono.Debugging.Client/DebuggerEngine.cs" subtype="Code" buildaction="Compile" />
+    <File name="Mono.Debugging.Client/DebuggerSession.cs" subtype="Code" buildaction="Compile" />
+    <File name="Mono.Debugging.Backend/IDebuggerSessionFactory.cs" subtype="Code" buildaction="Compile" />
+    <File name="Mono.Debugging.Client/Backtrace.cs" subtype="Code" buildaction="Compile" />
+    <File name="Mono.Debugging.Client/DebuggerStartInfo.cs" subtype="Code" buildaction="Compile" />
+    <File name="Mono.Debugging.Client/ProcessEventArgs.cs" subtype="Code" buildaction="Compile" />
+    <File name="Mono.Debugging.Client/SourceLocation.cs" subtype="Code" buildaction="Compile" />
+    <File name="Mono.Debugging.Client/StackFrame.cs" subtype="Code" buildaction="Compile" />
+    <File name="Mono.Debugging.Client/TargetEventArgs.cs" subtype="Code" buildaction="Compile" />
+    <File name="Mono.Debugging.Client/TargetEventType.cs" subtype="Code" buildaction="Compile" />
+    <File name="Mono.Debugging.Client/ThreadEventArgs.cs" subtype="Code" buildaction="Compile" />
+    <File name="Mono.Debugging.Backend/IBacktrace.cs" subtype="Code" buildaction="Compile" />
+    <File name="Mono.Debugging.Backend/IDebuggerSessionBackend.cs" subtype="Code" buildaction="Compile" />
+    <File name="Mono.Debugging.Backend/IDebuggerSessionFrontend.cs" subtype="Code" buildaction="Compile" />
+    <File name="Mono.Debugging.Backend/DebuggerExtensionNode.cs" subtype="Code" buildaction="Compile" />
+    <File name="Mono.Debugging.addin.xml" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="Mono.Debugging.Client/BreakpointStore.cs" subtype="Code" buildaction="Compile" />
+    <File name="Mono.Debugging.Client/BreakpointEventArgs.cs" subtype="Code" buildaction="Compile" />
+    <File name="Mono.Debugging.Client/ObjectValue.cs" subtype="Code" buildaction="Compile" />
+    <File name="Mono.Debugging.Backend/IObjectValueSource.cs" subtype="Code" buildaction="Compile" />
+    <File name="Mono.Debugging.Client/ObjectValueKind.cs" subtype="Code" buildaction="Compile" />
+  </Contents>
+  <References>
+    <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+    <ProjectReference type="Gac" localcopy="True" refto="Mono.Addins, Version=0.4.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
+  </References>
+  <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="../../..">
+    <BuildFilesVar Sync="True" Name="FILES" />
+    <DeployFilesVar />
+    <ResourcesVar Sync="True" Name="RES" />
+    <OthersVar />
+    <GacRefVar Sync="True" Name="REFS" Prefix="-r:" />
+    <AsmRefVar Sync="True" Name="REFS" Prefix="-r:" />
+    <ProjectRefVar Sync="True" Name="REFS" Prefix="-r:" />
+  </MonoDevelop.Autotools.MakefileInfo>
+</Project>

@@ -42,6 +42,7 @@ using MonoDevelop.Ide.Gui.Dialogs;
 
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Ide.Tasks;
+using MonoDevelop.Ide.Debugging;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Parser;
 using MonoDevelop.Projects.Gui;
@@ -241,7 +242,7 @@ namespace MonoDevelop.Ide.Gui
 	{
 		IconService icons;
 		IDocumentationService documentationService;
-		IDebuggingService debuggingService;
+		DebuggingService debuggingService;
 		
 		public ResourceService Resources {
 			get { return MonoDevelop.Core.Gui.Services.Resources; }
@@ -263,10 +264,10 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 	
-		public IDebuggingService DebuggingService {
+		public DebuggingService DebuggingService {
 			get {
 				if (debuggingService == null)
-					debuggingService = (IDebuggingService) ServiceManager.GetService (typeof(IDebuggingService));
+					debuggingService = new DebuggingService ();
 				return debuggingService;
 			}
 		}

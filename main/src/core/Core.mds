@@ -11,6 +11,7 @@
       <Entry build="True" name="MonoDevelop.Projects.Gui" configuration="Debug" />
       <Entry build="True" name="MonoDevelop.Startup" configuration="Debug" />
       <Entry build="True" name="NRefactory" configuration="Debug" />
+      <Entry build="True" name="Mono.Debugging" configuration="Debug" />
     </Configuration>
     <Configuration name="Release" ctype="CombineConfiguration">
       <Entry build="True" name="MonoDevelop.Core" configuration="Debug" />
@@ -23,6 +24,7 @@
       <Entry build="True" name="MonoDevelop.Projects.Gui" configuration="Debug" />
       <Entry build="True" name="MonoDevelop.Startup" configuration="Debug" />
       <Entry build="True" name="NRefactory" configuration="Release" />
+      <Entry build="True" name="Mono.Debugging" configuration="Release" />
     </Configuration>
   </Configurations>
   <StartMode startupentry="MonoDevelop.Startup" single="True">
@@ -34,9 +36,9 @@
     <Execute type="None" entry="MonoDevelop.Ide" />
     <Execute type="None" entry="MonoDevelop.Projects" />
     <Execute type="None" entry="MonoDevelop.Projects.Gui" />
-    <Execute type="None" entry="Tools" />
     <Execute type="None" entry="MonoDevelop.Startup" />
     <Execute type="None" entry="NRefactory" />
+    <Execute type="None" entry="Mono.Debugging" />
   </StartMode>
   <Entries>
     <Entry filename="MonoDevelop.Core/MonoDevelop.Core.mdp" />
@@ -49,5 +51,6 @@
     <Entry filename="MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.mdp" />
     <Entry filename="MonoDevelop.Startup/MonoDevelop.Startup.mdp" />
     <Entry filename="NRefactory/NRefactory.mdp" />
+    <Entry filename="Mono.Debugging/Mono.Debugging.mdp" />
   </Entries>
 </Combine>

@@ -15,7 +15,6 @@ FILES =  \
 	MonoDevelop.Core.Execution/IBreakpoint.cs \
 	MonoDevelop.Core.Execution/IConsole.cs \
 	MonoDevelop.Core.Execution/IConsoleFactory.cs \
-	MonoDevelop.Core.Execution/IDebuggerService.cs \
 	MonoDevelop.Core.Execution/IExecutionHandler.cs \
 	MonoDevelop.Core.Execution/IExecutionHandlerFactory.cs \
 	MonoDevelop.Core.Execution/IProcessAsyncOperation.cs \

@@ -43,7 +43,6 @@ namespace MonoDevelop.Ide
 	{
 		static IconService icons;
 		static IDocumentationService documentationService;
-		static IDebuggingService debuggingService;
 		static TaskService taskService;
 		
 		public static ResourceService Resources {
@@ -63,14 +62,6 @@ namespace MonoDevelop.Ide
 				if (documentationService == null)
 					documentationService = (IDocumentationService) ServiceManager.GetService (typeof(IDocumentationService));
 				return documentationService;
-			}
-		}
-	
-		public static IDebuggingService DebuggingService {
-			get {
-				if (debuggingService == null)
-					debuggingService = (IDebuggingService) ServiceManager.GetService (typeof(IDebuggingService));
-				return debuggingService;
 			}
 		}
 	

@@ -24,7 +24,6 @@
     <File name="MonoDevelop.Core.Execution/AddinDependencyAttribute.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Core.Execution/BreakpointEventHandler.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Core.Execution/IBreakpoint.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Core.Execution/IDebuggerService.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Core.Execution/IProcessHost.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Core.Execution/IProcessHostController.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Core.Execution/ProcessHostController.cs" subtype="Code" buildaction="Compile" />

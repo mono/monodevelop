@@ -14,6 +14,7 @@ REFS =  \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Dock.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Projects.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Projects.Gui.dll \
+	-r:$(top_builddir)/build/bin/Mono.Debugging.dll \
 	-r:ICSharpCode.SharpZipLib \
 	-r:Mono.GetOptions \
 	-r:Mono.Posix \
@@ -96,6 +97,8 @@ FILES =  \
 	MonoDevelop.Ide.Commands/ToolsCommands.cs \
 	MonoDevelop.Ide.Commands/ViewCommands.cs \
 	MonoDevelop.Ide.Commands/WindowCommands.cs \
+	MonoDevelop.Ide.Debugging/DebugExecutionHandlerFactory.cs \
+	MonoDevelop.Ide.Debugging/DebuggingService.cs \
 	MonoDevelop.Ide.Dom.Output/Ambience.cs \
 	MonoDevelop.Ide.Dom.Output/AmbienceService.cs \
 	MonoDevelop.Ide.Dom.Output/NetAmbience.cs \

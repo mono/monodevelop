@@ -155,8 +155,8 @@ namespace MonoDevelop.Ide.Commands
 		
 		protected override void Run ()
 		{
-			if (Services.DebuggingService != null && Services.DebuggingService.IsDebugging && !Services.DebuggingService.IsRunning) {
-				Services.DebuggingService.Resume ();
+			if (IdeApp.Services.DebuggingService.IsDebugging && !IdeApp.Services.DebuggingService.IsRunning) {
+				IdeApp.Services.DebuggingService.Resume ();
 				return;
 			}
 			
@@ -175,16 +175,12 @@ namespace MonoDevelop.Ide.Commands
 		
 		protected override void Update (CommandInfo info)
 		{
-			if (Services.DebuggingService != null && Services.DebuggingService.IsDebugging && !Services.DebuggingService.IsRunning) {
+			if (IdeApp.Services.DebuggingService.IsDebugging && !IdeApp.Services.DebuggingService.IsRunning) {
 				info.Enabled = true;
 				info.Text = GettextCatalog.GetString ("Resume");
 				return;
 			}
 
-			if (Services.DebuggingService == null) {
-				info.Enabled = false;
-				return;
-			}
 			if (IdeApp.ProjectOperations.CurrentOpenCombine != null) {
 				info.Enabled = IdeApp.ProjectOperations.CurrentRunOperation.IsCompleted;
 			} else {
@@ -218,11 +214,6 @@ namespace MonoDevelop.Ide.Commands
 		
 		protected override void Update (CommandInfo info)
 		{
-			if (Services.DebuggingService == null) {
-				info.Enabled = false;
-				return;
-			}
-
 			info.Enabled = IdeApp.ProjectOperations.CurrentSelectedCombineEntry != null && 
 							IdeApp.ProjectOperations.CurrentRunOperation.IsCompleted;
 		}

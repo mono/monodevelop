@@ -66,8 +66,7 @@ namespace MonoDevelop.Ide.Commands
 		
 		protected override void Update (CommandInfo info)
 		{
-			info.Enabled = Services.DebuggingService != null &&
-							IdeApp.ProjectOperations.CurrentRunOperation.IsCompleted;
+			info.Enabled = IdeApp.ProjectOperations.CurrentRunOperation.IsCompleted;
 		}
 	}
 	
@@ -75,15 +74,12 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Run ()
 		{
-			Services.DebuggingService.StepOver();
+			IdeApp.Services.DebuggingService.StepOver();
 		}
 		
 		protected override void Update (CommandInfo info)
 		{
-			if (Services.DebuggingService == null)
-				info.Visible = false;
-			else
-				info.Enabled = Services.DebuggingService.IsDebugging;
+			info.Enabled = IdeApp.Services.DebuggingService.IsDebugging && !IdeApp.Services.DebuggingService.IsRunning;
 		}
 	}
 
@@ -91,15 +87,12 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Run ()
 		{
-			Services.DebuggingService.StepInto();
+			IdeApp.Services.DebuggingService.StepInto();
 		}
 		
 		protected override void Update (CommandInfo info)
 		{
-			if (Services.DebuggingService == null)
-				info.Visible = false;
-			else
-				info.Enabled = Services.DebuggingService.IsDebugging;
+			info.Enabled = IdeApp.Services.DebuggingService.IsDebugging && !IdeApp.Services.DebuggingService.IsRunning;
 		}
 	}
 	
@@ -107,15 +100,12 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Run ()
 		{
-			Services.DebuggingService.StepOut ();
+			IdeApp.Services.DebuggingService.StepOut ();
 		}
 		
 		protected override void Update (CommandInfo info)
 		{
-			if (Services.DebuggingService == null)
-				info.Visible = false;
-			else
-				info.Enabled = Services.DebuggingService.IsDebugging;
+			info.Enabled = IdeApp.Services.DebuggingService.IsDebugging && !IdeApp.Services.DebuggingService.IsRunning;
 		}
 	}
 	
@@ -123,15 +113,12 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Run ()
 		{
-			Services.DebuggingService.Pause ();
+			IdeApp.Services.DebuggingService.Pause ();
 		}
 		
 		protected override void Update (CommandInfo info)
 		{
-			if (Services.DebuggingService == null)
-				info.Visible = false;
-			else
-				info.Enabled = Services.DebuggingService.IsRunning;
+			info.Enabled = IdeApp.Services.DebuggingService.IsRunning;
 		}
 	}
 	
@@ -139,13 +126,24 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Run ()
 		{
-			Services.DebuggingService.ClearAllBreakpoints ();
+			IdeApp.Services.DebuggingService.Breakpoints.Clear ();
+		}
+	}
+	
+	internal class ToggleBreakpointHandler: CommandHandler
+	{
+		protected override void Run ()
+		{
+			IdeApp.Services.DebuggingService.Breakpoints.Toggle (
+			    IdeApp.Workbench.ActiveDocument.FileName,
+			    IdeApp.Workbench.ActiveDocument.TextEditor.CursorLine);
 		}
 		
 		protected override void Update (CommandInfo info)
 		{
-			if (Services.DebuggingService == null)
-				info.Visible = false;
+			info.Enabled = IdeApp.Workbench.ActiveDocument != null && 
+					IdeApp.Workbench.ActiveDocument.TextEditor != null &&
+					IdeApp.Workbench.ActiveDocument.FileName != null;
 		}
 	}
 }
