@@ -5,7 +5,7 @@ ASSEMBLY = $(ADDIN_BUILD)/MonoDevelop.Debugger.dll
 REFS =  \
 	$(GLIB_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
-	-r:../../../../build/bin/Mono.Debugging.dll \
+	-r:../../../build/bin/Mono.Debugging.dll \
 	-r:../../../build/bin/MonoDevelop.Core.dll \
 	-r:../../../build/bin/MonoDevelop.Core.Gui.dll \
 	-r:../../../build/bin/MonoDevelop.Ide.dll \
