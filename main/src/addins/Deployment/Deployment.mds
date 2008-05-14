@@ -1,5 +1,5 @@
 <Combine name="Deployment" fileversion="2.0">
-  <Configurations>
+  <Configurations active="Debug">
     <Configuration name="Debug" ctype="CombineConfiguration">
       <Entry build="True" name="MonoDevelop.Deployment" configuration="Debug" />
       <Entry build="True" name="MonoDevelop.Deployment.Linux" configuration="Debug" />
