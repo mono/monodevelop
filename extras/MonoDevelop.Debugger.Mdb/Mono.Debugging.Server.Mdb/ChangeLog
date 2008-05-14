@@ -1,0 +1,11 @@
+2008-05-14  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* DebuggerServer.cs, AssemblyInfo.cs, Util.cs, BacktraceWrapper.cs,
+	  Mono.Debugging.Server.Mdb.mdp, ChangeLog, Server.cs, Makefile:
+	  Initial import.
+
+2008-04-28  Ankit Jain  <jankit@novell.com>
+
+	* Initial import.
+
+

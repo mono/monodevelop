@@ -1,0 +1,19 @@
+2008-05-14  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Makefile.include, configure, rules.make, ChangeLog,
+	  Mono.Debugging.Server.Mdb, Mono.Debugging.Backend.Mdb,
+	  MonoDevelop.Debugger.Mdb, MonoDevelop.Debugger.Mdb/AssemblyInfo.cs,
+	  MonoDevelop.Debugger.Mdb/DebuggingService.cs,
+	  MonoDevelop.Debugger.Mdb/Debugger.mdp,
+	  MonoDevelop.Debugger.Mdb/BreakpointHitArgs.cs,
+	  MonoDevelop.Debugger.Mdb/DebugExecutionHandlerFactory.cs,
+	  MonoDevelop.Debugger.Mdb/BreakpointEntry.cs,
+	  MonoDevelop.Debugger.Mdb/Gui, MonoDevelop.Debugger.Mdb/Gui/Pads,
+	  MonoDevelop.Debugger.Mdb/Gui/Pads/StackTracePad.cs,
+	  MonoDevelop.Debugger.Mdb/Services.cs,
+	  MonoDevelop.Debugger.Mdb/MonoDevelop.Debugger.addin.xml,
+	  MonoDevelop.Debugger.Mdb/ChangeLog,
+	  MonoDevelop.Debugger.Mdb/MonoDevelop.Debugger.Mdb.mdp,
+	  MonoDevelop.Debugger.Mdb/Makefile, Makefile,
+	  MonoDevelop.Debugger.Mdb.mds: Initial import.
+

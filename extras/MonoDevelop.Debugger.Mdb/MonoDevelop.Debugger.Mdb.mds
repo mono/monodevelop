@@ -1,0 +1,20 @@
+<Combine name="MonoDevelop.Debugger.Mdb" fileversion="2.0">
+  <Configurations active="Debug">
+    <Configuration name="Debug" ctype="CombineConfiguration">
+      <Entry build="True" name="Mono.Debugging.Backend.Mdb" configuration="Debug" />
+      <Entry build="True" name="Mono.Debugging.Server.Mdb" configuration="Debug" />
+    </Configuration>
+    <Configuration name="Release" ctype="CombineConfiguration">
+      <Entry build="True" name="Mono.Debugging.Backend.Mdb" configuration="Release" />
+      <Entry build="True" name="Mono.Debugging.Server.Mdb" configuration="Release" />
+    </Configuration>
+  </Configurations>
+  <StartMode startupentry="Mono.Debugging.Backend.Mdb" single="True">
+    <Execute type="None" entry="Mono.Debugging.Backend.Mdb" />
+    <Execute type="None" entry="Mono.Debugging.Server.Mdb" />
+  </StartMode>
+  <Entries>
+    <Entry filename="Mono.Debugging.Backend.Mdb/Mono.Debugging.Backend.Mdb.mdp" />
+    <Entry filename="Mono.Debugging.Server.Mdb/Mono.Debugging.Server.Mdb.mdp" />
+  </Entries>
+</Combine>

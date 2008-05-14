@@ -1,0 +1,10 @@
+2008-05-14  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* AssemblyInfo.cs, Manifest.addin.xml, IDebuggerController.cs,
+	  MonoDebuggerSession.cs, ChangeLog, Mono.Debugging.Backend.Mdb.mdp,
+	  Mono.Debugging.Backend.Mdb, DebuggerController.cs,
+	  MonoDebuggerSessionFactory.cs, Makefile: Initial import.
+
+2008-04-28  Ankit Jain  <jankit@novell.com>
+
+	* Initial import.

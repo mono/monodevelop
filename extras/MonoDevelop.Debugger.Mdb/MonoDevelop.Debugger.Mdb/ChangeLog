@@ -1,0 +1,7 @@
+2008-04-29  Ankit Jain  <jankit@novell.com>
+
+	* MonoDevelop.Debugger.addin.xml: Remove useless parts.
+
+2008-04-28  Ankit Jain  <jankit@novell.com>
+
+	* Initial import.
