@@ -1,6 +1,0 @@
-Name: DebuggerClient
-Description: DebuggerClient
-Version: 0.1
-
-Requires: 
-Libs: -r:@expanded_libdir@/@PACKAGE@/DebuggerClient.dll
