@@ -1,16 +1,16 @@
-<Project name="Mono.Debugging" language="C#" clr-version="Net_2_0" fileversion="2.0" ctype="DotNetProject">
+<Project name="Mono.Debugging" fileversion="2.0" language="C#" clr-version="Net_2_0" ctype="DotNetProject">
   <Configurations active="Debug">
     <Configuration name="Debug" ctype="DotNetProjectConfiguration">
-      <Output directory="../../../../build/bin" assembly="Mono.Debugging" />
+      <Output directory="../../../build/bin" assembly="Mono.Debugging" />
       <Build debugmode="True" target="Library" />
-      <Execution runwithwarnings="True" consolepause="False" clr-version="Net_2_0" runtime="MsNet" />
-      <CodeGeneration warninglevel="4" optimize="False" unsafecodeallowed="False" generateoverflowchecks="False" definesymbols="DEBUG" generatexmldocumentation="False" compiler="Mcs" ctype="CSharpCompilerParameters" />
+      <Execution runwithwarnings="True" consolepause="False" runtime="MsNet" clr-version="Net_2_0" />
+      <CodeGeneration compiler="Mcs" warninglevel="4" optimize="False" unsafecodeallowed="False" generateoverflowchecks="False" definesymbols="DEBUG" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
     </Configuration>
     <Configuration name="Release" ctype="DotNetProjectConfiguration">
-      <Output directory="bin/Release" assembly="Mono" />
+      <Output directory="../../../build/bin" assembly="Mono" />
       <Build debugmode="False" target="Library" />
-      <Execution runwithwarnings="True" consolepause="False" clr-version="Net_2_0" runtime="MsNet" />
-      <CodeGeneration warninglevel="4" optimize="False" unsafecodeallowed="False" generateoverflowchecks="False" generatexmldocumentation="False" compiler="Mcs" ctype="CSharpCompilerParameters" />
+      <Execution runwithwarnings="True" consolepause="False" runtime="MsNet" clr-version="Net_2_0" />
+      <CodeGeneration compiler="Mcs" warninglevel="4" optimize="False" unsafecodeallowed="False" generateoverflowchecks="False" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
     </Configuration>
   </Configurations>
   <Contents>

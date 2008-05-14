@@ -14,7 +14,7 @@
       <Entry build="True" name="MonoDevelop.DesignerSupport" configuration="Debug" />
       <Entry build="True" name="MonoDevelop.Autotools" configuration="Debug" />
       <Entry build="True" name="MonoDevelop.WebReferences" configuration="Debug" />
-      <Entry build="True" name="CSharpBinding" configuration="" />
+      <Entry build="True" name="CSharpBinding" configuration="Debug" />
       <Entry build="True" name="MonoDevelop.Gettext" configuration="Debug" />
       <Entry build="True" name="MonoDevelop.RegexToolkit" configuration="Debug" />
       <Entry build="True" name="CBinding" configuration="Debug" />
@@ -26,22 +26,23 @@
       <Entry build="True" name="Deployment" configuration="Debug" />
       <Entry build="True" name="MonoDevelop.Moonlight" configuration="Debug" />
       <Entry build="True" name="MonoDevelop.XmlEditor" configuration="Debug" />
+      <Entry build="True" name="MonoDevelop.Debugger" configuration="Debug" />
     </Configuration>
     <Configuration name="Release" ctype="CombineConfiguration">
       <Entry build="True" name="MonoDevelop.NUnit" configuration="Debug" />
       <Entry build="True" name="ILAsmBinding" configuration="Debug" />
-      <Entry build="True" name="VersionControl" configuration="Debug" />
-      <Entry build="True" name="MonoDevelop.GtkCore" configuration="Debug" />
+      <Entry build="True" name="VersionControl" configuration="Release" />
+      <Entry build="True" name="MonoDevelop.GtkCore" configuration="Release" />
       <Entry build="True" name="WelcomePage" configuration="Debug" />
       <Entry build="True" name="MonoDevelop.MsVisualStudio" configuration="Debug" />
-      <Entry build="True" name="VBNetBinding" configuration="" />
+      <Entry build="True" name="VBNetBinding" configuration="Release" />
       <Entry build="True" name="MonoDevelop.ChangeLogAddIn" configuration="Debug" />
-      <Entry build="True" name="MonoDeveloperExtensions" configuration="" />
+      <Entry build="True" name="MonoDeveloperExtensions" configuration="Release" />
       <Entry build="True" name="MonoDevelop.AspNet" configuration="Debug" />
       <Entry build="True" name="MonoDevelop.DesignerSupport" configuration="Debug" />
       <Entry build="True" name="MonoDevelop.Autotools" configuration="Release" />
       <Entry build="True" name="MonoDevelop.WebReferences" configuration="Release" />
-      <Entry build="True" name="CSharpBinding" configuration="" />
+      <Entry build="True" name="CSharpBinding" configuration="Release" />
       <Entry build="True" name="MonoDevelop.Gettext" configuration="Release" />
       <Entry build="True" name="MonoDevelop.RegexToolkit" configuration="Release" />
       <Entry build="True" name="CBinding" configuration="Release" />
@@ -53,14 +54,13 @@
       <Entry build="True" name="Deployment" configuration="Release" />
       <Entry build="True" name="MonoDevelop.Moonlight" configuration="Release" />
       <Entry build="True" name="MonoDevelop.XmlEditor" configuration="Release" />
+      <Entry build="True" name="MonoDevelop.Debugger" configuration="Release" />
     </Configuration>
   </Configurations>
   <StartMode startupentry="MonoDevelop.NUnit" single="True">
     <Execute type="None" entry="MonoDevelop.NUnit" />
-    <Execute type="None" entry="CSharpBinding" />
     <Execute type="None" entry="ILAsmBinding" />
     <Execute type="None" entry="VersionControl" />
-    <Execute type="None" entry="MonoDevelop.SourceEditor" />
     <Execute type="None" entry="MonoDevelop.GtkCore" />
     <Execute type="None" entry="WelcomePage" />
     <Execute type="None" entry="MonoDevelop.MsVisualStudio" />
@@ -68,28 +68,22 @@
     <Execute type="None" entry="MonoDevelop.ChangeLogAddIn" />
     <Execute type="None" entry="MonoDeveloperExtensions" />
     <Execute type="None" entry="MonoDevelop.AspNet" />
-    <Execute type="None" entry="AspNetEdit" />
     <Execute type="None" entry="MonoDevelop.DesignerSupport" />
     <Execute type="None" entry="MonoDevelop.Autotools" />
     <Execute type="None" entry="MonoDevelop.WebReferences" />
-    <Execute type="None" entry="Deployment" />
-    <Execute type="None" entry="MonoDevelop.Database" />
     <Execute type="None" entry="CSharpBinding" />
     <Execute type="None" entry="MonoDevelop.Gettext" />
     <Execute type="None" entry="MonoDevelop.RegexToolkit" />
     <Execute type="None" entry="CBinding" />
-    <Execute type="None" entry="BooBinding" />
     <Execute type="None" entry="GnomePlatform" />
     <Execute type="None" entry="Mono.TextEditor" />
     <Execute type="None" entry="MonoDevelop.SourceEditor2" />
     <Execute type="None" entry="MonoDevelop.AssemblyBrowser" />
-    <Execute type="None" entry="MonoDevelop.CodeStatistic" />
-    <Execute type="None" entry="MonoDevelop.CodeStatistic" />
-    <Execute type="None" entry="MonoDevelop.CodeStatistic" />
     <Execute type="None" entry="MonoDevelop.CodeMetrics" />
     <Execute type="None" entry="Deployment" />
     <Execute type="None" entry="MonoDevelop.Moonlight" />
     <Execute type="None" entry="MonoDevelop.XmlEditor" />
+    <Execute type="None" entry="MonoDevelop.Debugger" />
   </StartMode>
   <Entries>
     <Entry filename="NUnit/MonoDevelop.NUnit.mdp" />
@@ -117,5 +111,6 @@
     <Entry filename="Deployment/Deployment.mds" />
     <Entry filename="MonoDevelop.Moonlight/MonoDevelop.Moonlight.mdp" />
     <Entry filename="MonoDevelop.XmlEditor/MonoDevelop.XmlEditor.mds" />
+    <Entry filename="MonoDevelop.Debugger/MonoDevelop.Debugger.mdp" />
   </Entries>
 </Combine>

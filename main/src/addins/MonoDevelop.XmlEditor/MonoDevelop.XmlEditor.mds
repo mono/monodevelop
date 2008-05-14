@@ -2,11 +2,11 @@
   <Configurations active="Debug">
     <Configuration name="Debug" ctype="CombineConfiguration">
       <Entry build="False" name="MonoDevelop.XmlEditor.Tests" configuration="Debug" />
-      <Entry build="False" name="MonoDevelop.XmlEditor" configuration="Debug" />
+      <Entry build="True" name="MonoDevelop.XmlEditor" configuration="Debug" />
     </Configuration>
     <Configuration name="Release" ctype="CombineConfiguration">
       <Entry build="False" name="MonoDevelop.XmlEditor.Tests" configuration="Release" />
-      <Entry build="False" name="MonoDevelop.XmlEditor" configuration="Release" />
+      <Entry build="True" name="MonoDevelop.XmlEditor" configuration="Release" />
     </Configuration>
   </Configurations>
   <StartMode startupentry="MonoDevelop.XmlEditor" single="True">

@@ -8,13 +8,13 @@ REFS =  \
 	$(MONO_ADDINS_SETUP_LIBS) \
 	$(MONODOC_LIBS) \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Documentation.dll \
+	-r:$(top_builddir)/build/bin/Mono.Debugging.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Components.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Core.Gui.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Dock.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Projects.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Projects.Gui.dll \
-	-r:$(top_builddir)/build/bin/Mono.Debugging.dll \
 	-r:ICSharpCode.SharpZipLib \
 	-r:Mono.GetOptions \
 	-r:Mono.Posix \
