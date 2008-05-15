@@ -21,7 +21,7 @@ DEFINES= -define:NET_2_0 -define:WITH_GTK
 
 if ENABLE_DEBUGGER
 
-noinst_DATA= $(ASSEMBLY)
+noinst_DATA= $(ASSEMBLY) $(ASSEMBLY).mdb
 
 $(ASSEMBLY): $(build_sources)
 	mkdir -p $(ADDIN_BUILD)

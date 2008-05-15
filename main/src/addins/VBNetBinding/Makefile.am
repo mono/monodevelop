@@ -58,7 +58,7 @@ $(ASSEMBLY): $(build_sources) $(build_resources)
 		$(build_sources)
 
 vbnetbindinglibdir = $(MD_ADDIN_DIR)/BackendBindings
-vbnetbindinglib_DATA = $(ASSEMBLY)
+vbnetbindinglib_DATA = $(ASSEMBLY) $(ASSEMBLY).mdb
 
 CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb
 

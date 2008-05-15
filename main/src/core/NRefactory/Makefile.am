@@ -83,7 +83,7 @@ $(ASSEMBLY): $(build_sources)
 	$(CSC) $(CSC_FLAGS) -debug -out:$@ -target:library $(REFS) $(build_sources)
 
 assemblydir = $(MD_ASSEMBLY_DIR)
-assembly_DATA = $(ASSEMBLY)
+assembly_DATA = $(ASSEMBLY) $(ASSEMBLY).mdb
 
 CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb
 

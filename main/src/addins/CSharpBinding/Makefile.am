@@ -176,7 +176,7 @@ run-parse-test: $(PARSE)
 	MONO_PATH=$(top_builddir)/build/AddIns/BackendBindings/:$(top_builddir)/build/bin/ mono $(PARSE) .
 
 csharpbindinglibdir = $(MD_ADDIN_DIR)/BackendBindings
-csharpbindinglib_DATA = $(ASSEMBLY)
+csharpbindinglib_DATA = $(ASSEMBLY) $(ASSEMBLY).mdb
 
 CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb $(PARSE) $(PARSE).mdb
 

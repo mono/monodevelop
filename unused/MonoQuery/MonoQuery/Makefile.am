@@ -100,7 +100,7 @@ EXTRA_DIST = $(FILES) $(RES) Gui/DbProviderCollection.cs.in
 
 if ENABLE_MONOQUERY
 monoquerydir = $(MD_ADDIN_DIR)/MonoQuery
-monoquery_DATA = $(ASSEMBLY)
+monoquery_DATA = $(ASSEMBLY) $(ASSEMBLY).mdb
 endif
 
 include $(top_srcdir)/Makefile.include

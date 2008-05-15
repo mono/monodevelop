@@ -85,7 +85,7 @@ $(ASSEMBLY): $(FILES) $(build_resources)
 	$(CSC) $(CSC_FLAGS) $(REFS) $(build_resources:%=/resource:%) $(build_sources) -out:$@ -target:library
 
 assemblydir = $(MD_ADDIN_DIR)/MonoDevelop.Autotools
-assembly_DATA = $(ASSEMBLY) $(DATA_FILES)
+assembly_DATA = $(ASSEMBLY) $(ASSEMBLY).mdb $(DATA_FILES)
 
 CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb $(DATA_FILE_BUILD)
 EXTRA_DIST = $(FILES) $(RES) $(DATA_FILES)

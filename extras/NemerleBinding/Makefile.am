@@ -63,7 +63,7 @@ $(ASSEMBLY): $(FILES) $(RES)
 
 if ENABLE_NEMERLE
 assemblydir = $(MD_ADDIN_DIR)/BackendBindings/
-assembly_DATA = $(ASSEMBLY)
+assembly_DATA = $(ASSEMBLY) $(ASSEMBLY).mdb
 
 endif
 

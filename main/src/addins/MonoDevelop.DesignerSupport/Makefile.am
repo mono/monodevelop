@@ -124,7 +124,7 @@ $(ASSEMBLY): $(build_sources) $(build_resources)
 		$(build_resources:%=/resource:%) $(build_sources)
 
 assemblydir = $(MD_ADDIN_DIR)/MonoDevelop.DesignerSupport
-assembly_DATA = $(ASSEMBLY)
+assembly_DATA = $(ASSEMBLY) $(ASSEMBLY).mdb
 
 CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb
 

@@ -11,7 +11,7 @@ RES =  \
 
 
 assemblydir = $(MD_ASSEMBLY_DIR)
-assembly_DATA = $(ASSEMBLY)
+assembly_DATA = $(ASSEMBLY) $(ASSEMBLY).mdb
 
 REFS =  \
 	$(GLADE_SHARP_LIBS) \

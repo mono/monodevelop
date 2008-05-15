@@ -188,7 +188,7 @@ $(ASSEMBLY): $(build_sources) $(build_resources)
 	$(CSC) $(CSC_FLAGS) -out:$@ -target:library $(REFS) $(build_resources:%=/resource:%) $(build_sources)
 
 assemblydir = $(MD_ASSEMBLY_DIR)
-assembly_DATA = $(ASSEMBLY)
+assembly_DATA = $(ASSEMBLY) $(ASSEMBLY).mdb
 
 CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb
 

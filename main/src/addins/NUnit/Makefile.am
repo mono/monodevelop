@@ -92,7 +92,7 @@ $(ASSEMBLY): $(FILES) $(build_resources)
 
 
 assemblydir = $(MD_ADDIN_DIR)/NUnit
-assembly_DATA = $(ASSEMBLY) $(SRC_NUNIT_FILES)
+assembly_DATA = $(ASSEMBLY) $(ASSEMBLY).mdb $(SRC_NUNIT_FILES)
 
 CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb $(BUILD_NUNIT_FILES)
 EXTRA_DIST = $(FILES) $(RES) $(SRC_NUNIT_FILES)

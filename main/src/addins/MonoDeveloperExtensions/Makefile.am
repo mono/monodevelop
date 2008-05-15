@@ -46,5 +46,5 @@ include $(top_srcdir)/Makefile.include
 
 if ENABLE_MONOEXTENSIONS
 MonoDeveloperExtensionsdir = $(MD_ADDIN_DIR)/MonoDeveloperExtensions
-MonoDeveloperExtensions_DATA = $(ASSEMBLY)
+MonoDeveloperExtensions_DATA = $(ASSEMBLY) $(ASSEMBLY).mdb
 endif

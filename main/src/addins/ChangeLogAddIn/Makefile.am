@@ -44,7 +44,7 @@ $(ASSEMBLY): $(FILES) $(build_resources)
 
 if ENABLE_VERSIONCONTROL
 assemblydir = $(MD_ADDIN_DIR)/ChangeLogAddIn
-assembly_DATA = $(ASSEMBLY)
+assembly_DATA = $(ASSEMBLY) $(ASSEMBLY).mdb
 endif
 
 CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb

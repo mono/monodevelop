@@ -158,7 +158,7 @@ check: all
 
 if ENABLE_ASPNET
 assemblydir = $(MD_ADDIN_DIR)/MonoDevelop.AspNet
-assembly_DATA = $(ASSEMBLY)
+assembly_DATA = $(ASSEMBLY) $(ASSEMBLY).mdb
 
 schemadir = $(MD_ADDIN_DIR)/MonoDevelop.AspNet/Schemas
 schema_DATA = $(DATA_FILES)

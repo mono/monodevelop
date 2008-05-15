@@ -15,7 +15,7 @@ $(ASSEMBLY): $(build_sources)
 	$(CSC) $(CSC_FLAGS) $(build_sources) $(REFS) -out:$(ASSEMBLY)
 
 assemblydir = $(MD_ASSEMBLY_DIR)
-assembly_DATA = $(ASSEMBLY)           
+assembly_DATA = $(ASSEMBLY) $(ASSEMBLY).mdb           
 
 CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb
 EXTRA_DIST = $(FILES)

@@ -234,7 +234,7 @@ $(ASSEMBLY): $(build_sources) $(build_resources)
 	&& cp $(CONFIG) $(top_builddir)/build/bin
 
 assemblydir = $(MD_ASSEMBLY_DIR)
-assembly_DATA = $(ASSEMBLY) $(CONFIG)
+assembly_DATA = $(ASSEMBLY) $(ASSEMBLY).mdb $(CONFIG)
 
 CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb
 DISTCLEANFILES = $(CONFIG)

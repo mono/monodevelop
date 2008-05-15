@@ -41,7 +41,7 @@ $(ASSEMBLY): $(build_sources) $(build_resources)
 check: all
 
 mdmoonlightlibdir = $(MD_ADDIN_DIR)/MonoDevelop.Moonlight
-mdmoonlightlib_DATA = $(ASSEMBLY)
+mdmoonlightlib_DATA = $(ASSEMBLY) $(ASSEMBLY).mdb
 
 CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb
 

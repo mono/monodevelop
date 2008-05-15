@@ -68,8 +68,8 @@ $(ASSEMBLY) : $(build_sources) $(build_resources)
 	mkdir -p $(top_builddir)/build/bin
 	$(CSC) $(CSC_FLAGS) $(build_resources:%=/resource:%) $(build_sources) -out:$@ -t:library $(REFS)
 
-  assemblydir = $(MD_ADDIN_DIR)
-  assembly_DATA = $(ASSEMBLY)
+assemblydir = $(MD_ADDIN_DIR)
+assembly_DATA = $(ASSEMBLY) $(ASSEMBLY).mdb
 
 CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb
 

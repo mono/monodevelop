@@ -98,7 +98,7 @@ $(ASSEMBLY): $(FILES) $(build_resources) $(top_builddir)/build/AddIns/MonoDevelo
 	$(CSC) $(CSC_FLAGS) $(REFS) $(build_resources:%=/resource:%) $(build_sources) -out:$@ -target:library
 
 assemblydir = $(MD_ADDIN_DIR)/MonoDevelop.XmlEditor
-assembly_DATA = $(ASSEMBLY)
+assembly_DATA = $(ASSEMBLY) $(ASSEMBLY).mdb
 
 schemadir = $(MD_ADDIN_DIR)/MonoDevelop.XmlEditor/schemas
 schema_DATA = $(DATA_FILES)

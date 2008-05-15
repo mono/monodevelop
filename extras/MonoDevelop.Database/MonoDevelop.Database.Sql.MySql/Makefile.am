@@ -53,7 +53,7 @@ $(ASSEMBLY): $(FILES) $(build_resources)
 
 
 assemblydir = $(MD_ADDIN_DIR)/MonoDevelop.Database
-assembly_DATA = $(ASSEMBLY) $(BUILD_MYSQL_FILES)
+assembly_DATA = $(ASSEMBLY) $(ASSEMBLY).mdb $(BUILD_MYSQL_FILES)
 
 CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb $(BUILD_MYSQL_FILES)
 EXTRA_DIST = $(FILES) $(RES) $(SRC_MYSQL_FILES)

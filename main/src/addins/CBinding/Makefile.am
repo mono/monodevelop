@@ -147,7 +147,7 @@ $(ASSEMBLY): $(build_sources) $(build_resources)
 
 if ENABLE_C
 cbindinglibdir = $(MD_ADDIN_DIR)/BackendBindings
-cbindinglib_DATA = $(ASSEMBLY)
+cbindinglib_DATA = $(ASSEMBLY) $(ASSEMBLY).mdb
 endif
 
 CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb

@@ -44,7 +44,7 @@ $(ASSEMBLY): $(FILES) $(build_resources)
 
 if ENABLE_POSTGRES
 assemblydir = $(MD_ADDIN_DIR)/MonoDevelop.Database
-assembly_DATA = $(ASSEMBLY)
+assembly_DATA = $(ASSEMBLY) $(ASSEMBLY).mdb
 endif
 
 CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb

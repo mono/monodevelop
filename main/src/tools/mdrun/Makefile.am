@@ -17,7 +17,7 @@ $(ASSEMBLY).config: $(ASSEMBLY) $(srcdir)/app.config
 	cp $(srcdir)/app.config $(ASSEMBLY).config
 
 assemblydir = $(MD_ASSEMBLY_DIR)
-assembly_DATA = $(ASSEMBLY) $(ASSEMBLY).config
+assembly_DATA = $(ASSEMBLY) $(ASSEMBLY).mdb $(ASSEMBLY).config
 
 CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb
 EXTRA_DIST = $(FILES) app.config

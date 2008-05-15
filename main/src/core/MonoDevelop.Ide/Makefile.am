@@ -436,7 +436,7 @@ $(ASSEMBLY): $(build_sources) $(build_resources)
 		$(monodoc_libflags) $(build_resources:%=/resource:%) $(build_sources)
 
 assemblydir = $(MD_ASSEMBLY_DIR)
-assembly_DATA = $(ASSEMBLY)
+assembly_DATA = $(ASSEMBLY) $(ASSEMBLY).mdb
 
 optionsdir = $(MD_DIR)/data/options
 options_DATA = $(OPTIONS)

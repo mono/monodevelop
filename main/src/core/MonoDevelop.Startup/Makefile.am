@@ -25,7 +25,7 @@ $(ASSEMBLY).addins: $(ASSEMBLY) $(srcdir)/MonoDevelop.exe.addins
 	cp $(srcdir)/MonoDevelop.exe.addins $(ASSEMBLY).addins
 	
 assemblydir = $(MD_ASSEMBLY_DIR)
-assembly_DATA = $(ASSEMBLY) $(ASSEMBLY).config $(ASSEMBLY).addins
+assembly_DATA = $(ASSEMBLY) $(ASSEMBLY).mdb $(ASSEMBLY).config $(ASSEMBLY).addins
 
 CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb
 

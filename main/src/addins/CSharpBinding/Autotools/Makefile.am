@@ -24,4 +24,4 @@ EXTRA_DIST = $(FILES)
 include $(top_srcdir)/Makefile.include
 
 csharpbindinglibdir = $(MD_ADDIN_DIR)/BackendBindings
-csharpbindinglib_DATA = $(ASSEMBLY)
+csharpbindinglib_DATA = $(ASSEMBLY) $(ASSEMBLY).mdb

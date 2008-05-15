@@ -32,7 +32,7 @@ $(ASSEMBLY): $(FILES) $(build_resources)
 
 
 assemblydir = $(MD_ADDIN_DIR)/MonoDevelop.Database
-assembly_DATA = $(ASSEMBLY)
+assembly_DATA = $(ASSEMBLY) $(ASSEMBLY).mdb
 
 CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb
 EXTRA_DIST = $(FILES) $(RES)

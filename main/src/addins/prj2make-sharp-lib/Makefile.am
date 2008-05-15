@@ -56,7 +56,7 @@ $(ASSEMBLY): $(build_sources) $(build_resources)
 	$(CSC) $(CSC_FLAGS) -out:$@ -target:library $(build_resources:%=/resource:%) $(build_sources) $(REFS)
 
 assemblydir = $(MD_ADDIN_DIR)/MonoDevelop.MsVisualStudio
-assembly_DATA = $(ASSEMBLY)
+assembly_DATA = $(ASSEMBLY) $(ASSEMBLY).mdb
 
 CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb
 

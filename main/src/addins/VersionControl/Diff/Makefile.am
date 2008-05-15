@@ -29,7 +29,7 @@ endif
 
 if ENABLE_VERSIONCONTROL
 addindir = $(MD_ADDIN_DIR)/VersionControl
-addin_DATA = $(ASSEMBLY)
+addin_DATA = $(ASSEMBLY) $(ASSEMBLY).mdb
 endif
 
 include $(top_srcdir)/Makefile.include

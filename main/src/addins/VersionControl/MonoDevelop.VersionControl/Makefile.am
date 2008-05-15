@@ -89,7 +89,7 @@ endif
 
 if ENABLE_VERSIONCONTROL
 addindir = $(MD_ADDIN_DIR)/VersionControl
-addin_DATA = $(DLL)
+addin_DATA = $(DLL) $(DLL).mdb
 endif
 
 $(DLL): $(build_sources) $(build_resources)

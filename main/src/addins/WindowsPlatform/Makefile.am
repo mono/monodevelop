@@ -24,7 +24,7 @@ $(ASSEMBLY): $(FILES)
 
 if ENABLE_WINDOWSPLATFORM
 assemblydir = $(MD_ADDIN_DIR)/WindowsPlatform
-assembly_DATA = $(ASSEMBLY)
+assembly_DATA = $(ASSEMBLY) $(ASSEMBLY).mdb
 endif
 
 CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb
