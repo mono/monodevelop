@@ -6,6 +6,7 @@ REFS =  \
 	$(GLIB_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
 	-r:../../../build/bin/Mono.Debugging.dll \
+	-r:../../../build/bin/MonoDevelop.Components.dll \
 	-r:../../../build/bin/MonoDevelop.Core.dll \
 	-r:../../../build/bin/MonoDevelop.Core.Gui.dll \
 	-r:../../../build/bin/MonoDevelop.Ide.dll \
@@ -14,7 +15,9 @@ REFS =  \
 
 FILES =  \
 	AssemblyInfo.cs \
-	MonoDevelop.Debugger/StackTracePad.cs
+	MonoDevelop.Debugger/ObjectValueTreeView.cs \
+	MonoDevelop.Debugger/StackTracePad.cs \
+	MonoDevelop.Debugger/WatchPad.cs
 
 RES = MonoDevelop.Debugger.addin.xml
 

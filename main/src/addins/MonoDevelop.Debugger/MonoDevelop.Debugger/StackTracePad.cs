@@ -25,33 +25,32 @@ namespace MonoDevelop.Debugger
 
 		public StackTracePad ()
 		{
-			try {
-				this.ShadowType = ShadowType.In;
-	
-				store = new TreeStore (typeof (string));
-	
-				tree = new TreeView (store);
-				tree.RulesHint = true;
-				tree.HeadersVisible = true;
-	
-				TreeViewColumn FrameCol = new TreeViewColumn ();
-				CellRenderer FrameRenderer = new CellRendererText ();
-				FrameCol.Title = "Frame";
-				FrameCol.PackStart (FrameRenderer, true);
-				FrameCol.AddAttribute (FrameRenderer, "text", 0);
-				FrameCol.Resizable = true;
-				FrameCol.Alignment = 0.0f;
-				tree.AppendColumn (FrameCol);
-	
-				Add (tree);
-				ShowAll ();
-	
-				IdeApp.Services.DebuggingService.PausedEvent += (EventHandler) DispatchService.GuiDispatch (new EventHandler (OnPausedEvent));
-				/*Services.DebuggingService.ResumedEvent += (EventHandler) DispatchService.GuiDispatch (new EventHandler (OnResumedEvent));
-				Services.DebuggingService.StoppedEvent += (EventHandler) DispatchService.GuiDispatch (new EventHandler (OnStoppedEvent));*/
-			} catch (Exception e) {
-				Console.WriteLine ("new StackTracePad, e - {0}", e.ToString ());
-			}
+			this.ShadowType = ShadowType.In;
+
+			store = new TreeStore (typeof (string));
+
+			tree = new TreeView (store);
+			tree.RulesHint = true;
+			tree.HeadersVisible = true;
+
+			TreeViewColumn FrameCol = new TreeViewColumn ();
+			CellRenderer FrameRenderer = new CellRendererText ();
+			FrameCol.Title = "Frame";
+			FrameCol.PackStart (FrameRenderer, true);
+			FrameCol.AddAttribute (FrameRenderer, "text", 0);
+			FrameCol.Resizable = true;
+			FrameCol.Alignment = 0.0f;
+			tree.AppendColumn (FrameCol);
+
+			Add (tree);
+			ShowAll ();
+
+			current_backtrace = IdeApp.Services.DebuggingService.CurrentBacktrace;
+			UpdateDisplay ();
+			
+			IdeApp.Services.DebuggingService.PausedEvent += (EventHandler) DispatchService.GuiDispatch (new EventHandler (OnPausedEvent));
+			IdeApp.Services.DebuggingService.ResumedEvent += (EventHandler) DispatchService.GuiDispatch (new EventHandler (OnResumedEvent));
+			IdeApp.Services.DebuggingService.StoppedEvent += (EventHandler) DispatchService.GuiDispatch (new EventHandler (OnStoppedEvent));
 		}
 		
 		void IPadContent.Initialize (IPadWindow window)
@@ -62,56 +61,32 @@ namespace MonoDevelop.Debugger
 
 		public void UpdateDisplay ()
 		{
-			Console.WriteLine ("** UpdateDisplay");
-			TreeIter it;
+			store.Clear ();
 
-			//if ((current_frame == null) /*|| (current_frame.Method == null)*/) {
-			if (current_backtrace == null) {
-				if (store.GetIterFirst (out it))
-					do { } while (store.Remove (ref it));
-
+			if (current_backtrace == null)
 				return;
-			}
 
-			string [] trace = IdeApp.Services.DebuggingService.Backtrace;
-			if (!store.GetIterFirst (out it)) {
-				foreach (string frame in trace) {
-					store.Append (out it);
-					store.SetValue (it, 0, frame);
-				}
-			}
-			else {
-				for (int i = 0; i < trace.Length; i ++) {
-					store.SetValue (it, 0, trace[i]);
-					if (i < trace.Length - 1 && !store.IterNext (ref it))
-						store.Append (out it);
-				}
-				/* clear any remaining rows */
-				if (store.IterNext (ref it))
-					do { } while (store.Remove (ref it));
-			}
+			string[] trace = IdeApp.Services.DebuggingService.Backtrace;
+			foreach (string frame in trace)
+				store.AppendValues (frame);
 		}
 
 		protected void OnStoppedEvent (object o, EventArgs args)
 		{
-			//current_frame = null;
 			current_backtrace = null;
 			UpdateDisplay ();
 		}
 
 		protected void OnResumedEvent (object o, EventArgs args)
 		{
+			current_backtrace = null;
+			UpdateDisplay ();
 		}
 
 		protected void OnPausedEvent (object o, EventArgs args)
 		{
-			try {
-				current_backtrace = IdeApp.Services.DebuggingService.CurrentBacktrace;
-				UpdateDisplay ();
-			} catch (Exception e) {
-				LoggingService.LogError ("Error updating stack trace display", e);
-				throw;
-			}
+			current_backtrace = IdeApp.Services.DebuggingService.CurrentBacktrace;
+			UpdateDisplay ();
 		}
 
 		public Gtk.Widget Control {
