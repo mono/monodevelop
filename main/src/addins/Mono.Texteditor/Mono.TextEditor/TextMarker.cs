@@ -180,7 +180,8 @@ namespace Mono.TextEditor
 			set {
 				color = value;
 			}
-
+		}
+		
 		public override void Draw (TextEditor editor, Gdk.Drawable win, bool selected, int startOffset, int endOffset, int y, int startXPos, int endXPos)
 		{
 			using (Gdk.GC gc = new Gdk.GC (win)) {

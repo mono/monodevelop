@@ -1,5 +1,9 @@
 2008-05-15  Mike Krüger <mkrueger@novell.com> 
 
+	* Mono.TextEditor/TextMarker.cs: fixed cut&paste error.
+
+2008-05-15  Mike Krüger <mkrueger@novell.com> 
+
 	* Mono.TextEditor/TextMarker.cs: exposed color property of the text
 	  marker
 
