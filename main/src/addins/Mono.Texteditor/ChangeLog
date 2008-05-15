@@ -1,3 +1,9 @@
+2008-05-15  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Mono.TextEditor/TextMarker.cs: Moved the code that draws error
+	  underlines to a new UnderlineMarker. Created LineBackgroundMarker,
+	  to be used to change the background of a line.
+
 2008-05-13  Mike Krüger <mkrueger@novell.com> 
 
 	* CSharpSyntaxMode.xml, Mono.TextEditor.Highlighting/SyntaxMode.cs:

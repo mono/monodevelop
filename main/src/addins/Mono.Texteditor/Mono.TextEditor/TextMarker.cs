@@ -28,6 +28,25 @@ using Gdk;
 
 namespace Mono.TextEditor
 {
+	
+	public class TextMarker
+	{
+		LineSegment lineSegment;
+		
+		public LineSegment LineSegment {
+			get {
+				return lineSegment;
+			}
+			set {
+				lineSegment = value;
+			}
+		}
+		
+		public virtual void Draw (TextEditor editor, Gdk.Drawable win, bool selected, int startOffset, int endOffset, int y, int startXPos, int endXPos)
+		{
+		}
+	}
+	
 	public enum UrlType {
 		Unknown,
 		Url,
@@ -129,22 +148,32 @@ namespace Mono.TextEditor
 		bool DrawBackground (TextEditor editor, Gdk.Drawable win, bool selected, int startOffset, int endOffset, int y, int startXPos, int endXPos);
 	}
 	
-	public class TextMarker
+	public class LineBackgroundMarker: TextMarker, IBackgroundMarker
 	{
-		LineSegment lineSegment;
+		Gdk.Color color;
 		
-		public LineSegment LineSegment {
-			get {
-				return lineSegment;
-			}
-			set {
-				lineSegment = value;
-			}
+		public LineBackgroundMarker (Gdk.Color color)
+		{
+			this.color = color;
 		}
 		
-		public virtual void Draw (TextEditor editor, Gdk.Drawable win, bool selected, int startOffset, int endOffset, int y, int startXPos, int endXPos)
+		public bool DrawBackground (TextEditor editor, Drawable win, bool selected, int startOffset, int endOffset, int y, int startXPos, int endXPos)
 		{
-			/*using (Gdk.GC gc = new Gdk.GC (win)) {
+			if (selected)
+				return true;
+			using (Gdk.GC gc = new Gdk.GC (win)) {
+				gc.RgbFgColor = color;
+				win.DrawRectangle (gc, true, startXPos, y, endXPos - startXPos, editor.LineHeight);
+			}
+			return true;
+		}
+	}
+	
+	public class UnderlineMarker: TextMarker
+	{
+		public override void Draw (TextEditor editor, Gdk.Drawable win, bool selected, int startOffset, int endOffset, int y, int startXPos, int endXPos)
+		{
+			using (Gdk.GC gc = new Gdk.GC (win)) {
 				gc.RgbFgColor = new Color (255, 0, 0);
 				int drawY    = y + editor.LineHeight - 1;
 				const int length = 6;
@@ -153,7 +182,7 @@ namespace Mono.TextEditor
 					win.DrawLine (gc, i, drawY, i + length / 2, drawY - height);
 					win.DrawLine (gc, i + length / 2, drawY - height, i + length, drawY);
 				}
-			}*/
+			}
 		}
 	}
 }
