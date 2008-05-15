@@ -28,18 +28,44 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace MonoDevelop.Components.Commands
 {
 	public class CommandArrayInfo: IEnumerable
 	{
-		ArrayList list = new ArrayList ();
+		List<CommandInfo> list = new List<CommandInfo> ();
 		CommandInfo defaultInfo;
 		bool bypass;
 		
 		internal CommandArrayInfo (CommandInfo defaultInfo)
 		{
 			this.defaultInfo = defaultInfo;
+		}
+		
+		public void Insert (int index, CommandInfoSet infoSet)
+		{
+			Insert (index, infoSet, null);
+		}
+		
+		public void Insert (int index, CommandInfo info, object dataItem)
+		{
+			info.DataItem = dataItem;
+			if (info.Text == null) info.Text = defaultInfo.Text;
+			if (info.Icon == null) info.Icon = defaultInfo.Icon;
+			list.Insert (index, info);
+		}
+
+		public CommandInfo Insert (int index, string text, object dataItem)
+		{
+			CommandInfo info = new CommandInfo (text);
+			Insert (index, info, dataItem);
+			return info;
+		}
+	
+		public void Add (CommandInfoSet infoSet)
+		{
+			Add (infoSet, null);
 		}
 		
 		public void Add (CommandInfo info, object dataItem)
@@ -56,6 +82,15 @@ namespace MonoDevelop.Components.Commands
 			Add (info, dataItem);
 			return info;
 		}
+		
+		public CommandInfo this [int n] {
+			get { return list [n]; }
+		}
+		
+		public int Count {
+			get { return list.Count; }
+		}
+			
 		
 		public void AddSeparator ()
 		{

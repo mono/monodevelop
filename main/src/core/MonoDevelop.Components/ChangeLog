@@ -1,3 +1,8 @@
+2008-05-15  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Components.Commands/CommandArrayInfo.cs: Added new
+	  methods for inserting CommandInfos to the list.
+
 2008-05-09  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Components.Commands/KeyBindingManager.cs: Fix "Bug 381499
