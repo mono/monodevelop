@@ -381,7 +381,7 @@ namespace MonoDevelop.SourceEditor
 			public ErrorInfo info;
 			public LineSegment line;
 			public Mono.TextEditor.Document doc;
-			TextMarker marker = new TextMarker ();
+			TextMarker marker = new UnderlineMarker ();
 			
 			public Error (Mono.TextEditor.Document doc, ErrorInfo info, LineSegment line)
 			{

@@ -1,3 +1,11 @@
+2008-05-15  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Makefile.am, MonoDevelop.SourceEditor.mdp,
+	  MonoDevelop.SourceEditor/SourceEditorView.cs: Show the current
+	  execution location when debugging. Show breakpoints.
+	* MonoDevelop.SourceEditor/SourceEditorWidget.cs: Use the new
+	  UnderlineMarker.
+
 2008-05-08  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.SourceEditor/SourceEditorDisplayBinding.cs: Use platform

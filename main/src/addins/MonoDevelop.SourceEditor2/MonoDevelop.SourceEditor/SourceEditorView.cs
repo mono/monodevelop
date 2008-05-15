@@ -41,6 +41,7 @@ using MonoDevelop.Projects.Gui.Completion;
 using MonoDevelop.Projects.Parser;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Gui.Search;
+using Mono.Debugging.Client;
 using MonoDevelop.DesignerSupport.Toolbox;
 
 namespace MonoDevelop.SourceEditor
@@ -57,6 +58,16 @@ namespace MonoDevelop.SourceEditor
 		FileSystemWatcher fileSystemWatcher;
 		static bool isInWrite = false;
 		DateTime lastSaveTime;
+		
+		LineBackgroundMarker currentDebugLineMarker = new LineBackgroundMarker (new Gdk.Color (255, 255, 0));
+		LineBackgroundMarker breakpointMarker = new LineBackgroundMarker (new Gdk.Color (255, 0, 0));
+		LineBackgroundMarker breakpointDisabledMarker = new LineBackgroundMarker (new Gdk.Color (255, 100, 100));
+		
+		int lastDebugLine = -1;
+		EventHandler executionLocationChanged;
+		EventHandler<BreakpointEventArgs> breakpointAdded;
+		EventHandler<BreakpointEventArgs> breakpointRemoved;
+		EventHandler<BreakpointEventArgs> breakpointStatusChanged;
 		
 		public Mono.TextEditor.Document Document {
 			get {
@@ -84,6 +95,11 @@ namespace MonoDevelop.SourceEditor
 		
 		public SourceEditorView()
 		{
+			executionLocationChanged = (EventHandler) MonoDevelop.Core.Gui.DispatchService.GuiDispatch (new EventHandler (OnExecutionLocationChanged));
+			breakpointAdded = (EventHandler<BreakpointEventArgs>) MonoDevelop.Core.Gui.DispatchService.GuiDispatch (new EventHandler<BreakpointEventArgs> (OnBreakpointAdded));
+			breakpointRemoved = (EventHandler<BreakpointEventArgs>) MonoDevelop.Core.Gui.DispatchService.GuiDispatch (new EventHandler<BreakpointEventArgs> (OnBreakpointRemoved));
+			breakpointStatusChanged = (EventHandler<BreakpointEventArgs>) MonoDevelop.Core.Gui.DispatchService.GuiDispatch (new EventHandler<BreakpointEventArgs> (OnBreakpointStatusChanged));
+			
 			widget = new SourceEditorWidget (this);
 			widget.TextEditor.Document.TextReplaced += delegate (object sender, ReplaceEventArgs args) {
 				int startIndex = args.Offset;
@@ -197,14 +213,14 @@ namespace MonoDevelop.SourceEditor
 			Document.Text = File.ReadAllText (fileName);
 			ContentName = fileName;
 //			InitializeFormatter ();
-//			
-//			if (Services.DebuggingService != null) {
-//				foreach (IBreakpoint b in Services.DebuggingService.GetBreakpointsAtFile (fileName))
-//					se.View.ShowBreakpointAt (b.Line - 1);
-//					
-//				UpdateExecutionLocation ();
-//			}
-//			
+			
+			UpdateExecutionLocation ();
+			UpdateBreakpoints ();
+			IdeApp.Services.DebuggingService.ExecutionLocationChanged += executionLocationChanged;
+			IdeApp.Services.DebuggingService.Breakpoints.BreakpointAdded += breakpointAdded;
+			IdeApp.Services.DebuggingService.Breakpoints.BreakpointRemoved += breakpointRemoved;
+			IdeApp.Services.DebuggingService.Breakpoints.BreakpointStatusChanged += breakpointStatusChanged;
+
 			widget.LoadClassCombo ();
 			this.IsDirty = false;
 		}
@@ -224,6 +240,11 @@ namespace MonoDevelop.SourceEditor
 				widget.Dispose ();
 				widget = null;
 			}
+			
+			IdeApp.Services.DebuggingService.ExecutionLocationChanged -= executionLocationChanged;
+			IdeApp.Services.DebuggingService.Breakpoints.BreakpointAdded -= breakpointAdded;
+			IdeApp.Services.DebuggingService.Breakpoints.BreakpointRemoved -= breakpointRemoved;
+			IdeApp.Services.DebuggingService.Breakpoints.BreakpointStatusChanged -= breakpointStatusChanged;
 		}
 		
 		public IParserContext GetParserContext ()
@@ -255,6 +276,82 @@ namespace MonoDevelop.SourceEditor
 			
 			if (args.ChangeType == WatcherChangeTypes.Changed || args.ChangeType == WatcherChangeTypes.Created) 
 				widget.ShowFileChangedWarning ();
+		}
+
+		void OnExecutionLocationChanged (object s, EventArgs args)
+		{
+			UpdateExecutionLocation ();
+		}
+		
+		void UpdateExecutionLocation ()
+		{
+			if (IdeApp.Services.DebuggingService != null && 
+			    IdeApp.Services.DebuggingService.IsDebugging && 
+			    !IdeApp.Services.DebuggingService.IsRunning &&
+				IdeApp.Services.DebuggingService.CurrentFilename != null &&
+			    Path.GetFullPath (IdeApp.Services.DebuggingService.CurrentFilename) == Path.GetFullPath (ContentName)
+		    ) {
+				if (lastDebugLine == IdeApp.Services.DebuggingService.CurrentLineNumber)
+					return;
+				if (lastDebugLine != -1)
+					widget.TextEditor.Document.GetLine (lastDebugLine-1).RemoveMarker (currentDebugLineMarker);
+				lastDebugLine = IdeApp.Services.DebuggingService.CurrentLineNumber;
+				widget.TextEditor.Document.GetLine (lastDebugLine-1).AddMarker (currentDebugLineMarker);
+				widget.TextEditor.QueueDraw ();
+			} else if (lastDebugLine != -1) {
+				widget.TextEditor.Document.GetLine (lastDebugLine-1).RemoveMarker (currentDebugLineMarker);
+				lastDebugLine = -1;
+				widget.TextEditor.QueueDraw ();
+			}
+		}
+		
+		void UpdateBreakpoints ()
+		{
+			foreach (Breakpoint bp in IdeApp.Services.DebuggingService.Breakpoints)
+				AddBreakpoint (bp);
+		}
+		
+		void OnBreakpointAdded (object s, BreakpointEventArgs args)
+		{
+			AddBreakpoint (args.Breakpoint);
+		}
+		
+		void AddBreakpoint (Breakpoint bp)
+		{
+			if (bp.FileName == Path.GetFullPath (ContentName)) {
+				LineSegment line = widget.TextEditor.Document.GetLine (bp.Line-1);
+				if (bp.Enabled)
+					line.AddMarker (breakpointMarker);
+				else
+					line.AddMarker (breakpointDisabledMarker);
+				Console.WriteLine ("pp ad1: ");
+				widget.TextEditor.QueueDraw ();
+			}
+		}
+		
+		void OnBreakpointRemoved (object s, BreakpointEventArgs args)
+		{
+			if (args.Breakpoint.FileName == Path.GetFullPath (ContentName)) {
+				LineSegment line = widget.TextEditor.Document.GetLine (args.Breakpoint.Line-1);
+				line.RemoveMarker (breakpointMarker);
+				line.RemoveMarker (breakpointDisabledMarker);
+				Console.WriteLine ("pp rm1: ");
+				widget.TextEditor.QueueDraw ();
+			}
+		}
+		
+		void OnBreakpointStatusChanged (object s, BreakpointEventArgs args)
+		{
+			if (args.Breakpoint.FileName == Path.GetFullPath (ContentName)) {
+				LineSegment line = widget.TextEditor.Document.GetLine (args.Breakpoint.Line-1);
+				line.RemoveMarker (breakpointMarker);
+				line.RemoveMarker (breakpointDisabledMarker);
+				if (args.Breakpoint.Enabled)
+					line.AddMarker (breakpointMarker);
+				else
+					line.AddMarker (breakpointDisabledMarker);
+				widget.TextEditor.QueueDraw ();
+			}
 		}
 		
 		#region IExtensibleTextEditor

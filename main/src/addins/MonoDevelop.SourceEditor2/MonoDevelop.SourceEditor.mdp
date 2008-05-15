@@ -1,13 +1,13 @@
 <Project name="MonoDevelop.SourceEditor2" fileversion="2.0" language="C#" clr-version="Net_2_0" ctype="DotNetProject">
   <Configurations active="Debug">
     <Configuration name="Debug" ctype="DotNetProjectConfiguration">
-      <CustomCommands>
-        <Command type="Execute" command="mono --debug ../../../build/bin/MonoDevelop.exe" workingdir="" />
-      </CustomCommands>
       <Output directory="../../../build/AddIns" assemblyKeyFile="." assembly="MonoDevelop.SourceEditor2" />
       <Build debugmode="True" target="Library" />
       <Execution runwithwarnings="True" consolepause="False" runtime="MsNet" clr-version="Net_2_0" />
       <CodeGeneration compiler="Mcs" warninglevel="4" optimize="True" unsafecodeallowed="False" generateoverflowchecks="True" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
+      <CustomCommands>
+        <Command type="Execute" command="mono --debug ../../../build/bin/MonoDevelop.exe" workingdir="" />
+      </CustomCommands>
     </Configuration>
     <Configuration name="Release" ctype="DotNetProjectConfiguration">
       <Output directory="../../../build/AddIns" assemblyKeyFile="." assembly="MonoDevelop.SourceEditor" />
@@ -67,6 +67,7 @@
     <ProjectReference type="Gac" localcopy="True" refto="glib-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="pango-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="atk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <ProjectReference type="Project" localcopy="True" refto="Mono.Debugging" />
   </References>
   <GtkDesignInfo isWidgetLibrary="True" gtkVersion="2.8.3">
     <ExportedWidgets>
