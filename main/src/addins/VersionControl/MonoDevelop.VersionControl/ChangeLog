@@ -1,3 +1,7 @@
+2008-05-15  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* gtk-gui/gui.stetic: Set correct target version.
+
 2008-04-11  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.VersionControl.mdp: Removed unneeded reference.
