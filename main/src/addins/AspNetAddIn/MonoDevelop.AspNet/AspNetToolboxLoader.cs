@@ -39,49 +39,48 @@ namespace MonoDevelop.AspNet
 	
 	public class AspNetToolboxLoader : ToolboxItemToolboxLoader
 	{
-		public override IList<ItemToolboxNode> Load (System.Reflection.Assembly assem)
-		{
-			List<ItemToolboxNode> nodes = new List<ItemToolboxNode> ();
-			foreach (Type t in AccessibleToolboxTypes (assem)) {
-				try {
-					AspNetToolboxNode node = GetNode (t);
-					if (node == null)
-						continue;
-					SetFullPath (node, assem);
-					nodes.Add (node);
-				} catch (Exception ex) {
-					MonoDevelop.Core.LoggingService.LogError ("Error scanning for web toolbox items.", ex);
-				}
-			}
-			return nodes;
-		}
 		
-		AspNetToolboxNode GetNode (Type t)
+		public override ItemToolboxNode GetNode (Type t, ToolboxItemAttribute tba, 
+		    string attributeCategory, string fullPath)
 		{
-			ToolboxItemAttribute tba = 
-				(ToolboxItemAttribute) t.GetCustomAttributes (typeof (ToolboxItemAttribute), true)[0];
-			Type toolboxItemType = (tba.ToolboxItemType == null) ? typeof (ToolboxItem) : tba.ToolboxItemType;
-			
-			if (toolboxItemType != typeof (System.Web.UI.Design.WebControlToolboxItem))
+			bool runtime1;
+			if (typeof (System.Web.UI.Control).IsAssignableFrom (t))
+				runtime1 = false;
+			else if (CanRuntime1 && SWUControl1.IsAssignableFrom (t))
+				runtime1 = true;
+			else
 				return null;
+			
+			Type toolboxItemType = (tba.ToolboxItemType == null) ? typeof (ToolboxItem) : tba.ToolboxItemType;
 			
 			//FIXME: fix WebControlToolboxItem so that this isn't necessary
 			//right now it's totally broken in mono
-			toolboxItemType = typeof (ToolboxItem);
+			if (typeof (System.Web.UI.Design.WebControlToolboxItem).IsAssignableFrom (toolboxItemType))
+				toolboxItemType = typeof (ToolboxItem);
 			
 			//Create the ToolboxItem. The ToolboxItemToolboxNode will destroy it, but need to
 			//be able to extract data from it first.
 			ToolboxItem item = (ToolboxItem) Activator.CreateInstance (toolboxItemType, new object[] {t});
-			string text = GetText (t);
-			
 			AspNetToolboxNode node = new AspNetToolboxNode (item);
-			if (!string.IsNullOrEmpty (text))
-				node.Text = text;
-			node.Category = GetCategory (t);
+			
+			//get the default markup for the tag
+			string webText = runtime1? GetWebText1 (t) : GetWebText (t);
+			if (!string.IsNullOrEmpty (webText))
+				node.Text = webText;
+			
+			if (!string.IsNullOrEmpty (attributeCategory))
+				node.Category = attributeCategory;
+			else if (runtime1)
+				node.Category = GuessCategory1 (t);
+			else
+				node.Category = GuessCategory (t);
+			
+			if (!string.IsNullOrEmpty (fullPath))
+				node.Type.AssemblyLocation = fullPath ;
 			return node;
 		}
 		
-		string GetText (Type t)
+		static string GetWebText (Type t)
 		{
 			object[] atts = t.GetCustomAttributes (typeof (System.Web.UI.ToolboxDataAttribute), false);
 			if (atts != null && atts.Length > 0)
@@ -90,12 +89,19 @@ namespace MonoDevelop.AspNet
 				return null;
 		}
 		
-		string GetCategory (Type t)
+		string GetWebText1 (Type t)
 		{
-			CategoryAttribute ca = GetCategoryAttribute (t);
-			if (ca != null)
-				return ca.Category;
-			
+			Type textAttType = webAssem1.GetType ("System.Web.UI.ToolboxDataAttribute");
+			object[] atts = t.GetCustomAttributes (textAttType, false);
+			if (atts != null && atts.Length > 0) {
+				return (string) textAttType.GetProperty ("Data").GetValue (atts[0], null);
+			} else {
+				return null;
+			}
+		}
+		
+		static string GuessCategory (Type t)
+		{
 			if (t.Namespace == "System.Web.UI.WebControls") {
 				switch (t.Name) {
 				case "Repeater":
@@ -108,10 +114,13 @@ namespace MonoDevelop.AspNet
 				case "PasswordRecovery":
 				case "ChangePassword":
 					return "Login";
+				case "Menu":
+				case "SiteMapPath":
+				case "TreeView":
+					return "Navigation";
 				}
 			}
 			
-			//FIXME: this shouldn't be hard coded, remove when we ship a default toolbox with categories predefined
 			if (t.IsSubclassOf (typeof (System.Web.UI.WebControls.BaseValidator)))
 				return "Validation";
 			else if (typeof (System.Web.UI.IDataSource).IsAssignableFrom (t))
@@ -125,6 +134,55 @@ namespace MonoDevelop.AspNet
 				return "Web Controls";
 			
 			return "General";
+		}
+		
+		
+		//.NET 1.1
+		string GuessCategory1 (Type t)
+		{
+			if (t.IsSubclassOf (webAssem1.GetType ("System.Web.UI.WebControls.BaseValidator")))
+				return "Validation";
+			else if (t.IsSubclassOf (webAssem1.GetType ("System.Web.UI.WebControls.BaseDataList")))
+				return "Data Controls";
+			else if (t.Namespace == "System.Web.UI.HtmlControls"
+			    && t.IsSubclassOf (webAssem1.GetType ("System.Web.UI.HtmlControls.HtmlControl")))
+				return "Html Elements";
+			else if (t.IsSubclassOf (webAssem1.GetType ("System.Web.UI.WebControls.WebControl")))
+				return "Web Controls";
+			
+			return "General";
+		}
+		
+		Type SWUControl1;
+		System.Reflection.Assembly webAssem1;
+		
+		bool canRuntime1 = false;
+		bool inited = false;
+		
+		bool CanRuntime1 {
+			get {
+				if (!inited)
+					InitRuntime1 ();
+				return canRuntime1;
+			}
+		}
+		
+		void InitRuntime1 ()
+		{
+			inited = true;
+			
+			//System.Reflection.Assembly.Load won't load things from the 1.0 GAC
+			string loc = MonoDevelop.Core.Runtime.SystemAssemblyService.GetAssemblyLocation ( 
+			    "System.Web, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a");
+			if (loc != null)
+				webAssem1 = System.Reflection.Assembly.LoadFile (loc);
+			
+			if (webAssem1 != null)
+				canRuntime1 = true;
+			else
+				return;
+			
+			SWUControl1 = webAssem1.GetType ("System.Web.UI.Control");
 		}
 	}
 }

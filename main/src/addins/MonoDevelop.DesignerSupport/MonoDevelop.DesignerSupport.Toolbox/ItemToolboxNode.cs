@@ -44,7 +44,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 {
 	[DataItem (Name = "item", FallbackType = typeof(UnknownToolboxNode))]
 	[Serializable]
-	public abstract class ItemToolboxNode : BaseToolboxNode, ICustomDataItem, IComparable, IComparable<ItemToolboxNode>
+	public abstract class ItemToolboxNode : ICustomDataItem, IComparable, IComparable<ItemToolboxNode>
 	{
 		[NonSerialized]
 		Gdk.Pixbuf icon;
@@ -68,6 +68,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		
 		#region properties
 		
+		[Browsable(false)]
 		public virtual Gdk.Pixbuf Icon {
 			get { return icon; }
 			set { icon = value; }
@@ -78,6 +79,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			set { name = value; }
 		}
 		
+		[ReadOnlyAttribute (true)]
 		public virtual string Category {
 			get { return category; }
 			set { category = value; }
@@ -88,11 +90,12 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			set { description = value; }
 		}
 		
-		//collection of ToolboxItemFilterAttribute
+		[Browsable(false)]
 		public virtual IList<ToolboxItemFilterAttribute> ItemFilters {
 			get { return itemFilters; }
 		}
 		
+		[Browsable(false)]
 		public virtual string ItemDomain {
 			get { return GettextCatalog.GetString ("Unknown"); }
 		}
@@ -101,33 +104,28 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		
 		#region Behaviours
 		
-		public override bool Filter (string keyword)
+		public virtual bool Filter (string keyword)
 		{
-			return ((Name==null)? false : (Name.ToLower ().IndexOf (keyword) >= 0))
-				   || ((Description == null)? false : (Description.ToLower ().IndexOf (keyword) >= 0));
+			return ((Name==null)? false :
+			        (Name.ToLower ().IndexOf (keyword, StringComparison.InvariantCultureIgnoreCase) >= 0))
+			    || ((Description == null)? false :
+				(Description.ToLower ().IndexOf (keyword, StringComparison.InvariantCultureIgnoreCase) >= 0));
 		}
 		
-		public override bool Equals (object o)
+		public virtual bool Equals (object o)
 		{
 			ItemToolboxNode node = o as ItemToolboxNode;
 			return (node != null) && (node.Name == this.Name) && (node.Category == this.Category) && (node.Description == this.Description);
 		}
 		
-		public override int GetHashCode ()
+		public virtual int GetHashCode ()
 		{
-			return ("" + Name + Category + Description).GetHashCode ();
-		}
-
-		
-		public bool Equals (ItemToolboxNode node)
-		{
-			return (node != null) && (node.Name == this.Name) && (node.Category == this.Category) && (node.Description == this.Description);
+			return (string.Empty + Name + Category + Description).GetHashCode ();
 		}
 		
-		public virtual int CompareTo (object o)
+		public int CompareTo (object other)
 		{
-			ItemToolboxNode node = o as ItemToolboxNode;
-			return node != null ? CompareTo (node): 0;
+			return CompareTo (other as ItemToolboxNode);
 		}
 		
 		public virtual int CompareTo (ItemToolboxNode other)
@@ -140,26 +138,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		}
 		
 		#endregion Behaviours
-		
-		
-		#region Tree columns
-
-		public override Gdk.Pixbuf ViewIcon {
-			get {
-				if (Icon != null)
-					return Icon;
-				else
-					return base.ViewIcon;
-			}
-		}
-		
-		public override string Label {
-			get { 
-				return Name;
-			}
-		}
-		
-		#endregion Tree columns
 		
 		
 		protected Gdk.Pixbuf ImageToPixbuf (System.Drawing.Image image)

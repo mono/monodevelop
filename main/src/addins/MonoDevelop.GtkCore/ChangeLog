@@ -1,3 +1,8 @@
+2008-05-15  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.GtkCore.GuiBuilder/ToolboxProvider.cs: Track API. Mark up
+	  for property grid.
+
 2008-05-13  Mike Kestner <mkestner@novell.com> 
 
 	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs: use new

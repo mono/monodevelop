@@ -31,11 +31,13 @@
 //
 
 using System;
+using System.ComponentModel;
 using MonoDevelop.Projects.Serialization;
 
 namespace MonoDevelop.DesignerSupport.Toolbox
 {
 	[Serializable]
+	[TypeConverter (typeof (TypeReferenceTypeConverter))]
 	public class TypeReference
 	{
 		//private serialisable fields
@@ -103,16 +105,25 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		
 		#region property accessors for the private fields
 		
+		[DisplayNameAttribute ("Assembly Name")]
+		[DescriptionAttribute ("The assembly name.")]
+		[ReadOnly (true)]
 		public string AssemblyName {
 			get { return assemblyName; }
 			set { assemblyName = value; }
 		}
 		
+		[DisplayNameAttribute ("Type Name")]
+		[DescriptionAttribute ("The fully-qualified type name.")]
+		[ReadOnly (true)]
 		public string TypeName {
 			get { return typeName; }
 			set { typeName = value; }
 		}
 		
+		[DisplayNameAttribute ("Assembly Location")]
+		[DescriptionAttribute ("The location of the assembly.")]
+		[ReadOnly (true)]
 		public string AssemblyLocation {
 			get { return assemblyLocation; }
 			set { assemblyLocation = value; }
@@ -150,5 +161,23 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				    assemblyLocation);
 			}
 		}
+	}
+	
+	public class TypeReferenceTypeConverter : ExpandableObjectConverter
+	{
+		public override object ConvertTo (ITypeDescriptorContext context, 
+		    System.Globalization.CultureInfo culture, object value, Type destinationType)
+		{
+			if (destinationType == typeof(string))
+				return ((TypeReference)value).TypeName;
+			else
+				return base.ConvertTo (context, culture, value, destinationType); 
+		}
+		
+		public override bool CanConvertTo (ITypeDescriptorContext context, Type destinationType)
+		{
+			return destinationType == typeof(string) || base.CanConvertTo (context, destinationType);
+		}
+
 	}
 }

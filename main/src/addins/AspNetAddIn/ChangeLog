@@ -1,3 +1,14 @@
+2008-05-15  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.AspNet/AspNetToolboxProvider.cs: Moved from AspNetEdit.
+	* MonoDevelop.AspNet/AspNetToolboxLoader.cs: Implement correct loading
+	  of items in System.Web 1.1.
+	* MonoDevelop.AspNet/AspNetToolboxNode.cs: Improve support for default
+	  tag text. Markup for property grid.
+	* MonoDevelop.AspNet.addin.xml: Register provider moved from
+	  AspNetEdit.
+	* Makefile.am, AspNetAddIn.mdp: Updated.
+
 2008-05-09  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.AspNet/AspNetDisplayBinding.cs: Remove unneeded display

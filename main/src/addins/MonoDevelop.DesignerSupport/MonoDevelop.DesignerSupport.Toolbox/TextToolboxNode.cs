@@ -36,7 +36,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 	[Serializable]
 	public class TextToolboxNode : ItemToolboxNode, ITextToolboxNode
 	{
-		private string text = "";
+		private string text = string.Empty;
 		string domain = MonoDevelop.Core.GettextCatalog.GetString ("Text Snippets");
 		
 		public TextToolboxNode (string text)
@@ -48,9 +48,24 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		public override bool Filter (string keyword)
 		{
 			return base.Filter (keyword)
-				   || ((Text==null)? false : (Text.IndexOf (keyword) >= 0));
+				   || ((Text==null)? false :  (Text.IndexOf (keyword, StringComparison.InvariantCultureIgnoreCase) >= 0));
 		}
 		
+		public override bool Equals (object o)
+		{
+			TextToolboxNode n = o as TextToolboxNode;
+			return n != null && text == n.text && base.Equals (o);
+		}
+		
+		public override int GetHashCode ()
+		{
+			int code = base.GetHashCode ();
+			if (text != null)
+				code += text.GetHashCode ();
+			return code;
+		}
+		
+		[DescriptionAttribute ("The text that will be inserted into the document.")]
 		public string Text {
 			get { return text; }
 			set { text = value; }
@@ -61,14 +76,17 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			return text;
 		}
 		
+		[Browsable(false)]
 		public override string ItemDomain {
 			get { return domain; }
 		}
-
+		
+		[Browsable(false)]
 		public virtual string[] AllowedMimetypes {
 			get { return new string[] { "text/plain" }; }
 		}
-
+		
+		[Browsable(false)]
 		public string[] AllowedExtensions {
 			get { return new string[] { "*" }; }
 		}

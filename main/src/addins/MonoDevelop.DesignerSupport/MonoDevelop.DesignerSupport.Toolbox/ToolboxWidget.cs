@@ -87,6 +87,10 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			}
 		}
 		
+		public IEnumerable<Category> Categories {
+			get { return categories; }
+		}
+		
 		public IEnumerable<Item> AllItems {
 			get {
 				foreach (Category category in this.categories) {
@@ -849,13 +853,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			}
 		}
 		
-		public Category (CategoryToolboxNode node) : base (node.Label)
-		{
-			this.canIconizeItems = node.CanIconizeItems;
-			this.isDropTarget    = node.IsDropTarget;
-			this.isSorted        = node.IsDropTarget;
-		}
-		
 		public Category (string text) : base (text)
 		{
 		}
@@ -887,6 +884,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 	
 	public class Item : IComparable<Item>
 	{
+		static Gdk.Pixbuf defaultIcon;
 		Gdk.Pixbuf icon;
 		string     text;
 		string     tooltip;
@@ -904,10 +902,22 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		
 		public Gdk.Pixbuf Icon {
 			get {
-				return icon;
+				return icon ?? DefaultIcon;
 			}
 			set {
 				icon = value;
+			}
+		}
+		
+		static Gdk.Pixbuf DefaultIcon {
+			get {
+				if (defaultIcon == null) {
+					Gtk.Label lab = new Gtk.Label ();
+					lab.EnsureStyle ();
+					defaultIcon = lab.RenderIcon (Stock.MissingImage, IconSize.Menu, string.Empty);
+					lab.Destroy ();
+				}
+				return defaultIcon;
 			}
 		}
 		

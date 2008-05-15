@@ -39,45 +39,38 @@ using System.Drawing.Design;
 namespace MonoDevelop.DesignerSupport.Toolbox
 {
 	
-	
 	public abstract class ToolboxItemToolboxLoader : IToolboxLoader
 	{
-		static string[] fileTypes = new string[] {"dll"};
 		bool initialized;
 		
 		public bool ShouldIsolate {
 			get { return true; }
 		}
-		
-		public string [] FileTypes {
-			get { return fileTypes; }
+
+		public string[] FileTypes {
+			get { return new string[] {"dll", "exe"}; }
 		}
-		
 		
 		public IList<ItemToolboxNode> Load (string filename)
 		{		
 			System.Reflection.Assembly scanAssem = System.Reflection.Assembly.LoadFile (filename);
-			return Load (scanAssem);
-		}
-		
-		public abstract IList<ItemToolboxNode> Load (System.Reflection.Assembly assem);
-		
-		protected IEnumerable<Type> AccessibleToolboxTypes (System.Reflection.Assembly assem)
-		{
+			MonoDevelop.Core.SystemPackage package
+				= MonoDevelop.Core.Runtime.SystemAssemblyService.GetPackageFromPath (filename);
+			
+			//need to initialise if this if out of the main process
+			//in order to be able to load icons etc.
 			if (!initialized) {
 				Gtk.Application.Init ();
 				initialized = true;
 			}
 			
-			Type[] types = assem.GetTypes ();
+			List<ItemToolboxNode> list = new List<ItemToolboxNode> ();
+			
+			Type[] types = scanAssem.GetTypes ();
 
-			foreach (Type t in types)
-			{
+			foreach (Type t in types) {
 				//skip inaccessible types
 				if (t.IsAbstract || !t.IsPublic || !t.IsClass) continue;
-				
-				//note: toolbox items can create types with non-empty constructors
-				//if (t.GetConstructor (new Type[] {}) == null) continue;
 				
 				//get the ToolboxItemAttribute if present
 				object[] atts = t.GetCustomAttributes (typeof (ToolboxItemAttribute), true);
@@ -85,30 +78,45 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 					continue;
 				
 				ToolboxItemAttribute tba = (ToolboxItemAttribute) atts[0];
-				if (!tba.Equals (ToolboxItemAttribute.None))
-					yield return t;
+				if (tba.Equals (ToolboxItemAttribute.None) || tba.ToolboxItemType == null)
+					continue;
+				
+				// Technically CategoryAttribute shouldn't be used for this purpose (intended for properties in 
+				// the PropertyGrid) but I can see no harm in doing this.
+				string cat = null;
+				atts = t.GetCustomAttributes (typeof (CategoryAttribute), true);
+				if (atts != null && atts.Length > 0)
+					cat = ((CategoryAttribute)atts[0]).Category;
+				
+				try {
+					ItemToolboxNode node = GetNode (t, tba, cat, package != null? filename : null);
+					if (node != null)
+						list.Add (node);
+				} catch (Exception ex) {
+					MonoDevelop.Core.LoggingService.LogError (
+					    "Unhandled error in toolbox node loader '" + GetType ().FullName 
+					    + "' with type '" + t.FullName
+					    + "' in assembly '" + scanAssem.FullName + "'",
+					    ex);
+				}
 			}
-		}
-		
-		//Technically CategoryAttribute shouldn't be used for this purpose (intended for properties in the PropertyGrid)
-		//but I can see no harm in doing this.
-		protected CategoryAttribute GetCategoryAttribute (Type type)
-		{
-			object[] atts = type.GetCustomAttributes (typeof (CategoryAttribute), true);
-			if (atts != null && atts.Length > 0)
-				return (CategoryAttribute)atts[0];
-			else
-				return null;
-		}
-		
-		protected void SetFullPath (TypeToolboxNode node, System.Reflection.Assembly assem)
-		{
 			
-			//if assembly wasn't loaded from the GAC, record the path too
-			if (!assem.GlobalAssemblyCache) {
-				string path = assem.Location;
-					node.Type.AssemblyLocation = path;
-			}
+			return list;// Load (scanAssem);
 		}
+		
+		//TODO: this method is public so that the toolbox service can special-case subclasses of this
+		//to unify them into a single type-walk in a single remote process
+		/// <param name="type">The <see cref="Type"/> of the item for which a node should be created.</param>
+		/// <param name="attribute">The <see cref="ToolboxItemAttribute"/> that was applied to the type.</param>
+		/// <param name="attributeCategory"> The node's category as detected from the <see cref="CategoryAttribute"/>. 
+		/// If it's null or empty, the method will need to infer a value.</param>
+		/// <param name="assemblyPath"> If the assembly is a system package, this value will be null. Else, the method will 
+		/// need to record the full path in the node.</param>
+		public abstract ItemToolboxNode GetNode (
+		    Type type,
+		    ToolboxItemAttribute attribute,
+		    string attributeCategory,
+		    string assemblyPath
+		    );
 	}
 }

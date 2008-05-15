@@ -1,3 +1,47 @@
+2008-05-15  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.DesignerSupport.addin.xml,
+	  MonoDevelop.DesignerSupport.mdp, gtk-gui/gui.stetic, Makefile.am:
+	  Updated.
+	* MonoDevelop.DesignerSupport/ToolboxService.cs,
+	  MonoDevelop.DesignerSupport.Toolbox/ComponentSelectorDialog.cs,
+	  MonoDevelop.DesignerSupport.Toolbox/IToolboxProvider.cs: Track API.
+	* MonoDevelop.DesignerSupport.PropertyGrid.Editors/TextEditor.cs: Use
+	  string.Empty instead of "".
+	* MonoDevelop.DesignerSupport.Toolbox/ItemToolboxNode.cs,
+	  MonoDevelop.DesignerSupport.Toolbox/TextToolboxNode.cs: Remove dead
+	  code. Mark up for property grid. Fix filtering. Fix comparisons.
+	* MonoDevelop.DesignerSupport.Toolbox/ToolboxItemToolboxNode.cs: Fix
+	  Equals.
+	* MonoDevelop.DesignerSupport.Toolbox/Toolbox.cs: Fix filtering. Remove
+	  old API usage. Implement IPropertyPadProvider for the toolpad.
+	* MonoDevelop.DesignerSupport.Toolbox/BaseToolboxNode.cs,
+	  MonoDevelop.DesignerSupport.Toolbox/CategoryToolboxNode.cs,
+	  MonoDevelop.DesignerSupport.Toolbox/ToolboxStore.cs: Remove dead
+	  code.
+	* MonoDevelop.DesignerSupport.Toolbox/CodeTemplateToolboxProvider.cs:
+	  Fix logic. Remove cursor insertion marker.
+	* MonoDevelop.DesignerSupport.Toolbox/ToolboxWidget.cs: Remove use of
+	  deprecated API. Need to fix the Droptarget/Iconise/Sort properties
+	  of the categories.
+	* MonoDevelop.DesignerSupport.Toolbox/CecilToolboxItemLoader.cs:
+	  Abstract toolbox loader that uses Cecil to reflect for attributes.
+	* MonoDevelop.DesignerSupport.Toolbox/TypeToolboxNode.cs: Fix Equals
+	  (calls to Equals on ItemToolboxNode were resolving to base-specific
+	  overloads, which weren't calling the overridden children).
+	* MonoDevelop.DesignerSupport.Toolbox/TypeReference.cs: Mark up for
+	  property grid. 
+	* MonoDevelop.DesignerSupport.Toolbox/ToolboxItemToolboxLoader.cs:
+	  Refactor to work better as a base class for loaders.
+	* MonoDevelop.DesignerSupport.Toolbox/CecilTypeResolver.cs: Copied from
+	  the Cecil linker.
+	* MonoDevelop.DesignerSupport.PropertyGrid/EditorManager.cs: Make
+	  expanding properties work with subclasses of ExpandableObject
+	  typeconverter.
+	* MonoDevelop.DesignerSupport.PropertyGrid/PropertyGridTree.cs: Make
+	  expanding properties work with subclasses of ExpandableObject
+	  typeconverter. Use string.Empty instead of "".
+
 2008-05-12  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.DesignerSupport.Toolbox/CodeTemplateToolboxProvider.cs:

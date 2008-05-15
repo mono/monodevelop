@@ -7,6 +7,7 @@
   <import>
     <widget-library name="../../../../build/bin/MonoDevelop.Components.dll" />
     <widget-library name="../../../../build/bin/MonoDevelop.Ide.dll" />
+    <widget-library name="../../../../build/bin/MonoDevelop.Projects.Gui.dll" />
   </import>
   <widget class="Gtk.Dialog" id="MonoDevelop.DesignerSupport.Toolbox.ComponentSelectorDialog" design-size="642 433">
     <property name="MemberName" />

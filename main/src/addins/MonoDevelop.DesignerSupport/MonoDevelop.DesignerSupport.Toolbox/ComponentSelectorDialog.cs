@@ -158,11 +158,11 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 					while (store.IterNext (ref it));
 				}
 				if (!found)
-					it = store.AppendValues (false, co.Category, "", "", "", null, null, false, (int)Pango.Weight.Bold);
-				store.AppendValues (it, currentItems.ContainsKey (co), co.Label, "", ifile.Name, ifile.Location, img, co, true, (int)Pango.Weight.Normal);
+					it = store.AppendValues (false, co.Category, string.Empty, string.Empty, string.Empty, null, null, false, (int)Pango.Weight.Bold);
+				store.AppendValues (it, currentItems.ContainsKey (co), co.Name, string.Empty, ifile.Name, ifile.Location, img, co, true, (int)Pango.Weight.Normal);
 			}
 			else
-				store.AppendValues (currentItems.ContainsKey (co), co.Label, "", ifile.Name, ifile.Location, img, co, true, (int)Pango.Weight.Normal);
+				store.AppendValues (currentItems.ContainsKey (co), co.Name, string.Empty, ifile.Name, ifile.Location, img, co, true, (int)Pango.Weight.Normal);
 		}
 
 		protected virtual void OnComboTypeChanged (object sender, System.EventArgs e)

@@ -36,20 +36,22 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 	{
 		static string category = MonoDevelop.Core.GettextCatalog.GetString ("Text Snippets");
 		
-		public System.Collections.Generic.IEnumerable<BaseToolboxNode> GetDynamicItems (IToolboxConsumer consumer)
+		public System.Collections.Generic.IEnumerable<ItemToolboxNode> GetDynamicItems (IToolboxConsumer consumer)
 		{
 			MonoDevelop.Ide.Gui.Content.IExtensibleTextEditor editor 
 				= consumer as MonoDevelop.Ide.Gui.Content.IExtensibleTextEditor;
 			if (editor != null) {
 				CodeTemplateGroup group = CodeTemplateService.GetTemplateGroupPerFilename (editor.Name);
-				if (group != null)
+				if (group != null) {
 					foreach (CodeTemplate ct in group.Templates) {
-						TextToolboxNode n = new TextToolboxNode (ct.Text);
+						string text = ct.Text.Replace ("|", string.Empty);
+						TextToolboxNode n = new TextToolboxNode (text);
 						n.Description = ct.Description;
 						n.Name = ct.Shortcut;
 						n.Category = category;
-						yield return new TextToolboxNode (ct.Text);
+						yield return n;
 					}
+				}
 			}
 		}
 		

@@ -134,7 +134,12 @@ namespace MonoDevelop.DesignerSupport
 		void AddUserItems (string fileName)
 		{			
 			foreach (IToolboxLoader loader in loaders) {
-				if (!fileName.EndsWith (loader.FileTypes[0]))
+				//check whether the loader can handle this file extension
+				bool match = false;
+				foreach (string ext in loader.FileTypes)
+					if (fileName.EndsWith (ext))
+						match = true;
+				if (!match)
 					continue;
 				
 				System.Collections.Generic.IList<ItemToolboxNode> loadedItems = loader.Load (fileName);
@@ -295,7 +300,7 @@ namespace MonoDevelop.DesignerSupport
 		
 		#region Actions and properties
 		
-		public IList GetCurrentToolboxItems ()
+		public IList<ItemToolboxNode> GetCurrentToolboxItems ()
 		{
 			return GetToolboxItems (CurrentConsumer);
 		}
@@ -309,9 +314,9 @@ namespace MonoDevelop.DesignerSupport
 		}
 		
 		
-		public IList GetToolboxItems (IToolboxConsumer consumer)
+		public IList<ItemToolboxNode> GetToolboxItems (IToolboxConsumer consumer)
 		{
-			List<BaseToolboxNode> arr = new List<BaseToolboxNode> ();
+			List<ItemToolboxNode> arr = new List<ItemToolboxNode> ();
 			Hashtable nodes = new Hashtable ();
 			
 			if (consumer != null) {
@@ -326,9 +331,9 @@ namespace MonoDevelop.DesignerSupport
 				
 				//merge the list of dynamic items from each provider
 				foreach (IToolboxDynamicProvider prov in dynamicProviders) {
-					IEnumerable<BaseToolboxNode> dynItems = prov.GetDynamicItems (consumer);
+					IEnumerable<ItemToolboxNode> dynItems = prov.GetDynamicItems (consumer);
 					if (dynItems != null) {
-						foreach (BaseToolboxNode node in dynItems) {
+						foreach (ItemToolboxNode node in dynItems) {
 							if (!nodes.Contains (node)) {
 								arr.Add (node);
 								nodes.Add (node, node);

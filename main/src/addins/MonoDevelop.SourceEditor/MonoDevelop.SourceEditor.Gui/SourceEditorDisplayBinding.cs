@@ -47,27 +47,9 @@ namespace MonoDevelop.SourceEditor.Gui
 
 		public virtual bool CanCreateContentForMimeType (string mimetype)
 		{
-			if (mimetype == null)
+			if (String.IsNullOrEmpty (mimetype))
 				return false;
-			if (mimetype.StartsWith ("text"))
-				return true;
-			if (mimetype == "application/x-python")
-				return true;
-			if (mimetype == "application/x-config")
-				return true;
-			if (mimetype == "application/x-aspx")
-				return true;
-			if (mimetype == "application/x-ascx")
-				return true;
-			if (mimetype == "application/x-web-config")
-				return true;
-
-			// If gedit can open the file, this editor also can do it
-			foreach (DesktopApplication app in IdeApp.Services.PlatformService.GetAllApplications (mimetype))
-				if (app.Command == "gedit")
-					return true;
-			
-			return false;
+			return IdeApp.Services.PlatformService.GetMimeTypeIsText (mimetype);
 		}
 		
 		public virtual IViewContent CreateContentForFile (string fileName)

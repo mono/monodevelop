@@ -1,6 +1,5 @@
 //
-// IToolbox(Default|Dynamic)Provider.cs: Interface for extensions that 
-//   provide toolbox items.
+// ToolboxProvider.cs: Provides default ASP.NET controls to the toolbox.
 //
 // Authors:
 //   Michael Hutchinson <m.j.hutchinson@gmail.com>
@@ -31,29 +30,36 @@
 //
 
 using System;
+using System.IO;
 using System.Collections.Generic;
+using MonoDevelop.Core;
+using MonoDevelop.DesignerSupport.Toolbox;
+using MonoDevelop.Ide.Gui;
 
-namespace MonoDevelop.DesignerSupport.Toolbox
+namespace MonoDevelop.AspNet
 {
 	
-	//Used to fetch or generate the default toolbox items at the beginning of each MD session
-	public interface IToolboxDefaultProvider
+	public class AspNetToolboxProvider : IToolboxDefaultProvider
 	{
-		// It should return a list of items to be added by default to the toolbox
-		IEnumerable<ItemToolboxNode> GetDefaultItems ();
+		public IEnumerable<string> GetDefaultFiles ()
+		{
+			string location;
+			location = Runtime.SystemAssemblyService.GetAssemblyLocation ("System.Web, Version=1.0.5000.0");
+			if (!string.IsNullOrEmpty (location))
+				yield return location;
+			
+			location = Runtime.SystemAssemblyService.GetAssemblyLocation ("System.Web, Version=2.0.0.0");
+			if (!string.IsNullOrEmpty (location))
+				yield return location;
+			
+			location = Runtime.SystemAssemblyService.GetAssemblyLocation ("System.Web.Extensions");
+			if (!string.IsNullOrEmpty (location))
+				yield return location;
+		}
 		
-		// It should return a list of files which contains items to be added by default
-		// to the toolbox (all items in the files will be added).
-		IEnumerable<string> GetDefaultFiles ();
-	}
-	
-	//Can provide dynamic toolbox items for a specific consumer. 
-	public interface IToolboxDynamicProvider
-	{
-		//This method will be called each time the consumer changes. Return null if not
-		//returning any items for a specific consumer.
-		IEnumerable<ItemToolboxNode> GetDynamicItems (IToolboxConsumer consumer);
-		
-		event EventHandler ItemsChanged;
+		public IEnumerable<ItemToolboxNode> GetDefaultItems ()
+		{
+			return null;
+		}
 	}
 }

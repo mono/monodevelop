@@ -1,3 +1,7 @@
+2008-05-15  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.SourceEditor/SourceEditorView.cs: Track API.
+
 2008-05-15  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Makefile.am, MonoDevelop.SourceEditor.mdp,

@@ -76,8 +76,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		  : base (item.TypeName, item.AssemblyName.FullName)
 		{
 			base.Type.AssemblyLocation = assemblyLocation;
-		}
-				
+		}	
 		
 		//for deserialisation
 		public ToolboxItemToolboxNode ()
@@ -86,7 +85,12 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		
 		public override bool Equals (object obj)
 		{
-			return Equals (obj as ToolboxItemToolboxNode);
+			ToolboxItemToolboxNode other = obj as ToolboxItemToolboxNode;
+			return (other != null)
+			    && (this.toolboxItemType == null?
+				    other.toolboxItemType == null
+				    : this.toolboxItemType.Equals (other.toolboxItemType))
+			    && base.Equals (other);
 		}
 		
 		public override int GetHashCode ()
@@ -95,14 +99,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			if (toolboxItemType != null)
 				code += toolboxItemType.GetHashCode ();
 			return code;
-		}
-
-		
-		public bool Equals (ToolboxItemToolboxNode other)
-		{
-			return (other != null)
-			    && (this.toolboxItemType == null? other.toolboxItemType == null : this.toolboxItemType.Equals (other.toolboxItemType))
-		        && base.Equals (other);
 		}
 		
 		public ToolboxItem GetToolboxItem ()

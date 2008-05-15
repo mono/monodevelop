@@ -147,8 +147,7 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid
 			//can we use a type converter with a built-in editor?
 			TypeConverter tc = pd.Converter;
 			
-			//TODO: build this functionality into the grid 
-			if (tc.GetType () == typeof (ExpandableObjectConverter))
+			if (typeof (ExpandableObjectConverter).IsAssignableFrom (tc.GetType ()))
 				return typeof(ExpandableObjectEditor);
 
 			//This is a temporary workaround *and* and optimisation

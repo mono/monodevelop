@@ -140,6 +140,10 @@
 	<Extension path = "/MonoDevelop/DesignerSupport/ToolboxLoaders">
 		<Class id="AspNetToolboxLoader" class="MonoDevelop.AspNet.AspNetToolboxLoader"/>
 	</Extension>
+	
+	<Extension path = "/MonoDevelop/DesignerSupport/ToolboxProviders">
+		<Class id="AspNetDefaultControlToolboxProvider" class="MonoDevelop.AspNet.AspNetToolboxProvider"/>
+	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/Commands">
 		<Category _name = "ASP.NET" id = "AspNet">

@@ -100,7 +100,7 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid.PropertyEditors
 			}
 			set {
 				string val = property.Converter.ConvertToString (value);
-				entry.Text = val != null ? val : "";
+				entry.Text = val ?? string.Empty;
 				initialText = entry.Text;
 			}
 		}

@@ -92,6 +92,7 @@ FILES =  \
 	MonoDevelop.AspNet/AspNetParserService.cs \
 	MonoDevelop.AspNet/AspNetToolboxLoader.cs \
 	MonoDevelop.AspNet/AspNetToolboxNode.cs \
+	MonoDevelop.AspNet/AspNetToolboxProvider.cs \
 	MonoDevelop.AspNet/CodeBehind.cs \
 	MonoDevelop.AspNet/IAspNetLanguageBinding.cs \
 	MonoDevelop.AspNet/ProjectFolderNodeBuilderExtension.cs \

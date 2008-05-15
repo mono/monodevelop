@@ -5,6 +5,7 @@ REFS =  \
 	$(GLIB_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
 	$(MONO_ADDINS_LIBS) \
+	-r:$(top_builddir)/build/bin/Mono.Cecil.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Components.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Core.Gui.dll \
@@ -66,8 +67,8 @@ FILES =  \
 	MonoDevelop.DesignerSupport.PropertyGrid/PropertyValueChangedEventArgs.cs \
 	MonoDevelop.DesignerSupport.PropertyGrid/PropertyValueChangedEventHandler.cs \
 	MonoDevelop.DesignerSupport.PropertyGrid/SurrogateUITypeEditorAttribute.cs \
-	MonoDevelop.DesignerSupport.Toolbox/BaseToolboxNode.cs \
-	MonoDevelop.DesignerSupport.Toolbox/CategoryToolboxNode.cs \
+	MonoDevelop.DesignerSupport.Toolbox/CecilToolboxItemLoader.cs \
+	MonoDevelop.DesignerSupport.Toolbox/CecilTypeResolver.cs \
 	MonoDevelop.DesignerSupport.Toolbox/CodeTemplateToolboxProvider.cs \
 	MonoDevelop.DesignerSupport.Toolbox/ComponentSelectorDialog.cs \
 	MonoDevelop.DesignerSupport.Toolbox/ItemToolboxNode.cs \
@@ -81,7 +82,6 @@ FILES =  \
 	MonoDevelop.DesignerSupport.Toolbox/ToolboxItemToolboxLoader.cs \
 	MonoDevelop.DesignerSupport.Toolbox/ToolboxItemToolboxNode.cs \
 	MonoDevelop.DesignerSupport.Toolbox/ToolboxList.cs \
-	MonoDevelop.DesignerSupport.Toolbox/ToolboxStore.cs \
 	MonoDevelop.DesignerSupport.Toolbox/ToolboxWidget.cs \
 	MonoDevelop.DesignerSupport.Toolbox/TypeReference.cs \
 	MonoDevelop.DesignerSupport.Toolbox/TypeToolboxNode.cs \

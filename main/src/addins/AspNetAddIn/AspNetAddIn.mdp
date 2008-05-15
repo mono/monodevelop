@@ -1,4 +1,4 @@
-<Project name="MonoDevelop.AspNet" fileversion="2.0" language="C#" clr-version="Net_2_0" UseParentDirectoryAsNamespace="True" ctype="DotNetProject">
+<Project name="MonoDevelop.AspNet" fileversion="2.0" UseParentDirectoryAsNamespace="True" language="C#" clr-version="Net_2_0" ctype="DotNetProject">
   <Configurations active="Debug">
     <Configuration name="Debug" ctype="DotNetProjectConfiguration">
       <Output directory="../../../build/AddIns/MonoDevelop.AspNet" assembly="MonoDevelop.AspNet" />
@@ -123,6 +123,7 @@
     <File name="MonoDevelop.AspNet/AspNetToolboxLoader.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.AspNet/AspNetToolboxNode.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.AspNet/AspNetParserService.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.AspNet/AspNetToolboxProvider.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Components" />

@@ -40,8 +40,12 @@ namespace MonoDevelop.AspNet
 	[Serializable]
 	public class AspNetToolboxNode : ToolboxItemToolboxNode, ITextToolboxNode
 	{
+		
 		[ItemProperty ("text")]
 		string text;
+		
+		[NonSerialized]
+		string defaultText;
 		
 		static readonly string aspNetDomain = GettextCatalog.GetString ("ASP.NET Controls");
 		
@@ -58,24 +62,34 @@ namespace MonoDevelop.AspNet
 		}
 		
 		public string Text {
-			get { return text; }
-			set {text = value; }
+			get {
+				if (string.IsNullOrEmpty (text)) {
+					if (defaultText == null) {
+						string ctrlName = base.Type.TypeName.Substring (base.Type.TypeName.LastIndexOf ('.') + 1);
+						defaultText = "<{0}:" + ctrlName + " runat=\"server\"></{0}:" + ctrlName + ">";
+					}
+					return defaultText;
+				}
+				return text;
+			}
+			set {
+				if (value != Text)
+					text = value;
+			}
 		}
 		
 		public override bool Equals (object obj)
 		{
-			return Equals (obj as AspNetToolboxNode);
+			AspNetToolboxNode other = obj as AspNetToolboxNode;
+			return (other != null) && (this.text != other.text) && base.Equals (other);
 		}
 		
 		public override int GetHashCode ()
 		{
-			return base.GetHashCode () + (text != null? text.GetHashCode () : 0);
-		}
-
-		
-		public bool Equals (AspNetToolboxNode other)
-		{
-			return (other != null) && (this.text != other.text) && base.Equals (other);
+			int code = base.GetHashCode ();
+			if (text != null)
+				code += text.GetHashCode ();
+			return code;
 		}
 		
 		void RegisterReference (MonoDevelop.Projects.Project project)
@@ -87,12 +101,7 @@ namespace MonoDevelop.AspNet
 
 		public string GetTextForFile (string path, MonoDevelop.Projects.Project project)
 		{
-			string tag = text;
-			
-			if (string.IsNullOrEmpty (tag)) {
-				string ctrlName = base.Type.TypeName.Substring (base.Type.TypeName.LastIndexOf ('.') + 1);
-				tag = "<{0}:" + ctrlName + " runat=\"server\"></{0}:" + ctrlName + ">";
-			}
+			string tag = Text;
 			
 			if  (!tag.Contains ("{0}"))
 				return tag;
@@ -120,14 +129,17 @@ namespace MonoDevelop.AspNet
 			return tag;
 		}
 		
+		[Browsable(false)]
 		public override string ItemDomain {
 			get { return aspNetDomain; }
 		}
-
+		
+		[Browsable(false)]
 		public string[] AllowedMimetypes {
 			get { return new string[] { "application/x-aspx", "application/x-ascx", "application/x-master-page" }; }
 		}
-
+		
+		[Browsable(false)]
 		public string[] AllowedExtensions {
 			get { return new string[] { "aspx", "ascx", "master" }; }
 		}

@@ -29,7 +29,8 @@
 	</ExtensionPoint>
 	
 	<ExtensionPoint path = "/MonoDevelop/DesignerSupport/ToolboxLoaders" name = "Toolbox loaders">
-		<Description>Used to load ItemToolboxNodesToolbox into the Toolbox</Description>
+		<Description>Used to load ItemToolboxNodes into the ToolboxMust implement
+		MonoDevelop.DesignerSupport.Toolbox.IToolboxItemLoader</Description>
 		<ExtensionNode name="Class" />
 	</ExtensionPoint>
 	

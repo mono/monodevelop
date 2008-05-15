@@ -41,7 +41,7 @@ using MonoDevelop.Components.Commands;
 
 namespace MonoDevelop.DesignerSupport.Toolbox
 {
-	public class Toolbox : VBox
+	public class Toolbox : VBox, MonoDevelop.DesignerSupport.PropertyGrid.IPropertyPadProvider
 	{
 		ToolboxService toolboxService;
 		
@@ -160,9 +160,13 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		
 		void filterTextChanged (object sender, EventArgs e)
 		{
-			foreach (Item item in toolboxWidget.AllItems) {
-				item.IsVisible = !filterToggleButton.Active || 
-					              item.Text.ToUpper ().Contains (filterEntry.Text.ToUpper ());
+			foreach (Category cat in toolboxWidget.Categories) {
+				bool hasVisibleChild = false;
+				foreach (Item child in cat.Items) {
+					child.IsVisible = ((ItemToolboxNode) child.Tag).Filter (filterEntry.Text);
+					hasVisibleChild |= child.IsVisible;
+				}
+				cat.IsVisible = hasVisibleChild;
 			}
 			toolboxWidget.QueueDraw ();
 		}
@@ -202,21 +206,14 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		#region GUI population
 		
 		Dictionary<string, Category> categories = new Dictionary<string, Category> ();
-		void AddItems (IEnumerable nodes)
+		void AddItems (IEnumerable<ItemToolboxNode> nodes)
 		{
-			foreach (BaseToolboxNode node in nodes) {
-				if (node is ItemToolboxNode) {
-					ItemToolboxNode itbn = ((ItemToolboxNode)node);
-					Item newItem = new Item (itbn.ViewIcon, itbn.Label, String.IsNullOrEmpty (itbn.Description) ? itbn.Label : itbn.Description, itbn);
-					if (!categories.ContainsKey (itbn.Category))
-						categories[itbn.Category] = new Category (itbn.Category);
-					if (newItem.Text != null)
-						categories[itbn.Category].Add (newItem);
-				} else if (node is CategoryToolboxNode) {
-					CategoryToolboxNode category = node as CategoryToolboxNode;
-					categories[category.Label] = new Category (category);
-					AddItems (category.Children);
-				}
+			foreach (ItemToolboxNode itbn in nodes) {
+				Item newItem = new Item (itbn.Icon, itbn.Name, String.IsNullOrEmpty (itbn.Description) ? itbn.Name : itbn.Description, itbn);
+				if (!categories.ContainsKey (itbn.Category))
+					categories[itbn.Category] = new Category (itbn.Category);
+				if (newItem.Text != null)
+					categories[itbn.Category].Add (newItem);
 			}
 		}
 		
@@ -237,7 +234,30 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				Drag.SourceSet (toolboxWidget, Gdk.ModifierType.Button1Mask, targetTable, Gdk.DragAction.Copy | Gdk.DragAction.Move);
 			compactModeToggleButton.Visible = toolboxWidget.CanIconizeToolboxCategories;
 		}
+
+		
 		#endregion
 		
+		#region IPropertyPadProvider
+		
+		object MonoDevelop.DesignerSupport.PropertyGrid.IPropertyPadProvider.GetActiveComponent ()
+		{
+			return selectedNode;
+		}
+
+		object MonoDevelop.DesignerSupport.PropertyGrid.IPropertyPadProvider.GetProvider ()
+		{
+			return selectedNode;
+		}
+
+		void MonoDevelop.DesignerSupport.PropertyGrid.IPropertyPadProvider.OnEndEditing (object obj)
+		{
+		}
+
+		void MonoDevelop.DesignerSupport.PropertyGrid.IPropertyPadProvider.OnChanged (object obj)
+		{
+		}
+		
+		#endregion
 	}
 }

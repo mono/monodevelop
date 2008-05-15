@@ -20,7 +20,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			Instance = this;
 		}
 		
-		public IEnumerable<BaseToolboxNode> GetDynamicItems (IToolboxConsumer consumer)
+		public IEnumerable<ItemToolboxNode> GetDynamicItems (IToolboxConsumer consumer)
 		{
 			GuiBuilderView view = consumer as GuiBuilderView;
 			if (view == null)
@@ -38,7 +38,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 					refs[FileService.GetFullPath (f)] = f;
 				}
 			
-			List<BaseToolboxNode> list = new List<BaseToolboxNode> ();
+			List<ItemToolboxNode> list = new List<ItemToolboxNode> ();
 			foreach (ComponentType type in types) {
 				if (type.Category == "window")
 					continue;
@@ -112,16 +112,21 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			gtkVersion = type.TargetGtkVersion;
 		}
 		
+		[Browsable (false)]
 		public override IList<ToolboxItemFilterAttribute> ItemFilters {
 			get { return attributes; }
 		}
 		
+		[Browsable (false)]
 		public Stetic.ComponentType ComponentType {
 			get {
 				return componentType;
 			}
 		}
-
+		
+		[ReadOnly (true)]
+		[DisplayName ("Reference Type")]
+		[DescriptionAttribute ("The type of the project or assembly from which this component originates.")]
 		public ReferenceType ReferenceType {
 			get {
 				return refType;
@@ -130,7 +135,10 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				refType = value;
 			}
 		}
-
+		
+		[ReadOnly (true)]
+		[DisplayName ("Reference Path")]
+		[DescriptionAttribute ("The project or assembly from which this component originates.")]
 		public string Reference {
 			get {
 				return reference;
@@ -139,13 +147,17 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				reference = value;
 			}
 		}
-
+		
+		[DisplayName ("Class Name")]
+		[DescriptionAttribute ("The name of the component class.")]
 		public string ClassName {
 			get {
 				return className;
 			}
 		}
-
+		
+		[DisplayName ("GTK# Version")]
+		[DescriptionAttribute ("The minimum GTK# version required to use this component.")]
 		public string GtkVersion {
 			get {
 				return gtkVersion;
@@ -161,7 +173,8 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			else
 				return cat;
 		}
-
+		
+		[Browsable (false)]
 		public override string ItemDomain {
 			get { return GtkWidgetDomain; }
 		}

@@ -1263,23 +1263,26 @@ namespace MonoDevelop.SourceEditor
 				ItemsChanged (this, EventArgs.Empty);
 		}
 		
-		public IEnumerable<BaseToolboxNode> GetDynamicItems (IToolboxConsumer consumer)
+		public IEnumerable<ItemToolboxNode> GetDynamicItems (IToolboxConsumer consumer)
 		{
-			CategoryToolboxNode category = new CategoryToolboxNode (GettextCatalog.GetString ("Clipboard ring"));
-			category.IsDropTarget    = false;
-			category.CanIconizeItems = false;
-			category.IsSorted        = false;
-			foreach (TextToolboxNode item in clipboardRing) {
-				category.Add (item);
-			}
-			
-			if (clipboardRing.Count == 0) {
-				TextToolboxNode item = new TextToolboxNode (null);
-				item.Category = GettextCatalog.GetString ("Clipboard ring");
-				item.Name = null;
-				category.Add (item);
-			}
-			return new BaseToolboxNode [] { category };
+			foreach (TextToolboxNode item in clipboardRing)
+				yield return item;
+			//FIXME: make this work again
+//			CategoryToolboxNode category = new CategoryToolboxNode (GettextCatalog.GetString ("Clipboard ring"));
+//			category.IsDropTarget    = false;
+//			category.CanIconizeItems = false;
+//			category.IsSorted        = false;
+//			foreach (TextToolboxNode item in clipboardRing) {
+//				category.Add (item);
+//			}
+//			
+//			if (clipboardRing.Count == 0) {
+//				TextToolboxNode item = new TextToolboxNode (null);
+//				item.Category = GettextCatalog.GetString ("Clipboard ring");
+//				item.Name = null;
+//				//category.Add (item);
+//			}
+//			return new BaseToolboxNode [] { category };
 		}
 		
 		public event EventHandler ItemsChanged;

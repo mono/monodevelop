@@ -24,13 +24,10 @@
     <File name="MonoDevelop.DesignerSupport.PropertyGrid.Editors/DefaultEditor.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.DesignerSupport.PropertyGrid.Editors/EventEditor.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.DesignerSupport.PropertyGrid.Editors/ExpandableObjectEditor.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.DesignerSupport.Toolbox/BaseToolboxNode.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.DesignerSupport.Toolbox/CategoryToolboxNode.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.DesignerSupport.Toolbox/ItemToolboxNode.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.DesignerSupport.Toolbox/TextToolboxNode.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.DesignerSupport.Toolbox/Toolbox.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.DesignerSupport.Toolbox/ToolboxItemToolboxNode.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.DesignerSupport.Toolbox/ToolboxStore.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.DesignerSupport.addin.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="icons/MonoDevelop.DesignerSupport.PropertyGrid.DefaultPropertyTab.bmp" subtype="Code" buildaction="EmbedAsResource" />
     <File name="icons/MonoDevelop.DesignerSupport.PropertyGrid.EventPropertyTab.bmp" subtype="Code" buildaction="EmbedAsResource" />
@@ -107,6 +104,8 @@
     <File name="icons/pad-document-outline-16.png" subtype="Code" buildaction="EmbedAsResource" />
     <File name="MonoDevelop.DesignerSupport.Toolbox/ITextToolboxNode.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.DesignerSupport.Toolbox/CodeTemplateToolboxProvider.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.DesignerSupport.Toolbox/CecilToolboxItemLoader.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.DesignerSupport.Toolbox/CecilTypeResolver.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="False" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
@@ -125,6 +124,7 @@
     <ProjectReference type="Gac" localcopy="True" refto="Mono.Addins, Version=0.3.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
     <ProjectReference type="Gac" localcopy="True" refto="Mono.Cairo, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
     <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Projects.Gui" />
+    <ProjectReference type="Project" localcopy="True" refto="Mono.Cecil" />
     <ProjectReference type="Gac" localcopy="True" refto="glib-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="pango-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="atk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />

@@ -244,7 +244,7 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid
 			propertyRows [prop] = store.GetStringFromIter (iter);
 			
 			TypeConverter tc = prop.Converter;
-			if (tc.GetType () == typeof (ExpandableObjectConverter)) {
+			if (typeof (ExpandableObjectConverter).IsAssignableFrom (tc.GetType ())) {
 				object cob = prop.GetValue (idata.Instance);
 				foreach (PropertyDescriptor cprop in TypeDescriptor.GetProperties (cob))
 					AppendProperty (iter, cprop, cob);
@@ -272,11 +272,11 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid
 			if (tree.Selection.GetSelected (out iter)) {
 				PropertyDescriptor prop = (PropertyDescriptor) store.GetValue (iter, 1);
 				if (prop != null)
-					parentGrid.SetHelp (prop.Name, prop.Description);
+					parentGrid.SetHelp (prop.DisplayName, prop.Description);
 				else
-					parentGrid.SetHelp ("", "");
+					parentGrid.SetHelp (string.Empty, string.Empty);
 			} else {
-				parentGrid.SetHelp ("", "");
+				parentGrid.SetHelp (string.Empty, string.Empty);
 			}
 		}
 		

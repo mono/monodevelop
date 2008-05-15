@@ -30,6 +30,7 @@
 //
 
 using System;
+using System.ComponentModel;
 using MonoDevelop.Projects.Serialization;
 
 namespace MonoDevelop.DesignerSupport.Toolbox
@@ -92,14 +93,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			if (type != null)
 				code += type.GetHashCode ();
 			return code;
-		}
-
-		
-		public bool Equals (TypeToolboxNode node)
-		{
-			return (node != null)
-			    && (this.type == null? node.type == null : this.type.Equals (node.type))
-			    && base.Equals (node);
 		}
 		
 		#endregion
