@@ -1,3 +1,16 @@
+2008-05-15  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Commands/ViewCommands.cs, MonoDevelop.Ide.addin.xml,
+	  MonoDevelop.Ide.mdp, Makefile.am,
+	  MonoDevelop.Ide.Gui/DefaultWorkbench.cs,
+	  MonoDevelop.Ide.Gui/Pad.cs, MonoDevelop.Ide.Codons/CategoryNode.cs:
+	  Added support for view pad categories. When a pad is assigned to a
+	  category, it will be shown in a submenu in the view menu.
+	* MonoDevelop.Ide.Debugging/DebuggingService.cs: Added support for
+	  changing the current frame of the stack. Added Started event.
+	* MonoDevelop.Ide.Gui/ProjectOperations.cs: Disabled workbench context
+	  switching when debugging an app.
+
 2008-05-08  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Ide.Gui/MonoDevelopStatusBar.cs: Fixed 'Bug 387448 - New

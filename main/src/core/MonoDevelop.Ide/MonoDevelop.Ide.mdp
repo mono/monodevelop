@@ -396,6 +396,7 @@
     <File name="MonoDevelop.Ide.Gui.Content/IPathedDocument.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Debugging/DebugExecutionHandlerFactory.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Debugging/DebuggingService.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Ide.Codons/CategoryNode.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="False" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />

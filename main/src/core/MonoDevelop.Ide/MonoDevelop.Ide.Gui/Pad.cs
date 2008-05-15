@@ -29,6 +29,7 @@
 
 
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Codons;
@@ -40,6 +41,7 @@ namespace MonoDevelop.Ide.Gui
 		IPadWindow window;
 		PadCodon content;
 		IWorkbench workbench;
+		string[] categories;
 		
 		internal Pad (IWorkbench workbench, PadCodon content)
 		{
@@ -62,6 +64,21 @@ namespace MonoDevelop.Ide.Gui
 		
 		public string Id {
 			get { return window.Id; }
+		}
+		
+		public string[] Categories {
+			get {
+				if (categories == null) {
+					List<string> list = new List<string> ();
+					CategoryNode cat = content.Parent as CategoryNode;
+					while (cat != null) {
+						list.Insert (0, cat.Name);
+						cat = cat.Parent as CategoryNode;
+					}
+					categories = list.ToArray ();
+				}
+				return categories;
+			}
 		}
 		
 		public void BringToFront ()

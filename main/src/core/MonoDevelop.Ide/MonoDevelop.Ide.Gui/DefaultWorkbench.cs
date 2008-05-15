@@ -306,9 +306,41 @@ namespace MonoDevelop.Ide.Gui
 				editor.TextChanged += OnViewTextChanged;
 		}
 		
+		void ShowPadNode (ExtensionNode node)
+		{
+			if (node is PadCodon) {
+				PadCodon pad = (PadCodon) node;
+				ShowPad (pad);
+				if (layout != null) {
+					IPadWindow win = WorkbenchLayout.GetPadWindow (pad);
+					if (pad.Label != null)
+						win.Title = pad.Label;
+					if (pad.Icon != null)
+						win.Icon = pad.Icon;
+				}
+			}
+			else if (node is CategoryNode) {
+				foreach (ExtensionNode cn in node.ChildNodes)
+					ShowPadNode (cn);
+			}
+		}
+		
+		void RemovePadNode (ExtensionNode node)
+		{
+			if (node is PadCodon)
+				RemovePad ((PadCodon) node);
+			else if (node is CategoryNode) {
+				foreach (ExtensionNode cn in node.ChildNodes)
+					RemovePadNode (cn);
+			}
+		}
+		
 		public virtual void ShowPad (PadCodon content)
 		{
-			padContentCollection.Add(content);
+			if (padContentCollection.Contains (content))
+				return;
+			
+			padContentCollection.Add (content);
 			
 			if (layout != null)
 				layout.ShowPad (content);
@@ -622,22 +654,17 @@ namespace MonoDevelop.Ide.Gui
 		
 		public void InitializeLayout (IWorkbenchLayout workbenchLayout)
 		{
-			ExtensionNodeList padCodons = AddinManager.GetExtensionNodes (viewContentPath, typeof(PadCodon));
+			ExtensionNodeList padCodons = AddinManager.GetExtensionNodes (viewContentPath);
 			
-			foreach (PadCodon codon in padCodons)
-				ShowPad (codon);
+			foreach (ExtensionNode node in padCodons)
+				ShowPadNode (node);
 			
 			layout = workbenchLayout;
 			layout.Attach(this);
 			layout.ActiveWorkbenchWindowChanged += windowChangeEventHandler;
 			
-			foreach (PadCodon codon in padCodons) {
-				IPadWindow win = WorkbenchLayout.GetPadWindow (codon);
-				if (codon.Label != null)
-					win.Title = codon.Label;
-				if (codon.Icon != null)
-					win.Icon = codon.Icon;
-			}
+			foreach (ExtensionNode node in padCodons)
+				ShowPadNode (node);
 
 			RedrawAllComponents ();
 			
@@ -727,20 +754,11 @@ namespace MonoDevelop.Ide.Gui
 				return;
 			
 			if (args.Change == ExtensionChange.Add) {
-				PadCodon codon = (PadCodon) args.ExtensionNode;
-				ShowPad (codon);
-				
-				IPadWindow win = WorkbenchLayout.GetPadWindow (codon);
-				if (codon.Label != null)
-					win.Title = codon.Label;
-				if (codon.Icon != null)
-					win.Icon = codon.Icon;
-
+				ShowPadNode (args.ExtensionNode);
 				RedrawAllComponents ();
 			}
 			else {
-				PadCodon codon = (PadCodon) args.ExtensionNode;
-				RemovePad (codon);
+				RemovePadNode (args.ExtensionNode);
 			}
 		}
 		

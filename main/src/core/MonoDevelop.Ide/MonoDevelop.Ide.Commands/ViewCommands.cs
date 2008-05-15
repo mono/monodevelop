@@ -20,6 +20,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.CodeDom.Compiler;
 using System.Diagnostics;
 
@@ -160,16 +161,46 @@ namespace MonoDevelop.Ide.Commands
 		protected override void Update (CommandArrayInfo info)
 		{
 			foreach (Pad pad in IdeApp.Workbench.Pads) {
+				CommandArrayInfo ciset = FindArray (info, pad.Categories);
 				CommandInfo cmd = new CommandInfo (pad.Title);
 				cmd.Icon = pad.Icon;
 				cmd.UseMarkup = true;
 				cmd.Description = GettextCatalog.GetString ("Show {0}", pad.Title);
-				info.Add (cmd, pad);
+				
+				// Insert before the submenus
+				int n = ciset.Count-1;
+				while (n >= 0 && ciset [n] is CommandInfoSet)
+					n--;
+				ciset.Insert (n+1, cmd, pad);
 			}
+		}
+		
+		public CommandArrayInfo FindArray (CommandArrayInfo iset, string[] categories)
+		{
+			for (int n=0; n<categories.Length; n++) {
+				CommandArrayInfo foundSet = null;
+				for (int i=0; i<iset.Count; i++) {
+					CommandInfoSet s = iset [i] as CommandInfoSet;
+					if (s != null && s.Text == categories [n]) {
+						foundSet = s.CommandInfos;
+						break;
+					}
+				}
+				if (foundSet == null) {
+					CommandInfoSet s = new CommandInfoSet ();
+					s.Text = s.Description = categories [n];
+					iset.Add (s);
+					foundSet = s.CommandInfos;
+				}
+				iset = foundSet;
+			}
+			return iset;
 		}
 		
 		protected override void Run (object ob)
 		{
+			if (ob == null)
+				return;
 			Pad pad = (Pad) ob;
 			pad.Visible = true;
 			pad.BringToFront ();

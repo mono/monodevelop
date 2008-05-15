@@ -34,6 +34,13 @@ namespace MonoDevelop.Ide.Debugging
 		
 		DebuggerSession session;
 		Backtrace current_backtrace;
+		int currentFrame;
+
+		public event EventHandler PausedEvent;
+		public event EventHandler ResumedEvent;
+		public event EventHandler StoppedEvent;
+		public event EventHandler CurrentFrameChanged;
+		public event EventHandler ExecutionLocationChanged;
 
 		internal DebuggingService()
 		{
@@ -89,30 +96,6 @@ namespace MonoDevelop.Ide.Debugging
 			console.Out.Write (line);
 		}
 
-		void NotifyPaused ()
-		{
-			if (PausedEvent != null)
-				PausedEvent (null, EventArgs.Empty);
-			NotifyLocationChanged ();
-			
-			Gtk.Application.Invoke (delegate {
-				if (!string.IsNullOrEmpty (CurrentFilename))
-					IdeApp.Workbench.OpenDocument (CurrentFilename, CurrentLineNumber, 1, true);
-			});
-		}
-		
-		void NotifyLocationChanged ()
-		{
-			if (ExecutionLocationChanged != null)
-				ExecutionLocationChanged (null, EventArgs.Empty);
-		}
-
-		public event EventHandler PausedEvent;
-		public event EventHandler ResumedEvent;
-		public event EventHandler StartedEvent;
-		public event EventHandler StoppedEvent;
-		public event EventHandler ExecutionLocationChanged;
-
 		void KillApplication (object obj)
 		{
 			Cleanup ();
@@ -147,9 +130,18 @@ namespace MonoDevelop.Ide.Debugging
 			session.Breakpoints = breakpoints;
 			session.Run (startInfo);
 			session.TargetEvent += OnTargetEvent;
+			session.TargetStarted += OnStarted;
 
 			console.CancelRequested += new EventHandler (OnCancelRequested);
 			NotifyLocationChanged ();
+		}
+		
+		void OnStarted (object s, EventArgs a)
+		{
+			Gtk.Application.Invoke (delegate {
+				if (ResumedEvent != null)
+					ResumedEvent (null, a);
+			});
 		}
 		
 		void OnTargetEvent (object sender, TargetEventArgs args)
@@ -158,10 +150,7 @@ namespace MonoDevelop.Ide.Debugging
 				Console.WriteLine ("OnTargetEvent, type - {0}", args.Type);
 				if (args.Type != TargetEventType.TargetExited) {
 					current_backtrace = args.Backtrace;
-					for (int i = 0; i < args.Backtrace.FrameCount; i ++) {
-						StackFrame frame = args.Backtrace.GetFrame (i);
-						Console.WriteLine ("addr - 0x{0:X}, file: {1}, method : {2}, line : {3}", frame.Address, frame.SourceLocation.Filename, frame.SourceLocation.Method, frame.SourceLocation.Line);
-					}
+					SetCurrentFrame ();
 				}
 				
 				switch (args.Type) {
@@ -183,6 +172,24 @@ namespace MonoDevelop.Ide.Debugging
 				Console.WriteLine ("OnTargetEvent, {0}", e.ToString ());
 			}
 
+		}
+
+		void NotifyPaused ()
+		{
+			if (PausedEvent != null)
+				PausedEvent (null, EventArgs.Empty);
+			NotifyLocationChanged ();
+			
+			Gtk.Application.Invoke (delegate {
+				if (!string.IsNullOrEmpty (CurrentFilename))
+					IdeApp.Workbench.OpenDocument (CurrentFilename, CurrentLineNumber, 1, true);
+			});
+		}
+		
+		void NotifyLocationChanged ()
+		{
+			if (ExecutionLocationChanged != null)
+				ExecutionLocationChanged (null, EventArgs.Empty);
 		}
 		
 		void OnCancelRequested (object sender, EventArgs args)
@@ -240,7 +247,8 @@ namespace MonoDevelop.Ide.Debugging
 
 		public string[] Backtrace {
 			get {
-				//FIXME: == null
+				if (current_backtrace == null)
+					return null;
 				string [] result = new string [current_backtrace.FrameCount];
 				for (int i = 0; i < current_backtrace.FrameCount; i ++)
 					result [i] = current_backtrace.GetFrame (i).ToString ();
@@ -255,7 +263,7 @@ namespace MonoDevelop.Ide.Debugging
 
 		public string CurrentFilename {
 			get {
-				StackFrame sf = FindCurrentFrame ();
+				StackFrame sf = CurrentFrame;
 				if (sf != null)
 					return sf.SourceLocation.Filename;
 				else
@@ -265,24 +273,49 @@ namespace MonoDevelop.Ide.Debugging
 
 		public int CurrentLineNumber {
 			get {
-				StackFrame sf = FindCurrentFrame ();
+				StackFrame sf = CurrentFrame;
 				if (sf != null)
 					return sf.SourceLocation.Line;
 				else
 					return -1;
 			}
 		}
+
+		public StackFrame CurrentFrame {
+			get {
+				if (current_backtrace != null && currentFrame != -1)
+					return current_backtrace.GetFrame (currentFrame);
+				else
+					return null;
+			}
+		}
 		
-		StackFrame FindCurrentFrame ()
+		public int CurrentFrameIndex {
+			get {
+				return currentFrame;
+			}
+			set {
+				if (current_backtrace != null && value < current_backtrace.FrameCount) {
+					currentFrame = value;
+					Gtk.Application.Invoke (delegate {
+						if (CurrentFrameChanged != null)
+							CurrentFrameChanged (this, EventArgs.Empty);
+					});
+				}
+				else
+					currentFrame = -1;
+			}
+		}
+		
+		void SetCurrentFrame ()
 		{
 			if (current_backtrace != null) {
 				for (int n=0; n<current_backtrace.FrameCount; n++) {
 					StackFrame sf = current_backtrace.GetFrame (n);
 					if (!string.IsNullOrEmpty (sf.SourceLocation.Filename))
-						return sf;
+						CurrentFrameIndex = n;
 				}
 			}
-			return null;
 		}
 	}
 }

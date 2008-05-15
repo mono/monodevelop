@@ -140,13 +140,20 @@
 		<ExtensionNode name="TaskListView" type="MonoDevelop.Ide.Codons.TaskListViewCodon"/>
 	</ExtensionPoint>
 	
-	<ExtensionPoint path = "/MonoDevelop/Ide/Pads" name = "Workbench pads">
-		<Description>Pads shown in the workbench.</Description>
+	<ExtensionNodeSet id="MonoDevelop.Ide.Pads">
 		<ExtensionNode name="Pad" type="MonoDevelop.Ide.Codons.PadCodon"/>
 		<ExtensionNode name="SolutionPad" type="MonoDevelop.Ide.Codons.SolutionPadCodon">
 			<ExtensionNode name="NodeBuilder" type="MonoDevelop.Ide.Codons.NodeBuilderCodon"/>
 			<ExtensionNode name="PadOption" type="MonoDevelop.Ide.Codons.PadOptionCodon"/>
 		</ExtensionNode>
+		<ExtensionNode name="Category" type="MonoDevelop.Ide.Codons.CategoryNode">
+			<ExtensionNodeSet id="MonoDevelop.Ide.Pads"/>
+		</ExtensionNode>
+	</ExtensionNodeSet>
+	
+	<ExtensionPoint path = "/MonoDevelop/Ide/Pads" name = "Workbench pads">
+		<Description>Pads shown in the workbench.</Description>
+		<ExtensionNodeSet id="MonoDevelop.Ide.Pads" />
 	</ExtensionPoint>
 	
 	<ExtensionPoint path = "/MonoDevelop/Ide/WorkbenchContexts" name = "Workbench contexts">
@@ -1150,7 +1157,6 @@
 	<Extension path = "/MonoDevelop/Ide/Pads">
 		<Pad id = "MonoDevelop.Ide.Gui.Pads.FileScout" _label = "Files" icon="system-file-manager" class = "MonoDevelop.Ide.Gui.Pads.FileScout"/>
 		<Pad id = "MonoDevelop.Ide.Gui.Pads.ErrorListPad" defaultPlacement = "Bottom" _label = "Error List" icon="gtk-dialog-error" class = "MonoDevelop.Ide.Gui.Pads.ErrorListPad"/>
-		<Pad id = "MonoDevelop.Ide.Gui.Pads.InternalLogPad" defaultPlacement = "Bottom" _label = "Message Log" class = "MonoDevelop.Ide.Gui.Pads.InternalLogPad"/>
 		<Pad id = "MonoDevelop.Ide.Gui.Pads.TaskListPad" defaultPlacement = "Bottom" _label = "Task List" icon="md-task-list-icon" class = "MonoDevelop.Ide.Gui.Pads.TaskListPad"/>
 		<Pad id = "MonoDevelop.Ide.Gui.Pads.HelpTree" defaultPlacement = "Left" _label = "Help" icon="gtk-help" class = "MonoDevelop.Ide.Gui.Pads.HelpTree"/>
 
@@ -1185,14 +1191,9 @@
 			<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.ClassPad.MethodNodeBuilder"/>
 			<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.ClassPad.PropertyNodeBuilder"/>
 		</SolutionPad>
-		
-<!---		<Pad id = "ClassPad" defaultPlacement = "Left" _label = "Classes" class = "MonoDevelop.Ide.Gui.Pads.ClassBrowser.ClassBrowserPad"/> -->
-			
-<!--			   
-		<Pad id = "SideBar" class = "MonoDevelop.Ide.Gui.Pads.SideBarView"/>
-		<Pad id = "PropertyPad" class = "MonoDevelop.Ide.Gui.Pads.PropertyPad"/>
-		<Pad id = "TerminalPad" class = "MonoDevelop.Ide.Gui.Pads.TerminalPad"/>
--->			 
+		<Category id="Other" _name="Other Windows">
+			<Pad id = "MonoDevelop.Ide.Gui.Pads.InternalLogPad" defaultPlacement = "Bottom" _label = "Message Log" class = "MonoDevelop.Ide.Gui.Pads.InternalLogPad"/>
+		</Category>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/WorkbenchContexts">

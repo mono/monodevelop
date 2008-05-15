@@ -1024,7 +1024,7 @@ namespace MonoDevelop.Ide.Gui
 			if (currentRunOperation != null && !currentRunOperation.IsCompleted)
 				return currentRunOperation;
 			
-			guiHelper.SetWorkbenchContext (WorkbenchContext.Debug);
+			//guiHelper.SetWorkbenchContext (WorkbenchContext.Debug);
 
 			IProgressMonitor monitor = new MessageDialogProgressMonitor ();
 			ExecutionContext context = new ExecutionContext (IdeApp.Services.DebuggingService.GetExecutionHandlerFactory (), IdeApp.Workbench.ProgressMonitors);
@@ -1039,13 +1039,14 @@ namespace MonoDevelop.Ide.Gui
 		void DebugCombineEntryAsync (IProgressMonitor monitor, CombineEntry entry, ExecutionContext context, WorkbenchContext oldContext)
 		{
 			try {
+				Console.WriteLine ("pp: " + entry);
 				entry.Execute (monitor, context);
 			} catch (Exception ex) {
 				monitor.ReportError (GettextCatalog.GetString ("Execution failed."), ex);
 			} finally {
 				monitor.Dispose ();
 			}
-			guiHelper.SetWorkbenchContext (WorkbenchContext.Edit);
+			//guiHelper.SetWorkbenchContext (WorkbenchContext.Edit);
 		}
 		
 		public IAsyncOperation DebugFile (string file)
