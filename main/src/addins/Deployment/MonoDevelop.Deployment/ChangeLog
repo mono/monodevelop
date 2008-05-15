@@ -1,3 +1,7 @@
+2008-05-15  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Deployment.addin.xml: Removed obsolete attributes.
+
 2008-04-15  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Deployment.Targets/LocalFileCopyHandler.cs: Remove extra

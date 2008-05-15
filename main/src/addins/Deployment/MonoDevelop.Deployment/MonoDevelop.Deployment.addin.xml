@@ -35,7 +35,7 @@
 
 	<!-- Extension Points -->
 	
-	<ExtensionPoint path = "/MonoDevelop/DeployService/PackageBuilders" extension-nodes="Class">
+	<ExtensionPoint path = "/MonoDevelop/DeployService/PackageBuilders">
 		<Description>Deployment handlers. Specified classes must implement IDeployHandler.</Description>
 		<ExtensionNode name="Class" />
 	</ExtensionPoint>
@@ -103,27 +103,27 @@
 		<DataType class = "MonoDevelop.Deployment.Targets.SourcesZipPackageBuilder" />
 	</Extension>
 
-	<Extension path = "/MonoDevelop/DeployService/PackageBuilders" extension-nodes="Class" description="Deployment handlers. Specified classes must implement IDeployHandler.">
+	<Extension path = "/MonoDevelop/DeployService/PackageBuilders">
 		<Class class = "MonoDevelop.Deployment.Targets.SourcesZipPackageBuilder" />
 		<Class class = "MonoDevelop.Deployment.Targets.BinariesZipPackageBuilder" />
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/Deployment/DeployFileCopiers" extension-nodes="Class" description="File copiers for deployment handlers. Specified classes must implement IDeployFileCopier.">
+	<Extension path = "/MonoDevelop/Deployment/DeployFileCopiers">
 		<Class class = "MonoDevelop.Deployment.Targets.LocalFileCopyHandler" />
 		<Class class = "MonoDevelop.Deployment.Targets.SshFuseFileCopyHandler" />
 	</Extension>
 
-	<Extension path = "/MonoDevelop/Deployment/DeployServiceExtensions" extension-nodes="Class">
+	<Extension path = "/MonoDevelop/Deployment/DeployServiceExtensions">
 		<Class id="PrepareDeploy" class = "MonoDevelop.Deployment.DeployServiceExtension" />
 		<Class id="DefaultDeploy" class = "MonoDevelop.Deployment.DefaultDeployServiceExtension" />
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/Deployment/PackageBuilderEditors" extension-nodes="Class" description="Editors for deployment targets. Specified classes must implement IPackageBuilderEditor.">
+	<Extension path = "/MonoDevelop/Deployment/PackageBuilderEditors">
 		<Class class = "MonoDevelop.Deployment.Gui.SourcesZipDeployEditor" />
 		<Class class = "MonoDevelop.Deployment.Gui.BinariesZipDeployEditor" />
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/Deployment/FileCopyConfigurationEditors" extension-nodes="Class" description="Editors for file copy congigurations. Specified classes must implement IFileCopyConfigurationEditor.">
+	<Extension path = "/MonoDevelop/Deployment/FileCopyConfigurationEditors">
 		<Class class = "MonoDevelop.Deployment.Gui.LocalFileCopyConfigurationEditor" />
 		<Class class = "MonoDevelop.Deployment.Gui.SshFuseFileCopyConfigurationEditor" />
 	</Extension>
