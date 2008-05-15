@@ -171,10 +171,20 @@ namespace Mono.TextEditor
 	
 	public class UnderlineMarker: TextMarker
 	{
+		Gdk.Color   color = new Color (255, 0, 0);
+
+		public Color Color {
+			get {
+				return color;
+			}
+			set {
+				color = value;
+			}
+
 		public override void Draw (TextEditor editor, Gdk.Drawable win, bool selected, int startOffset, int endOffset, int y, int startXPos, int endXPos)
 		{
 			using (Gdk.GC gc = new Gdk.GC (win)) {
-				gc.RgbFgColor = new Color (255, 0, 0);
+				gc.RgbFgColor = color;
 				int drawY    = y + editor.LineHeight - 1;
 				const int length = 6;
 				const int height = 2;
