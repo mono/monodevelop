@@ -115,25 +115,25 @@ namespace Mono.Debugging.Client
 		
 		public void Run (DebuggerStartInfo startInfo)
 		{
-			isRunning = true;
+			OnRunning ();
 			debugger.Run (startInfo);
 		}
 		
 		public void NextLine ()
 		{
-			isRunning = true;
+			OnRunning ();
 			debugger.NextLine ();
 		}
 
 		public void StepLine ()
 		{
-			isRunning = true;
+			OnRunning ();
 			debugger.StepLine ();
 		}
 
 		public void Finish ()
 		{
-			isRunning = true;
+			OnRunning ();
 			debugger.Finish ();
 		}
 
@@ -196,7 +196,7 @@ namespace Mono.Debugging.Client
 
 		public void Continue ()
 		{
-			isRunning = true;
+			OnRunning ();
 			debugger.Continue ();
 		}
 
@@ -261,6 +261,13 @@ namespace Mono.Debugging.Client
 			}
 			if (TargetEvent != null)
 				TargetEvent (this, args);
+		}
+		
+		internal void OnRunning ()
+		{
+			isRunning = true;
+			if (TargetStarted != null)
+				TargetStarted (this, EventArgs.Empty);
 		}
 		
 		internal void OnStarted ()

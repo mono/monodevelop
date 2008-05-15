@@ -8,5 +8,8 @@ namespace Mono.Debugging.Backend
 		int FrameCount { get; }
 		StackFrame[] GetStackFrames (int firstIndex, int lastIndex);
 		ObjectValue[] GetLocalVariables (int frameIndex);
+		ObjectValue[] GetParameters (int frameIndex);
+		ObjectValue GetThisReference (int frameIndex);
+		ObjectValue[] GetExpressionValues (int frameIndex, string[] expressions);
 	}
 }

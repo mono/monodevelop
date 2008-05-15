@@ -1,0 +1,17 @@
+2008-05-15  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Mono.Debugging.Client/Backtrace.cs,
+	  Mono.Debugging.Client/StackFrame.cs,
+	  Mono.Debugging.Client/ObjectPath.cs,
+	  Mono.Debugging.Client/DebuggerSession.cs,
+	  Mono.Debugging.Client/ObjectValue.cs,
+	  Mono.Debugging.Client/ObjectValueKind.cs, Mono.Debugging.mdp,
+	  Mono.Debugging.Backend/IObjectValueSource.cs,
+	  Mono.Debugging.Backend/IBacktrace.cs, Makefile.am: Added api for
+	  querying variable and field values. Some improvements in
+	  ObjectValue. Added new ObjectPath class.
+
+2008-05-06  Lluis Sanchez  <lluis@novell.com>
+
+	* Imported library
+

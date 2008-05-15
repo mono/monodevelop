@@ -21,6 +21,7 @@ FILES =  \
 	Mono.Debugging.Client/DebuggerEngine.cs \
 	Mono.Debugging.Client/DebuggerSession.cs \
 	Mono.Debugging.Client/DebuggerStartInfo.cs \
+	Mono.Debugging.Client/ObjectPath.cs \
 	Mono.Debugging.Client/ObjectValue.cs \
 	Mono.Debugging.Client/ObjectValueKind.cs \
 	Mono.Debugging.Client/ProcessEventArgs.cs \

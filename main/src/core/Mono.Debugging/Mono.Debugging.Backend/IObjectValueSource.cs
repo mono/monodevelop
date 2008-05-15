@@ -32,6 +32,6 @@ namespace Mono.Debugging.Backend
 {
 	public interface IObjectValueSource
 	{
-		ObjectValue[] GetChildren (string path, int index, int count);
+		ObjectValue[] GetChildren (ObjectPath path, int index, int count);
 	}
 }

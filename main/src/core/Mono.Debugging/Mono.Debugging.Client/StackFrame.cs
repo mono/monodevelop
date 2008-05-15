@@ -48,6 +48,21 @@ namespace Mono.Debugging.Client
 		{
 			return sourceBacktrace.GetLocalVariables (index);
 		}
+		
+		public ObjectValue[] GetParameters ()
+		{
+			return sourceBacktrace.GetParameters (index);
+		}
+		
+		public ObjectValue GetThisReference ()
+		{
+			return sourceBacktrace.GetThisReference (index);
+		}
+		
+		public ObjectValue[] GetExpressionValues (string[] expressions)
+		{
+			return sourceBacktrace.GetExpressionValues (index, expressions);
+		}
 
 		public override string ToString()
 		{
