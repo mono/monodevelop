@@ -34,12 +34,8 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 	
 	public interface ITextToolboxNode
 	{
-		//"text/plain" is assumed to be valid anywhere where text is allowed
-		string[] AllowedMimetypes { get; }
+		string GetTextForFile (string fileName, MonoDevelop.Projects.Project project);
 		
-		//the string "*" should be used to allow *all* extensions
-		string[] AllowedExtensions { get; }
-		
-		string GetTextForFile (string path, MonoDevelop.Projects.Project project);
+		bool IsCompatibleWith (string fileName, MonoDevelop.Projects.Project project);
 	}
 }

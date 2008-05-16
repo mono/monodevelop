@@ -134,14 +134,12 @@ namespace MonoDevelop.AspNet
 			get { return aspNetDomain; }
 		}
 		
-		[Browsable(false)]
-		public string[] AllowedMimetypes {
-			get { return new string[] { "application/x-aspx", "application/x-ascx", "application/x-master-page" }; }
-		}
-		
-		[Browsable(false)]
-		public string[] AllowedExtensions {
-			get { return new string[] { "aspx", "ascx", "master" }; }
+		public bool IsCompatibleWith (string fileName, MonoDevelop.Projects.Project project)
+		{
+			if (fileName.EndsWith (".aspx") || fileName.EndsWith (".ascx") || fileName.EndsWith (".master"))
+				return true;
+			else
+				return false;
 		}
 	}
 }

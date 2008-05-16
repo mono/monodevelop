@@ -1,3 +1,10 @@
+2008-05-16  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.DesignerSupport.Toolbox/TextToolboxNode.cs,
+	  MonoDevelop.DesignerSupport.Toolbox/ITextToolboxNode.cs: Change
+	  ITextToolboxNode API so that nodes have more control over when
+	  they're shown.
+
 2008-05-15  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.DesignerSupport.addin.xml,

@@ -1331,18 +1331,7 @@ namespace MonoDevelop.SourceEditor
 			int i = filename.LastIndexOf ('.');
 			string ext = i < 0? null : filename.Substring (i + 1);
 			
-			if (textNode.AllowedExtensions != null)
-				foreach (string s in textNode.AllowedExtensions)
-					if (s == ext || s == "*")
-						return true;
-			
-			//FIXME: cache mimetypes before enabling this
-//			if (textNode.AllowedMimetypes != null) {
-//				string mime = MonoDevelop.Core.Gui.Services.PlatformService.GetMimeTypeForUri (filename);
-//				foreach (string s in textNode.AllowedMimetypes)
-//					if (s == mime || s == "text/plain")
-//						return true;
-//			}
+			return textNode.IsCompatibleWith (filename, this.Project);
 			return false;
 		}
 

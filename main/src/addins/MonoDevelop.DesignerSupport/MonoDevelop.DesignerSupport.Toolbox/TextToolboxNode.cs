@@ -81,14 +81,9 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			get { return domain; }
 		}
 		
-		[Browsable(false)]
-		public virtual string[] AllowedMimetypes {
-			get { return new string[] { "text/plain" }; }
-		}
-		
-		[Browsable(false)]
-		public string[] AllowedExtensions {
-			get { return new string[] { "*" }; }
+		public bool IsCompatibleWith (string fileName, MonoDevelop.Projects.Project project)
+		{
+			return true;
 		}
 	}
 }
