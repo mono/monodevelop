@@ -47,7 +47,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 			this.SkipTaskbarHint = true;
 			this.Decorated = false;
 			this.BorderWidth = 2;
-			this.TypeHint = Gdk.WindowTypeHint.Tooltip;
+			this.TypeHint = TooltipTypeHint;
 			this.AllowShrink = false;
 			this.AllowGrow = false;
 			
@@ -141,5 +141,23 @@ namespace MonoDevelop.Projects.Gui.Completion
 //			else
 //				WidthRequest = width;
 //		}
+		
+		//this is GTK+ >= 2.10 only, so reflect it
+		static Gdk.WindowTypeHint TooltipTypeHint {
+			get {
+				if (tooltipTypeHint > -1)
+					return (Gdk.WindowTypeHint) tooltipTypeHint;
+				
+				tooltipTypeHint = (int) Gdk.WindowTypeHint.Dialog;
+				
+				System.Reflection.FieldInfo fi = typeof (Gdk.WindowTypeHint).GetField ("Tooltip");
+				if (fi != null)
+					tooltipTypeHint = (int) fi.GetValue (typeof (Gdk.WindowTypeHint));
+				
+				return (Gdk.WindowTypeHint) tooltipTypeHint;
+			}
+		}
+		
+		static int tooltipTypeHint = -1;
 	}
 }
