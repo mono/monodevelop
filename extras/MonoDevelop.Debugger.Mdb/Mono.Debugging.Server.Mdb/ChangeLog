@@ -1,3 +1,9 @@
+2008-05-16  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* DebuggerServer.cs, Util.cs, BacktraceWrapper.cs,
+	  Mono.Debugging.Server.Mdb.mdp, IExpressionValueSource.cs, Makefile:
+	  Implemented query of variable and field data.
+
 2008-05-14  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* DebuggerServer.cs, AssemblyInfo.cs, Util.cs, BacktraceWrapper.cs,

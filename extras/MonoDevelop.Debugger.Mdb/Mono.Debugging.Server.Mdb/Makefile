@@ -51,6 +51,7 @@ FILES =  \
 	AssemblyInfo.cs \
 	BacktraceWrapper.cs \
 	DebuggerServer.cs \
+	IExpressionValueSource.cs \
 	Server.cs \
 	Util.cs 
 
@@ -62,7 +63,6 @@ EXTRAS = \
 	ChangeLog 
 
 REFERENCES =  \
-	../../../../../install/lib/monodevelop/bin/MonoDevelop.Projects.dll \
 	../build/DebuggerClient.dll \
 	-pkg:mono-addins \
 	-pkg:mono-debugger \

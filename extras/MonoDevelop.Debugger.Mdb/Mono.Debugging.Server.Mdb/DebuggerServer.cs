@@ -25,6 +25,7 @@ namespace DebuggerServer
 		private int max_frames;
 		bool internalInterruptionRequested;
 		List<ST.WaitCallback> stoppedWorkQueue = new List<ST.WaitCallback> ();
+		bool initializing;
 
 		public DebuggerServer (IDebuggerController dc)
 		{
@@ -53,6 +54,7 @@ namespace DebuggerServer
 				IExpressionParser parser = null;
 
 				DebuggerOptions options = DebuggerOptions.ParseCommandLine (new string[] { startInfo.Command } );
+				options.StopInMain = false;
 				session = new MD.DebuggerSession (config, options, "main", null);
 				debugger.Run(session);
 
@@ -110,7 +112,7 @@ namespace DebuggerServer
 			}
 		}
 
-		public int InsertBreakpoint (string filename, int line, bool activate)
+		public int InsertBreakpoint (string filename, int line, bool enable)
 		{
 			MD.SourceLocation location = FindFile (filename, line);
 			if (location == null)
@@ -119,18 +121,22 @@ namespace DebuggerServer
 
 			MD.Event ev = null;
 			
-			Console.WriteLine ("pp inserting bp: ");
-			RunWhenStopped (delegate {
-				try {
-					Console.WriteLine ("ppstop: " + process.MainThread.IsStopped);
-					ev = session.InsertBreakpoint (process.MainThread.ThreadGroup, location);
-					ev.IsEnabled = true;
-//					if (process.MainThread.IsStopped)
+			ev = session.InsertBreakpoint (process.MainThread.ThreadGroup, location);
+			ev.IsEnabled = enable;
+			
+			if (!initializing) {
+				Exception error = null;
+				RunWhenStopped (delegate {
+					try {
 						ev.Activate (process.MainThread);
-				} catch (Exception ex) {
-					Console.WriteLine ("pp: " + ex);
-				}
-			});
+					} catch (Exception ex) {
+						error = ex;
+						Console.WriteLine (ex);
+					}
+				});
+				if (error != null)
+					throw new Exception ("Breakpoint could not be set: " + error.Message);
+			}
 			
 			return ev.Index;
 		}
@@ -193,8 +199,10 @@ namespace DebuggerServer
 			Console.WriteLine (">> OnInitialized");
 			this.process = process;
 			this.debugger = debugger;
-			
+
+			initializing = true;
 			controller.OnMainProcessCreated(process.ID);
+			initializing = false;
 
 			//FIXME: conditionally add event handlers
 			process.TargetOutputEvent += OnTargetOutput;
@@ -222,36 +230,28 @@ namespace DebuggerServer
 			
 			lock (debugger)
 			{
-				if (true/*process.MainThread.IsStopped*/) {
-					Console.WriteLine ("pp RunWhenStopped: already stopped: ");
+				if (process.MainThread.IsStopped) {
 					cb (null);
 					return;
 				}
 				stoppedWorkQueue.Add (cb);
-				Console.WriteLine ("pp1: ");
 				
 				if (!internalInterruptionRequested) {
 					internalInterruptionRequested = true;
-					Console.WriteLine ("pp2: ");
 					process.MainThread.Stop ();
-					Console.WriteLine ("pp3: ");
 					stoppedByMe = true;
 				}
 				ST.Monitor.Enter (cb);
 			}
 
 			try {
-				Console.WriteLine ("pp4: ");
 				ST.Monitor.Wait (cb, 5000);
 			} finally {
-				Console.WriteLine ("pp5: ");
 				ST.Monitor.Exit (cb);
 			}
 			
 			lock (debugger) {
-				Console.WriteLine ("pp6: ");
 				if (stoppedByMe && internalInterruptionRequested) {
-					Console.WriteLine ("pp7: ");
 					process.MainThread.Continue ();
 				}
 			}
@@ -270,7 +270,6 @@ namespace DebuggerServer
 						// The process was stopped, but not as a result of the internal stop request.
 						// Reset the internal request flag, in order to avoid the process to be
 						// automatically restarted
-						Console.WriteLine ("pps1: ");
 						if (args.Type != MD.TargetEventType.TargetInterrupted)
 							internalInterruptionRequested = false;
 						
@@ -278,31 +277,30 @@ namespace DebuggerServer
 							cb (null);
 							lock (cb) {
 								ST.Monitor.PulseAll (cb);
-								Console.WriteLine ("pps2: ");
 							}
 						}
-						Console.WriteLine ("pps3: ");
 						stoppedWorkQueue.Clear ();
 						
 						if (internalInterruptionRequested) {
 							// It's internal, don't notify the client
 							internalInterruptionRequested = false;
-							Console.WriteLine ("pps4: ");
 							return;
 						}
 					}
 				
-					if (args.Frame.Method != null) {
+
+/*					if (args.Frame.Method != null) {
 						foreach (MD.Languages.TargetVariable var in args.Frame.Method.GetLocalVariables (process.MainThread)) {
 							MD.Languages.TargetObject ob = var.GetObject (args.Frame);
 							bool alive = var.IsInScope (args.Frame.TargetAddress);
 							Console.WriteLine ("\n--- var1: " + var.Name + " alive:" + alive + " " + var.IsAlive (args.Frame.TargetAddress));
 							if (alive)
-								Util.PrintObject (args.Frame, var.GetObject (args.Frame));
+								Console.WriteLine (" = '" + Util.ObjectToString (args.Frame, var.GetObject (args.Frame)) + "'");
+//								Util.PrintObject (args.Frame, var.GetObject (args.Frame));
 						}
 					}
+*/
 				}
-				Console.WriteLine ("pps5: ");
 				
 				DL.TargetEventArgs dl_args = new DL.TargetEventArgs ((DL.TargetEventType)args.Type);
 

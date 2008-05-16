@@ -1,3 +1,8 @@
+2008-05-16  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Mono.Debugging.Backend.Mdb.mdp: Implemented query of variable and
+	  field data.
+
 2008-05-14  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* AssemblyInfo.cs, Manifest.addin.xml, IDebuggerController.cs,
