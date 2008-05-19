@@ -1,3 +1,9 @@
+2008-05-19  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs: Only return a
+	  valid completion word if there is a selection. Makes code
+	  completion much less intrusive.
+
 2008-05-16  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Projects.Gui.Completion/TooltipWindow.cs: Tooltip window

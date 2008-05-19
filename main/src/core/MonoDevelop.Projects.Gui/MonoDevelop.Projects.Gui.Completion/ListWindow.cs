@@ -118,7 +118,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 		public string CompleteWord
 		{
 			get { 
-				if (list.Selection != -1)
+				if (list.Selection != -1 && !SelectionDisabled)
 					return provider.GetCompletionText (list.Selection);
 				else
 					return null;
@@ -127,6 +127,10 @@ namespace MonoDevelop.Projects.Gui.Completion
 		
 		public int Selection {
 			get { return list.Selection; }
+		}
+		
+		public bool SelectionDisabled {
+			get { return list.SelectionDisabled; }
 		}
 		
 		public string PartialWord
