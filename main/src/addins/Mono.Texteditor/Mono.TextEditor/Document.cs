@@ -34,7 +34,7 @@ using Mono.TextEditor.Highlighting;
 
 namespace Mono.TextEditor
 {
-	public class Document : AbstractBuffer
+	public class Document : AbstractBuffer, IDisposable
 	{
 		IBuffer      buffer;
 		LineSplitter splitter;
@@ -91,8 +91,34 @@ namespace Mono.TextEditor
 		
 		public Document()
 		{
-			buffer = new GapBuffer ();
+			buffer   = new GapBuffer ();
 			splitter = new LineSplitter (buffer);
+		}
+		
+		public override void Dispose ()
+		{
+			if (buffer != null) {
+				buffer.Dispose ();
+				buffer = null;
+			}
+			if (splitter != null) {
+				splitter.Dispose ();
+				splitter = null;
+			}
+			if (undoStack != null) {
+				undoStack.Clear ();
+				undoStack = null;
+			}
+			if (redoStack != null) {
+				redoStack.Clear ();
+				redoStack = null;
+			}
+			currentAtomicOperation = null;
+			
+			if (foldSegments != null) {
+				foldSegments.Clear ();
+				foldSegments = null;
+			}
 		}
 		
 		#region Buffer implementation

@@ -30,7 +30,7 @@ using System.Text;
 
 namespace Mono.TextEditor
 {
-	public interface IBuffer
+	public interface IBuffer : IDisposable
 	{
 		int Length {
 			get;
@@ -80,5 +80,7 @@ namespace Mono.TextEditor
 		{
 			return GetTextAt (segment.Offset, segment.Length);
 		}
+		
+		public abstract void Dispose ();
 	}
 }

@@ -83,12 +83,14 @@ namespace Mono.TextEditor
 		}
 		
 		Gdk.Pixmap buffer = null, flipBuffer = null;
+		
 		void DoFlipBuffer ()
 		{
 			Gdk.Pixmap tmp = buffer;
 			buffer = flipBuffer;
 			flipBuffer = tmp;
 		}
+		
 		void AllocateWindowBuffer (Rectangle allocation)
 		{
 			if (buffer != null) {
@@ -105,6 +107,7 @@ namespace Mono.TextEditor
 		{
 			this.QueueDrawArea (this.textViewMargin.XOffset, 0, this.Allocation.Width - this.textViewMargin.XOffset, this.Allocation.Height);
 		}
+		
 		void VAdjustmentValueChanged (object sender, EventArgs args)
 		{
 //				this.QueueDraw ();
@@ -279,52 +282,7 @@ namespace Mono.TextEditor
 			margins.Add (gutterMargin);
 			margins.Add (foldMarkerMargin);
 			margins.Add (textViewMargin);
-			ISegment oldSelection = null;
-			this.textEditorData.SelectionChanged += delegate {
-				if (IsSomethingSelected && SelectionRange.Offset >= 0 && SelectionRange.EndOffset < Document.Length) {
-					new CopyAction ().CopyToPrimary (this.textEditorData);
-				} else {
-					new CopyAction ().ClearPrimary ();
-				}
-					
-				
-				// Handle redraw
-				ISegment selection = SelectionRange;
-				int startLine    = selection != null ? Document.OffsetToLineNumber (selection.Offset) : -1;
-				int endLine      = selection != null ? Document.OffsetToLineNumber (selection.EndOffset) : -1;
-				int oldStartLine = oldSelection != null ? Document.OffsetToLineNumber (oldSelection.Offset) : -1;
-				int oldEndLine   = oldSelection != null ? Document.OffsetToLineNumber (oldSelection.EndOffset) : -1;
-				if (endLine < 0 && startLine >=0)
-					endLine = Document.LineCount;
-				if (oldEndLine < 0 && oldStartLine >=0)
-					oldEndLine = Document.LineCount;
-				int from = oldEndLine, to = endLine;
-				if (selection != null && oldSelection != null) {
-					if (startLine != oldStartLine && endLine != oldEndLine) {
-						from = System.Math.Min (startLine, oldStartLine);
-						to   = System.Math.Max (endLine, oldEndLine);
-					} else if (startLine != oldStartLine) {
-						from = startLine;
-						to   = oldStartLine;
-					} else if (endLine != oldEndLine) {
-						from = endLine;
-						to   = oldEndLine;
-					}
-				} else {
-					if (selection == null) {
-						from = oldStartLine;
-						to = oldEndLine;
-					} else if (oldSelection == null) {
-						from = startLine;
-						to = endLine;
-					} 
-				}
-				oldSelection = selection != null ? new Segment (selection.Offset, selection.Length) : null;
-				this.RedrawLines (System.Math.Max (0, System.Math.Min (from, to) - 1), 
-				                  System.Math.Max (from, to));
-				OnSelectionChanged (EventArgs.Empty);
-			};
-			
+			this.textEditorData.SelectionChanged += TextEditorDataSelectionChanged; 
 			Document.DocumentUpdated += DocumentUpdatedHandler;
 				
 			TextEditorOptions.Changed += OptionsChanged;
@@ -332,16 +290,63 @@ namespace Mono.TextEditor
 			Gtk.TargetList list = new Gtk.TargetList ();
 			list.AddTextTargets (CopyAction.TextType);
 			Gtk.Drag.DestSet (this, DestDefaults.All, (TargetEntry[])list, DragAction.Move | DragAction.Copy);
-			this.Destroyed += delegate {
-				Dispose ();
-			};
 			
 			imContext = new IMMulticontext ();
 			imContext.UsePreedit = false;
 			imContext.Commit += IMCommit;
-			Caret.PositionChanged += delegate (object sender, DocumentLocationEventArgs args) {
-				ResetIMContext ();
-			};
+			Caret.PositionChanged += CaretPositionChanged;
+		}
+		
+		void CaretPositionChanged (object sender, DocumentLocationEventArgs args) 
+		{
+			ResetIMContext ();
+		}
+		
+		ISegment oldSelection = null;
+		void TextEditorDataSelectionChanged (object sender, EventArgs args)
+		{
+			if (IsSomethingSelected && SelectionRange.Offset >= 0 && SelectionRange.EndOffset < Document.Length) {
+				new CopyAction ().CopyToPrimary (this.textEditorData);
+			} else {
+				new CopyAction ().ClearPrimary ();
+			}
+				
+			
+			// Handle redraw
+			ISegment selection = SelectionRange;
+			int startLine    = selection != null ? Document.OffsetToLineNumber (selection.Offset) : -1;
+			int endLine      = selection != null ? Document.OffsetToLineNumber (selection.EndOffset) : -1;
+			int oldStartLine = oldSelection != null ? Document.OffsetToLineNumber (oldSelection.Offset) : -1;
+			int oldEndLine   = oldSelection != null ? Document.OffsetToLineNumber (oldSelection.EndOffset) : -1;
+			if (endLine < 0 && startLine >=0)
+				endLine = Document.LineCount;
+			if (oldEndLine < 0 && oldStartLine >=0)
+				oldEndLine = Document.LineCount;
+			int from = oldEndLine, to = endLine;
+			if (selection != null && oldSelection != null) {
+				if (startLine != oldStartLine && endLine != oldEndLine) {
+					from = System.Math.Min (startLine, oldStartLine);
+					to   = System.Math.Max (endLine, oldEndLine);
+				} else if (startLine != oldStartLine) {
+					from = startLine;
+					to   = oldStartLine;
+				} else if (endLine != oldEndLine) {
+					from = endLine;
+					to   = oldEndLine;
+				}
+			} else {
+				if (selection == null) {
+					from = oldStartLine;
+					to = oldEndLine;
+				} else if (oldSelection == null) {
+					from = startLine;
+					to = endLine;
+				} 
+			}
+			oldSelection = selection != null ? new Segment (selection.Offset, selection.Length) : null;
+			this.RedrawLines (System.Math.Max (0, System.Math.Min (from, to) - 1), 
+			                  System.Math.Max (from, to));
+			OnSelectionChanged (EventArgs.Empty);
 		}
 		
 		void ResetIMContext ()
@@ -427,10 +432,28 @@ namespace Mono.TextEditor
 			if (isDisposed)
 				return;
 			this.isDisposed = true;
+			if (this.buffer != null) {
+				this.buffer.Dispose ();
+				this.buffer = null;
+			}
+			if (this.flipBuffer != null) {
+				this.flipBuffer.Dispose ();
+				this.flipBuffer = null;
+			}
+			if (this.keyBindings != null) {
+				this.keyBindings.Clear ();
+				this.keyBindings = null;
+			}
+			Caret.PositionChanged -= CaretPositionChanged;
+			
 			Document.DocumentUpdated -= DocumentUpdatedHandler;
 			TextEditorOptions.Changed -= OptionsChanged;
-			imContext.Commit -= IMCommit;
-			imContext.Dispose ();
+			
+			if (imContext != null) {
+				imContext.Commit -= IMCommit;
+				imContext.Dispose ();
+				imContext = null;
+			}
 			
 			if (this.textEditorData.HAdjustment != null) {
 				this.textEditorData.HAdjustment.ValueChanged -= HAdjustmentValueChanged; 
@@ -449,7 +472,13 @@ namespace Mono.TextEditor
 				this.margins = null;
 			}
 			
+			bookmarkMargin = null; 
+			gutterMargin = null;
+			foldMarkerMargin = null;
+			textViewMargin = null;
+			
 			if (this.textEditorData != null) {
+				this.textEditorData.SelectionChanged -= TextEditorDataSelectionChanged; 
 				this.textEditorData.Dispose ();
 				this.textEditorData = null;
 			}
@@ -903,7 +932,11 @@ namespace Mono.TextEditor
 						margin.XOffset = curX;
 						curX += margin.Width;
 						if (curX > area.X || margin.Width < 0) {
-							margin.Draw (win, area, logicalLineNumber, margin.XOffset, curY);
+							try {
+								margin.Draw (win, area, logicalLineNumber, margin.XOffset, curY);
+							} catch (Exception e) {
+								
+							}
 						}
 					}
 				}
@@ -916,6 +949,8 @@ namespace Mono.TextEditor
 		double oldVadjustment = 0;
 		protected override bool OnExposeEvent (Gdk.EventExpose e)
 		{
+			if (this.isDisposed)
+				return true;
 			int lastVisibleLine = Document.LogicalToVisualLine (Document.LineCount - 1);
 			if (oldRequest != lastVisibleLine) {
 				SetAdjustments (this.Allocation);

@@ -33,7 +33,7 @@ using System.Collections.ObjectModel;
 
 namespace Mono.TextEditor
 {
-	public class LineSplitter
+	public class LineSplitter : IDisposable
 	{
 		LineSegmentTree lines = new LineSegmentTree ();
 		
@@ -49,6 +49,14 @@ namespace Mono.TextEditor
 				do {
 					yield return iter.Current;
 				} while (iter.MoveNext ());
+			}
+		}
+		
+		public void Dispose ()
+		{
+			if (lines != null) {
+				lines.Dispose ();
+				lines = null;
 			}
 		}
 		

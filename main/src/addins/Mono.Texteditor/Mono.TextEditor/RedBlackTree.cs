@@ -32,7 +32,7 @@ using System.Collections.Generic;
 
 namespace Mono.TextEditor
 {
-	public class RedBlackTree<T> : ICollection<T>
+	public class RedBlackTree<T> : ICollection<T>, IDisposable
 	{
 		int count;
 		RedBlackTreeNode root;
@@ -45,7 +45,14 @@ namespace Mono.TextEditor
 				root = value;
 			}
 		}
-			
+		
+		public void Dispose ()
+		{
+			if (root != null) {
+				root.Dispose ();
+				root = null;
+			}
+		}
 		public void Add (RedBlackTreeNode node)
 		{
 			count++;
@@ -438,7 +445,7 @@ namespace Mono.TextEditor
 		static bool red   = true;
 		static bool black = false;
 		
-		public class RedBlackTreeNode
+		public class RedBlackTreeNode : IDisposable
 		{
 			public RedBlackTreeNode parent;
 			public RedBlackTreeNode left, right;
@@ -484,6 +491,23 @@ namespace Mono.TextEditor
 			public RedBlackTreeNode Uncle {
 				get {
 					return parent == Grandparent.left ? Grandparent.right : Grandparent.left;
+				}
+			}
+			
+			public void Dispose ()
+			{
+				parent = null;
+				if (value is System.IDisposable) {
+					((System.IDisposable)value).Dispose ();
+				}
+				value  = default (T);
+				if (left != null) {
+					left.Dispose ();
+					left = null;
+				}
+				if (right != null) {
+					right.Dispose ();
+					right = null;
 				}
 			}
 		}

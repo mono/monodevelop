@@ -1,3 +1,11 @@
+2008-05-19  Mike Krüger <mkrueger@novell.com> 
+
+	* Mono.TextEditor/LineSplitter.cs, Mono.TextEditor/Document.cs,
+	  Mono.TextEditor/IBuffer.cs, Mono.TextEditor/RedBlackTree.cs,
+	  Mono.TextEditor/LineSegmentTree.cs, Mono.TextEditor/TextEditor.cs,
+	  Mono.TextEditor/GapBuffer.cs, Mono.TextEditor/LineSegment.cs: Fixed
+	  text editor memory leak.
+
 2008-05-15  Mike Krüger <mkrueger@novell.com> 
 
 	* Mono.TextEditor/TextMarker.cs: fixed cut&paste error.

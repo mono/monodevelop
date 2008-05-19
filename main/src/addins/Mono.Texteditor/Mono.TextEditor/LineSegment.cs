@@ -223,6 +223,11 @@ namespace Mono.TextEditor
 		public void Dispose ()
 		{
 			this.startSpan = null;
+			if (markers != null) {
+				markers.Clear ();
+				markers = null;
+			}
+			treeNode = null;
 		}
 	}
 }
