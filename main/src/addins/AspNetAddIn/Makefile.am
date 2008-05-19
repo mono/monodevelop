@@ -139,11 +139,7 @@ DATA_FILES =  \
 
 DATA_FILE_BUILD = $(addprefix $(ADDIN_BUILD)/Schemas/, $(notdir $(DATA_FILES)))
 
-if ENABLE_ASPNET
 all: $(ASSEMBLY) $(DATA_FILE_BUILD)
-else
-all:
-endif
 
 $(ASSEMBLY): $(build_sources) $(build_resources)
 	mkdir -p $(ADDIN_BUILD)
@@ -156,13 +152,11 @@ $(DATA_FILE_BUILD): $(srcdir)$(subst $(ADDIN_BUILD),, $@)
 
 check: all
 
-if ENABLE_ASPNET
 assemblydir = $(MD_ADDIN_DIR)/MonoDevelop.AspNet
 assembly_DATA = $(ASSEMBLY) $(ASSEMBLY).mdb
 
 schemadir = $(MD_ADDIN_DIR)/MonoDevelop.AspNet/Schemas
 schema_DATA = $(DATA_FILES)
-endif
 
 CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb $(DATA_FILE_BUILD)
 EXTRA_DIST = $(FILES) $(RES) $(DATA_FILES)

@@ -1,5 +1,10 @@
 2008-05-19  Michael Hutchinson <mhutchinson@novell.com> 
 
+	* configure.in: Remove conditional build for ASP.NET support; there's
+	  no longer any reason to disable it.
+
+2008-05-19  Michael Hutchinson <mhutchinson@novell.com> 
+
 	* configure.in: Check for broken *-gtkmozembed files, as they've turned
 	  up with xulrunner 1.9.
 

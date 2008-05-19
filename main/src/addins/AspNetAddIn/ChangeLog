@@ -1,3 +1,8 @@
+2008-05-19  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* Makefile.am: Remove conditional build for ASP.NET support; there's no
+	  longer any reason to disable it.
+
 2008-05-16  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.AspNet/AspNetToolboxNode.cs: Change ITextToolboxNode API

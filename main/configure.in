@@ -211,14 +211,6 @@ fi
 
 AM_CONDITIONAL(ENABLE_WINDOWSPLATFORM, [test x$enable_windowsplatform = xyes])
 
-# ASP.NET project addin
-AC_ARG_ENABLE(aspnet,
-	AC_HELP_STRING([--enable-aspnet],
-		[enable ASP.NET project support [default=yes]]),
-		enable_aspnet=${enableval}, enable_aspnet=yes)
-
-AM_CONDITIONAL(ENABLE_ASPNET, [test x$enable_aspnet = xyes]) 
-
 # C/C++ project addin
 AC_ARG_ENABLE(c, AC_HELP_STRING([--enable-c], [enable C/C++ project support [default=yes]]), enable_c=${enableval}, enable_c=yes)
 AM_CONDITIONAL(ENABLE_C, [test x$enable_c = xyes])
@@ -402,7 +394,6 @@ echo "   * Mono class library development extensions: $enable_monoextensions"
 echo "   * Version control support: $enable_versioncontrol"
 echo "   *   Providers:"
 echo "   *     Subversion: $enable_subversion"
-echo "   * ASP.NET project support: $enable_aspnet"
 echo "   * Web References: yes"
 echo "   * C/C++ project support: $enable_c"
 echo "   * GtkSourceView2 Editor: $enable_gtksourceview2"
