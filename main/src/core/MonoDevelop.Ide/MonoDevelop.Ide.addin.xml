@@ -323,15 +323,15 @@
 				_description = "Add the user defined header to the top of the file"/>
 		
 		<Command id = "MonoDevelop.Ide.Commands.EditCommands.ToggleFolding"
-				_label = "_Toggle fold" 
+				_label = "_Toggle Fold" 
 				shortcut = "Control|Shift|M"
 				_description = "Toggles the folding at caret position."/>
 		<Command id = "MonoDevelop.Ide.Commands.EditCommands.ToggleAllFoldings"
-				_label = "Toggle _all folds" 
+				_label = "Toggle _All Folds" 
 				shortcut = "Control|Shift|A"
 				_description = "Toggles the all foldings in the document."/>
 		<Command id = "MonoDevelop.Ide.Commands.EditCommands.FoldDefinitions"
-				_label = "Show _definitions only" 
+				_label = "Show _Definitions Only" 
 				_description = "Folds all method and property bodies."/>
 		</Category>
 
@@ -723,17 +723,17 @@
 
 		<Command id = "MonoDevelop.Ide.Commands.WindowCommands.SplitWindowVertically"
 				defaultHandler = "MonoDevelop.Ide.Commands.SplitWindowVertically"
-				_label = "Split _vertically" />
+				_label = "Split _Vertically" />
 		<Command id = "MonoDevelop.Ide.Commands.WindowCommands.SplitWindowHorizontally"
 				defaultHandler = "MonoDevelop.Ide.Commands.SplitWindowHorizontally"
-				_label = "Split _horizontally" />
+				_label = "Split _Horizontally" />
 		<Command id = "MonoDevelop.Ide.Commands.WindowCommands.UnsplitWindow"
 				defaultHandler = "MonoDevelop.Ide.Commands.UnsplitWindow"
 				_label = "_Unsplit" />
 		<Command id = "MonoDevelop.Ide.Commands.WindowCommands.SwitchSplitWindow"
 				defaultHandler = "MonoDevelop.Ide.Commands.SwitchSplitWindow"
 				shortcut = "Control|M"
-				_label = "_Switch between splits" />
+				_label = "_Switch Between Splits" />
 		</Category>
 				
 		<!-- HelpCommands -->
@@ -892,7 +892,7 @@
 		<Category _name = "Text Editor" id = "TextEditor">
 		
 		<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.ShowCompletionWindow"
-				_label = "Show completion window" 
+				_label = "Show Completion Window" 
 				shortcut = "Control|space" />
 		<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.LineEnd"
 				_label = "Go to end of line" />
