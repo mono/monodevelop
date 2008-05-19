@@ -229,14 +229,24 @@ AM_CONDITIONAL(ENABLE_C, [test x$enable_c = xyes])
 # detection code in the MonoDevelop core so that MD can set LD_LIBRARY_PATH 
 # MOZILLA_FIVE_HOME before starting.
 ###############################################################################
+MOZFILE="libgtkembedmoz.so"
 
 #Check pkg-config first
 MOZILLA_HOME="`$PKG_CONFIG --variable=libdir mozilla-gtkmozembed`"
+if test ! -z "$MOZILLA_HOME" && test ! -e "$MOZILLA_HOME/$MOZFILE";
+		then AC_MSG_WARN(The mozilla-gtkmozembed.pc file is broken); unset MOZILLA_HOME;
+	fi
 if test -z "$MOZILLA_HOME"; then
 	MOZILLA_HOME="`$PKG_CONFIG --variable=libdir firefox-gtkmozembed`"
+	if test ! -z "$MOZILLA_HOME" && test ! -e "$MOZILLA_HOME/$MOZFILE";
+		then AC_MSG_WARN(The firefox-gtkmozembed.pc file is broken); unset MOZILLA_HOME;
+	fi
 fi
 if test -z "$MOZILLA_HOME"; then
 	MOZILLA_HOME="`$PKG_CONFIG --variable=libdir xulrunner-gtkmozembed`"
+	if test ! -z "$MOZILLA_HOME" && test ! -e "$MOZILLA_HOME/$MOZFILE";
+		then AC_MSG_WARN(The xulrunner-gtkmozembed.pc file is broken); unset MOZILLA_HOME;
+	fi
 fi
 
 #if MOZILLA_HOME is still empty, try to detect without pkg_config
@@ -397,4 +407,5 @@ echo "   * Web References: yes"
 echo "   * C/C++ project support: $enable_c"
 echo "   * GtkSourceView2 Editor: $enable_gtksourceview2"
 echo "   * Platform bindings: $platform_bindings"
+echo "   * Mozilla location: $MOZILLA_HOME"
 echo ""

@@ -1,3 +1,8 @@
+2008-05-19  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* configure.in: Check for broken *-gtkmozembed files, as they've turned
+	  up with xulrunner 1.9.
+
 2008-04-02  Michael Hutchinson  <mhutchinson@novell.com> 
 
 	* monodevelop-core-addins.pc.in: Include MonoDevelop.XmlEditor.dll, 
