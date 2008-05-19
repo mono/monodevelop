@@ -63,14 +63,14 @@ FILES =  \
 	AspNetEdit.Integration/EditorProcess.cs \
 	AspNetEdit.Integration/GeckoWebBrowser.cs \
 	AspNetEdit.Integration/MonoDevelopProxy.cs \
-	AspNetEdit.Integration/ToolboxProvider.cs \
 	AspNetEdit.JSCall/CommandManager.cs \
 	AspNetEdit.JSCall/InvalidJSArgumentException.cs \
-	AssemblyInfo.cs 
+	AssemblyInfo.cs
 
 DATA_FILES = 
 
-RESOURCES = AspNetEdit.addin.xml 
+RESOURCES =  \
+	AspNetEdit.addin.xml
 
 EXTRAS = \
 	Makefile.am \
@@ -104,7 +104,7 @@ REFERENCES =  \
 
 DLL_REFERENCES = 
 
-CLEANFILES += 
+CLEANFILES += $(extension_jar)
 
 INSTALL_DIR = $(prefix)/lib/monodevelop/AddIns/AspNetEdit
 

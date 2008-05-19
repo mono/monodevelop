@@ -1,3 +1,12 @@
+2008-05-19  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* AspNetEdit.mdp, AspNetEdit.Integration/ToolboxProvider.cs,
+	  AspNetEdit.make, AspNetEdit.addin.xml: Remove unneeded toolbox
+	  provider.
+	* AspNetEdit.Integration/AspNetEditViewContent.cs,
+	  AspNetEdit.Integration/MonoDevelopProxy.cs: Track message service
+	  API changes. Thanks to John Garrison.
+
 2008-02-26  Michael Hutchinson  <mhutchinson@novell.com> 
 
 	* AspNetEdit.Integration/AspNetEditDisplayBinding.cs:

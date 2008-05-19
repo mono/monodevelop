@@ -221,8 +221,9 @@ namespace AspNetEdit.Integration
 				try {
 					doc = editorProcess.Editor.GetDocument ();
 				} catch (Exception e) {
-					IdeApp.Services.MessageService.ShowError (e,
-						AddinManager.CurrentLocalizer.GetString ("The document could not be retrieved from the designer"));
+					MonoDevelop.Core.Gui.MessageService.ShowException (e,
+						AddinManager.CurrentLocalizer.GetString (
+					        "The document could not be retrieved from the designer"));
 				}
 			
 				if (doc != null)
@@ -327,7 +328,8 @@ namespace AspNetEdit.Integration
 			
 			string ffBrowserManifest = Path.Combine (Path.Combine (mozPath, "chrome"), "toolkit.manifest");
 			if (!File.Exists (ffBrowserManifest)) {
-				error = String.Format ("MOZILLA_FIVE_HOME does not appear to be pointing to a valid Mozilla runtime: \"{0}\".", mozPath);
+				error = AddinManager.CurrentLocalizer.GetString (
+				    "MOZILLA_FIVE_HOME does not appear to be pointing to a valid Mozilla runtime: \"{0}\".", mozPath);
 				return false;
 			}
 			return true;
@@ -338,7 +340,8 @@ namespace AspNetEdit.Integration
 			string mozPath = System.Environment.GetEnvironmentVariable ("MOZILLA_FIVE_HOME");
 			string manifestLocation = Path.Combine (Path.Combine (mozPath, "chrome"), "aspdesigner.manifest");
 			if (!System.IO.File.Exists (manifestLocation)) {
-				error = "The ASP.NET designer's Mozilla extension is not installed.";
+				error = AddinManager.CurrentLocalizer.GetString (
+				    "The ASP.NET designer's Mozilla extension is not installed.");
 				return false;
 			} else {
 				try {
@@ -353,14 +356,19 @@ namespace AspNetEdit.Integration
 				} catch (System.UnauthorizedAccessException) {}
 			}
 			
-			error = "A Mozilla extension is installed for the ASP.NET designer, \nbut it is either incorrectly installed or is not the correct version. \nIt is only possible to have one version installed.";
+			error = AddinManager.CurrentLocalizer.GetString (
+			    "A Mozilla extension is installed for the ASP.NET designer, \n" +
+			    "but it is either incorrectly installed or is not the correct version. \n" +
+			    "It is only possible to have one version installed.");
 			return false;
 		}
 		
 		bool InstallExtension (string extensionStatus)
 		{
-			if (!MonoDevelop.Core.Gui.Services.MessageService.AskQuestionFormatted
-				("Mozilla extension installation", "{0}\n Would you like to install it?", extensionStatus))
+			if (!MonoDevelop.Core.Gui.MessageService.Confirm (
+			    AddinManager.CurrentLocalizer.GetString ("Mozilla extension installation"),
+			    extensionStatus + "\n" + AddinManager.CurrentLocalizer.GetString ("Would you like to install it?"),
+			    new MonoDevelop.Core.Gui.AlertButton (AddinManager.CurrentLocalizer.GetString ("Install extension"))))
 				return false;
 			
 			string sourcePath = Path.GetTempFileName ();
@@ -390,8 +398,9 @@ namespace AspNetEdit.Integration
 			} catch (Exception ex) {
 				LoggingService.LogError ("Error installing ASP.NET designer Mozilla extension.", ex);
 			}
-			MonoDevelop.Core.Gui.Services.MessageService.ShowError (
-				string.Format ("Could not execute command as root. \nPlease manually run the command \n{0}\nbefore continuing.", installCommand));
+			MonoDevelop.Core.Gui.MessageService.ShowError (
+			    AddinManager.CurrentLocalizer.GetString ("Could not execute command as root. \n"+
+			        "Please manually run the command \n{0}\nbefore continuing.", installCommand));
 			File.Delete (sourcePath);
 			return true;
 		}
@@ -407,7 +416,7 @@ namespace AspNetEdit.Integration
 				if (ExtensionInstalled (ref error))
 					return true;
 			} catch (Exception ex) {
-				error = String.Format ("Unhandled error.\n{0}", ex);
+				error = AddinManager.CurrentLocalizer.GetString ("Unhandled error:\n{0}", ex);
 			}
 			return false;
 		}

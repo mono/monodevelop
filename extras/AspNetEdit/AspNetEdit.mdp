@@ -58,7 +58,6 @@
     <File name="AspNetEdit.Integration/EditorProcess.cs" subtype="Code" buildaction="Compile" />
     <File name="AspNetEdit.Integration/MonoDevelopProxy.cs" subtype="Code" buildaction="Compile" />
     <File name="AspNetEdit.Editor.ComponentModel/EventBindingService.cs" subtype="Code" buildaction="Compile" />
-    <File name="AspNetEdit.Integration/ToolboxProvider.cs" subtype="Code" buildaction="Compile" />
     <File name="AspNetEdit.JSCall/CommandManager.cs" subtype="Code" buildaction="Compile" />
     <File name="AspNetEdit.JSCall/InvalidJSArgumentException.cs" subtype="Code" buildaction="Compile" />
     <File name="AspNetEdit.Integration/GeckoWebBrowser.cs" subtype="Code" buildaction="Compile" />

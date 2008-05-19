@@ -20,8 +20,7 @@
 		<Addin id="Projects.Gui" version="0.19.0"/>
 		<Addin id="Ide" version="0.19.0"/>
 		<Addin id="Deployment" version="0.19.0" />
-		<Addin id="SourceEditor" version="0.19.0"/>
-		<Addin id="AspNetAddIn" version="0.19.0" />
+		<Addin id="AspNet" version="0.19.0" />
 		<Addin id="DesignerSupport" version="0.19.0" />
 	</Dependencies>
 	
@@ -30,9 +29,4 @@
 		                supportedformats = "Source Code"
 		                class = "AspNetEdit.Integration.AspNetEditDisplayBinding"/>
 	</Extension>
-	
-	<Extension path = "/MonoDevelop/DesignerSupport/ToolboxProviders">
-		<Class id="AspNetDefaultControlToolboxProvider" class="AspNetEdit.Integration.ToolboxProvider"/>
-	</Extension>
-	
 </Addin>

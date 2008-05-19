@@ -53,14 +53,6 @@ namespace AspNetEdit.Integration
 			this.project = project;
 		}
 		
-		#region services (must all be GuiSyncObjects, i.e. MarshalByRef)
-		public MonoDevelop.Core.Gui.MessageService MessageService {
-			get {
-				return IdeApp.Services.MessageService;
-			}
-		}
-		#endregion
-		
 		//keep this object available through remoting
 		public override object InitializeLifetimeService ()
 		{
