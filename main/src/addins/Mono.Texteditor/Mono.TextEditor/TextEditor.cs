@@ -80,6 +80,7 @@ namespace Mono.TextEditor
 		
 		public TextEditor () : this (new Document ())
 		{
+			
 		}
 		
 		Gdk.Pixmap buffer = null, flipBuffer = null;
@@ -91,12 +92,18 @@ namespace Mono.TextEditor
 			flipBuffer = tmp;
 		}
 		
-		void AllocateWindowBuffer (Rectangle allocation)
+		void DisposeBgBuffer ()
 		{
 			if (buffer != null) {
 				buffer.Dispose ();
 				flipBuffer.Dispose ();
+				buffer = flipBuffer = null;
 			}
+		}
+		
+		void AllocateWindowBuffer (Rectangle allocation)
+		{
+			DisposeBgBuffer ();
 			if (this.IsRealized) {
 				buffer = new Gdk.Pixmap (this.GdkWindow, allocation.Width, allocation.Height);
 				flipBuffer = new Gdk.Pixmap (this.GdkWindow, allocation.Width, allocation.Height);
@@ -169,6 +176,7 @@ namespace Mono.TextEditor
 			this.textEditorData.Document = doc;
 			this.Events = EventMask.AllEventsMask;
 			this.DoubleBuffered = false;
+			
 			base.CanFocus = true;
 			
 			keyBindings.Add (GetKeyCode (Gdk.Key.KP_Left), new CaretMoveLeft ());
@@ -432,14 +440,7 @@ namespace Mono.TextEditor
 			if (isDisposed)
 				return;
 			this.isDisposed = true;
-			if (this.buffer != null) {
-				this.buffer.Dispose ();
-				this.buffer = null;
-			}
-			if (this.flipBuffer != null) {
-				this.flipBuffer.Dispose ();
-				this.flipBuffer = null;
-			}
+			DisposeBgBuffer ();
 			if (this.keyBindings != null) {
 				this.keyBindings.Clear ();
 				this.keyBindings = null;
@@ -860,6 +861,21 @@ namespace Mono.TextEditor
 			SetAdjustments (allocation);
 			base.OnSizeAllocated (allocation);
 		}
+		
+		protected override void OnMapped ()
+		{
+			if (buffer == null) 
+				AllocateWindowBuffer (this.Allocation);
+			base.OnMapped (); 
+		}
+
+		protected override void OnUnmapped ()
+		{
+			DisposeBgBuffer ();
+			
+			base.OnUnmapped (); 
+		}
+
 		
 		protected override bool OnScrollEvent (EventScroll evnt)
 		{
