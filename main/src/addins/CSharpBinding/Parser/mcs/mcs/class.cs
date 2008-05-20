@@ -6720,6 +6720,7 @@ namespace Mono.CSharp {
 		public MethodBuilder GetBuilder, SetBuilder;
 
 		protected bool define_set_first = false;
+		Dom.LocationBlock members_block;
 
 		public PropertyBase (DeclSpace parent, FullNamedExpression type, int mod_flags,
 				     int allowed_mod, bool is_iface, MemberName name,
@@ -6941,6 +6942,11 @@ namespace Mono.CSharp {
 
 		public Dom.IAccessor SetAccessor {
 			get { return Set.IsDummy ? null : Set; }
+		}
+
+		public Dom.LocationBlock AccessorsBlock {
+			get { return members_block; }
+			set { members_block = value; }
 		}
 
 		#endregion
@@ -7283,6 +7289,7 @@ namespace Mono.CSharp {
 
 
 		static readonly string[] attribute_targets = new string [] { "event" }; // "property" target was disabled for 2.0 version
+		Dom.LocationBlock accessors_block;
 
 		public EventProperty (DeclSpace parent, FullNamedExpression type, int mod_flags,
 				      bool is_iface, MemberName name,
@@ -7306,6 +7313,11 @@ namespace Mono.CSharp {
 			get {
 				return attribute_targets;
 			}
+		}
+
+		public override Dom.LocationBlock AccessorsBlock {
+			get { return accessors_block; }
+			set { accessors_block = value; }
 		}
 	}
 
@@ -7715,6 +7727,11 @@ namespace Mono.CSharp {
 
 		public Dom.IAccessor RemoveAccessor {
 			get { return Remove; }
+		}
+
+		public virtual Dom.LocationBlock AccessorsBlock {
+			get { return Dom.LocationBlock.Null; }
+			set { throw new NotSupportedException (); }
 		}
 
 		#endregion

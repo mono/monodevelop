@@ -157,6 +157,7 @@ namespace Mono.CSharp.Dom
 
 	public interface IProperty : ITypeMember
 	{
+		LocationBlock AccessorsBlock { get; }
 		IAccessor GetAccessor { get; }
 		IAccessor SetAccessor { get; }
 	}
@@ -168,6 +169,7 @@ namespace Mono.CSharp.Dom
 
 	public interface IEvent : ITypeMember
 	{
+		LocationBlock AccessorsBlock { get; }
 		IAccessor AddAccessor { get; }
 		IAccessor RemoveAccessor { get; }
 	}

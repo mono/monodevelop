@@ -1636,6 +1636,7 @@ property_declaration
 
 		prop = new Property (current_class, (FullNamedExpression) $3, (int) $2, false,
 				     name, (Attributes) $1, get_block, set_block, accessors.declared_in_reverse, current_block);
+		prop.AccessorsBlock = new Dom.LocationBlock (GetLocation ($6), GetLocation ($10));
 
 		current_container.AddProperty (prop);
 		implicit_value_parameter_type = null;
@@ -2063,7 +2064,8 @@ interface_property_declaration
 		p = new Property (current_class, (FullNamedExpression) $3, (int) $2, true,
 				   name, (Attributes) $1,
 				   accessor.get_or_add, accessor.set_or_remove, accessor.declared_in_reverse);
-
+		p.AccessorsBlock = new Dom.LocationBlock (GetLocation ($5), GetLocation ($9));
+		
 		if (accessor.get_or_add != null && accessor.get_or_add.Block != null) {
 			Report.Error (531, p.Location, "`{0}.get': interface members cannot have a definition", p.GetSignatureForError ());
 			$$ = null;
@@ -2157,6 +2159,7 @@ interface_indexer_declaration
 				  new MemberName (TypeContainer.DefaultIndexerName, (Location) $4),
 				  (int) $2, true, (Parameters) $6, (Attributes) $1,
 				   accessors.get_or_add, accessors.set_or_remove, accessors.declared_in_reverse);
+		i.AccessorsBlock = new Dom.LocationBlock (GetLocation ($8), GetLocation ($12));
 
 		if (accessors.get_or_add != null && accessors.get_or_add.Block != null) {
 			Report.Error (531, i.Location, "`{0}.get': interface members cannot have a definition", i.GetSignatureForError ());
@@ -2526,6 +2529,8 @@ event_declaration
 				Event e = new EventProperty (
 					current_class, (FullNamedExpression) $4, (int) $2, false, name,
 					(Attributes) $1, accessors.get_or_add, accessors.set_or_remove);
+				e.AccessorsBlock = new Dom.LocationBlock (GetLocation ($6), GetLocation ($10));
+					
 				if (RootContext.Documentation != null) {
 					e.DocComment = Lexer.consume_doc_comment ();
 					Lexer.doc_state = XmlCommentState.Allowed;
@@ -2677,7 +2682,8 @@ indexer_declaration
 		indexer = new Indexer (current_class, decl.type, name,
 				       (int) $2, false, decl.param_list, (Attributes) $1,
 				       get_block, set_block, accessors.declared_in_reverse);
-
+		indexer.AccessorsBlock = new Dom.LocationBlock (GetLocation ($4), GetLocation ($8));
+		
 		if (RootContext.Documentation != null)
 			indexer.DocComment = ConsumeStoredComment ();
 
