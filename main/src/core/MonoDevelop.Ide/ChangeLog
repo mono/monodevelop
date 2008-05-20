@@ -1,5 +1,10 @@
 2008-05-20  Michael Hutchinson <mhutchinson@novell.com> 
 
+	* MonoDevelop.Ide.Gui.Dialogs/NewProjectDialog.cs: Implement restoring
+	  selection of child categories.
+
+2008-05-20  Michael Hutchinson <mhutchinson@novell.com> 
+
 	* MonoDevelop.Ide.Gui.Dialogs/NewProjectDialog.cs: Restore
 	  functionality to auto-select last selected category, defaulting to
 	  C#. Fixes "Bug 392561 - Should default to C# language -> empty

@@ -114,31 +114,48 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 			return false;
 		}
 		
+		bool FindCategory (string category, ref TreeIter iter)
+		{
+			TreeIter trial = iter;
+			do {
+				string val = (string)catStore.GetValue (trial, 0);
+				if (val == category) {
+					iter = trial;
+					return true;
+				}
+			} while (catStore.IterNext (ref trial));
+			return false;
+		}
+		
 		void SelectCategory (string category)
 		{
+			string[] cats = category.Split ('/');
+			
 			TreeIter iter;
-			TreeIter defaultIter;
-			if (catStore.GetIterFirst (out iter)) {
-				defaultIter = iter;
-				do {
-					string cat = (string)catStore.GetValue (iter, 0);
-					if (cat == category) {
-						lst_template_types.Selection.SelectIter (iter);
-						return;
-					} else if (cat == "C#") {
-						defaultIter = iter;
-					}
-				} while (catStore.IterNext (ref iter));
-				
-				lst_template_types.Selection.SelectIter (defaultIter);
+			if (!catStore.GetIterFirst (out iter))
+				return;
+			
+			TreeIter nextIter = iter;
+			for (int i = 0; i < cats.Length; i++) {
+				if (FindCategory (cats[i], ref nextIter)) {
+					iter = nextIter;
+					if (i >= cats.Length - 1 || !catStore.IterChildren (out nextIter, nextIter))
+						break;
+				} else if (i == 0) {
+					FindCategory ("C#", ref iter);
+					break;
+				}
 			}
+			
+			lst_template_types.ExpandToPath (catStore.GetPath (iter));
+			lst_template_types.Selection.SelectIter (iter);
 		}
 		
 		void InitializeView()
 		{
 			InsertCategories (TreeIter.Zero, categories);
 			catStore.SetSortColumnId (0, SortType.Ascending);
-			SelectCategory (PropertyService.Get<string>("Dialogs.NewProjectDialog.LastSelectedCategory", "C#"));
+			SelectCategory (PropertyService.Get<string> ("Dialogs.NewProjectDialog.LastSelectedCategory", "C#"));
 			ShowAll ();
 		}
 		
