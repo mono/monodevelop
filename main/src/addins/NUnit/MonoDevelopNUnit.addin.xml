@@ -82,7 +82,7 @@
 			<PadOption id = "ShowTestCounters" _label = "Show Test Counters" defaultValue = "False" />
 			<NodeBuilder id = "TestNode" class = "MonoDevelop.NUnit.TestNodeBuilder"/>
 		</SolutionPad>
-		<Pad id="MonoDevelop.NUnit.TestResultsPad" _label="Test results" icon="nunit-pad-icon" class="MonoDevelop.NUnit.TestResultsPad" defaultPlacement = "Bottom"/>
+		<Pad id="MonoDevelop.NUnit.TestResultsPad" _label="Test Results" icon="nunit-pad-icon" class="MonoDevelop.NUnit.TestResultsPad" defaultPlacement = "Bottom"/>
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/Pads/ProjectPad">
