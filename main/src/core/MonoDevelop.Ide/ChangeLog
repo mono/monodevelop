@@ -1,3 +1,8 @@
+2008-05-20  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Ide.Gui/SdiWorkspaceWindow.cs: Remove unnecessary
+	  operation, fixing a Gtk-Warning.
+
 2008-05-20  Zach Lute <zach.lute@gmail.com> 
 
 	* MonoDevelop.Ide.Gui.Dialogs/GoToDialog.cs: Fixed a NPE if the

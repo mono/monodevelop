@@ -345,7 +345,6 @@ namespace MonoDevelop.Ide.Gui
 			//pack them in a box
 			box.PackStart (subViewNotebook, true, true, 0);
 			box.ShowAll ();
-			this.Child = box;
 		}
 		
 		#endregion
