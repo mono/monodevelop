@@ -283,6 +283,27 @@ namespace MonoDevelop.SourceEditor
 				//this.args = args;
 			}
 			
+			bool IsInsideMember (FoldSegment marker, MonoDevelop.Projects.Parser.FoldingRegion region, IClass cl)
+			{
+				foreach (IMethod m in cl.Methods) {
+					if (m.BodyRegion.BeginLine <=  region.Region.BeginLine && region.Region.BeginLine <= m.BodyRegion.EndLine) 
+						return true;
+				}
+				foreach (IProperty p in cl.Properties) {
+					if (p.BodyRegion.BeginLine <=  region.Region.BeginLine && region.Region.BeginLine <= p.BodyRegion.EndLine) 
+						return true;
+				}
+				foreach (IIndexer i in cl.Indexer) {
+					if (i.BodyRegion.BeginLine <=  region.Region.BeginLine && region.Region.BeginLine <= i.BodyRegion.EndLine) 
+						return true;
+				}
+				foreach (IClass inner in cl.InnerClasses) {
+					if (IsInsideMember (marker, region, inner))
+						return true;
+				}
+				return false;
+			}
+			
 			protected override void InnerRun ()
 			{
 				try {
@@ -293,8 +314,17 @@ namespace MonoDevelop.SourceEditor
 							if (base.IsStopping)
 								return;
 							FoldSegment marker = widget.AddMarker (foldSegments, region.Name, region.Region, FoldingType.Region);
-							if (marker != null)
-								marker.IsFolded = !widget.TextEditor.Document.HasFoldSegments;
+							if (marker != null) {
+								marker.IsFolded = true;
+								foreach (IClass cl in widget.lastCu.Classes) {
+									if (IsInsideMember (marker, region, cl)) {
+										marker.IsFolded = false;
+										break;
+									}
+								}
+							 skip:
+								marker.IsFolded &= !widget.TextEditor.Document.HasFoldSegments;
+							}
 						}
 						foreach (IClass cl in widget.lastCu.Classes) {
 							if (base.IsStopping)
@@ -440,6 +470,7 @@ namespace MonoDevelop.SourceEditor
 			RemoveSearchWidget ();
 			IdeApp.ProjectOperations.ParserDatabase.ParseInformationChanged -= UpdateClassBrowser;
 			IdeApp.ProjectOperations.ParserDatabase.ParseInformationChanged -= OnParseInformationChanged;
+			System.GC.Collect ();
 		}
 		
 		void UpdateClassBrowser (object sender, ParseInformationEventArgs args)
