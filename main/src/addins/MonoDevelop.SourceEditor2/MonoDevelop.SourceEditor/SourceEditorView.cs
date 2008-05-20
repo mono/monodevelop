@@ -93,6 +93,10 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 		
+		public override string TabPageLabel {
+			get { return GettextCatalog.GetString ("Source"); }
+		}
+		
 		public SourceEditorView()
 		{
 			executionLocationChanged = (EventHandler) MonoDevelop.Core.Gui.DispatchService.GuiDispatch (new EventHandler (OnExecutionLocationChanged));
