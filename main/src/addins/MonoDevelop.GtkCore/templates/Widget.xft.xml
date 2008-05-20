@@ -17,6 +17,7 @@
 		<Widget DefaultName="${Name}">
 			<SteticTemplate>
 			  <widget class="Gtk.Bin" id="${FullName}" design-size="300 300">
+                            <property name="Visible">false</property>
 		        <child>
 		          <placeholder />
 		        </child>

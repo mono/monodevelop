@@ -1,3 +1,10 @@
+2008-05-20  Mike Kestner <mkestner@novell.com> 
+
+	* templates/Widget.xft.xml:
+	* templates/WidgetPartial.xft.xml:
+	Mark the custom widgets Visible=false to conform to the Gtk convention
+	of widgets being shown explicitly.  [Fixes #364985]
+
 2008-05-15  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.GtkCore.GuiBuilder/ToolboxProvider.cs: Track API. Mark up
