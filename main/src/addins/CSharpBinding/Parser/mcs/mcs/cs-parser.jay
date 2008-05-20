@@ -815,6 +815,9 @@ named_argument
 		  
 class_body
 	:  OPEN_BRACE opt_class_member_declarations CLOSE_BRACE
+	  {
+		((TypeContainer)current_class).MembersBlock = new Dom.LocationBlock (GetLocation ($1), GetLocation ($3));
+	  }
 	;
 
 opt_class_member_declarations
@@ -861,8 +864,10 @@ struct_declaration
 
 		current_class.SetParameterInfo ((ArrayList) $9);
 
-		if (RootContext.Documentation != null)
+		if (RootContext.Documentation != null) {
 			current_container.DocComment = Lexer.consume_doc_comment ();
+			Lexer.doc_state = XmlCommentState.Allowed;
+		}
 	  }
 	  struct_body
 	  {
@@ -879,12 +884,10 @@ struct_declaration
 	;
 
 struct_body
-	: OPEN_BRACE
+	: OPEN_BRACE opt_struct_member_declarations CLOSE_BRACE
 	  {
-		if (RootContext.Documentation != null)
-			Lexer.doc_state = XmlCommentState.Allowed;
+		((TypeContainer)current_class).MembersBlock = new Dom.LocationBlock (GetLocation ($1), GetLocation ($3));
 	  }
-	  opt_struct_member_declarations CLOSE_BRACE
 	;
 
 opt_struct_member_declarations
@@ -1805,9 +1808,10 @@ interface_declaration
 	;
 
 interface_body
-	: OPEN_BRACE
-	  opt_interface_member_declarations
-	  CLOSE_BRACE
+	: OPEN_BRACE opt_interface_member_declarations CLOSE_BRACE
+	  {
+		((TypeContainer)current_class).MembersBlock = new Dom.LocationBlock (GetLocation ($1), GetLocation ($3));
+	  }
 	;
 
 opt_interface_member_declarations
@@ -2721,23 +2725,29 @@ enum_declaration
 	  opt_modifiers
 	  ENUM IDENTIFIER 
 	  opt_enum_base {
-		if (RootContext.Documentation != null)
-			enumTypeComment = Lexer.consume_doc_comment ();
-	  }
-	  enum_body
-	  opt_semicolon
-	  {
 		LocatedToken lt = (LocatedToken) $4;
 		Location enum_location = lt.Location;
 
 		MemberName name = MakeName (new MemberName (lt.Value, enum_location));
-		Enum e = new Enum (current_namespace, current_class, (FullNamedExpression) $5, (int) $2,
-				   name, (Attributes) $1);
-		
+		push_current_class (new Enum (current_namespace, current_class, (FullNamedExpression) $5, (int) $2, name, (Attributes) $1), null);
+
+		if (RootContext.Documentation != null) {
+			enumTypeComment = Lexer.consume_doc_comment ();
+			Lexer.doc_state = XmlCommentState.Allowed;
+		}
+	  }
+	  enum_body
+	  {
 		if (RootContext.Documentation != null)
-			e.DocComment = enumTypeComment;
+			Lexer.doc_state = XmlCommentState.Allowed;
+	  }
+	  opt_semicolon
+	  {
+		if (RootContext.Documentation != null)
+			current_class.DocComment = enumTypeComment;
 
-
+		// TODO: use curent_class inside enum_body and delete redundant arraylist allocation
+		Enum e = (Enum)current_class;
 		EnumMember em = null;
 		foreach (VariableDeclaration ev in (ArrayList) $7) {
 			em = new EnumMember (
@@ -2750,10 +2760,7 @@ enum_declaration
 			e.AddEnumMember (em);
 		}
 
-		current_container.AddTypeContainer (e);
-		current_namespace.AddType (e);
-		$$ = e;
-
+		$$ = pop_current_class ();
 	  }
 	;
 
@@ -2763,20 +2770,10 @@ opt_enum_base
 	;
 
 enum_body
-	: OPEN_BRACE
+	: OPEN_BRACE opt_enum_member_declarations CLOSE_BRACE
 	  {
-		if (RootContext.Documentation != null)
-			Lexer.doc_state = XmlCommentState.Allowed;
-	  }
-	  opt_enum_member_declarations
-	  {
-	  	// here will be evaluated after CLOSE_BLACE is consumed.
-		if (RootContext.Documentation != null)
-			Lexer.doc_state = XmlCommentState.Allowed;
-	  }
-	  CLOSE_BRACE
-	  {
-		$$ = $3;
+		((TypeContainer)current_class).MembersBlock = new Dom.LocationBlock (GetLocation ($1), GetLocation ($3));
+		$$ = $2;
 	  }
 	;
 

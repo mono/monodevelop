@@ -22,6 +22,9 @@ namespace Mono.CSharp.Dom
 	public struct LocationBlock
 	{
 		readonly ILocation start, end;
+
+		public static readonly LocationBlock Null = new LocationBlock ();
+
 		public LocationBlock (ILocation start, ILocation end)
 		{
 			this.start = start;
@@ -87,7 +90,7 @@ namespace Mono.CSharp.Dom
 		ITypeName [] BaseTypes { get; }
 		Kind ContainerType { get; }
 		string Name { get; }
-		LocationBlock LocationBlock { get; }
+		LocationBlock MembersBlock { get; }
 		int ModFlags { get; }
 		ITypeParameter [] TypeParameters { get; }
 

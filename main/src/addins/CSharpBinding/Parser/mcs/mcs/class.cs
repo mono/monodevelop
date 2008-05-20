@@ -278,6 +278,8 @@ namespace Mono.CSharp {
 		/// </remarks>
 		PendingImplementation pending;
 
+		Dom.LocationBlock members_block;
+
 		public TypeContainer (NamespaceEntry ns, DeclSpace parent, MemberName name,
 				      Attributes attrs, Kind kind)
 			: base (ns, parent, name, attrs)
@@ -2721,8 +2723,9 @@ namespace Mono.CSharp {
 			get { return Kind; }
 		}
 
-		public Dom.LocationBlock LocationBlock {
-			get { return new Dom.LocationBlock (Location, null); }
+		public Dom.LocationBlock MembersBlock {
+			get { return members_block; }
+			set { members_block = value; }
 		}
 
 		Dom.ITypeParameter [] Dom.IType.TypeParameters {
@@ -3452,7 +3455,7 @@ namespace Mono.CSharp {
 		#region IMethod Members
 
 		public Dom.LocationBlock LocationBlock {
-			get { return block.LocationBlock; }
+			get { return block == null ? Dom.LocationBlock.Null : block.LocationBlock; }
 		}
 
 		Dom.IParameter [] Dom.IMethod.Parameters {
