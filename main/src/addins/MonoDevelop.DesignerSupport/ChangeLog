@@ -1,3 +1,8 @@
+2008-05-20  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.DesignerSupport.Toolbox/Toolbox.cs: fixed 'Bug 389065 -
+	  Toolbox tooltips show while a drag taking place and do not hide'
+
 2008-05-16  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.DesignerSupport.Toolbox/TextToolboxNode.cs,
