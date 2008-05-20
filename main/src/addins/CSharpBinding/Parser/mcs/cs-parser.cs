@@ -2398,6 +2398,7 @@ case 194:
 
 		prop = new Property (current_class, (FullNamedExpression) yyVals[-7+yyTop], (int) yyVals[-8+yyTop], false,
 				     name, (Attributes) yyVals[-9+yyTop], get_block, set_block, accessors.declared_in_reverse, current_block);
+		prop.AccessorsBlock = new Dom.LocationBlock (GetLocation (yyVals[-4+yyTop]), GetLocation (yyVals[0+yyTop]));
 
 		current_container.AddProperty (prop);
 		implicit_value_parameter_type = null;
@@ -2408,13 +2409,13 @@ case 194:
 	  }
   break;
 case 195:
-#line 1651 "cs-parser.jay"
+#line 1652 "cs-parser.jay"
   {
 		yyVal = new Accessors ((Accessor) yyVals[0+yyTop], null);
 	 }
   break;
 case 196:
-#line 1655 "cs-parser.jay"
+#line 1656 "cs-parser.jay"
   { 
 		Accessors accessors = (Accessors) yyVals[0+yyTop];
 		accessors.get_or_add = (Accessor) yyVals[-1+yyTop];
@@ -2422,13 +2423,13 @@ case 196:
 	 }
   break;
 case 197:
-#line 1661 "cs-parser.jay"
+#line 1662 "cs-parser.jay"
   {
 		yyVal = new Accessors (null, (Accessor) yyVals[0+yyTop]);
 	 }
   break;
 case 198:
-#line 1665 "cs-parser.jay"
+#line 1666 "cs-parser.jay"
   { 
 		Accessors accessors = (Accessors) yyVals[0+yyTop];
 		accessors.set_or_remove = (Accessor) yyVals[-1+yyTop];
@@ -2437,14 +2438,14 @@ case 198:
 	 }
   break;
 case 199:
-#line 1672 "cs-parser.jay"
+#line 1673 "cs-parser.jay"
   {
 		Report.Error (1014, GetLocation (yyVals[0+yyTop]), "A get or set accessor expected");
 		yyVal = null;
 	  }
   break;
 case 200:
-#line 1680 "cs-parser.jay"
+#line 1681 "cs-parser.jay"
   {
 		/* If this is not the case, then current_local_parameters has already*/
 		/* been set in indexer_declaration*/
@@ -2458,7 +2459,7 @@ case 200:
 	  }
   break;
 case 201:
-#line 1692 "cs-parser.jay"
+#line 1693 "cs-parser.jay"
   {
 		if (has_get) {
 			Report.Error (1007, (Location) yyVals[-2+yyTop], "Property accessor already defined");
@@ -2480,7 +2481,7 @@ case 201:
 	  }
   break;
 case 202:
-#line 1715 "cs-parser.jay"
+#line 1716 "cs-parser.jay"
   {
 		Parameter [] args;
 		Parameter implicit_value_parameter = new Parameter (
@@ -2512,7 +2513,7 @@ case 202:
 	  }
   break;
 case 203:
-#line 1745 "cs-parser.jay"
+#line 1746 "cs-parser.jay"
   {
 		if (has_set) {
 			Report.Error (1007, ((LocatedToken) yyVals[-2+yyTop]).Location, "Property accessor already defined");
@@ -2534,24 +2535,24 @@ case 203:
 	  }
   break;
 case 205:
-#line 1768 "cs-parser.jay"
+#line 1769 "cs-parser.jay"
   { yyVal = null; }
   break;
 case 206:
-#line 1776 "cs-parser.jay"
+#line 1777 "cs-parser.jay"
   {
 		lexer.ConstraintsParsing = true;
 	  }
   break;
 case 207:
-#line 1780 "cs-parser.jay"
+#line 1781 "cs-parser.jay"
   {
 		MemberName name = MakeName ((MemberName) yyVals[0+yyTop]);
 		push_current_class (new Interface (current_namespace, current_class, name, (int) yyVals[-4+yyTop], (Attributes) yyVals[-5+yyTop]), yyVals[-3+yyTop]);
 	  }
   break;
 case 208:
-#line 1786 "cs-parser.jay"
+#line 1787 "cs-parser.jay"
   {
 		lexer.ConstraintsParsing = false;
 
@@ -2564,32 +2565,32 @@ case 208:
 	  }
   break;
 case 209:
-#line 1797 "cs-parser.jay"
+#line 1798 "cs-parser.jay"
   {
 		if (RootContext.Documentation != null)
 			Lexer.doc_state = XmlCommentState.Allowed;
 	  }
   break;
 case 210:
-#line 1802 "cs-parser.jay"
+#line 1803 "cs-parser.jay"
   {
 		yyVal = pop_current_class ();
 	  }
   break;
 case 211:
-#line 1805 "cs-parser.jay"
+#line 1806 "cs-parser.jay"
   {
 		CheckIdentifierToken (yyToken, GetLocation (yyVals[0+yyTop]));
 	  }
   break;
 case 212:
-#line 1812 "cs-parser.jay"
+#line 1813 "cs-parser.jay"
   {
 		((TypeContainer)current_class).MembersBlock = new Dom.LocationBlock (GetLocation (yyVals[-2+yyTop]), GetLocation (yyVals[0+yyTop]));
 	  }
   break;
 case 217:
-#line 1829 "cs-parser.jay"
+#line 1830 "cs-parser.jay"
   { 
 		if (yyVals[0+yyTop] == null)
 			break;
@@ -2607,7 +2608,7 @@ case 217:
 	  }
   break;
 case 218:
-#line 1845 "cs-parser.jay"
+#line 1846 "cs-parser.jay"
   { 
 		if (yyVals[0+yyTop] == null)
 			break;
@@ -2625,7 +2626,7 @@ case 218:
 	  }
   break;
 case 219:
-#line 1861 "cs-parser.jay"
+#line 1862 "cs-parser.jay"
   { 
 		if (yyVals[0+yyTop] != null){
 			Event e = (Event) yyVals[0+yyTop];
@@ -2642,7 +2643,7 @@ case 219:
 	  }
   break;
 case 220:
-#line 1876 "cs-parser.jay"
+#line 1877 "cs-parser.jay"
   { 
 		if (yyVals[0+yyTop] == null)
 			break;
@@ -2660,7 +2661,7 @@ case 220:
 	  }
   break;
 case 221:
-#line 1892 "cs-parser.jay"
+#line 1893 "cs-parser.jay"
   {
 		if (yyVals[0+yyTop] != null) {
 			Report.Error (524, GetLocation (yyVals[0+yyTop]), "`{0}': Interfaces cannot declare classes, structs, interfaces, delegates, enumerations or constants",
@@ -2669,7 +2670,7 @@ case 221:
 	  }
   break;
 case 222:
-#line 1899 "cs-parser.jay"
+#line 1900 "cs-parser.jay"
   {
 		if (yyVals[0+yyTop] != null) {
 			Report.Error (524, GetLocation (yyVals[0+yyTop]), "`{0}': Interfaces cannot declare classes, structs, interfaces, delegates, enumerations or constants",
@@ -2678,7 +2679,7 @@ case 222:
 	  }
   break;
 case 223:
-#line 1906 "cs-parser.jay"
+#line 1907 "cs-parser.jay"
   {
 		if (yyVals[0+yyTop] != null) {
 			Report.Error (524, GetLocation (yyVals[0+yyTop]), "`{0}': Interfaces cannot declare classes, structs, interfaces, delegates, enumerations or constants",
@@ -2687,7 +2688,7 @@ case 223:
 	  }
   break;
 case 224:
-#line 1913 "cs-parser.jay"
+#line 1914 "cs-parser.jay"
   {
 		if (yyVals[0+yyTop] != null) {
 			Report.Error (524, GetLocation (yyVals[0+yyTop]), "`{0}': Interfaces cannot declare classes, structs, interfaces, delegates, enumerations or constants",
@@ -2696,7 +2697,7 @@ case 224:
 	  }
   break;
 case 225:
-#line 1920 "cs-parser.jay"
+#line 1921 "cs-parser.jay"
   {
 		if (yyVals[0+yyTop] != null) {
 			Report.Error (524, GetLocation (yyVals[0+yyTop]), "`{0}': Interfaces cannot declare classes, structs, interfaces, delegates, enumerations or constants",
@@ -2705,13 +2706,13 @@ case 225:
 	  }
   break;
 case 226:
-#line 1927 "cs-parser.jay"
+#line 1928 "cs-parser.jay"
   {
 		Report.Error (525, GetLocation (yyVals[0+yyTop]), "Interfaces cannot contain fields or constants");
 	  }
   break;
 case 227:
-#line 1934 "cs-parser.jay"
+#line 1935 "cs-parser.jay"
   {
 		int val = (int) yyVals[0+yyTop];
 		val = Modifiers.Check (Modifiers.NEW | Modifiers.UNSAFE, val, 0, GetLocation (yyVals[0+yyTop]));
@@ -2719,7 +2720,7 @@ case 227:
 	  }
   break;
 case 228:
-#line 1943 "cs-parser.jay"
+#line 1944 "cs-parser.jay"
   {
 		Report.Error (531, (Location)yyVals[0+yyTop],
 			      "`{0}.{1}{2}': interface members cannot have a definition",
@@ -2731,26 +2732,26 @@ case 228:
 	  }
   break;
 case 229:
-#line 1953 "cs-parser.jay"
+#line 1954 "cs-parser.jay"
   {
 		yyVal = null;
 	  }
   break;
 case 231:
-#line 1962 "cs-parser.jay"
+#line 1963 "cs-parser.jay"
   {
 		lexer.ConstraintsParsing = true;
 	  }
   break;
 case 232:
-#line 1966 "cs-parser.jay"
+#line 1967 "cs-parser.jay"
   {
 		/* Refer to the name as $-1 in interface_method_declaration_body	  */
 		yyVal = yyVals[-5+yyTop];
 	  }
   break;
 case 233:
-#line 1971 "cs-parser.jay"
+#line 1972 "cs-parser.jay"
   {
 		lexer.ConstraintsParsing = false;
 
@@ -2775,19 +2776,19 @@ case 233:
 	  }
   break;
 case 234:
-#line 1995 "cs-parser.jay"
+#line 1996 "cs-parser.jay"
   {
 		lexer.ConstraintsParsing = true;
 	  }
   break;
 case 235:
-#line 1999 "cs-parser.jay"
+#line 2000 "cs-parser.jay"
   {
 		yyVal = yyVals[-5+yyTop];
 	  }
   break;
 case 236:
-#line 2003 "cs-parser.jay"
+#line 2004 "cs-parser.jay"
   {
 		lexer.ConstraintsParsing = false;
 
@@ -2812,14 +2813,14 @@ case 236:
 	  }
   break;
 case 237:
-#line 2032 "cs-parser.jay"
+#line 2033 "cs-parser.jay"
   {
 		lexer.PropertyParsing = true;
 		implicit_value_parameter_type = (FullNamedExpression)yyVals[-2+yyTop];
 	  }
   break;
 case 238:
-#line 2037 "cs-parser.jay"
+#line 2038 "cs-parser.jay"
   {
 		has_get = has_set = false; 
 		lexer.PropertyParsing = false;
@@ -2827,7 +2828,7 @@ case 238:
 	  }
   break;
 case 239:
-#line 2043 "cs-parser.jay"
+#line 2044 "cs-parser.jay"
   {
 		LocatedToken lt = (LocatedToken) yyVals[-5+yyTop];
 		MemberName name = new MemberName (lt.Value, lt.Location);
@@ -2851,7 +2852,8 @@ case 239:
 		p = new Property (current_class, (FullNamedExpression) yyVals[-6+yyTop], (int) yyVals[-7+yyTop], true,
 				   name, (Attributes) yyVals[-8+yyTop],
 				   accessor.get_or_add, accessor.set_or_remove, accessor.declared_in_reverse);
-
+		p.AccessorsBlock = new Dom.LocationBlock (GetLocation (yyVals[-4+yyTop]), GetLocation (yyVals[0+yyTop]));
+		
 		if (accessor.get_or_add != null && accessor.get_or_add.Block != null) {
 			Report.Error (531, p.Location, "`{0}.get': interface members cannot have a definition", p.GetSignatureForError ());
 			yyVal = null;
@@ -2871,14 +2873,14 @@ case 239:
 	  }
   break;
 case 240:
-#line 2086 "cs-parser.jay"
+#line 2088 "cs-parser.jay"
   {
 		CheckIdentifierToken (yyToken, GetLocation (yyVals[0+yyTop]));
 		yyVal = null;
 	  }
   break;
 case 241:
-#line 2095 "cs-parser.jay"
+#line 2097 "cs-parser.jay"
   {
 		LocatedToken lt = (LocatedToken) yyVals[-1+yyTop];
 		yyVal = new EventField (current_class, (FullNamedExpression) yyVals[-2+yyTop], (int) yyVals[-4+yyTop], true,
@@ -2889,14 +2891,14 @@ case 241:
 	  }
   break;
 case 242:
-#line 2103 "cs-parser.jay"
+#line 2105 "cs-parser.jay"
   {
 		CheckIdentifierToken (yyToken, GetLocation (yyVals[0+yyTop]));
 		yyVal = null;
 	  }
   break;
 case 243:
-#line 2107 "cs-parser.jay"
+#line 2109 "cs-parser.jay"
   {
 		LocatedToken lt = (LocatedToken) yyVals[-1+yyTop];
 		Report.Error (68, lt.Location, "`{0}.{1}': event in interface cannot have initializer", current_container.Name, lt.Value);
@@ -2904,35 +2906,35 @@ case 243:
 	  }
   break;
 case 244:
-#line 2113 "cs-parser.jay"
+#line 2115 "cs-parser.jay"
   {
 		implicit_value_parameter_type = (FullNamedExpression) yyVals[-2+yyTop];
 		lexer.EventParsing = true;
 	  }
   break;
 case 245:
-#line 2118 "cs-parser.jay"
+#line 2120 "cs-parser.jay"
   {
 		lexer.EventParsing = false;
 		implicit_value_parameter_type = null;
 	  }
   break;
 case 246:
-#line 2122 "cs-parser.jay"
+#line 2124 "cs-parser.jay"
   {
 		Report.Error (69, (Location) yyVals[-7+yyTop], "Event in interface cannot have add or remove accessors");
  		yyVal = null;
  	  }
   break;
 case 247:
-#line 2132 "cs-parser.jay"
+#line 2134 "cs-parser.jay"
   {
 		lexer.PropertyParsing = true;
 		implicit_value_parameter_type = (FullNamedExpression)yyVals[-5+yyTop];
 	  }
   break;
 case 248:
-#line 2137 "cs-parser.jay"
+#line 2139 "cs-parser.jay"
   { 
 		has_get = has_set = false;
  		lexer.PropertyParsing = false;
@@ -2940,7 +2942,7 @@ case 248:
 	  }
   break;
 case 249:
-#line 2143 "cs-parser.jay"
+#line 2145 "cs-parser.jay"
   {
 		Indexer i = null;
 		if (yyVals[-2+yyTop] == null) {
@@ -2958,6 +2960,7 @@ case 249:
 				  new MemberName (TypeContainer.DefaultIndexerName, (Location) yyVals[-8+yyTop]),
 				  (int) yyVals[-10+yyTop], true, (Parameters) yyVals[-6+yyTop], (Attributes) yyVals[-11+yyTop],
 				   accessors.get_or_add, accessors.set_or_remove, accessors.declared_in_reverse);
+		i.AccessorsBlock = new Dom.LocationBlock (GetLocation (yyVals[-4+yyTop]), GetLocation (yyVals[0+yyTop]));
 
 		if (accessors.get_or_add != null && accessors.get_or_add.Block != null) {
 			Report.Error (531, i.Location, "`{0}.get': interface members cannot have a definition", i.GetSignatureForError ());
@@ -2978,13 +2981,13 @@ case 249:
 	  }
   break;
 case 250:
-#line 2182 "cs-parser.jay"
+#line 2185 "cs-parser.jay"
   {
 		anonymous_host = SimpleAnonymousHost.GetSimple ();
 	  }
   break;
 case 251:
-#line 2186 "cs-parser.jay"
+#line 2189 "cs-parser.jay"
   {
 		if (yyVals[-2+yyTop] == null)
 			break;
@@ -3010,17 +3013,17 @@ case 251:
 	  }
   break;
 case 253:
-#line 2213 "cs-parser.jay"
+#line 2216 "cs-parser.jay"
   { yyVal = null; }
   break;
 case 254:
-#line 2218 "cs-parser.jay"
+#line 2221 "cs-parser.jay"
   {
 		params_modifiers_not_allowed = true;
 	  }
   break;
 case 255:
-#line 2222 "cs-parser.jay"
+#line 2225 "cs-parser.jay"
   {
 		params_modifiers_not_allowed = false;
 
@@ -3061,101 +3064,101 @@ case 255:
 	  }
   break;
 case 257:
-#line 2265 "cs-parser.jay"
+#line 2268 "cs-parser.jay"
   { yyVal = Operator.OpType.LogicalNot; }
   break;
 case 258:
-#line 2266 "cs-parser.jay"
+#line 2269 "cs-parser.jay"
   { yyVal = Operator.OpType.OnesComplement; }
   break;
 case 259:
-#line 2267 "cs-parser.jay"
+#line 2270 "cs-parser.jay"
   { yyVal = Operator.OpType.Increment; }
   break;
 case 260:
-#line 2268 "cs-parser.jay"
+#line 2271 "cs-parser.jay"
   { yyVal = Operator.OpType.Decrement; }
   break;
 case 261:
-#line 2269 "cs-parser.jay"
+#line 2272 "cs-parser.jay"
   { yyVal = Operator.OpType.True; }
   break;
 case 262:
-#line 2270 "cs-parser.jay"
+#line 2273 "cs-parser.jay"
   { yyVal = Operator.OpType.False; }
   break;
 case 263:
-#line 2272 "cs-parser.jay"
+#line 2275 "cs-parser.jay"
   { yyVal = Operator.OpType.Addition; }
   break;
 case 264:
-#line 2273 "cs-parser.jay"
+#line 2276 "cs-parser.jay"
   { yyVal = Operator.OpType.Subtraction; }
   break;
 case 265:
-#line 2275 "cs-parser.jay"
+#line 2278 "cs-parser.jay"
   { yyVal = Operator.OpType.Multiply; }
   break;
 case 266:
-#line 2276 "cs-parser.jay"
+#line 2279 "cs-parser.jay"
   {  yyVal = Operator.OpType.Division; }
   break;
 case 267:
-#line 2277 "cs-parser.jay"
+#line 2280 "cs-parser.jay"
   { yyVal = Operator.OpType.Modulus; }
   break;
 case 268:
-#line 2278 "cs-parser.jay"
+#line 2281 "cs-parser.jay"
   { yyVal = Operator.OpType.BitwiseAnd; }
   break;
 case 269:
-#line 2279 "cs-parser.jay"
+#line 2282 "cs-parser.jay"
   { yyVal = Operator.OpType.BitwiseOr; }
   break;
 case 270:
-#line 2280 "cs-parser.jay"
+#line 2283 "cs-parser.jay"
   { yyVal = Operator.OpType.ExclusiveOr; }
   break;
 case 271:
-#line 2281 "cs-parser.jay"
+#line 2284 "cs-parser.jay"
   { yyVal = Operator.OpType.LeftShift; }
   break;
 case 272:
-#line 2282 "cs-parser.jay"
+#line 2285 "cs-parser.jay"
   { yyVal = Operator.OpType.RightShift; }
   break;
 case 273:
-#line 2283 "cs-parser.jay"
+#line 2286 "cs-parser.jay"
   { yyVal = Operator.OpType.Equality; }
   break;
 case 274:
-#line 2284 "cs-parser.jay"
+#line 2287 "cs-parser.jay"
   { yyVal = Operator.OpType.Inequality; }
   break;
 case 275:
-#line 2285 "cs-parser.jay"
+#line 2288 "cs-parser.jay"
   { yyVal = Operator.OpType.GreaterThan; }
   break;
 case 276:
-#line 2286 "cs-parser.jay"
+#line 2289 "cs-parser.jay"
   { yyVal = Operator.OpType.LessThan; }
   break;
 case 277:
-#line 2287 "cs-parser.jay"
+#line 2290 "cs-parser.jay"
   { yyVal = Operator.OpType.GreaterThanOrEqual; }
   break;
 case 278:
-#line 2288 "cs-parser.jay"
+#line 2291 "cs-parser.jay"
   { yyVal = Operator.OpType.LessThanOrEqual; }
   break;
 case 279:
-#line 2293 "cs-parser.jay"
+#line 2296 "cs-parser.jay"
   {
 		params_modifiers_not_allowed = true;
 	  }
   break;
 case 280:
-#line 2297 "cs-parser.jay"
+#line 2300 "cs-parser.jay"
   {
 		params_modifiers_not_allowed = false;
 
@@ -3171,13 +3174,13 @@ case 280:
 	  }
   break;
 case 281:
-#line 2311 "cs-parser.jay"
+#line 2314 "cs-parser.jay"
   {
 		params_modifiers_not_allowed = true;
 	  }
   break;
 case 282:
-#line 2315 "cs-parser.jay"
+#line 2318 "cs-parser.jay"
   {
 		params_modifiers_not_allowed = false;
 		
@@ -3193,19 +3196,19 @@ case 282:
 	  }
   break;
 case 283:
-#line 2329 "cs-parser.jay"
+#line 2332 "cs-parser.jay"
   {
 		syntax_error ((Location) yyVals[-1+yyTop], "'operator' expected");
 	  }
   break;
 case 284:
-#line 2333 "cs-parser.jay"
+#line 2336 "cs-parser.jay"
   {
 		syntax_error ((Location) yyVals[-1+yyTop], "'operator' expected");
 	  }
   break;
 case 285:
-#line 2343 "cs-parser.jay"
+#line 2346 "cs-parser.jay"
   { 
 		Constructor c = (Constructor) yyVals[-1+yyTop];
 		c.Block = (ToplevelBlock) yyVals[0+yyTop];
@@ -3239,20 +3242,20 @@ case 285:
 	  }
   break;
 case 286:
-#line 2378 "cs-parser.jay"
+#line 2381 "cs-parser.jay"
   {
 		yyVal = yyVals[0+yyTop];
 	  }
   break;
 case 287:
-#line 2382 "cs-parser.jay"
+#line 2385 "cs-parser.jay"
   {
 		((Constructor)yyVals[-1+yyTop]).Initializer = (ConstructorInitializer) yyVals[0+yyTop];
 		yyVal = yyVals[-1+yyTop];
 	  }
   break;
 case 288:
-#line 2390 "cs-parser.jay"
+#line 2393 "cs-parser.jay"
   {
 		if (RootContext.Documentation != null) {
 			tmpComment = Lexer.consume_doc_comment ();
@@ -3261,7 +3264,7 @@ case 288:
 	  }
   break;
 case 289:
-#line 2397 "cs-parser.jay"
+#line 2400 "cs-parser.jay"
   {
 		LocatedToken lt = (LocatedToken) yyVals[-4+yyTop];
 		current_local_parameters = (Parameters) yyVals[-1+yyTop];
@@ -3274,42 +3277,42 @@ case 289:
 	  }
   break;
 case 291:
-#line 2411 "cs-parser.jay"
+#line 2414 "cs-parser.jay"
   { current_block = null; yyVal = null; }
   break;
 case 292:
-#line 2416 "cs-parser.jay"
+#line 2419 "cs-parser.jay"
   {
 		yyVal = new ConstructorBaseInitializer ((ArrayList) yyVals[-1+yyTop], (Location) yyVals[-3+yyTop]);
 	  }
   break;
 case 293:
-#line 2420 "cs-parser.jay"
+#line 2423 "cs-parser.jay"
   {
 		yyVal = new ConstructorThisInitializer ((ArrayList) yyVals[-1+yyTop], (Location) yyVals[-3+yyTop]);
 	  }
   break;
 case 294:
-#line 2423 "cs-parser.jay"
+#line 2426 "cs-parser.jay"
   {
 		Report.Error (1018, (Location) yyVals[-1+yyTop], "Keyword this or base expected");
 		yyVal = null;
 	  }
   break;
 case 295:
-#line 2430 "cs-parser.jay"
+#line 2433 "cs-parser.jay"
   { yyVal = 0; }
   break;
 case 296:
-#line 2431 "cs-parser.jay"
+#line 2434 "cs-parser.jay"
   { yyVal = Modifiers.UNSAFE; }
   break;
 case 297:
-#line 2432 "cs-parser.jay"
+#line 2435 "cs-parser.jay"
   { yyVal = Modifiers.EXTERN; }
   break;
 case 298:
-#line 2437 "cs-parser.jay"
+#line 2440 "cs-parser.jay"
   {
 		if (RootContext.Documentation != null) {
 			tmpComment = Lexer.consume_doc_comment ();
@@ -3318,7 +3321,7 @@ case 298:
 	  }
   break;
 case 299:
-#line 2444 "cs-parser.jay"
+#line 2447 "cs-parser.jay"
   {
 		LocatedToken lt = (LocatedToken) yyVals[-3+yyTop];
 		if (lt.Value != current_container.MemberName.Name){
@@ -3346,7 +3349,7 @@ case 299:
 	  }
   break;
 case 300:
-#line 2475 "cs-parser.jay"
+#line 2478 "cs-parser.jay"
   {
 		current_array_type = null;
 		foreach (VariableDeclaration var in (ArrayList) yyVals[-1+yyTop]) {
@@ -3370,20 +3373,20 @@ case 300:
 	  }
   break;
 case 301:
-#line 2500 "cs-parser.jay"
+#line 2503 "cs-parser.jay"
   {
 		implicit_value_parameter_type = (FullNamedExpression) yyVals[-2+yyTop];  
 		lexer.EventParsing = true;
 	  }
   break;
 case 302:
-#line 2505 "cs-parser.jay"
+#line 2508 "cs-parser.jay"
   {
 		lexer.EventParsing = false;  
 	  }
   break;
 case 303:
-#line 2509 "cs-parser.jay"
+#line 2512 "cs-parser.jay"
   {
 		MemberName name = (MemberName) yyVals[-5+yyTop];
 
@@ -3404,6 +3407,8 @@ case 303:
 				Event e = new EventProperty (
 					current_class, (FullNamedExpression) yyVals[-6+yyTop], (int) yyVals[-8+yyTop], false, name,
 					(Attributes) yyVals[-9+yyTop], accessors.get_or_add, accessors.set_or_remove);
+				e.AccessorsBlock = new Dom.LocationBlock (GetLocation (yyVals[-4+yyTop]), GetLocation (yyVals[0+yyTop]));
+					
 				if (RootContext.Documentation != null) {
 					e.DocComment = Lexer.consume_doc_comment ();
 					Lexer.doc_state = XmlCommentState.Allowed;
@@ -3416,7 +3421,7 @@ case 303:
 	  }
   break;
 case 304:
-#line 2539 "cs-parser.jay"
+#line 2544 "cs-parser.jay"
   {
 		MemberName mn = (MemberName) yyVals[-1+yyTop];
 
@@ -3430,13 +3435,13 @@ case 304:
 	  }
   break;
 case 305:
-#line 2554 "cs-parser.jay"
+#line 2559 "cs-parser.jay"
   {
 		yyVal = new Accessors ((Accessor) yyVals[-1+yyTop], (Accessor) yyVals[0+yyTop]);
 	  }
   break;
 case 306:
-#line 2558 "cs-parser.jay"
+#line 2563 "cs-parser.jay"
   {
 		Accessors accessors = new Accessors ((Accessor) yyVals[0+yyTop], (Accessor) yyVals[-1+yyTop]);
 		accessors.declared_in_reverse = true;
@@ -3444,26 +3449,26 @@ case 306:
 	  }
   break;
 case 307:
-#line 2563 "cs-parser.jay"
+#line 2568 "cs-parser.jay"
   { yyVal = null; }
   break;
 case 308:
-#line 2564 "cs-parser.jay"
+#line 2569 "cs-parser.jay"
   { yyVal = null; }
   break;
 case 309:
-#line 2566 "cs-parser.jay"
+#line 2571 "cs-parser.jay"
   { 
 		Report.Error (1055, GetLocation (yyVals[0+yyTop]), "An add or remove accessor expected");
 		yyVal = null;
 	  }
   break;
 case 310:
-#line 2570 "cs-parser.jay"
+#line 2575 "cs-parser.jay"
   { yyVal = null; }
   break;
 case 311:
-#line 2575 "cs-parser.jay"
+#line 2580 "cs-parser.jay"
   {
 		Parameter [] args = new Parameter [1];
 		Parameter implicit_value_parameter = new Parameter (
@@ -3479,7 +3484,7 @@ case 311:
 	  }
   break;
 case 312:
-#line 2589 "cs-parser.jay"
+#line 2594 "cs-parser.jay"
   {
 		Accessor accessor = new Accessor ((ToplevelBlock) yyVals[0+yyTop], 0, (Attributes) yyVals[-3+yyTop], (Location) yyVals[-2+yyTop]);
 		lexer.EventParsing = true;
@@ -3492,21 +3497,21 @@ case 312:
 	  }
   break;
 case 313:
-#line 2599 "cs-parser.jay"
+#line 2604 "cs-parser.jay"
   {
 		Report.Error (73, (Location) yyVals[-1+yyTop], "An add or remove accessor must have a body");
 		yyVal = null;
 	  }
   break;
 case 314:
-#line 2603 "cs-parser.jay"
+#line 2608 "cs-parser.jay"
   {
 		Report.Error (1609, (Location) yyVals[0+yyTop], "Modifiers cannot be placed on event accessor declarations");
 		yyVal = null;
 	  }
   break;
 case 315:
-#line 2611 "cs-parser.jay"
+#line 2616 "cs-parser.jay"
   {
 		Parameter [] args = new Parameter [1];
 		Parameter implicit_value_parameter = new Parameter (
@@ -3520,28 +3525,28 @@ case 315:
 	  }
   break;
 case 316:
-#line 2623 "cs-parser.jay"
+#line 2628 "cs-parser.jay"
   {
 		yyVal = new Accessor ((ToplevelBlock) yyVals[0+yyTop], 0, (Attributes) yyVals[-3+yyTop], (Location) yyVals[-2+yyTop]);
 		lexer.EventParsing = true;
 	  }
   break;
 case 317:
-#line 2627 "cs-parser.jay"
+#line 2632 "cs-parser.jay"
   {
 		Report.Error (73, (Location) yyVals[-1+yyTop], "An add or remove accessor must have a body");
 		yyVal = null;
 	  }
   break;
 case 318:
-#line 2631 "cs-parser.jay"
+#line 2636 "cs-parser.jay"
   {
 		Report.Error (1609, (Location) yyVals[0+yyTop], "Modifiers cannot be placed on event accessor declarations");
 		yyVal = null;
 	  }
   break;
 case 319:
-#line 2640 "cs-parser.jay"
+#line 2645 "cs-parser.jay"
   {
 		IndexerDeclaration decl = (IndexerDeclaration) yyVals[-1+yyTop];
 
@@ -3555,7 +3560,7 @@ case 319:
 	  }
   break;
 case 320:
-#line 2652 "cs-parser.jay"
+#line 2657 "cs-parser.jay"
   {
 		  lexer.PropertyParsing = false;
 		  has_get = has_set = false;
@@ -3563,7 +3568,7 @@ case 320:
 	  }
   break;
 case 321:
-#line 2658 "cs-parser.jay"
+#line 2663 "cs-parser.jay"
   { 
 		if (yyVals[-2+yyTop] == null)
 			break;
@@ -3586,7 +3591,8 @@ case 321:
 		indexer = new Indexer (current_class, decl.type, name,
 				       (int) yyVals[-6+yyTop], false, decl.param_list, (Attributes) yyVals[-7+yyTop],
 				       get_block, set_block, accessors.declared_in_reverse);
-
+		indexer.AccessorsBlock = new Dom.LocationBlock (GetLocation (yyVals[-4+yyTop]), GetLocation (yyVals[0+yyTop]));
+		
 		if (RootContext.Documentation != null)
 			indexer.DocComment = ConsumeStoredComment ();
 
@@ -3598,7 +3604,7 @@ case 321:
 	  }
   break;
 case 322:
-#line 2694 "cs-parser.jay"
+#line 2700 "cs-parser.jay"
   {
 		Parameters pars = (Parameters) yyVals[-1+yyTop];
 		if (pars.Empty){
@@ -3613,7 +3619,7 @@ case 322:
 	  }
   break;
 case 323:
-#line 2707 "cs-parser.jay"
+#line 2713 "cs-parser.jay"
   {
 		Parameters pars = (Parameters) yyVals[-1+yyTop];
 		if (pars.Empty){
@@ -3630,7 +3636,7 @@ case 323:
 	  }
   break;
 case 324:
-#line 2727 "cs-parser.jay"
+#line 2733 "cs-parser.jay"
   {
 		LocatedToken lt = (LocatedToken) yyVals[-1+yyTop];
 		Location enum_location = lt.Location;
@@ -3645,14 +3651,14 @@ case 324:
 	  }
   break;
 case 325:
-#line 2740 "cs-parser.jay"
+#line 2746 "cs-parser.jay"
   {
 		if (RootContext.Documentation != null)
 			Lexer.doc_state = XmlCommentState.Allowed;
 	  }
   break;
 case 326:
-#line 2745 "cs-parser.jay"
+#line 2751 "cs-parser.jay"
   {
 		if (RootContext.Documentation != null)
 			current_class.DocComment = enumTypeComment;
@@ -3675,30 +3681,30 @@ case 326:
 	  }
   break;
 case 327:
-#line 2768 "cs-parser.jay"
+#line 2774 "cs-parser.jay"
   { yyVal = TypeManager.system_int32_expr; }
   break;
 case 328:
-#line 2769 "cs-parser.jay"
+#line 2775 "cs-parser.jay"
   { yyVal = yyVals[0+yyTop];   }
   break;
 case 329:
-#line 2774 "cs-parser.jay"
+#line 2780 "cs-parser.jay"
   {
 		((TypeContainer)current_class).MembersBlock = new Dom.LocationBlock (GetLocation (yyVals[-2+yyTop]), GetLocation (yyVals[0+yyTop]));
 		yyVal = yyVals[-1+yyTop];
 	  }
   break;
 case 330:
-#line 2781 "cs-parser.jay"
+#line 2787 "cs-parser.jay"
   { yyVal = new ArrayList (4); }
   break;
 case 331:
-#line 2782 "cs-parser.jay"
+#line 2788 "cs-parser.jay"
   { yyVal = yyVals[-1+yyTop]; }
   break;
 case 332:
-#line 2787 "cs-parser.jay"
+#line 2793 "cs-parser.jay"
   {
 		ArrayList l = new ArrayList (4);
 
@@ -3707,7 +3713,7 @@ case 332:
 	  }
   break;
 case 333:
-#line 2794 "cs-parser.jay"
+#line 2800 "cs-parser.jay"
   {
 		ArrayList l = (ArrayList) yyVals[-2+yyTop];
 
@@ -3717,7 +3723,7 @@ case 333:
 	  }
   break;
 case 334:
-#line 2805 "cs-parser.jay"
+#line 2811 "cs-parser.jay"
   {
 		VariableDeclaration vd = new VariableDeclaration (
 			(LocatedToken) yyVals[0+yyTop], null, (Attributes) yyVals[-1+yyTop]);
@@ -3731,7 +3737,7 @@ case 334:
 	  }
   break;
 case 335:
-#line 2817 "cs-parser.jay"
+#line 2823 "cs-parser.jay"
   {
 		if (RootContext.Documentation != null) {
 			tmpComment = Lexer.consume_doc_comment ();
@@ -3740,7 +3746,7 @@ case 335:
 	  }
   break;
 case 336:
-#line 2824 "cs-parser.jay"
+#line 2830 "cs-parser.jay"
   { 
 		VariableDeclaration vd = new VariableDeclaration (
 			(LocatedToken) yyVals[-3+yyTop], yyVals[0+yyTop], (Attributes) yyVals[-4+yyTop]);
@@ -3752,7 +3758,7 @@ case 336:
 	  }
   break;
 case 337:
-#line 2841 "cs-parser.jay"
+#line 2847 "cs-parser.jay"
   {
 		MemberName name = MakeName ((MemberName) yyVals[-3+yyTop]);
 		Parameters p = (Parameters) yyVals[-1+yyTop];
@@ -3772,13 +3778,13 @@ case 337:
 	  }
   break;
 case 338:
-#line 2859 "cs-parser.jay"
+#line 2865 "cs-parser.jay"
   {
 		lexer.ConstraintsParsing = false;
 	  }
   break;
 case 339:
-#line 2863 "cs-parser.jay"
+#line 2869 "cs-parser.jay"
   {
 		current_delegate.SetParameterInfo ((ArrayList) yyVals[-2+yyTop]);
 		yyVal = current_delegate;
@@ -3787,14 +3793,14 @@ case 339:
 	  }
   break;
 case 340:
-#line 2873 "cs-parser.jay"
+#line 2879 "cs-parser.jay"
   {
 		lexer.CheckNullable (false);
 		yyVal = false;
 	  }
   break;
 case 341:
-#line 2878 "cs-parser.jay"
+#line 2884 "cs-parser.jay"
   {
 	  	/* FIXME: A hack with parsing conditional operator as nullable type*/
 		/*if (RootContext.Version < LanguageVersion.ISO_2)*/
@@ -3805,14 +3811,14 @@ case 341:
 	  }
   break;
 case 342:
-#line 2890 "cs-parser.jay"
+#line 2896 "cs-parser.jay"
   {
 		LocatedToken lt = (LocatedToken) yyVals[-1+yyTop];
 		yyVal = new MemberName (lt.Value, (TypeArguments) yyVals[0+yyTop], lt.Location);
 	  }
   break;
 case 343:
-#line 2894 "cs-parser.jay"
+#line 2900 "cs-parser.jay"
   {
 		LocatedToken lt1 = (LocatedToken) yyVals[-3+yyTop];
 		LocatedToken lt2 = (LocatedToken) yyVals[-1+yyTop];
@@ -3823,39 +3829,39 @@ case 343:
 	  }
   break;
 case 344:
-#line 2902 "cs-parser.jay"
+#line 2908 "cs-parser.jay"
   {
 		LocatedToken lt = (LocatedToken) yyVals[-1+yyTop];
 		yyVal = new MemberName ((MemberName) yyVals[-3+yyTop], lt.Value, (TypeArguments) yyVals[0+yyTop], lt.Location);
 	  }
   break;
 case 345:
-#line 2910 "cs-parser.jay"
+#line 2916 "cs-parser.jay"
   {
 		LocatedToken lt = (LocatedToken) yyVals[-1+yyTop];
 		yyVal = new MemberName (lt.Value, (TypeArguments) yyVals[0+yyTop], lt.Location);
 	  }
   break;
 case 346:
-#line 2915 "cs-parser.jay"
+#line 2921 "cs-parser.jay"
   {
 		LocatedToken lt = (LocatedToken) yyVals[-1+yyTop];
 		yyVal = new MemberName ((MemberName) yyVals[-3+yyTop], lt.Value, (TypeArguments) yyVals[0+yyTop], lt.Location);
 	  }
   break;
 case 347:
-#line 2923 "cs-parser.jay"
+#line 2929 "cs-parser.jay"
   {
 		LocatedToken lt = (LocatedToken) yyVals[-1+yyTop];
 		yyVal = new MemberName (lt.Value, (TypeArguments)yyVals[0+yyTop], lt.Location);	  
 	  }
   break;
 case 348:
-#line 2934 "cs-parser.jay"
+#line 2940 "cs-parser.jay"
   { yyVal = null; }
   break;
 case 349:
-#line 2936 "cs-parser.jay"
+#line 2942 "cs-parser.jay"
   {
 		if (RootContext.Version < LanguageVersion.ISO_2)
 			Report.FeatureIsNotAvailable (GetLocation (yyVals[-2+yyTop]), "generics");	  
@@ -3864,11 +3870,11 @@ case 349:
 	  }
   break;
 case 350:
-#line 2949 "cs-parser.jay"
+#line 2955 "cs-parser.jay"
   { yyVal = null; }
   break;
 case 351:
-#line 2951 "cs-parser.jay"
+#line 2957 "cs-parser.jay"
   {
 		if (RootContext.Version < LanguageVersion.ISO_2)
 			Report.FeatureIsNotAvailable (GetLocation (yyVals[-2+yyTop]), "generics");
@@ -3877,7 +3883,7 @@ case 351:
 	  }
   break;
 case 352:
-#line 2961 "cs-parser.jay"
+#line 2967 "cs-parser.jay"
   {
 		TypeArguments type_args = new TypeArguments (lexer.Location);
 		type_args.Add ((Expression) yyVals[0+yyTop]);
@@ -3885,7 +3891,7 @@ case 352:
 	  }
   break;
 case 353:
-#line 2967 "cs-parser.jay"
+#line 2973 "cs-parser.jay"
   {
 		TypeArguments type_args = (TypeArguments) yyVals[-2+yyTop];
 		type_args.Add ((Expression) yyVals[0+yyTop]);
@@ -3893,13 +3899,13 @@ case 353:
 	  }
   break;
 case 354:
-#line 2976 "cs-parser.jay"
+#line 2982 "cs-parser.jay"
   {
 		yyVal = yyVals[0+yyTop];
   	  }
   break;
 case 355:
-#line 2980 "cs-parser.jay"
+#line 2986 "cs-parser.jay"
   {
 		SimpleName sn = yyVals[0+yyTop] as SimpleName;
 		if (sn == null)
@@ -3910,7 +3916,7 @@ case 355:
   	  }
   break;
 case 356:
-#line 2998 "cs-parser.jay"
+#line 3004 "cs-parser.jay"
   {
 		MemberName name = (MemberName) yyVals[-1+yyTop];
 
@@ -3925,14 +3931,14 @@ case 356:
 	  }
   break;
 case 357:
-#line 3011 "cs-parser.jay"
+#line 3017 "cs-parser.jay"
   {
 		if ((bool) yyVals[0+yyTop])
 			yyVal = new ComposedCast ((FullNamedExpression) yyVals[-1+yyTop], "?", lexer.Location);
 	  }
   break;
 case 360:
-#line 3021 "cs-parser.jay"
+#line 3027 "cs-parser.jay"
   {
 		/**/
 		/* Note that here only unmanaged types are allowed but we*/
@@ -3943,20 +3949,20 @@ case 360:
 	  }
   break;
 case 361:
-#line 3030 "cs-parser.jay"
+#line 3036 "cs-parser.jay"
   {
 		yyVal = new ComposedCast (TypeManager.system_void_expr, "*", (Location) yyVals[-1+yyTop]);
 	  }
   break;
 case 362:
-#line 3037 "cs-parser.jay"
+#line 3043 "cs-parser.jay"
   {
 		if ((bool) yyVals[0+yyTop])
 			yyVal = new ComposedCast ((FullNamedExpression) yyVals[-1+yyTop], "?", lexer.Location);
 	  }
   break;
 case 363:
-#line 3042 "cs-parser.jay"
+#line 3048 "cs-parser.jay"
   {
 		Location loc = GetLocation (yyVals[-1+yyTop]);
 		if (loc.IsNull)
@@ -3965,7 +3971,7 @@ case 363:
 	  }
   break;
 case 364:
-#line 3049 "cs-parser.jay"
+#line 3055 "cs-parser.jay"
   {
 		Location loc = GetLocation (yyVals[-1+yyTop]);
 		if (loc.IsNull)
@@ -3974,7 +3980,7 @@ case 364:
 	  }
   break;
 case 365:
-#line 3061 "cs-parser.jay"
+#line 3067 "cs-parser.jay"
   {
 		FullNamedExpression e = yyVals[-1+yyTop] as FullNamedExpression;
 		if (e != null)
@@ -3984,7 +3990,7 @@ case 365:
 	  }
   break;
 case 366:
-#line 3072 "cs-parser.jay"
+#line 3078 "cs-parser.jay"
   {
 		ArrayList types = new ArrayList (2);
 		types.Add (yyVals[0+yyTop]);
@@ -3992,7 +3998,7 @@ case 366:
 	  }
   break;
 case 367:
-#line 3078 "cs-parser.jay"
+#line 3084 "cs-parser.jay"
   {
 		ArrayList types = (ArrayList) yyVals[-2+yyTop];
 		types.Add (yyVals[0+yyTop]);
@@ -4000,7 +4006,7 @@ case 367:
 	  }
   break;
 case 368:
-#line 3087 "cs-parser.jay"
+#line 3093 "cs-parser.jay"
   {
 		if (yyVals[0+yyTop] is ComposedCast)
 			Report.Error (1521, GetLocation (yyVals[0+yyTop]), "Invalid base type `{0}'", ((ComposedCast)yyVals[0+yyTop]).GetSignatureForError ());
@@ -4008,71 +4014,71 @@ case 368:
 	  }
   break;
 case 369:
-#line 3099 "cs-parser.jay"
+#line 3105 "cs-parser.jay"
   { yyVal = TypeManager.system_object_expr; }
   break;
 case 370:
-#line 3100 "cs-parser.jay"
+#line 3106 "cs-parser.jay"
   { yyVal = TypeManager.system_string_expr; }
   break;
 case 371:
-#line 3101 "cs-parser.jay"
+#line 3107 "cs-parser.jay"
   { yyVal = TypeManager.system_boolean_expr; }
   break;
 case 372:
-#line 3102 "cs-parser.jay"
+#line 3108 "cs-parser.jay"
   { yyVal = TypeManager.system_decimal_expr; }
   break;
 case 373:
-#line 3103 "cs-parser.jay"
+#line 3109 "cs-parser.jay"
   { yyVal = TypeManager.system_single_expr; }
   break;
 case 374:
-#line 3104 "cs-parser.jay"
+#line 3110 "cs-parser.jay"
   { yyVal = TypeManager.system_double_expr; }
   break;
 case 376:
-#line 3109 "cs-parser.jay"
+#line 3115 "cs-parser.jay"
   { yyVal = TypeManager.system_sbyte_expr; }
   break;
 case 377:
-#line 3110 "cs-parser.jay"
+#line 3116 "cs-parser.jay"
   { yyVal = TypeManager.system_byte_expr; }
   break;
 case 378:
-#line 3111 "cs-parser.jay"
+#line 3117 "cs-parser.jay"
   { yyVal = TypeManager.system_int16_expr; }
   break;
 case 379:
-#line 3112 "cs-parser.jay"
+#line 3118 "cs-parser.jay"
   { yyVal = TypeManager.system_uint16_expr; }
   break;
 case 380:
-#line 3113 "cs-parser.jay"
+#line 3119 "cs-parser.jay"
   { yyVal = TypeManager.system_int32_expr; }
   break;
 case 381:
-#line 3114 "cs-parser.jay"
+#line 3120 "cs-parser.jay"
   { yyVal = TypeManager.system_uint32_expr; }
   break;
 case 382:
-#line 3115 "cs-parser.jay"
+#line 3121 "cs-parser.jay"
   { yyVal = TypeManager.system_int64_expr; }
   break;
 case 383:
-#line 3116 "cs-parser.jay"
+#line 3122 "cs-parser.jay"
   { yyVal = TypeManager.system_uint64_expr; }
   break;
 case 384:
-#line 3117 "cs-parser.jay"
+#line 3123 "cs-parser.jay"
   { yyVal = TypeManager.system_char_expr; }
   break;
 case 385:
-#line 3118 "cs-parser.jay"
+#line 3124 "cs-parser.jay"
   { yyVal = TypeManager.system_void_expr; }
   break;
 case 386:
-#line 3123 "cs-parser.jay"
+#line 3129 "cs-parser.jay"
   {
 		string rank_specifiers = (string) yyVals[-1+yyTop];
 		if ((bool) yyVals[0+yyTop])
@@ -4082,20 +4088,20 @@ case 386:
 	  }
   break;
 case 387:
-#line 3137 "cs-parser.jay"
+#line 3143 "cs-parser.jay"
   {
 		/* 7.5.1: Literals*/
 	  }
   break;
 case 388:
-#line 3141 "cs-parser.jay"
+#line 3147 "cs-parser.jay"
   {
 		MemberName mn = (MemberName) yyVals[0+yyTop];
 		yyVal = mn.GetTypeExpression ();
 	  }
   break;
 case 389:
-#line 3146 "cs-parser.jay"
+#line 3152 "cs-parser.jay"
   {
 		LocatedToken lt1 = (LocatedToken) yyVals[-3+yyTop];
 		LocatedToken lt2 = (LocatedToken) yyVals[-1+yyTop];
@@ -4106,31 +4112,31 @@ case 389:
 	  }
   break;
 case 409:
-#line 3176 "cs-parser.jay"
+#line 3182 "cs-parser.jay"
   { yyVal = new CharLiteral ((char) lexer.Value, lexer.Location); }
   break;
 case 410:
-#line 3177 "cs-parser.jay"
+#line 3183 "cs-parser.jay"
   { yyVal = new StringLiteral ((string) lexer.Value, lexer.Location); }
   break;
 case 411:
-#line 3178 "cs-parser.jay"
+#line 3184 "cs-parser.jay"
   { yyVal = new NullLiteral (lexer.Location); }
   break;
 case 412:
-#line 3182 "cs-parser.jay"
+#line 3188 "cs-parser.jay"
   { yyVal = new FloatLiteral ((float) lexer.Value, lexer.Location); }
   break;
 case 413:
-#line 3183 "cs-parser.jay"
+#line 3189 "cs-parser.jay"
   { yyVal = new DoubleLiteral ((double) lexer.Value, lexer.Location); }
   break;
 case 414:
-#line 3184 "cs-parser.jay"
+#line 3190 "cs-parser.jay"
   { yyVal = new DecimalLiteral ((decimal) lexer.Value, lexer.Location); }
   break;
 case 415:
-#line 3188 "cs-parser.jay"
+#line 3194 "cs-parser.jay"
   { 
 		object v = lexer.Value;
 
@@ -4147,15 +4153,15 @@ case 415:
 	  }
   break;
 case 416:
-#line 3205 "cs-parser.jay"
+#line 3211 "cs-parser.jay"
   { yyVal = new BoolLiteral (true, lexer.Location); }
   break;
 case 417:
-#line 3206 "cs-parser.jay"
+#line 3212 "cs-parser.jay"
   { yyVal = new BoolLiteral (false, lexer.Location); }
   break;
 case 418:
-#line 3211 "cs-parser.jay"
+#line 3217 "cs-parser.jay"
   {
 		yyVal = yyVals[-1+yyTop];
 		lexer.Deambiguate_CloseParens (yyVal);
@@ -4165,23 +4171,23 @@ case 418:
 	  }
   break;
 case 419:
-#line 3218 "cs-parser.jay"
+#line 3224 "cs-parser.jay"
   { CheckToken (1026, yyToken, "Expecting ')'", lexer.Location); }
   break;
 case 420:
-#line 3223 "cs-parser.jay"
+#line 3229 "cs-parser.jay"
   {
 		yyVal = yyVals[-1+yyTop];
 	  }
   break;
 case 421:
-#line 3227 "cs-parser.jay"
+#line 3233 "cs-parser.jay"
   {
 		yyVal = yyVals[-1+yyTop];
 	  }
   break;
 case 422:
-#line 3231 "cs-parser.jay"
+#line 3237 "cs-parser.jay"
   {
 		/* If a parenthesized expression is followed by a minus, we need to wrap*/
 		/* the expression inside a ParenthesizedExpression for the CS0075 check*/
@@ -4190,14 +4196,14 @@ case 422:
 	  }
   break;
 case 423:
-#line 3241 "cs-parser.jay"
+#line 3247 "cs-parser.jay"
   {
 		LocatedToken lt = (LocatedToken) yyVals[-1+yyTop];
 		yyVal = new MemberAccess ((Expression) yyVals[-3+yyTop], lt.Value, (TypeArguments) yyVals[0+yyTop], lt.Location);
 	  }
   break;
 case 424:
-#line 3246 "cs-parser.jay"
+#line 3252 "cs-parser.jay"
   {
 		LocatedToken lt = (LocatedToken) yyVals[-1+yyTop];
 		/* TODO: Location is wrong as some predefined types doesn't hold a location*/
@@ -4205,7 +4211,7 @@ case 424:
 	  }
   break;
 case 426:
-#line 3259 "cs-parser.jay"
+#line 3265 "cs-parser.jay"
   {
 		if (yyVals[-3+yyTop] == null)
 			Report.Error (1, (Location) yyVals[-2+yyTop], "Parse error");
@@ -4214,19 +4220,19 @@ case 426:
 	  }
   break;
 case 427:
-#line 3266 "cs-parser.jay"
+#line 3272 "cs-parser.jay"
   {
 		yyVal = new Invocation ((Expression) yyVals[-3+yyTop], new ArrayList ());
 	  }
   break;
 case 428:
-#line 3270 "cs-parser.jay"
+#line 3276 "cs-parser.jay"
   {
 		yyVal = new InvocationOrCast ((Expression) yyVals[-2+yyTop], (Expression) yyVals[0+yyTop]);
 	  }
   break;
 case 429:
-#line 3274 "cs-parser.jay"
+#line 3280 "cs-parser.jay"
   {
 		ArrayList args = new ArrayList (1);
 		args.Add (yyVals[-1+yyTop]);
@@ -4234,7 +4240,7 @@ case 429:
 	  }
   break;
 case 430:
-#line 3280 "cs-parser.jay"
+#line 3286 "cs-parser.jay"
   {
 		ArrayList args = ((ArrayList) yyVals[-3+yyTop]);
 		args.Add (yyVals[-1+yyTop]);
@@ -4242,11 +4248,11 @@ case 430:
 	  }
   break;
 case 431:
-#line 3288 "cs-parser.jay"
+#line 3294 "cs-parser.jay"
   { yyVal = null; }
   break;
 case 433:
-#line 3294 "cs-parser.jay"
+#line 3300 "cs-parser.jay"
   {
 	  	if (yyVals[-1+yyTop] == null)
 	  	  yyVal = CollectionOrObjectInitializers.Empty;
@@ -4255,23 +4261,23 @@ case 433:
 	  }
   break;
 case 434:
-#line 3301 "cs-parser.jay"
+#line 3307 "cs-parser.jay"
   {
 	  	yyVal = new CollectionOrObjectInitializers ((ArrayList) yyVals[-2+yyTop], GetLocation (yyVals[-3+yyTop]));
 	  }
   break;
 case 435:
-#line 3307 "cs-parser.jay"
+#line 3313 "cs-parser.jay"
   { yyVal = null; }
   break;
 case 436:
-#line 3309 "cs-parser.jay"
+#line 3315 "cs-parser.jay"
   {
 		yyVal = yyVals[0+yyTop];
 	}
   break;
 case 437:
-#line 3316 "cs-parser.jay"
+#line 3322 "cs-parser.jay"
   {
 	  	ArrayList a = new ArrayList ();
 	  	a.Add (yyVals[0+yyTop]);
@@ -4279,7 +4285,7 @@ case 437:
 	  }
   break;
 case 438:
-#line 3322 "cs-parser.jay"
+#line 3328 "cs-parser.jay"
   {
 	  	ArrayList a = (ArrayList)yyVals[-2+yyTop];
 	  	a.Add (yyVals[0+yyTop]);
@@ -4287,36 +4293,36 @@ case 438:
 	  }
   break;
 case 439:
-#line 3331 "cs-parser.jay"
+#line 3337 "cs-parser.jay"
   {
 	  	LocatedToken lt = yyVals[-2+yyTop] as LocatedToken;
 	  	yyVal = new ElementInitializer (lt.Value, (Expression)yyVals[0+yyTop], lt.Location);
 	  }
   break;
 case 440:
-#line 3336 "cs-parser.jay"
+#line 3342 "cs-parser.jay"
   {
 		yyVal = new CollectionElementInitializer ((Expression)yyVals[0+yyTop]);
 	  }
   break;
 case 441:
-#line 3340 "cs-parser.jay"
+#line 3346 "cs-parser.jay"
   {
 	  	yyVal = new CollectionElementInitializer ((ArrayList)yyVals[-1+yyTop], GetLocation (yyVals[-2+yyTop]));
 	  }
   break;
 case 442:
-#line 3344 "cs-parser.jay"
+#line 3350 "cs-parser.jay"
   {
 	  	Report.Error (1920, GetLocation (yyVals[-1+yyTop]), "An element initializer cannot be empty");
 	  }
   break;
 case 445:
-#line 3355 "cs-parser.jay"
+#line 3361 "cs-parser.jay"
   { yyVal = null; }
   break;
 case 447:
-#line 3361 "cs-parser.jay"
+#line 3367 "cs-parser.jay"
   { 
 		ArrayList list = new ArrayList (4);
 		list.Add (yyVals[0+yyTop]);
@@ -4324,7 +4330,7 @@ case 447:
 	  }
   break;
 case 448:
-#line 3367 "cs-parser.jay"
+#line 3373 "cs-parser.jay"
   {
 		ArrayList list = (ArrayList) yyVals[-2+yyTop];
 		list.Add (yyVals[0+yyTop]);
@@ -4332,38 +4338,38 @@ case 448:
 	  }
   break;
 case 449:
-#line 3372 "cs-parser.jay"
+#line 3378 "cs-parser.jay"
   {
 		CheckToken (1026, yyToken, "Expected `,' or `)'", GetLocation (yyVals[0+yyTop]));
 		yyVal = null;
 	  }
   break;
 case 450:
-#line 3380 "cs-parser.jay"
+#line 3386 "cs-parser.jay"
   {
 		yyVal = new Argument ((Expression) yyVals[0+yyTop], Argument.AType.Expression);
 	  }
   break;
 case 451:
-#line 3384 "cs-parser.jay"
+#line 3390 "cs-parser.jay"
   {
 		yyVal = yyVals[0+yyTop];
 	  }
   break;
 case 452:
-#line 3391 "cs-parser.jay"
+#line 3397 "cs-parser.jay"
   { 
 		yyVal = new Argument ((Expression) yyVals[0+yyTop], Argument.AType.Ref);
 	  }
   break;
 case 453:
-#line 3395 "cs-parser.jay"
+#line 3401 "cs-parser.jay"
   { 
 		yyVal = new Argument ((Expression) yyVals[0+yyTop], Argument.AType.Out);
 	  }
   break;
 case 454:
-#line 3399 "cs-parser.jay"
+#line 3405 "cs-parser.jay"
   {
 		ArrayList list = (ArrayList) yyVals[-1+yyTop];
 		Argument[] args = new Argument [list.Count];
@@ -4374,29 +4380,29 @@ case 454:
 	  }
   break;
 case 455:
-#line 3408 "cs-parser.jay"
+#line 3414 "cs-parser.jay"
   {
 		yyVal = new Argument (new Arglist ((Location) yyVals[-2+yyTop]), Argument.AType.Expression);
 	  }
   break;
 case 456:
-#line 3412 "cs-parser.jay"
+#line 3418 "cs-parser.jay"
   {
 		yyVal = new Argument (new ArglistAccess ((Location) yyVals[0+yyTop]), Argument.AType.ArgList);
 	  }
   break;
 case 457:
-#line 3418 "cs-parser.jay"
+#line 3424 "cs-parser.jay"
   { note ("section 5.4"); yyVal = yyVals[0+yyTop]; }
   break;
 case 458:
-#line 3423 "cs-parser.jay"
+#line 3429 "cs-parser.jay"
   {
 		yyVal = new ElementAccess ((Expression) yyVals[-3+yyTop], (ArrayList) yyVals[-1+yyTop]);
 	  }
   break;
 case 459:
-#line 3427 "cs-parser.jay"
+#line 3433 "cs-parser.jay"
   {
 		/* So the super-trick is that primary_expression*/
 		/* can only be either a SimpleName or a MemberAccess. */
@@ -4423,7 +4429,7 @@ case 459:
 	  }
   break;
 case 460:
-#line 3455 "cs-parser.jay"
+#line 3461 "cs-parser.jay"
   {
 		ArrayList list = new ArrayList (4);
 		list.Add (yyVals[0+yyTop]);
@@ -4431,7 +4437,7 @@ case 460:
 	  }
   break;
 case 461:
-#line 3461 "cs-parser.jay"
+#line 3467 "cs-parser.jay"
   {
 		ArrayList list = (ArrayList) yyVals[-2+yyTop];
 		list.Add (yyVals[0+yyTop]);
@@ -4439,47 +4445,47 @@ case 461:
 	  }
   break;
 case 462:
-#line 3470 "cs-parser.jay"
+#line 3476 "cs-parser.jay"
   {
 		yyVal = new This (current_block, (Location) yyVals[0+yyTop]);
 	  }
   break;
 case 463:
-#line 3477 "cs-parser.jay"
+#line 3483 "cs-parser.jay"
   {
 		LocatedToken lt = (LocatedToken) yyVals[-1+yyTop];
 		yyVal = new BaseAccess (lt.Value, (TypeArguments) yyVals[0+yyTop], lt.Location);
 	  }
   break;
 case 464:
-#line 3482 "cs-parser.jay"
+#line 3488 "cs-parser.jay"
   {
 		yyVal = new BaseIndexerAccess ((ArrayList) yyVals[-1+yyTop], (Location) yyVals[-3+yyTop]);
 	  }
   break;
 case 465:
-#line 3485 "cs-parser.jay"
+#line 3491 "cs-parser.jay"
   {
 		Report.Error (175, (Location) yyVals[-1+yyTop], "Use of keyword `base' is not valid in this context");
 		yyVal = null;
 	  }
   break;
 case 466:
-#line 3493 "cs-parser.jay"
+#line 3499 "cs-parser.jay"
   {
 		yyVal = new UnaryMutator (UnaryMutator.Mode.PostIncrement,
 				       (Expression) yyVals[-1+yyTop], (Location) yyVals[0+yyTop]);
 	  }
   break;
 case 467:
-#line 3501 "cs-parser.jay"
+#line 3507 "cs-parser.jay"
   {
 		yyVal = new UnaryMutator (UnaryMutator.Mode.PostDecrement,
 				       (Expression) yyVals[-1+yyTop], (Location) yyVals[0+yyTop]);
 	  }
   break;
 case 471:
-#line 3515 "cs-parser.jay"
+#line 3521 "cs-parser.jay"
   {
 		if (yyVals[0+yyTop] != null) {
 			if (RootContext.Version <= LanguageVersion.ISO_2)
@@ -4492,7 +4498,7 @@ case 471:
 	  }
   break;
 case 472:
-#line 3526 "cs-parser.jay"
+#line 3532 "cs-parser.jay"
   {
 		if (RootContext.Version <= LanguageVersion.ISO_2)
 			Report.FeatureIsNotAvailable (GetLocation (yyVals[-2+yyTop]), "collection initializers");
@@ -4501,39 +4507,39 @@ case 472:
 	  }
   break;
 case 473:
-#line 3538 "cs-parser.jay"
+#line 3544 "cs-parser.jay"
   {
 		yyVal = new ArrayCreation ((FullNamedExpression) yyVals[-5+yyTop], (ArrayList) yyVals[-3+yyTop], (string) yyVals[-1+yyTop], (ArrayList) yyVals[0+yyTop], (Location) yyVals[-6+yyTop]);
 	  }
   break;
 case 474:
-#line 3542 "cs-parser.jay"
+#line 3548 "cs-parser.jay"
   {
 		yyVal = new ArrayCreation ((FullNamedExpression) yyVals[-2+yyTop], (string) yyVals[-1+yyTop], (ArrayList) yyVals[0+yyTop], (Location) yyVals[-3+yyTop]);
 	  }
   break;
 case 475:
-#line 3546 "cs-parser.jay"
+#line 3552 "cs-parser.jay"
   {
 		yyVal = new ImplicitlyTypedArrayCreation ((string) yyVals[-1+yyTop], (ArrayList) yyVals[0+yyTop], (Location) yyVals[-2+yyTop]);
 	  }
   break;
 case 476:
-#line 3550 "cs-parser.jay"
+#line 3556 "cs-parser.jay"
   {
 		Report.Error (1031, (Location) yyVals[-1+yyTop], "Type expected");
                 yyVal = null;
 	  }
   break;
 case 477:
-#line 3555 "cs-parser.jay"
+#line 3561 "cs-parser.jay"
   {
 		Report.Error (1526, (Location) yyVals[-2+yyTop], "A new expression requires () or [] after type");
 		yyVal = null;
 	  }
   break;
 case 478:
-#line 3563 "cs-parser.jay"
+#line 3569 "cs-parser.jay"
   {
 	  	if (RootContext.Version <= LanguageVersion.ISO_2)
 	  		Report.FeatureIsNotAvailable (GetLocation (yyVals[-3+yyTop]), "anonymous types");
@@ -4542,11 +4548,11 @@ case 478:
 	  }
   break;
 case 479:
-#line 3572 "cs-parser.jay"
+#line 3578 "cs-parser.jay"
   { yyVal = null; }
   break;
 case 480:
-#line 3574 "cs-parser.jay"
+#line 3580 "cs-parser.jay"
   {
 	  	ArrayList a = new ArrayList (4);
 	  	a.Add (yyVals[0+yyTop]);
@@ -4554,7 +4560,7 @@ case 480:
 	  }
   break;
 case 481:
-#line 3580 "cs-parser.jay"
+#line 3586 "cs-parser.jay"
   {
 	  	ArrayList a = (ArrayList) yyVals[-2+yyTop];
 	  	a.Add (yyVals[0+yyTop]);
@@ -4562,14 +4568,14 @@ case 481:
 	  }
   break;
 case 482:
-#line 3589 "cs-parser.jay"
+#line 3595 "cs-parser.jay"
   {
 		LocatedToken lt = (LocatedToken)yyVals[-2+yyTop];
 	  	yyVal = new AnonymousTypeParameter ((Expression)yyVals[0+yyTop], lt.Value, lt.Location);
 	  }
   break;
 case 483:
-#line 3594 "cs-parser.jay"
+#line 3600 "cs-parser.jay"
   {
 		LocatedToken lt = (LocatedToken)yyVals[0+yyTop];
 	  	yyVal = new AnonymousTypeParameter (new SimpleName (lt.Value, lt.Location),
@@ -4577,45 +4583,45 @@ case 483:
 	  }
   break;
 case 484:
-#line 3600 "cs-parser.jay"
+#line 3606 "cs-parser.jay"
   {
 	  	MemberAccess ma = (MemberAccess) yyVals[0+yyTop];
 	  	yyVal = new AnonymousTypeParameter (ma, ma.Name, ma.Location);
 	  }
   break;
 case 485:
-#line 3605 "cs-parser.jay"
+#line 3611 "cs-parser.jay"
   {
 		Report.Error (746, lexer.Location, "Invalid anonymous type member declarator. " +
 		"Anonymous type members must be a member assignment, simple name or member access expression");
 	  }
   break;
 case 486:
-#line 3613 "cs-parser.jay"
+#line 3619 "cs-parser.jay"
   {
 		  yyVal = "";
 	  }
   break;
 case 487:
-#line 3617 "cs-parser.jay"
+#line 3623 "cs-parser.jay"
   {
 			yyVal = yyVals[0+yyTop];
 	  }
   break;
 case 488:
-#line 3624 "cs-parser.jay"
+#line 3630 "cs-parser.jay"
   {
 		yyVal = "";
 	  }
   break;
 case 489:
-#line 3628 "cs-parser.jay"
+#line 3634 "cs-parser.jay"
   {
 		yyVal = "?";
 	  }
   break;
 case 490:
-#line 3632 "cs-parser.jay"
+#line 3638 "cs-parser.jay"
   {
 		if ((bool) yyVals[-1+yyTop])
 			yyVal = "?" + yyVals[0+yyTop];
@@ -4624,7 +4630,7 @@ case 490:
 	  }
   break;
 case 491:
-#line 3639 "cs-parser.jay"
+#line 3645 "cs-parser.jay"
   {
 		if ((bool) yyVals[-2+yyTop])
 			yyVal = "?" + yyVals[-1+yyTop] + "?";
@@ -4633,68 +4639,68 @@ case 491:
 	  }
   break;
 case 492:
-#line 3649 "cs-parser.jay"
+#line 3655 "cs-parser.jay"
   {
 		  yyVal = (string) yyVals[0+yyTop] + (string) yyVals[-1+yyTop];
 	  }
   break;
 case 493:
-#line 3656 "cs-parser.jay"
+#line 3662 "cs-parser.jay"
   {
 		yyVal = "[" + (string) yyVals[-1+yyTop] + "]";
 	  }
   break;
 case 494:
-#line 3663 "cs-parser.jay"
+#line 3669 "cs-parser.jay"
   {
 		yyVal = "";
 	  }
   break;
 case 495:
-#line 3667 "cs-parser.jay"
+#line 3673 "cs-parser.jay"
   {
 		  yyVal = yyVals[0+yyTop];
 	  }
   break;
 case 496:
-#line 3674 "cs-parser.jay"
+#line 3680 "cs-parser.jay"
   {
 		yyVal = ",";
 	  }
   break;
 case 497:
-#line 3678 "cs-parser.jay"
+#line 3684 "cs-parser.jay"
   {
 		yyVal = (string) yyVals[-1+yyTop] + ",";
 	  }
   break;
 case 498:
-#line 3685 "cs-parser.jay"
+#line 3691 "cs-parser.jay"
   {
 		yyVal = null;
 	  }
   break;
 case 499:
-#line 3689 "cs-parser.jay"
+#line 3695 "cs-parser.jay"
   {
 		yyVal = yyVals[0+yyTop];
 	  }
   break;
 case 500:
-#line 3696 "cs-parser.jay"
+#line 3702 "cs-parser.jay"
   {
 		ArrayList list = new ArrayList (4);
 		yyVal = list;
 	  }
   break;
 case 501:
-#line 3701 "cs-parser.jay"
+#line 3707 "cs-parser.jay"
   {
 		yyVal = (ArrayList) yyVals[-2+yyTop];
 	  }
   break;
 case 502:
-#line 3708 "cs-parser.jay"
+#line 3714 "cs-parser.jay"
   {
 		ArrayList list = new ArrayList (4);
 		list.Add (yyVals[0+yyTop]);
@@ -4702,7 +4708,7 @@ case 502:
 	  }
   break;
 case 503:
-#line 3714 "cs-parser.jay"
+#line 3720 "cs-parser.jay"
   {
 		ArrayList list = (ArrayList) yyVals[-2+yyTop];
 		list.Add (yyVals[0+yyTop]);
@@ -4710,14 +4716,14 @@ case 503:
 	  }
   break;
 case 504:
-#line 3723 "cs-parser.jay"
+#line 3729 "cs-parser.jay"
   {
 	  	pushed_current_array_type = current_array_type;
 	  	lexer.TypeOfParsing = true;
 	  }
   break;
 case 505:
-#line 3728 "cs-parser.jay"
+#line 3734 "cs-parser.jay"
   {
 	  	lexer.TypeOfParsing = false;
 		Expression type = (Expression)yyVals[-1+yyTop];
@@ -4729,19 +4735,19 @@ case 505:
 	  }
   break;
 case 506:
-#line 3741 "cs-parser.jay"
+#line 3747 "cs-parser.jay"
   {
 		yyVal = yyVals[0+yyTop];
 	  }
   break;
 case 507:
-#line 3745 "cs-parser.jay"
+#line 3751 "cs-parser.jay"
   {
 		yyVal = new UnboundTypeExpression ((MemberName)yyVals[0+yyTop], lexer.Location);
 	  }
   break;
 case 508:
-#line 3752 "cs-parser.jay"
+#line 3758 "cs-parser.jay"
   {
 		if (RootContext.Version < LanguageVersion.ISO_2)
 			Report.FeatureIsNotAvailable (lexer.Location, "generics");
@@ -4753,7 +4759,7 @@ case 508:
 	  }
   break;
 case 509:
-#line 3762 "cs-parser.jay"
+#line 3768 "cs-parser.jay"
   {
 		LocatedToken lt = (LocatedToken) yyVals[-3+yyTop];
 		MemberName left = new MemberName (lt.Value, lt.Location);
@@ -4767,7 +4773,7 @@ case 509:
 	  }
   break;
 case 510:
-#line 3774 "cs-parser.jay"
+#line 3780 "cs-parser.jay"
   {
 		LocatedToken lt = (LocatedToken) yyVals[-1+yyTop];
 		TypeArguments ta = new TypeArguments ((int)yyVals[0+yyTop], lt.Location);
@@ -4776,7 +4782,7 @@ case 510:
 	  }
   break;
 case 511:
-#line 3781 "cs-parser.jay"
+#line 3787 "cs-parser.jay"
   {
 		LocatedToken lt = (LocatedToken) yyVals[-1+yyTop];
 		TypeArguments ta = new TypeArguments ((int)yyVals[0+yyTop], lt.Location);
@@ -4785,25 +4791,25 @@ case 511:
 	  }
   break;
 case 512:
-#line 3791 "cs-parser.jay"
+#line 3797 "cs-parser.jay"
   { 
 		yyVal = new SizeOf ((Expression) yyVals[-1+yyTop], (Location) yyVals[-3+yyTop]);
 	  }
   break;
 case 513:
-#line 3798 "cs-parser.jay"
+#line 3804 "cs-parser.jay"
   {
 		yyVal = new CheckedExpr ((Expression) yyVals[-1+yyTop], (Location) yyVals[-3+yyTop]);
 	  }
   break;
 case 514:
-#line 3805 "cs-parser.jay"
+#line 3811 "cs-parser.jay"
   {
 		yyVal = new UnCheckedExpr ((Expression) yyVals[-1+yyTop], (Location) yyVals[-3+yyTop]);
 	  }
   break;
 case 515:
-#line 3812 "cs-parser.jay"
+#line 3818 "cs-parser.jay"
   {
 		Expression deref;
 		LocatedToken lt = (LocatedToken) yyVals[0+yyTop];
@@ -4813,36 +4819,36 @@ case 515:
 	  }
   break;
 case 516:
-#line 3823 "cs-parser.jay"
+#line 3829 "cs-parser.jay"
   {
 		start_anonymous (false, (Parameters) yyVals[0+yyTop], (Location) yyVals[-1+yyTop]);
 	  }
   break;
 case 517:
-#line 3827 "cs-parser.jay"
+#line 3833 "cs-parser.jay"
   {
 		yyVal = end_anonymous ((ToplevelBlock) yyVals[0+yyTop], (Location) yyVals[-3+yyTop]);
 	}
   break;
 case 518:
-#line 3833 "cs-parser.jay"
+#line 3839 "cs-parser.jay"
   { yyVal = null; }
   break;
 case 520:
-#line 3839 "cs-parser.jay"
+#line 3845 "cs-parser.jay"
   {
 	  	params_modifiers_not_allowed = true; 
 	  }
   break;
 case 521:
-#line 3843 "cs-parser.jay"
+#line 3849 "cs-parser.jay"
   {
 	  	params_modifiers_not_allowed = false;
 	  	yyVal = yyVals[-1+yyTop];
 	  }
   break;
 case 522:
-#line 3851 "cs-parser.jay"
+#line 3857 "cs-parser.jay"
   {
 		if (RootContext.Version < LanguageVersion.ISO_2)
 			Report.FeatureIsNotAvailable (lexer.Location, "default value expression");
@@ -4851,144 +4857,144 @@ case 522:
 	  }
   break;
 case 524:
-#line 3862 "cs-parser.jay"
+#line 3868 "cs-parser.jay"
   {
 		yyVal = new Unary (Unary.Operator.LogicalNot, (Expression) yyVals[0+yyTop], (Location) yyVals[-1+yyTop]);
 	  }
   break;
 case 525:
-#line 3866 "cs-parser.jay"
+#line 3872 "cs-parser.jay"
   {
 		yyVal = new Unary (Unary.Operator.OnesComplement, (Expression) yyVals[0+yyTop], (Location) yyVals[-1+yyTop]);
 	  }
   break;
 case 527:
-#line 3874 "cs-parser.jay"
+#line 3880 "cs-parser.jay"
   {
 		yyVal = new Cast ((Expression) yyVals[-2+yyTop], (Expression) yyVals[0+yyTop]);
 	  }
   break;
 case 528:
-#line 3878 "cs-parser.jay"
+#line 3884 "cs-parser.jay"
   {
 	  	yyVal = new Cast ((Expression) yyVals[-2+yyTop], (Expression) yyVals[0+yyTop]);
 	  }
   break;
 case 529:
-#line 3882 "cs-parser.jay"
+#line 3888 "cs-parser.jay"
   {
 		yyVal = new Cast ((Expression) yyVals[-2+yyTop], (Expression) yyVals[0+yyTop]);
 	  }
   break;
 case 531:
-#line 3890 "cs-parser.jay"
+#line 3896 "cs-parser.jay"
   {
 		/* TODO: wrong location*/
 		yyVal = new Cast ((Expression) yyVals[-2+yyTop], (Expression) yyVals[0+yyTop], lexer.Location);
 	  }
   break;
 case 533:
-#line 3903 "cs-parser.jay"
+#line 3909 "cs-parser.jay"
   { 
 	  	yyVal = new Unary (Unary.Operator.UnaryPlus, (Expression) yyVals[0+yyTop], (Location) yyVals[-1+yyTop]);
 	  }
   break;
 case 534:
-#line 3907 "cs-parser.jay"
+#line 3913 "cs-parser.jay"
   { 
 		yyVal = new Unary (Unary.Operator.UnaryNegation, (Expression) yyVals[0+yyTop], (Location) yyVals[-1+yyTop]);
 	  }
   break;
 case 535:
-#line 3911 "cs-parser.jay"
+#line 3917 "cs-parser.jay"
   {
 		yyVal = new UnaryMutator (UnaryMutator.Mode.PreIncrement,
 				       (Expression) yyVals[0+yyTop], (Location) yyVals[-1+yyTop]);
 	  }
   break;
 case 536:
-#line 3916 "cs-parser.jay"
+#line 3922 "cs-parser.jay"
   {
 		yyVal = new UnaryMutator (UnaryMutator.Mode.PreDecrement,
 				       (Expression) yyVals[0+yyTop], (Location) yyVals[-1+yyTop]);
 	  }
   break;
 case 537:
-#line 3921 "cs-parser.jay"
+#line 3927 "cs-parser.jay"
   {
 		yyVal = new Indirection ((Expression) yyVals[0+yyTop], (Location) yyVals[-1+yyTop]);
 	  }
   break;
 case 538:
-#line 3925 "cs-parser.jay"
+#line 3931 "cs-parser.jay"
   {
 		yyVal = new Unary (Unary.Operator.AddressOf, (Expression) yyVals[0+yyTop], (Location) yyVals[-1+yyTop]);
 	  }
   break;
 case 540:
-#line 3933 "cs-parser.jay"
+#line 3939 "cs-parser.jay"
   {
 		yyVal = new Binary (Binary.Operator.Multiply, 
 			         (Expression) yyVals[-2+yyTop], (Expression) yyVals[0+yyTop]);
 	  }
   break;
 case 541:
-#line 3938 "cs-parser.jay"
+#line 3944 "cs-parser.jay"
   {
 		yyVal = new Binary (Binary.Operator.Division, 
 			         (Expression) yyVals[-2+yyTop], (Expression) yyVals[0+yyTop]);
 	  }
   break;
 case 542:
-#line 3943 "cs-parser.jay"
+#line 3949 "cs-parser.jay"
   {
 		yyVal = new Binary (Binary.Operator.Modulus, 
 			         (Expression) yyVals[-2+yyTop], (Expression) yyVals[0+yyTop]);
 	  }
   break;
 case 544:
-#line 3952 "cs-parser.jay"
+#line 3958 "cs-parser.jay"
   {
 		yyVal = new Binary (Binary.Operator.Addition, 
 			         (Expression) yyVals[-2+yyTop], (Expression) yyVals[0+yyTop]);
 	  }
   break;
 case 545:
-#line 3957 "cs-parser.jay"
+#line 3963 "cs-parser.jay"
   {
 		yyVal = new Binary (Binary.Operator.Subtraction, 
 			         (Expression) yyVals[-2+yyTop], (Expression) yyVals[0+yyTop]);
 	  }
   break;
 case 547:
-#line 3966 "cs-parser.jay"
+#line 3972 "cs-parser.jay"
   {
 		yyVal = new Binary (Binary.Operator.LeftShift, 
 			         (Expression) yyVals[-2+yyTop], (Expression) yyVals[0+yyTop]);
 	  }
   break;
 case 548:
-#line 3971 "cs-parser.jay"
+#line 3977 "cs-parser.jay"
   {
 		yyVal = new Binary (Binary.Operator.RightShift, 
 			         (Expression) yyVals[-2+yyTop], (Expression) yyVals[0+yyTop]);
 	  }
   break;
 case 549:
-#line 3979 "cs-parser.jay"
+#line 3985 "cs-parser.jay"
   {
 		yyVal = false;
 	  }
   break;
 case 550:
-#line 3983 "cs-parser.jay"
+#line 3989 "cs-parser.jay"
   {
 		lexer.PutbackNullable ();
 		yyVal = true;
 	  }
   break;
 case 551:
-#line 3991 "cs-parser.jay"
+#line 3997 "cs-parser.jay"
   {
 		if (((bool) yyVals[0+yyTop]) && (yyVals[-1+yyTop] is ComposedCast))
 			yyVal = ((ComposedCast) yyVals[-1+yyTop]).RemoveNullable ();
@@ -4997,114 +5003,114 @@ case 551:
 	  }
   break;
 case 553:
-#line 4002 "cs-parser.jay"
+#line 4008 "cs-parser.jay"
   {
 		yyVal = new Binary (Binary.Operator.LessThan, 
 			         (Expression) yyVals[-2+yyTop], (Expression) yyVals[0+yyTop]);
 	  }
   break;
 case 554:
-#line 4007 "cs-parser.jay"
+#line 4013 "cs-parser.jay"
   {
 		yyVal = new Binary (Binary.Operator.GreaterThan, 
 			         (Expression) yyVals[-2+yyTop], (Expression) yyVals[0+yyTop]);
 	  }
   break;
 case 555:
-#line 4012 "cs-parser.jay"
+#line 4018 "cs-parser.jay"
   {
 		yyVal = new Binary (Binary.Operator.LessThanOrEqual, 
 			         (Expression) yyVals[-2+yyTop], (Expression) yyVals[0+yyTop]);
 	  }
   break;
 case 556:
-#line 4017 "cs-parser.jay"
+#line 4023 "cs-parser.jay"
   {
 		yyVal = new Binary (Binary.Operator.GreaterThanOrEqual, 
 			         (Expression) yyVals[-2+yyTop], (Expression) yyVals[0+yyTop]);
 	  }
   break;
 case 557:
-#line 4022 "cs-parser.jay"
+#line 4028 "cs-parser.jay"
   {
 		yyErrorFlag = 3;
 	  }
   break;
 case 558:
-#line 4025 "cs-parser.jay"
+#line 4031 "cs-parser.jay"
   {
 		yyVal = new Is ((Expression) yyVals[-3+yyTop], (Expression) yyVals[0+yyTop], (Location) yyVals[-2+yyTop]);
 	  }
   break;
 case 559:
-#line 4029 "cs-parser.jay"
+#line 4035 "cs-parser.jay"
   {
 		yyErrorFlag = 3;
 	  }
   break;
 case 560:
-#line 4032 "cs-parser.jay"
+#line 4038 "cs-parser.jay"
   {
 		yyVal = new As ((Expression) yyVals[-3+yyTop], (Expression) yyVals[0+yyTop], (Location) yyVals[-2+yyTop]);
 	  }
   break;
 case 562:
-#line 4040 "cs-parser.jay"
+#line 4046 "cs-parser.jay"
   {
 		yyVal = new Binary (Binary.Operator.Equality, 
 			         (Expression) yyVals[-2+yyTop], (Expression) yyVals[0+yyTop]);
 	  }
   break;
 case 563:
-#line 4045 "cs-parser.jay"
+#line 4051 "cs-parser.jay"
   {
 		yyVal = new Binary (Binary.Operator.Inequality, 
 			         (Expression) yyVals[-2+yyTop], (Expression) yyVals[0+yyTop]);
 	  }
   break;
 case 565:
-#line 4054 "cs-parser.jay"
+#line 4060 "cs-parser.jay"
   {
 		yyVal = new Binary (Binary.Operator.BitwiseAnd, 
 			         (Expression) yyVals[-2+yyTop], (Expression) yyVals[0+yyTop]);
 	  }
   break;
 case 567:
-#line 4063 "cs-parser.jay"
+#line 4069 "cs-parser.jay"
   {
 		yyVal = new Binary (Binary.Operator.ExclusiveOr, 
 			         (Expression) yyVals[-2+yyTop], (Expression) yyVals[0+yyTop]);
 	  }
   break;
 case 569:
-#line 4072 "cs-parser.jay"
+#line 4078 "cs-parser.jay"
   {
 		yyVal = new Binary (Binary.Operator.BitwiseOr, 
 			         (Expression) yyVals[-2+yyTop], (Expression) yyVals[0+yyTop]);
 	  }
   break;
 case 571:
-#line 4081 "cs-parser.jay"
+#line 4087 "cs-parser.jay"
   {
 		yyVal = new Binary (Binary.Operator.LogicalAnd, 
 			         (Expression) yyVals[-2+yyTop], (Expression) yyVals[0+yyTop]);
 	  }
   break;
 case 573:
-#line 4090 "cs-parser.jay"
+#line 4096 "cs-parser.jay"
   {
 		yyVal = new Binary (Binary.Operator.LogicalOr, 
 			         (Expression) yyVals[-2+yyTop], (Expression) yyVals[0+yyTop]);
 	  }
   break;
 case 575:
-#line 4099 "cs-parser.jay"
+#line 4105 "cs-parser.jay"
   {
 		yyVal = new Conditional ((Expression) yyVals[-4+yyTop], (Expression) yyVals[-2+yyTop], (Expression) yyVals[0+yyTop]);
 	  }
   break;
 case 576:
-#line 4103 "cs-parser.jay"
+#line 4109 "cs-parser.jay"
   {
 		if (RootContext.Version < LanguageVersion.ISO_2)
 			Report.FeatureIsNotAvailable (GetLocation (yyVals[-1+yyTop]), "null coalescing operator");
@@ -5113,90 +5119,90 @@ case 576:
 	  }
   break;
 case 577:
-#line 4111 "cs-parser.jay"
+#line 4117 "cs-parser.jay"
   {
 		yyVal = new ComposedCast ((FullNamedExpression) yyVals[-2+yyTop], "?", lexer.Location);
 		lexer.PutbackCloseParens ();
 	  }
   break;
 case 578:
-#line 4119 "cs-parser.jay"
+#line 4125 "cs-parser.jay"
   {
 		yyVal = new SimpleAssign ((Expression) yyVals[-2+yyTop], (Expression) yyVals[0+yyTop]);
 	  }
   break;
 case 579:
-#line 4123 "cs-parser.jay"
+#line 4129 "cs-parser.jay"
   {
 		yyVal = new CompoundAssign (
 			Binary.Operator.Multiply, (Expression) yyVals[-2+yyTop], (Expression) yyVals[0+yyTop]);
 	  }
   break;
 case 580:
-#line 4128 "cs-parser.jay"
+#line 4134 "cs-parser.jay"
   {
 		yyVal = new CompoundAssign (
 			Binary.Operator.Division, (Expression) yyVals[-2+yyTop], (Expression) yyVals[0+yyTop]);
 	  }
   break;
 case 581:
-#line 4133 "cs-parser.jay"
+#line 4139 "cs-parser.jay"
   {
 		yyVal = new CompoundAssign (
 			Binary.Operator.Modulus, (Expression) yyVals[-2+yyTop], (Expression) yyVals[0+yyTop]);
 	  }
   break;
 case 582:
-#line 4138 "cs-parser.jay"
+#line 4144 "cs-parser.jay"
   {
 		yyVal = new CompoundAssign (
 			Binary.Operator.Addition, (Expression) yyVals[-2+yyTop], (Expression) yyVals[0+yyTop]);
 	  }
   break;
 case 583:
-#line 4143 "cs-parser.jay"
+#line 4149 "cs-parser.jay"
   {
 		yyVal = new CompoundAssign (
 			Binary.Operator.Subtraction, (Expression) yyVals[-2+yyTop], (Expression) yyVals[0+yyTop]);
 	  }
   break;
 case 584:
-#line 4148 "cs-parser.jay"
+#line 4154 "cs-parser.jay"
   {
 		yyVal = new CompoundAssign (
 			Binary.Operator.LeftShift, (Expression) yyVals[-2+yyTop], (Expression) yyVals[0+yyTop]);
 	  }
   break;
 case 585:
-#line 4153 "cs-parser.jay"
+#line 4159 "cs-parser.jay"
   {
 		yyVal = new CompoundAssign (
 			Binary.Operator.RightShift, (Expression) yyVals[-2+yyTop], (Expression) yyVals[0+yyTop]);
 	  }
   break;
 case 586:
-#line 4158 "cs-parser.jay"
+#line 4164 "cs-parser.jay"
   {
 		yyVal = new CompoundAssign (
 			Binary.Operator.BitwiseAnd, (Expression) yyVals[-2+yyTop], (Expression) yyVals[0+yyTop]);
 	  }
   break;
 case 587:
-#line 4163 "cs-parser.jay"
+#line 4169 "cs-parser.jay"
   {
 		yyVal = new CompoundAssign (
 			Binary.Operator.BitwiseOr, (Expression) yyVals[-2+yyTop], (Expression) yyVals[0+yyTop]);
 	  }
   break;
 case 588:
-#line 4168 "cs-parser.jay"
+#line 4174 "cs-parser.jay"
   {
 		yyVal = new CompoundAssign (
 			Binary.Operator.ExclusiveOr, (Expression) yyVals[-2+yyTop], (Expression) yyVals[0+yyTop]);
 	  }
   break;
 case 589:
-#line 4176 "cs-parser.jay"
+#line 4182 "cs-parser.jay"
   {
 		ArrayList pars = new ArrayList (4);
 		pars.Add (yyVals[0+yyTop]);
@@ -5205,7 +5211,7 @@ case 589:
 	  }
   break;
 case 590:
-#line 4183 "cs-parser.jay"
+#line 4189 "cs-parser.jay"
   {
 		ArrayList pars = (ArrayList) yyVals[-2+yyTop];
 		Parameter p = (Parameter)yyVals[0+yyTop];
@@ -5218,7 +5224,7 @@ case 590:
 	  }
   break;
 case 591:
-#line 4197 "cs-parser.jay"
+#line 4203 "cs-parser.jay"
   {
 		LocatedToken lt = (LocatedToken) yyVals[0+yyTop];
 
@@ -5226,7 +5232,7 @@ case 591:
 	  }
   break;
 case 592:
-#line 4203 "cs-parser.jay"
+#line 4209 "cs-parser.jay"
   {
 		LocatedToken lt = (LocatedToken) yyVals[0+yyTop];
 
@@ -5234,31 +5240,31 @@ case 592:
 	  }
   break;
 case 593:
-#line 4209 "cs-parser.jay"
+#line 4215 "cs-parser.jay"
   {
 	  	LocatedToken lt = (LocatedToken) yyVals[0+yyTop];
 		yyVal = new ImplicitLambdaParameter (lt.Value, lt.Location);
 	  }
   break;
 case 594:
-#line 4216 "cs-parser.jay"
+#line 4222 "cs-parser.jay"
   { yyVal = Parameters.EmptyReadOnlyParameters; }
   break;
 case 595:
-#line 4217 "cs-parser.jay"
+#line 4223 "cs-parser.jay"
   { 
 		ArrayList pars_list = (ArrayList) yyVals[0+yyTop];
 		yyVal = new Parameters ((Parameter[])pars_list.ToArray (typeof (Parameter)));
 	  }
   break;
 case 596:
-#line 4224 "cs-parser.jay"
+#line 4230 "cs-parser.jay"
   {
 		start_block (lexer.Location);
 	  }
   break;
 case 597:
-#line 4228 "cs-parser.jay"
+#line 4234 "cs-parser.jay"
   {
 		Block b = end_block (lexer.Location);
 		b.AddStatement (new ContextualReturn ((Expression) yyVals[0+yyTop]));
@@ -5266,13 +5272,13 @@ case 597:
 	  }
   break;
 case 598:
-#line 4233 "cs-parser.jay"
+#line 4239 "cs-parser.jay"
   { 
 	  	yyVal = yyVals[0+yyTop]; 
 	  }
   break;
 case 599:
-#line 4240 "cs-parser.jay"
+#line 4246 "cs-parser.jay"
   {
 		LocatedToken lt = (LocatedToken) yyVals[-1+yyTop];
 		Parameter p = new ImplicitLambdaParameter (lt.Value, lt.Location);
@@ -5280,38 +5286,38 @@ case 599:
 	  }
   break;
 case 600:
-#line 4246 "cs-parser.jay"
+#line 4252 "cs-parser.jay"
   {
 		yyVal = end_anonymous ((ToplevelBlock) yyVals[0+yyTop], (Location) yyVals[-2+yyTop]);
 	  }
   break;
 case 601:
-#line 4250 "cs-parser.jay"
+#line 4256 "cs-parser.jay"
   {
 		start_anonymous (true, (Parameters) yyVals[-2+yyTop], (Location) yyVals[0+yyTop]);
 	  }
   break;
 case 602:
-#line 4254 "cs-parser.jay"
+#line 4260 "cs-parser.jay"
   {
 		yyVal = end_anonymous ((ToplevelBlock) yyVals[0+yyTop], (Location) yyVals[-2+yyTop]);
 	  }
   break;
 case 610:
-#line 4286 "cs-parser.jay"
+#line 4292 "cs-parser.jay"
   {
 		lexer.ConstraintsParsing = true;
 	  }
   break;
 case 611:
-#line 4290 "cs-parser.jay"
+#line 4296 "cs-parser.jay"
   {
 		MemberName name = MakeName ((MemberName) yyVals[0+yyTop]);
 		push_current_class (new Class (current_namespace, current_class, name, (int) yyVals[-4+yyTop], (Attributes) yyVals[-5+yyTop]), yyVals[-3+yyTop]);
 	  }
   break;
 case 612:
-#line 4296 "cs-parser.jay"
+#line 4302 "cs-parser.jay"
   {
 		lexer.ConstraintsParsing = false;
 
@@ -5324,32 +5330,32 @@ case 612:
 	  }
   break;
 case 613:
-#line 4307 "cs-parser.jay"
+#line 4313 "cs-parser.jay"
   {
 		if (RootContext.Documentation != null)
 			Lexer.doc_state = XmlCommentState.Allowed;
 	  }
   break;
 case 614:
-#line 4312 "cs-parser.jay"
+#line 4318 "cs-parser.jay"
   {
 		yyVal = pop_current_class ();
 	  }
   break;
 case 615:
-#line 4319 "cs-parser.jay"
+#line 4325 "cs-parser.jay"
   { yyVal = null; }
   break;
 case 616:
-#line 4321 "cs-parser.jay"
+#line 4327 "cs-parser.jay"
   { yyVal = yyVals[0+yyTop]; }
   break;
 case 617:
-#line 4325 "cs-parser.jay"
+#line 4331 "cs-parser.jay"
   { yyVal = (int) 0; }
   break;
 case 620:
-#line 4332 "cs-parser.jay"
+#line 4338 "cs-parser.jay"
   { 
 		int m1 = (int) yyVals[-1+yyTop];
 		int m2 = (int) yyVals[0+yyTop];
@@ -5362,75 +5368,75 @@ case 620:
 	  }
   break;
 case 621:
-#line 4345 "cs-parser.jay"
+#line 4351 "cs-parser.jay"
   { yyVal = Modifiers.NEW; }
   break;
 case 622:
-#line 4346 "cs-parser.jay"
+#line 4352 "cs-parser.jay"
   { yyVal = Modifiers.PUBLIC; }
   break;
 case 623:
-#line 4347 "cs-parser.jay"
+#line 4353 "cs-parser.jay"
   { yyVal = Modifiers.PROTECTED; }
   break;
 case 624:
-#line 4348 "cs-parser.jay"
+#line 4354 "cs-parser.jay"
   { yyVal = Modifiers.INTERNAL; }
   break;
 case 625:
-#line 4349 "cs-parser.jay"
+#line 4355 "cs-parser.jay"
   { yyVal = Modifiers.PRIVATE; }
   break;
 case 626:
-#line 4350 "cs-parser.jay"
+#line 4356 "cs-parser.jay"
   { yyVal = Modifiers.ABSTRACT; }
   break;
 case 627:
-#line 4351 "cs-parser.jay"
+#line 4357 "cs-parser.jay"
   { yyVal = Modifiers.SEALED; }
   break;
 case 628:
-#line 4352 "cs-parser.jay"
+#line 4358 "cs-parser.jay"
   { yyVal = Modifiers.STATIC; }
   break;
 case 629:
-#line 4353 "cs-parser.jay"
+#line 4359 "cs-parser.jay"
   { yyVal = Modifiers.READONLY; }
   break;
 case 630:
-#line 4354 "cs-parser.jay"
+#line 4360 "cs-parser.jay"
   { yyVal = Modifiers.VIRTUAL; }
   break;
 case 631:
-#line 4355 "cs-parser.jay"
+#line 4361 "cs-parser.jay"
   { yyVal = Modifiers.OVERRIDE; }
   break;
 case 632:
-#line 4356 "cs-parser.jay"
+#line 4362 "cs-parser.jay"
   { yyVal = Modifiers.EXTERN; }
   break;
 case 633:
-#line 4357 "cs-parser.jay"
+#line 4363 "cs-parser.jay"
   { yyVal = Modifiers.VOLATILE; }
   break;
 case 634:
-#line 4358 "cs-parser.jay"
+#line 4364 "cs-parser.jay"
   { yyVal = Modifiers.UNSAFE; }
   break;
 case 637:
-#line 4367 "cs-parser.jay"
+#line 4373 "cs-parser.jay"
   { current_container.AddBasesForPart (current_class, (ArrayList) yyVals[0+yyTop]); }
   break;
 case 638:
-#line 4371 "cs-parser.jay"
+#line 4377 "cs-parser.jay"
   { yyVal = null; }
   break;
 case 639:
-#line 4373 "cs-parser.jay"
+#line 4379 "cs-parser.jay"
   { yyVal = yyVals[0+yyTop]; }
   break;
 case 640:
-#line 4377 "cs-parser.jay"
+#line 4383 "cs-parser.jay"
   {
 		ArrayList constraints = new ArrayList (1);
 		constraints.Add (yyVals[0+yyTop]);
@@ -5438,7 +5444,7 @@ case 640:
 	  }
   break;
 case 641:
-#line 4382 "cs-parser.jay"
+#line 4388 "cs-parser.jay"
   {
 		ArrayList constraints = (ArrayList) yyVals[-1+yyTop];
 		Constraints new_constraint = (Constraints)yyVals[0+yyTop];
@@ -5455,14 +5461,14 @@ case 641:
 	  }
   break;
 case 642:
-#line 4399 "cs-parser.jay"
+#line 4405 "cs-parser.jay"
   {
 		LocatedToken lt = (LocatedToken) yyVals[-2+yyTop];
 		yyVal = new Constraints (lt.Value, (ArrayList) yyVals[0+yyTop], lt.Location);
 	  }
   break;
 case 643:
-#line 4406 "cs-parser.jay"
+#line 4412 "cs-parser.jay"
   {
 		ArrayList constraints = new ArrayList (1);
 		constraints.Add (yyVals[0+yyTop]);
@@ -5470,7 +5476,7 @@ case 643:
 	  }
   break;
 case 644:
-#line 4411 "cs-parser.jay"
+#line 4417 "cs-parser.jay"
   {
 		ArrayList constraints = (ArrayList) yyVals[-2+yyTop];
 
@@ -5479,52 +5485,52 @@ case 644:
 	  }
   break;
 case 646:
-#line 4421 "cs-parser.jay"
+#line 4427 "cs-parser.jay"
   {
 		yyVal = SpecialConstraint.Constructor;
 	  }
   break;
 case 647:
-#line 4424 "cs-parser.jay"
+#line 4430 "cs-parser.jay"
   {
 		yyVal = SpecialConstraint.ReferenceType;
 	  }
   break;
 case 648:
-#line 4427 "cs-parser.jay"
+#line 4433 "cs-parser.jay"
   {
 		yyVal = SpecialConstraint.ValueType;
 	  }
   break;
 case 649:
-#line 4447 "cs-parser.jay"
+#line 4453 "cs-parser.jay"
   {
 		++lexer.parsing_block;
 		start_block ((Location) yyVals[0+yyTop]);
 	  }
   break;
 case 650:
-#line 4452 "cs-parser.jay"
+#line 4458 "cs-parser.jay"
   {
 	 	--lexer.parsing_block;
 		yyVal = end_block ((Location) yyVals[0+yyTop]);
 	  }
   break;
 case 651:
-#line 4460 "cs-parser.jay"
+#line 4466 "cs-parser.jay"
   {
 		++lexer.parsing_block;
 	  }
   break;
 case 652:
-#line 4464 "cs-parser.jay"
+#line 4470 "cs-parser.jay"
   {
 		--lexer.parsing_block;
 		yyVal = end_block ((Location) yyVals[0+yyTop]);
 	  }
   break;
 case 657:
-#line 4482 "cs-parser.jay"
+#line 4488 "cs-parser.jay"
   {
 		if (yyVals[0+yyTop] != null && (Block) yyVals[0+yyTop] != current_block){
 			current_block.AddStatement ((Statement) yyVals[0+yyTop]);
@@ -5533,33 +5539,33 @@ case 657:
 	  }
   break;
 case 658:
-#line 4489 "cs-parser.jay"
+#line 4495 "cs-parser.jay"
   {
 		current_block.AddStatement ((Statement) yyVals[0+yyTop]);
 	  }
   break;
 case 674:
-#line 4514 "cs-parser.jay"
+#line 4520 "cs-parser.jay"
   {
 		  Report.Error (1023, GetLocation (yyVals[0+yyTop]), "An embedded statement may not be a declaration or labeled statement");
 		  yyVal = null;
 	  }
   break;
 case 675:
-#line 4519 "cs-parser.jay"
+#line 4525 "cs-parser.jay"
   {
 		  Report.Error (1023, GetLocation (yyVals[0+yyTop]), "An embedded statement may not be a declaration or labeled statement");
 		  yyVal = null;
 	  }
   break;
 case 676:
-#line 4527 "cs-parser.jay"
+#line 4533 "cs-parser.jay"
   {
 		  yyVal = EmptyStatement.Value;
 	  }
   break;
 case 677:
-#line 4534 "cs-parser.jay"
+#line 4540 "cs-parser.jay"
   {
 		LocatedToken lt = (LocatedToken) yyVals[-1+yyTop];
 		LabeledStatement labeled = new LabeledStatement (lt.Value, lt.Location);
@@ -5569,7 +5575,7 @@ case 677:
 	  }
   break;
 case 679:
-#line 4546 "cs-parser.jay"
+#line 4552 "cs-parser.jay"
   {
 		current_array_type = null;
 		if (yyVals[-1+yyTop] != null){
@@ -5581,7 +5587,7 @@ case 679:
 	  }
   break;
 case 680:
-#line 4557 "cs-parser.jay"
+#line 4563 "cs-parser.jay"
   {
 		current_array_type = null;
 		if (yyVals[-1+yyTop] != null){
@@ -5592,7 +5598,7 @@ case 680:
 	  }
   break;
 case 681:
-#line 4575 "cs-parser.jay"
+#line 4581 "cs-parser.jay"
   { 
 		/* FIXME: Do something smart here regarding the composition of the type.*/
 
@@ -5635,7 +5641,7 @@ case 681:
 	  }
   break;
 case 682:
-#line 4616 "cs-parser.jay"
+#line 4622 "cs-parser.jay"
   {
 		if ((string) yyVals[0+yyTop] == "")
 			yyVal = yyVals[-1+yyTop];
@@ -5644,7 +5650,7 @@ case 682:
 	  }
   break;
 case 683:
-#line 4626 "cs-parser.jay"
+#line 4632 "cs-parser.jay"
   {
 		ATypeNameExpression expr = yyVals[-1+yyTop] as ATypeNameExpression;
 
@@ -5657,25 +5663,25 @@ case 683:
 	  }
   break;
 case 684:
-#line 4637 "cs-parser.jay"
+#line 4643 "cs-parser.jay"
   {
 		yyVal = new ComposedCast ((FullNamedExpression) yyVals[-1+yyTop], "*", lexer.Location);
 	  }
   break;
 case 685:
-#line 4641 "cs-parser.jay"
+#line 4647 "cs-parser.jay"
   {
 		yyVal = new ComposedCast (TypeManager.system_void_expr, "*", (Location) yyVals[-1+yyTop]);
 	  }
   break;
 case 686:
-#line 4645 "cs-parser.jay"
+#line 4651 "cs-parser.jay"
   {
 		yyVal = new ComposedCast ((FullNamedExpression) yyVals[-1+yyTop], "*");
 	  }
   break;
 case 687:
-#line 4652 "cs-parser.jay"
+#line 4658 "cs-parser.jay"
   {
 		if (yyVals[-1+yyTop] != null) {
 			VarExpr ve = yyVals[-1+yyTop] as VarExpr;
@@ -5688,7 +5694,7 @@ case 687:
 	  }
   break;
 case 688:
-#line 4663 "cs-parser.jay"
+#line 4669 "cs-parser.jay"
   {
 		if (yyVals[-2+yyTop] != null){
 			Expression t;
@@ -5703,7 +5709,7 @@ case 688:
 	  }
   break;
 case 689:
-#line 4679 "cs-parser.jay"
+#line 4685 "cs-parser.jay"
   {
 		if (yyVals[-1+yyTop] != null)
 			yyVal = new DictionaryEntry (yyVals[-1+yyTop], yyVals[0+yyTop]);
@@ -5712,11 +5718,11 @@ case 689:
 	  }
   break;
 case 690:
-#line 4688 "cs-parser.jay"
+#line 4694 "cs-parser.jay"
   { yyVal = yyVals[-1+yyTop]; }
   break;
 case 691:
-#line 4697 "cs-parser.jay"
+#line 4703 "cs-parser.jay"
   {
 		Expression expr = (Expression) yyVals[0+yyTop];
 		ExpressionStatement s = expr as ExpressionStatement;
@@ -5728,14 +5734,14 @@ case 691:
 	  }
   break;
 case 692:
-#line 4707 "cs-parser.jay"
+#line 4713 "cs-parser.jay"
   {
 		Report.Error (1002, GetLocation (yyVals[0+yyTop]), "Expecting `;'");
 		yyVal = null;
 	  }
   break;
 case 695:
-#line 4721 "cs-parser.jay"
+#line 4727 "cs-parser.jay"
   { 
 		Location l = (Location) yyVals[-4+yyTop];
 
@@ -5748,7 +5754,7 @@ case 695:
 	  }
   break;
 case 696:
-#line 4733 "cs-parser.jay"
+#line 4739 "cs-parser.jay"
   {
 		Location l = (Location) yyVals[-6+yyTop];
 
@@ -5762,7 +5768,7 @@ case 696:
 	  }
   break;
 case 697:
-#line 4748 "cs-parser.jay"
+#line 4754 "cs-parser.jay"
   { 
 		if (switch_stack == null)
 			switch_stack = new Stack (2);
@@ -5770,27 +5776,27 @@ case 697:
 	  }
   break;
 case 698:
-#line 4755 "cs-parser.jay"
+#line 4761 "cs-parser.jay"
   {
 		yyVal = new Switch ((Expression) yyVals[-2+yyTop], (ArrayList) yyVals[0+yyTop], (Location) yyVals[-5+yyTop]);
 		current_block = (Block) switch_stack.Pop ();
 	  }
   break;
 case 699:
-#line 4765 "cs-parser.jay"
+#line 4771 "cs-parser.jay"
   {
 		yyVal = yyVals[-1+yyTop];
 	  }
   break;
 case 700:
-#line 4772 "cs-parser.jay"
+#line 4778 "cs-parser.jay"
   {
 	  	Report.Warning (1522, 1, lexer.Location, "Empty switch block"); 
 		yyVal = new ArrayList ();
 	  }
   break;
 case 702:
-#line 4781 "cs-parser.jay"
+#line 4787 "cs-parser.jay"
   {
 		ArrayList sections = new ArrayList (4);
 
@@ -5799,7 +5805,7 @@ case 702:
 	  }
   break;
 case 703:
-#line 4788 "cs-parser.jay"
+#line 4794 "cs-parser.jay"
   {
 		ArrayList sections = (ArrayList) yyVals[-1+yyTop];
 
@@ -5808,19 +5814,19 @@ case 703:
 	  }
   break;
 case 704:
-#line 4798 "cs-parser.jay"
+#line 4804 "cs-parser.jay"
   {
 		current_block = current_block.CreateSwitchBlock (lexer.Location);
 	  }
   break;
 case 705:
-#line 4802 "cs-parser.jay"
+#line 4808 "cs-parser.jay"
   {
 		yyVal = new SwitchSection ((ArrayList) yyVals[-2+yyTop], current_block.Explicit);
 	  }
   break;
 case 706:
-#line 4809 "cs-parser.jay"
+#line 4815 "cs-parser.jay"
   {
 		ArrayList labels = new ArrayList (4);
 
@@ -5829,7 +5835,7 @@ case 706:
 	  }
   break;
 case 707:
-#line 4816 "cs-parser.jay"
+#line 4822 "cs-parser.jay"
   {
 		ArrayList labels = (ArrayList) (yyVals[-1+yyTop]);
 		labels.Add (yyVals[0+yyTop]);
@@ -5838,15 +5844,15 @@ case 707:
 	  }
   break;
 case 708:
-#line 4825 "cs-parser.jay"
+#line 4831 "cs-parser.jay"
   { yyVal = new SwitchLabel ((Expression) yyVals[-1+yyTop], (Location) yyVals[-2+yyTop]); }
   break;
 case 709:
-#line 4826 "cs-parser.jay"
+#line 4832 "cs-parser.jay"
   { yyVal = new SwitchLabel (null, (Location) yyVals[0+yyTop]); }
   break;
 case 710:
-#line 4827 "cs-parser.jay"
+#line 4833 "cs-parser.jay"
   {
 		Report.Error (
 			1523, GetLocation (yyVals[0+yyTop]), 
@@ -5854,14 +5860,14 @@ case 710:
 	  }
   break;
 case 715:
-#line 4843 "cs-parser.jay"
+#line 4849 "cs-parser.jay"
   {
 		Location l = (Location) yyVals[-4+yyTop];
 		yyVal = new While ((Expression) yyVals[-2+yyTop], (Statement) yyVals[0+yyTop], l);
 	  }
   break;
 case 716:
-#line 4852 "cs-parser.jay"
+#line 4858 "cs-parser.jay"
   {
 		Location l = (Location) yyVals[-6+yyTop];
 
@@ -5869,7 +5875,7 @@ case 716:
 	  }
   break;
 case 717:
-#line 4862 "cs-parser.jay"
+#line 4868 "cs-parser.jay"
   {
 		Location l = lexer.Location;
 		start_block (l);  
@@ -5910,7 +5916,7 @@ case 717:
 	  }
   break;
 case 718:
-#line 4903 "cs-parser.jay"
+#line 4909 "cs-parser.jay"
   {
 		Location l = (Location) yyVals[-9+yyTop];
 
@@ -5922,19 +5928,19 @@ case 718:
 	  }
   break;
 case 719:
-#line 4915 "cs-parser.jay"
+#line 4921 "cs-parser.jay"
   { yyVal = EmptyStatement.Value; }
   break;
 case 723:
-#line 4925 "cs-parser.jay"
+#line 4931 "cs-parser.jay"
   { yyVal = null; }
   break;
 case 725:
-#line 4930 "cs-parser.jay"
+#line 4936 "cs-parser.jay"
   { yyVal = EmptyStatement.Value; }
   break;
 case 728:
-#line 4940 "cs-parser.jay"
+#line 4946 "cs-parser.jay"
   {
 		/* CHANGE: was `null'*/
 		Statement s = (Statement) yyVals[0+yyTop];
@@ -5945,7 +5951,7 @@ case 728:
 	  }
   break;
 case 729:
-#line 4949 "cs-parser.jay"
+#line 4955 "cs-parser.jay"
   {
 		Block b = (Block) yyVals[-2+yyTop];
 
@@ -5954,14 +5960,14 @@ case 729:
 	  }
   break;
 case 730:
-#line 4959 "cs-parser.jay"
+#line 4965 "cs-parser.jay"
   {
 		Report.Error (230, (Location) yyVals[-5+yyTop], "Type and identifier are both required in a foreach statement");
 		yyVal = null;
 	  }
   break;
 case 731:
-#line 4965 "cs-parser.jay"
+#line 4971 "cs-parser.jay"
   {
 		start_block (lexer.Location);
 		Block foreach_block = current_block;
@@ -5983,7 +5989,7 @@ case 731:
 	  }
   break;
 case 732:
-#line 4985 "cs-parser.jay"
+#line 4991 "cs-parser.jay"
   {
 		LocalVariableReference v = (LocalVariableReference) yyVals[-1+yyTop];
 		Location l = (Location) yyVals[-8+yyTop];
@@ -5997,50 +6003,50 @@ case 732:
 	  }
   break;
 case 739:
-#line 5009 "cs-parser.jay"
+#line 5015 "cs-parser.jay"
   {
 		yyVal = new Break ((Location) yyVals[-1+yyTop]);
 	  }
   break;
 case 740:
-#line 5016 "cs-parser.jay"
+#line 5022 "cs-parser.jay"
   {
 		yyVal = new Continue ((Location) yyVals[-1+yyTop]);
 	  }
   break;
 case 741:
-#line 5023 "cs-parser.jay"
+#line 5029 "cs-parser.jay"
   {
 		LocatedToken lt = (LocatedToken) yyVals[-1+yyTop];
 		yyVal = new Goto (lt.Value, lt.Location);
 	  }
   break;
 case 742:
-#line 5028 "cs-parser.jay"
+#line 5034 "cs-parser.jay"
   {
 		yyVal = new GotoCase ((Expression) yyVals[-1+yyTop], (Location) yyVals[-3+yyTop]);
 	  }
   break;
 case 743:
-#line 5032 "cs-parser.jay"
+#line 5038 "cs-parser.jay"
   {
 		yyVal = new GotoDefault ((Location) yyVals[-2+yyTop]);
 	  }
   break;
 case 744:
-#line 5039 "cs-parser.jay"
+#line 5045 "cs-parser.jay"
   {
 		yyVal = new Return ((Expression) yyVals[-1+yyTop], (Location) yyVals[-2+yyTop]);
 	  }
   break;
 case 745:
-#line 5046 "cs-parser.jay"
+#line 5052 "cs-parser.jay"
   {
 		yyVal = new Throw ((Expression) yyVals[-1+yyTop], (Location) yyVals[-2+yyTop]);
 	  }
   break;
 case 746:
-#line 5053 "cs-parser.jay"
+#line 5059 "cs-parser.jay"
   {
 		LocatedToken lt = (LocatedToken) yyVals[-3+yyTop];
 		string s = lt.Value;
@@ -6062,14 +6068,14 @@ case 746:
 	  }
   break;
 case 747:
-#line 5073 "cs-parser.jay"
+#line 5079 "cs-parser.jay"
   {
 		Report.Error (1627, (Location) yyVals[-1+yyTop], "Expression expected after yield return");
 		yyVal = null;
 	  }
   break;
 case 748:
-#line 5078 "cs-parser.jay"
+#line 5084 "cs-parser.jay"
   {
 		LocatedToken lt = (LocatedToken) yyVals[-2+yyTop];
 		string s = lt.Value;
@@ -6091,32 +6097,32 @@ case 748:
 	  }
   break;
 case 751:
-#line 5106 "cs-parser.jay"
+#line 5112 "cs-parser.jay"
   {
 		yyVal = new TryCatch ((Block) yyVals[-1+yyTop], (ArrayList) yyVals[0+yyTop], (Location) yyVals[-2+yyTop], false);
 	  }
   break;
 case 752:
-#line 5110 "cs-parser.jay"
+#line 5116 "cs-parser.jay"
   {
 		yyVal = new TryFinally ((Statement) yyVals[-2+yyTop], (Block) yyVals[0+yyTop], (Location) yyVals[-3+yyTop]);
 	  }
   break;
 case 753:
-#line 5114 "cs-parser.jay"
+#line 5120 "cs-parser.jay"
   {
 		yyVal = new TryFinally (new TryCatch ((Block) yyVals[-3+yyTop], (ArrayList) yyVals[-2+yyTop], (Location) yyVals[-4+yyTop], true), (Block) yyVals[0+yyTop], (Location) yyVals[-4+yyTop]);
 	  }
   break;
 case 754:
-#line 5118 "cs-parser.jay"
+#line 5124 "cs-parser.jay"
   {
 		Report.Error (1524, (Location) yyVals[-2+yyTop], "Expected catch or finally");
 		yyVal = null;
 	  }
   break;
 case 755:
-#line 5126 "cs-parser.jay"
+#line 5132 "cs-parser.jay"
   {
 		ArrayList l = new ArrayList (4);
 
@@ -6125,7 +6131,7 @@ case 755:
 	  }
   break;
 case 756:
-#line 5133 "cs-parser.jay"
+#line 5139 "cs-parser.jay"
   {
 		ArrayList l = (ArrayList) yyVals[-1+yyTop];
 
@@ -6134,11 +6140,11 @@ case 756:
 	  }
   break;
 case 757:
-#line 5142 "cs-parser.jay"
+#line 5148 "cs-parser.jay"
   { yyVal = null; }
   break;
 case 759:
-#line 5148 "cs-parser.jay"
+#line 5154 "cs-parser.jay"
   {
 		Expression type = null;
 		
@@ -6159,7 +6165,7 @@ case 759:
 	  }
   break;
 case 760:
-#line 5165 "cs-parser.jay"
+#line 5171 "cs-parser.jay"
   {
 		Expression type = null;
 		string id = null;
@@ -6180,41 +6186,41 @@ case 760:
 	  }
   break;
 case 761:
-#line 5186 "cs-parser.jay"
+#line 5192 "cs-parser.jay"
   { yyVal = null; }
   break;
 case 763:
-#line 5192 "cs-parser.jay"
+#line 5198 "cs-parser.jay"
   {
 		yyVal = new DictionaryEntry (yyVals[-2+yyTop], yyVals[-1+yyTop]);
 	  }
   break;
 case 764:
-#line 5200 "cs-parser.jay"
+#line 5206 "cs-parser.jay"
   {
 		yyVal = new Checked ((Block) yyVals[0+yyTop]);
 	  }
   break;
 case 765:
-#line 5207 "cs-parser.jay"
+#line 5213 "cs-parser.jay"
   {
 		yyVal = new Unchecked ((Block) yyVals[0+yyTop]);
 	  }
   break;
 case 766:
-#line 5214 "cs-parser.jay"
+#line 5220 "cs-parser.jay"
   {
 		RootContext.CheckUnsafeOption ((Location) yyVals[0+yyTop]);
 	  }
   break;
 case 767:
-#line 5216 "cs-parser.jay"
+#line 5222 "cs-parser.jay"
   {
 		yyVal = new Unsafe ((Block) yyVals[0+yyTop]);
 	  }
   break;
 case 768:
-#line 5225 "cs-parser.jay"
+#line 5231 "cs-parser.jay"
   {
 		ArrayList list = (ArrayList) yyVals[-1+yyTop];
 		Expression type = (Expression) yyVals[-2+yyTop];
@@ -6239,7 +6245,7 @@ case 768:
 	  }
   break;
 case 769:
-#line 5248 "cs-parser.jay"
+#line 5254 "cs-parser.jay"
   {
 		Location l = (Location) yyVals[-6+yyTop];
 
@@ -6251,7 +6257,7 @@ case 769:
 	  }
   break;
 case 770:
-#line 5260 "cs-parser.jay"
+#line 5266 "cs-parser.jay"
   { 
 	   	ArrayList declarators = new ArrayList (4);
 	   	if (yyVals[0+yyTop] != null)
@@ -6260,7 +6266,7 @@ case 770:
 	  }
   break;
 case 771:
-#line 5267 "cs-parser.jay"
+#line 5273 "cs-parser.jay"
   {
 		ArrayList declarators = (ArrayList) yyVals[-2+yyTop];
 		if (yyVals[0+yyTop] != null)
@@ -6269,7 +6275,7 @@ case 771:
 	  }
   break;
 case 772:
-#line 5277 "cs-parser.jay"
+#line 5283 "cs-parser.jay"
   {
 		LocatedToken lt = (LocatedToken) yyVals[-2+yyTop];
 		/* FIXME: keep location*/
@@ -6277,26 +6283,26 @@ case 772:
 	  }
   break;
 case 773:
-#line 5283 "cs-parser.jay"
+#line 5289 "cs-parser.jay"
   {
 		Report.Error (210, ((LocatedToken) yyVals[0+yyTop]).Location, "You must provide an initializer in a fixed or using statement declaration");
 		yyVal = null;
 	  }
   break;
 case 774:
-#line 5291 "cs-parser.jay"
+#line 5297 "cs-parser.jay"
   {
 		/**/
  	  }
   break;
 case 775:
-#line 5295 "cs-parser.jay"
+#line 5301 "cs-parser.jay"
   {
 		yyVal = new Lock ((Expression) yyVals[-3+yyTop], (Statement) yyVals[0+yyTop], (Location) yyVals[-5+yyTop]);
 	  }
   break;
 case 776:
-#line 5302 "cs-parser.jay"
+#line 5308 "cs-parser.jay"
   {
 		start_block (lexer.Location);
 		Block assign_block = current_block;
@@ -6340,7 +6346,7 @@ case 776:
 	  }
   break;
 case 777:
-#line 5344 "cs-parser.jay"
+#line 5350 "cs-parser.jay"
   {
 		Statement stmt = (Statement) yyVals[0+yyTop];
 		Stack vars = (Stack) yyVals[-1+yyTop];
@@ -6355,26 +6361,26 @@ case 777:
 	  }
   break;
 case 778:
-#line 5357 "cs-parser.jay"
+#line 5363 "cs-parser.jay"
   {
 		start_block (lexer.Location);
 	  }
   break;
 case 779:
-#line 5361 "cs-parser.jay"
+#line 5367 "cs-parser.jay"
   {
 		current_block.AddStatement (new UsingTemporary ((Expression) yyVals[-3+yyTop], (Statement) yyVals[0+yyTop], (Location) yyVals[-5+yyTop]));
 		yyVal = end_block (lexer.Location);
 	  }
   break;
 case 780:
-#line 5372 "cs-parser.jay"
+#line 5378 "cs-parser.jay"
   {
 		++lexer.query_parsing;
 	  }
   break;
 case 781:
-#line 5376 "cs-parser.jay"
+#line 5382 "cs-parser.jay"
   {
 		if (--lexer.query_parsing == 1)
 			lexer.query_parsing = 0;
@@ -6389,7 +6395,7 @@ case 781:
 	  }
   break;
 case 782:
-#line 5392 "cs-parser.jay"
+#line 5398 "cs-parser.jay"
   {
 		current_block = new Linq.QueryBlock (current_block, GetLocation (yyVals[-3+yyTop]));
 		LocatedToken lt = (LocatedToken) yyVals[-2+yyTop];
@@ -6399,7 +6405,7 @@ case 782:
 	  }
   break;
 case 783:
-#line 5400 "cs-parser.jay"
+#line 5406 "cs-parser.jay"
   {
 		current_block = new Linq.QueryBlock (current_block, GetLocation (yyVals[-4+yyTop]));
 		LocatedToken lt = (LocatedToken) yyVals[-2+yyTop];
@@ -6410,7 +6416,7 @@ case 783:
 	  }
   break;
 case 784:
-#line 5412 "cs-parser.jay"
+#line 5418 "cs-parser.jay"
   {
 		LocatedToken lt = (LocatedToken) yyVals[-2+yyTop];
 		
@@ -6421,7 +6427,7 @@ case 784:
 	  }
   break;
 case 785:
-#line 5421 "cs-parser.jay"
+#line 5427 "cs-parser.jay"
   {
 		LocatedToken lt = (LocatedToken) yyVals[-2+yyTop];
 
@@ -6431,7 +6437,7 @@ case 785:
 	  }
   break;
 case 786:
-#line 5432 "cs-parser.jay"
+#line 5438 "cs-parser.jay"
   {
 	  	Linq.AQueryClause head = (Linq.AQueryClause)yyVals[-1+yyTop];
 		
@@ -6448,26 +6454,26 @@ case 786:
 	  }
   break;
 case 787:
-#line 5450 "cs-parser.jay"
+#line 5456 "cs-parser.jay"
   {
 		yyVal = new Linq.Select ((Expression)yyVals[0+yyTop], GetLocation (yyVals[-1+yyTop]));
 	  }
   break;
 case 788:
-#line 5454 "cs-parser.jay"
+#line 5460 "cs-parser.jay"
   {
 	    yyVal = new Linq.GroupBy ((Expression)yyVals[-2+yyTop], (Expression)yyVals[0+yyTop], GetLocation (yyVals[-3+yyTop]));
 	  }
   break;
 case 792:
-#line 5467 "cs-parser.jay"
+#line 5473 "cs-parser.jay"
   {
 		((Linq.AQueryClause)yyVals[-1+yyTop]).Tail.Next = (Linq.AQueryClause)yyVals[0+yyTop];
 		yyVal = yyVals[-1+yyTop];
 	  }
   break;
 case 798:
-#line 5483 "cs-parser.jay"
+#line 5489 "cs-parser.jay"
   {
 		LocatedToken lt = (LocatedToken) yyVals[-2+yyTop];
 		current_block.AddVariable (Linq.ImplicitQueryParameter.ImplicitType.Instance,
@@ -6476,13 +6482,13 @@ case 798:
 	  }
   break;
 case 799:
-#line 5493 "cs-parser.jay"
+#line 5499 "cs-parser.jay"
   {
 		yyVal = new Linq.Where ((Expression)yyVals[0+yyTop], GetLocation (yyVals[-1+yyTop]));
 	  }
   break;
 case 800:
-#line 5500 "cs-parser.jay"
+#line 5506 "cs-parser.jay"
   {
 		Location loc = GetLocation (yyVals[-8+yyTop]);
 		LocatedToken lt = (LocatedToken) yyVals[-7+yyTop];
@@ -6500,7 +6506,7 @@ case 800:
 	  }
   break;
 case 801:
-#line 5516 "cs-parser.jay"
+#line 5522 "cs-parser.jay"
   {
 		Location loc = GetLocation (yyVals[-9+yyTop]);
 		LocatedToken lt = (LocatedToken) yyVals[-7+yyTop];
@@ -6518,75 +6524,75 @@ case 801:
 	  }
   break;
 case 803:
-#line 5536 "cs-parser.jay"
+#line 5542 "cs-parser.jay"
   {
 	  	yyVal = yyVals[0+yyTop];
 	  }
   break;
 case 804:
-#line 5543 "cs-parser.jay"
+#line 5549 "cs-parser.jay"
   {
 		yyVal = yyVals[0+yyTop];
 	  }
   break;
 case 806:
-#line 5551 "cs-parser.jay"
+#line 5557 "cs-parser.jay"
   {
 		((Linq.AQueryClause)yyVals[-2+yyTop]).Next = (Linq.AQueryClause)yyVals[0+yyTop];
 		yyVal = yyVals[-2+yyTop];
 	  }
   break;
 case 807:
-#line 5559 "cs-parser.jay"
+#line 5565 "cs-parser.jay"
   {
 		yyVal = yyVals[0+yyTop];
 	  }
   break;
 case 808:
-#line 5563 "cs-parser.jay"
+#line 5569 "cs-parser.jay"
   {
 		((Linq.AQueryClause)yyVals[-2+yyTop]).Tail.Next = (Linq.AQueryClause)yyVals[0+yyTop];
 		yyVal = yyVals[-2+yyTop];
 	  }
   break;
 case 809:
-#line 5571 "cs-parser.jay"
+#line 5577 "cs-parser.jay"
   {
 		yyVal = new Linq.OrderByAscending ((Expression)yyVals[0+yyTop]);	
 	  }
   break;
 case 810:
-#line 5575 "cs-parser.jay"
+#line 5581 "cs-parser.jay"
   {
 		yyVal = new Linq.OrderByAscending ((Expression)yyVals[-1+yyTop]);	
 	  }
   break;
 case 811:
-#line 5579 "cs-parser.jay"
+#line 5585 "cs-parser.jay"
   {
 		yyVal = new Linq.OrderByDescending ((Expression)yyVals[-1+yyTop]);	
 	  }
   break;
 case 812:
-#line 5586 "cs-parser.jay"
+#line 5592 "cs-parser.jay"
   {
 		yyVal = new Linq.ThenByAscending ((Expression)yyVals[0+yyTop]);	
 	  }
   break;
 case 813:
-#line 5590 "cs-parser.jay"
+#line 5596 "cs-parser.jay"
   {
 		yyVal = new Linq.ThenByAscending ((Expression)yyVals[-1+yyTop]);	
 	  }
   break;
 case 814:
-#line 5594 "cs-parser.jay"
+#line 5600 "cs-parser.jay"
   {
 		yyVal = new Linq.ThenByDescending ((Expression)yyVals[-1+yyTop]);	
 	  }
   break;
 case 816:
-#line 5603 "cs-parser.jay"
+#line 5609 "cs-parser.jay"
   {
 		/* query continuation block is not linked with query block but with block*/
 		/* before. This means each query can use same range variable names for*/
@@ -6602,7 +6608,7 @@ case 816:
 	  }
   break;
 case 817:
-#line 5617 "cs-parser.jay"
+#line 5623 "cs-parser.jay"
   {
   		yyVal = new Linq.QueryExpression ((LocatedToken) yyVals[-2+yyTop],
   			(Linq.AQueryClause)yyVals[0+yyTop]);
@@ -9674,7 +9680,7 @@ case 817:
    -1,  339,
   };
 
-#line 5624 "cs-parser.jay"
+#line 5630 "cs-parser.jay"
 
 // <summary>
 //   A class used to pass around variable declarations and constants
