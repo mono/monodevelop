@@ -138,8 +138,8 @@ namespace Mono.TextEditor
 				ReplaceEventArgs args = new ReplaceEventArgs (0, oldLength, new StringBuilder (value));
 				this.OnTextReplacing (args);
 				this.buffer.Text = value;
-				UpdateHighlighting ();
 				splitter.TextReplaced (this, args);
+				UpdateHighlighting ();
 				this.OnTextReplaced (args);
 			}
 		}

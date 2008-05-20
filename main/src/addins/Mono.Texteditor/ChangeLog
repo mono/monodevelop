@@ -1,3 +1,9 @@
+2008-05-20  Mike Krüger <mkrueger@novell.com> 
+
+	* Mono.TextEditor/Document.cs: fixed 'Bug 385844 - XML syntax
+	  highlighting is unreliable' & 'Bug 389352 - Regression: big comment
+	  is not coloured'.
+
 2008-05-19  Mike Krüger <mkrueger@novell.com> 
 
 	* Mono.TextEditor/TextEditor.cs: Optimized background buffer.
