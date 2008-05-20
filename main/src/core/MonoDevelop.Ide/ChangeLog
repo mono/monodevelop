@@ -1,3 +1,8 @@
+2008-05-20  Zach Lute <zach.lute@gmail.com> 
+
+	* MonoDevelop.Ide.Gui.Dialogs/GoToDialog.cs: Fixed a NPE if the
+	  GoToDialog was closed while populating the tree. (Bug #391091)
+
 2008-05-19  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.addin.xml: Fix bug #375128 - Not all menu items in

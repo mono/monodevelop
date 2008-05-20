@@ -472,6 +472,9 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 
 		private void Select (TreeIter iter)
 		{
+			if ( tree.Selection == null )
+				return;
+			
 			tree.Selection.SelectIter (iter);
 			TreePath path = model.GetPath (iter);
 			tree.ScrollToCell (path, null, false, 0, 0);
