@@ -114,7 +114,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 			return false;
 		}
 		
-		bool FindCategory (string category, ref TreeIter iter)
+		bool FindCategoryAtCurrentLevel (string category, ref TreeIter iter)
 		{
 			TreeIter trial = iter;
 			do {
@@ -137,12 +137,12 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 			
 			TreeIter nextIter = iter;
 			for (int i = 0; i < cats.Length; i++) {
-				if (FindCategory (cats[i], ref nextIter)) {
+				if (FindCategoryAtCurrentLevel (cats[i], ref nextIter)) {
 					iter = nextIter;
 					if (i >= cats.Length - 1 || !catStore.IterChildren (out nextIter, nextIter))
 						break;
 				} else if (i == 0) {
-					FindCategory ("C#", ref iter);
+					FindCategoryAtCurrentLevel ("C#", ref iter);
 					break;
 				}
 			}

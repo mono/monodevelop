@@ -1,5 +1,12 @@
 2008-05-20  Michael Hutchinson <mhutchinson@novell.com> 
 
+	* MonoDevelop.Ide.Gui.Dialogs/NewProjectDialog.cs: More descriptive
+	  method name.
+	* MonoDevelop.Ide.Gui.Dialogs/NewFileDialog.cs: Store last selected
+	  category for each different project and language type.
+
+2008-05-20  Michael Hutchinson <mhutchinson@novell.com> 
+
 	* MonoDevelop.Ide.Gui.Dialogs/NewProjectDialog.cs: Implement restoring
 	  selection of child categories.
 

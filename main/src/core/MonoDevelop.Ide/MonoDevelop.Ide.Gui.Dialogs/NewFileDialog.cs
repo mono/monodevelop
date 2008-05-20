@@ -51,7 +51,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		PixbufList cat_imglist;
 
 		TreeStore catStore;
-		const string defaultSelectedCategory = "General";
 		
 		// Add To Project widgets
 		Combine solution;
@@ -128,26 +127,66 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			InsertCategories(TreeIter.Zero, categories);
 			
 			//select the most recently selected category (with a few fallbacks)
-			string lastSelected = PropertyService.Get<string> ("Dialogs.NewFileDialog.LastSelectedCategory", defaultSelectedCategory);
-			TreeIter iterToSelect = FindIterMatchingString (catStore, lastSelected);
-			if (TreeIter.Zero.Equals (iterToSelect))
-				iterToSelect = FindIterMatchingString (catStore, defaultSelectedCategory);
-			if (TreeIter.Zero.Equals (iterToSelect))
-				catStore.GetIterFirst (out iterToSelect);
-			if (catStore.IterIsValid (iterToSelect))
+			string lastSelected = PropertyService.Get<string> (GetCategoryPropertyKey (parentProject), "General");
+			TreeIter iterToSelect;
+			if (FindCatIter (lastSelected, out iterToSelect)
+			    || FindCatIter ("Misc", out iterToSelect)
+			    || catStore.GetIterFirst (out iterToSelect)) {
 				catView.Selection.SelectIter (iterToSelect);
+			}
 		}
 		
-		TreeIter FindIterMatchingString (TreeModel model, string firstColStringMatch)
+		static string GetCategoryPropertyKey (Project proj)
 		{
-			TreeIter iter;
-			model.GetIterFirst (out iter);
-			do {
-				if (((string)model.GetValue (iter, 0)) == firstColStringMatch) {
-					return iter;
+			string key = "Dialogs.NewFileDialog.LastSelectedCategory";
+			if (proj != null) {
+				key += "." + proj.ProjectType;
+				if (proj is DotNetProject)
+					key += "." + ((DotNetProject)proj).LanguageName;
+			}
+			return key;
+		}
+		
+		bool FindCatIter (string catPath, out TreeIter iter)
+		{
+			string[] cats = catPath.Split ('/');
+			iter = TreeIter.Zero;
+			
+			TreeIter nextIter;
+			if (!catStore.GetIterFirst (out nextIter))
+				return false;
+			
+			for (int i = 0; i < cats.Length; i++) {
+				if (FindCategoryAtCurrentLevel (cats[i], ref nextIter)) {
+					iter = nextIter;
+					if (i >= cats.Length - 1 || !catStore.IterChildren (out nextIter, nextIter))
+						return true;
 				}
-			} while (model.IterNext (ref iter));
-			return TreeIter.Zero;
+			}
+			return false;
+		}
+		
+		bool FindCategoryAtCurrentLevel (string category, ref TreeIter iter)
+		{
+			TreeIter trial = iter;
+			do {
+				string val = (string)catStore.GetValue (trial, 0);
+				if (val == category) {
+					iter = trial;
+					return true;
+				}
+			} while (catStore.IterNext (ref trial));
+			return false;
+		}
+		
+		string GetCatPath (TreeIter iter)
+		{
+			TreeIter currentIter = iter;
+			string path = (string) catStore.GetValue (currentIter, 0);
+			while (catStore.IterParent (out currentIter, currentIter)) {
+				path = ((string) catStore.GetValue (currentIter, 0)) + "/" + path;
+			}
+			return path;
 		}
 		
 		void InsertCategories(TreeIter node, List<Category> catarray)
@@ -385,7 +424,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			//PropertyService.Set("Dialogs.NewProjectDialog.LargeImages", ((RadioButton)ControlDictionary["largeIconsRadioButton"]).Checked);
 			TreeIter selectedIter;
 			if (catView.Selection.GetSelected (out selectedIter))
-				PropertyService.Set("Dialogs.NewFileDialog.LastSelectedCategory", (string)catStore.GetValue (selectedIter, 0));
+				PropertyService.Set (GetCategoryPropertyKey (parentProject), GetCatPath (selectedIter));
 			
 			if (iconView.CurrentlySelected != null && nameEntry.Text.Length > 0) {
 				TemplateItem titem = (TemplateItem) iconView.CurrentlySelected;
