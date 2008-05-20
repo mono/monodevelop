@@ -614,13 +614,14 @@ namespace Mono.TextEditor
 				}
 			}
 			if (button == 2)  {
-				int length = PasteAction.PasteFromPrimary (textEditor.GetTextEditorData ());
+				int offset = Document.LocationToOffset (VisualToDocumentLocation (x, y));
+				int length = PasteAction.PasteFromPrimary (textEditor.GetTextEditorData (), offset);
 				int newOffset = textEditor.Caret.Offset;
 				if (selection != null) {
 					if (newOffset < selection.EndOffset) {
 						oldOffset += length;
 						anchor   += length;
-						selection = new Segment (selection.Offset + length, selection.Length);
+						selection = new Segment (selection.Offset + length + 1, selection.Length);
 					}
 					textEditor.Caret.Offset = oldOffset;
 					textEditor.SelectionAnchor = anchor;

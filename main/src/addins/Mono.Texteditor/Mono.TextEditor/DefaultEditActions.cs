@@ -892,6 +892,7 @@ namespace Mono.TextEditor
 					System.Console.WriteLine("Copy data failed - unable to get text at:" + segment);
 					throw;
 				}
+				
 				try {
 					rtf  = GenerateRtf (data);
 				} catch (Exception) {
@@ -920,10 +921,10 @@ namespace Mono.TextEditor
 		{
 			this.data      = data;
 			this.selection = data.SelectionRange;
-			
 			Clipboard clipboard = Clipboard.Get (CopyAction.PRIMARYCLIPBOARD_ATOM);
 			clipboard.SetWithData ((Gtk.TargetEntry[])TargetList, ClipboardGetFuncLazy, ClipboardClearFunc);
 		}
+		
 		public void ClearPrimary ()
 		{
 			Clipboard clipboard = Clipboard.Get (CopyAction.PRIMARYCLIPBOARD_ATOM);
@@ -949,30 +950,37 @@ namespace Mono.TextEditor
 	
 	public class PasteAction : EditAction
 	{
-		static int PasteFrom (Clipboard clipboard, TextEditorData data)
+		static int PasteFrom (Clipboard clipboard, TextEditorData data, bool preserveSelection, int insertionOffset)
 		{
 			int result = -1;
-			if (clipboard.WaitIsTextAvailable ()) {
+			clipboard.RequestText (delegate (Clipboard clp, string text) {
 				data.Document.BeginAtomicUndo ();
-				if (data.IsSomethingSelected) {
+				if (preserveSelection && data.IsSomethingSelected) 
 					data.DeleteSelectedText ();
-				}
-				StringBuilder sb = new StringBuilder (clipboard.WaitForText ());
-				data.Document.Insert (data.Caret.Offset, sb);
+				
+				data.Caret.PreserveSelection = true;
+				StringBuilder sb = new StringBuilder (text);
+				data.Document.Insert (insertionOffset, sb);
 				//int oldLine = data.Caret.Line;
 				result = sb.Length;
-				data.Caret.Offset += sb.Length;
+				if (data.Caret.Offset >= insertionOffset) 
+					data.Caret.Offset += sb.Length;
+				if (data.IsSomethingSelected && data.SelectionRange.Offset >= insertionOffset) 
+					data.SelectionRange.Offset += sb.Length;
+				if (data.IsSomethingSelected && data.SelectionAnchor >= insertionOffset) 
+					data.SelectionAnchor += sb.Length;
+				data.Caret.PreserveSelection = false;
 				data.Document.EndAtomicUndo ();
-			}
+			});
 			return result;
 		}
-		public static int PasteFromPrimary (TextEditorData data)
+		public static int PasteFromPrimary (TextEditorData data, int insertionOffset)
 		{
-			return PasteFrom (Clipboard.Get (CopyAction.PRIMARYCLIPBOARD_ATOM), data);
+			return PasteFrom (Clipboard.Get (CopyAction.PRIMARYCLIPBOARD_ATOM), data, false, insertionOffset);
 		}
 		public override void Run (TextEditorData data)
 		{
-			PasteFrom (Clipboard.Get (CopyAction.CLIPBOARD_ATOM), data);
+			PasteFrom (Clipboard.Get (CopyAction.CLIPBOARD_ATOM), data, true, data.Caret.Offset);
 		}
 	}
 #endregion

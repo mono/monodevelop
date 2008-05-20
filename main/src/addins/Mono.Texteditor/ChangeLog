@@ -1,5 +1,11 @@
 2008-05-20  Mike Krüger <mkrueger@novell.com> 
 
+	* Mono.TextEditor/DefaultEditActions.cs,
+	  Mono.TextEditor/TextViewMargin.cs: fixed 'Bug 389561 - Regression:
+	  Middle-click paste does not insert at cursor location'.
+
+2008-05-20  Mike Krüger <mkrueger@novell.com> 
+
 	* Mono.TextEditor/Document.cs: fixed 'Bug 385844 - XML syntax
 	  highlighting is unreliable' & 'Bug 389352 - Regression: big comment
 	  is not coloured'.
