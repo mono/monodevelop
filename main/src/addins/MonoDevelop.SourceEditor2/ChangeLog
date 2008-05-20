@@ -1,5 +1,10 @@
 2008-05-20  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.SourceEditor/SourceEditorWidget.cs: fixed 'Bug 384665 -
+	  Gtk-critical showed in console'.
+
+2008-05-20  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.SourceEditor/SourceEditorWidget.cs: fixed 'Bug 385457 -
 	  Folding in the middle of a method'.
 

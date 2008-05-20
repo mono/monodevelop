@@ -622,9 +622,9 @@ namespace MonoDevelop.SourceEditor
 		public void RemoveReloadBar ()
 		{
 			if (reloadBar != null) {
-				editorBar.Remove (reloadBar);
+				if (reloadBar.Parent == editorBar)
+					editorBar.Remove (reloadBar);
 				reloadBar.Destroy ();
-				reloadBar.Dispose ();
 				reloadBar = null;
 			}
 		}
