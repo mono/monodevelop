@@ -152,6 +152,8 @@ namespace MonoDevelop.CSharpBinding
 				}
 			}
 			
+			return null;
+			/*
 			return new MonoDevelop.Ide.Dom.DomType (unit,
 			                                        ClassType.Class,
 			                                        type.Name,
@@ -159,6 +161,7 @@ namespace MonoDevelop.CSharpBinding
 			                                        nsName, 
 			                                        Block2Region (type.LocationBlock),
 			                                        members);
+			                                        */
 		}
 		
 		public ICompilationUnit Parse (string fileName, string content)
