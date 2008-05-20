@@ -114,19 +114,31 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 			return false;
 		}
 		
+		void SelectCategory (string category)
+		{
+			TreeIter iter;
+			TreeIter defaultIter;
+			if (catStore.GetIterFirst (out iter)) {
+				defaultIter = iter;
+				do {
+					string cat = (string)catStore.GetValue (iter, 0);
+					if (cat == category) {
+						lst_template_types.Selection.SelectIter (iter);
+						return;
+					} else if (cat == "C#") {
+						defaultIter = iter;
+					}
+				} while (catStore.IterNext (ref iter));
+				
+				lst_template_types.Selection.SelectIter (defaultIter);
+			}
+		}
+		
 		void InitializeView()
 		{
 			InsertCategories (TreeIter.Zero, categories);
-			/*for (int j = 0; j < categories.Count; ++j) {
-				if (((Category)categories[j]).Name == PropertyService.Get("Dialogs.NewProjectDialog.LastSelectedCategory", "C#")) {
-					((TreeView)ControlDictionary["categoryTreeView"]).SelectedNode = (TreeNode)((TreeView)ControlDictionary["categoryTreeView"]).Nodes[j];
-					break;
-				}
-			}*/
 			catStore.SetSortColumnId (0, SortType.Ascending);
-			TreeIter first;
-			if (catStore.GetIterFirst (out first))
-				lst_template_types.Selection.SelectIter (first);
+			SelectCategory (PropertyService.Get<string>("Dialogs.NewProjectDialog.LastSelectedCategory", "C#"));
 			ShowAll ();
 		}
 		
@@ -339,7 +351,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 		bool CreateProject ()
 		{
 			if (TemplateView.CurrentlySelected != null) {
-				PropertyService.Set("Dialogs.NewProjectDialog.LastSelectedCategory", ((ProjectTemplate)TemplateView.CurrentlySelected).Name);
+				PropertyService.Set("Dialogs.NewProjectDialog.LastSelectedCategory",  ((ProjectTemplate)TemplateView.CurrentlySelected).Category);
 				//PropertyService.Set("Dialogs.NewProjectDialog.LargeImages", ((RadioButton)ControlDictionary["largeIconsRadioButton"]).Checked);
 			}
 			

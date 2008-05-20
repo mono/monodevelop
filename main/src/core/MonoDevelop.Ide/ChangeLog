@@ -1,5 +1,12 @@
 2008-05-20  Michael Hutchinson <mhutchinson@novell.com> 
 
+	* MonoDevelop.Ide.Gui.Dialogs/NewProjectDialog.cs: Restore
+	  functionality to auto-select last selected category, defaulting to
+	  C#. Fixes "Bug 392561 - Should default to C# language -> empty
+	  project when creating new solution/project".
+
+2008-05-20  Michael Hutchinson <mhutchinson@novell.com> 
+
 	* MonoDevelop.Ide.Gui/SdiWorkspaceWindow.cs: Remove unnecessary
 	  operation, fixing a Gtk-Warning.
 
