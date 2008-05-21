@@ -486,6 +486,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 				Hashtable grps = new Hashtable ();
 				foreach (ProjectFile file in project.Files) {
+					if (file.Subtype == Subtype.Directory)
+						continue;
 					string itemName;
 					switch (file.BuildAction) {
 						case BuildAction.Compile: itemName = "Compile"; break;

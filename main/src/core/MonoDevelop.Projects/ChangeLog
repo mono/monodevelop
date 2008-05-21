@@ -1,5 +1,10 @@
 2008-05-21  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectHandler.cs: Don't
+	  store folders. Not yet supported.
+
+2008-05-21  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectHandler.cs,
 	  MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectService.cs,
 	  MonoDevelop.Projects.mdp, Makefile.am: Remove msbuild dependency.
