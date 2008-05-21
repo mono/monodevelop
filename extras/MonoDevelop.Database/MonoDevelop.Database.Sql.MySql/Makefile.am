@@ -7,6 +7,7 @@ REFS =  \
 	-r:$(top_builddir)/build/MonoDevelop.Database.Designer.dll \
 	-r:$(top_builddir)/build/MonoDevelop.Database.Sql.dll \
 	-r:$(top_srcdir)/contrib/MySql/MySql.Data.dll \
+	-r:/home/lluis/install/lib/monodevelop/bin/MonoDevelop.Projects.Gui.dll \
 	-r:Mono.Posix \
 	-r:System \
 	-r:System.Data

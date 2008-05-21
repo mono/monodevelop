@@ -6,6 +6,8 @@ REFS =  \
 	$(GTKSOURCEVIEW_SHARP_LIBS) \
 	$(MONO_ADDINS_LIBS) \
 	$(MONODEVELOP_LIBS) \
+	-r:../../../../../install/lib/monodevelop/bin/MonoDevelop.Projects.dll \
+	-r:../../../../../install/lib/monodevelop/bin/MonoDevelop.Projects.Gui.dll \
 	-r:../build/MonoDevelop.Database.Sql.dll \
 	-r:Mono.Posix \
 	-r:System \

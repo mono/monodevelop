@@ -56,14 +56,14 @@ namespace MonoDevelop.Database.CodeGenerator
 		protected override void Update (CommandInfo info)
 		{
 			int count = ConnectionContextService.DatabaseConnections.Count;
-			Combine combine = IdeApp.ProjectOperations.CurrentOpenCombine;
+			Solution combine = IdeApp.ProjectOperations.CurrentSelectedSolution;
 			if (count == 0 || combine == null) {
 				info.Enabled = false;
 				return;
 			}
 
 			//only enable the command if 1 or more code projects exist 
-			foreach (CombineEntry entry in combine.Entries) {
+			foreach (SolutionItem entry in combine.Items) {
 				if (!(entry is DotNetProject))
 					continue;
 				

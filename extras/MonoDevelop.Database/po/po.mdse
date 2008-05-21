@@ -1,5 +1,5 @@
 <CombineEntry name="po" fileversion="2.0" packageName="monodevelop-database" outputType="RelativeToOutput" relPath="locale" absPath="" ctype="TranslationProject">
-  <Configurations>
+  <Configurations active="Debug">
     <Configuration name="Debug" ctype="TranslationProjectConfiguration" />
     <Configuration name="Release" ctype="TranslationProjectConfiguration" />
   </Configurations>

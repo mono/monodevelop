@@ -1,4 +1,4 @@
-﻿//
+//
 // Authors:
 //   Ben Motmans  <ben.motmans@gmail.com>
 //
@@ -75,13 +75,13 @@ namespace MonoDevelop.Database.Components
 		
 		private void PopulateCombo ()
 		{			
-			Combine cmb = IdeApp.ProjectOperations.CurrentOpenCombine;
+			Solution cmb = IdeApp.ProjectOperations.CurrentSelectedSolution;
 			if (cmb != null) {
-				CombineEntry selected = IdeApp.ProjectOperations.CurrentSelectedCombineEntry;
+				SolutionItem selected = IdeApp.ProjectOperations.CurrentSelectedSolutionItem;
 				TreeIter activeIter = TreeIter.Zero;
 
 				//TODO: add support for recursive combines
-				foreach (CombineEntry entry in cmb.Entries) {
+				foreach (SolutionItem entry in cmb.Items) {
 					if (!(entry is DotNetProject))
 						continue;
 				

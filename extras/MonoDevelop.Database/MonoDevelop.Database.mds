@@ -15,7 +15,7 @@
       <Entry build="True" name="MonoDevelop.Database.ConnectionManager" configuration="Debug" />
       <Entry build="True" name="MonoDevelop.Database.Components" configuration="Debug" />
       <Entry build="True" name="MonoDevelop.Database.Designer" configuration="Debug" />
-      <Entry build="True" name="po" configuration="" />
+      <Entry build="True" name="po" configuration="Debug" />
       <Entry build="True" name="MonoDevelop.Database.CodeGenerator" configuration="Debug" />
     </Configuration>
     <Configuration name="Release" ctype="CombineConfiguration">
@@ -33,17 +33,14 @@
       <Entry build="True" name="MonoDevelop.Database.ConnectionManager" configuration="Release" />
       <Entry build="True" name="MonoDevelop.Database.Components" configuration="Release" />
       <Entry build="True" name="MonoDevelop.Database.Designer" configuration="Release" />
-      <Entry build="True" name="po" configuration="" />
+      <Entry build="True" name="po" configuration="Release" />
       <Entry build="True" name="MonoDevelop.Database.CodeGenerator" configuration="Release" />
     </Configuration>
   </Configurations>
-  <StartMode startupentry="MonoDevelop.Database.Sql.Tests" single="False">
+  <StartMode startupentry="MonoDevelop.Database.Sql.Tests" single="True">
     <Execute type="None" entry="MonoDevelop.Database.Sql" />
     <Execute type="None" entry="MonoDevelop.Database.Sql.Tests" />
-    <Execute type="None" entry="MonoDevelop.Database.Components" />
     <Execute type="None" entry="MonoDevelop.Database.Query" />
-    <Execute type="None" entry="MonoDevelop.Database.Designer" />
-    <Execute type="None" entry="MonoDevelop.Database.ConnectionManager" />
     <Execute type="None" entry="MonoDevelop.Database.Sql.Sybase" />
     <Execute type="None" entry="MonoDevelop.Database.Sql.MySql" />
     <Execute type="None" entry="MonoDevelop.Database.Sql.Firebird" />
@@ -52,6 +49,9 @@
     <Execute type="None" entry="MonoDevelop.Database.Sql.Oracle" />
     <Execute type="None" entry="MonoDevelop.Database.Sql.Npgsql" />
     <Execute type="None" entry="MonoDevelop.Database.Sql.Odbc" />
+    <Execute type="None" entry="MonoDevelop.Database.ConnectionManager" />
+    <Execute type="None" entry="MonoDevelop.Database.Components" />
+    <Execute type="None" entry="MonoDevelop.Database.Designer" />
     <Execute type="None" entry="po" />
     <Execute type="None" entry="MonoDevelop.Database.CodeGenerator" />
   </StartMode>

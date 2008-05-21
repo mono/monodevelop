@@ -1,3 +1,7 @@
+2008-05-21  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Commands/ToolCommands.cs: New project model changes and updates.
+
 2008-03-10  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Dialogs/GenerateDataClassesDialog.cs: Track changes in the
