@@ -171,6 +171,63 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
+		internal void SetBestStartupProject ()
+		{
+			if (!IsOpen) {
+				StartupItem = null;
+				return;
+			}
+			if (!SetBestStartupProject (true) && !SetBestStartupProject (false))
+				StartupItem = null;
+		}
+		
+		bool SetBestStartupProject (bool findExe)
+		{
+			Solution sol = IdeApp.ProjectOperations.CurrentSelectedSolution;
+			if (sol != null && SetBestStartupProjectInSolution (sol, findExe))
+				return true;
+			
+			WorkspaceItem it = IdeApp.ProjectOperations.CurrentSelectedWorkspaceItem;
+			if (it != null && SetBestStartupProjectInWorkspace (it, findExe))
+				return true;
+
+			foreach (WorkspaceItem wit in Items) {
+				foreach (WorkspaceItem cit in wit.GetAllItems ()) {
+					if (SetBestStartupProjectInWorkspace (cit, findExe))
+						return true;
+				}
+			}
+			return false;
+		}
+		
+		bool SetBestStartupProjectInWorkspace (WorkspaceItem it, bool findExe)
+		{
+			foreach (Solution sol in it.GetAllSolutions ()) {
+				if (SetBestStartupProjectInSolution (sol, findExe))
+					return true;
+			}
+			return false;
+		}
+		
+		bool SetBestStartupProjectInSolution (Solution sol, bool findExe)
+		{
+			if (!findExe) {
+				System.Collections.ObjectModel.ReadOnlyCollection<Project> ps = sol.GetAllProjects ();
+				if (ps.Count > 0) {
+					StartupItem = ps [0];
+					return true;
+				}
+			} else {
+				foreach (DotNetProject p in sol.GetAllSolutionItems<DotNetProject> ()) {
+					if (p.CompileTarget == CompileTarget.Exe || p.CompileTarget == CompileTarget.WinExe) {
+						StartupItem = p;
+						return true;
+					}
+				}
+			}
+			return false;
+		}
+		
 		public PropertyBag GetUserPreferences (WorkspaceItem item)
 		{
 			PropertyBag props;
@@ -275,7 +332,12 @@ namespace MonoDevelop.Ide.Gui
 
 		public IAsyncOperation Execute ()
 		{
-			return IdeApp.ProjectOperations.Execute (this);
+			if (startupItem != null)
+				return IdeApp.ProjectOperations.Execute (startupItem);
+			else {
+				MessageService.ShowError (GettextCatalog.GetString ("Startup project not set"), GettextCatalog.GetString ("To set a startup project, select the project in the solution pad an click on the option 'Set as Startup Project' in the contextual menu."));
+				return null;
+			}
 		}
 		
 		public void Dispose ()
@@ -308,7 +370,10 @@ namespace MonoDevelop.Ide.Gui
 
 		public void Execute (MonoDevelop.Core.IProgressMonitor monitor, ExecutionContext context, string configuration)
 		{
-			throw new NotImplementedException();
+			if (startupItem != null)
+				startupItem.Execute (monitor, context, configuration);
+			else
+				throw new UserException (GettextCatalog.GetString ("Startup project not set"));
 		}
 		
 		public bool NeedsBuilding ()
@@ -502,6 +567,8 @@ namespace MonoDevelop.Ide.Gui
 				using (monitor) {
 					if (Items.Count == 1)
 						RestoreWorkspacePreferences (item);
+					if (StartupItem == null)
+						SetBestStartupProject ();
 					monitor.ReportSuccess (GettextCatalog.GetString ("Solution loaded."));
 				}
 			});
@@ -608,7 +675,7 @@ namespace MonoDevelop.Ide.Gui
 				WorkspaceUserData data = props.GetValue<WorkspaceUserData> ("MonoDevelop.Ide.Workspace");
 				if (data != null) {
 					ActiveConfiguration = data.ActiveConfiguration;
-					if (data.StartupItem != null)
+					if (data.StartupItem != null && StartupItem == null)
 						StartupItem = FindSolutionItem (data.StartupItem);
 				}
 			}
@@ -948,7 +1015,7 @@ namespace MonoDevelop.Ide.Gui
 			if (e == IdeApp.ProjectOperations.CurrentSelectedSolutionItem)
 				IdeApp.ProjectOperations.CurrentSelectedSolutionItem = null;
 			if (e == startupItem)
-				StartupItem = null;
+				SetBestStartupProject ();
 				
 			if (e is SolutionFolder) {
 				foreach (SolutionItem ce in ((SolutionFolder)e).Items)
@@ -1000,6 +1067,9 @@ namespace MonoDevelop.Ide.Gui
 					WorkspaceItemUnloaded (this, new WorkspaceItemEventArgs (item));
 				if (item is Solution && SolutionUnloaded != null)
 					SolutionUnloaded (this, new SolutionEventArgs ((Solution)item));
+				if (startupItem != null && ProjectOperations.ContainsTarget (item, startupItem)) {
+					SetBestStartupProject ();
+				}
 			} catch (Exception ex) {
 				LoggingService.LogError ("Error in SolutionClosed event.", ex);
 			}

@@ -168,7 +168,7 @@ namespace MonoDevelop.Ide.Gui
 			return !currentRunOperation.IsCompleted && ContainsTarget (target, currentRunOperationOwner);
 		}
 		
-		bool ContainsTarget (IBuildTarget owner, IBuildTarget target)
+		internal static bool ContainsTarget (IBuildTarget owner, IBuildTarget target)
 		{
 			if (owner == target) {
 				return true;

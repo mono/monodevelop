@@ -450,12 +450,15 @@ namespace MonoDevelop.Ide.Gui
 				TextEditorProperties.Properties,
 				"/MonoDevelop/Ide/GlobalOptionsDialog");
 
-			if (panelId != null)
-				ops.SelectPanel (panelId);
-			if (ops.Run () == (int) Gtk.ResponseType.Ok) {
-				PropertyService.SaveProperties ();
+			try {
+				if (panelId != null)
+					ops.SelectPanel (panelId);
+				if (ops.Run () == (int) Gtk.ResponseType.Ok) {
+					PropertyService.SaveProperties ();
+				}
+			} finally {
+				ops.Destroy ();
 			}
-			ops.Destroy ();
 		}
 		
 		internal void ShowNext ()

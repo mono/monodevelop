@@ -1,5 +1,13 @@
 2008-05-21  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Ide.Gui/RootWorkspace.cs,
+	  MonoDevelop.Ide.Gui/ProjectOperations.cs: Always try to set a valid
+	  startup project when the workspace solutions change.
+	* MonoDevelop.Ide.Gui/Workbench.cs: Ensure the MD options panel is
+	  properly destroyed.
+
+2008-05-21  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Ide.CodeTemplates/CodeTemplateGroup.cs: Fix bug 372041 -
 	  Additional code template groups are not loaded after a restart.
 	  Patch by Levi Bard.
