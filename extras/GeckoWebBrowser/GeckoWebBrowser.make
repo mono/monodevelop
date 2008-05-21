@@ -59,6 +59,8 @@ EXTRAS = \
 	monodevelop-geckowebbrowser.pc.in 
 
 REFERENCES =  \
+	../../../../install/lib/monodevelop/bin/MonoDevelop.Projects.dll \
+	../../../../install/lib/monodevelop/bin/MonoDevelop.Projects.Gui.dll \
 	-pkg:gecko-sharp-2.0 \
 	-pkg:glib-sharp-2.0 \
 	-pkg:gtk-sharp-2.0 \
