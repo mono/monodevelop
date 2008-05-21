@@ -193,7 +193,7 @@ class InferredReturnType(DefaultReturnType):
 	
 	def Resolve() as IReturnType:
 		resolver = Resolver()
-		if resolver.Initialize(IdeApp.ProjectOperations.ParserDatabase.GetFileParserContext (_filename), _caretLine, _caretColumn, _filename):
+		if resolver.Initialize(IdeApp.Workspace.ParserDatabase.GetFileParserContext (_filename), _caretLine, _caretColumn, _filename):
 			visitor = ExpressionTypeVisitor(Resolver : resolver)
 			visitor.Visit(_expression)
 			return visitor.ReturnType

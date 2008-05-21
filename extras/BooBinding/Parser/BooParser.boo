@@ -81,14 +81,13 @@ class BooParser(IParser):
 		compiler = BooCompiler()
 		compiler.Parameters.Input.Add(StringInput(fileName, fileContent))
 		project as Project
-		if IdeApp.ProjectOperations.CurrentOpenCombine is not null:
-			for entry as Project in IdeApp.ProjectOperations.CurrentOpenCombine.GetAllProjects():
-				if entry.IsFileInProject(fileName):
-					project = entry
+		for entry as Project in IdeApp.Workspace.GetAllProjects():
+			if entry.IsFileInProject(fileName):
+				project = entry
 		
-		if project is not null and project.ProjectReferences is not null:
-			for projectRef as ProjectReference in project.ProjectReferences:
-				for asmName as string in projectRef.GetReferencedFileNames():
+		if project is not null and cast(DotNetProject,project).References is not null:
+			for projectRef as ProjectReference in cast(DotNetProject,project).References:
+				for asmName as string in projectRef.GetReferencedFileNames (ProjectService.DefaultConfiguration):
 					compiler.Parameters.References.Add(System.Reflection.Assembly.LoadFile(asmName))
 		
 		return Parse(fileName, lineLength, compiler)

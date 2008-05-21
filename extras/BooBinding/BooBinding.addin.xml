@@ -24,6 +24,10 @@
     <Assembly name="Boo.Lang.Compiler, Version=1.0.0.0" package="Boo" />
   </Dependencies>
 
+  <Extension path = "/MonoDevelop/ProjectModel/MSBuildItemTypes">
+		<DotNetProject language="Boo" extension="booproj" guid="{B3672514-7503-4B01-B4B4-B44E87061EA2}"/>
+  </Extension>
+	
   <Extension path = "/MonoDevelop/Ide/FileFilters">
     <FileFilter id = "Boo"
                 insertbefore = "AllFiles"
@@ -46,9 +50,9 @@
 		<DataType class = "BooBinding.BooCompilerParameters" />
 	</Extension>
 	
-  <Extension path = "/MonoDevelop/ProjectModel/Gui/ProjectOptions/ConfigurationOptions">
+  <Extension path = "/MonoDevelop/ProjectModel/Gui/ProjectOptions">
     <Condition id="activelanguage" value = "Boo">
-      <DialogPanel id = "BooCodeGenerationPanel"
+      <Section id = "BooCodeGenerationPanel"
                    _label = "Code Generation"
                    class = "BooBinding.Gui.OptionPanels.CodeGenerationPanel"/>
     </Condition>

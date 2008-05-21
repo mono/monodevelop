@@ -282,7 +282,7 @@ class Resolver:
 				return false if _callingClass.Region.BeginLine > caretLine
 
 /*		if _project == null:
-			for project as Project in Ide.ProjectOperations.CurrentOpenCombine.GetAllProjects():
+			for project as Project in Ide.ProjectOperations.CurrentOpenWorkspace.GetAllProjects():
 				if project.IsFileInProject(fileName):
 					_project = project
 					break

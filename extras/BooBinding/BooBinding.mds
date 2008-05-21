@@ -3,12 +3,12 @@
     <Configuration name="Debug" ctype="CombineConfiguration">
       <Entry build="True" name="BooBinding" configuration="Debug" />
       <Entry build="True" name="BooShell" configuration="Debug" />
-      <Entry build="True" name="po" configuration="" />
+      <Entry build="True" name="po" configuration="Debug" />
     </Configuration>
     <Configuration name="Release" ctype="CombineConfiguration">
       <Entry build="True" name="BooBinding" configuration="Release" />
       <Entry build="True" name="BooShell" configuration="Debug" />
-      <Entry build="True" name="po" configuration="" />
+      <Entry build="True" name="po" configuration="Release" />
     </Configuration>
   </Configurations>
   <StartMode startupentry="BooBinding" single="True">

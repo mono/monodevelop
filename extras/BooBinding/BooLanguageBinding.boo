@@ -54,11 +54,6 @@ public class BooLanguageBinding(IDotNetLanguageBinding):
 		Debug.Assert(compilerServices is not null)
 		return compilerServices.Compile (projectFiles, references, configuration, monitor)
 	
-	public def GenerateMakefile (project as Project, parentCombine as Combine) as void:
-		// FIXME: dont abort for now
-		// throw NotImplementedException ()
-		return
-	
 	public def CreateCompilationParameters (projectOptions as XmlElement) as ICloneable:
 		parameters = BooCompilerParameters ()
 		return parameters

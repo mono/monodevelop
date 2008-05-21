@@ -75,7 +75,7 @@ class ShellTextView (SourceView, ICompletionWidget):
 	private _ambience as BooBinding.BooAmbience
 	
 	def constructor(model as IShellModel):
-		_parserService = IdeApp.ProjectOperations.ParserDatabase
+		_parserService = IdeApp.Workspace.ParserDatabase
 
 		manager = SourceLanguagesManager()
 		lang = manager.GetLanguageFromMimeType(model.MimeType)
@@ -150,21 +150,15 @@ class ShellTextView (SourceView, ICompletionWidget):
 	def getProjectAssemblies():
 		_assemblies = []
 		if (_proj is not null):
-			assembly = _proj.GetOutputFileName()
+			assembly = _proj.GetOutputFileName(ProjectService.DefaultConfiguration)
 			if assembly is not null:
 				_assemblies.Add(assembly)
 		else:
-			_combine = IdeApp.ProjectOperations.CurrentOpenCombine
-			if _combine is null:
-				return _assemblies
-
-			projects = _combine.GetAllProjects()
-			if projects is null:
-				return _assemblies
+			projects = IdeApp.Workspace.GetAllProjects()
 			for entry as Project in projects:
 				if entry is null:
 					continue
-				assembly = entry.GetOutputFileName()
+				assembly = entry.GetOutputFileName(ProjectService.DefaultConfiguration)
 				if assembly is not null:
 					_assemblies.Add(assembly)
 

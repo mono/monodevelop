@@ -55,7 +55,7 @@ public class BooBindingCompilerServices:
 
 		if references is not null:
 			for lib as ProjectReference in references:
-				for fileName as string in lib.GetReferencedFileNames ():
+				for fileName as string in lib.GetReferencedFileNames (configuration.Id):
 					compiler.Parameters.References.Add(Assembly.LoadFile(fileName))
 
 		for finfo as ProjectFile in projectFiles:

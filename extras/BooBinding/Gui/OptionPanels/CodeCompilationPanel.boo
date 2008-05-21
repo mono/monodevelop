@@ -25,11 +25,11 @@ import System
 import Gtk
 
 import MonoDevelop.Projects
-import MonoDevelop.Core.Gui.Dialogs
+import MonoDevelop.Projects.Gui.Dialogs
 import MonoDevelop.Components
 import MonoDevelop.Core
 
-public class CodeGenerationPanel(AbstractOptionPanel):
+public class CodeGenerationPanel(MultiConfigItemOptionsPanel):
 	private codeGenerationLabel as Gtk.Label = Gtk.Label ()
 	private labelWarnings as Gtk.Label = Gtk.Label ()
 	private labelOutputDir as Gtk.Label = Gtk.Label ()
@@ -52,6 +52,8 @@ public class CodeGenerationPanel(AbstractOptionPanel):
 	
 	compilerParameters as BooCompilerParameters = null
 	configuration as DotNetProjectConfiguration  = null
+	project as DotNetProject = null;
+	vbox as VBox
 	
 	public def constructor():
 
@@ -83,7 +85,6 @@ public class CodeGenerationPanel(AbstractOptionPanel):
 		hboxTmp = HBox()
 		hboxTmp.PackStart (checkDucky, false, false, 6)
 		vbox.PackStart (hboxTmp, false, false, 0)
-		Add (vbox)
 
 	private def InitializeComponent() as void:
 		codeGenerationLabel.Markup = String.Format ("<b>{0}</b>", GettextCatalog.GetString ("Code Generation"))
@@ -121,10 +122,11 @@ public class CodeGenerationPanel(AbstractOptionPanel):
 		compileTargetCombo.AddAttribute(cr, "text", 0)
 
 	
-	public override def LoadPanelContents() as void:
+	public override def LoadConfigData() as void:
 		//FIXME: BOO COMPILER CAN'T RESOLVE OVERLOADS OF GENERIC METHODS
 		//configuration = (cast(MonoDevelop.Core.Properties,CustomizationObject)).Get [of DotNetProjectConfiguration] ("Config")
-		configuration = (cast(MonoDevelop.Core.Properties,CustomizationObject)).Get [of DotNetProjectConfiguration] ("Config", null)
+		configuration = cast(DotNetProjectConfiguration,CurrentConfiguration)
+		project = cast(DotNetProject,ConfiguredProject)
 		if configuration == null:
 			raise InvalidOperationException ("Invalid program state as a result of Boo compiler bug http://jira.codehaus.org/browse/BOO-856")
 		//END FIXME
@@ -140,18 +142,18 @@ public class CodeGenerationPanel(AbstractOptionPanel):
 		culture.Text = compilerParameters.Culture
 		compileTargetCombo.Active = cast (int, configuration.CompileTarget)
 
-	public override def StorePanelContents() as bool:
+	public override def CreatePanelWidget() as Gtk.Widget:
+		return vbox
+		
+	public override def ApplyChanges():
 		if (compilerParameters is null):
-			return true
+			return
 
-
+		project.CompileTarget = cast (CompileTarget, compileTargetCombo.Active)
 		configuration.DebugMode = checkDebug.Active
-		configuration.CompileTarget = cast (CompileTarget, compileTargetCombo.Active)
 		configuration.OutputAssembly = outputAssembly.Text
 		configuration.OutputDirectory = outputDirectory.Text
 		//configuration.OutputDirectory = outputDirectory.Path
 
 		compilerParameters.Ducky = checkDucky.Active
 		compilerParameters.Culture = culture.Text
-
-		return true

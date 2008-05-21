@@ -1,3 +1,11 @@
+2008-05-21  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Gui/ShellTextView.boo, Gui/OptionPanels/CodeCompilationPanel.boo,
+	  BooBinding.addin.xml, BooBindingCompilerServices.boo,
+	  Parser/Resolver.boo, Parser/ReturnType.boo, Parser/BooParser.boo,
+	  BooLanguageBinding.boo, BooBinding.mds: New project model changes.
+	* BooBinding.mdp: Added new error regex.
+
 2008-05-08  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* BooBinding.addin.xml: Set "isText" attribute on the mimetype
