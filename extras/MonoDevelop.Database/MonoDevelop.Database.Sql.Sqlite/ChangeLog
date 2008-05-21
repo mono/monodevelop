@@ -1,5 +1,9 @@
 2008-05-21  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Database.Sql.Sqlite.mdp, Makefile.am: Fix projects.
+
+2008-05-21  Lluis Sanchez Gual <lluis@novell.com> 
+
 	
 
 2008-03-10  Lluis Sanchez Gual <lluis@novell.com> 

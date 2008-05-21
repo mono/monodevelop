@@ -1,5 +1,9 @@
 2008-05-21  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* Makefile.am, MonoDevelop.Database.Components.mdp: Fix projects.
+
+2008-05-21  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* Widgets/ProjectDirectoryComboBox.cs: New project model changes and
 	  updates.
 

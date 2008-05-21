@@ -4,7 +4,6 @@ REFS =  \
 	$(GTK_SHARP_LIBS) \
 	$(GTKSOURCEVIEW_SHARP_LIBS) \
 	$(MONODEVELOP_LIBS) \
-	-r:../../../../../install/lib/monodevelop/bin/MonoDevelop.Projects.Gui.dll \
 	-r:../build/MonoDevelop.Database.Components.dll \
 	-r:../build/MonoDevelop.Database.Sql.dll \
 	-r:Mono.Posix \

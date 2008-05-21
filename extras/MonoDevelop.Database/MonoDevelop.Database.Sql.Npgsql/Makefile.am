@@ -3,7 +3,6 @@ ASSEMBLY = $(ADDIN_BUILD)/MonoDevelop.Database.Sql.Npgsql.dll
 REFS =  \
 	$(GTK_SHARP_LIBS) \
 	$(MONODEVELOP_LIBS) \
-	-r:../../../../../install/lib/monodevelop/bin/MonoDevelop.Projects.Gui.dll \
 	-r:../build/MonoDevelop.Database.Components.dll \
 	-r:../build/MonoDevelop.Database.Designer.dll \
 	-r:../build/MonoDevelop.Database.Sql.dll \

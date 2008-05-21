@@ -1,3 +1,7 @@
+2008-05-21  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Database.ConnectionManager.mdp: Fix projects.
+
 2008-03-10  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* NodeBuilders/ConnectionContextNodeBuilder.cs,

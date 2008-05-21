@@ -1,5 +1,9 @@
 2008-05-21  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* Makefile.am, MonoDevelop.Database.Sql.MySql.mdp: Fix projects.
+
+2008-05-21  Lluis Sanchez Gual <lluis@novell.com> 
+
 	
 
 2008-01-30  Ben Motmans <ben.motmans@gmail.com> 
