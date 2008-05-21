@@ -1,0 +1,24 @@
+<Combine name="console-with-libs-mdp" fileversion="2.0">
+  <Configurations active="Debug">
+    <Configuration name="Debug" ctype="CombineConfiguration">
+      <Entry build="True" name="console-with-libs-mdp" configuration="Debug" />
+      <Entry build="True" name="library1" configuration="Debug" />
+      <Entry build="True" name="library2" configuration="Debug" />
+    </Configuration>
+    <Configuration name="Release" ctype="CombineConfiguration">
+      <Entry build="True" name="console-with-libs-mdp" configuration="Release" />
+      <Entry build="True" name="library1" configuration="Release" />
+      <Entry build="True" name="library2" configuration="Release" />
+    </Configuration>
+  </Configurations>
+  <StartMode startupentry="console-with-libs-mdp" single="True">
+    <Execute type="None" entry="console-with-libs-mdp" />
+    <Execute type="None" entry="library1" />
+    <Execute type="None" entry="library2" />
+  </StartMode>
+  <Entries>
+    <Entry filename="console-with-libs-mdp/console-with-libs-mdp.mdp" />
+    <Entry filename="library1/library1.mdp" />
+    <Entry filename="library2/library2.mdp" />
+  </Entries>
+</Combine>

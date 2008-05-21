@@ -1,0 +1,25 @@
+<Project name="console-with-libs-mdp" fileversion="2.0" language="C#" clr-version="Net_2_0" ctype="DotNetProject">
+  <Configurations active="Debug">
+    <Configuration name="Debug" ctype="DotNetProjectConfiguration">
+      <Output directory="bin/Debug" assembly="console-with-libs-mdp" />
+      <Build debugmode="True" target="Exe" />
+      <Execution runwithwarnings="True" consolepause="True" runtime="MsNet" clr-version="Net_2_0" />
+      <CodeGeneration compiler="Mcs" warninglevel="4" optimize="True" unsafecodeallowed="False" generateoverflowchecks="True" definesymbols="DEBUG" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
+    </Configuration>
+    <Configuration name="Release" ctype="DotNetProjectConfiguration">
+      <Output directory="bin/Release" assembly="console-with-libs-mdp" />
+      <Build debugmode="False" target="Exe" />
+      <Execution runwithwarnings="True" consolepause="True" runtime="MsNet" clr-version="Net_2_0" />
+      <CodeGeneration compiler="Mcs" warninglevel="4" optimize="True" unsafecodeallowed="False" generateoverflowchecks="True" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
+    </Configuration>
+  </Configurations>
+  <Contents>
+    <File name="Main.cs" subtype="Code" buildaction="Compile" />
+    <File name="AssemblyInfo.cs" subtype="Code" buildaction="Compile" />
+  </Contents>
+  <References>
+    <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+    <ProjectReference type="Project" localcopy="True" refto="library1" />
+    <ProjectReference type="Project" localcopy="True" refto="library2" />
+  </References>
+</Project>

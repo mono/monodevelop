@@ -1,0 +1,24 @@
+<Combine name="nested-solutions-mdp" fileversion="2.0">
+  <Configurations active="Debug">
+    <Configuration name="Debug" ctype="CombineConfiguration">
+      <Entry build="True" name="console-project" configuration="Debug" />
+      <Entry build="True" name="nested-solution1" configuration="Debug" />
+      <Entry build="True" name="nested-solution2" configuration="Debug" />
+    </Configuration>
+    <Configuration name="Release" ctype="CombineConfiguration">
+      <Entry build="True" name="console-project" configuration="Release" />
+      <Entry build="True" name="nested-solution1" configuration="Release" />
+      <Entry build="True" name="nested-solution2" configuration="Release" />
+    </Configuration>
+  </Configurations>
+  <StartMode startupentry="console-project" single="True">
+    <Execute type="None" entry="console-project" />
+    <Execute type="None" entry="nested-solution1" />
+    <Execute type="None" entry="nested-solution2" />
+  </StartMode>
+  <Entries>
+    <Entry filename="console-project/console-project.mdp" />
+    <Entry filename="nested-solution1/nested-solution1.mds" />
+    <Entry filename="nested-solution2/nested-solution2.mds" />
+  </Entries>
+</Combine>

@@ -1,0 +1,20 @@
+<Combine name="nested-solution1" fileversion="2.0">
+  <Configurations active="Debug">
+    <Configuration name="Debug" ctype="CombineConfiguration">
+      <Entry build="True" name="library1" configuration="Debug" />
+      <Entry build="True" name="library2" configuration="Debug" />
+    </Configuration>
+    <Configuration name="Release" ctype="CombineConfiguration">
+      <Entry build="True" name="library1" configuration="Release" />
+      <Entry build="True" name="library2" configuration="Release" />
+    </Configuration>
+  </Configurations>
+  <StartMode startupentry="library1" single="True">
+    <Execute type="None" entry="library1" />
+    <Execute type="None" entry="library2" />
+  </StartMode>
+  <Entries>
+    <Entry filename="library1/library1.mdp" />
+    <Entry filename="library2/library2.mdp" />
+  </Entries>
+</Combine>

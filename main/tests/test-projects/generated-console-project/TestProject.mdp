@@ -1,0 +1,28 @@
+<Project name="TestProject" fileversion="2.0" language="C#" clr-version="Net_2_0" DefaultNamespace="TestProject" ctype="DotNetProject">
+  <Configurations active="Debug">
+    <Configuration name="Debug" ctype="DotNetProjectConfiguration">
+      <Output directory="bin/Debug" assembly="TestProject" />
+      <Build debugmode="True" target="Exe" />
+      <Execution runwithwarnings="True" consolepause="True" runtime="MsNet" clr-version="Net_2_0" />
+      <CodeGeneration compiler="Mcs" warninglevel="4" optimize="False" unsafecodeallowed="False" generateoverflowchecks="False" definesymbols="DEBUG;TRACE" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
+    </Configuration>
+    <Configuration name="Release" ctype="DotNetProjectConfiguration">
+      <Output directory="bin/Release" assembly="TestProject" />
+      <Build debugmode="False" target="Exe" />
+      <Execution runwithwarnings="True" consolepause="True" runtime="MsNet" clr-version="Net_2_0" />
+      <CodeGeneration compiler="Mcs" warninglevel="4" optimize="True" unsafecodeallowed="False" generateoverflowchecks="False" definesymbols="TRACE" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
+    </Configuration>
+  </Configurations>
+  <Contents>
+    <File name="Main.cs" subtype="Code" buildaction="Compile" />
+    <File name="Resource.xml" resource_id="TestProject.Resource.xml" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="Excluded.xml" subtype="Code" buildaction="Exclude" />
+    <File name="Copy.xml" subtype="Code" buildaction="FileCopy" />
+    <File name="Nothing.xml" subtype="Code" buildaction="Nothing" />
+  </Contents>
+  <References>
+    <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+    <ProjectReference type="Gac" localcopy="True" refto="System.Data" />
+    <ProjectReference type="Gac" localcopy="True" refto="System.Xml" />
+  </References>
+</Project>

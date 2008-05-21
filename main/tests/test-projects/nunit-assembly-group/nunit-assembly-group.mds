@@ -1,0 +1,13 @@
+<Combine name="nunit-assembly-group" fileversion="2.0">
+  <Configurations active="Default">
+    <Configuration name="Default" ctype="CombineConfiguration">
+      <Entry build="True" name="nunit-assembly-group" configuration="Default" />
+    </Configuration>
+  </Configurations>
+  <StartMode startupentry="nunit-assembly-group" single="True">
+    <Execute type="None" entry="nunit-assembly-group" />
+  </StartMode>
+  <Entries>
+    <Entry filename="nunit-assembly-group.md-nunit" />
+  </Entries>
+</Combine>

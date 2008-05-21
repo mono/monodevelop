@@ -1,5 +1,9 @@
 2008-05-21  Lluis Sanchez Gual <lluis@novell.com> 
 
+	
+
+2008-05-21  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* monodevelop-core-addins.pc.in: Removed MSVisualStudio project from
 	  .pc file since it is not extensible anymore.
 	* configure.in, MonoDevelop.mds: Added test infrastructure.

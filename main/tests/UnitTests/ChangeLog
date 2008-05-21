@@ -1,0 +1,14 @@
+2008-05-21  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects/SolutionTests.cs,
+	  MonoDevelop.Projects/MakefileTests.cs,
+	  MonoDevelop.Projects/WorkspaceTests.cs,
+	  MonoDevelop.Projects/MSBuildTests.cs,
+	  MonoDevelop.Projects/MdsTests.cs,
+	  MonoDevelop.Projects/PackagingTests.cs,
+	  MonoDevelop.Projects/ProjectTests.cs,
+	  MonoDevelop.Projects/MonoDeveloperFormatTests.cs,
+	  MonoDevelop.Projects/TestProjectsChecks.cs, Util.cs, TestBase.cs:
+	  New unit test infrastructure.
+
+
