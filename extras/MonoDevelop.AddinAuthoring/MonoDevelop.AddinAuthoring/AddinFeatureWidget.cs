@@ -167,7 +167,7 @@ namespace MonoDevelop.AddinAuthoring
 		}
 	}
 	
-	public class AddinFeature: ICombineEntryFeature
+	public class AddinFeature: ISolutionItemFeature
 	{
 		public string Title {
 			get { return AddinManager.CurrentLocalizer.GetString ("Add-in Support"); }
@@ -177,33 +177,33 @@ namespace MonoDevelop.AddinAuthoring
 			get { return AddinManager.CurrentLocalizer.GetString ("Add-in Support"); }
 		}
 		
-		public bool SupportsCombineEntry (Combine parentCombine, CombineEntry entry)
+		public bool SupportsSolutionItem (SolutionFolder parentCombine, SolutionItem entry)
 		{
 			return entry is DotNetProject;
 		}
 
-		public Widget CreateFeatureEditor (Combine parentCombine, CombineEntry entry)
+		public Widget CreateFeatureEditor (SolutionFolder parentCombine, SolutionItem entry)
 		{
 			AddinFeatureWidget w = new AddinFeatureWidget ();
 			w.Load ((DotNetProject)entry, true);
 			return w;
 		}
 		
-		public bool IsEnabled (Combine parentCombine, CombineEntry entry)
+		public bool IsEnabled (SolutionFolder parentCombine, SolutionItem entry)
 		{
-			return AddinData.GetAddinData ((Project)entry) != null;
+			return AddinData.GetAddinData ((DotNetProject)entry) != null;
 		}
 
-		public string Validate (Combine parentCombine, CombineEntry entry, Widget ed)
+		public string Validate (SolutionFolder parentCombine, SolutionItem entry, Widget ed)
 		{
 			AddinFeatureWidget editor = (AddinFeatureWidget) ed;
 			return editor.Validate ();
 		}
 
-		public void ApplyFeature (Combine parentCombine, CombineEntry entry, Widget ed)
+		public void ApplyFeature (SolutionFolder parentCombine, SolutionItem entry, Widget ed)
 		{
 			AddinFeatureWidget editor = (AddinFeatureWidget) ed;
-			AddinData data = AddinData.EnableAddinAuthoringSupport ((Project) entry);
+			AddinData data = AddinData.EnableAddinAuthoringSupport ((DotNetProject) entry);
 			
 			data.AddinRegistry = new AddinRegistry (editor.RegistryPath);
 			

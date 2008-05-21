@@ -3,7 +3,7 @@ using System;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using MonoDevelop.Core.Gui;
-using MonoDevelop.Core.Gui.Dialogs;
+using MonoDevelop.Projects.Gui.Dialogs;
 using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.AddinAuthoring
@@ -28,7 +28,7 @@ namespace MonoDevelop.AddinAuthoring
 				
 		}
 		
-		public bool Store ()
+		public bool ValidateChanges ()
 		{
 			if (checkEnable.Active) {
 				string msg = optionsWidget.Validate ();
@@ -36,13 +36,18 @@ namespace MonoDevelop.AddinAuthoring
 					MessageService.ShowError ((Gtk.Window) this.Toplevel, msg);
 					return false;
 				}
+			}
+			return true;
+		}
+		
+		public void Store ()
+		{
+			if (checkEnable.Active) {
 				AddinFeature f = new AddinFeature ();
-				f.ApplyFeature (project.ParentCombine, project, optionsWidget);
-				return true;
+				f.ApplyFeature (project.ParentFolder, project, optionsWidget);
 			}
 			else {
 				AddinData.DisableAddinAuthoringSupport (project);
-				return true;
 			}
 		}
 
@@ -52,20 +57,23 @@ namespace MonoDevelop.AddinAuthoring
 		}
 	}
 	
-	class AddinOptionPanel: AbstractOptionPanel
+	class AddinOptionPanel: ItemOptionsPanel
 	{
 		AddinOptionPanelWidget widget;
 		
-		public override void LoadPanelContents ()
+		public override Gtk.Widget CreatePanelWidget ()
 		{
-			Properties props = (Properties) CustomizationObject;
-			CombineEntry entry = props.Get <CombineEntry> ("CombineEntry");
-			Add (widget = new AddinOptionPanelWidget ((DotNetProject)entry));
+			return widget = new AddinOptionPanelWidget ((DotNetProject)ConfiguredProject);
 		}
 		
-		public override bool StorePanelContents ()
+		public override bool ValidateChanges ()
 		{
-			return widget.Store ();
+			return widget.ValidateChanges ();
+		}
+		
+		public override void ApplyChanges ()
+		{
+			widget.Store ();
 		}
 	}
 }

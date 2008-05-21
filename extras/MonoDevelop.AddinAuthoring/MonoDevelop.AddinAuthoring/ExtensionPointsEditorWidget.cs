@@ -113,7 +113,7 @@ namespace MonoDevelop.AddinAuthoring
 		protected virtual void OnButtonNewClicked (object sender, System.EventArgs e)
 		{
 			ExtensionPoint ep = new ExtensionPoint ();
-			NewExtensionPointDialog dlg = new NewExtensionPointDialog (data.Project, data.AddinRegistry, adesc, ep);
+			NewExtensionPointDialog dlg = new NewExtensionPointDialog ((DotNetProject)data.Project, data.AddinRegistry, adesc, ep);
 			try {
 				if (dlg.Run () == (int) ResponseType.Ok) {
 					adesc.ExtensionPoints.Add (ep);
@@ -143,7 +143,7 @@ namespace MonoDevelop.AddinAuthoring
 			ExtensionPoint ep = (ExtensionPoint) store.GetValue (iter, 0);
 			ExtensionPoint epc = new ExtensionPoint ();
 			epc.CopyFrom (ep);
-			NewExtensionPointDialog epdlg = new NewExtensionPointDialog (data.Project, data.AddinRegistry, adesc, epc);
+			NewExtensionPointDialog epdlg = new NewExtensionPointDialog ((DotNetProject)data.Project, data.AddinRegistry, adesc, epc);
 			if (epdlg.Run () == (int) ResponseType.Ok)
 				ep.CopyFrom (epc);
 			epdlg.Destroy ();

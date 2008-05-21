@@ -11,7 +11,7 @@ namespace MonoDevelop.AddinAuthoring
 	{
 		NodeEditorWidget editor;
 		
-		public NodeEditorDialog (Project project, AddinRegistry reg, ExtensionNodeType ntype, AddinDescription parentAddinDescription, string parentPath, ExtensionNodeDescription node)
+		public NodeEditorDialog (DotNetProject project, AddinRegistry reg, ExtensionNodeType ntype, AddinDescription parentAddinDescription, string parentPath, ExtensionNodeDescription node)
 		{
 			editor = new NodeEditorWidget (project, reg, ntype, parentAddinDescription, parentPath, node);
 			editor.BorderWidth = 12;

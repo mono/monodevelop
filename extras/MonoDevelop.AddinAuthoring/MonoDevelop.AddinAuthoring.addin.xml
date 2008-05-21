@@ -98,9 +98,9 @@
 		<Class class = "MonoDevelop.AddinAuthoring.AddinFeature" />
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/ProjectModel/Gui/ProjectOptions/GeneralOptions/Common">
+	<Extension path = "/MonoDevelop/ProjectModel/Gui/ProjectOptions/Common">
 		<Condition id="activeproject" value="DotNet">
-			<DialogPanel id = "AddinAuthoring" _label = "Add-in Settings" class="MonoDevelop.AddinAuthoring.AddinOptionPanel"/>
+			<Section id = "AddinAuthoring" _label = "Add-in Settings" icon="md-addin" class="MonoDevelop.AddinAuthoring.AddinOptionPanel"/>
 		</Condition>
 	</Extension>
 	

@@ -58,7 +58,7 @@ namespace MonoDevelop.AddinAuthoring
 			notebook.ShowBorder = false;
 			
 			if (desc.LocalId.Length == 0) {
-				defaultId = System.IO.Path.GetFileNameWithoutExtension (data.Project.GetOutputFileName ());
+				defaultId = System.IO.Path.GetFileNameWithoutExtension (data.Project.GetOutputFileName (data.Project.DefaultConfigurationId));
 				entryIdentifier.Text = defaultId;
 			}
 			else

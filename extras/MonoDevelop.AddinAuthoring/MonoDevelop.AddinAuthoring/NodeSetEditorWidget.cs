@@ -42,7 +42,7 @@ namespace MonoDevelop.AddinAuthoring
 		TreeStore store;
 		AddinRegistry registry;
 		AddinDescription adesc;
-		Project project;
+		DotNetProject project;
 		
 		const int ColObject = 0;
 		const int ColIcon = 1;
@@ -85,7 +85,7 @@ namespace MonoDevelop.AddinAuthoring
 			}
 		}
 		
-		public void Fill (Project project, AddinRegistry registry, AddinDescription adesc, ExtensionNodeSet nset)
+		public void Fill (DotNetProject project, AddinRegistry registry, AddinDescription adesc, ExtensionNodeSet nset)
 		{
 			this.nodeSet = nset;
 			this.registry = registry;

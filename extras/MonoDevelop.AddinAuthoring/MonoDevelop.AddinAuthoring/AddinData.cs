@@ -39,7 +39,7 @@ namespace MonoDevelop.AddinAuthoring
 {
 	public class AddinData: IDisposable
 	{
-		Project project;
+		DotNetProject project;
 		AddinRegistry registry;
 		string lastOutputPath;
 		
@@ -64,12 +64,12 @@ namespace MonoDevelop.AddinAuthoring
 			AddinAuthoringService.Init ();
 		}
 		
-		internal AddinData (Project project)
+		internal AddinData (DotNetProject project)
 		{
 			Bind (project);
 		}
 		
-		internal void Bind (Project project)
+		internal void Bind (DotNetProject project)
 		{
 			this.project = project;
 			
@@ -77,7 +77,7 @@ namespace MonoDevelop.AddinAuthoring
 			watcher.Filter = Path.GetFileName (AddinManifestFileName);
 			watcher.Changed += OnDescFileChanged;
 			watcher.EnableRaisingEvents = true;
-			lastOutputPath = Path.GetDirectoryName (Project.GetOutputFileName ());
+			lastOutputPath = Path.GetDirectoryName (Project.GetOutputFileName (Project.DefaultConfigurationId));
 			
 			SyncRoot ();
 			SyncReferences ();
@@ -100,7 +100,7 @@ namespace MonoDevelop.AddinAuthoring
 		}
 
 		
-		public static AddinData GetAddinData (Project project)
+		public static AddinData GetAddinData (DotNetProject project)
 		{
 			AddinData data = project.ExtendedProperties ["MonoDevelop.AddinAuthoring"] as AddinData;
 			if (data != null)
@@ -108,7 +108,7 @@ namespace MonoDevelop.AddinAuthoring
 			return data;
 		}
 		
-		public static AddinData EnableAddinAuthoringSupport (Project project)
+		public static AddinData EnableAddinAuthoringSupport (DotNetProject project)
 		{
 			AddinData data = GetAddinData (project);
 			if (data != null)
@@ -120,7 +120,7 @@ namespace MonoDevelop.AddinAuthoring
 			return data;
 		}
 		
-		public static void DisableAddinAuthoringSupport (Project project)
+		public static void DisableAddinAuthoringSupport (DotNetProject project)
 		{
 			AddinData data = GetAddinData (project);
 			project.ExtendedProperties.Remove ("MonoDevelop.AddinAuthoring");
@@ -128,7 +128,7 @@ namespace MonoDevelop.AddinAuthoring
 				AddinSupportChanged (project, false);
 		}
 		
-		public Project Project {
+		public DotNetProject Project {
 			get { return project; }
 		}
 		
@@ -147,7 +147,7 @@ namespace MonoDevelop.AddinAuthoring
 		
 		public string AddinManifestFileName {
 			get {
-				foreach (ProjectFile pf in project.ProjectFiles) {
+				foreach (ProjectFile pf in project.Files) {
 					if (pf.FilePath.EndsWith (".addin") || pf.FilePath.EndsWith (".addin.xml"))
 						return pf.FilePath;
 				}
@@ -163,8 +163,8 @@ namespace MonoDevelop.AddinAuthoring
 		public AddinDescription CompiledAddinManifest {
 			get {
 				if (compiledManifest == null) {
-					if (File.Exists (project.GetOutputFileName ()))
-						compiledManifest = registry.GetAddinDescription (null, project.GetOutputFileName ());
+					if (File.Exists (project.GetOutputFileName (project.DefaultConfigurationId)))
+						compiledManifest = registry.GetAddinDescription (null, project.GetOutputFileName (project.DefaultConfigurationId));
 				}
 				return compiledManifest;
 			}
@@ -224,7 +224,7 @@ namespace MonoDevelop.AddinAuthoring
 				return registry = AddinRegistry.GetGlobalRegistry ();
 			else {
 				if (isRoot) {
-					string outDir = Path.GetDirectoryName (Project.GetOutputFileName ());
+					string outDir = Path.GetDirectoryName (Project.GetOutputFileName (Project.DefaultConfigurationId));
 					registry = new AddinRegistry (RegistryPath, outDir);
 					Console.WriteLine ("pp reg is root: " + RegistryPath + " - " + outDir);
 				} else {
@@ -245,7 +245,7 @@ namespace MonoDevelop.AddinAuthoring
 		internal void CheckOutputPath ()
 		{
 			if (CachedAddinManifest.IsRoot) {
-				string outDir = Path.GetDirectoryName (Project.GetOutputFileName ());
+				string outDir = Path.GetDirectoryName (Project.GetOutputFileName (Project.DefaultConfigurationId));
 				if (lastOutputPath != outDir) {
 					registry = null;
 					NotifyChanged ();
@@ -278,7 +278,7 @@ namespace MonoDevelop.AddinAuthoring
 			Hashtable addinRefs = new Hashtable ();
 			foreach (AddinDependency adep in CachedAddinManifest.MainModule.Dependencies) {
 				bool found = false;
-				foreach (ProjectReference pr in Project.ProjectReferences) {
+				foreach (ProjectReference pr in Project.References) {
 					if ((pr is AddinProjectReference) && pr.Reference == adep.FullAddinId) {
 						found = true;
 						break;
@@ -286,19 +286,19 @@ namespace MonoDevelop.AddinAuthoring
 				}
 				if (!found) {
 					AddinProjectReference ar = new AddinProjectReference (adep.FullAddinId);
-					Project.ProjectReferences.Add (ar);
+					Project.References.Add (ar);
 					changed = true;
 				}
 				addinRefs [adep.FullAddinId] = adep;
 			}
 			
 			ArrayList toDelete = new ArrayList ();
-			foreach (ProjectReference pr in Project.ProjectReferences) {
+			foreach (ProjectReference pr in Project.References) {
 				if ((pr is AddinProjectReference) && !addinRefs.ContainsKey (pr.Reference))
 					toDelete.Add (pr);
 			}
 			foreach (ProjectReference pr in toDelete)
-				Project.ProjectReferences.Remove (pr);
+				Project.References.Remove (pr);
 			
 			if (changed || toDelete.Count > 0)
 				Project.Save (new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor ());

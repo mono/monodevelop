@@ -50,7 +50,7 @@ namespace MonoDevelop.AddinAuthoring
 		
 		public override void BuildChildNodes (ITreeBuilder builder, object dataObject)
 		{
-			Project p = builder.GetParentDataItem (typeof(Project), false) as DotNetProject;
+			DotNetProject p = builder.GetParentDataItem (typeof(Project), false) as DotNetProject;
 			if (p != null) {
 				AddinData data = AddinData.GetAddinData (p);
 				if (data != null) {
@@ -62,7 +62,7 @@ namespace MonoDevelop.AddinAuthoring
 		
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
 		{
-			Project p = builder.GetParentDataItem (typeof(Project), false) as DotNetProject;
+			DotNetProject p = builder.GetParentDataItem (typeof(Project), false) as DotNetProject;
 			if (p != null) {
 				AddinData data = AddinData.GetAddinData (p);
 				if (data != null)

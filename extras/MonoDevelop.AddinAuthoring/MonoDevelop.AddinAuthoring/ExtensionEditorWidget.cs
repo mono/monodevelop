@@ -82,8 +82,8 @@ namespace MonoDevelop.AddinAuthoring
 		AddinDescription CompiledAddinDesc {
 			get {
 				if (compiledDesc == null) {
-					if (System.IO.File.Exists (data.Project.GetOutputFileName ()))
-						compiledDesc = data.AddinRegistry.GetAddinDescription (new Mono.Addins.ConsoleProgressStatus (false), data.Project.GetOutputFileName ());
+					if (System.IO.File.Exists (data.Project.GetOutputFileName (data.Project.DefaultConfigurationId)))
+						compiledDesc = data.AddinRegistry.GetAddinDescription (new Mono.Addins.ConsoleProgressStatus (false), data.Project.GetOutputFileName (data.Project.DefaultConfigurationId));
 				}
 				return compiledDesc;
 			}

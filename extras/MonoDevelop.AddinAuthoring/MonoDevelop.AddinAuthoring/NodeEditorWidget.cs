@@ -16,11 +16,11 @@ namespace MonoDevelop.AddinAuthoring
 		ComboBox insBeforeCombo;
 		ComboBox insAfterCombo;
 		Gtk.Tooltips tips;
-		Project project;
+		DotNetProject project;
 		
 		Hashtable atts = new Hashtable ();
 		
-		public NodeEditorWidget (Project project, AddinRegistry reg, ExtensionNodeType ntype, AddinDescription parentAddinDescription, string parentPath, ExtensionNodeDescription node)
+		public NodeEditorWidget (DotNetProject project, AddinRegistry reg, ExtensionNodeType ntype, AddinDescription parentAddinDescription, string parentPath, ExtensionNodeDescription node)
 		{
 			this.node = node;
 			this.project = project;

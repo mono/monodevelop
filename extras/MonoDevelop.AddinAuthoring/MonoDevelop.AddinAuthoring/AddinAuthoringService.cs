@@ -88,9 +88,9 @@ namespace MonoDevelop.AddinAuthoring
 		
 		static void OnEndBuild (object s, BuildEventArgs args)
 		{
-			if (args.Success && IdeApp.ProjectOperations.CurrentOpenCombine != null) {
+			if (args.Success && IdeApp.Workspace.IsOpen) {
 				Dictionary<string, AddinRegistry> regs = new Dictionary<string, AddinRegistry> ();
-				foreach (Project p in IdeApp.ProjectOperations.CurrentOpenCombine.GetAllProjects ()) {
+				foreach (DotNetProject p in IdeApp.Workspace.GetAllSolutionItems<DotNetProject> ()) {
 					AddinData data = AddinData.GetAddinData (p);
 					if (data != null) {
 						if (!regs.ContainsKey (data.AddinRegistry.RegistryPath))

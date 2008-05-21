@@ -11,9 +11,9 @@ namespace MonoDevelop.AddinAuthoring
 {
 	public class AddinProjectExtension: ProjectServiceExtension
 	{
-		public override ICompilerResult Build (IProgressMonitor monitor, CombineEntry entry)
+		protected override ICompilerResult Build (IProgressMonitor monitor, SolutionEntityItem entry, string configuration)
 		{
-			ICompilerResult res = base.Build (monitor, entry);
+			ICompilerResult res = base.Build (monitor, entry, configuration);
 			if (res.ErrorCount > 0 || !(entry is DotNetProject))
 				return res;
 			
@@ -24,13 +24,13 @@ namespace MonoDevelop.AddinAuthoring
 			
 			monitor.Log.WriteLine (AddinManager.CurrentLocalizer.GetString ("Verifying add-in description..."));
 			string fileName = data.AddinManifestFileName;
-			ProjectFile file = data.Project.ProjectFiles.GetFile (fileName);
+			ProjectFile file = data.Project.Files.GetFile (fileName);
 			if (file == null)
 				return res;
 			
 			string addinFile;
 			if (file.BuildAction == BuildAction.EmbedAsResource)
-				addinFile = project.GetOutputFileName ();
+				addinFile = project.GetOutputFileName (project.DefaultConfigurationId);
 			else
 				addinFile = file.FilePath;
 			
@@ -45,7 +45,7 @@ namespace MonoDevelop.AddinAuthoring
 			return res;
 		}
 		
-		public override void Save (IProgressMonitor monitor, CombineEntry entry)
+		public override void Save (IProgressMonitor monitor, SolutionEntityItem entry)
 		{
 			base.Save (monitor, entry);
 			

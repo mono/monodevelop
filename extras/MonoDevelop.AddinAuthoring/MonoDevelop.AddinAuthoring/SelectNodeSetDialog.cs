@@ -37,11 +37,11 @@ namespace MonoDevelop.AddinAuthoring
 	public partial class SelectNodeSetDialog : Gtk.Dialog
 	{
 		Hashtable sets = new Hashtable ();
-		Project project;
+		DotNetProject project;
 		AddinRegistry registry;
 		AddinDescription desc;
 		
-		public SelectNodeSetDialog (Project project, AddinRegistry registry, AddinDescription desc)
+		public SelectNodeSetDialog (DotNetProject project, AddinRegistry registry, AddinDescription desc)
 		{
 			this.Build();
 			this.project = project;

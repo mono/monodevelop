@@ -41,7 +41,7 @@ namespace MonoDevelop.AddinAuthoring
 		bool allowCreate = true;
 		bool allowCreateInterface = true;
 		IClass[] typeList;
-		Project project;
+		DotNetProject project;
 		bool loading;
 		
 		string newClassLabel = AddinManager.CurrentLocalizer.GetString ("(New Class)");
@@ -56,14 +56,14 @@ namespace MonoDevelop.AddinAuthoring
 			combo.Entry.Changed += OnEntryChanged;
 		}
 		
-		public TypeSelector (Project project, string typeName): this ()
+		public TypeSelector (DotNetProject project, string typeName): this ()
 		{
 			this.project = project;
 			combo.Entry.Text = typeName;
 			FillCombo ();
 		}
 		
-		public Project Project {
+		public DotNetProject Project {
 			get { return project; }
 			set {
 				project = value; 
@@ -85,7 +85,7 @@ namespace MonoDevelop.AddinAuthoring
 		public IClass[] TypeList {
 			get { 
 				if (typeList == null && project != null) {
-					IParserContext ctx = IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (project);
+					IParserContext ctx = IdeApp.Workspace.ParserDatabase.GetProjectParserContext (project);
 					typeList = ctx.GetProjectContents ();
 				}
 				return typeList; 

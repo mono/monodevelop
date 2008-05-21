@@ -37,11 +37,11 @@ namespace MonoDevelop.AddinAuthoring
 	public partial class NewExtensionPointDialog : Gtk.Dialog
 	{
 		ExtensionPoint ep;
-		Project project;
+		DotNetProject project;
 		AddinRegistry registry;
 		AddinDescription adesc;
 		
-		public NewExtensionPointDialog (Project project, AddinRegistry registry, AddinDescription adesc, ExtensionPoint ep)
+		public NewExtensionPointDialog (DotNetProject project, AddinRegistry registry, AddinDescription adesc, ExtensionPoint ep)
 		{
 			this.Build();
 			this.ep = ep;

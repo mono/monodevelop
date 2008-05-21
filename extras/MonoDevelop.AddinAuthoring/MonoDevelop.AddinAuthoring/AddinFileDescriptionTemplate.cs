@@ -74,7 +74,7 @@ namespace MonoDevelop.AddinAuthoring
 			
 			project.AddFile (file, BuildAction.EmbedAsResource);
 			
-			AddinData.EnableAddinAuthoringSupport (project);
+			AddinData.EnableAddinAuthoringSupport ((DotNetProject)project);
 		}
 		
 		public override void Show ()

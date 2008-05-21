@@ -38,7 +38,7 @@ namespace MonoDevelop.AddinAuthoring
 		ExtensionNodeType ntype;
 		bool nodeNameSet, loading;
 		
-		public NodeTypeEditorDialog (Project project, ExtensionNodeType nt)
+		public NodeTypeEditorDialog (DotNetProject project, ExtensionNodeType nt)
 		{
 			this.Build();
 			this.ntype = nt;

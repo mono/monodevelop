@@ -2,21 +2,16 @@
   <Configurations active="Debug">
     <Configuration name="Debug" ctype="CombineConfiguration">
       <Entry build="True" name="MonoDevelop.AddinAuthoring" configuration="Debug" />
-      <Entry build="True" name="Localization" configuration="" />
     </Configuration>
     <Configuration name="Release" ctype="CombineConfiguration">
       <Entry build="True" name="MonoDevelop.AddinAuthoring" configuration="Release" />
-      <Entry build="True" name="Localization" configuration="" />
     </Configuration>
   </Configurations>
   <StartMode startupentry="MonoDevelop.AddinAuthoring" single="True">
     <Execute type="None" entry="MonoDevelop.AddinAuthoring" />
-    <Execute type="None" entry="Localization" />
-    <Execute type="None" entry="Localization" />
   </StartMode>
-  <MonoDevelop.ChangeLogAddIn.ChangeLogInfo policy="OneChangeLogInProjectRootDirectory" />
+  <MonoDevelop.ChangeLogAddIn.ChangeLogInfo policy="UseParentPolicy" />
   <Entries>
     <Entry filename="MonoDevelop.AddinAuthoring.mdp" />
-    <Entry filename="Localization/Localization.mdse" />
   </Entries>
 </Combine>

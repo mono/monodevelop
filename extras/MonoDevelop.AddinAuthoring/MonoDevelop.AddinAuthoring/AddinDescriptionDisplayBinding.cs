@@ -44,8 +44,8 @@ namespace MonoDevelop.AddinAuthoring
 		public bool CanCreateContentForFile (string fileName)
 		{
 			if (fileName.EndsWith (".addin.xml") || fileName.EndsWith (".xml")) {
-				if (IdeApp.ProjectOperations.CurrentOpenCombine != null) {
-					Project p = IdeApp.ProjectOperations.CurrentOpenCombine.GetProjectContainingFile (fileName);
+				if (IdeApp.Workspace.IsOpen) {
+					DotNetProject p = IdeApp.Workspace.GetProjectContainingFile (fileName) as DotNetProject;
 					return p != null && AddinData.GetAddinData (p) != null;
 				}
 			}
@@ -59,7 +59,7 @@ namespace MonoDevelop.AddinAuthoring
 
 		public IViewContent CreateContentForFile (string fileName)
 		{
-			Project p = IdeApp.ProjectOperations.CurrentOpenCombine.GetProjectContainingFile (fileName);
+			DotNetProject p = IdeApp.Workspace.GetProjectContainingFile (fileName) as DotNetProject;
 			AddinData data = AddinData.GetAddinData (p);
 			return new AddinDescriptionView (data);
 		}

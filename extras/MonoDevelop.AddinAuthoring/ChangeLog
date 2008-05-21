@@ -1,3 +1,27 @@
+2008-05-21  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.AddinAuthoring/NodeEditorDialog.cs,
+	  MonoDevelop.AddinAuthoring/NodeSetEditorWidget.cs,
+	  MonoDevelop.AddinAuthoring/NodeTypeEditorDialog.cs,
+	  MonoDevelop.AddinAuthoring/AddinFileDescriptionTemplate.cs,
+	  MonoDevelop.AddinAuthoring/NewExtensionPointDialog.cs,
+	  MonoDevelop.AddinAuthoring/AddinAuthoringService.cs,
+	  MonoDevelop.AddinAuthoring/SelectNodeSetDialog.cs,
+	  MonoDevelop.AddinAuthoring/TypeSelector.cs,
+	  MonoDevelop.AddinAuthoring/ExtensionPointsEditorWidget.cs,
+	  MonoDevelop.AddinAuthoring/AddinProjectReference.cs,
+	  MonoDevelop.AddinAuthoring/ExtensionEditorWidget.cs,
+	  MonoDevelop.AddinAuthoring/AddinDescriptionWidget.cs,
+	  MonoDevelop.AddinAuthoring/AddinOptionPanelWidget.cs,
+	  MonoDevelop.AddinAuthoring/AddinFeatureWidget.cs,
+	  MonoDevelop.AddinAuthoring/NodeEditorWidget.cs,
+	  MonoDevelop.AddinAuthoring/AddinProjectExtension.cs,
+	  MonoDevelop.AddinAuthoring/AddinDescriptionDisplayBinding.cs,
+	  MonoDevelop.AddinAuthoring/AddinData.cs,
+	  MonoDevelop.AddinAuthoring.addin.xml,
+	  MonoDevelop.AddinAuthoring.NodeBuilders/ReferencesFolderNodeBuilder.cs,
+	  MonoDevelop.AddinAuthoring.mds: New project model changes.
+
 2008-03-10  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* templates/AddinProject.xpt.xml: Fix attribute name.
