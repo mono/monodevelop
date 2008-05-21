@@ -1,3 +1,9 @@
+2008-05-21  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.CodeTemplates/CodeTemplateGroup.cs: Fix bug 372041 -
+	  Additional code template groups are not loaded after a restart.
+	  Patch by Levi Bard.
+
 2008-03-10  Michael Hutchinson  <mhutchinson@novell.com> 
 
 	* options/TipsOfTheDay.xml: Add some tips.
