@@ -1,5 +1,9 @@
 2008-05-21  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* md1format.xml: Added missing file.
+
+2008-05-21  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelopNUnit.addin.xml, MonoDevelop.NUnit.mdp,
 	  Services/WorkspaceTestGroup.cs, Services/NUnitService.cs,
 	  Services/UnitTest.cs, Services/SolutionFolderTestGroup.cs,
