@@ -1,5 +1,12 @@
 2008-05-21  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Ide.Gui/Workbench.cs,
+	  MonoDevelop.Ide.Gui/SdiWorkspaceLayout.cs: Fix bug 361084 -
+	  Dragging a tab to a different position doesn't change its position
+	  in the tab order.
+
+2008-05-21  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Ide.Gui/RootWorkspace.cs: Use the property to access
 	  ParserDatabase since it lazily creates the object.
 

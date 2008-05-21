@@ -760,6 +760,17 @@ namespace MonoDevelop.Ide.Gui
 					return pad;
 			return null;
 		}
+		
+		internal void ReorderDocuments (int oldPlacement, int newPlacement)
+		{
+			IViewContent content = workbench.ViewContentCollection[oldPlacement];
+			workbench.InternalViewContentCollection.RemoveAt (oldPlacement);
+			workbench.InternalViewContentCollection.Insert (newPlacement, content);
+			
+			Document doc = documents [oldPlacement];
+			documents.RemoveAt (oldPlacement);
+			documents.Insert (newPlacement, doc);
+		}
 	}
 	
 	class FileInformation
