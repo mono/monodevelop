@@ -2736,13 +2736,15 @@ namespace Mono.CSharp {
 
 		public Dom.IMethod [] Constructors {
 			get {
-				ArrayList ctors = new ArrayList (instance_constructors.Count + 1);
+				ArrayList ctors = new ArrayList ();
 				if (default_static_constructor != null && !default_static_constructor.IsCompilerGenerated)
 					ctors.Add (default_static_constructor);
 
-				foreach (Constructor c in instance_constructors) {
-					if (!c.IsCompilerGenerated)
-						ctors.Add (c);
+				if (instance_constructors != null) {
+					foreach (Constructor c in instance_constructors) {
+						if (!c.IsCompilerGenerated)
+							ctors.Add (c);
+					}
 				}
 
 				return (Dom.IMethod[]) ctors.ToArray (typeof (Dom.IMethod));
