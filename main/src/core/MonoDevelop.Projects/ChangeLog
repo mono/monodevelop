@@ -1,5 +1,9 @@
 2008-05-21  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Projects/CmbxFileFormat.cs: Remove unused file.
+
+2008-05-21  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Projects/DotNetProjectConfiguration.cs,
 	  MonoDevelop.Projects/WorkspaceItem.cs,
 	  MonoDevelop.Projects/ProjectServiceExtension.cs,
