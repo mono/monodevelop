@@ -1,5 +1,11 @@
 2008-05-21  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.AspNet/AspNetAppProject.cs: The Deserialize event may not
+	  be called in some file formats, so don't use it to control the
+	  project loading.
+
+2008-05-21  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.AspNet/AspNetAppProjectBinding.cs,
 	  MonoDevelop.AspNet/AspNetAppProject.cs,
 	  MonoDevelop.AspNet/CodeBehind.cs,

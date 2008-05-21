@@ -65,9 +65,6 @@ namespace MonoDevelop.AspNet
 		[ItemProperty ("Target", ValueType=typeof(WebDeployTarget), Scope=1)]
 		protected WebDeployTargetCollection webDeployTargets = new WebDeployTargetCollection ();
 		
-		//used true while the project is being loaded
-		bool loading = false;
-		
 		#region properties
 		
 		public override string ProjectType {
@@ -124,15 +121,6 @@ namespace MonoDevelop.AspNet
 			};
 		}
 
-		/* TODO msbuild
-		protected override void Deserialize (ITypeSerializer handler, DataCollection data)
-		{
-			loading = true;
-			base.Deserialize (handler, data);
-			loading = false;
-		}
-				*/
-		
 		//AspNetAppProjectConfiguration needs SourceDirectory set so it can append "bin" to determine the output path
 		public override string FileName {
 			get {
@@ -352,7 +340,7 @@ namespace MonoDevelop.AspNet
 		protected override void OnReferenceAddedToProject (ProjectReferenceEventArgs e)
 		{
 			//short-circuit if the project is being deserialised
-			if (loading) {
+			if (FileName == null) {
 				base.OnReferenceAddedToProject (e);
 				return;
 			}
@@ -508,7 +496,7 @@ namespace MonoDevelop.AspNet
 		protected override void OnFileAddedToProject (ProjectFileEventArgs e)
 		{
 			//short-circuit if the project is being deserialised
-			if (loading) {
+			if (FileName == null) {
 				base.OnFileAddedToProject (e);
 				return;
 			}
