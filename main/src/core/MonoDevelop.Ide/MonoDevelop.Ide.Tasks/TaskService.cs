@@ -389,11 +389,11 @@ namespace MonoDevelop.Ide.Tasks
 			if (!tasks.TryGetValue (task.OwnerItem, out tlist))
 				return;
 			tlist.Add (task);
-			if (!taskCount.ContainsKey (task.TaskType)) {
+			int count;
+			if (!taskCount.TryGetValue (task.TaskType, out count))
 				taskCount[task.TaskType] = 1;
-			} else {
-				taskCount[task.TaskType]++;
-			}
+			else
+				taskCount[task.TaskType] = count + 1;
 		}
 		
 /*		public void AddUserTasksRange (IEnumerable<UserTask> tasks)

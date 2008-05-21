@@ -1,5 +1,9 @@
 2008-05-21  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Ide.Tasks/TaskService.cs: Improved task count updating.
+
+2008-05-21  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Ide.Gui/RootWorkspace.cs,
 	  MonoDevelop.Ide.Gui/ProjectOperations.cs: Always try to set a valid
 	  startup project when the workspace solutions change.
