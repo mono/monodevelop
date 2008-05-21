@@ -1,5 +1,11 @@
 2008-05-21  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Ide.Gui/IPadContainer.cs,
+	  MonoDevelop.Ide.Gui/Workbench.cs, MonoDevelop.Ide.Gui/Pad.cs: Avoid
+	  creating hidden pads when storing workspace preferences.
+
+2008-05-21  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Ide.Gui/Workbench.cs,
 	  MonoDevelop.Ide.Gui/SdiWorkspaceLayout.cs: Fix bug 361084 -
 	  Dragging a tab to a different position doesn't change its position

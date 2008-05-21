@@ -32,6 +32,7 @@ using System.Drawing;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Codons;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Gui;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -138,6 +139,12 @@ namespace MonoDevelop.Ide.Gui
 			if (this.content == null) {
 				this.content = codon.PadContent;
 			}
+		}
+		
+		internal IMementoCapable GetMementoCapable ()
+		{
+			// Don't create the content if not already created
+			return content as IMementoCapable;
 		}
 		
 		internal void NotifyShown ()

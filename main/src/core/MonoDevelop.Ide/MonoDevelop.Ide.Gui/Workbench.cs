@@ -688,8 +688,9 @@ namespace MonoDevelop.Ide.Gui
 			}
 			
 			foreach (Pad pad in Pads) {
-				if (pad.Content is IMementoCapable) {
-					ICustomXmlSerializer mem = ((IMementoCapable)pad.Content).CreateMemento ();
+				IMementoCapable mc = pad.GetMementoCapable ();
+				if (mc != null) {
+					ICustomXmlSerializer mem = mc.CreateMemento ();
 					if (mem != null) {
 						PadUserPrefs data = new PadUserPrefs ();
 						data.Id = pad.Id;

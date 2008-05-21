@@ -100,6 +100,12 @@ namespace MonoDevelop.Ide.Gui
 			get { return window; }
 		}
 		
+		internal IMementoCapable GetMementoCapable ()
+		{
+			PadWindow pw = (PadWindow) window;
+			return pw.GetMementoCapable ();
+		}
+		
 		public void Destroy ()
 		{
 			Visible = false;
