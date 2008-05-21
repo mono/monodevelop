@@ -1,5 +1,9 @@
 2008-05-21  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* GeckoWebBrowser.make: Fix makefile.
+
+2008-05-21  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* GeckoWebBrowser.mdp: Updated.
 
 2008-02-26  Michael Hutchinson  <mhutchinson@novell.com> 
