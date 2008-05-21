@@ -52,8 +52,17 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		}
 		
 		public IList<ItemToolboxNode> Load (string filename)
-		{		
-			System.Reflection.Assembly scanAssem = System.Reflection.Assembly.LoadFile (filename);
+		{
+			List<ItemToolboxNode> list = new List<ItemToolboxNode> ();
+			System.Reflection.Assembly scanAssem;
+			try {
+				scanAssem = System.Reflection.Assembly.LoadFile (filename);
+			} catch (Exception ex) {
+				MonoDevelop.Core.LoggingService.LogError ("ToolboxItemToolboxLoader: Could not load assembly '"
+				    + filename + "'", ex);
+				return list;
+			}
+			
 			MonoDevelop.Core.SystemPackage package
 				= MonoDevelop.Core.Runtime.SystemAssemblyService.GetPackageFromPath (filename);
 			
@@ -64,7 +73,28 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				initialized = true;
 			}
 			
-			List<ItemToolboxNode> list = new List<ItemToolboxNode> ();
+			//detect the runtime version
+			MonoDevelop.Core.ClrVersion clrVersion = MonoDevelop.Core.ClrVersion.Default;
+			byte[] corlibKey = new byte[] { 0xb7, 0x7a, 0x5c, 0x56, 0x19, 0x34, 0xe0, 0x89 };      
+			//the other system.{...} key: 	
+			//{ 0xb0, 0x3f, 0x5f, 0x7f, 0x11, 0xd5, 0x0a, 0x3a };
+			foreach (System.Reflection.AssemblyName an in scanAssem.GetReferencedAssemblies ()) {
+				if (an.Name == "mscorlib" && byteArraysEqual (corlibKey, an.GetPublicKeyToken ())) {
+					if (an.Version == new Version (2, 0, 0, 0)) {
+						clrVersion = MonoDevelop.Core.ClrVersion.Net_2_0;
+						break;
+					} else if (an.Version == new Version (1, 0, 5000, 0)) {
+						clrVersion = MonoDevelop.Core.ClrVersion.Net_1_1;
+						break;
+					}
+				}
+			}
+			
+			if (clrVersion == MonoDevelop.Core.ClrVersion.Default) {
+				MonoDevelop.Core.LoggingService.LogError ("ToolboxItemToolboxLoader: assembly '"
+				    + filename + "' references unknown runtime version.");
+				return list;
+			}
 			
 			Type[] types = scanAssem.GetTypes ();
 
@@ -89,7 +119,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 					cat = ((CategoryAttribute)atts[0]).Category;
 				
 				try {
-					ItemToolboxNode node = GetNode (t, tba, cat, package != null? filename : null);
+					ItemToolboxNode node = GetNode (t, tba, cat, package != null? filename : null, clrVersion);
 					if (node != null)
 						list.Add (node);
 				} catch (Exception ex) {
@@ -104,6 +134,21 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			return list;// Load (scanAssem);
 		}
 		
+		bool byteArraysEqual (byte[] a, byte[] b)
+		{
+			if (a == null)
+				return b == null;
+			if (b == null)
+				return a == null;
+			if (a.Length != b.Length)
+				return false;
+			for (int i = 0; i < a.Length; i++) {
+				if (a[i] != b[i])
+					return false;
+			}
+			return true;
+		}
+		
 		//TODO: this method is public so that the toolbox service can special-case subclasses of this
 		//to unify them into a single type-walk in a single remote process
 		/// <param name="type">The <see cref="Type"/> of the item for which a node should be created.</param>
@@ -116,7 +161,8 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		    Type type,
 		    ToolboxItemAttribute attribute,
 		    string attributeCategory,
-		    string assemblyPath
+		    string assemblyPath,
+		    MonoDevelop.Core.ClrVersion referencedRuntime
 		    );
 	}
 }

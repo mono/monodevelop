@@ -52,13 +52,6 @@ namespace MonoDevelop.AspNet
 		public AspNetToolboxNode () : base () {}
 		public AspNetToolboxNode (ToolboxItem item) : base (item)
 		{
-			//not needed since text editor implements custom filtering for ITextToolboxNode
-//			ItemFilters.Add (new ToolboxItemFilterAttribute ("mime:application/x-aspx", ToolboxItemFilterType.Allow));
-//			ItemFilters.Add (new ToolboxItemFilterAttribute ("mime:application/x-ascx", ToolboxItemFilterType.Allow));
-//			ItemFilters.Add (new ToolboxItemFilterAttribute ("mime:application/x-master-page", ToolboxItemFilterType.Allow));
-//			ItemFilters.Add (new ToolboxItemFilterAttribute ("text:.aspx", ToolboxItemFilterType.Allow));
-//			ItemFilters.Add (new ToolboxItemFilterAttribute ("text:.ascx", ToolboxItemFilterType.Allow));
-//			ItemFilters.Add (new ToolboxItemFilterAttribute ("text:.master", ToolboxItemFilterType.Allow));
 		}
 		
 		public string Text {
@@ -137,6 +130,34 @@ namespace MonoDevelop.AspNet
 		
 		public bool IsCompatibleWith (string fileName, MonoDevelop.Projects.Project project)
 		{
+			ClrVersion clrVersion = ClrVersion.Net_2_0;
+			MonoDevelop.Projects.DotNetProject dnp = project as MonoDevelop.Projects.DotNetProject;
+			if (dnp != null && dnp.ClrVersion != ClrVersion.Default)
+				clrVersion = dnp.ClrVersion;
+			
+			bool allow = false;
+			foreach (ToolboxItemFilterAttribute tbfa in ItemFilters) {
+				if (tbfa.FilterString == "ClrVersion.Net_1_1") {
+					if (tbfa.FilterType == ToolboxItemFilterType.Require) {
+						if (clrVersion == ClrVersion.Net_1_1 || clrVersion == ClrVersion.Net_2_0)
+							allow = true;
+					} else if (tbfa.FilterType == ToolboxItemFilterType.Prevent) {
+						if (clrVersion == ClrVersion.Net_1_1)
+							return false;
+					}
+				} else if (tbfa.FilterString == "ClrVersion.Net_2_0") {
+					if (tbfa.FilterType == ToolboxItemFilterType.Require) {
+						if (clrVersion == ClrVersion.Net_2_0)
+							allow = true;
+					} else if (tbfa.FilterType == ToolboxItemFilterType.Prevent) {
+						if (clrVersion == ClrVersion.Net_2_0)
+							return false;
+					}
+				}
+			}
+			if (!allow)
+				return false;
+			
 			if (fileName.EndsWith (".aspx") || fileName.EndsWith (".ascx") || fileName.EndsWith (".master"))
 				return true;
 			else

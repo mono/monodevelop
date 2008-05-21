@@ -41,13 +41,17 @@ namespace MonoDevelop.AspNet
 	{
 		
 		public override ItemToolboxNode GetNode (Type t, ToolboxItemAttribute tba, 
-		    string attributeCategory, string fullPath)
+		    string attributeCategory, string fullPath, MonoDevelop.Core.ClrVersion referencedRuntime)
 		{
-			bool runtime1;
+			if (referencedRuntime != MonoDevelop.Core.ClrVersion.Net_1_1
+			    && referencedRuntime != MonoDevelop.Core.ClrVersion.Net_2_0)
+				return null;
+			
+			bool reflectedRuntime1;
 			if (typeof (System.Web.UI.Control).IsAssignableFrom (t))
-				runtime1 = false;
+				reflectedRuntime1 = false;
 			else if (CanRuntime1 && SWUControl1.IsAssignableFrom (t))
-				runtime1 = true;
+				reflectedRuntime1 = true;
 			else
 				return null;
 			
@@ -64,19 +68,32 @@ namespace MonoDevelop.AspNet
 			AspNetToolboxNode node = new AspNetToolboxNode (item);
 			
 			//get the default markup for the tag
-			string webText = runtime1? GetWebText1 (t) : GetWebText (t);
+			string webText = reflectedRuntime1? GetWebText1 (t) : GetWebText (t);
 			if (!string.IsNullOrEmpty (webText))
 				node.Text = webText;
 			
 			if (!string.IsNullOrEmpty (attributeCategory))
 				node.Category = attributeCategory;
-			else if (runtime1)
+			else if (reflectedRuntime1)
 				node.Category = GuessCategory1 (t);
 			else
 				node.Category = GuessCategory (t);
 			
 			if (!string.IsNullOrEmpty (fullPath))
-				node.Type.AssemblyLocation = fullPath ;
+				node.Type.AssemblyLocation = fullPath;
+			
+			//prevent system.web 1.1 from being shown for 2.0 runtime
+			if (CanRuntime1 && webAssem1.FullName == t.Assembly.FullName) {
+				node.ItemFilters.Add (new ToolboxItemFilterAttribute ("ClrVersion.Net_2_0", ToolboxItemFilterType.Prevent));
+			}
+			
+			//set filters fom supported runtimes
+			if (referencedRuntime == MonoDevelop.Core.ClrVersion.Net_1_1) {
+				node.ItemFilters.Add (new ToolboxItemFilterAttribute ("ClrVersion.Net_1_1", ToolboxItemFilterType.Require));
+			} else if (referencedRuntime == MonoDevelop.Core.ClrVersion.Net_2_0) {
+				node.ItemFilters.Add (new ToolboxItemFilterAttribute ("ClrVersion.Net_2_0", ToolboxItemFilterType.Require));
+			}
+			
 			return node;
 		}
 		
