@@ -1,3 +1,10 @@
+2008-05-21  Lluis Sanchez Gual <lluis@novell.com>
+
+	* MonoDevelop.Ide.Gui/Workbench.cs,
+	  MonoDevelop.Ide.Gui/SdiWorkspaceLayout.cs: Fix bug 361084 -
+	  Dragging a tab to a different position doesn't change its position
+	  in the tab order.
+
 2008-05-21  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.CodeTemplates/CodeTemplateGroup.cs: Fix bug 372041 -

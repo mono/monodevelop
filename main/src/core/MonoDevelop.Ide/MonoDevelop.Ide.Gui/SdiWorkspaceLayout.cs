@@ -251,12 +251,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		void OnTabsReordered (Widget widget, int oldPlacement, int newPlacement)
 		{
-			lock (workbench.ViewContentCollection) {
-				IViewContent content = workbench.ViewContentCollection[oldPlacement];
-				workbench.InternalViewContentCollection.RemoveAt (oldPlacement);
-				workbench.InternalViewContentCollection.Insert (newPlacement, content);
-				
-			}
+			IdeApp.Workbench.ReorderDocuments (oldPlacement, newPlacement);
 		}
 
 		void OnContextChanged (object o, EventArgs e)
