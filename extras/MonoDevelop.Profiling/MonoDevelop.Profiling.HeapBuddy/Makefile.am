@@ -5,8 +5,6 @@ REFS =  \
 	$(GTK_SHARP_LIBS) \
 	$(MONO_ADDINS_LIBS) \
 	$(MONODEVELOP_LIBS) \
-	-r:../../../../../install/lib/monodevelop/bin/MonoDevelop.Projects.dll \
-	-r:../../../../../install/lib/monodevelop/bin/MonoDevelop.Projects.Gui.dll \
 	-r:../build/MonoDevelop.Profiling.dll \
 	-r:Mono.Posix \
 	-r:System

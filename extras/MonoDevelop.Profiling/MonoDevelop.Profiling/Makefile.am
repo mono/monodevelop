@@ -6,8 +6,6 @@ REFS =  \
 	$(MONO_ADDINS_LIBS) \
 	$(MONODEVELOP_CORE_ADDINS_LIBS) \
 	$(MONODEVELOP_LIBS) \
-	-r:../../../../../install/lib/monodevelop/bin/MonoDevelop.Projects.dll \
-	-r:../../../../../install/lib/monodevelop/bin/MonoDevelop.Projects.Gui.dll \
 	-r:Mono.Posix \
 	-r:System \
 	-r:System.Xml
