@@ -45,9 +45,9 @@ namespace AspNetEdit.Integration
 	public class MonoDevelopProxy : MarshalByRefObject, IDisposable
 	{
 		IClass codeBehindClass;
-		CombineEntry project;
+		SolutionItem project;
 		
-		public MonoDevelopProxy (CombineEntry project, IClass codeBehindClass)
+		public MonoDevelopProxy (SolutionItem project, IClass codeBehindClass)
 		{
 			this.codeBehindClass = codeBehindClass;
 			this.project = project;
