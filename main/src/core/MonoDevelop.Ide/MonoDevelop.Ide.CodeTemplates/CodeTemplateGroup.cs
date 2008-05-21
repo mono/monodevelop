@@ -95,6 +95,8 @@ namespace MonoDevelop.Ide.CodeTemplates
 						break;
 					}
 				}
+				else
+					break;
 			}
 			return result;
 		}
