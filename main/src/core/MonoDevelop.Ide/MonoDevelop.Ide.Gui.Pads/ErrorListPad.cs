@@ -168,12 +168,13 @@ namespace MonoDevelop.Ide.Gui.Pads
 			sw.ShadowType = ShadowType.None;
 			sw.Add (view);
 			
-			Services.TaskService.TasksCleared     += (EventHandler) DispatchService.GuiDispatch (new EventHandler (ShowResults));
+			Services.TaskService.TaskRemoved      += (TaskEventHandler) DispatchService.GuiDispatch (new TaskEventHandler (ShowResults));
 			Services.TaskService.TaskAdded        += (TaskEventHandler) DispatchService.GuiDispatch (new TaskEventHandler (TaskAdded));
 			Services.TaskService.TaskChanged      += (TaskEventHandler) DispatchService.GuiDispatch (new TaskEventHandler (TaskChanged));
 			
-			IdeApp.ProjectOperations.CombineOpened += (CombineEventHandler) DispatchService.GuiDispatch (new CombineEventHandler (OnCombineOpen));
-			IdeApp.ProjectOperations.CombineClosed += (CombineEventHandler) DispatchService.GuiDispatch (new CombineEventHandler (OnCombineClosed));
+			IdeApp.Workspace.FirstWorkspaceItemOpened += OnCombineOpen;
+			IdeApp.Workspace.LastWorkspaceItemClosed += OnCombineClosed;
+			
 			view.RowActivated            += new RowActivatedHandler (OnRowActivated);
 						
 			iconWarning = sw.RenderIcon (Gtk.Stock.DialogWarning, Gtk.IconSize.Menu, "");
@@ -429,12 +430,12 @@ namespace MonoDevelop.Ide.Gui.Pads
 			col.Resizable = true;
 		}
 		
-		void OnCombineOpen(object sender, CombineEventArgs e)
+		void OnCombineOpen(object sender, EventArgs e)
 		{
 			Clear();
 		}
 		
-		void OnCombineClosed(object sender, CombineEventArgs e)
+		void OnCombineClosed(object sender, EventArgs e)
 		{
 			Clear();
 		}
@@ -529,7 +530,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 				} while (store.IterNext (ref iter));
 			}
 		}
-		
+	
 		void TaskAdded (object sender, TaskEventArgs e)
 		{
 			AddTasks (e.Tasks);

@@ -40,12 +40,12 @@ namespace MonoDevelop.AspNet.Parser
 	
 	public class SuggestedHandlerCompletionData : IActionCompletionData
 	{
-		CombineEntry entry;
+		SolutionItem entry;
 		CodeMemberMethod methodInfo;
 		IClass codeBehindClass;
 		IClass codeBehindClassPart;
 		
-		public SuggestedHandlerCompletionData (CombineEntry entry, CodeMemberMethod methodInfo, IClass codeBehindClass, IClass codeBehindClassPart)
+		public SuggestedHandlerCompletionData (SolutionItem entry, CodeMemberMethod methodInfo, IClass codeBehindClass, IClass codeBehindClassPart)
 		{
 			this.entry = entry;
 			this.methodInfo = methodInfo;

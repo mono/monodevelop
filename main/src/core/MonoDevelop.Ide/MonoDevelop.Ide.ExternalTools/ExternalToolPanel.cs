@@ -327,7 +327,6 @@ namespace MonoDevelop.Ide.ExternalTools
 
 		public bool Validate ()
 		{
-			List<ExternalTool> newlist = new List<ExternalTool> ();
 			TreeIter first;
 			if (toolListBox.Model.GetIterFirst (out first)) {
 				TreeIter current = first;

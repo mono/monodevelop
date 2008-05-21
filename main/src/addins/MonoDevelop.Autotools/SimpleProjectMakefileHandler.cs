@@ -40,7 +40,7 @@ namespace MonoDevelop.Autotools
 		// Handle files to be deployed
 		Dictionary<string, StringBuilder> deployDirs;
 		Dictionary<string, string> deployFileVars;
-		Dictionary<string, DeployFile> allDeployVars;
+		Dictionary<string, DeployFileData> allDeployVars;
 		List<string> builtFiles;
 
 		StringBuilder deployFileCopyVars;
@@ -69,7 +69,7 @@ namespace MonoDevelop.Autotools
 		// store all refs for easy access
 		Set<SystemPackage> pkgs;
 
-		public bool CanDeploy (CombineEntry entry, MakefileType type)
+		public bool CanDeploy (SolutionItem entry, MakefileType type)
 		{
 			Project project = entry as Project;
 			if ( project == null ) return false;
@@ -77,7 +77,7 @@ namespace MonoDevelop.Autotools
 			return true;
 		}
 
-		ISimpleAutotoolsSetup FindSetupForProject ( Project project )
+		ISimpleAutotoolsSetup FindSetupForProject (Project project)
 		{
 			object[] items = AddinManager.GetExtensionObjects ("/MonoDevelop/Autotools/SimpleSetups", typeof(ISimpleAutotoolsSetup));
 			foreach ( ISimpleAutotoolsSetup setup in items)
@@ -87,7 +87,7 @@ namespace MonoDevelop.Autotools
 			return null;
 		}
 
-		public Makefile Deploy ( AutotoolsContext ctx, CombineEntry entry, IProgressMonitor monitor )
+		public Makefile Deploy (AutotoolsContext ctx, SolutionItem entry, IProgressMonitor monitor)
 		{
 			generateAutotools = ctx.MakefileType == MakefileType.AutotoolsMakefile;
 			
@@ -130,7 +130,8 @@ namespace MonoDevelop.Autotools
 
 				string includes = String.Empty;
 				string references, dllReferences;
-				ProcessProjectReferences (project, out references, out dllReferences, ctx);
+				DotNetProject netProject = project as DotNetProject;
+				ProcessProjectReferences (netProject, out references, out dllReferences, ctx);
 
 				templateEngine.Variables["REFERENCES"] = references;
 				templateEngine.Variables["DLL_REFERENCES"] =  dllReferences;
@@ -141,7 +142,7 @@ namespace MonoDevelop.Autotools
 					templateEngine.Variables ["RESGEN"] = (dotnetProject.ClrVersion == ClrVersion.Net_2_0) ? "resgen2" : "resgen";
 				
 				string pfpath = null;
-				foreach (ProjectFile projectFile in project.ProjectFiles) 
+				foreach (ProjectFile projectFile in project.Files) 
 				{
 					pfpath = (PlatformID.Unix == Environment.OSVersion.Platform) ? projectFile.RelativePath : projectFile.RelativePath.Replace("\\","/");
 					pfpath = FileService.NormalizeRelativePath (pfpath);
@@ -211,13 +212,13 @@ namespace MonoDevelop.Autotools
 
 					conf_vars.AppendFormat ("srcdir=.\n");
 					conf_vars.AppendFormat ("top_srcdir={0}\n\n",
-						FileService.AbsoluteToRelativePath (project.BaseDirectory, ctx.TargetCombine.BaseDirectory));
+						FileService.AbsoluteToRelativePath (project.BaseDirectory, ctx.TargetSolution.BaseDirectory));
 
 					conf_vars.AppendFormat ("include $(top_srcdir)/config.make\n\n");
 
 					// Don't emit for top level project makefile(eg. pdn.make), as it would be
 					// included by top level solution makefile
-					if (ctx.TargetCombine.BaseDirectory != project.BaseDirectory){
+					if (ctx.TargetSolution.BaseDirectory != project.BaseDirectory){
 						string customhooks = Path.Combine (project.BaseDirectory, "custom-hooks.make");
 						bool include = File.Exists (customhooks);
 					
@@ -230,29 +231,27 @@ namespace MonoDevelop.Autotools
 
 				bool buildEnabled;
 				List<ConfigSection> configSections = new List<ConfigSection> ();
-				allDeployVars = new Dictionary<string, DeployFile> ();
+				allDeployVars = new Dictionary<string, DeployFileData> ();
 
-				IConfiguration saveConfiguration = ctx.TargetCombine.ActiveConfiguration;
-				foreach (CombineConfiguration combineConfig in ctx.TargetCombine.Configurations)
+				foreach (SolutionConfiguration combineConfig in ctx.TargetSolution.Configurations)
 				{
-					ctx.TargetCombine.ActiveConfiguration = combineConfig;
-					DotNetProjectConfiguration config = GetProjectConfig (combineConfig.Name, project, out buildEnabled) as DotNetProjectConfiguration;
+					DotNetProjectConfiguration config = GetProjectConfig (combineConfig.Id, project, out buildEnabled) as DotNetProjectConfiguration;
 					if (config == null)
 						continue;
 
-					ConfigSection configSection = new ConfigSection (combineConfig.Name);
+					ConfigSection configSection = new ConfigSection (combineConfig.Id);
 
 					string assembly = (PlatformID.Unix == Environment.OSVersion.Platform) ?
 						project.GetRelativeChildPath ( config.CompiledOutputName ) :
 						project.GetRelativeChildPath ( config.CompiledOutputName ).Replace("\\","/");
 
 					configSection.BuildVariablesBuilder.AppendFormat ("ASSEMBLY_COMPILER_COMMAND = {0}\n",
-							setup.GetCompilerCommand ( project, config.Name ) );
+							setup.GetCompilerCommand ( project, config.Id ) );
 					configSection.BuildVariablesBuilder.AppendFormat ("ASSEMBLY_COMPILER_FLAGS = {0}\n",
-							setup.GetCompilerFlags ( project, config.Name ) );
+							setup.GetCompilerFlags ( project, config.Id ) );
 
 					// add check for compiler command in configure.ac
-					ctx.AddCommandCheck ( setup.GetCompilerCommand ( project, config.Name ) );
+					ctx.AddCommandCheck ( setup.GetCompilerCommand ( project, config.Id ) );
 
 					configSection.BuildVariablesBuilder.AppendFormat ("ASSEMBLY = {0}\n",
 						AutotoolsContext.EscapeStringForAutomake (assembly));
@@ -282,13 +281,13 @@ namespace MonoDevelop.Autotools
 					// for project references, we need a ref to the dll for the current configuration
 					StringWriter projectReferences = new StringWriter();
 					string pref = null;
-					foreach (ProjectReference reference in project.ProjectReferences) 
+					foreach (ProjectReference reference in netProject.References) 
 					{
 						if (reference.ReferenceType != ReferenceType.Project)
 							continue;
-						Project refp = GetProjectFromName (reference.Reference, ctx.TargetCombine);
+						Project refp = GetProjectFromName (reference.Reference, ctx.TargetSolution);
 
-						DotNetProjectConfiguration dnpc = GetProjectConfig (combineConfig.Name, refp, out buildEnabled) as DotNetProjectConfiguration;
+						DotNetProjectConfiguration dnpc = GetProjectConfig (combineConfig.Id, refp, out buildEnabled) as DotNetProjectConfiguration;
 						if ( dnpc == null )
 							throw new Exception ( GettextCatalog.GetString
 									("Could not add reference to project '{0}'", refp.Name) );
@@ -303,10 +302,10 @@ namespace MonoDevelop.Autotools
 					}
 					configSection.BuildVariablesBuilder.AppendFormat ( "PROJECT_REFERENCES = {0}\n", projectReferences.ToString() );
 
-					pref = (PlatformID.Unix == Environment.OSVersion.Platform) ?
+					string buildDir = (PlatformID.Unix == Environment.OSVersion.Platform) ?
 						project.GetRelativeChildPath (config.OutputDirectory) :
 						project.GetRelativeChildPath (config.OutputDirectory).Replace ("\\","/");
-					configSection.BuildVariablesBuilder.AppendFormat ("BUILD_DIR = {0}\n", pref);
+					configSection.BuildVariablesBuilder.AppendFormat ("BUILD_DIR = {0}\n", buildDir);
 
 					// Register files built by this configuration.
 					// Built files won't be distributed.
@@ -314,13 +313,13 @@ namespace MonoDevelop.Autotools
 						ctx.AddBuiltFile (Path.Combine (config.OutputDirectory, bfile));
 
 					DeployFileCollection deployFiles = DeployService.GetDeployFiles (
-							ctx.DeployContext, new CombineEntry[] { project });
+							ctx.DeployContext, new SolutionItem[] { project }, config.Id);
 
-					ProcessDeployFilesForConfig (deployFiles, project, configSection, ctx);
+					ProcessDeployFilesForConfig (deployFiles, project, configSection, ctx, config);
 					configSections.Add (configSection);
 
 					if (!generateAutotools) {
-						EmitCustomCommandTargets (config.CustomCommands, project, customCommands, combineConfig.Name,
+						EmitCustomCommandTargets (config.CustomCommands, project, customCommands, combineConfig.Id,
 								new CustomCommandType [] {
 									CustomCommandType.BeforeBuild,
 									CustomCommandType.AfterBuild,
@@ -331,15 +330,19 @@ namespace MonoDevelop.Autotools
 							monitor.ReportWarning (GettextCatalog.GetString ("Custom commands are not supported for autotools based makefiles. Ignoring."));
 					}
 
-					if (buildEnabled && pkgs.Count > 0)
-						ctx.AddRequiredPackages (combineConfig.Name, pkgs);
-				}
-				ctx.TargetCombine.ActiveConfiguration = saveConfiguration;
+					// Register files generated by the compiler
+					ctx.AddBuiltFile (project.GetOutputFileName (config.Id));
+					if (config.DebugMode)
+						ctx.AddBuiltFile (project.GetOutputFileName (config.Id) + ".mdb");
 
-				Dictionary<string, DeployFile> commonDeployVars = new Dictionary<string, DeployFile> (allDeployVars);
+					if (buildEnabled && pkgs.Count > 0)
+						ctx.AddRequiredPackages (combineConfig.Id, pkgs);
+				}
+
+				Dictionary<string, DeployFileData> commonDeployVars = new Dictionary<string, DeployFileData> (allDeployVars);
 				foreach (ConfigSection configSection in configSections) {
 					List<string> toRemove = new List<string> ();
-					foreach (KeyValuePair<string, DeployFile> pair in commonDeployVars) {
+					foreach (KeyValuePair<string, DeployFileData> pair in commonDeployVars) {
 						if (!configSection.DeployFileVars.ContainsKey (pair.Key))
 							toRemove.Add (pair.Key);
 					}
@@ -355,9 +358,9 @@ namespace MonoDevelop.Autotools
 					conf_vars.Append (configSection.BuildVariablesBuilder.ToString ());
 					conf_vars.Append ("\n");
 
-					foreach (KeyValuePair<string, DeployFile> pair in allDeployVars) {
+					foreach (KeyValuePair<string, DeployFileData> pair in allDeployVars) {
 						string targetDeployVar = pair.Key;
-						if (pair.Value.ContainsPathReferences)
+						if (pair.Value.File.ContainsPathReferences)
 							//Template files are not handled per-config
 							continue;
 
@@ -390,7 +393,7 @@ namespace MonoDevelop.Autotools
 				conf_vars.AppendFormat ("AL={0}\n", (dotnetProject.ClrVersion == ClrVersion.Net_2_0) ? "al2" : "al");
 				conf_vars.AppendFormat ("SATELLITE_ASSEMBLY_NAME={0}.resources.dll\n", dotnetProject.DefaultNamespace);
 
-				foreach (KeyValuePair<string, DeployFile> pair in allDeployVars) {
+				foreach (KeyValuePair<string, DeployFileData> pair in allDeployVars) {
 					HandleDeployFile (pair.Value, pair.Key, project, ctx);
 
 					if (commonDeployVars.ContainsKey (pair.Key)) {
@@ -398,14 +401,9 @@ namespace MonoDevelop.Autotools
 						deployFileCopyVars.AppendFormat ("{0} = $(BUILD_DIR){1}{2}\n",
 									pair.Key,
 									Path.DirectorySeparatorChar,
-									EscapeSpace (pair.Value.RelativeTargetPath));
+									EscapeSpace (pair.Value.File.RelativeTargetPath));
 					}
 				}
-
-				// Register files generated by the compiler
-				ctx.AddBuiltFile (project.GetOutputFileName ());
-				//FIXME: mdb is not generated for non-DEBUG profiles
-				ctx.AddBuiltFile (project.GetOutputFileName () + ".mdb");
 				
 				conf_vars.Append ('\n');
 				
@@ -432,7 +430,7 @@ namespace MonoDevelop.Autotools
 				templateEngine.Variables["DEPLOY_FILE_VARS"] = vars.ToString ();
 				templateEngine.Variables["COPY_DEPLOY_FILES_VARS"] = deployFileCopyVars.ToString();
 				templateEngine.Variables["COPY_DEPLOY_FILES_TARGETS"] = deployFileCopyTargets.ToString();
-				templateEngine.Variables["ALL_TARGET"] = (ctx.TargetCombine.BaseDirectory == project.BaseDirectory) ? "all-local" : "all";
+				templateEngine.Variables["ALL_TARGET"] = (ctx.TargetSolution.BaseDirectory == project.BaseDirectory) ? "all-local" : "all";
 				templateEngine.Variables["INCLUDES"] = includes;
 
 				templateEngine.Variables["FILES"] = files.ToString();
@@ -463,14 +461,14 @@ namespace MonoDevelop.Autotools
 			return makefile;
 		}
 
-		void ProcessProjectReferences (Project project, out string references, out string dllReferences, AutotoolsContext ctx)
+		void ProcessProjectReferences (DotNetProject project, out string references, out string dllReferences, AutotoolsContext ctx)
 		{
 			StringWriter refWriter = new StringWriter();
 			StringWriter dllRefWriter = new StringWriter();
 			pkgs = new Set<SystemPackage> ();
 
 			// grab pkg-config references
-			foreach (ProjectReference reference in project.ProjectReferences) 
+			foreach (ProjectReference reference in project.References) 
 			{
 				if (reference.ReferenceType == ReferenceType.Gac) 
 				{
@@ -524,12 +522,12 @@ namespace MonoDevelop.Autotools
 		}
 
 		// Populates configSection.DeployFileVars with unique DeployFiles for a particular config
-		void ProcessDeployFilesForConfig (DeployFileCollection deployFiles, Project project, ConfigSection configSection, AutotoolsContext ctx)
+		void ProcessDeployFilesForConfig (DeployFileCollection deployFiles, Project project, ConfigSection configSection, AutotoolsContext ctx, DotNetProjectConfiguration config)
 		{
 			//@deployFiles can have duplicates
 			Dictionary<string, DeployFile> uniqueDeployFiles = new Dictionary<string, DeployFile> ();
 			foreach (DeployFile dfile in deployFiles) {
-				if (dfile.SourcePath == project.GetOutputFileName ())
+				if (dfile.SourcePath == project.GetOutputFileName (config.Id))
 					continue;
 
 				// DeployFileCollection can have duplicates, ignore them
@@ -542,14 +540,18 @@ namespace MonoDevelop.Autotools
 
 				string targetDeployVar = GetDeployVar (deployFileVars, Path.GetFileName (dfile.RelativeTargetPath));
 				configSection.DeployFileVars [targetDeployVar] = dfile;
-				allDeployVars [targetDeployVar] = dfile;
+				DeployFileData data = new DeployFileData ();
+				data.File = dfile;
+				data.Configuration = config;
+				allDeployVars [targetDeployVar] = data;
 			}
 		}
 
 		// Handle unique deploy files, emits non-perconfig stuff, like targets for deploy files,
 		// un/install commands
-		void HandleDeployFile (DeployFile dfile, string targetDeployVar, Project project, AutotoolsContext ctx)
+		void HandleDeployFile (DeployFileData data, string targetDeployVar, Project project, AutotoolsContext ctx)
 		{
+			DeployFile dfile = data.File;
 			string dependencyDeployFile = null; //Dependency for the deployfile target
 			if (dfile.ContainsPathReferences) {
 				// Template file, copy to .in file
@@ -568,7 +570,7 @@ namespace MonoDevelop.Autotools
 
 				//Path relative to TargetCombine
 				fname = FileService.NormalizeRelativePath (
-						FileService.AbsoluteToRelativePath (ctx.TargetCombine.BaseDirectory, full_fname));
+						FileService.AbsoluteToRelativePath (ctx.TargetSolution.BaseDirectory, full_fname));
 				infname = fname + ".in";
 				ctx.AddAutoconfFile (EscapeSpace (fname));
 				ctx.AddGeneratedFile (full_fname + ".in");
@@ -592,8 +594,12 @@ namespace MonoDevelop.Autotools
 					targetDeployVar,
 					EscapeSpace (dependencyDeployFile),
 					(dfile.FileAttributes & DeployFileAttributes.Executable) != 0 ? ",x" : String.Empty);
-			else
-				deployFileCopyTargets.AppendFormat ("$(eval $(call emit-deploy-target,{0}))\n", targetDeployVar);
+			else {
+				// The emit-deploy-target macro copies the deployable file to the output directory.
+				// This is not needed if the file is already there (e.g. for an .mdb file)
+				if (Path.GetFullPath (dfile.SourcePath) != Path.GetFullPath (Path.Combine (data.Configuration.OutputDirectory, dfile.RelativeTargetPath)))
+				    deployFileCopyTargets.AppendFormat ("$(eval $(call emit-deploy-target,{0}))\n", targetDeployVar);
+			}
 
 			switch (dfile.TargetDirectoryID) {
 				case TargetDirectory.Gac:
@@ -702,17 +708,17 @@ namespace MonoDevelop.Autotools
 		}
 
 		// Get the Project config corresponding to its @parentConfig
-		internal static IConfiguration GetProjectConfig (string parentConfig, CombineEntry entry, out bool enabled)
+		internal static SolutionItemConfiguration GetProjectConfig (string parentConfig, SolutionEntityItem entry, out bool enabled)
 		{
 			enabled = false;
-			CombineConfiguration combineConfig = entry.ParentCombine.Configurations [parentConfig] as CombineConfiguration;
-			if (combineConfig == null)
+			SolutionConfiguration solutionConfig = entry.ParentSolution.Configurations [parentConfig] as SolutionConfiguration;
+			if (solutionConfig == null)
 				return null;
 
-			foreach (CombineConfigurationEntry cce in combineConfig.Entries) {
-				if (cce.Entry == entry) {
+			foreach (SolutionConfigurationEntry cce in solutionConfig.Configurations) {
+				if (cce.Item == entry) {
 					enabled = cce.Build;
-					return entry.Configurations [cce.ConfigurationName];
+					return entry.Configurations [cce.ItemConfiguration];
 				}
 			}
 
@@ -730,10 +736,10 @@ namespace MonoDevelop.Autotools
 			return name;
 		}
 
-		Project GetProjectFromName ( string name, Combine targetCombine)
+		Project GetProjectFromName (string name, Solution targetSolution)
 		{
 			Project refp = null;
-			if (targetCombine != null) refp = targetCombine.FindProject (name);
+			if (targetSolution != null) refp = targetSolution.FindProjectByName (name);
 
 			if (refp == null)
 				throw new Exception ( GettextCatalog.GetString ("Couldn't find referenced project '{0}'", 
@@ -747,6 +753,12 @@ namespace MonoDevelop.Autotools
 			return str.Replace (" ", "\\ ");
 		}
 
+	}
+	
+	class DeployFileData
+	{
+		public DeployFile File;
+		public DotNetProjectConfiguration Configuration;
 	}
 }
 

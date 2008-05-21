@@ -24,7 +24,7 @@ using System.IO;
 using System.Drawing;
 
 using MonoDevelop.Projects;
-using MonoDevelop.Core.Gui.Dialogs;
+using MonoDevelop.Projects.Gui.Dialogs;
 using MonoDevelop.Core;
 using Mono.Addins;
 using MonoDevelop.Projects.Parser;
@@ -41,13 +41,14 @@ namespace CSharpBinding
 		DotNetProjectConfiguration configuration;
 		CSharpCompilerParameters compilerParameters = null;
 
-		public 
-		CodeGenerationPanelWidget (Properties CustomizationObject)
+		public CodeGenerationPanelWidget ()
 		{
 			Build ();
-			
-			configuration = ((Properties)CustomizationObject).Get<DotNetProjectConfiguration> ("Config");
-			//project = ((Properties)CustomizationObject).Get<Project> ("Project");
+		}
+		
+		public void Load (DotNetProjectConfiguration configuration)
+		{
+			this.configuration = configuration;
 			compilerParameters = (CSharpCompilerParameters) configuration.CompilationParameters;
 			
 			symbolsEntry.Text                          = compilerParameters.DefineSymbols;
@@ -61,11 +62,10 @@ namespace CSharpBinding
 			ignoreWarningsEntry.Text                   = compilerParameters.NoWarnings;
 		}
 
-		public bool Store ()
+		public void Store ()
 		{
-			if (compilerParameters == null) {
-				return true;
-			}
+			if (compilerParameters == null)
+				return;
 			
 			compilerParameters.DefineSymbols            = symbolsEntry.Text;
 			configuration.DebugMode                     = generateDebugInformationCheckButton.Active;
@@ -76,26 +76,27 @@ namespace CSharpBinding
 			compilerParameters.WarningLevel             = warningLevelSpinButton.ValueAsInt;
 			compilerParameters.AdditionalArguments      = additionalArgsEntry.Text;
 			compilerParameters.NoWarnings               = ignoreWarningsEntry.Text;
-			
-			return true;
 		}
 	}
 	
 
-	public class CodeGenerationPanel : AbstractOptionPanel
+	public class CodeGenerationPanel : MultiConfigItemOptionsPanel
 	{
 		CodeGenerationPanelWidget widget;
 		
-		public override void LoadPanelContents()
+		public override Widget CreatePanelWidget()
 		{
-			Add (widget = new  CodeGenerationPanelWidget ((Properties) CustomizationObject));
+			return (widget = new  CodeGenerationPanelWidget ());
 		}
 		
-		public override bool StorePanelContents()
+		public override void LoadConfigData ()
 		{
-			bool result = true;
-			result = widget.Store ();
- 			return result;
+			widget.Load ((DotNetProjectConfiguration) CurrentConfiguration);
+		}
+		
+		public override void ApplyChanges ()
+		{
+			widget.Store ();
 		}
 	}
 }

@@ -11,7 +11,7 @@
     <widget-library name="../../../../build/bin/MonoDevelop.Projects.Gui.dll" />
     <widget-library name="../../../../build/AddIns/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor.dll" />
   </import>
-  <widget class="Gtk.Bin" id="MonoDevelop.AspNet.Gui.AspNetConfigurationPanelWidget" design-size="436 300">
+  <widget class="Gtk.Bin" id="MonoDevelop.AspNet.Gui.AspNetConfigurationPanelWidget" design-size="449 300">
     <property name="MemberName" />
     <child>
       <widget class="Gtk.VBox" id="vbox1">

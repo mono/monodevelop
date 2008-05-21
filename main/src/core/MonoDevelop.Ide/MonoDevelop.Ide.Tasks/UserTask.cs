@@ -31,15 +31,16 @@ using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
 using MonoDevelop.Core;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.Ide.Tasks
 {
 	public class UserTask
-	{	
-		
+	{
 		TaskPriority priority = TaskPriority.Normal;
   		bool completed = false;
   		string description;
+		Solution solution;
   		
 		public TaskPriority Priority
 		{
@@ -57,6 +58,16 @@ namespace MonoDevelop.Ide.Tasks
 		{
 			get { return description; }
 			set { description = value; }
+		}
+
+		[System.Xml.Serialization.XmlIgnoreAttribute]
+		public Solution Solution {
+			get {
+				return solution;
+			}
+			internal set {
+				solution = value;
+			}
 		}
 		
 		public override string ToString ()

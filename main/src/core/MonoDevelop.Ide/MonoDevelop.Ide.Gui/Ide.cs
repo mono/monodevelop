@@ -60,6 +60,8 @@ namespace MonoDevelop.Ide.Gui
 		static HelpOperations helpOperations;
 		static CommandManager commandService;
 		static IdeServices ideServices;
+		static RootWorkspace workspace;
+		static IdePreferences preferences;
 		
 		public static event ExitEventHandler Exiting;
 		public static event EventHandler Exited;
@@ -77,6 +79,10 @@ namespace MonoDevelop.Ide.Gui
 			get { return projectOperations; }
 		}
 		
+		public static RootWorkspace Workspace {
+			get { return workspace; }
+		}
+		
 		public static HelpOperations HelpOperations {
 			get { return helpOperations; }
 		}
@@ -87,6 +93,10 @@ namespace MonoDevelop.Ide.Gui
 		
 		public static IdeServices Services {
 			get { return ideServices; }
+		}
+
+		public static IdePreferences Preferences {
+			get { return preferences; }
 		}
 
 		public static bool IsInitialized {
@@ -101,10 +111,12 @@ namespace MonoDevelop.Ide.Gui
 			MonoDevelop.Core.Gui.Services.Resources.ToString ();
 			
 			workbench = new Workbench ();
+			workspace = new RootWorkspace ();
 			projectOperations = new ProjectOperations ();
 			helpOperations = new HelpOperations ();
 			commandService = new CommandManager ();
 			ideServices = new IdeServices ();
+			preferences = new IdePreferences ();
 			
 			commandService.CommandError += delegate (object sender, CommandErrorArgs args) {
 				MessageService.ShowException (args.Exception, args.ErrorMessage);
@@ -136,6 +148,15 @@ namespace MonoDevelop.Ide.Gui
 		
 			commandService.EnableIdleUpdate = true;
 			
+			// Default file format
+			
+			IdeApp.Services.ProjectService.DefaultFileFormatId = IdeApp.Preferences.DefaultProjectFileFormat;
+			IdeApp.Preferences.DefaultProjectFileFormatChanged += delegate {
+				IdeApp.Services.ProjectService.DefaultFileFormatId = IdeApp.Preferences.DefaultProjectFileFormat;
+			};
+			
+			// Startup commands
+			
 			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Ide/StartupHandlers", OnExtensionChanged);
 			monitor.EndTask ();
 
@@ -146,9 +167,9 @@ namespace MonoDevelop.Ide.Gui
 			// Load requested files
 			foreach (string file in StartupInfo.GetRequestedFileList()) {
 				//FIXME: use mimetypes
-				if (Services.ProjectService.IsCombineEntryFile (file)) {
+				if (Services.ProjectService.IsWorkspaceItemFile (file)) {
 					try {
-						IdeApp.ProjectOperations.OpenCombine (file).WaitForCompleted ();
+						IdeApp.Workspace.OpenWorkspaceItem (file).WaitForCompleted ();
 					} catch (Exception e) {
 						MessageService.ShowException (e, "Could not load solution: " + file);
 					}
@@ -167,7 +188,7 @@ namespace MonoDevelop.Ide.Gui
 				RecentOpen recentOpen = Workbench.RecentOpen;
 
 				if (recentOpen.RecentProject != null && recentOpen.RecentProject.Length > 0) { 
-					IdeApp.ProjectOperations.OpenCombine(recentOpen.RecentProject[0].ToString()).WaitForCompleted ();
+					IdeApp.Workspace.OpenWorkspaceItem(recentOpen.RecentProject[0].ToString()).WaitForCompleted ();
 				}
 			}
 			
@@ -280,7 +301,7 @@ namespace MonoDevelop.Ide.Gui
 			get { return MonoDevelop.Projects.Services.ParserService; }
 		}
 	
-		public IProjectService ProjectService {
+		public ProjectService ProjectService {
 			get { return MonoDevelop.Projects.Services.ProjectService; }
 		}
 		

@@ -5,6 +5,6 @@ namespace MonoDevelop.Deployment
 {
 	public interface IDeployable
 	{
-		DeployFileCollection GetDeployFiles ();
+		DeployFileCollection GetDeployFiles (string configuration);
 	}
 }

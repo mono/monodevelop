@@ -1,3 +1,9 @@
+2008-05-21  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* ProjectOptionPanel.cs, ChangeLogData.cs, ProjectOptionPanelWidget.cs,
+	  ChangeLogAddIn.addin.xml, ChangeLogAddIn.mdp, gtk-gui/gui.stetic,
+	  Makefile.am, ChangeLogService.cs: New project model changes.
+
 2008-03-07  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* ChangeLogAddInOptionsPanel.cs, ChangeLogAddIn.addin.xml,

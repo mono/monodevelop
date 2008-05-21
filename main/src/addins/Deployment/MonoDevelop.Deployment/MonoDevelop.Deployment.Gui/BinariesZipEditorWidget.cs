@@ -44,6 +44,16 @@ namespace MonoDevelop.Deployment.Gui
 				entryZip.Text = System.IO.Path.GetFileName (builder.TargetFile.Substring (0, builder.TargetFile.Length - ext.Length));
 				comboZip.Active = zel;
 			}
+			
+			// Fill configurations
+			zel = 0;
+			foreach (string conf in builder.RootSolutionItem.ParentSolution.GetConfigurations ()) {
+				comboConfiguration.AppendText (conf);
+				if (conf == builder.Configuration)
+					comboConfiguration.Active = zel;
+				zel++;
+			}
+			
 			loading = false;
 		}
 		
@@ -66,6 +76,8 @@ namespace MonoDevelop.Deployment.Gui
 				return;
 			builder.TargetFile = TargetZipFile;
 			builder.Platform = platforms [comboPlatform.Active].Id;
+			if (comboConfiguration.Active != -1)
+				builder.Configuration = comboConfiguration.ActiveText;
 		}
 
 		protected virtual void OnFolderEntryPathChanged(object sender, System.EventArgs e)
@@ -84,6 +96,11 @@ namespace MonoDevelop.Deployment.Gui
 		}
 
 		protected virtual void OnComboPlatformChanged(object sender, System.EventArgs e)
+		{
+			UpdateTarget ();
+		}
+
+		protected virtual void OnComboConfigurationChanged (object sender, System.EventArgs e)
 		{
 			UpdateTarget ();
 		}

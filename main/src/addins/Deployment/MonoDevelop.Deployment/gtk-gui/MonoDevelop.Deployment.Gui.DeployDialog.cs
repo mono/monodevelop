@@ -158,7 +158,7 @@ namespace MonoDevelop.Deployment.Gui {
             this.notebook = new Gtk.Notebook();
             this.notebook.CanFocus = true;
             this.notebook.Name = "notebook";
-            this.notebook.CurrentPage = 0;
+            this.notebook.CurrentPage = 3;
             this.notebook.ShowBorder = false;
             this.notebook.BorderWidth = ((uint)(6));
             // Container child notebook.Gtk.Notebook+NotebookChild
@@ -579,7 +579,7 @@ namespace MonoDevelop.Deployment.Gui {
             // Internal child MonoDevelop.Deployment.Gui.DeployDialog.ActionArea
             Gtk.HButtonBox w48 = this.ActionArea;
             w48.Name = "MonoDevelop.Deployment.DeployDialog_ActionArea";
-            w48.Spacing = 10;
+            w48.Spacing = 6;
             w48.BorderWidth = ((uint)(5));
             w48.LayoutStyle = ((Gtk.ButtonBoxStyle)(4));
             // Container child MonoDevelop.Deployment.DeployDialog_ActionArea.Gtk.ButtonBox+ButtonBoxChild
@@ -624,7 +624,7 @@ namespace MonoDevelop.Deployment.Gui {
                 this.Child.ShowAll();
             }
             this.DefaultWidth = 573;
-            this.DefaultHeight = 432;
+            this.DefaultHeight = 433;
             this.Show();
             this.notebook.SelectPage += new Gtk.SelectPageHandler(this.OnNotebookSelectPage);
             this.checkSave.Clicked += new System.EventHandler(this.OnCheckSaveClicked);

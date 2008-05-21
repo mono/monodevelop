@@ -154,7 +154,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 		
 		void OnOKClicked (object sender, EventArgs e)
 		{
-			CodeRefactorer refactorer = IdeApp.ProjectOperations.CodeRefactorer;
+			CodeRefactorer refactorer = IdeApp.Workspace.GetCodeRefactorer (IdeApp.ProjectOperations.CurrentSelectedSolution);
 			IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetBackgroundProgressMonitor (this.Title, null);
 			string name = entryPropertyName.Text;
 			

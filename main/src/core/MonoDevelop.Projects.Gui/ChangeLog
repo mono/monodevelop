@@ -1,3 +1,29 @@
+2008-05-21  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Gui.addin.xml, MonoDevelop.Projects.Gui.mdp,
+	  MonoDevelop.Projects.Gui/ProjectsGuiServices.cs,
+	  MonoDevelop.Projects.Gui.Dialogs/MultiConfigItemOptionsDialog.cs,
+	  MonoDevelop.Projects.Gui.Dialogs/MultiConfigItemOptionsPanel.cs,
+	  MonoDevelop.Projects.Gui.Dialogs/ProjectOptionsDialog.cs,
+	  MonoDevelop.Projects.Gui.Dialogs/CombineOptionsDialog.cs,
+	  MonoDevelop.Projects.Gui.Dialogs/ItemOptionsPanel.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CombineInformationWidget.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Dialogs.NewConfigurationDialog.cs,
+	  gtk-gui/gui.stetic, Makefile.am,
+	  MonoDevelop.Projects.Gui.Completion/CodeCompletionData.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/OutputOptionsPanel.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CustomCommandPanelWidget.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CustomCommandWidget.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/RuntimeOptionsPanel.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/GeneralProjectOptions.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineInformationPanel.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineConfigurationPanel.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/SolutionItemConfigurationsPanel.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineBuildOptions.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CommonAssemblySigningPreferences.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CustomCommandPanel.cs:
+	  New project model changes.
+
 2008-05-19  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs: Only return a

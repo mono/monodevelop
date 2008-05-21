@@ -37,15 +37,15 @@ namespace MonoDevelop.Ide.Gui
 	{
 		string fileName;
 		bool cancel;
-		Combine combine;
+		SolutionFolder combine;
 		
-		public AddEntryEventArgs (Combine combine, string fileName)
+		public AddEntryEventArgs (SolutionFolder combine, string fileName)
 		{
 			this.combine = combine;
 			this.fileName = fileName;
 		}
 		
-		public Combine Combine {
+		public SolutionFolder Combine {
 			get { return combine; }
 		}
 		

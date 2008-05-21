@@ -27,30 +27,27 @@
 using System;
 using Gtk;
 
-using MonoDevelop.Core.Gui.Dialogs;
+using MonoDevelop.Projects.Gui.Dialogs;
 using MonoDevelop.Core;
 using MonoDevelop.AspNet;
 
 namespace MonoDevelop.AspNet.Deployment
 {
 	
-	public class WebDeployOptionsPanel : AbstractOptionPanel
+	public class WebDeployOptionsPanel : ItemOptionsPanel
 	{
-		
 		WebDeployOptionsPanelWidget panel;
 		
-		public override void LoadPanelContents ()
+		public override Widget CreatePanelWidget ()
 		{
-			AspNetAppProject project = ((Properties)CustomizationObject).Get<AspNetAppProject> ("Project");
-			panel = new WebDeployOptionsPanelWidget (project);
-			this.Child = panel;
+			AspNetAppProject project = (AspNetAppProject) ConfiguredProject;
+			return panel = new WebDeployOptionsPanelWidget (project);
 		}
 		
-		public override bool StorePanelContents ()
+		public override void ApplyChanges ()
 		{
-			AspNetAppProject project = ((Properties)CustomizationObject).Get<AspNetAppProject> ("Project");
+			AspNetAppProject project = (AspNetAppProject) ConfiguredProject;
 			panel.Store (project);
- 			return true;
 		}
 	}
 }

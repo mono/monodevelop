@@ -16,6 +16,19 @@
 		<Addin id="Ide" version="0.19.0"/>
 	</Dependencies>
 	
+	<Extension path = "/MonoDevelop/ProjectModel/MSBuildItemTypes">
+		<DotNetProject 
+			language="VBNet" 
+			extension="vbproj" 
+			guid="{F184B08F-C81C-45F6-A57F-5ABD9991F28F}" 
+			import="$(MSBuildBinPath)\Microsoft.VisualBasic.targets"
+			resourceHandler="VBBinding.VBNetResourceIdBuilder"/>
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/ProjectModel/MD1SerializationMaps">
+		<SerializationMap resource="md1format.xml" />
+	</Extension>
+
   <Extension path = "/MonoDevelop/Ide/FileFilters">
     <FileFilter id = "VBNet"
                 insertbefore = "AllFiles"
@@ -34,37 +47,19 @@
     <ProjectTemplate id = "VBGtkSharp2Project" resource = "VBGtkSharp2Project.xpt.xml"/>
   </Extension>
   
-  <Extension path = "/MonoDevelop/ProjectModel/Gui/ProjectOptions/ConfigurationOptions">
-    <Condition id="activelanguage" value = "VBNet">
-      <DialogPanel id = "VBNetCodeGenerationPanel"
-                   _label = "Code Generation"
-                   class = "MonoDevelop.VBNetBinding.CodeGenerationPanel"/>
-    </Condition>
-  </Extension>
-  
-  <Extension path = "/MonoDevelop/ProjectModel/Gui/ProjectOptions/ConfigurationOptions">
-    <Condition id="activelanguage" value = "VBNet">
-      <DialogPanel id = "VBNetOutputOptionsPanel"
-                   _label = "Output Options"
-                   class = "MonoDevelop.Projects.Gui.Dialogs.OptionPanels.OutputOptionsPanel"/>
-    </Condition>
-  </Extension>
-	<Extension path = "/MonoDevelop/ProjectModel/Gui/ProjectOptions/GeneralOptions/Common">
+	<Extension path = "/MonoDevelop/ProjectModel/Gui/ProjectOptions/Common">
 		<Condition id="activelanguage" value="VBNet">
-				<DialogPanel id = "RuntimeOptionsPanel"
+			<Section id = "RuntimeOptionsPanel"
 				             _label = "Runtime Options"
 				             class = "MonoDevelop.Projects.Gui.Dialogs.OptionPanels.RuntimeOptionsPanel"/>
+		      <Section id = "VBNetCodeGenerationPanel"
+		                   _label = "Code Generation"
+		                   class = "MonoDevelop.VBNetBinding.CodeGenerationPanel"/>
+		      <Section id = "VBNetOutputOptionsPanel"
+		                   _label = "Output Options"
+		                   class = "MonoDevelop.Projects.Gui.Dialogs.OptionPanels.OutputOptionsPanel"/>
 		</Condition>
 	</Extension>
-
-  <!-- <Extension path = "/MonoDevelop/ProjectModel/Gui/ProjectOptions/ConfigurationOptions">
-    <Condition id="activelanguage" value = "VBNet">
-      <DialogPanel id = "VBNetChooseRuntimePanel"
-                   _label = "Choose Runtime"
-                   class = "VBBinding.ChooseRuntimePanel"/>
-    </Condition>
-  </Extension> -->
-
 
   <Extension path = "/MonoDevelop/ProjectModel/Gui/Icons">
     <Icon language = "VBNet" icon = "res:VB.ProjectIcon"/>

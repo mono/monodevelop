@@ -54,7 +54,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		{
 			if (excludeThis)
 				return false;
-			if (IdeApp.ProjectOperations.CurrentOpenCombine == null)
+			if (!IdeApp.Workspace.IsOpen)
 				return false;
 			
 			if (GetActionGroup (fileName) == null)
@@ -76,7 +76,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			excludeThis = true;
 			IDisplayBinding db = IdeApp.Workbench.DisplayBindings.GetBindingPerFileName (fileName);
 			
-			Project project = IdeApp.ProjectOperations.CurrentOpenCombine.GetProjectContainingFile (fileName);
+			Project project = IdeApp.Workspace.GetProjectContainingFile (fileName);
 			GtkDesignInfo info = GtkCoreService.EnableGtkSupport (project);
 			
 			ActionGroupView view = new ActionGroupView (db.CreateContentForFile (fileName), GetActionGroup (fileName), info.GuiBuilderProject);
@@ -91,7 +91,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		Stetic.ActionGroupInfo GetActionGroup (string file)
 		{
-			Project project = IdeApp.ProjectOperations.CurrentOpenCombine.GetProjectContainingFile (file);
+			Project project = IdeApp.Workspace.GetProjectContainingFile (file);
 			if (project == null)
 				return null;
 				
@@ -136,7 +136,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		{
 			string fullName = namspace.Length > 0 ? namspace + "." + name : name;
 			
-			CodeRefactorer gen = new CodeRefactorer (project.RootCombine, IdeApp.ProjectOperations.ParserDatabase);
+			CodeRefactorer gen = new CodeRefactorer (project.ParentSolution, IdeApp.Workspace.ParserDatabase);
 			
 			CodeTypeDeclaration type = new CodeTypeDeclaration ();
 			type.Name = name;
@@ -183,10 +183,10 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				throw new UserException ("Could not create class " + fullName);
 			
 			project.AddFile (cls.Region.FileName, BuildAction.Compile);
-			IdeApp.ProjectOperations.SaveProject (project);
+			IdeApp.ProjectOperations.Save (project);
 			
 			// Make sure the database is up-to-date
-			IdeApp.ProjectOperations.ParserDatabase.UpdateFile (project, cls.Region.FileName, null);
+			IdeApp.Workspace.ParserDatabase.UpdateFile (project, cls.Region.FileName, null);
 			return cls;
 		}
 		

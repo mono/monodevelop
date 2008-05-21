@@ -4,7 +4,7 @@
       <Entry build="True" name="MonoDevelop.VBNetBinding" configuration="Debug" />
     </Configuration>
     <Configuration name="Release" ctype="CombineConfiguration">
-      <Entry build="True" name="MonoDevelop.VBNetBinding" configuration="Debug" />
+      <Entry build="True" name="MonoDevelop.VBNetBinding" configuration="Release" />
     </Configuration>
   </Configurations>
   <StartMode startupentry="MonoDevelop.VBNetBinding" single="True">

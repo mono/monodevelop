@@ -117,7 +117,7 @@ namespace MonoDevelop.Ide.Templates
 					string requiredFile = (f[0] == '/')? 
 						  Path.Combine (proj.BaseDirectory, f.Substring(1))
 						: Path.Combine (projectPath, f);
-					if (proj.ProjectFiles.GetFile (requiredFile) != null)
+					if (proj.Files.GetFile (requiredFile) != null)
 						requiredFileNotFound = true;
 				}
 				if (requiredFileNotFound)
@@ -131,7 +131,7 @@ namespace MonoDevelop.Ide.Templates
 					string excludedFile = (f[0] == '/')? 
 						  Path.Combine (proj.BaseDirectory, f.Substring(1))
 						: Path.Combine (projectPath, f);
-					if (proj.ProjectFiles.GetFile (excludedFile) != null)
+					if (proj.Files.GetFile (excludedFile) != null)
 						foundExcludedFile = true;
 				}
 				if (foundExcludedFile)

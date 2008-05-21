@@ -54,7 +54,7 @@ namespace MonoDevelop.AspNet
 				return null;
 			
 			IProjectParserContext ppc = 
-				MonoDevelop.Ide.Gui.IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (file.Project);
+				MonoDevelop.Ide.Gui.IdeApp.Workspace.ParserDatabase.GetProjectParserContext (file.Project);
 			IParseInformation pi = ppc.GetParseInformation (file.FilePath);
 			AspNetCompilationUnit cu = pi.MostRecentCompilationUnit as AspNetCompilationUnit;
 			

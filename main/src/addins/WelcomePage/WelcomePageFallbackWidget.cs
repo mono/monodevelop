@@ -35,6 +35,8 @@ using System.Xml;
 using System.Reflection;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
+using MonoDevelop.Ide.Gui;
+using MonoDevelop.Projects;
 
 using Gtk;
 using Gdk;
@@ -312,6 +314,11 @@ namespace MonoDevelop.WelcomePage
 				button.HoverMessage = ri.LocalPath;
 				button.LinkUrl = "project://" + ri.LocalPath;
 				label.Markup = string.Format (textFormat, WelcomePageView.TimeSinceEdited (ri.Timestamp));
+				if (IdeApp.Services.ProjectService.FileFormats.GetFileFormats (ri.LocalPath, typeof(Solution)).Length > 0)
+					button.Icon = "md-solution";
+				else
+					button.Icon = "md-workspace";
+				
 				i++;
 				
 				button.InnerLabel.MaxWidthChars = 22;
@@ -328,8 +335,10 @@ namespace MonoDevelop.WelcomePage
 	{
 		string hoverMessage = null;
 		Label label;
+		Gtk.Image image;
 		string text;
 		string desc;
+		string icon;
 		static Tooltips tooltips;
 		static int tipcount;
 		
@@ -347,7 +356,12 @@ namespace MonoDevelop.WelcomePage
 			label.Xalign = 0;
 			label.Xpad = 0;
 			label.Ypad = 0;
-			Add (label);
+			image = new Gtk.Image ();
+			
+			HBox box = new HBox (false, 6);
+			box.PackStart (image, false, false, 0);
+			box.PackStart (label, true, true, 0);
+			Add (box);
 			Relief = ReliefStyle.None;
 			tipcount ++;
 		}
@@ -370,8 +384,19 @@ namespace MonoDevelop.WelcomePage
 			set { desc = value; UpdateLabel (); }
 		}
 		
+		public string Icon {
+			get { return icon; }
+			set { icon = value; UpdateLabel (); }
+		}
+		
 		void UpdateLabel ()
 		{
+			if (icon != null) {
+				image.Pixbuf = IdeApp.Services.Resources.GetBitmap (icon, Gtk.IconSize.Menu);
+				image.Visible = true;
+			} else {
+				image.Visible = false;
+			}
 			string markup = string.Format ("<span underline=\"single\" foreground=\"#5a7ac7\">{0}</span>", text);
 			if (!string.IsNullOrEmpty (desc))
 				markup += "\n<span size=\"small\">" + desc + "</span>";

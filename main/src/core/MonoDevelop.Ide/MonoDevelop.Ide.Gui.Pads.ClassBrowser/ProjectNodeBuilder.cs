@@ -43,12 +43,12 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassBrowser
 {
 	public class ProjectNodeBuilder : TypeNodeBuilder
 	{
-		CombineEntryRenamedEventHandler projectNameChanged;
+		SolutionItemRenamedEventHandler projectNameChanged;
 		EventHandler domLoaded;
 		
 		public ProjectNodeBuilder ()
 		{
-			projectNameChanged = (CombineEntryRenamedEventHandler) DispatchService.GuiDispatch (new CombineEntryRenamedEventHandler (OnProjectRenamed));
+			projectNameChanged = (SolutionItemRenamedEventHandler) DispatchService.GuiDispatch (new SolutionItemRenamedEventHandler (OnProjectRenamed));
 			domLoaded = (EventHandler) DispatchService.GuiDispatch (new EventHandler (OnProjectDomLoaded));
 		}
 		
@@ -148,9 +148,9 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassBrowser
 			return true;
 		}
 		
-		void OnProjectRenamed (object sender, CombineEntryRenamedEventArgs e)
+		void OnProjectRenamed (object sender, SolutionItemRenamedEventArgs e)
 		{
-			ITreeBuilder tb = Context.GetTreeBuilder (e.CombineEntry);
+			ITreeBuilder tb = Context.GetTreeBuilder (e.SolutionItem);
 			if (tb != null)
 				tb.Update ();
 		}

@@ -130,21 +130,21 @@ namespace MonoDevelop.Ide.Tasks
 			delButton.SetTooltip (tips, GettextCatalog.GetString ("Delete Task"), GettextCatalog.GetString ("Delete Task"));
 
 			Services.TaskService.UserTasksChanged += (EventHandler) DispatchService.GuiDispatch (new EventHandler (UserTasksChanged));
-			IdeApp.ProjectOperations.CombineOpened += (CombineEventHandler) DispatchService.GuiDispatch (new CombineEventHandler (CombineOpened));
-			IdeApp.ProjectOperations.CombineClosed += (CombineEventHandler) DispatchService.GuiDispatch (new CombineEventHandler (CombineClosed));
+			IdeApp.Workspace.FirstWorkspaceItemOpened += CombineOpened;
+			IdeApp.Workspace.LastWorkspaceItemClosed += CombineClosed;
 			PropertyService.PropertyChanged += (EventHandler<PropertyChangedEventArgs>) DispatchService.GuiDispatch (new EventHandler<PropertyChangedEventArgs> (OnPropertyUpdated));	
 			ValidateButtons ();
 			// Initialize with existing tags.
 			UserTasksChanged (this, EventArgs.Empty);
 		}
 		
-		void CombineOpened (object sender, CombineEventArgs e)
+		void CombineOpened (object sender, EventArgs e)
 		{
 			solutionLoaded = true;
 			ValidateButtons ();
 		}
 		
-		void CombineClosed (object sender, CombineEventArgs e)
+		void CombineClosed (object sender, EventArgs e)
 		{
 			solutionLoaded = true;
 			ValidateButtons ();

@@ -43,9 +43,9 @@ namespace MonoDevelop.AspNet
 		{
 			IParserContext ctx;
 			if (project != null) {
-				ctx = IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (project);
+				ctx = IdeApp.Workspace.ParserDatabase.GetProjectParserContext (project);
 			} else {
-				ctx = IdeApp.ProjectOperations.ParserDatabase.GetFileParserContext (filename);
+				ctx = IdeApp.Workspace.ParserDatabase.GetFileParserContext (filename);
 			}
 			if (ensureUpToDate)
 				ctx.UpdateDatabase ();

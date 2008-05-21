@@ -37,31 +37,34 @@ using Gtk;
 
 namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 {
-	internal class CombineConfigurationPanel : AbstractOptionPanel
+	internal class CombineConfigurationPanel : MultiConfigItemOptionsPanel
 	{
 		CombineConfigurationPanelWidget widget;
 		
-		public override void LoadPanelContents()
+		public override Widget CreatePanelWidget()
 		{
-			Add (widget = new CombineConfigurationPanelWidget ((Properties) CustomizationObject));
+			return widget = new CombineConfigurationPanelWidget ();
 		}
 
-		public override bool StorePanelContents()
+		public override void LoadConfigData ()
 		{
-	        bool success = widget.Store ();
-			return success;			
+			widget.Load ((SolutionConfiguration) CurrentConfiguration);
+		}
+		
+		public override void ApplyChanges ()
+		{
+	        widget.Store ();
        	}
 	}
 
 	partial class CombineConfigurationPanelWidget : Gtk.Bin
 	{
 		TreeStore store;
-		CombineConfiguration configuration;
+		SolutionConfiguration configuration;
 		
-		public CombineConfigurationPanelWidget (Properties CustomizationObject)
+		public CombineConfigurationPanelWidget ()
 		{
 			Build ();
-			configuration = ((Properties)CustomizationObject).Get<CombineConfiguration> ("Config");
 			
 			store = new TreeStore (typeof(object), typeof(string), typeof(bool));
 			configsList.Model = store;
@@ -83,28 +86,35 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 			CellRendererComboBox comboCell = new CellRendererComboBox ();
 			comboCell.Changed += new ComboSelectionChangedHandler (OnConfigSelectionChanged);
 			configsList.AppendColumn (GettextCatalog.GetString ("Configuration"), comboCell, new TreeCellDataFunc (OnSetConfigurationsData));
-			
-			foreach (CombineConfigurationEntry ce in configuration.Entries) {
-				store.AppendValues (ce, ce.Entry.Name, ce.Build);
+		}
+		
+		public void Load (SolutionConfiguration config)
+		{
+			configuration = config;
+
+			store.Clear ();
+			foreach (SolutionConfigurationEntry ce in configuration.Configurations) {
+				if (ce.Item != null)
+					store.AppendValues (ce, ce.Item.Name, ce.Build);
 			}
 		}
 		
 		void OnSetConfigurationsData (Gtk.TreeViewColumn treeColumn, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
 		{
-			CombineConfigurationEntry entry = (CombineConfigurationEntry) store.GetValue (iter, 0);
-			string[] values = new string [entry.Entry.Configurations.Count];
+			SolutionConfigurationEntry entry = (SolutionConfigurationEntry) store.GetValue (iter, 0);
+			string[] values = new string [entry.Item.Configurations.Count];
 			for (int n=0; n<values.Length; n++)
-				values [n] = entry.Entry.Configurations [n].Name;
+				values [n] = entry.Item.Configurations [n].Id;
 			CellRendererComboBox comboCell = (CellRendererComboBox) cell;
 			comboCell.Values = values;
-			comboCell.Text = entry.ConfigurationName;
+			comboCell.Text = entry.ItemConfiguration;
 		}
 		
 		void OnBuildToggled (object sender, ToggledArgs args)
 		{
 			TreeIter iter;
 			if (store.GetIter (out iter, new TreePath (args.Path))) {
-				CombineConfigurationEntry entry = (CombineConfigurationEntry) store.GetValue (iter, 0);
+				SolutionConfigurationEntry entry = (SolutionConfigurationEntry) store.GetValue (iter, 0);
 				entry.Build = !entry.Build;
 				store.SetValue (iter, 2, entry.Build);
 			}
@@ -114,18 +124,17 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 		{
 			TreeIter iter;
 			if (store.GetIter (out iter, new TreePath (args.Path))) {
-				CombineConfigurationEntry entry = (CombineConfigurationEntry) store.GetValue (iter, 0);
+				SolutionConfigurationEntry entry = (SolutionConfigurationEntry) store.GetValue (iter, 0);
 				if (args.Active != -1)
-					entry.ConfigurationName = entry.Entry.Configurations [args.Active].Name;
+					entry.ItemConfiguration = entry.Item.Configurations [args.Active].Id;
 				else
-					entry.ConfigurationName = null;
+					entry.ItemConfiguration = null;
 			}
 		}
 		
-		public bool Store()
+		public void Store ()
 		{
 			// Data stored at dialog level
-			return true;
 		}
 	}
 

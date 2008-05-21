@@ -1,4 +1,4 @@
-// CombineEntryDescriptor.cs
+// SolutionItemDescriptor.cs
 //
 //Author:
 //  Lluis Sanchez Gual
@@ -31,11 +31,11 @@ using MonoDevelop.Projects;
 
 namespace MonoDevelop.DesignerSupport
 {
-	class CombineEntryDescriptor: CustomDescriptor
+	class SolutionItemDescriptor: CustomDescriptor
 	{
-		CombineEntry entry;
+		SolutionItem entry;
 		
-		public CombineEntryDescriptor (CombineEntry entry)
+		public SolutionItemDescriptor (SolutionItem entry)
 		{
 			this.entry = entry;
 		}
@@ -50,7 +50,12 @@ namespace MonoDevelop.DesignerSupport
 		[DisplayName ("File Path")]
 		[Description ("File path of the solution item.")]
 		public string FilePath {
-			get { return entry.FileName; }
+			get {
+				if (entry is SolutionEntityItem)
+					return ((SolutionEntityItem) entry).FileName; 
+				else
+					return "";
+			}
 		}
 	}
 }

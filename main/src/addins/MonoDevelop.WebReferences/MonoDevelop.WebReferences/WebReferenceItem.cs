@@ -90,8 +90,8 @@ namespace MonoDevelop.WebReferences
 		public void Delete()
 		{
 			Project project = proxyFile.Project;
-			project.ProjectFiles.Remove(proxyFile);
-			project.ProjectFiles.Remove(mapFile);
+			project.Files.Remove(proxyFile);
+			project.Files.Remove(mapFile);
 			Directory.Delete(Path.Combine(Library.GetWebReferencePath(project), Name), true);
 		}
 	}	

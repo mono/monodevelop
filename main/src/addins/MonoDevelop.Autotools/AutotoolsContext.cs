@@ -44,7 +44,7 @@ namespace MonoDevelop.Autotools
 		Set<SystemPackage> commonPackages;
 		Set<string> globalFilesReferences = new Set<string>();
 		Set<string> compilers = new Set<string> ();
-		Set<string> builtProjects = new Set<string> ();
+		Set<SolutionItem> builtProjects = new Set<SolutionItem> ();
 
 		// Useful for cleaning up in case of a problem in generation
 		List<string> generatedFiles = new List<string> ();
@@ -85,10 +85,10 @@ namespace MonoDevelop.Autotools
 			}
 		}
 
-		Combine targetCombine;
-		public Combine TargetCombine {
-			get { return targetCombine; }
-			set { targetCombine = value; }
+		Solution targetSolution;
+		public Solution TargetSolution {
+			get { return targetSolution; }
+			set { targetSolution = value; }
 		}
 
 		public string EscapeAndUpperConfigName (string configName)
@@ -177,12 +177,12 @@ namespace MonoDevelop.Autotools
 			globalFilesReferences.Add (filePath);
 		}
 		
-		public void RegisterBuiltProject (string name)
+		public void RegisterBuiltProject (SolutionItem item)
 		{
-			builtProjects.Add (name);
+			builtProjects.Add (item);
 		}
 		
-		public IEnumerable<string> GetBuiltProjects ()
+		public IEnumerable<SolutionItem> GetBuiltProjects ()
 		{
 			return builtProjects;
 		}
@@ -279,7 +279,7 @@ namespace MonoDevelop.Autotools
 		
 		// TODO: add an extension point with which addins can implement 
 		// autotools functionality.
-		public static IMakefileHandler GetMakefileHandler ( CombineEntry entry, MakefileType mt)
+		public static IMakefileHandler GetMakefileHandler (SolutionItem entry, MakefileType mt)
 		{
 			foreach (IMakefileHandler mh in AddinManager.GetExtensionObjects ("/MonoDevelop/Autotools/MakefileHandlers", typeof(IMakefileHandler), true)) {
 				if (mh.CanDeploy (entry, mt))

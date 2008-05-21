@@ -36,9 +36,11 @@ namespace MonoDevelop.Ide.Commands
 	public enum ProjectCommands
 	{
 		AddNewProject,
-		AddNewCombine,
+		AddNewSolution,
+		AddNewWorkspace,
+		AddSolutionFolder,
 		AddProject,
-		AddCombine,
+		AddItem,
 		RemoveFromProject,
 		Options,
 		AddResource,
@@ -83,8 +85,8 @@ namespace MonoDevelop.Ide.Commands
 				StopHandler.StopBuildOperations ();
 				IdeApp.ProjectOperations.CurrentRunOperation.WaitForCompleted ();
 			} 
-			if (IdeApp.ProjectOperations.CurrentOpenCombine != null) {
-				IAsyncOperation op = IdeApp.ProjectOperations.Build (IdeApp.ProjectOperations.CurrentOpenCombine);
+			if (IdeApp.Workspace.IsOpen) {
+				IAsyncOperation op = IdeApp.ProjectOperations.Build (IdeApp.Workspace);
 				op.Completed += new OperationHandler (ExecuteCombine);
 			} else {
 				doc = IdeApp.Workbench.ActiveDocument;
@@ -98,7 +100,7 @@ namespace MonoDevelop.Ide.Commands
 		protected override void Update (CommandInfo info)
 		{
 			info.Text = GettextCatalog.GetString ("_Run");
-			if (IdeApp.ProjectOperations.CurrentOpenCombine != null) {
+			if (IdeApp.Workspace.IsOpen) {
 				if (!IdeApp.ProjectOperations.CurrentRunOperation.IsCompleted) {
 					info.Text = GettextCatalog.GetString ("_Run again");
 				}
@@ -113,7 +115,7 @@ namespace MonoDevelop.Ide.Commands
 		{
 			if (op.Success)
 				// FIXME: check RunWithWarnings
-				IdeApp.ProjectOperations.Execute (IdeApp.ProjectOperations.CurrentOpenCombine);
+				IdeApp.ProjectOperations.Execute (IdeApp.Workspace);
 		}
 		
 		void ExecuteFile (IAsyncOperation op)
@@ -126,25 +128,20 @@ namespace MonoDevelop.Ide.Commands
 	
 	internal class RunEntryHandler: CommandHandler
 	{
-		CombineEntry entry;
-		
 		protected override void Run ()
 		{
-			entry = IdeApp.ProjectOperations.CurrentSelectedCombineEntry;
+			IBuildTarget entry = IdeApp.ProjectOperations.CurrentSelectedBuildTarget;
 			IAsyncOperation op = IdeApp.ProjectOperations.Build (entry);
-			op.Completed += new OperationHandler (ExecuteCombine);
+			op.Completed += delegate {
+				if (op.Success)
+					IdeApp.ProjectOperations.Execute (entry);
+			};
 		}
 		
 		protected override void Update (CommandInfo info)
 		{
-			info.Enabled = IdeApp.ProjectOperations.CurrentSelectedCombineEntry != null && 
+			info.Enabled = IdeApp.ProjectOperations.CurrentSelectedBuildTarget != null && 
 							IdeApp.ProjectOperations.CurrentRunOperation.IsCompleted;
-		}
-		
-		void ExecuteCombine (IAsyncOperation op)
-		{
-			if (op.Success)
-				IdeApp.ProjectOperations.Execute (entry);
 		}
 	}
 	
@@ -160,8 +157,8 @@ namespace MonoDevelop.Ide.Commands
 				return;
 			}
 			
-			if (IdeApp.ProjectOperations.CurrentOpenCombine != null) {
-				IAsyncOperation op = IdeApp.ProjectOperations.Build (IdeApp.ProjectOperations.CurrentOpenCombine);
+			if (IdeApp.Workspace.IsOpen) {
+				IAsyncOperation op = IdeApp.ProjectOperations.Build (IdeApp.Workspace);
 				op.Completed += new OperationHandler (ExecuteCombine);
 			} else {
 				doc = IdeApp.Workbench.ActiveDocument;
@@ -181,7 +178,7 @@ namespace MonoDevelop.Ide.Commands
 				return;
 			}
 
-			if (IdeApp.ProjectOperations.CurrentOpenCombine != null) {
+			if (IdeApp.Workspace.IsOpen) {
 				info.Enabled = IdeApp.ProjectOperations.CurrentRunOperation.IsCompleted;
 			} else {
 				info.Enabled = (IdeApp.Workbench.ActiveDocument != null && IdeApp.Workbench.ActiveDocument.IsBuildTarget);
@@ -191,7 +188,7 @@ namespace MonoDevelop.Ide.Commands
 		void ExecuteCombine (IAsyncOperation op)
 		{
 			if (op.Success)
-				IdeApp.ProjectOperations.Debug (IdeApp.ProjectOperations.CurrentOpenCombine);
+				IdeApp.ProjectOperations.Debug (IdeApp.Workspace);
 		}
 		
 		void ExecuteFile (IAsyncOperation op)
@@ -203,25 +200,20 @@ namespace MonoDevelop.Ide.Commands
 	
 	internal class DebugEntryHandler: CommandHandler
 	{
-		CombineEntry entry;
-		
 		protected override void Run ()
 		{
-			entry = IdeApp.ProjectOperations.CurrentSelectedCombineEntry;
+			IBuildTarget entry = IdeApp.ProjectOperations.CurrentSelectedBuildTarget;
 			IAsyncOperation op = IdeApp.ProjectOperations.Build (entry);
-			op.Completed += new OperationHandler (ExecuteCombine);
+			op.Completed += delegate {
+				if (op.Success)
+					IdeApp.ProjectOperations.Debug (entry);
+			};
 		}
 		
 		protected override void Update (CommandInfo info)
 		{
-			info.Enabled = IdeApp.ProjectOperations.CurrentSelectedCombineEntry != null && 
+			info.Enabled = IdeApp.ProjectOperations.CurrentSelectedBuildTarget != null && 
 							IdeApp.ProjectOperations.CurrentRunOperation.IsCompleted;
-		}
-		
-		void ExecuteCombine (IAsyncOperation op)
-		{
-			if (op.Success)
-				IdeApp.ProjectOperations.Debug (entry);
 		}
 	}
 	
@@ -229,9 +221,9 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Run ()
 		{
-			if (IdeApp.ProjectOperations.CurrentOpenCombine != null) {
-				if (IdeApp.ProjectOperations.CurrentSelectedCombineEntry != null)
-					IdeApp.ProjectOperations.Build (IdeApp.ProjectOperations.CurrentSelectedCombineEntry);
+			if (IdeApp.Workspace.IsOpen) {
+				if (IdeApp.ProjectOperations.CurrentSelectedBuildTarget != null)
+					IdeApp.ProjectOperations.Build (IdeApp.ProjectOperations.CurrentSelectedBuildTarget);
 			}
 			else if (IdeApp.Workbench.ActiveDocument != null) {
 				IdeApp.Workbench.ActiveDocument.Save ();
@@ -241,12 +233,12 @@ namespace MonoDevelop.Ide.Commands
 		
 		protected override void Update (CommandInfo info)
 		{
-			if (IdeApp.ProjectOperations.CurrentOpenCombine != null) {
-				CombineEntry entry = IdeApp.ProjectOperations.CurrentSelectedCombineEntry;
+			if (IdeApp.Workspace.IsOpen) {
+				IBuildTarget entry = IdeApp.ProjectOperations.CurrentSelectedBuildTarget;
 				if (entry != null) {
 					info.Enabled = IdeApp.ProjectOperations.CurrentBuildOperation.IsCompleted;
 					info.Text = GettextCatalog.GetString ("B_uild {0}", entry.Name);
-					if (entry is Combine)
+					if (entry is SolutionFolder)
 						info.Description = GettextCatalog.GetString ("Build solution {0}", entry.Name);
 					else if (entry is Project)
 						info.Description = GettextCatalog.GetString ("Build project {0}", entry.Name);
@@ -273,9 +265,9 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Run ()
 		{
-			if (IdeApp.ProjectOperations.CurrentOpenCombine != null) {
-				if (IdeApp.ProjectOperations.CurrentSelectedCombineEntry != null)
-					IdeApp.ProjectOperations.Rebuild (IdeApp.ProjectOperations.CurrentSelectedCombineEntry);
+			if (IdeApp.Workspace.IsOpen) {
+				if (IdeApp.ProjectOperations.CurrentSelectedBuildTarget != null)
+					IdeApp.ProjectOperations.Rebuild (IdeApp.ProjectOperations.CurrentSelectedBuildTarget);
 			}
 			else if (IdeApp.Workbench.ActiveDocument != null) {
 				IdeApp.Workbench.ActiveDocument.Save ();
@@ -285,8 +277,8 @@ namespace MonoDevelop.Ide.Commands
 		
 		protected override void Update (CommandInfo info)
 		{
-			if (IdeApp.ProjectOperations.CurrentOpenCombine != null) {
-				CombineEntry entry = IdeApp.ProjectOperations.CurrentSelectedCombineEntry;
+			if (IdeApp.Workspace.IsOpen) {
+				IBuildTarget entry = IdeApp.ProjectOperations.CurrentSelectedBuildTarget;
 				if (entry != null) {
 					info.Enabled = IdeApp.ProjectOperations.CurrentBuildOperation.IsCompleted;
 					info.Text = GettextCatalog.GetString ("R_ebuild {0}", entry.Name);
@@ -311,13 +303,13 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Run ()
 		{
-			IdeApp.ProjectOperations.Build (IdeApp.ProjectOperations.CurrentOpenCombine);
+			IdeApp.ProjectOperations.Build (IdeApp.Workspace);
 		}
 		
 		protected override void Update (CommandInfo info)
 		{
 			info.Enabled = IdeApp.ProjectOperations.CurrentBuildOperation.IsCompleted &&
-							(IdeApp.ProjectOperations.CurrentOpenCombine != null);
+							(IdeApp.Workspace.IsOpen);
 		}
 	}
 	
@@ -325,13 +317,13 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Run ()
 		{
-			IdeApp.ProjectOperations.Rebuild (IdeApp.ProjectOperations.CurrentOpenCombine);
+			IdeApp.ProjectOperations.Rebuild (IdeApp.Workspace);
 		}
 		
 		protected override void Update (CommandInfo info)
 		{
 			info.Enabled = IdeApp.ProjectOperations.CurrentBuildOperation.IsCompleted &&
-							(IdeApp.ProjectOperations.CurrentOpenCombine != null);
+							(IdeApp.Workspace.IsOpen);
 		}
 	}
 	
@@ -339,12 +331,12 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Run ()
 		{
-			IdeApp.ProjectOperations.Clean (IdeApp.ProjectOperations.CurrentOpenCombine);
+			IdeApp.ProjectOperations.Clean (IdeApp.Workspace);
 		}
 		
 		protected override void Update (CommandInfo info)
 		{
-			info.Enabled = IdeApp.ProjectOperations.CurrentOpenCombine != null;
+			info.Enabled = IdeApp.Workspace.IsOpen;
 		}
 	}
 	
@@ -352,15 +344,14 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Run ()
 		{
-			IdeApp.ProjectOperations.Clean (IdeApp.ProjectOperations.CurrentSelectedCombineEntry);
+			IdeApp.ProjectOperations.Clean (IdeApp.ProjectOperations.CurrentSelectedBuildTarget);
 		}
 		
 		protected override void Update (CommandInfo info)
 		{
-			if (IdeApp.ProjectOperations.CurrentSelectedCombineEntry != null) {
-				info.Enabled = IdeApp.ProjectOperations.CurrentSelectedCombineEntry != null;
-				info.Text = GettextCatalog.GetString ("C_lean {0}", IdeApp.ProjectOperations.CurrentSelectedCombineEntry.Name);
-				info.Description = GettextCatalog.GetString ("Clean {0}", IdeApp.ProjectOperations.CurrentSelectedCombineEntry.Name);
+			if (IdeApp.ProjectOperations.CurrentSelectedBuildTarget != null) {
+				info.Text = GettextCatalog.GetString ("C_lean {0}", IdeApp.ProjectOperations.CurrentSelectedBuildTarget.Name);
+				info.Description = GettextCatalog.GetString ("Clean {0}", IdeApp.ProjectOperations.CurrentSelectedBuildTarget.Name);
 			} else {
 				info.Enabled = false;
 			}
@@ -389,18 +380,18 @@ namespace MonoDevelop.Ide.Commands
 		}
 	}
 	
-	internal class CombineEntryOptionsHandler: CommandHandler
+	internal class SolutionItemOptionsHandler: CommandHandler
 	{
 		protected override void Run ()
 		{
-			CombineEntry ce = IdeApp.ProjectOperations.CurrentSelectedCombineEntry;
+			IBuildTarget ce = IdeApp.ProjectOperations.CurrentSelectedBuildTarget;
 			if (ce != null)
 				IdeApp.ProjectOperations.ShowOptions (ce);
 		}
 		
 		protected override void Update (CommandInfo info)
 		{
-			info.Enabled = IdeApp.ProjectOperations.CurrentSelectedCombineEntry != null;
+			info.Enabled = IdeApp.ProjectOperations.CurrentSelectedBuildTarget != null;
 		}
 	}
 	
@@ -408,14 +399,14 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Run (object c)
 		{
-			CombineEntry ce = IdeApp.ProjectOperations.CurrentSelectedCombineEntry;
+			IWorkspaceObject ce = IdeApp.ProjectOperations.CurrentSelectedBuildTarget;
 			CustomCommand cmd = (CustomCommand) c;
 			IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetRunProgressMonitor ();
 			
 			Thread t = new Thread (
 				delegate () {
 					using (monitor) {
-						cmd.Execute (monitor, ce);
+						cmd.Execute (monitor, ce, IdeApp.Workspace.ActiveConfiguration);
 					}
 				}
 			);
@@ -425,9 +416,9 @@ namespace MonoDevelop.Ide.Commands
 		
 		protected override void Update (CommandArrayInfo info)
 		{
-			CombineEntry ce = IdeApp.ProjectOperations.CurrentSelectedCombineEntry;
+			IConfigurationTarget ce = IdeApp.ProjectOperations.CurrentSelectedBuildTarget as IConfigurationTarget;
 			if (ce != null) {
-				AbstractConfiguration conf = ce.ActiveConfiguration as AbstractConfiguration;
+				ItemConfiguration conf = ce.DefaultConfiguration;
 				if (conf != null) {
 					foreach (CustomCommand cmd in conf.CustomCommands)
 						if (cmd.Type == CustomCommandType.Custom)
@@ -441,107 +432,14 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Run ()
 		{
-			CombineEntry ce = IdeApp.ProjectOperations.CurrentSelectedCombineEntry;
+			IWorkspaceObject ce = IdeApp.ProjectOperations.CurrentSelectedItem as IWorkspaceObject;
 			IdeApp.ProjectOperations.Export (ce, null);
 		}
 		
 		protected override void Update (CommandInfo info)
 		{
-			info.Enabled = IdeApp.ProjectOperations.CurrentSelectedCombineEntry != null;
+			info.Enabled = IdeApp.ProjectOperations.CurrentSelectedItem is WorkspaceItem || IdeApp.ProjectOperations.CurrentSelectedItem is SolutionEntityItem;
 		}
 
-	}
-	
-	internal class GenerateProjectDocumentation : CommandHandler
-	{
-		protected override void Run ()
-		{
-			try {
-				if (IdeApp.ProjectOperations.CurrentSelectedProject != null) {
-					string assembly    = IdeApp.ProjectOperations.CurrentSelectedProject.GetOutputFileName ();
-					string projectFile = Path.ChangeExtension(assembly, ".ndoc");
-					if (!File.Exists(projectFile)) {
-						StreamWriter sw = File.CreateText(projectFile);
-						sw.WriteLine("<project>");
-						sw.WriteLine("    <assemblies>");
-						sw.WriteLine("        <assembly location=\""+ assembly +"\" documentation=\"" + Path.ChangeExtension(assembly, ".xml") + "\" />");
-						sw.WriteLine("    </assemblies>");
-						/*
-						sw.WriteLine("    				    <documenters>");
-						sw.WriteLine("    				        <documenter name=\"JavaDoc\">");
-						sw.WriteLine("    				            <property name=\"Title\" value=\"NDoc\" />");
-						sw.WriteLine("    				            <property name=\"OutputDirectory\" value=\".\\docs\\JavaDoc\" />");
-						sw.WriteLine("    				            <property name=\"ShowMissingSummaries\" value=\"False\" />");
-						sw.WriteLine("    				            <property name=\"ShowMissingRemarks\" value=\"False\" />");
-						sw.WriteLine("    				            <property name=\"ShowMissingParams\" value=\"False\" />");
-						sw.WriteLine("    				            <property name=\"ShowMissingReturns\" value=\"False\" />");
-						sw.WriteLine("    				            <property name=\"ShowMissingValues\" value=\"False\" />");
-						sw.WriteLine("    				            <property name=\"DocumentInternals\" value=\"False\" />");
-						sw.WriteLine("    				            <property name=\"DocumentProtected\" value=\"True\" />");
-						sw.WriteLine("    				            <property name=\"DocumentPrivates\" value=\"False\" />");
-						sw.WriteLine("    				            <property name=\"DocumentEmptyNamespaces\" value=\"False\" />");
-						sw.WriteLine("    				            <property name=\"IncludeAssemblyVersion\" value=\"False\" />");
-						sw.WriteLine("    				            <property name=\"CopyrightText\" value=\"\" />");
-						sw.WriteLine("    				            <property name=\"CopyrightHref\" value=\"\" />");
-						sw.WriteLine("    				        </documenter>");
-						sw.WriteLine("    				        <documenter name=\"MSDN\">");
-						sw.WriteLine("    				            <property name=\"OutputDirectory\" value=\".\\docs\\MSDN\" />");
-						sw.WriteLine("    				            <property name=\"HtmlHelpName\" value=\"NDoc\" />");
-						sw.WriteLine("    				            <property name=\"HtmlHelpCompilerFilename\" value=\"C:\\Program Files\\HTML Help Workshop\\hhc.exe\" />");
-						sw.WriteLine("    				            <property name=\"IncludeFavorites\" value=\"False\" />");
-						sw.WriteLine("    				            <property name=\"Title\" value=\"An NDoc Documented Class Library\" />");
-						sw.WriteLine("    				            <property name=\"SplitTOCs\" value=\"False\" />");
-						sw.WriteLine("    				            <property name=\"DefaulTOC\" value=\"\" />");
-						sw.WriteLine("    				            <property name=\"ShowVisualBasic\" value=\"True\" />");
-						sw.WriteLine("    				            <property name=\"ShowMissingSummaries\" value=\"False\" />");
-						sw.WriteLine("    				            <property name=\"ShowMissingRemarks\" value=\"False\" />");
-						sw.WriteLine("    				            <property name=\"ShowMissingParams\" value=\"False\" />");
-						sw.WriteLine("    				            <property name=\"ShowMissingValues\" value=\"False\" />");
-						sw.WriteLine("    				            <property name=\"DocumentInternals\" value=\"False\" />");
-						sw.WriteLine("    				            <property name=\"DocumentProtected\" value=\"True\" />");
-						sw.WriteLine("    				            <property name=\"DocumentPrivates\" value=\"False\" />");
-						sw.WriteLine("    				            <property name=\"DocumentEmptyNamespaces\" value=\"False\" />");
-						sw.WriteLine("    				            <property name=\"IncludeAssemblyVersion\" value=\"False\" />");
-						sw.WriteLine("    				            <property name=\"CopyrightText\" value=\"\" />");
-						sw.WriteLine("                <property name=\"CopyrightHref\" value=\"\" />");
-						sw.WriteLine("            </documenter>");
-						sw.WriteLine("    				        <documenter name=\"XML\">");
-						sw.WriteLine("    				            <property name=\"OutputFile\" value=\".\\docs\\doc.xml\" />");
-						sw.WriteLine("    				            <property name=\"ShowMissingSummaries\" value=\"False\" />");
-						sw.WriteLine("    				            <property name=\"ShowMissingRemarks\" value=\"False\" />");
-						sw.WriteLine("    				            <property name=\"ShowMissingParams\" value=\"False\" />");
-						sw.WriteLine("    				            <property name=\"ShowMissingReturns\" value=\"False\" />");
-						sw.WriteLine("    				            <property name=\"ShowMissingValues\" value=\"False\" />");
-						sw.WriteLine("    				            <property name=\"DocumentInternals\" value=\"False\" />");
-						sw.WriteLine("    				            <property name=\"DocumentProtected\" value=\"True\" />");
-						sw.WriteLine("    				            <property name=\"DocumentPrivates\" value=\"False\" />");
-						sw.WriteLine("    				            <property name=\"DocumentEmptyNamespaces\" value=\"False\" />");
-						sw.WriteLine("    				            <property name=\"IncludeAssemblyVersion\" value=\"False\" />");
-						sw.WriteLine("    				            <property name=\"CopyrightText\" value=\"\" />");
-						sw.WriteLine("    				            <property name=\"CopyrightHref\" value=\"\" />");
-						sw.WriteLine("    				        </documenter>");
-						sw.WriteLine("    				    </documenters>");*/
-						sw.WriteLine("    				</project>");
-						sw.Close();
-					}
-					string command = FileService.ApplicationRootPath +
-					Path.DirectorySeparatorChar + "bin" +
-					Path.DirectorySeparatorChar + "ndoc" +
-					Path.DirectorySeparatorChar + "NDocGui.exe";
-					string args    = '"' + projectFile + '"';
-					
-					ProcessStartInfo psi = new ProcessStartInfo(command, args);
-					psi.WorkingDirectory = FileService.ApplicationRootPath +
-					Path.DirectorySeparatorChar + "bin" +
-					Path.DirectorySeparatorChar + "ndoc";
-					psi.UseShellExecute = false;
-					Process p = new Process();
-					p.StartInfo = psi;
-					p.Start();
-				}
-			} catch (Exception) {
-				//MessageBox.Show("You need to compile the project first.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Hand, MessageBoxDefaultButton.Button1);
-			}
-		}
 	}
 }

@@ -38,10 +38,10 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 {
 	public partial class CombineEntryFeatureSelector : Gtk.Bin
 	{
-		List<ICombineEntryFeature> selectedFeatures = new List<ICombineEntryFeature> ();
+		List<ISolutionItemFeature> selectedFeatures = new List<ISolutionItemFeature> ();
 		List<Gtk.Widget> selectedEditors = new List<Gtk.Widget> ();
-		CombineEntry entry;
-		Combine parentCombine;
+		SolutionItem entry;
+		SolutionFolder parentCombine;
 		VBox box = new VBox ();
 		Gdk.Cursor handCursor;
 		
@@ -54,7 +54,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			box.Show ();
 		}
 		
-		public void Fill (Combine parentCombine, CombineEntry entry, ICombineEntryFeature[] features)
+		public void Fill (SolutionFolder parentCombine, SolutionItem entry, ISolutionItemFeature[] features)
 		{
 			selectedFeatures.Clear ();
 			selectedEditors.Clear ();
@@ -67,13 +67,13 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				w.Destroy ();
 			}
 			// Show enabled features at the beginning
-			foreach (ICombineEntryFeature feature in features)
+			foreach (ISolutionItemFeature feature in features)
 				if (feature.IsEnabled (parentCombine, entry)) {
 					Gtk.Widget editor = AddFeature (feature);
 					selectedFeatures.Add (feature);
 					selectedEditors.Add (editor);
 				}
-			foreach (ICombineEntryFeature feature in features)
+			foreach (ISolutionItemFeature feature in features)
 				if (!feature.IsEnabled (parentCombine, entry))
 					AddFeature (feature);
 			
@@ -88,7 +88,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			scrolled.AddWithViewport (box);
 		}
 		
-		Gtk.Widget AddFeature (ICombineEntryFeature feature)
+		Gtk.Widget AddFeature (ISolutionItemFeature feature)
 		{
 			Gtk.HBox cbox = new Gtk.HBox ();
 			CheckButton check = null;
@@ -136,7 +136,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			}
 			
 			if (check != null) {
-				ICombineEntryFeature f = feature;
+				ISolutionItemFeature f = feature;
 				check.Toggled += delegate {
 					OnClickFeature (f, check, fbox, editor);
 				};
@@ -146,7 +146,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			return editor;
 		}
 		
-		void OnClickFeature (ICombineEntryFeature feature, CheckButton check, HBox fbox, Gtk.Widget editor)
+		void OnClickFeature (ISolutionItemFeature feature, CheckButton check, HBox fbox, Gtk.Widget editor)
 		{
 			if (editor != null)
 				fbox.Visible = check.Active;
@@ -162,7 +162,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		public bool Validate ()
 		{
 			for (int n=0; n<selectedFeatures.Count; n++) {
-				ICombineEntryFeature pf = selectedFeatures [n];
+				ISolutionItemFeature pf = selectedFeatures [n];
 				string msg = pf.Validate (parentCombine, entry, selectedEditors [n]);
 				if (!string.IsNullOrEmpty (msg)) {
 					msg = pf.Title + ": " + msg;
@@ -177,7 +177,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		{
 			for (int n=0; n<selectedFeatures.Count; n++) {
 				try {
-					ICombineEntryFeature pf = selectedFeatures [n];
+					ISolutionItemFeature pf = selectedFeatures [n];
 					pf.ApplyFeature (parentCombine, entry, selectedEditors [n]);
 				}
 				catch (Exception ex) {

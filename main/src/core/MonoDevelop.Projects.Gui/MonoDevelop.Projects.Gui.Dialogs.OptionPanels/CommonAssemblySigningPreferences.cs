@@ -34,129 +34,93 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 {
-	internal partial class CommonAssemblySigningPreferences : Gtk.Bin, IDialogPanel
+	internal partial class CommonAssemblySigningPreferences : Gtk.Bin
 	{
-		Project project;
-		AbstractProjectConfiguration configuration;
-		public CommonAssemblySigningPreferences()
+		ItemConfiguration[] configurations;
+		string keyFile;
+		
+		public CommonAssemblySigningPreferences ()
 		{
 			this.Build();
 		}
 		
-		public void LoadPanelContents ()
+		public void LoadPanelContents (Project project, ItemConfiguration[] configurations)
 		{
-			Properties props = (Properties) CustomizationObject;
-			configuration = props.Get<AbstractProjectConfiguration> ("Config");
-			project = ((Properties)CustomizationObject).Get<Project> ("Project");
+			this.configurations = configurations;
+			
+			int signAsm = -1;
+			
+			keyFile = null;
+			foreach (ProjectConfiguration c in configurations) {
+				int r = c.SignAssembly ? 1 : 0;
+				if (signAsm == -1)
+					signAsm = r;
+				else if (signAsm != r)
+					signAsm = 2;
+				if (keyFile == null)
+					keyFile = c.AssemblyKeyFile;
+				else if (keyFile != c.AssemblyKeyFile)
+					keyFile = "?";
+			}
+			
+			if (signAsm == 2)
+				signAssemblyCheckbutton.Inconsistent = true;
+			else {
+				signAssemblyCheckbutton.Inconsistent = false;
+				signAssemblyCheckbutton.Active = signAsm == 1;
+			}
+			
+			if (keyFile == null || keyFile == "?")
+				this.strongNameFileEntry.Path = string.Empty;
+			else
+				this.strongNameFileEntry.Path = keyFile;
+			
+			this.strongNameFileEntry.DefaultPath = project.BaseDirectory;
+			this.strongNameFileLabel.Sensitive = this.strongNameFileEntry.Sensitive = signAsm != 0;
 			this.signAssemblyCheckbutton.Toggled += new EventHandler (SignAssemblyCheckbuttonActivated);
-			if (configuration != null) {
-				this.signAssemblyCheckbutton.Active = configuration.SignAssembly;
-				this.strongNameFileEntry.Path = configuration.AssemblyKeyFile;
-			}
-			if (project != null) {
-				this.strongNameFileEntry.DefaultPath = project.BaseDirectory;
-			}
-			SignAssemblyCheckbuttonActivated (null, null);
 		}
 		
 		void SignAssemblyCheckbuttonActivated (object sender, EventArgs e)
 		{
+			signAssemblyCheckbutton.Inconsistent = false;
 			this.strongNameFileLabel.Sensitive = this.strongNameFileEntry.Sensitive = this.signAssemblyCheckbutton.Active;
 		}
 		
-		public bool StorePanelContents ()
+		public void StorePanelContents ()
 		{
-			if (configuration != null) {
-				configuration.SignAssembly = this.signAssemblyCheckbutton.Active;
-				configuration.AssemblyKeyFile = this.strongNameFileEntry.Path;
-			}
-			return true;
-		}
-		
-#region Cut&paste from abstract option panel
-		bool   wasActivated = false;
-		bool   isFinished   = true;
-		object customizationObject = null;
-		
-		public Gtk.Widget Control {
-			get {
-				return this;
+			foreach (ProjectConfiguration c in configurations) {
+				if (!signAssemblyCheckbutton.Inconsistent)
+					c.SignAssembly = this.signAssemblyCheckbutton.Active;
+				if (strongNameFileEntry.Path.Length > 0 || keyFile != "?")
+					c.AssemblyKeyFile = this.strongNameFileEntry.Path;
 			}
 		}
-
-		public virtual Gtk.Image Icon {
-			get {
-				return null;
-			}
-		}
-		
-		public bool WasActivated {
-			get {
-				return wasActivated;
-			}
-		}
-		
-		public virtual object CustomizationObject {
-			get {
-				return customizationObject;
-			}
-			set {
-				customizationObject = value;
-				OnCustomizationObjectChanged();
-			}
-		}
-		
-		public virtual bool EnableFinish {
-			get {
-				return isFinished;
-			}
-			set {
-				if (isFinished != value) {
-					isFinished = value;
-					OnEnableFinishChanged();
-				}
-			}
-		}
-		
-
-		public virtual bool ReceiveDialogMessage(DialogMessage message)
-		{
-			try {
-				switch (message) {
-					case DialogMessage.Activated:
-						if (!wasActivated) {
-							LoadPanelContents();
-							wasActivated = true;
-						}
-						break;
-					case DialogMessage.OK:
-						if (wasActivated) {
-							return StorePanelContents();
-						}
-						break;
-				}
-			} catch (Exception ex) {
-				MessageService.ShowException (ex);
-			}
-			
-			return true;
-		}
+	}
 	
-		protected virtual void OnEnableFinishChanged()
+	class CommonAssemblySigningPreferencesPanel: MultiConfigItemOptionsPanel
+	{
+		CommonAssemblySigningPreferences widget;
+		
+		public override bool IsVisible ()
 		{
-			if (EnableFinishChanged != null) {
-				EnableFinishChanged(this, null);
-			}
+			return ConfiguredProject is DotNetProject;
 		}
-		protected virtual void OnCustomizationObjectChanged()
+
+		
+		public override Gtk.Widget CreatePanelWidget ()
 		{
-			if (CustomizationObjectChanged != null) {
-				CustomizationObjectChanged(this, null);
-			}
+			AllowMixedConfigurations = true;
+			return (widget = new CommonAssemblySigningPreferences ());
 		}
 		
-		public event EventHandler CustomizationObjectChanged;
-		public event EventHandler EnableFinishChanged;
-#endregion
+		public override void LoadConfigData ()
+		{
+			widget.LoadPanelContents (ConfiguredProject, CurrentConfigurations);
+		}
+
+		public override void ApplyChanges ()
+		{
+			widget.StorePanelContents ();
+		}
 	}
 }

@@ -177,14 +177,14 @@ namespace MonoDevelop.SourceEditor
 			
 			ResetFocusChain ();
 			
-			IdeApp.ProjectOperations.ParserDatabase.ParseInformationChanged += UpdateClassBrowser;
+			IdeApp.Workspace.ParserDatabase.ParseInformationChanged += UpdateClassBrowser;
 			
 			UpdateLineCol ();
 			
 			this.Focused += delegate {
 				UpdateLineCol ();
 			};
-			IdeApp.ProjectOperations.ParserDatabase.ParseInformationChanged += OnParseInformationChanged;
+			IdeApp.Workspace.ParserDatabase.ParseInformationChanged += OnParseInformationChanged;
 //			this.IsClassBrowserVisible = SourceEditorOptions.Options.EnableQuickFinder;
 			
 //			this.d += delegate {
@@ -468,8 +468,8 @@ namespace MonoDevelop.SourceEditor
 			this.lastActiveEditor = null;
 			this.splittedTextEditor = null;
 			RemoveSearchWidget ();
-			IdeApp.ProjectOperations.ParserDatabase.ParseInformationChanged -= UpdateClassBrowser;
-			IdeApp.ProjectOperations.ParserDatabase.ParseInformationChanged -= OnParseInformationChanged;
+			IdeApp.Workspace.ParserDatabase.ParseInformationChanged -= UpdateClassBrowser;
+			IdeApp.Workspace.ParserDatabase.ParseInformationChanged -= OnParseInformationChanged;
 			System.GC.Collect ();
 		}
 		
@@ -1051,7 +1051,7 @@ namespace MonoDevelop.SourceEditor
 		
 		public void LoadClassCombo ()
 		{
-			IFileParserContext context = IdeApp.ProjectOperations.ParserDatabase.GetFileParserContext (view.ContentName);
+			IFileParserContext context = IdeApp.Workspace.ParserDatabase.GetFileParserContext (view.ContentName);
 			this.memberParseInfo = context.ParseFile (view.ContentName);
 			BindClassCombo();
 		}

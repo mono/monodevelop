@@ -28,25 +28,29 @@
 using System;
 using Gtk;
 using MonoDevelop.Projects;
-using MonoDevelop.Core.Gui.Dialogs;
+using MonoDevelop.Projects.Gui.Dialogs;
 using MonoDevelop.Core;
 
 namespace MonoDevelop.ChangeLogAddIn
 {		
-	public class ProjectOptionPanel : AbstractOptionPanel
+	public class ProjectOptionPanel : ItemOptionsPanel
 	{
 		ProjectOptionPanelWidget widget;
 		
-		public override void LoadPanelContents ()
-		{						
-			CombineEntry entry = ((Properties)CustomizationObject).Get<CombineEntry> ("CombineEntry");
-			widget = new ProjectOptionPanelWidget(entry);
-			Add (widget);
+		public override Widget CreatePanelWidget ()
+		{
+			SolutionItem it;
+			if (DataObject is Solution)
+				it = ((Solution)DataObject).RootFolder;
+			else
+				it = (SolutionItem) DataObject;
+			widget = new ProjectOptionPanelWidget (it);
+			return widget;
 		}
 		
-		public override bool StorePanelContents()
+		public override void ApplyChanges()
 		{			
-			return widget.Store ();
+			widget.Store ();
 		}
 	}
 }

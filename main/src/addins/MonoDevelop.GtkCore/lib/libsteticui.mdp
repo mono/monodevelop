@@ -2,7 +2,7 @@
   <Configurations active="Debug">
     <Configuration name="Debug" ctype="DotNetProjectConfiguration">
       <CustomCommands>
-        <Command type="Build" command="make libsteticui" workingdir="${ProjectDir}" />
+        <Command type="Build" command="make libsteticui" workingdir="${ItemDir}" />
       </CustomCommands>
       <Output directory="../../../../build/AddIns/MonoDevelop.GtkCore" assembly="libsteticui" />
       <Build debugmode="True" target="Library" />

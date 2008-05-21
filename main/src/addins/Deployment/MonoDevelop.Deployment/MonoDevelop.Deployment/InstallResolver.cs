@@ -40,18 +40,18 @@ namespace MonoDevelop.Deployment
 	{
 		string appName;
 		
-		public void Install (IProgressMonitor monitor, CombineEntry entry, string appName, string prefix)
+		public void Install (IProgressMonitor monitor, SolutionItem entry, string appName, string prefix, string configuration)
 		{
 			this.appName = appName;
 			
 			using (DeployContext ctx = new DeployContext (this, "Linux", prefix)) {
-				InstallEntry (monitor, ctx, entry);
+				InstallEntry (monitor, ctx, entry, configuration);
 			}
 		}
 		
-		void InstallEntry (IProgressMonitor monitor, DeployContext ctx, CombineEntry entry)
+		void InstallEntry (IProgressMonitor monitor, DeployContext ctx, SolutionItem entry, string configuration)
 		{
-			foreach (DeployFile df in DeployService.GetDeployFiles (ctx, new CombineEntry[] { entry } )) {
+			foreach (DeployFile df in DeployService.GetDeployFiles (ctx, new SolutionItem[] { entry }, configuration)) {
 				string targetPath = df.ResolvedTargetFile;
 				if (targetPath == null) {
 					monitor.ReportWarning ("Could not copy file '" + df.RelativeTargetPath + "': Unknown target directory.");
@@ -61,11 +61,11 @@ namespace MonoDevelop.Deployment
 				CopyFile (monitor, df.SourcePath, df.ResolvedTargetFile, df.FileAttributes);
 			}
 			
-			Combine c = entry as Combine;
+			SolutionFolder c = entry as SolutionFolder;
 			if (c != null) {
-				monitor.BeginTask ("Installing solution '" + c.Name + "'", c.Entries.Count);
-				foreach (CombineEntry ce in c.Entries) {
-					InstallEntry (monitor, ctx, ce);
+				monitor.BeginTask ("Installing solution '" + c.Name + "'", c.Items.Count);
+				foreach (SolutionItem ce in c.Items) {
+					InstallEntry (monitor, ctx, ce, configuration);
 					monitor.Step (1);
 				}
 				monitor.EndTask ();

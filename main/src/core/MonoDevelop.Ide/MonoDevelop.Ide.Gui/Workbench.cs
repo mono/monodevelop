@@ -29,6 +29,7 @@
 
 using System;
 using System.IO;
+using System.Xml;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
@@ -77,6 +78,8 @@ namespace MonoDevelop.Ide.Gui
 				PropertyService.PropertyChanged += new EventHandler<PropertyChangedEventArgs> (TrackPropertyChanges);
 				FileService.FileRemoved += (EventHandler<FileEventArgs>) DispatchService.GuiDispatch (new EventHandler<FileEventArgs> (IdeApp.Workbench.RecentOpen.FileRemoved));
 				FileService.FileRenamed += (EventHandler<FileCopyEventArgs>) DispatchService.GuiDispatch (new EventHandler<FileCopyEventArgs> (IdeApp.Workbench.RecentOpen.FileRenamed));
+				IdeApp.Workspace.StoringUserPreferences += OnStoringWorkspaceUserPreferences;
+				IdeApp.Workspace.LoadingUserPreferences += OnLoadingWorkspaceUserPreferences;
 				
 				pads = null;	// Make sure we get an up to date pad list.
 				monitor.Step (1);
@@ -450,7 +453,6 @@ namespace MonoDevelop.Ide.Gui
 			if (panelId != null)
 				ops.SelectPanel (panelId);
 			if (ops.Run () == (int) Gtk.ResponseType.Ok) {
-				Console.WriteLine ("pp saved: ");
 				PropertyService.SaveProperties ();
 			}
 			ops.Destroy ();
@@ -644,7 +646,7 @@ namespace MonoDevelop.Ide.Gui
 					binding = DisplayBindings.GetBindingPerFileName(fileName);
 				
 				if (binding != null) {
-					Project project = IdeApp.ProjectOperations.CurrentOpenCombine != null ? IdeApp.ProjectOperations.CurrentOpenCombine.GetProjectContainingFile (fileName) : null;
+					Project project = IdeApp.Workspace.GetProjectContainingFile (fileName);
 					LoadFileWrapper fw = new LoadFileWrapper (workbench, binding, project, oFileInfo);
 					fw.Invoke (fileName);
 					RecentOpen.AddLastFile (fileName, project != null ? project.Name : null);
@@ -661,6 +663,80 @@ namespace MonoDevelop.Ide.Gui
 						LoadFileWrapper fw = new LoadFileWrapper (workbench, DisplayBindings.LastBinding, null, oFileInfo);
 						fw.Invoke (fileName);
 						RecentOpen.AddLastFile (fileName, null);
+					}
+				}
+			}
+		}
+		
+		void OnStoringWorkspaceUserPreferences (object s, UserPreferencesEventArgs args)
+		{
+			WorkbenchUserPrefs prefs = new WorkbenchUserPrefs ();
+			
+			foreach (Document document in Documents) {
+				if (!String.IsNullOrEmpty (document.FileName)) {
+					DocumentUserPrefs dp = new DocumentUserPrefs ();
+					dp.FileName = FileService.AbsoluteToRelativePath (args.Item.BaseDirectory, document.FileName);
+					if (document.TextEditor != null) {
+						dp.Line = document.TextEditor.CursorLine;
+						dp.Column = document.TextEditor.CursorColumn;
+					}
+					prefs.Files.Add (dp);
+				}
+			}
+			
+			foreach (Pad pad in Pads) {
+				if (pad.Content is IMementoCapable) {
+					ICustomXmlSerializer mem = ((IMementoCapable)pad.Content).CreateMemento ();
+					if (mem != null) {
+						PadUserPrefs data = new PadUserPrefs ();
+						data.Id = pad.Id;
+						StringWriter w = new StringWriter ();
+						XmlTextWriter tw = new XmlTextWriter (w);
+						mem.WriteTo (tw);
+						XmlDocument doc = new XmlDocument ();
+						doc.LoadXml (w.ToString ());
+						data.State = doc.DocumentElement;
+						prefs.Pads.Add (data);
+					}
+				}
+			}
+			
+			if (ActiveDocument != null)
+				prefs.ActiveDocument = FileService.AbsoluteToRelativePath (args.Item.BaseDirectory, ActiveDocument.FileName);
+			
+			args.Properties.SetValue ("MonoDevelop.Ide.Workbench", prefs);
+		}
+		
+		void OnLoadingWorkspaceUserPreferences (object s, UserPreferencesEventArgs args)
+		{
+			WorkbenchUserPrefs prefs = args.Properties.GetValue<WorkbenchUserPrefs> ("MonoDevelop.Ide.Workbench");
+			if (prefs == null)
+				return;
+			
+			Document currentDoc;
+			string currentFileName = prefs.ActiveDocument != null ? Path.GetFullPath (Path.Combine (args.Item.BaseDirectory, prefs.ActiveDocument)) : null;
+			
+			foreach (DocumentUserPrefs doc in prefs.Files) {
+				string fileName = Path.GetFullPath (Path.Combine (args.Item.BaseDirectory, doc.FileName));
+				if (File.Exists (fileName))
+					IdeApp.Workbench.OpenDocument (fileName, doc.Line, doc.Column, fileName == currentFileName);
+			}
+			
+			foreach (PadUserPrefs pi in prefs.Pads) {
+				foreach (Pad pad in IdeApp.Workbench.Pads) {
+					if (pi.Id == pad.Id && pad.Content is IMementoCapable) {
+						try {
+							string xml = pi.State.OuterXml;
+							IMementoCapable m = (IMementoCapable) pad.Content; 
+							XmlReader innerReader = new XmlTextReader (new StringReader (xml));
+							innerReader.MoveToContent ();
+							ICustomXmlSerializer cs = (ICustomXmlSerializer)m.CreateMemento ();
+							if (cs != null)
+								m.SetMemento (cs.ReadFrom (innerReader));
+						} catch (Exception ex) {
+							LoggingService.LogError ("Error loading view memento.", ex);
+						}
+						break;
 					}
 				}
 			}

@@ -186,7 +186,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 		
 		public CodeCompletionData (string s, string image, string description, string completionString)
 		{
-			description = pango_description = description; 
+			this.description = pango_description = description; 
 			documentation = String.Empty;
 			text = s;
 			this.completionString = completionString;

@@ -77,7 +77,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			IdeApp.Workbench.ActiveDocumentChanged += new EventHandler (OnActiveDocumentChanged);
 			IdeApp.ProjectOperations.StartBuild += OnBeforeCompile;
 			IdeApp.ProjectOperations.EndBuild += OnProjectCompiled;
-			IdeApp.ProjectOperations.ParserDatabase.AssemblyInformationChanged += (AssemblyInformationEventHandler) DispatchService.GuiDispatch (new AssemblyInformationEventHandler (OnAssemblyInfoChanged));
+			IdeApp.Workspace.ParserDatabase.AssemblyInformationChanged += (AssemblyInformationEventHandler) DispatchService.GuiDispatch (new AssemblyInformationEventHandler (OnAssemblyInfoChanged));
 			
 			IdeApp.Exited += delegate {
 				if (steticApp != null) {
@@ -186,7 +186,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		static void OnBeforeCompile (object s, BuildEventArgs args)
 		{
-			if (IdeApp.ProjectOperations.CurrentOpenCombine == null)
+			if (!IdeApp.Workspace.IsOpen)
 				return;
 
 			// Generate stetic files for all modified projects
@@ -198,8 +198,8 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			if (args.Success) {
 				// Unload stetic projects which are not currently
 				// being used by the IDE. This will avoid unnecessary updates.
-				if (IdeApp.ProjectOperations.CurrentOpenCombine != null) {
-					foreach (Project prj in IdeApp.ProjectOperations.CurrentOpenCombine.GetAllProjects ()) {
+				if (IdeApp.Workspace.IsOpen) {
+					foreach (Project prj in IdeApp.Workspace.GetAllProjects ()) {
 						GtkDesignInfo info = GtkCoreService.GetGtkInfo (prj);
 						if (info != null && !HasOpenDesigners (prj, false)) {
 							info.ReloadGuiBuilderProject ();
@@ -345,12 +345,12 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				fileStream.Close ();
 			}
 
-			if (IdeApp.ProjectOperations.ParserDatabase.IsLoaded (project)) {
+			if (IdeApp.Workspace.ParserDatabase.IsLoaded (project)) {
 				// Only update the parser database if the project is actually loaded in the IDE.
 				if (saveToFile)
-					IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (project).UpdateDatabase ();
+					IdeApp.Workspace.ParserDatabase.GetProjectParserContext (project).UpdateDatabase ();
 				else
-					IdeApp.ProjectOperations.ParserDatabase.UpdateFile (project, fileName, ((StringWriter)fileStream).ToString ());
+					IdeApp.Workspace.ParserDatabase.UpdateFile (project, fileName, ((StringWriter)fileStream).ToString ());
 			}
 
 			FileService.NotifyFileChanged (fileName);
@@ -358,7 +358,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		}
 		
 		
-		public static Stetic.CodeGenerationResult GenerateSteticCode (IProgressMonitor monitor, Project prj)
+		public static Stetic.CodeGenerationResult GenerateSteticCode (IProgressMonitor monitor, DotNetProject prj, string configuration)
 		{
 			if (generating)
 				return null;
@@ -390,7 +390,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			
 			// Make sure the referenced assemblies are up to date. It is necessary to do
 			// it now since they may contain widget libraries.
-			prj.CopyReferencesToOutputPath (false);
+			prj.CopyReferencesToOutputPath (false, configuration);
 			
 			info.GuiBuilderProject.UpdateLibraries ();
 			
@@ -477,7 +477,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			// Make sure the generated files are added to the project
 			if (info.UpdateGtkFolder ()) {
 				Gtk.Application.Invoke (delegate {
-					IdeApp.ProjectOperations.SaveProject (project);
+					IdeApp.ProjectOperations.Save (project);
 				});
 			}
 			
@@ -486,14 +486,14 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		internal static string ImportFile (Project prj, string file)
 		{
-			ProjectFile pfile = prj.ProjectFiles.GetFile (file);
+			ProjectFile pfile = prj.Files.GetFile (file);
 			if (pfile == null) {
 				string[] files = IdeApp.ProjectOperations.AddFilesToProject (prj, new string[] { file }, prj.BaseDirectory);
 				if (files.Length == 0)
 					return null;
 				if (files [0] == null)
 					return null;
-				pfile = prj.ProjectFiles.GetFile (files[0]);
+				pfile = prj.Files.GetFile (files[0]);
 			}
 			if (pfile.BuildAction == BuildAction.EmbedAsResource) {
 				AlertButton embedButton = new AlertButton (GettextCatalog.GetString ("_Use as Source"));

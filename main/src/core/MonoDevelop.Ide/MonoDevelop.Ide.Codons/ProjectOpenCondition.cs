@@ -51,7 +51,7 @@ namespace MonoDevelop.Ide.Codons
 			Project project = IdeApp.ProjectOperations.CurrentSelectedProject;
 			
 			if (project == null && IdeApp.ProjectOperations.CurrentOpenCombine != null) {
-				CombineEntryCollection projects = IdeApp.ProjectOperations.CurrentOpenCombine.GetAllProjects();
+				SolutionItemCollection projects = IdeApp.ProjectOperations.CurrentOpenCombine.GetAllProjects();
 				if (projects.Count > 0) {
 					project = (Project)projects[0];
 				}

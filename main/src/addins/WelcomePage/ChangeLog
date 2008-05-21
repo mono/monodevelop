@@ -1,3 +1,9 @@
+2008-05-21  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* WelcomePageFallbackWidget.cs, WelcomePageView.cs,
+	  WelcomePageBrowser.cs, gtk-gui/objects.xml: New project model
+	  changes.
+
 2008-03-07  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* WelcomePage.addin.xml, WelcomePageOptionPanel.cs: Use new options

@@ -10,7 +10,7 @@ namespace MonoDevelop.Deployment.Linux
 	{
 		protected override void Run ()
 		{
-			IdeApp.ProjectOperations.FileAddedToProject += OnFileAdded;
+			IdeApp.Workspace.FileAddedToProject += OnFileAdded;
 		}
 		
 		void OnFileAdded (object o, ProjectFileEventArgs a)

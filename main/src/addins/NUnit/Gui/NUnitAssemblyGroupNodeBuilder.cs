@@ -119,9 +119,9 @@ namespace MonoDevelop.NUnit
 		public override void DeleteItem ()
 		{
 			NUnitAssemblyGroupProject project = CurrentNode.DataItem as NUnitAssemblyGroupProject;
-			project.ParentCombine.RemoveEntry (project);
+			project.ParentFolder.Items.Remove (project);
 			project.Dispose ();
-			IdeApp.ProjectOperations.SaveCombine ();
+			IdeApp.Workspace.Save ();
 		}
 	}
 }

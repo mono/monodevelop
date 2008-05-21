@@ -60,12 +60,12 @@ namespace MonoDevelop.Ide.Commands
 		string GetCurrentTargetPath()
 		{
 			if (IdeApp.ProjectOperations.CurrentSelectedProject != null) {
-				return IdeApp.ProjectOperations.CurrentSelectedProject.GetOutputFileName ();
+				return IdeApp.ProjectOperations.CurrentSelectedProject.GetOutputFileName (IdeApp.Workspace.ActiveConfiguration);
 			}
 			if (IdeApp.Workbench.ActiveDocument != null) {
-				string fileName = IdeApp.Workbench.ActiveDocument.FileName;
-				Project project = IdeApp.ProjectOperations.CurrentOpenCombine.FindProject (fileName);
-				if (project != null) return project.GetOutputFileName();
+				Project project = IdeApp.Workbench.ActiveDocument.Project;
+				if (project != null)
+					return project.GetOutputFileName (IdeApp.Workspace.ActiveConfiguration);
 			}
 			return String.Empty;
 		}
@@ -137,14 +137,14 @@ namespace MonoDevelop.Ide.Commands
 					break;
 				
 				case "COMBINEDIR":
-					if (IdeApp.ProjectOperations.CurrentSelectedCombineEntry != null)
-						return Path.GetDirectoryName (IdeApp.ProjectOperations.CurrentSelectedCombineEntry.RootCombine.FileName);
+					if (IdeApp.ProjectOperations.CurrentSelectedSolutionItem != null)
+						return Path.GetDirectoryName (IdeApp.ProjectOperations.CurrentSelectedSolutionItem.ParentSolution.FileName);
 					break;
 
 				case "COMBINEFILENAME":
 					try {
-					if (IdeApp.ProjectOperations.CurrentSelectedCombineEntry != null)
-						return Path.GetFileName (IdeApp.ProjectOperations.CurrentSelectedCombineEntry.RootCombine.FileName);
+					if (IdeApp.ProjectOperations.CurrentSelectedSolutionItem != null)
+						return Path.GetFileName (IdeApp.ProjectOperations.CurrentSelectedSolutionItem.ParentSolution.FileName);
 					} catch (Exception) {}
 					break;
 				case "STARTUPPATH":

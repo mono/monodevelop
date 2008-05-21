@@ -45,7 +45,7 @@ namespace MonoDevelop.DesignerSupport.Projects
 			
 			if (Document.HasProject) {
 				string file = Document.FileName;
-				return Document.Project.ProjectFiles.GetFile (file);
+				return Document.Project.Files.GetFile (file);
 			}
 			else
 				return null;
@@ -63,7 +63,7 @@ namespace MonoDevelop.DesignerSupport.Projects
 		public void OnChanged (object obj)
 		{
 			if (Document.HasProject)
-				IdeApp.ProjectOperations.SaveProject (Document.Project);
+				IdeApp.ProjectOperations.Save (Document.Project);
 		}
 	}
 }

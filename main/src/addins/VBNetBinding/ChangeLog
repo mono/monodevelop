@@ -1,3 +1,11 @@
+2008-05-21  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Gui/CodeGenerationPanel.cs, Gui/CodeGenerationPanelWidget.cs,
+	  VBNetBinding.addin.xml, VBNetBinding.mdp, VBNetBinding.mds,
+	  VBBindingCompilerServices.cs, Project/VBCompilerParameters.cs,
+	  Project/VBNetResourceIdBuilder.cs, gtk-gui/objects.xml,
+	  gtk-gui/gui.stetic, Makefile.am: New project model changes.
+
 2008-05-08  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* VBNetBinding.addin.xml: Set "isText" attribute on the mimetype

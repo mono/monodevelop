@@ -17,6 +17,9 @@ namespace MonoDevelop.Deployment.Targets
 		[ItemProperty]
 		string platform;
 		
+		[ItemProperty]
+		string configuration;
+		
 		public string TargetFile {
 			get { return targetFile != null ? targetFile : string.Empty; }
 			set { targetFile = value; }
@@ -26,17 +29,29 @@ namespace MonoDevelop.Deployment.Targets
 			get { return platform; }
 			set { platform = value; }
 		}
+
+		public string Configuration {
+			get { return configuration; }
+			set { configuration = value; }
+		}
 		
 		public override string Description {
 			get { return "Archive of Binaries"; }
 		}
 		
-		public override void InitializeSettings (CombineEntry entry)
+		public override void InitializeSettings (SolutionItem entry)
 		{
 			targetFile = Path.Combine (entry.BaseDirectory, entry.Name) + ".tar.gz";
+			if (entry.ParentSolution != null)
+				configuration = entry.ParentSolution.DefaultConfigurationId;
 		}
 		
-		public override bool CanBuild (CombineEntry entry)
+		public override string[] GetSupportedConfigurations ()
+		{
+			return configuration != null ? new string [] { configuration } : new string [0];
+		}
+		
+		public override bool CanBuild (SolutionItem entry)
 		{
 			// Can build anything but PackagingProject
 			return !(entry is PackagingProject);
@@ -47,15 +62,15 @@ namespace MonoDevelop.Deployment.Targets
 			return new DeployContext (this, platform, null);
 		}
 		
-		protected override void OnBuild (IProgressMonitor monitor, DeployContext ctx)
+		protected override bool OnBuild (IProgressMonitor monitor, DeployContext ctx)
 		{
 			string tmpFolder = null;
 			
 			try {
-				if (RootCombineEntry.NeedsBuilding) {
-					ICompilerResult res = RootCombineEntry.Build (monitor);
+				if (RootSolutionItem.NeedsBuilding (configuration)) {
+					ICompilerResult res = RootSolutionItem.Build (monitor, configuration);
 					if (res.ErrorCount > 0)
-						return;
+						return false;
 				}
 				
 				tmpFolder = FileService.CreateTempDirectory ();
@@ -65,7 +80,7 @@ namespace MonoDevelop.Deployment.Targets
 				string folder = FileService.GetFullPath (Path.Combine (tmpFolder, tf));
 				
 				// Export the binary files
-				DeployFileCollection deployFiles = GetDeployFiles (ctx);
+				DeployFileCollection deployFiles = GetDeployFiles (ctx, configuration);
 				foreach (DeployFile file in deployFiles) {
 					string tfile = Path.Combine (folder, file.ResolvedTargetFile);
 					string tdir = FileService.GetFullPath (Path.GetDirectoryName (tfile));
@@ -79,7 +94,11 @@ namespace MonoDevelop.Deployment.Targets
 				if (!Directory.Exists (td))
 					Directory.CreateDirectory (td);
 				DeployService.CreateArchive (monitor, tmpFolder, targetFile);
-				
+			}
+			catch (Exception ex) {
+				monitor.ReportError ("Package creation failed", ex);
+				LoggingService.LogError ("Package creation failed", ex);
+				return false;
 			}
 			finally {
 				if (tmpFolder != null)
@@ -87,6 +106,7 @@ namespace MonoDevelop.Deployment.Targets
 			}
 			if (monitor.AsyncOperation.Success)
 				monitor.Log.WriteLine (GettextCatalog.GetString ("Created file: {0}", targetFile));
+			return true;
 		}
 		
 		protected override string OnResolveDirectory (DeployContext ctx, string folderId)
@@ -100,6 +120,7 @@ namespace MonoDevelop.Deployment.Targets
 			BinariesZipPackageBuilder builder = (BinariesZipPackageBuilder) other;
 			targetFile = builder.targetFile;
 			platform = builder.platform;
+			configuration = builder.configuration;
 		}
 
 		public override string DefaultName {

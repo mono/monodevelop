@@ -3,11 +3,9 @@ SUBDIRS = . NUnit
 FILES =  \
 	AssemblyInfo.cs \
 	Commands.cs \
-	MonoCombine.cs \
 	MonoMakefile.cs \
 	MonoMakefileFormat.cs \
-	MonoProject.cs \
-	MonoProjectConfiguration.cs
+	MonoSolutionItemHandler.cs
 
 REFS =  \
 	$(GCONF_SHARP_LIBS) \

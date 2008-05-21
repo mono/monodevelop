@@ -33,7 +33,7 @@ using MonoDevelop.Core.Gui;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Parser;
 using MonoDevelop.Projects.Text;
-using MonoDevelop.Core.Gui.Dialogs;
+using MonoDevelop.Projects.Gui.Dialogs;
 
 namespace CSharpBinding
 {
@@ -44,11 +44,11 @@ namespace CSharpBinding
 		ListStore classListStore;
 		bool classListFilled;
 		
-		public CompilerOptionsPanelWidget (Properties CustomizationObject)
+		public CompilerOptionsPanelWidget (DotNetProject project)
 		{
 			this.Build();
-			project = CustomizationObject.Get<DotNetProject> ("Project");
-			DotNetProjectConfiguration configuration = (DotNetProjectConfiguration) project.ActiveConfiguration;
+			this.project = project;
+			DotNetProjectConfiguration configuration = (DotNetProjectConfiguration) project.GetActiveConfiguration (IdeApp.Workspace.ActiveConfiguration);
 			CSharpCompilerParameters compilerParameters = (CSharpCompilerParameters) configuration.CompilationParameters;
 			
 			ListStore store = new ListStore (typeof (string));
@@ -96,7 +96,29 @@ namespace CSharpBinding
 			langVerCombo.Active = (int) compilerParameters.LangVersion;
 		}
 		
-		public bool Store ()
+		public bool ValidateChanges ()
+		{
+			if (codepageEntry.Entry.Text.Length > 0) {
+				// Get the codepage. If the user specified an encoding name, find it.
+				int trialCodePage = -1;
+				foreach (TextEncoding e in TextEncoding.SupportedEncodings) {
+					if (e.Id == codepageEntry.Entry.Text) {
+						trialCodePage = e.CodePage;
+						break;
+					}
+				}
+			
+				if (trialCodePage == -1) {
+					if (!int.TryParse (codepageEntry.Entry.Text, out trialCodePage)) {
+						MessageService.ShowError (GettextCatalog.GetString ("Invalid code page number."));
+						return false;
+					}
+				}
+			}
+			return true;
+		}
+		
+		public void Store ()
 		{
 			int codePage;
 			CompileTarget compileTarget =  (CompileTarget) compileTargetCombo.Active;
@@ -117,20 +139,18 @@ namespace CSharpBinding
 					codePage = trialCodePage;
 				else {
 					if (!int.TryParse (codepageEntry.Entry.Text, out trialCodePage)) {
-						MessageService.ShowError (GettextCatalog.GetString ("Invalid code page number."));
-						return false;
+						return;
 					}
 					codePage = trialCodePage;
 				}
 			} else
 				codePage = 0;
 			
-			
+			project.CompileTarget = compileTarget;
 			foreach (DotNetProjectConfiguration configuration in project.Configurations) {
 				CSharpCompilerParameters compilerParameters = (CSharpCompilerParameters) configuration.CompilationParameters; 
 				
 				compilerParameters.CodePage = codePage;
-				configuration.CompileTarget = compileTarget;
 				
 				if (iconEntry.Sensitive)
 					compilerParameters.Win32Icon = iconEntry.Path;
@@ -141,8 +161,6 @@ namespace CSharpBinding
 				compilerParameters.UnsafeCode = allowUnsafeCodeCheckButton.Active;
 				compilerParameters.LangVersion = langVersion;
 			}
-			
-			return true;
 		}
 		
 		void OnTargetChanged (object s, EventArgs a)
@@ -166,7 +184,7 @@ namespace CSharpBinding
 		void FillClasses ()
 		{
 			try {
-				IParserContext ctx = IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (project);
+				IParserContext ctx = IdeApp.Workspace.ParserDatabase.GetProjectParserContext (project);
 				foreach (IClass c in ctx.GetProjectContents ()) {
 					if (c.Methods != null) {
 						foreach (IMethod m in c.Methods) {
@@ -182,20 +200,23 @@ namespace CSharpBinding
 		}
 	}
 	
-	public class CompilerOptionsPanel : AbstractOptionPanel
+	public class CompilerOptionsPanel : ItemOptionsPanel
 	{
 		CompilerOptionsPanelWidget widget;
 		
-		public override void LoadPanelContents ()
+		public override Widget CreatePanelWidget ()
 		{
-			Add (widget = new CompilerOptionsPanelWidget ((Properties) CustomizationObject));
+			return (widget = new CompilerOptionsPanelWidget ((DotNetProject) ConfiguredProject));
 		}
 		
-		public override bool StorePanelContents ()
+		public override bool ValidateChanges ()
 		{
-			bool result = true;
-			result = widget.Store ();
- 			return result;
+			return widget.ValidateChanges ();
+		}
+		
+		public override void ApplyChanges ()
+		{
+			widget.Store ();
 		}
 	}
 }

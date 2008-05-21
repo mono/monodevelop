@@ -227,7 +227,7 @@ namespace MonoDevelop.AspNet
 		static IAssemblyParserContext GetSystemWebAssemblyContext (MonoDevelop.Core.ClrVersion clrVersion)
 		{
 			string assem = MonoDevelop.Core.Runtime.SystemAssemblyService.GetAssemblyNameForVersion ("System.Web", clrVersion);
-			return MonoDevelop.Ide.Gui.IdeApp.ProjectOperations.ParserDatabase.GetAssemblyParserContext (assem);
+			return MonoDevelop.Ide.Gui.IdeApp.Workspace.ParserDatabase.GetAssemblyParserContext (assem);
 		}
 		
 		public static string AssemblyTypeNameLookup (string tagName, string namespac, string assem)
@@ -238,7 +238,7 @@ namespace MonoDevelop.AspNet
 		
 		public static IClass AssemblyTypeLookup (string tagName, string namespac, string assem)
 		{
-			IParserContext ctx = IdeApp.ProjectOperations.ParserDatabase.GetAssemblyParserContext (assem);
+			IParserContext ctx = IdeApp.Workspace.ParserDatabase.GetAssemblyParserContext (assem);
 			if (ctx == null)
 				return null;
 			ctx.UpdateDatabase ();
@@ -258,7 +258,7 @@ namespace MonoDevelop.AspNet
 		public static IEnumerable<IClass> ListControlClasses (string assem)
 		{
 			
-			IParserContext ctx = IdeApp.ProjectOperations.ParserDatabase.GetAssemblyParserContext (assem);
+			IParserContext ctx = IdeApp.Workspace.ParserDatabase.GetAssemblyParserContext (assem);
 			if (ctx == null)
 				yield break;
 			
@@ -322,9 +322,9 @@ namespace MonoDevelop.AspNet
 			IParserContext ctx = null;
 			if (!string.IsNullOrEmpty (namespac)) {
 				if (!string.IsNullOrEmpty (assem))
-					ctx = IdeApp.ProjectOperations.ParserDatabase.GetAssemblyParserContext (assem);
+					ctx = IdeApp.Workspace.ParserDatabase.GetAssemblyParserContext (assem);
 				else if (project != null)
-					ctx = IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (project);
+					ctx = IdeApp.Workspace.ParserDatabase.GetProjectParserContext (project);
 				else
 					ctx = GetSystemWebAssemblyContext (MonoDevelop.Core.ClrVersion.Default);
 				ctx.UpdateDatabase ();

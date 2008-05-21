@@ -29,8 +29,7 @@ namespace MonoDevelop.GtkCore.Dialogs
 			box.PackStart (new Label (GettextCatalog.GetString ("(or upper)")), false, false, 0);
 			PackStart (box, false, false, 0);
 			
-			DotNetProjectConfiguration conf = project.ActiveConfiguration as DotNetProjectConfiguration;
-			if (conf != null && conf.CompileTarget == CompileTarget.Library || conf.CompiledOutputName.EndsWith (".dll")) {
+			if (project.CompileTarget == CompileTarget.Library) {
 				GtkDesignInfo info = GtkCoreService.GetGtkInfo (project);
 				libCheck = new CheckButton (GettextCatalog.GetString ("This assembly is a widget library"));
 				libCheck.Active = info != null && info.IsWidgetLibrary;
@@ -49,7 +48,7 @@ namespace MonoDevelop.GtkCore.Dialogs
 		}
 	}
 	
-	class GtkProjectFeature: ICombineEntryFeature
+	class GtkProjectFeature: ISolutionItemFeature
 	{
 		public string Title {
 			get { return GettextCatalog.GetString ("Gtk# Support"); }
@@ -59,17 +58,17 @@ namespace MonoDevelop.GtkCore.Dialogs
 			get { return GettextCatalog.GetString ("Enables support for GTK# in the project. Allows the visual design of GTK# windows, and the creation of a GTK# widget library."); }
 		}
 
-		public bool SupportsCombineEntry (Combine parentCombine, CombineEntry entry)
+		public bool SupportsSolutionItem (SolutionFolder parentCombine, SolutionItem entry)
 		{
 			return entry is DotNetProject;
 		}
 		
-		public Widget CreateFeatureEditor (Combine parentCombine, CombineEntry entry)
+		public Widget CreateFeatureEditor (SolutionFolder parentCombine, SolutionItem entry)
 		{
 			return new GtkFeatureWidget ((DotNetProject) entry);
 		}
 
-		public void ApplyFeature (Combine parentCombine, CombineEntry entry, Widget editor)
+		public void ApplyFeature (SolutionFolder parentCombine, SolutionItem entry, Widget editor)
 		{
 			GtkDesignInfo info = GtkCoreService.EnableGtkSupport ((DotNetProject) entry);
 			GtkFeatureWidget fw = (GtkFeatureWidget) editor;
@@ -78,12 +77,12 @@ namespace MonoDevelop.GtkCore.Dialogs
 			info.UpdateGtkFolder ();
 		}
 		
-		public string Validate (Combine parentCombine, CombineEntry entry, Gtk.Widget editor)
+		public string Validate (SolutionFolder parentCombine, SolutionItem entry, Gtk.Widget editor)
 		{
 			return null;
 		}
 		
-		public bool IsEnabled (Combine parentCombine, CombineEntry entry) 
+		public bool IsEnabled (SolutionFolder parentCombine, SolutionItem entry) 
 		{
 			return GtkCoreService.GetGtkInfo ((Project)entry) != null;
 		}

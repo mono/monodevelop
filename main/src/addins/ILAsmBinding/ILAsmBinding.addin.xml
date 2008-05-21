@@ -31,9 +31,9 @@
 		            extensions = "*.il"/>
 	</Extension>
 
-  <Extension path = "/MonoDevelop/ProjectModel/Gui/ProjectOptions/ConfigurationOptions">
+  <Extension path = "/MonoDevelop/ProjectModel/Gui/ProjectOptions">
     <Condition id="activelanguage" value = "ILAsm">
-      <DialogPanel id = "ILAsmCompilerParametersPanel"
+      <Section id = "ILAsmCompilerParametersPanel"
                    _label = "Compiler"
                    class = "ILAsmBinding.CompilerParametersPanel"/>
     </Condition>

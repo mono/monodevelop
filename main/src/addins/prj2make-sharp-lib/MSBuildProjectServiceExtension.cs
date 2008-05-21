@@ -42,14 +42,14 @@ namespace MonoDevelop.Prj2Make
 	public class MSBuildProjectServiceExtension : ProjectServiceExtension
 	{
 
-		public override ICompilerResult Build (IProgressMonitor monitor, CombineEntry entry)
+		protected override ICompilerResult Build (IProgressMonitor monitor, IBuildTarget entry, string configuration)
 		{
 			//xamlg any SilverLightPages
 			DotNetProject project = entry as DotNetProject;
 			if (project == null)
-				return base.Build (monitor, entry);
+				return base.Build (monitor, entry, configuration);
 
-			foreach (ProjectFile pf in project.ProjectFiles) {
+			foreach (ProjectFile pf in project.Files) {
 				if (pf.BuildAction != BuildAction.EmbedAsResource)
 					continue;
 
@@ -71,7 +71,7 @@ namespace MonoDevelop.Prj2Make
 				}
 			}
 
-			return base.Build (monitor, entry);
+			return base.Build (monitor, entry, configuration);
 		}
 
 		CompilerError GenerateXamlPartialClass (string fname, out string generated_file_name, IProgressMonitor monitor)
@@ -142,31 +142,6 @@ namespace MonoDevelop.Prj2Make
 
 			//No errors
 			return null;
-		}
-
-		public override string GetDefaultResourceId (ProjectFile pf)
-		{
-			if (Utils.GetMSBuildData (pf.Project) == null)
-				return base.GetDefaultResourceId (pf);
-
-			return GetDefaultResourceIdInternal (pf);
-		}
-
-		internal static string GetDefaultResourceIdInternal (ProjectFile pf)
-		{
-			IResourceIdBuilder rb;
-			DotNetProject project = (DotNetProject) pf.Project;
-
-			if (project.LanguageName == "C#") {
-				rb = new CSharpResourceIdBuilder ();
-			} else if (project.LanguageName == "VBNet") {
-				rb = new VBNetResourceIdBuilder ();
-			} else {
-				LoggingService.LogError (GettextCatalog.GetString ("Language '{0}' not supported for building resource ids.", project.LanguageName));
-				return null;
-			}
-
-			return rb.GetResourceId (pf);
 		}
 
 		// Used for parsing "Line 123, position 5" errors from tools

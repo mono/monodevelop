@@ -54,18 +54,18 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassBrowser
 			scrolledwindow1.Add (treeView);
 			scrolledwindow1.ShowAll ();
 				
-			IdeApp.ProjectOperations.CombineOpened += (CombineEventHandler) DispatchService.GuiDispatch (new CombineEventHandler (OnOpenCombine));
-			IdeApp.ProjectOperations.CombineClosed += (CombineEventHandler) DispatchService.GuiDispatch (new CombineEventHandler (OnCloseCombine));
+			IdeApp.Workspace.WorkspaceItemOpened += OnOpenCombine;
+			IdeApp.Workspace.WorkspaceItemClosed += OnCloseCombine;
 		}
 			
-		void OnOpenCombine (object sender, CombineEventArgs e)
+		void OnOpenCombine (object sender, WorkspaceItemEventArgs e)
 		{
-			treeView.LoadTree (e.Combine);
+			treeView.AddChild (e.Item);
 		}
 		
-		void OnCloseCombine (object sender, CombineEventArgs e)
+		void OnCloseCombine (object sender, WorkspaceItemEventArgs e)
 		{
-			treeView.Clear ();
+			treeView.RemoveChild (e.Item);
 		}		
 	}
 }

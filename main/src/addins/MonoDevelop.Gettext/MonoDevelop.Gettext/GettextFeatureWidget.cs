@@ -81,7 +81,7 @@ namespace MonoDevelop.Gettext
 			};
 		}
 		
-		public void ApplyFeature (Combine parentCombine, CombineEntry entry)
+		public void ApplyFeature (SolutionFolder parentCombine, SolutionItem entry)
 		{
 			TranslationProject newProject;
 			if (entry is TranslationProject)
@@ -93,7 +93,7 @@ namespace MonoDevelop.Gettext
 				if (!System.IO.Directory.Exists (path))
 					System.IO.Directory.CreateDirectory (path);
 				newProject.FileName = System.IO.Path.Combine (path, newProject.Name + ".mdse");
-				parentCombine.Entries.Add (newProject);
+				parentCombine.Items.Add (newProject);
 			}
 			
 			TreeIter iter;

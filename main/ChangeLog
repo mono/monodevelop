@@ -1,3 +1,11 @@
+2008-05-21  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* monodevelop-core-addins.pc.in: Removed MSVisualStudio project from
+	  .pc file since it is not extensible anymore.
+	* configure.in, MonoDevelop.mds: Added test infrastructure.
+	* src/core/Core.mds: New project model changes.
+	* contrib/contrib.mds: Updated.
+
 2008-05-19  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* configure.in: Remove conditional build for ASP.NET support; there's

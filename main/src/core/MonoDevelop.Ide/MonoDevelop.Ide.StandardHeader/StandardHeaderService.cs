@@ -50,17 +50,6 @@ namespace MonoDevelop.Ide.StandardHeaders
 		static List<KeyValuePair<string, string>> headerTemplates = new List<KeyValuePair<string, string>> ();
 		static List<KeyValuePair<string, string>> customTemplates = new List<KeyValuePair<string, string>> ();
 		
-		public static IEnumerable<KeyValuePair<string, string>> Templates {
-			get {
-				foreach (KeyValuePair<string, string> pair in customTemplates)  {
-					yield return pair;
-				}
-				foreach (KeyValuePair<string, string> pair in headerTemplates)  {
-					yield return pair;
-				}
-			}
-		}
-		
 		public static ReadOnlyCollection<KeyValuePair<string, string>> HeaderTemplates {
 			get {
 				return headerTemplates.AsReadOnly ();

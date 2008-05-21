@@ -45,7 +45,7 @@ namespace CBinding
 		SharedLibrary
 	};
 	
-	public class CProjectConfiguration : AbstractProjectConfiguration
+	public class CProjectConfiguration : ProjectConfiguration
 	{
 		[ItemProperty("Output/output")]
 		string output = string.Empty;
@@ -150,7 +150,7 @@ namespace CBinding
 			set { precompileHeaders = value; }
 		}
 		
-		public override void CopyFrom (IConfiguration configuration)
+		public override void CopyFrom (ItemConfiguration configuration)
 		{
 			base.CopyFrom (configuration);
 			CProjectConfiguration conf = (CProjectConfiguration)configuration;

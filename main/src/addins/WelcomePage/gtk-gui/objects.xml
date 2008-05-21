@@ -10,6 +10,7 @@
         <property name="Label" />
         <property name="LinkUrl" />
         <property name="Description" />
+        <property name="Icon" />
       </itemgroup>
     </itemgroups>
     <signals />

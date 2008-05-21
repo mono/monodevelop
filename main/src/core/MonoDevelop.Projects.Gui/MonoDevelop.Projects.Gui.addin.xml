@@ -14,24 +14,14 @@
 
 	<!-- Extension points -->
 	
-	<ExtensionPoint path = "/MonoDevelop/ProjectModel/Gui/ProjectOptions/GeneralOptions">
+	<ExtensionPoint path = "/MonoDevelop/ProjectModel/Gui/ProjectOptions">
 		<Description>Dialog panels for project options.</Description>
-		<ExtensionNodeSet id="MonoDevelop.Core.Gui.DialogPanel" />
+		<ExtensionNodeSet id="MonoDevelop.Core.Gui.OptionsDialogSection"/>
 	</ExtensionPoint>
 
-	<ExtensionPoint path = "/MonoDevelop/ProjectModel/Gui/ProjectOptions/ConfigurationOptions">
-		<Description>Dialog panels for project configuration options.</Description>
-		<ExtensionNodeSet id="MonoDevelop.Core.Gui.DialogPanel" />
-	</ExtensionPoint>
-
-	<ExtensionPoint path = "/MonoDevelop/ProjectModel/Gui/CombineOptions/GeneralOptions">
+	<ExtensionPoint path = "/MonoDevelop/ProjectModel/Gui/SolutionOptions">
 		<Description>Dialog panels for solution options.</Description>
-		<ExtensionNodeSet id="MonoDevelop.Core.Gui.DialogPanel" />
-	</ExtensionPoint>
-
-	<ExtensionPoint path = "/MonoDevelop/ProjectModel/Gui/CombineOptions/ConfigurationOptions">
-		<Description>Dialog panels for solution configuration options.</Description>
-		<ExtensionNodeSet id="MonoDevelop.Core.Gui.DialogPanel" />
+		<ExtensionNodeSet id="MonoDevelop.Core.Gui.OptionsDialogSection"/>
 	</ExtensionPoint>
 
 	<ExtensionPoint path = "/MonoDevelop/ProjectModel/Gui/Icons" name="Project service icons">
@@ -40,54 +30,60 @@
 
 	<!-- Extensions points -->
 	
-	<Extension path = "/MonoDevelop/ProjectModel/Gui/ProjectOptions/GeneralOptions">
-		<DialogPanel id    = "Common"
-		             _label = "General">
-			<DialogPanel id = "GeneralProjectPanel"
-			             _label = "Project Options"
+	<Extension path = "/MonoDevelop/ProjectModel/Gui/ProjectOptions">
+		<Section id="Common" _label="General">
+			<Section id = "GeneralProjectPanel"
+			             _label = "Project"
 			             class = "MonoDevelop.Projects.Gui.Dialogs.OptionPanels.GeneralProjectOptions"/>
-			<DialogPanel id = "Compile"
-			             _label = "Compile"
-			             class = "MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CompileFileProjectOptions"/>
-		</DialogPanel>
-	</Extension>
-	
-	<Extension path = "/MonoDevelop/ProjectModel/Gui/ProjectOptions/ConfigurationOptions">
-			<DialogPanel id = "CustomCommands"
+			
+			<Section id = "CustomCommands"
 			             _label = "Custom Commands"
+			             fill = "true"
 			             class = "MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CustomCommandPanel"/>
-			<Condition id = "activeproject" value = "DotNet">
-				<DialogPanel id = "SigningPreferences"
-				             _label = "Assembly Signing"
-				             class = "MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CommonAssemblySigningPreferences"/>
-			</Condition>
+		</Section>
+		<Section id="Build" _label="Build">
+			<Section id="General" _label="General">
+				<Panel id = "RuntimeOptionsPanel"
+		             _label = "Runtime Options"
+	    	         class = "MonoDevelop.Projects.Gui.Dialogs.OptionPanels.RuntimeOptionsPanel"/>
+		    </Section>
+			<Section id = "Configurations"
+			             _label = "Configurations"
+			             fill = "true"
+			             class = "MonoDevelop.Projects.Gui.Dialogs.OptionPanels.SolutionItemConfigurationsPanel"/>
+			<Section id="Compiler" _label="Compiler" />
+			<Section id = "SigningPreferences"
+			             _label = "Assembly Signing"
+			             class = "MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CommonAssemblySigningPreferencesPanel"/>
+			<Section id = "OutputOptionsPanel"
+			             _label = "Output"
+			             class = "MonoDevelop.Projects.Gui.Dialogs.OptionPanels.OutputOptionsPanel"/>
+		</Section>
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/ProjectModel/Gui/CombineOptions/GeneralOptions">
-		<DialogPanel id    = "Common"
-		             _label = "Common">
-			<DialogPanel id = "Information"
+	<Extension path = "/MonoDevelop/ProjectModel/Gui/SolutionOptions">
+		<Section id = "Common" _label = "General">
+			<Section id = "Information"
 			             _label = "Solution Information"
 			             class = "MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CombineInformationPanel"/>
-			<DialogPanel id = "Startup"
-			             _label = "Startup Properties"
-			             class = "MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CombineStartupPanel"/>
-			<DialogPanel id = "Build"
-						_label = "Build Properties"
+			<Section id = "Build"
+						_label = "Build"
 						class = "MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CombineBuildOptions"/>
-		</DialogPanel>
-
-		<DialogPanel id = "Configurations"
-			             _label = "Configurations"
-			             class = "MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CombineEntryConfigurationsPanel"/>
-	</Extension>
-	
-	<Extension path = "/MonoDevelop/ProjectModel/Gui/CombineOptions/ConfigurationOptions">
-		<DialogPanel id = "EntryConfigurations"
-			             _label = "Configurations"
-			             class = "MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CombineConfigurationPanel"/>
-		<DialogPanel id = "CustomCommands"
-		             _label = "Custom Commands"
-		             class = "MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CustomCommandPanel"/>
+			<Section id = "Build" _label="Configurations">
+				<Panel id = "Configurations"
+					             _label = "Configurations"
+					             fill = "true"
+					             class = "MonoDevelop.Projects.Gui.Dialogs.OptionPanels.SolutionItemConfigurationsPanel"/>
+				<Panel id = "EntryConfigurations"
+					             _label = "Configuration Mappings"
+					             fill = "true"
+					             grouping="Tab"
+					             class = "MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CombineConfigurationPanel"/>
+			</Section>
+			<Section id = "CustomCommands"
+			             _label = "Custom Commands"
+			             fill = "true"
+			             class = "MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CustomCommandPanel"/>
+		</Section>
 	</Extension>
 </Addin>

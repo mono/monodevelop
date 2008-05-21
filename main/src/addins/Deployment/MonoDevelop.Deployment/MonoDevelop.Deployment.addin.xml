@@ -81,7 +81,7 @@
 
 	<!-- Extensions -->
 
-	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/Combine/Tools">
+	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/Solution/Tools">
 		<CommandItem id = "MonoDevelop.Deployment.Commands.CreatePackage" insertafter="MonoDevelop.Ide.Commands.ProjectCommands.ExportProject"/>
 		<CommandItem id = "MonoDevelop.Deployment.Commands.Install" insertafter="ExportSeparator"/>
 	</Extension>	
@@ -172,12 +172,12 @@
 		<StockIcon stockid = "md-packaging-project" icon = "md-project|res:packaging-16.png" size = "Menu" />
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/ProjectModel/Gui/CombineOptions/GeneralOptions">
-		<DialogPanel id = "Deployment" _label = "Deployment" />
+	<Extension path = "/MonoDevelop/ProjectModel/Gui/SolutionOptions">
+		<Section id = "Deployment" _label = "Deployment" />
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/ProjectModel/Gui/ProjectOptions/GeneralOptions">
-		<DialogPanel id = "Deployment" _label = "Deployment" />
+	<Extension path = "/MonoDevelop/ProjectModel/Gui/ProjectOptions">
+		<Section id = "Deployment" _label = "Deployment" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/ProjectModel/ProjectServiceExtensions">
@@ -200,5 +200,9 @@
 	
 	<Extension path = "/MonoDevelop/Ide/ProjectFeatures">
 		<Class class = "MonoDevelop.Deployment.Gui.PackagingFeature" />
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/ProjectModel/MD1SerializationMaps">
+		<SerializationMap resource="md1format.xml" />
 	</Extension>
 </Addin>

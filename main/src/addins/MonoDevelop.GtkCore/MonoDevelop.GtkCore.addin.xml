@@ -150,10 +150,11 @@
 		<Class class="MonoDevelop.GtkCore.GtkCoreStartupCommand" />
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/ProjectModel/Gui/ProjectOptions/GeneralOptions/Common">
+	<Extension path = "/MonoDevelop/ProjectModel/Gui/ProjectOptions/Common">
 		<Condition id="activeproject" value ="DotNet">
-			<DialogPanel id = "SteticOptionsPanel"
+			<Section id = "SteticOptionsPanel"
 			             _label = "GTK# Settings"
+			             fill="true"
 			             class = "MonoDevelop.GtkCore.Dialogs.WidgetBuilderOptionPanel"/>
 		</Condition>
 	</Extension>

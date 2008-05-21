@@ -1,29 +1,28 @@
-//
-// MonoProject.cs
+// MonoSolutionItemHandler.cs
 //
 // Author:
-//   Lluis Sanchez Gual
+//   Lluis Sanchez Gual <lluis@novell.com>
 //
-// Copyright (C) 2005 Novell, Inc (http://www.novell.com)
+// Copyright (c) 2008 Novell, Inc (http://www.novell.com)
 //
-// Permission is hereby granted, free of charge, to any person obtaining
-// a copy of this software and associated documentation files (the
-// "Software"), to deal in the Software without restriction, including
-// without limitation the rights to use, copy, modify, merge, publish,
-// distribute, sublicense, and/or sell copies of the Software, and to
-// permit persons to whom the Software is furnished to do so, subject to
-// the following conditions:
-// 
-// The above copyright notice and this permission notice shall be
-// included in all copies or substantial portions of the Software.
-// 
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-// NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
-// LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
-// OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
-// WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+//
 //
 
 using System;
@@ -36,37 +35,49 @@ using MonoDevelop.Projects;
 using System.CodeDom.Compiler;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core.ProgressMonitoring;
+using MonoDevelop.Projects.Extensions;
 
 namespace MonoDeveloper
 {
-	public class MonoProject: DotNetProject
+	public class MonoSolutionItemHandler: ISolutionItemHandler
 	{
+		DotNetProject project;
 		string outFile;
 		ArrayList refNames = new ArrayList ();
 		bool loading;
 		string testFileBase;
 		object unitTest;
 		
-		public override string ProjectType {
-			get { return "MonoMakefile"; }
-		}
-		
-		internal MonoProject (MonoMakefile mkfile): base ("C#")
+		public MonoSolutionItemHandler (DotNetProject project)
 		{
-			Read (mkfile);
-		}
-		
-		public override string [] SupportedLanguages {
-			get {
-				return new string [] { "C#", "" };
-			}
+			this.project = project;
+			project.FileAddedToProject += OnFileAddedToProject;
+			project.FileRemovedFromProject += OnFileRemovedFromProject;
+			project.FileRenamedInProject += OnFileRenamedInProject;
 		}
 		
 		public string SourcesFile {
 			get { return outFile + ".sources"; }
 		}
 		
-		void Read (MonoMakefile mkfile)
+		public bool SyncFileName {
+			get { return false; }
+		}
+		
+		public string ItemId {
+			get {
+				if (project.ParentSolution != null)
+					return project.ParentSolution.GetRelativeChildPath (project.FileName);
+				else
+					return project.Name;
+			}
+		}
+
+		public void Save (MonoDevelop.Core.IProgressMonitor monitor)
+		{
+		}
+		
+		internal void Read (MonoMakefile mkfile)
 		{
 			loading = true;
 			
@@ -86,9 +97,8 @@ namespace MonoDeveloper
 				targetAssembly = "$(topdir)/class/lib/$(PROFILE)/" + targetAssembly;
 			}
 			
-			Name = Path.GetFileNameWithoutExtension (aname);
 			outFile = Path.Combine (basePath, aname);
-			FileName = mkfile.FileName;
+			project.FileName = mkfile.FileName;
 			
 			ArrayList checkedFolders = new ArrayList ();
 			
@@ -100,14 +110,14 @@ namespace MonoDeveloper
 				line = line.Trim (' ','\t');
 				if (line != "") {
 					string fname = Path.Combine (basePath, line);
-					ProjectFiles.Add (new ProjectFile (fname));
+					project.Files.Add (new ProjectFile (fname));
 					
 					string dir = Path.GetDirectoryName (fname);
 					if (!checkedFolders.Contains (dir)) {
 						checkedFolders.Add (dir);
 						fname = Path.Combine (dir, "ChangeLog");
 						if (File.Exists (fname))
-							ProjectFiles.Add (new ProjectFile (fname, BuildAction.Exclude));
+							project.Files.Add (new ProjectFile (fname, BuildAction.Exclude));
 					}
 				}
 			}
@@ -136,36 +146,46 @@ namespace MonoDeveloper
 				testFileBase = Path.Combine (basePath, tname);
 			}
 			
-			MonoProjectConfiguration conf = new MonoProjectConfiguration ("default", "default");
-			conf.CompilationParameters = LanguageBinding.CreateCompilationParameters (null);
-			conf.OutputDirectory = basePath;
-			conf.AssemblyPathTemplate = targetAssembly;
-			Configurations.Add (conf);
+			foreach (string sconf in MonoMakefileFormat.Configurations) {
+				DotNetProjectConfiguration conf = new DotNetProjectConfiguration (sconf);
+				conf.CompilationParameters = project.LanguageBinding.CreateCompilationParameters (null);
+				conf.OutputDirectory = basePath;
+				conf.OutputAssembly = Path.GetFileName (targetAssembly);
+				project.Configurations.Add (conf);
+			}
 			
-			conf = new MonoProjectConfiguration ("net_2_0", "net_2_0");
-			conf.CompilationParameters = LanguageBinding.CreateCompilationParameters (null);
-			conf.OutputDirectory = basePath;
-			conf.AssemblyPathTemplate = targetAssembly;
-			Configurations.Add (conf);
-			
-			Console.WriteLine ("{0} {1}", aname, GetOutputFileName ());
 			loading = false;
-			IdeApp.ProjectOperations.CombineOpened += new CombineEventHandler (CombineOpened);
+			IdeApp.Workspace.SolutionLoaded += CombineOpened;
+		}
+		
+		public void CombineOpened (object sender, SolutionEventArgs args)
+		{
+			if (args.Solution == project.ParentSolution) {
+				foreach (string pref in refNames) {
+					Project p = project.ParentSolution.FindProjectByName (pref);
+					if (p != null) project.References.Add (new ProjectReference (p));
+				}
+			}
 		}
 		
 		static Regex regexError = new Regex (@"^(\s*(?<file>.*)\((?<line>\d*)(,(?<column>\d*[\+]*))?\)(:|)\s+)*(?<level>\w+)\s*(?<number>.*):\s(?<message>.*)",
 			RegexOptions.Compiled | RegexOptions.ExplicitCapture);
 				
-		protected override ICompilerResult DoBuild (IProgressMonitor monitor)
+		public ICompilerResult RunTarget (MonoDevelop.Core.IProgressMonitor monitor, string target, string configuration)
 		{
-			MonoProjectConfiguration conf = (MonoProjectConfiguration) ActiveConfiguration;
+			if (target == ProjectService.BuildTarget)
+				target = "all";
+			else if (target == ProjectService.CleanTarget)
+				target = "clean";
+			
+			DotNetProjectConfiguration conf = (DotNetProjectConfiguration) project.GetConfiguration (configuration);
 			
 			StringWriter output = new StringWriter ();
 			LogTextWriter tw = new LogTextWriter ();
 			tw.ChainWriter (output);
 			tw.ChainWriter (monitor.Log);
 			
-			ProcessWrapper proc = Runtime.ProcessService.StartProcess ("make", "PROFILE=" + conf.Profile, conf.OutputDirectory, monitor.Log, tw, null);
+			ProcessWrapper proc = Runtime.ProcessService.StartProcess ("make", "PROFILE=" + conf.Id + " " + target, conf.OutputDirectory, monitor.Log, tw, null);
 			proc.WaitForOutput ();
 			
 			CompilerResults cr = new CompilerResults (null);			
@@ -193,7 +213,7 @@ namespace MonoDeveloper
 			Match match=regexError.Match(error_string);
 			if (!match.Success) return null;
 			if (String.Empty != match.Result("${file}"))
-				error.FileName = Path.Combine (BaseDirectory, match.Result("${file}"));
+				error.FileName = Path.Combine (project.BaseDirectory, match.Result("${file}"));
 			if (String.Empty != match.Result("${line}"))
 				error.Line=Int32.Parse(match.Result("${line}"));
 			if (String.Empty != match.Result("${column}"))
@@ -205,46 +225,8 @@ namespace MonoDeveloper
 			return error;
 		}
 		
-		protected override void OnClean (IProgressMonitor monitor)
+		void OnFileAddedToProject (object s, ProjectFileEventArgs e)
 		{
-			MonoProjectConfiguration conf = (MonoProjectConfiguration) ActiveConfiguration;
-			ProcessWrapper proc = Runtime.ProcessService.StartProcess ("make", "PROFILE=" + conf.Profile + " clean", conf.OutputDirectory, monitor.Log, monitor.Log, null);
-			proc.WaitForOutput ();
-		}
-
-		public void Install (IProgressMonitor monitor)
-		{
-			MonoProjectConfiguration conf = (MonoProjectConfiguration) ActiveConfiguration;
-			monitor.BeginTask ("Installing: " + Name + " - " + conf.Name, 1);
-			ProcessWrapper proc = Runtime.ProcessService.StartProcess ("make", "install PROFILE=" + conf.Profile, conf.OutputDirectory, monitor.Log, monitor.Log, null);
-			proc.WaitForOutput ();
-			monitor.EndTask ();
-		}
-		
-		public override string GetOutputFileName ()
-		{
-			MonoProjectConfiguration conf = (MonoProjectConfiguration) ActiveConfiguration;
-			return conf.GetAssemblyPath ();
-		}
-		
-		public override IConfiguration CreateConfiguration (string name)
-		{
-			MonoProjectConfiguration conf = new MonoProjectConfiguration (name, name);
-			conf.CompilationParameters = LanguageBinding.CreateCompilationParameters (null);
-			return conf;
-		}
-		
-		public void CombineOpened (object sender, CombineEventArgs args)
-		{
-			foreach (string pref in refNames) {
-				Project p = RootCombine.FindProject (pref);
-				if (p != null) ProjectReferences.Add (new ProjectReference (p));
-			}
-		}
-		
-		protected override void OnFileAddedToProject (ProjectFileEventArgs e)
-		{
-			base.OnFileAddedToProject (e);
 			if (loading) return;
 			
 			if (e.ProjectFile.BuildAction != BuildAction.Compile)
@@ -253,9 +235,8 @@ namespace MonoDeveloper
 			AddSourceFile (e.ProjectFile.Name);
 		}
 		
-		protected override void OnFileRemovedFromProject (ProjectFileEventArgs e)
+		void OnFileRemovedFromProject (object s, ProjectFileEventArgs e)
 		{
-			base.OnFileRemovedFromProject (e);
 			if (loading) return;
 			
 			if (e.ProjectFile.BuildAction != BuildAction.Compile)
@@ -264,11 +245,10 @@ namespace MonoDeveloper
 			RemoveSourceFile (e.ProjectFile.Name);
 		}
 		
- 		protected override void OnFileRenamedInProject (ProjectFileRenamedEventArgs e)
+ 		void OnFileRenamedInProject (object s, ProjectFileRenamedEventArgs e)
 		{
-			base.OnFileRenamedInProject (e);
-			
 			if (loading) return;
+			
 			if (e.ProjectFile.BuildAction != BuildAction.Compile)
 				return;
 				
@@ -285,7 +265,7 @@ namespace MonoDeveloper
 				sr = new StreamReader (outFile + ".sources");
 				sw = new StreamWriter (outFile + ".sources.new");
 
-				string newFile = GetRelativeChildPath (sourceFile);
+				string newFile = project.GetRelativeChildPath (sourceFile);
 				if (newFile.StartsWith ("./")) newFile = newFile.Substring (2);
 				
 				string line;
@@ -317,7 +297,7 @@ namespace MonoDeveloper
 				sr = new StreamReader (outFile + ".sources");
 				sw = new StreamWriter (outFile + ".sources.new");
 
-				string oldFile = GetRelativeChildPath (sourceFile);
+				string oldFile = project.GetRelativeChildPath (sourceFile);
 				if (oldFile.StartsWith ("./")) oldFile = oldFile.Substring (2);
 				
 				string line;
@@ -339,10 +319,12 @@ namespace MonoDeveloper
 			return found;
 		}
 		
-		public override void Dispose ()
+		public void Dispose ()
 		{
-			base.Dispose ();
-			IdeApp.ProjectOperations.CombineOpened -= new CombineEventHandler (CombineOpened);
+			project.FileAddedToProject -= OnFileAddedToProject;
+			project.FileRemovedFromProject -= OnFileRemovedFromProject;
+			project.FileRenamedInProject -= OnFileRenamedInProject;
+			IdeApp.Workspace.SolutionLoaded -= CombineOpened;
 		}
 		
 		public string GetTestFileBase ()
@@ -354,5 +336,7 @@ namespace MonoDeveloper
 			get { return unitTest; }
 			set { unitTest = value; }
 		}
+
+		public event EventHandler ItemFileChanged;
 	}
 }

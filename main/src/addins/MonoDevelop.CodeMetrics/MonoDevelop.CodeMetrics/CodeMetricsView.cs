@@ -72,9 +72,14 @@ namespace MonoDevelop.CodeMetrics
 			widget.Add (project);
 		}
 		
-		public void Add (Combine combine)
+		public void Add (SolutionFolder combine)
 		{
 			widget.Add (combine);
+		}
+		
+		public void Add (WorkspaceItem item)
+		{
+			widget.Add (item);
 		}
 		
 		public void Run ()

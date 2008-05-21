@@ -1,3 +1,9 @@
+2008-05-21  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* ILAsmBinding.mdp, Gui/CompilerParametersPanel.cs,
+	  ILAsmLanguageBinding.cs, Makefile.am, ILAsmBinding.addin.xml: New
+	  project model changes.
+
 2008-02-04  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* ILAsmCompilerManager.cs: Properly detect and report compiler errors. Fixes

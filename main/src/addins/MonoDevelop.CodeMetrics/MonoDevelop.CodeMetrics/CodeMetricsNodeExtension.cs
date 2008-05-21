@@ -49,7 +49,8 @@ namespace MonoDevelop.CodeMetrics
 		{
 			return typeof(ProjectFile).IsAssignableFrom (dataType)
 				|| typeof(ProjectFolder).IsAssignableFrom (dataType)
-				|| typeof(CombineEntry).IsAssignableFrom (dataType);
+				|| typeof(SolutionItem).IsAssignableFrom (dataType)
+				|| typeof(Solution).IsAssignableFrom (dataType);
 		}
 		
 		public CodeMetricsNodeExtension()
@@ -75,9 +76,13 @@ namespace MonoDevelop.CodeMetrics
 				}
 			}
 			
-			Combine combine = CurrentNode.DataItem as Combine;
+			SolutionFolder combine = CurrentNode.DataItem as SolutionFolder;
 			if (combine != null) 
 				view.Add (combine);
+			
+			Solution solution = CurrentNode.DataItem as Solution;
+			if (combine != null) 
+				view.Add (solution);
 			
 			Project project = CurrentNode.DataItem as Project;
 			if (project != null) 

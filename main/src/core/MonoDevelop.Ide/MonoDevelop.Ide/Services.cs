@@ -77,7 +77,7 @@ namespace MonoDevelop.Ide
 			get { return MonoDevelop.Projects.Services.ParserService; }
 		}
 	
-		public static IProjectService ProjectService {
+		public static ProjectService ProjectService {
 			get { return MonoDevelop.Projects.Services.ProjectService; }
 		}
 	}

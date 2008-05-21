@@ -48,7 +48,7 @@ namespace MonoDevelop.Autotools
 	{
 		public override bool CanBuildNode (Type dataType)
 		{
-			return typeof (CombineEntry).IsAssignableFrom (dataType);
+			return typeof (Solution).IsAssignableFrom (dataType) || typeof (SolutionItem).IsAssignableFrom (dataType);
 		}
 		
 		public override Type CommandHandlerType {
@@ -61,14 +61,14 @@ namespace MonoDevelop.Autotools
 		[CommandHandler (Commands.GenerateFiles)]
 		protected void OnGenerate()
 		{
-			CombineEntry entry = (CombineEntry) CurrentNode.DataItem;
-			Combine combine = entry as Combine;
-			if (combine == null) {
+			SolutionItem entry = CurrentNode.DataItem as SolutionItem;
+			Solution solution = CurrentNode.DataItem as Solution;
+			if (solution == null) {
 				AlertButton generateMakefilesButton = new AlertButton (GettextCatalog.GetString ("_Generate Makefiles"));
-				if (MessageService.AskQuestion (GettextCatalog.GetString ("Generating Makefiles is not supported for single projects. Do you want to generate them for the full solution - '{0}' ?", entry.RootCombine.Name),
+				if (MessageService.AskQuestion (GettextCatalog.GetString ("Generating Makefiles is not supported for single projects. Do you want to generate them for the full solution - '{0}' ?", entry.ParentSolution.Name),
 				                                AlertButton.Cancel,
 				                                generateMakefilesButton) == generateMakefilesButton) 
-					combine = entry.RootCombine;
+					solution = ((SolutionItem)entry).ParentSolution;
 				else
 					return;
 			}
@@ -76,13 +76,13 @@ namespace MonoDevelop.Autotools
 			DeployContext ctx = null;
 			IProgressMonitor monitor = null;
 
-			GenerateMakefilesDialog dialog = new GenerateMakefilesDialog (combine);
+			GenerateMakefilesDialog dialog = new GenerateMakefilesDialog (solution);
 			try {
 				if (dialog.Run () != (int) Gtk.ResponseType.Ok)
 					return;
 
 				SolutionDeployer deployer = new SolutionDeployer (dialog.GenerateAutotools);
-				if ( deployer.HasGeneratedFiles ( combine ) )
+				if ( deployer.HasGeneratedFiles ( solution ) )
 				{
 					string msg = GettextCatalog.GetString ( "{0} already exist for this solution.  Would you like to overwrite them?", dialog.GenerateAutotools ? "Autotools files" : "Makefiles" );
 					if (MonoDevelop.Core.Gui.MessageService.AskQuestion (msg, AlertButton.Cancel, AlertButton.OverwriteFile) != AlertButton.OverwriteFile)
@@ -91,7 +91,7 @@ namespace MonoDevelop.Autotools
 
 				ctx = new DeployContext (new TarballDeployTarget (dialog.GenerateAutotools), "Linux", null);
 				monitor = IdeApp.Workbench.ProgressMonitors.GetOutputProgressMonitor ( GettextCatalog.GetString("Makefiles Output"), "md-package", true, true);
-				deployer.GenerateFiles (ctx, combine, dialog.DefaultConfiguration, monitor);
+				deployer.GenerateFiles (ctx, solution, dialog.DefaultConfiguration, monitor);
 			} finally {
 				dialog.Destroy ();
 				if (ctx != null)

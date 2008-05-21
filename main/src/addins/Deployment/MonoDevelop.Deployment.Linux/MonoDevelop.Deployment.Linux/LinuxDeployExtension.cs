@@ -9,16 +9,16 @@ namespace MonoDevelop.Deployment.Linux
 {
 	internal class LinuxDeployExtension: DeployServiceExtension
 	{
-		public override DeployFileCollection GetProjectDeployFiles (DeployContext ctx, Project project)
+		public override DeployFileCollection GetProjectDeployFiles (DeployContext ctx, Project project, string config)
 		{
-			DeployFileCollection col = base.GetProjectDeployFiles (ctx, project);
+			DeployFileCollection col = base.GetProjectDeployFiles (ctx, project, config);
 			
 			LinuxDeployData data = LinuxDeployData.GetLinuxDeployData (project);
 			
 			if (ctx.Platform == "Linux") {
 				DotNetProject netProject = project as DotNetProject;
 				if (netProject != null) {
-					DotNetProjectConfiguration conf = netProject.ActiveConfiguration as DotNetProjectConfiguration;
+					DotNetProjectConfiguration conf = netProject.GetConfiguration (config) as DotNetProjectConfiguration;
 					if (conf != null) {
 						if (conf.CompileTarget == CompileTarget.Exe || conf.CompileTarget == CompileTarget.WinExe) {
 							if (data.GenerateScript) {

@@ -1,3 +1,12 @@
+2008-05-21  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.CodeMetrics.addin.xml, MonoDevelop.CodeMetrics.mdp,
+	  MonoDevelop.CodeMetrics/CodeMetricsView.cs,
+	  MonoDevelop.CodeMetrics/Commands.cs,
+	  MonoDevelop.CodeMetrics/CodeMetricsNodeExtension.cs,
+	  MonoDevelop.CodeMetrics/CodeMetricsWidget.cs: New project model
+	  changes.
+
 2008-03-14  Marcos David Marín Amador <MarcosMarin@gmail.com> 
 
 	* MonoDevelop.CodeMetrics/CodeMetricsWidget.cs: Workaround bug in mono 1.2.4

@@ -20,7 +20,7 @@ namespace MonoDevelop.Deployment
 	{
 		protected override void Run ()
 		{
-			CombineEntry entry = IdeApp.ProjectOperations.CurrentSelectedCombineEntry;
+			SolutionItem entry = IdeApp.ProjectOperations.CurrentSelectedSolutionItem;
 			DeployDialog dlg = new DeployDialog (entry, false);
 			try {
 				if (dlg.Run () == (int) Gtk.ResponseType.Ok) {
@@ -34,12 +34,12 @@ namespace MonoDevelop.Deployment
 							project.Name = dlg.NewProjectName;
 							project.FileName = Path.Combine (dlg.NewProjectSolution.BaseDirectory, project.Name + ".mdse");
 							project.Packages.Add (p);
-							dlg.NewProjectSolution.Entries.Add (project);
-							IdeApp.ProjectOperations.SaveCombineEntry (dlg.NewProjectSolution);
+							dlg.NewProjectSolution.Items.Add (project);
+							IdeApp.ProjectOperations.Save (dlg.NewProjectSolution.ParentSolution);
 						}
 						else {
 							dlg.ExistingPackagingProject.Packages.Add (p);
-							IdeApp.ProjectOperations.SaveCombineEntry (dlg.ExistingPackagingProject);
+							IdeApp.ProjectOperations.Save (dlg.ExistingPackagingProject);
 						}
 					}
 					Package pkg = new Package (dlg.PackageBuilder);
@@ -52,7 +52,7 @@ namespace MonoDevelop.Deployment
 		
 		protected override void Update (CommandInfo info)
 		{
-			info.Enabled = IdeApp.ProjectOperations.CurrentSelectedCombineEntry != null;
+			info.Enabled = IdeApp.ProjectOperations.CurrentSelectedSolutionItem != null;
 		}
 	}
 	
@@ -60,12 +60,12 @@ namespace MonoDevelop.Deployment
 	{
 		protected override void Run ()
 		{
-			PackagingProject project = IdeApp.ProjectOperations.CurrentSelectedCombineEntry as PackagingProject;
-			DeployDialog dlg = new DeployDialog (project.ParentCombine, true);
+			PackagingProject project = IdeApp.ProjectOperations.CurrentSelectedSolutionItem as PackagingProject;
+			DeployDialog dlg = new DeployDialog (project.ParentFolder, true);
 			try {
 				if (dlg.Run () == (int) Gtk.ResponseType.Ok) {
 					project.AddPackage (dlg.NewPackageName, dlg.PackageBuilder);
-					IdeApp.ProjectOperations.SaveCombineEntry (project);
+					IdeApp.ProjectOperations.Save (project);
 				}
 			} finally {
 				dlg.Destroy ();
@@ -74,7 +74,7 @@ namespace MonoDevelop.Deployment
 		
 		protected override void Update (CommandInfo info)
 		{
-			info.Enabled = IdeApp.ProjectOperations.CurrentSelectedCombineEntry is PackagingProject;
+			info.Enabled = IdeApp.ProjectOperations.CurrentSelectedSolutionItem is PackagingProject;
 		}
 	}
 	
@@ -82,13 +82,13 @@ namespace MonoDevelop.Deployment
 	{
 		protected override void Run ()
 		{
-			CombineEntry entry = IdeApp.ProjectOperations.CurrentSelectedCombineEntry;
-			DeployOperations.Install (entry);
+			SolutionItem entry = IdeApp.ProjectOperations.CurrentSelectedSolutionItem;
+			DeployOperations.Install (entry, IdeApp.Workspace.ActiveConfiguration);
 		}
 		
 		protected override void Update (CommandInfo info)
 		{
-			info.Enabled = IdeApp.ProjectOperations.CurrentSelectedCombineEntry != null;
+			info.Enabled = IdeApp.ProjectOperations.CurrentSelectedSolutionItem != null;
 		}
 	}
 }

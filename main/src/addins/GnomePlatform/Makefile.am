@@ -4,6 +4,8 @@ ASSEMBLY = $(ADDIN_BUILD)/GnomePlatform.dll
 REFS =  \
 	$(GCONF_SHARP_LIBS) \
 	$(GNOME_SHARP_LIBS) \
+	$(GNOME_VFS_SHARP_LIBS) \
+	$(GTK_SHARP_LIBS) \
 	-r:../../../build/bin/MonoDevelop.Core.dll \
 	-r:../../../build/bin/MonoDevelop.Core.Gui.dll \
 	-r:System

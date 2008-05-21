@@ -1,3 +1,41 @@
+2008-05-21  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Deployment.addin.xml,
+	  MonoDevelop.Deployment.NodeBuilders/PackageNodeBuilder.cs,
+	  MonoDevelop.Deployment.NodeBuilders/PackagingProjectNodeBuilder.cs,
+	  MonoDevelop.Deployment.mdp,
+	  MonoDevelop.Deployment/MD1Serializer.cs,
+	  MonoDevelop.Deployment/PackagingProject.cs,
+	  MonoDevelop.Deployment/DeployService.cs,
+	  MonoDevelop.Deployment/DefaultDeployServiceExtension.cs,
+	  MonoDevelop.Deployment/UnknownPackageBuilder.cs,
+	  MonoDevelop.Deployment/InstallResolver.cs,
+	  MonoDevelop.Deployment/IDeployable.cs,
+	  MonoDevelop.Deployment/DeployFile.cs,
+	  MonoDevelop.Deployment/DeployProjectServiceExtension.cs,
+	  MonoDevelop.Deployment/PackageBuilder.cs,
+	  MonoDevelop.Deployment/DeployServiceExtension.cs,
+	  MonoDevelop.Deployment.Commands/Commands.cs,
+	  gtk-gui/MonoDevelop.Deployment.Gui.BinariesZipEditorWidget.cs,
+	  gtk-gui/MonoDevelop.Deployment.DeployFileListWidget.cs,
+	  gtk-gui/MonoDevelop.Deployment.Gui.DeployDialog.cs,
+	  gtk-gui/MonoDevelop.Deployment.Gui.EditPackageDialog.cs,
+	  gtk-gui/gui.stetic, MonoDevelop.Deployment.Gui/DeployDialog.cs,
+	  MonoDevelop.Deployment.Gui/SourcesZipEditorWidget.cs,
+	  MonoDevelop.Deployment.Gui/EditPackageDialog.cs,
+	  MonoDevelop.Deployment.Gui/InstallDialog.cs,
+	  MonoDevelop.Deployment.Gui/EntrySelectionTree.cs,
+	  MonoDevelop.Deployment.Gui/BinariesZipEditorWidget.cs,
+	  MonoDevelop.Deployment.Gui/DeployFileListWidget.cs,
+	  MonoDevelop.Deployment.Gui/DeployOperations.cs,
+	  MonoDevelop.Deployment.Gui/PackagingFeature.cs,
+	  MonoDevelop.Deployment.Gui/PackagingFeatureWidget.cs, Makefile.am,
+	  md1format.xml,
+	  MonoDevelop.Deployment.Targets/CommandPackageBuilder.cs,
+	  MonoDevelop.Deployment.Targets/BinariesZipPackageBuilder.cs,
+	  MonoDevelop.Deployment.Targets/SourcesZipPackageBuilder.cs: New
+	  project model changes.
+
 2008-05-15  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Deployment.addin.xml: Removed obsolete attributes.

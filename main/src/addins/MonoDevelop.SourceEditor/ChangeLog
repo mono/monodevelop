@@ -1,3 +1,9 @@
+2008-05-21  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.SourceEditor.Gui/SourceEditorView.cs,
+	  MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs: New
+	  project model changes.
+
 2008-05-15  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs: Track API

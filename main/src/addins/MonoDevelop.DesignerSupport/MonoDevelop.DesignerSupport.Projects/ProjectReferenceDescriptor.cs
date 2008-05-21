@@ -31,6 +31,7 @@ using System.ComponentModel;
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
 using System.Reflection;
+using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.DesignerSupport.Projects
 {
@@ -109,7 +110,7 @@ namespace MonoDevelop.DesignerSupport.Projects
 		[Description ("Path to the assembly.")]
 		public string Path {
 			get {
-				string[] files = pref.GetReferencedFileNames ();
+				string[] files = pref.GetReferencedFileNames (IdeApp.Workspace.ActiveConfiguration);
 				if (files.Length > 0)
 					return files [0];
 				else

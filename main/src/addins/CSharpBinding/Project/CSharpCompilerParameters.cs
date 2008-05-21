@@ -28,11 +28,6 @@ using MonoDevelop.Projects.Serialization;
 
 namespace CSharpBinding
 {
-	public enum CsharpCompiler {
-		Csc,
-		Mcs
-	};
-	
 	public enum LangVersion {
 		Default = 0,
 		ISO_1   = 1,
@@ -46,62 +41,54 @@ namespace CSharpBinding
 	{
 		// Configuration parameters
 		
-		[ItemProperty ("compiler")]
-		CsharpCompiler csharpCompiler = CsharpCompiler.Mcs;
-		
-		[ItemProperty ("warninglevel")]
+		[ItemProperty ("WarningLevel")]
 		int  warninglevel = 4;
 		
-		[ItemProperty ("nowarn", DefaultValue = "")]
+		[ItemProperty ("NoWarn", DefaultValue = "")]
 		string noWarnings = String.Empty;
 		
-		[ItemProperty ("optimize")]
-		bool optimize = true;
+		[ItemProperty ("Optimize")]
+		bool optimize;
 		
-		[ItemProperty ("unsafecodeallowed")]
+		[ItemProperty ("AllowUnsafeBlocks", DefaultValue = false)]
 		bool unsafecode = false;
 		
-		[ItemProperty ("generateoverflowchecks")]
-		bool generateOverflowChecks = true;
+		[ItemProperty ("CheckForOverflowUnderflow", DefaultValue = false)]
+		bool generateOverflowChecks;
 		
-		[ItemProperty ("mainclass")]
+		[ItemProperty ("StartupObject", DefaultValue = null)]
 		string mainclass = null;
 		
-		[ItemProperty ("definesymbols", DefaultValue = "")]
+		[ItemProperty ("DefineConstants", DefaultValue = "")]
 		string definesymbols = String.Empty;
 		
-		[ItemProperty ("generatexmldocumentation")]
+		[ItemProperty ("GenerateDocumentation", DefaultValue = false)]
 		bool generateXmlDocumentation = false;
 		
-		[ProjectPathItemProperty ("win32Icon", DefaultValue = "")]
+		[ProjectPathItemProperty ("ApplicationIcon", DefaultValue = "")]
 		string win32Icon = String.Empty;
 
-		[ProjectPathItemProperty ("win32Resource", DefaultValue = "")]
+		[ProjectPathItemProperty ("Win32Resource", DefaultValue = "")]
 		string win32Resource = String.Empty;
 	
-		[ItemProperty ("codepage", DefaultValue = 0)]
+		[ItemProperty ("CodePage", DefaultValue = 0)]
 		int codePage;
 		
 		[ItemProperty ("additionalargs", DefaultValue = "")]
 		string additionalArgs = string.Empty;
 		
-		[ItemProperty ("langversion", DefaultValue = LangVersion.Default)]
+		[ItemProperty ("LangVersion", DefaultValue = LangVersion.Default)]
 		LangVersion langVersion = LangVersion.Default;
 		
+		[ItemProperty ("NoStdLib", DefaultValue = false)]
+		bool noStdLib;
+		
+		[ItemProperty ("TreatWarningsAsErrors", DefaultValue = false)]
+		bool treatWarningsAsErrors;
 	
 		public object Clone ()
 		{
 			return MemberwiseClone ();
-		}
-		
-		[Browsable(false)]
-		public CsharpCompiler CsharpCompiler {
-			get {
-				return csharpCompiler;
-			}
-			set {
-				csharpCompiler = value;
-			}
 		}
 		
 		public int CodePage {
@@ -144,7 +131,6 @@ namespace CSharpBinding
 		}
 
 #region Code Generation
-		[DefaultValue("")]
 		public string MainClass {
 			get {
 				return mainclass;
@@ -154,7 +140,6 @@ namespace CSharpBinding
 			}
 		}
 		
-		[DefaultValue("")]
 		public string DefineSymbols {
 			get {
 				return definesymbols;
@@ -164,7 +149,6 @@ namespace CSharpBinding
 			}
 		}
 		
-		[DefaultValue(true)]
 		public bool Optimize {
 			get {
 				return optimize;
@@ -174,7 +158,6 @@ namespace CSharpBinding
 			}
 		}
 		
-		[DefaultValue(false)]
 		public bool UnsafeCode {
 			get {
 				return unsafecode;
@@ -184,7 +167,6 @@ namespace CSharpBinding
 			}
 		}
 		
-		[DefaultValue(true)]
 		public bool GenerateOverflowChecks {
 			get {
 				return generateOverflowChecks;
@@ -194,7 +176,6 @@ namespace CSharpBinding
 			}
 		}
 		
-		[DefaultValue(false)]
 		public bool GenerateXmlDocumentation {
 			get {
 				return generateXmlDocumentation;
@@ -207,7 +188,6 @@ namespace CSharpBinding
 #endregion
 
 #region Errors and Warnings 
-		[DefaultValue(4)]
 		public int WarningLevel {
 			get {
 				return warninglevel;
@@ -217,13 +197,30 @@ namespace CSharpBinding
 			}
 		}
 		
-		[DefaultValue("")]
 		public string NoWarnings {
 			get {
 				return noWarnings;
 			}
 			set {
 				noWarnings = value;
+			}
+		}
+
+		public bool NoStdLib {
+			get {
+				return noStdLib;
+			}
+			set {
+				noStdLib = value;
+			}
+		}
+
+		public bool TreatWarningsAsErrors {
+			get {
+				return treatWarningsAsErrors;
+			}
+			set {
+				treatWarningsAsErrors = value;
 			}
 		}
 #endregion

@@ -5,8 +5,8 @@
       <Entry build="True" name="MonoDeveloperExtensions_nunit" configuration="Debug" />
     </Configuration>
     <Configuration name="Release" ctype="CombineConfiguration">
-      <Entry build="True" name="MonoDeveloperExtensions" configuration="Debug" />
-      <Entry build="True" name="MonoDeveloperExtensions_nunit" configuration="Debug" />
+      <Entry build="True" name="MonoDeveloperExtensions" configuration="Release" />
+      <Entry build="True" name="MonoDeveloperExtensions_nunit" configuration="Release" />
     </Configuration>
   </Configurations>
   <StartMode startupentry="MonoDeveloperExtensions" single="True">

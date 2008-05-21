@@ -9,18 +9,20 @@ namespace MonoDevelop.Deployment.Gui
 {
 	internal partial class SourcesZipEditorWidget : Gtk.Bin
 	{
-		IFileFormat[] formats;
+		FileFormat[] formats;
 		SourcesZipPackageBuilder target;
 		bool loading;
 		
-		public SourcesZipEditorWidget (PackageBuilder target, IFileFormat selectedFormat)
+		public SourcesZipEditorWidget (PackageBuilder target, FileFormat selectedFormat)
 		{
 			this.Build();
 			this.target = (SourcesZipPackageBuilder) target;
 			loading = true;
 			
-			CombineEntry entry = target.RootCombineEntry;
-			formats = Services.ProjectService.FileFormats.GetFileFormatsForObject (entry);
+			if (target.RootSolutionItem is SolutionFolder)
+				formats = Services.ProjectService.FileFormats.GetFileFormatsForObject (target.Solution);
+			else
+				formats = Services.ProjectService.FileFormats.GetFileFormatsForObject (target.RootSolutionItem);
 			
 			if (selectedFormat == null) selectedFormat = this.target.FileFormat;
 			if (selectedFormat == null)
@@ -73,7 +75,7 @@ namespace MonoDevelop.Deployment.Gui
 			UpdateTarget ();
 		}
 		
-		public IFileFormat Format {
+		public FileFormat Format {
 			get { return formats [comboFormat.Active]; }
 		}
 		

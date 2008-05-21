@@ -100,7 +100,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 		
 		void OnOKClicked (object sender, EventArgs e)
 		{
-			CodeRefactorer refactorer = IdeApp.ProjectOperations.CodeRefactorer;
+			CodeRefactorer refactorer = IdeApp.Workspace.GetCodeRefactorer (IdeApp.ProjectOperations.CurrentSelectedSolution);
 			IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetBackgroundProgressMonitor (this.Title, null);
 			string name = entry.Text;
 			
@@ -120,7 +120,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 								FileService.RenameFile(part.Region.FileName, newFileName);
 							}
 						}
-						IdeApp.ProjectOperations.SaveProject(IdeApp.ProjectOperations.CurrentSelectedProject);
+						IdeApp.ProjectOperations.Save(IdeApp.ProjectOperations.CurrentSelectedProject);
 					}
 				}
 			} else if (item is LocalVariable) {

@@ -90,8 +90,18 @@
 		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
 	</ExtensionPoint>
 	
-	<ExtensionPoint path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/Combine" name = "Solution context menu">
+	<ExtensionPoint path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/Workspace" name = "Workspace context menu">
+		<Description>Context menu for workspaces in the solution pad.</Description>
+		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
+	</ExtensionPoint>
+	
+	<ExtensionPoint path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/Solution" name = "Solution context menu">
 		<Description>Context menu for solutions in the solution pad.</Description>
+		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
+	</ExtensionPoint>
+	
+	<ExtensionPoint path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/SolutionFolder" name = "Solution folder context menu">
+		<Description>Context menu for solution folders in the solution pad.</Description>
 		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
 	</ExtensionPoint>
 	
@@ -312,6 +322,9 @@
 				shortcut = "Control|Shift|L"
 				_description = "Convert the selected text to lowercase" 
 				_label = "_Lowercase Selection" />
+		<Command id = "MonoDevelop.Ide.Commands.EditCommands.WordCount"
+				_label = "_Word Count..." 
+				description = "Count words in a text file"/>
 		<Command id = "MonoDevelop.Ide.Commands.EditCommands.MonodevelopPreferences"
 				defaultHandler = "MonoDevelop.Ide.Commands.MonodevelopPreferencesHandler"
 				_label = "Pr_eferences"
@@ -342,22 +355,30 @@
 				_label = "_Add New Project..."
 				_description = "Add a new project to the selected solution"
 				icon  = "md-new-project-icon" />
-		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.AddNewCombine"
-				_label = "A_dd New Solution..." 
-				_description = "Add a new solution to the selected solution"
+		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.AddNewWorkspace"
+				_label = "_Add New Workspace..."
+				_description = "Add a new child workspace to the selected workspace"
+				icon  = "md-workspace" />
+		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.AddNewSolution"
+				_label = "_Add New Solution..."
+				_description = "Add a new child workspace to the selected workspace"
 				icon  = "md-new-solution-icon" />
+		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.AddSolutionFolder"
+				_label = "Add Solution _Folder" 
+				_description = "Add a new solution folder to the selected solution"
+				icon  = "md-new-folder-icon" />
 		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.AddProject"
 				_description = "Add a project to the selected solution"
-				_label = "Add existing _Project" />
-		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.AddCombine"
-				_description = "Add a solution to the selected solution"
-				_label = "Add existing _Solution" />
+				_label = "Add Existing _Project" />
+		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.AddItem"
+				_description = "Add an existing item to the selected workspace"
+				_label = "Add Existing _Item" />
 		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.RemoveFromProject"
 				_label = "_Remove From Project"
 				_description = "Remove an item from the project"
 				icon  = "gtk-delete" />
 		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.Options"
-				defaultHandler = "MonoDevelop.Ide.Commands.CombineEntryOptionsHandler"
+				defaultHandler = "MonoDevelop.Ide.Commands.SolutionItemOptionsHandler"
 				_label = "_Options" 
 				_description = "Show options window"
 				icon  = "md-properties-icon" />
@@ -514,10 +535,15 @@
 				_description = "Close All Files"
 				icon = "gtk-close"
 				shortcut = "Control|Shift|W" />
-		<Command id = "MonoDevelop.Ide.Commands.FileCommands.CloseCombine"
-				defaultHandler = "MonoDevelop.Ide.Commands.CloseCombineHandler"
-				_label = "C_lose Solution" 
-				_description = "Close solution"
+		<Command id = "MonoDevelop.Ide.Commands.FileCommands.CloseWorkspace"
+				defaultHandler = "MonoDevelop.Ide.Commands.CloseWorkspaceHandler"
+				_label = "C_lose Workspace" 
+				_description = "Close all solutions open in the current workspace"
+				icon = "md-close-combine-icon" />
+		<Command id = "MonoDevelop.Ide.Commands.FileCommands.CloseWorkspaceItem"
+				defaultHandler = "MonoDevelop.Ide.Commands.CloseWorkspaceHandler"
+				_label = "C_lose" 
+				_description = "Close the active solution or workspace item"
 				icon = "md-close-combine-icon" />
 		<Command id = "MonoDevelop.Ide.Commands.FileCommands.ReloadFile"
 				_label = "_Revert" 
@@ -994,7 +1020,34 @@
 		<Scheme _name = "MonoDevelop 1.0" resource="KeyBindingSchemeMonoDevelop1.xml"/>
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/Combine">
+	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/Workspace">
+		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Build" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Rebuild" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Clean" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Reload" />
+		<ItemSet id = "Tools" _label = "_Tools" >
+		</ItemSet>
+		<SeparatorItem id = "RunSeparator" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.RunEntry" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.DebugEntry" />
+		<SeparatorItem id = "CombineBuildGroupSeparator" />
+		<ItemSet id = "CombineAddMenu" _label = "_Add" >
+			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.AddNewSolution" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.AddNewWorkspace" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.AddItem" />
+		</ItemSet>
+		<SeparatorItem id = "AddSeparator" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Delete" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Rename" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.CloseWorkspaceItem" />
+		<SeparatorItem id = "FindInFilesSeparator" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.FindInFiles" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.OpenContainingFolder" />
+		<SeparatorItem id = "CombineOptionsSeparator" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Options" />
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/Solution">
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Build" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Rebuild" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Clean" />
@@ -1010,10 +1063,32 @@
 		<SeparatorItem id = "CombineBuildGroupSeparator" />
 		<ItemSet id = "CombineAddMenu" _label = "_Add" >
 			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.AddNewProject" />
-			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.AddNewCombine" />
-			<SeparatorItem id = "Separator1" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.AddProject" />
-			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.AddCombine" />
+			<SeparatorItem id = "Separator1" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.AddSolutionFolder" />
+		</ItemSet>
+		<SeparatorItem id = "AddSeparator" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Delete" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Rename" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.CloseWorkspaceItem" />
+		<SeparatorItem id = "FindInFilesSeparator" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.FindInFiles" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.OpenContainingFolder" />
+		<SeparatorItem id = "CombineOptionsSeparator" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Options" />
+	</Extension>
+		
+	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/SolutionFolder">
+		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Build" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Rebuild" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Clean" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Reload" />
+		<SeparatorItem id = "CombineBuildGroupSeparator" />
+		<ItemSet id = "CombineAddMenu" _label = "Add" >
+			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.AddNewProject" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.AddProject" />
+			<SeparatorItem id = "Separator1" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.AddSolutionFolder" />
 		</ItemSet>
 		<SeparatorItem id = "AddSeparator" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Delete" />
@@ -1021,8 +1096,6 @@
 		<SeparatorItem id = "FindInFilesSeparator" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.FindInFiles" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.OpenContainingFolder" />
-		<SeparatorItem id = "CombineOptionsSeparator" />
-		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Options" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/ResourceFolder">
@@ -1162,7 +1235,9 @@
 
 		<SolutionPad id = "ProjectPad" defaultPlacement = "Left" _label = "Solution" icon = "md-solution" class = "MonoDevelop.Ide.Gui.Pads.ProjectPad.ProjectSolutionPad">
 			<PadOption id = "ShowAllFiles" _label = "Show All Files" defaultValue = "False" />
-			<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.ProjectPad.CombineNodeBuilder"/>
+			<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.ProjectPad.WorkspaceNodeBuilder"/>
+			<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.ProjectPad.SolutionNodeBuilder"/>
+			<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.ProjectPad.SolutionFolderNodeBuilder"/>
 			<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.ProjectPad.LinkedFilesFolderNodeBuilder"/>
 			<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.ProjectPad.ProjectNodeBuilder"/>
 			<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.ProjectPad.ProjectReferenceFolderNodeBuilder"/>
@@ -1181,7 +1256,8 @@
 			<PadOption id = "GroupByAccess" _label = "Group members by access" defaultValue = "False" />
 			<PadOption id = "GroupByType" _label = "Group members by member type" defaultValue = "True" />
 			<PadOption id = "PublicApiOnly" _label = "Show public members only" defaultValue = "False" />
-						
+			<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.ProjectPad.WorkspaceNodeBuilder"/>
+			<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.ClassPad.SolutionNodeBuilder"/>
 			<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.ClassPad.CombineNodeBuilder"/>
 			<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.ClassPad.ProjectNodeBuilder"/>
 			<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.ClassPad.NamespaceNodeBuilder"/>
@@ -1336,7 +1412,7 @@
 			</ItemSet>
 			
 			<SeparatorItem id = "ExitSeparator" />
-			<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.CloseCombine" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.CloseWorkspace" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.CloseFile" _label = "_Close" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.Exit" />
 		</ItemSet>
@@ -1373,6 +1449,7 @@
 			<CommandItem id = "MonoDevelop.Ide.Commands.TextEditorCommands.ShowCompletionWindow" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.TextEditorCommands.ShowParameterCompletionWindow" />
 			<SeparatorItem id = "Separator5" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.WordCount" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.InsertStandardHeader" />
 			
 			<SeparatorItem id = "optionssep5" />
@@ -1531,7 +1608,7 @@
 
 	<Extension path = "/MonoDevelop/Ide/ProjectTemplates">
 		<ProjectTemplate id = "MonoDevelop.BlankSolution" resource = "BlankCombine.xpt.xml"/>
-<!--		<ProjectTemplate id = "MonoDevelop.Workspace" resource = "Workspace.xpt.xml"/>-->
+		<ProjectTemplate id = "MonoDevelop.Workspace" resource = "Workspace.xpt.xml"/>
 		<ProjectTemplate id = "MonoDevelop.GenericProject" resource = "GenericProject.xpt.xml"/>
 	</Extension>
 	

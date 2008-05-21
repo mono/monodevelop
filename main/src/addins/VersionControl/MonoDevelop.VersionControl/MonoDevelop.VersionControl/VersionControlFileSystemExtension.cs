@@ -13,7 +13,7 @@ namespace MonoDevelop.VersionControl
 		public override bool CanHandlePath (string path, bool isDirectory)
 		{
 			// FIXME: don't load this extension if the ide is not loaded.
-			if (IdeApp.ProjectOperations == null || IdeApp.ProjectOperations.CurrentOpenCombine == null)
+			if (IdeApp.ProjectOperations == null || !IdeApp.Workspace.IsOpen)
 				return false;
 			else
 				return GetRepository (path) != null;
@@ -22,7 +22,7 @@ namespace MonoDevelop.VersionControl
 		Repository GetRepository (string path)
 		{
 			// FIXME: Optimize
-			foreach (Project prj in IdeApp.ProjectOperations.CurrentOpenCombine.GetAllProjects ()) {
+			foreach (Project prj in IdeApp.Workspace.GetAllProjects ()) {
 				if (path.StartsWith (prj.BaseDirectory)) {
 					return VersionControlService.GetRepository (prj);
 				}

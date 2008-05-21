@@ -9,25 +9,22 @@ using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Deployment.Linux
 {
-	public class BasicOptionPanel: AbstractOptionPanel
+	public class BasicOptionPanel: ItemOptionsPanel
 	{
 		BasicOptionPanelWidget widget;
-		CombineEntry entry;
 		
 		public BasicOptionPanel()
 		{
 		}
 		
-		public override void LoadPanelContents ()
+		public override Gtk.Widget CreatePanelWidget ()
 		{
-			Properties props = (Properties) CustomizationObject;
-			entry = props.Get<CombineEntry> ("CombineEntry");
-			Add (widget = new BasicOptionPanelWidget (entry, false));
+			return (widget = new BasicOptionPanelWidget (ConfiguredSolutionItem, false));
 		}
 		
-		public override bool StorePanelContents ()
+		public override void ApplyChanges ()
 		{
-			return widget.Store ();
+			widget.Store ();
 		}
 	}
 }

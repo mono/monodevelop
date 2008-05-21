@@ -187,7 +187,7 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 
 			IdeApp.ProjectOperations.CreateProjectFile (project, path, id);
 			
-			IdeApp.ProjectOperations.SaveProject (project);
+			IdeApp.ProjectOperations.Save (project);
 			
 			ITreeNavigator nav = Tree.GetNodeAtObject (dataItem);
 			if (nav != null)

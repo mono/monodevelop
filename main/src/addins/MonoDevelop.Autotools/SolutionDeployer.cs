@@ -50,9 +50,9 @@ namespace MonoDevelop.Autotools
 			this.generateAutotools = generateAutotools;
 		}
 
-		public bool HasGeneratedFiles ( Combine combine )
+		public bool HasGeneratedFiles (Solution solution)
 		{
-			string dir = Path.GetDirectoryName(combine.FileName);
+			string dir = Path.GetDirectoryName (solution.FileName);
 			if (generateAutotools) {
 				return File.Exists (Path.Combine (dir, "configure.ac")) &&
 						File.Exists (Path.Combine (dir, "autogen.sh"));
@@ -63,47 +63,49 @@ namespace MonoDevelop.Autotools
 			}
 		}
 		
-		public bool CanDeploy (CombineEntry entry)
+		public bool CanDeploy (SolutionItem entry)
 		{
 			MakefileType mt = generateAutotools ? MakefileType.AutotoolsMakefile : MakefileType.SimpleMakefile;
 			IMakefileHandler handler = AutotoolsContext.GetMakefileHandler (entry, mt);
 			return handler != null;
 		}
 
-		public bool GenerateFiles (DeployContext ctx, Combine combine, string defaultConf, IProgressMonitor monitor )
+		public bool GenerateFiles (DeployContext ctx, Solution solution, string defaultConf, IProgressMonitor monitor )
 		{
 			string filesString = generateAutotools ? "Autotools files" : "Makefiles";
-			monitor.BeginTask ( GettextCatalog.GetString ("Generating {0} for Solution {1}", filesString, combine.Name), 1 );
+			monitor.BeginTask ( GettextCatalog.GetString ("Generating {0} for Solution {1}", filesString, solution.Name), 1 );
 
 			try
 			{
-				solution_dir = Path.GetDirectoryName(combine.FileName);
+				solution_dir = Path.GetDirectoryName(solution.FileName);
 
-				string[] configs = new string [ combine.Configurations.Count ];
+				string[] configs = new string [ solution.Configurations.Count ];
 				for (int ii=0; ii < configs.Length; ii++ )
-					configs [ii] = combine.Configurations[ii].Name;
+					configs [ii] = solution.Configurations[ii].Id;
 					
 				MakefileType mt = generateAutotools ? MakefileType.AutotoolsMakefile : MakefileType.SimpleMakefile;
 				
 				context = new AutotoolsContext ( ctx, solution_dir, configs, mt );
-				context.TargetCombine = combine;
+				context.TargetSolution = solution;
 				
-				IMakefileHandler handler = AutotoolsContext.GetMakefileHandler (combine, mt);
+				IMakefileHandler handler = AutotoolsContext.GetMakefileHandler (solution.RootFolder, mt);
 				if (handler == null)
 					throw new Exception ( GettextCatalog.GetString ("MonoDevelop does not currently support generating {0} for one (or more) child projects.", filesString) );
 
-				solution_name = combine.Name;
-				solution_version = AutotoolsContext.EscapeStringForAutoconf (combine.Version, true);
+				solution_name = solution.Name;
+				solution_version = AutotoolsContext.EscapeStringForAutoconf (solution.Version, true);
+				if (string.IsNullOrEmpty (solution_version))
+					solution_version = "0.1";
 
-				Makefile makefile = handler.Deploy ( context, combine, monitor );
+				Makefile makefile = handler.Deploy ( context, solution.RootFolder, monitor );
 				string path = Path.Combine (solution_dir, "Makefile");
 				if (generateAutotools) {
 					context.AddAutoconfFile (path);
 					CreateAutoGenDotSH (context, monitor);
-					CreateConfigureDotAC (combine, defaultConf, monitor, context);
+					CreateConfigureDotAC (solution, defaultConf, monitor, context);
 					CreateMacros ();
 				} else {
-					CreateConfigureScript (combine, defaultConf, context, monitor);
+					CreateConfigureScript (solution, defaultConf, context, monitor);
 
 					monitor.Log.WriteLine ( GettextCatalog.GetString ("Creating rules.make"));
 					string rules_make_path = Path.Combine (solution_dir, "rules.make");
@@ -139,22 +141,17 @@ namespace MonoDevelop.Autotools
 			return true;
 		}
 
-		public void Deploy ( DeployContext ctx, Combine combine, string targetDir, bool generateFiles, IProgressMonitor monitor  )
-		{
-			Deploy ( ctx, combine, combine.ActiveConfiguration.Name, targetDir, generateFiles, monitor  );
-		}
-		
-		public void Deploy ( DeployContext ctx, Combine combine, string defaultConf, string targetDir, bool generateFiles, IProgressMonitor monitor  )
+		public bool Deploy ( DeployContext ctx, Solution solution, string defaultConf, string targetDir, bool generateFiles, IProgressMonitor monitor  )
 		{
 			if (generateFiles) {
-				if ( !GenerateFiles ( ctx, combine, defaultConf, monitor ) ) 
-					return;
+				if ( !GenerateFiles ( ctx, solution, defaultConf, monitor ) ) 
+					return false;
 			}
 			
 			monitor.BeginTask ( GettextCatalog.GetString( "Deploying Solution to Tarball" ) , 3 );
 			try
 			{
-				string baseDir = Path.GetDirectoryName ( combine.FileName);
+				string baseDir = Path.GetDirectoryName ( solution.FileName);
 	
 				ProcessWrapper ag_process = Runtime.ProcessService.StartProcess ( "sh", 
 						generateAutotools ? "autogen.sh" : "configure",
@@ -200,13 +197,14 @@ namespace MonoDevelop.Autotools
 			catch ( Exception e )
 			{
 				monitor.ReportError ( GettextCatalog.GetString ("Solution could not be deployed: "), e );
-				return;
+				return false;
 			}
 			finally 
 			{
 				monitor.EndTask ();
 			}
 			monitor.ReportSuccess ( GettextCatalog.GetString ( "Solution was succesfully deployed" ) );
+			return true;
 		}
 
 		void DeleteGeneratedFiles ( AutotoolsContext context )
@@ -262,7 +260,7 @@ namespace MonoDevelop.Autotools
 				Syscall.chmod ( fileName , FilePermissions.S_IXOTH | FilePermissions.S_IROTH | FilePermissions.S_IRWXU | FilePermissions.S_IRWXG );
 		}
 
-		void CreateConfigureDotAC ( Combine combine, string defaultConf, IProgressMonitor monitor, AutotoolsContext context )
+		void CreateConfigureDotAC (Solution solution, string defaultConf, IProgressMonitor monitor, AutotoolsContext context)
 		{
 			monitor.Log.WriteLine ( GettextCatalog.GetString ("Creating configure.ac") );
 			TemplateEngine templateEngine = new TemplateEngine();			
@@ -270,16 +268,16 @@ namespace MonoDevelop.Autotools
 			
 			// add solution configuration options
 			StringBuilder config_options = new StringBuilder ();
-			foreach ( IConfiguration config in combine.Configurations )
+			foreach ( SolutionConfiguration config in solution.Configurations )
 			{
-				string name = context.EscapeAndUpperConfigName (config.Name).ToLower();
-				string def = config.Name == defaultConf ? "YES" : "NO";
+				string name = context.EscapeAndUpperConfigName (config.Id).ToLower();
+				string def = config.Id == defaultConf ? "YES" : "NO";
 				string ac_var = "enable_" + name;
 
 				// test to see if a configuration was enabled
 				config_options.AppendFormat ( "AC_ARG_ENABLE({0},\n", name );
 				config_options.AppendFormat ("	AC_HELP_STRING([--enable-{0}],\n", name );
-				config_options.AppendFormat ("		[Use '{0}' Configuration [default={1}]]),\n", context.EscapeAndUpperConfigName (config.Name), def );
+				config_options.AppendFormat ("		[Use '{0}' Configuration [default={1}]]),\n", context.EscapeAndUpperConfigName (config.Id), def );
 				config_options.AppendFormat ( "		{0}=yes, {0}=no)\n", ac_var );
 				config_options.AppendFormat ( "AM_CONDITIONAL({0}, test x${1} = xyes)\n", ac_var.ToUpper(), ac_var );
 
@@ -334,13 +332,13 @@ namespace MonoDevelop.Autotools
 				packageChecks.WriteLine("PKG_CHECK_MODULES([{0}], [{1}])", AutotoolsContext.GetPkgConfigVariable (pkg.Name), pkg.Name);
 
 			packageChecks.WriteLine ("\ndnl package checks, per config");
-			foreach (IConfiguration config in combine.Configurations) {
-				Set<SystemPackage> pkgs = context.GetRequiredPackages (config.Name, true);
+			foreach (SolutionConfiguration config in solution.Configurations) {
+				Set<SystemPackage> pkgs = context.GetRequiredPackages (config.Id, true);
 				if (pkgs == null || pkgs.Count == 0)
 					continue;
 
 				packageChecks.WriteLine (@"if test ""x$enable_{0}"" = ""xyes""; then",
-				                         context.EscapeAndUpperConfigName (config.Name).ToLower());
+				                         context.EscapeAndUpperConfigName (config.Id).ToLower());
 
 				foreach (SystemPackage pkg in pkgs)
 					packageChecks.WriteLine("\tPKG_CHECK_MODULES([{0}], [{1}])", AutotoolsContext.GetPkgConfigVariable (pkg.Name), pkg.Name);
@@ -363,7 +361,7 @@ namespace MonoDevelop.Autotools
 			context.AddGeneratedFile (configureFileName);
 		}
 
-		void CreateConfigureScript (Combine combine, string defaultConf, AutotoolsContext ctx, IProgressMonitor monitor)
+		void CreateConfigureScript (Solution solution, string defaultConf, AutotoolsContext ctx, IProgressMonitor monitor)
 		{
 			monitor.Log.WriteLine ( GettextCatalog.GetString ("Creating configure script") );
 
@@ -381,20 +379,20 @@ namespace MonoDevelop.Autotools
 
 			// Build list of packages required per config
 			StringBuilder requiredPackages = new StringBuilder ();
-			foreach (IConfiguration config in combine.Configurations) {
-				Set<SystemPackage> pkgs = context.GetRequiredPackages (config.Name, true);
+			foreach (SolutionConfiguration config in solution.Configurations) {
+				Set<SystemPackage> pkgs = context.GetRequiredPackages (config.Id, true);
 				if (pkgs == null || pkgs.Count == 0)
 					continue;
 
 				if (requiredPackages.Length > 0)
 					requiredPackages.Append ("\n");
 				requiredPackages.AppendFormat ("required_packages_{0}=\"{1}\"",
-						context.EscapeAndUpperConfigName (config.Name),
+						context.EscapeAndUpperConfigName (config.Id),
 						GetPackageListFromSet (pkgs));
 			}
 
 			templateEngine.Variables ["VERSION"] = solution_version;
-			templateEngine.Variables ["PACKAGE"] = AutotoolsContext.EscapeStringForAutoconf (combine.Name).ToLower ();
+			templateEngine.Variables ["PACKAGE"] = solution.Name.ToLower ();
 			templateEngine.Variables ["DEFAULT_CONFIG"] = ctx.EscapeAndUpperConfigName (defaultConf);
 			templateEngine.Variables ["CONFIGURATIONS"] = sbConfig.ToString ();
 			templateEngine.Variables ["COMMON_PACKAGES"] = commonPackages.ToString ();

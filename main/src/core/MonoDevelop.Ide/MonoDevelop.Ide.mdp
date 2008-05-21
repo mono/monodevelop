@@ -58,7 +58,6 @@
     <File name="MonoDevelop.Ide.Templates/FileDescriptionTemplate.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Templates/FileTemplate.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Templates/INewFileCreator.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Ide.Templates/TextTemplate.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Templates/CombineDescriptor.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Templates/ProjectDescriptor.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Templates/ProjectTemplate.cs" subtype="Code" buildaction="Compile" />
@@ -192,8 +191,8 @@
     <File name="MonoDevelop.Ide.Codons/PadCodon.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Codons/PadOptionCodon.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Codons/SolutionPadCodon.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Ide.Templates/ICombineEntryDescriptor.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Ide.Templates/CombineEntryDescriptor.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Ide.Templates/ISolutionItemDescriptor.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Ide.Templates/SolutionItemDescriptor.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui/ConfigurationComboBox.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui/IPadContainer.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.CodeTemplates/TemplateCompletionDataProvider.cs" subtype="Code" buildaction="Compile" />
@@ -253,7 +252,7 @@
     <File name="MonoDevelop.Ide.Commands/NavigationCommands.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui/NavigationHistory.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui.Dialogs/ExportProjectDialog.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Ide.Templates/ICombineEntryFeature.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Ide.Templates/ISolutionItemFeature.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui.Dialogs/CombineEntryFeatureSelector.cs" subtype="Code" buildaction="Compile" />
     <File name="gtk-gui/objects.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="MonoDevelop.Ide.Gui/DefaultDisplayBinding.cs" subtype="Code" buildaction="Compile" />
@@ -374,6 +373,7 @@
     <File name="MonoDevelop.Ide.Gui.OptionPanels/IDEStyleOptionsPanel.cs" subtype="Code" buildaction="Compile" />
     <File name="gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.IDEStyleOptionsPanelWidget.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui.Content/IZoomable.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Ide.Gui.Pads.ProjectPad/SolutionNodeBuilder.cs" subtype="Code" buildaction="Compile" />
     <File name="icons/keyboard-shortcuts-16.png" subtype="Code" buildaction="EmbedAsResource" />
     <File name="icons/keyboard-shortcuts-22.png" subtype="Code" buildaction="EmbedAsResource" />
     <File name="icons/text-editor-16.png" subtype="Code" buildaction="EmbedAsResource" />
@@ -382,8 +382,12 @@
     <File name="icons/navigate-next-24.png" subtype="Code" buildaction="EmbedAsResource" />
     <File name="icons/navigate-previous-16.png" subtype="Code" buildaction="EmbedAsResource" />
     <File name="icons/navigate-previous-24.png" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="MonoDevelop.Ide.Gui.Pads.ClassPad/SolutionNodeBuilder.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Ide.Gui.Pads.ProjectPad/WorkspaceNodeBuilder.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Ide.Gui/RootWorkspace.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Dom/DomLocation.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui.Content/DocumentStateTracker.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Ide.Gui/IdePreferences.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui.Pads.ClassBrowser/SolutionNodeBuilder.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui.Pads.ClassBrowser/ProjectNodeBuilder.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui.Pads.ClassBrowser/TypeNodeBuilder.cs" subtype="Code" buildaction="Compile" />

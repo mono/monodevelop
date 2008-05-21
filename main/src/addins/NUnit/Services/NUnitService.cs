@@ -29,6 +29,7 @@
 using System;
 using System.IO;
 using System.Collections;
+using System.Collections.Generic;
 using System.Threading;
 
 using MonoDevelop.Core;
@@ -45,31 +46,28 @@ namespace MonoDevelop.NUnit
 	public class NUnitService : AbstractService
 	{
 		ArrayList providers = new ArrayList ();
-		UnitTest rootTest;
+		UnitTest[] rootTests;
 		
 		public override void InitializeService ()
 		{
-			IdeApp.ProjectOperations.CombineOpened += (CombineEventHandler) DispatchService.GuiDispatch (new CombineEventHandler (OnOpenCombine));
-			IdeApp.ProjectOperations.CombineClosed += (CombineEventHandler) DispatchService.GuiDispatch (new CombineEventHandler (OnCloseCombine));
-			IdeApp.ProjectOperations.ReferenceAddedToProject += new ProjectReferenceEventHandler (OnReferenceAddedToProject);
-			IdeApp.ProjectOperations.ReferenceRemovedFromProject += new ProjectReferenceEventHandler (OnReferenceRemovedFromProject);
+			IdeApp.Workspace.ReferenceAddedToProject += OnWorkspaceChanged;
+			IdeApp.Workspace.ReferenceRemovedFromProject += OnWorkspaceChanged;
+			IdeApp.Workspace.WorkspaceItemOpened += OnWorkspaceChanged;
+			IdeApp.Workspace.WorkspaceItemClosed += OnWorkspaceChanged;
 			
-			IProjectService ps = MonoDevelop.Projects.Services.ProjectService;
+			ProjectService ps = MonoDevelop.Projects.Services.ProjectService;
 			ps.DataContext.IncludeType (typeof(UnitTestOptionsSet));
-			ps.DataContext.RegisterProperty (typeof(AbstractConfiguration), "UnitTestInformation", typeof(UnitTestOptionsSet));
+			ps.DataContext.RegisterProperty (typeof(SolutionItemConfiguration), "UnitTestInformation", typeof(UnitTestOptionsSet));
 			
 			Mono.Addins.AddinManager.AddExtensionNodeHandler ("/MonoDevelop/NUnit/TestProviders", OnExtensionChange);
 			
-			if (IdeApp.ProjectOperations.CurrentOpenCombine != null) {
-				rootTest = BuildTest (IdeApp.ProjectOperations.CurrentOpenCombine);
-				NotifyTestSuiteChanged ();
-			}
+			RebuildTests ();
 		}
 		
 		void OnExtensionChange (object s, ExtensionNodeEventArgs args)
 		{
 			if (args.Change == ExtensionChange.Add) {
-				IProjectService ps = MonoDevelop.Projects.Services.ProjectService;
+				ProjectService ps = MonoDevelop.Projects.Services.ProjectService;
 				ITestProvider provider = args.ExtensionObject as ITestProvider;
 				providers.Add (provider);
 				
@@ -107,43 +105,30 @@ namespace MonoDevelop.NUnit
 			return session;
 		}
 		
-		
-		protected virtual void OnOpenCombine (object sender, CombineEventArgs e)
-		{
-			rootTest = BuildTest (e.Combine);
-			NotifyTestSuiteChanged ();
-		}
-
-		protected virtual void OnCloseCombine (object sender, CombineEventArgs e)
-		{
-			if (rootTest != null) {
-				((IDisposable)rootTest).Dispose ();
-				rootTest = null;
-			}
-			NotifyTestSuiteChanged ();
-		}
-		
-		void OnReferenceAddedToProject (object sender, ProjectReferenceEventArgs e)
-		{
-			RebuildTests ();
-		}
-		
-		void OnReferenceRemovedFromProject (object sender, ProjectReferenceEventArgs e)
+		void OnWorkspaceChanged (object sender, EventArgs e)
 		{
 			RebuildTests ();
 		}
 		
 		void RebuildTests ()
 		{
-			if (rootTest != null)
-				((IDisposable)rootTest).Dispose ();
-				
-			rootTest = BuildTest (IdeApp.ProjectOperations.CurrentOpenCombine);
+			if (rootTests != null) {
+				foreach (IDisposable t in rootTests)
+					t.Dispose ();
+			}
 
+			List<UnitTest> list = new List<UnitTest> ();
+			foreach (WorkspaceItem it in IdeApp.Workspace.Items) {
+				UnitTest t = BuildTest (it);
+				if (t != null)
+					list.Add (t);
+			}
+
+			rootTests = list.ToArray ();
 			NotifyTestSuiteChanged ();
 		}
 		
-		public UnitTest BuildTest (CombineEntry entry)
+		public UnitTest BuildTest (IWorkspaceObject entry)
 		{
 			foreach (ITestProvider p in providers) {
 				UnitTest t = p.CreateUnitTest (entry);
@@ -152,8 +137,8 @@ namespace MonoDevelop.NUnit
 			return null;
 		}
 		
-		public UnitTest RootTest {
-			get { return rootTest; }
+		public UnitTest[] RootTests {
+			get { return rootTests; }
 		}
 		
 		public static void ShowOptionsDialog (UnitTest test)

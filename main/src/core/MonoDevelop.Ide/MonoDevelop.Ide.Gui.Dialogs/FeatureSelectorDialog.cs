@@ -36,10 +36,10 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 	
 	public partial class FeatureSelectorDialog : Gtk.Dialog
 	{
-		public FeatureSelectorDialog (Combine parentCombine, CombineEntry entry)
+		public FeatureSelectorDialog (SolutionFolder parentCombine, SolutionItem entry)
 		{
 			this.Build();
-			featureList.Fill (parentCombine, entry, CombineEntryFeatures.GetFeatures (parentCombine, entry));
+			featureList.Fill (parentCombine, entry, SolutionItemFeatures.GetFeatures (parentCombine, entry));
 		}
 
 		protected virtual void OnButtonOkClicked(object sender, System.EventArgs e)

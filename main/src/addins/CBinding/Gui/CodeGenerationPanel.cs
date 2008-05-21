@@ -36,7 +36,7 @@ using System.Collections;
 using Mono.Addins;
 
 using MonoDevelop.Core;
-using MonoDevelop.Core.Gui.Dialogs;
+using MonoDevelop.Projects.Gui.Dialogs;
 using MonoDevelop.Core.Gui.Components;
 
 namespace CBinding
@@ -54,12 +54,9 @@ namespace CBinding
 			{GettextCatalog.GetString ("_Root Solution Directory"), "${CombineDir}"},
 		};
 		
-		public CodeGenerationPanel (Properties customizationObject)
+		public CodeGenerationPanel ()
 		{
 			this.Build ();
-			
-			configuration = customizationObject.Get<CProjectConfiguration> ("Config");
-			compilationParameters = (CCompilationParameters)configuration.CompilationParameters;
 			
 			Gtk.CellRendererText textRenderer = new Gtk.CellRendererText ();
 			
@@ -74,6 +71,15 @@ namespace CBinding
 			includePathTreeView.Model = includePathStore;
 			includePathTreeView.HeadersVisible = false;
 			includePathTreeView.AppendColumn ("Include", textRenderer, "text", 0);
+			
+			new MenuButtonEntry (libPathEntry, quickInsertLibButton, quickPathInsertMenu);
+			new MenuButtonEntry (includePathEntry, quickInsertIncludeButton, quickPathInsertMenu);
+		}
+		
+		public void Load (CProjectConfiguration config)
+		{
+			configuration = config;
+			compilationParameters = (CCompilationParameters)configuration.CompilationParameters;
 			
 			switch (compilationParameters.WarningLevel)
 			{
@@ -111,18 +117,17 @@ namespace CBinding
 			
 			defineSymbolsTextEntry.Text = compilationParameters.DefineSymbols;
 			
+			libStore.Clear ();
 			foreach (string lib in configuration.Libs)
 				libStore.AppendValues (lib);
 			
+			libPathStore.Clear ();
 			foreach (string libPath in configuration.LibPaths)
 				libPathStore.AppendValues (libPath);
 			
+			libPathStore.Clear ();
 			foreach (string includePath in configuration.Includes)
 				includePathStore.AppendValues (includePath);
-			
-			
-			new MenuButtonEntry (libPathEntry, quickInsertLibButton, quickPathInsertMenu);
-			new MenuButtonEntry (includePathEntry, quickInsertIncludeButton, quickPathInsertMenu);
 		}
 		
 		private void OnIncludePathAdded (object sender, EventArgs e)
@@ -326,20 +331,23 @@ namespace CBinding
 		}
 	}
 	
-	public class CodeGenerationPanelBinding : AbstractOptionPanel
+	public class CodeGenerationPanelBinding : MultiConfigItemOptionsPanel
 	{
 		private CodeGenerationPanel panel;
 		
-		public override void LoadPanelContents ()
+		public override Gtk.Widget CreatePanelWidget ()
 		{
-			panel = new CodeGenerationPanel ((Properties)CustomizationObject);
-			Add (panel);
+			return panel = new CodeGenerationPanel ();
 		}
-
 		
-		public override bool StorePanelContents ()
+		public override void LoadConfigData ()
 		{
-			return panel.Store ();
+			panel.Load ((CProjectConfiguration) CurrentConfiguration);
+		}
+		
+		public override void ApplyChanges ()
+		{
+			panel.Store ();
 		}
 	}
 }

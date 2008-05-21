@@ -36,7 +36,8 @@ using System.Collections;
 using Mono.Addins;
 
 using MonoDevelop.Core;
-using MonoDevelop.Core.Gui.Dialogs;
+using MonoDevelop.Projects.Gui.Dialogs;
+using MonoDevelop.Ide.Gui;
 
 namespace CBinding
 {
@@ -46,11 +47,11 @@ namespace CBinding
 		private object[] compilers;
 		private ICompiler active_compiler;
 		
-		public CompilerPanel (Properties customizationObject)
+		public CompilerPanel (CProject project)
 		{
 			this.Build ();
 			
-			project = customizationObject.Get<CProject> ("Project");
+			this.project = project;
 			
 			compilers = AddinManager.GetExtensionObjects ("/CBinding/Compilers");
 			
@@ -72,15 +73,15 @@ namespace CBinding
 
 			compilerComboBox.Active = active;
 			
-			useCcacheCheckBox.Active = ((CProjectConfiguration)project.ActiveConfiguration).UseCcache;
+			useCcacheCheckBox.Active = ((CProjectConfiguration)project.GetConfiguration (IdeApp.Workspace.ActiveConfiguration)).UseCcache;
 			
 			Update ();
 		}
 		
-		public bool Store ()
+		public void Store ()
 		{
 			if (project == null)
-				return false;
+				return;
 			
 			if (!active_compiler.Equals (project.Compiler)) {
 				project.Compiler = active_compiler;
@@ -90,8 +91,6 @@ namespace CBinding
 			// Update use_ccache for all configurations
 			foreach (CProjectConfiguration conf in project.Configurations)
 				conf.UseCcache = useCcacheCheckBox.Active;
-
-			return true;
 		}
 
 		protected virtual void OnCompilerComboBoxChanged (object sender, EventArgs e)
@@ -115,20 +114,18 @@ namespace CBinding
 		}
 	}
 	
-	public class CompilerPanelBinding : AbstractOptionPanel
+	public class CompilerPanelBinding : ItemOptionsPanel
 	{
 		CompilerPanel panel;
 		
-		public override void LoadPanelContents ()
+		public override Gtk.Widget CreatePanelWidget ()
 		{
-			panel = new CompilerPanel ((Properties)CustomizationObject);
-			Add (panel);
+			return panel = new CompilerPanel ((CProject)ConfiguredProject);
 		}
-
 		
-		public override bool StorePanelContents ()
+		public override void ApplyChanges ()
 		{
-			return panel.Store ();
+			panel.Store ();
 		}
 	}
 }

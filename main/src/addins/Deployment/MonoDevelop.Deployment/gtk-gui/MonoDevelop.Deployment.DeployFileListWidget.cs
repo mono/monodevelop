@@ -15,7 +15,11 @@ namespace MonoDevelop.Deployment {
         
         private Gtk.VBox vbox2;
         
-        private Gtk.Label label1;
+        private Gtk.HBox hbox1;
+        
+        private Gtk.Label labelFiles;
+        
+        private Gtk.ComboBox comboConfigs;
         
         private Gtk.ScrolledWindow scrolledwindow1;
         
@@ -33,15 +37,32 @@ namespace MonoDevelop.Deployment {
             this.vbox2.Name = "vbox2";
             this.vbox2.Spacing = 6;
             // Container child vbox2.Gtk.Box+BoxChild
-            this.label1 = new Gtk.Label();
-            this.label1.Name = "label1";
-            this.label1.Xalign = 0F;
-            this.label1.LabelProp = Mono.Unix.Catalog.GetString("The following files will be included in the package:");
-            this.vbox2.Add(this.label1);
-            Gtk.Box.BoxChild w1 = ((Gtk.Box.BoxChild)(this.vbox2[this.label1]));
+            this.hbox1 = new Gtk.HBox();
+            this.hbox1.Name = "hbox1";
+            this.hbox1.Spacing = 6;
+            // Container child hbox1.Gtk.Box+BoxChild
+            this.labelFiles = new Gtk.Label();
+            this.labelFiles.Name = "labelFiles";
+            this.labelFiles.Xalign = 0F;
+            this.labelFiles.LabelProp = Mono.Unix.Catalog.GetString("The following files will be included in the package:");
+            this.hbox1.Add(this.labelFiles);
+            Gtk.Box.BoxChild w1 = ((Gtk.Box.BoxChild)(this.hbox1[this.labelFiles]));
             w1.Position = 0;
             w1.Expand = false;
             w1.Fill = false;
+            // Container child hbox1.Gtk.Box+BoxChild
+            this.comboConfigs = Gtk.ComboBox.NewText();
+            this.comboConfigs.Name = "comboConfigs";
+            this.hbox1.Add(this.comboConfigs);
+            Gtk.Box.BoxChild w2 = ((Gtk.Box.BoxChild)(this.hbox1[this.comboConfigs]));
+            w2.Position = 1;
+            w2.Expand = false;
+            w2.Fill = false;
+            this.vbox2.Add(this.hbox1);
+            Gtk.Box.BoxChild w3 = ((Gtk.Box.BoxChild)(this.vbox2[this.hbox1]));
+            w3.Position = 0;
+            w3.Expand = false;
+            w3.Fill = false;
             // Container child vbox2.Gtk.Box+BoxChild
             this.scrolledwindow1 = new Gtk.ScrolledWindow();
             this.scrolledwindow1.CanFocus = true;
@@ -55,22 +76,23 @@ namespace MonoDevelop.Deployment {
             this.fileList.HeadersClickable = true;
             this.scrolledwindow1.Add(this.fileList);
             this.vbox2.Add(this.scrolledwindow1);
-            Gtk.Box.BoxChild w3 = ((Gtk.Box.BoxChild)(this.vbox2[this.scrolledwindow1]));
-            w3.Position = 1;
+            Gtk.Box.BoxChild w5 = ((Gtk.Box.BoxChild)(this.vbox2[this.scrolledwindow1]));
+            w5.Position = 1;
             // Container child vbox2.Gtk.Box+BoxChild
             this.hbox2 = new Gtk.HBox();
             this.hbox2.Name = "hbox2";
             this.hbox2.Spacing = 6;
             this.vbox2.Add(this.hbox2);
-            Gtk.Box.BoxChild w4 = ((Gtk.Box.BoxChild)(this.vbox2[this.hbox2]));
-            w4.Position = 2;
-            w4.Expand = false;
-            w4.Fill = false;
+            Gtk.Box.BoxChild w6 = ((Gtk.Box.BoxChild)(this.vbox2[this.hbox2]));
+            w6.Position = 2;
+            w6.Expand = false;
+            w6.Fill = false;
             this.Add(this.vbox2);
             if ((this.Child != null)) {
                 this.Child.ShowAll();
             }
             this.Show();
+            this.comboConfigs.Changed += new System.EventHandler(this.OnComboConfigsChanged);
         }
     }
 }

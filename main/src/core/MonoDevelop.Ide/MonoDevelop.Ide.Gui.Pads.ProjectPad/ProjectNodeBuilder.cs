@@ -45,7 +45,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		ProjectFileEventHandler fileRemovedHandler;
 		ProjectFileRenamedEventHandler fileRenamedHandler;
 		ProjectFileEventHandler filePropertyChangedHandler;
-		CombineEntryRenamedEventHandler projectNameChanged;
+		SolutionItemRenamedEventHandler projectNameChanged;
 		
 		public override Type NodeDataType {
 			get { return typeof(Project); }
@@ -61,20 +61,20 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			fileRemovedHandler = (ProjectFileEventHandler) DispatchService.GuiDispatch (new ProjectFileEventHandler (OnRemoveFile));
 			filePropertyChangedHandler = (ProjectFileEventHandler) DispatchService.GuiDispatch (new ProjectFileEventHandler (OnFilePropertyChanged));
 			fileRenamedHandler = (ProjectFileRenamedEventHandler) DispatchService.GuiDispatch (new ProjectFileRenamedEventHandler (OnRenameFile));
-			projectNameChanged = (CombineEntryRenamedEventHandler) DispatchService.GuiDispatch (new CombineEntryRenamedEventHandler (OnProjectRenamed));
+			projectNameChanged = (SolutionItemRenamedEventHandler) DispatchService.GuiDispatch (new SolutionItemRenamedEventHandler (OnProjectRenamed));
 			
-			IdeApp.ProjectOperations.FileAddedToProject += fileAddedHandler;
-			IdeApp.ProjectOperations.FileRemovedFromProject += fileRemovedHandler;
-			IdeApp.ProjectOperations.FileRenamedInProject += fileRenamedHandler;
-			IdeApp.ProjectOperations.FilePropertyChangedInProject += filePropertyChangedHandler;
+			IdeApp.Workspace.FileAddedToProject += fileAddedHandler;
+			IdeApp.Workspace.FileRemovedFromProject += fileRemovedHandler;
+			IdeApp.Workspace.FileRenamedInProject += fileRenamedHandler;
+			IdeApp.Workspace.FilePropertyChangedInProject += filePropertyChangedHandler;
 		}
 		
 		public override void Dispose ()
 		{
-			IdeApp.ProjectOperations.FileAddedToProject -= fileAddedHandler;
-			IdeApp.ProjectOperations.FileRemovedFromProject -= fileRemovedHandler;
-			IdeApp.ProjectOperations.FileRenamedInProject -= fileRenamedHandler;
-			IdeApp.ProjectOperations.FilePropertyChangedInProject -= filePropertyChangedHandler;
+			IdeApp.Workspace.FileAddedToProject -= fileAddedHandler;
+			IdeApp.Workspace.FileRemovedFromProject -= fileRemovedHandler;
+			IdeApp.Workspace.FileRenamedInProject -= fileRenamedHandler;
+			IdeApp.Workspace.FilePropertyChangedInProject -= filePropertyChangedHandler;
 		}
 
 		public override void OnNodeAdded (object dataObject)
@@ -117,7 +117,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				label = GettextCatalog.GetString ("{0} <span foreground='red' size='small'>(Unknown language '{1}')</span>", p.Name, ((DotNetProject)p).LanguageName);
 			} else {
 				iconName = Services.Icons.GetImageForProjectType (p.ProjectType);
-				if (p.ParentCombine != null && p.ParentCombine.StartupEntry == p)
+				if (IdeApp.Workspace.StartupItem == p)
 					label = "<b>" + p.Name + "</b>";
 				else
 					label = p.Name;
@@ -129,10 +129,12 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		public override void BuildChildNodes (ITreeBuilder builder, object dataObject)
 		{
 			Project project = (Project) dataObject;
-			builder.AddChild (project.ProjectReferences);
-			builder.AddChild (new ResourceFolder (project));
+			if (project is DotNetProject) {
+				builder.AddChild (((DotNetProject)project).References);
+				builder.AddChild (new ResourceFolder (project));
+			}
 			
-			foreach (ProjectFile file in project.ProjectFiles) {
+			foreach (ProjectFile file in project.Files) {
 				if (file.IsExternalToProject) {
 					builder.AddChild (new LinkedFilesFolder (project));
 					break;
@@ -149,7 +151,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		
 		public override object GetParentObject (object dataObject)
 		{
-			return ((CombineEntry) dataObject).ParentCombine;
+			return ((SolutionItem) dataObject).ParentFolder;
 		}
 		
 		void OnAddFile (object sender, ProjectFileEventArgs e)
@@ -262,7 +264,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			
 			while (tb.DataItem is ProjectFolder) {
 				ProjectFolder f = (ProjectFolder) tb.DataItem;
-				if (!Directory.Exists (f.Path) || project.ProjectFiles.GetFilesInPath (f.Path).Length == 0)
+				if (!Directory.Exists (f.Path) || project.Files.GetFilesInPath (f.Path).Length == 0)
 					tb.Remove (true);
 				else
 					break;
@@ -275,9 +277,9 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			if (tb != null) tb.Update ();
 		}
 		
-		void OnProjectRenamed (object sender, CombineEntryRenamedEventArgs e)
+		void OnProjectRenamed (object sender, SolutionItemRenamedEventArgs e)
 		{
-			ITreeBuilder tb = Context.GetTreeBuilder (e.CombineEntry);
+			ITreeBuilder tb = Context.GetTreeBuilder (e.SolutionItem);
 			if (tb != null) tb.Update ();
 		}
 		
@@ -305,7 +307,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			
 			Project project = (Project) CurrentNode.DataItem;
 			project.Name = newName;
-			IdeApp.ProjectOperations.SaveCombine();
+			IdeApp.Workspace.Save();
 		}
 		
 		public override void ActivateItem ()
@@ -318,24 +320,19 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		public void SetAsStartupProject ()
 		{
 			Project project = CurrentNode.DataItem as Project;
-			Combine combine = CurrentNode.GetParentDataItem (typeof(Combine), false) as Combine;
-			
-			combine.StartupEntry = project;
-			combine.SingleStartupProject = true;
-			IdeApp.ProjectOperations.SaveCombine ();
+			IdeApp.Workspace.StartupItem = project;
 		}
 		
 		public override void DeleteItem ()
 		{
-			Combine cmb = CurrentNode.GetParentDataItem (typeof(Combine), false) as Combine;;
 			Project prj = CurrentNode.DataItem as Project;
-			
-			bool yes = MessageService.Confirm (GettextCatalog.GetString ("Do you really want to remove project {0} from solution {1}?", prj.Name, cmb.Name), AlertButton.Remove);
+			bool yes = MessageService.Confirm (GettextCatalog.GetString ("Do you really want to remove project '{0}' from '{1}'?", prj.Name, prj.ParentFolder.Name), AlertButton.Remove);
 
 			if (yes) {
-				cmb.RemoveEntry (prj);
+				Solution sol = prj.ParentSolution;
+				prj.ParentFolder.Items.Remove (prj);
 				prj.Dispose ();
-				IdeApp.ProjectOperations.SaveCombine();
+				IdeApp.ProjectOperations.Save (sol);
 			}
 		}
 		[CommandHandler (FileCommands.OpenContainingFolder)]
@@ -348,9 +345,15 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		[CommandHandler (ProjectCommands.AddReference)]
 		public void AddReferenceToProject ()
 		{
-			Project p = (Project) CurrentNode.DataItem;
+			DotNetProject p = (DotNetProject) CurrentNode.DataItem;
 			if (IdeApp.ProjectOperations.AddReferenceToProject (p))
-				IdeApp.ProjectOperations.SaveProject (p);
+				IdeApp.ProjectOperations.Save (p);
+		}
+		
+		[CommandUpdateHandler (ProjectCommands.AddReference)]
+		public void UpdateAddReferenceToProject (CommandInfo ci)
+		{
+			ci.Visible = CurrentNode.DataItem is DotNetProject;
 		}
 		
 		[CommandHandler (ProjectCommands.Reload)]
@@ -358,7 +361,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		{
 			Project p = (Project) CurrentNode.DataItem;
 			using (IProgressMonitor m = IdeApp.Workbench.ProgressMonitors.GetLoadProgressMonitor (true)) {
-				p.ParentCombine.ReloadEntry (m, p);
+				p.ParentFolder.ReloadItem (m, p);
 			}
 		}
 		
@@ -366,7 +369,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		public void OnUpdateReload (CommandInfo info)
 		{
 			Project p = (Project) CurrentNode.DataItem;
-			info.Visible = (p.ParentCombine != null) && p.NeedsReload;
+			info.Visible = (p.ParentFolder != null) && p.NeedsReload;
 		}
 		
 		public override DragOperation CanDragNode ()

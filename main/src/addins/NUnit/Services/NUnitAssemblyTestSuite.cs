@@ -54,7 +54,7 @@ namespace MonoDevelop.NUnit
 		{
 		}
 		
-		public NUnitAssemblyTestSuite (string name, CombineEntry ownerCombineEntry): base (name, ownerCombineEntry)
+		public NUnitAssemblyTestSuite (string name, SolutionItem ownerSolutionItem): base (name, ownerSolutionItem)
 		{
 		}
 		

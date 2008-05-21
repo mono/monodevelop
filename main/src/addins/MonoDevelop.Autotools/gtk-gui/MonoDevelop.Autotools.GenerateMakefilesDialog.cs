@@ -174,7 +174,7 @@ namespace MonoDevelop.Autotools {
             // Internal child MonoDevelop.Autotools.GenerateMakefilesDialog.ActionArea
             Gtk.HButtonBox w14 = this.ActionArea;
             w14.Name = "dialog1_ActionArea";
-            w14.Spacing = 10;
+            w14.Spacing = 6;
             w14.BorderWidth = ((uint)(5));
             w14.LayoutStyle = ((Gtk.ButtonBoxStyle)(4));
             // Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
@@ -206,7 +206,7 @@ namespace MonoDevelop.Autotools {
                 this.Child.ShowAll();
             }
             this.DefaultWidth = 614;
-            this.DefaultHeight = 337;
+            this.DefaultHeight = 359;
             this.Show();
         }
     }

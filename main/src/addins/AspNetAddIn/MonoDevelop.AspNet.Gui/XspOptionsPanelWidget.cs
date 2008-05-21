@@ -36,11 +36,10 @@ namespace MonoDevelop.AspNet.Gui
 	public partial class XspOptionsPanelWidget : Gtk.Bin
 	{
 		
-		public XspOptionsPanelWidget (Properties customizationObject)
+		public XspOptionsPanelWidget (AspNetAppProject project)
 		{
 			this.Build();
 			
-			AspNetAppProject project = ((Properties)customizationObject).Get<AspNetAppProject> ("Project");
 			XspParameters xPar = project.XspParameters;
 			
 			//index should be equivalent to XspSslMode enum
@@ -83,9 +82,8 @@ namespace MonoDevelop.AspNet.Gui
 			passwordEntry.Text = xPar.PrivateKeyPassword;
 		}
 		
-		public void Store (Properties customizationObject)
+		public void Store (AspNetAppProject project)
 		{
-			AspNetAppProject project = ((Properties)customizationObject).Get<AspNetAppProject> ("Project");
 			XspParameters xPar = project.XspParameters;
 			
 			xPar.Address = ipAddress.Text;

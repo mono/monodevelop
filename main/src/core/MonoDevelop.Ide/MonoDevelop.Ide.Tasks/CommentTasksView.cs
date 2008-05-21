@@ -110,7 +110,6 @@ namespace MonoDevelop.Ide.Tasks
 
 			LoadColumnsVisibility ();
 
-			Services.TaskService.TasksCleared += (EventHandler) DispatchService.GuiDispatch (new EventHandler (GeneratedTasksCleared));
 			Services.TaskService.TaskAdded += (TaskEventHandler) DispatchService.GuiDispatch (new TaskEventHandler (GeneratedTaskAdded));
 			Services.TaskService.TaskRemoved += (TaskEventHandler) DispatchService.GuiDispatch (new TaskEventHandler (GeneratedTaskRemoved));
 
@@ -146,12 +145,6 @@ namespace MonoDevelop.Ide.Tasks
 			                                view.Columns[(int)Columns.File].Visible,
 			                                view.Columns[(int)Columns.Path].Visible);
 			PropertyService.Set ("Monodevelop.CommentTasksColumns", columns);
-		}
-
-		void GeneratedTasksCleared (object sender, EventArgs e)
-		{
-			store.Clear ();
-			tasks.Clear ();
 		}
 
 		void GeneratedTaskAdded (object sender, TaskEventArgs e)

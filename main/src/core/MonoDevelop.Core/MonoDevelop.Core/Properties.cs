@@ -45,6 +45,7 @@ namespace MonoDevelop.Core
 		Dictionary<string, object> properties    = new Dictionary<string, object> ();
 		Dictionary<string, object> defaultValues = new Dictionary<string, object> ();
 		Dictionary<Type, TypeConverter> cachedConverters = new Dictionary<Type, TypeConverter> ();
+		Dictionary<string,EventHandler<PropertyChangedEventArgs>> propertyListeners;
 		
 		public ICollection<string> Keys {
 			get {
@@ -317,10 +318,41 @@ namespace MonoDevelop.Core
 			return result;
 		}
 		
+		public void AddPropertyHandler (string propertyName, EventHandler<PropertyChangedEventArgs> handler)
+		{
+			if (propertyListeners == null)
+				propertyListeners = new Dictionary<string,EventHandler<PropertyChangedEventArgs>> ();
+			
+			EventHandler<PropertyChangedEventArgs> handlers = null;
+			propertyListeners.TryGetValue (propertyName, out handlers);
+			propertyListeners [propertyName] = handlers + handler;
+		}
+		
+		public void RemovePropertyHandler (string propertyName, EventHandler<PropertyChangedEventArgs> handler)
+		{
+			if (propertyListeners == null)
+				return;
+			
+			EventHandler<PropertyChangedEventArgs> handlers = null;
+			propertyListeners.TryGetValue (propertyName, out handlers);
+			handlers -= handler;
+			if (handlers != null)
+				propertyListeners [propertyName] = handlers;
+			else
+				propertyListeners.Remove (propertyName);
+		}
+		
 		protected virtual void OnPropertyChanged (PropertyChangedEventArgs args)
 		{
 			if (PropertyChanged != null)
 				PropertyChanged (this, args);
+			
+			if (propertyListeners != null) {
+				EventHandler<PropertyChangedEventArgs> handlers = null;
+				propertyListeners.TryGetValue (args.Key, out handlers);
+				if (handlers != null)
+					handlers (this, args);
+			}
 		}
 		
 		public event EventHandler<PropertyChangedEventArgs> PropertyChanged;

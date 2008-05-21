@@ -75,7 +75,7 @@ namespace CBinding
 			
 			if (language.Length > 0) {
 				Project project =  new CProject (info, null, language);
-				project.ProjectFiles.Add (new ProjectFile (sourceFile));
+				project.Files.Add (new ProjectFile (sourceFile));
 				return project;
 			}
 			

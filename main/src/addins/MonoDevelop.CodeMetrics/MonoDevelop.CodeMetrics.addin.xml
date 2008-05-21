@@ -49,7 +49,7 @@
 		<CommandItem id = "MonoDevelop.CodeMetrics.Commands.ShowMetrics" insertafter="FindInFilesSeparator" insertbefore="CombineOptionsSeparator"/>
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/Combine/Tools">
+	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/Solution/Tools">
 		<CommandItem id = "MonoDevelop.CodeMetrics.Commands.ShowMetrics" insertafter="FindInFilesSeparator" insertbefore="CombineOptionsSeparator"/>
 	</Extension>
 </Addin>

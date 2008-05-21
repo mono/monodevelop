@@ -1,3 +1,18 @@
+2008-05-21  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MakefileGeneratorTool.cs, IMakefileHandler.cs,
+	  MonoDevelop.Autotools.addin.xml, ImportMakefileDialog.cs,
+	  MakefileOptionPanelWidget.cs, MakefileReaderExtension.cs,
+	  MakefileProject.cs, SolutionMakefileHandler.cs,
+	  SimpleProjectMakefileHandler.cs, Handler.cs, SolutionDeployer.cs,
+	  MakefileProjectServiceExtension.cs, MakefileOptionPanel.cs,
+	  FileNodeBuilderExtension.cs, templates/autogen.sh.template,
+	  templates/rules.make, GenerateMakefilesDialog.cs,
+	  MakefileIntegrationFeature.cs, AutotoolsContext.cs, Commands.cs,
+	  gtk-gui/MonoDevelop.Autotools.GenerateMakefilesDialog.cs,
+	  gtk-gui/gui.stetic, TarballBuilderEditorWidget.cs, MakefileData.cs,
+	  CustomMakefile.cs: New project model changes.
+
 2008-04-11  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* gtk-gui/MonoDevelop.Autotools.TarballBuilderEditorWidget.cs: Updated.

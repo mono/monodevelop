@@ -63,7 +63,10 @@ namespace MonoDevelop.Autotools
 				return false;
 			}
 			project.Name = nameEntry.Text;
-			return optionsWidget.Store (project);
+			if (!optionsWidget.ValidateChanges (project))
+				return false;
+			optionsWidget.Store (project);
+			return true;
 		}
 	}
 }

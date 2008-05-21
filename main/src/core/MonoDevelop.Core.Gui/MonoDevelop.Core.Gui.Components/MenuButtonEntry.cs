@@ -64,8 +64,10 @@ namespace MonoDevelop.Core.Gui.Components
 			manager = new CommandManager ();
 			manager.RegisterGlobalHandler (this);
 			
-			PackStart (entry, true, true, 0);
-			PackStart (button, false, false, 6);
+			if (entry.Parent == null)
+				PackStart (entry, true, true, 0);
+			if (entry.Parent == null)
+				PackStart (button, false, false, 6);
 			
 			ActionCommand cmd = new ActionCommand ("InsertOption", "InsertOption", null);
 			cmd.CommandArray = true;

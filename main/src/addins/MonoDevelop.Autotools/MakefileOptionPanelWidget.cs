@@ -92,7 +92,7 @@ namespace MonoDevelop.Autotools
 
 			this.fileEntryConfigureInPath.Path = data.AbsoluteConfigureInPath;
 			if (String.IsNullOrEmpty (data.AbsoluteConfigureInPath))
-				this.fileEntryConfigureInPath.DefaultPath = project.RootCombine.BaseDirectory;
+				this.fileEntryConfigureInPath.DefaultPath = project.ParentSolution.BaseDirectory;
 			else
 				this.fileEntryConfigureInPath.DefaultPath = data.AbsoluteConfigureInPath;
 
@@ -133,7 +133,7 @@ namespace MonoDevelop.Autotools
 				//comboAssemblyName, comboOutputDir};
 		}
 		
-		public bool Store (Project project)
+		public bool ValidateChanges (Project project)
 		{
 			data.IntegrationEnabled = this.cbEnableMakefileIntegration.Active;
 			data.RelativeMakefileName = this.fileEntryMakefilePath.Path;
@@ -267,6 +267,11 @@ namespace MonoDevelop.Autotools
 			}
 
  			return true;
+		}
+
+		public void Store (Project project)
+		{
+			// FIXME: Storing currently done in ValidateChanges. It should be done here.
 		}
 
 		bool CheckNonEmptyFileVar (MakefileVar var, string id)

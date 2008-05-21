@@ -52,7 +52,7 @@
 	
 	<Extension path = "/MonoDevelop/DesignerSupport/PropertyProviders" extension-nodes="Class">
 		<Class class = "MonoDevelop.DesignerSupport.Projects.ProjectItemPropertyProvider"/>
-		<Class class = "MonoDevelop.DesignerSupport.Projects.CombineEntryPropertyProvider"/>
+		<Class class = "MonoDevelop.DesignerSupport.Projects.SolutionItemPropertyProvider"/>
 	</Extension>
 	
 <!--	<Extension path = "/MonoDevelop/Ide/DisplayBindings">

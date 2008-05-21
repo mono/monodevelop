@@ -1,5 +1,5 @@
 //
-// MonoProjectConfiguration.cs
+// ISolutionItemDescriptor.cs
 //
 // Author:
 //   Lluis Sanchez Gual
@@ -26,38 +26,14 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+
 using System;
-using System.Collections;
-using System.IO;
-using MonoDevelop.Core;
-using System.Text.RegularExpressions;
 using MonoDevelop.Projects;
 
-namespace MonoDeveloper
+namespace MonoDevelop.Ide.Templates
 {
-	class MonoProjectConfiguration: DotNetProjectConfiguration
+	internal interface ISolutionItemDescriptor
 	{
-		string profile;
-		string assemblyPath;
-		
-		public MonoProjectConfiguration (string name, string profile)
-		{
-			Name = name;
-			this.profile = profile;
-		}
-		
-		public string Profile {
-			get { return profile; }
-		}
-		
-		public string AssemblyPathTemplate {
-			get { return assemblyPath; }
-			set { assemblyPath = value; }
-		}
-		
-		public string GetAssemblyPath ()
-		{
-			return assemblyPath.Replace ("$(PROFILE)", profile);
-		}
+		SolutionEntityItem CreateEntry (ProjectCreateInformation projectCreateInformation, string defaultLanguage);
 	}
 }

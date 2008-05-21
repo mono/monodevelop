@@ -1,3 +1,15 @@
+2008-05-21  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Deployment.Linux.addin.xml,
+	  MonoDevelop.Deployment.Linux.mdp,
+	  MonoDevelop.Deployment.Linux/BasicOptionPanelWidget.cs,
+	  MonoDevelop.Deployment.Linux/LinuxDeploymentSetup.cs,
+	  MonoDevelop.Deployment.Linux/LinuxDeployData.cs,
+	  MonoDevelop.Deployment.Linux/LinuxIntegrationProjectFeature.cs,
+	  MonoDevelop.Deployment.Linux/LinuxDeployExtension.cs,
+	  MonoDevelop.Deployment.Linux/BasicOptionPanel.cs: New project model
+	  changes.
+
 2008-02-23  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Deployment.Linux.mdp, gtk-gui/gui.stetic, Makefile.am: Removed

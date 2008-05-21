@@ -40,15 +40,17 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/ExtendedProperties">
-		<ItemProperty class = "MonoDevelop.Projects.CombineEntry"
+		<ItemProperty class = "MonoDevelop.Projects.SolutionItem"
+			name = "MonoDevelop.ChangeLogAddIn.ChangeLogInfo" type = "MonoDevelop.ChangeLogAddIn.ChangeLogData" />
+		<ItemProperty class = "MonoDevelop.Projects.Solution"
 			name = "MonoDevelop.ChangeLogAddIn.ChangeLogInfo" type = "MonoDevelop.ChangeLogAddIn.ChangeLogData" />
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/ProjectModel/Gui/ProjectOptions/GeneralOptions/Common">
-		<DialogPanel id = "ChangeLogIntegration" _label = "ChangeLog Integration" class="MonoDevelop.ChangeLogAddIn.ProjectOptionPanel"/>
+	<Extension path = "/MonoDevelop/ProjectModel/Gui/ProjectOptions/Common">
+		<Section id = "ChangeLogIntegration" _label = "ChangeLog Integration" class="MonoDevelop.ChangeLogAddIn.ProjectOptionPanel"/>
 	</Extension>
 
-	<Extension path = "/MonoDevelop/ProjectModel/Gui/CombineOptions/GeneralOptions/Common">
-		<DialogPanel id = "ChangeLogIntegration" _label = "ChangeLog Integration" class="MonoDevelop.ChangeLogAddIn.ProjectOptionPanel"/>
+	<Extension path = "/MonoDevelop/ProjectModel/Gui/SolutionOptions/Common">
+		<Section id = "ChangeLogIntegration" _label = "ChangeLog Integration" class="MonoDevelop.ChangeLogAddIn.ProjectOptionPanel"/>
 	</Extension>
 </Addin>

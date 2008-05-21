@@ -25,7 +25,7 @@ namespace MonoDevelop.Deployment.Gui
 			targetBox.PackStart (new PackageBuilderEditor (target), true, true, 0);
 			
 			entrySelector.Fill (target, null);
-			entrySelector.SetSelection (target.RootCombineEntry, target.GetChildEntries ());
+			entrySelector.SetSelection (target.RootSolutionItem, target.GetChildEntries ());
 			
 			DeployContext ctx = target.CreateDeployContext ();
 			if (ctx == null)
@@ -53,9 +53,9 @@ namespace MonoDevelop.Deployment.Gui
 
 		protected virtual void OnEntrySelectorSelectionChanged(object sender, System.EventArgs e)
 		{
-			CombineEntry ce = entrySelector.GetSelectedEntry ();
+			SolutionItem ce = entrySelector.GetSelectedEntry ();
 			if (ce != null)
-				target.SetCombineEntry (ce, entrySelector.GetSelectedChildren ());
+				target.SetSolutionItem (ce, entrySelector.GetSelectedChildren ());
 		}
 
 		protected virtual void OnNotebookSwitchPage(object o, Gtk.SwitchPageArgs args)

@@ -1,5 +1,5 @@
 //
-// CSharpResourceIdBuilder.cs
+// VBNetResourceIdBuilder.cs
 //
 // Author:
 //   Ankit Jain <jankit@novell.com>
@@ -26,106 +26,79 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using System;
-using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Text;
+using MonoDevelop.Projects.Extensions;
+using MonoDevelop.Projects.Formats.MSBuild;
 
-namespace MonoDevelop.Prj2Make
+namespace VBBinding
 {
-	class CSharpResourceIdBuilder : IResourceIdBuilder
+	class VBNetResourceIdBuilder : IResourceHandler
 	{
-		public string GetResourceId (ProjectFile pf)
+		public string GetDefaultResourceId (ProjectFile pf)
 		{
 			if (String.IsNullOrEmpty (pf.DependsOn))
-				return GetResourceIdForNoClass (pf);
+				return MSBuildProjectService.GetDefaultResourceId (pf);
 
 			string ns = null;
 			string classname = null;
 
 			using (StreamReader rdr = new StreamReader (pf.DependsOn)) {
-				int numopen = 0;
 				while (true) {
 					string tok = GetNextToken (rdr);
 					if (tok == null)
 						break;
 
-					if (tok == "@") {
-						//Handle @namespace, @class
-						GetNextToken (rdr);
-						continue;
-					}
-				
-					if (String.Compare (tok, "namespace", false) == 0)
-						ns = GetNextToken (rdr);
-
-					if (tok == "{")
-						numopen ++;
-
-					if (tok == "}") {
-						numopen --;
-						if (numopen == 0)
-							ns = String.Empty;
+					if (String.Compare (tok, "namespace", true) == 0) {
+						string t = GetNextToken (rdr);
+						/* 'namespace' can be a attribute param also, */
+						if (t == ":" && GetNextToken (rdr) == "=")
+							continue;
+						ns = t;
 					}
 
-					if (tok == "class") {
-						classname = GetNextToken (rdr);
+					if (String.Compare (tok, "class", true) == 0) {
+						string t = GetNextToken (rdr);
+						/* 'class' can be a attribute param also, */
+						if (t == ":" && GetNextToken (rdr) == "=")
+							continue;
+						classname = t;
 						break;
 					}
 				}
 
 				if (classname == null)
-					return GetResourceIdForNoClass (pf);
+					return MSBuildProjectService.GetDefaultResourceId (pf);
 
 				string culture, extn, only_filename;
-				if (Utils.TrySplitResourceName (pf.RelativePath, out only_filename, out culture, out extn))
+				if (MSBuildProjectService.TrySplitResourceName (pf.RelativePath, out only_filename, out culture, out extn))
 					extn = "." + culture + ".resources";
 				else
 					extn = ".resources";
 
+				string rname;
 				if (ns == null)
-					return classname + extn;
+					rname = classname + extn;
 				else
-					return ns + '.' + classname + extn;
+					rname = ns + '.' + classname + extn;
+				
+				DotNetProject dp = pf.Project as DotNetProject;
+				if (dp == null || String.IsNullOrEmpty (dp.DefaultNamespace))
+					return rname; 
+				else
+					return dp.DefaultNamespace + "." + rname;
 			}
 		}
 
-		static string GetResourceIdForNoClass (ProjectFile pf)
-		{
-			string fname = pf.RelativePath;
-			if (pf.IsExternalToProject)
-				fname = Path.GetFileName (fname);
-			else
-				fname = FileService.NormalizeRelativePath (fname);
 
-			if (String.Compare (Path.GetExtension (fname), ".resx", true) == 0) {
-				fname = Path.ChangeExtension (fname, ".resources");
-			} else {
-				string only_filename, culture, extn;
-				if (Utils.TrySplitResourceName (fname, out only_filename, out culture, out extn)) {
-					//remove the culture from fname
-					//foo.it.bmp -> foo.bmp
-					fname = only_filename + "." + extn;
-				}
-			}
 
-			string rname = fname.Replace ('/', '.');
-
-			if (String.IsNullOrEmpty (pf.Project.DefaultNamespace))
-				return rname;
-			else
-				return pf.Project.DefaultNamespace + "." + rname;
-		}
-
-		/* Special parser for C# files
+		/* Special parser for VB.NET files
 		 * Assumes that the file is compilable
 		 * skips comments, 
-		 * skips strings "foo", 
-		 * skips anything after a # , eg. #region, #if 
-		 * Won't handle #if false etc kinda blocks*/
+		 * skips strings "foo"
+		 */
 		string GetNextToken (StreamReader sr)
 		{
 			StringBuilder sb = new StringBuilder ();
@@ -143,36 +116,17 @@ namespace MonoDevelop.Prj2Make
 					continue;
 				}
 
-				if (c == '/') {
-					sr.Read ();
+				if (c == '\'') {
+					/* comment */
+					sr.ReadLine ();
+					if (sb.Length > 0)
+						return sb.ToString ();
 
-					if (sr.Peek () == '*') {
-						/* multi-line comment */
-						sr.Read ();
+					continue;
+				}
 
-						while (true) {
-							int n = sr.Read ();
-							if (n == -1)
-								break;
-							if (n != '*')
-								continue;
-
-							if (sr.Peek () == '/') {
-								/* End of multi-line comment */
-								if (sb.Length > 0) {
-									sr.Read ();
-									return sb.ToString ();
-								}
-								break;
-							}
-						}
-					} else if (sr.Peek () == '/') {
-						//Single line comment, skip the rest of the line
-						sr.ReadLine ();
-						continue;
-					}
-				} else if (c == '"') {
-					/* String "foo" */
+				if (c == '"') {
+					/* String */
 					sr.Read ();
 					while (true) {
 						int n = sr.Peek ();
@@ -180,7 +134,6 @@ namespace MonoDevelop.Prj2Make
 							throw new Exception ("String literal not closed");
 
 						if (n == '"') {
-							/* end of string */
 							if (sb.Length > 0) {
 								sr.Read ();
 								return sb.ToString ();
@@ -190,9 +143,6 @@ namespace MonoDevelop.Prj2Make
 						}
 						sr.Read ();
 					}
-				} else if (c == '#') {
-					//skip rest of the line
-					sr.ReadLine ();
 				} else {
 					if (Char.IsLetterOrDigit ((char) c) || c == '_' || c == '.') {
 						sb.Append ((char) c);

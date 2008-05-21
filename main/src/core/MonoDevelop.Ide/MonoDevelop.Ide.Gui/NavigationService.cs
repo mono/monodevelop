@@ -54,8 +54,8 @@ namespace MonoDevelop.Ide.Gui {
 		{
 			//WorkbenchSingleton.WorkbenchCreated += WorkbenchCreatedHandler;
 			
-			IdeApp.ProjectOperations.FileRenamedInProject += FileRenamed;
-			IdeApp.ProjectOperations.CombineClosed += SolutionClosed;
+			IdeApp.Workspace.FileRenamedInProject += FileRenamed;
+			IdeApp.Workspace.LastWorkspaceItemClosed += SolutionClosed;
 		}
 		
 #region Public Properties

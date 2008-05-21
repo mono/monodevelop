@@ -37,7 +37,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 	internal partial class CustomCommandWidget : Gtk.Bin
 	{
 		CustomCommand cmd;
-		CombineEntry entry;
+		IWorkspaceObject entry;
 		bool updating;
 		
 		// snatched from MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs
@@ -67,21 +67,33 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 //		};
 
 		static string[,] projectWorkingDirInsertMenu = new string[,] {
+			// Keep in sync with CustomCommand.cs
 			{GettextCatalog.GetString ("_Target Directory"), "${TargetDir}"},
-			{GettextCatalog.GetString ("Target Name"), "${TargetName}"},
+			{GettextCatalog.GetString ("Target _Name"), "${TargetName}"},
 			{"-", ""},
-			{GettextCatalog.GetString ("_Project Directory"), "${ProjectDir}"},
+			{GettextCatalog.GetString ("_Project Directory"), "${ItemDir}"},
+			{GettextCatalog.GetString ("P_roject Name"), "${ItemName}"},
 			{"-", ""},
-			{GettextCatalog.GetString ("_Root Solution Directory"), "${CombineDir}"},
+			{GettextCatalog.GetString ("_Solution Directory"), "${SolutionDir}"},
+			{GettextCatalog.GetString ("So_lution Name"), "${SolutionName}"},
 		};
 		
 		static string[,] entryWorkingDirInsertMenu = new string[,] {
-			{GettextCatalog.GetString ("_Project Directory"), "${ProjectDir}"},
+			// Keep in sync with CustomCommand.cs
+			{GettextCatalog.GetString ("Solution _Item Directory"), "${ItemDir}"},
+			{GettextCatalog.GetString ("Solution Item _Name"), "${ItemName}"},
 			{"-", ""},
-			{GettextCatalog.GetString ("_Root Solution Directory"), "${CombineDir}"},
+			{GettextCatalog.GetString ("_Solution Directory"), "${SolutionDir}"},
+			{GettextCatalog.GetString ("So_lution Name"), "${SolutionName}"},
 		};
 		
-		public CustomCommandWidget (CombineEntry entry, CustomCommand cmd)
+		static string[,] solutionWorkingDirInsertMenu = new string[,] {
+			// Keep in sync with CustomCommand.cs
+			{GettextCatalog.GetString ("_Solution Directory"), "${SolutionDir}"},
+			{GettextCatalog.GetString ("So_lution Name"), "${SolutionName}"},
+		};
+		
+		public CustomCommandWidget (IWorkspaceObject entry, CustomCommand cmd)
 		{
 			this.Build();
 			this.cmd = cmd;
@@ -95,7 +107,14 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 			UpdateControls ();
 			this.WidgetFlags |= Gtk.WidgetFlags.NoShowAll;
 			
-			string[,] workingDirInsertMenu = entry is Project? projectWorkingDirInsertMenu : entryWorkingDirInsertMenu;
+			string[,] workingDirInsertMenu;
+			if (entry is Project)
+				workingDirInsertMenu = projectWorkingDirInsertMenu;
+			else if (entry is SolutionEntityItem)
+				workingDirInsertMenu = entryWorkingDirInsertMenu;
+			else
+				workingDirInsertMenu = solutionWorkingDirInsertMenu;
+			
 			new MenuButtonEntry (workingdirEntry, workingdirQuickInsertButton, workingDirInsertMenu);
 		}
 		

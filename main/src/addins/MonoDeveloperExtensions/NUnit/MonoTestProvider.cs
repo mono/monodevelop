@@ -29,25 +29,28 @@
 using System;
 using System.IO;
 using MonoDevelop.Projects;
+using MonoDevelop.Projects.Extensions;
 using MonoDevelop.NUnit;
 
 namespace MonoDeveloper
 {	
 	class MonoTestProvider: ITestProvider
 	{
-		public UnitTest CreateUnitTest (CombineEntry entry)
+		public UnitTest CreateUnitTest (IWorkspaceObject entry)
 		{
-			if (entry is MonoProject) {
-				MonoProject project = (MonoProject) entry;
-				if (project.UnitTest != null)
-					return (UnitTest) project.UnitTest;
-
-				string testFileBase = project.GetTestFileBase ();
-				UnitTest testSuite = new MonoTestSuite (project, project.Name, testFileBase);
-				project.UnitTest = testSuite;
-				return testSuite;
-			} else
-				return null;
+			if (entry is DotNetProject) {
+				DotNetProject project = (DotNetProject) entry;
+				MonoSolutionItemHandler handler = ProjectExtensionUtil.GetItemHandler (project) as MonoSolutionItemHandler;
+				if (handler != null) {
+					if (handler.UnitTest != null)
+						return (UnitTest) handler.UnitTest;
+					string testFileBase = handler.GetTestFileBase ();
+					UnitTest testSuite = new MonoTestSuite (project, project.Name, testFileBase);
+					handler.UnitTest = testSuite;
+					return testSuite;
+				}
+			}
+			return null;
 		}
 		
 		public Type[] GetOptionTypes ()

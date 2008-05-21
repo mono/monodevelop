@@ -246,6 +246,8 @@ namespace MonoDevelop.Autotools
 
 			using (StreamWriter sw = new StreamWriter (fileName))
 				sw.Write (content);
+			
+			FileService.NotifyFileChanged (fileName);
 		}
 		
 		void ThrowMakefileVarNotFound (string var)

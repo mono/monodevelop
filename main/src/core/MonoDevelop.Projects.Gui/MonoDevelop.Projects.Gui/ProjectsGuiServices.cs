@@ -47,7 +47,7 @@ namespace MonoDevelop.Projects.Gui
 			get { return MonoDevelop.Projects.Services.Languages; }
 		}
 	
-		internal static IProjectService ProjectService {
+		internal static ProjectService ProjectService {
 			get { return MonoDevelop.Projects.Services.ProjectService; }
 		}
 	

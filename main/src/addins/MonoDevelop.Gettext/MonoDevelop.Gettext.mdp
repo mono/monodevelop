@@ -67,6 +67,7 @@
     <File name="MonoDevelop.Gettext.ExtensionNodes/TransformExtensionNode.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Gettext/StringEscaping.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Gettext/PluralForms.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Gettext/TranslationCollection.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />

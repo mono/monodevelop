@@ -31,7 +31,7 @@ using System.Collections;
 using System.IO;
 
 using MonoDevelop.Projects;
-using MonoDevelop.Core.Gui.Dialogs;
+using MonoDevelop.Projects.Gui.Dialogs;
 using MonoDevelop.Components;
 using MonoDevelop.Core;
 
@@ -39,20 +39,23 @@ using Gtk;
 
 namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 {
-	internal class RuntimeOptionsPanel : AbstractOptionPanel
+	internal class RuntimeOptionsPanel : ItemOptionsPanel
 	{
 		RuntimeOptionsPanelWidget widget;
 		
-		public override void LoadPanelContents()
+		public override bool IsVisible ()
 		{
-			Add (widget = new RuntimeOptionsPanelWidget ((Properties) CustomizationObject));
+			return ConfiguredProject is DotNetProject;
 		}
 		
-		public override bool StorePanelContents()
+		public override Widget CreatePanelWidget()
 		{
-			bool result = true;
-			result = widget.Store ();
- 			return result;
+			return (widget = new RuntimeOptionsPanelWidget ((DotNetProject)ConfiguredProject));
+		}
+		
+		public override void ApplyChanges()
+		{
+			widget.Store ();
 		}
 	}
 
@@ -61,11 +64,11 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 		DotNetProject project;
 		ArrayList supportedVersions = new ArrayList (); 
 
-		public RuntimeOptionsPanelWidget (Properties CustomizationObject)
+		public RuntimeOptionsPanelWidget (DotNetProject project)
 		{
 			Build ();
 			
-			project = ((Properties)CustomizationObject).Get<DotNetProject>("Project") ;
+			this.project = project;
 			if (project != null) {
 				// Get the list of available versions, and add only those supported by the target language.
 				ClrVersion[] langSupported = project.LanguageBinding.GetSupportedClrVersions ();
@@ -98,13 +101,11 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
  				Sensitive = false;
 		}
 
-		public bool Store ()
+		public void Store ()
 		{	
 			if (project == null || runtimeVersionCombo.Active == -1)
-				return true;
-			
+				return;
 			project.ClrVersion = (ClrVersion) supportedVersions [runtimeVersionCombo.Active];
-			return true;
 		}
 	}
 }

@@ -157,7 +157,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 					
 					if (FileService.IsValidFileName (newFoldername)) {
 						FileService.RenameDirectory (oldFoldername, newName);
-						IdeApp.ProjectOperations.SaveCombine();
+						IdeApp.Workspace.Save();
 					}
 				} catch (System.IO.IOException) {   // assume duplicate file
 					MessageService.ShowError(GettextCatalog.GetString ("File or directory name is already in use. Please choose a different one."));
@@ -171,7 +171,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		{
 			ProjectFolder folder = (ProjectFolder) CurrentNode.DataItem as ProjectFolder;
 			Project project = folder.Project;
-			ProjectFile[] files = folder.Project.ProjectFiles.GetFilesInPath (folder.Path);
+			ProjectFile[] files = folder.Project.Files.GetFilesInPath (folder.Path);
 			
 			if (files.Length == 0) {
 				bool yes = MessageService.Confirm (GettextCatalog.GetString ("Are you sure you want to permanently delete the folder {0}?", folder.Path), AlertButton.Delete);
@@ -188,20 +188,20 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				bool yes = MessageService.Confirm (GettextCatalog.GetString ("Do you really want to remove folder {0}?", folder.Name), AlertButton.Remove);
 				if (!yes) return;
 				
-				ProjectFile[] inParentFolder = project.ProjectFiles.GetFilesInPath (Path.GetDirectoryName (folder.Path));
+				ProjectFile[] inParentFolder = project.Files.GetFilesInPath (Path.GetDirectoryName (folder.Path));
 				
 				if (inParentFolder.Length == files.Length) {
 					// This is the last folder in the parent folder. Make sure we keep
 					// a reference to the folder, so it is not deleted from the tree.
 					ProjectFile folderFile = new ProjectFile (Path.GetDirectoryName (folder.Path));
 					folderFile.Subtype = Subtype.Directory;
-					project.ProjectFiles.Add (folderFile);
+					project.Files.Add (folderFile);
 				}
 				
 				foreach (ProjectFile file in files)
-					folder.Project.ProjectFiles.Remove (file);
+					folder.Project.Files.Remove (file);
 
-				IdeApp.ProjectOperations.SaveCombine();
+				IdeApp.Workspace.Save();
 			}
 		}
 
@@ -221,7 +221,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 						project.AddFile (file.Path, BuildAction.Nothing);
 				}
 
-				IdeApp.ProjectOperations.SaveProject (project);
+				IdeApp.ProjectOperations.Save (project);
 			}
 		}
 
@@ -268,7 +268,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		bool HasProjectFiles (Project project, string path)
 		{
 			string basePath = path + Path.DirectorySeparatorChar;
-			foreach (ProjectFile f in project.ProjectFiles)
+			foreach (ProjectFile f in project.Files)
 				if (f.Name.StartsWith (basePath))
 					return true;
 			return false;

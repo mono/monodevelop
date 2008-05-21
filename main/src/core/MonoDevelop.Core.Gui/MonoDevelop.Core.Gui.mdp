@@ -171,6 +171,8 @@
     <File name="gtk-gui/MonoDevelop.Core.Gui.Dialogs.OptionsDialog.cs" subtype="Code" buildaction="Compile" />
     <File name="icons/pad-task-list-24.png" subtype="Code" buildaction="EmbedAsResource" />
     <File name="MonoDevelop.Core.Gui/GLibLogging.cs" subtype="Code" buildaction="Compile" />
+    <File name="icons/solution-folder-closed-16.png" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="icons/solution-folder-open-16.png" subtype="Code" buildaction="EmbedAsResource" />
     <File name="MonoDevelop.Core.Gui.Codons/MimeTypeNode.cs" subtype="Code" buildaction="Compile" />
     <File name="icons/file-xml-16.png" subtype="Code" buildaction="EmbedAsResource" />
     <File name="icons/file-addin-16.png" subtype="Code" buildaction="EmbedAsResource" />

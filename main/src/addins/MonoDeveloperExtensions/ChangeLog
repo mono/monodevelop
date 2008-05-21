@@ -1,3 +1,10 @@
+2008-05-21  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDeveloperExtensions.mds, MonoMakefileFormat.cs, Commands.cs,
+	  MonoSolutionItemHandler.cs, Makefile.am,
+	  MonoDeveloperExtensions.addin.xml, NUnit/MonoTestProvider.cs,
+	  MonoDeveloperExtensions.mdp: New project model changes.
+
 2008-03-07  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDeveloperExtensions.mdp: Removed unneeded dependencies.

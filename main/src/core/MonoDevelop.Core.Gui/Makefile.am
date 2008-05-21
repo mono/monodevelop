@@ -165,6 +165,8 @@ RES =  \
 	icons/project-library-32.png \
 	icons/solution-16.png \
 	icons/solution-32.png \
+	icons/solution-folder-closed-16.png \
+	icons/solution-folder-open-16.png \
 	icons/system-software-update.png \
 	icons/system-software-update_22.png \
 	icons/uncomment.png \

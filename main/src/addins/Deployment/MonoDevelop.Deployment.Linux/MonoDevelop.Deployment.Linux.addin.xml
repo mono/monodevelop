@@ -53,12 +53,8 @@
 		                class = "MonoDevelop.Deployment.Linux.DotDesktopDisplayBinding"/>
 	</Extension>
 
-	<Extension path = "/MonoDevelop/ProjectModel/Gui/CombineOptions/GeneralOptions/Deployment">
-		<DialogPanel id = "LinuxDeployment" _label = "Linux Deployment Settings" class="MonoDevelop.Deployment.Linux.BasicOptionPanel"/>
-	</Extension>
-	
-	<Extension path = "/MonoDevelop/ProjectModel/Gui/ProjectOptions/GeneralOptions/Deployment">
-		<DialogPanel id = "LinuxDeployment" _label = "Linux Deployment Settings" class="MonoDevelop.Deployment.Linux.BasicOptionPanel"/>
+	<Extension path = "/MonoDevelop/ProjectModel/Gui/ProjectOptions/Deployment">
+		<Section id = "LinuxDeployment" _label = "Linux Deployment Settings" class="MonoDevelop.Deployment.Linux.BasicOptionPanel"/>
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Deployment/DeployDirectoryResolvers">
@@ -66,7 +62,7 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/ProjectModel/ExtendedProperties">
-		<ItemProperty class = "MonoDevelop.Projects.CombineEntry"
+		<ItemProperty class = "MonoDevelop.Projects.SolutionItem"
 			name = "Deployment.LinuxDeployData" type = "MonoDevelop.Deployment.Linux.LinuxDeployData" />
 	</Extension>
 

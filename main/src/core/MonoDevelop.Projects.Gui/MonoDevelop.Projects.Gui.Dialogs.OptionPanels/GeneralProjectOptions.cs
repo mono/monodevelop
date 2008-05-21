@@ -33,19 +33,18 @@ using MonoDevelop.Components;
 
 namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 {
-	internal class GeneralProjectOptions : AbstractOptionPanel
+	internal class GeneralProjectOptions : ItemOptionsPanel
 	{
 		GeneralProjectOptionsWidget widget;
 
-		public override void LoadPanelContents()
+		public override Widget CreatePanelWidget()
 		{
-			Add (widget = new GeneralProjectOptionsWidget ((Properties) CustomizationObject));
+			return (widget = new GeneralProjectOptionsWidget (ConfiguredProject));
 		}
 		
-		public override bool StorePanelContents()
+		public override void ApplyChanges()
 		{
-			widget.Store ((Properties) CustomizationObject);
- 			return true;
+			widget.Store ();
 		}
 	}
 
@@ -53,20 +52,23 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 	{
 		Project project;
 
-		public GeneralProjectOptionsWidget (Properties CustomizationObject)
+		public GeneralProjectOptionsWidget (Project project)
 		{
 			Build ();
 			
-			this.project = ((Properties)CustomizationObject).Get<Project> ("Project");
+			this.project = project;
 			
 			nameLabel.UseUnderline = true;
 			
 			descriptionLabel.UseUnderline = true;
 
 			projectNameEntry.Text = project.Name;
-			projectDefaultNamespaceEntry.Text = project.DefaultNamespace;
 			parentDirectoryNamespaceCheckButton.Active = project.UseParentDirectoryAsNamespace;
 			projectDescriptionTextView.Buffer.Text = project.Description;
+			
+			// TODO msbuild Move to build panel?
+			if (project is DotNetProject)
+				projectDefaultNamespaceEntry.Text = ((DotNetProject)project).DefaultNamespace;
 			
 			switch (project.NewFileSearch) 
 			{
@@ -103,12 +105,13 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 			projectDefaultNamespaceEntry.Sensitive = !parentDirectoryNamespaceCheckButton.Active;
 		}
 
-		public void  Store (Properties CustomizationObject)
+		public void  Store ()
 		{
 			project.Name                          = projectNameEntry.Text;
-			project.DefaultNamespace              = projectDefaultNamespaceEntry.Text;
 			project.UseParentDirectoryAsNamespace = parentDirectoryNamespaceCheckButton.Active;
 			project.Description                   = projectDescriptionTextView.Buffer.Text;
+			if (project is DotNetProject)
+				((DotNetProject)project).DefaultNamespace = projectDefaultNamespaceEntry.Text;
 			
 			if (newFilesOnLoadCheckButton.Active) {
 				project.NewFileSearch = autoInsertNewFilesCheckButton.Active ?  NewFileSearch.OnLoadAutoInsert : NewFileSearch.OnLoad;

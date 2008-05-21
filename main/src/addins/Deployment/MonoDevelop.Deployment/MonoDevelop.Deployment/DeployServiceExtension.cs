@@ -9,38 +9,38 @@ namespace MonoDevelop.Deployment
 	{
 		internal DeployServiceExtension Next;
 		
-		public virtual void BuildPackage (IProgressMonitor monitor, PackageBuilder builder)
+		public virtual bool BuildPackage (IProgressMonitor monitor, PackageBuilder builder)
 		{
 			if (Next != null)
-				Next.BuildPackage (monitor, builder);
+				return Next.BuildPackage (monitor, builder);
 			else
-				builder.Build (monitor);
+				return builder.Build (monitor);
 		}
 		
-		public virtual DeployFileCollection GetDeployFiles (DeployContext ctx, CombineEntry entry)
+		public virtual DeployFileCollection GetDeployFiles (DeployContext ctx, SolutionItem entry, string configuration)
 		{
-			if (entry is Combine)
-				return GetCombineDeployFiles (ctx, (Combine) entry);
+			if (entry is SolutionFolder)
+				return GetCombineDeployFiles (ctx, (SolutionFolder) entry, configuration);
 			else if (entry is Project)
-				return GetProjectDeployFiles (ctx, (Project) entry);
+				return GetProjectDeployFiles (ctx, (Project) entry, configuration);
 			else if (Next != null)
-				return Next.GetDeployFiles (ctx, entry);
+				return Next.GetDeployFiles (ctx, entry, configuration);
 			else
 				return new DeployFileCollection ();
 		}
 		
-		public virtual DeployFileCollection GetCombineDeployFiles (DeployContext ctx, Combine combine)
+		public virtual DeployFileCollection GetCombineDeployFiles (DeployContext ctx, SolutionFolder combine, string configuration)
 		{
 			if (Next != null)
-				return Next.GetDeployFiles (ctx, combine);
+				return Next.GetDeployFiles (ctx, combine, configuration);
 			else
 				return new DeployFileCollection ();
 		}
 		
-		public virtual DeployFileCollection GetProjectDeployFiles (DeployContext ctx, Project project)
+		public virtual DeployFileCollection GetProjectDeployFiles (DeployContext ctx, Project project, string configuration)
 		{
 			if (Next != null)
-				return Next.GetDeployFiles (ctx, project);
+				return Next.GetDeployFiles (ctx, project, configuration);
 			else
 				return new DeployFileCollection ();
 		}

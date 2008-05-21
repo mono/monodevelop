@@ -96,26 +96,21 @@
 			class = "CBinding.GeneralOptionsPanelBinding"/>
 	</Extension>
 
-	<Extension path = "/MonoDevelop/ProjectModel/Gui/ProjectOptions/ConfigurationOptions">
+	<Extension path = "/MonoDevelop/ProjectModel/Gui/ProjectOptions/Common">
 		<Condition id = "activelanguage" value = "C">
-			<DialogPanel
-				id = "CodeGenerationPanel"
-			    _label = "Code Generation"
-			    class = "CBinding.CodeGenerationPanelBinding"/>
-			<DialogPanel
-				id = "OutputOptionsPanel"
-			    _label = "Output"
-			    class = "CBinding.OutputOptionsPanelBinding"/>
-		</Condition>
-	</Extension>
-	
-	<Extension path = "/MonoDevelop/ProjectModel/Gui/ProjectOptions/GeneralOptions/Common">
-		<Condition id = "activelanguage" value = "C">
-			<DialogPanel
+			<Section
 				id = "CompilerPanel"
 			    _label = "Compiler"
 			    insertafter = "Compile"
 			    class = "CBinding.CompilerPanelBinding"/>
+			<Section
+				id = "CodeGenerationPanel"
+			    _label = "Code Generation"
+			    class = "CBinding.CodeGenerationPanelBinding"/>
+			<Section
+				id = "OutputOptionsPanel"
+			    _label = "Output"
+			    class = "CBinding.OutputOptionsPanelBinding"/>
 		</Condition>
 	</Extension>
 	
@@ -210,6 +205,11 @@
 		<DataType class = "CBinding.GppCompiler"/>
 		<DataType class = "CBinding.Package"/>
 	</Extension>
+	
+	<Extension path = "/MonoDevelop/ProjectModel/MSBuildItemTypes">
+		<SolutionItem type="CBinding.CProject" extension="cproj" guid="{2857B73E-F847-4B02-9238-064979017E93}"/>
+	</Extension>
+	
 <!-- Current Autotools AddIn is very .NET specific
 	<Module>
 	    <Runtime>

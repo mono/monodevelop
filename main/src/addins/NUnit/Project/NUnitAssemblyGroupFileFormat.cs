@@ -30,9 +30,12 @@
 using System;
 using System.IO;
 using System.Xml;
+using System.Collections.Generic;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Serialization;
 using MonoDevelop.Core;
+using MonoDevelop.Projects.Extensions;
+using MonoDevelop.Projects.Formats.MD1;
 
 namespace MonoDevelop.NUnit
 {
@@ -47,14 +50,14 @@ namespace MonoDevelop.NUnit
 			return Path.ChangeExtension (fileName, ".md-nunit");
 		}
 		
-		public bool CanReadFile (string file)
+		public bool CanReadFile (string file, Type expectedType)
 		{
-			return Path.GetExtension (file) == ".md-nunit";
+			return expectedType.IsAssignableFrom (typeof(NUnitAssemblyGroupProject)) && Path.GetExtension (file) == ".md-nunit";
 		}
 		
 		public bool CanWriteFile (object obj)
 		{
-			return obj is NUnitAssemblyGroupProject;
+			return false;
 		}
 		
 		public void WriteFile (string file, object obj, IProgressMonitor monitor)
@@ -67,32 +70,16 @@ namespace MonoDevelop.NUnit
 			WriteFile (((NUnitAssemblyGroupProject)obj).FileName, file, obj, monitor);
 		}
 		
-		public System.Collections.Specialized.StringCollection GetExportFiles (object obj)
+		public List<string> GetItemFiles (object obj)
 		{
-			return null;
+			return new List<string> ();
 		}
 		
 		void WriteFile (string file, string outFile, object obj, IProgressMonitor monitor)
 		{
-			NUnitAssemblyGroupProject project = obj as NUnitAssemblyGroupProject;
-			if (project == null)
-				throw new InvalidOperationException ("The provided object is not a valid Project");
-
-			StreamWriter sw = new StreamWriter (outFile);
-			try {
-				monitor.BeginTask (string.Format (GettextCatalog.GetString("Saving project: {0}"), file), 1);
-				XmlDataSerializer ser = new XmlDataSerializer (Services.ProjectService.DataContext);
-				ser.SerializationContext.BaseFile = file;
-				ser.Serialize (sw, project, typeof(NUnitAssemblyGroupProject));
-			} catch (Exception ex) {
-				monitor.ReportError (string.Format (GettextCatalog.GetString ("Could not save project: {0}"), file), ex);
-			} finally {
-				monitor.EndTask ();
-				sw.Close ();
-			}
 		}
 		
-		public object ReadFile (string file, IProgressMonitor monitor)
+		public object ReadFile (string file, Type expectedType, IProgressMonitor monitor)
 		{
 			XmlTextReader reader = new XmlTextReader (new StreamReader (file));
 			try {
@@ -100,10 +87,10 @@ namespace MonoDevelop.NUnit
 				
 				reader.MoveToContent ();
 				
-				XmlDataSerializer ser = new XmlDataSerializer (Services.ProjectService.DataContext);
+				XmlDataSerializer ser = new XmlDataSerializer (MD1ProjectService.DataContext);
 				ser.SerializationContext.BaseFile = file;
 				
-				CombineEntry entry = (CombineEntry) ser.Deserialize (reader, typeof(NUnitAssemblyGroupProject));
+				SolutionEntityItem entry = (SolutionEntityItem) ser.Deserialize (reader, typeof(NUnitAssemblyGroupProject));
 				entry.FileName = file;
 				return entry;
 			}
@@ -115,6 +102,10 @@ namespace MonoDevelop.NUnit
 				monitor.EndTask ();
 				reader.Close ();
 			}
+		}
+
+		public void ConvertToFormat (object obj)
+		{
 		}
 	}
 }

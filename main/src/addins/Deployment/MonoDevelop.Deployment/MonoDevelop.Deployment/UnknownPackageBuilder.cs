@@ -54,9 +54,10 @@ namespace MonoDevelop.Deployment
 			}
 		}
 		
-		protected override void OnBuild (IProgressMonitor monitor, DeployContext ctx)
+		protected override bool OnBuild (IProgressMonitor monitor, DeployContext ctx)
 		{
 			monitor.ReportError ("Unknown package type. The package can't be generated.", null);
+			return false;
 		}
 
 	}

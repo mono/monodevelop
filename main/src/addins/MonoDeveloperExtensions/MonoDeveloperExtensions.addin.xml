@@ -20,14 +20,14 @@
 		<Addin id="Ide" version="0.19.0"/>
 	</Dependencies>
 
-	<Extension path = "/MonoDevelop/ProjectModel/ProjectFileFormats">
-		<FileFormat id = "MonoMakefile"
+	<Extension path = "/MonoDevelop/ProjectModel/FileFormats">
+		<FileFormat id = "MonoMakefile" name="Mono Makefile"
 						class = "MonoDeveloper.MonoMakefileFormat" />
 	</Extension>
 	
-  <Extension path = "/MonoDevelop/ProjectModel/Gui/ProjectOptions/ConfigurationOptions">
+  <Extension path = "/MonoDevelop/ProjectModel/Gui/ProjectOptions">
     <Condition id="activeproject" value = "MonoMakefile">
-		<DialogPanel id = "MonoMakefileOptionsPanel"
+		<Section id = "MonoMakefileOptionsPanel"
 					 _label = "Output"
 					 class = "MonoDevelop.Projects.Gui.Dialogs.OutputOptionsPanel"/>
     </Condition>

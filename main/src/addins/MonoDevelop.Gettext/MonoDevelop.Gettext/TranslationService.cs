@@ -42,16 +42,6 @@ namespace MonoDevelop.Gettext
 {
 	public class TranslationService
 	{
-		static bool isTranslationEnabled = false;
-		
-		public static bool IsTranslationEnabled {
-			get {
-				return isTranslationEnabled;
-			}
-			set {
-				isTranslationEnabled = value;
-			}
-		}
 		static bool isInitialized = false;
 		internal static void InitializeTranslationService ()
 		{
@@ -59,29 +49,12 @@ namespace MonoDevelop.Gettext
 			if (isInitialized)
 				return;
 			isInitialized = true;
-			IdeApp.ProjectOperations.CombineOpened += new CombineEventHandler (CombineOpened);
-			IdeApp.ProjectOperations.CombineClosed += delegate {
-				isTranslationEnabled = false;
-			};
 		}
 		
 		public static IFileScanner[] GetFileScanners ()
 		{
 			return (IFileScanner[]) AddinManager.GetExtensionObjects ("/MonoDevelop/Gettext/FileScanners", typeof(IFileScanner), true);
 		}
-		
-		static void CombineOpened (object sender, CombineEventArgs e)
-		{
-			foreach (CombineEntry entry in e.Combine.Entries) {
-				if (entry is TranslationProject) {
-					isTranslationEnabled = true;
-					return;
-				}
-			}
-			isTranslationEnabled = false;
-		}
-		
-
 	}
 	
 	public class TranslationServiceStartupCommand : CommandHandler

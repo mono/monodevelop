@@ -3,6 +3,7 @@ using System;
 using Gtk;
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
+using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Deployment
 {
@@ -86,12 +87,43 @@ namespace MonoDevelop.Deployment
 			this.builder = builder;
 			this.context = builder.CreateDeployContext ();
 			
-			files = builder.GetDeployFiles (context);
-			
 			store.Clear ();
+			
+			string[] configs = builder.GetSupportedConfigurations ();
+			
+			string currentActive = comboConfigs.Active != -1 ? comboConfigs.ActiveText : null;
+			int i = Array.IndexOf (configs, currentActive);
+			if (i == -1) i = 0;
+			
+			((Gtk.ListStore)comboConfigs.Model).Clear ();
+			foreach (string conf in configs)
+				comboConfigs.AppendText (conf);
+			
+			if (configs.Length <= 1) {
+				labelFiles.Text = GettextCatalog.GetString ("The following files will be included in the package:");
+				comboConfigs.Visible = false;
+				if (configs.Length == 0)
+					return;
+			}
+			else if (configs.Length > 0) {
+				comboConfigs.Visible = true;
+				labelFiles.Text = GettextCatalog.GetString ("The following files will be included in the package for the configuration:");
+			}
+			
+			comboConfigs.Active = i;
+		}
+		
+		void FillFiles ()
+		{
+			store.Clear ();
+			if (comboConfigs.Active == -1)
+				return;
+
+			files = builder.GetDeployFiles (context, comboConfigs.ActiveText);
+			
 			foreach (DeployFile file in files) {
 				string desc = GetDirectoryName (file.TargetDirectoryID);
-				store.AppendValues (file, file.DisplayName, desc, file.RelativeTargetPath, file.SourceCombineEntry.Name, builder.IsFileIncluded (file));
+				store.AppendValues (file, file.DisplayName, desc, file.RelativeTargetPath, file.SourceSolutionItem.Name, builder.IsFileIncluded (file));
 			}
 		}
 		
@@ -117,6 +149,11 @@ namespace MonoDevelop.Deployment
 			bool inc = !builder.IsFileIncluded (file);
 			builder.SetFileIncluded (file, inc);
 			store.SetValue (iter, ColIncluded, inc);
+		}
+
+		protected virtual void OnComboConfigsChanged (object sender, System.EventArgs e)
+		{
+			FillFiles ();
 		}
 	}
 }

@@ -44,7 +44,7 @@ namespace MonoDevelop.WebReferences.NodeBuilders
 		protected override void Initialize()
 		{
 			base.Initialize();
-			IdeApp.ProjectOperations.FileRemovedFromProject += (ProjectFileEventHandler) DispatchService.GuiDispatch (new ProjectFileEventHandler (OnRemoveFile));
+			IdeApp.Workspace.FileRemovedFromProject += (ProjectFileEventHandler) DispatchService.GuiDispatch (new ProjectFileEventHandler (OnRemoveFile));
 		}
 		
 		/// <summary>Gets the node name for the current node.</summary>

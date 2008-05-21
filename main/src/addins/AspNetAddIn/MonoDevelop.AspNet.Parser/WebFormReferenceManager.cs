@@ -126,7 +126,7 @@ namespace MonoDevelop.AspNet.Parser
 				}
 			}
 			
-			doc.Project.ProjectReferences.Add (
+			doc.Project.References.Add (
 			    new ProjectReference (ReferenceType.Assembly, type.Assembly.ToString ()));
 		/*
 		TODO: insert the reference into the document tree 

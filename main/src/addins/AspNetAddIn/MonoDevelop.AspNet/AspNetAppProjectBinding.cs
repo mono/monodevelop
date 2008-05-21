@@ -69,7 +69,7 @@ namespace MonoDevelop.AspNet
 			info.ProjectName = Path.GetFileNameWithoutExtension (file);
 			info.CombinePath = Path.GetDirectoryName (file);
 			Project project = CreateProject (language, info, null);
-			project.ProjectFiles.Add (new ProjectFile (file));
+			project.Files.Add (new ProjectFile (file));
 			return project;
 		}
 

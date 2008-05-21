@@ -42,7 +42,7 @@ namespace MonoDevelop.WebReferences
 		public WebReferenceItemCollection(Project project)
 		{
 			string webRefPath = Library.GetWebReferencePath(project);
-			foreach (ProjectFile file in project.ProjectFiles)
+			foreach (ProjectFile file in project.Files)
 			{
 				if (file.FilePath.StartsWith(webRefPath))
 				{

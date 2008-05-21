@@ -132,8 +132,8 @@ namespace MonoDevelop.Ide.Gui.Pads
 			
 			endMark = buffer.CreateMark ("end-mark", buffer.EndIter, false);
 
-			IdeApp.ProjectOperations.CombineOpened += (CombineEventHandler) DispatchService.GuiDispatch (new CombineEventHandler (OnCombineOpen));
-			IdeApp.ProjectOperations.CombineClosed += (CombineEventHandler) DispatchService.GuiDispatch (new CombineEventHandler (OnCombineClosed));
+			IdeApp.Workspace.FirstWorkspaceItemOpened += OnCombineOpen;
+			IdeApp.Workspace.LastWorkspaceItemClosed += OnCombineClosed;
 
 			Control.ShowAll ();
 			
@@ -187,13 +187,13 @@ namespace MonoDevelop.Ide.Gui.Pads
 			asyncOperation.Cancel ();
 		}
 
-		void OnCombineOpen (object sender, CombineEventArgs e)
+		void OnCombineOpen (object sender, EventArgs e)
 		{
 			lock (updates.SyncRoot) outputDispatcherRunning = false;
 			buffer.Clear ();
 		}
 
-		void OnCombineClosed (object sender, CombineEventArgs e)
+		void OnCombineClosed (object sender, EventArgs e)
 		{
 			lock (updates.SyncRoot) outputDispatcherRunning = false;
 			buffer.Clear ();

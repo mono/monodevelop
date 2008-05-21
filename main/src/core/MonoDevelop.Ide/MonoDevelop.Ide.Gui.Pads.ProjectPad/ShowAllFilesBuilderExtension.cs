@@ -68,8 +68,8 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			deletedHandler = (EventHandler<FileEventArgs>) DispatchService.GuiDispatch (new EventHandler<FileEventArgs> (OnSystemFileDeleted));
 			renamedHandler = (EventHandler<FileCopyEventArgs>) DispatchService.GuiDispatch (new EventHandler<FileCopyEventArgs> (OnSystemFileRenamed));
 			
-			IdeApp.ProjectOperations.FileAddedToProject += fileAddedHandler;
-			IdeApp.ProjectOperations.FileRemovedFromProject += fileRemovedHandler;
+			IdeApp.Workspace.FileAddedToProject += fileAddedHandler;
+			IdeApp.Workspace.FileRemovedFromProject += fileRemovedHandler;
 			
 			FileService.FileRenamed += renamedHandler;
 			FileService.FileRemoved += deletedHandler;
@@ -78,8 +78,8 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		
 		public override void Dispose ()
 		{
-			IdeApp.ProjectOperations.FileAddedToProject -= fileAddedHandler;
-			IdeApp.ProjectOperations.FileRemovedFromProject -= fileRemovedHandler;
+			IdeApp.Workspace.FileAddedToProject -= fileAddedHandler;
+			IdeApp.Workspace.FileRemovedFromProject -= fileRemovedHandler;
 			FileService.FileRenamed -= renamedHandler;
 			FileService.FileRemoved -= deletedHandler;
 			FileService.FileCreated -= createdHandler;
@@ -139,7 +139,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				Project project = (Project) builder.GetParentDataItem (typeof(Project), true);
 				
 				foreach (string file in Directory.GetFiles (path)) {
-					if (project.ProjectFiles.GetFile (file) == null)
+					if (project.Files.GetFile (file) == null)
 						builder.AddChild (new SystemFile (file, project));
 				}
 				
@@ -239,7 +239,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			if (e.IsDirectory) {
 				EnsureReachable (project, e.FileName + "/");
 			} else {
-				if (project.ProjectFiles.GetFile (e.FileName) == null)
+				if (project.Files.GetFile (e.FileName) == null)
 					AddFile (e.FileName, project);
 			}
 		}
@@ -308,7 +308,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		bool HasProjectFiles (Project project, string path)
 		{
 			string basePath = path + Path.DirectorySeparatorChar;
-			foreach (ProjectFile f in project.ProjectFiles)
+			foreach (ProjectFile f in project.Files)
 				if (f.Name.StartsWith (basePath))
 					return true;
 			return false;

@@ -63,12 +63,12 @@ namespace MonoDevelop.VersionControl
 			icon_added = MonoDevelop.Core.Gui.Services.Resources.GetIcon (Gtk.Stock.Add, Gtk.IconSize.Menu);
 			icon_controled = Gdk.Pixbuf.LoadFromResource("overlay_controled.png");
 			
-			IdeApp.ProjectOperations.FileAddedToProject += OnFileAdded;
-			//IdeApp.ProjectOperations.FileChangedInProject += OnFileChanged;
-			//IdeApp.ProjectOperations.FileRemovedFromProject += OnFileRemoved;
-			//IdeApp.ProjectOperations.FileRenamedInProject += OnFileRenamed;
+			IdeApp.Workspace.FileAddedToProject += OnFileAdded;
+			//IdeApp.Workspace.FileChangedInProject += OnFileChanged;
+			//IdeApp.Workspace.FileRemovedFromProject += OnFileRemoved;
+			//IdeApp.Workspace.FileRenamedInProject += OnFileRenamed;
 			
-			IdeApp.ProjectOperations.EntryAddedToCombine += OnEntryAdded;
+			IdeApp.Workspace.ItemAddedToSolution += OnEntryAdded;
 			IdeApp.Exiting += delegate {
 				DelayedSaveComments (null);
 			};
@@ -154,7 +154,7 @@ namespace MonoDevelop.VersionControl
 			return GettextCatalog.GetString ("Unversioned");
 		}
 		
-		public static Repository GetRepository (CombineEntry entry)
+		public static Repository GetRepository (IWorkspaceObject entry)
 		{
 			Repository repo = (Repository) entry.ExtendedProperties [typeof(Repository)];
 			if (repo != null)
@@ -385,25 +385,30 @@ namespace MonoDevelop.VersionControl
 			}
 		}
 */
-		static void CombineEntryAddFiles (CombineEntry entry, ArrayList files)
+		static void SolutionItemAddFiles (SolutionItem entry, ArrayList files)
 		{
-			files.Add (entry.FileName);
+			if (entry is SolutionEntityItem) {
+				string file = ((SolutionEntityItem)entry).FileName;
+				if (!File.Exists (file))
+					return;
+				files.Add (file);
+			}
 			
 			if (entry is Project) {
-				foreach (ProjectFile file in ((Project) entry).ProjectFiles) {
+				foreach (ProjectFile file in ((Project) entry).Files) {
 					if (file.Subtype != Subtype.Directory)
 						files.Add (file.FilePath);
 				}
-			} else if (entry is Combine) {
-				foreach (CombineEntry ent in ((Combine) entry).Entries)
-					CombineEntryAddFiles (ent, files);
+			} else if (entry is SolutionFolder) {
+				foreach (SolutionItem ent in ((SolutionFolder) entry).Items)
+					SolutionItemAddFiles (ent, files);
 			}
 		}
 		
-		static void OnEntryAdded (object o, CombineEntryEventArgs args)
+		static void OnEntryAdded (object o, SolutionItemEventArgs args)
 		{
 			// handles addition of solutions and projects
-			CombineEntry parent = (CombineEntry) args.CombineEntry.ParentCombine;
+			SolutionItem parent = (SolutionItem) args.SolutionItem.ParentFolder;
 			
 			if (parent == null)
 				return;
@@ -413,7 +418,7 @@ namespace MonoDevelop.VersionControl
 			if (repo == null)
 				return;
 			
-			CombineEntry entry = args.CombineEntry;
+			SolutionItem entry = args.SolutionItem;
 			string path = entry.BaseDirectory;
 			
 			if (!repo.CanAdd (path))
@@ -426,7 +431,7 @@ namespace MonoDevelop.VersionControl
 			ArrayList files = new ArrayList ();
 			
 			files.Add (path);
-			CombineEntryAddFiles (entry, files);
+			SolutionItemAddFiles (entry, files);
 			
 			using (IProgressMonitor monitor = GetStatusMonitor ()) {
 				string[] paths = (string[]) files.ToArray (typeof (string));

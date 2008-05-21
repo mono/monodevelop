@@ -181,6 +181,8 @@
 		<StockIcon stockid = "md-addin" resource = "plugin-32.png" size = "LargeToolbar"/>
 		<StockIcon stockid = "md-workspace" resource = "workspace-16.png" size="Menu"/>
 		<StockIcon stockid = "md-workspace" resource = "workspace-32.png" size="Dnd" />
+		<StockIcon stockid = "md-solution-folder-open" resource = "solution-folder-open-16.png" size="Menu"/>
+		<StockIcon stockid = "md-solution-folder-closed" resource = "solution-folder-closed-16.png" size="Menu"/>
 		<StockIcon stockid = "md-regular-file" resource = "gnome-fs-regular.png" />
 	</Extension>
 

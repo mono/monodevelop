@@ -96,7 +96,8 @@ FILES =  \
 	Parser/SharpDevelopTree/Method.cs \
 	Parser/SharpDevelopTree/ReturnType.cs \
 	Parser/TypeVisitor.cs \
-	Project/CSharpCompilerParameters.cs
+	Project/CSharpCompilerParameters.cs \
+	Project/CSharpResourceIdBuilder.cs
 
 RES =  \
 	CSharpBinding.addin.xml \
@@ -104,6 +105,7 @@ RES =  \
 	gtk-gui/objects.xml \
 	icons/C\#.FileIcon \
 	icons/csharp-icon-32.png \
+	md1format.xml \
 	templates/AssemblyInfo.xft.xml \
 	templates/ConsoleProject.xpt.xml \
 	templates/EmptyCSharpFile.xft.xml \

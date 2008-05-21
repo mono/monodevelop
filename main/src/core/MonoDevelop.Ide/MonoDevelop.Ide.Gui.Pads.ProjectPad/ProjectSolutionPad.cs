@@ -48,22 +48,19 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			base.OnSelectionChanged (sender, args);
 			ITreeNavigator nav = treeView.GetSelectedNode ();
 			if (nav != null) {
-				Project p = (Project) nav.GetParentDataItem (typeof(Project), true);
-				IdeApp.ProjectOperations.CurrentSelectedProject = p;
-				Combine c = (Combine) nav.GetParentDataItem (typeof(Combine), true);
-				IdeApp.ProjectOperations.CurrentSelectedCombine = c;
-				CombineEntry ce = (CombineEntry) nav.GetParentDataItem (typeof(CombineEntry), true);
-				IdeApp.ProjectOperations.CurrentSelectedCombineEntry = ce;
+				WorkspaceItem c = (WorkspaceItem) nav.GetParentDataItem (typeof(WorkspaceItem), true);
+				IdeApp.ProjectOperations.CurrentSelectedWorkspaceItem = c;
+				SolutionItem ce = (SolutionItem) nav.GetParentDataItem (typeof(SolutionItem), true);
+				IdeApp.ProjectOperations.CurrentSelectedSolutionItem = ce;
 				IdeApp.ProjectOperations.CurrentSelectedItem = nav.DataItem;
 			}
 		}
 		
-		protected override void OnCloseCombine (object sender, CombineEventArgs e)
+		protected override void OnCloseWorkspace (object sender, WorkspaceItemEventArgs e)
 		{
-			base.OnCloseCombine (sender, e);
-			IdeApp.ProjectOperations.CurrentSelectedProject = null;
-			IdeApp.ProjectOperations.CurrentSelectedCombine = null;
-			IdeApp.ProjectOperations.CurrentSelectedCombineEntry = null;
+			base.OnCloseWorkspace (sender, e);
+			IdeApp.ProjectOperations.CurrentSelectedSolutionItem = null;
+			IdeApp.ProjectOperations.CurrentSelectedWorkspaceItem = null;
 		}
 		
 		void OnWindowChanged (object ob, EventArgs args)
@@ -77,7 +74,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			if (doc != null && doc.Project != null) {
 				string file = doc.FileName;
 				if (file != null) {
-					ProjectFile pf = doc.Project.ProjectFiles.GetFile (doc.FileName);
+					ProjectFile pf = doc.Project.Files.GetFile (doc.FileName);
 					if (pf != null) {
 						ITreeNavigator nav = treeView.GetNodeAtObject (pf, true);
 						if (nav != null) {

@@ -47,18 +47,18 @@ namespace MonoDevelop.ChangeLogAddIn
 		[ItemProperty]
 		ChangeLogPolicy policy = ChangeLogPolicy.UseParentPolicy;
 		
-		CombineEntry entry;
+		SolutionItem entry;
 		
 		internal ChangeLogData ()
 		{
 		}
 		
-		internal ChangeLogData (CombineEntry entry)
+		internal ChangeLogData (SolutionItem entry)
 		{
 			this.entry = entry;
 		}
 		
-		internal void Bind (CombineEntry entry)
+		internal void Bind (SolutionItem entry)
 		{
 			this.entry = entry;
 		}
@@ -74,7 +74,7 @@ namespace MonoDevelop.ChangeLogAddIn
 		public ChangeLogPolicy Policy
 		{
 			get {
-				if (policy == ChangeLogPolicy.UseParentPolicy && entry.ParentCombine == null)
+				if (policy == ChangeLogPolicy.UseParentPolicy && (entry is SolutionFolder) && ((SolutionFolder)entry).IsRoot)
 					return ChangeLogPolicy.UpdateNearestChangeLog;
 				else
 					return policy; 

@@ -1,3 +1,9 @@
+2008-05-21  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Core/Properties.cs, MonoDevelop.Core/PropertyService.cs,
+	  MonoDevelop.Core/SystemAssemblyService.cs: New project model
+	  changes.
+
 2008-04-29  Aaron Bockover  <abock@gnome.org>
 
 	* MonoDevelop.Core.Execution/ProcessService.cs: Use the new 

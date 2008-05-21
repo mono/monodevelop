@@ -24,9 +24,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			tvFiles = new TreeView (tsFiles);
 			TreeIter topCombineIter = TreeIter.Zero;
 			Hashtable projectIters = new Hashtable ();
-			if (IdeApp.ProjectOperations.CurrentOpenCombine != null) {
-				topCombineIter = tsFiles.AppendValues (GettextCatalog.GetString ("Solution: {0}", IdeApp.ProjectOperations.CurrentOpenCombine.Name), true, null, false);
-			}
+			
 			foreach (Document doc in IdeApp.Workbench.Documents) {
 				if (!doc.IsDirty)
 					continue;

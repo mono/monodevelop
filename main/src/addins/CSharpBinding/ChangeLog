@@ -1,3 +1,13 @@
+2008-05-21  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Gui/OverrideCompletionData.cs, Gui/CodeGenerationPanel.cs,
+	  Gui/CompilerOptionsPanelWidget.cs, CSharpBinding.addin.xml,
+	  md1format.xml, CSharpBinding.mdp, Parser/Parser.cs,
+	  CSharpBindingCompilerManager.cs,
+	  Project/CSharpResourceIdBuilder.cs,
+	  Project/CSharpCompilerParameters.cs, gtk-gui/gui.stetic,
+	  Makefile.am: New project model changes.
+
 2008-05-08  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* CSharpBinding.addin.xml: Set "isText" attribute on the mimetype

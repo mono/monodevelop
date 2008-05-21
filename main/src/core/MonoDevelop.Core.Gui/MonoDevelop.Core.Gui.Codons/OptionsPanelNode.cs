@@ -84,7 +84,10 @@ namespace MonoDevelop.Core.Gui.Codons
 		
 		public virtual IOptionsPanel CreatePanel ()
 		{
-			return (IOptionsPanel) Addin.CreateInstance (typeName, true);
+			IOptionsPanel p = Addin.CreateInstance (typeName, true) as IOptionsPanel;
+			if (p == null)
+				throw new System.InvalidOperationException ("Type '" + typeName + "' does not implement IOptionsPanel");
+			return p;
 		}
 	}
 	

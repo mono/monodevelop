@@ -66,7 +66,7 @@ namespace MonoDevelop.Gettext
 				this.Destroy ();
 			};
 			
-			store = new TreeStore (typeof(string), typeof(bool), typeof(string), typeof(CombineEntry), typeof(bool));
+			store = new TreeStore (typeof(string), typeof(bool), typeof(string), typeof(SolutionItem), typeof(bool));
 			treeviewProjectList.Model = store;
 			treeviewProjectList.HeadersVisible = false;
 			
@@ -89,7 +89,7 @@ namespace MonoDevelop.Gettext
 			
 			treeviewProjectList.AppendColumn (col);
 			
-			FillTree (TreeIter.Zero, project.ParentCombine);
+			FillTree (TreeIter.Zero, project.ParentFolder);
 		}
 		
 		void ActiveToggled (object sender, ToggledArgs e)
@@ -97,7 +97,7 @@ namespace MonoDevelop.Gettext
 			TreeIter iter;
 			if (store.GetIterFromString (out iter, e.Path)) {
 				bool         isTogglod = (bool)store.GetValue (iter, 1);
-				CombineEntry entry     = (CombineEntry)store.GetValue (iter, 3);
+				SolutionItem entry     = (SolutionItem)store.GetValue (iter, 3);
 				if (entry is Project) {
 					TranslationProjectInformation info = project.GetProjectInformation (entry, true);
 					info.IsIncluded = !isTogglod;
@@ -107,9 +107,9 @@ namespace MonoDevelop.Gettext
 		}
 		
 		TreeStore store;
-		string GetIcon (CombineEntry entry)
+		string GetIcon (SolutionItem entry)
 		{
-			if (entry is Combine)
+			if (entry is SolutionFolder)
 				return MonoDevelop.Core.Gui.Stock.Solution;
 			
 			if (entry is Project)
@@ -118,10 +118,10 @@ namespace MonoDevelop.Gettext
 			return MonoDevelop.Core.Gui.Stock.Project;
 		}
 		
-		bool IsIncluded (CombineEntry entry)
+		bool IsIncluded (SolutionItem entry)
 		{
-			if (entry is Combine) {
-				foreach (CombineEntry childEntry in ((Combine)entry).Entries)
+			if (entry is SolutionFolder) {
+				foreach (SolutionItem childEntry in ((SolutionFolder)entry).Items)
 					if (!IsIncluded (childEntry))
 						return false;
 				return true;
@@ -133,20 +133,20 @@ namespace MonoDevelop.Gettext
 			return true;
 		}
 			
-		void FillTree (TreeIter iter, CombineEntry entry)
+		void FillTree (TreeIter iter, SolutionItem entry)
 		{
 			TreeIter curIter;
 			if (!iter.Equals (TreeIter.Zero)) {
-				curIter = store.AppendValues (iter, GetIcon (entry), entry is Combine ? false : IsIncluded (entry), entry.Name, entry, !(entry is Combine));
+				curIter = store.AppendValues (iter, GetIcon (entry), entry is SolutionFolder ? false : IsIncluded (entry), entry.Name, entry, !(entry is SolutionFolder));
 			} else {
-				curIter = store.AppendValues (GetIcon (entry), entry is Combine ? false : IsIncluded (entry), entry.Name, entry, !(entry is Combine));
+				curIter = store.AppendValues (GetIcon (entry), entry is SolutionFolder ? false : IsIncluded (entry), entry.Name, entry, !(entry is SolutionFolder));
 			}
-			if (entry is Combine) {
+			if (entry is SolutionFolder) {
 				// Add solutions first, then projects
-				foreach (CombineEntry childEntry in ((Combine)entry).Entries)
-					if (childEntry is Combine)
+				foreach (SolutionItem childEntry in ((SolutionFolder)entry).Items)
+					if (childEntry is SolutionFolder)
 						FillTree (curIter, childEntry);
-				foreach (CombineEntry childEntry in ((Combine)entry).Entries)
+				foreach (SolutionItem childEntry in ((SolutionFolder)entry).Items)
 					if (!(childEntry is TranslationProject) && (childEntry is Project))
 						FillTree (curIter, childEntry);
 			}

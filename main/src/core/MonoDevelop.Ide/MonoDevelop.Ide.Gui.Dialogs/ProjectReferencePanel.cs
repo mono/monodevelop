@@ -129,14 +129,14 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 		
 		void PopulateListView (Project configureProject)
 		{
-			Combine openCombine = configureProject.RootCombine;
+			Solution openSolution = configureProject.ParentSolution;
 			
-			if (openCombine == null) {
+			if (openSolution == null) {
 				return;
 			}
 			
 			bool circDeps = false;
-			foreach (Project projectEntry in openCombine.GetAllProjects()) {
+			foreach (DotNetProject projectEntry in openSolution.GetAllSolutionItems<DotNetProject>()) {
 
 				if (projectEntry == configureProject) {
 					continue;
@@ -155,13 +155,13 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 				store.AppendValues ("", "<span foreground='dimgrey'>" + GettextCatalog.GetString ("(Projects referencing '{0}' are not shown,\nsince cyclic dependencies are not allowed)", configureProject.Name) + "</span>", null, false, null, false);
 		}
 		
-		bool ProjectReferencesProject (Project project, string targetProject)
+		bool ProjectReferencesProject (DotNetProject project, string targetProject)
 		{
-			foreach (ProjectReference pr in project.ProjectReferences) {
+			foreach (ProjectReference pr in project.References) {
 				if (pr.Reference == targetProject)
 					return true;
 				
-				Project pref = project.RootCombine.FindProject (pr.Reference);
+				DotNetProject pref = project.ParentSolution.FindProjectByName (pr.Reference) as DotNetProject;
 				if (pref != null && ProjectReferencesProject (pref, targetProject))
 					return true;
 			}

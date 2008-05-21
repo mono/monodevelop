@@ -1,3 +1,23 @@
+2008-05-21  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Gettext.NodeBuilders/TranslationNodeBuilder.cs,
+	  MonoDevelop.Gettext.NodeBuilders/TranslationProjectNodeBuilder.cs,
+	  MonoDevelop.Gettext.mdp,
+	  MonoDevelop.Gettext.Editor/POEditorWidget.cs,
+	  gtk-gui/MonoDevelop.Gettext.Translator.LanguageChooserDialog.cs,
+	  gtk-gui/MonoDevelop.Gettext.TranslationProjectOptionsDialog.cs,
+	  gtk-gui/gui.stetic, Makefile.am,
+	  MonoDevelop.Gettext/MakefileHandler.cs,
+	  MonoDevelop.Gettext/TranslationService.cs,
+	  MonoDevelop.Gettext/TranslationProjectOptionsDialog.cs,
+	  MonoDevelop.Gettext/GettextTool.cs,
+	  MonoDevelop.Gettext/TranslationProject.cs,
+	  MonoDevelop.Gettext/Translation.cs,
+	  MonoDevelop.Gettext/GettextFeature.cs,
+	  MonoDevelop.Gettext/GettextFeatureWidget.cs,
+	  MonoDevelop.Gettext/TranslationCollection.cs: New project model
+	  changes.
+
 2008-05-08  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Gettext.addin.xml: Set "isText" attribute on the mimetype

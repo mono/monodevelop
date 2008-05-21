@@ -162,7 +162,7 @@ namespace CBinding.Parser
 		/// <see cref="System.String"/>
 		/// </returns>
 		private static string findFileInIncludes (Project project, string filename) {
-			CProjectConfiguration conf = project.ActiveConfiguration as CProjectConfiguration;
+			CProjectConfiguration conf = project.DefaultConfiguration as CProjectConfiguration;
 			string fullpath = string.Empty;
 			
 			if (!Path.IsPathRooted (filename)) {

@@ -88,7 +88,7 @@ namespace MonoDevelop.Deployment.Targets
 			}
 		}
 		
-		protected override void OnBuild (IProgressMonitor monitor, DeployContext ctx)
+		protected override bool OnBuild (IProgressMonitor monitor, DeployContext ctx)
 		{
 			string consMsg;
 			IConsole cons;
@@ -111,6 +111,7 @@ namespace MonoDevelop.Deployment.Targets
 			if (cons is MonitorConsole) {
 				((MonitorConsole)cons).Dispose ();
 			}
+			return true;
 		}
 	}
 	

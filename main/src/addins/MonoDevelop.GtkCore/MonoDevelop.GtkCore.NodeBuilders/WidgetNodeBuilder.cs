@@ -141,11 +141,11 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 					if (dialog.DeleteFile) {
 						ProjectFile file = w.Project.Project.GetProjectFile (w.SourceCodeFile);
 						if (file != null)
-							w.Project.Project.ProjectFiles.Remove (file);
+							w.Project.Project.Files.Remove (file);
 					}
 					w.Project.Remove (w);
 					w.Project.Save (false);
-					IdeApp.ProjectOperations.SaveProject (w.Project.Project);
+					IdeApp.ProjectOperations.Save (w.Project.Project);
 				}
 			}
 		}

@@ -22,6 +22,7 @@ using System;
 using System.IO;
 using System.Xml;
 using System.Collections;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Reflection;
@@ -33,7 +34,7 @@ using MonoDevelop.Core.ProgressMonitoring;
 
 namespace MonoDevelop.Ide.Templates
 {
-	internal class CombineDescriptor: ICombineEntryDescriptor
+	internal class CombineDescriptor
 	{
 		ArrayList entryDescriptors = new ArrayList();
 		
@@ -54,29 +55,29 @@ namespace MonoDevelop.Ide.Templates
 			this.typeName = type;
 		}
 		
-		public ICombineEntryDescriptor[] EntryDescriptors {
-			get { return (ICombineEntryDescriptor[]) entryDescriptors.ToArray (typeof(ICombineEntryDescriptor)); }
+		public ISolutionItemDescriptor[] EntryDescriptors {
+			get { return (ISolutionItemDescriptor[]) entryDescriptors.ToArray (typeof(ISolutionItemDescriptor)); }
 		}
 		
-		public string CreateEntry (ProjectCreateInformation projectCreateInformation, string defaultLanguage)
+		public WorkspaceItem CreateEntry (ProjectCreateInformation projectCreateInformation, string defaultLanguage)
 		{
-			Combine newCombine;
-			
+			WorkspaceItem item;
+
 			if (typeName != null && typeName.Length > 0) {
 				Type type = Type.GetType (typeName);
-				if (type == null) {
+				if (type == null || !typeof(WorkspaceItem).IsAssignableFrom (type)) {
 					MessageService.ShowError (GettextCatalog.GetString ("Can't create solution with type: {0}", typeName));
-					return String.Empty;
+					return null;
 				}
-				newCombine = (Combine) Activator.CreateInstance (type);
+				item = (WorkspaceItem) Activator.CreateInstance (type);
 			} else
-				newCombine = new Combine();
-
+				item = new Solution ();
+			
 			string  newCombineName = StringParserService.Parse(name, new string[,] { 
 				{"ProjectName", projectCreateInformation.CombineName}
 			});
 			
-			newCombine.Name = newCombineName;
+			item.Name = newCombineName;
 			
 			string oldCombinePath = projectCreateInformation.CombinePath;
 			string oldProjectPath = projectCreateInformation.ProjectBasePath;
@@ -91,28 +92,32 @@ namespace MonoDevelop.Ide.Templates
 				}
 			}
 
-			// Create sub projects
-			foreach (ICombineEntryDescriptor entryDescriptor in entryDescriptors) {
-				newCombine.AddEntry (entryDescriptor.CreateEntry (projectCreateInformation, defaultLanguage), null);
+			Solution sol = item as Solution;
+			if (sol != null) {
+				List<string> configs = new List<string> ();
+				
+				// Create sub projects
+				foreach (ISolutionItemDescriptor entryDescriptor in entryDescriptors) {
+					SolutionItem sit = entryDescriptor.CreateEntry (projectCreateInformation, defaultLanguage);
+					sol.RootFolder.Items.Add (sit);
+					if (sit is IConfigurationTarget) {
+						foreach (ItemConfiguration c in ((IConfigurationTarget)sit).Configurations) {
+							if (!configs.Contains (c.Id))
+								configs.Add (c.Id);
+						}
+					}
+				}
+				
+				// Create configurations
+				foreach (string conf in configs)
+					sol.AddConfiguration (conf, true);
 			}
 			
 			projectCreateInformation.CombinePath = oldCombinePath;
 			projectCreateInformation.ProjectBasePath = oldProjectPath;
+			item.FileName = Path.Combine (projectCreateInformation.CombinePath, newCombineName);
 			
-			// Save combine
-			using (IProgressMonitor monitor = new NullProgressMonitor ()) {
-				string combineLocation = Path.Combine (projectCreateInformation.CombinePath, newCombineName + ".mds");
-				if (File.Exists(combineLocation)) {
-					if (MessageService.Confirm (GettextCatalog.GetString ("Solution file {0} already exists, do you want to overwrite\nthe existing file?", combineLocation), AlertButton.OverwriteFile)) {
-						newCombine.Save (combineLocation, monitor);
-					}
-				} else {
-					newCombine.Save (combineLocation, monitor);
-				}
-			
-				newCombine.Dispose();
-				return combineLocation;
-			}
+			return item;
 		}
 		
 		public static CombineDescriptor CreateCombineDescriptor(XmlElement element)
@@ -137,7 +142,8 @@ namespace MonoDevelop.Ide.Templates
 							combineDescriptor.entryDescriptors.Add (CreateCombineDescriptor((XmlElement)node));
 							break;
 						case "CombineEntry":
-							combineDescriptor.entryDescriptors.Add (CombineEntryDescriptor.CreateDescriptor((XmlElement)node));
+						case "SolutionItem":
+							combineDescriptor.entryDescriptors.Add (SolutionItemDescriptor.CreateDescriptor((XmlElement)node));
 							break;
 					}
 				}

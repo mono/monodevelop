@@ -288,7 +288,7 @@ namespace MonoDevelop.Gettext {
             // Internal child MonoDevelop.Gettext.TranslationProjectOptionsDialog.ActionArea
             Gtk.HButtonBox w24 = this.ActionArea;
             w24.Name = "dialog1_ActionArea";
-            w24.Spacing = 10;
+            w24.Spacing = 6;
             w24.BorderWidth = ((uint)(5));
             w24.LayoutStyle = ((Gtk.ButtonBoxStyle)(4));
             // Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild

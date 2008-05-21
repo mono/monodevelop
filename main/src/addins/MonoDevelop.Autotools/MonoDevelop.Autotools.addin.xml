@@ -57,7 +57,7 @@
 		</Category>
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/Combine/Tools">
+	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/Solution/Tools">
 		<CommandItem id = "MonoDevelop.Autotools.Commands.GenerateFiles" insertafter="ExportListSeparator"/>
 	</Extension>
 
@@ -89,8 +89,8 @@
 		<DataType class = "MonoDevelop.Autotools.TarballDeployTarget" />
 	</Extension>
 
-	<Extension path = "/MonoDevelop/ProjectModel/Gui/ProjectOptions/GeneralOptions/Common">
-		<DialogPanel id= "Makefile" _label = "Makefile Integration"
+	<Extension path = "/MonoDevelop/ProjectModel/Gui/ProjectOptions/Common">
+		<Section id= "Makefile" _label = "Makefile Integration"
 			class = "MonoDevelop.Autotools.MakefileOptionPanel" />
 	</Extension>
 

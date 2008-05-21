@@ -16,6 +16,16 @@
 		<Addin id="Ide" version="0.19.0"/>
 	</Dependencies>
 	
+	<Extension path = "/MonoDevelop/ProjectModel/MSBuildItemTypes">
+		<DotNetProject 
+			language="C#" 
+			extension="csproj" 
+			guid="{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
+			import="$(MSBuildBinPath)\Microsoft.CSharp.targets"
+			resourceHandler="CSharpBinding.CSharpResourceIdBuilder"
+			/>
+	</Extension>
+
 	<Extension path = "/MonoDevelop/ProjectModel/Ambiences">
 		<Class id    = "C#"
 		       class = "CSharpBinding.CSharpAmbience"/>
@@ -60,26 +70,19 @@
 		            extensions = "*.resources,*.resx"/>
 	</Extension>
 
-	<Extension path = "/MonoDevelop/ProjectModel/Gui/ProjectOptions/ConfigurationOptions">
+	<Extension path = "/MonoDevelop/ProjectModel/Gui/ProjectOptions/Build/General">
 		<Condition id="activelanguage" value="C#">
-			<DialogPanel id = "CSharpCodeGenerationPanel"
-			             _label = "Compiler Options"
-			             class = "CSharpBinding.CodeGenerationPanel"/>
-			<DialogPanel id = "CSharpOutputOptionsPanel"
-			             _label = "Output"
-			             class = "MonoDevelop.Projects.Gui.Dialogs.OptionPanels.OutputOptionsPanel"/>
+			<Panel id = "CSharpCompilerOptionsPanel"
+			             _label = "C#"
+			             class = "CSharpBinding.CompilerOptionsPanel"/>
 		</Condition>
 	</Extension>
-	
-	
-	<Extension path = "/MonoDevelop/ProjectModel/Gui/ProjectOptions/GeneralOptions/Common">
+
+	<Extension path = "/MonoDevelop/ProjectModel/Gui/ProjectOptions/Build/Compiler">
 		<Condition id="activelanguage" value="C#">
-				<DialogPanel id = "RuntimeOptionsPanel"
-				             _label = "Runtime Options"
-				             class = "MonoDevelop.Projects.Gui.Dialogs.OptionPanels.RuntimeOptionsPanel"/>
-				<DialogPanel id = "CSharpCompilerOptionsPanel"
-				             _label = "Compiler Options"
-				             class = "CSharpBinding.CompilerOptionsPanel"/>
+			<Panel id = "CSharpCodeGenerationPanel"
+			             _label = "Compiler"
+			             class = "CSharpBinding.CodeGenerationPanel"/>
 		</Condition>
 	</Extension>
 
@@ -103,6 +106,10 @@
 
 	<Extension path = "/MonoDevelop/Ide/TextEditorExtensions">
 		<Class class = "CSharpBinding.CSharpTextEditorExtension" />
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/ProjectModel/MD1SerializationMaps">
+		<SerializationMap resource="md1format.xml" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/DomParser">

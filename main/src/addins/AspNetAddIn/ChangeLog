@@ -1,3 +1,26 @@
+2008-05-21  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.AspNet/AspNetAppProjectBinding.cs,
+	  MonoDevelop.AspNet/AspNetAppProject.cs,
+	  MonoDevelop.AspNet/CodeBehind.cs,
+	  MonoDevelop.AspNet/VerifyCodeBehindBuildStep.cs,
+	  MonoDevelop.AspNet/AspNetParserService.cs,
+	  MonoDevelop.AspNet/AspNetToolboxNode.cs,
+	  MonoDevelop.AspNet/WebTypeManager.cs,
+	  MonoDevelop.AspNet/AspNetAppProjectConfiguration.cs,
+	  MonoDevelop.AspNet.addin.xml,
+	  MonoDevelop.AspNet.Deployment/WebDeployService.cs,
+	  MonoDevelop.AspNet.Deployment/WebDeployOptionsPanel.cs,
+	  MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs,
+	  MonoDevelop.AspNet.Gui/AspNetConfigurationPanel.cs,
+	  MonoDevelop.AspNet.Gui/AspNetConfigurationPanelWidget.cs,
+	  MonoDevelop.AspNet.Gui/XspOptionsPanel.cs,
+	  MonoDevelop.AspNet.Gui/XspOptionsPanelWidget.cs,
+	  gtk-gui/gui.stetic, AspNetAddIn.mdp, Makefile.am,
+	  MonoDevelop.AspNet.Parser/WebFormReferenceManager.cs,
+	  MonoDevelop.AspNet.Parser/SuggestedHandlerCompletionData.cs,
+	  MonoDevelop.AspNet.Parser/Document.cs: New project model changes.
+
 2008-05-19  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* Makefile.am: Remove conditional build for ASP.NET support; there's no

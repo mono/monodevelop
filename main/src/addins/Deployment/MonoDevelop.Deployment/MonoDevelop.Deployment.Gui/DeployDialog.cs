@@ -1,6 +1,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using Gtk;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Gui;
@@ -14,11 +15,11 @@ namespace MonoDevelop.Deployment.Gui
 		List<PackageBuilder> builders = new List<PackageBuilder> ();
 		PackageBuilder currentBuilder;
 		Gtk.Widget currentEditor;
-		CombineEntryCollection combineList;
-		CombineEntryCollection projectsList;
-		CombineEntry defaultEntry;
+		ReadOnlyCollection<SolutionFolder> combineList;
+		ReadOnlyCollection<PackagingProject> projectsList;
+		SolutionItem defaultEntry;
 		
-		public DeployDialog (CombineEntry defaultEntry, bool createBuilderOnly)
+		public DeployDialog (SolutionItem defaultEntry, bool createBuilderOnly)
 		{
 			this.Build();
 			notebook.ShowTabs = false;
@@ -65,8 +66,8 @@ namespace MonoDevelop.Deployment.Gui
 			get { return radioCreateProject.Active; }
 		}
 		
-		public Combine NewProjectSolution {
-			get { return CreateNewProject ? combineList [comboCreateProject.Active] as Combine : null; }
+		public SolutionFolder NewProjectSolution {
+			get { return CreateNewProject ? combineList [comboCreateProject.Active] as SolutionFolder : null; }
 		}
 		
 		public string NewProjectName {
@@ -102,12 +103,12 @@ namespace MonoDevelop.Deployment.Gui
 		{
 			// Fill the combine list
 			int n=0, sel=-1;
-			combineList = IdeApp.ProjectOperations.CurrentOpenCombine.GetAllEntries (typeof(Combine));
-			foreach (Combine c in combineList) {
+			combineList = IdeApp.ProjectOperations.CurrentSelectedSolution.GetAllSolutionItems<SolutionFolder> ();
+			foreach (SolutionFolder c in combineList) {
 				string name = c.Name;
-				Combine co = c;
-				while (!co.IsRoot) {
-					co = co.ParentCombine;
+				SolutionFolder co = c;
+				while (co.ParentFolder != null) {
+					co = co.ParentFolder;
 					name = co.Name + " / " + name;
 				}
 				comboCreateProject.AppendText (name);
@@ -119,17 +120,17 @@ namespace MonoDevelop.Deployment.Gui
 				comboCreateProject.Active = 0;
 			
 			// Fill the packaging project list
-			projectsList = IdeApp.ProjectOperations.CurrentOpenCombine.GetAllEntries (typeof(PackagingProject));
+			projectsList = IdeApp.ProjectOperations.CurrentSelectedSolution.GetAllSolutionItems<PackagingProject> ();
 			if (projectsList.Count == 0) {
 				radioAddProject.Sensitive = false;
 			}
 			else {
 				foreach (PackagingProject p in projectsList) {
 					string name = p.Name;
-					Combine c = p.ParentCombine;
+					SolutionFolder c = p.ParentFolder;
 					while (c != null) {
 						name = c.Name + " / " + name;
-						c = c.ParentCombine;
+						c = c.ParentFolder;
 					}
 					comboSelProject.AppendText (name);
 				}
@@ -195,7 +196,7 @@ namespace MonoDevelop.Deployment.Gui
 				if (entryTree.GetSelectedEntry () == null)
 					msg = GettextCatalog.GetString ("Please select a project or solution.");
 				else {
-					currentBuilder.SetCombineEntry (entryTree.GetSelectedEntry (), entryTree.GetSelectedChildren ());
+					currentBuilder.SetSolutionItem (entryTree.GetSelectedEntry (), entryTree.GetSelectedChildren ());
 					UpdateBuilderEditor ();
 				}
 				break;

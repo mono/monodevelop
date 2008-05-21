@@ -21,6 +21,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 
 using MonoDevelop.Core.Gui.Components;
@@ -53,8 +54,9 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		TreeStore catStore;
 		
 		// Add To Project widgets
-		Combine solution;
+		WorkspaceItem solution;
 		string[] projectNames;
+		Project[] projectRefs;
 		
 		Project parentProject;
 		string basePath;
@@ -543,8 +545,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		void AddToProjectComboChanged (object o, EventArgs e)
 		{
 			int which = projectAddCombo.Active;
-			string projectName = projectNames[which];
-			Project project = solution.FindProject (projectName);
+			Project project = projectRefs [which];
 			
 			if (project != null) {
 				if (basePath == null || basePath == String.Empty ||
@@ -586,12 +587,9 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			nameEntry.Changed += new EventHandler (NameChanged);
 			nameEntry.Activated += new EventHandler (OpenEvent);
 			
-			CombineEntryCollection projects = null;
-			if (parentProject == null) {
-				solution = IdeApp.ProjectOperations.CurrentOpenCombine;
-				if (solution != null)
-					projects = solution.GetAllProjects ();
-			}
+			ReadOnlyCollection<Project> projects = null;
+			if (parentProject == null)
+				projects = IdeApp.Workspace.GetAllProjects ();
 			
 			if (projects != null) {
 				Project curProject = IdeApp.ProjectOperations.CurrentSelectedProject;
@@ -601,23 +599,26 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				projectAddCheckbox.Toggled += new EventHandler (AddToProjectToggled);
 				
 				projectNames = new string [projects.Count];
+				projectRefs = new Project [projects.Count];
 				int i = 0;
 				
-				foreach (Project project in projects)
-					projectNames[i++] = project.Name;
+				bool singleSolution = IdeApp.Workspace.Items.Count == 1 && IdeApp.Workspace.Items [0] is Solution;
 				
-				Array.Sort (projectNames);
-				if (curProject != null) {
-					for (i = 0; i < projectNames.Length; i++) {
-						if (projectNames[i] == curProject.Name)
-							break;
-					}
+				foreach (Project project in projects) {
+					projectRefs[i] = project;
+					if (singleSolution)
+						projectNames[i++] = project.Name;
+					else
+						projectNames[i++] = project.ParentSolution.Name + "/" + project.Name;
 				}
+				
+				Array.Sort (projectNames, projectRefs);
+				i = Array.IndexOf (projectRefs, curProject);
 				
 				foreach (string pn in projectNames)
 					projectAddCombo.AppendText (pn);
 				
-				projectAddCombo.Active = i;
+				projectAddCombo.Active = i != -1 ? i : 0;
 				projectAddCombo.Sensitive = projectAddCheckbox.Active;
 				projectAddCombo.Changed += new EventHandler (AddToProjectComboChanged);
 				

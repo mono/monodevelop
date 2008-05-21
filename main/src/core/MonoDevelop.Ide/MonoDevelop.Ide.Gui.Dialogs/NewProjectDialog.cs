@@ -48,16 +48,17 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 		IconView TemplateView;
 		TreeStore catStore;
 		
-		bool openCombine;
+		bool openSolution;
 		string basePath;
-		bool newCombine;
+		bool newSolution;
 		string lastName = "";
 		ProjectTemplate selectedItem;
-		CombineEntry currentEntry;
-		Combine parentCombine;
+		SolutionItem currentEntry;
+		SolutionFolder parentFolder;
 		CombineEntryFeatureSelector featureList;
+		IWorkspaceFileObject newItem;
 			
-		public NewProjectDialog (Combine parentCombine, bool openCombine, bool newCombine, string basePath)
+		public NewProjectDialog (SolutionFolder parentFolder, bool openCombine, string basePath)
 		{
 			Build ();
 			featureList = new CombineEntryFeatureSelector ();
@@ -66,16 +67,16 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 			notebook.Page = 0;
 			notebook.ShowTabs = false;
 			
-			this.parentCombine = parentCombine;
+			this.parentFolder = parentFolder;
 			this.basePath = basePath;
-			this.newCombine = newCombine;
-			this.openCombine = openCombine;
+			this.newSolution = parentFolder == null;
+			this.openSolution = openCombine;
 			TransientFor = IdeApp.Workbench.RootWindow;
-			Title = newCombine ? GettextCatalog.GetString ("New Solution") : GettextCatalog.GetString ("New Project");
+			Title = newSolution ? GettextCatalog.GetString ("New Solution") : GettextCatalog.GetString ("New Project");
 
 			InitializeTemplates ();
 			
-			if (!newCombine) {
+			if (!newSolution) {
 				txt_subdirectory.Hide ();
 				chk_combine_directory.Active = false;
 				chk_combine_directory.Hide ();
@@ -199,7 +200,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 		{
 			foreach (ProjectTemplate template in ProjectTemplate.ProjectTemplates) {
 				// When creating a project (not a solution) hide solutions that don't have at least one project
-				if (!newCombine && template.CombineDescriptor.EntryDescriptors.Length == 0)
+				if (!newSolution && template.CombineDescriptor.EntryDescriptors.Length == 0)
 					continue;
 				TemplateItem titem = new TemplateItem(template);
 				Category cat = GetCategory(titem.Template.Category);
@@ -265,6 +266,12 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 				return System.IO.Path.Combine (path, GetValidDir (txt_name.Text));
 			}
 		}
+
+		public IWorkspaceObject NewItem {
+			get {
+				return newItem;
+			}
+		}
 		
 		protected void SolutionCheckChanged (object sender, EventArgs e)
 		{
@@ -289,27 +296,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 			lbl_will_save_in.Text = GettextCatalog.GetString("Project will be saved at") + " " + ProjectLocation;
 		}
 		
-		public bool IsFilenameAvailable(string fileName)
-		{
-			return true;
-		}
-		
-		public void SaveFile(Project project, string filename, string content, bool showFile)
-		{
-			project.ProjectFiles.Add (new ProjectFile(filename));
-			
-			StreamWriter sr = System.IO.File.CreateText (filename);
-			sr.Write (StringParserService.Parse(content, new string[,] { {"PROJECT", txt_name.Text}, {"FILE", System.IO.Path.GetFileName(filename)}}));
-			sr.Close();
-			
-			if (showFile) {
-				string longfilename = System.IO.Path.Combine (ProjectLocation, StringParserService.Parse (filename, new string[,] { {"PROJECT", txt_name.Text}}));
-				IdeApp.Workbench.OpenDocument (longfilename);
-			}
-		}
-		
-		public string NewCombineEntryLocation;
-		
 		void OpenEvent (object sender, EventArgs e)
 		{
 			if (!btn_new.Sensitive)
@@ -319,28 +305,28 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 				if (!CreateProject ())
 					return;
 				
-				CombineEntry entry;
-				try {
-					entry = Services.ProjectService.ReadCombineEntry (NewCombineEntryLocation, new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor ());
-				}
-				catch (Exception ex) {
-					MessageService.ShowException (ex, GettextCatalog.GetString ("The file '{0}' could not be loaded.", NewCombineEntryLocation));
-					return;
-				}
-				if (parentCombine == null) {
-					parentCombine = (Combine) entry;
-					if (parentCombine.Entries.Count > 0)
-						currentEntry = parentCombine.Entries [0];
-					else
-						currentEntry = parentCombine;
+				Solution parentSolution = null;
+				
+				if (parentFolder == null) {
+					WorkspaceItem item = (WorkspaceItem) newItem;
+					parentSolution = item as Solution;
+					if (parentSolution != null) {
+						if (parentSolution.RootFolder.Items.Count > 0)
+							currentEntry = parentSolution.RootFolder.Items [0] as SolutionItem;
+						parentFolder = parentSolution.RootFolder;
+					}
 				} else {
-					currentEntry = entry;
+					SolutionItem item = (SolutionItem) newItem;
+					parentSolution = parentFolder.ParentSolution;
+					currentEntry = item;
 				}
-				try {
-					featureList.Fill (parentCombine, currentEntry, CombineEntryFeatures.GetFeatures (parentCombine, currentEntry));
-				}
-				catch (Exception ex) {
-					LoggingService.LogError (ex.ToString ());
+				if (currentEntry != null) {
+					try {
+						featureList.Fill (parentFolder, currentEntry, SolutionItemFeatures.GetFeatures (parentFolder, currentEntry));
+					}
+					catch (Exception ex) {
+						LoggingService.LogError (ex.ToString ());
+					}
 				}
 				notebook.Page++;
 				btn_new.Label = Gtk.Stock.Ok;
@@ -350,16 +336,22 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 					return;
 				
 				// New combines (not added to parent combines) already have the project as child.
-				if (!newCombine || (newCombine && !openCombine))
-					parentCombine.Entries.Add (currentEntry);
+				if (!newSolution) {
+					// Make sure the new item is saved before adding. In this way the
+					// version control add-in will be able to put it under version control.
+					if (currentEntry is SolutionEntityItem)
+						IdeApp.ProjectOperations.Save ((SolutionEntityItem) currentEntry);
+					parentFolder.Items.Add (currentEntry);
+				}
 				
 				featureList.ApplyFeatures ();
-				if (newCombine)
-					IdeApp.ProjectOperations.SaveCombineEntry (parentCombine);
-				else
-					IdeApp.ProjectOperations.SaveCombine ();
+				if (parentFolder != null)
+					IdeApp.ProjectOperations.Save (parentFolder.ParentSolution);
+				else {
+					IdeApp.ProjectOperations.Save (newItem);
+				}
 				
-				if (openCombine)
+				if (openSolution)
 					selectedItem.OpenCreatedCombine();
 				Respond (ResponseType.Ok);
 			}
@@ -392,7 +384,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 				return false;
 			}
 
-			if (parentCombine != null && parentCombine.RootCombine.FindProject (name) != null) {
+			if (parentFolder != null && parentFolder.ParentSolution.FindProjectByName (name) != null) {
 				MessageService.ShowError (GettextCatalog.GetString ("A Project with that name is already in your Project Space"));
 				return false;
 			}
@@ -427,10 +419,10 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 //				cinfo.ProjectTemplate = item.Template;
 			
 			try {
-				if (newCombine)
-					NewCombineEntryLocation = item.CreateCombine (cinfo);
+				if (newSolution)
+					newItem = item.CreateWorkspaceItem (cinfo);
 				else
-					NewCombineEntryLocation = item.CreateProject (cinfo);
+					newItem = item.CreateProject (cinfo);
 			} catch (Exception ex) {
 				MessageService.ShowException (ex, GettextCatalog.GetString ("The project could not be created"));
 				return false;

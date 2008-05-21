@@ -64,13 +64,13 @@ namespace MonoDevelop.NUnit
 		
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
 		{
-			return ((IConfiguration)dataObject).Name;
+			return ((SolutionItemConfiguration)dataObject).Id;
 		}
 		
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
 		{
-			IConfiguration conf = dataObject as IConfiguration;
-			label = conf.Name;
+			SolutionItemConfiguration conf = dataObject as SolutionItemConfiguration;
+			label = conf.Id;
 			icon = Context.GetIcon (Stock.ClosedFolder);
 		}
 
@@ -126,7 +126,7 @@ namespace MonoDevelop.NUnit
 				foreach (string file in fdiag.Filenames)
 					config.Assemblies.Add (new TestAssembly (file));
 				
-				IdeApp.ProjectOperations.SaveCombine();
+				IdeApp.Workspace.Save();
 			}
 			finally {
 				fdiag.Destroy ();

@@ -18,18 +18,24 @@ namespace MonoDevelop.Deployment.Targets
 		[ItemProperty]
 		string format;
 		
-		IFileFormat fileFormat;
+		FileFormat fileFormat;
 		
 		public override string Description {
 			get { return "Archive of Sources"; }
 		}
 		
-		public IFileFormat FileFormat {
+		public override bool CanBuild (SolutionItem entry)
+		{
+			return entry is SolutionFolder || entry is SolutionEntityItem;
+		}
+
+		
+		public FileFormat FileFormat {
 			get {
 				if (fileFormat == null) {
 					if (string.IsNullOrEmpty (format))
 						return null;
-					foreach (IFileFormat f in Services.ProjectService.FileFormats.GetAllFileFormats ()) {
+					foreach (FileFormat f in Services.ProjectService.FileFormats.GetAllFileFormats ()) {
 						if (f.GetType ().FullName == format) {
 							fileFormat = f;
 							break;
@@ -52,10 +58,14 @@ namespace MonoDevelop.Deployment.Targets
 			set { targetFile = value; }
 		}
 		
-		protected override void OnBuild (IProgressMonitor monitor, DeployContext ctx)
+		protected override bool OnBuild (IProgressMonitor monitor, DeployContext ctx)
 		{
-			CombineEntry entry = RootCombineEntry;
-			string sourceFile = entry.FileName;
+			string sourceFile;
+			SolutionItem entry = RootSolutionItem;
+			if (entry is SolutionFolder)
+				sourceFile = entry.ParentSolution.FileName;
+			else
+				sourceFile = ((SolutionEntityItem)entry).FileName;
 			
 			AggregatedProgressMonitor mon = new AggregatedProgressMonitor ();
 			mon.AddSlaveMonitor (monitor, MonitorAction.WriteLog|MonitorAction.ReportError|MonitorAction.ReportWarning|MonitorAction.ReportSuccess);
@@ -71,12 +81,14 @@ namespace MonoDevelop.Deployment.Targets
 				
 				// Export the project
 				
-				CombineEntry[] ents = GetChildEntries ();
+				SolutionItem[] ents = GetChildEntries ();
 				string[] epaths = new string [ents.Length];
 				for (int n=0; n<ents.Length; n++)
-					epaths [n] = ents [n].FileName;
+					epaths [n] = ents [n].ItemId;
 				
 				Services.ProjectService.Export (mon, sourceFile, epaths, folder, FileFormat);
+				if (!mon.AsyncOperation.Success)
+					return false;
 				
 				// Create the archive
 				string td = Path.GetDirectoryName (targetFile);
@@ -89,12 +101,14 @@ namespace MonoDevelop.Deployment.Targets
 			}
 			if (monitor.AsyncOperation.Success)
 				monitor.Log.WriteLine (GettextCatalog.GetString ("Created file: {0}", targetFile));
+			return true;
 		}
 		
-		public override void InitializeSettings (CombineEntry entry)
+		public override void InitializeSettings (SolutionItem entry)
 		{
 			targetFile = Path.Combine (entry.BaseDirectory, entry.Name) + ".tar.gz";
-			fileFormat = entry.FileFormat;
+			if (entry.ParentSolution != null)
+				fileFormat = entry.ParentSolution.FileFormat;
 		}
 
 		
@@ -134,13 +148,13 @@ namespace MonoDevelop.Deployment.Targets
 		{
 			List<PackageBuilder> list = new List<PackageBuilder> ();
 			
-			foreach (IFileFormat format in Services.ProjectService.FileFormats.GetFileFormatsForObject (RootCombineEntry)) {
+			foreach (FileFormat format in Services.ProjectService.FileFormats.GetFileFormatsForObject (RootSolutionItem)) {
 				SourcesZipPackageBuilder pb = (SourcesZipPackageBuilder) Clone ();
 				pb.FileFormat = format;
 				
 				// The suffix for the archive will be the extension of the file format.
 				// If there is no extension, use the whole file name.
-				string fname = format.GetValidFormatName (RootCombineEntry, RootCombineEntry.FileName);
+				string fname = format.GetValidFileName (RootSolutionItem, RootSolutionItem.ParentSolution.FileName);
 				string suffix = Path.GetExtension (fname);
 				if (suffix.Length > 0)
 					suffix = suffix.Substring (1).ToLower (); // Remove the initial dot

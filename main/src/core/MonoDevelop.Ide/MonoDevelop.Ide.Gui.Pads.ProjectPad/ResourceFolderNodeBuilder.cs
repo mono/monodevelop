@@ -70,7 +70,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
 		{
 			Project project = ((ResourceFolder)dataObject).Project;
-			foreach (ProjectFile file in project.ProjectFiles)
+			foreach (ProjectFile file in project.Files)
 				if (file.BuildAction == BuildAction.EmbedAsResource)
 					return true;
 			return false;
@@ -87,7 +87,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		public override void BuildChildNodes (ITreeBuilder builder, object dataObject)
 		{
 			Project project = ((ResourceFolder)dataObject).Project;
-			foreach (ProjectFile file in project.ProjectFiles)
+			foreach (ProjectFile file in project.Files)
 				if (file.BuildAction == BuildAction.EmbedAsResource)
 					builder.AddChild (file);
 		}
@@ -111,13 +111,13 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			CurrentNode.Expanded = true;
 		
 			foreach (string fileName in files) {
-				ProjectFile file = project.ProjectFiles.GetFile (fileName);
+				ProjectFile file = project.Files.GetFile (fileName);
 				if (file != null)
 					file.BuildAction = BuildAction.EmbedAsResource;
 				else
 					project.AddFile (fileName, BuildAction.EmbedAsResource);
 			}
-			IdeApp.ProjectOperations.SaveProject (project);
+			IdeApp.ProjectOperations.Save (project);
 		}
 		
 		string[] AskFiles (Project project)

@@ -8,6 +8,7 @@ using MonoDevelop.Projects;
 using MonoDevelop.Projects.Serialization;
 using Stetic;
 using MonoDevelop.Core;
+using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.GtkCore.GuiBuilder
 {
@@ -31,10 +32,10 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				return null;
 				
 			Hashtable refs = new Hashtable ();
-			string of = FileService.GetFullPath (view.Project.GetOutputFileName ());
+			string of = FileService.GetFullPath (view.Project.GetOutputFileName (IdeApp.Workspace.ActiveConfiguration));
 			refs [of] = of;
-			foreach (ProjectReference pr in view.Project.ProjectReferences)
-				foreach (string f in pr.GetReferencedFileNames ()) {
+			foreach (ProjectReference pr in ((DotNetProject)view.Project).References)
+				foreach (string f in pr.GetReferencedFileNames (IdeApp.Workspace.ActiveConfiguration)) {
 					refs[FileService.GetFullPath (f)] = f;
 				}
 			

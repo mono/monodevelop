@@ -322,7 +322,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 					info.AddExportedWidget (codeBinder.TargetObject.Name);
 					info.UpdateGtkFolder ();
 					GtkCoreService.UpdateObjectsFile (gproject.Project);
-					IdeApp.ProjectOperations.SaveProject (gproject.Project);
+					IdeApp.ProjectOperations.Save (gproject.Project);
 				}
 			}
 		}
@@ -447,11 +447,11 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				else
 					pref = new ProjectReference (node.ReferenceType, node.Reference);
 				
-				foreach (ProjectReference pr in gproject.Project.ProjectReferences) {
+				foreach (ProjectReference pr in gproject.Project.References) {
 					if (pr.Reference == pref.Reference)
 						return;
 				}
-				gproject.Project.ProjectReferences.Add (pref);
+				gproject.Project.References.Add (pref);
 		}
 		
 		Widget MonoDevelop.DesignerSupport.IOutlinedDocument.GetOutlineWidget ()

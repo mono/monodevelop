@@ -113,10 +113,10 @@ namespace MonoDevelop.Deployment.NodeBuilders
 		{
 			PackagingProject project = CurrentNode.DataItem as PackagingProject;
 			if (MessageService.AskQuestion (GettextCatalog.GetString ("Are you sure you want to delete the project '{0}'?", project.Name), AlertButton.Cancel, AlertButton.Delete) == AlertButton.Delete) {
-				Combine c = project.ParentCombine;
-				c.RemoveEntry (project);
+				SolutionFolder c = project.ParentFolder;
+				c.Items.Remove (project);
 				project.Dispose ();
-				IdeApp.ProjectOperations.SaveCombineEntry (c);
+				IdeApp.ProjectOperations.Save (c.ParentSolution);
 			}
 		}
 		

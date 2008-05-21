@@ -54,14 +54,6 @@ namespace MonoDevelop.AspNet
 		
 		#region //override behaviour of base class to make sure things compile to the right places
 		
-		public override CompileTarget CompileTarget {
-			get { return CompileTarget.Library; }
-			set {
-				//if (value != CompileTarget.Library)
-				//	throw new InvalidOperationException ("ASP.NET applications must compile to a library.");
-			}
-		}
-		
 		string GetStandardOutputDirectory ()
 		{
 			if (SourceDirectory != null) {

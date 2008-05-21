@@ -118,12 +118,12 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				} else {
 					finfo.BuildAction = BuildAction.Exclude;
 				}
-				project.ProjectFiles.Add(finfo);
+				project.Files.Add(finfo);
 				
 				store.IterNext(ref current);
 			}
 			
-			IdeApp.ProjectOperations.SaveCombine ();
+			IdeApp.Workspace.Save ();
 			
 			Destroy();
 		}

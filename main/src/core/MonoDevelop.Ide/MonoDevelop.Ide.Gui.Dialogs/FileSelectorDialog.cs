@@ -48,9 +48,9 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		
 		Gtk.Label encodingLabel;
 		Gtk.OptionMenu encodingMenu;
-		
 		Gtk.Label viewerLabel;
 		Gtk.ComboBox viewerSelector;
+		Gtk.CheckButton closeWorkspaceCheck;
 		ArrayList currentViewers = new ArrayList ();
 		
 		public FileSelectorDialog (string title): this (title, Gtk.FileChooserAction.Open)
@@ -126,8 +126,13 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			viewerLabel.Xalign = 0;
 			table.Attach (viewerLabel, 0, 1, 1, 2, AttachOptions.Fill, AttachOptions.Fill, 0, 0);
 			
+			Gtk.HBox box = new HBox (false, 6);
 			viewerSelector = Gtk.ComboBox.NewText ();
-			table.Attach (viewerSelector, 1, 2, 1, 2, AttachOptions.Expand|AttachOptions.Fill, AttachOptions.Expand|AttachOptions.Fill, 0, 0);
+			box.PackStart (viewerSelector, true, true, 0);
+			closeWorkspaceCheck = new CheckButton (GettextCatalog.GetString ("Close current workspace"));
+			closeWorkspaceCheck.Active = true;
+			box.PackStart (closeWorkspaceCheck, false, false, 0);
+			table.Attach (box, 1, 2, 1, 2, AttachOptions.Expand|AttachOptions.Fill, AttachOptions.Expand|AttachOptions.Fill, 0, 0);
 			FillViewers ();
 			viewerSelector.Changed += OnViewerChanged;
 			
@@ -177,6 +182,10 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		public bool ShowViewerSelector {
 			get { return viewerLabel.Visible; }
 			set { viewerLabel.Visible = viewerSelector.Visible = value; }
+		}
+		
+		public bool CloseCurrentWorkspace {
+			get { return closeWorkspaceCheck.Active; }
 		}
 		
 		void FillEncodings ()
@@ -245,8 +254,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			
 			if (Filename == null || Filename.Length == 0 || System.IO.Directory.Exists (Filename))
 				return;
-			 
-			if (IdeApp.Services.ProjectService.IsCombineEntryFile (Filename)) {
+			
+			if (IdeApp.Services.ProjectService.IsWorkspaceItemFile (Filename) || IdeApp.Services.ProjectService.IsSolutionItemFile (Filename)) {
 				viewerSelector.AppendText (GettextCatalog.GetString ("Solution Workbench"));
 				currentViewers.Add (null);
 			}
@@ -271,13 +280,18 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			if (Filename == null || Filename.Length == 0 || System.IO.Directory.Exists (Filename)) {
 				encodingLabel.Sensitive = encodingMenu.Sensitive = false;
 				viewerLabel.Sensitive = viewerSelector.Sensitive = false;
+				closeWorkspaceCheck.Visible = false;
 				return;
 			}
-			    
-			if (IdeApp.Services.ProjectService.IsCombineEntryFile (Filename))
+			   
+			if (IdeApp.Services.ProjectService.IsWorkspaceItemFile (Filename) || IdeApp.Services.ProjectService.IsSolutionItemFile (Filename)) {
 				encodingLabel.Sensitive = encodingMenu.Sensitive = (SelectedViewer != null);
-			else
+				closeWorkspaceCheck.Visible = viewerLabel.Visible && IdeApp.Workspace.IsOpen;
+			}
+			else {
 				encodingLabel.Sensitive = encodingMenu.Sensitive = true;
+				closeWorkspaceCheck.Visible = false;
+			}
 
 			viewerLabel.Sensitive = viewerSelector.Sensitive = currentViewers.Count > 1;
 		}

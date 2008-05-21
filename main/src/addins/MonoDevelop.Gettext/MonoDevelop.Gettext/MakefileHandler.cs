@@ -39,12 +39,12 @@ namespace MonoDevelop.Gettext
 {
 	public class MakefileHandler: IMakefileHandler
 	{
-		public bool CanDeploy (CombineEntry entry, MakefileType type)
+		public bool CanDeploy (SolutionItem entry, MakefileType type)
 		{
 			return entry is TranslationProject;
 		}
 
-		public Makefile Deploy (AutotoolsContext ctx, CombineEntry entry, IProgressMonitor monitor)
+		public Makefile Deploy (AutotoolsContext ctx, SolutionItem entry, IProgressMonitor monitor)
 		{
 			Makefile mkfile = new Makefile ();
 			TranslationProject project = (TranslationProject) entry;
@@ -64,11 +64,11 @@ namespace MonoDevelop.Gettext
 			dir = dir.Replace ("@PACKAGE@", "$(PACKAGE)");
 			
 			TemplateEngine templateEngine = new TemplateEngine ();
-			templateEngine.Variables ["TOP_SRCDIR"] = FileService.AbsoluteToRelativePath (project.BaseDirectory, ctx.TargetCombine.BaseDirectory);
+			templateEngine.Variables ["TOP_SRCDIR"] = FileService.AbsoluteToRelativePath (project.BaseDirectory, ctx.TargetSolution.BaseDirectory);
 			templateEngine.Variables ["FILES"] = files.ToString ();
 			templateEngine.Variables ["BUILD_DIR"] = ".";
 			templateEngine.Variables ["INSTALL_DIR"] = "$(DESTDIR)" + dir;
-			templateEngine.Variables ["ALL_TARGET"] = (ctx.TargetCombine.BaseDirectory == project.BaseDirectory) ? "all-local" : "all";
+			templateEngine.Variables ["ALL_TARGET"] = (ctx.TargetSolution.BaseDirectory == project.BaseDirectory) ? "all-local" : "all";
 			
 			StringWriter sw = new StringWriter ();
 			

@@ -1,5 +1,5 @@
 //
-// CombineEntryConfigurationsPanel.cs
+// SolutionItemConfigurationsPanel.cs
 //
 // Author:
 //   Lluis Sanchez Gual
@@ -28,6 +28,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Reflection;
 
 using MonoDevelop.Projects;
@@ -39,19 +40,19 @@ using Gtk;
 
 namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 {
-	internal class CombineEntryConfigurationsPanel : AbstractOptionPanel
+	internal class SolutionItemConfigurationsPanel : ItemOptionsPanel
 	{
 		CombineEntryConfigurationsPanelWidget widget;
 		
-		public override void LoadPanelContents()
+		public override Widget CreatePanelWidget ()
 		{
-			Add (widget = new CombineEntryConfigurationsPanelWidget ((Properties) CustomizationObject));
+			MultiConfigItemOptionsDialog dlg = (MultiConfigItemOptionsDialog) ParentDialog;
+			return (widget = new CombineEntryConfigurationsPanelWidget (dlg));
 		}
 
-		public override bool StorePanelContents()
+		public override void ApplyChanges()
 		{
-	        bool success = widget.Store ();
-			return success;			
+	        widget.Store ();
        	}
 	}
 
@@ -60,12 +61,11 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 		TreeStore store;
 		ConfigurationData configData;
 		
-		public CombineEntryConfigurationsPanelWidget (Properties CustomizationObject)
+		public CombineEntryConfigurationsPanelWidget (MultiConfigItemOptionsDialog dlg)
 		{
 			Build ();
 			
-//			combine = (Combine)((Properties)CustomizationObject).Get("Combine");
-			configData = ((Properties)CustomizationObject).Get<ConfigurationData>("CombineConfigData");
+			configData = dlg.ConfigurationData;
 			
 			store = new TreeStore (typeof(object), typeof(string));
 			configsList.Model = store;
@@ -78,8 +78,8 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 			col.Title = GettextCatalog.GetString ("Configuration");
 			configsList.AppendColumn (col);
 			
-			foreach (CombineConfiguration cc in configData.Configurations)
-				store.AppendValues (cc, cc.Name);
+			foreach (ItemConfiguration cc in configData.Configurations)
+				store.AppendValues (cc, cc.Id);
 
 			addButton.Clicked += new EventHandler (OnAddConfiguration);
 			removeButton.Clicked += new EventHandler (OnRemoveConfiguration);
@@ -99,8 +99,8 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 			if (!configsList.Selection.GetSelected (out foo, out iter))
 				return;
 				
-			CombineConfiguration cc = (CombineConfiguration) store.GetValue (iter, 0);
-			AddConfiguration (cc.Name);
+			ItemConfiguration cc = (ItemConfiguration) store.GetValue (iter, 0);
+			AddConfiguration (cc.Id);
 		}
 
 		void AddConfiguration (string copyFrom)
@@ -115,8 +115,8 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 						} else if (configData.Configurations [dlg.ConfigName] != null) {
 							MessageService.ShowWarning (GettextCatalog.GetString ("A configuration with the name '{0}' already exists.", dlg.ConfigName));
 						} else {
-							CombineConfiguration cc = (CombineConfiguration) configData.AddConfiguration (dlg.ConfigName, copyFrom, dlg.CreateChildren);
-							store.AppendValues (cc, cc.Name);
+							ItemConfiguration cc = configData.AddConfiguration (dlg.ConfigName, copyFrom, dlg.CreateChildren);
+							store.AppendValues (cc, cc.Id);
 							done = true;
 						}
 					} else
@@ -139,12 +139,12 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 				return;
 			}
 			
-			CombineConfiguration cc = (CombineConfiguration) store.GetValue (iter, 0);
+			ItemConfiguration cc = (ItemConfiguration) store.GetValue (iter, 0);
 			DeleteConfigDialog dlg = new DeleteConfigDialog ();
 			
 			try {
 				if (dlg.Run () == (int) Gtk.ResponseType.Yes) {
-					configData.RemoveConfiguration (cc.Name, dlg.DeleteChildren);
+					configData.RemoveConfiguration (cc.Id, dlg.DeleteChildren);
 					store.Remove (ref iter);
 				}
 			} finally {
@@ -159,9 +159,9 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 			if (!configsList.Selection.GetSelected (out foo, out iter))
 				return;
 				
-			CombineConfiguration cc = (CombineConfiguration) store.GetValue (iter, 0);
+			ItemConfiguration cc = (ItemConfiguration) store.GetValue (iter, 0);
 			RenameConfigDialog dlg = new RenameConfigDialog ();
-			dlg.ConfigName = cc.Name;
+			dlg.ConfigName = cc.Id;
 			
 			try {
 				bool done = false;
@@ -172,8 +172,8 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 						} else if (configData.Configurations [dlg.ConfigName] != null) {
 							MessageService.ShowWarning (GettextCatalog.GetString ("A configuration with the name '{0}' already exists.", dlg.ConfigName));
 						} else {
-							configData.RenameConfiguration (cc.Name, dlg.ConfigName, dlg.RenameChildren);
-							store.SetValue (iter, 1, cc.Name);
+							configData.RenameConfiguration (cc.Id, dlg.ConfigName, dlg.RenameChildren);
+							store.SetValue (iter, 1, cc.Id);
 							done = true;
 						}
 					} else

@@ -40,19 +40,19 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassBrowser
 {
 	public class SolutionNodeBuilder : TypeNodeBuilder
 	{
-		CombineEntryChangeEventHandler combineEntryAdded;
-		CombineEntryChangeEventHandler combineEntryRemoved;
-		CombineEntryRenamedEventHandler combineNameChanged;
+		SolutionItemChangeEventHandler SolutionItemAdded;
+		SolutionItemChangeEventHandler SolutionItemRemoved;
+		EventHandler<WorkspaceItemRenamedEventArgs> combineNameChanged;
 		
 		public SolutionNodeBuilder ()
 		{
-			combineEntryAdded   = (CombineEntryChangeEventHandler) DispatchService.GuiDispatch (new CombineEntryChangeEventHandler (OnEntryAdded));
-			combineEntryRemoved = (CombineEntryChangeEventHandler) DispatchService.GuiDispatch (new CombineEntryChangeEventHandler (OnEntryRemoved));
-			combineNameChanged  = (CombineEntryRenamedEventHandler) DispatchService.GuiDispatch (new CombineEntryRenamedEventHandler (OnCombineRenamed));
+			SolutionItemAdded   = (SolutionItemChangeEventHandler) DispatchService.GuiDispatch (new SolutionItemChangeEventHandler (OnEntryAdded));
+			SolutionItemRemoved = (SolutionItemChangeEventHandler) DispatchService.GuiDispatch (new SolutionItemChangeEventHandler (OnEntryRemoved));
+			combineNameChanged  = (EventHandler<WorkspaceItemRenamedEventArgs>) DispatchService.GuiDispatch (new EventHandler<WorkspaceItemRenamedEventArgs> (OnCombineRenamed));
 		}
 			
 		public override Type NodeDataType {
-			get { return typeof(Combine); }
+			get { return typeof(Solution); }
 		}
 
 		public override string ContextMenuAddinPath {
@@ -61,42 +61,32 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassBrowser
 		
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
 		{
-			return ((Combine)dataObject).Name;
+			return ((Solution)dataObject).Name;
 		}
 		
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
 		{
-			Combine combine = dataObject as Combine;
-			label = GettextCatalog.GetString ("Solution {0}", combine.Name);
+			Solution solution = dataObject as Solution;
+			label = GettextCatalog.GetString ("Solution {0}", solution.Name);
 			icon = Context.GetIcon (Stock.Solution);
 		}
 
 		public override void BuildChildNodes (ITreeBuilder builder, object dataObject)
 		{
-			Combine combine = (Combine) dataObject;
-			foreach (CombineEntry entry in combine.Entries) {
+			Solution solution = (Solution) dataObject;
+			foreach (SolutionItem entry in solution.Items) {
 				builder.AddChild (entry);
 			}
 		}
 
-		void AddClasses (ITreeBuilder builder, CombineEntry entry)
-		{
-			if (entry is Combine) {
-				foreach (CombineEntry e in ((Combine)entry).Entries)
-					AddClasses (builder, e);
-			} else if (entry is Project) {
-				ProjectNodeBuilder.BuildChildNodes (builder, entry as Project);
-			}
-		}
-		
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
 		{
-			return ((Combine) dataObject).Entries.Count > 0;
+			return ((Solution) dataObject).Items.Count > 0;
 		}
 		
 		public override int CompareObjects (ITreeNavigator thisNode, ITreeNavigator otherNode)
 		{
-			if (otherNode.DataItem is Combine)
+			if (otherNode.DataItem is Solution)
 				return DefaultSort;
 			else
 				return -1;
@@ -104,44 +94,44 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassBrowser
 
 		public override void OnNodeAdded (object dataObject)
 		{
-			Combine combine = (Combine) dataObject;
-			combine.EntryAdded += combineEntryAdded;
-			combine.EntryRemoved += combineEntryRemoved;
-			combine.NameChanged += combineNameChanged;
+			Solution sol = (Solution) dataObject;
+			sol.SolutionItemAdded += SolutionItemAdded;
+			sol.SolutionItemRemoved += SolutionItemRemoved;
+			sol.NameChanged += combineNameChanged;
 		}
 		
 		public override void OnNodeRemoved (object dataObject)
 		{
-			Combine combine = (Combine) dataObject;
-			combine.EntryAdded -= combineEntryAdded;
-			combine.EntryRemoved -= combineEntryRemoved;
-			combine.NameChanged -= combineNameChanged;
+			Solution sol = (Solution) dataObject;
+			sol.SolutionItemAdded -= SolutionItemAdded;
+			sol.SolutionItemRemoved -= SolutionItemRemoved;
+			sol.NameChanged -= combineNameChanged;
 		}
 		
-		void OnEntryAdded (object sender, CombineEntryEventArgs e)
+		void OnEntryAdded (object sender, SolutionItemEventArgs e)
 		{
-			DispatchService.GuiDispatch (OnAddEntry, e.CombineEntry);
+			DispatchService.GuiDispatch (OnAddEntry, e.SolutionItem);
 		}
 		
 		void OnAddEntry (object newEntry)
 		{
-			CombineEntry e = (CombineEntry) newEntry;
-			ITreeBuilder tb = Context.GetTreeBuilder (e.ParentCombine);
+			SolutionItem item = (SolutionItem) newEntry;
+			ITreeBuilder tb = Context.GetTreeBuilder (item.ParentSolution);
 			if (tb != null) {
-				tb.AddChild (e, true);
+				tb.AddChild (item, true);
 				tb.Expanded = true;
 			}
 		}
 
-		void OnEntryRemoved (object sender, CombineEntryEventArgs e)
+		void OnEntryRemoved (object sender, SolutionItemEventArgs e)
 		{
-			ITreeBuilder tb = Context.GetTreeBuilder (e.CombineEntry);
+			ITreeBuilder tb = Context.GetTreeBuilder (e.SolutionItem);
 			if (tb != null) tb.Remove ();
 		}
 		
-		void OnCombineRenamed (object sender, CombineEntryRenamedEventArgs e)
+		void OnCombineRenamed (object sender, WorkspaceItemRenamedEventArgs e)
 		{
-			ITreeBuilder tb = Context.GetTreeBuilder (e.CombineEntry);
+			ITreeBuilder tb = Context.GetTreeBuilder (e.Item);
 			if (tb != null) 
 				tb.Update ();
 		}

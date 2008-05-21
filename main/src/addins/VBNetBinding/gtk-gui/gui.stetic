@@ -8,6 +8,7 @@
     <widget-library name="../../../../build/bin/MonoDevelop.Ide.dll" />
     <widget-library name="../../../../build/bin/MonoDevelop.Components.dll" />
     <widget-library name="../../../../build/AddIns/BackendBindings/MonoDevelop.VBNetBinding.dll" internal="true" />
+    <widget-library name="../../../../build/bin/MonoDevelop.Projects.Gui.dll" />
   </import>
   <widget class="Gtk.Bin" id="MonoDevelop.VBNetBinding.CodeGenerationPanelWidget" design-size="342 426">
     <property name="MemberName" />

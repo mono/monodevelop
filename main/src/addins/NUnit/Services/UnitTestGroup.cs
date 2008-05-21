@@ -41,7 +41,7 @@ namespace MonoDevelop.NUnit
 		{
 		}
 		
-		protected UnitTestGroup (string name, CombineEntry ownerCombineEntry): base (name, ownerCombineEntry)
+		protected UnitTestGroup (string name, IWorkspaceObject ownerSolutionItem): base (name, ownerSolutionItem)
 		{
 		}
 		

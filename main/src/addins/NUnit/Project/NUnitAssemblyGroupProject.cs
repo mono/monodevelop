@@ -37,7 +37,7 @@ using MonoDevelop.Projects.Serialization;
 namespace MonoDevelop.NUnit
 {
 	[DataInclude (typeof(NUnitAssemblyGroupProjectConfiguration))]
-	public class NUnitAssemblyGroupProject: CombineEntry
+	public class NUnitAssemblyGroupProject: SolutionEntityItem
 	{
 		RootTest rootTest;
 		
@@ -59,37 +59,37 @@ namespace MonoDevelop.NUnit
 			}
 		}
 		
-		public override IConfiguration CreateConfiguration (string name)
+		public override SolutionItemConfiguration CreateConfiguration (string name)
 		{
 			NUnitAssemblyGroupProjectConfiguration conf = new NUnitAssemblyGroupProjectConfiguration ();
 			conf.Name = name;
 			return conf;
 		}
 		
-		protected override void OnClean (IProgressMonitor monitor)
+		protected override void OnClean (IProgressMonitor monitor, string configuration)
 		{
 		}
 		
-		protected override ICompilerResult OnBuild (IProgressMonitor monitor)
+		protected override ICompilerResult OnBuild (IProgressMonitor monitor, string configuration)
 		{
 			return null;
 		}
 		
-		protected override void OnExecute (IProgressMonitor monitor, ExecutionContext context)
+		protected override void OnExecute (IProgressMonitor monitor, ExecutionContext context, string configuration)
 		{
 		}
 		
-		protected override bool OnGetNeedsBuilding ()
+		protected override bool OnGetNeedsBuilding (string configuration)
 		{
 			return false;
 		}
 		
-		protected override void OnSetNeedsBuilding (bool value)
+		protected override void OnSetNeedsBuilding (bool value, string configuration)
 		{
 		}
 	}
 	
-	public class NUnitAssemblyGroupProjectConfiguration: AbstractConfiguration
+	public class NUnitAssemblyGroupProjectConfiguration: SolutionItemConfiguration
 	{
 		TestAssemblyCollection assemblies;
 		
@@ -98,7 +98,7 @@ namespace MonoDevelop.NUnit
 			assemblies = new TestAssemblyCollection (this);
 		}
 		
-		public override void CopyFrom (IConfiguration other)
+		public override void CopyFrom (ItemConfiguration other)
 		{
 			base.CopyFrom (other);
 			
@@ -139,7 +139,7 @@ namespace MonoDevelop.NUnit
 			resultsPath = Path.Combine (project.BaseDirectory, "test-results");
 			ResultsStore = new XmlResultsStore (resultsPath, Path.GetFileName (project.FileName));
 			
-			lastConfig = (NUnitAssemblyGroupProjectConfiguration) project.ActiveConfiguration;
+			lastConfig = (NUnitAssemblyGroupProjectConfiguration) project.DefaultConfiguration;
 			if (lastConfig != null)
 				lastConfig.AssembliesChanged += new EventHandler (OnAssembliesChanged);
 		}
@@ -164,7 +164,7 @@ namespace MonoDevelop.NUnit
 			if (lastConfig != null)
 				lastConfig.AssembliesChanged -= new EventHandler (OnAssembliesChanged);
 
-			lastConfig = (NUnitAssemblyGroupProjectConfiguration) project.ActiveConfiguration;
+			lastConfig = (NUnitAssemblyGroupProjectConfiguration) project.DefaultConfiguration;
 			if (lastConfig != null)
 				lastConfig.AssembliesChanged += new EventHandler (OnAssembliesChanged);
 

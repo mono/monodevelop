@@ -52,16 +52,16 @@ namespace MonoDevelop.AspNet
 	[DataInclude (typeof(AspNetAppProjectConfiguration))]
 	public class AspNetAppProject : DotNetProject, IDeployable
 	{
-		[ItemProperty("XspParameters")]
+		[ItemProperty("XspParameters", IsExternal=true)]
 		protected XspParameters xspParameters = new XspParameters ();
 		
-		[ItemProperty ("VerifyCodeBehindFields")]
+		[ItemProperty ("VerifyCodeBehindFields", IsExternal=true)]
 		protected bool verifyCodeBehindFields = true;
 		
-		[ItemProperty ("VerifyCodeBehindEvents")]
+		[ItemProperty ("VerifyCodeBehindEvents", IsExternal=true)]
 		protected bool verifyCodeBehindEvents = true;
 		
-		[ItemProperty("WebDeployTargets")]
+		[ItemProperty("WebDeployTargets", IsExternal=true)]
 		[ItemProperty ("Target", ValueType=typeof(WebDeployTarget), Scope=1)]
 		protected WebDeployTargetCollection webDeployTargets = new WebDeployTargetCollection ();
 		
@@ -123,13 +123,15 @@ namespace MonoDevelop.AspNet
 				conf.SourceDirectory = BaseDirectory;
 			};
 		}
-		
+
+		/* TODO msbuild
 		protected override void Deserialize (ITypeSerializer handler, DataCollection data)
 		{
 			loading = true;
 			base.Deserialize (handler, data);
 			loading = false;
 		}
+				*/
 		
 		//AspNetAppProjectConfiguration needs SourceDirectory set so it can append "bin" to determine the output path
 		public override string FileName {
@@ -143,7 +145,7 @@ namespace MonoDevelop.AspNet
 			}
 		}		
 		
-		public override IConfiguration CreateConfiguration (string name)
+		public override SolutionItemConfiguration CreateConfiguration (string name)
 		{
 			AspNetAppProjectConfiguration conf = new AspNetAppProjectConfiguration ();
 			
@@ -157,22 +159,22 @@ namespace MonoDevelop.AspNet
 		#endregion
 		
 		//custom version of GetDeployFiles which puts libraries in the bin directory
-		public DeployFileCollection GetDeployFiles ()
+		public DeployFileCollection GetDeployFiles (string configuration)
 		{
 			DeployFileCollection files = new DeployFileCollection ();
 			
 			//add files that are marked to 'deploy'
 			//ASP.NET files etc all go relative to the application root
-			foreach (ProjectFile pf in ProjectFiles)
+			foreach (ProjectFile pf in Files)
 				if (pf.BuildAction == BuildAction.FileCopy)
 					files.Add (new DeployFile (this, pf.FilePath, pf.RelativePath, WebTargetDirectory.SiteRoot));
 			
 			//add referenced libraries
-			foreach (string refFile in GetReferenceDeployFiles (false))
+			foreach (string refFile in GetReferenceDeployFiles (false, configuration))
 				files.Add (new DeployFile (this, refFile, Path.GetFileName (refFile), WebTargetDirectory.AspNetBin));
 			
 			//add the compiled output file
-			string outputFile = this.GetOutputFileName ();
+			string outputFile = this.GetOutputFileName (configuration);
 			if (!string.IsNullOrEmpty (outputFile))
 				files.Add (new DeployFile (this, outputFile, Path.GetFileName (outputFile), WebTargetDirectory.AspNetBin));
 			
@@ -182,12 +184,12 @@ namespace MonoDevelop.AspNet
 		#region build/prebuild/execute
 		
 		
-		protected override ICompilerResult DoBuild (IProgressMonitor monitor)
+		protected override ICompilerResult DoBuild (IProgressMonitor monitor, string configuration)
 		{
 			//if no files are set to compile, then some compilers will error out
 			//though this is valid with ASP.NET apps, so we just avoid calling the compiler in this case
 			bool needsCompile = false;
-			foreach (ProjectFile pf in ProjectFiles) {
+			foreach (ProjectFile pf in Files) {
 				if (pf.BuildAction == BuildAction.Compile) {
 					needsCompile = true;
 					break;
@@ -196,7 +198,7 @@ namespace MonoDevelop.AspNet
 			
 			ICompilerResult ret;
 			if (needsCompile)
-				ret = base.DoBuild (monitor);
+				ret = base.DoBuild (monitor, configuration);
 			else
 				ret = new DefaultCompilerResult ();
 			
@@ -204,7 +206,7 @@ namespace MonoDevelop.AspNet
 			// it's not strictly necessary, as the Run/Deploy commands do it too..
 			// but some users expect it to happen during a compile, so it's easier all round this way
 			//need to do this after the compile, as the compile phase removes copied references
-			CopyReferencesToOutputPath (false);
+			CopyReferencesToOutputPath (false, configuration);
 			return ret;
 		}
 		
@@ -219,21 +221,23 @@ namespace MonoDevelop.AspNet
 			}
 		}
 		
-		protected override void DoExecute (IProgressMonitor monitor, ExecutionContext context)
+		protected override void DoExecute (IProgressMonitor monitor, ExecutionContext context, string config)
 		{
 			//check XSP is available
-			ClrVersion clrVersion = ((AspNetAppProjectConfiguration) ActiveConfiguration).ClrVersion;
+			
+			AspNetAppProjectConfiguration configuration = (AspNetAppProjectConfiguration) GetConfiguration (config);
+			
+			ClrVersion clrVersion = configuration.ClrVersion;
 			string xspVersion = (clrVersion == ClrVersion.Net_1_1)? "xsp" : "xsp2";
 			if (!CheckXsp (xspVersion)) {
 				monitor.ReportError (string.Format ("The \"{0}\" web server cannot be started. Please ensure that it is installed.",xspVersion), null);
 				return;
 			}
 			
-			CopyReferencesToOutputPath (false);
+			CopyReferencesToOutputPath (false, config);
 			
 			IConsole console = null;
 			AggregatedOperationMonitor operationMonitor = new AggregatedOperationMonitor (monitor);
-			AspNetAppProjectConfiguration configuration = (AspNetAppProjectConfiguration) ActiveConfiguration;
 			
 			try {
 				IExecutionHandler handler = context.ExecutionHandlerFactory.CreateExecutionHandler ("Native");
@@ -367,7 +371,7 @@ namespace MonoDevelop.AspNet
 		void UpdateWebConfigRefs ()
 		{
 			List<string> refs = new List<string> ();
-			foreach (ProjectReference reference in ProjectReferences) {
+			foreach (ProjectReference reference in References) {
 				//local copied assemblies are copied to the bin directory so ASP.NET references them automatically
 				if (reference.LocalCopy && (reference.ReferenceType == ReferenceType.Project || reference.ReferenceType == ReferenceType.Assembly))
 					continue;
@@ -533,7 +537,7 @@ namespace MonoDevelop.AspNet
 			
 			if (ClrVersion == MonoDevelop.Core.ClrVersion.Net_2_0)
 				foreach (string dir in specialDirs20)
-					if (ProjectFiles.GetFile (Path.Combine (BaseDirectory, dir)) == null)
+					if (Files.GetFile (Path.Combine (BaseDirectory, dir)) == null)
 						notPresent.Add (dir);
 			
 			return notPresent;

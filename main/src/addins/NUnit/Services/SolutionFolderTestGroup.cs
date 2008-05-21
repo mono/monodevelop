@@ -36,41 +36,41 @@ using NUnit.Core;
 
 namespace MonoDevelop.NUnit
 {
-	public class CombineTestGroup: UnitTestGroup
+	public class SolutionFolderTestGroup: UnitTestGroup
 	{
-		Combine combine;
+		SolutionFolder combine;
 		
-		public CombineTestGroup (Combine c): base (c.Name, c)
+		public SolutionFolderTestGroup (SolutionFolder c): base (c.Name, c)
 		{
-			string storeId = Path.GetFileName (c.FileName);
+			string storeId = c.ItemId;
 			string resultsPath = Path.Combine (c.BaseDirectory, "test-results");
 			ResultsStore = new XmlResultsStore (resultsPath, storeId);
 			
 			combine = c;
-			combine.EntryAdded += OnEntryChanged;
-			combine.EntryRemoved += OnEntryChanged;
+			combine.ItemAdded += OnEntryChanged;
+			combine.ItemRemoved += OnEntryChanged;
 			combine.NameChanged += OnCombineRenamed;
 		}
 		
-		public static CombineTestGroup CreateTest (Combine c)
+		public static SolutionFolderTestGroup CreateTest (SolutionFolder c)
 		{
-			return new CombineTestGroup (c);
+			return new SolutionFolderTestGroup (c);
 		}
 		
 		public override void Dispose ()
 		{
-			combine.EntryAdded -= OnEntryChanged;
-			combine.EntryRemoved -= OnEntryChanged;
+			combine.ItemAdded -= OnEntryChanged;
+			combine.ItemRemoved -= OnEntryChanged;
 			combine.NameChanged -= OnCombineRenamed;
 			base.Dispose ();
 		}
 		
-		void OnEntryChanged (object sender, CombineEntryEventArgs e)
+		void OnEntryChanged (object sender, SolutionItemEventArgs e)
 		{
 			UpdateTests ();
 		}
 		
-		void OnCombineRenamed (object sender, CombineEntryRenamedEventArgs e)
+		void OnCombineRenamed (object sender, SolutionItemRenamedEventArgs e)
 		{
 			UnitTestGroup parent = Parent as UnitTestGroup;
 			if (parent != null)
@@ -80,7 +80,7 @@ namespace MonoDevelop.NUnit
 		protected override void OnCreateTests ()
 		{
 			NUnitService testService = (NUnitService) ServiceManager.GetService (typeof(NUnitService));
-			foreach (CombineEntry e in combine.Entries) {
+			foreach (SolutionItem e in combine.Items) {
 				UnitTest t = testService.BuildTest (e);
 				if (t != null)
 					Tests.Add (t);

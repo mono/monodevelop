@@ -2,6 +2,7 @@ ADDIN_BUILD = $(top_builddir)/build/AddIns/ChangeLogAddIn
 ASSEMBLY = $(ADDIN_BUILD)/ChangeLogAddIn.dll
 
 REFS =  \
+	$(GLIB_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
 	$(MONO_ADDINS_LIBS) \
 	-r:$(top_builddir)/build/AddIns/VersionControl/MonoDevelop.VersionControl.dll \
@@ -10,6 +11,7 @@ REFS =  \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Core.Gui.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Ide.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Projects.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Projects.Gui.dll \
 	-r:Mono.Posix
 
 FILES =  \

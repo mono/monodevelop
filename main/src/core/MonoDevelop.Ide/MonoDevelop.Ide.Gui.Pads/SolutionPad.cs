@@ -40,16 +40,16 @@ namespace MonoDevelop.Ide.Gui.Pads
 	{
 		public SolutionPad ()
 		{
-			IdeApp.ProjectOperations.CombineOpened += (CombineEventHandler) DispatchService.GuiDispatch (new CombineEventHandler (OnOpenCombine));
-			IdeApp.ProjectOperations.CombineClosed += (CombineEventHandler) DispatchService.GuiDispatch (new CombineEventHandler (OnCloseCombine));
+			IdeApp.Workspace.WorkspaceItemOpened += OnOpenWorkspace;
+			IdeApp.Workspace.WorkspaceItemClosed += OnCloseWorkspace;
 			PropertyService.PropertyChanged += (EventHandler<PropertyChangedEventArgs>) DispatchService.GuiDispatch (new EventHandler<PropertyChangedEventArgs> (TrackPropertyChange));
 		}
 		
 		public override void Initialize (NodeBuilder[] builders, TreePadOption[] options)
 		{
 			base.Initialize (builders, options);
-			if (IdeApp.ProjectOperations.CurrentOpenCombine != null)
-				treeView.LoadTree (IdeApp.ProjectOperations.CurrentOpenCombine);
+			foreach (WorkspaceItem it in IdeApp.Workspace.Items)
+				treeView.AddChild (it);
 		}
 		
 		void TrackPropertyChange (object o, MonoDevelop.Core.PropertyChangedEventArgs e)
@@ -59,14 +59,14 @@ namespace MonoDevelop.Ide.Gui.Pads
 			}
 		}
 		
-		protected virtual void OnOpenCombine (object sender, CombineEventArgs e)
+		protected virtual void OnOpenWorkspace (object sender, WorkspaceItemEventArgs e)
 		{
-			treeView.LoadTree (e.Combine);
+			treeView.AddChild (e.Item);
 		}
 
-		protected virtual void OnCloseCombine (object sender, CombineEventArgs e)
+		protected virtual void OnCloseWorkspace (object sender, WorkspaceItemEventArgs e)
 		{
-			treeView.Clear ();
+			treeView.RemoveChild (e.Item);
 		}
 	}
 }

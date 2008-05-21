@@ -1,3 +1,7 @@
+2008-05-21  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Moonlight/MoonlightProject.cs: New project model changes.
+
 2008-05-08  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Moonlight.addin.xml: Set "isText" attribute on the

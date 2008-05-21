@@ -171,7 +171,9 @@ namespace MonoDevelop.WelcomePage
 				Uri fileuri = new Uri (projectUri);
 				try {
 					loadingProject = true;
-					IAsyncOperation oper = IdeApp.ProjectOperations.OpenCombine (fileuri.LocalPath);
+					Gdk.ModifierType mtype;
+					bool inWorkspace = Gtk.Global.GetCurrentEventState (out mtype) && (mtype & Gdk.ModifierType.ControlMask) != 0;
+					IAsyncOperation oper = IdeApp.Workspace.OpenWorkspaceItem (fileuri.LocalPath, !inWorkspace);
 					oper.WaitForCompleted ();
 				} finally {
 					loadingProject = false;
@@ -214,7 +216,10 @@ namespace MonoDevelop.WelcomePage
 				string message = link;
 				if (link.IndexOf ("project://") != -1) 
 					message = message.Substring (10);
-				IdeApp.Workbench.StatusBar.ShowMessage (message);
+				string msg = GettextCatalog.GetString ("Open solution {0}", message);
+				if (IdeApp.Workspace.IsOpen)
+					msg += " - " + GettextCatalog.GetString ("Hold Control key to open in current workspace.");
+				IdeApp.Workbench.StatusBar.ShowMessage (msg);
 			}
 		}
 

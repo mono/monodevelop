@@ -111,7 +111,7 @@ namespace MonoDevelop.Gettext.NodeBuilders
 					return;
 				
 				bool yes = MonoDevelop.Core.Gui.MessageService.AskQuestion (GettextCatalog.GetString (
-					"Do you really want to remove the translation {0} from solution {1}?", translation.IsoCode, project.ParentCombine.Name), AlertButton.Cancel, AlertButton.Remove) == AlertButton.Remove;
+					"Do you really want to remove the translation {0} from solution {1}?", translation.IsoCode, project.ParentFolder.Name), AlertButton.Cancel, AlertButton.Remove) == AlertButton.Remove;
 
 				if (yes) {
 					string fileName = Path.Combine (project.BaseDirectory, translation.FileName);
@@ -120,7 +120,7 @@ namespace MonoDevelop.Gettext.NodeBuilders
 					}
 					
 					project.RemoveTranslation (translation.IsoCode);
-					IdeApp.ProjectOperations.SaveCombineEntry (project);
+					IdeApp.ProjectOperations.Save (project);
 				}
 			}
 			

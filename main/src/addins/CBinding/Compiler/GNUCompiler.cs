@@ -88,7 +88,7 @@ namespace CBinding
 			// Precompile header files and place them in .prec/<config_name>/
 			if (configuration.PrecompileHeaders) {
 				string precDir = Path.Combine (configuration.SourceDirectory, ".prec");
-				string precConfigDir = Path.Combine (precDir, configuration.Name);
+				string precConfigDir = Path.Combine (precDir, configuration.Id);
 				if (!Directory.Exists (precDir))
 					Directory.CreateDirectory (precDir);
 				if (!Directory.Exists (precConfigDir))
@@ -186,7 +186,7 @@ namespace CBinding
 			
 			if (configuration.PrecompileHeaders) {
 				string precdir = Path.Combine (configuration.SourceDirectory, ".prec");
-				precdir = Path.Combine (precdir, configuration.Name);
+				precdir = Path.Combine (precdir, configuration.Id);
 				args.Append ("-I\"" + precdir + "\"");
 			}
 			
@@ -287,7 +287,7 @@ namespace CBinding
 			foreach (ProjectFile file in projectFiles) {
 				if (file.Subtype == Subtype.Code && CProject.IsHeaderFile (file.Name)) {
 					string precomp = Path.Combine (configuration.SourceDirectory, ".prec");
-					precomp = Path.Combine (precomp, configuration.Name);
+					precomp = Path.Combine (precomp, configuration.Id);
 					precomp = Path.Combine (precomp, Path.GetFileName (file.Name) + ".ghc");
 					if (file.BuildAction == BuildAction.Compile) {
 						if (!File.Exists (precomp) || configuration.UseCcache || File.GetLastWriteTime (file.Name) > File.GetLastWriteTime (precomp)) {

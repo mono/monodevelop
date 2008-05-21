@@ -72,7 +72,7 @@ namespace MonoDevelop.AspNet.Gui
 			base.Initialize ();
 			
 			tracker = new DocumentStateTracker<Parser<AspNetFreeState>> (Editor);
-			MonoDevelop.Ide.Gui.IdeApp.ProjectOperations.ParserDatabase.ParseInformationChanged 
+			MonoDevelop.Ide.Gui.IdeApp.Workspace.ParserDatabase.ParseInformationChanged 
 				+= OnParseInformationChanged;
 			
 			//ensure that the schema service is initialised, or code completion may take a couple of seconds to trigger
@@ -83,7 +83,7 @@ namespace MonoDevelop.AspNet.Gui
 		{
 			if (tracker != null) {
 				tracker = null;
-				MonoDevelop.Ide.Gui.IdeApp.ProjectOperations.ParserDatabase.ParseInformationChanged 
+				MonoDevelop.Ide.Gui.IdeApp.Workspace.ParserDatabase.ParseInformationChanged 
 					-= OnParseInformationChanged;
 				base.Dispose ();
 			}
@@ -452,10 +452,10 @@ namespace MonoDevelop.AspNet.Gui
 			//get a parser context
 			MonoDevelop.Projects.Parser.IParserContext ctx = null;
 			if (doc.Project != null)
-				ctx = MonoDevelop.Ide.Gui.IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (doc.Project);
+				ctx = MonoDevelop.Ide.Gui.IdeApp.Workspace.ParserDatabase.GetProjectParserContext (doc.Project);
 			else
 				//FIXME use correct runtime
-				ctx = MonoDevelop.Ide.Gui.IdeApp.ProjectOperations.ParserDatabase.GetAssemblyParserContext ("System.Web");
+				ctx = MonoDevelop.Ide.Gui.IdeApp.Workspace.ParserDatabase.GetAssemblyParserContext ("System.Web");
 			if (ctx == null) {
 				LoggingService.LogWarning ("Could not obtain parser context in AddAspAttributeCompletionData");
 				return;
@@ -506,7 +506,7 @@ namespace MonoDevelop.AspNet.Gui
 			if (controlClass == null) {
 				//FIXME: respect runtime version
 				MonoDevelop.Projects.Parser.IParserContext sysWebContext =
-					MonoDevelop.Ide.Gui.IdeApp.ProjectOperations.ParserDatabase.GetAssemblyParserContext ("System.Web");
+					MonoDevelop.Ide.Gui.IdeApp.Workspace.ParserDatabase.GetAssemblyParserContext ("System.Web");
 				if (sysWebContext == null)
 					return;
 				
@@ -520,7 +520,7 @@ namespace MonoDevelop.AspNet.Gui
 			MonoDevelop.Projects.Parser.IParserContext projectContext = null;
 			if (cu != null && cu.Document.Project != null)
 				projectContext = 
-					MonoDevelop.Ide.Gui.IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (
+					MonoDevelop.Ide.Gui.IdeApp.Workspace.ParserDatabase.GetProjectParserContext (
 					    cu.Document.Project);
 			if (projectContext != null && !string.IsNullOrEmpty (cu.PageInfo.InheritedClass))
 				codeBehindClass = projectContext.GetClass (cu.PageInfo.InheritedClass);
@@ -563,7 +563,7 @@ namespace MonoDevelop.AspNet.Gui
 			//FIXME: respect runtime version
 			if (projectContext == null)
 				projectContext = 
-					MonoDevelop.Ide.Gui.IdeApp.ProjectOperations.
+					MonoDevelop.Ide.Gui.IdeApp.Workspace.
 					ParserDatabase.GetAssemblyParserContext ("System.Web");
 			if (projectContext == null)
 				return;

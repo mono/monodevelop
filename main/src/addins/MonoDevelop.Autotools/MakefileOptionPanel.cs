@@ -2,7 +2,7 @@ using System;
 using System.IO;
 
 using MonoDevelop.Core;
-using MonoDevelop.Core.Gui.Dialogs;
+using MonoDevelop.Projects.Gui.Dialogs;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
 
@@ -10,7 +10,7 @@ using Gtk;
 
 namespace MonoDevelop.Autotools
 {
-	public class MakefileOptionPanel : AbstractOptionPanel
+	public class MakefileOptionPanel : ItemOptionsPanel
 	{
 		MakefileOptionPanelWidget widget;
 
@@ -18,26 +18,26 @@ namespace MonoDevelop.Autotools
 		{
 		}
 
-		public override void LoadPanelContents()
+		public override Widget CreatePanelWidget()
 		{
-			try {
-				Project project = ((Properties) CustomizationObject).Get<Project> ("Project");
-				MakefileData data = project.ExtendedProperties ["MonoDevelop.Autotools.MakefileInfo"] as MakefileData;
+			Project project = ConfiguredProject;
+			MakefileData data = project.ExtendedProperties ["MonoDevelop.Autotools.MakefileInfo"] as MakefileData;
 
-				MakefileData tmpData = null;
-				if (data != null) {
-					tmpData = (MakefileData) data.Clone ();
-				}
-				Add (widget = new MakefileOptionPanelWidget (project, tmpData));
-			} catch (Exception ex) {
-				Console.WriteLine (ex);
+			MakefileData tmpData = null;
+			if (data != null) {
+				tmpData = (MakefileData) data.Clone ();
 			}
+			return (widget = new MakefileOptionPanelWidget (project, tmpData));
 		}
 		
-		public override bool StorePanelContents()
+		public override bool ValidateChanges ()
 		{
-			Project project = ((Properties) CustomizationObject).Get<Project> ("Project");
-			return widget.Store (project);
+			return widget.ValidateChanges (ConfiguredProject);
+		}
+		
+		public override void ApplyChanges ()
+		{
+			widget.Store (ConfiguredProject);
 		}
 	}
 }

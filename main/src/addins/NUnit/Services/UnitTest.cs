@@ -44,7 +44,8 @@ namespace MonoDevelop.NUnit
 		UnitTest parent;
 		TestStatus status;
 		Hashtable options;
-		CombineEntry ownerCombineEntry;
+		IWorkspaceObject ownerSolutionItem;
+		SolutionEntityItem ownerSolutionEntityItem;
 		UnitTestResultsStore results;
 		
 		protected UnitTest (string name)
@@ -52,17 +53,19 @@ namespace MonoDevelop.NUnit
 			this.name = name;
 		}
 		
-		protected UnitTest (string name, CombineEntry ownerCombineEntry)
+		protected UnitTest (string name, IWorkspaceObject ownerSolutionItem)
 		{
 			this.name = name;
-			this.ownerCombineEntry = ownerCombineEntry;
-			ownerCombineEntry.ActiveConfigurationChanged += new ConfigurationEventHandler (OnConfugurationChanged);
+			this.ownerSolutionItem = ownerSolutionItem;
+			ownerSolutionEntityItem = ownerSolutionItem as SolutionEntityItem;
+			if (ownerSolutionEntityItem != null)
+				ownerSolutionEntityItem.DefaultConfigurationChanged += OnConfugurationChanged;
 		}
 		
 		public virtual void Dispose ()
 		{
-			if (ownerCombineEntry != null)
-				ownerCombineEntry.ActiveConfigurationChanged -= new ConfigurationEventHandler (OnConfugurationChanged);
+			if (ownerSolutionEntityItem != null)
+				ownerSolutionEntityItem.DefaultConfigurationChanged -= OnConfugurationChanged;
 		}
 		
 		internal void SetParent (UnitTest t)
@@ -72,10 +75,10 @@ namespace MonoDevelop.NUnit
 		
 		public virtual string ActiveConfiguration {
 			get {
-				if (ownerCombineEntry != null) {
-					if (ownerCombineEntry.ActiveConfiguration == null)
+				if (ownerSolutionEntityItem != null) {
+					if (ownerSolutionEntityItem.DefaultConfiguration == null)
 						return "";
-					return ownerCombineEntry.ActiveConfiguration.Name;
+					return ownerSolutionEntityItem.DefaultConfiguration.Id;
 				} else if (Parent != null) {
 					return Parent.ActiveConfiguration;
 				} else {
@@ -86,10 +89,10 @@ namespace MonoDevelop.NUnit
 		
 		public virtual string[] GetConfigurations ()
 		{
-			if (ownerCombineEntry != null) {
-				string[] res = new string [ownerCombineEntry.Configurations.Count];
-				for (int n=0; n<ownerCombineEntry.Configurations.Count; n++)
-					res [n] = ownerCombineEntry.Configurations [n].Name;
+			if (ownerSolutionEntityItem != null) {
+				string[] res = new string [ownerSolutionEntityItem.Configurations.Count];
+				for (int n=0; n<ownerSolutionEntityItem.Configurations.Count; n++)
+					res [n] = ownerSolutionEntityItem.Configurations [n].Id;
 				return res;
 			} else if (Parent != null) {
 				return Parent.GetConfigurations ();
@@ -263,6 +266,15 @@ namespace MonoDevelop.NUnit
 			get { return parent; }
 		}
 		
+		public UnitTest RootTest {
+			get {
+				if (parent != null)
+					return parent.RootTest;
+				else
+					return this;
+			}
+		}
+		
 		public virtual string Name {
 			get { return name; }
 		}
@@ -285,8 +297,8 @@ namespace MonoDevelop.NUnit
 			}
 		}
 		
-		protected CombineEntry OwnerCombineEntry {
-			get { return ownerCombineEntry; }
+		protected IWorkspaceObject OwnerSolutionItem {
+			get { return ownerSolutionItem; }
 		}
 		
 		internal string StoreRelativeName {
@@ -370,16 +382,16 @@ namespace MonoDevelop.NUnit
 		
 		protected virtual void OnSaveOptions (OptionsData[] data)
 		{
-			CombineEntry ce;
+			IConfigurationTarget ce;
 			string path;
 			
-			GetOwnerCombineEntry (this, out ce, out path);
+			GetOwnerSolutionItem (this, out ce, out path);
 			
 			if (ce == null)
 				throw new InvalidOperationException ("Options can't be saved.");
 			
 			foreach (OptionsData d in data) {
-				IExtendedDataItem edi = (IExtendedDataItem) ce.GetConfiguration (d.Configuration);
+				IExtendedDataItem edi = (IExtendedDataItem) ce.Configurations [d.Configuration];
 				if (edi == null)
 					continue;
 				UnitTestOptionsSet oset = (UnitTestOptionsSet) edi.ExtendedProperties ["UnitTestInformation"];
@@ -408,15 +420,15 @@ namespace MonoDevelop.NUnit
 		
 		protected virtual ICollection OnLoadOptions (string configuration)
 		{
-			CombineEntry ce;
+			IConfigurationTarget ce;
 			string path;
 			
-			GetOwnerCombineEntry (this, out ce, out path);
+			GetOwnerSolutionItem (this, out ce, out path);
 			
 			if (ce == null)
 				return null;
 			
-			IExtendedDataItem edi = (IExtendedDataItem) ce.GetConfiguration (configuration);
+			IExtendedDataItem edi = (IExtendedDataItem) ce.Configurations [configuration];
 			if (edi == null)
 				return null;
 
@@ -431,13 +443,13 @@ namespace MonoDevelop.NUnit
 				return null;
 		}
 		
-		void GetOwnerCombineEntry (UnitTest t, out CombineEntry c, out string path)
+		void GetOwnerSolutionItem (UnitTest t, out IConfigurationTarget c, out string path)
 		{
-			if (OwnerCombineEntry != null) {
-				c = OwnerCombineEntry;
+			if (OwnerSolutionItem is SolutionEntityItem) {
+				c = OwnerSolutionItem as SolutionEntityItem;
 				path = "";
 			} else if (parent != null) {
-				parent.GetOwnerCombineEntry (t, out c, out path);
+				parent.GetOwnerSolutionItem (t, out c, out path);
 				if (c == null) return;
 				if (path.Length > 0)
 					path += "/" + t.Name;

@@ -21,10 +21,13 @@
 using System;
 using System.IO;
 using System.Collections;
+using System.Collections.Generic;
 
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Core.Gui.Dialogs;
 using MonoDevelop.Core;
+using MonoDevelop.Ide.Gui;
+using MonoDevelop.Projects;
 
 using Gtk;
 using MonoDevelop.Components;
@@ -63,23 +66,28 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 
 	partial class LoadSavePanelWidget : Gtk.Bin
 	{
+		List<string> formats = new List<string> ();
+		
 		public LoadSavePanelWidget ()
 		{
 			Build ();
 			
-			//
-			// load the internationalized strings.
-			//
 			folderEntry.Path = IdeApp.ProjectOperations.ProjectsDefaultPath;
-			//
-			// setup the properties
-			//
-			loadUserDataCheckButton.Active = PropertyService.Get (
-				"SharpDevelop.LoadDocumentProperties", true);
-			createBackupCopyCheckButton.Active = PropertyService.Get (
-				"SharpDevelop.CreateBackupCopy", false);
-			loadPrevProjectCheckButton.Active = (bool) PropertyService.Get(
-				"SharpDevelop.LoadPrevProjectOnStartup", false);
+			
+			loadUserDataCheckButton.Active = IdeApp.Preferences.LoadDocumentUserProperties;
+			createBackupCopyCheckButton.Active = IdeApp.Preferences.CreateFileBackupCopies;
+			loadPrevProjectCheckButton.Active = IdeApp.Preferences.LoadPrevSolutionOnStartup;
+
+			string defaultFormat = IdeApp.Preferences.DefaultProjectFileFormat;
+			
+			Solution sol = new Solution ();
+			FileFormat[] fs = IdeApp.Services.ProjectService.FileFormats.GetFileFormatsForObject (sol);
+			foreach (FileFormat f in fs) {
+				comboFileFormats.AppendText (f.Name);
+				formats.Add (f.Id);
+				if (f.Id == defaultFormat)
+					comboFileFormats.Active = formats.Count - 1;
+			}
 		}
 		
 		public bool ValidateChanges ()
@@ -97,9 +105,10 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		
 		public void Store () 
 		{
-			PropertyService.Set("SharpDevelop.LoadPrevProjectOnStartup", loadPrevProjectCheckButton.Active);
-			PropertyService.Set ("SharpDevelop.LoadDocumentProperties",  loadUserDataCheckButton.Active);
-			PropertyService.Set ("SharpDevelop.CreateBackupCopy",        createBackupCopyCheckButton.Active);
+			IdeApp.Preferences.LoadPrevSolutionOnStartup = loadPrevProjectCheckButton.Active;
+			IdeApp.Preferences.LoadDocumentUserProperties = loadUserDataCheckButton.Active;
+			IdeApp.Preferences.CreateFileBackupCopies = createBackupCopyCheckButton.Active;
+			IdeApp.Preferences.DefaultProjectFileFormat = formats [comboFileFormats.Active];
 			IdeApp.ProjectOperations.ProjectsDefaultPath = folderEntry.Path;
 		}
 	}

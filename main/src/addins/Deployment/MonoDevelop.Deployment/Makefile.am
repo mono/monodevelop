@@ -86,6 +86,7 @@ FILES =  \
 	MonoDevelop.Deployment/IFileCopyHandler.cs \
 	MonoDevelop.Deployment/IFileReplacePolicy.cs \
 	MonoDevelop.Deployment/InstallResolver.cs \
+	MonoDevelop.Deployment/MD1Serializer.cs \
 	MonoDevelop.Deployment/Package.cs \
 	MonoDevelop.Deployment/PackageBuilder.cs \
 	MonoDevelop.Deployment/PackageCollection.cs \
@@ -100,6 +101,7 @@ RES =  \
 	icons/package-x-generic.png \
 	icons/packaging-16.png \
 	icons/packaging-32.png \
+	md1format.xml \
 	MonoDevelop.Deployment.addin.xml \
 	templates/PackagingProject.xpt.xml
 

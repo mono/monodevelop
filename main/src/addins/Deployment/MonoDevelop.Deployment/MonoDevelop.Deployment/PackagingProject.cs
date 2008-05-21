@@ -8,7 +8,7 @@ using MonoDevelop.Projects.Serialization;
 
 namespace MonoDevelop.Deployment
 {
-	public class PackagingProject: CombineEntry
+	public class PackagingProject: SolutionEntityItem
 	{
 		PackageCollection packages;
 		
@@ -33,31 +33,31 @@ namespace MonoDevelop.Deployment
 			get { return packages; }
 		}
 		
-		public override IConfiguration CreateConfiguration (string name)
+		public override SolutionItemConfiguration CreateConfiguration (string name)
 		{
 			PackagingProjectConfiguration conf = new PackagingProjectConfiguration ();
 			conf.Name = name;
 			return conf;
 		}
 		
-		protected override void OnClean (IProgressMonitor monitor)
+		protected override void OnClean (IProgressMonitor monitor, string configuration)
 		{
 			foreach (Package p in packages)
 				p.Clean (monitor);
 		}
 		
-		protected override ICompilerResult OnBuild (IProgressMonitor monitor)
+		protected override ICompilerResult OnBuild (IProgressMonitor monitor, string configuration)
 		{
 			foreach (Package p in packages)
 				p.Build (monitor);
 			return null;
 		}
 		
-		protected override void OnExecute (IProgressMonitor monitor, ExecutionContext context)
+		protected override void OnExecute (IProgressMonitor monitor, ExecutionContext context, string configuration)
 		{
 		}
 		
-		protected override bool OnGetNeedsBuilding ()
+		protected override bool OnGetNeedsBuilding (string configuration)
 		{
 			foreach (Package p in packages)
 				if (p.NeedsBuilding)
@@ -65,7 +65,7 @@ namespace MonoDevelop.Deployment
 			return false;
 		}
 		
-		protected override void OnSetNeedsBuilding (bool val)
+		protected override void OnSetNeedsBuilding (bool val, string configuration)
 		{
 			foreach (Package p in packages)
 				p.NeedsBuilding = val;
@@ -78,25 +78,7 @@ namespace MonoDevelop.Deployment
 		}
 	}
 	
-	public class PackagingProjectConfiguration : IConfiguration
+	public class PackagingProjectConfiguration : SolutionItemConfiguration
 	{
-		[ItemProperty("name")]
-		string name = null;
-		
-		public string Name {
-			get { return name; }
-			set { name = value; }
-		}
-
-		public object Clone()
-		{
-			IConfiguration conf = (IConfiguration) MemberwiseClone ();
-			conf.CopyFrom (this);
-			return conf;
-		}
-		
-		public virtual void CopyFrom (IConfiguration configuration)
-		{
-		}
 	}
 }

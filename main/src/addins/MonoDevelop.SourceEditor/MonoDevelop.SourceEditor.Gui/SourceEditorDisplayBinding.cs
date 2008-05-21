@@ -262,7 +262,7 @@ namespace MonoDevelop.SourceEditor.Gui
 				Services.DebuggingService.ExecutionLocationChanged += executionChangedHandler;
 			}
 			*/
-			IdeApp.ProjectOperations.ParserDatabase.ParseInformationChanged += new ParseInformationEventHandler(UpdateClassBrowser);
+			IdeApp.Workspace.ParserDatabase.ParseInformationChanged += new ParseInformationEventHandler(UpdateClassBrowser);
 			
 			mainBox.ShowAll ();
 			
@@ -345,7 +345,7 @@ namespace MonoDevelop.SourceEditor.Gui
 			membersCombo.Model = null;
 			classCombo.Model = null;
 			
-			IdeApp.ProjectOperations.ParserDatabase.ParseInformationChanged -= new ParseInformationEventHandler(UpdateClassBrowser);
+			IdeApp.Workspace.ParserDatabase.ParseInformationChanged -= new ParseInformationEventHandler(UpdateClassBrowser);
 			mainBox.Destroy ();
 			fsw.Dispose ();
 			se = null;
@@ -429,7 +429,7 @@ namespace MonoDevelop.SourceEditor.Gui
 				UpdateExecutionLocation ();
 			}
 			*/
-			IFileParserContext context = IdeApp.ProjectOperations.ParserDatabase.GetFileParserContext(fileName);
+			IFileParserContext context = IdeApp.Workspace.ParserDatabase.GetFileParserContext(fileName);
 			memberParseInfo = context.ParseFile(fileName);
 			BindClassCombo();
 		}

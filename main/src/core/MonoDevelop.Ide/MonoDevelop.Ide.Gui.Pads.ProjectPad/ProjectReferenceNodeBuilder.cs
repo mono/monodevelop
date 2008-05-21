@@ -89,7 +89,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			ProjectReference pref = CurrentNode.DataItem as ProjectReference;
 			if (pref == null)
 				return;
-			foreach (string fileName in pref.GetReferencedFileNames ()) {
+			foreach (string fileName in pref.GetReferencedFileNames (IdeApp.Workspace.ActiveConfiguration)) {
 				IdeApp.Workbench.OpenDocument (fileName);
 			}
 		}
@@ -97,9 +97,9 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		public override void DeleteItem ()
 		{
 			ProjectReference pref = (ProjectReference) CurrentNode.DataItem;
-			Project project = CurrentNode.GetParentDataItem (typeof(Project), false) as Project;
-			project.ProjectReferences.Remove (pref);
-			IdeApp.ProjectOperations.SaveProject (project);
+			DotNetProject project = CurrentNode.GetParentDataItem (typeof(DotNetProject), false) as DotNetProject;
+			project.References.Remove (pref);
+			IdeApp.ProjectOperations.Save (project);
 		}
 		
 		[CommandHandler (ProjectCommands.LocalCopyReference)]
@@ -108,7 +108,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			ProjectReference pref = (ProjectReference) CurrentNode.DataItem;
 			pref.LocalCopy = !pref.LocalCopy;
 			Project project = CurrentNode.GetParentDataItem (typeof(Project), false) as Project;
-			IdeApp.ProjectOperations.SaveProject (project);
+			IdeApp.ProjectOperations.Save (project);
 		}
 		
 		[CommandUpdateHandler (ProjectCommands.LocalCopyReference)]

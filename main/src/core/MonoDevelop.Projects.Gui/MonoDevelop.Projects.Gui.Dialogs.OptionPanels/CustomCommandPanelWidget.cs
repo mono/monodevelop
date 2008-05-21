@@ -35,13 +35,25 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 	{
 		CustomCommandCollection commands;
 		CustomCommandWidget lastSlot;
-		CombineEntry entry;
+		SolutionEntityItem entry;
 		
-		public CustomCommandPanelWidget (CombineEntry entry, CustomCommandCollection commands)
+		public CustomCommandPanelWidget ()
 		{
 			this.Build();
+		}
+		
+		public void Load (SolutionEntityItem entry, CustomCommandCollection commands)
+		{
 			this.entry = entry;
 			this.commands = commands;
+			
+			// Clean the list
+			foreach (CustomCommandWidget ccw in vboxCommands.Children) {
+				ccw.CommandCreated -= OnCommandCreated;
+				ccw.CommandRemoved -= OnCommandRemoved;
+				vboxCommands.Remove (ccw);
+				ccw.Destroy ();
+			}
 			
 			foreach (CustomCommand cmd in commands) {
 				AddCommandSlot (cmd);

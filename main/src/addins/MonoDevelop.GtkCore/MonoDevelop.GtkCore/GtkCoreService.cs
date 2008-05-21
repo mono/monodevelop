@@ -80,7 +80,8 @@ namespace MonoDevelop.GtkCore
 				return false;
 			
 			RefactorOperations ops = RefactorOperations.AddField | RefactorOperations.AddMethod | RefactorOperations.RenameField;
-			return IdeApp.ProjectOperations.CodeRefactorer.LanguageSupportsOperation (dp.LanguageBinding.Language, ops); 
+			CodeRefactorer cref = IdeApp.Workspace.GetCodeRefactorer (project.ParentSolution);
+			return cref.LanguageSupportsOperation (dp.LanguageBinding.Language, ops); 
 		}
 		
 		static void FindSupportedGtkVersions ()
@@ -153,10 +154,10 @@ namespace MonoDevelop.GtkCore
 		
 		static void OnFileChanged (object s, FileEventArgs args)
 		{
-			if (IdeApp.ProjectOperations.CurrentOpenCombine == null)
+			if (!IdeApp.Workspace.IsOpen)
 				return;
 
-			foreach (Project project in IdeApp.ProjectOperations.CurrentOpenCombine.GetAllProjects ()) {
+			foreach (Project project in IdeApp.Workspace.GetAllProjects ()) {
 				if (!project.IsFileInProject (args.FileName))
 					continue;
 					
@@ -164,7 +165,7 @@ namespace MonoDevelop.GtkCore
 				if (info == null)
 					continue;
 
-				IdeApp.ProjectOperations.ParserDatabase.UpdateFile (project, args.FileName, null);
+				IdeApp.Workspace.ParserDatabase.UpdateFile (project, args.FileName, null);
 				foreach (IClass cls in info.GetExportedClasses ()) {
 					if (cls.Region.FileName == args.FileName)
 						UpdateObjectsFile (project, cls, null);
@@ -247,7 +248,7 @@ namespace MonoDevelop.GtkCore
 		
 		static void UpdateClass (Project project, XmlDocument doc, IClass widgetClass, IClass wrapperClass)
 		{
-			IParserContext ctx = IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (project);
+			IParserContext ctx = IdeApp.Workspace.ParserDatabase.GetProjectParserContext (project);
 			string typeName = widgetClass.FullyQualifiedName;
 			XmlElement objectElem = (XmlElement) doc.SelectSingleNode ("objects/object[@type='" + typeName + "']");
 			
@@ -283,7 +284,7 @@ namespace MonoDevelop.GtkCore
 			foreach (string t in types)
 				typesHash [t] = t;
 				
-			IParserContext pctx = IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (project);
+			IParserContext pctx = IdeApp.Workspace.ParserDatabase.GetProjectParserContext (project);
 			string ret = GetBaseType (widgetClass, pctx, typesHash);
 			return ret ?? "Gtk.Widget";
 		}
@@ -478,7 +479,7 @@ namespace MonoDevelop.GtkCore
 		
 		static public IClass[] GetExportableClasses (Project project)
 		{
-			IParserContext pctx = IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (project);
+			IParserContext pctx = IdeApp.Workspace.ParserDatabase.GetProjectParserContext (project);
 			ArrayList list = new ArrayList ();
 			foreach (IClass cls in pctx.GetProjectContents ())
 				if (IsWidget (cls, pctx)) list.Add (cls);

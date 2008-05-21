@@ -1,3 +1,7 @@
+2008-05-21  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.XmlEditor.mdp: New project model changes.
+
 2008-05-07  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Xml.StateEngine/XmlSpecialTagState.cs: Fix opening of

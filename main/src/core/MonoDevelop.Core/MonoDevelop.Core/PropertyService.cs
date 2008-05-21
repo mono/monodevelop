@@ -27,6 +27,7 @@
 //
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
@@ -37,6 +38,10 @@ namespace MonoDevelop.Core
 	{
 		readonly static string FileName = "MonoDevelopProperties.xml";
 		static Properties properties;
+		
+		public static Properties GlobalInstance {
+			get { return properties; }
+		}
 		
 		public static string EntryAssemblyPath {
 			get {
@@ -104,6 +109,16 @@ namespace MonoDevelop.Core
 		public static void Set (string key, object val)
 		{
 			properties.Set (key, val);
+		}
+		
+		public static void AddPropertyHandler (string propertyName, EventHandler<PropertyChangedEventArgs> handler)
+		{
+			properties.AddPropertyHandler (propertyName, handler);
+		}
+		
+		public static void RemovePropertyHandler (string propertyName, EventHandler<PropertyChangedEventArgs> handler)
+		{
+			properties.RemovePropertyHandler (propertyName, handler);
 		}
 		
 		public static event EventHandler<PropertyChangedEventArgs> PropertyChanged;

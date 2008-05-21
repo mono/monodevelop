@@ -253,7 +253,7 @@ namespace MonoDevelop.SourceEditor
 		
 		public IParserContext GetParserContext ()
 		{
-			IParserDatabase pdb = IdeApp.ProjectOperations.ParserDatabase;
+			IParserDatabase pdb = IdeApp.Workspace.ParserDatabase;
 			
 			Project project = Project;
 			if (project != null) 

@@ -142,9 +142,9 @@ namespace CSharpBinding.Parser
 		ICompilationUnit Parse (ICSharpCode.NRefactory.IParser p, string fileName)
 		{
 			// HACK: Better way would to pass the project to the Parse method, but works for now. (Refactoring should be done)
-			DotNetProject project = MonoDevelop.Ide.Gui.IdeApp.ProjectOperations.GetProjectContaining (fileName) as DotNetProject;
+			DotNetProject project = MonoDevelop.Ide.Gui.IdeApp.Workspace.GetProjectContainingFile (fileName) as DotNetProject;
 			if (project != null) {
-				DotNetProjectConfiguration config = project.ActiveConfiguration as DotNetProjectConfiguration;
+				DotNetProjectConfiguration config = project.GetActiveConfiguration (MonoDevelop.Ide.Gui.IdeApp.Workspace.ActiveConfiguration) as DotNetProjectConfiguration;
 				if (config != null) { 
 					CSharpCompilerParameters para = config.CompilationParameters as CSharpCompilerParameters;
 					if (para != null && !String.IsNullOrEmpty (para.DefineSymbols)) {

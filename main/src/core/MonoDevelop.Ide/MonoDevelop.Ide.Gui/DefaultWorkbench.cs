@@ -195,8 +195,8 @@ namespace MonoDevelop.Ide.Gui
 					file = new Uri(file).LocalPath;
 
 					try {
-						if (Services.ProjectService.IsCombineEntryFile (file))
-							IdeApp.ProjectOperations.OpenCombine(file);
+						if (Services.ProjectService.IsWorkspaceItemFile (file))
+							IdeApp.Workspace.OpenWorkspaceItem(file);
 						else
 							IdeApp.Workbench.OpenDocument (file);
 					} catch (Exception e) {
@@ -254,11 +254,8 @@ namespace MonoDevelop.Ide.Gui
 				layout.RedrawAllComponents();
 		}
 				
-		public void CloseContent(IViewContent content)
+		public void CloseContent (IViewContent content)
 		{
-			if (PropertyService.Get("SharpDevelop.LoadDocumentProperties", true) && content is IMementoCapable) {
-				StoreMemento(content);
-			}
 			if (viewContentCollection.Contains(content)) {
 				viewContentCollection.Remove(content);
 			}
@@ -393,37 +390,6 @@ namespace MonoDevelop.Ide.Gui
 			return null;
 		}
 		
-		public void StoreMemento(IViewContent content)
-		{
-			if (content.ContentName == null) {
-				return;
-			}
-			string directory = System.IO.Path.Combine (PropertyService.ConfigPath, "temp");
-			if (!Directory.Exists(directory)) {
-				Directory.CreateDirectory(directory);
-			}
-			
-//			XmlDocument doc = new XmlDocument();
-//			doc.LoadXml("<?xml version=\"1.0\"?>\n<Mementoable/>");
-//			
-//			XmlAttribute fileAttribute = doc.CreateAttribute("file");
-//			fileAttribute.InnerText = content.ContentName;
-//			doc.DocumentElement.Attributes.Append(fileAttribute);
-//			
-			object memento = ((IMementoCapable)content).CreateMemento();
-			
-//			doc.DocumentElement.AppendChild(memento.ToXmlElement(doc));
-//			
-			string fileName = content.ContentName.Substring(3).Replace('/', '.').Replace('\\', '.').Replace(System.IO.Path.DirectorySeparatorChar, '.');
-			// check the file name length because it could be more than the maximum length of a file name
-			string fullFileName = System.IO.Path.Combine (directory, fileName);
-			if (FileService.IsValidFileName(fullFileName)) {
-				((Properties)memento).Save (fullFileName);
-//				doc.Save (fullFileName);
-			}
-			
-		}
-		
 		// interface IMementoCapable
 		public ICustomXmlSerializer CreateMemento()
 		{
@@ -530,7 +496,7 @@ namespace MonoDevelop.Ide.Gui
 			if (!IdeApp.OnExit ())
 				return false;
 
-			IdeApp.ProjectOperations.SaveCombinePreferences ();
+			IdeApp.Workspace.SavePreferences ();
 			IdeApp.CommandService.Dispose ();
 
 			bool showDirtyDialog = false;
@@ -552,7 +518,7 @@ namespace MonoDevelop.Ide.Gui
 			
 			CloseAllViews ();
 			
-			IdeApp.ProjectOperations.CloseCombine (false);
+			IdeApp.Workspace.Close (false);
 			PropertyService.Set ("SharpDevelop.Workbench.WorkbenchMemento", CreateMemento());
 			IdeApp.OnExited ();
 			OnClosed (null);
@@ -625,7 +591,7 @@ namespace MonoDevelop.Ide.Gui
 		void AsyncParseCurrentFile (object ob)
 		{
 			object[] data = (object[]) ob;
-			IdeApp.ProjectOperations.ParserDatabase.UpdateFile ((Project) data[0], (string) data[1], (string) data[2]);
+			IdeApp.Workspace.ParserDatabase.UpdateFile ((Project) data[0], (string) data[1], (string) data[2]);
 		}
 
 		public Gtk.Toolbar[] ToolBars {

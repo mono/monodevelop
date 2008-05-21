@@ -37,7 +37,7 @@ namespace MonoDevelop.Ide.Templates
 	/// <summary>
 	/// This class is used inside the combine templates for projects.
 	/// </summary>
-	internal class ProjectDescriptor: ICombineEntryDescriptor
+	internal class ProjectDescriptor: ISolutionItemDescriptor
 	{
 		string name;
 		string projectType;
@@ -79,7 +79,7 @@ namespace MonoDevelop.Ide.Templates
 			this.name = name;
 		}
 		
-		public string CreateEntry (ProjectCreateInformation projectCreateInformation, string defaultLanguage)
+		public SolutionEntityItem CreateEntry (ProjectCreateInformation projectCreateInformation, string defaultLanguage)
 		{
 			
 			if (projectOptions.GetAttribute ("language") == "") {
@@ -92,19 +92,22 @@ namespace MonoDevelop.Ide.Templates
 			
 			if (project == null) {
 				MessageService.ShowError (GettextCatalog.GetString ("Can't create project with type : {0}", projectType));
-				return String.Empty;
+				return null;
 			}
 			
 			string newProjectName = StringParserService.Parse(name, new string[,] { 
 				{"ProjectName", projectCreateInformation.ProjectName}
 			});
 			
-			project.FileName = Path.Combine (projectCreateInformation.ProjectBasePath, newProjectName + ".mdp");
+			project.FileName = Path.Combine (projectCreateInformation.ProjectBasePath, newProjectName);
 			project.Name = newProjectName;
 			
-			// Add References
-			foreach (ProjectReference projectReference in references) {
-				project.ProjectReferences.Add(projectReference);
+			DotNetProject netProject = project as DotNetProject;
+			if (netProject != null) {
+				// Add References
+				foreach (ProjectReference projectReference in references) {
+					netProject.References.Add (projectReference);
+				}
 			}
 
 			foreach (FileDescriptionTemplate file in resources) {
@@ -117,7 +120,7 @@ namespace MonoDevelop.Ide.Templates
 
 					ProjectFile resource = new ProjectFile (fileName);
 					resource.BuildAction = BuildAction.EmbedAsResource;
-					project.ProjectFiles.Add(resource);
+					project.Files.Add(resource);
 				} catch (Exception ex) {
 					MessageService.ShowException (ex, GettextCatalog.GetString ("File {0} could not be written.", file.Name));
 				}
@@ -133,7 +136,7 @@ namespace MonoDevelop.Ide.Templates
 			}
 			
 			// Save project
-			
+/*			
 			using (IProgressMonitor monitor = new NullProgressMonitor ()) {
 				if (File.Exists (project.FileName)) {
 					if (MessageService.Confirm (GettextCatalog.GetString ("File already exists"),
@@ -145,8 +148,8 @@ namespace MonoDevelop.Ide.Templates
 					project.Save (monitor);
 				}
 			}
-			
-			return project.FileName;
+*/			
+			return project;
 		}
 		
 		public static ProjectDescriptor CreateProjectDescriptor(XmlElement element)

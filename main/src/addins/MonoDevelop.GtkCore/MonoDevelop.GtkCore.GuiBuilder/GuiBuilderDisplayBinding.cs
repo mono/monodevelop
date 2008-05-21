@@ -77,11 +77,11 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		GuiBuilderWindow GetWindow (string file)
 		{
-			if (IdeApp.ProjectOperations.CurrentOpenCombine == null)
+			if (!IdeApp.Workspace.IsOpen)
 				return null;
 
 			Project project = null;
-			foreach (Project p in IdeApp.ProjectOperations.CurrentOpenCombine.GetAllProjects ()) {
+			foreach (Project p in IdeApp.Workspace.GetAllProjects ()) {
 				if (p.IsFileInProject (file)) {
 					project = p;
 					break;

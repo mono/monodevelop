@@ -44,7 +44,8 @@ namespace MonoDevelop.Ide.Commands
 		NewProject,
 		CloseFile,
 		CloseAllFiles,
-		CloseCombine,
+		CloseWorkspace,
+		CloseWorkspaceItem,
 		ReloadFile,
 		Save,
 		SaveAll,
@@ -66,7 +67,7 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Run ()
 		{
-			IdeApp.ProjectOperations.NewProject ();
+			IdeApp.ProjectOperations.NewSolution ();
 		}
 	}
 	
@@ -129,9 +130,9 @@ namespace MonoDevelop.Ide.Commands
 							MessageService.ShowError (GettextCatalog.GetString ("The provided file could not be loaded."));
 						return;
 					}
-					IProjectService ps = MonoDevelop.Projects.Services.ProjectService;
-					if (ps.IsCombineEntryFile (name) && fs.SelectedViewer == null)
-						IdeApp.ProjectOperations.OpenCombine (name);
+					ProjectService ps = MonoDevelop.Projects.Services.ProjectService;
+					if ((ps.IsWorkspaceItemFile (name) || ps.IsSolutionItemFile (name)) && fs.SelectedViewer == null)
+						IdeApp.Workspace.OpenWorkspaceItem (name, fs.CloseCurrentWorkspace);
 					else if (fs.SelectedViewer != null)
 						fs.SelectedViewer.OpenFile (name, fs.Encoding);
 					else
@@ -144,16 +145,19 @@ namespace MonoDevelop.Ide.Commands
 		}
 	}
 	
-	internal class CloseCombineHandler : CommandHandler
+	internal class CloseWorkspaceHandler : CommandHandler
 	{
 		protected override void Run()
 		{
-			IdeApp.ProjectOperations.CloseCombine();
+			IdeApp.Workspace.Close();
 		}
 		
 		protected override void Update (CommandInfo info)
 		{
-			info.Enabled = (IdeApp.ProjectOperations.CurrentOpenCombine != null);
+			if (IdeApp.Workspace.Items.Count == 0)
+				info.Enabled = false;
+			else if (IdeApp.Workspace.Items.Count == 1 && IdeApp.Workspace.Items [0] is Solution)
+				info.Text = GettextCatalog.GetString ("C_lose Solution");
 		}
 	}
 		
@@ -274,7 +278,14 @@ namespace MonoDevelop.Ide.Commands
 					RecentItem ri = recentOpen.RecentProject[i];
 					string label = ((ri.Private == null || ri.Private.Length < 1) ? Path.GetFileNameWithoutExtension (ri.ToString ()) : ri.Private);
 					CommandInfo cmd = new CommandInfo (accelaratorKeyPrefix + label.Replace ("_", "__"));
-					cmd.Description = GettextCatalog.GetString ("Load solution {0}", ri.ToString ());
+					string str = GettextCatalog.GetString ("Load solution {0}", ri.ToString ());
+					if (IdeApp.Workspace.IsOpen)
+						str += " - " + GettextCatalog.GetString ("Hold Control to open in current worspace.");
+					cmd.Description = str;
+					if (IdeApp.Services.ProjectService.FileFormats.GetFileFormats (ri.LocalPath, typeof(Solution)).Length > 0)
+						cmd.Icon = "md-solution";
+					else
+						cmd.Icon = "md-workspace";
 					info.Add (cmd, ri);
 				}
 			}
@@ -282,15 +293,10 @@ namespace MonoDevelop.Ide.Commands
 		
 		protected override void Run (object dataItem)
 		{
-			//FIXME:THIS IS BROKEN!!
-			
 			string filename = dataItem.ToString();
-			
-			try {
-				IdeApp.ProjectOperations.OpenCombine(filename);
-			} catch (Exception ex) {
-				MessageService.ShowException (ex, "Could not load project or solution: " + filename);
-			}
+			Gdk.ModifierType mtype;
+			bool inWorkspace = Gtk.Global.GetCurrentEventState (out mtype) && (mtype & Gdk.ModifierType.ControlMask) != 0;
+			IdeApp.Workspace.OpenWorkspaceItem (filename, !inWorkspace);
 		}
 	}
 }

@@ -34,7 +34,6 @@ using MonoDevelop.Projects;
 
 using System;
 using System.CodeDom.Compiler;
-using System.Collections.Specialized;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -44,33 +43,33 @@ namespace MonoDevelop.Autotools
 {
 	public class MakefileProjectServiceExtension : ProjectServiceExtension
 	{
-		bool hasParentCombine = false;
-		
-		public override CombineEntry Load (IProgressMonitor monitor, string fileName)
+		public override WorkspaceItem LoadWorkspaceItem (IProgressMonitor monitor, string fileName)
 		{
-			bool oldHasParentCombine = hasParentCombine;
-			hasParentCombine = true;
-			CombineEntry entry = base.Load (monitor, fileName);
+			WorkspaceItem item = base.LoadWorkspaceItem (monitor, fileName);
+			
+			Solution sol = item as Solution;
+			if (sol != null) {
+				//Resolve project references
+				try {
+					MakefileData.ResolveProjectReferences (sol.RootFolder, monitor);
+				} catch (Exception e) {
+					LoggingService.LogError (GettextCatalog.GetString (
+						"Error resolving Makefile based project references for solution {0}", sol.Name), e);
+					monitor.ReportError (GettextCatalog.GetString (
+						"Error resolving Makefile based project references for solution {0}", sol.Name), e);
+				}
+			}
+			
+			return item;
+		}
+
+		
+		protected override SolutionEntityItem LoadSolutionItem (IProgressMonitor monitor, string fileName)
+		{
+			SolutionEntityItem entry = base.LoadSolutionItem (monitor, fileName);
 			if (entry == null)
 				return null;
 			
-			Combine c = entry as Combine;
-			if (c != null && !oldHasParentCombine) {
-				hasParentCombine = false;
-
-				//Resolve project references
-				try {
-					MakefileData.ResolveProjectReferences (c, monitor);
-				} catch (Exception e) {
-					LoggingService.LogError (GettextCatalog.GetString (
-						"Error resolving Makefile based project references for solution {0}", c.Name), e);
-					monitor.ReportError (GettextCatalog.GetString (
-						"Error resolving Makefile based project references for solution {0}", c.Name), e);
-				}
-
-				return entry;
-			}
-
 			Project project = entry as Project;
 			if (project == null)
 				return entry;
@@ -93,11 +92,11 @@ namespace MonoDevelop.Autotools
 				monitor.EndTask ();
 			}
 
-			entry.NeedsBuilding = false;
+			entry.SetNeedsBuilding (false);
 			return entry;
 		}
 
-		public override void Save (IProgressMonitor monitor, CombineEntry entry)
+		public override void Save (IProgressMonitor monitor, SolutionEntityItem entry)
 		{
 			base.Save (monitor, entry);
 			
@@ -119,9 +118,9 @@ namespace MonoDevelop.Autotools
 			}
 		}
 		
-		public override StringCollection GetExportFiles (CombineEntry entry)
+		public override List<string> GetItemFiles (SolutionEntityItem entry, bool includeReferencedFiles)
 		{
-			StringCollection col = base.GetExportFiles (entry);
+			List<string> col = base.GetItemFiles (entry, includeReferencedFiles);
 			
 			MakefileData data = entry.ExtendedProperties ["MonoDevelop.Autotools.MakefileInfo"] as MakefileData;
 			if (data == null || !data.IntegrationEnabled || string.IsNullOrEmpty (data.AbsoluteMakefileName))
@@ -133,21 +132,21 @@ namespace MonoDevelop.Autotools
 
 
 		//TODO
-		public override bool GetNeedsBuilding (CombineEntry entry)
+		protected override bool GetNeedsBuilding (SolutionEntityItem entry, string configuration)
 		{
-			return base.GetNeedsBuilding (entry);
+			return base.GetNeedsBuilding (entry, configuration);
 		}
 
 		//FIXME: Check whether autogen.sh is required or not
-		public override ICompilerResult Build (IProgressMonitor monitor, CombineEntry entry)
+		protected override ICompilerResult Build (IProgressMonitor monitor, SolutionEntityItem entry, string configuration)
 		{
 			Project project = entry as Project;
 			if (project == null)
-				return base.Build (monitor, entry);
+				return base.Build (monitor, entry, configuration);
 
 			MakefileData data = project.ExtendedProperties ["MonoDevelop.Autotools.MakefileInfo"] as MakefileData;
 			if (data == null || !data.IntegrationEnabled || String.IsNullOrEmpty (data.BuildTargetName))
-				return base.Build (monitor, entry);
+				return base.Build (monitor, entry, configuration);
 
 			//FIXME: Gen autofoo ? autoreconf?
 
@@ -195,7 +194,7 @@ namespace MonoDevelop.Autotools
 			if (exitCode != 0 && cr.FailedBuildCount == 0)
 				cr.AddError (GettextCatalog.GetString ("Build failed. See Build Output panel."));
 			else
-				entry.NeedsBuilding = false;
+				entry.SetNeedsBuilding (false, configuration);
 
 			return cr;
 		}
@@ -323,17 +322,17 @@ namespace MonoDevelop.Autotools
 				return null;
 		}
 
-		public override void Clean (IProgressMonitor monitor, CombineEntry entry)
+		protected override void Clean (IProgressMonitor monitor, SolutionEntityItem entry, string configuration)
 		{
 			Project proj = entry as Project;
 			if (proj == null) {
-				base.Clean (monitor, entry);
+				base.Clean (monitor, entry, configuration);
 				return;
 			}
 
 			MakefileData data = proj.ExtendedProperties ["MonoDevelop.Autotools.MakefileInfo"] as MakefileData;
 			if (data == null || !data.IntegrationEnabled || String.IsNullOrEmpty (data.CleanTargetName)) {
-				base.Clean (monitor, entry); 
+				base.Clean (monitor, entry, configuration); 
 				return;
 			}
 
@@ -367,17 +366,17 @@ namespace MonoDevelop.Autotools
 			monitor.ReportSuccess ( GettextCatalog.GetString ( "Project successfully cleaned"));
 		}
 
-		public override void Execute (IProgressMonitor monitor, CombineEntry entry, ExecutionContext context)
+		protected override void Execute (IProgressMonitor monitor, SolutionEntityItem entry, ExecutionContext context, string configuration)
 		{
 			Project project = entry as Project;
 			if (project == null) {
-				base.Execute (monitor, entry, context);
+				base.Execute (monitor, entry, context, configuration);
 				return;
 			}
 
 			MakefileData data = project.ExtendedProperties ["MonoDevelop.Autotools.MakefileInfo"] as MakefileData;
 			if (data == null || !data.IntegrationEnabled || String.IsNullOrEmpty (data.ExecuteTargetName)) {
-				base.Execute (monitor, entry, context);
+				base.Execute (monitor, entry, context, configuration);
 				return;
 			}
 

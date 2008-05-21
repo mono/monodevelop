@@ -46,7 +46,7 @@ using MonoDevelop.Deployment;
 
 namespace MonoDevelop.Gettext
 {	
-	public class TranslationProject : CombineEntry, IDeployable
+	public class TranslationProject : SolutionEntityItem, IDeployable
 	{
 		[ItemProperty("packageName")]
 		string packageName = null;
@@ -72,14 +72,14 @@ namespace MonoDevelop.Gettext
 			set { outputType = value; }
 		}
 		
-		[ItemProperty]
-		List<Translation> translations = new List<Translation> ();
+		TranslationCollection translations;
 		
 		[ItemProperty]
 		List<TranslationProjectInformation> projectInformations = new List<TranslationProjectInformation> ();
 		
-		public ReadOnlyCollection<Translation> Translations {
-			get { return translations.AsReadOnly (); }
+		[ItemProperty ("translations")]
+		public TranslationCollection Translations {
+			get { return translations; }
 		}
 		
 		public ReadOnlyCollection<TranslationProjectInformation> TranslationProjectInformations {
@@ -88,19 +88,22 @@ namespace MonoDevelop.Gettext
 		
 		public TranslationProject ()
 		{
-			this.NeedsBuilding = true;
+			translations = new TranslationCollection (this);
+			SetNeedsBuilding (true);
 			isDirty = true;
 		}
 		
-		protected override StringCollection OnGetExportFiles ()
+		protected override List<string> OnGetItemFiles (bool includeReferencedFiles)
 		{
-			StringCollection col = base.OnGetExportFiles ();
-			foreach (Translation tr in translations)
-				col.Add (tr.PoFile);
+			List<string> col = base.OnGetItemFiles (includeReferencedFiles);
+			if (includeReferencedFiles) {
+				foreach (Translation tr in translations)
+					col.Add (tr.PoFile);
+			}
 			return col;
 		}
 		
-		public TranslationProjectInformation GetProjectInformation (CombineEntry entry, bool force)
+		public TranslationProjectInformation GetProjectInformation (SolutionItem entry, bool force)
 		{
 			foreach (TranslationProjectInformation info in this.projectInformations) {
 				if (info.ProjectName == entry.Name)
@@ -114,7 +117,7 @@ namespace MonoDevelop.Gettext
 			return null;
 		}
 		
-		public bool IsIncluded (CombineEntry entry)
+		public bool IsIncluded (SolutionItem entry)
 		{
 			TranslationProjectInformation info = GetProjectInformation (entry, false);
 			if (info != null)
@@ -178,9 +181,7 @@ namespace MonoDevelop.Gettext
 				
 				monitor.ReportSuccess (String.Format (GettextCatalog.GetString ("Language '{0}' successfully added."), isoCode));
 				monitor.Step (1);
-				isDirty = true; 
 				this.Save (monitor);
-				OnTranslationAdded (EventArgs.Empty);
 				return tr;
 			} catch (Exception e) {
 				monitor.ReportError (String.Format ( GettextCatalog.GetString ("Language '{0}' could not be added: "), isoCode), e);
@@ -202,27 +203,35 @@ namespace MonoDevelop.Gettext
 		public void RemoveTranslation (string isoCode)
 		{
 			Translation translation = GetTranslation (isoCode);
-			if (translation != null) {
+			if (translation != null)
 				this.translations.Remove (translation);
-				OnTranslationRemoved (EventArgs.Empty);
-				isDirty = true;
-			}
 		}
 		
-		public override IConfiguration CreateConfiguration (string name)
+		internal void NotifyTranslationAdded (Translation tr)
+		{
+			isDirty = true; 
+			OnTranslationAdded (EventArgs.Empty);
+		}
+		
+		internal void NotifyTranslationRemoved (Translation tr)
+		{
+			isDirty = true;
+			OnTranslationRemoved (EventArgs.Empty);
+		}
+		
+		public override SolutionItemConfiguration CreateConfiguration (string name)
 		{
 			return new TranslationProjectConfiguration (name);
 		}
 		
-		internal string OutputDirectory {
-			get {
-				if (this.ParentCombine.StartupEntry == null) 
-					return BaseDirectory;
-				if (this.ParentCombine.StartupEntry is DotNetProject) {
-					return Path.Combine (Path.GetDirectoryName (((DotNetProject)RootCombine.StartupEntry).GetOutputFileName ()), RelPath);
-				}
-				return Path.Combine (this.RootCombine.StartupEntry.BaseDirectory, RelPath);
+		internal string GetOutputDirectory (string configuration)
+		{
+			if (this.ParentSolution.StartupEntry == null) 
+				return BaseDirectory;
+			if (this.ParentSolution.StartupEntry is DotNetProject) {
+				return Path.Combine (Path.GetDirectoryName (((DotNetProject)ParentSolution.StartupEntry).GetOutputFileName (configuration)), RelPath);
 			}
+			return Path.Combine (this.ParentSolution.StartupEntry.BaseDirectory, RelPath);
 		}
 		
 		void CreateDefaultCatalog (IProgressMonitor monitor)
@@ -231,13 +240,13 @@ namespace MonoDevelop.Gettext
 			
 			Catalog catalog = new Catalog ();
 			List<Project> projects = new List<Project> ();
-			foreach (Project p in RootCombine.GetAllProjects ()) {
+			foreach (Project p in ParentSolution.GetAllProjects ()) {
 				if (IsIncluded (p))
 					projects.Add (p);
 			}
 			foreach (Project p in projects) {
 				monitor.Log.WriteLine (GettextCatalog.GetString ("Scanning project {0}...", p.Name));
-				foreach (ProjectFile file in p.ProjectFiles) {
+				foreach (ProjectFile file in p.Files) {
 					if (!File.Exists (file.FilePath))
 						continue;
 					if (file.Subtype == Subtype.Code) {
@@ -257,7 +266,7 @@ namespace MonoDevelop.Gettext
 		
 		public void UpdateTranslations (IProgressMonitor monitor)
 		{
-			UpdateTranslations (monitor, this.translations.ToArray ());
+			UpdateTranslations (monitor, translations.ToArray ());
 		}
 		
 		public void UpdateTranslations (IProgressMonitor monitor, params Translation[] translations)
@@ -266,7 +275,7 @@ namespace MonoDevelop.Gettext
 			
 			try {
 				List<Project> projects = new List<Project> ();
-				foreach (Project p in RootCombine.GetAllProjects ()) {
+				foreach (Project p in ParentSolution.GetAllProjects ()) {
 					if (IsIncluded (p))
 						projects.Add (p);
 				}
@@ -324,18 +333,10 @@ namespace MonoDevelop.Gettext
 			}
 		}
 		
-		protected override void Deserialize (ITypeSerializer handler, DataCollection data)
-		{
-			base.Deserialize (handler, data);
-			foreach (Translation translation in this.Translations)
-				translation.ParentProject = this;
-		}
-
-				
-		protected override ICompilerResult OnBuild (IProgressMonitor monitor)
+		protected override ICompilerResult OnBuild (IProgressMonitor monitor, string configuration)
 		{
 			CompilerResults results = new CompilerResults (null);
-			string outputDirectory = OutputDirectory;
+			string outputDirectory = GetOutputDirectory (configuration);
 			if (!string.IsNullOrEmpty (outputDirectory)) {
 				foreach (Translation translation in this.Translations) {
 					string poFileName  = translation.PoFile;
@@ -362,17 +363,17 @@ namespace MonoDevelop.Gettext
 					}
 				}
 				isDirty = false;
-				this.NeedsBuilding = false;
+				SetNeedsBuilding (false);
 			}
 			return new DefaultCompilerResult (results, "");
 		}
 		
-		protected override void OnClean (IProgressMonitor monitor)
+		protected override void OnClean (IProgressMonitor monitor, string configuration)
 		{
 			isDirty = true;
-			this.NeedsBuilding = true;
+			SetNeedsBuilding (true);
 			monitor.Log.WriteLine (GettextCatalog.GetString ("Removing all .mo files."));
-			string outputDirectory = OutputDirectory;
+			string outputDirectory = GetOutputDirectory (configuration);
 			if (string.IsNullOrEmpty (outputDirectory))
 				return;
 			foreach (Translation translation in this.Translations) {
@@ -383,12 +384,12 @@ namespace MonoDevelop.Gettext
 			}
 		}
 		
-		protected override void OnExecute (IProgressMonitor monitor, MonoDevelop.Projects.ExecutionContext context)
+		protected override void OnExecute (IProgressMonitor monitor, MonoDevelop.Projects.ExecutionContext context, string configuration)
 		{
 		}
 		
 #region Deployment
-		public DeployFileCollection GetDeployFiles ()
+		public DeployFileCollection GetDeployFiles (string configuration)
 		{
 			DeployFileCollection result = new DeployFileCollection ();
 			foreach (Translation translation in this.Translations) {
@@ -396,12 +397,12 @@ namespace MonoDevelop.Gettext
 					string moDirectory = Path.Combine ("locale", translation.IsoCode);
 					moDirectory = Path.Combine (moDirectory, "LC_MESSAGES");
 					string moFileName  = Path.Combine (moDirectory, PackageName + ".mo");
-					result.Add (new DeployFile (this, translation.OutFile, moFileName, TargetDirectory.CommonApplicationDataRoot));
+					result.Add (new DeployFile (this, translation.GetOutFile (configuration), moFileName, TargetDirectory.CommonApplicationDataRoot));
 				} else {
 					string moDirectory = Path.Combine (RelPath, translation.IsoCode);
 					moDirectory = Path.Combine (moDirectory, "LC_MESSAGES");
 					string moFileName  = Path.Combine (moDirectory, PackageName + ".mo");
-					result.Add (new DeployFile (this, translation.OutFile, moFileName, TargetDirectory.ProgramFiles));
+					result.Add (new DeployFile (this, translation.GetOutFile (configuration), moFileName, TargetDirectory.ProgramFiles));
 				}
 			}
 			return result;
@@ -409,12 +410,12 @@ namespace MonoDevelop.Gettext
 #endregion
 		
 		bool isDirty = true;
-		protected override bool OnGetNeedsBuilding ()
+		protected override bool OnGetNeedsBuilding (string configuration)
 		{
 			return this.isDirty;
 		}
 		
-		protected override void OnSetNeedsBuilding (bool val)
+		protected override void OnSetNeedsBuilding (bool val, string configuration)
 		{
 			isDirty = val;
 		}
@@ -441,34 +442,13 @@ namespace MonoDevelop.Gettext
 		SystemPath
 	}
 	
-	public class TranslationProjectConfiguration : IConfiguration
+	public class TranslationProjectConfiguration : SolutionItemConfiguration
 	{
-		[ItemProperty]
-		string name;
-		
-		public string Name {
-			get {
-				return name;
-			}
-		}
-		
 		public TranslationProjectConfiguration ()
 		{
 		}
 		
-		public TranslationProjectConfiguration (string name)
-		{
-			this.name = name;
-		}
-
-		public object Clone ()		
-		{
-			IConfiguration conf = (IConfiguration) MemberwiseClone ();
-			conf.CopyFrom (this);
-			return conf;
-		}
-		
-		public virtual void CopyFrom (IConfiguration configuration)
+		public TranslationProjectConfiguration (string name): base (name)
 		{
 		}
 	}

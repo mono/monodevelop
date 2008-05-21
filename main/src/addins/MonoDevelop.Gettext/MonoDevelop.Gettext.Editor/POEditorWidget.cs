@@ -480,7 +480,7 @@ namespace MonoDevelop.Gettext
 			                                                            AlertButton.Cancel, AlertButton.Remove) == AlertButton.Remove;
 
 			if (yes) {
-				TranslationProject project = IdeApp.ProjectOperations.CurrentSelectedCombineEntry as TranslationProject;
+				TranslationProject project = IdeApp.ProjectOperations.CurrentSelectedSolutionItem as TranslationProject;
 				if (project != null) {
 					foreach (POEditorWidget widget in widgets)
 						widget.RemoveEntryByString (entry.String);

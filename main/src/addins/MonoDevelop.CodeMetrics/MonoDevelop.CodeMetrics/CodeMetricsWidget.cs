@@ -89,7 +89,7 @@ namespace MonoDevelop.CodeMetrics
 			public MetricsWorkerThread (CodeMetricsWidget widget)
 			{
 				this.widget = widget;
-				foreach (KeyValuePair<string, string> header in StandardHeaderService.Templates) {
+				foreach (KeyValuePair<string, string> header in StandardHeaderService.HeaderTemplates) {
 					Mono.TextEditor.Document newDoc = new Mono.TextEditor.Document ();
 					newDoc.Text = header.Value;
 					headers[header.Key] = newDoc;
@@ -162,7 +162,7 @@ namespace MonoDevelop.CodeMetrics
 				//string possibleHeader = document.GetTextAt (0, Math.Min (this.longestHeader, document.Length));
 				
 				if (!String.IsNullOrEmpty (last)) {
-					foreach (KeyValuePair<string, string> header in StandardHeaderService.Templates) {
+					foreach (KeyValuePair<string, string> header in StandardHeaderService.HeaderTemplates) {
 						if (header.Key == last) {
 							int match = FakeLongestCommonSubstring (document, header.Value);//;LongestCommonSubstring (header.Value, possibleHeader);
 							if (match > header.Value.Length / 2) 
@@ -172,7 +172,7 @@ namespace MonoDevelop.CodeMetrics
 					}
 				}
 				
-				foreach (KeyValuePair<string, string> header in StandardHeaderService.Templates) {
+				foreach (KeyValuePair<string, string> header in StandardHeaderService.HeaderTemplates) {
 					if (header.Key == last)
 						continue;
 					int match = FakeLongestCommonSubstring (document, header.Value);
@@ -282,14 +282,21 @@ namespace MonoDevelop.CodeMetrics
 		
 		public void Add (Project project)
 		{
-			foreach (ProjectFile projectFile in project.ProjectFiles) {
+			foreach (ProjectFile projectFile in project.Files) {
 				Add (projectFile);
 			}
 		}
 		
-		public void Add (Combine combine)
+		public void Add (SolutionFolder combine)
 		{
 			foreach (Project project in combine.GetAllProjects ()) {
+				Add (project);
+			}
+		}
+		
+		public void Add (WorkspaceItem item)
+		{
+			foreach (Project project in item.GetAllProjects ()) {
 				Add (project);
 			}
 		}

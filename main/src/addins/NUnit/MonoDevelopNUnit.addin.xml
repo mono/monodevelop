@@ -170,7 +170,7 @@
 		<FileTemplate id = "NUnitTestClass" resource = "NUnitTestClass.xft.xml"/>
 	</Extension>
   
-	<Extension path = "/MonoDevelop/ProjectModel/ProjectFileFormats">
+	<Extension path = "/MonoDevelop/ProjectModel/FileFormats">
 		<FileFormat id="NUnitAssemblyGroupFileFormat"
 		            class="MonoDevelop.NUnit.NUnitAssemblyGroupFileFormat, MonoDevelop.NUnit"/>
 	</Extension>

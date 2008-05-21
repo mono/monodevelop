@@ -86,7 +86,7 @@ namespace MonoDevelop.Ide.Gui
 			// If a combine was specified, force --newwindow.
 			if(!options.newwindow) {
 				foreach (string file in StartupInfo.GetRequestedFileList ()) {
-					if (MonoDevelop.Projects.Services.ProjectService.IsCombineEntryFile (file))
+					if (MonoDevelop.Projects.Services.ProjectService.IsWorkspaceItemFile (file))
 					{
 						options.newwindow = true;
 						break;
@@ -247,9 +247,9 @@ namespace MonoDevelop.Ide.Gui
 				string file = fileToOpen;
 				if (file == null || file.Length == 0)
 					return false;
-				if (MonoDevelop.Projects.Services.ProjectService.IsCombineEntryFile (file)) {
+				if (MonoDevelop.Projects.Services.ProjectService.IsWorkspaceItemFile (file)) {
 					try {
-						IdeApp.ProjectOperations.OpenCombine (file);
+						IdeApp.Workspace.OpenWorkspaceItem (file);
 					} catch {
 					}
 				} else {

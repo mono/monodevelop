@@ -40,13 +40,13 @@ namespace MonoDevelop.Ide.Codons
 	{
 		public CombineOpenCondition ()
 		{
-			IdeApp.ProjectOperations.CombineClosed += delegate { NotifyChanged(); };
-			IdeApp.ProjectOperations.CombineOpened += delegate { NotifyChanged(); };
+			IdeApp.Workspace.FirstWorkspaceItemOpened += delegate { NotifyChanged(); };
+			IdeApp.Workspace.LastWorkspaceItemClosed += delegate { NotifyChanged(); };
 		}
 		
 		public override bool Evaluate (NodeElement condition)
 		{
-			return IdeApp.ProjectOperations.CurrentOpenCombine != null;
+			return IdeApp.Workspace.IsOpen;
 		}
 	}
 }

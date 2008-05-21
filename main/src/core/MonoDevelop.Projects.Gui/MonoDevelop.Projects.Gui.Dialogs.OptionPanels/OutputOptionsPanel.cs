@@ -31,19 +31,34 @@ using Gtk;
 
 namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 {
-	internal class OutputOptionsPanel : AbstractOptionPanel
+	internal class OutputOptionsPanel : MultiConfigItemOptionsPanel
 	{
 		OutputOptionsPanelWidget  widget;
-		public override void LoadPanelContents()
+		
+		public override bool IsVisible ()
 		{
-			Add (widget = new  OutputOptionsPanelWidget ((Properties) CustomizationObject));
+			return ConfiguredProject is DotNetProject;
+		}
+
+		public override Widget CreatePanelWidget()
+		{
+			return (widget = new OutputOptionsPanelWidget ());
 		}
 		
-		public override bool StorePanelContents()
+		public override bool ValidateChanges ()
 		{
-			bool result = true;
-			result = widget.Store ();
- 			return result;
+			return widget.ValidateChanges ();
+		}
+		
+		public override void LoadConfigData ()
+		{
+			widget.Load (ConfiguredProject, (DotNetProjectConfiguration) CurrentConfiguration);
+		}
+
+		
+		public override void ApplyChanges()
+		{
+			widget.Store ();
 		}
 	}
 
@@ -51,15 +66,16 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 	partial class OutputOptionsPanelWidget : Gtk.Bin 
 	{
 		DotNetProjectConfiguration configuration;
-		Project project;
 
-		public  OutputOptionsPanelWidget(Properties CustomizationObject)
-		{	
+		public OutputOptionsPanelWidget ()
+		{
 			Build ();
-			configuration = ((Properties)CustomizationObject).Get<DotNetProjectConfiguration>("Config");
-			project = ((Properties)CustomizationObject).Get<Project>("Project");
 			externalConsoleCheckButton.Toggled += new EventHandler (ExternalConsoleToggle);
-			
+		}
+		
+		public void Load (Project project, DotNetProjectConfiguration config)
+		{	
+			this.configuration = config;
 			assemblyNameEntry.Text = configuration.OutputAssembly;
 			parametersEntry.Text = configuration.CommandLineParameters;
 			
@@ -69,12 +85,11 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 			externalConsoleCheckButton.Active = configuration.ExternalConsole;
 			pauseConsoleOutputCheckButton.Active = configuration.PauseConsoleOutput;
 			
-			if (!externalConsoleCheckButton.Active)
-				pauseConsoleOutputCheckButton.Sensitive = false;
+			pauseConsoleOutputCheckButton.Sensitive = externalConsoleCheckButton.Active;
 		}
 
-		public bool Store ()
-		{	
+		public bool ValidateChanges ()
+		{
 			if (configuration == null) {
 				return true;
 			}
@@ -89,12 +104,19 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 				return false;
 			}
 			
+			return true;
+		}
+		
+		public void Store ()
+		{	
+			if (configuration == null)
+				return;
+			
 			configuration.OutputAssembly = assemblyNameEntry.Text;
 			configuration.OutputDirectory = outputPathEntry.Path;
 			configuration.CommandLineParameters = parametersEntry.Text;
 				configuration.ExternalConsole = externalConsoleCheckButton.Active;
 			configuration.PauseConsoleOutput = pauseConsoleOutputCheckButton.Active;
-			return true;
 		}
 		
 		void ExternalConsoleToggle (object sender, EventArgs e)

@@ -55,6 +55,12 @@ namespace MonoDevelop.Core
 		ClrVersion currentVersion;
 		ClrVersion[] supportedVersions = new ClrVersion [] {};
 		
+		public ClrVersion CurrentClrVersion {
+			get {
+				return currentVersion;
+			}
+		}
+		
 		public event EventHandler PackagesChanged;
 
 		public override void InitializeService ()

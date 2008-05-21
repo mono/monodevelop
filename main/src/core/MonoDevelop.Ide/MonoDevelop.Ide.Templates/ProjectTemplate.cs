@@ -253,20 +253,21 @@ namespace MonoDevelop.Ide.Templates
 		string lastCombine    = null;
 		ProjectCreateInformation projectCreateInformation;
 		
-		public string CreateCombine (ProjectCreateInformation projectCreateInformation)
+		public WorkspaceItem CreateWorkspaceItem (ProjectCreateInformation projectCreateInformation)
 		{
 			this.projectCreateInformation = projectCreateInformation;
-			lastCombine = combineDescriptor.CreateEntry (projectCreateInformation, this.languagename);
-			return lastCombine;
+			WorkspaceItem item = combineDescriptor.CreateEntry (projectCreateInformation, this.languagename);
+			lastCombine = item.FileName;
+			return item;
 		}
 		
-		public string CreateProject (ProjectCreateInformation projectCreateInformation)
+		public SolutionEntityItem CreateProject (ProjectCreateInformation projectCreateInformation)
 		{
 			this.projectCreateInformation = projectCreateInformation;
 			
 			// Create a project using the first child template of the combine template
 			
-			ICombineEntryDescriptor[] entries = combineDescriptor.EntryDescriptors;
+			ISolutionItemDescriptor[] entries = combineDescriptor.EntryDescriptors;
 			if (entries.Length == 0)
 				throw new InvalidOperationException ("Combine template does not contain any project template");
 
@@ -276,7 +277,7 @@ namespace MonoDevelop.Ide.Templates
 		
 		public void OpenCreatedCombine()
 		{
-			IAsyncOperation op = IdeApp.ProjectOperations.OpenCombine (lastCombine);
+			IAsyncOperation op = IdeApp.Workspace.OpenWorkspaceItem (lastCombine);
 			op.WaitForCompleted ();
 			if (op.Success) {
 				foreach (OpenFileAction action in actions)

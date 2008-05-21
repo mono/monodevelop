@@ -97,7 +97,6 @@ namespace CSharpBinding
 				ConversionFlags.ShowParameters;
 			
 			StringBuilder textBuilder = new StringBuilder ();
-			Console.WriteLine ("ppres: " + resolver);
 			
 			textBuilder.Append (modifiers);
 			textBuilder.Append (ambience.Convert (method, flags, resolver));

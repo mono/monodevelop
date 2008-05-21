@@ -1,3 +1,7 @@
+2008-05-21  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.AssemblyBrowser.mdp: New project model changes.
+
 2008-04-08  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.AssemblyBrowser.addin.xml: Updated assembly browser for

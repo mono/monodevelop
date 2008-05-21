@@ -33,7 +33,6 @@ FILES =  \
 	Project/NUnitAssemblyGroupProject.cs \
 	Project/TestAssembly.cs \
 	Project/TestAssemblyCollection.cs \
-	Services/CombineTestGroup.cs \
 	Services/ExternalTestRunner.cs \
 	Services/GeneralTestOptions.cs \
 	Services/IResultsStore.cs \
@@ -45,15 +44,16 @@ FILES =  \
 	Services/NUnitService.cs \
 	Services/NUnitTestCase.cs \
 	Services/NUnitTestSuite.cs \
+	Services/SolutionFolderTestGroup.cs \
 	Services/SystemTestProvider.cs \
 	Services/TestContext.cs \
-	Services/TestProgressMonitor.cs \
 	Services/UnitTest.cs \
 	Services/UnitTestCollection.cs \
 	Services/UnitTestGroup.cs \
 	Services/UnitTestResult.cs \
 	Services/UnitTestResultsStore.cs \
 	Services/UnitTestStatus.cs \
+	Services/WorkspaceTestGroup.cs \
 	Services/XmlResultsStore.cs
 
 RES =  \
@@ -66,6 +66,7 @@ RES =  \
 	Gui/NUnit.Success.png \
 	Gui/NUnit.SuccessAndFailed.png \
 	Gui/nunit-overlay-32.png \
+	md1format.xml \
 	MonoDevelopNUnit.addin.xml \
 	nunit.glade \
 	templates/NUnitAssemblyGroup.xpt.xml \

@@ -35,14 +35,17 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 {
 	public partial class ExportProjectDialog : Gtk.Dialog
 	{
-		IFileFormat[] formats;
+		FileFormat[] formats;
 		
-		public ExportProjectDialog (CombineEntry entry, IFileFormat selectedFormat)
+		public ExportProjectDialog (IWorkspaceObject entry, FileFormat selectedFormat)
 		{
 			this.Build();
 			
+			FileFormat f = entry is WorkspaceItem ? ((WorkspaceItem)entry).FileFormat : ((SolutionEntityItem)entry).FileFormat;
+			labelNewFormat.Text = f.Name;
+			
 			formats = Services.ProjectService.FileFormats.GetFileFormatsForObject (entry);
-			foreach (IFileFormat format in formats)
+			foreach (FileFormat format in formats)
 				comboFormat.AppendText (format.Name);
 
 			int sel = Array.IndexOf (formats, selectedFormat);
@@ -53,7 +56,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			UpdateControls ();
 		}
 		
-		public IFileFormat Format {
+		public FileFormat Format {
 			get { return formats [comboFormat.Active]; }
 		}
 		

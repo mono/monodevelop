@@ -2,7 +2,7 @@
 <stetic-interface>
   <configuration>
     <images-root-path>..</images-root-path>
-    <target-gtk-version>2.10.2</target-gtk-version>
+    <target-gtk-version>2.10.3</target-gtk-version>
   </configuration>
   <import>
     <widget-library name="../../../../build/bin/MonoDevelop.Projects.Gui.dll" />
@@ -616,7 +616,7 @@
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Dialog" id="MonoDevelop.Gettext.Translator.LanguageChooserDialog" design-size="466 401">
+  <widget class="Gtk.Dialog" id="MonoDevelop.Gettext.Translator.LanguageChooserDialog" design-size="466 415">
     <property name="MemberName" />
     <property name="Events">ButtonPressMask</property>
     <property name="Title" translatable="yes">Create New Localization</property>
@@ -894,7 +894,7 @@
             <property name="UseStock">True</property>
             <property name="Type">StockItem</property>
             <property name="StockId">gtk-add</property>
-            <property name="ResponseId">0</property>
+            <property name="ResponseId">-5</property>
             <property name="label">gtk-add</property>
           </widget>
           <packing>
@@ -1229,7 +1229,7 @@
     <child internal-child="ActionArea">
       <widget class="Gtk.HButtonBox" id="dialog1_ActionArea">
         <property name="MemberName" />
-        <property name="Spacing">10</property>
+        <property name="Spacing">6</property>
         <property name="BorderWidth">5</property>
         <property name="Size">2</property>
         <property name="LayoutStyle">End</property>

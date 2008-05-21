@@ -18,11 +18,11 @@
       <Entry build="True" name="MonoDevelop.Core.Gui" configuration="Debug" />
       <Entry build="True" name="MonoDevelop.Components" configuration="Debug" />
       <Entry build="True" name="MonoDevelop.Dock" configuration="Debug" />
-      <Entry build="True" name="MonoDevelop.Documentation" configuration="Debug" />
+      <Entry build="True" name="MonoDevelop.Documentation" configuration="Release" />
       <Entry build="True" name="MonoDevelop.Ide" configuration="Debug" />
       <Entry build="True" name="MonoDevelop.Projects" configuration="Debug" />
-      <Entry build="True" name="MonoDevelop.Projects.Gui" configuration="Debug" />
-      <Entry build="True" name="MonoDevelop.Startup" configuration="Debug" />
+      <Entry build="True" name="MonoDevelop.Projects.Gui" configuration="Release" />
+      <Entry build="True" name="MonoDevelop.Startup" configuration="Release" />
       <Entry build="True" name="NRefactory" configuration="Release" />
       <Entry build="True" name="Mono.Debugging" configuration="Release" />
     </Configuration>

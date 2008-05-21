@@ -15,15 +15,16 @@ namespace MonoDevelop.Autotools
 			this.Build();
 			
 			this.target = target;
-			CombineEntry targetCombine = target.RootCombineEntry;
+			SolutionItem targetCombine = target.RootSolutionItem;
 			folderEntry.Path = target.TargetDir;
 			
-			if ((target.DefaultConfiguration == null || target.DefaultConfiguration == "") && targetCombine.ActiveConfiguration != null)
-				target.DefaultConfiguration = targetCombine.ActiveConfiguration.Name;
+			if (string.IsNullOrEmpty (target.DefaultConfiguration)) {
+				target.DefaultConfiguration = targetCombine.ParentSolution.GetConfigurations () [0];
+			}
 			
-			for (int ii=0; ii < targetCombine.Configurations.Count; ii++)
+			for (int ii=0; ii < targetCombine.ParentSolution.Configurations.Count; ii++)
 			{
-				string cc = targetCombine.Configurations [ii].Name;
+				string cc = targetCombine.ParentSolution.Configurations [ii].Id;
 				comboConfigs.AppendText ( cc );
 				if ( cc == target.DefaultConfiguration ) comboConfigs.Active = ii;
 			}

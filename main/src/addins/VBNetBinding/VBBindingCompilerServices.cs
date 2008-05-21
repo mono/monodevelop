@@ -101,8 +101,9 @@ namespace VBBinding {
 					sb.Append("-win32icon:");sb.Append('"');sb.Append(compilerparameters.Win32Icon);sb.Append('"');sb.Append(Environment.NewLine);
 			}
 			
-			if (compilerparameters.RootNamespace!= null && compilerparameters.RootNamespace.Length > 0) {
-				sb.Append("-rootnamespace:");sb.Append('"');sb.Append(compilerparameters.RootNamespace);sb.Append('"');sb.Append(Environment.NewLine);
+			DotNetProject dp = configuration.ParentItem as DotNetProject;
+			if (dp != null && !string.IsNullOrEmpty (dp.DefaultNamespace)) {
+				sb.Append("-rootnamespace:").Append('"').Append(dp.DefaultNamespace).Append('"').Append(Environment.NewLine);
 			}
 			
 			if (compilerparameters.DefineSymbols.Length > 0) {
@@ -158,7 +159,7 @@ namespace VBBinding {
 			writer.WriteLine(GenerateOptions (configuration, compilerparameters, exe));
 			
 			foreach (ProjectReference lib in references) {
-				foreach (string fileName in lib.GetReferencedFileNames())
+				foreach (string fileName in lib.GetReferencedFileNames(configuration.Id))
 					writer.WriteLine(String.Concat("-r:", fileName));
 			}
 			

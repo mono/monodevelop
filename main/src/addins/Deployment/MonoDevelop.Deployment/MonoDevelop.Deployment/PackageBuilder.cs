@@ -42,18 +42,22 @@ namespace MonoDevelop.Deployment
 	public class PackageBuilder: IDirectoryResolver
 	{
 		[ItemProperty ("ChildEntries")]
-		[ProjectPathItemProperty ("Entry", Scope=1)]
-		List<string> childEntries = new List<string> ();
+		List<SolutionItemReference> childEntries = new List<SolutionItemReference> ();
 		
 		[ItemProperty ("ExcludedFiles")]
 		[ItemProperty ("File", Scope=1)]
 		List<string> excludedFiles;
 		
-		[ProjectPathItemProperty]
-		string rootEntry;
+		[ItemProperty ("RootEntry")]
+		SolutionItemReference rootEntry;
 		
-		List<CombineEntry> childCombineEntries;
-		CombineEntry rootCombineEntry;
+		List<SolutionItem> childCombineEntries;
+		SolutionItem rootSolutionItem;
+
+#region MD 1.0 compatibility fields
+		string[] md1ChildEntries;
+		string md1RootEntry;
+#endregion
 		
 		public PackageBuilder ()
 		{
@@ -78,7 +82,7 @@ namespace MonoDevelop.Deployment
 			return null;
 		}
 		
-		internal void Build (IProgressMonitor monitor)
+		internal bool Build (IProgressMonitor monitor)
 		{
 			monitor.BeginTask ("Package: " + Description, 1);
 			DeployContext ctx = null;
@@ -86,23 +90,29 @@ namespace MonoDevelop.Deployment
 				ctx = CreateDeployContext ();
 				if (ctx != null)
 					ctx.FileFilter = this;
-				OnBuild (monitor, ctx);
+				if (!OnBuild (monitor, ctx)) {
+					monitor.AsyncOperation.Cancel ();
+					return false;
+				}
 			} catch (Exception ex) {
 				monitor.ReportError ("Package creation failed", ex);
+				LoggingService.LogError ("Package creation failed", ex);
 				monitor.AsyncOperation.Cancel ();
+				return false;
 			} finally {
 				monitor.EndTask ();
 				if (ctx != null)
 					ctx.Dispose ();
 			}
+			return true;
 		}
 		
-		public virtual bool CanBuild (CombineEntry entry)
+		public virtual bool CanBuild (SolutionItem entry)
 		{
 			return true;
 		}
 		
-		public virtual void InitializeSettings (CombineEntry entry)
+		public virtual void InitializeSettings (SolutionItem entry)
 		{
 		}
 		
@@ -115,17 +125,20 @@ namespace MonoDevelop.Deployment
 		
 		public virtual void CopyFrom (PackageBuilder other)
 		{
-			childEntries = new List<string> (other.childEntries);
+			childEntries = new List<SolutionItemReference> (other.childEntries);
 			rootEntry = other.rootEntry;
+			md1ChildEntries = other.md1ChildEntries;
+			md1RootEntry = other.md1RootEntry;
+			
 			if (other.childCombineEntries != null)
-				childCombineEntries = new List<CombineEntry> (other.childCombineEntries);
+				childCombineEntries = new List<SolutionItem> (other.childCombineEntries);
 			else
 				childCombineEntries = null;
 			if (other.excludedFiles != null)
 				excludedFiles = new List<string> (other.excludedFiles);
 			else
 				excludedFiles = null;
-			rootCombineEntry = other.rootCombineEntry;
+			rootSolutionItem = other.rootSolutionItem;
 		}
 		
 		public virtual PackageBuilder[] CreateDefaultBuilders ()
@@ -133,8 +146,9 @@ namespace MonoDevelop.Deployment
 			return new PackageBuilder [0];
 		}
 		
-		protected virtual void OnBuild (IProgressMonitor monitor, DeployContext ctx)
+		protected virtual bool OnBuild (IProgressMonitor monitor, DeployContext ctx)
 		{
+			return true;
 		}
 		
 		string IDirectoryResolver.GetDirectory (DeployContext ctx, string folderId)
@@ -152,120 +166,149 @@ namespace MonoDevelop.Deployment
 			return new DeployContext (this, "Linux", null);
 		}
 		
-		public void SetCombineEntry (CombineEntry entry)
+		public void SetSolutionItem (SolutionItem entry)
 		{
-			SetCombineEntry (entry, null);
+			SetSolutionItem (entry, null);
 		}
 		
-		public void SetCombineEntry (CombineEntry rootCombineEntry, CombineEntry[] childEntries)
+		public void SetSolutionItem (SolutionItem rootSolutionItem, IEnumerable<SolutionItem> childEntries)
 		{
-			this.rootCombineEntry = rootCombineEntry;
-			childCombineEntries = new List<CombineEntry> ();
+			this.rootSolutionItem = rootSolutionItem;
+			childCombineEntries = new List<SolutionItem> ();
 			
 			if (childEntries != null)
 			    childCombineEntries.AddRange (childEntries);
 			
 			UpdateEntryNames ();
-			InitializeSettings (rootCombineEntry);
+			InitializeSettings (rootSolutionItem);
+		}
+		
+		internal void SetSolutionItem (SolutionItemReference siRoot, SolutionItemReference[] children)
+		{
+			rootEntry = siRoot;
+			childEntries.Clear ();
+			foreach (SolutionItemReference e in children)
+				childEntries.Add (e);
+		}
+		
+		internal void SetSolutionItemMd1 (string siRoot, string[] children)
+		{
+			md1RootEntry = siRoot;
+			md1ChildEntries = children;
 		}
 		
 		void UpdateEntryNames ()
 		{
-			this.rootEntry = rootCombineEntry.FileName;
+			this.rootEntry = new SolutionItemReference (rootSolutionItem);
 			this.childEntries.Clear ();
-			foreach (CombineEntry e in childCombineEntries)
-				childEntries.Add (e.FileName);
+			foreach (SolutionItem e in childCombineEntries)
+				childEntries.Add (new SolutionItemReference (e));
 		}
 		
-		public CombineEntry RootCombineEntry {
+		public SolutionItem RootSolutionItem {
 			get {
-				if (rootCombineEntry == null && rootEntry != null) {
-					rootCombineEntry = GetEntry (rootEntry);
+				if (rootSolutionItem == null && (rootEntry != null || md1RootEntry != null)) {
+					if (md1RootEntry != null) {
+						rootSolutionItem = GetEntryMD1 (md1RootEntry);
+						md1RootEntry = null;
+					} else
+						rootSolutionItem = GetEntry (rootEntry);
 				}
-				return rootCombineEntry; 
+				return rootSolutionItem; 
 			}
 		}
 		
-		public void AddEntry (CombineEntry entry)
+		public Solution Solution {
+			get {
+				return RootSolutionItem != null ? RootSolutionItem.ParentSolution : null;
+			}
+		}
+		
+		public void AddEntry (SolutionItem entry)
 		{
-			string fp = FileService.GetFullPath (entry.FileName);
-			foreach (string s in childEntries)
-				if (FileService.GetFullPath (s) == fp)
+			SolutionItemReference fp = new SolutionItemReference (entry);
+			foreach (SolutionItemReference s in childEntries)
+				if (s.Equals (fp))
 					return;
 			
-			if (rootEntry != null && FileService.GetFullPath (rootEntry) == fp)
+			if (rootEntry == fp)
 				return;
 			
-			List<CombineEntry> list = new List<CombineEntry> ();
-			if (RootCombineEntry != null)
-				list.Add (RootCombineEntry);
+			List<SolutionItem> list = new List<SolutionItem> ();
+			if (RootSolutionItem != null)
+				list.Add (RootSolutionItem);
 			list.AddRange (GetChildEntries());
 			list.Add (entry);
 			
-			rootCombineEntry = GetCommonCombineEntry (list);
-			list.Remove (rootCombineEntry);
+			rootSolutionItem = GetCommonSolutionItem (list);
+			list.Remove (rootSolutionItem);
 			
-			foreach (CombineEntry e in list.ToArray ()) {
-				CombineEntry ce = e.ParentCombine;
-				while (ce != rootCombineEntry) {
+			foreach (SolutionItem e in list.ToArray ()) {
+				SolutionItem ce = e.ParentFolder;
+				while (ce != rootSolutionItem) {
 					if (!list.Contains (ce))
 						list.Add (ce);
-					ce = ce.ParentCombine;
+					ce = ce.ParentFolder;
 				}
 			}
 			childCombineEntries = list;
 			UpdateEntryNames ();
 		}
 		
-		public CombineEntry[] GetChildEntries ()
+		public SolutionItem[] GetChildEntries ()
 		{
 			if (childCombineEntries != null)
 				return childCombineEntries.ToArray ();
 			
-			childCombineEntries = new List<CombineEntry> ();
-			foreach (string en in childEntries) {
-				CombineEntry re = GetEntry (en);
-				if (re != null && !(re is UnknownCombineEntry))
+			childCombineEntries = new List<SolutionItem> ();
+			
+			if (md1ChildEntries != null) {
+				foreach (string it in md1ChildEntries) {
+					SolutionItem re = GetEntryMD1 (it);
+					if (re != null && !(re is UnknownSolutionItem))
+						childCombineEntries.Add (re);
+				}
+				md1ChildEntries = null;
+				return childCombineEntries.ToArray ();
+			}
+			
+			foreach (SolutionItemReference en in childEntries) {
+				SolutionItem re = GetEntry (en);
+				if (re != null && !(re is UnknownSolutionItem))
 					childCombineEntries.Add (re);
 			}
 			return childCombineEntries.ToArray ();
 		}
 		
-		public CombineEntry[] GetAllEntries ()
+		public SolutionItem[] GetAllEntries ()
 		{
-			List<CombineEntry> list = new List<CombineEntry> ();
-			if (RootCombineEntry != null)
-				list.Add (RootCombineEntry);
+			List<SolutionItem> list = new List<SolutionItem> ();
+			if (RootSolutionItem != null)
+				list.Add (RootSolutionItem);
 			list.AddRange (GetChildEntries ());
 			return list.ToArray ();
 		}
 		
-		CombineEntry GetEntry (string fileName)
+		SolutionItem GetEntry (SolutionItemReference reference)
 		{
-			if (IdeApp.ProjectOperations.CurrentOpenCombine != null) {
-				CombineEntry fe = FindEntry (IdeApp.ProjectOperations.CurrentOpenCombine, FileService.GetFullPath (fileName));
-				return fe;
-			}
-			return Services.ProjectService.ReadCombineEntry (fileName, new NullProgressMonitor ());
+			return Services.ProjectService.ReadSolutionItem (new NullProgressMonitor (), reference, IdeApp.Workspace.Items.ToArray ());
 		}
 		
-		CombineEntry FindEntry (CombineEntry e, string fileName)
+		public virtual DeployFileCollection GetDeployFiles (DeployContext ctx, string configuration)
 		{
-			if (FileService.GetFullPath (e.FileName) == fileName)
-				return e;
-			if (e is Combine) {
-				foreach (CombineEntry ce in ((Combine)e).Entries) {
-					CombineEntry fe = FindEntry (ce, fileName);
-					if (fe != null)
-						return fe;
-				}
-			}
-			return null;
+			return DeployService.GetDeployFiles (ctx, GetAllEntries (), configuration);
 		}
 		
-		public virtual DeployFileCollection GetDeployFiles (DeployContext ctx)
+		public virtual string[] GetSupportedConfigurations ()
 		{
-			return DeployService.GetDeployFiles (ctx, GetAllEntries ());
+			if (Solution != null) {
+				ICollection<string> col = Solution.GetConfigurations ();
+				string[] arr = new string [col.Count];
+				col.CopyTo (arr, 0);
+				return arr;
+			}
+			else
+				return new string [0];
 		}
 		
 		public bool IsFileIncluded (DeployFile file)
@@ -286,39 +329,56 @@ namespace MonoDevelop.Deployment
 		
 		string GetKey (DeployFile file)
 		{
-			return file.SourceCombineEntry.Name + "," + file.TargetDirectoryID + "," + file.RelativeTargetPath;
+			return file.SourceSolutionItem.Name + "," + file.TargetDirectoryID + "," + file.RelativeTargetPath;
 		}
 		
 		
-		internal static CombineEntry GetCommonCombineEntry (ICollection entries)
+		internal static SolutionItem GetCommonSolutionItem (IEnumerable<SolutionItem> entries)
 		{
-			ArrayList combineList = new ArrayList ();
-			bool firstEntry = true;
-			foreach (CombineEntry e in entries) {
-				CombineEntry c = e;
-				do {
-					int i = combineList.IndexOf (c);
-					if (i != -1) {
-						// Found a common entry.
-						// Remove all previous entries in the list, since they are not common.
-						combineList.RemoveRange (0, i);
-						break;
-					} else if (firstEntry) {
-						combineList.Add (c);
-					}
-					if ((c is Combine) && ((Combine)c).IsRoot)
-						c = null;
-					else
-						c = c.ParentCombine;
-				}
-				while (c != null);
-				
-				firstEntry = false;
+			SolutionItem common = null;
+			foreach (SolutionItem it in entries) {
+				if (common == null)
+					common = it;
+				else
+					return it.ParentSolution.RootFolder;
 			}
-			if (combineList.Count == 0)
-				return null;
-			else
-				return (CombineEntry) combineList [0];
+			return common;
+		}
+		
+		SolutionItem GetEntryMD1 (string fileName)
+		{
+			foreach (WorkspaceItem it in IdeApp.Workspace.Items) {
+				SolutionItem fi = FindEntryMD1 (it, FileService.GetFullPath (fileName));
+				if (fi != null)
+					return fi;
+			}
+			return Services.ProjectService.ReadSolutionItem (new NullProgressMonitor (), fileName);
+		}
+		
+		SolutionItem FindEntryMD1 (object item, string fileName)
+		{
+			if (item is SolutionItem) {
+				string file = MonoDevelop.Projects.Formats.MD1.MD1ProjectService.GetItemFileName ((SolutionItem)item);
+				if (file != null && FileService.GetFullPath (file) == fileName)
+					return (SolutionItem) item;
+			}
+			
+			if (item is Solution) {
+				return FindEntryMD1 (((Solution)item).RootFolder, fileName);
+			}
+			else if (item is SolutionFolder) {
+				foreach (SolutionItem ce in ((SolutionFolder)item).Items) {
+					SolutionItem fi = FindEntryMD1 (ce, fileName);
+					if (fi != null) return fi;
+				}
+			}
+			else if (item is Workspace) {
+				foreach (WorkspaceItem wi in ((Workspace)item).Items) {
+					SolutionItem fi = FindEntryMD1 (wi, fileName);
+					if (fi != null) return fi;
+				}
+			}
+			return null;
 		}
 	}
 }

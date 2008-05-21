@@ -38,42 +38,38 @@ using MonoDevelop.Components;
 
 namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 {
-	internal class CombineInformationPanel : AbstractOptionPanel 
+	internal class CombineInformationPanel : ItemOptionsPanel 
 	{
 		CombineInformationWidget widget;
 
-		public override void LoadPanelContents()
+		public override Widget CreatePanelWidget()
 		{
-			Add ( widget = new  CombineInformationWidget ((Properties) CustomizationObject));
+			return widget = new  CombineInformationWidget (ConfiguredSolution);
 		}
 		
-		public override bool StorePanelContents()
+		public override void ApplyChanges()
 		{
-			widget.Store ((Properties) CustomizationObject);
- 			return true;
+			widget.Store (ConfiguredSolution);
 		}
 	}
 		
 	partial class CombineInformationWidget : Gtk.Bin 
 	{
-		Combine combine;
-
-		public CombineInformationWidget (Properties CustomizationObject) 
+		public CombineInformationWidget (Solution solution) 
 		{
 			Build ();
-			this.combine =  ((Properties)CustomizationObject).Get<Combine> ("Combine");
 
 			versLabel.UseUnderline = true;
 			descLabel.UseUnderline = true;
 
-			versEntry.Text = combine.Version;
-			descView.Buffer.Text = combine.Description;
+			versEntry.Text = solution.Version;
+			descView.Buffer.Text = solution.Description;
 		}			
 		
-		public void Store (Properties CustomizationObject)
+		public void Store (Solution solution)
 		{
-			combine.Version = versEntry.Text;
-			combine.Description = descView.Buffer.Text;
+			solution.Version = versEntry.Text;
+			solution.Description = descView.Buffer.Text;
 		}
 	}
 }

@@ -36,18 +36,13 @@ namespace MonoDevelop.Ide.Gui
 {
 	internal class ConfigurationComboBox: ToolbarComboBox
 	{
-		ConfigurationEventHandler onActiveConfigurationChanged;
-		ConfigurationEventHandler onConfigurationsChanged;
+		bool updating;
 		
 		public ConfigurationComboBox () 
 		{
 			Combo.Changed += new EventHandler (OnChanged);
-			
-			onActiveConfigurationChanged = (ConfigurationEventHandler) DispatchService.GuiDispatch (new ConfigurationEventHandler (OnActiveConfigurationChanged));
-			onConfigurationsChanged = (ConfigurationEventHandler) DispatchService.GuiDispatch (new ConfigurationEventHandler (OnConfigurationsChanged));
-			
-			IdeApp.ProjectOperations.CombineOpened += (CombineEventHandler) DispatchService.GuiDispatch (new CombineEventHandler (OpenCombine));
-			IdeApp.ProjectOperations.CombineClosed += (CombineEventHandler) DispatchService.GuiDispatch (new CombineEventHandler (CloseCombine));
+			IdeApp.Workspace.ConfigurationsChanged += OnConfigurationsChanged;
+			IdeApp.Workspace.ActiveConfigurationChanged += OnActiveConfigurationChanged;
 			Reset ();
 		}
 		
@@ -59,62 +54,57 @@ namespace MonoDevelop.Ide.Gui
 			Combo.Sensitive = false;
 		}
 		
-		void RefreshCombo (Combine combine)
+		void RefreshCombo ()
 		{
 			((Gtk.ListStore)Combo.Model).Clear ();
-			Combo.Sensitive = true;
 			int active = 0;
-			for (int n=0; n < combine.Configurations.Count; n++) {
-				IConfiguration c = combine.Configurations [n];
-				Combo.AppendText (c.Name);
-				if (combine.ActiveConfiguration == c)
+			int n=0;
+			foreach (string conf in IdeApp.Workspace.GetConfigurations ()) {
+				Combo.AppendText (conf);
+				if (conf == IdeApp.Workspace.ActiveConfiguration)
 					active = n;
+				n++;
 			}
+			Combo.Sensitive = n > 0;
 			Combo.Active = active;
 			Combo.ShowAll ();
 		}
 
-		void OpenCombine (object sender, CombineEventArgs e)
+		void OnConfigurationsChanged (object sender, EventArgs e)
 		{
-			RefreshCombo (e.Combine);
-			e.Combine.ActiveConfigurationChanged += onActiveConfigurationChanged;
-			e.Combine.ConfigurationAdded += onConfigurationsChanged;
-			e.Combine.ConfigurationRemoved += onConfigurationsChanged;
-		}
-
-		void CloseCombine (object sender, CombineEventArgs e)
-		{
-			Reset ();
-			e.Combine.ActiveConfigurationChanged -= onActiveConfigurationChanged;
-			e.Combine.ConfigurationAdded -= onConfigurationsChanged;
-			e.Combine.ConfigurationRemoved -= onConfigurationsChanged;
+			RefreshCombo ();
 		}
 		
-		void OnConfigurationsChanged (object sender, ConfigurationEventArgs e)
+		void OnActiveConfigurationChanged (object sender, EventArgs e)
 		{
-			RefreshCombo (IdeApp.ProjectOperations.CurrentOpenCombine);
-		}
-		
-		void OnActiveConfigurationChanged (object sender, ConfigurationEventArgs e)
-		{
-			Combine combine = (Combine) e.CombineEntry;
-			for (int n=0; n < combine.Configurations.Count; n++) {
-				IConfiguration c = combine.Configurations [n];
-				if (combine.ActiveConfiguration == c) {
-					Combo.Active = n;
-					break;
+			if (updating)
+				return;
+			Gtk.TreeIter it;
+			if (Combo.Model.GetIterFirst (out it)) {
+				do {
+					string cs = (string) Combo.Model.GetValue (it, 0);
+					if (IdeApp.Workspace.ActiveConfiguration == cs) {
+						updating = true;
+						Combo.SetActiveIter (it);
+						updating = false;
+						break;
+					}
 				}
+				while (Combo.Model.IterNext (ref it));
 			}
 		}
 		
 		protected void OnChanged (object sender, EventArgs args)
 		{
-			if (IdeApp.ProjectOperations.CurrentOpenCombine != null) {
+			if (updating)
+				return;
+			if (IdeApp.Workspace.IsOpen) {
 				Gtk.TreeIter iter;
 				if (Combo.GetActiveIter (out iter)) {
 					string cs = (string) Combo.Model.GetValue (iter, 0);
-					IConfiguration conf = IdeApp.ProjectOperations.CurrentOpenCombine.GetConfiguration (cs);
-					IdeApp.ProjectOperations.CurrentOpenCombine.ActiveConfiguration = conf;
+					updating = true;
+					IdeApp.Workspace.ActiveConfiguration = cs;
+					updating = false;
 				}
 			}
 		}

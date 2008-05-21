@@ -35,7 +35,7 @@ namespace MonoDevelop.ChangeLogAddIn
 {
 	public static class ChangeLogService
 	{
-		public static ChangeLogData GetChangeLogData (CombineEntry entry)
+		public static ChangeLogData GetChangeLogData (SolutionItem entry)
 		{
 			ChangeLogData changeLogData = entry.ExtendedProperties ["MonoDevelop.ChangeLogAddIn.ChangeLogInfo"] as ChangeLogData;			
 			if (changeLogData == null) {
@@ -54,17 +54,17 @@ namespace MonoDevelop.ChangeLogAddIn
 		// Returns an empty string if changes don't have to be logged.
 		public static string GetChangeLogForFile (string baseCommitPath, string file)
 		{
-			if (IdeApp.ProjectOperations.CurrentOpenCombine == null)
+			if (!IdeApp.Workspace.IsOpen)
 				return null;
 			
 			// Find the project that contains the file. If none is found
 			// find a combine entry at the file location
-			CombineEntry entry = null;
+			SolutionItem entry = null;
 			string bestPath = null;
 			file = FileService.GetFullPath (file);
 			
-			foreach (CombineEntry e in IdeApp.ProjectOperations.CurrentOpenCombine.GetAllEntries ()) {
-				if (e is Project && ((Project)e).ProjectFiles.GetFile (file) != null) {
+			foreach (SolutionItem e in IdeApp.Workspace.GetAllSolutionItems ()) {
+				if (e is Project && ((Project)e).Files.GetFile (file) != null) {
 					entry = e;
 					break;
 				}
@@ -79,15 +79,15 @@ namespace MonoDevelop.ChangeLogAddIn
 				return null;
 			
 			if (baseCommitPath == null)
-				baseCommitPath = entry.RootCombine.BaseDirectory;
+				baseCommitPath = entry.ParentSolution.BaseDirectory;
 			
 			baseCommitPath = FileService.GetFullPath (baseCommitPath);
 			
 			ChangeLogData changeLogData = GetChangeLogData (entry);
 			
-			CombineEntry parent = entry;
+			SolutionItem parent = entry;
 			while (changeLogData.Policy == ChangeLogPolicy.UseParentPolicy) {
-				parent = parent.ParentCombine;
+				parent = parent.ParentFolder;
 				changeLogData = GetChangeLogData (parent);
 			}
 			

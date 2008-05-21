@@ -1,11 +1,8 @@
 <Combine name="contrib" fileversion="2.0">
   <Configurations active="Debug">
     <Configuration name="Debug" ctype="CombineConfiguration">
-      <CustomCommands>
-        <Command type="Custom" name="Update mono-addins" command="make update-source" workingdir="${ProjectDir}/Mono.Addins" externalConsole="True" pauseExternalConsole="True" />
-      </CustomCommands>
       <Entry build="True" name="Mono.Cecil" configuration="Debug" />
-      <Entry build="True" name="Mono.Cecil.Mdp" configuration="Debug" />
+      <Entry build="True" name="Mono.Cecil.Mdb" configuration="Debug" />
     </Configuration>
     <Configuration name="Release" ctype="CombineConfiguration">
       <Entry build="True" name="Mono.Cecil" configuration="Release" />
@@ -13,11 +10,7 @@
     </Configuration>
   </Configurations>
   <StartMode startupentry="Mono.Cecil" single="True">
-    <Execute type="None" entry="Firebird" />
-    <Execute type="None" entry="Firebird" />
     <Execute type="None" entry="Mono.Cecil" />
-    <Execute type="None" entry="log4net" />
-    <Execute type="None" entry="Mono.Addins.Gui" />
     <Execute type="None" entry="Mono.Cecil.Mdb" />
   </StartMode>
   <Entries>

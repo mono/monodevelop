@@ -1,4 +1,4 @@
-<Project name="MonoDevelop.AspNet" fileversion="2.0" UseParentDirectoryAsNamespace="True" language="C#" clr-version="Net_2_0" ctype="DotNetProject">
+<Project name="MonoDevelop.AspNet" fileversion="2.0" language="C#" clr-version="Net_2_0" UseParentDirectoryAsNamespace="True" ctype="DotNetProject">
   <Configurations active="Debug">
     <Configuration name="Debug" ctype="DotNetProjectConfiguration">
       <Output directory="../../../build/AddIns/MonoDevelop.AspNet" assembly="MonoDevelop.AspNet" />
@@ -88,7 +88,6 @@
     <File name="gtk-gui/MonoDevelop.AspNet.Deployment.WebDeployLaunchDialog.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.AspNet.Deployment/WebDeployService.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.AspNet.Deployment/WebDeployCommands.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.AspNet/AspNetMSBuildProjectExtension.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.AspNet.Deployment/WebDeployResolver.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.AspNet/WebTypeManager.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.AspNet.Parser/DocumentReferenceManager.cs" subtype="Code" buildaction="Compile" />
@@ -139,10 +138,9 @@
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.DesignerSupport" />
     <ProjectReference type="Gac" localcopy="True" refto="System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
     <ProjectReference type="Gac" localcopy="True" refto="System.Configuration, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
-    <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.MsVisualStudio" />
     <ProjectReference type="Gac" localcopy="True" refto="Mono.Addins, Version=0.3.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Deployment" />
-    <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Projects.Gui" />
+    <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Projects.Gui" />
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.XmlEditor" />
     <ProjectReference type="Gac" localcopy="True" refto="glib-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="pango-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />

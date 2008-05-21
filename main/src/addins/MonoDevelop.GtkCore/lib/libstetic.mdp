@@ -2,10 +2,10 @@
   <Configurations active="Debug">
     <Configuration name="Debug" ctype="DotNetProjectConfiguration">
       <CustomCommands>
-        <Command type="Build" command="make libstetic" workingdir="${ProjectDir}" />
+        <Command type="Build" command="make libstetic" workingdir="${ItemDir}" />
       </CustomCommands>
       <Output directory="../../../../build/AddIns/MonoDevelop.GtkCore" assemblyKeyFile="." assembly="libstetic" />
-      <Build debugmode="True" target="Library" />
+      <Build debugmode="False" target="Library" />
       <Execution runwithwarnings="True" consolepause="True" runtime="MsNet" clr-version="Net_1_1" />
       <CodeGeneration compiler="Mcs" warninglevel="4" optimize="True" unsafecodeallowed="False" generateoverflowchecks="True" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
     </Configuration>
@@ -264,7 +264,7 @@
     <ProjectReference type="Gac" localcopy="True" refto="gdk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="gtk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
   </References>
-  <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="./stetic/libstetic/Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="True">
+  <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="stetic/libstetic/Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="True">
     <BuildFilesVar Sync="True" Name="libstetic_dll_sources" />
     <DeployFilesVar Sync="True" Name="libstetic_dll_datafiles" />
     <ResourcesVar Sync="True" Name="libstetic_dll_resources" />

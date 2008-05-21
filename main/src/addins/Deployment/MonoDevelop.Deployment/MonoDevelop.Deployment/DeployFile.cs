@@ -44,7 +44,7 @@ namespace MonoDevelop.Deployment
 		string targetDirectoryID;
 		DeployContext deployContext;
 		bool isTemplate;
-		CombineEntry sourceCombineEntry;
+		SolutionItem sourceSolutionItem;
 		string displayName;
 		DeployFileAttributes attributes;
 		
@@ -57,20 +57,20 @@ namespace MonoDevelop.Deployment
 			this.attributes = props.FileAttributes;
 			if (props.HasPathReferences)
 				isTemplate = true;
-			sourceCombineEntry = pfile.Project;
+			sourceSolutionItem = pfile.Project;
 		}
 		
-		public DeployFile (CombineEntry sourceCombineEntry, string sourcePath, string relativeTargetPath)
-		 : this (sourceCombineEntry, sourcePath, relativeTargetPath, TargetDirectory.ProgramFiles)
+		public DeployFile (SolutionItem sourceSolutionItem, string sourcePath, string relativeTargetPath)
+		 : this (sourceSolutionItem, sourcePath, relativeTargetPath, TargetDirectory.ProgramFiles)
 		{
 		}
 		
-		public DeployFile (CombineEntry sourceCombineEntry, string sourcePath, string relativeTargetPath, string targetDirectoryID)
+		public DeployFile (SolutionItem sourceSolutionItem, string sourcePath, string relativeTargetPath, string targetDirectoryID)
 		{
 			this.targetDirectoryID = targetDirectoryID;
 			this.sourcePath = sourcePath;
 			this.relativeTargetPath = relativeTargetPath;
-			this.sourceCombineEntry = sourceCombineEntry;
+			this.sourceSolutionItem = sourceSolutionItem;
 		}
 		
 		internal void SetContext (DeployContext deployContext)
@@ -78,8 +78,8 @@ namespace MonoDevelop.Deployment
 			this.deployContext = deployContext;
 		}
 		
-		public CombineEntry SourceCombineEntry {
-			get { return sourceCombineEntry; }
+		public SolutionItem SourceSolutionItem {
+			get { return sourceSolutionItem; }
 		}
 		
 		public string DisplayName {
@@ -87,7 +87,7 @@ namespace MonoDevelop.Deployment
 				if (displayName != null)
 					return displayName;
 				else {
-					return FileService.AbsoluteToRelativePath (sourceCombineEntry.BaseDirectory, SourcePath);
+					return FileService.AbsoluteToRelativePath (sourceSolutionItem.BaseDirectory, SourcePath);
 				}
 			}
 			set { displayName = value; }

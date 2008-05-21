@@ -86,7 +86,7 @@ namespace CBinding.ProjectPad
 			
 			project.Packages.Remove (package);
 			
-			IdeApp.ProjectOperations.SaveProject (project);
+			IdeApp.ProjectOperations.Save (project);
 		}
 		
 		public override DragOperation CanDragNode ()

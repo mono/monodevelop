@@ -1,3 +1,15 @@
+2008-05-21  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.DesignerSupport.addin.xml,
+	  MonoDevelop.DesignerSupport/BindingService.cs,
+	  MonoDevelop.DesignerSupport/CodeBehindService.cs,
+	  MonoDevelop.DesignerSupport.Projects/CombineEntryDescriptor.cs,
+	  MonoDevelop.DesignerSupport.Projects/CombineEntryPropertyProvider.cs,
+	  MonoDevelop.DesignerSupport.Projects/ComponentNodeBuilder.cs,
+	  MonoDevelop.DesignerSupport.Projects/PropertyPadTextEditorExtension.cs,
+	  MonoDevelop.DesignerSupport.Projects/ProjectReferenceDescriptor.cs:
+	  New project model changes.
+
 2008-05-20  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.DesignerSupport.Toolbox/Toolbox.cs: fixed 'Bug 389065 -

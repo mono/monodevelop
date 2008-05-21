@@ -41,12 +41,12 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Core.Gui.Components;
 using MonoDevelop.Components;
-using MonoDevelop.Core.Gui.Dialogs;
+using MonoDevelop.Projects.Gui.Dialogs;
 
 
 namespace MonoDevelop.GtkCore.Dialogs
 {
-	class WidgetBuilderOptionPanel: AbstractOptionPanel
+	class WidgetBuilderOptionPanel: ItemOptionsPanel
 	{
 		class WidgetBuilderOptionPanelWidget : GladeWidgetExtract
 		{
@@ -65,11 +65,12 @@ namespace MonoDevelop.GtkCore.Dialogs
 			ArrayList selection;
 			GtkDesignInfo designInfo;
 			
-			public WidgetBuilderOptionPanelWidget (Properties customizationObject) : base ("gui.glade", "WidgetBuilderOptions")
+			public WidgetBuilderOptionPanelWidget (Project project) : base ("gui.glade", "WidgetBuilderOptions")
 			{
 				store = new ListStore (typeof(bool), typeof(Pixbuf), typeof(string), typeof(object));
 				tree.Model = store;
 				tree.HeadersVisible = false;
+				this.project = project;
 				
 				column = new TreeViewColumn ();
 			
@@ -89,7 +90,6 @@ namespace MonoDevelop.GtkCore.Dialogs
 				
 				tree.AppendColumn (column);
 				
-				this.project = ((Properties)customizationObject).Get<Project> ("Project");
 				if (!GtkCoreService.SupportsGtkDesigner (project)) {
 					notebook.RemovePage (1);
 				}
@@ -153,7 +153,7 @@ namespace MonoDevelop.GtkCore.Dialogs
 				}
 			}
 		
-			public void Store (Properties customizationObject)
+			public void Store ()
 			{
 				if (checkGtkEnabled.Active) {
 					if (designInfo == null)
@@ -184,19 +184,14 @@ namespace MonoDevelop.GtkCore.Dialogs
 		
 		WidgetBuilderOptionPanelWidget widget;
 
-		public override void LoadPanelContents()
+		public override Widget CreatePanelWidget()
 		{
-			try {
-				Add (widget = new WidgetBuilderOptionPanelWidget ((Properties) CustomizationObject));
-			} catch (Exception ex) {
-				Console.WriteLine (ex);
-			}
+			return (widget = new WidgetBuilderOptionPanelWidget (ConfiguredProject));
 		}
 		
-		public override bool StorePanelContents()
+		public override void ApplyChanges ()
 		{
-			widget.Store ((Properties) CustomizationObject);
- 			return true;
+			widget.Store ();
 		}
 	}
 	

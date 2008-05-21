@@ -55,11 +55,11 @@ namespace MonoDevelop.DesignerSupport
 		
 		internal void Initialise ()
 		{
-			IdeApp.ProjectOperations.FileRemovedFromProject += onFileEvent;
-			IdeApp.ProjectOperations.CombineClosed += onCombineClosed;
+			IdeApp.Workspace.FileRemovedFromProject += onFileEvent;
+			IdeApp.Workspace.SolutionUnloaded += onCombineClosed;
 			
-			IdeApp.ProjectOperations.ParserDatabase.ParseInformationChanged += onParseInformationChanged;
-			IdeApp.ProjectOperations.ParserDatabase.ClassInformationChanged += onClassInformationChanged;
+			IdeApp.Workspace.ParserDatabase.ClassInformationChanged += onClassInformationChanged;
+			IdeApp.Workspace.ParserDatabase.ParseInformationChanged += onParseInformationChanged;
 		}
 		
 		public void Dispose ()
@@ -68,11 +68,11 @@ namespace MonoDevelop.DesignerSupport
 			if (codeBehindBindings != null) {
 				codeBehindBindings = null;
 				
-				IdeApp.ProjectOperations.FileRemovedFromProject -= onFileEvent;
-				IdeApp.ProjectOperations.CombineClosed -= onCombineClosed;
+				IdeApp.Workspace.FileRemovedFromProject -= onFileEvent;
+				IdeApp.Workspace.SolutionUnloaded -= onCombineClosed;
 				
-				IdeApp.ProjectOperations.ParserDatabase.ParseInformationChanged -= onParseInformationChanged;
-				IdeApp.ProjectOperations.ParserDatabase.ClassInformationChanged -= onClassInformationChanged;
+				IdeApp.Workspace.ParserDatabase.ParseInformationChanged -= onParseInformationChanged;
+				IdeApp.Workspace.ParserDatabase.ClassInformationChanged -= onClassInformationChanged;
 			}
 		}
 		
@@ -147,10 +147,10 @@ namespace MonoDevelop.DesignerSupport
 			if (parent == null)
 				return;
 			
-			Project prj = IdeApp.ProjectOperations.GetProjectContaining (args.FileName);
+			Project prj = IdeApp.Workspace.GetProjectContainingFile (args.FileName);
 			if (prj != null) {
-				ProjectFile file = prj.ProjectFiles.GetFile (args.FileName);
-				IParserContext ctx = IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (file.Project);
+				ProjectFile file = prj.Files.GetFile (args.FileName);
+				IParserContext ctx = IdeApp.Workspace.ParserDatabase.GetProjectParserContext (file.Project);
 				updateCodeBehind (file, parent.CodeBehindClassName, ctx);
 			}
 		}
@@ -158,7 +158,7 @@ namespace MonoDevelop.DesignerSupport
 		void AddAffectedFilesFromClass (Project project, IClass cls, List<ProjectFile> list)
 		{
 			foreach (IClass part in cls.Parts) {
-				ProjectFile pf = project.ProjectFiles.GetFile (part.Region.FileName);
+				ProjectFile pf = project.Files.GetFile (part.Region.FileName);
 				if (pf != null && !list.Contains (pf)) {
 					list.Add (pf);
 #if DEBUGCODEBEHINDGROUPING
@@ -168,15 +168,24 @@ namespace MonoDevelop.DesignerSupport
 			}
 		}
 		
-		void onCombineClosed (object sender, CombineEventArgs e)
+		void onCombineClosed (object sender, SolutionEventArgs e)
 		{
 			//loop through all project files in all combines and remove their Projectfiles from our list
-			foreach (CombineEntry entry in e.Combine.Entries) {
-				Project proj = entry as Project;
-				if (proj != null)
-					foreach (ProjectFile pf in proj.ProjectFiles)
-						if (codeBehindBindings.ContainsKey (pf))
-							codeBehindBindings.Remove (pf);
+			foreach (Project proj in e.Solution.GetAllProjects ()) {
+				foreach (ProjectFile pf in proj.Files)
+					if (codeBehindBindings.ContainsKey (pf))
+						codeBehindBindings.Remove (pf);
+			}
+		}
+		
+		void RefreshFileList ()
+		{
+			codeBehindBindings.Clear ();
+			
+			//loop through all project files in all combines and check for CodeBehind
+			foreach (Project proj in IdeApp.Workspace.GetAllProjects ()) {
+				foreach (ProjectFile pf in proj.Files)
+					updateCodeBehind (pf);
 			}
 		}
 		
@@ -188,7 +197,7 @@ namespace MonoDevelop.DesignerSupport
 				return;
 			
 			string newCodeBehind = null;
-			IParserContext ctx = IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (file.Project);
+			IParserContext ctx = IdeApp.Workspace.ParserDatabase.GetProjectParserContext (file.Project);
 			IParseInformation pi = ctx.GetParseInformation (file.FilePath);
 			if (pi != null) {
 				ICodeBehindParent parent = pi.BestCompilationUnit as ICodeBehindParent;
@@ -255,7 +264,7 @@ namespace MonoDevelop.DesignerSupport
 				string clsName = null;
 				codeBehindBindings.TryGetValue (file, out clsName);
 				if (clsName != null) {
-					IParserContext ctx = IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (file.Project);
+					IParserContext ctx = IdeApp.Workspace.ParserDatabase.GetProjectParserContext (file.Project);
 					cls = ctx.GetClass (clsName);
 					if (cls != null) {
 						return new CodeBehindClass (cls);
@@ -286,7 +295,7 @@ namespace MonoDevelop.DesignerSupport
 					                           part.FullyQualifiedName);
 					continue;
 				}
-				ProjectFile partFile = proj.ProjectFiles.GetFile (part.Region.FileName);
+				ProjectFile partFile = proj.Files.GetFile (part.Region.FileName);
 				if (partFile == parent)
 					continue;
 				if (partFile != null)
@@ -301,7 +310,7 @@ namespace MonoDevelop.DesignerSupport
 		//determines whether a file contains only codebehind classes
 		public bool ContainsCodeBehind (ProjectFile file)
 		{
-			IParserContext ctx = IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (file.Project);
+			IParserContext ctx = IdeApp.Workspace.ParserDatabase.GetProjectParserContext (file.Project);
 			if (ctx == null)
 				return false;
 			

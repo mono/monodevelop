@@ -74,6 +74,9 @@ namespace CBinding
 		[ItemProperty]
 		private Language language;
 		
+		[ItemProperty("Target")]
+		CBinding.CompileTarget target = CBinding.CompileTarget.Bin;
+		
     	private ProjectPackageCollection packages = new ProjectPackageCollection ();
 		
 		public event ProjectPackageEventHandler PackageAddedToProject;
@@ -93,7 +96,7 @@ namespace CBinding
 		{
 			packages.Project = this;
 			
-			IdeApp.ProjectOperations.EntryAddedToCombine += OnEntryAddedToCombine;
+			IdeApp.Workspace.ItemAddedToSolution += OnEntryAddedToCombine;
 		}
 		
 		public CProject ()
@@ -140,7 +143,7 @@ namespace CBinding
 			Configurations.Add (configuration);
 			
 			foreach (CProjectConfiguration c in Configurations) {
-				c.OutputDirectory = Path.Combine (binPath, c.Name);
+				c.OutputDirectory = Path.Combine (binPath, c.Id);
 				c.SourceDirectory = BaseDirectory;
 				c.Output = Name;
 				CCompilationParameters parameters = c.CompilationParameters as CCompilationParameters;
@@ -177,6 +180,11 @@ namespace CBinding
 			get { return new string[] { "C", "CPP" }; }
 		}
 		
+		public CompileTarget CompileTarget {
+			get { return target; }
+			set { target = value; }
+		}
+		
 		public override bool IsCompileable (string fileName)
 		{
 			string ext = Path.GetExtension (fileName.ToUpper ());
@@ -188,10 +196,9 @@ namespace CBinding
 			}
 		}
 		
-		public List<CProject> DependedOnProjects ()
+		public override IEnumerable<SolutionItem> GetReferencedItems (string configuration)
 		{
 			List<string> project_names = new List<string> ();
-			List<CProject> projects = new List<CProject> ();
 			
 			foreach (Package p in Packages) {
 				if (p.IsProject && p.Name != Name) {
@@ -199,13 +206,11 @@ namespace CBinding
 				}
 			}
 			
-			foreach (CombineEntry e in ParentCombine.Entries) {
+			foreach (SolutionItem e in ParentFolder.Items) {
 				if (e is CProject && project_names.Contains (e.Name)) {
-					projects.Add ((CProject)e);
+					yield return e;
 				}
 			}
-			
-			return projects;
 		}
 		
 		public static bool IsHeaderFile (string filename)
@@ -216,15 +221,15 @@ namespace CBinding
 		/// <summary>
 		/// Ths pkg-config package is for internal MonoDevelop use only, it is not deployed.
 		/// </summary>
-		public void WriteMDPkgPackage ()
+		public void WriteMDPkgPackage (string configuration)
 		{
 			string pkgfile = Path.Combine (BaseDirectory, Name + ".md.pc");
 			
-			CProjectConfiguration config = (CProjectConfiguration)ActiveConfiguration;
+			CProjectConfiguration config = (CProjectConfiguration)GetConfiguration (configuration);
 			
 			List<string> headerDirectories = new List<string> ();
 			
-			foreach (ProjectFile f in ProjectFiles) {
+			foreach (ProjectFile f in Files) {
 				if (IsHeaderFile (f.Name)) {
 					string dir = Path.GetDirectoryName (f.FilePath);
 					
@@ -260,12 +265,12 @@ namespace CBinding
 		/// This is the pkg-config package that gets deployed.
 		/// <returns>The pkg-config package's filename</returns>
 		/// </summary>
-		private string WriteDeployablePgkPackage ()
+		private string WriteDeployablePgkPackage (string configuration)
 		{
 			// FIXME: This should probably be grabed from somewhere.
 			string prefix = "/usr/local";
 			string pkgfile = Path.Combine (BaseDirectory, Name + ".pc");
-			CProjectConfiguration config = (CProjectConfiguration)ActiveConfiguration;
+			CProjectConfiguration config = (CProjectConfiguration)GetConfiguration (configuration);
 			
 			using (StreamWriter writer = new StreamWriter (pkgfile)) {
 				writer.WriteLine ("prefix={0}", prefix);
@@ -288,21 +293,20 @@ namespace CBinding
 			return pkgfile;
 		}
 		
-		protected override ICompilerResult DoBuild (IProgressMonitor monitor)
+		protected override ICompilerResult DoBuild (IProgressMonitor monitor, string configuration)
 		{
-			CProjectConfiguration pc = (CProjectConfiguration)ActiveConfiguration;
+			CProjectConfiguration pc = (CProjectConfiguration) GetConfiguration (configuration);
 			pc.SourceDirectory = BaseDirectory;
 			
 			return compiler_manager.Compile (
-				ProjectFiles, packages,
-				(CProjectConfiguration)ActiveConfiguration,
+				Files, packages,
+				pc,
 			    monitor);
 		}
 		
-		protected override void DoExecute (IProgressMonitor monitor,
-		                                   ExecutionContext context)
+		protected override void DoExecute (IProgressMonitor monitor, ExecutionContext context, string configuration)
 		{
-			CProjectConfiguration conf = (CProjectConfiguration)ActiveConfiguration;
+			CProjectConfiguration conf = (CProjectConfiguration) GetConfiguration (configuration);
 			string command = conf.Output;
 			string args = conf.CommandLineParameters;
 			string dir = Path.GetFullPath (conf.OutputDirectory);
@@ -346,13 +350,13 @@ namespace CBinding
 			}
 		}
 		
-		public override string GetOutputFileName ()
+		public override string GetOutputFileName (string configuration)
 		{
-			CProjectConfiguration conf = (CProjectConfiguration)ActiveConfiguration;
+			CProjectConfiguration conf = (CProjectConfiguration) GetConfiguration (configuration);
 			return Path.Combine (conf.OutputDirectory, conf.CompiledOutputName);
 		}
 		
-		public override IConfiguration CreateConfiguration (string name)
+		public override SolutionItemConfiguration CreateConfiguration (string name)
 		{
 			CProjectConfiguration conf = new CProjectConfiguration ();
 			
@@ -420,14 +424,14 @@ namespace CBinding
 			TagDatabaseManager.Instance.UpdateFileTags (this, e.ProjectFile.Name);
 		}
 		
-		private static void OnEntryAddedToCombine (object sender, CombineEntryEventArgs e)
+		private static void OnEntryAddedToCombine (object sender, SolutionItemEventArgs e)
 		{
-			CProject p = e.CombineEntry as CProject;
+			CProject p = e.SolutionItem as CProject;
 			
 			if (p == null)
 				return;
 			
-			foreach (ProjectFile f in p.ProjectFiles)
+			foreach (ProjectFile f in p.Files)
 				TagDatabaseManager.Instance.UpdateFileTags (p, f.Name);
 		}
 		
@@ -441,14 +445,15 @@ namespace CBinding
 			PackageAddedToProject (this, new ProjectPackageEventArgs (this, package));
 		}
 
-		public DeployFileCollection GetDeployFiles ()
+		public DeployFileCollection GetDeployFiles (string configuration)
 		{
 			DeployFileCollection deployFiles = new DeployFileCollection ();
 			
-			CompileTarget target = ((CProjectConfiguration)ActiveConfiguration).CompileTarget;
+			CProjectConfiguration conf = (CProjectConfiguration) GetConfiguration (configuration);
+			CompileTarget target = conf.CompileTarget;
 			
 			// Headers and resources
-			foreach (ProjectFile f in ProjectFiles) {
+			foreach (ProjectFile f in Files) {
 				if (f.BuildAction == BuildAction.FileCopy) {
 					string targetDirectory =
 						(IsHeaderFile (f.Name) ? TargetDirectory.Include : TargetDirectory.ProgramFiles);
@@ -458,7 +463,7 @@ namespace CBinding
 			}
 			
 			// Output
-			string output = GetOutputFileName ();		
+			string output = GetOutputFileName (configuration);		
 			if (!string.IsNullOrEmpty (output)) {
 				string targetDirectory = string.Empty;
 				
@@ -479,7 +484,7 @@ namespace CBinding
 			
 			// PkgPackage
 			if (target != CompileTarget.Bin) {
-				string pkgfile = WriteDeployablePgkPackage ();
+				string pkgfile = WriteDeployablePgkPackage (configuration);
 				deployFiles.Add (new DeployFile (this, Path.Combine (BaseDirectory, pkgfile), pkgfile, LinuxTargetDirectory.PkgConfig));
 			}
 			
@@ -501,7 +506,7 @@ namespace CBinding
 			string filenameStub = Path.GetFileNameWithoutExtension (sourceFile);
 			bool wantHeader = !CProject.IsHeaderFile (sourceFile);
 			
-			foreach (ProjectFile file in this.ProjectFiles) {
+			foreach (ProjectFile file in this.Files) {
 				if (filenameStub == Path.GetFileNameWithoutExtension (file.Name) 
 				   && (wantHeader == IsHeaderFile (file.Name))) {
 					return file.Name;

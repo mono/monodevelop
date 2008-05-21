@@ -216,7 +216,7 @@ namespace MonoDevelop.GtkCore
 			if (builderProject != null)
 				pctx = builderProject.GetParserContext ();
 			else
-				pctx = IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (project);
+				pctx = IdeApp.Workspace.ParserDatabase.GetProjectParserContext (project);
 			
 			ArrayList list = new ArrayList ();
 			foreach (string cls in exportedWidgets) {
@@ -316,9 +316,9 @@ namespace MonoDevelop.GtkCore
 					}
 					
 					// Remove all project files which are not in the generated list
-					foreach (ProjectFile pf in project.ProjectFiles.GetFilesInPath (GtkGuiFolder)) {
+					foreach (ProjectFile pf in project.Files.GetFilesInPath (GtkGuiFolder)) {
 						if (pf.FilePath != SteticGeneratedFile && pf.FilePath != ObjectsFile && pf.FilePath != SteticFile && !partialFiles.Contains (pf.FilePath)) {
-							project.ProjectFiles.Remove (pf);
+							project.Files.Remove (pf);
 							FileService.DeleteFile (pf.FilePath);
 							projectModified = true;
 						}
@@ -365,7 +365,7 @@ namespace MonoDevelop.GtkCore
 			if (!SupportsDesigner) // No need to check posix in this case
 				posix = true;
 			
-			foreach (ProjectReference r in new List<ProjectReference> (project.ProjectReferences)) {
+			foreach (ProjectReference r in new List<ProjectReference> (project.References)) {
 				if (r.ReferenceType != ReferenceType.Gac)
 					continue;
 				int i = r.StoredReference.IndexOf (',');
@@ -386,20 +386,20 @@ namespace MonoDevelop.GtkCore
 				
 				// Check and correct the assembly version only if a version is set
 				if (!string.IsNullOrEmpty (gtkAsmVersion) && r.StoredReference.Substring (i+1).Trim() != gtkAsmVersion) {
-					project.ProjectReferences.Remove (r);
-					project.ProjectReferences.Add (new ProjectReference (ReferenceType.Gac, aname + ", " + gtkAsmVersion));
+					project.References.Remove (r);
+					project.References.Add (new ProjectReference (ReferenceType.Gac, aname + ", " + gtkAsmVersion));
 				}
 			}
 			if (!gtk)
-				project.ProjectReferences.Add (new ProjectReference (ReferenceType.Gac, typeof(Gtk.Widget).Assembly.FullName));
+				project.References.Add (new ProjectReference (ReferenceType.Gac, typeof(Gtk.Widget).Assembly.FullName));
 			if (!gdk)
-				project.ProjectReferences.Add (new ProjectReference (ReferenceType.Gac, typeof(Gdk.Window).Assembly.FullName));
+				project.References.Add (new ProjectReference (ReferenceType.Gac, typeof(Gdk.Window).Assembly.FullName));
 				
 			if (!posix && GenerateGettext && GettextClass == "Mono.Unix.Catalog") {
 				// Add a reference to Mono.Posix. Use the version for the selected project's runtime version.
 				string aname = Runtime.SystemAssemblyService.FindInstalledAssembly ("Mono.Posix, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756");
 				aname = Runtime.SystemAssemblyService.GetAssemblyNameForVersion (aname, project.ClrVersion);
-				project.ProjectReferences.Add (new ProjectReference (ReferenceType.Gac, aname));
+				project.References.Add (new ProjectReference (ReferenceType.Gac, aname));
 			}
 			
 			return projectModified || !gtk || !gdk || !posix;
@@ -414,7 +414,7 @@ namespace MonoDevelop.GtkCore
 			return provider;
 		}
 		
-		void OnProjectRenamed (object s, CombineEntryRenamedEventArgs a)
+		void OnProjectRenamed (object s, SolutionItemRenamedEventArgs a)
 		{
 			GtkCoreService.UpdateProjectName (project, a.OldName, a.NewName);
 		}

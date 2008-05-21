@@ -40,6 +40,7 @@ FILES =  \
 
 REFS =  \
 	$(GCONF_SHARP_LIBS) \
+	$(GLIB_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
 	$(MONO_ADDINS_LIBS) \
 	-r:$(top_builddir)/build/AddIns/VersionControl/Diff.dll \

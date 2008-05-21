@@ -32,26 +32,29 @@
 
 using System;
 using Gtk;
-using MonoDevelop.Core.Gui.Dialogs;
+using MonoDevelop.Projects.Gui.Dialogs;
 using MonoDevelop.Core;
 
 namespace MonoDevelop.AspNet.Gui
 {
 	
-	public class AspNetConfigurationPanel : AbstractOptionPanel
+	public class AspNetConfigurationPanel : MultiConfigItemOptionsPanel
 	{		
 		AspNetConfigurationPanelWidget panel;
 		
-		public override void LoadPanelContents ()
+		public override Widget CreatePanelWidget ()
 		{
-			panel = new AspNetConfigurationPanelWidget ((Properties) this.CustomizationObject);
-			this.Child = panel;
+			return panel = new AspNetConfigurationPanelWidget ();
 		}
 		
-		public override bool StorePanelContents ()
+		public override void LoadConfigData ()
+		{
+			panel.Load ((AspNetAppProjectConfiguration) CurrentConfiguration);
+		}
+		
+		public override void ApplyChanges ()
 		{
 			panel.Store ();
- 			return true;
 		}
 	}
 }

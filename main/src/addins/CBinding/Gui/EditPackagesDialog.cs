@@ -36,6 +36,7 @@ using System.Collections.Generic;
 using Mono.Addins;
 
 using MonoDevelop.Projects;
+using MonoDevelop.Ide.Gui;
 
 namespace CBinding
 {
@@ -192,12 +193,12 @@ namespace CBinding
 			List<Package> packages = new List<Package>();
 			Package package;
 			
-			foreach (CombineEntry c in project.ParentCombine.Entries) {
+			foreach (SolutionItem c in project.ParentFolder.Items) {
 				if (c is CProject) {
 					CProject cproj = (CProject)c;
-					CProjectConfiguration conf = (CProjectConfiguration)cproj.ActiveConfiguration;
+					CProjectConfiguration conf = (CProjectConfiguration)cproj.GetConfiguration (IdeApp.Workspace.ActiveConfiguration);
 					if (conf.CompileTarget != CBinding.CompileTarget.Bin) {
-						cproj.WriteMDPkgPackage ();
+						cproj.WriteMDPkgPackage (conf.Id);
 						package = new Package (cproj);
 						packages.Add (package);
 					}

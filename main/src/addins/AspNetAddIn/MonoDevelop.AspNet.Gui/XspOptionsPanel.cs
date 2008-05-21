@@ -31,26 +31,24 @@
 
 using System;
 using Gtk;
-using MonoDevelop.Core.Gui.Dialogs;
+using MonoDevelop.Projects.Gui.Dialogs;
 using MonoDevelop.Core;
 
 namespace MonoDevelop.AspNet.Gui
 {
 	
-	public class XspOptionsPanel : AbstractOptionPanel
+	public class XspOptionsPanel : ItemOptionsPanel
 	{
 		XspOptionsPanelWidget panel;
 		
-		public override void LoadPanelContents ()
+		public override Widget CreatePanelWidget ()
 		{
-			panel = new XspOptionsPanelWidget ((Properties) this.CustomizationObject);
-			this.Child = panel;
+			return panel = new XspOptionsPanelWidget ((AspNetAppProject) ConfiguredProject);
 		}
 		
-		public override bool StorePanelContents ()
+		public override void ApplyChanges ()
 		{
-			panel.Store ((Properties) CustomizationObject);
- 			return true;
+			panel.Store ((AspNetAppProject) ConfiguredProject);
 		}
 	}
 }

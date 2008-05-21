@@ -37,19 +37,15 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 {
 	public class CombineNodeBuilder: TypeNodeBuilder
 	{
-		CombineEntryChangeEventHandler combineEntryAdded;
-		CombineEntryChangeEventHandler combineEntryRemoved;
-		CombineEntryRenamedEventHandler combineNameChanged;
+		SolutionItemRenamedEventHandler combineNameChanged;
 		
 		public CombineNodeBuilder ()
 		{
-			combineEntryAdded = (CombineEntryChangeEventHandler) DispatchService.GuiDispatch (new CombineEntryChangeEventHandler (OnEntryAdded));
-			combineEntryRemoved = (CombineEntryChangeEventHandler) DispatchService.GuiDispatch (new CombineEntryChangeEventHandler (OnEntryRemoved));
-			combineNameChanged = (CombineEntryRenamedEventHandler) DispatchService.GuiDispatch (new CombineEntryRenamedEventHandler (OnCombineRenamed));
+			combineNameChanged = (SolutionItemRenamedEventHandler) DispatchService.GuiDispatch (new SolutionItemRenamedEventHandler (OnCombineRenamed));
 		}
 			
 		public override Type NodeDataType {
-			get { return typeof(Combine); }
+			get { return typeof(SolutionFolder); }
 		}
 
 		public override string ContextMenuAddinPath {
@@ -58,31 +54,32 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 		
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
 		{
-			return ((Combine)dataObject).Name;
+			return ((SolutionFolder)dataObject).Name;
 		}
 		
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
 		{
-			Combine combine = dataObject as Combine;
+			SolutionFolder combine = dataObject as SolutionFolder;
 			label = GettextCatalog.GetString ("Solution {0}", combine.Name);
-			icon = Context.GetIcon (Stock.Solution);
+			icon = Context.GetIcon (Stock.SolutionFolderOpen);
+			closedIcon = Context.GetIcon (Stock.SolutionFolderClosed);
 		}
 
 		public override void BuildChildNodes (ITreeBuilder builder, object dataObject)
 		{
-			Combine combine = (Combine) dataObject;
+			SolutionFolder combine = (SolutionFolder) dataObject;
 			if (builder.Options ["ShowProjects"]) {
-				foreach (CombineEntry entry in combine.Entries)
+				foreach (SolutionItem entry in combine.Items)
 					builder.AddChild (entry);
 			} else {
 				AddClasses (builder, combine);
 			}
 		}
 
-		void AddClasses (ITreeBuilder builder, CombineEntry entry)
+		void AddClasses (ITreeBuilder builder, SolutionItem entry)
 		{
-			if (entry is Combine) {
-				foreach (CombineEntry e in ((Combine)entry).Entries)
+			if (entry is SolutionFolder) {
+				foreach (SolutionItem e in ((SolutionFolder)entry).Items)
 					AddClasses (builder, e);
 			} else if (entry is Project) {
 				ProjectNodeBuilder.BuildChildNodes (builder, entry as Project);
@@ -91,12 +88,12 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 		
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
 		{
-			return ((Combine) dataObject).Entries.Count > 0;
+			return ((SolutionFolder) dataObject).Items.Count > 0;
 		}
 		
 		public override int CompareObjects (ITreeNavigator thisNode, ITreeNavigator otherNode)
 		{
-			if (otherNode.DataItem is Combine)
+			if (otherNode.DataItem is SolutionFolder)
 				return DefaultSort;
 			else
 				return -1;
@@ -104,44 +101,19 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 
 		public override void OnNodeAdded (object dataObject)
 		{
-			Combine combine = (Combine) dataObject;
-			combine.EntryAdded += combineEntryAdded;
-			combine.EntryRemoved += combineEntryRemoved;
+			SolutionFolder combine = (SolutionFolder) dataObject;
 			combine.NameChanged += combineNameChanged;
 		}
 		
 		public override void OnNodeRemoved (object dataObject)
 		{
-			Combine combine = (Combine) dataObject;
-			combine.EntryAdded -= combineEntryAdded;
-			combine.EntryRemoved -= combineEntryRemoved;
+			SolutionFolder combine = (SolutionFolder) dataObject;
 			combine.NameChanged -= combineNameChanged;
 		}
 		
-		void OnEntryAdded (object sender, CombineEntryEventArgs e)
+		void OnCombineRenamed (object sender, SolutionItemRenamedEventArgs e)
 		{
-			DispatchService.GuiDispatch (OnAddEntry, e.CombineEntry);
-		}
-		
-		void OnAddEntry (object newEntry)
-		{
-			CombineEntry e = (CombineEntry) newEntry;
-			ITreeBuilder tb = Context.GetTreeBuilder (e.ParentCombine);
-			if (tb != null) {
-				tb.AddChild (e, true);
-				tb.Expanded = true;
-			}
-		}
-
-		void OnEntryRemoved (object sender, CombineEntryEventArgs e)
-		{
-			ITreeBuilder tb = Context.GetTreeBuilder (e.CombineEntry);
-			if (tb != null) tb.Remove ();
-		}
-		
-		void OnCombineRenamed (object sender, CombineEntryRenamedEventArgs e)
-		{
-			ITreeBuilder tb = Context.GetTreeBuilder (e.CombineEntry);
+			ITreeBuilder tb = Context.GetTreeBuilder (e.SolutionItem);
 			if (tb != null) tb.Update ();
 		}
 	}

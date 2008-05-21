@@ -27,41 +27,30 @@
 
 
 using System;
+using System.Collections.Generic;
 using MonoDevelop.Core.Gui.Dialogs;
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 {
-	internal class CustomCommandPanel: AbstractOptionPanel
+	internal class CustomCommandPanel: MultiConfigItemOptionsPanel
 	{
-		AbstractConfiguration configuration;
-		CustomCommandCollection commands;
+		CustomCommandPanelWidget widget;
 		
-		public override void LoadPanelContents ()
+		public override Gtk.Widget CreatePanelWidget ()
 		{
-			Properties props = (Properties) CustomizationObject;
-			configuration = props.Get<AbstractConfiguration> ("Config");
-			if (configuration != null) {
-				CombineEntry entry = props.Get<CombineEntry> ("CombineEntry");
-				commands = configuration.CustomCommands.Clone ();
-				Add (new CustomCommandPanelWidget (entry, commands));
-			}
+			return (widget = new CustomCommandPanelWidget ());
+		}
+		
+		public override void LoadConfigData ()
+		{
+			widget.Load (ConfiguredSolutionItem, CurrentConfiguration.CustomCommands);
 		}
 
-		public override bool StorePanelContents ()
+		public override void ApplyChanges ()
 		{
-			if (configuration != null) {
-				configuration.CustomCommands.CopyFrom (commands);
-				// Remove empty commands
-				for (int n=0; n<configuration.CustomCommands.Count; n++) {
-					if (configuration.CustomCommands [n].Command == "") {
-						configuration.CustomCommands.RemoveAt (n);
-						n--;
-					}
-				}
-			}
-			return true;
+			// Do nothing. Changes to cloned configurations are automatically applied.
 		}
 	}
 }

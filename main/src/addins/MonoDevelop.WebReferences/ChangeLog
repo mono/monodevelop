@@ -1,3 +1,13 @@
+2008-05-21  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.WebReferences.NodeBuilders/WebReferenceFolderNodeBuilder.cs,
+	  MonoDevelop.WebReferences/WebReferenceItem.cs,
+	  MonoDevelop.WebReferences/Library.cs,
+	  MonoDevelop.WebReferences/WebReferenceItemCollection.cs,
+	  MonoDevelop.WebReferences.Commands/WebReferenceCommandHandler.cs,
+	  gtk-gui/MonoDevelop.WebReferences.Dialogs.WebReferenceDialog.cs:
+	  New project model changes.
+
 2008-03-04  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.WebReferences.Commands/WebReferenceCommandHandler.cs,

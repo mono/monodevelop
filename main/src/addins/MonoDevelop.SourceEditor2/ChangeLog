@@ -1,3 +1,11 @@
+2008-05-21  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.SourceEditor.mdp,
+	  MonoDevelop.SourceEditor/SourceEditorWidget.cs,
+	  MonoDevelop.SourceEditor/HighlightPropertiesSemanticRule.cs,
+	  MonoDevelop.SourceEditor/SourceEditorView.cs: New project model
+	  changes.
+
 2008-05-20  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.SourceEditor/SourceEditorView.cs: Name the editor's

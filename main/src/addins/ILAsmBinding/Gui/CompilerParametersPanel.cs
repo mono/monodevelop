@@ -23,45 +23,49 @@ using System.IO;
 using Gtk;
 
 using MonoDevelop.Projects;
-using MonoDevelop.Core.Gui.Dialogs;
+using MonoDevelop.Projects.Gui.Dialogs;
 using MonoDevelop.Core;
 using Mono.Addins;
 
 namespace ILAsmBinding
 {
-	public class CompilerParametersPanel : AbstractOptionPanel
+	public class CompilerParametersPanel : MultiConfigItemOptionsPanel
 	{
 		//ILAsmCompilerParameters compilerParameters = null;
 		DotNetProjectConfiguration configuration;
+		DotNetProject project;
 		
 		Entry outputPath = new Entry ();
 		Entry assemblyName = new Entry ();
 		RadioButton exeTarget = new RadioButton ("exe");
 		RadioButton dllTarget;
 		CheckButton debug = new CheckButton (GettextCatalog.GetString ("Include debug information"));
+		Gtk.Widget mainBox;
 		
-		public override void LoadPanelContents()
+		public override Widget CreatePanelWidget()
 		{
-			configuration = ((Properties)CustomizationObject).Get<DotNetProjectConfiguration> ("Config");
-			//compilerParameters = (ILAsmCompilerParameters) configuration.CompilationParameters;
-			
 			dllTarget = new RadioButton (exeTarget, "dll");
 			SetupUI ();
-			RestoreValues ();
-			this.ShowAll ();
+			mainBox.ShowAll ();
+			return mainBox;
 		}
 		
-		public override bool StorePanelContents()
+		public override void LoadConfigData ()
+		{
+			configuration = (DotNetProjectConfiguration) CurrentConfiguration;
+			project = ConfiguredProject as DotNetProject;
+			RestoreValues ();
+		}
+		
+		public override void ApplyChanges()
 		{
 			configuration.OutputAssembly = assemblyName.Text;
 			configuration.OutputDirectory = outputPath.Text;
 			configuration.DebugMode = debug.Active;
 			if (exeTarget.Active)
-				configuration.CompileTarget = CompileTarget.Exe;
+				project.CompileTarget = CompileTarget.Exe;
 			else
-				configuration.CompileTarget = CompileTarget.Library;
-				
-			return true;
+				project.CompileTarget = CompileTarget.Library;
 		}
 
 		void SetupUI ()
@@ -81,14 +85,14 @@ namespace ILAsmBinding
 			vbox.PackStart (exeTarget, false, true, 0);
 			vbox.PackStart (dllTarget, false, true, 0);
 			vbox.PackStart (debug, false, true, 0);
-			this.Add (vbox);
+			mainBox = vbox;
 		}
 
 		void RestoreValues ()
 		{
 			assemblyName.Text = configuration.OutputAssembly;
 			outputPath.Text = configuration.OutputDirectory;
-			if (configuration.CompileTarget == CompileTarget.Exe)
+			if (project.CompileTarget == CompileTarget.Exe)
 				exeTarget.Active = true;
 			else
 				dllTarget.Active = true;

@@ -263,7 +263,7 @@ namespace MonoDevelop.Gettext.Translator {
             this.buttonOK.UseStock = true;
             this.buttonOK.UseUnderline = true;
             this.buttonOK.Label = "gtk-add";
-            this.AddActionWidget(this.buttonOK, 0);
+            this.AddActionWidget(this.buttonOK, -5);
             Gtk.ButtonBox.ButtonBoxChild w22 = ((Gtk.ButtonBox.ButtonBoxChild)(w20[this.buttonOK]));
             w22.Position = 1;
             w22.Expand = false;
@@ -272,7 +272,7 @@ namespace MonoDevelop.Gettext.Translator {
                 this.Child.ShowAll();
             }
             this.DefaultWidth = 466;
-            this.DefaultHeight = 401;
+            this.DefaultHeight = 415;
             this.label3.MnemonicWidget = this.languageTreeView;
             this.label2.MnemonicWidget = this.entryLocale;
             this.Show();

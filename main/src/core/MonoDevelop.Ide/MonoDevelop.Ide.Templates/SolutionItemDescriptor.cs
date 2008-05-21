@@ -1,5 +1,5 @@
 //
-// CombineEntryDescriptor.cs
+// SolutionItemDescriptor.cs
 //
 // Author:
 //   Lluis Sanchez Gual
@@ -43,14 +43,14 @@ namespace MonoDevelop.Ide.Templates
 	/// <summary>
 	/// This class is used inside the combine templates for projects.
 	/// </summary>
-	internal class CombineEntryDescriptor: ICombineEntryDescriptor
+	internal class SolutionItemDescriptor: ISolutionItemDescriptor
 	{
 		string name;
 //		string relativePath;
 		string typeName;
 		XmlElement template;
 		
-		protected CombineEntryDescriptor (XmlElement element)
+		protected SolutionItemDescriptor (XmlElement element)
 		{
 			name = element.GetAttribute ("name");
 //			relativePath = element.GetAttribute ("directory");
@@ -58,16 +58,16 @@ namespace MonoDevelop.Ide.Templates
 			template = element;
 		}
 		
-		public string CreateEntry (ProjectCreateInformation projectCreateInformation, string defaultLanguage)
+		public SolutionEntityItem CreateEntry (ProjectCreateInformation projectCreateInformation, string defaultLanguage)
 		{
 			Type type = Type.GetType (typeName);
 			
 			if (type == null) {
 				MessageService.ShowError (GettextCatalog.GetString ("Can't create project with type : {0}", typeName));
-				return String.Empty;
+				return null;
 			}
 			
-			CombineEntry entry = (CombineEntry) Activator.CreateInstance (type);
+			SolutionEntityItem entry = (SolutionEntityItem) Activator.CreateInstance (type);
 			entry.InitializeFromTemplate (template);
 			
 			string newProjectName = StringParserService.Parse (name, new string[,] { 
@@ -75,30 +75,13 @@ namespace MonoDevelop.Ide.Templates
 			});
 			
 			entry.Name = newProjectName;
-			
-			IFileFormat[] fileFormats = Services.ProjectService.FileFormats.GetFileFormatsForObject (entry);
-			if (fileFormats.Length == 0)
-				throw new InvalidOperationException ("Can't find a file format for the type: " + type);
-
-			string fileName = fileFormats[0].GetValidFormatName (entry, Path.Combine (projectCreateInformation.ProjectBasePath, newProjectName));
-			
-			using (IProgressMonitor monitor = new NullProgressMonitor ()) {
-				if (File.Exists (fileName)) {
-					if (MessageService.Confirm (GettextCatalog.GetString (
-						"Project file {0} already exists. Do you want to overwrite\nthe existing file?", fileName), AlertButton.OverwriteFile)) {
-						entry.Save (fileName, monitor);
-					}
-				} else {
-					entry.Save (fileName, monitor);
-				}
-			}
-			
-			return fileName;
+			entry.FileName = Path.Combine (projectCreateInformation.ProjectBasePath, newProjectName);
+			return entry;
 		}
 		
-		public static CombineEntryDescriptor CreateDescriptor (XmlElement element)
+		public static SolutionItemDescriptor CreateDescriptor (XmlElement element)
 		{
-			return new CombineEntryDescriptor (element);
+			return new SolutionItemDescriptor (element);
 		}
 	}
 }

@@ -63,7 +63,7 @@ namespace MonoDevelop.Ide.Commands
 		protected override void Update (CommandArrayInfo ainfo)
 		{
 			Document doc = IdeApp.Workbench.ActiveDocument;
-			if (doc != null && doc.FileName != null) {
+			if (doc != null && doc.FileName != null && IdeApp.ProjectOperations.CurrentSelectedSolution != null) {
 				ITextBuffer editor = IdeApp.Workbench.ActiveDocument.GetContent <ITextBuffer>();
 				if (editor != null) {
 					bool added = false;
@@ -73,11 +73,11 @@ namespace MonoDevelop.Ide.Commands
 					IParseInformation pinfo;
 					IParserContext ctx;
 					if (doc.Project != null) {
-						ctx = IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (doc.Project);
-						pinfo = IdeApp.ProjectOperations.ParserDatabase.UpdateFile (doc.Project, doc.FileName, editor.Text);
+						ctx = IdeApp.Workspace.ParserDatabase.GetProjectParserContext (doc.Project);
+						pinfo = IdeApp.Workspace.ParserDatabase.UpdateFile (doc.Project, doc.FileName, editor.Text);
 					} else {
-						ctx = IdeApp.ProjectOperations.ParserDatabase.GetFileParserContext (doc.FileName);
-						pinfo = IdeApp.ProjectOperations.ParserDatabase.UpdateFile (doc.FileName, editor.Text);
+						ctx = IdeApp.Workspace.ParserDatabase.GetFileParserContext (doc.FileName);
+						pinfo = IdeApp.Workspace.ParserDatabase.UpdateFile (doc.FileName, editor.Text);
 					}
 					
 					// Look for an identifier at the cursor position
@@ -372,7 +372,7 @@ namespace MonoDevelop.Ide.Commands
 		void FindReferencesThread ()
 		{
 			using (monitor) {
-				CodeRefactorer refactorer = IdeApp.ProjectOperations.CodeRefactorer;
+				CodeRefactorer refactorer = IdeApp.Workspace.GetCodeRefactorer (IdeApp.ProjectOperations.CurrentSelectedSolution);
 				
 				if (item is IMember) {
 					IMember member = (IMember) item;
@@ -451,8 +451,9 @@ namespace MonoDevelop.Ide.Commands
 			using (monitor) {
 				IClass cls = (IClass) item;
 				if (cls == null) return;
-			
-				IClass[] classes = IdeApp.ProjectOperations.CodeRefactorer.FindDerivedClasses (cls);
+
+				CodeRefactorer cr = IdeApp.Workspace.GetCodeRefactorer (IdeApp.ProjectOperations.CurrentSelectedSolution);
+				IClass[] classes = cr.FindDerivedClasses (cls);
 				foreach (IClass sub in classes) {
 					if (sub.Region != null)
 						monitor.ReportResult (sub.Region.FileName, sub.Region.BeginLine, sub.Region.BeginColumn, sub.FullyQualifiedName);
@@ -462,7 +463,7 @@ namespace MonoDevelop.Ide.Commands
 		
 		void ImplementInterface (bool explicitly)
 		{
-			CodeRefactorer refactorer = IdeApp.ProjectOperations.CodeRefactorer;
+			CodeRefactorer refactorer = IdeApp.Workspace.GetCodeRefactorer (IdeApp.ProjectOperations.CurrentSelectedSolution);
 			IClass iface = item as IClass;
 			
 			if (klass == null)

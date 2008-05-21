@@ -1,4 +1,4 @@
-// CombineEntryPropertyProvider.cs
+// SolutionItemPropertyProvider.cs
 //
 //Author:
 //  Lluis Sanchez Gual
@@ -31,16 +31,16 @@ using MonoDevelop.Projects;
 
 namespace MonoDevelop.DesignerSupport.Projects
 {
-	class CombineEntryPropertyProvider: IPropertyProvider
+	class SolutionItemPropertyProvider: IPropertyProvider
 	{
 		public object CreateProvider (object obj)
 		{
-			return new CombineEntryDescriptor ((CombineEntry)obj);
+			return new SolutionItemDescriptor ((SolutionItem)obj);
 		}
 
 		public bool SupportsObject (object obj)
 		{
-			return obj is CombineEntry;
+			return obj is SolutionItem;
 		}
 	}
 }

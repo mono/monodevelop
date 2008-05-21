@@ -6,7 +6,7 @@ namespace MonoDevelop.Deployment.Gui
 {
 	internal partial class InstallDialog : Gtk.Dialog
 	{
-		public InstallDialog (CombineEntry entry)
+		public InstallDialog (SolutionItem entry)
 		{
 			this.Build();
 			nameEntry.Text = entry.Name;

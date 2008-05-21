@@ -62,7 +62,7 @@ namespace CSharpBinding
 			
 			if (references != null) {
 				foreach (ProjectReference lib in references) {
-					foreach (string fileName in lib.GetReferencedFileNames ()) {
+					foreach (string fileName in lib.GetReferencedFileNames (configuration.Id)) {
 						switch (lib.ReferenceType) {
 						case ReferenceType.Gac:
 							SystemPackage pkg = Runtime.SystemAssemblyService.GetPackageFromFullName (lib.Reference);
@@ -146,6 +146,14 @@ namespace CSharpBinding
 			
 			if (compilerparameters.UnsafeCode) {
 				writer.WriteLine("-unsafe");
+			}
+			
+			if (compilerparameters.NoStdLib) {
+				writer.WriteLine("-nostdlib");
+			}
+			
+			if (compilerparameters.TreatWarningsAsErrors) {
+				writer.WriteLine("-warnaserror");
 			}
 			
 			if (compilerparameters.DefineSymbols.Length > 0) {

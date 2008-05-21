@@ -49,21 +49,21 @@ namespace MonoDevelop.Autotools
 
 			Console.WriteLine (GettextCatalog.GetString ("Loading solution file {0}", filename));
 			ConsoleProgressMonitor monitor = new ConsoleProgressMonitor ();
-			CombineEntry centry = Services.ProjectService.ReadCombineEntry (filename, monitor);
-			Combine combine = centry as Combine;
-			if (combine == null) {
+			
+			Solution solution = Services.ProjectService.ReadWorkspaceItem (monitor, filename) as Solution;
+			if (solution == null) {
 				Console.WriteLine (GettextCatalog.GetString ("Error: Makefile generation supported only for solutions.\n"));
 				return 1;
 			}
 
-			if (defaultConfig == null || !CheckValidConfig (combine, defaultConfig)) {
+			if (defaultConfig == null || !CheckValidConfig (solution, defaultConfig)) {
 				Console.WriteLine (GettextCatalog.GetString ("\nInvalid configuration {0}. Valid configurations : ", defaultConfig));
-				for (int i = 0; i < combine.Configurations.Count; i ++) {
-					CombineConfiguration cc = (CombineConfiguration) combine.Configurations [i];
-					Console.WriteLine ("\t{0}. {1}", i + 1, cc.Name);
+				for (int i = 0; i < solution.Configurations.Count; i ++) {
+					SolutionConfiguration cc = (SolutionConfiguration) solution.Configurations [i];
+					Console.WriteLine ("\t{0}. {1}", i + 1, cc.Id);
 				}
 
-				int configCount = combine.Configurations.Count;
+				int configCount = solution.Configurations.Count;
 				int op = 0;
 				do {
 					Console.Write (GettextCatalog.GetString ("Select configuration : "));
@@ -76,12 +76,12 @@ namespace MonoDevelop.Autotools
 					}
 				} while (true);
 
-				defaultConfig = combine.Configurations [op - 1].Name;
+				defaultConfig = solution.Configurations [op - 1].Id;
 
 			}
 
 			SolutionDeployer deployer = new SolutionDeployer (generateAutotools);
-			if (deployer.HasGeneratedFiles (combine)) {
+			if (deployer.HasGeneratedFiles (solution)) {
 				string msg = GettextCatalog.GetString ( "{0} already exist for this solution.  Would you like to overwrite them? (Y/N)",
 						generateAutotools ? "Autotools files" : "Makefiles" );
 				bool op = false;
@@ -114,7 +114,7 @@ namespace MonoDevelop.Autotools
 
 			DeployContext ctx = new DeployContext (new TarballDeployTarget (), "Linux", null);
 			try {
-				deployer.GenerateFiles (ctx, combine, defaultConfig, monitor);
+				deployer.GenerateFiles (ctx, solution, defaultConfig, monitor);
 			}
 			finally {
 				ctx.Dispose ();
@@ -135,10 +135,10 @@ namespace MonoDevelop.Autotools
 			Console.WriteLine ();
 		}
 
-		bool CheckValidConfig (Combine combine, string config)
+		bool CheckValidConfig (Solution sol, string config)
 		{
-			foreach (IConfiguration iconf in combine.Configurations)
-				if (String.Compare (iconf.Name, config, true) == 0)
+			foreach (SolutionConfiguration iconf in sol.Configurations)
+				if (String.Compare (iconf.Id, config, true) == 0)
 					return true;
 
 			return false;

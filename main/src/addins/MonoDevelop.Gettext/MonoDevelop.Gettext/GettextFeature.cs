@@ -36,7 +36,7 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.Gettext
 {
-	public class GettextFeature : ICombineEntryFeature
+	public class GettextFeature : ISolutionItemFeature
 	{
 		public string Title {
 			get { return GettextCatalog.GetString ("Translation"); }
@@ -46,27 +46,27 @@ namespace MonoDevelop.Gettext
 			get { return GettextCatalog.GetString ("Add a Translation Project to the solution that will use gettext to generate a set of PO files for the new project."); }
 		}
 		
-		public bool SupportsCombineEntry (Combine parentCombine, CombineEntry entry)
+		public bool SupportsSolutionItem (SolutionFolder parentCombine, SolutionItem entry)
 		{
 			return ((entry is Project) || (entry is TranslationProject)) && parentCombine != null;
 		}
 		
-		public Widget CreateFeatureEditor (Combine parentCombine, CombineEntry entry)
+		public Widget CreateFeatureEditor (SolutionFolder parentCombine, SolutionItem entry)
 		{
 			return new GettextFeatureWidget ();
 		}
 
-		public void ApplyFeature (Combine parentCombine, CombineEntry entry, Widget editor)
+		public void ApplyFeature (SolutionFolder parentCombine, SolutionItem entry, Widget editor)
 		{
 			((GettextFeatureWidget)editor).ApplyFeature (parentCombine, entry);
 		}
 		
-		public string Validate (Combine parentCombine, CombineEntry entry, Gtk.Widget editor)
+		public string Validate (SolutionFolder parentCombine, SolutionItem entry, Gtk.Widget editor)
 		{
 			return null;
 		}
 		
-		public bool IsEnabled (Combine parentCombine, CombineEntry entry) 
+		public bool IsEnabled (SolutionFolder parentCombine, SolutionItem entry) 
 		{
 			return entry is TranslationProject;
 		}

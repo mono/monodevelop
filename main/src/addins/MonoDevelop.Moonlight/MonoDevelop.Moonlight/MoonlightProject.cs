@@ -52,9 +52,9 @@ namespace MonoDevelop.Moonlight
 		{
 			//set parameters to ones required for Moonlight build
 			ClrVersion = MonoDevelop.Core.ClrVersion.Clr_2_1;
+			CompileTarget = CompileTarget.Library;
 			foreach (DotNetProjectConfiguration parameter in Configurations) {
 				parameter.OutputDirectory = Path.Combine (".", "ClientBin");
-				parameter.CompileTarget = CompileTarget.Library;
 			}
 		}
 		
@@ -62,7 +62,7 @@ namespace MonoDevelop.Moonlight
 			get { return "Moonlight"; }
 		}
 		
-		protected override void DoExecute (IProgressMonitor monitor, ExecutionContext context)
+		protected override void DoExecute (IProgressMonitor monitor, ExecutionContext context, string configuration)
 		{
 			string[] pages = { (Name??"TestPage") + ".html", "TestPage.html", "Default.html", "default.html", "Index.html", "index.html" };
 			string testPage = null;

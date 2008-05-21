@@ -1,4 +1,4 @@
-// ICombineEntryFeature.cs
+// ISolutionItemFeature.cs
 //
 // Author:
 //   Lluis Sanchez Gual <lluis@novell.com>
@@ -34,24 +34,24 @@ using Mono.Addins;
 
 namespace MonoDevelop.Ide.Templates
 {
-	public interface ICombineEntryFeature
+	public interface ISolutionItemFeature
 	{
-		bool SupportsCombineEntry (Combine parentCombine, CombineEntry entry);
+		bool SupportsSolutionItem (SolutionFolder parentCombine, SolutionItem entry);
 		string Title { get; }
 		string Description { get; }
-		Gtk.Widget CreateFeatureEditor (Combine parentCombine, CombineEntry entry);
-		bool IsEnabled (Combine parentCombine, CombineEntry entry);
-		string Validate (Combine parentCombine, CombineEntry entry, Gtk.Widget editor);
-		void ApplyFeature (Combine parentCombine, CombineEntry entry, Gtk.Widget editor);
+		Gtk.Widget CreateFeatureEditor (SolutionFolder parentCombine, SolutionItem entry);
+		bool IsEnabled (SolutionFolder parentCombine, SolutionItem entry);
+		string Validate (SolutionFolder parentCombine, SolutionItem entry, Gtk.Widget editor);
+		void ApplyFeature (SolutionFolder parentCombine, SolutionItem entry, Gtk.Widget editor);
 	}
 	
-	internal class CombineEntryFeatures
+	internal class SolutionItemFeatures
 	{
-		public static ICombineEntryFeature[] GetFeatures (Combine parentCombine, CombineEntry entry)
+		public static ISolutionItemFeature[] GetFeatures (SolutionFolder parentCombine, SolutionItem entry)
 		{
-			List<ICombineEntryFeature> list = new List<ICombineEntryFeature> ();
-			foreach (ICombineEntryFeature e in AddinManager.GetExtensionObjects ("/MonoDevelop/Ide/ProjectFeatures", typeof(ICombineEntryFeature), true)) {
-				if (e.SupportsCombineEntry (parentCombine, entry))
+			List<ISolutionItemFeature> list = new List<ISolutionItemFeature> ();
+			foreach (ISolutionItemFeature e in AddinManager.GetExtensionObjects ("/MonoDevelop/Ide/ProjectFeatures", typeof(ISolutionItemFeature), true)) {
+				if (e.SupportsSolutionItem (parentCombine, entry))
 					list.Add (e);
 			}
 			return list.ToArray ();

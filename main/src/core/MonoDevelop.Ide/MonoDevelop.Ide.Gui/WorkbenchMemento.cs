@@ -19,10 +19,12 @@
 //  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Xml;
 
 using MonoDevelop.Core;
+using MonoDevelop.Projects.Serialization;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -82,5 +84,44 @@ namespace MonoDevelop.Ide.Gui
 		{
 			this.properties = properties;
 		}
+	}
+
+	[DataItem ("File")]
+	class DocumentUserPrefs
+	{
+		[ItemProperty]
+		public string FileName;
+		
+		[ItemProperty (DefaultValue = 0)]
+		public int Line;
+		
+		[ItemProperty (DefaultValue = 0)]
+		public int Column;
+	}
+	
+	[DataItem ("Pad")]
+	class PadUserPrefs
+	{
+		[ItemProperty]
+		public string Id;
+		
+		[ItemProperty]
+		public XmlElement State;
+	}
+	
+	[DataItem ("Workbench")]
+	class WorkbenchUserPrefs
+	{
+		[ItemProperty]
+		public string ActiveConfiguration;
+		
+		[ItemProperty]
+		public string ActiveDocument;
+		
+		[ItemProperty]
+		public List<DocumentUserPrefs> Files = new List<DocumentUserPrefs> ();
+		
+		[ItemProperty]
+		public List<PadUserPrefs> Pads = new List<PadUserPrefs> ();
 	}
 }

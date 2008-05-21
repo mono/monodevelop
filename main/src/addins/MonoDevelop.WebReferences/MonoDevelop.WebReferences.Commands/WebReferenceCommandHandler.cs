@@ -21,11 +21,10 @@ namespace MonoDevelop.WebReferences.Commands
 		public void NewWebReference()
 		{
 			// Get the project and project folder
-			Project project = CurrentNode.GetParentDataItem (typeof(Project), true) as Project;
-			DotNetProject dotProject = (DotNetProject) project;
+			DotNetProject project = CurrentNode.GetParentDataItem (typeof(DotNetProject), true) as DotNetProject;
 			
 			// Check and switch the runtime environment for the current project
-			if (dotProject.ClrVersion == ClrVersion.Net_1_1)
+			if (project.ClrVersion == ClrVersion.Net_1_1)
 			{
 				string question = "The current runtime environment for your project is set to version 1.0.";
 				question += "Web Service is not supported in this version.";
@@ -33,7 +32,7 @@ namespace MonoDevelop.WebReferences.Commands
 				
 				AlertButton switchButton = new AlertButton ("_Switch to .NET2"); 
 				if (MessageService.AskQuestion(question, AlertButton.Cancel, switchButton) == switchButton)
-					dotProject.ClrVersion = ClrVersion.Net_2_0;					
+					project.ClrVersion = ClrVersion.Net_2_0;					
 				else
 					return;
 			}
@@ -59,22 +58,22 @@ namespace MonoDevelop.WebReferences.Commands
 					ProjectFile mapFile = new ProjectFile(mapSpec);
 					mapFile.BuildAction = BuildAction.Nothing;
 					mapFile.Subtype = Subtype.Code;
-					project.ProjectFiles.Add(mapFile);
+					project.Files.Add(mapFile);
 			
 					// Generate the proxy class
 					string proxySpec = gen.CreateProxyFile(basePath, dialog.Namespace + "." + dialog.ReferenceName, "Reference");
 					ProjectFile proxyFile = new ProjectFile(proxySpec);
 					proxyFile.BuildAction = BuildAction.Compile;
 					proxyFile.Subtype = Subtype.Code;
-					project.ProjectFiles.Add(proxyFile);
+					project.Files.Add(proxyFile);
 					
 					// Add a reference System.Web.Services to the project if it does not exists
 					string refName = "System.Web.Services, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a";
 					ProjectReference gacRef = new ProjectReference(ReferenceType.Gac, refName);
-					if (!project.ProjectReferences.Contains(gacRef))
-						project.ProjectReferences.Add(gacRef);
+					if (!project.References.Contains(gacRef))
+						project.References.Add(gacRef);
 
-					IdeApp.ProjectOperations.SaveProject(project);
+					IdeApp.ProjectOperations.Save(project);
 				}
 				catch(Exception exception)
 				{
@@ -113,7 +112,7 @@ namespace MonoDevelop.WebReferences.Commands
 			WebReferenceItem item = (WebReferenceItem) CurrentNode.DataItem;
 			Project project = item.ProxyFile.Project;
 			item.Delete();
-			IdeApp.ProjectOperations.SaveProject(project);
+			IdeApp.ProjectOperations.Save(project);
 			IdeApp.Workbench.StatusBar.ShowMessage("Deleted Web Reference " + item.Name);
 		}
 		
@@ -128,7 +127,7 @@ namespace MonoDevelop.WebReferences.Commands
 				items[items.AllKeys[index]].Delete();
 				IdeApp.Workbench.StatusBar.ShowMessage("Deleted Web Reference " + items.AllKeys[index]);
 			}
-			IdeApp.ProjectOperations.SaveProject(project);
+			IdeApp.ProjectOperations.Save(project);
 			IdeApp.Workbench.StatusBar.ShowMessage("Deleted all Web References");
 		}
 	}	

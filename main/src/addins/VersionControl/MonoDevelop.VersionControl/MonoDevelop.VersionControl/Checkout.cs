@@ -65,7 +65,7 @@ namespace MonoDevelop.VersionControl
 			}
 			if ( projectFn == null ) {
 				foreach (string str in list ) {
-					if (MonoDevelop.Projects.Services.ProjectService.IsCombineEntryFile (str)) {
+					if (MonoDevelop.Projects.Services.ProjectService.IsWorkspaceItemFile (str)) {
 						projectFn = str;
 						break;
 					}
@@ -73,7 +73,7 @@ namespace MonoDevelop.VersionControl
 			}
 			
 			if (projectFn != null)
-				IdeApp.ProjectOperations.OpenCombine (projectFn);
+				IdeApp.Workspace.OpenWorkspaceItem (projectFn);
 		}
 	}
 }

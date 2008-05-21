@@ -2,6 +2,7 @@
 using System;
 using System.Text;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 
 using MonoDevelop.Core;
@@ -70,19 +71,19 @@ namespace MonoDevelop.Autotools
 			set { defaultConfig = value; }
 		}
 
-		public override bool CanBuild (CombineEntry entry)
+		public override bool CanBuild (SolutionItem entry)
 		{
 			SolutionDeployer deployer = new SolutionDeployer (generateAutotools);
 			return deployer.CanDeploy ( entry );
 		}
 		
-		public override void InitializeSettings (CombineEntry entry)
+		public override void InitializeSettings (SolutionItem entry)
 		{
 			if (string.IsNullOrEmpty (targetDir))
 				targetDir = entry.BaseDirectory;
 			if (string.IsNullOrEmpty (defaultConfig)) {
-				if (entry.ActiveConfiguration != null)
-					defaultConfig = entry.ActiveConfiguration.Name;
+				SolutionEntityItem se = entry as SolutionEntityItem;
+				defaultConfig = se != null ? se.GetConfigurations () [0] : null;
 			}
 			if (File.Exists (Path.Combine (entry.BaseDirectory, "autogen.sh")) ||
 			    File.Exists (Path.Combine (entry.BaseDirectory, "configure"))) {
@@ -93,58 +94,58 @@ namespace MonoDevelop.Autotools
 		}
 
 		
-		protected override void OnBuild (IProgressMonitor monitor, DeployContext ctx)
+		protected override bool OnBuild (IProgressMonitor monitor, DeployContext ctx)
 		{
 			string tmpFolder = FileService.CreateTempDirectory ();
-			Combine combine = null;
-			CombineEntry entry = RootCombineEntry;
+			Solution solution = null;
+			SolutionItem entry = RootSolutionItem;
 			
 			try {
 				if (generateFiles) {
-					string[] childEntries;
-					if (entry is Combine) {
-						CombineEntry[] ents = GetChildEntries ();
-						childEntries = new string [ents.Length];
-						for (int n=0; n<ents.Length; n++)
-							childEntries [n] = ents [n].FileName;
+					List<string> childEntries = new List<string> ();
+					if (entry is SolutionFolder) {
+						SolutionItem[] ents = GetChildEntries ();
+						foreach (SolutionItem it in ents)
+							childEntries.Add (it.ItemId);
 					}
 					else {
 						// If the entry is not a combine, use the parent combine as base combine
-						childEntries = new string [] { entry.FileName };
-						entry = entry.ParentCombine;
+						childEntries.Add (entry.ItemId);
+						entry = entry.ParentFolder;
 					}
+							
+					string sourceFile;
+					if (entry is SolutionFolder)
+						sourceFile = entry.ParentSolution.FileName;
+					else
+						sourceFile = ((SolutionEntityItem)entry).FileName;
 					
-					string efile = Services.ProjectService.Export (new FilteredProgressMonitor (monitor), entry.FileName, childEntries, tmpFolder, null);
+					string efile = Services.ProjectService.Export (new FilteredProgressMonitor (monitor), sourceFile, childEntries.ToArray (), tmpFolder, null);
 					if (efile == null) {
 						monitor.ReportError (GettextCatalog.GetString ("The project could not be exported."), null);
-						return;
+						return false;
 					}
-					combine = Services.ProjectService.ReadCombineEntry (efile, new NullProgressMonitor ()) as Combine;
+					solution = Services.ProjectService.ReadWorkspaceItem (new NullProgressMonitor (), efile) as Solution;
 				}
 				else {
-					if (entry is Combine)
-						combine = (Combine) entry;
-					else 
-						combine = entry.ParentCombine;
+					solution = entry.ParentSolution;
 				}
 				
-				combine.Build (monitor);
+				solution.Build (monitor, defaultConfig);
 			
 				if (monitor.IsCancelRequested || !monitor.AsyncOperation.Success)
-					return;
+					return false;
 			
 				SolutionDeployer deployer = new SolutionDeployer (generateAutotools);
-				
-				if (DefaultConfiguration == null || DefaultConfiguration == "")
-					deployer.Deploy ( ctx, combine, TargetDir, generateFiles, monitor );
-				else
-					deployer.Deploy ( ctx, combine, DefaultConfiguration, TargetDir, generateFiles, monitor );
+				if (!deployer.Deploy ( ctx, solution, DefaultConfiguration, TargetDir, generateFiles, monitor ))
+					return false;
 				
 			} finally {
-				if (combine != null)
-					combine.Dispose ();
+				if (solution != null)
+					solution.Dispose ();
 				Directory.Delete (tmpFolder, true);
 			}
+			return true;
 		}
 
 		protected override string OnResolveDirectory (DeployContext ctx, string folderId)

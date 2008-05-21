@@ -127,7 +127,7 @@ namespace MonoDevelop.Deployment.NodeBuilders
 			Package package = CurrentNode.DataItem as Package;
 			if (MessageService.AskQuestion (GettextCatalog.GetString ("Are you sure you want to delete the package '{0}'?", package.Name), AlertButton.Cancel, AlertButton.Delete) == AlertButton.Delete) {
 				package.ParentProject.Packages.Remove (package);
-				IdeApp.ProjectOperations.SaveCombineEntry (package.ParentProject);
+				IdeApp.ProjectOperations.Save (package.ParentProject);
 			}
 		}
 		

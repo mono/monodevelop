@@ -18,8 +18,6 @@
     <File name="MonoDevelop.Projects.Gui.Dialogs/ProjectOptionsDialog.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineBuildOptions.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineConfigurationPanel.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineStartupPanel.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CompileFileProjectOptions.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Gui.Dialogs.OptionPanels/GeneralProjectOptions.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Gui.Dialogs.OptionPanels/OutputOptionsPanel.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Gui.Dialogs/CombineOptionsDialog.cs" subtype="Code" buildaction="Compile" />
@@ -32,7 +30,7 @@
     <File name="MonoDevelop.Projects.Gui.Completion/ICompletionWidget.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Gui.Completion/ListWindow.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Gui.Completion/TextUtilities.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineEntryConfigurationsPanel.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Projects.Gui.Dialogs.OptionPanels/SolutionItemConfigurationsPanel.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Gui/ProjectsGuiServices.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Gui.Dialogs.OptionPanels/RuntimeOptionsPanel.cs" subtype="Code" buildaction="Compile" />
     <File name="ChangeLog" subtype="Code" buildaction="Nothing" />
@@ -64,11 +62,12 @@
     <File name="gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CombineBuildOptionsWidget.cs" subtype="Code" buildaction="Compile" />
     <File name="gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CombineEntryConfigurationsPanelWidget.cs" subtype="Code" buildaction="Compile" />
     <File name="gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CombineInformationWidget.cs" subtype="Code" buildaction="Compile" />
-    <File name="gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CombineStartupPanelWidget.cs" subtype="Code" buildaction="Compile" />
-    <File name="gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CompileFileOptionsWidget.cs" subtype="Code" buildaction="Compile" />
     <File name="gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.RuntimeOptionsPanelWidget.cs" subtype="Code" buildaction="Compile" />
     <File name="gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CombineConfigurationPanelWidget.cs" subtype="Code" buildaction="Compile" />
     <File name="gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.GeneralProjectOptionsWidget.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Projects.Gui.Dialogs/ItemOptionsPanel.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Projects.Gui.Dialogs/MultiConfigItemOptionsPanel.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Projects.Gui.Dialogs/MultiConfigItemOptionsDialog.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Gui.Completion/WindowTransparencyDecorator.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Gui.Completion/TooltipWindow.cs" subtype="Code" buildaction="Compile" />
   </Contents>

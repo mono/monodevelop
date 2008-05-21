@@ -7,7 +7,7 @@ using Gtk;
 
 namespace MonoDevelop.Autotools
 {
-	class MakefileIntegrationFeature: ICombineEntryFeature
+	class MakefileIntegrationFeature: ISolutionItemFeature
 	{
 		public string Title {
 			get { return GettextCatalog.GetString ("Makefile Integration"); }
@@ -17,27 +17,27 @@ namespace MonoDevelop.Autotools
 			get { return string.Empty; }
 		}
 
-		public bool SupportsCombineEntry (Combine parentCombine, CombineEntry entry)
+		public bool SupportsSolutionItem (SolutionFolder parentCombine, SolutionItem entry)
 		{
 			return entry is Project;
 		}
 		
-		public Widget CreateFeatureEditor (Combine parentCombine, CombineEntry entry)
+		public Widget CreateFeatureEditor (SolutionFolder parentCombine, SolutionItem entry)
 		{
 			return new MakefileIntegrationFeatureWidget ((Project)entry);
 		}
 
-		public void ApplyFeature (Combine parentCombine, CombineEntry entry, Widget editor)
+		public void ApplyFeature (SolutionFolder parentCombine, SolutionItem entry, Widget editor)
 		{
 			((MakefileIntegrationFeatureWidget)editor).Store ();
 		}
 		
-		public string Validate (Combine parentCombine, CombineEntry entry, Gtk.Widget editor)
+		public string Validate (SolutionFolder parentCombine, SolutionItem entry, Gtk.Widget editor)
 		{
 			return null;
 		}
 		
-		public bool IsEnabled (Combine parentCombine, CombineEntry entry) 
+		public bool IsEnabled (SolutionFolder parentCombine, SolutionItem entry) 
 		{
 			return false;
 		}

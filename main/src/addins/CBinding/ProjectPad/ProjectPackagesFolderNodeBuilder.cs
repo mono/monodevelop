@@ -138,7 +138,7 @@ namespace CBinding.ProjectPad
 			EditPackagesDialog dialog = new EditPackagesDialog (project);
 			dialog.Run ();			
 			
-			IdeApp.ProjectOperations.SaveProject (project);
+			IdeApp.ProjectOperations.Save (project);
 			CurrentNode.Expanded = true;
 		}
 		
@@ -154,7 +154,7 @@ namespace CBinding.ProjectPad
 				if (((ProjectPackageCollection)CurrentNode.DataItem).Project.Equals (project))
 					return false;
 				
-				CProjectConfiguration config = (CProjectConfiguration)project.ActiveConfiguration;
+				CProjectConfiguration config = (CProjectConfiguration)project.GetConfiguration (IdeApp.Workspace.ActiveConfiguration);
 				
 				if (config.CompileTarget != CBinding.CompileTarget.Bin)
 					return true;
@@ -179,23 +179,23 @@ namespace CBinding.ProjectPad
 				CProject source = nav.GetParentDataItem (typeof(CProject), true) as CProject;
 				
 				dest.Packages.Add (package);
-				IdeApp.ProjectOperations.SaveProject (dest);
+				IdeApp.ProjectOperations.Save (dest);
 				
 				if (operation == DragOperation.Move) {
 					source.Packages.Remove (package);
-					IdeApp.ProjectOperations.SaveProject (source);
+					IdeApp.ProjectOperations.Save (source);
 				}
 			} else if (dataObject is CProject) {
 				CProject draggedProject = (CProject)dataObject;
 				CProject destProject = (CurrentNode.DataItem as ProjectPackageCollection).Project;
 				
-				draggedProject.WriteMDPkgPackage ();
+				draggedProject.WriteMDPkgPackage (IdeApp.Workspace.ActiveConfiguration);
 				
 				Package package = new Package (draggedProject);
 				
 				if (!destProject.Packages.Contains (package)) {				
 					destProject.Packages.Add (package);
-					IdeApp.ProjectOperations.SaveProject (destProject);
+					IdeApp.ProjectOperations.Save (destProject);
 				}
 			}
 		}

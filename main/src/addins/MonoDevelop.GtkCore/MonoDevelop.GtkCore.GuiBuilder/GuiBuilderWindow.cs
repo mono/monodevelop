@@ -142,7 +142,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		{
 			string fullName = namspace.Length > 0 ? namspace + "." + name : name;
 			
-			CodeRefactorer gen = new CodeRefactorer (fproject.Project.RootCombine, IdeApp.ProjectOperations.ParserDatabase);
+			CodeRefactorer gen = new CodeRefactorer (fproject.Project.ParentSolution, IdeApp.Workspace.ParserDatabase);
 			GtkDesignInfo info = GtkCoreService.GetGtkInfo (fproject.Project);
 			Stetic.WidgetComponent component = (Stetic.WidgetComponent) rootWidget.Component;
 			
@@ -204,10 +204,10 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				throw new UserException ("Could not create class " + fullName);
 			
 			Project.Project.AddFile (cls.Region.FileName, BuildAction.Compile);
-			IdeApp.ProjectOperations.SaveProject (Project.Project);
+			IdeApp.ProjectOperations.Save (Project.Project);
 			
 			// Make sure the database is up-to-date
-			IdeApp.ProjectOperations.ParserDatabase.UpdateFile (Project.Project, cls.Region.FileName, null);
+			IdeApp.Workspace.ParserDatabase.UpdateFile (Project.Project, cls.Region.FileName, null);
 		}
 		
 		void AddSignalsRec (CodeTypeDeclaration type, Stetic.Component comp)

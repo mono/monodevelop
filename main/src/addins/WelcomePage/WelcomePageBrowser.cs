@@ -43,6 +43,7 @@ using MonoDevelop.Core.Gui;
 using MonoDevelop.Core.Gui.WebBrowser;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Commands;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.Core
 {

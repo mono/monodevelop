@@ -1,9 +1,6 @@
 <Combine name="MonoDevelop.GtkCore" fileversion="2.0">
   <Configurations active="Debug">
     <Configuration name="Debug" ctype="CombineConfiguration">
-      <CustomCommands>
-        <Command type="Custom" name="Update Stetic" command="make update-stetic" workingdir="${ProjectDir}" externalConsole="True" pauseExternalConsole="True" />
-      </CustomCommands>
       <Entry build="True" name="MonoDevelop.GtkCore" configuration="Debug" />
       <Entry build="True" name="libstetic" configuration="Debug" />
       <Entry build="True" name="libsteticui" configuration="Debug" />

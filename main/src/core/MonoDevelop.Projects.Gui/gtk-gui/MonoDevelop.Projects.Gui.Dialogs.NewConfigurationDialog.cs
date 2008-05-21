@@ -86,7 +86,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs {
             // Internal child MonoDevelop.Projects.Gui.Dialogs.NewConfigurationDialog.ActionArea
             Gtk.HButtonBox w7 = this.ActionArea;
             w7.Name = "dialog-action_area6";
-            w7.Spacing = 10;
+            w7.Spacing = 6;
             w7.BorderWidth = ((uint)(5));
             w7.LayoutStyle = ((Gtk.ButtonBoxStyle)(4));
             // Container child dialog-action_area6.Gtk.ButtonBox+ButtonBoxChild
@@ -108,8 +108,8 @@ namespace MonoDevelop.Projects.Gui.Dialogs {
             if ((this.Child != null)) {
                 this.Child.ShowAll();
             }
-            this.DefaultWidth = 301;
-            this.DefaultHeight = 143;
+            this.DefaultWidth = 320;
+            this.DefaultHeight = 147;
             this.Show();
         }
     }

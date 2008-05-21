@@ -21,9 +21,7 @@ FILES =  \
 	gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CombineConfigurationPanelWidget.cs \
 	gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CombineEntryConfigurationsPanelWidget.cs \
 	gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CombineInformationWidget.cs \
-	gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CombineStartupPanelWidget.cs \
 	gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CommonAssemblySigningPreferences.cs \
-	gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CompileFileOptionsWidget.cs \
 	gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CustomCommandPanelWidget.cs \
 	gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CustomCommandWidget.cs \
 	gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.GeneralProjectOptionsWidget.cs \
@@ -47,19 +45,20 @@ FILES =  \
 	MonoDevelop.Projects.Gui.Completion/WindowTransparencyDecorator.cs \
 	MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineBuildOptions.cs \
 	MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineConfigurationPanel.cs \
-	MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineEntryConfigurationsPanel.cs \
 	MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineInformationPanel.cs \
-	MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineStartupPanel.cs \
 	MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CommonAssemblySigningPreferences.cs \
-	MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CompileFileProjectOptions.cs \
 	MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CustomCommandPanel.cs \
 	MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CustomCommandPanelWidget.cs \
 	MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CustomCommandWidget.cs \
 	MonoDevelop.Projects.Gui.Dialogs.OptionPanels/GeneralProjectOptions.cs \
 	MonoDevelop.Projects.Gui.Dialogs.OptionPanels/OutputOptionsPanel.cs \
 	MonoDevelop.Projects.Gui.Dialogs.OptionPanels/RuntimeOptionsPanel.cs \
+	MonoDevelop.Projects.Gui.Dialogs.OptionPanels/SolutionItemConfigurationsPanel.cs \
 	MonoDevelop.Projects.Gui.Dialogs/CombineOptionsDialog.cs \
 	MonoDevelop.Projects.Gui.Dialogs/DeleteConfigDialog.cs \
+	MonoDevelop.Projects.Gui.Dialogs/ItemOptionsPanel.cs \
+	MonoDevelop.Projects.Gui.Dialogs/MultiConfigItemOptionsDialog.cs \
+	MonoDevelop.Projects.Gui.Dialogs/MultiConfigItemOptionsPanel.cs \
 	MonoDevelop.Projects.Gui.Dialogs/NewConfigurationDialog.cs \
 	MonoDevelop.Projects.Gui.Dialogs/ProjectOptionsDialog.cs \
 	MonoDevelop.Projects.Gui.Dialogs/RenameConfigDialog.cs \

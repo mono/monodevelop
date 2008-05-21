@@ -1,3 +1,14 @@
+2008-05-21  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.VersionControl.mdp, VersionControl.addin.xml,
+	  Makefile.am,
+	  MonoDevelop.VersionControl/VersionControlFileSystemExtension.cs,
+	  MonoDevelop.VersionControl/VersionControlNodeExtension.cs,
+	  MonoDevelop.VersionControl/Checkout.cs,
+	  MonoDevelop.VersionControl/Publish.cs,
+	  MonoDevelop.VersionControl/VersionControlService.cs: New project
+	  model changes.
+
 2008-05-15  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* gtk-gui/gui.stetic: Set correct target version.

@@ -218,6 +218,7 @@ FILES =  \
 	MonoDevelop.Ide.Gui.Pads.ClassPad/NamespaceNodeBuilder.cs \
 	MonoDevelop.Ide.Gui.Pads.ClassPad/ProjectNodeBuilder.cs \
 	MonoDevelop.Ide.Gui.Pads.ClassPad/PropertyNodeBuilder.cs \
+	MonoDevelop.Ide.Gui.Pads.ClassPad/SolutionNodeBuilder.cs \
 	MonoDevelop.Ide.Gui.Pads.ProjectPad/CombineNodeBuilder.cs \
 	MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs \
 	MonoDevelop.Ide.Gui.Pads.ProjectPad/LinkedFilesFolder.cs \
@@ -232,9 +233,11 @@ FILES =  \
 	MonoDevelop.Ide.Gui.Pads.ProjectPad/ResourceFolder.cs \
 	MonoDevelop.Ide.Gui.Pads.ProjectPad/ResourceFolderNodeBuilder.cs \
 	MonoDevelop.Ide.Gui.Pads.ProjectPad/ShowAllFilesBuilderExtension.cs \
+	MonoDevelop.Ide.Gui.Pads.ProjectPad/SolutionNodeBuilder.cs \
 	MonoDevelop.Ide.Gui.Pads.ProjectPad/SystemFile.cs \
 	MonoDevelop.Ide.Gui.Pads.ProjectPad/SystemFileNodeBuilder.cs \
 	MonoDevelop.Ide.Gui.Pads.ProjectPad/UnknownEntryNodeBuilder.cs \
+	MonoDevelop.Ide.Gui.Pads.ProjectPad/WorkspaceNodeBuilder.cs \
 	MonoDevelop.Ide.Gui.Pads/DefaultMonitorPad.cs \
 	MonoDevelop.Ide.Gui.Pads/DragOperation.cs \
 	MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs \
@@ -308,6 +311,7 @@ FILES =  \
 	MonoDevelop.Ide.Gui/HelpViewer.cs \
 	MonoDevelop.Ide.Gui/IBaseViewContent.cs \
 	MonoDevelop.Ide.Gui/Ide.cs \
+	MonoDevelop.Ide.Gui/IdePreferences.cs \
 	MonoDevelop.Ide.Gui/IdeStartup.cs \
 	MonoDevelop.Ide.Gui/INavigationPoint.cs \
 	MonoDevelop.Ide.Gui/InternalLog.cs \
@@ -327,6 +331,7 @@ FILES =  \
 	MonoDevelop.Ide.Gui/Pad.cs \
 	MonoDevelop.Ide.Gui/ProgressMonitors.cs \
 	MonoDevelop.Ide.Gui/ProjectOperations.cs \
+	MonoDevelop.Ide.Gui/RootWorkspace.cs \
 	MonoDevelop.Ide.Gui/SdiWorkspaceLayout.cs \
 	MonoDevelop.Ide.Gui/SdiWorkspaceWindow.cs \
 	MonoDevelop.Ide.Gui/StartupInfo.cs \
@@ -353,22 +358,21 @@ FILES =  \
 	MonoDevelop.Ide.Templates/CodeDomFileDescriptionTemplate.cs \
 	MonoDevelop.Ide.Templates/CodeTranslationFileDescriptionTemplate.cs \
 	MonoDevelop.Ide.Templates/CombineDescriptor.cs \
-	MonoDevelop.Ide.Templates/CombineEntryDescriptor.cs \
 	MonoDevelop.Ide.Templates/FileDescriptionTemplate.cs \
 	MonoDevelop.Ide.Templates/FileTemplate.cs \
 	MonoDevelop.Ide.Templates/FileTemplateCondition.cs \
 	MonoDevelop.Ide.Templates/FileTemplateReference.cs \
-	MonoDevelop.Ide.Templates/ICombineEntryDescriptor.cs \
-	MonoDevelop.Ide.Templates/ICombineEntryFeature.cs \
 	MonoDevelop.Ide.Templates/INewFileCreator.cs \
+	MonoDevelop.Ide.Templates/ISolutionItemDescriptor.cs \
+	MonoDevelop.Ide.Templates/ISolutionItemFeature.cs \
 	MonoDevelop.Ide.Templates/ParentProjectFileTemplateCondition.cs \
 	MonoDevelop.Ide.Templates/PartialTypeFileTemplateCondition.cs \
 	MonoDevelop.Ide.Templates/ProjectDescriptor.cs \
 	MonoDevelop.Ide.Templates/ProjectTemplate.cs \
 	MonoDevelop.Ide.Templates/ResourceFileDescriptionTemplate.cs \
 	MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs \
+	MonoDevelop.Ide.Templates/SolutionItemDescriptor.cs \
 	MonoDevelop.Ide.Templates/TextFileDescriptionTemplate.cs \
-	MonoDevelop.Ide.Templates/TextTemplate.cs \
 	MonoDevelop.Ide/Services.cs
 
 RES =  \

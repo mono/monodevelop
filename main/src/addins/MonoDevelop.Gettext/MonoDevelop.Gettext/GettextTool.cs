@@ -66,31 +66,31 @@ namespace MonoDevelop.Gettext
 			ConsoleProgressMonitor monitor = new ConsoleProgressMonitor ();
 			monitor.IgnoreLogMessages = true;
 			
-			CombineEntry centry = Services.ProjectService.ReadCombineEntry (file, monitor);
+			WorkspaceItem centry = Services.ProjectService.ReadWorkspaceItem (monitor, file);
 			monitor.IgnoreLogMessages = false;
 			
-			Combine combine = centry as Combine;
-			if (combine == null) {
+			Solution solution = centry as Solution;
+			if (solution == null) {
 				Console.WriteLine ("File is not a solution: " + file);
 				return 1;
 			}
 			
 			if (project != null) {
-				centry = combine.FindProject (project);
+				SolutionEntityItem item = solution.FindProjectByName (project);
 				
-				if (centry == null) {
+				if (item == null) {
 					Console.WriteLine ("The project '" + project + "' could not be found in " + file);
 					return 1;
 				}
-				TranslationProject tp = centry as TranslationProject;
+				TranslationProject tp = item as TranslationProject;
 				if (tp == null) {
-					Console.WriteLine ("The project '" + centry.FileName + "' is not a translation project");
+					Console.WriteLine ("The project '" + item.FileName + "' is not a translation project");
 					return 1;
 				}
 				tp.UpdateTranslations (monitor);
 			}
 			else {
-				foreach (TranslationProject p in combine.GetAllEntries (typeof(TranslationProject)))
+				foreach (TranslationProject p in solution.GetAllSolutionItems <TranslationProject>())
 					p.UpdateTranslations (monitor);
 			}
 			

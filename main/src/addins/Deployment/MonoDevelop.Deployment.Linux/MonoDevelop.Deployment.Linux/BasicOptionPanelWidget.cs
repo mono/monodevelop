@@ -8,9 +8,9 @@ namespace MonoDevelop.Deployment.Linux
 {
 	public partial class BasicOptionPanelWidget : Gtk.Bin
 	{
-		CombineEntry entry;
+		SolutionItem entry;
 		
-		public BasicOptionPanelWidget (CombineEntry entry, bool creatingProject)
+		public BasicOptionPanelWidget (SolutionItem entry, bool creatingProject)
 		{
 			this.Build();
 			
@@ -18,9 +18,9 @@ namespace MonoDevelop.Deployment.Linux
 			
 			this.entry = entry;
 			if (entry is DotNetProject) {
-				DotNetProjectConfiguration conf = entry.ActiveConfiguration as DotNetProjectConfiguration;
-				boxExe.Visible = (conf.CompileTarget == CompileTarget.Exe || conf.CompileTarget == CompileTarget.WinExe);
-				boxLibrary.Visible = (conf.CompileTarget == CompileTarget.Library || conf.CompiledOutputName.EndsWith (".dll"));
+				DotNetProject project = (DotNetProject) entry;
+				boxExe.Visible = (project.CompileTarget == CompileTarget.Exe || project.CompileTarget == CompileTarget.WinExe);
+				boxLibrary.Visible = (project.CompileTarget == CompileTarget.Library || project.GetOutputFileName (ProjectService.DefaultConfiguration).EndsWith (".dll"));
 			} else {
 				boxExe.Visible = boxLibrary.Visible = false;
 			}
@@ -42,11 +42,11 @@ namespace MonoDevelop.Deployment.Linux
 			return null;
 		}
 		
-		public bool Store ()
+		public void Store ()
 		{
 			DotNetProject project = entry as DotNetProject;
 			if (project == null)
-				return true;
+				return;
 			
 			LinuxDeployData data = LinuxDeployData.GetLinuxDeployData (project);
 			data.GenerateScript = checkScript.Active;
@@ -66,8 +66,6 @@ namespace MonoDevelop.Deployment.Linux
 				DeployProperties props = DeployService.GetDeployProperties (pfile);
 				props.TargetDirectory = LinuxTargetDirectory.DesktopApplications;
 			}
-			
-			return true;
 		}
 
 		protected virtual void OnCheckScriptClicked(object sender, System.EventArgs e)

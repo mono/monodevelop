@@ -10,7 +10,7 @@ namespace MonoDevelop.Autotools
 		{
 		}
 		
-		public override IConfiguration CreateConfiguration (string name)
+		public override SolutionItemConfiguration CreateConfiguration (string name)
 		{
 			MakefileProjectConfiguration conf = new MakefileProjectConfiguration ();
 			conf.Name = name;
@@ -24,7 +24,7 @@ namespace MonoDevelop.Autotools
 
 	}
 	
-	public class MakefileProjectConfiguration: AbstractProjectConfiguration
+	public class MakefileProjectConfiguration: ProjectConfiguration
 	{
 	}
 }

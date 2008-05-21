@@ -34,7 +34,7 @@ using System;
 using Mono.Addins;
 
 using MonoDevelop.Core;
-using MonoDevelop.Core.Gui.Dialogs;
+using MonoDevelop.Projects.Gui.Dialogs;
 
 namespace CBinding
 {
@@ -42,13 +42,15 @@ namespace CBinding
 	{
 		private CProjectConfiguration configuration;
 		
-		public OutputOptionsPanel (Properties customizationObject)
+		public OutputOptionsPanel ()
 		{
 			this.Build ();
-			
 			table1.RowSpacing = 3;
-			
-			configuration = customizationObject.Get<CProjectConfiguration> ("Config");
+		}
+		
+		public void Load (CProjectConfiguration configuration)
+		{
+			this.configuration = configuration;
 			
 			outputNameTextEntry.Text = configuration.Output;
 			outputPathTextEntry.Text = configuration.OutputDirectory;
@@ -68,10 +70,10 @@ namespace CBinding
 			outputPathTextEntry.Text = dialog.SelectedPath;
 		}
 		
-		public bool Store ()
+		public void Store ()
 		{
 			if (configuration == null)
-				return false;
+				return;
 			
 			if (outputNameTextEntry != null && outputNameTextEntry.Text.Length > 0)
 				configuration.Output = outputNameTextEntry.Text.Trim ();
@@ -84,8 +86,6 @@ namespace CBinding
 			
 			configuration.ExternalConsole = externalConsoleCheckbox.Active;
 			configuration.PauseConsoleOutput = pauseCheckbox.Active;
-			
-			return true;
 		}
 
 		protected virtual void OnExternalConsoleCheckboxClicked (object sender, System.EventArgs e)
@@ -94,19 +94,23 @@ namespace CBinding
 		}
 	}
 	
-	public class OutputOptionsPanelBinding : AbstractOptionPanel
+	public class OutputOptionsPanelBinding : MultiConfigItemOptionsPanel
 	{
 		private OutputOptionsPanel panel;
 		
-		public override void LoadPanelContents ()
+		public override Gtk.Widget CreatePanelWidget ()
 		{
-			panel = new OutputOptionsPanel ((Properties)CustomizationObject);
-			Add (panel);
+			return panel = new OutputOptionsPanel ();
 		}
 		
-		public override bool StorePanelContents ()
+		public override void LoadConfigData ()
 		{
-			return panel.Store ();
+			panel.Load ((CProjectConfiguration) CurrentConfiguration);
+		}
+		
+		public override void ApplyChanges ()
+		{
+			panel.Store ();
 		}
 	}
 }

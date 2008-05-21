@@ -55,7 +55,7 @@ namespace MonoDevelop.DesignerSupport
 		
 		public static IMember GetCompatibleMemberInClass (IClass cls, CodeTypeMember member)
 		{
-			IParserContext ctx = IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext ((MonoDevelop.Projects.Project) cls.SourceProject);
+			IParserContext ctx = IdeApp.Workspace.ParserDatabase.GetProjectParserContext ((MonoDevelop.Projects.Project) cls.SourceProject);
 			return GetCompatibleMemberInClass (ctx, cls, member);
 		}
 		
@@ -146,12 +146,12 @@ namespace MonoDevelop.DesignerSupport
 			return false;
 		}
 		
-		public static IMember AddMemberToClass (CombineEntry entry, IClass cls, CodeTypeMember member, bool throwIfExists)
+		public static IMember AddMemberToClass (SolutionItem entry, IClass cls, CodeTypeMember member, bool throwIfExists)
 		{
 			return AddMemberToClass (entry, cls, cls.Parts[0], member, throwIfExists);
 		}
 		
-		public static IMember AddMemberToClass (CombineEntry entry, IClass cls, IClass specificPartToAffect, CodeTypeMember member, bool throwIfExists)
+		public static IMember AddMemberToClass (SolutionItem entry, IClass cls, IClass specificPartToAffect, CodeTypeMember member, bool throwIfExists)
 		{
 			bool isChildClass = false;
 			foreach (IClass c in cls.Parts)
@@ -171,9 +171,9 @@ namespace MonoDevelop.DesignerSupport
 			return existingMember;
 		}
 		
-		public static CodeRefactorer GetCodeGenerator (CombineEntry entry)
+		public static CodeRefactorer GetCodeGenerator (SolutionItem entry)
 		{			
-			CodeRefactorer cr = new CodeRefactorer (entry.RootCombine, IdeApp.ProjectOperations.ParserDatabase);
+			CodeRefactorer cr = new CodeRefactorer (entry.ParentSolution, IdeApp.Workspace.ParserDatabase);
 			cr.TextFileProvider = OpenDocumentFileProvider.Instance;
 			return cr;
 		}
@@ -254,7 +254,7 @@ namespace MonoDevelop.DesignerSupport
 		
 		
 		//opens the code view with the desired method, creating it if it doesn't already exist
-		public static void CreateAndShowMember (CombineEntry project, IClass cls, CodeTypeMember member)
+		public static void CreateAndShowMember (SolutionItem project, IClass cls, CodeTypeMember member)
 		{
 			//only adds the method if it doesn't already exist
 			IMember mem = AddMemberToClass (project, cls, member, false);

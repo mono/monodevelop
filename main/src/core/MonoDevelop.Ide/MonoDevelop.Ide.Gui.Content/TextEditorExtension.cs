@@ -69,7 +69,7 @@ namespace MonoDevelop.Ide.Gui.Content
 			IViewContent view = document.Window.ViewContent;
 			string file = view.IsUntitled ? view.UntitledName : view.ContentName;
 			Project project = view.Project;
-			IParserDatabase pdb = IdeApp.ProjectOperations.ParserDatabase;
+			IParserDatabase pdb = IdeApp.Workspace.ParserDatabase;
 			
 			if (project != null)
 				return pdb.GetProjectParserContext (project);

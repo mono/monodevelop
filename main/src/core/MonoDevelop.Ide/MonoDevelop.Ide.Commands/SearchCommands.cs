@@ -79,7 +79,7 @@ namespace MonoDevelop.Ide.Commands
 	    
 	    protected override void Update(CommandInfo info)
 	    {
-	    	info.Enabled = (IdeApp.ProjectOperations.CurrentOpenCombine != null || IdeApp.Workbench.Documents.Count != 0);
+	    	info.Enabled = (IdeApp.Workspace.IsOpen || IdeApp.Workbench.Documents.Count != 0);
 	    }
 	}
 	
@@ -92,7 +92,7 @@ namespace MonoDevelop.Ide.Commands
 	    
 	    protected override void Update(CommandInfo info)
 	    {
-	    	info.Enabled = (IdeApp.ProjectOperations.CurrentOpenCombine != null || IdeApp.Workbench.Documents.Count != 0);
+	    	info.Enabled = (IdeApp.Workspace.IsOpen || IdeApp.Workbench.Documents.Count != 0);
 	    }
 	}
 }

@@ -123,12 +123,13 @@ namespace MonoDevelop.Gettext.NodeBuilders
 					return;
 				
 				bool yes = MonoDevelop.Core.Gui.MessageService.AskQuestion (GettextCatalog.GetString (
-					"Do you really want to remove the translations from solution {0}?", project.ParentCombine.Name), AlertButton.Cancel, AlertButton.Remove) == AlertButton.Remove;
+					"Do you really want to remove the translations from solution {0}?", project.ParentFolder.Name), AlertButton.Cancel, AlertButton.Remove) == AlertButton.Remove;
 
 				if (yes) {
-					project.ParentCombine.RemoveEntry (project);
+					Solution sol = project.ParentSolution;
+					project.ParentFolder.Items.Remove (project);
 					project.Dispose ();
-					IdeApp.ProjectOperations.SaveCombine ();
+					IdeApp.ProjectOperations.Save (sol);
 				}
 			}
 					
@@ -140,7 +141,7 @@ namespace MonoDevelop.Gettext.NodeBuilders
 					return;
 				TranslationProjectOptionsDialog options = new TranslationProjectOptionsDialog (project);
 				options.Run ();
-				IdeApp.ProjectOperations.SaveCombine ();
+				IdeApp.Workspace.Save ();
 			}
 			
 			[CommandUpdateHandler (Commands.AddTranslation)]

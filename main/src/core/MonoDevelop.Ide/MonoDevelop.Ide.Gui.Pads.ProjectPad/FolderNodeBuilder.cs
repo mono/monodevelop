@@ -77,7 +77,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			folders = new ArrayList ();
 			string folderPrefix = folder + Path.DirectorySeparatorChar;
 			
-			foreach (ProjectFile file in project.ProjectFiles)
+			foreach (ProjectFile file in project.Files)
 			{
 				string dir;
 				
@@ -109,7 +109,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			Project project = builder.GetParentDataItem (typeof(Project), true) as Project;
 			
 			// For big projects, a real HasChildNodes value is too slow to get
-			if (project.ProjectFiles.Count > 500)
+			if (project.Files.Count > 500)
 				return true;
 
 			ProjectFileCollection files;
@@ -232,7 +232,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				bool move = operation == DragOperation.Move;
 				IdeApp.ProjectOperations.TransferFiles (monitor, sourceProject, source, targetProject, targetPath, move, false);
 			}
-			IdeApp.ProjectOperations.SaveCombine();
+			IdeApp.Workspace.Save();
 		}
 		
 		[CommandHandler (ProjectCommands.AddFiles)]
@@ -260,7 +260,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			string baseDirectory = folder != null ? folder.Path : project.BaseDirectory;
 			
 			IdeApp.ProjectOperations.AddFilesToProject (project, files, baseDirectory);
-			IdeApp.ProjectOperations.SaveProject (project);
+			IdeApp.ProjectOperations.Save (project);
 		}
 		
 		[CommandHandler (ProjectCommands.AddNewFiles)]
@@ -268,7 +268,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		{
 			Project project = CurrentNode.GetParentDataItem (typeof(Project), true) as Project;
 			IdeApp.ProjectOperations.CreateProjectFile (project, GetFolderPath (CurrentNode.DataItem));
-			IdeApp.ProjectOperations.SaveProject (project);
+			IdeApp.ProjectOperations.Save (project);
 			CurrentNode.Expanded = true;
 		}
 		
@@ -299,8 +299,8 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			
 			ProjectFile newFolder = new ProjectFile (directoryName);
 			newFolder.Subtype = Subtype.Directory;
-			project.ProjectFiles.Add (newFolder);
-			IdeApp.ProjectOperations.SaveProject (project);
+			project.Files.Add (newFolder);
+			IdeApp.ProjectOperations.Save (project);
 
 			CurrentNode.Expanded = true;
 			Tree.AddNodeInsertCallback (new ProjectFolder (directoryName, project), new TreeNodeCallback (OnFileInserted));

@@ -6,6 +6,7 @@
       <Entry build="True" name="contrib" configuration="Debug" />
       <Entry build="True" name="po" configuration="Debug" />
       <Entry build="True" name="Tools" configuration="Debug" />
+      <Entry build="True" name="tests" configuration="" />
     </Configuration>
     <Configuration name="Release" ctype="CombineConfiguration">
       <Entry build="True" name="Core" configuration="Release" />
@@ -13,6 +14,7 @@
       <Entry build="True" name="contrib" configuration="Release" />
       <Entry build="True" name="po" configuration="Release" />
       <Entry build="True" name="Tools" configuration="Release" />
+      <Entry build="True" name="tests" configuration="" />
     </Configuration>
   </Configurations>
   <StartMode startupentry="Core" single="True">
@@ -23,6 +25,7 @@
     <Execute type="None" entry="contrib" />
     <Execute type="None" entry="po" />
     <Execute type="None" entry="Tools" />
+    <Execute type="None" entry="tests" />
   </StartMode>
   <DeployTargets />
   <Entries>
@@ -31,5 +34,6 @@
     <Entry filename="contrib/contrib.mds" />
     <Entry filename="po/po.mdse" />
     <Entry filename="src/tools/Tools.mds" />
+    <Entry filename="tests/tests.mds" />
   </Entries>
 </Combine>

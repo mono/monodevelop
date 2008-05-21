@@ -11,18 +11,18 @@ namespace MonoDevelop.Autotools
 {
 	public class MakefileReaderExtension: ProjectServiceExtension
 	{
-		public override bool IsCombineEntryFile (string fileName)
+		public override bool IsSolutionItemFile (string fileName)
 		{
 			if (Path.GetFileNameWithoutExtension (fileName) == "Makefile")
 				return true;
 			else
-				return base.IsCombineEntryFile (fileName);
+				return base.IsSolutionItemFile (fileName);
 		}
 		
-		public override CombineEntry Load (IProgressMonitor monitor, string fileName)
+		protected override SolutionEntityItem LoadSolutionItem (IProgressMonitor monitor, string fileName)
 		{
 			if (Path.GetFileNameWithoutExtension (fileName) != "Makefile")
-				return base.Load (monitor, fileName);
+				return base.LoadSolutionItem (monitor, fileName);
 			
 			// Use Makefile.am instead of Makefile if it exists
 			if (Path.GetFileName (fileName) == "Makefile") {
@@ -33,7 +33,7 @@ namespace MonoDevelop.Autotools
 			
 			string projectFile = fileName + ".mdp";
 			if (File.Exists (projectFile))
-				return base.Load (monitor, projectFile);
+				return base.LoadSolutionItem (monitor, projectFile);
 
 			MakefileProject project = new MakefileProject ();
 			
@@ -51,7 +51,7 @@ namespace MonoDevelop.Autotools
 				return null;
 				
 			project.Save (projectFile, monitor);
-			return base.Load (monitor, projectFile);
+			return base.LoadSolutionItem (monitor, projectFile);
 		}
 		
 		void ImportProject (Project project, IProgressMonitor monitor, string fileName)

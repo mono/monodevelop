@@ -1663,7 +1663,6 @@
                     <property name="MemberName" />
                     <property name="CanFocus">True</property>
                     <property name="Label" translatable="yes">Autotools based</property>
-                    <property name="Active">True</property>
                     <property name="DrawIndicator">True</property>
                     <property name="HasLabel">False</property>
                     <property name="UseUnderline">True</property>
@@ -1767,7 +1766,7 @@ Generates set of Makefiles with the most common targets, and a configuration scr
       <placeholder />
     </child>
   </widget>
-  <widget class="Gtk.Dialog" id="MonoDevelop.Autotools.GenerateMakefilesDialog" design-size="614 337">
+  <widget class="Gtk.Dialog" id="MonoDevelop.Autotools.GenerateMakefilesDialog" design-size="614 359">
     <property name="MemberName" />
     <property name="Title" translatable="yes">Generate Makefiles</property>
     <property name="WindowPosition">CenterOnParent</property>
@@ -1943,7 +1942,7 @@ Generates a Makefile structure based on Autotools, with the standard targets and
     <child internal-child="ActionArea">
       <widget class="Gtk.HButtonBox" id="dialog1_ActionArea">
         <property name="MemberName" />
-        <property name="Spacing">10</property>
+        <property name="Spacing">6</property>
         <property name="BorderWidth">5</property>
         <property name="Size">2</property>
         <property name="LayoutStyle">End</property>

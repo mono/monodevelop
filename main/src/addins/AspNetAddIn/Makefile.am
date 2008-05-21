@@ -7,7 +7,6 @@ REFS =  \
 	$(MONO_ADDINS_LIBS) \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Deployment/MonoDevelop.Deployment.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.MsVisualStudio/MonoDevelop.MsVisualStudio.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Components.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
@@ -88,7 +87,6 @@ FILES =  \
 	MonoDevelop.AspNet/AspNetCommands.cs \
 	MonoDevelop.AspNet/AspNetFileDescriptionTemplate.cs \
 	MonoDevelop.AspNet/AspNetLanguageBinding.cs \
-	MonoDevelop.AspNet/AspNetMSBuildProjectExtension.cs \
 	MonoDevelop.AspNet/AspNetParserService.cs \
 	MonoDevelop.AspNet/AspNetToolboxLoader.cs \
 	MonoDevelop.AspNet/AspNetToolboxNode.cs \

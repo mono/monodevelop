@@ -139,6 +139,12 @@ namespace MonoDevelop.Core.Gui
 			return guiContext.CreateSynchronizedDelegate (del);
 		}
 		
+		public static T GuiDispatch<T> (T theDelegate)
+		{
+			Delegate del = (Delegate)(object)theDelegate;
+			return (T)(object)guiContext.CreateSynchronizedDelegate (del);
+		}
+		
 		public static void BackgroundDispatch (MessageHandler cb)
 		{
 			arrBackgroundQueue.Add (new GenericMessageContainer (cb, false));
@@ -150,6 +156,14 @@ namespace MonoDevelop.Core.Gui
 			//thrBackground.Resume ();
 		}
 		
+		public static void ThreadDispatch (MessageHandler cb)
+		{
+			GenericMessageContainer smc = new GenericMessageContainer (cb, false);
+			Thread t = new Thread (new ThreadStart (smc.Run));
+			t.IsBackground = true;
+			t.Start ();
+		}
+
 		public static void ThreadDispatch (StatefulMessageHandler cb, object state)
 		{
 			StatefulMessageContainer smc = new StatefulMessageContainer (cb, state, false);

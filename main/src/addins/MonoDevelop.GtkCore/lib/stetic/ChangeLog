@@ -1,3 +1,7 @@
+2008-05-21  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* libstetic/libstetic.mdp: New project model changes.
+
 2008-05-20  Mike Kestner <mkestner@novell.com> 
 
 	* libsteticui/LibraryCache.cs: do a recursive delete when revising

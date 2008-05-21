@@ -90,7 +90,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		{
 			if (targetObject == null)
 				return;
-			IParseInformation pi = IdeApp.ProjectOperations.ParserDatabase.UpdateFile (project, fileName, null);
+			IParseInformation pi = IdeApp.Workspace.ParserDatabase.UpdateFile (project, fileName, null);
 			classFile = fileName;
 			
 			if (pi != null && !pi.MostRecentCompilationUnit.ErrorsDuringCompile) {
@@ -246,7 +246,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		CodeRefactorer GetCodeGenerator ()
 		{
-			CodeRefactorer cr = new CodeRefactorer (project.RootCombine, IdeApp.ProjectOperations.ParserDatabase);
+			CodeRefactorer cr = new CodeRefactorer (project.ParentSolution, IdeApp.Workspace.ParserDatabase);
 			cr.TextFileProvider = textFileProvider;
 			return cr;
 		}

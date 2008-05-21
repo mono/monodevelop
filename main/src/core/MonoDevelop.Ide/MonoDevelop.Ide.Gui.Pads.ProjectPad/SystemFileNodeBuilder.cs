@@ -151,7 +151,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			else
 				project.AddFile (file.Path, BuildAction.Nothing);
 			
-			IdeApp.ProjectOperations.SaveProject (project);
+			IdeApp.ProjectOperations.Save (project);
 		}
 		
 		[CommandUpdateHandler (ProjectCommands.IncludeToProject)]

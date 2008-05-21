@@ -74,8 +74,8 @@ namespace MonoDevelop.Ide.Gui.Pads
 
 			fb.DirectoryChangedEvent += new DirectoryChangedEventHandler (OnDirChanged);
 			filelister.RowActivated += new Gtk.RowActivatedHandler (FileSelected);
-			IdeApp.ProjectOperations.CombineOpened += (CombineEventHandler) DispatchService.GuiDispatch (new CombineEventHandler(OnCombineOpened));
-			IdeApp.ProjectOperations.CombineClosed += (CombineEventHandler) DispatchService.GuiDispatch (new CombineEventHandler(OnCombineClosed));
+			IdeApp.Workspace.FirstWorkspaceItemOpened += OnCombineOpened;
+			IdeApp.Workspace.LastWorkspaceItemClosed += OnCombineClosed;
 
 			Gtk.ScrolledWindow listsw = new Gtk.ScrolledWindow ();
 			listsw.Add (filelister);
@@ -135,24 +135,25 @@ namespace MonoDevelop.Ide.Gui.Pads
 
 				//FIXME: use mimetypes not extensions
 				// also change to Project tab when its a project
-				if (Services.ProjectService.IsCombineEntryFile (item.FullName))
-					IdeApp.ProjectOperations.OpenCombine (item.FullName);
+				if (Services.ProjectService.IsWorkspaceItemFile (item.FullName))
+					IdeApp.Workspace.OpenWorkspaceItem (item.FullName);
 				else
 					IdeApp.Workbench.OpenDocument (item.FullName);
 			}
 		}
 
-		void OnCombineOpened(object sender, CombineEventArgs args)
+		void OnCombineOpened(object sender, WorkspaceItemEventArgs args)
 		{
 			try {
-				if (args.Combine.StartupEntry != null)
-					fb.CurrentDir = args.Combine.StartupEntry.BaseDirectory;
+				Solution sol = args.Item as Solution;
+				if (sol != null && sol.StartupItem != null)
+					fb.CurrentDir = sol.StartupItem.BaseDirectory;
 			} catch {
 				fb.CurrentDir = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
 			}
 		}
 
-		void OnCombineClosed(object sender, CombineEventArgs args)
+		void OnCombineClosed(object sender, EventArgs args)
 		{
 			fb.CurrentDir = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
 		}

@@ -39,23 +39,17 @@ using MonoDevelop.Ide.Gui.Search;
 
 namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 {
-	public class CombineNodeBuilder: TypeNodeBuilder
+	public class SolutionFolderNodeBuilder: TypeNodeBuilder
 	{
-		CombineEntryChangeEventHandler combineEntryAdded;
-		CombineEntryChangeEventHandler combineEntryRemoved;
-		CombineEntryRenamedEventHandler combineNameChanged;
-		EventHandler startupChanged;
+		SolutionItemRenamedEventHandler combineNameChanged;
 		
-		public CombineNodeBuilder ()
+		public SolutionFolderNodeBuilder ()
 		{
-			combineEntryAdded = (CombineEntryChangeEventHandler) DispatchService.GuiDispatch (new CombineEntryChangeEventHandler (OnEntryAdded));
-			combineEntryRemoved = (CombineEntryChangeEventHandler) DispatchService.GuiDispatch (new CombineEntryChangeEventHandler (OnEntryRemoved));
-			combineNameChanged = (CombineEntryRenamedEventHandler) DispatchService.GuiDispatch (new CombineEntryRenamedEventHandler (OnCombineRenamed));
-			startupChanged = (EventHandler) DispatchService.GuiDispatch (new EventHandler (OnStartupChanged));
+			combineNameChanged = (SolutionItemRenamedEventHandler) DispatchService.GuiDispatch (new SolutionItemRenamedEventHandler (OnCombineRenamed));
 		}
 
 		public override Type NodeDataType {
-			get { return typeof(Combine); }
+			get { return typeof(SolutionFolder); }
 		}
 		
 		public override Type CommandHandlerType {
@@ -64,7 +58,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
 		{
-			return ((Combine)dataObject).Name;
+			return ((SolutionFolder)dataObject).Name;
 		}
 		
 		public override void GetNodeAttributes (ITreeNavigator treeNavigator, object dataObject, ref NodeAttributes attributes)
@@ -73,48 +67,37 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		}
 		
 		public override string ContextMenuAddinPath {
-			get { return "/MonoDevelop/Ide/ContextMenu/ProjectPad/Combine"; }
+			get { return "/MonoDevelop/Ide/ContextMenu/ProjectPad/SolutionFolder"; }
 		}
 		
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
 		{
-			Combine combine = dataObject as Combine;
-			
-			switch (combine.Entries.Count) {
-				case 0:
-					label = GettextCatalog.GetString ("Solution {0}", combine.Name);
-					break;
-				case 1:
-					label = GettextCatalog.GetString ("Solution {0} (1 entry)", combine.Name);
-					break;
-				default:
-					label = GettextCatalog.GetString ("Solution {0} ({1} entries)", combine.Name, combine.Entries.Count);
-					break;
-			}
-
-			icon = Context.GetIcon (Stock.Solution);
+			SolutionFolder combine = dataObject as SolutionFolder;
+			label = combine.Name;
+			icon = Context.GetIcon (Stock.SolutionFolderOpen);
+			closedIcon = Context.GetIcon (Stock.SolutionFolderClosed);
 		}
 
 		public override void BuildChildNodes (ITreeBuilder ctx, object dataObject)
 		{
-			Combine combine = (Combine) dataObject;
-			foreach (CombineEntry entry in combine.Entries)
+			SolutionFolder combine = (SolutionFolder) dataObject;
+			foreach (SolutionItem entry in combine.Items)
 				ctx.AddChild (entry);
 		}
 
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
 		{
-			return ((Combine) dataObject).Entries.Count > 0;
+			return ((SolutionFolder) dataObject).Items.Count > 0;
 		}
 		
 		public override object GetParentObject (object dataObject)
 		{
-			return ((CombineEntry) dataObject).ParentCombine;
+			return ((SolutionItem) dataObject).ParentFolder;
 		}
 		
 		public override int CompareObjects (ITreeNavigator thisNode, ITreeNavigator otherNode)
 		{
-			if (otherNode.DataItem is Combine)
+			if (otherNode.DataItem is SolutionFolder)
 				return DefaultSort;
 			else
 				return -1;
@@ -122,51 +105,19 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 
 		public override void OnNodeAdded (object dataObject)
 		{
-			Combine combine = (Combine) dataObject;
-			combine.EntryAdded += combineEntryAdded;
-			combine.EntryRemoved += combineEntryRemoved;
+			SolutionFolder combine = (SolutionFolder) dataObject;
 			combine.NameChanged += combineNameChanged;
-			combine.StartupPropertyChanged += startupChanged;
 		}
 		
 		public override void OnNodeRemoved (object dataObject)
 		{
-			Combine combine = (Combine) dataObject;
-			combine.EntryAdded -= combineEntryAdded;
-			combine.EntryRemoved -= combineEntryRemoved;
+			SolutionFolder combine = (SolutionFolder) dataObject;
 			combine.NameChanged -= combineNameChanged;
-			combine.StartupPropertyChanged -= startupChanged;
 		}
 		
-		void OnStartupChanged (object sender, EventArgs args)
+		void OnCombineRenamed (object sender, SolutionItemRenamedEventArgs e)
 		{
-			ITreeBuilder tb = Context.GetTreeBuilder (sender);
-			if (tb != null)
-				tb.UpdateAll ();
-		}
-		
-		void OnEntryAdded (object sender, CombineEntryEventArgs e)
-		{
-			ITreeBuilder tb = Context.GetTreeBuilder (sender);
-			if (tb != null) {
-				tb.Update ();	// Update the entry count
-				tb.AddChild (e.CombineEntry, true);
-				tb.Expanded = true;
-			}
-		}
-
-		void OnEntryRemoved (object sender, CombineEntryEventArgs e)
-		{
-			ITreeBuilder tb = Context.GetTreeBuilder (e.CombineEntry);
-			if (tb != null) {
-				tb.Remove (true);
-				tb.Update ();	// Update the entry count
-			}
-		}
-		
-		void OnCombineRenamed (object sender, CombineEntryRenamedEventArgs e)
-		{
-			ITreeBuilder tb = Context.GetTreeBuilder (e.CombineEntry);
+			ITreeBuilder tb = Context.GetTreeBuilder (e.SolutionItem);
 			if (tb != null) tb.Update ();
 		}
 	}
@@ -180,9 +131,9 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				return;
 			}
 			
-			Combine combine = (Combine) CurrentNode.DataItem;
+			SolutionFolder combine = (SolutionFolder) CurrentNode.DataItem;
 			combine.Name = newName;
-			IdeApp.ProjectOperations.SaveCombine();
+			IdeApp.Workspace.Save();
 		}
 		
 		public override DragOperation CanDragNode ()
@@ -192,45 +143,49 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		
 		public override bool CanDropNode (object dataObject, DragOperation operation)
 		{
-			return dataObject is CombineEntry;
+			SolutionItem it = dataObject as SolutionItem;
+			return it != null && operation == DragOperation.Move;
 		}
 		
 		public override void OnNodeDrop (object dataObject, DragOperation operation)
 		{
+			SolutionFolder folder = (SolutionFolder) CurrentNode.DataItem;
+			SolutionItem it = (SolutionItem) dataObject;
+			if (!MessageService.Confirm (GettextCatalog.GetString ("Are you sure you want to move the item '{0}' to the solution folder '{1}'?", it.Name, folder.Name), AlertButton.Move))
+				return;
+			
+			it.ParentFolder.Items.Remove (it);
+			folder.Items.Add (it);
+			IdeApp.ProjectOperations.Save (folder.ParentSolution);
 		}
 			
 		public override void ActivateItem ()
 		{
-			Combine combine = CurrentNode.DataItem as Combine;
+			SolutionFolder combine = CurrentNode.DataItem as SolutionFolder;
 			IdeApp.ProjectOperations.ShowOptions (combine);
 		}
 
 		
 		public override void DeleteItem ()
 		{
-			Combine combine = CurrentNode.DataItem as Combine;
-			Combine parent = CurrentNode.GetParentDataItem (typeof(Combine), false) as Combine;
+			SolutionFolder combine = CurrentNode.DataItem as SolutionFolder;
+			SolutionFolder parent = combine.ParentFolder;
 			if (parent == null) return;
 			
-			bool yes = MessageService.Confirm (GettextCatalog.GetString ("Do you really want to remove solution {0} from solution {1}?", combine.Name, parent.Name), AlertButton.Remove);
+			bool yes = MessageService.Confirm (GettextCatalog.GetString ("Do you really want to remove the folder '{0}' from '{1}'?", combine.Name, parent.Name), AlertButton.Remove);
 			if (yes) {
-				parent.Entries.Remove (combine);
+				Solution sol = combine.ParentSolution;
+				parent.Items.Remove (combine);
 				combine.Dispose ();
-				IdeApp.ProjectOperations.SaveCombine();
+				IdeApp.ProjectOperations.Save (sol);
 			}
-		}
-		
-		public override bool CanDeleteItem ()
-		{
-			Combine parent = CurrentNode.GetParentDataItem (typeof(Combine), false) as Combine;
-			return parent != null;
 		}
 		
 		[CommandHandler (ProjectCommands.AddNewProject)]
 		public void AddNewProjectToCombine()
 		{
-			Combine combine = (Combine) CurrentNode.DataItem;
-			CombineEntry ce = IdeApp.ProjectOperations.CreateProject (combine);
+			SolutionFolder combine = (SolutionFolder) CurrentNode.DataItem;
+			SolutionItem ce = IdeApp.ProjectOperations.CreateProject (combine);
 			if (ce == null) return;
 			Tree.AddNodeInsertCallback (ce, new TreeNodeCallback (OnEntryInserted));
 			CurrentNode.Expanded = true;
@@ -239,47 +194,38 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		[CommandHandler (ProjectCommands.AddProject)]
 		public void AddProjectToCombine()
 		{
-			Combine combine = (Combine) CurrentNode.DataItem;
-			CombineEntry ce = IdeApp.ProjectOperations.AddCombineEntry (combine);
+			SolutionFolder combine = (SolutionFolder) CurrentNode.DataItem;
+			SolutionItem ce = IdeApp.ProjectOperations.AddSolutionItem (combine);
 			if (ce == null) return;
 			Tree.AddNodeInsertCallback (ce, new TreeNodeCallback (OnEntryInserted));
 			CurrentNode.Expanded = true;
 		}
 		
-		[CommandHandler (ProjectCommands.AddNewCombine)]
-		public void AddNewCombineToCombine()
+		[CommandHandler (ProjectCommands.AddSolutionFolder)]
+		public void AddFolder()
 		{
-			Combine combine = (Combine) CurrentNode.DataItem;
-			CombineEntry ce = IdeApp.ProjectOperations.CreateCombine (combine);
-			if (ce == null) return;
-			Tree.AddNodeInsertCallback (ce, new TreeNodeCallback (OnEntryInserted));
-			CurrentNode.Expanded = true;
-		}
-		
-		[CommandHandler (ProjectCommands.AddCombine)]
-		public void AddCombineToCombine()
-		{
-			Combine combine = (Combine) CurrentNode.DataItem;
-			CombineEntry ce = IdeApp.ProjectOperations.AddCombineEntry (combine);
-			if (ce == null) return;
-			Tree.AddNodeInsertCallback (ce, new TreeNodeCallback (OnEntryInserted));
+			SolutionFolder folder = (SolutionFolder) CurrentNode.DataItem;
+			SolutionFolder ce = new SolutionFolder ();
+			ce.Name = GettextCatalog.GetString ("New Folder");
+			folder.Items.Add (ce);
+			Tree.AddNodeInsertCallback (ce, OnFolderInserted);
 			CurrentNode.Expanded = true;
 		}
 		
 		[CommandHandler (ProjectCommands.Reload)]
 		public void OnReload ()
 		{
-			Combine combine = (Combine) CurrentNode.DataItem;
+			SolutionFolder combine = (SolutionFolder) CurrentNode.DataItem;
 			using (IProgressMonitor m = IdeApp.Workbench.ProgressMonitors.GetLoadProgressMonitor (true)) {
-				combine.ParentCombine.ReloadEntry (m, combine);
+				combine.ParentFolder.ReloadItem (m, combine);
 			}
 		}
 		
 		[CommandUpdateHandler (ProjectCommands.Reload)]
 		public void OnUpdateReload (CommandInfo info)
 		{
-			Combine combine = (Combine) CurrentNode.DataItem;
-			info.Visible = (combine.ParentCombine != null) && combine.NeedsReload;
+			SolutionFolder combine = (SolutionFolder) CurrentNode.DataItem;
+			info.Visible = (combine.ParentFolder != null) && combine.NeedsReload;
 		}
 		
 		void OnEntryInserted (ITreeNavigator nav)
@@ -287,19 +233,12 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			nav.Selected = true;
 			nav.Expanded = true;
 		}
-		[CommandHandler (FileCommands.OpenContainingFolder)]
-		public void OnOpenFolder ()
-		{
-			Combine combine = (Combine) CurrentNode.DataItem;
-			System.Diagnostics.Process.Start ("file://" + combine.BaseDirectory);
-		}
 		
-		[CommandHandler (SearchCommands.FindInFiles)]
-		public void OnFindInFiles ()
+		void OnFolderInserted (ITreeNavigator nav)
 		{
-			Combine combine = (Combine) CurrentNode.DataItem;
-			SearchReplaceInFilesManager.SearchOptions.SearchDirectory = combine.BaseDirectory;
-			SearchReplaceInFilesManager.ShowFindDialog ();
+			nav.Selected = true;
+			nav.Expanded = true;
+			Tree.StartLabelEdit ();
 		}
 	}
 }

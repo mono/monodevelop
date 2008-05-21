@@ -44,16 +44,6 @@ namespace MonoDevelop.Prj2Make
 			return TypeOfFile.unknown;
 		}
 
-		public bool CreateCombineFromSln(string slnFileName, IProgressMonitor monitor)
-		{
-			SlnMaker slnMkObj = new SlnMaker();
-
-			// Load the sln and parse it
-			slnMkObj.MsSlnToCmbxHelper (slnFileName, monitor);
-
-			return false;
-		}
-     
 		public bool CreatePrjxFromCsproj(string csprojFileName, IProgressMonitor monitor)
 		{
 			SlnMaker slnMkObj = new SlnMaker();

@@ -30,7 +30,7 @@ namespace MonoDevelop.Autotools
 				MakefileData data = project.ExtendedProperties ["MonoDevelop.Autotools.MakefileInfo"] as MakefileData;
 				if (data != null && data.IntegrationEnabled) {
 					data.SetFileExcluded (file.FilePath, !data.IsFileExcluded (file.FilePath));
-					IdeApp.ProjectOperations.SaveProject (project);
+					IdeApp.ProjectOperations.Save (project);
 				}
 			}
 		}

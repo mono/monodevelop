@@ -30,37 +30,35 @@ using MonoDevelop.Components;
 
 namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 {
-	internal class CombineBuildOptions : AbstractOptionPanel
+	internal class CombineBuildOptions : ItemOptionsPanel
 	{
 		CombineBuildOptionsWidget widget;
 		
-		public override void LoadPanelContents()
+		public override Widget CreatePanelWidget()
 		{
-			Add (widget = new  CombineBuildOptionsWidget ((Properties) CustomizationObject));
+			return (widget = new  CombineBuildOptionsWidget (ConfiguredSolution));
 		}
 
-		public override bool StorePanelContents()
+		public override void ApplyChanges ()
 		{
-			bool success = widget.Store ();
- 			return success;
+			widget.Store ();
 		}					
 	}
 
 	partial class CombineBuildOptionsWidget : Gtk.Bin 
 	{
-		Combine combine;
+		Solution solution;
 
-		public  CombineBuildOptionsWidget (Properties CustomizationObject)
+		public CombineBuildOptionsWidget (Solution solution)
 		{
 			Build ();
-			this.combine = ((Properties)CustomizationObject).Get<Combine> ("Combine");
-			folderEntry.Path = combine.OutputDirectory;
+			this.solution = solution;
+			folderEntry.Path = solution.OutputDirectory;
 		}
 
-		public bool Store()
+		public void Store()
 		{
-			combine.OutputDirectory = folderEntry.Path;
-			return true;
+			solution.OutputDirectory = folderEntry.Path;
 		}
 	}
 }

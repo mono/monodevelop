@@ -44,19 +44,19 @@ namespace MonoDevelop.AspNet.Deployment
 		{
 		}
 		
-		static public void Deploy (AspNetAppProject project, WebDeployTarget target)
+		static public void Deploy (AspNetAppProject project, WebDeployTarget target, string configuration)
 		{
-			Deploy (project, new WebDeployTarget[] { target });
+			Deploy (project, new WebDeployTarget[] { target }, configuration);
 		}
 		
-		static public void Deploy (AspNetAppProject project, ICollection<WebDeployTarget> targets)
+		static public void Deploy (AspNetAppProject project, ICollection<WebDeployTarget> targets, string configuration)
 		{
 			//project needs to be built before it can be deployed
 			MonoDevelop.Ide.Gui.IdeApp.ProjectOperations.Build (project);
 			
 			//set up and launch a copying thread
 			DeployThreadParams threadParams = new DeployThreadParams (); 
-			threadParams.Files = project.GetDeployFiles ();
+			threadParams.Files = project.GetDeployFiles (configuration);
 			Dictionary<string, string> taskAliases = new Dictionary<string,string> ();
 			foreach (WebDeployTarget target in targets) {
 				threadParams.Targets.Add ((WebDeployTarget) target.Clone ());
@@ -122,7 +122,7 @@ namespace MonoDevelop.AspNet.Deployment
 			dialog.Destroy ();
 			
 			if (targets != null && targets.Count > 0)
-				Deploy (project, targets);
+				Deploy (project, targets, MonoDevelop.Ide.Gui.IdeApp.Workspace.ActiveConfiguration);
 		}
 		
 		class DeployThreadParams

@@ -43,25 +43,25 @@ namespace MonoDevelop.NUnit
 {
 	public class NUnitProjectTestSuite: NUnitAssemblyTestSuite
 	{
-		Project project;
+		DotNetProject project;
 		DateTime lastAssemblyTime;
 		string resultsPath;
 		string storeId;
 		
-		public NUnitProjectTestSuite (Project project): base (project.Name, project)
+		public NUnitProjectTestSuite (DotNetProject project): base (project.Name, project)
 		{
 			storeId = Path.GetFileName (project.FileName);
 			resultsPath = Path.Combine (project.BaseDirectory, "test-results");
 			ResultsStore = new XmlResultsStore (resultsPath, storeId);
 			this.project = project;
 			lastAssemblyTime = GetAssemblyTime ();
-			project.NameChanged += new CombineEntryRenamedEventHandler (OnProjectRenamed);
+			project.NameChanged += new SolutionItemRenamedEventHandler (OnProjectRenamed);
 			IdeApp.ProjectOperations.EndBuild += new BuildEventHandler (OnProjectBuilt);
 		}
 		
-		public static NUnitProjectTestSuite CreateTest (Project project)
+		public static NUnitProjectTestSuite CreateTest (DotNetProject project)
 		{
-			foreach (ProjectReference p in project.ProjectReferences)
+			foreach (ProjectReference p in project.References)
 				if (p.Reference.IndexOf ("nunit.framework") != -1)
 					return new NUnitProjectTestSuite (project);
 			return null;
@@ -69,7 +69,7 @@ namespace MonoDevelop.NUnit
 
 		protected override SourceCodeLocation GetSourceCodeLocation (string fullClassName, string methodName)
 		{
-			IParserContext ctx = IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (project);
+			IParserContext ctx = IdeApp.Workspace.ParserDatabase.GetProjectParserContext (project);
 			IClass cls = ctx.GetClass (fullClassName);
 			if (cls == null)
 				return null;
@@ -83,12 +83,12 @@ namespace MonoDevelop.NUnit
 		
 		public override void Dispose ()
 		{
-			project.NameChanged -= new CombineEntryRenamedEventHandler (OnProjectRenamed);
+			project.NameChanged -= new SolutionItemRenamedEventHandler (OnProjectRenamed);
 			IdeApp.ProjectOperations.EndBuild -= new BuildEventHandler (OnProjectBuilt);
 			base.Dispose ();
 		}
 		
-		void OnProjectRenamed (object sender, CombineEntryRenamedEventArgs e)
+		void OnProjectRenamed (object sender, SolutionItemRenamedEventArgs e)
 		{
 			UnitTestGroup parent = Parent as UnitTestGroup;
 			if (parent != null)
@@ -113,7 +113,7 @@ namespace MonoDevelop.NUnit
 		}
 	
 		protected override string AssemblyPath {
-			get { return project.GetOutputFileName (); }
+			get { return project.GetOutputFileName (IdeApp.Workspace.ActiveConfiguration); }
 		}
 		
 		protected override string TestInfoCachePath {

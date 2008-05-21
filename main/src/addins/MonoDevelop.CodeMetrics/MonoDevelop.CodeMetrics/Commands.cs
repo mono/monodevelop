@@ -31,6 +31,7 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Components.Commands;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.CodeMetrics
 {
@@ -43,13 +44,14 @@ namespace MonoDevelop.CodeMetrics
 		
 		protected override void Update (CommandInfo info)
 		{
-			info.Enabled = IdeApp.ProjectOperations.CurrentOpenCombine != null;
+			info.Enabled = IdeApp.Workspace.IsOpen;
 		}
 	
 		protected override void Run ()
 		{
 			CodeMetricsView view = new CodeMetricsView ();
-			view.Add (IdeApp.ProjectOperations.CurrentOpenCombine);
+			foreach (WorkspaceItem it in IdeApp.Workspace.Items)
+				view.Add (it);
 			IdeApp.Workbench.OpenDocument (view, true);
 			view.Run ();
 		}

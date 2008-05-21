@@ -48,6 +48,7 @@ namespace MonoDevelop.Ide.Tasks
 		int      savedLine = -1;
 		
 		string errorNumber;
+		object owner;
 		
 		public override string ToString ()
 		{
@@ -114,10 +115,10 @@ namespace MonoDevelop.Ide.Tasks
 				return fileName;
 			}
 			set {
-				if (System.IO.File.Exists (fileName))
+				if (!string.IsNullOrEmpty (value))
 					fileName = System.IO.Path.GetFullPath (value);
 				else
-					fileName = value;
+					fileName = null;
 			}
 		}
 		
@@ -130,6 +131,15 @@ namespace MonoDevelop.Ide.Tasks
 		public string ErrorNumber {
 			get {
 				return errorNumber;
+			}
+		}
+
+		public object OwnerItem {
+			get {
+				return owner;
+			}
+			internal set {
+				owner = value;
 			}
 		}
 		

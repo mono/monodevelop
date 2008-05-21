@@ -79,7 +79,7 @@ namespace CBinding.Navigation
 			if (o == null) return;
 			
 			try {
-				foreach (ProjectFile f in p.ProjectFiles) {
+				foreach (ProjectFile f in p.Files) {
 					if (f.BuildAction == BuildAction.Compile)
 						TagDatabaseManager.Instance.UpdateFileTags (p, f.Name);
 				}
@@ -186,7 +186,7 @@ namespace CBinding.Navigation
 			
 			if (p == null) return;
 			
-			foreach (ProjectFile f in p.ProjectFiles) {
+			foreach (ProjectFile f in p.Files) {
 				if (f.BuildAction == BuildAction.Compile)
 					TagDatabaseManager.Instance.UpdateFileTags (p, f.Name);
 			}

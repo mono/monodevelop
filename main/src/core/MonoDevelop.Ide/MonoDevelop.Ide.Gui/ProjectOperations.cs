@@ -58,137 +58,77 @@ namespace MonoDevelop.Ide.Gui
 	/// </summary>
 	public class ProjectOperations
 	{
-		IProjectService projectService = MonoDevelop.Projects.Services.ProjectService;
+		ProjectService projectService = MonoDevelop.Projects.Services.ProjectService;
 		IAsyncOperation currentBuildOperation = NullAsyncOperation.Success;
 		IAsyncOperation currentRunOperation = NullAsyncOperation.Success;
+		IBuildTarget currentBuildOperationOwner;
+		IBuildTarget currentRunOperationOwner;
 		
 		GuiHelper guiHelper = new GuiHelper ();
 		SelectReferenceDialog selDialog = null;
 		
-		CombineEntry currentEntry = null;
-		Project currentProject = null;
-		Combine currentCombine = null;
-		Combine openCombine = null;
+		SolutionItem currentSolutionItem = null;
+		WorkspaceItem currentWorkspaceItem = null;
 		object currentItem;
 		
-		IParserDatabase parserDatabase;
-		CodeRefactorer refactorer;
-
 		ICompilerResult lastResult = new DefaultCompilerResult ();
-		
-		ProjectFileEventHandler fileAddedToProjectHandler;
-		ProjectFileEventHandler fileRemovedFromProjectHandler;
-		ProjectFileRenamedEventHandler fileRenamedInProjectHandler;
-		ProjectFileEventHandler fileChangedInProjectHandler;
-		ProjectFileEventHandler filePropertyChangedInProjectHandler;
-		ProjectReferenceEventHandler referenceAddedToProjectHandler;
-		ProjectReferenceEventHandler referenceRemovedFromProjectHandler;
-		CombineEntryChangeEventHandler entryAddedToCombineHandler;
-		CombineEntryChangeEventHandler entryRemovedFromCombineHandler;
 		
 		internal ProjectOperations ()
 		{
-			fileAddedToProjectHandler = (ProjectFileEventHandler) DispatchService.GuiDispatch (new ProjectFileEventHandler (NotifyFileAddedToProject));
-			fileRemovedFromProjectHandler = (ProjectFileEventHandler) DispatchService.GuiDispatch (new ProjectFileEventHandler (NotifyFileRemovedFromProject));
-			fileRenamedInProjectHandler = (ProjectFileRenamedEventHandler) DispatchService.GuiDispatch (new ProjectFileRenamedEventHandler (NotifyFileRenamedInProject));
-			fileChangedInProjectHandler = (ProjectFileEventHandler) DispatchService.GuiDispatch (new ProjectFileEventHandler (NotifyFileChangedInProject));
-			filePropertyChangedInProjectHandler = (ProjectFileEventHandler) DispatchService.GuiDispatch (new ProjectFileEventHandler (NotifyFilePropertyChangedInProject));
-			referenceAddedToProjectHandler = (ProjectReferenceEventHandler) DispatchService.GuiDispatch (new ProjectReferenceEventHandler (NotifyReferenceAddedToProject));
-			referenceRemovedFromProjectHandler = (ProjectReferenceEventHandler) DispatchService.GuiDispatch (new ProjectReferenceEventHandler (NotifyReferenceRemovedFromProject));
-		
-			entryAddedToCombineHandler = (CombineEntryChangeEventHandler) DispatchService.GuiDispatch (new CombineEntryChangeEventHandler (NotifyEntryAddedToCombine));
-			entryRemovedFromCombineHandler = (CombineEntryChangeEventHandler) DispatchService.GuiDispatch (new CombineEntryChangeEventHandler (NotifyEntryRemovedFromCombine));
-			
-			FileService.FileRemoved += (EventHandler<FileEventArgs>) DispatchService.GuiDispatch (new EventHandler<FileEventArgs> (CheckFileRemove));
-			FileService.FileRenamed += (EventHandler<FileCopyEventArgs>) DispatchService.GuiDispatch (new EventHandler<FileCopyEventArgs> (CheckFileRename));
-			
-			GLib.Timeout.Add (2000, OnRunProjectChecks);
+			IdeApp.Workspace.WorkspaceItemUnloaded += OnWorkspaceItemUnloaded;
 		}
 		
-		public IParserDatabase ParserDatabase {
-			get { 
-				if (parserDatabase == null) {
-					parserDatabase = Services.ParserService.CreateParserDatabase ();
-					parserDatabase.TrackFileChanges = true;
-					parserDatabase.ParseProgressMonitorFactory = new ParseProgressMonitorFactory (); 
-				}
-				return parserDatabase; 
-			}
-		}
-		
-		public CodeRefactorer CodeRefactorer {
-			get {
-				if (refactorer == null) {
-					refactorer = new CodeRefactorer (openCombine, ParserDatabase);
-					refactorer.TextFileProvider = new OpenDocumentFileProvider ();
-				}
-				
-				return refactorer;
-			}
-		}
-
 		public ICompilerResult LastCompilerResult {
 			get { return lastResult; }
 		}
 		
-		bool IsDirtyFileInCombine {
-			get {
-				CombineEntryCollection projects = openCombine.GetAllProjects();
-				
-				foreach (Project projectEntry in projects) {
-					foreach (ProjectFile fInfo in projectEntry.ProjectFiles) {
-						foreach (Document doc in IdeApp.Workbench.Documents) {
-							if (doc.IsDirty && doc.FileName == fInfo.Name) {
-								return true;
-							}
-						}
-					}
-				}
-				return false;
-			}
-		}
-		
-		public bool NeedsCompiling {
-			get {
-				if (openCombine == null) {
-					return false;
-				}
-				return openCombine.NeedsBuilding || IsDirtyFileInCombine;
-			}
-		}
-		
 		public Project CurrentSelectedProject {
 			get {
-				return currentProject;
+				return currentSolutionItem as Project;
+			}
+		}
+		
+		public Solution CurrentSelectedSolution {
+			get {
+				return currentWorkspaceItem as Solution;
+			}
+		}
+		
+		public IBuildTarget CurrentSelectedBuildTarget {
+			get {
+				if (currentSolutionItem != null)
+					return currentSolutionItem;
+				return currentWorkspaceItem;
+			}
+		}
+		
+		public WorkspaceItem CurrentSelectedWorkspaceItem {
+			get {
+				return currentWorkspaceItem;
 			}
 			internal set {
-				if (value != currentProject) {
-					System.Diagnostics.Debug.Assert(openCombine != null);
-					currentProject = value;
-					OnCurrentProjectChanged(new ProjectEventArgs(currentProject));
+				if (value != currentWorkspaceItem) {
+					WorkspaceItem oldValue = currentWorkspaceItem;
+					currentWorkspaceItem = value;
+					if (oldValue is Solution || value is Solution)
+						OnCurrentSelectedSolutionChanged(new SolutionEventArgs (currentWorkspaceItem as Solution));
 				}
 			}
 		}
 		
-		public Combine CurrentSelectedCombine {
+		public SolutionItem CurrentSelectedSolutionItem {
 			get {
-				return currentCombine;
+				if (currentSolutionItem == null && CurrentSelectedSolution != null)
+					return CurrentSelectedSolution.RootFolder;
+				return currentSolutionItem;
 			}
 			internal set {
-				if (value != currentCombine) {
-					System.Diagnostics.Debug.Assert(openCombine != null);
-					currentCombine = value;
-					OnCurrentSelectedCombineChanged(new CombineEventArgs(currentCombine));
+				if (value != currentSolutionItem) {
+					SolutionItem oldValue = currentSolutionItem;
+					currentSolutionItem = value;
+					if (oldValue is Project || value is Project)
+						OnCurrentProjectChanged (new ProjectEventArgs(currentSolutionItem as Project));
 				}
-			}
-		}
-		
-		public CombineEntry CurrentSelectedCombineEntry {
-			get {
-				return currentEntry;
-			}
-			internal set {
-				currentEntry = value;
 			}
 		}
 		
@@ -210,17 +150,6 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
-		public Project GetProjectContaining (string fileName)
-		{
-			if (this.openCombine == null)
-				return null;
-			foreach (Project p in openCombine.GetAllProjects ())
-				if (p.GetProjectFile (fileName) != null)
-					return p;
-			return null;
-		}
-			
-		
 		public IAsyncOperation CurrentBuildOperation {
 			get { return currentBuildOperation; }
 		}
@@ -229,13 +158,34 @@ namespace MonoDevelop.Ide.Gui
 			get { return currentRunOperation; }
 		}
 		
-		public Combine CurrentOpenCombine {
-			get {
-				return openCombine;
+		public bool IsBuilding (IBuildTarget target)
+		{
+			return !currentBuildOperation.IsCompleted && ContainsTarget (target, currentBuildOperationOwner);
+		}
+		
+		public bool IsRunning (IBuildTarget target)
+		{
+			return !currentRunOperation.IsCompleted && ContainsTarget (target, currentRunOperationOwner);
+		}
+		
+		bool ContainsTarget (IBuildTarget owner, IBuildTarget target)
+		{
+			if (owner == target) {
+				return true;
 			}
-			set {
-				openCombine = value;
+			else if (owner is Solution) {
+				foreach (IBuildTarget bt in ((Solution)owner).GetAllSolutionItems <SolutionEntityItem> ()) {
+					if (bt == target)
+						return true;
+				}
 			}
+			else if (owner is Workspace) {
+				foreach (WorkspaceItem it in ((Workspace)owner).Items) {
+					if (ContainsTarget (it, target))
+						return true;
+				}
+			}
+			return false;
 		}
 		
 		string GetDeclaredFile(ILanguageItem item)
@@ -297,295 +247,14 @@ namespace MonoDevelop.Ide.Gui
 			else
 				return null;
 		}
-		
-		public void SaveCombinePreferences ()
-		{
-			if (CurrentOpenCombine != null)
-				SaveCombinePreferences (CurrentOpenCombine);
-		}
-		
-		public void CloseCombine()
-		{
-			CloseCombine (true);
-		}
 
-		public void CloseCombine (bool saveCombinePreferencies)
+		
+		public void Export (IWorkspaceObject item)
 		{
-			if (CurrentOpenCombine != null) {
-				if (saveCombinePreferencies)
-					SaveCombinePreferences ();
-				Combine closedCombine = CurrentOpenCombine;
-				CurrentSelectedProject = null;
-				
-				//stop all operations associated with this combine
-				if (!CurrentBuildOperation.IsCompleted)
-					CurrentBuildOperation.Cancel ();
-				if (!CurrentRunOperation.IsCompleted)
-					CurrentRunOperation.Cancel ();
-
-				closedCombine.FileAddedToProject -= fileAddedToProjectHandler;
-				closedCombine.FileRemovedFromProject -= fileRemovedFromProjectHandler;
-				closedCombine.FileRenamedInProject -= fileRenamedInProjectHandler;
-				closedCombine.FileChangedInProject -= fileChangedInProjectHandler;
-				closedCombine.FilePropertyChangedInProject -= filePropertyChangedInProjectHandler;
-				closedCombine.ReferenceAddedToProject -= referenceAddedToProjectHandler;
-				closedCombine.ReferenceRemovedFromProject -= referenceRemovedFromProjectHandler;
-				closedCombine.EntryAddedToCombine -= entryAddedToCombineHandler;
-				closedCombine.EntryRemovedFromCombine -= entryRemovedFromCombineHandler;
-
-				CurrentOpenCombine = CurrentSelectedCombine = null;
-				CurrentSelectedCombineEntry = null;
-				refactorer = null;
-				
-				Document[] docs = new Document [IdeApp.Workbench.Documents.Count];
-				IdeApp.Workbench.Documents.CopyTo (docs, 0);
-				foreach (Document doc in docs) {
-					if (doc.HasProject)
-						doc.Close ();
-				}
-				
-				ParserDatabase.Unload (closedCombine);
-
-				OnCombineClosed(new CombineEventArgs(closedCombine));
-				OnEntryUnloaded (closedCombine);
-				closedCombine.Dispose();
-			}
+			Export (item, null);
 		}
 		
-		public IAsyncOperation OpenCombine(string filename)
-		{
-			if (openCombine != null)
-				CloseCombine();
-
-			if (filename.StartsWith ("file://"))
-				filename = new Uri(filename).LocalPath;
-
-			IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetLoadProgressMonitor (true);
-			
-			object[] data = new object[] { filename, monitor };
-			DispatchService.BackgroundDispatch (new StatefulMessageHandler (backgroundLoadCombine), data);
-			return monitor.AsyncOperation;
-		}
-		
-		void backgroundLoadCombine (object arg)
-		{
-			object[] data = (object[]) arg;
-			string filename = data[0] as string;
-			IProgressMonitor monitor = data [1] as IProgressMonitor;
-			
-			try {
-				if (!File.Exists (filename)) {
-					monitor.ReportError (GettextCatalog.GetString ("File not found: {0}", filename), null);
-					monitor.Dispose ();
-					return;
-				}
-				
-				string validcombine = Path.ChangeExtension (filename, ".mds");
-				if (Path.GetExtension (filename).ToLower () == ".mdp") {
-					if (File.Exists (validcombine))
-						filename = validcombine;
-				}
-			
-				CombineEntry entry = projectService.ReadCombineEntry (filename, monitor);
-				if (monitor.IsCancelRequested) {
-					monitor.Dispose ();
-					return;
-				}
-
-				if (!(entry is Combine)) {
-					Combine loadingCombine = new Combine();
-					loadingCombine.Entries.Add (entry);
-					loadingCombine.Name = entry.Name;
-					loadingCombine.Save (validcombine, monitor);
-					entry = loadingCombine;
-				}
-			
-				openCombine = (Combine) entry;
-				
-				IdeApp.Workbench.RecentOpen.AddLastProject (filename, openCombine.Name);
-		
-				openCombine.FileAddedToProject += fileAddedToProjectHandler;
-				openCombine.FileRemovedFromProject += fileRemovedFromProjectHandler;
-				openCombine.FileRenamedInProject += fileRenamedInProjectHandler;
-				openCombine.FileChangedInProject += fileChangedInProjectHandler;
-				openCombine.FilePropertyChangedInProject += filePropertyChangedInProjectHandler;
-				openCombine.ReferenceAddedToProject += referenceAddedToProjectHandler;
-				openCombine.ReferenceRemovedFromProject += referenceRemovedFromProjectHandler;
-				openCombine.EntryAddedToCombine += entryAddedToCombineHandler;
-				openCombine.EntryRemovedFromCombine += entryRemovedFromCombineHandler;
-				
-				SearchForNewFiles ();
-
-				ParserDatabase.Load (openCombine);
-				
-			} catch (Exception ex) {
-				monitor.ReportError ("Load operation failed.", ex);
-				monitor.Dispose ();
-				return;
-			}
-			
-			Gtk.Application.Invoke (delegate {
-				using (monitor) {
-					OnEntryLoaded (openCombine);
-					OnCombineOpened (new CombineEventArgs (openCombine));
-					RestoreCombinePreferences (openCombine);
-					monitor.ReportSuccess (GettextCatalog.GetString ("Solution loaded."));
-				}
-			});
-		}
-		
-		void OnEntryLoaded (CombineEntry entry)
-		{
-			if (entry is Combine) {
-				foreach (CombineEntry ce in ((Combine)entry).Entries)
-					OnEntryLoaded (ce);
-			}
-		}
-		
-		void OnEntryUnloaded (CombineEntry entry)
-		{
-			if (entry is Combine) {
-				foreach (CombineEntry ce in ((Combine)entry).Entries)
-					OnEntryUnloaded (ce);
-			}
-		}
-		
-		bool OnRunProjectChecks ()
-		{
-			// If any project has been modified, reload it
-			if (openCombine != null)
-				OnCheckProject (openCombine);
-			return true;
-		}
-		
-		void OnCheckProject (CombineEntry entry)
-		{
-			if (entry.NeedsReload) {
-				bool warn = false;
-				if (entry is Project) {
-					warn = HasOpenDocuments ((Project) entry, false);
-				} else if (entry is Combine) {
-					foreach (Project p in ((Combine)entry).GetAllProjects ()) {
-						if (HasOpenDocuments (p, false)) {
-							warn = true;
-							break;
-						}
-					}
-				}
-				
-				if (!warn || MessageService.Confirm (GettextCatalog.GetString ("The project '{0}' has been modified by an external application. Do you want to reload it? All project files will be closed.", entry.Name), AlertButton.Reload)) {
-					if (entry == openCombine) {
-						string file = openCombine.FileName;
-						CloseCombine (true);
-						OpenCombine (file);
-					}
-					else {
-						using (IProgressMonitor m = IdeApp.Workbench.ProgressMonitors.GetSaveProgressMonitor (true)) {
-							entry.ParentCombine.ReloadEntry (m, entry);
-						}
-					}
-
-					if (entry is Combine)
-						return;
-				} else
-					entry.NeedsReload = false;
-			}
-			
-			if (entry is Combine) {
-				ArrayList ens = new ArrayList ();
-				foreach (CombineEntry ce in ((Combine)entry).Entries)
-					ens.Add (ce);
-				foreach (CombineEntry ce in ens)
-					OnCheckProject (ce);
-			}
-		}
-		
-		internal bool HasOpenDocuments (Project project, bool modifiedOnly)
-		{
-			foreach (Document doc in IdeApp.Workbench.Documents) {
-				if (doc.Project == project && (!modifiedOnly || doc.IsDirty))
-					return true;
-			}
-			return false;
-		}
-		
-		void SearchForNewFiles ()
-		{
-			foreach (Project p in openCombine.GetAllProjects()) {
-				if (p.NewFileSearch != NewFileSearch.None)
-					SearchNewFiles (p);
-			}
-		}
-		
-		void SearchNewFiles (Project project)
-		{
-			StringCollection newFiles   = new StringCollection();
-			string[] collection = Directory.GetFiles (project.BaseDirectory, "*", SearchOption.AllDirectories);
-
-			foreach (string sfile in collection) {
-				string extension = Path.GetExtension(sfile).ToUpper();
-				string file = Path.GetFileName (sfile);
-
-				if (!project.IsFileInProject(sfile) &&
-					extension != ".SCC" &&  // source safe control files -- Svante Lidmans
-					extension != ".DLL" &&
-					extension != ".PDB" &&
-					extension != ".EXE" &&
-					extension != ".CMBX" &&
-					extension != ".PRJX" &&
-					extension != ".SWP" &&
-					extension != ".MDSX" &&
-					extension != ".MDS" &&
-					extension != ".MDP" && 
-					extension != ".PIDB" &&
-					!file.EndsWith ("make.sh") &&
-					!file.EndsWith ("~") &&
-					!file.StartsWith (".") &&
-					!(Path.GetDirectoryName(sfile).IndexOf("CVS") != -1) &&
-					!(Path.GetDirectoryName(sfile).IndexOf(".svn") != -1) &&
-					!file.StartsWith ("Makefile") &&
-					!Path.GetDirectoryName(file).EndsWith("ProjectDocumentation")) {
-
-					newFiles.Add(sfile);
-				}
-			}
-			
-			if (newFiles.Count > 0) {
-				if (project.NewFileSearch == NewFileSearch.OnLoadAutoInsert) {
-					foreach (string file in newFiles) {
-						ProjectFile newFile = new ProjectFile(file);
-						newFile.BuildAction = project.IsCompileable(file) ? BuildAction.Compile : BuildAction.Nothing;
-						project.ProjectFiles.Add(newFile);
-					}		
-				} else {
-					DispatchService.GuiDispatch (
-						delegate (object state) {
-							NewFilesMessage message = (NewFilesMessage) state;
-							new IncludeFilesDialog (message.Project, message.NewFiles).ShowDialog ();
-						},
-						new NewFilesMessage (project, newFiles)
-					);
-				}
-			}
-		}
-		
-		private class NewFilesMessage
-		{
-			public Project Project;
-			public StringCollection NewFiles;
-			public NewFilesMessage (Project p, StringCollection newFiles)
-			{
-				this.Project = p;
-				this.NewFiles = newFiles;
-			}
-		}
-		
-		public void Export (CombineEntry entry)
-		{
-			Export (entry, null);
-		}
-		
-		public void Export (CombineEntry entry, IFileFormat format)
+		public void Export (IWorkspaceObject entry, FileFormat format)
 		{
 			ExportProjectDialog dlg = new ExportProjectDialog (entry, format);
 			try {
@@ -594,7 +263,8 @@ namespace MonoDevelop.Ide.Gui
 					using (IProgressMonitor mon = IdeApp.Workbench.ProgressMonitors.GetOutputProgressMonitor (GettextCatalog.GetString ("Export Project"), null, true, true)) {
 						string folder = dlg.TargetFolder;
 						
-						Services.ProjectService.Export (mon, entry.FileName, folder, dlg.Format);
+						string file = entry is WorkspaceItem ? ((WorkspaceItem)entry).FileName : ((SolutionEntityItem)entry).FileName;
+						Services.ProjectService.Export (mon, file, folder, dlg.Format);
 					}
 				}
 			} finally {
@@ -602,20 +272,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
-		public void SaveCombine()
-		{
-			IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetSaveProgressMonitor (true);
-			try {
-				openCombine.Save (monitor);
-				monitor.ReportSuccess (GettextCatalog.GetString ("Solution saved."));
-			} catch (Exception ex) {
-				monitor.ReportError (GettextCatalog.GetString ("Save failed."), ex);
-			} finally {
-				monitor.Dispose ();
-			}
-		}
-		
-		public void SaveCombineEntry (CombineEntry entry)
+		public void Save (SolutionEntityItem entry)
 		{
 			IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetSaveProgressMonitor (true);
 			try {
@@ -628,12 +285,30 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
-		public void SaveProject (Project project)
+		public void Save (Solution item)
 		{
 			IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetSaveProgressMonitor (true);
 			try {
-				project.Save (monitor);
-				monitor.ReportSuccess (GettextCatalog.GetString ("Project saved."));
+				item.Save (monitor);
+				monitor.ReportSuccess (GettextCatalog.GetString ("Solution saved."));
+			} catch (Exception ex) {
+				monitor.ReportError (GettextCatalog.GetString ("Save failed."), ex);
+			} finally {
+				monitor.Dispose ();
+			}
+		}
+		
+		public void Save (IWorkspaceFileObject item)
+		{
+			if (item is SolutionEntityItem)
+				Save ((SolutionEntityItem) item);
+			else if (item is Solution)
+				Save ((Solution)item);
+			
+			IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetSaveProgressMonitor (true);
+			try {
+				item.Save (monitor);
+				monitor.ReportSuccess (GettextCatalog.GetString ("Item saved."));
 			} catch (Exception ex) {
 				monitor.ReportError (GettextCatalog.GetString ("Save failed."), ex);
 			} finally {
@@ -643,104 +318,133 @@ namespace MonoDevelop.Ide.Gui
 		
 		public void MarkFileDirty (string filename)
 		{
-			if (openCombine != null) {
-				Project entry = openCombine.GetProjectContainingFile (filename);
-				if (entry != null) {
-					entry.NeedsBuilding = true;
-				}
+			Project entry = IdeApp.Workspace.GetProjectContainingFile (filename);
+			if (entry != null) {
+				entry.SetNeedsBuilding (true);
 			}
 		}
-
-		void CheckFileRemove(object sender, FileEventArgs e)
-		{
-			if (openCombine != null)
-				openCombine.RemoveFileFromProjects (e.FileName);
-		}
 		
-		void CheckFileRename(object sender, FileCopyEventArgs e)
-		{
-			if (openCombine != null)
-				openCombine.RenameFileInProjects (e.SourceFile, e.TargetFile);
-		}
-		
-		public void ShowOptions (CombineEntry entry)
+		public void ShowOptions (IWorkspaceObject entry)
 		{
 			ShowOptions (entry, null);
 		}
 		
-		public void ShowOptions (CombineEntry entry, string panelId)
+		public void ShowOptions (IWorkspaceObject entry, string panelId)
 		{
 			if (entry is Project) {
 				Project selectedProject = (Project) entry;
 				
-				ExtensionNode generalOptionsNode = AddinManager.GetExtensionNode ("/MonoDevelop/ProjectModel/Gui/ProjectOptions/GeneralOptions");
-				ExtensionNode configurationPropertiesNode = AddinManager.GetExtensionNode ("/MonoDevelop/ProjectModel/Gui/ProjectOptions/ConfigurationOptions");
-				
-				using (ProjectOptionsDialog optionsDialog = new ProjectOptionsDialog (IdeApp.Workbench.RootWindow, selectedProject, generalOptionsNode, configurationPropertiesNode)) {
+				ProjectOptionsDialog optionsDialog = new ProjectOptionsDialog (IdeApp.Workbench.RootWindow, selectedProject);
+				try {
 					if (panelId != null)
 						optionsDialog.SelectPanel (panelId);
 					
 					if (optionsDialog.Run() == (int)Gtk.ResponseType.Ok) {
-						selectedProject.NeedsBuilding = true;
-						SaveProject (selectedProject);
+						selectedProject.SetNeedsBuilding (true);
+						Save (selectedProject);
 					}
+				} finally {
+					optionsDialog.Destroy ();
 				}
-			} else if (entry is Combine) {
-				Combine combine = (Combine) entry;
+			} else if (entry is Solution) {
+				Solution solution = (Solution) entry;
 				
-				ExtensionNode generalOptionsNode = AddinManager.GetExtensionNode ("/MonoDevelop/ProjectModel/Gui/CombineOptions/GeneralOptions");
-				ExtensionNode configurationPropertiesNode = AddinManager.GetExtensionNode ("/MonoDevelop/ProjectModel/Gui/CombineOptions/ConfigurationOptions");
-				
-				using (CombineOptionsDialog optionsDialog = new CombineOptionsDialog (IdeApp.Workbench.RootWindow, combine, generalOptionsNode, configurationPropertiesNode)) {
+				CombineOptionsDialog optionsDialog = new CombineOptionsDialog (IdeApp.Workbench.RootWindow, solution);
+				try {
 					if (panelId != null)
 						optionsDialog.SelectPanel (panelId);
 					if (optionsDialog.Run () == (int) Gtk.ResponseType.Ok)
-						SaveCombine ();
+						IdeApp.Workspace.Save ();
+				} finally {
+					optionsDialog.Destroy ();
 				}
 			}
 		}
 		
-		public void NewProject ()
+		public void NewSolution ()
 		{
-			NewProjectDialog pd = new NewProjectDialog (null, true, true, null);
+			NewProjectDialog pd = new NewProjectDialog (null, true, null);
 			pd.Run ();
 			pd.Destroy ();
 		}
 		
-		public CombineEntry CreateProject (Combine parentCombine)
+		public WorkspaceItem AddNewWorkspaceItem (Workspace parentWorkspace)
 		{
-			return CreateCombineEntry (parentCombine, false);
+			return AddNewWorkspaceItem (parentWorkspace, null);
 		}
 		
-		public CombineEntry CreateCombine (Combine parentCombine)
+		public WorkspaceItem AddNewWorkspaceItem (Workspace parentWorkspace, string defaultItemId)
 		{
-			return CreateCombineEntry (parentCombine, true);
+			NewProjectDialog npdlg = new NewProjectDialog (null, false, parentWorkspace.BaseDirectory);
+			npdlg.SelectTemplate (defaultItemId);
+			try {
+				if (npdlg.Run () == (int) Gtk.ResponseType.Ok && npdlg.NewItem != null) {
+					parentWorkspace.Items.Add ((WorkspaceItem) npdlg.NewItem);
+					Save (parentWorkspace);
+					return (WorkspaceItem) npdlg.NewItem;
+				}
+			} finally {
+				npdlg.Destroy ();
+			}
+			return null;
 		}
 		
-		CombineEntry CreateCombineEntry (Combine parentCombine, bool createCombine)
+		public WorkspaceItem AddWorkspaceItem (Workspace parentWorkspace)
 		{
-			CombineEntry res = null;
-			string basePath = parentCombine != null ? parentCombine.BaseDirectory : null;
-			NewProjectDialog npdlg = new NewProjectDialog (parentCombine, parentCombine == null, createCombine, basePath);
-			if (createCombine && parentCombine != null)
-				npdlg.SelectTemplate ("MonoDevelop.BlankSolution");
-
+			WorkspaceItem res = null;
+			
+			FileSelector fdiag = new FileSelector (GettextCatalog.GetString ("Add to Workspace"));
+			try {
+				fdiag.SetCurrentFolder (parentWorkspace.BaseDirectory);
+				fdiag.SelectMultiple = false;
+				if (fdiag.Run () == (int) Gtk.ResponseType.Ok) {
+					try {
+						res = AddWorkspaceItem (parentWorkspace, fdiag.Filename);
+					}
+					catch (Exception ex) {
+						MessageService.ShowException (ex, GettextCatalog.GetString ("The file '{0}' could not be loaded.", fdiag.Filename));
+					}
+				}
+			} finally {
+				fdiag.Destroy ();
+			}
+			
+			return res;
+		}
+		
+		public WorkspaceItem AddWorkspaceItem (Workspace parentWorkspace, string itemFileName)
+		{
+			using (IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetLoadProgressMonitor (true)) {
+				WorkspaceItem it = Services.ProjectService.ReadWorkspaceItem (monitor, itemFileName);
+				if (it != null) {
+					parentWorkspace.Items.Add (it);
+					Save (parentWorkspace);
+				}
+				return it;
+			}
+		}
+		
+		public SolutionItem CreateProject (SolutionFolder parentFolder)
+		{
+			SolutionItem res = null;
+			string basePath = parentFolder != null ? parentFolder.BaseDirectory : null;
+			NewProjectDialog npdlg = new NewProjectDialog (parentFolder, false, basePath);
 			npdlg.Run ();
 			npdlg.Destroy ();
 			return res;
 		}
 
-		public CombineEntry AddCombineEntry (Combine parentCombine)
+		public SolutionItem AddSolutionItem (SolutionFolder parentFolder)
 		{
-			CombineEntry res = null;
+			SolutionItem res = null;
 			
 			FileSelector fdiag = new FileSelector (GettextCatalog.GetString ("Add to Solution"));
 			try {
-				fdiag.SetCurrentFolder (parentCombine.BaseDirectory);
+				fdiag.SetCurrentFolder (parentFolder.BaseDirectory);
 				fdiag.SelectMultiple = false;
 				if (fdiag.Run () == (int) Gtk.ResponseType.Ok) {
 					try {
-						res = AddCombineEntry (parentCombine, fdiag.Filename);
+						res = AddSolutionItem (parentFolder, fdiag.Filename);
 					}
 					catch (Exception ex) {
 						MessageService.ShowException (ex, GettextCatalog.GetString ("The file '{0}' could not be loaded.", fdiag.Filename));
@@ -751,20 +455,20 @@ namespace MonoDevelop.Ide.Gui
 			}
 			
 			if (res != null)
-				SaveCombine ();
+				IdeApp.Workspace.Save ();
 
 			return res;
 		}
 		
-		public CombineEntry AddCombineEntry (Combine combine, string entryFileName)
+		public SolutionItem AddSolutionItem (SolutionFolder folder, string entryFileName)
 		{
-			AddEntryEventArgs args = new AddEntryEventArgs (combine, entryFileName);
+			AddEntryEventArgs args = new AddEntryEventArgs (folder, entryFileName);
 			if (AddingEntryToCombine != null)
 				AddingEntryToCombine (this, args);
 			if (args.Cancel)
 				return null;
 			using (IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetLoadProgressMonitor (true)) {
-				return combine.AddEntry (args.FileName, monitor);
+				return folder.AddItem (args.FileName, monitor);
 			}
 		}
 
@@ -783,7 +487,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 
-		public bool AddReferenceToProject (Project project)
+		public bool AddReferenceToProject (DotNetProject project)
 		{
 			try {
 				if (selDialog == null)
@@ -795,16 +499,16 @@ namespace MonoDevelop.Ide.Gui
 					ProjectReferenceCollection newRefs = selDialog.ReferenceInformations;
 					
 					ArrayList toDelete = new ArrayList ();
-					foreach (ProjectReference refInfo in project.ProjectReferences)
+					foreach (ProjectReference refInfo in project.References)
 						if (!newRefs.Contains (refInfo))
 							toDelete.Add (refInfo);
 					
 					foreach (ProjectReference refInfo in toDelete)
-							project.ProjectReferences.Remove (refInfo);
+							project.References.Remove (refInfo);
 
 					foreach (ProjectReference refInfo in selDialog.ReferenceInformations)
-						if (!project.ProjectReferences.Contains (refInfo))
-							project.ProjectReferences.Add(refInfo);
+						if (!project.References.Contains (refInfo))
+							project.References.Add(refInfo);
 					
 					return true;
 				}
@@ -835,183 +539,34 @@ namespace MonoDevelop.Ide.Gui
 					selDialog.Hide ();
 			}
 		}
-		
-		const string UserCombinePreferencesNode = "UserCombinePreferences";
-		const string VersionAttribute           = "version";
-		const string Version                    = "1.0";
-		const string FilesNode                  = "Files";
-		const string FileNode                   = "File";
-		const string FileNameAttribute          = "name";
-		const string FileLineAttribute          = "line";
-		const string FileColumnAttribute        = "column";
-		const string ViewsNode                  = "Views";
-		const string ViewMementoNode            = "ViewMemento";
-		const string IdAttribute                = "id";
 
-		void RestoreCombinePreferences (object data)
-		{
-			Combine combine = (Combine) data;
-			string preferencesFileName = GetPreferencesFileName (combine);
-			if (!File.Exists(preferencesFileName))
-				return;
-			XmlTextReader reader = new XmlTextReader (preferencesFileName);
-			try {
-				bool invalid = false;
-				XmlReadHelper.ReadList (reader, UserCombinePreferencesNode, delegate() {
-					if (invalid)
-						return true;
-					switch (reader.LocalName) {
-						case UserCombinePreferencesNode:
-							if (reader.GetAttribute (VersionAttribute) != Version)
-								invalid = true;
-							return true;
-						case FilesNode:
-							XmlReadHelper.ReadList (reader, FilesNode, delegate() {
-								switch (reader.LocalName) {
-								case FileNode:
-									string fileName = FileService.RelativeToAbsolutePath (Path.GetDirectoryName (combine.FileName), reader.GetAttribute (FileNameAttribute));
-									int lin=0, col=0;
-									int.TryParse (reader.GetAttribute (FileLineAttribute), out lin);
-									int.TryParse (reader.GetAttribute (FileColumnAttribute), out col);
-									if (File.Exists(fileName))
-										IdeApp.Workbench.OpenDocument (fileName, lin, col, false);
-									return true;
-								}
-								return false;
-							});
-							return true;
-						case ViewsNode:
-							XmlReadHelper.ReadList (reader, ViewsNode, delegate() {
-								switch (reader.LocalName) {
-								case ViewMementoNode:
-									string id = reader.GetAttribute (IdAttribute);
-									string raw = reader.ReadInnerXml ();
-									foreach (Pad pad in IdeApp.Workbench.Pads) {
-										if (id == pad.Id && pad.Content is IMementoCapable) {
-											IMementoCapable m = (IMementoCapable) pad.Content; 
-											XmlReader innerReader = new XmlTextReader (new MemoryStream (System.Text.Encoding.UTF8.GetBytes (raw)));
-											try {
-												while (innerReader.Read () && innerReader.NodeType != XmlNodeType.Element) 
-													;
-												m.SetMemento ((ICustomXmlSerializer)m.CreateMemento ().ReadFrom (innerReader));
-											} finally {
-												innerReader.Close ();
-											}
-										}
-									}
-									return true;
-								}
-								return false;
-							});
-							return true;
-						case Properties.Node:
-							Properties properties = Properties.Read (reader);
-							string name = properties.Get ("ActiveWindow", "");
-							Gtk.Application.Invoke (delegate {
-								foreach (Document document in IdeApp.Workbench.Documents) {
-									if (document.FileName != null &&
-										document.FileName == name) {
-										DispatchService.GuiDispatch (new MessageHandler (document.Select));
-										break;
-									}
-								}
-							});
-							string cname = properties.Get ("ActiveConfiguration", "");
-							IConfiguration conf = combine.GetConfiguration (cname);
-							if (conf != null)
-								combine.ActiveConfiguration = conf;
-							return true;
-						}
-						return true;
-				});
-			} catch (Exception e) {
-				LoggingService.LogError ("Exception while loading user combine preferences.", e);
-			} finally {
-				reader.Close ();
-			}
-		} 
 		
-		string GetPreferencesFileName (Combine combine)
-		{
-			return Path.Combine (Path.GetDirectoryName (combine.FileName), Path.ChangeExtension (combine.FileName, ".userprefs"));
-		}
-		
-		void SaveCombinePreferences (Combine combine)
-		{
-			XmlTextWriter writer = new XmlTextWriter (GetPreferencesFileName (combine), System.Text.Encoding.UTF8);
-			writer.Formatting = Formatting.Indented;
-			try {
-				writer.WriteStartElement (UserCombinePreferencesNode);
-				writer.WriteAttributeString (VersionAttribute, Version); 
-				writer.WriteAttributeString ("filename", combine.FileName); 
-				
-				writer.WriteStartElement (FilesNode);
-				foreach (Document document in IdeApp.Workbench.Documents) {
-					if (!String.IsNullOrEmpty (document.FileName)) {
-						writer.WriteStartElement (FileNode);
-						writer.WriteAttributeString (FileNameAttribute, FileService.AbsoluteToRelativePath (Path.GetDirectoryName (combine.FileName), document.FileName)); 
-						if (document.TextEditor != null) {
-							writer.WriteAttributeString (FileLineAttribute, document.TextEditor.CursorLine.ToString ());
-							writer.WriteAttributeString (FileColumnAttribute, document.TextEditor.CursorColumn.ToString ());
-						}
-						writer.WriteEndElement (); // File
-					}
-				}
-				writer.WriteEndElement (); // FilesNode
-				
-				writer.WriteStartElement (ViewsNode);
-				foreach (Pad pad in IdeApp.Workbench.Pads) {
-					if (pad.Content is IMementoCapable) {
-						writer.WriteStartElement (ViewMementoNode);
-						writer.WriteAttributeString (IdAttribute, pad.Id); 
-						
-						((ICustomXmlSerializer)((IMementoCapable)pad.Content).CreateMemento ()).WriteTo (writer);
-						writer.WriteEndElement (); // ViewMementoNode
-					}
-				}
-				writer.WriteEndElement (); // Views
-				
-				Properties properties = new Properties ();
-				string name = IdeApp.Workbench.ActiveDocument == null ? String.Empty : IdeApp.Workbench.ActiveDocument.FileName;
-				properties.Set ("ActiveWindow", name == null ? String.Empty : name);
-				properties.Set ("ActiveConfiguration", combine.ActiveConfiguration == null ? String.Empty : combine.ActiveConfiguration.Name);
-			
-				properties.Write (writer);
-				
-				writer.WriteEndElement (); // UserCombinePreferencesNode
-			} catch (Exception e) {
-				LoggingService.LogWarning ("Could not save solution preferences: " + GetPreferencesFileName (combine), e);
-			} finally {
-				writer.Close ();
-			}
-		}
-		
-		public IAsyncOperation Execute (CombineEntry entry)
+		public IAsyncOperation Execute (IBuildTarget entry)
 		{
 			ExecutionContext context = new ExecutionContext (new DefaultExecutionHandlerFactory (), IdeApp.Workbench.ProgressMonitors);
 			return Execute (entry, context);
 		}
 		
-		public IAsyncOperation Execute (CombineEntry entry, ExecutionContext context)
+		public IAsyncOperation Execute (IBuildTarget entry, ExecutionContext context)
 		{
 			if (currentRunOperation != null && !currentRunOperation.IsCompleted) return currentRunOperation;
 
 			IProgressMonitor monitor = new MessageDialogProgressMonitor ();
 
-			DispatchService.ThreadDispatch (new StatefulMessageHandler (ExecuteCombineEntryAsync), new object[] {entry, monitor, context});
+			DispatchService.ThreadDispatch (delegate {
+				ExecuteSolutionItemAsync (monitor, entry, context);
+			});
 			currentRunOperation = monitor.AsyncOperation;
+			currentRunOperationOwner = entry;
+			currentRunOperation.Completed += delegate { currentRunOperationOwner = null; };
 			return currentRunOperation;
 		}
 		
-		void ExecuteCombineEntryAsync (object ob)
+		void ExecuteSolutionItemAsync (IProgressMonitor monitor, IBuildTarget entry, ExecutionContext context)
 		{
-			object[] data = (object[]) ob;
-			CombineEntry entry = (CombineEntry) data[0];
-			IProgressMonitor monitor = (IProgressMonitor) data[1];
-			ExecutionContext context = (ExecutionContext) data[2];
-			OnBeforeStartProject ();
 			try {
-				entry.Execute (monitor, context);
+				OnBeforeStartProject ();
+				entry.Execute (monitor, context, IdeApp.Workspace.ActiveConfiguration);
 			} catch (Exception ex) {
 				monitor.ReportError (GettextCatalog.GetString ("Execution failed."), ex);
 			} finally {
@@ -1019,7 +574,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
-		public IAsyncOperation Debug (CombineEntry entry)
+		public IAsyncOperation Debug (IBuildTarget entry)
 		{
 			if (currentRunOperation != null && !currentRunOperation.IsCompleted)
 				return currentRunOperation;
@@ -1030,17 +585,16 @@ namespace MonoDevelop.Ide.Gui
 			ExecutionContext context = new ExecutionContext (IdeApp.Services.DebuggingService.GetExecutionHandlerFactory (), IdeApp.Workbench.ProgressMonitors);
 			
 			DispatchService.ThreadDispatch (delegate {
-				DebugCombineEntryAsync (monitor, entry, context, null);
+				DebugSolutionItemAsync (monitor, entry, context, null);
 			}, null);
 			currentRunOperation = monitor.AsyncOperation;
 			return currentRunOperation;
 		}
 		
-		void DebugCombineEntryAsync (IProgressMonitor monitor, CombineEntry entry, ExecutionContext context, WorkbenchContext oldContext)
+		void DebugSolutionItemAsync (IProgressMonitor monitor, IBuildTarget entry, ExecutionContext context, WorkbenchContext oldContext)
 		{
 			try {
-				Console.WriteLine ("pp: " + entry);
-				entry.Execute (monitor, context);
+				entry.Execute (monitor, context, IdeApp.Workspace.ActiveConfiguration);
 			} catch (Exception ex) {
 				monitor.ReportError (GettextCatalog.GetString ("Execution failed."), ex);
 			} finally {
@@ -1079,9 +633,9 @@ namespace MonoDevelop.Ide.Gui
 			return currentRunOperation;
 		}
 		
-		public void Clean (CombineEntry entry)
+		public void Clean (IBuildTarget entry)
 		{
-			entry.Clean (new NullProgressMonitor ());
+			entry.RunTarget (new NullProgressMonitor (), ProjectService.CleanTarget, IdeApp.Workspace.ActiveConfiguration);
 		}
 		
 		public IAsyncOperation BuildFile (string file)
@@ -1123,7 +677,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
-		public IAsyncOperation Rebuild (CombineEntry entry)
+		public IAsyncOperation Rebuild (IBuildTarget entry)
 		{
 			if (currentBuildOperation != null && !currentBuildOperation.IsCompleted) return currentBuildOperation;
 
@@ -1131,7 +685,7 @@ namespace MonoDevelop.Ide.Gui
 			return Build (entry);
 		}
 
-		public IAsyncOperation Build (CombineEntry entry)
+		public IAsyncOperation Build (IBuildTarget entry)
 		{
 			if (currentBuildOperation != null && !currentBuildOperation.IsCompleted) return currentBuildOperation;
 			
@@ -1140,25 +694,30 @@ namespace MonoDevelop.Ide.Gui
 			
 			BeginBuild (monitor);
 
-			DispatchService.ThreadDispatch (new StatefulMessageHandler (BuildCombineEntryAsync), new object[] {entry, monitor});
+			DispatchService.ThreadDispatch (delegate {
+				BuildSolutionItemAsync (entry, monitor);
+			}, null);
 			currentBuildOperation = monitor.AsyncOperation;
+			currentBuildOperationOwner = entry;
+			currentBuildOperation.Completed += delegate { currentBuildOperationOwner = null; };
 			return currentBuildOperation;
 		}
 		
-		void BuildCombineEntryAsync (object ob)
+		void BuildSolutionItemAsync (IBuildTarget entry, IProgressMonitor monitor)
 		{
-			object[] data = (object[]) ob;
-			CombineEntry entry = (CombineEntry) data [0];
-			IProgressMonitor monitor = (IProgressMonitor) data [1];
 			ICompilerResult result = null;
 			try {
-				result = entry.Build (monitor);
+				SolutionItem it = entry as SolutionItem;
+				if (it != null)
+					result = it.Build (monitor, IdeApp.Workspace.ActiveConfiguration, true);
+				else
+					result = entry.RunTarget (monitor, ProjectService.BuildTarget, IdeApp.Workspace.ActiveConfiguration);
 			} catch (Exception ex) {
 				monitor.ReportError (GettextCatalog.GetString ("Build failed."), ex);
 			}
 			DispatchService.GuiDispatch (
 				delegate {
-					BuildDone (monitor, result);	// BuildDone disposes the monitor
+					BuildDone (monitor, result, entry);	// BuildDone disposes the monitor
 			});
 		}
 
@@ -1193,14 +752,19 @@ namespace MonoDevelop.Ide.Gui
 		void BeginBuild (IProgressMonitor monitor)
 		{
 			Services.TaskService.ClearExceptCommentTasks ();
-			if (StartBuild != null) {
+			if (StartBuild != null)
 				StartBuild (this, new BuildEventArgs (monitor, true));
-			}
 		}
 		
-		void BuildDone (IProgressMonitor monitor, ICompilerResult result)
+		void BuildDone (IProgressMonitor monitor, ICompilerResult result, IBuildTarget entry)
 		{
 			Task[] tasks = null;
+			Solution solution;
+			
+			if (entry is SolutionItem)
+				solution = ((SolutionItem)entry).ParentSolution;
+			else
+				solution = entry as Solution;
 		
 			try {
 				if (result != null) {
@@ -1212,7 +776,7 @@ namespace MonoDevelop.Ide.Gui
 					for (int n=0; n<tasks.Length; n++)
 						tasks [n] = new Task (null, result.CompilerResults.Errors [n]);
 
-					Services.TaskService.AddRange (tasks);
+					Services.TaskService.AddRange (tasks, solution);
 					
 					string errorString = GettextCatalog.GetPluralString("{0} error", "{0} errors", result.ErrorCount, result.ErrorCount);
 					string warningString = GettextCatalog.GetPluralString("{0} warning", "{0} warnings", result.WarningCount, result.WarningCount);
@@ -1373,7 +937,7 @@ namespace MonoDevelop.Ide.Gui
 			ICollection filesToMove;
 			try {
 				if (copyOnlyProjectFiles) {
-					filesToMove = sourceProject.ProjectFiles.GetFilesInPath (sourcePath);
+					filesToMove = sourceProject.Files.GetFilesInPath (sourcePath);
 				} else {
 					ProjectFileCollection col = new ProjectFileCollection ();
 					GetAllFilesRecursive (sourcePath, col);
@@ -1414,7 +978,7 @@ namespace MonoDevelop.Ide.Gui
 				string sourceFile = file.Name;
 				string newFile = targetPath + sourceFile.Substring (basePath.Length);
 				
-				ProjectFile oldProjectFile = sourceProject != null ? sourceProject.ProjectFiles.GetFile (sourceFile) : null;
+				ProjectFile oldProjectFile = sourceProject != null ? sourceProject.Files.GetFile (sourceFile) : null;
 				
 				if (!movingFolder) {
 					try {
@@ -1433,12 +997,12 @@ namespace MonoDevelop.Ide.Gui
 				}
 				
 				if (oldProjectFile != null) {
-					if (removeFromSource && sourceProject.ProjectFiles.Contains (oldProjectFile))
-						sourceProject.ProjectFiles.Remove (oldProjectFile);
-					if (targetProject.ProjectFiles.GetFile (newFile) == null) {
+					if (removeFromSource && sourceProject.Files.Contains (oldProjectFile))
+						sourceProject.Files.Remove (oldProjectFile);
+					if (targetProject.Files.GetFile (newFile) == null) {
 						ProjectFile projectFile = (ProjectFile) oldProjectFile.Clone ();
 						projectFile.Name = newFile;
-						targetProject.ProjectFiles.Add (projectFile);
+						targetProject.Files.Add (projectFile);
 					}
 				}
 				
@@ -1469,119 +1033,6 @@ namespace MonoDevelop.Ide.Gui
 				if (!IsDirectoryHierarchyEmpty (dir)) return false;
 			return true;
 		}
-		
-		void NotifyFileRemovedFromProject (object sender, ProjectFileEventArgs e)
-		{
-			OnFileRemovedFromProject (e);
-		}
-		
-		void NotifyFileAddedToProject (object sender, ProjectFileEventArgs e)
-		{
-			OnFileAddedToProject (e);
-		}
-
-		internal void NotifyFileRenamedInProject (object sender, ProjectFileRenamedEventArgs e)
-		{
-			OnFileRenamedInProject (e);
-		}		
-		
-		internal void NotifyFileChangedInProject (object sender, ProjectFileEventArgs e)
-		{
-			OnFileChangedInProject (e);
-		}		
-		
-		internal void NotifyFilePropertyChangedInProject (object sender, ProjectFileEventArgs e)
-		{
-			OnFilePropertyChangedInProject (e);
-		}		
-		
-		internal void NotifyReferenceAddedToProject (object sender, ProjectReferenceEventArgs e)
-		{
-			OnReferenceAddedToProject (e);
-		}
-		
-		internal void NotifyReferenceRemovedFromProject (object sender, ProjectReferenceEventArgs e)
-		{
-			OnReferenceRemovedFromProject (e);
-		}
-		
-		void NotifyEntryAddedToCombine (object sender, CombineEntryEventArgs args)
-		{
-			OnEntryLoaded (args.CombineEntry);
-			if (EntryAddedToCombine != null)
-				EntryAddedToCombine (sender, args);
-		}
-		
-		void NotifyEntryRemovedFromCombine (object sender, CombineEntryEventArgs args)
-		{
-			OnEntryUnloaded (args.CombineEntry);
-			NotifyEntryRemovedFromCombineRec (args.CombineEntry);
-		}
-		
-		void NotifyEntryRemovedFromCombineRec (CombineEntry e)
-		{
-			if (e == CurrentSelectedProject)
-				CurrentSelectedProject = null;
-				
-			if (e == CurrentSelectedCombine)
-				CurrentSelectedCombine = null;
-				
-			if (e is Combine) {
-				foreach (CombineEntry ce in ((Combine)e).Entries)
-					NotifyEntryRemovedFromCombineRec (ce);
-			}
-			if (EntryRemovedFromCombine != null)
-				EntryRemovedFromCombine (this, new CombineEntryEventArgs (e));
-		}
-		
-		protected virtual void OnFileRemovedFromProject (ProjectFileEventArgs e)
-		{
-			if (FileRemovedFromProject != null) {
-				FileRemovedFromProject(this, e);
-			}
-		}
-
-		protected virtual void OnFileAddedToProject (ProjectFileEventArgs e)
-		{
-			if (FileAddedToProject != null) {
-				FileAddedToProject (this, e);
-			}
-		}
-
-		protected virtual void OnFileRenamedInProject (ProjectFileRenamedEventArgs e)
-		{
-			if (FileRenamedInProject != null) {
-				FileRenamedInProject (this, e);
-			}
-		}
-		
-		protected virtual void OnFileChangedInProject (ProjectFileEventArgs e)
-		{
-			if (FileChangedInProject != null) {
-				FileChangedInProject (this, e);
-			}
-		}
-		
-		protected virtual void OnFilePropertyChangedInProject (ProjectFileEventArgs e)
-		{
-			if (FilePropertyChangedInProject != null) {
-				FilePropertyChangedInProject (this, e);
-			}
-		}
-		
-		protected virtual void OnReferenceRemovedFromProject (ProjectReferenceEventArgs e)
-		{
-			if (ReferenceRemovedFromProject != null) {
-				ReferenceRemovedFromProject (this, e);
-			}
-		}
-		
-		protected virtual void OnReferenceAddedToProject (ProjectReferenceEventArgs e)
-		{
-			if (ReferenceAddedToProject != null) {
-				ReferenceAddedToProject (this, e);
-			}
-		}
 
 		void OnBeforeStartProject()
 		{
@@ -1597,24 +1048,24 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
-		protected virtual void OnCombineOpened(CombineEventArgs e)
+		void OnWorkspaceItemUnloaded (object s, WorkspaceItemEventArgs args)
 		{
-			if (CombineOpened != null) {
-				CombineOpened(this, e);
-			}
-		}
-
-		protected virtual void OnCombineClosed(CombineEventArgs e)
-		{
-			if (CombineClosed != null) {
-				CombineClosed(this, e);
-			}
+			if (ContainsTarget (args.Item, currentSolutionItem))
+				CurrentSelectedSolutionItem = null;
+			if (ContainsTarget (args.Item, currentWorkspaceItem))
+				CurrentSelectedWorkspaceItem = null;
+			if ((currentItem is IBuildTarget) && ContainsTarget (args.Item, ((IBuildTarget)currentItem)))
+				CurrentSelectedItem = null;
+			if (IsBuilding (args.Item))
+				CurrentBuildOperation.Cancel ();
+			if (IsRunning (args.Item))
+				CurrentRunOperation.Cancel ();
 		}
 		
-		protected virtual void OnCurrentSelectedCombineChanged(CombineEventArgs e)
+		protected virtual void OnCurrentSelectedSolutionChanged(SolutionEventArgs e)
 		{
-			if (CurrentSelectedCombineChanged != null) {
-				CurrentSelectedCombineChanged(this, e);
+			if (CurrentSelectedSolutionChanged != null) {
+				CurrentSelectedSolutionChanged (this, e);
 			}
 		}
 		
@@ -1624,33 +1075,19 @@ namespace MonoDevelop.Ide.Gui
 				StringParserService.Properties["PROJECTNAME"] = CurrentSelectedProject.Name;
 			}
 			if (CurrentProjectChanged != null) {
-				CurrentProjectChanged(this, e);
+				CurrentProjectChanged (this, e);
 			}
 		}
-		
-		public event ProjectFileEventHandler FileRemovedFromProject;
-		public event ProjectFileEventHandler FileAddedToProject;
-		public event ProjectFileEventHandler FileChangedInProject;
-		public event ProjectFileEventHandler FilePropertyChangedInProject;
-		public event ProjectFileRenamedEventHandler FileRenamedInProject;
 		
 		public event BuildEventHandler StartBuild;
 		public event BuildEventHandler EndBuild;
 		public event EventHandler BeforeStartProject;
 		
-		public event CombineEventHandler CombineOpened;
-		public event CombineEventHandler CombineClosed;
-		public event CombineEventHandler CurrentSelectedCombineChanged;
-		
+		public event EventHandler<SolutionEventArgs> CurrentSelectedSolutionChanged;
 		public event ProjectEventHandler CurrentProjectChanged;
-		
-		public event ProjectReferenceEventHandler ReferenceAddedToProject;
-		public event ProjectReferenceEventHandler ReferenceRemovedFromProject;
 		
 		// Fired just before an entry is added to a combine
 		public event AddEntryEventHandler AddingEntryToCombine;
-		public event CombineEntryEventHandler EntryAddedToCombine;
-		public event CombineEntryEventHandler EntryRemovedFromCombine;
 
 		
 		// All methods inside this class are gui thread safe

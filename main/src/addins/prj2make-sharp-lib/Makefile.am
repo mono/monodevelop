@@ -16,16 +16,9 @@ REFS =  \
 	-r:System.Xml
 
 FILES =  \
-	CSharpMSBuildProjectExtension.cs \
-	CSharpResourceIdBuilder.cs \
 	csproj_ver2003.cs \
 	CsprojInfo.cs \
-	DefaultMSBuildProjectExtension.cs \
-	IResourceIdBuilder.cs \
 	MdPrjHelper.cs \
-	MSBuildData.cs \
-	MSBuildFileFormat.cs \
-	MSBuildProjectExtension.cs \
 	MSBuildProjectServiceExtension.cs \
 	MsPrjHelper.cs \
 	pkgconfiginvoker.cs \
@@ -33,14 +26,7 @@ FILES =  \
 	PrjxInfo.cs \
 	sharp_d_cmbx.cs \
 	sharp_d_prjx.cs \
-	SilverlightMSBuildProjectExtension.cs \
-	SlnData.cs \
-	SlnFileFormat.cs \
-	Utils.cs \
-	VBNetMSBuildProjectExtension.cs \
-	VBNetResourceIdBuilder.cs \
-	VS2003ProjectFileFormat.cs \
-	VS2003SlnFileFormat.cs
+	VS2003ProjectFileFormat.cs
 
 RES = prj2make-sharp-lib.addin.xml
 

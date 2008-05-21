@@ -86,7 +86,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		public override void BuildChildNodes (ITreeBuilder builder, object dataObject)
 		{
 			Project project = ((LinkedFilesFolder)dataObject).Project;
-			foreach (ProjectFile file in project.ProjectFiles)
+			foreach (ProjectFile file in project.Files)
 				if (file.IsExternalToProject)
 					builder.AddChild (file);
 		}

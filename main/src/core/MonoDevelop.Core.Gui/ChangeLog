@@ -1,3 +1,15 @@
+2008-05-21  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Core.Gui.mdp,
+	  MonoDevelop.Core.Gui.Dialogs/OptionsDialog.cs,
+	  MonoDevelop.Core.Gui.Components/MenuButtonEntry.cs,
+	  MonoDevelop.Core.Gui.Codons/OptionsPanelNode.cs,
+	  MonoDevelop.Core.Gui/StockIcons.cs,
+	  MonoDevelop.Core.Gui/DispatchService.cs, Makefile.am,
+	  icons/solution-folder-open-16.png,
+	  icons/solution-folder-closed-16.png,
+	  MonoDevelop.Core.Gui.addin.xml: New project model changes.
+
 2008-05-08  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Core.Gui/PlatformService.cs: Add a method for determining

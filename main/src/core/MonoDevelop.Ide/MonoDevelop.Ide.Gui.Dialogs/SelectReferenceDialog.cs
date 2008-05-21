@@ -38,7 +38,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		GacReferencePanel gacRefPanel;
 		ProjectReferencePanel projectRefPanel;
 		AssemblyReferencePanel assemblyRefPanel;
-		Project configureProject;
+		DotNetProject configureProject;
 		
 		const int NameColumn = 0;
 		const int TypeNameColumn = 1;
@@ -60,7 +60,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			}
 		}
 
-		public void SetProject (Project configureProject)
+		public void SetProject (DotNetProject configureProject)
 		{
 			this.configureProject = configureProject;
 			((ListStore) ReferencesTreeView.Model).Clear ();
@@ -70,11 +70,11 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			
 			DotNetProject netProject = configureProject as DotNetProject;
 			if (netProject != null)
-				gacRefPanel.SetClrVersion (((DotNetProjectConfiguration)netProject.ActiveConfiguration).ClrVersion);
+				gacRefPanel.SetClrVersion (((DotNetProjectConfiguration)netProject.DefaultConfiguration).ClrVersion);
 			gacRefPanel.Reset ();
 			assemblyRefPanel.SetBasePath (configureProject.BaseDirectory);
 
-			foreach (ProjectReference refInfo in configureProject.ProjectReferences)
+			foreach (ProjectReference refInfo in configureProject.References)
 				AddReference (refInfo);
 
 			OnChanged (null, null);
@@ -117,10 +117,10 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 
 		TreeIter AddProjectReference (ProjectReference refInfo)
 		{
-			Combine c = configureProject.RootCombine;
+			Solution c = configureProject.ParentSolution;
 			if (c == null) return TreeIter.Zero;
 			
-			Project p = c.FindProject (refInfo.Reference);
+			Project p = c.FindProjectByName (refInfo.Reference);
 			if (p == null) return TreeIter.Zero;
 			
 			string iconName = Services.Icons.GetImageForProjectType (p.ProjectType);

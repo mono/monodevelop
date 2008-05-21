@@ -1,3 +1,16 @@
+2008-05-21  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Gui/OutputOptionsPanel.cs, Gui/EditPackagesDialog.cs,
+	  Gui/CodeGenerationPanel.cs, Gui/CompilerPanel.cs,
+	  CBinding.addin.xml, ProjectPad/ProjectPackagesFolderNodeBuilder.cs,
+	  ProjectPad/ProjectPackageNodeBuilder.cs, CBinding.mdp,
+	  Parser/TagDatabaseManager.cs,
+	  Navigation/ProjectNodeBuilderExtension.cs,
+	  Project/CProjectConfiguration.cs, Project/CProjectBinding.cs,
+	  Project/CProjectServiceExtension.cs, Project/CProject.cs,
+	  gtk-gui/gui.stetic, Compiler/GNUCompiler.cs: New project model
+	  changes.
+
 2008-05-08  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* CBinding.addin.xml: Set "isText" attribute on the mimetype

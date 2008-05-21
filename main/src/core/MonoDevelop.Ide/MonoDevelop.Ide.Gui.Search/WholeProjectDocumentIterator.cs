@@ -87,20 +87,9 @@ namespace MonoDevelop.Ide.Gui.Search
 		
 		void AddFiles(Project project)
 		{
-			foreach (ProjectFile file in project.ProjectFiles) {
+			foreach (ProjectFile file in project.Files) {
 				if (file.Subtype == Subtype.Code) {
 					files.Add(file.Name);
-				}
-			}
-		}
-		
-		void AddFiles(Combine combine)
-		{
-			foreach (CombineEntry entry in combine.Entries) {
-				if (entry is Project) {
-					AddFiles ((Project)entry);
-				} else if (entry is Combine) {
-					AddFiles ((Combine)entry);
 				}
 			}
 		}
@@ -108,8 +97,10 @@ namespace MonoDevelop.Ide.Gui.Search
 		public void Reset() 
 		{
 			files.Clear();
-			if (IdeApp.ProjectOperations.CurrentOpenCombine != null) {
-				AddFiles (IdeApp.ProjectOperations.CurrentOpenCombine);
+			if (IdeApp.Workspace.IsOpen) {
+				foreach (Project p in IdeApp.Workspace.GetAllProjects ()) {
+					AddFiles (p);
+				}
 			}
 			
 			curIndex = -1;

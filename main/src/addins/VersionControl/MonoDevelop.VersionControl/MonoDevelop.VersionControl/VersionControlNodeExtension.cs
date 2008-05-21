@@ -27,7 +27,7 @@ namespace MonoDevelop.VersionControl
 			return typeof(ProjectFile).IsAssignableFrom (dataType)
 				|| typeof(SystemFile).IsAssignableFrom (dataType)
 				|| typeof(ProjectFolder).IsAssignableFrom (dataType)
-				|| typeof(CombineEntry).IsAssignableFrom (dataType);
+				|| typeof(IWorkspaceObject).IsAssignableFrom (dataType);
 		}
 		
 		public VersionControlNodeExtension ()
@@ -42,8 +42,8 @@ namespace MonoDevelop.VersionControl
 		
 			// Add status overlays
 			
-			if (dataObject is CombineEntry) {
-				CombineEntry ce = (CombineEntry) dataObject;
+			if (dataObject is IWorkspaceObject) {
+				IWorkspaceObject ce = (IWorkspaceObject) dataObject;
 				Repository rep = VersionControlService.GetRepository (ce);
 				if (rep != null)
 					AddFolderOverlay (rep, ce.BaseDirectory, ref icon, ref closedIcon);
@@ -163,8 +163,8 @@ namespace MonoDevelop.VersionControl
 				return ((ProjectFile) dataObject).FilePath;
 			} else if (dataObject is SystemFile) {
 				return ((SystemFile) dataObject).Path;
-			} else if (dataObject is CombineEntry) {
-				return ((CombineEntry)dataObject).BaseDirectory;
+			} else if (dataObject is IWorkspaceObject) {
+				return ((IWorkspaceObject)dataObject).BaseDirectory;
 			} else if (dataObject is ProjectFolder) {
 				return ((ProjectFolder)dataObject).Path;
 			}
@@ -284,7 +284,7 @@ namespace MonoDevelop.VersionControl
 		{
 			string path;
 			bool isDir;
-			CombineEntry pentry;
+			IWorkspaceObject pentry;
 			
 			if (CurrentNode.DataItem is ProjectFile) {
 				ProjectFile file = (ProjectFile)CurrentNode.DataItem;
@@ -301,8 +301,8 @@ namespace MonoDevelop.VersionControl
 				path = f.Path;
 				isDir = true;
 				pentry = f.Project;
-			} else if (CurrentNode.DataItem is CombineEntry) {
-				pentry = ((CombineEntry)CurrentNode.DataItem);
+			} else if (CurrentNode.DataItem is IWorkspaceObject) {
+				pentry = ((IWorkspaceObject)CurrentNode.DataItem);
 				path = pentry.BaseDirectory;
 				isDir = true;
 			} else {

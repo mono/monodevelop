@@ -34,12 +34,17 @@ namespace MonoDevelop.NUnit
 {
 	public class SystemTestProvider: ITestProvider
 	{
-		public UnitTest CreateUnitTest (CombineEntry entry)
+		public UnitTest CreateUnitTest (IWorkspaceObject entry)
 		{
-			if (entry is Combine)
-				return CombineTestGroup.CreateTest ((Combine)entry);
+			// TODO msbuild
+			if (entry is SolutionFolder)
+				return SolutionFolderTestGroup.CreateTest ((SolutionFolder)entry);
+			if (entry is Solution)
+				return SolutionFolderTestGroup.CreateTest (((Solution)entry).RootFolder);
+			if (entry is Workspace)
+				return WorkspaceTestGroup.CreateTest ((Workspace)entry);
 			if (entry is DotNetProject)
-				return NUnitProjectTestSuite.CreateTest ((Project)entry);
+				return NUnitProjectTestSuite.CreateTest ((DotNetProject)entry);
 			if (entry is NUnitAssemblyGroupProject)
 				return ((NUnitAssemblyGroupProject)entry).RootTest;
 			return null;

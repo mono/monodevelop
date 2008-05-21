@@ -29,7 +29,7 @@
 using System;
 
 using MonoDevelop.Projects;
-using MonoDevelop.Core.Gui.Dialogs;
+using MonoDevelop.Projects.Gui.Dialogs;
 using MonoDevelop.Core;
 using Mono.Addins;
 using MonoDevelop.Components;
@@ -37,7 +37,7 @@ using VBBinding;
 
 namespace MonoDevelop.VBNetBinding
 {
-	public class CodeGenerationPanel : AbstractOptionPanel
+	public class CodeGenerationPanel : MultiConfigItemOptionsPanel
 	{
 		CodeGenerationPanelWidget widget;
 		
@@ -45,14 +45,19 @@ namespace MonoDevelop.VBNetBinding
 		{
 		}
 		
-		public override void LoadPanelContents ()
+		public override Gtk.Widget CreatePanelWidget ()
 		{
-			Add (widget = new CodeGenerationPanelWidget ((Properties) CustomizationObject));
+			return (widget = new CodeGenerationPanelWidget (ConfiguredProject));
 		}
 		
-		public override bool StorePanelContents ()
+		public override void LoadConfigData ()
 		{
- 			return widget.StorePanelContents ();
+			widget.Load ((DotNetProjectConfiguration) CurrentConfiguration);
+		}
+		
+		public override void ApplyChanges ()
+		{
+ 			widget.StorePanelContents ();
 		}
 	}
 }

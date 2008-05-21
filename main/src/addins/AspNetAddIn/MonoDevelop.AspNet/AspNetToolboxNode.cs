@@ -94,9 +94,10 @@ namespace MonoDevelop.AspNet
 		
 		void RegisterReference (MonoDevelop.Projects.Project project)
 		{
+			MonoDevelop.Projects.DotNetProject dnp = (MonoDevelop.Projects.DotNetProject) project;
 			MonoDevelop.Projects.ProjectReference pr = base.Type.GetProjectReference ();
-			if (!project.ProjectReferences.Contains (pr))
-				project.ProjectReferences.Add (pr);
+			if (!dnp.References.Contains (pr))
+				dnp.References.Add (pr);
 		}
 
 		public string GetTextForFile (string path, MonoDevelop.Projects.Project project)
@@ -112,7 +113,7 @@ namespace MonoDevelop.AspNet
 			//register the assembly and look up the class
 			RegisterReference (project);
 			MonoDevelop.Projects.Parser.IParserContext ctx = 
-				MonoDevelop.Ide.Gui.IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (project);
+				MonoDevelop.Ide.Gui.IdeApp.Workspace.ParserDatabase.GetProjectParserContext (project);
 			ctx.UpdateDatabase ();
 			MonoDevelop.Projects.Parser.IClass cls = ctx.GetClass (base.Type.TypeName);
 			if (cls == null)

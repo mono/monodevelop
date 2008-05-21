@@ -456,289 +456,7 @@ Custom Command</property>
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Bin" id="MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CompileFileOptionsWidget" design-size="451 347">
-    <property name="MemberName" />
-    <property name="GeneratePublic">False</property>
-    <child>
-      <widget class="Gtk.VBox" id="vbox48">
-        <property name="MemberName" />
-        <property name="Spacing">6</property>
-        <child>
-          <widget class="Gtk.Label" id="includeLabel">
-            <property name="MemberName" />
-            <property name="Xalign">0</property>
-            <property name="LabelProp" translatable="yes">_Include files in compile run</property>
-            <property name="UseUnderline">True</property>
-          </widget>
-          <packing>
-            <property name="Position">0</property>
-            <property name="AutoSize">False</property>
-            <property name="Expand">False</property>
-            <property name="Fill">False</property>
-          </packing>
-        </child>
-        <child>
-          <widget class="Gtk.ScrolledWindow" id="scrolledwindow6">
-            <property name="MemberName" />
-            <property name="ShadowType">In</property>
-            <child>
-              <widget class="Gtk.TreeView" id="includeTreeView">
-                <property name="MemberName" />
-                <property name="WidthRequest">300</property>
-                <property name="HeightRequest">200</property>
-                <property name="HeadersVisible">False</property>
-                <property name="HeadersClickable">True</property>
-              </widget>
-            </child>
-          </widget>
-          <packing>
-            <property name="Position">1</property>
-            <property name="AutoSize">False</property>
-          </packing>
-        </child>
-      </widget>
-    </child>
-  </widget>
-  <widget class="Gtk.Bin" id="MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CombineStartupPanelWidget" design-size="576 369">
-    <property name="MemberName" />
-    <property name="GeneratePublic">False</property>
-    <child>
-      <widget class="Gtk.VBox" id="vbox57">
-        <property name="MemberName" />
-        <property name="Spacing">12</property>
-        <child>
-          <widget class="Gtk.VBox" id="vbox58">
-            <property name="MemberName" />
-            <property name="Spacing">6</property>
-            <child>
-              <widget class="Gtk.RadioButton" id="singleRadioButton">
-                <property name="MemberName" />
-                <property name="Label" translatable="yes">_Single Startup Project</property>
-                <property name="Active">True</property>
-                <property name="DrawIndicator">True</property>
-                <property name="HasLabel">True</property>
-                <property name="UseUnderline">True</property>
-                <property name="Group">singleRadioButton</property>
-              </widget>
-              <packing>
-                <property name="Position">0</property>
-                <property name="AutoSize">False</property>
-                <property name="Expand">False</property>
-                <property name="Fill">False</property>
-              </packing>
-            </child>
-            <child>
-              <widget class="Gtk.HBox" id="hbox37">
-                <property name="MemberName" />
-                <property name="Spacing">6</property>
-                <child>
-                  <widget class="Gtk.Label" id="label65">
-                    <property name="MemberName" />
-                    <property name="LabelProp" translatable="yes">    </property>
-                  </widget>
-                  <packing>
-                    <property name="Position">0</property>
-                    <property name="AutoSize">False</property>
-                    <property name="Expand">False</property>
-                    <property name="Fill">False</property>
-                  </packing>
-                </child>
-                <child>
-                  <widget class="Gtk.ComboBox" id="singleCombo">
-                    <property name="MemberName" />
-                    <property name="IsTextCombo">False</property>
-                    <property name="Items" translatable="yes" />
-                  </widget>
-                  <packing>
-                    <property name="Position">1</property>
-                    <property name="AutoSize">False</property>
-                  </packing>
-                </child>
-              </widget>
-              <packing>
-                <property name="Position">1</property>
-                <property name="AutoSize">False</property>
-              </packing>
-            </child>
-          </widget>
-          <packing>
-            <property name="Position">0</property>
-            <property name="AutoSize">False</property>
-            <property name="Expand">False</property>
-            <property name="Fill">False</property>
-          </packing>
-        </child>
-        <child>
-          <widget class="Gtk.VBox" id="vbox59">
-            <property name="MemberName" />
-            <property name="Spacing">6</property>
-            <child>
-              <widget class="Gtk.RadioButton" id="multipleRadioButton">
-                <property name="MemberName" />
-                <property name="Label" translatable="yes">_Multiple Startup Project</property>
-                <property name="DrawIndicator">True</property>
-                <property name="HasLabel">True</property>
-                <property name="UseUnderline">True</property>
-                <property name="Group">singleRadioButton</property>
-              </widget>
-              <packing>
-                <property name="Position">0</property>
-                <property name="AutoSize">False</property>
-                <property name="Expand">False</property>
-                <property name="Fill">False</property>
-              </packing>
-            </child>
-            <child>
-              <widget class="Gtk.HBox" id="hbox38">
-                <property name="MemberName" />
-                <property name="Spacing">6</property>
-                <child>
-                  <widget class="Gtk.Label" id="label66">
-                    <property name="MemberName" />
-                    <property name="LabelProp" translatable="yes">    </property>
-                  </widget>
-                  <packing>
-                    <property name="Position">0</property>
-                    <property name="AutoSize">False</property>
-                    <property name="Expand">False</property>
-                    <property name="Fill">False</property>
-                  </packing>
-                </child>
-                <child>
-                  <widget class="Gtk.VBox" id="multipleBox">
-                    <property name="MemberName" />
-                    <property name="Spacing">6</property>
-                    <child>
-                      <widget class="Gtk.HBox" id="hbox39">
-                        <property name="MemberName" />
-                        <property name="Spacing">6</property>
-                        <child>
-                          <widget class="Gtk.ScrolledWindow" id="scrolledwindow8">
-                            <property name="MemberName" />
-                            <property name="WidthRequest">200</property>
-                            <property name="HeightRequest">200</property>
-                            <property name="ShadowType">In</property>
-                            <child>
-                              <widget class="Gtk.TreeView" id="entryTreeView">
-                                <property name="MemberName" />
-                                <property name="HeadersClickable">True</property>
-                              </widget>
-                            </child>
-                          </widget>
-                          <packing>
-                            <property name="Position">0</property>
-                            <property name="AutoSize">False</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <widget class="Gtk.VBox" id="vbox61">
-                            <property name="MemberName" />
-                            <property name="Spacing">6</property>
-                            <child>
-                              <widget class="Gtk.Button" id="moveUpButton">
-                                <property name="MemberName" />
-                                <property name="UseStock">True</property>
-                                <property name="Type">StockItem</property>
-                                <property name="StockId">gtk-go-up</property>
-                                <property name="label">gtk-go-up</property>
-                              </widget>
-                              <packing>
-                                <property name="Position">0</property>
-                                <property name="AutoSize">False</property>
-                                <property name="Expand">False</property>
-                                <property name="Fill">False</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <widget class="Gtk.Button" id="moveDownButton">
-                                <property name="MemberName" />
-                                <property name="UseStock">True</property>
-                                <property name="Type">StockItem</property>
-                                <property name="StockId">gtk-go-down</property>
-                                <property name="label">gtk-go-down</property>
-                              </widget>
-                              <packing>
-                                <property name="Position">1</property>
-                                <property name="AutoSize">False</property>
-                                <property name="Expand">False</property>
-                                <property name="Fill">False</property>
-                              </packing>
-                            </child>
-                          </widget>
-                          <packing>
-                            <property name="Position">1</property>
-                            <property name="AutoSize">False</property>
-                            <property name="Expand">False</property>
-                            <property name="Fill">False</property>
-                          </packing>
-                        </child>
-                      </widget>
-                      <packing>
-                        <property name="Position">0</property>
-                        <property name="AutoSize">False</property>
-                        <property name="Expand">False</property>
-                        <property name="Fill">False</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <widget class="Gtk.HBox" id="hbox40">
-                        <property name="MemberName" />
-                        <property name="Spacing">6</property>
-                        <child>
-                          <widget class="Gtk.Label" id="ActionLabel">
-                            <property name="MemberName" />
-                            <property name="LabelProp" translatable="yes">Action</property>
-                          </widget>
-                          <packing>
-                            <property name="Position">0</property>
-                            <property name="AutoSize">False</property>
-                            <property name="Expand">False</property>
-                            <property name="Fill">False</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <widget class="Gtk.ComboBox" id="actionCombo">
-                            <property name="MemberName" />
-                            <property name="IsTextCombo">False</property>
-                            <property name="Items" translatable="yes" />
-                          </widget>
-                          <packing>
-                            <property name="Position">1</property>
-                            <property name="AutoSize">False</property>
-                            <property name="Expand">False</property>
-                            <property name="Fill">False</property>
-                          </packing>
-                        </child>
-                      </widget>
-                      <packing>
-                        <property name="Position">1</property>
-                        <property name="AutoSize">False</property>
-                        <property name="Expand">False</property>
-                        <property name="Fill">False</property>
-                      </packing>
-                    </child>
-                  </widget>
-                  <packing>
-                    <property name="Position">1</property>
-                    <property name="AutoSize">False</property>
-                  </packing>
-                </child>
-              </widget>
-              <packing>
-                <property name="Position">1</property>
-                <property name="AutoSize">False</property>
-              </packing>
-            </child>
-          </widget>
-          <packing>
-            <property name="Position">1</property>
-            <property name="AutoSize">False</property>
-          </packing>
-        </child>
-      </widget>
-    </child>
-  </widget>
-  <widget class="Gtk.Bin" id="MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CombineBuildOptionsWidget" design-size="249 72">
+  <widget class="Gtk.Bin" id="MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CombineBuildOptionsWidget" design-size="249 74">
     <property name="MemberName" />
     <property name="GeneratePublic">False</property>
     <child>
@@ -1188,7 +906,7 @@ Custom Command</property>
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Dialog" id="MonoDevelop.Projects.Gui.Dialogs.NewConfigurationDialog" design-size="301 143">
+  <widget class="Gtk.Dialog" id="MonoDevelop.Projects.Gui.Dialogs.NewConfigurationDialog" design-size="320 147">
     <property name="MemberName" />
     <property name="GeneratePublic">False</property>
     <property name="Title" translatable="yes">New Configuration</property>
@@ -1266,7 +984,7 @@ Custom Command</property>
     <child internal-child="ActionArea">
       <widget class="Gtk.HButtonBox" id="dialog-action_area6">
         <property name="MemberName" />
-        <property name="Spacing">10</property>
+        <property name="Spacing">6</property>
         <property name="BorderWidth">5</property>
         <property name="Size">2</property>
         <property name="LayoutStyle">End</property>
@@ -1561,8 +1279,9 @@ Custom Command</property>
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Bin" id="MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CombineInformationWidget">
+  <widget class="Gtk.Bin" id="MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CombineInformationWidget" design-size="434 184">
     <property name="MemberName" />
+    <property name="GeneratePublic">False</property>
     <child>
       <widget class="Gtk.VBox" id="vbox86">
         <property name="MemberName" />

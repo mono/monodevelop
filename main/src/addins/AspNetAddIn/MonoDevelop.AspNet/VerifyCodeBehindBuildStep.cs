@@ -45,26 +45,26 @@ namespace MonoDevelop.AspNet
 	
 	public class VerifyCodeBehindBuildStep : ProjectServiceExtension
 	{
-		public override ICompilerResult Build (IProgressMonitor monitor, CombineEntry project)
+		protected override ICompilerResult Build (IProgressMonitor monitor, SolutionEntityItem project, string configuration)
 		{
 			AspNetAppProject aspProject = project as AspNetAppProject;
 			List<CodeBehindWarning> errors = new List<CodeBehindWarning> ();
 			
 			if (aspProject == null || aspProject.LanguageBinding == null || aspProject.LanguageBinding.Refactorer == null)
-				return base.Build (monitor, project);
+				return base.Build (monitor, project, configuration);
 			
 			RefactorOperations ops = aspProject.LanguageBinding.Refactorer.SupportedOperations;
 			if ((ops & RefactorOperations.AddField) != RefactorOperations.AddField)
-				return base.Build (monitor, project);
+				return base.Build (monitor, project, configuration);
 			
 			//lists of members to be added 
 			List<System.CodeDom.CodeMemberField> membersToAdd = new List<System.CodeDom.CodeMemberField> ();
 			List<IClass> classesForMembers = new List<IClass> ();
 			
-			AspNetAppProjectConfiguration config = (AspNetAppProjectConfiguration) aspProject.ActiveConfiguration;
+			AspNetAppProjectConfiguration config = (AspNetAppProjectConfiguration) aspProject.GetConfiguration (configuration);
 			
 			//get an updated parser database
-			IParserContext ctx = MonoDevelop.Ide.Gui.IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (aspProject);
+			IParserContext ctx = MonoDevelop.Ide.Gui.IdeApp.Workspace.ParserDatabase.GetProjectParserContext (aspProject);
 			ctx.UpdateDatabase ();
 			
 			monitor.Log.WriteLine (GettextCatalog.GetString ("Generating CodeBehind members..."));
@@ -72,7 +72,7 @@ namespace MonoDevelop.AspNet
 				monitor.Log.WriteLine (GettextCatalog.GetString ("Auto-generation of CodeBehind members is disabled for non-partial classes."));
 			
 			//find the members that need to be added to CodeBehind classes
-			foreach (ProjectFile file in aspProject.ProjectFiles) {
+			foreach (ProjectFile file in aspProject.Files) {
 				
 				WebSubtype type = AspNetAppProject.DetermineWebSubtype (Path.GetExtension (file.FilePath));
 				if ((type != WebSubtype.WebForm) && (type != WebSubtype.WebControl) && (type != WebSubtype.MasterPage))
@@ -181,7 +181,7 @@ namespace MonoDevelop.AspNet
 				monitor.Log.WriteLine (GettextCatalog.GetString ("No changes made to CodeBehind classes."));
 			}
 			
-			ICompilerResult baseResult = base.Build (monitor, project);
+			ICompilerResult baseResult = base.Build (monitor, project, configuration);
 			foreach (CodeBehindWarning cbw in errors) {
 				if (cbw.FileName != null)
 					baseResult.AddWarning (cbw.FileName, cbw.Line, cbw.Column, null, cbw.WarningText);

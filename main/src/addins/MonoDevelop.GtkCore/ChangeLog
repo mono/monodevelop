@@ -1,3 +1,29 @@
+2008-05-21  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.GtkCore/GtkDesignInfo.cs,
+	  MonoDevelop.GtkCore/GtkCoreService.cs,
+	  MonoDevelop.GtkCore/WidgetFileDescriptionTemplate.cs,
+	  MonoDevelop.GtkCore/ProjectResourceProvider.cs,
+	  MonoDevelop.GtkCore.addin.xml,
+	  MonoDevelop.GtkCore.NodeBuilders/ProjectFolderNodeBuilderExtension.cs,
+	  MonoDevelop.GtkCore.NodeBuilders/WidgetNodeBuilder.cs,
+	  MonoDevelop.GtkCore.NodeBuilders/ActionGroupNodeBuilder.cs,
+	  MonoDevelop.GtkCore.mdp,
+	  MonoDevelop.GtkCore.Dialogs/WidgetBuilderOptionPanel.cs,
+	  MonoDevelop.GtkCore.Dialogs/GtkFeatureWidget.cs,
+	  MonoDevelop.GtkCore.mds, lib/libsteticui.mdp, lib/libstetic.mdp,
+	  Makefile.am,
+	  MonoDevelop.GtkCore.GuiBuilder/ActionGroupDisplayBinding.cs,
+	  MonoDevelop.GtkCore.GuiBuilder/GuiBuilderDisplayBinding.cs,
+	  MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs,
+	  MonoDevelop.GtkCore.GuiBuilder/GuiBuilderProject.cs,
+	  MonoDevelop.GtkCore.GuiBuilder/GuiBuilderWindow.cs,
+	  MonoDevelop.GtkCore.GuiBuilder/GuiBuilderView.cs,
+	  MonoDevelop.GtkCore.GuiBuilder/GtkProjectServiceExtension.cs,
+	  MonoDevelop.GtkCore.GuiBuilder/CodeBinder.cs,
+	  MonoDevelop.GtkCore.GuiBuilder/ToolboxProvider.cs: New project
+	  model changes.
+
 2008-05-20  Mike Kestner <mkestner@novell.com> 
 
 	* templates/Widget.xft.xml:

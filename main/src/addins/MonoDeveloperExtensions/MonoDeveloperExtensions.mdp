@@ -15,13 +15,11 @@
   </Configurations>
   <Contents>
     <File name="AssemblyInfo.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoCombine.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoMakefile.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoMakefileFormat.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoProject.cs" subtype="Code" buildaction="Compile" />
     <File name="Commands.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoProjectConfiguration.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDeveloperExtensions.addin.xml" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="MonoSolutionItemHandler.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Core" />

@@ -1,3 +1,9 @@
+2008-05-21  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* PrjHelper.cs, MsPrjHelper.cs, VS2003ProjectFileFormat.cs,
+	  MSBuildProjectServiceExtension.cs, Makefile.am,
+	  prj2make-sharp-lib.mdp: New project model changes.
+
 2008-03-04  Mike Krüger <mkrueger@novell.com> 
 
 	* VS2003SlnFileFormat.cs, VS2003ProjectFileFormat.cs, SlnFileFormat.cs:

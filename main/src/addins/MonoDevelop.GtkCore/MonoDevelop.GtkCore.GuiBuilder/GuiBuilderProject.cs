@@ -48,7 +48,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 	{
 		ArrayList formInfos;
 		Stetic.Project gproject;
-		Project project;
+		DotNetProject project;
 		string fileName;
 		bool hasError;
 		bool needsUpdate = true;
@@ -65,7 +65,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		public event EventHandler Unloaded;
 		public event EventHandler Changed;
 
-		public GuiBuilderProject (Project project, string fileName)
+		public GuiBuilderProject (DotNetProject project, string fileName)
 		{
 			this.fileName = fileName;
 			this.project = project;
@@ -195,7 +195,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				
 			GtkDesignInfo info = GtkCoreService.GetGtkInfo (project);
 			if (info.UpdateGtkFolder () && saveMdProject)
-				IdeApp.ProjectOperations.SaveProject (project);
+				IdeApp.ProjectOperations.Save (project);
 			GuiBuilderService.StoreConfiguration ();
 		}
 		
@@ -217,7 +217,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			}
 		}
 		
-		public Project Project {
+		public DotNetProject Project {
 			get { return project; }
 		}
 		
@@ -353,11 +353,11 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			string path = null;
 			
 			if (pref.ReferenceType == ReferenceType.Project) {
-				DotNetProject p = project.RootCombine.FindProject (pref.Reference) as DotNetProject;
+				DotNetProject p = project.ParentSolution.FindProjectByName (pref.Reference) as DotNetProject;
 				if (p != null) {
 					GtkDesignInfo info = GtkCoreService.GetGtkInfo (p);
 					if (info != null && info.IsWidgetLibrary)
-						path = p.GetOutputFileName ();
+						path = p.GetOutputFileName (IdeApp.Workspace.ActiveConfiguration);
 				}
 			} else if (pref.ReferenceType == ReferenceType.Assembly) {
 				// Assume everything is a widget library. Stetic will discard it if it is not.
@@ -480,7 +480,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		public IParserContext GetParserContext ()
 		{
-			IParserContext ctx = IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (Project);
+			IParserContext ctx = IdeApp.Workspace.ParserDatabase.GetProjectParserContext (Project);
 			if (ctx != null && needsUpdate) {
 				needsUpdate = false;
 				ctx.UpdateDatabase ();
@@ -501,7 +501,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			ArrayList libs = new ArrayList ();
 			string[] internalLibs;
 			
-			foreach (ProjectReference pref in project.ProjectReferences) {
+			foreach (ProjectReference pref in project.References) {
 				string wref = GetReferenceLibraryPath (pref);
 				if (wref != null)
 					libs.Add (wref);
@@ -517,7 +517,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			}
 
 			if (info != null && info.IsWidgetLibrary)
-				internalLibs = new string [] { project.GetOutputFileName () };
+				internalLibs = new string [] { project.GetOutputFileName (IdeApp.Workspace.ActiveConfiguration) };
 			else
 				internalLibs = new string [0];
 

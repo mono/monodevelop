@@ -34,13 +34,13 @@ namespace MonoDevelop.ChangeLogAddIn
 	{		
 		ChangeLogData changeLogData;
 		
-		public ProjectOptionPanelWidget (CombineEntry entry)
+		public ProjectOptionPanelWidget (SolutionItem entry)
 		{
 			this.Build();
 			
 			changeLogData = ChangeLogService.GetChangeLogData (entry);
 			
-			if (entry.ParentCombine == null)
+			if (entry.ParentFolder == null)
 				parentRadioButton.Sensitive = false;
 			
 			switch (changeLogData.Policy)
@@ -63,7 +63,7 @@ namespace MonoDevelop.ChangeLogAddIn
 			}									
 		}
 		
-		public bool Store ()
+		public void Store ()
 		{
 			if (noneRadioButton.Active)
 				changeLogData.Policy =  ChangeLogPolicy.NoChangeLog;
@@ -79,8 +79,6 @@ namespace MonoDevelop.ChangeLogAddIn
 			
 			if (oneChangeLogInEachDirectoryRadioButton.Active)
 				changeLogData.Policy = ChangeLogPolicy.OneChangeLogInEachDirectory;
-			
-			return true;
 		}
 	}
 }

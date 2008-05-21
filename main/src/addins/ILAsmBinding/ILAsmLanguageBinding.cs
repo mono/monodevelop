@@ -60,7 +60,7 @@ namespace ILAsmBinding
 			return compilerManager.Compile (projectFiles, references, configuration, monitor);
 		}
 		
-		public void GenerateMakefile (Project project, Combine parentCombine)
+		public void GenerateMakefile (Project project, SolutionFolder parentCombine)
 		{
 			// Not supported
 		}

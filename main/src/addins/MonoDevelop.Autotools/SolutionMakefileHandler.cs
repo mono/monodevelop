@@ -33,12 +33,12 @@ namespace MonoDevelop.Autotools
 		bool generateAutotools = true;
 
 		// Recurses into children and tests if they are deployable.
-		public bool CanDeploy (CombineEntry entry, MakefileType type)
+		public bool CanDeploy (SolutionItem entry, MakefileType type)
 		{
-			return entry is Combine;
+			return entry is SolutionFolder;
 		}
 
-		public Makefile Deploy ( AutotoolsContext ctx, CombineEntry entry, IProgressMonitor monitor )
+		public Makefile Deploy (AutotoolsContext ctx, SolutionItem entry, IProgressMonitor monitor)
 		{
 			generateAutotools = ctx.MakefileType == MakefileType.AutotoolsMakefile;
 			
@@ -51,14 +51,15 @@ namespace MonoDevelop.Autotools
 
 			try
 			{
-				Combine combine = entry as Combine;
+				SolutionFolder solutionFolder = (SolutionFolder) entry;
+				string targetDirectory = solutionFolder.BaseDirectory;
 
 				StringBuilder subdirs = new StringBuilder();
 				subdirs.Append ("#Warning: This is an automatically generated file, do not edit!\n");
 
 				if (!generateAutotools) {
 					solutionTop.AppendFormat ("top_srcdir={0}\n", FileService.AbsoluteToRelativePath (
-							entry.BaseDirectory, ctx.TargetCombine.BaseDirectory));
+							entry.BaseDirectory, ctx.TargetSolution.BaseDirectory));
 					solutionTop.Append ("include $(top_srcdir)/config.make\n");
 					solutionTop.Append ("include $(top_srcdir)/Makefile.include\n");
 					solutionTop.Append ("include $(top_srcdir)/rules.make\n\n");
@@ -66,28 +67,39 @@ namespace MonoDevelop.Autotools
 				}
 
 				ArrayList children = new ArrayList ();
-				foreach ( CombineConfiguration config in combine.Configurations )
+				foreach ( SolutionConfiguration config in solutionFolder.ParentSolution.Configurations )
 				{
-					if ( !ctx.IsSupportedConfiguration ( config.Name ) ) continue;
+					if ( !ctx.IsSupportedConfiguration ( config.Id ) ) continue;
 					
 					if (generateAutotools)
-						subdirs.AppendFormat ( "if {0}\n", "ENABLE_" + ctx.EscapeAndUpperConfigName (config.Name));
+						subdirs.AppendFormat ( "if {0}\n", "ENABLE_" + ctx.EscapeAndUpperConfigName (config.Id));
 					else
-						subdirs.AppendFormat ( "ifeq ($(CONFIG),{0})\n", ctx.EscapeAndUpperConfigName (config.Name));
+						subdirs.AppendFormat ( "ifeq ($(CONFIG),{0})\n", ctx.EscapeAndUpperConfigName (config.Id));
 
 					subdirs.Append (" SUBDIRS = ");
 					
-					foreach (CombineEntry ce in CalculateSubDirOrder (ctx, config))
+					foreach (SolutionItem ce in CalculateSubDirOrder (ctx, solutionFolder, config))
 					{
-						if (combine.BaseDirectory == ce.BaseDirectory) {
+						string baseDirectory;
+						if (!(ce is SolutionEntityItem) && !(ce is SolutionFolder))
+							continue;
+						
+						// Ignore projects which can't be deployed
+						IMakefileHandler handler = AutotoolsContext.GetMakefileHandler (ce, ctx.MakefileType);
+						if (handler == null)
+							continue;
+							
+						baseDirectory = ce.BaseDirectory;
+						
+						if (solutionFolder.BaseDirectory == baseDirectory) {
 							subdirs.Append (" . ");
 						} else {
-							if ( !ce.BaseDirectory.StartsWith (combine.BaseDirectory) )
+							if (!baseDirectory.StartsWith (solutionFolder.BaseDirectory) )
 								throw new Exception ( GettextCatalog.GetString (
-									"Child projects / solutions must be in sub-directories of their parent") );
+									"Child projects must be in sub-directories of their parent") );
 							
 							// add the subdirectory to the list
-							string path = Path.GetDirectoryName (ce.RelativeFileName);
+							string path = FileService.AbsoluteToRelativePath (targetDirectory, baseDirectory);
 							if (path.StartsWith ("." + Path.DirectorySeparatorChar) )
 								path = path.Substring (2);
 							subdirs.Append (" ");
@@ -104,17 +116,18 @@ namespace MonoDevelop.Autotools
 				string includedProject = null;
 
 				// deploy recursively
-				foreach ( CombineEntry ce in children )
+				foreach (SolutionItem ce in children)
 				{
 					IMakefileHandler handler = AutotoolsContext.GetMakefileHandler ( ce, ctx.MakefileType );
 					Makefile makefile;
 					string outpath;
 					if ( handler != null && handler.CanDeploy ( ce, ctx.MakefileType ) )
 					{
-						if (ce is Project)
-							ctx.RegisterBuiltProject (ce.Name);
+						ctx.RegisterBuiltProject (ce);
 						makefile = handler.Deploy ( ctx, ce, monitor );
-						if (combine.BaseDirectory == ce.BaseDirectory) {
+
+						if (targetDirectory == ce.BaseDirectory)
+						{
 							if (includedProject != null)
 								throw new Exception ( GettextCatalog.GetString (
 									"More than 1 project in the same directory as the top-level solution is not supported."));
@@ -122,20 +135,20 @@ namespace MonoDevelop.Autotools
 							// project is in the solution directory
 							string projectMakefileName = ce.Name + ".make";
 							includedProject = String.Format ("include {0}", projectMakefileName);
-							outpath = Path.Combine (Path.GetDirectoryName(ce.FileName), projectMakefileName);
+							outpath = Path.Combine (targetDirectory, projectMakefileName);
 							ctx.AddGeneratedFile (outpath);
 
 							if (!generateAutotools)
 								solutionMakefile.SetVariable ("EXTRA_DIST", projectMakefileName);
 						} else {
 							makefile.AppendToVariable ("EXTRA_DIST", generateAutotools ? String.Empty : "Makefile");
-							outpath = Path.Combine (Path.GetDirectoryName(ce.FileName), "Makefile");
+							outpath = Path.Combine (ce.BaseDirectory, "Makefile");
 							if (generateAutotools) {
 								ctx.AddAutoconfFile (outpath);
 								outpath = outpath + ".am";
 							} else {
 								makefile.Append ("install: install-local\nuninstall: uninstall-local\nclean: clean-local\n");
-								if (ce is Combine)
+								if (ce is SolutionFolder)
 									//non TargetCombine
 									makefile.Append ("dist-local: dist-local-recursive\n");
 								else
@@ -173,7 +186,7 @@ namespace MonoDevelop.Autotools
 
 					solutionMakefile.Append (sw.ToString ());
 
-					if (entry == ctx.TargetCombine) {
+					if (solutionFolder.IsRoot) {
 						// Emit dist and distcheck targets only for TargetCombine
 						reader = new StreamReader (Path.Combine (ctx.TemplateDir, "make-dist.targets"));
 						solutionMakefile.Append (reader.ReadToEnd ());
@@ -191,11 +204,11 @@ namespace MonoDevelop.Autotools
 		}
 
 		// utility function for finding the correct order to process directories
-		List<CombineEntry> CalculateSubDirOrder (AutotoolsContext ctx, CombineConfiguration config)
+		List<SolutionItem> CalculateSubDirOrder (AutotoolsContext ctx, SolutionFolder folder, SolutionConfiguration config)
 		{
-			List<CombineEntry> resultOrder = new List<CombineEntry>();
-			Set<string> dependenciesMet = new Set<string>();
-			Set<CombineEntry> inResult = new Set<CombineEntry>();
+			List<SolutionItem> resultOrder = new List<SolutionItem>();
+			Set<SolutionItem> dependenciesMet = new Set<SolutionItem>();
+			Set<SolutionItem> inResult = new Set<SolutionItem>();
 			
 			// We don't have to worry about projects built in parent combines
 			dependenciesMet.Union (ctx.GetBuiltProjects ());
@@ -206,44 +219,45 @@ namespace MonoDevelop.Autotools
 			{
 				added = false;
 				notMet = null;
+				
+				List<SolutionItem> items = new List<SolutionItem> ();
+				GetSubItems (items, folder);
 
-				foreach (CombineConfigurationEntry centry in config.Entries) 
+				foreach (SolutionItem item in items) 
 				{
-					if ( !centry.Build ) continue;
+					Set<SolutionItem> references, provides;
 					
-					CombineEntry entry = centry.Entry;
-					
-					if ( inResult.Contains (entry) ) continue;
-
-					Set<string> references, provides;
-					if (entry is Project)
-					{
-						Project project = entry as Project;
-
-						references = GetReferencedProjects (project);
-						provides = new Set<string>();
-						provides.Add(project.Name);
-					} 
-					else if (entry is Combine) 
-					{
-						CombineConfiguration cc = (entry as Combine).Configurations[config.Name] as CombineConfiguration;
-						if ( cc == null ) continue;
-						GetAllProjects ( cc, out provides, out references);
-					}
-					else {
-						if (!resultOrder.Contains (entry))
-							resultOrder.Add (entry);
+					if (inResult.Contains (item))
 						continue;
+					
+					if (item is SolutionEntityItem)
+					{
+						SolutionEntityItem entry = (SolutionEntityItem) item;
+						if (!config.BuildEnabledForItem (entry))
+							continue;
+						
+						string mappedConf = config.GetMappedConfiguration (entry);
+						if (mappedConf == null)
+							continue;
+						references = new Set<SolutionItem> ();
+						provides = new Set<SolutionItem>();
+						references.Union (entry.GetReferencedItems (mappedConf));
+						provides.Add (entry);
 					}
-
+					else if (item is SolutionFolder) {
+						GetAllProjects ((SolutionFolder) item, config, out provides, out references);
+					}
+					else
+						continue;
+	
 					if (dependenciesMet.ContainsSet (references) ) 
 					{
-						resultOrder.Add (entry);
+						resultOrder.Add (item);
 						dependenciesMet.Union(provides);
-						inResult.Add(entry);
+						inResult.Add(item);
 						added = true;
 					} 
-					else notMet = entry.Name;
+					else notMet = item.Name;
 				}
 			} while (added);
 
@@ -252,28 +266,22 @@ namespace MonoDevelop.Autotools
 
 			return resultOrder;
 		}
-
-		// cache references
-		Hashtable projectReferences = new Hashtable();		
-		/**
-		 * returns a set of all monodevelop projects that a give
-		 * projects references
-		 */
-		Set<string> GetReferencedProjects (Project project)
+		
+		void GetSubItems (List<SolutionItem> list, SolutionFolder folder)
 		{
-			Set<string> set = (Set<string>) projectReferences [project];
-			if (set != null) return set;
-
-			set = new Set<string>();
-
-			foreach (ProjectReference reference in project.ProjectReferences) 
-			{
-				if (reference.ReferenceType == ReferenceType.Project)
-					set.Add (reference.Reference);
+			// This method returns the subitems of a folder.
+			// If a folder does not match a phisical folder, it will be ignored.
+			
+			foreach (SolutionItem item in folder.Items) {
+				if (item is SolutionFolder) {
+					if (item.BaseDirectory != folder.BaseDirectory)
+						list.Add (item);
+					else
+						GetSubItems (list, (SolutionFolder) item);
+				}
+				else
+					list.Add (item);
 			}
-
-			projectReferences[project] = set;
-			return set;
 		}
 
 		// cache references
@@ -283,46 +291,46 @@ namespace MonoDevelop.Autotools
 		 * returns a set of projects that a combine contains and a set of projects
 		 * that are referenced from combine projects but not part of the combine
 		 */
-		void GetAllProjects (CombineConfiguration config, out Set<string> projects, out Set<string> references)
+		void GetAllProjects (SolutionFolder folder, SolutionConfiguration config, out Set<SolutionItem> projects, out Set<SolutionItem> references)
 		{
-			projects = (Set<string>) combineProjects [config];
-			if(projects != null) 
-			{
-				references = (Set<string>) combineReferences [config];
+			List<SolutionItem> subitems = new List<SolutionItem> ();
+			GetSubItems (subitems, folder);
+
+			projects = (Set<SolutionItem>) combineProjects [folder];
+			if (projects != null) {
+				references = (Set<SolutionItem>) combineReferences [folder];
 				return;
 			}
 
-			projects = new Set<string>();
-			references = new Set<string>();
+			projects = new Set<SolutionItem>();
+			references = new Set<SolutionItem>();
 			
-			foreach (CombineConfigurationEntry centry in config.Entries) 
+			foreach (SolutionItem item in subitems) 
 			{
-				if ( !centry.Build ) continue;
-				
-				CombineEntry entry = centry.Entry;
-				if (entry is Project) 
+				if (item is SolutionEntityItem)
 				{
-					Project project = entry as Project;
-					projects.Add (project.Name);
-					references.Union ( GetReferencedProjects (project) );
-				} 
-				else if (entry is Combine) 
+					SolutionEntityItem entry = (SolutionEntityItem) item;
+					if (!config.BuildEnabledForItem (entry))
+						continue;
+					string mappedConf = config.GetMappedConfiguration (entry);
+					if (mappedConf == null)
+						continue;
+					projects.Add (entry);
+					references.Union (entry.GetReferencedItems (mappedConf));
+				}
+				else if (item is SolutionFolder) 
 				{
-					Set<string> subProjects;
-					Set<string> subReferences;
-					
-					CombineConfiguration cc = (entry as Combine).Configurations[config.Name] as CombineConfiguration;
-					if ( cc == null ) continue;
-					GetAllProjects ( cc, out subProjects, out subReferences);
-
+					Set<SolutionItem> subProjects;
+					Set<SolutionItem> subReferences;
+					GetAllProjects ((SolutionFolder)item, config, out subProjects, out subReferences);
 					projects.Union (subProjects);
 					references.Union (subReferences);
 				}
 			}
 			
 			references.Without (projects);
-			combineProjects [config] = projects;
-			combineReferences [config] = references;
+			combineProjects [folder] = projects;
+			combineReferences [folder] = references;
 		}
 	}
 }

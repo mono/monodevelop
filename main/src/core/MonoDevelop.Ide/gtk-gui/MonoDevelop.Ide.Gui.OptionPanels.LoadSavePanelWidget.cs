@@ -17,6 +17,12 @@ namespace MonoDevelop.Ide.Gui.OptionPanels {
         
         private Gtk.VBox vbox26;
         
+        private Gtk.Label label1;
+        
+        private Gtk.HBox hbox1;
+        
+        private Gtk.ComboBox comboFileFormats;
+        
         private Gtk.Label locationLabel;
         
         private MonoDevelop.Components.FolderEntry folderEntry;
@@ -63,6 +69,33 @@ namespace MonoDevelop.Ide.Gui.OptionPanels {
             this.vbox26.Name = "vbox26";
             this.vbox26.Spacing = 6;
             // Container child vbox26.Gtk.Box+BoxChild
+            this.label1 = new Gtk.Label();
+            this.label1.Name = "label1";
+            this.label1.Xalign = 0F;
+            this.label1.LabelProp = Mono.Unix.Catalog.GetString("Project file format to use when creating new projects:");
+            this.vbox26.Add(this.label1);
+            Gtk.Box.BoxChild w1 = ((Gtk.Box.BoxChild)(this.vbox26[this.label1]));
+            w1.Position = 0;
+            w1.Expand = false;
+            w1.Fill = false;
+            // Container child vbox26.Gtk.Box+BoxChild
+            this.hbox1 = new Gtk.HBox();
+            this.hbox1.Name = "hbox1";
+            this.hbox1.Spacing = 6;
+            // Container child hbox1.Gtk.Box+BoxChild
+            this.comboFileFormats = Gtk.ComboBox.NewText();
+            this.comboFileFormats.Name = "comboFileFormats";
+            this.hbox1.Add(this.comboFileFormats);
+            Gtk.Box.BoxChild w2 = ((Gtk.Box.BoxChild)(this.hbox1[this.comboFileFormats]));
+            w2.Position = 0;
+            w2.Expand = false;
+            w2.Fill = false;
+            this.vbox26.Add(this.hbox1);
+            Gtk.Box.BoxChild w3 = ((Gtk.Box.BoxChild)(this.vbox26[this.hbox1]));
+            w3.Position = 1;
+            w3.Expand = false;
+            w3.Fill = false;
+            // Container child vbox26.Gtk.Box+BoxChild
             this.locationLabel = new Gtk.Label();
             this.locationLabel.Name = "locationLabel";
             this.locationLabel.Xalign = 0F;
@@ -70,22 +103,22 @@ namespace MonoDevelop.Ide.Gui.OptionPanels {
             this.locationLabel.LabelProp = Mono.Unix.Catalog.GetString("Default _Solution location");
             this.locationLabel.UseUnderline = true;
             this.vbox26.Add(this.locationLabel);
-            Gtk.Box.BoxChild w1 = ((Gtk.Box.BoxChild)(this.vbox26[this.locationLabel]));
-            w1.Position = 0;
-            w1.Expand = false;
-            w1.Fill = false;
+            Gtk.Box.BoxChild w4 = ((Gtk.Box.BoxChild)(this.vbox26[this.locationLabel]));
+            w4.Position = 2;
+            w4.Expand = false;
+            w4.Fill = false;
             // Container child vbox26.Gtk.Box+BoxChild
             this.folderEntry = new MonoDevelop.Components.FolderEntry();
             this.folderEntry.Name = "folderEntry";
             this.vbox26.Add(this.folderEntry);
-            Gtk.Box.BoxChild w2 = ((Gtk.Box.BoxChild)(this.vbox26[this.folderEntry]));
-            w2.Position = 1;
-            w2.Expand = false;
-            w2.Fill = false;
+            Gtk.Box.BoxChild w5 = ((Gtk.Box.BoxChild)(this.vbox26[this.folderEntry]));
+            w5.Position = 3;
+            w5.Expand = false;
+            w5.Fill = false;
             this.vbox17.Add(this.vbox26);
-            Gtk.Box.BoxChild w3 = ((Gtk.Box.BoxChild)(this.vbox17[this.vbox26]));
-            w3.Position = 0;
-            w3.Expand = false;
+            Gtk.Box.BoxChild w6 = ((Gtk.Box.BoxChild)(this.vbox17[this.vbox26]));
+            w6.Position = 0;
+            w6.Expand = false;
             // Container child vbox17.Gtk.Box+BoxChild
             this.vbox18 = new Gtk.VBox();
             this.vbox18.Name = "vbox18";
@@ -98,10 +131,10 @@ namespace MonoDevelop.Ide.Gui.OptionPanels {
             this.loadLabel.LabelProp = Mono.Unix.Catalog.GetString("<b>Load</b>");
             this.loadLabel.UseMarkup = true;
             this.vbox18.Add(this.loadLabel);
-            Gtk.Box.BoxChild w4 = ((Gtk.Box.BoxChild)(this.vbox18[this.loadLabel]));
-            w4.Position = 0;
-            w4.Expand = false;
-            w4.Fill = false;
+            Gtk.Box.BoxChild w7 = ((Gtk.Box.BoxChild)(this.vbox18[this.loadLabel]));
+            w7.Position = 0;
+            w7.Expand = false;
+            w7.Fill = false;
             // Container child vbox18.Gtk.Box+BoxChild
             this.hbox14 = new Gtk.HBox();
             this.hbox14.Name = "hbox14";
@@ -113,10 +146,10 @@ namespace MonoDevelop.Ide.Gui.OptionPanels {
             this.label25.Yalign = 0F;
             this.label25.LabelProp = "    ";
             this.hbox14.Add(this.label25);
-            Gtk.Box.BoxChild w5 = ((Gtk.Box.BoxChild)(this.hbox14[this.label25]));
-            w5.Position = 0;
-            w5.Expand = false;
-            w5.Fill = false;
+            Gtk.Box.BoxChild w8 = ((Gtk.Box.BoxChild)(this.hbox14[this.label25]));
+            w8.Position = 0;
+            w8.Expand = false;
+            w8.Fill = false;
             // Container child hbox14.Gtk.Box+BoxChild
             this.hbox10 = new Gtk.HBox();
             this.hbox10.Name = "hbox10";
@@ -132,10 +165,10 @@ namespace MonoDevelop.Ide.Gui.OptionPanels {
             this.loadUserDataCheckButton.DrawIndicator = true;
             this.loadUserDataCheckButton.UseUnderline = true;
             this.vbox65.Add(this.loadUserDataCheckButton);
-            Gtk.Box.BoxChild w6 = ((Gtk.Box.BoxChild)(this.vbox65[this.loadUserDataCheckButton]));
-            w6.Position = 0;
-            w6.Expand = false;
-            w6.Fill = false;
+            Gtk.Box.BoxChild w9 = ((Gtk.Box.BoxChild)(this.vbox65[this.loadUserDataCheckButton]));
+            w9.Position = 0;
+            w9.Expand = false;
+            w9.Fill = false;
             // Container child vbox65.Gtk.Box+BoxChild
             this.loadPrevProjectCheckButton = new Gtk.CheckButton();
             this.loadPrevProjectCheckButton.Name = "loadPrevProjectCheckButton";
@@ -143,25 +176,25 @@ namespace MonoDevelop.Ide.Gui.OptionPanels {
             this.loadPrevProjectCheckButton.DrawIndicator = true;
             this.loadPrevProjectCheckButton.UseUnderline = true;
             this.vbox65.Add(this.loadPrevProjectCheckButton);
-            Gtk.Box.BoxChild w7 = ((Gtk.Box.BoxChild)(this.vbox65[this.loadPrevProjectCheckButton]));
-            w7.Position = 1;
-            w7.Expand = false;
-            w7.Fill = false;
-            this.hbox10.Add(this.vbox65);
-            Gtk.Box.BoxChild w8 = ((Gtk.Box.BoxChild)(this.hbox10[this.vbox65]));
-            w8.Position = 0;
-            w8.Expand = false;
-            w8.Fill = false;
-            this.hbox14.Add(this.hbox10);
-            Gtk.Box.BoxChild w9 = ((Gtk.Box.BoxChild)(this.hbox14[this.hbox10]));
-            w9.Position = 1;
-            this.vbox18.Add(this.hbox14);
-            Gtk.Box.BoxChild w10 = ((Gtk.Box.BoxChild)(this.vbox18[this.hbox14]));
+            Gtk.Box.BoxChild w10 = ((Gtk.Box.BoxChild)(this.vbox65[this.loadPrevProjectCheckButton]));
             w10.Position = 1;
-            this.vbox17.Add(this.vbox18);
-            Gtk.Box.BoxChild w11 = ((Gtk.Box.BoxChild)(this.vbox17[this.vbox18]));
-            w11.Position = 1;
+            w10.Expand = false;
+            w10.Fill = false;
+            this.hbox10.Add(this.vbox65);
+            Gtk.Box.BoxChild w11 = ((Gtk.Box.BoxChild)(this.hbox10[this.vbox65]));
+            w11.Position = 0;
             w11.Expand = false;
+            w11.Fill = false;
+            this.hbox14.Add(this.hbox10);
+            Gtk.Box.BoxChild w12 = ((Gtk.Box.BoxChild)(this.hbox14[this.hbox10]));
+            w12.Position = 1;
+            this.vbox18.Add(this.hbox14);
+            Gtk.Box.BoxChild w13 = ((Gtk.Box.BoxChild)(this.vbox18[this.hbox14]));
+            w13.Position = 1;
+            this.vbox17.Add(this.vbox18);
+            Gtk.Box.BoxChild w14 = ((Gtk.Box.BoxChild)(this.vbox17[this.vbox18]));
+            w14.Position = 1;
+            w14.Expand = false;
             // Container child vbox17.Gtk.Box+BoxChild
             this.vbox19 = new Gtk.VBox();
             this.vbox19.Name = "vbox19";
@@ -174,10 +207,10 @@ namespace MonoDevelop.Ide.Gui.OptionPanels {
             this.saveLabel.LabelProp = Mono.Unix.Catalog.GetString("<b>Save</b>");
             this.saveLabel.UseMarkup = true;
             this.vbox19.Add(this.saveLabel);
-            Gtk.Box.BoxChild w12 = ((Gtk.Box.BoxChild)(this.vbox19[this.saveLabel]));
-            w12.Position = 0;
-            w12.Expand = false;
-            w12.Fill = false;
+            Gtk.Box.BoxChild w15 = ((Gtk.Box.BoxChild)(this.vbox19[this.saveLabel]));
+            w15.Position = 0;
+            w15.Expand = false;
+            w15.Fill = false;
             // Container child vbox19.Gtk.Box+BoxChild
             this.hbox11 = new Gtk.HBox();
             this.hbox11.Name = "hbox11";
@@ -189,10 +222,10 @@ namespace MonoDevelop.Ide.Gui.OptionPanels {
             this.label21.Yalign = 0F;
             this.label21.LabelProp = "    ";
             this.hbox11.Add(this.label21);
-            Gtk.Box.BoxChild w13 = ((Gtk.Box.BoxChild)(this.hbox11[this.label21]));
-            w13.Position = 0;
-            w13.Expand = false;
-            w13.Fill = false;
+            Gtk.Box.BoxChild w16 = ((Gtk.Box.BoxChild)(this.hbox11[this.label21]));
+            w16.Position = 0;
+            w16.Expand = false;
+            w16.Fill = false;
             // Container child hbox11.Gtk.Box+BoxChild
             this.vbox20 = new Gtk.VBox();
             this.vbox20.Name = "vbox20";
@@ -204,19 +237,19 @@ namespace MonoDevelop.Ide.Gui.OptionPanels {
             this.createBackupCopyCheckButton.DrawIndicator = true;
             this.createBackupCopyCheckButton.UseUnderline = true;
             this.vbox20.Add(this.createBackupCopyCheckButton);
-            Gtk.Box.BoxChild w14 = ((Gtk.Box.BoxChild)(this.vbox20[this.createBackupCopyCheckButton]));
-            w14.Position = 0;
-            w14.Expand = false;
-            w14.Fill = false;
+            Gtk.Box.BoxChild w17 = ((Gtk.Box.BoxChild)(this.vbox20[this.createBackupCopyCheckButton]));
+            w17.Position = 0;
+            w17.Expand = false;
+            w17.Fill = false;
             this.hbox11.Add(this.vbox20);
-            Gtk.Box.BoxChild w15 = ((Gtk.Box.BoxChild)(this.hbox11[this.vbox20]));
-            w15.Position = 1;
+            Gtk.Box.BoxChild w18 = ((Gtk.Box.BoxChild)(this.hbox11[this.vbox20]));
+            w18.Position = 1;
             this.vbox19.Add(this.hbox11);
-            Gtk.Box.BoxChild w16 = ((Gtk.Box.BoxChild)(this.vbox19[this.hbox11]));
-            w16.Position = 1;
+            Gtk.Box.BoxChild w19 = ((Gtk.Box.BoxChild)(this.vbox19[this.hbox11]));
+            w19.Position = 1;
             this.vbox17.Add(this.vbox19);
-            Gtk.Box.BoxChild w17 = ((Gtk.Box.BoxChild)(this.vbox17[this.vbox19]));
-            w17.Position = 2;
+            Gtk.Box.BoxChild w20 = ((Gtk.Box.BoxChild)(this.vbox17[this.vbox19]));
+            w20.Position = 2;
             this.Add(this.vbox17);
             if ((this.Child != null)) {
                 this.Child.ShowAll();

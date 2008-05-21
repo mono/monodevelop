@@ -87,7 +87,7 @@ namespace MonoDevelop.GtkCore
 			string fileName = fileTemplate.GetFileName (project, language, directory, name);
 			fileTemplate.AddToProject (project, language, directory, name);
 
-			IdeApp.ProjectOperations.ParserDatabase.UpdateFile (project, fileName, null);
+			IdeApp.Workspace.ParserDatabase.UpdateFile (project, fileName, null);
 			
 			DotNetProject netProject = project as DotNetProject;
 			string ns = netProject != null ? netProject.GetDefaultNamespace (fileName) : "";

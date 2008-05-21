@@ -16,10 +16,14 @@ namespace MonoDevelop.AspNet.Gui
 	{
 		AspNetAppProjectConfiguration configuration;
 		
-		public AspNetConfigurationPanelWidget (Properties customizationObject)
+		public AspNetConfigurationPanelWidget ()
 		{
 			this.Build();
-			configuration = ((Properties)customizationObject).Get<AspNetAppProjectConfiguration> ("Config");
+		}
+		
+		public void Load (AspNetAppProjectConfiguration configuration)
+		{
+			this.configuration = configuration;
 			autoGenerateNonPartialCodeBehind.Active = configuration.GenerateNonPartialCodeBehindMembers;
 		}
 		

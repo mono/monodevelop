@@ -71,7 +71,9 @@ namespace MonoDevelop.Components {
 		}
 		
 		public new string Path {
-			get { return default_path != null ? System.IO.Path.Combine (default_path, text.Text) : text.Text; }
+			get {
+				return default_path != null && text.Text.Length > 0 ? System.IO.Path.Combine (default_path, text.Text) : text.Text;
+			}
 			set {
 				loading = true; 
 				text.Text = value;

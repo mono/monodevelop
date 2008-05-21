@@ -45,7 +45,7 @@ namespace MonoDevelop.GtkCore
 		public Stetic.ResourceInfo[] GetResources ()
 		{
 			ArrayList list = new ArrayList ();
-			foreach (ProjectFile file in project.ProjectFiles) {
+			foreach (ProjectFile file in project.Files) {
 				if (file.BuildAction == BuildAction.EmbedAsResource)
 					list.Add (new Stetic.ResourceInfo (Path.GetFileName (file.Name), file.Name));
 			}
@@ -54,7 +54,7 @@ namespace MonoDevelop.GtkCore
 		
 		public Stream GetResourceStream (string resourceName)
 		{
-			foreach (ProjectFile file in project.ProjectFiles) {
+			foreach (ProjectFile file in project.Files) {
 				if (resourceName == Path.GetFileName (file.Name))
 					return File.OpenRead (file.Name);
 			}
@@ -70,9 +70,9 @@ namespace MonoDevelop.GtkCore
 		
 		public void RemoveResource (string resourceName)
 		{
-			foreach (ProjectFile file in project.ProjectFiles) {
+			foreach (ProjectFile file in project.Files) {
 				if (resourceName == Path.GetFileName (file.Name)) {
-					project.ProjectFiles.Remove (file);
+					project.Files.Remove (file);
 					project.Save (new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor());
 					return;
 				}

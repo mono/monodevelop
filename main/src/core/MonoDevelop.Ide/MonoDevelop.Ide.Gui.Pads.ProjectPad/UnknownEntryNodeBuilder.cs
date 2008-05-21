@@ -40,7 +40,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 	public class UnknownEntryNodeBuilder: TypeNodeBuilder
 	{
 		public override Type NodeDataType {
-			get { return typeof(UnknownCombineEntry); }
+			get { return typeof(UnknownSolutionItem); }
 		}
 		
 		public override string ContextMenuAddinPath {
@@ -53,7 +53,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
 		{
-			UnknownCombineEntry entry = (UnknownCombineEntry) dataObject;
+			UnknownSolutionItem entry = (UnknownSolutionItem) dataObject;
 			
 			if (entry.LoadError.Length > 0) {
 				icon = Context.GetIcon (Gtk.Stock.DialogError);
@@ -72,20 +72,20 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
 		{
-			UnknownCombineEntry entry = (UnknownCombineEntry) dataObject;
+			UnknownSolutionItem entry = (UnknownSolutionItem) dataObject;
 			return entry.LoadError.Length > 0;
 		}
 		
 		public override void BuildChildNodes (ITreeBuilder treeBuilder, object dataObject)
 		{
-			UnknownCombineEntry entry = (UnknownCombineEntry) dataObject;
+			UnknownSolutionItem entry = (UnknownSolutionItem) dataObject;
 			if (entry.LoadError.Length > 0)
 				treeBuilder.AddChild (new TreeViewItem (entry.LoadError));
 		}
 
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
 		{
-			return ((UnknownCombineEntry)dataObject).Name;
+			return ((UnknownSolutionItem)dataObject).Name;
 		}
 	}
 	
@@ -94,33 +94,33 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		[CommandHandler (ProjectCommands.Reload)]
 		public void OnReload ()
 		{
-			UnknownCombineEntry entry = (UnknownCombineEntry) CurrentNode.DataItem;
+			UnknownSolutionItem entry = (UnknownSolutionItem) CurrentNode.DataItem;
 			using (IProgressMonitor m = IdeApp.Workbench.ProgressMonitors.GetLoadProgressMonitor (true)) {
-				entry.ParentCombine.ReloadEntry (m, entry);
+				entry.ParentFolder.ReloadItem (m, entry);
 			}
 		}
 		
 		[CommandUpdateHandler (ProjectCommands.Reload)]
 		public void OnUpdateReload (CommandInfo info)
 		{
-			UnknownCombineEntry entry = (UnknownCombineEntry) CurrentNode.DataItem;
-			info.Enabled = entry.ParentCombine != null;
+			UnknownSolutionItem entry = (UnknownSolutionItem) CurrentNode.DataItem;
+			info.Enabled = entry.ParentFolder != null;
 		}
 		
 		public override void DeleteItem ()
 		{
-			UnknownCombineEntry entry = (UnknownCombineEntry) CurrentNode.DataItem;
-			Combine cmb = entry.ParentCombine;
+			UnknownSolutionItem item = (UnknownSolutionItem) CurrentNode.DataItem;
+			SolutionFolder cmb = item.ParentFolder;
 			if (cmb == null)
 				return;
 			
 			bool yes = MessageService.Confirm (GettextCatalog.GetString (
-				"Do you really want to remove project '{0}' from solution '{1}'", entry.FileName, cmb.Name), AlertButton.Remove);
+				"Do you really want to remove project '{0}' from solution '{1}'", item.FileName, cmb.Name), AlertButton.Remove);
 
 			if (yes) {
-				cmb.RemoveEntry (entry);
-				entry.Dispose ();
-				IdeApp.ProjectOperations.SaveCombineEntry (cmb);
+				cmb.Items.Remove (item);
+				item.Dispose ();
+				IdeApp.ProjectOperations.Save (cmb.ParentSolution);
 			}
 		}
 	}

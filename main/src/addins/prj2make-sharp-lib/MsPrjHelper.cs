@@ -95,7 +95,7 @@ namespace MonoDevelop.Prj2Make
 			StreamReader reader = new StreamReader(fis);
 			strInput = reader.ReadLine();
 
-			match = SlnFileFormat.SlnVersionRegex.Match(strInput);
+			match = SlnVersionRegex.Match(strInput);
 			if (match.Success)
 			{
 				strVersion = match.Groups[1].Value;
@@ -143,7 +143,7 @@ namespace MonoDevelop.Prj2Make
 					string s = reader.ReadLine();
 					Match match;
 
-					match = SlnFileFormat.ProjectRegex.Match(s);
+					match = ProjectRegex.Match(s);
 					if (match.Success)
 					{
 						string projectName = match.Groups[2].Value;
@@ -484,10 +484,10 @@ namespace MonoDevelop.Prj2Make
 				prjxObj.NewFileSearch = NewFileSearch.None;
 				prjxObj.DefaultNamespace = csprojObj.CSHARP.Build.Settings.RootNamespace;
 
-				GetContents (prjxObj, csprojObj.CSHARP.Files.Include, prjxObj.ProjectFiles, monitor);
+				GetContents (prjxObj, csprojObj.CSHARP.Files.Include, prjxObj.Files, monitor);
 				monitor.Step (1);
 				
-				GetReferences (csprojObj.CSHARP.Build.References, prjxObj.ProjectReferences, monitor);
+				GetReferences (csprojObj.CSHARP.Build.References, prjxObj.References, monitor);
 				monitor.Step (1);
 				
 				prjxObj.Configurations.Clear ();
@@ -517,13 +517,13 @@ namespace MonoDevelop.Prj2Make
 
 		public string MsSlnToCmbxHelper (string slnFileName, IProgressMonitor monitor)
 		{
-			Combine c = MsSlnToCmbxHelper (slnFileName, monitor, true);
+			Solution c = MsSlnToCmbxHelper (slnFileName, monitor, true);
 			return c.FileName;
 		}
 
-		public Combine MsSlnToCmbxHelper (string slnFileName, IProgressMonitor monitor, bool save)
+		public Solution MsSlnToCmbxHelper (string slnFileName, IProgressMonitor monitor, bool save)
 		{
-			Combine cmbxObj = new Combine();
+			Solution solution = new Solution();
 			cmbxFileName = String.Format ("{0}.mds",
 				Path.Combine(Path.GetDirectoryName(slnFileName),
 				Path.GetFileNameWithoutExtension(slnFileName))
@@ -554,11 +554,11 @@ namespace MonoDevelop.Prj2Make
 					if (save) {
 						string prjName = prj.FileName;
 						if (prjName != null)
-							cmbxObj.AddEntry (prjName, monitor);
+							solution.RootFolder.AddItem (prjName, monitor);
 						else
 							return null;
 					} else {
-						cmbxObj.Entries.Add (prj);
+						solution.RootFolder.Items.Add (prj);
 					}
 					monitor.Step (1);
 				}
@@ -566,12 +566,12 @@ namespace MonoDevelop.Prj2Make
 				monitor.EndTask ();
 				monitor.Step (1);
 
-				cmbxObj.FileName = cmbxFileName;
+				solution.FileName = cmbxFileName;
 				if (save)
-					cmbxObj.Save (cmbxFileName, monitor);
+					solution.Save (cmbxFileName, monitor);
 
 				monitor.Step (1);
-				return cmbxObj;
+				return solution;
 			}
 			catch (Exception e)
 			{
@@ -745,7 +745,6 @@ namespace MonoDevelop.Prj2Make
 						break;
 					case MonoDevelop.Prj2Make.Schema.Csproj.FileBuildAction.EmbeddedResource:
 						flOut.BuildAction = BuildAction.EmbedAsResource;
-						flOut.ResourceId = MSBuildProjectServiceExtension.GetDefaultResourceIdInternal (flOut);
 						break;
 					case MonoDevelop.Prj2Make.Schema.Csproj.FileBuildAction.None:
 						flOut.BuildAction = BuildAction.Nothing;
@@ -757,14 +756,13 @@ namespace MonoDevelop.Prj2Make
 			}
 		}
 
-		protected IConfiguration CreateConfigurationBlock (MonoDevelop.Projects.Project project, Config ConfigBlock, string AssemblyName, string OuputType, IProgressMonitor monitor)
+		protected SolutionItemConfiguration CreateConfigurationBlock (MonoDevelop.Projects.DotNetProject project, Config ConfigBlock, string AssemblyName, string OuputType, IProgressMonitor monitor)
 		{
 			DotNetProjectConfiguration confObj = project.CreateConfiguration (ConfigBlock.Name) as DotNetProjectConfiguration;
 
 			confObj.RunWithWarnings = false;
-			confObj.NetRuntime = NetRuntime.MsNet;
 			confObj.DebugMode = ConfigBlock.DebugSymbols;
-			confObj.CompileTarget = (CompileTarget) Enum.Parse (typeof(CompileTarget), OuputType, true);
+			project.CompileTarget = (CompileTarget) Enum.Parse (typeof(CompileTarget), OuputType, true);
 			
 			string dir = MapPath (project.BaseDirectory, ConfigBlock.OutputPath);
 			if (dir == null) {
@@ -775,7 +773,6 @@ namespace MonoDevelop.Prj2Make
 			confObj.OutputAssembly = AssemblyName;
 			
 			CSharpCompilerParameters compilerParams = new CSharpCompilerParameters ();
-			compilerParams.CsharpCompiler = CsharpCompiler.Mcs;
 			compilerParams.WarningLevel = ConfigBlock.WarningLevel;
 			compilerParams.NoWarnings = "";
 			compilerParams.Optimize = ConfigBlock.Optimize;
@@ -844,6 +841,25 @@ namespace MonoDevelop.Prj2Make
 				return Path.GetFullPath (part);
 			} else {
 				return Path.GetFullPath (path);
+			}
+		}
+
+		// static regexes
+		static Regex projectRegex = null;
+		internal static Regex ProjectRegex {
+			get {
+				if (projectRegex == null)
+					projectRegex = new Regex(@"Project\(""(\{[^}]*\})""\) = ""(.*)"", ""(.*)"", ""(\{[^{]*\})""");
+				return projectRegex;
+			}
+		}
+
+		static Regex slnVersionRegex = null;
+		internal static Regex SlnVersionRegex {
+			get {
+				if (slnVersionRegex == null)
+					slnVersionRegex = new Regex (@"Microsoft Visual Studio Solution File, Format Version (\d?\d.\d\d)");
+				return slnVersionRegex;
 			}
 		}
 	}   

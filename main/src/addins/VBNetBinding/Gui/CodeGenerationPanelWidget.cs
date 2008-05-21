@@ -42,11 +42,10 @@ namespace MonoDevelop.VBNetBinding
 {
 	public partial class CodeGenerationPanelWidget : Gtk.Bin
 	{
-		DotNetProject              project;
 		DotNetProjectConfiguration config;
 		VBCompilerParameters       parameters;
 		
-		public CodeGenerationPanelWidget (Properties customizationObject)
+		public CodeGenerationPanelWidget (Project project)
 		{
 			this.Build();
 			
@@ -61,28 +60,20 @@ namespace MonoDevelop.VBNetBinding
 			mainClassEntry.Model = classListStore;
 			mainClassEntry.TextColumn = 0;
 			
-			project = customizationObject.Get<DotNetProject> ("Project");
-			if (project == null) {
-				MessageService.ShowError ("project == null. In CodeGenerationPanelWidget constructor (VB.NET binding).");
-				return;
-			}
-			this.config = customizationObject.Get<DotNetProjectConfiguration> ("Config");
-			if (config == null) {
-				MessageService.ShowError ("config == null. In CodeGenerationPanelWidget constructor (VB.NET binding).");
-				return;
-			}
-			this.parameters = (VBCompilerParameters)config.CompilationParameters;
-			if (parameters == null) {
-				MessageService.ShowError ("parameters == null. In CodeGenerationPanelWidget constructor (VB.NET binding).");
-				return;
-			}
-			FillClasses ();
-			
 			Gtk.CellRendererText cr = new Gtk.CellRendererText ();
 			compileTargetCombo.PackStart (cr, true);
 			compileTargetCombo.AddAttribute (cr, "text", 0);
-			compileTargetCombo.Active = (int)config.CompileTarget;
 			compileTargetCombo.Changed += new EventHandler (OnTargetChanged);
+			
+			FillClasses (project);
+		}
+		
+		public void Load (DotNetProjectConfiguration config)
+		{
+			this.config = config;
+			this.parameters = (VBCompilerParameters) config.CompilationParameters;
+			
+			compileTargetCombo.Active = (int)config.CompileTarget;
 			
 			symbolsEntry.Text = parameters.DefineSymbols;
 			mainClassEntry.Entry.Text = parameters.MainClass;
@@ -96,7 +87,7 @@ namespace MonoDevelop.VBNetBinding
 			additionalArgsEntry.Text = parameters.AdditionalParameters;
 		}
 		
-		public bool StorePanelContents ()
+		public void StorePanelContents ()
 		{
 			parameters.DefineSymbols = symbolsEntry.Text;
 			parameters.MainClass = mainClassEntry.Entry.Text;
@@ -108,7 +99,6 @@ namespace MonoDevelop.VBNetBinding
 			config.RunWithWarnings = !warningsAsErrorsCheckButton.Active;
 			parameters.WarningLevel = (int)warningLevelSpinButton.Value;
 			parameters.AdditionalParameters = additionalArgsEntry.Text;
-			return true;
 		}
 		
 		void OnTargetChanged (object s, EventArgs a)
@@ -117,15 +107,16 @@ namespace MonoDevelop.VBNetBinding
 		}
 		
 		Gtk.ListStore classListStore;
-		void FillClasses ()
+		
+		void FillClasses (Project project)
 		{
 			try {
-				IParserContext ctx = MonoDevelop.Ide.Gui.IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (project);
+				classListStore.Clear ();
+				IParserContext ctx = MonoDevelop.Ide.Gui.IdeApp.Workspace.ParserDatabase.GetProjectParserContext (project);
 				foreach (IClass c in ctx.GetProjectContents ()) {
 					if (c.Methods == null) 
 						continue;
 					foreach (IMethod m in c.Methods) {
-						System.Console.WriteLine (m);
 						if (m.IsStatic && m.Name.ToUpper () == "MAIN")
 							classListStore.AppendValues (c.FullyQualifiedName);
 					}

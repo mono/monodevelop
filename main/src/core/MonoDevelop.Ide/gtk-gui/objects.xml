@@ -1,10 +1,4 @@
 <objects>
-  <object type="MonoDevelop.Ide.Gui.Dialogs.CombineEntryFeatureSelector" palette-category="MonoDevelop.Ide" allow-children="false" base-type="Gtk.Widget">
-    <itemgroups>
-    </itemgroups>
-    <signals>
-    </signals>
-  </object>
   <object type="MonoDevelop.Ide.StandardHeaders.StandardHeaderPanel" palette-category="MonoDevelop.Ide" allow-children="false" base-type="Gtk.Bin" internal="true">
     <itemgroups>
     </itemgroups>
@@ -16,6 +10,10 @@
     </itemgroups>
     <signals>
     </signals>
+  </object>
+  <object type="MonoDevelop.Ide.Gui.Dialogs.CombineEntryFeatureSelector" palette-category="MonoDevelop.Ide" allow-children="false" base-type="Gtk.Widget">
+    <itemgroups />
+    <signals />
   </object>
   <object type="MonoDevelop.Ide.Gui.Pads.ClassBrowser.ClassBrowserPadWidget" palette-category="MonoDevelop.Ide" allow-children="false" base-type="Gtk.Bin">
     <itemgroups />

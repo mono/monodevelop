@@ -1,12 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <stetic-interface>
   <configuration>
-    <images-root-path>../</images-root-path>
+    <images-root-path>..</images-root-path>
     <target-gtk-version>2.8.3</target-gtk-version>
   </configuration>
   <import>
-    <widget-library name="../../../build/bin/MonoDevelop.Components.dll" />
-    <widget-library name="../../../build/bin/MonoDevelop.Ide.dll" />
+    <widget-library name="../../../../build/bin/MonoDevelop.Components.dll" />
+    <widget-library name="../../../../build/bin/MonoDevelop.Ide.dll" />
+    <widget-library name="../../../../build/bin/MonoDevelop.Projects.Gui.dll" />
   </import>
   <widget class="Gtk.Dialog" id="MonoDevelop.ChangeLogAddIn.AddLogEntryDialog" design-size="573 510">
     <property name="MemberName" />
@@ -54,8 +55,6 @@
                       <widget class="Gtk.ScrolledWindow" id="scrolledwindow2">
                         <property name="MemberName" />
                         <property name="CanFocus">True</property>
-                        <property name="VscrollbarPolicy">Automatic</property>
-                        <property name="HscrollbarPolicy">Automatic</property>
                         <property name="ShadowType">In</property>
                         <child>
                           <widget class="Gtk.TreeView" id="fileList">
@@ -97,8 +96,6 @@
                       <widget class="Gtk.ScrolledWindow" id="scrolledwindow1">
                         <property name="MemberName" />
                         <property name="CanFocus">True</property>
-                        <property name="VscrollbarPolicy">Automatic</property>
-                        <property name="HscrollbarPolicy">Automatic</property>
                         <property name="ShadowType">In</property>
                         <child>
                           <widget class="Gtk.TextView" id="textview">
@@ -451,7 +448,7 @@
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Bin" id="MonoDevelop.ChangeLogAddIn.ProjectOptionPanelWidget" design-size="524 330">
+  <widget class="Gtk.Bin" id="MonoDevelop.ChangeLogAddIn.ProjectOptionPanelWidget" design-size="524 338">
     <property name="MemberName" />
     <child>
       <widget class="Gtk.VBox" id="vbox2">
@@ -475,7 +472,6 @@
             <property name="MemberName" />
             <property name="CanFocus">True</property>
             <property name="Label" translatable="yes">radiobutton2</property>
-            <property name="Active">True</property>
             <property name="DrawIndicator">True</property>
             <property name="HasLabel">False</property>
             <property name="UseUnderline">True</property>

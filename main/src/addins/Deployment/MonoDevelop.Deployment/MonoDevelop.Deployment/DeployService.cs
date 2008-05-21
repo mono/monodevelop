@@ -75,7 +75,7 @@ namespace MonoDevelop.Deployment
 			return props;
 		}
 		
-		public static PackageBuilder[] GetSupportedPackageBuilders (CombineEntry entry)
+		public static PackageBuilder[] GetSupportedPackageBuilders (SolutionItem entry)
 		{
 			object[] builders = AddinManager.GetExtensionObjects ("/MonoDevelop/DeployService/PackageBuilders", false);
 			ArrayList list = new ArrayList ();
@@ -95,10 +95,10 @@ namespace MonoDevelop.Deployment
 			return (PackageBuilder[]) AddinManager.GetExtensionObjects ("/MonoDevelop/DeployService/PackageBuilders", typeof(PackageBuilder), false);
 		}
 		
-		public static void Install (IProgressMonitor monitor, CombineEntry entry, string prefix, string appName)
+		public static void Install (IProgressMonitor monitor, SolutionItem entry, string prefix, string appName, string configuration)
 		{
 			InstallResolver res = new InstallResolver ();
-			res.Install (monitor, entry, appName, prefix);
+			res.Install (monitor, entry, appName, prefix, configuration);
 		}
 		
 		public static void CreateArchive (IProgressMonitor mon, string folder, string targetFile)
@@ -151,31 +151,31 @@ namespace MonoDevelop.Deployment
 			return null;
 		}
 		
-		public static void BuildPackage (IProgressMonitor mon, Package package)
+		public static bool BuildPackage (IProgressMonitor mon, Package package)
 		{
-			BuildPackage (mon, package.PackageBuilder);
+			return BuildPackage (mon, package.PackageBuilder);
 		}
 		
-		internal static void BuildPackage (IProgressMonitor mon, PackageBuilder builder)
+		public static bool BuildPackage (IProgressMonitor mon, PackageBuilder builder)
 		{
 			DeployServiceExtension extensionChain = GetExtensionChain ();
-			extensionChain.BuildPackage (mon, builder);
+			return extensionChain.BuildPackage (mon, builder);
 		}
 		
-		public static DeployFileCollection GetDeployFiles (DeployContext ctx, CombineEntry[] entries)
+		public static DeployFileCollection GetDeployFiles (DeployContext ctx, SolutionItem[] entries, string configuration)
 		{
 			DeployFileCollection col = new DeployFileCollection ();
-			foreach (CombineEntry e in entries) {
-				col.AddRange (GetDeployFiles (ctx, e));
+			foreach (SolutionItem e in entries) {
+				col.AddRange (GetDeployFiles (ctx, e, configuration));
 			}
 			return col;
 		}
 		
-		public static DeployFileCollection GetDeployFiles (DeployContext ctx, CombineEntry entry)
+		public static DeployFileCollection GetDeployFiles (DeployContext ctx, SolutionItem entry, string configuration)
 		{
 			ArrayList todel = new ArrayList ();
 			
-			DeployFileCollection col = GetExtensionChain ().GetDeployFiles (ctx, entry);
+			DeployFileCollection col = GetExtensionChain ().GetDeployFiles (ctx, entry, configuration);
 			foreach (DeployFile df in col) {
 				if (!ctx.IncludeFile (df)) {
 					todel.Add (df);

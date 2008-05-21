@@ -11,7 +11,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 	{
 		internal static bool GenerateSteticCode;
 		
-		public override ICompilerResult Build (IProgressMonitor monitor, CombineEntry entry)
+		protected override ICompilerResult Build (IProgressMonitor monitor, SolutionEntityItem entry, string configuration)
 		{
 			if (GenerateSteticCode) {
 				DotNetProject project = entry as DotNetProject;
@@ -22,12 +22,12 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 						// access to Gtk classes
 						Generator gen = new Generator ();
 						lock (gen) {
-							Gtk.Application.Invoke (delegate { gen.Run (monitor, project); });
+							Gtk.Application.Invoke (delegate { gen.Run (monitor, project, configuration); });
 							Monitor.Wait (gen);
 						}
 						
 						// Build the project
-						ICompilerResult res = base.Build (monitor, entry);
+						ICompilerResult res = base.Build (monitor, entry, configuration);
 						
 						if (gen.Messages != null) {
 							foreach (string s in gen.Messages)
@@ -43,17 +43,17 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				}
 			}
 			
-			return base.Build (monitor, entry);
+			return base.Build (monitor, entry, configuration);
 		}
 	}
 	
 	class Generator
 	{
-		public void Run (IProgressMonitor monitor, DotNetProject project)
+		public void Run (IProgressMonitor monitor, DotNetProject project, string configuration)
 		{
 			lock (this) {
 				try {
-					Stetic.CodeGenerationResult res = GuiBuilderService.GenerateSteticCode (monitor, project);
+					Stetic.CodeGenerationResult res = GuiBuilderService.GenerateSteticCode (monitor, project, configuration);
 					if (res != null)
 						Messages = res.Warnings;
 				} catch (Exception ex) {

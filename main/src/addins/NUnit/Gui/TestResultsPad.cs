@@ -310,7 +310,7 @@ namespace MonoDevelop.NUnit
 			cancel = false;
 			Running = true;
 			
-			configuration = rootTest.ActiveConfiguration;
+			configuration = IdeApp.Workspace.ActiveConfiguration;
 			
 			AddStartMessage ();
 		}

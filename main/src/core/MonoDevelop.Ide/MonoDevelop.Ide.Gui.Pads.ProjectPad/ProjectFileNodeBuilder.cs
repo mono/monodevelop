@@ -116,7 +116,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				try {
 					if (FileService.IsValidFileName (newPath)) {
 						FileService.RenameFile (oldPath, newName);
-						IdeApp.ProjectOperations.SaveCombine();
+						IdeApp.Workspace.Save();
 					}
 				} catch (System.IO.IOException) {   // assume duplicate file
 					MessageService.ShowError (GettextCatalog.GetString ("File or directory name is already in use. Please choose a different one."));
@@ -139,7 +139,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		
 		public override bool CanDropNode (object dataObject, DragOperation operation)
 		{
-			return dataObject is CombineEntry;
+			return dataObject is SolutionItem;
 		}
 		
 		public override void OnNodeDrop (object dataObject, DragOperation operation)
@@ -165,23 +165,23 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			                                                 AlertButton.Delete, AlertButton.Cancel, removeFromProject);
 			if (result != removeFromProject && result != AlertButton.Delete) 
 				return;
-			
+			   
 			if (!file.IsExternalToProject) {
-				ProjectFile[] inFolder = project.ProjectFiles.GetFilesInPath (Path.GetDirectoryName (file.Name));
+				ProjectFile[] inFolder = project.Files.GetFilesInPath (Path.GetDirectoryName (file.Name));
 				if (inFolder.Length == 1 && inFolder [0] == file) {
 					// This is the last project file in the folder. Make sure we keep
 					// a reference to the folder, so it is not deleted from the tree.
 					ProjectFile folderFile = new ProjectFile (Path.GetDirectoryName (file.Name));
 					folderFile.Subtype = Subtype.Directory;
-					project.ProjectFiles.Add (folderFile);
+					project.Files.Add (folderFile);
 				}
 			}
 			
-			project.ProjectFiles.Remove (file);
+			project.Files.Remove (file);
 			if (result == AlertButton.Delete)
 				FileService.DeleteFile (file.Name);
 		
-			IdeApp.ProjectOperations.SaveProject (project);				
+			IdeApp.ProjectOperations.Save (project);				
 		}
 		
 		[CommandUpdateHandler (EditCommands.Delete)]
@@ -206,7 +206,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			} else {
 				finfo.BuildAction = BuildAction.Compile;
 			}
-			IdeApp.ProjectOperations.SaveProject (finfo.Project);
+			IdeApp.ProjectOperations.Save (finfo.Project);
 		}
 		
 		[CommandUpdateHandler (ProjectCommands.IncludeInDeploy)]
@@ -226,7 +226,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			} else {
 				finfo.BuildAction = BuildAction.FileCopy;
 			}
-			IdeApp.ProjectOperations.SaveProject (finfo.Project);
+			IdeApp.ProjectOperations.Save (finfo.Project);
 		}
 		
 		[CommandHandler (ViewCommands.OpenWithList)]

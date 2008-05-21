@@ -54,7 +54,7 @@ namespace MonoDevelop.SourceEditor.Gui
 		int langTipX, langTipY;
 		uint tipTimeoutId;
 
-		IParserDatabase db = IdeApp.ProjectOperations.ParserDatabase;
+		IParserDatabase db = IdeApp.Workspace.ParserDatabase;
 		TextTag synErrorTag = new TextTag ("synError");
 		bool resetTimerStarted = false;
 		uint resetTimerId;
@@ -528,7 +528,7 @@ namespace MonoDevelop.SourceEditor.Gui
 		{
 			string file = ParentEditor.DisplayBinding.IsUntitled ? ParentEditor.DisplayBinding.UntitledName : ParentEditor.DisplayBinding.ContentName;
 			Project project = ParentEditor.DisplayBinding.Project;
-			IParserDatabase pdb = IdeApp.ProjectOperations.ParserDatabase;
+			IParserDatabase pdb = IdeApp.Workspace.ParserDatabase;
 			
 			if (project != null)
 				return pdb.GetProjectParserContext (project);

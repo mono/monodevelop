@@ -76,11 +76,10 @@ namespace MonoDevelop.Gettext
 			}
 		}
 		
-		public string OutFile {
-			get {
-				string moDirectory = Path.Combine (Path.Combine (parentProject.OutputDirectory, isoCode), "LC_MESSAGES");
-				return Path.Combine (moDirectory, parentProject.PackageName + ".mo");
-			}
+		public string GetOutFile (string configuration)
+		{
+			string moDirectory = Path.Combine (Path.Combine (parentProject.GetOutputDirectory (configuration), isoCode), "LC_MESSAGES");
+			return Path.Combine (moDirectory, parentProject.PackageName + ".mo");
 		}
 	}
 	

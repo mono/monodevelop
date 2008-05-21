@@ -41,7 +41,7 @@ namespace MonoDevelop.DesignerSupport.Projects
 			// Don't use the CurrentNode property here since it may not be properly initialized when the event is fired.
 			ITreeNavigator nav = Tree.GetNodeAtObject (obj);
 			if (nav != null) {
-				CombineEntry ce = (CombineEntry) nav.GetParentDataItem (typeof(CombineEntry), true);
+				SolutionItem ce = (SolutionItem) nav.GetParentDataItem (typeof(SolutionItem), true);
 				if (ce != null) {
 					using (IProgressMonitor mon = IdeApp.Workbench.ProgressMonitors.GetSaveProgressMonitor (false)) {
 						ce.Save (mon);

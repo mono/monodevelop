@@ -59,7 +59,7 @@ namespace MonoDevelop.Ide.Dom.Parser
 					break;
 				}
 			});
-			MonoDevelop.Ide.Gui.IdeApp.ProjectOperations.CombineOpened += delegate {
+			MonoDevelop.Ide.Gui.IdeApp.Workspace.FirstWorkspaceItemOpened += delegate {
 				LoadWholeSolution ();
 			};
 			LoadWholeSolution ();
@@ -90,14 +90,16 @@ namespace MonoDevelop.Ide.Dom.Parser
 		
 		static void LoadWholeSolutionThread ()
 		{
-			foreach (CombineEntry entry in MonoDevelop.Ide.Gui.IdeApp.ProjectOperations.CurrentOpenCombine.GetAllProjects ()) {
+			if (!MonoDevelop.Ide.Gui.IdeApp.Workspace.IsOpen)
+				return;
+			foreach (SolutionItem entry in MonoDevelop.Ide.Gui.IdeApp.Workspace.GetAllProjects ()) {
 				Project project = (Project)entry;
 				IParser parser = GetParser (project.ProjectType);
 				if (parser == null)
 					continue;
 				
 				ProjectDom dom = GetDom (project);
-				foreach (ProjectFile file in project.ProjectFiles) {
+				foreach (ProjectFile file in project.Files) {
 					if (file.BuildAction != BuildAction.Compile)
 						continue;
 					dom.UpdateCompilationUnit (parser.Parse (file.FilePath, System.IO.File.ReadAllText (file.FilePath)));
@@ -111,8 +113,6 @@ namespace MonoDevelop.Ide.Dom.Parser
 		
 		static void LoadWholeSolution ()
 		{
-			if (MonoDevelop.Ide.Gui.IdeApp.ProjectOperations.CurrentOpenCombine == null)
-				return;
 			Thread t = new Thread (new ThreadStart (LoadWholeSolutionThread));
 			t.IsBackground = true;
 			t.Priority     = ThreadPriority.Lowest;

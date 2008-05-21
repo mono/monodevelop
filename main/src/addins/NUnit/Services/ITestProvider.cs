@@ -35,7 +35,7 @@ namespace MonoDevelop.NUnit
 {
 	public interface ITestProvider
 	{
-		UnitTest CreateUnitTest (CombineEntry entry);
+		UnitTest CreateUnitTest (IWorkspaceObject entry);
 		Type[] GetOptionTypes ();
 	}
 }

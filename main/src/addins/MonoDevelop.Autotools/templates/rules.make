@@ -26,7 +26,7 @@ dist-local-recursive:
 		mkdir -p "$(distdir)/$$dir" || true; \
 		case "$$dir" in \
 		.) make dist-local "distdir=$(distdir)" || exit 1;; \
-		*) (cd "$$dir"; make dist-local "distdir=$(distdir)/$$dir)" || exit 1; \
+		*) (cd "$$dir"; make dist-local "distdir=$(distdir)/$$dir") || exit 1; \
 		esac \
 	done
 

@@ -704,15 +704,23 @@ namespace MonoDevelop.Autotools
 					ProjectRefVar.Extra.Clear ();
 
 					existingGacRefs = new Dictionary<string, ProjectReference> ();
+					requiredPackageVersions = new Dictionary<string,string> ();
 					newGacRefs = new Dictionary<string, ProjectReference> ();
 
 					List<ProjectReference> toRemove = new List<ProjectReference> ();
-					foreach (ProjectReference pref in OwnerProject.ProjectReferences) {
+					foreach (ProjectReference pref in dotnetProject.References) {
 						if (pref.ReferenceType == ReferenceType.Gac) {
-							string [] files = pref.GetReferencedFileNames ();
+							string [] files = pref.GetReferencedFileNames (ProjectService.DefaultConfiguration);
 							if (files == null)
 								continue;
 
+							if (pref.ReferenceType == ReferenceType.Gac) {
+								// Store the package version required by this reference. We'll use
+								// the same version when trying to match references coming from the makefile
+								SystemPackage pkg = Runtime.SystemAssemblyService.GetPackageFromFullName (pref.StoredReference);
+								if (pkg != null)
+									requiredPackageVersions [pkg.Name] = pkg.Version;
+							}
 							// this should help normalize paths like /foo//bar/../
 							string fullpath = Path.GetFullPath (files [0]);
 							if (existingGacRefs.ContainsKey (fullpath))
@@ -724,7 +732,7 @@ namespace MonoDevelop.Autotools
 
 					// Remove the repeats
 					foreach (ProjectReference pref in toRemove)
-						OwnerProject.ProjectReferences.Remove (pref);
+						dotnetProject.References.Remove (pref);
 
 					ReadReferences (GacRefVar, ReferenceType.Gac, "Gac References", dotnetProject);
 
@@ -737,11 +745,11 @@ namespace MonoDevelop.Autotools
 					
 					//Resolve References
 					//Required when UpdateProject gets called by ui
-					if (ownerProject.RootCombine != null)
-						ResolveProjectReferences (ownerProject.RootCombine, monitor);
+					if (ownerProject.ParentSolution != null)
+						ResolveProjectReferences (ownerProject.ParentSolution.RootFolder, monitor);
 
 					foreach (ProjectReference pr in existingGacRefs.Values)
-						ownerProject.ProjectReferences.Remove (pr);
+						dotnetProject.References.Remove (pr);
 
 					existingGacRefs.Clear ();
 					newGacRefs.Clear ();
@@ -798,7 +806,7 @@ namespace MonoDevelop.Autotools
 				len = fileVar.Prefix.Length;
 
 			Dictionary<string, ProjectFile> existingFiles = new Dictionary<string, ProjectFile> ();
-			foreach (ProjectFile pf in ownerProject.ProjectFiles) {
+			foreach (ProjectFile pf in ownerProject.Files) {
 				if (pf.BuildAction == buildAction)
 					existingFiles [ownerProject.GetAbsoluteChildPath (pf.FilePath)] = pf;
 			}
@@ -875,13 +883,14 @@ namespace MonoDevelop.Autotools
 			if (existingFiles.Count > 0) {
 				foreach (ProjectFile file in existingFiles.Values) {
 					if (!IsFileExcluded (file.FilePath))
-						ownerProject.ProjectFiles.Remove (file);
+						ownerProject.Files.Remove (file);
 				}
 			}
 		}
 
 		Dictionary<string, ProjectReference> existingGacRefs = null;
 		Dictionary<string, ProjectReference> newGacRefs = null;
+		Dictionary<string, string> requiredPackageVersions = null;
 
 		void ReadReferences (MakefileVar refVar, ReferenceType refType, string id, DotNetProject project)
 		{
@@ -1045,7 +1054,13 @@ namespace MonoDevelop.Autotools
 
 		bool LoadPackageReference (string pkgName, DotNetProject project, string prefix)
 		{
-			SystemPackage pkg = Runtime.SystemAssemblyService.GetPackage (pkgName);
+			SystemPackage pkg = null;
+			string packageVersion;
+			if (requiredPackageVersions.TryGetValue (pkgName, out packageVersion))
+				pkg = Runtime.SystemAssemblyService.GetPackage (pkgName, packageVersion);
+			if (pkg == null)
+				pkg = Runtime.SystemAssemblyService.GetPackage (pkgName);
+			
 			if (pkg == null) {
 				LoggingService.LogWarning ("No package named '{0}' found. Ignoring.", pkgName);
 				return false;
@@ -1136,26 +1151,27 @@ namespace MonoDevelop.Autotools
 			return null;
 		}
 
-		ProjectReference AddNewGacReference (Project project, string fullname, string fullpath)
+		ProjectReference AddNewGacReference (DotNetProject project, string fullname, string fullpath)
 		{
 			ProjectReference pref = new ProjectReference (ReferenceType.Gac, fullname);
-			project.ProjectReferences.Add (pref);
+			project.References.Add (pref);
 			newGacRefs [fullpath] = pref;
 
 			return pref;
 		}
 
-		public static void ResolveProjectReferences (Combine c, IProgressMonitor monitor)
+		public static void ResolveProjectReferences (SolutionFolder folder, IProgressMonitor monitor)
 		{
-			Dictionary<string, Project> projects = new Dictionary<string, Project> ();
-			foreach (Project p in c.GetAllProjects ()) {
-				string filename = p.GetOutputFileName ();
+			Dictionary<string, DotNetProject> projects = new Dictionary<string, DotNetProject> ();
+			string defConfig = ProjectService.DefaultConfiguration;
+			foreach (DotNetProject p in folder.GetAllItems<DotNetProject> ()) {
+				string filename = p.GetOutputFileName (defConfig);
 				// Can be null for Generic projects
 				if (!String.IsNullOrEmpty (filename))
 					projects [filename] = p;
 			}
 
-			foreach (Project sproj in projects.Values) {
+			foreach (DotNetProject sproj in projects.Values) {
 				MakefileData mdata = sproj.ExtendedProperties ["MonoDevelop.Autotools.MakefileInfo"] as MakefileData;
 				if (mdata == null)
 					continue;
@@ -1165,12 +1181,12 @@ namespace MonoDevelop.Autotools
 					Dictionary<string, ProjectReference> asmProjectRefs =
 						new Dictionary<string, ProjectReference> ();
 
-					foreach (ProjectReference pr in sproj.ProjectReferences) {
+					foreach (ProjectReference pr in sproj.References) {
 						if (pr.ReferenceType != ReferenceType.Assembly &&
 							pr.ReferenceType != ReferenceType.Project)
 							continue;
 						
-						string [] files = pr.GetReferencedFileNames ();
+						string [] files = pr.GetReferencedFileNames (defConfig);
 						if (files.Length > 0)
 							asmProjectRefs [files [0]] = pr;
 					}
@@ -1184,7 +1200,7 @@ namespace MonoDevelop.Autotools
 						} else {
 							// Try as a project ref
 							if (projects.ContainsKey (refstr)) {
-								sproj.ProjectReferences.Add (new ProjectReference (projects [refstr]));
+								sproj.References.Add (new ProjectReference (projects [refstr]));
 								toRemove.Add (refstr);
 							}
 						}
@@ -1195,11 +1211,11 @@ namespace MonoDevelop.Autotools
 
 					// Add all remaining unresolved refs as Assembly refs
 					foreach (string s in mdata.UnresolvedReferences.Keys)
-						sproj.ProjectReferences.Add (new ProjectReference (ReferenceType.Assembly, s));
+						sproj.References.Add (new ProjectReference (ReferenceType.Assembly, s));
 						
 					// Remove asm/project refs not found in UnresolvedReferences
 					foreach (ProjectReference pr in asmProjectRefs.Values)
-						sproj.ProjectReferences.Remove (pr);
+						sproj.References.Remove (pr);
 
 					mdata.UnresolvedReferences.Clear ();
 				}
@@ -1362,7 +1378,7 @@ namespace MonoDevelop.Autotools
 			}
 
 			List<string> files = new List<string> ();
-			foreach (ProjectFile pf in OwnerProject.ProjectFiles) {
+			foreach (ProjectFile pf in OwnerProject.Files) {
 				if (pf.Subtype != Subtype.Code)
 					continue;
 				if (IsFileExcluded (pf.FilePath))
@@ -1426,7 +1442,7 @@ namespace MonoDevelop.Autotools
 			//	key -> pkgname, emit as -pkg:$key
 			Dictionary<string, bool> hasAcSubstPackages = new Dictionary<string, bool> ();
 
-			foreach (ProjectReference pr in OwnerProject.ProjectReferences) {
+			foreach (ProjectReference pr in ((DotNetProject)OwnerProject).References) {
 				if (pr.ReferenceType != refType)
 					continue;
 
@@ -1493,7 +1509,7 @@ namespace MonoDevelop.Autotools
 			}
 
 			if (pkg == null)
-				return AsmRefToString (pr.GetReferencedFileNames () [0], refVar, false);
+				return AsmRefToString (pr.GetReferencedFileNames (ProjectService.DefaultConfiguration) [0], refVar, false);
 
 			// Reference is from a package
 
@@ -1555,7 +1571,7 @@ namespace MonoDevelop.Autotools
 
 		string ProjectRefToString (ProjectReference pr, MakefileVar refVar)
 		{
-			string [] tmp = pr.GetReferencedFileNames ();
+			string [] tmp = pr.GetReferencedFileNames (ProjectService.DefaultConfiguration);
 			if (tmp == null || tmp.Length == 0)
 				//Reference not found, ignoring
 				return null;

@@ -48,21 +48,21 @@ namespace MonoDeveloper
 	{
 		protected override void Run ()
 		{
-			MonoProject p = IdeApp.ProjectOperations.CurrentSelectedProject as MonoProject;
+			DotNetProject p = IdeApp.ProjectOperations.CurrentSelectedProject as DotNetProject;
 			if (p != null)
 				DispatchService.BackgroundDispatch (new StatefulMessageHandler (Install), p);
 		}
 		
 		protected override void Update (CommandInfo info)
 		{
-			info.Visible = IdeApp.ProjectOperations.CurrentSelectedProject is MonoProject;
+			info.Visible = MonoMakefileFormat.IsMonoProject (IdeApp.ProjectOperations.CurrentSelectedProject);
 		}
 		
 		void Install (object prj)
 		{
-			MonoProject p = prj as MonoProject;
+			DotNetProject p = prj as DotNetProject;
 			using (IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetBuildProgressMonitor ()) {
-				p.Install (monitor);
+				p.RunTarget (monitor, "install", IdeApp.Workspace.ActiveConfiguration);
 			}
 		}
 

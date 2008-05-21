@@ -1,6 +1,8 @@
 
 using System;
 using System.Collections;
+using System.Collections.ObjectModel;
+using System.Collections.Generic;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
 using Gtk;
@@ -10,8 +12,9 @@ namespace MonoDevelop.Deployment.Gui
 	internal partial class EntrySelectionTree : Gtk.Bin
 	{
 		TreeStore store;
-		Hashtable selectedEntries = new Hashtable ();
+		Dictionary<SolutionItem,SolutionItem> selectedEntries = new Dictionary<SolutionItem,SolutionItem> ();
 		PackageBuilder builder;
+		Solution solution;
 		
 		public event EventHandler SelectionChanged;
 		
@@ -38,13 +41,13 @@ namespace MonoDevelop.Deployment.Gui
 			tree.AppendColumn (col);
 		}
 		
-		public void Fill (PackageBuilder builder, CombineEntry selection)
+		public void Fill (PackageBuilder builder, SolutionItem selection)
 		{
 			store.Clear ();
 			
 			this.builder = builder;
-			if (selection is Combine) {
-				foreach (CombineEntry e in ((Combine)selection).GetAllEntries ()) {
+			if (selection is SolutionFolder) {
+				foreach (SolutionItem e in ((SolutionFolder)selection).GetAllItems ()) {
 					if (builder.CanBuild (e))
 						selectedEntries [e] = e;
 				}
@@ -53,23 +56,37 @@ namespace MonoDevelop.Deployment.Gui
 				selectedEntries [selection] = selection;
 			}
 			
-			AddEntry (TreeIter.Zero, IdeApp.ProjectOperations.CurrentOpenCombine);
+			if (selection != null)
+				solution = selection.ParentSolution;
+			else {
+				solution = IdeApp.ProjectOperations.CurrentSelectedSolution;
+				if (solution == null) {
+					ReadOnlyCollection<Solution> items = IdeApp.ProjectOperations.CurrentSelectedWorkspaceItem.GetAllSolutions ();
+					if (items.Count > 0)
+						solution = items [0];
+					else
+						return;
+				}
+			}
+			AddEntry (TreeIter.Zero, solution.RootFolder);
 		}
 		
-		void AddEntry (TreeIter iter, CombineEntry entry)
+		void AddEntry (TreeIter iter, SolutionItem entry)
 		{
 			string icon;
-			if (entry is Combine)
+			if (entry.ParentFolder == null)
 				icon = MonoDevelop.Core.Gui.Stock.Solution;
+			else if (entry is SolutionFolder)
+				icon = MonoDevelop.Core.Gui.Stock.SolutionFolderClosed;
 			else if (entry is Project)
 				icon = IdeApp.Services.Icons.GetImageForProjectType (((Project)entry).ProjectType);
 			else
 				icon = MonoDevelop.Core.Gui.Stock.Project;
 			
 			bool visible = builder.CanBuild (entry);
-			bool selected = selectedEntries.Contains (entry);
+			bool selected = selectedEntries.ContainsKey (entry);
 			
-			if (!(entry is Combine) && !visible)
+			if (!(entry is SolutionFolder) && !visible)
 				return;
 			
 			if (!iter.Equals (TreeIter.Zero))
@@ -80,64 +97,64 @@ namespace MonoDevelop.Deployment.Gui
 			if (selected)
 				tree.ExpandToPath (store.GetPath (iter));
 			
-			if (entry is Combine) {
-				foreach (CombineEntry ce in ((Combine)entry).Entries) {
+			if (entry is SolutionFolder) {
+				foreach (SolutionItem ce in ((SolutionFolder)entry).Items) {
 					AddEntry (iter, ce);
 				}
 			}
 		}
 		
-		public void SetSelection (CombineEntry rootEntry, CombineEntry[] childEntries)
+		public void SetSelection (SolutionItem rootEntry, SolutionItem[] childEntries)
 		{
 			selectedEntries.Clear ();
 			selectedEntries [rootEntry] = rootEntry;
-			foreach (CombineEntry e in childEntries)
+			foreach (SolutionItem e in childEntries)
 				selectedEntries [e] = e;
 			UpdateSelectionChecks (TreeIter.Zero, true);
 		}
 		
-		public CombineEntry GetSelectedEntry ()
+		public SolutionItem GetSelectedEntry ()
 		{
-			return GetCommonCombineEntry ();
+			return GetCommonSolutionItem ();
 		}
 		
-		public CombineEntry[] GetSelectedChildren ()
+		public SolutionItem[] GetSelectedChildren ()
 		{
 			// The first entry is the root entry
-			CombineEntry common = GetCommonCombineEntry ();
+			SolutionItem common = GetCommonSolutionItem ();
 			if (common == null)
 				return null;
 			ArrayList list = new ArrayList ();
-			foreach (CombineEntry e in selectedEntries.Keys)
+			foreach (SolutionItem e in selectedEntries.Keys)
 				if (e != common)
 					list.Add (e);
-			return (CombineEntry[]) list.ToArray (typeof(CombineEntry));
+			return (SolutionItem[]) list.ToArray (typeof(SolutionItem));
 		}
 		
 		void OnToggled (object sender, Gtk.ToggledArgs args)
 		{
 			TreeIter iter;
 			store.GetIterFromString (out iter, args.Path);
-			object ob = store.GetValue (iter, 2);
-			if (selectedEntries.Contains (ob)) {
+			SolutionItem ob = (SolutionItem) store.GetValue (iter, 2);
+			if (selectedEntries.ContainsKey (ob)) {
 				selectedEntries.Remove (ob);
 				store.SetValue (iter, 3, false);
-				if (ob is Combine) {
-					foreach (CombineEntry e in ((Combine)ob).GetAllEntries ())
+				if (ob is SolutionFolder) {
+					foreach (SolutionItem e in ((SolutionFolder)ob).GetAllItems ())
 						selectedEntries.Remove (e);
 					UpdateSelectionChecks (TreeIter.Zero, false);
 				}
 			} else {
 				selectedEntries [ob] = ob;
 				store.SetValue (iter, 3, true);
-				if (ob is Combine) {
-					foreach (CombineEntry e in ((Combine)ob).GetAllEntries ()) {
+				if (ob is SolutionFolder) {
+					foreach (SolutionItem e in ((SolutionFolder)ob).GetAllItems ()) {
 						if (builder.CanBuild (e))
 							selectedEntries [e] = e;
 					}
 					UpdateSelectionChecks (TreeIter.Zero, false);
 				}
-				SelectCommonCombine ((CombineEntry)ob);
+				SelectCommonCombine ((SolutionItem)ob);
 			}
 			if (SelectionChanged != null)
 				SelectionChanged (this, EventArgs.Empty);
@@ -154,7 +171,7 @@ namespace MonoDevelop.Deployment.Gui
 					return;
 			}
 			do {
-				bool sel = selectedEntries.Contains (store.GetValue (iter, 2));
+				bool sel = selectedEntries.ContainsKey ((SolutionItem) store.GetValue (iter, 2));
 				store.SetValue (iter, 3, sel);
 				if (sel)
 					tree.ExpandToPath (store.GetPath (iter));
@@ -163,27 +180,27 @@ namespace MonoDevelop.Deployment.Gui
 			while (store.IterNext (ref iter));
 		}
 		
-		void SelectCommonCombine (CombineEntry e)
+		void SelectCommonCombine (SolutionItem e)
 		{
-			CombineEntry common = GetCommonCombineEntry ();
+			SolutionItem common = GetCommonSolutionItem ();
 			if (common == null)
 				return;
 			selectedEntries [common] = common;
-			CombineEntry[] entries = new CombineEntry [selectedEntries.Count];
+			SolutionItem[] entries = new SolutionItem [selectedEntries.Count];
 			selectedEntries.Keys.CopyTo (entries, 0);
-			foreach (CombineEntry se in entries) {
-				CombineEntry ce = se;
+			foreach (SolutionItem se in entries) {
+				SolutionItem ce = se;
 				while (ce != null && ce != common) {
 					selectedEntries [ce] = ce;
-					ce = ce.ParentCombine;
+					ce = ce.ParentFolder;
 				}
 			}
 			UpdateSelectionChecks (TreeIter.Zero, false);
 		}
 		
-		CombineEntry GetCommonCombineEntry ()
+		SolutionItem GetCommonSolutionItem ()
 		{
-			return PackageBuilder.GetCommonCombineEntry (selectedEntries.Keys);
+			return PackageBuilder.GetCommonSolutionItem (selectedEntries.Keys);
 		}
 	}
 }

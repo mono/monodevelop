@@ -9,13 +9,13 @@ namespace MonoDevelop.Deployment.Gui
 {
 	public static class DeployOperations
 	{
-		public static void Install (CombineEntry entry)
+		public static void Install (SolutionItem entry, string configuration)
 		{
 			using (IProgressMonitor mon = IdeApp.Workbench.ProgressMonitors.GetRunProgressMonitor ()) {
 				InstallDialog dlg = new InstallDialog (entry);
 				try {
 					if (dlg.Run () == (int) Gtk.ResponseType.Ok)
-						DeployService.Install (mon, entry, dlg.Prefix, dlg.AppName);
+						DeployService.Install (mon, entry, dlg.Prefix, dlg.AppName, configuration);
 				} finally {
 					dlg.Destroy ();
 				}
@@ -61,7 +61,7 @@ namespace MonoDevelop.Deployment.Gui
 			EditPackageDialog dlg = new EditPackageDialog (package);
 			try {
 				if (dlg.Run () == (int) Gtk.ResponseType.Ok)
-					IdeApp.ProjectOperations.SaveCombineEntry (package.ParentProject);
+					IdeApp.ProjectOperations.Save (package.ParentProject);
 			} finally {
 				dlg.Destroy ();
 			}

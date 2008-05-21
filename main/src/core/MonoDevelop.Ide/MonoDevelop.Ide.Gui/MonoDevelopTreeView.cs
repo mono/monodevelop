@@ -417,6 +417,13 @@ namespace MonoDevelop.Ide.Gui
 			builder.Expanded = true;
 		}
 		
+		public void RemoveChild (object nodeObject)
+		{
+			TreeBuilder builder = new TreeBuilder (this);
+			if (builder.MoveToObject (nodeObject))
+				builder.Remove ();
+		}
+		
 		public void Clear ()
 		{
 			copyObject = dragObject = null;

@@ -12,7 +12,7 @@ namespace MonoDevelop.VersionControl
 {
 	internal class PublishCommand 
 	{
-		public static bool Publish (CombineEntry entry, string localPath, bool test)
+		public static bool Publish (IWorkspaceObject entry, string localPath, bool test)
 		{
 			if (test)
 				return true;
@@ -27,7 +27,7 @@ namespace MonoDevelop.VersionControl
 			if (localPath == entry.BaseDirectory) {
 				GetFiles (files, entry);
 			} else if (entry is Project) {
-				foreach (ProjectFile file in ((Project)entry).ProjectFiles.GetFilesInPath (localPath))
+				foreach (ProjectFile file in ((Project)entry).Files.GetFilesInPath (localPath))
 					if (file.Subtype != Subtype.Directory)
 						files.Add (file.FilePath);
 			} else
@@ -54,16 +54,19 @@ namespace MonoDevelop.VersionControl
 			return true;
 		}
 		
-		static void GetFiles (ArrayList files, CombineEntry entry)
+		static void GetFiles (ArrayList files, IWorkspaceObject entry)
 		{
-			files.Add (entry.FileName);
+			if (entry is SolutionEntityItem)
+				files.Add (((SolutionEntityItem)entry).FileName);
 			if (entry is Project) {
-				foreach (ProjectFile file in ((Project)entry).ProjectFiles)
+				foreach (ProjectFile file in ((Project)entry).Files)
 					if (file.Subtype != Subtype.Directory)
 						files.Add (file.FilePath);
-			} else if (entry is Combine) {
-				foreach (CombineEntry e in ((Combine)entry).Entries)
+			} else if (entry is SolutionFolder) {
+				foreach (SolutionItem e in ((SolutionFolder)entry).Items)
 					GetFiles (files, e);
+			} else if (entry is Solution) {
+				GetFiles (files, ((Solution)entry).RootFolder);
 			}
 		}
 		

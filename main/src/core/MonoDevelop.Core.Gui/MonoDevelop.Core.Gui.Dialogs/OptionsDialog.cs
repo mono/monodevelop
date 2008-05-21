@@ -173,25 +173,37 @@ namespace MonoDevelop.Core.Gui.Dialogs
 			if (resp == ResponseType.Ok) {
 				
 				// Validate changes before saving
-				foreach (SectionPage sp in pages.Values) {
-					if (sp.Widget == null)
-						continue;
-					foreach (PanelInstance pi in sp.Panels) {
-						if (!pi.Panel.ValidateChanges ())
-							return; // Not valid
-					}
-				}
+				if (!ValidateChanges ())
+					return;
 				
 				// Now save
-				foreach (SectionPage sp in pages.Values) {
-					if (sp.Widget == null)
-						continue;
-					foreach (PanelInstance pi in sp.Panels)
-						pi.Panel.ApplyChanges ();
-				}
+				ApplyChanges ();
 			}
 			base.OnResponse (resp);
 			DetachWidgets ();
+		}
+		
+		protected virtual bool ValidateChanges ()
+		{
+			foreach (SectionPage sp in pages.Values) {
+				if (sp.Widget == null)
+					continue;
+				foreach (PanelInstance pi in sp.Panels) {
+					if (!pi.Panel.ValidateChanges ())
+						return false; // Not valid
+				}
+			}
+			return true;
+		}
+		
+		protected virtual void ApplyChanges ()
+		{
+			foreach (SectionPage sp in pages.Values) {
+				if (sp.Widget == null)
+					continue;
+				foreach (PanelInstance pi in sp.Panels)
+					pi.Panel.ApplyChanges ();
+			}
 		}
 		
 		
@@ -220,6 +232,11 @@ namespace MonoDevelop.Core.Gui.Dialogs
 			}
 			
 			foreach (Gtk.Widget w in pageFrame.Children) {
+				Container cc = w as Gtk.Container;
+				if (cc != null) {
+					foreach (Gtk.Widget cw in cc)
+						cw.Hide ();
+				}
 				pageFrame.Remove (w);
 			}
 			
@@ -232,6 +249,13 @@ namespace MonoDevelop.Core.Gui.Dialogs
 			else
 				image.Stock = "gtk-preferences";
 			pageFrame.PackStart (page.Widget, true, true, 0);
+			
+			// Ensures that the Shown event is fired for each panel
+			Container c = page.Widget as Gtk.Container;
+			if (c != null) {
+				foreach (Gtk.Widget cw in c)
+					cw.Show ();
+			}
 		}
 		
 		SectionPage CreatePage (OptionsDialogSection section, object dataObject)
@@ -336,8 +360,8 @@ namespace MonoDevelop.Core.Gui.Dialogs
 					box.PackStart (sep, false, false, 0);
 				}
 				PanelInstance pi = boxPanels [n];
-				pi.Widget.Show ();
 				box.PackStart (pi.Widget, pi.Node.Fill, pi.Node.Fill, 0);
+				pi.Widget.Show ();
 			}
 			
 			if (tabPanels.Count > 0) {
@@ -350,12 +374,12 @@ namespace MonoDevelop.Core.Gui.Dialogs
 				foreach (PanelInstance pi in tabPanels) {
 					Gtk.Label lab = new Gtk.Label (GettextCatalog.GetString (pi.Node.Label));
 					lab.Show ();
-					pi.Widget.Show ();
 					Gtk.Alignment a = new Alignment (0, 0, 1, 1);
 					a.BorderWidth = 9;
 					a.Show ();
 					a.Add (pi.Widget);
 					nb.InsertPage (a, lab, -1);
+					pi.Widget.Show ();
 				}
 				page.Widget = nb;
 			} else {

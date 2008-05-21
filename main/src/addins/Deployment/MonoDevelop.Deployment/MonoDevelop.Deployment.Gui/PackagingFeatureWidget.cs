@@ -1,6 +1,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.ObjectModel;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 
@@ -8,22 +9,22 @@ namespace MonoDevelop.Deployment.Gui
 {
 	internal partial class PackagingFeatureWidget : Gtk.Bin
 	{
-		CombineEntry entry;
-		Combine parentCombine;
+		SolutionItem entry;
+		SolutionFolder parentFolder;
 		ArrayList packages = new ArrayList ();
 		PackagingProject newPackProject;
 		bool creatingPackProject;
 		
-		public PackagingFeatureWidget (Combine parentCombine, CombineEntry entry)
+		public PackagingFeatureWidget (SolutionFolder parentFolder, SolutionItem entry)
 		{
 			this.Build();
 			this.entry = entry;
-			this.parentCombine = parentCombine;
+			this.parentFolder = parentFolder;
 			
 			creatingPackProject = entry is PackagingProject;
 			
 			if (!creatingPackProject) {
-				CombineEntryCollection packProjects = parentCombine.RootCombine.GetAllEntries (typeof(PackagingProject));
+				ReadOnlyCollection<PackagingProject> packProjects = parentFolder.ParentSolution.GetAllSolutionItems<PackagingProject> ();
 				newPackProject = new PackagingProject ();
 			
 				string label = GettextCatalog.GetString ("Create packages for this project in a new Packaging Project");
@@ -40,12 +41,12 @@ namespace MonoDevelop.Deployment.Gui
 		void AddProject (PackagingProject project)
 		{
 			string pname = project.Name;
-			Combine c = project.ParentCombine;
+			SolutionFolder c = project.ParentFolder;
 			while (c != null) {
 				pname = c.Name + " / " + pname;
 				if (c.IsRoot)
 					break;
-				c = c.ParentCombine;
+				c = c.ParentFolder;
 			}
 			
 			// Get a list of packages that can contain the new project
@@ -141,14 +142,14 @@ namespace MonoDevelop.Deployment.Gui
 			
 			foreach (PackageBuilder pb in builders) {
 				if (creatingPackProject) {
-					pb.SetCombineEntry (parentCombine.RootCombine);
+					pb.SetSolutionItem (parentFolder.ParentSolution.RootFolder);
 					// Add all compatible projects
-					foreach (CombineEntry e in parentCombine.RootCombine.GetAllEntries ()) {
+					foreach (SolutionItem e in parentFolder.ParentSolution.GetAllSolutionItems ()) {
 						if (pb.CanBuild (e))
 							pb.AddEntry (e);
 					}
 				} else {
-					pb.SetCombineEntry (parentCombine, new CombineEntry [] { entry });
+					pb.SetSolutionItem (parentFolder, new SolutionItem [] { entry });
 				}
 				
 				PackageBuilder[] defp = pb.CreateDefaultBuilders ();
@@ -234,14 +235,14 @@ namespace MonoDevelop.Deployment.Gui
 				if (pi.Package.ParentProject == null)
 					pi.Project.Packages.Add (pi.Package);
 				else {
-					pi.Package.PackageBuilder.AddEntry (parentCombine);
+					pi.Package.PackageBuilder.AddEntry (parentFolder);
 					pi.Package.PackageBuilder.AddEntry (entry);
 				}
 			}
 			if (newPackProject != null && newPackProject.Packages.Count > 0) {
 				newPackProject.Name = "Packages";
-				newPackProject.FileName = System.IO.Path.Combine (parentCombine.BaseDirectory, "Packages.mdse");
-				parentCombine.Entries.Add (newPackProject);
+				newPackProject.FileName = System.IO.Path.Combine (parentFolder.BaseDirectory, "Packages.mdse");
+				parentFolder.Items.Add (newPackProject);
 			}
 		}
 	}

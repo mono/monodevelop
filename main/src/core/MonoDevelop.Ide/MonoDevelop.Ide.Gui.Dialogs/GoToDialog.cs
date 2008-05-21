@@ -33,6 +33,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Threading;
 using Gdk;
 using Gtk;
@@ -338,7 +339,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				if (searchFiles) {
 					CheckFile (doc.FileName, toMatch);
 				} else {
-					IParserContext ctx = IdeApp.ProjectOperations.ParserDatabase.GetFileParserContext(doc.FileName);
+					IParserContext ctx = IdeApp.Workspace.ParserDatabase.GetFileParserContext(doc.FileName);
 					if (ctx != null) {
 						IParseInformation info = ctx.ParseFile(doc.FileName);
 						if(info != null) {
@@ -351,15 +352,11 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				}
 			}
 			
-			Combine s = IdeApp.ProjectOperations.CurrentOpenCombine;
-			if (s == null)
-				return;
-		
-			CombineEntryCollection projects = s.GetAllProjects ();
+			ReadOnlyCollection<Project> projects = IdeApp.Workspace.GetAllProjects ();
 			if (projects.Count < 1)
 				return;
 
-			foreach (CombineEntry entry in projects) {
+			foreach (SolutionItem entry in projects) {
 				if (!searchCycleActive) return;
 				
 				Project p = entry as Project;
@@ -372,7 +369,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				}
 				
 				if (searchFiles) {
-					ProjectFileCollection files = p.ProjectFiles;
+					ProjectFileCollection files = p.Files;
 					if (files.Count < 1)
 						continue;
 
@@ -381,7 +378,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 						CheckFile (file.FilePath, toMatch);
 					}
 				} else {
-					IParserContext ctx = IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (p);
+					IParserContext ctx = IdeApp.Workspace.ParserDatabase.GetProjectParserContext (p);
 					foreach (IClass c in ctx.GetProjectContents()) {
 						if (!searchCycleActive) return;
 						CheckType (c, toMatch);

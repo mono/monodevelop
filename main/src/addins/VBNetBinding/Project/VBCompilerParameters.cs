@@ -38,49 +38,45 @@ namespace VBBinding {
 	/// </summary>
 	public class VBCompilerParameters: ICloneable
 	{
-		[ItemProperty("compilerversion")]
+		[ItemProperty("Compilerversion")]
 		string vbCompilerVersion = String.Empty;
 		
-		[ItemProperty("compiler")]
 		VBCompiler vbCompiler = VBCompiler.Mbas;
 		
-		[ItemProperty("warninglevel")]
-		int  warninglevel       = 4;
+		[ItemProperty("WarningLevel", DefaultValue=4)]
+		int  warninglevel = 4;
 		
-		[ItemProperty("nowarn")]
-		string noWarnings      = String.Empty;
+		[ItemProperty("NoWarn")]
+		string noWarnings = String.Empty;
 		
-		[ItemProperty("optimize")]
-		bool optimize = true;
+		[ItemProperty("Optimize", DefaultValue=false)]
+		bool optimize = false;
 		
-		[ItemProperty("unsafecodeallowed")]
-		bool unsafecode         = false;
+		[ItemProperty("AllowUnsafeBlocks", DefaultValue=false)]
+		bool unsafecode = false;
 		
-		[ItemProperty("generateoverflowchecks")]
-		bool generateOverflowChecks = true;
+		[ItemProperty("RemoveIntegerChecks", DefaultValue=false)]
+		bool generateOverflowChecks = false;
 		
-		[ItemProperty("rootnamespace")]
-		string rootnamespace = String.Empty;
-		
-		[ItemProperty("mainclass")]
+		[ItemProperty("StartupObject")]
 		string mainclass = null;
 		
-		[ItemProperty("definesymbols")]
+		[ItemProperty("DefineConstants", DefaultValue="")]
 		string definesymbols = String.Empty;
 		
 		[ItemProperty("generatexmldocumentation")]
 		bool generateXmlDocumentation = false;
 		
-		[ItemProperty("optionexplicit")]
+		[ItemProperty("OptionExplicit", DefaultValue=true)]
 		bool optionExplicit = true;
 		
-		[ItemProperty("optionstrict")]
+		[ItemProperty("OptionStrict", DefaultValue=false)]
 		bool optionStrict = false;
 		
-		[ProjectPathItemProperty("win32Icon")]
+		[ProjectPathItemProperty("ApplicationIcon")]
 		string win32Icon = String.Empty;
 		
-		[ProjectPathItemProperty("win32Resource")]
+		[ProjectPathItemProperty("Win32Resource")]
 		string win32Resource = String.Empty;
 
 		[ItemProperty("imports")]
@@ -103,7 +99,6 @@ namespace VBBinding {
 			return MemberwiseClone ();
 		}
 		
-		[Browsable(false)]
 		public string VBCompilerVersion
 		{
 			get {
@@ -114,7 +109,6 @@ namespace VBBinding {
 			}
 		} 
 		
-		[Browsable(false)]
 		public VBCompiler VBCompiler {
 			get {
 				return vbCompiler;
@@ -134,7 +128,6 @@ namespace VBBinding {
 			}
 		}
 		
-		[DefaultValue(false)]
 		public bool UnsafeCode {
 			get {
 				return unsafecode;
@@ -144,7 +137,6 @@ namespace VBBinding {
 			}
 		}
 		
-		[DefaultValue(false)]
 		public bool GenerateXmlDocumentation {
 			get {
 				return generateXmlDocumentation;
@@ -155,7 +147,6 @@ namespace VBBinding {
 		}
 		
 		
-		[DefaultValue(4)]
 		public int WarningLevel {
 			get {
 				return warninglevel;
@@ -195,16 +186,6 @@ namespace VBBinding {
 			}
 		}
 
-		public string RootNamespace
-		{
-			get {
-				return rootnamespace;
-			}
-			set {
-				rootnamespace = value;
-			}
-		}
-		
 		public string DefineSymbols
 		{
 			get {

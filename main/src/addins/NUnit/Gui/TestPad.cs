@@ -352,14 +352,17 @@ namespace MonoDevelop.NUnit
 			regressionTree.RowActivated += new Gtk.RowActivatedHandler (OnRegressionTestActivated);
 			failedTree.RowActivated += new Gtk.RowActivatedHandler (OnFailedTestActivated);
 			
-			if (testService.RootTest != null)
-				TreeView.LoadTree (testService.RootTest);
+			foreach (UnitTest t in testService.RootTests)
+				TreeView.AddChild (t);
 		}
 		
 		void OnTestSuiteChanged (object sender, EventArgs e)
 		{
-			if (testService.RootTest != null)
-				TreeView.LoadTree (testService.RootTest);
+			if (testService.RootTests.Length > 0) {
+				TreeView.Clear ();
+				foreach (UnitTest t in testService.RootTests)
+					TreeView.AddChild (t);
+			}
 			else {
 				TreeView.Clear ();
 				ClearDetails ();
@@ -429,6 +432,16 @@ namespace MonoDevelop.NUnit
 		}
 		
 		
+		public UnitTest SearchTest (string fullName)
+		{
+			foreach (UnitTest t in testService.RootTests) {
+				UnitTest r = SearchTest (t, fullName);
+				if (r != null)
+					return r;
+			}
+			return null;
+		}
+		
 		public static UnitTest SearchTest (UnitTest test, string fullName)
 		{
 			if (test == null)
@@ -456,17 +469,17 @@ namespace MonoDevelop.NUnit
 			if (test == null)
 				return;
 			string fullName = test.FullName;
-			TestSession.ResetResult (this.testService.RootTest);
+			TestSession.ResetResult (test.RootTest);
 			IdeApp.Workbench.GetPad<TestPad> ().BringToFront ();
-			if (IdeApp.ProjectOperations.CurrentOpenCombine != null) {
+			if (IdeApp.Workspace.IsOpen) {
 				if (!IdeApp.ProjectOperations.CurrentRunOperation.IsCompleted) {
 					MonoDevelop.Ide.Commands.StopHandler.StopBuildOperations ();
 					IdeApp.ProjectOperations.CurrentRunOperation.WaitForCompleted ();
 				} 
-				IAsyncOperation op = IdeApp.ProjectOperations.Build (IdeApp.ProjectOperations.CurrentOpenCombine);
+				IAsyncOperation op = IdeApp.ProjectOperations.Build (IdeApp.Workspace);
 				op.Completed += delegate {
 					GLib.Timeout.Add (50, delegate {
-						test = SearchTest (this.testService.RootTest, fullName);
+						test = SearchTest (fullName);
 						if (test == null)
 							return false;
 						runningTestOperation = testService.RunTest (test);
