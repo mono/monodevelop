@@ -63,12 +63,6 @@ namespace JavaBinding
 			return IKVMCompilerManager.Compile (projectFiles, references, configuration, monitor);
 		}
 		
-		public void GenerateMakefile (Project project, Combine parentCombine)
-		{
-			// FIXME: dont abort for now
-			// throw new NotImplementedException ();
-		}
-		
 		public ICloneable CreateCompilationParameters (XmlElement projectOptions)
 		{
 			JavaCompilerParameters parameters = new JavaCompilerParameters ();

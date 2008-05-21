@@ -128,7 +128,7 @@ namespace JavaBinding
 		static string GenerateReferenceStub (IProgressMonitor monitor,DotNetProjectConfiguration configuration, ProjectReference reference)
 		{
 			StringBuilder result = new StringBuilder ();
-			foreach (string fileName in reference.GetReferencedFileNames ()) {
+			foreach (string fileName in reference.GetReferencedFileNames (configuration.Id)) {
 				string name = Path.GetFileNameWithoutExtension (Path.GetFileName (fileName));
 				string outputName = Path.Combine (configuration.OutputDirectory, name + ".jar");
 				if (!System.IO.File.Exists (outputName)) {
@@ -187,13 +187,13 @@ namespace JavaBinding
 			
 			if (references != null) {
 				foreach (ProjectReference lib in references) {
-					foreach (string fileName in lib.GetReferencedFileNames ()) {
+					foreach (string fileName in lib.GetReferencedFileNames (configuration.Id)) {
 						args.Append (" -r:"); args.Append (fileName);
 					}
 				}
 			}
 			
-			foreach (string fileName in new ProjectReference(ReferenceType.Gac, "mscorlib").GetReferencedFileNames ()) {
+			foreach (string fileName in new ProjectReference(ReferenceType.Gac, "mscorlib").GetReferencedFileNames (configuration.Id)) {
 				args.Append (" -r:"); args.Append (fileName);
 			}
 			

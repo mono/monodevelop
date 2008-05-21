@@ -8,6 +8,7 @@
     <widget-library name="MonoDevelop.Components, Version=0.19.0.0, Culture=neutral" />
     <widget-library name="MonoDevelop.Ide, Version=0.19.0.0, Culture=neutral" />
     <widget-library name="MonoDevelop.Projects.Gui, Version=0.19.0.0, Culture=neutral" />
+    <widget-library name="Mono.TextEditor, Version=1.0.3020.20447, Culture=neutral" />
   </import>
   <widget class="Gtk.Bin" id="JavaBinding.CodeGenerationPanelWidget" design-size="600 410">
     <property name="MemberName" />
@@ -297,7 +298,6 @@
                       <widget class="Gtk.RadioButton" id="compilerGcjButton">
                         <property name="MemberName" />
                         <property name="Label" translatable="yes">gcj</property>
-                        <property name="Active">True</property>
                         <property name="DrawIndicator">True</property>
                         <property name="HasLabel">True</property>
                         <property name="UseUnderline">True</property>

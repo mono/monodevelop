@@ -50,12 +50,12 @@
     <ProjectTemplate id = "IkvmLibraryProject" resource = "IkvmLibraryProject.xpt.xml"/>
   </Extension>
 
-  <Extension path = "/MonoDevelop/ProjectModel/Gui/ProjectOptions/ConfigurationOptions">
+  <Extension path = "/MonoDevelop/ProjectModel/Gui/ProjectOptions">
     <Condition id="activelanguage" value = "Java">
-      <DialogPanel id = "JavaProjectPanel"
+      <Section id = "JavaProjectPanel"
                    _label = "Code Generation"
                    class = "JavaBinding.ProjectConfigurationPropertyPanel"/>
-	  <DialogPanel id = "JavaOutputOptionsPanel"
+	  <Section id = "JavaOutputOptionsPanel"
 				 _label = "Output"
 				 class = "MonoDevelop.Projects.Gui.Dialogs.OptionPanels.OutputOptionsPanel"/>
     </Condition>

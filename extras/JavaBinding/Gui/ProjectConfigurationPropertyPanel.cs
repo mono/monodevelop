@@ -22,26 +22,29 @@ using System;
 using Gtk;
 
 using MonoDevelop.Projects;
-using MonoDevelop.Core.Gui.Dialogs;
+using MonoDevelop.Projects.Gui.Dialogs;
 using MonoDevelop.Components;
 using MonoDevelop.Core;
 
 namespace JavaBinding
 {
-	public class ProjectConfigurationPropertyPanel : AbstractOptionPanel
+	public class ProjectConfigurationPropertyPanel : MultiConfigItemOptionsPanel
 	{
 		CodeGenerationPanelWidget widget;
 		
-		public override void LoadPanelContents()
+		public override Widget CreatePanelWidget()
 		{
-			Add (widget = new  CodeGenerationPanelWidget ((Properties) CustomizationObject));
+			return (widget = new CodeGenerationPanelWidget (ConfigurationData));
 		}
 		
-		public override bool StorePanelContents()
+		public override void LoadConfigData ()
 		{
-			bool result = true;
-			result = widget.Store ();
- 			return result;
+			widget.LoadConfigData (this);
+		}
+		
+		public override void ApplyChanges ()
+		{
+			widget.Store ();
 		}
 	}
 
@@ -49,13 +52,11 @@ namespace JavaBinding
 	{
 		JavaCompilerParameters compilerParameters = null;
 		DotNetProjectConfiguration configuration;
+		DotNetProject project;
 		
-		public CodeGenerationPanelWidget (Properties CustomizationObject)
+		public CodeGenerationPanelWidget (ConfigurationData configData)
 		{	
 			Build ();
-			
-			configuration = ((Properties)CustomizationObject).Get<DotNetProjectConfiguration> ("Config");
-			compilerParameters = (JavaCompilerParameters) configuration.CompilationParameters;
 			
 			ListStore store = new ListStore (typeof (string));
 			store.AppendValues (GettextCatalog.GetString ("Executable"));
@@ -64,15 +65,23 @@ namespace JavaBinding
 			CellRendererText cr = new CellRendererText ();
 			compileTargetCombo.PackStart (cr, true);
 			compileTargetCombo.AddAttribute (cr, "text", 0);
+				
+			compilerJavacButton.Toggled += new EventHandler (OnCompilerToggled);
+			compilerGcjButton.Toggled += new EventHandler (OnCompilerToggled);
+		}
+		
+		public void LoadConfigData (ProjectConfigurationPropertyPanel dlg)
+		{	
+			configuration = (DotNetProjectConfiguration) dlg.CurrentConfiguration;
+			project = (DotNetProject) dlg.ConfiguredProject;
+			compilerParameters = (JavaCompilerParameters) configuration.CompilationParameters;
+
 			compileTargetCombo.Active = (int) configuration.CompileTarget;
 
 			if (compilerParameters.Compiler == JavaCompiler.Javac)
 				compilerJavacButton.Active = true;
 			else
 				compilerGcjButton.Active = true;
-				
-			compilerJavacButton.Toggled += new EventHandler (OnCompilerToggled);
-			compilerGcjButton.Toggled += new EventHandler (OnCompilerToggled);
 
 			enableOptimizationCheckButton.Active = compilerParameters.Optimize;
 			generateDebugInformationCheckButton.Active = configuration.DebugMode;
@@ -105,7 +114,7 @@ namespace JavaBinding
 			else
 				compilerParameters.Compiler = JavaCompiler.Gcj;
 
-			configuration.CompileTarget = (CompileTarget) compileTargetCombo.Active;
+			project.CompileTarget = (CompileTarget) compileTargetCombo.Active;
 			compilerParameters.GenWarnings = generateWarningsCheckButton.Active;			
 			compilerParameters.Deprecation = deprecationCheckButton.Active;			
 			configuration.DebugMode = generateDebugInformationCheckButton.Active;			

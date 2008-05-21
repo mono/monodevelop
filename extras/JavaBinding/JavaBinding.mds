@@ -12,7 +12,6 @@
   <StartMode startupentry="JavaBinding" single="True">
     <Execute type="None" entry="JavaBinding" />
     <Execute type="None" entry="po" />
-    <Execute type="None" entry="packs" />
   </StartMode>
   <Entries>
     <Entry filename="JavaBinding.mdp" />
