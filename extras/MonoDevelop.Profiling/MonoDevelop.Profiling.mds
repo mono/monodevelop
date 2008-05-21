@@ -1,5 +1,5 @@
 <Combine name="MonoDevelop.Profiling" fileversion="2.0">
-  <Configurations>
+  <Configurations active="Debug">
     <Configuration name="Debug" ctype="CombineConfiguration">
       <Entry build="True" name="MonoDevelop.Profiling" configuration="Debug" />
       <Entry build="True" name="MonoDevelop.Profiling.HeapBuddy" configuration="Debug" />

@@ -1,3 +1,8 @@
+2008-05-21  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Profiling.HeapShot.mdp: New project model changes and
+	  updates.
+
 2008-03-10  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Gui/HeapShotProfilingSnapshotNodeBuilder.cs: Track changes in the

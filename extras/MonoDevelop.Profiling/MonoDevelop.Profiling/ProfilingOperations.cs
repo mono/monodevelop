@@ -44,7 +44,7 @@ namespace MonoDevelop.Profiling
 	{
 		private static string previousContext;
 		
-		public static IAsyncOperation Profile (IProfiler profiler, CombineEntry entry)
+		public static IAsyncOperation Profile (IProfiler profiler, IBuildTarget entry)
 		{
 			if (IdeApp.ProjectOperations.CurrentRunOperation != null
 			       && !IdeApp.ProjectOperations.CurrentRunOperation.IsCompleted)

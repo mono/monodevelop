@@ -47,7 +47,7 @@ namespace MonoDevelop.Profiling
 					cmd.UseMarkup = true;
 					cmd.Icon = prof.IconString;
 					if (prof.IsSupported) {
-						if (IdeApp.ProjectOperations.CurrentOpenCombine != null)
+						if (IdeApp.Workspace.IsOpen)
 							cmd.Enabled = IdeApp.ProjectOperations.CurrentRunOperation.IsCompleted;
 						else
 							cmd.Enabled = (IdeApp.Workbench.ActiveDocument != null && IdeApp.Workbench.ActiveDocument.IsBuildTarget);

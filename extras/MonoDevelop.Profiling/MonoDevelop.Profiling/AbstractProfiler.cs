@@ -156,8 +156,8 @@ namespace MonoDevelop.Profiling
 			dlg.LocalOnly = true;
 			dlg.Modal = true;
 
-			if (IdeApp.ProjectOperations.CurrentOpenCombine != null)
-				dlg.SetCurrentFolder (IdeApp.ProjectOperations.CurrentOpenCombine.BaseDirectory);
+			if (IdeApp.ProjectOperations.CurrentSelectedSolution != null)
+				dlg.SetCurrentFolder (IdeApp.ProjectOperations.CurrentSelectedSolution.BaseDirectory);
 			else
 				dlg.SetCurrentFolder (Environment.GetFolderPath (Environment.SpecialFolder.Personal));
 			

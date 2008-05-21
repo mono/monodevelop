@@ -52,9 +52,13 @@ namespace MonoDevelop.Profiling
 		{
 			profiler = (IProfiler)ob;
 
-			if (IdeApp.ProjectOperations.CurrentOpenCombine != null) {
-				IAsyncOperation op = IdeApp.ProjectOperations.Build (IdeApp.ProjectOperations.CurrentOpenCombine);
-				op.Completed += new OperationHandler (ExecuteCombine);
+			Solution sol = IdeApp.ProjectOperations.CurrentSelectedSolution;
+			if (sol != null) {
+				IAsyncOperation op = IdeApp.ProjectOperations.Build (sol);
+				op.Completed += delegate {
+					if (op.Success)
+						ProfilingOperations.Profile (profiler, sol);
+				};
 			} else {
 				doc = IdeApp.Workbench.ActiveDocument;
 				if (doc != null) {
@@ -66,16 +70,10 @@ namespace MonoDevelop.Profiling
 		
 		protected override void Update (CommandInfo info)
 		{
-			if (IdeApp.ProjectOperations.CurrentOpenCombine != null)
-				info.Enabled = IdeApp.ProjectOperations.CurrentRunOperation.IsCompleted;
+			if (IdeApp.Workspace.IsOpen)
+				info.Enabled = IdeApp.ProjectOperations.CurrentSelectedSolution != null && IdeApp.ProjectOperations.CurrentRunOperation.IsCompleted;
 			else
 				info.Enabled = (IdeApp.Workbench.ActiveDocument != null && IdeApp.Workbench.ActiveDocument.IsBuildTarget);
-		}
-		
-		protected void ExecuteCombine (IAsyncOperation op)
-		{
-			if (op.Success)
-				ProfilingOperations.Profile (profiler, IdeApp.ProjectOperations.CurrentOpenCombine);
 		}
 		
 		protected void ExecuteFile (IAsyncOperation op)
