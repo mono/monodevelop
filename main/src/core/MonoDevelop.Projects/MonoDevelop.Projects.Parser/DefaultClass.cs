@@ -45,7 +45,7 @@ namespace MonoDevelop.Projects.Parser
 		protected MethodCollection   methods;
 		protected EventCollection    events;
 		protected IndexerCollection  indexer;
-		CombineEntry sourceProject;
+		SolutionItem sourceProject;
 		
 		string ns = string.Empty;
 		
@@ -105,7 +105,7 @@ namespace MonoDevelop.Projects.Parser
 			get { return compilationUnit; }
 		}
 
-		public CombineEntry SourceProject {
+		public SolutionItem SourceProject {
 			get { return sourceProject; }
 			internal set { sourceProject = value; }
 		}

@@ -29,6 +29,7 @@
 using System;
 using System.Xml;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace MonoDevelop.Projects.Serialization
 {
@@ -41,6 +42,7 @@ namespace MonoDevelop.Projects.Serialization
 		{
 			dataContext = ctx;
 			serializationContext = ctx.CreateSerializationContext ();
+			serializationContext.Serializer = this;
 		}
 		
 		public DataSerializer (DataContext ctx, string baseFile)
@@ -48,10 +50,15 @@ namespace MonoDevelop.Projects.Serialization
 			dataContext = ctx;
 			serializationContext = ctx.CreateSerializationContext ();
 			serializationContext.BaseFile = baseFile;
+			serializationContext.Serializer = this;
 		}
 		
 		public SerializationContext SerializationContext {
 			get { return serializationContext; }
+		}
+		
+		public DataContext DataContext {
+			get { return dataContext; }
 		}
 		
 		public DataNode Serialize (object obj)
@@ -77,6 +84,61 @@ namespace MonoDevelop.Projects.Serialization
 		public object CreateInstance (Type type, DataItem data)
 		{
 			return dataContext.CreateConfigurationData (serializationContext, type, data);
+		}
+		
+		public IEnumerable<ItemProperty> GetProperties (object instance)
+		{
+			return dataContext.GetProperties (serializationContext, instance);
+		}
+		
+		internal protected virtual DataNode OnSerialize (DataType dataType, SerializationContext serCtx, object mapData, object value)
+		{
+			return dataType.OnSerialize (serCtx, mapData, value);
+		}
+		
+		internal protected virtual object OnDeserialize (DataType dataType, SerializationContext serCtx, object mapData, DataNode data)
+		{
+			return dataType.OnDeserialize (serCtx, mapData, data);
+		}
+		
+		internal protected virtual void OnDeserialize (DataType dataType, SerializationContext serCtx, object mapData, DataNode data, object valueInstance)
+		{
+			dataType.OnDeserialize (serCtx, mapData, data, valueInstance);
+		}
+		
+		internal protected virtual object OnCreateInstance (DataType dataType, SerializationContext serCtx, DataNode data)
+		{
+			return dataType.OnCreateInstance (serCtx, data);
+		}
+		
+		internal protected virtual DataNode OnSerializeProperty (ItemProperty prop, SerializationContext serCtx, object instance, object value)
+		{
+			return prop.OnSerialize (serCtx, value);
+		}
+		
+		internal protected virtual object OnDeserializeProperty (ItemProperty prop, SerializationContext serCtx, object instance, DataNode data)
+		{
+			return prop.OnDeserialize (serCtx, data);
+		}
+		
+		internal protected virtual void OnDeserializeProperty (ItemProperty prop, SerializationContext serCtx, object instance, DataNode data, object valueInstance)
+		{
+			prop.OnDeserialize (serCtx, data, valueInstance);
+		}
+		
+		internal protected virtual bool CanSerializeProperty (ItemProperty property, SerializationContext serCtx, object instance)
+		{
+			return CanHandleProperty (property, serCtx, instance);
+		}
+		
+		internal protected virtual bool CanDeserializeProperty (ItemProperty property, SerializationContext serCtx, object instance)
+		{
+			return CanHandleProperty (property, serCtx, instance);
+		}
+		
+		internal protected virtual bool CanHandleProperty (ItemProperty property, SerializationContext serCtx, object instance)
+		{
+			return true;
 		}
 	}
 }

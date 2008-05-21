@@ -59,7 +59,7 @@ namespace MonoDevelop.Projects.Parser
 			project.FileAddedToProject += new ProjectFileEventHandler (OnFileAdded);
 			project.FileRemovedFromProject += new ProjectFileEventHandler (OnFileRemoved);
 			project.FileRenamedInProject += new ProjectFileRenamedEventHandler (OnFileRenamed);
-			project.Modified += new CombineEntryEventHandler (OnProjectModified);
+			project.Modified += new SolutionItemEventHandler (OnProjectModified);
 
 			initialFileCheck = true;
 		}
@@ -68,7 +68,7 @@ namespace MonoDevelop.Projects.Parser
 			get { return project; }
 		}
 		
-		public override CombineEntry SourceEntry {
+		public override SolutionItem SourceEntry {
 			get { return project; }
 		}
 		
@@ -79,7 +79,7 @@ namespace MonoDevelop.Projects.Parser
 			project.FileAddedToProject -= new ProjectFileEventHandler (OnFileAdded);
 			project.FileRemovedFromProject -= new ProjectFileEventHandler (OnFileRemoved);
 			project.FileRenamedInProject -= new ProjectFileRenamedEventHandler (OnFileRenamed);
-			project.Modified -= new CombineEntryEventHandler (OnProjectModified);
+			project.Modified -= new SolutionItemEventHandler (OnProjectModified);
 		}
 		
 		public override void CheckModifiedFiles ()
@@ -125,7 +125,7 @@ namespace MonoDevelop.Projects.Parser
 			}
 		}
 		
-		void OnProjectModified (object s, CombineEntryEventArgs args)
+		void OnProjectModified (object s, SolutionItemEventArgs args)
 		{
 			if (UpdateCorlibReference ())
 				parserDatabase.NotifyReferencesChanged (this);
@@ -134,7 +134,7 @@ namespace MonoDevelop.Projects.Parser
 		public void UpdateFromProject ()
 		{
 			Hashtable fs = new Hashtable ();
-			foreach (ProjectFile file in project.ProjectFiles)
+			foreach (ProjectFile file in project.Files)
 			{
 				if (file.BuildAction != BuildAction.Compile) continue;
 				if (GetFile (file.Name) == null) AddFile (file.Name);
@@ -150,13 +150,16 @@ namespace MonoDevelop.Projects.Parser
 			}
 			
 			fs.Clear ();
-			foreach (ProjectReference pr in project.ProjectReferences)
-			{
-				string[] refIds = GetReferenceKeys (pr);
-				foreach (string refId in refIds) {
-					fs[refId] = null;
-					if (!HasReference (refId))
-						AddReference (refId);
+			if (project is DotNetProject) {
+				DotNetProject netProject = (DotNetProject) project;
+				foreach (ProjectReference pr in netProject.References)
+				{
+					string[] refIds = GetReferenceKeys (pr);
+					foreach (string refId in refIds) {
+						fs[refId] = null;
+						if (!HasReference (refId))
+							AddReference (refId);
+					}
 				}
 			}
 			
@@ -228,7 +231,7 @@ namespace MonoDevelop.Projects.Parser
 					return new string[] { "Assembly:" + refId };
 				default:
 					ArrayList list = new ArrayList ();
-					foreach (string s in pr.GetReferencedFileNames ())
+					foreach (string s in pr.GetReferencedFileNames (ProjectService.DefaultConfiguration))
 						list.Add ("Assembly:" + s);
 					return (string[]) list.ToArray (typeof(string));
 			}

@@ -35,13 +35,13 @@ namespace MonoDevelop.Projects
 	[Serializable()]
 	public class ProjectReferenceCollection : Collection<ProjectReference>
 	{
-		Project project;
+		DotNetProject project;
 		
 		public ProjectReferenceCollection()
 		{
 		}
 		
-		internal void SetProject (Project project)
+		internal void SetProject (DotNetProject project)
 		{
 			this.project = project;
 		}

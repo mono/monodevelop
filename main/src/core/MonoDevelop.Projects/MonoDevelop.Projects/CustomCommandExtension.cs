@@ -34,51 +34,51 @@ namespace MonoDevelop.Projects
 {
 	internal class CustomCommandExtension: ProjectServiceExtension
 	{
-		public override ICompilerResult Build (IProgressMonitor monitor, CombineEntry entry)
+		protected override ICompilerResult Build (IProgressMonitor monitor, SolutionEntityItem entry, string configuration)
 		{
-			AbstractConfiguration conf = entry.ActiveConfiguration as AbstractConfiguration;
+			SolutionItemConfiguration conf = entry.GetConfiguration (configuration) as SolutionItemConfiguration;
 			if (conf != null) {
-				conf.CustomCommands.ExecuteCommand (monitor, entry, CustomCommandType.BeforeBuild);
+				conf.CustomCommands.ExecuteCommand (monitor, entry, CustomCommandType.BeforeBuild, configuration);
 				if (monitor.IsCancelRequested)
 					return new DefaultCompilerResult (new CompilerResults (null), "");
 			}
 			
-			ICompilerResult res = base.Build (monitor, entry);
+			ICompilerResult res = base.Build (monitor, entry, configuration);
 			
 			if (conf != null && !monitor.IsCancelRequested)
-				conf.CustomCommands.ExecuteCommand (monitor, entry, CustomCommandType.AfterBuild);
+				conf.CustomCommands.ExecuteCommand (monitor, entry, CustomCommandType.AfterBuild, configuration);
 				                                    
 			return res;
 		}
 
-		public override void Clean (IProgressMonitor monitor, CombineEntry entry)
+		protected override void Clean (IProgressMonitor monitor, SolutionEntityItem entry, string configuration)
 		{
-			AbstractConfiguration conf = entry.ActiveConfiguration as AbstractConfiguration;
+			SolutionItemConfiguration conf = entry.GetConfiguration (configuration) as SolutionItemConfiguration;
 			if (conf != null) {
-				conf.CustomCommands.ExecuteCommand (monitor, entry, CustomCommandType.BeforeClean);
+				conf.CustomCommands.ExecuteCommand (monitor, entry, CustomCommandType.BeforeClean, configuration);
 				if (monitor.IsCancelRequested)
 					return;
 			}
 			
-			base.Clean (monitor, entry);
+			base.Clean (monitor, entry, configuration);
 			
 			if (conf != null && !monitor.IsCancelRequested)
-				conf.CustomCommands.ExecuteCommand (monitor, entry, CustomCommandType.AfterClean);
+				conf.CustomCommands.ExecuteCommand (monitor, entry, CustomCommandType.AfterClean, configuration);
 		}
 
-		public override void Execute (IProgressMonitor monitor, CombineEntry entry, ExecutionContext context)
+		protected override void Execute (IProgressMonitor monitor, SolutionEntityItem entry, ExecutionContext context, string configuration)
 		{
-			AbstractConfiguration conf = entry.ActiveConfiguration as AbstractConfiguration;
+			SolutionItemConfiguration conf = entry.GetConfiguration (configuration) as SolutionItemConfiguration;
 			if (conf != null) {
-				conf.CustomCommands.ExecuteCommand (monitor, entry, CustomCommandType.BeforeExecute, context);
+				conf.CustomCommands.ExecuteCommand (monitor, entry, CustomCommandType.BeforeExecute, context, configuration);
 				if (monitor.IsCancelRequested)
 					return;
 			}
 			
-			base.Execute (monitor, entry, context);
+			base.Execute (monitor, entry, context, configuration);
 			
 			if (conf != null && !monitor.IsCancelRequested)
-				conf.CustomCommands.ExecuteCommand (monitor, entry, CustomCommandType.AfterExecute, context);
+				conf.CustomCommands.ExecuteCommand (monitor, entry, CustomCommandType.AfterExecute, context, configuration);
 		}
 	}
 }

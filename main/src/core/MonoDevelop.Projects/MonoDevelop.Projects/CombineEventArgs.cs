@@ -27,17 +27,17 @@ namespace MonoDevelop.Projects
 	
 	public class CombineEventArgs : EventArgs
 	{
-		Combine combine;
+		SolutionFolder folder;
 		
-		public Combine Combine {
+		public SolutionFolder Combine {
 			get {
-				return combine;
+				return folder;
 			}
 		}
 		
-		public CombineEventArgs(Combine combine)
+		public CombineEventArgs(SolutionFolder folder)
 		{
-			this.combine = combine;
+			this.folder = folder;
 		}
 	}
 }

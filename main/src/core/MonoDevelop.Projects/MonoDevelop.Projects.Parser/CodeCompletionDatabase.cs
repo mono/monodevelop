@@ -114,7 +114,7 @@ namespace MonoDevelop.Projects.Parser
 			get { return disposed; }
 		}
 		
-		public virtual CombineEntry SourceEntry {
+		public virtual SolutionItem SourceEntry {
 			get { return null; }
 		}
 		

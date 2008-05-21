@@ -28,20 +28,22 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace MonoDevelop.Projects.Serialization
 {
 	public class DataCollection: IEnumerable
 	{
-		ArrayList list = new ArrayList ();
+		List<DataNode> list = new List<DataNode> ();
 		
 		public DataCollection ()
 		{
 		}
 		
-		protected ArrayList List {
+		protected List<DataNode> List {
 			get {
-				if (list == null) list = new ArrayList ();
+				if (list == null)
+					list = new List<DataNode> ();
 				return list;
 			}
 		}
@@ -53,7 +55,7 @@ namespace MonoDevelop.Projects.Serialization
 		
 		public virtual DataNode this [int n]
 		{
-			get { return (DataNode) List[n]; }
+			get { return List[n]; }
 		}
 		
 		public virtual DataNode this [string name]
@@ -61,7 +63,7 @@ namespace MonoDevelop.Projects.Serialization
 			get {
 				DataCollection col;
 				int i = FindData (name, out col, false);
-				if (i != -1) return (DataNode) col.List [i];
+				if (i != -1) return col.List [i];
 				else return null;
 			}
 		}
@@ -75,7 +77,7 @@ namespace MonoDevelop.Projects.Serialization
 			
 			if (name.IndexOf ('/') == -1) {
 				for (int n=0; n<list.Count; n++) {
-					DataNode data = (DataNode) list [n];
+					DataNode data = list [n];
 					if (data.Name == name) {
 						colec = this;
 						return n;
@@ -108,7 +110,7 @@ namespace MonoDevelop.Projects.Serialization
 					
 					pos = -1;
 					for (int n=0; n<colec.List.Count; n++) {
-						data = (DataNode) colec.List [n];
+						data = colec.List [n];
 						if (data.Name == names [p]) {
 							pos = n; break;
 						}
@@ -123,12 +125,26 @@ namespace MonoDevelop.Projects.Serialization
 			return list == null ? Type.EmptyTypes.GetEnumerator() : list.GetEnumerator ();
 		}
 		
+		public void AddRange (DataCollection col)
+		{
+			foreach (DataNode node in col)
+				Add (node);
+		}
+		
 		public virtual void Add (DataNode entry)
 		{
 			if (entry == null)
 				throw new ArgumentNullException ("entry");
 				
 			List.Add (entry);
+		}
+		
+		public virtual void Insert (int index, DataNode entry)
+		{
+			if (entry == null)
+				throw new ArgumentNullException ("entry");
+
+			List.Insert (index, entry);
 		}
 		
 		public virtual void Add (DataNode entry, string itemPath)
@@ -152,7 +168,7 @@ namespace MonoDevelop.Projects.Serialization
 			DataCollection col;
 			int i = FindData (name, out col, false);
 			if (i != -1) {
-				DataNode data = (DataNode) col.List [i];
+				DataNode data = col.List [i];
 				col.list.RemoveAt (i);
 				return data;
 			}
@@ -185,6 +201,19 @@ namespace MonoDevelop.Projects.Serialization
 			}
 			foreach (DataNode node in toAdd)
 				Add (node);
+		}
+		
+		// Sorts the list using the specified key order
+		public void Sort (Dictionary<string,int> nameToPosition)
+		{
+			list.Sort (delegate (DataNode x, DataNode y) {
+				int p1, p2;
+				if (!nameToPosition.TryGetValue (x.Name, out p1))
+					p1 = int.MaxValue;
+				if (!nameToPosition.TryGetValue (y.Name, out p2))
+					p2 = int.MaxValue;
+				return p1.CompareTo (p2);
+			});
 		}
 	}
 }

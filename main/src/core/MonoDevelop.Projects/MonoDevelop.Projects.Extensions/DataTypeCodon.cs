@@ -44,5 +44,11 @@ namespace MonoDevelop.Projects.Extensions
 		public Type Class {
 			get { return Addin.GetType (typeName, true); }
 		}
+
+		public string TypeName {
+			get {
+				return typeName;
+			}
+		}
 	}
 }

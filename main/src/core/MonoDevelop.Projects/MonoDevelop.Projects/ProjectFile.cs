@@ -25,6 +25,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Xml;
 using System.Collections;
+using System.Collections.Generic;
 using MonoDevelop.Core;
 using MonoDevelop.Projects.Serialization;
 
@@ -59,7 +60,6 @@ namespace MonoDevelop.Projects
 		[ItemProperty("buildaction")]
 		BuildAction buildaction;
 		
-		[ItemProperty("dependson", DefaultValue="")]		
 		string dependsOn;
 		
 		[ItemProperty("data", DefaultValue="")]

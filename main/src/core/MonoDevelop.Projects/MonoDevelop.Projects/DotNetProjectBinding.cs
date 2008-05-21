@@ -60,7 +60,7 @@ namespace MonoDevelop.Projects
 				info.CombinePath = Path.GetDirectoryName (file);
 				info.ProjectBasePath = Path.GetDirectoryName (file);
 				Project project = CreateProject (binding.Language, info, null);
-				project.ProjectFiles.Add (new ProjectFile (file));
+				project.Files.Add (new ProjectFile (file));
 				return project;
 			}
 			return null;

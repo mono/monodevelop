@@ -38,5 +38,10 @@ namespace MonoDevelop.Projects.Serialization
 			get { return name; }
 			set { name = value; }
 		}
+		
+		internal virtual string ToString (int indent)
+		{
+			return "";
+		}
 	}
 }

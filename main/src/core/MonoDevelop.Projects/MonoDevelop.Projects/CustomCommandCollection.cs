@@ -48,16 +48,16 @@ namespace MonoDevelop.Projects
 				Add (cmd.Clone ());
 		}
 		
-		public void ExecuteCommand (IProgressMonitor monitor, CombineEntry entry, CustomCommandType type)
+		public void ExecuteCommand (IProgressMonitor monitor, SolutionEntityItem entry, CustomCommandType type, string configuration)
 		{
-			ExecuteCommand (monitor, entry, type, null);
+			ExecuteCommand (monitor, entry, type, null, configuration);
 		}
 		
-		public void ExecuteCommand (IProgressMonitor monitor, CombineEntry entry, CustomCommandType type, ExecutionContext context)
+		public void ExecuteCommand (IProgressMonitor monitor, SolutionEntityItem entry, CustomCommandType type, ExecutionContext context, string configuration)
 		{
 			foreach (CustomCommand cmd in this) {
 				if (cmd.Type == type)
-					cmd.Execute (monitor, entry, context);
+					cmd.Execute (monitor, entry, context, configuration);
 				if (monitor.IsCancelRequested)
 					break;
 			}

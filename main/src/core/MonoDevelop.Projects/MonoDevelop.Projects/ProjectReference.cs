@@ -20,6 +20,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Diagnostics;
 using System.Xml;
@@ -41,12 +42,14 @@ namespace MonoDevelop.Projects
 	/// This class represent a reference information in an Project object.
 	/// </summary>
 	[DataItem (FallbackType=typeof(UnknownProjectReference))]
-	public class ProjectReference : ICloneable, ICustomDataItem
+	public class ProjectReference : ICloneable, IExtendedDataItem
 	{
+		Hashtable extendedProperties;
+		
 		[ItemProperty ("type")]
 		ReferenceType referenceType;
 		
-		Project ownerProject;
+		DotNetProject ownerProject;
 		
 		string reference = String.Empty;
 		
@@ -66,9 +69,10 @@ namespace MonoDevelop.Projects
 		{
 		}
 		
-		internal void SetOwnerProject (Project project)
+		internal void SetOwnerProject (DotNetProject project)
 		{
 			ownerProject = project;
+			UpdateGacReference ();
 		}
 		
 		public ProjectReference(ReferenceType referenceType, string reference)
@@ -84,25 +88,34 @@ namespace MonoDevelop.Projects
 			reference = referencedProject.Name;
 		}
 		
+		public IDictionary ExtendedProperties {
+			get {
+				if (extendedProperties == null)
+					extendedProperties = new Hashtable ();
+				return extendedProperties;
+			}
+		}
+		
 		public Project OwnerProject {
 			get { return ownerProject; }
 		}
 		
-		[ReadOnly(true)]
 		public ReferenceType ReferenceType {
 			get {
 				return referenceType;
 			}
 		}
 		
-		[ReadOnly(true)]
 		public string Reference {
 			get {
 				return reference;
 			}
+			internal set {
+				reference = value;
+				UpdateGacReference ();
+			}
 		}
 		
-		[ReadOnly(true)]
 		public string StoredReference {
 			get {
 				if (loadedReference != null)
@@ -112,7 +125,6 @@ namespace MonoDevelop.Projects
 			}
 		}
 		
-		[DefaultValue(true)]
 		public bool LocalCopy {
 			get {
 				return localCopy;
@@ -121,12 +133,21 @@ namespace MonoDevelop.Projects
 				localCopy = value;
 			}
 		}
+
+		internal string LoadedReference {
+			get {
+				return loadedReference;
+			}
+			set {
+				loadedReference = value;
+			}
+		}
 		
 		/// <summary>
 		/// Returns the file name to an assembly, regardless of what 
 		/// type the assembly is.
 		/// </summary>
-		string GetReferencedFileName ()
+		string GetReferencedFileName (string configuration)
 		{
 			switch (ReferenceType) {
 				case ReferenceType.Assembly:
@@ -137,10 +158,9 @@ namespace MonoDevelop.Projects
 					return file == null ? reference : file;
 				case ReferenceType.Project:
 					if (ownerProject != null) {
-						Combine c = ownerProject.RootCombine;
-						if (c != null) {
-							Project p = c.FindProject (reference);
-							if (p != null) return p.GetOutputFileName ();
+						if (ownerProject.ParentSolution != null) {
+							Project p = ownerProject.ParentSolution.FindProjectByName (reference);
+							if (p != null) return p.GetOutputFileName (configuration);
 						}
 					}
 					return null;
@@ -150,52 +170,30 @@ namespace MonoDevelop.Projects
 			}
 		}
 		
-		public virtual string[] GetReferencedFileNames ()
+		public virtual string[] GetReferencedFileNames (string configuration)
 		{
-			string s = GetReferencedFileName ();
+			string s = GetReferencedFileName (configuration);
 			if (s != null)
 				return new string[] { s };
 			else
 				return new string [0];
 		}
 		
-		DataCollection ICustomDataItem.Serialize (ITypeSerializer handler)
-		{
-			DataCollection data = handler.Serialize (this);
-			string refto = reference;
-			if (referenceType == ReferenceType.Assembly) {
-				string basePath = Path.GetDirectoryName (handler.SerializationContext.BaseFile);
-				refto = FileService.AbsoluteToRelativePath (basePath, refto);
-			} else if (referenceType == ReferenceType.Gac && loadedReference != null)
-				refto = loadedReference;
-
-			data.Add (new DataValue ("refto", refto));
-			return data;
-		}
-		
-		void ICustomDataItem.Deserialize (ITypeSerializer handler, DataCollection data)
-		{
-			DataValue refto = data.Extract ("refto") as DataValue;
-			handler.Deserialize (this, data);
-			if (refto != null) {
-				reference = refto.Value;
-				UpdateGacReference ();
-				if (referenceType == ReferenceType.Assembly) {
-					string basePath = Path.GetDirectoryName (handler.SerializationContext.BaseFile);
-					reference = FileService.RelativeToAbsolutePath (basePath, reference);
-				}
-			}
-		}
-		
 		void UpdateGacReference ()
 		{
 			if (referenceType == ReferenceType.Gac) {
 				string cref = Runtime.SystemAssemblyService.FindInstalledAssembly (reference);
+				if (ownerProject != null) {
+					if (cref == null)
+						cref = reference;
+					cref = Runtime.SystemAssemblyService.GetAssemblyNameForVersion (cref, ownerProject.ClrVersion);
+				}
 				if (cref != null && cref != reference) {
-					loadedReference = reference;
+					if (loadedReference == null) {
+						loadedReference = reference;
+					}
 					reference = cref;
-				} else
-					loadedReference = null;
+				}
 			}
 		}
 		
@@ -222,7 +220,7 @@ namespace MonoDevelop.Projects
 	{
 		Hashtable props;
 		
-		public IDictionary ExtendedProperties {
+		IDictionary IExtendedDataItem.ExtendedProperties {
 			get {
 				if (props == null)
 					props = new Hashtable ();

@@ -29,12 +29,33 @@
 using System;
 using System.Xml;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace MonoDevelop.Projects.Serialization
 {
 	public class DataContext
 	{
 		Hashtable configurationTypes = new Hashtable ();
+		ISerializationAttributeProvider attributeProvider;
+		
+		public DataContext ()
+		{
+			attributeProvider = TypeAttributeProvider.Instance;
+		}
+		
+		internal DataContext (ISerializationAttributeProvider attributeProvider)
+		{
+			this.attributeProvider = attributeProvider;
+		}
+		
+		internal ISerializationAttributeProvider AttributeProvider {
+			get {
+				return attributeProvider;
+			}
+			set {
+				attributeProvider = value;
+			}
+		}
 		
 		public virtual SerializationContext CreateSerializationContext ()
 		{
@@ -57,7 +78,7 @@ namespace MonoDevelop.Projects.Serialization
 		public void SetConfigurationItemData (SerializationContext serCtx, object obj, DataItem data)
 		{
 			ClassDataType dataType = (ClassDataType) GetConfigurationDataType (obj.GetType ());
-			dataType.SetConfigurationItemData (serCtx, obj, data);
+			dataType.Deserialize (serCtx, null, data, obj);
 		}
 		
 		public object CreateConfigurationData (SerializationContext serCtx, Type type, DataNode data)
@@ -74,6 +95,7 @@ namespace MonoDevelop.Projects.Serialization
 			ClassDataType ctype = (ClassDataType) GetConfigurationDataType (targetType);
 			ItemProperty prop = new ItemProperty (name, propertyType);
 			prop.Unsorted = true;
+			prop.IsExternal = true;
 			ctype.AddProperty (prop);
 		}
 		
@@ -81,6 +103,12 @@ namespace MonoDevelop.Projects.Serialization
 		{
 			ClassDataType ctype = (ClassDataType) GetConfigurationDataType (targetType);
 			ctype.RemoveProperty (name);
+		}
+		
+		public IEnumerable<ItemProperty> GetProperties (SerializationContext serCtx, object instance)
+		{
+			ClassDataType ctype = (ClassDataType) GetConfigurationDataType (instance.GetType ());
+			return ctype.GetProperties (serCtx, instance);
 		}
 		
 		public void IncludeType (Type type)
@@ -102,7 +130,15 @@ namespace MonoDevelop.Projects.Serialization
 			ctype.AddProperty (property);
 		}
 		
-		internal protected DataType GetConfigurationDataType (Type type)
+		public DataType GetConfigurationDataType (string typeName)
+		{
+			foreach (DataType dt in configurationTypes.Values)
+				if (dt.Name == typeName)
+					return dt;
+			return null;
+		}
+		
+		public DataType GetConfigurationDataType (Type type)
 		{
 			lock (configurationTypes) {
 				DataType itemType = (DataType) configurationTypes [type];
@@ -122,6 +158,8 @@ namespace MonoDevelop.Projects.Serialization
 				return new PrimitiveDataType (type);
 			else if (type == typeof(DateTime))
 				return new DateTimeDataType ();
+			else if (type == typeof(XmlElement))
+				return new XmlElementDataType ();
 			else {
 				ICollectionHandler handler = GetCollectionHandler (type);
 				if (handler != null)

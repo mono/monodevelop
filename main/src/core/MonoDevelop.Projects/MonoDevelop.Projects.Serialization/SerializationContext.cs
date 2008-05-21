@@ -27,16 +27,57 @@
 //
 
 using System;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects.Serialization
 {
 	public class SerializationContext: IDisposable
 	{
 		string file;
+		IPropertyFilter propertyFilter;
+		DataSerializer serializer;
+		IProgressMonitor monitor;
+		char directorySeparatorChar = System.IO.Path.DirectorySeparatorChar;
 		
 		public string BaseFile {
 			get { return file; }
 			set { file = value; }
+		}
+
+		public IPropertyFilter PropertyFilter {
+			get {
+				return propertyFilter;
+			}
+			set {
+				propertyFilter = value;
+			}
+		}
+
+		public DataSerializer Serializer {
+			get {
+				return serializer;
+			}
+			internal set {
+				serializer = value;
+			}
+		}
+
+		public char DirectorySeparatorChar {
+			get {
+				return directorySeparatorChar;
+			}
+			set {
+				directorySeparatorChar = value;
+			}
+		}
+
+		public IProgressMonitor ProgressMonitor {
+			get {
+				return monitor;
+			}
+			set {
+				monitor = value;
+			}
 		}
 		
 		public virtual void Close ()

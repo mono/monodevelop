@@ -9,6 +9,9 @@ REFS =  \
 	-r:$(top_builddir)/build/bin/Mono.Cecil.dll \
 	-r:$(top_builddir)/build/bin/Mono.Cecil.Mdb.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
+	-r:Microsoft.Build.Engine \
+	-r:Microsoft.Build.Framework \
+	-r:Microsoft.Build.Utilities \
 	-r:Mono.Posix \
 	-r:System \
 	-r:System.Drawing \
@@ -27,9 +30,38 @@ FILES =  \
 	MonoDevelop.Projects.CodeGeneration/XmlCodeDomReader.cs \
 	MonoDevelop.Projects.Documentation/IDocumentationService.cs \
 	MonoDevelop.Projects.Extensions/DataTypeCodon.cs \
+	MonoDevelop.Projects.Extensions/DotNetProjectNode.cs \
+	MonoDevelop.Projects.Extensions/DotNetProjectSubtypeNode.cs \
+	MonoDevelop.Projects.Extensions/FileFormatNode.cs \
+	MonoDevelop.Projects.Extensions/IFileFormat.cs \
+	MonoDevelop.Projects.Extensions/ISolutionItemHandler.cs \
 	MonoDevelop.Projects.Extensions/ItemPropertyCodon.cs \
+	MonoDevelop.Projects.Extensions/ItemTypeNode.cs \
 	MonoDevelop.Projects.Extensions/LanguageBindingCodon.cs \
 	MonoDevelop.Projects.Extensions/ProjectBindingCodon.cs \
+	MonoDevelop.Projects.Extensions/ProjectExtensionUtil.cs \
+	MonoDevelop.Projects.Extensions/SerlializationMapNode.cs \
+	MonoDevelop.Projects.Extensions/SolutionItemHandler.cs \
+	MonoDevelop.Projects.Extensions/SolutionItemNode.cs \
+	MonoDevelop.Projects.Formats.MD1/CmbxFileFormat.cs \
+	MonoDevelop.Projects.Formats.MD1/CombineConfiguration.cs \
+	MonoDevelop.Projects.Formats.MD1/CombineConfigurationEntry.cs \
+	MonoDevelop.Projects.Formats.MD1/CombineConfigurationSet.cs \
+	MonoDevelop.Projects.Formats.MD1/CombineStartupMode.cs \
+	MonoDevelop.Projects.Formats.MD1/MD1CustomDataItem.cs \
+	MonoDevelop.Projects.Formats.MD1/MD1DotNetProjectHandler.cs \
+	MonoDevelop.Projects.Formats.MD1/MD1FileFormat.cs \
+	MonoDevelop.Projects.Formats.MD1/MD1ProjectService.cs \
+	MonoDevelop.Projects.Formats.MD1/MD1SolutionEntityItemHandler.cs \
+	MonoDevelop.Projects.Formats.MD1/MD1SolutionItemHandler.cs \
+	MonoDevelop.Projects.Formats.MD1/PrjxFileFormat.cs \
+	MonoDevelop.Projects.Formats.MSBuild/MSBuildFileFormat.cs \
+	MonoDevelop.Projects.Formats.MSBuild/MSBuildHandler.cs \
+	MonoDevelop.Projects.Formats.MSBuild/MSBuildProject.cs \
+	MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectHandler.cs \
+	MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectService.cs \
+	MonoDevelop.Projects.Formats.MSBuild/SlnData.cs \
+	MonoDevelop.Projects.Formats.MSBuild/SlnFileFormat.cs \
 	MonoDevelop.Projects.Parser/AbstractDecoration.cs \
 	MonoDevelop.Projects.Parser/AbstractMember.cs \
 	MonoDevelop.Projects.Parser/AbstractNamedEntity.cs \
@@ -147,12 +179,18 @@ FILES =  \
 	MonoDevelop.Projects.Serialization/ExpandedCollectionAttribute.cs \
 	MonoDevelop.Projects.Serialization/GenericCollectionHandler.cs \
 	MonoDevelop.Projects.Serialization/ICollectionHandler.cs \
+	MonoDevelop.Projects.Serialization/ICustomDataItemHandler.cs \
 	MonoDevelop.Projects.Serialization/IExtendedDataItem.cs \
+	MonoDevelop.Projects.Serialization/IPropertyFilter.cs \
+	MonoDevelop.Projects.Serialization/ISerializationAttributeProvider.cs \
 	MonoDevelop.Projects.Serialization/ItemProperty.cs \
 	MonoDevelop.Projects.Serialization/ItemPropertyAttribute.cs \
 	MonoDevelop.Projects.Serialization/PrimitiveDataType.cs \
 	MonoDevelop.Projects.Serialization/SerializationContext.cs \
+	MonoDevelop.Projects.Serialization/TypeAttributeProvider.cs \
 	MonoDevelop.Projects.Serialization/XmlDataSerializer.cs \
+	MonoDevelop.Projects.Serialization/XmlElementDataType.cs \
+	MonoDevelop.Projects.Serialization/XmlMapAttributeProvider.cs \
 	MonoDevelop.Projects.Text/IEditableTextFile.cs \
 	MonoDevelop.Projects.Text/ITextFile.cs \
 	MonoDevelop.Projects.Text/ITextFileProvider.cs \
@@ -161,20 +199,12 @@ FILES =  \
 	MonoDevelop.Projects.Text/TextFileReader.cs \
 	MonoDevelop.Projects.Text/TextFileService.cs \
 	MonoDevelop.Projects.Utility/DiffUtility.cs \
-	MonoDevelop.Projects/AbstractConfiguration.cs \
 	MonoDevelop.Projects/AbstractProjectConfiguration.cs \
 	MonoDevelop.Projects/BuildEventHandler.cs \
 	MonoDevelop.Projects/BuildTool.cs \
-	MonoDevelop.Projects/CmbxFileFormat.cs \
-	MonoDevelop.Projects/Combine.cs \
-	MonoDevelop.Projects/CombineConfiguration.cs \
-	MonoDevelop.Projects/CombineEntry.cs \
-	MonoDevelop.Projects/CombineEntryCollection.cs \
 	MonoDevelop.Projects/CombineEntryEventArgs.cs \
 	MonoDevelop.Projects/CombineEntryRenamedEventArgs.cs \
 	MonoDevelop.Projects/CombineEventArgs.cs \
-	MonoDevelop.Projects/CombineExecuteDefinition.cs \
-	MonoDevelop.Projects/ConfigurationCollection.cs \
 	MonoDevelop.Projects/ConfigurationEventHandler.cs \
 	MonoDevelop.Projects/ConvertXml.cs \
 	MonoDevelop.Projects/CustomCommand.cs \
@@ -183,24 +213,25 @@ FILES =  \
 	MonoDevelop.Projects/CustomCommandType.cs \
 	MonoDevelop.Projects/CyclicBuildOrderException.cs \
 	MonoDevelop.Projects/DefaultCompilerResult.cs \
-	MonoDevelop.Projects/DefaultFileFormat.cs \
 	MonoDevelop.Projects/DotNetProject.cs \
 	MonoDevelop.Projects/DotNetProjectBinding.cs \
 	MonoDevelop.Projects/DotNetProjectConfiguration.cs \
 	MonoDevelop.Projects/ExecutionContext.cs \
+	MonoDevelop.Projects/FileFormat.cs \
 	MonoDevelop.Projects/FileFormatManager.cs \
 	MonoDevelop.Projects/GenericProject.cs \
 	MonoDevelop.Projects/GenericProjectBinding.cs \
+	MonoDevelop.Projects/IBuildTarget.cs \
 	MonoDevelop.Projects/ICompilerResult.cs \
-	MonoDevelop.Projects/IConfiguration.cs \
+	MonoDevelop.Projects/IConfigurationTarget.cs \
 	MonoDevelop.Projects/IDotNetLanguageBinding.cs \
-	MonoDevelop.Projects/IFileFormat.cs \
 	MonoDevelop.Projects/ILanguageBinding.cs \
 	MonoDevelop.Projects/IProjectBinding.cs \
-	MonoDevelop.Projects/IProjectService.cs \
+	MonoDevelop.Projects/ItemCollection.cs \
+	MonoDevelop.Projects/ItemConfiguration.cs \
+	MonoDevelop.Projects/ItemConfigurationCollection.cs \
+	MonoDevelop.Projects/IWorkspaceObject.cs \
 	MonoDevelop.Projects/LanguageBindingService.cs \
-	MonoDevelop.Projects/MonoDevelopFileFormat.cs \
-	MonoDevelop.Projects/PrjxFileFormat.cs \
 	MonoDevelop.Projects/Project.cs \
 	MonoDevelop.Projects/ProjectConvertTool.cs \
 	MonoDevelop.Projects/ProjectCreateInformation.cs \
@@ -216,13 +247,32 @@ FILES =  \
 	MonoDevelop.Projects/ProjectService.cs \
 	MonoDevelop.Projects/ProjectServiceExtension.cs \
 	MonoDevelop.Projects/ProjectsServices.cs \
-	MonoDevelop.Projects/SharpDevelopFileFormat.cs \
-	MonoDevelop.Projects/UnknownCombineEntry.cs \
+	MonoDevelop.Projects/PropertyBag.cs \
+	MonoDevelop.Projects/Solution.cs \
+	MonoDevelop.Projects/SolutionConfiguration.cs \
+	MonoDevelop.Projects/SolutionConfigurationCollection.cs \
+	MonoDevelop.Projects/SolutionEntityItem.cs \
+	MonoDevelop.Projects/SolutionEventArgs.cs \
+	MonoDevelop.Projects/SolutionFolder.cs \
+	MonoDevelop.Projects/SolutionFolderItemCollection.cs \
+	MonoDevelop.Projects/SolutionItem.cs \
+	MonoDevelop.Projects/SolutionItemCollection.cs \
+	MonoDevelop.Projects/SolutionItemConfiguration.cs \
+	MonoDevelop.Projects/SolutionItemConfigurationCollection.cs \
+	MonoDevelop.Projects/SolutionItemReference.cs \
 	MonoDevelop.Projects/UnknownConfiguration.cs \
 	MonoDevelop.Projects/UnknownProjectVersionException.cs \
-	MonoDevelop.Projects/Workspace.cs
+	MonoDevelop.Projects/UnknownSolutionItem.cs \
+	MonoDevelop.Projects/UnknownWorkspaceItem.cs \
+	MonoDevelop.Projects/Workspace.cs \
+	MonoDevelop.Projects/WorkspaceItem.cs \
+	MonoDevelop.Projects/WorkspaceItemCollection.cs \
+	MonoDevelop.Projects/WorkspaceItemEventArgs.cs \
+	MonoDevelop.Projects/WorkspaceItemRenamedEventArgs.cs
 
-RES = MonoDevelop.Projects.addin.xml 
+RES =  \
+	md1format.xml \
+	MonoDevelop.Projects.addin.xml 
 
 GENERATED_FILES = \
 AssemblyInfo.cs

@@ -28,12 +28,18 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace MonoDevelop.Projects.Serialization
 {
 	public interface IExtendedDataItem
 	{
 		IDictionary ExtendedProperties { get; }
+	}
+	
+	public interface IDataItemMetadata
+	{
+		IDictionary<string,string> ExtendedProperties { get; }
 	}
 	
 	public interface ICustomDataItem

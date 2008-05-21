@@ -107,7 +107,7 @@ namespace MonoDevelop.Projects.Parser
 			}
 		}
 		
-		public virtual CombineEntry SourceProject {
+		public virtual SolutionItem SourceProject {
 			get {
 				if (db is ProjectCodeCompletionDatabase)
 					return ((ProjectCodeCompletionDatabase)db).Project;

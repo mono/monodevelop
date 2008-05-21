@@ -96,28 +96,41 @@ namespace MonoDevelop.Projects
 			return cmd;
 		}
 		
-		public void Execute (IProgressMonitor monitor, CombineEntry entry)
+		public void Execute (IProgressMonitor monitor, IWorkspaceObject entry, string configuration)
 		{
-			Execute (monitor, entry, null);
+			Execute (monitor, entry, null, configuration);
 		}
 		
-		public void Execute (IProgressMonitor monitor, CombineEntry entry, ExecutionContext context)
+		public void Execute (IProgressMonitor monitor, IWorkspaceObject entry, ExecutionContext context, string configuration)
 		{
 			string [,] customtags = null;
 			
 			Project project = entry as Project;
 			if (project != null) {
-				string outputname = project.GetOutputFileName();
+				string outputname = project.GetOutputFileName(configuration);
 				customtags = new string [,] {
-					{"ProjectDir", entry.BaseDirectory},
+					// Keep in sync with CustomCommandWidget.cs
+					{"ItemName", entry.Name},
+					{"ItemDir", entry.BaseDirectory},
 					{"TargetName", Path.GetFileName (outputname)},
 					{"TargetDir", Path.GetDirectoryName (outputname)},
-					{"CombineDir", entry.RootCombine.BaseDirectory},
+					{"SolutionName", project.ParentSolution.Name},
+					{"SolutionDir", project.ParentSolution.BaseDirectory},
+				};
+			} else if (entry is SolutionEntityItem) {
+				SolutionEntityItem it = entry as SolutionEntityItem;
+				customtags = new string [,] {
+					// Keep in sync with CustomCommandWidget.cs
+					{"ItemName", it.Name},
+					{"ItemDir", it.BaseDirectory},
+					{"SolutionName", it.ParentSolution.Name},
+					{"SolutionDir", it.ParentSolution.BaseDirectory},
 				};
 			} else {
 				customtags = new string [,] {
-					{"ProjectDir", entry.BaseDirectory},
-					{"CombineDir", entry.RootCombine.BaseDirectory},
+					// Keep in sync with CustomCommandWidget.cs
+					{"SolutionName", entry.Name},
+					{"SolutionDir", entry.BaseDirectory}
 				};
 			}
 			

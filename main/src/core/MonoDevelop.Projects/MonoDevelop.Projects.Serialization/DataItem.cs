@@ -64,5 +64,22 @@ namespace MonoDevelop.Projects.Serialization
 			if (data == null) return null;
 			return data.Extract (name);
 		}
+		
+		public override string ToString ()
+		{
+			return ToString (0);
+		}
+		
+		internal override string ToString (int indent)
+		{
+			string ind = new string (' ', indent);
+			string str = ind + "[" + Name + "]\n";
+			foreach (DataNode nod in ItemData)
+				str += nod.ToString (indent + 4) + "\n";
+			str += ind + "[/" + Name + "]";
+			return str;
+		}
+
+
 	}
 }

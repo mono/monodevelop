@@ -367,6 +367,7 @@ namespace MonoDevelop.Projects.Parser
 		bool trackingFileChanges;
 		IProgressMonitorFactory parseProgressMonitorFactory;
 		int parseStatus;
+		Dictionary<object,int> loadCount = new Dictionary<object,int> ();
 		
 		// Only keeps track of explicitely loaded assemblies, not the ones
 		// referenced by projects.
@@ -444,8 +445,6 @@ namespace MonoDevelop.Projects.Parser
 		Hashtable lastUpdateSize = new Hashtable();
 		Hashtable parsings = new Hashtable ();
 		
-		CombineEntryChangeEventHandler combineEntryAddedHandler;
-		CombineEntryChangeEventHandler combineEntryRemovedHandler;
 
 		Queue parseQueue = new Queue();
 		object parseQueueLock = new object ();
@@ -564,8 +563,6 @@ namespace MonoDevelop.Projects.Parser
 		public ParserDatabase (DefaultParserService parserService)
 		{
 			this.parserService = parserService;
-			combineEntryAddedHandler = new CombineEntryChangeEventHandler (OnCombineEntryAdded);
-			combineEntryRemovedHandler = new CombineEntryChangeEventHandler (OnCombineEntryRemoved);
 			nameTable = new StringNameTable (sharedNameTable);
 		}
 		
@@ -751,52 +748,102 @@ namespace MonoDevelop.Projects.Parser
 			}
 		}
 		
+		int DecLoadCount (object ob)
+		{
+			lock (databases) {
+				int c;
+				if (loadCount.TryGetValue (ob, out c)) {
+					c--;
+					if (c == 0)
+						loadCount.Remove (ob);
+					else
+						loadCount [ob] = c;
+					return c;
+				}
+				LoggingService.LogError ("DecLoadCount: Object not registered.");
+				return 0;
+			}
+		}
+		
+		int IncLoadCount (object ob)
+		{
+			lock (databases) {
+				int c;
+				if (loadCount.TryGetValue (ob, out c)) {
+					c++;
+					loadCount [ob] = c;
+					return c;
+				}
+				else {
+					loadCount [ob] = 1;
+					return 1;
+				}
+			}
+		}
+		
 		public string LoadAssembly (string assemblyName)
 		{
 			string aname = AssemblyCodeCompletionDatabase.GetFullAssemblyName (assemblyName);
 			string name = "Assembly:" + aname;
-			
-			lock (databases) {
-				object c = loadedAssemblies [name];
-				if (c == null)
-					loadedAssemblies [name] = 1;
-				else
-					loadedAssemblies [name] = ((int)c) + 1;
-			}
+			IncLoadCount (name);
 			return aname;
 		}
 		
 		public void UnloadAssembly (string assemblyName)
 		{
 			string name = "Assembly:" + AssemblyCodeCompletionDatabase.GetFullAssemblyName (assemblyName);
-			
-			lock (databases) {
-				object c = loadedAssemblies [name];
-				if (c != null) {
-					int nc = ((int)c) - 1;
-					if (nc == 0)
-						loadedAssemblies.Remove (name);
-					else
-						loadedAssemblies [name] = nc;
-				}
-			}
+			DecLoadCount (name);
 			CleanUnusedDatabases ();
 		}
 		
-		public void Load (CombineEntry entry)
+		public void Load (WorkspaceItem item)
 		{
-			if (entry is Project)
-				LoadProjectDatabase ((Project)entry);
-			else if (entry is Combine)
-				LoadCombineDatabases ((Combine)entry);
+			if (IncLoadCount (item) != 1)
+				return;
+			if (item is Workspace) {
+				Workspace ws = (Workspace) item;
+				foreach (WorkspaceItem it in ws.Items)
+					Load (it);
+				ws.ItemAdded += OnWorkspaceItemAdded;
+				ws.ItemRemoved += OnWorkspaceItemRemoved;
+			}
+			else if (item is Solution) {
+				Solution solution = (Solution) item;
+				foreach (Project project in solution.GetAllProjects ())
+					Load (project);
+	
+				solution.SolutionItemAdded += OnSolutionItemAdded;
+				solution.SolutionItemRemoved += OnSolutionItemRemoved;
+			}
 		}
 		
-		public void Unload (CombineEntry entry)
+		public void Unload (WorkspaceItem item)
 		{
-			if (entry is Project)
-				UnloadProjectDatabase ((Project)entry);
-			else if (entry is Combine)
-				UnloadCombineDatabases ((Combine)entry);
+			if (DecLoadCount (item) != 0)
+				return;
+			
+			if (item is Workspace) {
+				Workspace ws = (Workspace) item;
+				foreach (WorkspaceItem it in ws.Items)
+					Unload (it);
+				ws.ItemAdded -= OnWorkspaceItemAdded;
+				ws.ItemRemoved -= OnWorkspaceItemRemoved;
+			}
+			else if (item is Solution) {
+				Solution solution = (Solution) item;
+				foreach (Project project in solution.GetAllProjects ())
+					UnloadProjectDatabase (project);
+				solution.SolutionItemAdded -= OnSolutionItemAdded;
+				solution.SolutionItemRemoved -= OnSolutionItemRemoved;
+			}
+			
+			CleanUnusedDatabases ();
+		}
+		
+		public void Unload (Project project)
+		{
+			UnloadProjectDatabase (project);
+			CleanUnusedDatabases ();
 		}
 		
 		public bool IsLoaded (Project project)
@@ -804,8 +851,11 @@ namespace MonoDevelop.Projects.Parser
 			return (GetProjectDatabase (project) != null);
 		}
 		
-		void LoadProjectDatabase (Project project)
+		public void Load (Project project)
 		{
+			if (IncLoadCount (project) != 1)
+				return;
+
 			lock (databases)
 			{
 				string uri = "Project:" + project.Name;
@@ -817,7 +867,7 @@ namespace MonoDevelop.Projects.Parser
 				foreach (ReferenceEntry re in db.References)
 					GetDatabase (re.Uri);
 
-				project.NameChanged += new CombineEntryRenamedEventHandler (OnProjectRenamed);
+				project.NameChanged += new SolutionItemRenamedEventHandler (OnProjectRenamed);
 				project.ReferenceAddedToProject += new ProjectReferenceEventHandler (OnProjectReferencesChanged);
 				project.ReferenceRemovedFromProject += new ProjectReferenceEventHandler (OnProjectReferencesChanged);
 			}
@@ -852,9 +902,12 @@ namespace MonoDevelop.Projects.Parser
 		
 		void UnloadProjectDatabase (Project project)
 		{
+			if (DecLoadCount (project) != 0)
+				return;
+			
 			string uri = "Project:" + project.Name;
 			UnloadDatabase (uri);
-			project.NameChanged -= new CombineEntryRenamedEventHandler (OnProjectRenamed);
+			project.NameChanged -= new SolutionItemRenamedEventHandler (OnProjectRenamed);
 			project.ReferenceAddedToProject -= new ProjectReferenceEventHandler (OnProjectReferencesChanged);
 			project.ReferenceRemovedFromProject -= new ProjectReferenceEventHandler (OnProjectReferencesChanged);
 		}
@@ -898,27 +951,7 @@ namespace MonoDevelop.Projects.Parser
 			}
 		}
 		
-		void LoadCombineDatabases (Combine combine)
-		{
-			foreach (CombineEntry entry in combine.Entries)
-				Load (entry);
-
-			combine.EntryAdded += combineEntryAddedHandler;
-			combine.EntryRemoved += combineEntryRemovedHandler;
-		}
-		
-		void UnloadCombineDatabases (Combine combine)
-		{
-			foreach (CombineEntry entry in combine.Entries)
-				Unload (entry);
-
-			combine.EntryAdded -= combineEntryAddedHandler;
-			combine.EntryRemoved -= combineEntryRemovedHandler;
-
-			CleanUnusedDatabases ();
-		}
-		
-		void OnProjectRenamed (object sender, CombineEntryRenamedEventArgs args)
+		void OnProjectRenamed (object sender, SolutionItemRenamedEventArgs args)
 		{
 			lock (databases)
 			{
@@ -934,14 +967,26 @@ namespace MonoDevelop.Projects.Parser
 			}
 		}
 		
-		void OnCombineEntryAdded (object sender, CombineEntryEventArgs args)
+		void OnWorkspaceItemAdded (object s, WorkspaceItemEventArgs args)
 		{
-			Load (args.CombineEntry);
+			Load (args.Item);
 		}
 		
-		void OnCombineEntryRemoved (object sender, CombineEntryEventArgs args)
+		void OnWorkspaceItemRemoved (object s, WorkspaceItemEventArgs args)
 		{
-			Unload (args.CombineEntry);
+			Unload (args.Item);
+		}
+		
+		void OnSolutionItemAdded (object sender, SolutionItemEventArgs args)
+		{
+			if (args.SolutionItem is Project)
+				Load ((Project) args.SolutionItem);
+		}
+		
+		void OnSolutionItemRemoved (object sender, SolutionItemEventArgs args)
+		{
+			if (args.SolutionItem is Project)
+				Unload ((Project) args.SolutionItem);
 		}
 		
 		internal void NotifyReferencesChanged (CodeCompletionDatabase db)

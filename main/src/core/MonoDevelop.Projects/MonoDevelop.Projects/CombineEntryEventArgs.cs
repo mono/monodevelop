@@ -1,4 +1,4 @@
-// CombineEntryEventArgs.cs
+// SolutionItemEventArgs.cs
 //
 // Author:
 //   Lluis Sanchez Gual <lluis@novell.com>
@@ -30,31 +30,31 @@ using MonoDevelop.Projects;
 
 namespace MonoDevelop.Projects
 {
-	public delegate void CombineEntryEventHandler(object sender, CombineEntryEventArgs e);
+	public delegate void SolutionItemEventHandler(object sender, SolutionItemEventArgs e);
 	
-	public class CombineEntryEventArgs : EventArgs
+	public class SolutionItemEventArgs : EventArgs
 	{
-		CombineEntry entry;
+		SolutionItem entry;
 		
-		public CombineEntry CombineEntry {
+		public SolutionItem SolutionItem {
 			get {
 				return entry;
 			}
 		}
 		
-		public CombineEntryEventArgs (CombineEntry entry)
+		public SolutionItemEventArgs (SolutionItem entry)
 		{
 			this.entry = entry;
 		}
 	}
 	
-	public delegate void CombineEntryChangeEventHandler(object sender, CombineEntryChangeEventArgs e);
+	public delegate void SolutionItemChangeEventHandler(object sender, SolutionItemChangeEventArgs e);
 	
-	public class CombineEntryChangeEventArgs: CombineEntryEventArgs
+	public class SolutionItemChangeEventArgs: SolutionItemEventArgs
 	{
 		bool reloading;
 		
-		public CombineEntryChangeEventArgs (CombineEntry entry, bool reloading): base (entry)
+		public SolutionItemChangeEventArgs (SolutionItem entry, bool reloading): base (entry)
 		{
 			this.reloading = reloading;
 		}

@@ -87,7 +87,7 @@ namespace MonoDevelop.Projects.Serialization
 			return defaultData;
 		}
 
-		public override DataNode Serialize (SerializationContext serCtx, object mdata, object collection)
+		internal protected override DataNode OnSerialize (SerializationContext serCtx, object mdata, object collection)
 		{
 			MapData mapData = (mdata != null) ? (MapData) mdata : GetDefaultData ();
 			DataItem item = new DataItem ();
@@ -104,7 +104,7 @@ namespace MonoDevelop.Projects.Serialization
 			return item;
 		}
 		
-		public override object Deserialize (SerializationContext serCtx, object mdata, DataNode data)
+		internal protected override object OnDeserialize (SerializationContext serCtx, object mdata, DataNode data)
 		{
 			DataCollection items = ((DataItem) data).ItemData;
 			object position;
@@ -113,7 +113,7 @@ namespace MonoDevelop.Projects.Serialization
 			return collectionInstance;
 		}
 		
-		public override void Deserialize (SerializationContext serCtx, object mdata, DataNode data, object collectionInstance)
+		internal protected override void OnDeserialize (SerializationContext serCtx, object mdata, DataNode data, object collectionInstance)
 		{
 			DataCollection items = ((DataItem) data).ItemData;
 			object position;

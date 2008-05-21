@@ -87,15 +87,15 @@ namespace MonoDevelop.Projects
 			
 			ConsoleProgressMonitor monitor = new ConsoleProgressMonitor ();
 			monitor.IgnoreLogMessages = true;
-			CombineEntry entry = Services.ProjectService.ReadCombineEntry (projectFile, monitor);
-			IFileFormat[] formats = Services.ProjectService.FileFormats.GetFileFormatsForObject (entry);
+			SolutionEntityItem entry = Services.ProjectService.ReadSolutionItem (monitor, projectFile);
+			FileFormat[] formats = Services.ProjectService.FileFormats.GetFileFormatsForObject (entry);
 			
 			if (formats.Length == 0) {
 				Console.WriteLine ("Can't convert file to any format: " + projectFile);
 				return 1;
 			}
 			
-			IFileFormat format = null;
+			FileFormat format = null;
 			
 			if (formatName == null || formatList) {
 				Console.WriteLine ();
@@ -121,7 +121,7 @@ namespace MonoDevelop.Projects
 				format = formats [op - 1];
 			}
 			else {
-				foreach (IFileFormat f in formats) {
+				foreach (FileFormat f in formats) {
 					if (f.Name == formatName)
 						format = f;
 				}

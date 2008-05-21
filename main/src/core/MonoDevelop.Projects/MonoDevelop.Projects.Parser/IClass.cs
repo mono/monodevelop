@@ -44,7 +44,7 @@ namespace MonoDevelop.Projects.Parser
 			get;
 		}
 		
-		CombineEntry SourceProject {
+		SolutionItem SourceProject {
 			get;
 		}
 		

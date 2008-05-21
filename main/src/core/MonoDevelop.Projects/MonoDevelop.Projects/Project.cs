@@ -24,6 +24,8 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Collections;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Reflection;
 using System.Xml;
@@ -34,6 +36,7 @@ using MonoDevelop.Core.Execution;
 using Mono.Addins;
 using MonoDevelop.Projects.Ambience;
 using MonoDevelop.Projects.Serialization;
+using MonoDevelop.Projects.Extensions;
 
 namespace MonoDevelop.Projects
 {
@@ -48,50 +51,35 @@ namespace MonoDevelop.Projects
 	/// </summary>
 	[DataInclude (typeof(ProjectFile))]
 	[DataItem (FallbackType=typeof(UnknownProject))]
-	public abstract class Project : CombineEntry
+	public abstract class Project : SolutionEntityItem
 	{
 		[ItemProperty ("Description", DefaultValue="")]
 		protected string description     = "";
-
-		[ItemProperty ("DefaultNamespace", DefaultValue="")]
-		protected string defaultNamespace = String.Empty;
 
 		[ItemProperty ("UseParentDirectoryAsNamespace", DefaultValue=false)]
 		protected bool useParentDirectoryAsNamespace = false;
 
 		[ItemProperty ("newfilesearch", DefaultValue = NewFileSearch.None)]
 		protected NewFileSearch newFileSearch  = NewFileSearch.None;
+		
+		[ItemProperty ("AppDesignerFolder")]
+		string designerFolder;
 
 		ProjectFileCollection projectFiles;
-
-		protected ProjectReferenceCollection projectReferences;
 		
 		bool isDirty = false;
 		
 		public Project ()
 		{
-			Name = "New Project";
-			projectReferences = new ProjectReferenceCollection ();
-			projectReferences.SetProject (this);
-			
 			FileService.FileChanged += OnFileChanged;
 		}
 		
-		[DefaultValue("")]
 		public string Description {
 			get {
 				return description;
 			}
 			set {
 				description = value;
-				NotifyModified ();
-			}
-		}
-
-		public string DefaultNamespace {
-			get { return defaultNamespace; }
-		        set {
-				defaultNamespace = value;
 				NotifyModified ();
 			}
 		}
@@ -104,25 +92,13 @@ namespace MonoDevelop.Projects
 			}
 		}
 		
-		[Browsable(false)]
-		[ItemProperty ("Contents")]
-		[ItemProperty ("File", Scope=1)]
-		public ProjectFileCollection ProjectFiles {
+		public ProjectFileCollection Files {
 			get {
 				if (projectFiles != null) return projectFiles;
 				return projectFiles = new ProjectFileCollection (this);
 			}
 		}
 		
-		[Browsable(false)]
-		[ItemProperty ("References")]
-		public ProjectReferenceCollection ProjectReferences {
-			get {
-				return projectReferences;
-			}
-		}
-		
-		[DefaultValue(NewFileSearch.None)]
 		public NewFileSearch NewFileSearch {
 			get {
 				return newFileSearch;
@@ -149,6 +125,15 @@ namespace MonoDevelop.Projects
 			}
 		}
 
+		public string DesignerFolder {
+			get {
+				return designerFolder;
+			}
+			set {
+				designerFolder = value;
+			}
+		}
+
 		public bool IsFileInProject(string filename)
 		{
 			return GetProjectFile (filename) != null;
@@ -156,7 +141,7 @@ namespace MonoDevelop.Projects
 		
 		public ProjectFile GetProjectFile (string fileName)
 		{
-			return ProjectFiles.GetFile (fileName);
+			return Files.GetFile (fileName);
 		}
 		
 		public virtual bool IsCompileable (string fileName)
@@ -166,152 +151,43 @@ namespace MonoDevelop.Projects
 				
 		public static Project LoadProject (string filename, IProgressMonitor monitor)
 		{
-			Project prj = Services.ProjectService.ReadCombineEntry (filename, monitor) as Project;
+			Project prj = Services.ProjectService.ReadSolutionItem (monitor, filename) as Project;
 			if (prj == null)
 				throw new InvalidOperationException ("Invalid project file: " + filename);
 			
 			return prj;
 		}
-		
-		protected override void Deserialize (ITypeSerializer handler, DataCollection data)
-		{
-			base.Deserialize (handler, data);
-			projectReferences.SetProject (this);
-			isDirty = false;
-		}
 
-		internal void RenameReferences(string oldName, string newName)
-		{
-			ArrayList toBeRemoved = new ArrayList();
-
-			foreach (ProjectReference refInfo in this.ProjectReferences) {
-				if (refInfo.ReferenceType == ReferenceType.Project) {
-					if (refInfo.Reference == oldName) {
-						toBeRemoved.Add(refInfo);
-					}
-				}
-			}
-			
-			foreach (ProjectReference pr in toBeRemoved) {
-				this.ProjectReferences.Remove(pr);
-				ProjectReference prNew = new ProjectReference (ReferenceType.Project, newName);
-				this.ProjectReferences.Add(prNew);
-			}			
-		}
-
-		public void CopyReferencesToOutputPath (bool force)
-		{
-			AbstractProjectConfiguration config = ActiveConfiguration as AbstractProjectConfiguration;
-			if (config == null) {
-				return;
-			}
-			CopyReferencesToOutputPath (config.OutputDirectory, force);
-		}
-		
-		void CopyReferencesToOutputPath (string destPath, bool force)
-		{
-			string[] deployFiles = GetReferenceDeployFiles (force);
-			
-			foreach (string sourcePath in deployFiles) {
-				string destinationFileName = Path.Combine (destPath, Path.GetFileName (sourcePath));
-				try {
-					if (destinationFileName != sourcePath) {
-						// Make sure the target directory exists
-						if (!Directory.Exists (Path.GetDirectoryName (destinationFileName)))
-							Directory.CreateDirectory (Path.GetDirectoryName (destinationFileName));
-						// Copy the file
-						FileService.CopyFile (sourcePath, destinationFileName);
-					}
-				} catch (Exception e) {
-					LoggingService.LogError ("Can't copy reference file from {0} to {1}: {2}", sourcePath, destinationFileName, e);
-				}
-			}
-		}
-		
-		public string[] GetReferenceDeployFiles (bool force)
-		{
-			ArrayList deployFiles = new ArrayList ();
-
-			foreach (ProjectReference projectReference in ProjectReferences) {
-				if ((projectReference.LocalCopy || force) && projectReference.ReferenceType != ReferenceType.Gac) {
-					foreach (string referenceFileName in projectReference.GetReferencedFileNames ()) {
-						deployFiles.Add (referenceFileName);
-						if (File.Exists (referenceFileName + ".config"))
-							deployFiles.Add (referenceFileName + ".config");
-					}
-				}
-				if (projectReference.ReferenceType == ReferenceType.Project && projectReference.LocalCopy && RootCombine != null) {
-					Project p = RootCombine.FindProject (projectReference.Reference);
-					if (p != null) {
-						AbstractProjectConfiguration config = p.ActiveConfiguration as AbstractProjectConfiguration;
-						if (config != null && config.DebugMode)
-							deployFiles.Add (p.GetOutputFileName () + ".mdb");
-
-						deployFiles.AddRange (p.GetReferenceDeployFiles (force));
-					}
-				}
-			}
-			return (string[]) deployFiles.ToArray (typeof(string));
-		}
-		
-		void CleanReferencesInOutputPath (string destPath)
-		{
-			string[] deployFiles = GetReferenceDeployFiles (true);
-			
-			foreach (string sourcePath in deployFiles) {
-				string destinationFileName = Path.Combine (destPath, Path.GetFileName (sourcePath));
-				try {
-					if (destinationFileName != sourcePath) {
-						if (File.Exists (destinationFileName))
-							FileService.DeleteFile (destinationFileName);
-					}
-				} catch (Exception e) {
-					LoggingService.LogError ("Can't delete reference file {0}: {2}", destinationFileName, e);
-				}
-			}
-		}
 		
 		public override void Dispose()
 		{
-			foreach (ProjectFile file in ProjectFiles) {
+			foreach (ProjectFile file in Files) {
 				file.Dispose ();
 			}
 			base.Dispose ();
 		}
 		
-		public ProjectReference AddReference (string filename)
-		{
-			foreach (ProjectReference rInfo in ProjectReferences) {
-				if (rInfo.Reference == filename) {
-					return rInfo;
-				}
-			}
-			ProjectReference newReferenceInformation = new ProjectReference (ReferenceType.Assembly, filename);
-			ProjectReferences.Add (newReferenceInformation);
-			return newReferenceInformation;
-		}
-		
 		public ProjectFile AddFile (string filename, BuildAction action)
 		{
-			foreach (ProjectFile fInfo in ProjectFiles) {
+			foreach (ProjectFile fInfo in Files) {
 				if (fInfo.Name == filename) {
 					return fInfo;
 				}
 			}
 			ProjectFile newFileInformation = new ProjectFile (filename, action);
-			ProjectFiles.Add (newFileInformation);
+			Files.Add (newFileInformation);
 			return newFileInformation;
 		}
 		
 		public void AddFile (ProjectFile projectFile) {
-			ProjectFiles.Add (projectFile);
+			Files.Add (projectFile);
 		}
 		
 		public ProjectFile AddDirectory (string relativePath)
 		{
 			string newPath = Path.Combine (BaseDirectory, relativePath);
 			
-			foreach (ProjectFile fInfo in ProjectFiles)
+			foreach (ProjectFile fInfo in Files)
 				if (fInfo.Name == newPath && fInfo.Subtype == Subtype.Directory)
 					return fInfo;
 			
@@ -329,69 +205,10 @@ namespace MonoDevelop.Projects
 			return newDir;
 		}
 		
-		public ICompilerResult Build (IProgressMonitor monitor, bool buildReferences)
-		{
-			return InternalBuild (monitor, buildReferences);
-		}
-		
-		internal override ICompilerResult InternalBuild (IProgressMonitor monitor)
-		{
-			return InternalBuild (monitor, true);
-		}
-		
-		ICompilerResult InternalBuild (IProgressMonitor monitor, bool buildReferences)
-		{
-			if (!buildReferences) {
-				if (!NeedsBuilding)
-					return new DefaultCompilerResult (new CompilerResults (null), "");
-					
-				try {
-					monitor.BeginTask (GettextCatalog.GetString ("Building Project: {0} ({1})", Name, ActiveConfiguration.Name), 1);
-					
-					// This will end calling OnBuild ()
-					return Services.ProjectService.ExtensionChain.Build (monitor, this);
-					
-				} finally {
-					monitor.EndTask ();
-				}
-			}
-				
-			// Get a list of all projects that need to be built (including this),
-			// and build them in the correct order
-			
-			CombineEntryCollection referenced = new CombineEntryCollection ();
-			GetReferencedProjects (referenced, this);
-			
-			referenced = Combine.TopologicalSort (referenced);
-			
-			CompilerResults cres = new CompilerResults (null);
-			
-			int builds = 0;
-			int failedBuilds = 0;
-				
-			monitor.BeginTask (null, referenced.Count);
-			foreach (Project p in referenced) {
-				if (p.NeedsBuilding) {
-					ICompilerResult res = p.Build (monitor, false);
-					cres.Errors.AddRange (res.CompilerResults.Errors);
-					builds++;
-					if (res.ErrorCount > 0) {
-						failedBuilds = 1;
-						break;
-					}
-				}
-				monitor.Step (1);
-				if (monitor.IsCancelRequested)
-					break;
-			}
-			monitor.EndTask ();
-			return new DefaultCompilerResult (cres, "", builds, failedBuilds);
-		}
-		
-		protected internal override ICompilerResult OnBuild (IProgressMonitor monitor)
+		protected internal override ICompilerResult OnBuild (IProgressMonitor monitor, string configuration)
 		{
 			// create output directory, if not exists
-			AbstractProjectConfiguration conf = ActiveConfiguration as AbstractProjectConfiguration;
+			ProjectConfiguration conf = GetConfiguration (configuration) as ProjectConfiguration;
 			if (conf == null)
 				return null;
 			string outputDir = conf.OutputDirectory;
@@ -407,7 +224,7 @@ namespace MonoDevelop.Projects
 			StringParserService.Properties["Project"] = Name;
 			
 			monitor.Log.WriteLine (GettextCatalog.GetString ("Performing main compilation..."));
-			ICompilerResult res = DoBuild (monitor);
+			ICompilerResult res = DoBuild (monitor, configuration);
 			
 			isDirty = false;
 			
@@ -421,91 +238,73 @@ namespace MonoDevelop.Projects
 			return res;
 		}
 		
-		protected internal override void OnClean (IProgressMonitor monitor)
+		protected internal override void OnClean (IProgressMonitor monitor, string configuration)
 		{
 			isDirty = true;
 			
 			// Delete the generated assembly
-			string file = GetOutputFileName ();
+			string file = GetOutputFileName (configuration);
 			if (file != null) {
 				if (File.Exists (file))
 					FileService.DeleteFile (file);
 			}
 
 			// Delete referenced assemblies
-			AbstractProjectConfiguration config = ActiveConfiguration as AbstractProjectConfiguration;
+			ProjectConfiguration config = GetConfiguration (configuration) as ProjectConfiguration;
 			if (config != null)
-				CleanReferencesInOutputPath (config.OutputDirectory);
+				ItemHandler.RunTarget (monitor, "Clean", config.Id);
 		}
 		
-		
-		void GetReferencedProjects (CombineEntryCollection referenced, Project project)
+		void GetBuildableReferencedItems (List<SolutionItem> referenced, SolutionItem item, string configuration)
 		{
-			if (referenced.Contains (project)) return;
+			if (referenced.Contains (item)) return;
 			
-			if (project.NeedsBuilding)
-				referenced.Add (project);
+			if (item.NeedsBuilding (configuration))
+				referenced.Add (item);
 
-			foreach (ProjectReference pref in project.ProjectReferences) {
-				if (pref.ReferenceType == ReferenceType.Project) {
-					Combine c = project.RootCombine;
-					if (c != null) {
-						Project rp = c.FindProject (pref.Reference);
-						if (rp != null)
-							GetReferencedProjects (referenced, rp);
-					}
-				}
-			}
+			foreach (SolutionItem ritem in item.GetReferencedItems (configuration))
+				GetBuildableReferencedItems (referenced, ritem, configuration);
 		}
 		
-		protected virtual ICompilerResult DoBuild (IProgressMonitor monitor)
+		protected virtual ICompilerResult DoBuild (IProgressMonitor monitor, string configuration)
 		{
-			return new DefaultCompilerResult (new CompilerResults (null), "");
+			return ItemHandler.RunTarget (monitor, "Build", configuration);
 		}
 		
-		protected internal override void OnExecute (IProgressMonitor monitor, ExecutionContext context)
+		protected internal override void OnExecute (IProgressMonitor monitor, ExecutionContext context, string configuration)
 		{
-			DoExecute (monitor, context);
+			DoExecute (monitor, context, configuration);
 		}
 		
-		protected virtual void DoExecute (IProgressMonitor monitor, ExecutionContext context)
+		protected virtual void DoExecute (IProgressMonitor monitor, ExecutionContext context, string configuration)
 		{
 		}
 		
-		public virtual string GetOutputFileName ()
+		public virtual string GetOutputFileName (string configuration)
 		{
 			return null;
 		}
 		
-		protected internal override bool OnGetNeedsBuilding ()
+		protected internal override bool OnGetNeedsBuilding (string configuration)
 		{
-			if (!isDirty) CheckNeedsBuild ();
+			if (!isDirty) CheckNeedsBuild (configuration);
 			return isDirty;
 		}
 		
-		protected internal override void OnSetNeedsBuilding (bool value)
+		protected internal override void OnSetNeedsBuilding (bool value, string configuration)
 		{
 			isDirty = value;
 		}
 		
-		public override string FileName {
-			get {
-				return base.FileName;
-			}
-			set {
-				base.FileName = value;
-			}
-		}
-		
-		protected virtual void CheckNeedsBuild ()
+		protected virtual void CheckNeedsBuild (string configuration)
 		{
-			DateTime tim = GetLastBuildTime ();
+			DateTime tim = GetLastBuildTime (configuration);
 			if (tim == DateTime.MinValue) {
 				isDirty = true;
 				return;
 			}
 			
-			foreach (ProjectFile file in ProjectFiles) {
+			foreach (ProjectFile file in Files) {
 				if (file.BuildAction == BuildAction.Exclude || file.BuildAction == BuildAction.Nothing)
 					continue;
 				FileInfo finfo = new FileInfo (file.FilePath);
@@ -515,25 +314,17 @@ namespace MonoDevelop.Projects
 				}
 			}
 			
-			foreach (ProjectReference pref in ProjectReferences) {
-				if (pref.ReferenceType == ReferenceType.Project && RootCombine != null) {
-					Project rp = RootCombine.FindProject (pref.Reference);
-					if (rp != null && rp.NeedsBuilding) {
-						isDirty = true;
-						return;
-					}
-					DateTime rptime = GetLastWriteTime (rp.GetOutputFileName ());
-					if (rptime == DateTime.MinValue || rptime > tim) {
-						isDirty = true;
-						return;
-					}
+			foreach (SolutionItem pref in GetReferencedItems (configuration)) {
+				if (pref.NeedsBuilding (configuration)) {
+					isDirty = true;
+					return;
 				}
 			}
 		}
 		
-		protected virtual DateTime GetLastBuildTime ()
+		protected virtual DateTime GetLastBuildTime (string configuration)
 		{
-			return GetLastWriteTime (GetOutputFileName ());
+			return GetLastWriteTime (GetOutputFileName (configuration));
 		}
 
 		DateTime GetLastWriteTime (string file)
@@ -562,18 +353,38 @@ namespace MonoDevelop.Projects
 
 		}
 		
-		internal protected override StringCollection OnGetExportFiles ()
+		internal protected override List<string> OnGetItemFiles (bool includeReferencedFiles)
 		{
-			StringCollection col = base.OnGetExportFiles ();
-			foreach (ProjectFile pf in ProjectFiles) {
-				if (pf.Subtype != Subtype.Directory)
-					col.Add (pf.FilePath);
+			List<string> col = base.OnGetItemFiles (includeReferencedFiles);
+			if (includeReferencedFiles) {
+				foreach (ProjectFile pf in Files) {
+					if (pf.Subtype != Subtype.Directory)
+						col.Add (pf.FilePath);
+				}
 			}
-			foreach (ProjectReference pref in ProjectReferences)
-				if (pref.ReferenceType == ReferenceType.Assembly)
-					col.Add (pref.Reference);
 			return col;
 		}
+		
+		internal override void SetItemHandler (ISolutionItemHandler handler)
+		{
+			// The new handler may have different defaults for resource ids. To ensure
+			// the existing ids don't change, we need to explicitely set them after the
+			// format change.
+			
+			Dictionary<ProjectFile,string> rids = new Dictionary<ProjectFile,string> ();
+			foreach (ProjectFile p in Files) {
+				if (p.BuildAction == BuildAction.EmbedAsResource)
+					rids [p] = p.ResourceId;
+			}
+			
+			base.SetItemHandler (handler);
+			
+			foreach (KeyValuePair<ProjectFile,string> entry in rids) {
+				if (entry.Key.ResourceId != entry.Value)
+					entry.Key.ResourceId = entry.Value;
+			}
+		}
+
 
  		internal void NotifyFileChangedInProject (ProjectFile file)
 		{
@@ -685,7 +496,7 @@ namespace MonoDevelop.Projects
 			get { return ""; }
 		}
 
-		public override IConfiguration CreateConfiguration (string name)
+		public override SolutionItemConfiguration CreateConfiguration (string name)
 		{
 			return null;
 		}

@@ -31,36 +31,11 @@ using MonoDevelop.Projects.Serialization;
 
 namespace MonoDevelop.Projects
 {
-	public class UnknownConfiguration: IConfiguration, IExtendedDataItem
+	public class UnknownConfiguration: SolutionItemConfiguration
 	{
-		Hashtable properties;
-		
-		public object Clone()
+		public UnknownConfiguration ()
 		{
-			return (IConfiguration) MemberwiseClone ();
-		}
-		
-		public void CopyFrom (IConfiguration configuration)
-		{
-			UnknownConfiguration other = (UnknownConfiguration) configuration;
-			if (other.properties != null)
-				properties = other.properties;
-		}
-		
-		public string Name {
-			get { return "Unknown Configuration"; }
-		}
-		
-		public override string ToString()
-		{
-			return "Unknown Configuration";
-		}
-		
-		public IDictionary ExtendedProperties {
-			get {
-				if (properties == null) properties = new Hashtable ();
-				return properties;
-			}
+			Name = "Unknown Configuration";
 		}
 	}
 }

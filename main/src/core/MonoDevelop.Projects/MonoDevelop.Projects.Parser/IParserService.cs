@@ -56,9 +56,11 @@ namespace MonoDevelop.Projects.Parser
 	
 	public interface IParserDatabase
 	{
-		void Load (CombineEntry entry);
-		void Unload (CombineEntry entry);
-		bool IsLoaded (Project entry);
+		void Load (WorkspaceItem item);
+		void Unload (WorkspaceItem item);
+		void Load (Project project);
+		void Unload (Project project);
+		bool IsLoaded (Project project);
 		
 		// Returns the normalized assembly name to use to later reference this assembly
 		string LoadAssembly (string assemblyName);

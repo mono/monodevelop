@@ -28,53 +28,63 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using MonoDevelop.Projects;
+using MonoDevelop.Projects.Extensions;
 
 namespace MonoDevelop.Projects
 {
 	public class FileFormatManager
 	{
-		ArrayList fileFormats = new ArrayList ();
-		static DefaultFileFormat defaultFormat = new DefaultFileFormat ();
+		List<FileFormat> fileFormats = new List<FileFormat> ();
 		
-		public void RegisterFileFormat (IFileFormat format)
+		public void RegisterFileFormat (IFileFormat format, string id, string name)
 		{
-			fileFormats.Add (format);
+			FileFormat f = new FileFormat (format, id, name);
+			fileFormats.Add (f);
 		}
 		
 		public void UnregisterFileFormat (IFileFormat format)
 		{
-			fileFormats.Remove (format);
+			foreach (FileFormat f in fileFormats) {
+				if (f.Format == format) {
+					fileFormats.Remove (f);
+					return;
+				}
+			}
 		}
 		
-		public IFileFormat[] GetFileFormats (string fileName)
+		public FileFormat[] GetFileFormats (string fileName, Type expectedType)
 		{
-			ArrayList list = new ArrayList ();
-			foreach (IFileFormat format in fileFormats)
-				if (format.CanReadFile (fileName))
-					list.Add (format);
-			if (defaultFormat.CanReadFile (fileName))
-				list.Add (defaultFormat);
-			return (IFileFormat[]) list.ToArray (typeof(IFileFormat));
+			List<FileFormat> list = new List<FileFormat> ();
+			foreach (FileFormat f in fileFormats)
+				if (f.Format.CanReadFile (fileName, expectedType))
+					list.Add (f);
+			return list.ToArray ();
 		}
 		
-		public IFileFormat[] GetFileFormatsForObject (object obj)
+		public FileFormat[] GetFileFormatsForObject (object obj)
 		{
-			ArrayList list = new ArrayList ();
-			foreach (IFileFormat format in fileFormats)
-				if (format.CanWriteFile (obj))
-					list.Add (format);
-			if (list.Count == 0 && defaultFormat.CanWriteFile (obj))
-				list.Add (defaultFormat);
-			return (IFileFormat[]) list.ToArray (typeof(IFileFormat));
+			List<FileFormat> list = new List<FileFormat> ();
+			foreach (FileFormat f in fileFormats)
+				if (f.Format.CanWriteFile (obj))
+					list.Add (f);
+			return list.ToArray ();
 		}
 		
-		public IFileFormat[] GetAllFileFormats ()
+		public FileFormat[] GetAllFileFormats ()
 		{
-			ArrayList list = new ArrayList ();
+			List<FileFormat> list = new List<FileFormat> ();
 			list.AddRange (fileFormats);
-			list.Add (defaultFormat);
-			return (IFileFormat[]) list.ToArray (typeof(IFileFormat));
+			return list.ToArray ();
+		}
+		
+		public FileFormat GetFileFormat (string id)
+		{
+			foreach (FileFormat f in fileFormats)
+				if (f.Id == id)
+					return f;
+			return null;
 		}
 	}
 }

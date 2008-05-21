@@ -34,7 +34,7 @@ namespace MonoDevelop.Projects
 	/// </summary>
 	public interface IProjectService
 	{
-		bool IsCombineEntryFile (string filename);
+		bool IsSolutionItemFile (string filename);
 		
 		DataContext DataContext {
 			get;
@@ -44,7 +44,7 @@ namespace MonoDevelop.Projects
 			get;
 		}
 		
-		CombineEntry ReadCombineEntry (string file, IProgressMonitor monitor);
+		SolutionEntityItem ReadSolutionItem (string file, IProgressMonitor monitor);
 
 		string Export (IProgressMonitor monitor, string rootSourceFile, string targetPath, IFileFormat format);
 		string Export (IProgressMonitor monitor, string rootSourceFile, string[] childEnryFiles, string targetPath, IFileFormat format);

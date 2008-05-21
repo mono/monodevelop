@@ -29,88 +29,94 @@
 
 using System;
 using System.Collections;
-
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Serialization;
-
 using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects
 {
-	public class ConfigurationCollection : CollectionBase
+	public interface IItemConfigurationCollection: ICollection<ItemConfiguration>
 	{
-		ArrayList tmpClear;
-		
-		public int Add (IConfiguration config)
-		{
-			return List.Add (config);
-		}
-		
-		public new IConfiguration this [int index] {
+		ItemConfiguration this [string name] { get; }
+	}
+	
+	public class ItemConfigurationCollection<T> : ItemCollection<T>, IItemConfigurationCollection where T: ItemConfiguration
+	{
+		public T this [string name] {
 			get {
-				return (IConfiguration) List [index];
-			}
-		}
-		
-		public IConfiguration this [string name] {
-			get {
-				foreach (IConfiguration c in this)
-					if (c.Name == name)
+				foreach (T c in this)
+					if (c.Id == name)
 						return c;
 				return null;
 			}
 		}
 		
-		public void Remove (IConfiguration config)
-		{
-			List.Remove (config);
-		}
-		
 		public void Remove (string name)
 		{
 			for (int n=0; n<Count; n++) {
-				if (this [n].Name == name) {
-					List.RemoveAt (n);
+				if (this [n].Id == name) {
+					RemoveAt (n);
 					return;
 				}
 			}
 		}
+
+#region IItemConfigurationCollection implementation
 		
-		protected override void OnInsertComplete (int index, object value)
+		ItemConfiguration IItemConfigurationCollection.this [string name] {
+			get {
+				return this [name];
+			}
+		}
+
+		bool ICollection<ItemConfiguration>.IsReadOnly {
+			get {
+				return false;
+			}
+		}
+
+		IEnumerator<ItemConfiguration> IEnumerable<ItemConfiguration>.GetEnumerator ()
 		{
-			OnConfigurationAdded ((IConfiguration) value);
+			foreach (ItemConfiguration item in this)
+				yield return item;
+		}
+
+		void ICollection<ItemConfiguration>.Add (ItemConfiguration item)
+		{
+			Add ((T)item);
+		}
+
+		void ICollection<ItemConfiguration>.Clear ()
+		{
+			Clear ();
+		}
+
+		bool ICollection<ItemConfiguration>.Contains (ItemConfiguration item)
+		{
+			return Contains ((T)item);
+		}
+
+		void ICollection<ItemConfiguration>.CopyTo (ItemConfiguration[] array, int arrayIndex)
+		{
+			for (int n=0; n<Count; n++)
+				array [arrayIndex + n] = this [n];
+		}
+
+		bool ICollection<ItemConfiguration>.Remove (ItemConfiguration item)
+		{
+			return Remove ((T)item);
 		}
 		
-		protected override void OnRemoveComplete (int index, object value)
-		{
-			OnConfigurationRemoved ((IConfiguration) value);
-		}
+#endregion
 		
-		protected override void OnSetComplete (int index, object oldValue, object newValue)
-		{
-			OnConfigurationRemoved ((IConfiguration) oldValue);
-			OnConfigurationAdded ((IConfiguration) newValue);
-		}
-		
-		protected override void OnClear ()
-		{
-			tmpClear = (ArrayList) InnerList.Clone ();
-		}
-		
-		protected override void OnClearComplete ()
-		{
-			foreach (object value in tmpClear)
-				OnConfigurationRemoved ((IConfiguration) value);
-			tmpClear = null;
-		}
-		
-		protected virtual void OnConfigurationAdded (IConfiguration conf)
+		protected override void OnItemAdded (T conf)
 		{
 			if (ConfigurationAdded != null)
 				ConfigurationAdded (this, new ConfigurationEventArgs (null, conf));
 		}
 		
-		protected virtual void OnConfigurationRemoved (IConfiguration conf)
+		protected override void OnItemRemoved (T conf)
 		{
 			if (ConfigurationRemoved != null)
 				ConfigurationRemoved (this, new ConfigurationEventArgs (null, conf));

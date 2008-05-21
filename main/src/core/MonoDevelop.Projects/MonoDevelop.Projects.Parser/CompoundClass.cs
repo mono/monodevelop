@@ -84,7 +84,7 @@ namespace MonoDevelop.Projects.Parser
 		
 		public static IClass MergeClass (IClass current, IClass cls)
 		{
-			if (current is CompoundClass) {
+			if (current is CompoundClass && cls.Region != null) {
 				// It's already a compound class. Add the new one.
 				CompoundClass ccls = (CompoundClass) current;
 				ccls.AddClass (cls);

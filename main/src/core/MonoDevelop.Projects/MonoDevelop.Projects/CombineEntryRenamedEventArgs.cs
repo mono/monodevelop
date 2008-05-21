@@ -1,5 +1,5 @@
 //
-// CombineEntryRenamedEventArgs.cs
+// SolutionItemRenamedEventArgs.cs
 //
 // Author:
 //   Lluis Sanchez Gual
@@ -30,14 +30,14 @@ using System;
 
 namespace MonoDevelop.Projects
 {
-	public delegate void CombineEntryRenamedEventHandler (object sender, CombineEntryRenamedEventArgs e);
+	public delegate void SolutionItemRenamedEventHandler (object sender, SolutionItemRenamedEventArgs e);
 	
-	public class CombineEntryRenamedEventArgs : CombineEntryEventArgs
+	public class SolutionItemRenamedEventArgs : SolutionItemEventArgs
 	{ 
 		string oldName;
 		string newName;
 		
-		public CombineEntryRenamedEventArgs (CombineEntry node, string oldName, string newName)
+		public SolutionItemRenamedEventArgs (SolutionItem node, string oldName, string newName)
 		: base (node)
 		{
 			this.oldName = oldName;

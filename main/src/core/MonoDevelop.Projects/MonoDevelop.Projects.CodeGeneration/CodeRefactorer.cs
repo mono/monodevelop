@@ -39,14 +39,14 @@ namespace MonoDevelop.Projects.CodeGeneration
 	public class CodeRefactorer
 	{
 		IParserDatabase pdb;
-		Combine rootCombine;
+		Solution solution;
 		ITextFileProvider fileProvider;
 		
 		delegate void RefactorDelegate (IProgressMonitor monitor, RefactorerContext gctx, IRefactorer gen, string file);
 		
-		public CodeRefactorer (Combine rootCombine, IParserDatabase pdb)
+		public CodeRefactorer (Solution solution, IParserDatabase pdb)
 		{
-			this.rootCombine = rootCombine;
+			this.solution = solution;
 			this.pdb = pdb;
 		}
 		
@@ -463,8 +463,8 @@ namespace MonoDevelop.Projects.CodeGeneration
 		{
 			ArrayList list = new ArrayList ();
 			
-			if (rootCombine != null) {
-				foreach (Project p in rootCombine.GetAllProjects ()) {
+			if (solution != null) {
+				foreach (Project p in solution.GetAllProjects ()) {
 					IParserContext ctx = pdb.GetProjectParserContext (p);
 					foreach (IClass cls in ctx.GetProjectContents ()) {
 						if (IsSubclass (ctx, baseClass, cls))
@@ -497,7 +497,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 		
 		void Refactor (IProgressMonitor monitor, IClass cls, RefactoryScope scope, RefactorDelegate refactorDelegate)
 		{
-			if (scope == RefactoryScope.File || rootCombine == null) {
+			if (scope == RefactoryScope.File || solution == null) {
 				string file = cls.Region.FileName;
 				RefactorerContext gctx = GetGeneratorContext (cls);
 				IRefactorer gen = Services.Languages.GetRefactorerForFile (file);
@@ -516,7 +516,8 @@ namespace MonoDevelop.Projects.CodeGeneration
 			}
 			else
 			{
-				RefactorCombine (monitor, rootCombine, refactorDelegate);
+				foreach (Project project in solution.GetAllProjects ())
+					RefactorProject (monitor, project, refactorDelegate);
 			}
 		}
 		
@@ -552,21 +553,11 @@ namespace MonoDevelop.Projects.CodeGeneration
 			}
 		}
 		
-		void RefactorCombine (IProgressMonitor monitor, CombineEntry ce, RefactorDelegate refactorDelegate)
-		{
-			if (ce is Combine) {
-				foreach (CombineEntry e in ((Combine)ce).Entries)
-					RefactorCombine (monitor, e, refactorDelegate);
-			} else if (ce is Project) {
-				RefactorProject (monitor, (Project) ce, refactorDelegate);
-			}
-		}
-		
 		void RefactorProject (IProgressMonitor monitor, Project p, RefactorDelegate refactorDelegate)
 		{
 			RefactorerContext gctx = GetGeneratorContext (p);
 			monitor.Log.WriteLine (GettextCatalog.GetString ("Refactoring project {0}", p.Name));
-			foreach (ProjectFile file in p.ProjectFiles) {
+			foreach (ProjectFile file in p.Files) {
 				if (file.BuildAction != BuildAction.Compile || !System.IO.File.Exists (file.FilePath))
 					continue;
 				IRefactorer gen = Services.Languages.GetRefactorerForFile (file.Name);
@@ -613,10 +604,10 @@ namespace MonoDevelop.Projects.CodeGeneration
 		
 		Project GetProjectForFile (string file)
 		{
-			if (rootCombine == null)
+			if (solution == null)
 				return null;
 
-			foreach (Project p in rootCombine.GetAllProjects ())
+			foreach (Project p in solution.GetAllProjects ())
 				if (p.IsFileInProject (file))
 					return p;
 			return null;

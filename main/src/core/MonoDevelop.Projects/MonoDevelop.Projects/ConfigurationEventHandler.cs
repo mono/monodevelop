@@ -34,16 +34,16 @@ namespace MonoDevelop.Projects
 {
 	public delegate void ConfigurationEventHandler (object sender, ConfigurationEventArgs e);
 	
-	public class ConfigurationEventArgs : CombineEntryEventArgs
+	public class ConfigurationEventArgs : SolutionItemEventArgs
 	{
-		IConfiguration configuration;
+		ItemConfiguration configuration;
 		
-		public ConfigurationEventArgs (CombineEntry entry, IConfiguration configuration): base (entry)
+		public ConfigurationEventArgs (SolutionEntityItem entry, ItemConfiguration configuration): base (entry)
 		{
 			this.configuration = configuration;
 		}
 
-		public IConfiguration Configuration {
+		public ItemConfiguration Configuration {
 			get {
 				return configuration;
 			}

@@ -31,7 +31,7 @@ using System.Reflection;
 
 namespace MonoDevelop.Projects.Serialization
 {
-	public sealed class ItemProperty
+	public class ItemProperty
 	{
 		string name;
 		MemberInfo member;
@@ -46,6 +46,8 @@ namespace MonoDevelop.Projects.Serialization
 		bool readOnly;
 		bool writeOnly;
 		bool unsorted;
+		bool external;
+		object initValue;
 		
 		public ItemProperty ()
 		{
@@ -82,6 +84,10 @@ namespace MonoDevelop.Projects.Serialization
 		internal MemberInfo Member {
 			get { return member; }
 			set { CheckReadOnly (); member = value; }
+		}
+		
+		internal virtual string MemberName {
+			get { return member != null ? member.Name : null; }
 		}
 		
 		public string Name {
@@ -129,6 +135,14 @@ namespace MonoDevelop.Projects.Serialization
 			set { CheckReadOnly (); dataType = value; }
 		}
 		
+		public bool IsExtendedProperty (Type forType)
+		{
+			if (member == null)
+				return true;
+			else
+				return !member.DeclaringType.IsAssignableFrom (forType);
+		}
+		
 		internal string[] NameList {
 			get { return nameList; }
 		}
@@ -145,17 +159,30 @@ namespace MonoDevelop.Projects.Serialization
 			get { return ctx; }
 		}
 		
-		internal object GetValue (object obj)
+		internal virtual object GetValue (object obj)
 		{
 			if (member != null) {
 				FieldInfo field = member as FieldInfo;
 				if (field != null) return field.GetValue (obj);
 				else return ((PropertyInfo)member).GetValue (obj, null);
-			} else
-				throw new InvalidOperationException ("Invalid object property");
+			} else if (obj is IExtendedDataItem) {
+				IExtendedDataItem eitem = (IExtendedDataItem) obj;
+				if (initValue == null)
+					return eitem.ExtendedProperties [Name];
+				else {
+					if (!eitem.ExtendedProperties.Contains (Name))
+						return initValue;
+					else
+						return eitem.ExtendedProperties [Name];
+				}
+			}
+			else if (initValue != null)
+				return initValue;
+			else
+				throw new InvalidOperationException ("Invalid object property: " + obj.GetType() + "." + Name);
 		}
 
-		internal void SetValue (object obj, object value)
+		internal virtual void SetValue (object obj, object value)
 		{
 			if (member != null) {
 				FieldInfo field = member as FieldInfo;
@@ -165,8 +192,11 @@ namespace MonoDevelop.Projects.Serialization
 					PropertyInfo pi = member as PropertyInfo;
 					pi.SetValue (obj, value, null);
 				}
-			} else
-				throw new InvalidOperationException ("Invalid object property");
+			}
+			else if (obj is IExtendedDataItem)
+				((IExtendedDataItem)obj).ExtendedProperties [Name] = value;
+			else if (initValue == null)
+				throw new InvalidOperationException ("Invalid object property: " + obj.GetType() + "." + Name);
 		}
 		
 		internal bool HasSetter {
@@ -182,19 +212,62 @@ namespace MonoDevelop.Projects.Serialization
 			}
 		}
 
-		internal DataNode Serialize (SerializationContext serCtx, object value)
+		public bool IsExternal {
+			get {
+				return external;
+			}
+			set {
+				external = value;
+			}
+		}
+
+		public object InitValue {
+			get {
+				return initValue;
+			}
+			set {
+				initValue = value;
+			}
+		}
+		
+		internal bool CanSerialize (SerializationContext serCtx, object instance)
+		{
+			return serCtx.Serializer.CanSerializeProperty (this, serCtx, instance);
+		}
+
+		internal DataNode Serialize (SerializationContext serCtx, object instance, object value)
+		{
+			return serCtx.Serializer.OnSerializeProperty (this, serCtx, instance, value);
+		}
+		
+		internal DataNode OnSerialize (SerializationContext serCtx, object value)
 		{
 			DataNode data = dataType.Serialize (serCtx, mapData, value);
 			if (data != null) data.Name = SingleName;
 			return data;
 		}
 		
-		internal object Deserialize (SerializationContext serCtx, DataNode data)
+		internal bool CanDeserialize (SerializationContext serCtx, object instance)
+		{
+			return serCtx.Serializer.CanDeserializeProperty (this, serCtx, instance);
+		}
+		
+		internal object Deserialize (SerializationContext serCtx, object instance, DataNode data)
+		{
+			return serCtx.Serializer.OnDeserializeProperty (this, serCtx, instance, data);
+		}
+		
+		internal object OnDeserialize (SerializationContext serCtx, DataNode data)
 		{
 			return dataType.Deserialize (serCtx, mapData, data);
 		}
 		
-		internal void Deserialize (SerializationContext serCtx, DataNode data, object valueInstance)
+		internal void Deserialize (SerializationContext serCtx, object instance, DataNode data, object valueInstance)
+		{
+			serCtx.Serializer.OnDeserializeProperty (this, serCtx, instance, data, valueInstance);
+		}
+		
+		internal void OnDeserialize (SerializationContext serCtx, DataNode data, object valueInstance)
 		{
 			dataType.Deserialize (serCtx, mapData, data, valueInstance);
 		}

@@ -43,6 +43,7 @@ namespace MonoDevelop.Projects.Serialization
 		bool readOnly;
 		bool writeOnly;
 		Type fallbackType;
+		bool isExternal;
 		
 		public ItemPropertyAttribute ()
 		{
@@ -96,6 +97,15 @@ namespace MonoDevelop.Projects.Serialization
 		public Type FallbackType {
 			get { return fallbackType; }
 			set { fallbackType = value; }
+		}
+
+		public bool IsExternal {
+			get {
+				return isExternal;
+			}
+			set {
+				isExternal = value;
+			}
 		}
 	}
 }

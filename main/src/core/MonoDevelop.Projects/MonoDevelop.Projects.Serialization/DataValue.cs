@@ -43,5 +43,15 @@ namespace MonoDevelop.Projects.Serialization
 		public string Value {
 			get { return value; }
 		}
+		
+		public override string ToString ()
+		{
+			return ToString (0);
+		}
+		
+		internal override string ToString (int indent)
+		{
+			return new string (' ', indent) + "[" + Name + " = '" + value + "']";
+		}
 	}
 }

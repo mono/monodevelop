@@ -28,6 +28,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Reflection;
 
 namespace MonoDevelop.Projects.Serialization
@@ -35,7 +36,7 @@ namespace MonoDevelop.Projects.Serialization
 	public class ClassDataType: DataType
 	{
 		Hashtable properties = new Hashtable ();
-		ArrayList sortedPoperties = new ArrayList ();
+		List<ItemProperty> sortedPoperties = new List<ItemProperty> ();
 		ArrayList subtypes;
 		Type fallbackType;
 		
@@ -49,7 +50,7 @@ namespace MonoDevelop.Projects.Serialization
 		
 		protected override void Initialize ()
 		{
-			DataItemAttribute atd = (DataItemAttribute) Attribute.GetCustomAttribute (ValueType, typeof(DataItemAttribute), false);
+			DataItemAttribute atd = (DataItemAttribute) Context.AttributeProvider.GetCustomAttribute (ValueType, typeof(DataItemAttribute), false);
 			if (atd != null) {
 				if (!string.IsNullOrEmpty (atd.Name)) {
 					Name = atd.Name;
@@ -63,7 +64,7 @@ namespace MonoDevelop.Projects.Serialization
 				}
 			}
 			
-			object[] incs = ValueType.GetCustomAttributes (typeof (DataIncludeAttribute), true);
+			object[] incs = Attribute.GetCustomAttributes (ValueType, typeof (DataIncludeAttribute), true);
 			foreach (DataIncludeAttribute incat in incs) {
 				Context.IncludeType (incat.Type);
 			}
@@ -90,50 +91,67 @@ namespace MonoDevelop.Projects.Serialization
 			MemberInfo[] members = ValueType.GetMembers (BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
 			foreach (MemberInfo member in members) {
 				if ((member is FieldInfo || member is PropertyInfo) && member.DeclaringType == ValueType) {
-					object[] ats = member.GetCustomAttributes (true);
-					
-					ItemPropertyAttribute at = FindPropertyAttribute (ats, 0);
-					if (at == null) continue;
-					
-					ItemProperty prop = new ItemProperty ();
-					prop.Name = (at.Name != null) ? at.Name : member.Name;
-					prop.ExpandedCollection = member.IsDefined (typeof(ExpandedCollectionAttribute), true);
-					prop.DefaultValue = at.DefaultValue;
 					Type memberType = member is FieldInfo ? ((FieldInfo)member).FieldType : ((PropertyInfo)member).PropertyType;
-
-					if (prop.ExpandedCollection) {
-						ICollectionHandler handler = Context.GetCollectionHandler (memberType);
-						if (handler == null)
-							throw new InvalidOperationException ("ExpandedCollectionAttribute can't be applied to property '" + prop.Name + "' in type '" + ValueType + "' becuase it is not a valid collection.");
-							
-						memberType = handler.GetItemType ();
-						prop.ExpandedCollectionHandler = handler;
-					}
-
-					if (at.ValueType != null)
-						prop.PropertyType = at.ValueType;
-					else
-						prop.PropertyType = memberType;
-						
-					if (at.SerializationDataType != null) {
-						try {
-							prop.DataType = (DataType) Activator.CreateInstance (at.SerializationDataType, new object[] { prop.PropertyType } );
-						} catch (MissingMethodException ex) {
-							throw new InvalidOperationException ("Constructor not found for custom data type: " + at.SerializationDataType.Name + " (Type propertyType);", ex);
-						}
-					}
-					
-					prop.Member = member;
-					AddProperty (prop);
-					prop.Initialize (ats, 0);
-					
-					if (prop.ExpandedCollection && prop.DataType.IsSimpleType)
-						throw new InvalidOperationException ("ExpandedCollectionAttribute is not allowed in collections of simple types");
+					AddProperty (member, member.Name, memberType);
 				}
+			}
+			
+			foreach (ItemMember member in Context.AttributeProvider.GetItemMembers (ValueType)) {
+				AddProperty (member, member.Name, member.Type);
 			}
 			
 			if (fallbackType != null)
 				Context.IncludeType (fallbackType);
+		}
+		
+		void AddProperty (object member, string name, Type memberType)
+		{
+			object[] ats = Context.AttributeProvider.GetCustomAttributes (member, typeof(Attribute), true);
+			
+			ItemPropertyAttribute at = FindPropertyAttribute (ats, 0);
+			if (at == null)
+				return;
+			
+			ItemProperty prop = new ItemProperty ();
+			prop.Name = (at.Name != null) ? at.Name : name;
+			prop.ExpandedCollection = Context.AttributeProvider.IsDefined (member, typeof(ExpandedCollectionAttribute), true);
+			prop.DefaultValue = at.DefaultValue;
+			prop.IsExternal = at.IsExternal;
+
+			if (prop.ExpandedCollection) {
+				ICollectionHandler handler = Context.GetCollectionHandler (memberType);
+				if (handler == null)
+					throw new InvalidOperationException ("ExpandedCollectionAttribute can't be applied to property '" + prop.Name + "' in type '" + ValueType + "' becuase it is not a valid collection.");
+					
+				memberType = handler.GetItemType ();
+				prop.ExpandedCollectionHandler = handler;
+			}
+
+			if (at.ValueType != null)
+				prop.PropertyType = at.ValueType;
+			else
+				prop.PropertyType = memberType;
+				
+			if (at.SerializationDataType != null) {
+				try {
+					prop.DataType = (DataType) Activator.CreateInstance (at.SerializationDataType, new object[] { prop.PropertyType } );
+				} catch (MissingMethodException ex) {
+					throw new InvalidOperationException ("Constructor not found for custom data type: " + at.SerializationDataType.Name + " (Type propertyType);", ex);
+				}
+			}
+			
+			if (member is MemberInfo) {
+				prop.Member = (MemberInfo) member;
+				AddProperty (prop);
+			} else {
+				prop.InitValue = ((ItemMember)member).InitValue;
+				AddProperty (prop, ((ItemMember)member).InsertBefore);
+			}
+			
+			prop.Initialize (ats, 0);
+			
+			if (prop.ExpandedCollection && prop.DataType.IsSimpleType)
+				throw new InvalidOperationException ("ExpandedCollectionAttribute is not allowed in collections of simple types");
 		}
 		
 		internal protected override object GetMapData (object[] attributes, int scope)
@@ -154,11 +172,16 @@ namespace MonoDevelop.Projects.Serialization
 			subtypes.Add (subtype); 
 		}
 
-		public ICollection Properties {
+		ICollection Properties {
 			get { return sortedPoperties; }
 		}
 		
 		public void AddProperty (ItemProperty prop)
+		{
+			AddProperty (prop, null);
+		}
+		
+		void AddProperty (ItemProperty prop, string insertBefore)
 		{
 			if (!prop.IsNested) {
 				foreach (ItemProperty p in sortedPoperties) {
@@ -176,7 +199,21 @@ namespace MonoDevelop.Projects.Serialization
 				throw new InvalidOperationException ("Duplicate property '" + prop.Name + "' in class '" + ValueType);
 			
 			properties.Add (prop.Name, prop);
-			if (prop.Unsorted) {
+			
+			if (insertBefore != null) {
+				bool added = false;
+				for (int n=0; n<sortedPoperties.Count; n++) {
+					ItemProperty p = sortedPoperties [n];
+					if (p.MemberName == insertBefore) {
+						sortedPoperties.Insert (n, prop);
+						added = true;
+						break;
+					}
+				}
+				if (!added)
+					sortedPoperties.Add (prop);
+			}
+			else if (prop.Unsorted) {
 				int foundPos = sortedPoperties.Count;
 				for (int n=0; n < sortedPoperties.Count; n++) {
 					ItemProperty cp = (ItemProperty) sortedPoperties [n];
@@ -209,12 +246,20 @@ namespace MonoDevelop.Projects.Serialization
 			}
 		}
 		
+		public IEnumerable<ItemProperty> GetProperties (SerializationContext serCtx, object instance)
+		{
+			foreach (ItemProperty prop in sortedPoperties) {
+				if (serCtx.Serializer.CanHandleProperty (prop, serCtx, instance))
+					yield return prop;
+			}
+		}
+		
 		Exception CreateNestedConflictException (ItemProperty p1, ItemProperty p2)
 		{
 			return new InvalidOperationException ("There is a conflict between the properties '" + p1.Name + "' and '" + p2.Name + "'. Nested element properties can't be mixed with normal element properties.");
 		}
 		
-		public override DataNode Serialize (SerializationContext serCtx, object mapData, object obj)
+		internal protected override DataNode OnSerialize (SerializationContext serCtx, object mapData, object obj)
 		{
 			string ctype = null;
 			
@@ -235,7 +280,7 @@ namespace MonoDevelop.Projects.Serialization
 			DataItem item = new DataItem ();
 			item.Name = Name;
 			
-			ICustomDataItem citem = obj as ICustomDataItem;
+			ICustomDataItem citem = Context.AttributeProvider.GetCustomDataItem (obj);
 			if (citem != null) {
 				ClassTypeHandler handler = new ClassTypeHandler (serCtx, this);
 				item.ItemData = citem.Serialize (handler);
@@ -254,12 +299,17 @@ namespace MonoDevelop.Projects.Serialization
 			DataCollection itemCol = new DataCollection ();
 			
 			foreach (ItemProperty prop in Properties) {
-				if (prop.ReadOnly) continue;
-				object val = GetPropValue (prop, obj);
-				if (val == null) continue;
-				if (val.Equals (prop.DefaultValue)) continue;
+				if (prop.ReadOnly || !prop.CanSerialize (serCtx, obj))
+					continue;
+				object val = prop.GetValue (obj);
+				if (val == null)
+					continue;
+				if (val.Equals (prop.DefaultValue))
+					continue;
+				
 				DataCollection col = itemCol;
-				if (prop.IsNested) col = GetNestedCollection (col, prop.NameList, 0);
+				if (prop.IsNested)
+					col = GetNestedCollection (col, prop.NameList, 0);
 				
 				if (prop.ExpandedCollection) {
 					ICollectionHandler handler = prop.ExpandedCollectionHandler;
@@ -267,13 +317,13 @@ namespace MonoDevelop.Projects.Serialization
 					while (handler.MoveNextItem (val, ref pos)) {
 						object item = handler.GetCurrentItem (val, pos);
 						if (item == null) continue;
-						DataNode data = prop.Serialize (serCtx, item);
+						DataNode data = prop.Serialize (serCtx, obj, item);
 						data.Name = prop.SingleName;
 						col.Add (data);
 					}
 				}
 				else {
-					DataNode data = prop.Serialize (serCtx, val);
+					DataNode data = prop.Serialize (serCtx, obj, val);
 					if (data == null)
 						continue;
 					// Don't write empty collections
@@ -306,11 +356,11 @@ namespace MonoDevelop.Projects.Serialization
 			return GetNestedCollection (item.ItemData, nameList, pos + 1);
 		}
 		
-		public override object Deserialize (SerializationContext serCtx, object mapData, DataNode data)
+		internal protected override object OnDeserialize (SerializationContext serCtx, object mapData, DataNode data)
 		{
 			DataItem item = data as DataItem;
 			if (item == null)
-				throw new InvalidOperationException ("Invalid value found for type '" + Name + "'");
+				throw new InvalidOperationException ("Invalid value found for type '" + Name + "' " + data);
 				
 			DataValue ctype = item ["ctype"] as DataValue;
 			if (ctype != null && ctype.Value != Name) {
@@ -341,11 +391,11 @@ namespace MonoDevelop.Projects.Serialization
 			if (ctor == null) throw new InvalidOperationException ("Default constructor not found for type '" + ValueType + "'");
 
 			object obj = ctor.Invoke (null);
-			SetConfigurationItemData (serCtx, obj, item);
+			Deserialize (serCtx, null, item, obj);
 			return obj;
 		}
 		
-		public override object CreateInstance (SerializationContext serCtx, DataNode data)
+		internal protected override object OnCreateInstance (SerializationContext serCtx, DataNode data)
 		{
 			DataItem item = data as DataItem;
 			if (item == null)
@@ -376,22 +426,23 @@ namespace MonoDevelop.Projects.Serialization
 			return ctor.Invoke (null);
 		}
 		
-		public void SetConfigurationItemData (SerializationContext serCtx, object obj, DataItem item)
+		protected internal override void OnDeserialize (SerializationContext serCtx, object mapData, DataNode data, object obj)
 		{
-			ICustomDataItem citem = obj as ICustomDataItem;
+			DataItem item = (DataItem) data;
+			ICustomDataItem citem = Context.AttributeProvider.GetCustomDataItem (obj);
 			if (citem != null) {
 				ClassTypeHandler handler = new ClassTypeHandler (serCtx, this);
 				citem.Deserialize (handler, item.ItemData);
 			}
 			else
-				Deserialize (serCtx, obj, item.ItemData);
+				DeserializeNoCustom (serCtx, obj, item.ItemData);
 		}
 		
-		internal void Deserialize (SerializationContext serCtx, object obj, DataCollection itemData)
+		internal void DeserializeNoCustom (SerializationContext serCtx, object obj, DataCollection itemData)
 		{
 			foreach (ItemProperty prop in Properties)
-				if (prop.DefaultValue != null)
-					SetPropValue (prop, obj, prop.DefaultValue);
+				if (!prop.CanDeserialize (serCtx, obj) && prop.DefaultValue != null)
+					prop.SetValue (obj, prop.DefaultValue);
 			
 			// ukwnDataRoot is where to store values for which a property cannot be found.
 			DataItem ukwnDataRoot = (obj is IExtendedDataItem) ? new DataItem () : null;
@@ -428,7 +479,7 @@ namespace MonoDevelop.Projects.Serialization
 					}
 					continue;
 				}
-				if (prop.WriteOnly)
+				if (prop.WriteOnly || !prop.CanDeserialize (serCtx, obj))
 					continue;
 				
 				try {
@@ -441,24 +492,24 @@ namespace MonoDevelop.Projects.Serialization
 							col = handler.CreateCollection (out pos, -1);
 						} else {
 							pos = expandedCollections [prop];
-							col = GetPropValue (prop, obj);
+							col = prop.GetValue (obj);
 						}
-						handler.AddItem (ref col, ref pos, prop.Deserialize (serCtx, value));
+						handler.AddItem (ref col, ref pos, prop.Deserialize (serCtx, obj, value));
 						expandedCollections [prop] = pos;
-						SetPropValue (prop, obj, col);
+						prop.SetValue (obj, col);
 					}
 					else {
 						if (prop.HasSetter && prop.DataType.CanCreateInstance)
-							SetPropValue (prop, obj, prop.Deserialize (serCtx, value));
+							prop.SetValue (obj, prop.Deserialize (serCtx, obj, value));
 						else if (prop.DataType.CanReuseInstance) {
-							object pval = GetPropValue (prop, obj);
+							object pval = prop.GetValue (obj);
 							if (pval == null) {
 								if (prop.HasSetter)
 									throw new InvalidOperationException ("The property '" + prop.Name + "' is null and a new instance of '" + prop.PropertyType + "' can't be created.");
 								else
 									throw new InvalidOperationException ("The property '" + prop.Name + "' is null and it does not have a setter.");
 							}
-							prop.Deserialize (serCtx, value, pval);
+							prop.Deserialize (serCtx, obj, value, pval);
 						} else {
 							throw new InvalidOperationException ("The property does not have a setter.");
 						}
@@ -468,24 +519,6 @@ namespace MonoDevelop.Projects.Serialization
 					throw new InvalidOperationException ("Could not set property '" + prop.Name + "' in type '" + Name + "'", ex);
 				}
 			}
-		}
-		
-		void SetPropValue (ItemProperty prop, object obj, object value)
-		{
-			if (prop.Member != null)
-				prop.SetValue (obj, value);
-			else if (obj is IExtendedDataItem)
-				((IExtendedDataItem)obj).ExtendedProperties [prop.Name] = value;
-		}
-		
-		object GetPropValue (ItemProperty prop, object obj)
-		{
-			if (prop.Member != null)
-				return prop.GetValue (obj);
-			else if (obj is IExtendedDataItem)
-				return ((IExtendedDataItem)obj).ExtendedProperties [prop.Name];
-			else
-				return null;
 		}
 		
 		DataType FindDerivedType (string name, object mapData, out bool isFallbackType)
@@ -536,7 +569,7 @@ namespace MonoDevelop.Projects.Serialization
 		
 		public void Deserialize (object instance, DataCollection data)
 		{
-			cdt.Deserialize (ctx, instance, data);
+			cdt.DeserializeNoCustom (ctx, instance, data);
 		}
 		
 		public SerializationContext SerializationContext {

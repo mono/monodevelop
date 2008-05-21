@@ -40,12 +40,12 @@ namespace MonoDevelop.Projects.Serialization
 		public override bool CanCreateInstance { get { return true; } }
 		public override bool CanReuseInstance { get { return false; } }
 		
-		public override DataNode Serialize (SerializationContext serCtx, object mapData, object value)
+		internal protected override DataNode OnSerialize (SerializationContext serCtx, object mapData, object value)
 		{
 			return new DataValue (Name, value.ToString ());
 		}
 		
-		public override object Deserialize (SerializationContext serCtx, object mapData, DataNode data)
+		internal protected override object OnDeserialize (SerializationContext serCtx, object mapData, DataNode data)
 		{
 			return Enum.Parse (ValueType, ((DataValue)data).Value, false);
 		}

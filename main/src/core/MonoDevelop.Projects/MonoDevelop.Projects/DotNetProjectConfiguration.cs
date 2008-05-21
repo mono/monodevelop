@@ -33,12 +33,6 @@ using MonoDevelop.Projects.Serialization;
 
 namespace MonoDevelop.Projects
 {
-	public enum NetRuntime {
-		Mono,
-		MonoInterpreter,
-		MsNet
-	};
-	
 	public enum CompileTarget {
 		Exe,
 		Library,
@@ -46,38 +40,39 @@ namespace MonoDevelop.Projects
 		Module
 	};
 	
-	public class DotNetProjectConfiguration: AbstractProjectConfiguration
+	public class DotNetProjectConfiguration: ProjectConfiguration
 	{
-		[ItemProperty ("Output/assembly")]
-		string assembly = "a";
+		[ItemProperty ("AssemblyName")]
+		string assembly;
 		
-		[ItemProperty ("Execution/runtime")]
-		NetRuntime netRuntime = NetRuntime.MsNet;
-		
-		[ItemProperty ("Execution/clr-version")]
 		MonoDevelop.Core.ClrVersion clrVersion = MonoDevelop.Core.ClrVersion.Net_2_0;
-		
-		[ItemProperty ("Build/target")]
-		CompileTarget compiletarget = CompileTarget.Exe;
 		
 		[ItemProperty ("CodeGeneration", FallbackType=typeof(UnknownCompilationParameters))]
 		ICloneable compilationParameters;
 		
 		string sourcePath;
+		
+		public DotNetProjectConfiguration ()
+		{
+		}
 
+		public DotNetProjectConfiguration (string name): base (name)
+		{
+		}
+		
 		public virtual string OutputAssembly {
 			get { return assembly; }
 			set { assembly = value; }
 		}
 		
-		public NetRuntime NetRuntime {
-			get { return netRuntime; }
-			set { netRuntime = value; }
-		}
-
 		public virtual CompileTarget CompileTarget {
-			get { return compiletarget; }
-			set { compiletarget = value; }
+			get {
+				DotNetProject prj = ParentItem as DotNetProject;
+				if (prj != null)
+					return prj.CompileTarget;
+				else
+					return CompileTarget.Library;
+			}
 		}
 		
 		public MonoDevelop.Core.ClrVersion ClrVersion {
@@ -106,14 +101,12 @@ namespace MonoDevelop.Projects
 			set { sourcePath = value; }
 		}
 		
-		public override void CopyFrom (IConfiguration configuration)
+		public override void CopyFrom (ItemConfiguration configuration)
 		{
 			base.CopyFrom (configuration);
 			DotNetProjectConfiguration conf = (DotNetProjectConfiguration) configuration;
 			
 			assembly = conf.assembly;
-			netRuntime = conf.netRuntime;
-			compiletarget = conf.compiletarget;
 			sourcePath = conf.sourcePath;
 			clrVersion = conf.clrVersion;
 			compilationParameters = conf.compilationParameters != null ? (ICloneable)conf.compilationParameters.Clone () : null;

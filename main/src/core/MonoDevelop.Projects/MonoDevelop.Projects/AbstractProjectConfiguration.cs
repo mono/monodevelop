@@ -1,4 +1,4 @@
-//  AbstractProjectConfiguration.cs
+//  ProjectConfiguration.cs
 //
 //  This file was derived from a file from #Develop. 
 //
@@ -34,42 +34,46 @@ namespace MonoDevelop.Projects
 	/// External language bindings may choose to extend this class.
 	/// It makes things a bit easier.
 	/// </summary>
-	public abstract class AbstractProjectConfiguration : AbstractConfiguration
+	public abstract class ProjectConfiguration : SolutionItemConfiguration
 	{
-		[ProjectPathItemProperty ("Output/directory")]
+		[ProjectPathItemProperty ("OutputPath")]
 		string directory = "." + Path.DirectorySeparatorChar.ToString();
 		
-		[ProjectPathItemProperty ("Build/executeBeforeBuild", DefaultValue = "")]
+		[ProjectPathItemProperty ("ExecuteBeforeBuild", DefaultValue = "")]
 		string executeBeforeBuild = String.Empty;
 		
-		[ProjectPathItemProperty ("Build/executeAfterBuild", DefaultValue = "")]
+		[ProjectPathItemProperty ("ExecuteAfterBuild", DefaultValue = "")]
 		string executeAfterBuild = String.Empty;
 		
-		[ItemProperty ("Build/debugmode")]
-		bool debugmode = true;
+		[ItemProperty ("DebugSymbols", DefaultValue=false)]
+		bool debugmode;
 		
-		[ItemProperty ("Output/signAssembly", DefaultValue = false)]
+		[ItemProperty ("SignAssembly", DefaultValue = false)]
 		bool signAssembly = false;
 		
-		[ProjectPathItemProperty ("Output/assemblyKeyFile")]
+		[ProjectPathItemProperty ("AssemblyKeyFile")]
 		string assemblyKeyFile = String.Empty;
 		
-		[ProjectPathItemProperty ("Execution/executeScript", DefaultValue = "")]
+		[ProjectPathItemProperty ("ExecuteScript", DefaultValue = "")]
 		string executeScript = String.Empty;
 		
-		[ItemProperty ("Execution/runwithwarnings")]
+		[ItemProperty ("RunWithWarnings", DefaultValue=true)]
 		protected bool runWithWarnings = true;
 		
-		[ItemProperty ("Execution/commandlineparameters", DefaultValue = "")]
+		[ItemProperty ("Commandlineparameters", DefaultValue = "")]
 		public string commandLineParameters = String.Empty;
 		
-		[ItemProperty ("Execution/externalconsole", DefaultValue=false)]
+		[ItemProperty ("Externalconsole", DefaultValue=false)]
 		public bool externalConsole = false;
 
-		[ItemProperty ("Execution/consolepause")]
+		[ItemProperty ("ConsolePause", DefaultValue=true)]
 		public bool pauseconsoleoutput = true;
 
-		public AbstractProjectConfiguration()
+		public ProjectConfiguration ()
+		{
+		}
+		
+		public ProjectConfiguration (string name): base (name)
 		{
 		}
 		
@@ -118,10 +122,10 @@ namespace MonoDevelop.Projects
 		}
 		
 		
-		public override void CopyFrom (IConfiguration configuration)
+		public override void CopyFrom (ItemConfiguration configuration)
 		{
 			base.CopyFrom (configuration);
-			AbstractProjectConfiguration conf = (AbstractProjectConfiguration) configuration;
+			ProjectConfiguration conf = (ProjectConfiguration) configuration;
 			
 			directory = conf.directory;
 			executeScript = conf.executeScript;

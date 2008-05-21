@@ -124,6 +124,7 @@ namespace MonoDevelop.Projects
 			compilerResults.Errors.AddRange (res.CompilerResults.Errors);
 			warningCount += res.WarningCount;
 			errorCount += res.ErrorCount;
+			buildCount += res.BuildCount;
 			if (!string.IsNullOrEmpty (res.CompilerOutput))
 				compilerOutput += "\n" + res.CompilerOutput;
 		}

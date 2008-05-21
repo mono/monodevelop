@@ -28,9 +28,9 @@
 		</ExtensionNode>	
 	</ExtensionPoint>
 
-	<ExtensionPoint path = "/MonoDevelop/ProjectModel/ProjectFileFormats" name = "File format handlers">
-		<Description>File format handlers for projects and solutions</Description>
-		<ExtensionNode name="FileFormat">
+	<ExtensionPoint path = "/MonoDevelop/ProjectModel/FileFormats" name = "Solution file format handlers">
+		<Description>File format handlers for workspaces, solutions and projects</Description>
+		<ExtensionNode name="FileFormat" type="MonoDevelop.Projects.Extensions.FileFormatNode">
 			<Description>A file format handler. The specified class must implement MonoDevelop.Projects.IFileFormat.</Description>
 		</ExtensionNode>	
 	</ExtensionPoint>
@@ -61,6 +61,18 @@
 		<ExtensionNode name="LanguageBinding" type="MonoDevelop.Projects.Extensions.LanguageBindingCodon"/>
 	</ExtensionPoint>
 
+	<ExtensionPoint path = "/MonoDevelop/ProjectModel/MSBuildItemTypes" name = "MSBuild item types">
+		<Description>Item types supported by MSBuild</Description>
+		<ExtensionNode name="SolutionItem" type="MonoDevelop.Projects.Extensions.SolutionItemNode"/>
+		<ExtensionNode name="DotNetProject" type="MonoDevelop.Projects.Extensions.DotNetProjectNode"/>
+		<ExtensionNode name="DotNetProjectSubtype" type="MonoDevelop.Projects.Extensions.DotNetProjectSubtypeNode"/>
+	</ExtensionPoint>
+
+	<ExtensionPoint path = "/MonoDevelop/ProjectModel/MD1SerializationMaps">
+		<Description>Serialization maps for the MonoDevelop 1.0 file format</Description>
+		<ExtensionNode name="SerializationMap" type="MonoDevelop.Projects.Extensions.SerializationMapNode"/>
+	</ExtensionPoint>
+	
 	<!-- Extensions -->
 
 	<Extension path = "/MonoDevelop/Core/Applications">
@@ -79,15 +91,21 @@
 		<ProjectBinding id = "GenericProject" class = "MonoDevelop.Projects.GenericProjectBinding" />
 	</Extension>
 	  
-	<Extension path = "/MonoDevelop/ProjectModel/ProjectFileFormats">
-		<FileFormat id="MonoDevelopFileFormat"
-		            class="MonoDevelop.Projects.MonoDevelopFileFormat"/>
-		<FileFormat id="SharpDevelopFileFormat"
-		            class="MonoDevelop.Projects.SharpDevelopFileFormat"/>
+	<Extension path = "/MonoDevelop/ProjectModel/FileFormats">
+		<FileFormat id = "MD1" 
+			class = "MonoDevelop.Projects.Formats.MD1.MD1FileFormat"
+			name = "MonoDevelop 1.0"/>
+		<FileFormat id = "MSBuild05" 
+			class = "MonoDevelop.Projects.Formats.MSBuild.MSBuildFileFormatVS05"
+			name = "MSBuild (Visual Studio 2005)" />
+		<FileFormat id = "MSBuild08" 
+			class = "MonoDevelop.Projects.Formats.MSBuild.MSBuildFileFormatVS08"
+			name = "MSBuild (Visual Studio 2008)" />
 	</Extension>
 	  
 	<Extension path = "/MonoDevelop/ProjectModel/SerializableClasses">
-		<DataType class = "MonoDevelop.Projects.Combine" />
+		<DataType class = "MonoDevelop.Projects.Solution" />
+		<DataType class = "MonoDevelop.Projects.SolutionEntityItem" />
 		<DataType class = "MonoDevelop.Projects.Project" />
 		<DataType class = "MonoDevelop.Projects.Workspace" />
 		<DataType class = "MonoDevelop.Projects.DotNetProject" />
@@ -102,5 +120,9 @@
 		<Class id="InitialStep" class = "MonoDevelop.Projects.ProjectServiceExtension" />
 		<Class id="MidStep" class = "MonoDevelop.Projects.ProjectServiceExtension" />
 		<Class id="FinalStep" class = "MonoDevelop.Projects.ProjectServiceExtension" />
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/ProjectModel/MD1SerializationMaps">
+		<SerializationMap resource="md1format.xml" />
 	</Extension>
 </Addin>

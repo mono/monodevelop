@@ -80,12 +80,32 @@ namespace MonoDevelop.Projects.Serialization
 			return null;
 		}
 		
-		public abstract DataNode Serialize (SerializationContext serCtx, object mapData, object value);
-		public abstract object Deserialize (SerializationContext serCtx, object mapData, DataNode data);
-		public virtual void Deserialize (SerializationContext serCtx, object mapData, DataNode data, object valueInstance)
+		public DataNode Serialize (SerializationContext serCtx, object mapData, object value)
+		{
+			return serCtx.Serializer.OnSerialize (this, serCtx, mapData, value);
+		}
+		
+		public object Deserialize (SerializationContext serCtx, object mapData, DataNode data)
+		{
+			return serCtx.Serializer.OnDeserialize (this, serCtx, mapData, data);
+		}
+		
+		public void Deserialize (SerializationContext serCtx, object mapData, DataNode data, object valueInstance)
+		{
+			serCtx.Serializer.OnDeserialize (this, serCtx, mapData, data, valueInstance);
+		}
+		
+		public object CreateInstance (SerializationContext serCtx, DataNode data)
+		{
+			return serCtx.Serializer.OnCreateInstance (this, serCtx, data);
+		}
+		
+		internal protected abstract DataNode OnSerialize (SerializationContext serCtx, object mapData, object value);
+		internal protected abstract object OnDeserialize (SerializationContext serCtx, object mapData, DataNode data);
+		internal protected virtual void OnDeserialize (SerializationContext serCtx, object mapData, DataNode data, object valueInstance)
 		{ throw new InvalidOperationException ("Could not create instance for type '" + ValueType + "'"); }
 		
-		public virtual object CreateInstance (SerializationContext serCtx, DataNode data)
+		internal protected virtual object OnCreateInstance (SerializationContext serCtx, DataNode data)
 		{ throw new InvalidOperationException ("Could not create instance for type '" + ValueType + "'"); }
 		
 		public abstract bool IsSimpleType { get; }

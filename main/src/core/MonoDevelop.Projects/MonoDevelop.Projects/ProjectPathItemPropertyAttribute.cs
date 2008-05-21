@@ -52,18 +52,22 @@ namespace MonoDevelop.Projects
 		{
 		}
 
-		public override DataNode Serialize (SerializationContext serCtx, object mapData, object value)
+		internal protected override DataNode OnSerialize (SerializationContext serCtx, object mapData, object value)
 		{
 			if (value == null || ((string)value).Length == 0) return null;
 			string basePath = Path.GetDirectoryName (serCtx.BaseFile);
 			string file = FileService.AbsoluteToRelativePath (basePath, value.ToString ());
+			if (Path.DirectorySeparatorChar != serCtx.DirectorySeparatorChar)
+				file = file.Replace (Path.DirectorySeparatorChar, serCtx.DirectorySeparatorChar);
 			return new DataValue (Name, file);
 		}
 		
-		public override object Deserialize (SerializationContext serCtx, object mapData, DataNode data)
+		internal protected override object OnDeserialize (SerializationContext serCtx, object mapData, DataNode data)
 		{
 			string file = ((DataValue)data).Value;
 			if (file == "") return "";
+			if (Path.DirectorySeparatorChar != serCtx.DirectorySeparatorChar)
+				file = file.Replace (serCtx.DirectorySeparatorChar, Path.DirectorySeparatorChar);
 			string basePath = Path.GetDirectoryName (serCtx.BaseFile);
 			return FileService.RelativeToAbsolutePath (basePath, file);
 		}

@@ -1,5 +1,5 @@
 //
-// UnknownCombineEntry.cs
+// UnknownSolutionItem.cs
 //
 // Author:
 //   Lluis Sanchez Gual
@@ -31,19 +31,29 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects
 {
-	public class UnknownCombineEntry: CombineEntry
+	public class UnknownSolutionItem: SolutionEntityItem
 	{
 		string loadError = string.Empty;
 		bool unloaded;
 		
-		public UnknownCombineEntry ()
+		// Store the file name locally to avoid the file format to change it
+		string fileName;
+		
+		public UnknownSolutionItem ()
 		{
 			NeedsReload = false;
 		}
 		
 		public override string FileName {
-			get { return base.FileName; }
-			set { base.FileName = value; NeedsReload = false; }
+			get { return fileName; }
+			set {
+				// Don't allow changing the file name once it is set
+				// File formats may try to change it
+				if (fileName == null) {
+					fileName = value; 
+					NeedsReload = false;
+				}
+			}
 		}
 
 		
@@ -67,30 +77,25 @@ namespace MonoDevelop.Projects
 			set { }
 		}
 		
-		public override IConfiguration CreateConfiguration (string name)
+		protected internal override void OnClean (IProgressMonitor monitor, string configuration)
+		{
+		}
+		
+		protected internal override ICompilerResult OnBuild (IProgressMonitor monitor, string configuration)
 		{
 			return null;
 		}
 		
-		protected internal override void OnClean (IProgressMonitor monitor)
+		protected internal override void OnExecute (IProgressMonitor monitor, ExecutionContext context, string configuration)
 		{
 		}
 		
-		protected internal override ICompilerResult OnBuild (IProgressMonitor monitor)
-		{
-			return null;
-		}
-		
-		protected internal override void OnExecute (IProgressMonitor monitor, ExecutionContext context)
-		{
-		}
-		
-		protected internal override bool OnGetNeedsBuilding ()
+		protected internal override bool OnGetNeedsBuilding (string configuration)
 		{
 			return false;
 		}
 		
-		protected internal override void OnSetNeedsBuilding (bool value)
+		protected internal override void OnSetNeedsBuilding (bool value, string configuration)
 		{
 		}
 		

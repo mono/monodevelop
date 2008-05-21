@@ -70,27 +70,27 @@ namespace MonoDevelop.Projects
 			
 			ConsoleProgressMonitor monitor = new ConsoleProgressMonitor ();
 			
-			CombineEntry centry = Services.ProjectService.ReadCombineEntry (file, monitor);
+			IBuildTarget item = Services.ProjectService.ReadWorkspaceItem (monitor, file);
 			
 			if (project != null) {
-				Combine combine = centry as Combine;
-				centry = null;
+				Solution solution = item as Solution;
+				item = null;
 				
-				if (combine != null) {
-					centry = combine.FindProject (project);
+				if (solution != null) {
+					item = solution.FindProjectByName (project);
 				}
-				if (centry == null) {
+				if (item == null) {
 					Console.WriteLine ("The project '" + project + "' could not be found in " + file);
 					return 1;
 				}
 			}
 			
 			if (command == "build") {
-				ICompilerResult res = centry.Build (monitor);
+				ICompilerResult res = item.RunTarget (monitor, ProjectService.BuildTarget, ProjectService.DefaultConfiguration);
 				return (res.ErrorCount == 0) ? 0 : 1;
 			}
 			else if (command == "clean") {
-				centry.Clean (monitor);
+				item.RunTarget (monitor, ProjectService.CleanTarget, ProjectService.DefaultConfiguration);
 				return 0;
 			} else {
 				Console.WriteLine ("Unknown command '{0}'", command);
