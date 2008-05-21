@@ -39,6 +39,9 @@ dist: dist-recursive
 
 run:
 	cd main && make run
+	
+test:
+	cd main/tests/UnitTests && make test fixture=$(fixture)
 
 check-addins:
 	cd main && make check-addins
