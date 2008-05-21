@@ -9,9 +9,6 @@ REFS =  \
 	-r:$(top_builddir)/build/bin/Mono.Cecil.dll \
 	-r:$(top_builddir)/build/bin/Mono.Cecil.Mdb.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
-	-r:Microsoft.Build.Engine \
-	-r:Microsoft.Build.Framework \
-	-r:Microsoft.Build.Utilities \
 	-r:Mono.Posix \
 	-r:System \
 	-r:System.Drawing \

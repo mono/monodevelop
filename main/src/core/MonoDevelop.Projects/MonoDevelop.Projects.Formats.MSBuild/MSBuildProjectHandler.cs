@@ -34,9 +34,6 @@ using System.Reflection;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Serialization;
-using Microsoft.Build.Framework;
-using Microsoft.Build.BuildEngine;
-using MSProject = Microsoft.Build.BuildEngine.Project;
 using MonoDevelop.Projects.Formats.MD1;
 using MonoDevelop.Projects.Extensions;
 

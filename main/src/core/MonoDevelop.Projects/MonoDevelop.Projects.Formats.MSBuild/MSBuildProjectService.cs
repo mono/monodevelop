@@ -35,9 +35,6 @@ using MonoDevelop.Projects;
 using MonoDevelop.Projects.Extensions;
 using MonoDevelop.Projects.Serialization;
 using MonoDevelop.Core;
-using Microsoft.Build.BuildEngine;
-using Microsoft.Build.Framework;
-using Microsoft.Build.Utilities;
 
 namespace MonoDevelop.Projects.Formats.MSBuild
 {
@@ -64,13 +61,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 		}
 		
-		public static Engine Engine;
-		
 		static MSBuildProjectService ()
 		{
-			string path = ToolLocationHelper.GetPathToDotNetFramework (TargetDotNetFrameworkVersion.Version20);
-			Engine = new Engine (path);
-			
 			Services.ProjectService.DataContextChanged += delegate {
 				dataContext = null;
 			};

@@ -1,5 +1,12 @@
 2008-05-21  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectHandler.cs,
+	  MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectService.cs,
+	  MonoDevelop.Projects.mdp, Makefile.am: Remove msbuild dependency.
+	  It is not yet required.
+
+2008-05-21  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Projects/CmbxFileFormat.cs: Remove unused file.
 
 2008-05-21  Lluis Sanchez Gual <lluis@novell.com> 
