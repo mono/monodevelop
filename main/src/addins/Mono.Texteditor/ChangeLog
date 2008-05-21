@@ -1,3 +1,8 @@
+2008-05-21  Mike Krüger <mkrueger@novell.com> 
+
+	* Mono.TextEditor.Highlighting/SyntaxModeService.cs: fixed 'Bug 392655
+	  - The 'stopateol' highlighting behaviour doesn't always work'.
+
 2008-05-20  Mike Krüger <mkrueger@novell.com> 
 
 	* Mono.TextEditor/DefaultEditActions.cs,

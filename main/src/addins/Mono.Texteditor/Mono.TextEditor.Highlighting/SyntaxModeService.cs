@@ -109,7 +109,7 @@ namespace Mono.TextEditor.Highlighting
 					if (curSpan.Escape == ch && offset + 1 < end && endOffset == 0 && doc.GetCharAt (offset + 1) == curSpan.End[0]) {
 						offset++;
 						continue;
-					} else	if (curSpan.End[endOffset] == ch) {
+					} else if (curSpan.End[endOffset] == ch) {
 						endOffset++;
 						if (endOffset >= curSpan.End.Length) {
 							spanStack.Pop ();
@@ -204,7 +204,7 @@ namespace Mono.TextEditor.Highlighting
 						if (curSpan.Escape == ch && offset + 1 < end && endOffset == 0 && doc.GetCharAt (offset + 1) == curSpan.End[0]) {
 							offset++;
 							continue;
-						} else	if (curSpan.End[endOffset] == ch) {
+						} else if (curSpan.End[endOffset] == ch) {
 							endOffset++;
 							if (endOffset >= curSpan.End.Length) {
 								spanStack.Pop ();
@@ -269,6 +269,7 @@ namespace Mono.TextEditor.Highlighting
 						break;
 					
 					Span[] newSpans = spanStack.ToArray ();
+					Array.Reverse (newSpans);
 					if (line.Offset > endOffset) {
 						bool equal = IsEqual (line.StartSpan, newSpans);
 						doUpdate |= !equal;
