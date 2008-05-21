@@ -1,5 +1,10 @@
 2008-05-21  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Ide.Gui/RootWorkspace.cs: Use the property to access
+	  ParserDatabase since it lazily creates the object.
+
+2008-05-21  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Ide.Tasks/TaskService.cs: Improved task count updating.
 
 2008-05-21  Lluis Sanchez Gual <lluis@novell.com> 

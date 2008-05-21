@@ -861,7 +861,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		void NotifyItemAddedGui (WorkspaceItem item)
 		{
-			parserDatabase.Load (item);
+			ParserDatabase.Load (item);
 
 			Workspace ws = item as Workspace;
 			if (ws != null) {
@@ -908,7 +908,7 @@ namespace MonoDevelop.Ide.Gui
 			if (WorkspaceItemClosed != null)
 				WorkspaceItemClosed (this, args);
 			
-			parserDatabase.Unload (item);
+			ParserDatabase.Unload (item);
 			
 			NotifyDescendantItemRemoved (this, args);
 		}
