@@ -1096,6 +1096,8 @@
 		<SeparatorItem id = "FindInFilesSeparator" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.FindInFiles" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.OpenContainingFolder" />
+		<SeparatorItem id = "OptionsSeparator" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Options" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/ResourceFolder">

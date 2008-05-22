@@ -358,6 +358,11 @@ namespace MonoDevelop.Ide.Gui
 							((IBuildTarget)entry).SetNeedsBuilding (true, IdeApp.Workspace.ActiveConfiguration);
 						if (entry is IWorkspaceFileObject)
 							Save ((IWorkspaceFileObject) entry);
+						else {
+							SolutionItem si = entry as SolutionItem;
+							if (si.ParentSolution != null)
+								Save (si.ParentSolution);
+						}
 					}
 				} finally {
 					optionsDialog.Destroy ();
