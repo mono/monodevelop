@@ -1,3 +1,8 @@
+2008-05-22  Mike Krüger <mkrueger@novell.com> 
+
+	* Mono.TextEditor/DefaultEditActions.cs: fixed Bug 393411 - Pasted text
+	  offset is wrong when there is a selection
+
 2008-05-21  Mike Krüger <mkrueger@novell.com> 
 
 	* Mono.TextEditor.Highlighting/SyntaxModeService.cs: fixed 'Bug 392655

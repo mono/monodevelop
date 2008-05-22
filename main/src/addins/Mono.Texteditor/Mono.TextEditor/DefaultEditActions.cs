@@ -980,7 +980,8 @@ namespace Mono.TextEditor
 		}
 		public override void Run (TextEditorData data)
 		{
-			PasteFrom (Clipboard.Get (CopyAction.CLIPBOARD_ATOM), data, true, data.Caret.Offset);
+			
+			PasteFrom (Clipboard.Get (CopyAction.CLIPBOARD_ATOM), data, true, data.IsSomethingSelected ? data.SelectionRange.Offset : data.Caret.Offset);
 		}
 	}
 #endregion
