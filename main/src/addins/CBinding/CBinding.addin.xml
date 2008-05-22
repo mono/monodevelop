@@ -96,7 +96,7 @@
 			class = "CBinding.GeneralOptionsPanelBinding"/>
 	</Extension>
 
-	<Extension path = "/MonoDevelop/ProjectModel/Gui/ProjectOptions/Common">
+	<Extension path = "/MonoDevelop/ProjectModel/Gui/ProjectOptions/Build">
 		<Condition id = "activelanguage" value = "C">
 			<Section
 				id = "CompilerPanel"

@@ -166,7 +166,7 @@ namespace CBinding
 			if (conf.CompilationParameters == null) {
 				compilationParameters = null;
 			} else {
-				compilationParameters = (ICloneable)compilationParameters.Clone ();
+				compilationParameters = (ICloneable)conf.compilationParameters.Clone ();
 			}
 		}
 	}

@@ -1,5 +1,10 @@
 2008-05-22  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* CBinding.addin.xml: Show build options in the build section.
+	* Project/CProjectConfiguration.cs: Fix nullref. Fixes bug #393422.
+
+2008-05-22  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* Project/CProjectServiceExtension.cs, Project/CProject.cs,
 	  Compiler/CCompiler.cs, Compiler/ICompiler.cs,
 	  Compiler/GNUCompiler.cs: Replaced
