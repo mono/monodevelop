@@ -70,9 +70,6 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 					typeNames.Add (itype.AssemblyQualifiedName);
 				}
 			}
-			foreach (string ss in typeNames)
-				Console.WriteLine ("pptn: " + ss);
-			Console.WriteLine ("pp ccc: " + type);
 			return typeNames.Contains (type);
 		}
 	}
