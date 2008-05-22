@@ -47,6 +47,12 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/Gui/ItemOptionPanels/Common">
-		<Section id = "ChangeLogIntegration" _label = "ChangeLog Integration" class="MonoDevelop.ChangeLogAddIn.ProjectOptionPanel"/>
+		<ComplexCondition>
+			<Or>
+				<Condition id="ItemType" value="SolutionItem" />
+				<Condition id="ItemType" value="Solution" />
+			</Or>
+			<Section id = "ChangeLogIntegration" _label = "ChangeLog Integration" class="MonoDevelop.ChangeLogAddIn.ProjectOptionPanel" />
+		</ComplexCondition>
 	</Extension>
 </Addin>
