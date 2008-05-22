@@ -119,6 +119,8 @@ namespace Mono.TextEditor
 		{
 //				this.QueueDraw ();
 //				return;
+				if (buffer == null) 
+					AllocateWindowBuffer (this.Allocation);
 				if (this.textEditorData.VAdjustment.Value != System.Math.Ceiling (this.textEditorData.VAdjustment.Value)) {
 					this.textEditorData.VAdjustment.Value = System.Math.Ceiling (this.textEditorData.VAdjustment.Value);
 					return;

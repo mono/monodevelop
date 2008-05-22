@@ -1,5 +1,10 @@
 2008-05-22  Mike Krüger <mkrueger@novell.com> 
 
+	* Mono.TextEditor/TextEditor.cs: fixed 'Bug 393037 - CTRL+F and writing
+	  text produces NRE'
+
+2008-05-22  Mike Krüger <mkrueger@novell.com> 
+
 	* Mono.TextEditor/DefaultEditActions.cs: fixed Bug 393411 - Pasted text
 	  offset is wrong when there is a selection
 
