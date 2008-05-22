@@ -348,6 +348,21 @@ namespace MonoDevelop.Ide.Gui
 					optionsDialog.Destroy ();
 				}
 			}
+			else {
+				ItemOptionsDialog optionsDialog = new ItemOptionsDialog (IdeApp.Workbench.RootWindow, entry);
+				try {
+					if (panelId != null)
+						optionsDialog.SelectPanel (panelId);
+					if (optionsDialog.Run () == (int) Gtk.ResponseType.Ok) {
+						if (entry is IBuildTarget)
+							((IBuildTarget)entry).SetNeedsBuilding (true, IdeApp.Workspace.ActiveConfiguration);
+						if (entry is IWorkspaceFileObject)
+							Save ((IWorkspaceFileObject) entry);
+					}
+				} finally {
+					optionsDialog.Destroy ();
+				}
+			}
 		}
 		
 		public void NewSolution ()

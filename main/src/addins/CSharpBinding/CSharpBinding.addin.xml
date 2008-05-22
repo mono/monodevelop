@@ -70,16 +70,16 @@
 		            extensions = "*.resources,*.resx"/>
 	</Extension>
 
-	<Extension path = "/MonoDevelop/ProjectModel/Gui/ProjectOptions/Build/General">
-		<Condition id="activelanguage" value="C#">
+	<Extension path = "/MonoDevelop/ProjectModel/Gui/ItemOptionPanels/Build/General">
+		<Condition id="ActiveLanguage" value="C#">
 			<Panel id = "CSharpCompilerOptionsPanel"
 			             _label = "C#"
 			             class = "CSharpBinding.CompilerOptionsPanel"/>
 		</Condition>
 	</Extension>
 
-	<Extension path = "/MonoDevelop/ProjectModel/Gui/ProjectOptions/Build/Compiler">
-		<Condition id="activelanguage" value="C#">
+	<Extension path = "/MonoDevelop/ProjectModel/Gui/ItemOptionPanels/Build/Compiler">
+		<Condition id="ActiveLanguage" value="C#">
 			<Panel id = "CSharpCodeGenerationPanel"
 			             _label = "Compiler"
 			             class = "CSharpBinding.CodeGenerationPanel"/>

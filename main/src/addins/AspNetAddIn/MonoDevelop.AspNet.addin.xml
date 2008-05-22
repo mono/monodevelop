@@ -112,8 +112,8 @@
 		<DataType class = "MonoDevelop.AspNet.AspNetToolboxNode" />
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/ProjectModel/Gui/ProjectOptions/Common">
-		<Condition id="activeproject" value="AspNetApp">
+	<Extension path = "/MonoDevelop/ProjectModel/Gui/ItemOptionPanels/Common">
+		<Condition id="ItemType" value="MonoDevelop.AspNet.AspNetAppProject">
 			<Section id = "XspOptions"
 			             _label = "XSP Web Server"
 			             class = "MonoDevelop.AspNet.Gui.XspOptionsPanel"/>
@@ -123,8 +123,8 @@
 		</Condition>
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/ProjectModel/Gui/ProjectOptions/Deployment">
-		<Condition id="activeproject" value="AspNetApp">
+	<Extension path = "/MonoDevelop/ProjectModel/Gui/ItemOptionPanels/Deployment">
+		<Condition id="ItemType" value="MonoDevelop.AspNet.AspNetAppProject">
 			<Section id = "MonoDevelop.AspNet.Deployment"
 			             _label = "Web Deployment Targets"
 			             class = "MonoDevelop.AspNet.Deployment.WebDeployOptionsPanel"/>

@@ -1,4 +1,4 @@
-// ProjectOptionsDialog.cs
+// BaseDirectoryPanel.cs
 //
 // Author:
 //   Lluis Sanchez Gual <lluis@novell.com>
@@ -26,25 +26,50 @@
 //
 
 using System;
-using System.Collections;
-using System.ComponentModel;
-
-using Mono.Addins;
 using MonoDevelop.Core;
-using MonoDevelop.Projects;
-using MonoDevelop.Components.Commands;
+using MonoDevelop.Core.Gui;
 using MonoDevelop.Core.Gui.Dialogs;
 
-namespace MonoDevelop.Projects.Gui.Dialogs {
-
-	/// <summary>
-	/// Dialog for viewing the project options.
-	/// </summary>
-	public class ProjectOptionsDialog : MultiConfigItemOptionsDialog
+namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
+{
+	public class BaseDirectoryPanel: IOptionsPanel
 	{
-		public ProjectOptionsDialog (Gtk.Window parentWindow, Project project) : base (parentWindow, project)
+		BaseDirectoryPanelWidget widget;
+		IWorkspaceObject obj;
+		
+		public BaseDirectoryPanel()
 		{
-			this.Title = GettextCatalog.GetString ("Project Options") + " - " + project.Name;
+		}
+
+		public void Initialize (OptionsDialog dialog, object dataObject)
+		{
+			obj = dataObject as IWorkspaceObject;
+		}
+
+		public Gtk.Widget CreatePanelWidget ()
+		{
+			widget = new BaseDirectoryPanelWidget ();
+			widget.BaseDirectory = obj.BaseDirectory;
+			return widget;
+		}
+
+		public bool IsVisible ()
+		{
+			return obj != null;
+		}
+
+		public bool ValidateChanges ()
+		{
+			if (widget.BaseDirectory.Length > 0 && !System.IO.Directory.Exists (widget.BaseDirectory)) {
+				MessageService.ShowError (GettextCatalog.GetString ("Directory not found: {0}", widget.BaseDirectory));
+				return false;
+			}
+			return true;
+		}
+
+		public void ApplyChanges ()
+		{
+			obj.BaseDirectory = widget.BaseDirectory;
 		}
 	}
 }

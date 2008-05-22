@@ -150,8 +150,8 @@
 		<Class class="MonoDevelop.GtkCore.GtkCoreStartupCommand" />
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/ProjectModel/Gui/ProjectOptions/Common">
-		<Condition id="activeproject" value ="DotNet">
+	<Extension path = "/MonoDevelop/ProjectModel/Gui/ItemOptionPanels/Common">
+		<Condition id="ItemType" value ="DotNetProject">
 			<Section id = "SteticOptionsPanel"
 			             _label = "GTK# Settings"
 			             fill="true"

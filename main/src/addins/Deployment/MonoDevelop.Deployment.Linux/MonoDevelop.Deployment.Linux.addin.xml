@@ -53,8 +53,10 @@
 		                class = "MonoDevelop.Deployment.Linux.DotDesktopDisplayBinding"/>
 	</Extension>
 
-	<Extension path = "/MonoDevelop/ProjectModel/Gui/ProjectOptions/Deployment">
-		<Section id = "LinuxDeployment" _label = "Linux Deployment Settings" class="MonoDevelop.Deployment.Linux.BasicOptionPanel"/>
+	<Extension path = "/MonoDevelop/ProjectModel/Gui/ItemOptionPanels/Deployment">
+		<Condition id="ItemType" value="Project">
+			<Section id = "LinuxDeployment" _label = "Linux Deployment Settings" class="MonoDevelop.Deployment.Linux.BasicOptionPanel"/>
+		</Condition>
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Deployment/DeployDirectoryResolvers">

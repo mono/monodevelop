@@ -32,21 +32,21 @@ using MonoDevelop.Core.Gui.Dialogs;
 
 namespace MonoDevelop.Projects.Gui.Dialogs
 {
-	public class MultiConfigItemOptionsDialog: OptionsDialog
+	public class MultiConfigItemOptionsDialog: ItemOptionsDialog
 	{
 		ConfigurationData configData;
 		string currentConfig;
 		string currentPlatform;
 		
-		public MultiConfigItemOptionsDialog (string extensionPath): this (null, null, extensionPath)
+		public MultiConfigItemOptionsDialog (): this (null, null)
 		{
 		}
 		
-		public MultiConfigItemOptionsDialog (Gtk.Window parentWindow, object dataObject, string extensionPath): base (parentWindow, dataObject, extensionPath)
+		public MultiConfigItemOptionsDialog (Gtk.Window parentWindow, object dataObject): base (parentWindow, dataObject)
 		{
 			IConfigurationTarget ct = DataObject as IConfigurationTarget;
 			if (ct == null)
-				throw new System.InvalidOperationException ("MultiConfigItemOptionsDialog can only be used for SolutionEntityItem and Solution objects");
+				throw new System.InvalidOperationException ("MultiConfigItemOptionsDialog can only be used for SolutionEntityItem and Solution objects. Invalid data object: " + DataObject);
 			if (ct.DefaultConfiguration != null) {
 				currentConfig = ct.DefaultConfiguration.Name;
 				currentPlatform = ct.DefaultConfiguration.Platform;

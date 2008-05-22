@@ -56,7 +56,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs
 			base.Initialize (dialog, dataObject);
 			this.dialog = dialog as MultiConfigItemOptionsDialog;
 			if (this.dialog == null)
-				throw new System.InvalidOperationException ("MultiConfigItemOptionsPanel can only be used in options dialogs of type MultiConfigItemOptionsDialog");
+				throw new System.InvalidOperationException ("MultiConfigItemOptionsPanel can only be used in options dialogs of type MultiConfigItemOptionsDialog. Panel type: " + GetType ());
 			this.dialog.ConfigurationData.ConfigurationsChanged += OnConfigurationsChanged;
 		}
 		

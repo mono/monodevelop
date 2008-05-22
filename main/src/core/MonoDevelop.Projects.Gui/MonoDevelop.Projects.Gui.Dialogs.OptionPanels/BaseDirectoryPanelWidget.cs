@@ -1,4 +1,4 @@
-// ProjectOptionsDialog.cs
+// BaseDirectoryPanel.cs
 //
 // Author:
 //   Lluis Sanchez Gual <lluis@novell.com>
@@ -26,25 +26,25 @@
 //
 
 using System;
-using System.Collections;
-using System.ComponentModel;
 
-using Mono.Addins;
-using MonoDevelop.Core;
-using MonoDevelop.Projects;
-using MonoDevelop.Components.Commands;
-using MonoDevelop.Core.Gui.Dialogs;
-
-namespace MonoDevelop.Projects.Gui.Dialogs {
-
-	/// <summary>
-	/// Dialog for viewing the project options.
-	/// </summary>
-	public class ProjectOptionsDialog : MultiConfigItemOptionsDialog
+namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
+{
+	
+	
+	public partial class BaseDirectoryPanelWidget : Gtk.Bin
 	{
-		public ProjectOptionsDialog (Gtk.Window parentWindow, Project project) : base (parentWindow, project)
+		public BaseDirectoryPanelWidget()
 		{
-			this.Title = GettextCatalog.GetString ("Project Options") + " - " + project.Name;
+			this.Build();
+		}
+		
+		public string BaseDirectory {
+			get {
+				return folderentry.Path;
+			}
+			set {
+				folderentry.Path = value;
+			}
 		}
 	}
 }

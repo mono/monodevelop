@@ -40,10 +40,17 @@ namespace MonoDevelop.Core.Gui.Dialogs
 		Dictionary<OptionsPanelNode, PanelInstance> panels = new Dictionary<OptionsPanelNode,PanelInstance> ();
 		object mainDataObject;
 		string extensionPath;
+		ExtensionContext extensionContext;
 		
 		public object DataObject {
 			get {
 				return mainDataObject;
+			}
+		}
+
+		public ExtensionContext ExtensionContext {
+			get {
+				return extensionContext;
 			}
 		}
 		
@@ -54,6 +61,8 @@ namespace MonoDevelop.Core.Gui.Dialogs
 		public OptionsDialog (Gtk.Window parentWindow, object dataObject, string extensionPath)
 		{
 			this.Build();
+			
+			extensionContext = AddinManager.CreateExtensionContext ();
 			
 			this.mainDataObject = dataObject;
 			this.extensionPath = extensionPath;
@@ -78,6 +87,8 @@ namespace MonoDevelop.Core.Gui.Dialogs
 			
 			tree.Selection.Changed += OnSelectionChanged;
 			
+			InitializeContext (extensionContext);
+			
 			FillTree ();
 			
 			TreeIter it;
@@ -94,9 +105,13 @@ namespace MonoDevelop.Core.Gui.Dialogs
 			DetachWidgets ();
 			pages.Clear ();
 			store.Clear ();
-			foreach (OptionsDialogSection section in AddinManager.GetExtensionNodes (extensionPath)) {
+			foreach (OptionsDialogSection section in extensionContext.GetExtensionNodes (extensionPath)) {
 				AddSection (section, mainDataObject);
 			}
+		}
+		
+		protected virtual void InitializeContext (ExtensionContext extensionContext)
+		{
 		}
 		
 		public override void Dispose ()

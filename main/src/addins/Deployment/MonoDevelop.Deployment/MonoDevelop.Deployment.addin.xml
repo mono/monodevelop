@@ -172,11 +172,7 @@
 		<StockIcon stockid = "md-packaging-project" icon = "md-project|res:packaging-16.png" size = "Menu" />
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/ProjectModel/Gui/SolutionOptions">
-		<Section id = "Deployment" _label = "Deployment" />
-	</Extension>
-	
-	<Extension path = "/MonoDevelop/ProjectModel/Gui/ProjectOptions">
+	<Extension path = "/MonoDevelop/ProjectModel/Gui/ItemOptionPanels">
 		<Section id = "Deployment" _label = "Deployment" />
 	</Extension>
 

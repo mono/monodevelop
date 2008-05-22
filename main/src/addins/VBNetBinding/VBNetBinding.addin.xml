@@ -47,8 +47,8 @@
     <ProjectTemplate id = "VBGtkSharp2Project" resource = "VBGtkSharp2Project.xpt.xml"/>
   </Extension>
   
-	<Extension path = "/MonoDevelop/ProjectModel/Gui/ProjectOptions/Common">
-		<Condition id="activelanguage" value="VBNet">
+	<Extension path = "/MonoDevelop/ProjectModel/Gui/ItemOptionPanels/Common">
+		<Condition id="ActiveLanguage" value="VBNet">
 			<Section id = "RuntimeOptionsPanel"
 				             _label = "Runtime Options"
 				             class = "MonoDevelop.Projects.Gui.Dialogs.OptionPanels.RuntimeOptionsPanel"/>

@@ -1,5 +1,13 @@
 2008-05-22  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* JavaBinding.addin.xml: Merged the extension points for project and
+	  solution option panels into a single extension point. A single
+	  extension point will now be used for all kinds of items. Extension
+	  conditions can be used to make panels visible only for some
+	  specific item types.
+
+2008-05-22  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* JavaLanguageBinding.cs, IKVMCompilerManager.cs: Replaced
 	  ICompilerResult/DefaultCompilerResult/CompilerResults by a new
 	  BuildResult class, which has owner information at error level, so

@@ -50,8 +50,8 @@
     <ProjectTemplate id = "IkvmLibraryProject" resource = "IkvmLibraryProject.xpt.xml"/>
   </Extension>
 
-  <Extension path = "/MonoDevelop/ProjectModel/Gui/ProjectOptions">
-    <Condition id="activelanguage" value = "Java">
+  <Extension path = "/MonoDevelop/ProjectModel/Gui/ItemOptionPanels">
+    <Condition id="ActiveLanguage" value = "Java">
       <Section id = "JavaProjectPanel"
                    _label = "Code Generation"
                    class = "JavaBinding.ProjectConfigurationPropertyPanel"/>

@@ -40,7 +40,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs
 {
 	public class CombineOptionsDialog : MultiConfigItemOptionsDialog
 	{
-		public CombineOptionsDialog (Gtk.Window parentWindow, Solution solution) : base (parentWindow, solution, "/MonoDevelop/ProjectModel/Gui/SolutionOptions")
+		public CombineOptionsDialog (Gtk.Window parentWindow, Solution solution) : base (parentWindow, solution)
 		{
 			this.Title = GettextCatalog.GetString ("Solution Options") + " - " + solution.Name;
 		}

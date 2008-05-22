@@ -25,8 +25,8 @@
 						class = "MonoDeveloper.MonoMakefileFormat" />
 	</Extension>
 	
-  <Extension path = "/MonoDevelop/ProjectModel/Gui/ProjectOptions">
-    <Condition id="activeproject" value = "MonoMakefile">
+  <Extension path = "/MonoDevelop/ProjectModel/Gui/ItemOptionPanels">
+    <Condition id="ItemType" value = "MonoDeveloper.MonoMakefile">
 		<Section id = "MonoMakefileOptionsPanel"
 					 _label = "Output"
 					 class = "MonoDevelop.Projects.Gui.Dialogs.OutputOptionsPanel"/>

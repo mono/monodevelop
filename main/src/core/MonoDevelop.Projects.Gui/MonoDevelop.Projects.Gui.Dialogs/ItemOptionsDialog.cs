@@ -1,4 +1,4 @@
-// ProjectOptionsDialog.cs
+// ItemOptionsDialog.cs
 //
 // Author:
 //   Lluis Sanchez Gual <lluis@novell.com>
@@ -26,25 +26,28 @@
 //
 
 using System;
-using System.Collections;
-using System.ComponentModel;
-
 using Mono.Addins;
-using MonoDevelop.Core;
-using MonoDevelop.Projects;
-using MonoDevelop.Components.Commands;
+using MonoDevelop.Projects.Gui.Dialogs.OptionPanels;
 using MonoDevelop.Core.Gui.Dialogs;
 
-namespace MonoDevelop.Projects.Gui.Dialogs {
-
-	/// <summary>
-	/// Dialog for viewing the project options.
-	/// </summary>
-	public class ProjectOptionsDialog : MultiConfigItemOptionsDialog
+namespace MonoDevelop.Projects.Gui.Dialogs
+{
+	public class ItemOptionsDialog: OptionsDialog
 	{
-		public ProjectOptionsDialog (Gtk.Window parentWindow, Project project) : base (parentWindow, project)
+		public ItemOptionsDialog (): base ("/MonoDevelop/ProjectModel/Gui/ItemOptionPanels")
 		{
-			this.Title = GettextCatalog.GetString ("Project Options") + " - " + project.Name;
+		}
+		
+		public ItemOptionsDialog (Gtk.Window parentWindow, object dataObject)
+			: base (parentWindow, dataObject, "/MonoDevelop/ProjectModel/Gui/ItemOptionPanels")
+		{
+		}
+		
+		protected override void InitializeContext (ExtensionContext extensionContext)
+		{
+			base.InitializeContext (extensionContext);
+			extensionContext.RegisterCondition ("ItemType", new ItemTypeCondition (DataObject.GetType ()));
+			extensionContext.RegisterCondition ("ActiveLanguage", new ActiveLanguageCondition (DataObject));
 		}
 	}
 }

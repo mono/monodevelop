@@ -17,6 +17,7 @@ FILES =  \
 	gtk-gui/generated.cs \
 	gtk-gui/MonoDevelop.Projects.Gui.Dialogs.DeleteConfigDialog.cs \
 	gtk-gui/MonoDevelop.Projects.Gui.Dialogs.NewConfigurationDialog.cs \
+	gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.BaseDirectoryPanelWidget.cs \
 	gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CombineBuildOptionsWidget.cs \
 	gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CombineConfigurationPanelWidget.cs \
 	gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CombineEntryConfigurationsPanelWidget.cs \
@@ -43,6 +44,9 @@ FILES =  \
 	MonoDevelop.Projects.Gui.Completion/TextUtilities.cs \
 	MonoDevelop.Projects.Gui.Completion/TooltipWindow.cs \
 	MonoDevelop.Projects.Gui.Completion/WindowTransparencyDecorator.cs \
+	MonoDevelop.Projects.Gui.Dialogs.OptionPanels/ActiveLanguageCondition.cs \
+	MonoDevelop.Projects.Gui.Dialogs.OptionPanels/BaseDirectoryPanel.cs \
+	MonoDevelop.Projects.Gui.Dialogs.OptionPanels/BaseDirectoryPanelWidget.cs \
 	MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineBuildOptions.cs \
 	MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineConfigurationPanel.cs \
 	MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineInformationPanel.cs \
@@ -51,11 +55,13 @@ FILES =  \
 	MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CustomCommandPanelWidget.cs \
 	MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CustomCommandWidget.cs \
 	MonoDevelop.Projects.Gui.Dialogs.OptionPanels/GeneralProjectOptions.cs \
+	MonoDevelop.Projects.Gui.Dialogs.OptionPanels/ItemTypeCondition.cs \
 	MonoDevelop.Projects.Gui.Dialogs.OptionPanels/OutputOptionsPanel.cs \
 	MonoDevelop.Projects.Gui.Dialogs.OptionPanels/RuntimeOptionsPanel.cs \
 	MonoDevelop.Projects.Gui.Dialogs.OptionPanels/SolutionItemConfigurationsPanel.cs \
 	MonoDevelop.Projects.Gui.Dialogs/CombineOptionsDialog.cs \
 	MonoDevelop.Projects.Gui.Dialogs/DeleteConfigDialog.cs \
+	MonoDevelop.Projects.Gui.Dialogs/ItemOptionsDialog.cs \
 	MonoDevelop.Projects.Gui.Dialogs/ItemOptionsPanel.cs \
 	MonoDevelop.Projects.Gui.Dialogs/MultiConfigItemOptionsDialog.cs \
 	MonoDevelop.Projects.Gui.Dialogs/MultiConfigItemOptionsPanel.cs \

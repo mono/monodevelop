@@ -46,7 +46,7 @@
 		<DataType class = "NemerleBinding.NemerleParameters" />
 	</Extension>
 	
-  <Extension path = "/MonoDevelop/ProjectModel/Gui/ProjectOptions/ConfigurationOptions">
+  <Extension path = "/MonoDevelop/ProjectModel/Gui/ItemOptionPanels">
     <Condition id="activelanguage" value = "Nemerle">
       <DialogPanel id = "NemerleCodeGenerationPanel"
                    _label = "Code Generation"

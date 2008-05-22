@@ -89,9 +89,11 @@
 		<DataType class = "MonoDevelop.Autotools.TarballDeployTarget" />
 	</Extension>
 
-	<Extension path = "/MonoDevelop/ProjectModel/Gui/ProjectOptions/Common">
-		<Section id= "Makefile" _label = "Makefile Integration"
-			class = "MonoDevelop.Autotools.MakefileOptionPanel" />
+	<Extension path = "/MonoDevelop/ProjectModel/Gui/ItemOptionPanels/Common">
+		<Condition id="ItemType" value="Project">
+			<Section id= "Makefile" _label = "Makefile Integration"
+				class = "MonoDevelop.Autotools.MakefileOptionPanel" />
+		</Condition>
 	</Extension>
 
 	<Extension path = "/MonoDevelop/ProjectModel/ExtendedProperties">

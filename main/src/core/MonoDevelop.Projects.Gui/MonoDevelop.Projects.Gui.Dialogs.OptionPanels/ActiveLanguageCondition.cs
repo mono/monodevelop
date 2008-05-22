@@ -1,4 +1,4 @@
-// ProjectOptionsDialog.cs
+// ActiveLanguageCondition.cs
 //
 // Author:
 //   Lluis Sanchez Gual <lluis@novell.com>
@@ -26,25 +26,27 @@
 //
 
 using System;
-using System.Collections;
-using System.ComponentModel;
-
-using Mono.Addins;
-using MonoDevelop.Core;
 using MonoDevelop.Projects;
-using MonoDevelop.Components.Commands;
-using MonoDevelop.Core.Gui.Dialogs;
+using Mono.Addins;
 
-namespace MonoDevelop.Projects.Gui.Dialogs {
-
-	/// <summary>
-	/// Dialog for viewing the project options.
-	/// </summary>
-	public class ProjectOptionsDialog : MultiConfigItemOptionsDialog
+namespace MonoDevelop.Projects.Gui
+{
+	public class ActiveLanguageCondition: ConditionType
 	{
-		public ProjectOptionsDialog (Gtk.Window parentWindow, Project project) : base (parentWindow, project)
+		string language;
+		
+		public ActiveLanguageCondition (object obj)
 		{
-			this.Title = GettextCatalog.GetString ("Project Options") + " - " + project.Name;
+			DotNetProject dp = obj as DotNetProject;
+			if (dp != null)
+				language = dp.LanguageName;
+		}
+		
+		public override bool Evaluate (NodeElement conditionNode)
+		{
+			if (string.IsNullOrEmpty (language))
+				return false;
+			return language == conditionNode.GetAttribute ("value");
 		}
 	}
 }
