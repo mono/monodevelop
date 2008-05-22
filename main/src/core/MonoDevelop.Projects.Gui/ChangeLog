@@ -1,6 +1,11 @@
 2008-05-22  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/ItemTypeCondition.cs:
+	  Added comment.
+
+2008-05-22  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/ItemTypeCondition.cs:
 	  Remove debug code.
 
 2008-05-22  Lluis Sanchez Gual <lluis@novell.com> 

@@ -47,6 +47,14 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 			if (type.IndexOf ('.') == -1)
 				type = "MonoDevelop.Projects." + type;
 			
+			// Type checking might be done by loading the provided type
+			// and then comparing the provided and the object types by
+			// using IsAssignableFrom. However, type comparison is done
+			// here by comparing type names. The advantage is that in
+			// this way the provided type doesn't need to be loaded,
+			// thus delaying the loading of the add-in that is making
+			// use of the condition.
+			
 			if (typeNames == null) {
 				typeNames = new List<string> ();
 				
