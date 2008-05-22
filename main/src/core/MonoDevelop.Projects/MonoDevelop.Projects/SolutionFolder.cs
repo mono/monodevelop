@@ -105,26 +105,25 @@ namespace MonoDevelop.Projects
 			}
 		}
 		
-		public override string BaseDirectory {
-			get {
-				if (ParentFolder == null)
-					return ParentSolution.BaseDirectory;
-				
-				SolutionFolder folder = this;
-				string path = "";
-				do {
-					// Root folder name is ignored
-					path = Path.Combine (path, folder.Name);
-					folder = folder.ParentFolder;
-				}
-				while (folder.ParentFolder != null);
-				
-				path = Path.Combine (ParentSolution.BaseDirectory, path);
-				if (Directory.Exists (path))
-					return path;
-				else
-					return ParentFolder.BaseDirectory;
+		protected override string GetDefaultBaseDirectory ()
+		{
+			if (ParentFolder == null)
+				return ParentSolution.BaseDirectory;
+			
+			SolutionFolder folder = this;
+			string path = "";
+			do {
+				// Root folder name is ignored
+				path = Path.Combine (path, folder.Name);
+				folder = folder.ParentFolder;
 			}
+			while (folder.ParentFolder != null);
+			
+			path = Path.Combine (ParentSolution.BaseDirectory, path);
+			if (Directory.Exists (path))
+				return path;
+			else
+				return ParentFolder.BaseDirectory;
 		}
 		
 		internal override IDictionary InternalGetExtendedProperties {

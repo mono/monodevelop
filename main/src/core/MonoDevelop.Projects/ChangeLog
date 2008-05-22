@@ -1,6 +1,15 @@
 2008-05-22  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Projects/WorkspaceItem.cs,
+	  MonoDevelop.Projects/SolutionFolder.cs,
+	  MonoDevelop.Projects/SolutionEntityItem.cs,
+	  MonoDevelop.Projects/SolutionItem.cs,
+	  MonoDevelop.Projects/IWorkspaceObject.cs: Allow setting the base
+	  directory of items.
+
+2008-05-22  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects/WorkspaceItem.cs,
 	  MonoDevelop.Projects/ProjectServiceExtension.cs,
 	  MonoDevelop.Projects/ProjectService.cs,
 	  MonoDevelop.Projects/CustomCommandExtension.cs,

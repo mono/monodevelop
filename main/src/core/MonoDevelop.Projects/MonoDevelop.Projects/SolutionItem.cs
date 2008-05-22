@@ -43,6 +43,9 @@ namespace MonoDevelop.Projects
 		Solution parentSolution;
 		ISolutionItemHandler handler;
 		
+		[ItemProperty ("BaseDirectory", DefaultValue=null)]
+		string baseDirectory;
+		
 		Hashtable extendedProperties;
 		
 		public SolutionItem()
@@ -92,10 +95,27 @@ namespace MonoDevelop.Projects
 		
 		public abstract string Name { get; set; }
 		
-		public virtual string BaseDirectory {
+		public string BaseDirectory {
 			get {
-				return ParentSolution.BaseDirectory;
+				if (baseDirectory == null)
+					return GetDefaultBaseDirectory ();
+				else
+					return baseDirectory;
 			}
+			set {
+				string def = GetDefaultBaseDirectory ();
+				if (value != null && def != null && System.IO.Path.GetFullPath (value) == System.IO.Path.GetFullPath (def))
+					baseDirectory = null;
+				else if (value == string.Empty)
+					baseDirectory = null;
+				else
+					baseDirectory = value;
+			}
+		}
+		
+		protected virtual string GetDefaultBaseDirectory ()
+		{
+			return ParentSolution.BaseDirectory;
 		}
 		
 		public string ItemId {

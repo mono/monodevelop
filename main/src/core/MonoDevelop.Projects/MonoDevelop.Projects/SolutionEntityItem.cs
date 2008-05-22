@@ -158,8 +158,9 @@ namespace MonoDevelop.Projects
 			Services.ProjectService.GetDefaultFormat (this).Format.ConvertToFormat (this);
 		}
 		
-		public override string BaseDirectory {
-			get { return Path.GetDirectoryName (FileName); }
+		protected override string GetDefaultBaseDirectory ()
+		{
+			return Path.GetDirectoryName (FileName); 
 		}
 		
 		public void Save (string fileName, IProgressMonitor monitor)
