@@ -1,5 +1,10 @@
 2008-05-22  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Projects/SolutionFolder.cs: Improved logic for guessing
+	  the physical path of a solution folder.
+
+2008-05-22  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Projects/WorkspaceItem.cs,
 	  MonoDevelop.Projects/SolutionItem.cs: Fix base directory
 	  serialization.

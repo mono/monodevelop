@@ -107,23 +107,70 @@ namespace MonoDevelop.Projects
 		
 		protected override string GetDefaultBaseDirectory ()
 		{
+			// Since solution folders don't are not bound to a specific directory, we have to guess it.
+			// First of all try to find a common root of all child projects
+			
+			string path = null;
+			
+			foreach (SolutionItem it in Items) {
+				string subdir = it.BaseDirectory;
+				
+				if (path != null) {
+					// Find the common root
+					path = GetCommonPathRoot (path, subdir);
+					if (string.IsNullOrEmpty (path))
+						break;
+				} else
+					path = subdir;
+			}
+			
+			if (!string.IsNullOrEmpty (path))
+			    return path;
+			
+			// Now try getting the folder using the folder name
+			
 			if (ParentFolder == null)
 				return ParentSolution.BaseDirectory;
-			
-			SolutionFolder folder = this;
-			string path = "";
-			do {
-				// Root folder name is ignored
-				path = Path.Combine (path, folder.Name);
-				folder = folder.ParentFolder;
+			else {
+				SolutionFolder folder = this;
+				path = "";
+				do {
+					// Root folder name is ignored
+					path = Path.Combine (path, folder.Name);
+					folder = folder.ParentFolder;
+				}
+				while (folder.ParentFolder != null);
+				
+				path = Path.Combine (ParentSolution.BaseDirectory, path);
+				if (!Directory.Exists (path))
+					return ParentFolder.BaseDirectory;
+				else
+					return path;
 			}
-			while (folder.ParentFolder != null);
+		}
+		
+		string GetCommonPathRoot (string path1, string path2)
+		{
+			path1 = Path.GetFullPath (path1);
+			path2 = Path.GetFullPath (path2);
 			
-			path = Path.Combine (ParentSolution.BaseDirectory, path);
-			if (Directory.Exists (path))
-				return path;
+			if (path1 == path2)
+				return path1;
+			
+			path1 += Path.DirectorySeparatorChar;
+			path2 += Path.DirectorySeparatorChar;
+			
+			int lastCommonSep = -1;
+			for (int n=0; n<path1.Length && n<path2.Length; n++) {
+				if (path1[n] != path2[n])
+					break;
+				else if (path1[n] == Path.DirectorySeparatorChar)
+					lastCommonSep = n;
+			}
+			if (lastCommonSep > 0)
+				return path1.Substring (0, lastCommonSep);
 			else
-				return ParentFolder.BaseDirectory;
+				return null;
 		}
 		
 		internal override IDictionary InternalGetExtendedProperties {
