@@ -1,3 +1,8 @@
+2008-05-22  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* VersionControl.addin.xml: Added version control menu to workspace
+	  context menu.
+
 2008-05-21  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.VersionControl.mdp, VersionControl.addin.xml,

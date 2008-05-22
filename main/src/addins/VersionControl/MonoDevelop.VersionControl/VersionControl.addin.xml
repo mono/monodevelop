@@ -171,6 +171,19 @@
 		</ItemSet>
 		<SeparatorItem />
 	</Extension>
+	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/Workspace">
+		<ItemSet id = "VersionControl" _label = "_Version Control" insertafter = "AddSeparator">
+			<CommandItem id = "MonoDevelop.VersionControl.Commands.Publish"/>
+			<SeparatorItem id = "CommandSeparator1" />
+			<CommandItem id = "MonoDevelop.VersionControl.Commands.Revert"/>
+			<SeparatorItem id = "CommandSeparator2" />
+			<CommandItem id = "MonoDevelop.VersionControl.Commands.Update"/>
+			<CommandItem id = "MonoDevelop.VersionControl.Commands.Status"/>
+			<CommandItem id = "MonoDevelop.VersionControl.Commands.Commit"/>
+			<CommandItem id = "MonoDevelop.VersionControl.Commands.Log"/>
+		</ItemSet>
+		<SeparatorItem />
+	</Extension>
 	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/SolutionFolder">
 		<ItemSet id = "VersionControl" _label = "_Version Control" insertafter = "AddSeparator">
 			<CommandItem id = "MonoDevelop.VersionControl.Commands.Revert"/>
