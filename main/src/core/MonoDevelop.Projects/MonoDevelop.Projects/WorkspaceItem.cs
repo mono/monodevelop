@@ -97,17 +97,18 @@ namespace MonoDevelop.Projects
 		public string BaseDirectory {
 			get {
 				if (baseDirectory == null)
-					return Path.GetDirectoryName (FileName);
+					return Path.GetFullPath (Path.GetDirectoryName (FileName));
 				else
 					return baseDirectory;
 			}
 			set {
 				if (value != null && FileName != null && Path.GetFullPath (Path.GetDirectoryName (FileName)) == Path.GetFullPath (value))
 					baseDirectory = null;
-				else if (value == string.Empty)
+				else if (string.IsNullOrEmpty (value))
 					baseDirectory = null;
 				else
-					baseDirectory = value;
+					baseDirectory = Path.GetFullPath (value);
+				NotifyModified ();
 			}
 		}
 		

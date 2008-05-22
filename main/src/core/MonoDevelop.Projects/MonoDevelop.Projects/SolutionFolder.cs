@@ -110,6 +110,9 @@ namespace MonoDevelop.Projects
 			// Since solution folders don't are not bound to a specific directory, we have to guess it.
 			// First of all try to find a common root of all child projects
 			
+			if (ParentFolder == null)
+				return ParentSolution.BaseDirectory;
+			
 			string path = null;
 			
 			foreach (SolutionItem it in Items) {
@@ -129,24 +132,20 @@ namespace MonoDevelop.Projects
 			
 			// Now try getting the folder using the folder name
 			
-			if (ParentFolder == null)
-				return ParentSolution.BaseDirectory;
-			else {
-				SolutionFolder folder = this;
-				path = "";
-				do {
-					// Root folder name is ignored
-					path = Path.Combine (path, folder.Name);
-					folder = folder.ParentFolder;
-				}
-				while (folder.ParentFolder != null);
-				
-				path = Path.Combine (ParentSolution.BaseDirectory, path);
-				if (!Directory.Exists (path))
-					return ParentFolder.BaseDirectory;
-				else
-					return path;
+			SolutionFolder folder = this;
+			path = "";
+			do {
+				// Root folder name is ignored
+				path = Path.Combine (path, folder.Name);
+				folder = folder.ParentFolder;
 			}
+			while (folder.ParentFolder != null);
+			
+			path = Path.Combine (ParentSolution.BaseDirectory, path);
+			if (!Directory.Exists (path))
+				return ParentFolder.BaseDirectory;
+			else
+				return path;
 		}
 		
 		string GetCommonPathRoot (string path1, string path2)
