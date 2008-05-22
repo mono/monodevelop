@@ -1,3 +1,8 @@
+2008-05-22  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.DesignerSupport.Projects/CombineEntryDescriptor.cs: Allow
+	  editing the root folder.
+
 2008-05-21  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.DesignerSupport/ToolboxService.cs: Update the toolbox

@@ -57,5 +57,17 @@ namespace MonoDevelop.DesignerSupport
 					return "";
 			}
 		}
+		
+		[DisplayName ("Root Directory")]
+		[Description ("Root directory of source files and projects. File paths will be shown relative to this directory.")]
+		public string RootDirectory {
+			get {
+				return entry.BaseDirectory;
+			}
+			set {
+				if (string.IsNullOrEmpty (value) || System.IO.Directory.Exists (value))
+					entry.BaseDirectory = value;
+			}
+		}
 	}
 }
