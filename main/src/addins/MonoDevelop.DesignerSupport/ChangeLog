@@ -1,5 +1,15 @@
 2008-05-22  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.DesignerSupport.mdp, Makefile.am,
+	  MonoDevelop.DesignerSupport.Projects/WorkspaceItemDescriptor.cs,
+	  MonoDevelop.DesignerSupport.Projects/ComponentNodeBuilder.cs: Add
+	  support for solution and workspaces.
+	* MonoDevelop.DesignerSupport.Projects/SolutionItemPropertyProvider.cs,
+	  MonoDevelop.DesignerSupport.Projects/SolutionItemDescriptor.cs:
+	  Renamed.
+
+2008-05-22  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.DesignerSupport.Projects/CombineEntryDescriptor.cs: Allow
 	  editing the root folder.
 

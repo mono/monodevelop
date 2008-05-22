@@ -29,7 +29,7 @@ using System;
 using System.ComponentModel;
 using MonoDevelop.Projects;
 
-namespace MonoDevelop.DesignerSupport
+namespace MonoDevelop.DesignerSupport.Projects
 {
 	class SolutionItemDescriptor: CustomDescriptor
 	{

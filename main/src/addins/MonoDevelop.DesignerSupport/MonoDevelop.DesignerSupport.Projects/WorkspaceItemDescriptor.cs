@@ -1,9 +1,9 @@
-// SolutionItemPropertyProvider.cs
+// WorkspaceItemDescriptor.cs
 //
-//Author:
-//  Lluis Sanchez Gual
+// Author:
+//   Lluis Sanchez Gual <lluis@novell.com>
 //
-//Copyright (c) 2007 Novell, Inc (http://www.novell.com)
+// Copyright (c) 2008 Novell, Inc (http://www.novell.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -26,21 +26,53 @@
 //
 
 using System;
-using System.ComponentModel;
 using MonoDevelop.Projects;
+using System.ComponentModel;
 
 namespace MonoDevelop.DesignerSupport.Projects
 {
-	class SolutionItemPropertyProvider: IPropertyProvider
+	public class WorkspaceItemDescriptor: CustomDescriptor
 	{
-		public object CreateProvider (object obj)
+		WorkspaceItem item;
+		
+		public WorkspaceItemDescriptor (WorkspaceItem item)
 		{
-			return new SolutionItemDescriptor ((SolutionItem)obj);
+			this.item = item;
 		}
-
-		public bool SupportsObject (object obj)
-		{
-			return obj is SolutionItem;
+		
+		[DisplayName ("Name")]
+		[Description ("Name of the item.")]
+		public string Name {
+			get { return item.Name; }
+			set { item.Name = value; }
+		}
+		
+		[DisplayName ("File Path")]
+		[Description ("File path of the item.")]
+		public string FilePath {
+			get {
+				return item.FileName;
+			}
+		}
+		
+		[DisplayName ("Root Directory")]
+		[Description ("Root directory of source files and projects. File paths will be shown relative to this directory.")]
+		public string RootDirectory {
+			get {
+				return item.BaseDirectory;
+			}
+			set {
+				if (string.IsNullOrEmpty (value) || System.IO.Directory.Exists (value))
+					item.BaseDirectory = value;
+			}
+		}
+		
+		[DisplayName ("File Format")]
+		[Description ("File format of the project file.")]
+		public string FileFormat {
+			get {
+				return item.FileFormat.Name;
+			}
 		}
 	}
 }

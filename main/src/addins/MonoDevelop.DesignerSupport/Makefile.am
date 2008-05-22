@@ -32,13 +32,14 @@ FILES =  \
 	MonoDevelop.DesignerSupport.CodeBehind/CodeBehindProjectFileExtension.cs \
 	MonoDevelop.DesignerSupport.CodeBehind/CodeBehindViewContent.cs \
 	MonoDevelop.DesignerSupport.CodeBehind/ICodeBehindProvider.cs \
-	MonoDevelop.DesignerSupport.Projects/CombineEntryDescriptor.cs \
-	MonoDevelop.DesignerSupport.Projects/CombineEntryPropertyProvider.cs \
 	MonoDevelop.DesignerSupport.Projects/ComponentNodeBuilder.cs \
 	MonoDevelop.DesignerSupport.Projects/ProjectFileDescriptor.cs \
 	MonoDevelop.DesignerSupport.Projects/ProjectItemPropertyProvider.cs \
 	MonoDevelop.DesignerSupport.Projects/ProjectReferenceDescriptor.cs \
 	MonoDevelop.DesignerSupport.Projects/PropertyPadTextEditorExtension.cs \
+	MonoDevelop.DesignerSupport.Projects/SolutionItemDescriptor.cs \
+	MonoDevelop.DesignerSupport.Projects/SolutionItemPropertyProvider.cs \
+	MonoDevelop.DesignerSupport.Projects/WorkspaceItemDescriptor.cs \
 	MonoDevelop.DesignerSupport.PropertyGrid.Editors/BooleanEditorCell.cs \
 	MonoDevelop.DesignerSupport.PropertyGrid.Editors/CharPropertyEditor.cs \
 	MonoDevelop.DesignerSupport.PropertyGrid.Editors/CollectionEditor.cs \
