@@ -1,3 +1,7 @@
+2008-05-22  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Mono.Debugging.Server.Mdb.mdp: Updated project.
+
 2008-05-16  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* DebuggerServer.cs, Util.cs, BacktraceWrapper.cs,
