@@ -47,7 +47,7 @@ namespace MonoDevelop.Projects.Formats.MD1
 			get { return (DotNetProject) Item; }
 		}
 		
-		protected override ICompilerResult OnClean (IProgressMonitor monitor, string configuration)
+		protected override BuildResult OnClean (IProgressMonitor monitor, string configuration)
 		{
 			DotNetProject project = Project;
 			DotNetProjectConfiguration conf = (DotNetProjectConfiguration) project.GetConfiguration (configuration);
@@ -88,19 +88,19 @@ namespace MonoDevelop.Projects.Formats.MD1
 		}
 
 		
-		protected override ICompilerResult OnBuild (IProgressMonitor monitor, string configuration)
+		protected override BuildResult OnBuild (IProgressMonitor monitor, string configuration)
 		{
 			DotNetProject project = Project;
 			
 			if (project.LanguageBinding == null) {
-				DefaultCompilerResult langres = new DefaultCompilerResult ();
+				BuildResult langres = new BuildResult ();
 				string msg = GettextCatalog.GetString ("Unknown language '{0}'. You may need to install an additional add-in to support this language.", project.LanguageName);
 				langres.AddError (msg);
 				monitor.ReportError (msg, null);
 				return langres;
 			}
 
-			DefaultCompilerResult refres = null;
+			BuildResult refres = null;
 			
 			foreach (ProjectReference pr in project.References) {
 				if (pr.ReferenceType == ReferenceType.Project) {
@@ -111,7 +111,7 @@ namespace MonoDevelop.Projects.Formats.MD1
 
 					if (p == null || pr.GetReferencedFileNames (configuration).Length == 0) {
 						if (refres == null)
-							refres = new DefaultCompilerResult ();
+							refres = new BuildResult ();
 						string msg = GettextCatalog.GetString ("Referenced project '{0}' not found in the solution.", pr.Reference);
 						monitor.ReportWarning (msg);
 						refres.AddWarning (msg);
@@ -123,7 +123,7 @@ namespace MonoDevelop.Projects.Formats.MD1
 			conf.SourceDirectory = project.BaseDirectory;
 			
 			ProjectFileCollection files = project.Files;
-			ICompilerResult res = BuildResources (conf, ref files, monitor);
+			BuildResult res = BuildResources (conf, ref files, monitor);
 			if (res != null)
 				return res;
 
@@ -154,7 +154,7 @@ namespace MonoDevelop.Projects.Formats.MD1
 
 		// Builds the EmbedAsResource files. If any localized resources are found then builds the satellite assemblies
 		// and sets @projectFiles to a cloned collection minus such resource files.
-		private ICompilerResult BuildResources (DotNetProjectConfiguration configuration, ref ProjectFileCollection projectFiles, IProgressMonitor monitor)
+		private BuildResult BuildResources (DotNetProjectConfiguration configuration, ref ProjectFileCollection projectFiles, IProgressMonitor monitor)
 		{
 			DotNetProject project = Project;
 			
@@ -172,7 +172,7 @@ namespace MonoDevelop.Projects.Formats.MD1
 					CompilerResults cr = new CompilerResults (new TempFileCollection ());
 					cr.Errors.Add (ce);
 
-					return new DefaultCompilerResult (cr, String.Empty);
+					return new BuildResult (cr, String.Empty);
 				}
 				string culture = GetCulture (finfo.Name);
 				if (culture == null)
@@ -200,7 +200,7 @@ namespace MonoDevelop.Projects.Formats.MD1
 				CompilerResults cr = new CompilerResults (new TempFileCollection ());
 				cr.Errors.Add (err);
 
-				return new DefaultCompilerResult (cr, String.Empty);
+				return new BuildResult (cr, String.Empty);
 			}
 
 			return null;

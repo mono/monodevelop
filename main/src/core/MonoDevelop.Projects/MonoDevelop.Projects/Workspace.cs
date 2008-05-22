@@ -106,6 +106,18 @@ namespace MonoDevelop.Projects
 			return null;
 		}
 
+		public override bool ContainsItem (IWorkspaceObject obj)
+		{
+			if (base.ContainsItem (obj))
+				return true;
+			
+			foreach (WorkspaceItem it in Items) {
+				if (it.ContainsItem (obj))
+					return true;
+			}
+			return false;
+		}
+		
 		
 		public override ReadOnlyCollection<T> GetAllSolutionItems<T> ()
 		{
@@ -117,14 +129,14 @@ namespace MonoDevelop.Projects
 		}
 
 		
-		internal protected override ICompilerResult OnRunTarget (IProgressMonitor monitor, string target, string configuration)
+		internal protected override BuildResult OnRunTarget (IProgressMonitor monitor, string target, string configuration)
 		{
-			DefaultCompilerResult result = null;
+			BuildResult result = null;
 			foreach (WorkspaceItem it in Items) {
-				ICompilerResult res = it.RunTarget (monitor, target, configuration);
+				BuildResult res = it.RunTarget (monitor, target, configuration);
 				if (res != null) {
 					if (result == null) {
-						result = new DefaultCompilerResult ();
+						result = new BuildResult ();
 						result.BuildCount = 0;
 					}
 					result.Append (res);

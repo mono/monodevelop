@@ -68,7 +68,7 @@ namespace MonoDevelop.Deployment.Targets
 			
 			try {
 				if (RootSolutionItem.NeedsBuilding (configuration)) {
-					ICompilerResult res = RootSolutionItem.Build (monitor, configuration);
+					BuildResult res = RootSolutionItem.Build (monitor, configuration);
 					if (res.ErrorCount > 0)
 						return false;
 				}

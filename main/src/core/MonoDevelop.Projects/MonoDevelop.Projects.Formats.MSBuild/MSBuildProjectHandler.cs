@@ -80,7 +80,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				this.targetImports.AddRange (import.Split (':'));
 		}
 
-		public override ICompilerResult RunTarget (IProgressMonitor monitor, string target, string configuration)
+		public override BuildResult RunTarget (IProgressMonitor monitor, string target, string configuration)
 		{
 			if (Item is DotNetProject) {
 				MD1DotNetProjectHandler handler = new MD1DotNetProjectHandler ((DotNetProject)Item);

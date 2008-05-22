@@ -54,7 +54,7 @@ namespace ILAsmBinding
 			return compilerManager.CanCompile(fileName);
 		}
 		
-		public ICompilerResult Compile (ProjectFileCollection projectFiles, ProjectReferenceCollection references, DotNetProjectConfiguration configuration, IProgressMonitor monitor)
+		public BuildResult Compile (ProjectFileCollection projectFiles, ProjectReferenceCollection references, DotNetProjectConfiguration configuration, IProgressMonitor monitor)
 		{
 			Debug.Assert(compilerManager != null);
 			return compilerManager.Compile (projectFiles, references, configuration, monitor);

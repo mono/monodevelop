@@ -54,7 +54,7 @@ namespace CBinding
 		bool compilerFound;
 		bool linkerFound;
 		
-		public override ICompilerResult Compile (
+		public override BuildResult Compile (
 			ProjectFileCollection projectFiles,
 		    ProjectPackageCollection packages,
 		    CProjectConfiguration configuration,
@@ -67,13 +67,13 @@ namespace CBinding
 			}
 				
 			if (!compilerFound) {
-				DefaultCompilerResult cres = new DefaultCompilerResult ();
+				BuildResult cres = new BuildResult ();
 				cres.AddError ("Compiler not found: " + compilerCommand);
 				return cres;
 			}
 			
 			if (!linkerFound) {
-				DefaultCompilerResult cres = new DefaultCompilerResult ();
+				BuildResult cres = new BuildResult ();
 				cres.AddError ("Linker not found: " + linkerCommand);
 				return cres;
 			}
@@ -130,7 +130,7 @@ namespace CBinding
 				}
 			}
 			
-			return new DefaultCompilerResult (cr, "");
+			return new BuildResult (cr, "");
 		}
 		
 		public override bool SupportsCcache {

@@ -42,7 +42,7 @@ namespace MonoDevelop.Prj2Make
 	public class MSBuildProjectServiceExtension : ProjectServiceExtension
 	{
 
-		protected override ICompilerResult Build (IProgressMonitor monitor, IBuildTarget entry, string configuration)
+		protected override BuildResult Build (IProgressMonitor monitor, IBuildTarget entry, string configuration)
 		{
 			//xamlg any SilverLightPages
 			DotNetProject project = entry as DotNetProject;
@@ -67,7 +67,7 @@ namespace MonoDevelop.Prj2Make
 					                       GettextCatalog.GetPluralString("{0} error", "{0} errors", cr.Errors.Count) +
 					                       GettextCatalog.GetPluralString("{0} warning", "{0} warnings", 0),
 					                       cr.Errors.Count, 0);
-					return new DefaultCompilerResult (cr, String.Empty);
+					return new BuildResult (cr, String.Empty);
 				}
 			}
 

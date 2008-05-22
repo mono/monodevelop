@@ -354,7 +354,7 @@ namespace MonoDevelop.Projects
 			
 			// Build the project and the references
 			
-			ICompilerResult res = p.Build (Util.GetMonitor (), "Debug", true);
+			BuildResult res = p.Build (Util.GetMonitor (), "Debug", true);
 			Assert.AreEqual (0, res.ErrorCount);
 			Assert.AreEqual (0, res.WarningCount);
 			Assert.AreEqual (3, res.BuildCount);
@@ -410,7 +410,7 @@ namespace MonoDevelop.Projects
 			
 			// Build the project and the references
 			
-			ICompilerResult res = ws.Build (Util.GetMonitor (), "Debug");
+			BuildResult res = ws.Build (Util.GetMonitor (), "Debug");
 			Assert.AreEqual (0, res.ErrorCount);
 			Assert.AreEqual (0, res.WarningCount);
 			Assert.AreEqual (3, res.BuildCount);

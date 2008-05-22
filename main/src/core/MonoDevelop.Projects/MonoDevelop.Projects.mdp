@@ -169,8 +169,6 @@
     <File name="MonoDevelop.Projects.Text/TextFile.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects/ProjectCreateInformation.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects/IProjectBinding.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Projects/DefaultCompilerResult.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Projects/ICompilerResult.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects/ILanguageBinding.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects/IDotNetLanguageBinding.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Extensions/LanguageBindingCodon.cs" subtype="Code" buildaction="Compile" />
@@ -270,6 +268,7 @@
     <File name="MonoDevelop.Projects.Formats.MSBuild/MSBuildHandler.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Formats.MD1/MD1SolutionItemHandler.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Extensions/DotNetProjectSubtypeNode.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Projects/BuildResult.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="False" refto="monodoc, Version=1.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />

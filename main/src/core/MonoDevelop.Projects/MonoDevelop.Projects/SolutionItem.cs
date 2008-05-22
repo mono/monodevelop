@@ -133,7 +133,7 @@ namespace MonoDevelop.Projects
 			return new SolutionItem [0];
 		}
 		
-		public ICompilerResult RunTarget (IProgressMonitor monitor, string target, string configuration)
+		public BuildResult RunTarget (IProgressMonitor monitor, string target, string configuration)
 		{
 			return Services.ProjectService.ExtensionChain.RunTarget (monitor, this, target, configuration);
 		}
@@ -143,16 +143,16 @@ namespace MonoDevelop.Projects
 			Services.ProjectService.ExtensionChain.RunTarget (monitor, this, ProjectService.CleanTarget, configuration);
 		}
 		
-		public ICompilerResult Build (IProgressMonitor monitor, string configuration)
+		public BuildResult Build (IProgressMonitor monitor, string configuration)
 		{
 			return Build (monitor, configuration, false);
 		}
 		
-		public ICompilerResult Build (IProgressMonitor monitor, string configuration, bool buildReferences)
+		public BuildResult Build (IProgressMonitor monitor, string configuration, bool buildReferences)
 		{
 			if (!buildReferences) {
 				if (!NeedsBuilding (configuration))
-					return new DefaultCompilerResult (new CompilerResults (null), "");
+					return new BuildResult (new CompilerResults (null), "");
 					
 				try {
 					monitor.BeginTask (GettextCatalog.GetString ("Building: {0} ({1})", Name, configuration), 1);
@@ -173,28 +173,20 @@ namespace MonoDevelop.Projects
 			
 			ReadOnlyCollection<SolutionItem> sortedReferenced = SolutionFolder.TopologicalSort (referenced, configuration);
 			
-			CompilerResults cres = new CompilerResults (null);
+			BuildResult cres = new BuildResult ();
 			
-			int builds = 0;
-			int failedBuilds = 0;
-				
 			monitor.BeginTask (null, sortedReferenced.Count);
 			foreach (SolutionItem p in sortedReferenced) {
 				if (p.NeedsBuilding (configuration)) {
-					ICompilerResult res = p.Build (monitor, configuration, false);
-					cres.Errors.AddRange (res.CompilerResults.Errors);
-					builds++;
-					if (res.ErrorCount > 0) {
-						failedBuilds = 1;
-						break;
-					}
+					BuildResult res = p.Build (monitor, configuration, false);
+					cres.Append (res);
 				}
 				monitor.Step (1);
 				if (monitor.IsCancelRequested)
 					break;
 			}
 			monitor.EndTask ();
-			return new DefaultCompilerResult (cres, "", builds, failedBuilds);
+			return cres;
 		}
 		
 		void GetBuildableReferencedItems (List<SolutionItem> referenced, SolutionItem item, string configuration)
@@ -305,7 +297,7 @@ namespace MonoDevelop.Projects
 		
 		
 		internal protected abstract void OnClean (IProgressMonitor monitor, string configuration);
-		internal protected abstract ICompilerResult OnBuild (IProgressMonitor monitor, string configuration);
+		internal protected abstract BuildResult OnBuild (IProgressMonitor monitor, string configuration);
 		internal protected abstract void OnExecute (IProgressMonitor monitor, ExecutionContext context, string configuration);
 		internal protected abstract bool OnGetNeedsBuilding (string configuration);
 		internal protected abstract void OnSetNeedsBuilding (bool val, string configuration);

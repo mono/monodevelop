@@ -198,6 +198,7 @@ FILES =  \
 	MonoDevelop.Projects.Utility/DiffUtility.cs \
 	MonoDevelop.Projects/AbstractProjectConfiguration.cs \
 	MonoDevelop.Projects/BuildEventHandler.cs \
+	MonoDevelop.Projects/BuildResult.cs \
 	MonoDevelop.Projects/BuildTool.cs \
 	MonoDevelop.Projects/CombineEntryEventArgs.cs \
 	MonoDevelop.Projects/CombineEntryRenamedEventArgs.cs \
@@ -209,7 +210,6 @@ FILES =  \
 	MonoDevelop.Projects/CustomCommandExtension.cs \
 	MonoDevelop.Projects/CustomCommandType.cs \
 	MonoDevelop.Projects/CyclicBuildOrderException.cs \
-	MonoDevelop.Projects/DefaultCompilerResult.cs \
 	MonoDevelop.Projects/DotNetProject.cs \
 	MonoDevelop.Projects/DotNetProjectBinding.cs \
 	MonoDevelop.Projects/DotNetProjectConfiguration.cs \
@@ -219,7 +219,6 @@ FILES =  \
 	MonoDevelop.Projects/GenericProject.cs \
 	MonoDevelop.Projects/GenericProjectBinding.cs \
 	MonoDevelop.Projects/IBuildTarget.cs \
-	MonoDevelop.Projects/ICompilerResult.cs \
 	MonoDevelop.Projects/IConfigurationTarget.cs \
 	MonoDevelop.Projects/IDotNetLanguageBinding.cs \
 	MonoDevelop.Projects/ILanguageBinding.cs \

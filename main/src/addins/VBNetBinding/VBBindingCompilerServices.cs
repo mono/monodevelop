@@ -147,7 +147,7 @@ namespace VBBinding {
 			return sb.ToString();
 		}
 		
-		public ICompilerResult Compile (ProjectFileCollection projectFiles, ProjectReferenceCollection references, DotNetProjectConfiguration configuration, IProgressMonitor monitor)
+		public BuildResult Compile (ProjectFileCollection projectFiles, ProjectReferenceCollection references, DotNetProjectConfiguration configuration, IProgressMonitor monitor)
 		{
 			VBCompilerParameters compilerparameters = (VBCompilerParameters) configuration.CompilationParameters;
 			if (compilerparameters == null) compilerparameters = new VBCompilerParameters ();
@@ -201,7 +201,7 @@ namespace VBBinding {
 			exitCode = DoCompilation (outstr, tf, workingDir, ref output);
 			
 			CompilerResults results = new CompilerResults (tf);
-			DefaultCompilerResult result = new DefaultCompilerResult (results, output);
+			BuildResult result = new BuildResult (results, output);
 				
 			monitor.Log.WriteLine (output);			                                                          
 			                                                          

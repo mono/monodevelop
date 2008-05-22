@@ -64,7 +64,7 @@ namespace CBinding
 		
 		string GetDefineFlags (CProjectConfiguration configuration);
 		
-		ICompilerResult Compile (
+		BuildResult Compile (
 			ProjectFileCollection projectFiles,
 		    ProjectPackageCollection packages,
 		    CProjectConfiguration configuration,

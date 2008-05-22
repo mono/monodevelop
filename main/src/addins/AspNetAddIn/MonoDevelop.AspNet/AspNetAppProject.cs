@@ -196,7 +196,7 @@ namespace MonoDevelop.AspNet
 		#region build/prebuild/execute
 		
 		
-		protected override ICompilerResult DoBuild (IProgressMonitor monitor, string configuration)
+		protected override BuildResult DoBuild (IProgressMonitor monitor, string configuration)
 		{
 			//if no files are set to compile, then some compilers will error out
 			//though this is valid with ASP.NET apps, so we just avoid calling the compiler in this case
@@ -208,11 +208,11 @@ namespace MonoDevelop.AspNet
 				}
 			}
 			
-			ICompilerResult ret;
+			BuildResult ret;
 			if (needsCompile)
 				ret = base.DoBuild (monitor, configuration);
 			else
-				ret = new DefaultCompilerResult ();
+				ret = new BuildResult ();
 			
 			// all this does is makes sure that references are copied after building
 			// it's not strictly necessary, as the Run/Deploy commands do it too..

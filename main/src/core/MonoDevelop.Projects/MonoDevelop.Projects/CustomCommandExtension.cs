@@ -34,16 +34,16 @@ namespace MonoDevelop.Projects
 {
 	internal class CustomCommandExtension: ProjectServiceExtension
 	{
-		protected override ICompilerResult Build (IProgressMonitor monitor, SolutionEntityItem entry, string configuration)
+		protected override BuildResult Build (IProgressMonitor monitor, SolutionEntityItem entry, string configuration)
 		{
 			SolutionItemConfiguration conf = entry.GetConfiguration (configuration) as SolutionItemConfiguration;
 			if (conf != null) {
 				conf.CustomCommands.ExecuteCommand (monitor, entry, CustomCommandType.BeforeBuild, configuration);
 				if (monitor.IsCancelRequested)
-					return new DefaultCompilerResult (new CompilerResults (null), "");
+					return new BuildResult (new CompilerResults (null), "");
 			}
 			
-			ICompilerResult res = base.Build (monitor, entry, configuration);
+			BuildResult res = base.Build (monitor, entry, configuration);
 			
 			if (conf != null && !monitor.IsCancelRequested)
 				conf.CustomCommands.ExecuteCommand (monitor, entry, CustomCommandType.AfterBuild, configuration);

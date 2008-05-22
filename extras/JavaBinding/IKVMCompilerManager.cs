@@ -56,7 +56,7 @@ namespace JavaBinding
 			return result.ToString ();
 		}
 		
-		public static ICompilerResult Compile (ProjectFileCollection projectFiles, ProjectReferenceCollection references, DotNetProjectConfiguration configuration, IProgressMonitor monitor)
+		public static BuildResult Compile (ProjectFileCollection projectFiles, ProjectReferenceCollection references, DotNetProjectConfiguration configuration, IProgressMonitor monitor)
 		{
 			JavaCompilerParameters parameters = (configuration.CompilationParameters as JavaCompilerParameters) ?? new JavaCompilerParameters ();
 			string outdir   = configuration.OutputDirectory;
@@ -104,7 +104,7 @@ namespace JavaBinding
 				ParseIkvmOutput (parameters.Compiler, error.ToString(), results);
 			}
 			
-			return new DefaultCompilerResult (results, "");
+			return new BuildResult (results, "");
 		}
 		
 		static void AppendClasspath (StringBuilder path, string jar)

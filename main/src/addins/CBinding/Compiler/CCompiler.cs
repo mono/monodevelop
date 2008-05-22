@@ -73,7 +73,7 @@ namespace CBinding
 		
 		public abstract string GetDefineFlags (CProjectConfiguration configuration);
 		
-		public abstract ICompilerResult Compile (
+		public abstract BuildResult Compile (
 			ProjectFileCollection projectFiles,
 		    ProjectPackageCollection packages,
 		    CProjectConfiguration configuration,

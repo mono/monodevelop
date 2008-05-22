@@ -82,7 +82,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			set { id = value; }
 		}
 
-		public virtual ICompilerResult RunTarget (IProgressMonitor monitor, string target, string configuration)
+		public virtual BuildResult RunTarget (IProgressMonitor monitor, string target, string configuration)
 		{
 			throw new NotSupportedException ();
 		}

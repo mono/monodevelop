@@ -11,7 +11,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 	{
 		internal static bool GenerateSteticCode;
 		
-		protected override ICompilerResult Build (IProgressMonitor monitor, SolutionEntityItem entry, string configuration)
+		protected override BuildResult Build (IProgressMonitor monitor, SolutionEntityItem entry, string configuration)
 		{
 			if (GenerateSteticCode) {
 				DotNetProject project = entry as DotNetProject;
@@ -27,7 +27,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 						}
 						
 						// Build the project
-						ICompilerResult res = base.Build (monitor, entry, configuration);
+						BuildResult res = base.Build (monitor, entry, configuration);
 						
 						if (gen.Messages != null) {
 							foreach (string s in gen.Messages)

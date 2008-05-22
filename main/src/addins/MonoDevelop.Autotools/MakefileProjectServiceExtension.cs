@@ -138,7 +138,7 @@ namespace MonoDevelop.Autotools
 		}
 
 		//FIXME: Check whether autogen.sh is required or not
-		protected override ICompilerResult Build (IProgressMonitor monitor, SolutionEntityItem entry, string configuration)
+		protected override BuildResult Build (IProgressMonitor monitor, SolutionEntityItem entry, string configuration)
 		{
 			Project project = entry as Project;
 			if (project == null)
@@ -190,7 +190,7 @@ namespace MonoDevelop.Autotools
 			Regex regexError = data.GetErrorRegex (false);
 			Regex regexWarning = data.GetWarningRegex (false);
 
-			ICompilerResult cr = ParseOutput (tf, output, project.BaseDirectory, regexError, regexWarning);
+			BuildResult cr = ParseOutput (tf, output, project.BaseDirectory, regexError, regexWarning);
 			if (exitCode != 0 && cr.FailedBuildCount == 0)
 				cr.AddError (GettextCatalog.GetString ("Build failed. See Build Output panel."));
 			else
@@ -199,7 +199,7 @@ namespace MonoDevelop.Autotools
 			return cr;
 		}
 
-		ICompilerResult ParseOutput (TempFileCollection tf, string output, string baseDir, Regex regexError, Regex regexWarning)
+		BuildResult ParseOutput (TempFileCollection tf, string output, string baseDir, Regex regexError, Regex regexWarning)
 		{
 			StringBuilder compilerOutput = new StringBuilder();
 
@@ -244,7 +244,7 @@ namespace MonoDevelop.Autotools
 			}
 			sr.Close();
 
-			return new DefaultCompilerResult(cr, compilerOutput.ToString());
+			return new BuildResult(cr, compilerOutput.ToString());
 		}
 
 		// Snatched from our codedom code :-).

@@ -35,8 +35,7 @@ namespace MonoDevelop.Ide.Tasks
 {
 	public class TaskService : GuiSyncObject
 	{
-		
-		Dictionary<object,List<Task>> tasks  = new Dictionary<object,List<Task>> ();
+		List<Task> tasks  = new List<Task> ();
 		Dictionary<TaskType, int> taskCount = new Dictionary<TaskType, int> ();
 		Dictionary<string, TaskPriority> priorities = new Dictionary<string, TaskPriority> ();
 		Dictionary<object,List<UserTask>> userTasks = new Dictionary<object,List<UserTask>> ();
@@ -98,7 +97,7 @@ namespace MonoDevelop.Ide.Tasks
 				OnTaskChanged (new TaskEventArgs (tasks));
 			};
 			
-			this.tasks [this] = new List<Task> ();
+			this.tasks = new List<Task> ();
 		}
 
 		void ProjectServiceSolutionOpened (object sender, WorkspaceItemEventArgs e)
@@ -122,9 +121,6 @@ namespace MonoDevelop.Ide.Tasks
 			
 			List<UserTask> utasks = new List<UserTask> ();
 			userTasks [e.Item] = utasks;
-			
-			List<Task> stasks = new List<Task> ();
-			tasks [e.Item] = stasks;
 			
         	// Load User Tasks from xml file
         	string fileToLoad = GetUserTasksFilename (e.Item);
@@ -165,19 +161,32 @@ namespace MonoDevelop.Ide.Tasks
 			
 			// Remove solution tasks
 			
-			List<Task> ttasks;
-			if (tasks.TryGetValue (e.Item, out ttasks)) {
-				tasks.Remove (e.Item);
-			
-				foreach (Task t in ttasks)
+			List<Task> ttasks = FindTasks (e.Item);
+			if (ttasks.Count > 0) {
+				foreach (Task t in ttasks) {
+					tasks.Remove (t);
 					taskCount [t.TaskType]--;
-				
+				}
+					
 				OnTaskRemoved (new TaskEventArgs (ttasks.ToArray ()));
 			}
 
 			userTasks.Remove (e.Item);
 			if (UserTasksChanged != null)
 				UserTasksChanged (this, EventArgs.Empty);
+		}
+		
+		List<Task> FindTasks (object owner)
+		{
+			List<Task> ts = new List<Task> ();
+			WorkspaceItem it = owner as WorkspaceItem;
+			foreach (Task t in tasks) {
+				if (t.OwnerItem == owner)
+					ts.Add (t);
+				else if (it != null && t.WorkspaceObject != null && it.ContainsItem (t.WorkspaceObject))
+					ts.Add (t);
+			}
+			return ts;
 		}
 		
 		void OnPropertyUpdated (object sender, PropertyChangedEventArgs e)
@@ -214,7 +223,7 @@ namespace MonoDevelop.Ide.Tasks
 				if (curTask.FileName == e.OldName) {
 					Remove (curTask);
 					curTask.FileName = e.NewName;
-					Add (curTask, curTask.OwnerItem);
+					Add (curTask);
 				}
 			}
 		}
@@ -271,20 +280,16 @@ namespace MonoDevelop.Ide.Tasks
 		public int TaskCount {
 			get {
 				int c = 0;
-				foreach (List<Task> tt in tasks.Values)
-					c += tt.Count;
-				return c - GetCount (TaskType.Comment);
+				return tasks.Count - GetCount (TaskType.Comment);
 			}
 		}
 		
 		public List<Task> Tasks {
 			get {
 				List<Task> retTasks = new List<Task> ();
-				foreach (List<Task> tt in tasks.Values) {
-					foreach (Task task in tt) {
-						if (task.TaskType != TaskType.Comment)
-							retTasks.Add (task);
-					}
+				foreach (Task task in tasks) {
+					if (task.TaskType != TaskType.Comment)
+						retTasks.Add (task);
 				}
 				return retTasks;
 			}
@@ -293,11 +298,9 @@ namespace MonoDevelop.Ide.Tasks
 		public List<Task> CommentTasks {
 			get {
 				List<Task> retTasks = new List<Task> ();
-				foreach (List<Task> tt in tasks.Values) {
-					foreach (Task task in tt) {
-						if (task.TaskType == TaskType.Comment) {
-							retTasks.Add (task);
-						}
+				foreach (Task task in tasks) {
+					if (task.TaskType == TaskType.Comment) {
+						retTasks.Add (task);
 					}
 				}
 				return retTasks;
@@ -356,25 +359,13 @@ namespace MonoDevelop.Ide.Tasks
 		
 		public void Add (Task task)
 		{
-			Add (task, this);
-		}
-		
-		public void Add (Task task, object owner)
-		{
-			task.OwnerItem = owner;
 			AddInternal (task);
 			OnTaskAdded (new TaskEventArgs (new Task[] {task}));
 		}
 		
 		public void AddRange (IEnumerable<Task> tasks)
 		{
-			AddRange (tasks, this);
-		}
-		
-		public void AddRange (IEnumerable<Task> tasks, object owner)
-		{
 			foreach (Task task in tasks) {
-				task.OwnerItem = owner;
 				AddInternal (task);
 			}
 			OnTaskAdded (new TaskEventArgs (tasks));
@@ -382,13 +373,15 @@ namespace MonoDevelop.Ide.Tasks
 		
 		void AddInternal (Task task)
 		{
-			if (task.OwnerItem == null)
-				throw new InvalidOperationException ();
+			object owner = task.OwnerItem;
+			if (owner == null)
+				owner = task.OwnerItem = this;
+			
+			if (owner is SolutionItem)
+				owner = ((SolutionItem)owner).ParentSolution;
 			
 			List<Task> tlist;
-			if (!tasks.TryGetValue (task.OwnerItem, out tlist))
-				return;
-			tlist.Add (task);
+			tasks.Add (task);
 			int count;
 			if (!taskCount.TryGetValue (task.TaskType, out count))
 				taskCount[task.TaskType] = 1;
@@ -412,13 +405,9 @@ namespace MonoDevelop.Ide.Tasks
 		
 		bool InternalRemove (Task task)
 		{
-			if (task.OwnerItem != null) {
-				List<Task> tlist;
-				if (tasks.TryGetValue (task.OwnerItem, out tlist) && tlist.Contains (task)) {
-					tlist.Remove (task);
-					taskCount[task.TaskType]--;
-					return true;
-				}
+			if (tasks.Remove (task)) {
+				taskCount[task.TaskType]--;
+				return true;
 			}
 			return false;
 		}
@@ -468,7 +457,7 @@ namespace MonoDevelop.Ide.Tasks
 			
 			foreach (Task task in newTasks) {
 				if (task != null) {
-					Add (task, sol);
+					Add (task);
 				}
 			}
 			

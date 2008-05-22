@@ -45,7 +45,7 @@ namespace CSharpBinding
 			return Path.GetExtension(fileName).ToUpper() == ".CS";
 		}
 
-		public ICompilerResult Compile (ProjectFileCollection projectFiles, ProjectReferenceCollection references, DotNetProjectConfiguration configuration, IProgressMonitor monitor)
+		public BuildResult Compile (ProjectFileCollection projectFiles, ProjectReferenceCollection references, DotNetProjectConfiguration configuration, IProgressMonitor monitor)
 		{
 			CSharpCompilerParameters compilerparameters = (CSharpCompilerParameters) configuration.CompilationParameters;
 			if (compilerparameters == null) compilerparameters = new CSharpCompilerParameters ();
@@ -241,7 +241,7 @@ namespace CSharpBinding
 			
 			int exitCode = DoCompilation (outstr, tf, workingDir, gacRoots, ref output, ref error);
 			
-			ICompilerResult result = ParseOutput(tf, output, error);
+			BuildResult result = ParseOutput(tf, output, error);
 			if (result.CompilerOutput.Trim ().Length != 0)
 				monitor.Log.WriteLine (result.CompilerOutput);
 			
@@ -291,7 +291,7 @@ namespace CSharpBinding
 			return compilerName;
 		}
 		
-		ICompilerResult ParseOutput(TempFileCollection tf, string stdout, string stderr)
+		BuildResult ParseOutput(TempFileCollection tf, string stdout, string stderr)
 		{
 			StringBuilder compilerOutput = new StringBuilder();
 			
@@ -341,7 +341,7 @@ namespace CSharpBinding
 					cr.Errors.Add (new CompilerError (String.Empty, 0, 0, String.Empty, "Error: A dependency of a referenced assembly may be missing, or you may be referencing an assembly created with a newer CLR version. See the compilation output for more details."));
 			}
 			
-			return new DefaultCompilerResult(cr, compilerOutput.ToString());
+			return new BuildResult(cr, compilerOutput.ToString());
 		}
 		
 		private int DoCompilation (string outstr, TempFileCollection tf, string working_dir, ArrayList gacRoots, ref string output, ref string error) {

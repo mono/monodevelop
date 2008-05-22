@@ -293,7 +293,7 @@ namespace CBinding
 			return pkgfile;
 		}
 		
-		protected override ICompilerResult DoBuild (IProgressMonitor monitor, string configuration)
+		protected override BuildResult DoBuild (IProgressMonitor monitor, string configuration)
 		{
 			CProjectConfiguration pc = (CProjectConfiguration) GetConfiguration (configuration);
 			pc.SourceDirectory = BaseDirectory;

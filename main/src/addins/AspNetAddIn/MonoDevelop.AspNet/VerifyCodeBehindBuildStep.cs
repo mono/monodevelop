@@ -45,7 +45,7 @@ namespace MonoDevelop.AspNet
 	
 	public class VerifyCodeBehindBuildStep : ProjectServiceExtension
 	{
-		protected override ICompilerResult Build (IProgressMonitor monitor, SolutionEntityItem project, string configuration)
+		protected override BuildResult Build (IProgressMonitor monitor, SolutionEntityItem project, string configuration)
 		{
 			AspNetAppProject aspProject = project as AspNetAppProject;
 			List<CodeBehindWarning> errors = new List<CodeBehindWarning> ();
@@ -181,7 +181,7 @@ namespace MonoDevelop.AspNet
 				monitor.Log.WriteLine (GettextCatalog.GetString ("No changes made to CodeBehind classes."));
 			}
 			
-			ICompilerResult baseResult = base.Build (monitor, project, configuration);
+			BuildResult baseResult = base.Build (monitor, project, configuration);
 			foreach (CodeBehindWarning cbw in errors) {
 				if (cbw.FileName != null)
 					baseResult.AddWarning (cbw.FileName, cbw.Line, cbw.Column, null, cbw.WarningText);

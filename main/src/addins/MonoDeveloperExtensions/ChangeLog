@@ -1,3 +1,12 @@
+2008-05-22  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoSolutionItemHandler.cs: Replaced
+	  ICompilerResult/DefaultCompilerResult/CompilerResults by a new
+	  BuildResult class, which has owner information at error level, so
+	  it is possible to know which project generated an error when
+	  building a solution. Updated Task and TaskService to use the new
+	  owner information.
+
 2008-05-21  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDeveloperExtensions.mds, MonoMakefileFormat.cs, Commands.cs,

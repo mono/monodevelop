@@ -86,7 +86,7 @@ namespace MonoDevelop.Projects
 			}
 			
 			if (command == "build") {
-				ICompilerResult res = item.RunTarget (monitor, ProjectService.BuildTarget, ProjectService.DefaultConfiguration);
+				BuildResult res = item.RunTarget (monitor, ProjectService.BuildTarget, ProjectService.DefaultConfiguration);
 				return (res.ErrorCount == 0) ? 0 : 1;
 			}
 			else if (command == "clean") {

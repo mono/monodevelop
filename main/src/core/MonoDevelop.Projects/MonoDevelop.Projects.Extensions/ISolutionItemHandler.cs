@@ -32,7 +32,7 @@ namespace MonoDevelop.Projects.Extensions
 {
 	public interface ISolutionItemHandler: IDisposable
 	{
-		ICompilerResult RunTarget (IProgressMonitor monitor, string target, string configuration);
+		BuildResult RunTarget (IProgressMonitor monitor, string target, string configuration);
 		void Save (IProgressMonitor monitor);
 		bool SyncFileName { get; }
 		string ItemId { get; }

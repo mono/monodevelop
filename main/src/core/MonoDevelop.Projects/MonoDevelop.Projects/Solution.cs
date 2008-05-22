@@ -178,6 +178,18 @@ namespace MonoDevelop.Projects
 			return RootFolder.GetProjectContainingFile (fileName);
 		}
 		
+		public override bool ContainsItem (IWorkspaceObject obj)
+		{
+			if (base.ContainsItem (obj))
+				return true;
+			
+			foreach (SolutionItem it in GetAllSolutionItems<SolutionItem> ()) {
+				if (it == obj)
+					return true;
+			}
+			return false;
+		}
+		
 		public SolutionEntityItem StartupItem {
 			get { return null; }
 		}
@@ -285,7 +297,7 @@ namespace MonoDevelop.Projects
 			}
 		}	 
 		
-		protected override ICompilerResult OnBuild (IProgressMonitor monitor, string configuration)
+		protected override BuildResult OnBuild (IProgressMonitor monitor, string configuration)
 		{
 			return RootFolder.Build (monitor, configuration);
 		}

@@ -43,7 +43,7 @@ namespace CBinding
 {
 	public class CProjectServiceExtension : ProjectServiceExtension
 	{
-		protected override ICompilerResult Build (IProgressMonitor monitor, SolutionEntityItem entry, string configuration)
+		protected override BuildResult Build (IProgressMonitor monitor, SolutionEntityItem entry, string configuration)
 		{
 			CProject project = entry as CProject;
 			

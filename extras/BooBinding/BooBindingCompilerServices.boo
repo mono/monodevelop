@@ -37,7 +37,7 @@ public class BooBindingCompilerServices:
 	public def CanCompile (fileName as string):
 		return Path.GetExtension(fileName).ToUpper() == ".BOO"
 	
-	def Compile (projectFiles as ProjectFileCollection, references as ProjectReferenceCollection, configuration as DotNetProjectConfiguration, monitor as IProgressMonitor) as ICompilerResult:
+	def Compile (projectFiles as ProjectFileCollection, references as ProjectReferenceCollection, configuration as DotNetProjectConfiguration, monitor as IProgressMonitor) as BuildResult:
 		compilerparameters = cast(BooCompilerParameters, configuration.CompilationParameters)
 		if compilerparameters is null:
 			compilerparameters = BooCompilerParameters()
@@ -88,7 +88,7 @@ public class BooBindingCompilerServices:
 		ensure:
 			monitor.EndTask()
 		
-	def ParseOutput (tf as TempFileCollection , context as CompilerContext) as ICompilerResult:
+	def ParseOutput (tf as TempFileCollection , context as CompilerContext) as BuildResult:
 		cr = CompilerResults (tf)
 		
 		for err as Boo.Lang.Compiler.CompilerError in context.Errors:
@@ -110,7 +110,7 @@ public class BooBindingCompilerServices:
 			cerror.IsWarning = true
 			cr.Errors.Add(cerror)
 
-		return DefaultCompilerResult (cr, null)
+		return BuildResult (cr, null)
 	
 	def SetErrorLexicalInfo (error as System.CodeDom.Compiler.CompilerError, lexicalInfo as Boo.Lang.Compiler.Ast.LexicalInfo):
 		error.FileName = lexicalInfo.FileName 

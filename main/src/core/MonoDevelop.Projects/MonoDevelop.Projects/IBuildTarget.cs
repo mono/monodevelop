@@ -34,7 +34,7 @@ namespace MonoDevelop.Projects
 {
 	public interface IBuildTarget: IWorkspaceObject
 	{
-		ICompilerResult RunTarget (IProgressMonitor monitor, string target, string configuration);
+		BuildResult RunTarget (IProgressMonitor monitor, string target, string configuration);
 		void Execute (IProgressMonitor monitor, ExecutionContext context, string configuration);
 		bool NeedsBuilding (string configuration);
 		void SetNeedsBuilding (bool needsBuilding, string configuration);

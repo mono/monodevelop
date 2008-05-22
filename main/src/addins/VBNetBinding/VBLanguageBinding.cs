@@ -54,7 +54,7 @@ namespace VBBinding
 			return compilerServices.CanCompile(fileName);
 		}
 		
-		public ICompilerResult Compile (ProjectFileCollection projectFiles, ProjectReferenceCollection references, DotNetProjectConfiguration configuration, IProgressMonitor monitor)
+		public BuildResult Compile (ProjectFileCollection projectFiles, ProjectReferenceCollection references, DotNetProjectConfiguration configuration, IProgressMonitor monitor)
 		{
 			Debug.Assert(compilerServices != null);
 			return compilerServices.Compile (projectFiles, references, configuration, monitor);

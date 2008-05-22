@@ -49,7 +49,7 @@ namespace MonoDevelop.Projects.Extensions
 			get { return item; }
 		}
 		
-		public virtual ICompilerResult RunTarget (IProgressMonitor monitor, string target, string configuration)
+		public virtual BuildResult RunTarget (IProgressMonitor monitor, string target, string configuration)
 		{
 			switch (target)
 			{
@@ -58,15 +58,15 @@ namespace MonoDevelop.Projects.Extensions
 			case "Clean":
 				return OnClean (monitor, configuration);
 			}
-			return new DefaultCompilerResult (new CompilerResults (null), "");
+			return new BuildResult (new CompilerResults (null), "");
 		}
 		
-		protected virtual ICompilerResult OnBuild (IProgressMonitor monitor, string configuration)
+		protected virtual BuildResult OnBuild (IProgressMonitor monitor, string configuration)
 		{
 			return null;
 		}
 		
-		protected virtual ICompilerResult OnClean (IProgressMonitor monitor, string configuration)
+		protected virtual BuildResult OnClean (IProgressMonitor monitor, string configuration)
 		{
 			return null;
 		}

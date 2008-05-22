@@ -11,9 +11,9 @@ namespace MonoDevelop.AddinAuthoring
 {
 	public class AddinProjectExtension: ProjectServiceExtension
 	{
-		protected override ICompilerResult Build (IProgressMonitor monitor, SolutionEntityItem entry, string configuration)
+		protected override BuildResult Build (IProgressMonitor monitor, SolutionEntityItem entry, string configuration)
 		{
-			ICompilerResult res = base.Build (monitor, entry, configuration);
+			BuildResult res = base.Build (monitor, entry, configuration);
 			if (res.ErrorCount > 0 || !(entry is DotNetProject))
 				return res;
 			

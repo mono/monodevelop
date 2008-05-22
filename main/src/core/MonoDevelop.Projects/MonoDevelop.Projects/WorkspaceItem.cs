@@ -108,6 +108,11 @@ namespace MonoDevelop.Projects
 			return null;
 		}
 		
+		public virtual bool ContainsItem (IWorkspaceObject obj)
+		{
+			return this == obj;
+		}
+		
 		public ReadOnlyCollection<SolutionItem> GetAllSolutionItems ()
 		{
 			return GetAllSolutionItems<SolutionItem> ();
@@ -161,7 +166,7 @@ namespace MonoDevelop.Projects
 			parentWorkspace = workspace;
 		}
 		
-		public ICompilerResult RunTarget (IProgressMonitor monitor, string target, string configuration)
+		public BuildResult RunTarget (IProgressMonitor monitor, string target, string configuration)
 		{
 			return Services.ProjectService.ExtensionChain.RunTarget (monitor, this, target, configuration);
 		}
@@ -171,7 +176,7 @@ namespace MonoDevelop.Projects
 			Services.ProjectService.ExtensionChain.RunTarget (monitor, this, ProjectService.CleanTarget, configuration);
 		}
 		
-		public ICompilerResult Build (IProgressMonitor monitor, string configuration)
+		public BuildResult Build (IProgressMonitor monitor, string configuration)
 		{
 			return InternalBuild (monitor, configuration);
 		}
@@ -211,7 +216,7 @@ namespace MonoDevelop.Projects
 			}
 		}
 		
-		internal virtual ICompilerResult InternalBuild (IProgressMonitor monitor, string configuration)
+		internal virtual BuildResult InternalBuild (IProgressMonitor monitor, string configuration)
 		{
 			return Services.ProjectService.ExtensionChain.RunTarget (monitor, this, ProjectService.BuildTarget, configuration);
 		}
@@ -287,7 +292,7 @@ namespace MonoDevelop.Projects
 				return DateTime.MinValue;
 		}
 		
-		internal protected virtual ICompilerResult OnRunTarget (IProgressMonitor monitor, string target, string configuration)
+		internal protected virtual BuildResult OnRunTarget (IProgressMonitor monitor, string target, string configuration)
 		{
 			if (target == ProjectService.BuildTarget)
 				return OnBuild (monitor, configuration);
@@ -302,7 +307,7 @@ namespace MonoDevelop.Projects
 		{
 		}
 		
-		protected virtual ICompilerResult OnBuild (IProgressMonitor monitor, string configuration)
+		protected virtual BuildResult OnBuild (IProgressMonitor monitor, string configuration)
 		{
 			return null;
 		}

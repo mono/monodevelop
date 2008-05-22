@@ -46,7 +46,7 @@ namespace MonoDevelop.Deployment
 				p.Clean (monitor);
 		}
 		
-		protected override ICompilerResult OnBuild (IProgressMonitor monitor, string configuration)
+		protected override BuildResult OnBuild (IProgressMonitor monitor, string configuration)
 		{
 			foreach (Package p in packages)
 				p.Build (monitor);

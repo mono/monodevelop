@@ -82,7 +82,7 @@ namespace MonoDevelop.Projects
 			return Next.LoadWorkspaceItem (monitor, fileName);
 		}
 		
-		public virtual ICompilerResult RunTarget (IProgressMonitor monitor, IBuildTarget item, string target, string configuration)
+		public virtual BuildResult RunTarget (IProgressMonitor monitor, IBuildTarget item, string target, string configuration)
 		{
 			if (target == ProjectService.BuildTarget)
 				return Build (monitor, item, configuration);
@@ -122,7 +122,7 @@ namespace MonoDevelop.Projects
 				Next.RunTarget (monitor, item, ProjectService.CleanTarget, configuration);
 		}
 		
-		protected virtual ICompilerResult Build (IProgressMonitor monitor, IBuildTarget item, string configuration)
+		protected virtual BuildResult Build (IProgressMonitor monitor, IBuildTarget item, string configuration)
 		{
 			if (item is SolutionEntityItem)
 				return Build (monitor, (SolutionEntityItem) item, configuration);
@@ -131,19 +131,19 @@ namespace MonoDevelop.Projects
 			return Next.RunTarget (monitor, item, ProjectService.BuildTarget, configuration);
 		}
 		
-		protected virtual ICompilerResult Build (IProgressMonitor monitor, SolutionEntityItem item, string configuration)
+		protected virtual BuildResult Build (IProgressMonitor monitor, SolutionEntityItem item, string configuration)
 		{
 			return Next.RunTarget (monitor, item, ProjectService.BuildTarget, configuration);
 		}
 		
-		protected virtual ICompilerResult Build (IProgressMonitor monitor, WorkspaceItem item, string configuration)
+		protected virtual BuildResult Build (IProgressMonitor monitor, WorkspaceItem item, string configuration)
 		{
 			if (item is Solution)
 				return Build (monitor, (Solution) item, configuration);
 			return Next.RunTarget (monitor, item, ProjectService.BuildTarget, configuration);
 		}
 		
-		protected virtual ICompilerResult Build (IProgressMonitor monitor, Solution solution, string configuration)
+		protected virtual BuildResult Build (IProgressMonitor monitor, Solution solution, string configuration)
 		{
 			return Next.RunTarget (monitor, solution, ProjectService.BuildTarget, configuration);
 		}

@@ -71,14 +71,14 @@ namespace MonoDevelop.Ide.Gui
 		WorkspaceItem currentWorkspaceItem = null;
 		object currentItem;
 		
-		ICompilerResult lastResult = new DefaultCompilerResult ();
+		BuildResult lastResult = new BuildResult ();
 		
 		internal ProjectOperations ()
 		{
 			IdeApp.Workspace.WorkspaceItemUnloaded += OnWorkspaceItemUnloaded;
 		}
 		
-		public ICompilerResult LastCompilerResult {
+		public BuildResult LastCompilerResult {
 			get { return lastResult; }
 		}
 		
@@ -170,21 +170,10 @@ namespace MonoDevelop.Ide.Gui
 		
 		internal static bool ContainsTarget (IBuildTarget owner, IBuildTarget target)
 		{
-			if (owner == target) {
+			if (owner == target)
 				return true;
-			}
-			else if (owner is Solution) {
-				foreach (IBuildTarget bt in ((Solution)owner).GetAllSolutionItems <SolutionEntityItem> ()) {
-					if (bt == target)
-						return true;
-				}
-			}
-			else if (owner is Workspace) {
-				foreach (WorkspaceItem it in ((Workspace)owner).Items) {
-					if (ContainsTarget (it, target))
-						return true;
-				}
-			}
+			else if (owner is WorkspaceItem)
+				return ((WorkspaceItem)owner).ContainsItem (target);
 			return false;
 		}
 		
@@ -705,7 +694,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		void BuildSolutionItemAsync (IBuildTarget entry, IProgressMonitor monitor)
 		{
-			ICompilerResult result = null;
+			BuildResult result = null;
 			try {
 				SolutionItem it = entry as SolutionItem;
 				if (it != null)
@@ -756,7 +745,7 @@ namespace MonoDevelop.Ide.Gui
 				StartBuild (this, new BuildEventArgs (monitor, true));
 		}
 		
-		void BuildDone (IProgressMonitor monitor, ICompilerResult result, IBuildTarget entry)
+		void BuildDone (IProgressMonitor monitor, BuildResult result, IBuildTarget entry)
 		{
 			Task[] tasks = null;
 			Solution solution;
@@ -772,11 +761,11 @@ namespace MonoDevelop.Ide.Gui
 					monitor.Log.WriteLine ();
 					monitor.Log.WriteLine (GettextCatalog.GetString ("---------------------- Done ----------------------"));
 					
-					tasks = new Task [result.CompilerResults.Errors.Count];
+					tasks = new Task [result.Errors.Count];
 					for (int n=0; n<tasks.Length; n++)
-						tasks [n] = new Task (null, result.CompilerResults.Errors [n]);
+						tasks [n] = new Task (result.Errors [n]);
 
-					Services.TaskService.AddRange (tasks, solution);
+					Services.TaskService.AddRange (tasks);
 					
 					string errorString = GettextCatalog.GetPluralString("{0} error", "{0} errors", result.ErrorCount, result.ErrorCount);
 					string warningString = GettextCatalog.GetPluralString("{0} warning", "{0} warnings", result.WarningCount, result.WarningCount);

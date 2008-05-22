@@ -171,7 +171,7 @@ namespace MonoDeveloper
 		static Regex regexError = new Regex (@"^(\s*(?<file>.*)\((?<line>\d*)(,(?<column>\d*[\+]*))?\)(:|)\s+)*(?<level>\w+)\s*(?<number>.*):\s(?<message>.*)",
 			RegexOptions.Compiled | RegexOptions.ExplicitCapture);
 				
-		public ICompilerResult RunTarget (MonoDevelop.Core.IProgressMonitor monitor, string target, string configuration)
+		public BuildResult RunTarget (MonoDevelop.Core.IProgressMonitor monitor, string target, string configuration)
 		{
 			if (target == ProjectService.BuildTarget)
 				target = "all";
@@ -195,7 +195,7 @@ namespace MonoDeveloper
 				if (err != null) cr.Errors.Add (err);
 			}
 			
-			return new DefaultCompilerResult (cr, output.ToString());
+			return new BuildResult (cr, output.ToString());
 		}
 		
 		private CompilerError CreateErrorFromString (string error_string)

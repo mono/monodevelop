@@ -441,39 +441,34 @@ namespace MonoDevelop.Projects
 			}
 		}
 		
-		protected internal override ICompilerResult OnBuild (IProgressMonitor monitor, string configuration)
+		protected internal override BuildResult OnBuild (IProgressMonitor monitor, string configuration)
 		{
 			ReadOnlyCollection<SolutionItem> allProjects;
-			CompilerResults cres = new CompilerResults (null);
 				
 			try {
 				allProjects = GetAllBuildableEntries (configuration, true);
 			} catch (CyclicBuildOrderException) {
 				monitor.ReportError (GettextCatalog.GetString ("Cyclic dependencies are not supported."), null);
-				return new DefaultCompilerResult (cres, "", 1, 1);
+				return new BuildResult ("", 1, 1);
 			}
 			
 			try {
 				monitor.BeginTask (GettextCatalog.GetString ("Building Solution {0}", Name), allProjects.Count);
 				
-				int builds = 0;
-				int failedBuilds = 0;
+				BuildResult cres = new BuildResult ();
 				
 				foreach (SolutionItem item in allProjects) {
 					if (monitor.IsCancelRequested)
 						break;
 
-					ICompilerResult res = item.Build (monitor, configuration, false);
-					builds++;
+					BuildResult res = item.Build (monitor, configuration, false);
 					if (res != null)
-						cres.Errors.AddRange (res.CompilerResults.Errors);
+						cres.Append (res);
 					monitor.Step (1);
-					if (res != null && res.ErrorCount > 0) {
-						failedBuilds++;
+					if (res != null && res.ErrorCount > 0)
 						break;
-					}
 				}
-				return new DefaultCompilerResult (cres, "", builds, failedBuilds);
+				return cres;
 			} finally {
 				monitor.EndTask ();
 			}
@@ -742,7 +737,7 @@ namespace MonoDevelop.Projects
 			get { return folder.Name; }
 		}
 		
-		public ICompilerResult RunTarget (IProgressMonitor monitor, string target, string configuration)
+		public BuildResult RunTarget (IProgressMonitor monitor, string target, string configuration)
 		{
 			throw new NotImplementedException ();
 		}

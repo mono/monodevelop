@@ -50,7 +50,7 @@ public class BooLanguageBinding(IDotNetLanguageBinding):
 		Debug.Assert(compilerServices is not null)
 		return compilerServices.CanCompile(fileName)
 	
-	public def Compile (projectFiles as ProjectFileCollection , references as ProjectReferenceCollection , configuration as DotNetProjectConfiguration , monitor as IProgressMonitor ) as ICompilerResult:
+	public def Compile (projectFiles as ProjectFileCollection , references as ProjectReferenceCollection , configuration as DotNetProjectConfiguration , monitor as IProgressMonitor ) as BuildResult:
 		Debug.Assert(compilerServices is not null)
 		return compilerServices.Compile (projectFiles, references, configuration, monitor)
 	

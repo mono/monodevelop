@@ -41,7 +41,6 @@ namespace MonoDevelop.Ide.Tasks
 		string   description;
 		string   fileName;
 		TaskType type;
-		Project project;
 		int      line;
 		int      column;
 
@@ -61,9 +60,9 @@ namespace MonoDevelop.Ide.Tasks
 			                     description);
 		}
 		
-		public Project Project {
+		public IWorkspaceObject WorkspaceObject {
 			get {
-				return project;
+				return owner as IWorkspaceObject;
 			}
 		}
 		
@@ -138,7 +137,7 @@ namespace MonoDevelop.Ide.Tasks
 			get {
 				return owner;
 			}
-			internal set {
+			set {
 				owner = value;
 			}
 		}
@@ -158,13 +157,13 @@ namespace MonoDevelop.Ide.Tasks
 		public Task (string fileName, string description, int column, int line, TaskType type, Project project)
 			: this (fileName, description, column, line, type)
 		{
-			this.project = project;
+			owner = project;
 		}
 		
 		public Task (string fileName, string description, int column, int line, TaskType type, Project project, TaskPriority priority)
 			: this (fileName, description, column, line, type, priority)
 		{
-			this.project = project;
+			owner = project;
 		}
 		
 		public Task (string fileName, string description, int column, int line, TaskType type, TaskPriority priority)
@@ -182,9 +181,9 @@ namespace MonoDevelop.Ide.Tasks
 			FileName    = fileName;
 		}
 		
-		public Task (Project project, CompilerError error)
+		public Task (BuildError error)
 		{
-			this.project = project;
+			owner = error.SourceTarget;
 			type        = error.IsWarning ? error.ErrorNumber == "COMMENT" ? TaskType.Message : TaskType.Warning : TaskType.Error;
 			column      = error.Column;
 			line        = error.Line;

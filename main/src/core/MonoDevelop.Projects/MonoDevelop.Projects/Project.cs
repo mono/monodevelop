@@ -205,7 +205,7 @@ namespace MonoDevelop.Projects
 			return newDir;
 		}
 		
-		protected internal override ICompilerResult OnBuild (IProgressMonitor monitor, string configuration)
+		protected internal override BuildResult OnBuild (IProgressMonitor monitor, string configuration)
 		{
 			// create output directory, if not exists
 			ProjectConfiguration conf = GetConfiguration (configuration) as ProjectConfiguration;
@@ -224,7 +224,7 @@ namespace MonoDevelop.Projects
 			StringParserService.Properties["Project"] = Name;
 			
 			monitor.Log.WriteLine (GettextCatalog.GetString ("Performing main compilation..."));
-			ICompilerResult res = DoBuild (monitor, configuration);
+			BuildResult res = DoBuild (monitor, configuration);
 			
 			isDirty = false;
 			
@@ -266,7 +266,7 @@ namespace MonoDevelop.Projects
 				GetBuildableReferencedItems (referenced, ritem, configuration);
 		}
 		
-		protected virtual ICompilerResult DoBuild (IProgressMonitor monitor, string configuration)
+		protected virtual BuildResult DoBuild (IProgressMonitor monitor, string configuration)
 		{
 			return ItemHandler.RunTarget (monitor, "Build", configuration);
 		}

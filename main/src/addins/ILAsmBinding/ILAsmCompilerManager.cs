@@ -44,7 +44,7 @@ namespace ILAsmBinding
 			return Path.GetExtension (fileName).ToLower () == ".il";
 		}
 		
-		public ICompilerResult Compile (ProjectFileCollection projectFiles, ProjectReferenceCollection references, DotNetProjectConfiguration configuration, IProgressMonitor monitor)
+		public BuildResult Compile (ProjectFileCollection projectFiles, ProjectReferenceCollection references, DotNetProjectConfiguration configuration, IProgressMonitor monitor)
 		{
 			// FIXME: response file?
 			StringBuilder parameters = new StringBuilder();
@@ -85,7 +85,7 @@ namespace ILAsmBinding
 			string error = String.Empty;
 			TempFileCollection tf = new TempFileCollection();
 			bool pres = DoCompilation (parameters.ToString (), tf, ref output, ref error);
-			DefaultCompilerResult result = ParseOutput(tf, output, error);
+			BuildResult result = ParseOutput(tf, output, error);
 			if (result.CompilerOutput.Trim () != "")
 				monitor.Log.WriteLine (result.CompilerOutput);
 			
@@ -119,7 +119,7 @@ namespace ILAsmBinding
 			return "ilasm";
 		}
 		
-		DefaultCompilerResult ParseOutput (TempFileCollection tf, string stdout, string stderr)
+		BuildResult ParseOutput (TempFileCollection tf, string stdout, string stderr)
 		{
 			StringBuilder compilerOutput = new StringBuilder ();
 			CompilerResults cr = new CompilerResults (tf);
@@ -147,7 +147,7 @@ namespace ILAsmBinding
 				}
 				sr.Close ();
 			}
-			return new DefaultCompilerResult (cr, compilerOutput.ToString ());
+			return new BuildResult (cr, compilerOutput.ToString ());
 		}
 
 		static Regex regexError = new Regex (@"^(\s*(?<file>.*)\s\((?<line>\d*)(,\s(?<column>\d*[\+]*))?\)\s(:|)\s+)*(?<level>\w+)\s*:\s*(?<message>.*)",

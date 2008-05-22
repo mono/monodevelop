@@ -12,6 +12,7 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.Tasks;
 using MonoDevelop.XmlEditor.Completion;
+using MonoDevelop.Projects;
 
 using System;
 using System.Collections.Generic;
@@ -33,7 +34,7 @@ namespace MonoDevelop.XmlEditor
 			// HACK: Use a compiler error since we cannot add an error
 			// task otherwise (task type property is read-only and
 			// no constructors usable).
-			System.CodeDom.Compiler.CompilerError error = new System.CodeDom.Compiler.CompilerError();
+			BuildError error = new BuildError ();
 			error.Column = column;
 			error.Line = line;
 			error.ErrorText = message;
@@ -41,7 +42,7 @@ namespace MonoDevelop.XmlEditor
 			error.IsWarning = false;
 			
 			//Task task = new Task(fileName, message, column, line);
-			Task task = new Task(null, error);
+			Task task = new Task (error);
 			IdeApp.Services.TaskService.Add(task);
 		}
 		#endregion

@@ -354,14 +354,14 @@ namespace MonoDevelop.Ide.Gui
 			monitor.EndTask ();
 		}
 		
-		ICompilerResult IBuildTarget.RunTarget (IProgressMonitor monitor, string target, string configuration)
+		BuildResult IBuildTarget.RunTarget (IProgressMonitor monitor, string target, string configuration)
 		{
-			DefaultCompilerResult result = null;
+			BuildResult result = null;
 			foreach (WorkspaceItem it in Items) {
-				ICompilerResult res = it.RunTarget (monitor, target, configuration);
+				BuildResult res = it.RunTarget (monitor, target, configuration);
 				if (res != null) {
 					if (result == null)
-						result = new DefaultCompilerResult ();
+						result = new BuildResult ();
 					result.Append (res);
 				}
 			}

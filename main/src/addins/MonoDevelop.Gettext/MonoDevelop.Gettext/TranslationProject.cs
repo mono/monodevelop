@@ -333,7 +333,7 @@ namespace MonoDevelop.Gettext
 			}
 		}
 		
-		protected override ICompilerResult OnBuild (IProgressMonitor monitor, string configuration)
+		protected override BuildResult OnBuild (IProgressMonitor monitor, string configuration)
 		{
 			CompilerResults results = new CompilerResults (null);
 			string outputDirectory = GetOutputDirectory (configuration);
@@ -365,7 +365,7 @@ namespace MonoDevelop.Gettext
 				isDirty = false;
 				SetNeedsBuilding (false);
 			}
-			return new DefaultCompilerResult (results, "");
+			return new BuildResult (results, "");
 		}
 		
 		protected override void OnClean (IProgressMonitor monitor, string configuration)

@@ -8,9 +8,9 @@ namespace MonoDevelop.Deployment
 {
 	class DeployProjectServiceExtension: ProjectServiceExtension, IDirectoryResolver
 	{
-		protected override ICompilerResult Build (IProgressMonitor monitor, SolutionEntityItem item, string configuration)
+		protected override BuildResult Build (IProgressMonitor monitor, SolutionEntityItem item, string configuration)
 		{
-			ICompilerResult res = base.Build (monitor, item, configuration);
+			BuildResult res = base.Build (monitor, item, configuration);
 			Project project = item as Project;
 			if (project == null)
 				return res;

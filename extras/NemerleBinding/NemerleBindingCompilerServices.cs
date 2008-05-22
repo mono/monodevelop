@@ -93,9 +93,9 @@ namespace NemerleBinding
 				Errors.Add(error);
 			}
 
-			public ICompilerResult GetResult()
+			public BuildResult GetResult()
 			{
-				return new DefaultCompilerResult(this, "");
+				return new BuildResult(this, "");
 			} 
 		}
 	
@@ -125,7 +125,7 @@ namespace NemerleBinding
 			return (System.IO.Path.GetExtension(fileName).ToLower() == ".n");
 		} 
 
-		public ICompilerResult Compile (ProjectFileCollection projectFiles, ProjectReferenceCollection projectReferences, DotNetProjectConfiguration configuration, IProgressMonitor monitor)
+		public BuildResult Compile (ProjectFileCollection projectFiles, ProjectReferenceCollection projectReferences, DotNetProjectConfiguration configuration, IProgressMonitor monitor)
 		{
 			NemerleParameters cp = (NemerleParameters) configuration.CompilationParameters;
 			if (cp == null) cp = new NemerleParameters ();
@@ -172,7 +172,7 @@ namespace NemerleBinding
 			} 
 		}
 		
-		private ICompilerResult DoCompilation(string arguments)
+		private BuildResult DoCompilation(string arguments)
 		{
 			string l;
 			ProcessStartInfo si = new ProcessStartInfo(ncc, arguments);

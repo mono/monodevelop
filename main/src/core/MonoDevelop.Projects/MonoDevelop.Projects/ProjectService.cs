@@ -571,24 +571,29 @@ namespace MonoDevelop.Projects
 				throw new InvalidOperationException ("Unknown item type: " + item);
 		}
 
-		protected override ICompilerResult Build (IProgressMonitor monitor, IBuildTarget item, string configuration)
+		protected override BuildResult Build (IProgressMonitor monitor, IBuildTarget item, string configuration)
 		{
+			BuildResult res;
 			if (item is SolutionEntityItem) {
 				SolutionEntityItem entry = (SolutionEntityItem) item;
 				SolutionItemConfiguration conf = entry.GetConfiguration (configuration) as SolutionItemConfiguration;
 				if (conf != null && conf.CustomCommands.HasCommands (CustomCommandType.Build)) {
 					conf.CustomCommands.ExecuteCommand (monitor, entry, CustomCommandType.Build, configuration);
-					return new DefaultCompilerResult (new CompilerResults (null), "");
+					res = new BuildResult ();
 				}
-				return entry.OnBuild (monitor, configuration);
+				else
+					res = entry.OnBuild (monitor, configuration);
 			}
 			else if (item is WorkspaceItem) {
-				return ((WorkspaceItem)item).OnRunTarget (monitor, ProjectService.BuildTarget, configuration);
+				res = ((WorkspaceItem)item).OnRunTarget (monitor, ProjectService.BuildTarget, configuration);
 			}
 			else if (item is SolutionItem)
-				return ((SolutionItem)item).OnBuild (monitor, configuration);
+				res = ((SolutionItem)item).OnBuild (monitor, configuration);
 			else
 				throw new InvalidOperationException ("Unknown item type: " + item);
+			
+			res.SourceTarget = item;
+			return res;
 		}
 		
 		public override void Execute (IProgressMonitor monitor, IBuildTarget item, ExecutionContext context, string configuration)
