@@ -1,5 +1,10 @@
 2008-05-21  Michael Hutchinson <mhutchinson@novell.com> 
 
+	* MonoDevelop.Projects/DotNetProject.cs: Changing the ClrVersion of a
+	  project should mark it as modified.
+
+2008-05-21  Michael Hutchinson <mhutchinson@novell.com> 
+
 	* MonoDevelop.Projects/DotNetProject.cs: Add a method that project
 	  subclasses can override to filter the CLR versions that they
 	  support.

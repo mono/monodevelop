@@ -125,8 +125,9 @@ namespace MonoDevelop.Projects
 				// in the future.
 				foreach (DotNetProjectConfiguration conf in Configurations)
 					conf.ClrVersion = clrVersion;
-
+				
 				UpdateSystemReferences ();
+				NotifyModified ();
 			}
 		}
 		
