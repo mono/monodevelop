@@ -1,3 +1,9 @@
+2008-05-21  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/RuntimeOptionsPanel.cs:
+	  Show only runtime versions allowed by the project, rather than the
+	  language binding.
+
 2008-05-21  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Projects.Gui.addin.xml, MonoDevelop.Projects.Gui.mdp,

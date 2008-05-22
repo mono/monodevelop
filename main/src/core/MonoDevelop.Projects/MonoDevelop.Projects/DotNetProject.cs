@@ -140,20 +140,26 @@ namespace MonoDevelop.Projects
 					suggestion = ClrVersion.Net_2_0;
 			}
 			
-			if (languageBinding != null) {
-				ClrVersion[] versions = languageBinding.GetSupportedClrVersions ();
-				if (versions != null && versions.Length > 0) {
-					foreach (ClrVersion v in versions) {
-						if (v == suggestion) {
-							return suggestion;
-						}
+			ClrVersion[] versions = SupportedClrVersions;
+			if (versions != null && versions.Length > 0) {
+				foreach (ClrVersion v in versions) {
+					if (v == suggestion) {
+						return suggestion;
 					}
-					
-					return versions[0];
 				}
+				
+				return versions[0];
 			}
 			
 			return suggestion;
+		}
+		
+		public virtual ClrVersion[] SupportedClrVersions {
+			get {
+				if (languageBinding != null)
+					return languageBinding.GetSupportedClrVersions ();
+				return null;
+			}
 		}
 		
 		[ItemProperty (DefaultValue=true)]

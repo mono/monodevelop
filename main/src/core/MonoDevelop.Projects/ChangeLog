@@ -1,3 +1,9 @@
+2008-05-21  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Projects/DotNetProject.cs: Add a method that project
+	  subclasses can override to filter the CLR versions that they
+	  support.
+
 2008-05-21  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectHandler.cs: Don't

@@ -71,7 +71,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 			this.project = project;
 			if (project != null) {
 				// Get the list of available versions, and add only those supported by the target language.
-				ClrVersion[] langSupported = project.LanguageBinding.GetSupportedClrVersions ();
+				ClrVersion[] langSupported = project.SupportedClrVersions;
 				foreach (ClrVersion ver in Runtime.SystemAssemblyService.GetSupportedClrVersions ()) {
 					if (Array.IndexOf (langSupported, ver) == -1)
 						continue;

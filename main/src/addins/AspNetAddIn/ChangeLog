@@ -1,5 +1,10 @@
 2008-05-21  Michael Hutchinson <mhutchinson@novell.com> 
 
+	* MonoDevelop.AspNet/AspNetAppProject.cs: Filter out runtime versions
+	  that aren't 1.1 or 2.0.
+
+2008-05-21  Michael Hutchinson <mhutchinson@novell.com> 
+
 	* MonoDevelop.AspNet/AspNetToolboxLoader.cs: Record the supported
 	  runtime versions.
 	* MonoDevelop.AspNet/AspNetToolboxNode.cs: Filter the item from the

@@ -90,6 +90,30 @@ namespace MonoDevelop.AspNet
 			get { return webDeployTargets; }
 		}
 		
+		public override ClrVersion[] SupportedClrVersions {
+			get {
+				ClrVersion[] versions = base.SupportedClrVersions;
+				if (versions == null)
+					return null;
+				
+				bool ver1 = false, ver2 = false;
+				foreach (ClrVersion version in versions) {
+					if (version == ClrVersion.Net_1_1)
+						ver1 = true;
+					if (version == ClrVersion.Net_2_0)
+						ver2 = true;
+				}
+				if (ver1) {
+					if (ver2)
+						return new ClrVersion[] { ClrVersion.Net_1_1, ClrVersion.Net_2_0 };
+					else return new ClrVersion[] { ClrVersion.Net_1_1 };
+				} else if (ver2) {
+					return new ClrVersion[] { ClrVersion.Net_2_0 };
+				}
+				return null;
+			}
+		}
+		
 		#endregion
 		
 		#region constructors
