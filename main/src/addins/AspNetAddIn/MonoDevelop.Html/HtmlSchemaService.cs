@@ -41,43 +41,19 @@ namespace MonoDevelop.Html
 	{
 		static Dictionary<string, HtmlSchema> schemas;
 		
-		#region Threaded lazy service loading
+		#region Service loading
 		
 		static object initLock = new object ();
 		static System.Threading.Thread loadingThread;
 		
-		public static void Initialise (bool block)
+		public static void Initialise ()
 		{
-			if (schemas == null) {
-				if (block) {
-					System.Threading.Thread t;
-					lock (initLock)
-						t = loadingThread;
-					if (t == null)
-						RealInitialise ();
-					else
-						t.Join ();
-				} else {
-					lock (initLock) {
-						if (loadingThread == null) {
-							loadingThread = new System.Threading.Thread (RealInitialise);
-							loadingThread.Start ();
-							MonoDevelop.Core.LoggingService.LogDebug (
-							    "HtmlSchemaService initialisation thread launched");
-						}
-					}
-				}
-			}
-		}
-		
-		static void RealInitialise ()
-		{
-			if (HtmlSchemaService.schemas != null)
+			if (schemas != null)
 				return;
 			
-			Dictionary<string, HtmlSchema> schemas = new Dictionary<string, HtmlSchema> ();
+			schemas = new Dictionary<string, HtmlSchema> ();
 			
-			//TODO: load all the schemas from addin points
+			//load all the schemas from addin points
 			//NOTE: the first ([0]) schema must be the default schema (HTML4 transitional)
 			string schemaDir = Path.GetDirectoryName (System.Reflection.Assembly.GetExecutingAssembly ().Location);
 			schemaDir = Path.Combine (schemaDir, "Schemas");
@@ -104,12 +80,11 @@ namespace MonoDevelop.Html
 			//initialise the default backup schema if it doesn't exist already
 			if (!schemas.ContainsKey (DefaultDocTypeName)) {
 				HtmlSchema defaultSubstProvider = schemas["XHTML 1.0 Transitional"];
-				IXmlCompletionProvider provider = null;
+				IXmlCompletionProvider provider;
 				if (defaultSubstProvider != null) {
+					//start the threaded schema loading
+					LoadSchema (defaultSubstProvider, true);
 					provider = defaultSubstProvider.CompletionProvider;
-					ILazilyLoadedProvider lazy = provider as ILazilyLoadedProvider;
-					if (lazy != null)
-						lazy.EnsureLoaded ();
 				} else {
 					LoggingService.LogWarning ("Completion schema for default HTML doctype not found.");
 					provider = new EmptyXmlCompletionProvider ();
@@ -122,10 +97,6 @@ namespace MonoDevelop.Html
 			}
 			
 			MonoDevelop.Core.LoggingService.LogDebug ("HtmlSchemaService initialised");
-			lock (initLock) {
-				loadingThread = null;
-				HtmlSchemaService.schemas = schemas;
-			}
 		}
 		
 		#endregion
@@ -136,7 +107,8 @@ namespace MonoDevelop.Html
 		
 		public static HtmlSchema DefaultDocType {
 			get {
-				if (schemas == null) Initialise (true);
+				if (schemas == null)
+					Initialise ();
 				return schemas[DefaultDocTypeName];
 			}
 		}
@@ -147,34 +119,46 @@ namespace MonoDevelop.Html
 		}
 		
 		//if lazy==true, then if the schema is lazily compiled, it gets force-compiled in a thread and null is returned
-		public static HtmlSchema GetSchema (string docType, bool threadedCompile)
+		public static HtmlSchema GetSchema (string docType, bool lazy)
 		{
-			if (schemas == null) Initialise (true);
+			if (schemas == null)
+				Initialise ();
 			
-			if (!string.IsNullOrEmpty (docType)) {
-				foreach (HtmlSchema schema in schemas.Values) { 
-					
-					if (docType.Contains (schema.Name)) {
-						if (!threadedCompile)
-							return schema;
-						
-						ILazilyLoadedProvider lazyProv = schema.CompletionProvider as ILazilyLoadedProvider;
-						if (lazyProv == null || lazyProv.IsLoaded) {
-							return schema;
-						} else {
-							//FIXME: actually implement threaded loading
-							lazyProv.EnsureLoaded ();
-							return schema;
-						}
-					}
-				}
-			}
+			if (!string.IsNullOrEmpty (docType))
+				foreach (HtmlSchema schema in schemas.Values)
+					if (docType.Contains (schema.Name))
+						return LoadSchema (schema, lazy);
 			return null;
+		}
+		
+		//if lazy == true, returns null if the schema isn't loaded yet
+		static HtmlSchema LoadSchema (HtmlSchema schema, bool lazy)
+		{
+			ILazilyLoadedProvider lazyProv = schema.CompletionProvider as ILazilyLoadedProvider;
+			if (lazyProv == null || lazyProv.IsLoaded) {
+				return schema;
+			} else {
+				//FIXME: actually implement threaded loading and return null if loading && lazy
+				lazyProv.EnsureLoaded ();
+				return schema;
+			}
+		}
+		
+		public static IXmlCompletionProvider LazyGetProvider (HtmlSchema schema)
+		{
+			//get the provided schema, if it's loaded
+			HtmlSchema hs = LoadSchema (schema, true);
+			//fall back to the defaul provider
+			if (hs == null)
+				hs = LoadSchema (DefaultDocType, true);
+			//fall back to a blank provider
+			return new EmptyXmlCompletionProvider ();
 		}
 		
 		public static ICompletionData[] GetDocTypeCompletionData ()
 		{
-			if (schemas == null) Initialise (true);
+			if (schemas == null)
+				Initialise ();
 			
 			List<ICompletionData> list = new List<ICompletionData> ();
 			foreach (HtmlSchema item in schemas.Values)

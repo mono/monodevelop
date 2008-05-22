@@ -1,3 +1,10 @@
+2008-05-22  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Html/HtmlSchemaService.cs,
+	  MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs: Remove threaded
+	  schema loading. Implement an alternative lazy schema loading
+	  system.
+
 2008-05-22  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.AspNet.addin.xml: Merged the extension points for project

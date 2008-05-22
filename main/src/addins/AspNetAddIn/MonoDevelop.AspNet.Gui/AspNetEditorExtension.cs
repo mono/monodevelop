@@ -76,7 +76,7 @@ namespace MonoDevelop.AspNet.Gui
 				+= OnParseInformationChanged;
 			
 			//ensure that the schema service is initialised, or code completion may take a couple of seconds to trigger
-			HtmlSchemaService.Initialise (false);
+			HtmlSchemaService.Initialise ();
 		}
 		
 		public override void Dispose ()
