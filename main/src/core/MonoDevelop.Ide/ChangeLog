@@ -1,5 +1,11 @@
 2008-05-22  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Ide.Gui/SdiWorkspaceLayout.cs: Fix bug 393671 - Creating
+	  a new empty text file from a freshly loaded MD (no projects loaded)
+	  throws a NRE.
+
+2008-05-22  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectNodeBuilder.cs: Refresh
 	  the project when any property changes.
 

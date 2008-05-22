@@ -618,7 +618,7 @@ namespace MonoDevelop.Ide.Gui
 			else if (content.IsUntitled && content.UntitledName == null) {
 				mimeimage = new Gtk.Image (IdeApp.Services.PlatformService.GetPixbufForType ("gnome-fs-regular", Gtk.IconSize.Menu));
 			} else {
-				mimeimage = new Gtk.Image (IdeApp.Services.PlatformService.GetPixbufForFile (content.ContentName, Gtk.IconSize.Menu));
+				mimeimage = new Gtk.Image (IdeApp.Services.PlatformService.GetPixbufForFile (content.ContentName ?? content.UntitledName, Gtk.IconSize.Menu));
 			}			
 
 			TabLabel tabLabel = new TabLabel (new Label (), mimeimage != null ? mimeimage : new Gtk.Image (""));
