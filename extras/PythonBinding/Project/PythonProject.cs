@@ -15,7 +15,7 @@ namespace PythonBinding
 			}
 		}
 		
-		public override IConfiguration CreateConfiguration ()
+		public override SolutionItemConfiguration CreateConfiguration ()
 		{
 			return new PythonCompilerParameters ();
 		}

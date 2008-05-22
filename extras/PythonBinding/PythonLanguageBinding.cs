@@ -92,7 +92,7 @@ namespace PythonBinding
 			return compilerManager.CanCompile(fileName);
 		}
 		
-		public ICompilerResult CompileFile(string fileName)
+		public BuildResult CompileFile(string fileName)
 		{
 			Debug.Assert(compilerManager != null);
 			PythonCompilerParameters param = new PythonCompilerParameters();
@@ -100,13 +100,13 @@ namespace PythonBinding
 			return compilerManager.CompileFile(fileName, param);
 		}
 		
-		public ICompilerResult CompileProject(IProject project)
+		public BuildResult CompileProject(IProject project)
 		{
 			Debug.Assert(compilerManager != null);
 			return compilerManager.CompileProject(project);
 		}
 		
-		public ICompilerResult RecompileProject(IProject project)
+		public BuildResult RecompileProject(IProject project)
 		{
 			return CompileProject(project);
 		}

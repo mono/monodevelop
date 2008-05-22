@@ -28,7 +28,7 @@
                      resource = "templates/PythonGtkProject.xpt.xml"/>
   </Extension>
 
-  <Extension path = "/MonoDevelop/ProjectModel/Gui/ProjectOptions/ConfigurationOptions">
+  <Extension path = "/MonoDevelop/ProjectModel/Gui/ProjectOptions">
     <Conditional activeproject = "Python">
       <DialogPanel id = "PythonCompilerParametersPanel"
                    _label = "Compiler"

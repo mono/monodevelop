@@ -12,7 +12,7 @@ namespace PythonBinding
 	/// <summary>
 	/// This class handles project specific compiler parameters
 	/// </summary>
-	public class PythonCompilerParameters : AbstractProjectConfiguration
+	public class PythonCompilerParameters : ProjectConfiguration
 	{
 		CompilerOptions compilerOptions = new CompilerOptions ();
 		

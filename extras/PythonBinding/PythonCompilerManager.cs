@@ -31,25 +31,25 @@ namespace PythonBinding
 			return Path.GetExtension (fileName).ToLower () == ".py";
 		}
 		
-		ICompilerResult Compile (PythonCompilerParameters compilerparameters, string[] fileNames)
+		BuildResult Compile (PythonCompilerParameters compilerparameters, string[] fileNames)
 		{
 			// just pretend we compiled
 			// and leave it to the runtime for now
-			return new DefaultCompilerResult (new CompilerResults (new TempFileCollection ()), "");
+			return new BuildResult (new CompilerResults (new TempFileCollection ()), "");
 		}
 
-		public ICompilerResult CompileFile (string fileName, PythonCompilerParameters compilerparameters)
+		public BuildResult CompileFile (string fileName, PythonCompilerParameters compilerparameters)
 		{
 			// just pretend we compiled
 			// and leave it to the runtime for now
-			return new DefaultCompilerResult (new CompilerResults (new TempFileCollection ()), "");
+			return new BuildResult (new CompilerResults (new TempFileCollection ()), "");
 		}
 		
-		public ICompilerResult CompileProject (IProject project)
+		public BuildResult CompileProject (IProject project)
 		{
 			// just pretend we compiled
 			// and leave it to the runtime for now
-			return new DefaultCompilerResult (new CompilerResults (new TempFileCollection ()), "");
+			return new BuildResult (new CompilerResults (new TempFileCollection ()), "");
 		}
 		
 		string GetCompilerName ()
@@ -57,11 +57,11 @@ namespace PythonBinding
 			return "IronPythonConsole";
 		}
 		
-		ICompilerResult ParseOutput (TempFileCollection tf, StreamReader sr)
+		BuildResult ParseOutput (TempFileCollection tf, StreamReader sr)
 		{
 			// just pretend we compiled
 			// and leave it to the runtime for now
-			return new DefaultCompilerResult (new CompilerResults (new TempFileCollection ()), "");
+			return new BuildResult (new CompilerResults (new TempFileCollection ()), "");
 		}
 	}
 }
