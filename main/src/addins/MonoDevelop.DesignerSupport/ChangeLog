@@ -1,5 +1,10 @@
 2008-05-21  Michael Hutchinson <mhutchinson@novell.com> 
 
+	* MonoDevelop.DesignerSupport/ToolboxService.cs: Update the toolbox
+	  when project properties change.
+
+2008-05-21  Michael Hutchinson <mhutchinson@novell.com> 
+
 	* MonoDevelop.DesignerSupport.Toolbox/ToolboxItemToolboxLoader.cs:
 	  Detect the runtime that the assembly references and pass it on to
 	  the node builder. Catch and log more errors.

@@ -291,7 +291,7 @@ namespace MonoDevelop.DesignerSupport
 				try {
 					config.SaveContents (ToolboxConfigFile);
 				} catch (Exception ex) {
-					LoggingService.LogError (ex.ToString ());
+					LoggingService.LogError ("Error saving toolbox configuration.", ex);
 				}
 			}
 		}
@@ -408,17 +408,26 @@ namespace MonoDevelop.DesignerSupport
 		
 		#region Change notification
 		
-		Document         oldActiveDoc =  null;
+		Document oldActiveDoc =  null;
+		Project oldProject = null;
+		bool configChanged;
 		IToolboxDynamicProvider viewProvider = null;
+		
 		void onActiveDocChanged (object o, EventArgs e)
 		{
-			if (oldActiveDoc != null) 
+			if (oldActiveDoc != null)
 				oldActiveDoc.ViewChanged -= OnViewChanged;
+			if (oldProject != null)
+				oldProject.Modified -= onProjectConfigChanged;
 			
-			if (IdeApp.Workbench.ActiveDocument != null) {
-				IdeApp.Workbench.ActiveDocument.ViewChanged += OnViewChanged;
-			}
 			oldActiveDoc = IdeApp.Workbench.ActiveDocument;
+			oldProject = oldActiveDoc != null?
+				oldActiveDoc.Project : null;
+			
+			if (oldActiveDoc != null)
+				oldActiveDoc.ViewChanged += OnViewChanged;					
+			if (oldProject != null)
+				oldProject.Modified += onProjectConfigChanged;
 			
 			OnViewChanged (null, null);
 		}
@@ -443,6 +452,21 @@ namespace MonoDevelop.DesignerSupport
 				CurrentConsumer = null;
 				viewProvider = null;
 			}
+		}
+		
+		//changing project settings could cause the toolbox contents to change
+		void onProjectConfigChanged (object sender, EventArgs args)
+		{
+			if (configChanged)
+				return;
+			
+			//project usually broadcasts many changes at once, so try to group them
+			configChanged = true;
+			GLib.Timeout.Add (500, delegate {
+				configChanged = false;
+				OnToolboxContentsChanged ();
+				return false;
+			});
 		}
 		
 		protected virtual void OnToolboxContentsChanged ()
