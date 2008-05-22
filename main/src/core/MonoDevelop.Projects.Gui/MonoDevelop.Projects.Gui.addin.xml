@@ -33,16 +33,22 @@
 	
 	<Extension path = "/MonoDevelop/ProjectModel/Gui/ItemOptionPanels">
 		<Section id="Common" _label="General">
-			<Condition id="ItemType" value="Project">
-				<Section id = "GeneralProjectPanel" _label = "Project" class = "MonoDevelop.Projects.Gui.Dialogs.OptionPanels.GeneralProjectOptions">
+			<Section id="General" _label="Main Settings">
+				<Condition id="ItemType" value="Project">
+					<Panel id = "GeneralProjectPanel" _label = "Project" class = "MonoDevelop.Projects.Gui.Dialogs.OptionPanels.GeneralProjectOptions" />
 					<Panel id = "BaseDirectoryPanel" _label = "Location of Project Files" class = "MonoDevelop.Projects.Gui.Dialogs.OptionPanels.BaseDirectoryPanel"/>
-				</Section>
-			</Condition>
-			<Condition id="ItemType" value="Solution">
-				<Section id = "Information" _label = "Solution" class = "MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CombineInformationPanel">
+				</Condition>
+				<Condition id="ItemType" value="Solution">
+					<Panel id = "GeneralSolutionPanel" _label = "Solution" class = "MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CombineInformationPanel" />
 					<Panel id = "BaseDirectoryPanel" _label = "Location of Project Files" class = "MonoDevelop.Projects.Gui.Dialogs.OptionPanels.BaseDirectoryPanel"/>
-				</Section>
-			</Condition>
+				</Condition>
+				<Condition id="ItemType" value="SolutionFolder">
+					<Panel id = "BaseDirectoryPanel" _label = "Location of Project Files" class = "MonoDevelop.Projects.Gui.Dialogs.OptionPanels.BaseDirectoryPanel"/>
+				</Condition>
+				<Condition id="ItemType" value="Workspace">
+					<Panel id = "BaseDirectoryPanel" _label = "Location of Project Files" class = "MonoDevelop.Projects.Gui.Dialogs.OptionPanels.BaseDirectoryPanel"/>
+				</Condition>
+			</Section>
 			<Condition id="ItemType" value="IConfigurationTarget">
 				<Section id = "CustomCommands" _label = "Custom Commands" fill = "true" class = "MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CustomCommandPanel"/>
 			</Condition>

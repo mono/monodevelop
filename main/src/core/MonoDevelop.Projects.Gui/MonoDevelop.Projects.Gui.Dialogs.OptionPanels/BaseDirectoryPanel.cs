@@ -49,7 +49,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 		public Gtk.Widget CreatePanelWidget ()
 		{
 			widget = new BaseDirectoryPanelWidget ();
-			widget.BaseDirectory = obj.BaseDirectory;
+			widget.BaseDirectory = System.IO.Path.GetFullPath (obj.BaseDirectory);
 			return widget;
 		}
 

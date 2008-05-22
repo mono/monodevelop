@@ -1,5 +1,12 @@
 2008-05-22  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Projects.Gui.addin.xml: Reorganize the main settings
+	  section.
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/BaseDirectoryPanel.cs:
+	  Cosmetic fix.
+
+2008-05-22  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/ItemTypeCondition.cs:
 	  Added comment.
 
