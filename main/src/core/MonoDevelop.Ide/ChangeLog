@@ -1,5 +1,9 @@
 2008-05-22  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Ide.Gui/RootWorkspace.cs: Track api changes.
+
+2008-05-22  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs,
 	  MonoDevelop.Ide.Gui/RootWorkspace.cs,
 	  MonoDevelop.Ide.Gui/ProjectOperations.cs,

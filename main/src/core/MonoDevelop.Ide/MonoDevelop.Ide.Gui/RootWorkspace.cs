@@ -153,6 +153,15 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
+		string IWorkspaceObject.BaseDirectory {
+			get {
+				return BaseDirectory;
+			}
+			set {
+				throw new NotSupportedException ();
+			}
+		}
+		
 		public SolutionEntityItem StartupItem {
 			get {
 				return startupItem; 
