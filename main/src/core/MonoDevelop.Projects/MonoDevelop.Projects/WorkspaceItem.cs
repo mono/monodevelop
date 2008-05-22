@@ -41,7 +41,7 @@ namespace MonoDevelop.Projects
 		Hashtable extendedProperties;
 		string fileName;
 		
-		[ItemProperty ("BaseDirectory", DefaultValue=null)]
+		[ProjectPathItemProperty ("BaseDirectory", DefaultValue=null)]
 		string baseDirectory;
 		
 		Dictionary<string,DateTime> lastSaveTime = new Dictionary<string,DateTime> ();
@@ -102,7 +102,7 @@ namespace MonoDevelop.Projects
 					return baseDirectory;
 			}
 			set {
-				if (value != null && FileName != null && Path.GetFullPath (FileName) == Path.GetFullPath (value))
+				if (value != null && FileName != null && Path.GetFullPath (Path.GetDirectoryName (FileName)) == Path.GetFullPath (value))
 					baseDirectory = null;
 				else if (value == string.Empty)
 					baseDirectory = null;

@@ -43,7 +43,7 @@ namespace MonoDevelop.Projects
 		Solution parentSolution;
 		ISolutionItemHandler handler;
 		
-		[ItemProperty ("BaseDirectory", DefaultValue=null)]
+		[ProjectPathItemProperty ("BaseDirectory", DefaultValue=null)]
 		string baseDirectory;
 		
 		Hashtable extendedProperties;

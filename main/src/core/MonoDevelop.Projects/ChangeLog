@@ -1,6 +1,14 @@
 2008-05-22  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Projects/WorkspaceItem.cs,
+	  MonoDevelop.Projects/SolutionItem.cs: Fix base directory
+	  serialization.
+	* MonoDevelop.Projects.Formats.MSBuild/SlnFileFormat.cs: Store and read
+	  custom properties in solution folders.
+
+2008-05-22  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects/WorkspaceItem.cs,
 	  MonoDevelop.Projects/SolutionFolder.cs,
 	  MonoDevelop.Projects/SolutionEntityItem.cs,
 	  MonoDevelop.Projects/SolutionItem.cs,

@@ -240,6 +240,15 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 						ce.Name, 
 						ce.Name,
 						ce.ItemId);
+					
+					//Write custom properties
+					MSBuildSerializer ser = new MSBuildSerializer ();
+					DataItem data = (DataItem) ser.Serialize (ce, typeof(SolutionFolder));
+					if (data.HasItemData) {
+						writer.WriteLine ("\tProjectSection(MonoDevelopProperties) = preProject");
+						WriteDataItem (writer, data);
+						writer.WriteLine ("\tEndProjectSection");
+					}
 				}
 
 				if (l != null) {
@@ -275,6 +284,40 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		{
 			foreach (SolutionItem ce in folder.Items)
 				writer.WriteLine (@"{0}{1} = {2}", "\t\t", ce.ItemId, folder.ItemId);
+		}
+		
+		void DeserializeSolutionItem (Solution sln, SolutionItem item, List<string> lines)
+		{
+			// Find a project section of type MonoDevelopProperties
+
+			int start = -1;
+			for (int n=0; n<lines.Count && start == -1; n++) {
+				string line = lines [n].Replace ("\t","").Replace (" ", "");
+				if (line == "ProjectSection(MonoDevelopProperties)=preProject")
+					start = n;
+			}
+			if (start == -1)
+				return;
+
+			int end = -1;
+
+			for (int n=start+1; n<lines.Count && end == -1; n++) {
+				string line = lines [n].Replace ("\t","").Replace (" ", "");
+				if (line == "EndProjectSection")
+					end = n;
+			}
+			
+			if (end == -1)
+				return;
+			
+			// Deserialize the object
+			DataItem it = ReadDataItem (start, end - start + 1, lines);
+			MSBuildSerializer ser = new MSBuildSerializer ();
+			ser.SerializationContext.BaseFile = sln.FileName;
+			ser.Deserialize (item, it);
+			
+			// Remove the lines, since they have already been preocessed
+			lines.RemoveRange (start, end - start + 1);
 		}
 		
 		void WriteDataItem (StreamWriter sw, DataItem item)
@@ -313,9 +356,14 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		
 		DataItem ReadDataItem (Section sec, List<string> lines)
 		{
+			return ReadDataItem (sec.Start, sec.Count, lines);
+		}
+		
+		DataItem ReadDataItem (int start, int count, List<string> lines)
+		{
 			DataItem it = new DataItem ();
-			int lineNum = sec.Start + 1;
-			int lastLine = sec.Start + sec.Count - 2;
+			int lineNum = start + 1;
+			int lastLine = start + count - 2;
 			while (lineNum <= lastLine) {
 				if (!ReadDataNode (it, lines, lastLine, "", ref lineNum))
 					lastLine++;
@@ -519,8 +567,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					MSBuildProjectService.InitializeItemHandler (sfolder);
 					MSBuildProjectService.SetId (sfolder, projectGuid);
 
+					List<string> projLines = lines.GetRange (sec.Start + 1, sec.Count - 2);
+					DeserializeSolutionItem (sol, sfolder, projLines);
+					
 					SlnData slnData = new SlnData ();
-					slnData.Extra = lines.GetRange (sec.Start + 1, sec.Count - 2).ToArray ();
+					slnData.Extra = projLines.ToArray ();
 					sfolder.ExtendedProperties [typeof (SlnFileFormat)] = slnData;
 
 					items.Add (projectGuid, sfolder);
@@ -818,6 +869,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		{
 			DataItem it = ReadDataItem (sec, lines);
 			MSBuildSerializer ser = new MSBuildSerializer ();
+			ser.SerializationContext.BaseFile = sln.FileName;
 			ser.Deserialize (sln, it);
 		}
 		
