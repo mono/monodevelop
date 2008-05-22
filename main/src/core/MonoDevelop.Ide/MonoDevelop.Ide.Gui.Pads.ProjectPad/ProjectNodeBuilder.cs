@@ -45,7 +45,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		ProjectFileEventHandler fileRemovedHandler;
 		ProjectFileRenamedEventHandler fileRenamedHandler;
 		ProjectFileEventHandler filePropertyChangedHandler;
-		SolutionItemRenamedEventHandler projectNameChanged;
+		SolutionItemEventHandler projectChanged;
 		
 		public override Type NodeDataType {
 			get { return typeof(Project); }
@@ -61,7 +61,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			fileRemovedHandler = (ProjectFileEventHandler) DispatchService.GuiDispatch (new ProjectFileEventHandler (OnRemoveFile));
 			filePropertyChangedHandler = (ProjectFileEventHandler) DispatchService.GuiDispatch (new ProjectFileEventHandler (OnFilePropertyChanged));
 			fileRenamedHandler = (ProjectFileRenamedEventHandler) DispatchService.GuiDispatch (new ProjectFileRenamedEventHandler (OnRenameFile));
-			projectNameChanged = (SolutionItemRenamedEventHandler) DispatchService.GuiDispatch (new SolutionItemRenamedEventHandler (OnProjectRenamed));
+			projectChanged = (SolutionItemEventHandler) DispatchService.GuiDispatch (new SolutionItemEventHandler (OnProjectModified));
 			
 			IdeApp.Workspace.FileAddedToProject += fileAddedHandler;
 			IdeApp.Workspace.FileRemovedFromProject += fileRemovedHandler;
@@ -81,14 +81,14 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		{
 			base.OnNodeAdded (dataObject);
 			Project project = (Project) dataObject;
-			project.NameChanged += projectNameChanged;
+			project.Modified += projectChanged;
 		}
 		
 		public override void OnNodeRemoved (object dataObject)
 		{
 			base.OnNodeRemoved (dataObject);
 			Project project = (Project) dataObject;
-			project.NameChanged -= projectNameChanged;
+			project.Modified -= projectChanged;
 		}
 		
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
@@ -277,10 +277,10 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			if (tb != null) tb.Update ();
 		}
 		
-		void OnProjectRenamed (object sender, SolutionItemRenamedEventArgs e)
+		void OnProjectModified (object sender, SolutionItemEventArgs e)
 		{
 			ITreeBuilder tb = Context.GetTreeBuilder (e.SolutionItem);
-			if (tb != null) tb.Update ();
+			if (tb != null) tb.UpdateAll ();
 		}
 		
 		void OnFilePropertyChanged (object sender, ProjectFileEventArgs args)

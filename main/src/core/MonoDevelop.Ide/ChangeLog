@@ -1,5 +1,10 @@
 2008-05-22  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectNodeBuilder.cs: Refresh
+	  the project when any property changes.
+
+2008-05-22  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Ide.addin.xml, MonoDevelop.Ide.Gui/ProjectOperations.cs:
 	  Show the "Options" command for solution folders, and make sure the
 	  solution is saved when the options are changed.
