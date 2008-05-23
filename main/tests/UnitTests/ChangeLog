@@ -1,5 +1,9 @@
 2008-05-23  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Projects/SolutionTests.cs, Util.cs: Added new test.
+
+2008-05-23  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Projects/TestProjectsChecks.cs, UnitTests.mdp: Use full
 	  names when creating package references.
 

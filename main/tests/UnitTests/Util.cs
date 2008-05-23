@@ -32,6 +32,7 @@ using System.Collections;
 using System.Text;
 using MonoDevelop.Core;
 using MonoDevelop.Core.ProgressMonitoring;
+using MonoDevelop.Projects;
 
 namespace UnitTests
 {
@@ -53,6 +54,18 @@ namespace UnitTests
 		
 		public static string TmpDir {
 			get { return Path.Combine (TestsRootDir, "tmp"); }
+		}
+		
+		public static FileFormat FileFormatMD1 {
+			get { return Services.ProjectService.FileFormats.GetFileFormat ("MD1"); }
+		}
+		
+		public static FileFormat FileFormatMSBuild05 {
+			get { return Services.ProjectService.FileFormats.GetFileFormat ("MSBuild05"); }
+		}
+		
+		public static FileFormat FileFormatMSBuild08 {
+			get { return Services.ProjectService.FileFormats.GetFileFormat ("MSBuild08"); }
 		}
 		
 		public static IProgressMonitor GetMonitor ()

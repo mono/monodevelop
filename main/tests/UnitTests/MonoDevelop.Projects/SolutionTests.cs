@@ -231,11 +231,11 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual (4, nameChanges);
 			Assert.AreEqual ("MSBuild05", prj.FileFormat.Id);
 
-			// Removing the project from the solution should restore the old format
+			// Removing the project from the solution should not restore the old format
 			sol.RootFolder.Items.Remove (prj);
-			Assert.AreEqual ("MD1", prj.FileFormat.Id);
+			Assert.AreEqual ("MSBuild05", prj.FileFormat.Id);
 			Assert.AreEqual ("test4", prj.Name);
-			Assert.AreEqual ("/tmp/test4.mdp", prj.FileName);
+			Assert.AreEqual ("/tmp/test4.csproj", prj.FileName);
 			Assert.AreEqual (4, nameChanges);
 		}
 		
@@ -475,6 +475,56 @@ namespace MonoDevelop.Projects
 			folder.Clean (Util.GetMonitor (), "Debug");
 			Assert.IsFalse (File.Exists (Util.Combine (lib2.BaseDirectory, "bin", "Debug", "library2.dll")));
 			Assert.IsFalse (File.Exists (Util.Combine (lib2.BaseDirectory, "bin", "Debug", "library2.dll.mdb")));
+		}
+		
+		[Test()]
+		public void FormatConversions ()
+		{
+			Solution sol = TestProjectsChecks.CreateConsoleSolution ("reloading");
+			Project p = (Project) sol.Items [0];
+			
+			Assert.AreEqual ("MSBuild05", sol.FileFormat.Id);
+			Assert.AreEqual ("MSBuild05", p.FileFormat.Id);
+			
+			// Change solution format of unsaved solution
+			
+			sol.FileFormat = Util.FileFormatMD1;
+			
+			Assert.AreEqual ("MD1", sol.FileFormat.Id);
+			Assert.AreEqual ("MD1", p.FileFormat.Id);
+			
+			sol.FileFormat = Util.FileFormatMSBuild05;
+			
+			Assert.AreEqual ("MSBuild05", sol.FileFormat.Id);
+			Assert.AreEqual ("MSBuild05", p.FileFormat.Id);
+			
+			// Change solution format of saved solution
+			
+			sol.Save (Util.GetMonitor ());
+
+			sol.FileFormat = Util.FileFormatMD1;
+			
+			Assert.AreEqual ("MD1", sol.FileFormat.Id);
+			Assert.AreEqual ("MD1", p.FileFormat.Id);
+			
+			// Add new project
+			
+			Project newp = new DotNetProject ("C#");
+			Assert.AreEqual ("MSBuild05", newp.FileFormat.Id);
+			
+			sol.RootFolder.Items.Add (newp);
+			Assert.AreEqual ("MD1", newp.FileFormat.Id);
+			
+			// Add saved project
+			
+			string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
+			Solution msol = (Solution) Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			
+			Project mp = (Project) msol.Items [0];
+			Assert.AreEqual ("MSBuild05", mp.FileFormat.Id);
+			
+			sol.RootFolder.Items.Add (newp);
+			Assert.AreEqual ("MSBuild05", mp.FileFormat.Id);
 		}
 	}
 }
