@@ -184,5 +184,10 @@ namespace MonoDeveloper
 				ProjectExtensionUtil.InstallHandler (handler, (DotNetProject) obj);
 			}
 		}
+		
+		public bool SupportsMixedFormats {
+			get { return false; }
+		}
+
 	}
 }
