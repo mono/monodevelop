@@ -393,11 +393,6 @@ namespace MonoDevelop.Components.Commands
 		public void ShowContextMenu (Gtk.Menu menu)
 		{
 			menu.Popup (null, null, null, 0, Gtk.Global.CurrentEventTime);
-			menu.Hidden += delegate {
-				// Needed to make sure the menu entries are destroyed and
-				// can't handle accelerators
-				menu.Destroy ();
-			};
 		}
 		
 		public void ShowContextMenu (Gtk.Menu menu, object initialCommandTarget)
