@@ -241,7 +241,6 @@ namespace MonoDevelop.SourceEditor
 			
 			if (widget != null) {
 				widget.Destroy ();
-				widget.Dispose ();
 				widget = null;
 			}
 			

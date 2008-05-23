@@ -451,6 +451,8 @@ namespace MonoDevelop.SourceEditor
 		
 		public override void Dispose ()
 		{
+			base.Dispose ();
+			
 			if (isDisposed)
 				return;
 			isDisposed = true;
@@ -459,18 +461,11 @@ namespace MonoDevelop.SourceEditor
 				parseInformationUpdaterWorkerThread.WaitForFinish ();
 			}
 			
-			Unsplit ();
-			RemoveReloadBar ();
-			if (this.textEditor != null) {
-				this.textEditor.Dispose ();
-				this.textEditor = null;
-			}
+			this.textEditor = null;
 			this.lastActiveEditor = null;
 			this.splittedTextEditor = null;
-			RemoveSearchWidget ();
 			IdeApp.Workspace.ParserDatabase.ParseInformationChanged -= UpdateClassBrowser;
 			IdeApp.Workspace.ParserDatabase.ParseInformationChanged -= OnParseInformationChanged;
-			System.GC.Collect ();
 		}
 		
 		void UpdateClassBrowser (object sender, ParseInformationEventArgs args)
