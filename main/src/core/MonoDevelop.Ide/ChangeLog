@@ -1,3 +1,8 @@
+2008-05-23  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Gui/RootWorkspace.cs: Moved code for getting a
+	  wrapper solution (when opening a single project) to ProjectService.
+
 2008-05-22  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Gui/SdiWorkspaceLayout.cs: Fix bug 393671 - Creating

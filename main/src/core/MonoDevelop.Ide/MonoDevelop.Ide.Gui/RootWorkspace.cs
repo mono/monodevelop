@@ -525,29 +525,8 @@ namespace MonoDevelop.Ide.Gui
 					}
 					
 					// It is a project, not a solution. Try to create a dummy solution and add the project to it
-					// First of all, check if a solution with the same name already exists
 					
-					FileFormat[] formats = Services.ProjectService.FileFormats.GetFileFormats (filename, typeof(SolutionEntityItem));
-					if (formats.Length == 0)
-						throw new InvalidOperationException ("Unknown file format: " + filename);
-					
-					Solution tempSolution = new Solution ();
-					string solFileName = formats [0].GetValidFileName (tempSolution, filename);
-					
-					if (File.Exists (solFileName)) {
-						filename = solFileName;
-					}
-					else {
-						// Create a temporary solution and add the project to the solution
-						tempSolution.FileName = filename;
-						SolutionEntityItem sitem = Services.ProjectService.ReadSolutionItem (monitor, filename);
-						tempSolution.FileFormat = sitem.FileFormat;
-						tempSolution.RootFolder.Items.Add (sitem);
-						tempSolution.CreateDefaultConfigurations ();
-						tempSolution.Save (monitor);
-						item = tempSolution;
-						filename = tempSolution.FileName;
-					}
+					item = IdeApp.Services.ProjectService.GetWrapperSolution (monitor, filename);
 				}
 				
 				if (item == null) {
@@ -558,7 +537,7 @@ namespace MonoDevelop.Ide.Gui
 					}
 				}
 
-				IdeApp.Workbench.RecentOpen.AddLastProject (filename, item.Name);
+				IdeApp.Workbench.RecentOpen.AddLastProject (item.FileName, item.Name);
 				
 				Items.Add (item);
 				
