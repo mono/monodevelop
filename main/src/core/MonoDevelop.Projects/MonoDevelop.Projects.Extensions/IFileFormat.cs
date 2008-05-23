@@ -47,5 +47,7 @@ namespace MonoDevelop.Projects.Extensions
 		
 		// Returns the list of files where the object is stored
 		List<string> GetItemFiles (object obj);
+		
+		bool SupportsMixedFormats { get; }
 	}
 }

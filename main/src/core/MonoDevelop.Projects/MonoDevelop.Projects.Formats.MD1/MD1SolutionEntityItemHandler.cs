@@ -40,7 +40,8 @@ namespace MonoDevelop.Projects.Formats.MD1
 
 		public override void Save (IProgressMonitor monitor)
 		{
-			new MD1FileFormat ().WriteFile (((SolutionEntityItem)Item).FileName, Item, monitor);
+			SolutionEntityItem it = (SolutionEntityItem) Item;
+			it.FileFormat.Format.WriteFile (it.FileName, it, monitor);
 		}
 	}
 }

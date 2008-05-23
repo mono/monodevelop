@@ -42,6 +42,10 @@ namespace MonoDevelop.Projects.Formats.MD1
 			get { return "MonoDevelop 1.0"; }
 		}
 		
+		public bool SupportsMixedFormats {
+			get { return true; }
+		}
+		
 		public string GetValidFormatName (object obj, string fileName)
 		{
 			if (obj is Project)

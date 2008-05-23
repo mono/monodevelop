@@ -137,20 +137,30 @@ namespace MonoDevelop.Projects
 		
 		public FileFormat FileFormat {
 			get {
-				if (ParentSolution != null)
+				if (ParentSolution != null) {
+					if (ParentSolution.FileFormat.Format.SupportsMixedFormats && fileFormat != null)
+						return fileFormat;
 					return ParentSolution.FileFormat;
+				}
 				if (fileFormat == null)
 					fileFormat = Services.ProjectService.GetDefaultFormat (this);
 				return fileFormat; 
 			}
 			set {
-				if (ParentSolution != null)
+				if (ParentSolution != null && !ParentSolution.FileFormat.Format.SupportsMixedFormats)
 					throw new InvalidOperationException ("The file format can't be changed when the item belongs to a solution.");
-				fileFormat = value;
+				InstallFormat (value);
 				fileFormat.Format.ConvertToFormat (this);
 				NeedsReload = false;
 				NotifyModified ();
 			}
+		}
+		
+		internal void InstallFormat (FileFormat format)
+		{
+			fileFormat = format;
+			if (fileName != null)
+				fileName = fileFormat.GetValidFileName (this, fileName);
 		}
 		
 		protected override void InitializeItemHandler ()
@@ -187,6 +197,12 @@ namespace MonoDevelop.Projects
 				FileService.NotifyFileChanged (FileName);
 			} finally {
 				savingFlag = false;
+			}
+		}
+		
+		internal bool IsSaved {
+			get {
+				return !string.IsNullOrEmpty (FileName) && File.Exists (FileName);
 			}
 		}
 		

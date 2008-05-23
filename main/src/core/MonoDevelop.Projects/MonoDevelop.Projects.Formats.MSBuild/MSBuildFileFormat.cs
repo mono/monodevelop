@@ -122,6 +122,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			item.ExtendedProperties ["ProductVersion"] = productVersion;
 			MSBuildProjectService.InitializeItemHandler (item);
 		}
+		
+		public bool SupportsMixedFormats {
+			get { return false; }
+		}
 	}
 	
 	class MSBuildFileFormatVS05: MSBuildFileFormat

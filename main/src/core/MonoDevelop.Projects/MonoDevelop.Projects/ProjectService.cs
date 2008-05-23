@@ -119,8 +119,7 @@ namespace MonoDevelop.Projects
 				FileFormat format;
 				SolutionEntityItem item = ReadFile (monitor, file, typeof(SolutionEntityItem), out format) as SolutionEntityItem;
 				if (item != null) {
-					if (item.FileFormat == null)
-						item.FileFormat = format;
+					item.FileFormat = format;
 					item.NeedsReload = false;
 				}
 				else
@@ -394,6 +393,39 @@ namespace MonoDevelop.Projects
 				}
 			}
 			return null;
+		}
+		
+		public Solution GetWrapperSolution (IProgressMonitor monitor, string filename)
+		{
+			// First of all, check if a solution with the same name already exists
+			
+			FileFormat[] formats = Services.ProjectService.FileFormats.GetFileFormats (filename, typeof(SolutionEntityItem));
+			if (formats.Length == 0)
+				throw new InvalidOperationException ("Unknown file format: " + filename);
+			
+			Solution tempSolution = new Solution ();
+			
+			FileFormat solutionFileFormat;
+			if (formats [0].Format.CanWriteFile (tempSolution))
+				solutionFileFormat = formats [0];
+			else
+				solutionFileFormat = MonoDevelop.Projects.Formats.MD1.MD1ProjectService.FileFormat;
+			
+			string solFileName = solutionFileFormat.GetValidFileName (tempSolution, filename);
+			
+			if (File.Exists (solFileName)) {
+				return (Solution) Services.ProjectService.ReadWorkspaceItem (monitor, solFileName);
+			}
+			else {
+				// Create a temporary solution and add the project to the solution
+				tempSolution.FileName = filename;
+				SolutionEntityItem sitem = Services.ProjectService.ReadSolutionItem (monitor, filename);
+				tempSolution.FileFormat = solutionFileFormat;
+				tempSolution.RootFolder.Items.Add (sitem);
+				tempSolution.CreateDefaultConfigurations ();
+				tempSolution.Save (monitor);
+				return tempSolution;
+			}
 		}
 		
 		public bool IsSolutionItemFile (string filename)

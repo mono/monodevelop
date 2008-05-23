@@ -1,5 +1,16 @@
 2008-05-23  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Projects/ProjectService.cs,
+	  MonoDevelop.Projects/Solution.cs,
+	  MonoDevelop.Projects/SolutionEntityItem.cs,
+	  MonoDevelop.Projects.Formats.MSBuild/MSBuildFileFormat.cs,
+	  MonoDevelop.Projects.Formats.MD1/MD1SolutionEntityItemHandler.cs,
+	  MonoDevelop.Projects.Formats.MD1/MD1FileFormat.cs,
+	  MonoDevelop.Projects.Extensions/IFileFormat.cs: Add support for
+	  solutions with mixed file formats. The MD1 file format supports it.
+
+2008-05-23  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Projects/SolutionFolder.cs,
 	  MonoDevelop.Projects/SolutionItem.cs: Fix build counts.
 
