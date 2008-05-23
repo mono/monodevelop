@@ -1,3 +1,8 @@
+2008-05-23  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects/TestProjectsChecks.cs, UnitTests.mdp: Use full
+	  names when creating package references.
+
 2008-05-22  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Projects/SolutionTests.cs,

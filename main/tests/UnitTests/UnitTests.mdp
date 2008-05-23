@@ -1,16 +1,16 @@
-<Project name="UnitTests" language="C#" clr-version="Net_2_0" fileversion="2.0" ctype="DotNetProject">
+<Project name="UnitTests" fileversion="2.0" language="C#" clr-version="Net_2_0" ctype="DotNetProject">
   <Configurations active="Debug">
     <Configuration name="Debug" ctype="DotNetProjectConfiguration">
       <Output directory="../../build/bin" assembly="UnitTests" />
       <Build debugmode="True" target="Library" />
-      <Execution runwithwarnings="True" consolepause="True" clr-version="Net_2_0" runtime="MsNet" />
-      <CodeGeneration warninglevel="4" optimize="True" unsafecodeallowed="False" generateoverflowchecks="True" definesymbols="DEBUG" generatexmldocumentation="False" compiler="Mcs" ctype="CSharpCompilerParameters" />
+      <Execution runwithwarnings="True" consolepause="True" runtime="MsNet" clr-version="Net_2_0" />
+      <CodeGeneration compiler="Mcs" warninglevel="4" optimize="True" unsafecodeallowed="False" generateoverflowchecks="True" definesymbols="DEBUG" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
     </Configuration>
     <Configuration name="Release" ctype="DotNetProjectConfiguration">
       <Output directory="bin/Release" assembly="UnitTests" />
       <Build debugmode="False" target="Library" />
-      <Execution runwithwarnings="True" consolepause="True" clr-version="Net_2_0" runtime="MsNet" />
-      <CodeGeneration warninglevel="4" optimize="True" unsafecodeallowed="False" generateoverflowchecks="True" generatexmldocumentation="False" compiler="Mcs" ctype="CSharpCompilerParameters" />
+      <Execution runwithwarnings="True" consolepause="True" runtime="MsNet" clr-version="Net_2_0" />
+      <CodeGeneration compiler="Mcs" warninglevel="4" optimize="True" unsafecodeallowed="False" generateoverflowchecks="True" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
     </Configuration>
   </Configurations>
   <Contents>

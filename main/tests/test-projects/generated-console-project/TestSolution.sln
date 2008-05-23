@@ -14,4 +14,7 @@ Global
 		{DC577202-654B-4FDB-95C7-8CC5DDF6D32D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DC577202-654B-4FDB-95C7-8CC5DDF6D32D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
+	GlobalSection(MonoDevelopProperties) = preSolution
+		name = TestSolution
+	EndGlobalSection
 EndGlobal
