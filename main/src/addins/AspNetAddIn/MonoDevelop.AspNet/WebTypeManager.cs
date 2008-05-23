@@ -46,6 +46,7 @@ namespace MonoDevelop.AspNet
 	
 	public static class WebTypeManager
 	{
+	
 		public static string GetRegisteredTypeName (AspNetAppProject project, string webDirectory, string tagPrefix, string tagName)
 		{
 			if (project == null)
@@ -340,7 +341,17 @@ namespace MonoDevelop.AspNet
 			else if (control.Namespace == "System.Web.UI.HtmlControls")
 				return string.Empty;
 			
-			throw new NotImplementedException ();
+			//todo: look in web.config etc
+			
+			//machine.config
+			Configuration config = ConfigurationManager.OpenMachineConfiguration ();
+			PagesSection pages = (PagesSection) config.GetSection ("system.web/pages");
+			foreach (TagPrefixInfo tpxInfo in pages.Controls)
+				if (!string.IsNullOrEmpty (tpxInfo.Namespace) && !string.IsNullOrEmpty (tpxInfo.TagPrefix) 
+				    && control.Namespace == tpxInfo.Namespace)
+					return tpxInfo.TagPrefix;
+			
+			return null;
 		}
 		
 		public static string GetControlTypeName (string fileName, string relativeToPath)
@@ -350,5 +361,52 @@ namespace MonoDevelop.AspNet
 			//they're only generated when the UserControl is hit.
 			return "System.Web.UI.UserControl";
 		}
+		
+		#region Global control registration tracking
+		
+		static XmlTextReader GetConfigReader (string configFile)
+		{
+			IEditableTextFile textFile = 
+				MonoDevelop.DesignerSupport.OpenDocumentFileProvider.Instance.GetEditableTextFile (configFile);
+			if (textFile != null)
+				return new XmlTextReader (textFile.Text, XmlNodeType.Document, null);
+			else
+				return new XmlTextReader (configFile);
+		}
+		
+		static IEnumerable<TagPrefixInfo> GetRegistrationTags (XmlTextReader reader)
+		{
+			reader.WhitespaceHandling = WhitespaceHandling.None;
+			reader.MoveToContent();
+			
+			if (reader.Name == "configuration"
+			    && reader.ReadToDescendant ("system.web") && reader.NodeType == XmlNodeType.Element
+			    && reader.ReadToDescendant ("pages") && reader.NodeType == XmlNodeType.Element
+			    && reader.ReadToDescendant ("controls") && reader.NodeType == XmlNodeType.Element
+			    && reader.ReadToDescendant ("add") && reader.NodeType == XmlNodeType.Element)
+			{
+				do {
+					if (reader.MoveToAttribute ("tagPrefix")) {
+						string prefix = reader.Value;
+						
+						//assemblies
+						if (reader.MoveToAttribute ("namespace")) {
+							string _namespace = reader.Value;
+							string _assembly = reader.MoveToAttribute ("assembly")? reader.Value : null;
+							yield return new TagPrefixInfo (prefix, _namespace, _assembly, null, null);
+						}
+						
+						//user controls
+						if (reader.MoveToAttribute ("tagName")) {
+							string tagName = reader.Value;
+							string src = reader.MoveToAttribute ("src")? reader.Value : null;
+							yield return new TagPrefixInfo (prefix, null, null, tagName, src);
+						}
+					}
+				} while (reader.ReadToNextSibling ("add"));
+			};
+		}
+		
+		#endregion
 	}
 }

@@ -123,6 +123,7 @@
     <File name="MonoDevelop.AspNet/AspNetToolboxNode.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.AspNet/AspNetParserService.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.AspNet/AspNetToolboxProvider.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.AspNet.Parser/PageDirectiveVisitor.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Components" />

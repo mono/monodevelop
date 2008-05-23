@@ -1,5 +1,14 @@
 2008-05-22  Michael Hutchinson <mhutchinson@novell.com> 
 
+	* MonoDevelop.AspNet/AspNetToolboxNode.cs,
+	  MonoDevelop.AspNet/WebTypeManager.cs, Makefile.am, AspNetAddIn.mdp,
+	  MonoDevelop.AspNet.Parser/DocumentReferenceManager.cs,
+	  MonoDevelop.AspNet.Parser/PageDirectiveVisitor.cs: Implemented
+	  auto-adding of register directives and project references when a
+	  control is added from the toolbox.
+
+2008-05-22  Michael Hutchinson <mhutchinson@novell.com> 
+
 	* MonoDevelop.Html/HtmlSchemaService.cs,
 	  MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs: Remove threaded
 	  schema loading. Implement an alternative lazy schema loading

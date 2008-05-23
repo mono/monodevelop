@@ -34,6 +34,7 @@ using System.Collections.Generic;
 using System.Globalization;
 
 using MonoDevelop.AspNet.Parser.Dom;
+using MonoDevelop.Projects.Text;
 using MonoDevelop.Projects.Parser;
 using MonoDevelop.Ide.Gui;
 
@@ -120,15 +121,20 @@ namespace MonoDevelop.AspNet.Parser
 		
 		public string GetTagPrefix (IClass control)
 		{
-			string globalPrefix = WebTypeManager.GetControlPrefix (doc.Project, control);
-			if (globalPrefix != null)
-				return globalPrefix;
+			if (control.Namespace == "System.Web.UI.WebControls")
+				return "asp";
+			else if (control.Namespace == "System.Web.UI.HtmlControls")
+				return string.Empty;
 			
 			foreach (RegisterDirective rd in pageRefsList) {
 				AssemblyRegisterDirective ard = rd as AssemblyRegisterDirective;
 				if (ard != null && ard.Namespace == control.Namespace)
 					return ard.TagPrefix;
 			}
+			
+			string globalPrefix = WebTypeManager.GetControlPrefix (doc.Project, control);
+			if (globalPrefix != null)
+				return globalPrefix;
 			
 			return null;
 		}
@@ -142,20 +148,52 @@ namespace MonoDevelop.AspNet.Parser
 		
 		#region "Refactoring" operations -- things that modify the file
 		
-		public string AddReference (IClass control)
+		public string AddAssemblyReferenceToDocument (IClass control, string assemblyName)
 		{
-			string prefix = GetTagPrefix (control);
-			if (prefix != null)
-				return prefix;
-			return InsertReference (control, GetPrefix (control));
+			return AddAssemblyReferenceToDocument (control, assemblyName, null);
 		}
 		
-		public string AddReference (IClass control, string desiredPrefix)
+		public string AddAssemblyReferenceToDocument (IClass control, string assemblyName, string desiredPrefix)
 		{
 			string existingPrefix = GetTagPrefix (control);
 			if (existingPrefix != null)
 				return existingPrefix;
-			return InsertReference (control, desiredPrefix);
+			
+			//TODO: detect control name conflicts 
+			string prefix = desiredPrefix;
+			if (desiredPrefix == null)
+				prefix = GetPrefix (control);
+			
+			System.Reflection.AssemblyName an = MonoDevelop.Core.Runtime.SystemAssemblyService.ParseAssemblyName (assemblyName);
+			
+			string directive = string.Format ("{0}<%@ Register TagPrefix=\"{1}\" Namespace=\"{2}\" Assembly=\"{3}\" %>",
+			    Environment.NewLine, prefix, control.Namespace, an.Name);
+			
+			//inset a directive into the document
+			InsertDirective (directive);
+			
+			return prefix;
+		}
+		
+		public void AddAssemblyReferenceToProject (string assemblyName, string assemblyLocation)
+		{
+			//build an reference to the assembly
+			MonoDevelop.Projects.ProjectReference pr;
+			if (string.IsNullOrEmpty (assemblyLocation)) {
+				pr = new MonoDevelop.Projects.ProjectReference
+					(MonoDevelop.Projects.ReferenceType.Gac, assemblyName);
+			} else {
+				pr =  new MonoDevelop.Projects.ProjectReference
+					(MonoDevelop.Projects.ReferenceType.Assembly, assemblyLocation);
+			}
+			
+			//add the reference if it doesn't match an existing one
+			bool match = false;
+			foreach (MonoDevelop.Projects.ProjectReference p in doc.Project.References)
+				if (p.Equals (pr))
+					match = true;
+			if (!match)
+				doc.Project.References.Add (pr);
 		}
 		
 		string GetPrefix (IClass control)
@@ -198,7 +236,7 @@ namespace MonoDevelop.AspNet.Parser
 				charr[i] = char.ToLower (namespaces[i][0]);
 			
 			//find a variant that doesn't match an existing prefix
-			string trialPrefix = charr.ToString ();
+			string trialPrefix = new string (charr);
 			int trialSuffix = 1;
 			string trial = trialPrefix;
 			bool foundMatch = false;
@@ -220,9 +258,26 @@ namespace MonoDevelop.AspNet.Parser
 			return p != null? p.Value as string : null;
 		}
 		
-		string InsertReference (IClass control, string prefix)
+		void InsertDirective (string directive)
 		{
-			throw new NotImplementedException ();
+			DirectiveNode node = GetPageDirective ();
+			if (node == null)
+				return;
+			
+			IEditableTextFile textFile = 
+				MonoDevelop.DesignerSupport.OpenDocumentFileProvider.Instance.GetEditableTextFile (doc.FilePath);
+			if (textFile == null)
+				textFile = new TextFile (doc.FilePath);
+			
+			int pos = textFile.GetPositionFromLineColumn (node.Location.EndLine, node.Location.EndColumn);
+			textFile.InsertText (pos, directive);
+		}
+		
+		DirectiveNode GetPageDirective ()
+		{
+			PageDirectiveVisitor v = new PageDirectiveVisitor ();
+			doc.RootNode.AcceptVisit (v);
+			return v.DirectiveNode;
 		}
 		
 		#endregion

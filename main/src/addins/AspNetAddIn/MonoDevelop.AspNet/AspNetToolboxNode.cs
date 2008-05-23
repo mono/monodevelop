@@ -89,7 +89,13 @@ namespace MonoDevelop.AspNet
 		{
 			MonoDevelop.Projects.DotNetProject dnp = (MonoDevelop.Projects.DotNetProject) project;
 			MonoDevelop.Projects.ProjectReference pr = base.Type.GetProjectReference ();
-			if (!dnp.References.Contains (pr))
+			
+			//add the reference if it doesn't match an existing one
+			bool match = false;
+			foreach (MonoDevelop.Projects.ProjectReference p in dnp.References)
+				if (p.Equals (pr))
+					match = true;
+			if (!match)
 				dnp.References.Add (pr);
 		}
 
@@ -108,7 +114,7 @@ namespace MonoDevelop.AspNet
 			MonoDevelop.Projects.Parser.IParserContext ctx = 
 				MonoDevelop.Ide.Gui.IdeApp.Workspace.ParserDatabase.GetProjectParserContext (project);
 			ctx.UpdateDatabase ();
-			MonoDevelop.Projects.Parser.IClass cls = ctx.GetClass (base.Type.TypeName);
+			MonoDevelop.Projects.Parser.IClass cls = ctx.GetClass (Type.TypeName);
 			if (cls == null)
 				return tag;
 			
@@ -116,7 +122,11 @@ namespace MonoDevelop.AspNet
 			MonoDevelop.AspNet.Parser.AspNetCompilationUnit cu = 
 				ctx.GetParseInformation (path).BestCompilationUnit
 					as MonoDevelop.AspNet.Parser.AspNetCompilationUnit;
-			string prefix = cu.Document.ReferenceManager.AddReference (cls);
+			
+			System.Reflection.AssemblyName assemName = 
+				MonoDevelop.Core.Runtime.SystemAssemblyService.ParseAssemblyName (Type.AssemblyName);
+			
+			string prefix = cu.Document.ReferenceManager.AddAssemblyReferenceToDocument (cls, assemName.Name);
 			
 			if (prefix != null)
 				return string.Format (tag, prefix);
