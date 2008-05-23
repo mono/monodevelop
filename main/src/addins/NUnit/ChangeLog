@@ -1,3 +1,7 @@
+2008-05-23  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Project/NUnitAssemblyGroupFileFormat.cs: Track api changes.
+
 2008-05-22  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Project/NUnitAssemblyGroupProject.cs: Replaced

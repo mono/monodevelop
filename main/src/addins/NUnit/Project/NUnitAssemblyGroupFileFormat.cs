@@ -107,6 +107,11 @@ namespace MonoDevelop.NUnit
 		public void ConvertToFormat (object obj)
 		{
 		}
+		
+		public bool SupportsMixedFormats {
+			get { return false; }
+		}
+
 	}
 }
 
