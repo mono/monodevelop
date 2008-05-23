@@ -366,7 +366,7 @@ namespace MonoDevelop.Core.Gui.Dialogs
 				}
 			} while (!fits);
 			
-			Gtk.VBox box = new VBox (false, 6);
+			Gtk.VBox box = new VBox (false, 12);
 			box.Show ();
 			for (int n=0; n<boxPanels.Count; n++) {
 				if (n != 0) {
