@@ -195,6 +195,7 @@ namespace MonoDevelop.Projects
 			ReadOnlyCollection<SolutionItem> sortedReferenced = SolutionFolder.TopologicalSort (referenced, configuration);
 			
 			BuildResult cres = new BuildResult ();
+			cres.BuildCount = 0;
 			
 			monitor.BeginTask (null, sortedReferenced.Count);
 			foreach (SolutionItem p in sortedReferenced) {

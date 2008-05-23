@@ -1,3 +1,8 @@
+2008-05-23  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects/SolutionFolder.cs,
+	  MonoDevelop.Projects/SolutionItem.cs: Fix build counts.
+
 2008-05-22  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Projects/WorkspaceItem.cs,

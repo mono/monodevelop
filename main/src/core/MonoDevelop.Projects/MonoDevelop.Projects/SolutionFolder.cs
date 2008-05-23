@@ -501,6 +501,7 @@ namespace MonoDevelop.Projects
 				monitor.BeginTask (GettextCatalog.GetString ("Building Solution {0}", Name), allProjects.Count);
 				
 				BuildResult cres = new BuildResult ();
+				cres.BuildCount = 0;
 				
 				foreach (SolutionItem item in allProjects) {
 					if (monitor.IsCancelRequested)
