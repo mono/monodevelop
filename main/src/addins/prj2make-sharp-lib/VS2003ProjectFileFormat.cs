@@ -259,5 +259,10 @@ namespace MonoDevelop.Prj2Make
 
 			return strVersion;
 		}
+		
+		public bool SupportsMixedFormats {
+			get { return false; }
+		}
+
 	}
 }
