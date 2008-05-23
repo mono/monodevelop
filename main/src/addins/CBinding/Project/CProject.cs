@@ -144,7 +144,7 @@ namespace CBinding
 			
 			foreach (CProjectConfiguration c in Configurations) {
 				c.OutputDirectory = Path.Combine (binPath, c.Id);
-				c.SourceDirectory = BaseDirectory;
+				c.SourceDirectory = info.ProjectBasePath;
 				c.Output = Name;
 				CCompilationParameters parameters = c.CompilationParameters as CCompilationParameters;
 				

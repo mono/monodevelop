@@ -1,3 +1,9 @@
+2008-05-23  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Project/CProject.cs: BaseDirectory can't be used until the project
+	  has been saved. Fixes bug 393945 - Can not create new C Binding
+	  project.
+
 2008-05-22  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* CBinding.addin.xml: Merged the extension points for project and
