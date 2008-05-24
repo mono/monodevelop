@@ -1,3 +1,8 @@
+2008-05-23  Michael Hutchinson  <mhutchinson@novell.com> 
+
+	* configure: Bump version.
+	* AspNetEdit.make: Fix dist. Fix build on non-bash sh.
+
 2008-05-21  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* AspNetEdit.mdp, AspNetEdit.Integration/MonoDevelopProxy.cs: Track api

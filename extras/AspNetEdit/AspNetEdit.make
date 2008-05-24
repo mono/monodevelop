@@ -69,13 +69,10 @@ FILES =  \
 
 DATA_FILES = 
 
-RESOURCES =  \
-	AspNetEdit.addin.xml
+RESOURCES = AspNetEdit.addin.xml
 
 EXTRAS = \
-	Makefile.am \
 	chrome/install.rdf \
-	chrome/Makefile.am \
 	chrome/README \
 	chrome/content/aspdesigner/aspdesigner.xul \
 	chrome/content/aspdesigner/clipboard.js \
@@ -86,8 +83,7 @@ EXTRAS = \
 	chrome/content/aspdesigner/JSCall.js \
 	chrome/content/aspdesigner/xpcom.js \
 	chrome/locale/en-US/aspdesigner/contents.rdf \
-	ChangeLog \
-	chrome/aspdesigner.manifest.in 
+	ChangeLog
 
 REFERENCES =  \
 	-pkg:gecko-sharp-2.0 \
@@ -138,7 +134,7 @@ $(ASSEMBLY) $(ASSEMBLY_MDB): $(build_sources) $(build_resources) $(build_datafil
 
 
 $(extension_jar): $(foreach f, $(jar_files), $(srcdir)/chrome/$f)
-	pushd $(srcdir)/chrome; zip -q9 $@ $(jar_files); popd
+	cd $(srcdir)/chrome; zip -q9 $@ $(jar_files)
 
 install-local: $(ASSEMBLY) $(ASSEMBLY_MDB) $(extension_jar)
 	make pre-install-local-hook prefix=$(prefix)
