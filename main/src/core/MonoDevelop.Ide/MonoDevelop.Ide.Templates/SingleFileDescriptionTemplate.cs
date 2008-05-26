@@ -87,9 +87,9 @@ namespace MonoDevelop.Ide.Templates
 			set { addStandardHeader = value; }
 		}
 		
-		public sealed override void AddToProject (Project project, string language, string directory, string name)
+		public sealed override bool AddToProject (Project project, string language, string directory, string name)
 		{
-			AddFileToProject (project, language, directory, name);
+			return AddFileToProject (project, language, directory, name) != null;
 		}
 		
 		public ProjectFile AddFileToProject (Project project, string language, string directory, string name)

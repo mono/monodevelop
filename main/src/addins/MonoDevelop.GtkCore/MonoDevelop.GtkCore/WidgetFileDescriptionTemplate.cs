@@ -76,7 +76,7 @@ namespace MonoDevelop.GtkCore
 			return GtkCoreService.SupportsGtkDesigner (project);
 		}
 		
-		public override void AddToProject (Project project, string language, string directory, string name)
+		public override bool AddToProject (Project project, string language, string directory, string name)
 		{
 			GtkDesignInfo info = GtkCoreService.GetGtkInfo (project);
 			if (info == null)
@@ -112,7 +112,7 @@ namespace MonoDevelop.GtkCore
 				
 				if (!w.IsWindow)
 					info.AddExportedWidget (fullName);
-				return;
+				return true;
 			}
 			
 			widgetElem = steticTemplate ["action-group"];
@@ -125,7 +125,7 @@ namespace MonoDevelop.GtkCore
 				
 				gproject.SteticProject.AddNewActionGroup (doc.DocumentElement);
 				gproject.Save (false);
-				return;
+				return true;
 			}
 			
 			throw new InvalidOperationException ("<widget> or <action-group> element not found in widget template.");

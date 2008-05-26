@@ -58,10 +58,13 @@ namespace MonoDevelop.Ide.Templates
 			get { return name;}
 		}
 		
-		public override void AddToProject (Project project, string language, string directory, string nameNotUsed)
+		public override bool AddToProject (Project project, string language, string directory, string nameNotUsed)
 		{
-			foreach (FileDescriptionTemplate fdt in innerTemplate.Files)
-				fdt.AddToProject (project, language, directory, this.name);
+			foreach (FileDescriptionTemplate fdt in innerTemplate.Files) {
+				if (!fdt.AddToProject (project, language, directory, this.name))
+					return false;
+			}
+			return true;
 		}
 		
 		public override void Show ()
