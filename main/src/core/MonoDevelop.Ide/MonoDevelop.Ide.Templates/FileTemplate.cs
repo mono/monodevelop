@@ -304,7 +304,8 @@ namespace MonoDevelop.Ide.Templates
 				return false;
 			} else {
 				foreach (FileDescriptionTemplate newfile in Files)
-					CreateFile (newfile, project, directory, language, name);
+					if (!CreateFile (newfile, project, directory, language, name))
+						return false;
 				return true;
 			}
 		}
@@ -322,11 +323,13 @@ namespace MonoDevelop.Ide.Templates
 			return valid;
 		}
 		
-		protected virtual void CreateFile (FileDescriptionTemplate newfile, Project project, string directory, string language, string name)
+		protected virtual bool CreateFile (FileDescriptionTemplate newfile, Project project, string directory, string language, string name)
 		{
 			if (project != null) {
-				newfile.AddToProject (project, language, directory, name);
-				newfile.Show ();
+				if (newfile.AddToProject (project, language, directory, name)) {
+					newfile.Show ();
+					return true;
+				}
 			} else {
 				SingleFileDescriptionTemplate singleFile = newfile as SingleFileDescriptionTemplate;
 				if (singleFile == null)
@@ -334,7 +337,10 @@ namespace MonoDevelop.Ide.Templates
 				
 				if (directory != null) {
 					string fileName = singleFile.SaveFile (project, language, directory, name);
-					IdeApp.Workbench.OpenDocument (fileName);
+					if (fileName != null) {
+						IdeApp.Workbench.OpenDocument (fileName);
+						return true;
+					}
 				} else {
 					string fileName = singleFile.GetFileName (project, language, directory, name);
 					Stream stream = singleFile.CreateFile (project, language, fileName);
@@ -352,8 +358,10 @@ namespace MonoDevelop.Ide.Templates
 						mimeType = "text";
 					
 					IdeApp.Workbench.NewDocument (fileName, mimeType, stream);
+					return true;
 				}
 			}
+			return false;
 		}
 		
 		protected virtual bool IsValidForProject (Project project, string projectPath)

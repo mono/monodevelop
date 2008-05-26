@@ -1,5 +1,18 @@
 2008-05-26  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Ide.Templates/FileTemplate.cs,
+	  MonoDevelop.Ide.Templates/FileDescriptionTemplate.cs,
+	  MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs,
+	  MonoDevelop.Ide.Templates/ResourceFileDescriptionTemplate.cs,
+	  MonoDevelop.Ide.Templates/FileTemplateReference.cs: Properly
+	  propagate file creation errors. Fixes bug 361349 - Choosing "No" to
+	  overwriting an existing file pops up "Invalid file name" dialog.
+	* gtk-gui/MonoDevelop.Ide.Gui.Dialogs.NewFileDialog.cs,
+	  gtk-gui/gui.stetic: Avoid auto-closing of the dialog when clicking
+	  on OK. This is handled manually.
+
+2008-05-26  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Ide.Gui/RootWorkspace.cs: Avoid crashing if there is a
 	  problem when loading a parser database. Fixes bug 358124 - Code
 	  completion prevents project loading.

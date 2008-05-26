@@ -52,10 +52,15 @@ namespace MonoDevelop.Ide.Templates
 			}
 		}
 		
-		public override void AddToProject (Project project, string language, string directory, string name)
+		public override bool AddToProject (Project project, string language, string directory, string name)
 		{
 			ProjectFile file = template.AddFileToProject (project, language, directory, name);
-			file.BuildAction = BuildAction.EmbedAsResource;
+			if (file != null) {
+				file.BuildAction = BuildAction.EmbedAsResource;
+				return true;
+			}
+			else
+				return false;
 		}
 		
 		public override void Show ()

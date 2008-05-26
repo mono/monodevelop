@@ -5814,7 +5814,7 @@ Months</property>
             <property name="UseStock">True</property>
             <property name="Type">StockItem</property>
             <property name="StockId">gtk-new</property>
-            <property name="ResponseId">0</property>
+            <property name="ResponseId">-1</property>
             <property name="label">gtk-new</property>
           </widget>
           <packing>

@@ -253,7 +253,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             this.okButton.UseStock = true;
             this.okButton.UseUnderline = true;
             this.okButton.Label = "gtk-new";
-            this.AddActionWidget(this.okButton, 0);
+            w21.Add(this.okButton);
             Gtk.ButtonBox.ButtonBoxChild w23 = ((Gtk.ButtonBox.ButtonBoxChild)(w21[this.okButton]));
             w23.Position = 1;
             w23.Expand = false;
