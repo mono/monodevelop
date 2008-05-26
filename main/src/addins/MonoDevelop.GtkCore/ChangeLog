@@ -1,5 +1,11 @@
 2008-05-26  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.GtkCore/GtkDesignInfo.cs: Explicitly set the resource ids
+	  for gui.stetic and objects.xml, since msbuild uses different
+	  default ids.
+
+2008-05-26  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.GtkCore/WidgetFileDescriptionTemplate.cs: Track api
 	  changes.
 

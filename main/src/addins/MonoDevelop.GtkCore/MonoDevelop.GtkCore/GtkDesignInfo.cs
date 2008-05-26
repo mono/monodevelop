@@ -276,7 +276,8 @@ namespace MonoDevelop.GtkCore
 				
 				// Add the stetic file to the project
 				if (!project.IsFileInProject (SteticFile)) {
-					project.AddFile (SteticFile, BuildAction.EmbedAsResource);
+					ProjectFile pf = project.AddFile (SteticFile, BuildAction.EmbedAsResource);
+					pf.ResourceId = "gui.stetic";
 					projectModified = true;
 				}
 			
@@ -336,11 +337,13 @@ namespace MonoDevelop.GtkCore
 				
 				ProjectFile file = project.GetProjectFile (ObjectsFile);
 				if (file == null) {
-					project.AddFile (ObjectsFile, BuildAction.EmbedAsResource);
+					file = project.AddFile (ObjectsFile, BuildAction.EmbedAsResource);
+					file.ResourceId = "objects.xml";
 					projectModified = true;
 				}
-				else if (file.BuildAction != BuildAction.EmbedAsResource) {
+				else if (file.BuildAction != BuildAction.EmbedAsResource || file.ResourceId != "objects.xml") {
 					file.BuildAction = BuildAction.EmbedAsResource;
+					file.ResourceId = "objects.xml";
 					projectModified = true;
 				}
 			}
