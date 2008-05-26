@@ -1,3 +1,7 @@
+2008-05-26  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects/BuildTool.cs: Updated documentation.
+
 2008-05-23  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Projects/ProjectService.cs,
