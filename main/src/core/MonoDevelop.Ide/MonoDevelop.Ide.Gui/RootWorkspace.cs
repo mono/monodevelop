@@ -849,7 +849,12 @@ namespace MonoDevelop.Ide.Gui
 		
 		void NotifyItemAddedGui (WorkspaceItem item)
 		{
-			ParserDatabase.Load (item);
+			try {
+				ParserDatabase.Load (item);
+			}
+			catch (Exception ex) {
+				LoggingService.LogError ("Could not load parser database.", ex);
+			}
 
 			Workspace ws = item as Workspace;
 			if (ws != null) {

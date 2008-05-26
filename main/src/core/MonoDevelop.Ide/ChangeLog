@@ -1,3 +1,9 @@
+2008-05-26  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Gui/RootWorkspace.cs: Avoid crashing if there is a
+	  problem when loading a parser database. Fixes bug 358124 - Code
+	  completion prevents project loading.
+
 2008-05-23  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Gui/RootWorkspace.cs: Moved code for getting a
