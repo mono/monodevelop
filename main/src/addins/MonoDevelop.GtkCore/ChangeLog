@@ -1,3 +1,8 @@
+2008-05-26  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.GtkCore/WidgetFileDescriptionTemplate.cs: Track api
+	  changes.
+
 2008-05-22  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.GtkCore.addin.xml: Merged the extension points for
