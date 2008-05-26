@@ -52,7 +52,7 @@ namespace MonoDevelop.AddinAuthoring
 			addinTemplate = filenode;
 		}
 		
-		public override void AddToProject (Project project, string language, string directory, string name)
+		public override bool AddToProject (Project project, string language, string directory, string name)
 		{
 			// Replace template variables
 			
@@ -75,6 +75,7 @@ namespace MonoDevelop.AddinAuthoring
 			project.AddFile (file, BuildAction.EmbedAsResource);
 			
 			AddinData.EnableAddinAuthoringSupport ((DotNetProject)project);
+			return true;
 		}
 		
 		public override void Show ()
