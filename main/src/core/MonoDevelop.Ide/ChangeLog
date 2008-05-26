@@ -1,5 +1,12 @@
 2008-05-26  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Ide.Templates/FileDescriptionTemplate.cs,
+	  MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs: Fix bug
+	  362783 - 'Add new file' dialog doesn't handle spaces in names
+	  propertly.
+
+2008-05-26  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Ide.Templates/FileTemplate.cs,
 	  MonoDevelop.Ide.Templates/FileDescriptionTemplate.cs,
 	  MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs,

@@ -303,22 +303,5 @@ namespace MonoDevelop.Ide.Templates
 			
 			return tagsArr;
 		}
-		
-		public override bool IsValidName (string name, string language)
-		{
-			if (name.Length > 0) {
-				if (language != null && language.Length > 0) {
-					IDotNetLanguageBinding binding = GetLanguageBinding (language) as IDotNetLanguageBinding;
-					if (binding != null) {
-						System.CodeDom.Compiler.CodeDomProvider provider = binding.GetCodeDomProvider ();
-						if (provider != null)
-							return provider.IsValidIdentifier (provider.CreateEscapedIdentifier (name));
-					}
-				}
-				return name.IndexOfAny (Path.GetInvalidFileNameChars ()) == -1;
-			}
-			else
-				return false;
-		}
 	}
 }
