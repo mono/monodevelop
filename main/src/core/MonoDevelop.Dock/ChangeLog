@@ -1,3 +1,7 @@
+2008-05-26  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* TabStrip.cs: Fix gtk warning.
+
 2008-03-17  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* DockItem.cs: Draw dockable/floating/autohide options as radio

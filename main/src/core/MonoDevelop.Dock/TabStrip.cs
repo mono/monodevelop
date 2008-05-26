@@ -223,11 +223,11 @@ namespace MonoDevelop.Components.Docking
 			
 			this.page = page;
 			if (Child != null) {
+				if (labelWidget != null)
+					oldMode = labelWidget.Ellipsize;
 				Gtk.Widget oc = Child;
 				Remove (oc);
 				oc.Destroy ();
-				if (labelWidget != null)
-					oldMode = labelWidget.Ellipsize;
 			}
 			
 			Gtk.HBox box = new HBox ();
