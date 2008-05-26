@@ -232,7 +232,12 @@ namespace Mono.TextEditor
 			bool newCaretBlink = caretBlinkStatus < 4 || (caretBlinkStatus - 4) % 3 != 0;
 			if (layout != null && newCaretBlink != caretBlink) {
 				caretBlink = newCaretBlink;
-				textEditor.RedrawLine (Caret.Line);
+				try {
+					// may have been disposed.
+					textEditor.RedrawLine (Caret.Line);
+				} catch (Exception) {
+					return true;
+				}
 			}
 			caretBlinkStatus++;
 			return true;
