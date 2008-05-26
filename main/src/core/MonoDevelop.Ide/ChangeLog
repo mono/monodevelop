@@ -1,3 +1,8 @@
+2008-05-26  Lluis Sanchez Gual <lluis@novell.com>
+
+	* MonoDevelop.Ide.Tasks/TaskService.cs: Fix bug 362791 - Renaming
+	  class (with filename in SVN) tends to throw exception.
+
 2008-05-26  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Templates/FileDescriptionTemplate.cs,

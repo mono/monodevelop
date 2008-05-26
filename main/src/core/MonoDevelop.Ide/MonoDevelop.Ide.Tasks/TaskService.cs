@@ -203,7 +203,7 @@ namespace MonoDevelop.Ide.Tasks
 		{
 			for (int i = 0; i < tasks.Count; ++i) {
 				Task curTask = tasks[i];
-				if (Path.GetFullPath (curTask.FileName) == Path.GetFullPath (e.OldName)) {
+				if (!string.IsNullOrEmpty (curTask.FileName) && Path.GetFullPath (curTask.FileName) == Path.GetFullPath (e.OldName)) {
 					Remove (curTask);
 					curTask.FileName = Path.GetFullPath (e.NewName);
 					Add (curTask);
