@@ -1,3 +1,9 @@
+2008-05-26  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Core.Gui.ProgressMonitoring/BaseProgressMonitor.cs: Make
+	  sure all async method calls are finished before disposing the
+	  progress monitor.
+
 2008-05-23  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Core.Gui.Dialogs/OptionsDialog.cs: Add some more spacing

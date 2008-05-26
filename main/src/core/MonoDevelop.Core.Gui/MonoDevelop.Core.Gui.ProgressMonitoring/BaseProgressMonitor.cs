@@ -151,6 +151,9 @@ namespace MonoDevelop.Core.Gui.ProgressMonitoring
 		[AsyncDispatch]
 		public virtual void Dispose()
 		{
+			// Make sure we are done with all pending calls
+			DispatchService.RunPendingEvents ();
+			
 			lock (progressTracker) {
 				progressTracker.Done ();
 				if (c.waitEvent != null)
