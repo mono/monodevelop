@@ -50,9 +50,13 @@ namespace MonoDevelop.Projects
 				ReadArgument (s);
 			
 			if (help) {
-				Console.WriteLine ("build [options] [project-file]");
-				Console.WriteLine ("--f --buildfile:FILE   Project or solution file to build.");
-				Console.WriteLine ("--p --project:PROJECT  Name of the project to build.");
+				Console.WriteLine ("build [options] [target]");
+				Console.WriteLine ("-f --buildfile:FILE   Project or solution file to build.");
+				Console.WriteLine ("-p --project:PROJECT  Name of the project to build.");
+				Console.WriteLine ();
+				Console.WriteLine ("Supported targets:");
+				Console.WriteLine ("  build: build the project (the default target).");
+				Console.WriteLine ("  clean: clean the project.");
 				Console.WriteLine ();
 				return 0;
 			}
