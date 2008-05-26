@@ -81,7 +81,19 @@ namespace MonoDevelop.Ide.Templates
 		
 		public virtual bool IsValidName (string name, string language)
 		{
-			return (name.Length > 0);
+			if (name.Length > 0) {
+				if (language != null && language.Length > 0) {
+					IDotNetLanguageBinding binding = MonoDevelop.Projects.Services.Languages.GetBindingPerLanguageName (language) as IDotNetLanguageBinding;
+					if (binding != null) {
+						System.CodeDom.Compiler.CodeDomProvider provider = binding.GetCodeDomProvider ();
+						if (provider != null)
+							return provider.IsValidIdentifier (provider.CreateEscapedIdentifier (name));
+					}
+				}
+				return name.IndexOfAny (Path.GetInvalidFileNameChars ()) == -1;
+			}
+			else
+				return false;
 		}
 		
 		public virtual bool SupportsProject (Project project, string projectPath)
