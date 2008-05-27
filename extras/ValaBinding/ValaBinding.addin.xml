@@ -1,0 +1,106 @@
+<Addin id          = "ValaBinding"
+       namespace   = "MonoDevelop"
+       name		   = "Vala Language Binding"
+       author      = "Levi Bard"
+       copyright   = "LGPL"
+       url         = "http://www.monodevelop.com"
+       description = "Vala Language binding"
+       category    = "Language bindings"
+       version     = "0.19.0">
+
+	<Dependencies>
+		<Addin id = "Core" version = "0.19.0"/>
+		<Addin id = "Core.Gui" version = "0.19.0"/>
+		<Addin id = "Projects" version = "0.19.0"/>
+		<Addin id = "Projects.Gui" version = "0.19.0"/>
+		<Addin id = "Ide" version = "0.19.0"/>
+		<Addin id = "Components" version = "0.19.0"/>
+		<Addin id = "Deployment" version = "0.19.0"/>
+		<Addin id = "Deployment.Linux" version = "0.19.0"/>
+	</Dependencies>
+	
+	<Extension path = "/MonoDevelop/Core/StockIcons">
+		<StockIcon stockid = "md-union" resource = "Icons.16x16.Union"/>
+		<StockIcon stockid = "md-protected-union" resource = "Icons.16x16.ProtectedUnion"/>
+		<StockIcon stockid = "md-private-union" resource = "Icons.16x16.PrivateUnion"/>
+		<StockIcon stockid = "md-vala-file" resource = "text-x-vala.16x16.png" />
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/Ide/FileFilters">
+		<FileFilter
+			id = "Vala"
+			insertbefore = "AllFiles"
+			_label = "Vala Files"
+			extensions = "*.vala,*.vapi" />
+	</Extension>
+
+	<Extension path = "/MonoDevelop/Ide/FileTemplates">
+		<FileTemplate id = "EmptyValaSourceFile" resource = "EmptyValaSourceFile.xft.xml"/>
+	</Extension>
+
+	<Extension path = "/MonoDevelop/Ide/ProjectTemplates">
+		<ProjectTemplate id = "EmptyValaProject" resource = "EmptyValaProject.xpt.xml"/>
+		<ProjectTemplate id = "ConsoleValaProject" resource = "ConsoleValaProject.xpt.xml"/>
+		<ProjectTemplate id = "SharedLibraryValaProject" resource = "SharedLibraryValaProject.xpt.xml"/>
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/Core/MimeTypes">
+		<MimeType id="text/x-vala" icon="md-vala-file">
+			<File pattern="*.vala" />
+			<File pattern="*.vapi" />
+		</MimeType>
+	</Extension>
+
+	<Extension path = "/MonoDevelop/ProjectModel/Gui/Icons">
+		<Icon extensions = ".vala" icon = "res:text-x-vala.16x16.png"/>
+		<Icon extensions = ".vapi" icon = "res:text-x-vala.16x16.png"/>
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/ProjectModel/ProjectBindings">
+		<ProjectBinding id = "ValaProject" class = "MonoDevelop.ValaBinding.ValaProjectBinding"/>
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/ProjectModel/LanguageBindings">
+		<LanguageBinding
+			id = "Vala"
+		    supportedextensions = ".vala,.vapi"
+		    class = "MonoDevelop.ValaBinding.ValaLanguageBinding"/>
+    </Extension>
+    
+	<Extension path = "/MonoDevelop/Ide/GlobalOptionsDialog/Other">
+		<Section
+			id = "ValaBindingOptions"
+			_label = "Vala"
+			class = "MonoDevelop.ValaBinding.GeneralOptionsPanelBinding"/>
+	</Extension>
+
+	<Extension path = "/MonoDevelop/ProjectModel/Gui/ItemOptionPanels/Build">
+		<Condition id = "ItemType" value = "MonoDevelop.ValaBinding.ValaProject">
+			<Section
+				id = "CodeGenerationPanel"
+			    _label = "Code Generation"
+			    insertafter = "Compile"
+			    class = "MonoDevelop.ValaBinding.CodeGenerationPanelBinding"/>
+			<Section
+				id = "OutputOptionsPanel"
+			    _label = "Output"
+			    class = "MonoDevelop.ValaBinding.OutputOptionsPanelBinding"/>
+		</Condition>
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/Ide/TextEditorExtensions">
+		<Class class = "MonoDevelop.ValaBinding.ValaTextEditorExtension" />
+	</Extension>
+
+	<Extension path = "/MonoDevelop/ProjectModel/ProjectServiceExtensions">
+		<Class id = "ExtraSteps" class = "MonoDevelop.ValaBinding.ValaProjectServiceExtension"/>
+	</Extension>
+
+	<Extension path = "/MonoDevelop/ProjectModel/SerializableClasses">
+		<DataType class = "MonoDevelop.ValaBinding.ValaCompilationParameters"/>
+		<DataType class = "MonoDevelop.ValaBinding.ValaProjectConfiguration"/>
+		<DataType class = "MonoDevelop.ValaBinding.ValaProject"/>
+		<DataType class = "MonoDevelop.ValaBinding.ValaCompiler"/>
+		<DataType class = "MonoDevelop.ValaBinding.ProjectPackage"/>
+	</Extension>
+</Addin>
