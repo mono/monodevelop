@@ -1,3 +1,8 @@
+2008-05-27  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.DesignerSupport/RemoteDesignerProcess.cs: Fix exception
+	  catching from GTK thread.
+
 2008-05-22  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.DesignerSupport.mdp, Makefile.am,

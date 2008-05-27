@@ -77,6 +77,7 @@ namespace MonoDevelop.DesignerSupport
 		void GuiThread ()
 		{
 			System.Diagnostics.Trace.WriteLine ("Designer GUI thread starting.");
+			HookExceptionManager ();
 			
 			//want to restart application loop when it's killed by an exception,
 			//but let it die if Application.Quit() is called
@@ -88,8 +89,6 @@ namespace MonoDevelop.DesignerSupport
 				} catch (Exception e) {
 					keepRunning = true;
 					exceptionOccurred = true;
-					System.Console.WriteLine ("An exception occurred in the GUI thread");
-					System.Console.WriteLine (e.ToString ());
 					HandleError (e);
 				}
 				
@@ -98,6 +97,7 @@ namespace MonoDevelop.DesignerSupport
 				System.Threading.Thread.Sleep (500);
 			}
 			
+			UnhookExceptionManager ();
 			System.Diagnostics.Trace.WriteLine ("Designer GUI thread ending.");
 		}
 		
@@ -128,9 +128,19 @@ namespace MonoDevelop.DesignerSupport
 		
 		protected virtual void HandleError (Exception e)
 		{
-			Gtk.Application.Invoke (delegate {
-				ShowText ("<b><big>The designer has encountered a fatal error:</big></b>\n\n" + System.Web.HttpUtility.HtmlEncode (e.ToString ()));
-			});	
+			MonoDevelop.Core.LoggingService.LogError ("An exception occurred in the designer GUI thread", e);
+			
+			string err = "<b><big>The designer has encountered a fatal error:</big></b>\n\n"
+				+ System.Web.HttpUtility.HtmlEncode (e.ToString ());
+			
+			if (gtkThread != null 
+			    && gtkThread.ManagedThreadId != System.Threading.Thread.CurrentThread.ManagedThreadId) {
+				Gtk.Application.Invoke (delegate{
+					ShowText (err);
+				});
+			} else {
+				ShowText (err);
+			}
 		}
 		
 		protected void ShowText (string markup)
@@ -252,5 +262,45 @@ namespace MonoDevelop.DesignerSupport
 			base.Dispose ();
 			System.Diagnostics.Trace.WriteLine ("Designer GUI thread cleaned up.");
 		}
+		
+		
+		#region from MonoDevelop.Core.Gui.GLibLogging
+		Delegate exceptionManagerHook;
+		
+		void HookExceptionManager ()
+		{
+			if (exceptionManagerHook != null)
+				return;
+			
+			Type t = typeof(GLib.Object).Assembly.GetType ("GLib.ExceptionManager");
+				if (t == null)
+				return;
+			
+			System.Reflection.EventInfo ev = t.GetEvent ("UnhandledException");
+			Type delType = typeof(GLib.Object).Assembly.GetType ("GLib.UnhandledExceptionHandler");
+			System.Reflection.MethodInfo met = typeof (RemoteDesignerProcess).GetMethod ("OnUnhandledException", 
+			    System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+			exceptionManagerHook = Delegate.CreateDelegate (delType, this, met);
+			ev.AddEventHandler (null, exceptionManagerHook);
+		}
+			
+		void UnhookExceptionManager ()
+		{
+			if (exceptionManagerHook == null)
+				return;
+				
+			Type t = typeof(GLib.Object).Assembly.GetType ("GLib.ExceptionManager");
+			System.Reflection.EventInfo ev = t.GetEvent ("UnhandledException");
+			ev.RemoveEventHandler (null, exceptionManagerHook);
+			exceptionManagerHook = null;
+		}
+			
+		void OnUnhandledException (UnhandledExceptionEventArgs args)
+		{
+			HandleError ((Exception)args.ExceptionObject);
+		}
+		
+		#endregion
 	}
 }
+	
