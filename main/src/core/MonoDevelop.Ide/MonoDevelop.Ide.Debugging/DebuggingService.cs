@@ -131,6 +131,12 @@ namespace MonoDevelop.Ide.Debugging
 			session.Run (startInfo);
 			session.TargetEvent += OnTargetEvent;
 			session.TargetStarted += OnStarted;
+			session.OutputWriter = delegate (bool iserr, string text) {
+				if (iserr)
+					console.Error.Write (text);
+				else
+					console.Out.Write (text);
+			};
 
 			console.CancelRequested += new EventHandler (OnCancelRequested);
 			NotifyLocationChanged ();
@@ -202,7 +208,7 @@ namespace MonoDevelop.Ide.Debugging
 			if (!IsDebugging)
 				return;
 
-			session.Stop ();
+			session.Exit ();
 			Cleanup ();
 		}
 
