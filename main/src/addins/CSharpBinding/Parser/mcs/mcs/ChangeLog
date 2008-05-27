@@ -1,3 +1,7 @@
+2008-05-27  Mike Krüger <mkrueger@novell.com> 
+
+	* report.cs: Added new dom & new class browser.
+
 2008-05-10  Marek Safar  <marek.safar@gmail.com>
 
 	* driver.cs: Split Parse.

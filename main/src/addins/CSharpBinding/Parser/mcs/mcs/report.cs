@@ -265,7 +265,19 @@ namespace Mono.CSharp {
 			protected readonly int code;
 			protected readonly Location location;
 			readonly string message;
-
+			
+			public Location Location {
+				get {
+					return location;
+				}
+			}
+			
+			public string Message {
+				get {
+					return message;
+				}
+			}
+			
 			protected AbstractMessage (int code, Location loc, string msg, ArrayList extraInfo)
 			{
 				this.code = code;
