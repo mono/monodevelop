@@ -33,7 +33,7 @@ namespace DebuggerServer
 			//FIXME: validate indices
 
 			List<DL.StackFrame> list = new List<DL.StackFrame> ();
-			for (int i = firstIndex; i < lastIndex && i < backtrace.Count; i ++) {
+			for (int i = firstIndex; i <= lastIndex && i < backtrace.Count; i ++) {
 				MD.StackFrame frame = frames [i];
 				MD.SourceLocation md_location = frame.SourceLocation;
 				DL.SourceLocation dl_location;

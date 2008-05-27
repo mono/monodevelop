@@ -14,16 +14,15 @@ namespace Mono.Debugging.Backend.Mdb
 {
 	class DebuggerController : MarshalByRefObject, IDebuggerController
 	{
-		IDebuggerSessionBackend debugger;
+		IDebuggerServer debugger;
 		Process process;
 		IDebuggerSessionFrontend frontend;
-		int mainProcessId;
 		
 		ManualResetEvent runningEvent = new ManualResetEvent (false);
 		ManualResetEvent exitRequestEvent = new ManualResetEvent (false);
 		ManualResetEvent exitedEvent = new ManualResetEvent (false);
 
-		public IDebuggerSessionBackend DebuggerServer {
+		public IDebuggerServer DebuggerServer {
 			get { return debugger; }
 		}
 		
@@ -34,7 +33,7 @@ namespace Mono.Debugging.Backend.Mdb
 
 		#region IDebuggerController Members
 
-		public void RegisterDebugger (IDebuggerSessionBackend debugger)
+		public void RegisterDebugger (IDebuggerServer debugger)
 		{
 			lock (this)
 			{
@@ -50,7 +49,6 @@ namespace Mono.Debugging.Backend.Mdb
 
 		public void OnMainProcessCreated (int processId)
 		{
-			mainProcessId = processId;
 			frontend.NotifyStarted ();
 		}
 
@@ -162,12 +160,23 @@ namespace Mono.Debugging.Backend.Mdb
 			}
 		}
 		
+		public void Exit ()
+		{
+			try {
+				debugger.Exit ();
+			} catch {
+				// Ignore
+			}
+		}
+		
 		public void StopDebugger ()
 		{
 			try {
 				Process oldProcess;
 				
 				lock (this) {
+					if (debugger == null)
+						return;
 					runningEvent.Reset ();
 					exitedEvent.Reset ();
 					exitRequestEvent.Set ();

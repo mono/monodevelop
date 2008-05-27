@@ -1,3 +1,12 @@
+2008-05-27  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* IDebuggerController.cs, MonoDebuggerSession.cs,
+	  Mono.Debugging.Backend.Mdb.mdp, IDebuggerServer.cs,
+	  DebuggerController.cs, Makefile: Track api changes. Properly
+	  redirect debugger output. Implemented support for adding
+	  breakpoints while the target process is running, it seems to kinda
+	  work.
+
 2008-05-22  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Mono.Debugging.Backend.Mdb.mdp: Updated project.

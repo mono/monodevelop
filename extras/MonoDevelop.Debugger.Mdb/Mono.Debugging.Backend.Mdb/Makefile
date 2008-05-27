@@ -55,6 +55,7 @@ FILES =  \
 	AssemblyInfo.cs \
 	DebuggerController.cs \
 	IDebuggerController.cs \
+	IDebuggerServer.cs \
 	MonoDebuggerSession.cs \
 	MonoDebuggerSessionFactory.cs 
 

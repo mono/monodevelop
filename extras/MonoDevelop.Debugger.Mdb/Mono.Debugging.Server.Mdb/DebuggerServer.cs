@@ -16,7 +16,7 @@ using Mono.Debugging.Backend.Mdb;
 
 namespace DebuggerServer
 {
-	class DebuggerServer : MarshalByRefObject, DB.IDebuggerSessionBackend, ISponsor
+	class DebuggerServer : MarshalByRefObject, IDebuggerServer, ISponsor
 	{
 		private IDebuggerController controller;
 		private MD.Debugger debugger;
@@ -34,6 +34,11 @@ namespace DebuggerServer
 			ILease lease = mbr.GetLifetimeService() as ILease;
 			lease.Register(this);
 			max_frames = 50;
+		}
+		
+		public override object InitializeLifetimeService ()
+		{
+			return null;
 		}
 
 		#region IDebugger Members
@@ -66,20 +71,21 @@ namespace DebuggerServer
 
 		public void Stop ()
 		{
-			lock (debugger) {
+			QueueTask (delegate {
 				if (internalInterruptionRequested) {
 					// Stop already internally requested. By resetting the flag, the interruption
 					// won't be considered internal anymore and the session won't be automatically restarted.
 					internalInterruptionRequested = false;
-					return;
 				}
-				process.MainThread.Stop ();
-			}
+				else
+					process.MainThread.Stop ();
+			});
 		}
 
 		public void Exit ()
 		{
 			lock (debugger) {
+				ResetTaskQueue ();
 				debugger.Kill ();
 			}
 		}
@@ -144,17 +150,21 @@ namespace DebuggerServer
 		public void RemoveBreakpoint (int handle)
 		{
 			//FIXME: handle errors
-			Event ev = session.GetEvent (handle);
-			session.DeleteEvent (ev);
+			QueueTask (delegate {
+				Event ev = session.GetEvent (handle);
+				session.DeleteEvent (ev);
+			});
 		}
 		
 		public void EnableBreakpoint (int handle, bool enable)
 		{
-			Event ev = session.GetEvent (handle);
-			if (enable)
-				ev.Activate (process.MainThread);
-			else
-				ev.Deactivate (process.MainThread);
+			RunWhenStopped (delegate {
+				Event ev = session.GetEvent (handle);
+				if (enable)
+					ev.Activate (process.MainThread);
+				else
+					ev.Deactivate (process.MainThread);
+			});
 		}
 
 		MD.SourceLocation FindFile (string filename, int line)
@@ -172,9 +182,9 @@ namespace DebuggerServer
 
 		public void Continue ()
 		{
-			lock (debugger) {
+			QueueTask (delegate {
 				process.MainThread.Continue ();
-			}
+			});
 		}
 		#endregion
 
@@ -219,9 +229,27 @@ namespace DebuggerServer
 			Console.WriteLine ("<< OnInitialized");
 		}
 
-		void OnTargetOutput (bool is_stderr, string line)
+		void OnTargetOutput (bool is_stderr, string text)
 		{
-			Console.WriteLine ("output: " + line);
+			controller.OnTargetOutput (is_stderr, text);
+		}
+		
+		void QueueTask (ST.WaitCallback cb)
+		{
+			lock (debugger) {
+				if (stoppedWorkQueue.Count > 0)
+					stoppedWorkQueue.Add (cb);
+				else
+					cb (null);
+			}
+		}
+		
+		void ResetTaskQueue ()
+		{
+			lock (debugger) {
+				internalInterruptionRequested = false;
+				stoppedWorkQueue.Clear ();
+			}
 		}
 		
 		void RunWhenStopped (ST.WaitCallback cb)
@@ -239,20 +267,6 @@ namespace DebuggerServer
 				if (!internalInterruptionRequested) {
 					internalInterruptionRequested = true;
 					process.MainThread.Stop ();
-					stoppedByMe = true;
-				}
-				ST.Monitor.Enter (cb);
-			}
-
-			try {
-				ST.Monitor.Wait (cb, 5000);
-			} finally {
-				ST.Monitor.Exit (cb);
-			}
-			
-			lock (debugger) {
-				if (stoppedByMe && internalInterruptionRequested) {
-					process.MainThread.Continue ();
 				}
 			}
 		}
@@ -261,6 +275,7 @@ namespace DebuggerServer
 		{
 			try {
 				Console.WriteLine ("pp OnTargetEvent: " + args.Type + " " + internalInterruptionRequested + " " + stoppedWorkQueue.Count);
+				
 				bool isStop = args.Type != MD.TargetEventType.FrameChanged &&
 					args.Type != MD.TargetEventType.TargetExited &&
 					args.Type != MD.TargetEventType.TargetRunning;
@@ -270,20 +285,37 @@ namespace DebuggerServer
 						// The process was stopped, but not as a result of the internal stop request.
 						// Reset the internal request flag, in order to avoid the process to be
 						// automatically restarted
-						if (args.Type != MD.TargetEventType.TargetInterrupted)
+						if (args.Type != MD.TargetEventType.TargetInterrupted && args.Type != MD.TargetEventType.TargetStopped)
 							internalInterruptionRequested = false;
 						
-						foreach (ST.WaitCallback cb in stoppedWorkQueue) {
-							cb (null);
-							lock (cb) {
-								ST.Monitor.PulseAll (cb);
-							}
+						bool notifyThisEvent = !internalInterruptionRequested;
+						
+						if (stoppedWorkQueue.Count > 0) {
+							// Execute queued work in another thread with a small delay
+							// since it is not safe to execute it here
+							System.Threading.ThreadPool.QueueUserWorkItem (delegate {
+								System.Threading.Thread.Sleep (50);
+								bool resume = false;
+								lock (debugger) {
+									foreach (ST.WaitCallback cb in stoppedWorkQueue) {
+										cb (null);
+									}
+									stoppedWorkQueue.Clear ();
+									if (internalInterruptionRequested) {
+										internalInterruptionRequested = false;
+										resume = true;
+									}
+								}
+								if (resume)
+									process.MainThread.Continue ();
+								else
+									NotifyTargetEvent (args);
+							});
+							return;
 						}
-						stoppedWorkQueue.Clear ();
 						
-						if (internalInterruptionRequested) {
+						if (!notifyThisEvent) {
 							// It's internal, don't notify the client
-							internalInterruptionRequested = false;
 							return;
 						}
 					}
@@ -302,6 +334,16 @@ namespace DebuggerServer
 */
 				}
 				
+				NotifyTargetEvent (args);
+
+			} catch (Exception e) {
+				Console.WriteLine ("*** DS.OnTargetEvent, exception : {0}", e.ToString ());
+			}
+		}
+		
+		void NotifyTargetEvent (MD.TargetEventArgs args)
+		{
+			try {
 				DL.TargetEventArgs dl_args = new DL.TargetEventArgs ((DL.TargetEventType)args.Type);
 
 				//FIXME: using Backtrace.Mode.Default right now

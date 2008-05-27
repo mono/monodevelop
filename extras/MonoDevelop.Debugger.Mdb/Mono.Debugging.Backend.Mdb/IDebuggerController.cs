@@ -4,7 +4,7 @@ namespace Mono.Debugging.Backend.Mdb
 {
 	public interface IDebuggerController
 	{
-		void RegisterDebugger(IDebuggerSessionBackend debugger);
+		void RegisterDebugger (IDebuggerServer debugger);
 		void WaitForExit();
 
 		//callbacks
@@ -20,6 +20,6 @@ namespace Mono.Debugging.Backend.Mdb
 		
 		void OnTargetEvent (TargetEventArgs args);
 		
-		void OnTargetOutput (bool isStderr, string line);
+		void OnTargetOutput (bool isStderr, string text);
 	}
 }
