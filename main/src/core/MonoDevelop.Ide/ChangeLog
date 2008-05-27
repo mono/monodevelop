@@ -1,5 +1,11 @@
 2008-05-27  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.Ide.Gui/Document.cs,
+	  MonoDevelop.Ide.Gui/SdiWorkspaceWindow.cs: Fixed dispose source
+	  editor widget bug.
+
+2008-05-27  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.Ide.Gui.Pads.ClassPad/ProjectNodeBuilder.cs,
 	  MonoDevelop.Ide.Gui.Pads.ClassPad/NamespaceNodeBuilder.cs,
 	  MonoDevelop.Ide.Gui.Pads.ClassPad/SolutionNodeBuilder.cs,

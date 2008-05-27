@@ -187,9 +187,9 @@ namespace MonoDevelop.SourceEditor
 			IdeApp.Workspace.ParserDatabase.ParseInformationChanged += OnParseInformationChanged;
 //			this.IsClassBrowserVisible = SourceEditorOptions.Options.EnableQuickFinder;
 			
-//			this.d += delegate {
-//				this.textEditor.Destroy ();
-//			};
+			this.Destroyed += delegate {
+				this.Dispose ();
+			};
 		}
 		
 		void ResetFocusChain ()
@@ -463,6 +463,7 @@ namespace MonoDevelop.SourceEditor
 			
 			if (isDisposed)
 				return;
+			
 			isDisposed = true;
 			StopParseInfoThread ();
 			

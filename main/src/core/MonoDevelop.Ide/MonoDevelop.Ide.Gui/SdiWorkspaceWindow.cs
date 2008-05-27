@@ -258,10 +258,10 @@ namespace MonoDevelop.Ide.Gui
 		public void CloseWindow (bool force, bool fromMenu, int pageNum)
 		{
 			WorkbenchWindowEventArgs args = new WorkbenchWindowEventArgs (force);
+			args.Cancel = false;
 			OnClosing (args);
 			if (args.Cancel)
 				return;
-
 			if (fromMenu == true) {
 				workbench.WorkbenchLayout.RemoveTab (tabControl.PageNum(this));
 			} else {
