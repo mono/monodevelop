@@ -107,6 +107,28 @@ namespace MonoDevelop.NUnit
 			return session;
 		}
 		
+		public UnitTest SearchTest (string fullName)
+		{
+			return SearchTest (rootTest, fullName);
+		}
+		
+		UnitTest SearchTest (UnitTest test, string fullName)
+		{
+			if (test == null)
+				return null;
+			if (test.FullName == fullName)
+				return test;
+			
+			UnitTestGroup group = test as UnitTestGroup;
+			if (group != null)  {
+				foreach (UnitTest t in group.Tests) {
+					UnitTest result = SearchTest (t, fullName);
+					if (result != null)
+						return result;
+				}
+			}
+			return null;
+		}
 		
 		protected virtual void OnOpenCombine (object sender, CombineEventArgs e)
 		{
