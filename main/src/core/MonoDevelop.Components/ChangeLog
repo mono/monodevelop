@@ -1,3 +1,9 @@
+2008-05-27  Mike Kestner <mkestner@novell.com> 
+
+	* MonoDevelop.Components.Commands/CommandManager.cs : revert
+	ContextMenu patch which causes exceptions with newer Gtk# versions
+	because finalization is more accurate.
+
 2008-03-06  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Components.addin.xml: Bump version to 1.0. Yay!
