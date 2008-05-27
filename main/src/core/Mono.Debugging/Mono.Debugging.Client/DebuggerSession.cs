@@ -40,12 +40,13 @@ namespace Mono.Debugging.Client
 	
 	public abstract class DebuggerSession: IDisposable
 	{
-		IDebuggerSessionBackend debugger;
 		InternalDebuggerSession frontend;
 		Dictionary<Breakpoint,int> breakpoints = new Dictionary<Breakpoint,int> ();
 		bool isRunning;
 		bool started;
 		BreakpointStore breakpointStore;
+		OutputWriterDelegate outputWriter;
+		bool disposed;
 		
 		public event EventHandler<TargetEventArgs> TargetEvent;
 		
@@ -74,12 +75,14 @@ namespace Mono.Debugging.Client
 		
 		public void Initialize ()
 		{
-			debugger = CreateBackend ();
 		}
 		
-		public void Dispose ()
+		public virtual void Dispose ()
 		{
-			Breakpoints = null;
+			if (!disposed) {
+				disposed = true;
+				Breakpoints = null;
+			}
 		}
 		
 		public BreakpointStore Breakpoints {
@@ -116,30 +119,30 @@ namespace Mono.Debugging.Client
 		public void Run (DebuggerStartInfo startInfo)
 		{
 			OnRunning ();
-			debugger.Run (startInfo);
+			OnRun (startInfo);
 		}
 		
 		public void NextLine ()
 		{
 			OnRunning ();
-			debugger.NextLine ();
+			OnNextLine ();
 		}
 
 		public void StepLine ()
 		{
 			OnRunning ();
-			debugger.StepLine ();
+			OnStepLine ();
 		}
 
 		public void Finish ()
 		{
 			OnRunning ();
-			debugger.Finish ();
+			OnFinish ();
 		}
 
 		void AddBreakpoint (Breakpoint bp)
 		{
-			int handle = debugger.InsertBreakpoint (bp.FileName, bp.Line, bp.Enabled);
+			int handle = OnInsertBreakpoint (bp.FileName, bp.Line, bp.Enabled);
 			breakpoints.Add (bp, handle);
 		}
 
@@ -148,7 +151,7 @@ namespace Mono.Debugging.Client
 			int handle;
 			if (GetHandle (bp, out handle)) {
 				breakpoints.Remove (bp);
-				debugger.RemoveBreakpoint (handle);
+				OnRemoveBreakpoint (handle);
 			}
 		}
 		
@@ -156,7 +159,7 @@ namespace Mono.Debugging.Client
 		{
 			int handle;
 			if (GetHandle (bp, out handle))
-				debugger.EnableBreakpoint (handle, bp.Enabled);
+				OnEnableBreakpoint (handle, bp.Enabled);
 		}
 		
 		void OnBreakpointAdded (object s, BreakpointEventArgs args)
@@ -197,20 +200,31 @@ namespace Mono.Debugging.Client
 		public void Continue ()
 		{
 			OnRunning ();
-			debugger.Continue ();
+			OnContinue ();
 		}
 
 		public void Stop ()
 		{
-			debugger.Stop ();
+			OnStop ();
 		}
 
 		public void Exit ()
 		{
-			debugger.Exit ();
+			OnExit ();
 		}
 
-		internal void OnTargetEvent (TargetEventArgs args)
+		public bool IsRunning {
+			get {
+				return isRunning;
+			}
+		}
+		
+		public OutputWriterDelegate OutputWriter {
+			get { return outputWriter; }
+			set { outputWriter = value; }
+		}
+
+		internal protected virtual void OnTargetEvent (TargetEventArgs args)
 		{
 			switch (args.Type) {
 				case TargetEventType.Exception:
@@ -263,14 +277,14 @@ namespace Mono.Debugging.Client
 				TargetEvent (this, args);
 		}
 		
-		internal void OnRunning ()
+		internal protected virtual void OnRunning ()
 		{
 			isRunning = true;
 			if (TargetStarted != null)
 				TargetStarted (this, EventArgs.Empty);
 		}
 		
-		internal void OnStarted ()
+		internal protected virtual void OnStarted ()
 		{
 			started = true;
 			foreach (Breakpoint bp in breakpointStore) {
@@ -278,54 +292,72 @@ namespace Mono.Debugging.Client
 			}
 		}
 		
-		internal void OnProcessCreated (ProcessEventArgs args)
+		internal protected virtual void OnProcessCreated (ProcessEventArgs args)
 		{
 			if (ProcessCreated != null)
 				ProcessCreated (this, args);
 		}
 		
-		internal void OnProcessExited (ProcessEventArgs args)
+		internal protected virtual void OnProcessExited (ProcessEventArgs args)
 		{
 			if (ProcessExited != null)
 				ProcessExited (this, args);
 		}
 		
-		internal void OnProcessExecd (ProcessEventArgs args)
+		internal protected virtual void OnProcessExecd (ProcessEventArgs args)
 		{
 			if (ProcessExecd != null)
 				ProcessExecd (this, args);
 		}
 		
-		internal void OnThreadCreated (ThreadEventArgs args)
+		internal protected virtual void OnThreadCreated (ThreadEventArgs args)
 		{
 			if (ThreadCreated != null)
 				ThreadCreated (this, args);
 		}
 		
-		internal void OnThreadExited (ThreadEventArgs args)
+		internal protected virtual void OnThreadExited (ThreadEventArgs args)
 		{
 			if (ThreadExited != null)
 				ThreadExited (this, args);
-			Dispose ();
 		}
 		
-/*		internal void OnTargetOutput (TargetOutputEventArgs args)
+		internal protected virtual void OnTargetOutput (bool isStderr, string text)
 		{
-			if (TargetOutput != null)
-				TargetOutput (this, args);
-		}*/
+			if (outputWriter != null)
+				outputWriter (isStderr, text);
+		}
 		
-		protected abstract IDebuggerSessionBackend CreateBackend ();
+		protected abstract void OnRun (DebuggerStartInfo startInfo);
 
+		protected abstract void OnStop ();
+		
+		protected abstract void OnExit ();
+
+		// Step one source line
+		protected abstract void OnStepLine ();
+
+		// Step one source line, but step over method calls
+		protected abstract void OnNextLine ();
+
+		// Continue until leaving the current method
+		protected abstract void OnFinish ();
+
+		//breakpoints etc
+
+		// returns a handle
+		protected abstract int OnInsertBreakpoint (string filename, int line, bool activate);
+
+		protected abstract void OnRemoveBreakpoint (int handle);
+		
+		protected abstract void OnEnableBreakpoint (int handle, bool enable);
+
+		protected abstract void OnContinue ();
+		
+		
 		protected IDebuggerSessionFrontend Frontend {
 			get {
 				return frontend;
-			}
-		}
-
-		public bool IsRunning {
-			get {
-				return isRunning;
 			}
 		}
 	}
@@ -369,9 +401,9 @@ namespace Mono.Debugging.Client
 			session.OnThreadExited (args);
 		}
 		
-		public void NotifyTargetOutput (bool isStderr, string line)
+		public void NotifyTargetOutput (bool isStderr, string text)
 		{
-//			session.OnTargetOutput (isStderr, line);
+			session.OnTargetOutput (isStderr, text);
 		}
 		
 		public void NotifyStarted ()
@@ -380,4 +412,5 @@ namespace Mono.Debugging.Client
 		}
 	}
 
+	public delegate void OutputWriterDelegate (bool isStderr, string text);
 }

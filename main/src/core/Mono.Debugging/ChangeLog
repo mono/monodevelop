@@ -1,3 +1,10 @@
+2008-05-27  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Mono.Debugging.Client/DebuggerSession.cs, Mono.Debugging.mdp,
+	  Mono.Debugging.Backend/IDebuggerSessionBackend.cs, Makefile.am:
+	  Removed IDebuggerSessionBackend interface. Methods must now be
+	  implemented using DebuggerSession overridables.
+
 2008-05-15  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Mono.Debugging.Client/Backtrace.cs,

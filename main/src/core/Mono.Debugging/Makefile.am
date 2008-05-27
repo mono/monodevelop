@@ -10,7 +10,6 @@ REFS =  \
 FILES =  \
 	Mono.Debugging.Backend/DebuggerExtensionNode.cs \
 	Mono.Debugging.Backend/IBacktrace.cs \
-	Mono.Debugging.Backend/IDebuggerSessionBackend.cs \
 	Mono.Debugging.Backend/IDebuggerSessionFactory.cs \
 	Mono.Debugging.Backend/IDebuggerSessionFrontend.cs \
 	Mono.Debugging.Backend/IObjectValueSource.cs \
