@@ -863,7 +863,7 @@ namespace Mono.TextEditor
 			rtf.Append (@"\f0");
 			try {
 				string fontName = TextEditorOptions.Options.Font.ToString ();
-				double fontSize = Double.Parse (fontName.Substring (fontName.LastIndexOf (' ')  + 1)) * 2;
+				double fontSize = Double.Parse (fontName.Substring (fontName.LastIndexOf (' ')  + 1), System.Globalization.CultureInfo.InvariantCulture) * 2;
 				rtf.Append (@"\fs");
 				rtf.Append (fontSize);
 			} catch (Exception) {};
