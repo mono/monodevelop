@@ -33,7 +33,7 @@ using Mono.Cecil;
 
 using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
-using MonoDevelop.Ide.Dom.Output;
+using MonoDevelop.Projects.Dom.Output;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Pads;
 

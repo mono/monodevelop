@@ -31,7 +31,7 @@ using Mono.Cecil;
 
 namespace MonoDevelop.AssemblyBrowser
 {
-	public class DomCecilReturnType : MonoDevelop.Ide.Dom.DomReturnType
+	public class DomCecilReturnType : MonoDevelop.Projects.Dom.DomReturnType
 	{
 		public DomCecilReturnType (TypeReference typeReference)
 		{

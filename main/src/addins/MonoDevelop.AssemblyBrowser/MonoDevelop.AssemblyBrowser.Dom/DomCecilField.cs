@@ -31,7 +31,7 @@ using Mono.Cecil;
 
 namespace MonoDevelop.AssemblyBrowser.Dom
 {
-	public class DomCecilField : MonoDevelop.Ide.Dom.DomField
+	public class DomCecilField : MonoDevelop.Projects.Dom.DomField
 	{
 		FieldDefinition fieldDefinition;
 		
@@ -41,7 +41,7 @@ namespace MonoDevelop.AssemblyBrowser.Dom
 			}
 		}
 		
-		public DomCecilField (MonoDevelop.Ide.Dom.IType declaringType, FieldDefinition fieldDefinition)
+		public DomCecilField (MonoDevelop.Projects.Dom.IType declaringType, FieldDefinition fieldDefinition)
 		{
 			this.declaringType   = declaringType;
 			this.fieldDefinition = fieldDefinition;

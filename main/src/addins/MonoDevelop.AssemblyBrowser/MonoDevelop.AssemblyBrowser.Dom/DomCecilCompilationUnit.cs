@@ -27,7 +27,7 @@
 //
 
 using System;
-using MonoDevelop.Ide.Dom;
+using MonoDevelop.Projects.Dom;
 using Mono.Cecil;
 
 namespace MonoDevelop.AssemblyBrowser.Dom

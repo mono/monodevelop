@@ -31,7 +31,7 @@ using Mono.Cecil;
 
 namespace MonoDevelop.AssemblyBrowser
 {
-	public class DomCecilAttribute : MonoDevelop.Ide.Dom.DomAttribute
+	public class DomCecilAttribute : MonoDevelop.Projects.Dom.DomAttribute
 	{
 		CustomAttribute customAttribute;
 		

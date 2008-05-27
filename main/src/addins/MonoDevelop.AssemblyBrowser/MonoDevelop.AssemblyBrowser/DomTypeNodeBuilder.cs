@@ -33,8 +33,8 @@ using Mono.Cecil;
 
 using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
-using MonoDevelop.Ide.Dom;
-using MonoDevelop.Ide.Dom.Output;
+using MonoDevelop.Projects.Dom;
+using MonoDevelop.Projects.Dom.Output;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.AssemblyBrowser.Dom;
@@ -67,7 +67,7 @@ namespace MonoDevelop.AssemblyBrowser
 			label = AmbienceService.Default.GetString (type, OutputFlags.ClassBrowserEntries);
 			if (type.IsPrivate || type.IsInternal)
 				label = DomMethodNodeBuilder.FormatPrivate (label);
-			icon = type.Icon;
+			icon = MonoDevelop.Ide.Gui.IdeApp.Services.Resources.GetIcon (type.StockIcon, Gtk.IconSize.Menu);
 		}
 		
 		public override void BuildChildNodes (ITreeBuilder ctx, object dataObject)

@@ -31,7 +31,7 @@ using Mono.Cecil;
 
 namespace MonoDevelop.AssemblyBrowser.Dom
 {
-	public class DomCecilMethod : MonoDevelop.Ide.Dom.DomMethod
+	public class DomCecilMethod : MonoDevelop.Projects.Dom.DomMethod
 	{
 		MethodDefinition methodDefinition;
 		
@@ -41,7 +41,7 @@ namespace MonoDevelop.AssemblyBrowser.Dom
 			}
 		}
 		
-		public DomCecilMethod (MonoDevelop.Ide.Dom.IType declaringType, MethodDefinition methodDefinition)
+		public DomCecilMethod (MonoDevelop.Projects.Dom.IType declaringType, MethodDefinition methodDefinition)
 		{
 			this.declaringType    = declaringType;
 			this.methodDefinition = methodDefinition;

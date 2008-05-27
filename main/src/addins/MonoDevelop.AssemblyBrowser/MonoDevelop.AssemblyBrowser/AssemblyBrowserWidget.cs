@@ -40,7 +40,7 @@ using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.AssemblyBrowser.Dom;
-using MonoDevelop.Ide.Dom;
+using MonoDevelop.Projects.Dom;
 
 namespace MonoDevelop.AssemblyBrowser
 {
@@ -130,7 +130,7 @@ namespace MonoDevelop.AssemblyBrowser
 			this.searchTreeview.RowActivated += delegate {
 				Gtk.TreeIter selectedIter;
 				if (searchTreeview.Selection.GetSelected (out selectedIter)) {
-					MonoDevelop.Ide.Dom.IMember member = (MonoDevelop.Ide.Dom.IMember)(searchMode != SearchMode.Type ? memberListStore.GetValue (selectedIter, 4) : typeListStore.GetValue (selectedIter, 4));
+					MonoDevelop.Projects.Dom.IMember member = (MonoDevelop.Projects.Dom.IMember)(searchMode != SearchMode.Type ? memberListStore.GetValue (selectedIter, 4) : typeListStore.GetValue (selectedIter, 4));
 					MonoDevelop.Ide.Gui.Pads.ITreeNavigator nav = SearchMember (member);
 					if (nav != null) {
 						nav.ExpandToNode ();
@@ -295,8 +295,8 @@ namespace MonoDevelop.AssemblyBrowser
 							}
 							DispatchService.GuiSyncDispatch (delegate {
 								MonoDevelop.Ide.Gui.IdeApp.Workbench.StatusBar.SetProgressFraction ((double)curType / types);
-								foreach (MonoDevelop.Ide.Dom.IMember member in members) {
-									memberListStore.AppendValues (member.Icon,
+								foreach (MonoDevelop.Projects.Dom.IMember member in members) {
+									memberListStore.AppendValues (MonoDevelop.Ide.Gui.IdeApp.Services.Resources.GetIcon (member.StockIcon, Gtk.IconSize.Menu),
 									                              member.Name,
 									                              type.FullName,
 									                              unit.AssemblyDefinition.Name.FullName,
@@ -322,8 +322,8 @@ namespace MonoDevelop.AssemblyBrowser
 							}
 							DispatchService.GuiSyncDispatch (delegate {
 								MonoDevelop.Ide.Gui.IdeApp.Workbench.StatusBar.SetProgressFraction ((double)curType / types);
-								foreach (MonoDevelop.Ide.Dom.IMember member in members) {
-									memberListStore.AppendValues (member.Icon,
+								foreach (MonoDevelop.Projects.Dom.IMember member in members) {
+									memberListStore.AppendValues (MonoDevelop.Ide.Gui.IdeApp.Services.Resources.GetIcon (member.StockIcon, Gtk.IconSize.Menu),
 									                              member.Name,
 									                              type.FullName,
 									                              unit.AssemblyDefinition.Name.FullName,
@@ -348,8 +348,8 @@ namespace MonoDevelop.AssemblyBrowser
 							}
 							DispatchService.GuiSyncDispatch (delegate {
 								MonoDevelop.Ide.Gui.IdeApp.Workbench.StatusBar.SetProgressFraction ((double)curType / types);
-								foreach (MonoDevelop.Ide.Dom.IMember member in members) {
-									memberListStore.AppendValues (member.Icon,
+								foreach (MonoDevelop.Projects.Dom.IMember member in members) {
+									memberListStore.AppendValues (MonoDevelop.Ide.Gui.IdeApp.Services.Resources.GetIcon (member.StockIcon, Gtk.IconSize.Menu),
 									                              member.Name,
 									                              type.FullName,
 									                              unit.AssemblyDefinition.Name.FullName,
@@ -366,7 +366,7 @@ namespace MonoDevelop.AssemblyBrowser
 							DispatchService.GuiSyncDispatch (delegate {
 								MonoDevelop.Ide.Gui.IdeApp.Workbench.StatusBar.SetProgressFraction ((double)curType / types);
 								if (type.FullName.ToUpper ().IndexOf (pattern) >= 0) {
-									typeListStore.AppendValues (type.Icon,
+									typeListStore.AppendValues (MonoDevelop.Ide.Gui.IdeApp.Services.Resources.GetIcon (type.StockIcon, Gtk.IconSize.Menu),
 									                            type.Name,
 									                            type.Namespace,
 									                            unit.AssemblyDefinition.Name.FullName,

@@ -29,7 +29,7 @@
 using System;
 using System.Collections.Generic;
 
-using MonoDevelop.Ide.Dom;
+using MonoDevelop.Projects.Dom;
 
 namespace MonoDevelop.AssemblyBrowser
 {

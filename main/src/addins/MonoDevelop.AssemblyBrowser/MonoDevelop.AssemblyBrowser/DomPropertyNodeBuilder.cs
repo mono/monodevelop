@@ -32,8 +32,8 @@ using System.Text;
 using Mono.Cecil;
 
 using MonoDevelop.Core.Gui;
-using MonoDevelop.Ide.Dom;
-using MonoDevelop.Ide.Dom.Output;
+using MonoDevelop.Projects.Dom;
+using MonoDevelop.Projects.Dom.Output;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Pads;
 
@@ -57,7 +57,7 @@ namespace MonoDevelop.AssemblyBrowser
 			label = AmbienceService.Default.GetString (property, OutputFlags.ClassBrowserEntries);
 			if (property.IsPrivate || property.IsInternal)
 				label = DomMethodNodeBuilder.FormatPrivate (label);
-			icon = property.Icon;
+			icon = MonoDevelop.Ide.Gui.IdeApp.Services.Resources.GetIcon (property.StockIcon, Gtk.IconSize.Menu);
 		}
 		public override int CompareObjects (ITreeNavigator thisNode, ITreeNavigator otherNode)
 		{

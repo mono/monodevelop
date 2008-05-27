@@ -30,7 +30,7 @@ using Mono.Cecil;
 
 namespace MonoDevelop.AssemblyBrowser.Dom
 {
-	public class DomCecilEvent : MonoDevelop.Ide.Dom.DomEvent
+	public class DomCecilEvent : MonoDevelop.Projects.Dom.DomEvent
 	{
 		EventDefinition eventDefinition;
 		
@@ -40,14 +40,14 @@ namespace MonoDevelop.AssemblyBrowser.Dom
 			}
 		}
 		
-		public  DomCecilEvent (MonoDevelop.Ide.Dom.IType declaringType, EventDefinition eventDefinition)
+		public  DomCecilEvent (MonoDevelop.Projects.Dom.IType declaringType, EventDefinition eventDefinition)
 		{
 			this.declaringType      = declaringType;
 			this.eventDefinition = eventDefinition;
 			base.name            = eventDefinition.Name;
 			base.modifiers       = DomCecilType.GetModifiers (eventDefinition.AddMethod.Attributes);
 			if (!eventDefinition.IsSpecialName)
-				base.modifiers &= ~MonoDevelop.Ide.Dom.Modifiers.SpecialName;
+				base.modifiers &= ~MonoDevelop.Projects.Dom.Modifiers.SpecialName;
 		}
 	}
 }

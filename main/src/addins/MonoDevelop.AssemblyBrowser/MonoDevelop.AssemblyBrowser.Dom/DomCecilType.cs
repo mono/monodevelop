@@ -29,11 +29,11 @@
 using System;
 using System.Collections.Generic;
 using Mono.Cecil;
-using MonoDevelop.Ide.Dom;
+using MonoDevelop.Projects.Dom;
 
 namespace MonoDevelop.AssemblyBrowser.Dom
 {
-	public class DomCecilType : MonoDevelop.Ide.Dom.DomType
+	public class DomCecilType : MonoDevelop.Projects.Dom.DomType
 	{
 		TypeDefinition typeDefinition;
 		
@@ -90,9 +90,9 @@ namespace MonoDevelop.AssemblyBrowser.Dom
 		}
 				
 		
-		public static MonoDevelop.Ide.Dom.Modifiers GetModifiers (Mono.Cecil.TypeAttributes attr)
+		public static MonoDevelop.Projects.Dom.Modifiers GetModifiers (Mono.Cecil.TypeAttributes attr)
 		{
-			MonoDevelop.Ide.Dom.Modifiers result = MonoDevelop.Ide.Dom.Modifiers.None;
+			MonoDevelop.Projects.Dom.Modifiers result = MonoDevelop.Projects.Dom.Modifiers.None;
 			if ((attr & TypeAttributes.Abstract) == TypeAttributes.Abstract)
 				result |= Modifiers.Abstract;
 			if ((attr & TypeAttributes.Sealed) == TypeAttributes.Sealed)
@@ -114,9 +114,9 @@ namespace MonoDevelop.AssemblyBrowser.Dom
 			return result;
 		}
 		
-		public static MonoDevelop.Ide.Dom.Modifiers GetModifiers (Mono.Cecil.FieldAttributes attr)
+		public static MonoDevelop.Projects.Dom.Modifiers GetModifiers (Mono.Cecil.FieldAttributes attr)
 		{
-			MonoDevelop.Ide.Dom.Modifiers result = MonoDevelop.Ide.Dom.Modifiers.None;
+			MonoDevelop.Projects.Dom.Modifiers result = MonoDevelop.Projects.Dom.Modifiers.None;
 			
 			if ((attr & FieldAttributes.Literal) == FieldAttributes.Literal) 
 				result |= Modifiers.Literal;
@@ -143,17 +143,17 @@ namespace MonoDevelop.AssemblyBrowser.Dom
 			return result;
 		}
 		
-		public static MonoDevelop.Ide.Dom.Modifiers GetModifiers (Mono.Cecil.EventAttributes attr)
+		public static MonoDevelop.Projects.Dom.Modifiers GetModifiers (Mono.Cecil.EventAttributes attr)
 		{
-			MonoDevelop.Ide.Dom.Modifiers result = MonoDevelop.Ide.Dom.Modifiers.None;
+			MonoDevelop.Projects.Dom.Modifiers result = MonoDevelop.Projects.Dom.Modifiers.None;
 			if ((attr & EventAttributes.SpecialName) == EventAttributes.SpecialName) 
 				result |= Modifiers.SpecialName;
 			return result;
 		}
 		
-		public static MonoDevelop.Ide.Dom.Modifiers GetModifiers (Mono.Cecil.MethodAttributes attr)
+		public static MonoDevelop.Projects.Dom.Modifiers GetModifiers (Mono.Cecil.MethodAttributes attr)
 		{
-			MonoDevelop.Ide.Dom.Modifiers result = MonoDevelop.Ide.Dom.Modifiers.None;
+			MonoDevelop.Projects.Dom.Modifiers result = MonoDevelop.Projects.Dom.Modifiers.None;
 			
 			if ((attr & MethodAttributes.Static) == MethodAttributes.Static) 
 				result |= Modifiers.Static;
@@ -183,9 +183,9 @@ namespace MonoDevelop.AssemblyBrowser.Dom
 			return result;
 		}
 		
-		public static MonoDevelop.Ide.Dom.Modifiers GetModifiers (Mono.Cecil.PropertyAttributes attr)
+		public static MonoDevelop.Projects.Dom.Modifiers GetModifiers (Mono.Cecil.PropertyAttributes attr)
 		{
-			MonoDevelop.Ide.Dom.Modifiers result = MonoDevelop.Ide.Dom.Modifiers.None;
+			MonoDevelop.Projects.Dom.Modifiers result = MonoDevelop.Projects.Dom.Modifiers.None;
 			if ((attr & PropertyAttributes.SpecialName) == PropertyAttributes.SpecialName) 
 				result |= Modifiers.SpecialName;
 			return result;

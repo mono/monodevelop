@@ -31,7 +31,7 @@ using Mono.Cecil;
 
 namespace MonoDevelop.AssemblyBrowser.Dom
 {
-	public class DomCecilProperty : MonoDevelop.Ide.Dom.DomProperty
+	public class DomCecilProperty : MonoDevelop.Projects.Dom.DomProperty
 	{
 		PropertyDefinition propertyDefinition;
 		
@@ -41,7 +41,7 @@ namespace MonoDevelop.AssemblyBrowser.Dom
 			}
 		}
 		
-		public DomCecilProperty (MonoDevelop.Ide.Dom.IType declaringType, PropertyDefinition propertyDefinition)
+		public DomCecilProperty (MonoDevelop.Projects.Dom.IType declaringType, PropertyDefinition propertyDefinition)
 		{
 			this.declaringType      = declaringType;
 			this.propertyDefinition = propertyDefinition;
@@ -49,7 +49,7 @@ namespace MonoDevelop.AssemblyBrowser.Dom
 			
 			base.modifiers          = DomCecilType.GetModifiers ((propertyDefinition.GetMethod != null ? propertyDefinition.GetMethod : propertyDefinition.SetMethod).Attributes);
 			if (!propertyDefinition.IsSpecialName)
-				base.modifiers &= ~MonoDevelop.Ide.Dom.Modifiers.SpecialName;
+				base.modifiers &= ~MonoDevelop.Projects.Dom.Modifiers.SpecialName;
 			base.returnType         = new DomCecilReturnType (propertyDefinition.PropertyType);
 		}
 	}

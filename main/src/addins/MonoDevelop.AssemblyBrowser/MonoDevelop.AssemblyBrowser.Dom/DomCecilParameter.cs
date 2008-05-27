@@ -31,7 +31,7 @@ using Mono.Cecil;
 
 namespace MonoDevelop.AssemblyBrowser.Dom
 {
-	public class DomCecilParameter : MonoDevelop.Ide.Dom.DomParameter
+	public class DomCecilParameter : MonoDevelop.Projects.Dom.DomParameter
 	{
 		ParameterDefinition parameterDefinition;
 		

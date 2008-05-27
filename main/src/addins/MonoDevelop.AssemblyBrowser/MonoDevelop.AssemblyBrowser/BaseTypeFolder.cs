@@ -27,7 +27,7 @@
 //
 
 using System;
-using MonoDevelop.Ide.Dom;
+using MonoDevelop.Projects.Dom;
 namespace MonoDevelop.AssemblyBrowser
 {
 	public class BaseTypeFolder
