@@ -431,36 +431,6 @@ namespace MonoDevelop.NUnit
 			RunSelectedTest ();
 		}
 		
-		
-		public UnitTest SearchTest (string fullName)
-		{
-			foreach (UnitTest t in testService.RootTests) {
-				UnitTest r = SearchTest (t, fullName);
-				if (r != null)
-					return r;
-			}
-			return null;
-		}
-		
-		public static UnitTest SearchTest (UnitTest test, string fullName)
-		{
-			if (test == null)
-				return null;
-			if (test.FullName == fullName)
-				return test;
-			
-			UnitTestGroup group = test as UnitTestGroup;
-			if (group != null)  {
-				foreach (UnitTest t in group.Tests) {
-					UnitTest result = SearchTest (t, fullName);
-					if (result != null)
-						return result;
-				}
-			}
-			return null;
-		}
-		
-		
 		void RunTest (ITreeNavigator nav)
 		{
 			if (nav == null)
@@ -479,7 +449,7 @@ namespace MonoDevelop.NUnit
 				IAsyncOperation op = IdeApp.ProjectOperations.Build (IdeApp.Workspace);
 				op.Completed += delegate {
 					GLib.Timeout.Add (50, delegate {
-						test = SearchTest (fullName);
+						test = testService.SearchTest (fullName);
 						if (test == null)
 							return false;
 						runningTestOperation = testService.RunTest (test);

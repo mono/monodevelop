@@ -105,6 +105,34 @@ namespace MonoDevelop.NUnit
 			return session;
 		}
 		
+		public UnitTest SearchTest (string fullName)
+		{
+			foreach (UnitTest t in RootTests) {
+				UnitTest r = SearchTest (t, fullName);
+				if (r != null)
+					return r;
+			}
+			return null;
+		}
+		
+		UnitTest SearchTest (UnitTest test, string fullName)
+		{
+			if (test == null)
+				return null;
+			if (test.FullName == fullName)
+				return test;
+			
+			UnitTestGroup group = test as UnitTestGroup;
+			if (group != null)  {
+				foreach (UnitTest t in group.Tests) {
+					UnitTest result = SearchTest (t, fullName);
+					if (result != null)
+						return result;
+				}
+			}
+			return null;
+		}
+		
 		void OnWorkspaceChanged (object sender, EventArgs e)
 		{
 			RebuildTests ();

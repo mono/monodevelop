@@ -147,6 +147,7 @@ namespace MonoDevelop.NUnit
 			
 			buttonRun = new ToolButton (new Gtk.Image (Gtk.Stock.Execute, IconSize.Menu), GettextCatalog.GetString ("Run Test"));
 			buttonRun.IsImportant = true;
+			buttonRun.Sensitive = false;
 			toolbar.Insert (buttonRun, -1);
 			
 			buttonStop = new ToolButton (Gtk.Stock.Stop);
@@ -252,6 +253,11 @@ namespace MonoDevelop.NUnit
 			testsFailed = 0;
 			testsIgnored = 0;
 			UpdateCounters ();
+			if (rootTest != null) {
+				rootTest = testService.SearchTest (rootTest.FullName);
+				if (rootTest == null)
+					buttonRun.Sensitive = false;
+			}
 		}
 		
 		bool Running {
@@ -373,6 +379,8 @@ namespace MonoDevelop.NUnit
 		
 		void OnRunClicked (object sender, EventArgs args)
 		{
+			if (rootTest == null)
+				return;
 			NUnitService testService = (NUnitService) ServiceManager.GetService (typeof(NUnitService));
 			testService.RunTest (rootTest);
 		}
