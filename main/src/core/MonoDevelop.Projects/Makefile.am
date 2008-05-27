@@ -26,6 +26,49 @@ FILES =  \
 	MonoDevelop.Projects.CodeGeneration/RefactorOperations.cs \
 	MonoDevelop.Projects.CodeGeneration/XmlCodeDomReader.cs \
 	MonoDevelop.Projects.Documentation/IDocumentationService.cs \
+	MonoDevelop.Projects.Dom.Output/Ambience.cs \
+	MonoDevelop.Projects.Dom.Output/AmbienceService.cs \
+	MonoDevelop.Projects.Dom.Output/NetAmbience.cs \
+	MonoDevelop.Projects.Dom.Output/OutputFlags.cs \
+	MonoDevelop.Projects.Dom.Parser/AbstractParser.cs \
+	MonoDevelop.Projects.Dom.Parser/IParser.cs \
+	MonoDevelop.Projects.Dom.Parser/ProjectDom.cs \
+	MonoDevelop.Projects.Dom.Parser/ProjectDomEventArgs.cs \
+	MonoDevelop.Projects.Dom.Parser/ProjectParserService.cs \
+	MonoDevelop.Projects.Dom/AbstractMember.cs \
+	MonoDevelop.Projects.Dom/AttributeTarget.cs \
+	MonoDevelop.Projects.Dom/ClassType.cs \
+	MonoDevelop.Projects.Dom/Comment.cs \
+	MonoDevelop.Projects.Dom/CommentType.cs \
+	MonoDevelop.Projects.Dom/CompilationUnit.cs \
+	MonoDevelop.Projects.Dom/CompilationUnitEventArgs.cs \
+	MonoDevelop.Projects.Dom/DomAttribute.cs \
+	MonoDevelop.Projects.Dom/DomEvent.cs \
+	MonoDevelop.Projects.Dom/DomField.cs \
+	MonoDevelop.Projects.Dom/DomLocation.cs \
+	MonoDevelop.Projects.Dom/DomMethod.cs \
+	MonoDevelop.Projects.Dom/DomParameter.cs \
+	MonoDevelop.Projects.Dom/DomProperty.cs \
+	MonoDevelop.Projects.Dom/DomRegion.cs \
+	MonoDevelop.Projects.Dom/DomReturnType.cs \
+	MonoDevelop.Projects.Dom/DomType.cs \
+	MonoDevelop.Projects.Dom/DomUsing.cs \
+	MonoDevelop.Projects.Dom/Error.cs \
+	MonoDevelop.Projects.Dom/IAttribute.cs \
+	MonoDevelop.Projects.Dom/ICompilationUnit.cs \
+	MonoDevelop.Projects.Dom/IDomVisitor.cs \
+	MonoDevelop.Projects.Dom/IEvent.cs \
+	MonoDevelop.Projects.Dom/IField.cs \
+	MonoDevelop.Projects.Dom/IMember.cs \
+	MonoDevelop.Projects.Dom/IMethod.cs \
+	MonoDevelop.Projects.Dom/IParameter.cs \
+	MonoDevelop.Projects.Dom/IProperty.cs \
+	MonoDevelop.Projects.Dom/IReturnType.cs \
+	MonoDevelop.Projects.Dom/IType.cs \
+	MonoDevelop.Projects.Dom/IUsing.cs \
+	MonoDevelop.Projects.Dom/Modifiers.cs \
+	MonoDevelop.Projects.Dom/ParameterModifiers.cs \
+	MonoDevelop.Projects.Dom/TypeParameter.cs \
 	MonoDevelop.Projects.Extensions/DataTypeCodon.cs \
 	MonoDevelop.Projects.Extensions/DotNetProjectNode.cs \
 	MonoDevelop.Projects.Extensions/DotNetProjectSubtypeNode.cs \
