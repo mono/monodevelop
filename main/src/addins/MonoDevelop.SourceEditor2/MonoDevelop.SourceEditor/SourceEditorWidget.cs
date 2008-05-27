@@ -317,6 +317,8 @@ namespace MonoDevelop.SourceEditor
 							if (marker != null) {
 								marker.IsFolded = true;
 								foreach (IClass cl in widget.lastCu.Classes) {
+									if (base.IsStopping)
+										return;
 									if (IsInsideMember (marker, region, cl)) {
 										marker.IsFolded = false;
 										break;
@@ -354,9 +356,7 @@ namespace MonoDevelop.SourceEditor
 				return;
 			lock (syncObject) {
 				lastCu = args.ParseInformation.MostRecentCompilationUnit as ICompilationUnit;
-				if (parseInformationUpdaterWorkerThread != null) 
-					parseInformationUpdaterWorkerThread.Stop ();
-				
+				StopParseInfoThread ();
 				if (lastCu != null) {
 					parseInformationUpdaterWorkerThread = new ParseInformationUpdaterWorkerThread (this, args);
 					parseInformationUpdaterWorkerThread.Start ();
@@ -364,6 +364,13 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 		
+		void StopParseInfoThread ()
+		{
+			if (parseInformationUpdaterWorkerThread != null) {
+				parseInformationUpdaterWorkerThread.Stop ();
+				parseInformationUpdaterWorkerThread = null;
+			}
+		}
 		void UpdateAutocorTimer ()
 		{
 			uint timeout = 900;
@@ -431,6 +438,7 @@ namespace MonoDevelop.SourceEditor
 				doc.CommitLineUpdate (doc.OffsetToLineNumber(line.Offset));
 			}
 		}
+		
 		void UnderLineError (ErrorInfo info)
 		{
 			if (this.isDisposed)
@@ -456,10 +464,7 @@ namespace MonoDevelop.SourceEditor
 			if (isDisposed)
 				return;
 			isDisposed = true;
-			if (parseInformationUpdaterWorkerThread != null) {
-				parseInformationUpdaterWorkerThread.Stop ();
-				parseInformationUpdaterWorkerThread.WaitForFinish ();
-			}
+			StopParseInfoThread ();
 			
 			this.textEditor = null;
 			this.lastActiveEditor = null;
