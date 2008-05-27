@@ -1,5 +1,9 @@
 2008-05-27  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* mono.debugging.backend.mdb.pc.in: Added missing file.
+
+2008-05-27  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* IDebuggerController.cs, MonoDebuggerSession.cs,
 	  Mono.Debugging.Backend.Mdb.mdp, IDebuggerServer.cs,
 	  DebuggerController.cs, Makefile: Track api changes. Properly
