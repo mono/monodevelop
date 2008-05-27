@@ -52,12 +52,12 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 		protected override void Initialize ()
 		{
 			changeClassInformationHandler = (ClassInformationEventHandler) DispatchService.GuiDispatch (new ClassInformationEventHandler (OnClassInformationChanged));
-			IdeApp.ProjectOperations.ParserDatabase.ClassInformationChanged += changeClassInformationHandler;
+			IdeApp.Workspace.ParserDatabase.ClassInformationChanged += changeClassInformationHandler;
 		}
 		
 		public override void Dispose ()
 		{
-			IdeApp.ProjectOperations.ParserDatabase.ClassInformationChanged -= changeClassInformationHandler;
+			IdeApp.Workspace.ParserDatabase.ClassInformationChanged -= changeClassInformationHandler;
 		}
 		
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
@@ -77,13 +77,13 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 			NamespaceData nsData = dataObject as NamespaceData;
 			
 			if (nsData.Project != null) {
-				IParserContext ctx = IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (nsData.Project);
+				IParserContext ctx = IdeApp.Workspace.ParserDatabase.GetProjectParserContext (nsData.Project);
 				LanguageItemCollection list = ctx.GetNamespaceContents (nsData.FullName, false);
 				AddProjectContent (builder, nsData.Project, nsData, list);
 			}
 			else {
-				foreach (Project p in IdeApp.ProjectOperations.CurrentOpenCombine.GetAllProjects ()) {
-					IParserContext ctx = IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (p);
+				foreach (Project p in IdeApp.Workspace.GetAllProjects ()) {
+					IParserContext ctx = IdeApp.Workspace.ParserDatabase.GetProjectParserContext (p);
 					LanguageItemCollection list = ctx.GetNamespaceContents (nsData.FullName, false);
 					AddProjectContent (builder, p, nsData, list);
 				}

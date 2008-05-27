@@ -164,6 +164,19 @@ FILES =  \
 	MonoDevelop.Ide.Gui.Pads.ClassBrowser/ProjectNodeBuilder.cs \
 	MonoDevelop.Ide.Gui.Pads.ClassBrowser/SolutionNodeBuilder.cs \
 	MonoDevelop.Ide.Gui.Pads.ClassBrowser/TypeNodeBuilder.cs \
+	MonoDevelop.Ide.Gui.Pads.ClassPad/ClassData.cs \
+	MonoDevelop.Ide.Gui.Pads.ClassPad/ClassNodeBuilder.cs \
+	MonoDevelop.Ide.Gui.Pads.ClassPad/CombineNodeBuilder.cs \
+	MonoDevelop.Ide.Gui.Pads.ClassPad/EventNodeBuilder.cs \
+	MonoDevelop.Ide.Gui.Pads.ClassPad/FieldNodeBuilder.cs \
+	MonoDevelop.Ide.Gui.Pads.ClassPad/MemberNodeBuilder.cs \
+	MonoDevelop.Ide.Gui.Pads.ClassPad/MemberNodeCommandHandler.cs \
+	MonoDevelop.Ide.Gui.Pads.ClassPad/MethodNodeBuilder.cs \
+	MonoDevelop.Ide.Gui.Pads.ClassPad/NamespaceData.cs \
+	MonoDevelop.Ide.Gui.Pads.ClassPad/NamespaceNodeBuilder.cs \
+	MonoDevelop.Ide.Gui.Pads.ClassPad/ProjectNodeBuilder.cs \
+	MonoDevelop.Ide.Gui.Pads.ClassPad/PropertyNodeBuilder.cs \
+	MonoDevelop.Ide.Gui.Pads.ClassPad/SolutionNodeBuilder.cs \
 	MonoDevelop.Ide.Gui.Pads.ProjectPad/CombineNodeBuilder.cs \
 	MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs \
 	MonoDevelop.Ide.Gui.Pads.ProjectPad/LinkedFilesFolder.cs \

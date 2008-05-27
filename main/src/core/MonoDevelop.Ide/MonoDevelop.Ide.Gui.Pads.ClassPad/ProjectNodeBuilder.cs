@@ -44,7 +44,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 
 		public ProjectNodeBuilder ()
 		{
-			projectNameChanged = (SolutionItemRenamedEventHandler) DispatchService.GuiDispatch (new CombineEntryRenamedEventHandler (OnProjectRenamed));
+			projectNameChanged = (SolutionItemRenamedEventHandler) DispatchService.GuiDispatch (new SolutionItemRenamedEventHandler (OnProjectRenamed));
 		}
 		
 		public override Type NodeDataType {
@@ -90,7 +90,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 		{
 			bool publicOnly = builder.Options ["PublicApiOnly"];
 			
-			IParserContext ctx = IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (project);
+			IParserContext ctx = IdeApp.Workspace.ParserDatabase.GetProjectParserContext (project);
 			LanguageItemCollection list = ctx.GetNamespaceContents ("", false);
 			foreach (ILanguageItem ob in list) {
 				if (ob is Namespace) {
@@ -107,7 +107,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 		
 		public static void FillNamespaces (ITreeBuilder builder, Project project, string ns)
 		{
-			IParserContext ctx = IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (project);
+			IParserContext ctx = IdeApp.Workspace.ParserDatabase.GetProjectParserContext (project);
 			if (ctx.GetClassList (ns, false, true).Length > 0) {
 				if (builder.Options ["ShowProjects"])
 					builder.AddChild (new NamespaceData (project, ns));
@@ -129,9 +129,8 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 		
 		void OnProjectRenamed (object sender, SolutionItemRenamedEventArgs e)
 		{
-			ITreeBuilder tb = Context.GetTreeBuilder (e.CombineEntry);
-			if (tb != null) 
-				tb.Update ();
+			ITreeBuilder tb = Context.GetTreeBuilder (e.SolutionItem);
+			if (tb != null) tb.Update ();
 		}
 	}
 }

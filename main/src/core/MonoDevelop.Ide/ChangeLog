@@ -1,5 +1,14 @@
 2008-05-27  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.Ide.Gui.Pads.ClassPad/ProjectNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassPad/NamespaceNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassPad/SolutionNodeBuilder.cs,
+	  MonoDevelop.Ide.addin.xml, MonoDevelop.Ide.mdp, Makefile.am,
+	  MonoDevelop.Ide.Gui/RootWorkspace.cs: Disabled the new class
+	  browser.
+
+2008-05-27  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.Ide.Gui/Document.cs: Fixed some bugs in the new dom
 	  parsing.
 
