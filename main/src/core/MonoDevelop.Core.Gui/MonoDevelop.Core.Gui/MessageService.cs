@@ -297,6 +297,10 @@ namespace MonoDevelop.Core.Gui
 			
 			public AlertButton GenericAlert (string icon, string primaryText, string secondaryText, int defaultButton, params AlertButton[] buttons)
 			{
+				if (string.IsNullOrEmpty (secondaryText)) {
+					secondaryText = primaryText;
+					primaryText = null;
+				}
 				AlertDialog alertDialog = new AlertDialog (icon, primaryText, secondaryText, buttons);
 				alertDialog.FocusButton (defaultButton);
 				ShowCustomDialog (alertDialog);

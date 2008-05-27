@@ -170,7 +170,10 @@ namespace MonoDevelop.Core.Gui.ProgressMonitoring
 				string s = "";
 				foreach (string m in errorsMessages)
 					s += m + "\n";
-				MessageService.ShowException (errorException, s);
+				if (errorException != null)
+					MessageService.ShowException (errorException, s);
+				else
+					MessageService.ShowError (s);
 			}
 			
 			if (warningMessages.Count > 0) {

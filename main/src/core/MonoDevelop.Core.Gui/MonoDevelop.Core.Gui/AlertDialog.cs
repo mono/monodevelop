@@ -90,8 +90,10 @@ namespace MonoDevelop.Core.Gui
 			markup.Append (primaryText);
 			markup.Append ("</span>");
 			if (!String.IsNullOrEmpty (secondaryText)) {
-				markup.AppendLine ();
-				markup.AppendLine ();
+				if (!String.IsNullOrEmpty (primaryText)) {
+					markup.AppendLine ();
+					markup.AppendLine ();
+				}
 				markup.Append (secondaryText);
 			}
 			label.Markup = markup.ToString ();
