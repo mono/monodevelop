@@ -27,16 +27,16 @@
 //
 
 using System;
-using MonoDevelop.Ide.Dom;
-using MonoDevelop.Ide.Dom.Parser;
-using MonoDevelop.Ide.Dom.Output;
+using MonoDevelop.Projects.Dom;
+using MonoDevelop.Projects.Dom.Parser;
+using MonoDevelop.Projects.Dom.Output;
 
 namespace MonoDevelop.Ide.Gui.Pads.ClassBrowser
 {
 	public class MemberNodeBuilder  : MonoDevelop.Ide.Gui.Pads.TypeNodeBuilder
 	{
 		public override Type NodeDataType {
-			get { return typeof(MonoDevelop.Ide.Dom.IMember); }
+			get { return typeof(MonoDevelop.Projects.Dom.IMember); }
 		}
 		
 		public override string ContextMenuAddinPath {
@@ -57,7 +57,15 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassBrowser
 		{
 			IMember member = dataObject as IMember;
 			label = AmbienceService.Default.GetString (member, OutputFlags.ClassBrowserEntries);
-			icon  = member.Icon;
+			icon  = MonoDevelop.Ide.Gui.IdeApp.Services.Resources.GetIcon (member.StockIcon, Gtk.IconSize.Menu);
+		}
+		
+		public override int CompareObjects (ITreeNavigator thisNode, ITreeNavigator otherNode)
+		{
+			if (thisNode.DataItem is System.IComparable) {
+				return ((System.IComparable)thisNode.DataItem).CompareTo (otherNode.DataItem);
+			}
+			return -1;
 		}
 		
 		internal class MemberNodeCommandHandler: NodeCommandHandler
@@ -66,7 +74,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassBrowser
 			{			
 				IMember member = CurrentNode.DataItem  as IMember;
 				if (member.DeclaringType != null) {
-					member.JumpToDeclaration ();
+					IdeApp.ProjectOperations.JumpToDeclaration (member);
 				}
 			}
 		}

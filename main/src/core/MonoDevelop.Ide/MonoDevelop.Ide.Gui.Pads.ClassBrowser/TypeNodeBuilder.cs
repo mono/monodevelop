@@ -27,15 +27,15 @@
 //
 
 using System;
-using MonoDevelop.Ide.Dom;
-using MonoDevelop.Ide.Dom.Parser;
+using MonoDevelop.Projects.Dom;
+using MonoDevelop.Projects.Dom.Parser;
 
 namespace MonoDevelop.Ide.Gui.Pads.ClassBrowser
 {
 	public class TypeNodeBuilder  : MonoDevelop.Ide.Gui.Pads.TypeNodeBuilder
 	{
 		public override Type NodeDataType {
-			get { return typeof(MonoDevelop.Ide.Dom.IType); }
+			get { return typeof(MonoDevelop.Projects.Dom.IType); }
 		}
 		
 		public override Type CommandHandlerType {
@@ -56,7 +56,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassBrowser
 		{
 			IType type = dataObject as IType;
 			label = type.FullName;
-			icon  = type.Icon;
+			icon  = MonoDevelop.Ide.Gui.IdeApp.Services.Resources.GetIcon (type.StockIcon, Gtk.IconSize.Menu);
 		}
 		
 		public override void BuildChildNodes (ITreeBuilder builder, object dataObject)
@@ -77,7 +77,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassBrowser
 			public override void ActivateItem ()
 			{
 				IType type = CurrentNode.DataItem as IType;
-				type.JumpToDeclaration ();
+				IdeApp.ProjectOperations.JumpToDeclaration (type);
 			}
 		}
 	}

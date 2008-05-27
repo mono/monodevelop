@@ -210,6 +210,24 @@ namespace MonoDevelop.Ide.Gui
 			return (GetDeclaredFile(item) != null);
 		}
 		
+		public void JumpToDeclaration (MonoDevelop.Projects.Dom.IMember member)
+		{
+			if (member == null) 
+				return;
+			if (member is MonoDevelop.Projects.Dom.IType) {
+				MonoDevelop.Ide.Gui.IdeApp.Workbench.OpenDocument (((MonoDevelop.Projects.Dom.IType)member).CompilationUnit.FileName,
+				                                                   member.Location.Line,
+				                                                   member.Location.Column,
+				                                                   true);
+			}
+			if (member.DeclaringType == null) 
+				return;
+			MonoDevelop.Ide.Gui.IdeApp.Workbench.OpenDocument (member.DeclaringType.CompilationUnit.FileName, 
+			                                                   member.Location.Line,
+			                                                   member.Location.Column,
+			                                                   true);
+		}
+		
 		public void JumpToDeclaration (ILanguageItem item)
 		{
 			String file;

@@ -100,48 +100,6 @@ FILES =  \
 	MonoDevelop.Ide.Commands/WindowCommands.cs \
 	MonoDevelop.Ide.Debugging/DebugExecutionHandlerFactory.cs \
 	MonoDevelop.Ide.Debugging/DebuggingService.cs \
-	MonoDevelop.Ide.Dom.Output/Ambience.cs \
-	MonoDevelop.Ide.Dom.Output/AmbienceService.cs \
-	MonoDevelop.Ide.Dom.Output/NetAmbience.cs \
-	MonoDevelop.Ide.Dom.Output/OutputFlags.cs \
-	MonoDevelop.Ide.Dom.Parser/AbstractParser.cs \
-	MonoDevelop.Ide.Dom.Parser/IParser.cs \
-	MonoDevelop.Ide.Dom.Parser/ProjectDom.cs \
-	MonoDevelop.Ide.Dom.Parser/ProjectDomEventArgs.cs \
-	MonoDevelop.Ide.Dom.Parser/ProjectParserService.cs \
-	MonoDevelop.Ide.Dom/AbstractMember.cs \
-	MonoDevelop.Ide.Dom/AttributeTarget.cs \
-	MonoDevelop.Ide.Dom/ClassType.cs \
-	MonoDevelop.Ide.Dom/Comment.cs \
-	MonoDevelop.Ide.Dom/CommentType.cs \
-	MonoDevelop.Ide.Dom/CompilationUnit.cs \
-	MonoDevelop.Ide.Dom/DomAttribute.cs \
-	MonoDevelop.Ide.Dom/DomEvent.cs \
-	MonoDevelop.Ide.Dom/DomField.cs \
-	MonoDevelop.Ide.Dom/DomLocation.cs \
-	MonoDevelop.Ide.Dom/DomMethod.cs \
-	MonoDevelop.Ide.Dom/DomParameter.cs \
-	MonoDevelop.Ide.Dom/DomProperty.cs \
-	MonoDevelop.Ide.Dom/DomRegion.cs \
-	MonoDevelop.Ide.Dom/DomReturnType.cs \
-	MonoDevelop.Ide.Dom/DomType.cs \
-	MonoDevelop.Ide.Dom/DomUsing.cs \
-	MonoDevelop.Ide.Dom/Error.cs \
-	MonoDevelop.Ide.Dom/IAttribute.cs \
-	MonoDevelop.Ide.Dom/ICompilationUnit.cs \
-	MonoDevelop.Ide.Dom/IDomVisitor.cs \
-	MonoDevelop.Ide.Dom/IEvent.cs \
-	MonoDevelop.Ide.Dom/IField.cs \
-	MonoDevelop.Ide.Dom/IMember.cs \
-	MonoDevelop.Ide.Dom/IMethod.cs \
-	MonoDevelop.Ide.Dom/IParameter.cs \
-	MonoDevelop.Ide.Dom/IProperty.cs \
-	MonoDevelop.Ide.Dom/IReturnType.cs \
-	MonoDevelop.Ide.Dom/IType.cs \
-	MonoDevelop.Ide.Dom/IUsing.cs \
-	MonoDevelop.Ide.Dom/Modifiers.cs \
-	MonoDevelop.Ide.Dom/ParameterModifiers.cs \
-	MonoDevelop.Ide.Dom/TypeParameter.cs \
 	MonoDevelop.Ide.ExternalTools/ExternalTool.cs \
 	MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs \
 	MonoDevelop.Ide.ExternalTools/ExternalToolService.cs \
@@ -206,19 +164,6 @@ FILES =  \
 	MonoDevelop.Ide.Gui.Pads.ClassBrowser/ProjectNodeBuilder.cs \
 	MonoDevelop.Ide.Gui.Pads.ClassBrowser/SolutionNodeBuilder.cs \
 	MonoDevelop.Ide.Gui.Pads.ClassBrowser/TypeNodeBuilder.cs \
-	MonoDevelop.Ide.Gui.Pads.ClassPad/ClassData.cs \
-	MonoDevelop.Ide.Gui.Pads.ClassPad/ClassNodeBuilder.cs \
-	MonoDevelop.Ide.Gui.Pads.ClassPad/CombineNodeBuilder.cs \
-	MonoDevelop.Ide.Gui.Pads.ClassPad/EventNodeBuilder.cs \
-	MonoDevelop.Ide.Gui.Pads.ClassPad/FieldNodeBuilder.cs \
-	MonoDevelop.Ide.Gui.Pads.ClassPad/MemberNodeBuilder.cs \
-	MonoDevelop.Ide.Gui.Pads.ClassPad/MemberNodeCommandHandler.cs \
-	MonoDevelop.Ide.Gui.Pads.ClassPad/MethodNodeBuilder.cs \
-	MonoDevelop.Ide.Gui.Pads.ClassPad/NamespaceData.cs \
-	MonoDevelop.Ide.Gui.Pads.ClassPad/NamespaceNodeBuilder.cs \
-	MonoDevelop.Ide.Gui.Pads.ClassPad/ProjectNodeBuilder.cs \
-	MonoDevelop.Ide.Gui.Pads.ClassPad/PropertyNodeBuilder.cs \
-	MonoDevelop.Ide.Gui.Pads.ClassPad/SolutionNodeBuilder.cs \
 	MonoDevelop.Ide.Gui.Pads.ProjectPad/CombineNodeBuilder.cs \
 	MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs \
 	MonoDevelop.Ide.Gui.Pads.ProjectPad/LinkedFilesFolder.cs \

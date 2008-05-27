@@ -17,13 +17,13 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassBrowser {
         
         private Gtk.HBox hbox1;
         
-        private Gtk.Entry entry1;
+        private Gtk.Entry searchEntry;
         
         private Gtk.Button buttonSearch;
         
         private Gtk.Arrow arrow1;
         
-        private Gtk.Button button4;
+        private Gtk.Button buttonCancelSearch;
         
         private Gtk.ScrolledWindow scrolledwindow1;
         
@@ -41,13 +41,13 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassBrowser {
             this.hbox1.Name = "hbox1";
             this.hbox1.Spacing = 6;
             // Container child hbox1.Gtk.Box+BoxChild
-            this.entry1 = new Gtk.Entry();
-            this.entry1.CanFocus = true;
-            this.entry1.Name = "entry1";
-            this.entry1.IsEditable = true;
-            this.entry1.InvisibleChar = '●';
-            this.hbox1.Add(this.entry1);
-            Gtk.Box.BoxChild w1 = ((Gtk.Box.BoxChild)(this.hbox1[this.entry1]));
+            this.searchEntry = new Gtk.Entry();
+            this.searchEntry.CanFocus = true;
+            this.searchEntry.Name = "searchEntry";
+            this.searchEntry.IsEditable = true;
+            this.searchEntry.InvisibleChar = '●';
+            this.hbox1.Add(this.searchEntry);
+            Gtk.Box.BoxChild w1 = ((Gtk.Box.BoxChild)(this.hbox1[this.searchEntry]));
             w1.Position = 0;
             // Container child hbox1.Gtk.Box+BoxChild
             this.buttonSearch = new Gtk.Button();
@@ -64,11 +64,11 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassBrowser {
             w3.Expand = false;
             w3.Fill = false;
             // Container child hbox1.Gtk.Box+BoxChild
-            this.button4 = new Gtk.Button();
-            this.button4.CanFocus = true;
-            this.button4.Name = "button4";
-            this.button4.UseUnderline = true;
-            // Container child button4.Gtk.Container+ContainerChild
+            this.buttonCancelSearch = new Gtk.Button();
+            this.buttonCancelSearch.CanFocus = true;
+            this.buttonCancelSearch.Name = "buttonCancelSearch";
+            this.buttonCancelSearch.UseUnderline = true;
+            // Container child buttonCancelSearch.Gtk.Container+ContainerChild
             Gtk.Alignment w4 = new Gtk.Alignment(0.5F, 0.5F, 0F, 0F);
             // Container child GtkAlignment.Gtk.Container+ContainerChild
             Gtk.HBox w5 = new Gtk.HBox();
@@ -82,9 +82,9 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassBrowser {
             w8.LabelProp = "";
             w5.Add(w8);
             w4.Add(w5);
-            this.button4.Add(w4);
-            this.hbox1.Add(this.button4);
-            Gtk.Box.BoxChild w12 = ((Gtk.Box.BoxChild)(this.hbox1[this.button4]));
+            this.buttonCancelSearch.Add(w4);
+            this.hbox1.Add(this.buttonCancelSearch);
+            Gtk.Box.BoxChild w12 = ((Gtk.Box.BoxChild)(this.hbox1[this.buttonCancelSearch]));
             w12.Position = 2;
             w12.Expand = false;
             w12.Fill = false;

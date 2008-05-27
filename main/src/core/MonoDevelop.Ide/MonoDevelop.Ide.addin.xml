@@ -151,7 +151,10 @@
 	</ExtensionPoint>
 	
 	<ExtensionNodeSet id="MonoDevelop.Ide.Pads">
-		<ExtensionNode name="Pad" type="MonoDevelop.Ide.Codons.PadCodon"/>
+		<ExtensionNode name="Pad" type="MonoDevelop.Ide.Codons.PadCodon">
+			<ExtensionNode name="NodeBuilder" type="MonoDevelop.Ide.Codons.NodeBuilderCodon"/>
+			<ExtensionNode name="PadOption" type="MonoDevelop.Ide.Codons.PadOptionCodon"/>
+		</ExtensionNode>
 		<ExtensionNode name="SolutionPad" type="MonoDevelop.Ide.Codons.SolutionPadCodon">
 			<ExtensionNode name="NodeBuilder" type="MonoDevelop.Ide.Codons.NodeBuilderCodon"/>
 			<ExtensionNode name="PadOption" type="MonoDevelop.Ide.Codons.PadOptionCodon"/>
@@ -1251,24 +1254,9 @@
 			<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.ProjectPad.ShowAllFilesBuilderExtension"/>
 			<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.ProjectPad.UnknownEntryNodeBuilder"/>
 		</SolutionPad>
-
-		<SolutionPad id = "ClassPad" defaultPlacement = "Left" _label = "Classes" icon = "md-class">
-			<PadOption id = "NestedNamespaces" _label = "Nested namespaces" defaultValue = "True" />
-			<PadOption id = "ShowProjects" _label = "Show project structure" defaultValue = "True" />
-			<PadOption id = "GroupByAccess" _label = "Group members by access" defaultValue = "False" />
-			<PadOption id = "GroupByType" _label = "Group members by member type" defaultValue = "True" />
-			<PadOption id = "PublicApiOnly" _label = "Show public members only" defaultValue = "False" />
-			<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.ProjectPad.WorkspaceNodeBuilder"/>
-			<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.ClassPad.SolutionNodeBuilder"/>
-			<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.ClassPad.CombineNodeBuilder"/>
-			<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.ClassPad.ProjectNodeBuilder"/>
-			<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.ClassPad.NamespaceNodeBuilder"/>
-			<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.ClassPad.ClassNodeBuilder"/>
-			<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.ClassPad.EventNodeBuilder"/>
-			<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.ClassPad.FieldNodeBuilder"/>
-			<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.ClassPad.MethodNodeBuilder"/>
-			<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.ClassPad.PropertyNodeBuilder"/>
-		</SolutionPad>
+		
+		<Pad id = "ClassPad" defaultPlacement = "Left" _label = "Classes" class = "MonoDevelop.Ide.Gui.Pads.ClassBrowser.ClassBrowserPad"/>
+		
 		<Category id="Other" _name="Other Windows">
 			<Pad id = "MonoDevelop.Ide.Gui.Pads.InternalLogPad" defaultPlacement = "Bottom" _label = "Message Log" class = "MonoDevelop.Ide.Gui.Pads.InternalLogPad"/>
 		</Category>

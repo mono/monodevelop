@@ -27,7 +27,14 @@
 //
 
 using System;
+using System.Threading;
+using System.Collections.Generic;
 
+using Gdk;
+using Gtk;
+
+using MonoDevelop.Projects.Dom;
+using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Projects;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Core;
@@ -38,7 +45,11 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassBrowser
 	public partial class ClassBrowserPadWidget : Gtk.Bin
 	{
 		MonoDevelopTreeView treeView;
+		TreeView searchResultsTreeView = new Gtk.TreeView ();
+		ListStore list;
+		TreeModelSort model;
 		
+		bool isInBrowerMode = true;
 		public ClassBrowserPadWidget()
 		{
 			this.Build();
@@ -53,19 +64,162 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassBrowser
 			
 			scrolledwindow1.Add (treeView);
 			scrolledwindow1.ShowAll ();
-				
+			
+			list = new ListStore (new Type[] {
+				typeof (Pixbuf),
+				typeof (string),
+				typeof (IType)
+			});
+			model = new TreeModelSort (list);
+			searchResultsTreeView.Model = model;
+			searchResultsTreeView.AppendColumn ("", new Gtk.CellRendererPixbuf (), "pixbuf", 0);
+			searchResultsTreeView.AppendColumn ("", new Gtk.CellRendererText (), "text", 1);
+			searchResultsTreeView.HeadersVisible = false;
+			searchResultsTreeView.RowActivated += SearchRowActivated;
 			IdeApp.Workspace.WorkspaceItemOpened += OnOpenCombine;
 			IdeApp.Workspace.WorkspaceItemClosed += OnCloseCombine;
+			
+			this.searchEntry.Changed += SearchEntryChanged;
+			this.buttonCancelSearch.Clicked += CancelSearchClicked;
+			this.searchEntry.Activated += SearchClicked;
+			this.searchEntry.KeyPressEvent += delegate(object sender, KeyPressEventArgs args) {
+				if (args.Event.Key == Gdk.Key.Escape)
+					CancelSearchClicked (this, EventArgs.Empty);
+			};
+			this.buttonSearch.Clicked += SearchClicked;
+		}
+		
+		List<IType> searchResults = new List<IType> ();
+		Thread searchThread;
+		object matchLock   = new object ();
+		string matchString = "";
+
+		void SearchEntryChanged (object sender, EventArgs e)
+		{
+			if (isInBrowerMode)
+				return;
+			PerformSearch ();
+		}
+		
+		void SearchRowActivated (object sender, RowActivatedArgs args)
+		{
+			JumpToSelectedType ();
+		}
+		
+		void JumpToSelectedType ()
+		{
+			TreeModel model;
+			TreeIter iter;
+			
+			TreeSelection sel = this.searchResultsTreeView.Selection;
+			if (sel.GetSelected (out model, out iter)) {
+				IType type = (IType)model.GetValue (iter, 2);
+				IdeApp.ProjectOperations.JumpToDeclaration (type);
+			}
+		}
+		
+		void PerformSearch ()
+		{
+			if (list == null)
+				return;
+			
+		//	userSelecting = false;
+			
+			string toMatch = this.searchEntry.Text.ToUpper ();
+				
+			lock (matchLock) {
+				matchString = toMatch;
+			}
+			
+			lock (searchResults) {
+				// Clean the results list
+				searchResults.Clear ();
+			}
+			
+			if (searchThread != null) {
+				searchThread.Abort ();
+				searchThread = null;
+			}
+			
+			// Queuing this seems to prevent things getting
+			// added from queued events after the clear.
+			DispatchService.GuiDispatch (list.Clear);
+			
+			ThreadStart start = new ThreadStart (SearchThread);
+			searchThread = new Thread (start);
+			searchThread.IsBackground = true;
+			searchThread.Priority = ThreadPriority.Lowest;
+			searchThread.Start ();
+		}
+		
+		bool ShouldAdd (IType type)
+		{
+			
+			return matchString.Length > 0 && type.FullName.ToUpper ().Contains (matchString);
+		}
+				
+		void SearchThread ()
+		{
+			if (!IdeApp.Workspace.IsOpen)
+				return;
+			foreach (Project project in IdeApp.Workspace.GetAllProjects ()) {
+				ProjectDom dom = ProjectDomService.GetDom (project);
+				foreach (CompilationUnit unit in dom.CompilationUnits) {
+					foreach (IType type in unit.Types) {
+						if (ShouldAdd (type)) {
+							lock (searchResults) {
+								searchResults.Add (type);
+								GLib.Idle.Add (AddItemGui);
+							}
+						}
+					}
+				}
+			}
+		}
+		
+		bool AddItemGui ()
+		{
+			// Add items to the tree. Do it in blocks of 50, to avoid freezing
+			// the GUI when there are a lot of items to add.
+			lock (searchResults) {
+				int max = Math.Min (50, searchResults.Count);
+				for (int i = 0; i < max; i++) {
+					list.AppendValues (MonoDevelop.Ide.Gui.IdeApp.Services.Resources.GetIcon (searchResults[i].StockIcon, Gtk.IconSize.Menu), searchResults[i].Name, searchResults[i]);
+				}
+				searchResults.RemoveRange (0, max);
+				return searchResults.Count > 0;
+			}
+		}
+				
+		void SearchClicked (object sender, EventArgs e)
+		{
+			if (!isInBrowerMode)
+				return;
+			scrolledwindow1.Remove (treeView);
+			scrolledwindow1.Add (searchResultsTreeView);
+			scrolledwindow1.ShowAll ();
+			isInBrowerMode = false;
+			PerformSearch ();
+		}
+		
+		void CancelSearchClicked (object sender, EventArgs e)
+		{
+			if (isInBrowerMode)
+				return;
+			scrolledwindow1.Remove (searchResultsTreeView);
+			scrolledwindow1.Add (treeView);
+			scrolledwindow1.ShowAll ();
+			isInBrowerMode = true;
 		}
 			
 		void OnOpenCombine (object sender, WorkspaceItemEventArgs e)
 		{
-			treeView.AddChild (e.Item);
+			treeView.LoadTree (e.Item);
 		}
 		
 		void OnCloseCombine (object sender, WorkspaceItemEventArgs e)
 		{
-			treeView.RemoveChild (e.Item);
+			treeView.Clear ();
 		}		
 	}
 }

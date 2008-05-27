@@ -108,18 +108,6 @@
     <File name="MonoDevelop.Ide.Gui.Dialogs/ProjectReferencePanel.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui.Pads/DefaultMonitorPad.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Ide.Gui.Pads.ClassPad/ClassData.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Ide.Gui.Pads.ClassPad/ClassNodeBuilder.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Ide.Gui.Pads.ClassPad/CombineNodeBuilder.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Ide.Gui.Pads.ClassPad/EventNodeBuilder.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Ide.Gui.Pads.ClassPad/FieldNodeBuilder.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Ide.Gui.Pads.ClassPad/MemberNodeBuilder.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Ide.Gui.Pads.ClassPad/MemberNodeCommandHandler.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Ide.Gui.Pads.ClassPad/MethodNodeBuilder.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Ide.Gui.Pads.ClassPad/NamespaceData.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Ide.Gui.Pads.ClassPad/NamespaceNodeBuilder.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Ide.Gui.Pads.ClassPad/ProjectNodeBuilder.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Ide.Gui.Pads.ClassPad/PropertyNodeBuilder.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui.Pads/FileList.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui.Pads/FileListItem.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui.Pads/FileScout.cs" subtype="Code" buildaction="Compile" />
@@ -321,48 +309,8 @@
     <File name="MonoDevelop.Ide.Gui.Dialogs/GotoLineDialog.cs" subtype="Code" buildaction="Compile" />
     <File name="gtk-gui/MonoDevelop.Ide.Gui.Dialogs.GotoLineDialog.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui.Content/ISplittable.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Ide.Dom.Output/Ambience.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Ide.Dom.Output/NetAmbience.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Ide.Dom.Parser/AbstractParser.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Ide.Dom.Parser/IParser.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Ide.Dom.Parser/ProjectDom.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Ide.Dom.Parser/ProjectParserService.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Ide.Dom/AbstractMember.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Ide.Dom/AttributeTarget.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Ide.Dom/ClassType.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Ide.Dom/Comment.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Ide.Dom/CommentType.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Ide.Dom/DomAttribute.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Ide.Dom/DomEvent.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Ide.Dom/DomField.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Ide.Dom/DomMethod.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Ide.Dom/DomParameter.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Ide.Dom/DomProperty.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Ide.Dom/DomRegion.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Ide.Dom/DomReturnType.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Ide.Dom/DomType.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Ide.Dom/DomUsing.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Ide.Dom/Error.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Ide.Dom/IAttribute.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Ide.Dom/ICompilationUnit.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Ide.Dom/IDomVisitor.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Ide.Dom/IEvent.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Ide.Dom/IField.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Ide.Dom/IMember.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Ide.Dom/IMethod.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Ide.Dom/IParameter.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Ide.Dom/IProperty.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Ide.Dom/IReturnType.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Ide.Dom/IType.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Ide.Dom/IUsing.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Ide.Dom/Modifiers.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Ide.Dom/ParameterModifiers.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Ide.Dom/TypeParameter.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui.Content/IFoldable.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui/MonoDevelopTreeView.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Ide.Dom.Output/OutputFlags.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Ide.Dom.Output/AmbienceService.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Ide.Dom/CompilationUnit.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs" subtype="Code" buildaction="Compile" />
     <File name="gtk-gui/MonoDevelop.Ide.ExternalTools.ExternalToolPanelWidget.cs" subtype="Code" buildaction="Compile" />
     <File name="options/KeyBindingSchemeMonoDevelop1.xml" subtype="Code" buildaction="EmbedAsResource" />
@@ -382,25 +330,22 @@
     <File name="icons/navigate-next-24.png" subtype="Code" buildaction="EmbedAsResource" />
     <File name="icons/navigate-previous-16.png" subtype="Code" buildaction="EmbedAsResource" />
     <File name="icons/navigate-previous-24.png" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="MonoDevelop.Ide.Gui.Pads.ClassPad/SolutionNodeBuilder.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui.Pads.ProjectPad/WorkspaceNodeBuilder.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui/RootWorkspace.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Ide.Dom/DomLocation.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui.Content/DocumentStateTracker.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui/IdePreferences.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Ide.Gui.Pads.ClassBrowser/SolutionNodeBuilder.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Ide.Gui.Pads.ClassBrowser/ProjectNodeBuilder.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Ide.Gui.Pads.ClassBrowser/TypeNodeBuilder.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Ide.Gui.Pads.ClassBrowser/ProjectNamespaceBuilder.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Ide.Gui.Pads.ClassBrowser/MemberNodeBuilder.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Ide.Dom.Parser/ProjectDomEventArgs.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Ide.Gui.Pads.ClassBrowser/ClassBrowserPad.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Ide.Gui.Pads.ClassBrowser/ClassBrowserPadWidget.cs" subtype="Code" buildaction="Compile" />
-    <File name="gtk-gui/MonoDevelop.Ide.Gui.Pads.ClassBrowser.ClassBrowserPadWidget.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui.Content/IPathedDocument.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Debugging/DebugExecutionHandlerFactory.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Debugging/DebuggingService.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Codons/CategoryNode.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Ide.Gui.Pads.ClassBrowser/ClassBrowserPad.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Ide.Gui.Pads.ClassBrowser/ClassBrowserPadWidget.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Ide.Gui.Pads.ClassBrowser/MemberNodeBuilder.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Ide.Gui.Pads.ClassBrowser/ProjectNamespaceBuilder.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Ide.Gui.Pads.ClassBrowser/ProjectNodeBuilder.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Ide.Gui.Pads.ClassBrowser/SolutionNodeBuilder.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Ide.Gui.Pads.ClassBrowser/TypeNodeBuilder.cs" subtype="Code" buildaction="Compile" />
+    <File name="gtk-gui/MonoDevelop.Ide.Gui.Pads.ClassBrowser.ClassBrowserPadWidget.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="False" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />

@@ -1,3 +1,20 @@
+2008-05-27  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Ide.Gui.Pads.ClassBrowser/TypeNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassBrowser/ClassBrowserPadWidget.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassBrowser/ProjectNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassBrowser/MemberNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassBrowser/ProjectNamespaceBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassPad/ProjectNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassPad/NamespaceNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassPad/SolutionNodeBuilder.cs,
+	  MonoDevelop.Ide.addin.xml, MonoDevelop.Ide.mdp, gtk-gui/gui.stetic,
+	  gtk-gui/MonoDevelop.Ide.Gui.Pads.ClassBrowser.ClassBrowserPadWidget.cs,
+	  Makefile.am, MonoDevelop.Ide.Gui/Document.cs,
+	  MonoDevelop.Ide.Gui/RootWorkspace.cs,
+	  MonoDevelop.Ide.Gui/ProjectOperations.cs: Added new dom & new class
+	  browser.
+
 2008-05-26  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Templates/FileDescriptionTemplate.cs,

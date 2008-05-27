@@ -29,6 +29,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 
 using Gtk;
@@ -40,6 +41,9 @@ using MonoDevelop.Projects.Text;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.Gui.Dialogs;
+using MonoDevelop.Projects.Dom;
+using MonoDevelop.Projects.Dom.Parser;
+using MonoDevelop.Ide.Tasks;
 using Mono.Addins;
 
 namespace MonoDevelop.Ide.Gui
@@ -80,6 +84,7 @@ namespace MonoDevelop.Ide.Gui
 		internal Document (IWorkbenchWindow window)
 		{
 			this.window = window;
+			MonoDevelop.Projects.Dom.Parser.ProjectDomService.CompilationUnitUpdated += CompilationUnitUpdated;
 			window.Closed += OnClosed;
 			window.ActiveViewContentChanged += OnActiveViewContentChanged;
 			IdeApp.Workspace.ItemRemovedFromSolution += OnEntryRemoved;
@@ -318,6 +323,9 @@ namespace MonoDevelop.Ide.Gui
 		
 		void OnClosed (object s, EventArgs a)
 		{
+			ClearTasks ();
+			MonoDevelop.Projects.Dom.Parser.ProjectDomService.CompilationUnitUpdated -= CompilationUnitUpdated;
+			
 			if (window is SdiWorkspaceWindow)
 				((SdiWorkspaceWindow)window).DetachFromPathedDocument ();
 			window.Closed -= OnClosed;
@@ -330,7 +338,31 @@ namespace MonoDevelop.Ide.Gui
 				editorExtension = editorExtension.Next as TextEditorExtension;
 			}
 		}
-		
+#region document tasks
+		List<Task> tasks = new List<Task> ();
+		object lockObj = new object ();
+		void ClearTasks ()
+		{
+			lock (lockObj) {
+				foreach (Task task in tasks) {
+					IdeApp.Services.TaskService.Remove (task);
+				}
+				tasks.Clear ();
+			}
+		}
+		void CompilationUnitUpdated (object sender, CompilationUnitEventArgs args)
+		{
+			if (this.FileName == args.Unit.FileName) {
+				ClearTasks ();
+				lock (lockObj) {
+					foreach (Error error in args.Unit.Errors) {
+						tasks.Add (new Task (this.FileName, error.Message, error.Column, error.Line, error.ErrorType == ErrorType.Error ? TaskType.Error : TaskType.Warning, this.Project));
+					}
+					IdeApp.Services.TaskService.AddRange (tasks);
+				}
+			}
+		}
+#endregion
 		void OnActiveViewContentChanged (object s, EventArgs args)
 		{
 			OnViewChanged (args);
@@ -353,7 +385,15 @@ namespace MonoDevelop.Ide.Gui
 			IExtensibleTextEditor editor = GetContent<IExtensibleTextEditor> ();
 			if (editor == null)
 				return;
-		
+			editor.TextChanged += delegate {
+				MonoDevelop.Projects.Dom.Parser.ProjectDomService.Refresh (Project, 
+				                                                           FileName, 
+				                                                           MonoDevelop.Core.Gui.Services.PlatformService.GetMimeTypeForUri (FileName),
+				                                                           delegate () {
+					return TextEditor.Text;
+				});
+			};
+			
 			// If the new document is a text editor, attach the extensions
 			
 			TextEditorExtension[] extensions = (TextEditorExtension[]) AddinManager.GetExtensionObjects ("/MonoDevelop/Ide/TextEditorExtensions", typeof(TextEditorExtension), false);
