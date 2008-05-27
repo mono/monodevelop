@@ -23,6 +23,7 @@ FILES =  \
 	gtk-gui/MonoDevelop.VBNetBinding.CodeGenerationPanelWidget.cs \
 	Gui/CodeGenerationPanel.cs \
 	Gui/CodeGenerationPanelWidget.cs \
+	Parser/DomParser.cs \
 	Parser/ExpressionFinder.cs \
 	Parser/Parser.cs \
 	Parser/Resolver.cs \

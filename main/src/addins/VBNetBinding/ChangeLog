@@ -1,3 +1,8 @@
+2008-05-27  Mike Krüger <mkrueger@novell.com> 
+
+	* VBNetBinding.mdp, Parser/DomParser.cs, Makefile.am: Added new dom
+	  parser for vb.net.
+
 2008-05-22  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* VBNetBinding.addin.xml: Merged the extension points for project and

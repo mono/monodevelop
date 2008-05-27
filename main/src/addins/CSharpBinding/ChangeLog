@@ -1,5 +1,9 @@
 2008-05-27  Mike Krüger <mkrueger@novell.com> 
 
+	* Parser/DomParser.cs: Fixed some bugs in the new dom parsing.
+
+2008-05-27  Mike Krüger <mkrueger@novell.com> 
+
 	* Parser/DomParser.cs: Added new dom & new class browser.
 
 2008-05-22  Lluis Sanchez Gual <lluis@novell.com> 

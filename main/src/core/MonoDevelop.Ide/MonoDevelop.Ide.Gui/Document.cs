@@ -386,6 +386,8 @@ namespace MonoDevelop.Ide.Gui
 			if (editor == null)
 				return;
 			editor.TextChanged += delegate {
+				System.Console.WriteLine("pt:" + Project.ProjectType);
+				
 				MonoDevelop.Projects.Dom.Parser.ProjectDomService.Refresh (Project, 
 				                                                           FileName, 
 				                                                           MonoDevelop.Core.Gui.Services.PlatformService.GetMimeTypeForUri (FileName),

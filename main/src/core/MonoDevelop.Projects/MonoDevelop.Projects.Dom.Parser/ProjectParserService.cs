@@ -95,7 +95,8 @@ namespace MonoDevelop.Projects.Dom.Parser
 		public static void Refresh (Project project, string fileName, string mimeType, ContentDelegate getContent)
 		{
 			ProjectDom dom = GetDom (project);
-			IParser parser = project != null ? GetParser (project.ProjectType) : GetParserByMime (mimeType);
+			
+			IParser parser = project != null ? GetParser (project is DotNetProject ? ((DotNetProject)project).LanguageName : project.ProjectType) : GetParserByMime (mimeType);
 			if (parser == null)
 				return;
 			if (refreshThreads.ContainsKey (fileName)) {

@@ -41,15 +41,17 @@ namespace MonoDevelop.CSharpBinding
 	{
 		public bool CanParseMimeType (string mimeType)
 		{
-			return true;
+			return "text/x-csharp" == mimeType;
 		}
+		
 		public bool CanParseProjectType (string projectType)
 		{
-			return true;
+			return "C#" == projectType;
 		}
+		
 		public bool CanParse (string fileName)
 		{
-			return true;
+			return Path.GetExtension (fileName) == ".cs";
 		}
 		
 		static DomRegion Block2Region (Mono.CSharp.Dom.LocationBlock block)
@@ -168,7 +170,7 @@ namespace MonoDevelop.CSharpBinding
 					members.Add (ConvertType (unit, "", t));
 				}
 			}
-			System.Console.WriteLine(type.MembersBlock);
+			
 			return new MonoDevelop.Projects.Dom.DomType (unit,
 			                                        ClassType.Class,
 			                                        type.Name,
