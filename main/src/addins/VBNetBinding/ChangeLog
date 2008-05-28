@@ -1,3 +1,8 @@
+2008-05-28  Mike Krüger <mkrueger@novell.com> 
+
+	* VBNetBinding.addin.xml, Parser/DomParser.cs: Worked on vb.net dom
+	  parser.
+
 2008-05-27  Mike Krüger <mkrueger@novell.com> 
 
 	* VBNetBinding.mdp, Parser/DomParser.cs, Makefile.am: Added new dom
