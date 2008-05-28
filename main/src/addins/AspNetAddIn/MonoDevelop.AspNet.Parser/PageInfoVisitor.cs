@@ -49,6 +49,8 @@ namespace MonoDevelop.AspNet.Parser
 		{
 			if (info.Subtype == WebSubtype.None)
 				info.SetSubtypeFromDirective (node.Name);
+			else
+				return;
 			
 			if (info.Subtype != WebSubtype.WebForm && info.Subtype != WebSubtype.MasterPage
 			    && info.Subtype != WebSubtype.WebControl)
