@@ -59,16 +59,18 @@ namespace MonoDevelop.Projects.Dom
 		{
 		}
 		
-		public DomMethod (string name, bool isConstructor, DomLocation location, DomRegion bodyRegion)
+		public DomMethod (string name, Modifiers modifiers, bool isConstructor, DomLocation location, DomRegion bodyRegion)
 		{
 			this.name       = name;
+			this.modifiers      = modifiers;
 			this.location   = location;
 			this.bodyRegion = bodyRegion;
 		}
 		
-		public DomMethod (string name, bool isConstructor, DomLocation location, DomRegion bodyRegion, IReturnType returnType, List<IParameter> parameters)
+		public DomMethod (string name, Modifiers modifiers, bool isConstructor, DomLocation location, DomRegion bodyRegion, IReturnType returnType, List<IParameter> parameters)
 		{
 			this.name       = name;
+			this.modifiers      = modifiers;
 			this.location   = location;
 			this.bodyRegion = bodyRegion;
 			this.returnType = returnType;

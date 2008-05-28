@@ -1,6 +1,14 @@
 2008-05-28  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom/DomType.cs,
+	  MonoDevelop.Projects.Dom/DomMethod.cs,
+	  MonoDevelop.Projects.Dom/DomEvent.cs,
+	  MonoDevelop.Projects.Dom/DomField.cs,
+	  MonoDevelop.Projects.Dom/DomProperty.cs: worked on dom.
+
+2008-05-28  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Dom/DomType.cs,
 	  MonoDevelop.Projects.Dom/DomReturnType.cs,
 	  MonoDevelop.Projects.Dom/DomField.cs: Added some dom functions.
 

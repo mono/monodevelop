@@ -92,9 +92,10 @@ namespace MonoDevelop.Projects.Dom
 			base.name = name;
 		}
 		
-		public DomProperty (string name, DomLocation location, DomRegion bodyRegion, IReturnType returnType)
+		public DomProperty (string name, Modifiers modifiers, DomLocation location, DomRegion bodyRegion, IReturnType returnType)
 		{
 			base.name       = name;
+			this.modifiers  = modifiers;
 			this.location   = location;
 			this.bodyRegion = bodyRegion;
 			base.returnType = returnType;

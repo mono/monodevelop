@@ -197,7 +197,7 @@ namespace MonoDevelop.Projects.Dom
 			result.compilationUnit = compilationUnit;
 			result.name = name;
 			result.classType = MonoDevelop.Projects.Dom.ClassType.Delegate;
-			result.members.Add (new DomMethod ("Invoke", false, location, DomRegion.Empty, type, parameters));
+			result.members.Add (new DomMethod ("Invoke", Modifiers.None, false, location, DomRegion.Empty, type, parameters));
 			return result;
 		}
 		

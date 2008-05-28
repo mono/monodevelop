@@ -55,9 +55,10 @@ namespace MonoDevelop.Projects.Dom
 		{
 		}
 		
-		public DomEvent (string name, DomLocation location, IReturnType returnType)
+		public DomEvent (string name, Modifiers modifiers, DomLocation location, IReturnType returnType)
 		{
 			this.name = name;
+			this.modifiers = modifiers;
 			this.location = location;
 			this.returnType = returnType;
 		}
