@@ -66,6 +66,10 @@ namespace MonoDevelop.Core.Execution
 			get { return closeOnDispose; }
 		}
 		
+		public TextWriter Log {
+			get { return Out; }
+		}
+		
 		public void Dispose ()
 		{
 		}

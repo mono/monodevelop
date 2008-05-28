@@ -14,6 +14,7 @@ namespace MonoDevelop.Core.Execution
 		ManualResetEvent endEventOut = new ManualResetEvent (false);
 		ManualResetEvent endEventErr = new ManualResetEvent (false);
 		bool done;
+		object lockObj = new object ();
 		
 		public ProcessWrapper ()
 		{
@@ -36,7 +37,7 @@ namespace MonoDevelop.Core.Execution
 		public void WaitForOutput (int milliseconds)
 		{
 			WaitForExit (milliseconds);
-			lock (this) {
+			lock (lockObj) {
 				done = true;
 			}
 			WaitHandle.WaitAll (new WaitHandle[] {endEventOut, endEventErr});
@@ -114,7 +115,7 @@ namespace MonoDevelop.Core.Execution
 			try {
 				WaitForOutput ();
 			} finally {
-				lock (this) {
+				lock (lockObj) {
 					done = true;
 					if (completedEvent != null)
 						completedEvent (this);
@@ -125,7 +126,7 @@ namespace MonoDevelop.Core.Execution
 		event OperationHandler IAsyncOperation.Completed {
 			add {
 				bool raiseNow = false;
-				lock (this) {
+				lock (lockObj) {
 					if (done)
 						raiseNow = true;
 					else
@@ -135,7 +136,7 @@ namespace MonoDevelop.Core.Execution
 					value (this);
 			}
 			remove {
-				lock (this) {
+				lock (lockObj) {
 					completedEvent -= value;
 				}
 			}

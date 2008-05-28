@@ -36,6 +36,7 @@ namespace MonoDevelop.Core.Execution
 		TextReader In { get; }
 		TextWriter Out { get; }
 		TextWriter Error { get; }
+		TextWriter Log { get; }
 		bool CloseOnDispose { get; }
 		
 		event EventHandler CancelRequested;

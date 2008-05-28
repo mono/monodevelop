@@ -309,9 +309,9 @@ namespace MonoDevelop.Core.Execution
 	{
 		public IConsole console;
 		EventHandler exited;
-		IAsyncOperation operation;
+		IProcessAsyncOperation operation;
 
-		public ProcessMonitor (IConsole console, IAsyncOperation operation, EventHandler exited)
+		public ProcessMonitor (IConsole console, IProcessAsyncOperation operation, EventHandler exited)
 		{
 			this.exited = exited;
 			this.operation = operation;
@@ -325,6 +325,8 @@ namespace MonoDevelop.Core.Execution
 			try {
 				if (exited != null)
 					exited (op, null);
+				if (operation.ExitCode != 0)
+					console.Log.WriteLine ("The application exited with code: {0}", operation.ExitCode);
 			} finally {
 				console.Dispose ();
 			}

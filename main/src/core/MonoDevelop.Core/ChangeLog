@@ -1,5 +1,14 @@
 2008-05-28  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Core.Execution/IConsole.cs,
+	  MonoDevelop.Core.Execution/ExternalConsoleFactory.cs: Added logging
+	  support to IConsole.
+	* MonoDevelop.Core.Execution/ProcessWrapper.cs: Fix locking.
+	* MonoDevelop.Core.Execution/ProcessService.cs: Log the exit code if it
+	  is not zero.
+
+2008-05-28  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Core.Execution/ProcessWrapper.cs,
 	  MonoDevelop.Core.Execution/ProcessService.cs: Read output from
 	  process by blocks, not by lines. Fixes bug 368479 - Delayed printf
