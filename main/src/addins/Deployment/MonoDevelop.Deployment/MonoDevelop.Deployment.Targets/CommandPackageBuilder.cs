@@ -153,6 +153,10 @@ namespace MonoDevelop.Deployment.Targets
 			get { return monitor.Log; }
 		}
 		
+		public TextWriter Log {
+			get { return Out; }
+		}
+		
 		public bool CloseOnDispose {
 			get { return false; }
 		}
