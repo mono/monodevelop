@@ -87,6 +87,10 @@ namespace MonoDevelop.Projects.Dom
 		{
 		}
 		
+		public DomReturnType (string name) : this (name, false, new List<IReturnType> ())
+		{
+		}
+		
 		public DomReturnType (string name, bool isNullable, List<IReturnType> typeParameters)
 		{
 			this.name           = name;

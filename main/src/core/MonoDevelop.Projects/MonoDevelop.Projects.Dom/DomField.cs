@@ -65,6 +65,14 @@ namespace MonoDevelop.Projects.Dom
 			this.returnType = returnType;
 		}
 		
+		public DomField (Modifiers modifiers, string name, DomLocation location, IReturnType returnType)
+		{
+			this.modifiers  = modifiers;
+			this.location   = location;
+			this.name       = name;
+			this.returnType = returnType;
+		}
+		
 		public override int CompareTo (object obj)
 		{
 			if (obj is IMethod)

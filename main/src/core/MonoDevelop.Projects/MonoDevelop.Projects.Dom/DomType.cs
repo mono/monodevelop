@@ -76,6 +76,9 @@ namespace MonoDevelop.Projects.Dom
 			get {
 				return baseType;
 			}
+			set {
+				baseType = value;
+			}
 		}
 		
 		public IEnumerable<IReturnType> ImplementedInterfaces {
@@ -170,6 +173,24 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
+		public DomType (ICompilationUnit compilationUnit, 
+		                ClassType classType, 
+		                Modifiers modifiers,
+		                string name, 
+		                DomLocation location, 
+		                string namesp, 
+		                DomRegion region)
+		{
+			this.compilationUnit = compilationUnit;
+			this.classType   = classType;
+			this.modifiers   = modifiers;
+			this.name        = name;
+			this.namesp      = namesp;
+			this.bodyRegion  = region;
+			this.members     = members;
+			this.location    = location;
+		}
+		
 		public static DomType CreateDelegate (ICompilationUnit compilationUnit, string name, DomLocation location, IReturnType type, List<IParameter> parameters)
 		{
 			DomType result = new DomType ();
@@ -178,6 +199,16 @@ namespace MonoDevelop.Projects.Dom
 			result.classType = MonoDevelop.Projects.Dom.ClassType.Delegate;
 			result.members.Add (new DomMethod ("Invoke", false, location, DomRegion.Empty, type, parameters));
 			return result;
+		}
+		
+		public void Add (IMember member)
+		{
+			this.members.Add (member);
+		}
+		
+		public void AddInterfaceImplementation (IReturnType interf)
+		{
+			implementedInterfaces.Add (interf);
 		}
 		
 		public override object AcceptVisitior (IDomVisitor visitor, object data)
