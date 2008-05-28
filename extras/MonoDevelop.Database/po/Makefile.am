@@ -33,7 +33,7 @@ MO_FILES = $(foreach po,$(FILES), $(INSTALL_DIR)/$(basename $(po))/LC_MESSAGES/$
 all: $(GMO_FILES)
 
 update-po:
-	pushd $(top_srcdir); $(MDTOOL) gettext-update; popd
+	cd $(top_srcdir) && $(MDTOOL) gettext-update
 
 statistics:
 	@for LANGFILE in $(FILES); do \

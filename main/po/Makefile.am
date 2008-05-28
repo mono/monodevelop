@@ -9,7 +9,7 @@ MO_FILES = $(foreach po,$(FILES), $(INSTALL_DIR)/$(basename $(po))/LC_MESSAGES/$
 all: $(GMO_FILES)
 
 update-po:
-	pushd $(top_srcdir) && $(MDTOOL_RUN) gettext-update ; popd
+	cd $(top_srcdir) && $(MDTOOL_RUN) gettext-update
 
 $(GMO_FILES): $(LC_BUILD)/%/LC_MESSAGES/$(PACKAGE).mo: %.po
 	$(mkdir_p) $(dir $@)

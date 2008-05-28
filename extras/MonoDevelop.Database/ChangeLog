@@ -1,3 +1,7 @@
+2008-05-28  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* po/Makefile.am: Remove bash-isms.
+
 2008-05-21  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Database.mds, po/po.mdse: New project model changes and
