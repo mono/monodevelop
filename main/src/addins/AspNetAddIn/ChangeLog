@@ -1,5 +1,13 @@
 2008-05-28  Michael Hutchinson <mhutchinson@novell.com> 
 
+	* MonoDevelop.AspNet/AspNetAppProject.cs: Fixes for ASP.NET projects
+	  with new project model.
+	* Templates/WebApplication.xpt.xml: Add some "Hello World"-type code to
+	  new ASP.NET C# projects. Fixes "Bug 361348 - C# ASP.Net template
+	  doesn't indicate by default that it's working when run".
+
+2008-05-28  Michael Hutchinson <mhutchinson@novell.com> 
+
 	* MonoDevelop.AspNet.Parser/PageInfoVisitor.cs: Actually prevent
 	  register directives overwriting page info with blank info.
 

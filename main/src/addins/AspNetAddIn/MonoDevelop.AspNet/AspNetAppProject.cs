@@ -114,6 +114,11 @@ namespace MonoDevelop.AspNet
 			}
 		}
 		
+		public override CompileTarget CompileTarget {
+			get { return CompileTarget.Library; }
+			set { base.CompileTarget = CompileTarget.Library; }
+		}
+		
 		#endregion
 		
 		#region constructors
@@ -137,9 +142,7 @@ namespace MonoDevelop.AspNet
 			AspNetAppProjectConfiguration conf = new AspNetAppProjectConfiguration ();
 			
 			conf.Name = name;
-			conf.CompilationParameters = LanguageBinding.CreateCompilationParameters (null);
-			conf.SourceDirectory = BaseDirectory;
-			
+			conf.CompilationParameters = LanguageBinding.CreateCompilationParameters (null);			
 			return conf;
 		}
 		
