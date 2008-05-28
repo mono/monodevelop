@@ -1,5 +1,10 @@
 2008-05-28  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Core.Execution/ProcessService.cs: If a process is
+	  terminated by a signal, log the signal name. Fixes bug #368482.
+
+2008-05-28  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Core.Execution/IConsole.cs,
 	  MonoDevelop.Core.Execution/ExternalConsoleFactory.cs: Added logging
 	  support to IConsole.

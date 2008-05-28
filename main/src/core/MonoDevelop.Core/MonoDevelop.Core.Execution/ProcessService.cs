@@ -325,8 +325,11 @@ namespace MonoDevelop.Core.Execution
 			try {
 				if (exited != null)
 					exited (op, null);
-				if (operation.ExitCode != 0)
-					console.Log.WriteLine ("The application exited with code: {0}", operation.ExitCode);
+				
+				if (Mono.Unix.Native.Syscall.WIFSIGNALED (operation.ExitCode))
+					console.Log.WriteLine (GettextCatalog.GetString ("The application was terminated by a signal: {0}"), Mono.Unix.Native.Syscall.WTERMSIG (operation.ExitCode));
+				else if (operation.ExitCode != 0)
+					console.Log.WriteLine (GettextCatalog.GetString ("The application exited with code: {0}"), operation.ExitCode);
 			} finally {
 				console.Dispose ();
 			}
