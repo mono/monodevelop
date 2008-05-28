@@ -95,7 +95,7 @@ namespace MonoDevelop.Projects
 			}
 		}
 		
-		public CompileTarget CompileTarget {
+		public virtual CompileTarget CompileTarget {
 			get { return compileTarget; }
 			set { compileTarget = value; }
 		}
