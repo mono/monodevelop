@@ -1,5 +1,16 @@
 2008-05-28  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Ide.Gui.Pads/ITreeNavigator.cs,
+	  MonoDevelop.Ide.Gui/MonoDevelopTreeView.cs: Implemented
+	  MoveToNextObject in ITreeNavigator, which moves the navigator to
+	  the next node containing the same object.
+	* MonoDevelop.Ide.Gui/Workbench.cs: When looking for a project to which
+	  to bind a file being opened, look first in the active projects and
+	  solutions. Fixes bug 370333 - Wrong file highlighted/selected when
+	  using external files feature. 
+
+2008-05-28  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Ide.Gui.Pads/DefaultMonitorPad.cs,
 	  MonoDevelop.Ide.Gui/OutputProgressMonitor.cs: Implement support for
 	  console logging.

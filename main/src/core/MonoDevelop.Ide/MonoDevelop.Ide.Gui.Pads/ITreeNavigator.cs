@@ -61,6 +61,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 		// The following methods only look through nodes already created
 		// (the tree is lazily created)
 		bool MoveToObject (object dataObject);
+		bool MoveToNextObject ();
 		bool FindChild (object dataObject);
 		bool FindChild (object dataObject, bool recursive);
 		

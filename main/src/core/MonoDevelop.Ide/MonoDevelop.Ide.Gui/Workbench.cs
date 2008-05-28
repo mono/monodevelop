@@ -649,7 +649,27 @@ namespace MonoDevelop.Ide.Gui
 					binding = DisplayBindings.GetBindingPerFileName(fileName);
 				
 				if (binding != null) {
-					Project project = IdeApp.Workspace.GetProjectContainingFile (fileName);
+					// When looking for the project to which the file belongs, look first
+					// in the active project, then the active solution, and so on
+					Project project = null;
+					if (IdeApp.ProjectOperations.CurrentSelectedProject != null) {
+						if (IdeApp.ProjectOperations.CurrentSelectedProject.Files.GetFile (fileName) != null)
+							project = IdeApp.ProjectOperations.CurrentSelectedProject;
+					}
+					if (project == null && IdeApp.ProjectOperations.CurrentSelectedWorkspaceItem != null) {
+						project = IdeApp.ProjectOperations.CurrentSelectedWorkspaceItem.GetProjectContainingFile (fileName);
+						if (project == null) {
+							WorkspaceItem it = IdeApp.ProjectOperations.CurrentSelectedWorkspaceItem.ParentWorkspace;
+							while (it != null && project == null) {
+								project = it.GetProjectContainingFile (fileName);
+								it = it.ParentWorkspace;
+							}
+						}
+					}
+					if (project == null) {
+						project = IdeApp.Workspace.GetProjectContainingFile (fileName);
+					}
+					
 					LoadFileWrapper fw = new LoadFileWrapper (workbench, binding, project, oFileInfo);
 					fw.Invoke (fileName);
 					RecentOpen.AddLastFile (fileName, project != null ? project.Name : null);

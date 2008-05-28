@@ -958,7 +958,7 @@ namespace MonoDevelop.Ide.Gui
 			return string.Compare (tb1.GetNodeName (compareNode1, o1), tb2.GetNodeName (compareNode2, o2), true);
 		}
 		
-		public bool GetFirstNode (object dataObject, out Gtk.TreeIter iter)
+		internal bool GetFirstNode (object dataObject, out Gtk.TreeIter iter)
 		{
 			object it = nodeHash [dataObject];
 			if (it == null) {
@@ -972,7 +972,29 @@ namespace MonoDevelop.Ide.Gui
 			return true;
 		}
 		
-		public void RegisterNode (Gtk.TreeIter it, object dataObject, NodeBuilder[] chain)
+		internal bool GetNextNode (object dataObject, ref Gtk.TreeIter iter)
+		{
+			object it = nodeHash [dataObject];
+			if (it == null) {
+				return false;
+			}
+			else if (it is Gtk.TreeIter)
+				return false; // There is only one node, GetFirstNode returned it
+			else {
+				Gtk.TreeIter[] its = (Gtk.TreeIter[]) it;
+				for (int n=0; n<its.Length; n++) {
+					if (its [n].Equals (iter)) {
+						if (n < its.Length - 1) {
+							iter = its [n+1];
+							return true;
+						}
+					}
+				}
+				return false;
+			}
+		}
+		
+		internal void RegisterNode (Gtk.TreeIter it, object dataObject, NodeBuilder[] chain)
 		{
 			object currentIt = nodeHash [dataObject];
 			if (currentIt == null) {
@@ -998,7 +1020,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
-		public void UnregisterNode (object dataObject, Gtk.TreeIter iter, NodeBuilder[] chain)
+		internal void UnregisterNode (object dataObject, Gtk.TreeIter iter, NodeBuilder[] chain)
 		{
 			if (dataObject == copyObject)
 				copyObject = null;
@@ -1517,6 +1539,16 @@ namespace MonoDevelop.Ide.Gui
 				if (!pad.GetFirstNode (dataObject, out iter)) return false;
 				currentIter = iter;
 				return true;
+			}
+		
+			public bool MoveToNextObject ()
+			{
+				object dataItem = DataItem;
+				if (dataItem == null)
+					return false;
+				if (currentIter.Equals (Gtk.TreeIter.Zero))
+					return false;
+				return pad.GetNextNode (dataItem, ref currentIter);
 			}
 		
 			public bool MoveToParent ()
