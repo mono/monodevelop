@@ -1,3 +1,10 @@
+2008-05-28  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/LibSvnClient.cs,
+	  MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:
+	  Load system and user svn configuration when initializing a context.
+	  Fixes bug #378835.
+
 2008-03-04  Mike Krüger <mkrueger@novell.com> 
 
 	

@@ -118,6 +118,9 @@ namespace MonoDevelop.VersionControl.Subversion {
 			ctxstruct.NotifyFunc = new LibSvnClient.svn_wc_notify_func_t (svn_wc_notify_func_t_impl);
 			ctxstruct.LogMsgFunc = new LibSvnClient.svn_client_get_commit_log_t (svn_client_get_commit_log_impl);
 			
+			// Load user and system configuration
+			svn.config_get_config (ref ctxstruct.config, null, pool);
+			
 			IntPtr providers = apr.array_make (pool, 1, IntPtr.Size);
 			IntPtr item;
 			

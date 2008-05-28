@@ -33,6 +33,7 @@ namespace MonoDevelop.VersionControl.Subversion {
 		}
 		
 		public abstract void config_ensure (string config_dir, IntPtr pool);
+		public abstract void config_get_config (ref IntPtr cfg_hash, string config_dir, IntPtr pool);
 		public abstract void auth_open (out IntPtr auth_baton, IntPtr providers, IntPtr pool);
 		public abstract void auth_set_parameter (IntPtr auth_baton, string name, IntPtr value);
 		public abstract IntPtr auth_get_parameter (IntPtr auth_baton, string name);
@@ -259,6 +260,7 @@ namespace MonoDevelop.VersionControl.Subversion {
 			public IntPtr notify_baton;
 			public svn_client_get_commit_log_t LogMsgFunc;
 			public IntPtr logmsg_baton;
+			public IntPtr config;
 		}
 		
 		public struct svn_error_t {
@@ -515,6 +517,11 @@ namespace MonoDevelop.VersionControl.Subversion {
 			svn_config_ensure (config_dir, pool);
 		}
 		
+		public override void config_get_config (ref IntPtr cfg_hash, string config_dir, IntPtr pool)
+		{
+			svn_config_get_config (ref cfg_hash, config_dir, pool);
+		}
+		
 		public override void auth_open (out IntPtr auth_baton, IntPtr providers, IntPtr pool)	
 		{
 			svn_auth_open (out auth_baton, providers, pool);
@@ -708,6 +715,7 @@ namespace MonoDevelop.VersionControl.Subversion {
 		}
 		
 		[DllImport(svnclientlib)] static extern void svn_config_ensure (string config_dir, IntPtr pool);
+		[DllImport(svnclientlib)] static extern void svn_config_get_config (ref IntPtr cfg_hash, string config_dir, IntPtr pool);
 		[DllImport(svnclientlib)] static extern void svn_auth_open (out IntPtr auth_baton, IntPtr providers, IntPtr pool);
 		[DllImport(svnclientlib)] static extern void svn_auth_set_parameter (IntPtr auth_baton, string name, IntPtr value);
 		[DllImport(svnclientlib)] static extern IntPtr svn_auth_get_parameter (IntPtr auth_baton, string name);
@@ -800,6 +808,11 @@ namespace MonoDevelop.VersionControl.Subversion {
 			svn_config_ensure (config_dir, pool);
 		}
 		
+		public override void config_get_config (ref IntPtr cfg_hash, string config_dir, IntPtr pool)
+		{
+			svn_config_get_config (ref cfg_hash, config_dir, pool);
+		}
+		
 		public override void auth_open (out IntPtr auth_baton, IntPtr providers, IntPtr pool)	
 		{
 			svn_auth_open (out auth_baton, providers, pool);
@@ -993,6 +1006,7 @@ namespace MonoDevelop.VersionControl.Subversion {
 		}
 		
 		[DllImport(svnclientlib)] static extern void svn_config_ensure (string config_dir, IntPtr pool);
+		[DllImport(svnclientlib)] static extern void svn_config_get_config (ref IntPtr cfg_hash, string config_dir, IntPtr pool);
 		[DllImport(svnclientlib)] static extern void svn_auth_open (out IntPtr auth_baton, IntPtr providers, IntPtr pool);
 		[DllImport(svnclientlib)] static extern void svn_auth_set_parameter (IntPtr auth_baton, string name, IntPtr value);
 		[DllImport(svnclientlib)] static extern IntPtr svn_auth_get_parameter (IntPtr auth_baton, string name);
