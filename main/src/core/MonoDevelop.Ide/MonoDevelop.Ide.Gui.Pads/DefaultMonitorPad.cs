@@ -58,6 +58,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 		TextTag tag;
 		TextTag bold;
 		TextTag errorTag;
+		TextTag consoleLogTag;
 		int ident = 0;
 		ArrayList tags = new ArrayList ();
 		Stack indents = new Stack ();
@@ -124,6 +125,10 @@ namespace MonoDevelop.Ide.Gui.Pads
 			errorTag.Foreground = "red";
 			errorTag.Weight = Pango.Weight.Bold;
 			buffer.TagTable.Add (errorTag);
+			
+			consoleLogTag = new TextTag ("consoleLog");
+			consoleLogTag.Foreground = "darkgrey";
+			buffer.TagTable.Add (consoleLogTag);
 			
 			tag = new TextTag ("0");
 			tag.LeftMargin = 10;
@@ -282,6 +287,14 @@ namespace MonoDevelop.Ide.Gui.Pads
 			}
 			QueuedTextWrite qtw = new QueuedTextWrite (text, null);
 			addQueuedUpdate (qtw);
+		}
+		
+		public void WriteConsoleLogText (string text)
+		{
+			if (lastTextWrite != null)
+				text = "\n" + text;
+			QueuedTextWrite w = new QueuedTextWrite (text, consoleLogTag);
+			addQueuedUpdate (w);
 		}
 		
 		public void WriteError (string text)

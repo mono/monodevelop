@@ -1,3 +1,9 @@
+2008-05-28  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Gui.Pads/DefaultMonitorPad.cs,
+	  MonoDevelop.Ide.Gui/OutputProgressMonitor.cs: Implement support for
+	  console logging.
+
 2008-05-28  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Ide.Gui/Document.cs: Deactivated on the fly parsing with

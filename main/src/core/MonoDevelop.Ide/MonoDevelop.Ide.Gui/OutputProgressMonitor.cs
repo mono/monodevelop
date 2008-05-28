@@ -51,6 +51,7 @@ namespace MonoDevelop.Ide.Gui
 		event EventHandler stopRequested;
 		
 		LogTextWriter logger = new LogTextWriter ();
+		LogTextWriter internalLogger = new LogTextWriter ();
 		
 		public OutputProgressMonitor (DefaultMonitorPad pad, string title, string icon)
 		{
@@ -58,6 +59,7 @@ namespace MonoDevelop.Ide.Gui
 			outputPad = pad;
 			outputPad.BeginProgress (title);
 			logger.TextWritten += outputPad.WriteText;
+			internalLogger.TextWritten += outputPad.WriteConsoleLogText;
 		}
 		
 		public override void BeginTask (string name, int totalWork)
@@ -108,6 +110,10 @@ namespace MonoDevelop.Ide.Gui
 		
 		public override TextWriter Log {
 			get { return logger; }
+		}
+		
+		TextWriter IConsole.Log {
+			get { return internalLogger; }
 		}
 		
 		TextReader IConsole.In {
