@@ -92,6 +92,16 @@ namespace MonoDevelop.Projects.Formats.MD1
 		{
 			DotNetProject project = Project;
 			
+			bool hasBuildableFiles = false;
+			foreach (ProjectFile pf in project.Files) {
+				if (pf.BuildAction == BuildAction.Compile || pf.BuildAction == BuildAction.EmbedAsResource) {
+					hasBuildableFiles = true;
+					break;
+				}
+			}
+			if (!hasBuildableFiles)
+				return new BuildResult ();
+			
 			if (project.LanguageBinding == null) {
 				BuildResult langres = new BuildResult ();
 				string msg = GettextCatalog.GetString ("Unknown language '{0}'. You may need to install an additional add-in to support this language.", project.LanguageName);
