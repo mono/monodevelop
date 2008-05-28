@@ -1,3 +1,11 @@
+2008-05-27  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.AspNet/AspNetAppProject.cs: Fix ASP.NET projects loading
+	  with the new project model. There *may* be problems with build
+	  paths.
+	* MonoDevelop.AspNet.Parser/PageInfoVisitor.cs: Prevent register
+	  directives overwriting page info with blank info.
+
 2008-05-22  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.AspNet/AspNetToolboxNode.cs,

@@ -120,42 +120,17 @@ namespace MonoDevelop.AspNet
 		
 		public AspNetAppProject ()
 		{
-			commonInit ();
 		}
 		
 		public AspNetAppProject (string languageName)
 			: base (languageName)
 		{
-			commonInit ();
 		}
 		
 		public AspNetAppProject (string languageName, ProjectCreateInformation info, XmlElement projectOptions)
 			: base (languageName, info, projectOptions)
 		{
-			commonInit ();
-		}
-		
-		
-		private void commonInit ()
-		{
-			//AspNetAppProjectConfiguration needs SourceDirectory set so it can append "bin" to determine the output path
-			Configurations.ConfigurationAdded += delegate (object ob, ConfigurationEventArgs args) {
-				AspNetAppProjectConfiguration conf = (AspNetAppProjectConfiguration) args.Configuration;
-				conf.SourceDirectory = BaseDirectory;
-			};
-		}
-
-		//AspNetAppProjectConfiguration needs SourceDirectory set so it can append "bin" to determine the output path
-		public override string FileName {
-			get {
-				return base.FileName;
-			}
-			set {
-				base.FileName = value;
-				foreach (AspNetAppProjectConfiguration conf in Configurations)
-					conf.SourceDirectory = BaseDirectory;
-			}
-		}		
+		}	
 		
 		public override SolutionItemConfiguration CreateConfiguration (string name)
 		{

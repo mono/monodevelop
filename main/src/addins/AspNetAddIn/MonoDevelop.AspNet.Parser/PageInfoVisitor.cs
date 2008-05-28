@@ -47,11 +47,12 @@ namespace MonoDevelop.AspNet.Parser
 		
 		public override void Visit (DirectiveNode node)
 		{
-			info.SetSubtypeFromDirective (node.Name);
+			if (info.Subtype == WebSubtype.None)
+				info.SetSubtypeFromDirective (node.Name);
 			
-			//we have the info, stop walking
-			if (info.Subtype != WebSubtype.WebForm && info.Subtype != WebSubtype.MasterPage)
-				QuickExit = true;
+			if (info.Subtype != WebSubtype.WebForm && info.Subtype != WebSubtype.MasterPage
+			    && info.Subtype != WebSubtype.WebControl)
+				return;
 			
 			info.InheritedClass = node.Attributes ["inherits"] as string;
 			if (info.InheritedClass == null)
