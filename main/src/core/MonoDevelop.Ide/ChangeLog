@@ -1,3 +1,8 @@
+2008-05-28  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Ide.Gui/Document.cs: Deactivated on the fly parsing with
+	  the new dom.
+
 2008-05-27  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Debugging/DebuggingService.cs: Write debugger output
