@@ -122,7 +122,9 @@ namespace MonoDevelop.Ide.Templates
 					resource.BuildAction = BuildAction.EmbedAsResource;
 					project.Files.Add(resource);
 				} catch (Exception ex) {
-					MessageService.ShowException (ex, GettextCatalog.GetString ("File {0} could not be written.", file.Name));
+					string err = GettextCatalog.GetString ("File {0} could not be written.", file.Name);
+					LoggingService.LogError (err, ex);	
+					MessageService.ShowException (ex, err);
 				}
 			}
 	
@@ -131,7 +133,9 @@ namespace MonoDevelop.Ide.Templates
 				try {
 					file.AddToProject (project, defaultLanguage, project.BaseDirectory, null);
 				} catch (Exception ex) {
-					MessageService.ShowException (ex, GettextCatalog.GetString ("File {0} could not be written.", file.Name));
+					string err = GettextCatalog.GetString ("File {0} could not be written.", file.Name);
+					LoggingService.LogError (err, ex);
+					MessageService.ShowException (ex, err);
 				}
 			}
 			

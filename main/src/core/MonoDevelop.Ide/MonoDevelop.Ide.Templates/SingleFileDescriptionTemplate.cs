@@ -159,7 +159,7 @@ namespace MonoDevelop.Ide.Templates
 			//substitute tags
 			if ((name != null) && (name.Length > 0)) {
 				Hashtable tags = new Hashtable ();
-				ModifyTags (project, language, entryName, null, ref tags);
+				ModifyTags (project, language, entryName ?? name, null, ref tags);
 				fileName = StringParserService.Parse (name, HashtableToStringArray (tags));
 			}
 			

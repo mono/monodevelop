@@ -1,3 +1,10 @@
+2008-05-28  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs: Fix a
+	  NRE.
+	* MonoDevelop.Ide.Templates/ProjectDescriptor.cs: Log some messages as
+	  well as throwing up dialog boxes.
+
 2008-05-28  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Gui.Pads/ITreeNavigator.cs,
