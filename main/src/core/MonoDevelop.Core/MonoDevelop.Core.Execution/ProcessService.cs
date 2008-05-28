@@ -350,7 +350,7 @@ namespace MonoDevelop.Core.Execution
 		
 		public void WriteOut (object sender, string s)
 		{
-			writer.WriteLine (s);
+			writer.Write (s);
 		}
 		
 		public static ProcessEventHandler GetWriteHandler (TextWriter tw)
