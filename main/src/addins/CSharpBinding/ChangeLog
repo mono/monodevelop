@@ -1,3 +1,7 @@
+2008-05-28  Mike Krüger <mkrueger@novell.com> 
+
+	* Parser/DomParser.cs: Worked on dom parser.
+
 2008-05-27  Mike Krüger <mkrueger@novell.com> 
 
 	* Parser/DomParser.cs: Fixed some bugs in the new dom parsing.

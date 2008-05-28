@@ -118,6 +118,7 @@ namespace MonoDevelop.CSharpBinding
 			if (type.Properties != null) {
 				foreach (Mono.CSharp.Dom.IProperty property in type.Properties) {
 					members.Add (new DomProperty (property.Name,
+					                              MonoDevelop.Projects.Dom.Modifiers.None,
 					                              Location2DomLocation (property.Location),
 					                              Block2Region (property.AccessorsBlock),
 					                              TypeName2ReturnType (property.ReturnTypeName)));
@@ -128,6 +129,7 @@ namespace MonoDevelop.CSharpBinding
 			if (type.Constructors != null) {
 				foreach (Mono.CSharp.Dom.IMethod method in type.Constructors) {
 					members.Add (new DomMethod (type.Name,
+					                            MonoDevelop.Projects.Dom.Modifiers.None,
 					                            true,
 					                            Location2DomLocation (method.Location),
 					                            Block2Region (method.LocationBlock),
@@ -139,6 +141,7 @@ namespace MonoDevelop.CSharpBinding
 			if (type.Methods != null) {
 				foreach (Mono.CSharp.Dom.IMethod method in type.Methods) {
 					members.Add (new DomMethod (method.Name,
+					                            MonoDevelop.Projects.Dom.Modifiers.None,
 					                            false,
 					                            Location2DomLocation (method.Location),
 					                            Block2Region (method.LocationBlock),
@@ -155,13 +158,13 @@ namespace MonoDevelop.CSharpBinding
 			
 			if (type.Events != null) {
 				foreach (Mono.CSharp.Dom.IEvent evt in type.Events) {
-					members.Add (new DomEvent (evt.Name, Location2DomLocation (evt.Location), TypeName2ReturnType (evt.ReturnTypeName)));
+					members.Add (new DomEvent (evt.Name, MonoDevelop.Projects.Dom.Modifiers.None, Location2DomLocation (evt.Location), TypeName2ReturnType (evt.ReturnTypeName)));
 				}
 			}
 			
 			if (type.Fields != null) {
 				foreach (Mono.CSharp.Dom.ITypeMember field in type.Fields) {
-					members.Add (new DomField (field.Name, Location2DomLocation (field.Location), TypeName2ReturnType (field.ReturnTypeName)));
+					members.Add (new DomField (field.Name, MonoDevelop.Projects.Dom.Modifiers.None, Location2DomLocation (field.Location), TypeName2ReturnType (field.ReturnTypeName)));
 				}
 			}
 			
