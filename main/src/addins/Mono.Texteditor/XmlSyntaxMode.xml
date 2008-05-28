@@ -41,7 +41,7 @@
 	
 	<Span tagColor = "kw:exceptions" color = "comment">
 		<Begin>&lt;![CDATA[</Begin>
-		<End>]]-&gt;</End>
+		<End>]]&gt;</End>
 	</Span>
 	
 	<!-- processing instructions -->

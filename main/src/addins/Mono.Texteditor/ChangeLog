@@ -1,3 +1,7 @@
+2008-05-28  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* XmlSyntaxMode.xml: Fix CDATA end tag.
+
 2008-05-27 David Makovský <yakeen@sannyas-on.net>
  
 	* Mono.TextEditor/DefaultEditActions.cs: parse double value with invariant culture (Patch by Jérémie Laval).
