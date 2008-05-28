@@ -323,9 +323,11 @@ namespace MonoDevelop.NUnit
 		
 		public void AddStartMessage ()
 		{
-			Gdk.Pixbuf infoIcon = failuresTreeView.RenderIcon (Gtk.Stock.DialogInfo, Gtk.IconSize.Menu, "");
-			string msg = string.Format (GettextCatalog.GetString ("Running tests for <b>{0}</b> configuration <b>{1}</b>"), rootTest.Name, configuration);
-			failuresStore.AppendValues (infoIcon, msg, rootTest);
+			if (rootTest != null) {
+				Gdk.Pixbuf infoIcon = failuresTreeView.RenderIcon (Gtk.Stock.DialogInfo, Gtk.IconSize.Menu, "");
+				string msg = string.Format (GettextCatalog.GetString ("Running tests for <b>{0}</b> configuration <b>{1}</b>"), rootTest.Name, configuration);
+				failuresStore.AppendValues (infoIcon, msg, rootTest);
+			}
 		}
 
 		public void ReportRuntimeError (string message, Exception exception)
@@ -373,8 +375,10 @@ namespace MonoDevelop.NUnit
 		
 		void OnStopClicked (object sender, EventArgs args)
 		{
-			Cancel ();
-			failuresStore.AppendValues (CircleImage.Failure, GettextCatalog.GetString ("Test execution cancelled."), null);
+			if (running) {
+				Cancel ();
+				failuresStore.AppendValues (CircleImage.Failure, GettextCatalog.GetString ("Test execution cancelled."), null);
+			}
 		}
 		
 		void OnRunClicked (object sender, EventArgs args)
