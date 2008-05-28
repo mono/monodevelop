@@ -1,3 +1,10 @@
+2008-05-28  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Core.Execution/ProcessWrapper.cs,
+	  MonoDevelop.Core.Execution/ProcessService.cs: Read output from
+	  process by blocks, not by lines. Fixes bug 368479 - Delayed printf
+	  from a gtk+ app in MD.
+
 2008-03-06  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Core.addin.xml: Bump version to 1.0. Yay!

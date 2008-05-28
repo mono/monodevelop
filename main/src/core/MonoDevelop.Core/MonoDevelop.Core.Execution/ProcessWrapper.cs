@@ -50,11 +50,12 @@ namespace MonoDevelop.Core.Execution
 		private void CaptureOutput ()
 		{
 			try {
-				string s;
+				char[] buffer = new char [1000];
 				if (OutputStreamChanged != null) {
-					while ((s = StandardOutput.ReadLine()) != null) {
+					int nr;
+					while ((nr = StandardOutput.Read (buffer, 0, buffer.Length)) > 0) {
 						if (OutputStreamChanged != null)
-							OutputStreamChanged (this, s);
+							OutputStreamChanged (this, new string (buffer, 0, nr));
 					}
 				}
 			} finally {
@@ -65,11 +66,12 @@ namespace MonoDevelop.Core.Execution
 		private void CaptureError ()
 		{
 			try {
-				string s;
+				char[] buffer = new char [1000];
 				if (ErrorStreamChanged != null) {
-					while ((s = StandardError.ReadLine()) != null) {
+					int nr;
+					while ((nr = StandardError.Read (buffer, 0, buffer.Length)) > 0) {
 						if (ErrorStreamChanged != null)
-							ErrorStreamChanged (this, s);
+							ErrorStreamChanged (this, new string (buffer, 0, nr));
 					}					
 				}
 			} finally {
