@@ -49,7 +49,13 @@ namespace MonoDevelop.WelcomePage
 		EventHandler recentChangesHandler;
 		
 		// netNewsXml is where online the news.xml file can be found
-		const string netNewsXml = "http://mono.ximian.com/monodevelop-news/0.18.1/news.xml";
+		static string netNewsXml {
+			get {
+				return "http://mono.ximian.com/monodevelop-news/"
+					+ Mono.Addins.AddinManager.CurrentAddin.Version 
+					+ "/news.xml";
+			}
+		}
 		
 		public override string StockIconId {
 			get { return Gtk.Stock.Home; }
@@ -91,7 +97,8 @@ namespace MonoDevelop.WelcomePage
 					using (XmlTextReader reader = new XmlTextReader (localCachedNewsFile))
 						updateDoc.Load (reader);
 					
-					XmlNode oNodeWhereInsert = contentDoc.SelectSingleNode ("/WelcomePage/Links[@_title=\"News Links\"]"); 
+					XmlNode oNodeWhereInsert =
+						contentDoc.SelectSingleNode ("/WelcomePage/Links[@_title=\"News Links\"]"); 
 					foreach (XmlNode link in updateDoc.SelectSingleNode ("/links")) 
 						oNodeWhereInsert.AppendChild (contentDoc.ImportNode (link,true)); 
 				}
@@ -105,6 +112,9 @@ namespace MonoDevelop.WelcomePage
 		static void updateNewsXmlThread ()
 		{
 			//check to see if the online news file has been modified since it was last downloaded
+			string netNewsXml = WelcomePageView.netNewsXml;
+			LoggingService.LogInfo ("Updating Welcome Page from '{0}'.", netNewsXml);
+			
 			HttpWebRequest request = (HttpWebRequest) WebRequest.Create (netNewsXml);
 			string localCachedNewsFile = System.IO.Path.Combine (PropertyService.ConfigPath, "news.xml");
 			FileInfo localNewsXml = new FileInfo (localCachedNewsFile);
@@ -121,7 +131,8 @@ namespace MonoDevelop.WelcomePage
 						int readBytes = -1;
 						byte[] buffer = new byte[2048];
 						while (readBytes != 0) {							
-							readBytes = responseStream.Read (buffer, position, (int) (avail > 2048 ? 2048 : avail));
+							readBytes = responseStream.Read
+								(buffer, position, (int) (avail > 2048 ? 2048 : avail));
 							position += readBytes;
 							avail -= readBytes;
 							fs.Write (buffer, 0, readBytes);
@@ -130,10 +141,16 @@ namespace MonoDevelop.WelcomePage
 				}
 				NewsUpdated (null, EventArgs.Empty);
 			} catch (System.Net.WebException wex) {
-				if (wex.Response == null || ((HttpWebResponse)wex.Response).StatusCode != HttpStatusCode.NotModified)
-					LoggingService.LogWarning ("Could not download news file for Welcome Page.", wex);
+				HttpWebResponse httpResp = wex.Response as HttpWebResponse;
+				if (httpResp != null && httpResp.StatusCode == HttpStatusCode.NotModified) {
+					LoggingService.LogInfo ("Welcome Page already up-to-date.");
+				} else if (httpResp != null && httpResp.StatusCode == HttpStatusCode.NotFound) {
+					LoggingService.LogInfo ("Welcome Page update file not found.", netNewsXml);
+				} else {
+					LoggingService.LogWarning ("Welcome Page news file could not be downloaded.", wex);
+				}
 			} catch (Exception ex) {
-				LoggingService.LogWarning ("Could not download news file for Welcome Page.", ex);
+				LoggingService.LogWarning ("Welcome Page news file could not be downloaded.", ex);
 			}
 			lock (updateLock)
 				isUpdating = false;
@@ -141,6 +158,9 @@ namespace MonoDevelop.WelcomePage
 		
 		public static void UpdateNews ()
 		{
+			if (!PropertyService.Get<bool>("WelcomePage.UpdateFromInternet", true))
+				return;
+			
 			lock (updateLock) {
 				if (isUpdating)
 					return;
@@ -172,7 +192,8 @@ namespace MonoDevelop.WelcomePage
 				try {
 					loadingProject = true;
 					Gdk.ModifierType mtype;
-					bool inWorkspace = Gtk.Global.GetCurrentEventState (out mtype) && (mtype & Gdk.ModifierType.ControlMask) != 0;
+					bool inWorkspace = Gtk.Global.GetCurrentEventState (out mtype) 
+						&& (mtype & Gdk.ModifierType.ControlMask) != 0;
 					IAsyncOperation oper = IdeApp.Workspace.OpenWorkspaceItem (fileuri.LocalPath, !inWorkspace);
 					oper.WaitForCompleted ();
 				} finally {
@@ -197,7 +218,9 @@ namespace MonoDevelop.WelcomePage
 					IdeApp.Services.PlatformService.ShowUrl (uri);
 				} catch (Exception) {
 					string msg = String.Format (GettextCatalog.GetString ("Could not open the url {0}"), uri);
-					Gtk.MessageDialog md = new Gtk.MessageDialog (null, Gtk.DialogFlags.Modal | Gtk.DialogFlags.DestroyWithParent, Gtk.MessageType.Error, Gtk.ButtonsType.Ok, msg);
+					Gtk.MessageDialog md = new Gtk.MessageDialog
+						(null, Gtk.DialogFlags.Modal| Gtk.DialogFlags.DestroyWithParent,
+						 Gtk.MessageType.Error, Gtk.ButtonsType.Ok, msg);
 					try {
 						md.Run ();
 						md.Hide ();

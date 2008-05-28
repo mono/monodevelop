@@ -3,6 +3,7 @@ ADDIN_BUILD = $(top_builddir)/build/AddIns/WelcomePage
 ASSEMBLY = $(ADDIN_BUILD)/WelcomePage.dll
 REFS =  \
 	$(GTK_SHARP_LIBS) \
+	$(MONO_ADDINS_LIBS) \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Components.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Core.Gui.dll \

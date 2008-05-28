@@ -1,3 +1,9 @@
+2008-05-28  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* WelcomePageView.cs, WelcomePageOptionPanel.cs, WelcomePage.mdp,
+	  Makefile.am: Add an option to disable online updating. Fixes bug
+	  #323870.
+
 2008-05-21  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* WelcomePageFallbackWidget.cs, WelcomePageView.cs,
