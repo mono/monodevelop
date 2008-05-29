@@ -1,3 +1,9 @@
+2008-05-29  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.SourceEditor/SourceEditorView.cs: Fix search issue with
+	  the ITextIterator implementation. The iterator should wrap around
+	  the end of the document if the initial position is not 0.
+
 2008-05-27  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.SourceEditor/SourceEditorWidget.cs: Fixed dispose source

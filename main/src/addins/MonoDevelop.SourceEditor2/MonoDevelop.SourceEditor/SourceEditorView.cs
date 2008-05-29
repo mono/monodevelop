@@ -794,17 +794,27 @@ namespace MonoDevelop.SourceEditor
 			
 			public bool MoveAhead (int numChars)
 			{
-				bool result = offset + numChars < view.Document.Length && offset + numChars >= 0;
-				offset = Math.Max (Math.Min (offset + numChars, view.Document.Length - 1), 0);
+				bool result = offset < initialOffset ? (offset + numChars < initialOffset) : (offset + numChars < initialOffset + view.Document.Length);
+				offset = (offset + numChars) % view.Document.Length;
 				return result;
 			}
 			public void MoveToEnd ()
 			{
-				offset = view.Document.Length - 1;
+				if (initialOffset > 0)
+					offset = initialOffset - 1;
+				else
+					offset = view.Document.Length - 1;
 			}
 			public string ReadToEnd ()
 			{
-				return view.Document.GetTextAt (offset, view.Document.Length - offset);
+				if (offset < initialOffset)
+					return view.Document.GetTextAt (offset, initialOffset - offset);
+				else if (initialOffset == 0)
+					return view.Document.GetTextAt (offset, view.Document.Length - offset);
+				else {
+					string s = view.Document.GetTextAt (offset, view.Document.Length - offset);
+					return s + view.Document.GetTextAt (0, initialOffset);
+				}
 			}
 					
 			public void Reset()
