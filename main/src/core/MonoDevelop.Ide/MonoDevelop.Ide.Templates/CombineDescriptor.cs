@@ -98,7 +98,8 @@ namespace MonoDevelop.Ide.Templates
 				
 				// Create sub projects
 				foreach (ISolutionItemDescriptor entryDescriptor in entryDescriptors) {
-					SolutionItem sit = entryDescriptor.CreateEntry (projectCreateInformation, defaultLanguage);
+					SolutionEntityItem sit = entryDescriptor.CreateItem (projectCreateInformation, defaultLanguage);
+					entryDescriptor.InitializeItem (projectCreateInformation, defaultLanguage, sit);
 					sol.RootFolder.Items.Add (sit);
 					if (sit is IConfigurationTarget) {
 						foreach (ItemConfiguration c in ((IConfigurationTarget)sit).Configurations) {

@@ -58,7 +58,7 @@ namespace MonoDevelop.Ide.Templates
 			template = element;
 		}
 		
-		public SolutionEntityItem CreateEntry (ProjectCreateInformation projectCreateInformation, string defaultLanguage)
+		public SolutionEntityItem CreateItem (ProjectCreateInformation projectCreateInformation, string defaultLanguage)
 		{
 			Type type = Type.GetType (typeName);
 			
@@ -67,16 +67,21 @@ namespace MonoDevelop.Ide.Templates
 				return null;
 			}
 			
-			SolutionEntityItem entry = (SolutionEntityItem) Activator.CreateInstance (type);
-			entry.InitializeFromTemplate (template);
+			SolutionEntityItem item = (SolutionEntityItem) Activator.CreateInstance (type);
+			item.InitializeFromTemplate (template);
 			
 			string newProjectName = StringParserService.Parse (name, new string[,] { 
 				{"ProjectName", projectCreateInformation.ProjectName}
 			});
 			
-			entry.Name = newProjectName;
-			entry.FileName = Path.Combine (projectCreateInformation.ProjectBasePath, newProjectName);
-			return entry;
+			item.Name = newProjectName;
+			item.FileName = Path.Combine (projectCreateInformation.ProjectBasePath, newProjectName);
+			
+			return item;
+		}
+		
+		public void InitializeItem (ProjectCreateInformation projectCreateInformation, string defaultLanguage, SolutionEntityItem item)
+		{
 		}
 		
 		public static SolutionItemDescriptor CreateDescriptor (XmlElement element)

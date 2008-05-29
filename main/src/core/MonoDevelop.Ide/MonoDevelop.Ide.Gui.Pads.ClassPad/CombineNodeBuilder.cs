@@ -59,8 +59,8 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 		
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
 		{
-			SolutionFolder combine = dataObject as SolutionFolder;
-			label = GettextCatalog.GetString ("Solution {0}", combine.Name);
+			SolutionFolder folder = dataObject as SolutionFolder;
+			label = folder.Name;
 			icon = Context.GetIcon (Stock.SolutionFolderOpen);
 			closedIcon = Context.GetIcon (Stock.SolutionFolderClosed);
 		}

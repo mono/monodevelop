@@ -1,3 +1,21 @@
+2008-05-29  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Templates/CombineDescriptor.cs,
+	  MonoDevelop.Ide.Templates/SolutionItemDescriptor.cs,
+	  MonoDevelop.Ide.Templates/ProjectTemplate.cs,
+	  MonoDevelop.Ide.Templates/ISolutionItemDescriptor.cs,
+	  MonoDevelop.Ide.Templates/ProjectDescriptor.cs: Split solution item
+	  creation in two steps: creation of the instance, and
+	  initialization. In this way the new project dialog can create a new
+	  instance of the project to check availability of features without
+	  having to expand the whole template.
+	* MonoDevelop.Ide.Gui.Pads.ClassPad/CombineNodeBuilder.cs: Fix node
+	  label.
+	* MonoDevelop.Ide.Gui.Dialogs/NewProjectDialog.cs: When adding a
+	  project to an existing solution, always use the solution's format.
+	  Skip the 'project features' page if there are no features available
+	  for that kind of project.
+
 2008-05-28  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs: Fix a

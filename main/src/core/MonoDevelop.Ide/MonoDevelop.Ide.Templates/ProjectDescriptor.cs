@@ -79,20 +79,23 @@ namespace MonoDevelop.Ide.Templates
 			this.name = name;
 		}
 		
-		public SolutionEntityItem CreateEntry (ProjectCreateInformation projectCreateInformation, string defaultLanguage)
+		public SolutionEntityItem CreateItem (ProjectCreateInformation projectCreateInformation, string defaultLanguage)
 		{
-			
 			if (projectOptions.GetAttribute ("language") == "") {
 /*				if (defaultLanguage == null || defaultLanguage == "")
 					throw new InvalidOperationException ("Language not specified in template");
 */				projectOptions.SetAttribute ("language", defaultLanguage);
 			}
-			
-			Project_ project = Services.ProjectService.CreateProject (projectType, projectCreateInformation, projectOptions);
+			return Services.ProjectService.CreateProject (projectType, projectCreateInformation, projectOptions);
+		}
+
+		public void InitializeItem (ProjectCreateInformation projectCreateInformation, string defaultLanguage, SolutionEntityItem item)
+		{
+			Project_ project = item as Project_;
 			
 			if (project == null) {
 				MessageService.ShowError (GettextCatalog.GetString ("Can't create project with type : {0}", projectType));
-				return null;
+				return;
 			}
 			
 			string newProjectName = StringParserService.Parse(name, new string[,] { 
@@ -153,7 +156,6 @@ namespace MonoDevelop.Ide.Templates
 				}
 			}
 */			
-			return project;
 		}
 		
 		public static ProjectDescriptor CreateProjectDescriptor(XmlElement element)

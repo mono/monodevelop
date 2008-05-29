@@ -272,7 +272,16 @@ namespace MonoDevelop.Ide.Templates
 				throw new InvalidOperationException ("Combine template does not contain any project template");
 
 			lastCombine = null;
-			return entries[0].CreateEntry (projectCreateInformation, this.languagename);
+			SolutionEntityItem it = entries[0].CreateItem (projectCreateInformation, this.languagename);
+			entries[0].InitializeItem (projectCreateInformation, this.languagename, it);
+			return it;
+		}
+		
+		public bool HasItemFeatures (SolutionFolder parentFolder, ProjectCreateInformation cinfo)
+		{
+			ISolutionItemDescriptor sid = combineDescriptor.EntryDescriptors [0];
+			SolutionEntityItem sampleItem = sid.CreateItem (cinfo, languagename);
+			return (SolutionItemFeatures.GetFeatures (parentFolder, sampleItem).Length > 0);
 		}
 		
 		public void OpenCreatedCombine()

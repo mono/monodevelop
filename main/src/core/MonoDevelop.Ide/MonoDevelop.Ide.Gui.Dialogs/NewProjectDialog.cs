@@ -320,41 +320,53 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 					parentSolution = parentFolder.ParentSolution;
 					currentEntry = item;
 				}
-				if (currentEntry != null) {
-					try {
-						featureList.Fill (parentFolder, currentEntry, SolutionItemFeatures.GetFeatures (parentFolder, currentEntry));
+				
+				if (btn_new.Label == Gtk.Stock.GoForward) {
+					// There are features to show. Go to the next page
+					if (currentEntry != null) {
+						try {
+							featureList.Fill (parentFolder, currentEntry, SolutionItemFeatures.GetFeatures (parentFolder, currentEntry));
+						}
+						catch (Exception ex) {
+							LoggingService.LogError (ex.ToString ());
+						}
 					}
-					catch (Exception ex) {
-						LoggingService.LogError (ex.ToString ());
-					}
+					notebook.Page++;
+					btn_new.Label = Gtk.Stock.Ok;
+					return;
 				}
-				notebook.Page++;
-				btn_new.Label = Gtk.Stock.Ok;
-			}
-			else {
+				
+			} else {
+				// Already in fetatures page
 				if (!featureList.Validate ())
 					return;
-				
-				// New combines (not added to parent combines) already have the project as child.
-				if (!newSolution) {
-					// Make sure the new item is saved before adding. In this way the
-					// version control add-in will be able to put it under version control.
-					if (currentEntry is SolutionEntityItem)
-						IdeApp.ProjectOperations.Save ((SolutionEntityItem) currentEntry);
-					parentFolder.Items.Add (currentEntry);
-				}
-				
-				featureList.ApplyFeatures ();
-				if (parentFolder != null)
-					IdeApp.ProjectOperations.Save (parentFolder.ParentSolution);
-				else {
-					IdeApp.ProjectOperations.Save (newItem);
-				}
-				
-				if (openSolution)
-					selectedItem.OpenCreatedCombine();
-				Respond (ResponseType.Ok);
 			}
+			
+			// New combines (not added to parent combines) already have the project as child.
+			if (!newSolution) {
+				// Make sure the new item is saved before adding. In this way the
+				// version control add-in will be able to put it under version control.
+				if (currentEntry is SolutionEntityItem) {
+					// Inherit the file format from the solution
+					SolutionEntityItem eitem = (SolutionEntityItem) currentEntry;
+					eitem.FileFormat = parentFolder.ParentSolution.FileFormat;
+					IdeApp.ProjectOperations.Save (eitem);
+				}
+				parentFolder.Items.Add (currentEntry);
+			}
+
+			if (notebook.Page == 1)
+				featureList.ApplyFeatures ();
+			
+			if (parentFolder != null)
+				IdeApp.ProjectOperations.Save (parentFolder.ParentSolution);
+			else {
+				IdeApp.ProjectOperations.Save (newItem);
+			}
+			
+			if (openSolution)
+				selectedItem.OpenCreatedCombine();
+			Respond (ResponseType.Ok);
 		}
 		
 		bool CreateProject ()
@@ -408,15 +420,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 				return false;
 			}
 			
-			ProjectCreateInformation cinfo = new ProjectCreateInformation ();
-			
-			cinfo.CombinePath     = SolutionLocation;
-			cinfo.ProjectBasePath = ProjectLocation;
-//				cinfo.Description     = Runtime.StringParserService.Parse(item.Template.Description);
-			
-			cinfo.ProjectName     = name;
-			cinfo.CombineName     = CreateSolutionDirectory ? txt_subdirectory.Text : name;
-//				cinfo.ProjectTemplate = item.Template;
+			ProjectCreateInformation cinfo = CreateProjectCreateInformation ();
 			
 			try {
 				if (newSolution)
@@ -430,6 +434,16 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 			selectedItem = item;
 			return true;
 		}
+		
+		ProjectCreateInformation CreateProjectCreateInformation ()
+		{
+			ProjectCreateInformation cinfo = new ProjectCreateInformation ();
+			cinfo.CombinePath     = SolutionLocation;
+			cinfo.ProjectBasePath = ProjectLocation;
+			cinfo.ProjectName     = txt_name.Text;
+			cinfo.CombineName     = CreateSolutionDirectory ? txt_subdirectory.Text : txt_name.Text;
+			return cinfo;
+		}
 
 		// icon view event handlers
 		void SelectedIndexChange(object sender, EventArgs e)
@@ -442,11 +456,18 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 					txt_subdirectory.Sensitive = false;
 					chk_combine_directory.Sensitive = false;
 					lbl_subdirectory.Sensitive = false;
+					btn_new.Label = Gtk.Stock.Ok;
 				} else {
 					txt_subdirectory.Sensitive = true;
 					chk_combine_directory.Sensitive = true;
 					lbl_subdirectory.Sensitive = true;
 					txt_subdirectory.Text = txt_name.Text;
+					
+					ProjectCreateInformation cinfo = CreateProjectCreateInformation ();
+					if (ptemplate.HasItemFeatures (parentFolder, cinfo))
+						btn_new.Label = Gtk.Stock.GoForward;
+					else
+						btn_new.Label = Gtk.Stock.Ok;
 				}
 			}
 			else
