@@ -385,24 +385,40 @@ namespace MonoDevelop.VersionControl
 			}
 		}
 */
-		static void SolutionItemAddFiles (SolutionItem entry, ArrayList files)
+		static void SolutionItemAddFiles (string rootPath, SolutionItem entry, ArrayList files)
 		{
 			if (entry is SolutionEntityItem) {
 				string file = ((SolutionEntityItem)entry).FileName;
-				if (!File.Exists (file))
-					return;
-				files.Add (file);
+				SolutionItemAddFile (rootPath, files, file);
 			}
 			
 			if (entry is Project) {
 				foreach (ProjectFile file in ((Project) entry).Files) {
 					if (file.Subtype != Subtype.Directory)
-						files.Add (file.FilePath);
+						SolutionItemAddFile (rootPath, files, file.FilePath);
 				}
 			} else if (entry is SolutionFolder) {
 				foreach (SolutionItem ent in ((SolutionFolder) entry).Items)
-					SolutionItemAddFiles (ent, files);
+					SolutionItemAddFiles (rootPath, ent, files);
 			}
+		}
+		
+		static void SolutionItemAddFile (string rootPath, ArrayList files, string file)
+		{
+			if (!file.StartsWith (rootPath + Path.DirectorySeparatorChar))
+			    return;
+			if (!File.Exists (file))
+				return;
+			if (files.Contains (file))
+				return;
+			string dir = Path.GetDirectoryName (file);
+			while (dir != rootPath) {
+				if (files.Contains (dir))
+					break;
+				files.Add (dir);
+				dir = Path.GetDirectoryName (dir);
+			}
+			files.Add (file);
 		}
 		
 		static void OnEntryAdded (object o, SolutionItemEventArgs args)
@@ -431,7 +447,8 @@ namespace MonoDevelop.VersionControl
 			ArrayList files = new ArrayList ();
 			
 			files.Add (path);
-			SolutionItemAddFiles (entry, files);
+			SolutionItemAddFiles (path, entry, files);
+			files.Sort ();
 			
 			using (IProgressMonitor monitor = GetStatusMonitor ()) {
 				string[] paths = (string[]) files.ToArray (typeof (string));

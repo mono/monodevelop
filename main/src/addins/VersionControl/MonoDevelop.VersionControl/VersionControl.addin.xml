@@ -85,7 +85,7 @@
 			icon = "vc-log"
 			description = "Shows the commit history of the file or folder."/>
 		<Command id = "MonoDevelop.VersionControl.Commands.Status" 
-			_label = "_Status/Commit..."
+			_label = "_Review Changes"
 			icon = "vc-status"
 			description = "Shows the status of files in the folder."/>
 		<Command id = "MonoDevelop.VersionControl.Commands.Update" 

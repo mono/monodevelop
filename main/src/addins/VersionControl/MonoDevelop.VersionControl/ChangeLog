@@ -1,3 +1,12 @@
+2008-05-29  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* VersionControl.addin.xml: Set a better label for the Status/Commit
+	  command.
+	* MonoDevelop.VersionControl/VersionControlService.cs: When adding the
+	  files of a project, add subfolders when needed. Fixes bug 393190 -
+	  Exception when creating new Gtk#/Stetic project if under version
+	  control.
+
 2008-05-22  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* VersionControl.addin.xml: Added version control menu to workspace
