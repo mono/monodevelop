@@ -1,5 +1,9 @@
 2008-05-29  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.Projects.Dom/DomField.cs: checked in domfield.
+
+2008-05-29  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.Projects.Dom/IMember.cs,
 	  MonoDevelop.Projects.Dom/DomReturnType.cs,
 	  MonoDevelop.Projects.Dom/DomRegion.cs,
