@@ -198,7 +198,6 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/ProjectModel/SerializableClasses">
-		<DataType class = "CBinding.CCompilationParameters"/>
 		<DataType class = "CBinding.CProjectConfiguration"/>
 		<DataType class = "CBinding.CProject"/>
 		<DataType class = "CBinding.GccCompiler"/>
@@ -208,6 +207,10 @@
 	
 	<Extension path = "/MonoDevelop/ProjectModel/MSBuildItemTypes">
 		<SolutionItem type="CBinding.CProject" extension="cproj" guid="{2857B73E-F847-4B02-9238-064979017E93}"/>
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/ProjectModel/MD1SerializationMaps">
+		<SerializationMap resource="md1format.xml" />
 	</Extension>
 	
 <!-- Current Autotools AddIn is very .NET specific

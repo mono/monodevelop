@@ -1,3 +1,15 @@
+2008-05-29  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Gui/CodeGenerationPanel.cs, md1format.xml, CBinding.addin.xml,
+	  CBinding.mdp, Project/CProjectConfiguration.cs,
+	  Project/CCompilationParameters.cs, Project/CProject.cs,
+	  Makefile.am, Compiler/GNUCompiler.cs: Removed
+	  CCompilationParameters because it is not really needed like in the
+	  .net case. Also changed the name used to serialize some properties,
+	  to better match the msbuild model. Added a serialization map
+	  (md1format.xml) for backwards compatibility with the old mdp
+	  format.
+
 2008-05-23  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Project/CProject.cs: BaseDirectory can't be used until the project

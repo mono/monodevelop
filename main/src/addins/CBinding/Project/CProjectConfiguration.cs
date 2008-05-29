@@ -45,12 +45,18 @@ namespace CBinding
 		SharedLibrary
 	};
 	
+	public enum WarningLevel {
+		None,
+		Normal,
+		All
+	}
+	
 	public class CProjectConfiguration : ProjectConfiguration
 	{
-		[ItemProperty("Output/output")]
+		[ItemProperty("OutputName")]
 		string output = string.Empty;
 		
-		[ItemProperty("Build/target")]
+		[ItemProperty("CompileTarget")]
 		CBinding.CompileTarget target = CBinding.CompileTarget.Bin;
 		
 		[ItemProperty ("Includes")]
@@ -65,10 +71,25 @@ namespace CBinding
 		[ItemProperty ("Lib", Scope = 1, ValueType = typeof(string))]
     	private ArrayList libs = new ArrayList ();
 		
-		[ItemProperty ("CodeGeneration", FallbackType = typeof(UnknownCompilationParameters))]
-		ICloneable compilationParameters;
+		[ItemProperty ("WarningLevel", DefaultValue=WarningLevel.Normal)]
+		private WarningLevel warning_level = WarningLevel.Normal;
 		
-		[ProjectPathItemProperty ("SourceDirectory")]
+		[ItemProperty ("WarningsAsErrors", DefaultValue=false)]
+		private bool warnings_as_errors = false;
+		
+		[ItemProperty ("OptimizationLevel", DefaultValue=0)]
+		private int optimization = 0;
+		
+		[ItemProperty ("ExtraCompilerArguments", DefaultValue="")]
+		private string extra_compiler_args = string.Empty;
+		
+		[ItemProperty ("ExtraLinkerArguments", DefaultValue="")]
+		private string extra_linker_args = string.Empty;
+		
+		[ItemProperty ("DefineSymbols", DefaultValue="")]
+		private string define_symbols = string.Empty;
+		
+		[ProjectPathItemProperty ("SourceDirectory", DefaultValue=null)]
 		private string source_directory_path;
 		
 		[ItemProperty ("UseCcache", DefaultValue=false)]
@@ -87,11 +108,6 @@ namespace CBinding
 			set { target = value; }
 		}
 
-		public ICloneable CompilationParameters {
-			get { return compilationParameters; }
-			set { compilationParameters = value; }
-		}
-		
 		// TODO: This should be revised to use the naming conventions depending on OS
 		public string CompiledOutputName {
 			get {
@@ -150,6 +166,41 @@ namespace CBinding
 			set { precompileHeaders = value; }
 		}
 		
+		public WarningLevel WarningLevel {
+			get { return warning_level; }
+			set { warning_level = value; }
+		}
+		
+		public bool WarningsAsErrors {
+			get { return warnings_as_errors; }
+			set { warnings_as_errors = value; }
+		}
+		
+		public int OptimizationLevel {
+			get { return optimization; }
+			set {
+				if (value >= 0 && value <= 3)
+					optimization = value;
+				else
+					optimization = 0;
+			}
+		}
+		
+		public string ExtraCompilerArguments {
+			get { return extra_compiler_args; }
+			set { extra_compiler_args = value; }
+		}
+		
+		public string ExtraLinkerArguments {
+			get { return extra_linker_args; }
+			set { extra_linker_args = value; }
+		}
+		
+		public string DefineSymbols {
+			get { return define_symbols; }
+			set { define_symbols = value; }
+		}
+		
 		public override void CopyFrom (ItemConfiguration configuration)
 		{
 			base.CopyFrom (configuration);
@@ -163,25 +214,12 @@ namespace CBinding
 			source_directory_path = conf.source_directory_path;
 			use_ccache = conf.use_ccache;
 			
-			if (conf.CompilationParameters == null) {
-				compilationParameters = null;
-			} else {
-				compilationParameters = (ICloneable)conf.compilationParameters.Clone ();
-			}
-		}
-	}
-	
-	public class UnknownCompilationParameters : ICloneable, IExtendedDataItem
-	{
-		Hashtable table = new Hashtable ();
-		
-		public IDictionary ExtendedProperties {
-			get { return table; }
-		}
-		
-		public object Clone ()
-		{
-			return MemberwiseClone ();
+			warning_level = conf.warning_level;
+			warnings_as_errors = conf.warnings_as_errors;
+			optimization = conf.optimization;
+			extra_compiler_args = conf.extra_compiler_args;
+			extra_linker_args = conf.extra_linker_args;
+			define_symbols = conf.define_symbols;
 		}
 	}
 }

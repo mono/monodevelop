@@ -80,7 +80,6 @@ FILES =  \
 	Parser/Typedef.cs \
 	Parser/Union.cs \
 	Parser/Variable.cs \
-	Project/CCompilationParameters.cs \
 	Project/CProject.cs \
 	Project/CProjectBinding.cs \
 	Project/CProjectConfiguration.cs \
@@ -121,6 +120,7 @@ RES =  \
 	icons/text-x-csrc.32x32.png \
 	icons/text-x-csrc.48x48.png \
 	icons/update \
+	md1format.xml \
 	templates/ConsoleCppProject.xpt.xml \
 	templates/ConsoleCProject.xpt.xml \
 	templates/EmptyCHeaderFile.xft.xml \

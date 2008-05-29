@@ -145,16 +145,13 @@ namespace CBinding
 		{
 			StringBuilder args = new StringBuilder ();
 			
-			CCompilationParameters cp =
-				(CCompilationParameters)configuration.CompilationParameters;
-			
 			if (configuration.DebugMode)
 				args.Append ("-g ");
 			
 			if (configuration.CompileTarget == CBinding.CompileTarget.SharedLibrary)
 				args.Append ("-fPIC ");
 			
-			switch (cp.WarningLevel)
+			switch (configuration.WarningLevel)
 			{
 			case WarningLevel.None:
 				args.Append ("-w ");
@@ -167,18 +164,18 @@ namespace CBinding
 				break;
 			}
 			
-			if (cp.WarningsAsErrors)
+			if (configuration.WarningsAsErrors)
 				args.Append ("-Werror ");
 			
-			args.Append ("-O" + cp.OptimizationLevel + " ");
+			args.Append ("-O" + configuration.OptimizationLevel + " ");
 			
-			if (cp.ExtraCompilerArguments != null && cp.ExtraCompilerArguments.Length > 0) {
-				string extraCompilerArgs = ExpandBacktickedParameters(cp.ExtraCompilerArguments.Replace ('\n', ' '));
+			if (configuration.ExtraCompilerArguments != null && configuration.ExtraCompilerArguments.Length > 0) {
+				string extraCompilerArgs = ExpandBacktickedParameters(configuration.ExtraCompilerArguments.Replace ('\n', ' '));
 				args.Append (extraCompilerArgs + " ");
 			}
 			
-			if (cp.DefineSymbols != null && cp.DefineSymbols.Length > 0)
-				args.Append (ProcessDefineSymbols (cp.DefineSymbols) + " ");
+			if (configuration.DefineSymbols != null && configuration.DefineSymbols.Length > 0)
+				args.Append (ProcessDefineSymbols (configuration.DefineSymbols) + " ");
 			
 			if (configuration.Includes != null)
 				foreach (string inc in configuration.Includes)
@@ -195,8 +192,7 @@ namespace CBinding
 		
 		public override string GetDefineFlags (CProjectConfiguration configuration)
 		{
-			string defines = ((CCompilationParameters)configuration.CompilationParameters).DefineSymbols;
-			return ProcessDefineSymbols (defines);
+			return ProcessDefineSymbols (configuration.DefineSymbols);
 		}
 		
 		private bool NeedsCompiling (ProjectFile file)
@@ -330,10 +326,9 @@ namespace CBinding
 			string objectFiles = string.Join (" ", ObjectFiles (projectFiles, true));
 			string pkgargs = GeneratePkgLinkerArgs (packages);
 			StringBuilder args = new StringBuilder ();
-			CCompilationParameters cp = (CCompilationParameters)configuration.CompilationParameters;
 			
-			if (cp.ExtraLinkerArguments != null && cp.ExtraLinkerArguments.Length > 0) {
-				string extraLinkerArgs = ExpandBacktickedParameters(cp.ExtraLinkerArguments.Replace ('\n', ' '));
+			if (configuration.ExtraLinkerArguments != null && configuration.ExtraLinkerArguments.Length > 0) {
+				string extraLinkerArgs = ExpandBacktickedParameters(configuration.ExtraLinkerArguments.Replace ('\n', ' '));
 				args.Append (extraLinkerArgs + " ");
 			}
 			
@@ -388,11 +383,9 @@ namespace CBinding
 			string objectFiles = string.Join (" ", ObjectFiles (projectFiles, true));
 			string pkgargs = GeneratePkgLinkerArgs (packages);
 			StringBuilder args = new StringBuilder ();
-			CCompilationParameters cp =
-				(CCompilationParameters)configuration.CompilationParameters;
 			
-			if (cp.ExtraLinkerArguments != null && cp.ExtraLinkerArguments.Length > 0) {
-				string extraLinkerArgs = ExpandBacktickedParameters(cp.ExtraLinkerArguments.Replace ('\n', ' '));
+			if (configuration.ExtraLinkerArguments != null && configuration.ExtraLinkerArguments.Length > 0) {
+				string extraLinkerArgs = ExpandBacktickedParameters(configuration.ExtraLinkerArguments.Replace ('\n', ' '));
 				args.Append (extraLinkerArgs + " ");
 			}
 			

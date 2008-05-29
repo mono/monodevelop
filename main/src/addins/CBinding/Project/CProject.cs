@@ -68,10 +68,10 @@ namespace CBinding
 	[DataInclude(typeof(CProjectConfiguration))]
 	public class CProject : Project, IDeployable
 	{
-		[ItemProperty ("compiler", ValueType = typeof(CCompiler))]
+		[ItemProperty ("Compiler", ValueType = typeof(CCompiler))]
 		private ICompiler compiler_manager;
 		
-		[ItemProperty]
+		[ItemProperty ("Language")]
 		private Language language;
 		
 		[ItemProperty("Target")]
@@ -130,7 +130,7 @@ namespace CBinding
 			CProjectConfiguration configuration =
 				(CProjectConfiguration)CreateConfiguration ("Debug");
 			
-			((CCompilationParameters)configuration.CompilationParameters).DefineSymbols = "DEBUG MONODEVELOP";		
+			configuration.DefineSymbols = "DEBUG MONODEVELOP";		
 				
 			Configurations.Add (configuration);
 			
@@ -138,15 +138,14 @@ namespace CBinding
 				(CProjectConfiguration)CreateConfiguration ("Release");
 				
 			configuration.DebugMode = false;
-			((CCompilationParameters)configuration.CompilationParameters).OptimizationLevel = 3;
-			((CCompilationParameters)configuration.CompilationParameters).DefineSymbols = "MONODEVELOP";
+			configuration.OptimizationLevel = 3;
+			configuration.DefineSymbols = "MONODEVELOP";
 			Configurations.Add (configuration);
 			
 			foreach (CProjectConfiguration c in Configurations) {
 				c.OutputDirectory = Path.Combine (binPath, c.Id);
 				c.SourceDirectory = info.ProjectBasePath;
 				c.Output = Name;
-				CCompilationParameters parameters = c.CompilationParameters as CCompilationParameters;
 				
 				if (projectOptions != null) {
 					if (projectOptions.Attributes["Target"] != null) {
@@ -159,14 +158,10 @@ namespace CBinding
 							projectOptions.Attributes["PauseConsoleOutput"].InnerText);
 					}
 					if (projectOptions.Attributes["CompilerArgs"].InnerText != null) {
-						if (parameters != null) {
-							parameters.ExtraCompilerArguments = projectOptions.Attributes["CompilerArgs"].InnerText;
-						}
+						c.ExtraCompilerArguments = projectOptions.Attributes["CompilerArgs"].InnerText;
 					}
 					if (projectOptions.Attributes["LinkerArgs"].InnerText != null) {
-						if (parameters != null) {
-							parameters.ExtraLinkerArguments = projectOptions.Attributes["LinkerArgs"].InnerText;
-						}
+						c.ExtraLinkerArguments = projectOptions.Attributes["LinkerArgs"].InnerText;
 					}
 				}
 			}			
@@ -361,7 +356,6 @@ namespace CBinding
 			CProjectConfiguration conf = new CProjectConfiguration ();
 			
 			conf.Name = name;
-			conf.CompilationParameters = new CCompilationParameters ();
 			
 			return conf;
 		}

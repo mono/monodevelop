@@ -44,7 +44,6 @@ namespace CBinding
 	public partial class CodeGenerationPanel : Gtk.Bin
 	{
 		private CProjectConfiguration configuration;
-		private CCompilationParameters compilationParameters;
 		private Gtk.ListStore libStore = new Gtk.ListStore (typeof(string));
 		private Gtk.ListStore libPathStore = new Gtk.ListStore (typeof(string));
 		private Gtk.ListStore includePathStore = new Gtk.ListStore (typeof(string));
@@ -79,9 +78,8 @@ namespace CBinding
 		public void Load (CProjectConfiguration config)
 		{
 			configuration = config;
-			compilationParameters = (CCompilationParameters)configuration.CompilationParameters;
 			
-			switch (compilationParameters.WarningLevel)
+			switch (configuration.WarningLevel)
 			{
 			case WarningLevel.None:
 				noWarningRadio.Active = true;
@@ -94,9 +92,9 @@ namespace CBinding
 				break;
 			}
 			
-			warningsAsErrorsCheckBox.Active = compilationParameters.WarningsAsErrors;
+			warningsAsErrorsCheckBox.Active = configuration.WarningsAsErrors;
 			
-			optimizationSpinButton.Value = compilationParameters.OptimizationLevel;
+			optimizationSpinButton.Value = configuration.OptimizationLevel;
 			
 			switch (configuration.CompileTarget)
 			{
@@ -111,11 +109,11 @@ namespace CBinding
 				break;
 			}
 			
-			extraCompilerTextView.Buffer.Text = compilationParameters.ExtraCompilerArguments;
+			extraCompilerTextView.Buffer.Text = configuration.ExtraCompilerArguments;
 			
-			extraLinkerTextView.Buffer.Text = compilationParameters.ExtraLinkerArguments;
+			extraLinkerTextView.Buffer.Text = configuration.ExtraLinkerArguments;
 			
-			defineSymbolsTextEntry.Text = compilationParameters.DefineSymbols;
+			defineSymbolsTextEntry.Text = configuration.DefineSymbols;
 			
 			libStore.Clear ();
 			foreach (string lib in configuration.Libs)
@@ -198,22 +196,22 @@ namespace CBinding
 		
 		public bool Store ()
 		{
-			if (compilationParameters == null || configuration == null)
+			if (configuration == null)
 				return false;
 			
 			string line;
 			Gtk.TreeIter iter;
 			
 			if (noWarningRadio.Active)
-				compilationParameters.WarningLevel = WarningLevel.None;
+				configuration.WarningLevel = WarningLevel.None;
 			else if (normalWarningRadio.Active)
-				compilationParameters.WarningLevel = WarningLevel.Normal;
+				configuration.WarningLevel = WarningLevel.Normal;
 			else
-				compilationParameters.WarningLevel = WarningLevel.All;
+				configuration.WarningLevel = WarningLevel.All;
 			
-			compilationParameters.WarningsAsErrors = warningsAsErrorsCheckBox.Active;
+			configuration.WarningsAsErrors = warningsAsErrorsCheckBox.Active;
 			
-			compilationParameters.OptimizationLevel = (int)optimizationSpinButton.Value;
+			configuration.OptimizationLevel = (int)optimizationSpinButton.Value;
 			
 			switch (targetComboBox.ActiveText)
 			{
@@ -228,11 +226,11 @@ namespace CBinding
 				break;
 			}
 			
-			compilationParameters.ExtraCompilerArguments = extraCompilerTextView.Buffer.Text;
+			configuration.ExtraCompilerArguments = extraCompilerTextView.Buffer.Text;
 			
-			compilationParameters.ExtraLinkerArguments = extraLinkerTextView.Buffer.Text;
+			configuration.ExtraLinkerArguments = extraLinkerTextView.Buffer.Text;
 			
-			compilationParameters.DefineSymbols = defineSymbolsTextEntry.Text;
+			configuration.DefineSymbols = defineSymbolsTextEntry.Text;
 			
 			libStore.GetIterFirst (out iter);
 			configuration.Libs.Clear ();

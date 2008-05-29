@@ -18,7 +18,6 @@
     <File name="CBinding.addin.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="templates/EmptyCProject.xpt.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="templates/EmptyCSourceFile.xft.xml" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="Project/CCompilationParameters.cs" subtype="Code" buildaction="Compile" />
     <File name="Project/CProject.cs" subtype="Code" buildaction="Compile" />
     <File name="Project/CProjectBinding.cs" subtype="Code" buildaction="Compile" />
     <File name="Project/CProjectConfiguration.cs" subtype="Code" buildaction="Compile" />
@@ -128,6 +127,7 @@
     <File name="Parser/Local.cs" subtype="Code" buildaction="Compile" />
     <File name="Gui/PackageDetails.cs" subtype="Code" buildaction="Compile" />
     <File name="gtk-gui/CBinding.PackageDetails.cs" subtype="Code" buildaction="Compile" />
+    <File name="md1format.xml" subtype="Code" buildaction="EmbedAsResource" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
