@@ -77,9 +77,9 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
-		public System.Collections.Generic.IEnumerable<IReturnType> TypeParameters {
+		public System.Collections.ObjectModel.ReadOnlyCollection<IReturnType> TypeParameters {
 			get {
-				return typeParameters;
+				return typeParameters.AsReadOnly ();
 			}
 		}
 		

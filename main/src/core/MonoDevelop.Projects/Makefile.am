@@ -38,6 +38,7 @@ FILES =  \
 	MonoDevelop.Projects.Dom/AbstractMember.cs \
 	MonoDevelop.Projects.Dom/AttributeTarget.cs \
 	MonoDevelop.Projects.Dom/ClassType.cs \
+	MonoDevelop.Projects.Dom/CodeCompletionDatabase.cs \
 	MonoDevelop.Projects.Dom/Comment.cs \
 	MonoDevelop.Projects.Dom/CommentType.cs \
 	MonoDevelop.Projects.Dom/CompilationUnit.cs \
@@ -48,6 +49,7 @@ FILES =  \
 	MonoDevelop.Projects.Dom/DomLocation.cs \
 	MonoDevelop.Projects.Dom/DomMethod.cs \
 	MonoDevelop.Projects.Dom/DomParameter.cs \
+	MonoDevelop.Projects.Dom/DomPersistence.cs \
 	MonoDevelop.Projects.Dom/DomProperty.cs \
 	MonoDevelop.Projects.Dom/DomRegion.cs \
 	MonoDevelop.Projects.Dom/DomReturnType.cs \

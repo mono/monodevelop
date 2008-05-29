@@ -52,6 +52,12 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
+		public static DomLocation Empty {
+			get {
+				return new DomLocation (-1, -1);
+			}
+		}
+		
 		public DomLocation (int line, int column)
 		{
 			this.line   = line;
@@ -61,6 +67,16 @@ namespace MonoDevelop.Projects.Dom
 		public override string ToString ()
 		{
 			return String.Format ("[DomLocation: Line={0}, Column={1}]", Line, Column);
+		}
+		
+		public static bool operator==(DomLocation left, DomLocation right)
+		{
+			return left.Line == right.Line && left.Column == right.Column;
+		}
+		
+		public static bool operator!=(DomLocation left, DomLocation right)
+		{
+			return left.Line != right.Line || left.Column != right.Column;
 		}
 
 	}

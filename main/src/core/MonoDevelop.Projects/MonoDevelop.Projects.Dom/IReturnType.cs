@@ -28,6 +28,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace MonoDevelop.Projects.Dom
 {
@@ -50,7 +51,12 @@ namespace MonoDevelop.Projects.Dom
 			get;
 		}
 		
-		IEnumerable<IReturnType> TypeParameters {
+		bool IsNullable {
+			get;
+		}
+		
+		
+		ReadOnlyCollection<IReturnType> TypeParameters {
 			get;
 		}
 	}

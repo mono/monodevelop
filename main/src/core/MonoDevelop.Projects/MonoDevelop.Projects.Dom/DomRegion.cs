@@ -81,5 +81,16 @@ namespace MonoDevelop.Projects.Dom
 			                      End.Line,
 			                      End.Column);
 		}
+		
+		public static bool operator==(DomRegion left, DomRegion right)
+		{
+			return left.Start == right.Start && left.End == right.End;
+		}
+		
+		public static bool operator!=(DomRegion left, DomRegion right)
+		{
+			return left.Start != right.Start|| left.End != right.End;
+		}
+		
 	}
 }

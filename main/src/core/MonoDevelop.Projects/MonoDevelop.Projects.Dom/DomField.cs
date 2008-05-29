@@ -49,7 +49,7 @@ namespace MonoDevelop.Projects.Dom
 			                      Location);
 		}
 		
-		protected DomField ()
+		internal DomField ()
 		{
 		}
 		

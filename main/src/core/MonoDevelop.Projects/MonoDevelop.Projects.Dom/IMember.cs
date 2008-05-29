@@ -40,6 +40,7 @@ namespace MonoDevelop.Projects.Dom
 		
 		IReturnType ReturnType {
 			get;
+			set;
 		}
 		
 		IType DeclaringType {
@@ -53,10 +54,17 @@ namespace MonoDevelop.Projects.Dom
 		
 		string Name {
 			get;
+			set;
+		}
+		
+		string Documentation {
+			get;
+			set;
 		}
 		
 		DomLocation Location {
 			get;
+			set;
 		}
 		
 		DomRegion BodyRegion {
@@ -65,6 +73,7 @@ namespace MonoDevelop.Projects.Dom
 		
 		Modifiers Modifiers {
 			get;
+			set;
 		}
 		
 		IEnumerable<IAttribute> Attributes {

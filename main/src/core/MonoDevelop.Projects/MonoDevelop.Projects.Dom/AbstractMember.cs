@@ -58,6 +58,9 @@ namespace MonoDevelop.Projects.Dom
 			get {
 				return returnType;
 			}
+			set {
+				returnType = value;
+			}
 		}
 		
 		public IEnumerable<IReturnType> ExplicitInterfaces {
@@ -67,6 +70,7 @@ namespace MonoDevelop.Projects.Dom
 		}
 		
 		protected string name;
+		protected string documentation;
 		protected DomRegion bodyRegion;
 		protected DomLocation location;
 		protected Modifiers modifiers;
@@ -76,11 +80,27 @@ namespace MonoDevelop.Projects.Dom
 			get {
 				return name;
 			}
+			set {
+				name = value;
+			}
 		}
+		
+		public string Documentation {
+			get {
+				return documentation;
+			}
+			set {
+				documentation = value;
+			}
+		}
+		
 		
 		public DomLocation Location {
 			get {
 				return location;
+			}
+			set {
+				location = value;
 			}
 		}
 		
@@ -94,6 +114,9 @@ namespace MonoDevelop.Projects.Dom
 		public Modifiers Modifiers {
 			get {
 				return modifiers;
+			}
+			set {
+				modifiers = value;
 			}
 		}
 		

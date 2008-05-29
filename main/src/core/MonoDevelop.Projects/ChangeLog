@@ -1,3 +1,16 @@
+2008-05-29  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Dom/IMember.cs,
+	  MonoDevelop.Projects.Dom/DomReturnType.cs,
+	  MonoDevelop.Projects.Dom/DomRegion.cs,
+	  MonoDevelop.Projects.Dom/DomField.cs,
+	  MonoDevelop.Projects.Dom/DomPersistence.cs,
+	  MonoDevelop.Projects.Dom/CodeCompletionDatabase.cs,
+	  MonoDevelop.Projects.Dom/IReturnType.cs,
+	  MonoDevelop.Projects.Dom/AbstractMember.cs,
+	  MonoDevelop.Projects.Dom/DomLocation.cs: Worked on code completion
+	  database for the new dom layer.
+
 2008-05-29  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectHandler.cs: Fix
