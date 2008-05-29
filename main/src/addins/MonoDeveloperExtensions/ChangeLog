@@ -1,3 +1,7 @@
+2008-05-29  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoSolutionItemHandler.cs: Fix warning.
+
 2008-05-23  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoMakefileFormat.cs: Track api changes.

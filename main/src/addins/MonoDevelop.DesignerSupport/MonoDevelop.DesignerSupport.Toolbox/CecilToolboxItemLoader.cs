@@ -205,7 +205,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 					return false;
 				currentType = resolver.Resolve (currentType.BaseType);
 			}
-			return false;
 		}
 		
 		protected static bool ImplementsInterface (Mono.Linker.AssemblyResolver resolver, MC.TypeReference inspect, MC.TypeReference interf)

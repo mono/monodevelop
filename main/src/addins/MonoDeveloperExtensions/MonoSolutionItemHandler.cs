@@ -336,7 +336,5 @@ namespace MonoDeveloper
 			get { return unitTest; }
 			set { unitTest = value; }
 		}
-
-		public event EventHandler ItemFileChanged;
 	}
 }

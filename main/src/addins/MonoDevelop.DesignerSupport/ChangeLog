@@ -1,3 +1,8 @@
+2008-05-29  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.DesignerSupport.Toolbox/CecilToolboxItemLoader.cs: Fix
+	  warning.
+
 2008-05-27  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.DesignerSupport/RemoteDesignerProcess.cs: Fix exception
