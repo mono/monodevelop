@@ -564,20 +564,22 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		
 		DataItem ReadPropertyGroupMetadata (DataSerializer ser, MSBuildPropertyGroup propGroup, object dataItem)
 		{
-			// The BuildPropertyGroup class has some weird limitations for persisted property groups.
-			// e.g. access by name to properties is not allowed.
-			
 			DataItem ditem = new DataItem ();
 
-			Dictionary <string,ItemProperty> properties = new Dictionary <string,ItemProperty> ();
-			foreach (ItemProperty prop in ser.GetProperties (dataItem))
-				properties [prop.Name] = prop;
-				
 			foreach (MSBuildProperty bprop in propGroup.Properties) {
-				ItemProperty prop;
-				if (properties.TryGetValue (bprop.Name, out prop))
-					ditem.ItemData.Add (GetDataNode (prop, bprop.Value));
+				DataNode node = null;
+				foreach (XmlNode xnode in bprop.Element.ChildNodes) {
+					if (xnode is XmlElement) {
+						node = XmlConfigurationReader.DefaultReader.Read ((XmlElement)xnode);
+						break;
+					}
+				}
+				if (node != null)
+					ditem.ItemData.Add (node);
+				else 
+					ditem.ItemData.Add (new DataValue (bprop.Name, bprop.Value));
 			}
+			
 			return ditem;
 		}
 		

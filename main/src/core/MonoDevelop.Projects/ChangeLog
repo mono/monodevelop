@@ -1,3 +1,8 @@
+2008-05-29  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectHandler.cs: Fix
+	  property metadata deserialization.
+
 2008-05-28  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Projects/DotNetProject.cs: Make CompileTarget virtual.
