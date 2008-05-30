@@ -1,5 +1,12 @@
 2008-05-30  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Projects/BuildResult.cs: New method for checking if a
+	  build failed.
+	* MonoDevelop.Projects/DotNetProject.cs: Set properly set debug mode
+	  when creating a project.
+
+2008-05-30  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Projects/SolutionFolder.cs,
 	  MonoDevelop.Projects/SolutionEntityItem.cs,
 	  MonoDevelop.Projects/SolutionItem.cs,

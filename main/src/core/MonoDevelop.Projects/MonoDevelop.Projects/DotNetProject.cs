@@ -201,6 +201,7 @@ namespace MonoDevelop.Projects
 					projectOptions.SetAttribute ("DefineDebug", "True");
 				DotNetProjectConfiguration configuration = (DotNetProjectConfiguration) CreateConfiguration ("Debug");
 				configuration.CompilationParameters = languageBinding.CreateCompilationParameters (projectOptions);
+				configuration.DebugMode = true;
 				Configurations.Add (configuration);
 				
 				configuration = (DotNetProjectConfiguration) CreateConfiguration ("Release");

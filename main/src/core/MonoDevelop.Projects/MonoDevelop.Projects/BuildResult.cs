@@ -138,6 +138,10 @@ namespace MonoDevelop.Projects
 			get { return failedBuildCount; }
 			set { failedBuildCount = value; }
 		}
+		
+		public bool Failed {
+			get { return failedBuildCount > 0; }
+		}
 
 		public IBuildTarget SourceTarget {
 			get {
