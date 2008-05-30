@@ -1,3 +1,14 @@
+2008-05-30  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectNodeBuilder.cs: When the
+	  Modified event of a project is fired, update the whole tree only if
+	  it is a change of the base directory. Fixes bug #395670 - Every
+	  addition to the current project crashes MD.
+	* MonoDevelop.Ide.Gui/MonoDevelopTreeView.cs: Made ITreeNavigator more
+	  reliable against tree changes. Every method now checks if the
+	  internal iterator is valid, and if it is not, it tries to get a new
+	  one.
+
 2008-05-29  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Templates/CombineDescriptor.cs,

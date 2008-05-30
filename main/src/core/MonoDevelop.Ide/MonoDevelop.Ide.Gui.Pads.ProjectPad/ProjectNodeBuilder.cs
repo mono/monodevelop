@@ -45,7 +45,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		ProjectFileEventHandler fileRemovedHandler;
 		ProjectFileRenamedEventHandler fileRenamedHandler;
 		ProjectFileEventHandler filePropertyChangedHandler;
-		SolutionItemEventHandler projectChanged;
+		SolutionItemModifiedEventHandler projectChanged;
 		
 		public override Type NodeDataType {
 			get { return typeof(Project); }
@@ -61,7 +61,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			fileRemovedHandler = (ProjectFileEventHandler) DispatchService.GuiDispatch (new ProjectFileEventHandler (OnRemoveFile));
 			filePropertyChangedHandler = (ProjectFileEventHandler) DispatchService.GuiDispatch (new ProjectFileEventHandler (OnFilePropertyChanged));
 			fileRenamedHandler = (ProjectFileRenamedEventHandler) DispatchService.GuiDispatch (new ProjectFileRenamedEventHandler (OnRenameFile));
-			projectChanged = (SolutionItemEventHandler) DispatchService.GuiDispatch (new SolutionItemEventHandler (OnProjectModified));
+			projectChanged = (SolutionItemModifiedEventHandler) DispatchService.GuiDispatch (new SolutionItemModifiedEventHandler (OnProjectModified));
 			
 			IdeApp.Workspace.FileAddedToProject += fileAddedHandler;
 			IdeApp.Workspace.FileRemovedFromProject += fileRemovedHandler;
@@ -277,10 +277,17 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			if (tb != null) tb.Update ();
 		}
 		
-		void OnProjectModified (object sender, SolutionItemEventArgs e)
+		void OnProjectModified (object sender, SolutionItemModifiedEventArgs e)
 		{
+			if (e.Hint == "References" || e.Hint == "Files")
+				return;
 			ITreeBuilder tb = Context.GetTreeBuilder (e.SolutionItem);
-			if (tb != null) tb.UpdateAll ();
+			if (tb != null) {
+				if (e.Hint == "BaseDirectory")
+					tb.UpdateAll ();
+				else
+					tb.Update ();
+			}
 		}
 		
 		void OnFilePropertyChanged (object sender, ProjectFileEventArgs args)
