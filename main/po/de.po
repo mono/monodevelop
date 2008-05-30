@@ -6,7 +6,7 @@ msgstr ""
 "X-Poedit-Bookmarks: -1,1681,-1,-1,-1,-1,-1,-1,-1,-1\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2008-05-30 12:13:10+0200\n"
+"PO-Revision-Date: 2008-05-30 12:49:45+0200\n"
 "Language-Team: \n"
 "Project-Id-Version: Monodevelop\n"
 "MIME-Version: 1.0\n"
@@ -627,9 +627,8 @@ msgid "Load solution {0}"
 msgstr "Lade Projektmappe {0}"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:282
-#, fuzzy
 msgid "Hold Control to open in current worspace."
-msgstr "Zu einer geöffneten Datei springen"
+msgstr "Control gedrückt halten, um im aktuellen Arbeitsbereich zu öffnen"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:101
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:436
@@ -2014,9 +2013,8 @@ msgstr "_Neuen Arbeitsbereich hinzufügen..."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:362
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:366
-#, fuzzy
 msgid "Add a new child workspace to the selected workspace"
-msgstr "Füge ein neues Projekt zur ausgewählten Projektmappe hinzu"
+msgstr "Neuen Unterarbeitsbereich zum ausgewählten Arbeitsbereich zufügen"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:365
 msgid "_Add New Solution..."
@@ -2027,9 +2025,8 @@ msgid "Add Solution _Folder"
 msgstr "Projektmappenordner hinzufügen"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:370
-#, fuzzy
 msgid "Add a new solution folder to the selected solution"
-msgstr "Neue Solution zur ausgewählten Solution zufügen"
+msgstr "Neuen Projektmappenordner zur ausgewählten Projektmappe zufügen"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:373
 msgid "Add a project to the selected solution"
@@ -2040,9 +2037,8 @@ msgid "Add Existing _Project"
 msgstr "_Vorhandenes Projekt hinzufügen"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:376
-#, fuzzy
 msgid "Add an existing item to the selected workspace"
-msgstr "Vorhandene Dateie zu dem Projekt hinzufügen"
+msgstr "Vorhandenes Element zu ausgewählten Arbeitsbereich hinzufügen"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:377
 msgid "Add Existing _Item"
@@ -4267,15 +4263,15 @@ msgid "Workspace name may not contain any of the following characters: {0}"
 msgstr "Arbeitsbereichsname darf die folgenden Zeichen nicht beinhalten: {0}"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/WorkspaceNodeBuilder.cs:179
-#, fuzzy
 msgid "Are you sure you want to move the item '{0}' to the workspace '{1}'?"
-msgstr "Wollen sie wirklich den Ordner '{0}' in den Ordner '{1}' verschieben? "
+msgstr ""
+"Wollen sie wirklich das Element '{0}' in den Arbeitsbereich '{1}' "
+"verschieben? "
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/WorkspaceNodeBuilder.cs:207
-#, fuzzy
 msgid "Do you really want to remove the item '{0}' from workspace '{1}'?"
 msgstr ""
-"Wollen Sie wirklich Projekt '{0}' von der Projektmappe '{1}' entfernen?"
+"Wollen Sie wirklich das Element '{0}' von dem Arbeitsbereich '{1}' entfernen?"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/RootWorkspace.cs:323
 msgid "Workspace saved."
@@ -4291,6 +4287,9 @@ msgid ""
 "To set a startup project, select the project in the solution pad an click on "
 "the option 'Set as Startup Project' in the contextual menu."
 msgstr ""
+"Um ein Startprojekt zu setzen muss ein Projekt in der Projektmappe gewählt "
+"werden und 'Als Startprojekt setzen' im Kontextmenü des Projektes ausgewählt "
+"werden."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/RootWorkspace.cs:357
 msgid "Saving Workspace..."
@@ -4301,9 +4300,8 @@ msgid "Could not close solution '{0}.'"
 msgstr "Konnte Projektmappe nicht schliessen '{0}'."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/RootWorkspace.cs:521
-#, fuzzy
 msgid "File is not a project or solution: {0}"
-msgstr "Bitte wählen sie ein Projekt oder eine Projektmappe."
+msgstr "Datei ist weder Projekt noch Projektmappe: {0}"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/RootWorkspace.cs:559
 msgid "Solution loaded."
@@ -5079,9 +5077,8 @@ msgid "Any CPU"
 msgstr "Jede CPU"
 
 #: ../src/core/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/BaseDirectoryPanel.cs:63
-#, fuzzy
 msgid "Directory not found: {0}"
-msgstr "Datei nicht gefunden: {0}"
+msgstr "Verzeichnis nicht gefunden: {0}"
 
 #: ../src/core/MonoDevelop.Projects.Gui/gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.BaseDirectoryPanelWidget.cs:40
 msgid "<b>Location of Files</b>"
@@ -7228,9 +7225,8 @@ msgid "ASP.NET user control"
 msgstr "ASP.NET Benutzercontrol"
 
 #: ../src/addins/AspNetAddIn/MonoDevelop.AspNet.addin.xml:183
-#, fuzzy
 msgid "ASP.NET global application class"
-msgstr "Eine Programm zum Erstellen von Anwendungen"
+msgstr "ASP.NET Globale Anwendungs-Klasse"
 
 #: ../src/addins/AspNetAddIn/MonoDevelop.AspNet.addin.xml:186
 msgid "ASP.NET handler"
@@ -7583,15 +7579,15 @@ msgid ""
 "Indicates that this tag should be able to be\n"
 "manipulated programmatically on the web server."
 msgstr ""
+"Gibt vor das das Tag per Programm verändert werden kann auf dem Webserver."
 
 #: ../src/addins/AspNetAddIn/MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs:413
 msgid "ASP.NET render block"
-msgstr ""
+msgstr "ASP.NET Renderblock"
 
 #: ../src/addins/AspNetAddIn/MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs:416
-#, fuzzy
 msgid "ASP.NET render expression"
-msgstr "ASP.NET-Einstellungen"
+msgstr "ASP.NET Render-Ausdruck"
 
 #: ../src/addins/AspNetAddIn/MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs:419
 msgid "ASP.NET directive"
@@ -7599,15 +7595,15 @@ msgstr "ASP.NET Direktive"
 
 #: ../src/addins/AspNetAddIn/MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs:422
 msgid "ASP.NET databinding expression"
-msgstr ""
+msgstr "ASP.NET Datenbindungs-Ausdruck"
 
 #: ../src/addins/AspNetAddIn/MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs:425
 msgid "ASP.NET server-side comment"
-msgstr ""
+msgstr "ASP.NET Serverseitiger Kommentar"
 
 #: ../src/addins/AspNetAddIn/MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs:432
 msgid "ASP.NET resource expression"
-msgstr ""
+msgstr "ASP.NET Ressource-Ausdruck"
 
 #: ../src/addins/AspNetAddIn/MonoDevelop.AspNet.Gui/BrowserLauncher.cs:113
 msgid "Could not connect to webserver {0}"
@@ -7624,6 +7620,8 @@ msgid ""
 "If you accept this suggestion, the method will\n"
 "be generated in the CodeBehind class."
 msgstr ""
+"Wenn Sie den Vorschlag akzeptieren wird die Methode\n"
+"in der CodeBehind Klasse erzeugt."
 
 #: ../src/addins/AspNetAddIn/MonoDevelop.AspNet/AspNetToolboxNode.cs:49
 msgid "ASP.NET Controls"
@@ -7654,9 +7652,8 @@ msgid "Toolbox"
 msgstr "Werkzeuge"
 
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.addin.xml:83
-#, fuzzy
 msgid "Document Outline"
-msgstr "Dokumentation"
+msgstr "Dokumentationsoutline"
 
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.addin.xml:96
 msgid "Group CodeBehind files"
@@ -7737,10 +7734,8 @@ msgstr ""
 "Für das aktuelle Dokument sind keine passenden Steuerelemente vorhanden."
 
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport/DocumentOutlinePad.cs:103
-#, fuzzy
 msgid "An outline is not available for the current document."
-msgstr ""
-"Für das aktuelle Dokument sind keine passenden Steuerelemente vorhanden."
+msgstr "Kein Outline ist für das aktuelle Dokument verfügbar."
 
 #: ../src/addins/MonoDevelop.Autotools/Commands.cs:66
 msgid "_Generate Makefiles"
@@ -7875,10 +7870,8 @@ msgid "Creating {0} for Solution {1}"
 msgstr "Erstelle {0} für Projektmappe {1}"
 
 #: ../src/addins/MonoDevelop.Autotools/SolutionMakefileHandler.cs:97
-#, fuzzy
 msgid "Child projects must be in sub-directories of their parent"
-msgstr ""
-"Nachfolge-Projekte/-mappen müssen in einem Unterordner ihres Vorgängers sein"
+msgstr "Kindprojekte müssen in einem Unterordner ihrer Projektmappe sein"
 
 #: ../src/addins/MonoDevelop.Autotools/SolutionMakefileHandler.cs:131
 msgid ""
@@ -10959,10 +10952,10 @@ msgid "The following files will be included in the package:"
 msgstr "Die folgenden Dateien werden im Paket enthalten sein:"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Gui/DeployFileListWidget.cs:109
-#, fuzzy
 msgid ""
 "The following files will be included in the package for the configuration:"
-msgstr "Die folgenden Dateien werden im Paket enthalten sein:"
+msgstr ""
+"Die folgenden Dateien werden im Paket für die Konfiguration enthalten sein:"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Gui/PackagingFeatureWidget.cs:29
 msgid "Create packages for this project in a new Packaging Project"
@@ -12237,6 +12230,8 @@ msgid ""
 "A schema is already registered with the namespace '{0}'. Would you like to "
 "replace it?"
 msgstr ""
+"Ein Schema ist für den Namensraum '{0}' schon registriert. Soll es ersetzt "
+"werden?"
 
 #: ../src/addins/MonoDevelop.XmlEditor/gtk-gui/MonoDevelop.XmlEditor.Gui.XmlSchemasPanelWidget.cs:60
 msgid "<b>Registered Schemas</b>"
@@ -12574,7 +12569,6 @@ msgstr "Der Name '{0}' existiert im aktuellen Kontext nicht."
 #~ msgstr "Ab_wärts"
 #~ msgid "R_eplace:"
 #~ msgstr "E_rsetzen:"
-
 #~ msgid "Exception occurred: {0}"
 #~ msgstr "Fehler aufgetreten: {0}"
 
