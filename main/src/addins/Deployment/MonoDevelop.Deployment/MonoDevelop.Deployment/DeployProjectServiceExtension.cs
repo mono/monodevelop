@@ -11,6 +11,9 @@ namespace MonoDevelop.Deployment
 		protected override BuildResult Build (IProgressMonitor monitor, SolutionEntityItem item, string configuration)
 		{
 			BuildResult res = base.Build (monitor, item, configuration);
+			if (res.Failed)
+				return res;
+			
 			Project project = item as Project;
 			if (project == null)
 				return res;

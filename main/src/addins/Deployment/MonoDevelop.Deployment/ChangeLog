@@ -1,3 +1,8 @@
+2008-05-30  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Deployment/DeployProjectServiceExtension.cs: Don't deploy
+	  files if the build failed.
+
 2008-05-28  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Deployment.Targets/CommandPackageBuilder.cs: Track api
