@@ -37,7 +37,6 @@ namespace MonoDevelop.Gettext
 {	
 	public class GettextEditorDisplayBinding : IDisplayBinding
 	{
-		
 		public string DisplayName 
 		{
 			get { return GettextCatalog.GetString ("Gettext Editor"); }
@@ -49,7 +48,7 @@ namespace MonoDevelop.Gettext
 		}
 		public bool CanCreateContentForMimeType (string mimeType)
 		{
-			return mimeType == "text/x-gettext-translation" ? true : false;
+			return mimeType == "text/x-gettext-translation";
 		}
 		
 		public IViewContent CreateContentForFile (string fileName)
