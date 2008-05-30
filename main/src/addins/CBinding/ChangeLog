@@ -1,3 +1,7 @@
+2008-05-30  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Project/CProject.cs: Properly set debug mode when creating a project.
+
 2008-05-29  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Gui/CodeGenerationPanel.cs, md1format.xml, CBinding.addin.xml,

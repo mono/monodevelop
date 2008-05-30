@@ -131,6 +131,7 @@ namespace CBinding
 				(CProjectConfiguration)CreateConfiguration ("Debug");
 			
 			configuration.DefineSymbols = "DEBUG MONODEVELOP";		
+			configuration.DebugMode = true;
 				
 			Configurations.Add (configuration);
 			
