@@ -1,5 +1,10 @@
 2008-05-30  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Ide.Debugging/DebuggingService.cs: Fixes in backtrace
+	  handling.
+
+2008-05-30  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectNodeBuilder.cs: When the
 	  Modified event of a project is fired, update the whole tree only if
 	  it is a change of the base directory. Fixes bug #395670 - Every

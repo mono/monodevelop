@@ -33,7 +33,7 @@ namespace MonoDevelop.Ide.Debugging
 		DebugExecutionHandlerFactory executionHandlerFactory;
 		
 		DebuggerSession session;
-		Backtrace current_backtrace;
+		Backtrace currentBacktrace;
 		int currentFrame;
 
 		public event EventHandler PausedEvent;
@@ -155,8 +155,7 @@ namespace MonoDevelop.Ide.Debugging
 			try {
 				Console.WriteLine ("OnTargetEvent, type - {0}", args.Type);
 				if (args.Type != TargetEventType.TargetExited) {
-					current_backtrace = args.Backtrace;
-					SetCurrentFrame ();
+					SetCurrentBacktrace (args.Backtrace);
 				}
 				
 				switch (args.Type) {
@@ -253,18 +252,18 @@ namespace MonoDevelop.Ide.Debugging
 
 		public string[] Backtrace {
 			get {
-				if (current_backtrace == null)
+				if (currentBacktrace == null)
 					return null;
-				string [] result = new string [current_backtrace.FrameCount];
-				for (int i = 0; i < current_backtrace.FrameCount; i ++)
-					result [i] = current_backtrace.GetFrame (i).ToString ();
+				string [] result = new string [currentBacktrace.FrameCount];
+				for (int i = 0; i < currentBacktrace.FrameCount; i ++)
+					result [i] = currentBacktrace.GetFrame (i).ToString ();
 				
 				return result;
 			}
 		}
 		
 		public Backtrace CurrentBacktrace {
-			get { return current_backtrace; }
+			get { return currentBacktrace; }
 		}
 
 		public string CurrentFilename {
@@ -289,8 +288,8 @@ namespace MonoDevelop.Ide.Debugging
 
 		public StackFrame CurrentFrame {
 			get {
-				if (current_backtrace != null && currentFrame != -1)
-					return current_backtrace.GetFrame (currentFrame);
+				if (currentBacktrace != null && currentFrame != -1)
+					return currentBacktrace.GetFrame (currentFrame);
 				else
 					return null;
 			}
@@ -301,7 +300,7 @@ namespace MonoDevelop.Ide.Debugging
 				return currentFrame;
 			}
 			set {
-				if (current_backtrace != null && value < current_backtrace.FrameCount) {
+				if (currentBacktrace != null && value < currentBacktrace.FrameCount) {
 					currentFrame = value;
 					Gtk.Application.Invoke (delegate {
 						if (CurrentFrameChanged != null)
@@ -313,15 +312,19 @@ namespace MonoDevelop.Ide.Debugging
 			}
 		}
 		
-		void SetCurrentFrame ()
+		void SetCurrentBacktrace (Backtrace bt)
 		{
-			if (current_backtrace != null) {
-				for (int n=0; n<current_backtrace.FrameCount; n++) {
-					StackFrame sf = current_backtrace.GetFrame (n);
-					if (!string.IsNullOrEmpty (sf.SourceLocation.Filename))
+			currentBacktrace = bt;
+			if (currentBacktrace != null) {
+				for (int n=0; n<currentBacktrace.FrameCount; n++) {
+					StackFrame sf = currentBacktrace.GetFrame (n);
+					if (!string.IsNullOrEmpty (sf.SourceLocation.Filename)) {
 						CurrentFrameIndex = n;
+						break;
+					}
 				}
 			}
+			currentFrame = -1;
 		}
 	}
 }
