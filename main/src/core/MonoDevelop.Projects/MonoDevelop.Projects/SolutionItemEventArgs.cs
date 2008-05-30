@@ -30,7 +30,7 @@ using MonoDevelop.Projects;
 
 namespace MonoDevelop.Projects
 {
-	public delegate void SolutionItemEventHandler(object sender, SolutionItemEventArgs e);
+	public delegate void SolutionItemEventHandler (object sender, SolutionItemEventArgs e);
 	
 	public class SolutionItemEventArgs : EventArgs
 	{
@@ -48,19 +48,35 @@ namespace MonoDevelop.Projects
 		}
 	}
 	
-	public delegate void SolutionItemChangeEventHandler(object sender, SolutionItemChangeEventArgs e);
+	public delegate void SolutionItemChangeEventHandler (object sender, SolutionItemChangeEventArgs e);
 	
 	public class SolutionItemChangeEventArgs: SolutionItemEventArgs
 	{
 		bool reloading;
 		
-		public SolutionItemChangeEventArgs (SolutionItem entry, bool reloading): base (entry)
+		public SolutionItemChangeEventArgs (SolutionItem item, bool reloading): base (item)
 		{
 			this.reloading = reloading;
 		}
 		
 		public bool Reloading {
 			get { return reloading; }
+		}
+	}
+	
+	public delegate void SolutionItemModifiedEventHandler (object sender, SolutionItemModifiedEventArgs e);
+	
+	public class SolutionItemModifiedEventArgs: SolutionItemEventArgs
+	{
+		string hint;
+		
+		public SolutionItemModifiedEventArgs (SolutionItem item, string hint): base (item)
+		{
+			this.hint = hint;
+		}
+		
+		public string Hint {
+			get { return hint; }
 		}
 	}
 }

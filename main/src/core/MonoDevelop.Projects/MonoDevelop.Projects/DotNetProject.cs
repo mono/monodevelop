@@ -104,7 +104,7 @@ namespace MonoDevelop.Projects
 			get { return defaultNamespace; }
 			set {
 				defaultNamespace = value;
-				NotifyModified ();
+				NotifyModified ("DefaultNamespace");
 			}
 		}
 		
@@ -127,7 +127,7 @@ namespace MonoDevelop.Projects
 					conf.ClrVersion = clrVersion;
 				
 				UpdateSystemReferences ();
-				NotifyModified ();
+				NotifyModified ("ClrVersion");
 			}
 		}
 		

@@ -55,7 +55,7 @@ namespace MonoDevelop.Projects
 		ProjectFileEventHandler fileChangedInProjectHandler;
 		ProjectFileEventHandler filePropertyChangedInProjectHandler;
 		ProjectFileRenamedEventHandler fileRenamedInProjectHandler;
-		SolutionItemEventHandler entryModifiedHandler;
+		SolutionItemModifiedEventHandler entryModifiedHandler;
 		SolutionItemEventHandler entrySavedHandler;
 
 		ProjectReferenceEventHandler referenceAddedToProjectHandler;
@@ -73,7 +73,7 @@ namespace MonoDevelop.Projects
 			fileRenamedInProjectHandler = new ProjectFileRenamedEventHandler (NotifyFileRenamedInProject);
 			referenceAddedToProjectHandler = new ProjectReferenceEventHandler (NotifyReferenceAddedToProject);
 			referenceRemovedFromProjectHandler = new ProjectReferenceEventHandler (NotifyReferenceRemovedFromProject);
-			entryModifiedHandler = new SolutionItemEventHandler (NotifyItemModified);
+			entryModifiedHandler = new SolutionItemModifiedEventHandler (NotifyItemModified);
 			entrySavedHandler = new SolutionItemEventHandler (NotifyItemSaved);
 		}
 		
@@ -231,7 +231,7 @@ namespace MonoDevelop.Projects
 				DisconnectChildEntryEvents (item);
 				ConnectChildEntryEvents (newItem);
 	
-				NotifyModified ();
+				NotifyModified ("Items");
 				OnItemRemoved (new SolutionItemChangeEventArgs (item, true));
 				OnItemAdded (new SolutionItemChangeEventArgs (newItem, true));
 				
@@ -246,7 +246,7 @@ namespace MonoDevelop.Projects
 		{
 			ConnectChildEntryEvents (item);
 
-			NotifyModified ();
+			NotifyModified ("Items");
 			OnItemAdded (new SolutionItemChangeEventArgs (item, false));
 		}
 		
@@ -297,7 +297,7 @@ namespace MonoDevelop.Projects
 		internal void NotifyItemRemoved (SolutionItem item)
 		{
 			DisconnectChildEntryEvents (item);
-			NotifyModified ();
+			NotifyModified ("Items");
 			OnItemRemoved (new SolutionItemChangeEventArgs (item, false));
 		}
 		
@@ -630,7 +630,7 @@ namespace MonoDevelop.Projects
 			OnReferenceAddedToProject (e);
 		}
 		
-		internal void NotifyItemModified (object sender, SolutionItemEventArgs e)
+		internal void NotifyItemModified (object sender, SolutionItemModifiedEventArgs e)
 		{
 			OnItemModified (e);
 		}
@@ -739,7 +739,7 @@ namespace MonoDevelop.Projects
 			}
 		}
 
-		protected virtual void OnItemModified (SolutionItemEventArgs e)
+		protected virtual void OnItemModified (SolutionItemModifiedEventArgs e)
 		{
 			if (ParentFolder == null && ParentSolution != null)
 				ParentSolution.OnEntryModified (e);
@@ -766,7 +766,7 @@ namespace MonoDevelop.Projects
 		public event ProjectFileRenamedEventHandler FileRenamedInProject;
 		public event ProjectReferenceEventHandler ReferenceAddedToProject;
 		public event ProjectReferenceEventHandler ReferenceRemovedFromProject;
-		public event SolutionItemEventHandler ItemModified;
+		public event SolutionItemModifiedEventHandler ItemModified;
 		public event SolutionItemEventHandler ItemSaved;
 	}
 	

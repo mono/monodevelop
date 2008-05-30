@@ -110,7 +110,7 @@ namespace MonoDevelop.Projects
 					baseDirectory = null;
 				else
 					baseDirectory = System.IO.Path.GetFullPath (value);
-				NotifyModified ();
+				NotifyModified ("BaseDirectory");
 			}
 		}
 		
@@ -295,12 +295,12 @@ namespace MonoDevelop.Projects
 			}
 		}
 		
-		protected void NotifyModified ()
+		protected void NotifyModified (string hint)
 		{
-			OnModified (new SolutionItemEventArgs (this));
+			OnModified (new SolutionItemModifiedEventArgs (this, hint));
 		}
 		
-		protected virtual void OnModified (SolutionItemEventArgs args)
+		protected virtual void OnModified (SolutionItemModifiedEventArgs args)
 		{
 			if (Modified != null)
 				Modified (this, args);
@@ -308,7 +308,7 @@ namespace MonoDevelop.Projects
 		
 		protected virtual void OnNameChanged (SolutionItemRenamedEventArgs e)
 		{
-			NotifyModified ();
+			NotifyModified ("Name");
 			if (NameChanged != null)
 				NameChanged (this, e);
 		}
@@ -325,6 +325,6 @@ namespace MonoDevelop.Projects
 		internal protected abstract void OnSetNeedsBuilding (bool val, string configuration);
 		
 		public event SolutionItemRenamedEventHandler NameChanged;
-		public event SolutionItemEventHandler Modified;
+		public event SolutionItemModifiedEventHandler Modified;
 	}
 }

@@ -245,7 +245,6 @@ FILES =  \
 	MonoDevelop.Projects/BuildEventHandler.cs \
 	MonoDevelop.Projects/BuildResult.cs \
 	MonoDevelop.Projects/BuildTool.cs \
-	MonoDevelop.Projects/CombineEntryEventArgs.cs \
 	MonoDevelop.Projects/CombineEntryRenamedEventArgs.cs \
 	MonoDevelop.Projects/CombineEventArgs.cs \
 	MonoDevelop.Projects/ConfigurationEventHandler.cs \
@@ -300,6 +299,7 @@ FILES =  \
 	MonoDevelop.Projects/SolutionItemCollection.cs \
 	MonoDevelop.Projects/SolutionItemConfiguration.cs \
 	MonoDevelop.Projects/SolutionItemConfigurationCollection.cs \
+	MonoDevelop.Projects/SolutionItemEventArgs.cs \
 	MonoDevelop.Projects/SolutionItemReference.cs \
 	MonoDevelop.Projects/UnknownConfiguration.cs \
 	MonoDevelop.Projects/UnknownProjectVersionException.cs \

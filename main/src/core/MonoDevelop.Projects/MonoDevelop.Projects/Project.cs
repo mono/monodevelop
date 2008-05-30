@@ -80,7 +80,7 @@ namespace MonoDevelop.Projects
 			}
 			set {
 				description = value;
-				NotifyModified ();
+				NotifyModified ("Description");
 			}
 		}
 		
@@ -88,7 +88,7 @@ namespace MonoDevelop.Projects
 			get { return useParentDirectoryAsNamespace; }
 			set { 
 				useParentDirectoryAsNamespace = value; 
-				NotifyModified ();
+				NotifyModified ("UseParentDirectoryAsNamespace");
 			}
 		}
 		
@@ -106,7 +106,7 @@ namespace MonoDevelop.Projects
 
 			set {
 				newFileSearch = value;
-				NotifyModified ();
+				NotifyModified ("NewFileSearch");
 			}
 		}
 		
@@ -393,42 +393,42 @@ namespace MonoDevelop.Projects
 		
  		internal void NotifyFilePropertyChangedInProject (ProjectFile file)
 		{
-			NotifyModified ();
+			NotifyModified ("Files");
 			OnFilePropertyChangedInProject (new ProjectFileEventArgs (this, file));
 		}
 		
 		internal void NotifyFileRemovedFromProject (ProjectFile file)
 		{
 			isDirty = true;
-			NotifyModified ();
+			NotifyModified ("Files");
 			OnFileRemovedFromProject (new ProjectFileEventArgs (this, file));
 		}
 		
 		internal void NotifyFileAddedToProject (ProjectFile file)
 		{
 			isDirty = true;
-			NotifyModified ();
+			NotifyModified ("Files");
 			OnFileAddedToProject (new ProjectFileEventArgs (this, file));
 		}
 		
 		internal void NotifyFileRenamedInProject (ProjectFileRenamedEventArgs args)
 		{
 			isDirty = true;
-			NotifyModified ();
+			NotifyModified ("Files");
 			OnFileRenamedInProject (args);
 		}
 		
 		internal void NotifyReferenceRemovedFromProject (ProjectReference reference)
 		{
 			isDirty = true;
-			NotifyModified ();
+			NotifyModified ("References");
 			OnReferenceRemovedFromProject (new ProjectReferenceEventArgs (this, reference));
 		}
 		
 		internal void NotifyReferenceAddedToProject (ProjectReference reference)
 		{
 			isDirty = true;
-			NotifyModified ();
+			NotifyModified ("References");
 			OnReferenceAddedToProject (new ProjectReferenceEventArgs (this, reference));
 		}
 		

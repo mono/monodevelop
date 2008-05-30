@@ -59,7 +59,7 @@ namespace MonoDevelop.Projects.Parser
 			project.FileAddedToProject += new ProjectFileEventHandler (OnFileAdded);
 			project.FileRemovedFromProject += new ProjectFileEventHandler (OnFileRemoved);
 			project.FileRenamedInProject += new ProjectFileRenamedEventHandler (OnFileRenamed);
-			project.Modified += new SolutionItemEventHandler (OnProjectModified);
+			project.Modified += new SolutionItemModifiedEventHandler (OnProjectModified);
 
 			initialFileCheck = true;
 		}
@@ -79,7 +79,7 @@ namespace MonoDevelop.Projects.Parser
 			project.FileAddedToProject -= new ProjectFileEventHandler (OnFileAdded);
 			project.FileRemovedFromProject -= new ProjectFileEventHandler (OnFileRemoved);
 			project.FileRenamedInProject -= new ProjectFileRenamedEventHandler (OnFileRenamed);
-			project.Modified -= new SolutionItemEventHandler (OnProjectModified);
+			project.Modified -= new SolutionItemModifiedEventHandler (OnProjectModified);
 		}
 		
 		public override void CheckModifiedFiles ()
@@ -125,7 +125,7 @@ namespace MonoDevelop.Projects.Parser
 			}
 		}
 		
-		void OnProjectModified (object s, SolutionItemEventArgs args)
+		void OnProjectModified (object s, SolutionItemModifiedEventArgs args)
 		{
 			if (UpdateCorlibReference ())
 				parserDatabase.NotifyReferencesChanged (this);

@@ -118,7 +118,7 @@
     <File name="MonoDevelop.Projects/ProjectPathItemPropertyAttribute.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects/SolutionConfiguration.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects/SolutionEntityItem.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Projects/CombineEntryEventArgs.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Projects/SolutionItemEventArgs.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects/CombineEntryRenamedEventArgs.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects/CyclicBuildOrderException.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects/SolutionItemConfiguration.cs" subtype="Code" buildaction="Compile" />

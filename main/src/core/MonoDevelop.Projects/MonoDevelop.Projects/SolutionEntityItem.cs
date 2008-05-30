@@ -117,7 +117,6 @@ namespace MonoDevelop.Projects
 					}
 				}
 				OnNameChanged (new SolutionItemRenamedEventArgs (this, oldName, name));
-				NotifyModified ();
 			}
 		}
 		
@@ -131,7 +130,7 @@ namespace MonoDevelop.Projects
 					fileName = FileFormat.GetValidFileName (this, fileName);
 				if (ItemHandler.SyncFileName)
 					Name = Path.GetFileNameWithoutExtension (fileName);
-				NotifyModified ();
+				NotifyModified ("FileName");
 			}
 		}
 		
@@ -152,7 +151,7 @@ namespace MonoDevelop.Projects
 				InstallFormat (value);
 				fileFormat.Format.ConvertToFormat (this);
 				NeedsReload = false;
-				NotifyModified ();
+				NotifyModified ("FileFormat");
 			}
 		}
 		
@@ -347,7 +346,7 @@ namespace MonoDevelop.Projects
 			set {
 				if (activeConfiguration != value) {
 					activeConfiguration = value;
-					NotifyModified ();
+					NotifyModified ("DefaultConfiguration");
 					OnDefaultConfigurationChanged (new ConfigurationEventArgs (this, value));
 				}
 			}
@@ -406,7 +405,7 @@ namespace MonoDevelop.Projects
 		
 		void OnConfigurationAddedToCollection (object ob, ConfigurationEventArgs args)
 		{
-			NotifyModified ();
+			NotifyModified ("Configurations");
 			OnConfigurationAdded (new ConfigurationEventArgs (this, args.Configuration));
 			if (ConfigurationsChanged != null)
 				ConfigurationsChanged (this, EventArgs.Empty);
@@ -422,7 +421,7 @@ namespace MonoDevelop.Projects
 				else
 					DefaultConfiguration = null;
 			}
-			NotifyModified ();
+			NotifyModified ("Configurations");
 			OnConfigurationRemoved (new ConfigurationEventArgs (this, args.Configuration));
 			if (ConfigurationsChanged != null)
 				ConfigurationsChanged (this, EventArgs.Empty);
