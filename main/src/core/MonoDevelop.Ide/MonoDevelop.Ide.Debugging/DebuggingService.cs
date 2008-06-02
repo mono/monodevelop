@@ -320,7 +320,7 @@ namespace MonoDevelop.Ide.Debugging
 					StackFrame sf = currentBacktrace.GetFrame (n);
 					if (!string.IsNullOrEmpty (sf.SourceLocation.Filename)) {
 						CurrentFrameIndex = n;
-						break;
+						return;
 					}
 				}
 			}
