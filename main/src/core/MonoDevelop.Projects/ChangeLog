@@ -1,3 +1,9 @@
+2008-06-02  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects/SolutionFolder.cs,
+	  MonoDevelop.Projects/SolutionItem.cs: Fix infinite recursion when
+	  determinig the base directory of a solution folder.
+
 2008-05-30  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Projects/BuildResult.cs: New method for checking if a

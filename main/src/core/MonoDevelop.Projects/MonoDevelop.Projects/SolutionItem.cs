@@ -114,6 +114,10 @@ namespace MonoDevelop.Projects
 			}
 		}
 		
+		internal bool HasCustomBaseDirectory {
+			get { return baseDirectory != null; }
+		}
+		
 		protected virtual string GetDefaultBaseDirectory ()
 		{
 			return ParentSolution.BaseDirectory;

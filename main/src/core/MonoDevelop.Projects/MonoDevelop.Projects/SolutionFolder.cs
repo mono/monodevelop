@@ -113,20 +113,7 @@ namespace MonoDevelop.Projects
 			if (ParentFolder == null)
 				return ParentSolution.BaseDirectory;
 			
-			string path = null;
-			
-			foreach (SolutionItem it in Items) {
-				string subdir = it.BaseDirectory;
-				
-				if (path != null) {
-					// Find the common root
-					path = GetCommonPathRoot (path, subdir);
-					if (string.IsNullOrEmpty (path))
-						break;
-				} else
-					path = subdir;
-			}
-			
+			string path = GetCommonPathRoot ();
 			if (!string.IsNullOrEmpty (path))
 			    return path;
 			
@@ -146,6 +133,35 @@ namespace MonoDevelop.Projects
 				return ParentFolder.BaseDirectory;
 			else
 				return path;
+		}
+		
+		string GetCommonPathRoot ()
+		{
+			string path = null;
+
+			foreach (SolutionItem it in Items) {
+				string subdir;
+				if (it is SolutionFolder) {
+					SolutionFolder sf = (SolutionFolder) it;
+					if (sf.HasCustomBaseDirectory)
+						subdir = sf.BaseDirectory;
+					else
+						subdir = sf.GetCommonPathRoot ();
+				} else
+					subdir = it.BaseDirectory;
+				
+				if (string.IsNullOrEmpty (subdir))
+					return null;
+				
+				if (path != null) {
+					// Find the common root
+					path = GetCommonPathRoot (path, subdir);
+					if (string.IsNullOrEmpty (path))
+						break;
+				} else
+					path = subdir;
+			}
+		    return path;
 		}
 		
 		string GetCommonPathRoot (string path1, string path2)
