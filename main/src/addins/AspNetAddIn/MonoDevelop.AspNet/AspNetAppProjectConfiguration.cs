@@ -56,8 +56,8 @@ namespace MonoDevelop.AspNet
 		
 		string GetStandardOutputDirectory ()
 		{
-			if (SourceDirectory != null) {
-				return System.IO.Path.Combine (SourceDirectory, "bin");
+			if (ParentItem != null && ParentItem.BaseDirectory != null) {
+				return System.IO.Path.Combine (ParentItem.BaseDirectory, "bin");
 			} else {
 				return "bin";
 			}

@@ -1,3 +1,8 @@
+2008-06-02  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.AspNet/AspNetAppProjectConfiguration.cs: Fix path of
+	  compiled output assembly.
+
 2008-05-28  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.AspNet/AspNetAppProject.cs: Fixes for ASP.NET projects
