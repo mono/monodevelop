@@ -66,6 +66,7 @@
 		<ItemProperty member="filename" name="name" serializationDataType="MonoDevelop.Projects.PathDataType"/>
 		<ItemProperty member="subtype" name="subtype"/>
 		<ItemProperty member="buildaction" name="buildaction"/>
+		<ItemProperty member="dependsOn" name="dependson" defaultValue=""/>
 		<ItemProperty member="resourceId" name="resource_id" defaultValue=""/>
 	</DataItem>
 	<DataItem class = "MonoDevelop.Projects.ProjectReference" customDataItem="MonoDevelop.Projects.Formats.MD1.MD1CustomDataItem">
