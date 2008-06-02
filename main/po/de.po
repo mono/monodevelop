@@ -6,7 +6,7 @@ msgstr ""
 "X-Poedit-Bookmarks: -1,1681,-1,-1,-1,-1,-1,-1,-1,-1\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2008-06-02 15:30:53+0200\n"
+"PO-Revision-Date: 2008-06-02 17:34:25+0200\n"
 "Language-Team: \n"
 "Project-Id-Version: Monodevelop\n"
 "MIME-Version: 1.0\n"
@@ -5419,7 +5419,7 @@ msgstr "Zeige Ä_nderungsprotokoll"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:87
 msgid "_Review Changes"
-msgstr "Ä_nderungen anzeigen"
+msgstr "Ä_nderungen überprüfen"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:91
 msgid "_Update"
@@ -7613,7 +7613,7 @@ msgstr "Kann nicht mit dem Webserver verbinden {0}"
 msgid ""
 "A suggested event handler method name.\n"
 msgstr ""
-"\n"
+"Ein vorgeschagener Eventhandler Methodenname.\n"
 
 #: ../src/addins/AspNetAddIn/MonoDevelop.AspNet.Parser/SuggestedHandlerCompletionData.cs:71
 msgid ""
@@ -12573,10 +12573,8 @@ msgstr "Der Name '{0}' existiert im aktuellen Kontext nicht."
 #~ msgstr "Fehler aufgetreten: {0}"
 #~ msgid "Question"
 #~ msgstr "Frage"
-
 #~ msgid "Delete files"
 #~ msgstr "Lösche Dateien"
-
 #~ msgid "Do you want to save the current changes?"
 #~ msgstr "Wollen sie die aktuellen Änderungen speichern?"
 
