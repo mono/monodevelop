@@ -52,6 +52,9 @@ namespace MonoDevelop.Projects.Dom
 			get {
 				return namesp;
 			}
+			set {
+				namesp = value;
+			}
 		}
 		
 		public object SourceProject {
@@ -69,6 +72,9 @@ namespace MonoDevelop.Projects.Dom
 		public ClassType ClassType {
 			get {
 				return classType;
+			}
+			set {
+				classType = value;
 			}
 		}
 		
@@ -154,7 +160,7 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
-		protected DomType ()
+		public DomType ()
 		{
 		}
 		
@@ -201,6 +207,10 @@ namespace MonoDevelop.Projects.Dom
 			return result;
 		}
 		
+		public void Add (IReturnType interf)
+		{
+			this.implementedInterfaces.Add (interf);
+		}
 		public void Add (IMember member)
 		{
 			this.members.Add (member);

@@ -49,7 +49,7 @@ namespace MonoDevelop.Projects.Dom
 			get;
 		}
 		
-		DomRegion Region {
+		DomLocation Location {
 			get;
 		}
 	}

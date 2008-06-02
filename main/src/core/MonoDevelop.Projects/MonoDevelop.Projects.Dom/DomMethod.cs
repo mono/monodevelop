@@ -28,6 +28,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace MonoDevelop.Projects.Dom
 {
@@ -40,11 +41,14 @@ namespace MonoDevelop.Projects.Dom
 			get {
 				return isConstructor;
 			}
+			set {
+				isConstructor = value;
+			}
 		}
 		
-		public IEnumerable<IParameter> Parameters {
+		public ReadOnlyCollection<IParameter> Parameters {
 			get {
-				return parameters;
+				return parameters.AsReadOnly ();
 			}
 		}
 		
@@ -55,8 +59,13 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
-		protected DomMethod ()
+		public DomMethod ()
 		{
+		}
+		
+		public void Add (IParameter parameter)
+		{
+			this.parameters.Add (parameter);
 		}
 		
 		public DomMethod (string name, Modifiers modifiers, bool isConstructor, DomLocation location, DomRegion bodyRegion)

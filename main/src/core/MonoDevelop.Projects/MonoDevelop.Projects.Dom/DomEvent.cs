@@ -33,25 +33,44 @@ namespace MonoDevelop.Projects.Dom
 {
 	public class DomEvent : AbstractMember, IEvent
 	{
+		IMethod addMethod = null;
+		IMethod removeMethod = null;
+		IMethod raiseMethod = null;
+		
 		public virtual IMethod AddMethod {
 			get {
+				if (addMethod != null)
+					return addMethod;
 				return LookupSpecialMethod ("add_");
+			}
+			set {
+				addMethod = value;
 			}
 		}
 		
 		public virtual IMethod RemoveMethod {
 			get {
+				if (removeMethod != null)
+					return removeMethod;
 				return LookupSpecialMethod ("remove_");
+			}
+			set {
+				removeMethod = value;
 			}
 		}
 		
 		public virtual IMethod RaiseMethod {
 			get {
+				if (raiseMethod != null)
+					return raiseMethod;
 				return LookupSpecialMethod ("raise_");
+			}
+			set {
+				raiseMethod = value;
 			}
 		}
 		
-		protected DomEvent ()
+		public DomEvent ()
 		{
 		}
 		

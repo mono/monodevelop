@@ -118,6 +118,194 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
+		internal static DomMethod ReadMethod (BinaryReader reader, INameDecoder nameTable)
+		{
+			DomMethod result = new DomMethod ();
+			ReadMemberInformation (reader, nameTable, result);
+			result.ReturnType    = ReadReturnType (reader, nameTable);
+			result.IsConstructor = reader.ReadBoolean ();
+			uint    arguments  = reader.ReadUInt32 ();
+			List<IParameter> parameters = new List<IParameter> ();
+			while (arguments-- > 0) {
+				result.Add (ReadParameter (reader, nameTable));
+			}
+			return result;
+		}
+		internal static void Write (BinaryWriter writer, INameEncoder nameTable, IMethod method)
+		{
+			Debug.Assert (method != null);
+			WriteMemberInformation (writer, nameTable, method);
+			Write (writer, nameTable, method.ReturnType);
+			writer.Write (method.IsConstructor);
+			writer.Write (method.Parameters.Count);
+			foreach (IParameter param in method.Parameters) {
+				Write (writer, nameTable, param);
+			}
+		}
+		
+		internal static DomParameter ReadParameter (BinaryReader reader, INameDecoder nameTable)
+		{
+			DomParameter result = new DomParameter ();
+			
+			result.Name               = ReadString (reader, nameTable);
+			result.ParameterModifiers = (ParameterModifiers)reader.ReadUInt32();
+			result.ReturnType         = ReadReturnType (reader, nameTable);
+			result.Location           = ReadLocation (reader, nameTable);
+			
+			return result;
+		}
+		internal static void Write (BinaryWriter writer, INameEncoder nameTable, IParameter parameter)
+		{
+			Debug.Assert (parameter != null);
+			WriteString (parameter.Name, writer, nameTable);
+			writer.Write ((uint)parameter.ParameterModifiers);
+			Write (writer, nameTable, parameter.ReturnType);
+			Write (writer, nameTable, parameter.Location);
+		}
+		
+		internal static DomProperty ReadProperty (BinaryReader reader, INameDecoder nameTable)
+		{
+			DomProperty result = new DomProperty ();
+			ReadMemberInformation (reader, nameTable, result);
+			result.ReturnType = ReadReturnType (reader, nameTable);
+			result.IsIndexer  = reader.ReadBoolean ();
+			bool hasGet = ReadNull (reader);
+			if (hasGet)
+				result.GetMethod = ReadMethod (reader, nameTable);
+			bool hasSet = ReadNull (reader);
+			if (hasSet)
+				result.SetMethod = ReadMethod (reader, nameTable);
+			return result;
+		}
+		internal static void Write (BinaryWriter writer, INameEncoder nameTable, IProperty property)
+		{
+			Debug.Assert (property != null);
+			WriteMemberInformation (writer, nameTable, property);
+			Write (writer, nameTable, property.ReturnType);
+			WriteNull (writer, property.GetMethod);
+			if (property.GetMethod != null) 
+				Write (writer, nameTable, property.GetMethod);
+			WriteNull (writer, property.SetMethod);
+			if (property.SetMethod != null) 
+				Write (writer, nameTable, property.SetMethod);
+		}
+		
+		internal static DomEvent ReadEvent (BinaryReader reader, INameDecoder nameTable)
+		{
+			DomEvent result = new DomEvent ();
+			ReadMemberInformation (reader, nameTable, result);
+			result.ReturnType = ReadReturnType (reader, nameTable);
+			bool hasAdd = ReadNull (reader);
+			if (hasAdd)
+				result.AddMethod = ReadMethod (reader, nameTable);
+			bool hasRemove = ReadNull (reader);
+			if (hasRemove)
+				result.RemoveMethod = ReadMethod (reader, nameTable);
+			bool hasRaise = ReadNull (reader);
+			if (hasRaise)
+				result.RaiseMethod = ReadMethod (reader, nameTable);
+			return result;
+		}
+		internal static void Write (BinaryWriter writer, INameEncoder nameTable, IEvent evt)
+		{
+			Debug.Assert (evt != null);
+			WriteMemberInformation (writer, nameTable, evt);
+			Write (writer, nameTable, evt.ReturnType);
+			WriteNull (writer, evt.AddMethod);
+			if (evt.AddMethod != null) 
+				Write (writer, nameTable, evt.AddMethod);
+			WriteNull (writer, evt.RemoveMethod);
+			if (evt.RemoveMethod != null) 
+				Write (writer, nameTable, evt.RemoveMethod);
+			WriteNull (writer, evt.RaiseMethod);
+			if (evt.RaiseMethod != null) 
+				Write (writer, nameTable, evt.RaiseMethod);
+		}
+		
+		
+		internal static DomType ReadType (BinaryReader reader, INameDecoder nameTable)
+		{
+			DomType result = new DomType ();
+			ReadMemberInformation (reader, nameTable, result);
+			result.Namespace = ReadString (reader, nameTable);
+			result.ClassType = (ClassType)reader.ReadUInt32();
+			result.BaseType  = ReadReturnType (reader, nameTable);
+			// implemented interfaces
+			uint count = reader.ReadUInt32 ();
+			while (count-- > 0) {
+				result.Add (ReadReturnType (reader, nameTable));
+			}
+			
+			// innerTypes
+			count = reader.ReadUInt32 ();
+			while (count-- > 0) {
+				result.Add (ReadType (reader, nameTable));
+			}
+			
+			// fields
+			count = reader.ReadUInt32 ();
+			while (count-- > 0) {
+				result.Add (ReadField (reader, nameTable));
+			}
+			
+			// properties
+			count = reader.ReadUInt32 ();
+			while (count-- > 0) {
+				result.Add (ReadProperty (reader, nameTable));
+			}
+			
+			// methods
+			count = reader.ReadUInt32 ();
+			while (count-- > 0) {
+				result.Add (ReadMethod (reader, nameTable));
+			}
+			
+			// events
+			count = reader.ReadUInt32 ();
+			while (count-- > 0) {
+				result.Add (ReadEvent (reader, nameTable));
+			}
+			return result;
+		}
+		
+		internal static void Write (BinaryWriter writer, INameEncoder nameTable, IType type)
+		{
+			Debug.Assert (type != null);
+			WriteMemberInformation (writer, nameTable, type);
+			WriteString (type.Namespace, writer, nameTable);
+			writer.Write ((uint)type.ClassType);
+			Write (writer, nameTable, type.BaseType);
+			writer.Write (GetCount (type.ImplementedInterfaces));
+			foreach (IReturnType iface in type.ImplementedInterfaces) {
+				Write (writer, nameTable, iface);
+			}
+			writer.Write (GetCount (type.Fields));
+			foreach (IField field in type.Fields) {
+				Write (writer, nameTable, field);
+			}
+			writer.Write (GetCount (type.Properties));
+			foreach (IProperty property in type.Properties) {
+				Write (writer, nameTable, property);
+			}
+			writer.Write (GetCount (type.Methods));
+			foreach (IMethod method in type.Methods) {
+				Write (writer, nameTable, method);
+			}
+			writer.Write (GetCount (type.Events));
+			foreach (IEvent evt in type.Events) {
+				Write (writer, nameTable, evt);
+			}
+		}
+		
+		static uint GetCount<T> (IEnumerable<T> list)
+		{
+			uint result = 0;
+			foreach (T o in list) {
+				result++;
+			}
+			return result;
+		}
+		
 		
 #region Helper methods
 		static void WriteMemberInformation (BinaryWriter writer, INameEncoder nameTable, IMember member)

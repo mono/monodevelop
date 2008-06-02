@@ -37,11 +37,14 @@ namespace MonoDevelop.Projects.Dom
 		protected ParameterModifiers parameterModifiers;
 		protected IReturnType returnType;
 		protected List<IAttribute> attributes = new List<IAttribute> ();
-		protected DomRegion region;
+		protected DomLocation location;
 		
 		public string Name {
 			get {
 				return name;
+			}
+			set {
+				name = value;
 			}
 		}
 
@@ -49,11 +52,17 @@ namespace MonoDevelop.Projects.Dom
 			get {
 				return parameterModifiers;
 			}
+			set {
+				parameterModifiers = value;
+			}
 		}
 
 		public IReturnType ReturnType {
 			get {
 				return returnType;
+			}
+			set {
+				returnType = value;
 			}
 		}
 
@@ -63,13 +72,16 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 
-		public DomRegion Region {
+		public DomLocation Location {
 			get {
-				return region;
+				return location;
+			}
+			set {
+				location = value;
 			}
 		}
 		
-		protected DomParameter ()
+		public DomParameter ()
 		{
 		}
 		
@@ -81,11 +93,11 @@ namespace MonoDevelop.Projects.Dom
 		
 		public override string ToString ()
 		{
-			return string.Format ("[DomParameter:Name={0}, ParameterModifiers={1}, ReturnType={2}, Region={3}]",
+			return string.Format ("[DomParameter:Name={0}, ParameterModifiers={1}, ReturnType={2}, Location={3}]",
 			                      Name,
 			                      ParameterModifiers,
 			                      ReturnType,
-			                      Region);
+			                      Location);
 		}
 
 		public object AcceptVisitior (IDomVisitor visitor, object data)

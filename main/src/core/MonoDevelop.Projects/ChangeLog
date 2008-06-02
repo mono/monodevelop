@@ -1,3 +1,14 @@
+2008-06-02  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Dom/DomType.cs,
+	  MonoDevelop.Projects.Dom/IMethod.cs,
+	  MonoDevelop.Projects.Dom/DomMethod.cs,
+	  MonoDevelop.Projects.Dom/DomParameter.cs,
+	  MonoDevelop.Projects.Dom/DomEvent.cs,
+	  MonoDevelop.Projects.Dom/DomPersistence.cs,
+	  MonoDevelop.Projects.Dom/DomProperty.cs,
+	  MonoDevelop.Projects.Dom/IParameter.cs: Worked on dom persistence.
+
 2008-06-02  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Projects/SolutionFolder.cs,

@@ -34,10 +34,15 @@ namespace MonoDevelop.Projects.Dom
 	public class DomProperty : AbstractMember, IProperty
 	{
 		protected bool isIndexer;
+		protected IMethod getMethod = null;
+		protected IMethod setMethod = null;
 		
 		public bool IsIndexer {
 			get {
 				return isIndexer;
+			}
+			set {
+				isIndexer = value;
 			}
 		}
 		
@@ -55,13 +60,23 @@ namespace MonoDevelop.Projects.Dom
 		
 		public virtual IMethod GetMethod {
 			get {
+				if (getMethod != null)
+					return getMethod;
 				return LookupSpecialMethod ("get_");
+			}
+			set {
+				getMethod = value;
 			}
 		}
 		
 		public virtual IMethod SetMethod {
 			get {
+				if (setMethod != null)
+					return setMethod;
 				return LookupSpecialMethod ("set_");
+			}
+			set {
+				setMethod = value;
 			}
 		}
 		
@@ -73,7 +88,7 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
-		protected DomProperty ()
+		public DomProperty ()
 		{
 		}
 		
