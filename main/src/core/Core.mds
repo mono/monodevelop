@@ -14,13 +14,13 @@
       <Entry build="True" name="Mono.Debugging" configuration="Debug" />
     </Configuration>
     <Configuration name="Release" ctype="CombineConfiguration">
-      <Entry build="True" name="MonoDevelop.Core" configuration="Debug" />
-      <Entry build="True" name="MonoDevelop.Core.Gui" configuration="Debug" />
-      <Entry build="True" name="MonoDevelop.Components" configuration="Debug" />
-      <Entry build="True" name="MonoDevelop.Dock" configuration="Debug" />
+      <Entry build="True" name="MonoDevelop.Core" configuration="Release" />
+      <Entry build="True" name="MonoDevelop.Core.Gui" configuration="Release" />
+      <Entry build="True" name="MonoDevelop.Components" configuration="Release" />
+      <Entry build="True" name="MonoDevelop.Dock" configuration="Release" />
       <Entry build="True" name="MonoDevelop.Documentation" configuration="Release" />
-      <Entry build="True" name="MonoDevelop.Ide" configuration="Debug" />
-      <Entry build="True" name="MonoDevelop.Projects" configuration="Debug" />
+      <Entry build="True" name="MonoDevelop.Ide" configuration="Release" />
+      <Entry build="True" name="MonoDevelop.Projects" configuration="Release" />
       <Entry build="True" name="MonoDevelop.Projects.Gui" configuration="Release" />
       <Entry build="True" name="MonoDevelop.Startup" configuration="Release" />
       <Entry build="True" name="NRefactory" configuration="Release" />

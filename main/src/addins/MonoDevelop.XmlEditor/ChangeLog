@@ -1,3 +1,7 @@
+2008-06-02  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.XmlEditor.mds: Some fixes in project files.
+
 2008-05-22  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.XmlEditor/XmlEditorService.cs: Replaced

@@ -1,3 +1,8 @@
+2008-06-02  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* src/addins/Addins.mds, src/core/Core.mds, Main.mds: Some fixes in
+	  project files.
+
 2008-05-21  Lluis Sanchez Gual <lluis@novell.com> 
 
 	

@@ -29,17 +29,17 @@
       <Entry build="True" name="MonoDevelop.Debugger" configuration="Debug" />
     </Configuration>
     <Configuration name="Release" ctype="CombineConfiguration">
-      <Entry build="True" name="MonoDevelop.NUnit" configuration="Debug" />
-      <Entry build="True" name="ILAsmBinding" configuration="Debug" />
+      <Entry build="True" name="MonoDevelop.NUnit" configuration="Release" />
+      <Entry build="True" name="ILAsmBinding" configuration="Release" />
       <Entry build="True" name="VersionControl" configuration="Release" />
       <Entry build="True" name="MonoDevelop.GtkCore" configuration="Release" />
-      <Entry build="True" name="WelcomePage" configuration="Debug" />
-      <Entry build="True" name="MonoDevelop.MsVisualStudio" configuration="Debug" />
+      <Entry build="True" name="WelcomePage" configuration="Release" />
+      <Entry build="True" name="MonoDevelop.MsVisualStudio" configuration="Release" />
       <Entry build="True" name="VBNetBinding" configuration="Release" />
-      <Entry build="True" name="MonoDevelop.ChangeLogAddIn" configuration="Debug" />
+      <Entry build="True" name="MonoDevelop.ChangeLogAddIn" configuration="Release" />
       <Entry build="True" name="MonoDeveloperExtensions" configuration="Release" />
-      <Entry build="True" name="MonoDevelop.AspNet" configuration="Debug" />
-      <Entry build="True" name="MonoDevelop.DesignerSupport" configuration="Debug" />
+      <Entry build="True" name="MonoDevelop.AspNet" configuration="Release" />
+      <Entry build="True" name="MonoDevelop.DesignerSupport" configuration="Release" />
       <Entry build="True" name="MonoDevelop.Autotools" configuration="Release" />
       <Entry build="True" name="MonoDevelop.WebReferences" configuration="Release" />
       <Entry build="True" name="CSharpBinding" configuration="Release" />

@@ -1,8 +1,8 @@
 <Combine name="Main" fileversion="2.0" outputpath="build/bin/" MakePkgConfig="False" MakeLibPC="True">
   <Configurations active="Debug">
     <Configuration name="Debug" ctype="CombineConfiguration">
-      <Entry build="True" name="core" configuration="Debug" />
-      <Entry build="True" name="addins" configuration="Debug" />
+      <Entry build="True" name="Core" configuration="Debug" />
+      <Entry build="True" name="Addins" configuration="Debug" />
       <Entry build="True" name="contrib" configuration="Debug" />
       <Entry build="True" name="po" configuration="Debug" />
       <Entry build="True" name="Tools" configuration="Debug" />
@@ -12,8 +12,8 @@
       </CustomCommands>
     </Configuration>
     <Configuration name="Release" ctype="CombineConfiguration">
-      <Entry build="True" name="core" configuration="Release" />
-      <Entry build="True" name="addins" configuration="Release" />
+      <Entry build="True" name="Core" configuration="Release" />
+      <Entry build="True" name="Addins" configuration="Release" />
       <Entry build="True" name="contrib" configuration="Release" />
       <Entry build="True" name="po" configuration="Release" />
       <Entry build="True" name="Tools" configuration="Release" />
@@ -21,8 +21,8 @@
     </Configuration>
   </Configurations>
   <StartMode startupentry="Core" single="True">
-    <Execute type="None" entry="core" />
-    <Execute type="None" entry="addins" />
+    <Execute type="None" entry="Core" />
+    <Execute type="None" entry="Addins" />
     <Execute type="None" entry="contrib" />
     <Execute type="None" entry="po" />
     <Execute type="None" entry="Tools" />
