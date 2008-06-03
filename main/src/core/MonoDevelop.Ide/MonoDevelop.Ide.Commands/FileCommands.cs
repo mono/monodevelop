@@ -75,8 +75,12 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Run ()
 		{
-			using (NewFileDialog fd = new NewFileDialog (null, null)) {
+			NewFileDialog fd = null;
+			try {
+				fd = new NewFileDialog (null, null);
 				fd.Run ();
+			} finally {
+				if (fd != null) fd.Destroy ();
 			}
 		}
 	}
