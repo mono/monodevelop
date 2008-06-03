@@ -27,7 +27,9 @@
 //
 
 using System;
+using System.Text;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace MonoDevelop.Projects.Dom
 {
@@ -38,6 +40,7 @@ namespace MonoDevelop.Projects.Dom
 		protected IReturnType baseType;
 		protected List<TypeParameter> typeParameters = new List<TypeParameter> ();
 		protected List<IMember> members = new List<IMember> ();
+		protected List<IType> parts = new List<IType> ();
 		protected List<IReturnType> implementedInterfaces = new List<IReturnType> ();
 		protected ClassType classType = ClassType.Unknown;
 		protected string namesp;
@@ -60,6 +63,9 @@ namespace MonoDevelop.Projects.Dom
 		public object SourceProject {
 			get {
 				return sourceProject;
+			}
+			set {
+				sourceProject = value;
 			}
 		}
 
@@ -93,9 +99,9 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
-		public IEnumerable<TypeParameter> TypeParameters {
+		public ReadOnlyCollection<TypeParameter> TypeParameters {
 			get {
-				return typeParameters;
+				return typeParameters.AsReadOnly ();
 			}
 		}
 		
@@ -144,6 +150,18 @@ namespace MonoDevelop.Projects.Dom
 						yield return (IEvent)item;
 			}
 		}
+		
+		public IEnumerable<IType> Parts { 
+			get {
+				return parts;
+			}
+		}
+		public bool HasParts {
+			get {
+				return parts != null && parts.Count > 0;
+			}
+		}
+		
 		
 		static string[,] iconTable = new string[,] {
 			{Stock.Error,     Stock.Error,            Stock.Error,              Stock.Error},             // unknown
@@ -211,8 +229,82 @@ namespace MonoDevelop.Projects.Dom
 		{
 			this.implementedInterfaces.Add (interf);
 		}
-		public void Add (IMember member)
+		
+		int fieldCount       = 0;
+		int methodCount      = 0;
+		int constructorCount = 0;
+		int indexerCount     = 0;
+		int propertyCount    = 0;
+		int eventCount       = 0;
+		int innerTypeCount   = 0;
+		
+		public int PropertyCount {
+			get {
+				return propertyCount;
+			}
+		}
+		public int FieldCount {
+			get {
+				return fieldCount;
+			}
+		}
+		public int MethodCount {
+			get {
+				return methodCount;
+			}
+		}
+		public int ConstructorCount {
+			get {
+				return constructorCount;
+			}
+		}
+		public int IndexerCount {
+			get {
+				return indexerCount;
+			}
+		}
+		public int EventCount {
+			get {
+				return eventCount;
+			}
+		}
+		public int InnerTypeCount {
+			get {
+				return innerTypeCount;
+			}
+		}
+		
+		public void Add (IField member)
 		{
+			fieldCount++;
+			this.members.Add (member);
+		}
+		public void Add (IMethod member)
+		{
+			if (member.IsConstructor) {
+				constructorCount++;
+			} else {
+				methodCount++;
+			}
+			this.members.Add (member);
+		}
+		public void Add (IProperty member)
+		{
+			if (member.IsIndexer) {
+				indexerCount++;
+			} else {
+				propertyCount++;
+			}
+			this.members.Add (member);
+		}
+		public void Add (IEvent member)
+		{
+			eventCount++;
+			this.members.Add (member);
+		}
+		public void Add (IType member)
+		{
+			innerTypeCount++;
 			this.members.Add (member);
 		}
 		
@@ -225,6 +317,23 @@ namespace MonoDevelop.Projects.Dom
 		{
 			return visitor.Visit (this, data);
 		}
+		
+		public static string GetInstantiatedTypeName (string typeName, IList<IReturnType> genericArguments)
+		{
+			if (genericArguments == null || genericArguments.Count == 0)
+				return typeName;
+			
+			StringBuilder sb = new StringBuilder (typeName);
+				
+			sb.Append ('[');
+			for (int i = 0;  i < genericArguments.Count; i++) {
+				if (i > 0) 
+					sb.Append (',');
+				sb.Append (DomReturnType.ConvertToString (genericArguments [i]));
+			}
+			sb.Append (']');
+			return sb.ToString ();
+		}		
 	}
 	
 	internal sealed class Stock 

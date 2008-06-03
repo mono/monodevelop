@@ -297,7 +297,7 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
-		static uint GetCount<T> (IEnumerable<T> list)
+		internal static uint GetCount<T> (IEnumerable<T> list)
 		{
 			uint result = 0;
 			foreach (T o in list) {

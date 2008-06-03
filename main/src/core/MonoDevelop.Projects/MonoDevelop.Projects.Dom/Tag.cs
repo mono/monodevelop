@@ -1,5 +1,5 @@
 //
-// IReturnType.cs
+// TypeParameter.cs
 //
 // Author:
 //   Mike Krüger <mkrueger@novell.com>
@@ -25,39 +25,25 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
-
 using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 
 namespace MonoDevelop.Projects.Dom
 {
-	public interface IReturnType : IDomVisitable
+	[Serializable]
+	public class Tag : Comment
 	{
-		string FullName {
-			get;
-		}
-		string Name {
-			get;
-		}
-		string Namespace {
-			get;
+		string key;
+		
+		public string Key {
+			get {
+				return key;
+			}
 		}
 		
-		int PointerNestingLevel {
-			get;
-		}
-		
-		int ArrayDimensions {
-			get;
-		}
-		
-		bool IsNullable {
-			get;
-		}
-		
-		ReadOnlyCollection<IReturnType> TypeParameters {
-			get;
+		public Tag (string key, DomRegion region) 
+		{
+			this.key    = key;
+			base.Region = region;
 		}
 	}
 }

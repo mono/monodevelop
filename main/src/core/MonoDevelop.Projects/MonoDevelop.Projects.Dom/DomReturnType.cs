@@ -27,6 +27,7 @@
 //
 
 using System;
+using System.Text;
 using System.Collections.Generic;
 
 namespace MonoDevelop.Projects.Dom
@@ -110,6 +111,21 @@ namespace MonoDevelop.Projects.Dom
 			                      PointerNestingLevel,
 			                      ArrayDimensions);
 		}
-
+		
+		public static string ConvertToString (IReturnType type)
+		{
+			StringBuilder sb = new StringBuilder (DomType.GetInstantiatedTypeName (type.FullName, type.TypeParameters));
+			
+			if (type.PointerNestingLevel > 0)
+				sb.Append (new String ('*', type.PointerNestingLevel));
+			
+			if (type.ArrayDimensions > 0) {
+				for (int i = 0; i < type.ArrayDimensions; i++) {
+					sb.Append ("[]");
+				}
+			}
+			
+			return sb.ToString ();
+		}
 	}
 }

@@ -1,5 +1,5 @@
 //
-// IReturnType.cs
+// ClassUpdateInformation.cs
 //
 // Author:
 //   Mike Krüger <mkrueger@novell.com>
@@ -28,36 +28,31 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 
 namespace MonoDevelop.Projects.Dom
 {
-	public interface IReturnType : IDomVisitable
+	public class TypeUpdateInformation
 	{
-		string FullName {
-			get;
-		}
-		string Name {
-			get;
-		}
-		string Namespace {
-			get;
+		List<IType> added    = new List<IType> ();
+		List<IType> removed  = new List<IType> ();
+		List<IType> modified = new List<IType> ();
+		
+		public List<IType> Added {
+			get {
+				return added; 
+			}
 		}
 		
-		int PointerNestingLevel {
-			get;
+		public List<IType> Removed {
+			get {
+				return removed; 
+			}
 		}
 		
-		int ArrayDimensions {
-			get;
-		}
-		
-		bool IsNullable {
-			get;
-		}
-		
-		ReadOnlyCollection<IReturnType> TypeParameters {
-			get;
+		public List<IType> Modified{
+			get {
+				return modified;
+			}
 		}
 	}
 }

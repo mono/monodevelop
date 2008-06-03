@@ -28,6 +28,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace MonoDevelop.Projects.Dom
 {
@@ -39,6 +40,7 @@ namespace MonoDevelop.Projects.Dom
 		
 		object SourceProject {
 			get;
+			set;
 		}
 		
 		ICompilationUnit CompilationUnit {
@@ -57,7 +59,7 @@ namespace MonoDevelop.Projects.Dom
 			get;
 		}
 		
-		IEnumerable<TypeParameter> TypeParameters {
+		ReadOnlyCollection<TypeParameter> TypeParameters {
 			get;
 		}
 		
@@ -82,6 +84,39 @@ namespace MonoDevelop.Projects.Dom
 		}
 
 		IEnumerable<IEvent> Events {
+			get;
+		}
+		
+		/// <value>
+		/// Types that are defined across several compilation unit (e.g. files) this returns
+		/// the other types that are part of the same super type.
+		/// </value>
+		IEnumerable<IType> Parts { 
+			get; 
+		}
+		bool HasParts {
+			get;
+		}
+		
+		int FieldCount {
+			get;
+		}
+		int MethodCount {
+			get;
+		}
+		int ConstructorCount {
+			get;
+		}
+		int IndexerCount {
+			get;
+		}
+		int PropertyCount {
+			get;
+		}
+		int EventCount {
+			get;
+		}
+		int InnerTypeCount {
 			get;
 		}
 	}

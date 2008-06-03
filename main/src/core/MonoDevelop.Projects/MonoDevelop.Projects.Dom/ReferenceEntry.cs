@@ -1,10 +1,10 @@
 //
-// IReturnType.cs
+// ReferenceEntry.cs
 //
 // Author:
-//   Mike Krüger <mkrueger@novell.com>
+//   Lluis Sanchez Gual
 //
-// Copyright (C) 2008 Novell, Inc (http://www.novell.com)
+// Copyright (C) 2005 Novell, Inc (http://www.novell.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -26,38 +26,27 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+
 using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+using System.Collections;
+using MonoDevelop.Projects;
+using MonoDevelop.Projects.Parser;
 
 namespace MonoDevelop.Projects.Dom
-{
-	public interface IReturnType : IDomVisitable
+{	
+	[Serializable]
+	class ReferenceEntry
 	{
-		string FullName {
-			get;
-		}
-		string Name {
-			get;
-		}
-		string Namespace {
-			get;
+		string databaseUri;
+		
+		public ReferenceEntry (string dbUri)
+		{
+			databaseUri = dbUri;
 		}
 		
-		int PointerNestingLevel {
-			get;
-		}
-		
-		int ArrayDimensions {
-			get;
-		}
-		
-		bool IsNullable {
-			get;
-		}
-		
-		ReadOnlyCollection<IReturnType> TypeParameters {
-			get;
+		public string Uri
+		{
+			get { return databaseUri; }
 		}
 	}
 }

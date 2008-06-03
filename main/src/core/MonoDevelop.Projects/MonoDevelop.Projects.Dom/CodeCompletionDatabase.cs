@@ -40,9 +40,8 @@ using System.Runtime.Serialization.Formatters.Binary;
 
 using MonoDevelop.Core;
 using Mono.Addins;
-using MonoDevelop.Projects;
-using MonoDevelop.Projects.Parser;
 using System.Reflection;
+using MonoDevelop.Projects.Dom.Parser;
 /*
 namespace MonoDevelop.Projects.Dom
 {
@@ -56,7 +55,6 @@ namespace MonoDevelop.Projects.Dom
 		NamespaceEntry rootNamespace;
 		protected ArrayList references;
 		protected Hashtable files;
-		protected ParserDatabase parserDatabase;
 		protected Hashtable headers;
 		
 		BinaryReader datareader;
@@ -84,9 +82,8 @@ namespace MonoDevelop.Projects.Dom
 		
 		protected Object rwlock = new Object ();
 		
-		public CodeCompletionDatabase (ParserDatabase parserDatabase)
+		public CodeCompletionDatabase ()
 		{
-			this.parserDatabase = parserDatabase;
 			rootNamespace = new NamespaceEntry (null, null);
 			files = new Hashtable ();
 			references = new ArrayList ();
@@ -199,10 +196,10 @@ namespace MonoDevelop.Projects.Dom
 			}
 			
 			// Notify read comments
-			foreach (FileEntry fe in files.Values)
-			{
-				if (! fe.IsAssembly && fe.CommentTasks != null)
+			foreach (FileEntry fe in files.Values) {
+				if (! fe.IsAssembly && fe.CommentTasks != null) {
 					parserDatabase.UpdatedCommentTasks (fe);
+				}
 			}
 			
 			// Update comments if needed...
@@ -265,7 +262,7 @@ namespace MonoDevelop.Projects.Dom
 					// Write all class data
 					foreach (ClassEntry ce in GetAllClasses ()) 
 					{
-						IClass c = ce.Class;
+						IType c = ce.Class;
 						byte[] data;
 						int len;
 						
@@ -290,7 +287,7 @@ namespace MonoDevelop.Projects.Dom
 						}
 						else {
 							buffer.Position = 0;
-							PersistentClass.WriteTo (c, bufWriter, parserDatabase.DefaultNameEncoder);
+							DomPersistence.Write (bufWriter, DefaultNameEncoder, c);
 							bufWriter.Flush ();
 							data = buffer.GetBuffer ();
 							len = (int)buffer.Position;
@@ -389,7 +386,7 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
-		internal IClass ReadClass (ClassEntry ce)
+		internal IType ReadClass (ClassEntry ce)
 		{
 			lock (rwlock)
 			{
@@ -399,8 +396,8 @@ namespace MonoDevelop.Projects.Dom
 				}
 				datafile.Position = ce.Position;
 				datareader.ReadInt32 ();	// Length of data
-
-				DefaultClass cls = PersistentClass.Read (datareader, parserDatabase.DefaultNameDecoder);
+				
+				IType cls = DomPersistence.ReadType (datareader, DefaultNameEncoder);
 				cls.SourceProject = SourceEntry;
 				return cls;
 			}
@@ -422,20 +419,20 @@ namespace MonoDevelop.Projects.Dom
 			headers = new Hashtable ();
 		}
 		
-		public IClass GetClass (string typeName, ReturnTypeList genericArguments, bool caseSensitive)
+		public IType GetClass (string typeName, List<IReturnType> genericArguments, bool caseSensitive)
 		{
 			lock (rwlock)
 			{
 				if (genericArguments != null && genericArguments.Count > 0) {
-					IClass templateClass = GetClass (typeName, null, caseSensitive);
+					IType templateClass = GetClass (typeName, null, caseSensitive);
 					if (templateClass == null)
 						return null;
 
 					if (templateClass.GenericParameters == null || (templateClass.GenericParameters.Count != genericArguments.Count))
 						return null;
 			
-					string tname = DefaultClass.GetInstantiatedTypeName (templateClass.FullyQualifiedName, genericArguments);
-					IClass res = (IClass) instantiatedGenericTypes [tname];
+					string tname = DefaultClass.GetInstantiatedTypeName (templateClass.FullName, genericArguments);
+					IType res = (IType) instantiatedGenericTypes [tname];
 					if (res == null) {
 						res = DefaultClass.CreateInstantiatedGenericType (templateClass, genericArguments);
 						instantiatedGenericTypes [tname] = res;
@@ -444,7 +441,7 @@ namespace MonoDevelop.Projects.Dom
 				}
 				
 				// It may be an instantiated generic type 
-				IClass igt = (IClass) instantiatedGenericTypes [typeName];
+				IType igt = (IType) instantiatedGenericTypes [typeName];
 				if (igt != null)
 					return igt;
 				
@@ -467,12 +464,12 @@ namespace MonoDevelop.Projects.Dom
 					if (ce == null) return null;
 					
 					len++;	// Now include class name
-					IClass c = GetClass (ce);
+					IType c = GetClass (ce);
 					
 					while (nextPos < len) {
-						IClass nextc = null;
+						IType nextc = null;
 						for (int n=0; n<c.InnerClasses.Count && nextc == null; n++) {
-							IClass innerc = c.InnerClasses[n];
+							IType innerc = c.InnerClasses[n];
 							if (string.Compare (innerc.Name, path[nextPos], !caseSensitive) == 0)
 								nextc = innerc;
 						}
@@ -485,7 +482,7 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
-		internal IClass GetClass (ClassEntry ce)
+		internal IType GetClass (ClassEntry ce)
 		{
 			ce.LastGetTime = currentGetTime++;
 			if (ce.Class != null)
@@ -515,7 +512,7 @@ namespace MonoDevelop.Projects.Dom
 					}
 					else {
 						// It's a full class name
-						IClass cls = this.GetClass ((string)ob, null, true);
+						IType cls = this.GetClass ((string)ob, null, true);
 						if (cls != null && (namespaces == null || nsList.Contains (cls.Namespace)))
 							yield return cls;
 					}
@@ -596,7 +593,7 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 	
-		public TagCollection GetSpecialComments (string fileName)
+		public List<Tag> GetSpecialComments (string fileName)
 		{
 			lock (rwlock)
 			{
@@ -605,7 +602,7 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
-		public void UpdateTagComments (TagCollection tags, string fileName)
+		public void UpdateTagComments (List<Tag> tags, string fileName)
 		{
 			lock (rwlock)
 			{
@@ -774,14 +771,14 @@ namespace MonoDevelop.Projects.Dom
 		{
 			lock (rwlock)
 			{
-				ClassUpdateInformation classInfo = new ClassUpdateInformation ();
+				TypeUpdateInformation classInfo = new TypeUpdateInformation ();
 				
 				FileEntry fe = files [fileName] as FileEntry;
 				if (fe == null) return;
 				
 				foreach (ClassEntry ce in fe.ClassEntries) {
 					if (ce.Class == null) ce.Class = ReadClass (ce);
-					IClass c = CompoundClass.RemoveFile (ce.Class, fileName);
+					IType c = CompoundClass.RemoveFile (ce.Class, fileName);
 					if (c == null) {
 						classInfo.Removed.Add (ce.Class);
 						RemoveSubclassReferences (ce);
@@ -798,126 +795,126 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
-		protected virtual void OnFileRemoved (string fileName, ClassUpdateInformation classInfo)
+		protected virtual void OnFileRemoved (string fileName, TypeUpdateInformation classInfo)
 		{
 		}
 		
-		public ClassUpdateInformation UpdateClassInformation (ClassCollection newClasses, string fileName)
-		{
-			lock (rwlock)
-			{
-				ClassUpdateInformation res = new ClassUpdateInformation ();
-				
-				FileEntry fe = files [fileName] as FileEntry;
-				if (fe == null) return null;
-				
-				// Get the namespace entry for each class
-				
-				bool[] added = new bool [newClasses.Count];
-				NamespaceEntry[] newNss = new NamespaceEntry [newClasses.Count];
-				for (int n=0; n<newClasses.Count; n++) {
-					string[] path = newClasses[n].Namespace.Split ('.');
-					((DefaultClass)newClasses[n]).SourceProject = SourceEntry;
-					newNss[n] = GetNamespaceEntry (path, path.Length, true, true);
-				}
-				
-				ArrayList newFileClasses = new ArrayList ();
-				
-				if (fe != null)
-				{
-					foreach (ClassEntry ce in fe.ClassEntries)
-					{
-						IClass newClass = null;
-						for (int n=0; n<newClasses.Count && newClass == null; n++) {
-							IClass uc = newClasses [n];
-							if (uc.Name == ce.Name && newNss[n] == ce.NamespaceRef) {
-								newClass = uc;
-								added[n] = true;
-							}
-						}
-						
-						if (newClass != null) {
-							// Class already in the database, update it
-							if (ce.Class == null) ce.Class = ReadClass (ce);
-							RemoveSubclassReferences (ce);
-							ce.Class = CompoundClass.MergeClass (ce.Class, CopyClass (newClass));
-							AddSubclassReferences (ce);							
-							
-							ce.LastGetTime = currentGetTime++;
-							newFileClasses.Add (ce);
-							res.Modified.Add (ce.Class);
-						}
-						else {
-							// Database class not found in the new class list, it has to be deleted
-							IClass c = ce.Class;
-							if (c == null) {
-								ce.Class = ReadClass (ce);
-								c = ce.Class;
-							}
-							IClass removed = CompoundClass.RemoveFile (c, fileName);
-							if (removed != null) {
-								// It's still a compound class
-								ce.Class = removed;
-								AddSubclassReferences (ce);							
-								res.Modified.Add (removed);
-							} else {
-								// It's not a compoudnd class. Remove it.
-								RemoveSubclassReferences (ce);
-								UnresolveSubclasses (ce);
-								res.Removed.Add (c);
-								ce.NamespaceRef.Remove (ce.Name);
-							}
-						}
-					}
-				}
-				
-				if (fe == null) {
-					fe = new FileEntry (fileName);
-					files [fileName] = fe;
-				}
-				
-				for (int n=0; n<newClasses.Count; n++) {
-					if (!added[n]) {
-						IClass c = CopyClass (newClasses[n]);
-						
-						// A ClassEntry may already exist if part of the class is defined in another file
-						ClassEntry ce = newNss[n].GetClass (c.Name, true);
-						if (ce != null) {
-							// The entry exists, just update it
-							if (ce.Class == null) ce.Class = ReadClass (ce);
-							RemoveSubclassReferences (ce);
-							ce.Class = CompoundClass.MergeClass (ce.Class, c);
-							res.Modified.Add (ce.Class);
-						} else {
-							// It's a new class
-							ce = new ClassEntry (c, newNss[n]);
-							newNss[n].Add (c.Name, ce);
-							res.Added.Add (c);
-							ResolveSubclasses (ce);
-						}
-						AddSubclassReferences (ce);							
-						newFileClasses.Add (ce);
-						ce.LastGetTime = currentGetTime++;
-					}
-				}
-				
-				fe.SetClasses (newFileClasses);
-				rootNamespace.Clean ();
-				fe.LastParseTime = DateTime.Now;
-				modified = true;
-				
-				return res;
-			}
-		}
+//		public TypeUpdateInformation UpdateClassInformation (ClassCollection newClasses, string fileName)
+//		{
+//			lock (rwlock)
+//			{
+//				TypeUpdateInformation res = new TypeUpdateInformation ();
+//				
+//				FileEntry fe = files [fileName] as FileEntry;
+//				if (fe == null) return null;
+//				
+//				// Get the namespace entry for each class
+//				
+//				bool[] added = new bool [newClasses.Count];
+//				NamespaceEntry[] newNss = new NamespaceEntry [newClasses.Count];
+//				for (int n=0; n<newClasses.Count; n++) {
+//					string[] path = newClasses[n].Namespace.Split ('.');
+//					((DefaultClass)newClasses[n]).SourceProject = SourceEntry;
+//					newNss[n] = GetNamespaceEntry (path, path.Length, true, true);
+//				}
+//				
+//				ArrayList newFileClasses = new ArrayList ();
+//				
+//				if (fe != null)
+//				{
+//					foreach (ClassEntry ce in fe.ClassEntries)
+//					{
+//						IType newClass = null;
+//						for (int n=0; n<newClasses.Count && newClass == null; n++) {
+//							IType uc = newClasses [n];
+//							if (uc.Name == ce.Name && newNss[n] == ce.NamespaceRef) {
+//								newClass = uc;
+//								added[n] = true;
+//							}
+//						}
+//						
+//						if (newClass != null) {
+//							// Class already in the database, update it
+//							if (ce.Class == null) ce.Class = ReadClass (ce);
+//							RemoveSubclassReferences (ce);
+//							ce.Class = CompoundClass.MergeClass (ce.Class, CopyClass (newClass));
+//							AddSubclassReferences (ce);							
+//							
+//							ce.LastGetTime = currentGetTime++;
+//							newFileClasses.Add (ce);
+//							res.Modified.Add (ce.Class);
+//						}
+//						else {
+//							// Database class not found in the new class list, it has to be deleted
+//							IType c = ce.Class;
+//							if (c == null) {
+//								ce.Class = ReadClass (ce);
+//								c = ce.Class;
+//							}
+//							IType removed = CompoundClass.RemoveFile (c, fileName);
+//							if (removed != null) {
+//								// It's still a compound class
+//								ce.Class = removed;
+//								AddSubclassReferences (ce);							
+//								res.Modified.Add (removed);
+//							} else {
+//								// It's not a compoudnd class. Remove it.
+//								RemoveSubclassReferences (ce);
+//								UnresolveSubclasses (ce);
+//								res.Removed.Add (c);
+//								ce.NamespaceRef.Remove (ce.Name);
+//							}
+//						}
+//					}
+//				}
+//				
+//				if (fe == null) {
+//					fe = new FileEntry (fileName);
+//					files [fileName] = fe;
+//				}
+//				
+//				for (int n=0; n<newClasses.Count; n++) {
+//					if (!added[n]) {
+//						IType c = CopyClass (newClasses[n]);
+//						
+//						// A ClassEntry may already exist if part of the class is defined in another file
+//						ClassEntry ce = newNss[n].GetClass (c.Name, true);
+//						if (ce != null) {
+//							// The entry exists, just update it
+//							if (ce.Class == null) ce.Class = ReadClass (ce);
+//							RemoveSubclassReferences (ce);
+//							ce.Class = CompoundClass.MergeClass (ce.Class, c);
+//							res.Modified.Add (ce.Class);
+//						} else {
+//							// It's a new class
+//							ce = new ClassEntry (c, newNss[n]);
+//							newNss[n].Add (c.Name, ce);
+//							res.Added.Add (c);
+//							ResolveSubclasses (ce);
+//						}
+//						AddSubclassReferences (ce);
+//						newFileClasses.Add (ce);
+//						ce.LastGetTime = currentGetTime++;
+//					}
+//				}
+//				
+//				fe.SetClasses (newFileClasses);
+//				rootNamespace.Clean ();
+//				fe.LastParseTime = DateTime.Now;
+//				modified = true;
+//				
+//				return res;
+//			}
+//		}
 		
 		void ResolveSubclasses (ClassEntry ce)
 		{
 			// If this type is registered in the unresolved subclass table, now those subclasses
 			// can properly be assigned.
-			ArrayList subs = (ArrayList) unresolvedSubclassTable [ce.Class.FullyQualifiedName];
+			ArrayList subs = (ArrayList) unresolvedSubclassTable [ce.Class.FullName];
 			if (subs != null) {
 				ce.Subclasses = subs;
-				unresolvedSubclassTable.Remove (ce.Class.FullyQualifiedName);
+				unresolvedSubclassTable.Remove (ce.Class.FullName);
 			}
 		}
 		
@@ -926,7 +923,7 @@ namespace MonoDevelop.Projects.Dom
 			// Called when a ClassEntry is removed. If there are registered subclass, add them
 			// to the unresolved subclass table
 			if (ce.Subclasses != null)
-				unresolvedSubclassTable [ce.Class.FullyQualifiedName] = ce.Subclasses;
+				unresolvedSubclassTable [ce.Class.FullName] = ce.Subclasses;
 		}
 		
 		void AddSubclassReferences (ClassEntry ce)
@@ -947,11 +944,11 @@ namespace MonoDevelop.Projects.Dom
 					subs.Add (ce);
 				}
 			}
-			foreach (IClass cls in ce.Class.InnerClasses)
+			foreach (IType cls in ce.Class.InnerClasses)
 				AddInnerSubclassReferences (cls);
 		}
 		
-		void AddInnerSubclassReferences (IClass cls)
+		void AddInnerSubclassReferences (IType cls)
 		{
 			foreach (IReturnType type in cls.BaseTypes) {
 				string bt = type.FullName;
@@ -962,9 +959,9 @@ namespace MonoDevelop.Projects.Dom
 					subs = new ArrayList ();
 					unresolvedSubclassTable [bt] = subs;
 				}
-				subs.Add (cls.FullyQualifiedName);
+				subs.Add (cls.FullName);
 			}
-			foreach (IClass ic in cls.InnerClasses)
+			foreach (IType ic in cls.InnerClasses)
 				AddInnerSubclassReferences (ic);
 		}
 		
@@ -982,18 +979,18 @@ namespace MonoDevelop.Projects.Dom
 						unresolvedSubclassTable.Remove (type.FullName);
 				}
 			}
-			foreach (IClass cls in ce.Class.InnerClasses)
+			foreach (IType cls in ce.Class.InnerClasses)
 				RemoveInnerSubclassReferences (cls);
 		}
 		
-		void RemoveInnerSubclassReferences (IClass cls)
+		void RemoveInnerSubclassReferences (IType cls)
 		{
 			foreach (IReturnType type in cls.BaseTypes) {
 				ArrayList subs = (ArrayList) unresolvedSubclassTable [type.FullName];
 				if (subs != null)
 					subs.Remove (type.FullName);
 			}
-			foreach (IClass ic in cls.InnerClasses)
+			foreach (IType ic in cls.InnerClasses)
 				RemoveInnerSubclassReferences (ic);
 		}
 		
@@ -1013,7 +1010,7 @@ namespace MonoDevelop.Projects.Dom
 			return null;
 		}
 		
-		public void GetNamespaceContents (LanguageItemCollection list, string subNameSpace, bool caseSensitive)
+		public void GetNamespaceContents (List<IMember> list, string subNameSpace, bool caseSensitive)
 		{
 			lock (rwlock)
 			{
@@ -1045,7 +1042,7 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
-		public IClass[] GetClassList ()
+		public IType[] GetClassList ()
 		{
 			lock (rwlock)
 			{
@@ -1053,31 +1050,31 @@ namespace MonoDevelop.Projects.Dom
 				foreach (ClassEntry ce in GetAllClasses ()) {
 					list.Add (GetClass (ce));
 				}
-				return (IClass[]) list.ToArray (typeof(IClass));
+				return (IType[]) list.ToArray (typeof(IType));
 			}
 		}
 		
-		public IEnumerable<IClass> GetClassList (bool includeInner, string[] namespaces)
+		public IEnumerable<IType> GetClassList (bool includeInner, string[] namespaces)
 		{
 			lock (rwlock)
 			{
 				IList nsList = namespaces;
 				ArrayList list = new ArrayList ();
 				foreach (ClassEntry ce in GetAllClasses ()) {
-					IClass cls = GetClass (ce);
+					IType cls = GetClass (ce);
 					if (nsList != null && !nsList.Contains (cls.Namespace))
 						continue;
 					list.Add (cls);
 					if (includeInner && ((ce.ContentFlags & ContentFlags.HasInnerClasses) != 0))
 						GetAllInnerClassesRec (list, cls);
 				}
-				return (IClass[]) list.ToArray (typeof(IClass));
+				return (IType[]) list.ToArray (typeof(IType));
 			}
 		}
 		
-		void GetAllInnerClassesRec (ArrayList list, IClass cls)
+		void GetAllInnerClassesRec (ArrayList list, IType cls)
 		{
-			foreach (IClass ic in cls.InnerClasses) {
+			foreach (IType ic in cls.InnerClasses) {
 				list.Add (ic);
 				GetAllInnerClassesRec (list, ic);
 			}
@@ -1113,27 +1110,27 @@ namespace MonoDevelop.Projects.Dom
 			get { return references; }
 		}
 		
-		public IClass[] GetFileContents (string fileName)
+		public IType[] GetFileContents (string fileName)
 		{
 			FileEntry fe = GetFile (fileName);
-			if (fe == null) return new IClass [0];
+			if (fe == null) return new IType [0];
 
 			ArrayList classes = new ArrayList ();
 			foreach (ClassEntry ce in fe.ClassEntries) {
 				classes.Add (GetClass (ce));
 			}
-			return (IClass[]) classes.ToArray (typeof(IClass));
+			return (IType[]) classes.ToArray (typeof(IType));
 		}
 		
-		IClass CopyClass (IClass cls)
+		IType CopyClass (IType cls)
 		{
 			MemoryStream ms = new MemoryStream ();
 			BinaryWriter bw = new BinaryWriter (ms);
-			PersistentClass.WriteTo (cls, bw, parserDatabase.DefaultNameEncoder);
+			DomPersistence.Write(bw, DefaultNameEncoder, cls);
 			bw.Flush ();
 			ms.Position = 0;
 			BinaryReader br = new BinaryReader (ms);
-			DefaultClass ret = PersistentClass.Read (br, parserDatabase.DefaultNameDecoder);
+			IType ret = DomPersistence.ReadType (br, DefaultNameDecoder);
 			ret.SourceProject = cls.SourceProject;
 			return ret;
 		}
@@ -1176,6 +1173,110 @@ namespace MonoDevelop.Projects.Dom
 			else
 				return null;
 		}
+		
+		static StringNameTable DefaultNameEncoder = new StringNameTable (sharedNameTable);
+		static readonly string[] sharedNameTable = new string[] {
+			"", // 505195
+			"System.Void", // 116020
+			"To be added", // 78598
+			"System.Int32", // 72669
+			"System.String", // 72097
+			"System.Object", // 48530
+			"System.Boolean", // 46200
+			".ctor", // 39938
+			"System.IntPtr", // 35184
+			"To be added.", // 19082
+			"value", // 11906
+			"System.Byte", // 8524
+			"To be added: an object of type 'string'", // 7928
+			"e", // 7858
+			"raw", // 7830
+			"System.IAsyncResult", // 7760
+			"System.Type", // 7518
+			"name", // 7188
+			"object", // 6982
+			"System.UInt32", // 6966
+			"index", // 6038
+			"To be added: an object of type 'int'", // 5196
+			"System.Int64", // 4166
+			"callback", // 4158
+			"System.EventArgs", // 4140
+			"method", // 4030
+			"System.Enum", // 3980
+			"value__", // 3954
+			"Invoke", // 3906
+			"result", // 3856
+			"System.AsyncCallback", // 3850
+			"System.MulticastDelegate", // 3698
+			"BeginInvoke", // 3650
+			"EndInvoke", // 3562
+			"node", // 3416
+			"sender", // 3398
+			"context", // 3310
+			"System.EventHandler", // 3218
+			"System.Double", // 3206
+			"type", // 3094
+			"x", // 3056
+			"System.Single", // 2940
+			"data", // 2930
+			"args", // 2926
+			"System.Char", // 2813
+			"Gdk.Key", // 2684
+			"ToString", // 2634
+			"'a", // 2594
+			"System.Drawing.Color", // 2550
+			"y", // 2458
+			"To be added: an object of type 'object'", // 2430
+			"System.DateTime", // 2420
+			"message", // 2352
+			"GLib.GType", // 2292
+			"o", // 2280
+			"a <see cref=\"T:System.Int32\" />", // 2176
+			"path", // 2062
+			"obj", // 2018
+			"Nemerle.Core.list`1", // 1950
+			"System.Windows.Forms", // 1942
+			"System.Collections.ArrayList", // 1918
+			"a <see cref=\"T:System.String\" />", // 1894
+			"key", // 1868
+			"Add", // 1864
+			"arg0", // 1796
+			"System.IO.Stream", // 1794
+			"s", // 1784
+			"arg1", // 1742
+			"provider", // 1704
+			"System.UInt64", // 1700
+			"System.Drawing.Rectangle", // 1684
+			"System.IFormatProvider", // 1684
+			"gch", // 1680
+			"System.Exception", // 1652
+			"Equals", // 1590
+			"System.Drawing.Pen", // 1584
+			"count", // 1548
+			"System.Collections.IEnumerator", // 1546
+			"info", // 1526
+			"Name", // 1512
+			"System.Attribute", // 1494
+			"gtype", // 1470
+			"To be added: an object of type 'Type'", // 1444
+			"System.Collections.Hashtable", // 1416
+			"array", // 1380
+			"System.Int16", // 1374
+			"Gtk", // 1350
+			"System.ComponentModel.ITypeDescriptorContext", // 1344
+			"System.Collections.ICollection", // 1330
+			"Dispose", // 1330
+			"Gtk.Widget", // 1326
+			"System.Runtime.Serialization.StreamingContext", // 1318
+			"Nemerle.Compiler.Parsetree.PExpr", // 1312
+			"System.Guid", // 1310
+			"i", // 1302
+			"Gtk.TreeIter", // 1300
+			"text", // 1290
+			"System.Runtime.Serialization.SerializationInfo", // 1272
+			"state", // 1264
+			"Remove" // 1256
+		};		
 	}
 }*/
 
@@ -1190,7 +1291,6 @@ namespace MonoDevelop.Projects.Dom
 	{
 		string GetStringValue (int id);
 	}
-	
 	
 	internal class StringNameTable: INameEncoder, INameDecoder
 	{

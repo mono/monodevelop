@@ -37,6 +37,7 @@ FILES =  \
 	MonoDevelop.Projects.Dom.Parser/ProjectParserService.cs \
 	MonoDevelop.Projects.Dom/AbstractMember.cs \
 	MonoDevelop.Projects.Dom/AttributeTarget.cs \
+	MonoDevelop.Projects.Dom/ClassEntry.cs \
 	MonoDevelop.Projects.Dom/ClassType.cs \
 	MonoDevelop.Projects.Dom/CodeCompletionDatabase.cs \
 	MonoDevelop.Projects.Dom/Comment.cs \
@@ -56,6 +57,7 @@ FILES =  \
 	MonoDevelop.Projects.Dom/DomType.cs \
 	MonoDevelop.Projects.Dom/DomUsing.cs \
 	MonoDevelop.Projects.Dom/Error.cs \
+	MonoDevelop.Projects.Dom/FileEntry.cs \
 	MonoDevelop.Projects.Dom/IAttribute.cs \
 	MonoDevelop.Projects.Dom/ICompilationUnit.cs \
 	MonoDevelop.Projects.Dom/IDomVisitor.cs \
@@ -69,8 +71,12 @@ FILES =  \
 	MonoDevelop.Projects.Dom/IType.cs \
 	MonoDevelop.Projects.Dom/IUsing.cs \
 	MonoDevelop.Projects.Dom/Modifiers.cs \
+	MonoDevelop.Projects.Dom/NamespaceEntry.cs \
 	MonoDevelop.Projects.Dom/ParameterModifiers.cs \
+	MonoDevelop.Projects.Dom/ReferenceEntry.cs \
+	MonoDevelop.Projects.Dom/Tag.cs \
 	MonoDevelop.Projects.Dom/TypeParameter.cs \
+	MonoDevelop.Projects.Dom/TypeUpdateInformation.cs \
 	MonoDevelop.Projects.Extensions/DataTypeCodon.cs \
 	MonoDevelop.Projects.Extensions/DotNetProjectNode.cs \
 	MonoDevelop.Projects.Extensions/DotNetProjectSubtypeNode.cs \

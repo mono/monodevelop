@@ -314,6 +314,12 @@
     <File name="MonoDevelop.Projects.Dom.Parser/ProjectParserService.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Dom/CodeCompletionDatabase.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Dom/DomPersistence.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Projects.Dom/FileEntry.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Projects.Dom/ClassEntry.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Projects.Dom/NamespaceEntry.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Projects.Dom/Tag.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Projects.Dom/TypeUpdateInformation.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Projects.Dom/ReferenceEntry.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="False" refto="monodoc, Version=1.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />

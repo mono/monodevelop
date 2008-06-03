@@ -1,3 +1,20 @@
+2008-06-03  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Dom/ReferenceEntry.cs,
+	  MonoDevelop.Projects.Dom/DomType.cs,
+	  MonoDevelop.Projects.Dom/DomReturnType.cs,
+	  MonoDevelop.Projects.Dom/ClassEntry.cs,
+	  MonoDevelop.Projects.Dom/Tag.cs,
+	  MonoDevelop.Projects.Dom/NamespaceEntry.cs,
+	  MonoDevelop.Projects.Dom/DomPersistence.cs,
+	  MonoDevelop.Projects.Dom/CodeCompletionDatabase.cs,
+	  MonoDevelop.Projects.Dom/IReturnType.cs,
+	  MonoDevelop.Projects.Dom/IType.cs,
+	  MonoDevelop.Projects.Dom/TypeUpdateInformation.cs,
+	  MonoDevelop.Projects.Dom/FileEntry.cs, MonoDevelop.Projects.mdp,
+	  MonoDevelop.Projects.Parser/CodeCompletionDatabase.cs: Worked on
+	  dom persistence.
+
 2008-06-02  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* md1format.xml: Add missing field.
