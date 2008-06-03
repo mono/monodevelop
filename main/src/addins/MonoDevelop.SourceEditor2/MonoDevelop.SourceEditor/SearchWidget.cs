@@ -218,7 +218,7 @@ namespace MonoDevelop.SourceEditor
 		}		
 		#endregion
 		
-		public override void Dispose ()
+		protected override void OnDestroyed ()
 		{
 			SearchPatternChanged -= UpdateSearchPattern;
 			if (searchHistory != null) {
@@ -226,7 +226,7 @@ namespace MonoDevelop.SourceEditor
 				searchHistory = null;
 			}
 			widget = null;
-			base.Dispose ();
+			base.OnDestroyed ();
 		}
 		
 		internal static List<string> GetHistory (string propertyKey)

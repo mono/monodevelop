@@ -100,12 +100,6 @@ namespace MonoDevelop.Components
 		{
 			PropertyService.Set (LastPathProperty, this.CurrentFolder);
 		}
-		
-		public override void Dispose ()
-		{
-			Destroy ();
-			base.Dispose ();
-		}
 	}
 }
 

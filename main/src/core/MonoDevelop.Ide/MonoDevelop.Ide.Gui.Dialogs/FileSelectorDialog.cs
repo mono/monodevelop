@@ -315,14 +315,14 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			FillViewers ();
 		}
 		
-		public override void Dispose ()
+		protected override void OnDestroyed ()
 		{
 			// Save active filter
 			string pattern = filterPairs[this.Filter.Name] as string;
 			if (pattern != null)
 				PropertyService.Set ("Monodevelop.FileSelector.LastPattern", pattern);
 
-			base.Dispose ();
+			base.OnDestroyed ();
 		}
 	}
 }

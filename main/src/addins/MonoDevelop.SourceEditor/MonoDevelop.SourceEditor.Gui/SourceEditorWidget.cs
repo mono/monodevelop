@@ -56,10 +56,10 @@ namespace MonoDevelop.SourceEditor.Gui
 			Add (View);
 		}
 		
-		public override void Dispose ()
+		protected override void OnDestroyed ()
 		{
 			Buffer.Dispose ();
-			base.Dispose ();
+			base.OnDestroyed ();
 		}
 /* FIXME GTKSV2
 		public void ExecutingAt (int linenumber)

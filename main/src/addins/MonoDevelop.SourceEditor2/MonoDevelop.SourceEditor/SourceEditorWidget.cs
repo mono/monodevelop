@@ -457,21 +457,19 @@ namespace MonoDevelop.SourceEditor
 		}
 		#endregion
 		
-		public override void Dispose ()
+		protected override void OnDestroyed ()
 		{
-			base.Dispose ();
-			
-			if (isDisposed)
-				return;
-			
-			isDisposed = true;
-			StopParseInfoThread ();
-			
-			this.textEditor = null;
-			this.lastActiveEditor = null;
-			this.splittedTextEditor = null;
-			IdeApp.Workspace.ParserDatabase.ParseInformationChanged -= UpdateClassBrowser;
-			IdeApp.Workspace.ParserDatabase.ParseInformationChanged -= OnParseInformationChanged;
+			if (!isDisposed) {
+				isDisposed = true;
+				StopParseInfoThread ();
+				
+				this.textEditor = null;
+				this.lastActiveEditor = null;
+				this.splittedTextEditor = null;
+				IdeApp.Workspace.ParserDatabase.ParseInformationChanged -= UpdateClassBrowser;
+				IdeApp.Workspace.ParserDatabase.ParseInformationChanged -= OnParseInformationChanged;
+			}			
+			base.OnDestroyed ();
 		}
 		
 		void UpdateClassBrowser (object sender, ParseInformationEventArgs args)

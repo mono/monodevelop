@@ -51,11 +51,11 @@ namespace MonoDevelop.Components {
 			int response = fd.Run ();
 			
 			if (response == (int) ResponseType.Ok) {
-				fd.Hide ();
+				fd.Destroy ();
 				return fd.Filename;
 			}
 
-			fd.Hide ();			
+			fd.Destroy ();			
 
 			return null;
 		}

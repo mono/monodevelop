@@ -901,17 +901,14 @@ namespace MonoDevelop.Gettext
 		}
 #endregion
 		
-		public override void Dispose ()
+		protected override void OnDestroyed ()
 		{
 			updateIsRunning = false;
 			
 			widgets.Remove (this);
-			if (this.headersEditor != null) {
-				this.headersEditor.Destroy ();
-				this.headersEditor = null;
-			}
 			ClearTasks ();
-			base.Dispose ();
+			
+			base.OnDestroyed ();
 		}
 #region Tasks
 		public class TranslationTask : Task

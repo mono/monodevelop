@@ -194,7 +194,7 @@ namespace MonoDevelop.SourceEditor
 			};
 		}
 		
-		public override void Dispose ()
+		protected override void OnDestroyed ()
 		{
 			SearchWidget.SearchPatternChanged -= UpdateSearchPattern;
 			ReplacePatternChanged -= UpdateReplacePattern;
@@ -208,7 +208,7 @@ namespace MonoDevelop.SourceEditor
 				replaceHistory = null;
 			}
 			widget = null;
-			base.Dispose ();
+			base.OnDestroyed ();
 		}
 		
 		public void Focus ()

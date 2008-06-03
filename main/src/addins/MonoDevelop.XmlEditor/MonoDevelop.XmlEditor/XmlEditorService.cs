@@ -397,9 +397,9 @@ namespace MonoDevelop.XmlEditor
 		
 		public static string BrowseForStylesheetFile ()
 		{
-			using (MonoDevelop.Components.FileSelector fs =
-			    new MonoDevelop.Components.FileSelector (GettextCatalog.GetString ("Select XSLT Stylesheet")))
-			{
+			MonoDevelop.Components.FileSelector fs =
+			    new MonoDevelop.Components.FileSelector (GettextCatalog.GetString ("Select XSLT Stylesheet"));
+			try {
 				Gtk.FileFilter xmlFiles = new Gtk.FileFilter ();
 				xmlFiles.Name = "XML Files";
 				xmlFiles.AddMimeType("text/xml");
@@ -413,15 +413,18 @@ namespace MonoDevelop.XmlEditor
 				
 				return browseCommon (fs);
 			}
+			finally {
+				fs.Destroy ();
+			}
 		}
 		
 		//Allows the user to browse the file system for a schema. Returns the schema file 
 		//name the user selected; otherwise an empty string.
 		public static string BrowseForSchemaFile ()
 		{
-			using (MonoDevelop.Components.FileSelector fs =
-			    new MonoDevelop.Components.FileSelector (GettextCatalog.GetString ("Select XML Schema")))
-			{
+			MonoDevelop.Components.FileSelector fs =
+			    new MonoDevelop.Components.FileSelector (GettextCatalog.GetString ("Select XML Schema"));
+			try {
 				Gtk.FileFilter xmlFiles = new Gtk.FileFilter ();
 				xmlFiles.Name = "XML Files";
 				xmlFiles.AddMimeType("text/xml");
@@ -430,6 +433,8 @@ namespace MonoDevelop.XmlEditor
 				fs.AddFilter (xmlFiles);
 				
 				return browseCommon (fs);
+			} finally {
+				fs.Destroy ();
 			}
 		}
 		

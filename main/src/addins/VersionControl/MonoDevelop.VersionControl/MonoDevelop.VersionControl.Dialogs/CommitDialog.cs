@@ -161,11 +161,5 @@ namespace MonoDevelop.VersionControl.Dialogs
 			else
 				selected.Remove (vinfo.LocalPath);
 		}
-		
-		public override void Dispose ()
-		{
-			base.Dispose ();
-			Destroy ();
-		}
 	}
 }

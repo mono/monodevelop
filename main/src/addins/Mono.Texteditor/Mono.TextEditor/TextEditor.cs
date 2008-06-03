@@ -437,8 +437,10 @@ namespace Mono.TextEditor
 			return (int)key | (int)m << 16;
 		}
 		
-		public override void Dispose ()
+		protected override void OnDestroyed ()
 		{
+			base.OnDestroyed ();
+			
 			if (isDisposed)
 				return;
 			this.isDisposed = true;
@@ -485,7 +487,6 @@ namespace Mono.TextEditor
 				this.textEditorData.Dispose ();
 				this.textEditorData = null;
 			}
-			base.Dispose ();
 		}
 		
 		internal void RedrawLine (int logicalLine)

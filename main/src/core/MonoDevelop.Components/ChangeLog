@@ -1,3 +1,10 @@
+2008-06-03  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Components/FileSelector.cs,
+	  MonoDevelop.Components/FileEntry.cs: Use the OnDestroyed event
+	  instead of Dispose, since with the latest changes in gtk#, Dispose
+	  is not called anymore when a widget is destroyed.
+
 2008-05-23  Mike Kestner <mkestner@novell.com> 
 
 	* MonoDevelop.Components/CommandManager.cs: reverting r72068 to avoid

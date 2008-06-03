@@ -141,7 +141,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			headerLayout.FontDescription = Pango.FontDescription.FromString ("Ahafoni CLM Bold 10");
 		}
 		
-		public override void Dispose ()
+		protected override void OnDestroyed ()
 		{
 			HideTooltipWindow ();
 			if (this.layout != null) {
@@ -152,7 +152,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				this.headerLayout.Dispose ();
 				this.headerLayout = null;
 			}
-			base.Dispose ();
+			base.OnDestroyed ();
 		}
 		
 		static Cairo.Color Convert (Gdk.Color color)
@@ -782,15 +782,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				label.Xpad = 3;
 				label.Ypad = 3;
 				Add (label);
-			}
-			
-			public override void Dispose ()
-			{
-				if (label != null) {
-					label.Dispose ();
-					label = null;
-				}
-				base.Dispose ();
 			}
 		}
 		#endregion

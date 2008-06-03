@@ -242,7 +242,7 @@ namespace MonoDevelop.SourceEditor.Gui
 			InitAutoCorrectionValues();
 		}
 		
-		public override void Dispose ()
+		protected override void OnDestroyed ()
 		{
 			if (showTipScheduled)
 				GLib.Source.Remove (tipTimeoutId);
@@ -252,7 +252,7 @@ namespace MonoDevelop.SourceEditor.Gui
 			buf.Changed -= new EventHandler (BufferChanged);
 			CleanAutoCorrectionValues();
 			
-			base.Dispose ();
+			base.OnDestroyed ();
 		}
 		
 		public ITextEditorExtension AttachExtension (ITextEditorExtension extension)

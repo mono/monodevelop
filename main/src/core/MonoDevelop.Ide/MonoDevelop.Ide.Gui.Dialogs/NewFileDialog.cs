@@ -97,12 +97,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			}
 		}
 		
-		public override void Dispose ()
-		{
-			Destroy ();
-			base.Dispose ();
-		}
-		
 		void InitializeView()
 		{
 			PixbufList smalllist  = new PixbufList();

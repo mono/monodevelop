@@ -113,13 +113,13 @@ namespace MonoDevelop.Core.Gui.Dialogs
 		protected virtual void InitializeContext (ExtensionContext extensionContext)
 		{
 		}
-		
-		public override void Dispose ()
+
+		protected override void OnDestroyed()
 		{
 			foreach (PanelInstance pi in panels.Values)
 				if (pi.Widget != null)
 					pi.Widget.Destroy ();
-			base.Dispose ();
+			base.OnDestroyed ();
 		}
 		
 		public void SelectPanel (string id)

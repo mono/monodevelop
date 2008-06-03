@@ -1,3 +1,10 @@
+2008-06-03  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.SourceEditor.Gui/SourceEditorWidget.cs,
+	  MonoDevelop.SourceEditor.Gui/SourceEditorView.cs: Use the
+	  OnDestroyed event instead of Dispose, since with the latest changes
+	  in gtk#, Dispose is not called anymore when a widget is destroyed.
+
 2008-05-21  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.SourceEditor.Gui/SourceEditorView.cs,

@@ -105,9 +105,14 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid.PropertyEditors
 			}
 		}
 		
-		public override void Dispose ()
+		protected override void OnDestroyed ()
 		{
-			base.Dispose ();
+			base.OnDestroyed ();
+			((IDisposable)this).Dispose ();
+		}
+
+		void IDisposable.Dispose ()
+		{
 			if (!disposed && initialText != entry.Text) {
 				TextChanged (null, null);
 			}

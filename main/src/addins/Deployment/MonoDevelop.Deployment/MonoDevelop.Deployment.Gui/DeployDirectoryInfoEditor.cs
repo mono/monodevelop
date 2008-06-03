@@ -53,11 +53,6 @@ namespace MonoDevelop.Deployment
 			}
 		}
 
-		public override void Dispose ()
-		{
-			base.Dispose ();
-		}
-
 		public object Value {
 			get {
 				if (combo.Active != -1)

@@ -1,5 +1,14 @@
 2008-06-03  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Ide.Gui.Dialogs/SplashScreen.cs,
+	  MonoDevelop.Ide.Gui.Dialogs/FileSelectorDialog.cs,
+	  MonoDevelop.Ide.Gui.Dialogs/NewFileDialog.cs,
+	  MonoDevelop.Ide.Gui/ProjectOperations.cs: Use the OnDestroyed event
+	  instead of Dispose, since with the latest changes in gtk#, Dispose
+	  is not called anymore when a widget is destroyed.
+
+2008-06-03  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Ide.Gui.Pads/DefaultMonitorPad.cs: Make sure the pad
 	  can't be reused once the monitor operation has started.
 	* MonoDevelop.Ide.Debugging/DebugExecutionHandlerFactory.cs,

@@ -506,11 +506,14 @@ namespace MonoDevelop.Ide.Gui
 		
 		public void CreateProjectFile (Project parentProject, string basePath, string selectedTemplateId)
 		{
-			using (NewFileDialog nfd = new NewFileDialog (parentProject, basePath)) {
+			NewFileDialog nfd = null;
+			try {
+				nfd = new NewFileDialog (parentProject, basePath);
 				if (selectedTemplateId != null)
 					nfd.SelectTemplate (selectedTemplateId);
 				nfd.Run ();
-				nfd.Dispose ();
+			} finally {
+				if (nfd != null) nfd.Destroy ();
 			}
 		}
 

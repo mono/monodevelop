@@ -1,3 +1,13 @@
+2008-06-03  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.SourceEditor/SourceEditorWidget.cs,
+	  MonoDevelop.SourceEditor/SearchAndReplaceWidget.cs,
+	  MonoDevelop.SourceEditor/SearchWidget.cs,
+	  gtk-gui/MonoDevelop.SourceEditor.OptionPanels.GeneralOptionsPanel.cs:
+	  Use the OnDestroyed event instead of Dispose, since with the latest
+	  changes in gtk#, Dispose is not called anymore when a widget is
+	  destroyed.
+
 2008-05-29  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.SourceEditor/SourceEditorView.cs: Fix search issue with

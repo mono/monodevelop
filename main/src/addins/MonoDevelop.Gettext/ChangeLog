@@ -1,5 +1,12 @@
 2008-06-03  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Gettext.Editor/POEditorWidget.cs, gtk-gui/gui.stetic: Use
+	  the OnDestroyed event instead of Dispose, since with the latest
+	  changes in gtk#, Dispose is not called anymore when a widget is
+	  destroyed.
+
+2008-06-03  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Gettext/TranslationProject.cs: Track api changes.
 
 2008-05-30  Mike Krüger <mkrueger@novell.com> 
