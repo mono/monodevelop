@@ -1,3 +1,19 @@
+2008-06-03  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects/WorkspaceItem.cs,
+	  MonoDevelop.Projects/ProjectService.cs,
+	  MonoDevelop.Projects/SolutionItem.cs,
+	  MonoDevelop.Projects/DotNetProject.cs,
+	  MonoDevelop.Projects/ProjectServiceExtension.cs: Added method for
+	  checking if a solution item can be executed for the given execution
+	  context.
+	* MonoDevelop.Projects/Solution.cs,
+	  MonoDevelop.Projects/ExecutionContext.cs,
+	  MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectHandler.cs,
+	  MonoDevelop.Projects.Formats.MSBuild/SlnFileFormat.cs,
+	  MonoDevelop.Projects.Formats.MD1/CmbxFileFormat.cs: Added support
+	  for projects with multiple startup items.
+
 2008-06-03  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom/ReferenceEntry.cs,

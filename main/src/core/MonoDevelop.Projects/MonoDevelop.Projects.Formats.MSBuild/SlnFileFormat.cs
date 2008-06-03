@@ -177,7 +177,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				}
 				
 				//Write custom properties
-				MSBuildSerializer ser = new MSBuildSerializer ();
+				MSBuildSerializer ser = new MSBuildSerializer (solution.FileName);
 				DataItem data = (DataItem) ser.Serialize (solution, typeof(Solution));
 				if (data.HasItemData) {
 					sw.WriteLine ("\tGlobalSection(MonoDevelopProperties) = preSolution");
@@ -242,7 +242,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 						ce.ItemId);
 					
 					//Write custom properties
-					MSBuildSerializer ser = new MSBuildSerializer ();
+					MSBuildSerializer ser = new MSBuildSerializer (folder.ParentSolution.FileName);
 					DataItem data = (DataItem) ser.Serialize (ce, typeof(SolutionFolder));
 					if (data.HasItemData) {
 						writer.WriteLine ("\tProjectSection(MonoDevelopProperties) = preProject");
@@ -312,7 +312,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			
 			// Deserialize the object
 			DataItem it = ReadDataItem (start, end - start + 1, lines);
-			MSBuildSerializer ser = new MSBuildSerializer ();
+			MSBuildSerializer ser = new MSBuildSerializer (sln.FileName);
 			ser.SerializationContext.BaseFile = sln.FileName;
 			ser.Deserialize (item, it);
 			
@@ -868,7 +868,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		void LoadMonoDevelopProperties (Section sec, List<string> lines, Solution sln, IProgressMonitor monitor)
 		{
 			DataItem it = ReadDataItem (sec, lines);
-			MSBuildSerializer ser = new MSBuildSerializer ();
+			MSBuildSerializer ser = new MSBuildSerializer (sln.FileName);
 			ser.SerializationContext.BaseFile = sln.FileName;
 			ser.Deserialize (sln, it);
 		}
@@ -879,7 +879,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			if (config == null)
 				return;
 			DataItem it = ReadDataItem (sec, lines);
-			MSBuildSerializer ser = new MSBuildSerializer ();
+			MSBuildSerializer ser = new MSBuildSerializer (sln.FileName);
 			ser.Deserialize (config, it);
 		}
 		

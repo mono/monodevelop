@@ -37,6 +37,12 @@ namespace MonoDevelop.Projects
 		IExecutionHandlerFactory executionHandlerFactory;
 		IConsoleFactory consoleFactory;
 		
+		public ExecutionContext (IExecutionMode executionMode, IConsoleFactory consoleFactory)
+		{
+			this.executionHandlerFactory = executionMode.HandlerFactory;
+			this.consoleFactory = consoleFactory;
+		}
+		
 		public ExecutionContext (IExecutionHandlerFactory executionHandlerFactory, IConsoleFactory consoleFactory)
 		{
 			this.executionHandlerFactory = executionHandlerFactory;

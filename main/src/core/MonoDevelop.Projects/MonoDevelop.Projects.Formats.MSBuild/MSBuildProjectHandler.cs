@@ -716,7 +716,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		
 		internal virtual MSBuildSerializer CreateSerializer ()
 		{
-			return new MSBuildSerializer ();
+			return new MSBuildSerializer (EntityItem.FileName);
 		}
 		
 		static readonly MSBuildElementOrder globalConfigOrder = new MSBuildElementOrder (
@@ -744,9 +744,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		public DataItem InternalItemProperties = new DataItem ();
 		public DataItem ExternalItemProperties = new DataItem ();
 		
-		public MSBuildSerializer (): base (MSBuildProjectService.DataContext)
+		public MSBuildSerializer (string baseFile): base (MSBuildProjectService.DataContext)
 		{
 			// Use windows separators
+			SerializationContext.BaseFile = baseFile;
 			SerializationContext.DirectorySeparatorChar = '\\';
 		}
 		

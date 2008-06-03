@@ -93,8 +93,19 @@ namespace MonoDevelop.Projects.Formats.MD1
 			
 			// Check startup mode
 			CombineStartupMode startupMode = (CombineStartupMode) obj.ExtendedProperties ["StartMode"];
-			if (startupMode != null && !startupMode.SingleStartup) {
-				monitor.ReportWarning ("Multiple project startup mode not supported.");
+			if (startupMode != null) {
+				sol.SingleStartup = startupMode.SingleStartup;
+				if (startupMode.SingleStartup)
+					sol.StartupItem = sol.FindProjectByName (startupMode.StartEntryName);
+				else if (startupMode.Entries != null) {
+					foreach (CombineStartupEntry cse in startupMode.Entries) {
+						if (cse.Type == "Execute") {
+							SolutionEntityItem it = sol.FindProjectByName (cse.Entry);
+							if (it != null)
+								sol.MultiStartupItems.Add (it);
+						}
+					}
+				}
 			}
 			
 			return obj;
@@ -273,9 +284,29 @@ namespace MonoDevelop.Projects.Formats.MD1
 				startupMode.Entries.Clear ();
 			}
 			
-			startupMode.SingleStartup = true;
-			if (startupMode.StartEntryName == null && folder.Items.Count > 0)
-				startupMode.StartEntryName = folder.Items [0].Name;
+			if (folder.IsRoot) {
+				startupMode.SingleStartup = folder.ParentSolution.SingleStartup;
+				if (startupMode.SingleStartup) {
+					if (folder.ParentSolution.StartupItem != null)
+						startupMode.StartEntryName = folder.ParentSolution.StartupItem.Name;
+					else
+						startupMode.StartEntryName = null;
+				} else {
+					foreach (SolutionEntityItem it in folder.ParentSolution.GetAllSolutionItems<SolutionEntityItem> ()) {
+						CombineStartupEntry cse = new CombineStartupEntry ();
+						cse.Entry = it.Name;
+						if (folder.ParentSolution.MultiStartupItems.Contains (it))
+							cse.Type = "Execute";
+						else
+							cse.Type = "None";
+						startupMode.Entries.Add (cse);
+					}
+				}
+			} else {
+				startupMode.SingleStartup = true;
+				if (startupMode.StartEntryName == null && folder.Items.Count > 0)
+					startupMode.StartEntryName = folder.Items [0].Name;
+			}
 			
 			// Configurations
 			
@@ -303,10 +334,6 @@ namespace MonoDevelop.Projects.Formats.MD1
 						cc.Entries.Add (ce);
 					}
 				}
-				CombineStartupEntry startupEntry = new CombineStartupEntry ();
-				startupEntry.Type = "None";
-				startupEntry.Entry = it.Name;
-				startupMode.Entries.Add (startupEntry);
 			}
 		}
 		

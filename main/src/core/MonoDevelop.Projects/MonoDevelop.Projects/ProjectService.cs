@@ -648,6 +648,24 @@ namespace MonoDevelop.Projects
 				throw new InvalidOperationException ("Unknown item type: " + item);
 		}
 		
+		public override bool CanExecute (IBuildTarget item, ExecutionContext context, string configuration)
+		{
+			if (item is SolutionEntityItem) {
+				SolutionEntityItem entry = (SolutionEntityItem) item;
+				SolutionItemConfiguration conf = entry.GetConfiguration (configuration) as SolutionItemConfiguration;
+				if (conf != null && conf.CustomCommands.HasCommands (CustomCommandType.Execute))
+					return true;
+				return entry.OnGetCanExecute (context, configuration);
+			}
+			else if (item is WorkspaceItem) {
+				return ((WorkspaceItem)item).OnGetCanExecute (context, configuration);
+			}
+			else if (item is SolutionItem)
+				return ((SolutionItem)item).OnGetCanExecute (context, configuration);
+			else
+				throw new InvalidOperationException ("Unknown item type: " + item);
+		}
+		
 		public override bool GetNeedsBuilding (IBuildTarget item, string configuration)
 		{
 			if (item is SolutionItem) {

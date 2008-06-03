@@ -203,6 +203,11 @@ namespace MonoDevelop.Projects
 			Services.ProjectService.ExtensionChain.Execute (monitor, this, context, configuration);
 		}
 		
+		public bool CanExecute (ExecutionContext context, string configuration)
+		{
+			return Services.ProjectService.ExtensionChain.CanExecute (this, context, configuration);
+		}
+		
 		public bool NeedsBuilding (string configuration)
 		{
 			return Services.ProjectService.ExtensionChain.GetNeedsBuilding (this, configuration);
@@ -331,6 +336,11 @@ namespace MonoDevelop.Projects
 		
 		internal protected virtual void OnExecute (IProgressMonitor monitor, ExecutionContext context, string configuration)
 		{
+		}
+		
+		internal protected virtual bool OnGetCanExecute (ExecutionContext context, string configuration)
+		{
+			return true;
 		}
 		
 		internal protected virtual bool OnGetNeedsBuilding (string configuration)

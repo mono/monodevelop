@@ -176,6 +176,34 @@ namespace MonoDevelop.Projects
 				Next.Execute (monitor, (IBuildTarget) item, context, configuration);
 		}
 		
+		public virtual bool CanExecute (IBuildTarget item, ExecutionContext context, string configuration)
+		{
+			if (item is SolutionEntityItem)
+				return CanExecute ((SolutionEntityItem)item, context, configuration);
+			else if (item is WorkspaceItem)
+				return CanExecute ((WorkspaceItem) item, context, configuration);
+			else 
+				return Next.CanExecute (item, context, configuration);
+		}
+		
+		protected virtual bool CanExecute (SolutionEntityItem item, ExecutionContext context, string configuration)
+		{
+			return Next.CanExecute ((IBuildTarget) item, context, configuration);
+		}
+		
+		protected virtual bool CanExecute (Solution solution, ExecutionContext context, string configuration)
+		{
+			return Next.CanExecute ((IBuildTarget) solution, context, configuration);
+		}
+		
+		protected virtual bool CanExecute (WorkspaceItem item, ExecutionContext context, string configuration)
+		{
+			if (item is Solution)
+				return CanExecute ((Solution) item, context, configuration);
+			else
+				return Next.CanExecute ((IBuildTarget) item, context, configuration);
+		}
+		
 		public virtual bool GetNeedsBuilding (IBuildTarget item, string configuration)
 		{
 			if (item is SolutionEntityItem)

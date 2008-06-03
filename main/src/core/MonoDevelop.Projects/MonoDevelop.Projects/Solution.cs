@@ -29,8 +29,10 @@ using System;
 using System.IO;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Threading;
 using MonoDevelop.Projects.Serialization;
 using MonoDevelop.Core;
+using MonoDevelop.Core.ProgressMonitoring;
 
 namespace MonoDevelop.Projects
 {
@@ -39,10 +41,14 @@ namespace MonoDevelop.Projects
 		SolutionFolder rootFolder;
 		string defaultConfiguration;
 		
-		[ProjectPathItemProperty ("StartupItem")]
+		SolutionEntityItem startupItem;
+		List<SolutionEntityItem> startupItems; 
+		bool singleStartup = true;
+
+		// Used for serialization only
+		List<string> multiStartupItems;
 		string startItemFileName;
 		
-		SolutionEntityItem startupItem;
 		ReadOnlyCollection<SolutionItem> solutionItems;
 		SolutionConfigurationCollection configurations;
 		
@@ -87,20 +93,101 @@ namespace MonoDevelop.Projects
 			}
 		}
 		
-		public SolutionEntityItem StartupEntry {
+		public SolutionEntityItem StartupItem {
 			get {
-				if (startupItem == null && startItemFileName != null)
+				if (startItemFileName != null) {
 					startupItem = FindSolutionItem (startItemFileName);
+					startItemFileName = null;
+					singleStartup = true;
+				}
+				if (startupItem == null && singleStartup) {
+					ReadOnlyCollection<SolutionEntityItem> its = GetAllSolutionItems<SolutionEntityItem> ();
+					if (its.Count > 0)
+						startupItem = its [0];
+				}
 				return startupItem;
 			}
 			set {
 				startupItem = value;
-				if (value == null)
-					startItemFileName = null;
+				startItemFileName = null;
 				NotifyModified ();
 				OnStartupItemChanged(null);
 			}
 		}
+		
+		public bool SingleStartup {
+			get {
+				if (startItemFileName != null)
+					return true;
+				if (multiStartupItems != null)
+					return false;
+				return singleStartup; 
+			}
+			set {
+				if (SingleStartup == value)
+					return;
+				singleStartup = value;
+				if (value) {
+					if (MultiStartupItems.Count > 0)
+						startupItem = startupItems [0];
+				} else {
+					MultiStartupItems.Clear ();
+					if (StartupItem != null)
+						MultiStartupItems.Add (StartupItem);
+				}
+				NotifyModified ();
+				OnStartupItemChanged(null);
+			}
+		}
+		
+		public List<SolutionEntityItem> MultiStartupItems {
+			get {
+				if (multiStartupItems != null) {
+					startupItems = new List<SolutionEntityItem> ();
+					foreach (string file in multiStartupItems) {
+						SolutionEntityItem it = FindSolutionItem (file);
+						if (it != null)
+							startupItems.Add (it);
+					}
+					multiStartupItems = null;
+					singleStartup = false;
+				}
+				else if (startupItems == null)
+					startupItems = new List<SolutionEntityItem> ();
+				return startupItems;
+			}
+		}
+
+		// Used by serialization only
+		[ProjectPathItemProperty ("StartupItem", DefaultValue=null)]
+		internal string StartupItemFileName {
+			get {
+				if (SingleStartup && StartupItem != null)
+					return StartupItem.FileName;
+				else
+					return null ;
+			}
+			set { startItemFileName = value; }
+		}
+		
+		[ItemProperty ("StartupItems")]
+		[ProjectPathItemProperty ("Item", Scope=1)]
+		internal List<string> MultiStartupItemFileNames {
+			get {
+				if (SingleStartup)
+					return null;
+				if (multiStartupItems != null)
+					return multiStartupItems;
+				List<string> files = new List<string> ();
+				foreach (SolutionEntityItem item in MultiStartupItems)
+					files.Add (item.FileName);
+				return files;
+			}
+			set {
+				multiStartupItems = value;
+			}
+		}
+
 		
 		public void CreateDefaultConfigurations ()
 		{
@@ -188,10 +275,6 @@ namespace MonoDevelop.Projects
 					return true;
 			}
 			return false;
-		}
-		
-		public SolutionEntityItem StartupItem {
-			get { return null; }
 		}
 		
 		public string Description {
@@ -318,7 +401,41 @@ namespace MonoDevelop.Projects
 		
 		protected internal override void OnExecute (IProgressMonitor monitor, ExecutionContext context, string configuration)
 		{
-			throw new NotImplementedException ();
+			if (SingleStartup) {
+				if (StartupItem == null) {
+					monitor.ReportError (GettextCatalog.GetString ("Startup item not set"), null);
+					return;
+				}
+				StartupItem.Execute (monitor, context, configuration);
+			} else {
+				List<IAsyncOperation> list = new List<IAsyncOperation> ();
+				monitor.BeginTask ("Executing projects", 1);
+				
+				SynchronizedProgressMonitor syncMonitor = new SynchronizedProgressMonitor (monitor);
+				
+				foreach (SolutionEntityItem it in MultiStartupItems) {
+					AggregatedProgressMonitor mon = new AggregatedProgressMonitor ();
+					mon.AddSlaveMonitor (syncMonitor, MonitorAction.ReportError | MonitorAction.ReportWarning | MonitorAction.SlaveCancel);
+					list.Add (mon.AsyncOperation);
+					SolutionEntityItem cit = it;
+					
+					Thread t = new Thread (delegate () {
+						try {
+							using (mon) {
+								cit.Execute (mon, context, configuration);
+							}
+						} catch (Exception ex) {
+							LoggingService.LogError ("Project execution failed", ex);
+						}
+					});
+					t.IsBackground = true;
+					t.Start ();
+				}
+				foreach (IAsyncOperation op in list)
+					op.WaitForCompleted ();
+				
+				monitor.EndTask ();
+			}
 		}
 		
 		protected internal override bool OnGetNeedsBuilding (string configuration)

@@ -434,6 +434,13 @@ namespace MonoDevelop.Projects
 			}
 		}
 		
+		protected internal override bool OnGetCanExecute (ExecutionContext context, string configuration)
+		{
+			return (compileTarget == CompileTarget.Exe || compileTarget == CompileTarget.WinExe) &&
+				context.ExecutionHandlerFactory.SupportsPlatform (ExecutionPlatform.Mono);
+		}
+
+		
 		protected internal override void OnClean (IProgressMonitor monitor, string configuration)
 		{
 			// Delete referenced assemblies
