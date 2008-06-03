@@ -43,6 +43,27 @@ namespace MonoDevelop.Projects.Formats.MD1
 		[ExpandedCollection]
 		[ItemProperty ("Execute", ValueType=typeof(CombineStartupEntry))]
 		public List<CombineStartupEntry> Entries = new List<CombineStartupEntry> ();
+		
+		public void AddEntry (string name)
+		{
+			CombineStartupEntry e = new CombineStartupEntry ();
+			e.Entry = name;
+			e.Type = "None";
+			Entries.Add (e);
+		}
+		
+		public CombineStartupEntry FindEntry (string name)
+		{
+			foreach (CombineStartupEntry cse in Entries)
+				if (cse.Entry == name)
+					return cse;
+			return null;
+		}
+		
+		public void MakeExecutable (string name)
+		{
+			FindEntry (name).Type = "Execute";
+		}
 	}
 	
 	class CombineStartupEntry

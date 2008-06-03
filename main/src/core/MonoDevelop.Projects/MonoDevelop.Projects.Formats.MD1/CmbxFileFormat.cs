@@ -29,6 +29,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.IO;
 using System.Xml;
@@ -88,25 +89,11 @@ namespace MonoDevelop.Projects.Formats.MD1
 			
 			serializer.Deserialize (obj, data);
 			
-			if (sol != null)
+			if (sol != null) {
 				CreateSolutionConfigurations (sol);
-			
-			// Check startup mode
-			CombineStartupMode startupMode = (CombineStartupMode) obj.ExtendedProperties ["StartMode"];
-			if (startupMode != null && sol != null) {
-				sol.SingleStartup = startupMode.SingleStartup;
-				if (startupMode.SingleStartup)
-					sol.StartupItem = sol.FindProjectByName (startupMode.StartEntryName);
-				else if (startupMode.Entries != null) {
-					foreach (CombineStartupEntry cse in startupMode.Entries) {
-						if (cse.Type == "Execute") {
-							SolutionEntityItem it = sol.FindProjectByName (cse.Entry);
-							if (it != null)
-								sol.MultiStartupItems.Add (it);
-						}
-					}
-				}
+				LoadStartupMode (sol);
 			}
+			
 			
 			return obj;
 		}
@@ -190,6 +177,55 @@ namespace MonoDevelop.Projects.Formats.MD1
 			sol.DefaultConfigurationId = configs.Active;
 		}
 		
+		void LoadStartupMode (Solution sol)
+		{
+			// Recursively look for startup items. If there is more than one,
+			// it means it is a multi startup solution.
+			List<SolutionEntityItem> items = new List<SolutionEntityItem> ();
+			FindStartupItems (sol, sol.RootFolder, items);
+			
+			if (items.Count == 1) {
+				sol.SingleStartup = true;
+				sol.StartupItem = items [0];
+			} else if (items.Count > 1) {
+				sol.SingleStartup = false;
+				sol.MultiStartupItems.AddRange (items);
+			}
+		}
+		
+		void FindStartupItems (Solution sol, SolutionFolder folder, List<SolutionEntityItem> items)
+		{
+			CombineStartupMode startupMode = (CombineStartupMode) folder.ExtendedProperties ["StartMode"];
+			if (startupMode != null) {
+				if (startupMode.SingleStartup) {
+					SolutionItem it = FindItemByName (folder, startupMode.StartEntryName);
+					if (it is SolutionFolder)
+						FindStartupItems (sol, (SolutionFolder)it, items);
+					else if (it is SolutionEntityItem)
+						items.Add ((SolutionEntityItem) it);
+					return;
+				} else {
+					foreach (CombineStartupEntry cse in startupMode.Entries) {
+						if (cse.Type == "Execute") {
+							SolutionItem it = FindItemByName (folder, cse.Entry);
+							if (it is SolutionFolder)
+								FindStartupItems (sol, (SolutionFolder)it, items);
+							else if (it is SolutionEntityItem)
+								items.Add ((SolutionEntityItem) it);
+						}
+					}
+				}
+			}
+		}
+		
+		SolutionItem FindItemByName (SolutionFolder folder, string name)
+		{
+			foreach (SolutionItem it in folder.Items)
+				if (it.Name == name)
+					return it;
+			return null;
+		}
+		
 		string FindItemConfiguration (List<IExtendedDataItem> chain, string configId)
 		{
 			for (int n=0; n < chain.Count - 1; n++) {
@@ -256,6 +292,7 @@ namespace MonoDevelop.Projects.Formats.MD1
 				Solution sol = (Solution) item;
 				folder = sol.RootFolder;
 				CreateCombineConfigurations (sol.RootFolder);
+				CreateStartupModes (sol);
 			}
 			else
 				folder = (SolutionFolder) item;
@@ -269,46 +306,65 @@ namespace MonoDevelop.Projects.Formats.MD1
 			Write (writer, data);
 		}
 		
+		void CreateStartupModes (Solution sol)
+		{
+			// Initialize the startup modes
+			ReadOnlyCollection<SolutionFolder> folders = sol.GetAllSolutionItems<SolutionFolder> ();
+			foreach (SolutionFolder folder in folders) {
+				CombineStartupMode startupMode = new CombineStartupMode ();
+				startupMode.SingleStartup = true;
+				startupMode.StartEntryName = null;
+				foreach (SolutionItem it in folder.Items)
+					startupMode.AddEntry (it.Name);
+				folder.ExtendedProperties ["StartMode"] = startupMode;
+			}
+			
+			// Get the list of startup items
+			IEnumerable<SolutionEntityItem> items;
+			if (sol.SingleStartup)
+				items = new SolutionEntityItem [] { sol.StartupItem };
+			else
+				items = sol.MultiStartupItems;
+
+			// Setup the startup modes
+			foreach (SolutionEntityItem it in items) {
+				if (it == null)
+					continue;
+				SolutionFolder folder = it.ParentFolder;
+				SolutionItem prevItem = it;
+				while (folder != null) {
+					CombineStartupMode startupMode = (CombineStartupMode) folder.ExtendedProperties ["StartMode"];
+					if (startupMode.SingleStartup) {
+						// If a start entry is already set, convert to multi startup mode
+						if (startupMode.StartEntryName == null)
+							startupMode.StartEntryName = prevItem.Name;
+						else if (startupMode.StartEntryName != prevItem.Name) {
+							startupMode.SingleStartup = false;
+							startupMode.MakeExecutable (startupMode.StartEntryName);
+							startupMode.MakeExecutable (prevItem.Name);
+						}
+					} else {
+						// Already multi startup, just add the new item
+						startupMode.MakeExecutable (prevItem.Name);
+					}
+					prevItem = folder;
+					folder = folder.ParentFolder;
+				}
+			}
+			
+			// Set the startup item for folders which don't have one
+			foreach (SolutionFolder folder in folders) {
+				CombineStartupMode startupMode = (CombineStartupMode) folder.ExtendedProperties ["StartMode"];
+				if (startupMode.SingleStartup && startupMode.StartEntryName == null) {
+					if (folder.Items.Count > 0)
+						startupMode.StartEntryName = folder.Items [0].Name;
+				}
+			}
+		}
+		
 		void CreateCombineConfigurations (SolutionFolder folder)
 		{
 			IDictionary extendedProperties = folder.ExtendedProperties;
-			
-			// Startup mode
-			
-			CombineStartupMode startupMode = (CombineStartupMode) extendedProperties ["StartMode"];
-			
-			if (startupMode == null) {
-				startupMode = new CombineStartupMode ();
-				extendedProperties ["StartMode"] = startupMode;
-			} else {
-				startupMode.Entries.Clear ();
-			}
-			
-			if (folder.IsRoot) {
-				startupMode.SingleStartup = folder.ParentSolution.SingleStartup;
-				if (startupMode.SingleStartup) {
-					if (folder.ParentSolution.StartupItem != null)
-						startupMode.StartEntryName = folder.ParentSolution.StartupItem.Name;
-					else
-						startupMode.StartEntryName = null;
-				} else {
-					foreach (SolutionEntityItem it in folder.ParentSolution.GetAllSolutionItems<SolutionEntityItem> ()) {
-						CombineStartupEntry cse = new CombineStartupEntry ();
-						cse.Entry = it.Name;
-						if (folder.ParentSolution.MultiStartupItems.Contains (it))
-							cse.Type = "Execute";
-						else
-							cse.Type = "None";
-						startupMode.Entries.Add (cse);
-					}
-				}
-			} else {
-				startupMode.SingleStartup = true;
-				if (startupMode.StartEntryName == null && folder.Items.Count > 0)
-					startupMode.StartEntryName = folder.Items [0].Name;
-			}
-			
-			// Configurations
 			
 			CombineConfigurationSet configs = CreateCombineConfigurationSet (folder.ParentSolution, folder.IsRoot);
 			configs.Active = folder.ParentSolution.DefaultConfigurationId;
