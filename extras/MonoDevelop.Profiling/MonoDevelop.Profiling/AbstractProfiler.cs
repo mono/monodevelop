@@ -225,6 +225,11 @@ namespace MonoDevelop.Profiling
 				this.profiler = profiler;
 			}
 			
+			public bool SupportsPlatform (string platformId)
+			{
+				return platformId == "Mono";
+			}
+			
 			public IExecutionHandler CreateExecutionHandler (string platformId)
 			{
 				if (platformId == "Mono")
@@ -244,6 +249,11 @@ namespace MonoDevelop.Profiling
 				this.process = process;
 			}
 
+			public bool SupportsPlatform (string platformId)
+			{
+				return true;
+			}
+			
 			public IExecutionHandler CreateExecutionHandler (string platformId)
 			{
 				return new ProcessProfilerExecutionHandler (profiler, process);
