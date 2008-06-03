@@ -1,3 +1,7 @@
+2008-06-04  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Database.Sql.Firebird.addin.xml: Bump MD version.
+
 2008-01-29  Ben Motmans <ben.motmans@gmail.com> 
 
 	* MonoDevelop.Database.Sql.Firebird.mdp: removed the hard copy of the

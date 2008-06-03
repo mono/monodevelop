@@ -13,9 +13,9 @@
 	</Runtime>
 
 	<Dependencies>
-		<Addin id="Core" version="0.19.0"/>
-		<Addin id="Core.Gui" version="0.19.0"/>
-		<Addin id="Ide" version="0.19.0"/>
+		<Addin id="Core" version="1.9.0"/>
+		<Addin id="Core.Gui" version="1.9.0"/>
+		<Addin id="Ide" version="1.9.0"/>
 		<Addin id="Profiling" version="0.2.0"/>
 	</Dependencies>
 	

@@ -4,7 +4,7 @@ PACKAGE=geckowebbrowser
 prefix=/usr/local
 config=DEBUG
 configurations=" RELEASE DEBUG"
-common_packages=" glib-sharp-2.0;2.10.2 gtk-sharp-2.0;2.10.2 gecko-sharp-2.0;0.12 monodevelop;0.18"
+common_packages=" glib-sharp-2.0;2.10.2 gtk-sharp-2.0;2.10.2 gecko-sharp-2.0;0.12 monodevelop;1.9"
 
 
 usage ()

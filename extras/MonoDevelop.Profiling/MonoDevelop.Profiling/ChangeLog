@@ -1,3 +1,7 @@
+2008-06-04  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Profiling.addin.xml: Bump MD version.
+
 2008-06-03  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* AbstractProfiler.cs: Track api changes.

@@ -6,7 +6,7 @@
        url         = "http://www.monodevelop.com"
        description = "Java Language Binding"
 	   category    = "Language bindings"
-       version     = "0.19.0">
+       version     = "1.9.0">
 
   <Runtime>
     <Import assembly = "JavaBinding.dll"/>
@@ -15,11 +15,11 @@
   <Localizer type="Gettext" catalog="monodevelop-java"/>
 
 	<Dependencies>
-	    <Addin id="Core" version="0.19.0"/>
-	    <Addin id="Core.Gui" version="0.19.0"/>
-	    <Addin id="Projects" version="0.19.0"/>
-		<Addin id="Projects.Gui" version="0.19.0"/>
-		<Addin id="Ide" version="0.19.0"/>
+	    <Addin id="Core" version="1.9.0"/>
+	    <Addin id="Core.Gui" version="1.9.0"/>
+	    <Addin id="Projects" version="1.9.0"/>
+		<Addin id="Projects.Gui" version="1.9.0"/>
+		<Addin id="Ide" version="1.9.0"/>
 	</Dependencies>
 	
   <Extension path = "/MonoDevelop/Ide/FileFilters">
