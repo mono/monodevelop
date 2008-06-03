@@ -7,7 +7,9 @@
       <Entry build="True" name="UnitTests" configuration="Release" />
     </Configuration>
   </Configurations>
-  <StartMode startupentry="UnitTests" single="True" />
+  <StartMode startupentry="UnitTests" single="True">
+    <Execute type="None" entry="UnitTests" />
+  </StartMode>
   <Entries>
     <Entry filename="UnitTests/UnitTests.mdp" />
   </Entries>

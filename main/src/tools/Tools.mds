@@ -9,7 +9,7 @@
       <Entry build="True" name="mdrun" configuration="Debug" />
     </Configuration>
   </Configurations>
-  <StartMode startupentry="mdrun" single="True">
+  <StartMode startupentry="mdhost" single="True">
     <Execute type="None" entry="mdhost" />
     <Execute type="None" entry="mdrun" />
   </StartMode>
