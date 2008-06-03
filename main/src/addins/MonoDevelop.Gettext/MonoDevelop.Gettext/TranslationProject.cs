@@ -226,12 +226,12 @@ namespace MonoDevelop.Gettext
 		
 		internal string GetOutputDirectory (string configuration)
 		{
-			if (this.ParentSolution.StartupEntry == null) 
+			if (this.ParentSolution.StartupItem == null) 
 				return BaseDirectory;
-			if (this.ParentSolution.StartupEntry is DotNetProject) {
-				return Path.Combine (Path.GetDirectoryName (((DotNetProject)ParentSolution.StartupEntry).GetOutputFileName (configuration)), RelPath);
+			if (this.ParentSolution.StartupItem is DotNetProject) {
+				return Path.Combine (Path.GetDirectoryName (((DotNetProject)ParentSolution.StartupItem).GetOutputFileName (configuration)), RelPath);
 			}
-			return Path.Combine (this.ParentSolution.StartupEntry.BaseDirectory, RelPath);
+			return Path.Combine (this.ParentSolution.StartupItem.BaseDirectory, RelPath);
 		}
 		
 		void CreateDefaultCatalog (IProgressMonitor monitor)
