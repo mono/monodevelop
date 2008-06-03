@@ -1816,7 +1816,7 @@ Custom Command</property>
           <widget class="Gtk.RadioButton" id="radioSingle">
             <property name="MemberName" />
             <property name="CanFocus">True</property>
-            <property name="Label" translatable="yes">Single startup item:</property>
+            <property name="Label" translatable="yes">Single startup project:</property>
             <property name="Active">True</property>
             <property name="DrawIndicator">True</property>
             <property name="HasLabel">True</property>
@@ -1871,7 +1871,7 @@ Custom Command</property>
           <widget class="Gtk.RadioButton" id="radioMulti">
             <property name="MemberName" />
             <property name="CanFocus">True</property>
-            <property name="Label" translatable="yes">Multiple startup items:</property>
+            <property name="Label" translatable="yes">Multiple startup projects:</property>
             <property name="DrawIndicator">True</property>
             <property name="HasLabel">True</property>
             <property name="UseUnderline">True</property>
