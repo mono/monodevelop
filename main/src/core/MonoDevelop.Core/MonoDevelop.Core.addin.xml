@@ -19,11 +19,16 @@
 		<ExtensionNode name="Class" type="MonoDevelop.Core.AddIns.ServiceExtensionNode" />
 	</ExtensionPoint>
 
-	<ExtensionPoint path = "/MonoDevelop/Core/ExecutionHandlers" name = "Execution handlers">
-		<Description>Default execution handlers.</Description>
-		<ExtensionNode name="ExecutionHandler" type="MonoDevelop.Core.AddIns.ExecutionHandlerCodon" />
+	<ExtensionPoint path = "/MonoDevelop/Core/ExecutionModes" name = "Execution modes">
+		<Description>Execution modes such as default, debug, profiler, etc.</Description>
+		<ExtensionNode name="Mode" type="MonoDevelop.Core.AddIns.ExecutionModeNode" />
 	</ExtensionPoint>
 
+	<ExtensionPoint path = "/MonoDevelop/Core/ExecutionHandlers" name = "Execution handlers">
+		<Description>Execution handlers for the default execution mode</Description>
+		<ExtensionNode name="ExecutionHandler" type="MonoDevelop.Core.AddIns.ExecutionHandlerCodon" />
+	</ExtensionPoint>
+	
 	<ExtensionPoint path = "/MonoDevelop/Core/FileSystemExtensions" name = "File system extensions">
 		<Description>File system extensions which can provide specific behavior when handling files. Specified classes must implement MonoDevelop.Core.FileSystem.FileSystemExtension.</Description>
 		<ExtensionNode name="Class" objectType="MonoDevelop.Core.FileSystem.FileSystemExtension"/>
@@ -43,6 +48,10 @@
 		       class = "MonoDevelop.Core.SystemAssemblyService"/>
 		<Class id    = "ProcessService"
 		       class = "MonoDevelop.Core.Execution.ProcessService"/>
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/Core/ExecutionModes">
+		<Mode id="Default" _name="Default" class="MonoDevelop.Core.Execution.DefaultExecutionHandlerFactory"/>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Core/ExecutionHandlers">

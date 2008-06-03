@@ -1,3 +1,19 @@
+2008-06-03  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Core.AddIns/ExecutionModeNode.cs,
+	  MonoDevelop.Core.Execution/IExecutionMode.cs,
+	  MonoDevelop.Core.Execution/DefaultExecutionHandlerFactory.cs,
+	  MonoDevelop.Core.Execution/ProcessService.cs,
+	  MonoDevelop.Core.Execution/ExecutionPlatform.cs, Makefile.am,
+	  MonoDevelop.Core.addin.xml, MonoDevelop.Core.mdp: Implemented
+	  IExecutionMode. And execution mode is basically an
+	  IExecutionHandlerFactory with a name. There will be several
+	  execution modes, such as Debug, Profile, etc.
+	* MonoDevelop.Core.Execution/IExecutionHandlerFactory.cs: Added new
+	  SupportsPlatform method for checking if a handler is supported for
+	  a platform.
+	* MonoDevelop.Core.Logging/ConsoleLogger.cs: Fix warning.
+
 2008-05-28  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Core.Execution/ProcessService.cs: If a process is

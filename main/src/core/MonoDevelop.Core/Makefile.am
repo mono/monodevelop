@@ -5,11 +5,13 @@ FILES =  \
 	MonoDevelop.Core.AddIns/ApplicationExtensionNode.cs \
 	MonoDevelop.Core.AddIns/AssemblyExtensionNode.cs \
 	MonoDevelop.Core.AddIns/ExecutionHandlerCodon.cs \
+	MonoDevelop.Core.AddIns/ExecutionModeNode.cs \
 	MonoDevelop.Core.AddIns/PackageExtensionNode.cs \
 	MonoDevelop.Core.AddIns/ServiceExtensionNode.cs \
 	MonoDevelop.Core.Execution/AddinDependencyAttribute.cs \
 	MonoDevelop.Core.Execution/BreakpointEventHandler.cs \
 	MonoDevelop.Core.Execution/DefaultExecutionHandlerFactory.cs \
+	MonoDevelop.Core.Execution/ExecutionPlatform.cs \
 	MonoDevelop.Core.Execution/ExternalConsoleFactory.cs \
 	MonoDevelop.Core.Execution/ExternalConsoleLocator.cs \
 	MonoDevelop.Core.Execution/IBreakpoint.cs \
@@ -17,6 +19,7 @@ FILES =  \
 	MonoDevelop.Core.Execution/IConsoleFactory.cs \
 	MonoDevelop.Core.Execution/IExecutionHandler.cs \
 	MonoDevelop.Core.Execution/IExecutionHandlerFactory.cs \
+	MonoDevelop.Core.Execution/IExecutionMode.cs \
 	MonoDevelop.Core.Execution/IProcessAsyncOperation.cs \
 	MonoDevelop.Core.Execution/IProcessHost.cs \
 	MonoDevelop.Core.Execution/IProcessHostController.cs \

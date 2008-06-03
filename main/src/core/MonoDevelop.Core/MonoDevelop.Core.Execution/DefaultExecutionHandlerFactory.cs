@@ -32,6 +32,11 @@ namespace MonoDevelop.Core.Execution
 {
 	public class DefaultExecutionHandlerFactory: IExecutionHandlerFactory
 	{
+		public bool SupportsPlatform (string platformId)
+		{
+			return Runtime.ProcessService.GetDefaultExecutionHandler (platformId) != null;
+		}
+		
 		public IExecutionHandler CreateExecutionHandler (string platformId)
 		{
 			return Runtime.ProcessService.GetDefaultExecutionHandler (platformId);

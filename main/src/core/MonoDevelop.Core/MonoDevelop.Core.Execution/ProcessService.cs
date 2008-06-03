@@ -217,6 +217,20 @@ namespace MonoDevelop.Core.Execution
 			return null;
 		}
 		
+		public IExecutionMode[] GetExecutionModes ()
+		{
+			ExtensionNodeList nodes = AddinManager.GetExtensionNodes ("/MonoDevelop/Core/ExecutionModes", typeof(ExecutionModeNode));
+			IExecutionMode[] modes = new IExecutionMode [nodes.Count];
+			nodes.CopyTo (modes, 0);
+			return modes;
+		}
+		
+		public IExecutionMode DefaultExecutionMode {
+			get {
+				return AddinManager.GetExtensionNode ("/MonoDevelop/Core/ExecutionModes/Default") as IExecutionMode;
+			}
+		}
+		
 		void OnExtensionChange (object s, ExtensionNodeEventArgs args)
 		{
 			if (args.Change == ExtensionChange.Add)

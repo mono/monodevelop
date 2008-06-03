@@ -32,6 +32,7 @@ namespace MonoDevelop.Core.Execution
 {
 	public interface IExecutionHandlerFactory
 	{
+		bool SupportsPlatform (string platformId);
 		IExecutionHandler CreateExecutionHandler (string platformId);
 	}
 }

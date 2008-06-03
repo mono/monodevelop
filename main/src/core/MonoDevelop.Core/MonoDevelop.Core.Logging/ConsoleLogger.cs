@@ -104,7 +104,7 @@ namespace MonoDevelop.Core.Logging
 					ConsoleCrayon.ForegroundColor = ConsoleColor.Red;
 					ConsoleCrayon.ResetColor ();
 					useColour = true;
-				} catch (Exception ex) { }
+				} catch { }
 			}
 		}
 	}
