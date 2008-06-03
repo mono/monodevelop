@@ -39,6 +39,11 @@ namespace MonoDevelop.Ide.Debugging
 {
 	internal class DebugExecutionHandlerFactory: IExecutionHandlerFactory
 	{
+		public bool SupportsPlatform (string platformId)
+		{
+			return DebuggerEngine.CanDebugPlatform (platformId);
+		}
+
 		public IExecutionHandler CreateExecutionHandler (string platformId)
 		{
 			if (DebuggerEngine.CanDebugPlatform (platformId))

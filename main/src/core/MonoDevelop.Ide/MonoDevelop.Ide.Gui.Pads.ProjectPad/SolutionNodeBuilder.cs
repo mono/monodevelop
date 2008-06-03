@@ -44,14 +44,15 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		SolutionItemEventHandler combineEntryAdded;
 		SolutionItemEventHandler combineEntryRemoved;
 		EventHandler<WorkspaceItemRenamedEventArgs> combineNameChanged;
+		EventHandler startupChanged;
 		
 		public SolutionNodeBuilder ()
 		{
 			combineEntryAdded = (SolutionItemEventHandler) DispatchService.GuiDispatch (new SolutionItemEventHandler (OnEntryAdded));
 			combineEntryRemoved = (SolutionItemEventHandler) DispatchService.GuiDispatch (new SolutionItemEventHandler (OnEntryRemoved));
 			combineNameChanged = (EventHandler<WorkspaceItemRenamedEventArgs>) DispatchService.GuiDispatch (new EventHandler<WorkspaceItemRenamedEventArgs> (OnCombineRenamed));
+			startupChanged = (EventHandler) DispatchService.GuiDispatch (new EventHandler (OnStartupChanged));
 			
-			IdeApp.Workspace.StartupItemChanged += OnStartupChanged;
 			IdeApp.Workspace.ItemAddedToSolution += combineEntryAdded;
 			IdeApp.Workspace.ItemRemovedFromSolution += combineEntryRemoved;
 		}
@@ -59,7 +60,6 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		public override void Dispose ()
 		{
 			base.Dispose ();
-			IdeApp.Workspace.StartupItemChanged -= OnStartupChanged;
 			IdeApp.Workspace.ItemAddedToSolution -= combineEntryAdded;
 			IdeApp.Workspace.ItemRemovedFromSolution -= combineEntryRemoved;
 		}
@@ -131,12 +131,14 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		{
 			Solution solution = (Solution) dataObject;
 			solution.NameChanged += combineNameChanged;
+			solution.StartupItemChanged += startupChanged;
 		}
 		
 		public override void OnNodeRemoved (object dataObject)
 		{
 			Solution solution = (Solution) dataObject;
 			solution.NameChanged -= combineNameChanged;
+			solution.StartupItemChanged -= startupChanged;
 		}
 		
 		void OnStartupChanged (object sender, EventArgs args)

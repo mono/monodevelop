@@ -52,6 +52,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 		ToolButton buttonStop;
 		ToggleToolButton buttonPin;
 		TextMark endMark;
+		bool progressStarted;
 
 		private static Gtk.Tooltips tips = new Gtk.Tooltips ();
 		
@@ -213,7 +214,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 		}
 		
 		public bool AllowReuse {
-			get { return !buttonStop.Sensitive && !buttonPin.Active; }
+			get { return !progressStarted && !buttonPin.Active; }
 		}
 		
 		void addQueuedUpdate (QueuedUpdate update)
@@ -233,6 +234,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			lock (updates.SyncRoot) {
 				updates.Clear ();
 				lastTextWrite = null;
+				progressStarted = true;
 			}
 			
 			Gtk.Application.Invoke (delegate {
@@ -339,6 +341,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			Gtk.Application.Invoke (delegate {
 				window.Title = originalTitle;
 				buttonStop.Sensitive = false;
+				progressStarted = false;
 			});
 		}
 		

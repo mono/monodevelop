@@ -55,13 +55,11 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 			
 			IdeApp.Workspace.ItemAddedToSolution += combineEntryAdded;
 			IdeApp.Workspace.ItemRemovedFromSolution += combineEntryRemoved;
-			IdeApp.Workspace.StartupItemChanged += OnStartupChanged;
 		}
 		
 		public override void Dispose ()
 		{
 			base.Dispose ();
-			IdeApp.Workspace.StartupItemChanged -= OnStartupChanged;
 			IdeApp.Workspace.ItemAddedToSolution -= combineEntryAdded;
 			IdeApp.Workspace.ItemRemovedFromSolution -= combineEntryRemoved;
 		}
@@ -132,12 +130,14 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 		{
 			Solution solution = (Solution) dataObject;
 			solution.NameChanged += combineNameChanged;
+			solution.StartupItemChanged += startupChanged;
 		}
 		
 		public override void OnNodeRemoved (object dataObject)
 		{
 			Solution solution = (Solution) dataObject;
 			solution.NameChanged -= combineNameChanged;
+			solution.StartupItemChanged -= startupChanged;
 		}
 		
 		void OnStartupChanged (object sender, EventArgs args)

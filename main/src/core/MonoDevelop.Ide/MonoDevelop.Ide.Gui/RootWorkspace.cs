@@ -49,7 +49,6 @@ namespace MonoDevelop.Ide.Gui
 		IParserDatabase parserDatabase;
 		string activeConfiguration;
 		Dictionary<WorkspaceItem, PropertyBag> userPrefs;
-		SolutionEntityItem startupItem;
 		
 		ProjectFileEventHandler fileAddedToProjectHandler;
 		ProjectFileEventHandler fileRemovedFromProjectHandler;
@@ -162,81 +161,6 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
-		public SolutionEntityItem StartupItem {
-			get {
-				return startupItem; 
-			}
-			set {
-				startupItem = value;
-				if (startupItem != null) {
-					WorkspaceItem pit = startupItem.ParentSolution;
-					while (pit != null) {
-						pit.ExtendedProperties ["__StartupItem"] = startupItem;
-						pit = pit.ParentWorkspace;
-					}
-				}
-				if (StartupItemChanged != null)
-					StartupItemChanged (this, EventArgs.Empty);
-			}
-		}
-		
-		internal void SetBestStartupProject ()
-		{
-			if (!IsOpen) {
-				StartupItem = null;
-				return;
-			}
-			if (!SetBestStartupProject (true) && !SetBestStartupProject (false))
-				StartupItem = null;
-		}
-		
-		bool SetBestStartupProject (bool findExe)
-		{
-			Solution sol = IdeApp.ProjectOperations.CurrentSelectedSolution;
-			if (sol != null && SetBestStartupProjectInSolution (sol, findExe))
-				return true;
-			
-			WorkspaceItem it = IdeApp.ProjectOperations.CurrentSelectedWorkspaceItem;
-			if (it != null && SetBestStartupProjectInWorkspace (it, findExe))
-				return true;
-
-			foreach (WorkspaceItem wit in Items) {
-				foreach (WorkspaceItem cit in wit.GetAllItems ()) {
-					if (SetBestStartupProjectInWorkspace (cit, findExe))
-						return true;
-				}
-			}
-			return false;
-		}
-		
-		bool SetBestStartupProjectInWorkspace (WorkspaceItem it, bool findExe)
-		{
-			foreach (Solution sol in it.GetAllSolutions ()) {
-				if (SetBestStartupProjectInSolution (sol, findExe))
-					return true;
-			}
-			return false;
-		}
-		
-		bool SetBestStartupProjectInSolution (Solution sol, bool findExe)
-		{
-			if (!findExe) {
-				System.Collections.ObjectModel.ReadOnlyCollection<Project> ps = sol.GetAllProjects ();
-				if (ps.Count > 0) {
-					StartupItem = ps [0];
-					return true;
-				}
-			} else {
-				foreach (DotNetProject p in sol.GetAllSolutionItems<DotNetProject> ()) {
-					if (p.CompileTarget == CompileTarget.Exe || p.CompileTarget == CompileTarget.WinExe) {
-						StartupItem = p;
-						return true;
-					}
-				}
-			}
-			return false;
-		}
-		
 		public PropertyBag GetUserPreferences (WorkspaceItem item)
 		{
 			PropertyBag props;
@@ -341,10 +265,10 @@ namespace MonoDevelop.Ide.Gui
 
 		public IAsyncOperation Execute ()
 		{
-			if (startupItem != null)
-				return IdeApp.ProjectOperations.Execute (startupItem);
+			if (IdeApp.ProjectOperations.CurrentSelectedSolution != null)
+				return IdeApp.ProjectOperations.Execute (IdeApp.ProjectOperations.CurrentSelectedSolution);
 			else {
-				MessageService.ShowError (GettextCatalog.GetString ("Startup project not set"), GettextCatalog.GetString ("To set a startup project, select the project in the solution pad an click on the option 'Set as Startup Project' in the contextual menu."));
+				MessageService.ShowError (GettextCatalog.GetString ("No solution has been selected"), GettextCatalog.GetString ("The solution to be executed must be selected in the solution pad."));
 				return null;
 			}
 		}
@@ -379,10 +303,10 @@ namespace MonoDevelop.Ide.Gui
 
 		public void Execute (MonoDevelop.Core.IProgressMonitor monitor, ExecutionContext context, string configuration)
 		{
-			if (startupItem != null)
-				startupItem.Execute (monitor, context, configuration);
+			if (IdeApp.ProjectOperations.CurrentSelectedSolution != null)
+				IdeApp.ProjectOperations.CurrentSelectedSolution.Execute (monitor, context, configuration);
 			else
-				throw new UserException (GettextCatalog.GetString ("Startup project not set"));
+				throw new UserException (GettextCatalog.GetString ("No solution has been selected"));
 		}
 		
 		public bool NeedsBuilding ()
@@ -555,8 +479,6 @@ namespace MonoDevelop.Ide.Gui
 				using (monitor) {
 					if (Items.Count == 1)
 						RestoreWorkspacePreferences (item);
-					if (StartupItem == null)
-						SetBestStartupProject ();
 					monitor.ReportSuccess (GettextCatalog.GetString ("Solution loaded."));
 				}
 			});
@@ -663,8 +585,6 @@ namespace MonoDevelop.Ide.Gui
 				WorkspaceUserData data = props.GetValue<WorkspaceUserData> ("MonoDevelop.Ide.Workspace");
 				if (data != null) {
 					ActiveConfiguration = data.ActiveConfiguration;
-					if (data.StartupItem != null && StartupItem == null)
-						StartupItem = FindSolutionItem (data.StartupItem);
 				}
 			}
 			catch (Exception ex) {
@@ -696,11 +616,6 @@ namespace MonoDevelop.Ide.Gui
 			
 			WorkspaceUserData data = new WorkspaceUserData ();
 			data.ActiveConfiguration = ActiveConfiguration;
-			
-			SolutionEntityItem sit = (SolutionEntityItem) item.ExtendedProperties ["__StartupItem"];
-			if (sit != null)
-				data.StartupItem = sit.FileName;
-			
 			props.SetValue ("MonoDevelop.Ide.Workspace", data);
 			
 			// Allow add-ins to fill-up data
@@ -1009,8 +924,6 @@ namespace MonoDevelop.Ide.Gui
 		{
 			if (e == IdeApp.ProjectOperations.CurrentSelectedSolutionItem)
 				IdeApp.ProjectOperations.CurrentSelectedSolutionItem = null;
-			if (e == startupItem)
-				SetBestStartupProject ();
 				
 			if (e is SolutionFolder) {
 				foreach (SolutionItem ce in ((SolutionFolder)e).Items)
@@ -1062,9 +975,6 @@ namespace MonoDevelop.Ide.Gui
 					WorkspaceItemUnloaded (this, new WorkspaceItemEventArgs (item));
 				if (item is Solution && SolutionUnloaded != null)
 					SolutionUnloaded (this, new SolutionEventArgs ((Solution)item));
-				if (startupItem != null && ProjectOperations.ContainsTarget (item, startupItem)) {
-					SetBestStartupProject ();
-				}
 			} catch (Exception ex) {
 				LoggingService.LogError ("Error in SolutionClosed event.", ex);
 			}
@@ -1117,7 +1027,6 @@ namespace MonoDevelop.Ide.Gui
 
 		public event EventHandler ActiveConfigurationChanged;
 		public event EventHandler ConfigurationsChanged;
-		public event EventHandler StartupItemChanged;
 #endregion
 	}
 	
@@ -1188,8 +1097,5 @@ namespace MonoDevelop.Ide.Gui
 	{
 		[ItemProperty]
 		public string ActiveConfiguration;
-		
-		[ProjectPathItemProperty]
-		public string StartupItem;
 	}
 }

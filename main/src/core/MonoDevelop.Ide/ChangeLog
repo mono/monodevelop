@@ -1,3 +1,15 @@
+2008-06-03  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Gui.Pads/DefaultMonitorPad.cs: Make sure the pad
+	  can't be reused once the monitor operation has started.
+	* MonoDevelop.Ide.Debugging/DebugExecutionHandlerFactory.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassPad/SolutionNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ProjectPad/SolutionNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui/RootWorkspace.cs: Track api changes.
+	  StartupItem is now handled by solutions.
+	* MonoDevelop.Ide.addin.xml: Register debug execution mode.
+
 2008-06-02  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Debugging/DebuggingService.cs: Fix current frame

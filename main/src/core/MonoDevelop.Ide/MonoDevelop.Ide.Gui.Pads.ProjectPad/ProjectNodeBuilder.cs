@@ -117,7 +117,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				label = GettextCatalog.GetString ("{0} <span foreground='red' size='small'>(Unknown language '{1}')</span>", p.Name, ((DotNetProject)p).LanguageName);
 			} else {
 				iconName = Services.Icons.GetImageForProjectType (p.ProjectType);
-				if (IdeApp.Workspace.StartupItem == p)
+				if (p.ParentSolution.SingleStartup && p.ParentSolution.StartupItem == p)
 					label = "<b>" + p.Name + "</b>";
 				else
 					label = p.Name;
@@ -327,7 +327,8 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		public void SetAsStartupProject ()
 		{
 			Project project = CurrentNode.DataItem as Project;
-			IdeApp.Workspace.StartupItem = project;
+			project.ParentSolution.SingleStartup = true;
+			project.ParentSolution.StartupItem = project;
 		}
 		
 		public override void DeleteItem ()
