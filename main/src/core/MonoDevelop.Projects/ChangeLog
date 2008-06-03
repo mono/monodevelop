@@ -1,5 +1,10 @@
 2008-06-03  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Projects.Formats.MD1/CmbxFileFormat.cs: Added missing
+	  null check.
+
+2008-06-03  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Projects/WorkspaceItem.cs,
 	  MonoDevelop.Projects/ProjectService.cs,
 	  MonoDevelop.Projects/SolutionItem.cs,

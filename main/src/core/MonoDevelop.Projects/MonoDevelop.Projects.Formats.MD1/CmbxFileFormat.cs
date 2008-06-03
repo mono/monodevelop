@@ -93,7 +93,7 @@ namespace MonoDevelop.Projects.Formats.MD1
 			
 			// Check startup mode
 			CombineStartupMode startupMode = (CombineStartupMode) obj.ExtendedProperties ["StartMode"];
-			if (startupMode != null) {
+			if (startupMode != null && sol != null) {
 				sol.SingleStartup = startupMode.SingleStartup;
 				if (startupMode.SingleStartup)
 					sol.StartupItem = sol.FindProjectByName (startupMode.StartEntryName);
