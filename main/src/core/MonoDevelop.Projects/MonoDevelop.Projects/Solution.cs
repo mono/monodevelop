@@ -545,6 +545,11 @@ namespace MonoDevelop.Projects
 			
 			// Update the file name because the file format may have changed
 			item.FileName = item.FileName;
+			
+			if (StartupItem == item)
+				StartupItem = null;
+			else
+				MultiStartupItems.Remove (item);
 		}
 		
 		void RemoveReferencesToProject (DotNetProject projectToRemove)
