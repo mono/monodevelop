@@ -28,6 +28,7 @@ FILES =  \
 	gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.GeneralProjectOptionsWidget.cs \
 	gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.OutputOptionsPanelWidget.cs \
 	gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.RuntimeOptionsPanelWidget.cs \
+	gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.StartupOptionsPanelWidget.cs \
 	gtk-gui/MonoDevelop.Projects.Gui.Dialogs.RenameConfigDialog.cs \
 	MonoDevelop.Projects.Gui.Completion/CodeCompletionData.cs \
 	MonoDevelop.Projects.Gui.Completion/CodeCompletionDataProvider.cs \
@@ -59,6 +60,7 @@ FILES =  \
 	MonoDevelop.Projects.Gui.Dialogs.OptionPanels/OutputOptionsPanel.cs \
 	MonoDevelop.Projects.Gui.Dialogs.OptionPanels/RuntimeOptionsPanel.cs \
 	MonoDevelop.Projects.Gui.Dialogs.OptionPanels/SolutionItemConfigurationsPanel.cs \
+	MonoDevelop.Projects.Gui.Dialogs.OptionPanels/StartupOptionsPanel.cs \
 	MonoDevelop.Projects.Gui.Dialogs/CombineOptionsDialog.cs \
 	MonoDevelop.Projects.Gui.Dialogs/DeleteConfigDialog.cs \
 	MonoDevelop.Projects.Gui.Dialogs/ItemOptionsDialog.cs \

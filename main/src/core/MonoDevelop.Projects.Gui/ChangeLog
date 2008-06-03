@@ -1,3 +1,16 @@
+2008-06-03  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Gui.addin.xml, MonoDevelop.Projects.Gui.mdp,
+	  gtk-gui/gui.stetic, Makefile.am,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/StartupOptionsPanel.cs:
+	  Implemented new options panel for setting the solution startup
+	  options.
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.GeneralProjectOptionsWidget.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CombineInformationWidget.cs,
+	  gtk-gui/objects.xml,
+	  gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.StartupOptionsPanelWidget.cs:
+	  Updated.
+
 2008-05-22  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Projects.Gui.addin.xml: Reorganize the main settings

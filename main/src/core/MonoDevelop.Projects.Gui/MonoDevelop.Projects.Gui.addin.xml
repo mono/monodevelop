@@ -52,6 +52,9 @@
 			<Condition id="ItemType" value="IConfigurationTarget">
 				<Section id = "CustomCommands" _label = "Custom Commands" fill = "true" class = "MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CustomCommandPanel"/>
 			</Condition>
+			<Condition id="ItemType" value="Solution">
+				<Section id = "StartupOptionsPanel" _label = "Startup Project" fill = "true" class = "MonoDevelop.Projects.Gui.Dialogs.OptionPanels.StartupOptionsPanel"/>
+			</Condition>
 		</Section>
 		<Section id="Build" _label="Build">
 			<Section id="General" _label="General">

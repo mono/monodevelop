@@ -23,4 +23,8 @@
     </itemgroups>
     <signals />
   </object>
+  <object type="MonoDevelop.Projects.Gui.Dialogs.OptionPanels.StartupOptionsPanelWidget" palette-category="MonoDevelop.Projects.Gui" allow-children="false" base-type="Gtk.Bin" internal="true">
+    <itemgroups />
+    <signals />
+  </object>
 </objects>

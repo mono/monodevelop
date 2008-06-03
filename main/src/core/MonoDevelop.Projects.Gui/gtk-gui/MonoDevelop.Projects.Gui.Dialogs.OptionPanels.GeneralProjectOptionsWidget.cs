@@ -176,12 +176,11 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels {
             // Container child table11.Gtk.Table+TableChild
             this.scrolledwindow5 = new Gtk.ScrolledWindow();
             this.scrolledwindow5.WidthRequest = 350;
-            this.scrolledwindow5.HeightRequest = 150;
+            this.scrolledwindow5.HeightRequest = 100;
             this.scrolledwindow5.Name = "scrolledwindow5";
             this.scrolledwindow5.ShadowType = ((Gtk.ShadowType)(1));
             // Container child scrolledwindow5.Gtk.Container+ContainerChild
             this.projectDescriptionTextView = new Gtk.TextView();
-            this.projectDescriptionTextView.HeightRequest = 160;
             this.projectDescriptionTextView.Name = "projectDescriptionTextView";
             this.scrolledwindow5.Add(this.projectDescriptionTextView);
             this.table11.Add(this.scrolledwindow5);

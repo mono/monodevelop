@@ -44,7 +44,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels {
             this.descLabel = new Gtk.Label();
             this.descLabel.Name = "descLabel";
             this.descLabel.Xalign = 0F;
-            this.descLabel.Yalign = 1F;
+            this.descLabel.Yalign = 0F;
             this.descLabel.LabelProp = MonoDevelop.Core.GettextCatalog.GetString("_Description:");
             this.descLabel.UseUnderline = true;
             this.table14.Add(this.descLabel);
@@ -56,12 +56,11 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels {
             // Container child table14.Gtk.Table+TableChild
             this.scrolledwindow14 = new Gtk.ScrolledWindow();
             this.scrolledwindow14.WidthRequest = 350;
-            this.scrolledwindow14.HeightRequest = 150;
+            this.scrolledwindow14.HeightRequest = 100;
             this.scrolledwindow14.Name = "scrolledwindow14";
             this.scrolledwindow14.ShadowType = ((Gtk.ShadowType)(1));
             // Container child scrolledwindow14.Gtk.Container+ContainerChild
             this.descView = new Gtk.TextView();
-            this.descView.HeightRequest = 160;
             this.descView.Name = "descView";
             this.scrolledwindow14.Add(this.descView);
             this.table14.Add(this.scrolledwindow14);
