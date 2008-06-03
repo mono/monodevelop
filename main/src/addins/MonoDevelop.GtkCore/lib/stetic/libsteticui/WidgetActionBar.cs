@@ -19,6 +19,7 @@ namespace Stetic
 		Hashtable sensitives, invisibles;
 		ArrayList toggles;
 		Gtk.Tooltips tips = new Gtk.Tooltips ();
+		bool disposed;
 		bool updating;
 		bool allowBinding;
 		WidgetDesignerFrontend frontend;
@@ -48,6 +49,11 @@ namespace Stetic
 		
 		public override void Dispose ()
 		{
+			if (disposed)
+				return;
+			disposed = true;
+			combo.Destroy ();
+			combo = null;
 			RootWidget = null;
 			Clear ();
 			base.Dispose ();
@@ -67,7 +73,8 @@ namespace Stetic
 				}
 				
 				rootWidget = value;
-				combo.RootWidget = rootWidget;
+				if (combo != null)
+					combo.RootWidget = rootWidget;
 				
 				if (rootWidget != null) {
 					project = (Stetic.ProjectBackend) rootWidget.Project;

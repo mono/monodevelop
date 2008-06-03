@@ -40,9 +40,16 @@ namespace Stetic
 			return session.Editor;
 		}
 		
+		bool disposed = false;
+
 		public override void Dispose ()
 		{
-			session.Dispose ();
+			if (disposed)
+				return;
+			disposed = true;
+
+			if (session != null)
+				session.Dispose ();
 			frontend.disposed = true;
 			System.Runtime.Remoting.RemotingServices.Disconnect (frontend);
 			base.Dispose ();

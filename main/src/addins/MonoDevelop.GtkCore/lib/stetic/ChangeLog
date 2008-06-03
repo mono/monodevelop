@@ -1,3 +1,63 @@
+2008-06-02  Mike Kestner <mkestner@novell.com> 
+
+	libstetic/wrapper/Object.cs: dispose guarding
+	libstetic/wrapper/Widget.cs: dispose guarding
+
+2008-05-28  Mike Kestner <mkestner@novell.com> 
+
+	libstetic/editor/ActionGroupEditor.cs: dispose guarding
+	libstetic/editor/ActionMenuItem.cs: dispose guarding
+	libsteticui/ActionGroupDesigner.cs: dispose guarding
+	libsteticui/ActionGroupEditSession.cs: dispose guarding
+	libsteticui/ActionGroupToolbar.cs: dispose guarding
+	libsteticui/WidgetActionBar.cs: dispose guarding
+
+2008-05-21  Mike Kestner <mkestner@novell.com> 
+
+	* libstetic/wrapper/ActionToolbarWrapper.cs: call FillMenu on Wrap
+	so that the actionTree is populated on the editor.  Otherwise we
+	crash when inserting items.  [Fixes #377672]  Also fix what looks to
+	be a copy/paste error on a UIManagerItemType in the ActionTree.
+
+2008-05-20  Mike Kestner <mkestner@novell.com> 
+
+	* libsteticui/LibraryCache.cs: do a recursive delete when revising
+	the cache directory.
+
+2008-05-15  Mike Kestner <mkestner@novell.com> 
+
+	* libsteticui/Application.cs: remove redundant cache.  Destroy widgets
+	on Dispose instead of Disposing them.
+
+2008-05-13  Mike Kestner <mkestner@novell.com> 
+
+	* libsteticui/Application.cs: refactor to split out isolated backend
+	and inprocess backend cases.  Dispose additions.  Destroy handling for
+	the public accessors.
+	* libsteticui/ApplicationBackendController.cs: use IsolatedApplication.
+	* libsteticui/PluggableWidget.cs: IsolatedApplication handling and
+	dispose rework.
+	* libsteticui/Project.cs: ditto.
+	* stetic/Stetic.cs: use new ApplicationFactory.
+
+2008-05-13  Mike Kestner <mkestner@novell.com> 
+
+	* libsteticui/AssemblyResolver.cs: update to JBs latest Linker version.
+	* libsteticui/CecilWidgetLibrary.cs: use new cache API.
+	* libsteticui/LibraryCache.cs: rewritten to use instances, 
+	XmlSerialization of the index and keep the index in memory, and to add
+	HasWidgets capability.  Should be able to remove the other cache from
+	Application now.
+
+2008-05-11  Mike Kestner <mkestner@novell.com> 
+
+	* libsteticui/SignalsEditor.cs: some Disposal bulletproofing.
+
+2008-04-30  Mike Kestner <mkestner@novell.com> 
+
+	* libstetic/wrapper/objects.xml: clamp Gtk.Misc.(X|Y)align to values
+	between 0.0 and 1.0.
+
 2008-02-28  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* libstetic/editor/ActionItem.cs: Properly handle drag event fired by

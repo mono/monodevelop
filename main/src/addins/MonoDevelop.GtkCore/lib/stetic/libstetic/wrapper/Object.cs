@@ -6,6 +6,8 @@ namespace Stetic.Wrapper {
 
 		public override void Dispose ()
 		{
+			if (Wrapped == null)
+				return;
 			((GLib.Object)Wrapped).RemoveNotification (NotifyHandler);
 			base.Dispose ();
 		}

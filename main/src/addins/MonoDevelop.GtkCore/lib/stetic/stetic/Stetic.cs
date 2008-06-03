@@ -84,7 +84,7 @@ namespace Stetic {
 			int ret;
 			
 			if (args.Length - n > 2 && ((args [n] == "--generate" || args [n] == "-g"))) {
-				SteticApp = new Stetic.Application (IsolationMode.None);
+				SteticApp = Stetic.ApplicationFactory.CreateApplication (IsolationMode.None);
 				GenerationOptions ops = new GenerationOptions ();
 				ops.UsePartialClasses = usePartial;
 				ops.GenerateEmptyBuildMethod = genEmpty;
@@ -93,7 +93,7 @@ namespace Stetic {
 				ret = GenerateCode (args [n+1], args, n+2, ops);
 			}
 			else {
-				SteticApp = new Stetic.Application (mode);
+				SteticApp = Stetic.ApplicationFactory.CreateApplication (mode);
 				SteticApp.AllowInProcLibraries = false;
 				ret = RunApp (args, n);
 			}

@@ -98,6 +98,9 @@ namespace Stetic.Wrapper {
 		
 		public override void Dispose ()
 		{
+			if (Wrapped == null)
+				return;
+
 			if (Project != null && Project.Selection == Wrapped)
 				Project.Selection = null;
 
@@ -109,6 +112,7 @@ namespace Stetic.Wrapper {
 			if (actionGroups != null) {
 				foreach (ActionGroup ag in actionGroups)
 					ag.Dispose ();
+				actionGroups = null;
 			}
 			base.Dispose ();
 		}
@@ -213,7 +217,7 @@ namespace Stetic.Wrapper {
 		
 		public new Gtk.Widget Wrapped {
 			get {
-				return (Gtk.Widget)base.Wrapped;
+				return base.Wrapped as Gtk.Widget;
 			}
 		}
 

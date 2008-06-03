@@ -54,8 +54,11 @@ namespace Stetic
 				backend.SetFrontend (this);
 			}
 
-			app.BackendChanging += OnBackendChanging;
-			app.BackendChanged += OnBackendChanged;
+			if (app is IsolatedApplication) {
+				IsolatedApplication iapp = app as IsolatedApplication;
+				iapp.BackendChanging += OnBackendChanging;
+				iapp.BackendChanged += OnBackendChanged;
+			}
 		}
 		
 		internal ProjectBackend ProjectBackend {
@@ -80,10 +83,15 @@ namespace Stetic
 			get { return app; }
 		}
 		
+		internal event EventHandler Disposed;
+
 		public void Dispose ()
 		{
-			app.BackendChanging -= OnBackendChanging;
-			app.BackendChanged -= OnBackendChanged;
+			if (app is IsolatedApplication) {
+				IsolatedApplication iapp = app as IsolatedApplication;
+				iapp.BackendChanging -= OnBackendChanging;
+				iapp.BackendChanged -= OnBackendChanged;
+			}
 			
 			if (tmpProjectFile != null && File.Exists (tmpProjectFile)) {
 				File.Delete (tmpProjectFile);
@@ -91,9 +99,9 @@ namespace Stetic
 			}
 			if (backend != null)
 				backend.Dispose ();
-			app.DisposeProject (this);
+			if (Disposed != null)
+				Disposed (this, EventArgs.Empty);
 			System.Runtime.Remoting.RemotingServices.Disconnect (this);
-			app.UpdateWidgetLibraries (false, false);
 		}
 
 		public override object InitializeLifetimeService ()

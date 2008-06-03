@@ -178,6 +178,7 @@ namespace Stetic
 			System.Runtime.Remoting.RemotingServices.Disconnect (frontend);
 			if (editSession != null)
 				editSession.Dispose ();
+			editSession = null;
 			base.Dispose ();
 		}
 		

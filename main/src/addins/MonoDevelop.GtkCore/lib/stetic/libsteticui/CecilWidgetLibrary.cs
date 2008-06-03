@@ -11,6 +11,8 @@ namespace Stetic
 {
 	internal class CecilWidgetLibrary: WidgetLibrary
 	{
+		static LibraryCache cache = LibraryCache.Load ();
+
 		AssemblyDefinition assembly;
 		DateTime timestamp;
 		string name;
@@ -48,16 +50,16 @@ namespace Stetic
 		
 		void ReadCachedDescription (string assemblyPath)
 		{
-			string path = LibraryCache.GetCachedFilePath (assemblyPath);
-			if (path == null)
+			if (!cache.IsCurrent (assemblyPath))
 				return;
-			
-			if (!File.Exists (path + ".objects"))
+
+			LibraryCache.LibraryInfo info = cache [assemblyPath];
+			if (!File.Exists (info.ObjectsPath))
 				return;
 			
 			try {
 				objects = new XmlDocument ();
-				objects.Load (path + ".objects");
+				objects.Load (info.ObjectsPath);
 			}
 			catch (Exception ex) {
 				Console.WriteLine (ex);
@@ -65,10 +67,10 @@ namespace Stetic
 				return;
 			}
 			
-			if (File.Exists (path + ".steticGui")) {
+			if (File.Exists (info.GuiPath)) {
 				try {
 					steticGui = new XmlDocument ();
-					steticGui.Load (path + ".steticGui");
+					steticGui.Load (info.GuiPath);
 				}
 				catch (Exception ex) {
 					Console.WriteLine (ex);
@@ -80,19 +82,14 @@ namespace Stetic
 		
 		void StoreCachedDescription ()
 		{
-			string path = LibraryCache.UpdateCachedFile (fileName);
-			if (path == null)
-				return;
+			LibraryCache.LibraryInfo info = cache [fileName];
 			
 			try {
-				string objfile = path + ".objects";
-				string guifile = path + ".steticGui";
-				
-				objects.Save (objfile);
+				objects.Save (info.ObjectsPath);
 				if (steticGui != null)
-					steticGui.Save (guifile);
-				else if (File.Exists (guifile))
-					File.Delete (guifile);
+					steticGui.Save (info.GuiPath);
+				else if (File.Exists (info.GuiPath))
+					File.Delete (info.GuiPath);
 			}
 			catch (Exception ex) {
 				Console.WriteLine (ex);
@@ -362,18 +359,7 @@ namespace Stetic
 		
 		public static bool IsWidgetLibrary (string path)
 		{
-			try {
-				AssemblyDefinition adef = AssemblyFactory.GetAssembly (path);
-				
-				foreach (Resource res in adef.MainModule.Resources) {
-					EmbeddedResource eres = res as EmbeddedResource;
-					if (eres == null) continue;
-					if (eres.Name == "objects.xml")
-						return true;
-				}
-			} catch {
-			}
-			return false;
+			return cache [path].HasWidgets;
 		}
 		
 		public static string FindAssembly (ImportContext importContext, string assemblyName, string basePath)
@@ -393,7 +379,7 @@ namespace Stetic
 			
 			AssemblyResolver res = new AssemblyResolver ();
 			try {
-				return res.Resolve (assemblyName, col);
+				return res.Resolve (AssemblyNameReference.Parse (assemblyName), col);
 			} catch {
 			}
 			return null;
@@ -426,7 +412,14 @@ namespace Stetic
 			EmbeddedResource res = GetResource (asm, "objects.xml");
 			if (res == null)
 				return list;
+			else
+				return GetComponentsFromResource (app, asm, res, fileName);
+		}
 				
+
+		static List<ComponentType> GetComponentsFromResource (Application app, AssemblyDefinition asm, EmbeddedResource res, string fileName)
+		{
+			List<ComponentType> list = new List<ComponentType> ();
 			MemoryStream ms = new MemoryStream (res.Data);
 			XmlDocument objects = new XmlDocument ();
 			objects.Load (ms);

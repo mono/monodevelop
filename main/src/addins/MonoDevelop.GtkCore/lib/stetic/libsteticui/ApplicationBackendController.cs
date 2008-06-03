@@ -15,13 +15,13 @@ namespace Stetic
 		bool stopping;
 		ApplicationBackend backend;
 		string channelId;
-		Application app;
+		IsolatedApplication app;
 		
 		ManualResetEvent runningEvent = new ManualResetEvent (false);
 		
 		public event EventHandler Stopped;
 		
-		public ApplicationBackendController (Application app, string channelId)
+		public ApplicationBackendController (IsolatedApplication app, string channelId)
 		{
 			this.app = app;
 			this.channelId = channelId;

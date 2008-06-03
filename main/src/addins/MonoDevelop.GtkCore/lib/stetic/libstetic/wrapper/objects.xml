@@ -215,8 +215,8 @@
 	    <itemgroup label="Miscellaneous Alignment Properties">
 		<property name="Xpad" />
 		<property name="Ypad" />
-		<property name="Xalign" />
-		<property name="Yalign" />
+		<property name="Xalign" min="0.0" max="1.0" />
+		<property name="Yalign" min="0.0" max="1.0" />
 		<command name="AlignLeft" label="Align Left" icon="gtk-justify-left" />
 		<command name="AlignCenter" label="Align Center" icon="gtk-justify-center" />
 		<command name="AlignRight" label="Align Right" icon="gtk-justify-right" />

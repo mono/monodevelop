@@ -25,157 +25,28 @@ namespace Stetic
 	
 	public delegate string AssemblyResolverCallback (string assemblyName);
 	
-	public class Application: MarshalByRefObject, IDisposable
-	{
-		ApplicationBackend backend;
-		bool externalBackend;
+	public static class ApplicationFactory {
+
+		public static Application CreateApplication (IsolationMode mode)
+		{
+			switch (mode) {
+			case IsolationMode.None:
+				return new LocalApplication ();
+			case IsolationMode.ProcessTcp:
+			case IsolationMode.ProcessUnix:
+				return new IsolatedApplication (mode);
+			default:
+				throw new ArgumentException ("mode");
+			}
+		}
+	}
+
+	internal class IsolatedApplication : Application {
+
 		string channelId;
 		ApplicationBackendController backendController;
-		
-		Hashtable components = new Hashtable ();
-		Hashtable types = new Hashtable ();
-		ArrayList widgetLibraries = new ArrayList ();
-		ArrayList projects = new ArrayList ();
-		Project activeProject;
-		Designer activeDesigner;
-		
-		WidgetPropertyTree propertiesWidget;
-		Palette paletteWidget;
-		WidgetTree projectWidget;
-		SignalsEditor signalsWidget;
-		bool allowInProcLibraries = true;
-		bool disposed;
-		
-		static Hashtable libraryCheckCache; 
-		
-		internal event BackendChangingHandler BackendChanging;
-		internal event BackendChangedHandler BackendChanged;
-		internal event EventHandler Disposing;
-		
-		public Application (IsolationMode mode)
-		{
-			if (mode == IsolationMode.None) {
-				backend = new ApplicationBackend (this);
-				externalBackend = false;
-			} else {
-				externalBackend = true;
-				channelId = RegisterRemotingChannel (mode);
-				backendController = new ApplicationBackendController (this, channelId);
-				backendController.StartBackend ();
-				OnBackendChanged (false);
-			}
-		}
-		
-		public AssemblyResolverCallback WidgetLibraryResolver {
-			get { return Backend.WidgetLibraryResolver; }
-			set { Backend.WidgetLibraryResolver = value; }
-		}
-		
-		public bool ShowNonContainerWarning {
-			get { return backend.ShowNonContainerWarning; }
-			set { backend.ShowNonContainerWarning = value; }
-		}
-		
-		// Loads the libraries registered in the projects or in the application.
-		// It will reload the libraries if they have changed. Libraries won't be
-		// unloaded unless forceUnload is set to true
-		public void UpdateWidgetLibraries (bool forceUnload)
-		{
-			UpdateWidgetLibraries (true, forceUnload);
-		}
-		
-		internal void UpdateWidgetLibraries (bool allowBackendRestart, bool forceUnload)
-		{
-			// Collect libraries from the project and from the application
-			
-			ArrayList assemblies = new ArrayList ();
-			assemblies.AddRange (widgetLibraries);
-			
-			ArrayList projectBackends = new ArrayList ();
-			foreach (Project p in projects)
-				if (p.IsBackendLoaded)
-					projectBackends.Add (p.ProjectBackend);
-			
-			if (!Backend.UpdateLibraries (assemblies, projectBackends, allowBackendRestart, forceUnload))
-			{
-				// The backend process needs to be restarted.
-				// This is done in background.
-				
-				ThreadPool.QueueUserWorkItem (delegate {
-					try {
-						// Start the new backend
-						ApplicationBackendController newController = new ApplicationBackendController (this, channelId);
-						newController.StartBackend ();
-						Gtk.Application.Invoke (newController, EventArgs.Empty, OnNewBackendStarted);
-					} catch {
-						// FIXME: show an error message
-					}
-				});
-			}
-		}
-		
-		void OnNewBackendStarted (object ob, EventArgs args)
-		{
-			// The new backend is running, just do the switch
-			
-			OnBackendChanging ();
-			
-			ApplicationBackendController oldBackend = backendController;
-			backendController = (ApplicationBackendController) ob;
-			
-			OnBackendChanged (true);
 
-			// The old backend can now be safely stopped
-			oldBackend.StopBackend (false);
-		}
-		
-		void OnBackendStopped (object ob, EventArgs args)
-		{
-			// The backend process crashed, try to restart it
-			backend = null;
-			backendController = new ApplicationBackendController (this, channelId);
-			backendController.StartBackend ();
-			OnBackendChanged (true);
-		}
-		
-		void OnBackendChanged (bool notify)
-		{
-			ApplicationBackend oldBackend = backend;
-			
-			backend = backendController.Backend;
-			backendController.Stopped += OnBackendStopped;
-			UpdateWidgetLibraries (false, false);
-			lock (types) {
-				types.Clear ();
-			}
-			
-			Component[] comps;
-			lock (components) {
-				// All components should have been cleared by the backend,
-				// just make sure it did
-				comps = new Component [components.Count];
-				components.Values.CopyTo (comps, 0);
-				components.Clear ();
-			}
-			
-			foreach (Component c in comps) {
-				c.Dispose ();
-			}
-
-			if (notify && BackendChanged != null)
-				BackendChanged (oldBackend);
-
-			backend.ActiveProject = activeProject != null ? activeProject.ProjectBackend : null;
-		}
-		
-		void OnBackendChanging ()
-		{
-			backend.GlobalWidgetLibraries = widgetLibraries;
-			if (BackendChanging != null)
-				BackendChanging ();
-		}
-		
-		internal string RegisterRemotingChannel (IsolationMode mode)
+		string RegisterRemotingChannel (IsolationMode mode)
 		{
 			string remotingChannel;
 			if (mode == IsolationMode.ProcessTcp) {
@@ -194,6 +65,200 @@ namespace Stetic
 			}
 			return remotingChannel;
 		}
+
+		public IsolatedApplication (IsolationMode mode)
+		{
+			if (mode == IsolationMode.None)
+				throw new ArgumentException ("mode");
+			channelId = RegisterRemotingChannel (mode);
+			backendController = new ApplicationBackendController (this, channelId);
+			backendController.StartBackend ();
+			OnBackendChanged (false);
+		}
+
+		public override void Dispose ()
+		{
+			base.Dispose ();
+			backendController.StopBackend (true);
+		}
+
+		public event BackendChangingHandler BackendChanging;
+		public event BackendChangedHandler BackendChanged;
+		
+		void OnNewBackendStarted (object ob, EventArgs args)
+		{
+			OnBackendChanging ();
+			ApplicationBackendController oldBackend = backendController;
+			backendController = (ApplicationBackendController) ob;
+			OnBackendChanged (true);
+			oldBackend.StopBackend (false);
+		}
+		
+		void OnBackendStopped (object ob, EventArgs args)
+		{
+			// The backend process crashed, try to restart it
+			Backend = null;
+			backendController = new ApplicationBackendController (this, channelId);
+			backendController.StartBackend ();
+			OnBackendChanged (true);
+		}
+		
+		void OnBackendChanged (bool notify)
+		{
+			ApplicationBackend oldBackend = Backend;
+			
+			Backend = backendController.Backend;
+			backendController.Stopped += OnBackendStopped;
+			UpdateWidgetLibraries (false, false);
+			ClearCollections ();
+			if (notify && BackendChanged != null)
+				BackendChanged (oldBackend);
+
+			Backend.ActiveProject = ActiveProject != null ? ActiveProject.ProjectBackend : null;
+		}
+		
+		void OnBackendChanging ()
+		{
+			Backend.GlobalWidgetLibraries = widgetLibraries;
+			if (BackendChanging != null)
+				BackendChanging ();
+		}
+
+		internal override void RestartBackend ()
+		{
+			// The backend process needs to be restarted.
+			// This is done in background.
+				
+			ThreadPool.QueueUserWorkItem (delegate {
+				try {
+					// Start the new backend
+					ApplicationBackendController newController = new ApplicationBackendController (this, channelId);
+					newController.StartBackend ();
+					Gtk.Application.Invoke (newController, EventArgs.Empty, OnNewBackendStarted);
+				} catch {
+					// FIXME: show an error message
+				}
+			});
+		}
+
+		internal override ComponentType CreateComponentType (string typeName)
+		{
+			string desc = null, className = null, category = null, targetGtkVersion = null, library = null;
+			Gdk.Pixbuf px = null;
+				
+			byte[] icon;
+					
+			if (Backend.GetClassDescriptorInfo (typeName, out desc, out className, out category, out targetGtkVersion, out library, out icon) && icon != null)
+				px = new Gdk.Pixbuf (icon);
+					
+			if (px == null)
+				px = ComponentType.Unknown.Icon;
+					
+			if (desc == null)
+				desc = typeName;
+
+			return new ComponentType (this, typeName, desc, className, category, targetGtkVersion, library, px);
+		}
+	}
+
+	internal class LocalApplication : Application {
+
+		public LocalApplication ()
+		{
+			Backend = new ApplicationBackend (this);
+		}
+
+		public override void Dispose ()
+		{
+			base.Dispose ();
+			Backend.Dispose ();
+		}
+
+		internal override ComponentType CreateComponentType (string typeName)
+		{
+			ClassDescriptor cls = Registry.LookupClassByName (typeName);
+			if (cls == null)
+				return null;
+				
+			return new ComponentType (this, typeName, cls.Label, cls.WrappedTypeName, cls.Category, cls.TargetGtkVersion, cls.Library.Name, cls.Icon);
+		}
+	}
+
+	public abstract class Application : MarshalByRefObject, IDisposable {
+
+		ApplicationBackend backend;
+
+		Hashtable components = new Hashtable ();
+		Hashtable types = new Hashtable ();
+		internal ArrayList widgetLibraries = new ArrayList ();
+		ArrayList projects = new ArrayList ();
+		Project activeProject;
+		Designer activeDesigner;
+		
+		WidgetPropertyTree propertiesWidget;
+		Palette paletteWidget;
+		WidgetTree projectWidget;
+		SignalsEditor signalsWidget;
+		bool allowInProcLibraries = true;
+		bool disposed;
+		
+		public AssemblyResolverCallback WidgetLibraryResolver {
+			get { return Backend.WidgetLibraryResolver; }
+			set { Backend.WidgetLibraryResolver = value; }
+		}
+		
+		public bool ShowNonContainerWarning {
+			get { return Backend.ShowNonContainerWarning; }
+			set { Backend.ShowNonContainerWarning = value; }
+		}
+		
+		// Loads the libraries registered in the projects or in the application.
+		// It will reload the libraries if they have changed. Libraries won't be
+		// unloaded unless forceUnload is set to true
+		public void UpdateWidgetLibraries (bool forceUnload)
+		{
+			UpdateWidgetLibraries (true, forceUnload);
+		}
+		
+		internal virtual void RestartBackend ()
+		{
+		}
+
+		protected void ClearCollections ()
+		{
+			lock (types) {
+				types.Clear ();
+			}
+			
+			Component[] comps;
+			lock (components) {
+				// All components should have been cleared by the backend,
+				// just make sure it did
+				comps = new Component [components.Count];
+				components.Values.CopyTo (comps, 0);
+				components.Clear ();
+			}
+			
+			foreach (Component c in comps) {
+				c.Dispose ();
+			}
+		}
+
+		internal void UpdateWidgetLibraries (bool allowBackendRestart, bool forceUnload)
+		{
+			// Collect libraries from the project and from the application
+			
+			ArrayList assemblies = new ArrayList ();
+			assemblies.AddRange (widgetLibraries);
+			
+			ArrayList projectBackends = new ArrayList ();
+			foreach (Project p in projects)
+				if (p.IsBackendLoaded)
+					projectBackends.Add (p.ProjectBackend);
+			
+			if (!Backend.UpdateLibraries (assemblies, projectBackends, allowBackendRestart, forceUnload))
+				RestartBackend ();
+		}
 		
 		public virtual void Dispose ()
 		{
@@ -201,32 +266,38 @@ namespace Stetic
 				return;
 				
 			disposed = true;
-			if (Disposing != null)
-				Disposing (this, EventArgs.Empty);
-			if (externalBackend) {
-				backendController.StopBackend (true);
-			} else {
-				backend.Dispose ();
-			}
+			ClearCollections ();
+			ArrayList copy = (ArrayList) projects.Clone ();
+			foreach (Project p in copy)
+				p.Dispose ();
+			if (propertiesWidget != null)
+				 propertiesWidget.Destroy ();
+			if (paletteWidget != null)
+				 paletteWidget.Destroy ();
+			if (projectWidget != null)
+				 projectWidget.Destroy ();
+			if (signalsWidget != null)
+				 signalsWidget.Destroy ();
+			widgetLibraries.Clear ();
 			System.Runtime.Remoting.RemotingServices.Disconnect (this);
 		}
 		
-		internal bool Disposed {
-			get { return disposed; }
-		}
-
 		public override object InitializeLifetimeService ()
 		{
 			// Will be disconnected when calling Dispose
 			return null;
 		}
 		
-		internal ApplicationBackend Backend {
-			get {
-				if (disposed)
-					throw new InvalidOperationException ("Application has been disposed");
-				return backend;
-			}
+		internal ApplicationBackend Backend { 
+			get { return backend; }
+			set { backend = value; }
+		}
+		
+		void ProjectDisposed (object sender, EventArgs args)
+		{
+			projects.Remove (sender as Project);
+			if (!disposed)
+				UpdateWidgetLibraries (false, false);
 		}
 		
 		public Project LoadProject (string path)
@@ -234,6 +305,7 @@ namespace Stetic
 			Project p = new Project (this);
 			p.Load (path);
 			projects.Add (p);
+			p.Disposed += ProjectDisposed;
 			return p;
 		}
 		
@@ -241,6 +313,7 @@ namespace Stetic
 		{
 			Project p = new Project (this);
 			projects.Add (p);
+			p.Disposed += ProjectDisposed;
 			return p;
 		}
 		
@@ -256,7 +329,7 @@ namespace Stetic
 		{
 			if (!widgetLibraries.Contains (assemblyPath)) {
 				widgetLibraries.Add (assemblyPath);
-				Backend.GlobalWidgetLibraries = widgetLibraries; 
+				Backend.GlobalWidgetLibraries = widgetLibraries;
 				UpdateWidgetLibraries (false, false);
 			}
 		}
@@ -264,7 +337,7 @@ namespace Stetic
 		public void RemoveWidgetLibrary (string assemblyPath)
 		{
 			widgetLibraries.Remove (assemblyPath);
-			Backend.GlobalWidgetLibraries = widgetLibraries; 
+			Backend.GlobalWidgetLibraries = widgetLibraries;
 			UpdateWidgetLibraries (false, false);
 		}
 		
@@ -277,7 +350,7 @@ namespace Stetic
 		{
 			ImportContext ic = new ImportContext ();
 			ic.App = this.Backend;
-			return Application.InternalIsWidgetLibrary (ic, assemblyRef);
+			return InternalIsWidgetLibrary (ic, assemblyRef);
 		}
 		
 		internal static bool InternalIsWidgetLibrary (ImportContext ic, string assemblyRef)
@@ -294,20 +367,8 @@ namespace Stetic
 				if (path == null)
 					return false;
 			}
-			
-			LibraryData data = GetLibraryCacheData (path);
-			if (data == null) {
-				// There is no info about this library, it has to be checked
-				bool isLib = CecilWidgetLibrary.IsWidgetLibrary (path);
-				SetLibraryCacheData (path, isLib);
-				return isLib;
-			} else
-				return data.IsLibrary;
-		}
-		
-		internal void DisposeProject (Project p)
-		{
-			projects.Remove (p);
+
+			return CecilWidgetLibrary.IsWidgetLibrary (path);
 		}
 		
 		public CodeGenerationResult GenerateProjectCode (string file, string namespaceName, CodeDomProvider provider, GenerationOptions options, params Project[] projects)
@@ -361,10 +422,6 @@ namespace Stetic
 			}
 		}
 		
-		internal bool UseExternalBackend {
-			get { return externalBackend; }
-		}
-			
 		internal Project ActiveProject {
 			get { return activeProject; }
 			set { 
@@ -383,32 +440,40 @@ namespace Stetic
 		
 		public WidgetPropertyTree PropertiesWidget {
 			get {
-				if (propertiesWidget == null)
+				if (propertiesWidget == null) {
 					propertiesWidget = new WidgetPropertyTree (this);
+					propertiesWidget.Destroyed += delegate { propertiesWidget = null; };
+				}
 				return propertiesWidget;
 			}
 		}
 		
 		public Palette PaletteWidget {
 			get {
-				if (paletteWidget == null)
+				if (paletteWidget == null) {
 					paletteWidget = new Palette (this);
+					paletteWidget.Destroyed += delegate { paletteWidget = null; };
+				}
 				return paletteWidget;
 			}
 		}
 		
 		public WidgetTree WidgetTreeWidget {
 			get {
-				if (projectWidget == null)
+				if (projectWidget == null) {
 					projectWidget = new WidgetTree (this);
+					projectWidget.Destroyed += delegate { projectWidget = null; };
+				}
 				return projectWidget;
 			}
 		}
 		
 		public SignalsEditor SignalsWidget {
 			get {
-				if (signalsWidget == null)
+				if (signalsWidget == null) {
 					signalsWidget = new SignalsEditor (this);
+					signalsWidget.Destroyed += delegate { signalsWidget = null; };
+				}
 				return signalsWidget;
 			}
 		}
@@ -436,6 +501,8 @@ namespace Stetic
 			}
 		}
 		
+		internal abstract ComponentType CreateComponentType (string typeName);
+
 		internal ComponentType GetComponentType (string typeName)
 		{
 			lock (types) {
@@ -448,36 +515,7 @@ namespace Stetic
 					return t;
 				}
 				
-				string desc = null, className = null, category = null, targetGtkVersion = null, library = null;
-				Gdk.Pixbuf px = null;
-				
-				if (externalBackend) {
-					byte[] icon;
-					
-					if (Backend.GetClassDescriptorInfo (typeName, out desc, out className, out category, out targetGtkVersion, out library, out icon)) {
-						if (icon != null)
-							px = new Gdk.Pixbuf (icon);
-					}
-					
-					if (px == null) {
-						px = ComponentType.Unknown.Icon;
-					}
-					
-					if (desc == null)
-						desc = typeName;
-				} else {
-					ClassDescriptor cls = Registry.LookupClassByName (typeName);
-					if (cls != null) {
-						desc = cls.Label;
-						className = cls.WrappedTypeName;
-						category = cls.Category;
-						targetGtkVersion = cls.TargetGtkVersion;
-						px = cls.Icon;
-						library = cls.Library.Name;
-					}
-				}
-				
-				t = new ComponentType (this, typeName, desc, className, category, targetGtkVersion, library, px);
+				t = CreateComponentType (typeName);
 				types [typeName] = t;
 				return t;
 			}
@@ -531,97 +569,6 @@ namespace Stetic
 			}
 		}
 		
-		static LibraryData GetLibraryCacheData (string path)
-		{
-			if (libraryCheckCache == null)
-				LoadLibraryCheckCache ();
-			LibraryData data = (LibraryData) libraryCheckCache [path];
-			if (data == null)
-				return null;
-
-			DateTime lastWrite = File.GetLastWriteTime (path);
-			if (data.LastCheck == lastWrite)
-				return data;
-			else
-				// Data not valid anymore
-				return null;
-		}
-		
-		static void SetLibraryCacheData (string path, bool isLibrary)
-		{
-			if (libraryCheckCache == null)
-				LoadLibraryCheckCache ();
-
-			LibraryData data = (LibraryData) libraryCheckCache [path];
-			if (data == null) {
-				data = new LibraryData ();
-				libraryCheckCache [path] = data;
-			}
-			data.IsLibrary = isLibrary;
-			data.LastCheck = File.GetLastWriteTime (path);
-			SaveLibraryCheckCache ();
-		}
-		
-		static void LoadLibraryCheckCache ()
-		{
-			bool needsSave = false;;
-			libraryCheckCache = new Hashtable ();
-			string cacheFile = Path.Combine (ConfigDir, "assembly-check-cache");
-			if (!File.Exists (cacheFile))
-				return;
-			
-			try {
-				XmlDocument doc = new XmlDocument ();
-				doc.Load (cacheFile);
-				foreach (XmlElement elem in doc.SelectNodes ("assembly-check-cache/assembly")) {
-					string file = elem.GetAttribute ("path");
-					if (File.Exists (file)) {
-						LibraryData data = new LibraryData ();
-						if (elem.GetAttribute ("isLibrary") == "yes")
-							data.IsLibrary = true;
-						data.LastCheck = XmlConvert.ToDateTime (elem.GetAttribute ("timestamp"), XmlDateTimeSerializationMode.Local);
-					} else
-						needsSave = true;
-				}
-			} catch {
-				// If there is an error, just ignore the cached data
-				needsSave = true;
-			}
-			
-			if (needsSave)
-				SaveLibraryCheckCache ();
-		}
-		
-		static void SaveLibraryCheckCache ()
-		{
-			if (libraryCheckCache == null)
-				return;
-			
-			try {
-				if (!Directory.Exists (ConfigDir))
-					Directory.CreateDirectory (ConfigDir);
-					
-				XmlDocument doc = new XmlDocument ();
-				XmlElement delem = doc.CreateElement ("assembly-check-cache");
-				doc.AppendChild (delem);
-					
-				foreach (DictionaryEntry e in libraryCheckCache) {
-					LibraryData data = (LibraryData) e.Value;
-					XmlElement elem = doc.CreateElement ("assembly");
-					elem.SetAttribute ("path", (string) e.Key);
-					if (data.IsLibrary)
-						elem.SetAttribute ("isLibrary", "yes");
-					elem.SetAttribute ("timestamp", XmlConvert.ToString (data.LastCheck, XmlDateTimeSerializationMode.Local));
-					delem.AppendChild (elem);
-				}
-				
-				doc.Save (Path.Combine (ConfigDir, "assembly-check-cache"));
-			}
-			catch {
-				// If something goes wrong, just ignore the cached info
-			}
-		}
-		
 		static string ConfigDir {
 			get { 
 				string file = Path.Combine (Environment.GetFolderPath (Environment.SpecialFolder.Personal), ".config");
@@ -632,10 +579,4 @@ namespace Stetic
 
 	internal delegate void BackendChangingHandler ();
 	internal delegate void BackendChangedHandler (ApplicationBackend oldBackend);
-	
-	class LibraryData
-	{
-		public DateTime LastCheck;
-		public bool IsLibrary;
-	}
 }

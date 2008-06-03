@@ -42,8 +42,13 @@ namespace Stetic.Editor
 			CreateControls ();
 		}
 		
+		bool disposed;
+
 		public override void Dispose ()
 		{
+			if (disposed)
+				return;
+			disposed = true;
 			if (menuBarItem != null) {
 				menuBarItem.ButtonPressEvent -= OnMenuItemPress;
 				menuBarItem.ButtonReleaseEvent -= OnMemuItemRelease;
@@ -289,6 +294,9 @@ namespace Stetic.Editor
 		
 		public void Detach ()
 		{
+			if (disposed)
+				return;
+
 			Gtk.Table table = (Gtk.Table)Parent;
 			if (table == null)
 				return;

@@ -4,7 +4,7 @@
 // Author:
 //   Jb Evain (jbevain@gmail.com)
 //
-// (C) 2005 Jb Evain
+// (C) 2007 Novell, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -30,29 +30,160 @@
 // Keep in synch as much as possible.
 
 using System;
+using System.Collections;
 using System.Collections.Specialized;
 using System.IO;
-using SR = System.Reflection;
 using System.Text;
 using Mono.Cecil;
 
-namespace Stetic
-{
-	internal class AssemblyResolver
-	{
-		public virtual string Resolve (string fullName)
-		{
-			return Resolve (fullName, null);
+namespace Stetic {
+
+	internal class AssemblyResolver : BaseAssemblyResolver {
+
+		Hashtable _assemblies;
+
+		public IDictionary AssemblyCache {
+			get { return _assemblies; }
 		}
-		
-		public virtual string Resolve (AssemblyNameReference name)
+
+		public AssemblyResolver ()
 		{
-			return Resolve (name, null);
+			_assemblies = new Hashtable ();
 		}
-		
-		public string Resolve (string fullName, StringCollection basePaths)
+
+		public override AssemblyDefinition Resolve (AssemblyNameReference name)
 		{
-			return Resolve (AssemblyNameReference.Parse (fullName), basePaths);
+			AssemblyDefinition asm = (AssemblyDefinition) _assemblies [name.Name];
+			if (asm == null) {
+				asm = base.Resolve (name);
+				asm.Resolver = this;
+				_assemblies [name.Name] = asm;
+			}
+
+			return asm;
+		}
+
+		public TypeDefinition Resolve (TypeReference type)
+		{
+			if (type is TypeDefinition)
+				return (TypeDefinition) type;
+
+			AssemblyNameReference reference = type.Scope as AssemblyNameReference;
+			if (reference != null) {
+				AssemblyDefinition assembly = Resolve (reference);
+				return assembly.MainModule.Types [type.FullName];
+			}
+
+			ModuleDefinition module = type.Scope as ModuleDefinition;
+			if (module != null)
+				return module.Types [type.FullName];
+
+			throw new NotImplementedException ();
+		}
+
+		public FieldDefinition Resolve (FieldReference field)
+		{
+			TypeDefinition type = Resolve (field.DeclaringType);
+			return GetField (type.Fields, field);
+		}
+
+		static FieldDefinition GetField (ICollection collection, FieldReference reference)
+		{
+			foreach (FieldDefinition field in collection) {
+				if (field.Name != reference.Name)
+					continue;
+
+				if (!AreSame (field.FieldType, reference.FieldType))
+					continue;
+
+				return field;
+			}
+
+			return null;
+		}
+
+		public MethodDefinition Resolve (MethodReference method)
+		{
+			TypeDefinition type = Resolve (method.DeclaringType);
+			if (method.Name == MethodDefinition.Cctor || method.Name == MethodDefinition.Ctor)
+				return GetMethod (type.Constructors, method);
+			else
+				return GetMethod (type, method);
+		}
+
+		MethodDefinition GetMethod (TypeDefinition type, MethodReference reference)
+		{
+			while (type != null) {
+				MethodDefinition method = GetMethod (type.Methods, reference);
+				if (method == null)
+					type = Resolve (type.BaseType);
+				else
+					return method;
+			}
+
+			return null;
+		}
+
+		static MethodDefinition GetMethod (ICollection collection, MethodReference reference)
+		{
+			foreach (MethodDefinition meth in collection) {
+				if (meth.Name != reference.Name)
+					continue;
+
+				if (!AreSame (meth.ReturnType.ReturnType, reference.ReturnType.ReturnType))
+					continue;
+
+				if (!AreSame (meth.Parameters, reference.Parameters))
+					continue;
+
+				return meth;
+			}
+
+			return null;
+		}
+
+		static bool AreSame (ParameterDefinitionCollection a, ParameterDefinitionCollection b)
+		{
+			if (a.Count != b.Count)
+				return false;
+
+			if (a.Count == 0)
+				return true;
+
+			for (int i = 0; i < a.Count; i++)
+				if (!AreSame (a [i].ParameterType, b [i].ParameterType))
+					return false;
+
+			return true;
+		}
+
+		static bool AreSame (TypeReference a, TypeReference b)
+		{
+			while (a is TypeSpecification || b is TypeSpecification) {
+				if (a.GetType () != b.GetType ())
+					return false;
+
+				a = ((TypeSpecification) a).ElementType;
+				b = ((TypeSpecification) b).ElementType;
+			}
+
+			if (a is GenericParameter || b is GenericParameter) {
+				if (a.GetType() != b.GetType())
+					return false;
+
+				GenericParameter pa = (GenericParameter) a;
+				GenericParameter pb = (GenericParameter) b;
+
+				return pa.Position == pb.Position;
+			}
+
+			return a.FullName == b.FullName;
+		}
+
+		public void CacheAssembly (AssemblyDefinition assembly)
+		{
+			_assemblies [assembly.Name.FullName] = assembly;
+			assembly.Resolver = this;
 		}
 
 		public string Resolve (AssemblyNameReference name, StringCollection basePaths)
@@ -81,8 +212,7 @@ namespace Stetic
 
 		string GetCorlib (AssemblyNameReference reference)
 		{
-			SR.AssemblyName corlib = typeof (object).Assembly.GetName ();
-			if (corlib.Version == reference.Version)
+			if (typeof (object).Assembly.GetName ().Version == reference.Version)
 				return typeof (object).Assembly.Location;
 
 			string path = Directory.GetParent (
@@ -109,11 +239,6 @@ namespace Stetic
 			}
 
 			return Path.Combine (path, "mscorlib.dll");
-		}
-
-		public static bool OnMono ()
-		{
-			return typeof (object).Assembly.GetType ("System.MonoType", false) != null;
 		}
 
 		static string GetAssemblyInGac (AssemblyNameReference reference)

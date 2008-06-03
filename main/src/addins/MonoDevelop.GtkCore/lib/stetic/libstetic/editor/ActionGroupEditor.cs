@@ -16,6 +16,7 @@ namespace Stetic.Editor
 		EditableLabel headerLabel;
 		uint columns = 2;
 		bool modified;
+		bool disposed;
 		ObjectWrapperEventHandler changedEvent;
 		IDesignArea darea;
 		
@@ -58,6 +59,9 @@ namespace Stetic.Editor
 		
 		public override void Dispose ()
 		{
+			if (disposed)
+				return;
+			disposed = true;
 			headerLabel.Changed -= OnGroupNameChanged;
 			if (emptyLabel != null)
 				emptyLabel.ButtonPressEvent -= OnAddClicked;
@@ -100,7 +104,8 @@ namespace Stetic.Editor
 					foreach (Wrapper.Action a in actionGroup.Actions)
 						a.ObjectChanged += changedEvent;
 				}
-				Fill ();
+				if (!disposed)
+					Fill ();
 			}
 		}
 		

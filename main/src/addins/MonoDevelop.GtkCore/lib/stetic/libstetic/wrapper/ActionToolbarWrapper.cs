@@ -52,6 +52,7 @@ namespace Stetic.Wrapper
 		{
 			base.Wrap (obj, initialized);
 			CreateTree ();
+			toolbar.FillMenu (actionTree);
 		}
 		
 		public override bool HExpandable {
@@ -270,7 +271,7 @@ namespace Stetic.Wrapper
 		{
 			actionTree = new ActionTree ();
 			actionTree.Name = Wrapped.Name;
-			actionTree.Type = Gtk.UIManagerItemType.Menubar;
+			actionTree.Type = Gtk.UIManagerItemType.Toolbar;
 			actionTree.Changed += OnTreeChanged;
 		}
 		

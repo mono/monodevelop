@@ -89,7 +89,11 @@ namespace Stetic
 		
 		public override void Dispose ()
 		{
+			if (combo == null)
+				return;
+
 			combo.Changed -= OnActiveChanged;
+			combo = null;
 			if (addButton != null) {
 				addButton.Clicked -= OnAddGroup;
 				removeButton.Clicked -= OnRemoveGroup;
@@ -159,7 +163,7 @@ namespace Stetic
 		
 		void Refresh ()
 		{
-			if (singleGroupMode)
+			if (singleGroupMode || combo == null)
 				return;
 
 			while (combo.Model.IterNChildren () > 0)

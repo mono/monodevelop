@@ -20,9 +20,9 @@ namespace Stetic
 			Add (book);
 			
 			this.app = app;
-			if (app.UseExternalBackend) {
-				app.BackendChanged += OnBackendChanged;
-				app.BackendChanging += OnBackendChanging;
+			if (app is IsolatedApplication) {
+				(app as IsolatedApplication).BackendChanged += OnBackendChanged;
+				(app as IsolatedApplication).BackendChanging += OnBackendChanging;
 			}
 		}
 		
@@ -50,9 +50,9 @@ namespace Stetic
 		protected override void OnRealized ()
 		{
 			base.OnRealized ();
-			if (!initialized && !app.Disposed) {
+			if (!initialized) {
 				initialized = true;
-				if (app.UseExternalBackend)
+				if (app is IsolatedApplication)
 					ConnectPlug ();
 				else {
 					Gtk.Widget w = OnCreateWidget ();
@@ -64,7 +64,7 @@ namespace Stetic
 		
 		protected override void OnUnrealized ()
 		{
-			if (!app.Disposed && app.UseExternalBackend && initialized) {
+			if (app is IsolatedApplication && initialized) {
 				OnDestroyPlug (socket.Id);
 				initialized = false;
 			}
@@ -93,10 +93,10 @@ namespace Stetic
 		
 		protected void UpdateWidget ()
 		{
-			if (!initialized || app.Disposed)
+			if (!initialized)
 				return;
 
-			if (!app.UseExternalBackend) {
+			if (app is LocalApplication) {
 				Gtk.Widget w = OnCreateWidget ();
 				if (w.Parent != book) {
 					book.AppendPage (w, null);
@@ -119,25 +119,24 @@ namespace Stetic
 		
 		public override void Dispose ()
 		{
-			if (app.UseExternalBackend) {
-				app.BackendChanged -= OnBackendChanged;
-				app.BackendChanging -= OnBackendChanging;
+			if (app is IsolatedApplication) {
+				IsolatedApplication iapp = app as IsolatedApplication;
+				iapp.BackendChanged -= OnBackendChanged;
+				iapp.BackendChanging -= OnBackendChanging;
 			}
 			base.Dispose ();
 		}
 		
 		internal virtual void OnBackendChanged (ApplicationBackend oldBackend)
 		{
-			if (!initialized || app.Disposed)
+			if (!initialized)
 				return;
 
-			if (app.UseExternalBackend) {
-				Gtk.Widget w = book.GetNthPage (0);
-				book.RemovePage (0);
-				w.Destroy ();
-				socket.Dispose ();
-				ConnectPlug ();
-			}
+			Gtk.Widget w = book.GetNthPage (0);
+			book.RemovePage (0);
+			w.Destroy ();
+			socket.Dispose ();
+			ConnectPlug ();
 		}
 		
 		internal virtual void OnBackendChanging ()

@@ -60,6 +60,7 @@ namespace Stetic
 			designer = UserInterface.CreateActionGroupDesigner (project, groupToolbar);
 			designer.Editor.GroupModified += OnModified;
 			designer.Toolbar.AllowActionBinding = allowActionBinding;
+			designer.Destroyed += delegate { designer = null; Dispose (); };
 		}
 		
 		public Wrapper.ActionGroup EditedActionGroup {
@@ -276,10 +277,10 @@ namespace Stetic
 		
 		public void Dispose ()
 		{
-			if (designer != null)
+			if (designer != null) {
 				designer.Editor.GroupModified -= OnModified;
-			if (!designerRequested) {
-				designer.Destroy ();
+				if (!designerRequested)
+					designer.Destroy ();
 			}
 			
 			project.ProjectReloaded -= OnProjectReloaded;
