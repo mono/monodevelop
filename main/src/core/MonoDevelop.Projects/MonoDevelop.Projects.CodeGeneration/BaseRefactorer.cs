@@ -367,7 +367,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 			
 		}
 		
-		public virtual IMember EncapsulateField (RefactorerContext ctx, IClass cls, IField field, string propName)
+		public virtual IMember EncapsulateField (RefactorerContext ctx, IClass cls, IField field, string propName, MemberAttributes attr, bool generateSetter)
 		{
 			// If the field isn't already private/protected/internal, we'll need to fix it to be
 			if (true || field.IsPublic || (!field.IsPrivate && !field.IsProtectedOrInternal)) {
@@ -416,14 +416,12 @@ namespace MonoDevelop.Projects.CodeGeneration
 			prop.Name = propName;
 			
 			prop.Type = ReturnTypeToDom (ctx, field.ReturnType);
-			prop.Attributes = MemberAttributes.Public | MemberAttributes.Final;
+			prop.Attributes = attr | MemberAttributes.Final;
 			if (field.IsStatic)
 				prop.Attributes |= MemberAttributes.Static;
 			
 			prop.HasGet = true;
-			
-			// if the field was public before, then we provide a 'set', else we don't
-			prop.HasSet = (field.IsPublic || (!field.IsPrivate && !field.IsProtectedOrInternal));
+			prop.HasSet = generateSetter;
 			
 			EncapsulateFieldImpGetSet (ctx, cls, field, prop);
 			

@@ -1,3 +1,14 @@
+2008-06-04  Ankit Jain  <jankit@novell.com>
+
+	* MonoDevelop.Ide.Commands/RefactoryCommands.cs
+	(BuildRefactoryMenuForItem): Add a "Encapsulate fields" command to the Class
+	menu.
+	(EncapsulateField): Handle invokation from class menu also.
+	* MonoDevelop.Ide.Gui.Dialogs/EncapsulateFieldDialog.cs: Show a list of
+	all fields and allow generating properties for multiple fields.
+	* gtk-gui/MonoDevelop.Ide.Gui.Dialogs.EncapsulateFieldDialog.cs: Update.
+	* gtk-gui/gui.stetic: Update.
+
 2008-06-03  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Gui.Dialogs/SplashScreen.cs,

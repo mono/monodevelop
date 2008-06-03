@@ -15,15 +15,17 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
         
         private Gtk.VBox vbox;
         
-        private Gtk.Table tableName;
+        private Gtk.ScrolledWindow GtkScrolledWindow;
         
-        private Gtk.Entry entryFieldName;
+        private Gtk.TreeView treeview;
         
-        private Gtk.Entry entryPropertyName;
+        private Gtk.HBox hbox1;
         
-        private Gtk.Label labelFieldName;
+        private Gtk.Button buttonSelectAll;
         
-        private Gtk.Label labelPropertyName;
+        private Gtk.Button buttonUnselectAll;
+        
+        private Gtk.HSeparator hseparator2;
         
         private Gtk.Label labelUpdateRefs;
         
@@ -37,6 +39,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
         
         private Gtk.RadioButton radioUpdateAll;
         
+        private Gtk.Label labelError;
+        
         private Gtk.Button buttonCancel;
         
         private Gtk.Button buttonOk;
@@ -45,7 +49,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             Stetic.Gui.Initialize(this);
             // Widget MonoDevelop.Ide.Gui.Dialogs.EncapsulateFieldDialog
             this.Name = "MonoDevelop.Ide.Gui.Dialogs.EncapsulateFieldDialog";
-            this.Title = Mono.Unix.Catalog.GetString("Encapsulate Field");
+            this.Title = Mono.Unix.Catalog.GetString("Encapsulate Fields...");
             this.WindowPosition = ((Gtk.WindowPosition)(4));
             this.BorderWidth = ((uint)(6));
             // Internal child MonoDevelop.Ide.Gui.Dialogs.EncapsulateFieldDialog.VBox
@@ -59,61 +63,57 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             this.vbox.Spacing = 6;
             this.vbox.BorderWidth = ((uint)(6));
             // Container child vbox.Gtk.Box+BoxChild
-            this.tableName = new Gtk.Table(((uint)(2)), ((uint)(2)), false);
-            this.tableName.Name = "tableName";
-            this.tableName.RowSpacing = ((uint)(6));
-            this.tableName.ColumnSpacing = ((uint)(6));
-            // Container child tableName.Gtk.Table+TableChild
-            this.entryFieldName = new Gtk.Entry();
-            this.entryFieldName.Sensitive = false;
-            this.entryFieldName.CanFocus = true;
-            this.entryFieldName.Name = "entryFieldName";
-            this.entryFieldName.IsEditable = true;
-            this.entryFieldName.InvisibleChar = '●';
-            this.tableName.Add(this.entryFieldName);
-            Gtk.Table.TableChild w2 = ((Gtk.Table.TableChild)(this.tableName[this.entryFieldName]));
-            w2.LeftAttach = ((uint)(1));
-            w2.RightAttach = ((uint)(2));
-            w2.YOptions = ((Gtk.AttachOptions)(4));
-            // Container child tableName.Gtk.Table+TableChild
-            this.entryPropertyName = new Gtk.Entry();
-            this.entryPropertyName.CanFocus = true;
-            this.entryPropertyName.Name = "entryPropertyName";
-            this.entryPropertyName.IsEditable = true;
-            this.entryPropertyName.InvisibleChar = '●';
-            this.tableName.Add(this.entryPropertyName);
-            Gtk.Table.TableChild w3 = ((Gtk.Table.TableChild)(this.tableName[this.entryPropertyName]));
-            w3.TopAttach = ((uint)(1));
-            w3.BottomAttach = ((uint)(2));
-            w3.LeftAttach = ((uint)(1));
-            w3.RightAttach = ((uint)(2));
-            w3.YOptions = ((Gtk.AttachOptions)(4));
-            // Container child tableName.Gtk.Table+TableChild
-            this.labelFieldName = new Gtk.Label();
-            this.labelFieldName.Name = "labelFieldName";
-            this.labelFieldName.Xalign = 0F;
-            this.labelFieldName.LabelProp = Mono.Unix.Catalog.GetString("Field name:");
-            this.tableName.Add(this.labelFieldName);
-            Gtk.Table.TableChild w4 = ((Gtk.Table.TableChild)(this.tableName[this.labelFieldName]));
-            w4.XOptions = ((Gtk.AttachOptions)(4));
-            w4.YOptions = ((Gtk.AttachOptions)(4));
-            // Container child tableName.Gtk.Table+TableChild
-            this.labelPropertyName = new Gtk.Label();
-            this.labelPropertyName.Name = "labelPropertyName";
-            this.labelPropertyName.Xalign = 0F;
-            this.labelPropertyName.LabelProp = Mono.Unix.Catalog.GetString("_Property name:");
-            this.labelPropertyName.UseUnderline = true;
-            this.tableName.Add(this.labelPropertyName);
-            Gtk.Table.TableChild w5 = ((Gtk.Table.TableChild)(this.tableName[this.labelPropertyName]));
-            w5.TopAttach = ((uint)(1));
-            w5.BottomAttach = ((uint)(2));
-            w5.XOptions = ((Gtk.AttachOptions)(4));
-            w5.YOptions = ((Gtk.AttachOptions)(4));
-            this.vbox.Add(this.tableName);
-            Gtk.Box.BoxChild w6 = ((Gtk.Box.BoxChild)(this.vbox[this.tableName]));
-            w6.Position = 0;
+            this.GtkScrolledWindow = new Gtk.ScrolledWindow();
+            this.GtkScrolledWindow.Name = "GtkScrolledWindow";
+            this.GtkScrolledWindow.ShadowType = ((Gtk.ShadowType)(1));
+            // Container child GtkScrolledWindow.Gtk.Container+ContainerChild
+            this.treeview = new Gtk.TreeView();
+            this.treeview.CanFocus = true;
+            this.treeview.Name = "treeview";
+            this.treeview.HeadersClickable = true;
+            this.GtkScrolledWindow.Add(this.treeview);
+            this.vbox.Add(this.GtkScrolledWindow);
+            Gtk.Box.BoxChild w3 = ((Gtk.Box.BoxChild)(this.vbox[this.GtkScrolledWindow]));
+            w3.Position = 0;
+            // Container child vbox.Gtk.Box+BoxChild
+            this.hbox1 = new Gtk.HBox();
+            this.hbox1.Name = "hbox1";
+            this.hbox1.Spacing = 6;
+            // Container child hbox1.Gtk.Box+BoxChild
+            this.buttonSelectAll = new Gtk.Button();
+            this.buttonSelectAll.CanFocus = true;
+            this.buttonSelectAll.Name = "buttonSelectAll";
+            this.buttonSelectAll.UseUnderline = true;
+            this.buttonSelectAll.Label = Mono.Unix.Catalog.GetString("Select All");
+            this.hbox1.Add(this.buttonSelectAll);
+            Gtk.Box.BoxChild w4 = ((Gtk.Box.BoxChild)(this.hbox1[this.buttonSelectAll]));
+            w4.Position = 0;
+            w4.Expand = false;
+            w4.Fill = false;
+            // Container child hbox1.Gtk.Box+BoxChild
+            this.buttonUnselectAll = new Gtk.Button();
+            this.buttonUnselectAll.CanFocus = true;
+            this.buttonUnselectAll.Name = "buttonUnselectAll";
+            this.buttonUnselectAll.UseUnderline = true;
+            this.buttonUnselectAll.Label = Mono.Unix.Catalog.GetString("Unselect All");
+            this.hbox1.Add(this.buttonUnselectAll);
+            Gtk.Box.BoxChild w5 = ((Gtk.Box.BoxChild)(this.hbox1[this.buttonUnselectAll]));
+            w5.Position = 1;
+            w5.Expand = false;
+            w5.Fill = false;
+            this.vbox.Add(this.hbox1);
+            Gtk.Box.BoxChild w6 = ((Gtk.Box.BoxChild)(this.vbox[this.hbox1]));
+            w6.Position = 1;
             w6.Expand = false;
             w6.Fill = false;
+            // Container child vbox.Gtk.Box+BoxChild
+            this.hseparator2 = new Gtk.HSeparator();
+            this.hseparator2.Name = "hseparator2";
+            this.vbox.Add(this.hseparator2);
+            Gtk.Box.BoxChild w7 = ((Gtk.Box.BoxChild)(this.vbox[this.hseparator2]));
+            w7.Position = 2;
+            w7.Expand = false;
+            w7.Fill = false;
             // Container child vbox.Gtk.Box+BoxChild
             this.labelUpdateRefs = new Gtk.Label();
             this.labelUpdateRefs.Name = "labelUpdateRefs";
@@ -121,10 +121,10 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             this.labelUpdateRefs.LabelProp = Mono.Unix.Catalog.GetString("_Update references:");
             this.labelUpdateRefs.UseUnderline = true;
             this.vbox.Add(this.labelUpdateRefs);
-            Gtk.Box.BoxChild w7 = ((Gtk.Box.BoxChild)(this.vbox[this.labelUpdateRefs]));
-            w7.Position = 1;
-            w7.Expand = false;
-            w7.Fill = false;
+            Gtk.Box.BoxChild w8 = ((Gtk.Box.BoxChild)(this.vbox[this.labelUpdateRefs]));
+            w8.Position = 3;
+            w8.Expand = false;
+            w8.Fill = false;
             // Container child vbox.Gtk.Box+BoxChild
             this.hboxUpdateRefs = new Gtk.HBox();
             this.hboxUpdateRefs.Name = "hboxUpdateRefs";
@@ -135,10 +135,10 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             this.labelSpacer.Xalign = 0F;
             this.labelSpacer.LabelProp = "    ";
             this.hboxUpdateRefs.Add(this.labelSpacer);
-            Gtk.Box.BoxChild w8 = ((Gtk.Box.BoxChild)(this.hboxUpdateRefs[this.labelSpacer]));
-            w8.Position = 0;
-            w8.Expand = false;
-            w8.Fill = false;
+            Gtk.Box.BoxChild w9 = ((Gtk.Box.BoxChild)(this.hboxUpdateRefs[this.labelSpacer]));
+            w9.Position = 0;
+            w9.Expand = false;
+            w9.Fill = false;
             // Container child hboxUpdateRefs.Gtk.Box+BoxChild
             this.vboxUpdateChoices = new Gtk.VBox();
             this.vboxUpdateChoices.Name = "vboxUpdateChoices";
@@ -147,15 +147,14 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             this.radioUpdateExternal = new Gtk.RadioButton(Mono.Unix.Catalog.GetString("_External"));
             this.radioUpdateExternal.CanFocus = true;
             this.radioUpdateExternal.Name = "radioUpdateExternal";
-            this.radioUpdateExternal.Active = true;
             this.radioUpdateExternal.DrawIndicator = true;
             this.radioUpdateExternal.UseUnderline = true;
             this.radioUpdateExternal.Group = new GLib.SList(System.IntPtr.Zero);
             this.vboxUpdateChoices.Add(this.radioUpdateExternal);
-            Gtk.Box.BoxChild w9 = ((Gtk.Box.BoxChild)(this.vboxUpdateChoices[this.radioUpdateExternal]));
-            w9.Position = 0;
-            w9.Expand = false;
-            w9.Fill = false;
+            Gtk.Box.BoxChild w10 = ((Gtk.Box.BoxChild)(this.vboxUpdateChoices[this.radioUpdateExternal]));
+            w10.Position = 0;
+            w10.Expand = false;
+            w10.Fill = false;
             // Container child vboxUpdateChoices.Gtk.Box+BoxChild
             this.radioUpdateAll = new Gtk.RadioButton(Mono.Unix.Catalog.GetString("_All"));
             this.radioUpdateAll.CanFocus = true;
@@ -164,29 +163,36 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             this.radioUpdateAll.UseUnderline = true;
             this.radioUpdateAll.Group = this.radioUpdateExternal.Group;
             this.vboxUpdateChoices.Add(this.radioUpdateAll);
-            Gtk.Box.BoxChild w10 = ((Gtk.Box.BoxChild)(this.vboxUpdateChoices[this.radioUpdateAll]));
-            w10.Position = 1;
-            w10.Expand = false;
-            w10.Fill = false;
-            this.hboxUpdateRefs.Add(this.vboxUpdateChoices);
-            Gtk.Box.BoxChild w11 = ((Gtk.Box.BoxChild)(this.hboxUpdateRefs[this.vboxUpdateChoices]));
+            Gtk.Box.BoxChild w11 = ((Gtk.Box.BoxChild)(this.vboxUpdateChoices[this.radioUpdateAll]));
             w11.Position = 1;
+            w11.Expand = false;
+            w11.Fill = false;
+            this.hboxUpdateRefs.Add(this.vboxUpdateChoices);
+            Gtk.Box.BoxChild w12 = ((Gtk.Box.BoxChild)(this.hboxUpdateRefs[this.vboxUpdateChoices]));
+            w12.Position = 1;
             this.vbox.Add(this.hboxUpdateRefs);
-            Gtk.Box.BoxChild w12 = ((Gtk.Box.BoxChild)(this.vbox[this.hboxUpdateRefs]));
-            w12.Position = 2;
-            w12.Expand = false;
-            w12.Fill = false;
-            w1.Add(this.vbox);
-            Gtk.Box.BoxChild w13 = ((Gtk.Box.BoxChild)(w1[this.vbox]));
-            w13.Position = 0;
+            Gtk.Box.BoxChild w13 = ((Gtk.Box.BoxChild)(this.vbox[this.hboxUpdateRefs]));
+            w13.Position = 4;
             w13.Expand = false;
             w13.Fill = false;
+            // Container child vbox.Gtk.Box+BoxChild
+            this.labelError = new Gtk.Label();
+            this.labelError.Name = "labelError";
+            this.labelError.LabelProp = "";
+            this.vbox.Add(this.labelError);
+            Gtk.Box.BoxChild w14 = ((Gtk.Box.BoxChild)(this.vbox[this.labelError]));
+            w14.Position = 5;
+            w14.Expand = false;
+            w14.Fill = false;
+            w1.Add(this.vbox);
+            Gtk.Box.BoxChild w15 = ((Gtk.Box.BoxChild)(w1[this.vbox]));
+            w15.Position = 0;
             // Internal child MonoDevelop.Ide.Gui.Dialogs.EncapsulateFieldDialog.ActionArea
-            Gtk.HButtonBox w14 = this.ActionArea;
-            w14.Name = "dialog1_ActionArea";
-            w14.Spacing = 10;
-            w14.BorderWidth = ((uint)(5));
-            w14.LayoutStyle = ((Gtk.ButtonBoxStyle)(4));
+            Gtk.HButtonBox w16 = this.ActionArea;
+            w16.Name = "dialog1_ActionArea";
+            w16.Spacing = 6;
+            w16.BorderWidth = ((uint)(5));
+            w16.LayoutStyle = ((Gtk.ButtonBoxStyle)(4));
             // Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
             this.buttonCancel = new Gtk.Button();
             this.buttonCancel.CanDefault = true;
@@ -196,9 +202,9 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             this.buttonCancel.UseUnderline = true;
             this.buttonCancel.Label = "gtk-cancel";
             this.AddActionWidget(this.buttonCancel, -6);
-            Gtk.ButtonBox.ButtonBoxChild w15 = ((Gtk.ButtonBox.ButtonBoxChild)(w14[this.buttonCancel]));
-            w15.Expand = false;
-            w15.Fill = false;
+            Gtk.ButtonBox.ButtonBoxChild w17 = ((Gtk.ButtonBox.ButtonBoxChild)(w16[this.buttonCancel]));
+            w17.Expand = false;
+            w17.Fill = false;
             // Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
             this.buttonOk = new Gtk.Button();
             this.buttonOk.CanDefault = true;
@@ -208,15 +214,15 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             this.buttonOk.UseUnderline = true;
             this.buttonOk.Label = "gtk-ok";
             this.AddActionWidget(this.buttonOk, -5);
-            Gtk.ButtonBox.ButtonBoxChild w16 = ((Gtk.ButtonBox.ButtonBoxChild)(w14[this.buttonOk]));
-            w16.Position = 1;
-            w16.Expand = false;
-            w16.Fill = false;
+            Gtk.ButtonBox.ButtonBoxChild w18 = ((Gtk.ButtonBox.ButtonBoxChild)(w16[this.buttonOk]));
+            w18.Position = 1;
+            w18.Expand = false;
+            w18.Fill = false;
             if ((this.Child != null)) {
                 this.Child.ShowAll();
             }
-            this.DefaultWidth = 413;
-            this.DefaultHeight = 247;
+            this.DefaultWidth = 465;
+            this.DefaultHeight = 427;
             this.Show();
         }
     }

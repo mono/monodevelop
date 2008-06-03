@@ -252,6 +252,9 @@ namespace MonoDevelop.Ide.Commands
 				
 				if ((cls.ClassType == ClassType.Class && !cls.IsSealed) || cls.ClassType == ClassType.Interface)
 					ciset.CommandInfos.Add (GettextCatalog.GetString ("Find _derived classes"), new RefactoryOperation (refactorer.FindDerivedClasses));
+
+				if (cls.SourceProject != null && ((cls.ClassType == ClassType.Class) || (cls.ClassType == ClassType.Struct)))
+					ciset.CommandInfos.Add (GettextCatalog.GetString ("Encapsulate Fields..."), new RefactoryOperation (refactorer.EncapsulateField));
 				
 				ciset.CommandInfos.Add (GettextCatalog.GetString ("_Find references"), new RefactoryOperation (refactorer.FindReferences));
 				
@@ -289,7 +292,7 @@ namespace MonoDevelop.Ide.Commands
 			} else if (item is IField) {
 				txt = GettextCatalog.GetString ("Field <b>{0}</b>", itemName);
 				if (canRename)
-					ciset.CommandInfos.Add (GettextCatalog.GetString ("Encapsulate Field"), new RefactoryOperation (refactorer.EncapsulateField));
+					ciset.CommandInfos.Add (GettextCatalog.GetString ("Encapsulate Field..."), new RefactoryOperation (refactorer.EncapsulateField));
 				AddRefactoryMenuForClass (ctx, pinfo, ciset, ((IField) item).ReturnType.FullyQualifiedName);
 			} else if (item is IProperty) {
 				txt = GettextCatalog.GetString ("Property <b>{0}</b>", itemName);
@@ -501,7 +504,12 @@ namespace MonoDevelop.Ide.Commands
 				editor.BeginAtomicUndo ();
 				
 			try {
-				EncapsulateFieldDialog dialog = new EncapsulateFieldDialog (ctx, (IField) item);
+				EncapsulateFieldDialog dialog;
+				if (item is IField)
+					dialog = new EncapsulateFieldDialog (ctx, (IField) item);
+				else
+					dialog = new EncapsulateFieldDialog (ctx, (IClass) item);
+
 				dialog.Show ();
 			} finally {
 				if (editor != null)
@@ -509,7 +517,7 @@ namespace MonoDevelop.Ide.Commands
 			}
 			
 		}
-		
+
 		public void Rename ()
 		{
 			RenameItemDialog dialog = new RenameItemDialog (ctx, item);
