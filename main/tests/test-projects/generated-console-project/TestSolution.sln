@@ -16,5 +16,6 @@ Global
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
 		name = TestSolution
+		StartupItem = TestProject.csproj
 	EndGlobalSection
 EndGlobal

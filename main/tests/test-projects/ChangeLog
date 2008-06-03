@@ -1,3 +1,8 @@
+2008-06-04  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* generated-console-project/TestSolution.sln,
+	  console-project/ConsoleProject.sln: Test fixes.
+
 2008-05-23  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* generated-console-project/TestProject.mdp,

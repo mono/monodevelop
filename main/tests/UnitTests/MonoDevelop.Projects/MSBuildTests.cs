@@ -82,8 +82,8 @@ namespace MonoDevelop.Projects
 			string solFile = Util.GetSampleProjectPath ("generated-console-project", "TestSolution.sln");
 			string projectFile = Util.GetSampleProjectPath ("generated-console-project", "TestProject.csproj");
 			
-			Assert.AreEqual (solXml, File.ReadAllText (solFile));
-			Assert.AreEqual (projectXml, Util.GetXmlFileInfoset (projectFile));
+			Assert.AreEqual (File.ReadAllText (solFile), solXml);
+			Assert.AreEqual (Util.GetXmlFileInfoset (projectFile), projectXml);
 
 			// MD1 format
 			

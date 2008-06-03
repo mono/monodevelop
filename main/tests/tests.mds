@@ -1,4 +1,4 @@
-<Combine name="tests" fileversion="2.0">
+<Combine BaseDirectory="." name="tests" fileversion="2.0">
   <Configurations active="Debug">
     <Configuration name="Debug" ctype="CombineConfiguration">
       <Entry build="True" name="UnitTests" configuration="Debug" />
@@ -7,9 +7,7 @@
       <Entry build="True" name="UnitTests" configuration="Release" />
     </Configuration>
   </Configurations>
-  <StartMode startupentry="UnitTests" single="True">
-    <Execute type="None" entry="UnitTests" />
-  </StartMode>
+  <StartMode startupentry="UnitTests" single="True" />
   <Entries>
     <Entry filename="UnitTests/UnitTests.mdp" />
   </Entries>

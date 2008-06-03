@@ -17,6 +17,7 @@ Global
 	GlobalSection(MonoDevelopProperties) = preSolution
 		name = ConsoleProject
 		version = 0.1
+		StartupItem = ConsoleProject\ConsoleProject.csproj
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
