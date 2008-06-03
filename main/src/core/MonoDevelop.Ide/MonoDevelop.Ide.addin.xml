@@ -7,17 +7,17 @@
        description = "The MonoDevelop IDE application."
        category    = "MonoDevelop Core"
        isroot      = "true"
-       version     = "0.19.0"
-       compatVersion = "0.19.0">
+       version     = "1.9.0"
+       compatVersion = "1.9.0">
 	
 	<Runtime>
 		<Import assembly="MonoDevelop.Ide.dll"/>
 	</Runtime>
 	
 	<Dependencies>
-		<Addin id="Core.Gui" version="0.19.0"/>
-		<Addin id="Documentation" version="0.19.0"/>
-		<Addin id="Components" version="0.19.0"/>
+		<Addin id="Core.Gui" version="1.9.0"/>
+		<Addin id="Documentation" version="1.9.0"/>
+		<Addin id="Components" version="1.9.0"/>
 	</Dependencies>
 
 	<!-- Extension ponts -->

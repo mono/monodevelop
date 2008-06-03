@@ -6,19 +6,19 @@
        url         = "http://www.monodevelop.com/"
        description = "Supporting services and pads for visual design tools."
 	   category    = "MonoDevelop Core"
-       version     = "0.19.0">
+       version     = "1.9.0">
 	
 	<Runtime>
 		<Import assembly = "MonoDevelop.DesignerSupport.dll"/>
 	</Runtime>
 	
 	<Dependencies>
-	    <Addin id="Core" version="0.19.0"/>
-	    <Addin id="Core.Gui" version="0.19.0"/>
-    	<Addin id="Projects" version="0.19.0"/>
-		<Addin id="Projects.Gui" version="0.19.0"/>
-		<Addin id="Ide" version="0.19.0"/>
-		<Addin id="Components" version="0.19.0"/>
+	    <Addin id="Core" version="1.9.0"/>
+	    <Addin id="Core.Gui" version="1.9.0"/>
+    	<Addin id="Projects" version="1.9.0"/>
+		<Addin id="Projects.Gui" version="1.9.0"/>
+		<Addin id="Ide" version="1.9.0"/>
+		<Addin id="Components" version="1.9.0"/>
 	</Dependencies>
 
 	<!-- Extension points -->

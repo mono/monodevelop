@@ -1,3 +1,7 @@
+2008-06-04  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* VBNetBinding.addin.xml: Bump MD version.
+
 2008-05-28  Mike Krüger <mkrueger@novell.com> 
 
 	* VBNetBinding.addin.xml, Parser/DomParser.cs: Worked on vb.net dom

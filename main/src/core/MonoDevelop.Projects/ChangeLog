@@ -1,5 +1,9 @@
 2008-06-04  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Projects.addin.xml: Bump MD version.
+
+2008-06-04  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Projects.Formats.MD1/CmbxFileFormat.cs,
 	  MonoDevelop.Projects.Formats.MD1/CombineStartupMode.cs: Properly
 	  implement start mode loading and writing.

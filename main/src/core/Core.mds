@@ -27,7 +27,7 @@
       <Entry build="True" name="Mono.Debugging" configuration="Release" />
     </Configuration>
   </Configurations>
-  <StartMode startupentry="MonoDevelop.Startup" single="True">
+  <StartMode startupentry="MonoDevelop.Core" single="True">
     <Execute type="None" entry="MonoDevelop.Core" />
     <Execute type="None" entry="MonoDevelop.Core.Gui" />
     <Execute type="None" entry="MonoDevelop.Components" />

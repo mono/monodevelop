@@ -1,3 +1,7 @@
+2008-06-04  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.AspNet.addin.xml: Bump MD version.
+
 2008-06-02  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.AspNet/AspNetAppProjectConfiguration.cs: Fix path of

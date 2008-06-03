@@ -1,3 +1,7 @@
+2008-06-04  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* ChangeLogAddIn.addin.xml: Bump MD version.
+
 2008-05-22  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* ChangeLogAddIn.addin.xml: Show the options dialog only for solution

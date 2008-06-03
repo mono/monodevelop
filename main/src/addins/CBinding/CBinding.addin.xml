@@ -6,17 +6,17 @@
        url         = "http://www.monodevelop.com"
        description = "C/C++ Language binding"
        category    = "Language bindings"
-       version     = "0.19.0">
+       version     = "1.9.0">
 
 	<Dependencies>
-		<Addin id = "Core" version = "0.19.0"/>
-		<Addin id = "Core.Gui" version = "0.19.0"/>
-		<Addin id = "Projects" version = "0.19.0"/>
-		<Addin id = "Projects.Gui" version = "0.19.0"/>
-		<Addin id = "Ide" version = "0.19.0"/>
-		<Addin id = "Components" version = "0.19.0"/>
-		<Addin id = "Deployment" version = "0.19.0"/>
-		<Addin id = "Deployment.Linux" version = "0.19.0"/>
+		<Addin id = "Core" version = "1.9.0"/>
+		<Addin id = "Core.Gui" version = "1.9.0"/>
+		<Addin id = "Projects" version = "1.9.0"/>
+		<Addin id = "Projects.Gui" version = "1.9.0"/>
+		<Addin id = "Ide" version = "1.9.0"/>
+		<Addin id = "Components" version = "1.9.0"/>
+		<Addin id = "Deployment" version = "1.9.0"/>
+		<Addin id = "Deployment.Linux" version = "1.9.0"/>
 	</Dependencies>
 	
 	<Extension path = "/MonoDevelop/Core/StockIcons">
@@ -220,7 +220,7 @@
 	    </Runtime>
 	    
 		<Dependencies>
-			<Addin id = "MonoDevelop.Autotools" version = "0.19.0"/>
+			<Addin id = "MonoDevelop.Autotools" version = "1.9.0"/>
 		</Dependencies>
 		
 		<Extension path = "/Autotools/SimpleSetups">

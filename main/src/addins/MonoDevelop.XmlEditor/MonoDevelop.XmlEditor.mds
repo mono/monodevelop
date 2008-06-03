@@ -9,7 +9,7 @@
       <Entry build="True" name="MonoDevelop.XmlEditor" configuration="Release" />
     </Configuration>
   </Configurations>
-  <StartMode startupentry="MonoDevelop.XmlEditor" single="True">
+  <StartMode startupentry="MonoDevelop.XmlEditor.Tests" single="True">
     <Execute type="None" entry="MonoDevelop.XmlEditor.Tests" />
     <Execute type="None" entry="MonoDevelop.XmlEditor" />
   </StartMode>

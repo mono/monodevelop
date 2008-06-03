@@ -1,3 +1,7 @@
+2008-06-04  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelopNUnit.addin.xml: Bump MD version.
+
 2008-05-28  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Gui/TestResultsPad.cs: Fix bug 387453 - Buttons in NUnit Test Results

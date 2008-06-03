@@ -1,3 +1,7 @@
+2008-06-04  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* prj2make-sharp-lib.addin.xml: Bump MD version.
+
 2008-05-23  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* VS2003ProjectFileFormat.cs: Track api changes.

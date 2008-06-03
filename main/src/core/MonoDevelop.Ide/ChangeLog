@@ -1,5 +1,9 @@
 2008-06-04  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Ide.addin.xml: Bump MD version.
+
+2008-06-04  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Ide.Commands/FileCommands.cs: Use destroy to dispose the
 	  dialog.
 

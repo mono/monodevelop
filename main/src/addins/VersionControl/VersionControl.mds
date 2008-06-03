@@ -13,7 +13,7 @@
       <Entry build="True" name="MonoDevelop.VersionControl.Subversion" configuration="Release" />
     </Configuration>
   </Configurations>
-  <StartMode startupentry="VersionControl" single="True">
+  <StartMode startupentry="Diff" single="True">
     <Execute type="None" entry="Diff" />
     <Execute type="None" entry="DiffWidget" />
     <Execute type="None" entry="MonoDevelop.VersionControl" />

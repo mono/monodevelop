@@ -1,3 +1,7 @@
+2008-06-04  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* WelcomePage.addin.xml: Bump MD version.
+
 2008-05-28  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* WelcomePageView.cs, WelcomePageOptionPanel.cs, WelcomePage.mdp,

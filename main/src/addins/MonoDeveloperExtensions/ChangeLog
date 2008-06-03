@@ -1,3 +1,7 @@
+2008-06-04  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDeveloperExtensions.addin.xml: Bump MD version.
+
 2008-05-29  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoSolutionItemHandler.cs: Fix warning.

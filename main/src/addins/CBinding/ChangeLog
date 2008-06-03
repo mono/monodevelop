@@ -1,3 +1,7 @@
+2008-06-04  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* CBinding.addin.xml: Bump MD version.
+
 2008-05-30  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Project/CProject.cs: Properly set debug mode when creating a project.
