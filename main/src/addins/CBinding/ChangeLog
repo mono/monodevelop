@@ -1,5 +1,11 @@
 2008-06-04  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* Project/CProject.cs: The configuration parameter of GetDeployFiles is
+	  a solution configuration, so it needs to get the mapped project
+	  configuration name. Track some api changes.
+
+2008-06-04  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* CBinding.addin.xml: Bump MD version.
 
 2008-05-30  Lluis Sanchez Gual <lluis@novell.com> 

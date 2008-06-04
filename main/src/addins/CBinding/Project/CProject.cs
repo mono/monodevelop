@@ -261,12 +261,11 @@ namespace CBinding
 		/// This is the pkg-config package that gets deployed.
 		/// <returns>The pkg-config package's filename</returns>
 		/// </summary>
-		private string WriteDeployablePgkPackage (string configuration)
+		private string WriteDeployablePgkPackage (CProjectConfiguration config)
 		{
 			// FIXME: This should probably be grabed from somewhere.
 			string prefix = "/usr/local";
 			string pkgfile = Path.Combine (BaseDirectory, Name + ".pc");
-			CProjectConfiguration config = (CProjectConfiguration)GetConfiguration (configuration);
 			
 			using (StreamWriter writer = new StreamWriter (pkgfile)) {
 				writer.WriteLine ("prefix={0}", prefix);
@@ -346,7 +345,7 @@ namespace CBinding
 			}
 		}
 		
-		public override string GetOutputFileName (string configuration)
+		protected override string OnGetOutputFileName (string configuration)
 		{
 			CProjectConfiguration conf = (CProjectConfiguration) GetConfiguration (configuration);
 			return Path.Combine (conf.OutputDirectory, conf.CompiledOutputName);
@@ -440,11 +439,11 @@ namespace CBinding
 			PackageAddedToProject (this, new ProjectPackageEventArgs (this, package));
 		}
 
-		public DeployFileCollection GetDeployFiles (string configuration)
+		public DeployFileCollection GetDeployFiles (string solutionConfiguration)
 		{
 			DeployFileCollection deployFiles = new DeployFileCollection ();
 			
-			CProjectConfiguration conf = (CProjectConfiguration) GetConfiguration (configuration);
+			CProjectConfiguration conf = (CProjectConfiguration) GetActiveConfiguration (solutionConfiguration);
 			CompileTarget target = conf.CompileTarget;
 			
 			// Headers and resources
@@ -458,7 +457,7 @@ namespace CBinding
 			}
 			
 			// Output
-			string output = GetOutputFileName (configuration);		
+			string output = GetOutputFileName (solutionConfiguration);		
 			if (!string.IsNullOrEmpty (output)) {
 				string targetDirectory = string.Empty;
 				
@@ -479,7 +478,7 @@ namespace CBinding
 			
 			// PkgPackage
 			if (target != CompileTarget.Bin) {
-				string pkgfile = WriteDeployablePgkPackage (configuration);
+				string pkgfile = WriteDeployablePgkPackage (conf);
 				deployFiles.Add (new DeployFile (this, Path.Combine (BaseDirectory, pkgfile), pkgfile, LinuxTargetDirectory.PkgConfig));
 			}
 			
