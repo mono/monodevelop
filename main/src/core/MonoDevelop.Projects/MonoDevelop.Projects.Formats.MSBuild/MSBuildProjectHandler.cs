@@ -206,6 +206,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					if (buildItem.HasMetadata ("HintPath")) {
 						string path = MSBuildProjectService.FromMSBuildPath (dotNetProject.BaseDirectory, buildItem.GetMetadata ("HintPath"));
 						pref = new ProjectReference (ReferenceType.Assembly, path);
+						pref.LocalCopy = buildItem.GetMetadata ("Private") != "False";
 					} else {
 						pref = new ProjectReference (ReferenceType.Gac, buildItem.Include);
 					}
@@ -213,7 +214,9 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					dotNetProject.References.Add (pref);
 				}
 				foreach (MSBuildItem buildItem in msproject.GetAllItems ("ProjectReference")) {
-					dotNetProject.References.Add (new ProjectReference (ReferenceType.Project, buildItem.GetMetadata ("Name")));
+					ProjectReference pref = new ProjectReference (ReferenceType.Project, buildItem.GetMetadata ("Name"));
+					dotNetProject.References.Add (pref);
+					pref.LocalCopy = buildItem.GetMetadata ("Private") != "False";
 				}
 				
 				// Get the common assembly name
@@ -439,6 +442,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 						buildItem = refgrp.AddNewItem ("Reference", asm);
 						buildItem.SetMetadata ("SpecificVersion", "False");
 						buildItem.SetMetadata ("HintPath", MSBuildProjectService.ToMSBuildPath (project.BaseDirectory, pref.Reference));
+						if (!pref.LocalCopy)
+							buildItem.SetMetadata ("Private", "False");
 					}
 					else if (pref.ReferenceType == ReferenceType.Gac) {
 						string include = pref.Reference;
@@ -461,6 +466,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 							if (handler != null)
 								buildItem.SetMetadata ("Project", Item.ItemId);
 							buildItem.SetMetadata ("Name", refProj.Name);
+							if (!pref.LocalCopy)
+								buildItem.SetMetadata ("Private", "False");
 						} else {
 							monitor.ReportWarning (GettextCatalog.GetString ("Reference to unknown project '{0}' ignored.", pref.Reference));
 							continue;

@@ -46,7 +46,6 @@ namespace MonoDevelop.Projects
 	{
 		Hashtable extendedProperties;
 		
-		[ItemProperty ("type")]
 		ReferenceType referenceType;
 		
 		DotNetProject ownerProject;
@@ -62,7 +61,6 @@ namespace MonoDevelop.Projects
 		// so it can be saved again.
 		string loadedReference;
 		
-		[ItemProperty ("localcopy")]
 		bool localCopy = true;
 		
 		public ProjectReference ()

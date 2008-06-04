@@ -1,5 +1,12 @@
 2008-06-04  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Projects/ProjectReference.cs,
+	  MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectHandler.cs: Fix
+	  bug 374497 - csproj: References' <Private> tag not taken into
+	  account.
+
+2008-06-04  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Projects/CustomCommand.cs: Add new variables.
 
 2008-06-04  Lluis Sanchez Gual <lluis@novell.com> 
