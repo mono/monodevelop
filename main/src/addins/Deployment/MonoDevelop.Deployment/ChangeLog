@@ -1,5 +1,12 @@
 2008-06-04  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Deployment/DefaultDeployServiceExtension.cs,
+	  MonoDevelop.Deployment/DeployProjectServiceExtension.cs: Some
+	  parameter renames to make it more explicit that configuration names
+	  refer to solution configurations, not project configurations.
+
+2008-06-04  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Deployment.addin.xml: Bump MD version.
 
 2008-06-03  Lluis Sanchez Gual <lluis@novell.com> 

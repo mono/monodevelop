@@ -8,9 +8,9 @@ namespace MonoDevelop.Deployment
 {
 	class DeployProjectServiceExtension: ProjectServiceExtension, IDirectoryResolver
 	{
-		protected override BuildResult Build (IProgressMonitor monitor, SolutionEntityItem item, string configuration)
+		protected override BuildResult Build (IProgressMonitor monitor, SolutionEntityItem item, string solutionConfiguration)
 		{
-			BuildResult res = base.Build (monitor, item, configuration);
+			BuildResult res = base.Build (monitor, item, solutionConfiguration);
 			if (res.Failed)
 				return res;
 			
@@ -18,7 +18,7 @@ namespace MonoDevelop.Deployment
 			if (project == null)
 				return res;
 			
-			string outfile = project.GetOutputFileName (configuration);
+			string outfile = project.GetOutputFileName (solutionConfiguration);
 			if (string.IsNullOrEmpty (outfile))
 				return res;
 			
@@ -27,7 +27,7 @@ namespace MonoDevelop.Deployment
 			// Copy deploy files with ProgramFiles as target directory
 			
 			using (DeployContext ctx = new DeployContext (this, DeployService.CurrentPlatform, Path.GetDirectoryName (outfile))) {
-				DeployFileCollection files = DeployService.GetDeployFiles (ctx, item, configuration);
+				DeployFileCollection files = DeployService.GetDeployFiles (ctx, item, solutionConfiguration);
 				
 				foreach (DeployFile file in files) {
 					if (FileService.GetFullPath (file.SourcePath) == outfile)
@@ -51,21 +51,21 @@ namespace MonoDevelop.Deployment
 			return res;
 		}
 	
-		protected override void Clean (IProgressMonitor monitor, SolutionEntityItem item, string configuration)
+		protected override void Clean (IProgressMonitor monitor, SolutionEntityItem item, string solutionConfiguration)
 		{
-			base.Clean (monitor, item, configuration);
+			base.Clean (monitor, item, solutionConfiguration);
 			Project project = item as Project;
 			if (project == null)
 				return;
 			
-			string path = project.GetOutputFileName (configuration);
+			string path = project.GetOutputFileName (solutionConfiguration);
 			if (string.IsNullOrEmpty (path))
 				return;
 			
 			path = Path.GetDirectoryName (path);
 			
 			using (DeployContext ctx = new DeployContext (this, DeployService.CurrentPlatform, path)) {
-				DeployFileCollection files = DeployService.GetDeployFiles (ctx, item, configuration);
+				DeployFileCollection files = DeployService.GetDeployFiles (ctx, item, solutionConfiguration);
 				foreach (DeployFile file in files) {
 					if (file.TargetDirectoryID == TargetDirectory.ProgramFiles) {
 						string tfile = file.ResolvedTargetFile;
