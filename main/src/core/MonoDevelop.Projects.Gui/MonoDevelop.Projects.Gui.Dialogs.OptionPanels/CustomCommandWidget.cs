@@ -71,20 +71,24 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 			{GettextCatalog.GetString ("_Target Directory"), "${TargetDir}"},
 			{GettextCatalog.GetString ("Target _Name"), "${TargetName}"},
 			{"-", ""},
-			{GettextCatalog.GetString ("_Project Directory"), "${ItemDir}"},
-			{GettextCatalog.GetString ("P_roject Name"), "${ItemName}"},
+			{GettextCatalog.GetString ("_Project Directory"), "${ProjectDir}"},
+			{GettextCatalog.GetString ("P_roject Name"), "${ProjectName}"},
+			{GettextCatalog.GetString ("Project _File"), "${ProjectFile}"},
 			{"-", ""},
 			{GettextCatalog.GetString ("_Solution Directory"), "${SolutionDir}"},
 			{GettextCatalog.GetString ("So_lution Name"), "${SolutionName}"},
+			{GettextCatalog.GetString ("Solution F_ile"), "${SolutionFile}"},
 		};
 		
 		static string[,] entryWorkingDirInsertMenu = new string[,] {
 			// Keep in sync with CustomCommand.cs
 			{GettextCatalog.GetString ("Solution _Item Directory"), "${ItemDir}"},
 			{GettextCatalog.GetString ("Solution Item _Name"), "${ItemName}"},
+			{GettextCatalog.GetString ("Solution Item _File"), "${ItemFile}"},
 			{"-", ""},
 			{GettextCatalog.GetString ("_Solution Directory"), "${SolutionDir}"},
 			{GettextCatalog.GetString ("So_lution Name"), "${SolutionName}"},
+			{GettextCatalog.GetString ("Solution F_ile"), "${SolutionFile}"},
 		};
 		
 		static string[,] solutionWorkingDirInsertMenu = new string[,] {

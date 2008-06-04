@@ -49,9 +49,10 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels {
             this.vbox2.Name = "vbox2";
             this.vbox2.Spacing = 6;
             // Container child vbox2.Gtk.Box+BoxChild
-            this.radioSingle = new Gtk.RadioButton(MonoDevelop.Core.GettextCatalog.GetString("Single startup item:"));
+            this.radioSingle = new Gtk.RadioButton(MonoDevelop.Core.GettextCatalog.GetString("Single startup project:"));
             this.radioSingle.CanFocus = true;
             this.radioSingle.Name = "radioSingle";
+            this.radioSingle.Active = true;
             this.radioSingle.DrawIndicator = true;
             this.radioSingle.UseUnderline = true;
             this.radioSingle.Group = new GLib.SList(System.IntPtr.Zero);
@@ -86,7 +87,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels {
             w4.Expand = false;
             w4.Fill = false;
             // Container child vbox2.Gtk.Box+BoxChild
-            this.radioMulti = new Gtk.RadioButton(MonoDevelop.Core.GettextCatalog.GetString("Multiple startup items:"));
+            this.radioMulti = new Gtk.RadioButton(MonoDevelop.Core.GettextCatalog.GetString("Multiple startup projects:"));
             this.radioMulti.CanFocus = true;
             this.radioMulti.Name = "radioMulti";
             this.radioMulti.DrawIndicator = true;
