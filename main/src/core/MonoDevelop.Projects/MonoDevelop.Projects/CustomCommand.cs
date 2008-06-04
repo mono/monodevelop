@@ -112,10 +112,15 @@ namespace MonoDevelop.Projects
 					// Keep in sync with CustomCommandWidget.cs
 					{"ItemName", entry.Name},
 					{"ItemDir", entry.BaseDirectory},
+					{"ItemFile", project.FileName},
+					{"ProjectName", entry.Name},
+					{"ProjectDir", entry.BaseDirectory},
+					{"ProjectFile", project.FileName},
 					{"TargetName", Path.GetFileName (outputname)},
 					{"TargetDir", Path.GetDirectoryName (outputname)},
 					{"SolutionName", project.ParentSolution.Name},
 					{"SolutionDir", project.ParentSolution.BaseDirectory},
+					{"SolutionFile", project.ParentSolution.FileName}
 				};
 			} else if (entry is SolutionEntityItem) {
 				SolutionEntityItem it = entry as SolutionEntityItem;
@@ -123,8 +128,13 @@ namespace MonoDevelop.Projects
 					// Keep in sync with CustomCommandWidget.cs
 					{"ItemName", it.Name},
 					{"ItemDir", it.BaseDirectory},
+					{"ItemFile", it.FileName},
+					{"ProjectName", it.Name},
+					{"ProjectDir", it.BaseDirectory},
+					{"ProjectFile", it.FileName},
 					{"SolutionName", it.ParentSolution.Name},
 					{"SolutionDir", it.ParentSolution.BaseDirectory},
+					{"SolutionFile", it.ParentSolution.FileName}
 				};
 			} else {
 				customtags = new string [,] {

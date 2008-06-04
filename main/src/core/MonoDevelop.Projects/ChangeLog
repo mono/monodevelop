@@ -1,5 +1,9 @@
 2008-06-04  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Projects/CustomCommand.cs: Add new variables.
+
+2008-06-04  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Projects/Solution.cs: Clean startup item references when
 	  an item is removed.
 
