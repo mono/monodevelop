@@ -291,7 +291,7 @@ namespace MonoDevelop.ValaBinding
 			}
 		}
 		
-		public override string GetOutputFileName (string configuration)
+		protected override string OnGetOutputFileName (string configuration)
 		{
 			ValaProjectConfiguration conf = (ValaProjectConfiguration)GetConfiguration(configuration);
 			return Path.Combine (conf.OutputDirectory, conf.CompiledOutputName);
