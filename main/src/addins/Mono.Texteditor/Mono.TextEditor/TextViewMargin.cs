@@ -174,6 +174,7 @@ namespace Mono.TextEditor
 			
 			layout.SetText ("H");
 			layout.GetPixelSize (out this.charWidth, out this.lineHeight);
+			lineHeight = System.Math.Max (1, lineHeight);
 		}
 		
 		void DisposeGCs ()
