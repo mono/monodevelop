@@ -36,6 +36,7 @@ namespace MonoDevelop.Projects.Dom
 	{
 		protected bool isConstructor;
 		protected List<IParameter> parameters = new List<IParameter> ();
+		protected List<IReturnType> genericParameters = new List<IReturnType> ();
 		
 		public bool IsConstructor {
 			get {
@@ -51,6 +52,13 @@ namespace MonoDevelop.Projects.Dom
 				return parameters.AsReadOnly ();
 			}
 		}
+		
+		public ReadOnlyCollection<IReturnType> GenericParameters {
+			get {
+				return genericParameters.AsReadOnly ();
+			}
+		}
+
 		
 		static readonly string[] iconTable = {Stock.Method, Stock.PrivateMethod, Stock.ProtectedMethod, Stock.InternalMethod};
 		public override string StockIcon {
@@ -93,6 +101,30 @@ namespace MonoDevelop.Projects.Dom
 				return Name.CompareTo (((IMethod)obj).Name);
 			return -1;
 		}
+		
+		public static IMethod Resolve (IMethod source, ITypeResolver typeResolver)
+		{
+			DomMethod result = new DomMethod ();
+			result.Name          = source.Name;
+			result.Documentation = source.Documentation;
+			result.Modifiers     = source.Modifiers;
+			result.ReturnType    = DomReturnType.Resolve (source.ReturnType, typeResolver);
+			result.Location      = source.Location;
+			result.bodyRegion    = source.BodyRegion;
+			result.attributes    = DomAttribute.Resolve (source.Attributes, typeResolver);
+			
+			foreach (IParameter parameter in source.Parameters)
+				result.parameters.Add (DomParameter.Resolve (parameter, typeResolver));
+			
+			if (source.GenericParameters != null && source.GenericParameters.Count > 0) {
+				foreach (IReturnType returnType in source.GenericParameters) {
+					result.genericParameters.Add(DomReturnType.Resolve (returnType, typeResolver));
+				}
+			}
+			
+			return result;
+		}
+		
 		
 		public override string ToString ()
 		{

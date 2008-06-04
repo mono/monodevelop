@@ -30,8 +30,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using MonoDevelop.Projects;
-using MonoDevelop.Projects.Parser;
 
 namespace MonoDevelop.Projects.Dom
 {	
@@ -41,7 +39,7 @@ namespace MonoDevelop.Projects.Dom
 		string filePath;
 		DateTime parseTime;
 		int parseErrorRetries;
-		TagCollection commentTasks;
+		List<Tag> commentTasks;
 		
 		// When the file contains only one class, this field has a reference to
 		// the only ClassEntry. If it has more than one class, it has a ClassEntry[]
@@ -156,7 +154,7 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
-		public TagCollection CommentTasks
+		public List<Tag> CommentTasks
 		{
 			get { return commentTasks; }
 			set { commentTasks = value; }

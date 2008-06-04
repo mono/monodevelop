@@ -55,6 +55,7 @@ FILES =  \
 	MonoDevelop.Projects.Dom/DomRegion.cs \
 	MonoDevelop.Projects.Dom/DomReturnType.cs \
 	MonoDevelop.Projects.Dom/DomType.cs \
+	MonoDevelop.Projects.Dom/DomTypeProxy.cs \
 	MonoDevelop.Projects.Dom/DomUsing.cs \
 	MonoDevelop.Projects.Dom/Error.cs \
 	MonoDevelop.Projects.Dom/FileEntry.cs \
@@ -71,6 +72,7 @@ FILES =  \
 	MonoDevelop.Projects.Dom/IType.cs \
 	MonoDevelop.Projects.Dom/IUsing.cs \
 	MonoDevelop.Projects.Dom/Modifiers.cs \
+	MonoDevelop.Projects.Dom/Namespace.cs \
 	MonoDevelop.Projects.Dom/NamespaceEntry.cs \
 	MonoDevelop.Projects.Dom/ParameterModifiers.cs \
 	MonoDevelop.Projects.Dom/ReferenceEntry.cs \

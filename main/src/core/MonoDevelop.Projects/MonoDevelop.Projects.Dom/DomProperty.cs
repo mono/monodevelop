@@ -116,6 +116,24 @@ namespace MonoDevelop.Projects.Dom
 			base.returnType = returnType;
 		}
 		
+		public static IProperty Resolve (IProperty source, ITypeResolver typeResolver)
+		{
+			DomProperty result = new DomProperty ();
+			result.Name           = source.Name;
+			result.Documentation  = source.Documentation;
+			result.Modifiers      = source.Modifiers;
+			result.ReturnType     = DomReturnType.Resolve (source.ReturnType, typeResolver);
+			result.Location       = source.Location;
+			result.IsIndexer      = source.IsIndexer;
+			result.attributes     = DomAttribute.Resolve (source.Attributes, typeResolver);
+			
+			if (source.GetMethod != null)
+				result.GetMethod = DomMethod.Resolve (source.GetMethod, typeResolver);
+			if (source.SetMethod != null)
+				result.SetMethod = DomMethod.Resolve (source.SetMethod, typeResolver);
+			return result;
+		}
+		
 		public override string ToString ()
 		{
 			return string.Format ("[DomProperty:Name={0}, Modifiers={1}, ReturnType={2}, Location={3}]",

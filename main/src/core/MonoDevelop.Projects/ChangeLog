@@ -1,3 +1,24 @@
+2008-06-04  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Dom.Output/NetAmbience.cs,
+	  MonoDevelop.Projects.Dom/DomType.cs,
+	  MonoDevelop.Projects.Dom/DomReturnType.cs,
+	  MonoDevelop.Projects.Dom/IMethod.cs,
+	  MonoDevelop.Projects.Dom/DomAttribute.cs,
+	  MonoDevelop.Projects.Dom/IDomVisitor.cs,
+	  MonoDevelop.Projects.Dom/DomParameter.cs,
+	  MonoDevelop.Projects.Dom/DomMethod.cs,
+	  MonoDevelop.Projects.Dom/DomEvent.cs,
+	  MonoDevelop.Projects.Dom/DomField.cs,
+	  MonoDevelop.Projects.Dom/DomTypeProxy.cs,
+	  MonoDevelop.Projects.Dom/DomProperty.cs,
+	  MonoDevelop.Projects.Dom/IParameter.cs,
+	  MonoDevelop.Projects.Dom/CodeCompletionDatabase.cs,
+	  MonoDevelop.Projects.Dom/IReturnType.cs,
+	  MonoDevelop.Projects.Dom/AbstractMember.cs,
+	  MonoDevelop.Projects.Dom/Namespace.cs,
+	  MonoDevelop.Projects.Dom/FileEntry.cs: Worked on new dom.
+
 2008-06-04  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProject.cs: Preserve the

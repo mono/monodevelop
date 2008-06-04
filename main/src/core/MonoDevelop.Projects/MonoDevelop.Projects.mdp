@@ -320,6 +320,8 @@
     <File name="MonoDevelop.Projects.Dom/Tag.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Dom/TypeUpdateInformation.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Dom/ReferenceEntry.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Projects.Dom/Namespace.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Projects.Dom/DomTypeProxy.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="False" refto="monodoc, Version=1.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />

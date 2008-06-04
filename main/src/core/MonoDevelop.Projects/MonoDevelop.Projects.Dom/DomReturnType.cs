@@ -53,16 +53,25 @@ namespace MonoDevelop.Projects.Dom
 			get {
 				return name;
 			}
+			set {
+				name = value;
+			}
 		}
 
 		public string Namespace {
 			get {
 				return nspace;
 			}
+			set {
+				nspace = value;
+			}
 		}
 		public int PointerNestingLevel {
 			get {
 				return pointerNestingLevel;
+			}
+			set {
+				pointerNestingLevel = value;
 			}
 		}
 		
@@ -70,11 +79,17 @@ namespace MonoDevelop.Projects.Dom
 			get {
 				return arrayDimensions;
 			}
+			set {
+				arrayDimensions = value;
+			}
 		}
 		
 		public bool IsNullable {
 			get {
 				return this.isNullable;
+			}
+			set {
+				isNullable = value;
 			}
 		}
 		
@@ -84,7 +99,7 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
-		protected DomReturnType ()
+		public DomReturnType ()
 		{
 		}
 		
@@ -99,9 +114,21 @@ namespace MonoDevelop.Projects.Dom
 			this.typeParameters = typeParameters;
 		}
 		
+		
+		public void AddTypeParameter (IReturnType type)
+		{
+			if (typeParameters == null)
+				typeParameters = new List<IReturnType> ();
+			this.typeParameters.Add (type);
+		}
 		public object AcceptVisitior (IDomVisitor visitor, object data)
 		{
 			return visitor.Visit (this, data);
+		}
+		
+		public static IReturnType Resolve (IReturnType source, ITypeResolver resolver)
+		{
+			return source != null ? resolver.Resolve (source) : null;
 		}
 		
 		public override string ToString ()

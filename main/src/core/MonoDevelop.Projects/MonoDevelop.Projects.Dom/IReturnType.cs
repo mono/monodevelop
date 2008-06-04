@@ -60,4 +60,9 @@ namespace MonoDevelop.Projects.Dom
 			get;
 		}
 	}
+	
+	public interface ITypeResolver
+	{
+		IReturnType Resolve (IReturnType type);
+	}
 }

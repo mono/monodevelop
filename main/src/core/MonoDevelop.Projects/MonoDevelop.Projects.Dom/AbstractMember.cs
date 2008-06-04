@@ -324,6 +324,5 @@ namespace MonoDevelop.Projects.Dom
 		
 		public abstract object AcceptVisitior (IDomVisitor visitor, object data);
 		
-		
 	}
 }

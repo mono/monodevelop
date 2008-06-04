@@ -70,6 +70,24 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
+		public static IAttribute Resolve (IAttribute source, ITypeResolver typeResolver)
+		{
+			DomAttribute result = new DomAttribute ();
+			result.region          = source.Region;
+			result.attributeTarget = source.AttributeTarget;
+			result.attributeType   = source.AttributeType;
+			return result;
+		}
+		
+		public static List<IAttribute> Resolve (IEnumerable<IAttribute> source, ITypeResolver typeResolver)
+		{
+			List<IAttribute> result = new List<IAttribute> ();
+			foreach (IAttribute attr in source) {
+				result.Add (Resolve (attr, typeResolver));
+			}
+			return result;
+		}
+		
 		public object AcceptVisitior (IDomVisitor visitor, object data)
 		{
 			return visitor.Visit (this, data);

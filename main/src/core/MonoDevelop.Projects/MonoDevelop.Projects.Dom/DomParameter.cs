@@ -65,6 +65,18 @@ namespace MonoDevelop.Projects.Dom
 				returnType = value;
 			}
 		}
+		
+		public static IParameter Resolve (IParameter source, ITypeResolver typeResolver)
+		{
+			DomParameter result = new DomParameter ();
+			result.Name               = source.Name;
+			result.ParameterModifiers = source.ParameterModifiers;
+			result.ReturnType         = DomReturnType.Resolve (source.ReturnType, typeResolver);
+			result.attributes         = DomAttribute.Resolve (source.Attributes, typeResolver);
+			
+			return result;
+		}
+		
 
 		public System.Collections.Generic.IEnumerable<IAttribute> Attributes {
 			get {

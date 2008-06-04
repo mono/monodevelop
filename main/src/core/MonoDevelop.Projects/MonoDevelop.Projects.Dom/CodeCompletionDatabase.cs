@@ -428,13 +428,13 @@ namespace MonoDevelop.Projects.Dom
 					if (templateClass == null)
 						return null;
 
-					if (templateClass.GenericParameters == null || (templateClass.GenericParameters.Count != genericArguments.Count))
+					if (templateClass.TypeParameters == null || (templateClass.TypeParameters.Count != genericArguments.Count))
 						return null;
 			
-					string tname = DefaultClass.GetInstantiatedTypeName (templateClass.FullName, genericArguments);
+					string tname = DomType.GetInstantiatedTypeName (templateClass.FullName, genericArguments);
 					IType res = (IType) instantiatedGenericTypes [tname];
 					if (res == null) {
-						res = DefaultClass.CreateInstantiatedGenericType (templateClass, genericArguments);
+						res = DomType.CreateInstantiatedGenericType (templateClass, genericArguments);
 						instantiatedGenericTypes [tname] = res;
 					}
 					return res;
@@ -468,8 +468,7 @@ namespace MonoDevelop.Projects.Dom
 					
 					while (nextPos < len) {
 						IType nextc = null;
-						for (int n=0; n<c.InnerClasses.Count && nextc == null; n++) {
-							IType innerc = c.InnerClasses[n];
+						foreach (IType innerc  in c.InnerTypes)  {
 							if (string.Compare (innerc.Name, path[nextPos], !caseSensitive) == 0)
 								nextc = innerc;
 						}
@@ -488,7 +487,7 @@ namespace MonoDevelop.Projects.Dom
 			if (ce.Class != null)
 				return ce.Class;
 			else
-				return new ClassWrapper (this, ce);
+				return new DomTypeProxy (this, ce);
 		}
 		
 		public IEnumerable GetSubclasses (string fullName, string[] namespaces)
@@ -928,7 +927,8 @@ namespace MonoDevelop.Projects.Dom
 		
 		void AddSubclassReferences (ClassEntry ce)
 		{
-			foreach (IReturnType type in ce.Class.BaseTypes) {
+			foreach (IEnumerable<IReturnType> col in new IEnumerable<IReturnType>[] { new IReturnType[] { ce.Class.BaseType}, ce.Class.ImplementedInterfaces})
+			foreach (IReturnType type in col) {
 				string bt = type.FullName;
 				if (bt == "System.Object")
 					continue;
@@ -944,13 +944,14 @@ namespace MonoDevelop.Projects.Dom
 					subs.Add (ce);
 				}
 			}
-			foreach (IType cls in ce.Class.InnerClasses)
+			foreach (IType cls in ce.Class.InnerTypes)
 				AddInnerSubclassReferences (cls);
 		}
 		
 		void AddInnerSubclassReferences (IType cls)
 		{
-			foreach (IReturnType type in cls.BaseTypes) {
+			foreach (IEnumerable<IReturnType> col in new IEnumerable<IReturnType>[] { new IReturnType[] { cls.BaseType}, cls.ImplementedInterfaces})
+			foreach (IReturnType type in col) {
 				string bt = type.FullName;
 				if (bt == "System.Object")
 					continue;
@@ -961,13 +962,14 @@ namespace MonoDevelop.Projects.Dom
 				}
 				subs.Add (cls.FullName);
 			}
-			foreach (IType ic in cls.InnerClasses)
+			foreach (IType ic in cls.InnerTypes)
 				AddInnerSubclassReferences (ic);
 		}
 		
 		void RemoveSubclassReferences (ClassEntry ce)
 		{
-			foreach (IReturnType type in ce.Class.BaseTypes) {
+			foreach (IEnumerable<IReturnType> col in new IEnumerable<IReturnType>[] { new IReturnType[] { ce.Class.BaseType}, ce.Class.ImplementedInterfaces})
+			foreach (IReturnType type in col) {
 				ClassEntry sup = FindClassEntry (type.FullName);
 				if (sup != null)
 					sup.UnregisterSubclass (ce);
@@ -979,18 +981,19 @@ namespace MonoDevelop.Projects.Dom
 						unresolvedSubclassTable.Remove (type.FullName);
 				}
 			}
-			foreach (IType cls in ce.Class.InnerClasses)
+			foreach (IType cls in ce.Class.InnerTypes)
 				RemoveInnerSubclassReferences (cls);
 		}
 		
 		void RemoveInnerSubclassReferences (IType cls)
 		{
-			foreach (IReturnType type in cls.BaseTypes) {
+			foreach (IEnumerable<IReturnType> col in new IEnumerable<IReturnType>[] { new IReturnType[] { cls.BaseType}, cls.ImplementedInterfaces})
+			foreach (IReturnType type in col) {
 				ArrayList subs = (ArrayList) unresolvedSubclassTable [type.FullName];
 				if (subs != null)
 					subs.Remove (type.FullName);
 			}
-			foreach (IType ic in cls.InnerClasses)
+			foreach (IType ic in cls.InnerTypes)
 				RemoveInnerSubclassReferences (ic);
 		}
 		
@@ -1074,7 +1077,7 @@ namespace MonoDevelop.Projects.Dom
 		
 		void GetAllInnerClassesRec (ArrayList list, IType cls)
 		{
-			foreach (IType ic in cls.InnerClasses) {
+			foreach (IType ic in cls.InnerTypes) {
 				list.Add (ic);
 				GetAllInnerClassesRec (list, ic);
 			}
@@ -1175,6 +1178,8 @@ namespace MonoDevelop.Projects.Dom
 		}
 		
 		static StringNameTable DefaultNameEncoder = new StringNameTable (sharedNameTable);
+		static StringNameTable DefaultNameDecoder = DefaultNameEncoder;
+		
 		static readonly string[] sharedNameTable = new string[] {
 			"", // 505195
 			"System.Void", // 116020

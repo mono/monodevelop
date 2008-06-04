@@ -41,5 +41,9 @@ namespace MonoDevelop.Projects.Dom
 		ReadOnlyCollection<IParameter> Parameters {
 			get;
 		}
+		
+		ReadOnlyCollection<IReturnType> GenericParameters {
+			get;
+		}
 	}
 }

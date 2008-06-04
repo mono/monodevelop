@@ -75,7 +75,7 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
-		public ClassType ClassType {
+		public virtual ClassType ClassType {
 			get {
 				return classType;
 			}
@@ -84,7 +84,7 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
-		public IReturnType BaseType {
+		public virtual IReturnType BaseType {
 			get {
 				return baseType;
 			}
@@ -93,13 +93,13 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
-		public IEnumerable<IReturnType> ImplementedInterfaces {
+		public virtual IEnumerable<IReturnType> ImplementedInterfaces {
 			get {
 				return implementedInterfaces;
 			}
 		}
 		
-		public ReadOnlyCollection<TypeParameter> TypeParameters {
+		public virtual ReadOnlyCollection<TypeParameter> TypeParameters {
 			get {
 				return typeParameters.AsReadOnly ();
 			}
@@ -151,7 +151,7 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
-		public IEnumerable<IType> Parts { 
+		public virtual IEnumerable<IType> Parts { 
 			get {
 				return parts;
 			}
@@ -230,13 +230,13 @@ namespace MonoDevelop.Projects.Dom
 			this.implementedInterfaces.Add (interf);
 		}
 		
-		int fieldCount       = 0;
-		int methodCount      = 0;
-		int constructorCount = 0;
-		int indexerCount     = 0;
-		int propertyCount    = 0;
-		int eventCount       = 0;
-		int innerTypeCount   = 0;
+		protected int fieldCount       = 0;
+		protected int methodCount      = 0;
+		protected int constructorCount = 0;
+		protected int indexerCount     = 0;
+		protected int propertyCount    = 0;
+		protected int eventCount       = 0;
+		protected int innerTypeCount   = 0;
 		
 		public int PropertyCount {
 			get {
@@ -333,7 +333,103 @@ namespace MonoDevelop.Projects.Dom
 			}
 			sb.Append (']');
 			return sb.ToString ();
-		}		
+		}
+		
+		
+		public static IType CreateInstantiatedGenericType (IType type, IList<IReturnType> genericArguments)
+		{
+			string name = GetInstantiatedTypeName (type.Name, genericArguments);
+			GenericTypeInstanceResolver resolver = new GenericTypeInstanceResolver ();
+			for (int i = 0; i < type.TypeParameters.Count; i++)
+				resolver.Add (type.TypeParameters[i].Name, genericArguments[i]);
+			
+			DomType result = (DomType)Resolve (type, resolver);
+			result.Name = name;
+			result.typeParameters.Clear ();
+			return result;
+		}
+		
+		class GenericTypeInstanceResolver: ITypeResolver
+		{
+			public Dictionary<string, IReturnType> typeTable = new Dictionary<string,IReturnType> ();
+			
+			public void Add (string name, IReturnType type)
+			{
+				typeTable.Add (name, type);
+			}
+			
+			public IReturnType Resolve (IReturnType type)
+			{
+				DomReturnType result = null;
+				if (typeTable.ContainsKey (type.FullName)) {
+					if (type.TypeParameters == null || type.TypeParameters.Count == 0)
+						return typeTable [type.FullName];
+					
+					result = new DomReturnType ();
+					
+					IReturnType retType = typeTable [type.FullName];
+					result.Name      = retType.Name;
+					result.Namespace = retType.Namespace;
+					result.ArrayDimensions = retType.ArrayDimensions;
+					result.PointerNestingLevel = retType.PointerNestingLevel;
+					result.IsNullable  = retType.IsNullable;
+					foreach (IReturnType param in retType.TypeParameters) {
+						result.AddTypeParameter (Resolve (param));
+					}
+				} else {
+					result = new DomReturnType ();
+					result.Name      = type.Name;
+					result.Namespace = type.Namespace;
+					result.ArrayDimensions = type.ArrayDimensions;
+					result.PointerNestingLevel = type.PointerNestingLevel;
+					result.IsNullable = type.IsNullable;
+					foreach (IReturnType param in type.TypeParameters) {
+						result.AddTypeParameter (param);
+					}
+				}
+				return result;
+			}
+		}
+		
+		
+		public static IType Resolve (IType type, ITypeResolver typeResolver)
+		{
+			DomType result = new DomType ();
+			
+			result.Name          = type.Name;
+			result.Namespace     = type.Namespace;
+			result.Documentation = type.Documentation;
+			result.ClassType     = type.ClassType;
+			result.Modifiers     = type.Modifiers;
+			
+			result.Location      = type.Location;
+			result.bodyRegion    = type.BodyRegion;
+			result.attributes    = DomAttribute.Resolve (type.Attributes, typeResolver);
+						
+			if (type.BaseType != null)
+				result.baseType      = DomReturnType.Resolve (type.BaseType, typeResolver);
+			foreach (IReturnType iface in type.ImplementedInterfaces) {
+				result.implementedInterfaces.Add (DomReturnType.Resolve (iface, typeResolver));
+			}
+			
+			foreach (IType innerType in type.InnerTypes) {
+				result.Add (Resolve (innerType, typeResolver));
+			}
+			foreach (IField field in type.Fields) {
+				result.Add (DomField.Resolve (field, typeResolver));
+			}
+			foreach (IProperty property in type.Properties) {
+				result.Add (DomProperty.Resolve (property, typeResolver));
+			}
+			foreach (IMethod method in type.Methods) {
+				result.Add (DomMethod.Resolve (method, typeResolver));
+			}
+			foreach (IEvent evt in type.Events) {
+				result.Add (DomEvent.Resolve (evt, typeResolver));
+			}
+			
+			return result;
+		}
 	}
 	
 	internal sealed class Stock 
@@ -348,6 +444,7 @@ namespace MonoDevelop.Projects.Dom
 		public static readonly string Property = "md-property";
 		public static readonly string Struct = "md-struct";
 		public static readonly string Delegate = "md-delegate";
+		public static readonly string Namespace = "md-name-space";
 		
 		public static readonly string InternalClass = "md-internal-class";
 		public static readonly string InternalDelegate = "md-internal-delegate";

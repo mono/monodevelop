@@ -82,6 +82,25 @@ namespace MonoDevelop.Projects.Dom
 			this.returnType = returnType;
 		}
 		
+		public static IEvent Resolve (IEvent source, ITypeResolver typeResolver)
+		{
+			DomEvent result = new DomEvent ();
+			result.Name           = source.Name;
+			result.Documentation  = source.Documentation;
+			result.Modifiers      = source.Modifiers;
+			result.ReturnType     = DomReturnType.Resolve (source.ReturnType, typeResolver);
+			result.Location       = source.Location;
+			result.attributes     = DomAttribute.Resolve (source.Attributes, typeResolver);
+			if (source.AddMethod != null)
+				result.addMethod = DomMethod.Resolve (source.AddMethod, typeResolver);
+			if (source.RemoveMethod != null)
+				result.removeMethod = DomMethod.Resolve (source.RemoveMethod, typeResolver);
+			if (source.RaiseMethod != null)
+				result.raiseMethod = DomMethod.Resolve (source.RaiseMethod, typeResolver);
+			return result;
+		}
+		
+		
 		static readonly string[] iconTable = {Stock.Event, Stock.PrivateEvent, Stock.ProtectedEvent, Stock.InternalEvent};
 		public override string StockIcon {
 			get {

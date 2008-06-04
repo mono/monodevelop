@@ -1,10 +1,10 @@
 //
-// IDomVisitor.cs
+// Namespace.cs
 //
 // Author:
-//   Mike Krüger <mkrueger@novell.com>
+//   Lluis Sanchez Gual
 //
-// Copyright (C) 2008 Novell, Inc (http://www.novell.com)
+// Copyright (C) 2006 Novell, Inc (http://www.novell.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -30,27 +30,57 @@ using System;
 
 namespace MonoDevelop.Projects.Dom
 {
-	public interface IDomVisitable
+	public class Namespace : AbstractMember
 	{
-		object AcceptVisitior (IDomVisitor visitor, object data);
-	}
-	
-	public interface IDomVisitor
-	{
-		object Visit (ICompilationUnit unit, object data);
+		string name;
+		string documentation;
 		
-		object Visit (IAttribute attribute, object data);
+		public Namespace (string name)
+		{
+			this.name = name;
+		}
 		
-		object Visit (IType type, object data);
+		public Namespace (string name, string documentation)
+		{
+			this.name = name;
+			this.documentation = documentation;
+		}
 		
-		object Visit (IField field, object data);
-		object Visit (IMethod method, object data);
-		object Visit (IProperty property, object data);
-		object Visit (IEvent evt, object data);
+		public string Name {
+			get { return name; }
+		}
+
+		public string Documentation {
+			get { return documentation; }
+		}
 		
-		object Visit (IReturnType returnType, object data);
-		object Visit (IParameter parameter, object data);
-		object Visit (IUsing u, object data);
-		object Visit (Namespace namesp, object data);
+		public virtual int CompareTo (object value)
+		{
+			Namespace loc = (Namespace) value;
+			return name.CompareTo (loc.name);
+		}
+		
+		public override bool Equals (object ob)
+		{
+			Namespace other = ob as Namespace;
+			if (other == null) return false;
+			return CompareTo (other) == 0;
+		}
+
+		public override object AcceptVisitior (IDomVisitor visitor, object data)
+		{
+			return visitor.Visit (this, data);
+		}
+		
+		public override string StockIcon {
+			get {
+				return Stock.Namespace;
+			}
+		}		
+
+		public override int GetHashCode ()
+		{
+			return name.GetHashCode ();
+		}
 	}
 }

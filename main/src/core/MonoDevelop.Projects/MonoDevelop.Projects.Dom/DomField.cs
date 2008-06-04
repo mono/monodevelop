@@ -67,6 +67,19 @@ namespace MonoDevelop.Projects.Dom
 			this.returnType = returnType;
 		}
 		
+		
+		public static IField Resolve (IField source, ITypeResolver typeResolver)
+		{
+			DomField result       = new DomField ();
+			result.Name           = source.Name;
+			result.Documentation  = source.Documentation;
+			result.Modifiers      = source.Modifiers;
+			result.ReturnType     = DomReturnType.Resolve (source.ReturnType, typeResolver);
+			result.Location       = source.Location;
+			result.attributes     = DomAttribute.Resolve (source.Attributes, typeResolver);
+			return result;
+		}
+		
 		public override int CompareTo (object obj)
 		{
 			if (obj is IMethod)
