@@ -131,8 +131,8 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				return;
 			}
 			
-			SolutionFolder combine = (SolutionFolder) CurrentNode.DataItem;
-			combine.Name = newName;
+			SolutionFolder folder = (SolutionFolder) CurrentNode.DataItem;
+			folder.Name = newName;
 			IdeApp.Workspace.Save();
 		}
 		
@@ -161,22 +161,22 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			
 		public override void ActivateItem ()
 		{
-			SolutionFolder combine = CurrentNode.DataItem as SolutionFolder;
-			IdeApp.ProjectOperations.ShowOptions (combine);
+			SolutionFolder folder = CurrentNode.DataItem as SolutionFolder;
+			IdeApp.ProjectOperations.ShowOptions (folder);
 		}
 
 		
 		public override void DeleteItem ()
 		{
-			SolutionFolder combine = CurrentNode.DataItem as SolutionFolder;
-			SolutionFolder parent = combine.ParentFolder;
+			SolutionFolder folder = CurrentNode.DataItem as SolutionFolder;
+			SolutionFolder parent = folder.ParentFolder;
 			if (parent == null) return;
 			
-			bool yes = MessageService.Confirm (GettextCatalog.GetString ("Do you really want to remove the folder '{0}' from '{1}'?", combine.Name, parent.Name), AlertButton.Remove);
+			bool yes = MessageService.Confirm (GettextCatalog.GetString ("Do you really want to remove the folder '{0}' from '{1}'?", folder.Name, parent.Name), AlertButton.Remove);
 			if (yes) {
-				Solution sol = combine.ParentSolution;
-				parent.Items.Remove (combine);
-				combine.Dispose ();
+				Solution sol = folder.ParentSolution;
+				parent.Items.Remove (folder);
+				folder.Dispose ();
 				IdeApp.ProjectOperations.Save (sol);
 			}
 		}
@@ -184,8 +184,8 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		[CommandHandler (ProjectCommands.AddNewProject)]
 		public void AddNewProjectToCombine()
 		{
-			SolutionFolder combine = (SolutionFolder) CurrentNode.DataItem;
-			SolutionItem ce = IdeApp.ProjectOperations.CreateProject (combine);
+			SolutionFolder folder = (SolutionFolder) CurrentNode.DataItem;
+			SolutionItem ce = IdeApp.ProjectOperations.CreateProject (folder);
 			if (ce == null) return;
 			Tree.AddNodeInsertCallback (ce, new TreeNodeCallback (OnEntryInserted));
 			CurrentNode.Expanded = true;
@@ -194,8 +194,8 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		[CommandHandler (ProjectCommands.AddProject)]
 		public void AddProjectToCombine()
 		{
-			SolutionFolder combine = (SolutionFolder) CurrentNode.DataItem;
-			SolutionItem ce = IdeApp.ProjectOperations.AddSolutionItem (combine);
+			SolutionFolder folder = (SolutionFolder) CurrentNode.DataItem;
+			SolutionItem ce = IdeApp.ProjectOperations.AddSolutionItem (folder);
 			if (ce == null) return;
 			Tree.AddNodeInsertCallback (ce, new TreeNodeCallback (OnEntryInserted));
 			CurrentNode.Expanded = true;
@@ -215,17 +215,32 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		[CommandHandler (ProjectCommands.Reload)]
 		public void OnReload ()
 		{
-			SolutionFolder combine = (SolutionFolder) CurrentNode.DataItem;
+			SolutionFolder folder = (SolutionFolder) CurrentNode.DataItem;
 			using (IProgressMonitor m = IdeApp.Workbench.ProgressMonitors.GetLoadProgressMonitor (true)) {
-				combine.ParentFolder.ReloadItem (m, combine);
+				folder.ParentFolder.ReloadItem (m, folder);
 			}
 		}
 		
 		[CommandUpdateHandler (ProjectCommands.Reload)]
 		public void OnUpdateReload (CommandInfo info)
 		{
-			SolutionFolder combine = (SolutionFolder) CurrentNode.DataItem;
-			info.Visible = (combine.ParentFolder != null) && combine.NeedsReload;
+			SolutionFolder folder = (SolutionFolder) CurrentNode.DataItem;
+			info.Visible = (folder.ParentFolder != null) && folder.NeedsReload;
+		}
+		
+		[CommandHandler (FileCommands.OpenContainingFolder)]
+		public void OpenContainingFolder ()
+		{
+			SolutionFolder folder = (SolutionFolder) CurrentNode.DataItem;
+			System.Diagnostics.Process.Start ("file://" + folder.BaseDirectory);
+		}
+		
+		[CommandHandler (SearchCommands.FindInFiles)]
+		public void OnFindInFiles ()
+		{
+			SolutionFolder folder = (SolutionFolder) CurrentNode.DataItem;
+			SearchReplaceInFilesManager.SearchOptions.SearchDirectory = folder.BaseDirectory;
+			SearchReplaceInFilesManager.ShowFindDialog ();
 		}
 		
 		void OnEntryInserted (ITreeNavigator nav)
