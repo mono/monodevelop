@@ -15,6 +15,7 @@
 	</Runtime>
 	
 	<Dependencies>
+		<Addin id="Core" version="1.9.0"/>
 		<Addin id="Core.Gui" version="1.9.0"/>
 		<Addin id="Documentation" version="1.9.0"/>
 		<Addin id="Components" version="1.9.0"/>
