@@ -153,37 +153,39 @@ namespace MonoDevelop.Projects
 				handler.Dispose ();
 		}
 		
-		public virtual IEnumerable<SolutionItem> GetReferencedItems (string configuration)
+		public virtual IEnumerable<SolutionItem> GetReferencedItems (string solutionConfiguration)
 		{
 			return new SolutionItem [0];
 		}
 		
-		public BuildResult RunTarget (IProgressMonitor monitor, string target, string configuration)
+		public BuildResult RunTarget (IProgressMonitor monitor, string target, string solutionConfiguration)
 		{
-			return Services.ProjectService.ExtensionChain.RunTarget (monitor, this, target, configuration);
+			return Services.ProjectService.ExtensionChain.RunTarget (monitor, this, target, solutionConfiguration);
 		}
 		
-		public void Clean (IProgressMonitor monitor, string configuration)
+		public void Clean (IProgressMonitor monitor, string solutionConfiguration)
 		{
-			Services.ProjectService.ExtensionChain.RunTarget (monitor, this, ProjectService.CleanTarget, configuration);
+			Services.ProjectService.ExtensionChain.RunTarget (monitor, this, ProjectService.CleanTarget, solutionConfiguration);
 		}
 		
-		public BuildResult Build (IProgressMonitor monitor, string configuration)
+		public BuildResult Build (IProgressMonitor monitor, string solutionConfiguration)
 		{
-			return Build (monitor, configuration, false);
+			return Build (monitor, solutionConfiguration, false);
 		}
 		
-		public BuildResult Build (IProgressMonitor monitor, string configuration, bool buildReferences)
+		public BuildResult Build (IProgressMonitor monitor, string solutionConfiguration, bool buildReferences)
 		{
 			if (!buildReferences) {
-				if (!NeedsBuilding (configuration))
+				if (!NeedsBuilding (solutionConfiguration))
 					return new BuildResult (new CompilerResults (null), "");
 					
 				try {
-					monitor.BeginTask (GettextCatalog.GetString ("Building: {0} ({1})", Name, configuration), 1);
+					SolutionEntityItem it = this as SolutionEntityItem;
+					string confName = it != null ? it.GetActiveConfigurationId (solutionConfiguration) : solutionConfiguration;
+					monitor.BeginTask (GettextCatalog.GetString ("Building: {0} ({1})", Name, confName), 1);
 					
 					// This will end calling OnBuild ()
-					return Services.ProjectService.ExtensionChain.RunTarget (monitor, this, ProjectService.BuildTarget, configuration);
+					return Services.ProjectService.ExtensionChain.RunTarget (monitor, this, ProjectService.BuildTarget, solutionConfiguration);
 					
 				} finally {
 					monitor.EndTask ();
@@ -194,17 +196,17 @@ namespace MonoDevelop.Projects
 			// and build them in the correct order
 			
 			List<SolutionItem> referenced = new List<SolutionItem> ();
-			GetBuildableReferencedItems (referenced, this, configuration);
+			GetBuildableReferencedItems (referenced, this, solutionConfiguration);
 			
-			ReadOnlyCollection<SolutionItem> sortedReferenced = SolutionFolder.TopologicalSort (referenced, configuration);
+			ReadOnlyCollection<SolutionItem> sortedReferenced = SolutionFolder.TopologicalSort (referenced, solutionConfiguration);
 			
 			BuildResult cres = new BuildResult ();
 			cres.BuildCount = 0;
 			
 			monitor.BeginTask (null, sortedReferenced.Count);
 			foreach (SolutionItem p in sortedReferenced) {
-				if (p.NeedsBuilding (configuration)) {
-					BuildResult res = p.Build (monitor, configuration, false);
+				if (p.NeedsBuilding (solutionConfiguration)) {
+					BuildResult res = p.Build (monitor, solutionConfiguration, false);
 					cres.Append (res);
 				}
 				monitor.Step (1);
@@ -215,35 +217,35 @@ namespace MonoDevelop.Projects
 			return cres;
 		}
 		
-		void GetBuildableReferencedItems (List<SolutionItem> referenced, SolutionItem item, string configuration)
+		void GetBuildableReferencedItems (List<SolutionItem> referenced, SolutionItem item, string solutionConfiguration)
 		{
 			if (referenced.Contains (item)) return;
 			
-			if (item.NeedsBuilding (configuration))
+			if (item.NeedsBuilding (solutionConfiguration))
 				referenced.Add (item);
 
-			foreach (SolutionItem ritem in item.GetReferencedItems (configuration))
-				GetBuildableReferencedItems (referenced, ritem, configuration);
+			foreach (SolutionItem ritem in item.GetReferencedItems (solutionConfiguration))
+				GetBuildableReferencedItems (referenced, ritem, solutionConfiguration);
 		}
 		
-		public void Execute (IProgressMonitor monitor, ExecutionContext context, string configuration)
+		public void Execute (IProgressMonitor monitor, ExecutionContext context, string solutionConfiguration)
 		{
-			Services.ProjectService.ExtensionChain.Execute (monitor, this, context, configuration);
+			Services.ProjectService.ExtensionChain.Execute (monitor, this, context, solutionConfiguration);
 		}
 		
-		public bool CanExecute (ExecutionContext context, string configuration)
+		public bool CanExecute (ExecutionContext context, string solutionConfiguration)
 		{
-			return Services.ProjectService.ExtensionChain.CanExecute (this, context, configuration);
+			return Services.ProjectService.ExtensionChain.CanExecute (this, context, solutionConfiguration);
 		}
 		
-		public bool NeedsBuilding (string configuration)
+		public bool NeedsBuilding (string solutionConfiguration)
 		{
-			return Services.ProjectService.ExtensionChain.GetNeedsBuilding (this, configuration);
+			return Services.ProjectService.ExtensionChain.GetNeedsBuilding (this, solutionConfiguration);
 		}
 		
-		public void SetNeedsBuilding (bool value, string configuration)
+		public void SetNeedsBuilding (bool value, string solutionConfiguration)
 		{
-			Services.ProjectService.ExtensionChain.SetNeedsBuilding (this, value, configuration);
+			Services.ProjectService.ExtensionChain.SetNeedsBuilding (this, value, solutionConfiguration);
 		}
 		
 		public virtual bool NeedsReload {
@@ -257,7 +259,7 @@ namespace MonoDevelop.Projects
 			}
 		}
 		
-		public static ReadOnlyCollection<T> TopologicalSort<T> (IEnumerable<T> items, string configuration) where T: SolutionItem
+		public static ReadOnlyCollection<T> TopologicalSort<T> (IEnumerable<T> items, string solutionConfiguration) where T: SolutionItem
 		{
 			IList<T> allItems;
 			allItems = items as IList<T>;
@@ -269,12 +271,12 @@ namespace MonoDevelop.Projects
 			bool[] triedToInsert = new bool[allItems.Count];
 			for (int i = 0; i < allItems.Count; ++i) {
 				if (!inserted[i])
-					Insert<T> (i, allItems, sortedEntries, inserted, triedToInsert, configuration);
+					Insert<T> (i, allItems, sortedEntries, inserted, triedToInsert, solutionConfiguration);
 			}
 			return sortedEntries.AsReadOnly ();
 		}
 		
-		static void Insert<T> (int index, IList<T> allItems, List<T> sortedItems, bool[] inserted, bool[] triedToInsert, string configuration) where T: SolutionItem
+		static void Insert<T> (int index, IList<T> allItems, List<T> sortedItems, bool[] inserted, bool[] triedToInsert, string solutionConfiguration) where T: SolutionItem
 		{
 			if (triedToInsert[index]) {
 				throw new CyclicBuildOrderException();
@@ -282,12 +284,12 @@ namespace MonoDevelop.Projects
 			triedToInsert[index] = true;
 			SolutionItem insertItem = allItems[index];
 			
-			foreach (SolutionItem reference in insertItem.GetReferencedItems (configuration)) {
+			foreach (SolutionItem reference in insertItem.GetReferencedItems (solutionConfiguration)) {
 				for (int j=0; j < allItems.Count; ++j) {
 					SolutionItem checkItem = allItems[j];
 					if (reference == checkItem) {
 						if (!inserted[j])
-							Insert (j, allItems, sortedItems, inserted, triedToInsert, configuration);
+							Insert (j, allItems, sortedItems, inserted, triedToInsert, solutionConfiguration);
 						break;
 					}
 				}
@@ -327,13 +329,13 @@ namespace MonoDevelop.Projects
 		}
 		
 		
-		internal protected abstract void OnClean (IProgressMonitor monitor, string configuration);
-		internal protected abstract BuildResult OnBuild (IProgressMonitor monitor, string configuration);
-		internal protected abstract void OnExecute (IProgressMonitor monitor, ExecutionContext context, string configuration);
-		internal protected abstract bool OnGetNeedsBuilding (string configuration);
-		internal protected abstract void OnSetNeedsBuilding (bool val, string configuration);
+		internal protected abstract void OnClean (IProgressMonitor monitor, string solutionConfiguration);
+		internal protected abstract BuildResult OnBuild (IProgressMonitor monitor, string solutionConfiguration);
+		internal protected abstract void OnExecute (IProgressMonitor monitor, ExecutionContext context, string solutionConfiguration);
+		internal protected abstract bool OnGetNeedsBuilding (string solutionConfiguration);
+		internal protected abstract void OnSetNeedsBuilding (bool val, string solutionConfiguration);
 		
-		internal protected virtual bool OnGetCanExecute (ExecutionContext context, string configuration)
+		internal protected virtual bool OnGetCanExecute (ExecutionContext context, string solutionConfiguration)
 		{
 			return false;
 		}

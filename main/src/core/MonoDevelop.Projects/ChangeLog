@@ -1,3 +1,19 @@
+2008-06-04  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects/Solution.cs,
+	  MonoDevelop.Projects/SolutionEntityItem.cs,
+	  MonoDevelop.Projects/SolutionItem.cs,
+	  MonoDevelop.Projects/DotNetProject.cs,
+	  MonoDevelop.Projects/Project.cs: Changed how the configuration
+	  parameter is interpreted in SolutionItem and subclasses. This
+	  parameter will always be a solution configuration, even when used
+	  in projects. So for example, project.Build (mm, "Debug") will not
+	  build the Debug configuration of the project, but the configuration
+	  mapped to the Debug solution configuration. The same for all other
+	  methods taking a configuration as parameter.  This is needed to
+	  ensure the consistency of operations which involve several
+	  projects.
+
 2008-06-04  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom.Output/NetAmbience.cs,

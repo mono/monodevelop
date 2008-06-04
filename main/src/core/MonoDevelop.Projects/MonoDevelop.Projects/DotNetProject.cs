@@ -310,7 +310,7 @@ namespace MonoDevelop.Projects
 				if (projectReference.ReferenceType == ReferenceType.Project && projectReference.LocalCopy && ParentSolution != null) {
 					DotNetProject p = ParentSolution.FindProjectByName (projectReference.Reference) as DotNetProject;
 					if (p != null) {
-						ProjectConfiguration config = p.GetConfiguration (configuration) as ProjectConfiguration;
+						ProjectConfiguration config = p.GetActiveConfiguration (configuration) as ProjectConfiguration;
 						if (config != null && config.DebugMode)
 							deployFiles.Add (p.GetOutputFileName (configuration) + ".mdb");
 
@@ -388,7 +388,7 @@ namespace MonoDevelop.Projects
 		}
 
 
-		public override string GetOutputFileName (string configuration)
+		protected override string OnGetOutputFileName (string configuration)
 		{
 			DotNetProjectConfiguration conf = (DotNetProjectConfiguration) GetConfiguration (configuration);
 			if (conf != null)

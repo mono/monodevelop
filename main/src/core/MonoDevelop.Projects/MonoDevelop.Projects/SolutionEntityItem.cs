@@ -331,6 +331,19 @@ namespace MonoDevelop.Projects
 			return null;
 		}
 		
+		public string GetActiveConfigurationId (string solutionConfiguration)
+		{
+			if (ParentSolution != null) {
+				SolutionConfiguration config = ParentSolution.Configurations [solutionConfiguration];
+				if (config != null) {
+					string mc = config.GetMappedConfiguration (this);
+					if (mc != null)
+						return mc;
+				}
+			}
+			return ProjectService.DefaultConfiguration;
+		}
+		
 		ItemConfiguration IConfigurationTarget.DefaultConfiguration {
 			get { return DefaultConfiguration; }
 			set { DefaultConfiguration = (SolutionItemConfiguration) value; }

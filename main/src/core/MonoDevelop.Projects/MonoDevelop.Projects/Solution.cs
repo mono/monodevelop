@@ -395,7 +395,7 @@ namespace MonoDevelop.Projects
 				if (cce.Item == null)
 					LoggingService.LogWarning ("Combine.OnClean '{0}', configuration '{1}', entry '{2}': Entry is null", Name, config.Id, cce.Item.Name);
 				else if (cce.Build)
-					cce.Item.Clean (monitor, cce.ItemConfiguration);
+					cce.Item.Clean (monitor, configuration);
 			}
 		}
 		
