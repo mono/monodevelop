@@ -26,6 +26,7 @@
 //
 
 using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Xml;
 
@@ -38,6 +39,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		
 		public const string Schema = "http://schemas.microsoft.com/developer/msbuild/2003";
 		static XmlNamespaceManager manager;
+		
+		bool useCrLf;
 		
 		internal static XmlNamespaceManager XmlNamespaceManager {
 			get {
@@ -68,11 +71,32 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			doc = new XmlDocument ();
 			doc.PreserveWhitespace = false;
 			doc.LoadXml (xml);
+			useCrLf = CountNewLines ("\r\n", xml) > (CountNewLines ("\n", xml) / 2);
 		}
 		
 		public void Save (string file)
 		{
-			doc.Save (file);
+			StreamWriter sw = new StreamWriter (file);
+			if (useCrLf)
+				sw.NewLine = "\r\n";
+			else
+				sw.NewLine = "\n";
+			using (sw) {
+				doc.Save (sw);
+			}
+		}
+		
+		int CountNewLines (string nl, string text)
+		{
+			int i = -1;
+			int c = -1;
+			do {
+				c++;
+				i++;
+				i = text.IndexOf (nl, i);
+			}
+			while (i != -1);
+			return c;
 		}
 		
 		public string DefaultTargets {
