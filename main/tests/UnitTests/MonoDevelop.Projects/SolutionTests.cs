@@ -526,5 +526,121 @@ namespace MonoDevelop.Projects
 			sol.RootFolder.Items.Add (newp);
 			Assert.AreEqual ("MSBuild05", mp.FileFormat.Id);
 		}
+		
+		[Test()]
+		public void BuildConfigurationMappings ()
+		{
+			string solFile = Util.GetSampleProject ("test-build-configs", "test-build-configs.mds");
+			
+			Solution sol = (Solution) Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			DotNetProject lib1 = (DotNetProject) sol.FindProjectByName ("Lib1");
+			DotNetProject lib2 = (DotNetProject) sol.FindProjectByName ("Lib2");
+			DotNetProject lib3 = (DotNetProject) sol.FindProjectByName ("Lib3");
+			DotNetProject lib4 = (DotNetProject) sol.FindProjectByName ("Lib4");
+			
+			// Check that the output file names are correct
+			
+			Assert.AreEqual (GetConfigFolderName (lib1, "Debug"), "Debug");
+			Assert.AreEqual (GetConfigFolderName (lib1, "Release"), "Release");
+			Assert.AreEqual (GetConfigFolderName (lib2, "Debug"), "Release");
+			Assert.AreEqual (GetConfigFolderName (lib2, "Release"), "Debug");
+			Assert.AreEqual (GetConfigFolderName (lib3, "Debug"), "DebugExtra");
+			Assert.AreEqual (GetConfigFolderName (lib3, "Release"), "ReleaseExtra");
+
+			// Check that building the solution builds the correct project configurations
+			
+			CheckSolutionBuildClean (sol, "Debug");
+			CheckSolutionBuildClean (sol, "Release");
+			
+			// Check that building a project builds the correct referenced project configurations
+			
+			CheckProjectReferencesBuildClean (sol, "Debug");
+			CheckProjectReferencesBuildClean (sol, "Release");
+			
+			// Single project build and clean
+			
+			CheckProjectBuildClean (lib2, "Debug");
+			CheckProjectBuildClean (lib2, "Release");
+			CheckProjectBuildClean (lib3, "Debug");
+			CheckProjectBuildClean (lib3, "Release");
+			CheckProjectBuildClean (lib4, "Debug");
+			CheckProjectBuildClean (lib4, "Release");
+		}
+		
+		void CheckSolutionBuildClean (Solution sol, string config)
+		{
+			string tag = "CheckSolutionBuildClean config=" + config;
+			DotNetProject lib1 = (DotNetProject) sol.FindProjectByName ("Lib1");
+			DotNetProject lib2 = (DotNetProject) sol.FindProjectByName ("Lib2");
+			DotNetProject lib3 = (DotNetProject) sol.FindProjectByName ("Lib3");
+			DotNetProject lib4 = (DotNetProject) sol.FindProjectByName ("Lib4");
+			
+			Assert.IsFalse (File.Exists (lib1.GetOutputFileName (config)), tag);
+			Assert.IsFalse (File.Exists (lib2.GetOutputFileName (config)), tag);
+			Assert.IsFalse (File.Exists (lib3.GetOutputFileName (config)), tag);
+			Assert.IsFalse (File.Exists (lib4.GetOutputFileName (config)), tag);
+			
+			BuildResult res = sol.Build (Util.GetMonitor (), config);
+			Assert.AreEqual (0, res.WarningCount, tag);
+			Assert.AreEqual (0, res.ErrorCount, tag);
+			
+			Assert.IsTrue (File.Exists (lib1.GetOutputFileName (config)), tag);
+			Assert.IsTrue (File.Exists (lib2.GetOutputFileName (config)), tag);
+			Assert.IsTrue (File.Exists (lib3.GetOutputFileName (config)), tag);
+			Assert.IsTrue (File.Exists (lib4.GetOutputFileName (config)), tag);
+			
+			sol.Clean (Util.GetMonitor (), config);
+			
+			Assert.IsFalse (File.Exists (lib1.GetOutputFileName (config)), tag);
+			Assert.IsFalse (File.Exists (lib2.GetOutputFileName (config)), tag);
+			Assert.IsFalse (File.Exists (lib3.GetOutputFileName (config)), tag);
+			Assert.IsFalse (File.Exists (lib4.GetOutputFileName (config)), tag);
+		}
+		
+		void CheckProjectReferencesBuildClean (Solution sol, string config)
+		{
+			string tag = "CheckProjectReferencesBuildClean config=" + config;
+			DotNetProject lib1 = (DotNetProject) sol.FindProjectByName ("Lib1");
+			DotNetProject lib2 = (DotNetProject) sol.FindProjectByName ("Lib2");
+			DotNetProject lib3 = (DotNetProject) sol.FindProjectByName ("Lib3");
+			DotNetProject lib4 = (DotNetProject) sol.FindProjectByName ("Lib4");
+			
+			Assert.IsFalse (File.Exists (lib1.GetOutputFileName (config)), tag);
+			Assert.IsFalse (File.Exists (lib2.GetOutputFileName (config)), tag);
+			Assert.IsFalse (File.Exists (lib3.GetOutputFileName (config)), tag);
+			Assert.IsFalse (File.Exists (lib4.GetOutputFileName (config)), tag);
+			
+			BuildResult res = lib1.Build (Util.GetMonitor (), config, true);
+			Assert.AreEqual (0, res.WarningCount, tag);
+			Assert.AreEqual (0, res.ErrorCount, tag + " " + res.CompilerOutput);
+			
+			Assert.IsTrue (File.Exists (lib1.GetOutputFileName (config)), tag);
+			Assert.IsTrue (File.Exists (lib2.GetOutputFileName (config)), tag);
+			Assert.IsTrue (File.Exists (lib3.GetOutputFileName (config)), tag);
+			Assert.IsTrue (File.Exists (lib4.GetOutputFileName (config)), tag);
+			
+			sol.Clean (Util.GetMonitor (), config);
+		}
+		
+		void CheckProjectBuildClean (DotNetProject lib, string config)
+		{
+			string tag = "CheckProjectBuildClean lib=" + lib.Name + " config=" + config;
+			
+			Assert.IsFalse (File.Exists (lib.GetOutputFileName (config)), tag);
+			
+			BuildResult res = lib.Build (Util.GetMonitor (), config, false);
+			Assert.AreEqual (0, res.WarningCount, tag);
+			Assert.AreEqual (0, res.ErrorCount, tag);
+			
+			Assert.IsTrue (File.Exists (lib.GetOutputFileName (config)), tag);
+			
+			lib.Clean (Util.GetMonitor (), config);
+			Assert.IsFalse (File.Exists (lib.GetOutputFileName (config)), tag);
+		}
+		
+		string GetConfigFolderName (DotNetProject lib, string conf)
+		{
+			return Path.GetFileName (Path.GetDirectoryName (lib.GetOutputFileName (conf)));
+		}
 	}
 }

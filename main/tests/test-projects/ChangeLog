@@ -1,5 +1,22 @@
 2008-06-04  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* test-build-configs, test-build-configs/test-build-configs.mds,
+	  test-build-configs/Lib1, test-build-configs/Lib1/MyClass.cs,
+	  test-build-configs/Lib1/AssemblyInfo.cs,
+	  test-build-configs/Lib1/Lib1.mdp, test-build-configs/Lib2,
+	  test-build-configs/Lib2/MyClass.cs,
+	  test-build-configs/Lib2/AssemblyInfo.cs,
+	  test-build-configs/Lib2/Lib2.mdp, test-build-configs/Lib3,
+	  test-build-configs/Lib3/MyClass.cs,
+	  test-build-configs/Lib3/AssemblyInfo.cs,
+	  test-build-configs/Lib3/Lib3.mdp, test-build-configs/Lib4,
+	  test-build-configs/Lib4/MyClass.cs,
+	  test-build-configs/Lib4/AssemblyInfo.cs,
+	  test-build-configs/Lib4/Lib4.mdp: New tests for checking solution
+	  configuration mappings.
+
+2008-06-04  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* generated-console-project/TestSolution.sln,
 	  console-project/ConsoleProject.sln: Test fixes.
 
