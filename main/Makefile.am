@@ -1,4 +1,4 @@
-SUBDIRS = contrib src build po man theme-icons
+SUBDIRS = contrib src build po man theme-icons tests
 
 bin_SCRIPTS = monodevelop mdtool
 
