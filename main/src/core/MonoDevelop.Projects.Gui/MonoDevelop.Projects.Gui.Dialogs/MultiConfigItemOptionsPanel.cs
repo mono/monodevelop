@@ -40,6 +40,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs
 		Gtk.ComboBox platformCombo;
 		List<ItemConfiguration> currentConfigs = new List<ItemConfiguration> ();
 		List<string> platforms = new List<string> ();
+		Gtk.Widget panelWidget;
 		
 		bool loading;
 		bool widgetCreated;
@@ -127,8 +128,14 @@ namespace MonoDevelop.Projects.Gui.Dialogs
 				UpdateSelection ();
 			}
 			widgetCreated = true;
+			panelWidget = cbox;
 			
-			LoadConfigData ();
+			if (currentConfigs.Count > 0) {
+				panelWidget.Sensitive = true;
+				LoadConfigData ();
+			}
+			else
+				panelWidget.Sensitive = false;
 			
 			return cbox;
 		}
@@ -219,8 +226,11 @@ namespace MonoDevelop.Projects.Gui.Dialogs
 					currentConfigs.Add (config);
 			}
 			
-			if (widgetCreated && currentConfigs.Count > 0)
+			if (widgetCreated && currentConfigs.Count > 0) {
+				panelWidget.Sensitive = true;
 				LoadConfigData ();
+			} else if (widgetCreated)
+				panelWidget.Sensitive = false;
 		}
 		
 		void OnConfigurationsChanged (object s, EventArgs a)
