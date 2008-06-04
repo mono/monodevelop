@@ -1,3 +1,9 @@
+2008-06-04  Mike Krüger <mkrueger@novell.com> 
+
+	* Gui/CSharpTextEditorExtension.cs: fixed 'Bug 396798 - Smart
+	  Indendation mode doesn't work with tab-to-space-conversion
+	  enabled'.
+
 2008-06-04  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* CSharpBinding.addin.xml: Bump MD version.

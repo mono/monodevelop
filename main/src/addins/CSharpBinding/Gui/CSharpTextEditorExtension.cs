@@ -272,7 +272,7 @@ namespace CSharpBinding
 		
 		#endregion
 		
-		
+		int cursorPositionBeforeKeyPress;
 		public override bool KeyPress (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
 		{
 			if (keyChar == ',') {
@@ -284,7 +284,7 @@ namespace CSharpBinding
 			if (GenerateDocComments (key))
 				//if doc comments were inserted, further handling not necessary
 				return false;
-			
+			cursorPositionBeforeKeyPress = Editor.CursorPosition;
 			//do the smart indent
 			if (TextEditorProperties.IndentStyle == IndentStyle.Smart) {
 				//capture some of the current state
@@ -382,11 +382,12 @@ namespace CSharpBinding
 				// Tab is interpreted as a reindent command when it's neither at the end of a line nor in a verbatim string
 				// and when a tab has just been inserted (i.e. not a template or an autocomplete command)
 				if (!stateTracker.Engine.IsInsideVerbatimString
-				    && cursor >= 1 && Editor.GetCharAt (cursor - 1) == '\t' //tab was actually inserted, or in a region of tabs
+				    && cursor >= 1 && Char.IsWhiteSpace (Editor.GetCharAt (cursor - 1)) //tab was actually inserted, or in a region of tabs
 				    && !hadSelection //was just a cursor, not a block of selected text -- the text editor handles that specially
 				    )
 				{
-					Editor.DeleteText (cursor - 1, 1);
+					int delta = Editor.CursorPosition - this.cursorPositionBeforeKeyPress;
+					Editor.DeleteText (cursor - delta, delta);
 					reIndent = true;
 				}
 				break;
