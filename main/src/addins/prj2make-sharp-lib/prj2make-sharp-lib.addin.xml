@@ -22,11 +22,7 @@
 		<ExtensionNode name ="Class" />
 	</ExtensionPoint>
 
-	<Extension path = "/MonoDevelop/ProjectModel/ProjectFileFormats">
-		<FileFormat id="MSBuildFileFormat"
-		            class="MonoDevelop.Prj2Make.MSBuildFileFormat"/>
-		<FileFormat id="VS2003SlnFileFormat"
-		            class="MonoDevelop.Prj2Make.VS2003SlnFileFormat"/>
+	<Extension path = "/MonoDevelop/ProjectModel/FileFormats">
 		<FileFormat id="VS2003ProjectFileFormat"
 		            class="MonoDevelop.Prj2Make.VS2003ProjectFileFormat"/>
 	</Extension>
