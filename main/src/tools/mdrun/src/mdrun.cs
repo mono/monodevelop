@@ -44,10 +44,15 @@ public class MonoDevelopProcessHost
 			Runtime.SetProcessName ("mdtool");
 			
 			if (args.Length == 0 || args [0] == "--help") {
-				Console.WriteLine ("MonoDevelop Application Runner");
-				Console.WriteLine ("Usage: mdtool <applicationId> ... : Runs an application.");
+				Console.WriteLine ();
+				Console.WriteLine ("MonoDevelop Tool Runner");
+				Console.WriteLine ();
+				Console.WriteLine ("Usage: mdtool [options] <tool> ... : Runs a tool.");
 				Console.WriteLine ("       mdtool setup ... : Runs the setup utility.");
-				Console.WriteLine ("       mdtool -q : Lists available applications.");
+				Console.WriteLine ("       mdtool -q : Lists available tools.");
+				Console.WriteLine ();
+				Console.WriteLine ("Options:");
+				Console.WriteLine ("  --verbose (-v): Enable verbose log.");
 				Console.WriteLine ();
 				ShowAvailableApps ();
 				return 0;
@@ -58,10 +63,17 @@ public class MonoDevelopProcessHost
 				return 0;
 			}
 			
-			string[] newArgs = new string [args.Length - 1];
-			Array.Copy (args, 1, newArgs, 0, args.Length - 1);
-			if (args [0] != "setup")
-				return Runtime.ApplicationService.StartApplication (args[0], newArgs);
+			// Don't log to console unless verbose log is requested
+			int pi = 0;
+			if (args [0] == "-v" || args [0] == "--verbose")
+				pi++;
+			else
+				LoggingService.RemoveLogger ("ConsoleLogger");
+			
+			string[] newArgs = new string [args.Length - 1 - pi];
+			Array.Copy (args, pi + 1, newArgs, 0, args.Length - 1 - pi);
+			if (args [pi] != "setup")
+				return Runtime.ApplicationService.StartApplication (args[pi], newArgs);
 			else
 				return RunSetup (newArgs);
 		} catch (UserException ex) {
@@ -94,7 +106,7 @@ public class MonoDevelopProcessHost
 
 	static void ShowAvailableApps ()
 	{
-		Console.WriteLine ("Available applications:");
+		Console.WriteLine ("Available tools:");
 		foreach (IApplicationInfo ainfo in Runtime.ApplicationService.GetApplications ()) {
 			Console.Write ("- " + ainfo.Id);
 			if (ainfo.Description != null && ainfo.Description.Length > 0)
@@ -102,6 +114,7 @@ public class MonoDevelopProcessHost
 			else
 				Console.WriteLine ();
 		}
+		Console.WriteLine ();
 	}
 
 }

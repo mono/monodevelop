@@ -1,3 +1,8 @@
+2008-06-05  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* src/mdrun.cs: Don't log internal messages to console by default.
+	  Added parameter for enabling the logging service.
+
 2008-01-16  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* src/mdrun.cs: Set process name for mdtool.
