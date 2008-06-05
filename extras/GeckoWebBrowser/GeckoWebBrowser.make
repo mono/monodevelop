@@ -55,7 +55,6 @@ RESOURCES =  \
 
 EXTRAS = \
 	ChangeLog \
-	Makefile.am \
 	monodevelop-geckowebbrowser.pc.in 
 
 REFERENCES =  \

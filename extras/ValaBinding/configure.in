@@ -1,9 +1,9 @@
-AC_INIT([valabinding], 0.19, [taktaktaktaktaktaktaktaktaktak@gmail.com])
+AC_INIT([valabinding], 1.9, [taktaktaktaktaktaktaktaktaktak@gmail.com])
 AC_PREREQ(2.53)
 AM_INIT_AUTOMAKE(1.9 tar-ustar)
 AM_MAINTAINER_MODE
 
-ASSEMBLY_VERSION=0.19.0.0
+ASSEMBLY_VERSION=1.9.0.0
 
 AC_PATH_PROG(MONO, mono)
 AC_PATH_PROG(MCS, gmcs)
