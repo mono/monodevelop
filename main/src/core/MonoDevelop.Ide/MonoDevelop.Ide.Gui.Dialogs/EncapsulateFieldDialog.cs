@@ -131,11 +131,15 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 
 			treeview.Model = store;
 
-			foreach (IField ifield in declaringType.Fields)
-				// "check" the row, if we were invoked on a field
-				store.AppendValues (field != null && (field.Name == ifield.Name),
-				                    ifield.Name, GeneratePropertyName (ifield.Name),
+			foreach (IField ifield in declaringType.Fields) {
+				bool enabled = field != null && (field.Name == ifield.Name);
+				string propertyName = GeneratePropertyName (ifield.Name);
+				store.AppendValues (enabled, ifield.Name, propertyName,
 				                    "Public", ifield.IsReadonly || ifield.IsLiteral, ifield);
+
+				if (enabled)
+					CheckAndUpdateConflictMessage (propertyName, false);
+			}
 
 			store.SetSortColumnId (colFieldNameIndex, SortType.Ascending);
 			buttonSelectAll.Clicked += OnSelectAllClicked;
@@ -181,7 +185,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 				return;
 
 			store.SetValue (iter, colPropertyNameIndex, args.NewText);
-			if (!CheckAndUpdateConflictMessage (iter))
+			if (!CheckAndUpdateConflictMessage (iter, true))
 				// unselect this field
 				store.SetValue (iter, colCheckedIndex, false);
 
@@ -190,11 +194,12 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 
 		void RenderPropertyName (Gtk.TreeViewColumn column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
 		{
+			bool selected = (bool) store.GetValue (iter, colCheckedIndex);
 			string propertyName = (string) store.GetValue (iter, colPropertyNameIndex);
 			string error;
 
 			CellRendererText cellRendererText = (CellRendererText) cell;
-			if (IsValidPropertyName (propertyName, out error))
+			if (!selected || IsValidPropertyName (propertyName, out error))
 				cellRendererText.Foreground = "black";
 			else
 				cellRendererText.Foreground = "red";
@@ -202,12 +207,20 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 			cellRendererText.Text = propertyName;
 		}
 
-		bool CheckAndUpdateConflictMessage (TreeIter iter)
+		// @clearOnValid: clear the message label if propertyName is valid
+		bool CheckAndUpdateConflictMessage (TreeIter iter, bool clearOnValid)
+		{
+			return CheckAndUpdateConflictMessage ((string) store.GetValue (iter, colPropertyNameIndex), 
+			                                      clearOnValid);
+		}
+
+		// @clearOnValid: clear the message label if propertyName is valid
+		bool CheckAndUpdateConflictMessage (string name, bool clearOnValid)
 		{
 			string error;
-			string name = (string) store.GetValue (iter, colPropertyNameIndex);
 			if (IsValidPropertyName (name, out error)) {
-				SetErrorMessage (null);
+				if (clearOnValid)
+					SetErrorMessage (null);
 				return true;
 			} else {
 				SetErrorMessage (error);
@@ -296,7 +309,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 			if (old_value)
 				SetErrorMessage (null);
 			else
-				CheckAndUpdateConflictMessage (iter);
+				CheckAndUpdateConflictMessage (iter, true);
 			UpdateOKButton ();
 		}
 
@@ -346,6 +359,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 		void OnUnselectAllClicked (object sender, EventArgs e)
 		{
 			SelectAll (false);
+			SetErrorMessage (null);
 		}
 
 		void SelectAll (bool select)
@@ -354,10 +368,18 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 			if (!store.GetIterFirst (out iter))
 				return;
 
+			// clear any old error message
+			SetErrorMessage (null);
+
+			bool has_error = false;
 			do {
+				if (select && !CheckAndUpdateConflictMessage (iter, false))
+					has_error = true;
 				store.SetValue (iter, colCheckedIndex, select);
 			} while (store.IterNext (ref iter));
 
+			if (has_error)
+				SetErrorMessage (GettextCatalog.GetString ("One or more property names conflict with existing members of the class"));
 			UpdateOKButton ();
 		}
 
