@@ -8,19 +8,9 @@ using MonoDevelop.Projects;
 namespace MonoDevelop.SourceEditor
 {
 	class Services
-	{
-		static IDebuggingService debuggingService;
-		
+	{		
 		public static ResourceService Resources {
 			get { return MonoDevelop.Core.Gui.Services.Resources; }
-		}
-	
-		public static IDebuggingService DebuggingService {
-			get {
-				if (debuggingService == null)
-					debuggingService = (IDebuggingService) ServiceManager.GetService (typeof(IDebuggingService));
-				return debuggingService;
-			}
 		}
 	
 		public static LanguageBindingService Languages {

@@ -627,15 +627,17 @@ namespace MonoDevelop.SourceEditor.Gui
 		protected override bool OnKeyPressEvent (Gdk.EventKey evnt)
 		{
 			evntCopy = evnt;
+			
+			//FIXME use Gdk.Keyval.ToUnicode rtc
 			if (extension == null)
-				return ((ITextEditorExtension)this).KeyPress (evnt.Key, evnt.State);
+				return ((ITextEditorExtension)this).KeyPress (evnt.Key, (char)evnt.KeyValue, evnt.State);
 			else
-				return extension.KeyPress (evnt.Key, evnt.State);
+				return extension.KeyPress (evnt.Key, (char)evnt.KeyValue, evnt.State);
 		}
 		
 		Gdk.EventKey evntCopy;
 
-		bool ITextEditorExtension.KeyPress (Gdk.Key key, Gdk.ModifierType modifier)
+		bool ITextEditorExtension.KeyPress (Gdk.Key key, char ch, Gdk.ModifierType modifier)
 		{
 			Gdk.EventKey evnt = evntCopy;
 			HideLanguageItemWindow ();

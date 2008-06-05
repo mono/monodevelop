@@ -322,12 +322,12 @@ namespace MonoDevelop.SourceEditor.Gui
 		public override void Dispose()
 		{
 			disposed = true;
-			
+			/*FIXME gtksv2
 			if (Services.DebuggingService != null) {
 				Services.DebuggingService.BreakpointAdded -= breakpointAddedHandler;
 				Services.DebuggingService.BreakpointRemoved -= breakpointRemovedHandler;
 				Services.DebuggingService.ExecutionLocationChanged -= executionChangedHandler;
-			}
+			}*/
 			TextFileService.FireResetCountChanges (this);
 
 			properties.PropertyChanged -= propertyHandler;
