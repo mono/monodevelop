@@ -1,3 +1,10 @@
+2008-06-06  Ankit Jain  <jankit@novell.com>
+
+	* MonoDevelop.Ide.Gui.Dialogs/EncapsulateFieldDialog.cs: Usability
+	improvements suggested by lluis.
+	* gtk-gui/MonoDevelop.Ide.Gui.Dialogs.EncapsulateFieldDialog.cs: Update.
+	* gtk-gui/gui.stetic: Update.
+
 2008-06-05  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Gui/MonoDevelopTreeView.cs: When handling the Delete

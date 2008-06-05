@@ -1307,9 +1307,35 @@
               </packing>
             </child>
             <child>
-              <widget class="Gtk.Label" id="labelError">
+              <widget class="Gtk.HBox" id="hbox2">
                 <property name="MemberName" />
-                <property name="LabelProp" translatable="yes" />
+                <property name="Spacing">6</property>
+                <child>
+                  <widget class="Gtk.Image" id="imageError">
+                    <property name="MemberName" />
+                  </widget>
+                  <packing>
+                    <property name="Position">0</property>
+                    <property name="AutoSize">True</property>
+                    <property name="Expand">False</property>
+                    <property name="Fill">False</property>
+                  </packing>
+                </child>
+                <child>
+                  <widget class="Gtk.Label" id="labelError">
+                    <property name="MemberName" />
+                    <property name="LabelProp" translatable="yes" />
+                  </widget>
+                  <packing>
+                    <property name="Position">1</property>
+                    <property name="AutoSize">True</property>
+                    <property name="Expand">False</property>
+                    <property name="Fill">False</property>
+                  </packing>
+                </child>
+                <child>
+                  <placeholder />
+                </child>
               </widget>
               <packing>
                 <property name="Position">5</property>

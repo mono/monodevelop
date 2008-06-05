@@ -41,10 +41,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 
 	public partial class EncapsulateFieldDialog : Gtk.Dialog {
 		IClass declaringType;
-
 		ListStore store;
 		ListStore visibilityStore;
-		int selected;
 
 		private const int colCheckedIndex = 0;
 		private const int colFieldNameIndex = 1;
@@ -71,6 +69,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 			store = new ListStore (typeof (bool), typeof(string), typeof (string), typeof (string), typeof (bool), typeof (IField));
 			visibilityStore = new ListStore (typeof (string));
 
+			// Column #1
 			CellRendererToggle cbRenderer = new CellRendererToggle ();
 			cbRenderer.Activatable = true;
 			cbRenderer.Toggled += OnSelectedToggled;
@@ -80,13 +79,16 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 			cbCol.AddAttribute (cbRenderer, "active", colCheckedIndex);
 			treeview.AppendColumn (cbCol);
 
+			// Column #2
 			CellRendererText fieldRenderer = new CellRendererText ();
+			fieldRenderer.Weight = (int) Pango.Weight.Bold;
 			TreeViewColumn fieldCol = new TreeViewColumn ();
 			fieldCol.Title = GettextCatalog.GetString ("Field");
 			fieldCol.PackStart (fieldRenderer, true);
 			fieldCol.AddAttribute (fieldRenderer, "text", colFieldNameIndex);
 			treeview.AppendColumn (fieldCol);
 
+			// Column #3
 			CellRendererText propertyRenderer = new CellRendererText ();
 			propertyRenderer.Editable = true;
 			propertyRenderer.Edited += new EditedHandler (OnPropertyEdited);
@@ -94,8 +96,10 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 			propertyCol.Title = GettextCatalog.GetString ("Property");
 			propertyCol.PackStart (propertyRenderer, true);
 			propertyCol.AddAttribute (propertyRenderer, "text", colPropertyNameIndex);
+			propertyCol.SetCellDataFunc (propertyRenderer, new TreeCellDataFunc (RenderPropertyName));
 			treeview.AppendColumn (propertyCol);
 
+			// Column #4
 			CellRendererCombo visiComboRenderer = new CellRendererCombo ();
 			visiComboRenderer.Model = visibilityStore;
 			visiComboRenderer.Editable = true;
@@ -109,6 +113,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 			visiCol.AddAttribute (visiComboRenderer, "text", colVisibilityIndex);
 			treeview.AppendColumn (visiCol);
 
+			// Column #5
 			CellRendererToggle roRenderer = new CellRendererToggle ();
 			roRenderer.Activatable = true;
 			roRenderer.Xalign = 0.0f;
@@ -126,21 +131,19 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 
 			treeview.Model = store;
 
-			foreach (IField ifield in declaringType.Fields) {
-				string propertyName = GeneratePropertyName (ifield.Name);
-				string errorMsg;
-				bool enabled = field != null && (field.Name == ifield.Name) &&
-					IsValidPropertyName (propertyName, out errorMsg);
-
-				store.AppendValues (enabled, ifield.Name, GeneratePropertyName (ifield.Name),
-						"Public", false, ifield);
-			}
+			foreach (IField ifield in declaringType.Fields)
+				// "check" the row, if we were invoked on a field
+				store.AppendValues (field != null && (field.Name == ifield.Name),
+				                    ifield.Name, GeneratePropertyName (ifield.Name),
+				                    "Public", ifield.IsReadonly || ifield.IsLiteral, ifield);
 
 			store.SetSortColumnId (colFieldNameIndex, SortType.Ascending);
 			buttonSelectAll.Clicked += OnSelectAllClicked;
 			buttonUnselectAll.Clicked += OnUnselectAllClicked;
 			buttonOk.Clicked += OnOKClicked;
 			buttonCancel.Clicked += OnCancelClicked;
+
+			UpdateOKButton ();
 		}
 
 		string GeneratePropertyName (string fieldName)
@@ -177,19 +180,49 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 			if (!store.GetIterFromString (out iter, args.Path))
 				return;
 
-			TrySetPropertyName (iter, args.NewText);
+			store.SetValue (iter, colPropertyNameIndex, args.NewText);
+			if (!CheckAndUpdateConflictMessage (iter))
+				// unselect this field
+				store.SetValue (iter, colCheckedIndex, false);
+
+			UpdateOKButton ();
 		}
 
-		bool TrySetPropertyName (TreeIter iter, string name)
+		void RenderPropertyName (Gtk.TreeViewColumn column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
+		{
+			string propertyName = (string) store.GetValue (iter, colPropertyNameIndex);
+			string error;
+
+			CellRendererText cellRendererText = (CellRendererText) cell;
+			if (IsValidPropertyName (propertyName, out error))
+				cellRendererText.Foreground = "black";
+			else
+				cellRendererText.Foreground = "red";
+
+			cellRendererText.Text = propertyName;
+		}
+
+		bool CheckAndUpdateConflictMessage (TreeIter iter)
 		{
 			string error;
+			string name = (string) store.GetValue (iter, colPropertyNameIndex);
 			if (IsValidPropertyName (name, out error)) {
-				store.SetValue (iter, colPropertyNameIndex, name);
-				labelError.Text = String.Empty;
+				SetErrorMessage (null);
 				return true;
 			} else {
-				labelError.Text = error;
+				SetErrorMessage (error);
 				return false;
+			}
+		}
+
+		void SetErrorMessage (string message)
+		{
+			if (String.IsNullOrEmpty (message)) {
+				labelError.Text = String.Empty;
+				imageError.Clear ();
+			} else {
+				labelError.Text = message;
+				imageError.SetFromStock (MonoDevelop.Core.Gui.Stock.Error, IconSize.Menu);
 			}
 		}
 
@@ -244,12 +277,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 			return true;
 		}
 
-		void OnEntryActivated (object sender, EventArgs e)
-		{
-			if (buttonOk.Sensitive)
-				buttonOk.Click ();
-		}
-
 		private void OnVisibilityEdited (object sender, EditedArgs args)
 		{
 			TreeIter iter;
@@ -264,20 +291,48 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 				return;
 
 			bool old_value = (bool) store.GetValue (iter, colCheckedIndex);
-			if (!old_value) {
-				// selecting
-				string name = (string) store.GetValue (iter, colPropertyNameIndex);
-				if (!TrySetPropertyName (iter, name))
-					return;
-			}
-
 			store.SetValue (iter, colCheckedIndex, !old_value);
+
+			if (old_value)
+				SetErrorMessage (null);
+			else
+				CheckAndUpdateConflictMessage (iter);
+			UpdateOKButton ();
+		}
+
+		void UpdateOKButton ()
+		{
+			TreeIter iter;
+			if (!store.GetIterFirst (out iter))
+				return;
+
+			bool atleast_one_selected = false;
+			do {
+				bool selected = (bool) store.GetValue (iter, colCheckedIndex);
+				if (!selected)
+					continue;
+
+				atleast_one_selected = true;
+
+				string propertyName = (string) store.GetValue (iter, colPropertyNameIndex);
+				string error;
+				if (!IsValidPropertyName (propertyName, out error)) {
+					buttonOk.Sensitive = false;
+					return;
+				}
+			} while (store.IterNext (ref iter));
+
+			buttonOk.Sensitive = atleast_one_selected;
 		}
 
 		private void OnReadOnlyToggled (object o, ToggledArgs args)
 		{
 			TreeIter iter;
 			if (store.GetIterFromString (out iter, args.Path)) {
+				IField ifield = (IField) store.GetValue (iter, colFieldIndex);
+				if (ifield.IsReadonly || ifield.IsLiteral)
+					return;
+
 				bool value = (bool) store.GetValue (iter, colReadOnlyIndex);
 				store.SetValue (iter, colReadOnlyIndex, !value);
 			}
@@ -300,13 +355,10 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 				return;
 
 			do {
-				if (select) {
-					string propertyName = (string) store.GetValue (iter, colPropertyNameIndex);
-					if (!TrySetPropertyName (iter, propertyName))
-						continue;
-				}
 				store.SetValue (iter, colCheckedIndex, select);
 			} while (store.IterNext (ref iter));
+
+			UpdateOKButton ();
 		}
 
 		void OnCancelClicked (object sender, EventArgs e)
