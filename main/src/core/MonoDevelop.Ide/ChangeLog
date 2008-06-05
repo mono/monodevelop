@@ -1,3 +1,11 @@
+2008-06-05  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* AssemblyInfo.cs.in,
+	  MonoDevelop.Ide.Gui.Dialogs/SharpDevelopAboutPanels.cs,
+	  MonoDevelop.Ide.Gui.Dialogs/SplashScreen.cs: Show version label in
+	  the splash and in the about box. Version label is the friendly name
+	  of the package version.
+
 2008-06-05  Ankit Jain  <jankit@novell.com>
 
 	* MonoDevelop.Ide.Gui.Dialogs/EncapsulateFieldDialog.cs: Left-align the

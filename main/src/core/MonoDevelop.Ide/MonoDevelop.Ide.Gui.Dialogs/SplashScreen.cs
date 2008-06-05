@@ -54,6 +54,14 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 		{
 			Gdk.GC gc = Style.LightGC (StateType.Normal);
 			GdkWindow.DrawPixbuf (gc, bitmap, 0, 0, 0, 0, bitmap.Width, bitmap.Height, Gdk.RgbDither.None, 0, 0);
+
+			Pango.Layout pl = new Pango.Layout (PangoContext);
+			Pango.FontDescription des = this.Style.FontDescription.Copy();
+			pl.FontDescription = des;
+			pl.SetMarkup("<b><span foreground='#8cb8e8'>" + BuildVariables.PackageVersionLabel + "</span></b>");
+			int w,h;
+			pl.GetPixelSize (out w, out h);
+			GdkWindow.DrawLayout (gc, bitmap.Width - w - 40, 110, pl);
 			return base.OnExposeEvent (evt);
 		}
 
