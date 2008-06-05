@@ -334,7 +334,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 
 				refactorer.EncapsulateField (
 						monitor, declaringType, field, propertyName,
-						StringToMemberAttributes (visibility), radioUpdateAll.Active, !read_only);
+						StringToMemberAttributes (visibility), !read_only, radioUpdateAll.Active);
 			} while (store.IterNext (ref iter));
 
 			((Widget) this).Destroy ();
