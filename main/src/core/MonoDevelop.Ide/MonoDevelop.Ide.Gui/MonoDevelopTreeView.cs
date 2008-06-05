@@ -560,6 +560,8 @@ namespace MonoDevelop.Ide.Gui
 					NodeCommandHandler handler = b.CommandHandler;
 					handler.SetCurrentNode (node);
 					handler.ActivateItem ();
+					if (!store.IterIsValid (pos._iter))
+						break;
 					node.MoveToPosition (pos);
 				}
 			}
