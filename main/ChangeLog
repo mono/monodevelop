@@ -1,3 +1,8 @@
+2008-06-04  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* tests/Makefile.am, configure.in: Fix --disable-tests.
+	* src/addins/Makefile.am: Fix GtkSourceView2 addin build.
+
 2008-06-04  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* src/tools/Tools.mds, tests/tests.mds: Minor project file fixes.

@@ -30,6 +30,6 @@ SUBDIRS = \
 	WindowsPlatform
 
 if ENABLE_GTKSOURCEVIEW2
-SUBDIRS = $(DEFAULTSUBDIRS) MonoDevelop.SourceEditor
+SUBDIRS += MonoDevelop.SourceEditor
 endif
 

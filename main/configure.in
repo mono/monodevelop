@@ -139,6 +139,7 @@ if test "x$enable_tests" = "xyes"; then
 fi
 
 AC_SUBST(MONO_NUNIT_LIBS)
+AM_CONDITIONAL(ENABLE_TESTS, test x$enable_tests = xyes)
 
 
 ## gtksourceview2-sharp
@@ -412,7 +413,6 @@ echo "   * Mono class library development extensions: $enable_monoextensions"
 echo "   * Version control support: $enable_versioncontrol"
 echo "   *   Providers:"
 echo "   *     Subversion: $enable_subversion"
-echo "   * Web References: yes"
 echo "   * C/C++ project support: $enable_c"
 echo "   * GtkSourceView2 Editor: $enable_gtksourceview2"
 echo "   * Platform bindings: $platform_bindings"
