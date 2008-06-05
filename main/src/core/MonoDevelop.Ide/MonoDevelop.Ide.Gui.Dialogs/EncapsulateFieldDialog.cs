@@ -111,6 +111,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 
 			CellRendererToggle roRenderer = new CellRendererToggle ();
 			roRenderer.Activatable = true;
+			roRenderer.Xalign = 0.0f;
 			roRenderer.Toggled += new ToggledHandler (OnReadOnlyToggled);
 			TreeViewColumn roCol = new TreeViewColumn ();
 			roCol.Title = GettextCatalog.GetString ("Read only");

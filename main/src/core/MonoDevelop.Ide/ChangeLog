@@ -1,5 +1,10 @@
 2008-06-05  Ankit Jain  <jankit@novell.com>
 
+	* MonoDevelop.Ide.Gui.Dialogs/EncapsulateFieldDialog.cs: Left-align the
+	'read-only' column.
+
+2008-06-05  Ankit Jain  <jankit@novell.com>
+
 	* EncapsulateFieldDialog.cs (OnOKClicked): Fix order of arguments.
 
 2008-06-04  Lluis Sanchez Gual <lluis@novell.com> 
