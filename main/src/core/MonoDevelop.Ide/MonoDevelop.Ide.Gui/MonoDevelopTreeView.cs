@@ -579,6 +579,9 @@ namespace MonoDevelop.Ide.Gui
 					if (handler.CanDeleteItem ()) {
 						node.MoveToPosition (pos);
 						handler.DeleteItem ();
+						// FIXME: fixes bug #396566, but it is not 100% correct
+						// It can only be fully fixed if updates to the tree are delayed
+						break;
 					}
 					node.MoveToPosition (pos);
 				}

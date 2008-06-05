@@ -1,5 +1,12 @@
 2008-06-05  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Ide.Gui/MonoDevelopTreeView.cs: When handling the Delete
+	  command, run DeleteItem for only one command handle, since the node
+	  will probably be gone after that method is called. Should fix Bug
+	  396566 - Deleting items in the solution pad often segfaults.
+
+2008-06-05  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* AssemblyInfo.cs.in,
 	  MonoDevelop.Ide.Gui.Dialogs/SharpDevelopAboutPanels.cs,
 	  MonoDevelop.Ide.Gui.Dialogs/SplashScreen.cs: Show version label in
