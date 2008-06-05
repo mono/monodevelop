@@ -1,5 +1,10 @@
 2008-06-05  Mike Krüger <mkrueger@novell.com> 
 
+	* Mono.TextEditor/TextViewMargin.cs: Improved support for non
+	  monospaced font.
+
+2008-06-05  Mike Krüger <mkrueger@novell.com> 
+
 	* Mono.TextEditor/TextEditor.cs: fixed Bug 394285 - NRE in CaretThread
 
 2008-06-04  Mike Krüger <mkrueger@novell.com> 

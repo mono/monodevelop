@@ -172,7 +172,7 @@ namespace Mono.TextEditor
 			invalidLineMarker.FontDescription = 
 			layout.FontDescription = TextEditorOptions.Options.Font;
 			
-			layout.SetText ("H");
+			layout.SetText (" ");
 			layout.GetPixelSize (out this.charWidth, out this.lineHeight);
 			lineHeight = System.Math.Max (1, lineHeight);
 		}
@@ -409,16 +409,20 @@ namespace Mono.TextEditor
 							drawText &= bgMarker.DrawBackground (textEditor, win, selected, offset, offset + 1, y, xPos, xPos + charWidth);
 						}
 					}
+					int width = this.charWidth;
 					if (drawText) {
+						layout.SetText (ch.ToString ());
+						int cWidth, cHeight;
+						layout.GetPixelSize (out cWidth, out cHeight);
+						width = cWidth;
 						if (drawBg) {
-							Gdk.Rectangle bracketMatch = new Gdk.Rectangle (xPos, y, charWidth - 1, LineHeight - 1);
+							Gdk.Rectangle bracketMatch = new Gdk.Rectangle (xPos, y, cWidth - 1, cHeight - 1);
 							gc.RgbFgColor = selected ? this.ColorStyle.SelectedBg : this.ColorStyle.BracketHighlightBg;
 							win.DrawRectangle (gc, true, bracketMatch);
 							gc.RgbFgColor = this.ColorStyle.BracketHighlightRectangle;
 							win.DrawRectangle (gc, false, bracketMatch);
 						}
 						
-						layout.SetText (ch.ToString ());
 						gc.RgbFgColor = selected ? ColorStyle.SelectedFg : style.Color;
 						win.DrawLayout (gc, xPos, y, layout);
 					}
@@ -427,7 +431,7 @@ namespace Mono.TextEditor
 							marker.Draw (textEditor, win, selected, offset, offset + 1, y, xPos, xPos + charWidth);
 						}
 					}
-					xPos += this.charWidth;
+					xPos += width;
 					visibleColumn++;
 				} else if (ch == ' ') {
 					OutputWordBuilder (win, line, selected, style, ref visibleColumn, ref xPos, y, offset);
@@ -991,8 +995,6 @@ namespace Mono.TextEditor
 		public DocumentLocation VisualToDocumentLocation (int xp, int yp)
 		{
 			int lineNumber = System.Math.Min (Document.VisualToLogicalLine ((int)(yp + textEditor.VAdjustment.Value) / LineHeight), Document.LineCount - 1);
-			
-			layout.Alignment = Pango.Alignment.Left;
 			LineSegment line = lineNumber < Document.LineCount ? Document.GetLine (lineNumber) : null;
 			int xStart = XOffset;
 			int y      = (int)(Document.LogicalToVisualLine (lineNumber) * LineHeight - textEditor.VAdjustment.Value);
@@ -1003,7 +1005,9 @@ namespace Mono.TextEditor
 			int visibleColumn = 0;
 			if (line == null) 
 				return DocumentLocation.Empty;
-			
+			Pango.Layout measureLayout = new Pango.Layout (textEditor.PangoContext);
+			measureLayout.Alignment = Pango.Alignment.Left;
+			measureLayout.FontDescription = TextEditorOptions.Options.Font;
 			List<FoldSegment> foldings = Document.GetStartFoldings (line);
 			int offset = line.Offset;
 			int caretOffset = Caret.Offset;
@@ -1016,33 +1020,40 @@ namespace Mono.TextEditor
 					continue;
 				
 				if (folding.IsFolded) {
-					for (int o = offset; o < foldOffset; o++) {
-						char ch = Document.GetCharAt (o);
-						int delta;
-						System.Console.WriteLine(ch);
-						if (ch == '\t') {
-							int newColumn = GetNextTabstop (visibleColumn);
-							delta = (newColumn - visibleColumn) * this.charWidth;
-							visibleColumn = newColumn;
-						} else {
-							layout.SetText (ch.ToString ());
-							layout.GetPixelSize (out delta, out height);
-							visibleColumn++;
+					Chunk[] chunks = Document.SyntaxMode.GetChunks (Document, textEditor.ColorStyle, line, offset, foldOffset - offset);
+					foreach (Chunk chunk in chunks) {
+						for (int o = chunk.Offset; o < chunk.EndOffset; o++) {
+							char ch = Document.GetCharAt (o);
+							int delta = 0;
+							if (ch == '\t') {
+								int newColumn = GetNextTabstop (visibleColumn);
+								delta = (newColumn - visibleColumn) * this.charWidth;
+								visibleColumn = newColumn;
+							} else if (ch == ' ') {
+								delta = this.charWidth;
+								visibleColumn++;
+							} else {
+								measureLayout.FontDescription.Weight = chunk.Style.Bold ? Pango.Weight.Bold : Pango.Weight.Normal;
+								measureLayout.FontDescription.Style =  chunk.Style.Italic ? Pango.Style.Italic: Pango.Style.Normal;
+								measureLayout.SetText (ch.ToString ());
+								measureLayout.GetPixelSize (out delta, out height);
+								visibleColumn++;
+							}
+							int nextXPosition = xPos + delta;
+							if (nextXPosition >= visualXPos) {
+								if (!IsNearX1 (visualXPos, xPos, nextXPosition))
+									column++;
+								goto skip;
+							}
+							column++;
+							xPos = nextXPosition;
 						}
-						int nextXPosition = xPos + delta;
-						if (nextXPosition >= visualXPos) {
-							if (!IsNearX1 (visualXPos, xPos, nextXPosition))
-								column++;
-							break;
-						}
-						column++;
-						xPos = nextXPosition;
 					}
-					
+				 skip:
 					offset = folding.EndLine.Offset + folding.EndColumn;
 					
-					layout.SetText (folding.Description);
-					layout.GetPixelSize (out width, out height);
+					measureLayout.SetText (folding.Description);
+					measureLayout.GetPixelSize (out width, out height);
 					xPos += width;
 					if (folding.EndLine != line) {
 						line   = folding.EndLine;
@@ -1051,33 +1062,44 @@ namespace Mono.TextEditor
 					}
 				}
 				
+				
 //				i1 (!IsNearX1 (xp, xPos, nextXPosition))
 //					column++;
 			}
-
+			
 			if (line.EndOffset - offset > 0) {
-				for (int o = offset; o < line.Offset + line.EditableLength; o++) {
-					char ch = Document.GetCharAt (o);
-					int delta;
-					if (ch == '\t') {
-						int newColumn = GetNextTabstop (visibleColumn);
-						delta = (newColumn - visibleColumn) * this.charWidth;
-						visibleColumn = newColumn;
-					} else {
-						layout.SetText (ch.ToString ());
-						layout.GetPixelSize (out delta, out height);
-						visibleColumn++;
+				Chunk[] chunks = Document.SyntaxMode.GetChunks (Document, textEditor.ColorStyle, line, offset, line.Offset + line.EditableLength - offset);
+				foreach (Chunk chunk in chunks) {
+					for (int o = chunk.Offset; o < chunk.EndOffset; o++) {
+						char ch = Document.GetCharAt (o);
+						int delta;
+						if (ch == '\t') {
+							int newColumn = GetNextTabstop (visibleColumn);
+							delta = (newColumn - visibleColumn) * this.charWidth;
+							visibleColumn = newColumn;
+						} else if (ch == ' ') {
+							delta = this.charWidth;
+							visibleColumn++;
+						} else {
+							measureLayout.FontDescription.Weight = chunk.Style.Bold ? Pango.Weight.Bold : Pango.Weight.Normal;
+							measureLayout.FontDescription.Style =  chunk.Style.Italic ? Pango.Style.Italic: Pango.Style.Normal;
+							measureLayout.SetText (ch.ToString ());
+							measureLayout.GetPixelSize (out delta, out height);
+							visibleColumn++;
+						}
+						int nextXPosition = xPos + delta;
+						if (nextXPosition >= visualXPos) {
+							if (!IsNearX1 (visualXPos, xPos, nextXPosition))
+								column++;
+							goto skip;
+						}
+						column++;
+						xPos = nextXPosition;
 					}
-					int nextXPosition = xPos + delta;
-					if (nextXPosition >= visualXPos) {
-						if (!IsNearX1 (visualXPos, xPos, nextXPosition))
-							column++;
-						break;
-					}
-					column++;
-					xPos = nextXPosition;
 				}
 			}
+		 skip:
+			measureLayout.Dispose ();
 			
 			return new DocumentLocation (lineNumber, column);
 //			int lineNumber = System.Math.Min (Document.VisualToLogicalLine ((int)(y + textEditor.VAdjustment.Value) / LineHeight), Document.LineCount - 1);
