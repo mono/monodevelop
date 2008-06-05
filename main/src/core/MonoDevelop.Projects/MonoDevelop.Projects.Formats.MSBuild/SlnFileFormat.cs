@@ -612,7 +612,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 							projTypeGuid,
 							sec.Start + 1));
 						monitor.ReportWarning (GettextCatalog.GetString (
-							"{0}({1}): Unsupported or unrecognized project : '{2}'. See logs.", 
+							"{0}({1}): Unsupported or unrecognized project : '{2}'.", 
 							fileName, sec.Start + 1, projectPath));
 						continue;
 					}
