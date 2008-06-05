@@ -70,7 +70,7 @@ namespace CBinding
 			string c_compiler = PropertyService.Get<string> ("CBinding.DefaultCCompiler", new GccCompiler ().Name);
 			string cpp_compiler = PropertyService.Get<string> ("CBinding.DefaultCppCompiler", new GppCompiler ().Name);
 			parseSystemTagsCheck.Active = PropertyService.Get<bool> ("CBinding.ParseSystemTags", true);
-			parseLocalVariablesCheck.Active = PropertyService.Get<bool> ("CBinding.ParseLocalVariables", true);
+			parseLocalVariablesCheck.Active = PropertyService.Get<bool> ("CBinding.ParseLocalVariables", false);
 			
 			foreach (ICompiler compiler in c_compilers) {
 				if (compiler.Name == c_compiler) {

@@ -348,7 +348,7 @@ namespace CBinding.Parser
 			string[] headers = Headers (project, filename, false);
 			string ctags_kinds = "--C++-kinds=+u";
 			
-			if (PropertyService.Get<bool> ("CBinding.ParseLocalVariables", true))
+			if (PropertyService.Get<bool> ("CBinding.ParseLocalVariables", false))
 				ctags_kinds += "+l";
 			
 			string ctags_options = ctags_kinds + " --fields=+a-f+S --language-force=C++ --excmd=pattern -f - '" + filename + "' " + string.Join (" ", headers);
