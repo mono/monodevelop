@@ -54,7 +54,7 @@ namespace Mono.TextEditor
 		int oldRequest = -1;
 		
 		bool isDisposed = false;
-		
+		object disposeLock = new object ();
 		IMMulticontext imContext;
 		Gdk.EventKey lastIMEvent;
 		bool imContextActive;
@@ -440,84 +440,93 @@ namespace Mono.TextEditor
 		protected override void OnDestroyed ()
 		{
 			base.OnDestroyed ();
-			
-			if (isDisposed)
-				return;
-			this.isDisposed = true;
-			DisposeBgBuffer ();
-			if (this.keyBindings != null) {
-				this.keyBindings.Clear ();
-				this.keyBindings = null;
-			}
-			Caret.PositionChanged -= CaretPositionChanged;
-			
-			Document.DocumentUpdated -= DocumentUpdatedHandler;
-			TextEditorOptions.Changed -= OptionsChanged;
-			
-			if (imContext != null) {
-				imContext.Commit -= IMCommit;
-				imContext.Dispose ();
-				imContext = null;
-			}
-			
-			if (this.textEditorData.HAdjustment != null) {
-				this.textEditorData.HAdjustment.ValueChanged -= HAdjustmentValueChanged; 
-				this.textEditorData.HAdjustment = null;
-			}
-			if (this.textEditorData.VAdjustment!= null) {
-				this.textEditorData.VAdjustment.ValueChanged -= VAdjustmentValueChanged;
-				this.textEditorData.VAdjustment = null;
-			}
-			
-			if (margins != null) {
-				foreach (IMargin margin in this.margins) {
-					if (margin is IDisposable)
-						((IDisposable)margin).Dispose ();
+			lock (disposeLock) {
+				if (isDisposed)
+					return;
+				this.isDisposed = true;
+				DisposeBgBuffer ();
+				if (this.keyBindings != null) {
+					this.keyBindings.Clear ();
+					this.keyBindings = null;
 				}
-				this.margins = null;
-			}
-			
-			bookmarkMargin = null; 
-			gutterMargin = null;
-			foldMarkerMargin = null;
-			textViewMargin = null;
-			
-			if (this.textEditorData != null) {
-				this.textEditorData.SelectionChanged -= TextEditorDataSelectionChanged; 
-				this.textEditorData.Dispose ();
-				this.textEditorData = null;
+				Caret.PositionChanged -= CaretPositionChanged;
+				
+				Document.DocumentUpdated -= DocumentUpdatedHandler;
+				TextEditorOptions.Changed -= OptionsChanged;
+				
+				if (imContext != null) {
+					imContext.Commit -= IMCommit;
+					imContext.Dispose ();
+					imContext = null;
+				}
+				
+				if (this.textEditorData.HAdjustment != null) {
+					this.textEditorData.HAdjustment.ValueChanged -= HAdjustmentValueChanged; 
+					this.textEditorData.HAdjustment = null;
+				}
+				if (this.textEditorData.VAdjustment!= null) {
+					this.textEditorData.VAdjustment.ValueChanged -= VAdjustmentValueChanged;
+					this.textEditorData.VAdjustment = null;
+				}
+				
+				if (margins != null) {
+					foreach (IMargin margin in this.margins) {
+						if (margin is IDisposable)
+							((IDisposable)margin).Dispose ();
+					}
+					this.margins = null;
+				}
+				
+				bookmarkMargin = null; 
+				gutterMargin = null;
+				foldMarkerMargin = null;
+				textViewMargin = null;
+				
+				if (this.textEditorData != null) {
+					this.textEditorData.SelectionChanged -= TextEditorDataSelectionChanged; 
+					this.textEditorData.Dispose ();
+					this.textEditorData = null;
+				}
 			}
 		}
 		
 		internal void RedrawLine (int logicalLine)
 		{
-			if (isDisposed)
-				return;
-			this.QueueDrawArea (0, Document.LogicalToVisualLine (logicalLine) * LineHeight - (int)this.textEditorData.VAdjustment.Value,  this.Allocation.Width,  LineHeight);
+			lock (disposeLock) {
+				if (isDisposed)
+					return;
+				this.QueueDrawArea (0, Document.LogicalToVisualLine (logicalLine) * LineHeight - (int)this.textEditorData.VAdjustment.Value,  this.Allocation.Width,  LineHeight);
+			}
 		}
 		
 		internal void RedrawPosition (int logicalLine, int logicalColumn)
 		{
-			if (isDisposed)
-				return;
-			RedrawLine (logicalLine);
+			lock (disposeLock) {
+				if (isDisposed)
+					return;
+				RedrawLine (logicalLine);
+			}
 //			this.QueueDrawArea (0, (int)-this.textEditorData.VAdjustment.Value + Document.LogicalToVisualLine (logicalLine) * LineHeight, this.Allocation.Width, LineHeight);
 		}
 		
 		internal void RedrawLines (int start, int end)
 		{
-			if (isDisposed)
-				return;
-			int visualStart = (int)-this.textEditorData.VAdjustment.Value + Document.LogicalToVisualLine (start) * LineHeight;
-			int visualEnd   = (int)-this.textEditorData.VAdjustment.Value + Document.LogicalToVisualLine (end) * LineHeight + LineHeight;
-			this.QueueDrawArea (0, visualStart, this.Allocation.Width, visualEnd - visualStart );
+			lock (disposeLock) {
+				if (isDisposed)
+					return;
+				int visualStart = (int)-this.textEditorData.VAdjustment.Value + Document.LogicalToVisualLine (start) * LineHeight;
+				int visualEnd   = (int)-this.textEditorData.VAdjustment.Value + Document.LogicalToVisualLine (end) * LineHeight + LineHeight;
+				this.QueueDrawArea (0, visualStart, this.Allocation.Width, visualEnd - visualStart );
+			}
 		}
 		
 		internal void RedrawFromLine (int logicalLine)
 		{
-			if (isDisposed)
-				return;
-			this.QueueDrawArea (0, (int)-this.textEditorData.VAdjustment.Value + Document.LogicalToVisualLine (logicalLine) * LineHeight, this.Allocation.Width, this.Allocation.Height);
+			lock (disposeLock) {
+				if (isDisposed)
+					return;
+				this.QueueDrawArea (0, (int)-this.textEditorData.VAdjustment.Value + Document.LogicalToVisualLine (logicalLine) * LineHeight, this.Allocation.Width, this.Allocation.Height);
+			}
 		}
 		
 		public void RunAction (EditAction action)
@@ -968,21 +977,23 @@ namespace Mono.TextEditor
 		double oldVadjustment = 0;
 		protected override bool OnExposeEvent (Gdk.EventExpose e)
 		{
-			if (this.isDisposed)
-				return true;
-			int lastVisibleLine = Document.LogicalToVisualLine (Document.LineCount - 1);
-			if (oldRequest != lastVisibleLine) {
-				SetAdjustments (this.Allocation);
-				oldRequest = lastVisibleLine;
+			lock (disposeLock) {
+				if (this.isDisposed)
+					return true;
+				int lastVisibleLine = Document.LogicalToVisualLine (Document.LineCount - 1);
+				if (oldRequest != lastVisibleLine) {
+					SetAdjustments (this.Allocation);
+					oldRequest = lastVisibleLine;
+				}
+				
+				//RenderMargins (e.Window, e.Area);
+				RenderMargins (this.buffer, e.Area);
+				
+				e.Window.DrawDrawable (Style.BackgroundGC (StateType.Normal), 
+				                     buffer,
+				                     e.Area.X, e.Area.Y, e.Area.X, e.Area.Y, 
+				                     e.Area.Width, e.Area.Height);
 			}
-			
-			//RenderMargins (e.Window, e.Area);
-			RenderMargins (this.buffer, e.Area);
-			
-			e.Window.DrawDrawable (Style.BackgroundGC (StateType.Normal), 
-			                     buffer,
-			                     e.Area.X, e.Area.Y, e.Area.X, e.Area.Y, 
-			                     e.Area.Width, e.Area.Height);
 			return true;
 		}
 		
