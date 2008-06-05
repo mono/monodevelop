@@ -9,7 +9,7 @@ using MonoDevelop.Core.ProgressMonitoring;
 
 namespace MonoDevelop.Ide.Gui.Dialogs {
 	
-	public class SplashScreenForm : Gtk.Window, IProgressMonitor
+	public class SplashScreenForm : Gtk.Window, IProgressMonitor, IDisposable
 	{
 		static SplashScreenForm splashScreen;
 		static ProgressBar progress;
@@ -135,10 +135,9 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 			get { return this; }
 		}
 		
-		public override void Dispose ()
+		void IDisposable.Dispose ()
 		{
 			Destroy ();
-			base.Dispose ();
 		}
 	}
 }

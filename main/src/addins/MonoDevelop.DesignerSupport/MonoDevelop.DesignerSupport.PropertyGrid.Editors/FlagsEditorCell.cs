@@ -128,10 +128,18 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid.PropertyEditors {
 			}
 		}
 		
-		public override void Dispose ()
+		protected override void OnDestroyed ()
 		{
-			tips.Destroy ();
-			base.Dispose ();
+			base.OnDestroyed ();
+			((IDisposable)this).Dispose ();
+		}
+
+		void IDisposable.Dispose ()
+		{
+			if (tips != null) {
+				tips.Destroy ();
+				tips = null;
+			}
 		}
 
 		public object Value {

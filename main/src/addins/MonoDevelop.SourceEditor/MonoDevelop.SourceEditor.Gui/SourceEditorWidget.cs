@@ -59,10 +59,10 @@ namespace MonoDevelop.SourceEditor.Gui
 			Add (View);
 		}
 		
-		public override void Dispose ()
+		protected override void OnDestroyed ()
 		{
 			Buffer.Dispose ();
-			base.Dispose ();
+			base.OnDestroyed ();
 		}
 
 		public void ExecutingAt (int linenumber)

@@ -1,3 +1,9 @@
+2008-06-03  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.VersionControl.Dialogs/CommitDialog.cs: Use the
+	  OnDestroyed event instead of Dispose, since with the latest changes
+	  in gtk#, Dispose is not called anymore when a widget is destroyed.
+
 2008-03-06  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* VersionControl.addin.xml: Bump version to 1.0. Yay!

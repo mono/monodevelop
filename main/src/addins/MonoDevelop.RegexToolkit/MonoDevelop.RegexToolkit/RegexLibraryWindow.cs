@@ -74,11 +74,6 @@ namespace MonoDevelop.RegexToolkit
 			UpdateExpressions ();
 		}
 		
-		public override void Dispose ()
-		{
-			base.Dispose ();
-		}
-		
 		void ShowSelectedEntry ()
 		{
 			TreeIter iter;

@@ -195,15 +195,10 @@ namespace MonoDevelop.RegexToolkit
 			}
 		}
 		
-		
-		public override void Dispose ()
+		protected override void OnDestroyed ()
 		{
-			base.Dispose ();
+			base.OnDestroyed ();
 			HideTooltipWindow ();
-			if (regexLib != null) {
-				regexLib.Destroy ();
-				regexLib = null;
-			}
 		}
 
 		

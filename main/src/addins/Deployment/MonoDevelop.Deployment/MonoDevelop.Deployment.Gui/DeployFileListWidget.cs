@@ -103,10 +103,10 @@ namespace MonoDevelop.Deployment
 			return "";
 		}		
 		
-		public override void Dispose ()
+		protected override void OnDestroyed ()
 		{
 			context.Dispose ();
-			base.Dispose ();
+			base.OnDestroyed ();
 		}
 
 		void OnToggled (object sender, Gtk.ToggledArgs args)

@@ -507,13 +507,10 @@ namespace MonoDevelop.Gettext
 		}
 #endregion
 		
-		public override void Dispose ()
+		protected override void OnDestroyed ()
 		{
 			widgets.Remove (this);
-			this.headersEditor.Destroy ();
-			this.headersEditor = null;
-			
-			base.Dispose ();
+			base.OnDestroyed ();
 		}
 	}
 }
