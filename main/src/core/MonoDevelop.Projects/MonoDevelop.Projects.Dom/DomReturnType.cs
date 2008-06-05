@@ -38,6 +38,7 @@ namespace MonoDevelop.Projects.Dom
 		protected string nspace;
 		protected int pointerNestingLevel;
 		protected int arrayDimensions;
+		protected int[] dimensions = new int [0];
 		protected bool isNullable;
 		protected List<IReturnType> typeParameters = new List<IReturnType> ();
 		
@@ -81,6 +82,7 @@ namespace MonoDevelop.Projects.Dom
 			}
 			set {
 				arrayDimensions = value;
+				this.dimensions = new int [arrayDimensions];
 			}
 		}
 		
@@ -93,7 +95,7 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
-		public System.Collections.ObjectModel.ReadOnlyCollection<IReturnType> TypeParameters {
+		public System.Collections.ObjectModel.ReadOnlyCollection<IReturnType> GenericArguments {
 			get {
 				return typeParameters.AsReadOnly ();
 			}
@@ -102,6 +104,21 @@ namespace MonoDevelop.Projects.Dom
 		public DomReturnType ()
 		{
 		}
+		
+		public int GetDimension (int arrayDimension)
+		{
+			if (arrayDimension < 0 || arrayDimension >= this.arrayDimensions)
+				return -1;
+			return this.dimensions [arrayDimension];
+		}
+		
+		public void SetDimension (int arrayDimension, int dimension)
+		{
+			if (arrayDimension < 0 || arrayDimension >= this.arrayDimensions)
+				return;
+			this.dimensions [arrayDimension] = dimension;
+		}
+
 		
 		public DomReturnType (string name) : this (name, false, new List<IReturnType> ())
 		{
@@ -141,7 +158,7 @@ namespace MonoDevelop.Projects.Dom
 		
 		public static string ConvertToString (IReturnType type)
 		{
-			StringBuilder sb = new StringBuilder (DomType.GetInstantiatedTypeName (type.FullName, type.TypeParameters));
+			StringBuilder sb = new StringBuilder (DomType.GetInstantiatedTypeName (type.FullName, type.GenericArguments));
 			
 			if (type.PointerNestingLevel > 0)
 				sb.Append (new String ('*', type.PointerNestingLevel));

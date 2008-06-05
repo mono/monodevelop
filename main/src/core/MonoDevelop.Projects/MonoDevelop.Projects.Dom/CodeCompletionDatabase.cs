@@ -1283,8 +1283,8 @@ namespace MonoDevelop.Projects.Dom
 			"Remove" // 1256
 		};		
 	}
-}*/
-
+}
+*/
 namespace MonoDevelop.Projects.Dom
 {
 	internal interface INameEncoder

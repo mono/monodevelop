@@ -362,7 +362,7 @@ namespace MonoDevelop.Projects.Dom
 			{
 				DomReturnType result = null;
 				if (typeTable.ContainsKey (type.FullName)) {
-					if (type.TypeParameters == null || type.TypeParameters.Count == 0)
+					if (type.GenericArguments == null || type.GenericArguments.Count == 0)
 						return typeTable [type.FullName];
 					
 					result = new DomReturnType ();
@@ -373,7 +373,7 @@ namespace MonoDevelop.Projects.Dom
 					result.ArrayDimensions = retType.ArrayDimensions;
 					result.PointerNestingLevel = retType.PointerNestingLevel;
 					result.IsNullable  = retType.IsNullable;
-					foreach (IReturnType param in retType.TypeParameters) {
+					foreach (IReturnType param in retType.GenericArguments) {
 						result.AddTypeParameter (Resolve (param));
 					}
 				} else {
@@ -383,7 +383,7 @@ namespace MonoDevelop.Projects.Dom
 					result.ArrayDimensions = type.ArrayDimensions;
 					result.PointerNestingLevel = type.PointerNestingLevel;
 					result.IsNullable = type.IsNullable;
-					foreach (IReturnType param in type.TypeParameters) {
+					foreach (IReturnType param in type.GenericArguments) {
 						result.AddTypeParameter (param);
 					}
 				}

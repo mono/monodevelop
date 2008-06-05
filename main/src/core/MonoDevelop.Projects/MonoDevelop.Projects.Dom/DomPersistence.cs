@@ -108,12 +108,12 @@ namespace MonoDevelop.Projects.Dom
 			
 			WriteString (returnType.Name, writer, nameTable);
 			writer.Write (returnType.IsNullable);
-			if (returnType.TypeParameters == null) {
+			if (returnType.GenericArguments == null) {
 				writer.Write ((uint)0);
 				return;
 			}
-			writer.Write ((uint)returnType.TypeParameters.Count);
-			foreach (DomReturnType param in returnType.TypeParameters) {
+			writer.Write ((uint)returnType.GenericArguments.Count);
+			foreach (DomReturnType param in returnType.GenericArguments) {
 				Write (writer, nameTable, param);
 			}
 		}

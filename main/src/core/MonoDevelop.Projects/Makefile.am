@@ -44,6 +44,7 @@ FILES =  \
 	MonoDevelop.Projects.Dom/CommentType.cs \
 	MonoDevelop.Projects.Dom/CompilationUnit.cs \
 	MonoDevelop.Projects.Dom/CompilationUnitEventArgs.cs \
+	MonoDevelop.Projects.Dom/CompoundType.cs \
 	MonoDevelop.Projects.Dom/DomAttribute.cs \
 	MonoDevelop.Projects.Dom/DomEvent.cs \
 	MonoDevelop.Projects.Dom/DomField.cs \

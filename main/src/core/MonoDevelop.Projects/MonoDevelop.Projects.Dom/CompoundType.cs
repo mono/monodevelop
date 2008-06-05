@@ -1,5 +1,5 @@
 //
-// IReturnType.cs
+// CompoundType.cs
 //
 // Author:
 //   Mike Krüger <mkrueger@novell.com>
@@ -27,44 +27,33 @@
 //
 
 using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 
 namespace MonoDevelop.Projects.Dom
 {
-	public interface IReturnType : IDomVisitable
+	public class CompoundType : DomType
 	{
-		string FullName {
-			get;
-		}
-		string Name {
-			get;
-		}
-		string Namespace {
-			get;
+		public CompoundType()
+		{
 		}
 		
-		int PointerNestingLevel {
-			get;
+		public void AddPart (IType part)
+		{
+			this.parts.Add (part);
+		}
+			
+		
+		public static IType Merge (IType type1, IType type2)
+		{
+			if (type1 is CompoundType) {
+				((CompoundType)type1).AddPart (type2);
+				return type1;
+			}
+			CompoundType result = new CompoundType ();
+			result.AddPart (type1);
+			result.AddPart (type2);
+			return result;
 		}
 		
-		int ArrayDimensions {
-			get;
-		}
 		
-		bool IsNullable {
-			get;
-		}
-		
-		int GetDimension (int arrayDimension);
-		
-		ReadOnlyCollection<IReturnType> GenericArguments {
-			get;
-		}
-	}
-	
-	public interface ITypeResolver
-	{
-		IReturnType Resolve (IReturnType type);
 	}
 }
