@@ -452,7 +452,7 @@ namespace MonoDevelop.Projects.Parser
 		
 		string codeCompletionPath;
 
-		Hashtable databases = new Hashtable();
+		Hashtable databasesTable = new Hashtable();
 		Hashtable singleDatabases = new Hashtable ();
 		
 		StringNameTable nameTable;
@@ -631,16 +631,27 @@ namespace MonoDevelop.Projects.Parser
 
 			codeCompletionPath = path;
 		}
+		
+		Hashtable databases {
+			get {
+				lock (databasesTable) {
+					if (coreDatabase == null) {
+						DeleteObsoleteDatabases ();
+						string coreName = typeof(object).Assembly.GetName().ToString ();
+						coreDatabase = new AssemblyCodeCompletionDatabase (codeCompletionPath, coreName, this);
+						databasesTable [CoreDB] = coreDatabase;
+					}
+				}
+				return databasesTable;
+			}
+		}
 
 		public void Initialize ()
 		{
 			SetDefaultCompletionFileLocation();
-			DeleteObsoleteDatabases ();
 
 			string coreName = typeof(object).Assembly.GetName().ToString ();
 			CoreDB = "Assembly:" + coreName;
-			coreDatabase = new AssemblyCodeCompletionDatabase (codeCompletionPath, coreName, this);
-			databases [CoreDB] = coreDatabase;
 		}
 		
 		internal IProgressMonitor GetParseProgressMonitor ()
