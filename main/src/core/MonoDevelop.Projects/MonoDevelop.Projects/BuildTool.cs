@@ -41,7 +41,8 @@ namespace MonoDevelop.Projects
 		bool help;
 		string file;
 		string project;
-		string command = "build";
+		string config = ProjectService.DefaultConfiguration;
+		string command = ProjectService.BuildTarget;
 		
 		public int Run (string[] arguments)
 		{
@@ -50,31 +51,52 @@ namespace MonoDevelop.Projects
 				ReadArgument (s);
 			
 			if (help) {
-				Console.WriteLine ("build [options] [target]");
-				Console.WriteLine ("-f --buildfile:FILE   Project or solution file to build.");
+				Console.WriteLine ("build [options] [build-file]");
 				Console.WriteLine ("-p --project:PROJECT  Name of the project to build.");
+				Console.WriteLine ("-t --target:TARGET    Name of the solution configuration to build.");
+				Console.WriteLine ("-c --configuration:CONFIGURATION  Name of the solution configuration to build.");
 				Console.WriteLine ();
 				Console.WriteLine ("Supported targets:");
-				Console.WriteLine ("  build: build the project (the default target).");
-				Console.WriteLine ("  clean: clean the project.");
+				Console.WriteLine ("  {0}: build the project (the default target).", ProjectService.BuildTarget);
+				Console.WriteLine ("  {0}: clean the project.", ProjectService.CleanTarget);
 				Console.WriteLine ();
 				return 0;
 			}
 			
+			string solFile = null;
+			string itemFile = null;
+			
 			if (file == null) {
-				string[] files = Directory.GetFiles (".", "*.mds");
-				if (files.Length == 0)
-					files = Directory.GetFiles (".", "*.mdp");
-				if (files.Length == 0) {
+				string[] files = Directory.GetFiles (".");
+				foreach (string f in files) {
+					if (Services.ProjectService.IsWorkspaceItemFile (f)) {
+						solFile = f;
+						break;
+					} else if (itemFile == null && Services.ProjectService.IsSolutionItemFile (f))
+						itemFile = f;
+				}
+				if (solFile == null && itemFile == null) {
 					Console.WriteLine ("Project file not found.");
 					return 1;
 				}
-				file = files [0];
+			} else {
+				if (Services.ProjectService.IsWorkspaceItemFile (file))
+				    solFile = file;
+				else if (Services.ProjectService.IsSolutionItemFile (file))
+					itemFile = file;
+				else {
+					Console.WriteLine ("File '{0}' is not a project or solution.", file);
+					return 1;
+				}
 			}
 			
 			ConsoleProgressMonitor monitor = new ConsoleProgressMonitor ();
 			
-			IBuildTarget item = Services.ProjectService.ReadWorkspaceItem (monitor, file);
+			IBuildTarget item;
+			if (solFile != null)
+				item = Services.ProjectService.ReadWorkspaceItem (monitor, solFile);
+			else
+				item = Services.ProjectService.ReadSolutionItem (monitor, itemFile);
 			
 			if (project != null) {
 				Solution solution = item as Solution;
@@ -89,17 +111,9 @@ namespace MonoDevelop.Projects
 				}
 			}
 			
-			if (command == "build") {
-				BuildResult res = item.RunTarget (monitor, ProjectService.BuildTarget, ProjectService.DefaultConfiguration);
-				return (res.ErrorCount == 0) ? 0 : 1;
-			}
-			else if (command == "clean") {
-				item.RunTarget (monitor, ProjectService.CleanTarget, ProjectService.DefaultConfiguration);
-				return 0;
-			} else {
-				Console.WriteLine ("Unknown command '{0}'", command);
-				return 1;
-			}
+			monitor = new ConsoleProgressMonitor ();
+			BuildResult res = item.RunTarget (monitor, command, config);
+			return (res == null || res.ErrorCount == 0) ? 0 : 1;
 		}
 		
 		void ReadArgument (string argument)
@@ -109,11 +123,11 @@ namespace MonoDevelop.Projects
 			if (argument.StartsWith("--")) {
 				optionValuePair = argument.Substring(2);
 			}
-			else if (argument.StartsWith("/") || argument.StartsWith("-")) {
+			else if ((argument.StartsWith("/") || argument.StartsWith("-")) && !File.Exists (argument)) {
 				optionValuePair = argument.Substring(1);
 			}
 			else {
-				command = argument;
+				file = argument;
 				return;
 			}
 			
@@ -145,6 +159,16 @@ namespace MonoDevelop.Projects
 				case "p":
 				case "project":
 				    project = value;
+				    break;
+
+				case "c":
+				case "configuration":
+				    config = value;
+				    break;
+
+				case "t":
+				case "target":
+				    command = value;
 				    break;
 
 				default:

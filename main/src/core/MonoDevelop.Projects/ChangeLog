@@ -1,5 +1,11 @@
 2008-06-06  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Projects/BuildTool.cs: The file to build can now be
+	  specified without the -f argument. Added argument for selecting the
+	  target and configuration to build.
+
+2008-06-06  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Projects.Parser/DefaultParserService.cs: Delay as much as
 	  possible the initialization of the core assembly database. Fixes
 	  some performance issues at MD startup.
