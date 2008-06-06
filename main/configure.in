@@ -36,7 +36,7 @@ AC_SUBST(UPDATE_MIME_DB)
 
 AC_ARG_ENABLE(update-desktopdb,
    AC_HELP_STRING([--disable-update-desktopdb],
-                  [disable the update-desktop-database after install [default=np]]),,
+                  [disable the update-desktop-database after install [default=no]]),,
                   enable_update_desktopdb=yes)
    AM_CONDITIONAL(ENABLE_UPDATE_DESKTOPDB, test x$enable_update_desktopdb = xyes)
 
@@ -130,8 +130,8 @@ AC_SUBST(gtksharp_prefix)
 
 AC_ARG_ENABLE(tests,
 	AC_HELP_STRING([--enable-tests],
-		[build unit tests [default=yes]]),
-		enable_tests=${enableval}, enable_tests=yes)
+		[build unit tests [default=no]]),
+		enable_tests=${enableval}, enable_tests=no)
 
 AM_CONDITIONAL(ENABLE_TESTS, test x$enable_tests = xyes)
 
