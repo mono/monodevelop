@@ -33,8 +33,7 @@ using System.Collections.Generic;
 
 using Mono.Cecil;
 using Mono.Cecil.Cil;
-
-using MonoDevelop.AssemblyBrowser.Dom;
+using MonoDevelop.Projects.Dom;
 
 namespace MonoDevelop.AssemblyBrowser
 {

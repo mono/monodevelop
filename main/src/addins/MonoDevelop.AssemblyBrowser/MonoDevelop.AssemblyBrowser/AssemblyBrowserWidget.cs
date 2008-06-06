@@ -39,7 +39,6 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Components.Commands;
-using MonoDevelop.AssemblyBrowser.Dom;
 using MonoDevelop.Projects.Dom;
 
 namespace MonoDevelop.AssemblyBrowser
@@ -138,13 +137,13 @@ namespace MonoDevelop.AssemblyBrowser
 					}
 					if (searchMode == SearchMode.Disassembler) {
 						this.notebook1.Page = 0;
-						int idx = DomMethodNodeBuilder.Disassemble ((MonoDevelop.AssemblyBrowser.Dom.DomCecilMethod)member, false).ToUpper ().IndexOf (searchEntry.Text.ToUpper ());
+						int idx = DomMethodNodeBuilder.Disassemble ((DomCecilMethod)member, false).ToUpper ().IndexOf (searchEntry.Text.ToUpper ());
 						this.disassemblerLabel.Selectable = true;
 						this.disassemblerLabel.SelectRegion (idx, idx + searchEntry.Text.Length);
 					}
 					if (searchMode == SearchMode.Decompiler) {
 						this.notebook1.Page = 1;
-						int idx = DomMethodNodeBuilder.Decompile ((MonoDevelop.AssemblyBrowser.Dom.DomCecilMethod)member, false).ToUpper ().IndexOf (searchEntry.Text.ToUpper ());
+						int idx = DomMethodNodeBuilder.Decompile ((DomCecilMethod)member, false).ToUpper ().IndexOf (searchEntry.Text.ToUpper ());
 						this.disassemblerLabel.Selectable = true;
 						this.disassemblerLabel.SelectRegion (idx, idx + searchEntry.Text.Length);
 					}

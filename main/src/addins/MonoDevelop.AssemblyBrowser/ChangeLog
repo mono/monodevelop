@@ -1,3 +1,29 @@
+2008-06-06  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.AssemblyBrowser.Dom/DomCecilCompilationUnit.cs,
+	  MonoDevelop.AssemblyBrowser.Dom/DomCecilMethod.cs,
+	  MonoDevelop.AssemblyBrowser.Dom/DomCecilParameter.cs,
+	  MonoDevelop.AssemblyBrowser.Dom/DomCecilType.cs,
+	  MonoDevelop.AssemblyBrowser.Dom/DomCecilEvent.cs,
+	  MonoDevelop.AssemblyBrowser.Dom/DomCecilReturnType.cs,
+	  MonoDevelop.AssemblyBrowser.Dom/DomCecilField.cs,
+	  MonoDevelop.AssemblyBrowser.Dom/DomCecilAttribute.cs,
+	  MonoDevelop.AssemblyBrowser.Dom/DomCecilProperty.cs,
+	  MonoDevelop.AssemblyBrowser/ModuleDefinitionNodeBuilder.cs,
+	  MonoDevelop.AssemblyBrowser/ModuleReferenceNodeBuilder.cs,
+	  MonoDevelop.AssemblyBrowser/Decompiler.cs,
+	  MonoDevelop.AssemblyBrowser/BaseTypeFolderNodeBuilder.cs,
+	  MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs,
+	  MonoDevelop.AssemblyBrowser/AssemblyNodeBuilder.cs,
+	  MonoDevelop.AssemblyBrowser/DomMethodNodeBuilder.cs,
+	  MonoDevelop.AssemblyBrowser/DomTypeNodeBuilder.cs,
+	  MonoDevelop.AssemblyBrowser/ResourceFolderNodeBuilder.cs,
+	  MonoDevelop.AssemblyBrowser/NamespaceBuilder.cs,
+	  MonoDevelop.AssemblyBrowser/ResourceNodeBuilder.cs,
+	  MonoDevelop.AssemblyBrowser/ErrorNodeBuilder.cs,
+	  MonoDevelop.AssemblyBrowser/ReferenceFolderNodeBuilder.cs:
+	  Refactored dom cecil layer.
+
 2008-06-04  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.AssemblyBrowser.addin.xml: Bump MD version.

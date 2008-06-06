@@ -37,7 +37,6 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Output;
 using MonoDevelop.Ide.Gui.Pads;
-using MonoDevelop.AssemblyBrowser.Dom;
 
 namespace MonoDevelop.AssemblyBrowser
 {
