@@ -1005,6 +1005,7 @@ namespace Mono.TextEditor
 			int visibleColumn = 0;
 			if (line == null) 
 				return DocumentLocation.Empty;
+			SyntaxMode mode = Document.SyntaxMode != null && TextEditorOptions.Options.EnableSyntaxHighlighting ? Document.SyntaxMode : SyntaxMode.Default;
 			Pango.Layout measureLayout = new Pango.Layout (textEditor.PangoContext);
 			measureLayout.Alignment = Pango.Alignment.Left;
 			measureLayout.FontDescription = TextEditorOptions.Options.Font;
@@ -1020,7 +1021,7 @@ namespace Mono.TextEditor
 					continue;
 				
 				if (folding.IsFolded) {
-					Chunk[] chunks = Document.SyntaxMode.GetChunks (Document, textEditor.ColorStyle, line, offset, foldOffset - offset);
+					Chunk[] chunks = mode.GetChunks (Document, textEditor.ColorStyle, line, offset, foldOffset - offset);
 					foreach (Chunk chunk in chunks) {
 						for (int o = chunk.Offset; o < chunk.EndOffset; o++) {
 							char ch = Document.GetCharAt (o);
@@ -1068,7 +1069,7 @@ namespace Mono.TextEditor
 			}
 			
 			if (line.EndOffset - offset > 0) {
-				Chunk[] chunks = Document.SyntaxMode.GetChunks (Document, textEditor.ColorStyle, line, offset, line.Offset + line.EditableLength - offset);
+				Chunk[] chunks = mode.GetChunks (Document, textEditor.ColorStyle, line, offset, line.Offset + line.EditableLength - offset);
 				foreach (Chunk chunk in chunks) {
 					for (int o = chunk.Offset; o < chunk.EndOffset; o++) {
 						char ch = Document.GetCharAt (o);
