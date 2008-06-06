@@ -33,12 +33,11 @@ using System.Diagnostics;
 
 namespace MonoDevelop.Projects.Dom
 {
-	/*
 	internal class DomTypeProxy : DomType
 	{
 		CodeCompletionDatabase db;
 		ClassEntry entry;
-		
+		bool isLoaded = false;
 		IType wrappedType = null;
 		IType WrappedType {
 			get {
@@ -57,7 +56,7 @@ namespace MonoDevelop.Projects.Dom
 							base.innerTypeCount   = wrappedType.InnerTypeCount;
 						}
 					} catch (Exception ex) {
-						LoggingService.LogError (ex.ToString ());
+						MonoDevelop.Core.LoggingService.LogError (ex.ToString ());
 					}
 				}
 				return wrappedType;
@@ -114,5 +113,5 @@ namespace MonoDevelop.Projects.Dom
 				return WrappedType.Parts;
 			}
 		}
-	}*/
+	}
 }

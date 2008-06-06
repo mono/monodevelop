@@ -36,6 +36,7 @@ FILES =  \
 	MonoDevelop.Projects.Dom.Parser/ProjectDomEventArgs.cs \
 	MonoDevelop.Projects.Dom.Parser/ProjectParserService.cs \
 	MonoDevelop.Projects.Dom/AbstractMember.cs \
+	MonoDevelop.Projects.Dom/AssemblyCodeCompletionDatabase.cs \
 	MonoDevelop.Projects.Dom/AttributeTarget.cs \
 	MonoDevelop.Projects.Dom/ClassEntry.cs \
 	MonoDevelop.Projects.Dom/ClassType.cs \
@@ -46,6 +47,15 @@ FILES =  \
 	MonoDevelop.Projects.Dom/CompilationUnitEventArgs.cs \
 	MonoDevelop.Projects.Dom/CompoundType.cs \
 	MonoDevelop.Projects.Dom/DomAttribute.cs \
+	MonoDevelop.Projects.Dom/DomCecilAttribute.cs \
+	MonoDevelop.Projects.Dom/DomCecilCompilationUnit.cs \
+	MonoDevelop.Projects.Dom/DomCecilEvent.cs \
+	MonoDevelop.Projects.Dom/DomCecilField.cs \
+	MonoDevelop.Projects.Dom/DomCecilMethod.cs \
+	MonoDevelop.Projects.Dom/DomCecilParameter.cs \
+	MonoDevelop.Projects.Dom/DomCecilProperty.cs \
+	MonoDevelop.Projects.Dom/DomCecilReturnType.cs \
+	MonoDevelop.Projects.Dom/DomCecilType.cs \
 	MonoDevelop.Projects.Dom/DomEvent.cs \
 	MonoDevelop.Projects.Dom/DomField.cs \
 	MonoDevelop.Projects.Dom/DomLocation.cs \
@@ -77,6 +87,7 @@ FILES =  \
 	MonoDevelop.Projects.Dom/NamespaceEntry.cs \
 	MonoDevelop.Projects.Dom/ParameterModifiers.cs \
 	MonoDevelop.Projects.Dom/ReferenceEntry.cs \
+	MonoDevelop.Projects.Dom/SimpleCodeCompletionDatabase.cs \
 	MonoDevelop.Projects.Dom/Tag.cs \
 	MonoDevelop.Projects.Dom/TypeParameter.cs \
 	MonoDevelop.Projects.Dom/TypeUpdateInformation.cs \

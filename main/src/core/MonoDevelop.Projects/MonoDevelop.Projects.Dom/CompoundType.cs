@@ -39,8 +39,44 @@ namespace MonoDevelop.Projects.Dom
 		public void AddPart (IType part)
 		{
 			this.parts.Add (part);
+			Update ();
 		}
+		
+		public IType RemoveFile (string fileName)
+		{
+			for (int i = 0; i < this.parts.Count; i++) {
+				if (parts [i].CompilationUnit != null && parts [i].CompilationUnit.FileName == fileName) {
+					parts.RemoveAt (i);
+					i--;
+					Update ();
+					continue;
+				}
+			}
+			if (parts.Count == 1)
+				return parts[0];
+			return this;
+		}
+		
+		void Update ()
+		{
+			if (parts.Count == 0)
+				return;
+			this.classType = parts[0].ClassType;
+			this.Name      = parts[0].Name;
+			this.Namespace = parts[0].Namespace;
+			this.typeParameters.Clear ();
+			this.typeParameters.AddRange (parts[0].TypeParameters);
 			
+			this.implementedInterfaces.Clear ();
+			this.attributes.Clear ();
+			Modifiers modifier = Modifiers.None;
+			foreach (IType part in parts) {
+				modifier |= part.Modifiers;
+				this.implementedInterfaces.AddRange (part.ImplementedInterfaces);
+				this.attributes.AddRange (part.Attributes);
+			}
+			this.modifiers = modifier;
+		}
 		
 		public static IType Merge (IType type1, IType type2)
 		{
@@ -53,6 +89,15 @@ namespace MonoDevelop.Projects.Dom
 			result.AddPart (type2);
 			return result;
 		}
+		
+		public static IType RemoveFile (IType type, string fileName)
+		{
+			if (type is CompoundType) 
+				return ((CompoundType)type).RemoveFile (fileName);
+			
+			return type;
+		}
+		
 		
 		
 	}

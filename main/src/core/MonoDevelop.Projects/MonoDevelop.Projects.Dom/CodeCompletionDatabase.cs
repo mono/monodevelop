@@ -42,7 +42,7 @@ using MonoDevelop.Core;
 using Mono.Addins;
 using System.Reflection;
 using MonoDevelop.Projects.Dom.Parser;
-/*
+
 namespace MonoDevelop.Projects.Dom
 {
 	
@@ -198,7 +198,7 @@ namespace MonoDevelop.Projects.Dom
 			// Notify read comments
 			foreach (FileEntry fe in files.Values) {
 				if (! fe.IsAssembly && fe.CommentTasks != null) {
-					parserDatabase.UpdatedCommentTasks (fe);
+					ProjectDomService.UpdateCommentTasks (fe.FileName);
 				}
 			}
 			
@@ -621,7 +621,7 @@ namespace MonoDevelop.Projects.Dom
 						if (tag.Key == token) markedTags.Add (tag);
 					foreach (Tag tag in markedTags)
 						fe.CommentTasks.Remove (tag);
-					parserDatabase.UpdatedCommentTasks (fe);
+					ProjectDomService.UpdateCommentTasks (fe.FileName);
 				}
 			}
 		}
@@ -673,9 +673,10 @@ namespace MonoDevelop.Projects.Dom
 		{
 			if (file.InParseQueue)
 				return;
-
 			file.InParseQueue = true;
-			parserDatabase.QueueParseJob (this, new JobCallback (ParseCallback), file.FileName);
+			
+			// TODO:
+			//parserDatabase.QueueParseJob (this, new JobCallback (ParseCallback), file.FileName);
 		}
 		
 		protected void QueueAllFilesForParse ()
@@ -777,7 +778,7 @@ namespace MonoDevelop.Projects.Dom
 				
 				foreach (ClassEntry ce in fe.ClassEntries) {
 					if (ce.Class == null) ce.Class = ReadClass (ce);
-					IType c = CompoundClass.RemoveFile (ce.Class, fileName);
+					IType c = CompoundType.RemoveFile (ce.Class, fileName);
 					if (c == null) {
 						classInfo.Removed.Add (ce.Class);
 						RemoveSubclassReferences (ce);
@@ -798,6 +799,10 @@ namespace MonoDevelop.Projects.Dom
 		{
 		}
 		
+		public TypeUpdateInformation UpdateTypeInformation (IList<IType> newClasses, string fileName)
+		{
+			return new TypeUpdateInformation ();
+		}
 //		public TypeUpdateInformation UpdateClassInformation (ClassCollection newClasses, string fileName)
 //		{
 //			lock (rwlock)
@@ -1284,7 +1289,7 @@ namespace MonoDevelop.Projects.Dom
 		};		
 	}
 }
-*/
+
 namespace MonoDevelop.Projects.Dom
 {
 	internal interface INameEncoder

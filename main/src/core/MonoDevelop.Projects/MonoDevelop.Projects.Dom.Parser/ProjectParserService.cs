@@ -202,6 +202,10 @@ namespace MonoDevelop.Projects.Dom.Parser
 			OnDomUpdated (new ProjectDomEventArgs (dom));
 		}
 		
+		public static void UpdateCommentTasks (string fileName)
+		{
+		}
+		
 		static void OnSolutionItemAdded (object sender, SolutionItemEventArgs args)
 		{
 			if (args.SolutionItem is Project)

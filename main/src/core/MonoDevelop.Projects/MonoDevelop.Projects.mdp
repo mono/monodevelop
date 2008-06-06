@@ -323,6 +323,17 @@
     <File name="MonoDevelop.Projects.Dom/Namespace.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Dom/DomTypeProxy.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Dom/CompoundType.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Projects.Dom/SimpleCodeCompletionDatabase.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Projects.Dom/AssemblyCodeCompletionDatabase.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Projects.Dom/DomCecilType.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Projects.Dom/DomCecilReturnType.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Projects.Dom/DomCecilProperty.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Projects.Dom/DomCecilParameter.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Projects.Dom/DomCecilMethod.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Projects.Dom/DomCecilField.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Projects.Dom/DomCecilEvent.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Projects.Dom/DomCecilAttribute.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Projects.Dom/DomCecilCompilationUnit.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="False" refto="monodoc, Version=1.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
