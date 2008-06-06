@@ -186,6 +186,7 @@ namespace MonoDevelop.Core
 			try {
 				return app.Run (parameters);
 			} catch (Exception ex) {
+				Console.WriteLine (ex.Message);
 				LoggingService.LogFatalError (ex.ToString ());
 				return -1;
 			}
