@@ -41,6 +41,8 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Ide.Gui;
 
+using MonoDevelop.ValaBinding.Navigation;
+
 namespace MonoDevelop.ValaBinding.Parser
 {
 	/// <summary>
@@ -52,7 +54,7 @@ namespace MonoDevelop.ValaBinding.Parser
 		private Queue<ProjectFilePair> parsingJobs = new Queue<ProjectFilePair> ();
 		private Thread parsingThread;
 		
-		//public event ClassPadEventHandler FileUpdated;
+		public event ClassPadEventHandler FileUpdated;
 		
 		bool ctagsInstalled = false;
 		bool checkedCtagsInstalled = false;

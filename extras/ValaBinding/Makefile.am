@@ -59,6 +59,25 @@ FILES =  \
 	Parser/Typedef.cs \
 	Parser/Union.cs \
 	Parser/Variable.cs \
+	Navigation/ClassNodeBuilder.cs \
+	Navigation/ClassPadEventArgs.cs \
+	Navigation/EnumerationNodeBuilder.cs \
+	Navigation/EnumeratorNodeBuilder.cs \
+	Navigation/FunctionNodeBuilder.cs \
+	Navigation/GlobalsNodeBuilder.cs \
+	Navigation/LanguageItemCommandHandler.cs \
+	Navigation/LanguageItemEventArgs.cs \
+	Navigation/MacroDefinitionsNodeBuilder.cs \
+	Navigation/MacroNodeBuilder.cs \
+	Navigation/MemberNodeBuilder.cs \
+	Navigation/NamespaceNodeBuilder.cs \
+	Navigation/ProjectNodeBuilderExtension.cs \
+	Navigation/StructureNodeBuilder.cs \
+	Navigation/TypedefNodeBuilder.cs \
+	Navigation/UnionNodeBuilder.cs \
+	Navigation/VariableNodeBuilder.cs \
+	ProjectPad/ProjectReferencesExtension.cs \
+	ProjectPad/ProjectResourcesExtension.cs \
 	ValaLanguageBinding.cs
 
 RES =  \
