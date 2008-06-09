@@ -1,6 +1,0 @@
-<objects>
-  <object type="MonoDevelop.CodeMetrics.CodeMetricsWidget" palette-category="MonoDevelop.CodeMetrics" allow-children="false" base-type="Gtk.Bin">
-    <itemgroups />
-    <signals />
-  </object>
-</objects>
