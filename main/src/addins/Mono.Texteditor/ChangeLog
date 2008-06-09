@@ -1,5 +1,9 @@
 2008-06-09  Mike Krüger <mkrueger@novell.com> 
 
+	* Mono.TextEditor/TextViewMargin.cs: Fixed horizontal scrollbar bug.
+
+2008-06-09  Mike Krüger <mkrueger@novell.com> 
+
 	* Mono.TextEditor/TextViewMargin.cs: Fixed bug in
 	  VisualToDocumentLocation
 

@@ -465,7 +465,7 @@ namespace Mono.TextEditor
 				} else if (ch == '\t') {
 					OutputWordBuilder (win, line, selected, style, ref visibleColumn, ref xPos, y, offset);
 					int newColumn = GetNextTabstop (visibleColumn);
-					int delta = GetNextVisualTab (xPos - this.XOffset) - xPos + this.XOffset;
+					int delta = GetNextVisualTab (xPos + (int)this.textEditor.HAdjustment.Value) - xPos - (int)this.textEditor.HAdjustment.Value;
 					visibleColumn = newColumn;
 					bool drawText = true;
 					bool drawBg   = true;
