@@ -1084,7 +1084,7 @@ namespace Mono.TextEditor
 						xPos += width;
 						if (folding.EndLine != line) {
 							line   = folding.EndLine;
-							foldings = Document.GetStartFoldings (line);
+							foldings = margin.Document.GetStartFoldings (line);
 							i = -1;
 						}
 					}
