@@ -303,10 +303,16 @@ namespace MonoDevelop.Ide.Gui
 
 		public void Execute (MonoDevelop.Core.IProgressMonitor monitor, ExecutionContext context, string configuration)
 		{
-			if (IdeApp.ProjectOperations.CurrentSelectedSolution != null)
-				IdeApp.ProjectOperations.CurrentSelectedSolution.Execute (monitor, context, configuration);
+			Solution sol = IdeApp.ProjectOperations.CurrentSelectedSolution;
+			if (sol == null) {
+				ReadOnlyCollection<Solution> sols = GetAllSolutions ();
+				if (sols.Count > 0)
+					sol = sols [0];
+			}
+			if (sol != null)
+				sol.Execute (monitor, context, configuration);
 			else
-				throw new UserException (GettextCatalog.GetString ("No solution has been selected"));
+				throw new UserException (GettextCatalog.GetString ("No solution has been selected."));
 		}
 		
 		public bool NeedsBuilding ()
