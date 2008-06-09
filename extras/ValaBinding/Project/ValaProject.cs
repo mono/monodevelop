@@ -334,6 +334,9 @@ namespace MonoDevelop.ValaBinding
 			set {
 				packages = value;
 				packages.Project = this;
+				foreach(ProjectPackage p in packages) {
+					TagDatabaseManager.Instance.UpdateFileTags(this, p.File);
+				}
 			}
 		}
 		
@@ -373,16 +376,20 @@ namespace MonoDevelop.ValaBinding
 			
 			foreach (ProjectFile f in p.Files)
 				TagDatabaseManager.Instance.UpdateFileTags (p, f.Name);
+			foreach (ProjectPackage package in p.Packages)
+				TagDatabaseManager.Instance.UpdateFileTags (p, package.File);
 		}
 		
 		internal void NotifyPackageRemovedFromProject (ProjectPackage package)
 		{
 			PackageRemovedFromProject (this, new ProjectPackageEventArgs (this, package));
+			TagDatabaseManager.Instance.RemoveFileInfo(this, package.File);
 		}
 		
 		internal void NotifyPackageAddedToProject (ProjectPackage package)
 		{
 			PackageAddedToProject (this, new ProjectPackageEventArgs (this, package));
+			TagDatabaseManager.Instance.UpdateFileTags(this, package.File);
 		}
 
 		public DeployFileCollection GetDeployFiles (string configuration)

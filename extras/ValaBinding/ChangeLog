@@ -1,5 +1,10 @@
 2008-06-09  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com>
 
+	* Project/ValaProject.cs, Navigation/ProjectNodeBuilderExtension.cs: 
+	  Add tags from packages to class pad and code completion.
+
+2008-06-09  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com>
+
 	* Parser/*: Update parse data on file removal.
 
 2008-06-09  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com>

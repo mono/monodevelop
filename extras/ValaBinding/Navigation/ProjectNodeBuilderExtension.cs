@@ -83,6 +83,9 @@ namespace MonoDevelop.ValaBinding.Navigation
 					if (f.BuildAction == BuildAction.Compile)
 						TagDatabaseManager.Instance.UpdateFileTags (p, f.Name);
 				}
+				foreach (ProjectPackage package in p.Packages) {
+					TagDatabaseManager.Instance.UpdateFileTags(p, package.File);
+				}
 			} catch (IOException) {
 				return;
 			}
@@ -177,6 +180,9 @@ namespace MonoDevelop.ValaBinding.Navigation
 			foreach (ProjectFile f in p.Files) {
 				if (f.BuildAction == BuildAction.Compile)
 					TagDatabaseManager.Instance.UpdateFileTags (p, f.Name);
+			}
+			foreach (ProjectPackage package in p.Packages) {
+				TagDatabaseManager.Instance.UpdateFileTags(p, package.File);
 			}
 		}
 	}
