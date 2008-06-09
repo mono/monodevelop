@@ -82,6 +82,7 @@ namespace MonoDevelop.ValaBinding.Parser
 			enumerators.Clear ();
 			unions.Clear ();
 			typedefs.Clear ();
+			locals.Clear ();
 		}
 		
 		public void RemoveFileInfo(string filename)
@@ -97,6 +98,7 @@ namespace MonoDevelop.ValaBinding.Parser
 			enumerators.RemoveAll(delegate(Enumerator item){ return item.File == filename; });
 			unions.RemoveAll(delegate(Union item){ return item.File == filename; });
 			typedefs.RemoveAll(delegate(Typedef item){ return item.File == filename; });
+			locals.RemoveAll(delegate(Local item){ return item.File == filename; });
 		}
 		
 		public IEnumerable<LanguageItem> Containers ()
