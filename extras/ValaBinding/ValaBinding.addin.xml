@@ -87,10 +87,23 @@
 			    class = "MonoDevelop.ValaBinding.OutputOptionsPanelBinding"/>
 		</Condition>
 	</Extension>
+
+	<ExtensionPoint path = "/MonoDevelop/ValaBinding/Views/ProjectBrowser/ContextMenu/PackagesFolderNode" name = "Packages folder context menu">
+		<Description>Context menu for packages folder in the solution pad.</Description>
+		<ExtensionNodeSet id = "MonoDevelop.Components.Commands.ItemSet"/>
+	</ExtensionPoint>
 	
+	<ExtensionPoint path = "/MonoDevelop/ValaBinding/Views/ProjectBrowser/ContextMenu/PackageNode" name = "ProjectPackage context menu">
+		<Description>Context menu for a package in the solution pad.</Description>
+		<ExtensionNodeSet id = "MonoDevelop.Components.Commands.ItemSet"/>
+	</ExtensionPoint>
+
 	<Extension path = "/MonoDevelop/Ide/Pads/ProjectPad">
 		<NodeBuilder id = "MonoDevelop.ValaBinding.ProjectPad.ProjectReferencesExtension" class = "MonoDevelop.ValaBinding.ProjectPad.ProjectReferencesExtension"/>
 		<NodeBuilder id = "MonoDevelop.ValaBinding.ProjectPad.ProjectResourcesExtension" class = "MonoDevelop.ValaBinding.ProjectPad.ProjectResourcesExtension"/>
+		<NodeBuilder id = "MonoDevelop.ValaBinding.ProjectPad.ProjectPackagesFolderNodeBuilder" class = "MonoDevelop.ValaBinding.ProjectPad.ProjectPackagesFolderNodeBuilder"/>
+		<NodeBuilder id = "MonoDevelop.ValaBinding.ProjectPad.ProjectPackageNodeBuilder" class = "MonoDevelop.ValaBinding.ProjectPad.ProjectPackageNodeBuilder"/>
+		<NodeBuilder id = "MonoDevelop.ValaBinding.ProjectPad.ProjectNodeExtension" class = "MonoDevelop.ValaBinding.ProjectPad.ProjectNodeExtension"/>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/Pads/ClassPad">
@@ -113,14 +126,27 @@
 	<Extension path = "/MonoDevelop/Ide/Commands">
 		<Category _name = "Vala" id = "Vala">
 			<Command id = "MonoDevelop.ValaBinding.ValaProjectCommands.UpdateClassPad" _label = "Update class pad" icon = "res:update" />
+			<Command id = "MonoDevelop.ValaBinding.ValaProjectCommands.AddPackage" _label = "Edit Packages..." />
+			<Command id = "MonoDevelop.ValaBinding.ValaProjectCommands.ShowPackageDetails" _label = "Details..." />
 		</Category>
 	</Extension>
-	
+
+	<Extension path = "/MonoDevelop/ValaBinding/Views/ProjectBrowser/ContextMenu/PackagesFolderNode">
+		<CommandItem id = "MonoDevelop.ValaBinding.ValaProjectCommands.AddPackage"/>
+		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Paste"/>
+	</Extension>
+
 	<Extension path = "/MonoDevelop/Ide/ContextMenu/ClassPad/Project">
 		<CommandItem id = "MonoDevelop.ValaBinding.ValaProjectCommands.UpdateClassPad"/>
 	</Extension>
 	
-	
+	<Extension path = "/MonoDevelop/ValaBinding/Views/ProjectBrowser/ContextMenu/PackageNode">
+		<CommandItem id = "MonoDevelop.ValaBinding.ValaProjectCommands.ShowPackageDetails"/>
+		<SeparatorItem id = "Separator1" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Copy"/>
+		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Delete"/>
+	</Extension>
+
 	<Extension path = "/MonoDevelop/Ide/TextEditorExtensions">
 		<Class class = "MonoDevelop.ValaBinding.ValaTextEditorExtension" />
 	</Extension>

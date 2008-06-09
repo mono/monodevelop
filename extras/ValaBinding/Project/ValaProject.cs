@@ -37,6 +37,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.CodeDom.Compiler;
+using System.Text.RegularExpressions;
 
 using Mono.Addins;
 
@@ -56,6 +57,7 @@ namespace MonoDevelop.ValaBinding
 {
 	public enum ValaProjectCommands {
 		AddPackage,
+		ShowPackageDetails,
 		UpdateClassPad
 	}
 	
@@ -226,7 +228,7 @@ namespace MonoDevelop.ValaBinding
 				writer.Write ("Libs: -L${libdir} ");
 				writer.WriteLine ("-l{0}", config.Output);
 				writer.Write ("Cflags: -I${includedir}/");
-				writer.WriteLine ("{0} {1}", Name, Compiler.GetDefineFlags (config));
+				writer.WriteLine ("{0} {1}", Name, Regex.Replace(((ValaCompilationParameters)config.CompilationParameters).DefineSymbols, @"(^|\s+)(\w+)", "-D$2 ", RegexOptions.Compiled));
 			}
 			
 			return pkgfile;
@@ -353,6 +355,13 @@ namespace MonoDevelop.ValaBinding
 			base.OnFileChangedInProject (e);
 			
 			TagDatabaseManager.Instance.UpdateFileTags (this, e.ProjectFile.Name);
+		}
+		
+		protected override void OnFileRemovedFromProject (ProjectFileEventArgs e)
+		{
+			base.OnFileRemovedFromProject(e);
+			
+			TagDatabaseManager.Instance.RemoveFileInfo (this, e.ProjectFile.Name);
 		}
 		
 		private static void OnEntryAddedToCombine (object sender, SolutionItemEventArgs e)

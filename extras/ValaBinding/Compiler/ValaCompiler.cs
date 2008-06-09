@@ -90,7 +90,7 @@ namespace MonoDevelop.ValaBinding
 			StringBuilder libs = new StringBuilder ();
 			
 			foreach (ProjectPackage p in packages) {
-				libs.Append (string.Format(" --pkg \"{0}\" ",p.File));
+				libs.Append (string.Format(" --pkg \"{0}\" ",p.Name));
 			}
 			
 			return libs.ToString ();
@@ -357,7 +357,7 @@ namespace MonoDevelop.ValaBinding
 									CompilerResults cr)
 		{			
 			string compiler_args = string.Format ("{0} {1} -o \"{2}\"",
-				projectFiles, args, outputName);
+				args, projectFiles, outputName);
 			
 			string errorOutput = string.Empty;
 			int exitCode = ExecuteCommand (compilerCommand, compiler_args, Path.GetDirectoryName (outputName), monitor, out errorOutput);

@@ -666,6 +666,12 @@ namespace MonoDevelop.ValaBinding.Parser
 			}
 		}
 		
+		public void RemoveFileInfo(Project project, string filename)
+		{
+			ProjectInformation info = ProjectInformationManager.Instance.Get (project);
+			info.RemoveFileInfo(filename);
+		}
+		
 		private static string[] diff (string[] a1, string[] a2)
 		{
 			List<string> res = new List<string> ();

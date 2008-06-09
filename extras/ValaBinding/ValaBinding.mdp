@@ -93,6 +93,13 @@
     <File name="Navigation/VariableNodeBuilder.cs" subtype="Code" buildaction="Compile" />
     <File name="ProjectPad/ProjectReferencesExtension.cs" subtype="Code" buildaction="Compile" />
     <File name="ProjectPad/ProjectResourcesExtension.cs" subtype="Code" buildaction="Compile" />
+    <File name="Gui/EditPackagesDialog.cs" subtype="Code" buildaction="Compile" />
+    <File name="Gui/PackageDetails.cs" subtype="Code" buildaction="Compile" />
+    <File name="gtk-gui/MonoDevelop.ValaBinding.EditPackagesDialog.cs" subtype="Code" buildaction="Compile" />
+    <File name="gtk-gui/MonoDevelop.ValaBinding.PackageDetails.cs" subtype="Code" buildaction="Compile" />
+    <File name="ProjectPad/ProjectPackageNodeBuilder.cs" subtype="Code" buildaction="Compile" />
+    <File name="ProjectPad/ProjectPackagesFolderNodeBuilder.cs" subtype="Code" buildaction="Compile" />
+    <File name="ProjectPad/ProjectNodeExtension.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />

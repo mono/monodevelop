@@ -1,3 +1,15 @@
+2008-06-09  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com>
+
+	* Parser/*: Update parse data on file removal.
+
+2008-06-09  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com>
+
+	* Project/ValaProject.cs: Fix define syntax in generated .pc files.
+
+2008-06-09  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com>
+
+	* *: Add package support.
+
 2008-06-04  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com> 
 
 	* *: Add classpad support

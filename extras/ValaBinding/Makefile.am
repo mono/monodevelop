@@ -27,6 +27,8 @@ FILES =  \
 	gtk-gui/MonoDevelop.ValaBinding.CodeGenerationPanel.cs \
 	gtk-gui/MonoDevelop.ValaBinding.GeneralOptionsPanel.cs \
 	gtk-gui/MonoDevelop.ValaBinding.OutputOptionsPanel.cs \
+	gtk-gui/MonoDevelop.ValaBinding.EditPackagesDialog.cs \
+	gtk-gui/MonoDevelop.ValaBinding.PackageDetails.cs \
 	Gui/AddLibraryDialog.cs \
 	Gui/AddPathDialog.cs \
 	Gui/CodeGenerationPanel.cs \
@@ -34,6 +36,8 @@ FILES =  \
 	Gui/GeneralOptionsPanel.cs \
 	Gui/OutputOptionsPanel.cs \
 	Gui/ValaTextEditorExtension.cs \
+	Gui/EditPackagesDialog.cs \
+	Gui/PackageDetails.cs \
 	Project/ProjectPackage.cs \
 	Project/ProjectPackageCollection.cs \
 	Project/ProjectPackageEventArgs.cs \
@@ -78,6 +82,9 @@ FILES =  \
 	Navigation/VariableNodeBuilder.cs \
 	ProjectPad/ProjectReferencesExtension.cs \
 	ProjectPad/ProjectResourcesExtension.cs \
+	ProjectPad/ProjectPackageNodeBuilder.cs \
+	ProjectPad/ProjectPackagesFolderNodeBuilder.cs \
+	ProjectPad/ProjectNodeExtension.cs \
 	ValaLanguageBinding.cs
 
 RES =  \

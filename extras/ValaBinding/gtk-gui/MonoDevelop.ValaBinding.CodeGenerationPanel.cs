@@ -195,6 +195,7 @@ namespace MonoDevelop.ValaBinding {
             this.noWarningRadio = new Gtk.RadioButton(Mono.Unix.Catalog.GetString("no warnings"));
             this.noWarningRadio.CanFocus = true;
             this.noWarningRadio.Name = "noWarningRadio";
+            this.noWarningRadio.Active = true;
             this.noWarningRadio.DrawIndicator = true;
             this.noWarningRadio.UseUnderline = true;
             this.noWarningRadio.Group = new GLib.SList(System.IntPtr.Zero);

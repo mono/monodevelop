@@ -32,6 +32,8 @@
 
 using System;
 using System.IO;
+using System.Text.RegularExpressions;
+using System.Collections.Generic;
 
 using Mono.Addins;
 
@@ -50,22 +52,43 @@ namespace MonoDevelop.ValaBinding
 		[ItemProperty ("IsProject")]
 		private bool is_project;
 		
-		public ProjectPackage (string file)
-		{
-			this.file = file;
-			this.name = file;
-			this.is_project = false;
+		public string Description {
+			get{ return description; }
+			set{ description = value; }
+		}
+		private string description;
+		
+		public string Version {
+			get{ return version; }
+			set{ version = value; }
+		}
+		private string version;
+		
+		public List<string> Requires {
+			get { return requires; }
+		}
+		private List<string> requires;
+
+		protected ProjectPackage() {
+			requires = new List<string>();
+			description = string.Empty;
+			version = string.Empty;
 		}
 		
-		public ProjectPackage (ValaProject project)
+		public ProjectPackage (string file): this()
+		{
+			this.file = file;
+			this.name = Path.GetFileNameWithoutExtension(file);
+			this.is_project = false;
+			ParsePackage();
+			ParseRequires();
+		}
+		
+		public ProjectPackage (ValaProject project): this()
 		{
 			name = project.Name;
 			file = Path.Combine (project.BaseDirectory, name + ".md.pc");
 			is_project = true;
-		}
-		
-		public ProjectPackage ()
-		{
 		}
 		
 		public string File {
@@ -95,6 +118,87 @@ namespace MonoDevelop.ValaBinding
 		public override int GetHashCode ()
 		{
 			return (file + name).GetHashCode ();
+		}
+		
+		/// <summary>
+		/// Insert '\n's to make sure string isn't too long.
+		/// </summary>
+		/// <param name="desc">
+		/// The unprocessed description.
+		/// A <see cref="System.String"/>
+		/// </param>
+		/// <returns>
+		/// The processed description.
+		/// A <see cref="System.String"/>
+		/// </returns>
+		public static string ProcessDescription (string desc)
+		{
+			return Regex.Replace(desc, @"(.{1,80} )", "$&" + Environment.NewLine, RegexOptions.Compiled);
+		}
+		
+		protected void ParsePackage ()
+		{
+			string line;
+			
+			try {
+				// HACK
+				using (StreamReader reader = new StreamReader (Path.Combine("/usr/lib/pkgconfig", Path.ChangeExtension(Path.GetFileName(file), ".pc")))) {
+					if(null == reader){ return; }
+					
+					while ((line = reader.ReadLine ()) != null) {
+						if (Regex.IsMatch(line, @"^\s*#", RegexOptions.Compiled))
+						    continue;
+						    
+	//					if (line.IndexOf ('=') >= 0)
+	//						ParseVar (line);
+						
+						if (line.IndexOf (':') >= 0)
+							ParseProperty (line);
+					}
+				}
+			} catch (FileNotFoundException) {
+				// We just won't populate some fields
+			} catch (IOException) {
+				// We just won't populate some fields
+			}
+		}
+		
+		protected void ParseProperty (string line)
+		{
+			string[] tokens = line.Split(new char[]{':'}, 2);
+			
+			if(2 != tokens.Length){ return; }
+			
+			string key = tokens[0];
+			string value = tokens[1].Trim();
+			
+			if (value.Length <= 0)
+				return;
+			
+			switch (key) {
+			case "Description":;
+				description = ProcessDescription (value);
+				break;
+			case "Version":
+				version = value;
+				break;
+			}
+		}
+		
+		protected void ParseRequires ()
+		{
+			string line;
+			
+			try {
+				using (StreamReader reader = new StreamReader (Path.ChangeExtension(file, ".deps"))) {
+					if(null == reader){ return; }
+					for(; null != (line = reader.ReadLine()); requires.Add(line));
+				}
+			} catch (FileNotFoundException) {
+				// We just won't populate requires
+			} catch (IOException) {
+				// We just won't populate requires
+			}
 		}
 	}
 }

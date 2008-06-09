@@ -84,6 +84,21 @@ namespace MonoDevelop.ValaBinding.Parser
 			typedefs.Clear ();
 		}
 		
+		public void RemoveFileInfo(string filename)
+		{
+			namespaces.RemoveAll(delegate(Namespace item){ return item.File == filename; });
+			functions.RemoveAll(delegate(Function item){ return item.File == filename; });
+			classes.RemoveAll(delegate(Class item){ return item.File == filename; });
+			structures.RemoveAll(delegate(Structure item){ return item.File == filename; });
+			members.RemoveAll(delegate(Member item){ return item.File == filename; });
+			variables.RemoveAll(delegate(Variable item){ return item.File == filename; });
+			macros.RemoveAll(delegate(Macro item){ return item.File == filename; });
+			enumerations.RemoveAll(delegate(Enumeration item){ return item.File == filename; });
+			enumerators.RemoveAll(delegate(Enumerator item){ return item.File == filename; });
+			unions.RemoveAll(delegate(Union item){ return item.File == filename; });
+			typedefs.RemoveAll(delegate(Typedef item){ return item.File == filename; });
+		}
+		
 		public IEnumerable<LanguageItem> Containers ()
 		{
 			foreach (Namespace n in namespaces)
