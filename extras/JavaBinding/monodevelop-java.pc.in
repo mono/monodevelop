@@ -1,8 +1,0 @@
-Name: JavaBinding
-Description: JavaBinding
-Version: 0.1
-
-libdir=@prefix@/lib/monodevelop
-
-Requires: 
-Libs: -r:${libdir}/AddIns/JavaBinding.dll
