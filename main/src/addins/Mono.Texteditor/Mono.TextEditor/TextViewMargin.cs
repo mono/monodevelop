@@ -464,9 +464,8 @@ namespace Mono.TextEditor
 					visibleColumn++;
 				} else if (ch == '\t') {
 					OutputWordBuilder (win, line, selected, style, ref visibleColumn, ref xPos, y, offset);
-					
 					int newColumn = GetNextTabstop (visibleColumn);
-					int delta = (newColumn - visibleColumn) * this.charWidth;
+					int delta = GetNextVisualTab (xPos - this.XOffset) - xPos + this.XOffset;
 					visibleColumn = newColumn;
 					bool drawText = true;
 					bool drawBg   = true;
@@ -788,6 +787,13 @@ namespace Mono.TextEditor
 			return lineXPos;
 		}
 		
+		public int GetNextVisualTab (int xPos)
+		{
+			int tabWidth = TextEditorOptions.Options.TabSize * this.charWidth;
+			return (xPos / tabWidth + 1) * tabWidth;
+		}
+				
+		
 		public static int GetNextTabstop (int currentColumn)
 		{
 			int result = currentColumn + TextEditorOptions.Options.TabSize;
@@ -992,94 +998,44 @@ namespace Mono.TextEditor
 			ShowTooltip (null, Gdk.Rectangle.Zero);
 		}
 		
-		public DocumentLocation VisualToDocumentLocation (int xp, int yp)
+		class VisualLocationTranslator
 		{
-			int lineNumber = System.Math.Min (Document.VisualToLogicalLine ((int)(yp + textEditor.VAdjustment.Value) / LineHeight), Document.LineCount - 1);
-			LineSegment line = lineNumber < Document.LineCount ? Document.GetLine (lineNumber) : null;
-			int xStart = XOffset;
-			int y      = (int)(Document.LogicalToVisualLine (lineNumber) * LineHeight - textEditor.VAdjustment.Value);
-			Gdk.Rectangle lineArea = new Gdk.Rectangle (XOffset, y, textEditor.Allocation.Width - XOffset, LineHeight);
+			TextViewMargin margin;
+			int lineNumber;
+			LineSegment line;
+			int xStart;
+			int y;
+			Gdk.Rectangle lineArea;
 			int width, height;
 			int xPos = 0;
 			int column = 0;
 			int visibleColumn = 0;
-			if (line == null) 
-				return DocumentLocation.Empty;
-			SyntaxMode mode = Document.SyntaxMode != null && TextEditorOptions.Options.EnableSyntaxHighlighting ? Document.SyntaxMode : SyntaxMode.Default;
-			Pango.Layout measureLayout = new Pango.Layout (textEditor.PangoContext);
-			measureLayout.Alignment = Pango.Alignment.Left;
-			measureLayout.FontDescription = TextEditorOptions.Options.Font;
-			List<FoldSegment> foldings = Document.GetStartFoldings (line);
-			int offset = line.Offset;
-			int caretOffset = Caret.Offset;
-			int index, trailing;
-			int visualXPos = xp + (int)textEditor.HAdjustment.Value;
-			for (int i = 0; i < foldings.Count; ++i) {
-				FoldSegment folding = foldings[i];
-				int foldOffset = folding.StartLine.Offset + folding.Column;
-				if (foldOffset < offset)
-					continue;
-				
-				if (folding.IsFolded) {
-					Chunk[] chunks = mode.GetChunks (Document, textEditor.ColorStyle, line, offset, foldOffset - offset);
-					foreach (Chunk chunk in chunks) {
-						for (int o = chunk.Offset; o < chunk.EndOffset; o++) {
-							char ch = Document.GetCharAt (o);
-							int delta = 0;
-							if (ch == '\t') {
-								int newColumn = GetNextTabstop (visibleColumn);
-								delta = (newColumn - visibleColumn) * this.charWidth;
-								visibleColumn = newColumn;
-							} else if (ch == ' ') {
-								delta = this.charWidth;
-								visibleColumn++;
-							} else {
-								measureLayout.FontDescription.Weight = chunk.Style.Bold ? Pango.Weight.Bold : Pango.Weight.Normal;
-								measureLayout.FontDescription.Style =  chunk.Style.Italic ? Pango.Style.Italic: Pango.Style.Normal;
-								measureLayout.SetText (ch.ToString ());
-								measureLayout.GetPixelSize (out delta, out height);
-								visibleColumn++;
-							}
-							int nextXPosition = xPos + delta;
-							if (nextXPosition >= visualXPos) {
-								if (!IsNearX1 (visualXPos, xPos, nextXPosition))
-									column++;
-								goto skip;
-							}
-							column++;
-							xPos = nextXPosition;
-						}
-					}
-				 skip:
-					offset = folding.EndLine.Offset + folding.EndColumn;
-					
-					measureLayout.SetText (folding.Description);
-					measureLayout.GetPixelSize (out width, out height);
-					xPos += width;
-					if (folding.EndLine != line) {
-						line   = folding.EndLine;
-						foldings = Document.GetStartFoldings (line);
-						i = -1;
-					}
-				}
-				
-				
-//				i1 (!IsNearX1 (xp, xPos, nextXPosition))
-//					column++;
-			}
+			int visualXPos;
+			SyntaxMode mode;
+			Pango.Layout measureLayout;
 			
-			if (line.EndOffset - offset > 0) {
-				Chunk[] chunks = mode.GetChunks (Document, textEditor.ColorStyle, line, offset, line.Offset + line.EditableLength - offset);
+			public VisualLocationTranslator (TextViewMargin margin, int xp, int yp)
+			{
+				this.margin = margin;
+				lineNumber = System.Math.Min (margin.Document.VisualToLogicalLine ((int)(yp + margin.textEditor.VAdjustment.Value) / margin.LineHeight), margin.Document.LineCount - 1);
+				line = lineNumber < margin.Document.LineCount ? margin.Document.GetLine (lineNumber) : null;
+				xStart = margin.XOffset;
+				y      = (int)(margin.Document.LogicalToVisualLine (lineNumber) * margin.LineHeight - margin.textEditor.VAdjustment.Value);
+				lineArea = new Gdk.Rectangle (margin.XOffset, y, margin.textEditor.Allocation.Width - margin.XOffset, margin.LineHeight);
+			}
+			Chunk[] chunks;
+			void ConsumeChunks ()
+			{
 				foreach (Chunk chunk in chunks) {
 					for (int o = chunk.Offset; o < chunk.EndOffset; o++) {
-						char ch = Document.GetCharAt (o);
-						int delta;
+						char ch = margin.Document.GetCharAt (o);
+						int delta = 0;
 						if (ch == '\t') {
 							int newColumn = GetNextTabstop (visibleColumn);
-							delta = (newColumn - visibleColumn) * this.charWidth;
+							delta = margin.GetNextVisualTab (xPos) - xPos;
 							visibleColumn = newColumn;
 						} else if (ch == ' ') {
-							delta = this.charWidth;
+							delta = margin.charWidth;
 							visibleColumn++;
 						} else {
 							measureLayout.FontDescription.Weight = chunk.Style.Bold ? Pango.Weight.Bold : Pango.Weight.Normal;
@@ -1092,42 +1048,60 @@ namespace Mono.TextEditor
 						if (nextXPosition >= visualXPos) {
 							if (!IsNearX1 (visualXPos, xPos, nextXPosition))
 								column++;
-							goto skip;
+							return;
 						}
 						column++;
 						xPos = nextXPosition;
 					}
 				}
 			}
-		 skip:
-			measureLayout.Dispose ();
-			
-			return new DocumentLocation (lineNumber, column);
-//			int lineNumber = System.Math.Min (Document.VisualToLogicalLine ((int)(y + textEditor.VAdjustment.Value) / LineHeight), Document.LineCount - 1);
-//			LineSegment line = Document.GetLine (lineNumber);
-//			int lineXPos  = 0;
-//			int column;
-//			int visibleColumn = 0;
-//			int visualXPos = x + (int)textEditor.HAdjustment.Value;
-//			for (column = 0; column < line.EditableLength; column++) {
-//				int delta;
-//				if (this.Document.GetCharAt (line.Offset + column) == '\t') {
-//					int newColumn = GetNextTabstop (visibleColumn);
-//					delta = (newColumn - visibleColumn) * this.charWidth;
-//					visibleColumn = newColumn;
-//				} else {
-//					delta = this.charWidth;
-//					visibleColumn++;
-//				}
-//				int nextXPosition = lineXPos + delta;
-//				if (nextXPosition >= visualXPos) {
-//					if (!IsNearX1 (visualXPos, lineXPos, nextXPosition))
-//						column++;
-//					break;
-//				}
-//				lineXPos = nextXPosition;
-//			}			
-//			return new DocumentLocation (lineNumber, column);
+			public DocumentLocation VisualToDocumentLocation (int xp, int yp)
+			{
+				if (line == null) 
+					return DocumentLocation.Empty;
+				mode = margin.Document.SyntaxMode != null && TextEditorOptions.Options.EnableSyntaxHighlighting ? margin.Document.SyntaxMode : SyntaxMode.Default;
+				measureLayout = new Pango.Layout (margin.textEditor.PangoContext);
+				measureLayout.Alignment = Pango.Alignment.Left;
+				measureLayout.FontDescription = TextEditorOptions.Options.Font;
+				List<FoldSegment> foldings = margin.Document.GetStartFoldings (line);
+				int offset = line.Offset;
+				int caretOffset = margin.Caret.Offset;
+				int index, trailing;
+				visualXPos = xp + (int)margin.textEditor.HAdjustment.Value;
+				for (int i = 0; i < foldings.Count; ++i) {
+					FoldSegment folding = foldings[i];
+					int foldOffset = folding.StartLine.Offset + folding.Column;
+					if (foldOffset < offset)
+						continue;
+					
+					if (folding.IsFolded) {
+						chunks = mode.GetChunks (margin.Document, margin.textEditor.ColorStyle, line, offset, foldOffset - offset);
+						ConsumeChunks ();
+						offset = folding.EndLine.Offset + folding.EndColumn;
+						
+						measureLayout.SetText (folding.Description);
+						measureLayout.GetPixelSize (out width, out height);
+						xPos += width;
+						if (folding.EndLine != line) {
+							line   = folding.EndLine;
+							foldings = Document.GetStartFoldings (line);
+							i = -1;
+						}
+					}
+				}
+				
+				if (line.EndOffset - offset > 0) {
+					chunks = mode.GetChunks (margin.Document, margin.textEditor.ColorStyle, line, offset, line.Offset + line.EditableLength - offset);
+					ConsumeChunks ();
+				}
+				measureLayout.Dispose ();
+				return new DocumentLocation (lineNumber, column);
+			}
+		}
+		
+		public DocumentLocation VisualToDocumentLocation (int xp, int yp)
+		{
+			return new VisualLocationTranslator (this, xp, yp).VisualToDocumentLocation (xp, yp);
 		}
 		
 		static bool IsNearX1 (int pos, int x1, int x2)

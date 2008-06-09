@@ -1,3 +1,9 @@
+2008-06-09  Mike Krüger <mkrueger@novell.com> 
+
+	* Mono.TextEditor/TextViewMargin.cs: Fixed tab stop calculation - it
+	  should work better now. Refactored visual <--> document location
+	  logic.
+
 2008-06-06  Mike Krüger <mkrueger@novell.com> 
 
 	* Mono.TextEditor/TextViewMargin.cs: fixed possible null reference
