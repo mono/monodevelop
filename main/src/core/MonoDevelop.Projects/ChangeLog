@@ -1,8 +1,7 @@
 2008-06-10  Andres G. Aragoneses <aaragoneses@novell.com> 
 
 	* MonoDevelop.Projects/Solution.cs,
-	  MonoDevelop.Projects/DotNetProject.cs: Implement feature to allow
-	  unmanaged project references in a managed project (bug#397490).
+	  MonoDevelop.Projects/DotNetProject.cs: Cosmetic.
 
 2008-06-06  Lluis Sanchez Gual <lluis@novell.com> 
 
