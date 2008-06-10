@@ -1,0 +1,153 @@
+#!/bin/bash
+version=1.9
+prefix=/usr/local
+profile=dist
+trunkRoot=svn+ssh://mono-cvs.ximian.com/source/trunk/monodevelop
+branchesRoot=svn+ssh://mono-cvs.ximian.com/source/branches/monodevelop
+tagsRoot=svn+ssh://mono-cvs.ximian.com/source/tags/monodevelop
+srcVersion=
+
+sourceRoot=$trunkRoot
+destRoot=$branchesRoot
+
+MSG=`mktemp`
+
+usage ()
+{
+	echo "Usage : mdbrach [--profile=PROFILE] versionNumber"
+	echo ""
+	echo "Creates a new branch of MonoDevelop and the extras add-ins included"
+	echo "in the specified profile (which is 'stable' by default)."
+}
+
+validate_profile ()
+{
+	test -z "$1" && return 0
+	for c in `ls ../profiles`; do
+		if [ "$c" = "$1" ]; then
+			return 1
+		fi
+	done
+	return 0
+}
+
+read_packages ()
+{
+	for p in `sed -e /#/d -e 's/ /,/g' < ../profiles/$profile` ; do
+		path=`echo $p | cut -d ',' -f 1`
+		packages="$packages $path"
+	done
+	return 0
+}
+
+while test x$1 != x; do
+	case $1 in
+		--profile=*)
+			prof=`echo $1 | sed 's/--profile=//'`
+			validate_profile "$prof"
+			if [ $? -eq 1 ]; then
+				profile=$prof
+			else
+				echo "Invalid profile name - $conf"
+				usage
+				exit 1
+			fi
+			;;
+		--profile)
+			shift
+			prof=$1
+			validate_profile "$prof"
+			if [ $? -eq 1 ]; then
+				profile=$prof
+			else
+				echo "Invalid profile name - $conf"
+				usage
+				exit 1
+			fi
+			;;
+		--tag)
+			shift
+			sourceRoot=$branchesRoot
+			destRoot=$tagsRoot
+			srcVersion="/$1"
+			;;
+		--help)
+			usage
+			exit
+			;;
+		*)
+			version=$1
+			;;
+	esac
+	shift
+done
+
+read_packages
+
+
+echo ""
+if [ $destRoot = $tagsRoot ]; then
+	echo "The following tags will be created:"
+else
+	echo "The following branches will be created:"
+fi
+
+echo ""
+for p in $packages; do
+	echo "$destRoot/$p/$version"
+done
+echo ""
+echo "From sources:"
+echo ""
+for p in $packages; do
+	echo "$sourceRoot/$p$srcVersion"
+done
+
+if [ $destRoot = $tagsRoot ]; then
+	echo "Created $version tag." > $MSG
+else
+	echo "Created $version branch." > $MSG
+fi
+
+echo ""
+echo "Commit message:"
+cat $MSG
+echo ""
+	
+while [[ 1 ]]
+do 
+
+	read -a RESPONSE  -p"Would you like to continue (Y)es/(N)o/(E)dit Message:  "
+	if [[ $? != 0 ]]
+	then
+		RESPONSE="N"
+	fi
+
+	case $RESPONSE in
+		"Y" | "y" | "yes" | "Yes")
+		
+			echo "Comitting..."
+			for p in $packages; do
+				echo "svn cp -F $MSG $sourceRoot/$p$srcVersion $destRoot/$p/$version"
+				svn cp -F $MSG $sourceRoot/$p$srcVersion $destRoot/$p/$version
+			done
+			rm $MSG
+			exit 0
+		;;
+		
+		"N" | "n" | "no" | "No")
+			echo "Aborting..."
+			rm $MSG
+			exit 1
+		;;
+		
+		"E" | "e" | "ed" | "Ed" | "Edit" | "edit")
+			vi $MSG
+			# try again
+		;;
+		*)
+			# try again
+		;;
+	esac
+done
+
