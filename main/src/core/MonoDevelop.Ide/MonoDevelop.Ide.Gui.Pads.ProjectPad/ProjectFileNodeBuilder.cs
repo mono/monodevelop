@@ -62,7 +62,12 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		
 		public override void GetNodeAttributes (ITreeNavigator treeNavigator, object dataObject, ref NodeAttributes attributes)
 		{
-			attributes |= NodeAttributes.AllowRename;
+			ProjectFile file = (ProjectFile) dataObject;
+			if (file.DependsOnFile != null) {
+				attributes = NodeAttributes.None;
+			} else {
+				attributes |= NodeAttributes.AllowRename;
+			}
 		}
 		
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
@@ -87,6 +92,13 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			if (file.BuildAction == BuildAction.EmbedAsResource)
 				return new ResourceFolder (file.Project);
 			string dir = Path.GetDirectoryName (file.FilePath);
+			
+			if (!string.IsNullOrEmpty (file.DependsOn)) {
+				ProjectFile groupUnder = file.Project.Files.GetFile (Path.Combine (dir, file.DependsOn));
+				if (groupUnder != null)
+					return groupUnder;
+			}
+			
 			if (dir == file.Project.BaseDirectory)
 				return file.Project;
 			else if (file.IsExternalToProject)
@@ -102,6 +114,23 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			else
 				return DefaultSort;
 		}
+		
+		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
+		{
+			ProjectFile file = (ProjectFile) dataObject;
+			return file.HasChildren;
+		}
+		
+		public override void BuildChildNodes (ITreeBuilder treeBuilder, object dataObject)
+		{
+			base.BuildChildNodes (treeBuilder, dataObject);
+			ProjectFile file = (ProjectFile) dataObject;
+			if (file.HasChildren)
+				foreach (ProjectFile pf in file.DependentChildren)
+					treeBuilder.AddChild (pf);
+		}
+
+
 	}
 	
 	public class ProjectFileNodeCommandHandler: NodeCommandHandler
@@ -134,12 +163,15 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		
 		public override DragOperation CanDragNode ()
 		{
-			return DragOperation.Copy | DragOperation.Move;
+			if (((ProjectFile) CurrentNode.DataItem).DependsOnFile == null)
+				return DragOperation.Copy | DragOperation.Move;
+			else
+				return DragOperation.None;
 		}
 		
 		public override bool CanDropNode (object dataObject, DragOperation operation)
 		{
-			return dataObject is SolutionItem;
+			return (dataObject is SolutionItem && ((ProjectFile) CurrentNode.DataItem).DependsOnFile == null);
 		}
 		
 		public override void OnNodeDrop (object dataObject, DragOperation operation)
@@ -160,8 +192,20 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			ProjectFile file = CurrentNode.DataItem as ProjectFile;
 			Project project = CurrentNode.GetParentDataItem (typeof(Project), false) as Project;
 			AlertButton removeFromProject = new AlertButton (GettextCatalog.GetString ("_Remove from Project"), Gtk.Stock.Remove);
-			AlertButton result = MessageService.AskQuestion (GettextCatalog.GetString ("Are you sure you want to remove file {0} from project {1}?", Path.GetFileName (file.Name), project.Name), 
-			                                                 GettextCatalog.GetString ("Delete physically removes the file from disc."), 
+			
+			string question, secondaryText;
+			if (file.HasChildren) {
+				question = GettextCatalog.GetString ("Are you sure you want to remove the file {0} and " + 
+				                                     "its CodeBehind children from project {1}?",
+				                                     Path.GetFileName (file.Name), project.Name);
+				secondaryText = GettextCatalog.GetString ("Delete physically removes the files from disc.");
+			} else {
+				question = GettextCatalog.GetString ("Are you sure you want to remove file {0} from project {1}?",
+				                                     Path.GetFileName (file.Name), project.Name);
+				secondaryText = GettextCatalog.GetString ("Delete physically removes the file from disc.");
+			}
+			
+			AlertButton result = MessageService.AskQuestion (question, secondaryText,
 			                                                 AlertButton.Delete, AlertButton.Cancel, removeFromProject);
 			if (result != removeFromProject && result != AlertButton.Delete) 
 				return;
@@ -174,6 +218,14 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 					ProjectFile folderFile = new ProjectFile (Path.GetDirectoryName (file.Name));
 					folderFile.Subtype = Subtype.Directory;
 					project.Files.Add (folderFile);
+				}
+			}
+			
+			if (file.HasChildren) {
+				foreach (ProjectFile f in file.DependentChildren) {
+					project.Files.Remove (f);
+					if (result == AlertButton.Delete)
+						FileService.DeleteFile (f.Name);
 				}
 			}
 			

@@ -209,6 +209,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				} else {
 					if (tb.MoveToObject (project))
 						tb.AddChild (data);
+					tb.UpdateChildren ();
 				}
 			}
 		}

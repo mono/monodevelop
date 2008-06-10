@@ -47,6 +47,7 @@ namespace MonoDevelop.Ide.Templates
 		string generatedFile;
 		bool suppressAutoOpen = false;
 		bool addStandardHeader = false;
+		string dependsOn;
 		BuildAction buildAction;
 		
 		public override void Load (XmlElement filenode)
@@ -54,6 +55,7 @@ namespace MonoDevelop.Ide.Templates
 			name = filenode.GetAttribute ("name");
 			defaultName = filenode.GetAttribute ("DefaultName");
 			defaultExtension = filenode.GetAttribute ("DefaultExtension");
+			dependsOn = filenode.GetAttribute ("DependsOn");
 			buildAction = BuildAction.Compile;
 			try {
 				buildAction = (BuildAction) Enum.Parse (typeof (BuildAction), filenode.GetAttribute ("BuildAction"), true);
@@ -101,8 +103,16 @@ namespace MonoDevelop.Ide.Templates
 			
 			generatedFile = SaveFile (project, language, directory, name);
 			if (generatedFile != null) {
-				project.AddFile (generatedFile, buildAction);
-				return project.GetProjectFile (generatedFile);
+				ProjectFile projectFile = new ProjectFile (generatedFile, buildAction);
+				if (!string.IsNullOrEmpty (dependsOn)) {
+					System.Console.WriteLine(dependsOn);
+					Hashtable tags = new Hashtable ();
+					ModifyTags (project, language, null, generatedFile, ref tags);
+					string parsedDepName = StringParserService.Parse (dependsOn, HashtableToStringArray (tags));
+					projectFile.DependsOn = parsedDepName;
+				}
+				project.AddFile (projectFile);
+				return projectFile;
 			} else
 				return null;
 		}
@@ -216,7 +226,7 @@ namespace MonoDevelop.Ide.Templates
 
 		public virtual string CreateContent (string language)
 		{
-			return "";
+			return string.Empty;
 		}
 		
 		// Can add tags for substitution based on project, language or filename.

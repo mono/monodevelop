@@ -964,7 +964,7 @@ namespace MonoDevelop.Ide.Gui
 
 			// Get the list of files to copy
 
-			ICollection filesToMove;
+			ICollection<ProjectFile> filesToMove;
 			try {
 				if (copyOnlyProjectFiles) {
 					filesToMove = sourceProject.Files.GetFilesInPath (sourcePath);
@@ -976,6 +976,25 @@ namespace MonoDevelop.Ide.Gui
 			} catch (Exception ex) {
 				monitor.ReportError (GettextCatalog.GetString ("Could not get any file from '{0}'.", sourcePath), ex);
 				return;
+			}
+			
+			// If copying a single file, bring any grouped children along
+			if (filesToMove.Count == 1 && sourceProject != null) {
+				//Make sure the list is a type to which we can append files
+				IList<ProjectFile> list = filesToMove as IList<ProjectFile>;
+				if (list == null)
+					filesToMove = list = new List<ProjectFile> (filesToMove);
+				
+				// if file's nor parented on the project, it won't have its children resolved
+				// So get the 'real' ProjectFile from the project
+				ProjectFile pf = list[0];
+				if (pf.Project == null)
+					pf = sourceProject.Files.GetFile (pf.Name);
+				
+				// If it resolved, get the children
+				if (pf != null)
+					foreach (ProjectFile child in pf.DependentChildren)
+						list.Add (child);
 			}
 			
 			// Ensure that the destination folder is created, even if no files

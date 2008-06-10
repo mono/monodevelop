@@ -86,6 +86,8 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 					continue;
 
 				if (file.Subtype != Subtype.Directory) {
+					if (file.DependsOnFile != null)
+						continue;
 					dir = Path.GetDirectoryName (file.Name);
 					if (dir == folder) {
 						files.Add (file);
@@ -133,10 +135,12 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		{
 			string targetPath = GetFolderPath (CurrentNode.DataItem);
 			
-			if (dataObject is ProjectFile)
-				return Path.GetDirectoryName (((ProjectFile)dataObject).Name) != targetPath;
-			if (dataObject is ProjectFolder)
+			if (dataObject is ProjectFile) {
+				ProjectFile file = (ProjectFile) dataObject;
+				return Path.GetDirectoryName (file.Name) != targetPath && file.DependsOnFile == null;
+			} if (dataObject is ProjectFolder) {
 				return ((ProjectFolder)dataObject).Path != targetPath;
+			}
 			return false;
 		}
 		
@@ -146,6 +150,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			string what, source;
 			Project targetProject = (Project) CurrentNode.GetParentDataItem (typeof(Project), true);
 			Project sourceProject;
+			System.Collections.Generic.IEnumerable<ProjectFile> groupedChildren = null;
 			
 			bool ask;
 			
@@ -156,8 +161,10 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				ask = true;
 			}
 			else if (dataObject is ProjectFile) {
-				source = ((ProjectFile)dataObject).Name;
-				sourceProject = ((ProjectFile) dataObject).Project;
+				ProjectFile file = (ProjectFile) dataObject;
+				source = file.Name;
+				sourceProject = file.Project;
+				groupedChildren = file.DependentChildren;
 				what = null;
 				ask = false;
 			} else {
@@ -187,8 +194,15 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			
 			ArrayList filesToSave = new ArrayList ();
 			foreach (Document doc in IdeApp.Workbench.Documents) {
-				if (doc.IsDirty && (doc.FileName == source || doc.FileName.StartsWith (source + Path.DirectorySeparatorChar)))
-					filesToSave.Add (doc);
+				if (doc.IsDirty) {
+					if (doc.FileName == source || doc.FileName.StartsWith (source + Path.DirectorySeparatorChar)) {
+						filesToSave.Add (doc);
+					} else if (groupedChildren != null) {
+						foreach (ProjectFile f in groupedChildren)
+							if (doc.FileName == f.Name)
+								filesToSave.Add (doc);
+					}
+				}
 			}
 			
 			if (filesToSave.Count > 0) {

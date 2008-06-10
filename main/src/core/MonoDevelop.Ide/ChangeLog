@@ -1,3 +1,14 @@
+2008-06-10  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Ide.Gui/ProjectOperations.cs,
+	  MonoDevelop.Ide.Gui.Pads.ProjectPad/ResourceFolderNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs: Handle
+	  adding, removing, drag-n-drop etc for grouped/dependent files.
+	* MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs: Allow
+	  templates to define name of dependency parent.
+
 2008-06-10  Andres G. Aragoneses <aaragoneses@novell.com> 
 
 	* MonoDevelop.Ide.Gui.Dialogs/ProjectReferencePanel.cs: Implement

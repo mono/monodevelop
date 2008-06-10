@@ -155,7 +155,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		{
 			Project project = CurrentNode.GetParentDataItem (typeof(Project), true) as Project;
 			ProjectFile file = dataObject as ProjectFile;
-			return file != null && file.Project == project;
+			return file != null && file.Project == project && file.DependsOnFile == null;
 		}
 
 		
