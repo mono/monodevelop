@@ -1,3 +1,13 @@
+2008-06-10  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.SourceEditor/SearchAndReplaceWidget.cs: Another
+	  workaround for gtk# bug #398929.
+
+2008-06-10  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.SourceEditor/SearchWidget.cs: Workaround for gtk# bug
+	  #398929.
+
 2008-06-04  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* gtk-gui/gui.stetic, MonoDevelop.SourceEditor.addin.xml: Bump MD

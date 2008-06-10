@@ -45,6 +45,20 @@ namespace MonoDevelop.SourceEditor
 		SourceEditorWidget widget;
 		internal static string searchPattern = "";
 		
+		protected override void OnSizeAllocated (Gdk.Rectangle allocation)
+		{
+			if (hbox1 != null)
+				hbox1.Allocation = allocation;
+		}
+
+		
+		protected override void OnSizeRequested (ref Gtk.Requisition requisition)
+		{
+			if (hbox1 != null)
+				requisition = hbox1.SizeRequest();
+		}
+
+		
 		public static bool IsCaseSensitive {
 			get {
 				return PropertyService.Get ("IsCaseSensitive", true);
