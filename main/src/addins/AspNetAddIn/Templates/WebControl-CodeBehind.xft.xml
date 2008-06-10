@@ -25,7 +25,7 @@
 			</FileText>
 		</AspNetFile>
 		
-		<CodeTranslationFile name="${Name}.ascx.${LanguageExtension}">
+		<CodeTranslationFile name="${Name}.ascx.${LanguageExtension}" DependsOn="${Name}.ascx" >
 <![CDATA[using System;
 using System.Web;
 using System.Web.UI;
@@ -37,7 +37,8 @@ namespace ${Namespace} {
 	}
 }]]>
 		</CodeTranslationFile>
-		<CodeTranslationFile name="${Name}.ascx.designer.${LanguageExtension}" ShowAutogenerationNotice="True" AddStandardHeader="False" SuppressAutoOpen="True">
+		<CodeTranslationFile name="${Name}.ascx.designer.${LanguageExtension}" ShowAutogenerationNotice="True" 
+			AddStandardHeader="False" SuppressAutoOpen="True" DependsOn="${Name}.ascx" >
 <![CDATA[using System;
 using System.Web;
 using System.Web.UI;

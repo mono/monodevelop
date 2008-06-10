@@ -1,5 +1,20 @@
 2008-06-10  Michael Hutchinson <mhutchinson@novell.com> 
 
+	* Templates/WebService-CodeBehind.xft.xml,
+	  Templates/WebHandler-CodeBehind.xft.xml,
+	  Templates/WebForm-CodeBehindNonPartial.xft.xml,
+	  Templates/WebForm-CodeBehind.xft.xml,
+	  Templates/WebControl-CodeBehindNonPartial.xft.xml,
+	  Templates/WebControl-CodeBehind.xft.xml,
+	  Templates/MasterPage-CodeBehindNonPartial.xft.xml,
+	  Templates/GlobalAsax-CodeBehind.xft.xml,
+	  Templates/MasterPage-CodeBehind.xft.xml: Set grouping/dependencies
+	  on new files.
+	* MonoDevelop.AspNet/AspNetAppProject.cs: Set grouping dependencies on
+	  added files, and auto-add parents/children.
+
+2008-06-10  Michael Hutchinson <mhutchinson@novell.com> 
+
 	* MonoDevelop.AspNet.Parser/AspNetCompilationUnit.cs: Remove old
 	  CodeBehind grouping mechanism.
 

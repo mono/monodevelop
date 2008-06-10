@@ -21,7 +21,7 @@
 			</FileText>
 		</AspNetFile>
 		
-		<CodeTranslationFile name="${Name}.asmx.${LanguageExtension}">
+		<CodeTranslationFile name="${Name}.asmx.${LanguageExtension}" DependsOn="${Name}.asmx" >
 <![CDATA[using System;
 using System.Web;
 using System.Web.Services;

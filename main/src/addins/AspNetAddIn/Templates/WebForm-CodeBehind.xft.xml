@@ -19,7 +19,7 @@
 	
 	<!-- Template Content -->
 	<TemplateFiles>
-		<AspNetFile name="${Name}.aspx" DefaultExtension=".aspx" BuildAction="FileCopy">
+		<AspNetFile name="${Name}.aspx" DefaultExtension=".aspx" BuildAction="FileCopy" >
 			<FileText>
 				<![CDATA[<%@ Page Language="${AspNetLanguage}" Inherits="${Namespace}.${Name}" %>
 ${Doctype}
@@ -35,7 +35,7 @@ ${Doctype}
 			</FileText>
 		</AspNetFile>
 		
-		<CodeTranslationFile name="${Name}.aspx.${LanguageExtension}">
+		<CodeTranslationFile name="${Name}.aspx.${LanguageExtension}" DependsOn="${Name}.aspx" >
 <![CDATA[using System;
 using System.Web;
 using System.Web.UI;
@@ -48,7 +48,8 @@ namespace ${Namespace} {
 	}
 }]]>
 		</CodeTranslationFile>
-		<CodeTranslationFile name="${Name}.aspx.designer.${LanguageExtension}" ShowAutogenerationNotice="True" AddStandardHeader="False" SuppressAutoOpen="True">
+		<CodeTranslationFile name="${Name}.aspx.designer.${LanguageExtension}" ShowAutogenerationNotice="True" 
+			AddStandardHeader="False" SuppressAutoOpen="True" DependsOn="${Name}.aspx" >
 <![CDATA[using System;
 using System.Web;
 using System.Web.UI;

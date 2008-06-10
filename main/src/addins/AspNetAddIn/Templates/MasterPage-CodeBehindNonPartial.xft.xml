@@ -39,7 +39,7 @@ ${Doctype}
 			</FileText>
 		</AspNetFile>
 		
-		<CodeTranslationFile name="${Name}.master.${LanguageExtension}">
+		<CodeTranslationFile name="${Name}.master.${LanguageExtension}" DependsOn="${Name}.master" >
 <![CDATA[using System;
 using System.Web;
 using System.Web.UI;

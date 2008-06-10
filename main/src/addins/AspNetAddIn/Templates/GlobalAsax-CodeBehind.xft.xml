@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
-<Template	Originator="Michael Hutchinson"
-			Created="2006/08/21"
-			LastModified="2006/08/21">
+<Template Originator="Michael Hutchinson"
+          Created="2006/08/21"
+          LastModified="2006/08/21">
 
 	<!-- Template Header -->
 	<TemplateConfiguration>
@@ -25,7 +25,7 @@
 <![CDATA[<%@ Application Inherits="${Namespace}.Global" %>]]>
 			</FileText>
 		</AspNetFile>
-		<CodeTranslationFile name="Global.asax.${LanguageExtension}">
+		<CodeTranslationFile name="Global.asax.${LanguageExtension}" DependsOn="Global.asax" >
 <![CDATA[using System;
 using System.Collections;
 using System.ComponentModel;
