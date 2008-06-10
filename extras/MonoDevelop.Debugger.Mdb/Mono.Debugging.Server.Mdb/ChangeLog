@@ -1,7 +1,3 @@
-2008-06-10  Michael Hutchinson <mhutchinson@novell.com> 
-
-	* Mono.Debugging.Server.Mdb.mdp: Track API changes.
-
 2008-05-27  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* DebuggerServer.cs, BacktraceWrapper.cs: Track api changes. Properly
