@@ -52,6 +52,12 @@ namespace Mono.TextEditor
 			}
 		}
 		
+		internal LineSegmentTree LineSegmentTree {
+			get {
+				return lines;
+			}
+		}
+		
 		public void Dispose ()
 		{
 			if (lines != null) {

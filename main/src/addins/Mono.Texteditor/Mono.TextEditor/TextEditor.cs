@@ -305,6 +305,8 @@ namespace Mono.TextEditor
 			imContext.UsePreedit = false;
 			imContext.Commit += IMCommit;
 			Caret.PositionChanged += CaretPositionChanged;
+			
+			textViewMargin.Initialize ();
 		}
 		
 		void CaretPositionChanged (object sender, DocumentLocationEventArgs args) 
@@ -807,6 +809,8 @@ namespace Mono.TextEditor
 
 		public int LineHeight {
 			get {
+				if (this.textViewMargin == null)
+					return 16;
 				return this.textViewMargin.LineHeight;
 			}
 		}
@@ -834,7 +838,7 @@ namespace Mono.TextEditor
 		{
 			if (Caret.Line < 0 || Caret.Line >= Document.LineCount)
 				return;
-			int yMargin = 1 * this.LineHeight;
+//			int yMargin = 1 * this.LineHeight;
 			int xMargin = 10 * this.textViewMargin.CharWidth;
 			int caretPosition = Document.LogicalToVisualLine (Caret.Line) * this.LineHeight;
 			this.textEditorData.VAdjustment.Value = caretPosition - this.textEditorData.VAdjustment.PageSize / 2;
@@ -963,7 +967,7 @@ namespace Mono.TextEditor
 							try {
 								margin.Draw (win, area, logicalLineNumber, margin.XOffset, curY);
 							} catch (Exception e) {
-								
+								System.Console.WriteLine (e);
 							}
 						}
 					}
