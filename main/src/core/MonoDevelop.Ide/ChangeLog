@@ -1,3 +1,9 @@
+2008-06-10  Andres G. Aragoneses <aaragoneses@novell.com> 
+
+	* MonoDevelop.Ide.Gui.Dialogs/ProjectReferencePanel.cs: Implement
+	  feature to allow unmanaged project references in a managed project
+	  (bug#397490).
+
 2008-06-09  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Gui/RootWorkspace.cs: Fix bug 398179 - Loading

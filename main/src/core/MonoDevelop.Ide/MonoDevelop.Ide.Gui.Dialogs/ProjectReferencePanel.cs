@@ -136,12 +136,14 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 			}
 			
 			bool circDeps = false;
-			foreach (DotNetProject projectEntry in openSolution.GetAllSolutionItems<DotNetProject>()) {
+			foreach (Project projectEntry in openSolution.GetAllSolutionItems<Project>()) {
 
 				if (projectEntry == configureProject) {
 					continue;
 				}
-				if (ProjectReferencesProject (projectEntry, configureProject.Name)) {
+				
+				if (projectEntry is DotNetProject &&
+				    ProjectReferencesProject ((DotNetProject)projectEntry, configureProject.Name)) {
 					circDeps = true;
 					continue;
 				}

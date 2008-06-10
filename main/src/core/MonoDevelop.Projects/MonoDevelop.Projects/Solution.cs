@@ -570,7 +570,7 @@ namespace MonoDevelop.Projects
 				
 				foreach (ProjectReference pref in toDelete) {
 					project.References.Remove (pref);
-				}				
+				}
 			}
 		}
 		

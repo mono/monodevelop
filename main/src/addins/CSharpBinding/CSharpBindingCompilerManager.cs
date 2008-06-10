@@ -62,6 +62,9 @@ namespace CSharpBinding
 			
 			if (references != null) {
 				foreach (ProjectReference lib in references) {
+					if ((lib.ReferenceType == ReferenceType.Project) &&
+					    (!(lib.OwnerProject.ParentSolution.FindProjectByName (lib.Reference) is DotNetProject)))
+						continue;
 					foreach (string fileName in lib.GetReferencedFileNames (configuration.Id)) {
 						switch (lib.ReferenceType) {
 						case ReferenceType.Gac:

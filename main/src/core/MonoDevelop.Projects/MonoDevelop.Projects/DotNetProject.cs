@@ -263,7 +263,7 @@ namespace MonoDevelop.Projects
 				this.References.Remove(pr);
 				ProjectReference prNew = new ProjectReference (ReferenceType.Project, newName);
 				this.References.Add(prNew);
-			}			
+			}
 		}
 
 		public void CopyReferencesToOutputPath (bool force, string configuration)

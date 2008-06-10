@@ -370,6 +370,10 @@ namespace MonoDevelop.AspNet
 				//these assemblies are referenced automatically by ASP.NET
 				if (IsSystemReference (reference.Reference))
 				    continue;
+				//bypass non dotnet projects
+				if ((reference.ReferenceType == ReferenceType.Project) &&
+				    (!(reference.OwnerProject.ParentSolution.FindProjectByName (reference.Reference) is DotNetProject)))
+						continue;
 				refs.Add (reference.Reference);
 			}
 						

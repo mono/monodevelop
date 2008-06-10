@@ -287,6 +287,9 @@ namespace MonoDevelop.Autotools
 							continue;
 						Project refp = GetProjectFromName (reference.Reference, ctx.TargetSolution);
 
+						if (!(refp is DotNetProject))
+							continue;
+						
 						DotNetProjectConfiguration dnpc = GetProjectConfig (combineConfig.Id, refp, out buildEnabled) as DotNetProjectConfiguration;
 						if ( dnpc == null )
 							throw new Exception ( GettextCatalog.GetString
