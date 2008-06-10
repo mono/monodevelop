@@ -182,12 +182,14 @@ namespace AspNetEdit.Integration
 			//hook up proxy for event binding
 			MonoDevelop.Projects.Parser.IClass codeBehind = null;
 			if (viewContent.Project != null) {
-				MonoDevelop.Projects.ProjectFile pf = viewContent.Project.GetProjectFile (viewContent.ContentName);
-				if (pf != null) {
-					MonoDevelop.DesignerSupport.CodeBehind.CodeBehindClass cc = 
-						DesignerSupport.Service.CodeBehindService.GetChildClass (pf);
-					if (cc != null)
-						codeBehind = cc.IClass;
+				MonoDevelop.Projects.Parser.IProjectParserContext ctx =
+					MonoDevelop.Ide.Gui.IdeApp.Workspace.ParserDatabase.GetProjectParserContext (viewContent.Project);
+				MonoDevelop.Projects.Parser.IParseInformation pi = ctx.GetParseInformation (viewContent.ContentName);
+				if (pi != null) {
+					MonoDevelop.AspNet.Parser.AspNetCompilationUnit cu =
+						pi.BestCompilationUnit as MonoDevelop.AspNet.Parser.AspNetCompilationUnit;
+					if (cu != null && cu.PageInfo != null && !string.IsNullOrEmpty (cu.PageInfo.InheritedClass))
+						codeBehind = ctx.GetClass (cu.PageInfo.InheritedClass);
 				}
 			}
 			proxy = new MonoDevelopProxy (viewContent.Project, codeBehind);
