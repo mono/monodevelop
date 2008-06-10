@@ -48,7 +48,6 @@ namespace MonoDevelop.DesignerSupport
 	{
 		PropertyPad propertyPad = null;
 		ToolboxService toolboxService = null;
-		CodeBehindService codeBehindService;
 		IPropertyProvider[] providers;
 		
 		IPropertyPadProvider lastPadProvider;
@@ -199,21 +198,11 @@ namespace MonoDevelop.DesignerSupport
 		
 		#endregion
 		
-		#region CodeBehind
-		
-		public CodeBehindService CodeBehindService {
-			get { return codeBehindService; }
-		}
-		
-		#endregion
-		
 		#region IService implementations
 		
 		public override void InitializeService()
 		{
 			base.InitializeService ();
-			codeBehindService= new CodeBehindService ();
-			codeBehindService.Initialise ();
 			IdeApp.CommandService.RegisterCommandTargetVisitor (new PropertyPadVisitor ());
 			AddinManager.ExtensionChanged += OnExtensionChanged;
 		}
@@ -228,10 +217,6 @@ namespace MonoDevelop.DesignerSupport
 		
 		public override void UnloadService ()
 		{
-			if (codeBehindService != null) {
-				codeBehindService.Dispose ();
-				codeBehindService = null;
-			}
 			base.UnloadService ();
 		}
 

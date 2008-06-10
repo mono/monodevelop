@@ -35,7 +35,7 @@ namespace MonoDevelop.AspNet.Parser
 {
 	
 	
-	public class AspNetCompilationUnit : DefaultCompilationUnit, MonoDevelop.DesignerSupport.CodeBehind.ICodeBehindParent
+	public class AspNetCompilationUnit : DefaultCompilationUnit
 	{
 		PageInfo pageInfo;
 		Document doc;
@@ -74,11 +74,5 @@ namespace MonoDevelop.AspNet.Parser
 				errors.ToArray ()
 				: null;
 		}
-		
-		public string CodeBehindClassName {
-			get { return PageInfo.InheritedClass; }
-		}
-
-		
 	}
 }

@@ -25,13 +25,6 @@ REFS =  \
 FILES =  \
 	gtk-gui/generated.cs \
 	gtk-gui/MonoDevelop.DesignerSupport.Toolbox.ComponentSelectorDialog.cs \
-	MonoDevelop.DesignerSupport.CodeBehind/CodeBehindClass.cs \
-	MonoDevelop.DesignerSupport.CodeBehind/CodeBehindClassEventArgs.cs \
-	MonoDevelop.DesignerSupport.CodeBehind/CodeBehindDisplayBinding.cs \
-	MonoDevelop.DesignerSupport.CodeBehind/CodeBehindMissingClassBuilder.cs \
-	MonoDevelop.DesignerSupport.CodeBehind/CodeBehindProjectFileExtension.cs \
-	MonoDevelop.DesignerSupport.CodeBehind/CodeBehindViewContent.cs \
-	MonoDevelop.DesignerSupport.CodeBehind/ICodeBehindProvider.cs \
 	MonoDevelop.DesignerSupport.Projects/ComponentNodeBuilder.cs \
 	MonoDevelop.DesignerSupport.Projects/ProjectFileDescriptor.cs \
 	MonoDevelop.DesignerSupport.Projects/ProjectItemPropertyProvider.cs \
@@ -88,7 +81,6 @@ FILES =  \
 	MonoDevelop.DesignerSupport.Toolbox/TypeToolboxNode.cs \
 	MonoDevelop.DesignerSupport.Toolbox/UnknownToolboxNode.cs \
 	MonoDevelop.DesignerSupport/BindingService.cs \
-	MonoDevelop.DesignerSupport/CodeBehindService.cs \
 	MonoDevelop.DesignerSupport/Commands.cs \
 	MonoDevelop.DesignerSupport/CustomDescriptor.cs \
 	MonoDevelop.DesignerSupport/DesignerSupportService.cs \

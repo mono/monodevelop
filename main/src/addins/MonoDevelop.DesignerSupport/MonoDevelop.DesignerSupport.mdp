@@ -42,13 +42,7 @@
     <File name="MonoDevelop.DesignerSupport.Toolbox/UnknownToolboxNode.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.DesignerSupport.Toolbox/TypeToolboxNode.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.DesignerSupport/WrapperDesignView.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.DesignerSupport.CodeBehind/CodeBehindViewContent.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.DesignerSupport.CodeBehind/CodeBehindProjectFileExtension.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.DesignerSupport.CodeBehind/ICodeBehindProvider.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.DesignerSupport.CodeBehind/CodeBehindDisplayBinding.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.DesignerSupport.CodeBehind/CodeBehindMissingClassBuilder.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.DesignerSupport/ToolboxService.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.DesignerSupport/CodeBehindService.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.DesignerSupport/BindingService.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.DesignerSupport/MemberExistsException.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.DesignerSupport/RemoteDesignerProcess.cs" subtype="Code" buildaction="Compile" />
@@ -87,8 +81,6 @@
     <File name="MonoDevelop.DesignerSupport.Toolbox/ToolboxConfiguration.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.DesignerSupport/Commands.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.DesignerSupport.Projects/PropertyPadTextEditorExtension.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.DesignerSupport.CodeBehind/CodeBehindClassEventArgs.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.DesignerSupport.CodeBehind/CodeBehindClass.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.DesignerSupport/OpenDocumentFileProvider.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.DesignerSupport/ErrorInFileException.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.DesignerSupport/TypeNotFoundException.cs" subtype="Code" buildaction="Compile" />

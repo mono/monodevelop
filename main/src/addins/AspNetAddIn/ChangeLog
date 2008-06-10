@@ -1,3 +1,8 @@
+2008-06-10  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.AspNet.Parser/AspNetCompilationUnit.cs: Remove old
+	  CodeBehind grouping mechanism.
+
 2008-06-10  Andres G. Aragoneses <aaragoneses@novell.com> 
 
 	* MonoDevelop.AspNet/AspNetAppProject.cs: Implement feature to allow

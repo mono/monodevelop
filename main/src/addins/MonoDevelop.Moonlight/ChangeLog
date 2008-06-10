@@ -1,3 +1,9 @@
+2008-06-10  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Moonlight.mdp,
+	  MonoDevelop.Moonlight/MoonlightCodebehindProvider.cs, Makefile.am:
+	  Remove old CodeBehind grouping mechanism.
+
 2008-06-04  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Moonlight.addin.xml: Bump MD version.

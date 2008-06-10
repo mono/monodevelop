@@ -1,3 +1,18 @@
+2008-06-10  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.DesignerSupport.addin.xml,
+	  MonoDevelop.DesignerSupport.mdp,
+	  MonoDevelop.DesignerSupport/DesignerSupportService.cs,
+	  MonoDevelop.DesignerSupport/CodeBehindService.cs,
+	  MonoDevelop.DesignerSupport.CodeBehind/CodeBehindMissingClassBuilder.cs,
+	  MonoDevelop.DesignerSupport.CodeBehind/CodeBehindDisplayBinding.cs,
+	  MonoDevelop.DesignerSupport.CodeBehind/CodeBehindProjectFileExtension.cs,
+	  MonoDevelop.DesignerSupport.CodeBehind/ICodeBehindProvider.cs,
+	  MonoDevelop.DesignerSupport.CodeBehind/CodeBehindClassEventArgs.cs,
+	  MonoDevelop.DesignerSupport.CodeBehind/CodeBehindClass.cs,
+	  MonoDevelop.DesignerSupport.CodeBehind/CodeBehindViewContent.cs,
+	  Makefile.am: Remove old CodeBehind grouping mechanism.
+
 2008-06-04  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.DesignerSupport.addin.xml: Bump MD version.

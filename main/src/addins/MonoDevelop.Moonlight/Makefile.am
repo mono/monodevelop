@@ -16,7 +16,6 @@ REFS =  \
 
 FILES =  \
 	gtk-gui/generated.cs \
-	MonoDevelop.Moonlight/MoonlightCodebehindProvider.cs \
 	MonoDevelop.Moonlight/MoonlightProject.cs \
 	MonoDevelop.Moonlight/MoonlightProjectBinding.cs \
 	MonoDevelop.Moonlight/MoonlightProjectConfiguration.cs

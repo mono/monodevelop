@@ -55,12 +55,6 @@
 		<Class class = "MonoDevelop.DesignerSupport.Projects.SolutionItemPropertyProvider"/>
 	</Extension>
 	
-<!--	<Extension path = "/MonoDevelop/Ide/DisplayBindings">
-		<DisplayBinding id    = "CodeBehindView"
-		                supportedformats = "Source Code"
-		                class = "MonoDevelop.DesignerSupport.CodeBehind.CodeBehindDisplayBinding"/>
-	</Extension>-->
-	
 	<Extension path = "/MonoDevelop/ProjectModel/SerializableClasses">
 		<DataType class = "MonoDevelop.DesignerSupport.Toolbox.ToolboxItemToolboxNode" />
 		<DataType class = "MonoDevelop.DesignerSupport.Toolbox.TextToolboxNode" />
@@ -91,12 +85,6 @@
 		<ContextPad id = "MonoDevelop.DesignerSupport.ToolboxPad" />
 		<ContextPad id = "MonoDevelop.DesignerSupport.PropertyPad" />
 		<ContextPad id = "MonoDevelop.DesignerSupport.DocumentOutlinePad" />
-	</Extension>
-	
-	<Extension path = "/MonoDevelop/Ide/Pads/ProjectPad">
-		<PadOption id = "GroupCodeBehind" _label = "Group CodeBehind files" defaultValue = "True" />
-		<NodeBuilder id = "CodeBehindProjectFileExtension" class = "MonoDevelop.DesignerSupport.CodeBehind.CodeBehindProjectFileExtension"/>
-		<NodeBuilder id = "CodeBehindMissingClassBuilder" class = "MonoDevelop.DesignerSupport.CodeBehind.CodeBehindMissingClassBuilder"/>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Core/StockIcons">
