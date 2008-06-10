@@ -69,15 +69,19 @@ FILES =  \
 	MonoDevelop.Projects.Dom/DomTypeProxy.cs \
 	MonoDevelop.Projects.Dom/DomUsing.cs \
 	MonoDevelop.Projects.Dom/Error.cs \
+	MonoDevelop.Projects.Dom/ExpressionContext.cs \
+	MonoDevelop.Projects.Dom/ExpressionResult.cs \
 	MonoDevelop.Projects.Dom/FileEntry.cs \
 	MonoDevelop.Projects.Dom/IAttribute.cs \
 	MonoDevelop.Projects.Dom/ICompilationUnit.cs \
 	MonoDevelop.Projects.Dom/IDomVisitor.cs \
 	MonoDevelop.Projects.Dom/IEvent.cs \
+	MonoDevelop.Projects.Dom/IExpressionFinder.cs \
 	MonoDevelop.Projects.Dom/IField.cs \
 	MonoDevelop.Projects.Dom/IMember.cs \
 	MonoDevelop.Projects.Dom/IMethod.cs \
 	MonoDevelop.Projects.Dom/IParameter.cs \
+	MonoDevelop.Projects.Dom/IParserContext.cs \
 	MonoDevelop.Projects.Dom/IProperty.cs \
 	MonoDevelop.Projects.Dom/IReturnType.cs \
 	MonoDevelop.Projects.Dom/IType.cs \
@@ -86,6 +90,7 @@ FILES =  \
 	MonoDevelop.Projects.Dom/Namespace.cs \
 	MonoDevelop.Projects.Dom/NamespaceEntry.cs \
 	MonoDevelop.Projects.Dom/ParameterModifiers.cs \
+	MonoDevelop.Projects.Dom/ProjectCodeCompletionDatabase.cs \
 	MonoDevelop.Projects.Dom/ReferenceEntry.cs \
 	MonoDevelop.Projects.Dom/SimpleCodeCompletionDatabase.cs \
 	MonoDevelop.Projects.Dom/Tag.cs \

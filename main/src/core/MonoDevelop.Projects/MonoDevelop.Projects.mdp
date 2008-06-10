@@ -334,6 +334,11 @@
     <File name="MonoDevelop.Projects.Dom/DomCecilEvent.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Dom/DomCecilAttribute.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Dom/DomCecilCompilationUnit.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Projects.Dom/ProjectCodeCompletionDatabase.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Projects.Dom/IExpressionFinder.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Projects.Dom/ExpressionResult.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Projects.Dom/ExpressionContext.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Projects.Dom/IParserContext.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="False" refto="monodoc, Version=1.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
