@@ -315,6 +315,19 @@ namespace MonoDevelop.SourceEditor
 			this.entryReplace.Entry.Text = replacePattern;
 		}
 		
+		protected override void OnSizeAllocated (Gdk.Rectangle allocation)
+		{
+			if (hbox3 != null)
+				hbox3.Allocation = allocation;
+		}
+
+		
+		protected override void OnSizeRequested (ref Gtk.Requisition requisition)
+		{
+			if (hbox3 != null)
+				requisition = hbox3.SizeRequest();
+		}
+		
 		internal static bool inReplaceUpdate = false;
 		internal static void FireReplacePatternChanged ()
 		{
