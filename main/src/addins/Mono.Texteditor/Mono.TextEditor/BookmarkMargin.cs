@@ -230,8 +230,8 @@ namespace Mono.TextEditor
 			this.win    = win;
 			this.lineSegment = line;
 			this.line   = lineNumber;
-			this.x      = x;
-			this.y      = y;
+			this.x      = xPos;
+			this.y      = yPos;
 		}
 	}
 	

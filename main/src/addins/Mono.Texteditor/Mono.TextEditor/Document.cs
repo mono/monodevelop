@@ -93,7 +93,19 @@ namespace Mono.TextEditor
 		{
 			buffer   = new GapBuffer ();
 			splitter = new LineSplitter (buffer);
+			splitter.LineSegmentTree.LineChanged += delegate (object sender, LineEventArgs args) {
+				if (LineChanged != null) 
+					LineChanged (this, args);
+			};
+			splitter.LineSegmentTree.LineInserted += delegate (object sender, LineEventArgs args) {
+				if (LineInserted != null) 
+					LineInserted (this, args);
+			};
 		}
+		
+		public event EventHandler<LineEventArgs> LineChanged;
+		public event EventHandler<LineEventArgs> LineInserted;
+		
 		
 		public override void Dispose ()
 		{

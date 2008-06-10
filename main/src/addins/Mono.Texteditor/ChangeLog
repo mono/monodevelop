@@ -1,3 +1,18 @@
+2008-06-10  Mike Krüger <mkrueger@novell.com> 
+
+	* Mono.TextEditor/TextViewMargin.cs, Mono.TextEditor/LineSplitter.cs,
+	  Mono.TextEditor/Document.cs, Mono.TextEditor/LineSegmentTree.cs,
+	  Mono.TextEditor/TextEditor.cs, Mono.TextEditor/BookmarkMargin.cs,
+	  Mono.TextEditor.Highlighting/SyntaxMode.cs,
+	  Mono.TextEditor.Highlighting/SyntaxModeService.cs,
+	  Mono.TextEditor.Highlighting/Rule.cs: Fixed some
+	  warnings/refactored code a bit. Improved the handling of the
+	  longest line.
+
+2008-06-10  Mike Krüger <mkrueger@novell.com> 
+
+	* Mono.TextEditor/TextViewMargin.cs: Fixed tab placement bug.
+
 2008-06-09  Mike Krüger <mkrueger@novell.com> 
 
 	* Mono.TextEditor/TextViewMargin.cs: Fixed horizontal scrollbar bug.

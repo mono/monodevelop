@@ -115,6 +115,22 @@ namespace Mono.TextEditor
 			textEditor.Document.TextReplaced += UpdateBracketHighlighting;
 			Caret.PositionChanged += UpdateBracketHighlighting;
 			base.cursor = new Gdk.Cursor (Gdk.CursorType.Xterm);
+			Document.LineChanged += CheckLongestLine;
+			Document.LineInserted += CheckLongestLine;
+		}
+		
+		internal void Initialize ()
+		{
+			foreach (LineSegment line in Document.Lines) 
+				CheckLongestLine (this, new LineEventArgs (line));
+		}
+		
+		void CheckLongestLine (object sender, LineEventArgs args)
+		{
+			if (textEditor.longestLine == null || args.Line.EditableLength > textEditor.longestLine.EditableLength) {
+				textEditor.longestLine = args.Line;
+				textEditor.SetAdjustments (textEditor.Allocation);
+			}
 		}
 		
 		void CaretPositionChanged (object sender, DocumentLocationEventArgs args) 
@@ -194,7 +210,9 @@ namespace Mono.TextEditor
 			Caret.PositionChanged -= CaretPositionChanged;
 			textEditor.Document.TextReplaced -= UpdateBracketHighlighting;
 			Caret.PositionChanged -= UpdateBracketHighlighting;
-						
+			Document.LineChanged -= CheckLongestLine;
+			Document.LineInserted -= CheckLongestLine;
+		
 			DisposeGCs ();
 			if (layout != null) {
 				layout.Dispose ();
@@ -465,7 +483,7 @@ namespace Mono.TextEditor
 				} else if (ch == '\t') {
 					OutputWordBuilder (win, line, selected, style, ref visibleColumn, ref xPos, y, offset);
 					int newColumn = GetNextTabstop (visibleColumn);
-					int delta = GetNextVisualTab (xPos + (int)this.textEditor.HAdjustment.Value) - xPos - (int)this.textEditor.HAdjustment.Value;
+					int delta = GetNextVisualTab (xPos - this.XOffset + (int)this.textEditor.HAdjustment.Value) - xPos - (int)this.textEditor.HAdjustment.Value + this.XOffset;
 					visibleColumn = newColumn;
 					bool drawText = true;
 					bool drawBg   = true;
@@ -792,7 +810,6 @@ namespace Mono.TextEditor
 			int tabWidth = TextEditorOptions.Options.TabSize * this.charWidth;
 			return (xPos / tabWidth + 1) * tabWidth;
 		}
-				
 		
 		public static int GetNextTabstop (int currentColumn)
 		{
@@ -838,9 +855,9 @@ namespace Mono.TextEditor
 			List<System.Collections.Generic.KeyValuePair<Gdk.Rectangle,FoldSegment>> result = new List<System.Collections.Generic.KeyValuePair<Gdk.Rectangle,FoldSegment>> ();
 			layout.Alignment = Pango.Alignment.Left;
 			LineSegment line = lineNr < Document.LineCount ? Document.GetLine (lineNr) : null;
-			int xStart = XOffset;
+//			int xStart = XOffset;
 			int y      = (int)(Document.LogicalToVisualLine (lineNr) * LineHeight - textEditor.VAdjustment.Value);
-			Gdk.Rectangle lineArea = new Gdk.Rectangle (XOffset, y, textEditor.Allocation.Width - XOffset, LineHeight);
+//			Gdk.Rectangle lineArea = new Gdk.Rectangle (XOffset, y, textEditor.Allocation.Width - XOffset, LineHeight);
 			int width, height;
 			int xPos = (int)(XOffset - textEditor.HAdjustment.Value);
 			
@@ -850,7 +867,7 @@ namespace Mono.TextEditor
 			
 			List<FoldSegment> foldings = Document.GetStartFoldings (line);
 			int offset = line.Offset;
-			int caretOffset = Caret.Offset;
+//			int caretOffset = Caret.Offset;
 			for (int i = 0; i < foldings.Count; ++i) {
 				FoldSegment folding = foldings[i];
 				int foldOffset = folding.StartLine.Offset + folding.Column;
@@ -883,7 +900,7 @@ namespace Mono.TextEditor
 		
 		public override void Draw (Gdk.Drawable win, Gdk.Rectangle area, int lineNr, int x, int y)
 		{
-			int visibleLine = y / this.LineHeight;
+//			int visibleLine = y / this.LineHeight;
 			this.caretX = -1;
 			layout.Alignment = Pango.Alignment.Left;
 			LineSegment line = lineNr < Document.LineCount ? Document.GetLine (lineNr) : null;
@@ -1003,10 +1020,11 @@ namespace Mono.TextEditor
 			TextViewMargin margin;
 			int lineNumber;
 			LineSegment line;
-			int xStart;
-			int y;
-			Gdk.Rectangle lineArea;
-			int width, height;
+//			int xStart;
+//			int y;
+//			Gdk.Rectangle lineArea;
+			int width;
+//			int height;
 			int xPos = 0;
 			int column = 0;
 			int visibleColumn = 0;
@@ -1019,9 +1037,9 @@ namespace Mono.TextEditor
 				this.margin = margin;
 				lineNumber = System.Math.Min (margin.Document.VisualToLogicalLine ((int)(yp + margin.textEditor.VAdjustment.Value) / margin.LineHeight), margin.Document.LineCount - 1);
 				line = lineNumber < margin.Document.LineCount ? margin.Document.GetLine (lineNumber) : null;
-				xStart = margin.XOffset;
-				y      = (int)(margin.Document.LogicalToVisualLine (lineNumber) * margin.LineHeight - margin.textEditor.VAdjustment.Value);
-				lineArea = new Gdk.Rectangle (margin.XOffset, y, margin.textEditor.Allocation.Width - margin.XOffset, margin.LineHeight);
+//				xStart = margin.XOffset;
+//				y      = (int)(margin.Document.LogicalToVisualLine (lineNumber) * margin.LineHeight - margin.textEditor.VAdjustment.Value);
+//				lineArea = new Gdk.Rectangle (margin.XOffset, y, margin.textEditor.Allocation.Width - margin.XOffset, margin.LineHeight);
 			}
 			Chunk[] chunks;
 			void ConsumeChunks ()
@@ -1041,6 +1059,7 @@ namespace Mono.TextEditor
 							measureLayout.FontDescription.Weight = chunk.Style.Bold ? Pango.Weight.Bold : Pango.Weight.Normal;
 							measureLayout.FontDescription.Style =  chunk.Style.Italic ? Pango.Style.Italic: Pango.Style.Normal;
 							measureLayout.SetText (ch.ToString ());
+							int height;
 							measureLayout.GetPixelSize (out delta, out height);
 							visibleColumn++;
 						}
@@ -1065,8 +1084,8 @@ namespace Mono.TextEditor
 				measureLayout.FontDescription = TextEditorOptions.Options.Font;
 				List<FoldSegment> foldings = margin.Document.GetStartFoldings (line);
 				int offset = line.Offset;
-				int caretOffset = margin.Caret.Offset;
-				int index, trailing;
+//				int caretOffset = margin.Caret.Offset;
+//				int index, trailing;
 				visualXPos = xp + (int)margin.textEditor.HAdjustment.Value;
 				for (int i = 0; i < foldings.Count; ++i) {
 					FoldSegment folding = foldings[i];
@@ -1080,6 +1099,7 @@ namespace Mono.TextEditor
 						offset = folding.EndLine.Offset + folding.EndColumn;
 						
 						measureLayout.SetText (folding.Description);
+						int height;
 						measureLayout.GetPixelSize (out width, out height);
 						xPos += width;
 						if (folding.EndLine != line) {

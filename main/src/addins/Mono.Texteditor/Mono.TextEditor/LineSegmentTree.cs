@@ -138,6 +138,7 @@ namespace Mono.TextEditor
 			}
 			result.TreeNode = newNode;
 			UpdateNode (newNode);
+			OnLineChanged (new LineEventArgs (result));
 			return result;
 		}
 		
@@ -159,8 +160,23 @@ namespace Mono.TextEditor
 			Debug.Assert (newLength >= 0);
 			line.Length = newLength;
 			line.DelimiterLength = delimiterLength;
+			OnLineChanged (new LineEventArgs (line));
 			UpdateNode (line.Iter.CurrentNode);
 		}
+		
+		protected virtual void OnLineChanged (LineEventArgs args)
+		{
+			if (LineChanged != null) 
+				LineChanged (this, args);
+		}
+		public event EventHandler<LineEventArgs> LineChanged;
+		
+		protected virtual void OnLineInserted (LineEventArgs args)
+		{
+			if (LineInserted != null) 
+				LineInserted (this, args);
+		}
+		public event EventHandler<LineEventArgs> LineInserted;
 		
 		public static int GetOffsetFromNode (RedBlackTree<TreeNode>.RedBlackTreeNode node)
 		{

@@ -133,7 +133,7 @@ namespace Mono.TextEditor.Highlighting
 		{
 			foreach (Span span in this.spans) {
 				Dictionary<char, List<Span>> tree = spanStarts;
-				List<Span> list = null;
+				//List<Span> list = null;
 				char start = span.Begin[0];
 				if (!tree.ContainsKey (start))
 					tree.Add (start, new List<Span> ());

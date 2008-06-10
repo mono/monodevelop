@@ -156,8 +156,8 @@ namespace Mono.TextEditor.Highlighting
 				} else {
 					spanTree = curRule != null ? curRule.spanStarts : null;
 				}
-			 skip:
-					;
+//			 skip:
+//					;
 			}
 		}
 		static bool IsEqual (Span[] spans1, Span[] spans2)
@@ -252,8 +252,8 @@ namespace Mono.TextEditor.Highlighting
 					} else {
 						spanTree = curRule != null ? curRule.spanStarts : null;
 					}
-				 skip:
-						;
+//				 skip:
+//						;
 				}
 			}
 			
