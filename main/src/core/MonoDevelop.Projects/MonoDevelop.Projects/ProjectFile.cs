@@ -69,6 +69,8 @@ namespace MonoDevelop.Projects
 		string resourceId = String.Empty;
 		
 		Project project;
+		ProjectFile dependsOnFile;
+		List<ProjectFile> dependentChildren;
 		
 		public ProjectFile()
 		{
@@ -101,7 +103,6 @@ namespace MonoDevelop.Projects
 			}
 		}
 						
-		[ReadOnly(true)]
 		public string Name {
 			get {
 				return filename;
@@ -110,6 +111,15 @@ namespace MonoDevelop.Projects
 				Debug.Assert (value != null && value.Length > 0, "name == null || name.Length == 0");
 				string oldName = filename;
 				filename = FileService.GetFullPath (value);
+				
+				if (HasChildren)
+					foreach (ProjectFile child in DependentChildren)
+						//go direct to private member to avoid triggering events and invalidating the 
+						// collection. It hasn't really changed anyway.
+						//NOTE: also that the dependent files are always assumed to be in the same directory
+						//This matches VS behaviour
+						child.dependsOn = Path.GetFileName (FilePath);
+				
 				if (project != null)
 					project.NotifyFileRenamedInProject (new ProjectFileRenamedEventArgs (project, this, oldName));
 			}
@@ -134,7 +144,6 @@ namespace MonoDevelop.Projects
 			get { return project; }
 		}
 		
-		[Browsable(false)]
 		public Subtype Subtype {
 			get {
 				return subtype;
@@ -157,19 +166,70 @@ namespace MonoDevelop.Projects
 			}
 		}
 		
-		[Browsable(false)]
+		#region File grouping
+		
 		public string DependsOn {
 			get {
 				return dependsOn;
 			}
 			set {
 				dependsOn = value;
+				if (dependsOnFile != null) {
+					dependsOnFile.dependentChildren.Remove (this);
+					dependsOnFile = null;
+				}
+				if (value != null && project != null)
+					project.Files.ResolveDependencies (this);
+				
 				if (project != null)
 					project.NotifyFilePropertyChangedInProject (this);
 			}
 		}
 		
-		[Browsable(false)]
+		public ProjectFile DependsOnFile {
+			get { return dependsOnFile; }
+			internal set { dependsOnFile = value; }
+		}
+		
+		public bool HasChildren {
+			get { return dependentChildren != null && dependentChildren.Count > 0; }
+		}
+		
+		public IEnumerable<ProjectFile> DependentChildren {
+			get { return ((IEnumerable<ProjectFile>)dependentChildren) ?? new ProjectFile[0]; }
+		}
+		
+		internal bool ResolveParent ()
+		{
+			if (dependsOnFile == null && (!string.IsNullOrEmpty (dependsOn) && project != null)) {
+				//NOTE also that the dependent files are always assumed to be in the same directory
+				//This matches VS behaviour
+				string parentPath = Path.Combine (Path.GetDirectoryName (FilePath), Path.GetFileName (DependsOn));
+				
+				//don't allow cyclic references
+				if (parentPath == FilePath) {
+					MonoDevelop.Core.LoggingService.LogWarning
+						("Cyclic dependency in project '{0}': file '{1}' depends on '{2}'",
+						 project == null? "(none)" : project.Name, FilePath, parentPath);
+					return true;
+				}
+				
+				dependsOnFile = project.Files.GetFile (parentPath);
+				if (dependsOnFile != null) {
+					if (dependsOnFile.dependentChildren == null)
+						dependsOnFile.dependentChildren = new List<ProjectFile> ();
+					dependsOnFile.dependentChildren.Add (this);
+					return true;
+				} else {
+					return false;
+				}
+			} else {
+				return true;
+			}
+		}
+		
+		#endregion
+		
 		public string Data {
 			get {
 				return data;
@@ -204,6 +264,8 @@ namespace MonoDevelop.Projects
 		public object Clone()
 		{
 			ProjectFile pf = (ProjectFile) MemberwiseClone();
+			pf.dependsOnFile = null;
+			pf.dependentChildren = null;
 			pf.project = null;
 			return pf;
 		}
