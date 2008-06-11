@@ -179,10 +179,7 @@ namespace MonoDeveloper
 
 		public void ConvertToFormat (object obj)
 		{
-			if (obj is DotNetProject) {
-				MonoSolutionItemHandler handler = new MonoSolutionItemHandler ((DotNetProject) obj);
-				ProjectExtensionUtil.InstallHandler (handler, (DotNetProject) obj);
-			}
+			// Nothing can be converted to this format.
 		}
 		
 		public bool SupportsMixedFormats {
