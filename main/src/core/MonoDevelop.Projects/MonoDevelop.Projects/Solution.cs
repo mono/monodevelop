@@ -460,11 +460,8 @@ namespace MonoDevelop.Projects
 			}
 			set {
 				base.FileFormat = value;
-				foreach (SolutionItem eitem in GetAllSolutionItems<SolutionItem> ()) {
-					value.Format.ConvertToFormat (eitem);
-					if (eitem is SolutionEntityItem)
-						((SolutionEntityItem)eitem).InstallFormat (value);
-				}
+				foreach (SolutionItem item in GetAllSolutionItems<SolutionItem> ())
+					ConvertToSolutionFormat (item);
 			}
 		}
 		
@@ -501,18 +498,24 @@ namespace MonoDevelop.Projects
 		
 		void SetupNewItem (SolutionItem item)
 		{
-			SolutionEntityItem eitem = item as SolutionEntityItem;
-			if (!FileFormat.Format.SupportsMixedFormats || eitem == null || !eitem.IsSaved) {
-				this.FileFormat.Format.ConvertToFormat (item);
-				if (eitem != null)
-					eitem.InstallFormat (this.FileFormat);
-			}
+			ConvertToSolutionFormat (item);
 			
+			SolutionEntityItem eitem = item as SolutionEntityItem;
 			if (eitem != null) {
 				eitem.NeedsReload = false;
 				// Register the new entry in every solution configuration
 				foreach (SolutionConfiguration conf in Configurations)
 					conf.AddItem (eitem);
+			}
+		}
+		
+		void ConvertToSolutionFormat (SolutionItem item)
+		{
+			SolutionEntityItem eitem = item as SolutionEntityItem;
+			if (!FileFormat.Format.SupportsMixedFormats || eitem == null || !eitem.IsSaved) {
+				this.FileFormat.Format.ConvertToFormat (item);
+				if (eitem != null)
+					eitem.InstallFormat (this.FileFormat);
 			}
 		}
 		
