@@ -1,5 +1,9 @@
 2008-06-11  Mike Krüger <mkrueger@novell.com> 
 
+	* Mono.TextEditor/RedBlackTree.cs: Fixed red black tree.
+
+2008-06-11  Mike Krüger <mkrueger@novell.com> 
+
 	* Mono.TextEditor/RedBlackTree.cs: fixed 'Bug 381106 - Document view
 	  state can become scrambled'.
 

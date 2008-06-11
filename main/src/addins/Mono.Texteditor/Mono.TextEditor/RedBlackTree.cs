@@ -295,15 +295,13 @@ namespace Mono.TextEditor
 			sibling.color = parent.color;
 			parent.color = black;
 			if (node == parent.left) {
-				if (sibling.right != null) {
+				if (sibling.right != null) 
 					sibling.right.color = black;
-					RotateLeft (parent);
-				}
+				RotateLeft (parent);
 			} else {
-				if (sibling.left != null) {
+				if (sibling.left != null) 
 					sibling.left.color = black;
-					RotateRight (parent);
-				}
+				RotateRight (parent);
 			}
 		}
 		
