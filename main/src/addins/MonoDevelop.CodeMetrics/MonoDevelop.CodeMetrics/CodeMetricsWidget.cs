@@ -46,7 +46,8 @@ namespace MonoDevelop.CodeMetrics
 		List<string> files = new List<string> ();
 		TreeStore store = new TreeStore (typeof (string), // file name
 		                                 typeof (string), // line count (real lines)
-		                                 typeof (string)  // license
+		                                 typeof (string),  // license
+		                                 typeof (int) // line count number
 		                                 );
 		
 		public CodeMetricsWidget()
@@ -62,7 +63,7 @@ namespace MonoDevelop.CodeMetrics
 			
 			col = new TreeViewColumn (GettextCatalog.GetString ("Lines (real)"), new CellRendererText (), "text", 1);
 			col.SortIndicator = true;
-			col.SortColumnId = 1;
+			col.SortColumnId = 3;
 			treeviewMetrics.AppendColumn (col);
 			
 			col = new TreeViewColumn (GettextCatalog.GetString ("License"), new CellRendererText (), "text", 2);
@@ -223,7 +224,8 @@ namespace MonoDevelop.CodeMetrics
 						MonoDevelop.Ide.Gui.IdeApp.Workbench.StatusBar.SetProgressFraction (i / (double)widget.files.Count);
 						widget.store.AppendValues (file,
 						                           doc.LineCount + "(" + realLines + ")",
-						                           license);
+						                           license,
+						                           doc.LineCount);
 					});
 				}
 				DispatchService.GuiSyncDispatch (delegate {

@@ -1,3 +1,8 @@
+2008-06-11  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.CodeMetrics/CodeMetricsWidget.cs: fixed 'Bug 388247 -
+	  Code Metrics Quick Fix'.
+
 2008-06-04  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.CodeMetrics.addin.xml: Bump MD version.
