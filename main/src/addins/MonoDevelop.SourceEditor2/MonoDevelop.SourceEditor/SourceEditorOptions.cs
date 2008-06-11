@@ -339,7 +339,7 @@ namespace MonoDevelop.SourceEditor
 		
 		public override string FontName {
 			set {
-				string newName = !String.IsNullOrEmpty (value) ? value : "Mono 10";
+				string newName = !String.IsNullOrEmpty (value) ? value : DEFAULT_FONT;
 				PropertyService.Set ("FontName", newName);
 				base.FontName = newName;
 			}
@@ -359,7 +359,10 @@ namespace MonoDevelop.SourceEditor
 				switch (EditorFontType) {
 				case EditorFontType.DefaultMonospace:
 					try {
-						result =  FontDescription.FromString (IdeApp.Services.PlatformService.DefaultMonospaceFont);
+						string font = IdeApp.Services.PlatformService.DefaultMonospaceFont;
+						if (String.IsNullOrEmpty (font))
+							font = DEFAULT_FONT;
+						result =  FontDescription.FromString (font);
 					} catch (Exception ex) {
 						LoggingService.LogWarning ("Could not load platform's default monospace font.", ex);
 						goto default;
@@ -371,6 +374,8 @@ namespace MonoDevelop.SourceEditor
 					result = FontDescription.FromString (FontName);
 					break;
 				}
+				if (result == null || String.IsNullOrEmpty (result.Family))
+					result = FontDescription.FromString (DEFAULT_FONT);
 				if (result != null)
 					result.Size = (int)(result.Size * Zoom);
 				return result;
