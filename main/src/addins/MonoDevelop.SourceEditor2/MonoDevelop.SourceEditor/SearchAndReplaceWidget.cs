@@ -71,7 +71,7 @@ namespace MonoDevelop.SourceEditor
 				widget.TextEditor.SearchPattern = SearchWidget.searchPattern;
 			} else if (widget.TextEditor.SearchPattern != SearchWidget.searchPattern) {
 				SearchWidget.searchPattern = widget.TextEditor.SearchPattern;
-				SearchWidget.FireSearchPatternChanged ();
+				//SearchWidget.FireSearchPatternChanged ();
 			}
 			this.entrySearch.Entry.Text = widget.TextEditor.SearchPattern;
 			this.entrySearch.Model = searchHistory;
@@ -97,18 +97,18 @@ namespace MonoDevelop.SourceEditor
 //			this.comboboxSearchAs.AppendText (GettextCatalog.GetString ("Text"));
 //			this.comboboxSearchAs.AppendText (GettextCatalog.GetString ("Regular Expressions"));
 //			this.comboboxSearchAs.Active = 0;
-			ReplacePatternChanged += UpdateReplacePattern;
+			//ReplacePatternChanged += UpdateReplacePattern;
 			#region Cut & Paste from SearchWidget
-			SearchWidget.SearchPatternChanged += UpdateSearchPattern;
+			//SearchWidget.SearchPatternChanged += UpdateSearchPattern;
 			this.FocusChildSet += delegate {
 				StoreWidgetState ();
 			};
 			this.entrySearch.Changed += delegate {
 				widget.SetSearchPattern (SearchPattern);
-				if (!SearchWidget.inSearchUpdate) {
+//				if (!SearchWidget.inSearchUpdate) {
 					SearchWidget.searchPattern = SearchPattern;
-					SearchWidget.FireSearchPatternChanged ();
-				}
+//					SearchWidget.FireSearchPatternChanged ();
+//				}
 				UpdateSearchEntry ();
 			};
 			this.entrySearch.Entry.Activated += delegate {
@@ -196,7 +196,7 @@ namespace MonoDevelop.SourceEditor
 		
 		protected override void OnDestroyed ()
 		{
-			SearchWidget.SearchPatternChanged -= UpdateSearchPattern;
+//			SearchWidget.SearchPatternChanged -= UpdateSearchPattern;
 			ReplacePatternChanged -= UpdateReplacePattern;
 			
 			if (searchHistory != null) {

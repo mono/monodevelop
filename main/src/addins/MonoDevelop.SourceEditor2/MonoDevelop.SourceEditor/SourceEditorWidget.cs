@@ -1068,7 +1068,7 @@ namespace MonoDevelop.SourceEditor
 			if (!String.IsNullOrEmpty (selectedText)) {
 				this.SetSearchPattern (selectedText);
 				SearchWidget.searchPattern = selectedText;
-				SearchWidget.FireSearchPatternChanged ();
+//				SearchWidget.FireSearchPatternChanged ();
 			}
 		}
 		
@@ -1223,17 +1223,23 @@ namespace MonoDevelop.SourceEditor
 			this.textEditor.IsWholeWordOnly = SearchWidget.IsWholeWordOnly;
 			
 			string error;
-			bool valid = this.textEditor.SearchEngine.IsValidPattern (SearchWidget.searchPattern, out error);
+			string pattern = SearchWidget.searchPattern;
+			if (searchWidget != null)
+				pattern = searchWidget.SearchPattern;
+			if (searchAndReplaceWidget != null)
+				pattern = searchAndReplaceWidget.SearchPattern;
+			
+			bool valid = this.textEditor.SearchEngine.IsValidPattern (pattern, out error);
 			
 			if (valid) {
-				this.textEditor.SearchPattern = SearchWidget.searchPattern;
+				this.textEditor.SearchPattern = pattern;
 			}
 			this.textEditor.QueueDraw ();
 			if (this.splittedTextEditor != null) {
 				this.splittedTextEditor.IsCaseSensitive = SearchWidget.IsCaseSensitive;
 				this.splittedTextEditor.IsWholeWordOnly = SearchWidget.IsWholeWordOnly;
 				if (valid) {
-					this.splittedTextEditor.SearchPattern = SearchWidget.searchPattern;
+					this.splittedTextEditor.SearchPattern = pattern;
 				}
 				this.splittedTextEditor.QueueDraw ();
 			}

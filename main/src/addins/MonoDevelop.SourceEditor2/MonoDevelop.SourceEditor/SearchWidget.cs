@@ -115,7 +115,7 @@ namespace MonoDevelop.SourceEditor
 				widget.TextEditor.SearchPattern = SearchWidget.searchPattern;
 			} else if (widget.TextEditor.SearchPattern != SearchWidget.searchPattern) {
 				searchPattern = widget.TextEditor.SearchPattern;
-				FireSearchPatternChanged ();
+//				FireSearchPatternChanged ();
 			}
 			this.entrySearch.Entry.Text = widget.TextEditor.SearchPattern;
 			this.entrySearch.Model = searchHistory;
@@ -129,7 +129,7 @@ namespace MonoDevelop.SourceEditor
 			}
 			
 			// if you change something here don"t forget the SearchAndReplaceWidget
-			SearchWidget.SearchPatternChanged += UpdateSearchPattern;
+			//SearchWidget.SearchPatternChanged += UpdateSearchPattern;
 			this.FocusChildSet += delegate {
 				StoreWidgetState ();
 			};
@@ -142,10 +142,10 @@ namespace MonoDevelop.SourceEditor
 			
 			this.entrySearch.Changed += delegate {
 				widget.SetSearchPattern (SearchPattern);
-				if (!SearchWidget.inSearchUpdate) {
+//				if (!SearchWidget.inSearchUpdate) {
 					SearchWidget.searchPattern = SearchPattern;
-					FireSearchPatternChanged ();
-				}
+//					FireSearchPatternChanged ();
+//				}
 				UpdateSearchEntry ();
 			};
 			this.entrySearch.Entry.Activated += delegate {
@@ -234,7 +234,7 @@ namespace MonoDevelop.SourceEditor
 		
 		protected override void OnDestroyed ()
 		{
-			SearchPatternChanged -= UpdateSearchPattern;
+//			SearchPatternChanged -= UpdateSearchPattern;
 			if (searchHistory != null) {
 				searchHistory.Dispose ();
 				searchHistory = null;
@@ -314,16 +314,16 @@ namespace MonoDevelop.SourceEditor
 			this.entrySearch.GrabFocus ();
 		}
 		
-		internal static bool inSearchUpdate = false;
-		internal static void FireSearchPatternChanged ()
-		{
-			inSearchUpdate = true;
-			if (SearchPatternChanged != null)
-				SearchPatternChanged (null, EventArgs.Empty);
-			inSearchUpdate = false;
-		}
-		
-		internal static event EventHandler SearchPatternChanged;
+//		internal static bool inSearchUpdate = false;
+//		internal static void FireSearchPatternChanged ()
+//		{
+//			inSearchUpdate = true;
+//			if (SearchPatternChanged != null)
+//				SearchPatternChanged (null, EventArgs.Empty);
+//			inSearchUpdate = false;
+//		}
+//		
+//		internal static event EventHandler SearchPatternChanged;
 		
 	}
 }

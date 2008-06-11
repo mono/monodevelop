@@ -1,3 +1,10 @@
+2008-06-11  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.SourceEditor/SourceEditorWidget.cs,
+	  MonoDevelop.SourceEditor/SearchAndReplaceWidget.cs,
+	  MonoDevelop.SourceEditor/SearchWidget.cs: fixed 'Bug 382403 - Find
+	  moves current position in all files'.
+
 2008-06-10  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.SourceEditor/SearchAndReplaceWidget.cs: Another
