@@ -1,5 +1,10 @@
 2008-06-11  Mike Krüger <mkrueger@novell.com> 
 
+	* Mono.TextEditor/RedBlackTree.cs: fixed 'Bug 381106 - Document view
+	  state can become scrambled'.
+
+2008-06-11  Mike Krüger <mkrueger@novell.com> 
+
 	* Mono.TextEditor.Highlighting/SemanticRule.cs: fixed 'Bug 393118 - URL
 	  is not underlined completely and indeed redirects to only the
 	  domain'

@@ -236,14 +236,16 @@ namespace Mono.TextEditor
 			RedBlackTreeNode sibling = node.Sibling;
 			if (sibling == null)
 				return;
+			
 			// case 2
 			if (sibling.color == red) {
 				parent.color  = red;
 				sibling.color = black;
-				if (node == parent.left)
-				   RotateLeft (parent);
-				else
+				if (node == parent.left) {
+					RotateLeft (parent);
+				} else {
 					RotateRight (parent);
+				}
 				sibling = node.Sibling;
 			}
 			
@@ -272,29 +274,37 @@ namespace Mono.TextEditor
 			    sibling.color == black &&
 			    GetColorSafe (sibling.left) == red &&
 			    GetColorSafe (sibling.right) == black) {
-			    sibling.color = red;
-			    sibling.left.color = black;
-			    RotateRight (sibling);
+				sibling.color = red;
+				if (sibling.left != null)
+					sibling.left.color = black;
+				RotateRight (sibling);
 			} else if (node == parent.right &&
 			           sibling.color == black &&
 			           GetColorSafe (sibling.right) == red &&
 			           GetColorSafe (sibling.left) == black) {
-			    sibling.color = red;
-			    sibling.right.color = black;
-			    RotateLeft (sibling);
+				sibling.color = red;
+				if (sibling.right != null)
+					sibling.right.color = black;
+				RotateLeft (sibling);
 			}
 			
 			// case 6
-			sibling = node.Sibling;			
+			sibling = node.Sibling;
+			if (sibling == null)
+				return;
 			sibling.color = parent.color;
 			parent.color = black;
 			if (node == parent.left) {
-			    sibling.right.color = black;
-			    RotateLeft (parent);
+				if (sibling.right != null) {
+					sibling.right.color = black;
+					RotateLeft (parent);
+				}
 			} else {
-			    sibling.left.color = black;
-			    RotateRight (parent);
-			}			
+				if (sibling.left != null) {
+					sibling.left.color = black;
+					RotateRight (parent);
+				}
+			}
 		}
 		
 #region ICollection<T> implementation
