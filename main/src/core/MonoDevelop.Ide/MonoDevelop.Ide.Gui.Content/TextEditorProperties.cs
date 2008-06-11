@@ -109,10 +109,13 @@ namespace MonoDevelop.Ide.Gui.Content {
 		
 		public static IndentStyle IndentStyle {
 			get {
-				return (IndentStyle)properties.Get ("IndentStyle", IndentStyle.Smart);
-			}
-			set {
-				properties.Set ("IndentStyle", value);
+				switch (PropertyService.Get ("IndentStyle", "Smart")) {
+				case "Smart":
+					return IndentStyle.Smart;
+				case "Auto":
+					return IndentStyle.Auto;
+				}
+				return IndentStyle.None;
 			}
 		}
 		
