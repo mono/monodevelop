@@ -32,7 +32,7 @@ namespace Mono.TextEditor
 {
 	public class TextEditorOptions
 	{
-		const string DEFAULT_FONT = "Mono 10";
+		public const string DEFAULT_FONT = "Mono 10";
 		static TextEditorOptions options = new TextEditorOptions ();
 		
 		public static TextEditorOptions Options {
