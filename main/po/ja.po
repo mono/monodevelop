@@ -5127,7 +5127,7 @@ msgstr "Webサーバ {0} に接続できませんでした"
 
 #: ../src/addins/AspNetAddIn/MonoDevelop.AspNet.Parser/SuggestedHandlerCompletionData.cs:70
 msgid "A suggested event handler method name.\n"
-msgstr "\n"
+msgstr ""
 
 #: ../src/addins/AspNetAddIn/MonoDevelop.AspNet.Parser/SuggestedHandlerCompletionData.cs:71
 msgid ""
@@ -6420,9 +6420,7 @@ msgstr[1] "未訳メッセージ {0}件"
 
 #: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.POEditorWidget.cs:121
 msgid "_Filter:"
-msgstr ""
-"\n"
-"フィルタ (_F)"
+msgstr "フィルタ (_F):"
 
 #: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.POEditorWidget.cs:228
 msgid "_Options"

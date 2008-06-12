@@ -1,5 +1,9 @@
 2008-06-12  Atsushi Enomoto  <atsushi@ximian.com>
 
+	* ja.po : fixed invalid strings (likely generated incorrectly).
+
+2008-06-12  Atsushi Enomoto  <atsushi@ximian.com>
+
 	* messages.po : updated to the latest build.
 	* ja.po : in progress updates.
 
