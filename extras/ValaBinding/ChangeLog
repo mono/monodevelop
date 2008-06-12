@@ -1,5 +1,11 @@
 2008-06-12  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* configure.in, Makefile.am: Fix makefile so that it does not directly
+	  depend on MD core and it can always be built standalone.
+	* ValaBinding.mdp: Enable makefile synchronization.
+
+2008-06-12  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* ValaBinding.mdp: Fix gtk-sharp dependency versions.
 
 2008-06-09  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com>

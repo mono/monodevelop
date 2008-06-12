@@ -1,18 +1,12 @@
-ADDIN_BUILD = @MD_BUILDDIR@/AddIns/BackendBindings
+ADDIN_BUILD = $(top_builddir)/build
 ASSEMBLY = $(ADDIN_BUILD)/MonoDevelop.ValaBinding.dll
 
 REFS =  \
 	-pkg:glib-sharp-2.0 \
 	-pkg:gtk-sharp-2.0 \
 	-pkg:mono-addins \
-	-r:@MD_ADDIN_DIR@/MonoDevelop.Deployment/MonoDevelop.Deployment.dll \
-	-r:@MD_ADDIN_DIR@/MonoDevelop.Deployment/MonoDevelop.Deployment.Linux.dll \
-	-r:@MD_ASSEMBLY_DIR@/MonoDevelop.Components.dll \
-	-r:@MD_ASSEMBLY_DIR@/MonoDevelop.Core.dll \
-	-r:@MD_ASSEMBLY_DIR@/MonoDevelop.Core.Gui.dll \
-	-r:@MD_ASSEMBLY_DIR@/MonoDevelop.Ide.dll \
-	-r:@MD_ASSEMBLY_DIR@/MonoDevelop.Projects.dll \
-	-r:@MD_ASSEMBLY_DIR@/MonoDevelop.Projects.Gui.dll \
+	-pkg:monodevelop \
+	-pkg:monodevelop-core-addins \
 	-r:Mono.Posix \
 	-r:System \
 	-r:System.Xml
@@ -25,44 +19,19 @@ FILES =  \
 	gtk-gui/MonoDevelop.ValaBinding.AddLibraryDialog.cs \
 	gtk-gui/MonoDevelop.ValaBinding.AddPathDialog.cs \
 	gtk-gui/MonoDevelop.ValaBinding.CodeGenerationPanel.cs \
+	gtk-gui/MonoDevelop.ValaBinding.EditPackagesDialog.cs \
 	gtk-gui/MonoDevelop.ValaBinding.GeneralOptionsPanel.cs \
 	gtk-gui/MonoDevelop.ValaBinding.OutputOptionsPanel.cs \
-	gtk-gui/MonoDevelop.ValaBinding.EditPackagesDialog.cs \
 	gtk-gui/MonoDevelop.ValaBinding.PackageDetails.cs \
 	Gui/AddLibraryDialog.cs \
 	Gui/AddPathDialog.cs \
 	Gui/CodeGenerationPanel.cs \
 	Gui/DataProvider.cs \
+	Gui/EditPackagesDialog.cs \
 	Gui/GeneralOptionsPanel.cs \
 	Gui/OutputOptionsPanel.cs \
-	Gui/ValaTextEditorExtension.cs \
-	Gui/EditPackagesDialog.cs \
 	Gui/PackageDetails.cs \
-	Project/ProjectPackage.cs \
-	Project/ProjectPackageCollection.cs \
-	Project/ProjectPackageEventArgs.cs \
-	Project/ValaCompilationParameters.cs \
-	Project/ValaProject.cs \
-	Project/ValaProjectBinding.cs \
-	Project/ValaProjectConfiguration.cs \
-	Project/ValaProjectServiceExtension.cs \
-	Parser/Class.cs \
-	Parser/Enumeration.cs \
-	Parser/Enumerator.cs \
-	Parser/Function.cs \
-	Parser/LanguageItem.cs \
-	Parser/Local.cs \
-	Parser/Macro.cs \
-	Parser/Member.cs \
-	Parser/Namespace.cs \
-	Parser/ProjectInformation.cs \
-	Parser/ProjectInformationManager.cs \
-	Parser/Structure.cs \
-	Parser/Tag.cs \
-	Parser/TagDatabaseManager.cs \
-	Parser/Typedef.cs \
-	Parser/Union.cs \
-	Parser/Variable.cs \
+	Gui/ValaTextEditorExtension.cs \
 	Navigation/ClassNodeBuilder.cs \
 	Navigation/ClassPadEventArgs.cs \
 	Navigation/EnumerationNodeBuilder.cs \
@@ -80,11 +49,36 @@ FILES =  \
 	Navigation/TypedefNodeBuilder.cs \
 	Navigation/UnionNodeBuilder.cs \
 	Navigation/VariableNodeBuilder.cs \
-	ProjectPad/ProjectReferencesExtension.cs \
-	ProjectPad/ProjectResourcesExtension.cs \
+	Parser/Class.cs \
+	Parser/Enumeration.cs \
+	Parser/Enumerator.cs \
+	Parser/Function.cs \
+	Parser/LanguageItem.cs \
+	Parser/Local.cs \
+	Parser/Macro.cs \
+	Parser/Member.cs \
+	Parser/Namespace.cs \
+	Parser/ProjectInformation.cs \
+	Parser/ProjectInformationManager.cs \
+	Parser/Structure.cs \
+	Parser/Tag.cs \
+	Parser/TagDatabaseManager.cs \
+	Parser/Typedef.cs \
+	Parser/Union.cs \
+	Parser/Variable.cs \
+	Project/ProjectPackage.cs \
+	Project/ProjectPackageCollection.cs \
+	Project/ProjectPackageEventArgs.cs \
+	Project/ValaCompilationParameters.cs \
+	Project/ValaProject.cs \
+	Project/ValaProjectBinding.cs \
+	Project/ValaProjectConfiguration.cs \
+	Project/ValaProjectServiceExtension.cs \
+	ProjectPad/ProjectNodeExtension.cs \
 	ProjectPad/ProjectPackageNodeBuilder.cs \
 	ProjectPad/ProjectPackagesFolderNodeBuilder.cs \
-	ProjectPad/ProjectNodeExtension.cs \
+	ProjectPad/ProjectReferencesExtension.cs \
+	ProjectPad/ProjectResourcesExtension.cs \
 	ValaLanguageBinding.cs
 
 RES =  \
@@ -105,21 +99,17 @@ RES =  \
 	templates/SharedLibraryValaProject.xpt.xml \
 	ValaBinding.addin.xml
 
-if ENABLE_VALA
 all: $(ASSEMBLY)
-else
-all:
-endif
+
+LOCAL_PKGCONFIG=PKG_CONFIG_PATH=../../local-config:$$PKG_CONFIG_PATH
 
 $(ASSEMBLY): $(build_sources) $(build_resources)
 	mkdir -p $(ADDIN_BUILD)
-	$(CSC) $(CSC_FLAGS) -debug -out:$@ -target:library $(REFS) \
+	$(LOCAL_PKGCONFIG) $(CSC) $(CSC_FLAGS) -debug -out:$@ -target:library $(REFS) \
 		$(build_resources:%=/resource:%) $(build_sources)
 
-if ENABLE_VALA
 valabindinglibdir = $(prefix)/lib/monodevelop/AddIns/BackendBindings
 valabindinglib_DATA = $(ASSEMBLY)
-endif
 
 CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb
 
