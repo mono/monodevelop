@@ -5,17 +5,17 @@
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: MonoDevelop 0.3\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-06-12 17:04:39+0900\n"
-"PO-Revision-Date: 2008-06-12 17:01:37+0900\n"
-"Last-Translator: Atsushi Eno <atsushi@ximian.com>\n"
-"Language-Team: Atsushi Enomoto <atsushi@ximian.com>\n"
-"MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: 2008-06-12 18:42:11+0900\n"
+"Language-Team: Atsushi Enomoto <atsushi@ximian.com>\n"
+"Project-Id-Version: MonoDevelop 0.3\n"
+"MIME-Version: 1.0\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 "X-Generator: MonoDevelop Gettext addin\n"
+"POT-Creation-Date: 2008-06-12 17:04:39+0900\n"
+"Last-Translator: Atsushi Eno <atsushi@ximian.com>\n"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Core/ServiceManager.cs:120
 msgid "Initializing service: "
@@ -591,8 +591,10 @@ msgid "Done."
 msgstr "完了"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/CommonAboutDialog.cs:122
-msgid "<b>Ported and developed by:</b>\n"
-msgstr "<b>移植および開発:</b>\n"
+msgid ""
+"<b>Ported and developed by:</b>\n"
+msgstr ""
+"<b>移植および開発:</b>\n"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/CommonAboutDialog.cs:132
 msgid "translator-credits"
@@ -904,8 +906,7 @@ msgstr "ドキュメンテーション"
 msgid ""
 "The help viewer could not be loaded, because an embedded web browser is not "
 "available."
-msgstr ""
-"組み込みWebブラウザが利用できないため、ヘルプ ビューアが読み込めませんでした"
+msgstr "組み込みWebブラウザが利用できないため、ヘルプ ビューアが読み込めませんでした"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/HelpViewer.cs:108
 msgid "{0}Error: the help topic '{2}' could not be loaded.{1}"
@@ -955,9 +956,7 @@ msgstr "本当にフォルダ {0} を フォルダ {1} に移動しますか?"
 msgid ""
 "Do you really want to copy the folder '{0}' to the root folder of project "
 "'{1}'?"
-msgstr ""
-"本当にフォルダ '{0}' をこのプロジェクトのルート フォルダ '{1}' にコピーします"
-"か?"
+msgstr "本当にフォルダ '{0}' をこのプロジェクトのルート フォルダ '{1}' にコピーしますか?"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:187
 msgid "Do you really want to copy the folder '{0}' to the folder '{1}'?"
@@ -1015,9 +1014,7 @@ msgstr "ファイルを追加"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/SystemFileNodeBuilder.cs:110
 msgid ""
 "File or directory name is already in use. Please choose a different one."
-msgstr ""
-"その名前のファイルまたはディレクトリは既に使用されています。別の名前を指定し"
-"て下さい。"
+msgstr "その名前のファイルまたはディレクトリは既に使用されています。別の名前を指定して下さい。"
 
 #  new file name with wildcard (*, ?) characters in it
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:152
@@ -1026,9 +1023,7 @@ msgstr ""
 msgid ""
 "The file name you have chosen contains illegal characters. Please choose a "
 "different file name."
-msgstr ""
-"指定したファイル名には無効な文字が含まれています。別のファイル名を選択して下"
-"さい。"
+msgstr "指定したファイル名には無効な文字が含まれています。別のファイル名を選択して下さい。"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:193
 msgid "_Remove from Project"
@@ -1036,10 +1031,9 @@ msgstr "プロジェクトから削除 (_R)"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:197
 msgid ""
-"Are you sure you want to remove the file {0} and its CodeBehind children "
-"from project {1}?"
-msgstr ""
-"ファイル {0} およびそのコードビハインドをプロジェクト {1} から削除しますか?"
+"Are you sure you want to remove the file {0} and its CodeBehind children from "
+"project {1}?"
+msgstr "ファイル {0} およびそのコードビハインドをプロジェクト {1} から削除しますか?"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:200
 msgid "Delete physically removes the files from disc."
@@ -1262,9 +1256,7 @@ msgstr "ファイル {0} が既に存在します。上書きしますか?"
 msgid ""
 "You need a newer monodoc to use it externally from monodevelop. Using the "
 "integrated help viewer now."
-msgstr ""
-"monodevelop外部で使用するには新しいmonodocが必要となります。今回は統合ヘルプ"
-"ビューアを使用します。"
+msgstr "monodevelop外部で使用するには新しいmonodocが必要となります。今回は統合ヘルプビューアを使用します。"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Ide.cs:126
 msgid "Loading Workbench"
@@ -1366,9 +1358,7 @@ msgstr "リンク (_L)"
 msgid ""
 "An error occurred while attempt to move/copy that file. Please check your "
 "permissions."
-msgstr ""
-"ファイルの移動またはコピー中にエラーが発生しました。ファイルの許可属性を"
-"チェックして下さい。"
+msgstr "ファイルの移動またはコピー中にエラーが発生しました。ファイルの許可属性をチェックして下さい。"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:925
 msgid "The file '{0}' already exists. Do you want to replace it?"
@@ -1474,9 +1464,7 @@ msgstr "MonoDevelopの起動に失敗しました。ローカルホスト名が�
 msgid ""
 "Your network may be misconfigured. Make sure the hostname of your system is "
 "added to the /etc/hosts file."
-msgstr ""
-"ネットワークの設定が不正です。システムのホスト名が/etc/hosts ファイルに追加さ"
-"れているか、確認してください。"
+msgstr "ネットワークの設定が不正です。システムのホスト名が/etc/hosts ファイルに追加されているか、確認してください。"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/IdeStartup.cs:176
 msgid "MonoDevelop failed to start. The following error has been reported: "
@@ -1486,8 +1474,7 @@ msgstr "MonoDevelopの起動に失敗しました。以下のエラーが報告�
 msgid ""
 "Some packages installed in your system are not compatible with MonoDevelop:\n"
 msgstr ""
-"このシステムにインストールされているパッケージのいくつかはMonoDevelopと互換性"
-"がありません:\n"
+"このシステムにインストールされているパッケージのいくつかはMonoDevelopと互換性がありません:\n"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/IdeStartup.cs:327
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/IdeStartup.cs:329
@@ -1496,8 +1483,7 @@ msgstr "必要なバージョン: {0}"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/IdeStartup.cs:331
 msgid "You need to upgrade the previous packages to start using MonoDevelop."
-msgstr ""
-"MonoDevelopを起動するには以上のパッケージをアップグレードする必要があります"
+msgstr "MonoDevelopを起動するには以上のパッケージをアップグレードする必要があります"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/AddinUpdateHandler.cs:109
 msgid "New add-in updates are available:"
@@ -1873,10 +1859,8 @@ msgid ""
 "After creating the project those features can be enabled or disabled in the "
 "Project Options dialog, or by adding new projects to the solution.</small>"
 msgstr ""
-"<small>このリストでは、新しいプロジェクトで有効に出来る機能を表示します。これ"
-"らの機能は、プロジェクトを作成した後でプロジェクト オプション ダイアログか"
-"ら、あるいはソリューションに新しいプロジェクトを追加する時に、有効または無効"
-"に出来ます。</small>"
+"<small>このリストでは、新しいプロジェクトで有効に出来る機能を表示します。これらの機能は、プロジェクトを作成した後でプロジェクト オプション "
+"ダイアログから、あるいはソリューションに新しいプロジェクトを追加する時に、有効または無効に出来ます。</small>"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.FeatureSelectorDialog.cs:29
 msgid "New Project Features"
@@ -2211,7 +2195,7 @@ msgstr "単語一致のみ"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.LoadSavePanelWidget.cs:74
 msgid "Project file format to use when creating new projects:"
-msgstr ""
+msgstr "新しいプロジェクトを作成する際のプロジェクトファイルフォーマット"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.LoadSavePanelWidget.cs:102
 msgid "Default _Solution location"
@@ -2263,8 +2247,7 @@ msgstr "優先度:"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.TasksPanelWidget.cs:198
 msgid "<i><b>Note:</b> Only Letters, Digits and Underscore are allowed.</i>"
-msgstr ""
-"<i><b>注意:</b> レター文字、数字、アンダースコア (_)のみ使用可能です</i>"
+msgstr "<i><b>注意:</b> レター文字、数字、アンダースコア (_)のみ使用可能です</i>"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.TasksPanelWidget.cs:301
 msgid "<b>Task Priorities Foreground Colors</b>"
@@ -2326,9 +2309,7 @@ msgstr "以下のアドインが実行できませんでした:"
 msgid ""
 "You can start MonoDevelop without these add-ins, but the functionality they "
 "provide will be missing. Do you wish to continue?"
-msgstr ""
-"これらのアドインが無くてもMonoDevelopは起動しますが、これらが提供する機能は利"
-"用できません。続行しますか?"
+msgstr "これらのアドインが無くてもMonoDevelopは起動しますが、これらが提供する機能は利用できません。続行しますか?"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.AddinLoadErrorDialog.cs:114
 msgid "MonoDevelop cannot start because a fatal error has been detected."
@@ -2336,11 +2317,9 @@ msgstr "MonoDevelopの起動に失敗しました。致命的なエラーが報�
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.AddinLoadErrorDialog.cs:125
 msgid ""
-"MonoDevelop can run without these add-ins, but the functionality they "
-"provide will be missing."
-msgstr ""
-"MonoDevelopはこれらのアドインが無くても起動できますが、これらが提供する機能は"
-"利用できません。"
+"MonoDevelop can run without these add-ins, but the functionality they provide "
+"will be missing."
+msgstr "MonoDevelopはこれらのアドインが無くても起動できますが、これらが提供する機能は利用できません。"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.SelectReferenceDialog.cs:102
 msgid "Selected references:"
@@ -2562,7 +2541,7 @@ msgstr "大"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.IDEStyleOptionsPanelWidget.cs:93
 msgid "_Enable document switch dialog"
-msgstr ""
+msgstr "ドキュメント切り替えダイアログを有効化 (_E)"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.IDEStyleOptionsPanelWidget.cs:116
 msgid "_Show extensions"
@@ -2623,11 +2602,11 @@ msgstr "ワークスペースを保存しました"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/RootWorkspace.cs:270
 msgid "No solution has been selected"
-msgstr ""
+msgstr "ソリューションが選択されていません"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/RootWorkspace.cs:270
 msgid "The solution to be executed must be selected in the solution pad."
-msgstr ""
+msgstr "実行されるソリューションがソリューションパッドで選択されていなければなりません"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/RootWorkspace.cs:281
 msgid "Saving Workspace..."
@@ -2653,9 +2632,7 @@ msgstr "ソリューションを読み込みました"
 msgid ""
 "The project '{0}' has been modified by an external application. Do you want "
 "to reload it? All project files will be closed."
-msgstr ""
-"プロジェクト '{0}' は外部アプリケーションによって更新されました。リロードしま"
-"すか? 全てのプロジェクトファイルは閉じられます。"
+msgstr "プロジェクト '{0}' は外部アプリケーションによって更新されました。リロードしますか? 全てのプロジェクトファイルは閉じられます。"
 
 #: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/ProjectService.cs:341
 msgid "File '{0}' not found."
@@ -2691,9 +2668,7 @@ msgstr "ファイル {0} を {1} に変更しようとしてエラーになり�
 msgid ""
 "Error while implementing interface '{0}' in '{1}': base type '{2}' was not "
 "found."
-msgstr ""
-"インターフェース'{0}'を'{1}'で実装しようとしてエラーになりました: 基底"
-"型'{2}'があります"
+msgstr "インターフェース'{0}'を'{1}'で実装しようとしてエラーになりました: 基底型'{2}'があります"
 
 #: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.CodeGeneration/CodeRefactorer.cs:328
 msgid "Error while removing {0}:{1}"
@@ -2862,7 +2837,7 @@ msgstr "ファイル '{0}'のバージョン('{1}')は未知のものです。"
 
 #: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/Solution.cs:405
 msgid "Startup item not set"
-msgstr ""
+msgstr "スタートアップ項目が設定されていません"
 
 #: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/SolutionFolder.cs:511
 msgid "Cyclic dependencies are not supported."
@@ -2888,9 +2863,7 @@ msgstr "全てのサテライトアセンブリを削除します"
 msgid ""
 "Unknown language '{0}'. You may need to install an additional add-in to "
 "support this language."
-msgstr ""
-"'{0}'は未知の言語です。この言語をプロジェクトでサポートするには、特別なアドイ"
-"ンのインストールが必要かもしれません。"
+msgstr "'{0}'は未知の言語です。この言語をプロジェクトでサポートするには、特別なアドインのインストールが必要かもしれません。"
 
 #: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Formats.MD1/MD1DotNetProjectHandler.cs:124
 msgid "Referenced project '{0}' not found in the solution."
@@ -2940,8 +2913,7 @@ msgid ""
 "culture:\n"
 " {2}"
 msgstr ""
-"'{1}'のサテライトアセンブリを生成する'{0}'の呼び出し中にエラーが発生しまし"
-"た: \n"
+"'{1}'のサテライトアセンブリを生成する'{0}'の呼び出し中にエラーが発生しました: \n"
 " {2}"
 
 #: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Formats.MD1/MD1DotNetProjectHandler.cs:381
@@ -3041,8 +3013,7 @@ msgstr "プロジェクトを保存しています"
 
 #: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Formats.MSBuild/SlnFileFormat.cs:537
 msgid "Invalid Project definition on line number #{0} in file '{1}'. Ignoring."
-msgstr ""
-"ファイル '{1}' の '{0}' 行目に無効なプロジェクト定義があるので無視します。"
+msgstr "ファイル '{1}' の '{0}' 行目に無効なプロジェクト定義があるので無視します。"
 
 #: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Formats.MSBuild/SlnFileFormat.cs:550
 msgid "Invalid Project type guid '{0}' on line #{1}. Ignoring."
@@ -3051,9 +3022,7 @@ msgstr "{1}行目のGuid '{0}'のプロジェクト種別は無効です。無�
 #: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Formats.MSBuild/SlnFileFormat.cs:583
 msgid ""
 "{0}({1}): Projects with non-local source (http://...) not supported. '{2}'."
-msgstr ""
-"{0} ({1}): ローカルでないソース (http://...) を含むプロジェクトはサポートされ"
-"ていません。'{2}'"
+msgstr "{0} ({1}): ローカルでないソース (http://...) を含むプロジェクトはサポートされていません。'{2}'"
 
 #: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Formats.MSBuild/SlnFileFormat.cs:592
 #: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Formats.MSBuild/SlnFileFormat.cs:594
@@ -3075,15 +3044,11 @@ msgstr "プロジェクト {0} のロード中にエラーが発生しました�
 
 #: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Formats.MSBuild/SlnFileFormat.cs:754
 msgid "{0} ({1}) : Unknown action. Only ActiveCfg & Build.0 supported."
-msgstr ""
-"{0} ({1}): 未定義のアクションです。ActiveCfgとBuild.0 のみサポートされていま"
-"す。"
+msgstr "{0} ({1}): 未定義のアクションです。ActiveCfgとBuild.0 のみサポートされています。"
 
 #: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Formats.MSBuild/SlnFileFormat.cs:774
 msgid "{0} ({1}) : Project with guid = '{2}' not found or not loaded. Ignoring"
-msgstr ""
-"{0} ({1}): GUID='{2}'のプロジェクトが見つからないか、またはロードできませんで"
-"した。無視します。"
+msgstr "{0} ({1}): GUID='{2}'のプロジェクトが見つからないか、またはロードできませんでした。無視します。"
 
 #: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Formats.MSBuild/SlnFileFormat.cs:899
 #: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Formats.MSBuild/SlnFileFormat.cs:911
@@ -3261,9 +3226,7 @@ msgid ""
 "as a replacement of common project operations. It is also possible to enter "
 "custom commands which will be available in the project or solution menu."
 msgstr ""
-"MonoDevelopは共通のプロジェクト操作の前後で、あるいは代替として、特定のコマン"
-"ドあるいはスクリプトを実行することが出来ます。プロジェクトあるいはソリュー"
-"ションメニューから利用可能なカスタムコマンドを入力することも可能です。"
+"MonoDevelopは共通のプロジェクト操作の前後で、あるいは代替として、特定のコマンドあるいはスクリプトを実行することが出来ます。プロジェクトあるいはソリューションメニューから利用可能なカスタムコマンドを入力することも可能です。"
 
 #: ../src/core/MonoDevelop.Projects.Gui/gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CommonAssemblySigningPreferences.cs:38
 msgid "_Sign this assembly"
@@ -3428,7 +3391,7 @@ msgstr "テストを実行"
 #: ../src/addins/NUnit/Gui/TestPad.cs:122
 #: ../src/addins/NUnit/Gui/TestPad.cs:123
 msgid "Cancel running test"
-msgstr ""
+msgstr "テストの実行を中断します"
 
 #: ../src/addins/NUnit/Gui/TestPad.cs:261
 msgid "Summary"
@@ -3530,9 +3493,8 @@ msgid "Test execution cancelled."
 msgstr "テストの実行は中断されました。"
 
 #: ../src/addins/NUnit/Gui/TestResultsPad.cs:547
-#, fuzzy
 msgid "Running {0} ..."
-msgstr "実行中 - "
+msgstr "{0}を実行中..."
 
 #: ../src/addins/NUnit/Gui/TestResultsPad.cs:590
 msgid "Running "
@@ -3583,9 +3545,8 @@ msgid "Target options"
 msgstr "ターゲット オプション"
 
 #: ../src/addins/ILAsmBinding/ILAsmCompilerManager.cs:92
-#, fuzzy
 msgid "Compilation failed."
-msgstr "コンパイルのターゲット(_T)"
+msgstr "コンパイルが失敗しました"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Logs.cs:50
 msgid "Retrieving history for {0}..."
@@ -3671,18 +3632,16 @@ msgid "Retreiving content of {0} at revision {1}..."
 msgstr "{0} のリビジョン {1} における内容を取得中..."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Statuses.cs:88
-#, fuzzy
 msgid "Commit..."
-msgstr "コミット"
+msgstr "コミットする..."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Statuses.cs:98
 msgid "Revert"
 msgstr "変更を破棄する"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Statuses.cs:103
-#, fuzzy
 msgid "Show Remote Status"
-msgstr "起動時に表示"
+msgstr "リモート ステータスを表示"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Statuses.cs:117
 msgid "Expand All"
@@ -3723,9 +3682,8 @@ msgid "Commit message (multiple selection):"
 msgstr "コミットメッセージ（複数選択）:"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Statuses.cs:604
-#, fuzzy
 msgid "_Open All"
-msgstr "フォルダを開く (_O)"
+msgstr "全て開く (_O)"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Statuses.cs:605
 msgid "Do you want to open all {0} files?"
@@ -3744,36 +3702,32 @@ msgid "Could not get diff information. "
 msgstr "diff情報を取得できませんでした。"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/AddRemoveMoveCommand.cs:46
-#, fuzzy
 msgid "Adding {0}..."
-msgstr "ファイルを追加しています..."
+msgstr "{0} を追加中..."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/Checkout.cs:42
-#, fuzzy
 msgid "Checkout {0}..."
-msgstr "チェックアウト..."
+msgstr "{0}をチェックアウト..."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/CommitCommand.cs:74
-#, fuzzy
 msgid "Committing {0}..."
-msgstr "{0} を配置しています"
+msgstr "{0} をコミット中..."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/Publish.cs:38
 msgid "Initial check-in of module {0}"
 msgstr "モジュール {0} の初期チェックイン"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/Publish.cs:42
-#, fuzzy
 msgid "Are you sure you want to publish the project?"
-msgstr "本当にプロジェクト '{0}' を削除しますか?"
+msgstr "本当にこのプロジェクトを公開しますか?"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/Publish.cs:42
 msgid "The project will be published to the repository '{0}', module '{1}'."
-msgstr ""
+msgstr "このプロジェクトはリポジトリ '{0}'、モジュール '{1}' として公開されることになります"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/Publish.cs:97
 msgid "Publishing \"{0}\" Project..."
-msgstr ""
+msgstr "プロジェクト\"{0}\"を公開中..."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/RevertCommand.cs:34
 msgid "Are you sure you want to revert the changes done in the selected files?"
@@ -3781,17 +3735,15 @@ msgstr "本当に選択されたファイルの変更を破棄して元に戻し
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/RevertCommand.cs:35
 msgid "All changes made to the selected files will be permanently lost."
-msgstr ""
+msgstr "選択されたファイルへの変更は永久に失われます"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/RevertCommand.cs:61
-#, fuzzy
 msgid "Reverting ..."
-msgstr "検索中..."
+msgstr "元に戻しています..."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/Update.cs:38
-#, fuzzy
 msgid "Updating {0}..."
-msgstr "{0}を更新しています"
+msgstr "{0}を更新中..."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlNodeExtension.cs:277
 msgid "This project or folder is not under version control"
@@ -3818,9 +3770,7 @@ msgstr "バージョン管理リポジトリの更新中"
 msgid ""
 "There isn't any supported version control system installed. You may need to "
 "install additional add-ins or packages."
-msgstr ""
-"サポートされているバージョン管理システムがインストールされていません。追加の"
-"アドインまたはパッケージが必要です。"
+msgstr "サポートされているバージョン管理システムがインストールされていません。追加のアドインまたはパッケージが必要です。"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/gtk-gui/MonoDevelop.VersionControl.Dialogs.SelectRepositoryDialog.cs:84
 msgid "Select Repository"
@@ -3902,45 +3852,38 @@ msgid "Commit"
 msgstr "コミット"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:552
-#, fuzzy
 msgid "Revision: {0}"
-msgstr "リビジョン"
+msgstr "リビジョン: {0}"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:737
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:743
-#, fuzzy
 msgid "Added"
 msgstr "追加"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:738
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:744
-#, fuzzy
 msgid "Deleted"
 msgstr "削除"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:739
-#, fuzzy
 msgid "Updating"
-msgstr "{0}を更新しています"
+msgstr "更新"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:740
-#, fuzzy
 msgid "External Updated"
-msgstr "外部ファイル"
+msgstr "更新された外部項目"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:741
-#, fuzzy
 msgid "Finished"
 msgstr "完了"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:746
-#, fuzzy
 msgid "Replaced"
 msgstr "置換"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:747
 msgid "Sending Content"
-msgstr ""
+msgstr "内容を送信中"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion.Gui/ClientCertificateDialog.cs:12
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion.Gui/ClientCertificatePasswordDialog.cs:12
@@ -4056,26 +3999,21 @@ msgstr "Subversion"
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/gtk-gui/MonoDevelop.VersionControl.Subversion.Gui.UserPasswordDialog.cs:60
 msgid ""
 "<b>User credentials are required to access the Subversion repository.</b>"
-msgstr ""
-"<b>このSubversionリポジトリにアクセスするには、ユーザーの識別情報が必要です。"
-"</b>"
+msgstr "<b>このSubversionリポジトリにアクセスするには、ユーザーの識別情報が必要です。</b>"
 
 #: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderProject.cs:91
 msgid "The GUI designer project file '{0}' could not be loaded."
 msgstr "GUIデザイナ プロジェクトファイル '{0}' がロードできませんでした。"
 
 #: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderProject.cs:155
-#, fuzzy
 msgid ""
 "The project '{0}' has been modified by an external application. Do you want "
 "to reload it?"
-msgstr ""
-"プロジェクト '{0}' は外部アプリケーションによって更新されました。リロードしま"
-"すか? 全てのプロジェクトファイルは閉じられます。"
+msgstr "プロジェクト '{0}' は外部アプリケーションによって更新されました。リロードしますか?"
 
 #: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderProject.cs:155
 msgid "Unsaved changes in the open GTK designers will be lost."
-msgstr ""
+msgstr "開かれているGTKデザイナで保存されていない変更は失われます"
 
 #: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/PropertiesWidget.cs:56
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.PropertyGrid/DefaultPropertyTab.cs:49
@@ -4094,40 +4032,34 @@ msgstr "GUIビルダー"
 #: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs:214
 msgid ""
 "ERROR: MonoDevelop could not find the Gtk# 2.0 development package. "
-"Compilation of projects depending on Gtk# libraries will fail. You may need "
-"to install development packages for gtk-sharp-2.0."
+"Compilation of projects depending on Gtk# libraries will fail. You may need to install "
+"development packages for gtk-sharp-2.0."
 msgstr ""
-"エラー: MonoDevelopはGTK# 2.0開発パッケージを見つけることが出来ませんでした。"
-"GTK#ライブラリに依存するプロジェクトのコンパイルは失敗します。gtk-sharp-2.0の"
-"開発パッケージをインストールする必要があります。"
+"エラー: MonoDevelopはGTK# "
+"2.0開発パッケージを見つけることが出来ませんでした。GTK#ライブラリに依存するプロジェクトのコンパイルは失敗します。gtk-sharp-2.0の開発パッケージをインストールする必要があります。"
 
 #: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs:380
 msgid ""
 "GUI code generation failed for project '{0}'. The file '{1}' could not be "
 "loaded."
-msgstr ""
-"プロジェクト '{0}' のGUIコード生成に失敗しました。ファイル'{1}'は読み込めませ"
-"んでした。"
+msgstr "プロジェクト '{0}' のGUIコード生成に失敗しました。ファイル'{1}'は読み込めませんでした。"
 
 #: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs:388
 msgid "Generating GUI code for project '{0}'..."
 msgstr "プロジェクト '{0}' のGUIコードを生成中..."
 
 #: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs:498
-#, fuzzy
 msgid "_Use as Source"
-msgstr "リソース"
+msgstr "ソースとして使用 (_U)"
 
 #: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs:499
 msgid ""
-"You are requesting the file '{0}' to be used as source for an image. "
-"However, this file is already added to the project as a resource. Are you "
-"sure you want to continue (the file will have to be removed from the "
-"resource list)?"
+"You are requesting the file '{0}' to be used as source for an image. However, "
+"this file is already added to the project as a resource. Are you sure you "
+"want to continue (the file will have to be removed from the resource list)?"
 msgstr ""
-"ファイル '{0}' を画像のソースとして使用しようとしていますが、このファイルは既"
-"にリソースとしてこのプロジェクト上に追加されています。それでも続行しますか?"
-"（このファイルはリソースのリストからは削除されなければならなくなります）"
+"ファイル '{0}' "
+"を画像のソースとして使用しようとしていますが、このファイルは既にリソースとしてこのプロジェクト上に追加されています。それでも続行しますか?（このファイルはリソースのリストからは削除されなければならなくなります）"
 
 #: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderView.cs:91
 #: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderView.cs:115
@@ -4176,11 +4108,9 @@ msgstr "ソースコード"
 
 #: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/CodeBinder.cs:304
 msgid ""
-"The class bound to the component '{0}' could not be found. This may be due "
-"to syntax errors in the source code file."
-msgstr ""
-"コンポーネント '{0}'にバインドされたクラスが見つかりません。これはソースコー"
-"ドファイル中に文法エラーがあると発生することがあります。"
+"The class bound to the component '{0}' could not be found. This may be due to "
+"syntax errors in the source code file."
+msgstr "コンポーネント '{0}'にバインドされたクラスが見つかりません。これはソースコードファイル中に文法エラーがあると発生することがあります。"
 
 #: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/ToolboxProvider.cs:90
 msgid "GTK# Widgets"
@@ -4222,8 +4152,7 @@ msgid ""
 "Enables support for GTK# in the project. Allows the visual design of GTK# "
 "windows, and the creation of a GTK# widget library."
 msgstr ""
-"このプロジェクトでGtk#サポートを有効にします。GTK#ウィンドウのビジュアルデザ"
-"イン、GTK#ウィジェットライブラリの作成が可能になります。"
+"このプロジェクトでGtk#サポートを有効にします。GTK#ウィンドウのビジュアルデザイン、GTK#ウィジェットライブラリの作成が可能になります。"
 
 #: ../src/addins/MonoDevelop.GtkCore/lib/stetic/libstetic/editor/Accelerator.cs:82
 msgid "Press a key..."
@@ -4244,11 +4173,9 @@ msgstr "クリックするとアクションを作成します"
 
 #: ../src/addins/MonoDevelop.GtkCore/lib/stetic/libstetic/editor/ActionGroupEditor.cs:385
 msgid ""
-"Are you sure you want to delete the action '{0}'? It will be removed from "
-"all menus and toolbars."
-msgstr ""
-"本当にこのアクショングループ '{0}' を削除しますか?全てのメニューおよびツール"
-"バーから削除されます。"
+"Are you sure you want to delete the action '{0}'? It will be removed from all "
+"menus and toolbars."
+msgstr "本当にこのアクショングループ '{0}' を削除しますか?全てのメニューおよびツールバーから削除されます。"
 
 #: ../src/addins/MonoDevelop.GtkCore/lib/stetic/libstetic/editor/ActionMenu.cs:533
 #: ../src/addins/MonoDevelop.GtkCore/lib/stetic/libstetic/editor/ActionMenuBar.cs:495
@@ -4420,47 +4347,42 @@ msgid "Widget '{0}' not available in GTK# {1}"
 msgstr "ウィジェット '{0}' はGTK# {1}では利用できません"
 
 #: ../src/addins/MonoDevelop.GtkCore/lib/stetic/libsteticui/ActionGroupToolbar.cs:61
-#, fuzzy
 msgid "Action Group:"
-msgstr "アクショングループ"
+msgstr "アクショングループ:"
 
 #: ../src/addins/MonoDevelop.GtkCore/lib/stetic/libsteticui/ActionGroupToolbar.cs:204
-#, fuzzy
 msgid "New Action Group"
-msgstr "新しいアクショングループ (_N)"
+msgstr "新しいアクショングループ:"
 
 #: ../src/addins/MonoDevelop.GtkCore/lib/stetic/libsteticui/ActionGroupToolbar.cs:259
 #: ../src/addins/MonoDevelop.GtkCore/lib/stetic/libsteticui/WidgetActionBar.cs:142
-#, fuzzy
 msgid "Bind to Field"
-msgstr "複数ファイルから検索"
+msgstr "フィールドにバインド"
 
 #: ../src/addins/MonoDevelop.GtkCore/lib/stetic/libsteticui/ContextMenu.cs:24
 #: ../src/addins/MonoDevelop.GtkCore/lib/stetic/libsteticui/ContextMenu.cs:46
-#, fuzzy
 msgid "_Select"
-msgstr "削除 (_D)"
+msgstr "選択 (_S)"
 
 #: ../src/addins/MonoDevelop.GtkCore/lib/stetic/libsteticui/ContextMenu.cs:152
 msgid "Placeholder"
-msgstr ""
+msgstr "プレースホルダ"
 
 #: ../src/addins/MonoDevelop.GtkCore/lib/stetic/libsteticui/Glade.cs:25
 msgid "Not a glade file according to node name."
-msgstr ""
+msgstr "ノード名から見るに、gladeファイルではありません"
 
 #: ../src/addins/MonoDevelop.GtkCore/lib/stetic/libsteticui/PaletteBackend.cs:29
 msgid "Windows"
 msgstr "Windows"
 
 #: ../src/addins/MonoDevelop.GtkCore/lib/stetic/libsteticui/PaletteBackend.cs:245
-#, fuzzy
 msgid "Empty"
-msgstr "空のファイル"
+msgstr "空"
 
 #: ../src/addins/MonoDevelop.GtkCore/lib/stetic/libsteticui/ProjectBackend.cs:316
 msgid "Not a Stetic file according to node name."
-msgstr ""
+msgstr "ノード名から見るに、Steticファイルではありません"
 
 #: ../src/addins/MonoDevelop.GtkCore/lib/stetic/libsteticui/PropertyTree.cs:44
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.PropertyGrid/PropertyGridTree.cs:82
@@ -4470,55 +4392,48 @@ msgid "Value"
 msgstr "値"
 
 #: ../src/addins/MonoDevelop.GtkCore/lib/stetic/libsteticui/SignalsEditorBackend.cs:46
-#, fuzzy
 msgid "Signal"
 msgstr "シグナル"
 
 #: ../src/addins/MonoDevelop.GtkCore/lib/stetic/libsteticui/SignalsEditorBackend.cs:47
-#, fuzzy
 msgid "Handler"
-msgstr "Webハンドラ"
+msgstr "ハンドラ"
 
 #: ../src/addins/MonoDevelop.GtkCore/lib/stetic/libsteticui/SignalsEditorBackend.cs:48
-#, fuzzy
 msgid "After"
-msgstr "チューナー"
+msgstr "後"
 
 #: ../src/addins/MonoDevelop.GtkCore/lib/stetic/libsteticui/SignalsEditorBackend.cs:432
 msgid "Click here to add a new handler"
-msgstr ""
+msgstr "ここをクリックして新しいハンドラを追加"
 
 #: ../src/addins/MonoDevelop.GtkCore/lib/stetic/libsteticui/WidgetDesigner.cs:140
-#, fuzzy
 msgid "The designer could not be loaded."
-msgstr "ヘルプビューアがロードできませんでした。"
+msgstr "デザイナがロードできませんでした。"
 
 #: ../src/addins/MonoDevelop.GtkCore/lib/stetic/libsteticui/WidgetEditSession.cs:318
-#, fuzzy
 msgid "The form designer could not be loaded"
-msgstr "指定されたファイル '{0}' が読み込めませんでした。"
+msgstr "フォームデザイナがロードできませんでした。"
 
 #: ../src/addins/WelcomePage/WelcomePageOptionPanel.cs:15
 msgid "Show welcome page on startup"
 msgstr "起動時にwelcomeページを表示"
 
 #: ../src/addins/WelcomePage/WelcomePageOptionPanel.cs:19
-#, fuzzy
 msgid "Update welcome page from internet"
-msgstr "起動時にwelcomeページを表示"
+msgstr "インターネットからwelcomeページを更新"
 
 #: ../src/addins/WelcomePage/WelcomePageView.cs:69
 msgid "Welcome"
 msgstr "ようこそ"
 
 #: ../src/addins/WelcomePage/WelcomePageView.cs:241
-#, fuzzy
 msgid "Open solution {0}"
-msgstr "ソリューションを開く"
+msgstr "ソリューション {0} を開く"
 
 #: ../src/addins/WelcomePage/WelcomePageView.cs:243
 msgid "Hold Control key to open in current workspace."
-msgstr ""
+msgstr "現在のワークスペースで開くにはControlを押していて下さい。"
 
 #: ../src/addins/WelcomePage/WelcomePageView.cs:277
 msgid "Less than a minute"
@@ -4578,9 +4493,7 @@ msgstr "ファイルがインポートできません: "
 msgid ""
 "Output directory '{0}' can't be mapped to a local directory. The directory "
 "'{1}' will be used instead"
-msgstr ""
-"出力ディレクトリ '{0}' はローカルディレクトリにマップできませんでした。ディレ"
-"クトリ '{1}' が代わりに使用されます"
+msgstr "出力ディレクトリ '{0}' はローカルディレクトリにマップできませんでした。ディレクトリ '{1}' が代わりに使用されます"
 
 #: ../src/addins/prj2make-sharp-lib/MSBuildProjectServiceExtension.cs:88
 msgid "Generating partial classes for {0} with {1}"
@@ -4607,29 +4520,25 @@ msgstr ""
 "{2}\n"
 
 #: ../src/addins/prj2make-sharp-lib/VS2003ProjectFileFormat.cs:110
-#, fuzzy
 msgid ""
 "The project file {0} is a VS2003 project. It must be converted to either a "
 "MonoDevelop or a VS2005 project."
 msgstr ""
-"プロジェクトファイル {0} はVS2003のプロジェクトです。これはMonoDevelopあるい"
-"はVS2005のプロジェクトに、変換されなければなりません。VS2005への変換を行え"
-"ば、既存のファイルを上書きすることになります。変換しますか?"
+"プロジェクトファイル {0} "
+"はVS2003のプロジェクトです。これはMonoDevelopあるいはVS2005のプロジェクトに、変換されなければなりません。"
 
 #: ../src/addins/prj2make-sharp-lib/VS2003ProjectFileFormat.cs:111
 #: ../src/addins/prj2make-sharp-lib/VS2003ProjectFileFormat.cs:142
 msgid "Converting to VS2005 format will overwrite existing files."
-msgstr ""
+msgstr "VS2005フォーマットへの変換を行えば、既存のファイルを上書きすることになります。"
 
 #: ../src/addins/prj2make-sharp-lib/VS2003ProjectFileFormat.cs:141
-#, fuzzy
 msgid ""
 "The solution file {0} is a VS2003 solution. It must be converted to either a "
 "MonoDevelop or a VS2005 solution"
 msgstr ""
-"ソリューションファイル {0} はVS2003のソリューションです。これはMonoDevelopあ"
-"るいはVS2005のソリューションに、変換されなければなりません。VS2005への変換を"
-"行えば、既存のファイルを上書きすることになります。変換しますか?"
+"ソリューションファイル {0} "
+"はVS2003のソリューションです。これはMonoDevelopあるいはVS2005のソリューションに、変換されなければなりません。"
 
 #: ../src/addins/VBNetBinding/Gui/CodeGenerationPanelWidget.cs:52
 #: ../src/addins/CSharpBinding/Gui/CompilerOptionsPanelWidget.cs:54
@@ -4756,12 +4665,8 @@ msgstr "{0}件のChangeLogファイルが更新されます"
 #: ../src/addins/ChangeLogAddIn/CommitDialogExtensionWidget.cs:115
 msgid "{0} ChangeLog file not found. Some changes will not be logged."
 msgid_plural "{0} ChangeLog files not found. Some changes will not be logged."
-msgstr[0] ""
-"{0} 件のChangeLogファイルが見つかりませんでした。変更のいくつかは記録されませ"
-"ん。"
-msgstr[1] ""
-"{0} 件のChangeLogファイルが見つかりませんでした。変更のいくつかは記録されませ"
-"ん。"
+msgstr[0] "{0} 件のChangeLogファイルが見つかりませんでした。変更のいくつかは記録されません。"
+msgstr[1] "{0} 件のChangeLogファイルが見つかりませんでした。変更のいくつかは記録されません。"
 
 #: ../src/addins/ChangeLogAddIn/ChangeLogAddInOptionPanelWidget.cs:41
 msgid "Full Name"
@@ -4793,12 +4698,11 @@ msgstr "このChangeLogファイルは存在せず、作成も<b>されません
 
 #: ../src/addins/ChangeLogAddIn/gtk-gui/MonoDevelop.ChangeLogAddIn.AddLogEntryDialog.cs:234
 msgid ""
-"To change the ChangeLog creation and update policies, open the options "
-"dialog of the project or solution and click on the 'ChangeLog Integration\" "
+"To change the ChangeLog creation and update policies, open the options dialog "
+"of the project or solution and click on the 'ChangeLog Integration\" "
 "section."
 msgstr ""
-"ChangeLog作成と更新のポリシーを変更するには、プロジェクトあるいはソリューショ"
-"ンのダイアログを開いて、「ChangeLog統合」のセクションをクリックします。"
+"ChangeLog作成と更新のポリシーを変更するには、プロジェクトあるいはソリューションのダイアログを開いて、「ChangeLog統合」のセクションをクリックします。"
 
 #: ../src/addins/ChangeLogAddIn/gtk-gui/MonoDevelop.ChangeLogAddIn.ChangeLogAddInOptionPanelWidget.cs:47
 msgid "Specify personal information used in ChangeLog entries"
@@ -4856,9 +4760,7 @@ msgid ""
 "ChangeLog files will never be automatically created."
 msgstr ""
 "<b>最も近いChangeLogを更新</b>\n"
-"そのディレクトリから（コミットディレクトリ以下で）最も近い階層にあるディレク"
-"トリのChangeLogファイルが更新されます。一つも見つからない場合は、警告メッセー"
-"ジが表示されます。ChangeLogファイルは自動的には生成されません。"
+"そのディレクトリから（コミットディレクトリ以下で）最も近い階層にあるディレクトリのChangeLogファイルが更新されます。一つも見つからない場合は、警告メッセージが表示されます。ChangeLogファイルは自動的には生成されません。"
 
 #: ../src/addins/ChangeLogAddIn/gtk-gui/MonoDevelop.ChangeLogAddIn.ProjectOptionPanelWidget.cs:119
 msgid "One ChangeLog in the project root directory"
@@ -4885,13 +4787,11 @@ msgid ""
 "The ChangeLog file will be created if it doesn't exist."
 msgstr ""
 "<b>各ディレクトリに1つのChangeLog</b>\n"
-"ファイルへの変更は、そのファイルが存在するディレクトリにあるChangeLogに記録さ"
-"れます。ChangeLogファイルが存在しない場合は生成されます。"
+"ファイルへの変更は、そのファイルが存在するディレクトリにあるChangeLogに記録されます。ChangeLogファイルが存在しない場合は生成されます。"
 
 #: ../src/addins/AspNetAddIn/MonoDevelop.AspNet/AspNetAppProject.cs:260
-#, fuzzy
 msgid "Error launching web browser"
-msgstr "Webブラウザ"
+msgstr "Webブラウザの起動に失敗しました"
 
 #: ../src/addins/AspNetAddIn/MonoDevelop.AspNet.Parser/MemberListVisitor.cs:63
 msgid "Tag ID must be unique within the document: '{0}'."
@@ -4912,17 +4812,13 @@ msgstr "コードビハインドメンバを生成しています..."
 #: ../src/addins/AspNetAddIn/MonoDevelop.AspNet/VerifyCodeBehindBuildStep.cs:71
 msgid ""
 "Auto-generation of CodeBehind members is disabled for non-partial classes."
-msgstr ""
-"コードビハインドメンバの自動生成は、partialでないクラスでは無効となっていま"
-"す。"
+msgstr "コードビハインドメンバの自動生成は、partialでないクラスでは無効となっています。"
 
 #: ../src/addins/AspNetAddIn/MonoDevelop.AspNet/VerifyCodeBehindBuildStep.cs:93
 msgid ""
 "Parser failed with error {0}. CodeBehind members for this file will not be "
 "added."
-msgstr ""
-"パーサがエラー {0} で失敗しました。このファイルのコードビハインドメンバは追加"
-"されません。"
+msgstr "パーサがエラー {0} で失敗しました。このファイルのコードビハインドメンバは追加されません。"
 
 #: ../src/addins/AspNetAddIn/MonoDevelop.AspNet/VerifyCodeBehindBuildStep.cs:108
 msgid "Cannot find CodeBehind class '{0}'."
@@ -4932,9 +4828,7 @@ msgstr "コードビハインドクラス '{0}' が見つかりません。"
 msgid ""
 "CodeBehind member generation failed with error {0}. Further CodeBehind "
 "members for this file will not be added."
-msgstr ""
-"コードビハインドメンバの生成がエラー {0} で失敗しました。このファイルでこれ以"
-"上のコードビハインドメンバは追加されません。"
+msgstr "コードビハインドメンバの生成がエラー {0} で失敗しました。このファイルでこれ以上のコードビハインドメンバは追加されません。"
 
 #: ../src/addins/AspNetAddIn/MonoDevelop.AspNet/VerifyCodeBehindBuildStep.cs:180
 msgid "No changes made to CodeBehind classes."
@@ -4944,12 +4838,8 @@ msgstr "コードビハインドクラスへの変更は行われませんでし
 msgid "Added {0} member to CodeBehind classes. Saving updated source files."
 msgid_plural ""
 "Added {0} members to CodeBehind classes. Saving updated source files."
-msgstr[0] ""
-"コードビハインドクラスに {0} 件のメンバーを追加しました。更新されたソースファ"
-"イルを保存しています。"
-msgstr[1] ""
-"コードビハインドクラスに {0} 件のメンバーを追加しました。更新されたソースファ"
-"イルを保存しています。"
+msgstr[0] "コードビハインドクラスに {0} 件のメンバーを追加しました。更新されたソースファイルを保存しています。"
+msgstr[1] "コードビハインドクラスに {0} 件のメンバーを追加しました。更新されたソースファイルを保存しています。"
 
 #: ../src/addins/AspNetAddIn/MonoDevelop.AspNet.Gui/XspOptionsPanelWidget.cs:46
 #: ../src/addins/AspNetAddIn/MonoDevelop.AspNet.Gui/XspOptionsPanelWidget.cs:59
@@ -5085,60 +4975,60 @@ msgid "Certificate location:"
 msgstr "証明書の場所:"
 
 #: ../src/addins/AspNetAddIn/MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs:271
-#, fuzzy
-msgid "Required for ASP.NET controls.\n"
-msgstr "ASP.NETコントロールに必要な変更です"
+msgid ""
+"Required for ASP.NET controls.\n"
+msgstr ""
+"ASP.NETコントロールに必要な変更です\n"
 
 #: ../src/addins/AspNetAddIn/MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs:272
 msgid ""
 "Indicates that this tag should be able to be\n"
 "manipulated programmatically on the web server."
-msgstr ""
+msgstr "このタグは、webブラウザ上でプログラムによって操作されうるものであることを示します"
 
 #: ../src/addins/AspNetAddIn/MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs:413
 msgid "ASP.NET render block"
-msgstr ""
+msgstr "ASP.NETがレンダリングするブロック"
 
 #: ../src/addins/AspNetAddIn/MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs:416
-#, fuzzy
 msgid "ASP.NET render expression"
-msgstr "ASP.NETオプション"
+msgstr "ASP.NETがレンダリングする式"
 
 #: ../src/addins/AspNetAddIn/MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs:419
-#, fuzzy
 msgid "ASP.NET directive"
-msgstr "ASP.NETディレクトリ"
+msgstr "ASP.NETディレクティブ"
 
 #: ../src/addins/AspNetAddIn/MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs:422
 msgid "ASP.NET databinding expression"
-msgstr ""
+msgstr "ASP.NETデータバインディング式"
 
 #: ../src/addins/AspNetAddIn/MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs:425
 msgid "ASP.NET server-side comment"
-msgstr ""
+msgstr "ASP.NETサーバサイドコメント"
 
 #: ../src/addins/AspNetAddIn/MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs:432
 msgid "ASP.NET resource expression"
-msgstr ""
+msgstr "ASP.NETリソース式"
 
 #: ../src/addins/AspNetAddIn/MonoDevelop.AspNet.Gui/BrowserLauncher.cs:113
 msgid "Could not connect to webserver {0}"
 msgstr "Webサーバ {0} に接続できませんでした"
 
 #: ../src/addins/AspNetAddIn/MonoDevelop.AspNet.Parser/SuggestedHandlerCompletionData.cs:70
-msgid "A suggested event handler method name.\n"
+msgid ""
+"A suggested event handler method name.\n"
 msgstr ""
+"提案されるイベントハンドラメソッド名\n"
 
 #: ../src/addins/AspNetAddIn/MonoDevelop.AspNet.Parser/SuggestedHandlerCompletionData.cs:71
 msgid ""
 "If you accept this suggestion, the method will\n"
 "be generated in the CodeBehind class."
-msgstr ""
+msgstr "この提案を受け入れれば、そのメソッドがコードビハインドに生成されます"
 
 #: ../src/addins/AspNetAddIn/MonoDevelop.AspNet/AspNetToolboxNode.cs:49
-#, fuzzy
 msgid "ASP.NET Controls"
-msgstr "ASP.NETオプション"
+msgstr "ASP.NETコントロール"
 
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.PropertyGrid/EventPropertyTab.cs:48
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/DomTypeNodeBuilder.cs:165
@@ -5154,7 +5044,7 @@ msgstr "不明"
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/TextToolboxNode.cs:39
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/CodeTemplateToolboxProvider.cs:36
 msgid "Text Snippets"
-msgstr ""
+msgstr "テキスト コード片"
 
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/ToolboxItemToolboxNode.cs:151
 msgid "Web and Windows Forms Components"
@@ -5167,11 +5057,9 @@ msgstr "コンポーネントを探索中..."
 
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport/MemberExistsException.cs:107
 msgid ""
-"Cannot add {0} '{1}' to class '{2}', because there is already a {3} with "
-"that name{4}."
-msgstr ""
-"既に {4} という名前の {3} が存在するため、{0} '{1}' をクラス '{2}' に追加でき"
-"ません。"
+"Cannot add {0} '{1}' to class '{2}', because there is already a {3} with that "
+"name{4}."
+msgstr "既に {4} という名前の {3} が存在するため、{0} '{1}' をクラス '{2}' に追加できません。"
 
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.PropertyGrid/PropertyGrid.cs:92
 msgid "Sort in categories"
@@ -5222,26 +5110,22 @@ msgid "Custom"
 msgstr "カスタム"
 
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/ToolboxWidget.cs:170
-#, fuzzy
 msgid "There are no tools available for the current document."
-msgstr "このプロジェクトで利用可能な追加機能はありません。"
+msgstr "現在のドキュメントに適用可能なツールはありません"
 
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport/DocumentOutlinePad.cs:103
 msgid "An outline is not available for the current document."
-msgstr ""
+msgstr "現在のドキュメントではアウトラインは利用できません"
 
 #: ../src/addins/MonoDevelop.Autotools/Commands.cs:66
-#, fuzzy
 msgid "_Generate Makefiles"
-msgstr "Makefileを生成する"
+msgstr "Makefileを生成する (_G)"
 
 #: ../src/addins/MonoDevelop.Autotools/Commands.cs:67
 msgid ""
 "Generating Makefiles is not supported for single projects. Do you want to "
 "generate them for the full solution - '{0}' ?"
-msgstr ""
-"Makefile生成は単一のプロジェクトではサポートされていません。ソリューション "
-"'{0}' 全体用に作成しますか?"
+msgstr "Makefile生成は単一のプロジェクトではサポートされていません。ソリューション '{0}' 全体用に作成しますか?"
 
 #: ../src/addins/MonoDevelop.Autotools/Commands.cs:86
 msgid "{0} already exist for this solution.  Would you like to overwrite them?"
@@ -5278,9 +5162,7 @@ msgstr "プロジェクト '{0}' に参照を追加できませんでした"
 #: ../src/addins/MonoDevelop.Autotools/SimpleProjectMakefileHandler.cs:332
 msgid ""
 "Custom commands are not supported for autotools based makefiles. Ignoring."
-msgstr ""
-"カスタムコマンドはautotoolsベースのmakefileではサポートされていません。無視し"
-"ます。"
+msgstr "カスタムコマンドはautotoolsベースのmakefileではサポートされていません。無視します。"
 
 #: ../src/addins/MonoDevelop.Autotools/SimpleProjectMakefileHandler.cs:518
 msgid "Project reference type '{0}' not supported yet"
@@ -5300,10 +5182,9 @@ msgstr "ソリューション {1} の {0} を生成中"
 
 #: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:92
 msgid ""
-"MonoDevelop does not currently support generating {0} for one (or more) "
-"child projects."
-msgstr ""
-"現在のMonoDevelopは、子プロジェクト用の {0} の生成をサポートしていません。"
+"MonoDevelop does not currently support generating {0} for one (or more) child "
+"projects."
+msgstr "現在のMonoDevelopは、子プロジェクト用の {0} の生成をサポートしていません。"
 
 #: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:109
 msgid "Creating rules.make"
@@ -5361,19 +5242,14 @@ msgid "Creating {0} for Solution {1}"
 msgstr "ソリューション {1} の {0} を作成中"
 
 #: ../src/addins/MonoDevelop.Autotools/SolutionMakefileHandler.cs:97
-#, fuzzy
 msgid "Child projects must be in sub-directories of their parent"
-msgstr ""
-"子プロジェクト/ソリューションは、その親のサブディレクトリ以下に置く必要があり"
-"ます"
+msgstr "子プロジェクトは、その親のサブディレクトリ以下に置く必要があります"
 
 #: ../src/addins/MonoDevelop.Autotools/SolutionMakefileHandler.cs:131
 msgid ""
 "More than 1 project in the same directory as the top-level solution is not "
 "supported."
-msgstr ""
-"同一のディレクトリに複数のプロジェクトをトップレベルソリューションとして含め"
-"ることはできません。"
+msgstr "同一のディレクトリに複数のプロジェクトをトップレベルソリューションとして含めることはできません。"
 
 #: ../src/addins/MonoDevelop.Autotools/SolutionMakefileHandler.cs:169
 msgid ""
@@ -5395,9 +5271,7 @@ msgstr "エラー: 未知のオプション {0}"
 msgid ""
 "Error: Filename already specified - {0}, another filename '{1}' cannot be "
 "specified."
-msgstr ""
-"エラー: ファイル名が既に指定されています - {0}, 別のファイル名 '{1}' は指定で"
-"きません"
+msgstr "エラー: ファイル名が既に指定されています - {0}, 別のファイル名 '{1}' は指定できません"
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileGeneratorTool.cs:44
 msgid "Error: Solution file not specified."
@@ -5408,8 +5282,10 @@ msgid "Loading solution file {0}"
 msgstr "ソリューションファイル {0} をロードしています"
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileGeneratorTool.cs:54
-msgid "Error: Makefile generation supported only for solutions.\n"
-msgstr "エラー: Makefile生成はソリューションでのみサポートされています。\n"
+msgid ""
+"Error: Makefile generation supported only for solutions.\n"
+msgstr ""
+"エラー: Makefile生成はソリューションでのみサポートされています。\n"
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileGeneratorTool.cs:59
 msgid ""
@@ -5429,32 +5305,27 @@ msgid ""
 msgstr "{0} はこのソリューション中に既に存在します。上書きしますか? (Y/N)"
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileGeneratorTool.cs:131
-#, fuzzy
 msgid ""
 " --simple-makefiles -s\n"
 "\tGenerates set of Makefiles with the most common targets, and a "
-"configuration script that does a basic check of package dependencies. "
-"Default is to generate Makefile structure based on Autotools with the "
-"standard targets and configuration scripts."
+"configuration script that does a basic check of package dependencies. Default is to "
+"generate Makefile structure based on Autotools with the standard targets and "
+"configuration scripts."
 msgstr ""
 "--simple-makefiles -s\n"
-"\\\\\\\\\\\\\\\\t最も一般的なターゲットを含み、基本的なパッケージ依存性を"
-"チェックするコンフィグレーションスクリプトを含む、Makefileを生成します。デ"
-"フォルトでは、Autotoolsと標準的なターゲットおよびコンフィグレーションスクリプ"
-"トに基づいて、Makefile構造を生成します。"
+"\t"
+"最も一般的なターゲットを含み、基本的なパッケージ依存性をチェックするコンフィグレーションスクリプトを含む、Makefileを生成します。デフォルトでは、Autotoolsと標準的なターゲットおよびコンフィグレーションスクリプトに基づいて、Makefile構造を生成します。"
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileGeneratorTool.cs:133
-#, fuzzy
 msgid ""
 " -d:default-config\n"
 "\tConfiguration that the Makefile will build by default. Other "
-"configurations can be selected via the '--config' or '--enable-*' option of "
-"the generated configure script."
+"configurations can be selected via the '--config' or '--enable-*' option of the generated "
+"configure script."
 msgstr ""
 "-d:default-config\n"
-"\\\\\\\\\\\\\\\\tデフォルトでMakefileがビルドする設定。その他のコンフィグレー"
-"ションは、生成されたconfigureスクリプトの'--config'または'--enable-*'オプショ"
-"ンで選択できます。"
+"\t"
+"デフォルトでMakefileがビルドする設定。その他のコンフィグレーションは、生成されたconfigureスクリプトの'--config'または'--enable-*'オプションで選択できます。"
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileOptionPanelWidget.cs:62
 #: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:433
@@ -5473,9 +5344,7 @@ msgstr "configure.inに指定されたパスが無効です: {0}"
 msgid ""
 "'Sync References' is enabled, but one of Reference variables is not set. "
 "Please correct this."
-msgstr ""
-"「参照の同期」が有効になっていますが、設定されていない参照変数がありますので"
-"修正してください。"
+msgstr "「参照の同期」が有効になっていますが、設定されていない参照変数がありますので修正してください。"
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileOptionPanelWidget.cs:244
 msgid "Invalid regex for Error messages: {0}"
@@ -5493,9 +5362,7 @@ msgstr "プロジェクトを更新しています: "
 msgid ""
 "File variable ({0}) is set for sync'ing, but no valid variable is selected. "
 "Either disable the sync'ing or select a variable name."
-msgstr ""
-"ファイル変数 ({0}) が同期設定されていますが、有効な変数が選択されていません。"
-"同期を無効にするか、有効な変数名を選択してください。"
+msgstr "ファイル変数 ({0}) が同期設定されていますが、有効な変数が選択されていません。同期を無効にするか、有効な変数名を選択してください。"
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileOptionPanelWidget.cs:718
 msgid "Error while trying to read the specified Makefile"
@@ -5510,15 +5377,12 @@ msgid ""
 "Unable to find the specified Makefile. You need to specify the path to an "
 "existing Makefile for use with the 'Makefile Integration' feature."
 msgstr ""
-"指定されたMakefileが見つかりません。既存のMakefileへのパスを指定するか、"
-"「Makefile統合」の機能を利用する必要があります。"
+"指定されたMakefileが見つかりません。既存のMakefileへのパスを指定するか、「Makefile統合」の機能を利用する必要があります。"
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs:55
 #: ../src/addins/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs:57
 msgid "Error resolving Makefile based project references for solution {0}"
-msgstr ""
-"ソリューション{0}用のMakefileベースのプロジェクトで、参照の解決中にエラーが発"
-"生しました"
+msgstr "ソリューション{0}用のMakefileベースのプロジェクトで、参照の解決中にエラーが発生しました"
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs:81
 msgid "Updating project from Makefile"
@@ -5572,12 +5436,10 @@ msgstr "無効なMakefileです : {0}. Makefile統合を無効にします。"
 #: ../src/addins/MonoDevelop.Autotools/MakefileData.cs:640
 msgid ""
 "Enabling Makefile integration. You can choose to have either the Project or "
-"the Makefile be used as the master copy. This is done only when enabling "
-"this feature. After this, the Makefile will be taken as the master copy."
+"the Makefile be used as the master copy. This is done only when enabling this "
+"feature. After this, the Makefile will be taken as the master copy."
 msgstr ""
-"Makefile統合を有効にします。プロジェクトまたはMakefileをマスターコピーとして"
-"使用することができます。これはこの機能を有効にしている場合にのみ行われます。"
-"この操作以降は、Makefileがマスターコピーとして使用されます。"
+"Makefile統合を有効にします。プロジェクトまたはMakefileをマスターコピーとして使用することができます。これはこの機能を有効にしている場合にのみ行われます。この操作以降は、Makefileがマスターコピーとして使用されます。"
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileData.cs:682
 msgid ""
@@ -5599,31 +5461,25 @@ msgstr "'{0}' のファイルの読み込みでエラーです。スキップし
 msgid ""
 "Makefile variable '{0}' not found. Skipping syncing of '{1}' file list for "
 "project '{2}'."
-msgstr ""
-"Makefile変数 '{0}' が見つかりません。プロジェクト '{2}' の '{1}' ファイルリス"
-"トの同期をスキップします。"
+msgstr "Makefile変数 '{0}' が見つかりません。プロジェクト '{2}' の '{1}' ファイルリストの同期をスキップします。"
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileData.cs:839
 msgid ""
-"Files in variable '{0}' contains variables which cannot be parsed without "
-"the path to configure.in being set. Ignoring such files."
+"Files in variable '{0}' contains variables which cannot be parsed without the "
+"path to configure.in being set. Ignoring such files."
 msgstr ""
-"変数 '{0}' で指定されるファイルには、configure.inで指定されたパスが無いと解析"
-"できないものが含まれているため、そのようなファイルは無視します。"
+"変数 '{0}' "
+"で指定されるファイルには、configure.inで指定されたパスが無いと解析できないものが含まれているため、そのようなファイルは無視します。"
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileData.cs:864
 msgid "Ignoring invalid file '{0}' found in '{1}' for project '{2}'."
-msgstr ""
-"プロジェクト '{2}' の '{1}' の中で見つかった無効なファイル '{0}' を無視しま"
-"す。"
+msgstr "プロジェクト '{2}' の '{1}' の中で見つかった無効なファイル '{0}' を無視します。"
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileData.cs:902
 msgid ""
 "Makefile variable '{0}' not found. Skipping syncing of all '{1}' references "
 "for project {2}."
-msgstr ""
-"Makefile変数 '{0}' が見つかりません。 プロジェクト '{2}' における '{1}' の全"
-"ての参照の同期をスキップします。"
+msgstr "Makefile変数 '{0}' が見つかりません。 プロジェクト '{2}' における '{1}' の全ての参照の同期をスキップします。"
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileData.cs:922
 msgid "Unable to parse reference '{0}' for project '{1}'. Ignoring."
@@ -5633,28 +5489,23 @@ msgstr "プロジェクト '{1}' の参照 '{0}' が解析できないため、�
 msgid ""
 "Makefile variable '{0}' not found. Skipping writing of '{1}' files to the "
 "Makefile."
-msgstr ""
-"Makefile変数 '{0}'が見つかりません。Makefileへの '{1}' のファイルの出力をス"
-"キップします。"
+msgstr "Makefile変数 '{0}'が見つかりません。Makefileへの '{1}' のファイルの出力をスキップします。"
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileData.cs:1431
 msgid ""
 "Makefile variable '{0}' not found. Skipping syncing of '{1}' references."
-msgstr ""
-"Makefile変数 '{0}'が見つかりません。'{1}' の参照の同期をスキップします。"
+msgstr "Makefile変数 '{0}'が見つかりません。'{1}' の参照の同期をスキップします。"
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileData.cs:1533
 msgid ""
-"A reference to the pkg-config package '{0}' is being emitted to the "
-"Makefile, because at least one assembly from the package is used in the "
-"project. However, this dependency is not specified in the configure.in file, "
-"so you might need to add it to ensure that the project builds successfully "
-"on other systems."
+"A reference to the pkg-config package '{0}' is being emitted to the Makefile, "
+"because at least one assembly from the package is used in the project. "
+"However, this dependency is not specified in the configure.in file, so you might "
+"need to add it to ensure that the project builds successfully on other "
+"systems."
 msgstr ""
-"パッケージ '{0}'は、このパッケージに含まれる1つ以上のアセンブリがこのプロジェ"
-"クトで使用されているため、出力されますが、この依存関係はconfigure.inで指定さ"
-"れていません。他のシステム上でビルドを成功させるには、これを追加する必要があ"
-"るかもしれません。"
+"パッケージ "
+"'{0}'は、このパッケージに含まれる1つ以上のアセンブリがこのプロジェクトで使用されているため、出力されますが、この依存関係はconfigure.inで指定されていません。他のシステム上でビルドを成功させるには、これを追加する必要があるかもしれません。"
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileData.cs:1640
 msgid "Unable to find configure.in at '{0}'."
@@ -5669,8 +5520,7 @@ msgid ""
 "MonoDevelop is going to create a project bound to a Makefile. Please enter "
 "the name you want to give to the new project."
 msgstr ""
-"MonoDevelopはMakefileに関連付けられたプロジェクトを作成しようとしています。こ"
-"の新しいプロジェクトの名前を入力してください。"
+"MonoDevelopはMakefileに関連付けられたプロジェクトを作成しようとしています。この新しいプロジェクトの名前を入力してください。"
 
 #: ../src/addins/MonoDevelop.Autotools/ImportMakefileDialog.cs:36
 msgid "Project Name:"
@@ -5740,9 +5590,7 @@ msgid ""
 "file kind please specify the makefile variable that holds the list and "
 "optionally a prefix to be prepended to each file name."
 msgstr ""
-"makefileと同期させたいファイルの種別を選択してください。それぞれのファイル種"
-"別について、リストとオプションで各ファイル名に追加されるプレフィックスとを、"
-"それぞれ保持するmakefile変数を指定してください。"
+"makefileと同期させたいファイルの種別を選択してください。それぞれのファイル種別について、リストとオプションで各ファイル名に追加されるプレフィックスとを、それぞれ保持するmakefile変数を指定してください。"
 
 #: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:636
 #: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:837
@@ -5765,14 +5613,11 @@ msgstr "configure.inからパッケージを探す"
 #: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:814
 msgid ""
 "Select the kind of references you want to synchronize with the makefile. For "
-"each reference type please specify the makefile variable that holds the "
-"list, and optionally a prefix to be prepended to each reference name. You "
-"can specify the same variable name for several types of references."
+"each reference type please specify the makefile variable that holds the list, "
+"and optionally a prefix to be prepended to each reference name. You can "
+"specify the same variable name for several types of references."
 msgstr ""
-"makefileと同期させたい参照の種別を選択してください。それぞれの参照種別につい"
-"て、リストとオプションで各ファイル名に追加されるプレフィックスとを、それぞれ"
-"保持するmakefile変数を指定してください。複数の参照種別について、同じ変数名を"
-"指定できます。"
+"makefileと同期させたい参照の種別を選択してください。それぞれの参照種別について、リストとオプションで各ファイル名に追加されるプレフィックスとを、それぞれ保持するmakefile変数を指定してください。複数の参照種別について、同じ変数名を指定できます。"
 
 #: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:826
 msgid "Assembly References"
@@ -5793,16 +5638,14 @@ msgstr "プロジェクト参照"
 #: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:915
 msgid ""
 "Select the Compiler message format for parsing the compiler errors and "
-"warnings. You can either select one of the built-in options, or specify "
-"custom regular expressions for errors and warnings. The regex must be the ."
-"net style regex. The following named groups are relevant : file, line, "
-"column, number (error number) and message."
+"warnings. You can either select one of the built-in options, or specify custom "
+"regular expressions for errors and warnings. The regex must be the .net style "
+"regex. The following named groups are relevant : file, line, column, number "
+"(error number) and message."
 msgstr ""
-"コンパイラエラーと警告を解析するためのコンパイラメッセージ書式を選択してくだ"
-"さい。ビルトイン オプションのひとつを選択することも、エラーと警告のカスタム正"
-"規表現を指定することもできます。正規表現は.net形式でなければなりません。以下"
-"の名前付きグループが関連します:file, line, column, number (error number), "
-"message"
+"コンパイラエラーと警告を解析するためのコンパイラメッセージ書式を選択してください。ビルトイン "
+"オプションのひとつを選択することも、エラーと警告のカスタム正規表現を指定することもできます。正規表現は.net形式でなければなりません。以下の名前付きグループが関連します:file, line, column, "
+"number (error number), message"
 
 #: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:981
 msgid "Error regex :"
@@ -5854,8 +5697,7 @@ msgid ""
 "and configuration scripts."
 msgstr ""
 "<b>Autotoolsに基づいたMakefile</b>\n"
-"Autotoolsに基づいたMakefile構造とコンフィグレーション スクリプトを生成しま"
-"す。"
+"Autotoolsに基づいたMakefile構造とコンフィグレーション スクリプトを生成します。"
 
 #: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.TarballBuilderEditorWidget.cs:238
 #: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.GenerateMakefilesDialog.cs:75
@@ -5870,8 +5712,7 @@ msgid ""
 "script that does a basic check of package dependencies."
 msgstr ""
 "<b>簡易版Makefile</b>\n"
-"最も一般的なターゲットを含むMakefileと、基本的なパッケージ依存関係のチェック"
-"を行うスクリプトを生成します。"
+"最も一般的なターゲットを含むMakefileと、基本的なパッケージ依存関係のチェックを行うスクリプトを生成します。"
 
 #: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.GenerateMakefilesDialog.cs:47
 msgid "Generate Makefiles"
@@ -5887,9 +5728,7 @@ msgid ""
 "configurations can be selected via the '--config' option of the generated "
 "configure script."
 msgstr ""
-"Makefileがデフォルトでビルドするコンフィグレーションを選択してください。他の"
-"コンフィグレーションは、生成されたconfigureスクリプトの'--config'オプションで"
-"選択できます。"
+"Makefileがデフォルトでビルドするコンフィグレーションを選択してください。他のコンフィグレーションは、生成されたconfigureスクリプトの'--config'オプションで選択できます。"
 
 #: ../src/addins/MonoDevelop.WebReferences/MonoDevelop.WebReferences.Dialogs/WebReferenceDialog.cs:194
 msgid "The reference name '{0}' already exists."
@@ -5971,10 +5810,8 @@ msgid ""
 "This is an alternative to placing documentation comments directly in your "
 "source code file."
 msgstr ""
-"この&lt;include&gt;タグによって、ソースコード中にある型およびメンバを説明する"
-"コメントに、他のファイルから参照言及することができます。\n"
-"あなたのソースコードファイル中に直接ドキュメンテーション コメントを配置するの"
-"とは、異なる方法です。"
+"この&lt;include&gt;タグによって、ソースコード中にある型およびメンバを説明するコメントに、他のファイルから参照言及することができます。\n"
+"あなたのソースコードファイル中に直接ドキュメンテーション コメントを配置するのとは、異なる方法です。"
 
 #: ../src/addins/CSharpBinding/Gui/CSharpTextEditorExtension.cs:973
 msgid "Defines a list or table."
@@ -6008,30 +5845,23 @@ msgstr "メソッドパラメータを記述します。"
 msgid ""
 "The &lt;paramref&gt; tag gives you a way to indicate that a word is a "
 "parameter."
-msgstr ""
-"&lt;paramref&gt;タグは、ある単語をパラメータとして指示するために用いられま"
-"す。"
+msgstr "&lt;paramref&gt;タグは、ある単語をパラメータとして指示するために用いられます。"
 
 #: ../src/addins/CSharpBinding/Gui/CSharpTextEditorExtension.cs:983
 msgid "The &lt;permission&gt; tag lets you document the access of a member."
-msgstr ""
-"&lt;permission&gt;タグは、メンバへのアクセスを記述するために用いられます。"
+msgstr "&lt;permission&gt;タグは、メンバへのアクセスを記述するために用いられます。"
 
 #: ../src/addins/CSharpBinding/Gui/CSharpTextEditorExtension.cs:984
 msgid ""
 "The &lt;remarks&gt; tag is used to add information about a type, "
 "supplementing the information specified with &lt;summary&gt;."
-msgstr ""
-"&lt:remarks&gt;タグは、型の情報を追加し、&lt;summary&gt;で規定した情報を補完"
-"するために用いられます。"
+msgstr "&lt:remarks&gt;タグは、型の情報を追加し、&lt;summary&gt;で規定した情報を補完するために用いられます。"
 
 #: ../src/addins/CSharpBinding/Gui/CSharpTextEditorExtension.cs:985
 msgid ""
 "The &lt;returns&gt; tag should be used in the comment for a method "
 "declaration to describe the return value."
-msgstr ""
-"&lt;returns&gt;タグは、メソッド宣言のコメントで、戻り値について説明するために"
-"用いられます。"
+msgstr "&lt;returns&gt;タグは、メソッド宣言のコメントで、戻り値について説明するために用いられます。"
 
 #: ../src/addins/CSharpBinding/Gui/CSharpTextEditorExtension.cs:986
 msgid "The &lt;see&gt; tag lets you specify a link from within text."
@@ -6041,15 +5871,12 @@ msgstr "&lt;see&gt;タグはテキスト中でリンクを指定するために�
 msgid ""
 "The &lt;seealso&gt; tag lets you specify the text that you might want to "
 "appear in a See Also section."
-msgstr ""
-"&lt;seealso&gt;タグは、See Alsoセクションに出現させたいテキストを指定するため"
-"に用いられます。"
+msgstr "&lt;seealso&gt;タグは、See Alsoセクションに出現させたいテキストを指定するために用いられます。"
 
 #: ../src/addins/CSharpBinding/Gui/CSharpTextEditorExtension.cs:988
 msgid ""
 "The &lt;summary&gt; tag should be used to describe a type or a type member."
-msgstr ""
-"&lt;summary&gt;タグは、型または型メンバについて説明するために用いられます。"
+msgstr "&lt;summary&gt;タグは、型または型メンバについて説明するために用いられます。"
 
 #: ../src/addins/CSharpBinding/Gui/CSharpTextEditorExtension.cs:989
 msgid "The &lt;value&gt; tag lets you describe a property."
@@ -6376,9 +6203,7 @@ msgstr "単語一致のみ (_W)"
 msgid ""
 "Do you really want to remove the translation string {0} (It will be removed "
 "from all translations)?"
-msgstr ""
-"本当に翻訳文字列 {0} を削除しますか? （全ての翻訳から削除されることになりま"
-"す）"
+msgstr "本当に翻訳文字列 {0} を削除しますか? （全ての翻訳から削除されることになります）"
 
 #: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:496
 msgid "{0:#00.00}% Translated"
@@ -6398,13 +6223,11 @@ msgstr "'{0}'の大文字小文字がマッチしていません"
 
 #: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:977
 msgid "Original string '{0}' contains '_', translation doesn't."
-msgstr ""
-"オリジナル文字列 '{0}' には '_' が含まれていますが、翻訳に含まれていません"
+msgstr "オリジナル文字列 '{0}' には '_' が含まれていますが、翻訳に含まれていません"
 
 #: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:983
 msgid "Original string '{0}' contains '{1}', translation doesn't."
-msgstr ""
-"オリジナル文字列 '{0}' には '{1}' が含まれていますが、翻訳に含まれていません"
+msgstr "オリジナル文字列 '{0}' には '{1}' が含まれていますが、翻訳に含まれていません"
 
 #: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:501
 msgid "{0} Fuzzy Message"
@@ -6465,25 +6288,22 @@ msgstr "フォーム {0} (e.g.\"{1}\")"
 
 #: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext/GettextFeature.cs:45
 msgid ""
-"Add a Translation Project to the solution that will use gettext to generate "
-"a set of PO files for the new project."
-msgstr ""
-"新しいプロジェクト用に、翻訳プロジェクトを、gettextでPOファイルの集合を使用す"
-"るソリューションに追加します"
+"Add a Translation Project to the solution that will use gettext to generate a "
+"set of PO files for the new project."
+msgstr "新しいプロジェクト用に、翻訳プロジェクトを、gettextでPOファイルの集合を使用するソリューションに追加します"
 
 #: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.GettextFeatureWidget.cs:47
 msgid ""
 "Select the languages you want to support (more languages can be added later):"
-msgstr ""
-"サポートしたい言語を選択してください（これ以外の言語は後で追加できます）:"
+msgstr "サポートしたい言語を選択してください（これ以外の言語は後で追加できます）:"
 
 #: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext/StringEscaping.cs:81
 msgid "Invalid character '{0}' in translatable string: '{1}'"
-msgstr ""
+msgstr "翻訳可能文字列に無効な文字 '{0}' があります: '{1}'"
 
 #: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext/StringEscaping.cs:119
 msgid "Invalid escape sequence '{0}' in string: '{1}'"
-msgstr ""
+msgstr "文字列中に無効なエスケープシーケンス '{0}' があります: '{1}'"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/MonoDevelop.RegexToolkit/UpdateInProgressDialog.cs:65
 msgid "Update done."
@@ -6502,24 +6322,20 @@ msgid "Regular Expression Toolkit"
 msgstr "正規表現ツールキット"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWindow.cs:117
-#, fuzzy
 msgid "_Regular Expression"
-msgstr "正規表現"
+msgstr "正規表現 (_R)"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWindow.cs:184
-#, fuzzy
 msgid "_Start Regular Expression"
-msgstr "正規表現"
+msgstr "正規表現の開始 (_S)"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWindow.cs:215
-#, fuzzy
 msgid "_Input:"
-msgstr "入力"
+msgstr "入力 (_I):"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWindow.cs:281
-#, fuzzy
 msgid "Elements"
-msgstr "正規表現要素"
+msgstr "要素"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWindow.cs:336
 msgid "Matches"
@@ -6664,7 +6480,7 @@ msgstr "ライブラリ"
 #: ../src/addins/CBinding/gtk-gui/CBinding.CodeGenerationPanel.cs:528
 #: ../src/addins/CBinding/gtk-gui/CBinding.CodeGenerationPanel.cs:638
 msgid ">"
-msgstr ""
+msgstr ">"
 
 #: ../src/addins/CBinding/gtk-gui/CBinding.CodeGenerationPanel.cs:665
 msgid "Include:"
@@ -6699,9 +6515,8 @@ msgid "Project Packages"
 msgstr "プロジェクト パッケージ"
 
 #: ../src/addins/CBinding/gtk-gui/CBinding.EditPackagesDialog.cs:143
-#, fuzzy
 msgid "..."
-msgstr "More..."
+msgstr "..."
 
 #: ../src/addins/CBinding/gtk-gui/CBinding.EditPackagesDialog.cs:167
 msgid "Selected packages:"
@@ -6732,183 +6547,152 @@ msgid "Default C++ Compiler:"
 msgstr "デフォルトのC++コンパイラ:"
 
 #: ../src/addins/CBinding/gtk-gui/CBinding.GeneralOptionsPanel.cs:88
-#, fuzzy
 msgid "Parse Local Variables"
-msgstr "ローカル変数"
+msgstr "ローカル変数を解析"
 
 #: ../src/addins/CBinding/gtk-gui/CBinding.GeneralOptionsPanel.cs:103
 msgid "Parse System Tags"
 msgstr "システムタグを解析"
 
 #: ../src/addins/CBinding/gtk-gui/CBinding.PackageDetails.cs:67
-#, fuzzy
 msgid "Package Details"
-msgstr "パッケージ設定"
+msgstr "パッケージ詳細"
 
 #: ../src/addins/CBinding/gtk-gui/CBinding.PackageDetails.cs:89
-#, fuzzy
 msgid "label12"
-msgstr "label24"
+msgstr "label12"
 
 #: ../src/addins/CBinding/gtk-gui/CBinding.PackageDetails.cs:111
-#, fuzzy
 msgid "Version:"
-msgstr "バージョン (_V):"
+msgstr "バージョン:"
 
 #: ../src/addins/CBinding/gtk-gui/CBinding.PackageDetails.cs:123
-#, fuzzy
 msgid "Description:"
-msgstr "説明 (_D):"
+msgstr "説明:"
 
 #: ../src/addins/CBinding/gtk-gui/CBinding.PackageDetails.cs:134
-#, fuzzy
 msgid "label10"
-msgstr "label24"
+msgstr "label10"
 
 #: ../src/addins/CBinding/gtk-gui/CBinding.PackageDetails.cs:145
-#, fuzzy
 msgid "label11"
-msgstr "label24"
+msgstr "label11"
 
 #: ../src/addins/CBinding/gtk-gui/CBinding.PackageDetails.cs:167
-#, fuzzy
 msgid "Requires:"
-msgstr "リソース"
+msgstr "Requires:"
 
 #: ../src/addins/CBinding/gtk-gui/CBinding.PackageDetails.cs:202
-#, fuzzy
 msgid "Libs:"
-msgstr "ライブラリ:"
+msgstr "Libs:"
 
 #: ../src/addins/CBinding/gtk-gui/CBinding.PackageDetails.cs:262
-#, fuzzy
 msgid "CFlags:"
-msgstr "フラグ"
+msgstr "CFlags:"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.GeneralOptionsPanel.cs:52
-#, fuzzy
 msgid "_Code completion"
-msgstr "コード補完を有効にする (_c)"
+msgstr "コード補完を有効にする (_C)"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.GeneralOptionsPanel.cs:64
 msgid "C_lass & Method quick finder"
-msgstr ""
+msgstr "クラスおよびメソッドのクイック検索 (L)"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.GeneralOptionsPanel.cs:76
-#, fuzzy
 msgid "Code _folding"
-msgstr "コードの折りたたみを有効にする (_f)"
+msgstr "コードの折りたたみ (_F)"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.GeneralOptionsPanel.cs:97
-#, fuzzy
 msgid "_Default monospace"
-msgstr "デフォルト ネームスペース:"
+msgstr "デフォルト ネームスペース (_D)"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.GeneralOptionsPanel.cs:114
-#, fuzzy
 msgid "_Custom"
-msgstr "カスタム"
+msgstr "カスタム (_C)"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.GeneralOptionsPanel.cs:141
 msgid "<b>Font</b>"
 msgstr "<b>フォント</b>"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.MarkerPanel.cs:60
-#, fuzzy
 msgid "_Show line numbers"
-msgstr "行番号を表示 (_l)"
+msgstr "行番号を表示 (_S)"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.MarkerPanel.cs:72
 msgid "_Underline errors"
 msgstr "エラーを下線表示 (_U)"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.MarkerPanel.cs:84
-#, fuzzy
 msgid "_Highlight matching bracket"
-msgstr "対応する括弧を強調表示する"
+msgstr "対応する括弧を強調表示する (_H)"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.MarkerPanel.cs:96
-#, fuzzy
 msgid "Highlight _current line"
-msgstr "現在の行を強調表示する (_g)"
+msgstr "現在の行を強調表示する (_C)"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.MarkerPanel.cs:112
-#, fuzzy
 msgid "Show _column ruler, at column:"
-msgstr "列ルーラを表示 (_c)"
+msgstr "列ルーラを表示 (_C):"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.MarkerPanel.cs:153
-#, fuzzy
 msgid "_Invalid lines"
-msgstr "無効なファイル名です"
+msgstr "無効な行 (_I)"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.MarkerPanel.cs:165
-#, fuzzy
 msgid "S_paces"
-msgstr "置換 (_R)"
+msgstr "空白 (_P)"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.MarkerPanel.cs:177
-#, fuzzy
 msgid "_Tabs"
-msgstr "テーブル"
+msgstr "タブ (_T)"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.MarkerPanel.cs:189
-#, fuzzy
 msgid "_End of line"
-msgstr "行末に移動"
+msgstr "改行 (_E)"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.MarkerPanel.cs:201
 msgid "<b>Show Whitespaces</b>"
-msgstr ""
+msgstr "<b>空白を表示</b>"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:56
-#, fuzzy
 msgid "_Auto template insertion"
-msgstr "自動コード追加 (_A)"
+msgstr "自動テンプレート追加 (_A)"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:68
-#, fuzzy
 msgid "A_uto insert matching brace"
-msgstr "中括弧を自動で追加 (_u)"
+msgstr "対応する括弧を自動で追加 (_U)"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:95
-#, fuzzy
 msgid "_Indentation:"
-msgstr "インデント (_n)"
+msgstr "インデント (_I):"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:122
-#, fuzzy
 msgid "_Tab and indentation size:"
 msgstr "タブとインデントのサイズ: (_T)"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:150
-#, fuzzy
 msgid "_Convert tabs to spaces"
-msgstr "タブをスペースに変換 (_o)"
+msgstr "タブをスペースに変換 (_C)"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:162
 msgid "<b>Tabs</b>"
 msgstr "<b>タブ</b>"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.HighlightingPanel.cs:72
-#, fuzzy
 msgid "_Enable highlighting"
-msgstr "文法 強調表示を有効にする"
+msgstr "文法 強調表示を有効にする (_E):"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.HighlightingPanel.cs:84
-#, fuzzy
 msgid "E_nable semantic highlighting"
-msgstr "文法 強調表示を有効にする"
+msgstr "文法 強調表示を有効にする (_N):"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.HighlightingPanel.cs:96
-#, fuzzy
 msgid "<b>Syntax highlighting</b>"
-msgstr "シンタックス ハイライティング"
+msgstr "<b>シンタックス ハイライティング</b>"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.HighlightingPanel.cs:172
-#, fuzzy
 msgid "<b>Color sheme</b>"
-msgstr "<b>要素</b>"
+msgstr "<b>カラースキーム</b>"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/LanguageItemWindow.cs:44
 msgid "Parameter"
@@ -6920,9 +6704,8 @@ msgstr "ローカル変数"
 
 #  FIXME: make this a resource in the resource file
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:96
-#, fuzzy
 msgid "Source"
-msgstr "ソース:"
+msgstr "ソース"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:164
 msgid ""
@@ -6947,26 +6730,23 @@ msgid "Page"
 msgstr "ページ"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:1258
-#, fuzzy
 msgid "Clipboard ring"
-msgstr "コーディング"
+msgstr "クリップボード リング"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:164
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:1022
-#, fuzzy
 msgid "Type list"
-msgstr "型"
+msgstr "型リスト"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:170
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:1033
 msgid "Member list"
-msgstr ""
+msgstr "メンバーリスト"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:175
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:823
-#, fuzzy
 msgid "Region list"
-msgstr "リグレッション"
+msgstr "区域リスト"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:608
 msgid "This file has been changed outside of MonoDevelop"
@@ -6981,30 +6761,28 @@ msgid "Ignore"
 msgstr "無視"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:817
-#, fuzzy
 msgid "Region {0}"
-msgstr "{0} の名前の変更"
+msgstr "区域 {0}"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:1262
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:1278
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:1317
-#, fuzzy
 msgid "Search pattern not found"
-msgstr "検索文字列が見つかりませんでした:"
+msgstr "検索したパターンが見つかりませんでした"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:1264
 msgid "Reached bottom, continued from top"
-msgstr ""
+msgstr "最後まで到達したので最初から続けます"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:1280
 msgid "Reached top, continued from bottom"
-msgstr ""
+msgstr "最初まで到達したので最後から続けます"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:1319
 msgid "Found and replaced one occurrence"
 msgid_plural "Found and replaced {0} occurrences"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "1件置換しました"
+msgstr[1] "{0}件置換しました"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/BehaviorPanel.cs:38
 msgid "Automatic"
@@ -7016,33 +6794,29 @@ msgstr "スマート"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/HighlightingPanel.cs:59
 msgid "The default color scheme."
-msgstr ""
+msgstr "デフォルトのカラースキーム"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/MarkerOperationsHandler.cs:71
 msgid "_Write an e-mail to..."
-msgstr ""
+msgstr "emailを書く (_W)"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/MarkerOperationsHandler.cs:71
-#, fuzzy
 msgid "_Open URL..."
-msgstr "開く (_P)"
+msgstr "URLを開く (_O)"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.SearchWidget.cs:112
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.SearchAndReplaceWidget.cs:210
-#, fuzzy
 msgid "Find Previous"
-msgstr "前を検索 (_P)"
+msgstr "前を検索"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.SearchWidget.cs:145
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.SearchAndReplaceWidget.cs:242
-#, fuzzy
 msgid "Find Next"
-msgstr "次を検索 (_N)"
+msgstr "次を検索"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.SearchAndReplaceWidget.cs:181
-#, fuzzy
 msgid "Replace all"
-msgstr "全て置換 (_e)"
+msgstr "全て置換"
 
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:95
 msgid "Types"
@@ -7050,66 +6824,58 @@ msgstr "型"
 
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:96
 msgid "Members"
-msgstr ""
+msgstr "メンバー"
 
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:97
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:106
-#, fuzzy
 msgid "Disassembler"
-msgstr "無効"
+msgstr "逆アセンブラ"
 
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:98
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:107
-#, fuzzy
 msgid "Decompiler"
-msgstr "コンパイラ"
+msgstr "逆コンパイラ"
 
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:108
 msgid "Search"
 msgstr "検索"
 
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:212
-#, fuzzy
 msgid "Member"
-msgstr "$number"
+msgstr "メンバー"
 
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:221
 msgid "Declaring Type"
-msgstr ""
+msgstr "宣言型"
 
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:238
-#, fuzzy
 msgid "Namespace"
-msgstr "ネームスペース:"
+msgstr "ネームスペース"
 
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:253
-#, fuzzy
 msgid "Searching member..."
-msgstr "検索中..."
+msgstr "メンバーを検索中..."
 
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:256
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:308
 msgid "Searching string in disassembled code..."
-msgstr ""
+msgstr "逆アセンブルしたコードから文字列を検索..."
 
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:259
-#, fuzzy
 msgid "Searching string in decompiled code..."
-msgstr "検索文字列が見つかりませんでした:"
+msgstr "逆コンパイルしたコードから文字列を検索..."
 
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:262
-#, fuzzy
 msgid "Searching type..."
-msgstr "検索中..."
+msgstr "型を検索中..."
 
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyNodeBuilder.cs:82
 msgid "Assembly <b>{0}</b>, Version {1}"
-msgstr ""
+msgstr "アセンブリ <b>{0}</b>、バージョン {1}"
 
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyNodeBuilder.cs:93
-#, fuzzy
 msgid "Console application"
-msgstr "カレンダー アプリケーション"
+msgstr "コンソール アプリケーション"
 
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyNodeBuilder.cs:97
 #: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs:194
@@ -7118,109 +6884,93 @@ msgstr "アプリケーション"
 
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyNodeBuilder.cs:108
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/DomTypeNodeBuilder.cs:109
-#, fuzzy
 msgid "<b>Name:</b>\t{0}"
-msgstr "<b>失敗</b>: {0}"
+msgstr "<b>名前:</b>\t {0}"
 
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyNodeBuilder.cs:111
-#, fuzzy
 msgid "<b>Type:</b>\t{0}"
-msgstr "<b>テスト</b>: {0}"
+msgstr "<b>型:</b>\t {0}"
 
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/ModuleDefinitionNodeBuilder.cs:89
-#, fuzzy
 msgid "Module <b>{0}</b>"
-msgstr "メソッド <b>{0}</b>"
+msgstr "モジュール <b>{0}</b>"
 
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/ModuleDefinitionNodeBuilder.cs:101
-#, fuzzy
 msgid "<b>Version:</b>\t{0}"
-msgstr "<b>GTK# バージョン</b>"
+msgstr "<b>バージョン:</b>\t {0}"
 
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/DomTypeNodeBuilder.cs:95
 msgid "<b>Assembly:</b>\t{0}, Version={1}"
-msgstr ""
+msgstr "<b>アセンブリ:</b>\t{0}、バージョン={1}"
 
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/DomTypeNodeBuilder.cs:151
-#, fuzzy
 msgid "Fields"
 msgstr "フィールド"
 
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/DomTypeNodeBuilder.cs:182
-#, fuzzy
 msgid "Methods"
-msgstr "ヶ月"
+msgstr "メソッド"
 
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/ReferenceFolderNodeBuilder.cs:78
-#, fuzzy
 msgid "Can't find:"
-msgstr "ファイルがインポートできません: "
+msgstr "見つかりません: "
 
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/BaseTypeFolderNodeBuilder.cs:53
-#, fuzzy
 msgid "Base Types"
-msgstr "型"
+msgstr "基底型"
 
 #: ../src/addins/MonoDevelop.AssemblyBrowser/gtk-gui/MonoDevelop.AssemblyBrowser.AssemblyBrowserWidget.cs:155
-#, fuzzy
 msgid "_Search:"
 msgstr "検索 (_S)"
 
 #: ../src/addins/MonoDevelop.AssemblyBrowser/gtk-gui/MonoDevelop.AssemblyBrowser.AssemblyBrowserWidget.cs:174
-#, fuzzy
 msgid "_in:"
-msgstr "リンク (_L)"
+msgstr "以下から (_I):"
 
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/DomMethodNodeBuilder.cs:88
 msgid "<b>Declaring Type:</b>\t{0}"
-msgstr ""
+msgstr "<b>宣言型:</b>\t{0}"
 
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/DomMethodNodeBuilder.cs:114
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/DomMethodNodeBuilder.cs:141
 msgid "Method is P/Invoke"
-msgstr ""
+msgstr "メソッドがP/Invokeです"
 
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/DomMethodNodeBuilder.cs:117
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/DomMethodNodeBuilder.cs:144
-#, fuzzy
 msgid "Interface method"
-msgstr "メソッド名の変更"
+msgstr "インターフェースメソッド"
 
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/DomMethodNodeBuilder.cs:117
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/DomMethodNodeBuilder.cs:144
-#, fuzzy
 msgid "Abstract method"
-msgstr "Abstract Content"
+msgstr "抽象メソッド"
 
 #: ../src/addins/MonoDevelop.CodeMetrics/MonoDevelop.CodeMetrics/CodeMetricsWidget.cs:63
 msgid "Lines (real)"
-msgstr ""
+msgstr "（実際の）行"
 
 #: ../src/addins/MonoDevelop.CodeMetrics/MonoDevelop.CodeMetrics/CodeMetricsWidget.cs:68
-#, fuzzy
 msgid "License"
-msgstr "行"
+msgstr "ライセンス"
 
 #: ../src/addins/MonoDevelop.CodeMetrics/MonoDevelop.CodeMetrics/CodeMetricsWidget.cs:241
-#, fuzzy
 msgid "Results:"
-msgstr "一時停止"
+msgstr "結果:"
 
 #: ../src/addins/MonoDevelop.CodeMetrics/MonoDevelop.CodeMetrics/CodeMetricsWidget.cs:243
 msgid ""
 "lines: {0} (real:{1}), commented:{2} ({3:0.00}%), blank:{4} ({5:0.00}%))"
-msgstr ""
+msgstr "行数: {0} (実際: {1}), コメント: {2} ({3:0.00}%), 空行: {4} ({5:0.00}%)"
 
 #: ../src/addins/MonoDevelop.CodeMetrics/MonoDevelop.CodeMetrics/CodeMetricsWidget.cs:252
-#, fuzzy
 msgid "Licenses:"
-msgstr "行"
+msgstr "ライセンス:"
 
 #: ../src/addins/MonoDevelop.CodeMetrics/MonoDevelop.CodeMetrics/CodeMetricsWidget.cs:268
 #: ../src/addins/MonoDevelop.CodeMetrics/MonoDevelop.CodeMetrics/CodeMetricsWidget.cs:269
-#, fuzzy
 msgid "Scanning files..."
-msgstr "ファイルを追加しています..."
+msgstr "ファイルをスキャンしています..."
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment/UnknownPackageBuilder.cs:46
 msgid "Unknown package type"
@@ -7347,15 +7097,13 @@ msgid "The following files will be included in the package:"
 msgstr "以下のファイルがパッケージに含まれることになります:"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Gui/DeployFileListWidget.cs:109
-#, fuzzy
 msgid ""
 "The following files will be included in the package for the configuration:"
-msgstr "以下のファイルがパッケージに含まれることになります:"
+msgstr "構成のために、以下のファイルがパッケージに含まれることになります:"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Gui/PackagingFeatureWidget.cs:29
 msgid "Create packages for this project in a new Packaging Project"
-msgstr ""
-"新しいパッケージプロジェクト上に、このプロジェクト用のパッケージを作成します"
+msgstr "新しいパッケージプロジェクト上に、このプロジェクト用のパッケージを作成します"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Gui/PackagingFeatureWidget.cs:35
 msgid "Select packages to add to the new Packaging Project"
@@ -7375,9 +7123,7 @@ msgstr "このプロジェクト用に新しいパッケージを作成"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Gui/PackagingFeatureWidget.cs:108
 msgid "Add new packages for this project in the packaging project '{0}'"
-msgstr ""
-"このプロジェクト用の新しいパッケージをパッケージプロジェクト '{0}' に追加しま"
-"す"
+msgstr "このプロジェクト用の新しいパッケージをパッケージプロジェクト '{0}' に追加します"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Gui/PackagingFeature.cs:12
 msgid "Packaging"
@@ -7387,9 +7133,7 @@ msgstr "パッケージ"
 msgid ""
 "Add a Packaging Project to the solution for generating different kinds of "
 "packages for the new project."
-msgstr ""
-"新しいプロジェクト用に別のパッケージを生成するため、このソリューションにパッ"
-"ケージプロジェクトを追加します。"
+msgstr "新しいプロジェクト用に別のパッケージを生成するため、このソリューションにパッケージプロジェクトを追加します。"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment/DeployProjectServiceExtension.cs:37
 msgid "File '{0}' not found"
@@ -7425,8 +7169,7 @@ msgstr "<big><b>プロジェクトを選択</b></big>"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.DeployDialog.cs:244
 msgid "Select the project or solution for which you want to create a package:"
-msgstr ""
-"パッケージを作成するプロジェクトまたはソリューションを選択してください:"
+msgstr "パッケージを作成するプロジェクトまたはソリューションを選択してください:"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.DeployDialog.cs:274
 msgid "<big><b>Package Settings</b></big>"
@@ -7479,9 +7222,7 @@ msgstr "ディレクトリ プレフィックス:"
 #: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.InstallDialog.cs:72
 msgid ""
 "Application name (to use as subdirectory name in the installation prefix):"
-msgstr ""
-"アプリケーション名（インストールのプレフィックスとしてサブディレクトリ名にな"
-"ります）:"
+msgstr "アプリケーション名（インストールのプレフィックスとしてサブディレクトリ名になります）:"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.SourcesZipEditorWidget.cs:51
 msgid "Select the archive file name and format:"
@@ -7534,13 +7275,12 @@ msgstr "<b><big>配置ファイルは既に存在します。置き換えます�
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.FileReplaceDialog.cs:153
 msgid ""
-"There is already a file in the target directory that has the same name as "
-"the source file. You can keep the existing target file, or overwrite it with "
-"the source file."
+"There is already a file in the target directory that has the same name as the "
+"source file. You can keep the existing target file, or overwrite it with the "
+"source file."
 msgstr ""
-"ターゲット ディレクトリに、このソースファイルと同名のファイルが存在します。既"
-"存のターゲットファイルを維持することもできますし、このソースファイルで上書き"
-"することもできます。"
+"ターゲット "
+"ディレクトリに、このソースファイルと同名のファイルが存在します。既存のターゲットファイルを維持することもできますし、このソースファイルで上書きすることもできます。"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.FileReplaceDialog.cs:244
 #: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.FileReplaceDialog.cs:338
@@ -7549,11 +7289,9 @@ msgstr "最終更新日:"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.FileReplaceDialog.cs:397
 msgid ""
-"The source file will replace the existing target file if it has been "
-"modified more recently."
-msgstr ""
-"このソースファイルがより新しく更新されたファイルであれば、これで既存のター"
-"ゲットファイルを置き換えます。"
+"The source file will replace the existing target file if it has been modified "
+"more recently."
+msgstr "このソースファイルがより新しく更新されたファイルであれば、これで既存のターゲットファイルを置き換えます。"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.FileReplaceDialog.cs:415
 msgid "Apply this decision to _all files in this operation"
@@ -7593,10 +7331,8 @@ msgid ""
 "password protected, the password must be loaded into a running SSH "
 "authentication daemon, such as <i>ssh-agent</i> or <i>seahorse-agent</i>."
 msgstr ""
-"注意: このホスト用のSSH鍵は、あなたのシステム上にインストールされていなければ"
-"なりません。もしこれがパスワード保護されていたら、そのパスワードは<i>ssh-"
-"agent</i>や<i>seahorse-agent</i>などの、実行中のSSH認証デーモンによってロード"
-"されなければなりません。"
+"注意: "
+"このホスト用のSSH鍵は、あなたのシステム上にインストールされていなければなりません。もしこれがパスワード保護されていたら、そのパスワードは<i>ssh-agent</i>や<i>seahorse-agent</i>などの、実行中のSSH認証デーモンによってロードされなければなりません。"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/BasicOptionPanelWidget.cs:40
 msgid "Script name not provided"
@@ -7634,9 +7370,7 @@ msgstr "Unix統合"
 msgid ""
 "Set options for generating files to better integrate the application or "
 "library in a Unix system."
-msgstr ""
-"Unixシステム上で、よりよい方法でアプリケーションあるいはライブラリを統合する"
-"ための、ファイルを生成するオプションを設定します。"
+msgstr "Unixシステム上で、よりよい方法でアプリケーションあるいはライブラリを統合するための、ファイルを生成するオプションを設定します。"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.BasicOptionPanelWidget.cs:55
 msgid "Generate launch script"
@@ -7747,141 +7481,127 @@ msgid "Select the categories you want to assign to the desktop entry:"
 msgstr "デスクトップエントリで割り当てたいカテゴリを選択してください:"
 
 #: ../src/addins/MonoDevelop.Moonlight/MonoDevelop.Moonlight/MoonlightProject.cs:73
-#, fuzzy
 msgid "Could not find test HTML file '{0}'."
-msgstr "型 '{0}' が見つかりません"
+msgstr "テストHTMLファイル '{0}' が見つかりません"
 
 #: ../src/addins/MonoDevelop.Moonlight/MonoDevelop.Moonlight/MoonlightProject.cs:85
 msgid "Failed to open test page in browser."
-msgstr ""
+msgstr "ブラウザでテストページを開けませんでした"
 
 #: ../src/addins/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor/XmlEditorService.cs:221
 #: ../src/addins/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor/XmlEditorService.cs:250
 msgid "Validating XML..."
-msgstr ""
+msgstr "XMLの妥当性を検証中..."
 
 #: ../src/addins/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor/XmlEditorService.cs:235
 #: ../src/addins/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor/XmlEditorService.cs:301
 #: ../src/addins/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor/XmlEditorService.cs:349
 #: ../src/addins/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor/XmlEditorService.cs:385
-#, fuzzy
 msgid "Validation failed."
-msgstr "保存に失敗しました。"
+msgstr "妥当性検証に失敗しました。"
 
 #: ../src/addins/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor/XmlEditorService.cs:238
 #: ../src/addins/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor/XmlEditorService.cs:304
 msgid "XML is valid."
-msgstr ""
+msgstr "XMLは妥当です"
 
 #: ../src/addins/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor/XmlEditorService.cs:316
 msgid "Validating schema..."
-msgstr ""
+msgstr "スキーマを検証しています..."
 
 #: ../src/addins/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor/XmlEditorService.cs:352
-#, fuzzy
 msgid "Schema is valid."
-msgstr "検索パターンが無効です"
+msgstr "スキーマは妥当です"
 
 #: ../src/addins/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor/XmlEditorService.cs:361
 msgid "Validating stylesheet..."
-msgstr ""
+msgstr "スタイルシートを妥当性検証しています..."
 
 #: ../src/addins/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor/XmlEditorService.cs:388
 msgid "Stylesheet is valid."
-msgstr ""
+msgstr "スタイルシートは妥当です"
 
 #: ../src/addins/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor/XmlEditorService.cs:400
 msgid "Select XSLT Stylesheet"
-msgstr ""
+msgstr "XSLTスタイルシートを選択してください"
 
 #: ../src/addins/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor/XmlEditorService.cs:425
-#, fuzzy
 msgid "Select XML Schema"
-msgstr "画像を選択"
+msgstr "XMLスキーマを選択してください"
 
 #: ../src/addins/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor/XmlTextEditorExtension.cs:554
-#, fuzzy
 msgid "Creating schema..."
-msgstr "rules.makeの作成中"
+msgstr "スキーマを作成中..."
 
 #: ../src/addins/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor/XmlTextEditorExtension.cs:559
-#, fuzzy
 msgid "Schema created."
-msgstr "検索が完了しました"
+msgstr "スキーマを作成しました"
 
 #: ../src/addins/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor/XmlTextEditorExtension.cs:561
 msgid "Error creating XML schema."
-msgstr ""
+msgstr "XMLスキーマの作成中にエラーが発生しました"
 
 #: ../src/addins/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor/XmlTextEditorExtension.cs:656
-#, fuzzy
 msgid "Error reading file '{0}'."
-msgstr "ファイル {0} の読み込みでエラーです "
+msgstr "ファイル '{0}' の読み込みでエラーです "
 
 #: ../src/addins/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor/XmlTextEditorExtension.cs:670
 msgid "Executing transform..."
-msgstr ""
+msgstr "変換中..."
 
 #: ../src/addins/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor/XmlTextEditorExtension.cs:676
-#, fuzzy
 msgid "Transform completed."
-msgstr "検索が完了しました"
+msgstr "変換が完了しました"
 
 #: ../src/addins/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor/XmlTextEditorExtension.cs:679
-#, fuzzy
 msgid "Could not run transform."
-msgstr "diff情報を取得できませんでした。"
+msgstr "変換を実行できませんでした。"
 
 #: ../src/addins/MonoDevelop.XmlEditor/gtk-gui/MonoDevelop.XmlEditor.Gui.XmlEditorOptionsPanelWidget.cs:34
 msgid "Autocomplete XML closing tags"
-msgstr ""
+msgstr "XML閉じタグを自動補完する"
 
 #: ../src/addins/MonoDevelop.XmlEditor/gtk-gui/MonoDevelop.XmlEditor.Gui.XmlEditorOptionsPanelWidget.cs:47
 msgid "Show schema annotation"
-msgstr ""
+msgstr "スキーマの注釈を表示"
 
 #: ../src/addins/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor.Gui/XmlSchemasPanelWidget.cs:70
-#, fuzzy
 msgid "Built in"
-msgstr "ビルド: "
+msgstr "ビルトイン"
 
 #: ../src/addins/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor.Gui/XmlSchemasPanelWidget.cs:71
-#, fuzzy
 msgid "User schema"
-msgstr "ccacheを使用"
+msgstr "ユーザースキーマ"
 
 #: ../src/addins/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor.Gui/XmlSchemasPanelWidget.cs:379
-#, fuzzy
 msgid "Error loading schema '{0}'."
-msgstr "テンプレート {0} の読み込みでエラーが発生しました"
+msgstr "スキーマ '{0}' の読み込みでエラーが発生しました"
 
 #: ../src/addins/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor.Gui/XmlSchemasPanelWidget.cs:387
 msgid "Schema '{0}' has no target namespace."
-msgstr ""
+msgstr "スキーマ '{0}' にターゲット名前空間がありません"
 
 #: ../src/addins/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor.Gui/XmlSchemasPanelWidget.cs:395
 msgid ""
 "A schema is already registered with the namespace '{0}'. Would you like to "
 "replace it?"
-msgstr ""
+msgstr "名前空間 '{0}'のスキーマが既に登録されています。置き換えますか?"
 
 #: ../src/addins/MonoDevelop.XmlEditor/gtk-gui/MonoDevelop.XmlEditor.Gui.XmlSchemasPanelWidget.cs:60
 msgid "<b>Registered Schemas</b>"
-msgstr ""
+msgstr "<b>登録済みスキーマ</b>"
 
 #: ../src/addins/MonoDevelop.XmlEditor/gtk-gui/MonoDevelop.XmlEditor.Gui.XmlSchemasPanelWidget.cs:133
-#, fuzzy
 msgid "<b>Default File Associations</b>"
-msgstr "<b>ファイル保存オプション</b>"
+msgstr "<b>デフォルトのファイル関連付け</b>"
 
 #: ../src/addins/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor.Gui/XmlSchemasPanel.cs:55
 msgid "Unhandled error saving schema changes."
-msgstr ""
+msgstr "スキーマの変更の保存時に想定外のエラーが発生しました"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValueTreeView.cs:154
-#, fuzzy
 msgid "The name '{0}' does not exist in the current context."
-msgstr "ファイル '{0}' にはコンポーネントが存在しません。"
+msgstr "現在のコンテキストには名前 '{0}' が存在しません。"
 
 #~ msgid "Cat_egories:"
 #~ msgstr "カテゴリ(_e)"
@@ -8903,10 +8623,8 @@ msgstr "ファイル '{0}' にはコンポーネントが存在しません。"
 #  nb.AppendPage (changelog, new Label ("ChangeLog"));
 #~ msgid "Version Control"
 #~ msgstr "バージョン コントロール"
-
 #~ msgid "Diff"
 #~ msgstr "Diff"
-
 #~ msgid "Log"
 #~ msgstr "ログ"
 
@@ -9445,10 +9163,8 @@ msgstr "ファイル '{0}' にはコンポーネントが存在しません。"
 #  nb.AppendPage (changelog, new Label ("ChangeLog"));
 #~ msgid "User Control"
 #~ msgstr "ユーザー コントロール"
-
 #~ msgid "Creates an empty ASP.NET user control."
 #~ msgstr "空のASP.NETユーザーコントロールを作成します"
-
 #~ msgid "User Control with CodeBehind"
 #~ msgstr "ユーザーコントロールとコードビハインド"
 
@@ -10597,10 +10313,8 @@ msgstr "ファイル '{0}' にはコンポーネントが存在しません。"
 #  set the label properties
 #~ msgid "Replace all files"
 #~ msgstr "全ファイルで置換"
-
 #~ msgid "Replace all _older files"
 #~ msgstr "他のファイルで全て置換"
-
 #~ msgid "Skip all files"
 #~ msgstr "全ファイルをスキップ"
 
@@ -10934,3 +10648,4 @@ msgstr "ファイル '{0}' にはコンポーネントが存在しません。"
 
 #~ msgid "Start a New Project"
 #~ msgstr "新しいプロジェクトを開始"
+
