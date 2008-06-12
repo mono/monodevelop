@@ -117,6 +117,9 @@ namespace MonoDevelop.Ide.Gui.Content {
 				}
 				return IndentStyle.None;
 			}
+			set {
+				PropertyService.Set ("IndentStyle", value);
+			}
 		}
 		
 		public static DocumentSelectionMode DocumentSelectionMode {

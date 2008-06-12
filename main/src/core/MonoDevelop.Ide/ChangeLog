@@ -1,3 +1,8 @@
+2008-06-12  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Ide.Gui.Content/TextEditorProperties.cs: added set for
+	  indentstyle property.
+
 2008-06-11  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Ide.Gui.Content/TextEditorProperties.cs: fixed 'Bug
