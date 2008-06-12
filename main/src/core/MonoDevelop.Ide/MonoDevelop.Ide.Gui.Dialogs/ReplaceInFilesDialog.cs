@@ -337,7 +337,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				}
 				
 				if (!Directory.Exists(directoryName)) {
-					MessageService.ShowError (GettextCatalog.GetString ("Invalid directory name: {0}, directoryName"));
+					MessageService.ShowError (GettextCatalog.GetString ("Invalid directory name: {0}", directoryName));
 					return false;
 				}
 				
