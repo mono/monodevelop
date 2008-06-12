@@ -1,7 +1,10 @@
 #!/bin/bash
 VERSION=0.17
-prefix=/usr/local
 profile=stable
+
+prefix=NONE
+test -e "$CONFIG_SITE" && . "$CONFIG_SITE"
+test "$prefix" = NONE && prefix=/usr/local
 
 usage ()
 {

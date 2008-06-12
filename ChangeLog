@@ -1,3 +1,7 @@
+2008-06-12  Aaron Bockover  <abock@gnome.org>
+
+	* configure: Support CONFIG_SITE (BNC #350629)
+
 2008-05-21  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Makefile: Added test target.
