@@ -1,0 +1,25 @@
+2008-03-18  Daniel Abramov <ex@vingrad.ru>
+
+	* MonoDevelop.CodeAnalysis.Smokey.addin.xml: added dependencies
+	* SmokeyAnalyzer.cs: (new) implementation of IAnalyzer for Smokey
+	* SmokeyRuleLoader.cs: make it dynamic
+	* SmokeyViolation.cs: minor
+
+2008-03-17  Daniel Abramov <ex@vingrad.ru> 
+
+	* SmokeyRunner.cs: interface implementation stub
+
+2008-03-16  Daniel Abramov <ex@vingrad.ru> 
+
+	* MonoDevelop.CodeAnalysis.Smokey.mdp, SmokeyRule.cs,
+	SmokeyRuleLoader.cs, SmokeyRunner.cs
+	SmokeyViolation.cs: initial code, now rule loading works (tested)
+	
+	
+
+2008-03-14  Ben Motmans <ben.motmans@gmail.com> 
+
+	* MonoDevelop.CodeAnalysis.Smokey.addin.xml, ChangeLog, gtk-gui,
+	  gtk-gui/generated.cs, gtk-gui/gui.stetic,
+	  MonoDevelop.CodeAnalysis.Smokey.mdp: initial smokey addin
+

@@ -1,0 +1,10 @@
+<objects>
+  <object type="MonoDevelop.CodeAnalysis.ProjectOptionsPanelWidget" palette-category="MonoDevelop.CodeAnalysis" allow-children="false" base-type="Gtk.Bin">
+    <itemgroups />
+    <signals />
+  </object>
+  <object type="MonoDevelop.CodeAnalysis.ViolationWidget" palette-category="MonoDevelop.CodeAnalysis" allow-children="false" base-type="Gtk.Bin">
+    <itemgroups />
+    <signals />
+  </object>
+</objects>

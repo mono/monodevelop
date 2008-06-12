@@ -1,0 +1,52 @@
+2008-04-24  Daniel Abramov <ex@vingrad.ru> 
+
+	* MonoDevelop.CodeAnalysis.Gendarme.addin.xml: added dependencies
+	* Makefile.am, MonoDevelop.CodeAnalysis.Gendarme.mdp: added new files
+	* GendarmeAnalyzer.cs: (new) class implementing IAnalyzer for Gendarme
+	* GendarmeRule.cs: simplified code
+	* GendarmeRuleCache.cs: minor changes
+	* GendarmeRuleLoader.cs: minor changes + implemented dynamical loading
+	for Gendarme rules assemblies
+	* GendarmeRunner.cs: minor changes
+	* Utilities.cs: simplification
+
+
+2008-03-17  Daniel Abramov <ex@vingrad.ru> 
+
+	* GendarmeRuleLoader.cs: added little comment
+
+2008-03-17  Daniel Abramov <ex@vingrad.ru> 
+
+	* GendarmeRunner.cs: fixed minor problem (now Gendarme runner works)
+	
+2008-03-16  Daniel Abramov <ex@vingrad.ru> 
+
+	* GendarmeRule.cs, GendarmeRuleCache.cs, GendarmeRuleLoader.cs,
+	GendarmeRunner.cs, GendarmeViolation.cs: most code is
+	Mono Guidelines-formatted; also rule loading is implemented (and tested)
+	* Utilities.cs: a good place for Gendarme-wide shared code
+	* Makefile.am, MonoDevelop.CodeAnalysis.Gendarme.mdp: added Utilities.cs
+	
+2008-03-16  Daniel Abramov <ex@vingrad.ru> 
+
+	* GendarmeRuleCache.cs, GendarmeRuleLoader.cs, GendarmeRunner.cs,
+	GendarmeViolation.cs, MonoDevelop.CodeAnalysis.Gendarme.mdp,
+	Utilities.cs: added more Gendarme support.
+	
+2008-03-15  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* MonoDevelop.CodeAnalysis.Gendarme.mdp: Downgrade references to Gtk#
+	2.8 (so it works with my SLED10 :-)
+
+2008-03-14  Ben Motmans <ben.motmans@gmail.com> 
+
+	* MonoDevelop.CodeAnalysis.Gendarme.mdp, Makefile.am: fixed references
+
+2008-03-14  Ben Motmans <ben.motmans@gmail.com> 
+
+	* MonoDevelop.CodeAnalysis.Gendarme.addin.xml: added addin metadata
+
+2008-03-14  Ben Motmans <ben.motmans@gmail.com> 
+
+	* MonoDevelop.CodeAnalysis.Gendarme.mdp: changed the build directory
+

@@ -1,0 +1,18 @@
+<Addin  id          = "CodeAnalysis.Smokey"
+        namespace   = "MonoDevelop"
+	name        = "MonoDevelop CodeAnalysis Smokey addin"
+	author      = "Ben Motmans"
+	copyright   = "MIT/X11"
+	url         = "http://code.google.com/p/md-codeanalysis"
+	description = "MonoDevelop CodeAnalysis addin"
+	category    = "Code Analysis"
+	version     = "0.1.0">
+
+	<Runtime>
+		<Import assembly="MonoDevelop.CodeAnalysis.dll"/>
+		<Import assembly="MonoDevelop.CodeAnalysis.Smokey.dll"/>
+		<Import assembly="smokey.exe"/>
+	</Runtime>
+
+	<Localizer type="Gettext" catalog="monodevelop-codeanalysis" />
+</Addin>
