@@ -2,11 +2,11 @@ ADDIN_BUILD = $(top_builddir)/build
 ASSEMBLY = $(ADDIN_BUILD)/MonoDevelop.ValaBinding.dll
 
 REFS =  \
-	-pkg:glib-sharp-2.0 \
-	-pkg:gtk-sharp-2.0 \
-	-pkg:mono-addins \
-	-pkg:monodevelop \
-	-pkg:monodevelop-core-addins \
+	$(GLIB_SHARP_LIBS) \
+	$(GTK_SHARP_LIBS) \
+	$(MONO_ADDINS_LIBS) \
+	$(MONODEVELOP_CORE_ADDINS_LIBS) \
+	$(MONODEVELOP_LIBS) \
 	-r:Mono.Posix \
 	-r:System \
 	-r:System.Xml
