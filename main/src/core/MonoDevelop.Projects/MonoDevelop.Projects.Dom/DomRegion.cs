@@ -70,6 +70,10 @@ namespace MonoDevelop.Projects.Dom
 			this.end   = new DomLocation (endLine, endColumn);
 		}
 		
+		public DomRegion (DomLocation start, DomLocation end) : this (start.Line, start.Column, end.Line, end.Column)
+		{
+		}
+		
 		public override string ToString ()
 		{
 			if (this.IsEmpty)

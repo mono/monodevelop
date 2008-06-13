@@ -46,6 +46,9 @@ namespace MonoDevelop.Projects.Dom
 		}
 		
 		
-		public static ExpressionContext Default = new ExpressionContext ();
+		public static ExpressionContext Default   = new ExpressionContext ();
+		public static ExpressionContext Namespace = new ExpressionContext ();
+		public static ExpressionContext Attribute = new ExpressionContext ();
+		public static ExpressionContext Type      = new ExpressionContext ();
 	}
 }

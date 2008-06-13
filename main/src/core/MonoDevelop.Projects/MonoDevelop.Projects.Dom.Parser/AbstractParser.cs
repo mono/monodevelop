@@ -46,6 +46,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 			return Parse (fileName, System.IO.File.ReadAllText (fileName));
 		}
 		
+		public abstract IExpressionFinder CreateExpressionFinder ();
 		public abstract ICompilationUnit Parse (string fileName, string content);
 		
 		public virtual bool CanParseMimeType (string mimeType)

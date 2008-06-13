@@ -37,5 +37,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 		bool CanParseMimeType (string mimeType);
 		bool CanParseProjectType (string projectType);
 		bool CanParse (string fileName);
+		
+		IExpressionFinder CreateExpressionFinder ();
 	}
 }

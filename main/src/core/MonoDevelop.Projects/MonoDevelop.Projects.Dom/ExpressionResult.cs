@@ -48,6 +48,9 @@ namespace MonoDevelop.Projects.Dom
 			get {
 				return expressionContext;
 			}
+			set {
+				expressionContext = value;
+			}
 		}
 
 		public DomRegion Region {
@@ -55,7 +58,9 @@ namespace MonoDevelop.Projects.Dom
 				return region;
 			}
 		}
-		
+		public ExpressionResult (string expression) : this (expression, DomRegion.Empty, null)
+		{
+		}
 		public ExpressionResult (string expression, DomRegion region, ExpressionContext expressionContext)
 		{
 			this.expression = expression;

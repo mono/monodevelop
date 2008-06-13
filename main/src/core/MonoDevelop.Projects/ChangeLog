@@ -1,3 +1,11 @@
+2008-06-13  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Dom.Parser/AbstractParser.cs,
+	  MonoDevelop.Projects.Dom.Parser/IParser.cs,
+	  MonoDevelop.Projects.Dom/DomRegion.cs,
+	  MonoDevelop.Projects.Dom/ExpressionResult.cs,
+	  MonoDevelop.Projects.Dom/ExpressionContext.cs: Worked on new dom.
+
 2008-06-12  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Projects/Solution.cs: When assigning a format to the
