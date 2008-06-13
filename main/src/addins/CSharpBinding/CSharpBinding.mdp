@@ -108,6 +108,7 @@
     <File name="Parser/mcs/mcs/symbolwriter.cs" subtype="Code" buildaction="Compile" />
     <File name="Parser/mcs/mcs/typemanager.cs" subtype="Code" buildaction="Compile" />
     <File name="Project/CSharpResourceIdBuilder.cs" subtype="Code" buildaction="Compile" />
+    <File name="Parser/CSharpExpressionFinder.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Core" />

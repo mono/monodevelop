@@ -40,6 +40,7 @@ FILES =  \
 	Gui/FormattingPanel.cs \
 	Gui/OverrideCompletionData.cs \
 	Parser/CodeGenerator.cs \
+	Parser/CSharpExpressionFinder.cs \
 	Parser/CSharpVisitor.cs \
 	Parser/DomParser.cs \
 	Parser/ExpressionFinder.cs \

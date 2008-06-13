@@ -54,6 +54,11 @@ namespace MonoDevelop.CSharpBinding
 			return Path.GetExtension (fileName) == ".cs";
 		}
 		
+		public IExpressionFinder CreateExpressionFinder ()
+		{
+			return new CSharpExpressionFinder ();
+		}
+		
 		static DomRegion Block2Region (Mono.CSharp.Dom.LocationBlock block)
 		{
 			int startLine;

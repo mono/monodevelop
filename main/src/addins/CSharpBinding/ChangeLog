@@ -1,3 +1,9 @@
+2008-06-13  Mike Krüger <mkrueger@novell.com> 
+
+	* Gui/CSharpTextEditorExtension.cs, Parser/DomParserOld.cs,
+	  Parser/DomParser.cs, Parser/CSharpExpressionFinder.cs: Worked on
+	  new expression finder.
+
 2008-06-10  Andres G. Aragoneses <aaragoneses@novell.com> 
 
 	* CSharpBindingCompilerManager.cs: Implement feature to allow unmanaged
