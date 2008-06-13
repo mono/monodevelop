@@ -25,12 +25,12 @@ namespace MonoDevelop.VBNetBinding
 		
 		public bool CanParseProjectType (string projectType)
 		{
-			return "C#" == projectType;
+			return "VB.NET" == projectType;
 		}
 		
 		public bool CanParse (string fileName)
 		{
-			return Path.GetExtension (fileName) == ".cs";
+			return Path.GetExtension (fileName) == ".vb";
 		}
 		
 		public ICompilationUnit Parse (string fileName, string content)
