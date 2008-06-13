@@ -1,4 +1,10 @@
 2008-06-14  Ankit Jain  <jankit@novell.com>
+  
+	Fix bug #400300.
+	* VBBindingCompilerServices.cs (ParseOutput): Returns BuildResult now.
+	Move construction of BuildResult to here.
+ 
+2008-06-14  Ankit Jain  <jankit@novell.com>
  
  	* VBBindingCompilerServices.cs (GenerateOptions): Emit -debug option.
  
