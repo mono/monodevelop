@@ -1,3 +1,7 @@
+2008-06-14  Ankit Jain  <jankit@novell.com>
+
+	* VBBindingCompilerServices.cs (GenerateOptions): Emit -debug option.
+
 2008-06-13  Mike Krüger <mkrueger@novell.com> 
 
 	* Parser/DomParser.cs: worked on dom parser.
