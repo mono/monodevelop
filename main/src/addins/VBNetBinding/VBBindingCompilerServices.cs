@@ -200,14 +200,9 @@ namespace VBBinding {
 			monitor.Log.WriteLine (compilerName + " " + string.Join (" ", File.ReadAllLines (responseFileName)));
 			exitCode = DoCompilation (outstr, tf, workingDir, ref output);
 			
-			CompilerResults results = new CompilerResults (tf);
-			BuildResult result = new BuildResult (results, output);
-				
 			monitor.Log.WriteLine (output);			                                                          
-			                                                          
-			ParseOutput(tf, output, results);
-
-			if (results.Errors.Count == 0 && exitCode != 0) {
+			BuildResult result = ParseOutput (tf, output);
+			if (result.Errors.Count == 0 && exitCode != 0) {
 				// Compilation failed, but no errors?
 				// Show everything the compiler said.
 				result.AddError (output);
@@ -247,8 +242,10 @@ namespace VBBinding {
 			sw.Close();
 		}
 		
-		void ParseOutput(TempFileCollection tf, string output, CompilerResults cr)
+		BuildResult ParseOutput(TempFileCollection tf, string output)
 		{
+			CompilerResults results = new CompilerResults (tf);
+
 			using (StringReader sr = new StringReader (output)) {			
 				while (true) {
 					string curLine = sr.ReadLine();
@@ -265,9 +262,10 @@ namespace VBBinding {
 					CompilerError error = CreateErrorFromString (curLine);
 					
 					if (error != null)
-						cr.Errors.Add (error);
+						results.Errors.Add (error);
 				}
 			}
+			return new BuildResult (results, output);
 		}
 		
 		
