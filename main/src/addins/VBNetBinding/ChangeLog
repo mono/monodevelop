@@ -1,5 +1,9 @@
 2008-06-13  Mike Krüger <mkrueger@novell.com> 
 
+	* Parser/DomParser.cs: worked on dom parser.
+
+2008-06-13  Mike Krüger <mkrueger@novell.com> 
+
 	* Parser/DomParser.cs: Some changes in the vb.net dom parser.
 
 2008-06-04  Lluis Sanchez Gual <lluis@novell.com> 

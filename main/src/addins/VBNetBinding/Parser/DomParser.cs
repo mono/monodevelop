@@ -33,6 +33,11 @@ namespace MonoDevelop.VBNetBinding
 			return Path.GetExtension (fileName) == ".vb";
 		}
 		
+		public IExpressionFinder CreateExpressionFinder ()
+		{
+			return null;
+		}
+		
 		public ICompilationUnit Parse (string fileName, string content)
 		{
 			using (ICSharpCode.NRefactory.IParser parser = ICSharpCode.NRefactory.ParserFactory.CreateParser (ICSharpCode.NRefactory.SupportedLanguage.VBNet, new StringReader(content))) {
