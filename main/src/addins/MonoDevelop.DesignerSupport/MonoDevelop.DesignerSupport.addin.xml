@@ -116,6 +116,7 @@
 	
 	<Extension path = "/MonoDevelop/Ide/TextEditorExtensions">
 		<Class class = "MonoDevelop.DesignerSupport.Projects.PropertyPadTextEditorExtension" />
+		<Class class = "MonoDevelop.DesignerSupport.ClassOutlineTextEditorExtension" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/DesignerSupport/ToolboxProviders">
