@@ -5392,7 +5392,7 @@ namespace Mono.CSharp {
 				return;
 			}
 
-#if GMCS_SOURCE && !MS_COMPATIBLE
+#if false // FIXES BUILD
 			builder.SetGenericMethodSignature (
 				flags, method.CallingConventions,
 				method.ReturnType, ParameterTypes);
