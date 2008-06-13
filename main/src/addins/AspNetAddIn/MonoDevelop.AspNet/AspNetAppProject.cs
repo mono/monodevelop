@@ -520,9 +520,10 @@ namespace MonoDevelop.AspNet
 			
 			//make sure that the parent and child files are in the project
 			if (filesToAdd != null) {
-				foreach (string file in filesToAdd)
+				foreach (string file in filesToAdd) {
 					//NOTE: this only adds files if they are not already in the project
 					AddFile (file, BuildAction.FileCopy);
+				}
 			}
 		}
 		
@@ -582,7 +583,7 @@ namespace MonoDevelop.AspNet
 						return codebehind != null ? new string[] { designer, codebehind }
 							: new string[] { designer };
 					} else {
-						return codebehind == null?  new string[] { codebehind }
+						return codebehind != null?  new string[] { codebehind }
 							: null;
 					}
 				}

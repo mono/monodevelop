@@ -63,7 +63,10 @@ namespace ${Namespace} {
 	
 	public partial class ${EscapedIdentifier} : System.Web.UI.Page
 	{
-		
+		public void button1Clicked (object sender, EventArgs args)
+		{
+			button1.Text = "You clicked me";
+		}
 	}
 }]]>
 				</CodeTranslationFile>
@@ -79,10 +82,7 @@ namespace ${Namespace} {
 	
 	public partial class ${EscapedIdentifier}
 	{
-		public void button1Clicked (object sender, EventArgs args)
-		{
-			button1.Text = "You clicked me";
-		}
+		protected System.Web.UI.WebControls.Button button1;
 	}
 }]]>
 				</CodeTranslationFile>
