@@ -71,10 +71,10 @@ namespace VBBinding {
 			sb.Append("-nologo");sb.Append(Environment.NewLine);
 			sb.Append("-utf8output");sb.Append(Environment.NewLine);
 			
-//			if (compilerparameters.DebugMode) {
+			if (configuration.DebugMode) {
 //				sb.Append("--debug+");sb.Append(Environment.NewLine);
-//				sb.Append("--debug:full");sb.Append(Environment.NewLine);
-//			}
+				sb.Append("-debug:full");sb.Append(Environment.NewLine);
+			}
 			
 			//if (compilerparameters.Optimize) {
 			//	sb.Append("-optimize");sb.Append(Environment.NewLine);
