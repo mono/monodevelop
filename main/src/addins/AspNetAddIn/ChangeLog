@@ -1,3 +1,11 @@
+2008-06-13  Michael Hutchinson <mhutchinson@novell.com> 
+
+	Partially backport r105807.
+	* Templates/WebApplication.xpt.xml: Move event hander to the user code
+	  class, not the designer class. Add protected button member because
+	  some languagee bindings can't auto-add it. Fixes "Bug 400301 -
+	  [Regression] The default VB Asp.Net template fails to compile".
+
 2008-06-04  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.AspNet.addin.xml: Bump MD version.
