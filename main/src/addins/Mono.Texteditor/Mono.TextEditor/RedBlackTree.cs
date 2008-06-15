@@ -247,6 +247,8 @@ namespace Mono.TextEditor
 					RotateRight (parent);
 				}
 				sibling = node.Sibling;
+				if (sibling == null)
+					return;
 			}
 			
 			// case 3
@@ -498,7 +500,10 @@ namespace Mono.TextEditor
 			
 			public RedBlackTreeNode Uncle {
 				get {
-					return parent == Grandparent.left ? Grandparent.right : Grandparent.left;
+					RedBlackTreeNode grandparent = Grandparent;
+					if (grandparent == null)
+						return null;
+					return parent == grandparent.left ? grandparent.right : grandparent.left;
 				}
 			}
 			
