@@ -1,3 +1,8 @@
+2008-06-16  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectNodeBuilder.cs: Fix
+	  nullref (bug #400317).
+
 2008-06-09  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Gui/RootWorkspace.cs: Fix bug 398179 - Loading

@@ -117,7 +117,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				label = GettextCatalog.GetString ("{0} <span foreground='red' size='small'>(Unknown language '{1}')</span>", p.Name, ((DotNetProject)p).LanguageName);
 			} else {
 				iconName = Services.Icons.GetImageForProjectType (p.ProjectType);
-				if (p.ParentSolution.SingleStartup && p.ParentSolution.StartupItem == p)
+				if (p.ParentSolution != null && p.ParentSolution.SingleStartup && p.ParentSolution.StartupItem == p)
 					label = "<b>" + p.Name + "</b>";
 				else
 					label = p.Name;
