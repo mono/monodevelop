@@ -34,12 +34,13 @@ using MonoDevelop.Projects.Serialization;
 
 namespace MonoDevelop.Projects
 {
-	public abstract class WorkspaceItem : IBuildTarget, IWorkspaceFileObject
+	public abstract class WorkspaceItem : IBuildTarget, IWorkspaceFileObject, ILoadController
 	{
 		Workspace parentWorkspace;
 		FileFormat format;
 		Hashtable extendedProperties;
 		string fileName;
+		int loading;
 		
 		[ProjectPathItemProperty ("BaseDirectory", DefaultValue=null)]
 		string baseDirectory;
@@ -110,6 +111,15 @@ namespace MonoDevelop.Projects
 					baseDirectory = Path.GetFullPath (value);
 				NotifyModified ();
 			}
+		}
+		
+		protected bool Loading {
+			get { return loading > 0; }
+		}
+		
+		public WorkspaceItem ()
+		{
+			MonoDevelop.Projects.Extensions.ProjectExtensionUtil.LoadControl (this);
 		}
 		
 		public virtual List<string> GetItemFiles (bool includeReferencedFiles)
@@ -231,11 +241,13 @@ namespace MonoDevelop.Projects
 				}
 				return format;
 			}
-			set {
-				format = value;
-				if (!string.IsNullOrEmpty (FileName))
-					FileName = format.GetValidFileName (this, FileName);
-			}
+		}
+		
+		public virtual void ConvertToFormat (FileFormat format, bool convertChildren)
+		{
+			this.format = format;
+			if (!string.IsNullOrEmpty (FileName))
+				FileName = format.GetValidFileName (this, FileName);
 		}
 		
 		internal virtual BuildResult InternalBuild (IProgressMonitor monitor, string configuration)
@@ -349,6 +361,26 @@ namespace MonoDevelop.Projects
 		}
 		
 		internal protected virtual void OnSetNeedsBuilding (bool val, string configuration)
+		{
+		}
+		
+		void ILoadController.BeginLoad ()
+		{
+			loading++;
+			OnBeginLoad ();
+		}
+		
+		void ILoadController.EndLoad ()
+		{
+			loading--;
+			OnEndLoad ();
+		}
+		
+		protected virtual void OnBeginLoad ()
+		{
+		}
+		
+		protected virtual void OnEndLoad ()
 		{
 		}
 		

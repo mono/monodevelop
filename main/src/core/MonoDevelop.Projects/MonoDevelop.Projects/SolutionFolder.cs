@@ -302,12 +302,40 @@ namespace MonoDevelop.Projects
 				item.Save (monitor);
 		}
 
-		public SolutionEntityItem AddItem (string filename, IProgressMonitor monitor)
+		public SolutionEntityItem AddItem (IProgressMonitor monitor, string filename)
+		{
+			return AddItem (monitor, filename, false);
+		}
+
+		public SolutionEntityItem AddItem (IProgressMonitor monitor, string filename, bool createSolutionConfigurations)
 		{
 			if (monitor == null) monitor = new NullProgressMonitor ();
 			SolutionEntityItem entry = Services.ProjectService.ReadSolutionItem (monitor, filename);
-			Items.Add (entry);
+			AddItem (entry, createSolutionConfigurations);
 			return entry;
+		}
+
+		public void AddItem (SolutionItem item)
+		{
+			AddItem (item, false);
+		}
+		
+		public void AddItem (SolutionItem item, bool createSolutionConfigurations)
+		{
+			Items.Add (item);
+			
+			SolutionEntityItem eitem = item as SolutionEntityItem;
+			if (eitem != null && createSolutionConfigurations) {
+				// Create new solution configurations for item configurations
+				foreach (ItemConfiguration iconf in eitem.Configurations) {
+					SolutionConfiguration conf = ParentSolution.Configurations [iconf.Id];
+					if (conf == null) {
+						conf = new SolutionConfiguration (iconf.Id);
+						conf.AddItem (eitem);
+						ParentSolution.Configurations.Add (conf);
+					}
+				}
+			}
 		}
 
 		internal void NotifyItemRemoved (SolutionItem item)

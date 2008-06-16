@@ -211,9 +211,14 @@ namespace MonoDevelop.Projects
 		public SolutionConfiguration AddConfiguration (string name, bool createConfigForItems)
 		{
 			SolutionConfiguration conf = new SolutionConfiguration (name);
-			if (createConfigForItems) {
-				foreach (SolutionEntityItem item in Items)
-					conf.AddItem (item);
+			foreach (SolutionEntityItem item in Items) {
+				if (createConfigForItems && item.GetConfiguration (name) == null) {
+					SolutionItemConfiguration newc = item.CreateConfiguration (name);
+					if (item.DefaultConfiguration != null)
+						newc.CopyFrom (item.DefaultConfiguration);
+					item.Configurations.Add (newc);
+				}
+				conf.AddItem (item);
 			}
 			configurations.Add (conf);
 			return conf;
@@ -454,15 +459,11 @@ namespace MonoDevelop.Projects
 				StartupItemChanged (this, e);
 		}
 		
-		public override FileFormat FileFormat {
-			get {
-				return base.FileFormat;
-			}
-			set {
-				base.FileFormat = value;
-				foreach (SolutionItem item in GetAllSolutionItems<SolutionItem> ())
-					ConvertToSolutionFormat (item);
-			}
+		public override void ConvertToFormat (FileFormat format, bool convertChildren)
+		{
+			base.ConvertToFormat (format, convertChildren);
+			foreach (SolutionItem item in GetAllSolutionItems<SolutionItem> ())
+				ConvertToSolutionFormat (item, convertChildren);
 		}
 		
 		public override List<string> GetItemFiles (bool includeReferencedFiles)
@@ -498,7 +499,7 @@ namespace MonoDevelop.Projects
 		
 		void SetupNewItem (SolutionItem item)
 		{
-			ConvertToSolutionFormat (item);
+			ConvertToSolutionFormat (item, false);
 			
 			SolutionEntityItem eitem = item as SolutionEntityItem;
 			if (eitem != null) {
@@ -509,10 +510,10 @@ namespace MonoDevelop.Projects
 			}
 		}
 		
-		void ConvertToSolutionFormat (SolutionItem item)
+		void ConvertToSolutionFormat (SolutionItem item, bool force)
 		{
 			SolutionEntityItem eitem = item as SolutionEntityItem;
-			if (!FileFormat.Format.SupportsMixedFormats || eitem == null || !eitem.IsSaved) {
+			if (force || !FileFormat.Format.SupportsMixedFormats || eitem == null || !eitem.IsSaved) {
 				this.FileFormat.Format.ConvertToFormat (item);
 				if (eitem != null)
 					eitem.InstallFormat (this.FileFormat);

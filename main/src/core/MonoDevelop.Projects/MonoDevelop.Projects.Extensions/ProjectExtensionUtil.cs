@@ -26,12 +26,22 @@
 //
 
 using System;
+using System.Collections.Generic;
+using System.Threading;
 using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects.Extensions
 {
 	public static class ProjectExtensionUtil
 	{
+		static int loading;
+		static LocalDataStoreSlot loadControlSlot;
+		
+		static ProjectExtensionUtil ()
+		{
+			loadControlSlot = Thread.AllocateDataSlot ();
+		}
+		
 		public static ISolutionItemHandler GetItemHandler (SolutionItem item)
 		{
 			return item.GetItemHandler ();
@@ -46,7 +56,62 @@ namespace MonoDevelop.Projects.Extensions
 		{
 			return Services.ProjectService.ExtensionChain.LoadSolutionItem (monitor, fileName, callback);
 		}
+		
+		public static void BeginLoadOperation ()
+		{
+			Interlocked.Increment (ref loading);
+			LoadOperation op = (LoadOperation) Thread.GetData (loadControlSlot);
+			if (op == null) {
+				op = new LoadOperation ();
+				Thread.SetData (loadControlSlot, op);
+			}
+			op.LoadingCount++;
+		}
+		
+		public static void EndLoadOperation ()
+		{
+			Interlocked.Decrement (ref loading);
+			LoadOperation op = (LoadOperation) Thread.GetData (loadControlSlot);
+			if (op != null)
+				return;
+			if (--op.LoadingCount == 0) {
+				op.End ();
+				Thread.SetData (loadControlSlot, null);
+			}
+		}
+		
+		public static void LoadControl (ILoadController rc)
+		{
+			if (loading == 0)
+				return;
+			LoadOperation op = (LoadOperation) Thread.GetData (loadControlSlot);
+			if (op != null)
+				op.Add (rc);
+		}
 	}
+	
+	class LoadOperation
+	{
+		List<ILoadController> objects = new List<ILoadController> ();
+		public int LoadingCount;
+		
+		public void Add (object ob)
+		{
+			ILoadController lc = ob as ILoadController;
+			if (lc != null) {
+				objects.Add (lc);
+				lc.BeginLoad ();
+			}
+		}
+		
+		public void End ()
+		{
+			foreach (ILoadController ob in objects)
+				ob.EndLoad ();
+		}
+	}
+	
+
 	
 	public delegate SolutionEntityItem ItemLoadCallback (IProgressMonitor monitor, string fileName);
 }

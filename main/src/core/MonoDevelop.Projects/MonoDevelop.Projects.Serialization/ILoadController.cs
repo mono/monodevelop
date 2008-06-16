@@ -1,4 +1,4 @@
-// IWorkspaceObject.cs
+// IReaderControl.cs
 //
 // Author:
 //   Lluis Sanchez Gual <lluis@novell.com>
@@ -26,25 +26,12 @@
 //
 
 using System;
-using System.Collections.Generic;
-using MonoDevelop.Core;
-using MonoDevelop.Projects.Serialization;
-
 
 namespace MonoDevelop.Projects
 {
-	public interface IWorkspaceObject: IExtendedDataItem, IDisposable
+	public interface ILoadController
 	{
-		string Name { get; set; }
-		string BaseDirectory { get; set; }
-		void Save (IProgressMonitor monitor);
-	}
-	
-	public interface IWorkspaceFileObject: IWorkspaceObject
-	{
-		string FileName { get; set; }
-		FileFormat FileFormat { get; }
-		void ConvertToFormat (FileFormat format, bool convertChildren);
-		List<string> GetItemFiles (bool includeReferencedFiles);
+		void BeginLoad ();
+		void EndLoad ();
 	}
 }

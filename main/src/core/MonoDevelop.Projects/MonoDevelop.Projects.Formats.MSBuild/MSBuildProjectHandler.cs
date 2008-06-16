@@ -125,7 +125,12 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			it.FileName = fileName;
 			it.Name = System.IO.Path.GetFileNameWithoutExtension (fileName);
 			
-			Load (monitor, p);
+			try {
+				ProjectExtensionUtil.BeginLoadOperation ();
+				Load (monitor, p);
+			} finally {
+				ProjectExtensionUtil.EndLoadOperation ();
+			}
 			
 			return it;
 		}
@@ -203,20 +208,23 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			if (dotNetProject != null) {
 				foreach (MSBuildItem buildItem in msproject.GetAllItems ("Reference")) {
 					ProjectReference pref;
+					bool localCopy;
 					if (buildItem.HasMetadata ("HintPath")) {
 						string path = MSBuildProjectService.FromMSBuildPath (dotNetProject.BaseDirectory, buildItem.GetMetadata ("HintPath"));
 						pref = new ProjectReference (ReferenceType.Assembly, path);
-						pref.LocalCopy = buildItem.GetMetadata ("Private") != "False";
+						localCopy = buildItem.GetMetadata ("Private") != "False";
 					} else {
 						pref = new ProjectReference (ReferenceType.Gac, buildItem.Include);
+						localCopy = pref.LocalCopy;
 					}
+					pref.LocalCopy = localCopy;
 					ReadBuildItemMetadata (ser, buildItem, pref, typeof(ProjectReference));
 					dotNetProject.References.Add (pref);
 				}
 				foreach (MSBuildItem buildItem in msproject.GetAllItems ("ProjectReference")) {
 					ProjectReference pref = new ProjectReference (ReferenceType.Project, buildItem.GetMetadata ("Name"));
-					dotNetProject.References.Add (pref);
 					pref.LocalCopy = buildItem.GetMetadata ("Private") != "False";
+					dotNetProject.References.Add (pref);
 				}
 				
 				// Get the common assembly name
@@ -230,6 +238,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			foreach (MSBuildPropertyGroup grp in msproject.PropertyGroups) {
 				if (ParseConfigCondition (grp.Condition, out conf, out platform)) {
 					SolutionItemConfiguration config = EntityItem.CreateConfiguration (conf);
+					
 					config.Platform = platform;
 					DataItem data = ReadPropertyGroupMetadata (ser, grp, config);
 					ser.Deserialize (config, data);
@@ -637,6 +646,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			
 			string path = MSBuildProjectService.FromMSBuildPath (project.BaseDirectory, buildItem.Include);
 			ProjectFile file = new ProjectFile (path, buildAction);
+			
 			ReadBuildItemMetadata (ser, buildItem, file, typeof(ProjectFile));
 			
 			string dependentFile = buildItem.GetMetadata ("DependentUpon");
@@ -648,7 +658,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			string resourceId = buildItem.GetMetadata ("LogicalName");
 			if (!string.IsNullOrEmpty (resourceId))
 				file.ResourceId = resourceId;
-			
 			project.Files.Add (file);
 		}
 

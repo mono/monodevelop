@@ -339,6 +339,7 @@
     <File name="MonoDevelop.Projects.Dom/ExpressionResult.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Dom/ExpressionContext.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Dom/IParserContext.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Projects.Serialization/ILoadController.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Dom/DefaultParserContext.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>

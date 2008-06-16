@@ -220,42 +220,54 @@ namespace MonoDevelop.Projects.Formats.MD1
 		
 		public object ReadFile (string fileName, Type expectedType, IProgressMonitor monitor)
 		{
-			string ext = Path.GetExtension (fileName).ToLower ();
+			object readObject = null;
 			
-			if (ext == ".mdp") {
-				object project = ReadProjectFile (fileName, monitor);
-				if (project is DotNetProject)
-					((DotNetProject)project).SetItemHandler (new MD1DotNetProjectHandler ((DotNetProject) project));
-				return project;
-			}
-			else if (ext == ".mds") {
-				return ReadCombineFile (fileName, monitor);
-			}
-			else if (ext == ".mdw") {
-				return ReadWorkspaceItemFile (fileName, monitor);
-			}
-			else {
-				XmlTextReader reader = new XmlTextReader (new StreamReader (fileName));
-				try {
-					monitor.BeginTask (string.Format (GettextCatalog.GetString ("Loading solution item: {0}"), fileName), 1);
-					reader.MoveToContent ();
-					XmlDataSerializer ser = new XmlDataSerializer (MD1ProjectService.DataContext);
-					ser.SerializationContext.BaseFile = fileName;
-					ser.SerializationContext.ProgressMonitor = monitor;
-					SolutionEntityItem entry = (SolutionEntityItem) ser.Deserialize (reader, typeof(SolutionEntityItem));
-					entry.FileName = fileName;
-					MD1ProjectService.InitializeHandler (entry);
-					return entry;
+			ProjectExtensionUtil.BeginLoadOperation ();
+			try {
+				string ext = Path.GetExtension (fileName).ToLower ();
+				
+				if (ext == ".mdp") {
+					object project = ReadProjectFile (fileName, monitor);
+					if (project is DotNetProject)
+						((DotNetProject)project).SetItemHandler (new MD1DotNetProjectHandler ((DotNetProject) project));
+					readObject = project;
 				}
-				catch (Exception ex) {
-					monitor.ReportError (string.Format (GettextCatalog.GetString ("Could not load solution item: {0}"), fileName), ex);
-					throw;
+				else if (ext == ".mds") {
+					readObject = ReadCombineFile (fileName, monitor);
 				}
-				finally {
-					monitor.EndTask ();
-					reader.Close ();
+				else if (ext == ".mdw") {
+					readObject = ReadWorkspaceItemFile (fileName, monitor);
 				}
+				else {
+					XmlTextReader reader = new XmlTextReader (new StreamReader (fileName));
+					try {
+						monitor.BeginTask (string.Format (GettextCatalog.GetString ("Loading solution item: {0}"), fileName), 1);
+						reader.MoveToContent ();
+						XmlDataSerializer ser = new XmlDataSerializer (MD1ProjectService.DataContext);
+						ser.SerializationContext.BaseFile = fileName;
+						ser.SerializationContext.ProgressMonitor = monitor;
+						SolutionEntityItem entry = (SolutionEntityItem) ser.Deserialize (reader, typeof(SolutionEntityItem));
+						entry.FileName = fileName;
+						MD1ProjectService.InitializeHandler (entry);
+						readObject = entry;
+					}
+					catch (Exception ex) {
+						monitor.ReportError (string.Format (GettextCatalog.GetString ("Could not load solution item: {0}"), fileName), ex);
+						throw;
+					}
+					finally {
+						monitor.EndTask ();
+						reader.Close ();
+					}
+				}
+			} finally {
+				ProjectExtensionUtil.EndLoadOperation ();
 			}
+			
+			IWorkspaceFileObject fo = readObject as IWorkspaceFileObject;
+			if (fo != null)
+				fo.ConvertToFormat (MD1ProjectService.FileFormat, false);
+			return readObject;
 		}
 	
 		object ReadCombineFile (string file, IProgressMonitor monitor)
@@ -326,7 +338,7 @@ namespace MonoDevelop.Projects.Formats.MD1
 				ser.SerializationContext.BaseFile = fileName;
 				ser.SerializationContext.ProgressMonitor = monitor;
 				WorkspaceItem entry = (WorkspaceItem) ser.Deserialize (reader, typeof(WorkspaceItem));
-				entry.FileFormat = MD1ProjectService.FileFormat;
+				entry.ConvertToFormat (MD1ProjectService.FileFormat, false);
 				entry.FileName = fileName;
 				return entry;
 			}

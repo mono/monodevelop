@@ -1,3 +1,30 @@
+2008-06-16  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects/WorkspaceItem.cs,
+	  MonoDevelop.Projects/SolutionItem.cs: Added Loading flag.
+	* MonoDevelop.Projects/ProjectService.cs,
+	  MonoDevelop.Projects/Workspace.cs,
+	  MonoDevelop.Projects.Formats.MD1/CmbxFileFormat.cs: Track api
+	  changes.
+	* MonoDevelop.Projects/SolutionFolder.cs: Added new method for adding
+	  an item which creates the solution configurations if required.
+	* MonoDevelop.Projects/Solution.cs: Properly create child
+	  configurations in AddConfiguration. Added ConvertToFormat method.
+	* MonoDevelop.Projects/SolutionEntityItem.cs: Implement
+	  ConvertToFormat. Return the default configuration if no active
+	  configuration is found.
+	* MonoDevelop.Projects/IWorkspaceObject.cs: Removed setter for
+	  FileFormat, and in replacement added a new ConvertToFormat method
+	  which allows recuresively converting child objects.
+	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectHandler.cs,
+	  MonoDevelop.Projects.Formats.MSBuild/SlnFileFormat.cs,
+	  MonoDevelop.Projects.Serialization/ILoadController.cs,
+	  MonoDevelop.Projects.mdp,
+	  MonoDevelop.Projects.Formats.MD1/MD1FileFormat.cs, Makefile.am,
+	  MonoDevelop.Projects.Extensions/ProjectExtensionUtil.cs: Added a
+	  Loading flag to WorkspaceITem and SolutionITem which is set when an
+	  item is being deserialized from a file.
+
 2008-06-16  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom.Parser/ProjectParserService.cs,

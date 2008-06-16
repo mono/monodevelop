@@ -155,6 +155,11 @@ namespace MonoDevelop.Projects
 			}
 		}
 		
+		void IWorkspaceFileObject.ConvertToFormat (FileFormat format, bool convertChildren)
+		{
+			this.FileFormat = format;
+		}
+		
 		internal void InstallFormat (FileFormat format)
 		{
 			fileFormat = format;
@@ -328,7 +333,7 @@ namespace MonoDevelop.Projects
 			}
 			foreach (SolutionItemConfiguration conf in configurations)
 				if (conf.Id == solutionConfiguration) return conf;
-			return null;
+			return DefaultConfiguration;
 		}
 		
 		public string GetActiveConfigurationId (string solutionConfiguration)

@@ -456,14 +456,17 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			if (fileName == null || monitor == null)
 				return null;
 
-			Solution sol = new Solution ();
+			Solution sol;
 			try {
+				ProjectExtensionUtil.BeginLoadOperation ();
+				sol = new Solution ();
 				monitor.BeginTask (string.Format (GettextCatalog.GetString ("Loading solution: {0}"), fileName), 1);
 				LoadSolution (sol, fileName, monitor);
 			} catch (Exception ex) {
 				monitor.ReportError (GettextCatalog.GetString ("Could not load solution: {0}", fileName), ex);
 				throw;
 			} finally {
+				ProjectExtensionUtil.EndLoadOperation ();
 				monitor.EndTask ();
 			}
 			return sol;
@@ -493,7 +496,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			//Parse the .sln file
 			using (StreamReader reader = new StreamReader(fileName)) {
 				sol.FileName = fileName;
-				sol.FileFormat = projectFormat;
+				sol.ConvertToFormat (projectFormat, false);
 				folder = sol.RootFolder;
 				sol.Version = "0.1"; //FIXME:
 				data = new SlnData ();

@@ -128,6 +128,15 @@ namespace MonoDevelop.Projects
 			return list.AsReadOnly ();
 		}
 
+		public override void ConvertToFormat (FileFormat format, bool convertChildren)
+		{
+			base.ConvertToFormat (format, convertChildren);
+			if (convertChildren) {
+				foreach (WorkspaceItem it in Items)
+					it.ConvertToFormat (format, true);
+			}
+		}
+
 		
 		internal protected override BuildResult OnRunTarget (IProgressMonitor monitor, string target, string configuration)
 		{

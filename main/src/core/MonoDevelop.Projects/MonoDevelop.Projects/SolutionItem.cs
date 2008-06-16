@@ -37,11 +37,12 @@ using MonoDevelop.Projects.Extensions;
 
 namespace MonoDevelop.Projects
 {
-	public abstract class SolutionItem: IExtendedDataItem, IBuildTarget
+	public abstract class SolutionItem: IExtendedDataItem, IBuildTarget, ILoadController
 	{
 		SolutionFolder parentFolder;
 		Solution parentSolution;
 		ISolutionItemHandler handler;
+		int loading;
 		
 		[ProjectPathItemProperty ("BaseDirectory", DefaultValue=null)]
 		string baseDirectory;
@@ -50,6 +51,7 @@ namespace MonoDevelop.Projects
 		
 		public SolutionItem()
 		{
+			ProjectExtensionUtil.LoadControl (this);
 		}
 		
 		public virtual void InitializeFromTemplate (XmlElement template)
@@ -89,6 +91,10 @@ namespace MonoDevelop.Projects
 			internal set {
 				parentSolution = value;
 			}
+		}
+		
+		protected bool Loading {
+			get { return loading > 0; }
 		}
 		
 		public abstract void Save (IProgressMonitor monitor);
@@ -304,6 +310,26 @@ namespace MonoDevelop.Projects
 					extendedProperties = new Hashtable ();
 				return extendedProperties;
 			}
+		}
+		
+		void ILoadController.BeginLoad ()
+		{
+			loading++;
+			OnBeginLoad ();
+		}
+		
+		void ILoadController.EndLoad ()
+		{
+			loading--;
+			OnEndLoad ();
+		}
+		
+		protected virtual void OnBeginLoad ()
+		{
+		}
+		
+		protected virtual void OnEndLoad ()
+		{
 		}
 		
 		protected void NotifyModified (string hint)

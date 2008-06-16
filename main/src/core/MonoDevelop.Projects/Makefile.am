@@ -249,6 +249,7 @@ FILES =  \
 	MonoDevelop.Projects.Serialization/ICollectionHandler.cs \
 	MonoDevelop.Projects.Serialization/ICustomDataItemHandler.cs \
 	MonoDevelop.Projects.Serialization/IExtendedDataItem.cs \
+	MonoDevelop.Projects.Serialization/ILoadController.cs \
 	MonoDevelop.Projects.Serialization/IPropertyFilter.cs \
 	MonoDevelop.Projects.Serialization/ISerializationAttributeProvider.cs \
 	MonoDevelop.Projects.Serialization/ItemProperty.cs \

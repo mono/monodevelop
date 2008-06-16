@@ -191,7 +191,7 @@ namespace MonoDevelop.Projects
 				throw new InvalidOperationException ("Invalid file format: " + file);
 			
 			if (item.FileFormat != null)
-				item.FileFormat = format;
+				item.ConvertToFormat (format, false);
 
 			return item;
 		}
@@ -279,7 +279,7 @@ namespace MonoDevelop.Projects
 					List<string> oldFiles = obj.GetItemFiles (true);
 					ExcludeEntries (obj, includedChildIds);
 					if (format != null)
-						obj.FileFormat = format;
+						obj.ConvertToFormat (format, true);
 					obj.Save (monitor);
 					List<string> newFiles = obj.GetItemFiles (true);
 	
@@ -309,7 +309,7 @@ namespace MonoDevelop.Projects
 				using (obj) {
 					ExcludeEntries (obj, includedChildIds);
 					if (format != null)
-						obj.FileFormat = format;
+						obj.ConvertToFormat (format, true);
 					obj.Save (monitor);
 					return obj.FileName;
 				}
@@ -420,7 +420,7 @@ namespace MonoDevelop.Projects
 				// Create a temporary solution and add the project to the solution
 				tempSolution.FileName = filename;
 				SolutionEntityItem sitem = Services.ProjectService.ReadSolutionItem (monitor, filename);
-				tempSolution.FileFormat = solutionFileFormat;
+				tempSolution.ConvertToFormat (solutionFileFormat, false);
 				tempSolution.RootFolder.Items.Add (sitem);
 				tempSolution.CreateDefaultConfigurations ();
 				tempSolution.Save (monitor);

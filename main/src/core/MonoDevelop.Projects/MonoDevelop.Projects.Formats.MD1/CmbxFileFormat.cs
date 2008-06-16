@@ -72,7 +72,7 @@ namespace MonoDevelop.Projects.Formats.MD1
 			Solution sol = obj as Solution;
 			if (sol != null) {
 				folder = sol.RootFolder;
-				sol.FileFormat = MD1ProjectService.FileFormat;
+				sol.ConvertToFormat (MD1ProjectService.FileFormat, false);
 				sol.FileName = serializer.SerializationContext.BaseFile;
 				folder.ExtendedProperties ["FileName"] = serializer.SerializationContext.BaseFile;
 			}
