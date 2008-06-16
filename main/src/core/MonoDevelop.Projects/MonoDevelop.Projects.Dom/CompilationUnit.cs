@@ -101,6 +101,16 @@ namespace MonoDevelop.Projects.Dom
 		}
 		#endregion
 		
+		
+		public IType GetType (string fullName, int genericParameterCount)
+		{
+			foreach (IType type in types) {
+				if (type.FullName == fullName && (genericParameterCount < 0 || type.TypeParameters.Count == genericParameterCount))
+					return type;
+			}
+			return null;
+		}
+		
 		public virtual void Dispose ()
 		{
 		}

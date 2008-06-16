@@ -40,6 +40,7 @@ namespace MonoDevelop.Projects.Dom
 		protected int arrayDimensions;
 		protected int[] dimensions = new int [0];
 		protected bool isNullable;
+		protected bool byRef;
 		protected List<IReturnType> typeParameters = new List<IReturnType> ();
 		
 		public static readonly DomReturnType Void = new DomReturnType (null, false, null);
@@ -47,6 +48,16 @@ namespace MonoDevelop.Projects.Dom
 		public string FullName {
 			get {
 				return !String.IsNullOrEmpty (nspace) ? nspace + "." + name : name;
+			}
+			set {
+				int idx = value.LastIndexOf ('.');
+				if (idx >= 0) {
+					nspace = value.Substring (0, idx);
+					name   = value.Substring (idx + 1);
+				} else {
+					nspace = "";
+					name  = value;
+				}
 			}
 		}
 
@@ -100,9 +111,46 @@ namespace MonoDevelop.Projects.Dom
 				return typeParameters.AsReadOnly ();
 			}
 		}
+
+		public bool IsByRef {
+			get {
+				return byRef;
+			}
+			set {
+				byRef = value;
+			}
+		}
 		
 		public DomReturnType ()
 		{
+		}
+		public override bool Equals (object obj)
+		{
+			DomReturnType type = obj as DomReturnType;
+			if (type == null)
+				return false;
+			if (dimensions != null && type.dimensions != null) {
+				if (dimensions.Length != type.dimensions.Length)
+					return false;
+				for (int i = 0; i < dimensions.Length; i++) {
+					if (dimensions [i] != type.dimensions [i])
+						return false;
+				}
+			}
+			if (typeParameters != null && type.typeParameters != null) {
+				if (typeParameters.Count != type.typeParameters.Count)
+					return false;
+				for (int i = 0; i < typeParameters.Count; i++) {
+					if (!typeParameters[i].Equals (type.typeParameters [i]))
+						return false;
+				}
+			}
+			return name == type.name &&
+				nspace == type.nspace &&
+				pointerNestingLevel == type.pointerNestingLevel &&
+				arrayDimensions == type.arrayDimensions &&
+				isNullable == type.isNullable &&
+				byRef == type.byRef;
 		}
 		
 		public int GetDimension (int arrayDimension)
@@ -171,5 +219,70 @@ namespace MonoDevelop.Projects.Dom
 			
 			return sb.ToString ();
 		}
+#region Shared return types
+		static Dictionary<string, List<IReturnType>> sharedTypes;
+		static string[] sharedTypeList = new string [] {
+			"System.Void",
+			"System.Object",
+			"System.Boolean",
+			"System.Byte",
+			"System.SByte",
+			"System.Char",
+			"System.Enum",
+			"System.Int16",
+			"System.Int32",
+			"System.Int64",
+			"System.UInt16",
+			"System.UInt32",
+			"System.UInt64",
+			"System.Single",
+			"System.Double",
+			"System.Decimal",
+			"System.String",
+			"System.DateTime",
+			"System.IntPtr",
+			"System.Enum",
+			"System.Type",
+			"System.IO.Stream",
+			"System.EventArgs"
+		};
+		
+		internal static IReturnType GetSharedType (IReturnType type)
+		{
+			if (sharedTypes == null)
+				InitSharedTypes ();
+			
+			if (sharedTypes.ContainsKey (type.FullName)) {
+				foreach (IReturnType sharedType in sharedTypes[type.FullName]) {
+					if (sharedType.Equals (type)) {
+						return sharedType;
+					}
+				}
+			}
+			return type;
+		}
+		
+		static void InitSharedTypes ()
+		{
+			sharedTypes = new Dictionary <string, List<IReturnType>> ();
+			foreach (string typeName in sharedTypeList) {
+				AddSharedType (typeName);
+			}
+		}
+		
+		static void AddSharedType (string typeName)
+		{
+			AddSharedType (typeName, new DomReturnType (typeName));
+		}
+		static void AddSharedType (string typeName, DomReturnType type)
+		{
+			if (!sharedTypes.ContainsKey (typeName)) {
+				sharedTypes.Add (typeName, new List <IReturnType> ());
+			}
+			if (!sharedTypes [typeName].Contains (type))
+				sharedTypes [typeName].Add (type);
+		}
+		
+#endregion
 	}
 }

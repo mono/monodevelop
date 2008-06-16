@@ -53,6 +53,7 @@ namespace MonoDevelop.Projects.Dom
 		
 		IReturnType BaseType {
 			get;
+			set;
 		}
 		
 		IEnumerable<IReturnType> ImplementedInterfaces {

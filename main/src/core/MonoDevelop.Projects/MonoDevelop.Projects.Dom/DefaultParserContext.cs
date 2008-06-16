@@ -1,5 +1,5 @@
 //
-// ProjectDom.cs
+// DefaultParserContext.cs
 //
 // Author:
 //   Mike Krüger <mkrueger@novell.com>
@@ -28,62 +28,53 @@
 
 using System;
 using System.Collections.Generic;
+using MonoDevelop.Projects.Dom.Parser;
 
-namespace MonoDevelop.Projects.Dom.Parser
+namespace MonoDevelop.Projects.Dom
 {
-	public class ProjectDom
+	public class DefaultParserContext : IParserContext
 	{
-		Dictionary<string, ICompilationUnit> compilationUnits = new Dictionary<string, ICompilationUnit> ();
-			
-		public IEnumerable<ICompilationUnit> CompilationUnits {
-			get {
-				return compilationUnits.Values;
-			}
+		ProjectDom dom;
+		
+		public DefaultParserContext (ProjectDom dom)
+		{
+			this.dom = dom;
 		}
 		
-		public bool Contains (ICompilationUnit unit)
+		public IExpressionFinder GetExpressionFinderFor (string fileName)
 		{
-			foreach (ICompilationUnit u in compilationUnits.Values) {
-				if (u == unit)
-					return true;
-			}
-			return false;
-		}
-		
-		public void RemoveCompilationUnit (string fileName)
-		{
-			if (compilationUnits.ContainsKey (fileName)) {
-				compilationUnits[fileName].Dispose ();
-				compilationUnits.Remove (fileName);
-			}
-		}
-		
-		public void UpdateCompilationUnit (ICompilationUnit compilationUnit)
-		{
-			if (compilationUnits.ContainsKey (compilationUnit.FileName)) {
-				compilationUnits[compilationUnit.FileName].Dispose ();
-			}
-			compilationUnits[compilationUnit.FileName] = compilationUnit;
-		}
-		
-		public IType GetType (string fullName, int genericParameterCount)
-		{
-			foreach (ICompilationUnit unit in compilationUnits.Values) {
-				IType type = unit.GetType (fullName, genericParameterCount);
-				if (type != null)
-					return type;
-			}
 			return null;
 		}
 		
-		
-		internal void FireLoaded ()
+		public ICompilationUnit GetCompilationUnitFor (string fileName)
 		{
-			if (Loaded != null) {
-				Loaded (this, EventArgs.Empty);
-			}
+			return null;
 		}
 		
-		public event EventHandler Loaded;
+		public System.Collections.Generic.List<IMember> GetNamespaceContents (string nsName)
+		{
+			return null;
+		}
+
+		public SearchTypeResult SearchType (SearchTypeRequest request)
+		{
+			IType result = ProjectDomService.GetType (request.Name, request.GenericParameterCount);
+			if (result != null)
+				return new SearchTypeResult (result);
+			foreach (IUsing u in request.CurrentCompilationUnit.Usings) {
+				result = ProjectDomService.GetType (u.Namespaces + "." + request.Name, request.GenericParameterCount);
+				if (result != null)
+					return new SearchTypeResult (result);
+			}
+			return null;
+		}
+
+		public IType LookupType (IReturnType returnType)
+		{
+			if (dom != null) 
+				return dom.GetType (returnType.FullName, returnType.GenericArguments.Count);
+			
+			return ProjectDomService.GetType (returnType.FullName, returnType.GenericArguments.Count);
+		}
 	}
 }

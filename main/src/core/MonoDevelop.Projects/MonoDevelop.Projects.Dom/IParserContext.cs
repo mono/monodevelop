@@ -38,7 +38,6 @@ namespace MonoDevelop.Projects.Dom
 		
 		List<IMember> GetNamespaceContents (string nsName);
 		SearchTypeResult SearchType (SearchTypeRequest request);
-		
 		IType LookupType (IReturnType returnType);
 	}
 	
@@ -107,6 +106,11 @@ namespace MonoDevelop.Projects.Dom
 			get {
 				return result;
 			}
+		}
+		
+		public SearchTypeResult (IType type)
+		{
+			this.result = new DomReturnType (type.FullName);
 		}
 		
 		public SearchTypeResult (IReturnType result)

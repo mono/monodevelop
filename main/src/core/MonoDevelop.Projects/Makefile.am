@@ -46,6 +46,7 @@ FILES =  \
 	MonoDevelop.Projects.Dom/CompilationUnit.cs \
 	MonoDevelop.Projects.Dom/CompilationUnitEventArgs.cs \
 	MonoDevelop.Projects.Dom/CompoundType.cs \
+	MonoDevelop.Projects.Dom/DefaultParserContext.cs \
 	MonoDevelop.Projects.Dom/DomAttribute.cs \
 	MonoDevelop.Projects.Dom/DomCecilAttribute.cs \
 	MonoDevelop.Projects.Dom/DomCecilCompilationUnit.cs \

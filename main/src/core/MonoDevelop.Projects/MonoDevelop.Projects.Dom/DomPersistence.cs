@@ -94,13 +94,16 @@ namespace MonoDevelop.Projects.Dom
 			// TODO: Attributes
 			string name       = ReadString (reader, nameTable);
 			bool   isNullable = reader.ReadBoolean ();
+			bool   isByRef = reader.ReadBoolean ();
 			uint    arguments  = reader.ReadUInt32 ();
 			List<IReturnType> parameters = new List<IReturnType> ();
 			while (arguments-- > 0) {
 				parameters.Add (ReadReturnType (reader, nameTable));
 			}
 			
-			return new DomReturnType (name, isNullable, parameters);
+			DomReturnType result = new DomReturnType (name, isNullable, parameters);
+			result.IsByRef = isByRef;
+			return result;
 		}
 		internal static void Write (BinaryWriter writer, INameEncoder nameTable, IReturnType returnType)
 		{
@@ -108,6 +111,7 @@ namespace MonoDevelop.Projects.Dom
 			
 			WriteString (returnType.Name, writer, nameTable);
 			writer.Write (returnType.IsNullable);
+			writer.Write (returnType.IsByRef);
 			if (returnType.GenericArguments == null) {
 				writer.Write ((uint)0);
 				return;

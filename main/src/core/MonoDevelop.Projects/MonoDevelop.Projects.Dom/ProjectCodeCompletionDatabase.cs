@@ -25,14 +25,15 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
-/*
+
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Parser;
+using MonoDevelop.Projects.Dom.Parser;
 using System.Reflection;
 
 namespace MonoDevelop.Projects.Dom
@@ -242,12 +243,15 @@ namespace MonoDevelop.Projects.Dom
 			if (monitor != null) monitor.BeginTask ("Parsing file: " + Path.GetFileName (fileName), 1);
 			
 			try {
-				IParseInformation parserInfo = parserDatabase.DoParseFile ((string)fileName, null);
+				ICompilationUnit parserInfo = ProjectDomService.Parse (this.project,
+				                                                         fileName,
+				                                                         null,
+				                                                         delegate () { return File.ReadAllText (fileName); });
 				if (parserInfo != null) {
 					lock (rwlock) {
-						ClassUpdateInformation res = UpdateFromParseInfo (parserInfo, fileName);
-						if (res != null)
-							parserDatabase.NotifyParseInfoChange (fileName, res, project);
+						TypeUpdateInformation res = UpdateFromParseInfo (parserInfo, fileName);
+						if (res != null) 
+							ProjectDomService.NotifyTypeUpdate (project, fileName, res);
 					}
 				}
 			} finally {
@@ -255,22 +259,23 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
-		public ClassUpdateInformation UpdateFromParseInfo (IParseInformation parserInfo, string fileName)
+		public TypeUpdateInformation UpdateFromParseInfo (ICompilationUnit parserInfo, string fileName)
 		{
-			ICompilationUnit cu = (ICompilationUnit)parserInfo.MostRecentCompilationUnit;
+			ICompilationUnit cu = parserInfo;
 
-			ClassCollection resolved;
-			bool allResolved = parserDatabase.ResolveTypes (this, cu, cu.Classes, out resolved);
-			ClassUpdateInformation res = UpdateClassInformation (resolved, fileName);
+			List<IType> resolved;
+			
+			bool allResolved = ResolveTypes (cu, cu.Types, out resolved);
+			TypeUpdateInformation res = UpdateTypeInformation (resolved, fileName);
 			
 			FileEntry file = files [fileName] as FileEntry;
 			if (file != null) {
-				
-				if (file.CommentTasks != ((ICompilationUnit)parserInfo.BestCompilationUnit).TagComments)
-				{
-					file.CommentTasks = ((ICompilationUnit)parserInfo.BestCompilationUnit).TagComments;
-					parserDatabase.UpdatedCommentTasks (file);
-				}
+				// TODO: TagComments
+//				if (file.CommentTasks != parserInfo.TagComments)
+//				{
+//					file.CommentTasks = parserInfo.TagComments;
+//					parserDatabase.UpdatedCommentTasks (file);
+//				}
 				
 				
 				if (!allResolved) {
@@ -292,9 +297,8 @@ namespace MonoDevelop.Projects.Dom
 		protected override void OnFileRemoved (string fileName, TypeUpdateInformation classInfo)
 		{
 			if (classInfo.Removed.Count > 0)
-				parserDatabase.NotifyParseInfoChange (fileName, classInfo, project);
+				ProjectDomService.NotifyTypeUpdate (project, fileName, classInfo);
 		}
 
 	}
 }
-*/

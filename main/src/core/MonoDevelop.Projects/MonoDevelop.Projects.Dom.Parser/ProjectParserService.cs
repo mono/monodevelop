@@ -89,9 +89,47 @@ namespace MonoDevelop.Projects.Dom.Parser
 			return GetDom (project.FileName); 
 		}
 		
+		public static IType GetType (string fullName, int genericParameterCount)
+		{
+			foreach (ProjectDom dom in doms.Values) {
+				IType type = dom.GetType (fullName, genericParameterCount);
+				if (type != null)
+					return type;
+			}
+			return null;
+		}
+		
+		public static IType GetType (SearchTypeRequest request)
+		{
+			IParserContext context = GetContext (request.CurrentCompilationUnit);
+			SearchTypeResult result = context.SearchType (request);
+			if (result == null)
+				return null;
+			return context.LookupType (result.Result);
+		}
+		
+		public static SearchTypeResult SearchType (SearchTypeRequest request)
+		{
+			IParserContext context = GetContext (request.CurrentCompilationUnit);
+			return context.SearchType (request);
+		}
+		
+		static IParserContext GetContext (ICompilationUnit unit)
+		{
+			ProjectDom foundDom = null;
+			foreach (ProjectDom dom in doms.Values) {
+				if (dom.Contains (unit)) {
+					foundDom = dom;
+					break;
+				}
+			}
+			return new DefaultParserContext (foundDom);
+		}
+		
 		public delegate string ContentDelegate ();
 		
 		static Dictionary<string, Thread> refreshThreads = new Dictionary<string,Thread> ();
+		
 		public static void Refresh (Project project, string fileName, string mimeType, ContentDelegate getContent)
 		{
 			ProjectDom dom = GetDom (project);
@@ -116,6 +154,25 @@ namespace MonoDevelop.Projects.Dom.Parser
 			thread.Priority = ThreadPriority.Lowest;
 			thread.IsBackground = true;
 			thread.Start ();
+		}
+		
+		public static ICompilationUnit Parse (Project project, string fileName, string mimeType, ContentDelegate getContent)
+		{
+			ProjectDom dom = GetDom (project);
+			
+			IParser parser = project != null ? GetParser (project is DotNetProject ? ((DotNetProject)project).LanguageName : project.ProjectType) : GetParserByMime (mimeType);
+			if (parser == null)
+				return null;
+			if (refreshThreads.ContainsKey (fileName)) {
+				refreshThreads [fileName].Abort ();
+				refreshThreads.Remove (fileName);
+			}
+			dom.RemoveCompilationUnit (fileName);
+			ICompilationUnit unit = parser.Parse (fileName, getContent ());
+			dom.UpdateCompilationUnit (unit);
+			OnCompilationUnitUpdated (new CompilationUnitEventArgs (unit));
+			OnDomUpdated (new ProjectDomEventArgs (dom));
+			return unit;
 		}
 		
 		public static ProjectDom GetDom (string fileName)
@@ -179,9 +236,14 @@ namespace MonoDevelop.Projects.Dom.Parser
 		
 		public static void Load (Project project)
 		{
-			IParser parser = GetParser (project.ProjectType);
-			if (parser == null)
+			string type = project.ProjectType;
+			if (project is DotNetProject)
+				type = ((DotNetProject)project).LanguageName;
+			IParser parser = GetParser (type);
+			if (parser == null) {
+				System.Console.WriteLine("No parser found for: " + type);
 				return;
+			}
 			
 			ProjectDom dom = GetDom (project);
 			foreach (ProjectFile file in project.Files) {
@@ -234,6 +296,14 @@ namespace MonoDevelop.Projects.Dom.Parser
 				CompilationUnitUpdated (null, args);
 		}
 		public static event EventHandler<CompilationUnitEventArgs> CompilationUnitUpdated;
+		
+		public static void NotifyTypeUpdate (Project project, string fileName, TypeUpdateInformation info)
+		{
+			if (TypesUpdated != null)
+				TypesUpdated (null, new TypeUpdateInformationEventArgs (info));
+		}
+		
+		public static event EventHandler<TypeUpdateInformationEventArgs> TypesUpdated;
 		
 		static void OnDomUpdated (ProjectDomEventArgs args) 
 		{

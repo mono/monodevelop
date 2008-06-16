@@ -52,6 +52,10 @@ namespace MonoDevelop.Projects.Dom
 			get;
 		}
 		
+		bool IsByRef {
+			get;
+		}
+		
 		bool IsNullable {
 			get;
 		}

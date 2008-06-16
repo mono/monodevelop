@@ -207,6 +207,80 @@ namespace MonoDevelop.Projects.Dom
 			this.OnPropertyUpdated (null, args);
 		}
 		
+		protected bool ResolveTypes (ICompilationUnit unit, IList<IType> types, out List<IType> result)
+		{
+			CompilationUnitTypeResolver resolver = new CompilationUnitTypeResolver (this, unit);
+			bool allResolved = true;
+			result = new List<IType> ();
+			foreach (IType c in types) {
+				resolver.CallingClass = c;
+				resolver.AllResolved = true;
+				IType rc = DomType.Resolve (c, resolver);
+				
+				if (resolver.AllResolved && c.FullName != "System.Object") {
+					// If the class has no base classes, make sure it subclasses System.Object
+					bool foundBase = false;
+					foreach (IEnumerable<IReturnType> typeList in new IEnumerable<IReturnType> [] {new IReturnType [] { rc.BaseType }, rc.ImplementedInterfaces })
+					foreach (IReturnType bt in typeList) {
+						IType bc = this.GetClass (bt.FullName, null, true);
+						if (bc == null || bc.ClassType != ClassType.Interface) {
+							foundBase =  true;
+							break;
+						}
+					}
+					if (!foundBase) 
+						rc.BaseType = new DomReturnType ("System.Object");
+				}
+				
+				result.Add (rc);
+				allResolved = allResolved && resolver.AllResolved;
+			}
+				
+			return allResolved;
+		}
+		
+		class CompilationUnitTypeResolver: ITypeResolver
+		{
+			public IType CallingClass;
+			CodeCompletionDatabase db;
+			ICompilationUnit unit;
+			bool allResolved;
+			
+			public CompilationUnitTypeResolver (CodeCompletionDatabase db, ICompilationUnit unit)
+			{
+				this.db = db;
+				this.unit = unit;
+			}
+			
+			public IReturnType Resolve (IReturnType type)
+			{
+				IType c = ProjectDomService.GetType (new SearchTypeRequest (unit, -1, -1, type.FullName));
+				if (c == null) {
+					allResolved = false;
+					return type;
+				}
+				
+				DomReturnType rt = new DomReturnType ();
+				rt.FullName = c.FullName;
+				rt.IsByRef = type.IsByRef;
+				rt.PointerNestingLevel = type.PointerNestingLevel;
+				rt.ArrayDimensions = type.ArrayDimensions;
+				
+				if (type.GenericArguments != null && type.GenericArguments.Count > 0) {
+					foreach (IReturnType ga in type.GenericArguments) {
+						rt.AddTypeParameter (DomReturnType.Resolve (ga, this));
+					}
+				}
+				return DomReturnType.GetSharedType (rt);
+			}
+			
+			public bool AllResolved
+			{
+				get { return allResolved; }
+				set { allResolved = value; }
+			}
+		}
+		
 		private class OldPidbVersionException : Exception
 		{
 			public int FoundVersion;

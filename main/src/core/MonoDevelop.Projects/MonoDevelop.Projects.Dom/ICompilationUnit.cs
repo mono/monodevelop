@@ -65,5 +65,8 @@ namespace MonoDevelop.Projects.Dom
 		ReadOnlyCollection<Error> Errors {
 			get;
 		}
+		
+		IType GetType (string fullName, int genericParameterCount);
+		
 	}
 }

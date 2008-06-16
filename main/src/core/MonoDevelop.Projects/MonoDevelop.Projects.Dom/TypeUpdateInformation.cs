@@ -55,4 +55,21 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 	}
+	
+	public class TypeUpdateInformationEventArgs : EventArgs
+	{
+		TypeUpdateInformation typeUpdateInformation;
+		
+		public MonoDevelop.Projects.Dom.TypeUpdateInformation TypeUpdateInformation {
+			get {
+				return typeUpdateInformation;
+			}
+		}
+		
+		public TypeUpdateInformationEventArgs (TypeUpdateInformation typeUpdateInformation)
+		{
+			this.typeUpdateInformation = typeUpdateInformation;
+		}
+		
+	}
 }
