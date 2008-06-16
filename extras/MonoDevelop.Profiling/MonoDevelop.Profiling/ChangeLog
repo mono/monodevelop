@@ -1,3 +1,8 @@
+2008-06-17  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* ProfilingOperations.cs: Switch workbench layouts instead of contexts,
+	  which are not very well supported.
+
 2008-06-04  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Profiling.addin.xml: Bump MD version.

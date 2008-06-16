@@ -96,26 +96,21 @@ namespace MonoDevelop.Profiling
 		
 		public static void RestoreWorkbenchContext ()
 		{
-			WorkbenchContext context = null;
-			if (previousContext == null)
-				context = WorkbenchContext.Edit;
-			else
-				context = WorkbenchContext.GetContext (previousContext);
-			
-			SwitchWorkbenchContext (context);
+			if (previousContext != null)
+				SwitchWorkbenchContext (previousContext);
 		}
 		
-		private static WorkbenchContext ProfileWorkbenchContext {
-			get { return WorkbenchContext.GetContext ("Profile"); }
+		private static string ProfileWorkbenchContext {
+			get { return "Profile"; }
 		}
 		
-		private static void SwitchWorkbenchContext (WorkbenchContext context)
+		private static void SwitchWorkbenchContext (string context)
 		{
-			if (IdeApp.Workbench.Context.Id != "Profile")
-				previousContext = IdeApp.Workbench.Context.Id;
+			if (IdeApp.Workbench.CurrentLayout != context)
+				previousContext = IdeApp.Workbench.CurrentLayout;
 			
 			DispatchService.GuiDispatch (delegate () {
-				IdeApp.Workbench.Context = context;
+				IdeApp.Workbench.CurrentLayout = context;
 
 				Pad pad = IdeApp.Workbench.GetPad<ProfilingPad> ();
 				pad.Visible = true;
