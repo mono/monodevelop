@@ -1,3 +1,7 @@
+2008-06-16  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Makefile.am: Added test target.
+
 2008-06-06  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* configure.in: Disable unit tests by default. Also fix a typo.

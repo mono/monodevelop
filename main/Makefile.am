@@ -94,6 +94,9 @@ run-profile-heap: $(PROGRAM)
 check-addins:
 	$(MDTOOL_RUN) setup reg-build -v
 
+test:
+	cd tests/UnitTests && make test fixture=$(fixture)
+
 # we can't use the variables that are conditionally defined
 EXTRA_DIST = $(bin_SCRIPTS) $(desktop_DATA) $(pixmap_DATA) \
 	monodevelop.xml $(pkgconfig_in_files)
