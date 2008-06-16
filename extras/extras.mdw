@@ -8,5 +8,7 @@
     <Item>MonoDevelop.Profiling/MonoDevelop.Profiling.mds</Item>
     <Item>MonoDevelop.Debugger.Mdb/MonoDevelop.Debugger.Mdb.mds</Item>
     <Item>AspNetEdit/AspNetEdit.mds</Item>
+    <Item>ValaBinding/ValaBinding.mds</Item>
+    <Item>MonoDevelop.Debugger.Gdb/MonoDevelop.Debugger.Gdb.mds</Item>
   </Items>
 </WorkspaceItem>
