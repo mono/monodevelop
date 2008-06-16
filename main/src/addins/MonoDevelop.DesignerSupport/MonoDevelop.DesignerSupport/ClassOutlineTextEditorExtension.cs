@@ -27,6 +27,8 @@
 //
 
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using Gtk;
 
 using MonoDevelop.Ide.Gui;
@@ -216,22 +218,54 @@ namespace MonoDevelop.DesignerSupport
 		
 		static void AddTreeClassContents (TreeStore store, TreeIter parent, IClass cls)
 		{
-			foreach (IClass childCls in cls.InnerClasses) {
-				TreeIter childIter;
-				childIter = store.AppendValues (parent, childCls);
-				AddTreeClassContents (store, childIter, childCls);
+			foreach (ILanguageItem item in Merge (
+				new IEnumerable[] { cls.Fields, cls.Events, cls.Properties, cls.InnerClasses, cls.Methods },
+				delegate (object item) {
+					if (item is IClass)
+						return 1 - ((IClass)item).Region.BeginLine;
+					else if (item is IMember)
+						return 1 - ((IMember)item).Region.BeginLine;
+					else
+						return 0;
+				}))
+			{
+				TreeIter childIter = store.AppendValues (parent, item);
+				if (item is IClass)
+					AddTreeClassContents (store, childIter, (IClass)item);
 			}
-			
-			foreach (object o in cls.Fields)
-				store.AppendValues (parent, o);
-			foreach (object o in cls.Events)
-				store.AppendValues (parent, o);
-			foreach (object o in cls.Methods)
-				store.AppendValues (parent, o);
-			foreach (object o in cls.Properties)
-				store.AppendValues (parent, o);
 		}
 		
-
+		delegate int PrecendenceSelector (object item);
+		
+		static IEnumerable Merge (IEnumerable<IEnumerable> enumerables, PrecendenceSelector selector)
+		{
+			bool carryOn = false;
+			List<IEnumerator> enumerators = new List<IEnumerator> ();
+			foreach (IEnumerable enumerable in enumerables) {
+				IEnumerator enumerator = enumerable.GetEnumerator ();
+				if (enumerator.MoveNext ())
+					enumerators.Add (enumerator);
+			}
+			
+			while (enumerators.Count > 0) {
+				int maxPrecendence = int.MinValue;
+				IEnumerator best = null;
+				
+				for (int i = 0; i < enumerators.Count; i++) {
+					IEnumerator current = enumerators[i];
+					int precendence = selector (current.Current);
+					if (precendence > maxPrecendence) {
+						maxPrecendence = precendence;
+						best = current;
+					}
+				}
+				
+				yield return best.Current;
+				
+				if (!best.MoveNext ())
+					enumerators.Remove (best);
+			}
+			
+		}
 	}
 }
