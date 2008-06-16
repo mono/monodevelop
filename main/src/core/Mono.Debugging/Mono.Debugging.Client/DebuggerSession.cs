@@ -224,7 +224,7 @@ namespace Mono.Debugging.Client
 			set { outputWriter = value; }
 		}
 
-		internal protected virtual void OnTargetEvent (TargetEventArgs args)
+		internal protected void OnTargetEvent (TargetEventArgs args)
 		{
 			switch (args.Type) {
 				case TargetEventType.Exception:
@@ -277,14 +277,14 @@ namespace Mono.Debugging.Client
 				TargetEvent (this, args);
 		}
 		
-		internal protected virtual void OnRunning ()
+		internal void OnRunning ()
 		{
 			isRunning = true;
 			if (TargetStarted != null)
 				TargetStarted (this, EventArgs.Empty);
 		}
 		
-		internal protected virtual void OnStarted ()
+		internal protected void OnStarted ()
 		{
 			started = true;
 			foreach (Breakpoint bp in breakpointStore) {
@@ -292,37 +292,37 @@ namespace Mono.Debugging.Client
 			}
 		}
 		
-		internal protected virtual void OnProcessCreated (ProcessEventArgs args)
+		internal protected void OnProcessCreated (ProcessEventArgs args)
 		{
 			if (ProcessCreated != null)
 				ProcessCreated (this, args);
 		}
 		
-		internal protected virtual void OnProcessExited (ProcessEventArgs args)
+		internal protected void OnProcessExited (ProcessEventArgs args)
 		{
 			if (ProcessExited != null)
 				ProcessExited (this, args);
 		}
 		
-		internal protected virtual void OnProcessExecd (ProcessEventArgs args)
+		internal protected void OnProcessExecd (ProcessEventArgs args)
 		{
 			if (ProcessExecd != null)
 				ProcessExecd (this, args);
 		}
 		
-		internal protected virtual void OnThreadCreated (ThreadEventArgs args)
+		internal protected void OnThreadCreated (ThreadEventArgs args)
 		{
 			if (ThreadCreated != null)
 				ThreadCreated (this, args);
 		}
 		
-		internal protected virtual void OnThreadExited (ThreadEventArgs args)
+		internal protected void OnThreadExited (ThreadEventArgs args)
 		{
 			if (ThreadExited != null)
 				ThreadExited (this, args);
 		}
 		
-		internal protected virtual void OnTargetOutput (bool isStderr, string text)
+		internal protected void OnTargetOutput (bool isStderr, string text)
 		{
 			if (outputWriter != null)
 				outputWriter (isStderr, text);

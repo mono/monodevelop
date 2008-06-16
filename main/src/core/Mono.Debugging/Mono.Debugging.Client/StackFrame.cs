@@ -66,7 +66,14 @@ namespace Mono.Debugging.Client
 
 		public override string ToString()
 		{
-			return String.Format("0x{0:X} in {1} at {2}:{3}", address, location.Method, location.Filename, location.Line);
+			string loc;
+			if (location.Line != -1 && !string.IsNullOrEmpty (location.Filename))
+				loc = " at " + location.Filename + ":" + location.Line;
+			else if (!string.IsNullOrEmpty (location.Filename))
+				loc = " at " + location.Filename;
+			else
+				loc = "";
+			return String.Format("0x{0:X} in {1}{2}", address, location.Method, loc);
 		}
 	}
 }

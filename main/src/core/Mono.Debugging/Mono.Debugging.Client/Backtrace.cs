@@ -18,7 +18,7 @@ namespace Mono.Debugging.Client
 			count = serverBacktrace.FrameCount;
 
 			// Get some initial frames
-			GetFrame (System.Math.Min (2, count-1));
+			GetFrame (System.Math.Min (1, count-1));
 		}
 
 		public int FrameCount

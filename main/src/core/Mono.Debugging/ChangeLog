@@ -1,5 +1,13 @@
 2008-06-16  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* Mono.Debugging.Client/Backtrace.cs: Get 1 initial frame when creating
+	  the backtrace.
+	* Mono.Debugging.Client/DebuggerSession.cs: Some methods don't need to
+	  be virtual.
+	* Mono.Debugging.Client/StackFrame.cs: Improved frame description.
+
+2008-06-16  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* Mono.Debugging.mdp: Fixed Mono.Addins reference.
 
 2008-05-27  Lluis Sanchez Gual <lluis@novell.com> 
