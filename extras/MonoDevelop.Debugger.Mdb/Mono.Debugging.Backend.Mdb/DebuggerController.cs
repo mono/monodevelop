@@ -162,10 +162,22 @@ namespace Mono.Debugging.Backend.Mdb
 		
 		public void Exit ()
 		{
-			try {
-				debugger.Exit ();
-			} catch {
-				// Ignore
+			object elock = new object ();
+			lock (elock) {
+				ThreadPool.QueueUserWorkItem (delegate {
+					try {
+						debugger.Exit ();
+						lock (elock) {
+							Monitor.PulseAll (elock);
+						}
+					} catch {
+						// Ignore
+					}
+				});
+				
+				// If the debugger does not stop, kill it.
+				if (!Monitor.Wait (elock, 3000))
+					StopDebugger ();
 			}
 		}
 		

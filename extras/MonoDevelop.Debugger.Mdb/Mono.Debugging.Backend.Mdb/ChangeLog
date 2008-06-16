@@ -1,3 +1,7 @@
+2008-06-17  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* DebuggerController.cs: Added a timeout in the Exit method.
+
 2008-05-27  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* mono.debugging.backend.mdb.pc.in: Added missing file.
