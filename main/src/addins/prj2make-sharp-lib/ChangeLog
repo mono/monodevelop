@@ -1,3 +1,7 @@
+2008-06-16  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MsPrjHelper.cs: Track api changes.
+
 2008-06-04  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* prj2make-sharp-lib.addin.xml: Fix extension paths.

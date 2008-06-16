@@ -554,7 +554,7 @@ namespace MonoDevelop.Prj2Make
 					if (save) {
 						string prjName = prj.FileName;
 						if (prjName != null)
-							solution.RootFolder.AddItem (prjName, monitor);
+							solution.RootFolder.AddItem (monitor, prjName);
 						else
 							return null;
 					} else {

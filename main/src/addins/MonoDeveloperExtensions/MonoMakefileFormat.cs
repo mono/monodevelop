@@ -103,70 +103,75 @@ namespace MonoDeveloper
 			string aname = mkfile.GetVariable ("LIBRARY");
 			if (aname == null) aname = mkfile.GetVariable ("PROGRAM");
 			
-			if (aname != null) {
-				// It is a project
-				monitor.BeginTask ("Loading '" + fileName + "'", 0);
-				DotNetProject project = new DotNetProject ("C#");
-				MonoSolutionItemHandler handler = new MonoSolutionItemHandler (project);
-				ProjectExtensionUtil.InstallHandler (handler, project);
-				project.Name = Path.GetFileName (basePath);
-				handler.Read (mkfile);
-				monitor.EndTask ();
-				return project;
-			} else {
-				string subdirs;
-				StringBuilder subdirsBuilder = new StringBuilder ();
-				subdirsBuilder.Append (mkfile.GetVariable ("common_dirs"));
-				if (subdirsBuilder.Length != 0) {
-					subdirsBuilder.Append ("\t");
-					subdirsBuilder.Append (mkfile.GetVariable ("net_2_0_dirs"));
-				}
-				if (subdirsBuilder.Length == 0)
-					subdirsBuilder.Append (mkfile.GetVariable ("SUBDIRS"));
-
-				subdirs = subdirsBuilder.ToString ();
-				if (subdirs != null && (subdirs = subdirs.Trim (' ','\t')) != "")
-				{
-					object retObject;
-					SolutionFolder folder;
-					if (!hasParentSolution) {
-						Solution sol = new Solution ();
-						sol.FileFormat = Services.ProjectService.FileFormats.GetFileFormat ("MonoMakefile");
-						sol.FileName = fileName;
-						folder = sol.RootFolder;
-						retObject = sol;
-						
-						foreach (string conf in MonoMakefileFormat.Configurations) {
-							SolutionConfiguration sc = new SolutionConfiguration (conf);
-							sol.Configurations.Add (sc);
-						}
-					} else {
-						folder = new SolutionFolder ();
-						folder.Name = Path.GetFileName (Path.GetDirectoryName (fileName));
-						retObject = folder;
-					}
-					
-					subdirs = subdirs.Replace ('\t',' ');
-					string[] dirs = subdirs.Split (' ');
-					
-					monitor.BeginTask ("Loading '" + fileName + "'", dirs.Length);
-					Hashtable added = new Hashtable ();
-					foreach (string dir in dirs) {
-						if (added.Contains (dir)) continue;
-						added.Add (dir, dir);
-						monitor.Step (1);
-						if (dir == null) continue;
-						string tdir = dir.Trim ();
-						if (tdir == "") continue;
-						string mfile = Path.Combine (Path.Combine (basePath, tdir), "Makefile");
-						if (File.Exists (mfile) && CanReadFile (mfile, typeof(SolutionItem))) {
-							SolutionItem it = (SolutionItem) ReadFile (mfile, true, monitor);
-							folder.Items.Add (it);
-						}
-					}
+			try {
+				ProjectExtensionUtil.BeginLoadOperation ();
+				if (aname != null) {
+					// It is a project
+					monitor.BeginTask ("Loading '" + fileName + "'", 0);
+					DotNetProject project = new DotNetProject ("C#");
+					MonoSolutionItemHandler handler = new MonoSolutionItemHandler (project);
+					ProjectExtensionUtil.InstallHandler (handler, project);
+					project.Name = Path.GetFileName (basePath);
+					handler.Read (mkfile);
 					monitor.EndTask ();
-					return retObject;
+					return project;
+				} else {
+					string subdirs;
+					StringBuilder subdirsBuilder = new StringBuilder ();
+					subdirsBuilder.Append (mkfile.GetVariable ("common_dirs"));
+					if (subdirsBuilder.Length != 0) {
+						subdirsBuilder.Append ("\t");
+						subdirsBuilder.Append (mkfile.GetVariable ("net_2_0_dirs"));
+					}
+					if (subdirsBuilder.Length == 0)
+						subdirsBuilder.Append (mkfile.GetVariable ("SUBDIRS"));
+	
+					subdirs = subdirsBuilder.ToString ();
+					if (subdirs != null && (subdirs = subdirs.Trim (' ','\t')) != "")
+					{
+						object retObject;
+						SolutionFolder folder;
+						if (!hasParentSolution) {
+							Solution sol = new Solution ();
+							sol.ConvertToFormat (Services.ProjectService.FileFormats.GetFileFormat ("MonoMakefile"), false);
+							sol.FileName = fileName;
+							folder = sol.RootFolder;
+							retObject = sol;
+							
+							foreach (string conf in MonoMakefileFormat.Configurations) {
+								SolutionConfiguration sc = new SolutionConfiguration (conf);
+								sol.Configurations.Add (sc);
+							}
+						} else {
+							folder = new SolutionFolder ();
+							folder.Name = Path.GetFileName (Path.GetDirectoryName (fileName));
+							retObject = folder;
+						}
+						
+						subdirs = subdirs.Replace ('\t',' ');
+						string[] dirs = subdirs.Split (' ');
+						
+						monitor.BeginTask ("Loading '" + fileName + "'", dirs.Length);
+						Hashtable added = new Hashtable ();
+						foreach (string dir in dirs) {
+							if (added.Contains (dir)) continue;
+							added.Add (dir, dir);
+							monitor.Step (1);
+							if (dir == null) continue;
+							string tdir = dir.Trim ();
+							if (tdir == "") continue;
+							string mfile = Path.Combine (Path.Combine (basePath, tdir), "Makefile");
+							if (File.Exists (mfile) && CanReadFile (mfile, typeof(SolutionItem))) {
+								SolutionItem it = (SolutionItem) ReadFile (mfile, true, monitor);
+								folder.Items.Add (it);
+							}
+						}
+						monitor.EndTask ();
+						return retObject;
+					}
 				}
+			} finally {
+				ProjectExtensionUtil.EndLoadOperation ();
 			}
 			return null;
 		}
