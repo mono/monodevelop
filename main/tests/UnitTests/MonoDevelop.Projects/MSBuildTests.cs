@@ -87,7 +87,7 @@ namespace MonoDevelop.Projects
 
 			// MD1 format
 			
-			sol.FileFormat = Services.ProjectService.FileFormats.GetFileFormat ("MD1");
+			sol.ConvertToFormat (Util.FileFormatMD1, true);
 			sol.Save (Util.GetMonitor ());
 
 			solXml = Util.GetXmlFileInfoset (sol.FileName);

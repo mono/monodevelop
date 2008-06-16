@@ -181,7 +181,7 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual ("/tmp/test4.sln", sol.FileName);
 			Assert.AreEqual (4, nameChanges);
 			
-			sol.FileFormat = Services.ProjectService.FileFormats.GetFileFormat ("MD1");
+			sol.ConvertToFormat (Util.FileFormatMD1, true);
 			Assert.AreEqual ("test4", sol.Name);
 			Assert.AreEqual ("/tmp/test4.mds", sol.FileName);
 			Assert.AreEqual (4, nameChanges);
@@ -217,7 +217,7 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual ("/tmp/test4.csproj", prj.FileName);
 			Assert.AreEqual (4, nameChanges);
 			
-			prj.FileFormat = Services.ProjectService.FileFormats.GetFileFormat ("MD1");
+			prj.FileFormat = Util.FileFormatMD1;
 			Assert.AreEqual ("test4", prj.Name);
 			Assert.AreEqual ("/tmp/test4.mdp", prj.FileName);
 			Assert.AreEqual (4, nameChanges);
@@ -250,22 +250,22 @@ namespace MonoDevelop.Projects
 			Assert.IsFalse (p.NeedsReload);
 			
 			// Changing format must reset the reload flag (it's like we just created a new solution in memory)
-			sol.FileFormat = Services.ProjectService.FileFormats.GetFileFormat ("MD1");
+			sol.ConvertToFormat (Util.FileFormatMD1, true);
 			Assert.IsFalse (sol.NeedsReload);
 			Assert.IsFalse (p.NeedsReload);
-			sol.FileFormat = Services.ProjectService.FileFormats.GetFileFormat ("MSBuild05");
+			sol.ConvertToFormat (Util.FileFormatMSBuild05, true);
 			Assert.IsFalse (sol.NeedsReload);
 			Assert.IsFalse (p.NeedsReload);
 			
 			sol.RootFolder.Items.Remove (p);
 			Assert.IsFalse (p.NeedsReload);
-			p.FileFormat = Services.ProjectService.FileFormats.GetFileFormat ("MD1");
+			p.FileFormat = Util.FileFormatMD1;
 			Assert.IsFalse (p.NeedsReload);
 			sol.RootFolder.Items.Add (p);
 			Assert.IsFalse (p.NeedsReload);
 			sol.RootFolder.Items.Remove (p);
 			Assert.IsFalse (p.NeedsReload);
-			p.FileFormat = Services.ProjectService.FileFormats.GetFileFormat ("MSBuild05");
+			p.FileFormat = Util.FileFormatMSBuild05;
 			Assert.IsFalse (p.NeedsReload);
 			sol.RootFolder.Items.Add (p);
 			Assert.IsFalse (p.NeedsReload);
@@ -488,12 +488,12 @@ namespace MonoDevelop.Projects
 			
 			// Change solution format of unsaved solution
 			
-			sol.FileFormat = Util.FileFormatMD1;
+			sol.ConvertToFormat (Util.FileFormatMD1, true);
 			
 			Assert.AreEqual ("MD1", sol.FileFormat.Id);
 			Assert.AreEqual ("MD1", p.FileFormat.Id);
 			
-			sol.FileFormat = Util.FileFormatMSBuild05;
+			sol.ConvertToFormat (Util.FileFormatMSBuild05, true);
 			
 			Assert.AreEqual ("MSBuild05", sol.FileFormat.Id);
 			Assert.AreEqual ("MSBuild05", p.FileFormat.Id);
@@ -502,9 +502,12 @@ namespace MonoDevelop.Projects
 			
 			sol.Save (Util.GetMonitor ());
 
-			sol.FileFormat = Util.FileFormatMD1;
+			sol.ConvertToFormat (Util.FileFormatMD1, false);
 			
 			Assert.AreEqual ("MD1", sol.FileFormat.Id);
+			Assert.AreEqual ("MSBuild05", p.FileFormat.Id);
+			
+			p.FileFormat = Util.FileFormatMD1;
 			Assert.AreEqual ("MD1", p.FileFormat.Id);
 			
 			// Add new project

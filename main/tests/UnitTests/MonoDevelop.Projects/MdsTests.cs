@@ -119,7 +119,7 @@ namespace MonoDevelop.Projects
 		public void CreateNestedSolutions()
 		{
 			Solution sol = TestProjectsChecks.CreateProjectWithFolders ("nested-solutions-md1");
-			sol.FileFormat = Services.ProjectService.FileFormats.GetFileFormat ("MD1");
+			sol.ConvertToFormat (Util.FileFormatMD1, true);
 			
 			sol.Save (Util.GetMonitor ());
 			

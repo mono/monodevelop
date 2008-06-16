@@ -318,7 +318,7 @@ namespace MonoDevelop.Projects
 		public static void CheckGenericItemProject (string fileFormat)
 		{
 			Solution sol = new Solution ();
-			sol.FileFormat = Services.ProjectService.FileFormats.GetFileFormat (fileFormat);
+			sol.ConvertToFormat (Services.ProjectService.FileFormats.GetFileFormat (fileFormat), true);
 			string dir = Util.CreateTmpDir ("generic-item-" + fileFormat);
 			sol.FileName = Path.Combine (dir, "TestGenericItem");
 			sol.Name = "TheItem";
@@ -345,7 +345,7 @@ namespace MonoDevelop.Projects
 			List<string> ids = new List<string> ();
 			
 			Solution sol = new Solution ();
-			sol.FileFormat = Services.ProjectService.FileFormats.GetFileFormat (fileFormat);
+			sol.ConvertToFormat (Services.ProjectService.FileFormats.GetFileFormat (fileFormat), true);
 			string dir = Util.CreateTmpDir ("solution-folders-" + fileFormat);
 			sol.FileName = Path.Combine (dir, "TestSolutionFolders");
 			sol.Name = "TheSolution";
@@ -432,7 +432,7 @@ namespace MonoDevelop.Projects
 		public static void TestCreateLoadSaveConsoleProject (string fileFormat)
 		{
 			Solution sol = CreateConsoleSolution ("TestCreateLoadSaveConsoleProject");
-			sol.FileFormat = Services.ProjectService.FileFormats.GetFileFormat (fileFormat);
+			sol.ConvertToFormat (Services.ProjectService.FileFormats.GetFileFormat (fileFormat), true);
 			
 			sol.Save (Util.GetMonitor ());
 			string solFile = sol.FileName;
@@ -450,7 +450,7 @@ namespace MonoDevelop.Projects
 		{
 			string solFile = Util.GetSampleProject ("resources-tester", "ResourcesTester.sln");
 			Solution sol = (Solution) Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
-			sol.FileFormat = Services.ProjectService.FileFormats.GetFileFormat (fileFormat);
+			sol.ConvertToFormat (Services.ProjectService.FileFormats.GetFileFormat (fileFormat), true);
 			ProjectTests.CheckResourcesSolution (sol);
 			
 			sol.Save (Util.GetMonitor ());
