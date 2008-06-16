@@ -1,0 +1,17 @@
+<Addin id = "Mono.Debugging.Gdb"
+       name	     = "GDB support for Mono.Debugging"
+       author	 = "Lluis Sanchez"
+       url       = "http://www.mono-project.com"
+       description = "GNU Debugger support for Mono.Debugging"
+       copyright   = "MIT X11"
+       version   = "0.1">
+
+	<Dependencies>
+		<Addin id="Mono.Debugging" version="0.1"/>
+	</Dependencies>
+	
+	<Extension path="/Mono/Debugging/DebuggerFactories">
+		<DebuggerFactory type="MonoDevelop.Debugger.Gdb.GdbSessionFactory" />
+	</Extension>
+
+</Addin>

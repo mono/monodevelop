@@ -1,0 +1,7 @@
+2008-06-17  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* AssemblyInfo.cs, GdbBacktrace.cs, GdbEvent.cs, GdbSession.cs,
+	  CommandStatus.cs, GdbSessionFactory.cs, ResultData.cs,
+	  GdbCommandResult.cs, Manifest.addin.xml: Initial support for gdb
+	  integration.
+
