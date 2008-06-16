@@ -68,7 +68,10 @@ namespace MonoDevelop.Ide.Debugging
 			if (StoppedEvent != null)
 				StoppedEvent (null, new EventArgs ());
 
-			session = null;
+			if (session != null) {
+				session.Dispose ();
+				session = null;
+			}
 			
 			if (console != null) {
 				console.Dispose ();

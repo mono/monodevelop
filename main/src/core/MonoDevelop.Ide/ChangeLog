@@ -1,3 +1,16 @@
+2008-06-16  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Debugging/DebuggingService.cs: Dispose the debug
+	  session when done.
+	* MonoDevelop.Ide.Gui.Dialogs/NewProjectDialog.cs: Track api changes.
+	* gtk-gui/MonoDevelop.Ide.Gui.Dialogs.EncapsulateFieldDialog.cs:
+	  Updated.
+	* Makefile.am: Removed unneeded reference.
+	* MonoDevelop.Ide.Gui/ProjectOperations.cs: Track api changes. Don't
+	  switch worbench context when debugging.
+	* MonoDevelop.Ide.Gui/Workbench.cs: If a file can't be loaded, show an
+	  error, don't try to open it using an arbitrary display binding.
+
 2008-06-12  Atsushi Enomoto  <atsushi@ximian.com>
 
 	* MonoDevelop.Ide.Gui.Dialogs/ReplaceInFilesDialog.cs : fixed

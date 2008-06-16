@@ -352,7 +352,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 					eitem.FileFormat = parentFolder.ParentSolution.FileFormat;
 					IdeApp.ProjectOperations.Save (eitem);
 				}
-				parentFolder.Items.Add (currentEntry);
+				parentFolder.AddItem (currentEntry, true);
 			}
 
 			if (notebook.Page == 1)
@@ -360,9 +360,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 			
 			if (parentFolder != null)
 				IdeApp.ProjectOperations.Save (parentFolder.ParentSolution);
-			else {
+			else
 				IdeApp.ProjectOperations.Save (newItem);
-			}
 			
 			if (openSolution)
 				selectedItem.OpenCreatedCombine();

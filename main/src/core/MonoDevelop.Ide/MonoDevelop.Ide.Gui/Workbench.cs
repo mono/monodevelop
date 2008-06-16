@@ -682,10 +682,9 @@ namespace MonoDevelop.Ide.Gui
 						//} else {
 							IdeApp.Services.PlatformService.ShowUrl ("file://" + fileName);
 						//}
-					} catch {
-						LoadFileWrapper fw = new LoadFileWrapper (workbench, DisplayBindings.LastBinding, null, oFileInfo);
-						fw.Invoke (fileName);
-						RecentOpen.AddLastFile (fileName, null);
+					} catch (Exception ex) {
+						LoggingService.LogError ("Error opening file: " + fileName, ex);
+						MessageService.ShowError (GettextCatalog.GetString ("File '{0}' could not be opened", fileName));
 					}
 				}
 			}

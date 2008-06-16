@@ -495,7 +495,7 @@ namespace MonoDevelop.Ide.Gui
 			if (args.Cancel)
 				return null;
 			using (IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetLoadProgressMonitor (true)) {
-				return folder.AddItem (args.FileName, monitor);
+				return folder.AddItem (monitor, args.FileName, true);
 			}
 		}
 
@@ -650,7 +650,7 @@ namespace MonoDevelop.Ide.Gui
 		{
 			if (currentRunOperation != null && !currentRunOperation.IsCompleted) return currentRunOperation;
 			
-			guiHelper.SetWorkbenchContext (WorkbenchContext.Debug);
+//			guiHelper.SetWorkbenchContext (WorkbenchContext.Debug);
 
 			IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetRunProgressMonitor ();
 
