@@ -99,6 +99,7 @@
 		<DataType class = "MonoDevelop.Deployment.Targets.LocalFileCopyConfiguration" />
 		<DataType class = "MonoDevelop.Deployment.Targets.SshFuseFileCopyConfiguration" />
 		<DataType class = "MonoDevelop.Deployment.PackagingProject" />
+		<DataType class = "MonoDevelop.Deployment.PackagingProjectConfiguration" />
 		<DataType class = "MonoDevelop.Deployment.Targets.BinariesZipPackageBuilder" />
 		<DataType class = "MonoDevelop.Deployment.Targets.SourcesZipPackageBuilder" />
 	</Extension>
