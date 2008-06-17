@@ -25,7 +25,15 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassBrowser {
         
         private Gtk.Button buttonCancelSearch;
         
+        private Gtk.Notebook notebook1;
+        
         private Gtk.ScrolledWindow scrolledwindow1;
+        
+        private Gtk.Label label1;
+        
+        private Gtk.ScrolledWindow scrolledwindow2;
+        
+        private Gtk.Label label2;
         
         protected virtual void Build() {
             Stetic.Gui.Initialize(this);
@@ -94,13 +102,39 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassBrowser {
             w13.Expand = false;
             w13.Fill = false;
             // Container child vbox1.Gtk.Box+BoxChild
+            this.notebook1 = new Gtk.Notebook();
+            this.notebook1.CanFocus = true;
+            this.notebook1.Name = "notebook1";
+            this.notebook1.CurrentPage = 0;
+            // Container child notebook1.Gtk.Notebook+NotebookChild
             this.scrolledwindow1 = new Gtk.ScrolledWindow();
             this.scrolledwindow1.CanFocus = true;
             this.scrolledwindow1.Name = "scrolledwindow1";
             this.scrolledwindow1.ShadowType = ((Gtk.ShadowType)(1));
-            this.vbox1.Add(this.scrolledwindow1);
-            Gtk.Box.BoxChild w14 = ((Gtk.Box.BoxChild)(this.vbox1[this.scrolledwindow1]));
-            w14.Position = 1;
+            this.notebook1.Add(this.scrolledwindow1);
+            // Notebook tab
+            this.label1 = new Gtk.Label();
+            this.label1.Name = "label1";
+            this.label1.LabelProp = Mono.Unix.Catalog.GetString("page1");
+            this.notebook1.SetTabLabel(this.scrolledwindow1, this.label1);
+            this.label1.ShowAll();
+            // Container child notebook1.Gtk.Notebook+NotebookChild
+            this.scrolledwindow2 = new Gtk.ScrolledWindow();
+            this.scrolledwindow2.CanFocus = true;
+            this.scrolledwindow2.Name = "scrolledwindow2";
+            this.scrolledwindow2.ShadowType = ((Gtk.ShadowType)(1));
+            this.notebook1.Add(this.scrolledwindow2);
+            Gtk.Notebook.NotebookChild w15 = ((Gtk.Notebook.NotebookChild)(this.notebook1[this.scrolledwindow2]));
+            w15.Position = 1;
+            // Notebook tab
+            this.label2 = new Gtk.Label();
+            this.label2.Name = "label2";
+            this.label2.LabelProp = Mono.Unix.Catalog.GetString("page2");
+            this.notebook1.SetTabLabel(this.scrolledwindow2, this.label2);
+            this.label2.ShowAll();
+            this.vbox1.Add(this.notebook1);
+            Gtk.Box.BoxChild w16 = ((Gtk.Box.BoxChild)(this.vbox1[this.notebook1]));
+            w16.Position = 1;
             this.Add(this.vbox1);
             if ((this.Child != null)) {
                 this.Child.ShowAll();

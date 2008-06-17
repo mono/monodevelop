@@ -103,8 +103,8 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassBrowser
 			
 			Dictionary <string, ProjectNamespace> namespaces = new Dictionary<string, ProjectNamespace> ();
 			
-			foreach (CompilationUnit unit in dom.CompilationUnits) {
-				foreach (IType type in unit.Types) {
+//			foreach (CompilationUnit unit in dom.CompilationUnits) {
+				foreach (IType type in dom.Types) {
 					if (String.IsNullOrEmpty (type.Namespace)) {
 						builder.AddChild (type);
 					} else {
@@ -114,7 +114,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassBrowser
 						namespaces [type.Namespace].Types.Add (type);
 					}
 				}
-			}
+//			}
 			foreach (ProjectNamespace ns in namespaces.Values) {
 				builder.AddChild (ns);
 			}

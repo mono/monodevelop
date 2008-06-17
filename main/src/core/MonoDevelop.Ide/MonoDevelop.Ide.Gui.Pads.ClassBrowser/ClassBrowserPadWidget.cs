@@ -61,9 +61,13 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassBrowser
 				new ProjectNamespaceNodeBuilder (),
 				new MemberNodeBuilder ()
 				}, new TreePadOption [] {});
-			
-			scrolledwindow1.Add (treeView);
+				
+			this.notebook1.ShowTabs = false;
+			scrolledwindow1.AddWithViewport (treeView);
 			scrolledwindow1.ShowAll ();
+			
+			scrolledwindow2.AddWithViewport (searchResultsTreeView);
+			scrolledwindow2.ShowAll ();
 			
 			list = new ListStore (new Type[] {
 				typeof (Pixbuf),
@@ -78,7 +82,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassBrowser
 			searchResultsTreeView.RowActivated += SearchRowActivated;
 			IdeApp.Workspace.WorkspaceItemOpened += OnOpenCombine;
 			IdeApp.Workspace.WorkspaceItemClosed += OnCloseCombine;
-			
+					
 			this.searchEntry.Changed += SearchEntryChanged;
 			this.buttonCancelSearch.Clicked += CancelSearchClicked;
 			this.searchEntry.Activated += SearchClicked;
@@ -164,16 +168,16 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassBrowser
 				return;
 			foreach (Project project in IdeApp.Workspace.GetAllProjects ()) {
 				ProjectDom dom = ProjectDomService.GetDom (project);
-				foreach (CompilationUnit unit in dom.CompilationUnits) {
-					foreach (IType type in unit.Types) {
-						if (ShouldAdd (type)) {
-							lock (searchResults) {
-								searchResults.Add (type);
-								GLib.Idle.Add (AddItemGui);
-							}
+//				foreach (CompilationUnit unit in dom.CompilationUnits) {
+				foreach (IType type in dom.Types) {
+					if (ShouldAdd (type)) {
+						lock (searchResults) {
+							searchResults.Add (type);
+							GLib.Idle.Add (AddItemGui);
 						}
 					}
 				}
+//				}
 			}
 		}
 		
@@ -195,9 +199,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassBrowser
 		{
 			if (!isInBrowerMode)
 				return;
-			scrolledwindow1.Remove (treeView);
-			scrolledwindow1.Add (searchResultsTreeView);
-			scrolledwindow1.ShowAll ();
+			this.notebook1.Page = 1;
 			isInBrowerMode = false;
 			PerformSearch ();
 		}
@@ -206,9 +208,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassBrowser
 		{
 			if (isInBrowerMode)
 				return;
-			scrolledwindow1.Remove (searchResultsTreeView);
-			scrolledwindow1.Add (treeView);
-			scrolledwindow1.ShowAll ();
+			this.notebook1.Page = 0;
 			isInBrowerMode = true;
 		}
 			
