@@ -67,11 +67,19 @@ namespace MonoDevelop.WebReferences.Commands
 					proxyFile.Subtype = Subtype.Code;
 					project.Files.Add(proxyFile);
 					
-					// Add a reference System.Web.Services to the project if it does not exists
-					string refName = "System.Web.Services, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a";
-					ProjectReference gacRef = new ProjectReference(ReferenceType.Gac, refName);
-					if (!project.References.Contains(gacRef))
-						project.References.Add(gacRef);
+					// Add references to the project if they do not exist
+					string[] references = { 
+						"System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089",
+						"System.Web.Services, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a",
+						"System.Xml, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"
+					};
+					ProjectReference gacRef;
+					
+					foreach(string refName in references) {
+						gacRef = new ProjectReference(ReferenceType.Gac, refName);
+						if (!project.References.Contains(gacRef))
+							project.References.Add(gacRef);
+					}
 
 					IdeApp.ProjectOperations.Save(project);
 				}

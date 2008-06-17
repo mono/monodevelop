@@ -1,3 +1,8 @@
+2008-06-17  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com>
+
+	* MonoDevelop.WebReferences.Commands/WebReferenceCommandHandler.cs: 
+	  Auto-add necessary references.
+
 2008-06-04  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.WebReferences.addin.xml: Bump MD version.
