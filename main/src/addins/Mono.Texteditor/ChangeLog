@@ -1,5 +1,10 @@
 2008-06-17  Mike Krüger <mkrueger@novell.com> 
 
+	* VBNetSyntaxMode.xml, CSharpSyntaxMode.xml, JavaSyntaxMode.xml,
+	  CSyntaxMode.xml, ValaSyntaxMode.xml: Updated highlighting files.
+
+2008-06-17  Mike Krüger <mkrueger@novell.com> 
+
 	* Mono.TextEditor.Highlighting/SyntaxMode.cs,
 	  Mono.TextEditor.Highlighting/SyntaxModeService.cs: Fixed syntax
 	  highlighting issue.

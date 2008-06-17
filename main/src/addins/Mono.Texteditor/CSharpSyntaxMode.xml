@@ -44,7 +44,7 @@
 		<End>"</End>
 	</Span>
 
-	<Span color = "literal" stopateol = "true" escape="\">
+	<Span color = "literal" rule="String" stopateol = "true" escape="\">
 		<Begin>&apos;</Begin>
 		<End>&apos;</End>
 	</Span>

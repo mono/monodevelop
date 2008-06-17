@@ -34,7 +34,7 @@
 		<End>*/</End>
 	</Span>
 	
-	<Span color = "literal" stopateol = "true" escape="\">
+	<Span color = "literal" rule="String" stopateol = "true" escape="\">
 		<Begin>"</Begin>
 		<End>"</End>
 	</Span>
@@ -272,6 +272,9 @@
 			<Word>HACK</Word>
 			<Word>UNDONE</Word>
 		</Keywords>	
+	</Rule>
+	
+	<Rule name = "String">
 	</Rule>
 	
 </SyntaxMode>
