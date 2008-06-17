@@ -152,6 +152,13 @@ namespace Mono.TextEditor.Highlighting
 				if (!String.IsNullOrEmpty (topColor)) {
 					result = style.GetChunkStyle (topColor);
 				} else {
+					if (String.IsNullOrEmpty (spanStack.Peek ().Color)) {
+						Span span = spanStack.Pop ();
+						result = GetChunkStyleColor (topColor);
+						spanStack.Push (span);
+						return result;
+					}
+					
 					result = spanStack.Count > 0 ? style.GetChunkStyle (spanStack.Peek ().Color) : defaultStyle;
 				}
 				return result;
@@ -161,6 +168,13 @@ namespace Mono.TextEditor.Highlighting
 			{
 				if (spanStack.Count == 0)
 					return defaultStyle;
+				if (String.IsNullOrEmpty (spanStack.Peek ().Color)) {
+					Span span = spanStack.Pop ();
+					ChunkStyle result = GetSpanStyle ();
+					spanStack.Push (span);
+					return result;
+				}
+				
 				return style.GetChunkStyle (spanStack.Peek ().Color);
 			}
 			
@@ -169,6 +183,12 @@ namespace Mono.TextEditor.Highlighting
 				curSpan = spanStack.Count > 0 ? spanStack.Peek () : null;
 				pair    = null;
 				if (curSpan != null) { 
+					if (String.IsNullOrEmpty (curSpan.Rule)) {
+						Span span = spanStack.Pop ();
+						SetTree ();
+						spanStack.Push (span);
+						return;
+					}
 					curRule = mode.GetRule (curSpan.Rule);
 					tree     = curRule.parseTree;
 				} else {
@@ -184,6 +204,12 @@ namespace Mono.TextEditor.Highlighting
 					semanticRule.Analyze (this.doc, line, result, ruleStart, offset);
 				}
 				if (curSpan != null) { 
+					if (String.IsNullOrEmpty (curSpan.Rule)) {
+						Span span = spanStack.Pop ();
+						SetSpan (offset);
+						spanStack.Push (span);
+						return;
+					}
 					curRule  = mode.GetRule (curSpan.Rule);
 					spanTree = curRule.spanStarts;
 				} else {

@@ -1,3 +1,9 @@
+2008-06-17  Mike Krüger <mkrueger@novell.com> 
+
+	* Mono.TextEditor.Highlighting/SyntaxMode.cs,
+	  Mono.TextEditor.Highlighting/SyntaxModeService.cs: Fixed syntax
+	  highlighting issue.
+
 2008-06-15  Mike Krüger <mkrueger@novell.com> 
 
 	* Mono.TextEditor/RedBlackTree.cs: fixed possible null reference.

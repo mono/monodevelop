@@ -268,8 +268,15 @@ namespace Mono.TextEditor.Highlighting
 					if (line == null || line.Offset < 0)
 						break;
 					
-					Span[] newSpans = spanStack.ToArray ();
-					Array.Reverse (newSpans);
+					List<Span> spanList = new List<Span> (spanStack.ToArray ());
+					spanList.Reverse ();
+					for (int i = 0; i < spanList.Count; i++) {
+						if (spanList[i].StopAtEol) {
+							spanList.RemoveAt (i);
+							i--;
+						}
+					}
+					Span[] newSpans = spanList.ToArray ();
 					if (line.Offset > endOffset) {
 						bool equal = IsEqual (line.StartSpan, newSpans);
 						doUpdate |= !equal;
