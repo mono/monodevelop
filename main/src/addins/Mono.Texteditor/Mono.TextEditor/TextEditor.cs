@@ -176,7 +176,17 @@ namespace Mono.TextEditor
 		public TextEditor (Document doc)
 		{
 			this.textEditorData.Document = doc;
-			this.Events = EventMask.AllEventsMask;
+//			this.Events = EventMask.AllEventsMask;
+			this.Events = EventMask.PointerMotionMask | 
+			              EventMask.ButtonPressMask | 
+			              EventMask.ButtonReleaseMask | 
+			              EventMask.EnterNotifyMask | 
+			              EventMask.LeaveNotifyMask | 
+			              EventMask.VisibilityNotifyMask | 
+			              EventMask.FocusChangeMask | 
+			              EventMask.ScrollMask | 
+			              EventMask.KeyPressMask |
+			              EventMask.KeyReleaseMask;
 			this.DoubleBuffered = false;
 			
 			base.CanFocus = true;

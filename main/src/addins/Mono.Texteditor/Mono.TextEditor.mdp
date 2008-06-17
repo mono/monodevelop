@@ -1,5 +1,5 @@
 <Project name="Mono.TextEditor" fileversion="2.0" language="C#" clr-version="Net_2_0" ctype="DotNetProject">
-  <Configurations active="Debug">
+  <Configurations active="Release">
     <Configuration name="Debug" ctype="DotNetProjectConfiguration">
       <Output directory="../../../build/bin" assemblyKeyFile="." assembly="Mono.TextEditor" />
       <Build debugmode="True" target="Library" />

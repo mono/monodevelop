@@ -1,3 +1,7 @@
+2008-06-18  Mike Krüger <mkrueger@novell.com> 
+
+	* Mono.TextEditor/TextEditor.cs: added workaround to fix 400293.
+
 2008-06-17  Mike Krüger <mkrueger@novell.com> 
 
 	* VBNetSyntaxMode.xml, CSharpSyntaxMode.xml, JavaSyntaxMode.xml,
