@@ -29,7 +29,7 @@
 				<Reference type="Gac" refto="System, Version=2.1.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e0899" />
 			</References>
 			<Files>
-				<FileTemplateReference TemplateID="Moonlight-XamlWithCodeBehind" name="${ProjectName}" />
+				<FileTemplateReference TemplateID="Moonlight-XamlWithCodeBehind" name="${EscapedProjectName}" />
 				<FileTemplateReference TemplateID="Moonlight-TestPage" name="TestPage.html" />
 				<FileTemplateReference TemplateID="Moonlight-CreateSilverlightJs" name="CreateSilverlight.js" />
 			</Files>

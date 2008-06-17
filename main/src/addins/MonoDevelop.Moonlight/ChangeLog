@@ -1,3 +1,8 @@
+2008-06-17  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* Templates/MoonlightProject.xpt.xml: Use escaped project name for
+	  identifier of main class.
+
 2008-06-10  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Moonlight.mdp,
