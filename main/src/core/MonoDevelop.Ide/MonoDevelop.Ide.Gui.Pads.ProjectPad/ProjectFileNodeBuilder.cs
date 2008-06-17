@@ -137,7 +137,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 	{
 		public override void RenameItem (string newName)
 		{
-			ProjectFile file = CurrentNode.DataItem as ProjectFile;
+			ProjectFile file = (ProjectFile) CurrentNode.DataItem;
 			string oldPath = file.Name;
 			string newPath = Path.Combine (Path.GetDirectoryName (oldPath), newName);
 			
@@ -157,7 +157,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		
 		public override void ActivateItem ()
 		{
-			ProjectFile file = CurrentNode.DataItem as ProjectFile;
+			ProjectFile file = (ProjectFile) CurrentNode.DataItem;
 			IdeApp.Workbench.OpenDocument (file.FilePath);
 		}
 		
@@ -181,15 +181,20 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		[CommandHandler (FileCommands.OpenContainingFolder)]
 		public void OnOpenFolder ()
 		{
-			ProjectFile file = CurrentNode.DataItem as ProjectFile;
+			ProjectFile file = (ProjectFile) CurrentNode.DataItem;
 			string path = System.IO.Path.GetDirectoryName (file.FilePath);
 			System.Diagnostics.Process.Start ("file://" + path);
 		}
-
+		
+		public override bool CanDeleteItem ()
+		{
+			return ((ProjectFile) CurrentNode.DataItem).DependsOnFile == null;
+		}
+		
 		[CommandHandler (EditCommands.Delete)]
 		public override void DeleteItem ()
 		{
-			ProjectFile file = CurrentNode.DataItem as ProjectFile;
+			ProjectFile file = (ProjectFile) CurrentNode.DataItem;
 			Project project = CurrentNode.GetParentDataItem (typeof(Project), false) as Project;
 			AlertButton removeFromProject = new AlertButton (GettextCatalog.GetString ("_Remove from Project"), Gtk.Stock.Remove);
 			
@@ -239,20 +244,23 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		[CommandUpdateHandler (EditCommands.Delete)]
 		public void UpdateRemoveItem (CommandInfo info)
 		{
+			//don't allow removing children from parents. The parent can be removed and will remove the whole group.
+			info.Enabled = CanDeleteItem ();
+			
 			info.Text = GettextCatalog.GetString ("Remove");
 		}
 		
 		[CommandUpdateHandler (ProjectCommands.IncludeInBuild)]
 		public void OnUpdateIncludeInBuild (CommandInfo info)
 		{
-			ProjectFile file = CurrentNode.DataItem as ProjectFile;
+			ProjectFile file = (ProjectFile) CurrentNode.DataItem;
 			info.Checked = (file.BuildAction == BuildAction.Compile);
 		}
 		
 		[CommandHandler (ProjectCommands.IncludeInBuild)]
 		public void OnIncludeInBuild ()
 		{
-			ProjectFile finfo = CurrentNode.DataItem as ProjectFile;
+			ProjectFile finfo = (ProjectFile) CurrentNode.DataItem;
 			if (finfo.BuildAction == BuildAction.Compile) {
 				finfo.BuildAction = BuildAction.Nothing;
 			} else {
@@ -264,14 +272,14 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		[CommandUpdateHandler (ProjectCommands.IncludeInDeploy)]
 		public void OnUpdateIncludeInDeploy (CommandInfo info)
 		{
-			ProjectFile finfo = CurrentNode.DataItem as ProjectFile;
+			ProjectFile finfo = (ProjectFile) CurrentNode.DataItem;
 			info.Checked = finfo.BuildAction == BuildAction.FileCopy;
 		}
 		
 		[CommandHandler (ProjectCommands.IncludeInDeploy)]
 		public void OnIncludeInDeploy ()
 		{
-			ProjectFile finfo = CurrentNode.DataItem as ProjectFile;
+			ProjectFile finfo = (ProjectFile) CurrentNode.DataItem;
 
 			if (finfo.BuildAction == BuildAction.FileCopy) {
 				finfo.BuildAction = BuildAction.Nothing;
@@ -284,14 +292,14 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		[CommandHandler (ViewCommands.OpenWithList)]
 		public void OnOpenWith (object ob)
 		{
-			ProjectFile finfo = CurrentNode.DataItem as ProjectFile;
+			ProjectFile finfo = (ProjectFile) CurrentNode.DataItem;
 			((FileViewer)ob).OpenFile (finfo.Name);
 		}
 		
 		[CommandUpdateHandler (ViewCommands.OpenWithList)]
 		public void OnOpenWithUpdate (CommandArrayInfo info)
 		{
-			ProjectFile finfo = CurrentNode.DataItem as ProjectFile;
+			ProjectFile finfo = (ProjectFile) CurrentNode.DataItem;
 			FileViewer prev = null; 
 			foreach (FileViewer fv in IdeApp.Workbench.GetFileViewers (finfo.Name)) {
 				if (prev != null && fv.IsExternal != prev.IsExternal)

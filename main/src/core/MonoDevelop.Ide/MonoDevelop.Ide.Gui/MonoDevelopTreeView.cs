@@ -567,8 +567,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 			OnCurrentItemActivated (EventArgs.Empty);
 		}
-
-		[CommandHandler (EditCommands.Delete)]
+		
 		public virtual void DeleteCurrentItem ()
 		{
 			TreeNodeNavigator node = (TreeNodeNavigator) GetSelectedNode ();
@@ -588,12 +587,6 @@ namespace MonoDevelop.Ide.Gui
 					node.MoveToPosition (pos);
 				}
 			}
-		}
-
-		[CommandUpdateHandler (EditCommands.Delete)]
-		internal void CanDeleteCurrentItem (CommandInfo info)
-		{
-			info.Bypass = !CanDeleteCurrentItem ();
 		}
 		
 		protected virtual bool CanDeleteCurrentItem ()

@@ -78,6 +78,18 @@ namespace MonoDevelop.Ide.Gui.Pads
 		{
 		}
 		
+		[CommandUpdateHandler (EditCommands.Delete)]
+		internal void CanDeleteCurrentItem (CommandInfo info)
+		{
+			info.Bypass = !CanDeleteItem ();
+		}
+		
+		[CommandHandler (EditCommands.Delete)]
+		internal void DeleteCurrentItem ()
+		{
+			DeleteItem ();
+		}
+		
 		public virtual bool CanDeleteItem ()
 		{
 			return GetType().GetMethod ("DeleteItem").DeclaringType != typeof(NodeCommandHandler);

@@ -1,3 +1,14 @@
+2008-06-17  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Ide.Gui.Pads/NodeCommandHandler.cs,
+	  MonoDevelop.Ide.Gui/MonoDevelopTreeView.cs: Handle delete commands
+	  in the base node command handler instead of the tree view, so that
+	  subclassed command handlers can override them properly.
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs: Don't
+	  allow deleting child files. Fix bad casting pattern. 
+	* MonoDevelop.Ide.Tasks/TaskService.cs: Avoid an exception on closing
+	  solutions without user tasks.
+
 2008-06-17  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Ide.mdp, Makefile.am: Fixed makefile.

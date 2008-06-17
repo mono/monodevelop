@@ -146,16 +146,15 @@ namespace MonoDevelop.Ide.Tasks
 		{
 			// Save UserTasks to xml file
 			string fileToSave = GetUserTasksFilename (e.Item);
-			try
-			{
-				List<UserTask> utasks = userTasks [e.Item];
-				XmlSerializer serializer = new XmlSerializer (utasks.GetType ());
-				Stream stream = new FileStream (fileToSave, FileMode.Create, FileAccess.Write, FileShare.None);
-				serializer.Serialize (stream, utasks);
-				stream.Close ();
-			}
-			catch (Exception ex)
-			{
+			try {
+				List<UserTask> utasks;
+				if (userTasks.TryGetValue (e.Item, out utasks)) {
+					XmlSerializer serializer = new XmlSerializer (utasks.GetType ());
+					using (Stream stream = new FileStream (fileToSave, FileMode.Create, FileAccess.Write, FileShare.None)) {
+						serializer.Serialize (stream, utasks);
+					}
+				}
+			} catch (Exception ex) {
 				LoggingService.LogWarning ("Could not save user tasks: " + fileToSave, ex);
 			}
 			
