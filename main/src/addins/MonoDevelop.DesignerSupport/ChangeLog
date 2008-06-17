@@ -1,5 +1,10 @@
 2008-06-16  Michael Hutchinson <mhutchinson@novell.com> 
 
+	* MonoDevelop.DesignerSupport/ClassOutlineTextEditorExtension.cs: Cache
+	  precendence selection results in IEnumerable merger.
+
+2008-06-16  Michael Hutchinson <mhutchinson@novell.com> 
+
 	* MonoDevelop.DesignerSupport/ClassOutlineTextEditorExtension.cs: List
 	  members in the order they're present in the file.
 

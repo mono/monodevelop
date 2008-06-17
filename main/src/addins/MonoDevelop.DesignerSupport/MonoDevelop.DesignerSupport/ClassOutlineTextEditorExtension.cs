@@ -239,33 +239,37 @@ namespace MonoDevelop.DesignerSupport
 		
 		static IEnumerable Merge (IEnumerable<IEnumerable> enumerables, PrecendenceSelector selector)
 		{
-			bool carryOn = false;
 			List<IEnumerator> enumerators = new List<IEnumerator> ();
+			List<int> precedences = new List<int> ();
 			foreach (IEnumerable enumerable in enumerables) {
 				IEnumerator enumerator = enumerable.GetEnumerator ();
-				if (enumerator.MoveNext ())
+				if (enumerator.MoveNext ()) {
 					enumerators.Add (enumerator);
+					precedences.Add (selector (enumerator.Current));
+				}
 			}
 			
 			while (enumerators.Count > 0) {
 				int maxPrecendence = int.MinValue;
-				IEnumerator best = null;
+				int bestIndex = 0;
 				
-				for (int i = 0; i < enumerators.Count; i++) {
-					IEnumerator current = enumerators[i];
-					int precendence = selector (current.Current);
-					if (precendence > maxPrecendence) {
-						maxPrecendence = precendence;
-						best = current;
+				for (int i = 0; i < precedences.Count; i++) {
+					if (precedences[i] > maxPrecendence) {
+						maxPrecendence = precedences[i];
+						bestIndex = i;
 					}
 				}
 				
+				IEnumerator best = enumerators[bestIndex];
 				yield return best.Current;
 				
-				if (!best.MoveNext ())
-					enumerators.Remove (best);
+				if (best.MoveNext ()) {
+					precedences[bestIndex] = selector (best.Current);
+				} else {
+					enumerators.RemoveAt (bestIndex);
+					precedences.RemoveAt (bestIndex);
+				}
 			}
-			
 		}
 	}
 }
