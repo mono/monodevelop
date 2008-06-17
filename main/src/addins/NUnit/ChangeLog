@@ -1,3 +1,9 @@
+2008-06-17  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Services/NUnitAssemblyTestSuite.cs: When counting test cases, ensure
+	  the test suite is fully loaded. Fixes bug #400106.
+	* Gui/TestResultsPad.cs: Some protection against division by 0.
+
 2008-06-04  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelopNUnit.addin.xml: Bump MD version.
