@@ -1,5 +1,9 @@
 2008-06-17  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.Ide.mdp, Makefile.am: Fixed makefile.
+
+2008-06-17  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.Ide.Gui.Pads.ClassBrowser/ClassBrowserPadWidget.cs,
 	  gtk-gui/MonoDevelop.Ide.Gui.Pads.ClassBrowser.ClassBrowserPadWidget.cs:
 	  Changed class browser widget.
