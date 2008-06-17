@@ -475,24 +475,35 @@ namespace MonoDevelop.Projects
 			if (UseParentDirectoryAsNamespace) {
 				try {
 					DirectoryInfo directory = new DirectoryInfo (Path.GetDirectoryName (fileName));
-					if (directory != null) 
-						return directory.Name;
-				} catch {
-				}
+					if (directory != null) {
+						string potential = SanitisePotentialNamespace (directory.Name);
+						if (potential != null)
+							return potential;
+					}
+				} catch {}
 			}
 			
 			if (!string.IsNullOrEmpty (DefaultNamespace))
 				return DefaultNamespace;
 			
+			return SanitisePotentialNamespace (Name) ?? "Application";
+		}
+		
+		string SanitisePotentialNamespace (string potential)
+		{
 			StringBuilder sb = new StringBuilder ();
-			foreach (char c in Name) {
-				if (char.IsLetterOrDigit (c) || c == '_' || c == '.')
+			foreach (char c in potential) {
+				if (char.IsLetter (c) || c == '_'
+					|| (sb.Length > 0 && (char.IsLetterOrDigit (sb[sb.Length-1]) || sb[sb.Length-1] == '_')
+						&& (c == '.' || char.IsNumber (c)))
+				) {
 					sb.Append (c);
+				}
 			}
 			if (sb.Length > 0)
 				return sb.ToString ();
 			else
-				return "Application";
+				return null;
 		}
 
 		// Make sure that the project references are valid for the target clr version.
