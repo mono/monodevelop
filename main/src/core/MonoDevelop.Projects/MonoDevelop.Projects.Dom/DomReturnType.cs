@@ -50,6 +50,10 @@ namespace MonoDevelop.Projects.Dom
 				return !String.IsNullOrEmpty (nspace) ? nspace + "." + name : name;
 			}
 			set {
+				if (value == null) {
+					nspace = name = null; 
+					return;
+				}
 				int idx = value.LastIndexOf ('.');
 				if (idx >= 0) {
 					nspace = value.Substring (0, idx);
@@ -176,7 +180,7 @@ namespace MonoDevelop.Projects.Dom
 		
 		public DomReturnType (string name, bool isNullable, List<IReturnType> typeParameters)
 		{
-			this.name           = name;
+			this.FullName           = name;
 			this.isNullable     = isNullable;
 			this.typeParameters = typeParameters;
 		}

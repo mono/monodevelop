@@ -98,8 +98,11 @@ namespace MonoDevelop.Projects.Dom
 				return null;
 			// TODO: Attributes
 			string name       = ReadString (reader, nameTable);
+			int   pointerNesting = reader.ReadInt32 ();
 			bool   isNullable = reader.ReadBoolean ();
 			bool   isByRef = reader.ReadBoolean ();
+			
+			int   arrayDimensions = reader.ReadInt32 ();
 			uint    arguments  = reader.ReadUInt32 ();
 			List<IReturnType> parameters = new List<IReturnType> ();
 			while (arguments-- > 0) {
@@ -107,16 +110,20 @@ namespace MonoDevelop.Projects.Dom
 			}
 			
 			DomReturnType result = new DomReturnType (name, isNullable, parameters);
+			result.PointerNestingLevel = pointerNesting;
 			result.IsByRef = isByRef;
+			result.ArrayDimensions = arrayDimensions;
 			return result;
 		}
 		public static void Write (BinaryWriter writer, INameEncoder nameTable, IReturnType returnType)
 		{
 			if (WriteNull (writer, returnType))
 				return;
-			WriteString (returnType.Name, writer, nameTable);
+			WriteString (returnType.FullName, writer, nameTable);
+			writer.Write (returnType.PointerNestingLevel);
 			writer.Write (returnType.IsNullable);
 			writer.Write (returnType.IsByRef);
+			writer.Write (returnType.ArrayDimensions);
 			if (returnType.GenericArguments == null) {
 				writer.Write ((uint)0);
 				return;
