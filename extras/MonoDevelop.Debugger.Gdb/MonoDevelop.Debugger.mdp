@@ -38,7 +38,7 @@
     <ProjectReference type="Gac" localcopy="True" refto="Mono.TextEditor, Version=1.0.3083.32360, Culture=neutral, PublicKeyToken=null" />
     <ProjectReference type="Gac" localcopy="True" refto="Mono.Posix, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
   </References>
-  <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="MonoDevelop.Debugger.Gdb.make" BuildTargetName="" CleanTargetName="" SyncReferences="True">
+  <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="MonoDevelop.Debugger.Gdb.make" SyncReferences="True">
     <BuildFilesVar Sync="True" Name="FILES" />
     <DeployFilesVar />
     <ResourcesVar Sync="True" Name="RESOURCES" />

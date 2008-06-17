@@ -1,5 +1,12 @@
 2008-06-17  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Debugger.Gdb.make, configure, MonoDevelop.Debugger.mdp,
+	  MonoDevelop.Debugger.mds, Makefile.include, rules.make,
+	  monodevelop.debugger.gdb.pc.in, Makefile: Added missing build
+	  files.
+
+2008-06-17  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* AssemblyInfo.cs, GdbBacktrace.cs, GdbEvent.cs, GdbSession.cs,
 	  CommandStatus.cs, GdbSessionFactory.cs, ResultData.cs,
 	  GdbCommandResult.cs, Manifest.addin.xml: Initial support for gdb

@@ -1,0 +1,6 @@
+Name: MonoDevelop.Debugger.Gdb
+Description: MonoDevelop.Debugger.Gdb
+Version: 
+
+Requires: 
+Libs: -r:@expanded_libdir@/@PACKAGE@/MonoDevelop.Debugger.Gdb.dll
