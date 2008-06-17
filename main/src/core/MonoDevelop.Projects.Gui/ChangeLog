@@ -1,3 +1,10 @@
+2008-06-17  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs,
+	  MonoDevelop.Projects.Gui.Completion/ListWindow.cs: Maintain more
+	  completion window state after a parser DB update. Fixes "Bug 400228
+	  - C# parsing frequently interrupts code completion".
+
 2008-06-04  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Projects.Gui.Dialogs/MultiConfigItemOptionsPanel.cs:

@@ -166,7 +166,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 			this.completionWidget = completionWidget;
 			this.firstChar = firstChar;
 
-			if (FillList ()) {
+			if (FillList (true)) {
 				// makes control-space in midle of words to work
 				string text = completionWidget.GetCompletionText (completionContext);
 				if (text.Length == 0) {
@@ -191,7 +191,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 				return false;
 		}
 		
-		bool FillList ()
+		bool FillList (bool reshow)
 		{
 			completionData = provider.GenerateCompletionData (completionWidget, firstChar);
 			if ((completionData == null || completionData.Length == 0) && !IsChanging)
@@ -222,7 +222,8 @@ namespace MonoDevelop.Projects.Gui.Completion
 
 			Move (x, y);
 			
-			Show ();
+			if (reshow)
+				Show ();
 			return true;
 		}
 		
@@ -397,14 +398,20 @@ namespace MonoDevelop.Projects.Gui.Completion
 		
 		void OnCompletionDataChanged (object s, EventArgs args)
 		{
+			//try to capture full selection state so as not to interrupt user
 			string last = null;
-			if (Visible)
-				last = CompleteWord;
+			if (Visible) {
+				if (SelectionDisabled)
+					last = PartialWord;
+				else
+					last = CompleteWord;
+			}
 
 			HideFooter ();
 			if (Visible) {
-				Reset ();
-				FillList ();
+				//don't reset the user-entered word when refilling the list
+				Reset (false);
+				FillList (false);
 				if (last != null)
 					SelectEntry (last);
 			}

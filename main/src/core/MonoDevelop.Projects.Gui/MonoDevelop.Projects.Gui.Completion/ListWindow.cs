@@ -71,7 +71,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 		public new void Show ()
 		{
 			this.ShowAll ();
-			Reset ();
+			Reset (true);
 		}
 		
 		public void ShowFooter (Widget w)
@@ -89,10 +89,13 @@ namespace MonoDevelop.Projects.Gui.Completion
 			}
 		}
 		
-		public void Reset ()
+		public void Reset (bool clearWord)
 		{
-			word = new StringBuilder ();
-			curPos = 0;
+			if (clearWord) {
+				word = new StringBuilder ();
+				curPos = 0;
+			}
+			
 			list.Reset ();
 			if (provider == null)
 				return;
@@ -242,8 +245,9 @@ namespace MonoDevelop.Projects.Gui.Completion
 				
 				//punctuation is only accepted if it actually matches an item in the list
 				word.Insert (curPos, c);
-				int match = findMatchedEntry (word.ToString ());
-				if (match >= 0) {
+				bool hasMismatches;
+				int match = findMatchedEntry (word.ToString (), out hasMismatches);
+				if (match >= 0 && !hasMismatches) {
 					curPos++;
 					SelectEntry (match);
 					return KeyAction.Process;
@@ -261,21 +265,35 @@ namespace MonoDevelop.Projects.Gui.Completion
 			SelectEntry (word.ToString ());
 		}
 		
-		int findMatchedEntry (string s)
+		//note: finds the full match, or the best partial match
+		//returns -1 if there is no match at all
+		int findMatchedEntry (string s, out bool hasMismatches)
 		{
 			int max = (provider == null ? 0 : provider.ItemCount);
 			string sLower = s.ToLower ();
 			
 			int bestMatch = -1;
+			int bestMatchLength = 0;
 			for (int n=0; n<max; n++) 
 			{
 				string txt = provider.GetText (n);
 				if (txt.StartsWith (s)) {
+					hasMismatches = false;
 					return n;
+				} else {
+					//try to match as many characters at the beginning of the words as possible
+					int matchLength = 0;
+					int minLength = Math.Min (s.Length, txt.Length);
+					while (matchLength < minLength && char.ToLower (txt[matchLength]) == sLower [matchLength]) {
+						matchLength++;
+					}
+					if (matchLength > bestMatchLength) {
+						bestMatchLength = matchLength;
+						bestMatch = n;
+					}
 				}
-				else if (bestMatch == -1 && txt.ToLower().StartsWith (sLower))
-					bestMatch = n;
 			}
+			hasMismatches = (bestMatch > -1) && (bestMatchLength != s.Length);
 			return bestMatch;
 		}
 		
@@ -290,8 +308,11 @@ namespace MonoDevelop.Projects.Gui.Completion
 		
 		public void SelectEntry (string s)
 		{
-			int n = findMatchedEntry (s);
+			bool hasMismatches;
+			int n = findMatchedEntry (s, out hasMismatches);
 			SelectEntry (n);
+			if (hasMismatches)
+				list.SelectionDisabled = true;
 		}
 		
 		void OnScrollChanged (object o, EventArgs args)
