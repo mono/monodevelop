@@ -582,7 +582,13 @@ namespace MonoDevelop.NUnit
 			ShowTestResult (test, result);
 			
 			UpdateCounters ();
-			progressBar.Fraction = ((double)testsRun / (double)testsToRun);
+
+			double frac;
+			if (testsToRun != 0)
+				frac = ((double)testsRun / (double)testsToRun);
+			else
+				frac = 1;
+			progressBar.Fraction = frac;
 			progressBar.Text = testsRun + " / " + testsToRun;
 		}
 		

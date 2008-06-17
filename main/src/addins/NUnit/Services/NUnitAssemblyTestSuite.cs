@@ -92,6 +92,16 @@ namespace MonoDevelop.NUnit
 			return null;
 		}
 		
+		public override int CountTestCases ()
+		{
+			lock (locker) {
+				if (Status == TestStatus.Loading)
+					Monitor.Wait (locker, 10000);
+			}
+			return base.CountTestCases ();
+		}
+
+		
 		protected override void OnCreateTests ()
 		{
 			lock (locker) {
@@ -159,6 +169,7 @@ namespace MonoDevelop.NUnit
 			finally {
 				lock (locker) {
 					Status = newStatus;
+					Monitor.PulseAll (locker);
 				}
 				OnTestChanged ();
 			}
