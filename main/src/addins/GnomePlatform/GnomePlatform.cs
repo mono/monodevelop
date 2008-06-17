@@ -100,37 +100,45 @@ namespace MonoDevelop.Platform
 
 		protected override string OnGetIconForFile (string filename)
 		{
-			Gnome.IconLookupResultFlags result;
-			return Gnome.Icon.LookupSync (IconTheme.Default, thumbnailFactory, filename, null, Gnome.IconLookupFlags.None, out result);
+			if (filename == "Documentation") {
+				return "gnome-fs-regular";
+			} 
+			if (System.IO.Directory.Exists (filename)) {
+				return "gnome-fs-directory";
+			} else if (System.IO.File.Exists (filename)) {
+				filename = EscapeFileName (filename);
+				if (filename == null)
+					return "gnome-fs-regular";
+				
+				string icon = null;
+				Gnome.IconLookupResultFlags result;
+				try {
+					icon = Gnome.Icon.LookupSync (IconTheme.Default, thumbnailFactory, filename, null, Gnome.IconLookupFlags.None, out result);
+				} catch {}
+				if (icon != null && icon.Length > 0)
+					return icon;
+			}			
+			return "gnome-fs-regular";
+			
 		}
 		
 		protected override Gdk.Pixbuf OnGetPixbufForFile (string filename, Gtk.IconSize size)
 		{
-			if (filename == "Documentation") {
-				return GetGnomeIcon ("gnome-fs-regular", size);
-			} 
-			if (System.IO.Directory.Exists (filename)) {
-				return GetPixbufForType ("gnome-fs-directory", size);
-			} else if (System.IO.File.Exists (filename)) {
-				foreach (char c in filename) {
-					// FIXME: This is a temporary workaround. In some systems, files with
-					// accented characters make LookupSync crash. Still trying to find out why.
-					if ((int)c < 32 || (int)c > 127)
-						return GetGnomeIcon ("gnome-fs-regular", size);
-				}
-				filename = filename.Replace ("%", "%25");
-				filename = filename.Replace ("#", "%23");
-				filename = filename.Replace ("?", "%3F");
-				string icon = null;
-				try {
-					icon = OnGetIconForFile (filename);
-				} catch {}
-				if (icon == null || icon.Length == 0)
-					return GetGnomeIcon ("gnome-fs-regular", size);
-				else
-					return GetPixbufForType (icon, size);
-			}			
-			return GetGnomeIcon ("gnome-fs-regular", size);
+			string icon = OnGetIconForFile (filename);
+			return GetPixbufForType (icon, size);
+		}
+		
+		string EscapeFileName (string filename)
+		{
+			foreach (char c in filename) {
+				// FIXME: This is a temporary workaround. In some systems, files with
+				// accented characters make LookupSync crash. Still trying to find out why.
+				if ((int)c < 32 || (int)c > 127)
+					return null;
+			}
+			filename = filename.Replace ("%", "%25");
+			filename = filename.Replace ("#", "%23");
+			return filename.Replace ("?", "%3F");
 		}
 		
 		Gdk.Pixbuf GetGnomeIcon (string name, Gtk.IconSize size)

@@ -1,3 +1,10 @@
+2008-06-17  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* GnomePlatform.mdp: Fix runtime version.
+	* GnomePlatform.cs: Gnome.Icon.LookupSync crashes in old gnome versions
+	  if the file doesn't exist. Fixed this case in OnGetPixbufForFile.
+	  Fixes bug #400297.
+
 2008-06-04  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* GnomePlatform.addin.xml: Bump MD version.
