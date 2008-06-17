@@ -1,5 +1,10 @@
 2008-06-17  Michael Hutchinson <mhutchinson@novell.com> 
 
+	* MonoDevelop.Ide.Templates/FileTemplateReference.cs: Provide a valid
+	  .NET identifier from the project name for templating file names.
+
+2008-06-17  Michael Hutchinson <mhutchinson@novell.com> 
+
 	* MonoDevelop.Ide.Gui.Pads/NodeCommandHandler.cs,
 	  MonoDevelop.Ide.Gui/MonoDevelopTreeView.cs: Handle delete commands
 	  in the base node command handler instead of the tree view, so that

@@ -62,8 +62,10 @@ namespace MonoDevelop.Ide.Templates
 		{
 			string[,] customTags = new string[,] {
 				{"ProjectName", project.Name},
-				{"EntryName", entryName}
-			};
+				{"EntryName", entryName},
+				{"EscapedProjectName", GetDotNetIdentifier (project.Name) }
+			};				
+			
 			string substName = MonoDevelop.Core.StringParserService.Parse (this.name, customTags);
 			
 			foreach (FileDescriptionTemplate fdt in innerTemplate.Files) {
@@ -71,6 +73,18 @@ namespace MonoDevelop.Ide.Templates
 					return false;
 			}
 			return true;
+		}
+		
+		string GetDotNetIdentifier (string identifier)
+		{
+			System.Text.StringBuilder sb = new System.Text.StringBuilder ();
+			foreach (char c in identifier)
+				if (char.IsLetter (c) || c == '_' || (sb.Length > 0 && char.IsNumber (c)))
+					sb.Append (c);
+			if (sb.Length > 0)
+				return sb.ToString ();
+			else
+				return "Application";
 		}
 		
 		public override void Show ()
