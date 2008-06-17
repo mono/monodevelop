@@ -457,7 +457,7 @@ namespace MonoDevelop.Projects.Parser
 		
 		StringNameTable nameTable;
 		
-		string[] sharedNameTable = new string[] {
+		static readonly string[] sharedNameTable = new string[] {
 			"", // 505195
 			"System.Void", // 116020
 			"To be added", // 78598

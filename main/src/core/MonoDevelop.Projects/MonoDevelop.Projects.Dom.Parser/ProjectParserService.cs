@@ -81,6 +81,15 @@ namespace MonoDevelop.Projects.Dom.Parser
 			return null;
 		}
 		
+		static IParser GetParserByFileName (string fileName)
+		{
+			foreach (IParser parser in parsers) {
+				if (parser.CanParse (fileName))
+					return parser;
+			}
+			return null;
+		}
+		
 		public static ProjectDom GetDom (Project project)
 		{
 			Debug.Assert (project != null);
@@ -89,10 +98,10 @@ namespace MonoDevelop.Projects.Dom.Parser
 			return GetDom (project.FileName); 
 		}
 		
-		public static IType GetType (string fullName, int genericParameterCount)
+		public static IType GetType (string fullName, int genericParameterCount, bool caseSensitive)
 		{
 			foreach (ProjectDom dom in doms.Values) {
-				IType type = dom.GetType (fullName, genericParameterCount);
+				IType type = dom.GetType (fullName, genericParameterCount, caseSensitive);
 				if (type != null)
 					return type;
 			}
@@ -118,7 +127,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 		{
 			ProjectDom foundDom = null;
 			foreach (ProjectDom dom in doms.Values) {
-				if (dom.Contains (unit)) {
+				if (dom.Database.Project.GetProjectFile (unit.FileName) != null) {
 					foundDom = dom;
 					break;
 				}
@@ -143,9 +152,8 @@ namespace MonoDevelop.Projects.Dom.Parser
 			}
 			Thread thread = new Thread (delegate () {
 				Thread.Sleep (500);
-				dom.RemoveCompilationUnit (fileName);
 				ICompilationUnit unit = parser.Parse (fileName, getContent ());
-				dom.UpdateCompilationUnit (unit);
+				dom.Database.UpdateFromParseInfo (unit, fileName);
 				OnCompilationUnitUpdated (new CompilationUnitEventArgs (unit));
 				OnDomUpdated (new ProjectDomEventArgs (dom));
 			});
@@ -156,20 +164,37 @@ namespace MonoDevelop.Projects.Dom.Parser
 			thread.Start ();
 		}
 		
+		public static IParser GetParser (Project project, string mimeType, string fileName)
+		{
+			if (project != null) {
+				IParser result = GetParser (project is DotNetProject ? ((DotNetProject)project).LanguageName : project.ProjectType);
+				if (result != null)
+					return result;
+			}
+			if (!String.IsNullOrEmpty (mimeType)) {
+				IParser result = GetParserByMime (mimeType);
+				if (result != null)
+					return result;
+			}
+			if (!String.IsNullOrEmpty (fileName)) 
+				return GetParserByFileName (fileName);
+			// give up
+			return null;
+		}
+		
 		public static ICompilationUnit Parse (Project project, string fileName, string mimeType, ContentDelegate getContent)
 		{
 			ProjectDom dom = GetDom (project);
+			IParser parser = GetParser (project, mimeType, fileName);
 			
-			IParser parser = project != null ? GetParser (project is DotNetProject ? ((DotNetProject)project).LanguageName : project.ProjectType) : GetParserByMime (mimeType);
 			if (parser == null)
 				return null;
 			if (refreshThreads.ContainsKey (fileName)) {
 				refreshThreads [fileName].Abort ();
 				refreshThreads.Remove (fileName);
 			}
-			dom.RemoveCompilationUnit (fileName);
 			ICompilationUnit unit = parser.Parse (fileName, getContent ());
-			dom.UpdateCompilationUnit (unit);
+			dom.Database.UpdateFromParseInfo (unit, fileName);
 			OnCompilationUnitUpdated (new CompilationUnitEventArgs (unit));
 			OnDomUpdated (new ProjectDomEventArgs (dom));
 			return unit;
@@ -246,7 +271,10 @@ namespace MonoDevelop.Projects.Dom.Parser
 			}
 			
 			ProjectDom dom = GetDom (project);
-			foreach (ProjectFile file in project.Files) {
+			dom.Database = new ProjectCodeCompletionDatabase (project);
+			dom.Database.CheckModifiedFiles ();
+//			dom.Database.UpdateFromProject ();
+/*			foreach (ProjectFile file in project.Files) {
 				if (file.BuildAction != BuildAction.Compile)
 					continue;
 				string content = null;
@@ -259,7 +287,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 					dom.UpdateCompilationUnit (unit);
 					OnCompilationUnitUpdated (new CompilationUnitEventArgs (unit));
 				}
-			}
+			}*/
 			dom.FireLoaded ();
 			OnDomUpdated (new ProjectDomEventArgs (dom));
 		}

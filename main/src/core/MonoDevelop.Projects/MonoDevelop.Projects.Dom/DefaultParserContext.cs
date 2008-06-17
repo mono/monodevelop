@@ -58,11 +58,11 @@ namespace MonoDevelop.Projects.Dom
 
 		public SearchTypeResult SearchType (SearchTypeRequest request)
 		{
-			IType result = ProjectDomService.GetType (request.Name, request.GenericParameterCount);
+			IType result = ProjectDomService.GetType (request.Name, request.GenericParameterCount, request.CaseSensitive);
 			if (result != null)
 				return new SearchTypeResult (result);
 			foreach (IUsing u in request.CurrentCompilationUnit.Usings) {
-				result = ProjectDomService.GetType (u.Namespaces + "." + request.Name, request.GenericParameterCount);
+				result = ProjectDomService.GetType (u.Namespaces + "." + request.Name, request.GenericParameterCount, request.CaseSensitive);
 				if (result != null)
 					return new SearchTypeResult (result);
 			}
@@ -72,9 +72,9 @@ namespace MonoDevelop.Projects.Dom
 		public IType LookupType (IReturnType returnType)
 		{
 			if (dom != null) 
-				return dom.GetType (returnType.FullName, returnType.GenericArguments.Count);
+				return dom.GetType (returnType.FullName, returnType.GenericArguments.Count, true);
 			
-			return ProjectDomService.GetType (returnType.FullName, returnType.GenericArguments.Count);
+			return ProjectDomService.GetType (returnType.FullName, returnType.GenericArguments.Count, true);
 		}
 	}
 }

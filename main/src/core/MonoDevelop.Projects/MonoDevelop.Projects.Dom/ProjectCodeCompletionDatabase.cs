@@ -38,7 +38,7 @@ using System.Reflection;
 
 namespace MonoDevelop.Projects.Dom
 {
-	internal class ProjectCodeCompletionDatabase: CodeCompletionDatabase
+	internal class ProjectCodeCompletionDatabase : CodeCompletionDatabase
 	{
 		Project project;
 		bool initialFileCheck;
@@ -55,11 +55,11 @@ namespace MonoDevelop.Projects.Dom
 			
 			UpdateFromProject ();
 			
-			project.FileChangedInProject += new ProjectFileEventHandler (OnFileChanged);
-			project.FileAddedToProject += new ProjectFileEventHandler (OnFileAdded);
+			project.FileChangedInProject   += new ProjectFileEventHandler (OnFileChanged);
+			project.FileAddedToProject     += new ProjectFileEventHandler (OnFileAdded);
 			project.FileRemovedFromProject += new ProjectFileEventHandler (OnFileRemoved);
-			project.FileRenamedInProject += new ProjectFileRenamedEventHandler (OnFileRenamed);
-			project.Modified += new SolutionItemModifiedEventHandler (OnProjectModified);
+			project.FileRenamedInProject   += new ProjectFileRenamedEventHandler (OnFileRenamed);
+			project.Modified               += new SolutionItemModifiedEventHandler (OnProjectModified);
 
 			initialFileCheck = true;
 		}
@@ -259,6 +259,19 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
+		protected override void QueueParseJob (FileEntry file)
+		{
+			if (file.InParseQueue)
+				return;
+			file.InParseQueue = true;
+			ProjectDomService.Parse (this.project,
+			                           file.FileName,
+			                           "",
+			                           delegate () {
+				return File.ReadAllText (file.FileName);
+			});
+		}
+
 		public TypeUpdateInformation UpdateFromParseInfo (ICompilationUnit parserInfo, string fileName)
 		{
 			ICompilationUnit cu = parserInfo;

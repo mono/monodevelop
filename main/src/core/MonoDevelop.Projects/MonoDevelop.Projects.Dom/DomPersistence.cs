@@ -33,9 +33,9 @@ using System.IO;
 
 namespace MonoDevelop.Projects.Dom
 {
-	internal static class DomPersistence
+	public static class DomPersistence
 	{
-		internal static DomLocation ReadLocation (BinaryReader reader, INameDecoder nameTable)
+		public static DomLocation ReadLocation (BinaryReader reader, INameDecoder nameTable)
 		{
 			if (ReadNull (reader)) 
 				return DomLocation.Empty;
@@ -45,7 +45,8 @@ namespace MonoDevelop.Projects.Dom
 			
 			return new DomLocation (line, column);
 		}
-		internal static void Write (BinaryWriter writer, INameEncoder nameTable, DomLocation location)
+		
+		public static void Write (BinaryWriter writer, INameEncoder nameTable, DomLocation location)
 		{
 			if (WriteNull (writer, location)) 
 				return;
@@ -53,7 +54,7 @@ namespace MonoDevelop.Projects.Dom
 			writer.Write (location.Column);
 		}
 		
-		internal static DomRegion ReadRegion (BinaryReader reader, INameDecoder nameTable)
+		public static DomRegion ReadRegion (BinaryReader reader, INameDecoder nameTable)
 		{
 			if (ReadNull (reader)) 
 				return DomRegion.Empty;
@@ -65,7 +66,8 @@ namespace MonoDevelop.Projects.Dom
 			
 			return new DomRegion (startLine, startColumn, endLine, endColumn);
 		}
-		internal static void Write (BinaryWriter writer, INameEncoder nameTable, DomRegion region)
+		
+		public static void Write (BinaryWriter writer, INameEncoder nameTable, DomRegion region)
 		{
 			if (WriteNull (writer, region)) 
 				return;
@@ -75,22 +77,25 @@ namespace MonoDevelop.Projects.Dom
 			writer.Write (region.End.Column);
 		}
 		
-		internal static DomField ReadField (BinaryReader reader, INameDecoder nameTable)
+		public static DomField ReadField (BinaryReader reader, INameDecoder nameTable)
 		{
 			DomField result = new DomField ();
 			ReadMemberInformation (reader, nameTable, result);
 			result.ReturnType = ReadReturnType (reader, nameTable);
 			return result;
 		}
-		internal static void Write (BinaryWriter writer, INameEncoder nameTable, IField field)
+		
+		public static void Write (BinaryWriter writer, INameEncoder nameTable, IField field)
 		{
 			Debug.Assert (field != null);
 			WriteMemberInformation (writer, nameTable, field);
 			Write (writer, nameTable, field.ReturnType);
 		}
 		
-		internal static DomReturnType ReadReturnType (BinaryReader reader, INameDecoder nameTable)
+		public static DomReturnType ReadReturnType (BinaryReader reader, INameDecoder nameTable)
 		{
+			if (ReadNull (reader))
+				return null;
 			// TODO: Attributes
 			string name       = ReadString (reader, nameTable);
 			bool   isNullable = reader.ReadBoolean ();
@@ -105,10 +110,10 @@ namespace MonoDevelop.Projects.Dom
 			result.IsByRef = isByRef;
 			return result;
 		}
-		internal static void Write (BinaryWriter writer, INameEncoder nameTable, IReturnType returnType)
+		public static void Write (BinaryWriter writer, INameEncoder nameTable, IReturnType returnType)
 		{
-			Debug.Assert (returnType != null);
-			
+			if (WriteNull (writer, returnType))
+				return;
 			WriteString (returnType.Name, writer, nameTable);
 			writer.Write (returnType.IsNullable);
 			writer.Write (returnType.IsByRef);
@@ -122,7 +127,7 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
-		internal static DomMethod ReadMethod (BinaryReader reader, INameDecoder nameTable)
+		public static DomMethod ReadMethod (BinaryReader reader, INameDecoder nameTable)
 		{
 			DomMethod result = new DomMethod ();
 			ReadMemberInformation (reader, nameTable, result);
@@ -135,7 +140,8 @@ namespace MonoDevelop.Projects.Dom
 			}
 			return result;
 		}
-		internal static void Write (BinaryWriter writer, INameEncoder nameTable, IMethod method)
+		
+		public static void Write (BinaryWriter writer, INameEncoder nameTable, IMethod method)
 		{
 			Debug.Assert (method != null);
 			WriteMemberInformation (writer, nameTable, method);
@@ -147,7 +153,7 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
-		internal static DomParameter ReadParameter (BinaryReader reader, INameDecoder nameTable)
+		public static DomParameter ReadParameter (BinaryReader reader, INameDecoder nameTable)
 		{
 			DomParameter result = new DomParameter ();
 			
@@ -158,7 +164,8 @@ namespace MonoDevelop.Projects.Dom
 			
 			return result;
 		}
-		internal static void Write (BinaryWriter writer, INameEncoder nameTable, IParameter parameter)
+		
+		public static void Write (BinaryWriter writer, INameEncoder nameTable, IParameter parameter)
 		{
 			Debug.Assert (parameter != null);
 			WriteString (parameter.Name, writer, nameTable);
@@ -167,68 +174,61 @@ namespace MonoDevelop.Projects.Dom
 			Write (writer, nameTable, parameter.Location);
 		}
 		
-		internal static DomProperty ReadProperty (BinaryReader reader, INameDecoder nameTable)
+		public static DomProperty ReadProperty (BinaryReader reader, INameDecoder nameTable)
 		{
 			DomProperty result = new DomProperty ();
 			ReadMemberInformation (reader, nameTable, result);
 			result.ReturnType = ReadReturnType (reader, nameTable);
 			result.IsIndexer  = reader.ReadBoolean ();
-			bool hasGet = ReadNull (reader);
-			if (hasGet)
+			if (!ReadNull (reader))
 				result.GetMethod = ReadMethod (reader, nameTable);
-			bool hasSet = ReadNull (reader);
-			if (hasSet)
+			if (!ReadNull (reader))
 				result.SetMethod = ReadMethod (reader, nameTable);
 			return result;
 		}
-		internal static void Write (BinaryWriter writer, INameEncoder nameTable, IProperty property)
+		
+		public static void Write (BinaryWriter writer, INameEncoder nameTable, IProperty property)
 		{
 			Debug.Assert (property != null);
 			WriteMemberInformation (writer, nameTable, property);
 			Write (writer, nameTable, property.ReturnType);
-			WriteNull (writer, property.GetMethod);
-			if (property.GetMethod != null) 
+			writer.Write (property.IsIndexer);
+			if (!WriteNull (writer, property.GetMethod)) 
 				Write (writer, nameTable, property.GetMethod);
-			WriteNull (writer, property.SetMethod);
-			if (property.SetMethod != null) 
+			if (!WriteNull (writer, property.SetMethod)) 
 				Write (writer, nameTable, property.SetMethod);
 		}
 		
-		internal static DomEvent ReadEvent (BinaryReader reader, INameDecoder nameTable)
+		public static DomEvent ReadEvent (BinaryReader reader, INameDecoder nameTable)
 		{
 			DomEvent result = new DomEvent ();
 			ReadMemberInformation (reader, nameTable, result);
 			result.ReturnType = ReadReturnType (reader, nameTable);
-			bool hasAdd = ReadNull (reader);
-			if (hasAdd)
+			if (!ReadNull (reader))
 				result.AddMethod = ReadMethod (reader, nameTable);
-			bool hasRemove = ReadNull (reader);
-			if (hasRemove)
+			if (!ReadNull (reader))
 				result.RemoveMethod = ReadMethod (reader, nameTable);
-			bool hasRaise = ReadNull (reader);
-			if (hasRaise)
+			if (!ReadNull (reader))
 				result.RaiseMethod = ReadMethod (reader, nameTable);
 			return result;
 		}
-		internal static void Write (BinaryWriter writer, INameEncoder nameTable, IEvent evt)
+		public static void Write (BinaryWriter writer, INameEncoder nameTable, IEvent evt)
 		{
 			Debug.Assert (evt != null);
 			WriteMemberInformation (writer, nameTable, evt);
 			Write (writer, nameTable, evt.ReturnType);
-			WriteNull (writer, evt.AddMethod);
-			if (evt.AddMethod != null) 
+			if (!WriteNull (writer, evt.AddMethod)) 
 				Write (writer, nameTable, evt.AddMethod);
-			WriteNull (writer, evt.RemoveMethod);
-			if (evt.RemoveMethod != null) 
+			if (!WriteNull (writer, evt.RemoveMethod)) 
 				Write (writer, nameTable, evt.RemoveMethod);
-			WriteNull (writer, evt.RaiseMethod);
-			if (evt.RaiseMethod != null) 
+			if (!WriteNull (writer, evt.RaiseMethod)) 
 				Write (writer, nameTable, evt.RaiseMethod);
 		}
 		
 		
-		internal static DomType ReadType (BinaryReader reader, INameDecoder nameTable)
+		public static DomType ReadType (BinaryReader reader, INameDecoder nameTable)
 		{
+			System.Console.WriteLine("Read Class");
 			DomType result = new DomType ();
 			ReadMemberInformation (reader, nameTable, result);
 			result.Namespace = ReadString (reader, nameTable);
@@ -269,11 +269,13 @@ namespace MonoDevelop.Projects.Dom
 			while (count-- > 0) {
 				result.Add (ReadEvent (reader, nameTable));
 			}
+			System.Console.WriteLine("Read Class DONE");
 			return result;
 		}
 		
-		internal static void Write (BinaryWriter writer, INameEncoder nameTable, IType type)
+		public static void Write (BinaryWriter writer, INameEncoder nameTable, IType type)
 		{
+			System.Console.WriteLine("Write Class");
 			Debug.Assert (type != null);
 			WriteMemberInformation (writer, nameTable, type);
 			WriteString (type.Namespace, writer, nameTable);
@@ -299,9 +301,10 @@ namespace MonoDevelop.Projects.Dom
 			foreach (IEvent evt in type.Events) {
 				Write (writer, nameTable, evt);
 			}
+			System.Console.WriteLine("Write Class DONE");
 		}
 		
-		internal static uint GetCount<T> (IEnumerable<T> list)
+		public static uint GetCount<T> (IEnumerable<T> list)
 		{
 			uint result = 0;
 			foreach (T o in list) {
@@ -348,8 +351,8 @@ namespace MonoDevelop.Projects.Dom
 				return reader.ReadString ();
 			else if (id == -2)
 				return null;
-			else
-				return nameTable.GetStringValue (id);
+			
+			return nameTable.GetStringValue (id);
 		}
 		
 		static bool ReadNull (BinaryReader reader)

@@ -47,6 +47,7 @@ namespace MonoDevelop.Projects.Dom
 		int    genericParameterCount;
 		ICompilationUnit currentCompilationUnit;
 		int    caretLine, caretColumn;
+		bool   caseSensitive = true;
 		
 		public string Name {
 			get {
@@ -75,6 +76,15 @@ namespace MonoDevelop.Projects.Dom
 		public int CaretColumn {
 			get {
 				return caretColumn;
+			}
+		}
+
+		public bool CaseSensitive {
+			get {
+				return caseSensitive;
+			}
+			set {
+				caseSensitive = value;
 			}
 		}
 		

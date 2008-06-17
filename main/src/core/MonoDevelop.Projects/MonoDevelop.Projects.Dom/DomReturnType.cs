@@ -108,6 +108,8 @@ namespace MonoDevelop.Projects.Dom
 		
 		public System.Collections.ObjectModel.ReadOnlyCollection<IReturnType> GenericArguments {
 			get {
+				if (typeParameters == null)
+					return null;
 				return typeParameters.AsReadOnly ();
 			}
 		}

@@ -33,47 +33,69 @@ namespace MonoDevelop.Projects.Dom.Parser
 {
 	public class ProjectDom
 	{
-		Dictionary<string, ICompilationUnit> compilationUnits = new Dictionary<string, ICompilationUnit> ();
-			
-		public IEnumerable<ICompilationUnit> CompilationUnits {
+//		Dictionary<string, ICompilationUnit> compilationUnits = new Dictionary<string, ICompilationUnit> ();
+		ProjectCodeCompletionDatabase database;
+		
+/*		public IEnumerable<ICompilationUnit> CompilationUnits {
 			get {
 				return compilationUnits.Values;
 			}
-		}
+		}*/
 		
-		public bool Contains (ICompilationUnit unit)
-		{
-			foreach (ICompilationUnit u in compilationUnits.Values) {
-				if (u == unit)
-					return true;
-			}
-			return false;
-		}
 		
-		public void RemoveCompilationUnit (string fileName)
-		{
-			if (compilationUnits.ContainsKey (fileName)) {
-				compilationUnits[fileName].Dispose ();
-				compilationUnits.Remove (fileName);
+		public IEnumerable<IType> Types {
+			get {
+				return database.GetClassList ();
 			}
 		}
+	
 		
-		public void UpdateCompilationUnit (ICompilationUnit compilationUnit)
-		{
-			if (compilationUnits.ContainsKey (compilationUnit.FileName)) {
-				compilationUnits[compilationUnit.FileName].Dispose ();
+		internal MonoDevelop.Projects.Dom.ProjectCodeCompletionDatabase Database {
+			get {
+				return database;
 			}
-			compilationUnits[compilationUnit.FileName] = compilationUnit;
+			set {
+				database = value;
+			}
 		}
-		
-		public IType GetType (string fullName, int genericParameterCount)
+//		
+//		public bool Contains (ICompilationUnit unit)
+//		{
+//			foreach (ICompilationUnit u in compilationUnits.Values) {
+//				if (u == unit)
+//					return true;
+//			}
+//			return false;
+//		}
+//		
+//		public void RemoveCompilationUnit (string fileName)
+//		{
+//			if (compilationUnits.ContainsKey (fileName)) {
+//				compilationUnits[fileName].Dispose ();
+//				compilationUnits.Remove (fileName);
+//			}
+//		}
+//		
+//		public void UpdateCompilationUnit (ICompilationUnit compilationUnit)
+//		{
+//			if (compilationUnits.ContainsKey (compilationUnit.FileName)) {
+//				compilationUnits[compilationUnit.FileName].Dispose ();
+//			}
+//			compilationUnits[compilationUnit.FileName] = compilationUnit;
+//		}
+//		
+		public IType GetType (string fullName, int genericParameterCount, bool caseSensitive)
 		{
-			foreach (ICompilationUnit unit in compilationUnits.Values) {
+			if (String.IsNullOrEmpty (fullName))
+				return null;
+			return database.GetClass (fullName, null, caseSensitive);
+/*			foreach (ICompilationUnit unit in compilationUnits.Values) {
 				IType type = unit.GetType (fullName, genericParameterCount);
 				if (type != null)
 					return type;
 			}
 			return null;
+			*/
 		}
 		
 		
