@@ -77,7 +77,7 @@ namespace MonoDevelop.RegexToolkit {
             Stetic.Gui.Initialize(this);
             // Widget MonoDevelop.RegexToolkit.RegexLibraryWindow
             this.Name = "MonoDevelop.RegexToolkit.RegexLibraryWindow";
-            this.Title = Mono.Unix.Catalog.GetString("RegexLibraryWindow");
+            this.Title = Mono.Unix.Catalog.GetString("Regex Library");
             this.WindowPosition = ((Gtk.WindowPosition)(4));
             this.BorderWidth = ((uint)(6));
             // Container child MonoDevelop.RegexToolkit.RegexLibraryWindow.Gtk.Container+ContainerChild
@@ -254,6 +254,7 @@ namespace MonoDevelop.RegexToolkit {
             this.descriptionTextview.Name = "descriptionTextview";
             this.descriptionTextview.Editable = false;
             this.descriptionTextview.CursorVisible = false;
+            this.descriptionTextview.WrapMode = ((Gtk.WrapMode)(2));
             this.scrolledwindow1.Add(this.descriptionTextview);
             this.vbox7.Add(this.scrolledwindow1);
             Gtk.Box.BoxChild w18 = ((Gtk.Box.BoxChild)(this.vbox7[this.scrolledwindow1]));

@@ -482,7 +482,7 @@
   </widget>
   <widget class="Gtk.Window" id="MonoDevelop.RegexToolkit.RegexLibraryWindow" design-size="526 508">
     <property name="MemberName" />
-    <property name="Title" translatable="yes">RegexLibraryWindow</property>
+    <property name="Title" translatable="yes">Regex Library</property>
     <property name="WindowPosition">CenterOnParent</property>
     <property name="BorderWidth">6</property>
     <child>
@@ -731,6 +731,7 @@
                             <property name="Editable">False</property>
                             <property name="CursorVisible">False</property>
                             <property name="Text" translatable="yes" />
+                            <property name="WrapMode">Word</property>
                           </widget>
                         </child>
                       </widget>
