@@ -1,3 +1,7 @@
+2008-06-18  Jerome Haltom <wasabi@larvalstage.net>
+
+	* Gui/EditPackagesDialog.cs: Attempt to detect vapidir.
+
 2008-06-12  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* ValaBinding.mdp, Makefile.am: More makefile fixes.
