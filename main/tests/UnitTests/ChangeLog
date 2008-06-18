@@ -1,3 +1,8 @@
+2008-06-18  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects/DomPersistenceTests.cs: Added some dom
+	  persistence tests.
+
 2008-06-17  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects/DomPersistenceTests.cs: Added dom persistence

@@ -116,7 +116,7 @@ namespace MonoDevelop.Projects.DomTests
 		}
 		
 		[Test()]
-		public void ReadWriteReturnType ()
+		public void ReadWriteReturnTypeTest ()
 		{
 			DomReturnType input = new DomReturnType ();
 			input.Name      = "Test";
@@ -140,7 +140,70 @@ namespace MonoDevelop.Projects.DomTests
 			Assert.AreEqual (true, result.IsNullable);
 			Assert.AreEqual (666, result.PointerNestingLevel);
 		}
-
+		
+		[Test()]
+		public void ReadWriteMethodTest ()
+		{
+			DomMethod input = new DomMethod ();
+			input.Name      = "Test";
+			input.IsConstructor = true;
+			input.Add (new DomParameter ("par1", DomReturnType.Void));
+			
+			MemoryStream ms = new MemoryStream ();
+			BinaryWriter writer = new BinaryWriter (ms);
+			DomPersistence.Write (writer, DefaultNameEncoder, input);
+			byte[] bytes = ms.ToArray ();
+			
+			DomMethod result = DomPersistence.ReadMethod (CreateReader (bytes), DefaultNameDecoder);
+			Assert.AreEqual ("Test", result.Name);
+			Assert.AreEqual (true, result.IsConstructor);
+			Assert.AreEqual ("par1", result.Parameters [0].Name);
+			Assert.AreEqual (null, result.Parameters [0].ReturnType.Name);
+		}
+		
+		[Test()]
+		public void ReadWritePropertyTest ()
+		{
+			DomProperty input = new DomProperty ();
+			input.Name      = "Test";
+			input.IsIndexer = true;
+			input.GetMethod = new DomMethod ("Getter", Modifiers.New, false, DomLocation.Empty, DomRegion.Empty);
+			input.SetMethod = new DomMethod ("Setter", Modifiers.New, false, DomLocation.Empty, DomRegion.Empty);
+			
+			MemoryStream ms = new MemoryStream ();
+			BinaryWriter writer = new BinaryWriter (ms);
+			DomPersistence.Write (writer, DefaultNameEncoder, input);
+			byte[] bytes = ms.ToArray ();
+			
+			DomProperty result = DomPersistence.ReadProperty (CreateReader (bytes), DefaultNameDecoder);
+			Assert.AreEqual ("Test", result.Name);
+			Assert.AreEqual (true, result.IsIndexer);
+			Assert.AreEqual (true, result.HasGet);
+			Assert.AreEqual ("Getter", result.GetMethod.Name);
+			Assert.AreEqual (true, result.HasSet);
+			Assert.AreEqual ("Setter", result.SetMethod.Name);
+		}
+		
+		[Test()]
+		public void ReadWriteEventTest ()
+		{
+			DomEvent input     = new DomEvent ();
+			input.Name         = "Test";
+			input.AddMethod    = new DomMethod ("AddMethod", Modifiers.New, false, DomLocation.Empty, DomRegion.Empty);
+			input.RemoveMethod = new DomMethod ("RemoveMethod", Modifiers.New, false, DomLocation.Empty, DomRegion.Empty);
+			input.RaiseMethod  = new DomMethod ("RaiseMethod", Modifiers.New, false, DomLocation.Empty, DomRegion.Empty);
+			
+			MemoryStream ms = new MemoryStream ();
+			BinaryWriter writer = new BinaryWriter (ms);
+			DomPersistence.Write (writer, DefaultNameEncoder, input);
+			byte[] bytes = ms.ToArray ();
+			
+			DomEvent result = DomPersistence.ReadEvent (CreateReader (bytes), DefaultNameDecoder);
+			Assert.AreEqual ("Test", result.Name);
+			Assert.AreEqual ("AddMethod", result.AddMethod.Name);
+			Assert.AreEqual ("RemoveMethod", result.RemoveMethod.Name);
+			Assert.AreEqual ("RaiseMethod", result.RaiseMethod.Name);
+		}
 		
 		static BinaryReader CreateReader (byte[] bytes)
 		{
