@@ -1,5 +1,12 @@
 2008-06-18  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.Projects.Dom.Parser/ProjectParserService.cs,
+	  MonoDevelop.Projects.Dom/DomType.cs,
+	  MonoDevelop.Projects.Dom/DomPersistence.cs: Worked on dom
+	  persistence.
+
+2008-06-18  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.Projects.Dom/DomType.cs,
 	  MonoDevelop.Projects.Dom/DomTypeProxy.cs,
 	  MonoDevelop.Projects.Dom/DomPersistence.cs,

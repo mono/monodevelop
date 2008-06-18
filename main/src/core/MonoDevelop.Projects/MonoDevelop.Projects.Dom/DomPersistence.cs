@@ -237,9 +237,13 @@ namespace MonoDevelop.Projects.Dom
 		{
 			DomType result = new DomType ();
 			ReadMemberInformation (reader, nameTable, result);
+			string compilationUnitFileName = ReadString (reader, nameTable);
+			result.CompilationUnit = new CompilationUnit (compilationUnitFileName);
+			
 			result.Namespace = ReadString (reader, nameTable);
 			result.ClassType = (ClassType)reader.ReadUInt32();
 			result.BaseType  = ReadReturnType (reader, nameTable);
+			
 			// implemented interfaces
 			long count = reader.ReadUInt32 ();
 			while (count-- > 0) {
@@ -249,31 +253,41 @@ namespace MonoDevelop.Projects.Dom
 			// innerTypes
 			count = reader.ReadUInt32 ();
 			while (count-- > 0) {
-				result.Add (ReadType (reader, nameTable));
+				DomType innerType = ReadType (reader, nameTable);
+				innerType.DeclaringType = result;
+				result.Add (innerType);
 			}
 			
 			// fields
 			count = reader.ReadUInt32 ();
 			while (count-- > 0) {
-				result.Add (ReadField (reader, nameTable));
+				DomField field = ReadField (reader, nameTable);
+				field.DeclaringType = result;
+				result.Add (field);
 			}
 			
 			// properties
 			count = reader.ReadUInt32 ();
 			while (count-- > 0) {
-				result.Add (ReadProperty (reader, nameTable));
+				DomProperty property = ReadProperty (reader, nameTable);
+				property.DeclaringType = result;
+				result.Add (property);
 			}
 			
 			// methods
 			count = reader.ReadUInt32 ();
 			while (count-- > 0) {
-				result.Add (ReadMethod (reader, nameTable));
+				DomMethod method = ReadMethod (reader, nameTable);
+				method.DeclaringType = result;
+				result.Add (method);
 			}
 			
 			// events
 			count = reader.ReadUInt32 ();
 			while (count-- > 0) {
-				result.Add (ReadEvent (reader, nameTable));
+				DomEvent evt = ReadEvent (reader, nameTable);
+				evt.DeclaringType = result;
+				result.Add (evt);
 			}
 			
 			return result;
@@ -283,6 +297,12 @@ namespace MonoDevelop.Projects.Dom
 		{
 			Debug.Assert (type != null);
 			WriteMemberInformation (writer, nameTable, type);
+			
+			if (type.CompilationUnit != null) {
+				WriteString (type.CompilationUnit.FileName, writer, nameTable);
+			} else {
+				WriteString (null, writer, nameTable);
+			}
 			WriteString (type.Namespace, writer, nameTable);
 			writer.Write ((uint)type.ClassType);
 			Write (writer, nameTable, type.BaseType);

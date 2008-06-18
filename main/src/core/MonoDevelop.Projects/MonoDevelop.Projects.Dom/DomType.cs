@@ -73,6 +73,9 @@ namespace MonoDevelop.Projects.Dom
 			get {
 				return compilationUnit;
 			}
+			set {
+				compilationUnit = value;
+			}
 		}
 		
 		public virtual ClassType ClassType {
@@ -395,7 +398,7 @@ namespace MonoDevelop.Projects.Dom
 		public static IType Resolve (IType type, ITypeResolver typeResolver)
 		{
 			DomType result = new DomType ();
-			
+			result.CompilationUnit = type.CompilationUnit;
 			result.Name          = type.Name;
 			result.Namespace     = type.Namespace;
 			result.Documentation = type.Documentation;

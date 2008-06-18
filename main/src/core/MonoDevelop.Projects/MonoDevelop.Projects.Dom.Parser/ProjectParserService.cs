@@ -266,7 +266,6 @@ namespace MonoDevelop.Projects.Dom.Parser
 				type = ((DotNetProject)project).LanguageName;
 			IParser parser = GetParser (type);
 			if (parser == null) {
-				System.Console.WriteLine("No parser found for: " + type);
 				return;
 			}
 			
