@@ -1,3 +1,8 @@
+2008-06-18  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Gui/IdePreferences.cs: Use msbuild as default file
+	  format.
+
 2008-06-17  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Ide.Templates/FileTemplateReference.cs: Provide a valid

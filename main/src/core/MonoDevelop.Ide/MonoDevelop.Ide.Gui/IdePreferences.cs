@@ -33,7 +33,7 @@ namespace MonoDevelop.Ide.Gui
 	public class IdePreferences
 	{
 		public string DefaultProjectFileFormat {
-			get { return PropertyService.Get ("MonoDevelop.DefaultFileFormat", "MD1"); }
+			get { return PropertyService.Get ("MonoDevelop.DefaultFileFormat", "MSBuild05"); }
 			set { PropertyService.Set ("MonoDevelop.DefaultFileFormat", value); }
 		}
 		
