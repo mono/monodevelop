@@ -1,3 +1,8 @@
+2008-06-18  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Gui/IdePreferences.cs: Use msbuild as default file
+	  format.
+
 2008-06-16  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectNodeBuilder.cs: Fix
