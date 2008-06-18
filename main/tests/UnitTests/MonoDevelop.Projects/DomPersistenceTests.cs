@@ -205,6 +205,25 @@ namespace MonoDevelop.Projects.DomTests
 			Assert.AreEqual ("RaiseMethod", result.RaiseMethod.Name);
 		}
 		
+		[Test()]
+		public void ReadWriteTypeTest ()
+		{
+			DomType input     = new DomType ();
+			input.Name         = "Test";
+			input.ClassType    = ClassType.Struct;
+			input.BaseType     = new DomReturnType ("BaseClass");
+			
+			MemoryStream ms = new MemoryStream ();
+			BinaryWriter writer = new BinaryWriter (ms);
+			DomPersistence.Write (writer, DefaultNameEncoder, input);
+			byte[] bytes = ms.ToArray ();
+			
+			DomType result = DomPersistence.ReadType (CreateReader (bytes), DefaultNameDecoder);
+			Assert.AreEqual ("Test", result.Name);
+			Assert.AreEqual (ClassType.Struct, result.ClassType);
+			Assert.AreEqual ("BaseClass", result.BaseType.Name);
+		}
+		
 		static BinaryReader CreateReader (byte[] bytes)
 		{
 			return new BinaryReader (new MemoryStream (bytes));
