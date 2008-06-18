@@ -93,9 +93,9 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
-		public virtual IEnumerable<IReturnType> ImplementedInterfaces {
+		public virtual ReadOnlyCollection<IReturnType> ImplementedInterfaces {
 			get {
-				return implementedInterfaces;
+				return implementedInterfaces.AsReadOnly ();
 			}
 		}
 		

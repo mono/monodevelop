@@ -235,14 +235,13 @@ namespace MonoDevelop.Projects.Dom
 		
 		public static DomType ReadType (BinaryReader reader, INameDecoder nameTable)
 		{
-			System.Console.WriteLine("Read Class");
 			DomType result = new DomType ();
 			ReadMemberInformation (reader, nameTable, result);
 			result.Namespace = ReadString (reader, nameTable);
 			result.ClassType = (ClassType)reader.ReadUInt32();
 			result.BaseType  = ReadReturnType (reader, nameTable);
 			// implemented interfaces
-			uint count = reader.ReadUInt32 ();
+			long count = reader.ReadUInt32 ();
 			while (count-- > 0) {
 				result.Add (ReadReturnType (reader, nameTable));
 			}
@@ -276,39 +275,42 @@ namespace MonoDevelop.Projects.Dom
 			while (count-- > 0) {
 				result.Add (ReadEvent (reader, nameTable));
 			}
-			System.Console.WriteLine("Read Class DONE");
+			
 			return result;
 		}
 		
 		public static void Write (BinaryWriter writer, INameEncoder nameTable, IType type)
 		{
-			System.Console.WriteLine("Write Class");
 			Debug.Assert (type != null);
 			WriteMemberInformation (writer, nameTable, type);
 			WriteString (type.Namespace, writer, nameTable);
 			writer.Write ((uint)type.ClassType);
 			Write (writer, nameTable, type.BaseType);
-			writer.Write (GetCount (type.ImplementedInterfaces));
+			writer.Write (type.ImplementedInterfaces.Count);
 			foreach (IReturnType iface in type.ImplementedInterfaces) {
 				Write (writer, nameTable, iface);
 			}
-			writer.Write (GetCount (type.Fields));
+			writer.Write (type.InnerTypeCount);
+			foreach (IType innerType in type.InnerTypes) {
+				Write (writer, nameTable, innerType);
+			}
+			writer.Write (type.FieldCount);
 			foreach (IField field in type.Fields) {
 				Write (writer, nameTable, field);
 			}
-			writer.Write (GetCount (type.Properties));
+			writer.Write (type.PropertyCount);
 			foreach (IProperty property in type.Properties) {
 				Write (writer, nameTable, property);
 			}
-			writer.Write (GetCount (type.Methods));
+			writer.Write (type.MethodCount);
 			foreach (IMethod method in type.Methods) {
 				Write (writer, nameTable, method);
 			}
-			writer.Write (GetCount (type.Events));
+			writer.Write (type.EventCount);
 			foreach (IEvent evt in type.Events) {
 				Write (writer, nameTable, evt);
 			}
-			System.Console.WriteLine("Write Class DONE");
+			
 		}
 		
 		public static uint GetCount<T> (IEnumerable<T> list)

@@ -90,7 +90,7 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
-		public override IEnumerable<IReturnType> ImplementedInterfaces {
+		public override ReadOnlyCollection<IReturnType> ImplementedInterfaces {
 			get {
 				return WrappedType.ImplementedInterfaces;
 			}

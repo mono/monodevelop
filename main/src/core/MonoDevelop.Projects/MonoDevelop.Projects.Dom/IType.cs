@@ -56,7 +56,7 @@ namespace MonoDevelop.Projects.Dom
 			set;
 		}
 		
-		IEnumerable<IReturnType> ImplementedInterfaces {
+		ReadOnlyCollection<IReturnType> ImplementedInterfaces {
 			get;
 		}
 		

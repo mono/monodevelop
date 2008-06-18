@@ -1401,6 +1401,8 @@ namespace MonoDevelop.Projects.Dom
 		
 		public string GetStringValue (int id)
 		{
+			if (id < 0 || id >= table.Length)
+				return "Invalid id:" + id;
 			return table [id];
 		}
 		
