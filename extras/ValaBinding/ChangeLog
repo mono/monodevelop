@@ -1,3 +1,8 @@
+2008-06-18  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com>
+
+	* Project/ProjectPackage.cs: Search more thoroughly for corresponding
+	  .pc files.
+
 2008-06-18  Jerome Haltom <wasabi@larvalstage.net>
 
 	* Gui/EditPackagesDialog.cs: Attempt to detect vapidir.

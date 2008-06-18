@@ -68,6 +68,12 @@ namespace MonoDevelop.ValaBinding
 			get { return requires; }
 		}
 		private List<string> requires;
+		
+		private static string[] packagePaths;
+		
+		static ProjectPackage () {
+			packagePaths = ScanPackageDirs ();
+		}
 
 		protected ProjectPackage() {
 			requires = new List<string>();
@@ -136,24 +142,31 @@ namespace MonoDevelop.ValaBinding
 			return Regex.Replace(desc, @"(.{1,80} )", "$&" + Environment.NewLine, RegexOptions.Compiled);
 		}
 		
+		/// <summary>
+		/// Search for a .pc file for this package, and parse its relevant attributes
+		/// </summary>
 		protected void ParsePackage ()
 		{
-			string line;
+			string line, pcfile;
 			
 			try {
-				// HACK
-				using (StreamReader reader = new StreamReader (Path.Combine("/usr/lib/pkgconfig", Path.ChangeExtension(Path.GetFileName(file), ".pc")))) {
-					if(null == reader){ return; }
-					
-					while ((line = reader.ReadLine ()) != null) {
-						if (Regex.IsMatch(line, @"^\s*#", RegexOptions.Compiled))
-						    continue;
-						    
-	//					if (line.IndexOf ('=') >= 0)
-	//						ParseVar (line);
+				foreach(string path in packagePaths) {
+					pcfile = Path.Combine (path, Path.ChangeExtension (Path.GetFileName (file), ".pc"));
+					if (!System.IO.File.Exists (pcfile)){ continue; }
+					using (StreamReader reader = new StreamReader (pcfile)) {
+						if (null == reader){ continue; }
 						
-						if (line.IndexOf (':') >= 0)
-							ParseProperty (line);
+						while ((line = reader.ReadLine ()) != null) {
+							if (Regex.IsMatch(line, @"^\s*#", RegexOptions.Compiled))
+							    continue;
+							    
+		//					if (line.IndexOf ('=') >= 0)
+		//						ParseVar (line);
+							
+							if (line.IndexOf (':') >= 0)
+								ParseProperty (line);
+						}
+						return;
 					}
 				}
 			} catch (FileNotFoundException) {
@@ -199,6 +212,33 @@ namespace MonoDevelop.ValaBinding
 			} catch (IOException) {
 				// We just won't populate requires
 			}
+		}
+		
+		/// <summary>
+		/// Scans PKG_CONFIG_PATH and a few static directories 
+		/// for potential pkg-config repositories
+		/// </summary>
+		/// <returns>
+		/// A <see cref="System.String"/> array: The potential directories
+		/// </returns>
+		private static string[] ScanPackageDirs ()
+		{
+			List<string> dirs = new List<string> ();
+			string pkg_var = Environment.GetEnvironmentVariable ("PKG_CONFIG_PATH");
+			string[] staticPaths = { "/usr/lib/pkgconfig",
+				"/usr/lib64/pkgconfig",
+				"/usr/share/pkgconfig",
+				"/usr/local/lib/pkgconfig",
+				"/usr/local/share/pkgconfig"
+			};
+				
+			dirs.AddRange(pkg_var.Split(new char[]{System.IO.Path.PathSeparator}, StringSplitOptions.RemoveEmptyEntries));
+			
+			foreach(string dir in staticPaths) {
+				if(!dirs.Contains(dir)){ dirs.Add(dir); }
+			}
+			
+			return dirs.ToArray ();
 		}
 	}
 }
