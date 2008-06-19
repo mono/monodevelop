@@ -27,6 +27,7 @@
 //
 
 using System;
+using System.Collections.Generic;
 using MonoDevelop.Projects.Gui.Completion;
 
 namespace MonoDevelop.Html
@@ -46,7 +47,10 @@ namespace MonoDevelop.Html
 
 		public ICompletionData[] GenerateCompletionData (ICompletionWidget widget, char charTyped)
 		{
-			return HtmlSchemaService.GetDocTypeCompletionData ();
+			List<ICompletionData> l = new List<ICompletionData> ();
+			foreach (ICompletionData data in HtmlSchemaService.DocTypeCompletionData)
+				l.Add (data);
+			return l.ToArray ();
 		}
 
 	}

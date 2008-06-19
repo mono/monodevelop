@@ -105,14 +105,16 @@ namespace MonoDevelop.DesignerSupport
 		
 		public override string ToString ()
 		{
-			return MonoDevelop.Core.GettextCatalog.GetString (
-				"Cannot add {0} '{1}' to class '{2}', because there is already a {3} with that name{4}.",
-				newMemberType.ToString ().ToLower (),
-				memberName,
-				className,
-				existingMemberType.ToString ().ToLower (),
-				(NewMemberType == ExistingMemberType)? " with an incompatible return type" : ""
-		   );
+			string str;
+			if (NewMemberType == ExistingMemberType)
+				str = MonoDevelop.Core.GettextCatalog.GetString ("Cannot add {0} '{1}' to class '{2}', " + 
+					"because there is already a {3} with that name with an incompatible return type.");
+			else
+				str = MonoDevelop.Core.GettextCatalog.GetString ("Cannot add {0} '{1}' to class '{2}', " + 
+					"because there is already a {3} with that name.");
+			
+			return string.Format (str, newMemberType.ToString ().ToLower (), memberName, className, 
+				existingMemberType.ToString ().ToLower ());
 		}
 	}
 	

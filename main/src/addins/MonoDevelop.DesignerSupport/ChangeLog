@@ -1,3 +1,10 @@
+2008-06-19  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.DesignerSupport/MemberExistsException.cs: Improve
+	  translatability.
+	* MonoDevelop.DesignerSupport/BindingService.cs: Fix a possible NRE.
+	  Check base classes when looking for conflicting identifiers.
+
 2008-06-16  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.DesignerSupport/ClassOutlineTextEditorExtension.cs: Cache

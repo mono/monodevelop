@@ -56,6 +56,8 @@ namespace MonoDevelop.AspNet.Gui
 		Gtk.TreeView outlineTreeView;
 		Gtk.TreeStore outlineTreeStore;
 		
+		#region Setup and teardown
+		
 		public AspNetEditorExtension () : base ()
 		{
 		}
@@ -97,6 +99,10 @@ namespace MonoDevelop.AspNet.Gui
 			RefreshOutline ();
 		}
 		
+		#endregion
+		
+		#region Convenience accessors
+		
 		MonoDevelop.AspNet.Parser.AspNetCompilationUnit CU {
 			get { lock (lockObj) { return lastCU; } }
 			set { lock (lockObj) { lastCU = value; } }
@@ -117,6 +123,8 @@ namespace MonoDevelop.AspNet.Gui
 				return Document.GetContent<IEditableTextBuffer> ();
 			}
 		}
+		
+		#endregion
 			
 		public override ICompletionDataProvider CodeCompletionCommand (ICodeCompletionContext completionContext)
 		{
@@ -550,7 +558,7 @@ namespace MonoDevelop.AspNet.Gui
 						}
 							
 						domMethod.Name = BindingService.GenerateIdentifierUniqueInClass
-							(codeBehindClass, suggestedIdentifier);
+							(projectContext, codeBehindClass, suggestedIdentifier);
 						provider.AddCompletionData (
 						    new SuggestedHandlerCompletionData (cu.Document.Project, domMethod, codeBehindClass,
 						        MonoDevelop.AspNet.CodeBehind.GetNonDesignerClass (codeBehindClass))
@@ -945,16 +953,15 @@ namespace MonoDevelop.AspNet.Gui
 				return;
 			
 			outlineTreeStore.Clear ();
-			if (lastCU == null)
-				return;
+			if (lastCU != null) {
+				DateTime start = DateTime.Now;
+				ParentNode p = lastCU.Document.RootNode;
+//				Gtk.TreeIter iter = outlineTreeStore.AppendValues (System.IO.Path.GetFileName (lastCU.Document.FilePath), p);
+				BuildTreeChildren (outlineTreeStore, Gtk.TreeIter.Zero, p);
+				outlineTreeView.ExpandAll ();
+				LoggingService.LogDebug ("Built ASP.NET outline in {0}ms", (DateTime.Now - start).Milliseconds);
+			}
 			
-			DateTime start = DateTime.Now;
-			ParentNode p = lastCU.Document.RootNode;
-//			Gtk.TreeIter iter = outlineTreeStore.AppendValues (System.IO.Path.GetFileName (lastCU.Document.FilePath), p);
-			BuildTreeChildren (outlineTreeStore, Gtk.TreeIter.Zero, p);
-			outlineTreeView.ExpandAll ();
-			
-			LoggingService.LogDebug ("Built ASP.NET outline in {0}ms", (DateTime.Now - start).Milliseconds);
 			Gdk.Threads.Leave ();
 		}
 		

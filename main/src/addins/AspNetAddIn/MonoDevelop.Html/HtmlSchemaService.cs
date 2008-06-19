@@ -155,15 +155,14 @@ namespace MonoDevelop.Html
 			return new EmptyXmlCompletionProvider ();
 		}
 		
-		public static ICompletionData[] GetDocTypeCompletionData ()
-		{
-			if (schemas == null)
-				Initialise ();
-			
-			List<ICompletionData> list = new List<ICompletionData> ();
-			foreach (HtmlSchema item in schemas.Values)
-				list.Add (new DocTypeCompletionData (item.Name, item.DocType));
-			return list.ToArray ();
+		public static IEnumerable<DocTypeCompletionData> DocTypeCompletionData {
+			get {
+				if (schemas == null)
+					Initialise ();
+				
+				foreach (HtmlSchema item in schemas.Values)
+					yield return new DocTypeCompletionData (item.Name, item.DocType);
+			}
 		}
 	}
 }

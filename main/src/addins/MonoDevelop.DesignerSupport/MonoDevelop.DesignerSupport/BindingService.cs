@@ -32,6 +32,7 @@
 using System;
 using System.CodeDom;
 using System.Reflection;
+using System.Collections;
 using System.Collections.Generic;
 
 using MonoDevelop.Projects;
@@ -44,14 +45,10 @@ namespace MonoDevelop.DesignerSupport
 {
 	
 	
-	public class BindingService
+	public static class BindingService
 	{
 		//TODO: currently case-sensitive, so some languages may not like this
 		const bool ignoreCase = false;
-		
-		private BindingService ()
-		{
-		}
 		
 		public static IMember GetCompatibleMemberInClass (IClass cls, CodeTypeMember member)
 		{
@@ -121,8 +118,8 @@ namespace MonoDevelop.DesignerSupport
 		
 		static IRegion GetValidRegion (IMember member)
 		{
-			if (member.Region.FileName == null)
-				member.Region.FileName = member.DeclaringType.Region.FileName;
+			if (member.Region == null || member.Region.FileName == null)
+				return member.DeclaringType.Region;
 			return member.Region;
 		}
 		
@@ -213,37 +210,52 @@ namespace MonoDevelop.DesignerSupport
 		}
 		
 		
-		public static bool IdentifierExistsInClass (IClass cls, string identifier)
+		static bool IdentifierExistsInClass (IParserContext parserContext, IClass cls, string identifier)
 		{
-			bool found = false;
-			
 			foreach (IMethod method in cls.Methods)
 				if (method.Name == identifier)
-					found = true;
+					return true;
 			
 			foreach (IProperty property in cls.Properties)
 				if (property.Name == identifier)
-					found = true;
+					return true;
 			
 			foreach (IEvent ev in cls.Events)
 				if (ev.Name == identifier)
-					found = true;
+					return true;
 			
 			foreach (IField field in cls.Fields)
 				if (field.Name == identifier)
-					found = true;
+					return true;
 			
-			return found;
+			foreach (IClass innerClass in cls.InnerClasses)
+				if (innerClass.Name == identifier)
+					return true;
+			
+			return VisibleIdentifierExistsInBaseClasses (parserContext.GetClassInheritanceTree (cls), identifier);
 		}
 		
+		static bool VisibleIdentifierExistsInBaseClasses (IEnumerable classes, string identifier)
+		{
+			foreach (IClass cls in classes) {
+				foreach (IEnumerable en in new IEnumerable[] {cls.Methods, cls.Properties, cls.Events, cls.Fields})
+					foreach (IMember item in en)
+						if (!item.IsPrivate && item.Name == identifier)
+							return true;
+				foreach (IClass innerClass in cls.InnerClasses)
+					if (!innerClass.IsPrivate && innerClass.Name == identifier)
+						return true;
+			}
+			return false;
+		}
 		
-		public static string GenerateIdentifierUniqueInClass (IClass cls, string trialIdentifier)
+		public static string GenerateIdentifierUniqueInClass (IParserContext parserContext, IClass cls, string trialIdentifier)
 		{
 			string trialValue = trialIdentifier;
 			
 			for (int suffix = 1; suffix <= int.MaxValue; suffix++)
 			{
-				if (!IdentifierExistsInClass (cls, trialValue))
+				if (!IdentifierExistsInClass (parserContext, cls, trialValue))
 					return trialValue;
 				
 				trialValue = trialIdentifier + suffix.ToString ();

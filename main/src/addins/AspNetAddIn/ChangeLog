@@ -1,3 +1,12 @@
+2008-06-19  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs: Track BindingService
+	  API. Fix possible skipping of Gdk.Threads.Leave().
+	* MonoDevelop.Html/DocTypeCompletionDataProvider.cs,
+	  MonoDevelop.Html/HtmlCompletionDataProvider.cs,
+	  MonoDevelop.Html/HtmlSchemaService.cs: Minor change to doctype
+	  completion data API.
+
 2008-06-13  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.AspNet/AspNetAppProject.cs: Fix a logic error that caused

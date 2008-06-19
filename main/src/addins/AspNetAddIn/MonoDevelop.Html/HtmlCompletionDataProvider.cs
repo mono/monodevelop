@@ -27,23 +27,30 @@
 //
 
 using System;
+using System.Collections.Generic;
 using MonoDevelop.Projects.Gui.Completion;
 
 namespace MonoDevelop.Html
 {
 	
 	
-	public class HtmlCompletionDataProvider : IMutableCompletionDataProvider
+	public class HtmlTagCompletionDataProvider : IMutableCompletionDataProvider
 	{
+		string parentElement;
+		HtmlSchema schema;
 		
 		public string DefaultCompletionString {
 			get { return null; }
 		}
 
 		public bool IsChanging {
-			get {
-				throw new NotImplementedException();
-			}
+			get { return false; }
+		}
+		
+		public HtmlTagCompletionDataProvider (HtmlSchema schema, string parentElement)
+		{
+			this.parentElement = parentElement;
+			this.schema = schema;
 		}
 		
 		public void Dispose ()
@@ -52,9 +59,11 @@ namespace MonoDevelop.Html
 
 		public ICompletionData[] GenerateCompletionData (ICompletionWidget widget, char charTyped)
 		{
-			return HtmlSchemaService.GetDocTypeCompletionData ();
+			if (parentElement != null)
+				return schema.CompletionProvider.GetChildElementCompletionData (parentElement);
+			else
+				return schema.CompletionProvider.GetElementCompletionData ();
 		}
-
 		
 		public event EventHandler CompletionDataChanging;
 
