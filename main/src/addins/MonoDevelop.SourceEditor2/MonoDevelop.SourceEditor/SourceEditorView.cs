@@ -327,7 +327,6 @@ namespace MonoDevelop.SourceEditor
 					line.AddMarker (breakpointMarker);
 				else
 					line.AddMarker (breakpointDisabledMarker);
-				Console.WriteLine ("pp ad1: ");
 				widget.TextEditor.QueueDraw ();
 			}
 		}
@@ -338,7 +337,6 @@ namespace MonoDevelop.SourceEditor
 				LineSegment line = widget.TextEditor.Document.GetLine (args.Breakpoint.Line-1);
 				line.RemoveMarker (breakpointMarker);
 				line.RemoveMarker (breakpointDisabledMarker);
-				Console.WriteLine ("pp rm1: ");
 				widget.TextEditor.QueueDraw ();
 			}
 		}

@@ -116,9 +116,6 @@ namespace MonoDevelop.SourceEditor
 					base.ResetMouseState ();
 				}
 			};
-			this.Realized += delegate {
-				FireOptionsChange ();
-			};
 		}
 		public void FireOptionsChange ()
 		{
