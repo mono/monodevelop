@@ -1,5 +1,10 @@
 2008-06-20  Ankit Jain  <jankit@novell.com>
 
+	* MonoDevelop.Ide.Gui.Dialogs/OverridesImplementsDialog.cs:
+	Show members names in the form - "MemberName : Return type"
+
+2008-06-20  Ankit Jain  <jankit@novell.com>
+
 	* MonoDevelop.Ide.Gui.Dialogs/OverridesImplementsDialog.cs
 	(PopulateTreeView): Properly stringify type names also.
 

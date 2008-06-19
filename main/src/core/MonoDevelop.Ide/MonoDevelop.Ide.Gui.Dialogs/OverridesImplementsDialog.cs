@@ -305,6 +305,16 @@ namespace MonoDevelop.Ide
 
 		string GetDescriptionString (ILanguageItem item, ConversionFlags flags)
 		{
+			string sig = LanguageItemToString (item, flags & ~ConversionFlags.ShowReturnType);
+			IMember member = item as IMember;
+			if (member == null || (flags & ConversionFlags.ShowReturnType) == 0)
+				return sig;
+
+			return sig + " : " + ambience.Convert (member.ReturnType, default_conversion_flags);
+		}
+
+		string LanguageItemToString (ILanguageItem item, ConversionFlags flags)
+		{
 			if (item is IClass)
 				return ambience.Convert ((IClass) item, flags);
 			if (item is IMethod)
@@ -318,6 +328,7 @@ namespace MonoDevelop.Ide
 
 			throw new InvalidOperationException (String.Format ("Unsupported language item type: {0}", item.GetType ().ToString ()));
 		}
+
 #endregion
 
 	}
