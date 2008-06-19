@@ -41,7 +41,8 @@ namespace Mono.TextEditor
 {
 	public class TextEditor : Gtk.DrawingArea
 	{
-		TextEditorData textEditorData = new TextEditorData ();
+		TextEditorData textEditorData;
+		TextEditorOptions options;
 		
 		protected Dictionary <int, EditAction> keyBindings = new Dictionary<int,EditAction> ();
 		protected BookmarkMargin   bookmarkMargin;
@@ -76,6 +77,18 @@ namespace Mono.TextEditor
 		
 		protected IMMulticontext IMContext {
 			get { return imContext; }
+		}
+		
+		public TextEditorOptions Options {
+			get {
+				return options;
+			}
+			set {
+				if (options != null)
+					options.Changed -= OptionsChanged;
+				options = value;
+				options.Changed += OptionsChanged;
+			}
 		}
 		
 		public TextEditor () : this (new Document ())
@@ -175,7 +188,8 @@ namespace Mono.TextEditor
 		
 		public TextEditor (Document doc)
 		{
-			this.textEditorData.Document = doc;
+			textEditorData = new TextEditorData (this, doc);
+			
 //			this.Events = EventMask.AllEventsMask;
 			this.Events = EventMask.PointerMotionMask | 
 			              EventMask.ButtonPressMask | 
@@ -304,8 +318,8 @@ namespace Mono.TextEditor
 			margins.Add (textViewMargin);
 			this.textEditorData.SelectionChanged += TextEditorDataSelectionChanged; 
 			Document.DocumentUpdated += DocumentUpdatedHandler;
-				
-			TextEditorOptions.Changed += OptionsChanged;
+			
+			Options = TextEditorOptions.Options;
 			
 			Gtk.TargetList list = new Gtk.TargetList ();
 			list.AddTextTargets (CopyAction.TextType);
@@ -317,6 +331,10 @@ namespace Mono.TextEditor
 			Caret.PositionChanged += CaretPositionChanged;
 			
 			textViewMargin.Initialize ();
+			
+			this.Realized += delegate {
+				OptionsChanged (null, null);
+			};
 		}
 		
 		void CaretPositionChanged (object sender, DocumentLocationEventArgs args) 
@@ -426,11 +444,11 @@ namespace Mono.TextEditor
 		{
 			if (!this.IsRealized)
 				return;
-			this.textEditorData.ColorStyle = TextEditorOptions.Options.GetColorStyle (this);
+			this.textEditorData.ColorStyle = Options.GetColorStyle (this);
 			
-			bookmarkMargin.IsVisible   = TextEditorOptions.Options.ShowIconMargin;
-			gutterMargin.IsVisible     = TextEditorOptions.Options.ShowLineNumberMargin;
-			foldMarkerMargin.IsVisible = TextEditorOptions.Options.ShowFoldMargin;
+			bookmarkMargin.IsVisible   = Options.ShowIconMargin;
+			gutterMargin.IsVisible     = Options.ShowLineNumberMargin;
+			foldMarkerMargin.IsVisible = Options.ShowFoldMargin;
 			foreach (IMargin margin in this.margins) {
 				margin.OptionsChanged ();
 			}
@@ -464,7 +482,7 @@ namespace Mono.TextEditor
 				Caret.PositionChanged -= CaretPositionChanged;
 				
 				Document.DocumentUpdated -= DocumentUpdatedHandler;
-				TextEditorOptions.Changed -= OptionsChanged;
+				options.Changed -= OptionsChanged;
 				
 				if (imContext != null) {
 					imContext.Commit -= IMCommit;
@@ -844,6 +862,11 @@ namespace Mono.TextEditor
 			return this.textViewMargin.VisualToDocumentLocation (x, y);
 		}
 		
+		public DocumentLocation LogicalToVisualLocation (DocumentLocation location)
+		{
+			return Document.LogicalToVisualLocation (this, location);
+		}
+		
 		public void CenterToCaret ()
 		{
 			if (Caret.Line < 0 || Caret.Line >= Document.LineCount)
@@ -907,9 +930,9 @@ namespace Mono.TextEditor
 		{
 			if ((evnt.State & Gdk.ModifierType.ControlMask) == Gdk.ModifierType.ControlMask) {
 				if (evnt.Direction == ScrollDirection.Down)
-					TextEditorOptions.Options.ZoomIn ();
+					Options.ZoomIn ();
 				else 
-					TextEditorOptions.Options.ZoomOut ();
+					Options.ZoomOut ();
 				return true;
 			}
 			return base.OnScrollEvent (evnt); 
@@ -952,7 +975,7 @@ namespace Mono.TextEditor
 		
 		void RenderMargins (Gdk.Drawable win, Gdk.Rectangle area)
 		{
-			this.TextViewMargin.rulerX = TextEditorOptions.Options.RulerColumn * this.TextViewMargin.CharWidth - (int)this.textEditorData.HAdjustment.Value;
+			this.TextViewMargin.rulerX = Options.RulerColumn * this.TextViewMargin.CharWidth - (int)this.textEditorData.HAdjustment.Value;
 			int reminder  = (int)this.textEditorData.VAdjustment.Value % LineHeight;
 			int firstLine = (int)(this.textEditorData.VAdjustment.Value / LineHeight);
 			int startLine = area.Top / this.LineHeight;

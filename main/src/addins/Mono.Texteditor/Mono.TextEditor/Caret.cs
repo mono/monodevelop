@@ -38,6 +38,7 @@ namespace Mono.TextEditor
 		bool isVisible = true;
 		int  desiredColumn;
 		Document document;
+		TextEditor editor;
 		
 		public int Line {
 			get {
@@ -136,8 +137,9 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		public Caret (Document document)
+		public Caret (TextEditor editor, Document document)
 		{
+			this.editor = editor;
 			this.document = document;
 		}
 		
@@ -150,13 +152,13 @@ namespace Mono.TextEditor
 		{
 			LineSegment curLine = this.document.GetLine (this.Line);
 			this.Column = System.Math.Min (curLine.EditableLength, System.Math.Max (0, this.Column));
-			this.desiredColumn = curLine.GetVisualColumn (document, this.Column);
+			this.desiredColumn = curLine.GetVisualColumn (editor, document, this.Column);
 		}
 		
 		void SetColumn ()
 		{
 			LineSegment curLine = this.document.GetLine (this.Line);
-			this.location.Column = curLine.GetLogicalColumn (this.document, this.desiredColumn);
+			this.location.Column = curLine.GetLogicalColumn (editor, this.document, this.desiredColumn);
 		}
 		
 		public override string ToString ()

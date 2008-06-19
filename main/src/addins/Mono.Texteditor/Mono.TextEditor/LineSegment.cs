@@ -177,12 +177,12 @@ namespace Mono.TextEditor
 			return result.ToString ();
 		}
 		
-		public int GetLogicalColumn (IBuffer doc, int visualColumn)
+		public int GetLogicalColumn (TextEditor editor, IBuffer doc, int visualColumn)
 		{
 			int curVisualColumn = 0;
 			for (int i = 0; i < EditableLength; i++) {
 				if (doc.GetCharAt (Offset + i) == '\t') {
-					curVisualColumn = TextViewMargin.GetNextTabstop (curVisualColumn);
+					curVisualColumn = TextViewMargin.GetNextTabstop (editor, curVisualColumn);
 				} else {
 					curVisualColumn++;
 				}
@@ -192,12 +192,12 @@ namespace Mono.TextEditor
 			return EditableLength;
 		}
 		
-		public int GetVisualColumn (IBuffer doc, int logicalColumn)
+		public int GetVisualColumn (TextEditor editor, IBuffer doc, int logicalColumn)
 		{
 			int result = 0;
 			for (int i = 0; i < logicalColumn; i++) {
 				if (i < EditableLength && doc.GetCharAt (Offset + i) == '\t') {
-					result = TextViewMargin.GetNextTabstop (result);
+					result = TextViewMargin.GetNextTabstop (editor, result);
 				} else {
 					result++;
 				}

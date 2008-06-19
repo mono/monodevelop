@@ -156,7 +156,7 @@ namespace Mono.TextEditor
 		Gdk.GC lineNumberBgGC, lineNumberGC, lineNumberHighlightGC;
 		public override void OptionsChanged ()
 		{
-			layout.FontDescription = TextEditorOptions.Options.Font;
+			layout.FontDescription = editor.Options.Font;
 			CalculateWidth ();
 			
 			DisposeGCs ();

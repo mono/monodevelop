@@ -101,7 +101,7 @@ namespace Mono.TextEditor
 			foldToggleMarkerGC = new Gdk.GC (editor.GdkWindow);
 			foldToggleMarkerGC.RgbFgColor = editor.ColorStyle.FoldToggleMarker;
 			
-			layout.FontDescription = TextEditorOptions.Options.Font;
+			layout.FontDescription = editor.Options.Font;
 			layout.SetText ("!");
 			int tmp;
 			layout.GetPixelSize (out tmp, out this.marginWidth);

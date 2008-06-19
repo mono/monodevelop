@@ -62,7 +62,7 @@ namespace Mono.TextEditor.Highlighting
 			return new ChunkParser (doc, style, this, line).GetChunks (offset, length);
 		}
 		
-		public string GetMarkup (Document doc, Style style, int offset, int length, bool removeIndent)
+		public string GetMarkup (Document doc, TextEditorOptions options, Style style, int offset, int length, bool removeIndent)
 		{
 			int curOffset = offset;
 			int indentLength = int.MaxValue;
@@ -94,7 +94,7 @@ namespace Mono.TextEditor.Highlighting
 					text = text.Replace ("&", "&amp;");
 					text = text.Replace ("<", "&lt;");
 					text = text.Replace (">", "&gt;");
-					text = text.Replace ("\t", new string (' ', TextEditorOptions.Options.TabSize));
+					text = text.Replace ("\t", new string (' ', options.TabSize));
 					result.Append(text);
 					result.Append("</span>");
 				}

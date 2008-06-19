@@ -792,11 +792,11 @@ namespace Mono.TextEditor
 			return result;
 		}
 		
-		public DocumentLocation LogicalToVisualLocation (DocumentLocation location)
+		public DocumentLocation LogicalToVisualLocation (TextEditor editor, DocumentLocation location)
 		{
 			int line = LogicalToVisualLine (location.Line);
 			LineSegment lineSegment = this.GetLine (location.Line);
-			int column = lineSegment.GetVisualColumn (this, location.Column);
+			int column = lineSegment.GetVisualColumn (editor, this, location.Column);
 			return new DocumentLocation (line, column);
 		}
 		

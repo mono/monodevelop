@@ -33,6 +33,7 @@ namespace Mono.TextEditor
 	{
 		Document   document; 
 		Caret      caret;
+		TextEditor editor;
 		
 		Adjustment hadjustment = new Adjustment (0, 0, 0, 0, 0, 0); 
 		public Adjustment HAdjustment {
@@ -54,9 +55,10 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		public TextEditorData ()
+		public TextEditorData (TextEditor editor, Document doc)
 		{
-			Document = new Document ();
+			this.editor = editor;
+			Document = doc;
 			this.SearchEngine = new BasicSearchEngine ();
 		}
 		
@@ -66,10 +68,16 @@ namespace Mono.TextEditor
 			}
 			set {
 				this.document = value;
-				caret = new Caret (document);
+				caret = new Caret (editor, document);
 				caret.PositionChanged += CaretPositionChanged;
 				this.document.BeginUndo += OnBeginUndo;
 				this.document.EndUndo += OnEndUndo;
+			}
+		}
+
+		public TextEditor Editor {
+			get {
+				return editor;
 			}
 		}
 		

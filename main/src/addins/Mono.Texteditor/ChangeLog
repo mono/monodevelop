@@ -1,3 +1,19 @@
+2008-06-19  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Mono.TextEditor/DefaultEditActions.cs,
+	  Mono.TextEditor/TextViewMargin.cs, Mono.TextEditor/Document.cs,
+	  Mono.TextEditor/FoldMarkerMargin.cs,
+	  Mono.TextEditor/TextEditorData.cs,
+	  Mono.TextEditor/CodeSegmentPreviewWindow.cs,
+	  Mono.TextEditor/TextEditor.cs, Mono.TextEditor/Caret.cs,
+	  Mono.TextEditor/BookmarkMargin.cs,
+	  Mono.TextEditor/TextEditorOptions.cs,
+	  Mono.TextEditor/GutterMargin.cs, Mono.TextEditor/LineSegment.cs,
+	  Mono.TextEditor.Highlighting/SyntaxMode.cs: Added support for
+	  editor-specific options. TextEditor now has an Options property and
+	  all classes use that object to get options, instead of the static
+	  instance.
+
 2008-06-18  Mike Krüger <mkrueger@novell.com> 
 
 	* Mono.TextEditor/TextEditor.cs: added workaround to fix 400293.

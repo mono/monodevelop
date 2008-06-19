@@ -314,11 +314,12 @@ namespace Mono.TextEditor
 			return SyntaxModeService.GetColorStyle (widget, ColorSheme);
 		}
 		
-		protected static void OnChanged (EventArgs args)
+		protected void OnChanged (EventArgs args)
 		{
 			if (Changed != null)
 				Changed (null, args);
 		}
-		public static event EventHandler Changed;
+		
+		public event EventHandler Changed;
 	}
 }

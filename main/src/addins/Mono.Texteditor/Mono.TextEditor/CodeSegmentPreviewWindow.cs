@@ -46,9 +46,10 @@ namespace Mono.TextEditor
 			this.segment  = segment;
 			
 			Pango.Layout layout = new Pango.Layout (this.PangoContext);
-			layout.FontDescription = TextEditorOptions.Options.Font;
+			layout.FontDescription = editor.Options.Font;
 			layout.Ellipsize = Pango.EllipsizeMode.End;
-			layout.SetMarkup (editor.Document.SyntaxMode.GetMarkup (editor.Document, 
+			layout.SetMarkup (editor.Document.SyntaxMode.GetMarkup (editor.Document,
+			                                                        editor.Options,
 			                                                        editor.ColorStyle,
 			                                                        segment.Offset,
 			                                                        segment.Length,
@@ -67,9 +68,10 @@ namespace Mono.TextEditor
 			gc.RgbFgColor = editor.ColorStyle.Background;
 			ev.Window.DrawRectangle (gc, true, ev.Area);
 			Pango.Layout layout = new Pango.Layout (this.PangoContext);
-			layout.FontDescription = TextEditorOptions.Options.Font;
+			layout.FontDescription = editor.Options.Font;
 			layout.Ellipsize = Pango.EllipsizeMode.End;
-			layout.SetMarkup (editor.Document.SyntaxMode.GetMarkup (editor.Document, 
+			layout.SetMarkup (editor.Document.SyntaxMode.GetMarkup (editor.Document,
+			                                                        editor.Options,
 			                                                        editor.ColorStyle,
 			                                                        segment.Offset,
 			                                                        segment.Length,

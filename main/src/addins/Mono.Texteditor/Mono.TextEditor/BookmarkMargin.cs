@@ -84,7 +84,7 @@ namespace Mono.TextEditor
 			color1 = Convert (editor.ColorStyle.BookmarkColor1);
 			color2 = Convert (editor.ColorStyle.BookmarkColor2);
 			
-			layout.FontDescription = TextEditorOptions.Options.Font;
+			layout.FontDescription = editor.Options.Font;
 			layout.SetText ("!");
 			int tmp;
 			layout.GetPixelSize (out tmp, out this.marginWidth);
