@@ -20,7 +20,7 @@ using Ambience_ = MonoDevelop.Projects.Ambience.Ambience;
 
 namespace CSharpBinding
 {
-	public class CSharpTextEditorExtension: CompletionTextEditorExtension
+	public class CSharpTextEditorExtension : CompletionTextEditorExtension
 	{
 		DocumentStateTracker<CSharpIndentEngine> stateTracker;
 		

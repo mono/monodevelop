@@ -1,3 +1,9 @@
+2008-06-19  Mike Krüger <mkrueger@novell.com> 
+
+	* Gui/NRefactoryResolver.cs, Gui/CSharpTextEditorCompletion.cs,
+	  Gui/CSharpTextEditorExtension.cs: Worked on code completion with
+	  the new dom.
+
 2008-06-13  Mike Krüger <mkrueger@novell.com> 
 
 	* Gui/CSharpTextEditorExtension.cs, Parser/DomParserOld.cs,

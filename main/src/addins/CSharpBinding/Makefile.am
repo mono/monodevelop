@@ -36,8 +36,10 @@ FILES =  \
 	Gui/CodeGenerationPanel.cs \
 	Gui/CompilerOptionsPanelWidget.cs \
 	Gui/CSharpParameterDataProvider.cs \
+	Gui/CSharpTextEditorCompletion.cs \
 	Gui/CSharpTextEditorExtension.cs \
 	Gui/FormattingPanel.cs \
+	Gui/NRefactoryResolver.cs \
 	Gui/OverrideCompletionData.cs \
 	Parser/CodeGenerator.cs \
 	Parser/CSharpExpressionFinder.cs \
