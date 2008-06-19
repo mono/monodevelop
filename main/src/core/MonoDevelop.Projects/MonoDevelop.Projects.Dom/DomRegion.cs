@@ -86,6 +86,15 @@ namespace MonoDevelop.Projects.Dom
 			                      End.Column);
 		}
 		
+		public bool Contains (DomLocation location)
+		{
+			return start <= location && location <= end;
+		}
+		public bool Contains (int line, int column)
+		{
+			return Contains (new DomLocation (line, column));
+		}
+		
 		public static bool operator==(DomRegion left, DomRegion right)
 		{
 			return left.Start == right.Start && left.End == right.End;

@@ -93,6 +93,7 @@ FILES =  \
 	MonoDevelop.Projects.Dom/ParameterModifiers.cs \
 	MonoDevelop.Projects.Dom/ProjectCodeCompletionDatabase.cs \
 	MonoDevelop.Projects.Dom/ReferenceEntry.cs \
+	MonoDevelop.Projects.Dom/ResolveResult.cs \
 	MonoDevelop.Projects.Dom/SimpleCodeCompletionDatabase.cs \
 	MonoDevelop.Projects.Dom/Tag.cs \
 	MonoDevelop.Projects.Dom/TypeParameter.cs \

@@ -30,7 +30,7 @@ using System;
 
 namespace MonoDevelop.Projects.Dom
 {
-	public struct DomLocation
+	public struct DomLocation : IComparable<DomLocation>, IEquatable<DomLocation>
 	{
 		int line, column;
 		
@@ -64,6 +64,27 @@ namespace MonoDevelop.Projects.Dom
 			this.column = column;
 		}
 		
+		public override bool Equals (object other)
+		{
+			if (!(other is DomLocation)) 
+				return false;
+			return (DomLocation)other == this;
+		}
+		
+		public bool Equals (DomLocation other)
+		{
+			return other == this;
+		}
+		
+		public int CompareTo (DomLocation other)
+		{
+			if (this == other)
+				return 0;
+			if (this < other)
+				return -1;
+			return 1;
+		}
+		
 		public override string ToString ()
 		{
 			return String.Format ("[DomLocation: Line={0}, Column={1}]", Line, Column);
@@ -78,6 +99,22 @@ namespace MonoDevelop.Projects.Dom
 		{
 			return left.Line != right.Line || left.Column != right.Column;
 		}
-
+		
+		public static bool operator<(DomLocation left, DomLocation right)
+		{
+			return left.Line < right.Line || left.Line == right.Line && left.Column < right.Column;
+		}
+		public static bool operator>(DomLocation left, DomLocation right)
+		{
+			return left.Line > right.Line || left.Line == right.Line && left.Column > right.Column;
+		}
+		public static bool operator<=(DomLocation left, DomLocation right)
+		{
+			return !(left > right);
+		}
+		public static bool operator>=(DomLocation left, DomLocation right)
+		{
+			return !(left < right);
+		}
 	}
 }

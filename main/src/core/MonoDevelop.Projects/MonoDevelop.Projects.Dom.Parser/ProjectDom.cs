@@ -49,6 +49,13 @@ namespace MonoDevelop.Projects.Dom.Parser
 			}
 		}
 	
+		public IEnumerable<IType> GetTypesFrom (string fileName)
+		{
+			foreach (IType type in Types) {
+				if (type.CompilationUnit != null && type.CompilationUnit.FileName == fileName)
+					yield return type;
+			}
+		}
 		
 		internal MonoDevelop.Projects.Dom.CodeCompletionDatabase Database {
 			get {
