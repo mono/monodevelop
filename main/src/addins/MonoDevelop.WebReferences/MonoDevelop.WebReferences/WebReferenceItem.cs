@@ -74,15 +74,32 @@ namespace MonoDevelop.WebReferences
 		public void Update()
 		{
 			// Read the map file into the discovery client protocol and setup the code generator
-			DiscoveryProtocol protocol = new DiscoveryProtocol();
+			DiscoveryProtocol protocol = new DiscoveryProtocol(),
+			remoteProtocol = null;
 			protocol.ReadAllUseBasePath(MapFile.FilePath);
+
+			// Refresh the disco and wsdl from the server
+			foreach (object doc in protocol.References.Values) { 
+				if (doc is DiscoveryDocumentReference) {
+					remoteProtocol = new DiscoveryProtocol();
+					try {
+						remoteProtocol.DiscoverAny(((DiscoveryDocumentReference)doc).Url);
+						break;
+					} catch (WebException) {
+						remoteProtocol = null;
+					}
+				}
+			}
+
+			if(null != remoteProtocol){ protocol = remoteProtocol; }
+			
 			protocol.ResolveAll();
 			
 			// Re-generate the proxy and map files
 			string basePath = new FileInfo(MapFile.FilePath).Directory.FullName;
 			CodeGenerator codeGen = new CodeGenerator(ProxyFile.Project, (DiscoveryClientProtocol)protocol);
 			codeGen.CreateProxyFile(basePath, MapFile.Project.Name + "." + Name, "Reference");
-			codeGen.CreateMapFile(basePath, "Reference.map");
+			protocol.WriteAll(basePath, "Reference.map");
 			protocol.Dispose();
 		}
 		

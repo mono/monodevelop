@@ -1,3 +1,8 @@
+2008-06-18  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com>
+
+	* MonoDevelop.WebReferences/WebReferenceItem.cs: Update web reference 
+	  over the network.
+
 2008-06-17  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com>
 
 	* MonoDevelop.WebReferences.Commands/WebReferenceCommandHandler.cs: 
