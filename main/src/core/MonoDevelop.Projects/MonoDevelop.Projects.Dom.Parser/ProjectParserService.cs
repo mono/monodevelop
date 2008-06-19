@@ -127,7 +127,10 @@ namespace MonoDevelop.Projects.Dom.Parser
 		{
 			ProjectDom foundDom = null;
 			foreach (ProjectDom dom in doms.Values) {
-				if (dom.Database.Project.GetProjectFile (unit.FileName) != null) {
+				ProjectCodeCompletionDatabase pccd = dom.Database as ProjectCodeCompletionDatabase;
+				if (pccd == null)
+					continue;
+				if (pccd.Project.GetProjectFile (unit.FileName) != null) {
 					foundDom = dom;
 					break;
 				}
@@ -153,7 +156,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 			Thread thread = new Thread (delegate () {
 				Thread.Sleep (500);
 				ICompilationUnit unit = parser.Parse (fileName, getContent ());
-				dom.Database.UpdateFromParseInfo (unit, fileName);
+				((ProjectCodeCompletionDatabase)dom.Database).UpdateFromParseInfo (unit, fileName);
 				OnCompilationUnitUpdated (new CompilationUnitEventArgs (unit));
 				OnDomUpdated (new ProjectDomEventArgs (dom));
 			});
@@ -194,7 +197,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 				refreshThreads.Remove (fileName);
 			}
 			ICompilationUnit unit = parser.Parse (fileName, getContent ());
-			dom.Database.UpdateFromParseInfo (unit, fileName);
+			((ProjectCodeCompletionDatabase)dom.Database).UpdateFromParseInfo (unit, fileName);
 			OnCompilationUnitUpdated (new CompilationUnitEventArgs (unit));
 			OnDomUpdated (new ProjectDomEventArgs (dom));
 			return unit;
@@ -221,8 +224,9 @@ namespace MonoDevelop.Projects.Dom.Parser
 			if (item is Solution) {
 				Thread thread = new Thread (delegate () {
 					Solution solution = (Solution) item;
-					foreach (Project project in solution.GetAllProjects ())
+					foreach (Project project in solution.GetAllProjects ()) {
 						Load (project);
+					}
 					solution.SolutionItemAdded   += OnSolutionItemAdded;
 					solution.SolutionItemRemoved += OnSolutionItemRemoved;
 				});
@@ -259,6 +263,19 @@ namespace MonoDevelop.Projects.Dom.Parser
 				doms.Remove (project.FileName);
 		}
 		
+		public static void Load (string baseDirectory, string uri)
+		{
+			if (uri.StartsWith ("Assembly:")) {
+				string file = uri.Substring (9);
+				string fullName = AssemblyCodeCompletionDatabase.GetFullAssemblyName (file);
+				
+				ProjectDom dom = GetDom (uri);
+				dom.Database = new AssemblyCodeCompletionDatabase (baseDirectory, file);
+				foreach (ReferenceEntry re in dom.Database.References)
+					Load (baseDirectory, re.Uri);
+			}
+		}
+		
 		public static void Load (Project project)
 		{
 			string type = project.ProjectType;
@@ -271,6 +288,13 @@ namespace MonoDevelop.Projects.Dom.Parser
 			
 			ProjectDom dom = GetDom (project);
 			dom.Database = new ProjectCodeCompletionDatabase (project);
+			foreach (ReferenceEntry re in dom.Database.References) {
+				Load (project.BaseDirectory, re.Uri);
+				System.Console.WriteLine(re.Uri);
+				//GetDatabase (baseDir, re.Uri);
+			}
+			
+			
 			dom.Database.CheckModifiedFiles ();
 //			dom.Database.UpdateFromProject ();
 /*			foreach (ProjectFile file in project.Files) {

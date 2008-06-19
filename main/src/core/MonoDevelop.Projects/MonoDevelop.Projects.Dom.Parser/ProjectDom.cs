@@ -34,7 +34,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 	public class ProjectDom
 	{
 //		Dictionary<string, ICompilationUnit> compilationUnits = new Dictionary<string, ICompilationUnit> ();
-		ProjectCodeCompletionDatabase database;
+		CodeCompletionDatabase database;
 		
 /*		public IEnumerable<ICompilationUnit> CompilationUnits {
 			get {
@@ -50,7 +50,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 		}
 	
 		
-		internal MonoDevelop.Projects.Dom.ProjectCodeCompletionDatabase Database {
+		internal MonoDevelop.Projects.Dom.CodeCompletionDatabase Database {
 			get {
 				return database;
 			}
