@@ -53,7 +53,7 @@ namespace MonoDevelop.Ide
 		private const int colExplicitIndex = 3;
 		private const int colItemIndex = 4;
 
-		private const ConversionFlags default_conversion_flags = 
+		private const ConversionFlags default_conversion_flags =
 			ConversionFlags.ShowParameterNames |
 			ConversionFlags.ShowGenericParameters |
 			ConversionFlags.ShowReturnType |
@@ -137,13 +137,15 @@ namespace MonoDevelop.Ide
 				TreeIter iter;
 				if (!iter_cache.TryGetValue (member.DeclaringType.FullyQualifiedName, out iter)) {
 					iter = store.AppendValues (false, parent_icon,
-			                                   member.DeclaringType.FullyQualifiedName, false, member.DeclaringType);
+			                                   GetDescriptionString (member.DeclaringType,
+								   default_conversion_flags | ConversionFlags.UseFullyQualifiedNames),
+							   false, member.DeclaringType);
 					iter_cache [member.DeclaringType.FullyQualifiedName] = iter;
 				}
 
 				store.AppendValues (iter, false,
 				                    IdeApp.Services.Resources.GetIcon (Services.Icons.GetIcon (member), IconSize.Menu),
-				                    GetDescriptionString (member, ambience), false, member);
+				                    GetDescriptionString (member, default_conversion_flags), false, member);
 			}
 		}
 
@@ -301,18 +303,18 @@ namespace MonoDevelop.Ide
 			} while (store.IterNext (ref child));
 		}
 
-		string GetDescriptionString (ILanguageItem item, Ambience_ ambience)
+		string GetDescriptionString (ILanguageItem item, ConversionFlags flags)
 		{
 			if (item is IClass)
-				return ambience.Convert ((IClass) item, default_conversion_flags);
+				return ambience.Convert ((IClass) item, flags);
 			if (item is IMethod)
-				return ambience.Convert ((IMethod) item, default_conversion_flags);
+				return ambience.Convert ((IMethod) item, flags);
 			if (item is IProperty)
-				return ambience.Convert ((IProperty) item, default_conversion_flags);
+				return ambience.Convert ((IProperty) item, flags);
 			if (item is IEvent)
-				return ambience.Convert ((IEvent) item, default_conversion_flags);
+				return ambience.Convert ((IEvent) item, flags);
 			if (item is IIndexer)
-				return ambience.Convert ((IIndexer) item, default_conversion_flags);
+				return ambience.Convert ((IIndexer) item, flags);
 
 			throw new InvalidOperationException (String.Format ("Unsupported language item type: {0}", item.GetType ().ToString ()));
 		}

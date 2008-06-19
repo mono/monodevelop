@@ -1,5 +1,10 @@
 2008-06-20  Ankit Jain  <jankit@novell.com>
 
+	* MonoDevelop.Ide.Gui.Dialogs/OverridesImplementsDialog.cs
+	(PopulateTreeView): Properly stringify type names also.
+
+2008-06-20  Ankit Jain  <jankit@novell.com>
+
 	* MonoDevelop.Ide.Gui.Dialogs/EncapsulateFieldDialog.cs: Make
 	Field/Property name columns expandable.
 
