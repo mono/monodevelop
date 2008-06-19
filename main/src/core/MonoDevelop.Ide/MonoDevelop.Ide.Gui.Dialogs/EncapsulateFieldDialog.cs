@@ -75,7 +75,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 			cbRenderer.Toggled += OnSelectedToggled;
 			TreeViewColumn cbCol = new TreeViewColumn ();
 			cbCol.Title = "";
-			cbCol.PackStart (cbRenderer, true);
+			cbCol.PackStart (cbRenderer, false);
 			cbCol.AddAttribute (cbRenderer, "active", colCheckedIndex);
 			treeview.AppendColumn (cbCol);
 
@@ -84,6 +84,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 			fieldRenderer.Weight = (int) Pango.Weight.Bold;
 			TreeViewColumn fieldCol = new TreeViewColumn ();
 			fieldCol.Title = GettextCatalog.GetString ("Field");
+			fieldCol.Expand = true;
 			fieldCol.PackStart (fieldRenderer, true);
 			fieldCol.AddAttribute (fieldRenderer, "text", colFieldNameIndex);
 			treeview.AppendColumn (fieldCol);
@@ -94,6 +95,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 			propertyRenderer.Edited += new EditedHandler (OnPropertyEdited);
 			TreeViewColumn propertyCol = new TreeViewColumn ();
 			propertyCol.Title = GettextCatalog.GetString ("Property");
+			propertyCol.Expand = true;
 			propertyCol.PackStart (propertyRenderer, true);
 			propertyCol.AddAttribute (propertyRenderer, "text", colPropertyNameIndex);
 			propertyCol.SetCellDataFunc (propertyRenderer, new TreeCellDataFunc (RenderPropertyName));
@@ -109,7 +111,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 
 			TreeViewColumn visiCol = new TreeViewColumn ();
 			visiCol.Title = GettextCatalog.GetString ("Visibility");
-			visiCol.PackStart (visiComboRenderer, true);
+			visiCol.PackStart (visiComboRenderer, false);
 			visiCol.AddAttribute (visiComboRenderer, "text", colVisibilityIndex);
 			treeview.AppendColumn (visiCol);
 
@@ -120,7 +122,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 			roRenderer.Toggled += new ToggledHandler (OnReadOnlyToggled);
 			TreeViewColumn roCol = new TreeViewColumn ();
 			roCol.Title = GettextCatalog.GetString ("Read only");
-			roCol.PackStart (roRenderer, true);
+			roCol.PackStart (roRenderer, false);
 			roCol.AddAttribute (roRenderer, "active", colReadOnlyIndex);
 			treeview.AppendColumn (roCol);
 
