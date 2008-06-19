@@ -29,6 +29,7 @@
 using System;
 using System.CodeDom;
 using System.Collections;
+using System.Collections.Generic;
 using System.Text;
 using MonoDevelop.Core;
 using MonoDevelop.Projects.Text;
@@ -141,6 +142,105 @@ namespace MonoDevelop.Projects.CodeGeneration
 			return refs;
 		}
 		
+		public void FindOverridables (IClass cls, List<IMember> classMembers, List<IMember> interfaceMembers,
+		                              bool includeOverridenClassMembers, bool includeOverridenInterfaceMembers)
+		{
+			IParserContext pctx = GetParserContext (cls);
+			List<IClass> visited = new List<IClass> ();
+
+			FindOverridables (pctx, cls, cls, classMembers, interfaceMembers, visited, includeOverridenClassMembers, includeOverridenInterfaceMembers);
+		}
+
+		void FindOverridables (IParserContext pctx, IClass motherClass, IClass cls, List<IMember> classMembers, List<IMember> interfaceMembers,
+		                       List<IClass> visited, bool includeOverridenClassMembers, bool includeOverridenInterfaceMembers)
+		{
+			if (visited.Contains (cls))
+				return;
+			visited.Add (cls);
+
+			foreach (IReturnType rt in cls.BaseTypes)
+			{
+				IClass baseCls = pctx.GetClass (rt.FullyQualifiedName, rt.GenericArguments, true, true);
+				if (baseCls == null)
+					continue;
+
+				if (visited.Contains (baseCls))
+					continue;
+
+				bool isInterface = baseCls.ClassType == ClassType.Interface;
+				if (isInterface && interfaceMembers == null)
+					continue;
+				List<IMember> list = isInterface ? interfaceMembers : classMembers;
+				bool includeOverriden = isInterface ? includeOverridenInterfaceMembers : includeOverridenClassMembers;
+
+				foreach (IMethod m in baseCls.Methods) {
+					if (m.IsInternal && motherClass.SourceProject != null && motherClass.SourceProject != m.DeclaringType.SourceProject)
+						continue;
+					if ((isInterface || m.IsVirtual || m.IsAbstract) && !m.IsSealed && (includeOverriden || !IsOverridenMethod (motherClass, m)))
+						list.Add (m);
+				}
+				foreach (IProperty m in baseCls.Properties) {
+					if (m.IsInternal && motherClass.SourceProject != null && motherClass.SourceProject != m.DeclaringType.SourceProject)
+						continue;
+					if ((isInterface || m.IsVirtual || m.IsAbstract) && !m.IsSealed && (includeOverriden || !IsOverridenProperty (motherClass, m)))
+						list.Add (m);
+				}
+				foreach (IIndexer m in baseCls.Indexer) {
+					if (m.IsInternal && motherClass.SourceProject != null && motherClass.SourceProject != m.DeclaringType.SourceProject)
+						continue;
+					if ((isInterface || m.IsVirtual || m.IsAbstract) && !m.IsSealed && (includeOverriden || !IsOverridenIndexer (motherClass, m)))
+						list.Add (m);
+				}
+				foreach (IEvent m in baseCls.Events) {
+					if (m.IsInternal && motherClass.SourceProject != null && motherClass.SourceProject != m.DeclaringType.SourceProject)
+						continue;
+					if ((isInterface || m.IsVirtual || m.IsAbstract) && !m.IsSealed)
+						list.Add (m);
+				}
+
+				FindOverridables (pctx, motherClass, baseCls, classMembers, isInterface ? interfaceMembers : null, visited,
+				                  includeOverridenClassMembers, includeOverridenInterfaceMembers);
+			}
+		}
+
+		bool IsOverridenMethod (IClass cls, IMethod method)
+		{
+			foreach (IMethod m in cls.Methods) {
+				if (method.Name == m.Name && IsEqual (method.Parameters, m.Parameters))
+					return true;
+			}
+			return false;
+		}
+
+		bool IsOverridenProperty (IClass cls, IProperty prop)
+		{
+			foreach (IProperty p in cls.Properties) {
+				if (prop.Name == p.Name)
+					return true;
+			}
+			return false;
+		}
+
+		bool IsOverridenIndexer (IClass cls, IIndexer idx)
+		{
+			foreach (IIndexer i in cls.Indexer) {
+				if (idx.Name == i.Name && IsEqual (idx.Parameters, i.Parameters))
+					return true;
+			}
+			return false;
+		}
+
+		bool IsEqual (ParameterCollection c1, ParameterCollection c2)
+		{
+			if (c1.Count != c2.Count)
+				return false;
+			for (int i = 0; i < c1.Count; i++) {
+				if (c1[i].ReturnType.FullyQualifiedName != c2[i].ReturnType.FullyQualifiedName)
+					return false;
+			}
+			return true;
+		}
+
 		public IMember AddMember (IClass cls, CodeTypeMember member)
 		{
 			RefactorerContext gctx = GetGeneratorContext (cls);

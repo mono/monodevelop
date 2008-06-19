@@ -1,3 +1,8 @@
+2008-06-20  Ankit Jain  <jankit@novell.com>
+
+	* Gui/CSharpTextEditorExtension.cs (FindOverridables): Move to
+	CodeRefactorer and use that.
+
 2008-06-19  Mike Krüger <mkrueger@novell.com> 
 
 	* Gui/NRefactoryResolver.cs, Gui/CSharpTextEditorCompletion.cs,

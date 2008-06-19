@@ -8,6 +8,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
 
+using MonoDevelop.Projects.CodeGeneration;
 using MonoDevelop.Projects.Parser;
 using MonoDevelop.Projects.Gui.Completion;
 
@@ -810,14 +811,15 @@ namespace CSharpBinding
 		
 		ICompletionDataProvider GetOverridablesCompletionData (IParserContext pctx, ICodeCompletionContext ctx, IClass cls, int insertPos, string typedModifiers, ITypeNameResolver resolver)
 		{
-			ArrayList classMembers = new ArrayList ();
-			ArrayList interfaceMembers = new ArrayList ();
-			
-			FindOverridables (pctx, cls, cls, classMembers, interfaceMembers, new List<IClass> ());
-			foreach (object mem in interfaceMembers)
-				if (!classMembers.Contains (mem))
-					classMembers.Add (mem);
-			
+			List<IMember> classMembers = new List<IMember> ();
+			List<IMember> interfaceMembers = new List<IMember> ();
+
+			CodeRefactorer refactorer = IdeApp.Workspace.GetCodeRefactorer (IdeApp.ProjectOperations.CurrentSelectedSolution);
+			refactorer.FindOverridables (cls, classMembers, interfaceMembers, false, false);
+			foreach (IMember member in interfaceMembers)
+				if (!classMembers.Contains (member))
+					classMembers.Add (member);
+
 			CSharpAmbience amb = new CSharpAmbience ();
 			CodeCompletionDataProvider completionProvider = new CodeCompletionDataProvider (pctx, GetAmbience ());
 			foreach (ILanguageItem mem in classMembers) {
@@ -825,97 +827,6 @@ namespace CSharpBinding
 			}
 			return completionProvider;
 		}
-		
-		bool IsEqual (ParameterCollection c1, ParameterCollection c2)
-		{
-			if (c1.Count != c2.Count)
-				return false;
-			for (int i = 0; i < c1.Count; i++) {
-				if (c1[i].ReturnType.FullyQualifiedName != c2[i].ReturnType.FullyQualifiedName)
-					return false;
-			}
-			return true;
-		}
-		
-		#region Override checks
-		
-		bool CanOverrideMethod (IClass cls, IMethod method)
-		{
-			foreach (IMethod m in cls.Methods) {
-				if (method.Name == m.Name && IsEqual (method.Parameters, m.Parameters))
-					return false;
-			}
-			return true;
-		}
-		
-		bool CanOverrideProperty (IClass cls, IProperty prop)
-		{
-			foreach (IProperty p in cls.Properties) {
-				if (prop.Name == p.Name)
-					return false;
-			}
-			return true;
-		}
-		
-		bool CanOverrideIndexer (IClass cls, IIndexer idx)
-		{
-			foreach (IIndexer i in cls.Indexer) {
-				if (idx.Name == i.Name && IsEqual (idx.Parameters, i.Parameters))
-					return false;
-			}
-			return true;
-		}
-		
-		void FindOverridables (IParserContext pctx, IClass motherClass, IClass cls, ArrayList classMembers, ArrayList interfaceMembers, List<IClass> visited)
-		{
-			if (visited.Contains (cls))
-				return;
-			visited.Add (cls);
-			
-			foreach (IReturnType rt in cls.BaseTypes)
-			{
-				if (cls.ClassType == ClassType.Interface)
-					continue;
-
-				IClass baseCls = pctx.GetClass (rt.FullyQualifiedName, rt.GenericArguments, true, true);
-				if (baseCls == null)
-					continue;
-
-				bool isInterface = baseCls.ClassType == ClassType.Interface;
-				if (isInterface && interfaceMembers == null)
-					continue;
-				ArrayList list = isInterface ? interfaceMembers : classMembers;
-				
-				foreach (IMethod m in baseCls.Methods) {
-					if (m.IsInternal && motherClass.SourceProject != null && motherClass.SourceProject != m.DeclaringType.SourceProject)
-						continue;
-					if ((isInterface || m.IsVirtual || m.IsAbstract) && !m.IsSealed && CanOverrideMethod (motherClass, m))
-						list.Add (m);
-				}
-				foreach (IProperty m in baseCls.Properties) {
-					if (m.IsInternal && motherClass.SourceProject != null && motherClass.SourceProject != m.DeclaringType.SourceProject)
-						continue;
-					if ((isInterface || m.IsVirtual || m.IsAbstract) && !m.IsSealed && CanOverrideProperty (motherClass, m))
-						list.Add (m);
-				}
-				foreach (IIndexer m in baseCls.Indexer) {
-					if (m.IsInternal && motherClass.SourceProject != null && motherClass.SourceProject != m.DeclaringType.SourceProject)
-						continue;
-					if ((isInterface || m.IsVirtual || m.IsAbstract) && !m.IsSealed && CanOverrideIndexer (motherClass, m))
-						list.Add (m);
-				}
-				foreach (IEvent m in baseCls.Events) {
-					if (m.IsInternal && motherClass.SourceProject != null && motherClass.SourceProject != m.DeclaringType.SourceProject)
-						continue;
-					if ((isInterface || m.IsVirtual || m.IsAbstract) && !m.IsSealed)
-						list.Add (m);
-				}
-				
-				FindOverridables (pctx, motherClass, baseCls, classMembers, isInterface ? interfaceMembers : null, visited);
-			}
-		}
-		
-		#endregion
 		
 		CodeCompletionDataProvider GetDefineCompletionData ()
 		{

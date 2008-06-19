@@ -253,8 +253,10 @@ namespace MonoDevelop.Ide.Commands
 				if ((cls.ClassType == ClassType.Class && !cls.IsSealed) || cls.ClassType == ClassType.Interface)
 					ciset.CommandInfos.Add (GettextCatalog.GetString ("Find _derived classes"), new RefactoryOperation (refactorer.FindDerivedClasses));
 
-				if (cls.SourceProject != null && ((cls.ClassType == ClassType.Class) || (cls.ClassType == ClassType.Struct)))
+				if (cls.SourceProject != null && ((cls.ClassType == ClassType.Class) || (cls.ClassType == ClassType.Struct))) {
 					ciset.CommandInfos.Add (GettextCatalog.GetString ("Encapsulate Fields..."), new RefactoryOperation (refactorer.EncapsulateField));
+					ciset.CommandInfos.Add (GettextCatalog.GetString ("Override/Implement members..."), new RefactoryOperation (refactorer.OverrideOrImplementMembers));
+				}
 				
 				ciset.CommandInfos.Add (GettextCatalog.GetString ("_Find references"), new RefactoryOperation (refactorer.FindReferences));
 				
@@ -516,6 +518,21 @@ namespace MonoDevelop.Ide.Commands
 					editor.EndAtomicUndo ();
 			}
 			
+		}
+
+		public void OverrideOrImplementMembers ()
+		{
+			IEditableTextBuffer editor = IdeApp.Workbench.ActiveDocument.GetContent <IEditableTextBuffer>();
+			if (editor != null)
+				editor.BeginAtomicUndo ();
+
+			try {
+				OverridesImplementsDialog dialog = new MonoDevelop.Ide.OverridesImplementsDialog ((IClass) item);
+				dialog.Show ();
+			} finally {
+				if (editor != null)
+					editor.EndAtomicUndo ();
+			}
 		}
 
 		public void Rename ()

@@ -160,17 +160,28 @@ namespace MonoDevelop.Projects.CodeGeneration
 		public virtual IMember ImplementMember (RefactorerContext ctx, IClass cls, IMember member, IReturnType privateImplementationType)
 		{
 			CodeTypeMember m;
-			
+			bool is_interface_method = member.DeclaringType.ClassType == ClassType.Interface;
+
 			if (member is IEvent) {
 				CodeMemberEvent mEvent = new CodeMemberEvent ();
-				m = (CodeTypeMember) mEvent;
+				m = mEvent;
 				mEvent.Type = ReturnTypeToDom (ctx, member.ReturnType);
+				if (!is_interface_method)
+					mEvent.Attributes = MemberAttributes.Override;
+
 				if (privateImplementationType != null)
 					mEvent.PrivateImplementationType = ReturnTypeToDom (ctx, privateImplementationType);
 			} else if (member is IMethod) {
 				CodeMemberMethod mMethod = new CodeMemberMethod ();
 				IMethod method = (IMethod) member;
-				m = (CodeMemberMethod) mMethod;
+				m = mMethod;
+
+				if (method.GenericParameters != null) {
+					foreach (GenericParameter param in method.GenericParameters)
+						mMethod.TypeParameters.Add (param.Name);
+				}
+				if (!is_interface_method)
+					mMethod.Attributes = MemberAttributes.Override;
 				
 				mMethod.ReturnType = ReturnTypeToDom (ctx, member.ReturnType);
 				CodeExpression nieReference = new CodeObjectCreateExpression (TypeToDom (ctx, typeof (NotImplementedException)));
@@ -187,7 +198,9 @@ namespace MonoDevelop.Projects.CodeGeneration
 			} else if (member is IProperty) {
 				CodeMemberProperty mProperty = new CodeMemberProperty ();
 				IProperty property = (IProperty) member;
-				m = (CodeMemberProperty) mProperty;
+				m = mProperty;
+				if (!is_interface_method)
+					mProperty.Attributes = MemberAttributes.Override;
 				
 				CodeExpression nieReference = new CodeObjectCreateExpression (TypeToDom (ctx, typeof (NotImplementedException)));
 				CodeStatement throwExpression = new CodeThrowExceptionStatement (nieReference);
@@ -204,12 +217,15 @@ namespace MonoDevelop.Projects.CodeGeneration
 			} else if (member is IIndexer) {
 				CodeMemberProperty mProperty = new CodeMemberProperty ();
 				IIndexer property = (IIndexer) member;
-				m = (CodeMemberProperty) mProperty;
+				m = mProperty;
+				if (!is_interface_method)
+					mProperty.Attributes = MemberAttributes.Override;
 				
 				CodeExpression nieReference = new CodeObjectCreateExpression (TypeToDom (ctx, typeof (NotImplementedException)));
 				CodeStatement throwExpression = new CodeThrowExceptionStatement (nieReference);
-				mProperty.HasGet = true;
-				mProperty.HasSet = true;
+				mProperty.HasGet = property.GetterRegion != null;
+				mProperty.HasSet = property.SetterRegion != null;
+
 				if (mProperty.HasGet)
 					mProperty.GetStatements.Add (throwExpression);
 				if (mProperty.HasSet)
@@ -228,15 +244,13 @@ namespace MonoDevelop.Projects.CodeGeneration
 				return null;
 			}
 			
-			if (member is IIndexer)
-				m.Name = "Item";
-			else
-				m.Name = member.Name;
-			
-			m.Attributes = MemberAttributes.Final;
-			
+			m.Name = (member is IIndexer) ? "Item" : member.Name;
+			if ((m.Attributes & MemberAttributes.ScopeMask) != MemberAttributes.Override)
+				// Mark final if not overriding
+				m.Attributes = (m.Attributes & ~MemberAttributes.ScopeMask) | MemberAttributes.Final;
+
 			if (privateImplementationType == null)
-				m.Attributes |= MemberAttributes.Public;
+				m.Attributes = (m.Attributes & ~MemberAttributes.AccessMask) | MemberAttributes.Public;
 			
 			return AddMember (ctx, cls, m);
 		}

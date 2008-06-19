@@ -53,6 +53,7 @@ FILES =  \
 	gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.LoadSavePanelWidget.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.TasksPanelWidget.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Pads.ClassBrowser.ClassBrowserPadWidget.cs \
+	gtk-gui/MonoDevelop.Ide.OverridesImplementsDialog.cs \
 	gtk-gui/MonoDevelop.Ide.SelectEncodingsDialog.cs \
 	gtk-gui/MonoDevelop.Ide.StandardHeaders.NewHeaderTemplateDialog.cs \
 	gtk-gui/MonoDevelop.Ide.StandardHeaders.StandardHeaderPanel.cs \
@@ -140,6 +141,7 @@ FILES =  \
 	MonoDevelop.Ide.Gui.Dialogs/NewFileDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/NewLayoutDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/NewProjectDialog.cs \
+	MonoDevelop.Ide.Gui.Dialogs/OverridesImplementsDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/ProjectReferencePanel.cs \
 	MonoDevelop.Ide.Gui.Dialogs/RenameItemDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/ReplaceDialog.cs \

@@ -1,3 +1,9 @@
+2008-06-20  Ankit Jain  <jankit@novell.com>
+
+	* BaseRefactorer.cs (ImplementMember): Fix emitting 'override'.
+	* MonoDevelop.Projects.CodeGeneration/CodeRefactorer.cs
+	(FindOverridables): Move here from CSharpTextEditorExtension.
+
 2008-06-19  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom.Parser/ProjectDom.cs,
