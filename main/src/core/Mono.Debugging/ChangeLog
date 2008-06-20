@@ -1,3 +1,24 @@
+2008-06-20  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Mono.Debugging.Client/Backtrace.cs,
+	  Mono.Debugging.Client/StackFrame.cs,
+	  Mono.Debugging.Client/IDebuggerEngine.cs,
+	  Mono.Debugging.Client/ObjectPath.cs,
+	  Mono.Debugging.Client/ThreadInfo.cs,
+	  Mono.Debugging.Client/AssemblyLine.cs,
+	  Mono.Debugging.Client/DebuggerSession.cs,
+	  Mono.Debugging.Client/ProcessInfo.cs,
+	  Mono.Debugging.Client/ObjectValue.cs,
+	  Mono.Debugging.Client/TargetEventArgs.cs,
+	  Mono.Debugging.Client/ObjectValueKind.cs,
+	  Mono.Debugging.Client/DebuggerEngine.cs, Mono.Debugging.mdp,
+	  Mono.Debugging.Backend/DissassemblyBuffer.cs,
+	  Mono.Debugging.Backend/IDebuggerSessionFrontend.cs,
+	  Mono.Debugging.Backend/IBacktrace.cs,
+	  Mono.Debugging.Backend/IDebuggerSessionFactory.cs, Makefile.am:
+	  Added support for attaching processes and disassembling. Improved
+	  API. 
+
 2008-06-16  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Mono.Debugging.Client/Backtrace.cs: Get 1 initial frame when creating

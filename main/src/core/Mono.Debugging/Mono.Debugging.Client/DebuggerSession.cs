@@ -46,7 +46,10 @@ namespace Mono.Debugging.Client
 		bool started;
 		BreakpointStore breakpointStore;
 		OutputWriterDelegate outputWriter;
+		OutputWriterDelegate logWriter;
 		bool disposed;
+		
+		ProcessInfo[] currentProcesses;
 		
 		public event EventHandler<TargetEventArgs> TargetEvent;
 		
@@ -56,17 +59,8 @@ namespace Mono.Debugging.Client
 		public event EventHandler<TargetEventArgs> TargetHitBreakpoint;
 		public event EventHandler<TargetEventArgs> TargetSignaled;
 		public event EventHandler TargetExited;
-		public event EventHandler<TargetEventArgs> TargetFrameChanged;
 		public event EventHandler<TargetEventArgs> TargetExceptionThrown;
 		public event EventHandler<TargetEventArgs> TargetUnhandledException;
-		
-		public event EventHandler<ProcessEventArgs> MainProcessCreated;
-		public event EventHandler<ProcessEventArgs> ProcessCreated;
-		public event EventHandler<ProcessEventArgs> ProcessExited;
-		public event EventHandler<ProcessEventArgs> ProcessExecd;
-		
-		public event EventHandler<ThreadEventArgs> ThreadCreated;
-		public event EventHandler<ThreadEventArgs> ThreadExited;
 		
 		public DebuggerSession ()
 		{
@@ -119,25 +113,78 @@ namespace Mono.Debugging.Client
 		public void Run (DebuggerStartInfo startInfo)
 		{
 			OnRunning ();
-			OnRun (startInfo);
+			try {
+				OnRun (startInfo);
+			} catch {
+				ForceStop ();
+				throw;
+			}
+		}
+		
+		public void AttachToProcess (ProcessInfo proc)
+		{
+			OnRunning ();
+			try {
+				OnAttachToProcess (proc.Id);
+			} catch {
+				ForceStop ();
+				throw;
+			}
 		}
 		
 		public void NextLine ()
 		{
 			OnRunning ();
-			OnNextLine ();
+			try {
+				OnNextLine ();
+			} catch {
+				ForceStop ();
+				throw;
+			}
 		}
 
 		public void StepLine ()
 		{
 			OnRunning ();
-			OnStepLine ();
+			try {
+				OnStepLine ();
+			} catch {
+				ForceStop ();
+				throw;
+			}
+		}
+		
+		public void NextInstruction ()
+		{
+			OnRunning ();
+			try {
+				OnNextInstruction ();
+			} catch {
+				ForceStop ();
+				throw;
+			}
+		}
+
+		public void StepInstruction ()
+		{
+			OnRunning ();
+			try {
+				OnStepInstruction ();
+			} catch {
+				ForceStop ();
+				throw;
+			}
 		}
 
 		public void Finish ()
 		{
 			OnRunning ();
-			OnFinish ();
+			try {
+				OnFinish ();
+			} catch {
+				ForceStop ();
+				throw;
+			}
 		}
 
 		void AddBreakpoint (Breakpoint bp)
@@ -180,18 +227,6 @@ namespace Mono.Debugging.Client
 				UpdateBreakpoint (args.Breakpoint);
 		}
 		
-/*		bool GetBreakpoint (int handle, out Breakpoint bp)
-		{
-			foreach (KeyValuePair<Breakpoint,int> entry in breakpoints) {
-				if (entry.Value == handle) {
-					bp = entry.Key;
-					return true;
-				}
-			}
-			bp = null;
-			return false;
-		}
-*/			
 		bool GetHandle (Breakpoint bp, out int handle)
 		{
 			return breakpoints.TryGetValue (bp, out handle);
@@ -200,7 +235,12 @@ namespace Mono.Debugging.Client
 		public void Continue ()
 		{
 			OnRunning ();
-			OnContinue ();
+			try {
+				OnContinue ();
+			} catch {
+				ForceStop ();
+				throw;
+			}
 		}
 
 		public void Stop ()
@@ -219,22 +259,59 @@ namespace Mono.Debugging.Client
 			}
 		}
 		
+		public ProcessInfo[] GetPocesses ()
+		{
+			if (currentProcesses == null) {
+				currentProcesses = OnGetPocesses ();
+				foreach (ProcessInfo p in currentProcesses)
+					p.Attach (this);
+			}
+			return currentProcesses;
+		}
+		
 		public OutputWriterDelegate OutputWriter {
 			get { return outputWriter; }
 			set { outputWriter = value; }
 		}
+		
+		public OutputWriterDelegate LogWriter {
+			get { return logWriter; }
+			set { logWriter = value; }
+		}
 
+		internal ThreadInfo[] GetThreads (int processId)
+		{
+			ThreadInfo[] threads = OnGetThreads (processId);
+			foreach (ThreadInfo t in threads)
+				t.Attach (this);
+			return threads;
+		}
+		
+		internal Backtrace GetBacktrace (int threadId)
+		{
+			Backtrace bt = OnGetThreadBacktrace (threadId);
+			bt.Attach (this);
+			return bt;
+		}
+		
+		void ForceStop ()
+		{
+			TargetEventArgs args = new TargetEventArgs (TargetEventType.TargetStopped);
+			OnTargetEvent (args);
+		}
+		
 		internal protected void OnTargetEvent (TargetEventArgs args)
 		{
+			if (args.Process != null)
+				args.Process.Attach (this);
+			if (args.Thread != null)
+				args.Thread.Attach (this);
+			
 			switch (args.Type) {
 				case TargetEventType.Exception:
 					isRunning = false;
 					if (TargetExceptionThrown != null)
 						TargetExceptionThrown (this, args);
-					break;
-				case TargetEventType.FrameChanged:
-					if (TargetFrameChanged != null)
-						TargetFrameChanged (this, args);
 					break;
 				case TargetEventType.TargetExited:
 					isRunning = false;
@@ -251,11 +328,6 @@ namespace Mono.Debugging.Client
 					isRunning = false;
 					if (TargetInterrupted != null)
 						TargetInterrupted (this, args);
-					break;
-				case TargetEventType.TargetRunning:
-					isRunning = true;
-					if (TargetStarted != null)
-						TargetStarted (this, args);
 					break;
 				case TargetEventType.TargetSignaled:
 					isRunning = false;
@@ -292,43 +364,21 @@ namespace Mono.Debugging.Client
 			}
 		}
 		
-		internal protected void OnProcessCreated (ProcessEventArgs args)
-		{
-			if (ProcessCreated != null)
-				ProcessCreated (this, args);
-		}
-		
-		internal protected void OnProcessExited (ProcessEventArgs args)
-		{
-			if (ProcessExited != null)
-				ProcessExited (this, args);
-		}
-		
-		internal protected void OnProcessExecd (ProcessEventArgs args)
-		{
-			if (ProcessExecd != null)
-				ProcessExecd (this, args);
-		}
-		
-		internal protected void OnThreadCreated (ThreadEventArgs args)
-		{
-			if (ThreadCreated != null)
-				ThreadCreated (this, args);
-		}
-		
-		internal protected void OnThreadExited (ThreadEventArgs args)
-		{
-			if (ThreadExited != null)
-				ThreadExited (this, args);
-		}
-		
 		internal protected void OnTargetOutput (bool isStderr, string text)
 		{
 			if (outputWriter != null)
 				outputWriter (isStderr, text);
 		}
 		
+		internal protected void OnDebuggerOutput (bool isStderr, string text)
+		{
+			if (logWriter != null)
+				logWriter (isStderr, text);
+		}
+		
 		protected abstract void OnRun (DebuggerStartInfo startInfo);
+
+		protected abstract void OnAttachToProcess (int processId);
 
 		protected abstract void OnStop ();
 		
@@ -339,6 +389,12 @@ namespace Mono.Debugging.Client
 
 		// Step one source line, but step over method calls
 		protected abstract void OnNextLine ();
+
+		// Step one instruction
+		protected abstract void OnStepInstruction ();
+
+		// Step one instruction, but step over method calls
+		protected abstract void OnNextInstruction ();
 
 		// Continue until leaving the current method
 		protected abstract void OnFinish ();
@@ -354,6 +410,11 @@ namespace Mono.Debugging.Client
 
 		protected abstract void OnContinue ();
 		
+		protected abstract ThreadInfo[] OnGetThreads (int processId);
+		
+		protected abstract ProcessInfo[] OnGetPocesses ();
+		
+		protected abstract Backtrace OnGetThreadBacktrace (int threadId);
 		
 		protected IDebuggerSessionFrontend Frontend {
 			get {
@@ -376,34 +437,14 @@ namespace Mono.Debugging.Client
 			session.OnTargetEvent (args);
 		}
 
-		public void NotifyProcessCreated (ProcessEventArgs args)
-		{
-			session.OnProcessCreated (args);
-		}
-
-		public void NotifyProcessExited (ProcessEventArgs args)
-		{
-			session.OnProcessExited (args);
-		}
-
-		public void NotifyProcessExecd (ProcessEventArgs args)
-		{
-			session.OnProcessExecd (args);
-		}
-
-		public void NotifyThreadCreated (ThreadEventArgs args)
-		{
-			session.OnThreadCreated (args);
-		}
-
-		public void NotifyThreadExited (ThreadEventArgs args)
-		{
-			session.OnThreadExited (args);
-		}
-		
 		public void NotifyTargetOutput (bool isStderr, string text)
 		{
 			session.OnTargetOutput (isStderr, text);
+		}
+		
+		public void NotifyDebuggerOutput (bool isStderr, string text)
+		{
+			session.OnDebuggerOutput (isStderr, text);
 		}
 		
 		public void NotifyStarted ()

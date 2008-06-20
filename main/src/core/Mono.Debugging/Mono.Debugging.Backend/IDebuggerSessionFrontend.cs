@@ -34,13 +34,7 @@ namespace Mono.Debugging.Backend
 	{
 		void NotifyTargetEvent (TargetEventArgs args);
 		void NotifyTargetOutput (bool isStderr, string line);
-		
-		void NotifyProcessCreated (ProcessEventArgs args);
-		void NotifyProcessExited (ProcessEventArgs args);
-		void NotifyProcessExecd (ProcessEventArgs args);
-		
-		void NotifyThreadCreated (ThreadEventArgs args);
-		void NotifyThreadExited (ThreadEventArgs args);
+		void NotifyDebuggerOutput (bool isStderr, string line);
 		
 		// To be called when the process is ready to run.
 		void NotifyStarted ();

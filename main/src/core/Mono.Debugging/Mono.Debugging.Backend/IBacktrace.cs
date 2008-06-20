@@ -11,5 +11,6 @@ namespace Mono.Debugging.Backend
 		ObjectValue[] GetParameters (int frameIndex);
 		ObjectValue GetThisReference (int frameIndex);
 		ObjectValue[] GetExpressionValues (int frameIndex, string[] expressions);
+		AssemblyLine[] Disassemble (int frameIndex, int firstLine, int count);
 	}
 }

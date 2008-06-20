@@ -87,5 +87,10 @@ namespace Mono.Debugging.Client
 					return path [path.Length - 1];
 			}
 		}
+		
+		public string Join (string separator)
+		{
+			return string.Join (separator, path);
+		}
 	}
 }

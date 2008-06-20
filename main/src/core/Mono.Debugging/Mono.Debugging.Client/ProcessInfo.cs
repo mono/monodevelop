@@ -1,4 +1,4 @@
-// ObjectValueKind.cs
+// ProcessInfo.cs
 //
 // Author:
 //   Lluis Sanchez Gual <lluis@novell.com>
@@ -29,10 +29,50 @@ using System;
 
 namespace Mono.Debugging.Client
 {
-	public enum ObjectValueKind {
-		Object,
-		Array,
-		Primitive,
-		Unknown
+	[Serializable]
+	public class ProcessInfo
+	{
+		int id;
+		string name;
+		
+		[NonSerialized]
+		ThreadInfo[] currentThreads;
+		
+		[NonSerialized]
+		DebuggerSession session;
+		
+		internal void Attach (DebuggerSession session)
+		{
+			this.session = session;
+			if (currentThreads != null) {
+				foreach (ThreadInfo t in currentThreads)
+					t.Attach (session);
+			}
+		}
+		
+		public int Id {
+			get {
+				return id;
+			}
+		}
+
+		public string Name {
+			get {
+				return name;
+			}
+		}
+
+		public ProcessInfo (int id, string name)
+		{
+			this.id = id;
+			this.name = name;
+		}
+		
+		public ThreadInfo[] GetThreads ()
+		{
+			if (currentThreads == null)
+				currentThreads = session.GetThreads (id);
+			return currentThreads;
+		}
 	}
 }

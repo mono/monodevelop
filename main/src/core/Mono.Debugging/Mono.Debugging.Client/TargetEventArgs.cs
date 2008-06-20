@@ -7,8 +7,10 @@ namespace Mono.Debugging.Client
 	{
 		TargetEventType type;
 		Backtrace backtrace;
+		ProcessInfo process;
+		ThreadInfo thread;
 
-		public TargetEventArgs(TargetEventType type)
+		public TargetEventArgs (TargetEventType type)
 		{
 			this.type = type;
 		}
@@ -23,6 +25,24 @@ namespace Mono.Debugging.Client
 		{
 			get { return backtrace; }
 			set { backtrace = value; }
+		}
+
+		public ThreadInfo Thread {
+			get {
+				return thread;
+			}
+			set {
+				thread = value;
+			}
+		}
+
+		public ProcessInfo Process {
+			get {
+				return process;
+			}
+			set {
+				process = value;
+			}
 		}
 	}
 }

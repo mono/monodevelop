@@ -15,9 +15,7 @@
   </Configurations>
   <Contents>
     <File name="Mono.Debugging.Client/Breakpoint.cs" subtype="Code" buildaction="Compile" />
-    <File name="Mono.Debugging.Client/DebuggerEngine.cs" subtype="Code" buildaction="Compile" />
     <File name="Mono.Debugging.Client/DebuggerSession.cs" subtype="Code" buildaction="Compile" />
-    <File name="Mono.Debugging.Backend/IDebuggerSessionFactory.cs" subtype="Code" buildaction="Compile" />
     <File name="Mono.Debugging.Client/Backtrace.cs" subtype="Code" buildaction="Compile" />
     <File name="Mono.Debugging.Client/DebuggerStartInfo.cs" subtype="Code" buildaction="Compile" />
     <File name="Mono.Debugging.Client/ProcessEventArgs.cs" subtype="Code" buildaction="Compile" />
@@ -36,6 +34,11 @@
     <File name="Mono.Debugging.Backend/IObjectValueSource.cs" subtype="Code" buildaction="Compile" />
     <File name="Mono.Debugging.Client/ObjectValueKind.cs" subtype="Code" buildaction="Compile" />
     <File name="Mono.Debugging.Client/ObjectPath.cs" subtype="Code" buildaction="Compile" />
+    <File name="Mono.Debugging.Client/ThreadInfo.cs" subtype="Code" buildaction="Compile" />
+    <File name="Mono.Debugging.Client/ProcessInfo.cs" subtype="Code" buildaction="Compile" />
+    <File name="Mono.Debugging.Client/IDebuggerEngine.cs" subtype="Code" buildaction="Compile" />
+    <File name="Mono.Debugging.Client/AssemblyLine.cs" subtype="Code" buildaction="Compile" />
+    <File name="Mono.Debugging.Backend/DissassemblyBuffer.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />

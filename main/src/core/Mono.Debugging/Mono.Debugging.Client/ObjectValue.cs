@@ -37,6 +37,7 @@ namespace Mono.Debugging.Client
 	{
 		ObjectPath path;
 		int arrayCount = -1;
+		string name;
 		object value;
 		string typeName;
 		bool editable;
@@ -44,42 +45,53 @@ namespace Mono.Debugging.Client
 		IObjectValueSource source;
 		List<ObjectValue> children;
 		
-		public ObjectValue (IObjectValueSource source, ObjectPath path, string typeName, ObjectValue[] children)
-			: this (source, path, typeName)
+		ObjectValue ()
 		{
-			this.path = path;
-			kind = ObjectValueKind.Object;
+		}
+		
+		public static ObjectValue CreateObject (IObjectValueSource source, ObjectPath path, string typeName, string value, ObjectValue[] children)
+		{
+			ObjectValue ob = CreateUnknown (source, path, typeName);
+			ob.path = path;
+			ob.kind = ObjectValueKind.Object;
+			ob.value = value;
 			if (children != null)
-				this.children.AddRange (children);
+				ob.children.AddRange (children);
+			return ob;
 		}
 		
-		public ObjectValue (IObjectValueSource source, ObjectPath path, string typeName, object value)
-			: this (source, path, typeName)
+		public static ObjectValue CreatePrimitive (IObjectValueSource source, ObjectPath path, string typeName, object value)
 		{
-			kind = ObjectValueKind.Prmitive;
-			this.value = value;
+			ObjectValue ob = CreateUnknown (source, path, typeName);
+			ob.kind = ObjectValueKind.Primitive;
+			ob.value = value;
+			return ob;
 		}
 		
-		public ObjectValue (IObjectValueSource source, ObjectPath path, string typeName, int arrayCount, ObjectValue[] children)
-			: this (source, path, typeName)
+		public static ObjectValue CreateArray (IObjectValueSource source, ObjectPath path, string typeName, int arrayCount, ObjectValue[] children)
 		{
-			this.arrayCount = arrayCount;
-			kind = ObjectValueKind.Array;
+			ObjectValue ob = CreateUnknown (source, path, typeName);
+			ob.arrayCount = arrayCount;
+			ob.kind = ObjectValueKind.Array;
+			ob.value = "[" + arrayCount + "]";
 			if (children != null)
-				this.children.AddRange (children);
+				ob.children.AddRange (children);
+			return ob;
 		}
 		
-		public ObjectValue (IObjectValueSource source, ObjectPath path, string typeName)
+		public static ObjectValue CreateUnknown (IObjectValueSource source, ObjectPath path, string typeName)
 		{
-			this.source = source;
-			this.path = path;
-			this.typeName = typeName;
-			kind = ObjectValueKind.Unknown;
+			ObjectValue ob = new ObjectValue ();
+			ob.source = source;
+			ob.path = path;
+			ob.typeName = typeName;
+			ob.kind = ObjectValueKind.Unknown;
+			return ob;
 		}
 		
-		public static ObjectValue CreateUnknownValue (string name)
+		public static ObjectValue CreateUnknown (string name)
 		{
-			return new ObjectValue (null, new ObjectPath (name), "");
+			return CreateUnknown (null, new ObjectPath (name), "");
 		}
 		
 		public ObjectValueKind Kind {
@@ -88,7 +100,13 @@ namespace Mono.Debugging.Client
 		
 		public string Name {
 			get {
-				return path [path.Length - 1];
+				if (name == null)
+					return path [path.Length - 1];
+				else
+					return name;
+			}
+			set {
+				name = value;
 			}
 		}
 		

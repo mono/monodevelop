@@ -1,4 +1,4 @@
-// ObjectValueKind.cs
+// DebuggerSessionFactory.cs
 //
 // Author:
 //   Lluis Sanchez Gual <lluis@novell.com>
@@ -29,10 +29,12 @@ using System;
 
 namespace Mono.Debugging.Client
 {
-	public enum ObjectValueKind {
-		Object,
-		Array,
-		Primitive,
-		Unknown
+	public interface IDebuggerEngine
+	{
+		string Name { get; }
+		bool CanDebugPlatform (string id);
+		bool CanDebugFile (string file);
+		ProcessInfo[] GetAttachablePocesses ();
+		DebuggerSession CreateSession ();
 	}
 }

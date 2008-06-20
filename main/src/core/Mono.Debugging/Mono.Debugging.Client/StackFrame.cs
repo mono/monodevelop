@@ -10,18 +10,21 @@ namespace Mono.Debugging.Client
 		long address;
 		SourceLocation location;
 		IBacktrace sourceBacktrace;
+		string language;
 		int index;
 
-		public StackFrame (long address, SourceLocation location)
+		public StackFrame (long address, SourceLocation location, string language)
 		{
 			this.address = address;
 			this.location = location;
+			this.language = language;
 		}
 
-		public StackFrame(long address, string module, string method, string filename, int line)
+		public StackFrame(long address, string module, string method, string filename, int line, string language)
 		{
 			this.location = new SourceLocation(method, filename, line);
 			this.address = address;
+			this.language = language;
 		}
 
 		public SourceLocation SourceLocation
@@ -43,6 +46,12 @@ namespace Mono.Debugging.Client
 			get { return index; }
 			set { index = value; }
 		}
+
+		public string Language {
+			get {
+				return language;
+			}
+		}
 		
 		public ObjectValue[] GetLocalVariables ()
 		{
@@ -62,6 +71,13 @@ namespace Mono.Debugging.Client
 		public ObjectValue[] GetExpressionValues (string[] expressions)
 		{
 			return sourceBacktrace.GetExpressionValues (index, expressions);
+		}
+		
+		// Returns disassembled code for this stack frame.
+		// firstLine is the relative code line. It can be negative.
+		public AssemblyLine[] Disassemble (int firstLine, int count)
+		{
+			return sourceBacktrace.Disassemble (index, firstLine, count);
 		}
 
 		public override string ToString()

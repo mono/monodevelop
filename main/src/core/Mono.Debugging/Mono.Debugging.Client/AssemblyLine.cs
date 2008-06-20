@@ -1,4 +1,4 @@
-// ObjectValueKind.cs
+// AssemblyLine.cs
 //
 // Author:
 //   Lluis Sanchez Gual <lluis@novell.com>
@@ -29,10 +29,28 @@ using System;
 
 namespace Mono.Debugging.Client
 {
-	public enum ObjectValueKind {
-		Object,
-		Array,
-		Primitive,
-		Unknown
+	[Serializable]
+	public class AssemblyLine
+	{
+		long address;
+		string code;
+		
+		public string Code {
+			get {
+				return code;
+			}
+		}
+		
+		public long Address {
+			get {
+				return address;
+			}
+		}
+		
+		public AssemblyLine (long address, string code)
+		{
+			this.address = address;
+			this.code = code;
+		}
 	}
 }

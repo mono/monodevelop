@@ -9,26 +9,29 @@ REFS =  \
 
 FILES =  \
 	Mono.Debugging.Backend/DebuggerExtensionNode.cs \
+	Mono.Debugging.Backend/DissassemblyBuffer.cs \
 	Mono.Debugging.Backend/IBacktrace.cs \
-	Mono.Debugging.Backend/IDebuggerSessionFactory.cs \
 	Mono.Debugging.Backend/IDebuggerSessionFrontend.cs \
 	Mono.Debugging.Backend/IObjectValueSource.cs \
+	Mono.Debugging.Client/AssemblyLine.cs \
 	Mono.Debugging.Client/Backtrace.cs \
 	Mono.Debugging.Client/Breakpoint.cs \
 	Mono.Debugging.Client/BreakpointEventArgs.cs \
 	Mono.Debugging.Client/BreakpointStore.cs \
-	Mono.Debugging.Client/DebuggerEngine.cs \
 	Mono.Debugging.Client/DebuggerSession.cs \
 	Mono.Debugging.Client/DebuggerStartInfo.cs \
+	Mono.Debugging.Client/IDebuggerEngine.cs \
 	Mono.Debugging.Client/ObjectPath.cs \
 	Mono.Debugging.Client/ObjectValue.cs \
 	Mono.Debugging.Client/ObjectValueKind.cs \
 	Mono.Debugging.Client/ProcessEventArgs.cs \
+	Mono.Debugging.Client/ProcessInfo.cs \
 	Mono.Debugging.Client/SourceLocation.cs \
 	Mono.Debugging.Client/StackFrame.cs \
 	Mono.Debugging.Client/TargetEventArgs.cs \
 	Mono.Debugging.Client/TargetEventType.cs \
-	Mono.Debugging.Client/ThreadEventArgs.cs
+	Mono.Debugging.Client/ThreadEventArgs.cs \
+	Mono.Debugging.Client/ThreadInfo.cs
 
 RES = Mono.Debugging.addin.xml 
 

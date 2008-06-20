@@ -11,14 +11,19 @@ namespace Mono.Debugging.Client
 		int count;
 
 		List<StackFrame> frames;
-
+		
 		public Backtrace (IBacktrace serverBacktrace)
 		{
 			this.serverBacktrace = serverBacktrace;
+			
 			count = serverBacktrace.FrameCount;
 
 			// Get some initial frames
 			GetFrame (System.Math.Min (1, count-1));
+		}
+		
+		internal void Attach (DebuggerSession session)
+		{
 		}
 
 		public int FrameCount
