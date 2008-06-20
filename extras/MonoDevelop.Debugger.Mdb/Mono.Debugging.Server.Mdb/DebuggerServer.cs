@@ -68,6 +68,22 @@ namespace DebuggerServer
 				throw;
 			}
 		}
+		
+		public void AttachToProcess (int pid)
+		{
+			Report.Initialize ();
+
+			DebuggerConfiguration config = new DebuggerConfiguration ();
+			config.LoadConfiguration ();
+			debugger = new MD.Debugger (config);
+			debugger.ProcessReachedMainEvent += new MD.ProcessEventHandler (OnInitialized);
+			
+			DebuggerOptions options = DebuggerOptions.ParseCommandLine (new string[0]);
+			options.StopInMain = false;
+			session = new MD.DebuggerSession (config, options, "main", (IExpressionParser) null);
+			
+			OnInitialized (debugger, debugger.Attach (session, pid));
+		}
 
 		public void Stop ()
 		{
@@ -107,6 +123,20 @@ namespace DebuggerServer
 
 			lock (debugger) {
 				process.MainThread.StepLine ();
+			}
+		}
+
+		public void StepInstruction ()
+		{
+			lock (debugger) {
+				process.MainThread.StepInstruction ();
+			}
+		}
+
+		public void NextInstruction ()
+		{
+			lock (debugger) {
+				process.MainThread.NextInstruction ();
 			}
 		}
 
@@ -368,31 +398,26 @@ namespace DebuggerServer
 		private void OnProcessCreatedEvent (MD.Debugger debugger, MD.Process process)
 		{
 			Console.WriteLine ("*** DS.OnProcessCreatedEvent");
-			controller.OnProcessCreated (process.ID);
 		}
 		
 		private void OnProcessExitedEvent (MD.Debugger debugger, MD.Process process)
 		{
 			Console.WriteLine ("*** DS.OnProcessExitedEvent");
-			controller.OnProcessExited (process.ID);
 		}
 		
 		private void OnProcessExecdEvent (MD.Debugger debugger, MD.Process process)
 		{
 			Console.WriteLine ("*** DS.OnProcessExecdEvent");
-			controller.OnProcessExecd (process.ID);
 		}
 		
 		private void OnThreadCreatedEvent (MD.Debugger debugger, MD.Thread process)
 		{
 			Console.WriteLine ("*** DS.OnThreadCreatedEvent");
-			controller.OnThreadCreated (process.ID);
 		}
 		
 		private void OnThreadExitedEvent (MD.Debugger debugger, MD.Thread process)
 		{
 			Console.WriteLine ("*** DS.OnThreadExitedEvent");
-			controller.OnThreadExited (process.ID);
 		}
 
 		private void OnTargetExitedEvent (MD.Debugger debugger)

@@ -44,25 +44,28 @@ namespace DebuggerServer
 		
 		static ObjectValue CreateObjectValue (MD.Thread thread, IObjectValueSource source, ObjectPath path, TargetObject obj, bool recurseCurrentObject)
 		{
+			if (obj == null) {
+				ObjectValue.CreateObject (null, path, "", null, null);
+			}
 			switch (obj.Kind) {
 				
 				case TargetObjectKind.Class:
 					TargetClassObject co = obj as TargetClassObject;
 					if (co == null)
-						return ObjectValue.CreateUnknownValue (path.LastName);
+						return ObjectValue.CreateUnknown (path.LastName);
 					else {
 						if (recurseCurrentObject) {
 							TargetObject ob = co.GetCurrentObject (thread);
 							if (ob != null)
 								return CreateObjectValue (thread, source, path, ob, false);
 						}
-						return new ObjectValue (source, path, obj.TypeName, (ObjectValue[]) null);
+						return ObjectValue.CreateObject (source, path, obj.TypeName, null, null);
 					}
 					
 				case TargetObjectKind.Object:
 					TargetObjectObject oob = obj as TargetObjectObject;
 					if (oob == null)
-						return ObjectValue.CreateUnknownValue (path.LastName);
+						return ObjectValue.CreateUnknown (path.LastName);
 					else
 						return CreateObjectValue (thread, source, path, oob.GetDereferencedObject (thread), false);
 					
@@ -70,19 +73,21 @@ namespace DebuggerServer
 					TargetArrayObject array = (TargetArrayObject) obj;
 					TargetArrayBounds bounds = array.GetArrayBounds (thread);
 					if (bounds.IsMultiDimensional)
-						return new ObjectValue (source, path, obj.TypeName, 0, null);
+						return ObjectValue.CreateArray (source, path, obj.TypeName, 0, null);
 					else
-						return new ObjectValue (source, path, obj.TypeName, bounds.Length, null);
+						return ObjectValue.CreateArray (source, path, obj.TypeName, bounds.Length, null);
 					
 				case TargetObjectKind.Fundamental:
 					TargetFundamentalObject fob = (TargetFundamentalObject) obj;
 					object val = fob.GetObject (thread);
-					return new ObjectValue (source, path, obj.TypeName, val);
+					return ObjectValue.CreatePrimitive (source, path, obj.TypeName, val);
+					
 				case TargetObjectKind.Enum:
 					TargetEnumObject enumobj = (TargetEnumObject) obj;
 					return CreateObjectValue (thread, source, path, enumobj.GetValue (thread));
+					
 				default:
-					return new ObjectValue (source, path, obj.TypeName);
+					return ObjectValue.CreateUnknown (source, path, obj.TypeName);
 			}
 		}
 		
@@ -97,7 +102,7 @@ namespace DebuggerServer
 			if (obj != null)
 				return CreateObjectValue (thread, source, path.GetSubpath (rootPathIndex), obj);
 			else
-				return ObjectValue.CreateUnknownValue (path.LastName);
+				return ObjectValue.CreateUnknown (path.LastName);
 		}
 
 		public static ObjectValue[] GetObjectValueChildren (MD.Thread thread, IObjectValueSource source, TargetObject rootObj, ObjectPath path, int pathIndex, int rootPathIndex, int firstItemIndex, int count)
@@ -142,7 +147,7 @@ namespace DebuggerServer
 						for (int n=0; n<count; n++) {
 							string idx = GetIndicesString (indices);
 							if (outOfRange)
-								values [n] = ObjectValue.CreateUnknownValue (idx);
+								values [n] = ObjectValue.CreateUnknown (idx);
 							else {
 								TargetObject elem = arr.GetElement (thread, indices);
 								values [n] = CreateObjectValue (thread, source, path.Append (idx), elem);
@@ -168,7 +173,7 @@ namespace DebuggerServer
 							int index = n + firstItemIndex;
 							string sidx = "[" + index + "]";
 							if (index >= bounds.Length)
-								values [n] = ObjectValue.CreateUnknownValue (sidx);
+								values [n] = ObjectValue.CreateUnknown (sidx);
 							else {
 								TargetObject elem = arr.GetElement (thread, new int[] { index });
 								values [n] = CreateObjectValue (thread, source, path.Append (sidx), elem);
@@ -194,7 +199,7 @@ namespace DebuggerServer
 					foreach (TargetFieldInfo field in type.ClassType.Fields) {
 						TargetObject ob = cls.GetField (thread, co, field);
 						if (ob == null)
-							values.Add (ObjectValue.CreateUnknownValue (field.Name));
+							values.Add (ObjectValue.CreateUnknown (field.Name));
 						else
 							values.Add (CreateObjectValue (thread, source, path.Append (field.Name), ob));
 					}
@@ -204,7 +209,7 @@ namespace DebuggerServer
 						if (prop.CanRead && !prop.IsStatic) {
 							MD.RuntimeInvokeResult result = thread.RuntimeInvoke (prop.Getter, co, new TargetObject[0], true, false);
 							if (result.ReturnObject == null)
-								values.Add (ObjectValue.CreateUnknownValue (prop.Name));
+								values.Add (ObjectValue.CreateUnknown (prop.Name));
 							else
 								values.Add (CreateObjectValue (thread, source, path.Append (prop.Name), result.ReturnObject));
 						}

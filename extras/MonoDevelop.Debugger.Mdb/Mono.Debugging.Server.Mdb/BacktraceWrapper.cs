@@ -15,6 +15,7 @@ namespace DebuggerServer
 	{
 		MD.Backtrace backtrace;
 		MD.StackFrame[] frames;
+		DissassemblyBuffer[] disBuffers;
 	       
 		public BacktraceWrapper (MD.Backtrace backtrace)
 		{
@@ -66,7 +67,8 @@ namespace DebuggerServer
 					line = frame.SourceAddress.Row;
 				}
 				
-				list.Add (new DL.StackFrame (frame.TargetAddress.Address, new DL.SourceLocation (method, filename, line)));
+				string lang = frame.Language != null ? frame.Language.Name : string.Empty;
+				list.Add (new DL.StackFrame (frame.TargetAddress.Address, new DL.SourceLocation (method, filename, line), frame.Language.Name));
 			}
 			
 			return list.ToArray ();
@@ -89,8 +91,10 @@ namespace DebuggerServer
 		{
 			List<ObjectValue> vars = new List<ObjectValue> ();
 			MD.StackFrame frame = frames [frameIndex];
-			foreach (TargetVariable var in frame.Method.GetParameters (frame.Thread))
-				vars.Add (Util.CreateObjectValue (frame.Thread, this, new ObjectPath ("FR", frameIndex.ToString (), "PS", var.Name), var.GetObject (frame)));
+			if (frame.Method != null) {
+				foreach (TargetVariable var in frame.Method.GetParameters (frame.Thread))
+					vars.Add (Util.CreateObjectValue (frame.Thread, this, new ObjectPath ("FR", frameIndex.ToString (), "PS", var.Name), var.GetObject (frame)));
+			}
 			
 			return vars.ToArray ();
 		}
@@ -113,7 +117,7 @@ namespace DebuggerServer
 				if (ob != null)
 					values [n] = Util.CreateObjectValue (frames[frameIndex].Thread, this, new ObjectPath ("FR", frameIndex.ToString(), "EXP", exp), ob);
 				else
-					values [n] = ObjectValue.CreateUnknownValue (exp);
+					values [n] = ObjectValue.CreateUnknown (exp);
 			}
 			return values;
 		}
@@ -160,6 +164,21 @@ namespace DebuggerServer
 				}
 			}
 			return null;
+		}
+
+		public AssemblyLine[] Disassemble (int frameIndex, int firstLine, int count)
+		{
+			if (disBuffers == null)
+				disBuffers = new MdbDissassemblyBuffer [frames.Length];
+			
+			MD.StackFrame frame = frames [frameIndex];
+			DissassemblyBuffer buffer = disBuffers [frameIndex];
+			if (buffer == null) {
+				buffer = new MdbDissassemblyBuffer (frame.Thread, frame.TargetAddress);
+				disBuffers [frameIndex] = buffer;
+			}
+			
+			return buffer.GetLines (firstLine, firstLine + count - 1);
 		}
 	}
 	
@@ -216,6 +235,37 @@ namespace DebuggerServer
 				}
 			}
 			return null;
+		}
+	}
+	
+	class MdbDissassemblyBuffer: DissassemblyBuffer
+	{
+		MD.Thread thread;
+		MD.TargetAddress baseAddr;
+		
+		public MdbDissassemblyBuffer (MD.Thread thread, MD.TargetAddress addr): base (addr.Address)
+		{
+			this.thread = thread;
+			this.baseAddr = addr;
+		}
+		
+		public override AssemblyLine[] GetLines (long startAddr, long endAddr)
+		{
+			List<AssemblyLine> lines = new List<AssemblyLine> ();
+			
+			MD.TargetAddress addr = baseAddr + (startAddr - baseAddr.Address);
+			while (addr.Address <= endAddr) {
+				try {
+					MD.AssemblerLine line = thread.DisassembleInstruction (null, addr);
+					lines.Add (new AssemblyLine (addr.Address, line.Text));
+					addr += line.InstructionSize;
+				} catch {
+					Console.WriteLine ("failed " + addr.Address);
+					lines.Add (new AssemblyLine (addr.Address, "??"));
+					addr++;
+				}
+			}
+			return lines.ToArray ();
 		}
 	}
 }

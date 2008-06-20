@@ -59,31 +59,6 @@ namespace Mono.Debugging.Backend.Mdb
 				StopDebugger ();
 		}
 		
-		public void OnProcessCreated (int processId)
-		{
-			frontend.NotifyProcessCreated (new ProcessEventArgs (processId));
-		}
-
-		public void OnProcessExited (int processId)
-		{
-			frontend.NotifyProcessExited (new ProcessEventArgs (processId));
-		}
-
-		public void OnProcessExecd (int processId)
-		{
-			frontend.NotifyProcessExecd (new ProcessEventArgs (processId));
-		}
-
-		public void OnThreadCreated (int threadId)
-		{
-			frontend.NotifyThreadCreated (new ThreadEventArgs (threadId));
-		}
-
-		public void OnThreadExited (int threadId)
-		{
-			frontend.NotifyThreadExited (new ThreadEventArgs (threadId));
-		}
-		
 		public void OnTargetOutput (bool isStderr, string line)
 		{
 			frontend.NotifyTargetOutput (isStderr, line);

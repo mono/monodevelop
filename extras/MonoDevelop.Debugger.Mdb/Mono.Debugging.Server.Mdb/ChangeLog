@@ -1,3 +1,9 @@
+2008-06-20  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* DebuggerServer.cs, Util.cs, BacktraceWrapper.cs,
+	  Mono.Debugging.Server.Mdb.mdp: Implemented support for attach to
+	  process, disassemble.
+
 2008-06-17  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Mono.Debugging.Server.Mdb.mdp: Updated.

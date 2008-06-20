@@ -26,13 +26,19 @@
 //
 
 using System;
+using System.Collections.Generic;
+using System.IO;
 using Mono.Debugging.Backend;
 using Mono.Debugging.Client;
 
 namespace Mono.Debugging.Backend.Mdb
 {
-	public class MonoDebuggerSessionFactory: IDebuggerSessionFactory
+	public class MonoDebuggerSessionFactory: IDebuggerEngine
 	{
+		public string Name {
+			get { return "Mono Debugger"; }
+		}
+		
 		public bool CanDebugPlatform (string platformId)
 		{
 			return platformId == "Mono";
@@ -49,6 +55,25 @@ namespace Mono.Debugging.Backend.Mdb
 			MonoDebuggerSession ds = new MonoDebuggerSession ();
 			ds.StartDebugger ();
 			return ds;
+		}
+		
+		public ProcessInfo[] GetAttachablePocesses ()
+		{
+			List<ProcessInfo> procs = new List<ProcessInfo> ();
+			foreach (string dir in Directory.GetDirectories ("/proc")) {
+				int id;
+				if (!int.TryParse (Path.GetFileName (dir), out id))
+					continue;
+				try {
+					File.ReadAllText (Path.Combine (dir, "sessionid"));
+				} catch {
+					continue;
+				}
+				string cmdline = File.ReadAllText (Path.Combine (dir, "cmdline"));
+				ProcessInfo pi = new ProcessInfo (id, cmdline);
+				procs.Add (pi);
+			}
+			return procs.ToArray ();
 		}
 	}
 }

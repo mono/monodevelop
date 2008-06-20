@@ -36,6 +36,8 @@ namespace Mono.Debugging.Backend.Mdb
 
 		void Stop ();
 		
+		void AttachToProcess (int id);
+		
 		void Exit ();
 
 		// Step one source line
@@ -44,6 +46,12 @@ namespace Mono.Debugging.Backend.Mdb
 		// Step one source line, but step over method calls
 		void NextLine ();
 
+		// Step one instruction
+		void StepInstruction ();
+
+		// Step one instruction, but step over method calls
+		void NextInstruction ();
+		
 		// Continue until leaving the current method
 		void Finish ();
 
