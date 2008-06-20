@@ -1,5 +1,10 @@
 2008-06-20  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* Mono.Debugging.Client/DebuggerSession.cs: Improved thread safety.
+	  Implemented Detach.
+
+2008-06-20  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* Mono.Debugging.Client/Backtrace.cs,
 	  Mono.Debugging.Client/StackFrame.cs,
 	  Mono.Debugging.Client/IDebuggerEngine.cs,

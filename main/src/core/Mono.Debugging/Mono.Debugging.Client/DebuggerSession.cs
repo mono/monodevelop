@@ -48,6 +48,8 @@ namespace Mono.Debugging.Client
 		OutputWriterDelegate outputWriter;
 		OutputWriterDelegate logWriter;
 		bool disposed;
+		bool attached;
+		object slock = new object ();
 		
 		ProcessInfo[] currentProcesses;
 		
@@ -73,117 +75,153 @@ namespace Mono.Debugging.Client
 		
 		public virtual void Dispose ()
 		{
-			if (!disposed) {
-				disposed = true;
-				Breakpoints = null;
+			lock (slock) {
+				if (!disposed) {
+					disposed = true;
+					Breakpoints = null;
+				}
 			}
 		}
 		
 		public BreakpointStore Breakpoints {
 			get {
-				if (breakpointStore == null)
-					Breakpoints = new BreakpointStore ();
-				return breakpointStore;
+				lock (slock) {
+					if (breakpointStore == null)
+						Breakpoints = new BreakpointStore ();
+					return breakpointStore;
+				}
 			}
 			set {
-				if (breakpointStore != null) {
-					if (started) {
-						foreach (Breakpoint bp in breakpointStore)
-							RemoveBreakpoint (bp);
+				lock (slock) {
+					if (breakpointStore != null) {
+						if (started) {
+							foreach (Breakpoint bp in breakpointStore)
+								RemoveBreakpoint (bp);
+						}
+						breakpointStore.BreakpointAdded -= OnBreakpointAdded;
+						breakpointStore.BreakpointRemoved -= OnBreakpointRemoved;
+						breakpointStore.BreakpointStatusChanged -= OnBreakpointStatusChanged;
 					}
-					breakpointStore.BreakpointAdded -= OnBreakpointAdded;
-					breakpointStore.BreakpointRemoved -= OnBreakpointRemoved;
-					breakpointStore.BreakpointStatusChanged -= OnBreakpointStatusChanged;
-				}
-				
-				breakpointStore = value;
-				
-				if (breakpointStore != null) {
-					if (started) {
-						foreach (Breakpoint bp in breakpointStore)
-							AddBreakpoint (bp);
+					
+					breakpointStore = value;
+					
+					if (breakpointStore != null) {
+						if (started) {
+							foreach (Breakpoint bp in breakpointStore)
+								AddBreakpoint (bp);
+						}
+						breakpointStore.BreakpointAdded += OnBreakpointAdded;
+						breakpointStore.BreakpointRemoved += OnBreakpointRemoved;
+						breakpointStore.BreakpointStatusChanged += OnBreakpointStatusChanged;
 					}
-					breakpointStore.BreakpointAdded += OnBreakpointAdded;
-					breakpointStore.BreakpointRemoved += OnBreakpointRemoved;
-					breakpointStore.BreakpointStatusChanged += OnBreakpointStatusChanged;
 				}
 			}
 		}
 		
 		public void Run (DebuggerStartInfo startInfo)
 		{
-			OnRunning ();
-			try {
-				OnRun (startInfo);
-			} catch {
-				ForceStop ();
-				throw;
+			lock (slock) {
+				OnRunning ();
+				try {
+					OnRun (startInfo);
+				} catch {
+					ForceStop ();
+					throw;
+				}
 			}
 		}
 		
 		public void AttachToProcess (ProcessInfo proc)
 		{
-			OnRunning ();
-			try {
-				OnAttachToProcess (proc.Id);
-			} catch {
-				ForceStop ();
-				throw;
+			lock (slock) {
+				OnRunning ();
+				try {
+					OnAttachToProcess (proc.Id);
+					attached = true;
+				} catch {
+					ForceStop ();
+					throw;
+				}
+			}
+		}
+		
+		public void Detach ()
+		{
+			lock (slock) {
+				OnDetach ();
+			}
+		}
+		
+		public bool AttachedToProcess {
+			get {
+				lock (slock) {
+					return attached; 
+				}
 			}
 		}
 		
 		public void NextLine ()
 		{
-			OnRunning ();
-			try {
-				OnNextLine ();
-			} catch {
-				ForceStop ();
-				throw;
+			lock (slock) {
+				OnRunning ();
+				try {
+					OnNextLine ();
+				} catch {
+					ForceStop ();
+					throw;
+				}
 			}
 		}
 
 		public void StepLine ()
 		{
-			OnRunning ();
-			try {
-				OnStepLine ();
-			} catch {
-				ForceStop ();
-				throw;
+			lock (slock) {
+				OnRunning ();
+				try {
+					OnStepLine ();
+				} catch {
+					ForceStop ();
+					throw;
+				}
 			}
 		}
 		
 		public void NextInstruction ()
 		{
-			OnRunning ();
-			try {
-				OnNextInstruction ();
-			} catch {
-				ForceStop ();
-				throw;
+			lock (slock) {
+				OnRunning ();
+				try {
+					OnNextInstruction ();
+				} catch {
+					ForceStop ();
+					throw;
+				}
 			}
 		}
 
 		public void StepInstruction ()
 		{
-			OnRunning ();
-			try {
-				OnStepInstruction ();
-			} catch {
-				ForceStop ();
-				throw;
+			lock (slock) {
+				OnRunning ();
+				try {
+					OnStepInstruction ();
+				} catch {
+					ForceStop ();
+					throw;
+				}
 			}
 		}
 
 		public void Finish ()
 		{
-			OnRunning ();
-			try {
-				OnFinish ();
-			} catch {
-				ForceStop ();
-				throw;
+			lock (slock) {
+				OnRunning ();
+				try {
+					OnFinish ();
+				} catch {
+					ForceStop ();
+					throw;
+				}
 			}
 		}
 
@@ -211,20 +249,26 @@ namespace Mono.Debugging.Client
 		
 		void OnBreakpointAdded (object s, BreakpointEventArgs args)
 		{
-			if (started)
-				AddBreakpoint (args.Breakpoint);
+			lock (slock) {
+				if (started)
+					AddBreakpoint (args.Breakpoint);
+			}
 		}
 		
 		void OnBreakpointRemoved (object s, BreakpointEventArgs args)
 		{
-			if (started)
-				RemoveBreakpoint (args.Breakpoint);
+			lock (slock) {
+				if (started)
+					RemoveBreakpoint (args.Breakpoint);
+			}
 		}
 		
 		void OnBreakpointStatusChanged (object s, BreakpointEventArgs args)
 		{
-			if (started)
-				UpdateBreakpoint (args.Breakpoint);
+			lock (slock) {
+				if (started)
+					UpdateBreakpoint (args.Breakpoint);
+			}
 		}
 		
 		bool GetHandle (Breakpoint bp, out int handle)
@@ -234,39 +278,49 @@ namespace Mono.Debugging.Client
 
 		public void Continue ()
 		{
-			OnRunning ();
-			try {
-				OnContinue ();
-			} catch {
-				ForceStop ();
-				throw;
+			lock (slock) {
+				OnRunning ();
+				try {
+					OnContinue ();
+				} catch {
+					ForceStop ();
+					throw;
+				}
 			}
 		}
 
 		public void Stop ()
 		{
-			OnStop ();
+			lock (slock) {
+				OnStop ();
+			}
 		}
 
 		public void Exit ()
 		{
-			OnExit ();
+			lock (slock) {
+				OnExit ();
+			}
 		}
 
 		public bool IsRunning {
 			get {
-				return isRunning;
+				lock (slock) {
+					return isRunning;
+				}
 			}
 		}
 		
 		public ProcessInfo[] GetPocesses ()
 		{
-			if (currentProcesses == null) {
-				currentProcesses = OnGetPocesses ();
-				foreach (ProcessInfo p in currentProcesses)
-					p.Attach (this);
+			lock (slock) {
+				if (currentProcesses == null) {
+					currentProcesses = OnGetPocesses ();
+					foreach (ProcessInfo p in currentProcesses)
+						p.Attach (this);
+				}
+				return currentProcesses;
 			}
-			return currentProcesses;
 		}
 		
 		public OutputWriterDelegate OutputWriter {
@@ -276,22 +330,30 @@ namespace Mono.Debugging.Client
 		
 		public OutputWriterDelegate LogWriter {
 			get { return logWriter; }
-			set { logWriter = value; }
+			set {
+				lock (slock) {
+					logWriter = value; 
+				}
+			}
 		}
 
 		internal ThreadInfo[] GetThreads (int processId)
 		{
-			ThreadInfo[] threads = OnGetThreads (processId);
-			foreach (ThreadInfo t in threads)
-				t.Attach (this);
-			return threads;
+			lock (slock) {
+				ThreadInfo[] threads = OnGetThreads (processId);
+				foreach (ThreadInfo t in threads)
+					t.Attach (this);
+				return threads;
+			}
 		}
 		
 		internal Backtrace GetBacktrace (int threadId)
 		{
-			Backtrace bt = OnGetThreadBacktrace (threadId);
-			bt.Attach (this);
-			return bt;
+			lock (slock) {
+				Backtrace bt = OnGetThreadBacktrace (threadId);
+				bt.Attach (this);
+				return bt;
+			}
 		}
 		
 		void ForceStop ()
@@ -309,38 +371,52 @@ namespace Mono.Debugging.Client
 			
 			switch (args.Type) {
 				case TargetEventType.Exception:
-					isRunning = false;
+					lock (slock) {
+						isRunning = false;
+					}
 					if (TargetExceptionThrown != null)
 						TargetExceptionThrown (this, args);
 					break;
 				case TargetEventType.TargetExited:
-					isRunning = false;
-					started = false;
+					lock (slock) {
+						isRunning = false;
+						started = false;
+					}
 					if (TargetExited != null)
 						TargetExited (this, args);
 					break;
 				case TargetEventType.TargetHitBreakpoint:
-					isRunning = false;
+					lock (slock) {
+						isRunning = false;
+					}
 					if (TargetHitBreakpoint != null)
 						TargetHitBreakpoint (this, args);
 					break;
 				case TargetEventType.TargetInterrupted:
-					isRunning = false;
+					lock (slock) {
+						isRunning = false;
+					}
 					if (TargetInterrupted != null)
 						TargetInterrupted (this, args);
 					break;
 				case TargetEventType.TargetSignaled:
-					isRunning = false;
+					lock (slock) {
+						isRunning = false;
+					}
 					if (TargetSignaled != null)
 						TargetSignaled (this, args);
 					break;
 				case TargetEventType.TargetStopped:
-					isRunning = false;
+					lock (slock) {
+						isRunning = false;
+					}
 					if (TargetStopped != null)
 						TargetStopped (this, args);
 					break;
 				case TargetEventType.UnhandledException:
-					isRunning = false;
+					lock (slock) {
+						isRunning = false;
+					}
 					if (TargetUnhandledException != null)
 						TargetUnhandledException (this, args);
 					break;
@@ -358,27 +434,34 @@ namespace Mono.Debugging.Client
 		
 		internal protected void OnStarted ()
 		{
-			started = true;
-			foreach (Breakpoint bp in breakpointStore) {
-				AddBreakpoint (bp);
+			lock (slock) {
+				started = true;
+				foreach (Breakpoint bp in breakpointStore)
+					AddBreakpoint (bp);
 			}
 		}
 		
 		internal protected void OnTargetOutput (bool isStderr, string text)
 		{
-			if (outputWriter != null)
-				outputWriter (isStderr, text);
+			lock (slock) {
+				if (outputWriter != null)
+					outputWriter (isStderr, text);
+			}
 		}
 		
 		internal protected void OnDebuggerOutput (bool isStderr, string text)
 		{
-			if (logWriter != null)
-				logWriter (isStderr, text);
+			lock (slock) {
+				if (logWriter != null)
+					logWriter (isStderr, text);
+			}
 		}
 		
 		protected abstract void OnRun (DebuggerStartInfo startInfo);
 
 		protected abstract void OnAttachToProcess (int processId);
+		
+		protected abstract void OnDetach ();
 
 		protected abstract void OnStop ();
 		
