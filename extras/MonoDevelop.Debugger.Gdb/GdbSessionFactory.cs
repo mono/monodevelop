@@ -26,13 +26,19 @@
 //
 
 using System;
+using System.Collections.Generic;
+using System.IO;
 using Mono.Debugging.Client;
 using Mono.Debugging.Backend;
 
 namespace MonoDevelop.Debugger.Gdb
 {
-	public class GdbSessionFactory: IDebuggerSessionFactory
+	public class GdbSessionFactory: IDebuggerEngine
 	{
+		public string Name {
+			get { return "GNU Debugger (GDB)"; }
+		}
+		
 		public bool CanDebugPlatform (string platformId)
 		{
 			return platformId == "Native";
@@ -49,5 +55,25 @@ namespace MonoDevelop.Debugger.Gdb
 			GdbSession ds = new GdbSession ();
 			return ds;
 		}
+		
+		public ProcessInfo[] GetAttachablePocesses ()
+		{
+			List<ProcessInfo> procs = new List<ProcessInfo> ();
+			foreach (string dir in Directory.GetDirectories ("/proc")) {
+				int id;
+				if (!int.TryParse (Path.GetFileName (dir), out id))
+					continue;
+				try {
+					File.ReadAllText (Path.Combine (dir, "sessionid"));
+				} catch {
+					continue;
+				}
+				string cmdline = File.ReadAllText (Path.Combine (dir, "cmdline"));
+				ProcessInfo pi = new ProcessInfo (id, cmdline);
+				procs.Add (pi);
+			}
+			return procs.ToArray ();
+		}
+		
 	}
 }

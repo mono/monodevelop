@@ -27,11 +27,14 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Text;
+using Mono.Debugging.Client;
+using Mono.Debugging.Backend;
 
 namespace MonoDevelop.Debugger.Gdb
 {
-	class ResultData
+	class ResultData: IEnumerable
 	{
 		Hashtable props;
 		object[] array;
@@ -180,6 +183,16 @@ namespace MonoDevelop.Debugger.Gdb
 				pos = str.Length;
 			str = str.Insert (pos, "[!]");
 			throw new InvalidOperationException ("Error parsing result: " + str);
+		}
+
+		public IEnumerator GetEnumerator ()
+		{
+			if (props != null)
+				return props.Values.GetEnumerator ();
+			else if (array != null)
+				return array.GetEnumerator ();
+			else
+				return new object[0].GetEnumerator ();
 		}
 	}
 }

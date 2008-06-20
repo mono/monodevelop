@@ -29,6 +29,7 @@ using System;
 using System.Text;
 using System.IO;
 using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 using Mono.Debugging.Client;
@@ -56,8 +57,6 @@ namespace MonoDevelop.Debugger.Gdb
 		
 		protected override void OnRun (DebuggerStartInfo startInfo)
 		{
-			Syscall.mknod ("/dev/tty99", FilePermissions.DEFFILEMODE | FilePermissions.S_IFCHR, 1);
-
 			lock (gdbLock) {
 				// Create a script to be run in a terminal
 				string script = Path.GetTempFileName ();
@@ -90,21 +89,7 @@ namespace MonoDevelop.Debugger.Gdb
 					}
 				}
 				
-				proc = new Process ();
-				proc.StartInfo.FileName = "gdb";
-				proc.StartInfo.Arguments = "-quiet -fullname -i=mi2";
-				proc.StartInfo.UseShellExecute = false;
-				proc.StartInfo.RedirectStandardInput = true;
-				proc.StartInfo.RedirectStandardOutput = true;
-				proc.StartInfo.RedirectStandardError = true;
-				proc.Start ();
-				
-				sout = proc.StandardOutput;
-				sin = proc.StandardInput;
-				
-				thread = new Thread (OutputInterpreter);
-				thread.IsBackground = true;
-				thread.Start ();
+				StartGdb ();
 				
 				// Initialize the terminal
 				RunCommand ("-inferior-tty-set", tty);
@@ -120,6 +105,35 @@ namespace MonoDevelop.Debugger.Gdb
 				
 				RunCommand ("-exec-run");
 			}
+		}
+		
+		protected override void OnAttachToProcess (int processId)
+		{
+			lock (gdbLock) {
+				StartGdb ();
+				OnStarted ();
+				RunCommand ("attach", processId.ToString ());
+				FireTargetEvent (TargetEventType.TargetStopped, null);
+			}
+		}
+		
+		void StartGdb ()
+		{
+			proc = new Process ();
+			proc.StartInfo.FileName = "gdb";
+			proc.StartInfo.Arguments = "-quiet -fullname -i=mi2";
+			proc.StartInfo.UseShellExecute = false;
+			proc.StartInfo.RedirectStandardInput = true;
+			proc.StartInfo.RedirectStandardOutput = true;
+			proc.StartInfo.RedirectStandardError = true;
+			proc.Start ();
+			
+			sout = proc.StandardOutput;
+			sin = proc.StandardInput;
+			
+			thread = new Thread (OutputInterpreter);
+			thread.IsBackground = true;
+			thread.Start ();
 		}
 		
 		public override void Dispose ()
@@ -159,6 +173,16 @@ namespace MonoDevelop.Debugger.Gdb
 		protected override void OnNextLine ()
 		{
 			RunCommand ("-exec-next");
+		}
+
+		protected override void OnStepInstruction ()
+		{
+			RunCommand ("-exec-step-instruction");
+		}
+
+		protected override void OnNextInstruction ()
+		{
+			RunCommand ("-exec-next-instruction");
 		}
 		
 		protected override void OnFinish ()
@@ -212,6 +236,21 @@ namespace MonoDevelop.Debugger.Gdb
 		protected override void OnContinue ()
 		{
 			RunCommand ("-exec-continue");
+		}
+		
+		protected override ThreadInfo[] OnGetThreads (int processId)
+		{
+			return new ThreadInfo [0];
+		}
+		
+		protected override ProcessInfo[] OnGetPocesses ()
+		{
+			return new ProcessInfo [0];
+		}
+		
+		protected override Backtrace OnGetThreadBacktrace (int threadId)
+		{
+			return null;
 		}
 		
 		public GdbCommandResult RunCommand (string command, params string[] args)
@@ -332,17 +371,21 @@ namespace MonoDevelop.Debugger.Gdb
 					break;
 			}
 			
+			ResultData curFrame = ev.GetObject ("frame");
+			FireTargetEvent (type, curFrame);
+		}
+		
+		void FireTargetEvent (TargetEventType type, ResultData curFrame)
+		{
 			TargetEventArgs args = new TargetEventArgs (type);
 			
 			if (type != TargetEventType.TargetExited) {
 				GdbCommandResult res = RunCommand ("-stack-info-depth");
 				int fcount = int.Parse (res.GetValue ("depth"));
 				
-				ResultData curFrame = ev.GetObject ("frame");
 				GdbBacktrace bt = new GdbBacktrace (this, fcount, curFrame);
 				args.Backtrace = new Backtrace (bt);
 			}
-			
 			OnTargetEvent (args);
 		}
 	}
