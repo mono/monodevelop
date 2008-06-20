@@ -796,6 +796,9 @@
 		<Command id = "MonoDevelop.Ide.Commands.DebugCommands.AttachToProcess"
 				defaultHandler = "MonoDevelop.Ide.Commands.AttachToProcessHandler"
 				_label = "Attach to Process..." />
+		<Command id = "MonoDevelop.Ide.Commands.DebugCommands.Detach"
+				defaultHandler = "MonoDevelop.Ide.Commands.DetachFromProcessHandler"
+				_label = "Detach" />
 		<Command id = "MonoDevelop.Ide.Commands.DebugCommands.Pause"
 				defaultHandler = "MonoDevelop.Ide.Commands.PauseDebugHandler"
 				_label = "Pause"
@@ -1538,11 +1541,13 @@
 			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Clean" />
 		</ItemSet>
 
-		<ItemSet id = "Debug" _label = "_Debug">
+		<ItemSet id = "Debug" _label = "_Run">
 			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Run" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Debug" />
+			<SeparatorItem id = "Separator1" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.DebugCommands.DebugApplication" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.DebugCommands.AttachToProcess" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.DebugCommands.Detach" />
 			<SeparatorItem id = "Separator2" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.DebugCommands.Pause" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Stop" />

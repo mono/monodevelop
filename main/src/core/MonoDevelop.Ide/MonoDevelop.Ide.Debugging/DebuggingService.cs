@@ -67,6 +67,8 @@ namespace MonoDevelop.Ide.Debugging
 		
 		void Cleanup ()
 		{
+			currentBacktrace = null;
+			
 			if (!IsDebugging)
 				return;
 
@@ -83,7 +85,11 @@ namespace MonoDevelop.Ide.Debugging
 				console = null;
 			}
 			
-			NotifyLocationChanged ();
+			Gtk.Application.Invoke (delegate {
+				NotifyCallStackChanged ();
+				NotifyCurrentFrameChanged ();
+				NotifyLocationChanged ();
+			});
 		}
 
 		public bool IsDebugging {
@@ -163,6 +169,9 @@ namespace MonoDevelop.Ide.Debugging
 				else
 					console.Out.Write (text);
 			};
+			session.LogWriter = delegate (bool iserr, string text) {
+				console.Log.Write (text);
+			};
 
 			console.CancelRequested += new EventHandler (OnCancelRequested);
 			NotifyLocationChanged ();
@@ -190,9 +199,9 @@ namespace MonoDevelop.Ide.Debugging
 				
 				switch (args.Type) {
 					case TargetEventType.TargetExited:
-					case TargetEventType.TargetSignaled:
 						KillApplication (null);
 						break;
+					case TargetEventType.TargetSignaled:
 					case TargetEventType.TargetStopped:
 					case TargetEventType.TargetRunning:
 					case TargetEventType.TargetHitBreakpoint:

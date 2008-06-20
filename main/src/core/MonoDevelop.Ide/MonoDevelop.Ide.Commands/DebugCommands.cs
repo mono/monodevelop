@@ -29,6 +29,7 @@
 using System;
 using MonoDevelop.Core.Gui.Dialogs;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Gui;
 using Mono.Addins;
 using MonoDevelop.Components;
 using MonoDevelop.Ide.Gui;
@@ -46,7 +47,8 @@ namespace MonoDevelop.Ide.Commands
 		StepOut,
 		Pause,
 		ClearAllBreakpoints,
-		AttachToProcess
+		AttachToProcess,
+		Detach
 	}
 	
 	internal class DebugApplicationHandler: CommandHandler
@@ -90,6 +92,22 @@ namespace MonoDevelop.Ide.Commands
 		protected override void Update (CommandInfo info)
 		{
 			info.Enabled = IdeApp.ProjectOperations.CurrentRunOperation.IsCompleted;
+		}
+	}
+	
+	internal class DetachFromProcessHandler: CommandHandler
+	{
+		protected override void Run ()
+		{
+			if (MessageService.Confirm (GettextCatalog.GetString ("Do you want to detach from the process being debugged?"), new AlertButton (GettextCatalog.GetString ("Detach")), true)) {
+				IdeApp.Services.DebuggingService.DebuggerSession.Detach ();
+			}
+		}
+		
+		protected override void Update (CommandInfo info)
+		{
+			info.Enabled = IdeApp.Services.DebuggingService.IsDebugging &&
+				IdeApp.Services.DebuggingService.DebuggerSession.AttachedToProcess;
 		}
 	}
 	
