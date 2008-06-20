@@ -1,3 +1,7 @@
+2008-06-20  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com>
+
+	* MonoDevelop.Ide.Commands/FileCommands.cs: Spelling fix.
+
 2008-06-20  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Commands/DebugCommands.cs,

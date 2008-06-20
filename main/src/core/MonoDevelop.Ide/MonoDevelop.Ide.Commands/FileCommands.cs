@@ -284,7 +284,7 @@ namespace MonoDevelop.Ide.Commands
 					CommandInfo cmd = new CommandInfo (accelaratorKeyPrefix + label.Replace ("_", "__"));
 					string str = GettextCatalog.GetString ("Load solution {0}", ri.ToString ());
 					if (IdeApp.Workspace.IsOpen)
-						str += " - " + GettextCatalog.GetString ("Hold Control to open in current worspace.");
+						str += " - " + GettextCatalog.GetString ("Hold Control to open in current workspace.");
 					cmd.Description = str;
 					if (IdeApp.Services.ProjectService.FileFormats.GetFileFormats (ri.LocalPath, typeof(Solution)).Length > 0)
 						cmd.Icon = "md-solution";
