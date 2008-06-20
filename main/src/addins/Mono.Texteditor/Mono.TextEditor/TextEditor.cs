@@ -59,6 +59,7 @@ namespace Mono.TextEditor
 		IMMulticontext imContext;
 		Gdk.EventKey lastIMEvent;
 		bool imContextActive;
+		bool readOnly;
 		
 		public Document Document {
 			get {
@@ -88,7 +89,14 @@ namespace Mono.TextEditor
 					options.Changed -= OptionsChanged;
 				options = value;
 				options.Changed += OptionsChanged;
+				if (IsRealized)
+					OptionsChanged (null, null);
 			}
+		}
+		
+		public bool ReadOnly {
+			get { return readOnly; }
+			set { readOnly = value; }
 		}
 		
 		public TextEditor () : this (new Document ())
@@ -319,7 +327,8 @@ namespace Mono.TextEditor
 			this.textEditorData.SelectionChanged += TextEditorDataSelectionChanged; 
 			Document.DocumentUpdated += DocumentUpdatedHandler;
 			
-			Options = TextEditorOptions.Options;
+			options = TextEditorOptions.Options;
+			options.Changed += OptionsChanged;
 			
 			Gtk.TargetList list = new Gtk.TargetList ();
 			list.AddTextTargets (CopyAction.TextType);
@@ -585,7 +594,7 @@ namespace Mono.TextEditor
 				Document.BeginAtomicUndo ();
 				this.textEditorData.DeleteSelectedText ();
 				char ch = (char)unicodeKey;
-				if (!char.IsControl (ch)) {
+				if (!char.IsControl (ch) && textEditorData.CanEdit (Caret.Line)) {
 					LineSegment line = Document.GetLine (Caret.Line);
 					if (Caret.IsInInsertMode || Caret.Column >= line.EditableLength) {
 						Document.Insert (Caret.Offset, ch.ToString());

@@ -135,6 +135,11 @@ namespace Mono.TextEditor
 				this.ClearSelection ();
 		}
 		
+		public bool CanEdit (int line)
+		{
+			return !editor.ReadOnly;
+		}
+		
 		#region undo/redo handling
 		int      savedCaretPos;
 		ISegment savedSelection;
@@ -231,6 +236,16 @@ namespace Mono.TextEditor
 		public bool IsMultiLineSelection {
 			get {
 				return IsSomethingSelected && document.OffsetToLineNumber (selectionRange.Offset) != document.OffsetToLineNumber (selectionRange.EndOffset);
+			}
+		}
+		
+		public bool CanEditSelection {
+			get {
+				// To be improved when we support read-only regions
+				if (IsSomethingSelected)
+					return !editor.ReadOnly;
+				else
+					return CanEdit (editor.Caret.Line);
 			}
 		}
 		

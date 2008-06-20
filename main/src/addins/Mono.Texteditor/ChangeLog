@@ -1,3 +1,11 @@
+2008-06-20  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Mono.TextEditor/DefaultEditActions.cs,
+	  Mono.TextEditor/TextEditorData.cs, Mono.TextEditor/TextEditor.cs,
+	  gtk-gui/objects.xml: Implemented support for read-only editors.
+	* Mono.TextEditor/TextEditorOptions.cs: Make the Font property safer
+	  for incorrect font names. Implemented CopyFrom method.
+
 2008-06-19  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Mono.TextEditor/DefaultEditActions.cs,

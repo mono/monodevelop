@@ -291,9 +291,16 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		public virtual Pango.FontDescription Font {
+		public Pango.FontDescription Font {
 			get {
-				Pango.FontDescription result = Pango.FontDescription.FromString (FontName);
+				Pango.FontDescription result = null;
+				try {
+					result = Pango.FontDescription.FromString (FontName);
+				} catch {
+					Console.WriteLine ("Could not load font: {0}", FontName);
+				}
+				if (result == null || String.IsNullOrEmpty (result.Family))
+					result = Pango.FontDescription.FromString (DEFAULT_FONT);
 				if (result != null)
 					result.Size = (int)(result.Size * Zoom);
 				return result;
@@ -312,6 +319,29 @@ namespace Mono.TextEditor
 		public virtual Style GetColorStyle (Gtk.Widget widget)
 		{
 			return SyntaxModeService.GetColorStyle (widget, ColorSheme);
+		}
+		
+		public virtual void CopyFrom (TextEditorOptions other)
+		{
+			Zoom = other.Zoom;
+			HighlightMatchingBracket = other.HighlightMatchingBracket;
+			TabsToSpaces = other.TabsToSpaces;
+			IndentationSize = other.IndentationSize;
+			TabSize = other.TabSize;
+			ShowIconMargin = other.ShowIconMargin;
+			ShowLineNumberMargin = other.ShowLineNumberMargin;
+			ShowFoldMargin = other.ShowFoldMargin;
+			ShowInvalidLines = other.ShowInvalidLines;
+			ShowTabs = other.ShowTabs;
+			ShowEolMarkers = other.ShowEolMarkers;
+			HighlightCaretLine = other.HighlightCaretLine;
+			ShowSpaces = other.ShowSpaces;
+			RulerColumn = other.RulerColumn;
+			ShowRuler = other.ShowRuler;
+			AutoIndent = other.AutoIndent;
+			FontName = other.FontName;
+			EnableSyntaxHighlighting = other.EnableSyntaxHighlighting;
+			ColorSheme = other.ColorSheme;
 		}
 		
 		protected void OnChanged (EventArgs args)

@@ -76,12 +76,12 @@ namespace Mono.TextEditor
 		{
 			int oldLine = data.Caret.Line;
 			int offset = data.Document.FindPrevWordOffset (data.Caret.Offset);
-			if (data.Caret.Offset != offset) {
+			if (data.Caret.Offset != offset && data.CanEdit (oldLine) && data.CanEdit (data.Caret.Line)) {
 				data.Document.Remove (offset, data.Caret.Offset - offset);
 				data.Caret.Offset = offset;
+				if (oldLine != data.Caret.Line)
+					data.Document.CommitLineToEndUpdate (data.Caret.Line);
 			}
-			if (oldLine != data.Caret.Line)
-				data.Document.CommitLineToEndUpdate (data.Caret.Line);
 			
 		}
 	}
@@ -90,10 +90,12 @@ namespace Mono.TextEditor
 	{
 		public override void Run (TextEditorData data)
 		{
+			int oldLine = data.Caret.Line;
 			int offset = data.Document.FindNextWordOffset (data.Caret.Offset);
-			if (data.Caret.Offset != offset) 
+			if (data.Caret.Offset != offset && data.CanEdit (oldLine) && data.CanEdit (data.Caret.Line))  {
 				data.Document.Remove (data.Caret.Offset, offset - data.Caret.Offset);
-			data.Document.CommitLineToEndUpdate (data.Caret.Line);
+				data.Document.CommitLineToEndUpdate (data.Caret.Line);
+			}
 		}
 	}
 	
@@ -101,7 +103,7 @@ namespace Mono.TextEditor
 	{
 		public override void Run (TextEditorData data)
 		{
-			if (data.Document.LineCount <= 1)
+			if (data.Document.LineCount <= 1 || !data.CanEdit (data.Caret.Line))
 				return;
 			LineSegment line = data.Document.GetLine (data.Caret.Line);
 			data.Document.Remove (line.Offset, line.Length);
@@ -113,6 +115,8 @@ namespace Mono.TextEditor
 	{
 		public override void Run (TextEditorData data)
 		{
+			if (!data.CanEdit (data.Caret.Line))
+				return;
 			LineSegment line = data.Document.GetLine (data.Caret.Line);
 			data.Document.Remove (line.Offset + data.Caret.Column, line.EditableLength - data.Caret.Column);
 			data.Document.CommitLineUpdate (data.Caret.Line);
@@ -537,6 +541,8 @@ namespace Mono.TextEditor
 		
 		public override void Run (TextEditorData data)
 		{
+			if (!data.CanEditSelection)
+				return;
 			if (data.IsMultiLineSelection) {
 				RemoveIndentSelection (data);
 				return;
@@ -602,10 +608,9 @@ namespace Mono.TextEditor
 		
 		public override void Run (TextEditorData data)
 		{
-			if (data.IsMultiLineSelection) {
-				IndentSelection (data);
+			if (!data.CanEditSelection)
 				return;
-			}
+			
 			data.Document.BeginAtomicUndo ();
 			if (data.IsSomethingSelected) {
 				data.DeleteSelectedText ();
@@ -620,6 +625,9 @@ namespace Mono.TextEditor
 	{
 		public override void Run (TextEditorData data)
 		{
+			if (!data.CanEditSelection)
+				return;
+			
 			data.Document.BeginAtomicUndo ();
 			if (data.IsSomethingSelected) {
 				data.DeleteSelectedText ();
@@ -657,6 +665,8 @@ namespace Mono.TextEditor
 		
 		public override void Run (TextEditorData data)
 		{
+			if (!data.CanEditSelection)
+				return;
 			if (data.IsSomethingSelected) {
 				data.DeleteSelectedText ();
 				return;
@@ -678,6 +688,8 @@ namespace Mono.TextEditor
 	{
 		public override void Run (TextEditorData data)
 		{
+			if (!data.CanEditSelection)
+				return;
 			if (data.IsSomethingSelected) {
 				data.DeleteSelectedText ();
 				return;
@@ -714,7 +726,7 @@ namespace Mono.TextEditor
 	{
 		public override void Run (TextEditorData data)
 		{
-			if (data.IsSomethingSelected) {
+			if (data.IsSomethingSelected && data.CanEditSelection) {
 				new CopyAction ().Run (data);
 				new DeleteAction ().Run (data);
 			}
@@ -980,7 +992,8 @@ namespace Mono.TextEditor
 		}
 		public override void Run (TextEditorData data)
 		{
-			
+			if (!data.CanEditSelection)
+				return;
 			PasteFrom (Clipboard.Get (CopyAction.CLIPBOARD_ATOM), data, true, data.IsSomethingSelected ? data.SelectionRange.Offset : data.Caret.Offset);
 		}
 	}
