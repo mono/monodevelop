@@ -74,6 +74,7 @@ namespace MonoDevelop.Ide
 			TreeViewColumn nameCol = new TreeViewColumn ();
 			nameCol.Title = GettextCatalog.GetString ("Name");
 			nameCol.Expand = true;
+			nameCol.Resizable = true;
 
 			CellRendererToggle cbRenderer = new CellRendererToggle ();
 			cbRenderer.Activatable = true;
@@ -86,6 +87,7 @@ namespace MonoDevelop.Ide
 			nameCol.AddAttribute (iconRenderer, "pixbuf", colIconIndex);
 
 			CellRendererText nameRenderer = new CellRendererText ();
+			nameRenderer.Ellipsize = Pango.EllipsizeMode.End;
 			nameCol.PackStart (nameRenderer, true);
 			nameCol.AddAttribute (nameRenderer, "text", colNameIndex);
 
@@ -137,15 +139,13 @@ namespace MonoDevelop.Ide
 				TreeIter iter;
 				if (!iter_cache.TryGetValue (member.DeclaringType.FullyQualifiedName, out iter)) {
 					iter = store.AppendValues (false, parent_icon,
-			                                   GetDescriptionString (member.DeclaringType,
-								   default_conversion_flags | ConversionFlags.UseFullyQualifiedNames),
-							   false, member.DeclaringType);
+			                                   GetDescriptionString (member.DeclaringType), false, member.DeclaringType);
 					iter_cache [member.DeclaringType.FullyQualifiedName] = iter;
 				}
 
 				store.AppendValues (iter, false,
 				                    IdeApp.Services.Resources.GetIcon (Services.Icons.GetIcon (member), IconSize.Menu),
-				                    GetDescriptionString (member, default_conversion_flags), false, member);
+				                    GetDescriptionString (member), false, member);
 			}
 		}
 
@@ -303,30 +303,29 @@ namespace MonoDevelop.Ide
 			} while (store.IterNext (ref child));
 		}
 
-		string GetDescriptionString (ILanguageItem item, ConversionFlags flags)
+		string GetDescriptionString (IClass klass)
 		{
-			string sig = LanguageItemToString (item, flags & ~ConversionFlags.ShowReturnType);
-			IMember member = item as IMember;
-			if (member == null || (flags & ConversionFlags.ShowReturnType) == 0)
-				return sig;
-
-			return sig + " : " + ambience.Convert (member.ReturnType, default_conversion_flags);
+			return String.Format ("{0} ({1})", ambience.Convert (klass, default_conversion_flags), klass.Namespace);
 		}
 
-		string LanguageItemToString (ILanguageItem item, ConversionFlags flags)
+		string GetDescriptionString (IMember member)
 		{
-			if (item is IClass)
-				return ambience.Convert ((IClass) item, flags);
-			if (item is IMethod)
-				return ambience.Convert ((IMethod) item, flags);
-			if (item is IProperty)
-				return ambience.Convert ((IProperty) item, flags);
-			if (item is IEvent)
-				return ambience.Convert ((IEvent) item, flags);
-			if (item is IIndexer)
-				return ambience.Convert ((IIndexer) item, flags);
+			string sig = null;
+			ConversionFlags flags = default_conversion_flags & ~ConversionFlags.ShowReturnType;
 
-			throw new InvalidOperationException (String.Format ("Unsupported language item type: {0}", item.GetType ().ToString ()));
+			if (member is IMethod)
+				sig = ambience.Convert ((IMethod) member, flags);
+			if (member is IProperty)
+				sig = ambience.Convert ((IProperty) member, flags);
+			if (member is IEvent)
+				sig = ambience.Convert ((IEvent) member, flags);
+			if (member is IIndexer)
+				sig = ambience.Convert ((IIndexer) member, flags);
+
+			if (sig == null)
+				throw new InvalidOperationException (String.Format ("Unsupported language member type: {0}", member.GetType ()));
+
+			return sig + " : " + ambience.Convert (member.ReturnType, default_conversion_flags);
 		}
 
 #endregion

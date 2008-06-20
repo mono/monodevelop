@@ -1,6 +1,12 @@
 2008-06-20  Ankit Jain  <jankit@novell.com>
 
 	* MonoDevelop.Ide.Gui.Dialogs/OverridesImplementsDialog.cs:
+	Make name column resizable, ellipisize. Show type names as
+	"Name (Namespace)"
+
+2008-06-20  Ankit Jain  <jankit@novell.com>
+
+	* MonoDevelop.Ide.Gui.Dialogs/OverridesImplementsDialog.cs:
 	Show members names in the form - "MemberName : Return type"
 
 2008-06-20  Ankit Jain  <jankit@novell.com>
