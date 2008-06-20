@@ -1,3 +1,14 @@
+2008-06-20  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Commands/DebugCommands.cs,
+	  MonoDevelop.Ide.Debugging/DebuggingService.cs,
+	  MonoDevelop.Ide.Debugging/DebugExecutionHandlerFactory.cs,
+	  MonoDevelop.Ide.Gui.Dialogs/AttachToProcessDialog.cs,
+	  MonoDevelop.Ide.addin.xml, MonoDevelop.Ide.mdp, gtk-gui/gui.stetic,
+	  gtk-gui/MonoDevelop.Ide.Gui.Dialogs.AttachToProcessDialog.cs,
+	  Makefile.am, MonoDevelop.Ide.Gui/ProjectOperations.cs: Implemented
+	  attach to process. Some api improvements.
+
 2008-06-20  Ankit Jain  <jankit@novell.com>
 
 	* MonoDevelop.Ide.Gui.Dialogs/OverridesImplementsDialog.cs:

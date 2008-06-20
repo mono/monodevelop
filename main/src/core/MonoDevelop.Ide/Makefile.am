@@ -3,6 +3,7 @@
 REFS =  \
 	$(GLIB_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
+	$(MONO_ADDINS_GUI_LIBS) \
 	$(MONO_ADDINS_LIBS) \
 	$(MONO_ADDINS_SETUP_LIBS) \
 	$(MONODOC_LIBS) \
@@ -30,6 +31,7 @@ FILES =  \
 	gtk-gui/MonoDevelop.Ide.DocumentSwitcher.cs \
 	gtk-gui/MonoDevelop.Ide.ExternalTools.ExternalToolPanelWidget.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.AddinLoadErrorDialog.cs \
+	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.AttachToProcessDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.CombineEntryFeatureSelector.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.EncapsulateFieldDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.ExportProjectDialog.cs \
@@ -127,6 +129,7 @@ FILES =  \
 	MonoDevelop.Ide.Gui.Content/TextEditorProperties.cs \
 	MonoDevelop.Ide.Gui.Dialogs/AddinLoadErrorDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/AssemblyReferencePanel.cs \
+	MonoDevelop.Ide.Gui.Dialogs/AttachToProcessDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/CombineEntryFeatureSelector.cs \
 	MonoDevelop.Ide.Gui.Dialogs/CommonAboutDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/DirtyFilesDialog.cs \

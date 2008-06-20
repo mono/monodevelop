@@ -32,6 +32,7 @@ using MonoDevelop.Core;
 using Mono.Addins;
 using MonoDevelop.Components;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Components.Commands;
 
 namespace MonoDevelop.Ide.Commands
@@ -44,7 +45,8 @@ namespace MonoDevelop.Ide.Commands
 		StepInto,
 		StepOut,
 		Pause,
-		ClearAllBreakpoints
+		ClearAllBreakpoints,
+		AttachToProcess
 	}
 	
 	internal class DebugApplicationHandler: CommandHandler
@@ -61,6 +63,27 @@ namespace MonoDevelop.Ide.Commands
 			}
 			finally {
 				fs.Destroy ();
+			}
+		}
+		
+		protected override void Update (CommandInfo info)
+		{
+			info.Enabled = IdeApp.ProjectOperations.CurrentRunOperation.IsCompleted;
+		}
+	}
+	
+	internal class AttachToProcessHandler: CommandHandler
+	{
+		protected override void Run ()
+		{
+			AttachToProcessDialog dlg = new AttachToProcessDialog ();
+			try {
+				if (dlg.Run () == (int) Gtk.ResponseType.Ok) {
+					IdeApp.ProjectOperations.AttachToProcess (dlg.SelectedDebugger, dlg.SelectedProcess);
+				}
+			}
+			finally {
+				dlg.Destroy ();
 			}
 		}
 		

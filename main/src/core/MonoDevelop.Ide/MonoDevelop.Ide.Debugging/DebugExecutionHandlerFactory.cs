@@ -41,12 +41,12 @@ namespace MonoDevelop.Ide.Debugging
 	{
 		public bool SupportsPlatform (string platformId)
 		{
-			return DebuggerEngine.CanDebugPlatform (platformId);
+			return IdeApp.Services.DebuggingService.CanDebugPlatform (platformId);
 		}
 
 		public IExecutionHandler CreateExecutionHandler (string platformId)
 		{
-			if (DebuggerEngine.CanDebugPlatform (platformId))
+			if (IdeApp.Services.DebuggingService.CanDebugPlatform (platformId))
 				return new DebugExecutionHandler (platformId);
 			else
 				return null;

@@ -50,6 +50,7 @@ using MonoDevelop.Core.Gui.ProgressMonitoring;
 using MonoDevelop.Core.Gui.Dialogs;
 using MonoDevelop.Ide.Tasks;
 using MonoDevelop.Ide.Gui.Dialogs;
+using Mono.Debugging.Client;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -660,6 +661,16 @@ namespace MonoDevelop.Ide.Gui
 			};
 			
 			currentRunOperation = monitor.AsyncOperation;
+			return currentRunOperation;
+		}
+		
+		public IAsyncOperation AttachToProcess (IDebuggerEngine debugger, ProcessInfo proc)
+		{
+			if (currentRunOperation != null && !currentRunOperation.IsCompleted)
+				return currentRunOperation;
+			
+			currentRunOperation = IdeApp.Services.DebuggingService.AttachToProcess (debugger, proc);
+			
 			return currentRunOperation;
 		}
 		

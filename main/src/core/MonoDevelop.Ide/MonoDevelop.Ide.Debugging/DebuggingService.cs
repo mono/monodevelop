@@ -16,6 +16,7 @@ using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Gui;
 
 using Mono.Debugging.Client;
+using Mono.Debugging.Backend;
 
 /*
  * Some places we should be doing some error handling we used to toss
@@ -27,6 +28,8 @@ namespace MonoDevelop.Ide.Debugging
 
 	public class DebuggingService
 	{
+		const string FactoriesPath = "/Mono/Debugging/DebuggerFactories";
+		
 		BreakpointStore breakpoints = new BreakpointStore ();
 		
 		IConsole console;
@@ -39,6 +42,8 @@ namespace MonoDevelop.Ide.Debugging
 		public event EventHandler PausedEvent;
 		public event EventHandler ResumedEvent;
 		public event EventHandler StoppedEvent;
+		
+		public event EventHandler CallStackChanged;
 		public event EventHandler CurrentFrameChanged;
 		public event EventHandler ExecutionLocationChanged;
 
@@ -121,17 +126,35 @@ namespace MonoDevelop.Ide.Debugging
 			return h.Execute (file, null, null, null, console);
 		}
 		
+		public IAsyncOperation AttachToProcess (IDebuggerEngine debugger, ProcessInfo proc)
+		{
+			session = debugger.CreateSession ();
+			IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetRunProgressMonitor ();
+			console = monitor as IConsole;
+			SetupSession ();
+			session.TargetExited += delegate {
+				monitor.Dispose ();
+			};
+			session.AttachToProcess (proc);
+			return monitor.AsyncOperation;
+		}
+		
 		internal void InternalRun (string platform, DebuggerStartInfo startInfo, IConsole console)
 		{
 			this.console = console;
 			
 			if (platform != null)
-				session = DebuggerEngine.CreateDebugSessionForPlatform (platform);
+				session = CreateDebugSessionForPlatform (platform);
 			else
-				session = DebuggerEngine.CreateDebugSessionForFile (startInfo.Command);
+				session = CreateDebugSessionForFile (startInfo.Command);
 			
-			session.Breakpoints = breakpoints;
+			SetupSession ();
 			session.Run (startInfo);
+		}
+		
+		void SetupSession ()
+		{
+			session.Breakpoints = breakpoints;
 			session.TargetEvent += OnTargetEvent;
 			session.TargetStarted += OnStarted;
 			session.OutputWriter = delegate (bool iserr, string text) {
@@ -147,7 +170,11 @@ namespace MonoDevelop.Ide.Debugging
 		
 		void OnStarted (object s, EventArgs a)
 		{
+			currentBacktrace = null;
 			Gtk.Application.Invoke (delegate {
+				NotifyCallStackChanged ();
+				NotifyCurrentFrameChanged ();
+				NotifyLocationChanged ();
 				if (ResumedEvent != null)
 					ResumedEvent (null, a);
 			});
@@ -184,13 +211,10 @@ namespace MonoDevelop.Ide.Debugging
 
 		void NotifyPaused ()
 		{
-			if (PausedEvent != null)
-				PausedEvent (null, EventArgs.Empty);
-			NotifyLocationChanged ();
-			
 			Gtk.Application.Invoke (delegate {
-				if (!string.IsNullOrEmpty (CurrentFilename))
-					IdeApp.Workbench.OpenDocument (CurrentFilename, CurrentLineNumber, 1, true);
+				if (PausedEvent != null)
+					PausedEvent (null, EventArgs.Empty);
+				NotifyLocationChanged ();
 			});
 		}
 		
@@ -198,6 +222,18 @@ namespace MonoDevelop.Ide.Debugging
 		{
 			if (ExecutionLocationChanged != null)
 				ExecutionLocationChanged (null, EventArgs.Empty);
+		}
+		
+		void NotifyCurrentFrameChanged ()
+		{
+			if (CurrentFrameChanged != null)
+				CurrentFrameChanged (this, EventArgs.Empty);
+		}
+		
+		void NotifyCallStackChanged ()
+		{
+			if (CallStackChanged != null)
+				CallStackChanged (this, EventArgs.Empty);
 		}
 		
 		void OnCancelRequested (object sender, EventArgs args)
@@ -253,19 +289,7 @@ namespace MonoDevelop.Ide.Debugging
 			NotifyLocationChanged ();
 		}
 
-		public string[] Backtrace {
-			get {
-				if (currentBacktrace == null)
-					return null;
-				string [] result = new string [currentBacktrace.FrameCount];
-				for (int i = 0; i < currentBacktrace.FrameCount; i ++)
-					result [i] = currentBacktrace.GetFrame (i).ToString ();
-				
-				return result;
-			}
-		}
-		
-		public Backtrace CurrentBacktrace {
+		public Backtrace CurrentCallStack {
 			get { return currentBacktrace; }
 		}
 
@@ -306,8 +330,7 @@ namespace MonoDevelop.Ide.Debugging
 				if (currentBacktrace != null && value < currentBacktrace.FrameCount) {
 					currentFrame = value;
 					Gtk.Application.Invoke (delegate {
-						if (CurrentFrameChanged != null)
-							CurrentFrameChanged (this, EventArgs.Empty);
+						NotifyCurrentFrameChanged ();
 					});
 				}
 				else
@@ -318,16 +341,72 @@ namespace MonoDevelop.Ide.Debugging
 		void SetCurrentBacktrace (Backtrace bt)
 		{
 			currentBacktrace = bt;
-			if (currentBacktrace != null) {
-				for (int n=0; n<currentBacktrace.FrameCount; n++) {
-					StackFrame sf = currentBacktrace.GetFrame (n);
-					if (!string.IsNullOrEmpty (sf.SourceLocation.Filename)) {
-						CurrentFrameIndex = n;
-						return;
-					}
-				}
+			if (currentBacktrace != null)
+				currentFrame = 0;
+			else
+				currentFrame = -1;
+
+			Gtk.Application.Invoke (delegate {
+				NotifyCallStackChanged ();
+				NotifyCurrentFrameChanged ();
+			});
+		}
+		
+		public bool CanDebugPlatform (string platform)
+		{
+			return GetFactoryForPlatform (platform) != null;
+		}
+		
+		public bool CanDebugFile (string file)
+		{
+			return GetFactoryForFile (file) != null;
+		}
+		
+		public DebuggerSession CreateDebugSessionForPlatform (string platform)
+		{
+			IDebuggerEngine factory = GetFactoryForPlatform (platform);
+			if (factory != null) {
+				DebuggerSession ds = factory.CreateSession ();
+				ds.Initialize ();
+				return ds;
+			} else
+				throw new InvalidOperationException ("Unsupported platform: " + platform);
+		}
+		
+		public DebuggerSession CreateDebugSessionForFile (string file)
+		{
+			IDebuggerEngine factory = GetFactoryForFile (file);
+			if (factory != null) {
+				DebuggerSession ds = factory.CreateSession ();
+				ds.Initialize ();
+				return ds;
+			} else
+				throw new InvalidOperationException ("Unsupported file: " + file);
+		}
+		
+		public IDebuggerEngine[] GetDebuggerEngines ()
+		{
+			return (IDebuggerEngine[]) AddinManager.GetExtensionObjects (FactoriesPath, typeof(IDebuggerEngine), true);
+		}		
+		
+		IDebuggerEngine GetFactoryForPlatform (string platform)
+		{
+			foreach (TypeExtensionNode node in AddinManager.GetExtensionNodes (FactoriesPath)) {
+				IDebuggerEngine factory = (IDebuggerEngine) node.GetInstance ();
+				if (factory.CanDebugPlatform (platform))
+					return factory;
 			}
-			currentFrame = -1;
+			return null;
+		}
+		
+		IDebuggerEngine GetFactoryForFile (string file)
+		{
+			foreach (TypeExtensionNode node in AddinManager.GetExtensionNodes (FactoriesPath)) {
+				IDebuggerEngine factory = (IDebuggerEngine) node.GetInstance ();
+				if (factory.CanDebugFile (file))
+					return factory;
+			}
+			return null;
 		}
 	}
 }

@@ -793,6 +793,9 @@
 		<Command id = "MonoDevelop.Ide.Commands.DebugCommands.DebugApplication"
 				defaultHandler = "MonoDevelop.Ide.Commands.DebugApplicationHandler"
 				_label = "Debug Application..." />
+		<Command id = "MonoDevelop.Ide.Commands.DebugCommands.AttachToProcess"
+				defaultHandler = "MonoDevelop.Ide.Commands.AttachToProcessHandler"
+				_label = "Attach to Process..." />
 		<Command id = "MonoDevelop.Ide.Commands.DebugCommands.Pause"
 				defaultHandler = "MonoDevelop.Ide.Commands.PauseDebugHandler"
 				_label = "Pause"
@@ -1539,6 +1542,7 @@
 			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Run" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Debug" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.DebugCommands.DebugApplication" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.DebugCommands.AttachToProcess" />
 			<SeparatorItem id = "Separator2" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.DebugCommands.Pause" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Stop" />
