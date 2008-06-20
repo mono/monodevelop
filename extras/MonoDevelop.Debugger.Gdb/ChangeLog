@@ -1,5 +1,9 @@
 2008-06-20  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* GdbSession.cs: Implemented detach.
+
+2008-06-20  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* GdbSessionFactory.cs, GdbBacktrace.cs, GdbSession.cs, ResultData.cs:
 	  Implemented process attaching, variable query, disassemble.
 

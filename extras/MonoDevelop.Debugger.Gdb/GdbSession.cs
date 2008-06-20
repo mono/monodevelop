@@ -111,8 +111,8 @@ namespace MonoDevelop.Debugger.Gdb
 		{
 			lock (gdbLock) {
 				StartGdb ();
-				OnStarted ();
 				RunCommand ("attach", processId.ToString ());
+				OnStarted ();
 				FireTargetEvent (TargetEventType.TargetStopped, null);
 			}
 		}
@@ -150,6 +150,15 @@ namespace MonoDevelop.Debugger.Gdb
 		protected override void OnStop ()
 		{
 			Syscall.kill (proc.Id, Signum.SIGINT);
+		}
+		
+		protected override void OnDetach ()
+		{
+			lock (gdbLock) {
+				InternalStop ();
+				RunCommand ("detach");
+				FireTargetEvent (TargetEventType.TargetExited, null);
+			}
 		}
 		
 		protected override void OnExit ()
@@ -318,7 +327,9 @@ namespace MonoDevelop.Debugger.Gdb
 				case '&':
 					if (line.Length > 1 && line[1] == '"')
 						line = line.Substring (2, line.Length - 5);
-					OnTargetOutput (false, line + "\n");
+					ThreadPool.QueueUserWorkItem (delegate {
+						OnTargetOutput (false, line + "\n");
+					});
 					break;
 					
 				case '*':
