@@ -611,6 +611,10 @@ namespace Mono.TextEditor
 			if (!data.CanEditSelection)
 				return;
 			
+			if (data.IsMultiLineSelection) {
+				IndentSelection (data);
+				return;
+			}
 			data.Document.BeginAtomicUndo ();
 			if (data.IsSomethingSelected) {
 				data.DeleteSelectedText ();

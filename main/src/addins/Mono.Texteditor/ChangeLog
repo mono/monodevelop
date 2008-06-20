@@ -1,5 +1,10 @@
 2008-06-20  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* Mono.TextEditor/DefaultEditActions.cs: Restore accidentally removed
+	  code.
+
+2008-06-20  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* Mono.TextEditor/DefaultEditActions.cs,
 	  Mono.TextEditor/TextEditorData.cs, Mono.TextEditor/TextEditor.cs,
 	  gtk-gui/objects.xml: Implemented support for read-only editors.
