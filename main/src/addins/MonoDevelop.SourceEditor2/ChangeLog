@@ -1,3 +1,9 @@
+2008-06-20  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.SourceEditor/SourceEditorOptions.cs: Moved logic for
+	  getting the system font from Font to FontName. In this way it is
+	  possible to make copies of options objects and get the name copied.
+
 2008-06-19  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.SourceEditor/SourceEditorWidget.cs,

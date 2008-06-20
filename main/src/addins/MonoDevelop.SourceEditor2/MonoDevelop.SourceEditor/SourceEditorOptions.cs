@@ -338,6 +338,16 @@ namespace MonoDevelop.SourceEditor
 		}
 		
 		public override string FontName {
+			get {
+				if (EditorFontType == EditorFontType.DefaultMonospace) {
+					string font = IdeApp.Services.PlatformService.DefaultMonospaceFont;
+					if (String.IsNullOrEmpty (font))
+						return DEFAULT_FONT;
+					else
+						return font;
+				}
+				return base.FontName;
+			}
 			set {
 				string newName = !String.IsNullOrEmpty (value) ? value : DEFAULT_FONT;
 				PropertyService.Set ("FontName", newName);
@@ -353,34 +363,6 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 		
-		public override FontDescription Font {
-			get {
-				FontDescription result;
-				switch (EditorFontType) {
-				case EditorFontType.DefaultMonospace:
-					try {
-						string font = IdeApp.Services.PlatformService.DefaultMonospaceFont;
-						if (String.IsNullOrEmpty (font))
-							font = DEFAULT_FONT;
-						result =  FontDescription.FromString (font);
-					} catch (Exception ex) {
-						LoggingService.LogWarning ("Could not load platform's default monospace font.", ex);
-						goto default;
-					}
-					break;
-//				case "__default_sans":
-//					return new Gtk.Label ("").Style.FontDescription;
-				default:
-					result = FontDescription.FromString (FontName);
-					break;
-				}
-				if (result == null || String.IsNullOrEmpty (result.Family))
-					result = FontDescription.FromString (DEFAULT_FONT);
-				if (result != null)
-					result.Size = (int)(result.Size * Zoom);
-				return result;
-			}
-		}
 		#endregion
 	}
 }
