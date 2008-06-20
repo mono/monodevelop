@@ -1,5 +1,9 @@
 2008-06-20  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* AssemblyInfo.cs: Disable version auto-increment.
+
+2008-06-20  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* Mono.TextEditor/TextEditor.cs: Don't allow replacing text in
 	  read-only mode.
 
