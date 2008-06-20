@@ -1,6 +1,11 @@
 2008-06-20  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* IDebuggerController.cs, MonoDebuggerSession.cs, IDebuggerServer.cs,
+	  DebuggerController.cs: Implemented detach.
+
+2008-06-20  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* IDebuggerController.cs, MonoDebuggerSession.cs, IDebuggerServer.cs,
 	  DebuggerController.cs, MonoDebuggerSessionFactory.cs: Implemented
 	  support for attach to process, disassemble.
 

@@ -1,5 +1,12 @@
 2008-06-20  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* DebuggerServer.cs: Implemented detach. Send all events to the client
+	  asynchronously, to avoid deadlocks. Report debug output to the
+	  client.
+	* Server.cs: Implemented detach.
+
+2008-06-20  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* DebuggerServer.cs, Util.cs, BacktraceWrapper.cs,
 	  Mono.Debugging.Server.Mdb.mdp: Implemented support for attach to
 	  process, disassemble.

@@ -60,6 +60,11 @@ namespace Mono.Debugging.Backend.Mdb
 			controller.DebuggerServer.AttachToProcess (processId);
 		}
 		
+		protected override void OnDetach ()
+		{
+			controller.DebuggerServer.Detach ();
+		}
+		
 		protected override void OnStop ()
 		{
 			controller.DebuggerServer.Stop ();
@@ -105,7 +110,8 @@ namespace Mono.Debugging.Backend.Mdb
 
 		protected override void OnRemoveBreakpoint (int handle)
 		{
-			controller.DebuggerServer.RemoveBreakpoint (handle);
+			if (controller.DebuggerServer != null)
+				controller.DebuggerServer.RemoveBreakpoint (handle);
 		}
 		
 		protected override void OnEnableBreakpoint (int handle, bool enable)

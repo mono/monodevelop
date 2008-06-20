@@ -63,12 +63,16 @@ namespace Mono.Debugging.Backend.Mdb
 		{
 			frontend.NotifyTargetOutput (isStderr, line);
 		}
+		
+		public void OnDebuggerOutput (bool isStderr, string line)
+		{
+			frontend.NotifyDebuggerOutput (isStderr, line);
+		}
 
 		#endregion
 
 		public void StartDebugger ()
 		{
-			Console.WriteLine ("Controller.StartDebugger");
 			lock (this)
 			{
 				exitRequestEvent.Reset ();
@@ -94,9 +98,7 @@ namespace Mono.Debugging.Backend.Mdb
 					process.StartInfo.UseShellExecute = false;
 					process.StartInfo.RedirectStandardInput = true;
 					process.EnableRaisingEvents = true;
-					Console.WriteLine ("Calling start");
 					process.Start();
-					Console.WriteLine ("Calling start..done");
 					
 					// The server expects 3 lines with the following content:
 					// 1) location of the Mono.Debugging assembly (needed since it may be located
@@ -160,7 +162,6 @@ namespace Mono.Debugging.Backend.Mdb
 		{
 			try {
 				Process oldProcess;
-				
 				lock (this) {
 					if (debugger == null)
 						return;

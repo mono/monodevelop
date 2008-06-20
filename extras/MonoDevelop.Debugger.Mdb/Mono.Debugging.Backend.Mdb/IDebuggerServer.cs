@@ -38,6 +38,8 @@ namespace Mono.Debugging.Backend.Mdb
 		
 		void AttachToProcess (int id);
 		
+		void Detach ();
+		
 		void Exit ();
 
 		// Step one source line

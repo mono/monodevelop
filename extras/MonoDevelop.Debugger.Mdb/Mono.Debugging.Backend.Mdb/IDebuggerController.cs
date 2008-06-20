@@ -14,5 +14,7 @@ namespace Mono.Debugging.Backend.Mdb
 		void OnTargetEvent (TargetEventArgs args);
 		
 		void OnTargetOutput (bool isStderr, string text);
+		
+		void OnDebuggerOutput (bool isStderr, string text);
 	}
 }

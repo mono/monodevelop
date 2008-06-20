@@ -88,6 +88,10 @@ namespace DebuggerServer
 			{
 				Console.WriteLine ("DS: {0}", e.ToString());
 			}
+			
+			// Delay the exit a few seconds, to make sure all remoting calls
+			// from the client have been completed
+			System.Threading.Thread.Sleep (3000);
 
 			Console.WriteLine ("DebuggerServer exiting.");
 		}
