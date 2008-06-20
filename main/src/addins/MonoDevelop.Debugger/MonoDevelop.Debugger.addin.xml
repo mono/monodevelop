@@ -29,4 +29,8 @@
 		<ContextPad id = "MonoDevelop.Debugger.StackTracePad" />
 	</Extension>
 
+	<Extension path = "/MonoDevelop/Ide/StartupHandlers">
+		<Class class="MonoDevelop.Debugger.Initializer" />
+	</Extension>
+	
 </Addin>

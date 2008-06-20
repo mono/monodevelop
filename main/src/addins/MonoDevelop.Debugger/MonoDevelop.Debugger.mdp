@@ -19,6 +19,8 @@
     <File name="MonoDevelop.Debugger.addin.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="MonoDevelop.Debugger/ObjectValueTreeView.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Debugger/WatchPad.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Debugger/Initializer.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Debugger/DisasemblyView.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
@@ -33,6 +35,7 @@
     <ProjectReference type="Gac" localcopy="True" refto="gtk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Project" localcopy="True" refto="Mono.Debugging" />
     <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Components" />
+    <ProjectReference type="Project" localcopy="False" refto="Mono.TextEditor" />
   </References>
   <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="../../..">
     <BuildFilesVar Sync="True" Name="FILES" />

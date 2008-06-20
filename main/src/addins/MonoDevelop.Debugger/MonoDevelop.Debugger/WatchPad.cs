@@ -88,7 +88,7 @@ namespace MonoDevelop.Debugger
 			else {
 				ObjectValue[] vals = new ObjectValue [names.Length];
 				for (int n=0; n<vals.Length; n++)
-					vals [n] = ObjectValue.CreateUnknownValue (names [n]);
+					vals [n] = ObjectValue.CreateUnknown (names [n]);
 				return vals;
 			}
 		}

@@ -6,6 +6,7 @@ REFS =  \
 	$(GLIB_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
 	-r:../../../build/bin/Mono.Debugging.dll \
+	-r:../../../build/bin/Mono.TextEditor.dll \
 	-r:../../../build/bin/MonoDevelop.Components.dll \
 	-r:../../../build/bin/MonoDevelop.Core.dll \
 	-r:../../../build/bin/MonoDevelop.Core.Gui.dll \
@@ -15,6 +16,8 @@ REFS =  \
 
 FILES =  \
 	AssemblyInfo.cs \
+	MonoDevelop.Debugger/DisasemblyView.cs \
+	MonoDevelop.Debugger/Initializer.cs \
 	MonoDevelop.Debugger/ObjectValueTreeView.cs \
 	MonoDevelop.Debugger/StackTracePad.cs \
 	MonoDevelop.Debugger/WatchPad.cs

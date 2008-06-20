@@ -156,7 +156,7 @@ namespace MonoDevelop.Debugger
 				canEdit = false;
 			}
 			else {
-				canEdit = val.Kind == ObjectValueKind.Prmitive;
+				canEdit = val.Kind == ObjectValueKind.Primitive;
 				strval = val.Value != null ? val.Value.ToString () : "(null)";
 				strval = GLib.Markup.EscapeText (strval);
 			}
