@@ -1,12 +1,12 @@
 
 SUBDIRS = \
+	Mono.Texteditor \
 	MacPlatform \
 	GnomePlatform \
 	MonoDevelop.DesignerSupport \
 	MonoDevelop.Debugger \
 	Deployment \
 	MonoDevelop.Autotools \
-	Mono.Texteditor \
 	MonoDevelop.Gettext \
 	CSharpBinding \
 	ILAsmBinding \
