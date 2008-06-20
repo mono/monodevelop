@@ -1,5 +1,10 @@
 2008-06-20  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* Mono.TextEditor/TextEditor.cs: Don't allow replacing text in
+	  read-only mode.
+
+2008-06-20  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* Mono.TextEditor/DefaultEditActions.cs: Restore accidentally removed
 	  code.
 

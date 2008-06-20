@@ -592,7 +592,8 @@ namespace Mono.TextEditor
 				}
 			} else if (unicodeKey != 0) {
 				Document.BeginAtomicUndo ();
-				this.textEditorData.DeleteSelectedText ();
+				if (textEditorData.CanEditSelection)
+					textEditorData.DeleteSelectedText ();
 				char ch = (char)unicodeKey;
 				if (!char.IsControl (ch) && textEditorData.CanEdit (Caret.Line)) {
 					LineSegment line = Document.GetLine (Caret.Line);
