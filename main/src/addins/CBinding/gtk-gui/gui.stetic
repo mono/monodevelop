@@ -151,6 +151,7 @@ Shared Object</property>
                         <property name="MemberName" />
                         <property name="CanFocus">True</property>
                         <property name="Label" translatable="yes">no warnings</property>
+                        <property name="Active">True</property>
                         <property name="DrawIndicator">True</property>
                         <property name="HasLabel">True</property>
                         <property name="UseUnderline">True</property>
@@ -1258,6 +1259,7 @@ Example:
                     <property name="MemberName" />
                     <property name="CanFocus">True</property>
                     <property name="CurrentPage">0</property>
+                    <signal name="SwitchPage" handler="OnNotebook1SwitchPage" />
                     <child>
                       <widget class="Gtk.ScrolledWindow" id="scrolledwindow1">
                         <property name="MemberName" />

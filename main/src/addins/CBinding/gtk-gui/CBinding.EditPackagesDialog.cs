@@ -268,6 +268,7 @@ namespace CBinding {
             this.DefaultWidth = 580;
             this.DefaultHeight = 449;
             this.Show();
+            this.notebook1.SwitchPage += new Gtk.SwitchPageHandler(this.OnNotebook1SwitchPage);
             this.normalPackageTreeView.CursorChanged += new System.EventHandler(this.OnNonSelectedPackageCursorChanged);
             this.projectPackageTreeView.CursorChanged += new System.EventHandler(this.OnNonSelectedPackageCursorChanged);
             this.detailsButton.Clicked += new System.EventHandler(this.OnDetailsButtonClicked);

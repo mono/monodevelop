@@ -523,7 +523,43 @@ namespace CBinding
 		
 		protected virtual void OnNonSelectedPackageCursorChanged (object o, EventArgs e)
 		{
-			detailsButton.Sensitive = true;
+			Gtk.TreeIter iter;
+			Gtk.Widget active_tab = notebook1.Children [notebook1.Page];
+			string tab_label = notebook1.GetTabLabelText (active_tab);
+			bool sensitive = false;
+			
+			if (tab_label == "System Packages") {
+				normalPackageTreeView.Selection.GetSelected (out iter);
+				if (normalPackageListStore.IterIsValid (iter))
+					sensitive = true;
+			} else if (tab_label == "Project Packages") {
+				projectPackageTreeView.Selection.GetSelected (out iter);
+				if (projectPackageListStore.IterIsValid (iter))
+					sensitive = true;
+			} else {
+				return;
+			}
+			
+			detailsButton.Sensitive = sensitive;
+		}
+
+		protected virtual void OnNotebook1SwitchPage (object o, Gtk.SwitchPageArgs args)
+		{
+			Gtk.TreeIter iter;
+			Gtk.Widget active_tab = notebook1.Children [notebook1.Page];
+			
+			switch(notebook1.GetTabLabelText (active_tab))
+			{
+				case "System Packages":
+					normalPackageTreeView.Selection.GetSelected (out iter);
+					detailsButton.Sensitive = normalPackageListStore.IterIsValid (iter);
+					break;
+					
+				case "Project Packages":
+					projectPackageTreeView.Selection.GetSelected (out iter);
+					detailsButton.Sensitive = projectPackageListStore.IterIsValid (iter);
+					break;
+			}
 		}
 	}
 }

@@ -1,4 +1,18 @@
+2008-06-21  Mitchell Wheeler <mitchell.wheeler@gmail.com>
+
+	* Gui/EditPackagesDialog.cs: Re-check if there is a selected
+	  package before setting the package details button to sensitive
+	  on tab/page change.
+	  Fixes new steps to reproduce the bug 398789.
+
+2008-06-10  Marcos David Marín Amador <marcosmarin@gmail.com>
+
+	* Gui/EditPackagesDialog.cs: Check if there is a selected package
+	  before setting the package details button to sensitive.
+	  Fixes bug 398789.
+
 2008-06-04  Marcos David Marín Amador <marcosmarin@gmail.com>
+
 	* Gui/GeneralOptionsPanel.cs, Parser/TagDatabaseManager.cs: Don't
 	  parse local valriables by default.
 
