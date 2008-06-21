@@ -1,3 +1,16 @@
+2008-06-20  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Projects.CodeGeneration/IRefactorer.cs,
+	  MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs,
+	  MonoDevelop.Projects.CodeGeneration/CodeRefactorer.cs,
+	  MonoDevelop.Projects.CodeGeneration/RefactorOperations.cs: Add and
+	  implement API for bulk adding/implementing members at one location.
+	  Avoids reparsing the file after each individual addition, so
+	  increases performance substantially, and allows members to be
+	  created in contiguous blocks. Also implement APIs for creating
+	  folding regions, and for creating/implementing members within them.
+	  Implement interfaces in folding regions.
+
 2008-06-20  Ankit Jain  <jankit@novell.com>
 
 	* BaseRefactorer.cs (ImplementMember): Fix emitting 'override'.

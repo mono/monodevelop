@@ -250,6 +250,15 @@ namespace MonoDevelop.Projects.CodeGeneration
 			return m;
 		}
 		
+		public IClass AddMembers (IClass cls, IEnumerable<CodeTypeMember> members, string foldingRegionName)
+		{
+			RefactorerContext gctx = GetGeneratorContext (cls);
+			IRefactorer gen = GetGeneratorForClass (cls);
+			gen.AddMembers (gctx, cls, members, foldingRegionName);
+			gctx.Save ();
+			return GetUpdatedClass (gctx, cls);
+		}
+		
 		public IMember ImplementMember (IClass cls, IMember member, IReturnType privateReturnType)
 		{
 			RefactorerContext gctx = GetGeneratorContext (cls);
@@ -258,7 +267,16 @@ namespace MonoDevelop.Projects.CodeGeneration
 			gctx.Save ();
 			return m;
 		}
-
+		
+		public IClass ImplementMembers (IClass cls, IEnumerable<KeyValuePair<IMember,IReturnType>> members,
+		                                              string foldingRegionName)
+		{
+			RefactorerContext gctx = GetGeneratorContext (cls);
+			IRefactorer gen = GetGeneratorForClass (cls);
+			gen.ImplementMembers (gctx, cls, members, foldingRegionName);
+			gctx.Save ();
+			return GetUpdatedClass (gctx, cls);
+		}
 		
 		string GenerateGenerics (IRefactorer gen, IClass iface, IReturnType hintReturnType)
 		{
@@ -308,6 +326,8 @@ namespace MonoDevelop.Projects.CodeGeneration
 			IMember newMember;
 			int i, j;
 			
+			List<KeyValuePair<IMember,IReturnType>> toImplement = new List<KeyValuePair<IMember,IReturnType>> ();
+			
 			IParserContext ctx = GetParserContext (klass);
 			foreach (IReturnType rType in iface.BaseTypes) {
 				if (rType.FullyQualifiedName == "System.Object")
@@ -338,12 +358,8 @@ namespace MonoDevelop.Projects.CodeGeneration
 					}
 				}
 				
-				if (alreadyImplemented)
-					continue;
-				
-				if ((newMember = gen.ImplementMember (gctx, klass, ev, needsExplicitly ? prefix : null)) != null) {
-					klass = newMember.DeclaringType;
-				}
+				if (!alreadyImplemented)
+					toImplement.Add (new KeyValuePair<IMember,IReturnType> (ev, needsExplicitly ? prefix : null));
 			}
 			
 			// Stub out non-implemented methods defined by @iface
@@ -361,11 +377,8 @@ namespace MonoDevelop.Projects.CodeGeneration
 					}
 				}
 				
-				if (alreadyImplemented)
-					continue;
-				if ((newMember = gen.ImplementMember (gctx, klass, method, needsExplicitly ? prefix : null)) != null) {
-					klass = newMember.DeclaringType;
-				}
+				if (!alreadyImplemented)
+					toImplement.Add (new KeyValuePair<IMember,IReturnType> (method, needsExplicitly ? prefix : null));
 			}
 			
 			// Stub out non-implemented properties defined by @iface
@@ -383,12 +396,8 @@ namespace MonoDevelop.Projects.CodeGeneration
 					}
 				}
 				
-				if (alreadyImplemented)
-					continue;
-				
-				if ((newMember = gen.ImplementMember (gctx, klass, prop, needsExplicitly ? prefix : null)) != null) {
-					klass = newMember.DeclaringType;
-				}
+				if (!alreadyImplemented)
+					toImplement.Add (new KeyValuePair<IMember,IReturnType> (prop, needsExplicitly ? prefix : null));
 			}
 			
 			// Stub out non-implemented indexers defined by @iface
@@ -407,15 +416,22 @@ namespace MonoDevelop.Projects.CodeGeneration
 					}
 				}
 				
-				if (alreadyImplemented)
-					continue;
-				if ((newMember = gen.ImplementMember (gctx, klass, indexer, needsExplicitly ? prefix : null)) != null) {
-					klass = newMember.DeclaringType;
-				}
+				if (!alreadyImplemented)
+					toImplement.Add (new KeyValuePair<IMember,IReturnType> (indexer, needsExplicitly ? prefix : null));
 			}
 			
+			//implement members
+			ImplementMembers (klass, toImplement, iface.Name +  " implementation");
 			gctx.Save ();
-			return klass;
+			
+			return GetUpdatedClass (gctx, klass);
+		}
+		
+		IClass GetUpdatedClass (RefactorerContext gctx, IClass klass)
+		{
+			IEditableTextFile file = gctx.GetFile (klass.Region.FileName);
+			gctx.ParserContext.ParserDatabase.UpdateFile (file.Name, file.Text);
+			return gctx.ParserContext.GetClass (klass.FullyQualifiedName);
 		}
 		
 		public void RemoveMember (IClass cls, IMember member)

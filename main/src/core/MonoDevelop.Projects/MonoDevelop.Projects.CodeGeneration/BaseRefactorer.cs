@@ -30,6 +30,7 @@ using System;
 using System.IO;
 using System.CodeDom;
 using System.CodeDom.Compiler;
+using System.Collections.Generic;
 using Microsoft.CSharp;
 
 using MonoDevelop.Projects.Parser;
@@ -41,7 +42,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 	public abstract class BaseRefactorer: IRefactorer
 	{
 		public virtual RefactorOperations SupportedOperations {
-			get { return RefactorOperations.All; }
+			get { return RefactorOperations.All ^ RefactorOperations.AddFoldingRegion; }
 		}
 		
 		protected abstract CodeDomProvider GetCodeDomProvider ();
@@ -97,6 +98,77 @@ namespace MonoDevelop.Projects.CodeGeneration
 			
 			return FindGeneratedMember (ctx, buffer, cls, member, line);
 		}
+		
+		public virtual void AddMembers (RefactorerContext ctx, IClass cls, IEnumerable<CodeTypeMember> members)
+		{
+			foreach (CodeTypeMember member in members)
+				AddMember (ctx, cls, member);
+		}
+		
+		public virtual void AddMembers (RefactorerContext ctx, IClass cls, 
+		                                                IEnumerable<CodeTypeMember> members, string foldingRegionName)
+		{
+			//no region name, so distribute them with like members
+			if (string.IsNullOrEmpty (foldingRegionName)) {
+				AddMembers (ctx, cls, members);
+				return;
+			}
+			
+			IEditableTextFile buffer = ctx.GetFile (cls.Region.FileName);
+			int pos;
+			
+			// create/find the folding region, or if creation of regions isn't supported, put all the added
+			// members in one place anyway
+			if ((SupportedOperations & RefactorOperations.AddFoldingRegion) == 0) {
+				pos = GetNewMethodPosition (buffer, cls);
+			} else {
+				pos = AddFoldingRegion (ctx, cls, foldingRegionName);
+			}
+			
+			AddMembersAtPosition (ctx, cls, members, buffer, pos);
+		}
+		
+		protected void AddMembersAtPosition (RefactorerContext ctx, IClass cls, IEnumerable<CodeTypeMember> members, 
+		                                     IEditableTextFile buffer, int pos)
+		{
+			int line, col;
+			buffer.GetLineColumnFromPosition (pos, out line, out col);
+			
+			string indent = GetLineIndent (buffer, line);
+			List<int> positions = new List<int> ();
+			
+			bool first = true;
+			foreach (CodeTypeMember member in members) {
+				positions.Add (pos);
+				string code = GenerateCodeFromMember (member);
+				
+				//spacing between inserted members
+				if (first)
+					first = false;
+				else
+					code = "\n\n" + code;
+				
+				code = Indent (code, indent, false);
+				buffer.InsertText (pos, code);
+				pos += code.Length;
+			}
+		}
+		
+		int countNewlines (string str)
+		{
+			int count = 0;
+			foreach (char c in str)
+				if (c == '\n')
+					count++;
+			return count;
+		}
+		
+		public virtual int AddFoldingRegion (RefactorerContext ctx, IClass cls, string regionName)
+		{
+			IEditableTextFile buffer = ctx.GetFile (cls.Region.FileName);
+			return GetNewMethodPosition (buffer, cls);
+		}
+		
 		/*
 		IReturnType GetGenericArgument (IClass type, IReturnType rtype, IReturnType hintType)
 		{
@@ -157,7 +229,31 @@ namespace MonoDevelop.Projects.CodeGeneration
 			return new CodeTypeReference (ctx.TypeNameResolver.ResolveName (type.FullName));
 		}
 		
-		public virtual IMember ImplementMember (RefactorerContext ctx, IClass cls, IMember member, IReturnType privateImplementationType)
+		public virtual IMember ImplementMember (RefactorerContext ctx, IClass cls, IMember member, 
+		                                        IReturnType privateImplementationType)
+		{
+			CodeTypeMember m = CreateImplementation (ctx, cls, member, privateImplementationType);
+			return AddMember (ctx, cls, m);
+		}
+		
+		public virtual void ImplementMembers (RefactorerContext ctx, IClass cls, 
+		                                                      IEnumerable<KeyValuePair<IMember,IReturnType>> members,
+		                                                      string foldingRegionName)
+		{
+			AddMembers (ctx, cls, YieldImpls (ctx, cls, members), foldingRegionName);
+		}
+		
+		//FIXME: this is a workaround for not being able to use LINQ, i.e.
+		// from mem in members select CreateImplementation (ctx, cls, mem.Key, mem.Value)
+		IEnumerable<CodeTypeMember> YieldImpls (RefactorerContext ctx, IClass cls, 
+		                                        IEnumerable<KeyValuePair<IMember,IReturnType>> members)
+		{
+			foreach (KeyValuePair<IMember,IReturnType> mem in members)
+				yield return CreateImplementation (ctx, cls, mem.Key, mem.Value);
+		}
+		
+		protected CodeTypeMember CreateImplementation (RefactorerContext ctx, IClass cls, IMember member, 
+		                                               IReturnType privateImplementationType)
 		{
 			CodeTypeMember m;
 			bool is_interface_method = member.DeclaringType.ClassType == ClassType.Interface;
@@ -252,7 +348,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 			if (privateImplementationType == null)
 				m.Attributes = (m.Attributes & ~MemberAttributes.AccessMask) | MemberAttributes.Public;
 			
-			return AddMember (ctx, cls, m);
+			return m;
 		}
 		
 		public virtual void RemoveMember (RefactorerContext ctx, IClass cls, IMember member)

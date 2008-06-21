@@ -231,21 +231,13 @@ namespace MonoDevelop.Ide
 		void OnOKClicked (object sender, EventArgs e)
 		{
 			try {
-				TreeIter parent;
-				if (!store.GetIterFirst (out parent))
-					return;
-
-				do {
-					IClass klass = GetIClass (parent);
-					bool is_interface = klass.ClassType == ClassType.Interface;
-					IReturnType privateImplementationType = DefaultReturnType.FromString (klass.FullyQualifiedName);
-
-					foreach (TreeIter child in GetAllNodes (parent, false)) {
-						if (GetChecked (child))
-							refactorer.ImplementMember (cls, GetIMember (child),
-						                            (is_interface && GetExplicit (child)) ? privateImplementationType : null);
-					}
-				} while (store.IterNext (ref parent));
+				IClass target = this.cls;
+				foreach (KeyValuePair<IClass, IEnumerable<TreeIter>> kvp in GetAllClasses ()) {
+					//update the target class so that new members don't get inserted in weird locations
+					target = refactorer.ImplementMembers (target, YieldImpls (kvp), 
+							(kvp.Key.ClassType == ClassType.Interface)?
+								kvp.Key.Name + " implementation" : null);
+				}
 			} finally {
 				((Widget) this).Destroy ();
 			}
@@ -253,6 +245,45 @@ namespace MonoDevelop.Ide
 #endregion
 
 #region Helper methods
+		
+		IEnumerable<KeyValuePair<IClass, IEnumerable<TreeIter>>> GetAllClasses ()
+		{
+			TreeIter iter;
+			if (!store.GetIterFirst (out iter))
+				yield break;
+			do {
+				TreeIter firstMember;
+				if (store.IterChildren (out firstMember, iter)) {
+					IEnumerable<TreeIter> children = GetCheckedSiblings (firstMember);
+					if (children.GetEnumerator ().MoveNext ())
+						yield return new KeyValuePair<IClass, IEnumerable<TreeIter>> (
+							(IClass) store.GetValue (iter, colItemIndex),
+							children);
+				}
+			} while (store.IterNext (ref iter));
+		}
+		
+		IEnumerable<TreeIter> GetCheckedSiblings (TreeIter firstMember)
+		{
+			TreeIter iter = firstMember.Copy ();
+			do {
+				if (GetChecked (iter)) {
+					yield return iter;
+				}
+			} while (store.IterNext (ref iter));
+		}
+		
+		IEnumerable<KeyValuePair<IMember, IReturnType>> YieldImpls (KeyValuePair<IClass, IEnumerable<TreeIter>> kvp)
+		{
+			bool is_interface = kvp.Key.ClassType == ClassType.Interface;
+			IReturnType privateImplementationType = DefaultReturnType.FromString (kvp.Key.FullyQualifiedName);
+			foreach (TreeIter memberIter in kvp.Value) {
+				yield return new KeyValuePair<IMember, IReturnType> (
+					GetIMember (memberIter),
+					(is_interface && GetExplicit (memberIter)) ? privateImplementationType : null);
+			}
+		}
+		
 		void SelectAll (bool select)
 		{
 			foreach (TreeIter iter in GetAllNodes (TreeIter.Zero, true))

@@ -28,6 +28,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.CodeDom;
 using MonoDevelop.Projects.Text;
 using MonoDevelop.Projects.Parser;
@@ -44,6 +45,17 @@ namespace MonoDevelop.Projects.CodeGeneration
 		
 		IMember AddMember (RefactorerContext ctx, IClass cls, CodeTypeMember memberInfo);
 		IMember ImplementMember (RefactorerContext ctx, IClass cls, IMember member, IReturnType privateImplementationType);
+		
+		// these add contiguous blocks of memebers
+		// NOTE: Handling "foldingRegionName" is optional. Also, it can be null, in which case no region should be created.
+		void AddMembers (RefactorerContext ctx, IClass cls, IEnumerable<CodeTypeMember> memberInfo, string foldingRegionName);
+		void ImplementMembers (RefactorerContext ctx, IClass cls, IEnumerable<KeyValuePair<IMember,IReturnType>> members,
+		                       string foldingRegionName);
+		
+		// used by base AddMembers and ImplementMembers implementions
+		// expected to return file offset of space within the new region
+		int AddFoldingRegion (RefactorerContext ctx, IClass cls, string regionName);
+		
 		void RemoveMember (RefactorerContext ctx, IClass cls, IMember member);
 		IMember RenameMember (RefactorerContext ctx, IClass cls, IMember member, string newName);
 		IMember ReplaceMember (RefactorerContext ctx, IClass cls, IMember oldMember, CodeTypeMember memberInfo);

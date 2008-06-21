@@ -1,3 +1,9 @@
+2008-06-20  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Ide.Gui.Dialogs/OverridesImplementsDialog.cs: Use new
+	  bulk implementation interfaces to avoid lots of reparses, and to
+	  implement interfaces in regions.
+
 2008-06-20  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Commands/DebugCommands.cs,

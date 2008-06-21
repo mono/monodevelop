@@ -176,6 +176,31 @@ namespace CSharpBinding.Parser
 			return base.ImplementMember (ctx, cls, member, privateImplementationType);
 		}
 		
+		public override void ImplementMembers (RefactorerContext ctx, IClass cls, 
+		                                                      IEnumerable<KeyValuePair<IMember,IReturnType>> members,
+		                                                      string foldingRegionName)
+		{
+			base.ImplementMembers (ctx, cls, FixGenericImpl (ctx, members), foldingRegionName);
+		}
+		
+		// Workaround for bug in the code generator. Generic private implementation types are not generated correctly when they are generic.
+		IEnumerable<KeyValuePair<IMember,IReturnType>> FixGenericImpl (RefactorerContext ctx, IEnumerable<KeyValuePair<IMember,IReturnType>> members)
+		{
+			CSharpAmbience amb = null;
+			foreach (KeyValuePair<IMember,IReturnType> kvp in members) {
+				if (kvp.Value == null) {
+					yield return kvp;
+					continue;
+				}
+								
+				if (amb == null)
+					amb = new CSharpAmbience();
+				string tn = amb.Convert (kvp.Value, ConversionFlags.ShowGenericParameters
+				                         | ConversionFlags.UseFullyQualifiedNames | ConversionFlags.UseIntrinsicTypeNames, ctx.TypeNameResolver);
+				yield return new KeyValuePair<IMember,IReturnType> (kvp.Key, new DefaultReturnType (tn));
+			}
+		}
+		
 		public override MemberReferenceCollection FindClassReferences (RefactorerContext ctx, string fileName, IClass cls)
 		{
 			Resolver resolver = new Resolver (ctx.ParserContext);
@@ -434,6 +459,21 @@ namespace CSharpBinding.Parser
 			visitor.Visit (ctx.ParserContext, file);
 			
 			return refs;
+		}
+		
+		public override int AddFoldingRegion (RefactorerContext ctx, IClass cls, string regionName)
+		{
+			IEditableTextFile buffer = ctx.GetFile (cls.Region.FileName);
+			int pos = GetNewMethodPosition (buffer, cls);
+			
+			int line, col;
+			buffer.GetLineColumnFromPosition (pos, out line, out col);
+			string indent = GetLineIndent (buffer, line);
+			
+			string pre = "#region " + regionName + " \n" + indent + "\n" + indent;
+			string post = "\n" + indent + "\n" + indent + "#endregion \n" + indent;
+			buffer.InsertText (pos, pre + post);
+			return pos + pre.Length;
 		}
 		
 		protected override CodeGeneratorOptions GetOptions (bool isMethod)
