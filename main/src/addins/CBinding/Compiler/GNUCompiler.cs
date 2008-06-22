@@ -570,7 +570,7 @@ namespace CBinding
 			string next;
 				
 			while ((next = reader.ReadLine ()) != null) {
-				CompilerError error = CreateErrorFromErrorString (next);
+				CompilerError error = CreateErrorFromErrorString (next, reader);
 				if (error != null)
 					cr.Errors.Insert (0, error);
 			}
@@ -588,7 +588,7 @@ namespace CBinding
 		    @"^\s*(?<file>[^:]*):(?<line>\d*):\s*(?<message>[^:]*)",
 		    RegexOptions.Compiled | RegexOptions.ExplicitCapture);
 		
-		private CompilerError CreateErrorFromErrorString (string errorString)
+		private CompilerError CreateErrorFromErrorString (string errorString, TextReader reader)
 		{
 			CompilerError error = new CompilerError ();
 			
@@ -613,6 +613,23 @@ namespace CBinding
 				error.Line = int.Parse (noColMatch.Groups["line"].Value);
 				error.IsWarning = noColMatch.Groups["level"].Value.Equals ("warning");
 				error.ErrorText = noColMatch.Groups["message"].Value;
+				
+				// Multi-line error message? attempt to parse it into a single error.
+				if (error.ErrorText.StartsWith ("(") && !error.ErrorText.EndsWith (")"))
+				{
+					string error_continued = reader.ReadLine ();
+					
+					// Unexpected result?  just return the error.
+					if (error_continued == null)
+						return error;
+					
+					// Get the rest of the error message.
+					CompilerError error_fragment = CreateErrorFromErrorString (error_continued, reader);
+					if (error_fragment != null)
+					{
+						error.ErrorText += " " + error_fragment.ErrorText;
+					}
+				}
 				
 				return error;
 			}

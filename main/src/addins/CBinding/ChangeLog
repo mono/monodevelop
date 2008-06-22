@@ -1,3 +1,7 @@
+2008-06-22  Mitchell Wheeler <mitchell.wheeler@gmail.com>
+
+	* Compiler/GNUCompiler.cs: Fix bug#379620.
+
 2008-06-22  Andrés G. Aragoneses <aaragoneses@novell.com> 
 
 	* Gui/EditPackagesDialog.cs: Change the way of distinguishing tabs not
