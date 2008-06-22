@@ -525,14 +525,15 @@ namespace CBinding
 		{
 			Gtk.TreeIter iter;
 			Gtk.Widget active_tab = notebook1.Children [notebook1.Page];
-			string tab_label = notebook1.GetTabLabelText (active_tab);
+			Gtk.Widget active_label = notebook1.GetTabLabel (active_tab);
+			
 			bool sensitive = false;
 			
-			if (tab_label == "System Packages") {
+			if (active_label == this.labelSystemPackages) {
 				normalPackageTreeView.Selection.GetSelected (out iter);
 				if (normalPackageListStore.IterIsValid (iter))
 					sensitive = true;
-			} else if (tab_label == "Project Packages") {
+			} else if (active_label == this.labelProjectPackages) {
 				projectPackageTreeView.Selection.GetSelected (out iter);
 				if (projectPackageListStore.IterIsValid (iter))
 					sensitive = true;

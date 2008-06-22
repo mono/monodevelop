@@ -23,13 +23,13 @@ namespace CBinding {
         
         private Gtk.TreeView normalPackageTreeView;
         
-        private Gtk.Label label1;
+        private Gtk.Label labelSystemPackages;
         
         private Gtk.ScrolledWindow scrolledwindow3;
         
         private Gtk.TreeView projectPackageTreeView;
         
-        private Gtk.Label label2;
+        private Gtk.Label labelProjectPackages;
         
         private Gtk.VBox vbox3;
         
@@ -91,11 +91,11 @@ namespace CBinding {
             this.scrolledwindow1.Add(this.normalPackageTreeView);
             this.notebook1.Add(this.scrolledwindow1);
             // Notebook tab
-            this.label1 = new Gtk.Label();
-            this.label1.Name = "label1";
-            this.label1.LabelProp = Mono.Unix.Catalog.GetString("System Packages");
-            this.notebook1.SetTabLabel(this.scrolledwindow1, this.label1);
-            this.label1.ShowAll();
+            this.labelSystemPackages = new Gtk.Label();
+            this.labelSystemPackages.Name = "labelSystemPackages";
+            this.labelSystemPackages.LabelProp = Mono.Unix.Catalog.GetString("System Packages");
+            this.notebook1.SetTabLabel(this.scrolledwindow1, this.labelSystemPackages);
+            this.labelSystemPackages.ShowAll();
             // Container child notebook1.Gtk.Notebook+NotebookChild
             this.scrolledwindow3 = new Gtk.ScrolledWindow();
             this.scrolledwindow3.CanFocus = true;
@@ -111,11 +111,11 @@ namespace CBinding {
             Gtk.Notebook.NotebookChild w5 = ((Gtk.Notebook.NotebookChild)(this.notebook1[this.scrolledwindow3]));
             w5.Position = 1;
             // Notebook tab
-            this.label2 = new Gtk.Label();
-            this.label2.Name = "label2";
-            this.label2.LabelProp = Mono.Unix.Catalog.GetString("Project Packages");
-            this.notebook1.SetTabLabel(this.scrolledwindow3, this.label2);
-            this.label2.ShowAll();
+            this.labelProjectPackages = new Gtk.Label();
+            this.labelProjectPackages.Name = "labelProjectPackages";
+            this.labelProjectPackages.LabelProp = Mono.Unix.Catalog.GetString("Project Packages");
+            this.notebook1.SetTabLabel(this.scrolledwindow3, this.labelProjectPackages);
+            this.labelProjectPackages.ShowAll();
             this.hbox1.Add(this.notebook1);
             Gtk.Box.BoxChild w6 = ((Gtk.Box.BoxChild)(this.hbox1[this.notebook1]));
             w6.Position = 0;

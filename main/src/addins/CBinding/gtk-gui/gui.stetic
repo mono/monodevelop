@@ -1276,7 +1276,7 @@ Example:
                       </widget>
                     </child>
                     <child>
-                      <widget class="Gtk.Label" id="label1">
+                      <widget class="Gtk.Label" id="labelSystemPackages">
                         <property name="MemberName" />
                         <property name="LabelProp" translatable="yes">System Packages</property>
                       </widget>
@@ -1303,7 +1303,7 @@ Example:
                       </packing>
                     </child>
                     <child>
-                      <widget class="Gtk.Label" id="label2">
+                      <widget class="Gtk.Label" id="labelProjectPackages">
                         <property name="MemberName" />
                         <property name="LabelProp" translatable="yes">Project Packages</property>
                       </widget>
