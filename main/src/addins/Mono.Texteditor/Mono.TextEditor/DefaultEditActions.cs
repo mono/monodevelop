@@ -913,6 +913,10 @@ namespace Mono.TextEditor
 		
 		void ClipboardGetFuncLazy (Clipboard clipboard, SelectionData selection_data, uint info)
 		{
+			// data may have disposed
+			if (data.Document == null)
+				return;
+			
 			CopyData (data, selection);
 			ClipboardGetFunc (clipboard, selection_data, info);
 		}
