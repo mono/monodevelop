@@ -481,14 +481,14 @@ namespace Mono.TextEditor
 				return 1;
 			} else if (ch == ' ') {
 				int removeCount = 0;
-				for (int i = 0; i < data.Editor.Options.IndentationSize;) {
+				for (int i = 0; i < data.Options.IndentationSize;) {
 					ch = data.Document.GetCharAt (line.Offset + i);
 					if (ch == ' ') {
 						removeCount ++;
 						i++;
 					} else  if (ch == '\t') {
 						removeCount ++;
-						i += data.Editor.Options.TabSize;
+						i += data.Options.TabSize;
 					} else {
 						break;
 					}
@@ -550,13 +550,13 @@ namespace Mono.TextEditor
 				LineSegment line = data.Document.GetLine (data.Caret.Line);
 				int visibleColumn = 0;
 				for (int i = 0; i < data.Caret.Column; ++i)
-					visibleColumn += data.Document.GetCharAt (line.Offset + i) == '\t' ? data.Editor.Options.TabSize : 1;
+					visibleColumn += data.Document.GetCharAt (line.Offset + i) == '\t' ? data.Options.TabSize : 1;
 				
-				int newColumn = ((visibleColumn / data.Editor.Options.IndentationSize) - 1) * data.Editor.Options.IndentationSize;
+				int newColumn = ((visibleColumn / data.Options.IndentationSize) - 1) * data.Options.IndentationSize;
 				
 				visibleColumn = 0;
 				for (int i = 0; i < data.Caret.Column; ++i) {
-					visibleColumn += data.Document.GetCharAt (line.Offset + i) == '\t' ? data.Editor.Options.TabSize : 1;
+					visibleColumn += data.Document.GetCharAt (line.Offset + i) == '\t' ? data.Options.TabSize : 1;
 					if (visibleColumn >= newColumn) {
 						data.Caret.Column = i;
 						break;
@@ -579,15 +579,15 @@ namespace Mono.TextEditor
 			int         anchorColumn = data.IsSomethingSelected ? data.SelectionAnchor - anchorLine.Offset : -1;
 			data.Document.BeginAtomicUndo ();
 			foreach (LineSegment line in data.SelectedLines) {
-				data.Document.Insert (line.Offset, data.Editor.Options.IndentationString);
+				data.Document.Insert (line.Offset, data.Options.IndentationString);
 			}
 			if (data.IsSomethingSelected) {
 				if (data.SelectionAnchor < data.Caret.Offset) {
 					if (anchorColumn != 0) 
-						data.SelectionAnchor = System.Math.Min (anchorLine.Offset + anchorLine.EditableLength, System.Math.Max (anchorLine.Offset, data.SelectionAnchor + data.Editor.Options.IndentationString.Length));
+						data.SelectionAnchor = System.Math.Min (anchorLine.Offset + anchorLine.EditableLength, System.Math.Max (anchorLine.Offset, data.SelectionAnchor + data.Options.IndentationString.Length));
 				} else {
 					if (anchorColumn != 0) {
-						data.SelectionAnchor = System.Math.Min (anchorLine.Offset + anchorLine.EditableLength, System.Math.Max (anchorLine.Offset, anchorLine.Offset + anchorColumn + data.Editor.Options.IndentationString.Length));
+						data.SelectionAnchor = System.Math.Min (anchorLine.Offset + anchorLine.EditableLength, System.Math.Max (anchorLine.Offset, anchorLine.Offset + anchorColumn + data.Options.IndentationString.Length));
 					} else {
 						data.SelectionAnchor = anchorLine.Offset;
 					}
@@ -619,8 +619,8 @@ namespace Mono.TextEditor
 			if (data.IsSomethingSelected) {
 				data.DeleteSelectedText ();
 			}
-			data.Document.Insert (data.Caret.Offset, data.Editor.Options.IndentationString);
-			data.Caret.Column += data.Editor.Options.IndentationString.Length;
+			data.Document.Insert (data.Caret.Offset, data.Options.IndentationString);
+			data.Caret.Column += data.Options.IndentationString.Length;
 			data.Document.EndAtomicUndo ();
 		}
 	}
@@ -640,7 +640,7 @@ namespace Mono.TextEditor
 			string newLine = data.Document.EolMarker;
 			int caretColumnOffset = 0;
 			
-			if (data.Editor.Options.AutoIndent) {
+			if (data.Options.AutoIndent) {
 				LineSegment line = data.Document.GetLine (data.Caret.Line);
 				int i;
 				for (i = 0; i < line.EditableLength; i++) {
@@ -793,7 +793,7 @@ namespace Mono.TextEditor
 			int curColor  = -1;
 			do {
 				line = iter.Current;
-				Mono.TextEditor.Highlighting.SyntaxMode mode = data.Document.SyntaxMode != null && data.Editor.Options.EnableSyntaxHighlighting ? data.Document.SyntaxMode : Mono.TextEditor.Highlighting.SyntaxMode.Default;
+				Mono.TextEditor.Highlighting.SyntaxMode mode = data.Document.SyntaxMode != null && data.Options.EnableSyntaxHighlighting ? data.Document.SyntaxMode : Mono.TextEditor.Highlighting.SyntaxMode.Default;
 				Chunk[] chunks = mode.GetChunks (data.Document, data.ColorStyle, line, line.Offset, line.Offset + line.EditableLength);
 				foreach (Chunk chunk in chunks) {
 					int start = System.Math.Max (selection.Offset, chunk.Offset);
@@ -871,7 +871,7 @@ namespace Mono.TextEditor
 			
 			// font table
 			rtf.Append (@"{\fonttbl");
-			rtf.Append (@"{\f0\fnil\fprq1\fcharset128 " + data.Editor.Options.Font.Family + ";}");
+			rtf.Append (@"{\f0\fnil\fprq1\fcharset128 " + data.Options.Font.Family + ";}");
 			rtf.Append ("}");
 			
 			rtf.Append (colorTable.ToString ());
@@ -879,7 +879,7 @@ namespace Mono.TextEditor
 			rtf.Append (@"\viewkind4\uc1\pard");
 			rtf.Append (@"\f0");
 			try {
-				string fontName = data.Editor.Options.Font.ToString ();
+				string fontName = data.Options.Font.ToString ();
 				double fontSize = Double.Parse (fontName.Substring (fontName.LastIndexOf (' ')  + 1), System.Globalization.CultureInfo.InvariantCulture) * 2;
 				rtf.Append (@"\fs");
 				rtf.Append (fontSize);

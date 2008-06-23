@@ -177,7 +177,7 @@ namespace Mono.TextEditor
 			return result.ToString ();
 		}
 		
-		public int GetLogicalColumn (TextEditor editor, IBuffer doc, int visualColumn)
+		public int GetLogicalColumn (TextEditorData editor, IBuffer doc, int visualColumn)
 		{
 			int curVisualColumn = 0;
 			for (int i = 0; i < EditableLength; i++) {
@@ -192,7 +192,7 @@ namespace Mono.TextEditor
 			return EditableLength;
 		}
 		
-		public int GetVisualColumn (TextEditor editor, IBuffer doc, int logicalColumn)
+		public int GetVisualColumn (TextEditorData editor, IBuffer doc, int logicalColumn)
 		{
 			int result = 0;
 			for (int i = 0; i < logicalColumn; i++) {

@@ -31,9 +31,9 @@ namespace Mono.TextEditor
 {
 	public class TextEditorData : IDisposable
 	{
+		TextEditorOptions options;
 		Document   document; 
 		Caret      caret;
-		TextEditor editor;
 		
 		Adjustment hadjustment = new Adjustment (0, 0, 0, 0, 0, 0); 
 		public Adjustment HAdjustment {
@@ -55,9 +55,8 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		public TextEditorData (TextEditor editor, Document doc)
+		public TextEditorData (Document doc)
 		{
-			this.editor = editor;
 			Document = doc;
 			this.SearchEngine = new BasicSearchEngine ();
 		}
@@ -68,16 +67,19 @@ namespace Mono.TextEditor
 			}
 			set {
 				this.document = value;
-				caret = new Caret (editor, document);
+				caret = new Caret (this, document);
 				caret.PositionChanged += CaretPositionChanged;
 				this.document.BeginUndo += OnBeginUndo;
 				this.document.EndUndo += OnEndUndo;
 			}
 		}
-
-		public TextEditor Editor {
+		
+		public TextEditorOptions Options {
 			get {
-				return editor;
+				return options;
+			}
+			set {
+				options = value;
 			}
 		}
 		
@@ -137,7 +139,7 @@ namespace Mono.TextEditor
 		
 		public bool CanEdit (int line)
 		{
-			return !editor.ReadOnly;
+			return !document.ReadOnly;
 		}
 		
 		#region undo/redo handling
@@ -243,9 +245,8 @@ namespace Mono.TextEditor
 			get {
 				// To be improved when we support read-only regions
 				if (IsSomethingSelected)
-					return !editor.ReadOnly;
-				else
-					return CanEdit (editor.Caret.Line);
+					return !document.ReadOnly;
+				return CanEdit (caret.Line);
 			}
 		}
 		

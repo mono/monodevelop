@@ -43,6 +43,7 @@ namespace Mono.TextEditor
 		
 		string mimeType;
 		string fileName;
+		bool   readOnly;
 		
 		/// <value>
 		/// The eol mark used in this document - it's taken from the first line in the document,
@@ -792,7 +793,7 @@ namespace Mono.TextEditor
 			return result;
 		}
 		
-		public DocumentLocation LogicalToVisualLocation (TextEditor editor, DocumentLocation location)
+		public DocumentLocation LogicalToVisualLocation (TextEditorData editor, DocumentLocation location)
 		{
 			int line = LogicalToVisualLine (location.Line);
 			LineSegment lineSegment = this.GetLine (location.Line);
@@ -820,6 +821,15 @@ namespace Mono.TextEditor
 		public ReadOnlyCollection<DocumentUpdateRequest> UpdateRequests {
 			get {
 				return updateRequests.AsReadOnly ();
+			}
+		}
+
+		public bool ReadOnly {
+			get {
+				return readOnly;
+			}
+			set {
+				readOnly = value;
 			}
 		}
 

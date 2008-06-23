@@ -38,7 +38,7 @@ namespace Mono.TextEditor
 		bool isVisible = true;
 		int  desiredColumn;
 		Document document;
-		TextEditor editor;
+		TextEditorData editor;
 		
 		public int Line {
 			get {
@@ -137,7 +137,7 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		public Caret (TextEditor editor, Document document)
+		public Caret (TextEditorData editor, Document document)
 		{
 			this.editor = editor;
 			this.document = document;

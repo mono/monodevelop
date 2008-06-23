@@ -482,7 +482,7 @@ namespace Mono.TextEditor
 					visibleColumn++;
 				} else if (ch == '\t') {
 					OutputWordBuilder (win, line, selected, style, ref visibleColumn, ref xPos, y, offset);
-					int newColumn = GetNextTabstop (textEditor, visibleColumn);
+					int newColumn = GetNextTabstop (this.textEditor.GetTextEditorData (), visibleColumn);
 					int delta = GetNextVisualTab (xPos - this.XOffset + (int)this.textEditor.HAdjustment.Value) - xPos - (int)this.textEditor.HAdjustment.Value + this.XOffset;
 					visibleColumn = newColumn;
 					bool drawText = true;
@@ -791,7 +791,7 @@ namespace Mono.TextEditor
 			for (int curColumn = 0; curColumn < column && curColumn < line.EditableLength; curColumn++) {
 				int delta;
 				if (this.Document.GetCharAt (line.Offset + curColumn) == '\t') {
-					int newColumn = GetNextTabstop (textEditor, visibleColumn);
+					int newColumn = GetNextTabstop (this.textEditor.GetTextEditorData (), visibleColumn);
 					delta = (newColumn - visibleColumn) * this.charWidth;
 					visibleColumn = newColumn;
 				} else {
@@ -811,7 +811,7 @@ namespace Mono.TextEditor
 			return (xPos / tabWidth + 1) * tabWidth;
 		}
 		
-		public static int GetNextTabstop (TextEditor textEditor, int currentColumn)
+		public static int GetNextTabstop (TextEditorData textEditor, int currentColumn)
 		{
 			int result = currentColumn + textEditor.Options.TabSize;
 			return (result / textEditor.Options.TabSize) * textEditor.Options.TabSize;
@@ -1049,7 +1049,7 @@ namespace Mono.TextEditor
 						char ch = margin.Document.GetCharAt (o);
 						int delta = 0;
 						if (ch == '\t') {
-							int newColumn = GetNextTabstop (margin.textEditor, visibleColumn);
+							int newColumn = GetNextTabstop (margin.textEditor.GetTextEditorData (), visibleColumn);
 							delta = margin.GetNextVisualTab (xPos) - xPos;
 							visibleColumn = newColumn;
 						} else if (ch == ' ') {

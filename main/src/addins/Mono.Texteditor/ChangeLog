@@ -1,5 +1,14 @@
 2008-06-23  Mike Krüger <mkrueger@novell.com> 
 
+	* Mono.TextEditor/DefaultEditActions.cs,
+	  Mono.TextEditor/TextViewMargin.cs, Mono.TextEditor/Document.cs,
+	  Mono.TextEditor/TextEditorData.cs, Mono.TextEditor/TextEditor.cs,
+	  Mono.TextEditor/Caret.cs, Mono.TextEditor/LineSegment.cs:
+	  Refactored text editor. Corrected Document -> TextEditorData ->
+	  TextEditor layers.
+
+2008-06-23  Mike Krüger <mkrueger@novell.com> 
+
 	* Mono.TextEditor/DefaultEditActions.cs: fixed 'Bug 402543 - Crash
 	  while pasting text from closed document.'.
 

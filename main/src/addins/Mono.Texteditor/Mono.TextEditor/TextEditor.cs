@@ -42,7 +42,6 @@ namespace Mono.TextEditor
 	public class TextEditor : Gtk.DrawingArea
 	{
 		TextEditorData textEditorData;
-		TextEditorOptions options;
 		
 		protected Dictionary <int, EditAction> keyBindings = new Dictionary<int,EditAction> ();
 		protected BookmarkMargin   bookmarkMargin;
@@ -82,13 +81,13 @@ namespace Mono.TextEditor
 		
 		public TextEditorOptions Options {
 			get {
-				return options;
+				return textEditorData.Options;
 			}
 			set {
-				if (options != null)
-					options.Changed -= OptionsChanged;
-				options = value;
-				options.Changed += OptionsChanged;
+				if (textEditorData.Options != null)
+					textEditorData.Options.Changed -= OptionsChanged;
+				textEditorData.Options = value;
+				textEditorData.Options.Changed += OptionsChanged;
 				if (IsRealized)
 					OptionsChanged (null, null);
 			}
@@ -196,7 +195,7 @@ namespace Mono.TextEditor
 		
 		public TextEditor (Document doc)
 		{
-			textEditorData = new TextEditorData (this, doc);
+			textEditorData = new TextEditorData (doc);
 			
 //			this.Events = EventMask.AllEventsMask;
 			this.Events = EventMask.PointerMotionMask | 
@@ -327,8 +326,8 @@ namespace Mono.TextEditor
 			this.textEditorData.SelectionChanged += TextEditorDataSelectionChanged; 
 			Document.DocumentUpdated += DocumentUpdatedHandler;
 			
-			options = TextEditorOptions.Options;
-			options.Changed += OptionsChanged;
+			this.textEditorData.Options = TextEditorOptions.Options;
+			this.textEditorData.Options.Changed += OptionsChanged;
 			
 			Gtk.TargetList list = new Gtk.TargetList ();
 			list.AddTextTargets (CopyAction.TextType);
@@ -491,7 +490,8 @@ namespace Mono.TextEditor
 				Caret.PositionChanged -= CaretPositionChanged;
 				
 				Document.DocumentUpdated -= DocumentUpdatedHandler;
-				options.Changed -= OptionsChanged;
+				if (textEditorData.Options != null)
+					textEditorData.Options.Changed -= OptionsChanged;
 				
 				if (imContext != null) {
 					imContext.Commit -= IMCommit;
@@ -874,7 +874,7 @@ namespace Mono.TextEditor
 		
 		public DocumentLocation LogicalToVisualLocation (DocumentLocation location)
 		{
-			return Document.LogicalToVisualLocation (this, location);
+			return Document.LogicalToVisualLocation (this.textEditorData, location);
 		}
 		
 		public void CenterToCaret ()
