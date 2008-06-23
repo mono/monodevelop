@@ -188,6 +188,16 @@ namespace CSharpBinding.FormattingStrategy {
 				} else if ((inside & (Inside.PreProcessor | Inside.StringOrChar)) != 0) {
 					// if these fold, do not indent
 					nSpaces = 0;
+					
+					//pop regions back out
+					if (keyword == "region" || keyword == "endregion") {
+						for (; sp >= 0; sp--) {
+							if ((stack[sp].inside & Inside.FoldedBlockOrCase) != 0) {
+								indentBuilder.Append (stack[sp].indent);
+								break;
+							}
+						}
+					}
 				} else if (inside == Inside.LineComment || inside == Inside.DocComment) {
 					// can't actually fold, but we still want to push it onto the stack
 					nSpaces = 0;

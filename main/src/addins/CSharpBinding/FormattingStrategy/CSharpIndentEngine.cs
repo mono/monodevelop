@@ -292,6 +292,28 @@ namespace CSharpBinding.FormattingStrategy {
 			return str == "default";
 		}
 		
+		//directive keywords that we care about
+		static string[] directiveKeywords = new string [] {"region", "endregion" };
+		
+		string GetDirectiveKeyword (char currentChar)
+		{
+			string str = linebuf.ToString ().TrimStart ().Substring (1);
+			
+			if (str.Length == 0)
+				return null;
+			
+			for (int i = 0; i < directiveKeywords.Length; i++) {
+				if (directiveKeywords[i].StartsWith (str)) {
+					if (str + currentChar == directiveKeywords[i])
+						return directiveKeywords[i];
+					else
+						return null;
+				}
+			}
+			
+			return string.Empty;
+		}
+		
 		bool Folded2LevelsNonSpecial ()
 		{
 			return stack.PeekInside (0) == Inside.FoldedStatement &&
@@ -337,7 +359,7 @@ namespace CSharpBinding.FormattingStrategy {
 			if (rc != '\0')
 				return;
 			
-			stack.Push (Inside.PreProcessor, keyword, curLineNr, 0);
+			stack.Push (Inside.PreProcessor, null, curLineNr, 0);
 			
 			curIndent = String.Empty;
 			needsReindent = true;
@@ -820,12 +842,25 @@ namespace CSharpBinding.FormattingStrategy {
 			
 			if ((inside & (Inside.PreProcessor | Inside.StringOrChar | Inside.Comment)) == 0 &&
 			    wordStart != -1) {
-				if (Char.IsWhiteSpace (c) || c == '(' || c == '{') {
+				if (char.IsWhiteSpace (c) || c == '(' || c == '{') {
 					string tmp = WordIsKeyword ();
 					if (tmp != null)
 						keyword = tmp;
 				} else if (c == ':' && WordIsDefault ()) {
 					keyword = "default";
+				}	
+			//get the keyword for preprocessor directives
+			} else if ((inside & (Inside.PreProcessor)) != 0 && stack.PeekKeyword (0) == null) {
+				//replace the stack item with a keyworded one
+				string preProcessorKeyword = GetDirectiveKeyword (c);
+				int peekLine = stack.PeekLineNr (0);
+				stack.Pop ();
+				stack.Push (Inside.PreProcessor, preProcessorKeyword, peekLine, 0);
+				
+				//regions need to pop back out
+				if (preProcessorKeyword == "region" || preProcessorKeyword == "endregion") {
+					curIndent = stack.PeekIndent (0);
+					needsReindent = true;
 				}
 			}
 			

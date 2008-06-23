@@ -1,3 +1,10 @@
+2008-06-23  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* FormattingStrategy/CSharpIndentEngineStack.cs,
+	  FormattingStrategy/CSharpIndentEngine.cs: Capture keywords for
+	  proprocessor directives. Pop #region/#endregion directives back
+	  out.
+
 2008-06-23  Mike Krüger <mkrueger@novell.com> 
 
 	* Gui/CSharpTextEditorExtension.cs: Added tab == reindent function.
