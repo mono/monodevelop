@@ -93,7 +93,9 @@ namespace MonoDevelop.Ide.Gui.Search
 				case DocumentIteratorType.AllOpenFiles:
 					return new AllOpenDocumentIterator();
 				case DocumentIteratorType.WholeCombine:
-					return new WholeProjectDocumentIterator();
+					return new WholeCombineDocumentIterator();
+				case DocumentIteratorType.CurrentProject:
+					return new CurrentProjectDocumentIterator();
 				default:
 					throw new System.NotImplementedException("CreateDocumentIterator for type " + type);
 			}

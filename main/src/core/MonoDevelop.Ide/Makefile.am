@@ -228,11 +228,13 @@ FILES =  \
 	MonoDevelop.Ide.Gui.Search/AllOpenDocumentIterator.cs \
 	MonoDevelop.Ide.Gui.Search/BruteForceSearchStrategy.cs \
 	MonoDevelop.Ide.Gui.Search/CurrentDocumentIterator.cs \
+	MonoDevelop.Ide.Gui.Search/CurrentProjectDocumentIterator.cs \
 	MonoDevelop.Ide.Gui.Search/DefaultFind.cs \
 	MonoDevelop.Ide.Gui.Search/DefaultSearchResult.cs \
 	MonoDevelop.Ide.Gui.Search/DirectoryDocumentIterator.cs \
 	MonoDevelop.Ide.Gui.Search/ExtendedStreamReader.cs \
 	MonoDevelop.Ide.Gui.Search/FileDocumentInformation.cs \
+	MonoDevelop.Ide.Gui.Search/FilesDocumentIterator.cs \
 	MonoDevelop.Ide.Gui.Search/ForwardTextFileIterator.cs \
 	MonoDevelop.Ide.Gui.Search/ForwardTextIterator.cs \
 	MonoDevelop.Ide.Gui.Search/IDocumentInformation.cs \
@@ -250,7 +252,7 @@ FILES =  \
 	MonoDevelop.Ide.Gui.Search/SearchReplaceInFilesManager.cs \
 	MonoDevelop.Ide.Gui.Search/SearchReplaceManager.cs \
 	MonoDevelop.Ide.Gui.Search/SearchReplaceUtilities.cs \
-	MonoDevelop.Ide.Gui.Search/WholeProjectDocumentIterator.cs \
+	MonoDevelop.Ide.Gui.Search/WholeCombineDocumentIterator.cs \
 	MonoDevelop.Ide.Gui.Search/WildcardSearchStrategy.cs \
 	MonoDevelop.Ide.Gui/AbstractBaseViewContent.cs \
 	MonoDevelop.Ide.Gui/AbstractPadContent.cs \

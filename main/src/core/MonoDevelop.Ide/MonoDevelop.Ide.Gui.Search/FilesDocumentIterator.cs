@@ -1,8 +1,9 @@
-//  WholeProjectDocumentIterator.cs
+//  FilesDocumentIterator.cs
 //
 //  This file was derived from a file from #Develop. 
 //
 //  Copyright (C) 2001-2007 Mike Krüger <mkrueger@novell.com>
+//  Copyright (C) 2008 Novell, Inc. (http://www.novell.com)
 // 
 //  This program is free software; you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -20,6 +21,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 
 using MonoDevelop.Projects;
@@ -28,12 +30,13 @@ using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Ide.Gui.Search
 {
-	internal class WholeProjectDocumentIterator : IDocumentIterator
+	abstract class FilesDocumentIterator : IDocumentIterator
 	{
-		ArrayList files    = new ArrayList();
-		int       curIndex = -1;
+		protected List<string> files = new List<string> ();
 		
-		public WholeProjectDocumentIterator()
+		protected int curIndex = -1;
+		
+		public FilesDocumentIterator()
 		{
 			Reset();
 		}
@@ -47,7 +50,7 @@ namespace MonoDevelop.Ide.Gui.Search
 				return files[curIndex].ToString();
 			}
 		}
-				
+		
 		public IDocumentInformation Current {
 			get {
 				if (curIndex < 0 || curIndex >= files.Count) {
@@ -85,25 +88,6 @@ namespace MonoDevelop.Ide.Gui.Search
 		}
 		
 		
-		void AddFiles(Project project)
-		{
-			foreach (ProjectFile file in project.Files) {
-				if (file.Subtype == Subtype.Code) {
-					files.Add(file.Name);
-				}
-			}
-		}
-		
-		public void Reset() 
-		{
-			files.Clear();
-			if (IdeApp.Workspace.IsOpen) {
-				foreach (Project p in IdeApp.Workspace.GetAllProjects ()) {
-					AddFiles (p);
-				}
-			}
-			
-			curIndex = -1;
-		}
+		public abstract void Reset();
 	}
 }

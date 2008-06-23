@@ -37,6 +37,7 @@ namespace MonoDevelop.Ide.Gui.Search
 		CurrentDocument,
 		AllOpenFiles,
 		WholeCombine,
+		CurrentProject,
 		Directory // only used for search in files
 	}
 	

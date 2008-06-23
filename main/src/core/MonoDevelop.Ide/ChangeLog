@@ -1,3 +1,23 @@
+2008-06-23  Andrés G. Aragoneses <aaragoneses@novell.com> 
+
+	* MonoDevelop.Ide.Gui.Dialogs/ReplaceInFilesDialog.cs: Use new search
+	  pattern.
+	* MonoDevelop.Ide.mdp, Makefile.am: Updated.
+	* MonoDevelop.Ide.Gui.Search/FilesDocumentIterator.cs: Abstract class
+	  which contains common code for patterns which search in many files
+	  (contents copied from WholeProjectDocumentIterator).
+	* MonoDevelop.Ide.Gui.Search/WholeProjectDocumentIterator.cs: New
+	  iterator for new search pattern.
+	* MonoDevelop.Ide.Gui.Search/CurrentProjectDocumentIterator.cs: New
+	  file.
+	* MonoDevelop.Ide.Gui.Search/WholeCombineDocumentIterator.cs: New file,
+	  renamed from WholeProjectDocumentIterator, and moved all common
+	  code with new iterator to FilesDocumentIterator.
+	* MonoDevelop.Ide.Gui.Search/SearchReplaceManager.cs: New search
+	  pattern.
+	* MonoDevelop.Ide.Gui.Search/SearchReplaceUtilities.cs: Use the new
+	  iterator classes.
+
 2008-06-23  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Ide.Gui.Content/TextEditorProperties.cs: Added tab ==

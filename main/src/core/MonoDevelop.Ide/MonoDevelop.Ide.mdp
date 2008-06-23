@@ -154,7 +154,7 @@
     <File name="MonoDevelop.Ide.Gui.Search/IDocumentInformation.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui.Search/IDocumentIterator.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui.Search/ReverseDocumentIterator.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Ide.Gui.Search/WholeProjectDocumentIterator.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Ide.Gui.Search/WholeCombineDocumentIterator.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui.Search/DefaultSearchResult.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui.Search/ISearchResult.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui.Search/BruteForceSearchStrategy.cs" subtype="Code" buildaction="Compile" />
@@ -363,6 +363,8 @@
     <File name="gtk-gui/MonoDevelop.Ide.Gui.Dialogs.AttachToProcessDialog.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui.Dialogs/OverridesImplementsDialog.cs" subtype="Code" buildaction="Compile" />
     <File name="gtk-gui/MonoDevelop.Ide.OverridesImplementsDialog.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Ide.Gui.Search/CurrentProjectDocumentIterator.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Ide.Gui.Search/FilesDocumentIterator.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="False" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
