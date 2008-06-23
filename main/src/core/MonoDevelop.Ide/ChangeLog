@@ -1,3 +1,8 @@
+2008-06-23  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Ide.Gui.Content/CompletionTextEditorExtension.cs: Add a
+	  protected method for subclasses to show the completion window.
+
 2008-06-23  Andrés G. Aragoneses <aaragoneses@novell.com> 
 
 	Implements feature in bug#323396 (reviewed by Mike Krueger).

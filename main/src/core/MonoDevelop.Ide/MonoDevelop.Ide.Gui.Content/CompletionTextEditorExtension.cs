@@ -99,6 +99,22 @@ namespace MonoDevelop.Ide.Gui.Content
 			return res;
 		}
 		
+		protected void ShowCompletion (ICompletionDataProvider cp, int triggerWordLength, char keyChar)
+		{
+			if (completionWidget != null && currentCompletionContext == null) {
+				currentCompletionContext = completionWidget.CreateCodeCompletionContext (Editor.CursorPosition);
+				if (triggerWordLength > 0 && triggerWordLength < Editor.CursorPosition) {
+					currentCompletionContext = completionWidget.CreateCodeCompletionContext (Editor.CursorPosition - triggerWordLength);	
+					currentCompletionContext.TriggerWordLength = triggerWordLength;
+				}
+				if (cp != null)
+					CompletionWindowManager.ShowWindow (keyChar, cp, completionWidget, currentCompletionContext, OnCompletionWindowClosed);
+				else
+					currentCompletionContext = null;
+			}
+			autoHideCompletionWindow = true;
+		}
+		
 		void OnCompletionWindowClosed ()
 		{
 			currentCompletionContext = null;
