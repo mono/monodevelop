@@ -39,7 +39,9 @@ namespace MonoDevelop.SourceEditor.OptionPanels {
         
         private Gtk.CheckButton convertTabsToSpacesCheckbutton;
         
-        private Gtk.Label GtkLabel3;
+        private Gtk.CheckButton tabAsReindentCheckbutton;
+        
+        private Gtk.Label GtkLabel4;
         
         protected virtual void Build() {
             Stetic.Gui.Initialize(this);
@@ -156,18 +158,30 @@ namespace MonoDevelop.SourceEditor.OptionPanels {
             w9.Position = 2;
             w9.Expand = false;
             w9.Fill = false;
+            // Container child vbox2.Gtk.Box+BoxChild
+            this.tabAsReindentCheckbutton = new Gtk.CheckButton();
+            this.tabAsReindentCheckbutton.CanFocus = true;
+            this.tabAsReindentCheckbutton.Name = "tabAsReindentCheckbutton";
+            this.tabAsReindentCheckbutton.Label = Mono.Unix.Catalog.GetString("T_ab is interpretet as reindent");
+            this.tabAsReindentCheckbutton.DrawIndicator = true;
+            this.tabAsReindentCheckbutton.UseUnderline = true;
+            this.vbox2.Add(this.tabAsReindentCheckbutton);
+            Gtk.Box.BoxChild w10 = ((Gtk.Box.BoxChild)(this.vbox2[this.tabAsReindentCheckbutton]));
+            w10.Position = 3;
+            w10.Expand = false;
+            w10.Fill = false;
             this.GtkAlignment.Add(this.vbox2);
             this.frame1.Add(this.GtkAlignment);
-            this.GtkLabel3 = new Gtk.Label();
-            this.GtkLabel3.Name = "GtkLabel3";
-            this.GtkLabel3.LabelProp = Mono.Unix.Catalog.GetString("<b>Tabs</b>");
-            this.GtkLabel3.UseMarkup = true;
-            this.frame1.LabelWidget = this.GtkLabel3;
+            this.GtkLabel4 = new Gtk.Label();
+            this.GtkLabel4.Name = "GtkLabel4";
+            this.GtkLabel4.LabelProp = Mono.Unix.Catalog.GetString("<b>Tabs</b>");
+            this.GtkLabel4.UseMarkup = true;
+            this.frame1.LabelWidget = this.GtkLabel4;
             this.vbox1.Add(this.frame1);
-            Gtk.Box.BoxChild w12 = ((Gtk.Box.BoxChild)(this.vbox1[this.frame1]));
-            w12.Position = 2;
-            w12.Expand = false;
-            w12.Fill = false;
+            Gtk.Box.BoxChild w13 = ((Gtk.Box.BoxChild)(this.vbox1[this.frame1]));
+            w13.Position = 2;
+            w13.Expand = false;
+            w13.Fill = false;
             this.Add(this.vbox1);
             if ((this.Child != null)) {
                 this.Child.ShowAll();

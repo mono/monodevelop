@@ -1,3 +1,11 @@
+2008-06-23  Mike Krüger <mkrueger@novell.com> 
+
+	* gtk-gui/MonoDevelop.SourceEditor.OptionPanels.GeneralOptionsPanel.cs,
+	  gtk-gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs,
+	  MonoDevelop.SourceEditor.OptionPanels/BehaviorPanel.cs,
+	  MonoDevelop.SourceEditor/SourceEditorOptions.cs: Added tab to
+	  reindent option.
+
 2008-06-20  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.SourceEditor/SourceEditorOptions.cs: Moved logic for

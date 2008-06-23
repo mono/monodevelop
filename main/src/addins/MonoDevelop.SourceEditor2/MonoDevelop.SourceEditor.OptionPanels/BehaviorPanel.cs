@@ -45,6 +45,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			this.autoInsertTemplateCheckbutton.Active  = SourceEditorOptions.Options.AutoInsertTemplates;
 			this.convertTabsToSpacesCheckbutton.Active = SourceEditorOptions.Options.TabsToSpaces;
 			this.autoInsertBraceCheckbutton.Active = SourceEditorOptions.Options.AutoInsertMatchingBracket;
+			this.tabAsReindentCheckbutton.Active = SourceEditorOptions.Options.TabIsReindent;
 			this.indentationCombobox.Active = (int)SourceEditorOptions.Options.IndentStyle;
 			this.indentAndTabSizeSpinbutton.Value = SourceEditorOptions.Options.TabSize;
 			return this;
@@ -57,6 +58,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			SourceEditorOptions.Options.AutoInsertMatchingBracket = this.autoInsertBraceCheckbutton.Active;
 			SourceEditorOptions.Options.IndentStyle = (MonoDevelop.Ide.Gui.Content.IndentStyle)this.indentationCombobox.Active;
 			SourceEditorOptions.Options.TabSize = (int)this.indentAndTabSizeSpinbutton.Value;
+			SourceEditorOptions.Options.TabIsReindent = this.tabAsReindentCheckbutton.Active;
 		}
 
 		public void Initialize (OptionsDialog dialog, object dataObject)

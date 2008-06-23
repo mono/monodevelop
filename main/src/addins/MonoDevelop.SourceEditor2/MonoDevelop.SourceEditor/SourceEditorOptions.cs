@@ -94,7 +94,7 @@ namespace MonoDevelop.SourceEditor
 			this.underlineErrors            = PropertyService.Get ("UnderlineErrors", true);
 			this.indentStyle                = PropertyService.Get ("IndentStyle", MonoDevelop.Ide.Gui.Content.IndentStyle.Smart);
 			this.editorFontType             = PropertyService.Get ("EditorFontType", MonoDevelop.SourceEditor.EditorFontType.DefaultMonospace);
-			
+			this.tabIsReindent              = PropertyService.Get ("TabIsReindent", false);
 			base.TabsToSpaces          = PropertyService.Get ("TabsToSpaces", false);
 			base.IndentationSize       = PropertyService.Get ("TabIndent", 4);
 			base.ShowLineNumberMargin  = PropertyService.Get ("ShowLineNumberMargin", true);
@@ -136,6 +136,20 @@ namespace MonoDevelop.SourceEditor
 				if (value != this.autoInsertTemplates) {
 					this.autoInsertTemplates = value;
 					PropertyService.Set ("AutoInsertTemplates", value);
+					OnChanged (EventArgs.Empty);
+				}
+			}
+		}
+		
+		bool tabIsReindent;
+		public bool TabIsReindent {
+			get {
+				return tabIsReindent;
+			}
+			set {
+				if (value != this.tabIsReindent) {
+					this.tabIsReindent = value;
+					PropertyService.Set ("TabIsReindent", value);
 					OnChanged (EventArgs.Empty);
 				}
 			}
