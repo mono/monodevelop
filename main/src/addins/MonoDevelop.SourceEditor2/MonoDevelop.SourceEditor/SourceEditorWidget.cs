@@ -431,19 +431,24 @@ namespace MonoDevelop.SourceEditor
 			public Error (Mono.TextEditor.Document doc, ErrorInfo info, LineSegment line)
 			{
 				this.info = info;
-				this.line = line;
+				this.line = line; // may be null if no line is assigned to the error.
 				this.doc  = doc;
 			}
 			
 			public void AddToLine ()
 			{
-				line.AddMarker (marker);
-				doc.CommitLineUpdate (doc.OffsetToLineNumber(line.Offset));
+				if (line != null) {
+					line.AddMarker (marker);
+					doc.CommitLineUpdate (doc.OffsetToLineNumber(line.Offset));
+				}
 			}
+			
 			public void RemoveFromLine ()
 			{
-				line.RemoveMarker (marker);
-				doc.CommitLineUpdate (doc.OffsetToLineNumber(line.Offset));
+				if (line != null) {
+					line.RemoveMarker (marker);
+					doc.CommitLineUpdate (doc.OffsetToLineNumber(line.Offset));
+				}
 			}
 		}
 		
