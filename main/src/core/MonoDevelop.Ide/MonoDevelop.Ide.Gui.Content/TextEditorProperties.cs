@@ -185,6 +185,14 @@ namespace MonoDevelop.Ide.Gui.Content {
 			}
 		}
 		
+		public static bool TabIsReindent {
+			get {
+				return PropertyService.Get ("TabIsReindent", false);
+			}
+			set {
+				PropertyService.Set ("TabIsReindent", value);
+			}
+		}
 		public static bool ShowInvalidLines {
 			get {
 				return properties.Get ("ShowInvalidLines", false);

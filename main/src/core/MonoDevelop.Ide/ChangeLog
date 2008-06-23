@@ -1,3 +1,8 @@
+2008-06-23  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Ide.Gui.Content/TextEditorProperties.cs: Added tab ==
+	  reindent option.
+
 2008-06-20  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Ide.Gui.Dialogs/OverridesImplementsDialog.cs: Use new

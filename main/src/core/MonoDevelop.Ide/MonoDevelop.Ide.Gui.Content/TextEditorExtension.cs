@@ -36,7 +36,7 @@ using MonoDevelop.Ide.Commands;
 
 namespace MonoDevelop.Ide.Gui.Content
 {
-	public class TextEditorExtension: ITextEditorExtension, ICommandRouter, IDisposable
+	public class TextEditorExtension : ITextEditorExtension, ICommandRouter, IDisposable
 	{
 		internal ITextEditorExtension Next;
 		internal Document document;
