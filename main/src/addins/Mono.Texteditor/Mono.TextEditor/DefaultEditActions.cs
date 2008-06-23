@@ -767,6 +767,7 @@ namespace Mono.TextEditor
 		{
 			SetData (selection_data, info);
 		}
+		
 		void ClipboardClearFunc (Clipboard clipboard)
 		{
 			// NOTHING ?
@@ -814,7 +815,7 @@ namespace Mono.TextEditor
 						int color = colorList.IndexOf (chunk.Style.Color);
 						if (curColor != color) {
 							curColor = color;
-							rtfText.Append (@"\cf" + (curColor + 1));					
+							rtfText.Append (@"\cf" + (curColor + 1));
 							appendSpace = true;
 						}
 						for (int i = start; i < end; i++) {
@@ -929,6 +930,9 @@ namespace Mono.TextEditor
 		
 		void ClipboardGetFuncLazy (Clipboard clipboard, SelectionData selection_data, uint info)
 		{
+			// data may have disposed
+			if (data.Document == null)
+				return;
 			CopyData (data, selection);
 			ClipboardGetFunc (clipboard, selection_data, info);
 		}
