@@ -1,3 +1,7 @@
+2008-06-23  Mike Krüger <mkrueger@novell.com> 
+
+	* Gui/CSharpTextEditorExtension.cs: Added tab == reindent function.
+
 2008-06-20  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* Parser/CodeGenerator.cs: Implement creation of folding regions, and

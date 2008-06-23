@@ -382,7 +382,7 @@ namespace CSharpBinding
 				//
 				// Tab is interpreted as a reindent command when it's neither at the end of a line nor in a verbatim string
 				// and when a tab has just been inserted (i.e. not a template or an autocomplete command)
-				if (
+				if (TextEditorProperties.TabIsReindent &&
 				    !stateTracker.Engine.IsInsideVerbatimString
 				    && cursor >= 1 && Char.IsWhiteSpace (Editor.GetCharAt (cursor - 1)) //tab was actually inserted, or in a region of tabs
 				    && !hadSelection //was just a cursor, not a block of selected text -- the text editor handles that specially
