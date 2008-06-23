@@ -286,6 +286,7 @@ namespace CSharpBinding
 				//if doc comments were inserted, further handling not necessary
 				return false;
 			cursorPositionBeforeKeyPress = Editor.CursorPosition;
+			
 			//do the smart indent
 			if (TextEditorProperties.IndentStyle == IndentStyle.Smart) {
 				//capture some of the current state
@@ -294,6 +295,7 @@ namespace CSharpBinding
 				bool hadSelection = Editor.SelectionEndPosition != Editor.SelectionStartPosition;
 				
 				//pass through to the base class, which actually inserts the character
+				//and calls HandleCodeCompletion etc to handles completion
 				bool retval = base.KeyPress (key, keyChar, modifier);
 				stateTracker.UpdateEngine ();
 				
@@ -310,10 +312,23 @@ namespace CSharpBinding
 				//N.B. if the engine says we need to reindent, make sure that it's because a char was 
 				//inserted rather than just updating the stack due to moving around
 				stateTracker.UpdateEngine ();
-				if (reIndent || (stateTracker.Engine.NeedsReindent && lastCharInserted != '\0'))
+				bool automaticReindent = (stateTracker.Engine.NeedsReindent && lastCharInserted != '\0');
+				if (reIndent || automaticReindent)
 					DoReSmartIndent ();
+				
+				stateTracker.UpdateEngine ();
+				
+				//re-show directive completion data, since it gets hidden by the docuemnt change event when
+				//the re-indent takes place
+				if (lastCharInserted == '#' && stateTracker.Engine.IsInsidePreprocessorDirective 
+				    && Editor.GetLineText (Editor.CursorLine).TrimStart () == "#")
+					ShowCompletion (GetDirectiveCompletionData (), 0, '#');
+				
 				return retval;
 			}
+			
+			//pass through to the base class, which actually inserts the character
+			//and calls HandleCodeCompletion etc to handles completion
 			return base.KeyPress (key, keyChar, modifier);
 		}
 		
@@ -553,14 +568,17 @@ namespace CSharpBinding
 		
 		public override ICompletionDataProvider HandleCodeCompletion (ICodeCompletionContext ctx, char charTyped)
 		{
-			if (charTyped == '#') {
-				int lin, col;
-				Editor.GetLineColumnFromPosition (ctx.TriggerOffset, out lin, out col);
-				if (col == 2)
-					return GetDirectiveCompletionData ();
-			}
+			stateTracker.UpdateEngine ();
+			
+			if (stateTracker.Engine.IsInsideOrdinaryCommentOrString)
+				return null;
+			
+			if (charTyped == '#' && stateTracker.Engine.IsInsidePreprocessorDirective && 
+			    Editor.GetLineText (Editor.CursorLine).TrimStart () == "#")
+				return GetDirectiveCompletionData ();
+			
 			// Xml documentation code completion.
-			if (charTyped == '<' && IsInsideDocumentationComment (Editor.CursorPosition)) 
+			if (charTyped == '<' && stateTracker.Engine.IsInsideDocLineComment) 
 				return GetXmlDocumentationCompletionData ();
 
 			int caretLineNumber = ctx.TriggerLine + 1;

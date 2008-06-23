@@ -1,5 +1,13 @@
 2008-06-23  Michael Hutchinson <mhutchinson@novell.com> 
 
+	* Gui/CSharpTextEditorExtension.cs: Fix preprocessor directive
+	  completion. Short out completion when indent engine says inside
+	  string or comment.
+	* FormattingStrategy/CSharpIndentEngine.cs: Add methods to check if
+	  inside preprocessor directive or comment/string.
+
+2008-06-23  Michael Hutchinson <mhutchinson@novell.com> 
+
 	* FormattingStrategy/CSharpIndentEngineStack.cs,
 	  FormattingStrategy/CSharpIndentEngine.cs: Capture keywords for
 	  proprocessor directives. Pop #region/#endregion directives back

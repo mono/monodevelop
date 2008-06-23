@@ -118,6 +118,14 @@ namespace CSharpBinding.FormattingStrategy {
 			get { return beganInside == Inside.MultiLineComment; }
 		}
 		
+		public bool IsInsidePreprocessorDirective {
+			get { return stack.PeekInside (0) == Inside.PreProcessor; }
+		}
+		
+		public bool IsInsideOrdinaryCommentOrString {
+			get { return (stack.PeekInside (0) & (Inside.LineComment | Inside.MultiLineComment | Inside.StringOrChar)) != 0; }
+		}
+		
 		string TabsToSpaces (string indent)
 		{
 			StringBuilder builder;
