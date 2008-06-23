@@ -68,6 +68,11 @@ namespace Mono.TextEditor
 			this.length = length;
 		}
 		
+		public static bool Equals (ISegment left, ISegment right)
+		{
+			return left != null && right != null && left.Offset == right.Offset && left.Length == right.Length;
+		}
+		
 		public bool Contains (int offset)
 		{
 			return Offset <= offset && offset < EndOffset;

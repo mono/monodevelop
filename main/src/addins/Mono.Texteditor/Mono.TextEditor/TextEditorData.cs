@@ -255,8 +255,10 @@ namespace Mono.TextEditor
 				return selectionRange;
 			}
 			set {
-				selectionRange = value;
-				OnSelectionChanged (EventArgs.Empty);
+				if (!Segment.Equals (this.selectionRange, value))  {
+					selectionRange = value;
+					OnSelectionChanged (EventArgs.Empty);
+				}
 			}
 //			get {
 //				if (!IsSomethingSelected)
