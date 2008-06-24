@@ -408,7 +408,7 @@ namespace MonoDevelop.Projects.Dom
 			result.Location      = type.Location;
 			result.bodyRegion    = type.BodyRegion;
 			result.attributes    = DomAttribute.Resolve (type.Attributes, typeResolver);
-						
+			
 			if (type.BaseType != null)
 				result.baseType      = DomReturnType.Resolve (type.BaseType, typeResolver);
 			foreach (IReturnType iface in type.ImplementedInterfaces) {

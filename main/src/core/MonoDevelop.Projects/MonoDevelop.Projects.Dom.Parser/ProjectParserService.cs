@@ -155,10 +155,13 @@ namespace MonoDevelop.Projects.Dom.Parser
 			}
 			Thread thread = new Thread (delegate () {
 				Thread.Sleep (500);
-				ICompilationUnit unit = parser.Parse (fileName, getContent ());
-				((ProjectCodeCompletionDatabase)dom.Database).UpdateFromParseInfo (unit, fileName);
-				OnCompilationUnitUpdated (new CompilationUnitEventArgs (unit));
-				OnDomUpdated (new ProjectDomEventArgs (dom));
+				try {
+					ICompilationUnit unit = parser.Parse (fileName, getContent ());
+					((ProjectCodeCompletionDatabase)dom.Database).UpdateFromParseInfo (unit, fileName);
+					OnCompilationUnitUpdated (new CompilationUnitEventArgs (unit));
+					OnDomUpdated (new ProjectDomEventArgs (dom));
+				} catch (ThreadAbortException) {
+				}
 			});
 			refreshThreads [fileName] = thread;
 			

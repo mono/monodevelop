@@ -109,6 +109,9 @@ namespace MonoDevelop.Projects.Dom
 			get {
 				return bodyRegion;
 			}
+			set {
+				bodyRegion = value;
+			}
 		}
 		
 		public Modifiers Modifiers {

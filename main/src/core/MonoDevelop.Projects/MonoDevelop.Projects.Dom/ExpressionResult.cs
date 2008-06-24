@@ -58,14 +58,24 @@ namespace MonoDevelop.Projects.Dom
 				return region;
 			}
 		}
+		
 		public ExpressionResult (string expression) : this (expression, DomRegion.Empty, null)
 		{
 		}
+		
 		public ExpressionResult (string expression, DomRegion region, ExpressionContext expressionContext)
 		{
 			this.expression = expression;
 			this.region = region;
 			this.expressionContext = expressionContext;
+		}
+		
+		public override string ToString ()
+		{
+			return String.Format ("[ExpressionResult:Expression={0}, ExpressionContext={1}, Region={2}]",
+			                      this.expression,
+			                      this.expressionContext,
+			                      this.region);
 		}
 	}
 }

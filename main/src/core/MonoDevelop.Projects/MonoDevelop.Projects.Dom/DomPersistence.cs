@@ -138,6 +138,7 @@ namespace MonoDevelop.Projects.Dom
 		{
 			DomMethod result = new DomMethod ();
 			ReadMemberInformation (reader, nameTable, result);
+			result.BodyRegion = ReadRegion (reader, nameTable);
 			result.ReturnType    = ReadReturnType (reader, nameTable);
 			result.IsConstructor = reader.ReadBoolean ();
 			uint    arguments  = reader.ReadUInt32 ();
@@ -152,6 +153,7 @@ namespace MonoDevelop.Projects.Dom
 		{
 			Debug.Assert (method != null);
 			WriteMemberInformation (writer, nameTable, method);
+			Write (writer, nameTable, method.BodyRegion);
 			Write (writer, nameTable, method.ReturnType);
 			writer.Write (method.IsConstructor);
 			writer.Write (method.Parameters.Count);
@@ -185,6 +187,7 @@ namespace MonoDevelop.Projects.Dom
 		{
 			DomProperty result = new DomProperty ();
 			ReadMemberInformation (reader, nameTable, result);
+			result.BodyRegion = ReadRegion (reader, nameTable);
 			result.ReturnType = ReadReturnType (reader, nameTable);
 			result.IsIndexer  = reader.ReadBoolean ();
 			if (!ReadNull (reader))
@@ -198,6 +201,7 @@ namespace MonoDevelop.Projects.Dom
 		{
 			Debug.Assert (property != null);
 			WriteMemberInformation (writer, nameTable, property);
+			Write (writer, nameTable, property.BodyRegion);
 			Write (writer, nameTable, property.ReturnType);
 			writer.Write (property.IsIndexer);
 			if (!WriteNull (writer, property.GetMethod)) 
@@ -237,6 +241,7 @@ namespace MonoDevelop.Projects.Dom
 		{
 			DomType result = new DomType ();
 			ReadMemberInformation (reader, nameTable, result);
+			result.BodyRegion = ReadRegion (reader, nameTable);
 			string compilationUnitFileName = ReadString (reader, nameTable);
 			result.CompilationUnit = new CompilationUnit (compilationUnitFileName);
 			
@@ -297,6 +302,7 @@ namespace MonoDevelop.Projects.Dom
 		{
 			Debug.Assert (type != null);
 			WriteMemberInformation (writer, nameTable, type);
+			Write (writer, nameTable, type.BodyRegion);
 			
 			if (type.CompilationUnit != null) {
 				WriteString (type.CompilationUnit.FileName, writer, nameTable);

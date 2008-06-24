@@ -45,15 +45,25 @@ namespace MonoDevelop.Projects.Dom.Parser
 		
 		public IEnumerable<IType> Types {
 			get {
+				if (database == null)
+					return null;
 				return database.GetClassList ();
 			}
 		}
 	
 		public IEnumerable<IType> GetTypesFrom (string fileName)
 		{
-			foreach (IType type in Types) {
-				if (type.CompilationUnit != null && type.CompilationUnit.FileName == fileName)
-					yield return type;
+			if (Types != null) {
+				foreach (IType type in Types) {
+					if (type.Parts != null) {
+						foreach (IType part in type.Parts) {
+							if (part.CompilationUnit != null && part.CompilationUnit.FileName == fileName)
+								yield return part;
+						}
+					}
+					if (type.CompilationUnit != null && type.CompilationUnit.FileName == fileName)
+						yield return type;
+				}
 			}
 		}
 		

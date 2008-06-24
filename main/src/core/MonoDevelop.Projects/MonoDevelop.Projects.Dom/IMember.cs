@@ -69,6 +69,7 @@ namespace MonoDevelop.Projects.Dom
 		
 		DomRegion BodyRegion {
 			get;
+			set;
 		}
 		
 		Modifiers Modifiers {
