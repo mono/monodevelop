@@ -48,6 +48,9 @@ namespace MonoDevelop.Projects
 		[ItemProperty ("OutputType")]
 		CompileTarget compileTarget;
 		
+		[ItemProperty ("UseParentDirectoryAsNamespace", DefaultValue=false)]
+		bool useParentDirectoryAsNamespace = false;
+		
 		IDotNetLanguageBinding languageBinding;
 
 		protected ProjectReferenceCollection projectReferences;
@@ -105,6 +108,14 @@ namespace MonoDevelop.Projects
 			set {
 				defaultNamespace = value;
 				NotifyModified ("DefaultNamespace");
+			}
+		}
+		
+		public bool UseParentDirectoryAsNamespace {
+			get { return useParentDirectoryAsNamespace; }
+			set { 
+				useParentDirectoryAsNamespace = value; 
+				NotifyModified ("UseParentDirectoryAsNamespace");
 			}
 		}
 		

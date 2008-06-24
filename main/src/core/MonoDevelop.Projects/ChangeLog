@@ -1,3 +1,11 @@
+2008-06-24  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Projects/DotNetProject.cs,
+	  MonoDevelop.Projects/Project.cs, md1format.xml: Add serialisation
+	  map for UseParentDirectoryAsNamespace. Move
+	  UseParentDirectoryAsNamespace from Project to DotNetProject to
+	  increase consistency.
+
 2008-06-24  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom.Parser/ProjectParserService.cs,

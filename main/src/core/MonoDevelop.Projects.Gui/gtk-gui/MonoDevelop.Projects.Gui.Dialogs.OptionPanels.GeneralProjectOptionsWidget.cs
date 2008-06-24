@@ -27,9 +27,9 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels {
         
         private Gtk.Table table11;
         
-        private Gtk.Label descriptionLabel;
+        private Gtk.Label defaultNamespaceLabel;
         
-        private Gtk.Label label120;
+        private Gtk.Label descriptionLabel;
         
         private Gtk.Label nameLabel;
         
@@ -107,6 +107,15 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels {
             this.table11.RowSpacing = ((uint)(6));
             this.table11.ColumnSpacing = ((uint)(6));
             // Container child table11.Gtk.Table+TableChild
+            this.defaultNamespaceLabel = new Gtk.Label();
+            this.defaultNamespaceLabel.Name = "defaultNamespaceLabel";
+            this.defaultNamespaceLabel.Xalign = 0F;
+            this.defaultNamespaceLabel.LabelProp = MonoDevelop.Core.GettextCatalog.GetString("Default Namespace:");
+            this.table11.Add(this.defaultNamespaceLabel);
+            Gtk.Table.TableChild w3 = ((Gtk.Table.TableChild)(this.table11[this.defaultNamespaceLabel]));
+            w3.TopAttach = ((uint)(2));
+            w3.BottomAttach = ((uint)(3));
+            // Container child table11.Gtk.Table+TableChild
             this.descriptionLabel = new Gtk.Label();
             this.descriptionLabel.Name = "descriptionLabel";
             this.descriptionLabel.Xalign = 0F;
@@ -114,18 +123,9 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels {
             this.descriptionLabel.LabelProp = MonoDevelop.Core.GettextCatalog.GetString("_Description:");
             this.descriptionLabel.UseUnderline = true;
             this.table11.Add(this.descriptionLabel);
-            Gtk.Table.TableChild w3 = ((Gtk.Table.TableChild)(this.table11[this.descriptionLabel]));
-            w3.TopAttach = ((uint)(1));
-            w3.BottomAttach = ((uint)(2));
-            // Container child table11.Gtk.Table+TableChild
-            this.label120 = new Gtk.Label();
-            this.label120.Name = "label120";
-            this.label120.Xalign = 0F;
-            this.label120.LabelProp = MonoDevelop.Core.GettextCatalog.GetString("Default Namespace:");
-            this.table11.Add(this.label120);
-            Gtk.Table.TableChild w4 = ((Gtk.Table.TableChild)(this.table11[this.label120]));
-            w4.TopAttach = ((uint)(2));
-            w4.BottomAttach = ((uint)(3));
+            Gtk.Table.TableChild w4 = ((Gtk.Table.TableChild)(this.table11[this.descriptionLabel]));
+            w4.TopAttach = ((uint)(1));
+            w4.BottomAttach = ((uint)(2));
             // Container child table11.Gtk.Table+TableChild
             this.nameLabel = new Gtk.Label();
             this.nameLabel.Name = "nameLabel";

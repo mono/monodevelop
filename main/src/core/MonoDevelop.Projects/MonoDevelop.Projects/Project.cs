@@ -56,9 +56,6 @@ namespace MonoDevelop.Projects
 		[ItemProperty ("Description", DefaultValue="")]
 		protected string description     = "";
 
-		[ItemProperty ("UseParentDirectoryAsNamespace", DefaultValue=false)]
-		protected bool useParentDirectoryAsNamespace = false;
-
 		[ItemProperty ("newfilesearch", DefaultValue = NewFileSearch.None)]
 		protected NewFileSearch newFileSearch  = NewFileSearch.None;
 		
@@ -81,14 +78,6 @@ namespace MonoDevelop.Projects
 			set {
 				description = value;
 				NotifyModified ("Description");
-			}
-		}
-		
-		public bool UseParentDirectoryAsNamespace {
-			get { return useParentDirectoryAsNamespace; }
-			set { 
-				useParentDirectoryAsNamespace = value; 
-				NotifyModified ("UseParentDirectoryAsNamespace");
 			}
 		}
 		

@@ -34,6 +34,7 @@
 		<ItemProperty member="ClrVersion" name="clr-version"/>
 		<ItemProperty member="UsePartialTypes" defaultValue="true"/>
 		<ItemProperty member="defaultNamespace" name="DefaultNamespace" defaultValue="" />
+		<ItemProperty member="useParentDirectoryAsNamespace" name="UseParentDirectoryAsNamespace" defaultValue="false" />
 		<ItemProperty member="References" name="References" />
 	</DataItem>
 	<DataItem class = "MonoDevelop.Projects.DotNetProjectConfiguration">

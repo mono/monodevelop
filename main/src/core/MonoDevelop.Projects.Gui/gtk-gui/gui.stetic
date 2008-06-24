@@ -1448,6 +1448,24 @@ Custom Command</property>
                           <placeholder />
                         </child>
                         <child>
+                          <widget class="Gtk.Label" id="defaultNamespaceLabel">
+                            <property name="MemberName" />
+                            <property name="Xalign">0</property>
+                            <property name="LabelProp" translatable="yes">Default Namespace:</property>
+                          </widget>
+                          <packing>
+                            <property name="TopAttach">2</property>
+                            <property name="BottomAttach">3</property>
+                            <property name="AutoSize">False</property>
+                            <property name="XExpand">True</property>
+                            <property name="XFill">True</property>
+                            <property name="XShrink">False</property>
+                            <property name="YExpand">True</property>
+                            <property name="YFill">True</property>
+                            <property name="YShrink">False</property>
+                          </packing>
+                        </child>
+                        <child>
                           <widget class="Gtk.Label" id="descriptionLabel">
                             <property name="MemberName" />
                             <property name="Xalign">0</property>
@@ -1459,24 +1477,6 @@ Custom Command</property>
                           <packing>
                             <property name="TopAttach">1</property>
                             <property name="BottomAttach">2</property>
-                            <property name="AutoSize">False</property>
-                            <property name="XExpand">True</property>
-                            <property name="XFill">True</property>
-                            <property name="XShrink">False</property>
-                            <property name="YExpand">True</property>
-                            <property name="YFill">True</property>
-                            <property name="YShrink">False</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <widget class="Gtk.Label" id="label120">
-                            <property name="MemberName" />
-                            <property name="Xalign">0</property>
-                            <property name="LabelProp" translatable="yes">Default Namespace:</property>
-                          </widget>
-                          <packing>
-                            <property name="TopAttach">2</property>
-                            <property name="BottomAttach">3</property>
                             <property name="AutoSize">False</property>
                             <property name="XExpand">True</property>
                             <property name="XFill">True</property>

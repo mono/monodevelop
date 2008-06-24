@@ -63,12 +63,17 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 			descriptionLabel.UseUnderline = true;
 
 			projectNameEntry.Text = project.Name;
-			parentDirectoryNamespaceCheckButton.Active = project.UseParentDirectoryAsNamespace;
 			projectDescriptionTextView.Buffer.Text = project.Description;
 			
 			// TODO msbuild Move to build panel?
-			if (project is DotNetProject)
+			if (project is DotNetProject) {
 				projectDefaultNamespaceEntry.Text = ((DotNetProject)project).DefaultNamespace;
+				parentDirectoryNamespaceCheckButton.Active = ((DotNetProject)project).UseParentDirectoryAsNamespace;
+			} else {
+				defaultNamespaceLabel.Visible = false;
+				projectDefaultNamespaceEntry.Visible = false;
+				parentDirectoryNamespaceCheckButton.Visible = false;
+			}
 			
 			switch (project.NewFileSearch) 
 			{
@@ -108,10 +113,11 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 		public void  Store ()
 		{
 			project.Name                          = projectNameEntry.Text;
-			project.UseParentDirectoryAsNamespace = parentDirectoryNamespaceCheckButton.Active;
 			project.Description                   = projectDescriptionTextView.Buffer.Text;
-			if (project is DotNetProject)
+			if (project is DotNetProject) {
 				((DotNetProject)project).DefaultNamespace = projectDefaultNamespaceEntry.Text;
+				((DotNetProject)project).UseParentDirectoryAsNamespace = parentDirectoryNamespaceCheckButton.Active;
+			}
 			
 			if (newFilesOnLoadCheckButton.Active) {
 				project.NewFileSearch = autoInsertNewFilesCheckButton.Active ?  NewFileSearch.OnLoadAutoInsert : NewFileSearch.OnLoad;

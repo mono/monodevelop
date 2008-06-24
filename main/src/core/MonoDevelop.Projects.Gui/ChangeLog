@@ -1,3 +1,11 @@
+2008-06-24  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.GeneralProjectOptionsWidget.cs,
+	  gtk-gui/gui.stetic,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/GeneralProjectOptions.cs:
+	  Don't show namespace settings GUI unless project is a
+	  DotNetProject.
+
 2008-06-17  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs,
