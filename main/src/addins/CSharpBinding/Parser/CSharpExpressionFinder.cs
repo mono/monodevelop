@@ -111,8 +111,8 @@ namespace MonoDevelop.CSharpBinding
 					return ExpressionContext.TypeDerivingFrom(ProjectContentRegistry.Mscorlib.GetClass("System.Exception"), true);
 				}
 			}
-			return ExpressionContext.ObjectCreation;
-*/
+
+			return ExpressionContext.ObjectCreation;*/
 		}
 		
 		bool IsInAttribute(string txt, int offset)

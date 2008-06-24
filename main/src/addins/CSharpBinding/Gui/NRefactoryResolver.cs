@@ -52,24 +52,43 @@ namespace MonoDevelop.CSharpBinding
 {
 	public class NRefactoryResolver
 	{
+		SupportedLanguage lang;
 		Project    project;
 		TextEditor editor;
 		IType   callingType;
 		IMember callingMember;
 		
-		public NRefactoryResolver (Project project, TextEditor editor, string fileName)
+		LookupTableVisitor lookupTableVisitor;
+		
+		public IType CallingType {
+			get {
+				return callingType;
+			}
+		}
+		
+		public IMember CallingMember {
+			get {
+				return callingMember;
+			}
+		}
+		
+		public NRefactoryResolver (Project project, SupportedLanguage lang, TextEditor editor, string fileName)
 		{
+			this.lang   = lang;
 			this.editor = editor;
+			
+			lookupTableVisitor = new LookupTableVisitor (lang);
+			
 			ProjectDom dom = ProjectDomService.GetDom (project);
 			if (dom == null)
 				return;
+			
 			foreach (IType type in dom.GetTypesFrom (fileName)) {
 				if (type.BodyRegion.Contains (editor.CursorLine, editor.CursorColumn)) {
 					callingType = type;
 					break;
 				}
 			}
-			
 			if (callingType != null) {
 				foreach (IMember member in callingType.Members) {
 					if (member.BodyRegion.Contains (editor.CursorLine, editor.CursorColumn)) {
@@ -78,11 +97,18 @@ namespace MonoDevelop.CSharpBinding
 					}
 				}
 			}
+			if (callingMember != null) {
+				string wrapper = CreateWrapperClassForMember (callingMember);
+				ICSharpCode.NRefactory.IParser parser = ICSharpCode.NRefactory.ParserFactory.CreateParser (lang, new StringReader (wrapper));
+				parser.Parse ();
+				lookupTableVisitor.VisitCompilationUnit (parser.CompilationUnit, null);
+			}
+			
 		}
 			
 		Expression ParseExpression (ExpressionResult expressionResult)
 		{
-			ICSharpCode.NRefactory.IParser parser = ICSharpCode.NRefactory.ParserFactory.CreateParser (SupportedLanguage.CSharp, new StringReader (expressionResult.Expression));
+			ICSharpCode.NRefactory.IParser parser = ICSharpCode.NRefactory.ParserFactory.CreateParser (this.lang, new StringReader (expressionResult.Expression));
 			return parser.ParseExpression();
 		}
 		
@@ -92,7 +118,9 @@ namespace MonoDevelop.CSharpBinding
 			if (expr == null) 
 				return null;
 			
-			ResolveResult result = new ResolveResult ();
+			ResolveVisitor visitor = new ResolveVisitor (this);
+			
+			ResolveResult result = visitor.Resolve (expr);
 			
 			return result;
 		}
@@ -107,7 +135,7 @@ namespace MonoDevelop.CSharpBinding
 			result.Append ("class Wrapper {");
 			result.Append (this.editor.GetText (this.editor.GetPositionFromLineColumn (startLine, 0),
 			                                    this.editor.GetPositionFromLineColumn (endLine, this.editor.GetLineLength (endLine))));
-
+			
 			result.Append ("}");
 			return result.ToString ();
 		}

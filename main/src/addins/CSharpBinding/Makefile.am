@@ -41,6 +41,7 @@ FILES =  \
 	Gui/FormattingPanel.cs \
 	Gui/NRefactoryResolver.cs \
 	Gui/OverrideCompletionData.cs \
+	Gui/ResolveVisitor.cs \
 	Parser/CodeGenerator.cs \
 	Parser/CSharpExpressionFinder.cs \
 	Parser/CSharpVisitor.cs \

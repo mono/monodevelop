@@ -178,7 +178,6 @@ namespace MonoDevelop.CSharpBinding
 					members.Add (ConvertType (unit, "", t));
 				}
 			}
-			
 			return new MonoDevelop.Projects.Dom.DomType (unit,
 			                                        ClassType.Class,
 			                                        type.Name,

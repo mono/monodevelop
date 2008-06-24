@@ -159,7 +159,7 @@ namespace CSharpBinding.Parser
 			lookupTableVisitor = new LookupTableVisitor (SupportedLanguage.CSharp);
 			lookupTableVisitor.VisitCompilationUnit (fileCompilationUnit, null);
 			
-			TypeVisitor typeVisitor = new TypeVisitor(this);
+			TypeVisitor typeVisitor = new TypeVisitor (this);
 			
 			CSharpVisitor cSharpVisitor = new CSharpVisitor();
 			currentUnit = (ICompilationUnit)cSharpVisitor.VisitCompilationUnit (fileCompilationUnit, null);

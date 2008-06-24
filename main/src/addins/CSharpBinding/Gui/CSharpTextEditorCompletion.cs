@@ -45,9 +45,15 @@ namespace MonoDevelop.CSharpBinding.Gui
 			ExpressionResult result = expressionFinder.FindExpression (Editor.Text, Editor.CursorPosition);
 			if (result == null)
 				return true;
-			
+			System.Console.WriteLine ("Result:" + result);
 			switch (keyChar) {
 			case '.':
+				NRefactoryResolver resolver = new MonoDevelop.CSharpBinding.NRefactoryResolver (Document.Project,
+				                                                                                ICSharpCode.NRefactory.SupportedLanguage.CSharp,
+				                                                                                Editor,
+				                                                                                Document.FileName);
+				ResolveResult resolveResult = resolver.Resolve (result);
+				System.Console.WriteLine("resolve: " + resolveResult);
 //				Resolver res = new Resolver (parserContext);
 //				ResolveResult results = res.Resolve (expression, caretLineNumber, caretColumn, FileName, Editor.Text);
 //				completionProvider.AddResolveResults (results, false, res.CreateTypeNameResolver ());
