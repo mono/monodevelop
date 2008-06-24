@@ -133,7 +133,9 @@ namespace MonoDevelop.DesignerSupport
 			} else if (o is IMember) {
 				pixRenderer.Pixbuf = IdeApp.Services.Resources.GetIcon
 					(IdeApp.Services.Icons.GetIcon ((IMember)o), IconSize.Menu);
-			}	
+			} else if (o is FoldingRegion) {
+				pixRenderer.Pixbuf = IdeApp.Services.Resources.GetIcon ("gtk-add", IconSize.Menu);
+			}
 		}
 		
 		void OutlineTreeTextFunc (TreeViewColumn column, CellRenderer cell, TreeModel model, TreeIter iter)
@@ -153,6 +155,11 @@ namespace MonoDevelop.DesignerSupport
 				                               MonoDevelop.Projects.Ambience.ConversionFlags.ShowParameters |
 				                               MonoDevelop.Projects.Ambience.ConversionFlags.ShowParameterNames |
 				                               MonoDevelop.Projects.Ambience.ConversionFlags.ShowGenericParameters);
+			} else if (o is FoldingRegion) {
+				string name = ((FoldingRegion)o).Name.Trim ();
+				if (string.IsNullOrEmpty (name))
+					name = "#region";
+				txtRenderer.Text = name;
 			}
 		}
 		
@@ -162,10 +169,8 @@ namespace MonoDevelop.DesignerSupport
 				return;
 			
 			ScrolledWindow w = (ScrolledWindow) outlineTreeView.Parent;
-			w.Destroy ();
 			w.Dispose ();
 			outlineTreeView.Destroy ();
-			outlineTreeView.Dispose ();
 			outlineTreeStore.Dispose ();
 			outlineTreeStore = null;
 			outlineTreeView = null;
@@ -176,10 +181,13 @@ namespace MonoDevelop.DesignerSupport
 			// This event handler can get called when files other than the current content are updated. eg.
 			// when loading a new document. If we didn't do this check the member combo for this tab would have
 			// methods for a different class in it!
-			if (Document.FileName == args.FileName && !refreshingOutline) {
-				refreshingOutline = true;
+			if (Document.FileName == args.FileName) {
 				lastCU = (ICompilationUnit) args.ParseInformation.MostRecentCompilationUnit;
-				GLib.Timeout.Add (1000, new GLib.TimeoutHandler (RefillOutlineStore));
+				//limit update rate to 5s
+				if (!refreshingOutline) {
+					refreshingOutline = true;
+					GLib.Timeout.Add (5000, new GLib.TimeoutHandler (RefillOutlineStore));
+				}
 			}
 		}
 		
@@ -212,64 +220,98 @@ namespace MonoDevelop.DesignerSupport
 				else
 					childIter = store.AppendValues (cls);
 				
-				AddTreeClassContents (store, childIter, cls);
+				AddTreeClassContents (store, childIter, unit, cls);
 			}
 		}
 		
-		static void AddTreeClassContents (TreeStore store, TreeIter parent, IClass cls)
+		static void AddTreeClassContents (TreeStore store, TreeIter parent, ICompilationUnit unit, IClass cls)
 		{
-			foreach (ILanguageItem item in Merge (
-				new IEnumerable[] { cls.Fields, cls.Events, cls.Properties, cls.InnerClasses, cls.Methods },
-				delegate (object item) {
-					if (item is IClass)
-						return 1 - ((IClass)item).Region.BeginLine;
-					else if (item is IMember)
-						return 1 - ((IMember)item).Region.BeginLine;
-					else
-						return 0;
-				}))
-			{
-				TreeIter childIter = store.AppendValues (parent, item);
-				if (item is IClass)
-					AddTreeClassContents (store, childIter, (IClass)item);
-			}
-		}
-		
-		delegate int PrecendenceSelector (object item);
-		
-		static IEnumerable Merge (IEnumerable<IEnumerable> enumerables, PrecendenceSelector selector)
-		{
-			List<IEnumerator> enumerators = new List<IEnumerator> ();
-			List<int> precedences = new List<int> ();
-			foreach (IEnumerable enumerable in enumerables) {
-				IEnumerator enumerator = enumerable.GetEnumerator ();
-				if (enumerator.MoveNext ()) {
-					enumerators.Add (enumerator);
-					precedences.Add (selector (enumerator.Current));
-				}
-			}
+			List<object> items = new List<object> ();
+			foreach (object o in cls.Fields)
+				items.Add (o);
+			foreach (object o in cls.Properties)
+				items.Add (o);
+			foreach (object o in cls.Methods)
+				items.Add (o);
+			foreach (object o in cls.Events)
+				items.Add (o);
+			foreach (object o in cls.InnerClasses)
+				items.Add (o);
 			
-			while (enumerators.Count > 0) {
-				int maxPrecendence = int.MinValue;
-				int bestIndex = 0;
+			items.Sort (delegate (object x, object y) {
+				IRegion r1 = GetRegion (x), r2 = GetRegion (y);
+				return r1.CompareTo (r2);
+			});
+			
+			List<FoldingRegion> regions = new List<FoldingRegion> ();
+			foreach (FoldingRegion fr in unit.FoldingRegions)
+				//check regions inside class
+				if (RegionContains (cls.Region, fr.Region))
+					regions.Add (fr);
+			regions.Sort (delegate (FoldingRegion x, FoldingRegion y) { return x.Region.CompareTo (y.Region); });
+			
+			IEnumerator<FoldingRegion> regionEnumerator = regions.GetEnumerator ();
+			if (!regionEnumerator.MoveNext ())
+				regionEnumerator = null;
+			
+			FoldingRegion currentRegion = null;
+			TreeIter currentParent = parent;
+			foreach (object item in items) {
 				
-				for (int i = 0; i < precedences.Count; i++) {
-					if (precedences[i] > maxPrecendence) {
-						maxPrecendence = precedences[i];
-						bestIndex = i;
-					}
+				//no regions left; quick exit
+				if (regionEnumerator != null) {
+					IRegion itemRegion = GetRegion (item);
+					
+					//advance to a region that could potentially contain this member
+					while (regionEnumerator != null && !OuterEndsAfterInner (regionEnumerator.Current.Region, itemRegion))
+						if (!regionEnumerator.MoveNext ())
+							regionEnumerator = null;
+					
+					//if member is within region, make sure it's the current parent.
+					//If not, move target iter back to class parent
+					if (regionEnumerator != null && RegionContains (regionEnumerator.Current.Region, itemRegion)) {
+						if (currentRegion != regionEnumerator.Current) {
+							currentParent = store.AppendValues (parent, regionEnumerator.Current);
+							currentRegion = regionEnumerator.Current;
+						}
+					} else {
+						currentParent = parent;
+					}	
 				}
 				
-				IEnumerator best = enumerators[bestIndex];
-				yield return best.Current;
 				
-				if (best.MoveNext ()) {
-					precedences[bestIndex] = selector (best.Current);
-				} else {
-					enumerators.RemoveAt (bestIndex);
-					precedences.RemoveAt (bestIndex);
-				}
+				TreeIter childIter = store.AppendValues (currentParent, item);
+				if (item is IClass)
+					AddTreeClassContents (store, childIter, unit, (IClass)item);
 			}
+		}
+		
+		static IRegion GetRegion (object o)
+		{
+			if (o is IClass)
+				return ((IClass)o).Region;
+			else if (o is IMember)
+				return ((IMember)o).Region;
+			else
+				throw new InvalidOperationException (o.GetType ().ToString ());
+		}
+		
+		static bool OuterEndsAfterInner (IRegion outer, IRegion inner)
+		{
+			return (outer.EndLine > inner.EndLine
+			        || (outer.EndLine == inner.EndLine && outer.EndColumn > inner.EndColumn));
+		}
+		
+		static bool RegionContains (IRegion outer, IRegion inner)
+		{
+			return
+				//check beginning
+				(outer.BeginLine < inner.BeginLine
+					|| (outer.BeginLine == inner.BeginLine && outer.BeginColumn < inner.BeginColumn))
+				//check end
+				&& (outer.EndLine > inner.EndLine
+					|| (outer.EndLine == inner.EndLine && outer.EndColumn > inner.EndColumn));
+			
 		}
 	}
 }
