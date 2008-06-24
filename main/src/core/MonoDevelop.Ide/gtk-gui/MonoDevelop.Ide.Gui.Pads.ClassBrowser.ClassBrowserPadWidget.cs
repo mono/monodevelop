@@ -115,7 +115,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassBrowser {
             // Notebook tab
             this.label1 = new Gtk.Label();
             this.label1.Name = "label1";
-            this.label1.LabelProp = Mono.Unix.Catalog.GetString("page1");
+            this.label1.LabelProp = "";
             this.notebook1.SetTabLabel(this.scrolledwindow1, this.label1);
             this.label1.ShowAll();
             // Container child notebook1.Gtk.Notebook+NotebookChild
@@ -129,7 +129,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassBrowser {
             // Notebook tab
             this.label2 = new Gtk.Label();
             this.label2.Name = "label2";
-            this.label2.LabelProp = Mono.Unix.Catalog.GetString("page2");
+            this.label2.LabelProp = "";
             this.notebook1.SetTabLabel(this.scrolledwindow2, this.label2);
             this.label2.ShowAll();
             this.vbox1.Add(this.notebook1);

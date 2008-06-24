@@ -6440,7 +6440,7 @@ Large</property>
             <child>
               <widget class="Gtk.Label" id="label1">
                 <property name="MemberName" />
-                <property name="LabelProp" translatable="yes">page1</property>
+                <property name="LabelProp" translatable="yes" />
               </widget>
               <packing>
                 <property name="type">tab</property>
@@ -6468,7 +6468,7 @@ Large</property>
             <child>
               <widget class="Gtk.Label" id="label2">
                 <property name="MemberName" />
-                <property name="LabelProp" translatable="yes">page2</property>
+                <property name="LabelProp" translatable="yes" />
               </widget>
               <packing>
                 <property name="type">tab</property>

@@ -1,3 +1,8 @@
+2008-06-24  Mike Krüger <mkrueger@novell.com> 
+
+	* gtk-gui/MonoDevelop.Ide.Gui.Pads.ClassBrowser.ClassBrowserPadWidget.cs:
+	  Removed unused labels.
+
 2008-06-23  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Ide.Gui.Content/CompletionTextEditorExtension.cs: Add a
