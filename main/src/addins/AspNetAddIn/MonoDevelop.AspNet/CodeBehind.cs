@@ -72,7 +72,7 @@ namespace MonoDevelop.AspNet
 			string designerEnding = ".designer" + Path.GetExtension (cls.Region.FileName);
 			
 			foreach (IClass c in cls.Parts)
-				if (c.Region.FileName.EndsWith (designerEnding))
+				if (c.Region.FileName.EndsWith (designerEnding, StringComparison.OrdinalIgnoreCase))
 				    return c;
 			
 			return null;
@@ -86,7 +86,7 @@ namespace MonoDevelop.AspNet
 			string designerEnding = ".designer" + Path.GetExtension (cls.Region.FileName);
 			
 			foreach (IClass c in cls.Parts)
-				if (!c.Region.FileName.EndsWith (designerEnding))
+				if (!c.Region.FileName.EndsWith (designerEnding, StringComparison.OrdinalIgnoreCase))
 				    return c;
 			
 			return null;
