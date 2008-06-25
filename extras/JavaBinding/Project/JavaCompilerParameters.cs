@@ -32,28 +32,28 @@ namespace JavaBinding
 	/// </summary>
 	public class JavaCompilerParameters: ICloneable
 	{
-		[ItemProperty("deprecation")]
+		[ItemProperty("Deprecation", DefaultValue=true)]
 		bool deprecation = true;
 		
-		[ItemProperty("optimize")]
+		[ItemProperty("Optimize", DefaultValue=true)]
 		bool optimize = true;
 		
-		[ItemProperty("mainclass")]
+		[ItemProperty("MainClass", DefaultValue=null)]
 		string  mainclass = null;
 		
-		[ItemProperty("definesymbols")]
+		[ItemProperty("DefineSymbols", DefaultValue="")]
 		string definesymbols = String.Empty;
 		
-		[ItemProperty("classpath")]
+		[ItemProperty("ClassPath", DefaultValue="")]
 		string classpath = String.Empty;
 		
-		[ItemProperty ("compiler")]
+		[ItemProperty ("Compiler", DefaultValue=JavaCompiler.Gcj)]
 		JavaCompiler compiler = JavaCompiler.Gcj;
 
-		[ItemProperty("compilerpath")]
+		[ItemProperty("CompilerPath", DefaultValue="gcj")]
 		string compilerpath = "gcj";		
 		
-		[ItemProperty("genwarnings")]
+		[ItemProperty("GenWarnings", DefaultValue=false)]
 		bool genwarnings = false;
 		
 		public object Clone ()

@@ -94,4 +94,15 @@
 		<StockIcon stockid = "md-java" resource = "java-22.png" />
 	</Extension>
 
+	<Extension path = "/MonoDevelop/ProjectModel/MSBuildItemTypes">
+		<DotNetProject 
+			language="Java" 
+			extension="jproj" 
+			guid="{270db560-42d5-11dd-ae16-0800200c9a66}" />
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/ProjectModel/MD1SerializationMaps">
+		<SerializationMap resource="md1format.xml" />
+	</Extension>
+	
 </Addin>

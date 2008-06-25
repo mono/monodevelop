@@ -62,6 +62,7 @@ RESOURCES =  \
 	icons/java-22.png \
 	icons/java-icon-32.png \
 	JavaBinding.addin.xml \
+	md1format.xml \
 	templates/EmptyJavaFile.xft.xml \
 	templates/EmptyJavaProject.xpt.xml \
 	templates/IkvmConsoleApplicationProject.xpt.xml \
