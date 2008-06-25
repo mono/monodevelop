@@ -71,6 +71,12 @@ namespace MonoDevelop.CSharpBinding
 				return callingMember;
 			}
 		}
+
+		public Project Project {
+			get {
+				return project;
+			}
+		}
 		
 		public NRefactoryResolver (Project project, SupportedLanguage lang, TextEditor editor, string fileName)
 		{
@@ -124,6 +130,23 @@ namespace MonoDevelop.CSharpBinding
 			
 			return result;
 		}
+		
+		public ResolveResult ResolveIdentifier (string identifier)
+		{
+			ResolveResult result = new ResolveResult ();
+			result.CallingType   = CallingType;
+			result.CallingMember = CallingMember;
+			
+			foreach (KeyValuePair<string, List<LocalLookupVariable>> pair in this.lookupTableVisitor.Variables) {
+				if (identifier == pair.Key) {
+					LocalLookupVariable var = pair.Value[pair.Value.Count - 1];
+					result.ResolvedType = new DomReturnType (var.TypeRef.Type);
+					break;
+				}
+			}
+			return result;
+		}
+		
 		
 		string CreateWrapperClassForMember (IMember member)
 		{
