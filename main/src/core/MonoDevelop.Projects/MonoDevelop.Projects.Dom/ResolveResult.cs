@@ -66,5 +66,14 @@ namespace MonoDevelop.Projects.Dom
 		public ResolveResult ()
 		{
 		}
+		
+		public override string ToString ()
+		{
+			return String.Format ("[ResolveResult: CallingType={0}, CallingMember={1}, ResolvedType={2}]",
+			                      CallingType,
+			                      CallingMember,
+			                      ResolvedType);
+		}
+
 	}
 }

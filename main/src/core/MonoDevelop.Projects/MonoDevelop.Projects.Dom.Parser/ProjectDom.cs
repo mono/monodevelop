@@ -56,6 +56,15 @@ namespace MonoDevelop.Projects.Dom.Parser
 				return database == null ? CompilationUnitTypes : database.GetClassList ();
 			}
 		}
+		
+		public IType GetType (IReturnType returnType)
+		{
+			foreach (IType type in Types) {
+				if (type.FullName == returnType.FullName)
+					return type;
+			}
+			return null;
+		}
 	
 		public IEnumerable<IType> GetTypesFrom (string fileName)
 		{
