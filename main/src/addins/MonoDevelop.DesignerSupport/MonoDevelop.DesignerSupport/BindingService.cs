@@ -143,11 +143,6 @@ namespace MonoDevelop.DesignerSupport
 			return false;
 		}
 		
-		public static IMember AddMemberToClass (SolutionItem entry, IClass cls, CodeTypeMember member, bool throwIfExists)
-		{
-			return AddMemberToClass (entry, cls, cls.Parts[0], member, throwIfExists);
-		}
-		
 		public static IMember AddMemberToClass (SolutionItem entry, IClass cls, IClass specificPartToAffect, CodeTypeMember member, bool throwIfExists)
 		{
 			bool isChildClass = false;
@@ -266,18 +261,18 @@ namespace MonoDevelop.DesignerSupport
 		
 		
 		//opens the code view with the desired method, creating it if it doesn't already exist
-		public static void CreateAndShowMember (SolutionItem project, IClass cls, CodeTypeMember member)
+		public static void CreateAndShowMember (SolutionItem project, IClass cls, IClass specificPartToAffect, CodeTypeMember member)
 		{
 			//only adds the method if it doesn't already exist
-			IMember mem = AddMemberToClass (project, cls, member, false);
+			IMember mem = AddMemberToClass (project, cls, specificPartToAffect, member, false);
 			
 			//some tests in case code refactorer returns bad values
-			int beginline = cls.Region.BeginLine;			
-			if (mem.Region != null && mem.Region.BeginLine >= beginline && mem.Region.BeginLine <= cls.Region.EndLine)
+			int beginline = specificPartToAffect.Region.BeginLine;			
+			if (mem.Region != null && mem.Region.BeginLine >= beginline && mem.Region.BeginLine <= specificPartToAffect.Region.EndLine)
 				beginline = mem.Region.BeginLine;
 			
 			//jump to the member or class
-			IdeApp.Workbench.OpenDocument (cls.Region.FileName, beginline, 1, true);
+			IdeApp.Workbench.OpenDocument (specificPartToAffect.Region.FileName, beginline, 1, true);
 		}
 		
 		public static System.CodeDom.CodeTypeMember ReflectionToCodeDomMember (MemberInfo memberInfo)

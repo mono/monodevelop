@@ -1,3 +1,14 @@
+2008-06-25  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* AspNetEdit.Editor.ComponentModel/WebFormReferenceManager.cs: Use
+	  case-insensitive type name lookups.
+	* AspNetEdit.Integration/AspNetEditViewContent.cs: Fix build with M.A.
+	  0.3.
+	* AspNetEdit.Integration/MonoDevelopProxy.cs: Dynamically look up the
+	  IClass when needed, as it's a fragile handle. Improve robustness of
+	  identifier checking and locating the generated members in
+	  non-designer parts.
+
 2008-06-10  Michael Hutchinson <mhutchinson@novell.com> 
 
 	

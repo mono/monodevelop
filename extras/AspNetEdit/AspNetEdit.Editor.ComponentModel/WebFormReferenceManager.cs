@@ -61,7 +61,7 @@ namespace AspNetEdit.Editor.ComponentModel
 		public Type GetObjectType(string tagPrefix, string typeName)
 		{
 			if (0 == string.Compare (tagPrefix, "asp", true, CultureInfo.InvariantCulture))
-				return typeof (System.Web.UI.WebControls.WebControl).Assembly.GetType ("System.Web.UI.WebControls."+typeName, true);
+				return typeof (System.Web.UI.WebControls.WebControl).Assembly.GetType ("System.Web.UI.WebControls."+typeName, true, true);
 
 			//look it up in reference directives
 			DocumentDirective[] directives = host.RootDocument.GetDirectives("Register");

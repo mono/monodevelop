@@ -1,5 +1,10 @@
 2008-06-25  Michael Hutchinson <mhutchinson@novell.com> 
 
+	* MonoDevelop.DesignerSupport/BindingService.cs: Require a specific
+	  class part when creating members.
+
+2008-06-25  Michael Hutchinson <mhutchinson@novell.com> 
+
 	* MonoDevelop.DesignerSupport/BindingService.cs: Make
 	  IdentifierExistsInClass public again.
 

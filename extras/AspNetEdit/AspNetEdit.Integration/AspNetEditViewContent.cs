@@ -180,7 +180,7 @@ namespace AspNetEdit.Integration
 			//	MonoDevelop.DesignerSupport.DesignerSupport.Service.PropertyPad.BlankPad (); };
 			
 			//hook up proxy for event binding
-			MonoDevelop.Projects.Parser.IClass codeBehind = null;
+			string codeBehind = null;
 			if (viewContent.Project != null) {
 				MonoDevelop.Projects.Parser.IProjectParserContext ctx =
 					MonoDevelop.Ide.Gui.IdeApp.Workspace.ParserDatabase.GetProjectParserContext (viewContent.Project);
@@ -189,7 +189,7 @@ namespace AspNetEdit.Integration
 					MonoDevelop.AspNet.Parser.AspNetCompilationUnit cu =
 						pi.BestCompilationUnit as MonoDevelop.AspNet.Parser.AspNetCompilationUnit;
 					if (cu != null && cu.PageInfo != null && !string.IsNullOrEmpty (cu.PageInfo.InheritedClass))
-						codeBehind = ctx.GetClass (cu.PageInfo.InheritedClass);
+						codeBehind = cu.PageInfo.InheritedClass;
 				}
 			}
 			proxy = new MonoDevelopProxy (viewContent.Project, codeBehind);
@@ -418,7 +418,7 @@ namespace AspNetEdit.Integration
 				if (ExtensionInstalled (ref error))
 					return true;
 			} catch (Exception ex) {
-				error = AddinManager.CurrentLocalizer.GetString ("Unhandled error:\n{0}", ex);
+				error = AddinManager.CurrentLocalizer.GetString ("Unhandled error:\n{0}", ex.ToString ());
 			}
 			return false;
 		}

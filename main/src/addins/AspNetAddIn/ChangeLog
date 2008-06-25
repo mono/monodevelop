@@ -1,5 +1,10 @@
 2008-06-25  Michael Hutchinson <mhutchinson@novell.com> 
 
+	* MonoDevelop.AspNet.Parser/SuggestedHandlerCompletionData.cs: Track
+	  API.
+
+2008-06-25  Michael Hutchinson <mhutchinson@novell.com> 
+
 	* MonoDevelop.AspNet/CodeBehind.cs: Use case-insensitive checks on
 	  filenames.
 

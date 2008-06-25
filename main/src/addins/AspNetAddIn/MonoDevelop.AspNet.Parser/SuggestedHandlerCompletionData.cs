@@ -90,7 +90,7 @@ namespace MonoDevelop.AspNet.Parser
 			if (codeBehindClassPart != null)
 				BindingService.AddMemberToClass (entry, codeBehindClass, codeBehindClassPart, methodInfo, false);
 			else
-				BindingService.AddMemberToClass (entry, codeBehindClass, methodInfo, false);
+				BindingService.AddMemberToClass (entry, codeBehindClass, codeBehindClass, methodInfo, false);
 		}
 	}
 }
