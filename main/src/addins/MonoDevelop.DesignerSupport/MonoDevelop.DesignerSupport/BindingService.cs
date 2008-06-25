@@ -210,7 +210,7 @@ namespace MonoDevelop.DesignerSupport
 		}
 		
 		
-		static bool IdentifierExistsInClass (IParserContext parserContext, IClass cls, string identifier)
+		public static bool IdentifierExistsInClass (IParserContext parserContext, IClass cls, string identifier)
 		{
 			foreach (IMethod method in cls.Methods)
 				if (method.Name == identifier)
