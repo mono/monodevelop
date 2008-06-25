@@ -402,7 +402,7 @@ namespace CBinding
 		{
 			base.OnFileAddedToProject (e);
 			
-			if (!IsCompileable (e.ProjectFile.Name) &&
+			if (!Loading && !IsCompileable (e.ProjectFile.Name) &&
 			    e.ProjectFile.BuildAction == BuildAction.Compile) {
 				e.ProjectFile.BuildAction = BuildAction.Nothing;
 			}

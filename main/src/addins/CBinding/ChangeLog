@@ -1,3 +1,8 @@
+2008-06-25  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Project/CProject.cs: Don't set the build action for files when
+	  loading a project. Fixes bug #402336.
+
 2008-06-04  Marcos David Marín Amador <marcosmarin@gmail.com>
 	* Gui/GeneralOptionsPanel.cs, Parser/TagDatabaseManager.cs: Don't
 	  parse local valriables by default.
