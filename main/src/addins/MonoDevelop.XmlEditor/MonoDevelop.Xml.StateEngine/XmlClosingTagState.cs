@@ -41,16 +41,11 @@ namespace MonoDevelop.Xml.StateEngine
 			: base (parent, position)
 		{
 		}
-		
-		protected XmlClosingTagState (XmlClosingTagState copyFrom, bool copyParents)
-			: base (copyFrom, copyParents)
-		{
-			if (copyFrom.name != null)
-				name = (XmlTagNameState) copyFrom.name.DeepCopy (false);
-		}
 
-		public override State PushChar (char c, int position)
+		public override State PushChar (char c, int position, out bool reject)
 		{
+			reject = false;
+			
 			if (position == StartLocation) {
 				if (c != '/')
 					throw new InvalidOperationException ("First character pushed to a XmlClosingTagState must be '/'");
@@ -59,10 +54,9 @@ namespace MonoDevelop.Xml.StateEngine
 			
 			//if tag closed
 			if (c == '>' && name != null) {
-				
+				reject = true;
 				//walk up tree of parents looking for matching tag
 				foreach (XmlTagState ts in TagParents) {
-					
 					//when found, walk back up closing all tags
 					if (ts.Name.FullName == this.Name.FullName) {
 						ts.ClosingTag = this;
@@ -76,17 +70,24 @@ namespace MonoDevelop.Xml.StateEngine
 				}
 			}
 			
-			if (c == '<' || c == '>') {
+			if (c == '>') {
 				if (EndLocation < 0)
 					Close (position);
 				return Parent;
 			}
 			
+			if (c == '<') {
+				reject = true;
+				return Parent;
+			}
+			
 			if (position == StartLocation + 1 && char.IsLetter (c)) {
+				reject = true;
 				name = new XmlTagNameState (this, position);
 				return name;
 			}
 			
+			reject = true;
 			return new XmlMalformedTagState (this, position);
 		}
 		
@@ -96,7 +97,7 @@ namespace MonoDevelop.Xml.StateEngine
 		
 		public IEnumerable<XmlTagState> TagParents {
 			get {
-				foreach (State s in Parents) {
+				foreach (State s in ParentStack) {
 					XmlTagState ts = s as XmlTagState;
 					if (ts != null)
 						yield return ts;
@@ -109,10 +110,20 @@ namespace MonoDevelop.Xml.StateEngine
 			return string.Format ("[XmlClosingTag({0})]", name != null? name.ToString () : string.Empty);
 		}
 		
-		public override State DeepCopy (bool copyParents)
+		#region Cloning API
+		
+		public override State ShallowCopy ()
 		{
-			return new XmlClosingTagState (this, copyParents);
+			return new XmlClosingTagState (this);
 		}
+		
+		protected XmlClosingTagState (XmlClosingTagState copyFrom) : base (copyFrom)
+		{
+			if (copyFrom.name != null)
+				name = (XmlTagNameState) copyFrom.name.ShallowCopy ();
+		}
+		
+		#endregion
 
 	}
 }

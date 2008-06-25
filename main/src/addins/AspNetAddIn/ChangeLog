@@ -1,5 +1,12 @@
 2008-06-25  Michael Hutchinson <mhutchinson@novell.com> 
 
+	* MonoDevelop.AspNet.StateEngine/AspNetSpecialState.cs,
+	  MonoDevelop.AspNet.StateEngine/AspNetFreeState.cs,
+	  MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs: Rework stack
+	  cloning and character rejection mechanisms in XML/ASP state engine.
+
+2008-06-25  Michael Hutchinson <mhutchinson@novell.com> 
+
 	* MonoDevelop.AspNet.Parser/SuggestedHandlerCompletionData.cs: Track
 	  API.
 

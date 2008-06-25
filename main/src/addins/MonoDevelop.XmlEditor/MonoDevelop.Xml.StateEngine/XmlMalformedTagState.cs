@@ -38,19 +38,16 @@ namespace MonoDevelop.Xml.StateEngine
 			: base (parent, position)
 		{
 		}
-		
-		protected XmlMalformedTagState (XmlMalformedTagState copyFrom, bool copyParents)
-			: base (copyFrom, copyParents)
-		{
-		}
 
-		public override State PushChar (char c, int position)
+		public override State PushChar (char c, int position, out bool reject)
 		{
 			if (c == '<' || c == '>') {
+				reject = (c == '<');
 				Close (position);
 				return this.Parent;
 			}
-				
+			
+			reject= false;
 			return null;
 		}
 
@@ -59,10 +56,18 @@ namespace MonoDevelop.Xml.StateEngine
 			return "[XmlMalformedTag]";
 		}
 		
-		public override State DeepCopy (bool copyParents)
+		#region Cloning API
+		
+		public override State ShallowCopy ()
 		{
-			return new XmlMalformedTagState (this, copyParents);
+			return new XmlMalformedTagState (this);
 		}
+		
+		protected XmlMalformedTagState (XmlMalformedTagState copyFrom) : base (copyFrom)
+		{
+		}
+		
+		#endregion
 
 	}
 }

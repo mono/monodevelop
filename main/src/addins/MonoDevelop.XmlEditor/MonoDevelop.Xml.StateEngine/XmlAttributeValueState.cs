@@ -41,20 +41,16 @@ namespace MonoDevelop.Xml.StateEngine
 			: base (parent, position)
 		{
 		}
-		
-		public XmlAttributeValueState (XmlAttributeValueState copyFrom, bool copyParents)
-			: base (copyFrom, copyParents)
-		{
-			startChar = copyFrom.startChar;
-			done = copyFrom.done;
-		}
 
-		public override State PushChar (char c, int position)
+		public override State PushChar (char c, int position, out bool reject)
 		{
 			if (c == '<' || done) {
+				reject = true;
 				Close (position);
 				return Parent;
 			}
+			
+			reject = false;
 			
 			if (position == StartLocation) {
 				if (c == '\'' || c == '"' || char.IsLetterOrDigit (c)) {
@@ -93,9 +89,19 @@ namespace MonoDevelop.Xml.StateEngine
 			return "[XmlAttributeValue]";
 		}
 		
-		public override State DeepCopy (bool copyParents)
+		#region Cloning API
+		
+		public override State ShallowCopy ()
 		{
-			return new XmlAttributeValueState (this, copyParents);
+			return new XmlAttributeValueState (this);
 		}
+		
+		protected XmlAttributeValueState (XmlAttributeValueState copyFrom) : base (copyFrom)
+		{
+			startChar = copyFrom.startChar;
+			done = copyFrom.done;
+		}
+		
+		#endregion
 	}
 }

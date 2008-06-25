@@ -39,6 +39,7 @@ namespace MonoDevelop.Xml.StateEngine
 	{
 		State currentState;
 		int position;
+		Indent currentLineExpectedIndent, previousLineExpectedIndent;
 
 		public Parser ()
 		{
@@ -48,7 +49,7 @@ namespace MonoDevelop.Xml.StateEngine
 		
 		private Parser (Parser<T> old)
 		{
-			currentState = old.CurrentState.DeepCopy (true);
+			currentState = old.CurrentState.StackCopy ();
 			position = old.position;
 		}
 		
@@ -60,6 +61,14 @@ namespace MonoDevelop.Xml.StateEngine
 			get { return position; }
 		}
 		
+		public Indent CurrentLineExpectedIndent {
+			get { return currentLineExpectedIndent; }
+		}
+		
+		public Indent PreviousLineExpectedIndent {
+			get { return previousLineExpectedIndent; }
+		}
+		
 		public void Reset ()
 		{
 			position = 0;
@@ -68,20 +77,29 @@ namespace MonoDevelop.Xml.StateEngine
 
 		public void Push (char c)
 		{
+			if (c == '\n')
+				previousLineExpectedIndent = currentLineExpectedIndent;
+			
 			position++;
 			
-			//if we switch state, the new state gets offered the same char and postion a sthe old state
 			State newState = null;
 			
 			int loopLimit = 200;
 			do {
 				System.Diagnostics.Debug.Assert (currentState != null);
-				newState = currentState.PushChar (c, position);
+				
+				bool reject;
+				newState = currentState.PushChar (c, position, out reject);
+				
 				if (newState == currentState) {
 					newState = null;
 				} else if (newState != null) {
 					currentState = newState;
+					System.Console.WriteLine(ToString ());
 				}
+				
+				if (!reject)
+					break;
 				
 				loopLimit--;
 				if (loopLimit <= 0)
@@ -92,7 +110,8 @@ namespace MonoDevelop.Xml.StateEngine
 		
 		public override string ToString ()
 		{
-			StringBuilder builder = new StringBuilder ("[Parser Location={0} Stack=", position);
+			StringBuilder builder = new StringBuilder ();
+			builder.AppendFormat ("[Parser Location={0} Stack=", position);
 			State s = currentState;
 			while (s != null) {
 				builder.Append ("\n\t");

@@ -42,14 +42,9 @@ namespace MonoDevelop.Xml.StateEngine
 		{
 		}
 		
-		protected XmlProcessingInstructionState (XmlProcessingInstructionState copyFrom, bool copyParents)
-			: base (copyFrom, copyParents)
+		public override State PushChar (char c, int position, out bool reject)
 		{
-			backOne = copyFrom.backOne;
-		}
-
-		public override State PushChar (char c, int position)
-		{
+			reject = false;
 			if (c == '>' && backOne == '?') {
 				Close (position);
 				return Parent;
@@ -63,9 +58,18 @@ namespace MonoDevelop.Xml.StateEngine
 			return "[XmlProcessingInstruction]";
 		}
 		
-		public override State DeepCopy (bool copyParents)
+		#region Cloning API
+		
+		public override State ShallowCopy ()
 		{
-			return new XmlProcessingInstructionState (this, copyParents);
+			return new XmlProcessingInstructionState (this);
 		}
+		
+		protected XmlProcessingInstructionState (XmlProcessingInstructionState copyFrom) : base (copyFrom)
+		{
+			backOne = copyFrom.backOne;
+		}
+		
+		#endregion
 	}
 }

@@ -48,21 +48,17 @@ namespace MonoDevelop.AspNet.StateEngine
 			: base (parent, position)
 		{
 		}
-		
-		protected AspNetFreeState (AspNetFreeState copyFrom, bool copyParents)
-			: base (copyFrom, copyParents)
-		{
-			openTag = copyFrom.openTag;
-		}
 
-		public override State PushChar (char c, int location)
+		public override State PushChar (char c, int location, out bool reject)
 		{
 			if (c == '<') {
+				reject = false;
 				openTag = true;
 				return null;
 			}
 			
 			if (c == '>') {
+				reject = false;
 				XmlTagState tsParent = Parent as XmlTagState;
 				if (tsParent != null && tsParent.Closing)
 					return Parent;
@@ -70,6 +66,7 @@ namespace MonoDevelop.AspNet.StateEngine
 			
 			if (openTag) {
 				openTag = false;
+				reject = true;
 				if (c == '/')
 					return new XmlClosingTagState (this, location);
 				else if (c == '!')
@@ -84,6 +81,7 @@ namespace MonoDevelop.AspNet.StateEngine
 					return new XmlMalformedTagState (this, location);
 			}
 			
+			reject = false;
 			return null;
 		}
 
@@ -92,9 +90,18 @@ namespace MonoDevelop.AspNet.StateEngine
 			return "[AspNetFree]";
 		}
 		
-		public override State DeepCopy (bool copyParents)
+		#region Cloning API
+		
+		public override State ShallowCopy ()
 		{
-			return new AspNetFreeState (this, copyParents);
+			return new AspNetFreeState (this);
 		}
+		
+		protected AspNetFreeState (AspNetFreeState copyFrom) : base (copyFrom)
+		{
+			openTag = copyFrom.openTag;
+		}
+		
+		#endregion
 	}
 }

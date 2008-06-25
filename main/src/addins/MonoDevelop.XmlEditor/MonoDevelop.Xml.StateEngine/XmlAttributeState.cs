@@ -44,22 +44,16 @@ namespace MonoDevelop.Xml.StateEngine
 		{
 			nameBuilder = new StringBuilder ();
 		}
-		
-		protected XmlAttributeState (XmlAttributeState copyFrom, bool copyParents)
-			: base (copyFrom, copyParents)
-		{
-			if (copyFrom.nameBuilder != null)
-				nameBuilder = new StringBuilder (copyFrom.nameBuilder.ToString ());
-			name = copyFrom.name;
-			mode = copyFrom.mode;
-		}
 
-		public override State PushChar (char c, int position)
+		public override State PushChar (char c, int position, out bool reject)
 		{
 			if (c == '<' || c == '>') {
+				reject = true;
 				Close (position);
 				return this.Parent;
 			}
+			
+			reject = false;
 			
 			switch (mode) {
 			case Mode.Naming:
@@ -104,6 +98,7 @@ namespace MonoDevelop.Xml.StateEngine
 					return null;
 				} else if (char.IsLetterOrDigit (c) || c== '\'' || c== '"') {
 					mode = Mode.GotVal;
+					reject = true;
 					return new XmlAttributeValueState (this, position);
 				}
 				break;
@@ -140,10 +135,21 @@ namespace MonoDevelop.Xml.StateEngine
 			return string.Format ("[XmlAttribute({0})]", Name);
 		}
 		
-		public override State DeepCopy (bool copyParents)
+		#region Cloning API
+		
+		public override State ShallowCopy ()
 		{
-			return new XmlAttributeState (this, copyParents);
+			return new XmlAttributeState (this);
 		}
-
+		
+		protected XmlAttributeState (XmlAttributeState copyFrom) : base (copyFrom)
+		{
+			if (copyFrom.nameBuilder != null)
+				nameBuilder = new StringBuilder (copyFrom.nameBuilder.ToString ());
+			name = copyFrom.name;
+			mode = copyFrom.mode;
+		}
+		
+		#endregion
 	}
 }

@@ -1,3 +1,20 @@
+2008-06-25  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Xml.StateEngine/Parser.cs,
+	  MonoDevelop.Xml.StateEngine/XmlClosingTagState.cs,
+	  MonoDevelop.Xml.StateEngine/CDataState.cs,
+	  MonoDevelop.Xml.StateEngine/XmlTagState.cs,
+	  MonoDevelop.Xml.StateEngine/XmlSpecialTagState.cs,
+	  MonoDevelop.Xml.StateEngine/XmlTagNameState.cs,
+	  MonoDevelop.Xml.StateEngine/State.cs,
+	  MonoDevelop.Xml.StateEngine/XmlProcessingInstructionState.cs,
+	  MonoDevelop.Xml.StateEngine/XmlAttributeValueState.cs,
+	  MonoDevelop.Xml.StateEngine/XmlFreeState.cs,
+	  MonoDevelop.Xml.StateEngine/XmlCommentState.cs,
+	  MonoDevelop.Xml.StateEngine/XmlMalformedTagState.cs,
+	  MonoDevelop.Xml.StateEngine/XmlAttributeState.cs: Rework stack
+	  cloning and character rejection mechanisms in XML/ASP state engine.
+
 2008-06-09  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.XmlEditor.mds: Don't build editor tests by default.

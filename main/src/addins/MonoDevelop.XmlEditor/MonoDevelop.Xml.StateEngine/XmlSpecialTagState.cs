@@ -43,19 +43,18 @@ namespace MonoDevelop.Xml.StateEngine
 			: base (parent, position)
 		{
 		}
-		
-		protected XmlSpecialTagState (XmlSpecialTagState copyFrom, bool copyParents)
-			: base (copyFrom, copyParents)
-		{
-			mode = copyFrom.mode;
-		}
 
-		public override State PushChar (char c, int position)
+		public override State PushChar (char c, int position, out bool reject)
 		{
+			reject = false;
 			int index = position - StartLocation;
 			
-			if (c == '<' || c == '>')
+			if (c == '<') {
+				reject = true;
 				return Parent;
+			} else if (c == '>') {
+				return Parent;
+			}
 			
 			switch (index) {
 			case 0:
@@ -63,8 +62,10 @@ namespace MonoDevelop.Xml.StateEngine
 					mode = Mode.Exclam;
 					return null;
 				} else if (char.IsLetter (c)) {
+					reject = true;
 					return new XmlTagState (this, position);
 				} else if (c == '?') {
+					reject = true;
 					return new XmlProcessingInstructionState (this, position);
 				}
 				break;
@@ -93,6 +94,7 @@ namespace MonoDevelop.Xml.StateEngine
 				break;
 			}
 			
+			reject = true;
 			return new XmlMalformedTagState (this, position);
 		}
 		
@@ -108,10 +110,19 @@ namespace MonoDevelop.Xml.StateEngine
 			return string.Format ("[XmlSpecialTag]");
 		}
 		
-		public override State DeepCopy (bool copyParents)
+		#region Cloning API
+		
+		public override State ShallowCopy ()
 		{
-			return new XmlSpecialTagState (this, copyParents);
+			return new XmlSpecialTagState (this);
 		}
+		
+		protected XmlSpecialTagState (XmlSpecialTagState copyFrom) : base (copyFrom)
+		{
+			mode = copyFrom.mode;
+		}
+		
+		#endregion
 
 	}
 }

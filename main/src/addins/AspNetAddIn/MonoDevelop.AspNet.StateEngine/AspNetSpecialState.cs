@@ -44,14 +44,9 @@ namespace MonoDevelop.AspNet.StateEngine
 		{
 		}
 		
-		protected AspNetSpecialState (AspNetSpecialState copyFrom, bool copyParents)
-			: base (copyFrom, copyParents)
+		public override State PushChar (char c, int position, out bool reject)
 		{
-			mode = copyFrom.mode;
-		}
-
-		public override State PushChar (char c, int position)
-		{
+			reject = true;
 			int index = position - StartLocation;
 			
 			if (c == '<' || c == '>')
@@ -74,9 +69,18 @@ namespace MonoDevelop.AspNet.StateEngine
 			return string.Format ("[AspNetSpecial]");
 		}
 		
-		public override State DeepCopy (bool copyParents)
+		#region Cloning API
+		
+		public override State ShallowCopy ()
 		{
-			return new AspNetSpecialState (this, copyParents);
+			return new AspNetSpecialState (this);
 		}
+		
+		protected AspNetSpecialState (AspNetSpecialState copyFrom) : base (copyFrom)
+		{
+			mode = copyFrom.mode;
+		}
+		
+		#endregion
 	}
 }

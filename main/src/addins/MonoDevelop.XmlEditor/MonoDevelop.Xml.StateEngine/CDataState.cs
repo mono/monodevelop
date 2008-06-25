@@ -42,15 +42,9 @@ namespace MonoDevelop.Xml.StateEngine
 		{
 		}
 		
-		protected CDataState (CDataState copyFrom, bool copyParents)
-			: base (copyFrom, copyParents)
+		public override State PushChar (char c, int position, out bool reject)
 		{
-			backOne = copyFrom.backOne;
-			backTwo = copyFrom.backTwo;
-		}
-
-		public override State PushChar (char c, int position)
-		{
+			reject = false;
 			if (c == '>' && backOne == ']' && backTwo == ']') {
 				Close (position);
 				return Parent;
@@ -65,10 +59,20 @@ namespace MonoDevelop.Xml.StateEngine
 			return "[CData]";
 		}
 		
-		public override State DeepCopy (bool copyParents)
+		#region Cloning API
+		
+		public override State ShallowCopy ()
 		{
-			return new CDataState (this, copyParents);
+			return new CDataState (this);
 		}
+		
+		protected CDataState (CDataState copyFrom) : base (copyFrom)
+		{
+			backOne = copyFrom.backOne;
+			backTwo = copyFrom.backTwo;
+		}
+		
+		#endregion
 
 	}
 }

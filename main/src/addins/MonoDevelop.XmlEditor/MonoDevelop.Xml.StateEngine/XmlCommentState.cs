@@ -41,20 +41,15 @@ namespace MonoDevelop.Xml.StateEngine
 			: base (parent, position)
 		{
 		}
-		
-		protected XmlCommentState (XmlCommentState copyFrom, bool copyParents)
-			: base (copyFrom, copyParents)
-		{
-			backOne = copyFrom.backOne;
-			backTwo = copyFrom.backTwo;
-		}
 
-		public override State PushChar (char c, int position)
+		public override State PushChar (char c, int position, out bool reject)
 		{
+			reject = false;
 			if (c == '>' && backOne == '-' && backTwo == '-') {
 				Close (position);
 				return Parent;
 			}
+			
 			backTwo = backOne;
 			backOne = c;
 			return null;
@@ -65,9 +60,19 @@ namespace MonoDevelop.Xml.StateEngine
 			return "[XmlComment]";
 		}
 		
-		public override State DeepCopy (bool copyParents)
+		#region Cloning API
+		
+		public override State ShallowCopy ()
 		{
-			return new XmlCommentState (this, copyParents);
+			return new XmlCommentState (this);
 		}
+		
+		protected XmlCommentState (XmlCommentState copyFrom) : base (copyFrom)
+		{
+			backOne = copyFrom.backOne;
+			backTwo = copyFrom.backTwo;
+		}
+		
+		#endregion
 	}
 }

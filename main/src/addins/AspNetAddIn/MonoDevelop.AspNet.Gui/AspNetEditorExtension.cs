@@ -726,7 +726,7 @@ namespace MonoDevelop.AspNet.Gui
 		XmlTagState GetCompleteTag (int index)
 		{
 			List<State> path = GetCurrentPath ();
-			XmlTagState start = (XmlTagState) path[index].DeepCopy (true);
+			XmlTagState start = (XmlTagState) path[index].StackCopy ();
 			int pos = start.EndLocation;
 			if (pos < 0)
 				pos = tracker.Engine.Position;
@@ -739,18 +739,20 @@ namespace MonoDevelop.AspNet.Gui
 				//parser logic from parser.cs
 				State next = null;
 				do {
-					next = current.PushChar (c, pos);
+					bool reject;
+					next = current.PushChar (c, pos, out reject);
 					//System.Console.WriteLine("{0} {1}", c, current.ToString ());
 					//when end tag found, return it (skip the / to let the tag finish closing
 					//if (start.ClosingTag != null && c != '/')
 					//	return start;
 					if (next == start.Parent)
 						return start;
-					
-					if (next == current)
-						next = null;
+					if (!reject)
+						break;
 					if (next != null)
 						current = next;
+					if (next == current || !reject)
+						next = null;
 				} while (next != null);
 				pos++;
 			}
@@ -773,9 +775,10 @@ namespace MonoDevelop.AspNet.Gui
 				//text editor may update cursor before inserting chars, so avoid exceptions
 				if (tns.StartLocation == pos && !char.IsLetter (c))
 					break;
-				State ret = tns.PushChar (c, pos);
+				bool reject;
+				State ret = tns.PushChar (c, pos, out reject);
 				pos++;
-				if (tns.Complete || (ret != null && ret != tns))
+				if (tns.Complete || (ret != null && ret != tns) || reject)
 					break;
 			}
 		}
@@ -788,7 +791,7 @@ namespace MonoDevelop.AspNet.Gui
 			//if current state is a name, walk onwards to complete it
 			State s = this.tracker.Engine.CurrentState;
 			if (s is XmlTagNameState) {
-				XmlTagNameState tns = (XmlTagNameState) s.DeepCopy (false);
+				XmlTagNameState tns = (XmlTagNameState) s.ShallowCopy ();
 				CompleteNameTag (tns);
 				if (tns.Complete) {
 					path.Add (tns);

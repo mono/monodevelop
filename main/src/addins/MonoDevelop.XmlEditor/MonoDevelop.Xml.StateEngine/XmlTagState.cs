@@ -41,24 +41,19 @@ namespace MonoDevelop.Xml.StateEngine
 		public XmlTagState (State parent, int position)
 			: base (parent, position)
 		{
-		}
-		
-		protected XmlTagState (XmlTagState copyFrom, bool copyParents)
-			: base (copyFrom, copyParents)
-		{
-			if (copyFrom.name != null)
-				name = (XmlTagNameState) copyFrom.name.DeepCopy (false);
-			closing = copyFrom.closing;
 		}	
 		
-		public override State PushChar (char c, int position)
+		public override State PushChar (char c, int position, out bool reject)
 		{
 			if (name == null) {
+				reject = true;
 				name = new XmlTagNameState (this, position);
 				return name;
 			}
 			
 			if (c == '<') {
+				//FIXME: warning
+				reject = true;
 				if (EndLocation < 0)
 					Close (position);
 				return Parent;
@@ -67,25 +62,37 @@ namespace MonoDevelop.Xml.StateEngine
 			if (c == '>') {
 				if (EndLocation < 0)
 					Close (position);
-				return closing? Parent : new XmlFreeState (this, position);
+				if (closing) {
+					reject = true;
+					return Parent;
+				} else {
+					reject = false;
+					return new XmlFreeState (this, position);
+				}
 			}
 			
 			if (c == '/') {
+				reject = false;
 				ClosingTag = this;
 				closing = true;
 				return null;
 			}
 			
-			if (closing)
-				return new XmlMalformedTagState (this, position);
-			
-			if (char.IsWhiteSpace (c))
+			if (char.IsWhiteSpace (c)) {
+				reject = false;
 				return null;
+			} else if (closing) {
+				reject = true;
+				return new XmlMalformedTagState (this, position);
+			}
 			
-			if (char.IsLetter (c))
+			if (char.IsLetter (c)) {
+				reject = true;
 				return new XmlAttributeState (this, position);
+			}
 			
 			//FIXME: should we be strict about this?
+			reject = true;
 			return new XmlMalformedTagState (this, position);
 		}
 		
@@ -120,10 +127,21 @@ namespace MonoDevelop.Xml.StateEngine
 			return string.Format ("[XmlTag({0})]", name != null? name.FullName.ToString () : string.Empty);
 		}
 		
-		public override State DeepCopy (bool copyParents)
+		#region Cloning API
+		
+		public override State ShallowCopy ()
 		{
-			return new XmlTagState (this, copyParents);
+			return new XmlTagState (this);
 		}
+		
+		protected XmlTagState (XmlTagState copyFrom) : base (copyFrom)
+		{
+			if (copyFrom.name != null)
+				name = (XmlTagNameState) copyFrom.name.ShallowCopy ();
+			closing = copyFrom.closing;
+		}
+		
+		#endregion
 		
 	}
 }

@@ -45,28 +45,19 @@ namespace MonoDevelop.Xml.StateEngine
 			this.parent = parent;
 			this.startLocation = startLocation;
 		}
-		
-		protected State (State copyFrom, bool copyParents)
-		{
-			if (copyParents && copyFrom.Parent != null) {
-				parent = copyFrom.Parent.DeepCopy (copyParents);
-			} else {
-				parent = copyFrom.Parent;
-			}
-			startLocation = copyFrom.startLocation;
-			endLocation = copyFrom.endLocation;
-		}
 
 		/// <summary>
 		/// When the <see cref="Parser"/> advances by one character, it calls this method 
 		/// on the currently active <see cref="State"/> to determine the next state.
 		/// </summary>
 		/// <param name="c">The current character.</param>
+		/// <param name="reject"> If true, the character is being rejected, and should be 
+		/// passed on to the next state.</param>
 		/// <returns>
-		/// The next state. The parent state or a new <see cref="State"/> will 
-		/// change the parser state; the current state or <see cref="null"/> will not.
+		/// The next state. A new or parent <see cref="State"/> will change the parser state; 
+		/// the current state or <see cref="null"/> will not.
 		/// </returns>
-		public abstract State PushChar (char c, int position);
+		public abstract State PushChar (char c, int location, out bool reject);
 
 		public State Parent {
 			get { return parent; }
@@ -81,7 +72,7 @@ namespace MonoDevelop.Xml.StateEngine
 			get { return endLocation; }
 		}
 		
-		public IEnumerable<State> Parents
+		public IEnumerable<State> ParentStack
 		{
 			get {
 				State p = Parent;
@@ -103,6 +94,30 @@ namespace MonoDevelop.Xml.StateEngine
 			this.endLocation = endLocation;
 		}
 		
-		public abstract State DeepCopy (bool copyParents);
+		#region Cloning API
+		
+		public State StackCopy ()
+		{
+			State copy = ShallowCopy ();
+			if (parent != null)
+				copy.parent = parent.StackCopy ();
+			
+			//check that the subclass has implemented the API fully
+			System.Diagnostics.Debug.Assert (copy.GetType () == this.GetType ());
+			System.Diagnostics.Debug.Assert (copy.startLocation == this.startLocation);
+			
+			return copy;
+		}
+		
+		//this should simply call the protected cloning constructor chain
+		public abstract State ShallowCopy ();
+		
+		protected State (State copyFrom)
+		{
+			startLocation = copyFrom.startLocation;
+			endLocation = copyFrom.endLocation;
+		}
+		
+		#endregion
 	}
 }
