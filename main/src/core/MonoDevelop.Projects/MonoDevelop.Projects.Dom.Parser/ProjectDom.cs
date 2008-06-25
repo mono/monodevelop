@@ -33,7 +33,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 {
 	public class ProjectDom
 	{
-//		Dictionary<string, ICompilationUnit> compilationUnits = new Dictionary<string, ICompilationUnit> ();
+		Dictionary<string, ICompilationUnit> compilationUnits = new Dictionary<string, ICompilationUnit> ();
 		CodeCompletionDatabase database;
 		
 /*		public IEnumerable<ICompilationUnit> CompilationUnits {
@@ -42,12 +42,18 @@ namespace MonoDevelop.Projects.Dom.Parser
 			}
 		}*/
 		
-		
+		IEnumerable<IType> CompilationUnitTypes {
+			get {
+				foreach (ICompilationUnit unit in compilationUnits.Values) {
+					foreach (IType type in unit.Types) {
+						yield return type;
+					}
+				}
+			}
+		}
 		public IEnumerable<IType> Types {
 			get {
-				if (database == null)
-					return null;
-				return database.GetClassList ();
+				return database == null ? CompilationUnitTypes : database.GetClassList ();
 			}
 		}
 	
@@ -75,6 +81,16 @@ namespace MonoDevelop.Projects.Dom.Parser
 				database = value;
 			}
 		}
+		
+		public void UpdateFromParseInfo (ICompilationUnit unit, string fileName)
+		{
+			if (database != null) {
+				((ProjectCodeCompletionDatabase)database).UpdateFromParseInfo (unit, fileName);
+			} else {
+				this.compilationUnits [fileName] = unit;
+			}
+		}
+		
 //		
 //		public bool Contains (ICompilationUnit unit)
 //		{

@@ -157,7 +157,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 				Thread.Sleep (500);
 				try {
 					ICompilationUnit unit = parser.Parse (fileName, getContent ());
-					((ProjectCodeCompletionDatabase)dom.Database).UpdateFromParseInfo (unit, fileName);
+					dom.UpdateFromParseInfo (unit, fileName);
 					OnCompilationUnitUpdated (new CompilationUnitEventArgs (unit));
 					OnDomUpdated (new ProjectDomEventArgs (dom));
 				} catch (ThreadAbortException) {
