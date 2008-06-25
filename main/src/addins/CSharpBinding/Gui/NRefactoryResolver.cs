@@ -71,7 +71,7 @@ namespace MonoDevelop.CSharpBinding
 				return callingMember;
 			}
 		}
-
+		
 		public Project Project {
 			get {
 				return project;
@@ -141,12 +141,35 @@ namespace MonoDevelop.CSharpBinding
 				if (identifier == pair.Key) {
 					LocalLookupVariable var = pair.Value[pair.Value.Count - 1];
 					result.ResolvedType = new DomReturnType (var.TypeRef.Type);
-					break;
+					return result;
 				}
 			}
+			
+			if (this.callingType != null) {
+				foreach (IField f in this.callingType.Fields) {
+					if (f.Name == identifier) {
+						result.ResolvedType = f.ReturnType;
+						return result;
+					}
+				}
+				
+				foreach (IProperty p in this.callingType.Properties) {
+					if (p.Name == identifier) {
+						result.ResolvedType = p.ReturnType;
+						return result;
+					}
+				}
+			}
+			
+			if (this.callingMember != null) {
+				if (identifier == "value" && this.callingMember is IProperty) {
+					result.ResolvedType = ((IProperty)this.callingMember).ReturnType;
+					return result;
+				}
+			}
+			
 			return result;
 		}
-		
 		
 		string CreateWrapperClassForMember (IMember member)
 		{
@@ -162,6 +185,5 @@ namespace MonoDevelop.CSharpBinding
 			result.Append ("}");
 			return result.ToString ();
 		}
-		
 	}
 }

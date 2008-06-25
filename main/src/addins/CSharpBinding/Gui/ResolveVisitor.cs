@@ -52,6 +52,15 @@ namespace MonoDevelop.CSharpBinding
 			return result;
 		}
 		
+		ResolveResult CreateResult (IReturnType type)
+		{
+			ResolveResult result = new ResolveResult ();
+			result.CallingType   = resolver.CallingType;
+			result.CallingMember = resolver.CallingMember;
+			result.ResolvedType  = type;
+			return result;
+		}
+		
 		public override object VisitIdentifierExpression(IdentifierExpression identifierExpression, object data)
 		{
 			return resolver.ResolveIdentifier (identifierExpression.Identifier);
@@ -146,6 +155,8 @@ namespace MonoDevelop.CSharpBinding
 		
 		public override object VisitThisReferenceExpression (ThisReferenceExpression thisReferenceExpression, object data)
 		{
+			if (resolver.CallingType == null)
+				return CreateResult (DomReturnType.Void);
 			return CreateResult (resolver.CallingType.FullName);
 		}
 		

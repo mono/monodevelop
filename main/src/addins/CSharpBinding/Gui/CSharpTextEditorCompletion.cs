@@ -37,7 +37,7 @@ using MonoDevelop.Projects.Gui.Completion;
 
 namespace MonoDevelop.CSharpBinding.Gui
 {
-	public class CSharpTextEditorCompletion : TextEditorExtension
+	public class CSharpTextEditorCompletion : CompletionTextEditorExtension
 	{
 		public override bool KeyPress (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
 		{
@@ -45,7 +45,6 @@ namespace MonoDevelop.CSharpBinding.Gui
 			ExpressionResult result = expressionFinder.FindExpression (Editor.Text, Editor.CursorPosition);
 			if (result == null)
 				return true;
-			System.Console.WriteLine ("Result:" + result);
 			switch (keyChar) {
 			case '.':
 				NRefactoryResolver resolver = new MonoDevelop.CSharpBinding.NRefactoryResolver (Document.Project,
@@ -53,7 +52,9 @@ namespace MonoDevelop.CSharpBinding.Gui
 				                                                                                Editor,
 				                                                                                Document.FileName);
 				ResolveResult resolveResult = resolver.Resolve (result);
-				System.Console.WriteLine("resolve: " + resolveResult);
+				
+				ShowCompletion (CreateCompletionData (resolveResult), 0, '.');
+				
 //				Resolver res = new Resolver (parserContext);
 //				ResolveResult results = res.Resolve (expression, caretLineNumber, caretColumn, FileName, Editor.Text);
 //				completionProvider.AddResolveResults (results, false, res.CreateTypeNameResolver ());
@@ -62,5 +63,18 @@ namespace MonoDevelop.CSharpBinding.Gui
 			
 			return true;
 		}
+		
+		ICompletionDataProvider CreateCompletionData (ResolveResult resolveResult)
+		{
+			CodeCompletionDataProvider result = new CodeCompletionDataProvider (null, null);
+//			ProjectDom dom = ProjectDomService.GetDom (Document.Project);
+//			IType type = dom.GetType (resolveResult.ResolvedType);
+//			if (type != null) {
+//				// Add accessible members.
+//			}
+			
+			return result;
+		}
+
 	}
 }
