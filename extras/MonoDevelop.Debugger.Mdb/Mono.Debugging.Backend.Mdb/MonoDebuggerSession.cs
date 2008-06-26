@@ -126,17 +126,21 @@ namespace Mono.Debugging.Backend.Mdb
 		
 		protected override ThreadInfo[] OnGetThreads (int processId)
 		{
-			return new ThreadInfo [0];
+			return controller.DebuggerServer.GetThreads (processId);
 		}
 		
 		protected override ProcessInfo[] OnGetPocesses ()
 		{
-			return new ProcessInfo [0];
+			return controller.DebuggerServer.GetPocesses ();
 		}
 		
-		protected override Backtrace OnGetThreadBacktrace (int threadId)
+		protected override Backtrace OnGetThreadBacktrace (int processId, int threadId)
 		{
-			return null;
+			return controller.DebuggerServer.GetThreadBacktrace (processId, threadId);
+		}
+		
+		protected override void OnSetActiveThread (int threadId)
+		{
 		}
 	}
 }

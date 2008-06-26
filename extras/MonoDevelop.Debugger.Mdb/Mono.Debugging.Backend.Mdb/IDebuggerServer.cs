@@ -67,5 +67,11 @@ namespace Mono.Debugging.Backend.Mdb
 		void EnableBreakpoint (int handle, bool enable);
 
 		void Continue ();
+		
+		ThreadInfo[] GetThreads (int processId);
+		
+		ProcessInfo[] GetPocesses ();
+		
+		Backtrace GetThreadBacktrace (int processId, int threadId);
 	}
 }

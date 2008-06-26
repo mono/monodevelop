@@ -1,3 +1,8 @@
+2008-06-26  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDebuggerSession.cs, IDebuggerServer.cs: Implement GetThreads and
+	  GetProcesses.
+
 2008-06-20  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* IDebuggerController.cs, MonoDebuggerSession.cs, IDebuggerServer.cs,
