@@ -89,7 +89,7 @@ namespace MonoDevelop.Gettext
 			
 			treeviewProjectList.AppendColumn (col);
 			
-			FillTree (TreeIter.Zero, project.ParentFolder);
+			FillTree (TreeIter.Zero, project.ParentSolution.RootFolder);
 		}
 		
 		void ActiveToggled (object sender, ToggledArgs e)
