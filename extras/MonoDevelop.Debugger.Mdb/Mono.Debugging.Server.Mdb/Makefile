@@ -64,6 +64,7 @@ EXTRAS = \
 
 REFERENCES =  \
 	../build/DebuggerClient.dll \
+	Mono.Posix \
 	-pkg:mono-addins \
 	-pkg:mono-debugger \
 	-pkg:monodevelop \

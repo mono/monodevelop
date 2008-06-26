@@ -68,6 +68,7 @@ EXTRAS = \
 	mono.debugging.backend.mdb.pc.in 
 
 REFERENCES =  \
+	Mono.Posix \
 	-pkg:monodevelop \
 	-pkg:monodevelop-core-addins \
 	System \

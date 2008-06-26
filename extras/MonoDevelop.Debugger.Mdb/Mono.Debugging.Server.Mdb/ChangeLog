@@ -1,5 +1,10 @@
 2008-06-26  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* Mono.Debugging.Server.Mdb.mdp, Server.cs, Makefile: Enable unix
+	  channel support.
+
+2008-06-26  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* DebuggerServer.cs: Allow setting the active thread. Implemented
 	  GetThreads and GetProcesses.
 	* Util.cs, BacktraceWrapper.cs: Fix warnings.

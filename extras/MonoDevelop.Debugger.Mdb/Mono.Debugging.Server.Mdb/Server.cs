@@ -8,6 +8,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using Mono.Debugging.Backend.Mdb;
 using System.Reflection;
+using Mono.Remoting.Channels.Unix;
 
 namespace DebuggerServer
 {
@@ -38,11 +39,11 @@ namespace DebuggerServer
 				string unixPath = null;
 				if (channel == "unix")
 				{
-					/*unixPath = System.IO.Path.GetTempFileName();
-					  Hashtable props = new Hashtable();
-					  props["path"] = unixPath;
-					  props["name"] = "__internal_unix";
-					  ChannelServices.RegisterChannel(new UnixChannel(props, null, null), false);*/
+					unixPath = System.IO.Path.GetTempFileName();
+					Hashtable props = new Hashtable();
+					props["path"] = unixPath;
+					props["name"] = "__internal_unix";
+					ChannelServices.RegisterChannel(new UnixChannel(props, null, null), false);
 				}
 				else
 				{
@@ -82,8 +83,9 @@ namespace DebuggerServer
 				{
 				}
 
-				//if (unixPath != null)
-				// File.Delete(unixPath);
+				if (unixPath != null)
+					File.Delete(unixPath);
+				
 			} catch (Exception e)
 			{
 				Console.WriteLine ("DS: {0}", e.ToString());

@@ -6,6 +6,7 @@ using System.Runtime.Remoting;
 using System.Runtime.Remoting.Channels;
 using System.Runtime.Remoting.Channels.Tcp;
 using System.Runtime.Serialization.Formatters.Binary;
+using Mono.Remoting.Channels.Unix;
 using System.Threading;
 using Mono.Debugging.Backend;
 using Mono.Debugging.Client;
@@ -17,6 +18,7 @@ namespace Mono.Debugging.Backend.Mdb
 		IDebuggerServer debugger;
 		Process process;
 		IDebuggerSessionFrontend frontend;
+		string unixRemotingFile;
 		
 		ManualResetEvent runningEvent = new ManualResetEvent (false);
 		ManualResetEvent exitRequestEvent = new ManualResetEvent (false);
@@ -184,8 +186,7 @@ namespace Mono.Debugging.Backend.Mdb
 			}
 		}
 
-		//Frmo ProcessService, temporarily moving here..
-		string remotingChannel = "tcp";
+		string remotingChannel = "unix";
 		string RegisterRemotingChannel()
 		{
 			if (remotingChannel == "tcp")
@@ -205,11 +206,11 @@ namespace Mono.Debugging.Backend.Mdb
 			}
 			else
 			{
-				/*IChannel ch = ChannelServices.GetChannel ("unix");
-				  if (ch == null) {
-				  unixRemotingFile = Path.GetTempFileName (); 
-				  ChannelServices.RegisterChannel (new UnixChannel (unixRemotingFile), false);
-				  }*/
+				IChannel ch = ChannelServices.GetChannel ("unix");
+				if (ch == null) {
+					unixRemotingFile = Path.GetTempFileName (); 
+					ChannelServices.RegisterChannel (new UnixChannel (unixRemotingFile), false);
+				}
 			}
 			return remotingChannel;
 		}
