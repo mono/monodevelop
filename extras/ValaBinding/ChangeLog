@@ -1,3 +1,7 @@
+2008-06-26  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com>
+
+	* Project/ValaProject.cs: Actually turn on debug mode.
+
 2008-06-18  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com>
 
 	* Project/ProjectPackage.cs: Search more thoroughly for corresponding

@@ -100,6 +100,7 @@ namespace MonoDevelop.ValaBinding
 			ValaProjectConfiguration configuration =
 				(ValaProjectConfiguration)CreateConfiguration ("Debug");
 			
+			configuration.DebugMode = true;
 			((ValaCompilationParameters)configuration.CompilationParameters).DefineSymbols = "DEBUG MONODEVELOP";		
 				
 			Configurations.Add (configuration);
