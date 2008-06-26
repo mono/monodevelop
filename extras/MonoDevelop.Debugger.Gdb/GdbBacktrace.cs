@@ -43,10 +43,12 @@ namespace MonoDevelop.Debugger.Gdb
 		List<string> variableObjects = new List<string> ();
 		DissassemblyBuffer[] disBuffers;
 		int currentFrame = -1;
+		int threadId;
 		
-		public GdbBacktrace (GdbSession session, int count, ResultData firstFrame)
+		public GdbBacktrace (GdbSession session, int threadId, int count, ResultData firstFrame)
 		{
 			fcount = count;
+			this.threadId = threadId;
 			if (firstFrame != null)
 				this.firstFrame = CreateFrame (firstFrame);
 			this.session = session;
@@ -72,6 +74,7 @@ namespace MonoDevelop.Debugger.Gdb
 			if (firstIndex > lastIndex)
 				return frames.ToArray ();
 			
+			session.SelectThread (threadId);
 			GdbCommandResult res = session.RunCommand ("-stack-list-frames", firstIndex.ToString (), lastIndex.ToString ());
 			ResultData stack = res.GetObject ("stack");
 			for (int n=0; n<stack.Count; n++) {
@@ -96,8 +99,8 @@ namespace MonoDevelop.Debugger.Gdb
 		public ObjectValue[] GetParameters (int frameIndex)
 		{
 			List<ObjectValue> values = new List<ObjectValue> ();
-			GdbCommandResult res = session.RunCommand ("-stack-list-arguments", "0", frameIndex.ToString (), frameIndex.ToString ());
 			SelectFrame (frameIndex);
+			GdbCommandResult res = session.RunCommand ("-stack-list-arguments", "0", frameIndex.ToString (), frameIndex.ToString ());
 			foreach (ResultData data in res.GetObject ("stack-args").GetObject (0).GetObject ("frame").GetObject ("args"))
 				values.Add (CreateVarObject (data.GetValue ("name")));
 			
@@ -120,6 +123,7 @@ namespace MonoDevelop.Debugger.Gdb
 		
 		ObjectValue CreateVarObject (string name)
 		{
+			session.SelectThread (threadId);
 			GdbCommandResult res = session.RunCommand ("-var-create", "-", "*", name);
 			string vname = res.GetValue ("name");
 			variableObjects.Add (vname);
@@ -148,6 +152,7 @@ namespace MonoDevelop.Debugger.Gdb
 		public ObjectValue[] GetChildren (ObjectPath path, int index, int count)
 		{
 			List<ObjectValue> children = new List<ObjectValue> ();
+			session.SelectThread (threadId);
 			GdbCommandResult res = session.RunCommand ("-var-list-children", "2", path.Join ("."));
 			ResultData cdata = res.GetObject ("children");
 			if (index == -1) {
@@ -171,6 +176,7 @@ namespace MonoDevelop.Debugger.Gdb
 		
 		void SelectFrame (int frame)
 		{
+			session.SelectThread (threadId);
 			if (frame != currentFrame) {
 				session.RunCommand ("-stack-select-frame", frame.ToString ());
 				currentFrame = frame;

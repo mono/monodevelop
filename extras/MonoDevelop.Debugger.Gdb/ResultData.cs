@@ -38,6 +38,7 @@ namespace MonoDevelop.Debugger.Gdb
 	{
 		Hashtable props;
 		object[] array;
+		bool isArrayProperty;
 		
 		public int Count {
 			get {
@@ -73,6 +74,18 @@ namespace MonoDevelop.Debugger.Gdb
 		public ResultData GetObject (int index)
 		{
 			return (ResultData) array [index];
+		}
+		
+		public object[] GetAllValues (string name)
+		{
+			object ob = props [name];
+			if (ob == null)
+				return new object [0];
+			ResultData rd = ob as ResultData;
+			if (rd != null && rd.isArrayProperty)
+				return rd.array;
+			else
+				return new object[] { ob };
 		}
 					
 		protected void ReadResults (string str, int pos)
@@ -143,7 +156,25 @@ namespace MonoDevelop.Debugger.Gdb
 				string name;
 				object val;
 				ReadResult (str, ref pos, out name, out val);
-				data.props [name] = val;
+				if (data.props.ContainsKey (name)) {
+					object ob = data.props [name];
+					ResultData rd = ob as ResultData;
+					if (rd != null && rd.isArrayProperty) {
+						object[] newArr = new object [rd.array.Length + 1];
+						Array.Copy (rd.array, newArr, rd.array.Length);
+						newArr [rd.array.Length] = val;
+						rd.array = newArr;
+					} else {
+						rd = new ResultData ();
+						rd.isArrayProperty = true;
+						rd.array = new object [2];
+						rd.array [0] = ob;
+						rd.array [1] = val;
+						data.props [name] = rd;
+					}
+				} else {
+					data.props [name] = val;
+				}
 				TryReadChar (str, ref pos, ',');
 			}
 			TryReadChar (str, ref pos, '}');

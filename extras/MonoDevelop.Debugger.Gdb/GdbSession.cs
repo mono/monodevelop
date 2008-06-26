@@ -48,6 +48,9 @@ namespace MonoDevelop.Debugger.Gdb
 		GdbCommandResult lastResult;
 		bool running;
 		Thread thread;
+		int currentThread = -1;
+		int activeThread = -1;
+		string currentProcessName;
 		
 		bool internalStop;
 			
@@ -99,7 +102,7 @@ namespace MonoDevelop.Debugger.Gdb
 				if (!string.IsNullOrEmpty (startInfo.Arguments))
 					RunCommand ("-exec-arguments", startInfo.Arguments);
 				
-//				RunCommand ("-break-insert", "-t", "main");
+				currentProcessName = startInfo.Command + " " + startInfo.Arguments;
 				
 				OnStarted ();
 				
@@ -111,7 +114,9 @@ namespace MonoDevelop.Debugger.Gdb
 		{
 			lock (gdbLock) {
 				StartGdb ();
+				currentProcessName = "PID " + processId.ToString ();
 				RunCommand ("attach", processId.ToString ());
+				currentThread = 1;
 				OnStarted ();
 				FireTargetEvent (TargetEventType.TargetStopped, null);
 			}
@@ -147,6 +152,11 @@ namespace MonoDevelop.Debugger.Gdb
 				thread.Abort ();
 		}
 		
+		protected override void OnSetActiveThread (int threadId)
+		{
+			activeThread = threadId;
+		}
+		
 		protected override void OnStop ()
 		{
 			Syscall.kill (proc.Id, Signum.SIGINT);
@@ -176,26 +186,31 @@ namespace MonoDevelop.Debugger.Gdb
 
 		protected override void OnStepLine ()
 		{
+			SelectThread (activeThread);
 			RunCommand ("-exec-step");
 		}
 
 		protected override void OnNextLine ()
 		{
+			SelectThread (activeThread);
 			RunCommand ("-exec-next");
 		}
 
 		protected override void OnStepInstruction ()
 		{
+			SelectThread (activeThread);
 			RunCommand ("-exec-step-instruction");
 		}
 
 		protected override void OnNextInstruction ()
 		{
+			SelectThread (activeThread);
 			RunCommand ("-exec-next-instruction");
 		}
 		
 		protected override void OnFinish ()
 		{
+			SelectThread (activeThread);
 			RunCommand ("-exec-finish");
 		}
 
@@ -244,22 +259,45 @@ namespace MonoDevelop.Debugger.Gdb
 
 		protected override void OnContinue ()
 		{
+			SelectThread (activeThread);
 			RunCommand ("-exec-continue");
 		}
 		
 		protected override ThreadInfo[] OnGetThreads (int processId)
 		{
-			return new ThreadInfo [0];
+			List<ThreadInfo> list = new List<ThreadInfo> ();
+			ResultData data = RunCommand ("-thread-list-ids").GetObject ("thread-ids");
+			foreach (string id in data.GetAllValues ("thread-id"))
+				list.Add (GetThread (int.Parse (id)));
+			return list.ToArray ();
 		}
 		
 		protected override ProcessInfo[] OnGetPocesses ()
 		{
-			return new ProcessInfo [0];
+			ProcessInfo p = new ProcessInfo (0, currentProcessName);
+			return new ProcessInfo [] { p };
 		}
 		
-		protected override Backtrace OnGetThreadBacktrace (int threadId)
+		ThreadInfo GetThread (int id)
 		{
-			return null;
+			return new ThreadInfo (0, id, "Thread #" + id);
+		}
+		
+		protected override Backtrace OnGetThreadBacktrace (int processId, int threadId)
+		{
+			ResultData data = SelectThread (threadId);
+			GdbCommandResult res = RunCommand ("-stack-info-depth");
+			int fcount = int.Parse (res.GetValue ("depth"));
+			GdbBacktrace bt = new GdbBacktrace (this, threadId, fcount, data != null ? data.GetObject ("frame") : null);
+			return new Backtrace (bt);
+		}
+		
+		public ResultData SelectThread (int id)
+		{
+			if (id == currentThread)
+				return null;
+			currentThread = id;
+			return RunCommand ("-thread-select", id.ToString ());
 		}
 		
 		public GdbCommandResult RunCommand (string command, params string[] args)
@@ -337,6 +375,7 @@ namespace MonoDevelop.Debugger.Gdb
 					lock (eventLock) {
 						running = false;
 						ev = new GdbEvent (line);
+						currentThread = activeThread = ev.GetInt ("thread-id");
 						Monitor.PulseAll (eventLock);
 						if (internalStop) {
 							internalStop = false;
@@ -394,8 +433,9 @@ namespace MonoDevelop.Debugger.Gdb
 				GdbCommandResult res = RunCommand ("-stack-info-depth");
 				int fcount = int.Parse (res.GetValue ("depth"));
 				
-				GdbBacktrace bt = new GdbBacktrace (this, fcount, curFrame);
+				GdbBacktrace bt = new GdbBacktrace (this, activeThread, fcount, curFrame);
 				args.Backtrace = new Backtrace (bt);
+				args.Thread = GetThread (activeThread);
 			}
 			OnTargetEvent (args);
 		}

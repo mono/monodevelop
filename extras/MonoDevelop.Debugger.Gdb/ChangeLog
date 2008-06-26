@@ -1,3 +1,10 @@
+2008-06-26  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* GdbBacktrace.cs, GdbSession.cs: Allow setting the active thread.
+	  Implemented GetThreads and GetProcesses.
+	* ResultData.cs: Handle weird case where a tuple can have several
+	  values for a property.
+
 2008-06-20  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* GdbSession.cs: Implemented detach.
