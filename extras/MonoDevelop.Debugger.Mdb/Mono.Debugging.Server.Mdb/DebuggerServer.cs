@@ -239,6 +239,55 @@ namespace DebuggerServer
 				process.MainThread.Continue ();
 			});
 		}
+		
+		public ThreadInfo[] GetThreads (int processId)
+		{
+			MD.Process p = GetProcess (processId);
+			if (p == null)
+				return new ThreadInfo [0];
+			List<DL.ThreadInfo> list = new List<DL.ThreadInfo> ();
+			foreach (MD.Thread t in p.GetThreads ()) {
+				DL.ThreadInfo ct = new DL.ThreadInfo (processId, t.ID, t.Name);
+				list.Add (ct);
+			}
+			return list.ToArray ();
+		}
+		
+		public ProcessInfo[] GetPocesses ()
+		{
+			List<DL.ProcessInfo> list = new List<DL.ProcessInfo> ();
+			foreach (MD.Process p in debugger.Processes)
+				list.Add (new DL.ProcessInfo (p.ID, p.TargetApplication + " " + string.Join (" ", p.CommandLineArguments)));
+			return list.ToArray ();
+		}
+		
+		public DL.Backtrace GetThreadBacktrace (int processId, int threadId)
+		{
+			MD.Process p = GetProcess (processId);
+			if (p != null) {
+				foreach (MD.Thread t in p.GetThreads ()) {
+					if (t.ID == threadId) {
+						if (!t.IsStopped)
+							return null;
+						MD.Backtrace backtrace = t.CurrentBacktrace;
+						if (backtrace == null)
+							backtrace = t.GetBacktrace (MD.Backtrace.Mode.Default, max_frames);
+						return new DL.Backtrace (new BacktraceWrapper (backtrace));
+					}
+				}
+			}
+			return null;
+		}
+		
+		MD.Process GetProcess (int id)
+		{
+			foreach (MD.Process p in debugger.Processes) {
+				if (p.ID == id)
+					return p;
+			}
+			return null;
+		}
+
 		#endregion
 
 		public void Dispose ()
@@ -312,8 +361,6 @@ namespace DebuggerServer
 		
 		void RunWhenStopped (ST.WaitCallback cb)
 		{
-			bool stoppedByMe = false;
-			
 			lock (debugger)
 			{
 				if (process.MainThread.IsStopped) {
@@ -333,7 +380,7 @@ namespace DebuggerServer
 		private void OnTargetEvent (object sender, MD.TargetEventArgs args)
 		{
 			try {
-				Console.WriteLine ("pp OnTargetEvent: " + args.Type + " " + internalInterruptionRequested + " " + stoppedWorkQueue.Count + " iss:" + args.IsStopped);
+				Console.WriteLine ("pp OnTargetEvent: " + args.Type + " " + internalInterruptionRequested + " " + stoppedWorkQueue.Count + " iss:" + args.IsStopped + " " + args.Data);
 
 				bool isStop = args.Type != MD.TargetEventType.FrameChanged &&
 					args.Type != MD.TargetEventType.TargetExited &&
@@ -395,7 +442,20 @@ namespace DebuggerServer
 						controller.OnDebuggerOutput (false, string.Format ("Thread {0:x} received signal {1}.", args.Frame.Thread.ID, args.Data));
 					});
 				}
-				DL.TargetEventArgs dl_args = new DL.TargetEventArgs ((DL.TargetEventType)args.Type);
+				
+				DL.TargetEventType type;
+				
+				switch (args.Type) {
+					case MD.TargetEventType.Exception: type = DL.TargetEventType.Exception; break;
+					case MD.TargetEventType.TargetHitBreakpoint: type = DL.TargetEventType.TargetHitBreakpoint; break;
+					case MD.TargetEventType.TargetInterrupted: type = DL.TargetEventType.TargetInterrupted; break;
+					case MD.TargetEventType.TargetSignaled: type = DL.TargetEventType.TargetSignaled; break;
+					case MD.TargetEventType.TargetStopped: type = DL.TargetEventType.TargetStopped; break;
+					case MD.TargetEventType.UnhandledException: type = DL.TargetEventType.UnhandledException; break;
+					default:
+						return;
+				}
+				DL.TargetEventArgs dl_args = new DL.TargetEventArgs (type);
 
 				//FIXME: using Backtrace.Mode.Default right now
 				//FIXME: code from BacktraceCommand.DoExecute
@@ -421,42 +481,44 @@ namespace DebuggerServer
 		private void OnProcessCreatedEvent (MD.Debugger debugger, MD.Process process)
 		{
 			DispatchEvent (delegate {
-				controller.OnDebuggerOutput (false, string.Format ("Process {0:x} created.", process.ID));
+				controller.OnDebuggerOutput (false, string.Format ("Process {0} created.\n", process.ID));
 			});
 		}
 		
 		private void OnProcessExitedEvent (MD.Debugger debugger, MD.Process process)
 		{
 			DispatchEvent (delegate {
-				controller.OnDebuggerOutput (false, string.Format ("Process {0:x} exited.", process.ID));
+				controller.OnDebuggerOutput (false, string.Format ("Process {0} exited.\n", process.ID));
 			});
 		}
 		
 		private void OnProcessExecdEvent (MD.Debugger debugger, MD.Process process)
 		{
 			DispatchEvent (delegate {
-				controller.OnDebuggerOutput (false, string.Format ("Process {0:x} execd.", process.ID));
+				controller.OnDebuggerOutput (false, string.Format ("Process {0} execd.\n", process.ID));
 			});
 		}
 		
 		private void OnThreadCreatedEvent (MD.Debugger debugger, MD.Thread process)
 		{
 			DispatchEvent (delegate {
-				controller.OnDebuggerOutput (false, string.Format ("Thread {0:x} created.", process.ID));
+				controller.OnDebuggerOutput (false, string.Format ("Thread {0} created.\n", process.ID));
 			});
 		}
 		
 		private void OnThreadExitedEvent (MD.Debugger debugger, MD.Thread process)
 		{
 			DispatchEvent (delegate {
-				controller.OnDebuggerOutput (false, string.Format ("Thread {0:x} exited.", process.ID));
+				controller.OnDebuggerOutput (false, string.Format ("Thread {0} exited.\n", process.ID));
 			});
 		}
 
 		private void OnTargetExitedEvent (MD.Debugger debugger)
 		{
 			DispatchEvent (delegate {
-				controller.OnDebuggerOutput (false, "Target exited.");
+				controller.OnDebuggerOutput (false, "Target exited.\n");
+				DL.TargetEventArgs args = new DL.TargetEventArgs (DL.TargetEventType.TargetExited);
+				controller.OnTargetEvent (args);
 			});
 		}
 

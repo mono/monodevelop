@@ -91,11 +91,6 @@ namespace DebuggerServer
 			}
 		}
 		
-		static TargetObject FindChildObject (IObjectValueSource source, TargetObject rootObj, string[] path, int pathIndex)
-		{
-			return null;
-		}
-		
 		public static ObjectValue GetObjectValue (MD.Thread thread, IObjectValueSource source, TargetObject rootObj, ObjectPath path, int pathIndex, int rootPathIndex)
 		{
 			TargetObject obj = GetTargetObject (thread, rootObj, path, pathIndex);
@@ -342,7 +337,7 @@ namespace DebuggerServer
 						return oob.GetDereferencedObject (thread);
 				}
 			}
-			catch (Exception ex) {
+			catch {
 				// Ignore
 			}
 			return obj;
@@ -392,7 +387,6 @@ namespace DebuggerServer
 						TargetFundamentalObject fob = obj as TargetFundamentalObject;
 						if (fob == null)
 							return "null";
-						object ob = fob.GetObject (frame.Thread);
 						return fob.Print (frame.Thread);
 						
 					case TargetObjectKind.Object:
@@ -403,7 +397,7 @@ namespace DebuggerServer
 				}
 			}
 			catch (Exception ex) {
-				return "?";
+				return "? (" + ex.GetType () + ": " + ex.Message + ")";
 			}
 			return "?";
 		}
@@ -477,7 +471,7 @@ namespace DebuggerServer
 							Console.WriteLine ("  (NULL)");
 							return;
 						}
-						object ob = fob.GetObject (frame.Thread);
+//						object ob = fob.GetObject (frame.Thread);
 	//					Console.WriteLine ("  value: " + (ob != null ? ob.ToString () : "(null)"));
 	//					Console.WriteLine ("  print: " + fob.Print (frame.Thread));
 						break;

@@ -36,8 +36,6 @@ namespace DebuggerServer
 			List<DL.StackFrame> list = new List<DL.StackFrame> ();
 			for (int i = firstIndex; i <= lastIndex && i < backtrace.Count; i ++) {
 				MD.StackFrame frame = frames [i];
-				MD.SourceLocation md_location = frame.SourceLocation;
-				DL.SourceLocation dl_location;
 				string method = null;
 				string filename = null;
 				int line = -1;
@@ -68,7 +66,7 @@ namespace DebuggerServer
 				}
 				
 				string lang = frame.Language != null ? frame.Language.Name : string.Empty;
-				list.Add (new DL.StackFrame (frame.TargetAddress.Address, new DL.SourceLocation (method, filename, line), frame.Language.Name));
+				list.Add (new DL.StackFrame (frame.TargetAddress.Address, new DL.SourceLocation (method, filename, line), lang));
 			}
 			
 			return list.ToArray ();
