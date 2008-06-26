@@ -83,7 +83,6 @@ namespace MonoDevelop.Xml.StateEngine
 					newState = null;
 				} else if (newState != null) {
 					currentState = newState;
-					System.Console.WriteLine(ToString ());
 				}
 				
 				if (!reject)

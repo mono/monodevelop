@@ -1,4 +1,4 @@
-<Project name="MonoDevelop.XmlEditor" fileversion="2.0" language="C#" clr-version="Net_2_0" UseParentDirectoryAsNamespace="True" ctype="DotNetProject">
+<Project name="MonoDevelop.XmlEditor" fileversion="2.0" language="C#" UseParentDirectoryAsNamespace="True" clr-version="Net_2_0" ctype="DotNetProject">
   <Configurations active="Debug">
     <Configuration name="Debug" ctype="DotNetProjectConfiguration">
       <Output directory="../../../build/AddIns/MonoDevelop.XmlEditor" assembly="MonoDevelop.XmlEditor" />
@@ -85,6 +85,7 @@
     <File name="MonoDevelop.Xml.StateEngine/XmlTagNameState.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Xml.StateEngine/XmlTagState.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Xml.StateEngine/XmlProcessingInstructionState.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Xml.StateEngine/XDom.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />

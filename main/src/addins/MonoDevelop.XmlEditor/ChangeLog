@@ -1,3 +1,13 @@
+2008-06-26  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Xml.StateEngine/Parser.cs: Remove debug code.
+	* MonoDevelop.Xml.StateEngine/XDom.cs: Implement a new lightweight XML
+	  DOM somewhat modelled after the LINQ-to-XML DOM, but designed to
+	  ignore all content. It's intended to mark the location, name and
+	  type of tags in a text buffer, and should be able to be extended to
+	  be used with HTML and ASP.NET.
+	* Makefile.am, MonoDevelop.XmlEditor.mdp: Updated.
+
 2008-06-26  Michael Hutchinson  <mhutchinson@novell.com> 
 
 	* MonoDevelop.Xml.StateEngine/Parser.cs: Remove reference to work-in-

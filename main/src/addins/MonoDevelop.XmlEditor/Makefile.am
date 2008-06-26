@@ -28,6 +28,7 @@ FILES =  \
 	MonoDevelop.Xml.StateEngine/CDataState.cs \
 	MonoDevelop.Xml.StateEngine/Parser.cs \
 	MonoDevelop.Xml.StateEngine/State.cs \
+	MonoDevelop.Xml.StateEngine/XDom.cs \
 	MonoDevelop.Xml.StateEngine/XmlAttributeState.cs \
 	MonoDevelop.Xml.StateEngine/XmlAttributeValueState.cs \
 	MonoDevelop.Xml.StateEngine/XmlClosingTagState.cs \
