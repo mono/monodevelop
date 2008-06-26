@@ -39,7 +39,6 @@ namespace MonoDevelop.Xml.StateEngine
 	{
 		State currentState;
 		int position;
-		Indent currentLineExpectedIndent, previousLineExpectedIndent;
 
 		public Parser ()
 		{
@@ -61,14 +60,6 @@ namespace MonoDevelop.Xml.StateEngine
 			get { return position; }
 		}
 		
-		public Indent CurrentLineExpectedIndent {
-			get { return currentLineExpectedIndent; }
-		}
-		
-		public Indent PreviousLineExpectedIndent {
-			get { return previousLineExpectedIndent; }
-		}
-		
 		public void Reset ()
 		{
 			position = 0;
@@ -77,9 +68,6 @@ namespace MonoDevelop.Xml.StateEngine
 
 		public void Push (char c)
 		{
-			if (c == '\n')
-				previousLineExpectedIndent = currentLineExpectedIndent;
-			
 			position++;
 			
 			State newState = null;
