@@ -1,6 +1,6 @@
 #!/bin/bash
 VERSION=0.17
-profile=stable
+profile=default
 
 prefix=NONE
 test -e "$CONFIG_SITE" && . "$CONFIG_SITE"
@@ -8,23 +8,53 @@ test "$prefix" = NONE && prefix=/usr/local
 
 usage ()
 {
-	echo "Usage : configure [--prefix=PREFIX] [--profile=PROFILE]"
 	echo ""
-	echo "The MonoDevelop build system consists of 'main', which contains the "
-	echo "main distribution, and a number of additional addins in subdirectories "
-	echo "of 'extras'. The 'extras' addins are designed to be built and "
-	echo "distributed separately, and therefore build against your system- "
-	echo "installed MonoDevelop by default. However, this script sets them up to "
-	echo "build against the MonoDevelop in 'main', and ensures that they will be "
-	echo "loaded when MonoDevelop is launched with 'make run' in this top-level"
-	echo "directory. This is very useful for development and testing."
+	echo "Usage : configure [--prefix=PREFIX] [--select] [--profile=PROFILE]"
 	echo ""
-	echo "A 'profile' is a list of 'extras' directories and arguments for their "
-	echo "configure scripts, and arguments for the 'main' configure script. To "
-	echo "add a profile, simply create a file in the 'profiles' directory."
+	echo "This script allows selecting and configuring a set of MonoDevelop"
+	echo "modules to be included in an integrated build."
 	echo ""
-	echo "Profiles available :"
-	ls -1 profiles
+	echo "The MonoDevelop build system consists of a 'main' module, which "
+	echo "contains the main distribution, and a number of additional add-ins"
+	echo "in subdirectories of 'extras'. "
+	echo ""
+	echo "The 'extras' add-ins are designed to be built and distributed separately,"
+	echo "and therefore build against your system-installed MonoDevelop by default."
+	echo "However, this script sets them up to build against the MonoDevelop in"
+	echo "'main', and ensures that they will be loaded when MonoDevelop is launched"
+	echo "with 'make run' in this top-level directory. This is very useful for"
+	echo "development and testing."
+	echo ""
+	echo "The first time the configure script is executed, it will ask you"
+	echo "to select the add-ins to be included in the build. Further executions"
+	echo "will configure only the selected add-ins. To select a new list of"
+	echo "add-ins, run this script using the --select option."
+	echo ""
+	echo "You can also configure a predefined list of modules by specifying"
+	echo "a build profile using the --profile option."
+	echo ""
+	echo "Options:"
+	echo ""
+	echo "--prefix=PREFIX"
+	echo ""
+	echo "  Select the install directory prefix."
+	echo ""
+	echo "--select"
+	echo ""
+	echo "  Shows a list of add-ins and allows selecting which ones should be"
+	echo "  included in the build. It can be used in combination with --profile"
+	echo "  to select the add-ins to be built for a specific profile."
+	echo ""
+	echo "--profile=PROFILE"
+	echo ""
+	echo "  Configure the build system using the provided profile."
+	echo "  A 'profile' is a list of 'extras' directories and arguments for their "
+	echo "  configure scripts, and arguments for the 'main' configure script. To "
+	echo "  add a profile, simply create a file in the 'profiles' directory."
+	echo "  The 'default' profile is used when none is specified."
+	echo ""
+	echo "  Profiles available:" `ls --format=commas profiles | sed -e "s/ChangeLog, //"`
+	echo ""
 }
 
 validate_profile ()
@@ -36,6 +66,66 @@ validate_profile ()
 		fi
 	done
 	return 0
+}
+
+select_packages ()
+{
+	if [[ ! -a profiles/$profile ]] ; then
+		cp profiles/stable profiles/$profile
+	fi
+	n=1
+	for p in `sed -e /#/d -e 's/ /,/g' < profiles/all` ; do
+		packages[$n]=$p
+		if test x1 == x`grep -c -s $p profiles/$profile`; then
+			sel=X
+		else
+			sel=" "
+		fi
+		selection[$n]=$sel
+		let "n=n+1"
+	done
+	pcount=$n
+	while [[ 1 ]]
+	do 
+		echo Select the packages to include in the build for the profile \'$profile\':
+		echo
+		n=1
+		for p in ${packages[*]} ; do
+			echo $n. [${selection[n]}] $p
+			let "n=n+1"
+		done
+		echo
+		echo "Enter the number of an add-in to enable/disable,"
+		read -a response  -p"(q) quit, (c) clear all, (s) select all, or ENTER to continue:  "
+		echo
+		if [ -z $response ] ; then
+			break
+		elif [ $response == q -o $response == Q ] ; then
+			exit 1
+		elif [ $response == c -o $response == C ] ; then
+			for ((n=1; n < pcount; n++))
+			do
+				selection[$n]=" "
+			done
+		elif [ $response == s -o $response == S ] ; then
+			for ((n=1; n < pcount; n++))
+			do
+				selection[$n]=X
+			done
+		elif [ x${selection[response]} = xX ] ; then
+			selection[$response]=" "
+		else
+			selection[$response]=X
+		fi
+	done
+	n=1
+	rm -f profiles/$profile
+	for p in ${packages[*]} ; do
+		if [ x${selection[n]} == xX ]; then
+			echo ${packages[n]} >> profiles/$profile
+		fi
+		let "n=n+1"
+	done
 }
 
 configure_packages ()
@@ -94,6 +184,8 @@ create_local_config ()
 	echo "</Addins>" >> $addins
 }
 
+echo
+
 while test x$1 != x; do
 	case $1 in
 		--prefix=*)
@@ -103,28 +195,16 @@ while test x$1 != x; do
 			shift
 			prefix=$1
 			;;
+		--select)
+			select=yes
+			;;
 		--profile=*)
 			prof=`echo $1 | sed 's/--profile=//'`
-			validate_profile "$prof"
-			if [ $? -eq 1 ]; then
-				profile=$prof
-			else
-				echo "Invalid profile name - $conf"
-				usage
-				exit 1
-			fi
+			profile=$prof
 			;;
 		--profile)
 			shift
-			prof=$1
-			validate_profile "$prof"
-			if [ $? -eq 1 ]; then
-				profile=$prof
-			else
-				echo "Invalid profile name - $conf"
-				usage
-				exit 1
-			fi
+			profile=$1
 			;;
 		--help)
 			usage
@@ -138,6 +218,14 @@ while test x$1 != x; do
 	esac
 	shift
 done
+
+validate_profile "$profile"
+if [ ! $? -eq 1 ]; then
+	echo "The build profile '$profile' does not exist. A new profile will be created."
+fi
+if [ x$select == xyes -o ! -a profiles/$profile ]; then
+	select_packages
+fi
 
 configure_packages
 [ $? -eq 1 ] && exit 1

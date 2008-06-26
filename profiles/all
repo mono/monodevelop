@@ -1,11 +1,13 @@
 main
-extras/MonoDevelop.Debugger.Mdb
 extras/JavaBinding
 extras/BooBinding
+extras/ValaBinding
 extras/AspNetEdit
+extras/GeckoWebBrowser
 extras/MonoDevelop.Database
 extras/MonoDevelop.Profiling
-extras/GeckoWebBrowser
 extras/MonoDevelop.AddinAuthoring
-extras/ValaBinding
+extras/MonoDevelop.CodeAnalysis
+extras/MonoDevelop.Debugger.Mdb
+extras/MonoDevelop.Debugger.Gdb
 
