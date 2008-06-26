@@ -34,7 +34,7 @@ namespace Mono.Debugging.Client
 	{
 		int id;
 		string name;
-		string location;
+		int processId;
 		Backtrace backtrace;
 		
 		[NonSerialized]
@@ -57,25 +57,29 @@ namespace Mono.Debugging.Client
 			}
 		}
 
-		public string Location {
-			get {
-				return location;
-			}
-		}
-		
 		public Backtrace Backtrace {
 			get {
 				if (backtrace == null)
-					backtrace = session.GetBacktrace (id);
+					backtrace = session.GetBacktrace (processId, id);
 				return backtrace;
 			}
 		}
 		
-		public ThreadInfo(int id, string name, string location)
+		public void SetActive ()
+		{
+			session.ActiveThread = this;
+		}
+		
+		public ThreadInfo (int processId, int id, string name): this (processId, id, name, null)
+		{
+		}
+		
+		public ThreadInfo (int processId, int id, string name, Backtrace backtrace)
 		{
 			this.id = id;
 			this.name = name;
-			this.location = location;
+			this.processId = processId;
+			this.backtrace = backtrace;
 		}
 	}
 }

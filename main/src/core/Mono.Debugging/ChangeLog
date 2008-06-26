@@ -1,3 +1,11 @@
+2008-06-26  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Mono.Debugging.Client/Backtrace.cs: Get only the first stack frame at
+	  the begining.
+	* Mono.Debugging.Client/ThreadInfo.cs,
+	  Mono.Debugging.Client/DebuggerSession.cs: Allow changing the active
+	  thread.
+
 2008-06-20  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Mono.Debugging.Client/DebuggerSession.cs: Improved thread safety.

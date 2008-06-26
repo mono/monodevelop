@@ -50,6 +50,7 @@ namespace Mono.Debugging.Client
 		bool disposed;
 		bool attached;
 		object slock = new object ();
+		ThreadInfo activeThread;
 		
 		ProcessInfo[] currentProcesses;
 		
@@ -156,6 +157,20 @@ namespace Mono.Debugging.Client
 			get {
 				lock (slock) {
 					return attached; 
+				}
+			}
+		}
+		
+		public ThreadInfo ActiveThread {
+			get {
+				lock (slock) {
+					return activeThread;
+				}
+			}
+			set {
+				lock (slock) {
+					activeThread = value;
+					OnSetActiveThread (activeThread.Id);
 				}
 			}
 		}
@@ -347,11 +362,12 @@ namespace Mono.Debugging.Client
 			}
 		}
 		
-		internal Backtrace GetBacktrace (int threadId)
+		internal Backtrace GetBacktrace (int processId, int threadId)
 		{
 			lock (slock) {
-				Backtrace bt = OnGetThreadBacktrace (threadId);
-				bt.Attach (this);
+				Backtrace bt = OnGetThreadBacktrace (processId, threadId);
+				if (bt != null)
+					bt.Attach (this);
 				return bt;
 			}
 		}
@@ -366,8 +382,10 @@ namespace Mono.Debugging.Client
 		{
 			if (args.Process != null)
 				args.Process.Attach (this);
-			if (args.Thread != null)
+			if (args.Thread != null) {
 				args.Thread.Attach (this);
+				activeThread = args.Thread;
+			}
 			
 			switch (args.Type) {
 				case TargetEventType.Exception:
@@ -462,6 +480,8 @@ namespace Mono.Debugging.Client
 		protected abstract void OnAttachToProcess (int processId);
 		
 		protected abstract void OnDetach ();
+		
+		protected abstract void OnSetActiveThread (int threadId);
 
 		protected abstract void OnStop ();
 		
@@ -497,7 +517,7 @@ namespace Mono.Debugging.Client
 		
 		protected abstract ProcessInfo[] OnGetPocesses ();
 		
-		protected abstract Backtrace OnGetThreadBacktrace (int threadId);
+		protected abstract Backtrace OnGetThreadBacktrace (int processId, int threadId);
 		
 		protected IDebuggerSessionFrontend Frontend {
 			get {

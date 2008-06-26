@@ -19,7 +19,8 @@ namespace Mono.Debugging.Client
 			count = serverBacktrace.FrameCount;
 
 			// Get some initial frames
-			GetFrame (System.Math.Min (1, count-1));
+			if (count > 0)
+				GetFrame (0);
 		}
 		
 		internal void Attach (DebuggerSession session)
