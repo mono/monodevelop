@@ -233,7 +233,7 @@ namespace MonoDevelop.SourceEditor
 		{
 			if (this.TextEditor == null || this.TextEditor.Document == null)
 				return;
-			if (cl.BodyRegion != null)
+			if (cl.BodyRegion != null && cl.BodyRegion.EndLine > cl.BodyRegion.BeginLine)
 				AddMarker (foldSegments, "...", cl.BodyRegion, FoldingType.TypeDefinition);
 			foreach (IClass inner in cl.InnerClasses) 
 				AddClass (foldSegments, inner);
@@ -241,7 +241,7 @@ namespace MonoDevelop.SourceEditor
 			if (cl.ClassType == ClassType.Interface)
 				return;
 			foreach (IMethod method in cl.Methods) {
-				if (method.Region == null || method.BodyRegion == null || method.BodyRegion.EndLine <= 0)
+				if (method.Region == null || method.BodyRegion == null || method.BodyRegion.EndLine <= 0 || method.Region.EndLine == method.BodyRegion.EndLine)
 					continue;
 				int startOffset = this.TextEditor.Document.LocationToOffset (method.Region.EndLine - 1,  method.Region.EndColumn - 1);
 				int endOffset   = this.TextEditor.Document.LocationToOffset (method.BodyRegion.EndLine - 1,  method.BodyRegion.EndColumn - 1);
@@ -249,7 +249,7 @@ namespace MonoDevelop.SourceEditor
 			}
 			
 			foreach (IProperty property in cl.Properties) {
-				if (property.Region == null || property.BodyRegion == null || property.BodyRegion.EndLine <= 0)
+				if (property.Region == null || property.BodyRegion == null || property.BodyRegion.EndLine <= 0 || property.Region.EndLine == property.BodyRegion.EndLine)
 					continue;
 				int startOffset = this.TextEditor.Document.LocationToOffset (property.Region.EndLine - 1,  property.Region.EndColumn - 1);
 				int endOffset   = this.TextEditor.Document.LocationToOffset (property.BodyRegion.EndLine - 1,  property.BodyRegion.EndColumn - 1);
@@ -786,7 +786,7 @@ namespace MonoDevelop.SourceEditor
 					classes.Add (c);
 				classes.Sort (new LanguageItemComparer ());
 				foreach (IClass c in classes)
-					Add (c, "");
+					Add (c, string.Empty);
 				
 				int line = TextEditor.Caret.Line + 1;
 //				this.GetLineColumnFromPosition(this.CursorPosition, out line, out column);
