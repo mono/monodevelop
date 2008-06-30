@@ -52,6 +52,13 @@ namespace Mono.Debugging.Client
 			}
 		}
 		
+		public bool IsValid (DebuggerSession session)
+		{
+			if (session == null)
+				return true;
+			return session.IsBreakpointValid (this);
+		}
+		
 		public string FileName {
 			get { return fileName; }
 		}

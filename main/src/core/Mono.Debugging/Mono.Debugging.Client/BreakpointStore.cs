@@ -65,6 +65,7 @@ namespace Mono.Debugging.Client
 		public void Add (Breakpoint bp)
 		{
 			breakpoints.Add (bp);
+			bp.Store = this;
 			OnBreakpointAdded (bp);
 		}
 		
@@ -156,8 +157,9 @@ namespace Mono.Debugging.Client
 		internal void EnableBreakpoint (Breakpoint bp, bool enabled)
 		{
 			OnChanged ();
-			if (BreakpointStatusChanged != null)
-				BreakpointStatusChanged (this, new BreakpointEventArgs (bp));
+			if (BreakpointEnableStatusChanged != null)
+				BreakpointEnableStatusChanged (this, new BreakpointEventArgs (bp));
+			NotifyStatusChanged (bp);
 		}
 		
 		void OnBreakpointAdded (Breakpoint bp)
@@ -180,9 +182,20 @@ namespace Mono.Debugging.Client
 				Changed (this, EventArgs.Empty);
 		}
 		
+		internal void NotifyStatusChanged (Breakpoint bp)
+		{
+			try {
+				if (BreakpointStatusChanged != null)
+					BreakpointStatusChanged (this, new BreakpointEventArgs (bp));
+			} catch {
+				// Ignone
+			}
+		}
+		
 		public event EventHandler<BreakpointEventArgs> BreakpointAdded;
 		public event EventHandler<BreakpointEventArgs> BreakpointRemoved;
 		public event EventHandler<BreakpointEventArgs> BreakpointStatusChanged;
+		internal event EventHandler<BreakpointEventArgs> BreakpointEnableStatusChanged;
 		public event EventHandler Changed;
 	}
 }

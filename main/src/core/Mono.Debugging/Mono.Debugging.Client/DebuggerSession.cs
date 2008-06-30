@@ -41,7 +41,7 @@ namespace Mono.Debugging.Client
 	public abstract class DebuggerSession: IDisposable
 	{
 		InternalDebuggerSession frontend;
-		Dictionary<Breakpoint,int> breakpoints = new Dictionary<Breakpoint,int> ();
+		Dictionary<Breakpoint,object> breakpoints = new Dictionary<Breakpoint,object> ();
 		bool isRunning;
 		bool started;
 		BreakpointStore breakpointStore;
@@ -50,6 +50,7 @@ namespace Mono.Debugging.Client
 		bool disposed;
 		bool attached;
 		object slock = new object ();
+		object olock = new object ();
 		ThreadInfo activeThread;
 		
 		ProcessInfo[] currentProcesses;
@@ -101,7 +102,7 @@ namespace Mono.Debugging.Client
 						}
 						breakpointStore.BreakpointAdded -= OnBreakpointAdded;
 						breakpointStore.BreakpointRemoved -= OnBreakpointRemoved;
-						breakpointStore.BreakpointStatusChanged -= OnBreakpointStatusChanged;
+						breakpointStore.BreakpointEnableStatusChanged -= OnBreakpointStatusChanged;
 					}
 					
 					breakpointStore = value;
@@ -113,7 +114,7 @@ namespace Mono.Debugging.Client
 						}
 						breakpointStore.BreakpointAdded += OnBreakpointAdded;
 						breakpointStore.BreakpointRemoved += OnBreakpointRemoved;
-						breakpointStore.BreakpointStatusChanged += OnBreakpointStatusChanged;
+						breakpointStore.BreakpointEnableStatusChanged += OnBreakpointStatusChanged;
 					}
 				}
 			}
@@ -239,26 +240,42 @@ namespace Mono.Debugging.Client
 				}
 			}
 		}
+		
+		public bool IsBreakpointValid (Breakpoint bp)
+		{
+			if (!started)
+				return true;
+			
+			object handle;
+			return (breakpoints.TryGetValue (bp, out handle) && handle != null);
+		}
 
 		void AddBreakpoint (Breakpoint bp)
 		{
-			int handle = OnInsertBreakpoint (bp.FileName, bp.Line, bp.Enabled);
+			object handle = null;
+			try {
+				handle = OnInsertBreakpoint (bp.FileName, bp.Line, bp.Enabled);
+			} catch (Exception ex) {
+				logWriter (false, "Could not set breakpoint at location '" + bp.FileName + ":" + bp.Line + " (" + ex.Message + ")\n");
+			}
 			breakpoints.Add (bp, handle);
+			Breakpoints.NotifyStatusChanged (bp);
 		}
 
 		void RemoveBreakpoint (Breakpoint bp)
 		{
-			int handle;
+			object handle;
 			if (GetHandle (bp, out handle)) {
 				breakpoints.Remove (bp);
-				OnRemoveBreakpoint (handle);
+				if (handle != null)
+					OnRemoveBreakpoint (handle);
 			}
 		}
 		
 		void UpdateBreakpoint (Breakpoint bp)
 		{
-			int handle;
-			if (GetHandle (bp, out handle))
+			object handle;
+			if (GetHandle (bp, out handle) && handle != null)
 				OnEnableBreakpoint (handle, bp.Enabled);
 		}
 		
@@ -286,7 +303,7 @@ namespace Mono.Debugging.Client
 			}
 		}
 		
-		bool GetHandle (Breakpoint bp, out int handle)
+		bool GetHandle (Breakpoint bp, out object handle)
 		{
 			return breakpoints.TryGetValue (bp, out handle);
 		}
@@ -340,14 +357,18 @@ namespace Mono.Debugging.Client
 		
 		public OutputWriterDelegate OutputWriter {
 			get { return outputWriter; }
-			set { outputWriter = value; }
+			set {
+				lock (olock) {
+					outputWriter = value;
+				}
+			}
 		}
 		
 		public OutputWriterDelegate LogWriter {
 			get { return logWriter; }
 			set {
-				lock (slock) {
-					logWriter = value; 
+				lock (olock) {
+					logWriter = value;
 				}
 			}
 		}
@@ -399,6 +420,8 @@ namespace Mono.Debugging.Client
 					lock (slock) {
 						isRunning = false;
 						started = false;
+						foreach (Breakpoint bp in Breakpoints)
+							Breakpoints.NotifyStatusChanged (bp);
 					}
 					if (TargetExited != null)
 						TargetExited (this, args);
@@ -461,7 +484,7 @@ namespace Mono.Debugging.Client
 		
 		internal protected void OnTargetOutput (bool isStderr, string text)
 		{
-			lock (slock) {
+			lock (olock) {
 				if (outputWriter != null)
 					outputWriter (isStderr, text);
 			}
@@ -469,7 +492,7 @@ namespace Mono.Debugging.Client
 		
 		internal protected void OnDebuggerOutput (bool isStderr, string text)
 		{
-			lock (slock) {
+			lock (olock) {
 				if (logWriter != null)
 					logWriter (isStderr, text);
 			}
@@ -505,11 +528,11 @@ namespace Mono.Debugging.Client
 		//breakpoints etc
 
 		// returns a handle
-		protected abstract int OnInsertBreakpoint (string filename, int line, bool activate);
+		protected abstract object OnInsertBreakpoint (string filename, int line, bool activate);
 
-		protected abstract void OnRemoveBreakpoint (int handle);
+		protected abstract void OnRemoveBreakpoint (object handle);
 		
-		protected abstract void OnEnableBreakpoint (int handle, bool enable);
+		protected abstract void OnEnableBreakpoint (object handle, bool enable);
 
 		protected abstract void OnContinue ();
 		

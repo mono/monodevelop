@@ -1,3 +1,11 @@
+2008-07-01  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Mono.Debugging.Client/BreakpointStore.cs,
+	  Mono.Debugging.Client/DebuggerSession.cs,
+	  Mono.Debugging.Client/Breakpoint.cs: Add support for "invalid"
+	  breakpoints (breakpoints placed in locations where there is no
+	  source code).
+
 2008-06-26  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Mono.Debugging.Client/Backtrace.cs: Get only the first stack frame at
