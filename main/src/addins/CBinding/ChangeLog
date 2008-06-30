@@ -1,3 +1,8 @@
+2008-06-30  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Project/CProject.cs: Workaround for bug #402336. The previous
+	  fix can be applied to the branch.
+
 2008-06-25  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Project/CProject.cs: Don't set the build action for files when

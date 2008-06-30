@@ -184,12 +184,16 @@ namespace CBinding
 		public override bool IsCompileable (string fileName)
 		{
 			string ext = Path.GetExtension (fileName.ToUpper ());
+			Console.WriteLine ("ppla: " + language);
 			
-			if (language == Language.C) {
-				return (ext == ".C");
-			} else {
+			// HACK: this is a workaround for bug #402336.
+			// The proper fix is already applied in trunk.
+			
+//			if (language == Language.C) {
+//				return (ext == ".C");
+//			} else {
 				return (0 <= Array.IndexOf (SourceExtensions, ext));
-			}
+//			}
 		}
 		
 		public override IEnumerable<SolutionItem> GetReferencedItems (string configuration)
@@ -402,7 +406,7 @@ namespace CBinding
 		{
 			base.OnFileAddedToProject (e);
 			
-			if (!Loading && !IsCompileable (e.ProjectFile.Name) &&
+			if (!IsCompileable (e.ProjectFile.Name) &&
 			    e.ProjectFile.BuildAction == BuildAction.Compile) {
 				e.ProjectFile.BuildAction = BuildAction.Nothing;
 			}
