@@ -12,6 +12,7 @@ using MonoDevelop.Core;
 using Mono.Addins;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Core.Gui;
+using MonoDevelop.Projects.Text;
 
 using MonoDevelop.Ide.Gui;
 
@@ -50,6 +51,7 @@ namespace MonoDevelop.Ide.Debugging
 		internal DebuggingService()
 		{
 			executionHandlerFactory = new DebugExecutionHandlerFactory ();
+			TextFileService.LineCountChanged += OnLineCountChanged;
 		}
 
 		public IExecutionHandlerFactory GetExecutionHandlerFactory ()
@@ -225,7 +227,13 @@ namespace MonoDevelop.Ide.Debugging
 					PausedEvent (null, EventArgs.Empty);
 				NotifyLocationChanged ();
 			});
-		}
+/*			foreach (ProcessInfo p in session.GetPocesses ()) {
+				Console.WriteLine ("proc: " + p.Id + " '" + p.Name + "'");
+				foreach (ThreadInfo t in p.GetThreads ()) {
+					Console.WriteLine ("  t: " + t.Id + " " + t.Name + " f:" + (t.Backtrace != null ? t.Backtrace.GetFrame (0).ToString () : ""));
+				}
+			}
+*/		}
 		
 		void NotifyLocationChanged ()
 		{
@@ -416,6 +424,17 @@ namespace MonoDevelop.Ide.Debugging
 					return factory;
 			}
 			return null;
+		}
+		
+		void OnLineCountChanged (object ob, LineCountEventArgs a)
+		{
+			List<Breakpoint> bps = new List<Breakpoint> (breakpoints);
+			foreach (Breakpoint bp in bps) {
+				if (bp.FileName == a.TextFile.Name && bp.Line >= a.LineNumber) {
+					breakpoints.Remove (bp);
+					Breakpoint newBp = breakpoints.Add (bp.FileName, bp.Line + a.LineCount);
+				}
+			}
 		}
 	}
 }

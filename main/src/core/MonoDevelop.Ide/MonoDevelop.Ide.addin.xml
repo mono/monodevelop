@@ -819,6 +819,13 @@
 				_label = "Toggle Breakpoint"
 				defaultHandler = "MonoDevelop.Ide.Commands.ToggleBreakpointHandler"
 				shortcut = "F9" />
+		<Command id = "MonoDevelop.Ide.Commands.DebugCommands.EnableDisableBreakpoint"
+				_label = "Enable/Disable Breakpoint"
+				defaultHandler = "MonoDevelop.Ide.Commands.EnableDisableBreakpointHandler"
+				shortcut = "Control|F9" />
+		<Command id = "MonoDevelop.Ide.Commands.DebugCommands.DisableAllBreakpoints"
+				_label = "Disable All Breakpoints"
+				defaultHandler = "MonoDevelop.Ide.Commands.DisableAllBreakpointsHandler" />
 		<Command id = "MonoDevelop.Ide.Commands.DebugCommands.ClearAllBreakpoints"
 				defaultHandler = "MonoDevelop.Ide.Commands.ClearAllBreakpointsHandler"
 				_label = "Clear All Breakpoints" />
@@ -1557,6 +1564,8 @@
 			<CommandItem id = "MonoDevelop.Ide.Commands.DebugCommands.StepOut" />
 			<SeparatorItem id = "Separator4" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.DebugCommands.ToggleBreakpoint" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.DebugCommands.EnableDisableBreakpoint" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.DebugCommands.DisableAllBreakpoints" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.DebugCommands.ClearAllBreakpoints" />
 		</ItemSet>
 

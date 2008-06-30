@@ -1,3 +1,11 @@
+2008-07-01  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Commands/DebugCommands.cs, MonoDevelop.Ide.addin.xml:
+	  Implemented new debug commands.
+	* MonoDevelop.Ide.Debugging/DebuggingService.cs: Update breakpoint
+	  locations when lines are inserted or removed.
+	* MonoDevelop.Ide.mdp: Updated.
+
 2008-06-24  Mike Krüger <mkrueger@novell.com> 
 
 	* gtk-gui/MonoDevelop.Ide.Gui.Pads.ClassBrowser.ClassBrowserPadWidget.cs:

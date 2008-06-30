@@ -27,10 +27,12 @@
 
 
 using System;
+using System.Collections;
 using MonoDevelop.Core.Gui.Dialogs;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
 using Mono.Addins;
+using Mono.Debugging.Client;
 using MonoDevelop.Components;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Dialogs;
@@ -48,7 +50,9 @@ namespace MonoDevelop.Ide.Commands
 		Pause,
 		ClearAllBreakpoints,
 		AttachToProcess,
-		Detach
+		Detach,
+		EnableDisableBreakpoint,
+		DisableAllBreakpoints
 	}
 	
 	internal class DebugApplicationHandler: CommandHandler
@@ -185,6 +189,41 @@ namespace MonoDevelop.Ide.Commands
 			info.Enabled = IdeApp.Workbench.ActiveDocument != null && 
 					IdeApp.Workbench.ActiveDocument.TextEditor != null &&
 					IdeApp.Workbench.ActiveDocument.FileName != null;
+		}
+	}
+	
+	internal class EnableDisableBreakpointHandler: CommandHandler
+	{
+		protected override void Run ()
+		{
+			IEnumerable brs = IdeApp.Services.DebuggingService.Breakpoints.GetBreakpointsAtFileLine (
+			    IdeApp.Workbench.ActiveDocument.FileName,
+			    IdeApp.Workbench.ActiveDocument.TextEditor.CursorLine);
+			
+			foreach (Breakpoint bp in brs)
+				bp.Enabled = !bp.Enabled;
+		}
+		
+		protected override void Update (CommandInfo info)
+		{
+			if (IdeApp.Workbench.ActiveDocument != null && 
+					IdeApp.Workbench.ActiveDocument.TextEditor != null &&
+					IdeApp.Workbench.ActiveDocument.FileName != null) {
+				info.Enabled = IdeApp.Services.DebuggingService.Breakpoints.GetBreakpointsAtFileLine (
+			    	IdeApp.	Workbench.ActiveDocument.FileName,
+			    	IdeApp.Workbench.ActiveDocument.TextEditor.CursorLine).Count > 0;
+			}
+			else
+				info.Enabled = true;
+		}
+	}
+	
+	internal class DisableAllBreakpointsHandler: CommandHandler
+	{
+		protected override void Run ()
+		{
+			foreach (Breakpoint bp in IdeApp.Services.DebuggingService.Breakpoints)
+				bp.Enabled = false;
 		}
 	}
 }
