@@ -40,7 +40,9 @@ using MonoDevelop.Core;
 using MonoDevelop.Projects.Gui.Completion;
 using MonoDevelop.Projects.Parser;
 using MonoDevelop.Projects;
+using MonoDevelop.Projects.Text;
 using MonoDevelop.Ide.Gui.Search;
+using MonoDevelop.Debugger;
 using Mono.Debugging.Client;
 using MonoDevelop.DesignerSupport.Toolbox;
 
@@ -59,15 +61,19 @@ namespace MonoDevelop.SourceEditor
 		static bool isInWrite = false;
 		DateTime lastSaveTime;
 		
-		LineBackgroundMarker currentDebugLineMarker = new LineBackgroundMarker (new Gdk.Color (255, 255, 0));
-		LineBackgroundMarker breakpointMarker = new LineBackgroundMarker (new Gdk.Color (255, 0, 0));
-		LineBackgroundMarker breakpointDisabledMarker = new LineBackgroundMarker (new Gdk.Color (255, 100, 100));
+		LineBackgroundMarker currentDebugLineMarker = new CurrentDebugLineTextMarker ();
+		LineBackgroundMarker breakpointMarker = new BreakpointTextMarker ();
+		LineBackgroundMarker breakpointDisabledMarker = new DisabledBreakpointTextMarker ();
+		LineBackgroundMarker breakpointInvalidMarker = new InvalidBreakpointTextMarker ();
 		
 		int lastDebugLine = -1;
 		EventHandler executionLocationChanged;
 		EventHandler<BreakpointEventArgs> breakpointAdded;
 		EventHandler<BreakpointEventArgs> breakpointRemoved;
 		EventHandler<BreakpointEventArgs> breakpointStatusChanged;
+		
+		List<LineSegment> breakpointSegments = new List<LineSegment> ();
+		LineSegment currentLineSegment;
 		
 		public Mono.TextEditor.Document Document {
 			get {
@@ -115,6 +121,10 @@ namespace MonoDevelop.SourceEditor
 			widget.TextEditor.Document.TextReplaced += delegate {
 				this.IsDirty = Document.IsDirty;
 			};
+			
+			widget.TextEditor.Document.TextReplacing += OnTextReplacing;
+			widget.TextEditor.Document.TextReplacing += OnTextReplaced;
+			
 //			widget.TextEditor.Document.DocumentUpdated += delegate {
 //				this.IsDirty = Document.IsDirty;
 //			};
@@ -280,6 +290,39 @@ namespace MonoDevelop.SourceEditor
 			if (args.ChangeType == WatcherChangeTypes.Changed || args.ChangeType == WatcherChangeTypes.Created) 
 				widget.ShowFileChangedWarning ();
 		}
+		
+		string oldReplaceText;
+		
+		void OnTextReplacing (object s, ReplaceEventArgs a)
+		{
+			oldReplaceText = widget.TextEditor.Document.GetTextAt (a.Offset, a.Count);
+		}
+		
+		void OnTextReplaced (object s, ReplaceEventArgs a)
+		{
+			DocumentLocation location = Document.OffsetToLocation (a.Offset);
+			
+			int i=0, lines=0;
+			while (i != -1 && i < oldReplaceText.Length) {
+				i = oldReplaceText.IndexOf ('\n', i);
+				if (i != -1) {
+					lines--;
+					i++;
+				}
+			}
+
+			if (a.Value != null) {
+				i=0;
+				StringBuilder sb = a.Value;
+				while (i < sb.Length) {
+					if (sb [i] == '\n')
+						lines++;
+					i++;
+				}
+			}
+			if (lines != 0)
+				TextFileService.FireLineCountChanged (this, location.Line + 1, lines, location.Column + 1);
+		}
 
 		void OnExecutionLocationChanged (object s, EventArgs args)
 		{
@@ -296,63 +339,86 @@ namespace MonoDevelop.SourceEditor
 		    ) {
 				if (lastDebugLine == IdeApp.Services.DebuggingService.CurrentLineNumber)
 					return;
-				if (lastDebugLine != -1)
-					widget.TextEditor.Document.GetLine (lastDebugLine-1).RemoveMarker (currentDebugLineMarker);
+				if (currentLineSegment != null)
+					currentLineSegment.RemoveMarker (currentDebugLineMarker);
 				lastDebugLine = IdeApp.Services.DebuggingService.CurrentLineNumber;
-				widget.TextEditor.Document.GetLine (lastDebugLine-1).AddMarker (currentDebugLineMarker);
+				currentLineSegment = widget.TextEditor.Document.GetLine (lastDebugLine-1);
+				currentLineSegment.AddMarker (currentDebugLineMarker);
 				widget.TextEditor.QueueDraw ();
-			} else if (lastDebugLine != -1) {
-				widget.TextEditor.Document.GetLine (lastDebugLine-1).RemoveMarker (currentDebugLineMarker);
+			} else if (currentLineSegment != null) {
+				currentLineSegment.RemoveMarker (currentDebugLineMarker);
 				lastDebugLine = -1;
+				currentLineSegment = null;
 				widget.TextEditor.QueueDraw ();
 			}
 		}
 		
 		void UpdateBreakpoints ()
 		{
+			foreach (LineSegment line in breakpointSegments) {
+				line.RemoveMarker (breakpointMarker);
+				line.RemoveMarker (breakpointDisabledMarker);
+				line.RemoveMarker (breakpointInvalidMarker);
+			}
+			breakpointSegments.Clear ();
 			foreach (Breakpoint bp in IdeApp.Services.DebuggingService.Breakpoints)
 				AddBreakpoint (bp);
-		}
-		
-		void OnBreakpointAdded (object s, BreakpointEventArgs args)
-		{
-			AddBreakpoint (args.Breakpoint);
+			widget.TextEditor.QueueDraw ();
+			
+			// Ensure the current line marker is drawn at the top
+			lastDebugLine = -1;
+			UpdateExecutionLocation ();
 		}
 		
 		void AddBreakpoint (Breakpoint bp)
 		{
 			if (bp.FileName == Path.GetFullPath (ContentName)) {
 				LineSegment line = widget.TextEditor.Document.GetLine (bp.Line-1);
-				if (bp.Enabled)
+				if (!bp.Enabled)
+					line.AddMarker (breakpointDisabledMarker);
+				else if (bp.IsValid (IdeApp.Services.DebuggingService.DebuggerSession))
 					line.AddMarker (breakpointMarker);
 				else
-					line.AddMarker (breakpointDisabledMarker);
+					line.AddMarker (breakpointInvalidMarker);
 				widget.TextEditor.QueueDraw ();
+				breakpointSegments.Add (line);
 			}
+		}
+		
+		void OnBreakpointAdded (object s, BreakpointEventArgs args)
+		{
+			if (args.Breakpoint.FileName != Path.GetFullPath (ContentName))
+				return;
+			// Updated with a delay, to make sure it works when called as a
+			// result of inserting/removing lines before a breakpoint position
+			GLib.Timeout.Add (10, delegate {
+				UpdateBreakpoints ();
+				return false;
+			});
 		}
 		
 		void OnBreakpointRemoved (object s, BreakpointEventArgs args)
 		{
-			if (args.Breakpoint.FileName == Path.GetFullPath (ContentName)) {
-				LineSegment line = widget.TextEditor.Document.GetLine (args.Breakpoint.Line-1);
-				line.RemoveMarker (breakpointMarker);
-				line.RemoveMarker (breakpointDisabledMarker);
-				widget.TextEditor.QueueDraw ();
-			}
+			if (args.Breakpoint.FileName != Path.GetFullPath (ContentName))
+				return;
+			// Updated with a delay, to make sure it works when called as a
+			// result of inserting/removing lines before a breakpoint position
+			GLib.Timeout.Add (10, delegate {
+				UpdateBreakpoints ();
+				return false;
+			});
 		}
 		
 		void OnBreakpointStatusChanged (object s, BreakpointEventArgs args)
 		{
-			if (args.Breakpoint.FileName == Path.GetFullPath (ContentName)) {
-				LineSegment line = widget.TextEditor.Document.GetLine (args.Breakpoint.Line-1);
-				line.RemoveMarker (breakpointMarker);
-				line.RemoveMarker (breakpointDisabledMarker);
-				if (args.Breakpoint.Enabled)
-					line.AddMarker (breakpointMarker);
-				else
-					line.AddMarker (breakpointDisabledMarker);
-				widget.TextEditor.QueueDraw ();
-			}
+			if (args.Breakpoint.FileName != Path.GetFullPath (ContentName))
+				return;
+			// Updated with a delay, to make sure it works when called as a
+			// result of inserting/removing lines before a breakpoint position
+			GLib.Timeout.Add (10, delegate {
+				UpdateBreakpoints ();
+				return false;
+			});
 		}
 		
 		#region IExtensibleTextEditor
@@ -1343,7 +1409,6 @@ namespace MonoDevelop.SourceEditor
 			string ext = i < 0? null : filename.Substring (i + 1);
 			
 			return textNode.IsCompatibleWith (filename, this.Project);
-			return false;
 		}
 
 		
