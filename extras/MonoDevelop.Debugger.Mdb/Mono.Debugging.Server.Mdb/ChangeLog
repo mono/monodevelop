@@ -1,5 +1,10 @@
 2008-07-01  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* DebuggerServer.cs: Fix some deadlocks.
+	* BacktraceWrapper.cs: Fix infinite loop.
+
+2008-07-01  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* DebuggerServer.cs: Insert breakpoints using the global thread group.
 
 2008-06-26  Lluis Sanchez Gual <lluis@novell.com> 

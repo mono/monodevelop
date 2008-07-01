@@ -231,6 +231,7 @@ namespace DebuggerServer
 					if (field.Name == name && (field.IsStatic || thisobj != null))
 						return cls.GetField (frame.Thread, thisobj, field);
 				}
+				type = type.GetParentType (frame.Thread);
 			}
 			return null;
 		}

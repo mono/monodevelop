@@ -132,9 +132,7 @@ namespace DebuggerServer
 			//FIXME: doesn't look like the proper way to do this.
 			//can this be done for other threads/processes? how?
 
-			lock (debugger) {
-				process.MainThread.NextLine ();
-			}
+			process.MainThread.NextLine ();
 		}
 
 		public void StepLine ()
@@ -142,31 +140,23 @@ namespace DebuggerServer
 			//FIXME: doesn't look like the proper way to do this.
 			//can this be done for other threads/processes? how?
 
-			lock (debugger) {
-				process.MainThread.StepLine ();
-			}
+			process.MainThread.StepLine ();
 		}
 
 		public void StepInstruction ()
 		{
-			lock (debugger) {
-				process.MainThread.StepInstruction ();
-			}
+			process.MainThread.StepInstruction ();
 		}
 
 		public void NextInstruction ()
 		{
-			lock (debugger) {
-				process.MainThread.NextInstruction ();
-			}
+			process.MainThread.NextInstruction ();
 		}
 
 		public void Finish ()
 		{
 			//FIXME: param @native ?
-			lock (debugger) {
-				process.MainThread.Finish (false);
-			}
+			process.MainThread.Finish (false);
 		}
 
 		public int InsertBreakpoint (string filename, int line, bool enable)
