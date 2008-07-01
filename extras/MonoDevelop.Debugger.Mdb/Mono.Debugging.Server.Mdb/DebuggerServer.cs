@@ -123,10 +123,8 @@ namespace DebuggerServer
 
 		public void Exit ()
 		{
-			lock (debugger) {
-				ResetTaskQueue ();
-				debugger.Kill ();
-			}
+			ResetTaskQueue ();
+			debugger.Kill ();
 		}
 
 		public void NextLine ()
@@ -180,7 +178,7 @@ namespace DebuggerServer
 
 			MD.Event ev = null;
 			
-			ev = session.InsertBreakpoint (process.MainThread.ThreadGroup, location);
+			ev = session.InsertBreakpoint (ThreadGroup.Global, location);
 			ev.IsEnabled = enable;
 			
 			if (!initializing) {

@@ -1,3 +1,9 @@
+2008-07-01  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDebuggerSession.cs: Track api changes.
+	* DebuggerController.cs: Use tcp by default. Fire target even after
+	  forcing the debugger to stop.
+
 2008-06-26  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Mono.Debugging.Backend.Mdb.mdp, DebuggerController.cs, Makefile:

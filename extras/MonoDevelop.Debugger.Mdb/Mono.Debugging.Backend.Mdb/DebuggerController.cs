@@ -15,6 +15,7 @@ namespace Mono.Debugging.Backend.Mdb
 {
 	class DebuggerController : MarshalByRefObject, IDebuggerController
 	{
+		string remotingChannel = "tcp";
 		IDebuggerServer debugger;
 		Process process;
 		IDebuggerSessionFrontend frontend;
@@ -155,8 +156,10 @@ namespace Mono.Debugging.Backend.Mdb
 				});
 				
 				// If the debugger does not stop, kill it.
-				if (!Monitor.Wait (elock, 3000))
+				if (!Monitor.Wait (elock, 3000)) {
 					StopDebugger ();
+					OnTargetEvent (new TargetEventArgs (TargetEventType.TargetExited));
+				}
 			}
 		}
 		
@@ -186,7 +189,6 @@ namespace Mono.Debugging.Backend.Mdb
 			}
 		}
 
-		string remotingChannel = "unix";
 		string RegisterRemotingChannel()
 		{
 			if (remotingChannel == "tcp")

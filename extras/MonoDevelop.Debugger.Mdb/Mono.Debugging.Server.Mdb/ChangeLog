@@ -1,3 +1,7 @@
+2008-07-01  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* DebuggerServer.cs: Insert breakpoints using the global thread group.
+
 2008-06-26  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Mono.Debugging.Server.Mdb.mdp, Server.cs, Makefile: Enable unix
