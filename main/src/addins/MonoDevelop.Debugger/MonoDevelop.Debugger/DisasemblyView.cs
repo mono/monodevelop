@@ -47,7 +47,7 @@ namespace MonoDevelop.Debugger
 		List<AssemblyLine> lines = new List<AssemblyLine> ();
 		bool autoRefill;
 		int lastDebugLine = -1;
-		LineBackgroundMarker currentDebugLineMarker = new LineBackgroundMarker (new Gdk.Color (255, 255, 0));
+		CurrentDebugLineTextMarker currentDebugLineMarker = new CurrentDebugLineTextMarker ();
 		bool dragging;
 		
 		const int FillMarginLines = 50;
@@ -62,7 +62,6 @@ namespace MonoDevelop.Debugger
 			options.CopyFrom (TextEditorOptions.Options);
 			options.ShowEolMarkers = false;
 			options.ShowFoldMargin = false;
-//			options.ShowIconMargin = false;
 			options.ShowInvalidLines = false;
 			options.ShowLineNumberMargin = false;
 			editor.Options = options;
@@ -75,8 +74,11 @@ namespace MonoDevelop.Debugger
 			sw.VScrollbar.ButtonPressEvent += OnPress;
 			sw.VScrollbar.ButtonReleaseEvent += OnRelease;
 			sw.VScrollbar.Events |= Gdk.EventMask.ButtonPressMask | Gdk.EventMask.ButtonReleaseMask;
+			sw.ShadowType = Gtk.ShadowType.In;
 			
 			sw.Sensitive = false;
+			
+			IdeApp.Services.DebuggingService.StoppedEvent += OnStop;
 		}
 		
 		public override Gtk.Widget Control {
@@ -201,6 +203,14 @@ namespace MonoDevelop.Debugger
 				this.lines.AddRange (lines);
 		}
 
+		void OnStop (object s, EventArgs args)
+		{
+			sw.Sensitive = false;
+			autoRefill = false;
+			lastDebugLine = -1;
+			editor.Document.Text = string.Empty;
+			lines.Clear ();
+		}
 		
 		public override bool IsReadOnly {
 			get { return true; }
@@ -210,6 +220,7 @@ namespace MonoDevelop.Debugger
 		public override void Dispose ()
 		{
 			base.Dispose ();
+			IdeApp.Services.DebuggingService.StoppedEvent -= OnStop;
 			sw.Destroy ();
 		}
 		

@@ -12,10 +12,12 @@ REFS =  \
 	-r:../../../build/bin/MonoDevelop.Core.Gui.dll \
 	-r:../../../build/bin/MonoDevelop.Ide.dll \
 	-r:../../../build/bin/MonoDevelop.Projects.dll \
+	-r:Mono.Cairo \
 	-r:System 
 
 FILES =  \
 	AssemblyInfo.cs \
+	MonoDevelop.Debugger/DebugTextMarker.cs \
 	MonoDevelop.Debugger/DisasemblyView.cs \
 	MonoDevelop.Debugger/Initializer.cs \
 	MonoDevelop.Debugger/ObjectValueTreeView.cs \

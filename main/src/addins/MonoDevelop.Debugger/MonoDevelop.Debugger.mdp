@@ -1,13 +1,13 @@
 <Project name="MonoDevelop.Debugger" fileversion="2.0" language="C#" clr-version="Net_2_0" ctype="DotNetProject">
   <Configurations active="Debug">
     <Configuration name="Debug" ctype="DotNetProjectConfiguration">
-      <Output directory="../../../build/AddIns" assembly="MonoDevelop" />
+      <Output directory="../../../build/AddIns/MonoDevelop.Debugger" assembly="MonoDevelop.Debugger" />
       <Build debugmode="False" target="Library" />
       <Execution runwithwarnings="True" consolepause="False" runtime="MsNet" clr-version="Net_2_0" />
       <CodeGeneration compiler="Mcs" warninglevel="4" optimize="False" unsafecodeallowed="False" generateoverflowchecks="False" definesymbols="DEBUG" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
     </Configuration>
     <Configuration name="Release" ctype="DotNetProjectConfiguration">
-      <Output directory="../../../build/AddIns" assembly="MonoDevelop" />
+      <Output directory="../../../build/AddIns/MonoDevelop.Debugger" assembly="MonoDevelop.Debugger" />
       <Build debugmode="False" target="Library" />
       <Execution runwithwarnings="True" consolepause="False" runtime="MsNet" clr-version="Net_2_0" />
       <CodeGeneration compiler="Mcs" warninglevel="4" optimize="False" unsafecodeallowed="False" generateoverflowchecks="False" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
@@ -21,6 +21,7 @@
     <File name="MonoDevelop.Debugger/WatchPad.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Debugger/Initializer.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Debugger/DisasemblyView.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Debugger/DebugTextMarker.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
@@ -36,6 +37,7 @@
     <ProjectReference type="Project" localcopy="True" refto="Mono.Debugging" />
     <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Components" />
     <ProjectReference type="Project" localcopy="False" refto="Mono.TextEditor" />
+    <ProjectReference type="Gac" localcopy="True" refto="Mono.Cairo, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
   </References>
   <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="../../..">
     <BuildFilesVar Sync="True" Name="FILES" />
