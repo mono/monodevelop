@@ -116,7 +116,7 @@ namespace MonoDevelop.Debugger.Gdb
 				StartGdb ();
 				currentProcessName = "PID " + processId.ToString ();
 				RunCommand ("attach", processId.ToString ());
-				currentThread = 1;
+				currentThread = activeThread = 1;
 				OnStarted ();
 				FireTargetEvent (TargetEventType.TargetStopped, null);
 			}
@@ -214,7 +214,7 @@ namespace MonoDevelop.Debugger.Gdb
 			RunCommand ("-exec-finish");
 		}
 
-		protected override int OnInsertBreakpoint (string filename, int line, bool activate)
+		protected override object OnInsertBreakpoint (string filename, int line, bool activate)
 		{
 			lock (gdbLock) {
 				bool dres = InternalStop ();
@@ -230,7 +230,7 @@ namespace MonoDevelop.Debugger.Gdb
 			}
 		}
 		
-		protected override void OnRemoveBreakpoint (int handle)
+		protected override void OnRemoveBreakpoint (object handle)
 		{
 			lock (gdbLock) {
 				bool dres = InternalStop ();
@@ -242,7 +242,7 @@ namespace MonoDevelop.Debugger.Gdb
 			}
 		}
 		
-		protected override void OnEnableBreakpoint (int handle, bool enable)
+		protected override void OnEnableBreakpoint (object handle, bool enable)
 		{
 			lock (gdbLock) {
 				bool dres = InternalStop ();
