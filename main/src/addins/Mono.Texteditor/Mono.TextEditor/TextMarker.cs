@@ -131,7 +131,7 @@ namespace Mono.TextEditor
 	/// </summary>
 	public interface IIconBarMarker
 	{
-		void DrawIcon (TextEditor editor, Gdk.Drawable win, LineSegment line, int lineNumber, int xPos, int yPos);
+		void DrawIcon (TextEditor editor, Gdk.Drawable win, LineSegment line, int lineNumber, int xPos, int yPos, int width, int height);
 	}
 	
 	/// <summary>

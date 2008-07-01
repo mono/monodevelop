@@ -1,3 +1,9 @@
+2008-07-01  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Mono.TextEditor/TextMarker.cs, Mono.TextEditor/BookmarkMargin.cs:
+	  Added width and height parameters to IIConBarMarker.DrawIcon.
+	  Simplifies work to implementers.
+
 2008-06-23  Mike Krüger <mkrueger@novell.com> 
 
 	* Mono.TextEditor/TextEditorData.cs, Mono.TextEditor/Segment.cs:

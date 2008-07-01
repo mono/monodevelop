@@ -167,7 +167,7 @@ namespace Mono.TextEditor
 				if (lineSegment.Markers != null) {
 					foreach (TextMarker marker in lineSegment.Markers) {
 						if (marker is IIconBarMarker) 
-							((IIconBarMarker)marker).DrawIcon (editor, win, lineSegment, line, x, y);
+							((IIconBarMarker)marker).DrawIcon (editor, win, lineSegment, line, x, y, Width, editor.LineHeight);
 					}
 				}
 				if (DrawEvent != null) 
