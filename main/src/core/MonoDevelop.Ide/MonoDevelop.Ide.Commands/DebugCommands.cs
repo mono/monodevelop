@@ -214,7 +214,7 @@ namespace MonoDevelop.Ide.Commands
 			    	IdeApp.Workbench.ActiveDocument.TextEditor.CursorLine).Count > 0;
 			}
 			else
-				info.Enabled = true;
+				info.Enabled = false;
 		}
 	}
 	
