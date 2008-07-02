@@ -1,3 +1,14 @@
+2008-07-02  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Mono.Debugging.Client/ObjectPath.cs: Implemented ToString.
+	* Mono.Debugging.Client/AssemblyLine.cs,
+	  Mono.Debugging.Client/DebuggerSession.cs: Added support for
+	  disassembling files.
+	* Mono.Debugging.Client/ObjectValue.cs,
+	  Mono.Debugging.Client/ObjectValueKind.cs,
+	  Mono.Debugging.Backend/IObjectValueSource.cs: Implemented support
+	  for changing the value of an ObjectValue. Improved error reporting.
+
 2008-07-01  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Mono.Debugging.Client/BreakpointStore.cs,

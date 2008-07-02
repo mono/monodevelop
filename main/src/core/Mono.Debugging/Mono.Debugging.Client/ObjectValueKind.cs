@@ -33,6 +33,7 @@ namespace Mono.Debugging.Client
 		Object,
 		Array,
 		Primitive,
-		Unknown
+		Unknown,
+		Error
 	}
 }

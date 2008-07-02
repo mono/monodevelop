@@ -38,7 +38,7 @@ namespace Mono.Debugging.Client
 		ObjectPath path;
 		int arrayCount = -1;
 		string name;
-		object value;
+		string value;
 		string typeName;
 		bool editable;
 		ObjectValueKind kind;
@@ -60,11 +60,20 @@ namespace Mono.Debugging.Client
 			return ob;
 		}
 		
-		public static ObjectValue CreatePrimitive (IObjectValueSource source, ObjectPath path, string typeName, object value)
+		public static ObjectValue CreateNullObject (string name, string typeName)
+		{
+			ObjectValue ob = CreateUnknown (null, new ObjectPath (name), typeName);
+			ob.kind = ObjectValueKind.Object;
+			ob.value = "(null)";
+			return ob;
+		}
+		
+		public static ObjectValue CreatePrimitive (IObjectValueSource source, ObjectPath path, string typeName, string value, bool editable)
 		{
 			ObjectValue ob = CreateUnknown (source, path, typeName);
 			ob.kind = ObjectValueKind.Primitive;
 			ob.value = value;
+			ob.editable = editable;
 			return ob;
 		}
 		
@@ -94,6 +103,15 @@ namespace Mono.Debugging.Client
 			return CreateUnknown (null, new ObjectPath (name), "");
 		}
 		
+		public static ObjectValue CreateError (string message)
+		{
+			ObjectValue ob = new ObjectValue ();
+			ob.kind = ObjectValueKind.Error;
+			ob.value = message;
+			ob.name = "";
+			return ob;
+		}
+		
 		public ObjectValueKind Kind {
 			get { return kind; }
 		}
@@ -110,8 +128,15 @@ namespace Mono.Debugging.Client
 			}
 		}
 		
-		public object Value {
-			get { return value; }
+		public virtual string Value {
+			get {
+				return value;
+			}
+			set {
+				if (!editable || source == null)
+					throw new InvalidOperationException ("Value is not editable");
+				this.value = source.SetValue (path, value);
+			}
 		}
 		
 		public string TypeName {
@@ -120,7 +145,9 @@ namespace Mono.Debugging.Client
 		
 		public bool HasChildren {
 			get {
-				if (kind == ObjectValueKind.Array)
+				if (source == null)
+					return false;
+				else if (kind == ObjectValueKind.Array)
 					return arrayCount > 0;
 				else if (kind == ObjectValueKind.Object)
 					return true;
@@ -136,7 +163,12 @@ namespace Mono.Debugging.Client
 			
 			if (children == null) {
 				children = new List<ObjectValue> ();
-				children.AddRange (source.GetChildren (path, -1, -1));
+				try {
+					children.AddRange (source.GetChildren (path, -1, -1));
+				} catch (Exception ex) {
+					children = null;
+					return CreateError (ex.Message);
+				}
 			}
 			foreach (ObjectValue ob in children)
 				if (ob.Name == name)
@@ -152,7 +184,11 @@ namespace Mono.Debugging.Client
 			} else {
 				if (children == null) {
 					children = new List<ObjectValue> ();
-					children.AddRange (source.GetChildren (path, -1, -1));
+					try {
+						children.AddRange (source.GetChildren (path, -1, -1));
+					} catch (Exception ex) {
+						children.Add (CreateError (ex.Message));
+					}
 				}
 				return children.ToArray ();
 			}
@@ -171,8 +207,12 @@ namespace Mono.Debugging.Client
 				int nc = (index + 50);
 				if (nc > arrayCount) nc = arrayCount;
 				nc = nc - children.Count;
-				ObjectValue[] items = source.GetChildren (path, children.Count, nc);
-				children.AddRange (items);
+				try {
+					ObjectValue[] items = source.GetChildren (path, children.Count, nc);
+					children.AddRange (items);
+				} catch (Exception ex) {
+					return CreateError (ex.Message);
+				}
 			}
 			return children [index];
 		}
@@ -193,40 +233,6 @@ namespace Mono.Debugging.Client
 			get {
 				return editable;
 			}
-		}
-		
-		public static string[] DecodePath (string path)
-		{
-			List<string> list = new List<string> ();
-			int i = path.IndexOf ('/');
-			int lasti = 0;
-			bool hasSlash = false;
-			while (i != -1 && i < path.Length) {
-				if (i + 1 < path.Length && path [i+1] == '/') {
-					i+=2;
-					hasSlash = true;
-				} else {
-					string str = path.Substring (lasti, i - lasti);
-					list.Add (hasSlash ? str.Replace ("//","/") : str);
-					lasti = ++i;
-					hasSlash = false;
-				}
-				i = path.IndexOf ('/', i);
-			}
-			string pstr = path.Substring (lasti, path.Length - lasti);
-			list.Add (hasSlash ? pstr.Replace ("//","/") : pstr);
-			return list.ToArray ();
-		}
-		
-		public static string EncodePath (string[] path)
-		{
-			StringBuilder sb = new StringBuilder ();
-			foreach (string p in path) {
-				if (sb.Length > 0)
-					sb.Append ('/');
-				sb.Append (p.Replace ("/", "//"));
-			}
-			return sb.ToString ();
 		}
 	}
 }

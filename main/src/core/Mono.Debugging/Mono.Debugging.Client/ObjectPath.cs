@@ -92,5 +92,10 @@ namespace Mono.Debugging.Client
 		{
 			return string.Join (separator, path);
 		}
+		
+		public override string ToString ()
+		{
+			return Join ("/");
+		}
 	}
 }

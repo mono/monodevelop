@@ -34,6 +34,7 @@ namespace Mono.Debugging.Client
 	{
 		long address;
 		string code;
+		int sourceLine;
 		
 		public string Code {
 			get {
@@ -47,10 +48,21 @@ namespace Mono.Debugging.Client
 			}
 		}
 		
-		public AssemblyLine (long address, string code)
+		public int SourceLine {
+			get {
+				return sourceLine;
+			}
+		}
+		
+		public AssemblyLine (long address, string code): this (address, code, -1)
+		{
+		}
+		
+		public AssemblyLine (long address, string code, int sourceLine)
 		{
 			this.address = address;
 			this.code = code;
+			this.sourceLine = sourceLine;
 		}
 	}
 }

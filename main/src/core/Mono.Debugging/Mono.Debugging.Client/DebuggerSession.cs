@@ -373,6 +373,13 @@ namespace Mono.Debugging.Client
 			}
 		}
 
+		public AssemblyLine[] DisassembleFile (string file)
+		{
+			lock (slock) {
+				return OnDisassembleFile (file);
+			}
+		}
+		
 		internal ThreadInfo[] GetThreads (int processId)
 		{
 			lock (slock) {
@@ -541,6 +548,8 @@ namespace Mono.Debugging.Client
 		protected abstract ProcessInfo[] OnGetPocesses ();
 		
 		protected abstract Backtrace OnGetThreadBacktrace (int processId, int threadId);
+		
+		protected abstract AssemblyLine[] OnDisassembleFile (string file);
 		
 		protected IDebuggerSessionFrontend Frontend {
 			get {
