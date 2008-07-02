@@ -115,6 +115,7 @@ namespace MonoDevelop.SourceEditor
 			this.lastActiveEditor = this.textEditor = new MonoDevelop.SourceEditor.ExtendibleTextEditor (view);
 			this.mainsw.Child = this.TextEditor;
 			this.mainsw.ButtonPressEvent += PrepareEvent;
+			this.textEditor.Errors = errors;
 			
 			this.textEditor.Caret.ModeChanged += delegate {
 				this.UpdateLineCol ();
@@ -420,36 +421,6 @@ namespace MonoDevelop.SourceEditor
 			// Else we underline the error
 			foreach (ErrorInfo info in cu.ErrorInformation)
 				UnderLineError (info);
-		}
-		class Error
-		{
-			public ErrorInfo info;
-			public LineSegment line;
-			public Mono.TextEditor.Document doc;
-			TextMarker marker = new UnderlineMarker ();
-			
-			public Error (Mono.TextEditor.Document doc, ErrorInfo info, LineSegment line)
-			{
-				this.info = info;
-				this.line = line; // may be null if no line is assigned to the error.
-				this.doc  = doc;
-			}
-			
-			public void AddToLine ()
-			{
-				if (line != null) {
-					line.AddMarker (marker);
-					doc.CommitLineUpdate (doc.OffsetToLineNumber(line.Offset));
-				}
-			}
-			
-			public void RemoveFromLine ()
-			{
-				if (line != null) {
-					line.RemoveMarker (marker);
-					doc.CommitLineUpdate (doc.OffsetToLineNumber(line.Offset));
-				}
-			}
 		}
 		
 		void UnderLineError (ErrorInfo info)
@@ -1328,4 +1299,36 @@ namespace MonoDevelop.SourceEditor
 		}
 		#endregion
 	}
+
+	class Error
+	{
+		public ErrorInfo info;
+		public LineSegment line;
+		public Mono.TextEditor.Document doc;
+		TextMarker marker = new UnderlineMarker ();
+		
+		public Error (Mono.TextEditor.Document doc, ErrorInfo info, LineSegment line)
+		{
+			this.info = info;
+			this.line = line; // may be null if no line is assigned to the error.
+			this.doc  = doc;
+		}
+		
+		public void AddToLine ()
+		{
+			if (line != null) {
+				line.AddMarker (marker);
+				doc.CommitLineUpdate (doc.OffsetToLineNumber(line.Offset));
+			}
+		}
+		
+		public void RemoveFromLine ()
+		{
+			if (line != null) {
+				line.RemoveMarker (marker);
+				doc.CommitLineUpdate (doc.OffsetToLineNumber(line.Offset));
+			}
+		}
+	}
+	
 }

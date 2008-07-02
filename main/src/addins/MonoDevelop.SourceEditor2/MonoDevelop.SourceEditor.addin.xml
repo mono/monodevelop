@@ -19,14 +19,8 @@
 		<Addin id="Debugger" version="1.9.0"/>
 	</Dependencies>
 
-	<Extension path = "/MonoDevelop/Ide/Commands">
-		<Command id = "MonoDevelop.SourceEditor.SourceEditorCommands.MarkerOperations"
-		         defaultHandler = "MonoDevelop.SourceEditor.MarkerOperationsHandler"
-		         _label = ""
-		         type = "array"/> 
-	</Extension>
-
 	<!-- Extension points -->
+	
 	<ExtensionPoint path = "/MonoDevelop/SourceEditor2/ContextMenu/Editor" name = "Editor context menu">
 		<Description>Context menu for the editor.</Description>
 		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet" />
@@ -42,7 +36,25 @@
 		<ExtensionNode name="Class" />
 	</ExtensionPoint>
 	
+	<ExtensionPoint path = "/MonoDevelop/SourceEditor2/TooltipProviders" name = "Tooltip providers">
+		<Description>Tooltip providers. Classes must implement ITooltipProvider.</Description>
+		<ExtensionNode name="Class" />
+	</ExtensionPoint>
+	
 	<!-- Extensions -->
+
+	<Extension path = "/MonoDevelop/SourceEditor2/TooltipProviders">
+		<Class class="MonoDevelop.SourceEditor.LanguageItemTooltipProvider" />
+		<Class class="MonoDevelop.SourceEditor.CompileErrorTooltipProvider" />
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/Ide/Commands">
+		<Command id = "MonoDevelop.SourceEditor.SourceEditorCommands.MarkerOperations"
+		         defaultHandler = "MonoDevelop.SourceEditor.MarkerOperationsHandler"
+		         _label = ""
+		         type = "array"/> 
+	</Extension>
+	
 	<Extension path = "/MonoDevelop/Ide/DisplayBindings">
 		<DisplayBinding 
 			id = "NewText2"

@@ -31,6 +31,7 @@ using System.Text;
 using Gtk;
 
 using Mono.TextEditor;
+using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Projects.Parser;
@@ -38,20 +39,16 @@ using MonoDevelop.Projects.Gui.Completion;
 using MonoDevelop.Components.Commands;
 using Mono.TextEditor.Highlighting;
 using MonoDevelop.Ide.CodeTemplates;
+using Mono.Addins;
 
 namespace MonoDevelop.SourceEditor
 {
 	public class ExtendibleTextEditor : Mono.TextEditor.TextEditor
 	{
 		ITextEditorExtension extension = null;
-		LanguageItemWindow languageItemWindow;
 		SourceEditorView view;
+		Dictionary<int, Error> errors;
 		
-		const int LanguageItemTipTimer = 800;
-		ILanguageItem tipItem;
-		bool showTipScheduled;
-		int langTipX, langTipY;
-		uint tipTimeoutId;
 		Gdk.Point menuPopupLocation;
 		
 		public ITextEditorExtension Extension {
@@ -73,14 +70,23 @@ namespace MonoDevelop.SourceEditor
 			Initialize (view);
 		}
 		
+		internal SourceEditorView View {
+			get { return view; }
+		}
+
+		internal Dictionary<int, Error> Errors {
+			get {
+				return errors;
+			}
+			set {
+				errors = value;
+			}
+		}
+		
 		void Initialize (SourceEditorView view)
 		{
 			this.view = view;
-			Document.TextReplaced += delegate {
-				this.HideLanguageItemWindow ();
-			};
 			Caret.PositionChanged += delegate {
-				this.HideLanguageItemWindow ();
 				if (extension != null) {
 					try {
 						extension.CursorPositionChanged ();
@@ -116,7 +122,18 @@ namespace MonoDevelop.SourceEditor
 					base.ResetMouseState ();
 				}
 			};
+
+			AddinManager.AddExtensionNodeHandler ("MonoDevelop/SourceEditor2/TooltipProviders", OnTooltipProviderChanged);
 		}
+		
+		void OnTooltipProviderChanged (object s, ExtensionNodeEventArgs a)
+		{
+			if (a.Change == ExtensionChange.Add)
+				TooltipProviders.Add ((ITooltipProvider) a.ExtensionObject);
+			else
+				TooltipProviders.Remove ((ITooltipProvider) a.ExtensionObject);
+		}
+		
 		public void FireOptionsChange ()
 		{
 			this.OptionsChanged (null, null);
@@ -143,14 +160,14 @@ namespace MonoDevelop.SourceEditor
 			}
 			
 			// Handle keyboard toolip popup
-			if ((evnt.Key == Gdk.Key.F1 && (evnt.State & Gdk.ModifierType.ControlMask) == Gdk.ModifierType.ControlMask)) {
+/*			if ((evnt.Key == Gdk.Key.F1 && (evnt.State & Gdk.ModifierType.ControlMask) == Gdk.ModifierType.ControlMask)) {
 				Gdk.Point p = this.TextViewMargin.LocationToDisplayCoordinates (this.Caret.Location);
 				this.mx = p.X;
 				this.my = p.Y;
 				this.ShowTooltip ();
 				return true;
 			}
-			
+*/			
 			return base.OnKeyPressEvent (evnt);
 		}
 		
@@ -243,109 +260,13 @@ namespace MonoDevelop.SourceEditor
 			return result;
 		}
 		
-		double mx, my;
-		protected override bool OnMotionNotifyEvent (Gdk.EventMotion evnt)
+		internal string GetErrorInformationAt (int offset)
 		{
-			mx = evnt.X - textViewMargin.XOffset;
-			my = evnt.Y;
-			bool result = base.OnMotionNotifyEvent (evnt);
-			UpdateLanguageItemWindow ();
-			return result;
-		}
-		
-		void UpdateLanguageItemWindow ()
-		{
-			if (languageItemWindow != null) {
-				// Tip already being shown. Update it.
-				ShowTooltip ();
-			}
-			else if (showTipScheduled) {
-				// Tip already scheduled. Reset the timer.
-				GLib.Source.Remove (tipTimeoutId);
-				tipTimeoutId = GLib.Timeout.Add (LanguageItemTipTimer, ShowTooltip);
-			}
-			else {
-				// Start a timer to show the tip
-				showTipScheduled = true;
-				tipTimeoutId = GLib.Timeout.Add (LanguageItemTipTimer, ShowTooltip);
-			}
-		}
-		
-		bool ShowTooltip ()
-		{
-			string errorInfo;
-
-			showTipScheduled = false;
-			int xloc = (int)mx;
-			int yloc = (int)my;
-			ILanguageItem item = GetLanguageItem (Document.LocationToOffset (base.VisualToDocumentLocation ((int)mx, (int)my)));
-			if (item != null) {
-				// Tip already being shown for this language item?
-				if (languageItemWindow != null && tipItem != null && tipItem.Equals (item))
-					return false;
-				
-				langTipX = xloc;
-				langTipY = yloc;
-				tipItem = item;
-
-				HideLanguageItemWindow ();
-				
-				IParserContext pctx = view.GetParserContext ();
-				if (pctx == null)
-					return false;
-
-				DoShowTooltip (new LanguageItemWindow (tipItem, pctx, view.GetAmbience (), 
-				                                        GetErrorInformationAt (Caret.Offset)), langTipX, langTipY);
-				
-				
-			} else if (!string.IsNullOrEmpty ((errorInfo = GetErrorInformationAt(Caret.Offset)))) {
-				// Error tooltip already shown
-				if (languageItemWindow != null /*&& tiItem == ti.Line*/)
-					return false;
-				//tiItem = ti.Line;
-				
-				HideLanguageItemWindow ();
-				DoShowTooltip (new LanguageItemWindow (null, null, null, errorInfo), xloc, yloc);
-			} else
-				HideLanguageItemWindow ();
-			
-			return false;
-		}
-		
-		void DoShowTooltip (LanguageItemWindow liw, int xloc, int yloc)
-		{
-			languageItemWindow = liw;
-			
-			int ox = 0, oy = 0;
-			this.GdkWindow.GetOrigin (out ox, out oy);
-			
-			int screenW = Screen.Width;
-			int w = languageItemWindow.SetMaxWidth (screenW);
-
-			int x = xloc + ox - (w/2);
-			if (x + w >= screenW)
-				x = screenW - w;
-			if (x < 0)
-				x = 0;
-			    
-			languageItemWindow.Move (x, yloc + oy + 20);
-			languageItemWindow.ShowAll ();
-		}
-		
-		protected override void OnUnrealized ()
-		{
-			if (showTipScheduled) {
-				GLib.Source.Remove (tipTimeoutId);
-				showTipScheduled = false;
-			}
-			base.OnUnrealized ();
-		}
-		string GetErrorInformationAt (int offset)
-		{
-//			ErrorInfo info;
-//			if (errors.TryGetValue (iter.Line, out info))
-//				return "<b>" + GettextCatalog.GetString ("Parser Error:") + "</b> " + info.Message;
-//			else
+			Error error;
+			DocumentLocation location = Document.OffsetToLocation (offset);
+			if (errors.TryGetValue (location.Line, out error))
+				return "<b>" + GettextCatalog.GetString ("Parser Error:") + " </b> " + error.info.Message;
+			else
 				return null;
 		}
 		
@@ -374,18 +295,10 @@ namespace MonoDevelop.SourceEditor
 			return ctx.ResolveIdentifier (expression, lineNumber + 1, line.Offset + 1, fileName, txt);
 		}
 		
-
-		protected override bool OnLeaveNotifyEvent (Gdk.EventCrossing evnt)		
-		{
-			HideLanguageItemWindow ();
-			return base.OnLeaveNotifyEvent (evnt);
-		}
-		
 		protected override bool OnFocusOutEvent (Gdk.EventFocus evnt)
 		{
 			CompletionWindowManager.HideWindow ();
 			ParameterInformationWindowManager.HideWindow ();
-			HideLanguageItemWindow ();
 			return base.OnFocusOutEvent (evnt); 
 		}
 		
@@ -393,25 +306,12 @@ namespace MonoDevelop.SourceEditor
 		{
 			CompletionWindowManager.HideWindow ();
 			ParameterInformationWindowManager.HideWindow ();
-			HideLanguageItemWindow ();
 			return base.OnScrollEvent (evnt);
 		}
 		
-		public void HideLanguageItemWindow ()
-		{
-			if (showTipScheduled) {
-				GLib.Source.Remove (tipTimeoutId);
-				showTipScheduled = false;
-			}
-			if (languageItemWindow != null) {
-				languageItemWindow.Destroy ();
-				languageItemWindow = null;
-			}
-		}
-
 		void ShowPopup ()
 		{
-			HideLanguageItemWindow ();
+			HideTooltip ();
 			CommandEntrySet cset = IdeApp.CommandService.CreateCommandEntrySet ("/MonoDevelop/SourceEditor2/ContextMenu/Editor");
 			Gtk.Menu menu = IdeApp.CommandService.CreateMenu (cset);
 			
