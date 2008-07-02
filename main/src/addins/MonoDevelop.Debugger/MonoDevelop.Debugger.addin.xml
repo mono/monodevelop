@@ -1,4 +1,4 @@
-<Addin id = "MonoDevelop.Debugger"
+<Addin id = "Debugger"
        namespace = "MonoDevelop"
        name	= "Debugger support for MonoDevelop"
        author = "Ankit Jain, Lluis Sanchez"
