@@ -1,5 +1,15 @@
 2008-07-02  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Debugger/DebugTextMarker.cs: Improved colors.
+	* MonoDevelop.Debugger/ObjectValueTreeView.cs: Allow editing variable
+	  values.
+	* MonoDevelop.Debugger/Initializer.cs: Implement ShowDisassembly
+	  command.
+	* MonoDevelop.Debugger/DisasemblyView.cs: Implemented support for mixed
+	  assembler/source code view.
+
+2008-07-02  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Debugger.addin.xml: Fix add-in id.
 
 2008-07-01  Lluis Sanchez Gual <lluis@novell.com> 

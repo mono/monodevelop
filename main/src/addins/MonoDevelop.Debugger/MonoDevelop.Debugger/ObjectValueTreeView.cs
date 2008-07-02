@@ -217,6 +217,16 @@ namespace MonoDevelop.Debugger
 		
 		void OnValueEdited (object s, Gtk.EditedArgs args)
 		{
+			TreeIter it;
+			if (!store.GetIterFromString (out it, args.Path))
+				return;
+			ObjectValue val = store.GetValue (it, ObjectCol) as ObjectValue;
+			try {
+				val.Value = args.NewText;
+			} catch (Exception ex) {
+				LoggingService.LogError ("Could not set value for object '" + val.Name + "'", ex);
+			}
+			store.SetValue (it, ValueCol, GLib.Markup.EscapeText (val.Value));
 		}
 	}
 	

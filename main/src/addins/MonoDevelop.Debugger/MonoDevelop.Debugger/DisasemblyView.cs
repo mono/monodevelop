@@ -26,6 +26,7 @@
 //
 
 using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Text;
 using MonoDevelop.Core;
@@ -45,10 +46,13 @@ namespace MonoDevelop.Debugger
 		int firstLine;
 		int lastLine;
 		List<AssemblyLine> lines = new List<AssemblyLine> ();
+		Dictionary<long,int> addressLines = new Dictionary<long,int> ();
 		bool autoRefill;
 		int lastDebugLine = -1;
 		CurrentDebugLineTextMarker currentDebugLineMarker = new CurrentDebugLineTextMarker ();
 		bool dragging;
+		string currentFile;
+		AsmLineMarker asmMarker = new AsmLineMarker ();
 		
 		const int FillMarginLines = 50;
 		
@@ -61,7 +65,6 @@ namespace MonoDevelop.Debugger
 			TextEditorOptions options = new TextEditorOptions ();
 			options.CopyFrom (TextEditorOptions.Options);
 			options.ShowEolMarkers = false;
-			options.ShowFoldMargin = false;
 			options.ShowInvalidLines = false;
 			options.ShowLineNumberMargin = false;
 			editor.Options = options;
@@ -105,6 +108,72 @@ namespace MonoDevelop.Debugger
 			}
 			
 			sw.Sensitive = true;
+			
+			StackFrame sf = IdeApp.Services.DebuggingService.CurrentFrame;
+			if (!string.IsNullOrEmpty (sf.SourceLocation.Filename) && File.Exists (sf.SourceLocation.Filename) && sf.SourceLocation.Line != -1)
+				FillWithSource ();
+			else
+				Fill ();
+		}
+		
+		public void FillWithSource ()
+		{
+			lines.Clear ();
+			
+			StackFrame sf = IdeApp.Services.DebuggingService.CurrentFrame;
+			
+			if (currentFile != sf.SourceLocation.Filename) {
+				AssemblyLine[] asmLines = IdeApp.Services.DebuggingService.DebuggerSession.DisassembleFile (sf.SourceLocation.Filename);
+				if (asmLines == null) {
+					// Mixed disassemble not supported
+					Fill ();
+					return;
+				}
+				currentFile = sf.SourceLocation.Filename;
+				addressLines.Clear ();
+				editor.Document.Text = string.Empty;
+				StreamReader sr = new StreamReader (sf.SourceLocation.Filename);
+				string line;
+				int sourceLine = 1;
+				int na = 0;
+				int editorLine = 0;
+				StringBuilder sb = new StringBuilder ();
+				List<int> asmLineNums = new List<int> ();
+				while ((line = sr.ReadLine ()) != null) {
+					InsertSourceLine (sb, editorLine++, line);
+					while (na < asmLines.Length && asmLines [na].SourceLine == sourceLine) {
+						asmLineNums.Add (editorLine);
+						InsertAssemblerLine (sb, editorLine++, asmLines [na++]);
+					}
+					sourceLine++;
+				}
+				editor.Document.Text = sb.ToString ();
+				foreach (int li in asmLineNums)
+					editor.Document.GetLine (li).AddMarker (asmMarker);
+			}
+			int aline;
+			if (!addressLines.TryGetValue (sf.Address, out aline))
+				return;
+			lastDebugLine = aline;
+			editor.Caret.Line = aline;
+			editor.Document.GetLine (lastDebugLine).AddMarker (currentDebugLineMarker);
+			editor.QueueDraw ();
+		}
+		
+		void InsertSourceLine (StringBuilder sb, int line, string text)
+		{
+			sb.Append (text).Append ('\n');
+		}
+		
+		void InsertAssemblerLine (StringBuilder sb, int line, AssemblyLine asm)
+		{
+			sb.AppendFormat ("0x{0:x}   {1}\n", asm.Address, asm.Code);
+			addressLines [asm.Address] = line;
+		}
+
+		public void Fill ()
+		{
+			currentFile = null;
 			StackFrame sf = IdeApp.Services.DebuggingService.CurrentFrame;
 			if (lines.Count > 0) {
 				if (sf.Address >= lines [0].Address && sf.Address <= lines [lines.Count - 1].Address) {
@@ -202,7 +271,7 @@ namespace MonoDevelop.Debugger
 			else
 				this.lines.AddRange (lines);
 		}
-
+		
 		void OnStop (object s, EventArgs args)
 		{
 			sw.Sensitive = false;
@@ -241,6 +310,16 @@ namespace MonoDevelop.Debugger
 		protected void OnUpdateStep (CommandInfo ci)
 		{
 			ci.Enabled = lastDebugLine != -1;
+		}
+	}
+	
+	class AsmLineMarker: TextMarker
+	{
+		public override ChunkStyle GetStyle (ChunkStyle baseStyle)
+		{
+			ChunkStyle st = new ChunkStyle (baseStyle);
+			st.Color = new Gdk.Color (125, 125, 125);
+			return st;
 		}
 	}
 }

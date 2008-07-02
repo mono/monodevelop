@@ -42,6 +42,7 @@ namespace MonoDevelop.Debugger
 			IdeApp.Services.DebuggingService.CallStackChanged += OnStackChanged;
 			IdeApp.Services.DebuggingService.CurrentFrameChanged += OnFrameChanged;
 			IdeApp.Services.DebuggingService.ExecutionLocationChanged += OnExecLocationChanged;
+			IdeApp.Services.DebuggingService.DisassemblyRequested += OnShowDisassembly;
 		}
 		
 		void OnExecLocationChanged (object s, EventArgs a)

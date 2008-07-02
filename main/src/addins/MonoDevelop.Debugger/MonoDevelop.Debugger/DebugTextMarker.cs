@@ -30,10 +30,17 @@ using Mono.TextEditor;
 
 namespace MonoDevelop.Debugger
 {
-	public class DebugTextMarker: LineBackgroundMarker, IIconBarMarker
+	public class DebugTextMarker: StyleTextMarker, IIconBarMarker
 	{
-		public DebugTextMarker (Gdk.Color color): base (color)
+		public DebugTextMarker (Gdk.Color backColor)
 		{
+			BackgroundColor = backColor;
+		}
+		
+		public DebugTextMarker (Gdk.Color backColor, Gdk.Color foreColor)
+		{
+			BackgroundColor = backColor;
+			Color = foreColor;
 		}
 
 		public void DrawIcon (TextEditor editor, Gdk.Drawable win, LineSegment line, int lineNumber, int x, int y, int width, int height)
@@ -106,14 +113,14 @@ namespace MonoDevelop.Debugger
 	public class BreakpointTextMarker: DebugTextMarker
 	{
 		public BreakpointTextMarker ()
-			: base (new Gdk.Color (255, 0, 0))
+			: base (new Gdk.Color (125, 0, 0), new Gdk.Color (255, 255, 255))
 		{
 		}
 		
 		protected override void DrawIcon (Cairo.Context cr, int x, int y, int size)
 		{
-			Cairo.Color color1 = new Cairo.Color (1,0.8,0.8);
-			Cairo.Color color2 = new Cairo.Color (1,0,0);
+			Cairo.Color color1 = new Cairo.Color (1,1,1);
+			Cairo.Color color2 = new Cairo.Color (0.5,0,0);
 			DrawCircle (cr, x, y, size);
 			FillGradient (cr, color1, color2, x, y, size);
 			DrawBorder (cr, color2, x, y, size);
@@ -123,7 +130,7 @@ namespace MonoDevelop.Debugger
 	public class DisabledBreakpointTextMarker: DebugTextMarker
 	{
 		public DisabledBreakpointTextMarker ()
-			: base (new Gdk.Color (255, 200, 200))
+			: base (new Gdk.Color (237, 220, 220))
 		{
 		}
 		
@@ -131,14 +138,14 @@ namespace MonoDevelop.Debugger
 		{
 			DrawCircle (cr, x, y, size);
 			//FillGradient (cr, new Cairo.Color (1,1,1), new Cairo.Color (1,0.8,0.8), x, y, size);
-			DrawBorder (cr, new Cairo.Color (1,0,0), x, y, size);
+			DrawBorder (cr, new Cairo.Color (0.5,0,0), x, y, size);
 		}
 	}
 	
 	public class CurrentDebugLineTextMarker: DebugTextMarker
 	{
 		public CurrentDebugLineTextMarker ()
-			: base (new Gdk.Color (255, 255, 0))
+			: base (new Gdk.Color (255, 255, 0), new Gdk.Color (0, 0, 0))
 		{
 		}
 		
@@ -153,17 +160,17 @@ namespace MonoDevelop.Debugger
 	public class InvalidBreakpointTextMarker: DebugTextMarker
 	{
 		public InvalidBreakpointTextMarker ()
-			: base (new Gdk.Color (255, 200, 200))
+			: base (new Gdk.Color (237, 220, 220))
 		{
 		}
 		
 		protected override void DrawIcon (Cairo.Context cr, int x, int y, int size)
 		{
-			Cairo.Color color1 = new Cairo.Color (1,0.9,0.9);
-			Cairo.Color color2 = new Cairo.Color (1,0.6,0.6);
+			Cairo.Color color1 = new Cairo.Color (237.0/255.0, 220.0/255.0, 220.0/255.0);
+			Cairo.Color color2 = color1;
 			DrawCircle (cr, x, y, size);
 			FillGradient (cr, color1, color2, x, y, size);
-			DrawBorder (cr, color2, x, y, size);
+			DrawBorder (cr, new Cairo.Color (0.5,0,0), x, y, size);
 		}
 	}
 }
