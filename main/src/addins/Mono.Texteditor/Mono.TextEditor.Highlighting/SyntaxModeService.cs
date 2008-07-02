@@ -312,12 +312,21 @@ namespace Mono.TextEditor.Highlighting
 		static readonly object syncObject = new object();
 		static UpdateWorkerThread updateThread = null;
 		
-		public static void WaitForUpdate ()
+		public static void WaitForUpdate (bool stopUpdate)
 		{
 			lock (syncObject) {
-				if (updateThread != null)
+				if (updateThread != null) {
+					if (stopUpdate && !updateThread.IsStopping)
+						updateThread.Stop ();
 					updateThread.WaitForFinish ();
+					updateThread = null;
+				}
 			}
+		}
+		
+		public static void WaitForUpdate ()
+		{
+			WaitForUpdate (false);
 		}
 		
 		public static void StartUpdate (Document doc, SyntaxMode mode, int startOffset, int endOffset)

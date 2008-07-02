@@ -177,6 +177,8 @@ namespace Mono.TextEditor
 		
 		public override void Replace (int offset, int count, StringBuilder value)
 		{
+			InterruptFoldWorker ();
+			Mono.TextEditor.Highlighting.SyntaxModeService.WaitForUpdate (true);
 //			Debug.Assert (count >= 0);
 //			Debug.Assert (0 <= offset && offset + count <= Length);
 			int oldLineCount = this.LineCount;
@@ -649,6 +651,7 @@ namespace Mono.TextEditor
 		
 		readonly object syncObject = new object();
 		FoldSegmentWorkerThread foldSegmentWorkerThread = null;
+		
 		public void UpdateFoldSegments (List<FoldSegment> newSegments)
 		{
 			if (newSegments == null) {
@@ -661,6 +664,19 @@ namespace Mono.TextEditor
 				
 				foldSegmentWorkerThread = new FoldSegmentWorkerThread (this, newSegments);
 				foldSegmentWorkerThread.Start ();
+			}
+		}
+		
+		void InterruptFoldWorker ()
+		{
+			lock (syncObject) {
+				if (foldSegmentWorkerThread != null) {
+					if (!foldSegmentWorkerThread.IsStopping) {
+						foldSegmentWorkerThread.Stop ();
+					}
+					foldSegmentWorkerThread.WaitForFinish ();
+					foldSegmentWorkerThread = null;
+				}
 			}
 		}
 		
