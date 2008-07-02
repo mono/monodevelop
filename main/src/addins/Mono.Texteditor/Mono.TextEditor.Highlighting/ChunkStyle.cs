@@ -31,8 +31,10 @@ namespace Mono.TextEditor
 	public class ChunkStyle
 	{
 		Gdk.Color color;
+		Gdk.Color backColor;
 		bool      bold;
 		bool      italic;
+		bool      transparentBackround = true;
 		
 		public Gdk.Color Color {
 			get {
@@ -41,6 +43,20 @@ namespace Mono.TextEditor
 			set {
 				color = value;
 			}
+		}
+
+		public Gdk.Color BackgroundColor {
+			get {
+				return backColor;
+			}
+			set {
+				backColor = value; transparentBackround = false;
+			}
+		}
+		
+		public bool TransparentBackround {
+			get { return transparentBackround; }
+			set { transparentBackround = value; }
 		}
 
 		public bool Bold {
@@ -59,6 +75,15 @@ namespace Mono.TextEditor
 			set {
 				italic = value;
 			}
+		}
+		
+		public ChunkStyle (ChunkStyle style)
+		{
+			color = style.color;
+			backColor = style.backColor;
+			bold = style.bold;
+			italic = style.italic;
+			transparentBackround = style.transparentBackround;
 		}
 		
 		public ChunkStyle () : this (new Gdk.Color (0, 0, 0), false)

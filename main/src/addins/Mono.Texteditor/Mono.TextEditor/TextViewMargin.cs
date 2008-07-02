@@ -353,7 +353,8 @@ namespace Mono.TextEditor
 						// Draw text before the search result (if any)
 						if (firstSearch.Offset > offset) {
 							s = offset - startOffset;
-							DrawText (win, text.Substring (s, firstSearch.Offset - offset), style.Color, drawBg, defaultBgColor, ref xPos, y);
+							Gdk.Color bgc = style.TransparentBackround ? defaultBgColor : style.BackgroundColor;
+							DrawText (win, text.Substring (s, firstSearch.Offset - offset), style.Color, drawBg, bgc, ref xPos, y);
 							offset += firstSearch.Offset - offset;
 						}
 						// Draw text within the search result
@@ -365,7 +366,8 @@ namespace Mono.TextEditor
 					}
 					s = offset - startOffset;
 					if (s < wordBuilder.Length) {
-						DrawText (win, text.Substring (s, wordBuilder.Length - s), style.Color, drawBg, defaultBgColor, ref xPos, y);
+						Gdk.Color bgc = style.TransparentBackround ? defaultBgColor : style.BackgroundColor;
+						DrawText (win, text.Substring (s, wordBuilder.Length - s), style.Color, drawBg, bgc, ref xPos, y);
 					}
 				}
 			}
@@ -406,6 +408,12 @@ namespace Mono.TextEditor
 			int caretOffset = Caret.Offset;
 			int drawCaretAt = -1;
 			wordBuilder.Length = 0;
+			
+			if (line.Markers != null) {
+				foreach (TextMarker marker in line.Markers)
+					style = marker.GetStyle (style);
+			}
+	
 			if (style.Bold)
 				layout.FontDescription.Weight = Pango.Weight.Bold;
 			if (style.Italic)
@@ -465,8 +473,10 @@ namespace Mono.TextEditor
 						}
 					}
 					if (drawText) {
-						if (drawBg)
-							DrawRectangleWithRuler (win, this.XOffset, new Gdk.Rectangle (xPos, y, charWidth, LineHeight), selected ? ColorStyle.SelectedBg : (IsSearchResultAt (offset) ? ColorStyle.SearchTextBg : defaultBgColor));
+						if (drawBg) {
+							Gdk.Color bgc = GetBackgroundColor (offset, selected, style);
+							DrawRectangleWithRuler (win, this.XOffset, new Gdk.Rectangle (xPos, y, charWidth, LineHeight), bgc);
+						}
 						
 						if (textEditor.Options.ShowSpaces) 
 							DrawSpaceMarker (win, selected, xPos, y);
@@ -498,7 +508,7 @@ namespace Mono.TextEditor
 					}
 					if (drawText) {
 						if (drawBg)
-							DrawRectangleWithRuler (win, this.XOffset, new Gdk.Rectangle (xPos, y, delta, LineHeight), selected ? ColorStyle.SelectedBg : (IsSearchResultAt (offset) ? ColorStyle.SearchTextBg : defaultBgColor));
+							DrawRectangleWithRuler (win, this.XOffset, new Gdk.Rectangle (xPos, y, delta, LineHeight), GetBackgroundColor (offset, selected, style));
 						if (textEditor.Options.ShowTabs) 
 							DrawTabMarker (win, selected, xPos, y);
 						if (offset == caretOffset) 
@@ -570,6 +580,18 @@ namespace Mono.TextEditor
 		{
 			gc.RgbFgColor = ColorStyle.InvalidLineMarker;
 			win.DrawLayout (gc, x, y, invalidLineMarker);
+		}
+		
+		Gdk.Color GetBackgroundColor (int offset, bool selected, ChunkStyle style)
+		{
+			if (selected)
+				return ColorStyle.SelectedBg;
+			else if (IsSearchResultAt (offset))
+				return ColorStyle.SearchTextBg;
+			else if (style.TransparentBackround)
+				return defaultBgColor;
+			else
+				return style.BackgroundColor;
 		}
 		
 		public bool inSelectionDrag = false;

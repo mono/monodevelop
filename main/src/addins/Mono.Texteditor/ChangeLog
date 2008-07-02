@@ -1,3 +1,13 @@
+2008-07-02  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Mono.TextEditor/TextViewMargin.cs, Mono.TextEditor/TextMarker.cs:
+	  Added support for style overriding in text markers. Now a text
+	  marker can easily change the text style without having to implement
+	  the draw method. Also use the background defined by the style
+	  object, if there is one.
+	* Mono.TextEditor.Highlighting/ChunkStyle.cs: Added background color
+	  property. Added copy constructor.
+
 2008-07-01  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Mono.TextEditor/TextMarker.cs, Mono.TextEditor/BookmarkMargin.cs:

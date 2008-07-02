@@ -45,6 +45,11 @@ namespace Mono.TextEditor
 		public virtual void Draw (TextEditor editor, Gdk.Drawable win, bool selected, int startOffset, int endOffset, int y, int startXPos, int endXPos)
 		{
 		}
+		
+		public virtual ChunkStyle GetStyle (ChunkStyle baseStyle)
+		{
+			return baseStyle;
+		}
 	}
 	
 	public enum UrlType {
@@ -194,6 +199,90 @@ namespace Mono.TextEditor
 					win.DrawLine (gc, i + length / 2, drawY - height, i + length, drawY);
 				}
 			}
+		}
+	}
+	
+	public class StyleTextMarker: TextMarker
+	{
+		[Flags]
+		public enum StyleFlag {
+			None = 0,
+			Color = 1,
+			BackroundColor = 2,
+			Bold = 4,
+			Italic = 8
+		}
+		
+		StyleFlag includedStyles;
+		Gdk.Color color;
+		Gdk.Color backColor;
+		bool bold;
+		bool italic;
+		
+		public bool Italic {
+			get {
+				return italic;
+			}
+			set {
+				italic = value;
+				includedStyles |= StyleFlag.Italic;
+			}
+		}
+		
+		public StyleFlag IncludedStyles {
+			get {
+				return includedStyles;
+			}
+			set {
+				includedStyles = value;
+			}
+		}
+		
+		public Color Color {
+			get {
+				return color;
+			}
+			set {
+				color = value;
+				includedStyles |= StyleFlag.Color;
+			}
+		}
+		
+		public bool Bold {
+			get {
+				return bold;
+			}
+			set {
+				bold = value;
+				includedStyles |= StyleFlag.Bold;
+			}
+		}
+		
+		public Color BackgroundColor {
+			get {
+				return backColor;
+			}
+			set {
+				backColor = value;
+				includedStyles |= StyleFlag.BackroundColor;
+			}
+		}
+		
+		public override ChunkStyle GetStyle (ChunkStyle baseStyle)
+		{
+			if (includedStyles == StyleFlag.None)
+				return baseStyle;
+			
+			ChunkStyle style = new ChunkStyle (baseStyle);
+			if ((includedStyles & StyleFlag.Color) != 0)
+				style.Color = color;
+			if ((includedStyles & StyleFlag.BackroundColor) != 0)
+				style.BackgroundColor = backColor;
+			if ((includedStyles & StyleFlag.Bold) != 0)
+				style.Bold = bold;
+			if ((includedStyles & StyleFlag.Italic) != 0)
+				style.Italic = italic;
+			return style;
 		}
 	}
 }
