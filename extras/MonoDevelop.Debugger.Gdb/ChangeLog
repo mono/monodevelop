@@ -1,3 +1,8 @@
+2008-07-02  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* GdbBacktrace.cs: Support modifying variable values.
+	* GdbSession.cs: Implemented support for disassembling files.
+
 2008-07-01  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* GdbSession.cs: Track api changes.

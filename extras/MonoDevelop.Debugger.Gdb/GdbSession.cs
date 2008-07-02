@@ -26,6 +26,7 @@
 //
 
 using System;
+using System.Globalization;
 using System.Text;
 using System.IO;
 using System.Collections;
@@ -290,6 +291,39 @@ namespace MonoDevelop.Debugger.Gdb
 			int fcount = int.Parse (res.GetValue ("depth"));
 			GdbBacktrace bt = new GdbBacktrace (this, threadId, fcount, data != null ? data.GetObject ("frame") : null);
 			return new Backtrace (bt);
+		}
+		
+		protected override AssemblyLine[] OnDisassembleFile (string file)
+		{
+			List<AssemblyLine> lines = new List<AssemblyLine> ();
+			int cline = 1;
+			do {
+				ResultData data = null;
+				try {
+					data = RunCommand ("-data-disassemble", "-f", file, "-l", cline.ToString (), "--", "1");
+				} catch {
+					break;
+				}
+				ResultData asm_insns = data.GetObject ("asm_insns");
+				int newLine = cline;
+				for (int n=0; n<asm_insns.Count; n++) {
+					ResultData src_and_asm_line = asm_insns.GetObject (n).GetObject ("src_and_asm_line");
+					newLine = src_and_asm_line.GetInt ("line");
+					ResultData line_asm_insn = src_and_asm_line.GetObject ("line_asm_insn");
+					for (int i=0; i<line_asm_insn.Count; i++) {
+						ResultData asm = line_asm_insn.GetObject (i);
+						long addr = long.Parse (asm.GetValue ("address").Substring (2), NumberStyles.HexNumber);
+						string code = asm.GetValue ("inst");
+						lines.Add (new AssemblyLine (addr, code, newLine));
+					}
+				}
+				if (newLine <= cline)
+					break;
+				cline = newLine + 1;
+				
+			} while (true);
+			
+			return lines.ToArray ();
 		}
 		
 		public ResultData SelectThread (int id)

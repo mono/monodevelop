@@ -143,7 +143,7 @@ namespace MonoDevelop.Debugger.Gdb
 			} else if (value == "{...}" || typeName.EndsWith ("*") || nchild > 0) {
 				val = ObjectValue.CreateObject (this, new ObjectPath (vname), typeName, value, null);
 			} else {
-				val = ObjectValue.CreatePrimitive (this, new ObjectPath (vname), typeName, value);
+				val = ObjectValue.CreatePrimitive (this, new ObjectPath (vname), typeName, value, true);
 			}
 			val.Name = name;
 			return val;
@@ -173,6 +173,14 @@ namespace MonoDevelop.Debugger.Gdb
 			}
 			return children.ToArray ();
 		}
+		
+		public string SetValue (ObjectPath path, string value)
+		{
+			session.SelectThread (threadId);
+			session.RunCommand ("-var-assign", path.Join ("."), value);
+			return value;
+		}
+		
 		
 		void SelectFrame (int frame)
 		{
