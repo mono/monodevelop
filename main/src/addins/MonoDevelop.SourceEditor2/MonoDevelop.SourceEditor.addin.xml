@@ -16,6 +16,7 @@
 	    <Addin id="Core" version="1.9.0"/>
 		<Addin id="Components" version="1.9.0"/>
 		<Addin id="Ide" version="1.9.0"/>
+		<Addin id="Debugger" version="1.9.0"/>
 	</Dependencies>
 
 	<Extension path = "/MonoDevelop/Ide/Commands">
