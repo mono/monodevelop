@@ -1,4 +1,4 @@
-// IExpressionValueSource.cs
+// ArrayValueReference.cs
 //
 // Author:
 //   Lluis Sanchez Gual <lluis@novell.com>
@@ -26,12 +26,62 @@
 //
 
 using System;
+using System.Text;
 using Mono.Debugger.Languages;
+using Mono.Debugger;
 
 namespace DebuggerServer
 {
-	public interface IExpressionValueSource
+	public class ArrayValueReference: IValueReference
 	{
-		IValueReference GetValueReference (string name);
+		Thread thread;
+		TargetArrayObject arr;
+		int[] indices;
+		
+		public ArrayValueReference (Thread thread, TargetArrayObject arr, int[] indices)
+		{
+			this.thread = thread;
+			this.arr = arr;
+			this.indices = indices;
+		}
+
+		#region IValueReference implementation 
+		
+		public TargetObject Value {
+			get {
+				return arr.GetElement (thread, indices);
+			}
+			set {
+				arr.SetElement (thread, indices, value);
+			}
+		}
+		
+		public string Name {
+			get {
+				StringBuilder sb = new StringBuilder ();
+				sb.Append ('[');
+				for (int n=0; n<indices.Length; n++) {
+					if (n > 0) sb.Append (", ");
+					sb.Append (indices [n]);
+				}
+				sb.Append (']');
+				return sb.ToString ();
+			}
+		}
+		
+		public TargetType Type {
+			get {
+				return arr.Type.ElementType;
+			}
+		}
+		
+		public bool CanWrite {
+			get {
+				return true;
+			}
+		}
+		
+		#endregion 
+		
 	}
 }

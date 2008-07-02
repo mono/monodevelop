@@ -48,7 +48,7 @@ namespace DebuggerServer
 						foreach (TargetVariable var in frame.Method.GetParameters (frame.Thread)) {
 							if (sb.Length > 0)
 								sb.Append (", ");
-							sb.Append (var.Name).Append (" = ").Append (Util.ObjectToString (frame, var.GetObject (frame)));
+							sb.Append (var.Name).Append (" = ").Append (Util.TargetObjectToString (frame.Thread, var.GetObject (frame)));
 						}
 						sb.Append (')');
 						method = method.Substring (0, p+1) + sb.ToString ();
@@ -80,7 +80,7 @@ namespace DebuggerServer
 			List<ObjectValue> vars = new List<ObjectValue> ();
 			MD.StackFrame frame = frames [frameIndex];
 			foreach (TargetVariable var in frame.Method.GetLocalVariables (frame.Thread))
-				vars.Add (Util.CreateObjectValue (frame.Thread, this, new ObjectPath ("FR", frameIndex.ToString(), "LV", var.Name), var.GetObject (frame)));
+				vars.Add (Util.CreateObjectValue (frame.Thread, this, new ObjectPath ("FR", frameIndex.ToString(), "LV", var.Name), var.GetObject (frame), true));
 			
 			return vars.ToArray ();
 		}
@@ -91,7 +91,7 @@ namespace DebuggerServer
 			MD.StackFrame frame = frames [frameIndex];
 			if (frame.Method != null) {
 				foreach (TargetVariable var in frame.Method.GetParameters (frame.Thread))
-					vars.Add (Util.CreateObjectValue (frame.Thread, this, new ObjectPath ("FR", frameIndex.ToString (), "PS", var.Name), var.GetObject (frame)));
+					vars.Add (Util.CreateObjectValue (frame.Thread, this, new ObjectPath ("FR", frameIndex.ToString (), "PS", var.Name), var.GetObject (frame), true));
 			}
 			
 			return vars.ToArray ();
@@ -101,7 +101,7 @@ namespace DebuggerServer
 		{
 			MD.StackFrame frame = frames [frameIndex];
 			if (frame.Method.HasThis)
-				return Util.CreateObjectValue (frame.Thread, this, new ObjectPath ("FR", frameIndex.ToString (), "TR"), frame.Method.GetThis (frame.Thread).GetObject (frame));
+				return Util.CreateObjectValue (frame.Thread, this, new ObjectPath ("FR", frameIndex.ToString (), "TR"), frame.Method.GetThis (frame.Thread).GetObject (frame), false);
 			else
 				return null;
 		}
@@ -111,59 +111,106 @@ namespace DebuggerServer
 			ObjectValue[] values = new ObjectValue [expressions.Length];
 			for (int n=0; n<values.Length; n++) {
 				string exp = expressions[n];
-				TargetObject ob = GetExpressionTargetObject (frames[frameIndex], exp);
+				TargetObject ob = null;
+				IValueReference var = GetExpressionTargetObjectReference (frames[frameIndex], exp);
+				if (var != null)
+					ob = var.Value;
+				
 				if (ob != null)
-					values [n] = Util.CreateObjectValue (frames[frameIndex].Thread, this, new ObjectPath ("FR", frameIndex.ToString(), "EXP", exp), ob);
+					values [n] = Util.CreateObjectValue (frames[frameIndex].Thread, this, new ObjectPath ("FR", frameIndex.ToString(), "EXP", exp), ob, var.CanWrite);
 				else
 					values [n] = ObjectValue.CreateUnknown (exp);
 			}
 			return values;
 		}
 		
-		public TargetObject GetExpressionTargetObject (MD.StackFrame frame, string exp)
+		public IValueReference GetExpressionTargetObjectReference (MD.StackFrame frame, string exp)
 		{
 			FrameExpressionValueSource source = new FrameExpressionValueSource (frame);
-			return source.GetValue (exp);
+			return source.GetValueReference (exp);
 		}
 		
-		public ObjectValue[] GetChildren (ObjectPath path, int index, int count)
+		public IValueReference GetObjectReference (ObjectPath path, out MD.StackFrame frame)
 		{
+			IValueReference rootObj = null;
+			frame = null;
+			int pathPos = -1;
+			
+			// Frames query
+			if (frames == null)
+				frames = backtrace.Frames;
+			
 			if (path [0] == "FR") {
 				
-				// Frames query
-				if (frames == null)
-					frames = backtrace.Frames;
-				
-				MD.StackFrame frame = frames [int.Parse (path [1])];
+				frame = frames [int.Parse (path [1])];
 				
 				if (path [2] == "LV") {
 					// Local variables query
 					foreach (TargetVariable var in frame.Method.GetLocalVariables (frame.Thread)) {
-						if (var.Name == path [3])
-							return Util.GetObjectValueChildren (frame.Thread, this, var.GetObject (frame), path, 4, 0, index, count);
+						if (var.Name == path [3]) {
+							pathPos = 4;
+							rootObj = new VariableReference (frame, var);
+							break;
+						}
 					}
 				}
 				else if (path [2] == "PS") {
 					// Parameters query
 					foreach (TargetVariable var in frame.Method.GetParameters (frame.Thread)) {
-						if (var.Name == path [3])
-							return Util.GetObjectValueChildren (frame.Thread, this, var.GetObject (frame), path, 4, 0, index, count);
+						if (var.Name == path [3]) {
+							pathPos = 4;
+							rootObj = new VariableReference (frame, var);
+							break;
+						}
 					}
 				}
 				else if (path [2] == "TR") {
 					// This reference
+					pathPos = 3;
 					TargetVariable var = frame.Method.GetThis (frame.Thread);
-					return Util.GetObjectValueChildren (frame.Thread, this, var.GetObject (frame), path, 3, 0, index, count);
+					rootObj = new VariableReference (frame, var);
 				}
 				else if (path [2] == "EXP") {
-					// This reference
-					TargetObject val = GetExpressionTargetObject (frame, path[3]);
-					return Util.GetObjectValueChildren (frame.Thread, this, val, path, 4, 0, index, count);
+					pathPos = 4;
+					rootObj = GetExpressionTargetObjectReference (frame, path[3]);
 				}
 			}
-			return null;
+			
+			if (rootObj == null)
+				return null;
+			
+			return Util.GetTargetObjectReference (frame.Thread, rootObj, path, pathPos);
+		}
+		
+		public ObjectValue[] GetChildren (ObjectPath path, int index, int count)
+		{
+			MD.StackFrame frame;
+			TargetObject ob = null;
+			
+			IValueReference vref = GetObjectReference (path, out frame);
+			if (vref != null)
+				ob = vref.Value;
+			
+			if (ob != null)
+				return Util.GetObjectValueChildren (frame.Thread, this, ob, path, index, count);
+			else
+				return new ObjectValue [0];
+			
 		}
 
+		public string SetValue (ObjectPath path, string value)
+		{
+			MD.StackFrame frame;
+			IValueReference var = GetObjectReference (path, out frame);
+
+			if (var != null) {
+				object ovalue = Util.StringToObject (var.Type, value);
+				TargetObject newValue = frame.Language.CreateInstance (frame.Thread, ovalue);
+				var.Value = newValue;
+			}
+			return value;
+		}
+		
 		public AssemblyLine[] Disassemble (int frameIndex, int firstLine, int count)
 		{
 			if (disBuffers == null)
@@ -189,22 +236,23 @@ namespace DebuggerServer
 			this.frame = frame;
 		}
 		
-		public TargetObject GetValue (string name)
+		public IValueReference GetValueReference (string name)
 		{
 			if (frame.Method == null)
 				return null;
 			
 			// Look in variables
 			
-			foreach (TargetVariable var in frame.Method.GetLocalVariables (frame.Thread))
+			foreach (TargetVariable var in frame.Method.GetLocalVariables (frame.Thread)) {
 				if (var.Name == name)
-					return var.GetObject (frame);
+					return new VariableReference (frame, var);
+			}
 			
 			// Look in parameters
 			
 			foreach (TargetVariable var in frame.Method.GetParameters (frame.Thread))
 				if (var.Name == name)
-					return var.GetObject (frame);
+					return new VariableReference (frame, var);
 			
 			// Look in fields
 			
@@ -219,17 +267,14 @@ namespace DebuggerServer
 			
 			while (type != null)
 			{
-				TargetClass cls = type.GetClass (frame.Thread);
-				
 				foreach (TargetPropertyInfo prop in type.ClassType.Properties) {
 					if (prop.Name == name && prop.CanRead && (prop.IsStatic || thisobj != null)) {
-						MD.RuntimeInvokeResult result = frame.Thread.RuntimeInvoke (prop.Getter, thisobj, new TargetObject[0], true, false);
-						return result.ReturnObject;
+						return new PropertyReference (frame.Thread, prop, thisobj);
 					}
 				}
 				foreach (TargetFieldInfo field in type.ClassType.Fields) {
 					if (field.Name == name && (field.IsStatic || thisobj != null))
-						return cls.GetField (frame.Thread, thisobj, field);
+						return new FieldReference (frame.Thread, thisobj, type, field);
 				}
 				type = type.GetParentType (frame.Thread);
 			}

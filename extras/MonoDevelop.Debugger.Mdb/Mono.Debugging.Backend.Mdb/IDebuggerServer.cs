@@ -73,5 +73,7 @@ namespace Mono.Debugging.Backend.Mdb
 		ProcessInfo[] GetPocesses ();
 		
 		Backtrace GetThreadBacktrace (int processId, int threadId);
+		
+		AssemblyLine[] DisassembleFile (string file);
 	}
 }

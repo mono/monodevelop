@@ -68,6 +68,7 @@ EXTRAS = \
 	mono.debugging.backend.mdb.pc.in 
 
 REFERENCES =  \
+	../../../../../install/lib/monodevelop/bin/Mono.TextEditor.dll \
 	Mono.Posix \
 	-pkg:monodevelop \
 	-pkg:monodevelop-core-addins \

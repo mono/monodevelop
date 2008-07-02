@@ -1,4 +1,4 @@
-// IExpressionValueSource.cs
+// ValueReference.cs
 //
 // Author:
 //   Lluis Sanchez Gual <lluis@novell.com>
@@ -27,11 +27,15 @@
 
 using System;
 using Mono.Debugger.Languages;
+using Mono.Debugger;
 
 namespace DebuggerServer
 {
-	public interface IExpressionValueSource
+	public interface IValueReference
 	{
-		IValueReference GetValueReference (string name);
+		TargetObject Value {get; set; }
+		string Name { get; }
+		TargetType Type { get; }
+		bool CanWrite { get; }
 	}
 }

@@ -1,3 +1,12 @@
+2008-07-02  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* DebuggerServer.cs, Util.cs, BacktraceWrapper.cs, FieldReference.cs,
+	  Mono.Debugging.Server.Mdb.mdp, PropertyReference.cs,
+	  IValueReference.cs, VariableReference.cs,
+	  IExpressionValueSource.cs, Makefile, ArrayValueReference.cs:
+	  Implement support for modifying variable values and disassembling
+	  files.
+
 2008-07-01  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* DebuggerServer.cs: Fix some deadlocks.

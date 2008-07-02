@@ -48,12 +48,17 @@ RESGEN=resgen2
 DEBUGGERSERVER_EXE_MDB = $(BUILD_DIR)/DebuggerServer.exe.mdb
 
 FILES =  \
+	ArrayValueReference.cs \
 	AssemblyInfo.cs \
 	BacktraceWrapper.cs \
 	DebuggerServer.cs \
+	FieldReference.cs \
 	IExpressionValueSource.cs \
+	IValueReference.cs \
+	PropertyReference.cs \
 	Server.cs \
-	Util.cs 
+	Util.cs \
+	VariableReference.cs 
 
 DATA_FILES = 
 
@@ -63,6 +68,7 @@ EXTRAS = \
 	ChangeLog 
 
 REFERENCES =  \
+	../../../../../install/lib/monodevelop/bin/Mono.TextEditor.dll \
 	../build/DebuggerClient.dll \
 	Mono.Posix \
 	-pkg:mono-addins \

@@ -1,4 +1,4 @@
-// IExpressionValueSource.cs
+// PropertyVariable.cs
 //
 // Author:
 //   Lluis Sanchez Gual <lluis@novell.com>
@@ -27,11 +27,49 @@
 
 using System;
 using Mono.Debugger.Languages;
+using Mono.Debugger;
 
 namespace DebuggerServer
 {
-	public interface IExpressionValueSource
+	class PropertyReference: IValueReference
 	{
-		IValueReference GetValueReference (string name);
+		TargetPropertyInfo prop;
+		TargetStructObject thisobj;
+		Thread thread;
+		
+		public PropertyReference (Thread thread, TargetPropertyInfo prop, TargetStructObject thisobj)
+		{
+			this.prop = prop;
+			this.thread = thread;
+			if (!prop.IsStatic)
+				this.thisobj = thisobj;
+		}
+		
+		public TargetType Type {
+			get {
+				return prop.Type;
+			}
+		}
+		
+		public TargetObject Value {
+			get {
+				return Util.RuntimeInvoke (thread, prop.Getter, thisobj, new TargetObject[0]);
+			}
+			set {
+				Util.RuntimeInvoke (thread, prop.Setter, thisobj, new TargetObject[] { value });
+			}
+		}
+		
+		public string Name {
+			get {
+				return prop.Name;
+			}
+		}
+
+		public bool CanWrite {
+			get {
+				return prop.CanWrite;
+			}
+		}
 	}
 }

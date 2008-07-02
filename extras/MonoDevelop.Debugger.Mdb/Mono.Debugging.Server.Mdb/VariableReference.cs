@@ -1,4 +1,4 @@
-// IExpressionValueSource.cs
+// VariableReference.cs
 //
 // Author:
 //   Lluis Sanchez Gual <lluis@novell.com>
@@ -27,11 +27,50 @@
 
 using System;
 using Mono.Debugger.Languages;
+using Mono.Debugger;
 
 namespace DebuggerServer
 {
-	public interface IExpressionValueSource
+	public class VariableReference: IValueReference
 	{
-		IValueReference GetValueReference (string name);
+		TargetVariable var;
+		StackFrame frame;
+		
+		public VariableReference (StackFrame frame, TargetVariable var)
+		{
+			this.var = var;
+			this.frame = frame;
+		}
+		
+		#region IValueReference implementation 
+		
+		public TargetObject Value {
+			get {
+				return var.GetObject (frame);
+			}
+			set {
+				var.SetObject (frame, value);
+			}
+		}
+		
+		public string Name {
+			get {
+				return var.Name;
+			}
+		}
+		
+		public TargetType Type {
+			get {
+				return var.Type;
+			}
+		}
+		
+		public bool CanWrite {
+			get {
+				return var.CanWrite;
+			}
+		}
+		
+		#endregion 
 	}
 }

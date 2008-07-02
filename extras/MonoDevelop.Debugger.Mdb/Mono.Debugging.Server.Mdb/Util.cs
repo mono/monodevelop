@@ -37,16 +37,19 @@ namespace DebuggerServer
 {
 	public static class Util
 	{
-		public static ObjectValue CreateObjectValue (MD.Thread thread, IObjectValueSource source, ObjectPath path, TargetObject obj)
+		public static ObjectValue CreateObjectValue (MD.Thread thread, IObjectValueSource source, ObjectPath path, TargetObject obj, bool editable)
 		{
-			return CreateObjectValue (thread, source, path, obj, true);
+			return CreateObjectValue (thread, source, path, obj, editable, true);
 		}
 		
-		static ObjectValue CreateObjectValue (MD.Thread thread, IObjectValueSource source, ObjectPath path, TargetObject obj, bool recurseCurrentObject)
+		static ObjectValue CreateObjectValue (MD.Thread thread, IObjectValueSource source, ObjectPath path, TargetObject obj, bool editable, bool recurseCurrentObject)
 		{
-			if (obj == null) {
+			if (obj == null)
 				ObjectValue.CreateObject (null, path, "", null, null);
-			}
+			
+			if (obj.HasAddress && obj.GetAddress (thread).IsNull)
+				return ObjectValue.CreateObject (null, path, obj.TypeName, "(null)", null);
+			
 			switch (obj.Kind) {
 				
 				case TargetObjectKind.Class:
@@ -57,17 +60,19 @@ namespace DebuggerServer
 						if (recurseCurrentObject) {
 							TargetObject ob = co.GetCurrentObject (thread);
 							if (ob != null)
-								return CreateObjectValue (thread, source, path, ob, false);
+								return CreateObjectValue (thread, source, path, ob, editable, false);
 						}
-						return ObjectValue.CreateObject (source, path, obj.TypeName, null, null);
+						return ObjectValue.CreateObject (source, path, obj.TypeName, TargetObjectToString (thread, obj, false), null);
 					}
 					
 				case TargetObjectKind.Object:
 					TargetObjectObject oob = obj as TargetObjectObject;
 					if (oob == null)
 						return ObjectValue.CreateUnknown (path.LastName);
+					else if (recurseCurrentObject)
+						return CreateObjectValue (thread, source, path, oob.GetDereferencedObject (thread), editable, false);
 					else
-						return CreateObjectValue (thread, source, path, oob.GetDereferencedObject (thread), false);
+						return ObjectValue.CreateObject (source, path, obj.TypeName, TargetObjectToString (thread, obj, false), null);
 					
 				case TargetObjectKind.Array:
 					TargetArrayObject array = (TargetArrayObject) obj;
@@ -80,37 +85,24 @@ namespace DebuggerServer
 				case TargetObjectKind.Fundamental:
 					TargetFundamentalObject fob = (TargetFundamentalObject) obj;
 					object val = fob.GetObject (thread);
-					return ObjectValue.CreatePrimitive (source, path, obj.TypeName, val);
+					return ObjectValue.CreatePrimitive (source, path, obj.TypeName, ObjectToString (val), editable);
 					
 				case TargetObjectKind.Enum:
 					TargetEnumObject enumobj = (TargetEnumObject) obj;
-					return CreateObjectValue (thread, source, path, enumobj.GetValue (thread));
+					return CreateObjectValue (thread, source, path, enumobj.GetValue (thread), editable);
 					
 				default:
 					return ObjectValue.CreateUnknown (source, path, obj.TypeName);
 			}
 		}
 		
-		public static ObjectValue GetObjectValue (MD.Thread thread, IObjectValueSource source, TargetObject rootObj, ObjectPath path, int pathIndex, int rootPathIndex)
+		public static ObjectValue[] GetObjectValueChildren (MD.Thread thread, IObjectValueSource source, TargetObject obj, ObjectPath path, int firstItemIndex, int count)
 		{
-			TargetObject obj = GetTargetObject (thread, rootObj, path, pathIndex);
-			if (obj != null)
-				return CreateObjectValue (thread, source, path.GetSubpath (rootPathIndex), obj);
-			else
-				return ObjectValue.CreateUnknown (path.LastName);
-		}
-
-		public static ObjectValue[] GetObjectValueChildren (MD.Thread thread, IObjectValueSource source, TargetObject rootObj, ObjectPath path, int pathIndex, int rootPathIndex, int firstItemIndex, int count)
-		{
-			return GetObjectValueChildren (thread, source, rootObj, path, pathIndex, rootPathIndex, firstItemIndex, count, false);
+			return GetObjectValueChildren (thread, source, obj, path, firstItemIndex, count, false);
 		}
 		
-		static ObjectValue[] GetObjectValueChildren (MD.Thread thread, IObjectValueSource source, TargetObject rootObj, ObjectPath path, int pathIndex, int rootPathIndex, int firstItemIndex, int count, bool recurseCurrentObject)
+		static ObjectValue[] GetObjectValueChildren (MD.Thread thread, IObjectValueSource source, TargetObject obj, ObjectPath path, int firstItemIndex, int count, bool recurseCurrentObject)
 		{
-			TargetObject obj = GetTargetObject (thread, rootObj, path, pathIndex);
-			if (obj == null)
-				return new ObjectValue [0];
-			
 			switch (obj.Kind)
 			{
 				case MD.Languages.TargetObjectKind.Array:
@@ -145,7 +137,7 @@ namespace DebuggerServer
 								values [n] = ObjectValue.CreateUnknown (idx);
 							else {
 								TargetObject elem = arr.GetElement (thread, indices);
-								values [n] = CreateObjectValue (thread, source, path.Append (idx), elem);
+								values [n] = CreateObjectValue (thread, source, path.Append (idx), elem, true);
 							}
 							
 							// Increment the indices
@@ -171,7 +163,7 @@ namespace DebuggerServer
 								values [n] = ObjectValue.CreateUnknown (sidx);
 							else {
 								TargetObject elem = arr.GetElement (thread, new int[] { index });
-								values [n] = CreateObjectValue (thread, source, path.Append (sidx), elem);
+								values [n] = CreateObjectValue (thread, source, path.Append (sidx), elem, true);
 							}
 						}
 						return values;
@@ -183,30 +175,20 @@ namespace DebuggerServer
 						return new ObjectValue [0];
 					if (recurseCurrentObject) {
 						TargetObject currob = co.GetCurrentObject (thread);
-						return GetObjectValueChildren (thread, source, currob, path, pathIndex, rootPathIndex, firstItemIndex, count, false);
+						if (currob != null)
+							return GetObjectValueChildren (thread, source, currob, path, firstItemIndex, count, false);
 					}
 					
-					TargetStructType type = (TargetStructType) co.Type;
-					TargetClass cls = type.GetClass (thread);
-
-					// Get field values
 					List<ObjectValue> values = new List<ObjectValue> ();
-					foreach (TargetFieldInfo field in type.ClassType.Fields) {
-						TargetObject ob = cls.GetField (thread, co, field);
-						if (ob == null)
-							values.Add (ObjectValue.CreateUnknown (field.Name));
-						else
-							values.Add (CreateObjectValue (thread, source, path.Append (field.Name), ob));
-					}
-					
-					// Get property values
-					foreach (TargetPropertyInfo prop in type.ClassType.Properties) {
-						if (prop.CanRead && !prop.IsStatic) {
-							MD.RuntimeInvokeResult result = thread.RuntimeInvoke (prop.Getter, co, new TargetObject[0], true, false);
-							if (result.ReturnObject == null)
-								values.Add (ObjectValue.CreateUnknown (prop.Name));
+					foreach (IValueReference val in GetMembers (thread, co)) {
+						try {
+							TargetObject ob = val.Value;
+							if (ob == null)
+								values.Add (ObjectValue.CreateNullObject (val.Name, val.Type.Name));
 							else
-								values.Add (CreateObjectValue (thread, source, path.Append (prop.Name), result.ReturnObject));
+								values.Add (CreateObjectValue (thread, source, path.Append (val.Name), ob, true));
+						} catch (Exception ex) {
+							values.Add (CreateExceptionValue (val.Name, val.Type, ex));
 						}
 					}
 					return values.ToArray ();
@@ -215,11 +197,19 @@ namespace DebuggerServer
 					TargetObjectObject oob = obj as TargetObjectObject;
 					if (oob == null)
 						return new ObjectValue [0];
-					return GetObjectValueChildren (thread, source, oob.GetDereferencedObject (thread), path, pathIndex, rootPathIndex, firstItemIndex, count, false);
+					if (recurseCurrentObject)
+						return GetObjectValueChildren (thread, source, oob.GetDereferencedObject (thread), path, firstItemIndex, count, false);
+					else
+						return new ObjectValue [0];
 					
 				default:
 					return new ObjectValue [0];
 			}		
+		}
+		
+		static ObjectValue CreateExceptionValue (string name, TargetType type, Exception ex)
+		{
+			return ObjectValue.CreateObject (null, new ObjectPath (name), type.Name, ex.Message, null);
 		}
 		
 		static string GetIndicesString (int[] indices)
@@ -233,17 +223,21 @@ namespace DebuggerServer
 			return sb.ToString ();
 		}
 		
-		static TargetObject GetTargetObject (MD.Thread thread, TargetObject rootObj, ObjectPath path, int pathIndex)
-		{
-			return GetTargetObject (thread, rootObj, path, pathIndex, true);
-		}
-		
-		static TargetObject GetTargetObject (MD.Thread thread, TargetObject obj, ObjectPath path, int pathIndex, bool recurseCurrentObject)
+		public static IValueReference GetTargetObjectReference (MD.Thread thread, IValueReference rootObj, ObjectPath path, int pathIndex)
 		{
 			if (pathIndex >= path.Length)
-				return obj;
+				return rootObj;
+			else
+				return GetTargetObjectReference (thread, rootObj.Value, path, pathIndex, true);
+		}
+		
+		static IValueReference GetTargetObjectReference (MD.Thread thread, TargetObject obj, ObjectPath path, int pathIndex, bool recurseCurrentObject)
+		{
+			if (obj == null)
+				return null;
 			
 			string name = path [pathIndex];
+			
 			switch (obj.Kind)
 			{
 				case MD.Languages.TargetObjectKind.Array: {
@@ -258,8 +252,8 @@ namespace DebuggerServer
 					for (int n=0; n<sinds.Length; n++)
 						indices [n] = int.Parse (sinds [n]);
 					
-					TargetObject ob = arr.GetElement (thread, indices);
-					return GetTargetObject (thread, ob, path, pathIndex + 1);
+					IValueReference oref = new ArrayValueReference (thread, arr, indices);
+					return GetTargetObjectReference (thread, oref, path, pathIndex + 1);
 				}
 					
 				case TargetObjectKind.Class: {
@@ -268,48 +262,36 @@ namespace DebuggerServer
 						return null;
 					if (recurseCurrentObject) {
 						TargetObject currob = co.GetCurrentObject (thread);
-						return GetTargetObject (thread, currob, path, pathIndex, false);
+						if (currob != null)
+							return GetTargetObjectReference (thread, currob, path, pathIndex, false);
 					}
-					TargetObject ob = GetMemberValue (thread, (TargetStructType) co.Type, co, name);
+					IValueReference ob = GetMemberValueReference (thread, (TargetStructType) co.Type, co, name);
 					if (ob == null)
 						return null;
-					return GetTargetObject (thread, ob, path, pathIndex + 1);
+					return GetTargetObjectReference (thread, ob, path, pathIndex + 1);
 				}
 					
 				case TargetObjectKind.Object:
 					TargetObjectObject oob = obj as TargetObjectObject;
 					if (oob == null)
 						return null;
-					return GetTargetObject (thread, oob.GetDereferencedObject (thread), path, pathIndex);
+					if (recurseCurrentObject)
+						return GetTargetObjectReference (thread, oob.GetDereferencedObject (thread), path, pathIndex, false);
+					else
+						return null;
 					
 				default:
 					return null;
 			}
 		}
 		
-		public static TargetObject GetMemberValue (MD.Thread thread, TargetStructType type, TargetStructObject thisobj, string name)
+		public static IValueReference GetMemberValueReference (MD.Thread thread, TargetStructType type, TargetStructObject thisobj, string name)
 		{
-			while (type != null)
-			{
-				TargetClass cls = type.GetClass (thread);
-				
-				foreach (TargetPropertyInfo prop in type.ClassType.Properties) {
-					if (prop.Name == name && prop.CanRead && (prop.IsStatic || thisobj != null)) {
-						MD.RuntimeInvokeResult result = thread.RuntimeInvoke (prop.Getter, thisobj, new TargetObject[0], true, false);
-						return result.ReturnObject;
-					}
-				}
-				foreach (TargetFieldInfo field in type.ClassType.Fields) {
-					if (field.Name == name && (field.IsStatic || thisobj != null))
-						return cls.GetField (thread, thisobj, field);
-				}
+			foreach (IValueReference val in GetMembers (thread, thisobj)) {
+				if (val.Name == name)
+					return val;
 			}
 			return null;
-		}
-		
-		public static string ObjectToString (MD.StackFrame frame, TargetObject obj)
-		{
-			return ObjectToString (frame, obj, true);
 		}
 		
 		public static TargetObject GetRealObject (MD.Thread thread, TargetObject obj)
@@ -324,7 +306,8 @@ namespace DebuggerServer
 						TargetClassObject co = obj as TargetClassObject;
 						if (co == null)
 							return null;
-						return co.GetCurrentObject (thread);
+						TargetObject res = co.GetCurrentObject (thread);
+						return res ?? obj;
 						
 					case TargetObjectKind.Enum:
 						TargetEnumObject eob = (TargetEnumObject) obj;
@@ -343,7 +326,12 @@ namespace DebuggerServer
 			return obj;
 		}
 
-		public static string ObjectToString (MD.StackFrame frame, TargetObject obj, bool recurseOb)
+		public static string TargetObjectToString (MD.Thread thead, TargetObject obj)
+		{
+			return TargetObjectToString (thead, obj, true);
+		}
+		
+		public static string TargetObjectToString (MD.Thread thread, TargetObject obj, bool recurseOb)
 		{
 			try {
 				switch (obj.Kind) {
@@ -353,7 +341,7 @@ namespace DebuggerServer
 							return "null";
 						StringBuilder tn = new StringBuilder (arr.Type.ElementType.Name);
 						tn.Append ('[');
-						TargetArrayBounds ab = arr.GetArrayBounds (frame.Thread);
+						TargetArrayBounds ab = arr.GetArrayBounds (thread);
 						if (ab.IsMultiDimensional) {
 							for (int n=0; n<ab.Rank; n++) {
 								if (n>0)
@@ -370,36 +358,128 @@ namespace DebuggerServer
 					case TargetObjectKind.Class:
 						TargetClassObject co = obj as TargetClassObject;
 						if (co == null)
-							return "null";
-						TargetObject currob = co.GetCurrentObject (frame.Thread);
-						if (currob != null && recurseOb)
-							return ObjectToString (frame, currob, false);
-						else if (currob != null)
-							return "{" + currob.TypeName + "}";
-						else
-							return "{" + co.TypeName + "}";
+							return "(null)";
+						if (recurseOb) {
+							TargetObject currob = co.GetCurrentObject (thread);
+							if (currob != null)
+								return TargetObjectToString (thread, currob, false);
+						}
+						if (co.TypeName == "System.Decimal")
+							return CallToString (thread, co);
+						return "{" + co.TypeName + "}";
 						
 					case TargetObjectKind.Enum:
 						TargetEnumObject eob = (TargetEnumObject) obj;
-						return ObjectToString (frame, eob.GetValue (frame.Thread));
+						return TargetObjectToString (thread, eob.GetValue (thread));
 						
 					case TargetObjectKind.Fundamental:
 						TargetFundamentalObject fob = obj as TargetFundamentalObject;
 						if (fob == null)
 							return "null";
-						return fob.Print (frame.Thread);
+						return fob.Print (thread);
 						
 					case TargetObjectKind.Object:
 						TargetObjectObject oob = obj as TargetObjectObject;
 						if (oob == null)
 							return "null";
-						return ObjectToString (frame, oob.GetDereferencedObject (frame.Thread));
+						if (recurseOb)
+							return TargetObjectToString (thread, oob.GetDereferencedObject (thread), false);
+						else
+							return "{" + oob.TypeName + "}";
 				}
 			}
 			catch (Exception ex) {
 				return "? (" + ex.GetType () + ": " + ex.Message + ")";
 			}
 			return "?";
+		}
+		
+		public static string ObjectToString (object value)
+		{
+			return value.ToString ();
+		}
+		
+		public static object StringToObject (TargetType type, string value)
+		{
+			TargetFundamentalType ftype = type as TargetFundamentalType;
+			if (ftype != null) {
+				switch (ftype.FundamentalKind) {
+					case FundamentalKind.Boolean: return bool.Parse (value);
+					case FundamentalKind.Byte: return byte.Parse (value);
+					case FundamentalKind.Char: return char.Parse (value);
+					case FundamentalKind.Double: return double.Parse (value);
+					case FundamentalKind.Int16: return short.Parse (value);
+					case FundamentalKind.Int32: return int.Parse (value);
+					case FundamentalKind.Int64: return long.Parse (value);
+					case FundamentalKind.IntPtr: return new IntPtr (long.Parse (value));
+					case FundamentalKind.SByte: return sbyte.Parse (value);
+					case FundamentalKind.Single: return float.Parse (value);
+					case FundamentalKind.String: return value;
+					case FundamentalKind.UInt16: return ushort.Parse (value);
+					case FundamentalKind.UInt32: return uint.Parse (value);
+					case FundamentalKind.UInt64: return ulong.Parse (value);
+					case FundamentalKind.UIntPtr: return new UIntPtr (ulong.Parse (value));
+				}
+			}
+			throw new InvalidOperationException ("Value '" + value + "' can't be converted to type '" + type.Name + "'");
+		}
+		
+		static string CallToString (MD.Thread thread, TargetStructObject obj)
+		{
+			TargetStructObject cobj = obj;
+
+			do {
+				TargetStructType ctype = cobj.Type;
+				if ((ctype.Name == "System.Object") || (ctype.Name == "System.ValueType"))
+					return null;
+	
+				TargetClass klass = ctype.GetClass (thread);
+				TargetMethodInfo[] methods = klass.GetMethods (thread);
+				if (methods == null)
+					return null;
+	
+				foreach (TargetMethodInfo minfo in methods) {
+					if (minfo.Name != "ToString")
+						continue;
+	
+					TargetFunctionType ftype = minfo.Type;
+					if (ftype.ParameterTypes.Length != 0)
+						continue;
+					if (ftype.ReturnType != ftype.Language.StringType)
+						continue;
+	
+					MD.RuntimeInvokeResult result = thread.RuntimeInvoke (
+						ftype, obj, new TargetObject [0], true, false);
+	
+					result.CompletedEvent.WaitOne ();
+					if ((result.ExceptionMessage != null) || (result.ReturnObject == null))
+						return null;
+	
+					TargetObject retval = (TargetObject) result.ReturnObject;
+					object s = ((TargetFundamentalObject) retval).GetObject (thread);
+					return s != null ? s.ToString () : "";
+				}
+				cobj = cobj.GetParentObject (thread) as TargetStructObject;
+			}
+			while (cobj != null);
+
+			return null;
+		}
+		
+		public static IEnumerable<IValueReference> GetMembers (MD.Thread thread, TargetStructObject co)
+		{
+			TargetStructType type = (TargetStructType) co.Type;
+			
+			while (type != null) {
+				
+				foreach (TargetFieldInfo field in type.ClassType.Fields)
+					yield return new FieldReference (thread, co, type, field);
+				
+				foreach (TargetPropertyInfo prop in type.ClassType.Properties)
+					yield return new PropertyReference (thread, prop, co);
+				
+				type = type.GetParentType (thread);
+			}
 		}
 		
 		public static void PrintObject (MD.StackFrame frame, TargetObject obj)
@@ -490,6 +570,17 @@ namespace DebuggerServer
 			catch (Exception ex) {
 				Console.WriteLine ("pp: " + ex);
 			}
+		}
+		
+		public static TargetObject RuntimeInvoke (MD.Thread thread, TargetFunctionType function,
+							  TargetStructObject object_argument,
+							  TargetObject[] param_objects)
+		{
+			MD.RuntimeInvokeResult res = thread.RuntimeInvoke (function, object_argument, param_objects, true, false);
+			res.Wait ();
+			if (res.ExceptionMessage != null)
+				throw new Exception (res.ExceptionMessage);
+			return res.ReturnObject;
 		}
 	}
 }

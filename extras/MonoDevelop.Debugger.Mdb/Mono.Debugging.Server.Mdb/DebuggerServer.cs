@@ -276,6 +276,32 @@ namespace DebuggerServer
 			return null;
 		}
 
+		public AssemblyLine[] DisassembleFile (string file)
+		{
+			SourceFile sourceFile = session.FindFile (file);
+			List<AssemblyLine> lines = new List<AssemblyLine> ();
+			foreach (MethodSource met in sourceFile.Methods) {
+				TargetAddress addr = met.NativeMethod.StartAddress;
+				TargetAddress endAddr = met.NativeMethod.EndAddress;
+				while (addr < endAddr) {
+					SourceAddress line = met.NativeMethod.LineNumberTable.Lookup (addr);
+					AssemblerLine aline = process.MainThread.DisassembleInstruction (met.NativeMethod, addr);
+					if (aline != null) {
+						if (line != null)
+							lines.Add (new DL.AssemblyLine (addr.Address, aline.Text, line.Row));
+						else
+							lines.Add (new DL.AssemblyLine (addr.Address, aline.Text));
+						addr += aline.InstructionSize;
+					} else
+						addr++;
+				}
+			}
+			lines.Sort (delegate (DL.AssemblyLine l1, DL.AssemblyLine l2) {
+				return l1.SourceLine.CompareTo (l2.SourceLine);
+			});
+			return lines.ToArray ();
+		}
+		
 		#endregion
 
 		public void Dispose ()

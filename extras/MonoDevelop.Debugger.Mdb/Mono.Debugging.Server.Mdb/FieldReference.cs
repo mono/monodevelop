@@ -1,4 +1,4 @@
-// IExpressionValueSource.cs
+// FieldVariable.cs
 //
 // Author:
 //   Lluis Sanchez Gual <lluis@novell.com>
@@ -27,11 +27,55 @@
 
 using System;
 using Mono.Debugger.Languages;
+using Mono.Debugger;
 
 namespace DebuggerServer
 {
-	public interface IExpressionValueSource
+	public class FieldReference: IValueReference
 	{
-		IValueReference GetValueReference (string name);
+		TargetStructType type;
+		TargetFieldInfo field;
+		TargetStructObject thisobj;
+		Thread thread;
+		
+		public FieldReference (Thread thread, TargetStructObject thisobj, TargetStructType type, TargetFieldInfo field)
+		{
+			this.thread = thread;
+			this.type = type;
+			this.field = field;
+			if (!field.IsStatic)
+				this.thisobj = thisobj;
+		}
+		
+		public TargetType Type {
+			get {
+				return field.Type;
+			}
+		}
+		
+		public TargetObject Value {
+			get {
+				if (field.HasConstValue)
+					return thread.CurrentFrame.Language.CreateInstance (thread, field.ConstValue);
+				TargetClass cls = type.GetClass (thread);
+				return cls.GetField (thread, thisobj, field);
+			}
+			set {
+				TargetClass cls = type.GetClass (thread);
+				cls.SetField (thread, thisobj, field, value);
+			}
+		}
+		
+		public string Name {
+			get {
+				return field.Name;
+			}
+		}
+		
+		public bool CanWrite {
+			get {
+				return !field.HasConstValue;
+			}
+		}
 	}
 }

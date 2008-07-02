@@ -142,5 +142,10 @@ namespace Mono.Debugging.Backend.Mdb
 		protected override void OnSetActiveThread (int threadId)
 		{
 		}
+		
+		protected override AssemblyLine[] OnDisassembleFile (string file)
+		{
+			return controller.DebuggerServer.DisassembleFile (file);
+		}
 	}
 }
