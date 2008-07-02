@@ -287,6 +287,12 @@ namespace MonoDevelop.Projects.CodeGeneration
 				foreach (IParameter param in method.Parameters) {
 					CodeParameterDeclarationExpression par;
 					par = new CodeParameterDeclarationExpression (ReturnTypeToDom (ctx, param.ReturnType), param.Name);
+					if (param.IsOut)
+						par.Direction = FieldDirection.Out;
+					else if (param.IsRef)
+						par.Direction = FieldDirection.Ref;
+					if (param.IsParams)
+						par.CustomAttributes.Add (new CodeAttributeDeclaration ("System.ParamArrayAttribute"));
 					mMethod.Parameters.Add (par);
 				}
 				if (privateImplementationType != null)
