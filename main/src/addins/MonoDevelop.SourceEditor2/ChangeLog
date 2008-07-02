@@ -1,5 +1,9 @@
 2008-07-02  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.SourceEditor/SourceEditorView.cs: Track api changes.
+
+2008-07-02  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.SourceEditor.addin.xml: Add add-in dependency.
 
 2008-07-01  Lluis Sanchez Gual <lluis@novell.com> 

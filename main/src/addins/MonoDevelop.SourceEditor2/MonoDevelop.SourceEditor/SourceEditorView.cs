@@ -61,10 +61,10 @@ namespace MonoDevelop.SourceEditor
 		static bool isInWrite = false;
 		DateTime lastSaveTime;
 		
-		LineBackgroundMarker currentDebugLineMarker = new CurrentDebugLineTextMarker ();
-		LineBackgroundMarker breakpointMarker = new BreakpointTextMarker ();
-		LineBackgroundMarker breakpointDisabledMarker = new DisabledBreakpointTextMarker ();
-		LineBackgroundMarker breakpointInvalidMarker = new InvalidBreakpointTextMarker ();
+		TextMarker currentDebugLineMarker = new CurrentDebugLineTextMarker ();
+		TextMarker breakpointMarker = new BreakpointTextMarker ();
+		TextMarker breakpointDisabledMarker = new DisabledBreakpointTextMarker ();
+		TextMarker breakpointInvalidMarker = new InvalidBreakpointTextMarker ();
 		
 		int lastDebugLine = -1;
 		EventHandler executionLocationChanged;
