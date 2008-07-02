@@ -1,3 +1,9 @@
+2008-07-02  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Commands/DebugCommands.cs,
+	  MonoDevelop.Ide.Debugging/DebuggingService.cs,
+	  MonoDevelop.Ide.addin.xml: Added ShowDisassembly command.
+
 2008-07-02  Ankit Jain  <jankit@novell.com>
 
 	* DebugCommands.cs (EnableDisableBreakpointHandler): Disable if there is

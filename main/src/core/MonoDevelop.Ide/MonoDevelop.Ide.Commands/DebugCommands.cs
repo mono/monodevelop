@@ -52,7 +52,8 @@ namespace MonoDevelop.Ide.Commands
 		AttachToProcess,
 		Detach,
 		EnableDisableBreakpoint,
-		DisableAllBreakpoints
+		DisableAllBreakpoints,
+		ShowDisassembly
 	}
 	
 	internal class DebugApplicationHandler: CommandHandler
@@ -224,6 +225,14 @@ namespace MonoDevelop.Ide.Commands
 		{
 			foreach (Breakpoint bp in IdeApp.Services.DebuggingService.Breakpoints)
 				bp.Enabled = false;
+		}
+	}
+	
+	internal class ShowDisassemblyHandler: CommandHandler
+	{
+		protected override void Run ()
+		{
+			IdeApp.Services.DebuggingService.ShowDisassembly ();
 		}
 	}
 }

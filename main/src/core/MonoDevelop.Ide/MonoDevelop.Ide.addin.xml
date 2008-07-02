@@ -829,6 +829,9 @@
 		<Command id = "MonoDevelop.Ide.Commands.DebugCommands.ClearAllBreakpoints"
 				defaultHandler = "MonoDevelop.Ide.Commands.ClearAllBreakpointsHandler"
 				_label = "Clear All Breakpoints" />
+		<Command id = "MonoDevelop.Ide.Commands.DebugCommands.ShowDisassembly"
+				_label = "Show Disassembly"
+				defaultHandler = "MonoDevelop.Ide.Commands.ShowDisassemblyHandler" />
 		</Category>
 		
 		<!-- SearchCommands -->
@@ -1484,6 +1487,7 @@
 			</ItemSet>
 			<SeparatorItem id = "ViewItemsSeparator0" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.ViewList" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.DebugCommands.ShowDisassembly" />
 			<SeparatorItem id = "ViewItemsSeparator" />
 			<ItemSet id = "ViewLayouts" _label = "_Layouts">
 				<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.LayoutList" />

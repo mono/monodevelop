@@ -47,6 +47,7 @@ namespace MonoDevelop.Ide.Debugging
 		public event EventHandler CallStackChanged;
 		public event EventHandler CurrentFrameChanged;
 		public event EventHandler ExecutionLocationChanged;
+		public event EventHandler DisassemblyRequested;
 
 		internal DebuggingService()
 		{
@@ -145,6 +146,12 @@ namespace MonoDevelop.Ide.Debugging
 			};
 			session.AttachToProcess (proc);
 			return monitor.AsyncOperation;
+		}
+		
+		public void ShowDisassembly ()
+		{
+			if (DisassemblyRequested != null)
+				DisassemblyRequested (this, EventArgs.Empty);
 		}
 		
 		internal void InternalRun (string platform, DebuggerStartInfo startInfo, IConsole console)
