@@ -1,3 +1,10 @@
+2008-07-03  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Mono.TextEditor.mdp, Mono.TextEditor/ITooltipProvider.cs,
+	  Mono.TextEditor/TextEditor.cs, Makefile.am: Added support for
+	  tooltips. It is now possible to register tooltip providers which
+	  can create custom tooltip windows.
+
 2008-07-02  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* Mono.TextEditor/Document.cs,

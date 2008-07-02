@@ -43,6 +43,7 @@ FILES =  \
 	Mono.TextEditor/IMargin.cs \
 	Mono.TextEditor/ISearchEngine.cs \
 	Mono.TextEditor/ISegment.cs \
+	Mono.TextEditor/ITooltipProvider.cs \
 	Mono.TextEditor/LineEventArgs.cs \
 	Mono.TextEditor/LineSegment.cs \
 	Mono.TextEditor/LineSegmentTree.cs \

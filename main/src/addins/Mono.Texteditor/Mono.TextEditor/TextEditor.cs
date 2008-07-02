@@ -60,12 +60,24 @@ namespace Mono.TextEditor
 		bool imContextActive;
 		bool readOnly;
 		
+		// Tooltip fields
+		const int TooltipTimer = 800;
+		object tipItem;
+		bool showTipScheduled;
+		int tipX, tipY;
+		uint tipTimeoutId;
+		Gtk.Window tipWindow;
+		List<ITooltipProvider> tooltipProviders = new List<ITooltipProvider> ();
+		double mx, my;
+		
 		public Document Document {
 			get {
 				return textEditorData.Document;
 			}
 			set {
+				textEditorData.Document.TextReplaced -= OnDocumentStateChanged;
 				textEditorData.Document = value;
+				textEditorData.Document.TextReplaced += OnDocumentStateChanged;
 			}
 		}
 		
@@ -196,6 +208,7 @@ namespace Mono.TextEditor
 		public TextEditor (Document doc)
 		{
 			textEditorData = new TextEditorData (doc);
+			doc.TextReplaced += OnDocumentStateChanged;
 			
 //			this.Events = EventMask.AllEventsMask;
 			this.Events = EventMask.PointerMotionMask | 
@@ -347,6 +360,7 @@ namespace Mono.TextEditor
 		
 		void CaretPositionChanged (object sender, DocumentLocationEventArgs args) 
 		{
+			HideTooltip ();
 			ResetIMContext ();
 		}
 		
@@ -425,6 +439,7 @@ namespace Mono.TextEditor
 		protected override bool OnFocusOutEvent (EventFocus evnt)
 		{
 			imContext.FocusOut ();
+			HideTooltip ();
 			return base.OnFocusOutEvent (evnt);
 		}
 		
@@ -437,6 +452,10 @@ namespace Mono.TextEditor
 		protected override void OnUnrealized ()
 		{
 			imContext.ClientWindow = null;
+			if (showTipScheduled) {
+				GLib.Source.Remove (tipTimeoutId);
+				showTipScheduled = false;
+			}
 			base.OnUnrealized ();
 		}
 
@@ -789,6 +808,10 @@ namespace Mono.TextEditor
 		IMargin oldMargin = null;
 		protected override bool OnMotionNotifyEvent (Gdk.EventMotion e)
 		{
+			mx = e.X - textViewMargin.XOffset;
+			my = e.Y;
+			UpdateTooltip ();
+			
 			int startPos;
 			IMargin margin = GetMarginAtX ((int)e.X, out startPos);
 			if (margin != null)
@@ -837,6 +860,7 @@ namespace Mono.TextEditor
 		
 		protected override bool OnLeaveNotifyEvent (Gdk.EventCrossing e)
 		{
+			HideTooltip ();
 			if (e.Mode == CrossingMode.Normal) {
 				GdkWindow.Cursor = null;
 				if (oldMargin != null)
@@ -938,6 +962,7 @@ namespace Mono.TextEditor
 		
 		protected override bool OnScrollEvent (EventScroll evnt)
 		{
+			HideTooltip ();
 			if ((evnt.State & Gdk.ModifierType.ControlMask) == Gdk.ModifierType.ControlMask) {
 				if (evnt.Direction == ScrollDirection.Down)
 					Options.ZoomIn ();
@@ -1247,6 +1272,110 @@ namespace Mono.TextEditor
 			return textEditorData.ReplaceAll (withPattern);
 		}
 		#endregion
+	
+		#region Tooltips
+
+		public List<ITooltipProvider> TooltipProviders {
+			get { return tooltipProviders; }
+		}
 		
+		void UpdateTooltip ()
+		{
+			if (tipWindow != null) {
+				// Tip already being shown. Update it.
+				ShowTooltip ();
+			}
+			else if (showTipScheduled) {
+				// Tip already scheduled. Reset the timer.
+				GLib.Source.Remove (tipTimeoutId);
+				tipTimeoutId = GLib.Timeout.Add (TooltipTimer, ShowTooltip);
+			}
+			else {
+				// Start a timer to show the tip
+				showTipScheduled = true;
+				tipTimeoutId = GLib.Timeout.Add (TooltipTimer, ShowTooltip);
+			}
+		}
+		
+		bool ShowTooltip ()
+		{
+			showTipScheduled = false;
+			int xloc = (int)mx;
+			int yloc = (int)my;
+
+			// Find a provider
+			
+			int offset = Document.LocationToOffset (VisualToDocumentLocation ((int)mx, (int)my));
+			ITooltipProvider provider = null;
+			object item = null;
+			
+			foreach (ITooltipProvider tp in tooltipProviders) {
+				item = tp.GetItem (this, offset);
+				if (item != null) {
+					provider = tp;
+					break;
+				}
+			}
+			
+			if (item != null) {
+				// Tip already being shown for this item?
+				if (tipWindow != null && tipItem != null && tipItem.Equals (item))
+					return false;
+				
+				tipX = xloc;
+				tipY = yloc;
+				tipItem = item;
+
+				HideTooltip ();
+
+				Gtk.Window tw = provider.CreateTooltipWindow (this, item);
+				if (tw == null)
+					return false;
+				
+				DoShowTooltip (provider, tw, tipX, tipY);
+			} else
+				HideTooltip ();
+			
+			return false;
+		}
+		
+		void DoShowTooltip (ITooltipProvider provider, Gtk.Window liw, int xloc, int yloc)
+		{
+			tipWindow = liw;
+			
+			int ox = 0, oy = 0;
+			this.GdkWindow.GetOrigin (out ox, out oy);
+			
+			int screenW = Screen.Width;
+			int w = provider.GetRequiredWidth (this, liw);
+
+			int x = xloc + ox - (w/2);
+			if (x + w >= screenW)
+				x = screenW - w;
+			if (x < 0)
+				x = 0;
+			    
+			tipWindow.Move (x, yloc + oy + 20);
+			tipWindow.ShowAll ();
+		}		
+
+		public void HideTooltip ()
+		{
+			if (showTipScheduled) {
+				GLib.Source.Remove (tipTimeoutId);
+				showTipScheduled = false;
+			}
+			if (tipWindow != null) {
+				tipWindow.Destroy ();
+				tipWindow = null;
+			}
+		}
+		
+		void OnDocumentStateChanged (object s, EventArgs a)
+		{
+			HideTooltip ();
+		}
+		
+		#endregion
 	}
 }
