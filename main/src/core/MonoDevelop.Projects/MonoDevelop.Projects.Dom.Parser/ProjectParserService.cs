@@ -90,6 +90,20 @@ namespace MonoDevelop.Projects.Dom.Parser
 			return null;
 		}
 		
+		static bool HasDom (string fileName)
+		{
+			Debug.Assert (!String.IsNullOrEmpty (fileName));
+			return doms.ContainsKey (fileName);
+		}
+				
+		static bool HasDom (Project project)
+		{
+			Debug.Assert (project != null);
+			if (project == null) 
+				return true;
+			return HasDom (project.FileName); 
+		}
+		
 		public static ProjectDom GetDom (Project project)
 		{
 			Debug.Assert (project != null);
@@ -272,14 +286,18 @@ namespace MonoDevelop.Projects.Dom.Parser
 				string file = uri.Substring (9);
 				string fullName = AssemblyCodeCompletionDatabase.GetFullAssemblyName (file);
 				
+				bool isNew = !HasDom (uri);
 				ProjectDom dom = GetDom (uri);
-				if (dom.Database == null) {
-					AssemblyCodeCompletionDatabase adb = new AssemblyCodeCompletionDatabase (baseDirectory, file);
+				if (isNew) {
+					string realAssemblyName, assemblyFile, name;
+					AssemblyCodeCompletionDatabase.GetAssemblyInfo (fullName, out realAssemblyName, out assemblyFile, out name);
+					dom.UpdateFromParseInfo (DomCecilCompilationUnit.Load (assemblyFile), assemblyFile);
+//					AssemblyCodeCompletionDatabase adb = new AssemblyCodeCompletionDatabase (baseDirectory, file);
 //					adb.ParseInExternalProcess = true;
 //					adb.ParseAll ();
-					dom.Database = adb;
-					foreach (ReferenceEntry re in dom.Database.References)
-						Load (baseDirectory, re.Uri);
+//					dom.Database = adb;
+//					foreach (ReferenceEntry re in dom.Database.References)
+//						Load (baseDirectory, re.Uri);
 				}
 			}
 		}

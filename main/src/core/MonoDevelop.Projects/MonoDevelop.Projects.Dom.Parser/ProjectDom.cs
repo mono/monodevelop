@@ -42,18 +42,19 @@ namespace MonoDevelop.Projects.Dom.Parser
 			}
 		}*/
 		
-		IEnumerable<IType> CompilationUnitTypes {
+		
+		public IEnumerable<IType> Types {
 			get {
 				foreach (ICompilationUnit unit in compilationUnits.Values) {
 					foreach (IType type in unit.Types) {
 						yield return type;
 					}
 				}
-			}
-		}
-		public IEnumerable<IType> Types {
-			get {
-				return database == null ? CompilationUnitTypes : database.GetClassList ();
+				if (database != null) {
+					foreach (IType type in database.GetClassList ()) {
+						yield return type;
+					}
+				}
 			}
 		}
 		
@@ -68,17 +69,14 @@ namespace MonoDevelop.Projects.Dom.Parser
 				return null;
 			
 			foreach (IType type in Types) {
-				System.Console.WriteLine(type);
 				if (type.FullName == returnType.FullName)
 					return type;
 			}
 
-			if (searchDeep) {
+			if (searchDeep && database != null) {
 				foreach (ReferenceEntry re in database.References) {
-					System.Console.WriteLine("search in:" + re.Uri);
 					ProjectDom dom = ProjectDomService.GetDom (re.Uri);
-					if (dom != null && dom.Database != null) {
-						System.Console.WriteLine("get type !!!");
+					if (dom != null) {
 						IType result = dom.GetType (returnType, false);
 						if (result != null)
 							return result;
@@ -155,7 +153,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 				return null;
 			IType result = database != null ? database.GetClass (fullName, null, caseSensitive) : null;
 			if (result == null) {
-				foreach (IType type in CompilationUnitTypes) {
+				foreach (IType type in Types) {
 					if (type.FullName == fullName)
 						return type;
 				}

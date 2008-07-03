@@ -248,7 +248,7 @@ namespace MonoDevelop.Projects.Dom
 				return new DatabaseGenerator ();
 		}
 		
-		public bool GetAssemblyInfo (string assemblyName, out string realAssemblyName, out string assemblyFile, out string name)
+		public static bool GetAssemblyInfo (string assemblyName, out string realAssemblyName, out string assemblyFile, out string name)
 		{
 			name = null;
 			assemblyFile = null;
@@ -304,7 +304,7 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
-		string EncodeGacAssemblyName (string assemblyName)
+		static string EncodeGacAssemblyName (string assemblyName)
 		{
 			string[] assemblyPieces = assemblyName.Split(',');
 			string res = "";

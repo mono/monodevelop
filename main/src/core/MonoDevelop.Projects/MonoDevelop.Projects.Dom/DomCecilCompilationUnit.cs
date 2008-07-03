@@ -58,7 +58,8 @@ namespace MonoDevelop.Projects.Dom
 		void AddModuleDefinition (ModuleDefinition moduleDefinition)
 		{
 			foreach (TypeDefinition type in moduleDefinition.Types) {
-				Add (new DomCecilType (type));
+				DomCecilType loadType = new DomCecilType (type);
+				Add (loadType);
 			}
 		}
 	}

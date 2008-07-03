@@ -2,6 +2,14 @@
 
 	* MonoDevelop.Projects.Dom.Parser/ProjectParserService.cs,
 	  MonoDevelop.Projects.Dom.Parser/ProjectDom.cs,
+	  MonoDevelop.Projects.Dom/AssemblyCodeCompletionDatabase.cs,
+	  MonoDevelop.Projects.Dom/DomCecilCompilationUnit.cs: Worked on new
+	  dom. (resolving in the c# backend now works).
+
+2008-07-03  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Dom.Parser/ProjectParserService.cs,
+	  MonoDevelop.Projects.Dom.Parser/ProjectDom.cs,
 	  MonoDevelop.Projects.Dom/ResolveResult.cs,
 	  MonoDevelop.Projects.Dom/DomType.cs,
 	  MonoDevelop.Projects.Dom/AssemblyCodeCompletionDatabase.cs,
