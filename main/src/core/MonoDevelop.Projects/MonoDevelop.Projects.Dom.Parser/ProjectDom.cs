@@ -59,10 +59,33 @@ namespace MonoDevelop.Projects.Dom.Parser
 		
 		public IType GetType (IReturnType returnType)
 		{
+			return GetType (returnType, true);
+		}
+		
+		public IType GetType (IReturnType returnType, bool searchDeep)
+		{
+			if (returnType == null)
+				return null;
+			
 			foreach (IType type in Types) {
+				System.Console.WriteLine(type);
 				if (type.FullName == returnType.FullName)
 					return type;
 			}
+
+			if (searchDeep) {
+				foreach (ReferenceEntry re in database.References) {
+					System.Console.WriteLine("search in:" + re.Uri);
+					ProjectDom dom = ProjectDomService.GetDom (re.Uri);
+					if (dom != null && dom.Database != null) {
+						System.Console.WriteLine("get type !!!");
+						IType result = dom.GetType (returnType, false);
+						if (result != null)
+							return result;
+					}
+				}
+			}
+			
 			return null;
 		}
 	
@@ -130,7 +153,24 @@ namespace MonoDevelop.Projects.Dom.Parser
 		{
 			if (String.IsNullOrEmpty (fullName))
 				return null;
-			return database.GetClass (fullName, null, caseSensitive);
+			IType result = database != null ? database.GetClass (fullName, null, caseSensitive) : null;
+			if (result == null) {
+				foreach (IType type in CompilationUnitTypes) {
+					if (type.FullName == fullName)
+						return type;
+				}
+			}
+/*			if (result == null && database != null) {
+				foreach (ReferenceEntry re in database.References) {
+					ProjectDom dom = ProjectDomService.GetDom (re.Uri);
+					if (dom != null && dom.Database != null) {
+						result = dom.Database.GetClass (fullName, null, caseSensitive);
+						if (result != null)
+							return result;
+					}
+				}
+			}*/
+			return result;
 /*			foreach (ICompilationUnit unit in compilationUnits.Values) {
 				IType type = unit.GetType (fullName, genericParameterCount);
 				if (type != null)

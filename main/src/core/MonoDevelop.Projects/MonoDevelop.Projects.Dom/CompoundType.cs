@@ -27,6 +27,8 @@
 //
 
 using System;
+using System.Text;
+using System.Collections.Generic;
 
 namespace MonoDevelop.Projects.Dom
 {
@@ -34,6 +36,27 @@ namespace MonoDevelop.Projects.Dom
 	{
 		public CompoundType()
 		{
+		}
+		
+		public override string ToString ()
+		{
+			StringBuilder partsString = new StringBuilder ();
+			foreach (IType part in parts) {
+				if (partsString.Length > 0)
+					partsString.Append (", ");
+				partsString.Append (part.ToString ());
+			}
+			return String.Format ("[CompoundType: FullName={0}, #Parts={1}, Parts={2}]", this.FullName, this.parts.Count, partsString);
+		}
+		
+		public override IEnumerable<IMember> Members {
+			get {
+				foreach (IType part in Parts) {
+					foreach (IMember member in part.Members) {
+						yield return member;
+					}
+				}
+			}
 		}
 		
 		public void AddPart (IType part)
@@ -67,6 +90,28 @@ namespace MonoDevelop.Projects.Dom
 			this.typeParameters.Clear ();
 			this.typeParameters.AddRange (parts[0].TypeParameters);
 			
+			fieldCount = 0;
+			foreach (IType part in parts)
+				fieldCount += part.FieldCount;
+			methodCount = 0;
+			foreach (IType part in parts)
+				methodCount += part.MethodCount;
+			constructorCount = 0;
+			foreach (IType part in parts)
+				constructorCount += part.ConstructorCount;
+			indexerCount = 0;
+			foreach (IType part in parts)
+				indexerCount += part.IndexerCount;
+			propertyCount = 0;
+			foreach (IType part in parts)
+				propertyCount += part.PropertyCount;
+			eventCount = 0;
+			foreach (IType part in parts)
+				eventCount += part.EventCount;
+			innerTypeCount = 0;
+			foreach (IType part in parts)
+				innerTypeCount += part.InnerTypeCount;
+			
 			this.implementedInterfaces.Clear ();
 			this.attributes.Clear ();
 			Modifiers modifier = Modifiers.None;
@@ -97,8 +142,5 @@ namespace MonoDevelop.Projects.Dom
 			
 			return type;
 		}
-		
-		
-		
 	}
 }

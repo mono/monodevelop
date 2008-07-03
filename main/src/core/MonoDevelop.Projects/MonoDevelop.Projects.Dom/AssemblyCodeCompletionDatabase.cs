@@ -163,6 +163,8 @@ namespace MonoDevelop.Projects.Dom
 		
 		protected override void ParseFile (string fileName, IProgressMonitor parentMonitor)
 		{
+			if (!File.Exists (fileName))
+				return;
 			IProgressMonitor monitor = parentMonitor;
 //			if (parentMonitor == null)
 //				monitor = parserDatabase.GetParseProgressMonitor ();
@@ -174,7 +176,8 @@ namespace MonoDevelop.Projects.Dom
 				
 			try {
 				parsing = true;
-				monitor.BeginTask ("Parsing assembly: " + Path.GetFileName (fileName), 1);
+				if (monitor != null)
+					monitor.BeginTask ("Parsing assembly: " + Path.GetFileName (fileName), 1);
 				if (useExternalProcess)
 				{
 					using (DatabaseGenerator helper = GetGenerator (true))
@@ -182,18 +185,16 @@ namespace MonoDevelop.Projects.Dom
 						helper.GenerateDatabase (baseDir, assemblyName);
 						Read ();
 					}
-				}
-				else
-				{
+				} else {
 					DomCecilCompilationUnit ainfo = DomCecilCompilationUnit.Load (fileName);
 					
 					UpdateTypeInformation (ainfo.Types, fileName);
-
+					
 					// Reset the error retry count, since the file has been
 					// successfully parsed.
 					FileEntry e = GetFile (fileName);
 					e.ParseErrorRetries = 0;
-
+					
 					Flush ();
 				}
 			} catch (Exception ex) {
@@ -206,12 +207,16 @@ namespace MonoDevelop.Projects.Dom
 				}
 				else
 					e.ParseErrorRetries = 3;
-				monitor.ReportError ("Error parsing assembly: " + fileName, ex);
+				if (monitor != null)
+					monitor.ReportError ("Error parsing assembly: " + fileName, ex);
 				throw;
 			} finally {
 				parsing = false;
-				monitor.EndTask ();
-				if (parentMonitor == null) monitor.Dispose ();
+				if (monitor != null) {
+					monitor.EndTask ();
+					if (parentMonitor == null) 
+						monitor.Dispose ();
+				}
 			}
 		//	parserDatabase.NotifyAssemblyInfoChange (fileName, assemblyName);
 		}
@@ -319,9 +324,14 @@ namespace MonoDevelop.Projects.Dom
 	{
 		public void GenerateDatabase (string baseDir, string assemblyName)
 		{
-			// TODO:
-//			DefaultParserService parserService = new DefaultParserService ();
-//			parserService.GenerateAssemblyDatabase (baseDir, assemblyName);
+			AssemblyCodeCompletionDatabase db = new AssemblyCodeCompletionDatabase (baseDir, assemblyName);
+			
+			if (db.LoadError)
+				throw new InvalidOperationException ("Could find assembly: " + assemblyName);
+				
+			db.ParseInExternalProcess = false;
+			db.ParseAll ();
+			db.Write ();
 		}
 	}
 	

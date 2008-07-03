@@ -98,12 +98,12 @@ namespace MonoDevelop.Projects.Dom
 				return null;
 			// TODO: Attributes
 			string name       = ReadString (reader, nameTable);
-			int   pointerNesting = reader.ReadInt32 ();
-			bool   isNullable = reader.ReadBoolean ();
-			bool   isByRef = reader.ReadBoolean ();
+			int  pointerNesting = reader.ReadInt32 ();
+			bool isNullable = reader.ReadBoolean ();
+			bool isByRef = reader.ReadBoolean ();
 			
-			int   arrayDimensions = reader.ReadInt32 ();
-			uint    arguments  = reader.ReadUInt32 ();
+			int  arrayDimensions = reader.ReadInt32 ();
+			uint arguments  = reader.ReadUInt32 ();
 			List<IReturnType> parameters = new List<IReturnType> ();
 			while (arguments-- > 0) {
 				parameters.Add (ReadReturnType (reader, nameTable));
@@ -141,8 +141,8 @@ namespace MonoDevelop.Projects.Dom
 			result.BodyRegion = ReadRegion (reader, nameTable);
 			result.ReturnType    = ReadReturnType (reader, nameTable);
 			result.IsConstructor = reader.ReadBoolean ();
-			uint    arguments  = reader.ReadUInt32 ();
-			List<IParameter> parameters = new List<IParameter> ();
+			uint arguments = reader.ReadUInt32 ();
+			
 			while (arguments-- > 0) {
 				result.Add (ReadParameter (reader, nameTable));
 			}
@@ -241,6 +241,7 @@ namespace MonoDevelop.Projects.Dom
 		{
 			DomType result = new DomType ();
 			ReadMemberInformation (reader, nameTable, result);
+			
 			result.BodyRegion = ReadRegion (reader, nameTable);
 			string compilationUnitFileName = ReadString (reader, nameTable);
 			result.CompilationUnit = new CompilationUnit (compilationUnitFileName);
@@ -281,6 +282,7 @@ namespace MonoDevelop.Projects.Dom
 			
 			// methods
 			count = reader.ReadUInt32 ();
+			
 			while (count-- > 0) {
 				DomMethod method = ReadMethod (reader, nameTable);
 				method.DeclaringType = result;
@@ -294,7 +296,6 @@ namespace MonoDevelop.Projects.Dom
 				evt.DeclaringType = result;
 				result.Add (evt);
 			}
-			
 			return result;
 		}
 		
@@ -328,7 +329,7 @@ namespace MonoDevelop.Projects.Dom
 			foreach (IProperty property in type.Properties) {
 				Write (writer, nameTable, property);
 			}
-			writer.Write (type.MethodCount);
+			writer.Write (type.MethodCount + type.ConstructorCount);
 			foreach (IMethod method in type.Methods) {
 				Write (writer, nameTable, method);
 			}
@@ -336,7 +337,6 @@ namespace MonoDevelop.Projects.Dom
 			foreach (IEvent evt in type.Events) {
 				Write (writer, nameTable, evt);
 			}
-			
 		}
 		
 		public static uint GetCount<T> (IEnumerable<T> list)

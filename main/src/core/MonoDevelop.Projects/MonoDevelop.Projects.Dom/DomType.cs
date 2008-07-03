@@ -159,7 +159,7 @@ namespace MonoDevelop.Projects.Dom
 				return parts;
 			}
 		}
-		public bool HasParts {
+		public virtual bool HasParts {
 			get {
 				return parts != null && parts.Count > 0;
 			}
@@ -217,6 +217,13 @@ namespace MonoDevelop.Projects.Dom
 			this.members     = members;
 			this.location    = location;
 		}
+		
+		public override string ToString ()
+		{
+			return String.Format ("[DomType: FullName={0}, #Members={1}]", this.FullName, this.members.Count);
+		}
+		
+		
 		
 		public static DomType CreateDelegate (ICompilationUnit compilationUnit, string name, DomLocation location, IReturnType type, List<IParameter> parameters)
 		{

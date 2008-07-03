@@ -73,6 +73,11 @@ namespace MonoDevelop.Projects.Dom
 			base.Namespace = entry.NamespaceRef.FullName;
 		}
 		
+		public override string ToString ()
+		{
+			return String.Format ("[DomTypeProxy: WrappedType={0}]", this.WrappedType);
+		}
+		
 		bool HasFlags (ContentFlags cf)
 		{
 			return (entry.ContentFlags & cf) != 0 && WrappedType != null;
@@ -111,6 +116,12 @@ namespace MonoDevelop.Projects.Dom
 		public override IEnumerable<IType> Parts { 
 			get {
 				return WrappedType.Parts;
+			}
+		}
+		
+		public override bool HasParts {
+			get {
+				return WrappedType.HasParts;
 			}
 		}
 	}

@@ -101,7 +101,7 @@ namespace MonoDevelop.Projects.Dom
 		
 		void UpdateContent (IType cls)
 		{
-			name = cls.Name; 
+			name = cls.FullName; 
 			ctype = cls.ClassType;
 			modifiers = cls.Modifiers;
 			flags = (ContentFlags) 0;

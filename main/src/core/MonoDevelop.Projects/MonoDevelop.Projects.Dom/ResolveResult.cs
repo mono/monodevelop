@@ -34,6 +34,8 @@ namespace MonoDevelop.Projects.Dom
 	{
 		IType       callingType;
 		IMember     callingMember;
+		
+		//IMember     resolvedMember;
 		IReturnType resolvedType;
 		
 		public IType CallingType {
@@ -62,6 +64,15 @@ namespace MonoDevelop.Projects.Dom
 				callingMember = value;
 			}
 		}
+		
+//		public IMember ResolvedMember {
+//			get {
+//				return resolvedMember;
+//			}
+//			set {
+//				resolvedMember = value;
+//			}
+//		}
 		
 		public ResolveResult ()
 		{

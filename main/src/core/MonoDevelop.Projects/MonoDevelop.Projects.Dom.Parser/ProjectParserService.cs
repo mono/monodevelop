@@ -273,9 +273,14 @@ namespace MonoDevelop.Projects.Dom.Parser
 				string fullName = AssemblyCodeCompletionDatabase.GetFullAssemblyName (file);
 				
 				ProjectDom dom = GetDom (uri);
-				dom.Database = new AssemblyCodeCompletionDatabase (baseDirectory, file);
-				foreach (ReferenceEntry re in dom.Database.References)
-					Load (baseDirectory, re.Uri);
+				if (dom.Database == null) {
+					AssemblyCodeCompletionDatabase adb = new AssemblyCodeCompletionDatabase (baseDirectory, file);
+//					adb.ParseInExternalProcess = true;
+//					adb.ParseAll ();
+					dom.Database = adb;
+					foreach (ReferenceEntry re in dom.Database.References)
+						Load (baseDirectory, re.Uri);
+				}
 			}
 		}
 		
@@ -292,11 +297,10 @@ namespace MonoDevelop.Projects.Dom.Parser
 			ProjectDom dom = GetDom (project);
 			dom.Database = new ProjectCodeCompletionDatabase (project);
 			foreach (ReferenceEntry re in dom.Database.References) {
+			
 				Load (project.BaseDirectory, re.Uri);
-				System.Console.WriteLine(re.Uri);
 				//GetDatabase (baseDir, re.Uri);
 			}
-			
 			
 			dom.Database.CheckModifiedFiles ();
 //			dom.Database.UpdateFromProject ();

@@ -204,8 +204,8 @@ namespace MonoDevelop.Projects.Dom
 		
 		public override string ToString ()
 		{
-			return string.Format ("[DomReturnType:Name={0}, PointerNestingLevel={1}, ArrayDimensions={2}]",
-			                      Name,
+			return string.Format ("[DomReturnType:FullName={0}, PointerNestingLevel={1}, ArrayDimensions={2}]",
+			                      FullName,
 			                      PointerNestingLevel,
 			                      ArrayDimensions);
 		}

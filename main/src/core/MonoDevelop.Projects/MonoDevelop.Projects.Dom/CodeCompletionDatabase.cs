@@ -50,7 +50,7 @@ namespace MonoDevelop.Projects.Dom
 	{
 		static protected readonly int MAX_ACTIVE_COUNT = 100;
 		static protected readonly int MIN_ACTIVE_COUNT = 10;
-		static protected readonly int FORMAT_VERSION   = 30;
+		static protected readonly int FORMAT_VERSION   = 31;
 		
 		NamespaceEntry rootNamespace;
 		protected ArrayList references;
@@ -464,14 +464,13 @@ namespace MonoDevelop.Projects.Dom
 		
 		internal IType ReadClass (ClassEntry ce)
 		{
-			lock (rwlock)
-			{
+			lock (rwlock) {
 				if (datareader == null) {
 					datafile = new FileStream (dataFile, FileMode.Open, FileAccess.Read, FileShare.Read);
 					datareader = new BinaryReader (datafile);
 				}
 				datafile.Position = ce.Position;
-				datareader.ReadInt32 ();	// Length of data
+				datareader.ReadInt32 ();// Length of data
 				
 				IType cls = DomPersistence.ReadType (datareader, DefaultNameEncoder);
 				cls.SourceProject = SourceEntry;
@@ -910,7 +909,8 @@ namespace MonoDevelop.Projects.Dom
 						
 						if (newClass != null) {
 							// Class already in the database, update it
-							if (ce.Class == null) ce.Class = ReadClass (ce);
+							if (ce.Class == null) 
+								ce.Class = ReadClass (ce);
 							RemoveSubclassReferences (ce);
 							
 							ce.Class = CompoundType.Merge (ce.Class, CopyClass (newClass));
@@ -919,11 +919,10 @@ namespace MonoDevelop.Projects.Dom
 							ce.LastGetTime = currentGetTime++;
 							newFileClasses.Add (ce);
 							res.Modified.Add (ce.Class);
-						}
-						else {
+						} else {
 							// Database class not found in the new class list, it has to be deleted
 							IType c = ce.Class;
-							if (c == null) {
+							if  (c == null) {
 								ce.Class = ReadClass (ce);
 								c = ce.Class;
 							}
@@ -931,7 +930,7 @@ namespace MonoDevelop.Projects.Dom
 							if (removed != null) {
 								// It's still a compound class
 								ce.Class = removed;
-								AddSubclassReferences (ce);							
+								AddSubclassReferences (ce);
 								res.Modified.Add (removed);
 							} else {
 								// It's not a compoudnd class. Remove it.
@@ -1213,15 +1212,18 @@ namespace MonoDevelop.Projects.Dom
 		
 		IType CopyClass (IType cls)
 		{
-			MemoryStream ms = new MemoryStream ();
-			BinaryWriter bw = new BinaryWriter (ms);
-			DomPersistence.Write(bw, DefaultNameEncoder, cls);
-			bw.Flush ();
-			ms.Position = 0;
-			BinaryReader br = new BinaryReader (ms);
-			IType ret = DomPersistence.ReadType (br, DefaultNameDecoder);
-			ret.SourceProject = cls.SourceProject;
-			return ret;
+			using (MemoryStream memoryStream = new MemoryStream ()) {
+				BinaryWriter writer = new BinaryWriter (memoryStream);
+				DomPersistence.Write(writer, DefaultNameEncoder, cls);
+				writer.Flush ();
+				memoryStream.Position = 0;
+				BinaryReader reader = new BinaryReader (memoryStream);
+				IType result = DomPersistence.ReadType (reader, DefaultNameDecoder);
+				writer.Close ();
+				reader.Close ();
+				result.SourceProject = cls.SourceProject;
+				return result;
+			}
 		}
 		
 		bool GetBestNamespaceEntry (string[] path, int length, bool createPath, bool caseSensitive, out NamespaceEntry lastEntry, out int numMatched)

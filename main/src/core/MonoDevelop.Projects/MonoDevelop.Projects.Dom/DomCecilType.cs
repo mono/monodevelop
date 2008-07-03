@@ -62,27 +62,20 @@ namespace MonoDevelop.Projects.Dom
 			foreach (TypeReference interfaceReference in typeDefinition.Interfaces) {
 				this.implementedInterfaces.Add (new DomCecilReturnType (interfaceReference));
 			}
-			
-			members = null;
-		}
-		
-		public override IEnumerable<IMember> Members {
-			get {
-				if (base.members == null) {
-					base.members = new List<IMember> ();
-					foreach (FieldDefinition fieldDefinition in typeDefinition.Fields)
-						base.members.Add (new DomCecilField (this, fieldDefinition));
-					foreach (MethodDefinition methodDefinition in typeDefinition.Methods)
-						base.members.Add (new DomCecilMethod (this, methodDefinition));
-					foreach (PropertyDefinition propertyDefinition in typeDefinition.Properties)
-						base.members.Add (new DomCecilProperty (this, propertyDefinition));
-					foreach (EventDefinition eventDefinition in typeDefinition.Events)
-						base.members.Add (new DomCecilEvent (this, eventDefinition));
-				}
-				return members;
+			foreach (FieldDefinition fieldDefinition in typeDefinition.Fields) {
+				base.Add (new DomCecilField (this, fieldDefinition));
+			}
+			foreach (MethodDefinition methodDefinition in typeDefinition.Methods) {
+				base.Add (new DomCecilMethod (this, methodDefinition));
+			}
+			foreach (PropertyDefinition propertyDefinition in typeDefinition.Properties) {
+				base.Add (new DomCecilProperty (this, propertyDefinition));
+			}
+			foreach (EventDefinition eventDefinition in typeDefinition.Events) {
+				base.Add (new DomCecilEvent (this, eventDefinition));
 			}
 		}
-
+		
 		public TypeDefinition TypeDefinition {
 			get {
 				return typeDefinition;

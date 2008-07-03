@@ -82,6 +82,7 @@ namespace MonoDevelop.Projects.Dom
 			this.modifiers      = modifiers;
 			this.location   = location;
 			this.bodyRegion = bodyRegion;
+			this.isConstructor = isConstructor;
 		}
 		
 		public DomMethod (string name, Modifiers modifiers, bool isConstructor, DomLocation location, DomRegion bodyRegion, IReturnType returnType, List<IParameter> parameters)
@@ -92,8 +93,8 @@ namespace MonoDevelop.Projects.Dom
 			this.bodyRegion = bodyRegion;
 			this.returnType = returnType;
 			this.parameters = parameters;
+			this.isConstructor = isConstructor;
 		}
-		
 		
 		public override int CompareTo (object obj)
 		{
