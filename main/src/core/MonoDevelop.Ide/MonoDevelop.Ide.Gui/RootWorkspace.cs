@@ -73,14 +73,7 @@ namespace MonoDevelop.Ide.Gui
 			referenceAddedToProjectHandler = (ProjectReferenceEventHandler) DispatchService.GuiDispatch (new ProjectReferenceEventHandler (NotifyReferenceAddedToProject));
 			referenceRemovedFromProjectHandler = (ProjectReferenceEventHandler) DispatchService.GuiDispatch (new ProjectReferenceEventHandler (NotifyReferenceRemovedFromProject));
 		
-			itemAddedToSolutionHandler = (SoluextChanged += delegate {
-//				MonoDevelop.Projects.Dom.Parser.ProjectDomService.Refresh (Project, 
-//				                                                           FileName, 
-//				                                                           MonoDevelop.Core.Gui.Services.PlatformService.GetMimeTypeForUri (FileName),
-//				                                                           delegate () {
-//					return TextEditor.Text;
-//				});
-//			};tionItemChangeEventHandler) DispatchService.GuiDispatch (new SolutionItemChangeEventHandler (NotifyItemAddedToSolution));
+			itemAddedToSolutionHandler = (SolutionItemChangeEventHandler) DispatchService.GuiDispatch (new SolutionItemChangeEventHandler (NotifyItemAddedToSolution));
 			itemRemovedFromSolutionHandler = (SolutionItemChangeEventHandler) DispatchService.GuiDispatch (new SolutionItemChangeEventHandler (NotifyItemRemovedFromSolution));
 			
 			descendantItemAddedHandler = (EventHandler<WorkspaceItemChangeEventArgs>) DispatchService.GuiDispatch (new EventHandler<WorkspaceItemChangeEventArgs> (NotifyDescendantItemAdded));
@@ -829,7 +822,7 @@ namespace MonoDevelop.Ide.Gui
 			if (WorkspaceItemClosed != null)
 				WorkspaceItemClosed (this, args);
 			
-			//MonoDevelop.Projects.Dom.Parser.ProjectDomService.Unload (item);
+			MonoDevelop.Projects.Dom.Parser.ProjectDomService.Unload (item);
 			ParserDatabase.Unload (item);
 			
 			NotifyDescendantItemRemoved (this, args);
