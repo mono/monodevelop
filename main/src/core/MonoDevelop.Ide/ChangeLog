@@ -1,6 +1,11 @@
 2008-07-03  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Ide.Gui/Document.cs,
+	  MonoDevelop.Ide.Gui/RootWorkspace.cs: Reverted some changes.
+
+2008-07-03  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Ide.Gui/Document.cs,
 	  MonoDevelop.Ide.Gui/RootWorkspace.cs: Worked on new dom.
 
 2008-07-02  Lluis Sanchez Gual <lluis@novell.com> 

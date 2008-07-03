@@ -386,14 +386,14 @@ namespace MonoDevelop.Ide.Gui
 			IExtensibleTextEditor editor = GetContent<IExtensibleTextEditor> ();
 			if (editor == null)
 				return;
-			editor.TextChanged += delegate {
-				MonoDevelop.Projects.Dom.Parser.ProjectDomService.Refresh (Project, 
-				                                                           FileName, 
-				                                                           MonoDevelop.Core.Gui.Services.PlatformService.GetMimeTypeForUri (FileName),
-				                                                           delegate () {
-					return TextEditor.Text;
-				});
-			};
+//			editor.TextChanged += delegate {
+//				MonoDevelop.Projects.Dom.Parser.ProjectDomService.Refresh (Project, 
+//				                                                           FileName, 
+//				                                                           MonoDevelop.Core.Gui.Services.PlatformService.GetMimeTypeForUri (FileName),
+//				                                                           delegate () {
+//					return TextEditor.Text;
+//				});
+//			};
 			
 			// If the new document is a text editor, attach the extensions
 			
