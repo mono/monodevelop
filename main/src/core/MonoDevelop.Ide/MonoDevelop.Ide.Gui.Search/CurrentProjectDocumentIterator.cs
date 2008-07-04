@@ -40,11 +40,12 @@ namespace MonoDevelop.Ide.Gui.Search
 		public override void Reset() 
 		{
 			files.Clear();
-			if (IdeApp.Workspace.IsOpen)
-				foreach (ProjectFile file in
-				  IdeApp.Workspace.GetProjectContainingFile (IdeApp.Workbench.ActiveDocument.FileName).Files)
+			Document document = IdeApp.Workbench.ActiveDocument;
+			if (IdeApp.Workspace.IsOpen && document != null) {
+				foreach (ProjectFile file in IdeApp.Workspace.GetProjectContainingFile (document.FileName).Files)
 					if (file.Subtype == Subtype.Code)
 						files.Add(file.Name);
+			}
 			
 			curIndex = -1;
 		}
