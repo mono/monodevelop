@@ -33,6 +33,7 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
 
 using MonoDevelop.Projects.Dom;
+using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Projects.Gui.Completion;
 
 namespace MonoDevelop.CSharpBinding.Gui
@@ -52,6 +53,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 				                                                                                Editor,
 				                                                                                Document.FileName);
 				ResolveResult resolveResult = resolver.Resolve (result);
+				System.Console.WriteLine (resolveResult);
 				
 				ShowCompletion (CreateCompletionData (resolveResult), 0, '.');
 				
@@ -67,11 +69,16 @@ namespace MonoDevelop.CSharpBinding.Gui
 		ICompletionDataProvider CreateCompletionData (ResolveResult resolveResult)
 		{
 			CodeCompletionDataProvider result = new CodeCompletionDataProvider (null, null);
-//			ProjectDom dom = ProjectDomService.GetDom (Document.Project);
-//			IType type = dom.GetType (resolveResult.ResolvedType);
-//			if (type != null) {
-//				// Add accessible members.
-//			}
+			ProjectDom dom = ProjectDomService.GetDom (Document.Project);
+			IType type = dom.GetType (resolveResult.ResolvedType);
+			System.Console.WriteLine("get type:" + resolveResult.ResolvedType + " -- result:" + type);
+			if (type != null) {
+				System.Console.WriteLine("Add members!");
+				foreach (IMember member in type.Members) {
+					System.Console.WriteLine("member:" + member);
+					result.AddCompletionData (new CodeCompletionData (member.Name, member.StockIcon, member.Documentation));
+				}
+			}
 			
 			return result;
 		}

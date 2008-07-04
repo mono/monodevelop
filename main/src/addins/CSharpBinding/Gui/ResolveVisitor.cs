@@ -157,7 +157,9 @@ namespace MonoDevelop.CSharpBinding
 		{
 			if (resolver.CallingType == null)
 				return CreateResult (DomReturnType.Void);
-			return CreateResult (resolver.CallingType.FullName);
+			ResolveResult result = CreateResult (resolver.CallingType.FullName);
+		//	result.ResolvedMember = resolver.CallingType;
+			return result;
 		}
 		
 		
