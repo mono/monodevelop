@@ -27,7 +27,6 @@
 //
 
 using System;
-
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
@@ -40,12 +39,96 @@ namespace MonoDevelop.CSharpBinding.Gui
 {
 	public class CSharpTextEditorCompletion : CompletionTextEditorExtension
 	{
+		public CSharpTextEditorCompletion ()
+		{
+		}
+		
+		public override ICompletionDataProvider HandleCodeCompletion (ICodeCompletionContext completionContext, char completionChar)
+		{
+			CSharpExpressionFinder expressionFinder = new CSharpExpressionFinder ();
+			ExpressionResult result = expressionFinder.FindExpression (Editor.Text, Editor.CursorPosition);
+			System.Console.WriteLine("found:" + result);
+			if (result == null)
+				return null;
+			
+			NRefactoryResolver resolver = new MonoDevelop.CSharpBinding.NRefactoryResolver (Document.Project,
+			                                                                                ICSharpCode.NRefactory.SupportedLanguage.CSharp,
+			                                                                                Editor,
+			                                                                                Document.FileName);
+			
+			switch (completionChar) {
+			case '.':
+				ResolveResult resolveResult = resolver.Resolve (result);
+				return CreateCompletionData (resolveResult);
+				
+			case ' ':
+				int i = completionContext.TriggerOffset;
+				return HandleKeywordCompletion (result, GetPreviousToken (ref i, false));
+			}
+			return null;
+		}
+		
+		public ICompletionDataProvider HandleKeywordCompletion (ExpressionResult result, string word)
+		{
+			switch (word) {
+			case "using":
+				System.Console.WriteLine("Using !!!!");
+				return null;
+			case "is":
+			case "as":
+				System.Console.WriteLine("IsAs");
+				return null;
+			case "override":
+				System.Console.WriteLine("Override!!!");
+				return null;
+			case "new":
+				System.Console.WriteLine("New!!!");
+				return null;
+//			case "case":
+//				return null;
+//			case "return":
+//				return null;
+			}
+			return null;
+		}
+		
+		string GetPreviousToken (ref int i, bool allowLineChange)
+		{
+			char c;
+			
+			if (i <= 0)
+				return null;
+			
+			do {
+				c = Editor.GetCharAt (--i);
+			} while (i > 0 && char.IsWhiteSpace (c) && (allowLineChange ? true : c != '\n'));
+			
+			if (i == 0)
+				return null;
+			
+			if (!char.IsLetterOrDigit (c))
+				return new string (c, 1);
+			
+			int endOffset = i + 1;
+			
+			do {
+				c = Editor.GetCharAt (i - 1);
+				if (!(char.IsLetterOrDigit (c) || c == '_'))
+					break;
+				
+				i--;
+			} while (i > 0);
+			
+			return Editor.GetText (i, endOffset);
+		}
+		
+		/*
 		public override bool KeyPress (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
 		{
 			CSharpExpressionFinder expressionFinder = new CSharpExpressionFinder ();
 			ExpressionResult result = expressionFinder.FindExpression (Editor.Text, Editor.CursorPosition);
 			if (result == null)
-				return true;
+				return base.KeyPress (key, keyChar, modifier);
 			switch (keyChar) {
 			case '.':
 				NRefactoryResolver resolver = new MonoDevelop.CSharpBinding.NRefactoryResolver (Document.Project,
@@ -63,19 +146,16 @@ namespace MonoDevelop.CSharpBinding.Gui
 				break;
 			}
 			
-			return true;
-		}
+			return base.KeyPress (key, keyChar, modifier);
+		}*/
 		
 		ICompletionDataProvider CreateCompletionData (ResolveResult resolveResult)
 		{
 			CodeCompletionDataProvider result = new CodeCompletionDataProvider (null, null);
 			ProjectDom dom = ProjectDomService.GetDom (Document.Project);
 			IType type = dom.GetType (resolveResult.ResolvedType);
-			System.Console.WriteLine("get type:" + resolveResult.ResolvedType + " -- result:" + type);
 			if (type != null) {
-				System.Console.WriteLine("Add members!");
 				foreach (IMember member in type.Members) {
-					System.Console.WriteLine("member:" + member);
 					result.AddCompletionData (new CodeCompletionData (member.Name, member.StockIcon, member.Documentation));
 				}
 			}

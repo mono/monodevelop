@@ -105,6 +105,7 @@ namespace MonoDevelop.CSharpBinding
 			}
 			if (callingMember != null) {
 				string wrapper = CreateWrapperClassForMember (callingMember);
+				System.Console.WriteLine("wrapper:" + wrapper);
 				ICSharpCode.NRefactory.IParser parser = ICSharpCode.NRefactory.ParserFactory.CreateParser (lang, new StringReader (wrapper));
 				parser.Parse ();
 				lookupTableVisitor.VisitCompilationUnit (parser.CompilationUnit, null);
@@ -120,6 +121,7 @@ namespace MonoDevelop.CSharpBinding
 		
 		public ResolveResult Resolve (ExpressionResult expressionResult)
 		{
+			System.Console.WriteLine("resolve ExpressionResult:" + expressionResult);
 			Expression expr = ParseExpression (expressionResult);
 			if (expr == null) 
 				return null;
