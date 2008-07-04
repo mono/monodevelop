@@ -194,6 +194,7 @@ namespace Mono.TextEditor
 				int drawY    = y + editor.LineHeight - 1;
 				const int length = 6;
 				const int height = 2;
+				startXPos = System.Math.Max (startXPos, editor.TextViewMargin.XOffset);
 				for (int i = startXPos; i < endXPos; i += length) {
 					win.DrawLine (gc, i, drawY, i + length / 2, drawY - height);
 					win.DrawLine (gc, i + length / 2, drawY - height, i + length, drawY);

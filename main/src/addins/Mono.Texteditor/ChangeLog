@@ -1,5 +1,10 @@
 2008-07-04  Mike Krüger <mkrueger@novell.com> 
 
+	* Mono.TextEditor/TextMarker.cs: fixed 'Bug 405919 - Error underlines
+	  are sometimes painted over the line numbers and folding markers'.
+
+2008-07-04  Mike Krüger <mkrueger@novell.com> 
+
 	* Mono.TextEditor/TextEditor.cs: fixed 'Bug 405913 - Drag-n-dropping
 	  text should move text, not copy it'.
 
