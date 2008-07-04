@@ -43,6 +43,14 @@ namespace Mono.TextEditor.Highlighting
 		Color lineMarker, ruler, whitespaceMarker, invalidLineMarker;
 		Color caretForeground;
 		
+		Color breakpointBg, breakpointFg;
+		Color breakpointMarkerColor1, breakpointMarkerColor2;
+		Color disabledBreakpointBg;
+		Color currentDebugLineBg, currentDebugLineFg;
+		Color currentDebugLineMarkerColor1, currentDebugLineMarkerColor2, currentDebugLineMarkerBorder;
+		Color invalidBreakpointBg;
+		Color invalidBreakpointMarkerColor1, invalidBreakpointMarkerBorder;
+		
 		Color bookmarkColor1, bookmarkColor2;
 		
 		Color lineNumberFg, lineNumberBg, lineNumberFgHighlighted;
@@ -211,6 +219,100 @@ namespace Mono.TextEditor.Highlighting
 				searchTextBg = value;
 			}
 		}
+
+		public Color BreakpointFg {
+			get {
+				return breakpointFg;
+			}
+		}
+
+		public Color BreakpointBg {
+			get {
+				return breakpointBg;
+			}
+		}
+
+		public Color BreakpointMarkerColor2 {
+			get {
+				return breakpointMarkerColor2;
+			}
+		}
+
+		public Color BreakpointMarkerColor1 {
+			get {
+				return breakpointMarkerColor1;
+			}
+		}
+
+		public Color CurrentDebugLineFg {
+			get {
+				return currentDebugLineFg;
+			}
+			set {
+				currentDebugLineFg = value;
+			}
+		}
+
+		public Color CurrentDebugLineBg {
+			get {
+				return currentDebugLineBg;
+			}
+			set {
+				currentDebugLineBg = value;
+			}
+		}
+
+		public Color CurrentDebugLineMarkerColor2 {
+			get {
+				return currentDebugLineMarkerColor2;
+			}
+		}
+
+		public Color CurrentDebugLineMarkerColor1 {
+			get {
+				return currentDebugLineMarkerColor1;
+			}
+		}
+
+		public Color CurrentDebugLineMarkerBorder {
+			get {
+				return currentDebugLineMarkerBorder;
+			}
+		}
+
+		public Color InvalidBreakpointBg {
+			get {
+				return invalidBreakpointBg;
+			}
+			set {
+				invalidBreakpointBg = value;
+			}
+		}
+
+		public Color InvalidBreakpointMarkerColor1 {
+			get {
+				return invalidBreakpointMarkerColor1;
+			}
+		}
+
+		public Color DisabledBreakpointBg {
+			get {
+				return disabledBreakpointBg;
+			}
+		}
+
+		public Color InvalidBreakpointMarkerBorder {
+			get {
+				return invalidBreakpointMarkerBorder;
+			}
+		}
+		
+		public static Cairo.Color ToCairoColor (Gdk.Color color)
+		{
+			return new Cairo.Color ((double)color.Red / ushort.MaxValue,
+			                        (double)color.Green / ushort.MaxValue,
+			                        (double)color.Blue / ushort.MaxValue);
+		}
 		
 		public Style ()
 		{
@@ -236,6 +338,22 @@ namespace Mono.TextEditor.Highlighting
 			ruler      = new Gdk.Color (187, 187, 187);
 			whitespaceMarker  = new Gdk.Color (187, 187, 187);
 			invalidLineMarker = new Gdk.Color (210, 0, 0);
+			
+			breakpointBg = new Gdk.Color (125, 0, 0);
+			breakpointFg = new Gdk.Color (255, 255, 255);
+			
+			this.breakpointMarkerColor1 = new Gdk.Color (255, 255, 255);
+			this.breakpointMarkerColor2 = new Gdk.Color (125, 0, 0);
+			this.disabledBreakpointBg = new Gdk.Color (237, 220, 220);
+			this.currentDebugLineBg = new Gdk.Color (255, 255, 0);
+			this.currentDebugLineFg = new Gdk.Color (0, 0, 0);
+			
+			this.currentDebugLineMarkerColor1 = new Gdk.Color (255, 255, 0);
+			this.currentDebugLineMarkerColor2 = new Gdk.Color (255, 255, 204);
+			this.currentDebugLineMarkerBorder = new Gdk.Color (102, 102, 0);
+			this.invalidBreakpointBg          = new Gdk.Color (237, 220, 220);
+			this.invalidBreakpointMarkerColor1 = new Gdk.Color (237, 220, 220);
+			this.invalidBreakpointMarkerBorder = new Gdk.Color (125, 0, 0);
 			
 			searchTextBg = new Gdk.Color (250, 250, 0);
 			
@@ -333,6 +451,20 @@ namespace Mono.TextEditor.Highlighting
 			case "bookmarkColor1":
 			case "bookmarkColor2":
 			case "searchTextBg":
+			
+			case "breakpointBg":
+			case "breakpointFg":
+			case "breakpointMarkerColor1":
+			case "breakpointMarkerColor2":
+			case "disabledBreakpointBg":
+			case "currentDebugLineBg":
+			case "currentDebugLineFg":
+			case "currentDebugLineMarkerColor1":
+			case "currentDebugLineMarkerColor2":
+			case "currentDebugLineMarkerBorder":
+			case "invalidBreakpointBg":
+			case "invalidBreakpointMarkerColor1":
+			case "invalidBreakpointMarkerBorder":
 				return false;
 			}
 			return true;
@@ -426,6 +558,45 @@ namespace Mono.TextEditor.Highlighting
 				break;
 			case "searchTextBg":
 				this.searchTextBg = color;
+				break;
+			case "breakpointBg":
+				this.breakpointBg = color;
+				break;
+			case "breakpointFg":
+				this.breakpointFg = color;
+				break;
+			case "breakpointMarkerColor1":
+				this.breakpointMarkerColor1 = color;
+				break;
+			case "breakpointMarkerColor2":
+				this.breakpointMarkerColor2 = color;
+				break;
+			case "disabledBreakpointBg":
+				this.disabledBreakpointBg = color;
+				break;
+			case "currentDebugLineBg":
+				this.currentDebugLineBg = color;
+				break;
+			case "currentDebugLineFg":
+				this.currentDebugLineFg = color;
+				break;
+			case "currentDebugLineMarkerColor1":
+				this.currentDebugLineMarkerColor1 = color;
+				break;
+			case "currentDebugLineMarkerColor2":
+				this.currentDebugLineMarkerColor2 = color;
+				break;
+			case "currentDebugLineMarkerBorder":
+				this.currentDebugLineMarkerBorder = color;
+				break;
+			case "invalidBreakpointBg":
+				this.invalidBreakpointBg = color;
+				break;
+			case "invalidBreakpointMarkerColor1":
+				this.invalidBreakpointMarkerColor1 = color;
+				break;
+			case "invalidBreakpointMarkerBorder":
+				this.invalidBreakpointMarkerBorder = color;
 				break;
 			default:
 				throw new Exception ("color  " + name + " invalid.");

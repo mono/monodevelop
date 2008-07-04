@@ -238,7 +238,7 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		public Color Color {
+		public virtual Color Color {
 			get {
 				return color;
 			}
@@ -258,7 +258,7 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		public Color BackgroundColor {
+		public virtual Color BackgroundColor {
 			get {
 				return backColor;
 			}
@@ -275,9 +275,9 @@ namespace Mono.TextEditor
 			
 			ChunkStyle style = new ChunkStyle (baseStyle);
 			if ((includedStyles & StyleFlag.Color) != 0)
-				style.Color = color;
+				style.Color = Color;
 			if ((includedStyles & StyleFlag.BackroundColor) != 0)
-				style.BackgroundColor = backColor;
+				style.BackgroundColor = BackgroundColor;
 			if ((includedStyles & StyleFlag.Bold) != 0)
 				style.Bold = bold;
 			if ((includedStyles & StyleFlag.Italic) != 0)
