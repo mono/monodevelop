@@ -26,23 +26,23 @@
 //
 
 using System;
+
+using Gdk;
+
 using Mono.TextEditor;
+using Mono.TextEditor.Highlighting;
 
 namespace MonoDevelop.Debugger
 {
-	public class DebugTextMarker: StyleTextMarker, IIconBarMarker
+	public abstract class DebugTextMarker : StyleTextMarker, IIconBarMarker
 	{
-		public DebugTextMarker (Gdk.Color backColor)
+		protected TextEditor editor;
+		
+		public DebugTextMarker (TextEditor editor)
 		{
-			BackgroundColor = backColor;
+			this.editor = editor;
 		}
 		
-		public DebugTextMarker (Gdk.Color backColor, Gdk.Color foreColor)
-		{
-			BackgroundColor = backColor;
-			Color = foreColor;
-		}
-
 		public void DrawIcon (TextEditor editor, Gdk.Drawable win, LineSegment line, int lineNumber, int x, int y, int width, int height)
 		{
 			int size;
@@ -110,17 +110,27 @@ namespace MonoDevelop.Debugger
 		}
 	}
 	
-	public class BreakpointTextMarker: DebugTextMarker
+	public class BreakpointTextMarker : DebugTextMarker
 	{
-		public BreakpointTextMarker ()
-			: base (new Gdk.Color (125, 0, 0), new Gdk.Color (255, 255, 255))
+		public override Color BackgroundColor {
+			get { return editor.ColorStyle.BreakpointBg; }
+			set {  }
+		}
+		public override Color Color {
+			get { return editor.ColorStyle.BreakpointFg; }
+			set {  }
+		}
+
+
+		public BreakpointTextMarker (TextEditor editor) : base (editor)
 		{
+			IncludedStyles |= StyleFlag.BackroundColor | StyleFlag.Color;
 		}
 		
 		protected override void DrawIcon (Cairo.Context cr, int x, int y, int size)
 		{
-			Cairo.Color color1 = new Cairo.Color (1,1,1);
-			Cairo.Color color2 = new Cairo.Color (0.5,0,0);
+			Cairo.Color color1 = Style.ToCairoColor (editor.ColorStyle.BreakpointMarkerColor1);
+			Cairo.Color color2 = Style.ToCairoColor (editor.ColorStyle.BreakpointMarkerColor2);
 			DrawCircle (cr, x, y, size);
 			FillGradient (cr, color1, color2, x, y, size);
 			DrawBorder (cr, color2, x, y, size);
@@ -129,48 +139,74 @@ namespace MonoDevelop.Debugger
 	
 	public class DisabledBreakpointTextMarker: DebugTextMarker
 	{
-		public DisabledBreakpointTextMarker ()
-			: base (new Gdk.Color (237, 220, 220))
+		public override Color BackgroundColor {
+			get { return editor.ColorStyle.DisabledBreakpointBg; }
+			set {  }
+		}
+	
+		public DisabledBreakpointTextMarker (TextEditor editor) : base (editor)
 		{
+			IncludedStyles |= StyleFlag.BackroundColor;
 		}
 		
 		protected override void DrawIcon (Cairo.Context cr, int x, int y, int size)
 		{
+			Cairo.Color border = Style.ToCairoColor (editor.ColorStyle.InvalidBreakpointMarkerBorder);
 			DrawCircle (cr, x, y, size);
 			//FillGradient (cr, new Cairo.Color (1,1,1), new Cairo.Color (1,0.8,0.8), x, y, size);
-			DrawBorder (cr, new Cairo.Color (0.5,0,0), x, y, size);
+			DrawBorder (cr, border, x, y, size);
 		}
 	}
 	
 	public class CurrentDebugLineTextMarker: DebugTextMarker
 	{
-		public CurrentDebugLineTextMarker ()
-			: base (new Gdk.Color (255, 255, 0), new Gdk.Color (0, 0, 0))
+		public override Color BackgroundColor {
+			get { return editor.ColorStyle.CurrentDebugLineBg; }
+			set {  }
+		}
+		
+		public override Color Color {
+			get { return editor.ColorStyle.CurrentDebugLineFg;  }
+			set {  }
+		}
+		
+		public CurrentDebugLineTextMarker (TextEditor editor) : base (editor)
 		{
+			IncludedStyles |= StyleFlag.BackroundColor | StyleFlag.Color;
 		}
 		
 		protected override void DrawIcon (Cairo.Context cr, int x, int y, int size)
 		{
+			Cairo.Color color1 = Style.ToCairoColor (editor.ColorStyle.CurrentDebugLineMarkerColor1);
+			Cairo.Color color2 = Style.ToCairoColor (editor.ColorStyle.CurrentDebugLineMarkerColor2);
+			Cairo.Color border = Style.ToCairoColor (editor.ColorStyle.CurrentDebugLineMarkerBorder);
+		
 			DrawArrow (cr, x, y, size);
-			FillGradient (cr, new Cairo.Color (1,1,0), new Cairo.Color (1,1,0.8), x, y, size);
-			DrawBorder (cr, new Cairo.Color (0.4,0.4,0), x, y, size);
+			FillGradient (cr, color1, color2, x, y, size);
+			DrawBorder (cr, border, x, y, size);
 		}
 	}
 	
 	public class InvalidBreakpointTextMarker: DebugTextMarker
 	{
-		public InvalidBreakpointTextMarker ()
-			: base (new Gdk.Color (237, 220, 220))
+		public override Color BackgroundColor {
+			get { return editor.ColorStyle.InvalidBreakpointBg; }
+			set {  }
+		}
+		
+		public InvalidBreakpointTextMarker (TextEditor editor) : base (editor)
 		{
+			IncludedStyles |= StyleFlag.BackroundColor;
 		}
 		
 		protected override void DrawIcon (Cairo.Context cr, int x, int y, int size)
 		{
-			Cairo.Color color1 = new Cairo.Color (237.0/255.0, 220.0/255.0, 220.0/255.0);
+			Cairo.Color color1 = Style.ToCairoColor (editor.ColorStyle.InvalidBreakpointMarkerColor1);
 			Cairo.Color color2 = color1;
+			Cairo.Color border = Style.ToCairoColor (editor.ColorStyle.InvalidBreakpointMarkerBorder);
 			DrawCircle (cr, x, y, size);
 			FillGradient (cr, color1, color2, x, y, size);
-			DrawBorder (cr, new Cairo.Color (0.5,0,0), x, y, size);
+			DrawBorder (cr, border, x, y, size);
 		}
 	}
 }

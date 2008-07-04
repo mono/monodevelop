@@ -1,3 +1,9 @@
+2008-07-04  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Debugger/DebugTextMarker.cs,
+	  MonoDevelop.Debugger/DisasemblyView.cs: debug markers are now using
+	  color styles instead of hard coded colors.
+
 2008-07-02  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Debugger/DebugTextMarker.cs: Improved colors.

@@ -49,7 +49,7 @@ namespace MonoDevelop.Debugger
 		Dictionary<long,int> addressLines = new Dictionary<long,int> ();
 		bool autoRefill;
 		int lastDebugLine = -1;
-		CurrentDebugLineTextMarker currentDebugLineMarker = new CurrentDebugLineTextMarker ();
+		CurrentDebugLineTextMarker currentDebugLineMarker;
 		bool dragging;
 		string currentFile;
 		AsmLineMarker asmMarker = new AsmLineMarker ();
@@ -62,6 +62,7 @@ namespace MonoDevelop.Debugger
 			sw = new Gtk.ScrolledWindow ();
 			editor = new TextEditor ();
 			editor.ReadOnly = true;
+			
 			TextEditorOptions options = new TextEditorOptions ();
 			options.CopyFrom (TextEditorOptions.Options);
 			options.ShowEolMarkers = false;
@@ -81,6 +82,7 @@ namespace MonoDevelop.Debugger
 			
 			sw.Sensitive = false;
 			
+			currentDebugLineMarker = new CurrentDebugLineTextMarker (editor);
 			IdeApp.Services.DebuggingService.StoppedEvent += OnStop;
 		}
 		
