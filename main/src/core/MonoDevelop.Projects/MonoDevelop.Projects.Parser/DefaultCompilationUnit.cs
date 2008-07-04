@@ -27,6 +27,7 @@ namespace MonoDevelop.Projects.Parser
 	{
 		string  name;
 		IRegion region;
+		bool    defaultIsFolded = false;
 		
 		public string Name {
 			get {
@@ -37,6 +38,15 @@ namespace MonoDevelop.Projects.Parser
 		public IRegion Region {
 			get {
 				return region;
+			}
+		}
+
+		public bool DefaultIsFolded {
+			get {
+				return defaultIsFolded;
+			}
+			set {
+				defaultIsFolded = value;
 			}
 		}
 		

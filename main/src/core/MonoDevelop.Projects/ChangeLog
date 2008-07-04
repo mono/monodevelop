@@ -1,3 +1,9 @@
+2008-07-04  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Parser/DefaultCompilationUnit.cs: fixed Bug
+	  405930 - FoldingRegions in compilation units are all folded by
+	  default
+
 2008-07-03  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom.Parser/ProjectParserService.cs,
