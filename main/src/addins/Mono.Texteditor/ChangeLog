@@ -1,5 +1,9 @@
 2008-07-04  Mike Krüger <mkrueger@novell.com> 
 
+	* OblivionStyle.xml: set searchtextbg for oblivion.
+
+2008-07-04  Mike Krüger <mkrueger@novell.com> 
+
 	* Mono.TextEditor.Highlighting/SyntaxModeService.cs: fixed 'Bug 404713
 	  - Threading issues in text editor'.
 
