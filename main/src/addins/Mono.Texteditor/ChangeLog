@@ -1,5 +1,11 @@
 2008-07-04  Mike Krüger <mkrueger@novell.com> 
 
+	* Mono.TextEditor/TextViewMargin.cs: fixed 'Bug 405923 - After using
+	  middle-click insertion, the document jumps back to the location of
+	  the selection'.
+
+2008-07-04  Mike Krüger <mkrueger@novell.com> 
+
 	* Mono.TextEditor/TextMarker.cs: fixed 'Bug 405919 - Error underlines
 	  are sometimes painted over the line numbers and folding markers'.
 

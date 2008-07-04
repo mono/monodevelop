@@ -672,7 +672,13 @@ namespace Mono.TextEditor
 						anchor   += length;
 						selection = new Segment (selection.Offset + length + 1, selection.Length);
 					}
-					textEditor.Caret.Offset = oldOffset;
+					bool autoScroll = textEditor.Caret.AutoScrollToCaret;
+					textEditor.Caret.AutoScrollToCaret = false;
+					try {
+						textEditor.Caret.Offset = oldOffset;
+					} finally {
+						textEditor.Caret.AutoScrollToCaret = autoScroll;
+					}
 					textEditor.SelectionAnchor = anchor;
 					textEditor.SelectionRange  = selection;
 				} else {
