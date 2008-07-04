@@ -1,5 +1,10 @@
 2008-07-04  Mike Krüger <mkrueger@novell.com> 
 
+	* CSharpSyntaxMode.xml, XmlSyntaxMode.xml: fixed "Bug 405927 - Quotes
+	  are mis-highlighted in C# XML comments".
+
+2008-07-04  Mike Krüger <mkrueger@novell.com> 
+
 	* Mono.TextEditor/TextViewMargin.cs: fixed 'Bug 405923 - After using
 	  middle-click insertion, the document jumps back to the location of
 	  the selection'.

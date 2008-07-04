@@ -24,12 +24,12 @@
  THE SOFTWARE. -->
  
 <SyntaxMode name = "Xml" mimeTypes="application/xml;application/xaml+xml;application/xhtml+xml;text/html">
-	<Span color = "comment">
+	<Span color = "comment" rule = "Comment">
 		<Begin>&lt;!--</Begin>
 		<End>--&gt;</End>
 	</Span>
 	
-	<Span color = "preprocessor">
+	<Span color = "preprocessor" rule = "Comment">
 		<Begin>&amp;</Begin>
 		<End>;</End>
 	</Span>
@@ -54,6 +54,8 @@
 		<Begin>&lt;</Begin>
 		<End>&gt;</End>
 	</Span>
+	<Rule name = "Comment">
+	</Rule>
 	
 	<Rule name = "InTag">
 		<Span color = "literal" rule="InLiteral">

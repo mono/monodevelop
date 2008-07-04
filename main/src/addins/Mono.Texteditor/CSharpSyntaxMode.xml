@@ -228,7 +228,7 @@
 	</Rule>
 
 	<Rule name = "XmlDocumentationTag">
-		<Span color = "literal" stopateol = "true" escape="\">
+		<Span color = "literal" stopateol = "true" escape="\" rule="String" >
 			<Begin>"</Begin>
 			<End>"</End>
 		</Span>
