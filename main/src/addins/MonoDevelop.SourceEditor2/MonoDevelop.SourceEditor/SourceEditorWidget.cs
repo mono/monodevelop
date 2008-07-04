@@ -324,7 +324,7 @@ namespace MonoDevelop.SourceEditor
 								return;
 							FoldSegment marker = widget.AddMarker (foldSegments, region.Name, region.Region, FoldingType.Region);
 							if (marker != null) {
-								marker.IsFolded = true;
+								marker.IsFolded = region.DefaultIsFolded;
 								foreach (IClass cl in widget.lastCu.Classes) {
 									if (base.IsStopping)
 										return;

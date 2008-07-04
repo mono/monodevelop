@@ -1,3 +1,9 @@
+2008-07-04  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.SourceEditor/SourceEditorWidget.cs,
+	  MonoDevelop.SourceEditor/SourceEditorView.cs: fixed Bug 405930 -
+	  FoldingRegions in compilation units are all folded by default
+
 2008-07-03  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* gtk-gui/gui.stetic, Makefile.am, MonoDevelop.SourceEditor.addin.xml,

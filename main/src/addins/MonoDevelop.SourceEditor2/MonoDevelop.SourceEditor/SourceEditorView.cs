@@ -61,10 +61,10 @@ namespace MonoDevelop.SourceEditor
 		static bool isInWrite = false;
 		DateTime lastSaveTime;
 		
-		TextMarker currentDebugLineMarker = new CurrentDebugLineTextMarker ();
-		TextMarker breakpointMarker = new BreakpointTextMarker ();
-		TextMarker breakpointDisabledMarker = new DisabledBreakpointTextMarker ();
-		TextMarker breakpointInvalidMarker = new InvalidBreakpointTextMarker ();
+		TextMarker currentDebugLineMarker;
+		TextMarker breakpointMarker;
+		TextMarker breakpointDisabledMarker;
+		TextMarker breakpointInvalidMarker;
 		
 		int lastDebugLine = -1;
 		EventHandler executionLocationChanged;
@@ -140,6 +140,12 @@ namespace MonoDevelop.SourceEditor
 //			});
 			
 			widget.ShowAll ();
+			
+			currentDebugLineMarker   = new CurrentDebugLineTextMarker (widget.TextEditor);
+			breakpointMarker         = new BreakpointTextMarker (widget.TextEditor);
+			breakpointDisabledMarker = new DisabledBreakpointTextMarker (widget.TextEditor);
+			breakpointInvalidMarker  = new InvalidBreakpointTextMarker (widget.TextEditor);
+			
 			
 			fileSystemWatcher = new FileSystemWatcher ();
 			fileSystemWatcher.Created += (FileSystemEventHandler)MonoDevelop.Core.Gui.DispatchService.GuiDispatch (new FileSystemEventHandler (OnFileChanged));	
