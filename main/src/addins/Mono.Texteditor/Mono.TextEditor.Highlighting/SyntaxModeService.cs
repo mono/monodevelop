@@ -199,7 +199,15 @@ namespace Mono.TextEditor.Highlighting
 				for (int offset = start; offset < end; offset++) {
 					if (IsStopping)
 						return;
-					char ch = doc.GetCharAt (offset);
+					char ch;
+					try {
+						// document may have been changed and the thread is still running
+						// (however a new highlighting thread will be created after each document change)
+						ch = doc.GetCharAt (offset);
+					} catch (Exception) {
+						base.Stop ();
+						return;
+					}
 					if (curSpan != null && !String.IsNullOrEmpty (curSpan.End)) {
 						if (curSpan.Escape == ch && offset + 1 < end && endOffset == 0 && doc.GetCharAt (offset + 1) == curSpan.End[0]) {
 							offset++;
