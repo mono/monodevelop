@@ -1,5 +1,10 @@
 2008-07-04  Mike Krüger <mkrueger@novell.com> 
 
+	* Parser/Parser.cs: fixed Bug 405930 - FoldingRegions in compilation
+	  units are all folded by default.
+
+2008-07-04  Mike Krüger <mkrueger@novell.com> 
+
 	* Gui/ResolveVisitor.cs, Gui/CSharpTextEditorCompletion.cs: Worked on
 	  completion.
 

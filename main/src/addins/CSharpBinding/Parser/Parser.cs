@@ -71,7 +71,9 @@ namespace CSharpBinding.Parser
 									case "#endregion":
 										--deep;
 										if (deep == 0) {
-											cu.FoldingRegions.Add(new FoldingRegion(directive.Arg.Trim(), new DefaultRegion(directive.StartPosition.ToPoint (), new Point(nextDirective.EndPosition.X, nextDirective.EndPosition.Y))));
+											MonoDevelop.Projects.Parser.FoldingRegion region = new MonoDevelop.Projects.Parser.FoldingRegion (directive.Arg.Trim(), new DefaultRegion(directive.StartPosition.ToPoint (), new Point(nextDirective.EndPosition.X, nextDirective.EndPosition.Y)));
+											region.DefaultIsFolded = true;
+											cu.FoldingRegions.Add(region);
 											goto end;
 										}
 										break;
