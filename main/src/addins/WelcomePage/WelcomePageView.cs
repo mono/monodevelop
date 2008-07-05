@@ -235,13 +235,15 @@ namespace MonoDevelop.WelcomePage
 		{
 			if (String.IsNullOrEmpty (link) || link.IndexOf ("monodevelop://") != -1) {
 				IdeApp.Workbench.StatusBar.ShowMessage (null);
-			} else {
+			} else if (link.IndexOf ("project://") != -1) {
 				string message = link;
-				if (link.IndexOf ("project://") != -1) 
-					message = message.Substring (10);
+				message = message.Substring (10);
 				string msg = GettextCatalog.GetString ("Open solution {0}", message);
 				if (IdeApp.Workspace.IsOpen)
 					msg += " - " + GettextCatalog.GetString ("Hold Control key to open in current workspace.");
+				IdeApp.Workbench.StatusBar.ShowMessage (msg);
+			} else {
+				string msg = GettextCatalog.GetString ("Open {0}", link);
 				IdeApp.Workbench.StatusBar.ShowMessage (msg);
 			}
 		}

@@ -1,3 +1,8 @@
+2008-07-05  Zach Lute <zach.lute@gmail.com> 
+
+	* WelcomePageView.cs: Welcome page no longer shows 'Open solution'
+	  status bar message for non-solution links.
+
 2008-06-04  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* WelcomePage.addin.xml: Bump MD version.
