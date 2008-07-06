@@ -1,3 +1,9 @@
+2008-07-06  Mike Krüger <mkrueger@novell.com> 
+
+	* Mono.TextEditor.Highlighting/SyntaxModeService.cs,
+	  Mono.TextEditor.Highlighting/IXmlProvider.cs: Added support for
+	  custom styles.
+
 2008-07-04  Mike Krüger <mkrueger@novell.com> 
 
 	* CSharpSyntaxMode.xml, XmlSyntaxMode.xml: fixed "Bug 405927 - Quotes

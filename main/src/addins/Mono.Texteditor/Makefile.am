@@ -15,6 +15,7 @@ FILES =  \
 	Mono.TextEditor.Highlighting/Chunk.cs \
 	Mono.TextEditor.Highlighting/ChunkStyle.cs \
 	Mono.TextEditor.Highlighting/DefaultStyle.cs \
+	Mono.TextEditor.Highlighting/IXmlProvider.cs \
 	Mono.TextEditor.Highlighting/Keywords.cs \
 	Mono.TextEditor.Highlighting/Marker.cs \
 	Mono.TextEditor.Highlighting/Match.cs \
