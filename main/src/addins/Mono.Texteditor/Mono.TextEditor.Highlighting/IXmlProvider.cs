@@ -40,6 +40,18 @@ namespace Mono.TextEditor.Highlighting
 		Assembly assembly;
 		string   manifestResourceName;
 		
+		public string ManifestResourceName {
+			get {
+				return manifestResourceName;
+			}
+		}
+		
+		public Assembly Assembly {
+			get {
+				return assembly;
+			}
+		}
+		
 		public ResourceXmlProvider (Assembly assembly, string manifestResourceName)
 		{
 			this.assembly             = assembly;
@@ -48,13 +60,19 @@ namespace Mono.TextEditor.Highlighting
 		
 		public XmlTextReader Open ()
 		{
-			return new XmlTextReader (this.assembly.GetManifestResourceStream (this.manifestResourceName));
+			return new XmlTextReader (this.assembly.GetManifestResourceStream (this.ManifestResourceName));
 		}
 	}
 	
 	public class UrlXmlProvider : IXmlProvider
 	{
 		string  url;
+		
+		public string Url {
+			get {
+				return url;
+			}
+		}
 		
 		public UrlXmlProvider (string url)
 		{

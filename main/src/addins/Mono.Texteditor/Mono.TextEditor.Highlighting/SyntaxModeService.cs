@@ -63,10 +63,26 @@ namespace Mono.TextEditor.Highlighting
 				return styles [name];
 			if (styleLookup.ContainsKey (name)) {
 				LoadStyle (name);
-				return GetColorStyle (widget, name);		
+				return GetColorStyle (widget, name);
 			}
 			return new DefaultStyle (widget);
 		}
+		
+		public static IXmlProvider GetProvider (SyntaxMode mode)
+		{
+			foreach (string mimeType in mode.MimeType.Split (';')) {
+				if (syntaxModeLookup.ContainsKey (mimeType)) 
+					return syntaxModeLookup[mimeType];
+			}
+			return null;
+		}
+		public static IXmlProvider GetProvider (Style style)
+		{
+			if (styleLookup.ContainsKey (style.Name)) 
+				return styleLookup[style.Name];
+			return null;
+		}
+		
 		
 		static void LoadStyle (string name)
 		{
@@ -105,6 +121,23 @@ namespace Mono.TextEditor.Highlighting
 				return GetSyntaxMode (mimeType);
 			}
 			return null;
+		}
+		
+		public static void Remove (Style style)
+		{
+			if (styles.ContainsKey (style.Name))
+				styles.Remove (style.Name);
+			if (styleLookup.ContainsKey (style.Name))
+				styleLookup.Remove (style.Name);
+		}
+		public static void Remove (SyntaxMode mode)
+		{
+			foreach (string mimeType in mode.MimeType.Split (';')) {
+				if (syntaxModes.ContainsKey (mimeType)) 
+					syntaxModes.Remove (mimeType);
+				if (syntaxModeLookup.ContainsKey (mimeType)) 
+					syntaxModeLookup.Remove (mimeType);
+			}
 		}
 		
 		public static void ScanSpans (Document doc, Rule rule, Stack<Span> spanStack, int start, int end)
@@ -364,6 +397,34 @@ namespace Mono.TextEditor.Highlighting
 			while (reader.Read () && !reader.IsStartElement ()) 
 				;
 			return reader.GetAttribute (attribute);
+		}
+		
+		public static bool IsValidStyle (string fileName)
+		{
+			if (!fileName.EndsWith ("Style.xml"))
+				return false;
+			try {
+				using (XmlTextReader reader =  new XmlTextReader (fileName)) {
+					string styleName = Scan (reader, Style.NameAttribute);
+					return !String.IsNullOrEmpty (styleName);
+				}
+			} catch (Exception) {
+				return false;
+			}
+		}
+		
+		public static bool IsValidSyntaxMode (string fileName)
+		{
+			if (!fileName.EndsWith ("SyntaxMode.xml"))
+				return false;
+			try {
+				using (XmlTextReader reader =  new XmlTextReader (fileName)) {
+					string mimeTypes = Scan (reader, SyntaxMode.MimeTypesAttribute);
+					return !String.IsNullOrEmpty (mimeTypes);
+				}
+			} catch (Exception) {
+				return false;
+			}
 		}
 		
 		public static void LoadStylesAndModes (string path)

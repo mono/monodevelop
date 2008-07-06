@@ -1,6 +1,12 @@
 2008-07-06  Mike Krüger <mkrueger@novell.com> 
 
 	* Mono.TextEditor.Highlighting/SyntaxModeService.cs,
+	  Mono.TextEditor.Highlighting/IXmlProvider.cs: Worked on style
+	  support.
+
+2008-07-06  Mike Krüger <mkrueger@novell.com> 
+
+	* Mono.TextEditor.Highlighting/SyntaxModeService.cs,
 	  Mono.TextEditor.Highlighting/IXmlProvider.cs: Added support for
 	  custom styles.
 
