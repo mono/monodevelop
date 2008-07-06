@@ -24,6 +24,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.IO;
 
 using Gtk;
 
@@ -31,6 +32,7 @@ using MonoDevelop.Core.Gui.Dialogs;
 using MonoDevelop.Core.Gui;
 using Mono.TextEditor.Highlighting;
 using MonoDevelop.Core;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.SourceEditor.OptionPanels
 {
@@ -52,10 +54,18 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 
 		public virtual Gtk.Widget CreatePanelWidget ()
 		{
+			this.addButton.Clicked    += AddColorSheme;
+			this.removeButton.Clicked += RemoveColorSheme;
 			this.enableHighlightingCheckbutton.Active = SourceEditorOptions.Options.EnableSyntaxHighlighting;
 			this.enableSemanticHighlightingCheckbutton.Active = SourceEditorOptions.Options.EnableSemanticHighlighting;
 			this.enableHighlightingCheckbutton.Toggled += EnableHighlightingCheckbuttonToggled;
 			EnableHighlightingCheckbuttonToggled (this, EventArgs.Empty);
+			ShowStyles ();
+			return this;
+		}
+		
+		void ShowStyles ()
+		{
 			styleStore.Clear ();
 			TreeIter selectedIter = styleStore.AppendValues (GetMarkup (GettextCatalog.GetString ("Default"), GettextCatalog.GetString ("The default color scheme.")), "Default");
 			foreach (string styleName in SyntaxModeService.Styles) {
@@ -65,7 +75,48 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 					selectedIter = iter;
 			}
 			styleTreeview.Selection.SelectIter (selectedIter); 
-			return this;
+		}
+		
+		void RemoveColorSheme (object sender, EventArgs args)
+		{
+			string styleName = null;
+			TreeIter selectedIter;
+			if (styleTreeview.Selection.GetSelected (out selectedIter)) 
+				styleName = (string)this.styleStore.GetValue (selectedIter, 1);
+			Mono.TextEditor.Highlighting.Style style = SyntaxModeService.GetColorStyle (this, styleName);
+			UrlXmlProvider provider = SyntaxModeService.GetProvider (style) as UrlXmlProvider;
+			if (provider != null) {
+				if (provider.Url.StartsWith (SourceEditorDisplayBinding.SyntaxModePath)) {
+					SyntaxModeService.Remove (style);
+					File.Delete (provider.Url);
+					SourceEditorDisplayBinding.LoadCustomStylesAndModes ();
+					ShowStyles ();
+				}
+			}
+			
+		}
+		
+		void AddColorSheme (object sender, EventArgs args)
+		{
+			FileSelector fd = new FileSelector ();
+			int response = fd.Run ();
+			if (response == (int)ResponseType.Ok) {
+				if (SyntaxModeService.IsValidStyle (fd.Filename)) {
+					string newFileName = System.IO.Path.Combine (SourceEditorDisplayBinding.SyntaxModePath, System.IO.Path.GetFileName (fd.Filename));
+					bool success = true;
+					try {
+						File.Copy (fd.Filename, newFileName);
+					} catch (Exception e) {
+						success = false;
+						LoggingService.LogError ("Can't copy syntax mode file.", e);
+					}
+					if (success) {
+						SourceEditorDisplayBinding.LoadCustomStylesAndModes ();
+						ShowStyles ();
+					}
+				}
+			}
+			fd.Destroy ();
 		}
 		
 		void EnableHighlightingCheckbuttonToggled (object sender, EventArgs e)

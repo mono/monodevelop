@@ -1,3 +1,10 @@
+2008-07-06  Mike Krüger <mkrueger@novell.com> 
+
+	* gtk-gui/MonoDevelop.SourceEditor.OptionPanels.HighlightingPanel.cs,
+	  MonoDevelop.SourceEditor.OptionPanels/HighlightingPanel.cs,
+	  MonoDevelop.SourceEditor/SourceEditorDisplayBinding.cs: Added
+	  support for custom styles and modes.
+
 2008-07-04  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.SourceEditor/SourceEditorWidget.cs: fixed 'Bug 402202 -

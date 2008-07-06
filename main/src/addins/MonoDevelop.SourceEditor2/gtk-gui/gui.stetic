@@ -796,7 +796,7 @@
                           <placeholder />
                         </child>
                         <child>
-                          <widget class="Gtk.Button" id="button1">
+                          <widget class="Gtk.Button" id="addButton">
                             <property name="MemberName" />
                             <property name="CanFocus">True</property>
                             <property name="UseStock">True</property>
@@ -812,7 +812,7 @@
                           </packing>
                         </child>
                         <child>
-                          <widget class="Gtk.Button" id="button2">
+                          <widget class="Gtk.Button" id="removeButton">
                             <property name="MemberName" />
                             <property name="CanFocus">True</property>
                             <property name="UseStock">True</property>
@@ -840,7 +840,7 @@
               </widget>
             </child>
             <child>
-              <widget class="Gtk.Label" id="GtkLabel3">
+              <widget class="Gtk.Label" id="GtkLabel5">
                 <property name="MemberName" />
                 <property name="LabelProp" translatable="yes">&lt;b&gt;Color sheme&lt;/b&gt;</property>
                 <property name="UseMarkup">True</property>

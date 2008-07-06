@@ -25,6 +25,7 @@
 
 using System;
 using System.IO;
+using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Codons;
 using MonoDevelop.Ide.Gui;
@@ -33,10 +34,33 @@ namespace MonoDevelop.SourceEditor
 {
 	public class SourceEditorDisplayBinding : IDisplayBinding
 	{
+		public static string SyntaxModePath {
+			get {
+				return Path.Combine (PropertyService.ConfigPath, "syntaxmodes");
+			}
+		}
+		
 		static SourceEditorDisplayBinding ()
 		{
 			SourceEditorOptions.Init ();
+			LoadCustomStylesAndModes ();
 		}
+		
+		internal static void LoadCustomStylesAndModes ()
+		{
+			bool success = true;
+			if (!Directory.Exists (SyntaxModePath)) {
+				try {
+					Directory.CreateDirectory (SyntaxModePath);
+				} catch (Exception e) {
+					success = false;
+					LoggingService.LogError ("Can't create syntax mode directory", e);
+				}
+			}
+			if (success)
+				Mono.TextEditor.Highlighting.SyntaxModeService.LoadStylesAndModes (SyntaxModePath);
+		}
+		
 		
 		string IDisplayBinding.DisplayName {
 			get {
