@@ -1,3 +1,8 @@
+2008-07-07  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects/DomCompilationUnitTests.cs,
+	  MonoDevelop.Projects/DomPersistenceTests.cs: Added some tests.
+
 2008-06-18  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects/DomPersistenceTests.cs: Worked on unit tests.

@@ -125,7 +125,8 @@ namespace MonoDevelop.Projects.DomTests
 			input.IsByRef = true;
 			input.IsNullable = true;
 			input.PointerNestingLevel = 666;
-			
+			input.AddTypeParameter (new DomReturnType ("System.String"));
+			input.AddTypeParameter (new DomReturnType ("System.Int32"));
 			MemoryStream ms = new MemoryStream ();
 			BinaryWriter writer = new BinaryWriter (ms);
 			DomPersistence.Write (writer, DefaultNameEncoder, input);
@@ -138,7 +139,8 @@ namespace MonoDevelop.Projects.DomTests
 			Assert.AreEqual (5, result.ArrayDimensions);
 			Assert.AreEqual (true, result.IsByRef);
 			Assert.AreEqual (true, result.IsNullable);
-			Assert.AreEqual (666, result.PointerNestingLevel);
+			Assert.AreEqual ("System.String", result.GenericArguments[0].FullName);
+			Assert.AreEqual ("System.Int32", result.GenericArguments[1].FullName);
 		}
 		
 		[Test()]
@@ -222,6 +224,40 @@ namespace MonoDevelop.Projects.DomTests
 			Assert.AreEqual ("Test", result.Name);
 			Assert.AreEqual (ClassType.Struct, result.ClassType);
 			Assert.AreEqual ("BaseClass", result.BaseType.Name);
+		}
+		
+		[Test()]
+		public void ReadWriteTypeTestComplex ()
+		{
+			DomType input   = new DomType ();
+			
+			input.Name      = "Test";
+			input.ClassType = ClassType.Struct;
+			input.BaseType  = new DomReturnType ("BaseClass");
+			input.AddInterfaceImplementation (new DomReturnType ("Interface1"));
+			input.AddInterfaceImplementation (new DomReturnType ("Interface2"));
+			
+			input.Add (new DomMethod ("TestMethod", Modifiers.None, false, DomLocation.Empty, DomRegion.Empty));
+			input.Add (new DomMethod (".ctor", Modifiers.None, true, DomLocation.Empty, DomRegion.Empty));
+			
+			input.Add (new DomField ("TestField", Modifiers.None, DomLocation.Empty, DomReturnType.Void));
+			input.Add (new DomProperty ("TestProperty", Modifiers.None, DomLocation.Empty, DomRegion.Empty, DomReturnType.Void));
+			input.Add (new DomEvent ("TestEvent", Modifiers.None, DomLocation.Empty, DomReturnType.Void));
+			MemoryStream ms = new MemoryStream ();
+			BinaryWriter writer = new BinaryWriter (ms);
+			DomPersistence.Write (writer, DefaultNameEncoder, input);
+			byte[] bytes = ms.ToArray ();
+			
+			DomType result = DomPersistence.ReadType (CreateReader (bytes), DefaultNameDecoder);
+			Assert.AreEqual ("Test", result.Name);
+			Assert.AreEqual (ClassType.Struct, result.ClassType);
+			Assert.AreEqual ("BaseClass", result.BaseType.Name);
+			Assert.AreEqual (1, result.MethodCount);
+			Assert.AreEqual (1, result.ConstructorCount);
+			Assert.AreEqual (1, result.FieldCount);
+			Assert.AreEqual (1, result.PropertyCount);
+			Assert.AreEqual (1, result.EventCount);
+			
 		}
 		
 		static BinaryReader CreateReader (byte[] bytes)
