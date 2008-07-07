@@ -112,7 +112,7 @@ namespace MonoDevelop.Debugger.Gdb
 			return null;
 		}
 
-		public ObjectValue[] GetExpressionValues (int frameIndex, string[] expressions)
+		public ObjectValue[] GetExpressionValues (int frameIndex, string[] expressions, bool evaluateMethods)
 		{
 			List<ObjectValue> values = new List<ObjectValue> ();
 			SelectFrame (frameIndex);
@@ -138,12 +138,14 @@ namespace MonoDevelop.Debugger.Gdb
 			int nchild = data.GetInt ("numchild");
 			
 			ObjectValue val;
+			ObjectValueFlags flags = ObjectValueFlags.Variable;
+			
 			if (typeName.EndsWith ("]")) {
-				val = ObjectValue.CreateArray (this, new ObjectPath (vname), typeName, nchild, null);
+				val = ObjectValue.CreateArray (this, new ObjectPath (vname), typeName, nchild, flags, null);
 			} else if (value == "{...}" || typeName.EndsWith ("*") || nchild > 0) {
-				val = ObjectValue.CreateObject (this, new ObjectPath (vname), typeName, value, null);
+				val = ObjectValue.CreateObject (this, new ObjectPath (vname), typeName, value, flags, null);
 			} else {
-				val = ObjectValue.CreatePrimitive (this, new ObjectPath (vname), typeName, value, true);
+				val = ObjectValue.CreatePrimitive (this, new ObjectPath (vname), typeName, value, flags);
 			}
 			val.Name = name;
 			return val;

@@ -1,3 +1,7 @@
+2008-07-07  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* GdbBacktrace.cs: Track api changes.
+
 2008-07-02  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* GdbBacktrace.cs: Support modifying variable values.
