@@ -52,6 +52,7 @@ namespace MonoDevelop.CSharpBinding
 {
 	public class NRefactoryResolver
 	{
+		ProjectDom dom;
 		SupportedLanguage lang;
 		Project    project;
 		TextEditor editor;
@@ -85,7 +86,7 @@ namespace MonoDevelop.CSharpBinding
 			
 			lookupTableVisitor = new LookupTableVisitor (lang);
 			
-			ProjectDom dom = ProjectDomService.GetDom (project);
+			dom = ProjectDomService.GetDom (project);
 			if (dom == null)
 				return;
 			
@@ -133,39 +134,54 @@ namespace MonoDevelop.CSharpBinding
 		
 		public ResolveResult ResolveIdentifier (string identifier)
 		{
-			MemberResolveResult result = new MemberResolveResult ();
-			result.CallingType   = CallingType;
-			result.CallingMember = CallingMember;
-			
+			ResolveResult result = null;
+			System.Console.WriteLine("resolve identifier:" + identifier);
 			foreach (KeyValuePair<string, List<LocalLookupVariable>> pair in this.lookupTableVisitor.Variables) {
 				if (identifier == pair.Key) {
+					result = new MemberResolveResult ();
 					LocalLookupVariable var = pair.Value[pair.Value.Count - 1];
 					result.ResolvedType = new DomReturnType (var.TypeRef.Type);
-					return result;
+					goto end;
 				}
 			}
 			
 			if (this.callingType != null) {
 				foreach (IField f in this.callingType.Fields) {
 					if (f.Name == identifier) {
+						result = new MemberResolveResult ();
 						result.ResolvedType = f.ReturnType;
-						return result;
+						goto end;
 					}
 				}
 				
 				foreach (IProperty p in this.callingType.Properties) {
 					if (p.Name == identifier) {
+						result = new MemberResolveResult ();
 						result.ResolvedType = p.ReturnType;
-						return result;
+						goto end;
 					}
 				}
 			}
 			
 			if (this.callingMember != null) {
 				if (identifier == "value" && this.callingMember is IProperty) {
+					result = new MemberResolveResult ();
 					result.ResolvedType = ((IProperty)this.callingMember).ReturnType;
-					return result;
+					goto end;
 				}
+			}
+			
+			IType type = dom.GetType (identifier, -1, true);
+			if (type != null) {
+				result = new MemberResolveResult (true);
+				result.ResolvedType = new DomReturnType (type.FullName);
+				goto end;
+			}
+			
+		end:
+			if (result != null) {
+				result.CallingType   = CallingType;
+				result.CallingMember = CallingMember;
 			}
 			
 			return result;

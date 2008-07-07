@@ -1,4 +1,4 @@
-﻿//
+//
 // dom.cs: AST tree abstraction for C# compiler
 //
 // Authors: Marek Safar (marek.safar@gmail.com)

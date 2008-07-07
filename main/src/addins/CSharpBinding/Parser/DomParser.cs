@@ -116,6 +116,39 @@ namespace MonoDevelop.CSharpBinding
 			return result;
 		}
 		
+		static MonoDevelop.Projects.Dom.Modifiers ConvertModifier (int ModFlags)
+		{
+			MonoDevelop.Projects.Dom.Modifiers result = MonoDevelop.Projects.Dom.Modifiers.None;
+			if ((ModFlags & Mono.CSharp.Modifiers.PROTECTED) == Mono.CSharp.Modifiers.PROTECTED)
+				result |= MonoDevelop.Projects.Dom.Modifiers.Protected;
+			if ((ModFlags & Mono.CSharp.Modifiers.PUBLIC) == Mono.CSharp.Modifiers.PUBLIC)
+				result |= MonoDevelop.Projects.Dom.Modifiers.Public;
+			if ((ModFlags & Mono.CSharp.Modifiers.PRIVATE) == Mono.CSharp.Modifiers.PRIVATE)
+				result |= MonoDevelop.Projects.Dom.Modifiers.Private;
+			if ((ModFlags & Mono.CSharp.Modifiers.INTERNAL) == Mono.CSharp.Modifiers.INTERNAL)
+				result |= MonoDevelop.Projects.Dom.Modifiers.Internal;
+			if ((ModFlags & Mono.CSharp.Modifiers.NEW) == Mono.CSharp.Modifiers.NEW)
+				result |= MonoDevelop.Projects.Dom.Modifiers.New;
+			if ((ModFlags & Mono.CSharp.Modifiers.ABSTRACT) == Mono.CSharp.Modifiers.ABSTRACT)
+				result |= MonoDevelop.Projects.Dom.Modifiers.Abstract;
+			if ((ModFlags & Mono.CSharp.Modifiers.SEALED) == Mono.CSharp.Modifiers.SEALED)
+				result |= MonoDevelop.Projects.Dom.Modifiers.Sealed;
+			if ((ModFlags & Mono.CSharp.Modifiers.STATIC) == Mono.CSharp.Modifiers.STATIC)
+				result |= MonoDevelop.Projects.Dom.Modifiers.Static;
+			if ((ModFlags & Mono.CSharp.Modifiers.READONLY) == Mono.CSharp.Modifiers.READONLY)
+				result |= MonoDevelop.Projects.Dom.Modifiers.Readonly;
+			if ((ModFlags & Mono.CSharp.Modifiers.VIRTUAL) == Mono.CSharp.Modifiers.VIRTUAL)
+				result |= MonoDevelop.Projects.Dom.Modifiers.Virtual;
+			if ((ModFlags & Mono.CSharp.Modifiers.OVERRIDE) == Mono.CSharp.Modifiers.OVERRIDE)
+				result |= MonoDevelop.Projects.Dom.Modifiers.Override;
+			if ((ModFlags & Mono.CSharp.Modifiers.EXTERN) == Mono.CSharp.Modifiers.EXTERN)
+				result |= MonoDevelop.Projects.Dom.Modifiers.Extern;
+			if ((ModFlags & Mono.CSharp.Modifiers.VOLATILE) == Mono.CSharp.Modifiers.VOLATILE)
+				result |= MonoDevelop.Projects.Dom.Modifiers.Volatile;
+			if ((ModFlags & Mono.CSharp.Modifiers.UNSAFE) == Mono.CSharp.Modifiers.UNSAFE)
+				result |= MonoDevelop.Projects.Dom.Modifiers.Unsafe;
+			return result;
+		}
 		
 		static MonoDevelop.Projects.Dom.IType ConvertType (MonoDevelop.Projects.Dom.CompilationUnit unit, string nsName, Mono.CSharp.Dom.IType type)
 		{
@@ -123,7 +156,7 @@ namespace MonoDevelop.CSharpBinding
 			if (type.Properties != null) {
 				foreach (Mono.CSharp.Dom.IProperty property in type.Properties) {
 					members.Add (new DomProperty (property.Name,
-					                              MonoDevelop.Projects.Dom.Modifiers.None,
+					                              ConvertModifier (property.ModFlags),
 					                              Location2DomLocation (property.Location),
 					                              Block2Region (property.AccessorsBlock),
 					                              TypeName2ReturnType (property.ReturnTypeName)));
@@ -134,7 +167,7 @@ namespace MonoDevelop.CSharpBinding
 			if (type.Constructors != null) {
 				foreach (Mono.CSharp.Dom.IMethod method in type.Constructors) {
 					members.Add (new DomMethod (type.Name,
-					                            MonoDevelop.Projects.Dom.Modifiers.None,
+					                            ConvertModifier (method.ModFlags),
 					                            true,
 					                            Location2DomLocation (method.Location),
 					                            Block2Region (method.LocationBlock),
@@ -146,7 +179,7 @@ namespace MonoDevelop.CSharpBinding
 			if (type.Methods != null) {
 				foreach (Mono.CSharp.Dom.IMethod method in type.Methods) {
 					members.Add (new DomMethod (method.Name,
-					                            MonoDevelop.Projects.Dom.Modifiers.None,
+					                            ConvertModifier (method.ModFlags),
 					                            false,
 					                            Location2DomLocation (method.Location),
 					                            Block2Region (method.LocationBlock),
@@ -163,13 +196,13 @@ namespace MonoDevelop.CSharpBinding
 			
 			if (type.Events != null) {
 				foreach (Mono.CSharp.Dom.IEvent evt in type.Events) {
-					members.Add (new DomEvent (evt.Name, MonoDevelop.Projects.Dom.Modifiers.None, Location2DomLocation (evt.Location), TypeName2ReturnType (evt.ReturnTypeName)));
+					members.Add (new DomEvent (evt.Name, ConvertModifier (evt.ModFlags), Location2DomLocation (evt.Location), TypeName2ReturnType (evt.ReturnTypeName)));
 				}
 			}
 			
 			if (type.Fields != null) {
 				foreach (Mono.CSharp.Dom.ITypeMember field in type.Fields) {
-					members.Add (new DomField (field.Name, MonoDevelop.Projects.Dom.Modifiers.None, Location2DomLocation (field.Location), TypeName2ReturnType (field.ReturnTypeName)));
+					members.Add (new DomField (field.Name, ConvertModifier (field.ModFlags), Location2DomLocation (field.Location), TypeName2ReturnType (field.ReturnTypeName)));
 				}
 			}
 			

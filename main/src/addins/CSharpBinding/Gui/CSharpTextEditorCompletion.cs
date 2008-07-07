@@ -27,6 +27,7 @@
 //
 
 using System;
+using System.Collections.Generic;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
@@ -152,24 +153,28 @@ namespace MonoDevelop.CSharpBinding.Gui
 		
 		ICompletionDataProvider CreateCompletionData (ResolveResult resolveResult, ExpressionResult expressionResult)
 		{
+			if (resolveResult == null || expressionResult == null)
+				return null;
 			CodeCompletionDataProvider result = new CodeCompletionDataProvider (null, null);
 			ProjectDom dom = ProjectDomService.GetDom (Document.Project);
 			if (dom == null)
 				return null;
-			
-			foreach (object obj in resolveResult.CreateResolveResult (dom)) {
-				if (expressionResult.ExpressionContext.FilterEntry (obj))
-					continue;
-				Namespace ns = obj as Namespace;
-				if (ns != null) {
-					result.AddCompletionData (new CodeCompletionData (ns.Name, ns.StockIcon, ns.Documentation));
-					continue;
-				}
+			IEnumerable<object> objects = resolveResult.CreateResolveResult (dom);
+			if (objects != null) {
+				foreach (object obj in objects) {
+					if (expressionResult.ExpressionContext != null && expressionResult.ExpressionContext.FilterEntry (obj))
+						continue;
+					Namespace ns = obj as Namespace;
+					if (ns != null) {
+						result.AddCompletionData (new CodeCompletionData (ns.Name, ns.StockIcon, ns.Documentation));
+						continue;
+					}
 				
-				IMember member = obj as IMember;
-				if (member != null) {
-					result.AddCompletionData (new CodeCompletionData (member.Name, member.StockIcon, member.Documentation));
-					continue;
+					IMember member = obj as IMember;
+					if (member != null) {
+						result.AddCompletionData (new CodeCompletionData (member.Name, member.StockIcon, member.Documentation));
+						continue;
+					}
 				}
 			}
 			
