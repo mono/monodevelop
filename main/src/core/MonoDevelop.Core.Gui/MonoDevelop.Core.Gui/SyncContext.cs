@@ -44,6 +44,7 @@ namespace MonoDevelop.Core.Gui
 		static Hashtable delegateFactories = new Hashtable ();
 		static ModuleBuilder module;
 		static AssemblyBuilder asmBuilder;
+		static int typeCounter;
 	
 		public static void SetContext (SyncContext ctx)
 		{
@@ -97,7 +98,7 @@ namespace MonoDevelop.Core.Gui
 					typeNameBuilder.Append (t.Name);
 				}
 			}
-			TypeBuilder dataTypeBuilder = module.DefineType (typeNameBuilder + "_DelegateData", TypeAttributes.Public, typeof(object), Type.EmptyTypes);
+			TypeBuilder dataTypeBuilder = module.DefineType (typeNameBuilder + "_DelegateData_" + (typeCounter++), TypeAttributes.Public, typeof(object), Type.EmptyTypes);
 			
 			// Parameters
 			ParameterInfo[] pars = invoke.GetParameters ();
@@ -126,7 +127,7 @@ namespace MonoDevelop.Core.Gui
 			
 			// *** Factory class
 			
-			TypeBuilder typeBuilder = module.DefineType (typeNameBuilder + "_DelegateFactory", TypeAttributes.Public, typeof(object), new Type[] {typeof(IDelegateFactory)});
+			TypeBuilder typeBuilder = module.DefineType (typeNameBuilder + "_DelegateFactory_" + typeCounter, TypeAttributes.Public, typeof(object), new Type[] {typeof(IDelegateFactory)});
 			
 			// Context and target delegate field
 			
