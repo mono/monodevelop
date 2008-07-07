@@ -1,3 +1,10 @@
+2008-07-07  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Debugger/WatchPad.cs,
+	  MonoDevelop.Debugger/ObjectValueTreeView.cs: Show member icons in
+	  the watch pad. Support a new compact mode to be used in the debug
+	  tooltips.
+
 2008-07-04  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Debugger/DebugTextMarker.cs,

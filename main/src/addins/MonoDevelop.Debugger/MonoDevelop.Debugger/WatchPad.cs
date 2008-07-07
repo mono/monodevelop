@@ -56,6 +56,8 @@ namespace MonoDevelop.Debugger
 			tree = new ObjectValueTreeView ();
 			tree.AllowEditing = true;
 			tree.AllowAdding = true;
+			tree.HeadersVisible = true;
+			tree.RulesHint = true;
 			tree.Source = this;
 			scrolled.Add (tree);
 			scrolled.ShowAll ();
@@ -84,7 +86,7 @@ namespace MonoDevelop.Debugger
 		{
 			StackFrame sf = IdeApp.Services.DebuggingService.CurrentFrame;
 			if (sf != null)
-				return sf.GetExpressionValues (names);
+				return sf.GetExpressionValues (names, true);
 			else {
 				ObjectValue[] vals = new ObjectValue [names.Length];
 				for (int n=0; n<vals.Length; n++)
