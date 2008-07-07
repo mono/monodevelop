@@ -114,12 +114,28 @@ namespace MonoDevelop.Projects.Dom.Parser
 		
 		public void UpdateFromParseInfo (ICompilationUnit unit, string fileName)
 		{
+			if (String.IsNullOrEmpty (fileName))
+				return;
 			if (database != null) {
 				((ProjectCodeCompletionDatabase)database).UpdateFromParseInfo (unit, fileName);
 			} else {
 				this.compilationUnits [fileName] = unit;
 			}
 		}
+		
+			
+		public List<IMember> GetNamespaceContents (string subNameSpace, bool includeReferences)
+		{
+			List<IMember> result = new List<IMember> ();
+			if (database != null)
+				database.GetNamespaceContents (result, subNameSpace, false);
+			foreach (ICompilationUnit unit in compilationUnits.Values) {
+				unit.GetNamespaceContents (result, subNameSpace, false);
+			}
+				
+			return result;
+		}
+		
 		
 //		
 //		public bool Contains (ICompilationUnit unit)

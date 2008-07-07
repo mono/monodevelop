@@ -1100,8 +1100,7 @@ namespace MonoDevelop.Projects.Dom
 		
 		public void GetNamespaceContents (List<IMember> list, string subNameSpace, bool caseSensitive)
 		{
-			lock (rwlock)
-			{
+			lock (rwlock) {
 				string[] path = subNameSpace.Split ('.');
 				NamespaceEntry tns = GetNamespaceEntry (path, path.Length, false, caseSensitive);
 				if (tns == null) return;

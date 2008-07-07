@@ -50,8 +50,10 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
-		public static DomCecilCompilationUnit Load (string fileName)
+		public static ICompilationUnit Load (string fileName)
 		{
+			if (String.IsNullOrEmpty (fileName))
+				return new CompilationUnit (fileName);
 			return new DomCecilCompilationUnit (AssemblyFactory.GetAssembly (fileName));
 		}
 		

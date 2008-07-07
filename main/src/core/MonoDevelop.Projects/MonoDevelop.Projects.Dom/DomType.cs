@@ -185,6 +185,17 @@ namespace MonoDevelop.Projects.Dom
 		{
 		}
 		
+		public DomType (string fullName)
+		{
+			int idx = fullName.LastIndexOf ('.');
+			if (idx < 0) {
+				this.name = fullName;
+			} else {
+				this.namesp = fullName.Substring (0, idx); 
+				this.name = fullName.Substring (idx + 1);
+			}
+		}
+		
 		public DomType (ICompilationUnit compilationUnit, ClassType classType, string name, DomLocation location, string namesp, DomRegion region, List<IMember> members)
 		{
 			this.compilationUnit = compilationUnit;

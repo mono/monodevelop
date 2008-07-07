@@ -56,14 +56,17 @@ namespace MonoDevelop.Projects.Dom
 		
 		public virtual int CompareTo (object value)
 		{
-			Namespace loc = (Namespace) value;
-			return name.CompareTo (loc.name);
+			Namespace other = value as Namespace;
+			if (other == null) 
+				return 0;
+			return name.CompareTo (other.name);
 		}
 		
 		public override bool Equals (object ob)
 		{
 			Namespace other = ob as Namespace;
-			if (other == null) return false;
+			if (other == null) 
+				return false;
 			return CompareTo (other) == 0;
 		}
 

@@ -27,10 +27,12 @@
 //
 
 using System;
+using System.Collections.Generic;
+using MonoDevelop.Projects.Dom.Parser;
 
 namespace MonoDevelop.Projects.Dom
 {
-	public class ResolveResult
+	public abstract class ResolveResult
 	{
 		IType       callingType;
 		IMember     callingMember;
@@ -78,6 +80,13 @@ namespace MonoDevelop.Projects.Dom
 		{
 		}
 		
+		public virtual IEnumerable<object> CreateResolveResult (ProjectDom dom)
+		{
+			return CreateResolveResult (dom, false);
+		}
+		
+		public abstract IEnumerable<object> CreateResolveResult (ProjectDom dom, bool showStatic);
+		
 		public override string ToString ()
 		{
 			return String.Format ("[ResolveResult: CallingType={0}, CallingMember={1}, ResolvedType={2}]",
@@ -86,5 +95,54 @@ namespace MonoDevelop.Projects.Dom
 			                      ResolvedType);
 		}
 
+	}
+	
+	public class MemberResolveResult : ResolveResult
+	{
+		void AddType (ProjectDom dom, List<object> result, IReturnType returnType, bool showStatic)
+		{
+			IType type = dom.GetType (returnType);
+			if (type == null)
+				return;
+			foreach (IMember member in type.Members) {
+				if (showStatic ^ member.IsStatic)
+					result.Add (member);
+			}
+			if (type.BaseType != null && type.FullName != "System.Object")
+				AddType (dom, result, type.BaseType, showStatic);
+		}
+		
+		public override IEnumerable<object> CreateResolveResult (ProjectDom dom, bool showStatic)
+		{
+			List<object> result = new List<object> ();
+			AddType (dom, result, ResolvedType, showStatic);
+			return result;
+		}
+	}
+	
+	
+	public class NamespaceResolveResult : ResolveResult
+	{
+		string ns;
+		
+		public string Namespace {
+			get {
+				return ns;
+			}
+		}
+		
+		public NamespaceResolveResult (string ns)
+		{
+			this.ns = ns;
+		}
+		
+		public override IEnumerable<object> CreateResolveResult (ProjectDom dom, bool showStatic)
+		{
+			List<object> result = new List<object> ();
+			foreach (object o in dom.GetNamespaceContents (ns, true)) {
+				result.Add (o);
+			}
+			return result;
+		}
 	}
 }

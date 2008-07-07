@@ -71,6 +71,7 @@ namespace MonoDevelop.Projects.Dom
 				return types.Count;
 			}
 		}
+		
 		public ReadOnlyCollection<IType> Types {
 			get {
 				return types.AsReadOnly ();
@@ -143,6 +144,25 @@ namespace MonoDevelop.Projects.Dom
 		public void Add (Error error)
 		{
 			errors.Add (error);
+		}
+		
+		public void GetNamespaceContents (List<IMember> list, string subNamespace, bool caseSensitive)
+		{
+			foreach (IType type in Types) {
+				string fullName = type.FullName;
+				if (fullName.StartsWith (subNamespace, caseSensitive ? StringComparison.InvariantCulture : StringComparison.InvariantCultureIgnoreCase)) {
+					string tmp = subNamespace.Length > 0 ? fullName.Substring (subNamespace.Length + 1) : fullName;
+					int idx = tmp.IndexOf('.');
+					IMember newMember;
+					if (idx > 0) {
+						newMember = new Namespace (tmp.Substring (0, idx));
+					} else {
+						newMember = type;
+					}
+					if (!list.Contains (newMember))
+						list.Add (newMember);
+				}
+			}
 		}
 	}
 }

@@ -186,7 +186,7 @@ namespace MonoDevelop.Projects.Dom
 						Read ();
 					}
 				} else {
-					DomCecilCompilationUnit ainfo = DomCecilCompilationUnit.Load (fileName);
+					ICompilationUnit ainfo = DomCecilCompilationUnit.Load (fileName);
 					
 					UpdateTypeInformation (ainfo.Types, fileName);
 					
@@ -253,7 +253,8 @@ namespace MonoDevelop.Projects.Dom
 			name = null;
 			assemblyFile = null;
 			realAssemblyName = null;
-			
+			if (String.IsNullOrEmpty (assemblyName))
+				return false;
 			string ext = Path.GetExtension (assemblyName).ToLower ();
 			
 			if (ext == ".dll" || ext == ".exe") 
