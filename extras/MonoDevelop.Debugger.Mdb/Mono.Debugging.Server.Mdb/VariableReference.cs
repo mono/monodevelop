@@ -28,23 +28,26 @@
 using System;
 using Mono.Debugger.Languages;
 using Mono.Debugger;
+using DC = Mono.Debugging.Client;
 
 namespace DebuggerServer
 {
-	public class VariableReference: IValueReference
+	public class VariableReference: ValueReference
 	{
 		TargetVariable var;
 		StackFrame frame;
+		DC.ObjectValueFlags flags;
 		
-		public VariableReference (StackFrame frame, TargetVariable var)
+		public VariableReference (StackFrame frame, TargetVariable var, DC.ObjectValueFlags flags): base (frame.Thread)
 		{
+			this.flags = flags;
 			this.var = var;
 			this.frame = frame;
+			if (!var.CanWrite)
+				flags |= DC.ObjectValueFlags.ReadOnly;
 		}
 		
-		#region IValueReference implementation 
-		
-		public TargetObject Value {
+		public override TargetObject Value {
 			get {
 				return var.GetObject (frame);
 			}
@@ -53,24 +56,22 @@ namespace DebuggerServer
 			}
 		}
 		
-		public string Name {
+		public override string Name {
 			get {
 				return var.Name;
 			}
 		}
 		
-		public TargetType Type {
+		public override TargetType Type {
 			get {
 				return var.Type;
 			}
 		}
 		
-		public bool CanWrite {
+		public override DC.ObjectValueFlags Flags {
 			get {
-				return var.CanWrite;
+				return flags;
 			}
 		}
-		
-		#endregion 
 	}
 }

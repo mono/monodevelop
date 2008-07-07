@@ -18,15 +18,17 @@ namespace DebuggerServer
 {
 	class DebuggerServer : MarshalByRefObject, IDebuggerServer, ISponsor
 	{
-		private IDebuggerController controller;
-		private MD.Debugger debugger;
-		private MD.DebuggerSession session;
-		private MD.Process process;
-		private int max_frames;
+		IDebuggerController controller;
+		MD.Debugger debugger;
+		MD.DebuggerSession session;
+		MD.Process process;
+		MD.GUIManager guiManager;
+		int max_frames;
 		bool internalInterruptionRequested;
 		List<ST.WaitCallback> stoppedWorkQueue = new List<ST.WaitCallback> ();
 		List<ST.WaitCallback> eventQueue = new List<ST.WaitCallback> ();
 		bool initializing;
+		ExpressionEvaluator evaluator = new NRefactoryEvaluator ();
 
 		public DebuggerServer (IDebuggerController dc)
 		{
@@ -34,7 +36,7 @@ namespace DebuggerServer
 			MarshalByRefObject mbr = (MarshalByRefObject)controller;
 			ILease lease = mbr.GetLifetimeService() as ILease;
 			lease.Register(this);
-			max_frames = 50;
+			max_frames = 100;
 			
 			ST.Thread t = new ST.Thread ((ST.ThreadStart)EventDispatcher);
 			t.IsBackground = true;
@@ -44,6 +46,10 @@ namespace DebuggerServer
 		public override object InitializeLifetimeService ()
 		{
 			return null;
+		}
+		
+		public ExpressionEvaluator Evaluator {
+			get { return evaluator; }
 		}
 
 		#region IDebugger Members
@@ -129,18 +135,12 @@ namespace DebuggerServer
 
 		public void NextLine ()
 		{
-			//FIXME: doesn't look like the proper way to do this.
-			//can this be done for other threads/processes? how?
-
-			process.MainThread.NextLine ();
+			guiManager.StepOver (process.MainThread);
 		}
 
 		public void StepLine ()
 		{
-			//FIXME: doesn't look like the proper way to do this.
-			//can this be done for other threads/processes? how?
-
-			process.MainThread.StepLine ();
+			guiManager.StepInto (process.MainThread);
 		}
 
 		public void StepInstruction ()
@@ -155,8 +155,7 @@ namespace DebuggerServer
 
 		public void Finish ()
 		{
-			//FIXME: param @native ?
-			process.MainThread.Finish (false);
+			guiManager.StepOut (process.MainThread);
 		}
 
 		public int InsertBreakpoint (string filename, int line, bool enable)
@@ -224,7 +223,7 @@ namespace DebuggerServer
 		public void Continue ()
 		{
 			QueueTask (delegate {
-				process.MainThread.Continue ();
+				guiManager.Continue (process.MainThread);
 			});
 		}
 		
@@ -257,10 +256,7 @@ namespace DebuggerServer
 					if (t.ID == threadId) {
 						if (!t.IsStopped)
 							return null;
-						MD.Backtrace backtrace = t.CurrentBacktrace;
-						if (backtrace == null)
-							backtrace = t.GetBacktrace (MD.Backtrace.Mode.Default, max_frames);
-						return new DL.Backtrace (new BacktraceWrapper (backtrace));
+						return CreateBacktrace (t);
 					}
 				}
 			}
@@ -278,7 +274,10 @@ namespace DebuggerServer
 
 		public AssemblyLine[] DisassembleFile (string file)
 		{
-			SourceFile sourceFile = session.FindFile (file);
+			// Not working yet
+			return null;
+			
+/*			SourceFile sourceFile = session.FindFile (file);
 			List<AssemblyLine> lines = new List<AssemblyLine> ();
 			foreach (MethodSource met in sourceFile.Methods) {
 				TargetAddress addr = met.NativeMethod.StartAddress;
@@ -300,6 +299,7 @@ namespace DebuggerServer
 				return l1.SourceLine.CompareTo (l2.SourceLine);
 			});
 			return lines.ToArray ();
+						*/
 		}
 		
 		#endregion
@@ -309,6 +309,24 @@ namespace DebuggerServer
 			MarshalByRefObject mbr = (MarshalByRefObject)controller;
 			ILease lease = mbr.GetLifetimeService() as ILease;
 			lease.Unregister(this);
+		}
+		
+		public void WriteDebuggerOutput (string msg)
+		{
+			DispatchEvent (delegate {
+				controller.OnDebuggerOutput (false, msg);
+			});
+		}
+		
+		DL.Backtrace CreateBacktrace (MD.Thread thread)
+		{
+			List<MD.StackFrame> frames = new List<MD.StackFrame> ();
+			MD.Backtrace backtrace = thread.GetBacktrace (MD.Backtrace.Mode.Native, max_frames);
+			frames.AddRange (backtrace.Frames);
+			backtrace = thread.GetBacktrace (MD.Backtrace.Mode.Managed, max_frames);
+			frames.AddRange (backtrace.Frames);
+			BacktraceWrapper wrapper = new BacktraceWrapper (frames.ToArray ());
+			return new DL.Backtrace (wrapper);
 		}
 
 		#region ISponsor Members
@@ -325,6 +343,8 @@ namespace DebuggerServer
 			Console.WriteLine (">> OnInitialized");
 			this.process = process;
 			this.debugger = debugger;
+			
+			guiManager = process.StartGUIManager ();
 
 			//FIXME: conditionally add event handlers
 			process.TargetOutputEvent += OnTargetOutput;
@@ -337,7 +357,7 @@ namespace DebuggerServer
 			debugger.ThreadExitedEvent += OnThreadExitedEvent;
 
 			debugger.TargetExitedEvent += OnTargetExitedEvent;
-			debugger.TargetEvent += OnTargetEvent;
+			guiManager.TargetEvent += OnTargetEvent;
 			Console.WriteLine ("<< OnInitialized");
 		}
 		
@@ -469,20 +489,18 @@ namespace DebuggerServer
 					default:
 						return;
 				}
+				
+				// Dispose all previous remote objects
+				RemoteFrameObject.DisconnectAll ();
+				
 				DL.TargetEventArgs dl_args = new DL.TargetEventArgs (type);
 
 				//FIXME: using Backtrace.Mode.Default right now
 				//FIXME: code from BacktraceCommand.DoExecute
 				//FIXME: better way than args.Frame.Thread.* ?
 
-				if (args.Type != MD.TargetEventType.TargetExited) {
-					MD.Backtrace backtrace = args.Frame.Thread.CurrentBacktrace;
-					if (backtrace == null)
-						backtrace = args.Frame.Thread.GetBacktrace (MD.Backtrace.Mode.Default, max_frames);
-
-					BacktraceWrapper wrapper = new BacktraceWrapper (backtrace);
-					dl_args.Backtrace = new DL.Backtrace (wrapper);
-				}
+				if (args.Type != MD.TargetEventType.TargetExited)
+					dl_args.Backtrace = CreateBacktrace (args.Frame.Thread);
 
 				DispatchEvent (delegate {
 					controller.OnTargetEvent (dl_args);
@@ -494,37 +512,27 @@ namespace DebuggerServer
 
 		private void OnProcessCreatedEvent (MD.Debugger debugger, MD.Process process)
 		{
-			DispatchEvent (delegate {
-				controller.OnDebuggerOutput (false, string.Format ("Process {0} created.\n", process.ID));
-			});
+			WriteDebuggerOutput (string.Format ("Process {0} created.\n", process.ID));
 		}
 		
 		private void OnProcessExitedEvent (MD.Debugger debugger, MD.Process process)
 		{
-			DispatchEvent (delegate {
-				controller.OnDebuggerOutput (false, string.Format ("Process {0} exited.\n", process.ID));
-			});
+			WriteDebuggerOutput (string.Format ("Process {0} exited.\n", process.ID));
 		}
 		
 		private void OnProcessExecdEvent (MD.Debugger debugger, MD.Process process)
 		{
-			DispatchEvent (delegate {
-				controller.OnDebuggerOutput (false, string.Format ("Process {0} execd.\n", process.ID));
-			});
+			WriteDebuggerOutput (string.Format ("Process {0} execd.\n", process.ID));
 		}
 		
 		private void OnThreadCreatedEvent (MD.Debugger debugger, MD.Thread process)
 		{
-			DispatchEvent (delegate {
-				controller.OnDebuggerOutput (false, string.Format ("Thread {0} created.\n", process.ID));
-			});
+			WriteDebuggerOutput (string.Format ("Thread {0} created.\n", process.ID));
 		}
 		
 		private void OnThreadExitedEvent (MD.Debugger debugger, MD.Thread process)
 		{
-			DispatchEvent (delegate {
-				controller.OnDebuggerOutput (false, string.Format ("Thread {0} exited.\n", process.ID));
-			});
+			WriteDebuggerOutput (string.Format ("Thread {0} exited.\n", process.ID));
 		}
 
 		private void OnTargetExitedEvent (MD.Debugger debugger)

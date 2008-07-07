@@ -1,3 +1,16 @@
+2008-07-07  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* DebuggerServer.cs, Util.cs, MyTextReader.cs, Convert.cs,
+	  BacktraceWrapper.cs, ExpressionEvaluator.cs,
+	  Mono.Debugging.Server.Mdb.mdp, NullValueReference.cs,
+	  IExpressionValueSource.cs, ArrayValueReference.cs,
+	  ValueReference.cs, RemoteFrameObject.cs, TypeValueReference.cs,
+	  Expression.cs, NRefactoryEvaluator.cs, FieldReference.cs,
+	  PropertyReference.cs, VariableReference.cs, IValueReference.cs,
+	  ArrayElementGroup.cs, Server.cs, NamespaceValueReference.cs,
+	  LiteralValueReference.cs, Makefile: Implemented an expression
+	  evaluator based on NRefactory.
+
 2008-07-02  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* DebuggerServer.cs, Util.cs, BacktraceWrapper.cs, FieldReference.cs,

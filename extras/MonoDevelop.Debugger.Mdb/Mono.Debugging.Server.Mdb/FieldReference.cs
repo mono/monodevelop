@@ -28,53 +28,54 @@
 using System;
 using Mono.Debugger.Languages;
 using Mono.Debugger;
+using Mono.Debugging.Client;
 
 namespace DebuggerServer
 {
-	public class FieldReference: IValueReference
+	public class FieldReference: ValueReference
 	{
 		TargetStructType type;
 		TargetFieldInfo field;
 		TargetStructObject thisobj;
-		Thread thread;
 		
-		public FieldReference (Thread thread, TargetStructObject thisobj, TargetStructType type, TargetFieldInfo field)
+		public FieldReference (Thread thread, TargetStructObject thisobj, TargetStructType type, TargetFieldInfo field): base (thread)
 		{
-			this.thread = thread;
 			this.type = type;
 			this.field = field;
 			if (!field.IsStatic)
 				this.thisobj = thisobj;
 		}
 		
-		public TargetType Type {
+		public override TargetType Type {
 			get {
 				return field.Type;
 			}
 		}
 		
-		public TargetObject Value {
+		public override TargetObject Value {
 			get {
 				if (field.HasConstValue)
-					return thread.CurrentFrame.Language.CreateInstance (thread, field.ConstValue);
-				TargetClass cls = type.GetClass (thread);
-				return cls.GetField (thread, thisobj, field);
+					return Thread.CurrentFrame.Language.CreateInstance (Thread, field.ConstValue);
+				TargetClass cls = type.GetClass (Thread);
+				return cls.GetField (Thread, thisobj, field);
 			}
 			set {
-				TargetClass cls = type.GetClass (thread);
-				cls.SetField (thread, thisobj, field, value);
+				TargetClass cls = type.GetClass (Thread);
+				cls.SetField (Thread, thisobj, field, value);
 			}
 		}
 		
-		public string Name {
+		public override string Name {
 			get {
 				return field.Name;
 			}
 		}
-		
-		public bool CanWrite {
+
+		public override ObjectValueFlags Flags {
 			get {
-				return !field.HasConstValue;
+				ObjectValueFlags flags = ObjectValueFlags.Field | Util.GetAccessibility (field.Accessibility);
+				if (field.HasConstValue) flags |= ObjectValueFlags.ReadOnly;
+				return flags;
 			}
 		}
 	}

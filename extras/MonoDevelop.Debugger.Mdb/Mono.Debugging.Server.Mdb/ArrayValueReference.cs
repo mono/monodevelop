@@ -29,34 +29,31 @@ using System;
 using System.Text;
 using Mono.Debugger.Languages;
 using Mono.Debugger;
+using Mono.Debugging.Client;
 
 namespace DebuggerServer
 {
-	public class ArrayValueReference: IValueReference
+	public class ArrayValueReference: ValueReference
 	{
-		Thread thread;
 		TargetArrayObject arr;
 		int[] indices;
 		
-		public ArrayValueReference (Thread thread, TargetArrayObject arr, int[] indices)
+		public ArrayValueReference (Thread thread, TargetArrayObject arr, int[] indices): base (thread)
 		{
-			this.thread = thread;
 			this.arr = arr;
 			this.indices = indices;
 		}
 
-		#region IValueReference implementation 
-		
-		public TargetObject Value {
+		public override TargetObject Value {
 			get {
-				return arr.GetElement (thread, indices);
+				return arr.GetElement (Thread, indices);
 			}
 			set {
-				arr.SetElement (thread, indices, value);
+				arr.SetElement (Thread, indices, value);
 			}
 		}
 		
-		public string Name {
+		public override string Name {
 			get {
 				StringBuilder sb = new StringBuilder ();
 				sb.Append ('[');
@@ -69,19 +66,16 @@ namespace DebuggerServer
 			}
 		}
 		
-		public TargetType Type {
+		public override TargetType Type {
 			get {
 				return arr.Type.ElementType;
 			}
 		}
 		
-		public bool CanWrite {
+		public override ObjectValueFlags Flags {
 			get {
-				return true;
+				return ObjectValueFlags.ArrayElement;
 			}
 		}
-		
-		#endregion 
-		
 	}
 }

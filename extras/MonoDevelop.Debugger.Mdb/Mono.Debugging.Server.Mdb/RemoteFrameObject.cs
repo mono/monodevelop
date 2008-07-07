@@ -1,4 +1,4 @@
-// ValueReference.cs
+// RemoteFrameObject.cs
 //
 // Author:
 //   Lluis Sanchez Gual <lluis@novell.com>
@@ -26,16 +26,36 @@
 //
 
 using System;
-using Mono.Debugger.Languages;
-using Mono.Debugger;
+using System.Collections.Generic;
 
 namespace DebuggerServer
 {
-	public interface IValueReference
+	public class RemoteFrameObject: MarshalByRefObject
 	{
-		TargetObject Value {get; set; }
-		string Name { get; }
-		TargetType Type { get; }
-		bool CanWrite { get; }
+		static List<RemoteFrameObject> connectedValues = new List<RemoteFrameObject> ();
+		
+		public void Connect ()
+		{
+			// Registers the value reference. Once a remote reference of this object
+			// is created, it will never be released, until DisconnectAll is called,
+			// which is done every time the current backtrace changes
+			lock (connectedValues) {
+				connectedValues.Add (this);
+			}
+		}
+		
+		public static void DisconnectAll ()
+		{
+			lock (connectedValues) {
+				foreach (ValueReference val in connectedValues)
+					System.Runtime.Remoting.RemotingServices.Disconnect (val);
+				connectedValues.Clear ();
+			}
+		}
+		
+		public override object InitializeLifetimeService ()
+		{
+			return null;
+		}
 	}
 }

@@ -1,4 +1,4 @@
-// IExpressionValueSource.cs
+// NullValueReference.cs
 //
 // Author:
 //   Lluis Sanchez Gual <lluis@novell.com>
@@ -26,12 +26,73 @@
 //
 
 using System;
+using Mono.Debugger;
 using Mono.Debugger.Languages;
+using Mono.Debugging.Client;
 
 namespace DebuggerServer
 {
-	public interface IExpressionValueSource
+	
+	
+	public class NullValueReference: ValueReference
 	{
-		IValueReference GetValueReference (string name);
+		TargetType type;
+		TargetObject obj;
+		
+		public NullValueReference (Thread thread, TargetType type): base (thread)
+		{
+			this.type = type;
+		}
+	
+		public override TargetObject Value {
+			get {
+				if (obj == null)
+					obj = Thread.CurrentFrame.Language.CreateNullObject (Thread, type);
+				return obj;
+			}
+			set {
+				throw new NotSupportedException();
+			}
+		}
+		
+		public override TargetType Type {
+			get {
+				return type;
+			}
+		}
+		
+		public override object ObjectValue {
+			get {
+				return null;
+			}
+		}
+
+		public override string Name {
+			get {
+				return "null";
+			}
+		}
+		
+		public override ObjectValueFlags Flags {
+			get {
+				return ObjectValueFlags.Literal;
+			}
+		}
+
+		public override ObjectValue CreateObjectValue ()
+		{
+			Connect ();
+			return Mono.Debugging.Client.ObjectValue.CreateObject (null, new ObjectPath (Name), Type.Name, "null", Flags, null);
+		}
+		
+		public override ValueReference GetChild (string name)
+		{
+			return null;
+		}
+
+		public override ObjectValue[] GetChildren (Mono.Debugging.Client.ObjectPath path, int index, int count)
+		{
+			return new ObjectValue [0];
+		}
 	}
 }

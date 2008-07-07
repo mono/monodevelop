@@ -30,10 +30,18 @@ namespace DebuggerServer
 	
 	class Server
 	{
+		public static DebuggerServer Instance;
+		
 		public static void Run (string[] args)
 		{
 			try
 			{
+				// Load n-refactory from MD's dir
+				string path = typeof(Mono.Debugging.Client.DebuggerSession).Assembly.Location;
+				path = System.IO.Path.GetDirectoryName (path);
+				path = System.IO.Path.Combine (path, "NRefactory.dll");
+				Assembly.LoadFrom (path);
+				
 				string channel = Console.In.ReadLine();
 
 				string unixPath = null;
@@ -64,8 +72,8 @@ namespace DebuggerServer
 				BinaryFormatter bf = new BinaryFormatter();
 				IDebuggerController dc = (IDebuggerController) bf.Deserialize(ms);
 
-				DebuggerServer server = new DebuggerServer(dc);
-				dc.RegisterDebugger(server);
+				Instance = new DebuggerServer(dc);
+				dc.RegisterDebugger (Instance);
 				try
 				{
 					dc.WaitForExit();
@@ -77,7 +85,7 @@ namespace DebuggerServer
 
 				try
 				{
-					server.Dispose();
+					Instance.Dispose();
 				}
 				catch
 				{

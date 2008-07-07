@@ -20,12 +20,20 @@
     <File name="AssemblyInfo.cs" subtype="Code" buildaction="Compile" />
     <File name="ChangeLog" subtype="Code" buildaction="Nothing" />
     <File name="Util.cs" subtype="Code" buildaction="Compile" />
-    <File name="IExpressionValueSource.cs" subtype="Code" buildaction="Compile" />
     <File name="PropertyReference.cs" subtype="Code" buildaction="Compile" />
     <File name="FieldReference.cs" subtype="Code" buildaction="Compile" />
-    <File name="IValueReference.cs" subtype="Code" buildaction="Compile" />
+    <File name="ValueReference.cs" subtype="Code" buildaction="Compile" />
     <File name="VariableReference.cs" subtype="Code" buildaction="Compile" />
     <File name="ArrayValueReference.cs" subtype="Code" buildaction="Compile" />
+    <File name="LiteralValueReference.cs" subtype="Code" buildaction="Compile" />
+    <File name="NRefactoryEvaluator.cs" subtype="Code" buildaction="Compile" />
+    <File name="Convert.cs" subtype="Code" buildaction="Compile" />
+    <File name="TypeValueReference.cs" subtype="Code" buildaction="Compile" />
+    <File name="NullValueReference.cs" subtype="Code" buildaction="Compile" />
+    <File name="NamespaceValueReference.cs" subtype="Code" buildaction="Compile" />
+    <File name="ExpressionEvaluator.cs" subtype="Code" buildaction="Compile" />
+    <File name="ArrayElementGroup.cs" subtype="Code" buildaction="Compile" />
+    <File name="RemoteFrameObject.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />

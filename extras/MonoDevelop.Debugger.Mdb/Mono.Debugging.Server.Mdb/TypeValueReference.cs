@@ -1,4 +1,4 @@
-// PropertyVariable.cs
+// TypeValueReference.cs
 //
 // Author:
 //   Lluis Sanchez Gual <lluis@novell.com>
@@ -26,51 +26,79 @@
 //
 
 using System;
-using Mono.Debugger.Languages;
+using System.Collections.Generic;
 using Mono.Debugger;
+using Mono.Debugger.Languages;
 using Mono.Debugging.Client;
 
 namespace DebuggerServer
 {
-	class PropertyReference: ValueReference
+	public class TypeValueReference: ValueReference
 	{
-		TargetPropertyInfo prop;
-		TargetStructObject thisobj;
+		TargetType type;
 		
-		public PropertyReference (Thread thread, TargetPropertyInfo prop, TargetStructObject thisobj): base (thread)
+		public TypeValueReference (Thread thread, TargetType type): base (thread)
 		{
-			this.prop = prop;
-			if (!prop.IsStatic)
-				this.thisobj = thisobj;
-		}
-		
-		public override TargetType Type {
-			get {
-				return prop.Type;
-			}
+			this.type = type;
 		}
 		
 		public override TargetObject Value {
 			get {
-				return Util.RuntimeInvoke (Thread, prop.Getter, thisobj, new TargetObject[0]);
+				throw new NotSupportedException ();
 			}
 			set {
-				Util.RuntimeInvoke (Thread, prop.Setter, thisobj, new TargetObject[] { value });
-			}
-		}
-		
-		public override string Name {
-			get {
-				return prop.Name;
+				throw new NotSupportedException();
 			}
 		}
 
+		
+		public override TargetType Type {
+			get {
+				return type;
+			}
+		}
+
+		
+		public override object ObjectValue {
+			get {
+				throw new NotSupportedException ();
+			}
+		}
+
+		
+		public override string Name {
+			get {
+				return type.Name;
+			}
+		}
+		
 		public override ObjectValueFlags Flags {
 			get {
-				ObjectValueFlags flags = ObjectValueFlags.Property | Util.GetAccessibility (prop.Accessibility);
-				if (!prop.CanWrite) flags |= ObjectValueFlags.ReadOnly;
-				return flags;
+				return ObjectValueFlags.Literal;
 			}
+		}
+
+		public override ObjectValue CreateObjectValue ()
+		{
+			Connect ();
+			return Mono.Debugging.Client.ObjectValue.CreateObject (this, new ObjectPath (Name), type.Name, Name, Flags, null);
+		}
+		
+		public override ValueReference GetChild (string name)
+		{
+			foreach (ValueReference val in Util.GetMembers (Thread, type, null)) {
+				if (val.Name == name)
+					return val;
+			}
+			return null;
+		}
+
+		public override ObjectValue[] GetChildren (Mono.Debugging.Client.ObjectPath path, int index, int count)
+		{
+			List<ObjectValue> list = new List<ObjectValue> ();
+			foreach (ValueReference val in Util.GetMembers (Thread, type, null))
+				list.Add (val.CreateObjectValue ());
+			return list.ToArray ();
 		}
 	}
 }

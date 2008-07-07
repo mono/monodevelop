@@ -1,4 +1,4 @@
-// PropertyVariable.cs
+// LiteralValueReference.cs
 //
 // Author:
 //   Lluis Sanchez Gual <lluis@novell.com>
@@ -26,50 +26,75 @@
 //
 
 using System;
-using Mono.Debugger.Languages;
 using Mono.Debugger;
+using Mono.Debugger.Languages;
 using Mono.Debugging.Client;
 
 namespace DebuggerServer
 {
-	class PropertyReference: ValueReference
+	public class LiteralValueReference: ValueReference
 	{
-		TargetPropertyInfo prop;
-		TargetStructObject thisobj;
+		string name;
+		TargetObject value;
+		TargetType type;
+		object objValue;
+		bool objLiteral;
 		
-		public PropertyReference (Thread thread, TargetPropertyInfo prop, TargetStructObject thisobj): base (thread)
+		public LiteralValueReference (Thread thread, string name, TargetObject value): base (thread)
 		{
-			this.prop = prop;
-			if (!prop.IsStatic)
-				this.thisobj = thisobj;
+			this.name = name;
+			this.value = value;
+			this.type = value.Type;
+		}
+
+		public LiteralValueReference (Thread thread, string name, object value): base (thread)
+		{
+			this.name = name;
+			this.objValue = value;
+			objLiteral = true;
 		}
 		
-		public override TargetType Type {
+		public override object ObjectValue {
 			get {
-				return prop.Type;
+				if (objLiteral)
+					return objValue;
+				else
+					return value;
 			}
 		}
-		
+
 		public override TargetObject Value {
 			get {
-				return Util.RuntimeInvoke (Thread, prop.Getter, thisobj, new TargetObject[0]);
+				if (value == null && objLiteral) {
+					if (objValue == null)
+						value = Thread.CurrentFrame.Language.CreateNullObject (Thread, null);
+					else
+						value = Thread.CurrentFrame.Language.CreateInstance (Thread, objValue);
+				}
+				return value;
 			}
 			set {
-				Util.RuntimeInvoke (Thread, prop.Setter, thisobj, new TargetObject[] { value });
+				throw new NotSupportedException ();
 			}
 		}
 		
 		public override string Name {
 			get {
-				return prop.Name;
+				return name;
 			}
 		}
-
+		
+		public override Mono.Debugger.Languages.TargetType Type {
+			get {
+				if (type == null && objLiteral)
+					type = Value.Type;
+				return type;
+			}
+		}
+		
 		public override ObjectValueFlags Flags {
 			get {
-				ObjectValueFlags flags = ObjectValueFlags.Property | Util.GetAccessibility (prop.Accessibility);
-				if (!prop.CanWrite) flags |= ObjectValueFlags.ReadOnly;
-				return flags;
+				return ObjectValueFlags.Field | ObjectValueFlags.ReadOnly;
 			}
 		}
 	}

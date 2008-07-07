@@ -37,32 +37,33 @@ namespace DebuggerServer
 {
 	public static class Util
 	{
-		public static ObjectValue CreateObjectValue (MD.Thread thread, IObjectValueSource source, ObjectPath path, TargetObject obj, bool editable)
+		public static ObjectValue CreateObjectValue (MD.Thread thread, IObjectValueSource source, ObjectPath path, TargetObject obj, ObjectValueFlags flags)
 		{
-			return CreateObjectValue (thread, source, path, obj, editable, true);
+			return CreateObjectValue (thread, source, path, obj, flags, true);
 		}
 		
-		static ObjectValue CreateObjectValue (MD.Thread thread, IObjectValueSource source, ObjectPath path, TargetObject obj, bool editable, bool recurseCurrentObject)
+		static ObjectValue CreateObjectValue (MD.Thread thread, IObjectValueSource source, ObjectPath path, TargetObject obj, ObjectValueFlags flags, bool recurseCurrentObject)
 		{
 			if (obj == null)
-				ObjectValue.CreateObject (null, path, "", null, null);
-			
+				return ObjectValue.CreateObject (null, path, "", null, flags | ObjectValueFlags.ReadOnly, null);
+
 			if (obj.HasAddress && obj.GetAddress (thread).IsNull)
-				return ObjectValue.CreateObject (null, path, obj.TypeName, "(null)", null);
+				return ObjectValue.CreateObject (null, path, obj.TypeName, "(null)", flags, null);
 			
 			switch (obj.Kind) {
 				
+				case TargetObjectKind.Struct:
 				case TargetObjectKind.Class:
-					TargetClassObject co = obj as TargetClassObject;
+					TargetStructObject co = obj as TargetStructObject;
 					if (co == null)
 						return ObjectValue.CreateUnknown (path.LastName);
 					else {
 						if (recurseCurrentObject) {
 							TargetObject ob = co.GetCurrentObject (thread);
 							if (ob != null)
-								return CreateObjectValue (thread, source, path, ob, editable, false);
+								return CreateObjectValue (thread, source, path, ob, flags, false);
 						}
-						return ObjectValue.CreateObject (source, path, obj.TypeName, TargetObjectToString (thread, obj, false), null);
+						return ObjectValue.CreateObject (source, path, obj.TypeName, Server.Instance.Evaluator.TargetObjectToString (thread, obj, false), flags, null);
 					}
 					
 				case TargetObjectKind.Object:
@@ -70,38 +71,35 @@ namespace DebuggerServer
 					if (oob == null)
 						return ObjectValue.CreateUnknown (path.LastName);
 					else if (recurseCurrentObject)
-						return CreateObjectValue (thread, source, path, oob.GetDereferencedObject (thread), editable, false);
+						return CreateObjectValue (thread, source, path, oob.GetDereferencedObject (thread), flags, false);
 					else
-						return ObjectValue.CreateObject (source, path, obj.TypeName, TargetObjectToString (thread, obj, false), null);
+						return ObjectValue.CreateObject (source, path, obj.TypeName, Server.Instance.Evaluator.TargetObjectToString (thread, obj, false), flags, null);
 					
 				case TargetObjectKind.Array:
-					TargetArrayObject array = (TargetArrayObject) obj;
-					TargetArrayBounds bounds = array.GetArrayBounds (thread);
-					if (bounds.IsMultiDimensional)
-						return ObjectValue.CreateArray (source, path, obj.TypeName, 0, null);
-					else
-						return ObjectValue.CreateArray (source, path, obj.TypeName, bounds.Length, null);
+					return ObjectValue.CreateObject (source, path, obj.TypeName, Server.Instance.Evaluator.TargetObjectToString (thread, obj), flags, null);
 					
 				case TargetObjectKind.Fundamental:
 					TargetFundamentalObject fob = (TargetFundamentalObject) obj;
-					object val = fob.GetObject (thread);
-					return ObjectValue.CreatePrimitive (source, path, obj.TypeName, ObjectToString (val), editable);
+					return ObjectValue.CreatePrimitive (source, path, obj.TypeName, Server.Instance.Evaluator.TargetObjectToString (thread, fob), flags);
 					
 				case TargetObjectKind.Enum:
 					TargetEnumObject enumobj = (TargetEnumObject) obj;
-					return CreateObjectValue (thread, source, path, enumobj.GetValue (thread), editable);
+					return CreateObjectValue (thread, source, path, enumobj.GetValue (thread), flags);
+					
+				case TargetObjectKind.Pointer:
+					return ObjectValue.CreateObject (source, path, obj.TypeName, Server.Instance.Evaluator.TargetObjectToString (thread, obj, false), flags, null);
 					
 				default:
-					return ObjectValue.CreateUnknown (source, path, obj.TypeName);
+					return ObjectValue.CreateError ("?", "Unknown value type: " + obj.Kind, flags);
 			}
 		}
 		
-		public static ObjectValue[] GetObjectValueChildren (MD.Thread thread, IObjectValueSource source, TargetObject obj, ObjectPath path, int firstItemIndex, int count)
+		public static ObjectValue[] GetObjectValueChildren (MD.Thread thread, TargetObject obj, int firstItemIndex, int count)
 		{
-			return GetObjectValueChildren (thread, source, obj, path, firstItemIndex, count, false);
+			return GetObjectValueChildren (thread, obj, firstItemIndex, count, false);
 		}
 		
-		static ObjectValue[] GetObjectValueChildren (MD.Thread thread, IObjectValueSource source, TargetObject obj, ObjectPath path, int firstItemIndex, int count, bool recurseCurrentObject)
+		static ObjectValue[] GetObjectValueChildren (MD.Thread thread, TargetObject obj, int firstItemIndex, int count, bool recurseCurrentObject)
 		{
 			switch (obj.Kind)
 			{
@@ -111,84 +109,31 @@ namespace DebuggerServer
 					if (arr == null)
 						return new ObjectValue [0];
 					
-					TargetArrayBounds bounds = arr.GetArrayBounds (thread);
-					if (bounds.IsMultiDimensional) {
-						// Calculate the initial index
-						int[] indices = new int [bounds.Rank];
-						int[] rankSizes = new int [bounds.Rank];
-						rankSizes [bounds.Rank-1] = 1;
-						for (int n=bounds.Rank-2; n>=0; n--) {
-							rankSizes [n] = rankSizes [n+1] * (bounds.UpperBounds [n+1] - bounds.LowerBounds [n+1] +1);
-						}
-						int rest = firstItemIndex;
-						for (int n=0; n<bounds.Rank; n++) {
-							indices [n] = rest / rankSizes [n];
-							rest -= indices [n] * rankSizes [n];
-							indices [n] += bounds.LowerBounds [n];
-						}
-						// Get the values
-						
-						ObjectValue[] values = new ObjectValue [count];
-						bool outOfRange = false;
-						
-						for (int n=0; n<count; n++) {
-							string idx = GetIndicesString (indices);
-							if (outOfRange)
-								values [n] = ObjectValue.CreateUnknown (idx);
-							else {
-								TargetObject elem = arr.GetElement (thread, indices);
-								values [n] = CreateObjectValue (thread, source, path.Append (idx), elem, true);
-							}
-							
-							// Increment the indices
-							for (int m=bounds.Rank-1; m >= 0; m--) {
-								if (++indices [m] >= bounds.UpperBounds [m]) {
-									if (m == 0)
-										outOfRange = true;
-									else
-										indices [m] = bounds.LowerBounds [m];
-								}
-								else
-									break;
-							}
-						}
-						return values;
-					}
-					else {
-						ObjectValue[] values = new ObjectValue [count];
-						for (int n=0; n < values.Length; n++) {
-							int index = n + firstItemIndex;
-							string sidx = "[" + index + "]";
-							if (index >= bounds.Length)
-								values [n] = ObjectValue.CreateUnknown (sidx);
-							else {
-								TargetObject elem = arr.GetElement (thread, new int[] { index });
-								values [n] = CreateObjectValue (thread, source, path.Append (sidx), elem, true);
-							}
-						}
-						return values;
-					}
+					ArrayElementGroup agroup = new ArrayElementGroup (thread, arr);
+					return agroup.GetChildren ();
 					
+				case TargetObjectKind.Struct:
 				case TargetObjectKind.Class:
-					TargetClassObject co = obj as TargetClassObject;
+					TargetStructObject co = obj as TargetStructObject;
 					if (co == null)
 						return new ObjectValue [0];
 					if (recurseCurrentObject) {
 						TargetObject currob = co.GetCurrentObject (thread);
 						if (currob != null)
-							return GetObjectValueChildren (thread, source, currob, path, firstItemIndex, count, false);
+							return GetObjectValueChildren (thread, currob, firstItemIndex, count, false);
 					}
 					
 					List<ObjectValue> values = new List<ObjectValue> ();
-					foreach (IValueReference val in GetMembers (thread, co)) {
+					foreach (ValueReference val in GetMembers (thread, co.Type, co)) {
 						try {
 							TargetObject ob = val.Value;
 							if (ob == null)
-								values.Add (ObjectValue.CreateNullObject (val.Name, val.Type.Name));
+								values.Add (ObjectValue.CreateNullObject (val.Name, val.Type.Name, val.Flags));
 							else
-								values.Add (CreateObjectValue (thread, source, path.Append (val.Name), ob, true));
+								values.Add (val.CreateObjectValue ());
 						} catch (Exception ex) {
-							values.Add (CreateExceptionValue (val.Name, val.Type, ex));
+							Console.WriteLine ("pp: " + ex);
+							values.Add (ObjectValue.CreateError (null, new ObjectPath (val.Name), val.Type.Name, ex.Message, val.Flags));
 						}
 					}
 					return values.ToArray ();
@@ -198,100 +143,18 @@ namespace DebuggerServer
 					if (oob == null)
 						return new ObjectValue [0];
 					if (recurseCurrentObject)
-						return GetObjectValueChildren (thread, source, oob.GetDereferencedObject (thread), path, firstItemIndex, count, false);
+						return GetObjectValueChildren (thread, oob.GetDereferencedObject (thread), firstItemIndex, count, false);
 					else
 						return new ObjectValue [0];
-					
+				
+				case TargetObjectKind.Pointer:
+					TargetPointerObject pobj = (TargetPointerObject) obj;
+					TargetObject defob = pobj.GetDereferencedObject (thread);
+					LiteralValueReference pval = new LiteralValueReference (thread, "*", defob);
+					return new ObjectValue [] {pval.CreateObjectValue () };
 				default:
 					return new ObjectValue [0];
 			}		
-		}
-		
-		static ObjectValue CreateExceptionValue (string name, TargetType type, Exception ex)
-		{
-			return ObjectValue.CreateObject (null, new ObjectPath (name), type.Name, ex.Message, null);
-		}
-		
-		static string GetIndicesString (int[] indices)
-		{
-			StringBuilder sb = new StringBuilder ("[");
-			for (int n=0; n<indices.Length; n++) {
-				if (n > 0) sb.Append (',');
-				sb.Append (indices [n].ToString ());
-			}
-			sb.Append (']');
-			return sb.ToString ();
-		}
-		
-		public static IValueReference GetTargetObjectReference (MD.Thread thread, IValueReference rootObj, ObjectPath path, int pathIndex)
-		{
-			if (pathIndex >= path.Length)
-				return rootObj;
-			else
-				return GetTargetObjectReference (thread, rootObj.Value, path, pathIndex, true);
-		}
-		
-		static IValueReference GetTargetObjectReference (MD.Thread thread, TargetObject obj, ObjectPath path, int pathIndex, bool recurseCurrentObject)
-		{
-			if (obj == null)
-				return null;
-			
-			string name = path [pathIndex];
-			
-			switch (obj.Kind)
-			{
-				case MD.Languages.TargetObjectKind.Array: {
-					
-					TargetArrayObject arr = obj as TargetArrayObject;
-					if (arr == null)
-						return null;
-					
-					// Parse the array indices
-					string[] sinds = name.Substring (1, name.Length - 2).Split (',');
-					int[] indices = new int [sinds.Length];
-					for (int n=0; n<sinds.Length; n++)
-						indices [n] = int.Parse (sinds [n]);
-					
-					IValueReference oref = new ArrayValueReference (thread, arr, indices);
-					return GetTargetObjectReference (thread, oref, path, pathIndex + 1);
-				}
-					
-				case TargetObjectKind.Class: {
-					TargetClassObject co = obj as TargetClassObject;
-					if (co == null)
-						return null;
-					if (recurseCurrentObject) {
-						TargetObject currob = co.GetCurrentObject (thread);
-						if (currob != null)
-							return GetTargetObjectReference (thread, currob, path, pathIndex, false);
-					}
-					IValueReference ob = GetMemberValueReference (thread, (TargetStructType) co.Type, co, name);
-					if (ob == null)
-						return null;
-					return GetTargetObjectReference (thread, ob, path, pathIndex + 1);
-				}
-					
-				case TargetObjectKind.Object:
-					TargetObjectObject oob = obj as TargetObjectObject;
-					if (oob == null)
-						return null;
-					if (recurseCurrentObject)
-						return GetTargetObjectReference (thread, oob.GetDereferencedObject (thread), path, pathIndex, false);
-					else
-						return null;
-					
-				default:
-					return null;
-			}
-		}
-		
-		public static IValueReference GetMemberValueReference (MD.Thread thread, TargetStructType type, TargetStructObject thisobj, string name)
-		{
-			foreach (IValueReference val in GetMembers (thread, thisobj)) {
-				if (val.Name == name)
-					return val;
-			}
-			return null;
 		}
 		
 		public static TargetObject GetRealObject (MD.Thread thread, TargetObject obj)
@@ -325,79 +188,6 @@ namespace DebuggerServer
 			}
 			return obj;
 		}
-
-		public static string TargetObjectToString (MD.Thread thead, TargetObject obj)
-		{
-			return TargetObjectToString (thead, obj, true);
-		}
-		
-		public static string TargetObjectToString (MD.Thread thread, TargetObject obj, bool recurseOb)
-		{
-			try {
-				switch (obj.Kind) {
-					case MD.Languages.TargetObjectKind.Array:
-						TargetArrayObject arr = obj as TargetArrayObject;
-						if (arr == null)
-							return "null";
-						StringBuilder tn = new StringBuilder (arr.Type.ElementType.Name);
-						tn.Append ('[');
-						TargetArrayBounds ab = arr.GetArrayBounds (thread);
-						if (ab.IsMultiDimensional) {
-							for (int n=0; n<ab.Rank; n++) {
-								if (n>0)
-									tn.Append (',');
-								tn.Append (ab.UpperBounds [n] - ab.LowerBounds [n] + 1);
-							}
-						}
-						else if (!ab.IsUnbound) {
-							tn.Append (ab.Length.ToString ());
-						}
-						tn.Append (']');
-						return tn.ToString ();
-						
-					case TargetObjectKind.Class:
-						TargetClassObject co = obj as TargetClassObject;
-						if (co == null)
-							return "(null)";
-						if (recurseOb) {
-							TargetObject currob = co.GetCurrentObject (thread);
-							if (currob != null)
-								return TargetObjectToString (thread, currob, false);
-						}
-						if (co.TypeName == "System.Decimal")
-							return CallToString (thread, co);
-						return "{" + co.TypeName + "}";
-						
-					case TargetObjectKind.Enum:
-						TargetEnumObject eob = (TargetEnumObject) obj;
-						return TargetObjectToString (thread, eob.GetValue (thread));
-						
-					case TargetObjectKind.Fundamental:
-						TargetFundamentalObject fob = obj as TargetFundamentalObject;
-						if (fob == null)
-							return "null";
-						return fob.Print (thread);
-						
-					case TargetObjectKind.Object:
-						TargetObjectObject oob = obj as TargetObjectObject;
-						if (oob == null)
-							return "null";
-						if (recurseOb)
-							return TargetObjectToString (thread, oob.GetDereferencedObject (thread), false);
-						else
-							return "{" + oob.TypeName + "}";
-				}
-			}
-			catch (Exception ex) {
-				return "? (" + ex.GetType () + ": " + ex.Message + ")";
-			}
-			return "?";
-		}
-		
-		public static string ObjectToString (object value)
-		{
-			return value.ToString ();
-		}
 		
 		public static object StringToObject (TargetType type, string value)
 		{
@@ -424,7 +214,7 @@ namespace DebuggerServer
 			throw new InvalidOperationException ("Value '" + value + "' can't be converted to type '" + type.Name + "'");
 		}
 		
-		static string CallToString (MD.Thread thread, TargetStructObject obj)
+		public static string CallToString (MD.Thread thread, TargetStructObject obj)
 		{
 			TargetStructObject cobj = obj;
 
@@ -459,16 +249,19 @@ namespace DebuggerServer
 					object s = ((TargetFundamentalObject) retval).GetObject (thread);
 					return s != null ? s.ToString () : "";
 				}
-				cobj = cobj.GetParentObject (thread) as TargetStructObject;
+				if (cobj.Kind != TargetObjectKind.Struct)
+					cobj = cobj.GetParentObject (thread) as TargetStructObject;
+				else
+					break;
 			}
 			while (cobj != null);
 
 			return null;
 		}
 		
-		public static IEnumerable<IValueReference> GetMembers (MD.Thread thread, TargetStructObject co)
+		public static IEnumerable<ValueReference> GetMembers (MD.Thread thread, TargetType t, TargetStructObject co)
 		{
-			TargetStructType type = (TargetStructType) co.Type;
+			TargetStructType type = t as TargetStructType;
 			
 			while (type != null) {
 				
@@ -478,7 +271,10 @@ namespace DebuggerServer
 				foreach (TargetPropertyInfo prop in type.ClassType.Properties)
 					yield return new PropertyReference (thread, prop, co);
 				
-				type = type.GetParentType (thread);
+				if (type.HasParent)
+					type = type.GetParentType (thread);
+				else
+					break;
 			}
 		}
 		
@@ -581,6 +377,83 @@ namespace DebuggerServer
 			if (res.ExceptionMessage != null)
 				throw new Exception (res.ExceptionMessage);
 			return res.ReturnObject;
+		}
+		
+		public static ObjectValueFlags GetAccessibility (TargetMemberAccessibility ma)
+		{
+			switch (ma) {
+				case TargetMemberAccessibility.Internal: return ObjectValueFlags.Internal;
+				case TargetMemberAccessibility.Protected: return ObjectValueFlags.Protected;
+				case TargetMemberAccessibility.Public: return ObjectValueFlags.Public;
+				default: return ObjectValueFlags.Private;
+			}
+		}
+		
+		public static IEnumerable<VariableReference> GetLocalVariables (MD.StackFrame frame)
+		{
+			foreach (TargetVariable var in frame.Method.GetLocalVariables (frame.Thread)) {
+				yield return new VariableReference (frame, var, ObjectValueFlags.Variable);
+			}
+		}
+		
+		public static IEnumerable<VariableReference> GetParameters (MD.StackFrame frame)
+		{
+			if (frame.Method != null) {
+				foreach (TargetVariable var in frame.Method.GetParameters (frame.Thread))
+					yield return new VariableReference (frame, var, ObjectValueFlags.Parameter);
+			}
+		}
+		public static string UnscapeString (string text)
+		{
+			StringBuilder sb = new StringBuilder ();
+			for (int i = 0; i < text.Length; i++) {
+				char c = text[i];
+				if (c != '\\') {
+					sb.Append (c);
+					continue;
+				}
+				i++;
+				if (i >= text.Length)
+					return null;
+				
+				switch (text[i]) {
+					case '\\': c = '\\'; break;
+					case 'a': c = '\a'; break;
+					case 'b': c = '\b'; break;
+					case 'f': c = '\f'; break;
+					case 'v': c = '\v'; break;
+					case 'n': c = '\n'; break;
+					case 'r': c = '\r'; break;
+					case 't': c = '\t'; break;
+					default: return null;
+				}
+				sb.Append (c);
+			}
+			return sb.ToString ();
+		}
+		
+		public static string EscapeString (string text)
+		{
+			StringBuilder sb = new StringBuilder ();
+			for (int i = 0; i < text.Length; i++) {
+				char c = text[i];
+				string txt;
+				switch (c) {
+					case '\\': txt = @"\\"; break;
+					case '\a': txt = @"\a"; break;
+					case '\b': txt = @"\b"; break;
+					case '\f': txt = @"\f"; break;
+					case '\v': txt = @"\v"; break;
+					case '\n': txt = @"\n"; break;
+					case '\r': txt = @"\r"; break;
+					case '\t': txt = @"\t"; break;
+					default: 
+						sb.Append (c);
+						continue;
+				}
+				sb.Append (txt);
+			}
+			return sb.ToString ();
 		}
 	}
 }
