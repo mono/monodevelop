@@ -58,6 +58,12 @@ namespace MonoDevelop.SourceEditor
 			return win.SetMaxWidth (win.Screen.Width);
 		}
 		
+		public bool IsInteractive (TextEditor editor, Gtk.Window tipWindow)
+		{
+			return false;
+		}
+
+		
 		#endregion 
 		
 	}

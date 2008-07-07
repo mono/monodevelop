@@ -1,3 +1,14 @@
+2008-07-07  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Makefile.am, MonoDevelop.SourceEditor.addin.xml,
+	  MonoDevelop.SourceEditor.mdp,
+	  MonoDevelop.SourceEditor/DebugValueWindow.cs,
+	  MonoDevelop.SourceEditor/CompileErrorTooltipProvider.cs,
+	  MonoDevelop.SourceEditor/LanguageItemTooltipProvider.cs,
+	  MonoDevelop.SourceEditor/DebugValueTooltipProvider.cs: Initial
+	  implementation of debug tooltips. It still has some window sizing
+	  and editing issues.
+
 2008-07-06  Mike Krüger <mkrueger@novell.com> 
 
 	* gtk-gui/MonoDevelop.SourceEditor.OptionPanels.HighlightingPanel.cs,

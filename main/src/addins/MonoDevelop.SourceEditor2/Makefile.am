@@ -17,6 +17,8 @@ FILES =  \
 	MonoDevelop.SourceEditor.OptionPanels/HighlightingPanel.cs \
 	MonoDevelop.SourceEditor.OptionPanels/MarkerPanel.cs \
 	MonoDevelop.SourceEditor/CompileErrorTooltipProvider.cs \
+	MonoDevelop.SourceEditor/DebugValueTooltipProvider.cs \
+	MonoDevelop.SourceEditor/DebugValueWindow.cs \
 	MonoDevelop.SourceEditor/EditActions.cs \
 	MonoDevelop.SourceEditor/ExtendibleTextEditor.cs \
 	MonoDevelop.SourceEditor/GotoLineNumberWidget.cs \

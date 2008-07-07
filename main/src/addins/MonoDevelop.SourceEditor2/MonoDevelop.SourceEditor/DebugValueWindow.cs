@@ -26,14 +26,37 @@
 //
 
 using System;
+using Mono.Debugging.Client;
+using MonoDevelop.Debugger;
 using MonoDevelop.Projects.Gui.Completion;
+using Gtk;
 
-namespace MonoDevelop.SourceEditor2
+namespace MonoDevelop.SourceEditor
 {
 	public class DebugValueWindow: TooltipWindow
 	{
-		public DebugValueWindow()
+		ObjectValueTreeView tree;
+		ScrolledWindow sw;
+		
+		public DebugValueWindow (ObjectValue value)
 		{
+			sw = new ScrolledWindow ();
+			sw.HscrollbarPolicy = PolicyType.Never;
+			sw.VscrollbarPolicy = PolicyType.Never;
+			
+			tree = new ObjectValueTreeView ();
+			sw.Add (tree);
+			Add (sw);
+			
+			tree.CompactView = true;
+			tree.AllowAdding = false;
+			tree.AllowEditing = true;
+			tree.HeadersVisible = false;
+			
+			tree.AddValue (value);
+			tree.Selection.UnselectAll ();
+			
+			sw.ShowAll ();
 		}
 	}
 }

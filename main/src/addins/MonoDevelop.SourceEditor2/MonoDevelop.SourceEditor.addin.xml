@@ -44,6 +44,7 @@
 	<!-- Extensions -->
 
 	<Extension path = "/MonoDevelop/SourceEditor2/TooltipProviders">
+		<Class class="MonoDevelop.SourceEditor.DebugValueTooltipProvider" />
 		<Class class="MonoDevelop.SourceEditor.LanguageItemTooltipProvider" />
 		<Class class="MonoDevelop.SourceEditor.CompileErrorTooltipProvider" />
 	</Extension>
