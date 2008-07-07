@@ -10,7 +10,7 @@ namespace Mono.Debugging.Backend
 		ObjectValue[] GetLocalVariables (int frameIndex);
 		ObjectValue[] GetParameters (int frameIndex);
 		ObjectValue GetThisReference (int frameIndex);
-		ObjectValue[] GetExpressionValues (int frameIndex, string[] expressions);
+		ObjectValue[] GetExpressionValues (int frameIndex, string[] expressions, bool evaluateMethods);
 		AssemblyLine[] Disassemble (int frameIndex, int firstLine, int count);
 	}
 }

@@ -29,11 +29,34 @@ using System;
 
 namespace Mono.Debugging.Client
 {
-	public enum ObjectValueKind {
-		Object,
-		Array,
-		Primitive,
-		Unknown,
-		Error
+	[Flags]
+	public enum ObjectValueFlags: uint {
+		None = 0,
+		Object = 1,
+		Array = 1 << 1,
+		Primitive = 1 << 2,
+		Unknown = 1 << 3,
+		Error = 1 << 4,
+		KindMask = 0x000000ff,
+		
+		Field = 1 << 8,
+		Property = 1 << 9,
+		Parameter = 1 << 10,
+		Variable = 1 << 11,
+		ArrayElement = 1 << 12,
+		Method = 1 << 13,
+		Literal = 1 << 14,
+		OriginMask = 0x0000ff00,
+		
+		Global = 1 << 16,	// For fields, it means static
+		ReadOnly = 1 << 17,
+		
+		// For field and property
+		Public = 1 << 24,
+		Protected = 1 << 25,
+		Internal = 1 << 26,
+		Private = 1 << 27,
+		InternalProtected = Internal | Protected,
+		AccessMask = 0xff000000
 	}
 }

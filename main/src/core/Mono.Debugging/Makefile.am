@@ -23,7 +23,7 @@ FILES =  \
 	Mono.Debugging.Client/IDebuggerEngine.cs \
 	Mono.Debugging.Client/ObjectPath.cs \
 	Mono.Debugging.Client/ObjectValue.cs \
-	Mono.Debugging.Client/ObjectValueKind.cs \
+	Mono.Debugging.Client/ObjectValueFlags.cs \
 	Mono.Debugging.Client/ProcessEventArgs.cs \
 	Mono.Debugging.Client/ProcessInfo.cs \
 	Mono.Debugging.Client/SourceLocation.cs \

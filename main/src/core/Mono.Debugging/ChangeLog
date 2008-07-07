@@ -1,3 +1,13 @@
+2008-07-07  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Mono.Debugging.Client/ObjectValueFlags.cs,
+	  Mono.Debugging.Client/StackFrame.cs,
+	  Mono.Debugging.Client/ObjectValue.cs,
+	  Mono.Debugging.Client/ObjectValueKind.cs, Mono.Debugging.mdp,
+	  Mono.Debugging.Backend/IBacktrace.cs, Makefile.am: Added flags enum
+	  to ObjectValue which give information about the origin of the
+	  value.
+
 2008-07-02  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Mono.Debugging.Client/ObjectPath.cs: Implemented ToString.

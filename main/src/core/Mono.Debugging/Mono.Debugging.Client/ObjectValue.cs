@@ -40,48 +40,51 @@ namespace Mono.Debugging.Client
 		string name;
 		string value;
 		string typeName;
-		bool editable;
-		ObjectValueKind kind;
+		ObjectValueFlags flags;
 		IObjectValueSource source;
 		List<ObjectValue> children;
 		
-		ObjectValue ()
+		static ObjectValue Create (IObjectValueSource source, ObjectPath path, string typeName)
 		{
+			ObjectValue ob = new ObjectValue ();
+			ob.source = source;
+			ob.path = path;
+			ob.typeName = typeName;
+			return ob;
 		}
 		
-		public static ObjectValue CreateObject (IObjectValueSource source, ObjectPath path, string typeName, string value, ObjectValue[] children)
+		public static ObjectValue CreateObject (IObjectValueSource source, ObjectPath path, string typeName, string value, ObjectValueFlags flags, ObjectValue[] children)
 		{
-			ObjectValue ob = CreateUnknown (source, path, typeName);
+			ObjectValue ob = Create (source, path, typeName);
 			ob.path = path;
-			ob.kind = ObjectValueKind.Object;
+			ob.flags = flags | ObjectValueFlags.Object;
 			ob.value = value;
 			if (children != null)
 				ob.children.AddRange (children);
 			return ob;
 		}
 		
-		public static ObjectValue CreateNullObject (string name, string typeName)
+		public static ObjectValue CreateNullObject (string name, string typeName, ObjectValueFlags flags)
 		{
-			ObjectValue ob = CreateUnknown (null, new ObjectPath (name), typeName);
-			ob.kind = ObjectValueKind.Object;
+			ObjectValue ob = Create (null, new ObjectPath (name), typeName);
+			ob.flags = flags | ObjectValueFlags.Object;
 			ob.value = "(null)";
 			return ob;
 		}
 		
-		public static ObjectValue CreatePrimitive (IObjectValueSource source, ObjectPath path, string typeName, string value, bool editable)
+		public static ObjectValue CreatePrimitive (IObjectValueSource source, ObjectPath path, string typeName, string value, ObjectValueFlags flags)
 		{
-			ObjectValue ob = CreateUnknown (source, path, typeName);
-			ob.kind = ObjectValueKind.Primitive;
+			ObjectValue ob = Create (source, path, typeName);
+			ob.flags = flags | ObjectValueFlags.Primitive;
 			ob.value = value;
-			ob.editable = editable;
 			return ob;
 		}
 		
-		public static ObjectValue CreateArray (IObjectValueSource source, ObjectPath path, string typeName, int arrayCount, ObjectValue[] children)
+		public static ObjectValue CreateArray (IObjectValueSource source, ObjectPath path, string typeName, int arrayCount, ObjectValueFlags flags, ObjectValue[] children)
 		{
-			ObjectValue ob = CreateUnknown (source, path, typeName);
+			ObjectValue ob = Create (source, path, typeName);
 			ob.arrayCount = arrayCount;
-			ob.kind = ObjectValueKind.Array;
+			ob.flags = flags | ObjectValueFlags.Array;
 			ob.value = "[" + arrayCount + "]";
 			if (children != null)
 				ob.children.AddRange (children);
@@ -90,11 +93,8 @@ namespace Mono.Debugging.Client
 		
 		public static ObjectValue CreateUnknown (IObjectValueSource source, ObjectPath path, string typeName)
 		{
-			ObjectValue ob = new ObjectValue ();
-			ob.source = source;
-			ob.path = path;
-			ob.typeName = typeName;
-			ob.kind = ObjectValueKind.Unknown;
+			ObjectValue ob = Create (source, path, typeName);
+			ob.flags = ObjectValueFlags.Unknown | ObjectValueFlags.ReadOnly;
 			return ob;
 		}
 		
@@ -103,17 +103,26 @@ namespace Mono.Debugging.Client
 			return CreateUnknown (null, new ObjectPath (name), "");
 		}
 		
-		public static ObjectValue CreateError (string message)
+		public static ObjectValue CreateError (IObjectValueSource source, ObjectPath path, string typeName, string value, ObjectValueFlags flags)
+		{
+			ObjectValue ob = Create (source, path, typeName);
+			ob.path = path;
+			ob.flags = flags | ObjectValueFlags.Error;
+			ob.value = value;
+			return ob;
+		}
+		
+		public static ObjectValue CreateError (string name, string message, ObjectValueFlags flags)
 		{
 			ObjectValue ob = new ObjectValue ();
-			ob.kind = ObjectValueKind.Error;
+			ob.flags = flags | ObjectValueFlags.Error;
 			ob.value = message;
 			ob.name = "";
 			return ob;
 		}
 		
-		public ObjectValueKind Kind {
-			get { return kind; }
+		public ObjectValueFlags Flags {
+			get { return flags; }
 		}
 		
 		public string Name {
@@ -133,7 +142,7 @@ namespace Mono.Debugging.Client
 				return value;
 			}
 			set {
-				if (!editable || source == null)
+				if (IsReadOnly || source == null)
 					throw new InvalidOperationException ("Value is not editable");
 				this.value = source.SetValue (path, value);
 			}
@@ -147,9 +156,9 @@ namespace Mono.Debugging.Client
 			get {
 				if (source == null)
 					return false;
-				else if (kind == ObjectValueKind.Array)
+				else if (IsArray)
 					return arrayCount > 0;
-				else if (kind == ObjectValueKind.Object)
+				else if (IsObject)
 					return true;
 				else
 					return false;
@@ -167,7 +176,7 @@ namespace Mono.Debugging.Client
 					children.AddRange (source.GetChildren (path, -1, -1));
 				} catch (Exception ex) {
 					children = null;
-					return CreateError (ex.Message);
+					return CreateError ("", ex.Message, ObjectValueFlags.ReadOnly);
 				}
 			}
 			foreach (ObjectValue ob in children)
@@ -187,7 +196,7 @@ namespace Mono.Debugging.Client
 					try {
 						children.AddRange (source.GetChildren (path, -1, -1));
 					} catch (Exception ex) {
-						children.Add (CreateError (ex.Message));
+						children.Add (CreateError ("", ex.Message, ObjectValueFlags.ReadOnly));
 					}
 				}
 				return children.ToArray ();
@@ -211,14 +220,10 @@ namespace Mono.Debugging.Client
 					ObjectValue[] items = source.GetChildren (path, children.Count, nc);
 					children.AddRange (items);
 				} catch (Exception ex) {
-					return CreateError (ex.Message);
+					return CreateError ("", ex.Message, ObjectValueFlags.ArrayElement | ObjectValueFlags.ReadOnly);
 				}
 			}
 			return children [index];
-		}
-		
-		public bool IsArray {
-			get { return kind == ObjectValueKind.Array; }
 		}
 		
 		public int ArrayCount {
@@ -229,10 +234,33 @@ namespace Mono.Debugging.Client
 			}
 		}
 
-		public bool Editable {
-			get {
-				return editable;
-			}
+		public bool IsReadOnly {
+			get { return HasFlag (ObjectValueFlags.ReadOnly); }
+		}
+		
+		public bool IsArray {
+			get { return HasFlag (ObjectValueFlags.Array); }
+		}
+		
+		public bool IsObject {
+			get { return HasFlag (ObjectValueFlags.Object); }
+		}
+		
+		public bool IsPrimitive {
+			get { return HasFlag (ObjectValueFlags.Primitive); }
+		}
+		
+		public bool IsUnknown {
+			get { return HasFlag (ObjectValueFlags.Unknown); }
+		}
+		
+		public bool IsError {
+			get { return HasFlag (ObjectValueFlags.Error); }
+		}
+		
+		public bool HasFlag (ObjectValueFlags flag)
+		{
+			return (flags & flag) != 0;
 		}
 	}
 }

@@ -32,7 +32,7 @@
     <File name="Mono.Debugging.Client/BreakpointEventArgs.cs" subtype="Code" buildaction="Compile" />
     <File name="Mono.Debugging.Client/ObjectValue.cs" subtype="Code" buildaction="Compile" />
     <File name="Mono.Debugging.Backend/IObjectValueSource.cs" subtype="Code" buildaction="Compile" />
-    <File name="Mono.Debugging.Client/ObjectValueKind.cs" subtype="Code" buildaction="Compile" />
+    <File name="Mono.Debugging.Client/ObjectValueFlags.cs" subtype="Code" buildaction="Compile" />
     <File name="Mono.Debugging.Client/ObjectPath.cs" subtype="Code" buildaction="Compile" />
     <File name="Mono.Debugging.Client/ThreadInfo.cs" subtype="Code" buildaction="Compile" />
     <File name="Mono.Debugging.Client/ProcessInfo.cs" subtype="Code" buildaction="Compile" />

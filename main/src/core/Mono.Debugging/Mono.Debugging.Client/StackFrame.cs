@@ -68,9 +68,15 @@ namespace Mono.Debugging.Client
 			return sourceBacktrace.GetThisReference (index);
 		}
 		
-		public ObjectValue[] GetExpressionValues (string[] expressions)
+		public ObjectValue[] GetExpressionValues (string[] expressions, bool evaluateMethods)
 		{
-			return sourceBacktrace.GetExpressionValues (index, expressions);
+			return sourceBacktrace.GetExpressionValues (index, expressions, evaluateMethods);
+		}
+		
+		public ObjectValue GetExpressionValue (string expression, bool evaluateMethods)
+		{
+			ObjectValue[] values = sourceBacktrace.GetExpressionValues (index, new string[] { expression }, evaluateMethods);
+			return values [0];
 		}
 		
 		// Returns disassembled code for this stack frame.
