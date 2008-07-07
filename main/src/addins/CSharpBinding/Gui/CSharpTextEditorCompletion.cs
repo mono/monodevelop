@@ -45,6 +45,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 		
 		public override ICompletionDataProvider HandleCodeCompletion (ICodeCompletionContext completionContext, char completionChar)
 		{
+			System.Console.WriteLine(completionChar + " —-- " + ((int)completionChar));
 			CSharpExpressionFinder expressionFinder = new CSharpExpressionFinder ();
 			ExpressionResult result = expressionFinder.FindExpression (Editor.Text, Editor.CursorPosition);
 			System.Console.WriteLine("found:" + result);
@@ -59,7 +60,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 			switch (completionChar) {
 			case '.':
 				ResolveResult resolveResult = resolver.Resolve (result);
-				return CreateCompletionData (resolveResult);
+				return CreateCompletionData (resolveResult, result);
 				
 			case ' ':
 				int i = completionContext.TriggerOffset;
@@ -72,8 +73,8 @@ namespace MonoDevelop.CSharpBinding.Gui
 		{
 			switch (word) {
 			case "using":
-				System.Console.WriteLine("Using !!!!");
-				return null;
+				result.ExpressionContext = ExpressionContext.Using;
+				return CreateCompletionData (new NamespaceResolveResult (""), result);
 			case "is":
 			case "as":
 				System.Console.WriteLine("IsAs");
@@ -149,14 +150,26 @@ namespace MonoDevelop.CSharpBinding.Gui
 			return base.KeyPress (key, keyChar, modifier);
 		}*/
 		
-		ICompletionDataProvider CreateCompletionData (ResolveResult resolveResult)
+		ICompletionDataProvider CreateCompletionData (ResolveResult resolveResult, ExpressionResult expressionResult)
 		{
 			CodeCompletionDataProvider result = new CodeCompletionDataProvider (null, null);
 			ProjectDom dom = ProjectDomService.GetDom (Document.Project);
-			IType type = dom.GetType (resolveResult.ResolvedType);
-			if (type != null) {
-				foreach (IMember member in type.Members) {
+			if (dom == null)
+				return null;
+			
+			foreach (object obj in resolveResult.CreateResolveResult (dom)) {
+				if (expressionResult.ExpressionContext.FilterEntry (obj))
+					continue;
+				Namespace ns = obj as Namespace;
+				if (ns != null) {
+					result.AddCompletionData (new CodeCompletionData (ns.Name, ns.StockIcon, ns.Documentation));
+					continue;
+				}
+				
+				IMember member = obj as IMember;
+				if (member != null) {
 					result.AddCompletionData (new CodeCompletionData (member.Name, member.StockIcon, member.Documentation));
+					continue;
 				}
 			}
 			
