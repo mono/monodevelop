@@ -495,7 +495,10 @@ namespace MonoDevelop.Projects.Gui.Completion
 			int n = 0;
 			while (ypos < winHeight - margin && (page + n) < win.DataProvider.ItemCount)
 			{
-				layout.SetText (win.DataProvider.GetText (page + n));
+				string text = win.DataProvider.GetText (page + n);
+				if (text == null)
+					text = "<null>";
+				layout.SetText (text);
 				Gdk.Pixbuf icon = win.DataProvider.GetIcon (page + n);
 				
 				int wi, he, typos, iypos;
