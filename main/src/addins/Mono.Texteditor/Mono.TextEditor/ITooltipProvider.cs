@@ -34,5 +34,6 @@ namespace Mono.TextEditor
 		object GetItem (TextEditor editor, int offset);
 		Gtk.Window CreateTooltipWindow (TextEditor editor, object item);
 		int GetRequiredWidth (TextEditor editor, Gtk.Window tipWindow);
+		bool IsInteractive (TextEditor editor, Gtk.Window tipWindow);
 	}
 }
