@@ -18,6 +18,7 @@ FILES =  \
 	Mono.Debugging.Client/Breakpoint.cs \
 	Mono.Debugging.Client/BreakpointEventArgs.cs \
 	Mono.Debugging.Client/BreakpointStore.cs \
+	Mono.Debugging.Client/CompletionData.cs \
 	Mono.Debugging.Client/DebuggerSession.cs \
 	Mono.Debugging.Client/DebuggerStartInfo.cs \
 	Mono.Debugging.Client/IDebuggerEngine.cs \

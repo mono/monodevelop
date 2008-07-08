@@ -549,7 +549,10 @@ namespace Mono.Debugging.Client
 		
 		protected abstract Backtrace OnGetThreadBacktrace (int processId, int threadId);
 		
-		protected abstract AssemblyLine[] OnDisassembleFile (string file);
+		protected virtual AssemblyLine[] OnDisassembleFile (string file)
+		{
+			return null;
+		}
 		
 		protected IDebuggerSessionFrontend Frontend {
 			get {
@@ -589,4 +592,5 @@ namespace Mono.Debugging.Client
 	}
 
 	public delegate void OutputWriterDelegate (bool isStderr, string text);
+	
 }

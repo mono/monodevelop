@@ -79,6 +79,11 @@ namespace Mono.Debugging.Client
 			return values [0];
 		}
 		
+		public CompletionData GetExpressionCompletionData (string exp)
+		{
+			return sourceBacktrace.GetExpressionCompletionData (index, exp);
+		}
+		
 		// Returns disassembled code for this stack frame.
 		// firstLine is the relative code line. It can be negative.
 		public AssemblyLine[] Disassemble (int firstLine, int count)
