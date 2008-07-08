@@ -52,6 +52,7 @@ namespace MonoDevelop.Debugger.Gdb
 		int currentThread = -1;
 		int activeThread = -1;
 		string currentProcessName;
+		List<string> tempVariableObjects = new List<string> ();
 		
 		bool internalStop;
 			
@@ -379,7 +380,11 @@ namespace MonoDevelop.Debugger.Gdb
 		{
 			string line;
 			while ((line = sout.ReadLine ()) != null) {
-				ProcessOutput (line);
+				try {
+					ProcessOutput (line);
+				} catch (Exception ex) {
+					Console.WriteLine (ex);
+				}
 			}
 		}
 		
@@ -434,6 +439,8 @@ namespace MonoDevelop.Debugger.Gdb
 				return;
 			}
 			
+			CleanTempVariableObjects ();
+			
 			TargetEventType type;
 			switch (ev.Reason) {
 				case "breakpoint-hit":
@@ -472,6 +479,17 @@ namespace MonoDevelop.Debugger.Gdb
 				args.Thread = GetThread (activeThread);
 			}
 			OnTargetEvent (args);
+		}
+		
+		internal void RegisterTempVariableObject (string var)
+		{
+			tempVariableObjects.Add (var);
+		}
+		
+		void CleanTempVariableObjects ()
+		{
+			foreach (string s in tempVariableObjects)
+				RunCommand ("-var-delete", s);
 		}
 	}
 }

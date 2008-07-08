@@ -40,7 +40,6 @@ namespace MonoDevelop.Debugger.Gdb
 		int fcount;
 		StackFrame firstFrame;
 		GdbSession session;
-		List<string> variableObjects = new List<string> ();
 		DissassemblyBuffer[] disBuffers;
 		int currentFrame = -1;
 		int threadId;
@@ -121,13 +120,24 @@ namespace MonoDevelop.Debugger.Gdb
 			return values.ToArray ();
 		}
 		
-		ObjectValue CreateVarObject (string name)
+		public CompletionData GetExpressionCompletionData (int frameIndex, string exp)
 		{
-			session.SelectThread (threadId);
-			GdbCommandResult res = session.RunCommand ("-var-create", "-", "*", name);
-			string vname = res.GetValue ("name");
-			variableObjects.Add (vname);
-			return CreateObjectValue (name, res);
+			return null;
+		}
+
+		
+		ObjectValue CreateVarObject (string exp)
+		{
+			try {
+				session.SelectThread (threadId);
+				exp = exp.Replace ("\"", "\\\"");
+				GdbCommandResult res = session.RunCommand ("-var-create", "-", "*", "\"" + exp + "\"");
+				string vname = res.GetValue ("name");
+				session.RegisterTempVariableObject (vname);
+				return CreateObjectValue (exp, res);
+			} catch {
+				return ObjectValue.CreateUnknown (exp);
+			}
 		}
 
 		ObjectValue CreateObjectValue (string name, ResultData data)

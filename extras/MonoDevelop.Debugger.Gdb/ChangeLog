@@ -1,3 +1,8 @@
+2008-07-09  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* GdbBacktrace.cs: Track api changes.
+	* GdbSession.cs: Clean temporary variables.
+
 2008-07-07  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* GdbBacktrace.cs: Track api changes.
