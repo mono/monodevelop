@@ -1,3 +1,8 @@
+2008-07-08  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.AssemblyBrowser/ModuleDefinitionNodeBuilder.cs: API
+	  change.
+
 2008-06-06  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.AssemblyBrowser.Dom/DomCecilCompilationUnit.cs,
