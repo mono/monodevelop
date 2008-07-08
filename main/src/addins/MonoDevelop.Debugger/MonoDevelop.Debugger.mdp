@@ -38,6 +38,7 @@
     <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Components" />
     <ProjectReference type="Project" localcopy="False" refto="Mono.TextEditor" />
     <ProjectReference type="Gac" localcopy="True" refto="Mono.Cairo, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
+    <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Projects.Gui" />
   </References>
   <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="../../..">
     <BuildFilesVar Sync="True" Name="FILES" />

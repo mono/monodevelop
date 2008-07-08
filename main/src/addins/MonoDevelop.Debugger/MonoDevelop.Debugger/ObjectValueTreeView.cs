@@ -33,24 +33,27 @@ using Mono.Debugging.Client;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Components;
+using MonoDevelop.Projects.Gui.Completion;
 
 namespace MonoDevelop.Debugger
 {
-	public class ObjectValueTreeView: Gtk.TreeView
+	public class ObjectValueTreeView: Gtk.TreeView, ICompletionWidget
 	{
 		List<string> valueNames = new List<string> ();
 		List<ObjectValue> values = new List<ObjectValue> ();
-		IValueTreeSource source;
 		TreeStore store;
 		TreeViewState state;
 		string createMsg;
 		bool allowAdding;
 		bool allowEditing;
 		bool compact;
+		StackFrame frame;
 		
 		CellRendererText crtExp;
 		CellRendererText crtValue;
 		CellRendererText crtType;
+		Gtk.Entry editEntry;
+		CompletionData currentCompletionData;
 		
 		const int NameCol = 0;
 		const int ValueCol = 1;
@@ -62,6 +65,9 @@ namespace MonoDevelop.Debugger
 		const int IconCol = 7;
 		const int NamePlainCol = 8;
 		
+		public event EventHandler StartEditing;
+		public event EventHandler EndEditing;
+
 		public ObjectValueTreeView ()
 		{
 			store = new TreeStore (typeof(string), typeof(string), typeof(string), typeof(ObjectValue), typeof(bool), typeof(bool), typeof(bool), typeof(string), typeof(string));
@@ -101,12 +107,24 @@ namespace MonoDevelop.Debugger
 			
 			crtExp.Edited += OnExpEdited;
 			crtExp.EditingStarted += OnExpEditing;
+			crtExp.EditingCanceled += OnEditingCancelled;
 			crtValue.EditingStarted += OnValueEditing;
 			crtValue.Edited += OnValueEdited;
+			crtValue.EditingCanceled += OnEditingCancelled;
 			
 			createMsg = GettextCatalog.GetString ("Click here to add a new watch");
 		}
 		
+		public StackFrame Frame {
+			get {
+				return frame;
+			}
+			set {
+				frame = value;
+				Update ();
+			}
+		}
+				
 		public void SaveState ()
 		{
 			state.Save ();
@@ -115,16 +133,6 @@ namespace MonoDevelop.Debugger
 		public void LoadState ()
 		{
 			state.Load ();
-		}
-		
-		public IValueTreeSource Source {
-			get {
-				return source;
-			}
-			set {
-				source = value;
-				Update ();
-			}
 		}
 		
 		public bool AllowAdding {
@@ -199,8 +207,8 @@ namespace MonoDevelop.Debugger
 			foreach (ObjectValue val in values)
 				AppendValue (TreeIter.Zero, null, val);
 			
-			if (source != null) {
-				ObjectValue[] expValues = source.GetValues (valueNames.ToArray ());
+			if (valueNames.Count > 0) {
+				ObjectValue[] expValues = GetValues (valueNames.ToArray ());
 				for (int n=0; n<expValues.Length; n++)
 					AppendValue (TreeIter.Zero, valueNames [n], expValues [n]);
 			}
@@ -231,7 +239,6 @@ namespace MonoDevelop.Debugger
 			else {
 				canEdit = val.IsPrimitive && !val.IsReadOnly && allowEditing;
 				strval = val.Value != null ? val.Value.ToString () : "(null)";
-				if (canEdit) strval = Escape (strval);
 				strval = GLib.Markup.EscapeText (strval);
 			}
 			
@@ -252,7 +259,7 @@ namespace MonoDevelop.Debugger
 			}
 		}
 		
-		string GetIcon (ObjectValueFlags flags)
+		internal static string GetIcon (ObjectValueFlags flags)
 		{
 			if ((flags & ObjectValueFlags.Field) != 0 && (flags & ObjectValueFlags.ReadOnly) != 0)
 				return "md-literal";
@@ -314,10 +321,13 @@ namespace MonoDevelop.Debugger
 			Gtk.Entry e = (Gtk.Entry) args.Editable;
 			if (e.Text == createMsg)
 				e.Text = string.Empty;
+			OnStartEditing (args);
 		}
 		
 		void OnExpEdited (object s, Gtk.EditedArgs args)
 		{
+			OnEndEditing ();
+			
 			TreeIter it;
 			if (!store.GetIterFromString (out it, args.Path))
 				return;
@@ -339,97 +349,252 @@ namespace MonoDevelop.Debugger
 			}
 		}
 		
-		public event EventHandler StartEditing;
-		public event EventHandler EndEditing;
-
-		Gdk.Cursor cc;
 		void OnValueEditing (object s, Gtk.EditingStartedArgs args)
 		{
-			cc = new Gdk.Cursor (Gdk.CursorType.Arrow);
 			Gtk.Entry e = (Gtk.Entry) args.Editable;
 			e.GrabFocus ();
-			if (StartEditing != null)
-				StartEditing (this, EventArgs.Empty);
+			OnStartEditing (args);
 		}
 		
 		void OnValueEdited (object s, Gtk.EditedArgs args)
 		{
-			if (EndEditing != null)
-				EndEditing (this, EventArgs.Empty);
+			OnEndEditing ();
 			
 			TreeIter it;
 			if (!store.GetIterFromString (out it, args.Path))
 				return;
 			ObjectValue val = store.GetValue (it, ObjectCol) as ObjectValue;
 			try {
-				string newVal = Unscape (args.NewText);
-				if (newVal == null) {
+				string newVal = args.NewText;
+/*				if (newVal == null) {
 					MessageService.ShowError (GettextCatalog.GetString ("Unregognized escape sequence."));
 					return;
 				}
-				val.Value = newVal;
+*/				val.Value = newVal;
 			} catch (Exception ex) {
 				LoggingService.LogError ("Could not set value for object '" + val.Name + "'", ex);
 			}
-			store.SetValue (it, ValueCol, GLib.Markup.EscapeText (Escape (val.Value)));
+			store.SetValue (it, ValueCol, GLib.Markup.EscapeText (val.Value));
 		}
 		
-		public static string Unscape (string text)
+		void OnEditingCancelled (object s, EventArgs args)
 		{
-			StringBuilder sb = new StringBuilder ();
-			for (int i = 0; i < text.Length; i++) {
-				char c = text[i];
-				if (c != '\\') {
-					sb.Append (c);
-					continue;
+			OnEndEditing ();
+		}
+		
+		void OnStartEditing (Gtk.EditingStartedArgs args)
+		{
+			editEntry = (Gtk.Entry) args.Editable;
+			editEntry.KeyPressEvent += OnEditKeyPress;
+			if (StartEditing != null)
+				StartEditing (this, EventArgs.Empty);
+		}
+		
+		void OnEndEditing ()
+		{
+			editEntry.KeyPressEvent -= OnEditKeyPress;
+			CompletionWindowManager.HideWindow ();
+			currentCompletionData = null;
+			if (EndEditing != null)
+				EndEditing (this, EventArgs.Empty);
+		}
+		
+		[GLib.ConnectBeforeAttribute]
+		void OnEditKeyPress (object s, Gtk.KeyPressEventArgs args)
+		{
+			Gtk.Entry entry = (Gtk.Entry) s;
+			
+			if (currentCompletionData != null) {
+				bool ret = CompletionWindowManager.ProcessKeyEvent (args.Event.Key, args.Event.State);
+				args.RetVal = ret;
+			}
+			
+			Gtk.Application.Invoke (delegate {
+				char c = (char) Gdk.Keyval.ToUnicode (args.Event.KeyValue);
+				if (currentCompletionData == null && IsCompletionChar (c)) {
+					string exp = entry.Text.Substring (0, entry.CursorPosition);
+					currentCompletionData = GetCompletionData (exp);
+					if (currentCompletionData != null && currentCompletionData.Items.Count > 0) {
+						DebugCompletionDataProvider dataProvider = new DebugCompletionDataProvider (currentCompletionData);
+						ICodeCompletionContext ctx = ((ICompletionWidget)this).CreateCodeCompletionContext (entry.CursorPosition - currentCompletionData.ExpressionLenght);
+						CompletionWindowManager.ShowWindow (c, dataProvider, this, ctx, OnCompletionWindowClosed);
+					} else
+						currentCompletionData = null;
 				}
-				i++;
-				if (i >= text.Length)
-					return null;
+			});
+		}
+		
+		bool IsCompletionChar (char c)
+		{
+			return (char.IsLetterOrDigit (c) || char.IsPunctuation (c) || char.IsSymbol (c) || char.IsWhiteSpace (c));
+		}
+		
+		void OnCompletionWindowClosed ()
+		{
+			currentCompletionData = null;
+		}
+		
+		#region ICompletionWidget implementation 
+		
+		EventHandler completionContextChanged;
+		
+		event EventHandler ICompletionWidget.CompletionContextChanged {
+			add { completionContextChanged += value; }
+			remove { completionContextChanged -= value; }
+		}
+		
+		string ICompletionWidget.GetText (int startOffset, int endOffset)
+		{
+			if (startOffset < 0) startOffset = 0;
+			if (endOffset > editEntry.Text.Length) endOffset = editEntry.Text.Length;
+			return editEntry.Text.Substring (startOffset, endOffset - startOffset);
+		}
+		
+		char ICompletionWidget.GetChar (int offset)
+		{
+			string txt = editEntry.Text;
+			if (offset >= txt.Length)
+				return (char)0;
+			else
+				return txt [offset];
+		}
+		
+		CodeCompletionContext ICompletionWidget.CreateCodeCompletionContext (int triggerOffset)
+		{
+			CodeCompletionContext c = new CodeCompletionContext ();
+			c.TriggerLine = 0;
+			c.TriggerOffset = triggerOffset;
+			c.TriggerLineOffset = c.TriggerOffset;
+			c.TriggerTextHeight = editEntry.SizeRequest ().Height;
+			c.TriggerWordLength = currentCompletionData.ExpressionLenght;
+			
+			int x, y;
+			int tx, ty;
+			editEntry.GdkWindow.GetOrigin (out x, out y);
+			editEntry.GetLayoutOffsets (out tx, out ty);
+			int cp = editEntry.TextIndexToLayoutIndex (editEntry.Position);
+			Pango.Rectangle rect = editEntry.Layout.IndexToPos (cp);
+			tx += Pango.Units.ToPixels (rect.X) + x;
+			y += editEntry.Allocation.Height;
 				
-				switch (text[i]) {
-					case '\\': c = '\\'; break;
-					case 'a': c = '\a'; break;
-					case 'b': c = '\b'; break;
-					case 'f': c = '\f'; break;
-					case 'v': c = '\v'; break;
-					case 'n': c = '\n'; break;
-					case 'r': c = '\r'; break;
-					case 't': c = '\t'; break;
-					default: return null;
-				}
-				sb.Append (c);
-			}
-			return sb.ToString ();
+			c.TriggerXCoord = tx;
+			c.TriggerYCoord = y;
+			return c;
 		}
 		
-		public static string Escape (string text)
+		string ICompletionWidget.GetCompletionText (ICodeCompletionContext ctx)
 		{
-			StringBuilder sb = new StringBuilder ();
-			for (int i = 0; i < text.Length; i++) {
-				char c = text[i];
-				string txt;
-				switch (c) {
-					case '\\': txt = @"\\"; break;
-					case '\a': txt = @"\a"; break;
-					case '\b': txt = @"\b"; break;
-					case '\f': txt = @"\f"; break;
-					case '\v': txt = @"\v"; break;
-					case '\n': txt = @"\n"; break;
-					case '\r': txt = @"\r"; break;
-					case '\t': txt = @"\t"; break;
-					default: 
-						sb.Append (c);
-						continue;
-				}
-				sb.Append (txt);
+			return editEntry.Text.Substring (ctx.TriggerOffset, ctx.TriggerWordLength);
+		}
+		
+		void ICompletionWidget.SetCompletionText (ICodeCompletionContext ctx, string partial_word, string complete_word)
+		{
+			int sp = editEntry.Position - partial_word.Length;
+			editEntry.DeleteText (sp, sp + partial_word.Length);
+			editEntry.InsertText (complete_word, ref sp);
+			editEntry.Position = sp; // sp is incremented by InsertText
+		}
+		
+		int ICompletionWidget.TextLength {
+			get {
+				return editEntry.Text.Length;
 			}
-			return sb.ToString ();
+		}
+		
+		int ICompletionWidget.SelectedLength {
+			get {
+				return 0;
+			}
+		}
+		
+		Style ICompletionWidget.GtkStyle {
+			get {
+				return editEntry.Style;
+			}
+		}
+
+		ObjectValue[] GetValues (string[] names)
+		{
+			if (frame != null)
+				return frame.GetExpressionValues (names, true);
+			else {
+				ObjectValue[] vals = new ObjectValue [names.Length];
+				for (int n=0; n<vals.Length; n++)
+					vals [n] = ObjectValue.CreateUnknown (names [n]);
+				return vals;
+			}
+		}
+		
+		CompletionData GetCompletionData (string exp)
+		{
+			if (frame != null)
+				return frame.GetExpressionCompletionData (exp);
+			else
+				return null;
+		}
+		#endregion 
+		
+	}
+	
+	class DebugCompletionDataProvider: ICompletionDataProvider
+	{
+		CompletionData data;
+		
+		public DebugCompletionDataProvider (CompletionData data)
+		{
+			this.data = data;
+		}
+		
+		public void Dispose ()
+		{
+		}
+
+		public ICompletionData[] GenerateCompletionData (ICompletionWidget widget, char charTyped)
+		{
+			List<ICompletionData> list = new List<ICompletionData> ();
+			foreach (CompletionItem it in data.Items)
+				list.Add (new DebugCompletionData (it));
+			return list.ToArray ();
+		}
+		
+		public string DefaultCompletionString {
+			get {
+				return string.Empty;
+			}
 		}
 	}
 	
-	public interface IValueTreeSource
+	class DebugCompletionData: ICompletionData
 	{
-		ObjectValue[] GetValues (string[] name);
+		CompletionItem item;
+		
+		public DebugCompletionData (CompletionItem item)
+		{
+			this.item = item;
+		}
+		
+		public string Image {
+			get {
+				return ObjectValueTreeView.GetIcon (item.Flags);
+			}
+		}
+		
+		public string[] Text {
+			get {
+				return new string [] { item.Name };
+			}
+		}
+		
+		public string Description {
+			get {
+				return string.Empty;
+			}
+		}
+		
+		public string CompletionString {
+			get {
+				return item.Name;
+			}
+		}
 	}
 }

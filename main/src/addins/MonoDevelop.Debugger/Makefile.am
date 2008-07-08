@@ -12,6 +12,7 @@ REFS =  \
 	-r:../../../build/bin/MonoDevelop.Core.Gui.dll \
 	-r:../../../build/bin/MonoDevelop.Ide.dll \
 	-r:../../../build/bin/MonoDevelop.Projects.dll \
+	-r:../../../build/bin/MonoDevelop.Projects.Gui.dll \
 	-r:Mono.Cairo \
 	-r:System 
 

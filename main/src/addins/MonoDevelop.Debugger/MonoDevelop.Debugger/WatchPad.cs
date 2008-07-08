@@ -36,7 +36,7 @@ namespace MonoDevelop.Debugger
 {
 	
 	
-	public class WatchPad: IPadContent, IValueTreeSource
+	public class WatchPad: IPadContent
 	{
 		ObjectValueTreeView tree;
 		ScrolledWindow scrolled;
@@ -58,7 +58,6 @@ namespace MonoDevelop.Debugger
 			tree.AllowAdding = true;
 			tree.HeadersVisible = true;
 			tree.RulesHint = true;
-			tree.Source = this;
 			scrolled.Add (tree);
 			scrolled.ShowAll ();
 			
@@ -81,24 +80,12 @@ namespace MonoDevelop.Debugger
 		public void RedrawContent ()
 		{
 		}
-
-		public ObjectValue[] GetValues (string[] names)
-		{
-			StackFrame sf = IdeApp.Services.DebuggingService.CurrentFrame;
-			if (sf != null)
-				return sf.GetExpressionValues (names, true);
-			else {
-				ObjectValue[] vals = new ObjectValue [names.Length];
-				for (int n=0; n<vals.Length; n++)
-					vals [n] = ObjectValue.CreateUnknown (names [n]);
-				return vals;
-			}
-		}
 		
 		void OnFrameChanged (object s, EventArgs a)
 		{
-			if (IdeApp.Services.DebuggingService.CurrentFrame != null)
-				tree.Update ();
+			if (IdeApp.Services.DebuggingService.CurrentFrame != null) {
+				tree.Frame = IdeApp.Services.DebuggingService.CurrentFrame;
+			}
 		}
 		
 		void OnDebuggerPaused (object s, EventArgs a)

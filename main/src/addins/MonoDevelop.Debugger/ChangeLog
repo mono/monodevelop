@@ -1,3 +1,10 @@
+2008-07-09  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Debugger.mdp, Makefile.am,
+	  MonoDevelop.Debugger/WatchPad.cs,
+	  MonoDevelop.Debugger/ObjectValueTreeView.cs: Added support for code
+	  completion.
+
 2008-07-08  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Debugger/WatchPad.cs: Don't update the tree if there is
