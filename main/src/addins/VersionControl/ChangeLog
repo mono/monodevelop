@@ -1,5 +1,6 @@
 2008-07-06  Andrés G. Aragoneses <aaragoneses@novell.com> 
 
+	Implement feature in bug#394434: "Revert [to] revision".
 	* MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/LibSvnClient.cs:
 	  New P/Invokes for merge command.
 	* MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SubversionRepository.cs:

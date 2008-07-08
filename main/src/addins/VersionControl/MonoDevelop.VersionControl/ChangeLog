@@ -1,5 +1,6 @@
 2008-07-06  Andrés G. Aragoneses <aaragoneses@novell.com> 
 
+	Implement feature in bug#394434: "Revert [to] revision".
 	* MonoDevelop.VersionControl.mdp, Makefile.am: Add the new file
 	  RevertRevisionsCommands.
 	* MonoDevelop.VersionControl.Views/Logs.cs: Adding the new buttons to
