@@ -1,3 +1,9 @@
+2008-07-09  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.SourceEditor/DebugValueWindow.cs,
+	  MonoDevelop.SourceEditor/DebugValueTooltipProvider.cs: Track api
+	  changes.
+
 2008-07-08  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.SourceEditor/DebugValueWindow.cs: Show and hide

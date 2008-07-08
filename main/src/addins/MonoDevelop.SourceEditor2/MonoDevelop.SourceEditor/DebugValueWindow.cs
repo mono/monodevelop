@@ -39,7 +39,7 @@ namespace MonoDevelop.SourceEditor
 		ObjectValueTreeView tree;
 		ScrolledWindow sw;
 		
-		public DebugValueWindow (TextEditor editor, ObjectValue value)
+		public DebugValueWindow (TextEditor editor, StackFrame frame, ObjectValue value)
 		{
 			TransientFor = (Gtk.Window) editor.Toplevel;
 			AcceptFocus = true;
@@ -52,6 +52,7 @@ namespace MonoDevelop.SourceEditor
 			sw.Add (tree);
 			Add (sw);
 			
+			tree.Frame = frame;
 			tree.CompactView = true;
 			tree.AllowAdding = false;
 			tree.AllowEditing = true;

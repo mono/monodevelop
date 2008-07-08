@@ -116,7 +116,7 @@ namespace MonoDevelop.SourceEditor
 			
 		public Gtk.Window CreateTooltipWindow (TextEditor editor, object item)
 		{
-			return new DebugValueWindow (editor, (ObjectValue) item);
+			return new DebugValueWindow (editor, IdeApp.Services.DebuggingService.CurrentFrame, (ObjectValue) item);
 		}
 		
 		public void GetRequiredPosition (TextEditor editor, Gtk.Window tipWindow, out int requiredWidth, out double xalign)
