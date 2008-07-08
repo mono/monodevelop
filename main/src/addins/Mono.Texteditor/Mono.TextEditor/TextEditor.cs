@@ -1384,9 +1384,11 @@ namespace Mono.TextEditor
 			this.GdkWindow.GetOrigin (out ox, out oy);
 			
 			int screenW = Screen.Width;
-			int w = provider.GetRequiredWidth (this, liw);
+			int w;
+			double xalign;
+			provider.GetRequiredPosition (this, liw, out w, out xalign);
 
-			int x = xloc + ox - (w/2);
+			int x = xloc + ox + textViewMargin.XOffset - (int) ((double)w * xalign);
 			if (x + w >= screenW)
 				x = screenW - w;
 			if (x < 0)

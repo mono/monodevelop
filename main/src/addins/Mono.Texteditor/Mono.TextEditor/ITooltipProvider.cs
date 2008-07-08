@@ -33,7 +33,7 @@ namespace Mono.TextEditor
 	{
 		object GetItem (TextEditor editor, int offset);
 		Gtk.Window CreateTooltipWindow (TextEditor editor, object item);
-		int GetRequiredWidth (TextEditor editor, Gtk.Window tipWindow);
+		void GetRequiredPosition (TextEditor editor, Gtk.Window tipWindow, out int requiredWidth, out double xalign);
 		bool IsInteractive (TextEditor editor, Gtk.Window tipWindow);
 	}
 }
