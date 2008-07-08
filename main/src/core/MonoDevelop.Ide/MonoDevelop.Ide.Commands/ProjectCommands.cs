@@ -105,7 +105,7 @@ namespace MonoDevelop.Ide.Commands
 					info.Text = GettextCatalog.GetString ("_Run again");
 				}
 				
-				info.Enabled = true;
+				info.Enabled = !(IdeApp.ProjectOperations.CurrentSelectedItem is Workspace);
 			} else {
 				info.Enabled = (IdeApp.Workbench.ActiveDocument != null && IdeApp.Workbench.ActiveDocument.IsBuildTarget);
 			}
@@ -140,8 +140,10 @@ namespace MonoDevelop.Ide.Commands
 		
 		protected override void Update (CommandInfo info)
 		{
-			info.Enabled = IdeApp.ProjectOperations.CurrentSelectedBuildTarget != null && 
-							IdeApp.ProjectOperations.CurrentRunOperation.IsCompleted;
+			IBuildTarget target = IdeApp.ProjectOperations.CurrentSelectedBuildTarget;
+			info.Enabled = target != null &&
+					!(target is Workspace) &&
+					IdeApp.ProjectOperations.CurrentRunOperation.IsCompleted;
 		}
 	}
 	
@@ -179,7 +181,8 @@ namespace MonoDevelop.Ide.Commands
 			}
 
 			if (IdeApp.Workspace.IsOpen) {
-				info.Enabled = IdeApp.ProjectOperations.CurrentRunOperation.IsCompleted;
+				info.Enabled = IdeApp.ProjectOperations.CurrentRunOperation.IsCompleted && 
+						!(IdeApp.ProjectOperations.CurrentSelectedItem is Workspace);
 			} else {
 				info.Enabled = (IdeApp.Workbench.ActiveDocument != null && IdeApp.Workbench.ActiveDocument.IsBuildTarget);
 			}
@@ -212,8 +215,10 @@ namespace MonoDevelop.Ide.Commands
 		
 		protected override void Update (CommandInfo info)
 		{
-			info.Enabled = IdeApp.ProjectOperations.CurrentSelectedBuildTarget != null && 
-							IdeApp.ProjectOperations.CurrentRunOperation.IsCompleted;
+			IBuildTarget target = IdeApp.ProjectOperations.CurrentSelectedBuildTarget;
+			info.Enabled = target != null &&
+					!(target is Workspace) &&
+					IdeApp.ProjectOperations.CurrentRunOperation.IsCompleted;
 		}
 	}
 	

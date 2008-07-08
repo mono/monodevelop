@@ -1,5 +1,10 @@
 2008-07-08  Ankit Jain  <jankit@novell.com>
 
+	* MonoDevelop.Ide.Commands/ProjectCommands: Disable Run/Debug commands
+	for workspaces.
+
+2008-07-08  Ankit Jain  <jankit@novell.com>
+
 	* MonoDevelop.Ide.Commands/ProjectCommands: Rename "Resume" command to
 	"Continue".
 
