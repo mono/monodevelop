@@ -64,6 +64,14 @@ namespace MonoDevelop.VersionControl
 		{
 		}
 		
+		public override void RevertRevision (string localPath, Revision revision, IProgressMonitor monitor)
+		{
+		}
+		
+		public override void RevertToRevision (string localPath, Revision revision, IProgressMonitor monitor)
+		{
+		}
+		
 		public override void Add (string path, bool recurse, IProgressMonitor monitor)
 		{
 		}

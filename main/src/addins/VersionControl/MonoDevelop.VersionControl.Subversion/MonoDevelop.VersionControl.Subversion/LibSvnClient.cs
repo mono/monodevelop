@@ -114,6 +114,19 @@ namespace MonoDevelop.VersionControl.Subversion {
 		                                    IntPtr ctx, IntPtr pool);
 		
 		
+		public abstract IntPtr client_merge_peg2 (string source,
+		                                          ref Rev revision1,
+		                                          ref Rev revision2,
+		                                          ref Rev peg_revision,
+		                                          string target_wcpath,
+		                                          bool recurse,
+		                                          bool ignore_ancestry,
+		                                          bool force,
+		                                          bool dry_run,
+		                                          IntPtr merge_options,
+		                                          IntPtr ctx,
+		                                          IntPtr pool);
+		
 		
 		public class DirEnt {
 			public readonly string Name;
@@ -714,6 +727,26 @@ namespace MonoDevelop.VersionControl.Subversion {
 			                        no_diff_deleted, outfile, errfile, ctx, pool);
 		}
 		
+		public override IntPtr client_merge_peg2 (
+		                          string source,
+		                          ref Rev revision1,
+		                          ref Rev revision2,
+		                          ref Rev peg_revision,
+		                          string target_wcpath,
+		                          bool recurse,
+		                          bool ignore_ancestry,
+		                          bool force,
+		                          bool dry_run,
+		                          IntPtr merge_options,
+		                          IntPtr ctx,
+		                          IntPtr pool)
+		{
+			// svn_boolean_t == int
+			return svn_client_merge_peg2 (source, ref revision1, ref revision2, ref peg_revision, target_wcpath, 
+			                              recurse ? 1: 0, ignore_ancestry ? 1 : 0, force ? 1 : 0, dry_run ? 1 : 0,
+			                              merge_options, ctx, pool);
+		}
+		
 		[DllImport(svnclientlib)] static extern void svn_config_ensure (string config_dir, IntPtr pool);
 		[DllImport(svnclientlib)] static extern void svn_config_get_config (ref IntPtr cfg_hash, string config_dir, IntPtr pool);
 		[DllImport(svnclientlib)] static extern void svn_auth_open (out IntPtr auth_baton, IntPtr providers, IntPtr pool);
@@ -798,6 +831,19 @@ namespace MonoDevelop.VersionControl.Subversion {
 		                                                                IntPtr errfile,
 		                                                                IntPtr ctx,
 		                                                                IntPtr pool);
+		
+		[DllImport(svnclientlib)] static extern IntPtr svn_client_merge_peg2 (string source,
+		                                                                      ref Rev revision1,
+		                                                                      ref Rev revision2,
+		                                                                      ref Rev peg_revision,
+		                                                                      string target_wcpath,
+		                                                                      int recurse,
+		                                                                      int ignore_ancestry,
+		                                                                      int force,
+		                                                                      int dry_run,
+		                                                                      IntPtr merge_options,
+		                                                                      IntPtr ctx,
+		                                                                      IntPtr pool);
 	}
 	
 	public class LibSvnClient1 : LibSvnClient {
@@ -1005,6 +1051,26 @@ namespace MonoDevelop.VersionControl.Subversion {
 			                        no_diff_deleted, outfile, errfile, ctx, pool);
 		}
 		
+		public override IntPtr client_merge_peg2 (
+		                          string source,
+		                          ref Rev revision1,
+		                          ref Rev revision2,
+		                          ref Rev peg_revision,
+		                          string target_wcpath,
+		                          bool recurse,
+		                          bool ignore_ancestry,
+		                          bool force,
+		                          bool dry_run,
+		                          IntPtr merge_options,
+		                          IntPtr ctx,
+		                          IntPtr pool)
+		{
+			// svn_boolean_t == int
+			return svn_client_merge_peg2 (source, ref revision1, ref revision2, ref peg_revision, target_wcpath, 
+			                              recurse ? 1: 0, ignore_ancestry ? 1 : 0, force ? 1 : 0, dry_run ? 1 : 0,
+			                              merge_options, ctx, pool);
+		}
+
 		[DllImport(svnclientlib)] static extern void svn_config_ensure (string config_dir, IntPtr pool);
 		[DllImport(svnclientlib)] static extern void svn_config_get_config (ref IntPtr cfg_hash, string config_dir, IntPtr pool);
 		[DllImport(svnclientlib)] static extern void svn_auth_open (out IntPtr auth_baton, IntPtr providers, IntPtr pool);
@@ -1089,5 +1155,19 @@ namespace MonoDevelop.VersionControl.Subversion {
 		                                                                IntPtr errfile,
 		                                                                IntPtr ctx,
 		                                                                IntPtr pool);
+		
+		[DllImport(svnclientlib)] static extern IntPtr svn_client_merge_peg2 (string source,
+		                                                                      ref Rev revision1,
+		                                                                      ref Rev revision2,
+		                                                                      ref Rev peg_revision,
+		                                                                      string target_wcpath,
+		                                                                      int recurse,
+		                                                                      int ignore_ancestry,
+		                                                                      int force,
+		                                                                      int dry_run,
+		                                                                      IntPtr merge_options,
+		                                                                      IntPtr ctx,
+		                                                                      IntPtr pool);
+		
 	}
 }

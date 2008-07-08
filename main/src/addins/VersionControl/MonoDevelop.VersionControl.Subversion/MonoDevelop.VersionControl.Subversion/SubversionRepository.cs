@@ -160,6 +160,16 @@ namespace MonoDevelop.VersionControl.Subversion
 		{
 			Svn.Revert (new string[] {localPath}, recurse, monitor);
 		}
+
+		public override void RevertRevision (string localPath, Revision revision, IProgressMonitor monitor)
+		{
+			Svn.RevertRevision (localPath, revision, monitor);
+		}
+
+		public override void RevertToRevision (string localPath, Revision revision, IProgressMonitor monitor)
+		{
+			Svn.RevertToRevision (localPath, revision, monitor);
+		}
 		
 		public override void Add (string path, bool recurse, IProgressMonitor monitor)
 		{

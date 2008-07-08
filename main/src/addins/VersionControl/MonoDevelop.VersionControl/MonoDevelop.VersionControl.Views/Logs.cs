@@ -18,6 +18,7 @@ namespace MonoDevelop.VersionControl.Views
 		Revision[] history;
 		Repository vc;
 		VersionInfo vinfo;
+		Gtk.ToolButton revertButton, revertToButton;
 		
 		TreeView loglist;
 		ListStore changedpathstore;
@@ -83,13 +84,12 @@ namespace MonoDevelop.VersionControl.Views
 			widget = box;
 
 			// Create the toolbar
-			
-			if (!isDirectory && vinfo != null) {
-				commandbar = new Toolbar ();
-				commandbar.ToolbarStyle = Gtk.ToolbarStyle.BothHoriz;
-				commandbar.IconSize = Gtk.IconSize.Menu;
-				box.PackStart (commandbar, false, false, 0);
+			commandbar = new Toolbar ();
+			commandbar.ToolbarStyle = Gtk.ToolbarStyle.BothHoriz;
+			commandbar.IconSize = Gtk.IconSize.Menu;
+			box.PackStart (commandbar, false, false, 0);
 				
+			if (!isDirectory && vinfo != null) {
 				Gtk.ToolButton button = new Gtk.ToolButton (new Gtk.Image ("vc-diff", Gtk.IconSize.Menu), GettextCatalog.GetString ("View Changes"));
 				button.IsImportant = true;
 				button.Clicked += new EventHandler(DiffButtonClicked);
@@ -100,6 +100,19 @@ namespace MonoDevelop.VersionControl.Views
 				button.Clicked += new EventHandler (ViewTextButtonClicked);
 				commandbar.Insert (button, -1);
 			}
+			
+			revertButton = new Gtk.ToolButton (new Gtk.Image ("vc-revert-command", Gtk.IconSize.Menu), GettextCatalog.GetString ("Revert changes from this revision"));
+			revertButton.IsImportant = true;
+			revertButton.Sensitive = false;
+			revertButton.Clicked += new EventHandler (RevertRevisionClicked);
+			commandbar.Insert (revertButton, -1);
+			
+			revertToButton = new Gtk.ToolButton (new Gtk.Image ("vc-revert-command", Gtk.IconSize.Menu), GettextCatalog.GetString ("Revert to this revision"));
+			revertToButton.IsImportant = true;
+			revertToButton.Sensitive = false;
+			revertToButton.Clicked += new EventHandler (RevertToRevisionClicked);
+			commandbar.Insert (revertToButton, -1);
+
 			
 			// A paned with two trees
 			
@@ -193,6 +206,10 @@ namespace MonoDevelop.VersionControl.Views
 		
 		void TreeSelectionChanged(object o, EventArgs args) {
 			Revision d = GetSelectedRev();
+			
+			revertButton.Sensitive = (d != null);
+			revertToButton.Sensitive = (d != null);
+			
 			changedpathstore.Clear();
 			foreach (RevisionPath rp in d.ChangedFiles) 
 			{
@@ -238,6 +255,16 @@ namespace MonoDevelop.VersionControl.Views
 			Revision d = GetSelectedRev();
 			if (d == null) return;
 			HistoricalFileView.Show(filepath, vc, vinfo.RepositoryPath, d);
+		}
+		
+		void RevertToRevisionClicked(object src, EventArgs args) {
+			Revision d = GetSelectedRev();
+			RevertRevisionsCommands.RevertToRevision (vc, filepath, d, false);
+		}
+		
+		void RevertRevisionClicked(object src, EventArgs args) {
+			Revision d = GetSelectedRev();
+			RevertRevisionsCommands.RevertRevision (vc, filepath, d, false);
 		}
 		
 		public override Gtk.Widget Control { 

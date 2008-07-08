@@ -24,6 +24,7 @@ FILES =  \
 	MonoDevelop.VersionControl/Publish.cs \
 	MonoDevelop.VersionControl/Repository.cs \
 	MonoDevelop.VersionControl/RevertCommand.cs \
+	MonoDevelop.VersionControl/RevertRevisionsCommands.cs \
 	MonoDevelop.VersionControl/Revision.cs \
 	MonoDevelop.VersionControl/Task.cs \
 	MonoDevelop.VersionControl/UnknownRepository.cs \

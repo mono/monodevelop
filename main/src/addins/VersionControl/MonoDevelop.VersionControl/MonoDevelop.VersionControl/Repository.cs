@@ -218,6 +218,10 @@ namespace MonoDevelop.VersionControl
 		
 		public abstract void Revert (string localPath, bool recurse, IProgressMonitor monitor);
 		
+		public abstract void RevertRevision (string localPath, Revision revision, IProgressMonitor monitor);
+		
+		public abstract void RevertToRevision (string localPath, Revision revision, IProgressMonitor monitor);
+		
 		// Adds a file or directory to the repository
 		public abstract void Add (string localPath, bool recurse, IProgressMonitor monitor);
 

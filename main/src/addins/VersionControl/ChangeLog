@@ -1,3 +1,15 @@
+2008-07-06  Andrés G. Aragoneses <aaragoneses@novell.com> 
+
+	* MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/LibSvnClient.cs:
+	  New P/Invokes for merge command.
+	* MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SubversionRepository.cs:
+	  Overriding implementations for RevertRevision and RevertToRevision.
+	* MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:
+	  Connection between the P/Invoke library (for the merge command) and
+	  the Revert[To]Revision methods.
+	* MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SubversionVersionControl.cs:
+	  RevertRevision and RevertToRevision helper methods implemented.
+
 2008-06-04  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* VersionControl.mds,

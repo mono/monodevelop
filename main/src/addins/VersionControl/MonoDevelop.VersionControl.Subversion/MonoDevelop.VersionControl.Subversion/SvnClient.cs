@@ -694,6 +694,31 @@ namespace MonoDevelop.VersionControl.Subversion {
 				} catch {}
 			}
 		}
+
+		public void RevertToRevision (string path, int revision)
+		{
+			Merge (path, LibSvnClient.Rev.Head, LibSvnClient.Rev.Number(revision));
+		}
+		
+		public void RevertRevision (string path, int revision)
+		{
+			Merge (path, LibSvnClient.Rev.Number(revision), LibSvnClient.Rev.Number (revision - 1));
+		}
+		
+		private void Merge (string path, LibSvnClient.Rev revision1, LibSvnClient.Rev revision2)
+		{
+			IntPtr localpool = newpool (pool);
+			LibSvnClient.Rev working = LibSvnClient.Rev.Working;
+			CheckError (svn.client_merge_peg2 (path, 
+			                                   ref revision1,
+			                                   ref revision2,
+			                                   ref working,
+			                                   path,
+			                                   false, false, false, false,
+			                                   IntPtr.Zero, //default options is NULL
+			                                   ctx, localpool));
+			return;
+		}
 		
 		IntPtr svn_client_get_commit_log_impl (ref IntPtr log_msg, ref IntPtr tmp_file,
 		                                       IntPtr commit_items, IntPtr baton, IntPtr pool)

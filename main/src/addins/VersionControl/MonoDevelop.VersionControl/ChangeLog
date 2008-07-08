@@ -1,3 +1,14 @@
+2008-07-06  Andrés G. Aragoneses <aaragoneses@novell.com> 
+
+	* MonoDevelop.VersionControl.mdp, Makefile.am: Add the new file
+	  RevertRevisionsCommands.
+	* MonoDevelop.VersionControl.Views/Logs.cs: Adding the new buttons to
+	  the Log view.
+	* MonoDevelop.VersionControl/Repository.cs: New abstract methods
+	  Revert[To]Revision.
+	* MonoDevelop.VersionControl/UnknownRepository.cs: Empty
+	  implementations for Revert[To]Revision.
+
 2008-06-04  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* VersionControl.addin.xml: Bump MD version.
