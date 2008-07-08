@@ -47,7 +47,7 @@ namespace DebuggerServer
 		public static void DisconnectAll ()
 		{
 			lock (connectedValues) {
-				foreach (ValueReference val in connectedValues)
+				foreach (RemoteFrameObject val in connectedValues)
 					System.Runtime.Remoting.RemotingServices.Disconnect (val);
 				connectedValues.Clear ();
 			}
