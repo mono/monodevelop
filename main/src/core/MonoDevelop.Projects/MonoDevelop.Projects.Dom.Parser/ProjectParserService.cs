@@ -302,7 +302,13 @@ namespace MonoDevelop.Projects.Dom.Parser
 				if (isNew) {
 					string realAssemblyName, assemblyFile, name;
 					AssemblyCodeCompletionDatabase.GetAssemblyInfo (fullName, out realAssemblyName, out assemblyFile, out name);
-					dom.UpdateFromParseInfo (DomCecilCompilationUnit.Load (assemblyFile), assemblyFile);
+					Thread thread = new Thread (delegate () {
+						dom.UpdateFromParseInfo (DomCecilCompilationUnit.Load (assemblyFile, false), assemblyFile);
+					});
+					thread.Priority = ThreadPriority.Lowest;
+					thread.IsBackground = true;
+					thread.Start ();
+					
 //					AssemblyCodeCompletionDatabase adb = new AssemblyCodeCompletionDatabase (baseDirectory, file);
 //					adb.ParseInExternalProcess = true;
 //					adb.ParseAll ();
@@ -315,6 +321,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 		
 		public static void Load (Project project)
 		{
+			System.Console.WriteLine("Load:" + project);
 			string type = project.ProjectType;
 			if (project is DotNetProject)
 				type = ((DotNetProject)project).LanguageName;
@@ -330,6 +337,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 				Load (project.BaseDirectory, re.Uri);
 				//GetDatabase (baseDir, re.Uri);
 			}
+			
 			
 			dom.Database.CheckModifiedFiles ();
 //			dom.Database.UpdateFromProject ();

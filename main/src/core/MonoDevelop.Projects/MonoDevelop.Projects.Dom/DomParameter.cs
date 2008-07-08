@@ -36,7 +36,7 @@ namespace MonoDevelop.Projects.Dom
 		protected string name;
 		protected ParameterModifiers parameterModifiers;
 		protected IReturnType returnType;
-		protected List<IAttribute> attributes = new List<IAttribute> ();
+		protected List<IAttribute> attributes = null;
 		protected DomLocation location;
 		
 		public string Name {
@@ -101,6 +101,13 @@ namespace MonoDevelop.Projects.Dom
 		{
 			this.name       = name;
 			this.returnType = returnType;
+		}
+		
+		public void Add (IAttribute attribute)
+		{
+			if (attributes == null)
+				attributes = new List<IAttribute> ();
+			attributes.Add (attribute);
 		}
 		
 		public override string ToString ()

@@ -49,30 +49,48 @@ namespace MonoDevelop.Projects.Dom
 			return ClassType.Class;
 		}
 		
-		public DomCecilType (TypeDefinition typeDefinition)
+		public void CleanCecilDefinitions ()
 		{
-			this.typeDefinition = typeDefinition;
+			typeDefinition = null;
+			foreach (DomCecilField field in Fields) {
+				field.CleanCecilDefinitions ();
+			}
+			foreach (DomCecilMethod method in Methods) {
+				method.CleanCecilDefinitions ();
+			}
+			foreach (DomCecilProperty property in Properties) {
+				property.CleanCecilDefinitions ();
+			}
+			foreach (DomCecilEvent evt in Events) {
+				evt.CleanCecilDefinitions ();
+			}
+		}
+		
+		public DomCecilType (bool keepDefinitions, TypeDefinition typeDefinition)
+		{
+			if (keepDefinitions)
+				this.typeDefinition = typeDefinition;
 			this.classType      = GetClassType (typeDefinition);
-			this.name           = typeDefinition.Name;
-			this.namesp         = typeDefinition.Namespace;
+			this.Name           = typeDefinition.Name;
+			this.Namespace      = typeDefinition.Namespace;
 			this.modifiers      = GetModifiers (typeDefinition.Attributes);
 			if (typeDefinition.BaseType != null)
 				this.baseType = new DomCecilReturnType (typeDefinition.BaseType);
 			
 			foreach (TypeReference interfaceReference in typeDefinition.Interfaces) {
-				this.implementedInterfaces.Add (new DomCecilReturnType (interfaceReference));
+				this.AddInterfaceImplementation (new DomCecilReturnType (interfaceReference));
 			}
 			foreach (FieldDefinition fieldDefinition in typeDefinition.Fields) {
-				base.Add (new DomCecilField (this, fieldDefinition));
+				base.Add (new DomCecilField (this, keepDefinitions, fieldDefinition));
 			}
 			foreach (MethodDefinition methodDefinition in typeDefinition.Methods) {
-				base.Add (new DomCecilMethod (this, methodDefinition));
+				base.Add (new DomCecilMethod (this, keepDefinitions, methodDefinition));
 			}
 			foreach (PropertyDefinition propertyDefinition in typeDefinition.Properties) {
-				base.Add (new DomCecilProperty (this, propertyDefinition));
+				base.Add (new DomCecilProperty (this, keepDefinitions, propertyDefinition));
 			}
 			foreach (EventDefinition eventDefinition in typeDefinition.Events) {
-				base.Add (new DomCecilEvent (this, eventDefinition));
+				base.Add (new DomCecilEvent (this, keepDefinitions,eventDefinition));
 			}
 		}
 		

@@ -35,8 +35,8 @@ namespace MonoDevelop.Projects.Dom
 	public class DomMethod : AbstractMember, IMethod
 	{
 		protected bool isConstructor;
-		protected List<IParameter> parameters = new List<IParameter> ();
-		protected List<IReturnType> genericParameters = new List<IReturnType> ();
+		protected List<IParameter> parameters = null;
+		protected List<IReturnType> genericParameters = null;
 		
 		public bool IsConstructor {
 			get {
@@ -49,16 +49,17 @@ namespace MonoDevelop.Projects.Dom
 		
 		public ReadOnlyCollection<IParameter> Parameters {
 			get {
-				return parameters.AsReadOnly ();
+				return parameters != null ? parameters.AsReadOnly () : null;
 			}
 		}
 		
 		public ReadOnlyCollection<IReturnType> GenericParameters {
 			get {
-				return genericParameters.AsReadOnly ();
+				return genericParameters != null ? genericParameters.AsReadOnly () : null;
 			}
 		}
-
+		
+		
 		
 		static readonly string[] iconTable = {Stock.Method, Stock.PrivateMethod, Stock.ProtectedMethod, Stock.InternalMethod};
 		public override string StockIcon {
@@ -71,14 +72,9 @@ namespace MonoDevelop.Projects.Dom
 		{
 		}
 		
-		public void Add (IParameter parameter)
-		{
-			this.parameters.Add (parameter);
-		}
-		
 		public DomMethod (string name, Modifiers modifiers, bool isConstructor, DomLocation location, DomRegion bodyRegion)
 		{
-			this.name       = name;
+			this.Name       = name;
 			this.modifiers      = modifiers;
 			this.location   = location;
 			this.bodyRegion = bodyRegion;
@@ -87,7 +83,7 @@ namespace MonoDevelop.Projects.Dom
 		
 		public DomMethod (string name, Modifiers modifiers, bool isConstructor, DomLocation location, DomRegion bodyRegion, IReturnType returnType, List<IParameter> parameters)
 		{
-			this.name       = name;
+			this.Name       = name;
 			this.modifiers      = modifiers;
 			this.location   = location;
 			this.bodyRegion = bodyRegion;
@@ -95,6 +91,21 @@ namespace MonoDevelop.Projects.Dom
 			this.parameters = parameters;
 			this.isConstructor = isConstructor;
 		}
+		
+		public void Add (IParameter parameter)
+		{
+			if (parameters == null) 
+				parameters = new List<IParameter> ();
+			parameters.Add (parameter);
+		}
+		
+		public void AddGenericParameter (IReturnType genPara)
+		{
+			if (genericParameters == null) 
+				genericParameters = new List<IReturnType> ();
+			genericParameters.Add (genPara);
+		}
+
 		
 		public override int CompareTo (object obj)
 		{
@@ -112,14 +123,14 @@ namespace MonoDevelop.Projects.Dom
 			result.ReturnType    = DomReturnType.Resolve (source.ReturnType, typeResolver);
 			result.Location      = source.Location;
 			result.bodyRegion    = source.BodyRegion;
-			result.attributes    = DomAttribute.Resolve (source.Attributes, typeResolver);
+			result.AddRange (DomAttribute.Resolve (source.Attributes, typeResolver));
 			
 			foreach (IParameter parameter in source.Parameters)
-				result.parameters.Add (DomParameter.Resolve (parameter, typeResolver));
+				result.Add (DomParameter.Resolve (parameter, typeResolver));
 			
 			if (source.GenericParameters != null && source.GenericParameters.Count > 0) {
 				foreach (IReturnType returnType in source.GenericParameters) {
-					result.genericParameters.Add(DomReturnType.Resolve (returnType, typeResolver));
+					result.AddGenericParameter (DomReturnType.Resolve (returnType, typeResolver));
 				}
 			}
 			

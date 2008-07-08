@@ -104,12 +104,12 @@ namespace MonoDevelop.Projects.Dom
 		
 		public DomProperty (string name)
 		{
-			base.name = name;
+			base.Name = name;
 		}
 		
 		public DomProperty (string name, Modifiers modifiers, DomLocation location, DomRegion bodyRegion, IReturnType returnType)
 		{
-			base.name       = name;
+			base.Name       = name;
 			this.modifiers  = modifiers;
 			this.location   = location;
 			this.bodyRegion = bodyRegion;
@@ -125,7 +125,7 @@ namespace MonoDevelop.Projects.Dom
 			result.ReturnType     = DomReturnType.Resolve (source.ReturnType, typeResolver);
 			result.Location       = source.Location;
 			result.IsIndexer      = source.IsIndexer;
-			result.attributes     = DomAttribute.Resolve (source.Attributes, typeResolver);
+			result.AddRange (DomAttribute.Resolve (source.Attributes, typeResolver));
 			
 			if (source.GetMethod != null)
 				result.GetMethod = DomMethod.Resolve (source.GetMethod, typeResolver);

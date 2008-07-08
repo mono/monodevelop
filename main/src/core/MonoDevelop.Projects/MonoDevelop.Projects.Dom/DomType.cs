@@ -38,25 +38,26 @@ namespace MonoDevelop.Projects.Dom
 		protected object sourceProject;
 		protected ICompilationUnit compilationUnit;
 		protected IReturnType baseType;
-		protected List<TypeParameter> typeParameters = new List<TypeParameter> ();
-		protected List<IMember> members = new List<IMember> ();
-		protected List<IType> parts = new List<IType> ();
-		protected List<IReturnType> implementedInterfaces = new List<IReturnType> ();
-		protected ClassType classType = ClassType.Unknown;
-		protected string namesp;
 		
-		public override string FullName {
-			get {
-				return !String.IsNullOrEmpty (namesp) ? namesp + "." + name : name;
-			}
+		List<TypeParameter> typeParameters      = null;
+		List<IMember> members                   = new List<IMember> ();
+		List<IReturnType> implementedInterfaces = null;
+		
+		protected ClassType classType = ClassType.Unknown;
+		protected long nameSpaceId;
+		
+		protected override void CalculateFullName ()
+		{
+			fullNameId = StringRegistry.GetId (!String.IsNullOrEmpty (Namespace) ? Namespace + "." + Name : Name);
 		}
 		
 		public string Namespace {
 			get {
-				return namesp;
+				return StringRegistry.GetString (nameSpaceId);
 			}
 			set {
-				namesp = value;
+				nameSpaceId = StringRegistry.GetId (value);
+				CalculateFullName ();
 			}
 		}
 		
@@ -98,13 +99,13 @@ namespace MonoDevelop.Projects.Dom
 		
 		public virtual ReadOnlyCollection<IReturnType> ImplementedInterfaces {
 			get {
-				return implementedInterfaces.AsReadOnly ();
+				return implementedInterfaces != null ? implementedInterfaces.AsReadOnly () : null;
 			}
 		}
 		
 		public virtual ReadOnlyCollection<TypeParameter> TypeParameters {
 			get {
-				return typeParameters.AsReadOnly ();
+				return typeParameters != null ? typeParameters.AsReadOnly () : null;
 			}
 		}
 		
@@ -156,12 +157,12 @@ namespace MonoDevelop.Projects.Dom
 		
 		public virtual IEnumerable<IType> Parts { 
 			get {
-				return parts;
+				return null;
 			}
 		}
 		public virtual bool HasParts {
 			get {
-				return parts != null && parts.Count > 0;
+				return false;
 			}
 		}
 		
@@ -189,10 +190,10 @@ namespace MonoDevelop.Projects.Dom
 		{
 			int idx = fullName.LastIndexOf ('.');
 			if (idx < 0) {
-				this.name = fullName;
+				this.Name = fullName;
 			} else {
-				this.namesp = fullName.Substring (0, idx); 
-				this.name = fullName.Substring (idx + 1);
+				this.Namespace = fullName.Substring (0, idx); 
+				this.Name = fullName.Substring (idx + 1);
 			}
 		}
 		
@@ -200,8 +201,8 @@ namespace MonoDevelop.Projects.Dom
 		{
 			this.compilationUnit = compilationUnit;
 			this.classType   = classType;
-			this.name        = name;
-			this.namesp      = namesp;
+			this.Name        = name;
+			this.Namespace   = namesp;
 			this.bodyRegion  = region;
 			this.members     = members;
 			this.location    = location;
@@ -222,8 +223,8 @@ namespace MonoDevelop.Projects.Dom
 			this.compilationUnit = compilationUnit;
 			this.classType   = classType;
 			this.modifiers   = modifiers;
-			this.name        = name;
-			this.namesp      = namesp;
+			this.Name        = name;
+			this.Namespace   = namesp;
 			this.bodyRegion  = region;
 			this.members     = members;
 			this.location    = location;
@@ -240,7 +241,7 @@ namespace MonoDevelop.Projects.Dom
 		{
 			DomType result = new DomType ();
 			result.compilationUnit = compilationUnit;
-			result.name = name;
+			result.Name = name;
 			result.classType = MonoDevelop.Projects.Dom.ClassType.Delegate;
 			result.members.Add (new DomMethod ("Invoke", Modifiers.None, false, location, DomRegion.Empty, type, parameters));
 			return result;
@@ -329,9 +330,45 @@ namespace MonoDevelop.Projects.Dom
 			this.members.Add (member);
 		}
 		
+		protected void ClearInterfaceImplementations ()
+		{
+			if (implementedInterfaces != null)
+				implementedInterfaces.Clear ();
+		}
 		public void AddInterfaceImplementation (IReturnType interf)
 		{
+			if (implementedInterfaces == null)
+				implementedInterfaces = new List<IReturnType> ();
 			implementedInterfaces.Add (interf);
+		}
+		public void AddInterfaceImplementations (IEnumerable<IReturnType> interfaces)
+		{
+			if (interfaces == null)
+				return;
+			foreach (IReturnType interf in interfaces) {
+				AddInterfaceImplementation (interf);
+			}
+		}
+		
+		protected void ClearTypeParameter ()
+		{
+			if (typeParameters != null)
+				typeParameters.Clear ();
+		}
+		
+		public void AddTypeParameter (TypeParameter parameter)
+		{
+			if (typeParameters == null)
+				typeParameters = new List<TypeParameter> ();
+			typeParameters.Add (parameter);
+		}
+		public void AddTypeParameter (IEnumerable<TypeParameter> parameters)
+		{
+			if (parameters == null)
+				return;
+			foreach (TypeParameter parameter in parameters) {
+				AddTypeParameter (parameter);
+			}
 		}
 		
 		public override object AcceptVisitior (IDomVisitor visitor, object data)
@@ -425,12 +462,15 @@ namespace MonoDevelop.Projects.Dom
 			
 			result.Location      = type.Location;
 			result.bodyRegion    = type.BodyRegion;
-			result.attributes    = DomAttribute.Resolve (type.Attributes, typeResolver);
+			result.AddRange (DomAttribute.Resolve (type.Attributes, typeResolver));
 			
 			if (type.BaseType != null)
-				result.baseType      = DomReturnType.Resolve (type.BaseType, typeResolver);
-			foreach (IReturnType iface in type.ImplementedInterfaces) {
-				result.implementedInterfaces.Add (DomReturnType.Resolve (iface, typeResolver));
+				result.baseType = DomReturnType.Resolve (type.BaseType, typeResolver);
+			
+			if (type.ImplementedInterfaces != null) {
+				foreach (IReturnType iface in type.ImplementedInterfaces) {
+					result.implementedInterfaces.Add (DomReturnType.Resolve (iface, typeResolver));
+				}
 			}
 			
 			foreach (IType innerType in type.InnerTypes) {

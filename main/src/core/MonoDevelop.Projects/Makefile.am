@@ -95,6 +95,7 @@ FILES =  \
 	MonoDevelop.Projects.Dom/ReferenceEntry.cs \
 	MonoDevelop.Projects.Dom/ResolveResult.cs \
 	MonoDevelop.Projects.Dom/SimpleCodeCompletionDatabase.cs \
+	MonoDevelop.Projects.Dom/StringRegistry.cs \
 	MonoDevelop.Projects.Dom/Tag.cs \
 	MonoDevelop.Projects.Dom/TypeParameter.cs \
 	MonoDevelop.Projects.Dom/TypeUpdateInformation.cs \

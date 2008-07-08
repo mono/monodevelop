@@ -41,11 +41,17 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
-		public DomCecilField (MonoDevelop.Projects.Dom.IType declaringType, FieldDefinition fieldDefinition)
+		public void CleanCecilDefinitions ()
+		{
+			fieldDefinition = null;
+		}
+		
+		public DomCecilField (MonoDevelop.Projects.Dom.IType declaringType, bool keepDefinitions, FieldDefinition fieldDefinition)
 		{
 			this.declaringType   = declaringType;
-			this.fieldDefinition = fieldDefinition;
-			base.name            = fieldDefinition.Name;
+			if (keepDefinitions)
+				this.fieldDefinition = fieldDefinition;
+			base.Name            = fieldDefinition.Name;
 			base.modifiers       = DomCecilType.GetModifiers (fieldDefinition.Attributes);
 			base.returnType      = new DomCecilReturnType (fieldDefinition.FieldType);
 		}

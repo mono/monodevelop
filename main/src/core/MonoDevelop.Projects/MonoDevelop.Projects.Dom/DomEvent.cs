@@ -76,7 +76,7 @@ namespace MonoDevelop.Projects.Dom
 		
 		public DomEvent (string name, Modifiers modifiers, DomLocation location, IReturnType returnType)
 		{
-			this.name = name;
+			this.Name = name;
 			this.modifiers = modifiers;
 			this.location = location;
 			this.returnType = returnType;
@@ -90,7 +90,7 @@ namespace MonoDevelop.Projects.Dom
 			result.Modifiers      = source.Modifiers;
 			result.ReturnType     = DomReturnType.Resolve (source.ReturnType, typeResolver);
 			result.Location       = source.Location;
-			result.attributes     = DomAttribute.Resolve (source.Attributes, typeResolver);
+			result.AddRange (DomAttribute.Resolve (source.Attributes, typeResolver));
 			if (source.AddMethod != null)
 				result.addMethod = DomMethod.Resolve (source.AddMethod, typeResolver);
 			if (source.RemoveMethod != null)

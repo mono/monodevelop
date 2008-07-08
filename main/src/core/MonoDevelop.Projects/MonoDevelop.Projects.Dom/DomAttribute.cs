@@ -81,6 +81,8 @@ namespace MonoDevelop.Projects.Dom
 		
 		public static List<IAttribute> Resolve (IEnumerable<IAttribute> source, ITypeResolver typeResolver)
 		{
+			if (source == null)
+				return null;
 			List<IAttribute> result = new List<IAttribute> ();
 			foreach (IAttribute attr in source) {
 				result.Add (Resolve (attr, typeResolver));

@@ -41,7 +41,7 @@ namespace MonoDevelop.Projects.Dom
 		long position;
 		
 		NamespaceEntry namespaceRef;
-		string name;
+		long nameId;
 		
 		[NonSerialized]
 		int lastGetTime;
@@ -101,7 +101,7 @@ namespace MonoDevelop.Projects.Dom
 		
 		void UpdateContent (IType cls)
 		{
-			name = cls.FullName; 
+			Name = cls.FullName; 
 			ctype = cls.ClassType;
 			modifiers = cls.Modifiers;
 			flags = (ContentFlags) 0;
@@ -138,10 +138,13 @@ namespace MonoDevelop.Projects.Dom
 				flags |= ContentFlags.HasBodyRegion;
 		}
 		
-		public string Name
-		{
-			get { return name; }
-			set { name = value; }
+		public string Name {
+			get {
+				return StringRegistry.GetString (nameId);
+			}
+			set {
+				nameId = StringRegistry.GetId (value);
+			}
 		}
 		
 		public NamespaceEntry NamespaceRef

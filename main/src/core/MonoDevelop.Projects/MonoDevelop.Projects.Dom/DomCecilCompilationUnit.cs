@@ -42,25 +42,48 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
-		public DomCecilCompilationUnit (AssemblyDefinition assemblyDefinition) : base (assemblyDefinition.Name.FullName)
+		public DomCecilCompilationUnit (AssemblyDefinition assemblyDefinition) : this (true, assemblyDefinition)
 		{
-			this.assemblyDefinition = assemblyDefinition;
+		}
+		
+		public DomCecilCompilationUnit (bool keepDefinitions, AssemblyDefinition assemblyDefinition) : base (assemblyDefinition.Name.FullName)
+		{
+			if (keepDefinitions)
+				this.assemblyDefinition = assemblyDefinition;
 			foreach (ModuleDefinition moduleDefinition in assemblyDefinition.Modules) {
-				AddModuleDefinition (moduleDefinition);
+				AddModuleDefinition (keepDefinitions, moduleDefinition);
 			}
+			
+		}
+		
+		public void CleanCecilDefinitions ()
+		{
+			assemblyDefinition = null;
+			foreach (IType type in Types) {
+				DomCecilType cecilType = type as DomCecilType;
+				if (cecilType != null) 
+					cecilType.CleanCecilDefinitions ();
+			}
+			System.GC.Collect ();
 		}
 		
 		public static ICompilationUnit Load (string fileName)
 		{
+			return Load (fileName, true);
+		}
+		public static ICompilationUnit Load (string fileName, bool keepDefinitions)
+		{
 			if (String.IsNullOrEmpty (fileName))
 				return new CompilationUnit (fileName);
-			return new DomCecilCompilationUnit (AssemblyFactory.GetAssembly (fileName));
+			DomCecilCompilationUnit result = new DomCecilCompilationUnit (keepDefinitions, AssemblyFactory.GetAssembly (fileName));
+			System.GC.Collect ();
+			return result;
 		}
 		
-		void AddModuleDefinition (ModuleDefinition moduleDefinition)
+		void AddModuleDefinition (bool keepDefinitions, ModuleDefinition moduleDefinition)
 		{
 			foreach (TypeDefinition type in moduleDefinition.Types) {
-				DomCecilType loadType = new DomCecilType (type);
+				DomCecilType loadType = new DomCecilType (keepDefinitions, type);
 				Add (loadType);
 			}
 		}

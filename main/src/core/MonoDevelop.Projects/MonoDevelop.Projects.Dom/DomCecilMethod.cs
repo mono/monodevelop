@@ -41,15 +41,24 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
-		public DomCecilMethod (MonoDevelop.Projects.Dom.IType declaringType, MethodDefinition methodDefinition)
+		public void CleanCecilDefinitions ()
+		{
+			methodDefinition = null;
+			foreach (DomCecilParameter parameter in base.parameters) {
+				parameter.CleanCecilDefinitions ();
+			}
+		}
+		
+		public DomCecilMethod (MonoDevelop.Projects.Dom.IType declaringType, bool keepDefinitions, MethodDefinition methodDefinition)
 		{
 			this.declaringType    = declaringType;
-			this.methodDefinition = methodDefinition;
-			base.name             = methodDefinition.Name;
+			if (keepDefinitions)
+				this.methodDefinition = methodDefinition;
+			base.Name             = methodDefinition.Name;
 			base.modifiers        = DomCecilType.GetModifiers (methodDefinition.Attributes);
 			base.returnType       = new DomCecilReturnType (methodDefinition.ReturnType.ReturnType);
 			foreach (ParameterDefinition paramDef in methodDefinition.Parameters) {
-				base.parameters.Add (new DomCecilParameter (paramDef));
+				Add (new DomCecilParameter (paramDef));
 			}
 		}
 	}

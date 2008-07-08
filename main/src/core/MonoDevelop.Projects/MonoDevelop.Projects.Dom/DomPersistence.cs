@@ -156,9 +156,13 @@ namespace MonoDevelop.Projects.Dom
 			Write (writer, nameTable, method.BodyRegion);
 			Write (writer, nameTable, method.ReturnType);
 			writer.Write (method.IsConstructor);
-			writer.Write (method.Parameters.Count);
-			foreach (IParameter param in method.Parameters) {
-				Write (writer, nameTable, param);
+			if (method.Parameters == null) {
+				writer.Write (0);
+			} else {
+				writer.Write (method.Parameters.Count);
+				foreach (IParameter param in method.Parameters) {
+					Write (writer, nameTable, param);
+				}
 			}
 		}
 		
@@ -313,9 +317,13 @@ namespace MonoDevelop.Projects.Dom
 			WriteString (type.Namespace, writer, nameTable);
 			writer.Write ((uint)type.ClassType);
 			Write (writer, nameTable, type.BaseType);
-			writer.Write (type.ImplementedInterfaces.Count);
-			foreach (IReturnType iface in type.ImplementedInterfaces) {
-				Write (writer, nameTable, iface);
+			if (type.ImplementedInterfaces == null) {
+				writer.Write (0);
+			} else {
+				writer.Write (type.ImplementedInterfaces.Count);
+				foreach (IReturnType iface in type.ImplementedInterfaces) {
+					Write (writer, nameTable, iface);
+				}
 			}
 			writer.Write (type.InnerTypeCount);
 			foreach (IType innerType in type.InnerTypes) {
@@ -341,6 +349,8 @@ namespace MonoDevelop.Projects.Dom
 		
 		public static uint GetCount<T> (IEnumerable<T> list)
 		{
+			if (list == null)
+				return 0;
 			uint result = 0;
 			foreach (T o in list) {
 				result++;

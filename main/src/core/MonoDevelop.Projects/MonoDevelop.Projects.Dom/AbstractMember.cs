@@ -34,7 +34,7 @@ namespace MonoDevelop.Projects.Dom
 	public abstract class AbstractMember : IMember
 	{
 		protected IReturnType returnType;
-		protected List<IReturnType> explicitInterfaces = new List<IReturnType> ();
+		protected List<IReturnType> explicitInterfaces = null;
 		
 		protected IType  declaringType;
 		
@@ -44,15 +44,20 @@ namespace MonoDevelop.Projects.Dom
 			}
 			set {
 				this.declaringType = value;
+				CalculateFullName ();
 			}
 		}
 		
 		public virtual string FullName {
 			get {
-				return DeclaringType != null ? DeclaringType.FullName + "." + Name : Name;
+				return StringRegistry.GetString (fullNameId);
 			}
 		}
 		
+		protected virtual void CalculateFullName ()
+		{
+			fullNameId = StringRegistry.GetId (DeclaringType != null ? DeclaringType.FullName + "." + Name : Name);
+		}
 		
 		public IReturnType ReturnType {
 			get {
@@ -69,31 +74,33 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
-		protected string name;
-		protected string documentation;
+		protected long nameId;
+		protected long documentationId;
+		protected long fullNameId;
+		
 		protected DomRegion bodyRegion;
 		protected DomLocation location;
 		protected Modifiers modifiers;
-		protected List<IAttribute> attributes = new List<IAttribute> ();
+		List<IAttribute> attributes = null;
 		
 		public string Name {
 			get {
-				return name;
+				return StringRegistry.GetString (nameId);
 			}
 			set {
-				name = value;
+				nameId = StringRegistry.GetId (value);
+				CalculateFullName ();
 			}
 		}
 		
 		public string Documentation {
 			get {
-				return documentation;
+				return StringRegistry.GetString (documentationId);
 			}
 			set {
-				documentation = value;
+				documentationId = StringRegistry.GetId (value);
 			}
 		}
-		
 		
 		public DomLocation Location {
 			get {
@@ -103,7 +110,6 @@ namespace MonoDevelop.Projects.Dom
 				location = value;
 			}
 		}
-		
 		
 		public DomRegion BodyRegion {
 			get {
@@ -136,6 +142,35 @@ namespace MonoDevelop.Projects.Dom
 		public System.Collections.Generic.IEnumerable<IAttribute> Attributes {
 			get {
 				return attributes;
+			}
+		}
+		
+		public void AddExplicitInterface (IReturnType iface)
+		{
+			if (explicitInterfaces == null) 
+				explicitInterfaces = new List<IReturnType> ();
+			explicitInterfaces.Add (iface);
+		}
+		
+		protected void ClearAttributes ()
+		{
+			if (attributes != null)
+				attributes.Clear ();
+		}
+		
+		public void Add (IAttribute attribute)
+		{
+			if (attributes == null)
+				attributes = new List<IAttribute> ();
+			attributes.Add (attribute);
+		}
+		
+		public void AddRange (IEnumerable<IAttribute> attributes)
+		{
+			if (attributes == null)
+				return;
+			foreach (IAttribute attribute in attributes) {
+				Add (attribute);
 			}
 		}
 		

@@ -41,6 +41,11 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
+		public void CleanCecilDefinitions ()
+		{
+			parameterDefinition = null;
+		}
+		
 		public DomCecilParameter (ParameterDefinition parameterDefinition)
 		{
 			this.parameterDefinition = parameterDefinition;

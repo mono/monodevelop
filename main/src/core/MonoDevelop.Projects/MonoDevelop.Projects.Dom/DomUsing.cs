@@ -34,8 +34,8 @@ namespace MonoDevelop.Projects.Dom
 	public class DomUsing : IUsing
 	{
 		protected DomRegion domRegion;
-		protected List<string> namespaces = new List<string> ();
-		protected Dictionary<string, IReturnType> aliases = new Dictionary<string, IReturnType> ();
+		protected List<string>                    namespaces = null;
+		protected Dictionary<string, IReturnType> aliases    = null;
 		
 		public DomRegion Region {
 			get {
@@ -53,6 +53,20 @@ namespace MonoDevelop.Projects.Dom
 			get {
 				return aliases;
 			}
+		}
+		
+		public void Add (string nspace)
+		{
+			if (namespaces == null)
+				namespaces = new List<string> ();
+			namespaces.Add (nspace);
+		}
+		
+		public void Add (string nspace, IReturnType alias)
+		{
+			if (aliases == null)
+				aliases = new Dictionary<string, IReturnType> ();
+			aliases[nspace] = alias;
 		}
 
 		public object AcceptVisitior (IDomVisitor visitor, object data)

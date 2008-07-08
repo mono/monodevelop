@@ -49,6 +49,18 @@ namespace MonoDevelop.Projects.Dom
 			return String.Format ("[CompoundType: FullName={0}, #Parts={1}, Parts={2}]", this.FullName, this.parts.Count, partsString);
 		}
 		
+		List<IType> parts = new List<IType> ();
+		public override IEnumerable<IType> Parts { 
+			get {
+				return parts;
+			}
+		}
+		
+		public override bool HasParts {
+			get {
+				return parts.Count > 0;
+			}
+		}
 		public override IEnumerable<IMember> Members {
 			get {
 				foreach (IType part in Parts) {
@@ -87,8 +99,8 @@ namespace MonoDevelop.Projects.Dom
 			this.classType = parts[0].ClassType;
 			this.Name      = parts[0].Name;
 			this.Namespace = parts[0].Namespace;
-			this.typeParameters.Clear ();
-			this.typeParameters.AddRange (parts[0].TypeParameters);
+			this.ClearTypeParameter ();
+			this.AddTypeParameter (parts[0].TypeParameters);
 			
 			fieldCount = 0;
 			foreach (IType part in parts)
@@ -112,13 +124,13 @@ namespace MonoDevelop.Projects.Dom
 			foreach (IType part in parts)
 				innerTypeCount += part.InnerTypeCount;
 			
-			this.implementedInterfaces.Clear ();
-			this.attributes.Clear ();
+			this.ClearInterfaceImplementations ();
+			this.ClearAttributes ();
 			Modifiers modifier = Modifiers.None;
 			foreach (IType part in parts) {
 				modifier |= part.Modifiers;
-				this.implementedInterfaces.AddRange (part.ImplementedInterfaces);
-				this.attributes.AddRange (part.Attributes);
+				this.AddInterfaceImplementations (part.ImplementedInterfaces);
+				this.AddRange (part.Attributes);
 			}
 			this.modifiers = modifier;
 		}

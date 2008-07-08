@@ -40,11 +40,17 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
-		public  DomCecilEvent (MonoDevelop.Projects.Dom.IType declaringType, EventDefinition eventDefinition)
+		public void CleanCecilDefinitions ()
+		{
+			eventDefinition = null;
+		}
+		
+		public  DomCecilEvent (MonoDevelop.Projects.Dom.IType declaringType, bool keepDefinitions, EventDefinition eventDefinition)
 		{
 			this.declaringType      = declaringType;
-			this.eventDefinition = eventDefinition;
-			base.name            = eventDefinition.Name;
+			if (keepDefinitions)
+				this.eventDefinition = eventDefinition;
+			base.Name            = eventDefinition.Name;
 			base.modifiers       = DomCecilType.GetModifiers (eventDefinition.AddMethod.Attributes);
 			if (!eventDefinition.IsSpecialName)
 				base.modifiers &= ~MonoDevelop.Projects.Dom.Modifiers.SpecialName;

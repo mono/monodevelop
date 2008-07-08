@@ -220,14 +220,17 @@ namespace MonoDevelop.Projects.Dom
 				if (resolver.AllResolved && c.FullName != "System.Object") {
 					// If the class has no base classes, make sure it subclasses System.Object
 					bool foundBase = false;
-					foreach (IEnumerable<IReturnType> typeList in new IEnumerable<IReturnType> [] {new IReturnType [] { rc.BaseType }, rc.ImplementedInterfaces })
-					foreach (IReturnType bt in typeList) {
-						if (bt == null)
+					foreach (IEnumerable<IReturnType> typeList in new IEnumerable<IReturnType> [] {new IReturnType [] { rc.BaseType }, rc.ImplementedInterfaces }) {
+						if (typeList == null)
 							continue;
-						IType bc = this.GetClass (bt.FullName, null, true);
-						if (bc == null || bc.ClassType != ClassType.Interface) {
-							foundBase =  true;
-							break;
+						foreach (IReturnType bt in typeList) {
+							if (bt == null)
+								continue;
+							IType bc = this.GetClass (bt.FullName, null, true);
+							if (bc == null || bc.ClassType != ClassType.Interface) {
+								foundBase =  true;
+								break;
+							}
 						}
 					}
 					if (!foundBase) 
@@ -886,7 +889,7 @@ namespace MonoDevelop.Projects.Dom
 				
 				bool[] added = new bool [newClasses.Count];
 				NamespaceEntry[] newNss = new NamespaceEntry [newClasses.Count];
-				for (int n=0; n<newClasses.Count; n++) {
+				for (int n = 0; n < newClasses.Count; n++) {
 					string[] path = newClasses[n].Namespace.Split ('.');
 					((IType)newClasses[n]).SourceProject = SourceEntry;
 					newNss[n] = GetNamespaceEntry (path, path.Length, true, true);
@@ -1003,24 +1006,27 @@ namespace MonoDevelop.Projects.Dom
 		
 		void AddSubclassReferences (ClassEntry ce)
 		{
-			foreach (IEnumerable<IReturnType> col in new IEnumerable<IReturnType>[] { new IReturnType[] { ce.Class.BaseType}, ce.Class.ImplementedInterfaces})
-			foreach (IReturnType type in col) {
-				if (type == null)
+			foreach (IEnumerable<IReturnType> col in new IEnumerable<IReturnType>[] { new IReturnType[] { ce.Class.BaseType}, ce.Class.ImplementedInterfaces}) {
+				if (col == null)
 					continue;
-									
-				string bt = type.FullName;
-				if (bt == "System.Object")
-					continue;
-				ClassEntry sup = FindClassEntry (bt);
-				if (sup != null)
-					sup.RegisterSubclass (ce);
-				else {
-					ArrayList subs = (ArrayList) unresolvedSubclassTable [bt];
-					if (subs == null) {
-						subs = new ArrayList ();
-						unresolvedSubclassTable [bt] = subs;
+				foreach (IReturnType type in col) {
+					if (type == null)
+						continue;
+										
+					string bt = type.FullName;
+					if (bt == "System.Object")
+						continue;
+					ClassEntry sup = FindClassEntry (bt);
+					if (sup != null)
+						sup.RegisterSubclass (ce);
+					else {
+						ArrayList subs = (ArrayList) unresolvedSubclassTable [bt];
+						if (subs == null) {
+							subs = new ArrayList ();
+							unresolvedSubclassTable [bt] = subs;
+						}
+						subs.Add (ce);
 					}
-					subs.Add (ce);
 				}
 			}
 			foreach (IType cls in ce.Class.InnerTypes)
@@ -1029,19 +1035,22 @@ namespace MonoDevelop.Projects.Dom
 		
 		void AddInnerSubclassReferences (IType cls)
 		{
-			foreach (IEnumerable<IReturnType> col in new IEnumerable<IReturnType>[] { new IReturnType[] { cls.BaseType}, cls.ImplementedInterfaces})
-			foreach (IReturnType type in col) {
-				if (type == null)
+			foreach (IEnumerable<IReturnType> col in new IEnumerable<IReturnType>[] { new IReturnType[] { cls.BaseType}, cls.ImplementedInterfaces}) {
+				if (col == null)
 					continue;
-				string bt = type.FullName;
-				if (bt == "System.Object")
-					continue;
-				ArrayList subs = (ArrayList) unresolvedSubclassTable [bt];
-				if (subs == null) {
-					subs = new ArrayList ();
-					unresolvedSubclassTable [bt] = subs;
+				foreach (IReturnType type in col) {
+					if (type == null)
+						continue;
+					string bt = type.FullName;
+					if (bt == "System.Object")
+						continue;
+					ArrayList subs = (ArrayList) unresolvedSubclassTable [bt];
+					if (subs == null) {
+						subs = new ArrayList ();
+						unresolvedSubclassTable [bt] = subs;
+					}
+					subs.Add (cls.FullName);
 				}
-				subs.Add (cls.FullName);
 			}
 			foreach (IType ic in cls.InnerTypes)
 				AddInnerSubclassReferences (ic);
@@ -1049,19 +1058,22 @@ namespace MonoDevelop.Projects.Dom
 		
 		void RemoveSubclassReferences (ClassEntry ce)
 		{
-			foreach (IEnumerable<IReturnType> col in new IEnumerable<IReturnType>[] { new IReturnType[] { ce.Class.BaseType}, ce.Class.ImplementedInterfaces})
-			foreach (IReturnType type in col) {
-				if (type == null)
+			foreach (IEnumerable<IReturnType> col in new IEnumerable<IReturnType>[] { new IReturnType[] { ce.Class.BaseType}, ce.Class.ImplementedInterfaces}) {
+				if (col == null)
 					continue;
-				ClassEntry sup = FindClassEntry (type.FullName);
-				if (sup != null)
-					sup.UnregisterSubclass (ce);
-					
-				ArrayList subs = (ArrayList) unresolvedSubclassTable [type.FullName];
-				if (subs != null) {
-					subs.Remove (ce);
-					if (subs.Count == 0)
-						unresolvedSubclassTable.Remove (type.FullName);
+				foreach (IReturnType type in col) {
+					if (type == null)
+						continue;
+					ClassEntry sup = FindClassEntry (type.FullName);
+					if (sup != null)
+						sup.UnregisterSubclass (ce);
+						
+					ArrayList subs = (ArrayList) unresolvedSubclassTable [type.FullName];
+					if (subs != null) {
+						subs.Remove (ce);
+						if (subs.Count == 0)
+							unresolvedSubclassTable.Remove (type.FullName);
+					}
 				}
 			}
 			foreach (IType cls in ce.Class.InnerTypes)
@@ -1070,13 +1082,16 @@ namespace MonoDevelop.Projects.Dom
 		
 		void RemoveInnerSubclassReferences (IType cls)
 		{
-			foreach (IEnumerable<IReturnType> col in new IEnumerable<IReturnType>[] { new IReturnType[] { cls.BaseType}, cls.ImplementedInterfaces})
-			foreach (IReturnType type in col) {
-				if (type == null)
+			foreach (IEnumerable<IReturnType> col in new IEnumerable<IReturnType>[] { new IReturnType[] { cls.BaseType}, cls.ImplementedInterfaces}) {
+				if (col == null)
 					continue;
-				ArrayList subs = (ArrayList) unresolvedSubclassTable [type.FullName];
-				if (subs != null)
-					subs.Remove (type.FullName);
+				foreach (IReturnType type in col) {
+					if (type == null)
+						continue;
+					ArrayList subs = (ArrayList) unresolvedSubclassTable [type.FullName];
+					if (subs != null)
+						subs.Remove (type.FullName);
+				}
 			}
 			foreach (IType ic in cls.InnerTypes)
 				RemoveInnerSubclassReferences (ic);

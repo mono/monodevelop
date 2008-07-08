@@ -41,11 +41,17 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
-		public DomCecilProperty (MonoDevelop.Projects.Dom.IType declaringType, PropertyDefinition propertyDefinition)
+		public void CleanCecilDefinitions ()
+		{
+			propertyDefinition = null;
+		}
+		
+		public DomCecilProperty (MonoDevelop.Projects.Dom.IType declaringType, bool keepDefinitions, PropertyDefinition propertyDefinition)
 		{
 			this.declaringType      = declaringType;
-			this.propertyDefinition = propertyDefinition;
-			base.name               = propertyDefinition.Name;
+			if (keepDefinitions)
+				this.propertyDefinition = propertyDefinition;
+			base.Name               = propertyDefinition.Name;
 			
 			base.modifiers          = DomCecilType.GetModifiers ((propertyDefinition.GetMethod != null ? propertyDefinition.GetMethod : propertyDefinition.SetMethod).Attributes);
 			if (!propertyDefinition.IsSpecialName)

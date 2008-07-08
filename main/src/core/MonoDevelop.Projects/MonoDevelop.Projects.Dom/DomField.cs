@@ -55,7 +55,7 @@ namespace MonoDevelop.Projects.Dom
 		
 		public DomField (string name)
 		{
-			base.name = name;
+			base.Name = name;
 		}
 		
 		
@@ -63,7 +63,7 @@ namespace MonoDevelop.Projects.Dom
 		{
 			this.location   = location;
 			this.modifiers  = modifiers;
-			this.name       = name;
+			this.Name       = name;
 			this.returnType = returnType;
 		}
 		
@@ -76,7 +76,7 @@ namespace MonoDevelop.Projects.Dom
 			result.Modifiers      = source.Modifiers;
 			result.ReturnType     = DomReturnType.Resolve (source.ReturnType, typeResolver);
 			result.Location       = source.Location;
-			result.attributes     = DomAttribute.Resolve (source.Attributes, typeResolver);
+			result.AddRange (DomAttribute.Resolve (source.Attributes, typeResolver));
 			return result;
 		}
 		

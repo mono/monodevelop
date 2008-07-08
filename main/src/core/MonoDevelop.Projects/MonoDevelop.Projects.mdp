@@ -342,6 +342,7 @@
     <File name="MonoDevelop.Projects.Serialization/ILoadController.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Dom/DefaultParserContext.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Dom/ResolveResult.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Projects.Dom/StringRegistry.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="False" refto="monodoc, Version=1.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />

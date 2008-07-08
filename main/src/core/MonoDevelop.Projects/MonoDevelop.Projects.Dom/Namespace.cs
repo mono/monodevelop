@@ -32,26 +32,36 @@ namespace MonoDevelop.Projects.Dom
 {
 	public class Namespace : AbstractMember
 	{
-		string name;
-		string documentation;
-		
+		protected long nameId;
+		protected long documentationId;
+			
 		public Namespace (string name)
 		{
-			this.name = name;
+			this.Name = name;
 		}
 		
 		public Namespace (string name, string documentation)
 		{
-			this.name = name;
-			this.documentation = documentation;
+			this.Name          = name;
+			this.Documentation = documentation;
 		}
 		
 		public string Name {
-			get { return name; }
+			get {
+				return StringRegistry.GetString (nameId);
+			}
+			set {
+				nameId = StringRegistry.GetId (value);
+			}
 		}
-
+		
 		public string Documentation {
-			get { return documentation; }
+			get {
+				return StringRegistry.GetString (documentationId);
+			}
+			set {
+				documentationId = StringRegistry.GetId (value);
+			}
 		}
 		
 		public virtual int CompareTo (object value)
@@ -59,7 +69,7 @@ namespace MonoDevelop.Projects.Dom
 			Namespace other = value as Namespace;
 			if (other == null) 
 				return 0;
-			return name.CompareTo (other.name);
+			return Name.CompareTo (other.Name);
 		}
 		
 		public override bool Equals (object ob)
@@ -83,7 +93,8 @@ namespace MonoDevelop.Projects.Dom
 
 		public override int GetHashCode ()
 		{
-			return name.GetHashCode ();
+			string name = Name;
+			return name != null ? name.GetHashCode () : -1;
 		}
 	}
 }
