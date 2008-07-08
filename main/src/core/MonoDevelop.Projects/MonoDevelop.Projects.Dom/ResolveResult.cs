@@ -136,7 +136,6 @@ namespace MonoDevelop.Projects.Dom
 		}
 	}
 	
-	
 	public class NamespaceResolveResult : ResolveResult
 	{
 		string ns;
@@ -152,10 +151,16 @@ namespace MonoDevelop.Projects.Dom
 			this.ns = ns;
 		}
 		
+		public override string ToString ()
+		{
+			return String.Format ("[NamespaceResolveResult: Namespace={0}]", Namespace);
+		}
+
+		
 		public override IEnumerable<object> CreateResolveResult (ProjectDom dom)
 		{
 			List<object> result = new List<object> ();
-			foreach (object o in dom.GetNamespaceContents (ns, true)) {
+			foreach (object o in dom.GetNamespaceContents (ns, true, true)) {
 				result.Add (o);
 			}
 			return result;

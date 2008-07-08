@@ -32,7 +32,8 @@ using System.Collections.Generic;
 namespace MonoDevelop.Projects.Dom.Parser
 {
 	public class ProjectDom
-	{
+	{	
+		List<ProjectDom> references = new List<ProjectDom> ();
 		Dictionary<string, ICompilationUnit> compilationUnits = new Dictionary<string, ICompilationUnit> ();
 		CodeCompletionDatabase database;
 		
@@ -42,6 +43,18 @@ namespace MonoDevelop.Projects.Dom.Parser
 			}
 		}*/
 		
+		public IEnumerable<IType> AllAccessibleTypes {
+			get {
+				foreach (IType type in Types) {
+					yield return type;
+				}
+				foreach (ProjectDom reference in references) {
+					foreach (IType type in reference.Types) {
+						yield return type;
+					}
+				}
+			}
+		}
 		
 		public IEnumerable<IType> Types {
 			get {
@@ -56,6 +69,13 @@ namespace MonoDevelop.Projects.Dom.Parser
 					}
 				}
 			}
+		}
+		
+		public void AddReference (ProjectDom dom)
+		{
+			if (dom == null)
+				return;
+			references.Add (dom);
 		}
 		
 		public IType GetType (IReturnType returnType)
@@ -123,19 +143,36 @@ namespace MonoDevelop.Projects.Dom.Parser
 			}
 		}
 		
-			
-		public List<IMember> GetNamespaceContents (string subNameSpace, bool includeReferences)
+		public bool NamespaceExists (string name)
 		{
-			List<IMember> result = new List<IMember> ();
-			if (database != null)
-				database.GetNamespaceContents (result, subNameSpace, false);
-			foreach (ICompilationUnit unit in compilationUnits.Values) {
-				unit.GetNamespaceContents (result, subNameSpace, false);
+			foreach (IType type in AllAccessibleTypes) {
+				if (type.Namespace == name)
+					return true;
 			}
-				
-			return result;
+			
+			return false;
 		}
 		
+		public List<IMember> GetNamespaceContents (string subNamespace, bool includeReferences, bool caseSensitive)
+		{
+			List<IMember> result = new List<IMember> ();
+			foreach (IType type in AllAccessibleTypes) {
+				string fullName = type.FullName;
+				if (fullName.StartsWith (subNamespace, caseSensitive ? StringComparison.InvariantCulture : StringComparison.InvariantCultureIgnoreCase)) {
+					string tmp = subNamespace.Length > 0 ? fullName.Substring (subNamespace.Length + 1) : fullName;
+					int idx = tmp.IndexOf('.');
+					IMember newMember;
+					if (idx > 0) {
+						newMember = new Namespace (tmp.Substring (0, idx));
+					} else {
+						newMember = type;
+					}
+					if (!result.Contains (newMember))
+						result.Add (newMember);
+				}
+			}
+			return result;
+		}
 		
 //		
 //		public bool Contains (ICompilationUnit unit)

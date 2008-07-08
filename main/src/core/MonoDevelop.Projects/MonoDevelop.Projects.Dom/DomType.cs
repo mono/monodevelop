@@ -230,6 +230,15 @@ namespace MonoDevelop.Projects.Dom
 			this.location    = location;
 		}
 		
+		public IMember SearchMember (string name, bool caseSensitive)
+		{
+			foreach (IMember member in this.Members) {
+				if (0 == String.Compare (name, member.Name, caseSensitive ? StringComparison.InvariantCulture : StringComparison.InvariantCultureIgnoreCase))
+					return member;
+			}
+			return null;
+		}
+		
 		public override string ToString ()
 		{
 			return String.Format ("[DomType: FullName={0}, #Members={1}]", this.FullName, this.members.Count);

@@ -291,7 +291,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 			}
 		}
 		
-		public static void Load (string baseDirectory, string uri)
+		public static ProjectDom Load (string baseDirectory, string uri)
 		{
 			if (uri.StartsWith ("Assembly:")) {
 				string file = uri.Substring (9);
@@ -316,10 +316,12 @@ namespace MonoDevelop.Projects.Dom.Parser
 //					foreach (ReferenceEntry re in dom.Database.References)
 //						Load (baseDirectory, re.Uri);
 				}
+				return dom;
 			}
+			return null;
 		}
 		
-		public static void Load (Project project)
+		public static ProjectDom Load (Project project)
 		{
 			System.Console.WriteLine("Load:" + project);
 			string type = project.ProjectType;
@@ -327,17 +329,15 @@ namespace MonoDevelop.Projects.Dom.Parser
 				type = ((DotNetProject)project).LanguageName;
 			IParser parser = GetParser (type);
 			if (parser == null) {
-				return;
+				return null;
 			}
 			
 			ProjectDom dom = GetDom (project);
 			dom.Database = new ProjectCodeCompletionDatabase (project);
 			foreach (ReferenceEntry re in dom.Database.References) {
-			
-				Load (project.BaseDirectory, re.Uri);
+				dom.AddReference (Load (project.BaseDirectory, re.Uri));
 				//GetDatabase (baseDir, re.Uri);
 			}
-			
 			
 			dom.Database.CheckModifiedFiles ();
 //			dom.Database.UpdateFromProject ();
@@ -357,6 +357,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 			}*/
 			dom.FireLoaded ();
 			OnDomUpdated (new ProjectDomEventArgs (dom));
+			return dom;
 		}
 		
 		public static void UpdateCommentTasks (string fileName)
