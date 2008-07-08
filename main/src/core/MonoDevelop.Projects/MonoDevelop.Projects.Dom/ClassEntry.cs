@@ -41,7 +41,7 @@ namespace MonoDevelop.Projects.Dom
 		long position;
 		
 		NamespaceEntry namespaceRef;
-		long nameId;
+		string name;
 		
 		[NonSerialized]
 		int lastGetTime;
@@ -140,10 +140,10 @@ namespace MonoDevelop.Projects.Dom
 		
 		public string Name {
 			get {
-				return StringRegistry.GetString (nameId);
+				return name;
 			}
 			set {
-				nameId = StringRegistry.GetId (value);
+				name = value;
 			}
 		}
 		

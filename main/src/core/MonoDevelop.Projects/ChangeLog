@@ -1,5 +1,14 @@
 2008-07-08  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.Projects.Dom/DomType.cs,
+	  MonoDevelop.Projects.Dom/AbstractMember.cs,
+	  MonoDevelop.Projects.Dom/Namespace.cs,
+	  MonoDevelop.Projects.Dom/ClassEntry.cs,
+	  MonoDevelop.Projects.Dom/StringRegistry.cs: Removed string registry
+	  (it's obsolete).
+
+2008-07-08  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.Projects.Dom.Parser/ProjectParserService.cs,
 	  MonoDevelop.Projects.Dom/DomCecilParameter.cs,
 	  MonoDevelop.Projects.Dom/DomCecilEvent.cs,

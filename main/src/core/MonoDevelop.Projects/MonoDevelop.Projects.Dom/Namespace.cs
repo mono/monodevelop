@@ -32,8 +32,8 @@ namespace MonoDevelop.Projects.Dom
 {
 	public class Namespace : AbstractMember
 	{
-		protected long nameId;
-		protected long documentationId;
+		protected string name;
+		protected string documentation;
 			
 		public Namespace (string name)
 		{
@@ -48,19 +48,19 @@ namespace MonoDevelop.Projects.Dom
 		
 		public string Name {
 			get {
-				return StringRegistry.GetString (nameId);
+				return name;
 			}
 			set {
-				nameId = StringRegistry.GetId (value);
+				name = value;
 			}
 		}
 		
 		public string Documentation {
 			get {
-				return StringRegistry.GetString (documentationId);
+				return documentation;
 			}
 			set {
-				documentationId = StringRegistry.GetId (value);
+				documentation = value;
 			}
 		}
 		

@@ -44,19 +44,19 @@ namespace MonoDevelop.Projects.Dom
 		List<IReturnType> implementedInterfaces = null;
 		
 		protected ClassType classType = ClassType.Unknown;
-		protected long nameSpaceId;
+		protected string nameSpace;
 		
 		protected override void CalculateFullName ()
 		{
-			fullNameId = StringRegistry.GetId (!String.IsNullOrEmpty (Namespace) ? Namespace + "." + Name : Name);
+			fullName = !String.IsNullOrEmpty (Namespace) ? Namespace + "." + Name : Name;
 		}
 		
 		public string Namespace {
 			get {
-				return StringRegistry.GetString (nameSpaceId);
+				return nameSpace;
 			}
 			set {
-				nameSpaceId = StringRegistry.GetId (value);
+				nameSpace = value;
 				CalculateFullName ();
 			}
 		}

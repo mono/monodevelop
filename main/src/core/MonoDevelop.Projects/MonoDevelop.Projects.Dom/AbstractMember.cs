@@ -50,13 +50,13 @@ namespace MonoDevelop.Projects.Dom
 		
 		public virtual string FullName {
 			get {
-				return StringRegistry.GetString (fullNameId);
+				return fullName;
 			}
 		}
 		
 		protected virtual void CalculateFullName ()
 		{
-			fullNameId = StringRegistry.GetId (DeclaringType != null ? DeclaringType.FullName + "." + Name : Name);
+			fullName = DeclaringType != null ? DeclaringType.FullName + "." + Name : Name;
 		}
 		
 		public IReturnType ReturnType {
@@ -74,9 +74,9 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
-		protected long nameId;
-		protected long documentationId;
-		protected long fullNameId;
+		protected string name;
+		protected string documentation;
+		protected string fullName;
 		
 		protected DomRegion bodyRegion;
 		protected DomLocation location;
@@ -85,20 +85,20 @@ namespace MonoDevelop.Projects.Dom
 		
 		public string Name {
 			get {
-				return StringRegistry.GetString (nameId);
+				return name;
 			}
 			set {
-				nameId = StringRegistry.GetId (value);
+				name = value;
 				CalculateFullName ();
 			}
 		}
 		
 		public string Documentation {
 			get {
-				return StringRegistry.GetString (documentationId);
+				return documentation;
 			}
 			set {
-				documentationId = StringRegistry.GetId (value);
+				documentation = value;
 			}
 		}
 		
