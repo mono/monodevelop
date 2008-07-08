@@ -36,8 +36,6 @@ using MonoDevelop.Projects.Gui.Completion;
 
 namespace MonoDevelop.SourceEditor
 {
-	
-	
 	public class DebugValueTooltipProvider: ITooltipProvider
 	{
 		Dictionary<string,ObjectValue> cachedValues = new Dictionary<string,ObjectValue> ();
@@ -67,15 +65,22 @@ namespace MonoDevelop.SourceEditor
 			if (fileName == null)
 				fileName = ed.View.UntitledName;
 			
-			IParserContext ctx = ed.View.GetParserContext ();
-			IExpressionFinder expressionFinder = null;
-			if (fileName != null && ctx != null)
-				expressionFinder = ctx.GetExpressionFinder (fileName);
+			string expression;
+			if (ed.IsSomethingSelected && offset >= ed.SelectionRange.Offset && offset <= ed.SelectionRange.EndOffset) {
+				expression = ed.SelectedText;
+			}
+			else {
+				IParserContext ctx = ed.View.GetParserContext ();
+				IExpressionFinder expressionFinder = null;
+				if (fileName != null && ctx != null)
+					expressionFinder = ctx.GetExpressionFinder (fileName);
+				
+				expression = expressionFinder == null ? GetExpressionBeforeOffset (ed, offset) : expressionFinder.FindFullExpression (editor.Document.Text, offset).Expression;
+				if (expression == null)
+					return null;
+				expression = expression.Trim ();
+			}
 			
-			string expression = expressionFinder == null ? TextUtilities.GetExpressionBeforeOffset (ed.View, offset) : expressionFinder.FindFullExpression (editor.Document.Text, offset).Expression;
-			if (expression == null)
-				return null;
-			expression = expression.Trim ();
 			if (expression.Length == 0)
 				return null;
 			
@@ -90,14 +95,34 @@ namespace MonoDevelop.SourceEditor
 				return val;
 		}
 		
-		public Gtk.Window CreateTooltipWindow (TextEditor editor, object item)
+		string GetExpressionBeforeOffset (TextEditor editor, int offset)
 		{
-			return new DebugValueWindow ((ObjectValue) item);
+			int start = offset;
+			while (start > 0 && IsIdChar (editor.Document.GetCharAt (start)))
+				start--;
+			while (offset < editor.Document.Length && IsIdChar (editor.Document.GetCharAt (offset)))
+				offset++;
+			start++;
+			if (offset - start > 0)
+				return editor.Document.GetTextAt (start, offset - start);
+			else
+				return string.Empty;
 		}
 		
-		public int GetRequiredWidth (TextEditor editor, Gtk.Window tipWindow)
+		public static bool IsIdChar (char c)
 		{
-			return tipWindow.SizeRequest ().Width;
+			return char.IsLetterOrDigit (c) || c == '_';
+		}
+			
+		public Gtk.Window CreateTooltipWindow (TextEditor editor, object item)
+		{
+			return new DebugValueWindow (editor, (ObjectValue) item);
+		}
+		
+		public void GetRequiredPosition (TextEditor editor, Gtk.Window tipWindow, out int requiredWidth, out double xalign)
+		{
+			xalign = 0.1;
+			requiredWidth = tipWindow.SizeRequest ().Width;
 		}
 
 		public bool IsInteractive (TextEditor editor, Gtk.Window tipWindow)

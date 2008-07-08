@@ -56,10 +56,11 @@ namespace MonoDevelop.SourceEditor
 			return new LanguageItemWindow ((ILanguageItem)item, pctx, ed.View.GetAmbience (), null);
 		}
 		
-		public int GetRequiredWidth (TextEditor editor, Gtk.Window tipWindow)
+		public void GetRequiredPosition (TextEditor editor, Gtk.Window tipWindow, out int requiredWidth, out double xalign)
 		{
 			LanguageItemWindow win = (LanguageItemWindow) tipWindow;
-			return win.SetMaxWidth (win.Screen.Width);
+			requiredWidth = win.SetMaxWidth (win.Screen.Width);
+			xalign = 0.5;
 		}
 		
 		public bool IsInteractive (TextEditor editor, Gtk.Window tipWindow)

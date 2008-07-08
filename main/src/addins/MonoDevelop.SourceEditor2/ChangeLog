@@ -1,3 +1,16 @@
+2008-07-08  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.SourceEditor/DebugValueWindow.cs: Show and hide
+	  scrollbars when needed. Set the window to modal mode when the user
+	  starts editing a value. In this way keyboard events will be
+	  directed to this popup window instead of the editor.
+	* MonoDevelop.SourceEditor/CompileErrorTooltipProvider.cs,
+	  MonoDevelop.SourceEditor/LanguageItemTooltipProvider.cs: Set
+	  tooltip alignment.
+	* MonoDevelop.SourceEditor/DebugValueTooltipProvider.cs: Implemented
+	  basic expression scanner. Use the selection as debug expression if
+	  there is something selected.
+
 2008-07-07  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Makefile.am, MonoDevelop.SourceEditor.addin.xml,

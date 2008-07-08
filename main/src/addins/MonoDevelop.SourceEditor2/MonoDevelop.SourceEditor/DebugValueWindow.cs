@@ -30,6 +30,7 @@ using Mono.Debugging.Client;
 using MonoDevelop.Debugger;
 using MonoDevelop.Projects.Gui.Completion;
 using Gtk;
+using Mono.TextEditor;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -38,8 +39,11 @@ namespace MonoDevelop.SourceEditor
 		ObjectValueTreeView tree;
 		ScrolledWindow sw;
 		
-		public DebugValueWindow (ObjectValue value)
+		public DebugValueWindow (TextEditor editor, ObjectValue value)
 		{
+			TransientFor = (Gtk.Window) editor.Toplevel;
+			AcceptFocus = true;
+			
 			sw = new ScrolledWindow ();
 			sw.HscrollbarPolicy = PolicyType.Never;
 			sw.VscrollbarPolicy = PolicyType.Never;
@@ -55,8 +59,43 @@ namespace MonoDevelop.SourceEditor
 			
 			tree.AddValue (value);
 			tree.Selection.UnselectAll ();
+			tree.SizeAllocated += OnTreeSizeChanged;
 			
 			sw.ShowAll ();
+			
+			tree.StartEditing += delegate {
+				Modal = true;
+			};
+			
+			tree.EndEditing += delegate {
+				Modal = false;
+			};
+		}
+		
+		void OnTreeSizeChanged (object s, SizeAllocatedArgs a)
+		{
+			int x,y,w,h;
+			GetPosition (out x, out y);
+			h = (int) sw.Vadjustment.Upper;
+			w = (int) sw.Hadjustment.Upper;
+			int dy = y + h - this.Screen.Height;
+			int dx = x + w - this.Screen.Width;
+			
+			if (dy > 0 && sw.VscrollbarPolicy == PolicyType.Never) {
+				sw.VscrollbarPolicy = PolicyType.Always;
+				sw.HeightRequest = h - dy - 10;
+			} else if (sw.VscrollbarPolicy == PolicyType.Always && sw.Vadjustment.Upper == sw.Vadjustment.PageSize) {
+				sw.VscrollbarPolicy = PolicyType.Never;
+				sw.HeightRequest = -1;
+			}
+			
+			if (dx > 0 && sw.HscrollbarPolicy == PolicyType.Never) {
+				sw.HscrollbarPolicy = PolicyType.Always;
+				sw.WidthRequest = w - dx - 10;
+			} else if (sw.HscrollbarPolicy == PolicyType.Always && sw.Hadjustment.Upper == sw.Hadjustment.PageSize) {
+				sw.HscrollbarPolicy = PolicyType.Never;
+				sw.WidthRequest = -1;
+			}
 		}
 	}
 }
