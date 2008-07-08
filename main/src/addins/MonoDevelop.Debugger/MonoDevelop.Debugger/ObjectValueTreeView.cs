@@ -60,10 +60,11 @@ namespace MonoDevelop.Debugger
 		const int NameEditableCol = 5;
 		const int ValueEditableCol = 6;
 		const int IconCol = 7;
+		const int NamePlainCol = 8;
 		
 		public ObjectValueTreeView ()
 		{
-			store = new TreeStore (typeof(string), typeof(string), typeof(string), typeof(ObjectValue), typeof(bool), typeof(bool), typeof(bool), typeof(string));
+			store = new TreeStore (typeof(string), typeof(string), typeof(string), typeof(ObjectValue), typeof(bool), typeof(bool), typeof(bool), typeof(string), typeof(string));
 			Model = store;
 			RulesHint = true;
 			
@@ -100,9 +101,20 @@ namespace MonoDevelop.Debugger
 			
 			crtExp.Edited += OnExpEdited;
 			crtExp.EditingStarted += OnExpEditing;
+			crtValue.EditingStarted += OnValueEditing;
 			crtValue.Edited += OnValueEdited;
 			
 			createMsg = GettextCatalog.GetString ("Click here to add a new watch");
+		}
+		
+		public void SaveState ()
+		{
+			state.Save ();
+		}
+		
+		public void LoadState ()
+		{
+			state.Load ();
 		}
 		
 		public IValueTreeSource Source {
@@ -205,6 +217,7 @@ namespace MonoDevelop.Debugger
 			bool canEdit;
 			if (val.IsUnknown) {
 				strval = GettextCatalog.GetString ("The name '{0}' does not exist in the current context.", val.Name);
+				strval = GLib.Markup.EscapeText (strval);
 				canEdit = false;
 			}
 			else if (val.IsError) {
@@ -224,14 +237,14 @@ namespace MonoDevelop.Debugger
 			
 			if (name == null)
 				name = val.Name;
-			name = GLib.Markup.EscapeText (name);
+			string nameMarkup = GLib.Markup.EscapeText (name);
 			string icon = GetIcon (val.Flags);
 
 			TreeIter it;
 			if (parent.Equals (TreeIter.Zero))
-				it = store.AppendValues (name, strval, val.TypeName, val, !val.HasChildren, allowAdding, canEdit, icon);
+				it = store.AppendValues (nameMarkup, strval, val.TypeName, val, !val.HasChildren, allowAdding, canEdit, icon, name);
 			else
-				it = store.AppendValues (parent, name, strval, val.TypeName, val, !val.HasChildren, false, canEdit, icon);
+				it = store.AppendValues (parent, nameMarkup, strval, val.TypeName, val, !val.HasChildren, false, canEdit, icon, name);
 			
 			if (val.HasChildren) {
 				// Add dummy node
@@ -314,7 +327,7 @@ namespace MonoDevelop.Debugger
 					Update ();
 				}
 			} else {
-				string exp = (string) store.GetValue (it, NameCol);
+				string exp = (string) store.GetValue (it, NamePlainCol);
 				if (args.NewText == exp)
 					return;
 				int i = valueNames.IndexOf (exp);
@@ -326,8 +339,24 @@ namespace MonoDevelop.Debugger
 			}
 		}
 		
+		public event EventHandler StartEditing;
+		public event EventHandler EndEditing;
+
+		Gdk.Cursor cc;
+		void OnValueEditing (object s, Gtk.EditingStartedArgs args)
+		{
+			cc = new Gdk.Cursor (Gdk.CursorType.Arrow);
+			Gtk.Entry e = (Gtk.Entry) args.Editable;
+			e.GrabFocus ();
+			if (StartEditing != null)
+				StartEditing (this, EventArgs.Empty);
+		}
+		
 		void OnValueEdited (object s, Gtk.EditedArgs args)
 		{
+			if (EndEditing != null)
+				EndEditing (this, EventArgs.Empty);
+			
 			TreeIter it;
 			if (!store.GetIterFromString (out it, args.Path))
 				return;

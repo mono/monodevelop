@@ -1,3 +1,11 @@
+2008-07-08  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Debugger/WatchPad.cs: Don't update the tree if there is
+	  no current frame, since it will reset the current expansion state.
+	* MonoDevelop.Debugger/ObjectValueTreeView.cs: Added events which are
+	  fired when value editing starts/ends. Fixes some text escaping
+	  issues.
+
 2008-07-07  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Debugger/WatchPad.cs,

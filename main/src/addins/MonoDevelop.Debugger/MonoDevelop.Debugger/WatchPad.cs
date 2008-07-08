@@ -97,7 +97,8 @@ namespace MonoDevelop.Debugger
 		
 		void OnFrameChanged (object s, EventArgs a)
 		{
-			tree.Update ();
+			if (IdeApp.Services.DebuggingService.CurrentFrame != null)
+				tree.Update ();
 		}
 		
 		void OnDebuggerPaused (object s, EventArgs a)
