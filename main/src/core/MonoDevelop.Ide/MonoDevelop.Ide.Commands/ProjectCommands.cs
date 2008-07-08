@@ -174,7 +174,7 @@ namespace MonoDevelop.Ide.Commands
 		{
 			if (IdeApp.Services.DebuggingService.IsDebugging && !IdeApp.Services.DebuggingService.IsRunning) {
 				info.Enabled = true;
-				info.Text = GettextCatalog.GetString ("Resume");
+				info.Text = GettextCatalog.GetString ("Continue");
 				return;
 			}
 
