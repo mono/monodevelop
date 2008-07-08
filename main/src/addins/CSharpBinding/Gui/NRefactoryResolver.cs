@@ -78,6 +78,12 @@ namespace MonoDevelop.CSharpBinding
 				return project;
 			}
 		}
+
+		public ProjectDom Dom {
+			get {
+				return dom;
+			}
+		}
 		
 		public NRefactoryResolver (Project project, SupportedLanguage lang, TextEditor editor, string fileName)
 		{
@@ -115,6 +121,8 @@ namespace MonoDevelop.CSharpBinding
 			
 		Expression ParseExpression (ExpressionResult expressionResult)
 		{
+			if (expressionResult == null || String.IsNullOrEmpty (expressionResult.Expression))
+				return null;
 			ICSharpCode.NRefactory.IParser parser = ICSharpCode.NRefactory.ParserFactory.CreateParser (this.lang, new StringReader (expressionResult.Expression));
 			return parser.ParseExpression();
 		}
@@ -124,18 +132,18 @@ namespace MonoDevelop.CSharpBinding
 			Expression expr = ParseExpression (expressionResult);
 			if (expr == null) 
 				return null;
-			
+			System.Console.WriteLine("visit:" + expr);
 			ResolveVisitor visitor = new ResolveVisitor (this);
 			
 			ResolveResult result = visitor.Resolve (expr);
-			
+			System.Console.WriteLine("resolve result:" + result);
 			return result;
 		}
 		
 		public ResolveResult ResolveIdentifier (string identifier)
 		{
 			ResolveResult result = null;
-			System.Console.WriteLine("resolve identifier:" + identifier);
+			System.Console.WriteLine("Resovle identifier:" + identifier);
 			foreach (KeyValuePair<string, List<LocalLookupVariable>> pair in this.lookupTableVisitor.Variables) {
 				if (identifier == pair.Key) {
 					result = new MemberResolveResult ();
@@ -175,6 +183,10 @@ namespace MonoDevelop.CSharpBinding
 			if (type != null) {
 				result = new MemberResolveResult (true);
 				result.ResolvedType = new DomReturnType (type.FullName);
+				goto end;
+			}
+			if (dom.NamespaceExists (identifier)) {
+				result = new NamespaceResolveResult (identifier);
 				goto end;
 			}
 			

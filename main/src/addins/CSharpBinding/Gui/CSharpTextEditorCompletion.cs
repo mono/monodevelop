@@ -46,7 +46,6 @@ namespace MonoDevelop.CSharpBinding.Gui
 		
 		public override ICompletionDataProvider HandleCodeCompletion (ICodeCompletionContext completionContext, char completionChar)
 		{
-			System.Console.WriteLine(completionChar + " —-- " + ((int)completionChar));
 			CSharpExpressionFinder expressionFinder = new CSharpExpressionFinder ();
 			ExpressionResult result = expressionFinder.FindExpression (Editor.Text, Editor.CursorPosition);
 			System.Console.WriteLine("found:" + result);
@@ -164,6 +163,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 				foreach (object obj in objects) {
 					if (expressionResult.ExpressionContext != null && expressionResult.ExpressionContext.FilterEntry (obj))
 						continue;
+					System.Console.WriteLine("add:" + obj);
 					Namespace ns = obj as Namespace;
 					if (ns != null) {
 						result.AddCompletionData (new CodeCompletionData (ns.Name, ns.StockIcon, ns.Documentation));

@@ -61,7 +61,7 @@ namespace MonoDevelop.CSharpBinding
 		
 		ResolveResult CreateResult (TypeReference typeReference)
 		{
-			return CreateResult (typeReference.Type);
+			return CreateResult (String.IsNullOrEmpty (typeReference.SystemType) ? typeReference.Type : typeReference.SystemType);
 		}
 		
 		ResolveResult CreateResult (string fullTypeName)
@@ -85,7 +85,7 @@ namespace MonoDevelop.CSharpBinding
 		
 		public override object VisitIdentifierExpression(IdentifierExpression identifierExpression, object data)
 		{
-			return resolver.ResolveIdentifier (identifierExpression.Identifier);
+			return resolver.ResolveIdentifier (identifierExpression.Identifier.TrimEnd ('.'));
 		}
 		
 		public override object VisitSizeOfExpression (SizeOfExpression sizeOfExpression, object data)
@@ -198,13 +198,49 @@ namespace MonoDevelop.CSharpBinding
 		{
 			return CreateResult (typeReferenceExpression.TypeReference);
 		}
-		/*
-		public override object VisitInvocationExpression(InvocationExpression invocationExpression, object data)
-		{
-			
-		}*/
 		
-
+		public override object VisitFieldReferenceExpression(FieldReferenceExpression fieldReferenceExpression, object data)
+		{
+			if (fieldReferenceExpression == null) {
+				return null;
+			}
+			ResolveResult result;
+			if (String.IsNullOrEmpty (fieldReferenceExpression.FieldName)) {
+				if (fieldReferenceExpression.TargetObject is TypeReferenceExpression) {
+					result = CreateResult (((TypeReferenceExpression)fieldReferenceExpression.TargetObject).TypeReference);
+					result.StaticResolve = true;
+					return result;
+				}
+				return fieldReferenceExpression.TargetObject.AcceptVisitor(this, data);
+			}
+			result = fieldReferenceExpression.TargetObject.AcceptVisitor(this, data) as ResolveResult;
+			NamespaceResolveResult namespaceResult = result as NamespaceResolveResult;
+			if (namespaceResult != null) {
+				string fullName = namespaceResult.Namespace + "." + fieldReferenceExpression.FieldName;
+				if (resolver.Dom.NamespaceExists (fullName))
+					return new NamespaceResolveResult (fullName);
+				IType type = resolver.Dom.GetType (fullName, -1, true);
+				if (type != null) {
+					result = CreateResult (fullName);
+					result.StaticResolve = true;
+					return result;
+				}
+				return null;
+			}
+			
+			if (result != null && result.ResolvedType != null) {
+				IType type = resolver.Dom.GetType (result.ResolvedType);
+				if (type != null) {
+					IMember member = type.SearchMember (fieldReferenceExpression.FieldName, true);
+					if (member != null) {
+						result = CreateResult (member.ReturnType);
+						return result;
+					}
+				}
+			}
+			
+			return result;
+		}
 		
 		IReturnType GetCommonType (IReturnType left, IReturnType right)
 		{
