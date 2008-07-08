@@ -7,6 +7,7 @@
 	  the Log view.
 	* MonoDevelop.VersionControl/Repository.cs: New abstract methods
 	  Revert[To]Revision.
+	* MonoDevelop.VersionControl/RevertRevisionsCommands.cs: Add new file.
 	* MonoDevelop.VersionControl/UnknownRepository.cs: Empty
 	  implementations for Revert[To]Revision.
 
