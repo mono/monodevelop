@@ -116,6 +116,18 @@ namespace DebuggerServer
 			return Util.GetObjectValueChildren (Thread, Value, index, count);
 		}
 		
+		public virtual IEnumerable<ValueReference> GetChildReferences ()
+		{
+			try {
+				TargetStructObject val = Value as TargetStructObject;
+				if (val != null)
+					return Util.GetMembers (thread, val.Type, val);
+			} catch {
+				// Ignore
+			}
+			return new ValueReference [0];
+		}
+		
 		public virtual ValueReference GetChild (string name)
 		{
 			TargetObject obj = Value;

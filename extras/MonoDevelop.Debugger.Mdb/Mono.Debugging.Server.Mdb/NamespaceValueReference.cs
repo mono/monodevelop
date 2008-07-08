@@ -110,6 +110,14 @@ namespace DebuggerServer
 		public override ObjectValue[] GetChildren (Mono.Debugging.Client.ObjectPath path, int index, int count)
 		{
 			List<ObjectValue> obs = new List<ObjectValue> ();
+			foreach (ValueReference val in GetChildReferences ()) {
+				obs.Add (val.CreateObjectValue ());
+			}
+			return obs.ToArray ();
+		}
+		
+		public override IEnumerable<ValueReference> GetChildReferences ()
+		{
 			List<string> list = new List<string> ();
 			
 			if (namespaces == null)
@@ -137,7 +145,7 @@ namespace DebuggerServer
 			foreach (string typeName in types) {
 				TargetType tt = frame.Language.LookupType (typeName);
 				if (tt != null)
-					obs.Add (new TypeValueReference (frame.Thread, tt).CreateObjectValue ());
+					yield return new TypeValueReference (frame.Thread, tt);
 			}
 			
 			// Child namespaces
@@ -155,8 +163,7 @@ namespace DebuggerServer
 			}
 				
 			foreach (string ns in list)
-				obs.Add (new NamespaceValueReference (frame, ns).CreateObjectValue ());
-			return obs.ToArray ();
+				yield return new NamespaceValueReference (frame, ns);
 		}
 
 		public override Mono.Debugging.Client.ObjectValue CreateObjectValue ()

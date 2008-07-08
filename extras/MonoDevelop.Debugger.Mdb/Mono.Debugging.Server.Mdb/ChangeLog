@@ -1,3 +1,8 @@
+2008-07-09  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* BacktraceWrapper.cs, ValueReference.cs, TypeValueReference.cs,
+	  NamespaceValueReference.cs: Added support for code completion.
+
 2008-07-08  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* RemoteFrameObject.cs: Crash fix.

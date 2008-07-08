@@ -127,6 +127,79 @@ namespace DebuggerServer
 			return values;
 		}
 		
+		public CompletionData GetExpressionCompletionData (int frameIndex, string exp)
+		{
+			MD.StackFrame frame = frames[frameIndex];
+			int i;
+			
+			if (exp [exp.Length - 1] == '.') {
+				exp = exp.Substring (0, exp.Length - 1);
+				i = 0;
+				while (i < exp.Length) {
+					ValueReference vr = null;
+					try {
+						vr = Server.Instance.Evaluator.Evaluate (frame, exp.Substring (i), null);
+					} catch {
+					}
+					if (vr != null) {
+						DL.CompletionData data = new DL.CompletionData ();
+						foreach (ValueReference cv in vr.GetChildReferences ())
+							data.Items.Add (new CompletionItem (cv.Name, cv.Flags));
+						data.ExpressionLenght = 0;
+						return data;
+					}
+					i++;
+				}
+				return null;
+			}
+			
+			i = exp.Length - 1;
+			bool lastWastLetter = false;
+			while (i >= 0) {
+				char c = exp [i--];
+				if (!char.IsLetterOrDigit (c) && c != '_')
+					break;
+				lastWastLetter = !char.IsDigit (c);
+			}
+			if (lastWastLetter) {
+				string partialWord = exp.Substring (i+1);
+				
+				DL.CompletionData data = new DL.CompletionData ();
+				data.ExpressionLenght = partialWord.Length;
+				
+				// Local variables
+				
+				foreach (ValueReference vc in Util.GetLocalVariables (frame))
+					if (vc.Name.StartsWith (partialWord))
+						data.Items.Add (new CompletionItem (vc.Name, vc.Flags));
+				
+				// Parameters
+				
+				foreach (ValueReference vc in Util.GetParameters (frame))
+					if (vc.Name.StartsWith (partialWord))
+						data.Items.Add (new CompletionItem (vc.Name, vc.Flags));
+				
+				// Members
+				
+				TargetStructObject thisobj = null;
+				
+				if (frame.Method.HasThis) {
+					TargetObject ob = frame.Method.GetThis (frame.Thread).GetObject (frame);
+					thisobj = Util.GetRealObject (frame.Thread, ob) as TargetStructObject;
+				}
+				
+				TargetStructType type = frame.Method.GetDeclaringType (frame.Thread);
+				
+				foreach (ValueReference vc in Util.GetMembers (frame.Thread, type, thisobj))
+					if (vc.Name.StartsWith (partialWord))
+						data.Items.Add (new CompletionItem (vc.Name, vc.Flags));
+				
+				if (data.Items.Count > 0)
+					return data;
+			}
+			return null;
+		}
+	
 		public AssemblyLine[] Disassemble (int frameIndex, int firstLine, int count)
 		{
 			if (disBuffers == null)

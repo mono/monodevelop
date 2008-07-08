@@ -100,5 +100,11 @@ namespace DebuggerServer
 				list.Add (val.CreateObjectValue ());
 			return list.ToArray ();
 		}
+		
+		public override IEnumerable<ValueReference> GetChildReferences ()
+		{
+			foreach (ValueReference val in Util.GetMembers (Thread, type, null))
+				yield return val;
+		}
 	}
 }
