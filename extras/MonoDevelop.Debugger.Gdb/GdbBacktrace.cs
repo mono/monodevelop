@@ -122,6 +122,64 @@ namespace MonoDevelop.Debugger.Gdb
 		
 		public CompletionData GetExpressionCompletionData (int frameIndex, string exp)
 		{
+			SelectFrame (frameIndex);
+			
+			bool pointer = exp.EndsWith ("->");
+			int i;
+			
+			if (pointer || exp.EndsWith (".")) {
+				exp = exp.Substring (0, exp.Length - (pointer ? 2 : 1));
+				i = 0;
+				while (i < exp.Length) {
+					ObjectValue val = CreateVarObject (exp);
+					if (!val.IsUnknown && !val.IsError) {
+						CompletionData data = new CompletionData ();
+						foreach (ObjectValue cv in val.GetAllChildren ())
+							data.Items.Add (new CompletionItem (cv.Name, cv.Flags));
+						data.ExpressionLenght = 0;
+						return data;
+					}
+					i++;
+				}
+				return null;
+			}
+			
+			i = exp.Length - 1;
+			bool lastWastLetter = false;
+			while (i >= 0) {
+				char c = exp [i--];
+				if (!char.IsLetterOrDigit (c) && c != '_')
+					break;
+				lastWastLetter = !char.IsDigit (c);
+			}
+			
+			if (lastWastLetter) {
+				string partialWord = exp.Substring (i+1);
+				
+				CompletionData cdata = new CompletionData ();
+				cdata.ExpressionLenght = partialWord.Length;
+				
+				// Local variables
+				
+				GdbCommandResult res = session.RunCommand ("-stack-list-locals", "0");
+				foreach (ResultData data in res.GetObject ("locals")) {
+					string name = data.GetValue ("name");
+					if (name.StartsWith (partialWord))
+						cdata.Items.Add (new CompletionItem (name, ObjectValueFlags.Variable));
+				}
+				
+				// Parameters
+				
+				res = session.RunCommand ("-stack-list-arguments", "0", frameIndex.ToString (), frameIndex.ToString ());
+				foreach (ResultData data in res.GetObject ("stack-args").GetObject (0).GetObject ("frame").GetObject ("args")) {
+					string name = data.GetValue ("name");
+					if (name.StartsWith (partialWord))
+						cdata.Items.Add (new CompletionItem (name, ObjectValueFlags.Parameter));
+				}
+				
+				if (cdata.Items.Count > 0)
+					return cdata;
+			}			
 			return null;
 		}
 
