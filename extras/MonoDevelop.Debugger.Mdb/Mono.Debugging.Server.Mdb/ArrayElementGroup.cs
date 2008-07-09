@@ -243,7 +243,10 @@ namespace DebuggerServer
 			
 			TargetObject val;
 			try {
-				ValueReference var = Server.Instance.Evaluator.Evaluate (thread.CurrentFrame, value, array.Type.ElementType);
+				EvaluationOptions ops = new EvaluationOptions ();
+				ops.ExpectedType = array.Type.ElementType;
+				ops.CanEvaluateMethods = true;
+				ValueReference var = Server.Instance.Evaluator.Evaluate (thread.CurrentFrame, value, ops);
 				val = var.Value;
 				val = TargetObjectConvert.Cast (thread.CurrentFrame, val, array.Type.ElementType);
 				array.SetElement (thread, idx, val);

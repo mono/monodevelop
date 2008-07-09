@@ -8,6 +8,7 @@ using ST = System.Threading;
 using Mono.Debugger;
 
 using MD = Mono.Debugger;
+using ML = Mono.Debugger.Languages;
 using DL = Mono.Debugging.Client;
 using DB = Mono.Debugging.Backend;
 
@@ -28,6 +29,7 @@ namespace DebuggerServer
 		List<ST.WaitCallback> stoppedWorkQueue = new List<ST.WaitCallback> ();
 		List<ST.WaitCallback> eventQueue = new List<ST.WaitCallback> ();
 		bool initializing;
+		bool internalInvoke;
 		ExpressionEvaluator evaluator = new NRefactoryEvaluator ();
 
 		public DebuggerServer (IDebuggerController dc)
@@ -318,6 +320,22 @@ namespace DebuggerServer
 			});
 		}
 		
+		public ML.TargetObject RuntimeInvoke (MD.Thread thread, ML.TargetFunctionType function,
+							  ML.TargetStructObject object_argument,
+							  ML.TargetObject[] param_objects)
+		{
+			try {
+				internalInvoke = true;
+				MD.RuntimeInvokeResult res = thread.RuntimeInvoke (function, object_argument, param_objects, true, false);
+				res.Wait ();
+				if (res.ExceptionMessage != null)
+					throw new Exception (res.ExceptionMessage);
+				return res.ReturnObject;
+			} finally {
+				internalInvoke = false;
+			}
+		}
+		
 		DL.Backtrace CreateBacktrace (MD.Thread thread)
 		{
 			List<MD.StackFrame> frames = new List<MD.StackFrame> ();
@@ -414,6 +432,9 @@ namespace DebuggerServer
 		private void OnTargetEvent (object sender, MD.TargetEventArgs args)
 		{
 			try {
+				if (internalInvoke)
+					return;
+				
 				Console.WriteLine ("pp OnTargetEvent: " + args.Type + " " + internalInterruptionRequested + " " + stoppedWorkQueue.Count + " iss:" + args.IsStopped + " " + args.Data);
 
 				bool isStop = args.Type != MD.TargetEventType.FrameChanged &&
@@ -498,7 +519,7 @@ namespace DebuggerServer
 				//FIXME: using Backtrace.Mode.Default right now
 				//FIXME: code from BacktraceCommand.DoExecute
 				//FIXME: better way than args.Frame.Thread.* ?
-
+				
 				if (args.Type != MD.TargetEventType.TargetExited)
 					dl_args.Backtrace = CreateBacktrace (args.Frame.Thread);
 

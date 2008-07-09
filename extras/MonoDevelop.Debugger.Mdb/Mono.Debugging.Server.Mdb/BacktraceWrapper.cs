@@ -113,7 +113,9 @@ namespace DebuggerServer
 				
 				ValueReference var;
 				try {
-					var = (ValueReference) Server.Instance.Evaluator.Evaluate (frames[frameIndex], exp, null);
+					EvaluationOptions ops = new EvaluationOptions ();
+					ops.CanEvaluateMethods = evaluateMethods;
+					var = (ValueReference) Server.Instance.Evaluator.Evaluate (frames[frameIndex], exp, ops);
 				} catch {
 					values [n] = ObjectValue.CreateUnknown (exp);
 					continue;

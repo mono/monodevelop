@@ -83,7 +83,10 @@ namespace DebuggerServer
 		public string SetValue (ObjectPath path, string value)
 		{
 			try {
-				ValueReference vref = Server.Instance.Evaluator.Evaluate (Thread.CurrentFrame, value, Type);
+				EvaluationOptions ops = new EvaluationOptions ();
+				ops.ExpectedType = Type;
+				ops.CanEvaluateMethods = true;
+				ValueReference vref = Server.Instance.Evaluator.Evaluate (Thread.CurrentFrame, value, ops);
 				TargetObject newValue = vref.Value;
 				newValue = TargetObjectConvert.Cast (thread.CurrentFrame, newValue, Type);
 				Value = newValue;

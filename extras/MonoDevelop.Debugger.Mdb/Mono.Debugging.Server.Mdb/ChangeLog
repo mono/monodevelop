@@ -1,5 +1,16 @@
 2008-07-09  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* DebuggerServer.cs, Util.cs, PropertyReference.cs: Make sure internal
+	  invokes to the debugged process do not fire target events.
+	* BacktraceWrapper.cs, ExpressionEvaluator.cs, ValueReference.cs,
+	  ArrayElementGroup.cs: Use a new EvaluationOptions object to provide
+	  options to the evaluator.
+	* TypeValueReference.cs, NamespaceValueReference.cs: Use the internal
+	  cecil modules to locate types.
+	* NRefactoryEvaluator.cs: Support for array access and other fixes.
+
+2008-07-09  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* BacktraceWrapper.cs, ValueReference.cs, TypeValueReference.cs,
 	  NamespaceValueReference.cs: Added support for code completion.
 

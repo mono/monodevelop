@@ -41,12 +41,12 @@ namespace DebuggerServer
 {
 	public class NRefactoryEvaluator: ExpressionEvaluator
 	{
-		public override ValueReference Evaluate (StackFrame frame, string exp, TargetType expectedType)
+		public override ValueReference Evaluate (StackFrame frame, string exp, EvaluationOptions options)
 		{
 			StringReader codeStream = new StringReader (exp);
 			IParser parser = ParserFactory.CreateParser (SupportedLanguage.CSharp, codeStream);
 			Expression expObj = parser.ParseExpression ();
-			EvaluatorVisitor ev = new EvaluatorVisitor (this, frame, exp, expectedType);
+			EvaluatorVisitor ev = new EvaluatorVisitor (frame, exp, options);
 			return (ValueReference) expObj.AcceptVisitor (ev, null);
 		}
 	}
@@ -55,15 +55,13 @@ namespace DebuggerServer
 	{
 		StackFrame frame;
 		string name;
-		NRefactoryEvaluator evaluator;
-		TargetType expectedType;
+		EvaluationOptions options;
 		
-		public EvaluatorVisitor (NRefactoryEvaluator evaluator, StackFrame frame, string name, TargetType expectedType)
+		public EvaluatorVisitor (StackFrame frame, string name, EvaluationOptions options)
 		{
 			this.frame = frame;
 			this.name = name;
-			this.evaluator = evaluator;
-			this.expectedType = expectedType;
+			this.options = options;
 		}
 		
 		public override object VisitUnaryOperatorExpression (ICSharpCode.NRefactory.Ast.UnaryOperatorExpression unaryOperatorExpression, object data)
@@ -130,8 +128,8 @@ namespace DebuggerServer
 		{
 			if (primitiveExpression.Value != null)
 				return new LiteralValueReference (frame.Thread, name, primitiveExpression.Value);
-			else if (expectedType != null)
-				return new NullValueReference (frame.Thread, expectedType);
+			else if (options.ExpectedType != null)
+				return new NullValueReference (frame.Thread, options.ExpectedType);
 			else
 				return new NullValueReference (frame.Thread, frame.Language.ObjectType);
 		}
@@ -148,7 +146,7 @@ namespace DebuggerServer
 		
 		public override object VisitInvocationExpression (ICSharpCode.NRefactory.Ast.InvocationExpression invocationExpression, object data)
 		{
-			if (!evaluator.CanEvaluateMethods)
+			if (!options.CanEvaluateMethods)
 				throw new NotSupportedException ();
 				
 			ValueReference target = null;
@@ -227,7 +225,7 @@ namespace DebuggerServer
 				}
 			}
 			
-			TargetObject obj = Util.RuntimeInvoke (frame.Thread, method, thisobj, objs);
+			TargetObject obj = Server.Instance.RuntimeInvoke (frame.Thread, method, thisobj, objs);
 			return new LiteralValueReference (frame.Thread, name, obj);
 		}
 		
@@ -322,6 +320,16 @@ namespace DebuggerServer
 		
 		public override object VisitIndexerExpression (ICSharpCode.NRefactory.Ast.IndexerExpression indexerExpression, object data)
 		{
+			ValueReference val = (ValueReference) indexerExpression.TargetObject.AcceptVisitor (this, data);
+			TargetArrayObject arr = val.Value as TargetArrayObject;
+			if (arr != null) {
+				int[] indexes = new int [indexerExpression.Indexes.Count];
+				for (int n=0; n<indexes.Length; n++) {
+					ValueReference vi = (ValueReference) indexerExpression.Indexes [n].AcceptVisitor (this, data);
+					indexes [n] = (int) Convert.ChangeType (vi.ObjectValue, typeof(int));
+				}
+				return new ArrayValueReference (frame.Thread, arr, indexes);
+			}
 			throw new NotImplementedException();
 		}
 		
@@ -507,7 +515,8 @@ namespace DebuggerServer
 				default: throw CreateParseError ("Invalid binary operator.");
 			}
 			
-			res = (long) Convert.ChangeType (res, GetCommonType (v1, v2));
+			if (!(res is bool))
+				res = (long) Convert.ChangeType (res, GetCommonType (v1, v2));
 			return new LiteralValueReference (frame.Thread, name, res);
 		}
 		

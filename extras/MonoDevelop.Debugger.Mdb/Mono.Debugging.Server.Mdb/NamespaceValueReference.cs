@@ -31,6 +31,7 @@ using Mono.Debugger;
 using Mono.Debugger.Languages;
 using MD = Mono.Debugger;
 using Mono.Debugging.Client;
+using Mono.Cecil;
 
 namespace DebuggerServer
 {
@@ -85,7 +86,7 @@ namespace DebuggerServer
 		
 		public override ObjectValueFlags Flags {
 			get {
-				return ObjectValueFlags.Literal;
+				return ObjectValueFlags.Namespace;
 			}
 		}
 
@@ -126,20 +127,12 @@ namespace DebuggerServer
 			// Child types
 			
 			List<string> types = new List<string> ();
-			Module[] modules = frame.Thread.Process.Modules;
-			foreach (Module mod in modules) {
-				try {
-					foreach (SourceFile sf in mod.Sources) {
-						foreach (MethodSource met in sf.Methods) {
-							string tn = met.DeclaringType.Name;
-							int i = tn.LastIndexOf ('.');
-							if (i != -1 && tn.Substring (0,i) == namspace && !types.Contains (tn))
-								types.Add (tn);
-						}
-					}
-				} catch (Exception ex) {
-					Console.WriteLine ("pp: " + ex);
-				}
+			Dictionary<AssemblyDefinition,AssemblyDefinition> visited = new Dictionary<AssemblyDefinition,AssemblyDefinition> ();
+			
+			MethodDefinition md = frame.Method.MethodHandle as MethodDefinition;
+			if (md != null && md.DeclaringType.Module.Assembly.Resolver != null) {
+				IAssemblyResolver resolver = md.DeclaringType.Module.Assembly.Resolver;
+				FindTypes (resolver, visited, types, md.DeclaringType.Module.Assembly);
 			}
 			
 			foreach (string typeName in types) {
@@ -165,11 +158,30 @@ namespace DebuggerServer
 			foreach (string ns in list)
 				yield return new NamespaceValueReference (frame, ns);
 		}
+		
+		public void FindTypes (IAssemblyResolver resolver, Dictionary<AssemblyDefinition,AssemblyDefinition> visited, List<string> types, AssemblyDefinition asm)
+		{
+			if (visited.ContainsKey (asm))
+				return;
+			visited [asm] = asm;
+			
+			foreach (TypeDefinition tdef in asm.MainModule.Types) {
+				if (tdef.IsPublic && !tdef.IsInterface && !tdef.IsEnum && tdef.Namespace == namspace) {
+					types.Add (tdef.FullName);
+				}
+			}
+			
+			foreach (AssemblyNameReference an in asm.MainModule.AssemblyReferences) {
+				AssemblyDefinition refAsm = resolver.Resolve (an);
+				if (refAsm != null)
+					FindTypes (resolver, visited, types, refAsm);
+			}
+		}
 
 		public override Mono.Debugging.Client.ObjectValue CreateObjectValue ()
 		{
 			Connect ();
-			return Mono.Debugging.Client.ObjectValue.CreateObject (this, new ObjectPath (Name), namspace, namspace, Flags, null);
+			return Mono.Debugging.Client.ObjectValue.CreateObject (this, new ObjectPath (Name), "<namespace>", namspace, Flags, null);
 		}
 
 		public override string CallToString ()

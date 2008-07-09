@@ -262,14 +262,16 @@ namespace DebuggerServer
 		public static IEnumerable<ValueReference> GetMembers (MD.Thread thread, TargetType t, TargetStructObject co)
 		{
 			TargetStructType type = t as TargetStructType;
-			
+
 			while (type != null) {
 				
 				foreach (TargetFieldInfo field in type.ClassType.Fields)
-					yield return new FieldReference (thread, co, type, field);
+					if (field.IsStatic || co != null)
+						yield return new FieldReference (thread, co, type, field);
 				
 				foreach (TargetPropertyInfo prop in type.ClassType.Properties)
-					yield return new PropertyReference (thread, prop, co);
+					if ((prop.IsStatic || co != null) && (prop.Accessibility == TargetMemberAccessibility.Public || prop.Accessibility == TargetMemberAccessibility.Protected))
+						yield return new PropertyReference (thread, prop, co);
 				
 				if (type.HasParent)
 					type = type.GetParentType (thread);
@@ -366,17 +368,6 @@ namespace DebuggerServer
 			catch (Exception ex) {
 				Console.WriteLine ("pp: " + ex);
 			}
-		}
-		
-		public static TargetObject RuntimeInvoke (MD.Thread thread, TargetFunctionType function,
-							  TargetStructObject object_argument,
-							  TargetObject[] param_objects)
-		{
-			MD.RuntimeInvokeResult res = thread.RuntimeInvoke (function, object_argument, param_objects, true, false);
-			res.Wait ();
-			if (res.ExceptionMessage != null)
-				throw new Exception (res.ExceptionMessage);
-			return res.ReturnObject;
 		}
 		
 		public static ObjectValueFlags GetAccessibility (TargetMemberAccessibility ma)

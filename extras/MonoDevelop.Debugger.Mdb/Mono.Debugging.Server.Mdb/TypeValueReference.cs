@@ -36,10 +36,16 @@ namespace DebuggerServer
 	public class TypeValueReference: ValueReference
 	{
 		TargetType type;
+		string name;
 		
 		public TypeValueReference (Thread thread, TargetType type): base (thread)
 		{
 			this.type = type;
+			int i = type.Name.LastIndexOf ('.');
+			if (i != -1)
+				this.name = type.Name.Substring (i+1);
+			else
+				this.name = type.Name;
 		}
 		
 		public override TargetObject Value {
@@ -68,20 +74,20 @@ namespace DebuggerServer
 		
 		public override string Name {
 			get {
-				return type.Name;
+				return name;
 			}
 		}
 		
 		public override ObjectValueFlags Flags {
 			get {
-				return ObjectValueFlags.Literal;
+				return ObjectValueFlags.Type;
 			}
 		}
 
 		public override ObjectValue CreateObjectValue ()
 		{
 			Connect ();
-			return Mono.Debugging.Client.ObjectValue.CreateObject (this, new ObjectPath (Name), type.Name, Name, Flags, null);
+			return Mono.Debugging.Client.ObjectValue.CreateObject (this, new ObjectPath (Name), "<type>", Name, Flags, null);
 		}
 		
 		public override ValueReference GetChild (string name)
@@ -95,10 +101,16 @@ namespace DebuggerServer
 
 		public override ObjectValue[] GetChildren (Mono.Debugging.Client.ObjectPath path, int index, int count)
 		{
-			List<ObjectValue> list = new List<ObjectValue> ();
-			foreach (ValueReference val in Util.GetMembers (Thread, type, null))
-				list.Add (val.CreateObjectValue ());
-			return list.ToArray ();
+			try {
+				List<ObjectValue> list = new List<ObjectValue> ();
+				foreach (ValueReference val in Util.GetMembers (Thread, type, null))
+					list.Add (val.CreateObjectValue ());
+				return list.ToArray ();
+			} catch (Exception ex) {
+				Console.WriteLine (ex);
+				Server.Instance.WriteDebuggerOutput (ex.Message);
+				return new ObjectValue [0];
+			}
 		}
 		
 		public override IEnumerable<ValueReference> GetChildReferences ()

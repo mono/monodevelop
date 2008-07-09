@@ -34,14 +34,7 @@ namespace DebuggerServer
 {
 	public abstract class ExpressionEvaluator
 	{
-		bool canEvaluateMethods;
-		
-		public bool CanEvaluateMethods {
-			get { return canEvaluateMethods; }
-			set { canEvaluateMethods = value; }
-		}
-		
-		public abstract ValueReference Evaluate (StackFrame frame, string exp, TargetType expectedType);
+		public abstract ValueReference Evaluate (StackFrame frame, string exp, EvaluationOptions options);
 		
 		public virtual string TargetObjectToString (Thread thead, TargetObject obj)
 		{
@@ -130,6 +123,26 @@ namespace DebuggerServer
 				return "\"" + Util.EscapeString ((string)obj) + "\"";
 			
 			return obj.ToString ();
+		}
+	}
+	
+	public class EvaluationOptions
+	{
+		bool canEvaluateMethods;
+		TargetType expectedType;
+		
+		public bool CanEvaluateMethods {
+			get { return canEvaluateMethods; }
+			set { canEvaluateMethods = value; }
+		}
+
+		public TargetType ExpectedType {
+			get {
+				return expectedType;
+			}
+			set {
+				expectedType = value;
+			}
 		}
 	}
 }
