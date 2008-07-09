@@ -39,7 +39,7 @@ using MonoDevelop.Projects.Extensions;
 
 namespace MonoDevelop.Projects.Formats.MSBuild
 {
-	public class MSBuildProjectHandler: MSBuildHandler, IResourceHandler
+	public class MSBuildProjectHandler: MSBuildHandler, IResourceHandler, IPathHandler
 	{
 		string fileContent;
 		List<string> targetImports = new List<string> ();
@@ -97,6 +97,18 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					return res;
 			}
 			return MSBuildProjectService.GetDefaultResourceId (file);
+		}
+		
+		public string EncodePath (string path, string oldPath)
+		{
+			string basePath = Path.GetDirectoryName (EntityItem.FileName);
+			return FileService.RelativeToAbsolutePath (basePath, path);
+		}
+		
+		public string DecodePath (string path)
+		{
+			string basePath = Path.GetDirectoryName (EntityItem.FileName);
+			return FileService.AbsoluteToRelativePath (basePath, path);
 		}
 
 		public SolutionEntityItem Load (IProgressMonitor monitor, string fileName, string language, Type itemClass)

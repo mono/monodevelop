@@ -26,6 +26,7 @@
 //
 
 using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Threading;
 using MonoDevelop.Core;
@@ -87,6 +88,28 @@ namespace MonoDevelop.Projects.Extensions
 			LoadOperation op = (LoadOperation) Thread.GetData (loadControlSlot);
 			if (op != null)
 				op.Add (rc);
+		}
+		
+		public static string EncodePath (SolutionEntityItem item, string path, string oldPath)
+		{
+			IPathHandler ph = item.GetItemHandler () as IPathHandler;
+			if (ph != null)
+				return ph.EncodePath (path, oldPath);
+			else {
+				string basePath = Path.GetDirectoryName (item.FileName);
+				return FileService.RelativeToAbsolutePath (basePath, path);
+			}
+		}
+		
+		public static string DecodePath (SolutionEntityItem item, string path)
+		{
+			IPathHandler ph = item.GetItemHandler () as IPathHandler;
+			if (ph != null)
+				return ph.DecodePath (path);
+			else {
+				string basePath = Path.GetDirectoryName (item.FileName);
+				return FileService.AbsoluteToRelativePath (basePath, path);
+			}
 		}
 	}
 	

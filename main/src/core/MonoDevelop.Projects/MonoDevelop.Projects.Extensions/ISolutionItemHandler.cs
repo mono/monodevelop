@@ -42,4 +42,10 @@ namespace MonoDevelop.Projects.Extensions
 	{
 		string GetDefaultResourceId (ProjectFile file);
 	}
+	
+	public interface IPathHandler
+	{
+		string EncodePath (string path, string oldPath);
+		string DecodePath (string path);
+	}
 }
