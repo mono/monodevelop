@@ -42,7 +42,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 		public string DescriptionMarkup
 		{
 			get {
-			 	if (bodylabel.Text == "")
+			 	if (string.IsNullOrEmpty (bodylabel.Text))
 					return headlabel.Text;
 				else
 					return headlabel.Text + "\n" + bodylabel.Text;
@@ -50,17 +50,18 @@ namespace MonoDevelop.Projects.Gui.Completion
 			
 			set {
 				if (value == null) {
-					headlabel.Markup = "";
-					bodylabel.Markup = "";
+					headlabel.Markup = string.Empty;
+					bodylabel.Markup = string.Empty;
 					return;
 				}
 
 				string[] parts = value.Split (newline, 2);
 				headlabel.Markup = parts[0].Trim (whitespace);
-				bodylabel.Markup = "<span size=\"smaller\">" + (parts.Length == 2 ? parts[1].Trim (whitespace) : String.Empty) + "</span>";
+				bodylabel.Markup = parts.Length == 2 ?
+					"<span size=\"smaller\">" + parts[1].Trim (whitespace) + "</span>" : String.Empty;
 
-				headlabel.Visible = headlabel.Text != "";
-				bodylabel.Visible = bodylabel.Text != "";
+				headlabel.Visible = !string.IsNullOrEmpty (headlabel.Text);
+				bodylabel.Visible = !string.IsNullOrEmpty (bodylabel.Text);
 				//QueueDraw ();
 			}
 		}
@@ -77,8 +78,8 @@ namespace MonoDevelop.Projects.Gui.Completion
 				helpbox.Visible = value;
 				
 				//this could go somewhere better, as long as it's after realization
-				headlabel.Visible = headlabel.Text != "";
-				bodylabel.Visible = bodylabel.Text != "";
+				headlabel.Visible = !string.IsNullOrEmpty (headlabel.Text);
+				bodylabel.Visible = !string.IsNullOrEmpty (bodylabel.Text);
 			}
 		}
 

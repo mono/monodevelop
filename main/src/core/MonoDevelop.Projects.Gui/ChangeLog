@@ -1,3 +1,10 @@
+2008-07-09  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Projects.Gui.Completion/DeclarationViewWindow.cs: Avoid
+	  unnecessary string creations, concatenations and comparisons. Also
+	  fixes logic that was supposed to prevent empty tooltips from being
+	  shown.
+
 2008-07-07  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs: Added null check.
