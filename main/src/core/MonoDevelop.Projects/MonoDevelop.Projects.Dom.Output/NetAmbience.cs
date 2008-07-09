@@ -216,11 +216,13 @@ namespace MonoDevelop.Projects.Dom.Output
 			if (IncludeParameters (flags)) {
 				result.Append ("(");
 				bool first = true;
-				foreach (IParameter parameter in method.Parameters) {
-					if (!first)
-						result.Append (", ");
-					result.Append (GetString (parameter, flags));
-					first = false;
+				if (method.Parameters != null) {
+					foreach (IParameter parameter in method.Parameters) {
+						if (!first)
+							result.Append (", ");
+						result.Append (GetString (parameter, flags));
+						first = false;
+					}
 				}
 				result.Append (")");
 			}
@@ -287,20 +289,22 @@ namespace MonoDevelop.Projects.Dom.Output
 			result.Append (GetString (attribute.AttributeType, flags));
 			result.Append ('(');
 			bool first = true;
-			foreach (object o in attribute.PositionalArguments) {
-				if (!first)
-					result.Append (", ");
-				first = false;
-				if (o is string) {
-					result.Append ('"');
-					result.Append (o);
-					result.Append ('"');
-				} else if (o is char) {
-					result.Append ("'");
-					result.Append (o);
-					result.Append ("'");
-				} else
-					result.Append (o);
+			if (attribute.PositionalArguments != null) {
+				foreach (object o in attribute.PositionalArguments) {
+					if (!first)
+						result.Append (", ");
+					first = false;
+					if (o is string) {
+						result.Append ('"');
+						result.Append (o);
+						result.Append ('"');
+					} else if (o is char) {
+						result.Append ("'");
+						result.Append (o);
+						result.Append ("'");
+					} else
+						result.Append (o);
+				}
 			}
 			result.Append (')');
 			result.Append (']');

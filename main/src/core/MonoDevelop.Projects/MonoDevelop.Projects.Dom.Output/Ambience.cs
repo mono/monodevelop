@@ -140,6 +140,15 @@ namespace MonoDevelop.Projects.Dom.Output
 		public abstract string SingleLineComment (string text);
 		public abstract string GetString (string nameSpace, OutputFlags flags);
 		
+		public virtual string GetIntellisenseDescription (IMethod method)
+		{
+			return GetString (method, OutputFlags.AssemblyBrowserDescription);
+		}
+		public virtual string GetIntellisenseDescription (IParameter parameter)
+		{
+			return GetString (parameter, OutputFlags.AssemblyBrowserDescription);
+		}
+		
 		public string GetString (IDomVisitable domVisitable, OutputFlags flags)
 		{
 			if (domVisitable == null)

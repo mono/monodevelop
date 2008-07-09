@@ -27,6 +27,7 @@
 //
 
 using System;
+using System.Collections.ObjectModel;
 using System.Collections.Generic;
 using MonoDevelop.Projects.Dom.Parser;
 
@@ -134,6 +135,36 @@ namespace MonoDevelop.Projects.Dom
 			AddType (dom, result, ResolvedType, StaticResolve);
 			return result;
 		}
+	}
+	
+	public class MethodResolveResult : ResolveResult
+	{
+		List<IMethod> methods = new List<IMethod> ();
+		
+		public ReadOnlyCollection<IMethod> Methods {
+			get {
+				return methods.AsReadOnly ();
+			}
+		}
+		
+		public  MethodResolveResult (List<IMember> members)
+		{
+			foreach (IMember member in members) {
+				if (member is IMethod)
+					methods.Add ((IMethod)member);
+			}
+		}
+		
+		public override IEnumerable<object> CreateResolveResult (ProjectDom dom)
+		{
+			return null;
+		}
+		
+		public override string ToString ()
+		{
+			return String.Format ("[MethodResolveResult: #methods={0}]", methods.Count);
+		}
+
 	}
 	
 	public class NamespaceResolveResult : ResolveResult

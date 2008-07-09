@@ -206,7 +206,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 				return null;
 			IType result = database != null ? database.GetClass (fullName, null, caseSensitive) : null;
 			if (result == null) {
-				foreach (IType type in Types) {
+				foreach (IType type in AllAccessibleTypes) {
 					if (type.FullName == fullName)
 						return type;
 				}

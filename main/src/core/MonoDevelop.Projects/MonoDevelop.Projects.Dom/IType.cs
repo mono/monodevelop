@@ -88,7 +88,7 @@ namespace MonoDevelop.Projects.Dom
 			get;
 		}
 		
-		IMember SearchMember (string name, bool caseSensitive);
+		List<IMember> SearchMember (string name, bool caseSensitive);
 		
 		/// <value>
 		/// Types that are defined across several compilation unit (e.g. files) this returns

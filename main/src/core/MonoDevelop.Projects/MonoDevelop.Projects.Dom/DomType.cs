@@ -230,13 +230,15 @@ namespace MonoDevelop.Projects.Dom
 			this.location    = location;
 		}
 		
-		public IMember SearchMember (string name, bool caseSensitive)
+		public List<IMember> SearchMember (string name, bool caseSensitive)
 		{
+			List<IMember> result = new List<IMember> ();
 			foreach (IMember member in this.Members) {
-				if (0 == String.Compare (name, member.Name, caseSensitive ? StringComparison.InvariantCulture : StringComparison.InvariantCultureIgnoreCase))
-					return member;
+				if (0 == String.Compare (name, member.Name, caseSensitive ? StringComparison.InvariantCulture : StringComparison.InvariantCultureIgnoreCase)) {
+					result.Add (member);
+				}
 			}
-			return null;
+			return result;
 		}
 		
 		public override string ToString ()
