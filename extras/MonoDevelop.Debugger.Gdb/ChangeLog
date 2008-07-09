@@ -1,5 +1,9 @@
 2008-07-09  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* GdbSession.cs: Track api changes.
+
+2008-07-09  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* GdbBacktrace.cs: Added support for code completion.
 
 2008-07-09  Lluis Sanchez Gual <lluis@novell.com> 

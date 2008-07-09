@@ -154,7 +154,7 @@ namespace MonoDevelop.Debugger.Gdb
 				thread.Abort ();
 		}
 		
-		protected override void OnSetActiveThread (int threadId)
+		protected override void OnSetActiveThread (int processId, int threadId)
 		{
 			activeThread = threadId;
 		}
