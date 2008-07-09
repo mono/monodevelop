@@ -1,5 +1,11 @@
 2008-07-09  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* Mono.Debugging.Client/ThreadInfo.cs,
+	  Mono.Debugging.Client/DebuggerSession.cs: Provide the process id
+	  when setting the active thread.
+
+2008-07-09  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* Mono.Debugging.Client/ObjectValueFlags.cs: Added Type and Namespace.
 	* Mono.Debugging.Client/ObjectValue.cs: Properly set the name when
 	  creating an error object.

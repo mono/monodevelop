@@ -171,7 +171,7 @@ namespace Mono.Debugging.Client
 			set {
 				lock (slock) {
 					activeThread = value;
-					OnSetActiveThread (activeThread.Id);
+					OnSetActiveThread (activeThread.ProcessId, activeThread.Id);
 				}
 			}
 		}
@@ -511,7 +511,7 @@ namespace Mono.Debugging.Client
 		
 		protected abstract void OnDetach ();
 		
-		protected abstract void OnSetActiveThread (int threadId);
+		protected abstract void OnSetActiveThread (int processId, int threadId);
 
 		protected abstract void OnStop ();
 		
