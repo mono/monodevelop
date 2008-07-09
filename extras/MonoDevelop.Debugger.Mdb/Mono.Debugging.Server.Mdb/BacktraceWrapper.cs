@@ -40,16 +40,8 @@ namespace DebuggerServer
 				if (frame.Method != null) {
 					method = frame.Method.Name;
 					int p = method.IndexOf ('(');
-					if (p != -1) {
-						StringBuilder sb = new StringBuilder ();
-						foreach (TargetVariable var in frame.Method.GetParameters (frame.Thread)) {
-							if (sb.Length > 0)
-								sb.Append (", ");
-							sb.Append (var.Name).Append (" = ").Append (Server.Instance.Evaluator.TargetObjectToString (frame.Thread, var.GetObject (frame)));
-						}
-						sb.Append (')');
-						method = method.Substring (0, p+1) + sb.ToString ();
-					}
+					if (p != -1)
+						method = method.Substring (0, p).Trim ();
 				} else if (frame.Name != null) {
 					method = frame.Name.Name;
 				} else {

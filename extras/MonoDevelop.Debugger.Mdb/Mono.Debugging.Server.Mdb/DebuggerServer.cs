@@ -461,9 +461,9 @@ namespace DebuggerServer
 		private void OnTargetEvent (object sender, MD.TargetEventArgs args)
 		{
 			try {
-				Console.WriteLine ("pp OnTargetEvent: " + args.Type + " " + internalInterruptionRequested + " " + stoppedWorkQueue.Count + " iss:" + args.IsStopped);
+				Console.WriteLine ("Server OnTargetEvent: " + args.Type + " " + internalInterruptionRequested + " " + stoppedWorkQueue.Count + " iss:" + args.IsStopped);
 
-				if (!running || !args.IsStopped)
+				if (!running || (!args.IsStopped && args.Type != MD.TargetEventType.UnhandledException))
 					return;
 				
 				if (args.Frame != null) {

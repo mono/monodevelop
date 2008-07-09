@@ -18,21 +18,17 @@ COMPILE_TARGET = exe
 PROJECT_REFERENCES = 
 BUILD_DIR = ../build
 
-DEBUGGERSERVER_EXE_MDB_SOURCE=../build/DebuggerServer.exe.mdb
-
 endif
 
 ifeq ($(CONFIG),RELEASE)
 ASSEMBLY_COMPILER_COMMAND = gmcs
 ASSEMBLY_COMPILER_FLAGS =  -noconfig -codepage:utf8 -warn:4 -optimize+ -debug -define:DEBUG "-define:TRACE"
 
-ASSEMBLY = ../../../extra/home/lluis/work/monodevelop/extras/MonoDevelop.Debugger.Mdb/build/DebuggerServer.exe
+ASSEMBLY = ../build/DebuggerServer.exe
 ASSEMBLY_MDB = $(ASSEMBLY).mdb
 COMPILE_TARGET = exe
 PROJECT_REFERENCES = 
-BUILD_DIR = ../../../extra/home/lluis/work/monodevelop/extras/MonoDevelop.Debugger.Mdb/build
-
-DEBUGGERSERVER_EXE_MDB_SOURCE=../../../extra/home/lluis/work/monodevelop/extras/MonoDevelop.Debugger.Mdb/build/DebuggerServer.exe.mdb
+BUILD_DIR = ../build/MonoDevelop.Debugger.Mdb/build
 
 endif
 
@@ -106,6 +102,7 @@ $(eval $(call emit_resgen_targets))
 $(build_xamlg_list): %.xaml.g.cs: %.xaml
 	xamlg '$<'
 
+INSTALL_DIR = $(DESTDIR)$(prefix)/lib/monodevelop/AddIns/MonoDevelop.Debugger
 
 LOCAL_PKGCONFIG=PKG_CONFIG_PATH=../../../local-config:$$PKG_CONFIG_PATH
 
@@ -119,17 +116,17 @@ $(ASSEMBLY) $(ASSEMBLY_MDB): $(build_sources) $(build_resources) $(build_datafil
 
 install-local: $(ASSEMBLY) $(ASSEMBLY_MDB)
 	make pre-install-local-hook prefix=$(prefix)
-	mkdir -p '$(DESTDIR)$(libdir)/$(PACKAGE)'
-	$(call cp,$(ASSEMBLY),$(DESTDIR)$(libdir)/$(PACKAGE))
-	$(call cp,$(ASSEMBLY_MDB),$(DESTDIR)$(libdir)/$(PACKAGE))
-	$(call cp,$(DEBUGGERSERVER_EXE_MDB),$(DESTDIR)$(libdir)/$(PACKAGE))
+	mkdir -p '$(INSTALL_DIR)'
+	$(call cp,$(ASSEMBLY),$(INSTALL_DIR))
+	$(call cp,$(ASSEMBLY_MDB),$(INSTALL_DIR))
+	$(call cp,$(DEBUGGERSERVER_EXE_MDB),$(INSTALL_DIR))
 	make post-install-local-hook prefix=$(prefix)
 
 uninstall-local: $(ASSEMBLY) $(ASSEMBLY_MDB)
 	make pre-uninstall-local-hook prefix=$(prefix)
-	$(call rm,$(ASSEMBLY),$(DESTDIR)$(libdir)/$(PACKAGE))
-	$(call rm,$(ASSEMBLY_MDB),$(DESTDIR)$(libdir)/$(PACKAGE))
-	$(call rm,$(DEBUGGERSERVER_EXE_MDB),$(DESTDIR)$(libdir)/$(PACKAGE))
+	$(call rm,$(ASSEMBLY),$(INSTALL_DIR))
+	$(call rm,$(ASSEMBLY_MDB),$(INSTALL_DIR))
+	$(call rm,$(DEBUGGERSERVER_EXE_MDB),$(INSTALL_DIR))
 	make post-uninstall-local-hook prefix=$(prefix)
 
 install: install-local

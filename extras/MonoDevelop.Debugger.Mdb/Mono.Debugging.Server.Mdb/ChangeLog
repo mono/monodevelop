@@ -1,5 +1,11 @@
 2008-07-09  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* DebuggerServer.cs: Ignore target events which don't stop the thread.
+	* BacktraceWrapper.cs: Fix method name returned by StackFrame.
+	* Makefile: Install the assemblies to the correct directory.
+
+2008-07-09  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* DebuggerServer.cs: Implemented SetActiveThread. Ignore target events
 	  coming from non-stopped threads.
 

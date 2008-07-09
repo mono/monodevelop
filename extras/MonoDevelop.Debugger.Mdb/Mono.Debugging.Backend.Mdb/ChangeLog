@@ -1,5 +1,9 @@
 2008-07-09  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* Makefile: Install the assemblies to the correct directory.
+
+2008-07-09  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDebuggerSession.cs, IDebuggerServer.cs: Implemented
 	  SetActiveThread. Ignore target events coming from non-stopped
 	  threads.

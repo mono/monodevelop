@@ -68,7 +68,6 @@ EXTRAS = \
 	mono.debugging.backend.mdb.pc.in 
 
 REFERENCES =  \
-	../../../../../install/lib/monodevelop/bin/Mono.TextEditor.dll \
 	Mono.Posix \
 	-pkg:monodevelop \
 	-pkg:monodevelop-core-addins \
@@ -96,6 +95,7 @@ $(eval $(call emit_resgen_targets))
 $(build_xamlg_list): %.xaml.g.cs: %.xaml
 	xamlg '$<'
 
+INSTALL_DIR = $(DESTDIR)$(prefix)/lib/monodevelop/AddIns/MonoDevelop.Debugger
 
 LOCAL_PKGCONFIG=PKG_CONFIG_PATH=../../../local-config:$$PKG_CONFIG_PATH
 
@@ -109,20 +109,20 @@ $(ASSEMBLY) $(ASSEMBLY_MDB): $(build_sources) $(build_resources) $(build_datafil
 
 install-local: $(ASSEMBLY) $(ASSEMBLY_MDB)
 	make pre-install-local-hook prefix=$(prefix)
-	mkdir -p '$(DESTDIR)$(libdir)/$(PACKAGE)'
-	$(call cp,$(ASSEMBLY),$(DESTDIR)$(libdir)/$(PACKAGE))
-	$(call cp,$(ASSEMBLY_MDB),$(DESTDIR)$(libdir)/$(PACKAGE))
+	mkdir -p '$(INSTALL_DIR)'
+	$(call cp,$(ASSEMBLY),$(INSTALL_DIR))
+	$(call cp,$(ASSEMBLY_MDB),$(INSTALL_DIR))
 	mkdir -p '$(DESTDIR)$(libdir)/pkgconfig'
 	$(call cp,$(MONO_DEBUGGING_BACKEND_MDB_PC),$(DESTDIR)$(libdir)/pkgconfig)
-	$(call cp,$(DEBUGGERCLIENT_DLL_MDB),$(DESTDIR)$(libdir)/$(PACKAGE))
+	$(call cp,$(DEBUGGERCLIENT_DLL_MDB),$(INSTALL_DIR))
 	make post-install-local-hook prefix=$(prefix)
 
 uninstall-local: $(ASSEMBLY) $(ASSEMBLY_MDB)
 	make pre-uninstall-local-hook prefix=$(prefix)
-	$(call rm,$(ASSEMBLY),$(DESTDIR)$(libdir)/$(PACKAGE))
-	$(call rm,$(ASSEMBLY_MDB),$(DESTDIR)$(libdir)/$(PACKAGE))
+	$(call rm,$(ASSEMBLY),$(INSTALL_DIR))
+	$(call rm,$(ASSEMBLY_MDB),$(INSTALL_DIR))
 	$(call rm,$(MONO_DEBUGGING_BACKEND_MDB_PC),$(DESTDIR)$(libdir)/pkgconfig)
-	$(call rm,$(DEBUGGERCLIENT_DLL_MDB),$(DESTDIR)$(libdir)/$(PACKAGE))
+	$(call rm,$(DEBUGGERCLIENT_DLL_MDB),$(INSTALL_DIR))
 	make post-uninstall-local-hook prefix=$(prefix)
 
 install: install-local
