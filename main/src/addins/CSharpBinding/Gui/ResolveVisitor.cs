@@ -181,8 +181,11 @@ namespace MonoDevelop.CSharpBinding
 		{
 			if (resolver.CallingType == null)
 				return CreateResult (DomReturnType.Void);
-			ResolveResult result = CreateResult (resolver.CallingType.FullName);
-		//	result.ResolvedMember = resolver.CallingType;
+				
+			ThisResolveResult result = new ThisResolveResult ();
+			result.CallingType   = resolver.CallingType;
+			result.CallingMember = resolver.CallingMember;
+				
 			return result;
 		}
 		
@@ -191,8 +194,9 @@ namespace MonoDevelop.CSharpBinding
 			if (resolver.CallingType == null || resolver.CallingType.FullName == "System.Object")
 				return CreateResult (DomReturnType.Void);
 			
-			ResolveResult result = resolver.CallingType.BaseType != null ? CreateResult (resolver.CallingType.BaseType) : CreateResult ("System.Object");
-		//	result.ResolvedMember = resolver.CallingType;
+			BaseResolveResult result = new BaseResolveResult ();
+			result.CallingType   = resolver.CallingType;
+			result.CallingMember = resolver.CallingMember;
 			return result;
 		}
 		
@@ -235,7 +239,7 @@ namespace MonoDevelop.CSharpBinding
 				IType type = resolver.Dom.GetType (result.ResolvedType);
 				if (type != null) {
 					List <IMember> member = type.SearchMember (fieldReferenceExpression.FieldName, true);
-					if (member != null) {
+					if (member != null && member.Count > 0) {
 						if (member[0] is IMethod) {
 							result = new MethodResolveResult (member);
 							result.CallingType   = resolver.CallingType;

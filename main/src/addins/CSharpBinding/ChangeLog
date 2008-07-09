@@ -1,5 +1,10 @@
 2008-07-09  Mike Krüger <mkrueger@novell.com> 
 
+	* Gui/ResolveVisitor.cs, Gui/NRefactoryParameterDataProvider.cs: Worked
+	  on new dom.
+
+2008-07-09  Mike Krüger <mkrueger@novell.com> 
+
 	* CSharpBinding.addin.xml: switched back to old code completion.
 
 2008-07-09  Mike Krüger <mkrueger@novell.com> 

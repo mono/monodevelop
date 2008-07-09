@@ -43,11 +43,9 @@ namespace MonoDevelop.CSharpBinding
 		{
 			this.editor = editor;
 			this.resolveResult = resolveResult;
-			System.Console.WriteLine("parameter result:" + this.resolveResult);
 		}
 		
 		#region IParameterDataProvider implementation 
-		
 		public int GetCurrentParameterIndex (ICodeCompletionContext ctx)
 		{
 			int cursor = editor.CursorPosition;
@@ -96,8 +94,6 @@ namespace MonoDevelop.CSharpBinding
 				return resolveResult.Methods.Count;
 			}
 		}
-		
 		#endregion 
-		
 	}
 }
