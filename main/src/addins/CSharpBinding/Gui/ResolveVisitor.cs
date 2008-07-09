@@ -27,6 +27,8 @@
 //
 
 using System;
+using System.Collections.Generic;
+
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Parser;
 using ICSharpCode.NRefactory.Visitors;
@@ -219,6 +221,7 @@ namespace MonoDevelop.CSharpBinding
 				string fullName = namespaceResult.Namespace + "." + fieldReferenceExpression.FieldName;
 				if (resolver.Dom.NamespaceExists (fullName))
 					return new NamespaceResolveResult (fullName);
+				
 				IType type = resolver.Dom.GetType (fullName, -1, true);
 				if (type != null) {
 					result = CreateResult (fullName);
@@ -231,9 +234,15 @@ namespace MonoDevelop.CSharpBinding
 			if (result != null && result.ResolvedType != null) {
 				IType type = resolver.Dom.GetType (result.ResolvedType);
 				if (type != null) {
-					IMember member = type.SearchMember (fieldReferenceExpression.FieldName, true);
+					List <IMember> member = type.SearchMember (fieldReferenceExpression.FieldName, true);
 					if (member != null) {
-						result = CreateResult (member.ReturnType);
+						if (member[0] is IMethod) {
+							result = new MethodResolveResult (member);
+							result.CallingType   = resolver.CallingType;
+							result.CallingMember = resolver.CallingMember;
+							return result;
+						}
+						result = CreateResult (member[0].ReturnType);
 						return result;
 					}
 				}

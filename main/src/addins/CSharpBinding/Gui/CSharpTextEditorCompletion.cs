@@ -48,7 +48,6 @@ namespace MonoDevelop.CSharpBinding.Gui
 		{
 			CSharpExpressionFinder expressionFinder = new CSharpExpressionFinder ();
 			ExpressionResult result = expressionFinder.FindExpression (Editor.Text, Editor.CursorPosition);
-			System.Console.WriteLine("found:" + result);
 			if (result == null)
 				return null;
 			
@@ -61,13 +60,35 @@ namespace MonoDevelop.CSharpBinding.Gui
 			case '.':
 				ResolveResult resolveResult = resolver.Resolve (result);
 				return CreateCompletionData (resolveResult, result);
-				
 			case ' ':
 				int i = completionContext.TriggerOffset;
 				return HandleKeywordCompletion (result, GetPreviousToken (ref i, false));
 			}
 			return null;
 		}
+		
+		public override IParameterDataProvider HandleParameterCompletion (ICodeCompletionContext completionContext, char completionChar)
+		{
+			CSharpExpressionFinder expressionFinder = new CSharpExpressionFinder ();
+			ExpressionResult result = expressionFinder.FindExpression (Editor.Text, Editor.CursorPosition - 2);
+			if (result == null)
+				return null;
+			NRefactoryResolver resolver = new MonoDevelop.CSharpBinding.NRefactoryResolver (Document.Project,
+			                                                                                ICSharpCode.NRefactory.SupportedLanguage.CSharp,
+			                                                                                Editor,
+			                                                                                Document.FileName);
+			
+			switch (completionChar) {
+			case '(':
+				ResolveResult resolveResult = resolver.Resolve (result);
+				System.Console.WriteLine("res res:" + resolveResult);
+				if (resolveResult != null && resolveResult is MethodResolveResult)
+					return new NRefactoryParameterDataProvider (Editor, resolver.Dom, resolveResult as MethodResolveResult);
+				break;
+			}
+			return null;
+		}
+		
 		
 		public ICompletionDataProvider HandleKeywordCompletion (ExpressionResult result, string word)
 		{

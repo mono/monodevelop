@@ -11,7 +11,7 @@ using CSharpBinding.FormattingStrategy;
 
 namespace CSharpBinding
 {
-	public class CSharpParameterDataProvider: MethodParameterDataProvider
+	public class CSharpParameterDataProvider : MethodParameterDataProvider
 	{
 		TextEditor editor;
 		CSharpAmbience ambience = new CSharpAmbience ();
