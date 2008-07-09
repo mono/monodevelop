@@ -1,5 +1,11 @@
 2008-07-09  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* Mono.Debugging.Client/ObjectValueFlags.cs: Added Type and Namespace.
+	* Mono.Debugging.Client/ObjectValue.cs: Properly set the name when
+	  creating an error object.
+
+2008-07-09  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* Mono.Debugging.Client/StackFrame.cs,
 	  Mono.Debugging.Client/DebuggerSession.cs,
 	  Mono.Debugging.Client/CompletionData.cs, Mono.Debugging.mdp,

@@ -117,7 +117,7 @@ namespace Mono.Debugging.Client
 			ObjectValue ob = new ObjectValue ();
 			ob.flags = flags | ObjectValueFlags.Error;
 			ob.value = message;
-			ob.name = "";
+			ob.name = name;
 			return ob;
 		}
 		

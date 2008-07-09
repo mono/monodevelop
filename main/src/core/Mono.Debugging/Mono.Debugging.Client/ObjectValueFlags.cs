@@ -46,10 +46,12 @@ namespace Mono.Debugging.Client
 		ArrayElement = 1 << 12,
 		Method = 1 << 13,
 		Literal = 1 << 14,
-		OriginMask = 0x0000ff00,
+		Type = 1 << 15,
+		Namespace = 1 << 16,
+		OriginMask = 0x0001ff00,
 		
-		Global = 1 << 16,	// For fields, it means static
-		ReadOnly = 1 << 17,
+		Global = 1 << 17,	// For fields, it means static
+		ReadOnly = 1 << 18,
 		
 		// For field and property
 		Public = 1 << 24,
@@ -57,6 +59,6 @@ namespace Mono.Debugging.Client
 		Internal = 1 << 26,
 		Private = 1 << 27,
 		InternalProtected = Internal | Protected,
-		AccessMask = 0xff000000
+		AccessMask = Public | Protected | Internal | Private
 	}
 }
