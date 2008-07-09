@@ -1,3 +1,8 @@
+2008-07-09  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* DockGroup.cs: RemoveItemRec: don't keep looking if the item has
+	  already been removed.
+
 2008-05-26  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* TabStrip.cs: Fix gtk warning.

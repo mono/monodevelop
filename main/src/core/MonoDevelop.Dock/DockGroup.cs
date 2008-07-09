@@ -234,19 +234,21 @@ namespace MonoDevelop.Components.Docking
 			return -1;
 		}
 		
-		public void RemoveItemRec (DockItem item)
+		public bool RemoveItemRec (DockItem item)
 		{
 			foreach (DockObject ob in dockObjects) {
 				if (ob is DockGroup) {
-					((DockGroup)ob).RemoveItemRec (item);
+					if (((DockGroup)ob).RemoveItemRec (item))
+						return true;
 				} else {
 					DockGroupItem dit = ob as DockGroupItem;
 					if (dit != null && dit.Item == item) {
 						Remove (ob);
-						return;
+						return true;
 					}
 				}
 			}
+			return false;
 		}
 		
 		public void Remove (DockObject obj)
