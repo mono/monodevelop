@@ -87,6 +87,7 @@ $(eval $(call emit_resgen_targets))
 $(build_xamlg_list): %.xaml.g.cs: %.xaml
 	xamlg '$<'
 
+INSTALL_DIR = $(DESTDIR)$(prefix)/lib/monodevelop/AddIns/MonoDevelop.Debugger
 
 LOCAL_PKGCONFIG=PKG_CONFIG_PATH=../../local-config:$$PKG_CONFIG_PATH
 
@@ -100,18 +101,18 @@ $(ASSEMBLY) $(ASSEMBLY_MDB): $(build_sources) $(build_resources) $(build_datafil
 
 install-local: $(ASSEMBLY) $(ASSEMBLY_MDB)
 	make pre-install-local-hook prefix=$(prefix)
-	mkdir -p '$(DESTDIR)$(libdir)/$(PACKAGE)'
-	$(call cp,$(ASSEMBLY),$(DESTDIR)$(libdir)/$(PACKAGE))
-	$(call cp,$(ASSEMBLY_MDB),$(DESTDIR)$(libdir)/$(PACKAGE))
-	$(call cp,$(MONODEVELOP_DEBUGGER_GDB_DLL_MDB),$(DESTDIR)$(libdir)/$(PACKAGE))
+	mkdir -p '$(INSTALL_DIR)'
+	$(call cp,$(ASSEMBLY),$(INSTALL_DIR))
+	$(call cp,$(ASSEMBLY_MDB),$(INSTALL_DIR))
+	$(call cp,$(MONODEVELOP_DEBUGGER_GDB_DLL_MDB),$(INSTALL_DIR))
 	mkdir -p '$(DESTDIR)$(libdir)/pkgconfig'
 	$(call cp,$(MONODEVELOP_DEBUGGER_GDB_PC),$(DESTDIR)$(libdir)/pkgconfig)
 	make post-install-local-hook prefix=$(prefix)
 
 uninstall-local: $(ASSEMBLY) $(ASSEMBLY_MDB)
 	make pre-uninstall-local-hook prefix=$(prefix)
-	$(call rm,$(ASSEMBLY),$(DESTDIR)$(libdir)/$(PACKAGE))
-	$(call rm,$(ASSEMBLY_MDB),$(DESTDIR)$(libdir)/$(PACKAGE))
-	$(call rm,$(MONODEVELOP_DEBUGGER_GDB_DLL_MDB),$(DESTDIR)$(libdir)/$(PACKAGE))
+	$(call rm,$(ASSEMBLY),$(INSTALL_DIR))
+	$(call rm,$(ASSEMBLY_MDB),$(INSTALL_DIR))
+	$(call rm,$(MONODEVELOP_DEBUGGER_GDB_DLL_MDB),$(INSTALL_DIR))
 	$(call rm,$(MONODEVELOP_DEBUGGER_GDB_PC),$(DESTDIR)$(libdir)/pkgconfig)
 	make post-uninstall-local-hook prefix=$(prefix)

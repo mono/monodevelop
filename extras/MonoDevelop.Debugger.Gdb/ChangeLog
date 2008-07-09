@@ -1,5 +1,10 @@
 2008-07-09  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Debugger.Gdb.make: Install the assemblies to the correct
+	  directory.
+
+2008-07-09  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* GdbSession.cs: Track api changes.
 
 2008-07-09  Lluis Sanchez Gual <lluis@novell.com> 
