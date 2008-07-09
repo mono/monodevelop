@@ -75,5 +75,7 @@ namespace Mono.Debugging.Backend.Mdb
 		Backtrace GetThreadBacktrace (int processId, int threadId);
 		
 		AssemblyLine[] DisassembleFile (string file);
+		
+		void SetActiveThread (int processId, int threadId);
 	}
 }

@@ -139,8 +139,9 @@ namespace Mono.Debugging.Backend.Mdb
 			return controller.DebuggerServer.GetThreadBacktrace (processId, threadId);
 		}
 		
-		protected override void OnSetActiveThread (int threadId)
+		protected override void OnSetActiveThread (int processId, int threadId)
 		{
+			controller.DebuggerServer.SetActiveThread (processId, threadId);
 		}
 		
 		protected override AssemblyLine[] OnDisassembleFile (string file)

@@ -29,8 +29,9 @@ namespace DebuggerServer
 		List<ST.WaitCallback> stoppedWorkQueue = new List<ST.WaitCallback> ();
 		List<ST.WaitCallback> eventQueue = new List<ST.WaitCallback> ();
 		bool initializing;
-		bool internalInvoke;
+		bool running;
 		ExpressionEvaluator evaluator = new NRefactoryEvaluator ();
+		MD.Thread activeThread;
 
 		public DebuggerServer (IDebuggerController dc)
 		{
@@ -112,6 +113,8 @@ namespace DebuggerServer
 					debugger.Detach ();
 				} catch (Exception ex) {
 					Console.WriteLine (ex);
+				} finally {
+					running = false;
 				}
 			});
 		}
@@ -126,6 +129,7 @@ namespace DebuggerServer
 				}
 				else
 					process.MainThread.Stop ();
+				running = false;
 			});
 		}
 
@@ -133,31 +137,37 @@ namespace DebuggerServer
 		{
 			ResetTaskQueue ();
 			debugger.Kill ();
+			running = false;
 		}
 
 		public void NextLine ()
 		{
-			guiManager.StepOver (process.MainThread);
+			running = true;
+			guiManager.StepOver (activeThread);
 		}
 
 		public void StepLine ()
 		{
-			guiManager.StepInto (process.MainThread);
+			running = true;
+			guiManager.StepInto (activeThread);
 		}
 
 		public void StepInstruction ()
 		{
-			process.MainThread.StepInstruction ();
+			running = true;
+			activeThread.StepInstruction ();
 		}
 
 		public void NextInstruction ()
 		{
-			process.MainThread.NextInstruction ();
+			running = true;
+			activeThread.NextInstruction ();
 		}
 
 		public void Finish ()
 		{
-			guiManager.StepOut (process.MainThread);
+			running = true;
+			guiManager.StepOut (activeThread);
 		}
 
 		public int InsertBreakpoint (string filename, int line, bool enable)
@@ -225,7 +235,8 @@ namespace DebuggerServer
 		public void Continue ()
 		{
 			QueueTask (delegate {
-				guiManager.Continue (process.MainThread);
+				running = true;
+				guiManager.Continue (activeThread);
 			});
 		}
 		
@@ -252,14 +263,25 @@ namespace DebuggerServer
 		
 		public DL.Backtrace GetThreadBacktrace (int processId, int threadId)
 		{
-			MD.Process p = GetProcess (processId);
-			if (p != null) {
-				foreach (MD.Thread t in p.GetThreads ()) {
-					if (t.ID == threadId) {
-						if (!t.IsStopped)
-							return null;
-						return CreateBacktrace (t);
-					}
+			MD.Thread t = GetThread (processId, threadId);
+			if (t != null && t.IsStopped)
+				return CreateBacktrace (t);
+			else
+				return null;
+		}
+		
+		public void SetActiveThread (int processId, int threadId)
+		{
+			activeThread = GetThread (processId, threadId);
+		}
+
+		MD.Thread GetThread (int procId, int threadId)
+		{
+			MD.Process proc = GetProcess (threadId);
+			if (proc != null) {
+				foreach (MD.Thread t in proc.GetThreads ()) {
+					if (t.ID == threadId)
+						return t;
 				}
 			}
 			return null;
@@ -324,27 +346,30 @@ namespace DebuggerServer
 							  ML.TargetStructObject object_argument,
 							  ML.TargetObject[] param_objects)
 		{
-			try {
-				internalInvoke = true;
-				MD.RuntimeInvokeResult res = thread.RuntimeInvoke (function, object_argument, param_objects, true, false);
-				res.Wait ();
-				if (res.ExceptionMessage != null)
-					throw new Exception (res.ExceptionMessage);
-				return res.ReturnObject;
-			} finally {
-				internalInvoke = false;
-			}
+			MD.RuntimeInvokeResult res = thread.RuntimeInvoke (function, object_argument, param_objects, true, false);
+			res.Wait ();
+			if (res.ExceptionMessage != null)
+				throw new Exception (res.ExceptionMessage);
+			return res.ReturnObject;
 		}
 		
 		DL.Backtrace CreateBacktrace (MD.Thread thread)
 		{
 			List<MD.StackFrame> frames = new List<MD.StackFrame> ();
 			MD.Backtrace backtrace = thread.GetBacktrace (MD.Backtrace.Mode.Native, max_frames);
-			frames.AddRange (backtrace.Frames);
+			if (backtrace != null)
+				frames.AddRange (backtrace.Frames);
 			backtrace = thread.GetBacktrace (MD.Backtrace.Mode.Managed, max_frames);
-			frames.AddRange (backtrace.Frames);
-			BacktraceWrapper wrapper = new BacktraceWrapper (frames.ToArray ());
-			return new DL.Backtrace (wrapper);
+			if (backtrace != null)
+				frames.AddRange (backtrace.Frames);
+			if (frames.Count > 0) {
+				BacktraceWrapper wrapper = new BacktraceWrapper (frames.ToArray ());
+				return new DL.Backtrace (wrapper);
+			} else if (thread.CurrentBacktrace != null) {
+				BacktraceWrapper wrapper = new BacktraceWrapper (thread.CurrentBacktrace.Frames);
+				return new DL.Backtrace (wrapper);
+			}
+			return null;
 		}
 
 		#region ISponsor Members
@@ -359,6 +384,7 @@ namespace DebuggerServer
 		private void OnInitialized (MD.Debugger debugger, Process process)
 		{
 			Console.WriteLine (">> OnInitialized");
+			
 			this.process = process;
 			this.debugger = debugger;
 			
@@ -376,6 +402,9 @@ namespace DebuggerServer
 
 			debugger.TargetExitedEvent += OnTargetExitedEvent;
 			guiManager.TargetEvent += OnTargetEvent;
+			activeThread = process.MainThread;
+			running = true;
+			
 			Console.WriteLine ("<< OnInitialized");
 		}
 		
@@ -432,11 +461,15 @@ namespace DebuggerServer
 		private void OnTargetEvent (object sender, MD.TargetEventArgs args)
 		{
 			try {
-				if (internalInvoke)
+				Console.WriteLine ("pp OnTargetEvent: " + args.Type + " " + internalInterruptionRequested + " " + stoppedWorkQueue.Count + " iss:" + args.IsStopped);
+
+				if (!running || !args.IsStopped)
 					return;
 				
-				Console.WriteLine ("pp OnTargetEvent: " + args.Type + " " + internalInterruptionRequested + " " + stoppedWorkQueue.Count + " iss:" + args.IsStopped + " " + args.Data);
-
+				if (args.Frame != null) {
+					activeThread = args.Frame.Thread;
+				}
+				
 				bool isStop = args.Type != MD.TargetEventType.FrameChanged &&
 					args.Type != MD.TargetEventType.TargetExited &&
 					args.Type != MD.TargetEventType.TargetRunning;
@@ -510,6 +543,8 @@ namespace DebuggerServer
 					default:
 						return;
 				}
+				
+				running = false;
 				
 				// Dispose all previous remote objects
 				RemoteFrameObject.DisconnectAll ();

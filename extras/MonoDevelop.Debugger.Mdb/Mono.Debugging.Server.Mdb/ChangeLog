@@ -1,5 +1,10 @@
 2008-07-09  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* DebuggerServer.cs: Implemented SetActiveThread. Ignore target events
+	  coming from non-stopped threads.
+
+2008-07-09  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* DebuggerServer.cs, Util.cs, PropertyReference.cs: Make sure internal
 	  invokes to the debugged process do not fire target events.
 	* BacktraceWrapper.cs, ExpressionEvaluator.cs, ValueReference.cs,

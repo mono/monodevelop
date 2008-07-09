@@ -1,3 +1,9 @@
+2008-07-09  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDebuggerSession.cs, IDebuggerServer.cs: Implemented
+	  SetActiveThread. Ignore target events coming from non-stopped
+	  threads.
+
 2008-07-02  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDebuggerSession.cs, IDebuggerServer.cs, Makefile: Implement
