@@ -141,6 +141,8 @@ namespace MonoDevelop.Projects.Dom
 				((CompoundType)type1).AddPart (type2);
 				return type1;
 			}
+			if (type1.CompilationUnit != null && type2.CompilationUnit != null && type1.CompilationUnit.FileName == type2.CompilationUnit.FileName)
+				return type2;
 			CompoundType result = new CompoundType ();
 			result.AddPart (type1);
 			result.AddPart (type2);

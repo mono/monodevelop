@@ -1,5 +1,9 @@
 2008-07-09  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.Projects.Dom/CompoundType.cs: Worked on dom.
+
+2008-07-09  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.Projects.Dom.Parser/ProjectDom.cs,
 	  MonoDevelop.Projects.Dom.Output/Ambience.cs,
 	  MonoDevelop.Projects.Dom.Output/NetAmbience.cs,
