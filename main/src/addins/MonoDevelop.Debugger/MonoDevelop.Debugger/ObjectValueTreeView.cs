@@ -267,7 +267,9 @@ namespace MonoDevelop.Debugger
 			string source;
 			switch (flags & ObjectValueFlags.OriginMask) {
 				case ObjectValueFlags.Property: source = "property"; break;
+				case ObjectValueFlags.Type: source = "class"; break;
 				case ObjectValueFlags.Literal: return "md-literal";
+				case ObjectValueFlags.Namespace: return "md-name-space";
 				default: source = "field"; break;
 			}
 			string access;
@@ -512,6 +514,7 @@ namespace MonoDevelop.Debugger
 				return editEntry.Style;
 			}
 		}
+		#endregion 
 
 		ObjectValue[] GetValues (string[] names)
 		{
@@ -532,7 +535,6 @@ namespace MonoDevelop.Debugger
 			else
 				return null;
 		}
-		#endregion 
 		
 	}
 	

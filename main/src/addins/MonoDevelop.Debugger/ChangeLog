@@ -1,5 +1,10 @@
 2008-07-09  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Debugger/ObjectValueTreeView.cs: Show icons for Type and
+	  Namespace values.
+
+2008-07-09  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Debugger.mdp, Makefile.am,
 	  MonoDevelop.Debugger/WatchPad.cs,
 	  MonoDevelop.Debugger/ObjectValueTreeView.cs: Added support for code
