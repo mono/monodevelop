@@ -164,7 +164,26 @@ namespace MonoDevelop.Projects.Dom
 		{
 			return String.Format ("[MethodResolveResult: #methods={0}]", methods.Count);
 		}
-
+	}
+	
+	public class ThisResolveResult : ResolveResult
+	{
+		public override IEnumerable<object> CreateResolveResult (ProjectDom dom)
+		{
+			List<object> result = new List<object> ();
+			MemberResolveResult.AddType (dom, result, new DomReturnType (CallingType), StaticResolve);
+			return result;
+		}
+	}
+	
+	public class BaseResolveResult : ResolveResult
+	{
+		public override IEnumerable<object> CreateResolveResult (ProjectDom dom)
+		{
+			List<object> result = new List<object> ();
+			MemberResolveResult.AddType (dom, result, CallingType.BaseType, StaticResolve);
+			return result;
+		}
 	}
 	
 	public class NamespaceResolveResult : ResolveResult

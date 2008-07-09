@@ -130,6 +130,11 @@ namespace MonoDevelop.Projects.Dom
 		public DomReturnType ()
 		{
 		}
+		
+		public DomReturnType (IType type)
+		{
+			this.FullName = type.FullName;
+		}
 		public override bool Equals (object obj)
 		{
 			DomReturnType type = obj as DomReturnType;

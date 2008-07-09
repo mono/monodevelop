@@ -1,5 +1,10 @@
 2008-07-09  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.Projects.Dom/ResolveResult.cs,
+	  MonoDevelop.Projects.Dom/DomReturnType.cs: Worked on new dom.
+
+2008-07-09  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.Projects.Dom/CompoundType.cs: Worked on dom.
 
 2008-07-09  Mike Krüger <mkrueger@novell.com> 
