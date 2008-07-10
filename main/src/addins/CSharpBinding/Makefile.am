@@ -39,6 +39,7 @@ FILES =  \
 	Gui/CSharpTextEditorCompletion.cs \
 	Gui/CSharpTextEditorExtension.cs \
 	Gui/FormattingPanel.cs \
+	Gui/NewCSharpExpressionFinder.cs \
 	Gui/NRefactoryParameterDataProvider.cs \
 	Gui/NRefactoryResolver.cs \
 	Gui/OverrideCompletionData.cs \

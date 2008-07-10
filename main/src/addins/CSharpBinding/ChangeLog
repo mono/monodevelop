@@ -1,3 +1,11 @@
+2008-07-10  Mike Krüger <mkrueger@novell.com> 
+
+	* Gui/NRefactoryResolver.cs, Gui/ResolveVisitor.cs,
+	  Gui/NewCSharpExpressionFinder.cs,
+	  Gui/CSharpTextEditorCompletion.cs, Parser/DomParser.cs: Worked on
+	  code completion. Added new expression finder from sharpdevelop3
+	  (LGPL).
+
 2008-07-09  Mike Krüger <mkrueger@novell.com> 
 
 	* Gui/ResolveVisitor.cs, Gui/NRefactoryParameterDataProvider.cs: Worked

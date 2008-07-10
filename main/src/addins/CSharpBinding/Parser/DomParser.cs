@@ -307,6 +307,17 @@ namespace MonoDevelop.CSharpBinding
 					}
 				}
 			}
+			if (cu.UsingBlock != null) {
+				if (cu.UsingBlock.Usings != null) {
+					DomUsing domUsing = new DomUsing ();
+					foreach (Mono.CSharp.Dom.INamespaceImport import in cu.UsingBlock.Usings) {
+						domUsing.Add (import.Name);
+					}
+					result.Add (domUsing);
+					
+				}
+					
+			}
 			
 			return result;
 		}

@@ -54,11 +54,10 @@ namespace MonoDevelop.CSharpBinding
 	{
 		ProjectDom dom;
 		SupportedLanguage lang;
-		Project    project;
 		TextEditor editor;
 		IType   callingType;
 		IMember callingMember;
-		
+		ICompilationUnit unit;
 		LookupTableVisitor lookupTableVisitor;
 		
 		public IType CallingType {
@@ -72,12 +71,6 @@ namespace MonoDevelop.CSharpBinding
 				return callingMember;
 			}
 		}
-		
-		public Project Project {
-			get {
-				return project;
-			}
-		}
 
 		public ProjectDom Dom {
 			get {
@@ -85,17 +78,15 @@ namespace MonoDevelop.CSharpBinding
 			}
 		}
 		
-		public NRefactoryResolver (Project project, SupportedLanguage lang, TextEditor editor, string fileName)
+		public NRefactoryResolver (ProjectDom dom, SupportedLanguage lang, TextEditor editor, string fileName)
 		{
 			this.lang   = lang;
 			this.editor = editor;
 			
 			lookupTableVisitor = new LookupTableVisitor (lang);
 			
-			dom = ProjectDomService.GetDom (project);
-			if (dom == null)
-				return;
-			
+			this.dom = dom;
+			unit = dom.GetCompilationUnit (fileName);
 			foreach (IType type in dom.GetTypesFrom (fileName)) {
 				if (type.BodyRegion.Contains (editor.CursorLine, editor.CursorColumn)) {
 					callingType = type;
@@ -123,15 +114,19 @@ namespace MonoDevelop.CSharpBinding
 		{
 			if (expressionResult == null || String.IsNullOrEmpty (expressionResult.Expression))
 				return null;
-			ICSharpCode.NRefactory.IParser parser = ICSharpCode.NRefactory.ParserFactory.CreateParser (this.lang, new StringReader (expressionResult.Expression));
+			string expr = expressionResult.Expression.Trim ();
+			System.Console.WriteLine("Parse:" + expr);
+			ICSharpCode.NRefactory.IParser parser = ICSharpCode.NRefactory.ParserFactory.CreateParser (this.lang, new StringReader (expr));
 			return parser.ParseExpression();
 		}
 		
 		public ResolveResult Resolve (ExpressionResult expressionResult)
 		{
 			Expression expr = ParseExpression (expressionResult);
-			if (expr == null) 
+			if (expr == null) {
+				System.Console.WriteLine("Can't parse expression");
 				return null;
+			}
 			System.Console.WriteLine("visit:" + expr);
 			ResolveVisitor visitor = new ResolveVisitor (this);
 			
@@ -143,7 +138,6 @@ namespace MonoDevelop.CSharpBinding
 		public ResolveResult ResolveIdentifier (string identifier)
 		{
 			ResolveResult result = null;
-			System.Console.WriteLine("Resovle identifier:" + identifier);
 			foreach (KeyValuePair<string, List<LocalLookupVariable>> pair in this.lookupTableVisitor.Variables) {
 				if (identifier == pair.Key) {
 					result = new MemberResolveResult ();
@@ -179,12 +173,13 @@ namespace MonoDevelop.CSharpBinding
 				}
 			}
 			
-			IType type = dom.GetType (identifier, -1, true);
-			if (type != null) {
+			SearchTypeResult searchedTypeResult = dom.SearchType (new SearchTypeRequest (unit, -1, -1, identifier));
+			if (searchedTypeResult != null) {
 				result = new MemberResolveResult (true);
-				result.ResolvedType = new DomReturnType (type.FullName);
+				result.ResolvedType = searchedTypeResult.Result;
 				goto end;
 			}
+			
 			if (dom.NamespaceExists (identifier)) {
 				result = new NamespaceResolveResult (identifier);
 				goto end;

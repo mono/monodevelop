@@ -255,6 +255,18 @@ namespace MonoDevelop.CSharpBinding
 			return result;
 		}
 		
+		public override object VisitInvocationExpression(InvocationExpression invocationExpression, object data)
+		{
+			if (invocationExpression == null) 
+				return null;
+			
+			ResolveResult targetResult = Resolve (invocationExpression.TargetObject);
+		
+			
+			return targetResult;
+		}
+
+		
 		IReturnType GetCommonType (IReturnType left, IReturnType right)
 		{
 			return left ?? right;

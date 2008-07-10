@@ -113,6 +113,7 @@
     <File name="Gui/NRefactoryResolver.cs" subtype="Code" buildaction="Compile" />
     <File name="Gui/ResolveVisitor.cs" subtype="Code" buildaction="Compile" />
     <File name="Gui/NRefactoryParameterDataProvider.cs" subtype="Code" buildaction="Compile" />
+    <File name="Gui/NewCSharpExpressionFinder.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Core" />
