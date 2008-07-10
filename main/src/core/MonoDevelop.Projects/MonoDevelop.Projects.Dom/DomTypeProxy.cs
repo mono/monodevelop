@@ -85,43 +85,43 @@ namespace MonoDevelop.Projects.Dom
 		
 		public override ClassType ClassType {
 			get {
-				return WrappedType.ClassType;
+				return WrappedType != null ? WrappedType.ClassType : ClassType.Class;
 			}
 		}
 		
 		public override IReturnType BaseType {
 			get {
-				return WrappedType.BaseType;
+				return WrappedType != null ? WrappedType.BaseType : null;
 			}
 		}
 		
 		public override ReadOnlyCollection<IReturnType> ImplementedInterfaces {
 			get {
-				return WrappedType.ImplementedInterfaces;
+				return WrappedType != null ? WrappedType.ImplementedInterfaces : null;
 			}
 		}
 		
 		public override ReadOnlyCollection<TypeParameter> TypeParameters {
 			get {
-				return WrappedType.TypeParameters;
+				return WrappedType != null ? WrappedType.TypeParameters : null;
 			}
 		}
 		
 		public override IEnumerable<IMember> Members {
 			get {
-				return WrappedType.Members;
+				return WrappedType != null ? WrappedType.Members : null;
 			}
 		}
 		
 		public override IEnumerable<IType> Parts { 
 			get {
-				return WrappedType.Parts;
+				return WrappedType != null ? WrappedType.Parts : null;
 			}
 		}
 		
 		public override bool HasParts {
 			get {
-				return WrappedType.HasParts;
+				return WrappedType != null ? WrappedType.HasParts : false;
 			}
 		}
 	}

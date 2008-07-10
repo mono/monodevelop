@@ -257,7 +257,7 @@ namespace MonoDevelop.Projects.Dom
 			// implemented interfaces
 			long count = reader.ReadUInt32 ();
 			while (count-- > 0) {
-				result.Add (ReadReturnType (reader, nameTable));
+				result.AddInterfaceImplementation (ReadReturnType (reader, nameTable));
 			}
 			
 			// innerTypes

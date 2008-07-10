@@ -40,9 +40,17 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
+		string contextName;
+		
 		public virtual bool IsObjectCreation {
 			get {
 				return false;
+			}
+		}
+
+		public string ContextName {
+			get {
+				return contextName;
 			}
 		}
 		
@@ -55,38 +63,47 @@ namespace MonoDevelop.Projects.Dom
 			return false;
 		}
 		
+		public ExpressionContext (string contextName)
+		{
+			this.contextName = contextName;
+		}
 		
-		public static ExpressionContext Default   = new ExpressionContext ();
-		public static ExpressionContext Using     = new ExpressionContext ();
+		public override string ToString ()
+		{
+			return String.Format ("[ExpressionContext:ContextName={0}]", ContextName);
+		}
+		
+		public static ExpressionContext Default   = new ExpressionContext ("Default");
+		public static ExpressionContext Using     = new ExpressionContext ("Using");
 		
 		
 		// SharpDevelop compatibilty contextes
-		public static ExpressionContext Type     = new ExpressionContext ();
-		public static ExpressionContext Namespace = new ExpressionContext ();
-		public static ExpressionContext Attribute = new ExpressionContext ();
-		public static ExpressionContext IdentifierExpected = new ExpressionContext ();
-		public static ExpressionContext ConstraintsStart = new ExpressionContext ();
-		public static ExpressionContext FullyQualifiedType      = new ExpressionContext ();
-		public static ExpressionContext BaseConstructorCall      = new ExpressionContext ();
-		public static ExpressionContext DelegateType      = new ExpressionContext ();
-		public static ExpressionContext FirstParameterType      = new ExpressionContext ();
-		public static ExpressionContext ObjectInitializer      = new ExpressionContext ();
-		public static ExpressionContext ParameterType      = new ExpressionContext ();
-		public static ExpressionContext MethodBody      = new ExpressionContext ();
-		public static ExpressionContext PropertyDeclaration      = new ExpressionContext ();
-		public static ExpressionContext InterfacePropertyDeclaration      = new ExpressionContext ();
-		public static ExpressionContext EventDeclaration      = new ExpressionContext ();
-		public static ExpressionContext TypeDeclaration      = new ExpressionContext ();
-		public static ExpressionContext InterfaceDeclaration      = new ExpressionContext ();
-		public static ExpressionContext Global      = new ExpressionContext ();
-		public static ExpressionContext Constraints      = new ExpressionContext ();
-		public static ExpressionContext Interface      = new ExpressionContext ();
-		public static ExpressionContext EnumBaseType      = new ExpressionContext ();
-		public static ExpressionContext InheritableType      = new ExpressionContext ();
+		public static ExpressionContext Type                         = new ExpressionContext ("Type");
+		public static ExpressionContext Namespace                    = new ExpressionContext ("Namespace");
+		public static ExpressionContext Attribute                    = new ExpressionContext ("Attribute");
+		public static ExpressionContext IdentifierExpected           = new ExpressionContext ("IdentifierExpected");
+		public static ExpressionContext ConstraintsStart             = new ExpressionContext ("ConstraintsStart");
+		public static ExpressionContext FullyQualifiedType           = new ExpressionContext ("FullyQualifiedType");
+		public static ExpressionContext BaseConstructorCall          = new ExpressionContext ("BaseConstructorCall");
+		public static ExpressionContext DelegateType                 = new ExpressionContext ("DelegateType");
+		public static ExpressionContext FirstParameterType           = new ExpressionContext ("FirstParameterType");
+		public static ExpressionContext ObjectInitializer            = new ExpressionContext ("ObjectInitializer");
+		public static ExpressionContext ParameterType                = new ExpressionContext ("ParameterType");
+		public static ExpressionContext MethodBody                   = new ExpressionContext ("MethodBody");
+		public static ExpressionContext PropertyDeclaration          = new ExpressionContext ("PropertyDeclaration");
+		public static ExpressionContext InterfacePropertyDeclaration = new ExpressionContext ("InterfacePropertyDeclaration");
+		public static ExpressionContext EventDeclaration             = new ExpressionContext ("EventDeclaration");
+		public static ExpressionContext TypeDeclaration              = new ExpressionContext ("TypeDeclaration");
+		public static ExpressionContext InterfaceDeclaration         = new ExpressionContext ("InterfaceDeclaration");
+		public static ExpressionContext Global                       = new ExpressionContext ("Global");
+		public static ExpressionContext Constraints                  = new ExpressionContext ("Constraints");
+		public static ExpressionContext Interface                    = new ExpressionContext ("Interface");
+		public static ExpressionContext EnumBaseType                 = new ExpressionContext ("EnumBaseType");
+		public static ExpressionContext InheritableType              = new ExpressionContext ("InheritableType");
 		
 		public static ExpressionContext TypeDerivingFrom (IReturnType baseType, bool isObjectCreation)
 		{
-			return new ExpressionContext ();
+			return new ExpressionContext ("TypeDerivingFrom " + (baseType != null ? baseType.FullName : "<null>"));
 		}
 		
 	}

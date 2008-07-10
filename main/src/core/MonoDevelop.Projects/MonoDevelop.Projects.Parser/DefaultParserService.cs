@@ -1248,8 +1248,10 @@ namespace MonoDevelop.Projects.Parser
 					if (project != null) {
 						ProjectCodeCompletionDatabase db = GetProjectDatabase (project);
 						if (db != null) {
+							try {
 							ClassUpdateInformation res = db.UpdateFromParseInfo (parseInformation, fileName);
 							if (res != null) NotifyParseInfoChange (fileName, res, project);
+							} catch (Exception) { }
 						}
 					}
 					else {

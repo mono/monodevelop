@@ -97,13 +97,6 @@ namespace MonoDevelop.Projects.Dom
 		
 		public abstract IEnumerable<object> CreateResolveResult (ProjectDom dom);
 		
-		public override string ToString ()
-		{
-			return String.Format ("[ResolveResult: CallingType={0}, CallingMember={1}, ResolvedType={2}]",
-			                      CallingType,
-			                      CallingMember,
-			                      ResolvedType);
-		}
 
 	}
 	
@@ -135,6 +128,14 @@ namespace MonoDevelop.Projects.Dom
 			AddType (dom, result, ResolvedType, StaticResolve);
 			return result;
 		}
+		
+		public override string ToString ()
+		{
+			return String.Format ("[MemberResolveResult: CallingType={0}, CallingMember={1}, ResolvedType={2}]",
+			                      CallingType,
+			                      CallingMember,
+			                      ResolvedType);
+		}
 	}
 	
 	public class MethodResolveResult : ResolveResult
@@ -147,7 +148,7 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
-		public  MethodResolveResult (List<IMember> members)
+		public MethodResolveResult (List<IMember> members)
 		{
 			foreach (IMember member in members) {
 				if (member is IMethod)
@@ -174,6 +175,11 @@ namespace MonoDevelop.Projects.Dom
 			MemberResolveResult.AddType (dom, result, new DomReturnType (CallingType), StaticResolve);
 			return result;
 		}
+		
+		public override string ToString ()
+		{
+			return String.Format ("[ThisResolveResult]");
+		}
 	}
 	
 	public class BaseResolveResult : ResolveResult
@@ -183,6 +189,10 @@ namespace MonoDevelop.Projects.Dom
 			List<object> result = new List<object> ();
 			MemberResolveResult.AddType (dom, result, CallingType.BaseType, StaticResolve);
 			return result;
+		}
+		public override string ToString ()
+		{
+			return String.Format ("[BaseResolveResult]");
 		}
 	}
 	

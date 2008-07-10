@@ -202,7 +202,8 @@ namespace MonoDevelop.Projects.Dom.Output
 			if (EmitKeywords (flags)) {
 				if (EmitMarkup (flags))
 					result.Append ("<b>");
-				result.Append ("Method ");
+				
+				result.Append (method.IsConstructor ? "Constructor " : "Method ");
 				if (EmitMarkup (flags))
 					result.Append ("</b>");
 			}
@@ -227,7 +228,7 @@ namespace MonoDevelop.Projects.Dom.Output
 				result.Append (")");
 			}
 				
-			if (IncludeReturnType (flags)) {
+			if (IncludeReturnType (flags) && !method.IsConstructor) {
 				result.Append (" : ");
 				result.Append (GetString (method.ReturnType, flags));
 			}

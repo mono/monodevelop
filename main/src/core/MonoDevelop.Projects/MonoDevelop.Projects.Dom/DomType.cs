@@ -258,11 +258,6 @@ namespace MonoDevelop.Projects.Dom
 			return result;
 		}
 		
-		public void Add (IReturnType interf)
-		{
-			this.implementedInterfaces.Add (interf);
-		}
-		
 		protected int fieldCount       = 0;
 		protected int methodCount      = 0;
 		protected int constructorCount = 0;
@@ -480,7 +475,7 @@ namespace MonoDevelop.Projects.Dom
 			
 			if (type.ImplementedInterfaces != null) {
 				foreach (IReturnType iface in type.ImplementedInterfaces) {
-					result.implementedInterfaces.Add (DomReturnType.Resolve (iface, typeResolver));
+					result.AddInterfaceImplementation (DomReturnType.Resolve (iface, typeResolver));
 				}
 			}
 			
