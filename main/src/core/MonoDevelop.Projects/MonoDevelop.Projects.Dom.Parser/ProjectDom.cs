@@ -106,6 +106,25 @@ namespace MonoDevelop.Projects.Dom.Parser
 			
 			return null;
 		}
+		
+		public SearchTypeResult SearchType (SearchTypeRequest request)
+		{
+			IType type = GetType (request.Name, request.GenericParameterCount, true);
+			if (type != null)	
+				return new SearchTypeResult (type);
+			
+			if (request.CurrentCompilationUnit != null) {
+				foreach (IUsing u in request.CurrentCompilationUnit.Usings) {
+					foreach (string ns in u.Namespaces) {
+						type = GetType (ns + "." + request.Name, request.GenericParameterCount, true);
+						if (type != null)
+							return new SearchTypeResult (type);
+					}
+				}
+			}
+			
+			return null;
+		}
 	
 		public IEnumerable<IType> GetTypesFrom (string fileName)
 		{
@@ -138,9 +157,8 @@ namespace MonoDevelop.Projects.Dom.Parser
 				return;
 			if (database != null) {
 				((ProjectCodeCompletionDatabase)database).UpdateFromParseInfo (unit, fileName);
-			} else {
-				this.compilationUnits [fileName] = unit;
-			}
+			} 
+			this.compilationUnits [fileName] = unit;
 		}
 		
 		public bool NamespaceExists (string name)
@@ -231,6 +249,12 @@ namespace MonoDevelop.Projects.Dom.Parser
 			*/
 		}
 		
+		public ICompilationUnit GetCompilationUnit (string fileName) 
+		{
+			ICompilationUnit result;
+			this.compilationUnits.TryGetValue (fileName, out result);
+			return result;
+		}
 		
 		internal void FireLoaded ()
 		{

@@ -1,3 +1,10 @@
+2008-07-10  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Dom.Parser/ProjectDom.cs,
+	  MonoDevelop.Projects.Dom/ExpressionContext.cs,
+	  MonoDevelop.Projects.Dom/ExpressionResult.cs: Worked on code
+	  completion.
+
 2008-07-09  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectHandler.cs,

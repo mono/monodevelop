@@ -40,8 +40,18 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
+		public virtual bool IsObjectCreation {
+			get {
+				return false;
+			}
+		}
+		
 		public virtual bool FilterEntry (object entry)
 		{
+			if (entry is IMember) {
+				System.Console.WriteLine ("Filter entry !!!!");
+				return ((IMember)entry).IsSpecialName;
+			}
 			return false;
 		}
 		
@@ -49,8 +59,35 @@ namespace MonoDevelop.Projects.Dom
 		public static ExpressionContext Default   = new ExpressionContext ();
 		public static ExpressionContext Using     = new ExpressionContext ();
 		
+		
+		// SharpDevelop compatibilty contextes
+		public static ExpressionContext Type     = new ExpressionContext ();
 		public static ExpressionContext Namespace = new ExpressionContext ();
 		public static ExpressionContext Attribute = new ExpressionContext ();
-		public static ExpressionContext Type      = new ExpressionContext ();
+		public static ExpressionContext IdentifierExpected = new ExpressionContext ();
+		public static ExpressionContext ConstraintsStart = new ExpressionContext ();
+		public static ExpressionContext FullyQualifiedType      = new ExpressionContext ();
+		public static ExpressionContext BaseConstructorCall      = new ExpressionContext ();
+		public static ExpressionContext DelegateType      = new ExpressionContext ();
+		public static ExpressionContext FirstParameterType      = new ExpressionContext ();
+		public static ExpressionContext ObjectInitializer      = new ExpressionContext ();
+		public static ExpressionContext ParameterType      = new ExpressionContext ();
+		public static ExpressionContext MethodBody      = new ExpressionContext ();
+		public static ExpressionContext PropertyDeclaration      = new ExpressionContext ();
+		public static ExpressionContext InterfacePropertyDeclaration      = new ExpressionContext ();
+		public static ExpressionContext EventDeclaration      = new ExpressionContext ();
+		public static ExpressionContext TypeDeclaration      = new ExpressionContext ();
+		public static ExpressionContext InterfaceDeclaration      = new ExpressionContext ();
+		public static ExpressionContext Global      = new ExpressionContext ();
+		public static ExpressionContext Constraints      = new ExpressionContext ();
+		public static ExpressionContext Interface      = new ExpressionContext ();
+		public static ExpressionContext EnumBaseType      = new ExpressionContext ();
+		public static ExpressionContext InheritableType      = new ExpressionContext ();
+		
+		public static ExpressionContext TypeDerivingFrom (IReturnType baseType, bool isObjectCreation)
+		{
+			return new ExpressionContext ();
+		}
+		
 	}
 }

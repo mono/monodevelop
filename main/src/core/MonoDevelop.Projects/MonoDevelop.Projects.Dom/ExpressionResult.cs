@@ -70,6 +70,10 @@ namespace MonoDevelop.Projects.Dom
 			this.expressionContext = expressionContext;
 		}
 		
+		public ExpressionResult (string expression, ExpressionContext expressionContext) : this (expression, DomRegion.Empty, expressionContext)
+		{
+		}
+		
 		public override string ToString ()
 		{
 			return String.Format ("[ExpressionResult:Expression={0}, ExpressionContext={1}, Region={2}]",
