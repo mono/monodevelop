@@ -1,3 +1,12 @@
+2008-07-10  Mike Krüger <mkrueger@novell.com> 
+
+	* Project/Src/Lexer/CSharp/Tokens.cs: Added some stuff from newer
+	  nrefactory. To support c# 3.0 we need to update it to a newer
+	  version (when the new dom works I'll do it - our changes in
+	  nrefactory  aren't used anymore because all information is
+	  retrieved by mcs and nrefactory only get's used as an expression
+	  parser).
+
 2008-04-22  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Project/Src/Lexer/CSharp/Lexer.cs: Remove debug console write. 

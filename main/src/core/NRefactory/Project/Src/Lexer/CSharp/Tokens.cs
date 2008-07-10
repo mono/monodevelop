@@ -162,7 +162,12 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 		public static BitArray AssgnOps = NewSet(Assign, PlusAssign, MinusAssign, TimesAssign, DivAssign, ModAssign, BitwiseAndAssign, BitwiseOrAssign, ShiftLeftAssign);
 		public static BitArray UnaryOp = NewSet(Plus, Minus, Not, BitwiseComplement, Times, Increment, Decrement, BitwiseAnd);
 		public static BitArray TypeDeclarationKW = NewSet(Class, Interface, Struct, Enum, Delegate);
-
+		
+		public static BitArray IdentifierTokens = NewSet(Identifier);
+		public static BitArray SimpleTypeName = NewSet(Char, Bool, Object, String, Sbyte, Byte, Short, Ushort, Int, Uint, Long, Ulong, Float, Double, Decimal, Identifier, Void);
+		public static BitArray ValidInsideTypeName = NewSet(Identifier, Char, Bool, Object, String, Sbyte, Byte, Short, Ushort, Int, Uint, Long, Ulong, Float, Double, Decimal, LessThan, GreaterThan, Dot, Question, OpenSquareBracket, Comma, CloseSquareBracket, Times, DoubleColon);
+		public static BitArray ExpressionStart = NewSet(Base, Delegate, False, New, Null, Sizeof, This, True, Typeof, Checked, Unchecked);
+		
 		static string[] tokenList = new string[] {
 			// ----- terminal classes -----
 			"<EOF>",
