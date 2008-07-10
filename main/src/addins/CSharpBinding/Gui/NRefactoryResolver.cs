@@ -107,7 +107,6 @@ namespace MonoDevelop.CSharpBinding
 				parser.Parse ();
 				lookupTableVisitor.VisitCompilationUnit (parser.CompilationUnit, null);
 			}
-			
 		}
 			
 		Expression ParseExpression (ExpressionResult expressionResult)

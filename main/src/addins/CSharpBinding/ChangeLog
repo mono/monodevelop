@@ -1,5 +1,12 @@
 2008-07-10  Mike Krüger <mkrueger@novell.com> 
 
+	* Gui/NRefactoryResolver.cs, Gui/ResolveVisitor.cs,
+	  Gui/NRefactoryParameterDataProvider.cs,
+	  Gui/CSharpTextEditorCompletion.cs, Parser/DomParser.cs: Worked on
+	  code completion.
+
+2008-07-10  Mike Krüger <mkrueger@novell.com> 
+
 	* CSharpBinding.addin.xml: accidentally checked in new code completion
 	  enabled addin file.
 

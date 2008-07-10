@@ -49,30 +49,53 @@ namespace MonoDevelop.CSharpBinding.Gui
 			ProjectDom dom = ProjectDomService.GetDom (Document.Project);
 			if (dom == null)
 				return null;
-			NewCSharpExpressionFinder expressionFinder = new NewCSharpExpressionFinder (dom);
 			ExpressionResult result;
-			try {
-				result = expressionFinder.FindFullExpression (Editor.Text, Editor.CursorPosition);
-			} catch (Exception ex) {
-				LoggingService.LogWarning (ex.Message, ex);
-				return null;
-			}
-			if (result == null)
-				return null;
-			
-			NRefactoryResolver resolver = new MonoDevelop.CSharpBinding.NRefactoryResolver (dom,
-			                                                                                ICSharpCode.NRefactory.SupportedLanguage.CSharp,
-			                                                                                Editor,
-			                                                                                Document.FileName);
+			NewCSharpExpressionFinder expressionFinder;
 			
 			switch (completionChar) {
 			case '.':
+				expressionFinder = new NewCSharpExpressionFinder (dom);
+				try {
+					result = expressionFinder.FindFullExpression (Editor.Text, Editor.CursorPosition);
+				} catch (Exception ex) {
+					LoggingService.LogWarning (ex.Message, ex);
+					return null;
+				}
+				if (result == null)
+					return null;
+				
+				NRefactoryResolver resolver = new MonoDevelop.CSharpBinding.NRefactoryResolver (dom,
+				                                                                                ICSharpCode.NRefactory.SupportedLanguage.CSharp,
+				                                                                                Editor,
+				                                                                                Document.FileName);
+				
 				ResolveResult resolveResult = resolver.Resolve (result);
-				System.Console.WriteLine("resolve Result:" + result);
 				return CreateCompletionData (resolveResult, result);
 			case ' ':
+				expressionFinder = new NewCSharpExpressionFinder (dom);
+				try {
+					result = expressionFinder.FindFullExpression (Editor.Text, Editor.CursorPosition);
+				} catch (Exception ex) {
+					LoggingService.LogWarning (ex.Message, ex);
+					return null;
+				}
+				if (result == null)
+					return null;
+				
 				int i = completionContext.TriggerOffset;
 				return HandleKeywordCompletion (result, GetPreviousToken (ref i, false));
+			default:
+				if (Char.IsLetter (completionChar)) {
+					expressionFinder = new NewCSharpExpressionFinder (dom);
+					try {
+						result = expressionFinder.FindFullExpression (Editor.Text, Editor.CursorPosition);
+					} catch (Exception ex) {
+						LoggingService.LogWarning (ex.Message, ex);
+						return null;
+					}
+					System.Console.WriteLine ("Completion:" +result);
+				}
+				break;
 			}
 			return null;
 		}
@@ -90,7 +113,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 				LoggingService.LogWarning (ex.Message, ex);
 				return null;
 			}
-			System.Console.WriteLine("pc expr. res:" + result);
+			//System.Console.WriteLine("pc expr. res:" + result);
 			if (result == null)
 				return null;
 			NRefactoryResolver resolver = new MonoDevelop.CSharpBinding.NRefactoryResolver (dom,
@@ -101,9 +124,16 @@ namespace MonoDevelop.CSharpBinding.Gui
 			switch (completionChar) {
 			case '(':
 				ResolveResult resolveResult = resolver.Resolve (result);
-				System.Console.WriteLine("pc resolve res:" + resolveResult);
-				if (resolveResult != null && resolveResult is MethodResolveResult)
-					return new NRefactoryParameterDataProvider (Editor, resolver.Dom, resolveResult as MethodResolveResult);
+				if (resolveResult != null) {
+					if (resolveResult is MethodResolveResult)
+						return new NRefactoryParameterDataProvider (Editor, resolver.Dom, resolveResult as MethodResolveResult);
+					if (result.ExpressionContext == ExpressionContext.BaseConstructorCall) {
+						if (resolveResult is ThisResolveResult)
+							return new NRefactoryParameterDataProvider (Editor, resolver.Dom, resolveResult as ThisResolveResult);
+						if (resolveResult is BaseResolveResult)
+							return new NRefactoryParameterDataProvider (Editor, resolver.Dom, resolveResult as BaseResolveResult);
+					}
+				}
 				break;
 			}
 			return null;

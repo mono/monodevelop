@@ -211,13 +211,23 @@ namespace MonoDevelop.CSharpBinding
 					members.Add (ConvertType (unit, "", t));
 				}
 			}
-			return new MonoDevelop.Projects.Dom.DomType (unit,
+			MonoDevelop.Projects.Dom.DomType result = new MonoDevelop.Projects.Dom.DomType (unit,
 			                                        ClassType.Class,
 			                                        type.Name,
 			                                        Location2DomLocation (type.MembersBlock.Start), 
 			                                        nsName, 
 			                                        Block2Region (type.MembersBlock),
 			                                        members);
+			if (type.BaseTypes != null) {
+				foreach (Mono.CSharp.Dom.ITypeName baseType in type.BaseTypes) {
+					if (result.BaseType == null) {
+						result.BaseType = TypeName2ReturnType (baseType);
+						continue;
+					}
+					result.AddInterfaceImplementation (TypeName2ReturnType (baseType));
+				}
+			}
+			return result;
 		}
 		
 		public class MessageRecorder : Report.IMessageRecorder 

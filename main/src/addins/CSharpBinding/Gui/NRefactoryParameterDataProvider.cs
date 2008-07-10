@@ -25,6 +25,8 @@
 //
 
 using System;
+using System.Collections.Generic;
+
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects.Gui.Completion;
 using MonoDevelop.Projects.Dom;
@@ -37,12 +39,41 @@ namespace MonoDevelop.CSharpBinding
 	public class NRefactoryParameterDataProvider : IParameterDataProvider
 	{
 		TextEditor editor;
-		MethodResolveResult resolveResult;
+		List<IMethod> methods = new List<IMethod> ();
 		
 		public NRefactoryParameterDataProvider (TextEditor editor, ProjectDom dom, MethodResolveResult resolveResult)
 		{
 			this.editor = editor;
-			this.resolveResult = resolveResult;
+			methods.AddRange (resolveResult.Methods);
+		}
+		
+		public NRefactoryParameterDataProvider (TextEditor editor, ProjectDom dom, ThisResolveResult resolveResult)
+		{
+			this.editor = editor;
+			if (resolveResult.CallingType != null) {
+				foreach (IMethod method in resolveResult.CallingType.Methods) {
+					if (!method.IsConstructor)
+						continue;
+					methods.Add (method);
+				}
+			}
+		}
+		
+		public NRefactoryParameterDataProvider (TextEditor editor, ProjectDom dom, BaseResolveResult resolveResult)
+		{
+			this.editor = editor;
+			if (resolveResult.CallingType != null) {
+				IType baseType = dom.GetType (resolveResult.CallingType.BaseType);
+				System.Console.WriteLine("Calling:" + resolveResult.CallingType);
+				System.Console.WriteLine("base: " + resolveResult.CallingType.BaseType + " resolved :" + baseType);
+				if (baseType != null) {
+					foreach (IMethod method in baseType.Methods) {
+						if (!method.IsConstructor)
+							continue;
+						methods.Add (method);
+					}
+				}
+			}
 		}
 		
 		#region IParameterDataProvider implementation 
@@ -74,24 +105,24 @@ namespace MonoDevelop.CSharpBinding
 		
 		public string GetMethodMarkup (int overload, string[] parameterMarkup)
 		{
-			return AmbienceService.Default.GetIntellisenseDescription (resolveResult.Methods[overload]);
+			return AmbienceService.Default.GetIntellisenseDescription (methods[overload]);
 		}
 		
 		public string GetParameterMarkup (int overload, int paramIndex)
 		{
-			return AmbienceService.Default.GetIntellisenseDescription (resolveResult.Methods[overload].Parameters [paramIndex]);
+			return AmbienceService.Default.GetIntellisenseDescription (methods[overload].Parameters [paramIndex]);
 		}
 		
 		public int GetParameterCount (int overload)
 		{
 			if (overload < 0 || overload >= OverloadCount)
 				return 0;
-			return resolveResult.Methods[0].Parameters != null ? resolveResult.Methods[0].Parameters.Count : 0;
+			return methods[0].Parameters != null ? methods[0].Parameters.Count : 0;
 		}
 		
 		public int OverloadCount {
 			get {
-				return resolveResult.Methods.Count;
+				return methods.Count;
 			}
 		}
 		#endregion 
