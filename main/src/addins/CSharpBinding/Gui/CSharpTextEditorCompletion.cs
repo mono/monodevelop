@@ -46,6 +46,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 {
 	public class CSharpTextEditorCompletion : CompletionTextEditorExtension
 	{
+		ProjectDom dom;
 		DocumentStateTracker<CSharpIndentEngine> stateTracker;
 		
 		public CSharpTextEditorCompletion ()
@@ -56,6 +57,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 		{
 			base.Initialize ();
 			stateTracker = new DocumentStateTracker<CSharpIndentEngine> (Editor);
+			dom = ProjectDomService.GetDom (Document.Project);
 		}
 		
 		ExpressionResult FindExpression (ProjectDom dom)
@@ -71,12 +73,10 @@ namespace MonoDevelop.CSharpBinding.Gui
 		
 		public override ICompletionDataProvider HandleCodeCompletion (ICodeCompletionContext completionContext, char completionChar)
 		{
-			stateTracker.UpdateEngine ();
-			
-			System.Console.WriteLine("Handle code completion !!!!");
-			ProjectDom dom = ProjectDomService.GetDom (Document.Project);
 			if (dom == null)
 				return null;
+			stateTracker.UpdateEngine ();
+			System.Console.WriteLine("Handle code completion !!!!");
 			ExpressionResult result;
 			NewCSharpExpressionFinder expressionFinder;
 			int cursor, newCursorOffset = 0;
@@ -134,7 +134,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 				cursor = Editor.SelectionStartPosition;
 				if (cursor < 2)
 					break;
-				if (MayNeedComment (Editor.CursorLine, cursor)) {
+				if (stateTracker.Engine.IsInsideDocLineComment) {
 					StringBuilder generatedComment = new StringBuilder ();
 					bool generateStandardComment = true;
 					IType insideClass = NRefactoryResolver.GetTypeAtCursor (dom, Document.FileName, Editor);
@@ -173,7 +173,8 @@ namespace MonoDevelop.CSharpBinding.Gui
 					return null;
 				
 				int i = completionContext.TriggerOffset;
-				return HandleKeywordCompletion (result, GetPreviousToken (ref i, false));
+				string token = GetPreviousToken (ref i, false);
+				return HandleKeywordCompletion (result, i, token);
 			default:
 				if (Char.IsLetter (completionChar)) {
 					expressionFinder = new NewCSharpExpressionFinder (dom);
@@ -191,7 +192,6 @@ namespace MonoDevelop.CSharpBinding.Gui
 		
 		public override IParameterDataProvider HandleParameterCompletion (ICodeCompletionContext completionContext, char completionChar)
 		{
-			ProjectDom dom = ProjectDomService.GetDom (Document.Project);
 			if (dom == null)
 				return null;
 			NewCSharpExpressionFinder expressionFinder = new NewCSharpExpressionFinder (dom);
@@ -229,7 +229,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 		}
 		
 		
-		public ICompletionDataProvider HandleKeywordCompletion (ExpressionResult result, string word)
+		public ICompletionDataProvider HandleKeywordCompletion (ExpressionResult result, int wordStart, string word)
 		{
 			switch (word) {
 			case "using":
@@ -240,10 +240,30 @@ namespace MonoDevelop.CSharpBinding.Gui
 				System.Console.WriteLine("IsAs");
 				return null;
 			case "override":
-				System.Console.WriteLine("Override!!!");
+				// Look for modifiers, in order to find the beginning of the declaration
+				int firstMod = wordStart;
+				int i        = wordStart;
+				for (int n=0; n<3; n++) {
+					string mod = GetPreviousToken (ref i, true);
+					if (mod == "public" || mod == "protected" || mod == "private" || mod == "internal" || mod == "sealed") {
+						firstMod = i;
+					}
+					else if (mod == "static") {
+						// static methods are not overridable
+						return null;
+					}
+					else
+						break;
+				}
+				IType cls = NRefactoryResolver.GetTypeAtCursor (dom, Document.FileName, Editor);
+				if (cls != null && (cls.ClassType == ClassType.Class || cls.ClassType == ClassType.Struct)) {
+					string modifiers = Editor.GetText (firstMod, wordStart);
+					return GetOverrideCompletionData (cls, modifiers);
+				}
 				return null;
 			case "new":
-				System.Console.WriteLine("New!!!");
+				ExpressionContext exactContext = new NewCSharpExpressionFinder (dom).FindExactContextForNewCompletion(Editor, Document.FileName);
+				System.Console.WriteLine("New:" + exactContext);
 				return null;
 			case "if":
 			case "elif":
@@ -348,6 +368,36 @@ namespace MonoDevelop.CSharpBinding.Gui
 			return line.Substring (0, line.Length - trimmedLength);
 		}
 		
+		void AddVirtuals (CodeCompletionDataProvider provider, IType type, string modifiers, IReturnType curType)
+		{
+			IType searchType = dom.GetType (curType);
+			if (searchType == null)
+				return;
+			bool isInterface      = type.ClassType == ClassType.Interface;
+			bool includeOverriden = false;
+			foreach (IMember m in searchType.Members) {
+				if (m.IsInternal && searchType.SourceProject != Document.Project)
+					continue;
+				if ((isInterface || m.IsVirtual || m.IsAbstract) && !m.IsSealed && (includeOverriden || !type.HasOverriden (m))) {
+					provider.AddCompletionData (new NewOverrideCompletionData (Editor, m));
+				}
+			}
+			if (searchType.BaseType == null) {
+				if (searchType.FullName != "System.Object")
+					AddVirtuals (provider, type, modifiers, new DomReturnType ("System.Object"));
+			} else {
+				AddVirtuals (provider, type, modifiers, searchType.BaseType);
+			}
+			
+		}
+		
+		CodeCompletionDataProvider GetOverrideCompletionData (IType type, string modifiers)
+		{
+			CodeCompletionDataProvider result = new CodeCompletionDataProvider (null, GetAmbience ());
+			AddVirtuals (result, type, modifiers, type.BaseType);
+			return result;
+		}
+		
 		#region Preprocessor
 		CodeCompletionDataProvider GetDefineCompletionData ()
 		{
@@ -369,7 +419,6 @@ namespace MonoDevelop.CSharpBinding.Gui
 					}
 				}
 			}
-
 			return cp;
 		}
 		
@@ -402,30 +451,6 @@ namespace MonoDevelop.CSharpBinding.Gui
 			return Editor.GetLineText (lin).Trim ().StartsWith ("///");
 		}
 		
-		bool MayNeedComment (int line, int cursor)
-		{
-			bool inComment = Editor.GetCharAt (cursor - 1) == '/' && Editor.GetCharAt (cursor - 2) == '/';
-			
-			if (inComment) {
-				for (int l = line - 1; l >= 0; l--) {
-					string text = Editor.GetLineText (l).Trim (); 
-					if (text.StartsWith ("///"))
-						return false;
-					if (!String.IsNullOrEmpty (text))
-						break;
-				}
-				for (int l = line + 1; l < line + 100; l++) {
-					string text = Editor.GetLineText (l).Trim (); 
-					if (text.StartsWith ("///"))
-						return false;
-					if (!String.IsNullOrEmpty (text))
-						break;
-				}
-				return true;
-			}
-			return false;
-		}
-		
 		bool IsInsideClassBody (IType insideClass, int line, int column)
 		{
 			if (insideClass.Members != null) {
@@ -440,12 +465,13 @@ namespace MonoDevelop.CSharpBinding.Gui
 		void AppendSummary (StringBuilder sb, string indent, out int newCursorOffset)
 		{
 			Debug.Assert (sb != null);
-			sb.Append ("/ <summary>\n");
+			int length = sb.Length;
+			sb.Append (" <summary>\n");
 			sb.Append (indent);
 			sb.Append ("/// \n");
+			newCursorOffset = sb.Length - length - 1;
 			sb.Append (indent);
 			sb.Append ("/// </summary>");
-			newCursorOffset = ("/ <summary>\n/// " + indent).Length;
 		}
 		
 		void AppendMethodComment (StringBuilder builder, string indent, IMethod method)

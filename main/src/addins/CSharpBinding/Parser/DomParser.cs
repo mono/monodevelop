@@ -107,13 +107,16 @@ namespace MonoDevelop.CSharpBinding
 		
 		static List<MonoDevelop.Projects.Dom.IParameter> ParseParams (Mono.CSharp.Dom.IParameter[] p)
 		{
+			if (p == null || p.Length == 0)
+				return null;
 			List<MonoDevelop.Projects.Dom.IParameter> result = new List<MonoDevelop.Projects.Dom.IParameter> ();
-			
 			foreach (Mono.CSharp.Dom.IParameter para in p) {
+				if (para == null)
+					continue;
 				result.Add (new DomParameter (para.Name, TypeName2ReturnType (para.TypeName)));
 			}
 			
-			return result;
+			return result.Count > 0 ? result : null;
 		}
 		
 		static MonoDevelop.Projects.Dom.Modifiers ConvertModifier (int ModFlags)

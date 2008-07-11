@@ -15,7 +15,7 @@ using Ambience_ = MonoDevelop.Projects.Ambience.Ambience;
 
 namespace CSharpBinding
 {
-	class OverrideCompletionData: CodeCompletionData, IActionCompletionData
+	class OverrideCompletionData : CodeCompletionData, IActionCompletionData
 	{
 		ILanguageItem item;
 		TextEditor editor;

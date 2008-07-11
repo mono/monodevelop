@@ -1,5 +1,11 @@
 2008-07-11  Mike Krüger <mkrueger@novell.com> 
 
+	* Gui/NewOverrideCompletionData.cs, Gui/NewCSharpExpressionFinder.cs,
+	  Gui/OverrideCompletionData.cs, Gui/CSharpTextEditorCompletion.cs,
+	  Parser/DomParser.cs: Worked on code completion.
+
+2008-07-11  Mike Krüger <mkrueger@novell.com> 
+
 	* Gui/NRefactoryResolver.cs, Gui/ResolveVisitor.cs,
 	  Gui/CSharpTextEditorCompletion.cs,
 	  Gui/CSharpTextEditorExtension.cs: Added xml/preprocessor completion
