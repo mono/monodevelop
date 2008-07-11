@@ -376,7 +376,7 @@ namespace MonoDevelop.GtkCore
 		public static GtkDesignInfo FromProject (Project project)
 		{
 			if (!(project is DotNetProject))
-				return null;
+				return new GtkDesignInfo ();
 
 			IExtendedDataItem item = (IExtendedDataItem) project;
 			GtkDesignInfo info = item.ExtendedProperties ["GtkDesignInfo"] as GtkDesignInfo;

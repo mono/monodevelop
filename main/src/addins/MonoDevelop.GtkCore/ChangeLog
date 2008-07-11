@@ -1,5 +1,11 @@
 2008-07-10  Mike Kestner <mkestner@novell.com> 
 
+	* MonoDevelop.GtkCore/GtkDesignInfo.cs (FromProject): return an 
+	empty instance for non-DotNetProjects which will report false
+	on SupportsDesigner.
+
+2008-07-10  Mike Kestner <mkestner@novell.com> 
+
 	* MonoDevelop.GtkCore/GtkCoreService.cs: Gutted.  Moved everything
 	that took a Project parameter to GtkDesignInfo. Removed all the 
 	enable/disable/get info methods replaced by GtkDesignInfo.FromProject.
