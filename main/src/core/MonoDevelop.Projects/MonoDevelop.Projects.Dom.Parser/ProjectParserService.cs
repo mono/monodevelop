@@ -42,7 +42,6 @@ namespace MonoDevelop.Projects.Dom.Parser
 		static ProjectDom globalDom = new ProjectDom ();
 		static Dictionary<string, ProjectDom> doms = new Dictionary<string, ProjectDom> ();
 		static List<IParser> parsers = new List<IParser>();
-		static object lockobject = new object ();
 
 		public static List<IParser> Parsers {
 			get {
@@ -115,12 +114,10 @@ namespace MonoDevelop.Projects.Dom.Parser
 		
 		public static IType GetType (string fullName, int genericParameterCount, bool caseSensitive)
 		{
-			lock (lockobject) {
-				foreach (ProjectDom dom in doms.Values) {
-					IType type = dom.GetType (fullName, genericParameterCount, caseSensitive);
-					if (type != null)
-						return type;
-				}
+			foreach (ProjectDom dom in doms.Values) {
+				IType type = dom.GetType (fullName, genericParameterCount, caseSensitive);
+				if (type != null)
+					return type;
 			}
 			return null;
 		}
@@ -143,15 +140,13 @@ namespace MonoDevelop.Projects.Dom.Parser
 		static IParserContext GetContext (ICompilationUnit unit)
 		{
 			ProjectDom foundDom = null;
-			lock (lockobject) {
-				foreach (ProjectDom dom in doms.Values) {
-					ProjectCodeCompletionDatabase pccd = dom.Database as ProjectCodeCompletionDatabase;
-					if (pccd == null)
-						continue;
-					if (pccd.Project.GetProjectFile (unit.FileName) != null) {
-						foundDom = dom;
-						break;
-					}
+			foreach (ProjectDom dom in doms.Values) {
+				ProjectCodeCompletionDatabase pccd = dom.Database as ProjectCodeCompletionDatabase;
+				if (pccd == null)
+					continue;
+				if (pccd.Project.GetProjectFile (unit.FileName) != null) {
+					foundDom = dom;
+					break;
 				}
 			}
 			return new DefaultParserContext (foundDom);
@@ -229,9 +224,9 @@ namespace MonoDevelop.Projects.Dom.Parser
 		{
 			Debug.Assert (!String.IsNullOrEmpty (fileName));
 			if (!doms.ContainsKey (fileName)) {
-				lock (lockobject) {
-					doms [fileName] = new ProjectDom ();
-				}
+				Dictionary<string, ProjectDom> newDoms = new Dictionary<string, ProjectDom> (doms);
+				newDoms [fileName] = new ProjectDom ();
+				doms = newDoms;
 			}
 			return doms [fileName];
 		}
@@ -285,9 +280,9 @@ namespace MonoDevelop.Projects.Dom.Parser
 			if (project == null)
 				return;
 			if (doms.ContainsKey (project.FileName)) {
-				lock (lockobject) {
-					doms.Remove (project.FileName);
-				}
+				Dictionary<string, ProjectDom> newDoms = new Dictionary<string, ProjectDom> (doms);
+				newDoms.Remove (project.FileName);
+				doms = newDoms;
 			}
 		}
 		

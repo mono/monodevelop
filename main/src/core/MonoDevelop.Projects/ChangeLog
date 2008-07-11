@@ -1,3 +1,8 @@
+2008-07-11  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Dom.Parser/ProjectParserService.cs: changed
+	  parser serivce thread safety.
+
 2008-07-10  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom.Output/NetAmbience.cs,
