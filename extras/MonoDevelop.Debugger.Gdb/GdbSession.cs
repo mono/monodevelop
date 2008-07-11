@@ -216,12 +216,12 @@ namespace MonoDevelop.Debugger.Gdb
 			RunCommand ("-exec-finish");
 		}
 
-		protected override object OnInsertBreakpoint (string filename, int line, bool activate)
+		protected override object OnInsertBreakpoint (Breakpoint bp, bool activate)
 		{
 			lock (gdbLock) {
 				bool dres = InternalStop ();
 				try {
-					GdbCommandResult res = RunCommand ("-break-insert", filename + ":" + line);
+					GdbCommandResult res = RunCommand ("-break-insert", bp.FileName + ":" + bp.Line);
 					int bh = res.GetObject ("bkpt").GetInt ("number");
 					if (!activate)
 						RunCommand ("-break-disable", bh.ToString ());
@@ -257,6 +257,11 @@ namespace MonoDevelop.Debugger.Gdb
 					InternalResume (dres);
 				}
 			}
+		}
+		
+		protected override object OnUpdateBreakpoint (object handle, Breakpoint bp)
+		{
+			return handle;
 		}
 
 		protected override void OnContinue ()
