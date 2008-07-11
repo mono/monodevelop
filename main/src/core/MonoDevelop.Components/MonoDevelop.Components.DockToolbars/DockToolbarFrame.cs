@@ -155,6 +155,14 @@ namespace MonoDevelop.Components.DockToolbars
 			return bar;
 		}
 		
+		public void RemoveToolbar(DockToolbar bar)
+		{
+			IDockToolbar db = (IDockToolbar)bar;
+			db.Visible = false;
+			bar.Destroy();
+			bars.Remove(bar);
+		}
+
 		public void ClearToolbars ()
 		{
 			foreach (DockToolbar bar in bars) {
