@@ -122,5 +122,7 @@ namespace MonoDevelop.Projects.Dom
 		int InnerTypeCount {
 			get;
 		}
+		
+		bool HasOverriden (IMember member);
 	}
 }

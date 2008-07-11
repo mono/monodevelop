@@ -1,5 +1,14 @@
 2008-07-11  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.Projects.Dom/DomType.cs,
+	  MonoDevelop.Projects.Dom/DomMethod.cs,
+	  MonoDevelop.Projects.Dom/IParameter.cs,
+	  MonoDevelop.Projects.Dom/IType.cs,
+	  MonoDevelop.Projects.Dom/ExpressionContext.cs,
+	  MonoDevelop.Projects.Dom/DomParameter.cs: Worked on new dom.
+
+2008-07-11  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.Projects.Dom.Parser/ProjectParserService.cs: changed
 	  parser serivce thread safety.
 

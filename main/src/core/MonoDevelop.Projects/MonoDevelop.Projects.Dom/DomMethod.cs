@@ -125,8 +125,10 @@ namespace MonoDevelop.Projects.Dom
 			result.bodyRegion    = source.BodyRegion;
 			result.AddRange (DomAttribute.Resolve (source.Attributes, typeResolver));
 			
-			foreach (IParameter parameter in source.Parameters)
-				result.Add (DomParameter.Resolve (parameter, typeResolver));
+			if (source.Parameters != null) {
+				foreach (IParameter parameter in source.Parameters)
+					result.Add (DomParameter.Resolve (parameter, typeResolver));
+			}
 			
 			if (source.GenericParameters != null && source.GenericParameters.Count > 0) {
 				foreach (IReturnType returnType in source.GenericParameters) {

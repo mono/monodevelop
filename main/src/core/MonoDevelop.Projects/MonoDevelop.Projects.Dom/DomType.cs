@@ -246,7 +246,44 @@ namespace MonoDevelop.Projects.Dom
 			return String.Format ("[DomType: FullName={0}, #Members={1}]", this.FullName, this.members.Count);
 		}
 		
+		bool IsEqual (ReadOnlyCollection<IParameter> c1, ReadOnlyCollection<IParameter> c2)
+		{
+			if (c1 == null && c2 == null)
+				return true;
+			if (c1 == null || c2 == null || c1.Count != c2.Count)
+				return false;
+			for (int i = 0; i < c1.Count; i++) {
+				if (c1[i].ReturnType.FullName != c2[i].ReturnType.FullName)
+					return false;
+			}
+			return true;
+		}
+		bool HasOverriden (IMethod method)
+		{
+			foreach (IMethod m in Methods) {
+				if (method.Name == m.Name && IsEqual (method.Parameters, m.Parameters))
+					return true;
+			}
+			return false;
+		}
 		
+		bool HasOverriden (IProperty prop)
+		{
+			foreach (IProperty p in Properties) {
+				if (prop.Name == p.Name)
+					return true;
+			}
+			return false;
+		}
+		
+		public bool HasOverriden (IMember member)
+		{
+			if (member is IMethod)
+				return HasOverriden (member as IMethod);
+			if (member is IProperty)
+				return HasOverriden (member as IProperty);
+			return false;
+		}
 		
 		public static DomType CreateDelegate (ICompilationUnit compilationUnit, string name, DomLocation location, IReturnType type, List<IParameter> parameters)
 		{

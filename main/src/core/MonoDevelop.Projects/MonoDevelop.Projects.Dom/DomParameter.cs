@@ -66,6 +66,25 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
+		public bool IsOut {
+			get {
+				return (this.ParameterModifiers & ParameterModifiers.Out) == ParameterModifiers.Out;
+			}
+		}
+		
+		public bool IsRef {
+			get {
+				return (this.ParameterModifiers & ParameterModifiers.Ref) == ParameterModifiers.Ref;
+			}
+		}
+		
+		public bool IsParams {
+			get {
+				return (this.ParameterModifiers & ParameterModifiers.Params) == ParameterModifiers.Params;
+			}
+		}
+		
+		
 		public static IParameter Resolve (IParameter source, ITypeResolver typeResolver)
 		{
 			DomParameter result = new DomParameter ();

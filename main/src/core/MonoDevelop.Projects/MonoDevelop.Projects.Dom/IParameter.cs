@@ -52,5 +52,17 @@ namespace MonoDevelop.Projects.Dom
 		DomLocation Location {
 			get;
 		}
+		
+		bool IsOut {
+			get;
+		}
+		
+		bool IsRef {
+			get;
+		}
+		
+		bool IsParams {
+			get;
+		}
 	}
 }

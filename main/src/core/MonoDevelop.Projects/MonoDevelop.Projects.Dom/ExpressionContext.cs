@@ -38,6 +38,9 @@ namespace MonoDevelop.Projects.Dom
 			get {
 				return defaultItem;
 			}
+			set {
+				defaultItem = value;
+			}
 		}
 		
 		string contextName;
