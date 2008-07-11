@@ -278,7 +278,11 @@ namespace Mono.CSharp {
 			get {
 				if (token == 0)
 					return 1;
-				return checkpoints [CheckpointIndex].LineOffset + ((token & line_delta_mask) >> column_bits);
+				try {
+					return checkpoints [CheckpointIndex].LineOffset + ((token & line_delta_mask) >> column_bits);
+				} catch (Exception) {
+					return 1;
+				}
 			}
 		}
 

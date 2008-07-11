@@ -28,39 +28,62 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Text;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
 
+using MonoDevelop.Projects;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Projects.Gui.Completion;
+using CSharpBinding;
+using CSharpBinding.FormattingStrategy;
+using CSharpBinding.Parser;
 
 namespace MonoDevelop.CSharpBinding.Gui
 {
 	public class CSharpTextEditorCompletion : CompletionTextEditorExtension
 	{
+		DocumentStateTracker<CSharpIndentEngine> stateTracker;
+		
 		public CSharpTextEditorCompletion ()
 		{
 		}
 		
+		public override void Initialize ()
+		{
+			base.Initialize ();
+			stateTracker = new DocumentStateTracker<CSharpIndentEngine> (Editor);
+		}
+		
+		ExpressionResult FindExpression (ProjectDom dom)
+		{
+			NewCSharpExpressionFinder expressionFinder = new NewCSharpExpressionFinder (dom);
+			try {
+				return expressionFinder.FindFullExpression (Editor.Text, Editor.CursorPosition);
+			} catch (Exception ex) {
+				LoggingService.LogWarning (ex.Message, ex);
+				return null;
+			}
+		}
+		
 		public override ICompletionDataProvider HandleCodeCompletion (ICodeCompletionContext completionContext, char completionChar)
 		{
+			stateTracker.UpdateEngine ();
+			
+			System.Console.WriteLine("Handle code completion !!!!");
 			ProjectDom dom = ProjectDomService.GetDom (Document.Project);
 			if (dom == null)
 				return null;
 			ExpressionResult result;
 			NewCSharpExpressionFinder expressionFinder;
+			int cursor, newCursorOffset = 0;
 			
 			switch (completionChar) {
 			case '.':
-				expressionFinder = new NewCSharpExpressionFinder (dom);
-				try {
-					result = expressionFinder.FindFullExpression (Editor.Text, Editor.CursorPosition);
-				} catch (Exception ex) {
-					LoggingService.LogWarning (ex.Message, ex);
-					return null;
-				}
+				result = FindExpression (dom);
 				if (result == null)
 					return null;
 				
@@ -71,14 +94,81 @@ namespace MonoDevelop.CSharpBinding.Gui
 				
 				ResolveResult resolveResult = resolver.Resolve (result);
 				return CreateCompletionData (resolveResult, result);
-			case ' ':
-				expressionFinder = new NewCSharpExpressionFinder (dom);
-				try {
-					result = expressionFinder.FindFullExpression (Editor.Text, Editor.CursorPosition);
-				} catch (Exception ex) {
-					LoggingService.LogWarning (ex.Message, ex);
+			case '#':
+				if (stateTracker.Engine.IsInsidePreprocessorDirective) 
+					return GetDirectiveCompletionData ();
+				return null;
+			case '>':
+				cursor = Editor.SelectionStartPosition;
+				
+				if (stateTracker.Engine.IsInsideDocLineComment) {
+					string lineText = Editor.GetLineText (Editor.CursorLine);
+					int startIndex = Math.Min (Editor.CursorColumn - 1, lineText.Length - 1);
+					
+					while (startIndex >= 0 && lineText[startIndex] != '<') {
+						--startIndex;
+						if (lineText[startIndex] == '/') { // already closed.
+							startIndex = -1;
+							break;
+						}
+					}
+					if (startIndex >= 0) {
+						int endIndex = startIndex;
+						while (endIndex <= Editor.CursorColumn && endIndex < lineText.Length && !Char.IsWhiteSpace (lineText[endIndex])) {
+							endIndex++;
+						}
+						string tag = endIndex - startIndex - 1 > 0 ? lineText.Substring (startIndex + 1, endIndex - startIndex - 2) : null;
+						if (!String.IsNullOrEmpty (tag) && commentTags.IndexOf (tag) >= 0) {
+							Editor.InsertText (cursor, "</" + tag + ">");
+							Editor.CursorPosition = cursor; 
+							return null;
+						}
+					}
+				}
+				return null;
+			case '<':
+				if (stateTracker.Engine.IsInsideDocLineComment) 
+					return GetXmlDocumentationCompletionData ();
+				return null;
+			case '/':
+				cursor = Editor.SelectionStartPosition;
+				if (cursor < 2)
+					break;
+				if (MayNeedComment (Editor.CursorLine, cursor)) {
+					StringBuilder generatedComment = new StringBuilder ();
+					bool generateStandardComment = true;
+					IType insideClass = NRefactoryResolver.GetTypeAtCursor (dom, Document.FileName, Editor);
+					if (insideClass != null) {
+						string indent = GetLineWhiteSpace (Editor.GetLineText (Editor.CursorLine));
+						if (insideClass.ClassType == ClassType.Delegate) {
+							AppendSummary (generatedComment, indent, out newCursorOffset);
+							IMethod m = null;
+							foreach (IMethod method in insideClass.Methods)
+								m = method;
+							AppendMethodComment (generatedComment, indent, m);
+							generateStandardComment = false;
+						} else {
+							if (!IsInsideClassBody (insideClass, Editor.CursorLine, Editor.CursorColumn))
+								break;
+							string body = GenerateBody (insideClass, Editor.CursorLine, indent, out newCursorOffset);
+							if (!String.IsNullOrEmpty (body)) {
+								generatedComment.Append (body);
+								generateStandardComment = false;
+							}
+						}
+					}
+					if (generateStandardComment) {
+						string indent = GetLineWhiteSpace (Editor.GetLineText (Editor.CursorLine));
+						AppendSummary (generatedComment, indent, out newCursorOffset);
+					}
+					
+					Editor.InsertText (cursor, generatedComment.ToString ());
+					Editor.CursorPosition = cursor + newCursorOffset;
 					return null;
 				}
+				return null;
+			case ' ':
+				result = FindExpression (dom);
 				if (result == null)
 					return null;
 				
@@ -93,7 +183,6 @@ namespace MonoDevelop.CSharpBinding.Gui
 						LoggingService.LogWarning (ex.Message, ex);
 						return null;
 					}
-					System.Console.WriteLine ("Completion:" +result);
 				}
 				break;
 			}
@@ -156,10 +245,11 @@ namespace MonoDevelop.CSharpBinding.Gui
 			case "new":
 				System.Console.WriteLine("New!!!");
 				return null;
-//			case "case":
-//				return null;
-//			case "return":
-//				return null;
+			case "if":
+			case "elif":
+				if (stateTracker.Engine.IsInsidePreprocessorDirective) 
+					return GetDefineCompletionData ();
+				return null;
 			}
 			return null;
 		}
@@ -251,6 +341,210 @@ namespace MonoDevelop.CSharpBinding.Gui
 			
 			return result;
 		}
+		
+		static string GetLineWhiteSpace (string line)
+		{
+			int trimmedLength = line.TrimStart ().Length;
+			return line.Substring (0, line.Length - trimmedLength);
+		}
+		
+		#region Preprocessor
+		CodeCompletionDataProvider GetDefineCompletionData ()
+		{
+			if (Document.Project == null)
+				return null;
 
+			Dictionary<string, string> symbols = new Dictionary<string, string> ();
+			CodeCompletionDataProvider cp = new CodeCompletionDataProvider (null, GetAmbience ());
+			foreach (DotNetProjectConfiguration conf in Document.Project.Configurations) {
+				CSharpCompilerParameters cparams = conf.CompilationParameters as CSharpCompilerParameters;
+				if (cparams != null) {
+					string[] syms = cparams.DefineSymbols.Split (';');
+					foreach (string s in syms) {
+						string ss = s.Trim ();
+						if (ss.Length > 0 && !symbols.ContainsKey (ss)) {
+							symbols [ss] = ss;
+							cp.AddCompletionData (new CodeCompletionData (ss, "md-literal"));
+						}
+					}
+				}
+			}
+
+			return cp;
+		}
+		
+		CodeCompletionDataProvider GetDirectiveCompletionData ()
+		{
+			CodeCompletionDataProvider cp = new CodeCompletionDataProvider (null, GetAmbience ());
+			cp.AddCompletionData (new CodeCompletionData ("if", "md-literal"));
+			cp.AddCompletionData (new CodeCompletionData ("else", "md-literal"));
+			cp.AddCompletionData (new CodeCompletionData ("elif", "md-literal"));
+			cp.AddCompletionData (new CodeCompletionData ("endif", "md-literal"));
+			cp.AddCompletionData (new CodeCompletionData ("define", "md-literal"));
+			cp.AddCompletionData (new CodeCompletionData ("undef", "md-literal"));
+			cp.AddCompletionData (new CodeCompletionData ("warning", "md-literal"));
+			cp.AddCompletionData (new CodeCompletionData ("error", "md-literal"));
+			cp.AddCompletionData (new CodeCompletionData ("pragma", "md-literal"));
+			cp.AddCompletionData (new CodeCompletionData ("line", "md-literal"));
+			cp.AddCompletionData (new CodeCompletionData ("line hidden", "md-literal"));
+			cp.AddCompletionData (new CodeCompletionData ("line default", "md-literal"));
+			cp.AddCompletionData (new CodeCompletionData ("region", "md-literal"));
+			cp.AddCompletionData (new CodeCompletionData ("endregion", "md-literal"));
+			return cp;
+		}
+		#endregion
+		
+		#region Xml Comments
+		bool IsInsideDocumentationComment (int cursor)
+		{
+			int lin, col;
+			Editor.GetLineColumnFromPosition (cursor, out lin, out col);
+			return Editor.GetLineText (lin).Trim ().StartsWith ("///");
+		}
+		
+		bool MayNeedComment (int line, int cursor)
+		{
+			bool inComment = Editor.GetCharAt (cursor - 1) == '/' && Editor.GetCharAt (cursor - 2) == '/';
+			
+			if (inComment) {
+				for (int l = line - 1; l >= 0; l--) {
+					string text = Editor.GetLineText (l).Trim (); 
+					if (text.StartsWith ("///"))
+						return false;
+					if (!String.IsNullOrEmpty (text))
+						break;
+				}
+				for (int l = line + 1; l < line + 100; l++) {
+					string text = Editor.GetLineText (l).Trim (); 
+					if (text.StartsWith ("///"))
+						return false;
+					if (!String.IsNullOrEmpty (text))
+						break;
+				}
+				return true;
+			}
+			return false;
+		}
+		
+		bool IsInsideClassBody (IType insideClass, int line, int column)
+		{
+			if (insideClass.Members != null) {
+				foreach (IMember m in insideClass.Methods) {
+					if (m.BodyRegion.Contains (line, column)) 
+						return false;
+				}
+			}
+			return true;
+		}
+		
+		void AppendSummary (StringBuilder sb, string indent, out int newCursorOffset)
+		{
+			Debug.Assert (sb != null);
+			sb.Append ("/ <summary>\n");
+			sb.Append (indent);
+			sb.Append ("/// \n");
+			sb.Append (indent);
+			sb.Append ("/// </summary>");
+			newCursorOffset = ("/ <summary>\n/// " + indent).Length;
+		}
+		
+		void AppendMethodComment (StringBuilder builder, string indent, IMethod method)
+		{
+			if (method.Parameters != null) {
+				foreach (IParameter para in method.Parameters) {
+					builder.Append (Environment.NewLine);
+					builder.Append (indent);
+					builder.Append ("/// <param name=\"");
+					builder.Append (para.Name);
+					builder.Append ("\">\n");
+					builder.Append (indent);
+					builder.Append ("/// A <see cref=\"");
+					builder.Append (para.ReturnType.FullName);
+					builder.Append ("\"/>\n");
+					builder.Append (indent);
+					builder.Append ("/// </param>");
+				}
+			}
+			if (method.ReturnType != null && method.ReturnType.FullName != "System.Void") {
+				builder.Append (Environment.NewLine);
+				builder.Append (indent);
+				builder.Append("/// <returns>\n");
+				builder.Append (indent);
+				builder.Append ("/// A <see cref=\"");
+				builder.Append (method.ReturnType.FullName);
+				builder.Append ("\"/>\n");
+				builder.Append (indent);
+				builder.Append ("/// </returns>");
+			}
+		}
+		
+		string GenerateBody (IType c, int line, string indent, out int newCursorOffset)
+		{
+			int startLine = int.MaxValue;
+			newCursorOffset = 0;
+			StringBuilder builder = new StringBuilder ();
+			
+			IMethod method = null;
+			IProperty property = null;
+			foreach (IMethod m in c.Methods) {
+				if (m.Location.Line < startLine && m.Location.Line > line) {
+					startLine = m.Location.Line;
+					method = m;
+				}
+			}
+			foreach (IProperty p in c.Properties) {
+				if (p.Location.Line < startLine && p.Location.Line > line) {
+					startLine = p.Location.Line;
+					property = p;
+					method = null;
+				}
+			}
+			
+			if (method != null) {
+				AppendSummary (builder, indent, out newCursorOffset);
+				AppendMethodComment (builder, indent, method);
+			} else if (property != null) {
+				builder.Append ("/ <value>\n");
+				builder.Append (indent);
+				builder.Append ("/// \n");
+				builder.Append (indent);
+				builder.Append ("/// </value>");
+				newCursorOffset = ("/ <value>\n/// " + indent).Length;
+			}
+			
+			return builder.ToString ();
+		}
+		
+		static readonly List<string> commentTags = new List<string> (new string[] { "c", "code", "example", "exception", "include", "list", "listheader", "item", "term", "description", "para", "param", "paramref", "permission", "remarks", "returns", "see", "seealso", "summary", "value" });
+		
+		CodeCompletionDataProvider GetXmlDocumentationCompletionData ()
+		{
+			CodeCompletionDataProvider cp = new CodeCompletionDataProvider (null, GetAmbience ());
+			cp.AddCompletionData (new CodeCompletionData ("c", "md-literal", GettextCatalog.GetString ("Marks text as code.")));
+			cp.AddCompletionData (new CodeCompletionData ("code", "md-literal", GettextCatalog.GetString ("Marks text as code.")));
+			cp.AddCompletionData (new CodeCompletionData ("example", "md-literal", GettextCatalog.GetString ("A description of the code sample.\nCommonly, this would involve use of the &lt;code&gt; tag.")));
+			cp.AddCompletionData (new CodeCompletionData ("exception", "md-literal", GettextCatalog.GetString ("This tag lets you specify which exceptions can be thrown."), "exception cref=\"|\"></exception>"));
+			cp.AddCompletionData (new CodeCompletionData ("include", "md-literal", GettextCatalog.GetString ("The &lt;include&gt; tag lets you refer to comments in another file that describe the types and members in your source code.\nThis is an alternative to placing documentation comments directly in your source code file."), "include file=\"|\" path=\"\">"));
+			cp.AddCompletionData (new CodeCompletionData ("list", "md-literal", GettextCatalog.GetString ("Defines a list or table."), "list type=\"|\">"));
+			cp.AddCompletionData (new CodeCompletionData ("listheader", "md-literal", GettextCatalog.GetString ("Defines a header for a list or table.")));
+			cp.AddCompletionData (new CodeCompletionData ("item", "md-literal", GettextCatalog.GetString ("Defines an item for a list or table.")));
+			cp.AddCompletionData (new CodeCompletionData ("term", "md-literal", GettextCatalog.GetString ("A term to define.")));
+			cp.AddCompletionData (new CodeCompletionData ("description", "md-literal", GettextCatalog.GetString ("Describes a term in a list or table.")));
+			cp.AddCompletionData (new CodeCompletionData ("para", "md-literal", GettextCatalog.GetString ("A text paragraph.")));
+
+			cp.AddCompletionData (new CodeCompletionData ("param", "md-literal", GettextCatalog.GetString ("Describes a method parameter."), "param name=\"|\">"));
+			cp.AddCompletionData (new CodeCompletionData ("paramref", "md-literal", GettextCatalog.GetString ("The &lt;paramref&gt; tag gives you a way to indicate that a word is a parameter."), "paramref name=\"|\"/>"));
+			
+			cp.AddCompletionData (new CodeCompletionData ("permission", "md-literal", GettextCatalog.GetString ("The &lt;permission&gt; tag lets you document the access of a member."), "permission cref=\"|\""));
+			cp.AddCompletionData (new CodeCompletionData ("remarks", "md-literal", GettextCatalog.GetString ("The &lt;remarks&gt; tag is used to add information about a type, supplementing the information specified with &lt;summary&gt;.")));
+			cp.AddCompletionData (new CodeCompletionData ("returns", "md-literal", GettextCatalog.GetString ("The &lt;returns&gt; tag should be used in the comment for a method declaration to describe the return value.")));
+			cp.AddCompletionData (new CodeCompletionData ("see", "md-literal", GettextCatalog.GetString ("The &lt;see&gt; tag lets you specify a link from within text."), "see cref=\"|\"/>"));
+			cp.AddCompletionData (new CodeCompletionData ("seealso", "md-literal", GettextCatalog.GetString ("The &lt;seealso&gt; tag lets you specify the text that you might want to appear in a See Also section."), "seealso cref=\"|\"/>"));
+			cp.AddCompletionData (new CodeCompletionData ("summary", "md-literal", GettextCatalog.GetString ("The &lt;summary&gt; tag should be used to describe a type or a type member.")));
+			cp.AddCompletionData (new CodeCompletionData ("value", "md-literal", GettextCatalog.GetString ("The &lt;value&gt; tag lets you describe a property.")));
+			
+			return cp;
+		}
+		#endregion
 	}
 }

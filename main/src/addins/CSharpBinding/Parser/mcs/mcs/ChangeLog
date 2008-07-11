@@ -1,3 +1,7 @@
+2008-07-11  Mike Krüger <mkrueger@novell.com> 
+
+	
+
 2008-05-27  Mike Krüger <mkrueger@novell.com> 
 
 	* report.cs: Added new dom & new class browser.

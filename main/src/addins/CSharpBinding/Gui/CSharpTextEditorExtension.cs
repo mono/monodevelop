@@ -562,7 +562,6 @@ namespace CSharpBinding
 		{
 			int lin, col;
 			Editor.GetLineColumnFromPosition (cursor, out lin, out col);
-			
 			return Editor.GetLineText (lin).Trim ().StartsWith ("///");
 		}
 		

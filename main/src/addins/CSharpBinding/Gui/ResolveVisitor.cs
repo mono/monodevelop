@@ -217,11 +217,11 @@ namespace MonoDevelop.CSharpBinding
 					result.StaticResolve = true;
 					return result;
 				}
-				if (fieldReferenceExpression.TargetObject is ThisReferenceExpression) {
+/*				if (fieldReferenceExpression.TargetObject is ThisReferenceExpression) {
 					result = CreateResult (((TypeReferenceExpression)fieldReferenceExpression.TargetObject).TypeReference);
 					result.StaticResolve = true;
 					return result;
-				}
+				}*/
 				return fieldReferenceExpression.TargetObject.AcceptVisitor(this, data);
 			}
 			result = fieldReferenceExpression.TargetObject.AcceptVisitor(this, data) as ResolveResult;

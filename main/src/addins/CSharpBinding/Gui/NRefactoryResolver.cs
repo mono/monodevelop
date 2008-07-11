@@ -78,6 +78,15 @@ namespace MonoDevelop.CSharpBinding
 			}
 		}
 		
+		public static IType GetTypeAtCursor (ProjectDom dom, string fileName, TextEditor editor)
+		{
+			foreach (IType type in dom.GetTypesFrom (fileName)) {
+				if (type.BodyRegion.Contains (editor.CursorLine, editor.CursorColumn))
+					return type;
+			}
+			return null;
+		}
+		
 		public NRefactoryResolver (ProjectDom dom, SupportedLanguage lang, TextEditor editor, string fileName)
 		{
 			this.lang   = lang;
@@ -87,12 +96,8 @@ namespace MonoDevelop.CSharpBinding
 			
 			this.dom = dom;
 			unit = dom.GetCompilationUnit (fileName);
-			foreach (IType type in dom.GetTypesFrom (fileName)) {
-				if (type.BodyRegion.Contains (editor.CursorLine, editor.CursorColumn)) {
-					callingType = type;
-					break;
-				}
-			}
+			callingType = GetTypeAtCursor (dom, fileName, editor);
+			
 			if (callingType != null) {
 				foreach (IMember member in callingType.Members) {
 					if (member.BodyRegion.Contains (editor.CursorLine, editor.CursorColumn)) {
