@@ -1,3 +1,7 @@
+2008-07-11  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Makefile: Remove incorrect path.
+
 2008-07-09  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* DebuggerServer.cs: Ignore target events which don't stop the thread.

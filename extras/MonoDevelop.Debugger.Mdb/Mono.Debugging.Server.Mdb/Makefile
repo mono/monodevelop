@@ -72,7 +72,6 @@ EXTRAS = \
 	ChangeLog 
 
 REFERENCES =  \
-	../../../../../install/lib/monodevelop/bin/Mono.TextEditor.dll \
 	../build/DebuggerClient.dll \
 	Mono.Posix \
 	-pkg:mono-addins \
