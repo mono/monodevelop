@@ -35,6 +35,7 @@ FILES =  \
 	gtk-gui/generated.cs \
 	Gui/CodeGenerationPanel.cs \
 	Gui/CompilerOptionsPanelWidget.cs \
+	Gui/CSharpAmbience.cs \
 	Gui/CSharpParameterDataProvider.cs \
 	Gui/CSharpTextEditorCompletion.cs \
 	Gui/CSharpTextEditorExtension.cs \

@@ -376,9 +376,12 @@ namespace MonoDevelop.CSharpBinding.Gui
 			bool isInterface      = type.ClassType == ClassType.Interface;
 			bool includeOverriden = false;
 			foreach (IMember m in searchType.Members) {
+				System.Console.WriteLine ("scan:" + m);
 				if (m.IsInternal && searchType.SourceProject != Document.Project)
 					continue;
+				
 				if ((isInterface || m.IsVirtual || m.IsAbstract) && !m.IsSealed && (includeOverriden || !type.HasOverriden (m))) {
+				System.Console.WriteLine("add");
 					provider.AddCompletionData (new NewOverrideCompletionData (Editor, m));
 				}
 			}

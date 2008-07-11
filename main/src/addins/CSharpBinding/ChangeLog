@@ -1,3 +1,9 @@
+2008-07-12  Mike Krüger <mkrueger@novell.com> 
+
+	* Gui/NewOverrideCompletionData.cs, Gui/CSharpAmbience.cs,
+	  Gui/CSharpTextEditorCompletion.cs, Parser/DomParser.cs: Added C#
+	  ambience for new dom. Worked on override completion.
+
 2008-07-11  Mike Krüger <mkrueger@novell.com> 
 
 	* Gui/NewOverrideCompletionData.cs, Gui/NewCSharpExpressionFinder.cs,

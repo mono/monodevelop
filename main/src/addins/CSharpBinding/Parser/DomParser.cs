@@ -156,13 +156,23 @@ namespace MonoDevelop.CSharpBinding
 		static MonoDevelop.Projects.Dom.IType ConvertType (MonoDevelop.Projects.Dom.CompilationUnit unit, string nsName, Mono.CSharp.Dom.IType type)
 		{
 			List<MonoDevelop.Projects.Dom.IMember> members = new List<MonoDevelop.Projects.Dom.IMember> ();
+			
 			if (type.Properties != null) {
 				foreach (Mono.CSharp.Dom.IProperty property in type.Properties) {
-					members.Add (new DomProperty (property.Name,
-					                              ConvertModifier (property.ModFlags),
-					                              Location2DomLocation (property.Location),
-					                              Block2Region (property.AccessorsBlock),
-					                              TypeName2ReturnType (property.ReturnTypeName)));
+					DomProperty prop = new DomProperty (property.Name,
+					                                    ConvertModifier (property.ModFlags),
+					                                    Location2DomLocation (property.Location),
+					                                    Block2Region (property.AccessorsBlock),
+					                                    TypeName2ReturnType (property.ReturnTypeName));
+					if (property.GetAccessor != null) {
+						prop.GetMethod = new DomMethod ();
+						prop.GetMethod.BodyRegion = Block2Region (property.GetAccessor.LocationBlock);
+					}
+					if (property.SetAccessor != null) {
+						prop.SetMethod = new DomMethod ();
+						prop.SetMethod.BodyRegion = Block2Region (property.SetAccessor.LocationBlock);
+					}
+					members.Add (prop);
 					
 				}
 			}

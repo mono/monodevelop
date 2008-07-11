@@ -39,28 +39,55 @@ namespace MonoDevelop.CSharpBinding
 	{
 		TextEditor editor;
 		IMember member;
+		CSharpAmbience ambience = new CSharpAmbience ();
+		string indent;
+		int    initialOffset;
 		
 		public NewOverrideCompletionData (TextEditor editor, IMember member)
 		{
 			this.editor = editor;
 			this.member = member;
+			this.initialOffset = editor.CursorPosition;
+			this.indent = GetIndentString (editor.CursorPosition);
+			
 			Image       = member.StockIcon;
 			Text        = new string[] { AmbienceService.Default.GetString (member, OutputFlags.ClassBrowserEntries) };
 			CompletionString = member.Name;
-			
 		}
 		
 		public void InsertAction (ICompletionWidget widget, ICodeCompletionContext context)
 		{
+			//editor.DeleteText (insertOffset, editor.CursorPosition - insertOffset);
+			//editor.InsertText (GetModifiers (member));
+			
 			if (member is IMethod) {
 				InsertMethod (member as IMethod);
+				return;
+			}
+			if (member is IProperty) {
+				InsertProperty (member as IProperty);
 				return;
 			}
 			editor.InsertText (editor.CursorPosition, member.Name);
 		}
 		
+		string GetIndentString (int pos)
+		{
+			string ch = editor.GetText (pos - 1, pos);
+			int nwpos = pos;
+			while (ch.Length > 0 && ch != "\n") {
+				if (ch[0] != ' ' && ch[0] != '\t')
+					nwpos = pos;
+				pos--;
+				ch = editor.GetText (pos - 1, pos);
+			}
+			return editor.GetText (pos, nwpos - 1);
+		}
+		
 		void GenerateMethodBody (StringBuilder sb, IMethod method)
 		{
+			sb.Append (this.indent);
+			sb.Append (SingeleIndent);
 			if (method.ReturnType != null && method.ReturnType.FullName != "System.Void") {
 				sb.Append ("return base.");
 				sb.Append (method.Name);
@@ -80,30 +107,99 @@ namespace MonoDevelop.CSharpBinding
 						sb.Append (method.Parameters[i].Name);
 					}
 				}
-				sb.AppendLine (");");
-			}
+				sb.Append (");");
+			} else {
+				sb.Append ("throw new System.NotImplementedException ();");
+			} 
+			sb.AppendLine ();
 		}
 		
 		void InsertMethod (IMethod method)
 		{
 			StringBuilder sb = new StringBuilder ();
-			// todo: implement csharpambience.
-			sb.Append (method.ReturnType.FullName);
-			sb.Append (" ");
-			sb.Append (method.Name);
-			sb.Append (" (");
-			
-			sb.Append (")");
-			
+			sb.Append (ambience.GetString (method, OutputFlags.ClassBrowserEntries | OutputFlags.IncludeParameterName));
 			sb.AppendLine ();
+			sb.Append (this.indent);
 			sb.AppendLine ("{");
 			GenerateMethodBody (sb, method);
+			sb.Append (this.indent);
 			sb.Append ("}"); 
-			
 			sb.AppendLine ();
-			
 			editor.InsertText (editor.CursorPosition, sb.ToString ());
 		}
 		
+		string SingeleIndent {
+			get {
+				if (TextEditorProperties.ConvertTabsToSpaces) 
+					return new string (' ', TextEditorProperties.TabIndent);
+				return "\t";
+			}
+		}
+			
+		void GeneratePropertyBody (StringBuilder sb, IProperty property)
+		{
+			if (property.HasGet) {
+				sb.Append (this.indent);
+				sb.Append (SingeleIndent);
+				sb.AppendLine ("get {");
+				sb.Append (this.indent);
+				sb.Append (SingeleIndent);
+				sb.Append (SingeleIndent);
+				if (!property.IsAbstract) {
+					sb.Append (" return base.");
+					sb.Append (property.Name);
+					sb.Append (";");
+				}
+				sb.AppendLine ();
+				sb.Append (this.indent);
+				sb.Append (SingeleIndent);
+				sb.AppendLine ("}");
+			}
+			
+			if (property.HasSet) {
+				sb.Append (this.indent);
+				sb.Append (SingeleIndent);
+				sb.AppendLine ("set {");
+				sb.Append (this.indent);
+				sb.Append (SingeleIndent);
+				sb.Append (SingeleIndent);
+				sb.AppendLine ("throw new System.NotImplementedException ();");
+				sb.Append (this.indent);
+				sb.Append (SingeleIndent);
+				sb.AppendLine ("}");
+			}
+		}
+		void InsertProperty (IProperty property)
+		{
+			StringBuilder sb = new StringBuilder ();
+			sb.Append (ambience.GetString (property, OutputFlags.ClassBrowserEntries | OutputFlags.IncludeParameterName));
+			sb.AppendLine (" {");
+			GeneratePropertyBody (sb, property);
+			sb.Append (this.indent);
+			sb.Append ("}"); 
+			sb.AppendLine ();
+			editor.InsertText (editor.CursorPosition, sb.ToString ());
+		}
+		
+		string GetModifiers (IMember member)
+		{
+			if (member.IsPublic) 
+				return "public";
+			if (member.IsPrivate) 
+				return "";
+				
+			if (member.IsProtectedAndInternal) 
+				return "protected internal";
+			if (member.IsProtectedOrInternal) 
+				return "internal protected";
+			
+			if (member.IsProtected) 
+				return "protected";
+			if (member.IsInternal) 
+				return "internal";
+				
+			return "";
+		}
+
 	}
 }
