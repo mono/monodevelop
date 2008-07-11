@@ -29,12 +29,20 @@ using System;
 
 namespace Mono.Debugging.Client
 {
+	[Serializable]
 	public class Breakpoint
 	{
-		BreakpointStore store;
-		bool enabled = true;
+		[NonSerialized] BreakpointStore store;
+		[NonSerialized] bool enabled = true;
+		
 		string fileName;
 		int line;
+		
+		HitAction hitAction;
+		string customActionId;
+		string traceExpression;
+		string conditionExpression;
+		bool breakIfConditionChanges;
 		
 		public Breakpoint (string fileName, int line)
 		{
@@ -44,9 +52,13 @@ namespace Mono.Debugging.Client
 		
 		public bool Enabled {
 			get {
+				if (store == null)
+					throw new InvalidOperationException ();
 				return enabled;
 			}
 			set {
+				if (store == null)
+					throw new InvalidOperationException ();
 				enabled = value;
 				store.EnableBreakpoint (this, value);
 			}
@@ -54,6 +66,8 @@ namespace Mono.Debugging.Client
 		
 		public bool IsValid (DebuggerSession session)
 		{
+			if (store == null)
+				throw new InvalidOperationException ();
 			if (session == null)
 				return true;
 			return session.IsBreakpointValid (this);
@@ -75,5 +89,65 @@ namespace Mono.Debugging.Client
 				store = value;
 			}
 		}
+
+		public string TraceExpression {
+			get {
+				return traceExpression;
+			}
+			set {
+				traceExpression = value;
+			}
+		}
+
+		public HitAction HitAction {
+			get {
+				return hitAction;
+			}
+			set {
+				hitAction = value;
+			}
+		}
+
+		public string CustomActionId {
+			get {
+				return customActionId;
+			}
+			set {
+				customActionId = value;
+			}
+		}
+
+		public string ConditionExpression {
+			get {
+				return conditionExpression;
+			}
+			set {
+				conditionExpression = value;
+			}
+		}
+
+		public bool BreakIfConditionChanges {
+			get {
+				return breakIfConditionChanges;
+			}
+			set {
+				breakIfConditionChanges = value;
+			}
+		}
+		
+		public void CommitChanges ()
+		{
+			if (store != null)
+				store.NotifyBreakpointChanged (this);
+		}
 	}
+	
+	public enum HitAction
+	{
+		Break,
+		PrintExpression,
+		CustomAction
+	}
+	
+	public delegate bool BreakpointHitHandler (string actionId, Breakpoint bp);
 }

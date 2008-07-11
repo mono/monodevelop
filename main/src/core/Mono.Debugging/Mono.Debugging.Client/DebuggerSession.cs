@@ -52,6 +52,7 @@ namespace Mono.Debugging.Client
 		object slock = new object ();
 		object olock = new object ();
 		ThreadInfo activeThread;
+		BreakpointHitHandler customBreakpointHitHandler;
 		
 		ProcessInfo[] currentProcesses;
 		
@@ -102,6 +103,7 @@ namespace Mono.Debugging.Client
 						}
 						breakpointStore.BreakpointAdded -= OnBreakpointAdded;
 						breakpointStore.BreakpointRemoved -= OnBreakpointRemoved;
+						breakpointStore.BreakpointModified -= OnBreakpointModified;
 						breakpointStore.BreakpointEnableStatusChanged -= OnBreakpointStatusChanged;
 					}
 					
@@ -114,9 +116,19 @@ namespace Mono.Debugging.Client
 						}
 						breakpointStore.BreakpointAdded += OnBreakpointAdded;
 						breakpointStore.BreakpointRemoved += OnBreakpointRemoved;
+						breakpointStore.BreakpointModified += OnBreakpointModified;
 						breakpointStore.BreakpointEnableStatusChanged += OnBreakpointStatusChanged;
 					}
 				}
+			}
+		}
+
+		public BreakpointHitHandler CustomBreakpointHitHandler {
+			get {
+				return customBreakpointHitHandler;
+			}
+			set {
+				customBreakpointHitHandler = value;
 			}
 		}
 		
@@ -254,7 +266,7 @@ namespace Mono.Debugging.Client
 		{
 			object handle = null;
 			try {
-				handle = OnInsertBreakpoint (bp.FileName, bp.Line, bp.Enabled);
+				handle = OnInsertBreakpoint (bp, bp.Enabled);
 			} catch (Exception ex) {
 				logWriter (false, "Could not set breakpoint at location '" + bp.FileName + ":" + bp.Line + " (" + ex.Message + ")\n");
 			}
@@ -272,11 +284,38 @@ namespace Mono.Debugging.Client
 			}
 		}
 		
-		void UpdateBreakpoint (Breakpoint bp)
+		void UpdateBreakpointStatus (Breakpoint bp)
 		{
 			object handle;
 			if (GetHandle (bp, out handle) && handle != null)
 				OnEnableBreakpoint (handle, bp.Enabled);
+		}
+		
+		void UpdateBreakpoint (Breakpoint bp)
+		{
+			object handle;
+			if (GetHandle (bp, out handle)) {
+				if (handle != null) {
+					object newHandle = OnUpdateBreakpoint (handle, bp);
+					if (newHandle != handle && (newHandle == null || !newHandle.Equals (handle))) {
+						// Update the handle if it has changed, and notify the status change
+						breakpoints [bp] = newHandle;
+					}
+					Breakpoints.NotifyStatusChanged (bp);
+				} else {
+					// Try inserting the breakpoint again
+					try {
+						handle = OnInsertBreakpoint (bp, bp.Enabled);
+						if (handle != null) {
+							// This time worked
+							breakpoints [bp] = handle;
+							Breakpoints.NotifyStatusChanged (bp);
+						}
+					} catch (Exception ex) {
+						logWriter (false, "Could not set breakpoint at location '" + bp.FileName + ":" + bp.Line + " (" + ex.Message + ")\n");
+					}
+				}
+			}
 		}
 		
 		void OnBreakpointAdded (object s, BreakpointEventArgs args)
@@ -295,11 +334,19 @@ namespace Mono.Debugging.Client
 			}
 		}
 		
-		void OnBreakpointStatusChanged (object s, BreakpointEventArgs args)
+		void OnBreakpointModified (object s, BreakpointEventArgs args)
 		{
 			lock (slock) {
 				if (started)
 					UpdateBreakpoint (args.Breakpoint);
+			}
+		}
+		
+		void OnBreakpointStatusChanged (object s, BreakpointEventArgs args)
+		{
+			lock (slock) {
+				if (started)
+					UpdateBreakpointStatus (args.Breakpoint);
 			}
 		}
 		
@@ -505,6 +552,15 @@ namespace Mono.Debugging.Client
 			}
 		}
 		
+		internal protected bool OnCustomBreakpointAction (string actionId, object handle)
+		{
+			foreach (KeyValuePair<Breakpoint,object> e in breakpoints) {
+				if (handle == e.Value || handle.Equals (e.Value))
+					return customBreakpointHitHandler (actionId, e.Key);
+			}
+			return false;
+		}
+		
 		protected abstract void OnRun (DebuggerStartInfo startInfo);
 
 		protected abstract void OnAttachToProcess (int processId);
@@ -535,9 +591,11 @@ namespace Mono.Debugging.Client
 		//breakpoints etc
 
 		// returns a handle
-		protected abstract object OnInsertBreakpoint (string filename, int line, bool activate);
+		protected abstract object OnInsertBreakpoint (Breakpoint bp, bool activate);
 
 		protected abstract void OnRemoveBreakpoint (object handle);
+		
+		protected abstract object OnUpdateBreakpoint (object handle, Breakpoint bp);
 		
 		protected abstract void OnEnableBreakpoint (object handle, bool enable);
 
@@ -588,6 +646,11 @@ namespace Mono.Debugging.Client
 		public void NotifyStarted ()
 		{
 			session.OnStarted ();
+		}
+		
+		public bool NotifyCustomBreakpointAction (string actionId, object handle)
+		{
+			return session.OnCustomBreakpointAction (actionId, handle);
 		}
 	}
 

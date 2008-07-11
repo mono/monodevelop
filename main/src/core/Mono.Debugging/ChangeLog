@@ -1,3 +1,11 @@
+2008-07-11  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Mono.Debugging.Client/BreakpointStore.cs,
+	  Mono.Debugging.Client/DebuggerSession.cs,
+	  Mono.Debugging.Client/Breakpoint.cs,
+	  Mono.Debugging.Backend/IDebuggerSessionFrontend.cs: Added api to
+	  support custom breakpoint hit actions.
+
 2008-07-09  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Mono.Debugging.Client/ThreadInfo.cs,

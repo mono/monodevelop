@@ -192,9 +192,20 @@ namespace Mono.Debugging.Client
 			}
 		}
 		
+		internal void NotifyBreakpointChanged (Breakpoint bp)
+		{
+			try {
+				if (BreakpointModified != null)
+					BreakpointModified (this, new BreakpointEventArgs (bp));
+			} catch {
+				// Ignone
+			}
+		}
+		
 		public event EventHandler<BreakpointEventArgs> BreakpointAdded;
 		public event EventHandler<BreakpointEventArgs> BreakpointRemoved;
 		public event EventHandler<BreakpointEventArgs> BreakpointStatusChanged;
+		public event EventHandler<BreakpointEventArgs> BreakpointModified;
 		internal event EventHandler<BreakpointEventArgs> BreakpointEnableStatusChanged;
 		public event EventHandler Changed;
 	}
