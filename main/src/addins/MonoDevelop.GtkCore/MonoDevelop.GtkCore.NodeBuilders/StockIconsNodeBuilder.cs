@@ -59,9 +59,9 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 		public override void ActivateItem ()
 		{
 			StockIconsNode node = (StockIconsNode) CurrentNode.DataItem;
-			GuiBuilderProject gp = GtkCoreService.GetGtkInfo (node.Project).GuiBuilderProject;
+			GtkDesignInfo info = GtkDesignInfo.FromProject (node.Project);
+			GuiBuilderProject gp = info.GuiBuilderProject;
 			Stetic.Project sp = gp.SteticProject;
-			GtkDesignInfo info = GtkCoreService.GetGtkInfo (gp.Project);
 			sp.ImagesRootPath = FileService.AbsoluteToRelativePath (info.GtkGuiFolder, gp.Project.BaseDirectory);
 			sp.ImportFileCallback = delegate (string file) {
 				return GuiBuilderService.ImportFile (gp.Project, file);

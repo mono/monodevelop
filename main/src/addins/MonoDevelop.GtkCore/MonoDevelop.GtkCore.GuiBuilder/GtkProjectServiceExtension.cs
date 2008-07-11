@@ -16,8 +16,8 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			if (GenerateSteticCode) {
 				DotNetProject project = entry as DotNetProject;
 				if (project != null) {
-					GtkDesignInfo info = GtkCoreService.GetGtkInfo (project);
-					if (info != null && info.SupportsDesigner) {
+					GtkDesignInfo info = GtkDesignInfo.FromProject (project);
+					if (info.SupportsDesigner) {
 						// The code generator must run in the GUI thread since it needs to
 						// access to Gtk classes
 						Generator gen = new Generator ();

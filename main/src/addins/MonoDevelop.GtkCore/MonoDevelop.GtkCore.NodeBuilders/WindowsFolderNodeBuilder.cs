@@ -70,8 +70,8 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
 		{
 			Project p = ((WindowsFolder)dataObject).Project;
-			GtkDesignInfo info = GtkCoreService.GetGtkInfo (p);
-			if (info != null && info.GuiBuilderProject.HasError) {
+			GtkDesignInfo info = GtkDesignInfo.FromProject (p);
+			if (info.GuiBuilderProject.HasError) {
 				label = GettextCatalog.GetString ("User Interface (GUI project load failed)");
 			} else {
 				label = GettextCatalog.GetString ("User Interface");
@@ -83,8 +83,8 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 		public override void BuildChildNodes (ITreeBuilder builder, object dataObject)
 		{
 			Project p = ((WindowsFolder)dataObject).Project;
-			GtkDesignInfo info = GtkCoreService.GetGtkInfo (p);
-			if (info != null && !info.GuiBuilderProject.HasError) {
+			GtkDesignInfo info = GtkDesignInfo.FromProject (p);
+			if (!info.GuiBuilderProject.HasError) {
 				builder.AddChild (new StockIconsNode (p));
 				foreach (GuiBuilderWindow fi in info.GuiBuilderProject.Windows)
 					builder.AddChild (fi);

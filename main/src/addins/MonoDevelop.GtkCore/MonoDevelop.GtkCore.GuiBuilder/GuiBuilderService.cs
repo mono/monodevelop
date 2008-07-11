@@ -113,11 +113,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		public static GuiBuilderProject GetGuiBuilderProject (Project project)
 		{
-			GtkDesignInfo info = GtkCoreService.GetGtkInfo (project);
-			if (info != null)
-				return info.GuiBuilderProject;
-			else
-				return null;
+			return GtkDesignInfo.FromProject (project).GuiBuilderProject;
 		}
 		
 		public static ActionGroupView OpenActionGroup (Project project, Stetic.ActionGroupInfo group)
@@ -200,8 +196,8 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				// being used by the IDE. This will avoid unnecessary updates.
 				if (IdeApp.Workspace.IsOpen) {
 					foreach (Project prj in IdeApp.Workspace.GetAllProjects ()) {
-						GtkDesignInfo info = GtkCoreService.GetGtkInfo (prj);
-						if (info != null && !HasOpenDesigners (prj, false)) {
+						GtkDesignInfo info = GtkDesignInfo.FromProject (prj);
+						if (!HasOpenDesigners (prj, false)) {
 							info.ReloadGuiBuilderProject ();
 						}
 					}
@@ -253,14 +249,13 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		public static void ImportGladeFile (Project project)
 		{
-			GtkDesignInfo info = GtkCoreService.GetGtkInfo (project);
-			if (info == null) info = GtkCoreService.EnableGtkSupport (project);
+			GtkDesignInfo info = GtkDesignInfo.FromProject (project);
 			info.GuiBuilderProject.ImportGladeFile ();
 		}
 		
 		public static string GetBuildCodeFileName (Project project, string componentName)
 		{
-			GtkDesignInfo info = GtkCoreService.GetGtkInfo (project);
+			GtkDesignInfo info = GtkDesignInfo.FromProject (project);
 			return Path.Combine (info.GtkGuiFolder, componentName + Path.GetExtension (info.SteticGeneratedFile));
 		}
 		
@@ -288,8 +283,6 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				name = name.Substring (i+1);
 			}
 			
-			GtkDesignInfo info = GtkCoreService.GetGtkInfo (project);
-			
 			if (saveToFile && !overwrite && File.Exists (fileName))
 				return fileName;
 			
@@ -298,7 +291,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			
 			CodeCompileUnit cu = new CodeCompileUnit ();
 			
-			if (info.GeneratePartialClasses) {
+			if (project.UsePartialTypes) {
 				CodeNamespace cns = new CodeNamespace (ns);
 				cu.Namespaces.Add (cns);
 				
@@ -358,18 +351,12 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		}
 		
 		
-		public static Stetic.CodeGenerationResult GenerateSteticCode (IProgressMonitor monitor, DotNetProject prj, string configuration)
+		public static Stetic.CodeGenerationResult GenerateSteticCode (IProgressMonitor monitor, DotNetProject project, string configuration)
 		{
-			if (generating)
+			if (generating || project == null)
 				return null;
 
-			DotNetProject project = prj as DotNetProject;
-			if (project == null)
-				return null;
-				
-			GtkDesignInfo info = GtkCoreService.GetGtkInfo (project);
-			if (info == null)
-				return null;
+			GtkDesignInfo info = GtkDesignInfo.FromProject (project);
 			
 			// Check if the stetic file has been modified since last generation
 			if (File.Exists (info.SteticGeneratedFile) && File.Exists (info.SteticFile)) {
@@ -390,15 +377,10 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			
 			// Make sure the referenced assemblies are up to date. It is necessary to do
 			// it now since they may contain widget libraries.
-			prj.CopyReferencesToOutputPath (false, configuration);
+			project.CopyReferencesToOutputPath (false, configuration);
 			
 			info.GuiBuilderProject.UpdateLibraries ();
 			
-			if (info.IsWidgetLibrary) {
-				// Make sure the widget export file is up to date.
-				GtkCoreService.UpdateObjectsFile (project);
-			}
-
 			ArrayList projects = new ArrayList ();
 			projects.Add (info.GuiBuilderProject.File);
 			
@@ -415,7 +397,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 						// Generate the code in another process if stetic is not isolated
 						CodeGeneratorProcess cob = (CodeGeneratorProcess) Runtime.ProcessService.CreateExternalProcessObject (typeof (CodeGeneratorProcess), false);
 						using (cob) {
-							generationResult = cob.GenerateCode (projects, info.GenerateGettext, info.GettextClass, info.GeneratePartialClasses);
+							generationResult = cob.GenerateCode (projects, info.GenerateGettext, info.GettextClass, project.UsePartialTypes);
 						}
 					} catch (Exception ex) {
 						generatedException = ex;
@@ -435,7 +417,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 					Stetic.GenerationOptions options = new Stetic.GenerationOptions ();
 					options.UseGettext = info.GenerateGettext;
 					options.GettextClass = info.GettextClass;
-					options.UsePartialClasses = info.GeneratePartialClasses;
+					options.UsePartialClasses = project.UsePartialTypes;
 					options.GenerateSingleFile = false;
 					generationResult = SteticApp.GenerateProjectCode (options, info.GuiBuilderProject.SteticProject);
 				} catch (Exception ex) {

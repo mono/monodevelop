@@ -143,13 +143,13 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			string fullName = namspace.Length > 0 ? namspace + "." + name : name;
 			
 			CodeRefactorer gen = new CodeRefactorer (fproject.Project.ParentSolution, IdeApp.Workspace.ParserDatabase);
-			GtkDesignInfo info = GtkCoreService.GetGtkInfo (fproject.Project);
+			bool partialSupport = fproject.Project.UsePartialTypes;
 			Stetic.WidgetComponent component = (Stetic.WidgetComponent) rootWidget.Component;
 			
 			CodeTypeDeclaration type = new CodeTypeDeclaration ();
 			type.Name = name;
 			type.IsClass = true;
-			type.IsPartial = info.GeneratePartialClasses;
+			type.IsPartial = partialSupport;
 			type.BaseTypes.Add (new CodeTypeReference (component.Type.ClassName));
 			
 			// Generate the constructor. It contains the call that builds the widget.
@@ -170,7 +170,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 					ctor.BaseConstructorArgs.Add (new CodePrimitiveExpression (val));
 			}
 			
-			if (info.GeneratePartialClasses) {
+			if (partialSupport) {
 				CodeMethodInvokeExpression call = new CodeMethodInvokeExpression (
 					new CodeMethodReferenceExpression (
 						new CodeThisReferenceExpression (),

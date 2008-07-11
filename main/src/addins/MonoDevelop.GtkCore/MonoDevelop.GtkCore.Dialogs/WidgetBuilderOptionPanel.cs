@@ -3,8 +3,9 @@
 //
 // Author:
 //   Lluis Sanchez Gual
+//   Mike Kestner
 //
-// Copyright (C) 2006 Novell, Inc (http://www.novell.com)
+// Copyright (C) 2006, 2008  Novell, Inc (http://www.novell.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -48,137 +49,64 @@ namespace MonoDevelop.GtkCore.Dialogs
 {
 	class WidgetBuilderOptionPanel: ItemOptionsPanel
 	{
-		class WidgetBuilderOptionPanelWidget : GladeWidgetExtract
+		class WidgetBuilderOptionPanelWidget : Gtk.VBox
 		{
-			[Glade.Widget] protected Gtk.TreeView tree;
-			[Glade.Widget] protected Gtk.CheckButton checkWidgetLib;
-			[Glade.Widget] protected Gtk.CheckButton checkGettext;
-			[Glade.Widget] protected Gtk.CheckButton checkGtkEnabled;
-			[Glade.Widget] protected Gtk.Entry entryGettext;
-			[Glade.Widget] protected Gtk.Notebook notebook;
-			[Glade.Widget] protected Gtk.ComboBox comboVersions;
+			Gtk.CheckButton checkGettext;
+			Gtk.Entry entryGettext;
+			Gtk.ComboBox comboVersions;
 			
-			ListStore store;
-			TreeViewColumn column;
-			
-			Project project;
-			ArrayList selection;
 			GtkDesignInfo designInfo;
 			
-			public WidgetBuilderOptionPanelWidget (Project project) : base ("gui.glade", "WidgetBuilderOptions")
+			public WidgetBuilderOptionPanelWidget (Project project) : base (false, 6)
 			{
-				store = new ListStore (typeof(bool), typeof(Pixbuf), typeof(string), typeof(object));
-				tree.Model = store;
-				tree.HeadersVisible = false;
-				this.project = project;
-				
-				column = new TreeViewColumn ();
-			
-				CellRendererToggle crtog = new CellRendererToggle ();
-				crtog.Activatable = true;
-				crtog.Toggled += new ToggledHandler (OnToggled);
-				column.PackStart (crtog, false);
-				column.AddAttribute (crtog, "active", 0);
-				
-				CellRendererPixbuf pr = new CellRendererPixbuf ();
-				column.PackStart (pr, false);
-				column.AddAttribute (pr, "pixbuf", 1);
-				
-				CellRendererText crt = new CellRendererText ();
-				column.PackStart (crt, true);
-				column.AddAttribute (crt, "text", 2);
-				
-				tree.AppendColumn (column);
-				
-				if (!GtkCoreService.SupportsGtkDesigner (project)) {
-					notebook.RemovePage (1);
-				}
-					
-				designInfo = GtkCoreService.GetGtkInfo (project);
-				
-				selection = new ArrayList ();
+				designInfo = GtkDesignInfo.FromProject (project);
 
-				if (designInfo != null)
-					selection.AddRange (designInfo.ExportedWidgets);
+				Gtk.HBox box = new Gtk.HBox (false, 3);
+				Gtk.Label lbl = new Gtk.Label (GettextCatalog.GetString ("Target Gtk# version:"));
+				box.PackStart (lbl, false, false, 0);
+				comboVersions = ComboBox.NewText ();
+				box.PackStart (comboVersions, false, false, 0);
+				box.ShowAll ();
+				PackStart (box, false, false, 0);
+
+				HSeparator sep = new HSeparator ();
+				sep.Show ();
+				PackStart (sep, false, false, 0);
 				
-				foreach (IClass cls in GtkCoreService.GetExportableClasses (project)) {
-					bool exported = designInfo != null && designInfo.IsExported (cls.FullyQualifiedName);
-					string icon = IdeApp.Services.Icons.GetIcon (cls);
-					Pixbuf pic = IdeApp.Services.Resources.GetIcon (icon);
-					store.AppendValues (exported, pic, cls.FullyQualifiedName, cls);
-				}
-				
-				checkGtkEnabled.Active = designInfo != null;
-				checkWidgetLib.Active = designInfo != null && designInfo.IsWidgetLibrary;
-				checkGettext.Active = designInfo == null || designInfo.GenerateGettext;
-				entryGettext.Text = designInfo != null ? designInfo.GettextClass : "Mono.Unix.Catalog";
-				tree.Sensitive = checkWidgetLib.Active;
-				notebook.Sensitive = checkGtkEnabled.Active;
+				checkGettext = new CheckButton (GettextCatalog.GetString ("Enable gettext support"));
+				checkGettext.Active = designInfo.GenerateGettext;
+				checkGettext.Show ();
+				PackStart (checkGettext, false, false, 0);
+				box = new Gtk.HBox (false, 3);
+				box.PackStart (new Label (GettextCatalog.GetString ("Gettext class:")), false, false, 0);
+				entryGettext = new Gtk.Entry ();
+				entryGettext.Text = designInfo.GettextClass;
 				entryGettext.Sensitive = checkGettext.Active;
+				box.PackStart (entryGettext, false, false, 0);
+				box.ShowAll ();
+				PackStart (box, false, false, 0);
 				
-				comboVersions.RemoveText (0);
+				
 				foreach (string v in GtkCoreService.SupportedGtkVersions)
 					comboVersions.AppendText (v);
 
-				comboVersions.Active = (designInfo != null)
-					? Array.IndexOf (GtkCoreService.SupportedGtkVersions, designInfo.TargetGtkVersion)
-					: 0;
-				
-				checkWidgetLib.Clicked += delegate {
-					tree.Sensitive = checkWidgetLib.Active;
-				};
-				
-				checkGtkEnabled.Clicked += delegate {
-					notebook.Sensitive = checkGtkEnabled.Active;
-				};
+				comboVersions.Active = Array.IndexOf (GtkCoreService.SupportedGtkVersions, designInfo.TargetGtkVersion);
 				
 				checkGettext.Clicked += delegate {
-					entryGettext.Sensitive = checkGettext.Active;
+					box.Sensitive = checkGettext.Active;
 					if (checkGettext.Active)
 						entryGettext.Text = "Mono.Unix.Catalog";
 				};
 			}
 			
-			void OnToggled (object o, ToggledArgs args)
-			{
-				TreeIter it;
-				if (store.GetIter (out it, new TreePath (args.Path))) {
-					bool sel = !(bool) store.GetValue (it, 0);
-					store.SetValue (it, 0, sel);
-					string txt = (string) store.GetValue (it, 2);
-					if (sel)
-						selection.Add (txt);
-					else
-						selection.Remove (txt);
-				}
-			}
-		
 			public void Store ()
 			{
-				if (checkGtkEnabled.Active) {
-					if (designInfo == null)
-						designInfo = GtkCoreService.EnableGtkSupport (project);
-						
-					// Save selected widgets
-					if (checkWidgetLib.Active) {
-						if (selection.Count > 0 || designInfo != null) {
-							designInfo.IsWidgetLibrary = true;
-							designInfo.ExportedWidgets = (string[]) selection.ToArray (typeof(string));
-							GtkCoreService.UpdateObjectsFile (project);
-						}
-					} else
-						designInfo.IsWidgetLibrary = false;
-					
-					designInfo.GenerateGettext = checkGettext.Active;
-					designInfo.GettextClass = entryGettext.Text;
-					designInfo.TargetGtkVersion = comboVersions.ActiveText;
-						
-					designInfo.UpdateGtkFolder ();
-					designInfo.ForceCodeGenerationOnBuild ();
-				}
-				else {
-					GtkCoreService.DisableGtkSupport (project);
-				}
+				designInfo.GenerateGettext = checkGettext.Active;
+				designInfo.GettextClass = entryGettext.Text;
+				designInfo.TargetGtkVersion = comboVersions.ActiveText;
+
+				designInfo.UpdateGtkFolder ();
+				designInfo.ForceCodeGenerationOnBuild ();
 			}
 		}
 		
@@ -189,10 +117,14 @@ namespace MonoDevelop.GtkCore.Dialogs
 			return (widget = new WidgetBuilderOptionPanelWidget (ConfiguredProject));
 		}
 		
+		public override bool IsVisible () 
+		{
+			return GtkDesignInfo.FromProject (DataObject as Project).SupportsDesigner;
+		}
+
 		public override void ApplyChanges ()
 		{
 			widget.Store ();
 		}
 	}
-	
 }

@@ -41,16 +41,15 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 		public WindowsFolder (Project project)
 		{
 			this.project = project;
-			GtkDesignInfo info = GtkCoreService.GetGtkInfo (project);
+			GtkDesignInfo info = GtkDesignInfo.FromProject (project);
 			
 			info.GuiBuilderProject.Changed += OnUpdateFiles;
 		}
 		
 		public void Dispose ()
 		{
-			GtkDesignInfo info = GtkCoreService.GetGtkInfo (project);
-			if (info != null)
-				info.GuiBuilderProject.Changed -= OnUpdateFiles;
+			GtkDesignInfo info = GtkDesignInfo.FromProject (project);
+			info.GuiBuilderProject.Changed -= OnUpdateFiles;
 		}
 		
 		void OnUpdateFiles (object s, EventArgs args)

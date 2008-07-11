@@ -40,6 +40,8 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 {
 	public class ProjectNodeBuilder: NodeBuilderExtension
 	{
+		static ProjectNodeBuilder instance;
+
 		public override bool CanBuildNode (Type dataType)
 		{
 			return typeof(DotNetProject).IsAssignableFrom (dataType);
@@ -47,24 +49,28 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 		
 		protected override void Initialize ()
 		{
-			GtkCoreService.GtkSupportChanged += OnGtkSupportChanged;
+			lock (typeof (ProjectNodeBuilder))
+				instance = this;
 		}
 		
 		public override void Dispose ()
 		{
-			GtkCoreService.GtkSupportChanged -= OnGtkSupportChanged;
+			lock (typeof (ProjectNodeBuilder))
+				instance = null;
 		}
 		
 		public override void BuildChildNodes (ITreeBuilder builder, object dataObject)
 		{
-			GtkDesignInfo info = GtkCoreService.GetGtkInfo ((Project)dataObject);
-			if (info != null && info.SupportsDesigner)
+			if (GtkDesignInfo.FromProject ((Project)dataObject).SupportsDesigner)
 				builder.AddChild (new WindowsFolder ((Project)dataObject));
 		}
 		
-		void OnGtkSupportChanged (Project p, bool enabled)
+		public static void OnSupportChanged (Project p)
 		{
-			ITreeBuilder tb = Context.GetTreeBuilder (p);
+			if (instance == null)
+				return;
+
+			ITreeBuilder tb = instance.Context.GetTreeBuilder (p);
 			if (tb != null)
 				tb.UpdateAll ();
 		}

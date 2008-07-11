@@ -1,3 +1,53 @@
+2008-07-10  Mike Kestner <mkestner@novell.com> 
+
+	* MonoDevelop.GtkCore/GtkCoreService.cs: Gutted.  Moved everything
+	that took a Project parameter to GtkDesignInfo. Removed all the 
+	enable/disable/get info methods replaced by GtkDesignInfo.FromProject.
+	Killed all the objects file updating. Moved designer support checks
+	to DesignInfo.
+	* MonoDevelop.GtkCore/GtkDesignInfo.cs: Add FromProject static
+	method to replace GtkCoreService.GetGtkInfo. Remove ExportedWidgets
+	and IsWidgetLibrary functionality. Enable and disable designer based
+	on presence of gtk-sharp reference on projects. Refactor/move code 
+	generation to GuiBuilderProject from UpdateGtkFolder. Kill 
+	GeneratePartialClasses since it's a simple project property access 
+	and all users of GtkDesignInfo access it via the project. Moved 
+	Refactory checks from GtkCoreService to encapsulate SupportsDesigner.
+	Fix Reference updating checks for Mono.Posix, since the 
+	StoredReference returns a simple name for it.
+	* MonoDevelop.GtkCore/WidgetFileDescriptionTemplate.cs: switched to 
+	FromProject api.  Killed ExportedWidget handling.
+	* MonoDevelop.GtkCore.Dialogs/GtkFeatureWidget.cs: removed widget
+	library checkbox. s/Gtk#/GTK# for consistency. Updated to new
+	DesignInfo API.
+	* MonoDevelop.GtkCore.Dialogs/WidgetBuilderOptionPanel.cs: removed
+	all the Exported Widgets and WidgetLibrary tab stuff, simplified to
+	a vbox and hand-written to remove glade taint.
+	* MonoDevelop.GtkCore.GuiBuilder/ActionGroupDisplayBinding.cs: 
+	* MonoDevelop.GtkCore.GuiBuilder/ActionGroupView.cs: 
+	* MonoDevelop.GtkCore.GuiBuilder/CodeBinder.cs: 
+	* MonoDevelop.GtkCore.GuiBuilder/GtkProjectServiceExtension.cs: 
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderDisplayBinding.cs: 
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs: 
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderView.cs: 
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderWindow.cs: 
+	switched to new DesignInfo API.
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderProject.cs: 
+	switched to new DesignInfo API. moved gui folder file generation
+	here instead of DesignInfo iterating over builder properties.
+	* MonoDevelop.GtkCore.GuiBuilder/ToolboxProvider.cs: 
+	Added category mangling for ToolboxItems so that they are placed
+	by project.
+	* MonoDevelop.GtkCore.NodeBuilders/ActionGroupNodeBuilder.cs: 
+	* MonoDevelop.GtkCore.NodeBuilders/ProjectFolderNodeBuilderExtension.cs: 
+	* MonoDevelop.GtkCore.NodeBuilders/ProjectNodeBuilder.cs: 
+	* MonoDevelop.GtkCore.NodeBuilders/StockIconsNodeBuilder.cs: 
+	* MonoDevelop.GtkCore.NodeBuilders/WindowsFolder.cs: 
+	* MonoDevelop.GtkCore.NodeBuilders/WindowsFolderNodeBuilder.cs: 
+	switched to new DesignInfo api.
+	* templates/Widget.xft.xml: add ToolboxItem attr.
+	* templates/WidgetPartial.xft.xml: add ToolboxItem attr.
+
 2008-06-04  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.GtkCore.addin.xml: Bump MD version.

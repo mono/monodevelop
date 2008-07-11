@@ -73,14 +73,12 @@ namespace MonoDevelop.GtkCore
 		
 		public override bool SupportsProject (Project project, string projectPath)
 		{
-			return GtkCoreService.SupportsGtkDesigner (project);
+			return GtkDesignInfo.FromProject (project).SupportsDesigner;
 		}
 		
 		public override bool AddToProject (Project project, string language, string directory, string name)
 		{
-			GtkDesignInfo info = GtkCoreService.GetGtkInfo (project);
-			if (info == null)
-				info = GtkCoreService.EnableGtkSupport (project);
+			GtkDesignInfo info = GtkDesignInfo.FromProject ((DotNetProject) project);
 				
 			GuiBuilderProject gproject = info.GuiBuilderProject;
 			
@@ -107,11 +105,8 @@ namespace MonoDevelop.GtkCore
 				XmlDocument doc = new XmlDocument ();
 				doc.LoadXml (content);
 				
-				Stetic.WidgetInfo w = gproject.AddNewComponent (doc.DocumentElement);
+				gproject.AddNewComponent (doc.DocumentElement);
 				gproject.Save (false);
-				
-				if (!w.IsWindow)
-					info.AddExportedWidget (fullName);
 				return true;
 			}
 			

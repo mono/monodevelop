@@ -65,8 +65,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			this.project = project;
 			this.textFileProvider = textFileProvider;
 
-			GtkDesignInfo info = GtkCoreService.GetGtkInfo (project);
-			gproject = info.GuiBuilderProject;
+			gproject = GtkDesignInfo.FromProject (project).GuiBuilderProject;
 
 			TargetObject = targetObject;
 		}

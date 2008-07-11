@@ -65,10 +65,8 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			group = (Stetic.ActionGroupComponent) groupInfo.Component;
 			project.Unloaded += OnDisposeProject;
 			
-			GtkDesignInfo info = GtkCoreService.GetGtkInfo (project.Project);
-
 			designer = project.SteticProject.CreateActionGroupDesigner (groupInfo, false);
-			designer.AllowActionBinding = (info != null && !info.GeneratePartialClasses);
+			designer.AllowActionBinding = project.Project.UsePartialTypes;
 			designer.BindField += new EventHandler (OnBindField);
 			
 			ActionGroupPage actionsPage = new ActionGroupPage (designer);
@@ -129,8 +127,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				// for the generated fields. The call to GenerateSteticCodeStructure will generate
 				// the code for the window (only the fields in fact) and update the parser database, it
 				// will not save the code to disk.
-				GtkDesignInfo info = GtkCoreService.GetGtkInfo (project.Project);
-				if (info != null && info.GeneratePartialClasses)
+				if (project.Project.UsePartialTypes)
 					GuiBuilderService.GenerateSteticCodeStructure ((DotNetProject)project.Project, designer.RootComponent, null, false, false);
 			}
 			base.ShowPage (npage);

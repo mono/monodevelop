@@ -77,7 +77,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			IDisplayBinding db = IdeApp.Workbench.DisplayBindings.GetBindingPerFileName (fileName);
 			
 			Project project = IdeApp.Workspace.GetProjectContainingFile (fileName);
-			GtkDesignInfo info = GtkCoreService.EnableGtkSupport (project);
+			GtkDesignInfo info = GtkDesignInfo.FromProject ((DotNetProject) project);
 			
 			ActionGroupView view = new ActionGroupView (db.CreateContentForFile (fileName), GetActionGroup (fileName), info.GuiBuilderProject);
 			excludeThis = false;
@@ -95,8 +95,8 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			if (project == null)
 				return null;
 				
-			GtkDesignInfo info = GtkCoreService.GetGtkInfo (project);
-			if (info == null || !info.SupportsDesigner)
+			GtkDesignInfo info = GtkDesignInfo.FromProject (project);
+			if (!info.SupportsDesigner)
 				return null;
 				
 			return info.GuiBuilderProject.GetActionGroupForFile (file);

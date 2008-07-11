@@ -69,7 +69,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		{
 			rootName = window.Name;
 			gproject = window.Project;
-			GtkDesignInfo info = GtkCoreService.GetGtkInfo (gproject.Project);
+			GtkDesignInfo info = GtkDesignInfo.FromProject (gproject.Project);
 			gproject.SteticProject.ImagesRootPath = FileService.AbsoluteToRelativePath (info.GtkGuiFolder, gproject.Project.BaseDirectory);
 			gproject.UpdateLibraries ();
 			LoadDesigner ();
@@ -85,7 +85,6 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			
 			gproject.Unloaded += OnDisposeProject;
 			
-			GtkDesignInfo info = GtkCoreService.GetGtkInfo (gproject.Project);
 			designer = gproject.SteticProject.CreateWidgetDesigner (window.RootWidget, false);
 			if (designer.RootComponent == null) {
 				// Something went wrong while creating the designer. Show it, but don't do aything else.
@@ -94,7 +93,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				return;
 			}
 
-			designer.AllowWidgetBinding = (info != null && !info.GeneratePartialClasses);
+			designer.AllowWidgetBinding = !gproject.Project.UsePartialTypes;
 			
 			codeBinder = new CodeBinder (gproject.Project, new OpenDocumentFileProvider (), designer.RootComponent);
 			
@@ -117,7 +116,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			
 			// Actions designer
 			actionsBox = designer.CreateActionGroupDesigner ();
-			actionsBox.AllowActionBinding = (info != null && !info.GeneratePartialClasses);
+			actionsBox.AllowActionBinding = !gproject.Project.UsePartialTypes;
 			actionsBox.BindField += new EventHandler (OnBindActionField);
 			actionsBox.ModifiedChanged += new EventHandler (OnActionshanged);
 			
@@ -200,8 +199,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				// for the generated fields. The call to GenerateSteticCodeStructure will generate
 				// the code for the window (only the fields in fact) and update the parser database, it
 				// will not save the code to disk.
-				GtkDesignInfo info = GtkCoreService.GetGtkInfo (gproject.Project);
-				if (info != null && info.GeneratePartialClasses)
+				if (gproject.Project.UsePartialTypes)
 					GuiBuilderService.GenerateSteticCodeStructure ((DotNetProject)gproject.Project, designer.RootComponent, null, false, false);
 			}
 			base.ShowPage (npage);
@@ -225,8 +223,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				// way the component that has been renamed will be generated with the
 				// old name, and UpdateField will be able to find it (to rename the
 				// references to the field, it needs to have the old name).
-				GtkDesignInfo info = GtkCoreService.GetGtkInfo (gproject.Project);
-				if (info != null && info.GeneratePartialClasses)
+				if (gproject.Project.UsePartialTypes)
 					GuiBuilderService.GenerateSteticCodeStructure ((DotNetProject)gproject.Project, designer.RootComponent, args, false, false);
 				
 				codeBinder.UpdateField (args.Component, args.OldName);
@@ -290,7 +287,6 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			if (designer == null)
 				return;
 			
-			string oldName = window.RootWidget.Name;
 			string oldBuildFile = GuiBuilderService.GetBuildCodeFileName (gproject.Project, window.RootWidget.Name);
 			
 			codeBinder.UpdateBindings (fileName);
@@ -310,21 +306,6 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			}
 			
 			gproject.Save (true);
-			
-			if (window.RootWidget.Name != oldName) {
-				// The name of the component has changed. If this component is being
-				// exported by the library, then the component reference also has to
-				// be updated in the project configuration
-				
-				GtkDesignInfo info = GtkCoreService.GetGtkInfo (gproject.Project);
-				if (info.IsExported (oldName)) {
-					info.RemoveExportedWidget (oldName);
-					info.AddExportedWidget (codeBinder.TargetObject.Name);
-					info.UpdateGtkFolder ();
-					GtkCoreService.UpdateObjectsFile (gproject.Project);
-					IdeApp.ProjectOperations.Save (gproject.Project);
-				}
-			}
 		}
 		
 		public override bool IsDirty {

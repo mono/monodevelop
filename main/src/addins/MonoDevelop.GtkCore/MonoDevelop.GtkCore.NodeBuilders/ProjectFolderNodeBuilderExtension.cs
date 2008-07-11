@@ -57,8 +57,8 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 
 			ProjectFolder folder = dataObject as ProjectFolder;
 			if (folder != null && folder.Project != null) {
-				GtkDesignInfo info = GtkCoreService.GetGtkInfo (folder.Project);
-				if (info != null && info.GtkGuiFolder == folder.Path)
+				GtkDesignInfo info = GtkDesignInfo.FromProject (folder.Project);
+				if (info.GtkGuiFolder == folder.Path)
 					attributes |= NodeAttributes.Hidden;
 			}
 		}
@@ -131,7 +131,7 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 		protected void OnEditIcons ()
 		{
 			Project project = CurrentNode.GetParentDataItem (typeof(Project), true) as Project;
-			GuiBuilderProject gp = GtkCoreService.GetGtkInfo (project).GuiBuilderProject;
+			GuiBuilderProject gp = GtkDesignInfo.FromProject (project).GuiBuilderProject;
 			Stetic.Project sp = gp.SteticProject;
 			sp.EditIcons ();
 			gp.Save (true);
@@ -160,8 +160,8 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 		{
 			DotNetProject project = CurrentNode.GetParentDataItem (typeof(Project), true) as DotNetProject;
 			if (project != null) {
-				GtkDesignInfo info = GtkCoreService.GetGtkInfo (project);
-				return (info == null || info.SupportsDesigner);
+				GtkDesignInfo info = GtkDesignInfo.FromProject (project);
+				return (info.SupportsDesigner);
 			}
 			return false;
 		}
@@ -176,7 +176,7 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 			
 			ProjectFolder folder = CurrentNode.GetParentDataItem (typeof(ProjectFolder), true) as ProjectFolder;
 			
-			if (GtkCoreService.SupportsPartialTypes (project))
+			if (project.UsePartialTypes)
 				id = "Partial" + id;
 			
 			string path;

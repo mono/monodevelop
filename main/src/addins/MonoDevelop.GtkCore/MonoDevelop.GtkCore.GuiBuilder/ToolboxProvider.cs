@@ -32,19 +32,32 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				return null;
 				
 			Hashtable refs = new Hashtable ();
+			Hashtable projects = new Hashtable ();
 			string of = FileService.GetFullPath (view.Project.GetOutputFileName (IdeApp.Workspace.ActiveConfiguration));
-			refs [of] = of;
+			projects [of] = view.Project.Name;
 			foreach (ProjectReference pr in ((DotNetProject)view.Project).References)
 				foreach (string f in pr.GetReferencedFileNames (IdeApp.Workspace.ActiveConfiguration)) {
-					refs[FileService.GetFullPath (f)] = f;
+					if (pr.ReferenceType == ReferenceType.Project)
+						projects[FileService.GetFullPath (f)] = pr.Reference;
+					else
+						refs[FileService.GetFullPath (f)] = f;
 				}
 			
 			List<ItemToolboxNode> list = new List<ItemToolboxNode> ();
 			foreach (ComponentType type in types) {
 				if (type.Category == "window")
 					continue;
-				if (type.ClassName == "Gtk.Action" || (!String.IsNullOrEmpty (type.Library) && refs.Contains (FileService.GetFullPath (type.Library)))) {
+
+				string fullName = null;
+				if (!String.IsNullOrEmpty (type.Library))
+					fullName = FileService.GetFullPath (type.Library);
+
+				if (type.ClassName == "Gtk.Action" || (fullName != null && refs.Contains (fullName))) {
 					ComponentToolboxNode node = new ComponentToolboxNode (type);
+					list.Add (node);
+				} else if (fullName != null && projects.Contains (fullName)) {
+					ComponentToolboxNode node = new ComponentToolboxNode (type);
+					node.Category = (string) projects [fullName];
 					list.Add (node);
 				}
 			}

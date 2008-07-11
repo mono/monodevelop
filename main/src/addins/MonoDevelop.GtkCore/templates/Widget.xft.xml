@@ -37,6 +37,15 @@
 									<BaseTypes>
 										<TypeReference BaseType="Gtk.Bin" />
 									</BaseTypes>
+									<CustomAttributes>
+										<AttributeDeclaration Name="System.ComponentModel.ToolboxItem">
+											<Arguments>
+												<AttributeArgument>
+													<Value><PrimitiveExpression Value="True" ValueType="System.Boolean"/></Value>
+												</AttributeArgument>
+											</Arguments>
+										</AttributeDeclaration>
+									</CustomAttributes>
 									<Members>
 										<Constructor Attributes="Public, Final">
 											<Statements>

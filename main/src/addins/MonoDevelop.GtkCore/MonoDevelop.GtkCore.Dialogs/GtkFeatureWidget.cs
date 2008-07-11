@@ -9,7 +9,6 @@ namespace MonoDevelop.GtkCore.Dialogs
 {
 	class GtkFeatureWidget : Gtk.VBox
 	{
-		CheckButton libCheck;
 		ComboBox versionCombo;
 		
 		public GtkFeatureWidget (DotNetProject project)
@@ -29,18 +28,7 @@ namespace MonoDevelop.GtkCore.Dialogs
 			box.PackStart (new Label (GettextCatalog.GetString ("(or upper)")), false, false, 0);
 			PackStart (box, false, false, 0);
 			
-			if (project.CompileTarget == CompileTarget.Library) {
-				GtkDesignInfo info = GtkCoreService.GetGtkInfo (project);
-				libCheck = new CheckButton (GettextCatalog.GetString ("This assembly is a widget library"));
-				libCheck.Active = info != null && info.IsWidgetLibrary;
-				PackStart (libCheck, false, false, 0);
-			}
-
 			ShowAll ();
-		}
-		
-		public bool IsWidgetLibrary {
-			get { return libCheck != null && libCheck.Active; }
 		}
 		
 		public string SelectedVersion {
@@ -51,7 +39,7 @@ namespace MonoDevelop.GtkCore.Dialogs
 	class GtkProjectFeature: ISolutionItemFeature
 	{
 		public string Title {
-			get { return GettextCatalog.GetString ("Gtk# Support"); }
+			get { return GettextCatalog.GetString ("GTK# Support"); }
 		}
 		
 		public string Description {
@@ -70,9 +58,8 @@ namespace MonoDevelop.GtkCore.Dialogs
 
 		public void ApplyFeature (SolutionFolder parentCombine, SolutionItem entry, Widget editor)
 		{
-			GtkDesignInfo info = GtkCoreService.EnableGtkSupport ((DotNetProject) entry);
+			GtkDesignInfo info = GtkDesignInfo.FromProject ((DotNetProject) entry);
 			GtkFeatureWidget fw = (GtkFeatureWidget) editor;
-			info.IsWidgetLibrary = fw.IsWidgetLibrary;
 			info.TargetGtkVersion = fw.SelectedVersion;
 			info.UpdateGtkFolder ();
 		}
@@ -84,7 +71,7 @@ namespace MonoDevelop.GtkCore.Dialogs
 		
 		public bool IsEnabled (SolutionFolder parentCombine, SolutionItem entry) 
 		{
-			return GtkCoreService.GetGtkInfo ((Project)entry) != null;
+			return GtkDesignInfo.FromProject ((Project)entry).SupportsDesigner;
 		}
 	}
 }

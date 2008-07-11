@@ -123,7 +123,7 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 
 			Project project = (Project) CurrentNode.GetParentDataItem (typeof(Project), false);
 			Stetic.ActionGroupInfo group = (Stetic.ActionGroupInfo) CurrentNode.DataItem;
-			GuiBuilderProject gproject = GtkCoreService.GetGtkInfo (project).GuiBuilderProject;
+			GuiBuilderProject gproject = GtkDesignInfo.FromProject (project).GuiBuilderProject;
 			string sfile = gproject.GetSourceCodeFile (group);
 
 			if (sfile != null) {
