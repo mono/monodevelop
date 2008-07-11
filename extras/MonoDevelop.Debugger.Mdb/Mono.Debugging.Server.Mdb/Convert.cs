@@ -285,7 +285,7 @@ namespace DebuggerServer
 				return ctype;
 
 			TargetObjectType otype = type as TargetObjectType;
-			if (otype != null) {
+			if (otype != null && otype.HasClassType) {
 				ctype = otype.ClassType;
 				if (ctype != null)
 					return ctype;

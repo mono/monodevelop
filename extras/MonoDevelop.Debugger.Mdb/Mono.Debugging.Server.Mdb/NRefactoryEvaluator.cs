@@ -233,15 +233,10 @@ namespace DebuggerServer
 		{
 			List<TargetFunctionType> candidates = new List<TargetFunctionType> ();
 
-			while (type != null) {
-				foreach (TargetMethodInfo met in type.ClassType.Methods) {
-					if (met.Name == methodName && met.Type.ParameterTypes.Length == argtypes.Length && (met.IsStatic && allowStatic || !met.IsStatic && allowInstance))
-						candidates.Add (met.Type);
-				}
-				if (type.HasParent)
-					type = type.GetParentType (frame.Thread);
-				else
-					break;
+			foreach (KeyValuePair<TargetMemberInfo,TargetStructType> mem in Util.GetTypeMembers (frame.Thread, type, false, false, false, true)) {
+				TargetMethodInfo met = (TargetMethodInfo) mem.Key;
+				if (met.Name == methodName && met.Type.ParameterTypes.Length == argtypes.Length && (met.IsStatic && allowStatic || !met.IsStatic && allowInstance))
+					candidates.Add (met.Type);
 			}
 			
 			TargetFunctionType candidate;
@@ -361,21 +356,18 @@ namespace DebuggerServer
 			
 			TargetStructType type = frame.Method.GetDeclaringType (frame.Thread);
 			
-			while (type != null)
-			{
-				foreach (TargetPropertyInfo prop in type.ClassType.Properties) {
-					if (prop.Name == name && prop.CanRead && (prop.IsStatic || thisobj != null)) {
+			foreach (KeyValuePair<TargetMemberInfo,TargetStructType> mem in Util.GetTypeMembers (frame.Thread, type, thisobj==null, true, true, false)) {
+				if (mem.Key.Name != name)
+					continue;
+				if (mem.Key is TargetFieldInfo) {
+					TargetFieldInfo field = (TargetFieldInfo) mem.Key;
+					return new FieldReference (frame.Thread, thisobj, mem.Value, field);
+				}
+				if (mem.Key is TargetPropertyInfo) {
+					TargetPropertyInfo prop = (TargetPropertyInfo) mem.Key;
+					if (prop.CanRead)
 						return new PropertyReference (frame.Thread, prop, thisobj);
-					}
 				}
-				foreach (TargetFieldInfo field in type.ClassType.Fields) {
-					if (field.Name == name && (field.IsStatic || thisobj != null))
-						return new FieldReference (frame.Thread, thisobj, type, field);
-				}
-				if (type.HasParent)
-					type = type.GetParentType (frame.Thread);
-				else
-					break;
 			}
 			
 			// Look in types

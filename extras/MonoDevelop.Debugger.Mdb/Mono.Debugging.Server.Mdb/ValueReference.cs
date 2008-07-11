@@ -75,7 +75,7 @@ namespace DebuggerServer
 			try {
 				return Util.CreateObjectValue (Thread, this, new ObjectPath (Name), Value, Flags);
 			} catch (Exception ex) {
-				Console.WriteLine ("pp2: " + ex);
+				Console.WriteLine (ex);
 				return Mono.Debugging.Client.ObjectValue.CreateError (Name, ex.Message, Flags);
 			}
 		}
@@ -116,7 +116,12 @@ namespace DebuggerServer
 		
 		public virtual ObjectValue[] GetChildren (ObjectPath path, int index, int count)
 		{
-			return Util.GetObjectValueChildren (Thread, Value, index, count);
+			try {
+				return Util.GetObjectValueChildren (Thread, Value, index, count);
+			} catch (Exception ex) {
+				Console.WriteLine (ex);
+				return new ObjectValue [] { Mono.Debugging.Client.ObjectValue.CreateError ("", ex.Message, ObjectValueFlags.ReadOnly) };
+			}
 		}
 		
 		public virtual IEnumerable<ValueReference> GetChildReferences ()
@@ -160,8 +165,10 @@ namespace DebuggerServer
 					return new ArrayValueReference (thread, arr, indices);
 				}
 					
+				case TargetObjectKind.Struct: 
+				case TargetObjectKind.GenericInstance:
 				case TargetObjectKind.Class: {
-					TargetClassObject co = obj as TargetClassObject;
+					TargetStructObject co = obj as TargetStructObject;
 					if (co == null)
 						return null;
 					foreach (ValueReference val in Util.GetMembers (Thread, co.Type, co)) {

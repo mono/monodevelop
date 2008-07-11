@@ -170,12 +170,12 @@ namespace DebuggerServer
 			guiManager.StepOut (activeThread);
 		}
 
-		public int InsertBreakpoint (string filename, int line, bool enable)
+		public int InsertBreakpoint (DL.Breakpoint bp, bool enable)
 		{
-			MD.SourceLocation location = FindFile (filename, line);
+			MD.SourceLocation location = FindFile (bp.FileName, bp.Line);
 			if (location == null)
 				//FIXME: exception types
-				throw new Exception ("invalid location: " + filename + ":" + line);
+				throw new Exception ("invalid location: " + bp.FileName + ":" + bp.Line);
 
 			MD.Event ev = null;
 			
@@ -218,6 +218,12 @@ namespace DebuggerServer
 					ev.Deactivate (process.MainThread);
 			});
 		}
+		
+		public object UpdateBreakpoint (object handle, DL.Breakpoint bp)
+		{
+			return handle;
+		}
+
 
 		MD.SourceLocation FindFile (string filename, int line)
 		{
@@ -461,14 +467,12 @@ namespace DebuggerServer
 		private void OnTargetEvent (object sender, MD.TargetEventArgs args)
 		{
 			try {
-				Console.WriteLine ("Server OnTargetEvent: " + args.Type + " " + internalInterruptionRequested + " " + stoppedWorkQueue.Count + " iss:" + args.IsStopped);
+				Console.WriteLine ("Server OnTargetEvent: " + args.Type + " stopped:" + args.IsStopped + " data:" + args.Data + " internal:" + internalInterruptionRequested + " queue:" + stoppedWorkQueue.Count);
 
-				if (!running || (!args.IsStopped && args.Type != MD.TargetEventType.UnhandledException))
+				if (!running)
 					return;
 				
-				if (args.Frame != null) {
-					activeThread = args.Frame.Thread;
-				}
+				bool notifyToClient = args.IsStopped || args.Type == MD.TargetEventType.UnhandledException;
 				
 				bool isStop = args.Type != MD.TargetEventType.FrameChanged &&
 					args.Type != MD.TargetEventType.TargetExited &&
@@ -482,7 +486,7 @@ namespace DebuggerServer
 						if (args.Type != MD.TargetEventType.TargetInterrupted && args.Type != MD.TargetEventType.TargetStopped)
 							internalInterruptionRequested = false;
 						
-						bool notifyThisEvent = !internalInterruptionRequested;
+						notifyToClient = notifyToClient && !internalInterruptionRequested;
 						
 						if (stoppedWorkQueue.Count > 0) {
 							// Execute queued work in another thread with a small delay
@@ -502,20 +506,16 @@ namespace DebuggerServer
 								}
 								if (resume)
 									process.MainThread.Continue ();
-								else
+								else if (notifyToClient)
 									NotifyTargetEvent (args);
 							});
-							return;
-						}
-						
-						if (!notifyThisEvent) {
-							// It's internal, don't notify the client
 							return;
 						}
 					}
 				}
 				
-				NotifyTargetEvent (args);
+				if (notifyToClient)
+					NotifyTargetEvent (args);
 
 			} catch (Exception e) {
 				Console.WriteLine ("*** DS.OnTargetEvent, exception : {0}", e.ToString ());
@@ -524,10 +524,13 @@ namespace DebuggerServer
 		
 		void NotifyTargetEvent (MD.TargetEventArgs args)
 		{
+			if (args.Frame != null)
+				activeThread = args.Frame.Thread;
+	
 			try {
 				if (args.Type == MD.TargetEventType.TargetStopped && ((int)args.Data) != 0) {
 					DispatchEvent (delegate {
-						controller.OnDebuggerOutput (false, string.Format ("Thread {0:x} received signal {1}.", args.Frame.Thread.ID, args.Data));
+						controller.OnDebuggerOutput (false, string.Format ("Thread {0:x} received signal {1}.\n", args.Frame.Thread.ID, args.Data));
 					});
 				}
 				

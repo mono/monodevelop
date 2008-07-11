@@ -39,7 +39,12 @@ namespace DebuggerServer
 	{
 		public static ObjectValue CreateObjectValue (MD.Thread thread, IObjectValueSource source, ObjectPath path, TargetObject obj, ObjectValueFlags flags)
 		{
-			return CreateObjectValue (thread, source, path, obj, flags, true);
+			try {
+				return CreateObjectValue (thread, source, path, obj, flags, true);
+			} catch (Exception ex) {
+				Console.WriteLine (ex);
+				return ObjectValue.CreateError (path.LastName, ex.Message, flags);
+			}
 		}
 		
 		static ObjectValue CreateObjectValue (MD.Thread thread, IObjectValueSource source, ObjectPath path, TargetObject obj, ObjectValueFlags flags, bool recurseCurrentObject)
@@ -53,6 +58,7 @@ namespace DebuggerServer
 			switch (obj.Kind) {
 				
 				case TargetObjectKind.Struct:
+				case TargetObjectKind.GenericInstance:
 				case TargetObjectKind.Class:
 					TargetStructObject co = obj as TargetStructObject;
 					if (co == null)
@@ -90,7 +96,7 @@ namespace DebuggerServer
 					return ObjectValue.CreateObject (source, path, obj.TypeName, Server.Instance.Evaluator.TargetObjectToString (thread, obj, false), flags, null);
 					
 				default:
-					return ObjectValue.CreateError ("?", "Unknown value type: " + obj.Kind, flags);
+					return ObjectValue.CreateError (path.LastName, "Unknown value type: " + obj.Kind, flags);
 			}
 		}
 		
@@ -112,6 +118,7 @@ namespace DebuggerServer
 					ArrayElementGroup agroup = new ArrayElementGroup (thread, arr);
 					return agroup.GetChildren ();
 					
+				case TargetObjectKind.GenericInstance:
 				case TargetObjectKind.Struct:
 				case TargetObjectKind.Class:
 					TargetStructObject co = obj as TargetStructObject;
@@ -261,17 +268,68 @@ namespace DebuggerServer
 		
 		public static IEnumerable<ValueReference> GetMembers (MD.Thread thread, TargetType t, TargetStructObject co)
 		{
+			foreach (KeyValuePair<TargetMemberInfo,TargetStructType> mem in GetTypeMembers (thread, t, co==null, true, true, false)) {
+				if (mem.Key is TargetFieldInfo) {
+					TargetFieldInfo field = (TargetFieldInfo) mem.Key;
+					yield return new FieldReference (thread, co, mem.Value, field);
+				}
+				if (mem.Key is TargetPropertyInfo) {
+					TargetPropertyInfo prop = (TargetPropertyInfo) mem.Key;
+					yield return new PropertyReference (thread, prop, co);
+				}
+			}
+		}
+		
+		public static IEnumerable<KeyValuePair<TargetMemberInfo,TargetStructType>> GetTypeMembers (MD.Thread thread, TargetType t, bool staticOnly, bool includeFields, bool includeProps, bool includeMethods)
+		{
 			TargetStructType type = t as TargetStructType;
 
 			while (type != null) {
 				
-				foreach (TargetFieldInfo field in type.ClassType.Fields)
-					if (field.IsStatic || co != null)
-						yield return new FieldReference (thread, co, type, field);
+				TargetFieldInfo[] fields = null;
+				TargetPropertyInfo[] properties = null;
+				TargetMethodInfo[] methods = null;
 				
-				foreach (TargetPropertyInfo prop in type.ClassType.Properties)
-					if ((prop.IsStatic || co != null) && (prop.Accessibility == TargetMemberAccessibility.Public || prop.Accessibility == TargetMemberAccessibility.Protected))
-						yield return new PropertyReference (thread, prop, co);
+				TargetClass cls = type.GetClass (thread);
+				if (cls != null) {
+					if (includeFields)
+						fields = cls.GetFields (thread);
+					if (includeProps)
+						properties = cls.GetProperties (thread);
+					if (includeMethods)
+						methods = cls.GetMethods (thread);
+				}
+				else {
+					TargetClassType ct = type as TargetClassType;
+					if (ct == null && type.HasClassType)
+						ct = type.ClassType;
+					if (ct != null) {
+						if (includeFields)
+							fields = ct.Fields;
+						if (includeProps)
+							properties = ct.Properties;
+						if (includeMethods)
+							methods = ct.Methods;
+					}
+				}
+				
+				if (fields != null) {
+					foreach (TargetFieldInfo field in fields)
+						if (field.IsStatic || !staticOnly)
+							yield return new KeyValuePair<TargetMemberInfo,TargetStructType> (field, type);
+				}
+				
+				if (properties != null) {
+					foreach (TargetPropertyInfo prop in properties)
+						if ((prop.IsStatic || !staticOnly) && (prop.Accessibility == TargetMemberAccessibility.Public || prop.Accessibility == TargetMemberAccessibility.Protected))
+							yield return new KeyValuePair<TargetMemberInfo,TargetStructType> (prop, type);
+				}
+				
+				if (methods != null) {
+					foreach (TargetMethodInfo met in methods)
+						if ((met.IsStatic || !staticOnly) && (met.Accessibility == TargetMemberAccessibility.Public || met.Accessibility == TargetMemberAccessibility.Protected))
+							yield return new KeyValuePair<TargetMemberInfo,TargetStructType> (met, type);
+				}
 				
 				if (type.HasParent)
 					type = type.GetParentType (thread);

@@ -43,68 +43,64 @@ namespace DebuggerServer
 
 		public virtual string TargetObjectToString (Thread thread, TargetObject obj, bool recurseOb)
 		{
-			try {
-				switch (obj.Kind) {
-					case Mono.Debugger.Languages.TargetObjectKind.Array:
-						TargetArrayObject arr = obj as TargetArrayObject;
-						if (arr == null)
-							return "null";
-						StringBuilder tn = new StringBuilder (arr.Type.ElementType.Name);
-						tn.Append ("{[");
-						TargetArrayBounds ab = arr.GetArrayBounds (thread);
-						if (ab.IsMultiDimensional) {
-							for (int n=0; n<ab.Rank; n++) {
-								if (n>0)
-									tn.Append (',');
-								tn.Append (ab.UpperBounds [n] - ab.LowerBounds [n] + 1);
-							}
+			switch (obj.Kind) {
+				case Mono.Debugger.Languages.TargetObjectKind.Array:
+					TargetArrayObject arr = obj as TargetArrayObject;
+					if (arr == null)
+						return "null";
+					StringBuilder tn = new StringBuilder (arr.Type.ElementType.Name);
+					tn.Append ("[");
+					TargetArrayBounds ab = arr.GetArrayBounds (thread);
+					if (ab.IsMultiDimensional) {
+						for (int n=0; n<ab.Rank; n++) {
+							if (n>0)
+								tn.Append (',');
+							tn.Append (ab.UpperBounds [n] - ab.LowerBounds [n] + 1);
 						}
-						else if (!ab.IsUnbound) {
-							tn.Append (ab.Length.ToString ());
-						}
-						tn.Append ("]}");
-						return tn.ToString ();
-						
-					case TargetObjectKind.Struct:
-					case TargetObjectKind.Class:
-						TargetStructObject co = obj as TargetStructObject;
-						if (co == null)
-							return "null";
-						if (recurseOb) {
-							TargetObject currob = co.GetCurrentObject (thread);
-							if (currob != null)
-								return TargetObjectToString (thread, currob, false);
-						}
-						if (co.TypeName == "System.Decimal")
-							return Util.CallToString (thread, co);
-						return "{" + co.TypeName + "}";
-						
-					case TargetObjectKind.Enum:
-						TargetEnumObject eob = (TargetEnumObject) obj;
-						return TargetObjectToString (thread, eob.GetValue (thread));
-						
-					case TargetObjectKind.Fundamental:
-						TargetFundamentalObject fob = obj as TargetFundamentalObject;
-						if (fob == null)
-							return "null";
-						object val = fob.GetObject (thread);
-						return ToExpression (val);
-						
-					case TargetObjectKind.Pointer:
-						return ToExpression (new IntPtr (obj.GetAddress (thread).Address));
-						
-					case TargetObjectKind.Object:
-						TargetObjectObject oob = obj as TargetObjectObject;
-						if (oob == null)
-							return "null";
-						if (recurseOb)
-							return TargetObjectToString (thread, oob.GetDereferencedObject (thread), false);
-						else
-							return "{" + oob.TypeName + "}";
-				}
-			}
-			catch (Exception ex) {
-				return "? (" + ex.GetType () + ": " + ex.Message + ")";
+					}
+					else if (!ab.IsUnbound) {
+						tn.Append (ab.Length.ToString ());
+					}
+					tn.Append ("]");
+					return tn.ToString ();
+					
+				case TargetObjectKind.GenericInstance:
+				case TargetObjectKind.Struct:
+				case TargetObjectKind.Class:
+					TargetStructObject co = obj as TargetStructObject;
+					if (co == null)
+						return "null";
+					if (recurseOb) {
+						TargetObject currob = co.GetCurrentObject (thread);
+						if (currob != null)
+							return TargetObjectToString (thread, currob, false);
+					}
+					if (co.TypeName == "System.Decimal")
+						return Util.CallToString (thread, co);
+					return "{" + co.TypeName + "}";
+					
+				case TargetObjectKind.Enum:
+					TargetEnumObject eob = (TargetEnumObject) obj;
+					return TargetObjectToString (thread, eob.GetValue (thread));
+					
+				case TargetObjectKind.Fundamental:
+					TargetFundamentalObject fob = obj as TargetFundamentalObject;
+					if (fob == null)
+						return "null";
+					object val = fob.GetObject (thread);
+					return ToExpression (val);
+					
+				case TargetObjectKind.Pointer:
+					return ToExpression (new IntPtr (obj.GetAddress (thread).Address));
+					
+				case TargetObjectKind.Object:
+					TargetObjectObject oob = obj as TargetObjectObject;
+					if (oob == null)
+						return "null";
+					if (recurseOb)
+						return TargetObjectToString (thread, oob.GetDereferencedObject (thread), false);
+					else
+						return "{" + oob.TypeName + "}";
 			}
 			return "?";
 		}
@@ -113,13 +109,12 @@ namespace DebuggerServer
 		{
 			if (obj == null)
 				return "null";
-			
-			if (obj is IntPtr) {
+			else if (obj is IntPtr) {
 				IntPtr p = (IntPtr) obj;
 				return "0x" + p.ToInt64 ().ToString ("x");
-			}
-			
-			if (obj is string)
+			} else if (obj is char)
+				return "'" + obj + "'";
+			else if (obj is string)
 				return "\"" + Util.EscapeString ((string)obj) + "\"";
 			
 			return obj.ToString ();

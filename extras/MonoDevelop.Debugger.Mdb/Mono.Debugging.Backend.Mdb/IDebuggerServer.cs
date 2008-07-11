@@ -60,12 +60,14 @@ namespace Mono.Debugging.Backend.Mdb
 		//breakpoints etc
 
 		// returns a handle
-		int InsertBreakpoint (string filename, int line, bool activate);
+		int InsertBreakpoint (Breakpoint bp, bool activate);
 
 		void RemoveBreakpoint (int handle);
 		
 		void EnableBreakpoint (int handle, bool enable);
 
+		object UpdateBreakpoint (object handle, Breakpoint bp);
+		
 		void Continue ();
 		
 		ThreadInfo[] GetThreads (int processId);

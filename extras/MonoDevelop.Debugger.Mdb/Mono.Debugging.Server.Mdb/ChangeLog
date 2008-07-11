@@ -1,5 +1,15 @@
 2008-07-11  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* DebuggerServer.cs: Fix internal stopping logic.
+	* Util.cs, Convert.cs, ExpressionEvaluator.cs, ValueReference.cs,
+	  NRefactoryEvaluator.cs: Improved support for generic instance
+	  inspection.
+	* BacktraceWrapper.cs: Don't remove parameter list of methods with
+	  special names.
+	* ArrayElementGroup.cs: Improved error catching.
+
+2008-07-11  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* Makefile: Remove incorrect path.
 
 2008-07-09  Lluis Sanchez Gual <lluis@novell.com> 

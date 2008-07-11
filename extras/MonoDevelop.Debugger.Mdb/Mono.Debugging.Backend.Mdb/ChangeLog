@@ -1,3 +1,11 @@
+2008-07-11  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* IDebuggerController.cs, MonoDebuggerSession.cs, IDebuggerServer.cs,
+	  DebuggerController.cs: Track api changes to support custom
+	  breakpoint hit actions.
+	* MonoDebuggerSessionFactory.cs: Fix construction process command line
+	  string.
+
 2008-07-09  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Makefile: Install the assemblies to the correct directory.

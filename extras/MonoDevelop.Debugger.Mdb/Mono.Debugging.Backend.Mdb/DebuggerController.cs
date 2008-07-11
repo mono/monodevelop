@@ -72,6 +72,11 @@ namespace Mono.Debugging.Backend.Mdb
 			frontend.NotifyDebuggerOutput (isStderr, line);
 		}
 
+		public bool OnCustomBreakpointAction (string actionId, object handle)
+		{
+			return frontend.NotifyCustomBreakpointAction (actionId, handle);
+		}
+		
 		#endregion
 
 		public void StartDebugger ()

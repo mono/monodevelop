@@ -16,5 +16,7 @@ namespace Mono.Debugging.Backend.Mdb
 		void OnTargetOutput (bool isStderr, string text);
 		
 		void OnDebuggerOutput (bool isStderr, string text);
+		
+		bool OnCustomBreakpointAction (string actionId, object handle);
 	}
 }

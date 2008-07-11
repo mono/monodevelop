@@ -70,6 +70,7 @@ namespace Mono.Debugging.Backend.Mdb
 					continue;
 				}
 				string cmdline = File.ReadAllText (Path.Combine (dir, "cmdline"));
+				cmdline = cmdline.Replace ('\0',' ');
 				ProcessInfo pi = new ProcessInfo (id, cmdline);
 				procs.Add (pi);
 			}

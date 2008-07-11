@@ -39,9 +39,11 @@ namespace DebuggerServer
 				
 				if (frame.Method != null) {
 					method = frame.Method.Name;
-					int p = method.IndexOf ('(');
-					if (p != -1)
-						method = method.Substring (0, p).Trim ();
+					if (!method.StartsWith ("<")) {
+						int p = method.IndexOf ('(');
+						if (p != -1)
+							method = method.Substring (0, p).Trim ();
+					}
 				} else if (frame.Name != null) {
 					method = frame.Name.Name;
 				} else {
