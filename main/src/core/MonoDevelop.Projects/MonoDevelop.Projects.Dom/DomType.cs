@@ -97,6 +97,19 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
+		public virtual IEnumerable<IReturnType> BaseTypes {
+			get {
+				IReturnType baseType = BaseType;
+				if (baseType != null)
+					yield return baseType;
+				if (implementedInterfaces != null) {
+					for (int i = 0; i < implementedInterfaces.Count; i++) {
+						yield return implementedInterfaces[i];
+					}
+				}
+			}
+		}
+		
 		public virtual ReadOnlyCollection<IReturnType> ImplementedInterfaces {
 			get {
 				return implementedInterfaces != null ? implementedInterfaces.AsReadOnly () : null;

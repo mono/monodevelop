@@ -1,3 +1,8 @@
+2008-07-12  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Dom/DomType.cs,
+	  MonoDevelop.Projects.Dom/IType.cs: Some dom changes.
+
 2008-07-11  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom/DomType.cs,
