@@ -1,5 +1,10 @@
 2008-07-12  Mike Krüger <mkrueger@novell.com> 
 
+	* Gui/NRefactoryResolver.cs, Gui/ResolveVisitor.cs: Some code
+	  completion fixes.
+
+2008-07-12  Mike Krüger <mkrueger@novell.com> 
+
 	* Gui/NewOverrideCompletionData.cs, Gui/CSharpAmbience.cs,
 	  Gui/CSharpTextEditorCompletion.cs, Parser/DomParser.cs: Added C#
 	  ambience for new dom. Worked on override completion.

@@ -6420,7 +6420,7 @@ namespace Mono.CSharp {
 		#region IAccessor Members
 
 		public Dom.LocationBlock LocationBlock {
-			get { return block.LocationBlock; }
+			get { return block != null ? block.LocationBlock : Mono.CSharp.Dom.LocationBlock.Null; }
 		}
 
 		#endregion

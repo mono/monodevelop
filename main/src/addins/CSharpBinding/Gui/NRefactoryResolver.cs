@@ -139,6 +139,21 @@ namespace MonoDevelop.CSharpBinding
 			return result;
 		}
 		
+		public IEnumerable<IType> GetInheritanceTree (IType type)
+		{
+			Stack<IType> types = new Stack<IType> ();
+			types.Push (type);
+			while (types.Count > 0) {
+				IType cur = types.Pop ();
+				yield return cur;
+				foreach (IReturnType baseType in cur.BaseTypes) {
+					IType resolvedType = dom.GetType (baseType);
+					if (resolvedType != null) 
+						types.Push (resolvedType);
+				}
+			}
+		}
+		
 		public ResolveResult ResolveIdentifier (string identifier)
 		{
 			ResolveResult result = null;
@@ -152,18 +167,11 @@ namespace MonoDevelop.CSharpBinding
 			}
 			
 			if (this.callingType != null) {
-				foreach (IField f in this.callingType.Fields) {
-					if (f.Name == identifier) {
+				foreach (IType type in GetInheritanceTree (callingType)) {
+					List<IMember> members = type.SearchMember (identifier, true);
+					if (members != null &&  members.Count > 0) {
 						result = new MemberResolveResult ();
-						result.ResolvedType = f.ReturnType;
-						goto end;
-					}
-				}
-				
-				foreach (IProperty p in this.callingType.Properties) {
-					if (p.Name == identifier) {
-						result = new MemberResolveResult ();
-						result.ResolvedType = p.ReturnType;
+						result.ResolvedType = members[0].ReturnType;
 						goto end;
 					}
 				}

@@ -185,7 +185,7 @@ namespace MonoDevelop.CSharpBinding
 			ThisResolveResult result = new ThisResolveResult ();
 			result.CallingType   = resolver.CallingType;
 			result.CallingMember = resolver.CallingMember;
-				
+			result.ResolvedType  = new DomReturnType (resolver.CallingType);
 			return result;
 		}
 		
@@ -197,6 +197,8 @@ namespace MonoDevelop.CSharpBinding
 			BaseResolveResult result = new BaseResolveResult ();
 			result.CallingType   = resolver.CallingType;
 			result.CallingMember = resolver.CallingMember;
+			if (resolver.CallingType != null)
+				result.ResolvedType  = resolver.CallingType.BaseType;
 			return result;
 		}
 		
@@ -242,17 +244,20 @@ namespace MonoDevelop.CSharpBinding
 			
 			if (result != null && result.ResolvedType != null) {
 				IType type = resolver.Dom.GetType (result.ResolvedType);
+				
 				if (type != null) {
-					List <IMember> member = type.SearchMember (fieldReferenceExpression.FieldName, true);
-					if (member != null && member.Count > 0) {
-						if (member[0] is IMethod) {
-							result = new MethodResolveResult (member);
-							result.CallingType   = resolver.CallingType;
-							result.CallingMember = resolver.CallingMember;
+					foreach (IType curType in resolver.GetInheritanceTree (type)) {
+						List <IMember> member = curType.SearchMember (fieldReferenceExpression.FieldName, true);
+						if (member != null && member.Count > 0) {
+							if (member[0] is IMethod) {
+								result = new MethodResolveResult (member);
+								result.CallingType   = resolver.CallingType;
+								result.CallingMember = resolver.CallingMember;
+								return result;
+							}
+							result = CreateResult (member[0].ReturnType);
 							return result;
 						}
-						result = CreateResult (member[0].ReturnType);
-						return result;
 					}
 				}
 			}

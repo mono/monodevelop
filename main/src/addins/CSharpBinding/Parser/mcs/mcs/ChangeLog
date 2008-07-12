@@ -1,3 +1,7 @@
+2008-07-12  Mike Krüger <mkrueger@novell.com> 
+
+	* class.cs: Some code completion fixes.
+
 2008-07-11  Mike Krüger <mkrueger@novell.com> 
 
 	
