@@ -44,15 +44,17 @@ namespace MonoDevelop.Projects.Gui.Completion
 			wnd = new CompletionListWindow ();
 		}
 		
-		public static void ShowWindow (char firstChar, ICompletionDataProvider provider, ICompletionWidget completionWidget, ICodeCompletionContext completionContext, CompletionDelegate closedDelegate)
+		public static bool ShowWindow (char firstChar, ICompletionDataProvider provider, ICompletionWidget completionWidget, ICodeCompletionContext completionContext, CompletionDelegate closedDelegate)
 		{
 			try {
 				if (!wnd.ShowListWindow (firstChar, provider,  completionWidget, completionContext, closedDelegate)) {
 					provider.Dispose ();
-					return;
+					return false;
 				}
+				return true;
 			} catch (Exception ex) {
 				LoggingService.LogError (ex.ToString ());
+				return false;
 			}
 		}
 		

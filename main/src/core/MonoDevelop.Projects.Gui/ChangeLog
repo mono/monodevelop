@@ -1,3 +1,8 @@
+2008-07-12  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
+	  Completion list now returns true, if it is shown.
+
 2008-07-09  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Projects.Gui.Completion/DeclarationViewWindow.cs: Avoid
