@@ -466,7 +466,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 						}
 						return null;
 					}
-					if (getUserClass && cls.Region.FileName.StartsWith (gui_folder))
+					if (getUserClass && cls.Region != null && !string.IsNullOrEmpty (cls.Region.FileName) && cls.Region.FileName.StartsWith (gui_folder))
 						return null;
 					else
 						return cls;
