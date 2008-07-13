@@ -113,7 +113,66 @@ namespace MonoDevelop.CSharpBinding
 				lookupTableVisitor.VisitCompilationUnit (parser.CompilationUnit, null);
 			}
 		}
+		
+		void AddContentsFromClassAndMembers (CodeCompletionDataProvider provider)
+		{
+			IMethod method = callingMember as IMethod;
+			if (method != null && method.Parameters != null) {
+				foreach (IParameter p in method.Parameters) {
+					provider.AddCompletionData (new CodeCompletionData (p.Name, "md-literal"));
+				}
+			}
+			if (CallingType == null)
+				return;
+			bool isInStatic = CallingMember != null ? CallingMember.IsStatic : false;
 			
+			if (CallingType.TypeParameters != null) {
+				foreach (TypeParameter parameter in CallingType.TypeParameters) {
+					provider.AddCompletionData (new CodeCompletionData (parameter.Name, "md-literal"));
+				}
+			}
+			
+			foreach (IType type in dom.GetInheritanceTree (CallingType)) {
+				foreach (IMember member in type.Members) {
+//					if (member.IsAccessibleFrom (dom, CallingMember)) {
+						MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.AddCompletionData (provider, member);
+//					}
+				}
+			}
+		}
+		
+		public void AddAccessibleCodeCompletionData (CodeCompletionDataProvider provider)
+		{
+			AddContentsFromClassAndMembers (provider);
+			
+			foreach (KeyValuePair<string, List<LocalLookupVariable>> pair in lookupTableVisitor.Variables) {
+				if (pair.Value != null && pair.Value.Count > 0) {
+					foreach (LocalLookupVariable v in pair.Value) {
+						provider.AddCompletionData (new CodeCompletionData (pair.Key, "md-literal"));
+					}
+				}
+			}
+			if (CallingMember is IProperty) {
+				IProperty property = (IProperty)callingMember;
+				if (property.HasSet && property.SetMethod.BodyRegion.Contains (editor.CursorLine - 1, editor.CursorColumn - 1)) 
+					provider.AddCompletionData (new CodeCompletionData ("value", "md-literal"));
+			}
+			if (CallingMember is IEvent) {
+				provider.AddCompletionData (new CodeCompletionData ("value", "md-literal"));
+			}
+			foreach (object o in dom.GetNamespaceContents ("", true, true)) {
+				MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.AddCompletionData (provider, o);
+			}
+			foreach (IUsing u in this.unit.Usings) {
+				foreach (string ns in u.Namespaces) {
+					foreach (object o in dom.GetNamespaceContents (ns, true, true)) {
+						MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.AddCompletionData (provider, o);
+					}
+				}
+			}
+			
+		}
+		
 		Expression ParseExpression (ExpressionResult expressionResult)
 		{
 			if (expressionResult == null || String.IsNullOrEmpty (expressionResult.Expression))
@@ -139,21 +198,6 @@ namespace MonoDevelop.CSharpBinding
 			return result;
 		}
 		
-		public IEnumerable<IType> GetInheritanceTree (IType type)
-		{
-			Stack<IType> types = new Stack<IType> ();
-			types.Push (type);
-			while (types.Count > 0) {
-				IType cur = types.Pop ();
-				yield return cur;
-				foreach (IReturnType baseType in cur.BaseTypes) {
-					IType resolvedType = dom.GetType (baseType);
-					if (resolvedType != null) 
-						types.Push (resolvedType);
-				}
-			}
-		}
-		
 		public ResolveResult ResolveIdentifier (string identifier)
 		{
 			ResolveResult result = null;
@@ -167,7 +211,7 @@ namespace MonoDevelop.CSharpBinding
 			}
 			
 			if (this.callingType != null) {
-				foreach (IType type in GetInheritanceTree (callingType)) {
+				foreach (IType type in dom.GetInheritanceTree (callingType)) {
 					List<IMember> members = type.SearchMember (identifier, true);
 					if (members != null &&  members.Count > 0) {
 						result = new MemberResolveResult ();

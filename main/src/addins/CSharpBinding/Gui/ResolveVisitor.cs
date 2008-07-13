@@ -246,7 +246,7 @@ namespace MonoDevelop.CSharpBinding
 				IType type = resolver.Dom.GetType (result.ResolvedType);
 				
 				if (type != null) {
-					foreach (IType curType in resolver.GetInheritanceTree (type)) {
+					foreach (IType curType in resolver.Dom.GetInheritanceTree (type)) {
 						List <IMember> member = curType.SearchMember (fieldReferenceExpression.FieldName, true);
 						if (member != null && member.Count > 0) {
 							if (member[0] is IMethod) {
