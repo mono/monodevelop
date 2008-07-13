@@ -28,7 +28,7 @@
 
 using System;
 using System.Collections.Generic;
-
+using MonoDevelop.Projects.Dom.Parser;
 
 namespace MonoDevelop.Projects.Dom
 {
@@ -89,6 +89,8 @@ namespace MonoDevelop.Projects.Dom
 			get;
 			set;
 		}
+		
+		bool IsAccessibleFrom (ProjectDom dom, IMember member);
 		
 		#region ModifierAccessors
 		bool IsPrivate   { get; }

@@ -60,7 +60,6 @@ namespace MonoDevelop.Projects.Dom
 		public virtual bool FilterEntry (object entry)
 		{
 			if (entry is IMember) {
-				System.Console.WriteLine ("Filter entry !!!!");
 				return ((IMember)entry).IsSpecialName;
 			}
 			return false;

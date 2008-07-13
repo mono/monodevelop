@@ -59,6 +59,8 @@ namespace MonoDevelop.Projects.Dom.Parser
 		public IEnumerable<IType> Types {
 			get {
 				foreach (ICompilationUnit unit in compilationUnits.Values) {
+					if (unit.Types == null)
+						continue;
 					foreach (IType type in unit.Types) {
 						yield return type;
 					}
@@ -105,6 +107,21 @@ namespace MonoDevelop.Projects.Dom.Parser
 			}
 			
 			return null;
+		}
+		
+		public IEnumerable<IType> GetInheritanceTree (IType type)
+		{
+			Stack<IType> types = new Stack<IType> ();
+			types.Push (type);
+			while (types.Count > 0) {
+				IType cur = types.Pop ();
+				yield return cur;
+				foreach (IReturnType baseType in cur.BaseTypes) {
+					IType resolvedType = this.GetType (baseType, true);
+					if (resolvedType != null) 
+						types.Push (resolvedType);
+				}
+			}
 		}
 		
 		public SearchTypeResult SearchType (SearchTypeRequest request)

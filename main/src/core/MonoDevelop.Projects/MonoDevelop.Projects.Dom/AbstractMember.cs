@@ -28,6 +28,7 @@
 
 using System;
 using System.Collections.Generic;
+using MonoDevelop.Projects.Dom.Parser;
 
 namespace MonoDevelop.Projects.Dom
 {
@@ -219,6 +220,34 @@ namespace MonoDevelop.Projects.Dom
 			if ((modifier & Modifiers.Internal) == Modifiers.Internal)
 				return 3;
 			return 0;
+		}
+		
+		public bool IsAccessibleFrom (ProjectDom dom, IMember member)
+		{
+			if (member == null)
+				return IsStatic;
+			if (member.IsStatic && !IsStatic)
+				return false;
+			if (IsPublic)
+				return true;
+			if (IsInternal) // TODO: internal members
+				return true;
+				
+			if (member.DeclaringType == null || DeclaringType != null)
+				return false;
+			
+			if (IsProtected) {
+				foreach (IType type in dom.GetInheritanceTree (member.DeclaringType)) {
+					if (type.FullName == DeclaringType.FullName)
+						return true;
+				}
+				return false;
+			}
+			// inner class 
+			if (member.DeclaringType.DeclaringType == DeclaringType)
+				return true;
+			
+			return DeclaringType.FullName == member.DeclaringType.FullName;
 		}
 		
 		
