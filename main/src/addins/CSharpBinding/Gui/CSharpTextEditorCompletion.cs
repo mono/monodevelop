@@ -176,7 +176,6 @@ namespace MonoDevelop.CSharpBinding.Gui
 				string token = GetPreviousToken (ref i, false);
 				return HandleKeywordCompletion (result, i, token);
 			default:
-				
 				if (Char.IsLetter (completionChar) && !stateTracker.Engine.IsInsideDocLineComment && !stateTracker.Engine.IsInsideOrdinaryCommentOrString) {
 					char prevCh = Editor.CursorPosition > 2 ? Editor.GetCharAt (Editor.CursorPosition - 2) : '\0';
 					if (prevCh != '.') {
@@ -314,32 +313,21 @@ namespace MonoDevelop.CSharpBinding.Gui
 			return Editor.GetText (i, endOffset);
 		}
 		
-		/*
-		public override bool KeyPress (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
+		public override ICompletionDataProvider CodeCompletionCommand (ICodeCompletionContext completionContext)
 		{
-			CSharpExpressionFinder expressionFinder = new CSharpExpressionFinder ();
-			ExpressionResult result = expressionFinder.FindExpression (Editor.Text, Editor.CursorPosition);
-			if (result == null)
-				return base.KeyPress (key, keyChar, modifier);
-			switch (keyChar) {
-			case '.':
-				NRefactoryResolver resolver = new MonoDevelop.CSharpBinding.NRefactoryResolver (Document.Project,
-				                                                                                ICSharpCode.NRefactory.SupportedLanguage.CSharp,
-				                                                                                Editor,
-				                                                                                Document.FileName);
-				ResolveResult resolveResult = resolver.Resolve (result);
-				System.Console.WriteLine (resolveResult);
-				
-				ShowCompletion (CreateCompletionData (resolveResult), 0, '.');
-				
-//				Resolver res = new Resolver (parserContext);
-//				ResolveResult results = res.Resolve (expression, caretLineNumber, caretColumn, FileName, Editor.Text);
-//				completionProvider.AddResolveResults (results, false, res.CreateTypeNameResolver ());
-				break;
+			NewCSharpExpressionFinder expressionFinder = new NewCSharpExpressionFinder (dom);
+			ExpressionResult result;
+			try {
+				result = expressionFinder.FindExpression (Editor.Text, Editor.CursorPosition);
+			} catch (Exception ex) {
+				LoggingService.LogWarning (ex.Message, ex);
+				result = null;
 			}
 			
-			return base.KeyPress (key, keyChar, modifier);
-		}*/
+			if (result == null)
+				return null;
+			return CreateCtrlSpaceCompletionData (result);
+		}
 		
 		public static void AddCompletionData (CodeCompletionDataProvider provider, object obj)
 		{
