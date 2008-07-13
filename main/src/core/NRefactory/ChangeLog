@@ -1,3 +1,8 @@
+2008-07-13  Mike Krüger <mkrueger@novell.com> 
+
+	* Project/Src/Lexer/CSharp/Tokens.cs: Backported some nrefactory
+	  changes.
+
 2008-07-10  Mike Krüger <mkrueger@novell.com> 
 
 	* Project/Src/Lexer/CSharp/Tokens.cs: Added some stuff from newer

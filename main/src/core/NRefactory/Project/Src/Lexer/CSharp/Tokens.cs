@@ -167,6 +167,13 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 		public static BitArray SimpleTypeName = NewSet(Char, Bool, Object, String, Sbyte, Byte, Short, Ushort, Int, Uint, Long, Ulong, Float, Double, Decimal, Identifier, Void);
 		public static BitArray ValidInsideTypeName = NewSet(Identifier, Char, Bool, Object, String, Sbyte, Byte, Short, Ushort, Int, Uint, Long, Ulong, Float, Double, Decimal, LessThan, GreaterThan, Dot, Question, OpenSquareBracket, Comma, CloseSquareBracket, Times, DoubleColon);
 		public static BitArray ExpressionStart = NewSet(Base, Delegate, False, New, Null, Sizeof, This, True, Typeof, Checked, Unchecked);
+		public static BitArray ExpressionContent = NewSet(As, Is, Out, Ref, In);
+		
+		public static BitArray TypeLevel = NewSet(Public, Internal, Class, Interface, Struct, Enum, Delegate, Abstract, Sealed, Static, Unsafe, Protected, Private, Public, Internal, Const, Event, Explicit, Extern, Fixed, Implicit, New, Operator, Override, Readonly, Virtual, Volatile);
+		public static BitArray InterfaceLevel = NewSet(Event);
+		public static BitArray StatementStart = NewSet(Base, Delegate, False, New, Null, Sizeof, This, True, Typeof, Checked, Unchecked, As, Is, Out, Ref, In, Break, Case, Catch, Checked, Unchecked, Const, Continue, Default, Do, Else, Finally, Fixed, For, Foreach, Goto, If, Lock, Return, Stackalloc, Switch, Throw, Try, Unsafe, Using, While);
+		
+		public static BitArray InPropertyDeclaration = NewSet(Protected, Private, Public, Internal);
 		
 		static string[] tokenList = new string[] {
 			// ----- terminal classes -----
