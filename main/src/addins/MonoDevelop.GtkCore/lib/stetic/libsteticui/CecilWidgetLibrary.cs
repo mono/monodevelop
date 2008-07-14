@@ -230,6 +230,8 @@ namespace Stetic
 		void LoadDependencies ()
 		{
 			LibraryCache.LibraryInfo info = cache.Refresh (resolver, name);
+			if (info == null || info.ObjectsDocument == null)
+				return;
 			XmlElement elem = info.ObjectsDocument.DocumentElement ["dependencies"];
 			ArrayList list = new ArrayList ();
 			foreach (XmlElement dep in elem.SelectNodes ("dependency"))

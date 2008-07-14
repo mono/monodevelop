@@ -1,3 +1,8 @@
+2008-07-14  Mike Krüger <mkrueger@novell.com> 
+
+	* libsteticui/CecilWidgetLibrary.cs: fixed possible null reference
+	  exception.
+
 2008-07-11  Mike Kestner <mkestner@novell.com> 
 
 	* libsteticui/ApplicationBackend.cs: removed some CWL spew. This
