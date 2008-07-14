@@ -255,7 +255,12 @@ namespace MonoDevelop.CSharpBinding
 								result.CallingMember = resolver.CallingMember;
 								return result;
 							}
-							result = CreateResult (member[0].ReturnType);
+							if (member[0] is IType) {
+								result = CreateResult (member[0].FullName);
+								result.StaticResolve = true;
+							} else {
+								result = CreateResult (member[0].ReturnType);
+							}
 							return result;
 						}
 					}

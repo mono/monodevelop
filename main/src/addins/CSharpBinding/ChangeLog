@@ -1,3 +1,7 @@
+2008-07-14  Mike Krüger <mkrueger@novell.com> 
+
+	* Gui/ResolveVisitor.cs: Fixed inner types.
+
 2008-07-13  Mike Krüger <mkrueger@novell.com> 
 
 	* Gui/CSharpTextEditorCompletion.cs: Worked on ctrl+space completion.
