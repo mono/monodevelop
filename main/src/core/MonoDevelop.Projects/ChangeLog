@@ -1,5 +1,11 @@
 2008-07-14  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.Projects.Dom.Parser/ProjectParserService.cs,
+	  MonoDevelop.Projects.Dom.Parser/ProjectDom.cs: Added parserdatabase
+	  update thread.
+
+2008-07-14  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.Projects.Dom.Parser/AbstractParser.cs,
 	  MonoDevelop.Projects.Dom.Parser/ProjectParserService.cs,
 	  MonoDevelop.Projects.Dom.Parser/IParser.cs,

@@ -27,9 +27,11 @@
 //
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
+using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using Mono.Addins;
 
@@ -61,6 +63,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 					break;
 				}
 			});
+			StartParserThread ();
 		}
 		
 		static IParser GetParser (string projectType)
@@ -318,7 +321,6 @@ namespace MonoDevelop.Projects.Dom.Parser
 		
 		public static ProjectDom Load (Project project)
 		{
-			System.Console.WriteLine("Load:" + project);
 			string type = project.ProjectType;
 			if (project is DotNetProject)
 				type = ((DotNetProject)project).LanguageName;
@@ -331,10 +333,8 @@ namespace MonoDevelop.Projects.Dom.Parser
 			dom.Database = new ProjectCodeCompletionDatabase (project);
 			foreach (ReferenceEntry re in dom.Database.References) {
 				dom.AddReference (Load (project.BaseDirectory, re.Uri));
-				//GetDatabase (baseDir, re.Uri);
 			}
 			
-			dom.Database.CheckModifiedFiles ();
 //			dom.Database.UpdateFromProject ();
 /*			foreach (ProjectFile file in project.Files) {
 				if (file.BuildAction != BuildAction.Compile)
@@ -346,7 +346,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 				}
 				if (content != null) {
 					ICompilationUnit unit = parser.Parse (file.FilePath, content);
-					dom.UpdateCompilationUnit (unit);
+					dom.UpdateFromParseInfo (unit, file.FilePath);
 					OnCompilationUnitUpdated (new CompilationUnitEventArgs (unit));
 				}
 			}*/
@@ -354,6 +354,157 @@ namespace MonoDevelop.Projects.Dom.Parser
 			OnDomUpdated (new ProjectDomEventArgs (dom));
 			return dom;
 		}
+		
+		
+		static bool threadRunning = false;
+		static bool trackingFileChanges = false;
+		static object parseQueueLock = new object ();
+		static Queue parseQueue = new Queue();
+		static AutoResetEvent parseEvent = new AutoResetEvent (false);
+		
+		static void ParserUpdateThread ()
+		{
+			try {
+				while (trackingFileChanges) {
+					if (!parseEvent.WaitOne (5000, true))
+						CheckModifiedFiles ();
+					else if (trackingFileChanges)
+						ConsumeParsingQueue ();
+				}
+			} catch (Exception ex) {
+				LoggingService.LogError ("Unhandled error in parsing thread", ex);
+			}
+			lock (parseQueue) {
+				threadRunning = false;
+				if (trackingFileChanges)
+					StartParserThread ();
+			}
+		}
+		static void ConsumeParsingQueue ()
+		{
+			int pending = 0;
+			IProgressMonitor monitor = null;
+			
+			try {
+				Dictionary<CodeCompletionDatabase,CodeCompletionDatabase> dbsToFlush = new Dictionary<CodeCompletionDatabase,CodeCompletionDatabase> ();
+				do {
+					if (pending > 5 && monitor == null) {
+						monitor = null; //GetParseProgressMonitor ();
+						if (monitor != null)
+							monitor.BeginTask ("Generating database", 0);
+					}
+					
+					ParsingJob job = null;
+					lock (parseQueueLock)
+					{
+						if (parseQueue.Count > 0)
+							job = (ParsingJob) parseQueue.Dequeue ();
+					}
+					
+					if (job != null) {
+						try {
+							job.ParseCallback (job.Data, monitor);
+							dbsToFlush [job.Database] = job.Database;
+						} catch (Exception ex) {
+							if (monitor == null)
+								monitor = null; //GetParseProgressMonitor ();
+							if (monitor != null)
+								monitor.ReportError (null, ex);
+						}
+					}
+					
+					lock (parseQueueLock)
+						pending = parseQueue.Count;
+					
+				}
+				while (pending > 0);
+				
+				// Flush the parsed databases
+				foreach (CodeCompletionDatabase db in dbsToFlush.Keys)
+					db.Flush ();
+				
+			} finally {
+				if (monitor != null) monitor.Dispose ();
+			}
+		}
+		public delegate void JobCallback (object data, IProgressMonitor monitor);
+		class ParsingJob
+		{
+			public object Data;
+			public JobCallback ParseCallback;
+			public CodeCompletionDatabase Database;
+		}
+		
+		static void StartParserThread ()
+		{
+			lock (parseQueueLock) {
+				if (!threadRunning) {
+					threadRunning = true;
+					Thread t = new Thread(new ThreadStart(ParserUpdateThread));
+					t.IsBackground  = true;
+					t.Start();
+				}
+			}
+		}
+		
+		static void CheckModifiedFiles ()
+		{
+			// Check databases following a bottom-up strategy in the dependency
+			// tree. This will help resolving parsed classes.
+			
+			List<CodeCompletionDatabase> list = new List<CodeCompletionDatabase> ();
+			lock (doms)  {
+				// There may be several uris for the same db
+				foreach (ProjectDom dom in doms.Values) {
+					if (dom.Database == null)
+						continue;
+					if (!list.Contains (dom.Database))
+						list.Add (dom.Database);
+				}
+			}
+			
+			List<CodeCompletionDatabase> done = new List<CodeCompletionDatabase> ();
+			while (list.Count > 0) 
+			{
+				CodeCompletionDatabase readydb = null;
+				CodeCompletionDatabase bestdb = null;
+				int bestRefCount = int.MaxValue;
+				
+				// Look for a db with all references resolved
+				for (int n=0; n<list.Count && readydb==null; n++)
+				{
+					CodeCompletionDatabase db = (CodeCompletionDatabase)list[n];
+
+					bool allDone = true;
+					foreach (ReferenceEntry re in db.References) {
+						CodeCompletionDatabase refdb = GetDom (re.Uri) != null ? GetDom (re.Uri).Database : null;
+						if (refdb != null && !done.Contains (refdb)) {
+							allDone = false;
+							break;
+						}
+					}
+					
+					if (allDone)
+						readydb = db;
+					else if (db.References.Count < bestRefCount) {
+						bestdb = db;
+						bestRefCount = db.References.Count;
+					}
+				}
+
+				// It may not find any db without resolved references if there
+				// are circular dependencies. In this case, take the one with
+				// less references
+				
+				if (readydb == null)
+					readydb = bestdb;
+					
+				readydb.CheckModifiedFiles ();
+				list.Remove (readydb);
+				done.Add (readydb);
+			}
+		}
+		
 		
 		public static void UpdateCommentTasks (string fileName)
 		{

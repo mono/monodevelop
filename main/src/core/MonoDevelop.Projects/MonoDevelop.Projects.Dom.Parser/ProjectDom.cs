@@ -60,7 +60,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 			get {
 				Stack<IType> types = new Stack<IType> ();
 				foreach (ICompilationUnit unit in compilationUnits.Values) {
-					if (unit.Types == null)
+					if (unit == null || unit.Types == null)
 						continue;
 					
 					foreach (IType type in unit.Types) {
