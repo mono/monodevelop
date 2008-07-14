@@ -46,6 +46,7 @@ FILES =  \
 	MonoDevelop.Projects.Dom/CompilationUnit.cs \
 	MonoDevelop.Projects.Dom/CompilationUnitEventArgs.cs \
 	MonoDevelop.Projects.Dom/CompoundType.cs \
+	MonoDevelop.Projects.Dom/ConditionalRegion.cs \
 	MonoDevelop.Projects.Dom/DefaultParserContext.cs \
 	MonoDevelop.Projects.Dom/DomAttribute.cs \
 	MonoDevelop.Projects.Dom/DomCecilAttribute.cs \
@@ -73,8 +74,10 @@ FILES =  \
 	MonoDevelop.Projects.Dom/ExpressionContext.cs \
 	MonoDevelop.Projects.Dom/ExpressionResult.cs \
 	MonoDevelop.Projects.Dom/FileEntry.cs \
+	MonoDevelop.Projects.Dom/FoldingRegion.cs \
 	MonoDevelop.Projects.Dom/IAttribute.cs \
 	MonoDevelop.Projects.Dom/ICompilationUnit.cs \
+	MonoDevelop.Projects.Dom/IDocumentMetainformation.cs \
 	MonoDevelop.Projects.Dom/IDomVisitor.cs \
 	MonoDevelop.Projects.Dom/IEvent.cs \
 	MonoDevelop.Projects.Dom/IExpressionFinder.cs \
@@ -91,6 +94,7 @@ FILES =  \
 	MonoDevelop.Projects.Dom/Namespace.cs \
 	MonoDevelop.Projects.Dom/NamespaceEntry.cs \
 	MonoDevelop.Projects.Dom/ParameterModifiers.cs \
+	MonoDevelop.Projects.Dom/PreProcessorDefine.cs \
 	MonoDevelop.Projects.Dom/ProjectCodeCompletionDatabase.cs \
 	MonoDevelop.Projects.Dom/ReferenceEntry.cs \
 	MonoDevelop.Projects.Dom/ResolveResult.cs \

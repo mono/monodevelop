@@ -27,6 +27,7 @@
 //
 
 using System;
+using System.IO;
 
 namespace MonoDevelop.Projects.Dom.Parser
 {
@@ -48,6 +49,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 		
 		public abstract IExpressionFinder CreateExpressionFinder ();
 		public abstract ICompilationUnit Parse (string fileName, string content);
+		public abstract IDocumentMetaInformation CreateMetaInformation (Stream stream);
 		
 		public virtual bool CanParseMimeType (string mimeType)
 		{

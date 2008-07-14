@@ -149,7 +149,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 					break;
 				}
 			}
-			return new DefaultParserContext (foundDom);
+			return	 new DefaultParserContext (foundDom);
 		}
 		
 		public delegate string ContentDelegate ();

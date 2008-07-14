@@ -37,5 +37,10 @@ namespace MonoDevelop.Projects.Dom.Output
 				return new NetAmbience ();
 			}
 		}
+		
+		public static Ambience GetAmbience (string mimeType)
+		{
+			return new NetAmbience ();
+		}
 	}
 }

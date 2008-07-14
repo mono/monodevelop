@@ -27,6 +27,7 @@
 //
 
 using System;
+using System.IO;
 
 namespace MonoDevelop.Projects.Dom.Parser
 {
@@ -39,5 +40,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 		bool CanParse (string fileName);
 		
 		IExpressionFinder CreateExpressionFinder ();
+		
+		IDocumentMetaInformation CreateMetaInformation (Stream stream);
 	}
 }
