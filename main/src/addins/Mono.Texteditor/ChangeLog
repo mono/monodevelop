@@ -1,5 +1,10 @@
 2008-07-14  Mike Krüger <mkrueger@novell.com> 
 
+	* Mono.TextEditor/Document.cs, Mono.TextEditor/BufferedTextReader.cs:
+	  Added System.IO.TextReader support for the text buffer.
+
+2008-07-14  Mike Krüger <mkrueger@novell.com> 
+
 	* Mono.TextEditor/TextViewMargin.cs: fixed 'Bug 385456 - Code folding'.
 
 2008-07-14  Mike Krüger <mkrueger@novell.com> 

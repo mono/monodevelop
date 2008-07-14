@@ -165,6 +165,11 @@ namespace Mono.TextEditor
 			}
 		}
 		
+		public System.IO.TextReader OpenTextReader ()
+		{
+			return new BufferedTextReader (this.buffer);
+		}
+		
 		public void Insert (int offset, string value)
 		{
 			Insert (offset, new StringBuilder (value));
