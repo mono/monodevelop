@@ -47,7 +47,7 @@ namespace CSharpBinding
 				IClass result = null;
 				foreach (IClass c in unit.Classes) {
 					if (c.Region != null && c.Region.BeginLine < startLine && c.Region.BeginLine > line) { 
-						startLine = c.Region.BeginLine;						
+						startLine = c.Region.BeginLine;
 						result = c.ClassType == ClassType.Delegate ? c : null;
 					}
 					if (c.BodyRegion != null && c.BodyRegion.IsInside (line, column))
@@ -55,6 +55,7 @@ namespace CSharpBinding
 				}
 				return result;
 			}
+			
 			return null;
 		}
 		

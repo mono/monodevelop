@@ -40,6 +40,7 @@ namespace MonoDevelop.CSharpBinding
 	{
 		TextEditor editor;
 		List<IMethod> methods = new List<IMethod> ();
+		CSharpAmbience ambience = new CSharpAmbience ();
 		
 		public NRefactoryParameterDataProvider (TextEditor editor, ProjectDom dom, MethodResolveResult resolveResult)
 		{
@@ -105,12 +106,12 @@ namespace MonoDevelop.CSharpBinding
 		
 		public string GetMethodMarkup (int overload, string[] parameterMarkup)
 		{
-			return AmbienceService.Default.GetIntellisenseDescription (methods[overload]);
+			return ambience.GetIntellisenseDescription (methods[overload]);
 		}
 		
 		public string GetParameterMarkup (int overload, int paramIndex)
 		{
-			return AmbienceService.Default.GetIntellisenseDescription (methods[overload].Parameters [paramIndex]);
+			return ambience.GetIntellisenseDescription (methods[overload].Parameters [paramIndex]);
 		}
 		
 		public int GetParameterCount (int overload)

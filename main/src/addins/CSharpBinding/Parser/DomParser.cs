@@ -59,6 +59,11 @@ namespace MonoDevelop.CSharpBinding
 			return new CSharpExpressionFinder ();
 		}
 		
+		public IDocumentMetaInformation CreateMetaInformation (Stream stream)
+		{
+			return null;
+		}
+		
 		static DomRegion Block2Region (Mono.CSharp.Dom.LocationBlock block)
 		{
 			int startLine;
