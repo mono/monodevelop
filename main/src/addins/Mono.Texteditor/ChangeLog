@@ -1,3 +1,8 @@
+2008-07-14  Mike Krüger <mkrueger@novell.com> 
+
+	* JavascriptSyntaxMode.xml, XmlSyntaxMode.xml: Added java script syntax
+	  mode (Bug 400896 - Syntax Mode for Javascript).
+
 2008-07-08  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Mono.TextEditor/ITooltipProvider.cs, Mono.TextEditor/TextEditor.cs:

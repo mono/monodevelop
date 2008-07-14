@@ -78,6 +78,7 @@ RES =  \
 	CSyntaxMode.xml \
 	gtk-gui/gui.stetic \
 	gtk-gui/objects.xml \
+	JavascriptSyntaxMode.xml \
 	JavaSyntaxMode.xml \
 	OblivionStyle.xml \
 	PythonSyntaxMode.xml \
