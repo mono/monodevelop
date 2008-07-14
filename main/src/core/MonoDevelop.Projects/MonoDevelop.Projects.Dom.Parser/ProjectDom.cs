@@ -48,6 +48,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 				foreach (IType type in Types) {
 					yield return type;
 				}
+				
 				foreach (ProjectDom reference in references) {
 					foreach (IType type in reference.Types) {
 						yield return type;
@@ -170,6 +171,8 @@ namespace MonoDevelop.Projects.Dom.Parser
 		{
 			if (String.IsNullOrEmpty (fileName))
 				return;
+//			if (unit.Errors != null && unit.Errors.Count > 0)
+//				return;
 			if (database != null) {
 				((ProjectCodeCompletionDatabase)database).UpdateFromParseInfo (unit, fileName);
 			} 
@@ -243,8 +246,8 @@ namespace MonoDevelop.Projects.Dom.Parser
 					if (type.FullName == fullName)
 						return type;
 				}
-			}
-/*			if (result == null && database != null) {
+			}/*
+			if (result == null && database != null) {
 				foreach (ReferenceEntry re in database.References) {
 					ProjectDom dom = ProjectDomService.GetDom (re.Uri);
 					if (dom != null && dom.Database != null) {

@@ -42,16 +42,16 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
-		public DomCecilCompilationUnit (AssemblyDefinition assemblyDefinition) : this (true, assemblyDefinition)
+		public DomCecilCompilationUnit (AssemblyDefinition assemblyDefinition) : this (true, true, assemblyDefinition)
 		{
 		}
 		
-		public DomCecilCompilationUnit (bool keepDefinitions, AssemblyDefinition assemblyDefinition) : base (assemblyDefinition.Name.FullName)
+		public DomCecilCompilationUnit (bool keepDefinitions, bool loadInternals, AssemblyDefinition assemblyDefinition) : base (assemblyDefinition.Name.FullName)
 		{
 			if (keepDefinitions)
 				this.assemblyDefinition = assemblyDefinition;
 			foreach (ModuleDefinition moduleDefinition in assemblyDefinition.Modules) {
-				AddModuleDefinition (keepDefinitions, moduleDefinition);
+				AddModuleDefinition (keepDefinitions, loadInternals, moduleDefinition);
 			}
 			
 		}
@@ -73,17 +73,32 @@ namespace MonoDevelop.Projects.Dom
 		}
 		public static ICompilationUnit Load (string fileName, bool keepDefinitions)
 		{
+			return Load (fileName, true, true);
+		}
+		
+		public static ICompilationUnit Load (string fileName, bool keepDefinitions, bool loadInternals)
+		{
 			if (String.IsNullOrEmpty (fileName))
 				return new CompilationUnit (fileName);
-			DomCecilCompilationUnit result = new DomCecilCompilationUnit (keepDefinitions, AssemblyFactory.GetAssembly (fileName));
+			DomCecilCompilationUnit result = new DomCecilCompilationUnit (keepDefinitions, loadInternals, AssemblyFactory.GetAssembly (fileName));
 			System.GC.Collect ();
 			return result;
 		}
 		
-		void AddModuleDefinition (bool keepDefinitions, ModuleDefinition moduleDefinition)
+		public static bool IsInternal (MonoDevelop.Projects.Dom.Modifiers mods)
+		{
+			return (mods & MonoDevelop.Projects.Dom.Modifiers.Internal) == MonoDevelop.Projects.Dom.Modifiers.Internal ||
+			       (mods & MonoDevelop.Projects.Dom.Modifiers.Private) == MonoDevelop.Projects.Dom.Modifiers.Private ||
+			       (mods & MonoDevelop.Projects.Dom.Modifiers.ProtectedOrInternal) == MonoDevelop.Projects.Dom.Modifiers.ProtectedOrInternal ||
+			       (mods & MonoDevelop.Projects.Dom.Modifiers.SpecialName) == MonoDevelop.Projects.Dom.Modifiers.SpecialName;
+		}
+		
+		void AddModuleDefinition (bool keepDefinitions, bool loadInternal, ModuleDefinition moduleDefinition)
 		{
 			foreach (TypeDefinition type in moduleDefinition.Types) {
-				DomCecilType loadType = new DomCecilType (keepDefinitions, type);
+				if (!loadInternal && IsInternal (DomCecilType.GetModifiers (type.Attributes)))
+					continue;
+				DomCecilType loadType = new DomCecilType (keepDefinitions, loadInternal, type);
 				Add (loadType);
 			}
 		}

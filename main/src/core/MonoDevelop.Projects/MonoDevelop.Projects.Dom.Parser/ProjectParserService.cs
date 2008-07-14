@@ -35,7 +35,6 @@ using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using Mono.Addins;
 
-
 namespace MonoDevelop.Projects.Dom.Parser
 {
 	
@@ -301,7 +300,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 					string realAssemblyName, assemblyFile, name;
 					AssemblyCodeCompletionDatabase.GetAssemblyInfo (fullName, out realAssemblyName, out assemblyFile, out name);
 					Thread thread = new Thread (delegate () {
-						dom.UpdateFromParseInfo (DomCecilCompilationUnit.Load (assemblyFile, false), assemblyFile);
+						dom.UpdateFromParseInfo (DomCecilCompilationUnit.Load (assemblyFile, false, false), assemblyFile);
 					});
 					thread.Priority = ThreadPriority.Lowest;
 					thread.IsBackground = true;
@@ -330,13 +329,24 @@ namespace MonoDevelop.Projects.Dom.Parser
 			}
 			
 			ProjectDom dom = GetDom (project);
-			dom.Database = new ProjectCodeCompletionDatabase (project);
-			foreach (ReferenceEntry re in dom.Database.References) {
-				dom.AddReference (Load (project.BaseDirectory, re.Uri));
+			
+			if (project is DotNetProject) {
+				DotNetProject netProject = (DotNetProject) project;
+				
+				string requiredRefUri = "Assembly:";
+				requiredRefUri += Runtime.SystemAssemblyService.GetAssemblyNameForVersion (typeof(object).Assembly.GetName().ToString(), netProject.ClrVersion);
+				dom.AddReference (Load (project.BaseDirectory, requiredRefUri));
+				
+				foreach (ProjectReference pr in netProject.References) {
+					string[] refIds = GetReferenceKeys (pr);
+					foreach (string refId in refIds) {
+						dom.AddReference (Load (project.BaseDirectory, refId));
+					}
+				}
 			}
 			
 //			dom.Database.UpdateFromProject ();
-/*			foreach (ProjectFile file in project.Files) {
+			foreach (ProjectFile file in project.Files) {
 				if (file.BuildAction != BuildAction.Compile)
 					continue;
 				string content = null;
@@ -349,10 +359,29 @@ namespace MonoDevelop.Projects.Dom.Parser
 					dom.UpdateFromParseInfo (unit, file.FilePath);
 					OnCompilationUnitUpdated (new CompilationUnitEventArgs (unit));
 				}
-			}*/
+			}
 			dom.FireLoaded ();
 			OnDomUpdated (new ProjectDomEventArgs (dom));
 			return dom;
+		}
+		
+		static string[] GetReferenceKeys (ProjectReference pr)
+		{
+			switch (pr.ReferenceType) {
+				case ReferenceType.Project:
+					return new string[] { "Project:" + pr.Reference };
+				case ReferenceType.Gac:
+					string refId = pr.Reference;
+					string ext = System.IO.Path.GetExtension (refId).ToLower ();
+					if (ext == ".dll" || ext == ".exe")
+						refId = refId.Substring (0, refId.Length - 4);
+					return new string[] { "Assembly:" + refId };
+				default:
+					ArrayList list = new ArrayList ();
+					foreach (string s in pr.GetReferencedFileNames (ProjectService.DefaultConfiguration))
+						list.Add ("Assembly:" + s);
+					return (string[]) list.ToArray (typeof(string));
+			}
 		}
 		
 		
@@ -437,14 +466,14 @@ namespace MonoDevelop.Projects.Dom.Parser
 		
 		static void StartParserThread ()
 		{
-			lock (parseQueueLock) {
+			/*lock (parseQueueLock) {
 				if (!threadRunning) {
 					threadRunning = true;
 					Thread t = new Thread(new ThreadStart(ParserUpdateThread));
 					t.IsBackground  = true;
 					t.Start();
 				}
-			}
+			}*/
 		}
 		
 		static void CheckModifiedFiles ()

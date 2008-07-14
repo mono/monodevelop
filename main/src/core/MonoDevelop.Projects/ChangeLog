@@ -1,3 +1,12 @@
+2008-07-15  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Dom.Parser/ProjectParserService.cs,
+	  MonoDevelop.Projects.Dom.Parser/ProjectDom.cs,
+	  MonoDevelop.Projects.Dom/DomCecilType.cs,
+	  MonoDevelop.Projects.Dom/DomCecilCompilationUnit.cs,
+	  MonoDevelop.Projects.Parser/DefaultParserService.cs: Optimized
+	  cecil loading.
+
 2008-07-14  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom.Parser/ProjectParserService.cs,

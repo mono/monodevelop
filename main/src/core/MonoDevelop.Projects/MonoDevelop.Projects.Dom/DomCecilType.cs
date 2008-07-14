@@ -66,7 +66,7 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
-		public DomCecilType (bool keepDefinitions, TypeDefinition typeDefinition)
+		public DomCecilType (bool keepDefinitions, bool loadInternal, TypeDefinition typeDefinition)
 		{
 			if (keepDefinitions)
 				this.typeDefinition = typeDefinition;
@@ -81,15 +81,23 @@ namespace MonoDevelop.Projects.Dom
 				this.AddInterfaceImplementation (new DomCecilReturnType (interfaceReference));
 			}
 			foreach (FieldDefinition fieldDefinition in typeDefinition.Fields) {
+				if (!loadInternal && DomCecilCompilationUnit.IsInternal (DomCecilType.GetModifiers (fieldDefinition.Attributes)))
+					continue;
 				base.Add (new DomCecilField (this, keepDefinitions, fieldDefinition));
 			}
 			foreach (MethodDefinition methodDefinition in typeDefinition.Methods) {
+				if (!loadInternal && DomCecilCompilationUnit.IsInternal (DomCecilType.GetModifiers (methodDefinition.Attributes)))
+					continue;
 				base.Add (new DomCecilMethod (this, keepDefinitions, methodDefinition));
 			}
 			foreach (PropertyDefinition propertyDefinition in typeDefinition.Properties) {
+				if (!loadInternal && DomCecilCompilationUnit.IsInternal (DomCecilType.GetModifiers (propertyDefinition.Attributes)))
+					continue;
 				base.Add (new DomCecilProperty (this, keepDefinitions, propertyDefinition));
 			}
 			foreach (EventDefinition eventDefinition in typeDefinition.Events) {
+				if (!loadInternal && DomCecilCompilationUnit.IsInternal (DomCecilType.GetModifiers (eventDefinition.Attributes)))
+					continue;
 				base.Add (new DomCecilEvent (this, keepDefinitions,eventDefinition));
 			}
 		}
@@ -109,7 +117,9 @@ namespace MonoDevelop.Projects.Dom
 			if ((attr & TypeAttributes.Sealed) == TypeAttributes.Sealed)
 				result |= Modifiers.Sealed;
 			
-			if ((attr & TypeAttributes.Public) == TypeAttributes.Public) {
+			if ((attr & TypeAttributes.NestedPrivate) == TypeAttributes.NestedPrivate) {
+				result |= Modifiers.Private;
+			} else if ((attr & TypeAttributes.Public) == TypeAttributes.Public) {
 				result |= Modifiers.Public;
 			} else if ((attr & TypeAttributes.NestedFamANDAssem) == TypeAttributes.NestedFamANDAssem) {
 				result |= Modifiers.ProtectedAndInternal;
