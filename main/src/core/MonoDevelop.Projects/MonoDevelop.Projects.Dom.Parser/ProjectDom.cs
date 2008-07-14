@@ -58,16 +58,27 @@ namespace MonoDevelop.Projects.Dom.Parser
 		
 		public IEnumerable<IType> Types {
 			get {
+				Stack<IType> types = new Stack<IType> ();
 				foreach (ICompilationUnit unit in compilationUnits.Values) {
 					if (unit.Types == null)
 						continue;
+					
 					foreach (IType type in unit.Types) {
-						yield return type;
+						types.Push (type);
 					}
 				}
 				if (database != null) {
 					foreach (IType type in database.GetClassList ()) {
-						yield return type;
+						types.Push (type);
+					}
+				}
+				while (types.Count > 0) {
+					IType type = types.Pop ();
+					yield return type;
+					if (type.InnerTypes != null) {
+						foreach (IType innerType in type.InnerTypes) {
+							types.Push (innerType);
+						}
 					}
 				}
 			}
@@ -89,23 +100,10 @@ namespace MonoDevelop.Projects.Dom.Parser
 		{
 			if (returnType == null)
 				return null;
-			
-			foreach (IType type in Types) {
+			foreach (IType type in (searchDeep ? AllAccessibleTypes : Types)) {
 				if (type.FullName == returnType.FullName)
 					return type;
 			}
-
-			if (searchDeep && database != null) {
-				foreach (ReferenceEntry re in database.References) {
-					ProjectDom dom = ProjectDomService.GetDom (re.Uri);
-					if (dom != null) {
-						IType result = dom.GetType (returnType, false);
-						if (result != null)
-							return result;
-					}
-				}
-			}
-			
 			return null;
 		}
 		

@@ -1,3 +1,9 @@
+2008-07-14  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Dom.Parser/ProjectDom.cs,
+	  MonoDevelop.Projects.Dom/ResolveResult.cs,
+	  MonoDevelop.Projects.Dom/DomType.cs: Fixed inner types.
+
 2008-07-13  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom.Parser/ProjectDom.cs,

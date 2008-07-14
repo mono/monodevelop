@@ -48,7 +48,11 @@ namespace MonoDevelop.Projects.Dom
 		
 		protected override void CalculateFullName ()
 		{
-			fullName = !String.IsNullOrEmpty (Namespace) ? Namespace + "." + Name : Name;
+			if (DeclaringType != null) {
+				fullName = DeclaringType.FullName + "." + Name;
+			} else {
+				fullName = !String.IsNullOrEmpty (Namespace) ? Namespace + "." + Name : Name;
+			}
 		}
 		
 		public string Namespace {
