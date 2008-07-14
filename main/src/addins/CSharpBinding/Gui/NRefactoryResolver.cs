@@ -163,10 +163,14 @@ namespace MonoDevelop.CSharpBinding
 			foreach (object o in dom.GetNamespaceContents ("", true, true)) {
 				MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.AddCompletionData (provider, o);
 			}
-			foreach (IUsing u in this.unit.Usings) {
-				foreach (string ns in u.Namespaces) {
-					foreach (object o in dom.GetNamespaceContents (ns, true, true)) {
-						MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.AddCompletionData (provider, o);
+			if (unit != null && unit.Usings != null) {
+				foreach (IUsing u in unit.Usings) {
+					if (u.Namespaces == null)
+						continue;
+					foreach (string ns in u.Namespaces) {
+						foreach (object o in dom.GetNamespaceContents (ns, true, true)) {
+							MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.AddCompletionData (provider, o);
+						}
 					}
 				}
 			}
