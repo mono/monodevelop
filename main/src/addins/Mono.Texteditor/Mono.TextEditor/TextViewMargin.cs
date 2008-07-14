@@ -1059,7 +1059,7 @@ namespace Mono.TextEditor
 			int visualXPos;
 			SyntaxMode mode;
 			Pango.Layout measureLayout;
-			
+			bool done = false;
 			public VisualLocationTranslator (TextViewMargin margin, int xp, int yp)
 			{
 				this.margin = margin;
@@ -1095,6 +1095,7 @@ namespace Mono.TextEditor
 						if (nextXPosition >= visualXPos) {
 							if (!IsNearX1 (visualXPos, xPos, nextXPosition))
 								column++;
+							done = true;
 							return;
 						}
 						column++;
@@ -1102,6 +1103,7 @@ namespace Mono.TextEditor
 					}
 				}
 			}
+			
 			public DocumentLocation VisualToDocumentLocation (int xp, int yp)
 			{
 				if (line == null) 
@@ -1120,16 +1122,24 @@ namespace Mono.TextEditor
 					int foldOffset = folding.StartLine.Offset + folding.Column;
 					if (foldOffset < offset)
 						continue;
+					chunks = mode.GetChunks (margin.Document, margin.textEditor.ColorStyle, line, offset, foldOffset - offset);
+					ConsumeChunks ();
+					if (done)
+						break;
 					
 					if (folding.IsFolded) {
-						chunks = mode.GetChunks (margin.Document, margin.textEditor.ColorStyle, line, offset, foldOffset - offset);
-						ConsumeChunks ();
 						offset = folding.EndLine.Offset + folding.EndColumn;
-						
+						DocumentLocation loc = margin.Document.OffsetToLocation (offset);
+						lineNumber = loc.Line;
+						column     = loc.Column;
 						measureLayout.SetText (folding.Description);
 						int height;
 						measureLayout.GetPixelSize (out width, out height);
 						xPos += width;
+						if (xPos >= visualXPos) {
+							done = true;
+							break;
+						}
 						if (folding.EndLine != line) {
 							line   = folding.EndLine;
 							foldings = margin.Document.GetStartFoldings (line);
@@ -1138,7 +1148,7 @@ namespace Mono.TextEditor
 					}
 				}
 				
-				if (line.EndOffset - offset > 0) {
+				if (!done && line.EndOffset - offset > 0) {
 					chunks = mode.GetChunks (margin.Document, margin.textEditor.ColorStyle, line, offset, line.Offset + line.EditableLength - offset);
 					ConsumeChunks ();
 				}

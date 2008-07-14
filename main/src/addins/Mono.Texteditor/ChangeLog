@@ -1,5 +1,9 @@
 2008-07-14  Mike Krüger <mkrueger@novell.com> 
 
+	* Mono.TextEditor/TextViewMargin.cs: fixed 'Bug 385456 - Code folding'.
+
+2008-07-14  Mike Krüger <mkrueger@novell.com> 
+
 	* JavascriptSyntaxMode.xml, XmlSyntaxMode.xml: Added java script syntax
 	  mode (Bug 400896 - Syntax Mode for Javascript).
 
