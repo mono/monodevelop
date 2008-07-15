@@ -36,6 +36,8 @@ namespace MonoDevelop.Projects.Dom.Parser
 	{	
 		List<ProjectDom> references = new List<ProjectDom> ();
 		Dictionary<string, ICompilationUnit> compilationUnits = new Dictionary<string, ICompilationUnit> ();
+		Dictionary<string, IType> typeTable = new Dictionary<string, IType> ();
+		
 		CodeCompletionDatabase database;
 		public Project Project;
 		
@@ -103,10 +105,20 @@ namespace MonoDevelop.Projects.Dom.Parser
 		{
 			if (returnType == null)
 				return null;
-			foreach (IType type in (searchDeep ? AllAccessibleTypes : Types)) {
+			IType type = null;
+			if (typeTable.TryGetValue (returnType.FullName, out type))
+				return type;
+			if (searchDeep) {
+				foreach (ProjectDom reference in references) {
+					type = reference.GetType (returnType, false);
+					if (type != null)
+						return type;
+				}
+			}
+/*			foreach (IType type in (searchDeep ? AllAccessibleTypes : Types)) {
 				if (type.FullName == returnType.FullName)
 					return type;
-			}
+			}*/
 			return null;
 		}
 		
@@ -166,6 +178,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 			}
 			set {
 				database = value;
+				database.SourceProjectDom = this;
 			}
 		}
 		
@@ -179,6 +192,11 @@ namespace MonoDevelop.Projects.Dom.Parser
 				((ProjectCodeCompletionDatabase)database).UpdateFromParseInfo (unit, fileName);
 			} 
 			this.compilationUnits [fileName] = unit;
+			foreach (IType type in unit.Types) {
+				type.SourceProjectDom = this;
+				typeTable[type.FullName] = type;
+			}
+			
 		}
 		
 		public bool NamespaceExists (string name)

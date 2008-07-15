@@ -30,12 +30,13 @@ using System;
 using System.Text;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using MonoDevelop.Projects.Dom.Parser;
 
 namespace MonoDevelop.Projects.Dom
 {
 	public class DomType : AbstractMember, IType
 	{
-		protected object sourceProject;
+		protected ProjectDom sourceProjectDom;
 		protected ICompilationUnit compilationUnit;
 		protected IReturnType baseType;
 		
@@ -65,12 +66,18 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
-		public object SourceProject {
+		public ProjectDom SourceProjectDom {
 			get {
-				return sourceProject;
+				return sourceProjectDom;
 			}
 			set {
-				sourceProject = value;
+				sourceProjectDom = value;
+			}
+		}
+		
+		public SolutionItem SourceProject {
+			get {
+				return SourceProjectDom != null ? SourceProjectDom.Project : null;
 			}
 		}
 
@@ -299,6 +306,30 @@ namespace MonoDevelop.Projects.Dom
 				return HasOverriden (member as IMethod);
 			if (member is IProperty)
 				return HasOverriden (member as IProperty);
+			return false;
+		}
+		
+		public bool IsBaseType (IReturnType type)
+		{
+			if (type == null)
+				return false;
+			if (FullName == type.FullName)
+				return true;
+			foreach (IReturnType baseType in BaseTypes) {
+				if (baseType.FullName == type.FullName)
+					return true;
+			}
+			SearchTypeRequest request = new SearchTypeRequest (this.CompilationUnit, -1, -1, null);
+			foreach (IReturnType baseType in BaseTypes) {
+				request.Name = baseType.FullName;
+				SearchTypeResult searchTypeResult = this.SourceProjectDom.SearchType (request);
+				if (searchTypeResult == null)
+					continue;
+				IReturnType resolvedType = searchTypeResult.Result ?? baseType;
+				IType resolvedBaseType = this.SourceProjectDom.GetType (resolvedType);
+				if (resolvedBaseType != null && resolvedBaseType.IsBaseType (type))
+					return true;
+			}
 			return false;
 		}
 		

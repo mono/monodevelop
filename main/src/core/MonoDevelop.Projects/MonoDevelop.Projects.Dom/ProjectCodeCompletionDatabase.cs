@@ -68,10 +68,6 @@ namespace MonoDevelop.Projects.Dom
 			get { return project; }
 		}
 		
-		public override SolutionItem SourceEntry {
-			get { return project; }
-		}
-		
 		public override void Dispose ()
 		{
 			base.Dispose ();

@@ -112,8 +112,10 @@ namespace MonoDevelop.Projects.Dom
 			get { return disposed; }
 		}
 		
-		public virtual SolutionItem SourceEntry {
-			get { return null; }
+		ProjectDom sourceProjectDom;
+		public virtual ProjectDom SourceProjectDom {
+			get { return sourceProjectDom; }
+			set { sourceProjectDom = value; }
 		}
 		
 		protected void SetLocation (string basePath, string name)
@@ -476,7 +478,7 @@ namespace MonoDevelop.Projects.Dom
 				datareader.ReadInt32 ();// Length of data
 				
 				IType cls = DomPersistence.ReadType (datareader, DefaultNameEncoder);
-				cls.SourceProject = SourceEntry;
+				cls.SourceProjectDom = SourceProjectDom;
 				return cls;
 			}
 		}
@@ -891,7 +893,7 @@ namespace MonoDevelop.Projects.Dom
 				NamespaceEntry[] newNss = new NamespaceEntry [newClasses.Count];
 				for (int n = 0; n < newClasses.Count; n++) {
 					string[] path = newClasses[n].Namespace.Split ('.');
-					((IType)newClasses[n]).SourceProject = SourceEntry;
+					((IType)newClasses[n]).SourceProjectDom = SourceProjectDom;
 					newNss[n] = GetNamespaceEntry (path, path.Length, true, true);
 				}
 				
@@ -1235,7 +1237,7 @@ namespace MonoDevelop.Projects.Dom
 				IType result = DomPersistence.ReadType (reader, DefaultNameDecoder);
 				writer.Close ();
 				reader.Close ();
-				result.SourceProject = cls.SourceProject;
+				result.SourceProjectDom = cls.SourceProjectDom;
 				return result;
 			}
 		}

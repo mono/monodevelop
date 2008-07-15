@@ -65,6 +65,10 @@ namespace MonoDevelop.Projects.Dom
 			return false;
 		}
 		
+		protected ExpressionContext ()
+		{
+		}
+		
 		public ExpressionContext (string contextName)
 		{
 			this.contextName = contextName;
@@ -103,9 +107,49 @@ namespace MonoDevelop.Projects.Dom
 		public static ExpressionContext EnumBaseType                 = new ExpressionContext ("EnumBaseType");
 		public static ExpressionContext InheritableType              = new ExpressionContext ("InheritableType");
 		
-		public static ExpressionContext TypeDerivingFrom (IReturnType baseType, bool isObjectCreation)
+		public static TypeExpressionContext TypeDerivingFrom (IReturnType baseType, bool isObjectCreation)
 		{
-			return new ExpressionContext ("TypeDerivingFrom " + (baseType != null ? baseType.FullName : "<null>"));
+			return new TypeExpressionContext (baseType, isObjectCreation);
+		}
+		
+		public class TypeExpressionContext : ExpressionContext
+		{
+			IReturnType type;
+			public IReturnType Type {
+				get {
+					return type;
+				}
+			}
+			
+			
+			bool isObjectCreation;
+			public override bool IsObjectCreation {
+				get {
+					return isObjectCreation;
+				}
+			}
+		
+			public virtual bool FilterEntry (object entry)
+			{
+				if (IsObjectCreation && entry is IType) {
+					IType type = entry as IType;
+					return (type.ClassType == ClassType.Class || type.ClassType == ClassType.Struct) && !type.IsStatic && !type.IsAbstract;
+				}
+				return false;
+			}
+			
+
+			public TypeExpressionContext (IReturnType type, bool isObjectCreation)
+			{
+				this.type             = type;
+				this.isObjectCreation = isObjectCreation;
+			}
+			
+			public override string ToString ()
+			{
+				return String.Format ("[TypeExpressionContext:Type={0}, IsObjectCreation={1}]", Type, IsObjectCreation);
+			}
+		
 		}
 		
 	}

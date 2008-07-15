@@ -123,6 +123,15 @@ namespace MonoDevelop.Projects.Dom.Parser
 			}
 			return null;
 		}
+		public static IType GetType (IReturnType returnType)
+		{
+			foreach (ProjectDom dom in doms.Values) {
+				IType type = dom.GetType (returnType);
+				if (type != null)
+					return type;
+			}
+			return null;
+		}
 		
 		public static IType GetType (SearchTypeRequest request)
 		{
@@ -338,6 +347,8 @@ namespace MonoDevelop.Projects.Dom.Parser
 			
 			ProjectDom dom = GetDom (project);
 			dom.Project = project;
+			
+			// load References
 			if (project is DotNetProject) {
 				DotNetProject netProject = (DotNetProject) project;
 				

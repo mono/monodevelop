@@ -29,6 +29,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using MonoDevelop.Projects.Dom.Parser;
 
 namespace MonoDevelop.Projects.Dom
 {
@@ -38,9 +39,13 @@ namespace MonoDevelop.Projects.Dom
 			get;
 		}
 		
-		object SourceProject {
+		ProjectDom SourceProjectDom {
 			get;
 			set;
+		}
+		
+		SolutionItem SourceProject {
+			get;
 		}
 		
 		ICompilationUnit CompilationUnit {
@@ -127,5 +132,6 @@ namespace MonoDevelop.Projects.Dom
 		}
 		
 		bool HasOverriden (IMember member);
+		bool IsBaseType (IReturnType type);
 	}
 }

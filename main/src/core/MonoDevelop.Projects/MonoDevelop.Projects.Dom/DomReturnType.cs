@@ -209,10 +209,24 @@ namespace MonoDevelop.Projects.Dom
 		
 		public override string ToString ()
 		{
-			return string.Format ("[DomReturnType:FullName={0}, PointerNestingLevel={1}, ArrayDimensions={2}]",
+			StringBuilder genArgs = new StringBuilder ();
+			if (GenericArguments == null) {
+				genArgs.Append ("<null>");
+			} else {
+				genArgs.Append ("{");
+				foreach (object o in GenericArguments) {
+					if (genArgs.Length > 1)
+						genArgs.Append (", ");
+					genArgs.Append (o != null ? o.ToString () : "null");
+				} 
+				genArgs.Append ("}");
+			}
+			
+			return string.Format ("[DomReturnType:FullName={0}, PointerNestingLevel={1}, ArrayDimensions={2}, GenericArguments={3}]",
 			                      FullName,
 			                      PointerNestingLevel,
-			                      ArrayDimensions);
+			                      ArrayDimensions,
+			                      genArgs.ToString ());
 		}
 		
 		public static string ConvertToString (IReturnType type)

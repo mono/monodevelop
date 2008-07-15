@@ -53,6 +53,9 @@ namespace MonoDevelop.Projects.Dom
 			get {
 				return name;
 			}
+			set {
+				name = value;
+			}
 		}
 		
 		public int GenericParameterCount {

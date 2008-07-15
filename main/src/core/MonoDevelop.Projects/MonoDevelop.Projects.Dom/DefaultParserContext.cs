@@ -61,10 +61,12 @@ namespace MonoDevelop.Projects.Dom
 			IType result = ProjectDomService.GetType (request.Name, request.GenericParameterCount, request.CaseSensitive);
 			if (result != null)
 				return new SearchTypeResult (result);
-			foreach (IUsing u in request.CurrentCompilationUnit.Usings) {
-				result = ProjectDomService.GetType (u.Namespaces + "." + request.Name, request.GenericParameterCount, request.CaseSensitive);
-				if (result != null)
-					return new SearchTypeResult (result);
+			if (request.CurrentCompilationUnit != null) {
+				foreach (IUsing u in request.CurrentCompilationUnit.Usings) {
+					result = ProjectDomService.GetType (u.Namespaces + "." + request.Name, request.GenericParameterCount, request.CaseSensitive);
+					if (result != null)
+						return new SearchTypeResult (result);
+				}
 			}
 			return null;
 		}
