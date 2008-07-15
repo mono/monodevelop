@@ -38,6 +38,12 @@ namespace MonoDevelop.VBNetBinding
 			return null;
 		}
 		
+		public IDocumentMetaInformation CreateMetaInformation (Stream stream)
+		{
+			return null;
+		}
+				
+
 		public ICompilationUnit Parse (string fileName, string content)
 		{
 			using (ICSharpCode.NRefactory.IParser parser = ICSharpCode.NRefactory.ParserFactory.CreateParser (ICSharpCode.NRefactory.SupportedLanguage.VBNet, new StringReader(content))) {
