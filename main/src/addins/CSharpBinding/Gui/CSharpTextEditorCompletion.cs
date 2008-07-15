@@ -272,8 +272,9 @@ namespace MonoDevelop.CSharpBinding.Gui
 				return null;
 			case "new":
 				ExpressionContext exactContext = new NewCSharpExpressionFinder (dom).FindExactContextForNewCompletion(Editor, Document.FileName);
-				System.Console.WriteLine("New:" + exactContext);
-				return null;
+				if (exactContext is ExpressionContext.TypeExpressionContext)
+					return CreateTypeCompletionData (exactContext, ((ExpressionContext.TypeExpressionContext)exactContext).Type);
+				return CreateTypeCompletionData (exactContext, null);
 			case "if":
 			case "elif":
 				if (stateTracker.Engine.IsInsidePreprocessorDirective) 
@@ -379,12 +380,12 @@ namespace MonoDevelop.CSharpBinding.Gui
 			bool isInterface      = type.ClassType == ClassType.Interface;
 			bool includeOverriden = false;
 			foreach (IMember m in searchType.Members) {
-				System.Console.WriteLine ("scan:" + m);
+				//System.Console.WriteLine ("scan:" + m);
 				if (m.IsInternal && searchType.SourceProject != Document.Project)
 					continue;
 				
 				if ((isInterface || m.IsVirtual || m.IsAbstract) && !m.IsSealed && (includeOverriden || !type.HasOverriden (m))) {
-				System.Console.WriteLine("add");
+					//System.Console.WriteLine("add");
 					provider.AddCompletionData (new NewOverrideCompletionData (Editor, m));
 				}
 			}
@@ -395,6 +396,27 @@ namespace MonoDevelop.CSharpBinding.Gui
 				AddVirtuals (provider, type, modifiers, searchType.BaseType);
 			}
 			
+		}
+		
+		
+		CodeCompletionDataProvider CreateTypeCompletionData (ExpressionContext context, IReturnType returnType)
+		{
+			IReturnType resolvedType = returnType;
+			if (returnType != null) {
+				SearchTypeResult searchedTypeResult = dom.SearchType (new SearchTypeRequest (dom.GetCompilationUnit (Document.FileName), -1, -1, returnType.FullName));
+				if (searchedTypeResult != null) 
+					resolvedType = searchedTypeResult.Result ?? returnType;
+			}
+			System.Console.WriteLine (resolvedType);
+			CodeCompletionDataProvider result = new CodeCompletionDataProvider (null, GetAmbience ());
+			foreach (IType type in this.dom.AllAccessibleTypes) {
+				System.Console.WriteLine (type);
+				if (context != null && context.FilterEntry (type))
+					continue;
+				if (resolvedType == null || type.IsBaseType (resolvedType)) 
+					AddCompletionData (result, type);
+			}
+			return result;
 		}
 		
 		CodeCompletionDataProvider GetOverrideCompletionData (IType type, string modifiers)

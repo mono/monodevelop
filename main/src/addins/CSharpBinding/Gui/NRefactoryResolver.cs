@@ -202,6 +202,15 @@ namespace MonoDevelop.CSharpBinding
 			return result;
 		}
 		
+		public static DomReturnType ConvertTypeReference (TypeReference typeRef)
+		{
+			DomReturnType result = new DomReturnType (typeRef.Type);
+			foreach (TypeReference genericArgument in typeRef.GenericTypes) {
+				result.AddTypeParameter (ConvertTypeReference (genericArgument));
+			}
+			return result;
+		}
+		
 		public ResolveResult ResolveIdentifier (string identifier)
 		{
 			ResolveResult result = null;
@@ -209,7 +218,7 @@ namespace MonoDevelop.CSharpBinding
 				if (identifier == pair.Key) {
 					result = new MemberResolveResult ();
 					LocalLookupVariable var = pair.Value[pair.Value.Count - 1];
-					result.ResolvedType = new DomReturnType (var.TypeRef.Type);
+					result.ResolvedType = ConvertTypeReference (var.TypeRef);
 					goto end;
 				}
 			}

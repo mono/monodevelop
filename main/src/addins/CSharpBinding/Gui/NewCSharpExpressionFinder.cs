@@ -49,12 +49,15 @@ namespace MonoDevelop.CSharpBinding.Gui
 			// find expression on left hand side of the assignment
 			string documentToCursor = editor.GetText (0, editor.CursorPosition);
 			int pos = documentToCursor.LastIndexOf('=');
+			if (pos <= 0)
+				return null;
 			ExpressionResult lhsExpr = FindExpression (documentToCursor, pos);
 			if (lhsExpr.Expression != null) {
 				NRefactoryResolver resolver = new MonoDevelop.CSharpBinding.NRefactoryResolver (projectContent,
 				                                                                                ICSharpCode.NRefactory.SupportedLanguage.CSharp,
 				                                                                                editor,
 				                                                                                fileName);
+				
 				ResolveResult rr = resolver.Resolve (lhsExpr);
 				//ResolveResult rr = ParserService.Resolve (lhsExpr, currentLine.LineNumber, pos, editor.FileName, editor.Text);
 				if (rr != null && rr.ResolvedType != null) {
