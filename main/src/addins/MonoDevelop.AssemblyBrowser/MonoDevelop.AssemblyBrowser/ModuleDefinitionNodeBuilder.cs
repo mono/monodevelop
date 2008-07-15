@@ -67,7 +67,7 @@ namespace MonoDevelop.AssemblyBrowser
 			foreach (TypeDefinition type in moduleDefinition.Types) {
 				if (!namespaces.ContainsKey (type.Namespace))
 					namespaces [type.Namespace] = new Namespace (type.Namespace);
-				namespaces [type.Namespace].Types.Add (new DomCecilType (true, type));
+				namespaces [type.Namespace].Types.Add (new DomCecilType (true, true, type));
 			}
 			ctx.AddChild (new ReferenceFolder (moduleDefinition));
 			if (moduleDefinition.Resources.Count > 0)

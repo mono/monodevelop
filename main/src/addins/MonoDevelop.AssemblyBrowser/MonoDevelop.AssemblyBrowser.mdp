@@ -63,11 +63,7 @@
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Projects" />
     <ProjectReference type="Gac" localcopy="True" refto="glib-sharp, Version=2.10.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
   </References>
-  <GtkDesignInfo isWidgetLibrary="True" gtkVersion="2.10.2">
-    <ExportedWidgets>
-      <Widget>MonoDevelop.AssemblyBrowser.AssemblyBrowserWidget</Widget>
-    </ExportedWidgets>
-  </GtkDesignInfo>
+  <GtkDesignInfo gtkVersion="2.10.2" />
   <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="Makefile.am" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="../../..">
     <BuildFilesVar Sync="True" Name="FILES" />
     <DeployFilesVar />
