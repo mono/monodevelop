@@ -1,3 +1,7 @@
+2008-07-15  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* AUTHORS, README, NEWS: Add required files.
+
 2008-03-17  Daniel Abramov <ex@vingrad.ru>
 	* dlls/Gendarme.Framework.dll: updated framework to keep
 	the same version with Gendarme.Rules.BadPractice.dll
