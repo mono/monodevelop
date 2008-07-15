@@ -247,7 +247,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 				Thread thread = new Thread (delegate () {
 					Solution solution = (Solution) item;
 					foreach (Project project in solution.GetAllProjects ()) {
-						Load (project);
+						Load (solution, project);
 					}
 					solution.SolutionItemAdded   += OnSolutionItemAdded;
 					solution.SolutionItemRemoved += OnSolutionItemRemoved;
@@ -288,7 +288,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 			}
 		}
 		
-		public static ProjectDom Load (string baseDirectory, string uri)
+		static ProjectDom Load (Solution solution, string baseDirectory, string uri)
 		{
 			if (uri.StartsWith ("Assembly:")) {
 				string file = uri.Substring (9);
@@ -315,10 +315,18 @@ namespace MonoDevelop.Projects.Dom.Parser
 				}
 				return dom;
 			}
+			if (uri.StartsWith ("Project:")) {
+				string projectName = uri.Substring ("Project:".Length);
+				Project referencedProject = solution.FindProjectByName (projectName);
+				if (referencedProject != null) {
+					System.Console.WriteLine("found :" + projectName);
+					return GetDom (referencedProject);
+				}
+			}
 			return null;
 		}
 		
-		public static ProjectDom Load (Project project)
+		static ProjectDom Load (Solution solution, Project project)
 		{
 			string type = project.ProjectType;
 			if (project is DotNetProject)
@@ -329,18 +337,18 @@ namespace MonoDevelop.Projects.Dom.Parser
 			}
 			
 			ProjectDom dom = GetDom (project);
-			
+			dom.Project = project;
 			if (project is DotNetProject) {
 				DotNetProject netProject = (DotNetProject) project;
 				
 				string requiredRefUri = "Assembly:";
 				requiredRefUri += Runtime.SystemAssemblyService.GetAssemblyNameForVersion (typeof(object).Assembly.GetName().ToString(), netProject.ClrVersion);
-				dom.AddReference (Load (project.BaseDirectory, requiredRefUri));
+				dom.AddReference (Load (solution, project.BaseDirectory, requiredRefUri));
 				
 				foreach (ProjectReference pr in netProject.References) {
 					string[] refIds = GetReferenceKeys (pr);
 					foreach (string refId in refIds) {
-						dom.AddReference (Load (project.BaseDirectory, refId));
+						dom.AddReference (Load (solution, project.BaseDirectory, refId));
 					}
 				}
 			}
@@ -542,7 +550,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 		static void OnSolutionItemAdded (object sender, SolutionItemEventArgs args)
 		{
 			if (args.SolutionItem is Project)
-				Load ((Project) args.SolutionItem);
+				Load (args.SolutionItem.ParentSolution, (Project) args.SolutionItem);
 		}
 		
 		static void OnSolutionItemRemoved (object sender, SolutionItemEventArgs args)

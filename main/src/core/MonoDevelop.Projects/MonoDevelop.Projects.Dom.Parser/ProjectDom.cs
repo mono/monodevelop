@@ -28,6 +28,7 @@
 
 using System;
 using System.Collections.Generic;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.Projects.Dom.Parser
 {
@@ -36,6 +37,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 		List<ProjectDom> references = new List<ProjectDom> ();
 		Dictionary<string, ICompilationUnit> compilationUnits = new Dictionary<string, ICompilationUnit> ();
 		CodeCompletionDatabase database;
+		public Project Project;
 		
 /*		public IEnumerable<ICompilationUnit> CompilationUnits {
 			get {
@@ -269,6 +271,8 @@ namespace MonoDevelop.Projects.Dom.Parser
 		
 		public ICompilationUnit GetCompilationUnit (string fileName) 
 		{
+			if (String.IsNullOrEmpty (fileName))
+				return null;
 			ICompilationUnit result;
 			this.compilationUnits.TryGetValue (fileName, out result);
 			return result;
