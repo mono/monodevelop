@@ -1,3 +1,9 @@
+2008-07-15  Mike Krüger <mkrueger@novell.com> 
+
+	* Mono.TextEditor.Highlighting/SyntaxModeService.cs: fixed "Bug 408896
+	  - Text editor: cannot insert apostrophe, parentheses, etc in text
+	  files".
+
 2008-07-14  Mike Krüger <mkrueger@novell.com> 
 
 	* Mono.TextEditor/Document.cs, Mono.TextEditor/BufferedTextReader.cs:
