@@ -78,10 +78,21 @@ namespace MonoDevelop.CSharpBinding
 		
 		ResolveResult CreateResult (IReturnType type)
 		{
+			return CreateResult (null, type);
+		}
+		
+		ResolveResult CreateResult (ICompilationUnit unit, IReturnType type)
+		{
 			MemberResolveResult result = new MemberResolveResult ();
 			result.CallingType   = resolver.CallingType;
 			result.CallingMember = resolver.CallingMember;
-			result.ResolvedType  = type;
+			result.ResolvedType = type;
+			if (unit != null) {
+				SearchTypeResult searchedTypeResult = resolver.Dom.SearchType (new SearchTypeRequest (unit, -1, -1, type.FullName));
+				if (searchedTypeResult != null) {
+					result.ResolvedType = searchedTypeResult.Result;
+				}
+			}
 			return result;
 		}
 		
@@ -259,7 +270,7 @@ namespace MonoDevelop.CSharpBinding
 								result = CreateResult (member[0].FullName);
 								result.StaticResolve = true;
 							} else {
-								result = CreateResult (member[0].ReturnType);
+								result = CreateResult (curType.CompilationUnit, member[0].ReturnType);
 							}
 							return result;
 						}
