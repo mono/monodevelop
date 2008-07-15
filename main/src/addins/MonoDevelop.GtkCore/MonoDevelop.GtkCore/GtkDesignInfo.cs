@@ -101,10 +101,18 @@ namespace MonoDevelop.GtkCore
 		void OnReferenceRemoved (object o, ProjectReferenceEventArgs args)
 		{
 			if (IsGtkReference (args.ProjectReference)) {
-				CleanGtkFolder (new StringCollection ());
-				if (builderProject != null)
-					builderProject = new GuiBuilderProject (project, null);
-				ProjectNodeBuilder.OnSupportChanged (project);
+				if (MonoDevelop.Core.Gui.MessageService.Confirm (GettextCatalog.GetString ("The Gtk# User Interface designer will be disabled by removing the gtk-sharp reference."), new MonoDevelop.Core.Gui.AlertButton ("Disable Designer"))) {
+					StringCollection saveFiles = new StringCollection ();
+					saveFiles.AddRange (new string[] {ObjectsFile, SteticFile});
+					CleanGtkFolder (saveFiles);
+					project.Files.Remove (ObjectsFile);
+					project.Files.Remove (SteticFile);
+					if (builderProject != null)
+						builderProject = new GuiBuilderProject (project, null);
+					ProjectNodeBuilder.OnSupportChanged (project);
+				} else {
+					project.References.Add (new ProjectReference (ReferenceType.Gac, "gtk-sharp, " + GtkAsmVersion));
+				}
 			}
 		}
 
@@ -315,20 +323,27 @@ namespace MonoDevelop.GtkCore
 			return UpdateReferences () || projectModified;
 		}
 
+		string GtkAsmVersion {
+			get {
+				string gtkAsmVersion = "";
+			
+				if (gtkVersion != null) {
+					foreach (SystemPackage p in Runtime.SystemAssemblyService.GetPackages ()) {
+						if (p.Name == "gtk-sharp-2.0" && p.Version == TargetGtkVersion) {
+							string fn = Runtime.SystemAssemblyService.GetAssemblyFullName (p.Assemblies[0]);
+							int i = fn.IndexOf (',');
+							gtkAsmVersion = fn.Substring (i+1).Trim ();
+							break;
+						}
+					}
+				}	
+				return gtkAsmVersion;
+			}
+		}
+
 		bool UpdateReferences ()
 		{
-			string gtkAsmVersion = "";
-			
-			if (gtkVersion != null) {
-				foreach (SystemPackage p in Runtime.SystemAssemblyService.GetPackages ()) {
-					if (p.Name == "gtk-sharp-2.0" && p.Version == TargetGtkVersion) {
-						string fn = Runtime.SystemAssemblyService.GetAssemblyFullName (p.Assemblies[0]);
-						int i = fn.IndexOf (',');
-						gtkAsmVersion = fn.Substring (i+1).Trim ();
-						break;
-					}
-				}
-			}	
+			string gtkAsmVersion = GtkAsmVersion;
 			
 			bool changed = false, gdk=false, posix=false;
 			
