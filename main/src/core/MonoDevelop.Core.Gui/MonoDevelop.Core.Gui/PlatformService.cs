@@ -56,12 +56,13 @@ namespace MonoDevelop.Core.Gui
 
 		public string GetMimeTypeForUri (string uri)
 		{
-			FileInfo file = new FileInfo (uri);
-			MimeTypeNode mt = FindMimeTypeForFile (file.Name);
-			if (mt != null)
-				return mt.Id;
-			else
-				return OnGetMimeTypeForUri (uri) ?? "text/plain";
+			if (!String.IsNullOrEmpty (uri)) {
+				FileInfo file = new FileInfo (uri);
+				MimeTypeNode mt = FindMimeTypeForFile (file.Name);
+				if (mt != null)
+					return mt.Id;
+			}
+			return OnGetMimeTypeForUri (uri) ?? "text/plain";
 		}
 		
 		public string GetMimeTypeDescription (string mimeType)
