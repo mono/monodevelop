@@ -72,7 +72,7 @@ namespace MonoDevelop.Platform
 
 		protected override string OnGetMimeTypeForUri (string uri)
 		{
-			return Gnome.Vfs.MimeType.GetMimeTypeForUri (uri);
+			return uri != null ? Gnome.Vfs.MimeType.GetMimeTypeForUri (uri) : null;
 		}
 		
 		protected override bool OnGetMimeTypeIsText (string mimeType)
