@@ -178,7 +178,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 			default:
 				if (Char.IsLetter (completionChar) && !stateTracker.Engine.IsInsideDocLineComment && !stateTracker.Engine.IsInsideOrdinaryCommentOrString) {
 					char prevCh = Editor.CursorPosition > 2 ? Editor.GetCharAt (Editor.CursorPosition - 2) : '\0';
-					if (prevCh != '.') {
+					if (prevCh != '.' && !Char.IsLetterOrDigit (prevCh)) {
 						NewCSharpExpressionFinder expressionFinder = new NewCSharpExpressionFinder (dom);
 						try {
 							result = expressionFinder.FindExpression (Editor.Text, Editor.CursorPosition - 1);

@@ -235,9 +235,10 @@ namespace MonoDevelop.CSharpBinding
 					result.StaticResolve = true;
 					return result;
 				}*/
-				return fieldReferenceExpression.TargetObject.AcceptVisitor(this, data);
+//				return fieldReferenceExpression.TargetObject.AcceptVisitor(this, data);
 			}
 			result = fieldReferenceExpression.TargetObject.AcceptVisitor(this, data) as ResolveResult;
+			System.Console.WriteLine("target result:" + result);
 			NamespaceResolveResult namespaceResult = result as NamespaceResolveResult;
 			if (namespaceResult != null) {
 				string fullName = namespaceResult.Namespace + "." + fieldReferenceExpression.FieldName;

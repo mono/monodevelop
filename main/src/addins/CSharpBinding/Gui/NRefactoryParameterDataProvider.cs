@@ -26,6 +26,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text;
+using System.Xml;
 
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects.Gui.Completion;
@@ -67,6 +69,7 @@ namespace MonoDevelop.CSharpBinding
 				IType baseType = dom.GetType (resolveResult.CallingType.BaseType);
 				System.Console.WriteLine("Calling:" + resolveResult.CallingType);
 				System.Console.WriteLine("base: " + resolveResult.CallingType.BaseType + " resolved :" + baseType);
+				
 				if (baseType != null) {
 					foreach (IMethod method in baseType.Methods) {
 						if (!method.IsConstructor)
@@ -104,9 +107,40 @@ namespace MonoDevelop.CSharpBinding
 			return engine.StackDepth == 0 ? -1 : index;
 		}
 		
+		void GeneratePango (StringBuilder sb, XmlNode node)
+		{
+			if (node == null)
+				return;
+			if (node is XmlText) {
+				sb.Append (node.InnerText);
+			} else if (node is XmlElement) {
+				XmlElement el = node as XmlElement;
+				switch (el.Name) {
+					case "see":
+					case "seealso":
+						sb.Append ("<span foreground=\"blue\" underline=\"single\">");
+						sb.Append (el.GetAttribute ("cref"));
+						sb.Append ("</span> ");
+						break;
+				}
+			}
+			foreach (XmlNode child in node.ChildNodes) {
+				GeneratePango (sb, child);
+			}
+		}
+		
 		public string GetMethodMarkup (int overload, string[] parameterMarkup)
 		{
-			return ambience.GetIntellisenseDescription (methods[overload]);
+			XmlNode node = methods[overload].GetMonodocDocumentation ();
+			string xmlDoc = "";
+			XmlNode summary = node.SelectSingleNode ("summary");
+			if (summary != null) {
+				System.Console.WriteLine(summary.InnerXml);
+				StringBuilder sb = new StringBuilder ();
+				GeneratePango (sb, summary);
+				xmlDoc = sb.ToString ().Trim ();
+			}
+			return ambience.GetIntellisenseDescription (methods[overload]) + Environment.NewLine + xmlDoc;
 		}
 		
 		public string GetParameterMarkup (int overload, int paramIndex)

@@ -29,6 +29,7 @@
 using System;
 using System.IO;
 using System.Collections;
+using System.Collections.ObjectModel;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Drawing;
@@ -211,14 +212,24 @@ namespace MonoDevelop.CSharpBinding
 			return result;
 		}
 		
+		void ResolveType (IReturnType type)
+		{
+			SearchTypeResult searchedTypeResult = dom.SearchType (new SearchTypeRequest (unit, -1, -1, type.FullName));
+			if (searchedTypeResult != null && searchedTypeResult.Result != null) 
+				type.FullName = searchedTypeResult.Result.FullName;
+		}
+		
 		public ResolveResult ResolveIdentifier (string identifier)
 		{
 			ResolveResult result = null;
+			SearchTypeResult searchedTypeResult;
 			foreach (KeyValuePair<string, List<LocalLookupVariable>> pair in this.lookupTableVisitor.Variables) {
 				if (identifier == pair.Key) {
 					result = new MemberResolveResult ();
 					LocalLookupVariable var = pair.Value[pair.Value.Count - 1];
-					result.ResolvedType = ConvertTypeReference (var.TypeRef);
+					DomReturnType varType = ConvertTypeReference (var.TypeRef);
+					ResolveType (varType);
+					result.ResolvedType = varType;
 					goto end;
 				}
 			}
@@ -240,9 +251,22 @@ namespace MonoDevelop.CSharpBinding
 					result.ResolvedType = ((IProperty)this.callingMember).ReturnType;
 					goto end;
 				}
+				if (this.callingMember is IMethod || this.callingMember is IProperty) {
+					ReadOnlyCollection<IParameter> prms = this.callingMember is IMethod ? ((IMethod)this.callingMember).Parameters : ((IProperty)this.callingMember).Parameters;
+					if (prms != null) {
+						foreach (IParameter para in prms) {
+							if (para.Name == identifier) {
+								result = new MemberResolveResult ();
+								result.ResolvedType = para.ReturnType;
+								ResolveType (result.ResolvedType);
+								goto end;
+							}
+						}
+					}
+				}
 			}
 			
-			SearchTypeResult searchedTypeResult = dom.SearchType (new SearchTypeRequest (unit, -1, -1, identifier));
+			searchedTypeResult = dom.SearchType (new SearchTypeRequest (unit, -1, -1, identifier));
 			if (searchedTypeResult != null) {
 				result = new MemberResolveResult (true);
 				result.ResolvedType = searchedTypeResult.Result;
