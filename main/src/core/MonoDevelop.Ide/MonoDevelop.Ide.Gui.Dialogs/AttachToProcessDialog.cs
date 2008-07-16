@@ -28,6 +28,7 @@
 using System;
 using System.Collections.Generic;
 using MonoDevelop.Core;
+using MonoDevelop.Components;
 using Mono.Debugging.Client;
 
 namespace MonoDevelop.Ide.Gui.Dialogs
@@ -38,6 +39,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		Dictionary<int, List<IDebuggerEngine>> procEngines = new Dictionary<int,List<IDebuggerEngine>> ();
 		List<ProcessInfo> procs = new List<ProcessInfo> ();
 		Gtk.ListStore store;
+		TreeViewState state;
 		
 		public AttachToProcessDialog()
 		{
@@ -63,15 +65,40 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				} catch (Exception ex) {
 					LoggingService.LogError ("Could not get attachablbe processes.", ex);
 				}
+				comboDebs.AppendText (de.Name);
 			}
 			
-			foreach (ProcessInfo pi in procs) {
-				store.AppendValues (pi, pi.Id.ToString (), pi.Name);
-			}
+			state = new TreeViewState (tree, 1);
+			
+			FillList ();
 			
 			comboDebs.Sensitive = false;
 			buttonOk.Sensitive = false;
 			tree.Selection.Changed += OnSelectionChanged;
+			
+			Gtk.TreeIter it;
+			if (store.GetIterFirst (out it))
+				tree.Selection.SelectIter (it);
+		}
+		
+		void FillList ()
+		{
+			state.Save ();
+			
+			store.Clear ();
+			string filter = entryFilter.Text;
+			foreach (ProcessInfo pi in procs) {
+				if (filter.Length == 0 || pi.Id.ToString().Contains (filter) || pi.Name.Contains (filter))
+					store.AppendValues (pi, pi.Id.ToString (), pi.Name);
+			}
+			
+			state.Load ();
+			
+			if (tree.Selection.CountSelectedRows () == 0) {
+				Gtk.TreeIter it;
+				if (store.GetIterFirst (out it))
+					tree.Selection.SelectIter (it);
+			}
 		}
 		
 		void OnSelectionChanged (object s, EventArgs args)
@@ -93,6 +120,11 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				comboDebs.Sensitive = false;
 				buttonOk.Sensitive = false;
 			}
+		}
+
+		protected virtual void OnEntryFilterChanged (object sender, System.EventArgs e)
+		{
+			FillList ();
 		}
 		
 		public ProcessInfo SelectedProcess {

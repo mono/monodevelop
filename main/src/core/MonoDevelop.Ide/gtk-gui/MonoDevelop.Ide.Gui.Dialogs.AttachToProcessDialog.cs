@@ -15,13 +15,17 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
         
         private Gtk.VBox vbox2;
         
+        private Gtk.HBox hbox1;
+        
         private Gtk.Label label1;
+        
+        private Gtk.Entry entryFilter;
         
         private Gtk.ScrolledWindow GtkScrolledWindow;
         
         private Gtk.TreeView tree;
         
-        private Gtk.HBox hbox1;
+        private Gtk.HBox hbox2;
         
         private Gtk.Label label2;
         
@@ -49,15 +53,33 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             this.vbox2.Spacing = 12;
             this.vbox2.BorderWidth = ((uint)(9));
             // Container child vbox2.Gtk.Box+BoxChild
+            this.hbox1 = new Gtk.HBox();
+            this.hbox1.Name = "hbox1";
+            this.hbox1.Spacing = 6;
+            // Container child hbox1.Gtk.Box+BoxChild
             this.label1 = new Gtk.Label();
             this.label1.Name = "label1";
             this.label1.Xalign = 0F;
             this.label1.LabelProp = Mono.Unix.Catalog.GetString("Attach to:");
-            this.vbox2.Add(this.label1);
-            Gtk.Box.BoxChild w2 = ((Gtk.Box.BoxChild)(this.vbox2[this.label1]));
+            this.hbox1.Add(this.label1);
+            Gtk.Box.BoxChild w2 = ((Gtk.Box.BoxChild)(this.hbox1[this.label1]));
             w2.Position = 0;
             w2.Expand = false;
             w2.Fill = false;
+            // Container child hbox1.Gtk.Box+BoxChild
+            this.entryFilter = new Gtk.Entry();
+            this.entryFilter.CanFocus = true;
+            this.entryFilter.Name = "entryFilter";
+            this.entryFilter.IsEditable = true;
+            this.entryFilter.InvisibleChar = '●';
+            this.hbox1.Add(this.entryFilter);
+            Gtk.Box.BoxChild w3 = ((Gtk.Box.BoxChild)(this.hbox1[this.entryFilter]));
+            w3.Position = 1;
+            this.vbox2.Add(this.hbox1);
+            Gtk.Box.BoxChild w4 = ((Gtk.Box.BoxChild)(this.vbox2[this.hbox1]));
+            w4.Position = 0;
+            w4.Expand = false;
+            w4.Fill = false;
             // Container child vbox2.Gtk.Box+BoxChild
             this.GtkScrolledWindow = new Gtk.ScrolledWindow();
             this.GtkScrolledWindow.Name = "GtkScrolledWindow";
@@ -69,43 +91,43 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             this.tree.HeadersClickable = true;
             this.GtkScrolledWindow.Add(this.tree);
             this.vbox2.Add(this.GtkScrolledWindow);
-            Gtk.Box.BoxChild w4 = ((Gtk.Box.BoxChild)(this.vbox2[this.GtkScrolledWindow]));
-            w4.Position = 1;
+            Gtk.Box.BoxChild w6 = ((Gtk.Box.BoxChild)(this.vbox2[this.GtkScrolledWindow]));
+            w6.Position = 1;
             // Container child vbox2.Gtk.Box+BoxChild
-            this.hbox1 = new Gtk.HBox();
-            this.hbox1.Name = "hbox1";
-            this.hbox1.Spacing = 6;
-            // Container child hbox1.Gtk.Box+BoxChild
+            this.hbox2 = new Gtk.HBox();
+            this.hbox2.Name = "hbox2";
+            this.hbox2.Spacing = 6;
+            // Container child hbox2.Gtk.Box+BoxChild
             this.label2 = new Gtk.Label();
             this.label2.Name = "label2";
             this.label2.LabelProp = Mono.Unix.Catalog.GetString("Debugger:");
-            this.hbox1.Add(this.label2);
-            Gtk.Box.BoxChild w5 = ((Gtk.Box.BoxChild)(this.hbox1[this.label2]));
-            w5.Position = 0;
-            w5.Expand = false;
-            w5.Fill = false;
-            // Container child hbox1.Gtk.Box+BoxChild
-            this.comboDebs = Gtk.ComboBox.NewText();
-            this.comboDebs.Name = "comboDebs";
-            this.hbox1.Add(this.comboDebs);
-            Gtk.Box.BoxChild w6 = ((Gtk.Box.BoxChild)(this.hbox1[this.comboDebs]));
-            w6.Position = 1;
-            w6.Expand = false;
-            w6.Fill = false;
-            this.vbox2.Add(this.hbox1);
-            Gtk.Box.BoxChild w7 = ((Gtk.Box.BoxChild)(this.vbox2[this.hbox1]));
-            w7.Position = 2;
+            this.hbox2.Add(this.label2);
+            Gtk.Box.BoxChild w7 = ((Gtk.Box.BoxChild)(this.hbox2[this.label2]));
+            w7.Position = 0;
             w7.Expand = false;
             w7.Fill = false;
+            // Container child hbox2.Gtk.Box+BoxChild
+            this.comboDebs = Gtk.ComboBox.NewText();
+            this.comboDebs.Name = "comboDebs";
+            this.hbox2.Add(this.comboDebs);
+            Gtk.Box.BoxChild w8 = ((Gtk.Box.BoxChild)(this.hbox2[this.comboDebs]));
+            w8.Position = 1;
+            w8.Expand = false;
+            w8.Fill = false;
+            this.vbox2.Add(this.hbox2);
+            Gtk.Box.BoxChild w9 = ((Gtk.Box.BoxChild)(this.vbox2[this.hbox2]));
+            w9.Position = 2;
+            w9.Expand = false;
+            w9.Fill = false;
             w1.Add(this.vbox2);
-            Gtk.Box.BoxChild w8 = ((Gtk.Box.BoxChild)(w1[this.vbox2]));
-            w8.Position = 0;
+            Gtk.Box.BoxChild w10 = ((Gtk.Box.BoxChild)(w1[this.vbox2]));
+            w10.Position = 0;
             // Internal child MonoDevelop.Ide.Gui.Dialogs.AttachToProcessDialog.ActionArea
-            Gtk.HButtonBox w9 = this.ActionArea;
-            w9.Name = "dialog1_ActionArea";
-            w9.Spacing = 6;
-            w9.BorderWidth = ((uint)(5));
-            w9.LayoutStyle = ((Gtk.ButtonBoxStyle)(4));
+            Gtk.HButtonBox w11 = this.ActionArea;
+            w11.Name = "dialog1_ActionArea";
+            w11.Spacing = 6;
+            w11.BorderWidth = ((uint)(5));
+            w11.LayoutStyle = ((Gtk.ButtonBoxStyle)(4));
             // Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
             this.buttonCancel = new Gtk.Button();
             this.buttonCancel.CanDefault = true;
@@ -115,9 +137,9 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             this.buttonCancel.UseUnderline = true;
             this.buttonCancel.Label = "gtk-cancel";
             this.AddActionWidget(this.buttonCancel, -6);
-            Gtk.ButtonBox.ButtonBoxChild w10 = ((Gtk.ButtonBox.ButtonBoxChild)(w9[this.buttonCancel]));
-            w10.Expand = false;
-            w10.Fill = false;
+            Gtk.ButtonBox.ButtonBoxChild w12 = ((Gtk.ButtonBox.ButtonBoxChild)(w11[this.buttonCancel]));
+            w12.Expand = false;
+            w12.Fill = false;
             // Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
             this.buttonOk = new Gtk.Button();
             this.buttonOk.CanDefault = true;
@@ -126,16 +148,17 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             this.buttonOk.UseUnderline = true;
             this.buttonOk.Label = Mono.Unix.Catalog.GetString("Attach");
             this.AddActionWidget(this.buttonOk, -5);
-            Gtk.ButtonBox.ButtonBoxChild w11 = ((Gtk.ButtonBox.ButtonBoxChild)(w9[this.buttonOk]));
-            w11.Position = 1;
-            w11.Expand = false;
-            w11.Fill = false;
+            Gtk.ButtonBox.ButtonBoxChild w13 = ((Gtk.ButtonBox.ButtonBoxChild)(w11[this.buttonOk]));
+            w13.Position = 1;
+            w13.Expand = false;
+            w13.Fill = false;
             if ((this.Child != null)) {
                 this.Child.ShowAll();
             }
             this.DefaultWidth = 656;
             this.DefaultHeight = 413;
             this.Show();
+            this.entryFilter.Changed += new System.EventHandler(this.OnEntryFilterChanged);
         }
     }
 }

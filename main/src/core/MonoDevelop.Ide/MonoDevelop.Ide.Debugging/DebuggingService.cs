@@ -53,6 +53,7 @@ namespace MonoDevelop.Ide.Debugging
 		{
 			executionHandlerFactory = new DebugExecutionHandlerFactory ();
 			TextFileService.LineCountChanged += OnLineCountChanged;
+			breakpoints.AddCatchpoint ("System.InvalidOperationException");
 		}
 
 		public IExecutionHandlerFactory GetExecutionHandlerFactory ()
@@ -88,7 +89,7 @@ namespace MonoDevelop.Ide.Debugging
 				console = null;
 			}
 			
-			Gtk.Application.Invoke (delegate {
+			DispatchService.GuiDispatch (delegate {
 				NotifyCallStackChanged ();
 				NotifyCurrentFrameChanged ();
 				NotifyLocationChanged ();
@@ -189,12 +190,12 @@ namespace MonoDevelop.Ide.Debugging
 		void OnStarted (object s, EventArgs a)
 		{
 			currentBacktrace = null;
-			Gtk.Application.Invoke (delegate {
+			DispatchService.GuiDispatch (delegate {
+				if (ResumedEvent != null)
+					ResumedEvent (null, a);
 				NotifyCallStackChanged ();
 				NotifyCurrentFrameChanged ();
 				NotifyLocationChanged ();
-				if (ResumedEvent != null)
-					ResumedEvent (null, a);
 			});
 		}
 		
@@ -216,6 +217,7 @@ namespace MonoDevelop.Ide.Debugging
 					case TargetEventType.TargetHitBreakpoint:
 					case TargetEventType.TargetInterrupted:
 					case TargetEventType.UnhandledException:
+					case TargetEventType.ExceptionThrown:
 						NotifyPaused ();
 						break;
 					default:
@@ -229,10 +231,11 @@ namespace MonoDevelop.Ide.Debugging
 
 		void NotifyPaused ()
 		{
-			Gtk.Application.Invoke (delegate {
+			DispatchService.GuiDispatch (delegate {
 				if (PausedEvent != null)
 					PausedEvent (null, EventArgs.Empty);
 				NotifyLocationChanged ();
+				IdeApp.Workbench.RootWindow.Present ();
 			});
 /*			foreach (ProcessInfo p in session.GetPocesses ()) {
 				Console.WriteLine ("proc: " + p.Id + " '" + p.Name + "'");
@@ -353,7 +356,7 @@ namespace MonoDevelop.Ide.Debugging
 			set {
 				if (currentBacktrace != null && value < currentBacktrace.FrameCount) {
 					currentFrame = value;
-					Gtk.Application.Invoke (delegate {
+					DispatchService.GuiDispatch (delegate {
 						NotifyCurrentFrameChanged ();
 					});
 				}
@@ -370,7 +373,7 @@ namespace MonoDevelop.Ide.Debugging
 			else
 				currentFrame = -1;
 
-			Gtk.Application.Invoke (delegate {
+			DispatchService.GuiDispatch (delegate {
 				NotifyCallStackChanged ();
 				NotifyCurrentFrameChanged ();
 			});
@@ -435,7 +438,7 @@ namespace MonoDevelop.Ide.Debugging
 		
 		void OnLineCountChanged (object ob, LineCountEventArgs a)
 		{
-			List<Breakpoint> bps = new List<Breakpoint> (breakpoints);
+			List<Breakpoint> bps = new List<Breakpoint> (breakpoints.GetBreakpoints ());
 			foreach (Breakpoint bp in bps) {
 				if (bp.FileName == a.TextFile.Name && bp.Line >= a.LineNumber) {
 					breakpoints.Remove (bp);

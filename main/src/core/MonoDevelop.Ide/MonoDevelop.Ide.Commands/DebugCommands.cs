@@ -223,7 +223,7 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Run ()
 		{
-			foreach (Breakpoint bp in IdeApp.Services.DebuggingService.Breakpoints)
+			foreach (BreakEvent bp in IdeApp.Services.DebuggingService.Breakpoints)
 				bp.Enabled = false;
 		}
 	}

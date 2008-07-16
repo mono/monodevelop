@@ -1,3 +1,14 @@
+2008-07-16  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Commands/DebugCommands.cs: Track api changes.
+	* MonoDevelop.Ide.Debugging/DebuggingService.cs: Track api changes. Use
+	  GuiDispatch instead of Invoke to make sure events are delivered in
+	  the correct order.
+	* MonoDevelop.Ide.Gui.Dialogs/AttachToProcessDialog.cs,
+	  gtk-gui/gui.stetic,
+	  gtk-gui/MonoDevelop.Ide.Gui.Dialogs.AttachToProcessDialog.cs: Added
+	  a filter entry to the attach dialog.
+
 2008-07-12  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Ide.Gui.Content/CompletionTextEditorExtension.cs: Worked
