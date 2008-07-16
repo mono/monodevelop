@@ -283,7 +283,6 @@ namespace MonoDevelop.CSharpBinding
 				result.CallingType   = CallingType;
 				result.CallingMember = CallingMember;
 			}
-			
 			return result;
 		}
 		

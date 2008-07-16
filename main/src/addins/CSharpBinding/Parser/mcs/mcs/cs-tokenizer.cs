@@ -290,6 +290,8 @@ namespace Mono.CSharp
 		
 		static void AddKeyword (string kw, int token)
 		{
+			if (kw == null || keyword_strings.Contains (kw))
+				return;
 			keyword_strings.Add (kw, kw);
 			if (keywords [kw.Length] == null) {
 				keywords [kw.Length] = new CharArrayHashtable (kw.Length);

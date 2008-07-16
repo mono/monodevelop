@@ -86,7 +86,9 @@ namespace MonoDevelop.CSharpBinding.Gui
 				result = FindExpression (dom, 0);
 				if (result == null)
 					return null;
-				
+				int idx = result.Expression.LastIndexOf ('.');
+				if (idx > 0)
+					result.Expression = result.Expression.Substring (0, idx);
 				NRefactoryResolver resolver = new MonoDevelop.CSharpBinding.NRefactoryResolver (dom,
 				                                                                                ICSharpCode.NRefactory.SupportedLanguage.CSharp,
 				                                                                                Editor,

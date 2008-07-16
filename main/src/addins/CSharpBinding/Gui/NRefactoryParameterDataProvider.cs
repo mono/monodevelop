@@ -47,7 +47,9 @@ namespace MonoDevelop.CSharpBinding
 		public NRefactoryParameterDataProvider (TextEditor editor, ProjectDom dom, MethodResolveResult resolveResult)
 		{
 			this.editor = editor;
+			
 			methods.AddRange (resolveResult.Methods);
+			
 		}
 		
 		public NRefactoryParameterDataProvider (TextEditor editor, ProjectDom dom, ThisResolveResult resolveResult)
@@ -133,12 +135,13 @@ namespace MonoDevelop.CSharpBinding
 		{
 			XmlNode node = methods[overload].GetMonodocDocumentation ();
 			string xmlDoc = "";
-			XmlNode summary = node.SelectSingleNode ("summary");
-			if (summary != null) {
-				System.Console.WriteLine(summary.InnerXml);
-				StringBuilder sb = new StringBuilder ();
-				GeneratePango (sb, summary);
-				xmlDoc = sb.ToString ().Trim ();
+			if (node != null) {
+				XmlNode summary = node.SelectSingleNode ("summary");
+				if (summary != null) {
+					StringBuilder sb = new StringBuilder ();
+					GeneratePango (sb, summary);
+					xmlDoc = sb.ToString ().Trim ();
+				}
 			}
 			return ambience.GetIntellisenseDescription (methods[overload]) + Environment.NewLine + xmlDoc;
 		}

@@ -1,3 +1,7 @@
+2008-07-16  Mike Krüger <mkrueger@novell.com> 
+
+	* cs-tokenizer.cs: some bugfixes.
+
 2008-07-12  Mike Krüger <mkrueger@novell.com> 
 
 	* class.cs: Some code completion fixes.

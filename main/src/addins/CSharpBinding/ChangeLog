@@ -2,6 +2,12 @@
 
 	* Gui/NRefactoryResolver.cs, Gui/ResolveVisitor.cs,
 	  Gui/NRefactoryParameterDataProvider.cs,
+	  Gui/CSharpTextEditorCompletion.cs: some bugfixes.
+
+2008-07-16  Mike Krüger <mkrueger@novell.com> 
+
+	* Gui/NRefactoryResolver.cs, Gui/ResolveVisitor.cs,
+	  Gui/NRefactoryParameterDataProvider.cs,
 	  Gui/CSharpTextEditorCompletion.cs: Added xml documentation
 	  support/bugfixes.
 
