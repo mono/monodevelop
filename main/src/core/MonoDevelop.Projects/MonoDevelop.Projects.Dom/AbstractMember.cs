@@ -198,6 +198,10 @@ namespace MonoDevelop.Projects.Dom
 			return null;
 		}
 		
+		public abstract string HelpUrl {
+			get;
+		}
+		
 		public abstract string StockIcon {
 			get;
 		}

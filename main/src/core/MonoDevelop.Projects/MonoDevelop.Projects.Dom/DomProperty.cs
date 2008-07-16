@@ -27,13 +27,17 @@
 //
 
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Text;
 
 namespace MonoDevelop.Projects.Dom
 {
 	public class DomProperty : AbstractMember, IProperty
 	{
 		protected bool isIndexer;
+		protected List<IParameter> parameters = null;
 		protected IMethod getMethod = null;
 		protected IMethod setMethod = null;
 		
@@ -43,6 +47,12 @@ namespace MonoDevelop.Projects.Dom
 			}
 			set {
 				isIndexer = value;
+			}
+		}
+		
+		public ReadOnlyCollection<IParameter> Parameters {
+			get {
+				return parameters != null ? parameters.AsReadOnly () : null;
 			}
 		}
 		
@@ -77,6 +87,21 @@ namespace MonoDevelop.Projects.Dom
 			}
 			set {
 				setMethod = value;
+			}
+		}
+		
+		public override string HelpUrl {
+			get {
+				StringBuilder result = new StringBuilder ();
+				result.Append ("P:");
+				if (this.IsIndexer) {
+					result.Append (DeclaringType.FullName);
+					result.Append (".Item");
+					DomMethod.AppendHelpParameterList (result, this.Parameters);
+				} else {
+					result.Append (this.FullName);
+				}
+				return result.ToString ();
 			}
 		}
 		

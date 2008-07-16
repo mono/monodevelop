@@ -27,11 +27,17 @@
 //
 
 using System;
+using System.Collections.ObjectModel;
+
 namespace MonoDevelop.Projects.Dom
 {
 	public interface IProperty : IMember
 	{
 		bool IsIndexer {
+			get;
+		}
+		
+		ReadOnlyCollection<IParameter> Parameters {
 			get;
 		}
 		

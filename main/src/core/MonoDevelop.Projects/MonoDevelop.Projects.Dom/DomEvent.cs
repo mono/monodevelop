@@ -100,6 +100,11 @@ namespace MonoDevelop.Projects.Dom
 			return result;
 		}
 		
+		public override string HelpUrl {
+			get {
+				return "F:" + this.FullName;
+			}
+		}
 		
 		static readonly string[] iconTable = {Stock.Event, Stock.PrivateEvent, Stock.ProtectedEvent, Stock.InternalEvent};
 		public override string StockIcon {

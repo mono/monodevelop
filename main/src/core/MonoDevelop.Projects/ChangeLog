@@ -1,3 +1,19 @@
+2008-07-16  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Dom.Parser/ProjectParserService.cs,
+	  MonoDevelop.Projects.Dom/ResolveResult.cs,
+	  MonoDevelop.Projects.Dom/DomType.cs,
+	  MonoDevelop.Projects.Dom/IProperty.cs,
+	  MonoDevelop.Projects.Dom/DomMethod.cs,
+	  MonoDevelop.Projects.Dom/DomCecilType.cs,
+	  MonoDevelop.Projects.Dom/AbstractMember.cs,
+	  MonoDevelop.Projects.Dom/Namespace.cs,
+	  MonoDevelop.Projects.Dom/IMember.cs,
+	  MonoDevelop.Projects.Dom/DomEvent.cs,
+	  MonoDevelop.Projects.Dom/DomField.cs,
+	  MonoDevelop.Projects.Dom/DomProperty.cs: Added help support for new
+	  dom.
+
 2008-07-15  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom.Parser/ProjectParserService.cs,

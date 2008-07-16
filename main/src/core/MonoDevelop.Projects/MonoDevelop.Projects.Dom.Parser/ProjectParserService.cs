@@ -31,6 +31,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
+using Monodoc;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using Mono.Addins;
@@ -43,13 +44,19 @@ namespace MonoDevelop.Projects.Dom.Parser
 		static ProjectDom globalDom = new ProjectDom ();
 		static Dictionary<string, ProjectDom> doms = new Dictionary<string, ProjectDom> ();
 		static List<IParser> parsers = new List<IParser>();
-
+		static RootTree helpTree = RootTree.LoadTree ();
+		
 		public static List<IParser> Parsers {
 			get {
 				return parsers;
 			}
 		}
-
+		public static RootTree HelpTree {
+			get {
+				return helpTree;
+			}
+		}
+		
 		static ProjectDomService ()
 		{
 			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Ide/DomParser", delegate(object sender, ExtensionNodeEventArgs args) {
@@ -383,6 +390,8 @@ namespace MonoDevelop.Projects.Dom.Parser
 			OnDomUpdated (new ProjectDomEventArgs (dom));
 			return dom;
 		}
+		
+		
 		
 		static string[] GetReferenceKeys (ProjectReference pr)
 		{

@@ -85,6 +85,12 @@ namespace MonoDevelop.Projects.Dom
 			return visitor.Visit (this, data);
 		}
 		
+		public override string HelpUrl {
+			get {
+				return "N:" + this.FullName;
+			}
+		}
+		
 		public override string StockIcon {
 			get {
 				return Stock.Namespace;

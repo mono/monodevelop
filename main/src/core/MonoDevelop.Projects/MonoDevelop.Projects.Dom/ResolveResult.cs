@@ -114,9 +114,11 @@ namespace MonoDevelop.Projects.Dom
 			IType type = dom.GetType (returnType);
 			if (type == null)
 				return;
-			foreach (IMember member in type.Members) {
-				if (member is IType || !(showStatic ^ member.IsStatic))
-					result.Add (member);
+			foreach (IType curType in dom.GetInheritanceTree (type)) {
+				foreach (IMember member in curType.Members) {
+					if (member is IType || !(showStatic ^ member.IsStatic))
+						result.Add (member);
+				}
 			}
 			if (type.BaseType != null && type.FullName != "System.Object")
 				AddType (dom, result, type.BaseType, showStatic);

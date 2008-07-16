@@ -29,6 +29,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Text;
 
 namespace MonoDevelop.Projects.Dom
 {
@@ -59,7 +60,38 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
+		// get's re-used for property parameters
+		internal static void AppendHelpParameterList (StringBuilder result, ReadOnlyCollection<IParameter> parameters)
+		{
+			result.Append ('(');
+			if (parameters != null) {
+				for (int i = 0; i < parameters.Count; i++) {
+					if (i > 0)
+						result.Append (',');
+					if (parameters[i].ReturnType == null) {
+						result.Append ("System.Void");
+					} else {
+						result.Append (parameters[i].ReturnType.FullName);
+					}
+				}
+			}
+			result.Append (')');
+		}
 		
+		public override string HelpUrl {
+			get {
+				StringBuilder result = new StringBuilder ();
+				if (this.IsConstructor) {
+					result.Append ("C:");
+					result.Append (DeclaringType.FullName);
+				} else {
+					result.Append ("M:");
+					result.Append (FullName);
+				}
+				AppendHelpParameterList (result, Parameters);
+				return result.ToString ();
+			}
+		}
 		
 		static readonly string[] iconTable = {Stock.Method, Stock.PrivateMethod, Stock.ProtectedMethod, Stock.InternalMethod};
 		public override string StockIcon {

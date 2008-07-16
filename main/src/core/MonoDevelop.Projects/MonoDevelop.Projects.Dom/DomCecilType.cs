@@ -65,7 +65,9 @@ namespace MonoDevelop.Projects.Dom
 				evt.CleanCecilDefinitions ();
 			}
 		}
-		
+		public DomCecilType (TypeDefinition typeDefinition) : this (true, true, typeDefinition)
+		{
+		}	
 		public DomCecilType (bool keepDefinitions, bool loadInternal, TypeDefinition typeDefinition)
 		{
 			if (keepDefinitions)

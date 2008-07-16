@@ -200,6 +200,12 @@ namespace MonoDevelop.Projects.Dom
 			{Stock.Delegate,  Stock.PrivateDelegate,  Stock.ProtectedDelegate,  Stock.InternalDelegate}   // delegate
 		};
 		
+		public override string HelpUrl {
+			get {
+				return "T:" + this.FullName;
+			}
+		}
+		
 		public override string StockIcon {
 			get {
 				return iconTable[(int)ClassType, ModifierToOffset (Modifiers)];

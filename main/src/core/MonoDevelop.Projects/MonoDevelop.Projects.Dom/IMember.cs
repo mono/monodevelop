@@ -81,6 +81,10 @@ namespace MonoDevelop.Projects.Dom
 			get;
 		}
 		
+		string HelpUrl {
+			get;
+		}
+		
 		string StockIcon {
 			get;
 		}

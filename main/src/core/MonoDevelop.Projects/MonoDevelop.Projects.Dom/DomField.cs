@@ -32,6 +32,12 @@ namespace MonoDevelop.Projects.Dom
 {
 	public class DomField : AbstractMember, IField
 	{
+		public override string HelpUrl {
+			get {
+				return "F:" + this.FullName;
+			}
+		}
+		
 		static readonly string[] iconTable = {Stock.Field, Stock.PrivateField, Stock.ProtectedField, Stock.InternalField};
 		
 		public override string StockIcon {
