@@ -92,7 +92,7 @@ namespace MonoDevelop.GtkCore
 		
 		void OnReferenceAdded (object o, ProjectReferenceEventArgs args)
 		{
-			if (IsGtkReference (args.ProjectReference)) {
+			if (!updatingVersion && IsGtkReference (args.ProjectReference)) {
 				builderProject = null;
 				UpdateGtkFolder ();
 				ProjectNodeBuilder.OnSupportChanged (project);
