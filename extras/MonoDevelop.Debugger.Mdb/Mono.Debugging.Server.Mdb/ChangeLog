@@ -1,3 +1,9 @@
+2008-07-16  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* DebuggerServer.cs: Implement support for catchpoints.
+	* ExpressionEvaluator.cs: Fix pointer issue. Int64 can't be converted
+	  to IntPtr in 32bit systems.
+
 2008-07-11  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* DebuggerServer.cs: Fix internal stopping logic.

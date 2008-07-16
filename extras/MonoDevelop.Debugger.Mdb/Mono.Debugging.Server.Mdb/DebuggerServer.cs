@@ -170,36 +170,47 @@ namespace DebuggerServer
 			guiManager.StepOut (activeThread);
 		}
 
-		public int InsertBreakpoint (DL.Breakpoint bp, bool enable)
+		public int InsertBreakEvent (DL.BreakEvent be, bool enable)
 		{
-			MD.SourceLocation location = FindFile (bp.FileName, bp.Line);
-			if (location == null)
-				//FIXME: exception types
-				throw new Exception ("invalid location: " + bp.FileName + ":" + bp.Line);
-
+			DL.Breakpoint bp = be as DL.Breakpoint;
 			MD.Event ev = null;
 			
-			ev = session.InsertBreakpoint (ThreadGroup.Global, location);
+			if (bp != null) {
+				MD.SourceLocation location = FindFile (bp.FileName, bp.Line);
+				if (location == null)
+					//FIXME: exception types
+					throw new Exception ("invalid location: " + bp.FileName + ":" + bp.Line);
+				ev = session.InsertBreakpoint (ThreadGroup.Global, location);
+			}
+			else if (be is Catchpoint) {
+				Catchpoint cp = (Catchpoint) be;
+				ML.TargetType exc = null;
+				foreach (Module mod in process.Modules) {
+					exc = mod.Language.LookupType (cp.ExceptionName);
+					if (exc != null)
+						break;
+				}
+				if (exc == null)
+					throw new Exception ("Unknown exception type.");
+				ev = session.InsertExceptionCatchPoint (process.MainThread, ThreadGroup.Global, exc);
+			}
+			
 			ev.IsEnabled = enable;
 			
 			if (!initializing) {
-				Exception error = null;
 				RunWhenStopped (delegate {
 					try {
 						ev.Activate (process.MainThread);
 					} catch (Exception ex) {
-						error = ex;
 						Console.WriteLine (ex);
 					}
 				});
-				if (error != null)
-					throw new Exception ("Breakpoint could not be set: " + error.Message);
 			}
 			
 			return ev.Index;
 		}
 
-		public void RemoveBreakpoint (int handle)
+		public void RemoveBreakEvent (int handle)
 		{
 			//FIXME: handle errors
 			QueueTask (delegate {
@@ -208,7 +219,7 @@ namespace DebuggerServer
 			});
 		}
 		
-		public void EnableBreakpoint (int handle, bool enable)
+		public void EnableBreakEvent (int handle, bool enable)
 		{
 			RunWhenStopped (delegate {
 				Event ev = session.GetEvent (handle);
@@ -219,7 +230,7 @@ namespace DebuggerServer
 			});
 		}
 		
-		public object UpdateBreakpoint (object handle, DL.Breakpoint bp)
+		public object UpdateBreakEvent (object handle, DL.BreakEvent bp)
 		{
 			return handle;
 		}
@@ -362,12 +373,16 @@ namespace DebuggerServer
 		DL.Backtrace CreateBacktrace (MD.Thread thread)
 		{
 			List<MD.StackFrame> frames = new List<MD.StackFrame> ();
+			DateTime t = DateTime.Now;
 			MD.Backtrace backtrace = thread.GetBacktrace (MD.Backtrace.Mode.Native, max_frames);
-			if (backtrace != null)
+			Console.WriteLine ("GetBacktrace time: {0} ms n:{1}", (DateTime.Now - t).TotalMilliseconds, backtrace.Count);
+			if (backtrace != null) {
 				frames.AddRange (backtrace.Frames);
+			}
 			backtrace = thread.GetBacktrace (MD.Backtrace.Mode.Managed, max_frames);
-			if (backtrace != null)
+			if (backtrace != null) {
 				frames.AddRange (backtrace.Frames);
+			}
 			if (frames.Count > 0) {
 				BacktraceWrapper wrapper = new BacktraceWrapper (frames.ToArray ());
 				return new DL.Backtrace (wrapper);
@@ -458,7 +473,6 @@ namespace DebuggerServer
 				
 				if (!internalInterruptionRequested) {
 					internalInterruptionRequested = true;
-					Console.WriteLine ("pp internal stop: ");
 					process.MainThread.Stop ();
 				}
 			}
@@ -472,7 +486,7 @@ namespace DebuggerServer
 				if (!running)
 					return;
 				
-				bool notifyToClient = args.IsStopped || args.Type == MD.TargetEventType.UnhandledException;
+				bool notifyToClient = args.IsStopped || args.Type == MD.TargetEventType.UnhandledException || args.Type == MD.TargetEventType.Exception;
 				
 				bool isStop = args.Type != MD.TargetEventType.FrameChanged &&
 					args.Type != MD.TargetEventType.TargetExited &&
@@ -537,7 +551,7 @@ namespace DebuggerServer
 				DL.TargetEventType type;
 				
 				switch (args.Type) {
-					case MD.TargetEventType.Exception: type = DL.TargetEventType.Exception; break;
+					case MD.TargetEventType.Exception: type = DL.TargetEventType.ExceptionThrown; break;
 					case MD.TargetEventType.TargetHitBreakpoint: type = DL.TargetEventType.TargetHitBreakpoint; break;
 					case MD.TargetEventType.TargetInterrupted: type = DL.TargetEventType.TargetInterrupted; break;
 					case MD.TargetEventType.TargetSignaled: type = DL.TargetEventType.TargetSignaled; break;

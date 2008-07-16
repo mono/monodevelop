@@ -91,7 +91,10 @@ namespace DebuggerServer
 					return ToExpression (val);
 					
 				case TargetObjectKind.Pointer:
-					return ToExpression (new IntPtr (obj.GetAddress (thread).Address));
+					if (IntPtr.Size < 8)
+						return ToExpression (new IntPtr ((int)obj.GetAddress (thread).Address));
+					else
+						return ToExpression (new IntPtr (obj.GetAddress (thread).Address));
 					
 				case TargetObjectKind.Object:
 					TargetObjectObject oob = obj as TargetObjectObject;

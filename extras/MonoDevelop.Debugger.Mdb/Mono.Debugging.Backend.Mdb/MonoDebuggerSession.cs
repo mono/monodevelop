@@ -103,25 +103,25 @@ namespace Mono.Debugging.Backend.Mdb
 		//breakpoints etc
 
 		// returns a handle
-		protected override object OnInsertBreakpoint (Breakpoint bp, bool activate)
+		protected override object OnInsertBreakEvent (BreakEvent be, bool activate)
 		{
-			return controller.DebuggerServer.InsertBreakpoint (bp, activate);
+			return controller.DebuggerServer.InsertBreakEvent (be, activate);
 		}
 
-		protected override void OnRemoveBreakpoint (object handle)
+		protected override void OnRemoveBreakEvent (object handle)
 		{
 			if (controller.DebuggerServer != null)
-				controller.DebuggerServer.RemoveBreakpoint ((int)handle);
+				controller.DebuggerServer.RemoveBreakEvent ((int)handle);
 		}
 		
-		protected override void OnEnableBreakpoint (object handle, bool enable)
+		protected override void OnEnableBreakEvent (object handle, bool enable)
 		{
-			controller.DebuggerServer.EnableBreakpoint ((int)handle, enable);
+			controller.DebuggerServer.EnableBreakEvent ((int)handle, enable);
 		}
 
-		protected override object OnUpdateBreakpoint (object handle, Breakpoint bp)
+		protected override object OnUpdateBreakEvent (object handle, BreakEvent be)
 		{
-			return controller.DebuggerServer.UpdateBreakpoint (handle, bp);
+			return controller.DebuggerServer.UpdateBreakEvent (handle, be);
 		}
 		
 		protected override void OnContinue ()
