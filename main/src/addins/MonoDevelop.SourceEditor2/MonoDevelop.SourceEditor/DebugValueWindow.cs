@@ -38,6 +38,7 @@ namespace MonoDevelop.SourceEditor
 	{
 		ObjectValueTreeView tree;
 		ScrolledWindow sw;
+		bool resetSelection = true;
 		
 		public DebugValueWindow (TextEditor editor, StackFrame frame, ObjectValue value)
 		{
@@ -70,6 +71,13 @@ namespace MonoDevelop.SourceEditor
 			
 			tree.EndEditing += delegate {
 				Modal = false;
+			};
+
+			tree.Selection.Changed += delegate {
+				if (resetSelection) {
+					resetSelection = false;
+					tree.Selection.UnselectAll ();
+				}
 			};
 		}
 		

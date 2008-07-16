@@ -367,7 +367,7 @@ namespace MonoDevelop.SourceEditor
 				line.RemoveMarker (breakpointInvalidMarker);
 			}
 			breakpointSegments.Clear ();
-			foreach (Breakpoint bp in IdeApp.Services.DebuggingService.Breakpoints)
+			foreach (Breakpoint bp in IdeApp.Services.DebuggingService.Breakpoints.GetBreakpoints ())
 				AddBreakpoint (bp);
 			widget.TextEditor.QueueDraw ();
 			

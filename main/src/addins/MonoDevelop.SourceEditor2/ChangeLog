@@ -1,3 +1,9 @@
+2008-07-16  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.SourceEditor/DebugValueWindow.cs: Make sure no rows are
+	  selected the first time the value tree is shown.
+	* MonoDevelop.SourceEditor/SourceEditorView.cs: Track api changes.
+
 2008-07-09  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.SourceEditor/DebugValueWindow.cs,
