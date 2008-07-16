@@ -1,5 +1,10 @@
 2008-07-15  Mike Kestner <mkestner@novell.com> 
 
+	* MonoDevelop.GtkCore/GtkDesignInfo.cs: add an updatingVersion 
+	state to prevent warning when we are adjusting reference versions.
+
+2008-07-15  Mike Kestner <mkestner@novell.com> 
+
 	* MonoDevelop.GtkCore/GtkDesignInfo.cs: add a user confirmation for
 	disabling the designer on reference removal.  Leave the stetic.gui
 	and objects.xml files on disk, though we still remove them from the 

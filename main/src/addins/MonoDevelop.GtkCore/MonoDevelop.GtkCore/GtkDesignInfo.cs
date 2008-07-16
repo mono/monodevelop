@@ -53,6 +53,7 @@ namespace MonoDevelop.GtkCore
 		GuiBuilderProject builderProject;
 		IDotNetLanguageBinding binding;
 		ProjectResourceProvider resourceProvider;
+		bool updatingVersion;
 		
 		static string[] GtkSharpAssemblies = new string [] { 
 			"art-sharp", "atk-sharp", "gconf-sharp", "gdk-sharp", "glade-sharp","glib-sharp","gnome-sharp",
@@ -100,7 +101,7 @@ namespace MonoDevelop.GtkCore
 
 		void OnReferenceRemoved (object o, ProjectReferenceEventArgs args)
 		{
-			if (IsGtkReference (args.ProjectReference)) {
+			if (!updatingVersion && IsGtkReference (args.ProjectReference)) {
 				if (MonoDevelop.Core.Gui.MessageService.Confirm (GettextCatalog.GetString ("The Gtk# User Interface designer will be disabled by removing the gtk-sharp reference."), new MonoDevelop.Core.Gui.AlertButton ("Disable Designer"))) {
 					StringCollection saveFiles = new StringCollection ();
 					saveFiles.AddRange (new string[] {ObjectsFile, SteticFile});
@@ -367,8 +368,10 @@ namespace MonoDevelop.GtkCore
 				
 				// Check and correct the assembly version only if a version is set
 				if (!string.IsNullOrEmpty (gtkAsmVersion) && r.StoredReference.Substring (i+1).Trim() != gtkAsmVersion) {
+					updatingVersion = true;
 					project.References.Remove (r);
 					project.References.Add (new ProjectReference (ReferenceType.Gac, name + ", " + gtkAsmVersion));
+					updatingVersion = false;
 					changed = true;
 				}
 			}
