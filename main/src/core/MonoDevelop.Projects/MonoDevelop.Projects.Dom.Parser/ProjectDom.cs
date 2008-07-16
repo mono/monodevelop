@@ -201,8 +201,9 @@ namespace MonoDevelop.Projects.Dom.Parser
 		
 		public bool NamespaceExists (string name)
 		{
+			string ns = name + ".";
 			foreach (IType type in AllAccessibleTypes) {
-				if (type.Namespace == name)
+				if (type.FullName.StartsWith (ns))
 					return true;
 			}
 			

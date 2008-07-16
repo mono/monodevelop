@@ -42,6 +42,9 @@ namespace MonoDevelop.Projects.Dom
 			get {
 				return expression;
 			}
+			set {
+				expression = value;
+			}
 		}
 
 		public ExpressionContext ExpressionContext {
