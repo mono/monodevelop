@@ -216,8 +216,12 @@ namespace MonoDevelop.Debugger.Gdb
 			RunCommand ("-exec-finish");
 		}
 
-		protected override object OnInsertBreakpoint (Breakpoint bp, bool activate)
+		protected override object OnInsertBreakEvent (BreakEvent be, bool activate)
 		{
+			Breakpoint bp = be as Breakpoint;
+			if (bp == null)
+				return null;
+			
 			lock (gdbLock) {
 				bool dres = InternalStop ();
 				try {
@@ -232,7 +236,7 @@ namespace MonoDevelop.Debugger.Gdb
 			}
 		}
 		
-		protected override void OnRemoveBreakpoint (object handle)
+		protected override void OnRemoveBreakEvent (object handle)
 		{
 			lock (gdbLock) {
 				bool dres = InternalStop ();
@@ -244,7 +248,7 @@ namespace MonoDevelop.Debugger.Gdb
 			}
 		}
 		
-		protected override void OnEnableBreakpoint (object handle, bool enable)
+		protected override void OnEnableBreakEvent (object handle, bool enable)
 		{
 			lock (gdbLock) {
 				bool dres = InternalStop ();
@@ -259,8 +263,12 @@ namespace MonoDevelop.Debugger.Gdb
 			}
 		}
 		
-		protected override object OnUpdateBreakpoint (object handle, Breakpoint bp)
+		protected override object OnUpdateBreakEvent (object handle, BreakEvent be)
 		{
+			Breakpoint bp = be as Breakpoint;
+			if (bp == null)
+				return null;
+			
 			return handle;
 		}
 
