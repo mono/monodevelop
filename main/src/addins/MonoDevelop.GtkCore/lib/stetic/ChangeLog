@@ -1,3 +1,7 @@
+2008-07-16  Mike Kestner <mkestner@novell.com> 
+
+	* libsteticui/ApplicationBackend.cs (RegisterLibrary): null guarding.
+
 2008-07-14  Mike Krüger <mkrueger@novell.com> 
 
 	* libsteticui/CecilWidgetLibrary.cs: fixed possible null reference

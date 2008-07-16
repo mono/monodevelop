@@ -219,7 +219,7 @@ namespace Stetic
 		
 		void RegisterLibrary (AssemblyResolver resolver, Hashtable visited, WidgetLibrary lib)
 		{
-			if (visited.Contains (lib.Name))
+			if (lib == null || visited.Contains (lib.Name))
 				return;
 				
 			visited [lib.Name] = lib;
