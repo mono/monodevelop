@@ -26,6 +26,7 @@
 //
 
 using System;
+using System.Xml;
 
 namespace Mono.Debugging.Client
 {
@@ -34,15 +35,28 @@ namespace Mono.Debugging.Client
 	{
 		string exceptionName;
 		
+		public Catchpoint (string exceptionName)
+		{
+			this.exceptionName = exceptionName;
+		}
+		
+		internal Catchpoint (XmlElement elem): base (elem)
+		{
+			exceptionName = elem.GetAttribute ("exceptionName");
+		}
+
+		internal override XmlElement ToXml (XmlDocument doc)
+		{
+			XmlElement elem = base.ToXml (doc);
+			elem.SetAttribute ("exceptionName", exceptionName);
+			return elem;
+		}
+
+		
 		public string ExceptionName {
 			get {
 				return exceptionName;
 			}
-		}
-		
-		public Catchpoint (string exceptionName)
-		{
-			this.exceptionName = exceptionName;
 		}
 	}
 }

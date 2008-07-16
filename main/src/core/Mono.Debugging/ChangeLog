@@ -1,5 +1,13 @@
 2008-07-16  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* Mono.Debugging.Client/BreakpointStore.cs,
+	  Mono.Debugging.Client/BreakEvent.cs,
+	  Mono.Debugging.Client/Catchpoint.cs,
+	  Mono.Debugging.Client/Breakpoint.cs, Mono.Debugging.mdp,
+	  Makefile.am: Add serialization support to BreakpointStore.
+
+2008-07-16  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* Mono.Debugging.Client/CatchpointEventArgs.cs,
 	  Mono.Debugging.Client/BreakpointStore.cs,
 	  Mono.Debugging.Client/BreakEvent.cs,

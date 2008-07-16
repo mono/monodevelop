@@ -26,14 +26,13 @@
 //
 
 using System;
+using System.Xml;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
 namespace Mono.Debugging.Client
 {
-	
-	
 	public sealed class BreakpointStore: ICollection<BreakEvent>
 	{
 		List<BreakEvent> breakpoints = new List<BreakEvent> ();
@@ -195,6 +194,30 @@ namespace Mono.Debugging.Client
 		public void CopyTo (BreakEvent[] array, int arrayIndex)
 		{
 			breakpoints.CopyTo (array, arrayIndex);
+		}
+		
+		public XmlElement Save ()
+		{
+			XmlDocument doc = new XmlDocument ();
+			XmlElement elem = doc.CreateElement ("BreakpointStore");
+			foreach (BreakEvent ev in this) {
+				XmlElement be = ev.ToXml (doc);
+				elem.AppendChild (be);
+			}
+			return elem;
+		}
+		
+		public void Load (XmlElement rootElem)
+		{
+			Clear ();
+			foreach (XmlNode n in rootElem.ChildNodes) {
+				XmlElement elem = n as XmlElement;
+				if (elem == null)
+					continue;
+				BreakEvent ev = BreakEvent.FromXml (elem);
+				if (ev != null)
+					Add (ev);
+			}
 		}
 		
 		internal void EnableBreakEvent (BreakEvent be, bool enabled)

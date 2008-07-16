@@ -26,6 +26,7 @@
 //
 
 using System;
+using System.Xml;
 
 namespace Mono.Debugging.Client
 {
@@ -43,6 +44,32 @@ namespace Mono.Debugging.Client
 			this.fileName = fileName;
 			this.line = line;
 		}
+		
+		internal Breakpoint (XmlElement elem): base (elem)
+		{
+			fileName = elem.GetAttribute ("file");
+			line = int.Parse (elem.GetAttribute ("line"));
+			string s = elem.GetAttribute ("conditionExpression");
+			if (s.Length > 0)
+				conditionExpression = s;
+			s = elem.GetAttribute ("breakIfConditionChanges");
+			if (s.Length > 0)
+				breakIfConditionChanges = bool.Parse (s);
+		}
+		
+		internal override XmlElement ToXml (XmlDocument doc)
+		{
+			XmlElement elem = base.ToXml (doc);
+			elem.SetAttribute ("file", fileName);
+			elem.SetAttribute ("line", line.ToString ());
+			if (!string.IsNullOrEmpty (conditionExpression)) {
+				elem.SetAttribute ("conditionExpression", conditionExpression);
+				if (breakIfConditionChanges)
+					elem.SetAttribute ("breakIfConditionChanges", "True");
+			}
+			return elem;
+		}
+
 		
 		public string FileName {
 			get { return fileName; }

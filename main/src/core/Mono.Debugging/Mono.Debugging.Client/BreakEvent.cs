@@ -26,6 +26,7 @@
 //
 
 using System;
+using System.Xml;
 
 namespace Mono.Debugging.Client
 {
@@ -35,12 +36,52 @@ namespace Mono.Debugging.Client
 		[NonSerialized] BreakpointStore store;
 		[NonSerialized] bool enabled = true;
 		
-		HitAction hitAction;
+		HitAction hitAction = HitAction.Break;
 		string customActionId;
 		string traceExpression;
 		
 		public BreakEvent()
 		{
+		}
+		
+		internal BreakEvent (XmlElement elem)
+		{
+			string s = elem.GetAttribute ("enabled");
+			if (s.Length > 0)
+				enabled = bool.Parse (s);
+			s = elem.GetAttribute ("hitAction");
+			if (s.Length > 0)
+				hitAction = (HitAction) Enum.Parse (typeof(HitAction), s);
+			s = elem.GetAttribute ("customActionId");
+			if (s.Length > 0)
+				customActionId = s;
+			s = elem.GetAttribute ("traceExpression");
+			if (s.Length > 0)
+				traceExpression = s;
+		}
+		
+		internal virtual XmlElement ToXml (XmlDocument doc)
+		{
+			XmlElement elem = doc.CreateElement (GetType().Name);
+			if (!enabled)
+				elem.SetAttribute ("enabled", "false");
+			if (hitAction != HitAction.Break)
+				elem.SetAttribute ("hitAction", hitAction.ToString ());
+			if (!string.IsNullOrEmpty (customActionId))
+				elem.SetAttribute ("customActionId", customActionId);
+			if (!string.IsNullOrEmpty (traceExpression))
+				elem.SetAttribute ("traceExpression", traceExpression);
+			return elem;
+		}
+		
+		internal static BreakEvent FromXml (XmlElement elem)
+		{
+			if (elem.Name == "Breakpoint")
+				return new Breakpoint (elem);
+			else if (elem.Name == "Catchpoint")
+				return new Catchpoint (elem);
+			else
+				return null;
 		}
 		
 		public bool Enabled {

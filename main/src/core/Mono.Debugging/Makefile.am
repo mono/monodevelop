@@ -5,7 +5,8 @@ ASSEMBLY = $(ASSEMBLY_BUILD_DIR)/Mono.Debugging.dll
 
 REFS =  \
 	$(MONO_ADDINS_LIBS) \
-	-r:System
+	-r:System \
+	-r:System.Xml
 
 FILES =  \
 	Mono.Debugging.Backend/DebuggerExtensionNode.cs \
