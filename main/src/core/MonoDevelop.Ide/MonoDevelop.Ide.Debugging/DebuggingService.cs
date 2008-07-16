@@ -5,6 +5,7 @@
 // Copyright (c) 2004 Novell, Inc.
 
 using System;
+using System.Xml;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -54,6 +55,8 @@ namespace MonoDevelop.Ide.Debugging
 			executionHandlerFactory = new DebugExecutionHandlerFactory ();
 			TextFileService.LineCountChanged += OnLineCountChanged;
 			breakpoints.AddCatchpoint ("System.InvalidOperationException");
+			IdeApp.Workspace.StoringUserPreferences += OnStoreUserPrefs;
+			IdeApp.Workspace.LoadingUserPreferences += OnLoadUserPrefs;
 		}
 
 		public IExecutionHandlerFactory GetExecutionHandlerFactory ()
@@ -445,6 +448,18 @@ namespace MonoDevelop.Ide.Debugging
 					Breakpoint newBp = breakpoints.Add (bp.FileName, bp.Line + a.LineCount);
 				}
 			}
+		}
+		
+		void OnStoreUserPrefs (object s, UserPreferencesEventArgs args)
+		{
+			args.Properties.SetValue ("MonoDevelop.Ide.DebuggingService", breakpoints.Save ());
+		}
+		
+		void OnLoadUserPrefs (object s, UserPreferencesEventArgs args)
+		{
+			XmlElement elem = args.Properties.GetValue<XmlElement> ("MonoDevelop.Ide.DebuggingService");
+			if (elem != null)
+				breakpoints.Load (elem);
 		}
 	}
 }

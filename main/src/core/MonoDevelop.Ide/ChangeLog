@@ -1,5 +1,10 @@
 2008-07-16  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Ide.Debugging/DebuggingService.cs: Store breakpoints in
+	  the user preferences file.
+
+2008-07-16  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Ide.Commands/DebugCommands.cs: Track api changes.
 	* MonoDevelop.Ide.Debugging/DebuggingService.cs: Track api changes. Use
 	  GuiDispatch instead of Invoke to make sure events are delivered in
