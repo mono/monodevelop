@@ -11,8 +11,7 @@ namespace Mono.Debugging.Client
 		TargetHitBreakpoint,
 		TargetSignaled,
 		TargetExited,
-		FrameChanged,
-		Exception,
+		ExceptionThrown,
 		UnhandledException
 	}
 }

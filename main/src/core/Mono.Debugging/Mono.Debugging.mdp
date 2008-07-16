@@ -40,6 +40,10 @@
     <File name="Mono.Debugging.Client/AssemblyLine.cs" subtype="Code" buildaction="Compile" />
     <File name="Mono.Debugging.Backend/DissassemblyBuffer.cs" subtype="Code" buildaction="Compile" />
     <File name="Mono.Debugging.Client/CompletionData.cs" subtype="Code" buildaction="Compile" />
+    <File name="Mono.Debugging.Client/Catchpoint.cs" subtype="Code" buildaction="Compile" />
+    <File name="Mono.Debugging.Client/BreakEvent.cs" subtype="Code" buildaction="Compile" />
+    <File name="Mono.Debugging.Client/CatchpointEventArgs.cs" subtype="Code" buildaction="Compile" />
+    <File name="Mono.Debugging.Client/BreakEventArgs.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />

@@ -1,4 +1,4 @@
-// Breakpoint.cs
+// Catchpoint.cs
 //
 // Author:
 //   Lluis Sanchez Gual <lluis@novell.com>
@@ -30,53 +30,19 @@ using System;
 namespace Mono.Debugging.Client
 {
 	[Serializable]
-	public class Breakpoint: BreakEvent
+	public class Catchpoint: BreakEvent
 	{
-		string fileName;
-		int line;
+		string exceptionName;
 		
-		string conditionExpression;
-		bool breakIfConditionChanges;
+		public string ExceptionName {
+			get {
+				return exceptionName;
+			}
+		}
 		
-		public Breakpoint (string fileName, int line)
+		public Catchpoint (string exceptionName)
 		{
-			this.fileName = fileName;
-			this.line = line;
-		}
-		
-		public string FileName {
-			get { return fileName; }
-		}
-		
-		public int Line {
-			get { return line; }
-		}
-
-		public string ConditionExpression {
-			get {
-				return conditionExpression;
-			}
-			set {
-				conditionExpression = value;
-			}
-		}
-
-		public bool BreakIfConditionChanges {
-			get {
-				return breakIfConditionChanges;
-			}
-			set {
-				breakIfConditionChanges = value;
-			}
+			this.exceptionName = exceptionName;
 		}
 	}
-	
-	public enum HitAction
-	{
-		Break,
-		PrintExpression,
-		CustomAction
-	}
-	
-	public delegate bool BreakEventHitHandler (string actionId, BreakEvent be);
 }

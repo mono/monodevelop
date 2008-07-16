@@ -1,3 +1,15 @@
+2008-07-16  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Mono.Debugging.Client/CatchpointEventArgs.cs,
+	  Mono.Debugging.Client/BreakpointStore.cs,
+	  Mono.Debugging.Client/BreakEvent.cs,
+	  Mono.Debugging.Client/DebuggerSession.cs,
+	  Mono.Debugging.Client/TargetEventType.cs,
+	  Mono.Debugging.Client/Catchpoint.cs,
+	  Mono.Debugging.Client/Breakpoint.cs,
+	  Mono.Debugging.Client/BreakEventArgs.cs, Mono.Debugging.mdp,
+	  Makefile.am: Implemented support for catchpoints.
+
 2008-07-11  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Mono.Debugging.Client/BreakpointStore.cs,

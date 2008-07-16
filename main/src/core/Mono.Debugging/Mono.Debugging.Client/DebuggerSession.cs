@@ -41,7 +41,7 @@ namespace Mono.Debugging.Client
 	public abstract class DebuggerSession: IDisposable
 	{
 		InternalDebuggerSession frontend;
-		Dictionary<Breakpoint,object> breakpoints = new Dictionary<Breakpoint,object> ();
+		Dictionary<BreakEvent,object> breakpoints = new Dictionary<BreakEvent,object> ();
 		bool isRunning;
 		bool started;
 		BreakpointStore breakpointStore;
@@ -52,7 +52,7 @@ namespace Mono.Debugging.Client
 		object slock = new object ();
 		object olock = new object ();
 		ThreadInfo activeThread;
-		BreakpointHitHandler customBreakpointHitHandler;
+		BreakEventHitHandler customBreakpointHitHandler;
 		
 		ProcessInfo[] currentProcesses;
 		
@@ -98,32 +98,32 @@ namespace Mono.Debugging.Client
 				lock (slock) {
 					if (breakpointStore != null) {
 						if (started) {
-							foreach (Breakpoint bp in breakpointStore)
-								RemoveBreakpoint (bp);
+							foreach (BreakEvent bp in breakpointStore)
+								RemoveBreakEvent (bp);
 						}
-						breakpointStore.BreakpointAdded -= OnBreakpointAdded;
-						breakpointStore.BreakpointRemoved -= OnBreakpointRemoved;
-						breakpointStore.BreakpointModified -= OnBreakpointModified;
-						breakpointStore.BreakpointEnableStatusChanged -= OnBreakpointStatusChanged;
+						breakpointStore.BreakEventAdded -= OnBreakpointAdded;
+						breakpointStore.BreakEventRemoved -= OnBreakpointRemoved;
+						breakpointStore.BreakEventModified -= OnBreakpointModified;
+						breakpointStore.BreakEventEnableStatusChanged -= OnBreakpointStatusChanged;
 					}
 					
 					breakpointStore = value;
 					
 					if (breakpointStore != null) {
 						if (started) {
-							foreach (Breakpoint bp in breakpointStore)
-								AddBreakpoint (bp);
+							foreach (BreakEvent bp in breakpointStore)
+								AddBreakEvent (bp);
 						}
-						breakpointStore.BreakpointAdded += OnBreakpointAdded;
-						breakpointStore.BreakpointRemoved += OnBreakpointRemoved;
-						breakpointStore.BreakpointModified += OnBreakpointModified;
-						breakpointStore.BreakpointEnableStatusChanged += OnBreakpointStatusChanged;
+						breakpointStore.BreakEventAdded += OnBreakpointAdded;
+						breakpointStore.BreakEventRemoved += OnBreakpointRemoved;
+						breakpointStore.BreakEventModified += OnBreakpointModified;
+						breakpointStore.BreakEventEnableStatusChanged += OnBreakpointStatusChanged;
 					}
 				}
 			}
 		}
 
-		public BreakpointHitHandler CustomBreakpointHitHandler {
+		public BreakEventHitHandler CustomBreakEventHitHandler {
 			get {
 				return customBreakpointHitHandler;
 			}
@@ -253,106 +253,116 @@ namespace Mono.Debugging.Client
 			}
 		}
 		
-		public bool IsBreakpointValid (Breakpoint bp)
+		public bool IsBreakEventValid (BreakEvent be)
 		{
 			if (!started)
 				return true;
 			
 			object handle;
-			return (breakpoints.TryGetValue (bp, out handle) && handle != null);
+			return (breakpoints.TryGetValue (be, out handle) && handle != null);
 		}
 
-		void AddBreakpoint (Breakpoint bp)
+		void AddBreakEvent (BreakEvent be)
 		{
 			object handle = null;
+			
 			try {
-				handle = OnInsertBreakpoint (bp, bp.Enabled);
+				handle = OnInsertBreakEvent (be, be.Enabled);
 			} catch (Exception ex) {
-				logWriter (false, "Could not set breakpoint at location '" + bp.FileName + ":" + bp.Line + " (" + ex.Message + ")\n");
+				Breakpoint bp = be as Breakpoint;
+				if (bp != null)
+					logWriter (false, "Could not set breakpoint at location '" + bp.FileName + ":" + bp.Line + "' (" + ex.Message + ")\n");
+				else
+					logWriter (false, "Could not set catchpoint for exception '" + ((Catchpoint)be).ExceptionName + "' (" + ex.Message + ")\n");
 			}
-			breakpoints.Add (bp, handle);
-			Breakpoints.NotifyStatusChanged (bp);
+			
+			breakpoints.Add (be, handle);
+			Breakpoints.NotifyStatusChanged (be);
 		}
 
-		void RemoveBreakpoint (Breakpoint bp)
+		void RemoveBreakEvent (BreakEvent be)
 		{
 			object handle;
-			if (GetHandle (bp, out handle)) {
-				breakpoints.Remove (bp);
+			if (GetHandle (be, out handle)) {
+				breakpoints.Remove (be);
 				if (handle != null)
-					OnRemoveBreakpoint (handle);
+					OnRemoveBreakEvent (handle);
 			}
 		}
 		
-		void UpdateBreakpointStatus (Breakpoint bp)
+		void UpdateBreakEventStatus (BreakEvent be)
 		{
 			object handle;
-			if (GetHandle (bp, out handle) && handle != null)
-				OnEnableBreakpoint (handle, bp.Enabled);
+			if (GetHandle (be, out handle) && handle != null)
+				OnEnableBreakEvent (handle, be.Enabled);
 		}
 		
-		void UpdateBreakpoint (Breakpoint bp)
+		void UpdateBreakEvent (BreakEvent be)
 		{
 			object handle;
-			if (GetHandle (bp, out handle)) {
+			if (GetHandle (be, out handle)) {
 				if (handle != null) {
-					object newHandle = OnUpdateBreakpoint (handle, bp);
+					object newHandle = OnUpdateBreakEvent (handle, be);
 					if (newHandle != handle && (newHandle == null || !newHandle.Equals (handle))) {
 						// Update the handle if it has changed, and notify the status change
-						breakpoints [bp] = newHandle;
+						breakpoints [be] = newHandle;
 					}
-					Breakpoints.NotifyStatusChanged (bp);
+					Breakpoints.NotifyStatusChanged (be);
 				} else {
 					// Try inserting the breakpoint again
 					try {
-						handle = OnInsertBreakpoint (bp, bp.Enabled);
+						handle = OnInsertBreakEvent (be, be.Enabled);
 						if (handle != null) {
 							// This time worked
-							breakpoints [bp] = handle;
-							Breakpoints.NotifyStatusChanged (bp);
+							breakpoints [be] = handle;
+							Breakpoints.NotifyStatusChanged (be);
 						}
 					} catch (Exception ex) {
-						logWriter (false, "Could not set breakpoint at location '" + bp.FileName + ":" + bp.Line + " (" + ex.Message + ")\n");
+						Breakpoint bp = be as Breakpoint;
+						if (bp != null)
+							logWriter (false, "Could not set breakpoint at location '" + bp.FileName + ":" + bp.Line + " (" + ex.Message + ")\n");
+						else
+							logWriter (false, "Could not set catchpoint for exception '" + ((Catchpoint)be).ExceptionName + "' (" + ex.Message + ")\n");
 					}
 				}
 			}
 		}
 		
-		void OnBreakpointAdded (object s, BreakpointEventArgs args)
+		void OnBreakpointAdded (object s, BreakEventArgs args)
 		{
 			lock (slock) {
 				if (started)
-					AddBreakpoint (args.Breakpoint);
+					AddBreakEvent (args.BreakEvent);
 			}
 		}
 		
-		void OnBreakpointRemoved (object s, BreakpointEventArgs args)
+		void OnBreakpointRemoved (object s, BreakEventArgs args)
 		{
 			lock (slock) {
 				if (started)
-					RemoveBreakpoint (args.Breakpoint);
+					RemoveBreakEvent (args.BreakEvent);
 			}
 		}
 		
-		void OnBreakpointModified (object s, BreakpointEventArgs args)
+		void OnBreakpointModified (object s, BreakEventArgs args)
 		{
 			lock (slock) {
 				if (started)
-					UpdateBreakpoint (args.Breakpoint);
+					UpdateBreakEvent (args.BreakEvent);
 			}
 		}
 		
-		void OnBreakpointStatusChanged (object s, BreakpointEventArgs args)
+		void OnBreakpointStatusChanged (object s, BreakEventArgs args)
 		{
 			lock (slock) {
 				if (started)
-					UpdateBreakpointStatus (args.Breakpoint);
+					UpdateBreakEventStatus (args.BreakEvent);
 			}
 		}
 		
-		bool GetHandle (Breakpoint bp, out object handle)
+		bool GetHandle (BreakEvent be, out object handle)
 		{
-			return breakpoints.TryGetValue (bp, out handle);
+			return breakpoints.TryGetValue (be, out handle);
 		}
 
 		public void Continue ()
@@ -463,7 +473,7 @@ namespace Mono.Debugging.Client
 			}
 			
 			switch (args.Type) {
-				case TargetEventType.Exception:
+				case TargetEventType.ExceptionThrown:
 					lock (slock) {
 						isRunning = false;
 					}
@@ -474,7 +484,7 @@ namespace Mono.Debugging.Client
 					lock (slock) {
 						isRunning = false;
 						started = false;
-						foreach (Breakpoint bp in Breakpoints)
+						foreach (BreakEvent bp in Breakpoints)
 							Breakpoints.NotifyStatusChanged (bp);
 					}
 					if (TargetExited != null)
@@ -531,8 +541,8 @@ namespace Mono.Debugging.Client
 		{
 			lock (slock) {
 				started = true;
-				foreach (Breakpoint bp in breakpointStore)
-					AddBreakpoint (bp);
+				foreach (BreakEvent bp in breakpointStore)
+					AddBreakEvent (bp);
 			}
 		}
 		
@@ -554,7 +564,7 @@ namespace Mono.Debugging.Client
 		
 		internal protected bool OnCustomBreakpointAction (string actionId, object handle)
 		{
-			foreach (KeyValuePair<Breakpoint,object> e in breakpoints) {
+			foreach (KeyValuePair<BreakEvent,object> e in breakpoints) {
 				if (handle == e.Value || handle.Equals (e.Value))
 					return customBreakpointHitHandler (actionId, e.Key);
 			}
@@ -591,13 +601,13 @@ namespace Mono.Debugging.Client
 		//breakpoints etc
 
 		// returns a handle
-		protected abstract object OnInsertBreakpoint (Breakpoint bp, bool activate);
+		protected abstract object OnInsertBreakEvent (BreakEvent be, bool activate);
 
-		protected abstract void OnRemoveBreakpoint (object handle);
+		protected abstract void OnRemoveBreakEvent (object handle);
 		
-		protected abstract object OnUpdateBreakpoint (object handle, Breakpoint bp);
+		protected abstract object OnUpdateBreakEvent (object handle, BreakEvent be);
 		
-		protected abstract void OnEnableBreakpoint (object handle, bool enable);
+		protected abstract void OnEnableBreakEvent (object handle, bool enable);
 
 		protected abstract void OnContinue ();
 		

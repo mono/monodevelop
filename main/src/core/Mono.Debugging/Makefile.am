@@ -15,9 +15,13 @@ FILES =  \
 	Mono.Debugging.Backend/IObjectValueSource.cs \
 	Mono.Debugging.Client/AssemblyLine.cs \
 	Mono.Debugging.Client/Backtrace.cs \
+	Mono.Debugging.Client/BreakEvent.cs \
+	Mono.Debugging.Client/BreakEventArgs.cs \
 	Mono.Debugging.Client/Breakpoint.cs \
 	Mono.Debugging.Client/BreakpointEventArgs.cs \
 	Mono.Debugging.Client/BreakpointStore.cs \
+	Mono.Debugging.Client/Catchpoint.cs \
+	Mono.Debugging.Client/CatchpointEventArgs.cs \
 	Mono.Debugging.Client/CompletionData.cs \
 	Mono.Debugging.Client/DebuggerSession.cs \
 	Mono.Debugging.Client/DebuggerStartInfo.cs \

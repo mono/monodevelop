@@ -34,9 +34,9 @@ namespace Mono.Debugging.Client
 {
 	
 	
-	public sealed class BreakpointStore: ICollection<Breakpoint>
+	public sealed class BreakpointStore: ICollection<BreakEvent>
 	{
-		List<Breakpoint> breakpoints = new List<Breakpoint> ();
+		List<BreakEvent> breakpoints = new List<BreakEvent> ();
 		
 		public int Count {
 			get {
@@ -62,11 +62,18 @@ namespace Mono.Debugging.Client
 			return bp;
 		}
 
-		public void Add (Breakpoint bp)
+		public void Add (BreakEvent bp)
 		{
 			breakpoints.Add (bp);
 			bp.Store = this;
-			OnBreakpointAdded (bp);
+			OnBreakEventAdded (bp);
+		}
+		
+		public Catchpoint AddCatchpoint (string exceptioName)
+		{
+			Catchpoint cp = new Catchpoint (exceptioName);
+			Add (cp);
+			return cp;
 		}
 		
 		public void Remove (string filename, int line)
@@ -74,10 +81,10 @@ namespace Mono.Debugging.Client
 			filename = System.IO.Path.GetFullPath (filename);
 			
 			for (int n=0; n<breakpoints.Count; n++) {
-				Breakpoint bp = breakpoints [n];
-				if (bp.FileName == filename && bp.Line == line) {
+				Breakpoint bp = breakpoints [n] as Breakpoint;
+				if (bp != null && bp.FileName == filename && bp.Line == line) {
 					breakpoints.RemoveAt (n);
-					OnBreakpointRemoved (bp);
+					OnBreakEventRemoved (bp);
 					n--;
 				}
 			}
@@ -95,14 +102,36 @@ namespace Mono.Debugging.Client
 			}
 		}
 		
+		public ReadOnlyCollection<Breakpoint> GetBreakpoints ()
+		{
+			List<Breakpoint> list = new List<Breakpoint> ();
+			foreach (BreakEvent be in breakpoints) {
+				if (be is Breakpoint)
+					list.Add ((Breakpoint)be);
+			}
+			return list.AsReadOnly ();
+		}
+		
+		public ReadOnlyCollection<Catchpoint> GetCatchpoints ()
+		{
+			List<Catchpoint> list = new List<Catchpoint> ();
+			foreach (BreakEvent be in breakpoints) {
+				if (be is Catchpoint)
+					list.Add ((Catchpoint) be);
+			}
+			return list.AsReadOnly ();
+		}
+		
 		public ReadOnlyCollection<Breakpoint> GetBreakpointsAtFile (string filename)
 		{
 			filename = System.IO.Path.GetFullPath (filename);
 			
 			List<Breakpoint> list = new List<Breakpoint> ();
-			foreach (Breakpoint bp in breakpoints)
-				if (bp.FileName == filename)
+			foreach (BreakEvent be in breakpoints) {
+				Breakpoint bp = be as Breakpoint;
+				if (bp != null && bp.FileName == filename)
 					list.Add (bp);
+			}
 			return list.AsReadOnly ();
 		}
 		
@@ -111,16 +140,18 @@ namespace Mono.Debugging.Client
 			filename = System.IO.Path.GetFullPath (filename);
 			
 			List<Breakpoint> list = new List<Breakpoint> ();
-			foreach (Breakpoint bp in breakpoints)
-				if (bp.FileName == filename && bp.Line == line)
+			foreach (BreakEvent be in breakpoints) {
+				Breakpoint bp = be as Breakpoint;
+				if (bp != null && bp.FileName == filename && bp.Line == line)
 					list.Add (bp);
+			}
 			return list.AsReadOnly ();
 		}
 		
-		public bool Remove (Breakpoint bp)
+		public bool Remove (BreakEvent bp)
 		{
 			if (breakpoints.Remove (bp)) {
-				OnBreakpointRemoved (bp);
+				OnBreakEventRemoved (bp);
 				return true;
 			}
 			return false;
@@ -131,49 +162,75 @@ namespace Mono.Debugging.Client
 			return breakpoints.GetEnumerator ();
 		}
 
-		IEnumerator<Breakpoint> IEnumerable<Breakpoint>.GetEnumerator ()
+		IEnumerator<BreakEvent> IEnumerable<BreakEvent>.GetEnumerator ()
 		{
 			return breakpoints.GetEnumerator ();
 		}
 
 		public void Clear ()
 		{
-			List<Breakpoint> oldList = breakpoints;
-			breakpoints = new List<Breakpoint> ();
-			foreach (Breakpoint bp in oldList)
-				OnBreakpointRemoved (bp);
+			List<BreakEvent> oldList = breakpoints;
+			breakpoints = new List<BreakEvent> ();
+			foreach (BreakEvent bp in oldList)
+				OnBreakEventRemoved (bp);
 		}
 
-		public bool Contains (Breakpoint item)
+		public void ClearBreakpoints ()
+		{
+			foreach (Breakpoint bp in GetBreakpoints ())
+				Remove (bp);
+		}
+
+		public void ClearCatchpoints ()
+		{
+			foreach (Catchpoint bp in GetCatchpoints ())
+				Remove (bp);
+		}
+
+		public bool Contains (BreakEvent item)
 		{
 			return breakpoints.Contains (item);
 		}
 
-		public void CopyTo (Breakpoint[] array, int arrayIndex)
+		public void CopyTo (BreakEvent[] array, int arrayIndex)
 		{
 			breakpoints.CopyTo (array, arrayIndex);
 		}
 		
-		internal void EnableBreakpoint (Breakpoint bp, bool enabled)
+		internal void EnableBreakEvent (BreakEvent be, bool enabled)
 		{
 			OnChanged ();
-			if (BreakpointEnableStatusChanged != null)
-				BreakpointEnableStatusChanged (this, new BreakpointEventArgs (bp));
-			NotifyStatusChanged (bp);
+			if (BreakEventEnableStatusChanged != null)
+				BreakEventEnableStatusChanged (this, new BreakEventArgs (be));
+			NotifyStatusChanged (be);
 		}
 		
-		void OnBreakpointAdded (Breakpoint bp)
+		void OnBreakEventAdded (BreakEvent be)
 		{
 			OnChanged ();
-			if (BreakpointAdded != null)
-				BreakpointAdded (this, new BreakpointEventArgs (bp));
+			if (BreakEventAdded != null)
+				BreakEventAdded (this, new BreakEventArgs ((BreakEvent)be));
+			if (be is Breakpoint) {
+				if (BreakpointAdded != null)
+					BreakpointAdded (this, new BreakpointEventArgs ((Breakpoint)be));
+			} else if (be is Catchpoint) {
+				if (CatchpointAdded != null)
+					CatchpointAdded (this, new CatchpointEventArgs ((Catchpoint)be));
+			}
 		}
 		
-		void OnBreakpointRemoved (Breakpoint bp)
+		void OnBreakEventRemoved (BreakEvent be)
 		{
 			OnChanged ();
-			if (BreakpointRemoved != null)
-				BreakpointRemoved (this, new BreakpointEventArgs (bp));
+			if (BreakEventRemoved != null)
+				BreakEventRemoved (this, new BreakEventArgs ((BreakEvent)be));
+			if (be is Breakpoint) {
+				if (BreakpointRemoved != null)
+					BreakpointRemoved (this, new BreakpointEventArgs ((Breakpoint)be));
+			} else if (be is Catchpoint) {
+				if (CatchpointRemoved != null)
+					CatchpointRemoved (this, new CatchpointEventArgs ((Catchpoint)be));
+			}
 		}
 		
 		void OnChanged ()
@@ -182,21 +239,35 @@ namespace Mono.Debugging.Client
 				Changed (this, EventArgs.Empty);
 		}
 		
-		internal void NotifyStatusChanged (Breakpoint bp)
+		internal void NotifyStatusChanged (BreakEvent be)
 		{
 			try {
-				if (BreakpointStatusChanged != null)
-					BreakpointStatusChanged (this, new BreakpointEventArgs (bp));
+				if (BreakEventStatusChanged != null)
+					BreakEventStatusChanged (this, new BreakEventArgs ((BreakEvent)be));
+				if (be is Breakpoint) {
+					if (BreakpointStatusChanged != null)
+						BreakpointStatusChanged (this, new BreakpointEventArgs ((Breakpoint)be));
+				} else if (be is Catchpoint) {
+					if (CatchpointStatusChanged != null)
+						CatchpointStatusChanged (this, new CatchpointEventArgs ((Catchpoint)be));
+				}
 			} catch {
 				// Ignone
 			}
 		}
 		
-		internal void NotifyBreakpointChanged (Breakpoint bp)
+		internal void NotifyBreakEventChanged (BreakEvent be)
 		{
 			try {
-				if (BreakpointModified != null)
-					BreakpointModified (this, new BreakpointEventArgs (bp));
+				if (BreakEventModified != null)
+					BreakEventModified (this, new BreakEventArgs ((BreakEvent)be));
+				if (be is Breakpoint) {
+					if (BreakpointModified != null)
+						BreakpointModified (this, new BreakpointEventArgs ((Breakpoint)be));
+				} else if (be is Catchpoint) {
+					if (CatchpointModified != null)
+						CatchpointModified (this, new CatchpointEventArgs ((Catchpoint)be));
+				}
 			} catch {
 				// Ignone
 			}
@@ -206,7 +277,15 @@ namespace Mono.Debugging.Client
 		public event EventHandler<BreakpointEventArgs> BreakpointRemoved;
 		public event EventHandler<BreakpointEventArgs> BreakpointStatusChanged;
 		public event EventHandler<BreakpointEventArgs> BreakpointModified;
-		internal event EventHandler<BreakpointEventArgs> BreakpointEnableStatusChanged;
+		public event EventHandler<CatchpointEventArgs> CatchpointAdded;
+		public event EventHandler<CatchpointEventArgs> CatchpointRemoved;
+		public event EventHandler<CatchpointEventArgs> CatchpointStatusChanged;
+		public event EventHandler<CatchpointEventArgs> CatchpointModified;
+		public event EventHandler<BreakEventArgs> BreakEventAdded;
+		public event EventHandler<BreakEventArgs> BreakEventRemoved;
+		public event EventHandler<BreakEventArgs> BreakEventStatusChanged;
+		public event EventHandler<BreakEventArgs> BreakEventModified;
+		internal event EventHandler<BreakEventArgs> BreakEventEnableStatusChanged;
 		public event EventHandler Changed;
 	}
 }
