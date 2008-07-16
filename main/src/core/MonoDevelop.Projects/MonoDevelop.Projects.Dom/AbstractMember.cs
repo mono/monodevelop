@@ -393,6 +393,14 @@ namespace MonoDevelop.Projects.Dom
 		}
 		#endregion
 		
+		public virtual System.Xml.XmlNode GetMonodocDocumentation ()
+		{
+			System.Xml.XmlDocument doc = ProjectDomService.HelpTree.GetHelpXml (DeclaringType.HelpUrl);
+			if (doc != null) 
+				return doc.SelectSingleNode ("/Type/Members/Member[@MemberName='" + Name + "']/Docs");
+			return null;
+		}
+		
 		public abstract object AcceptVisitior (IDomVisitor visitor, object data);
 		
 	}

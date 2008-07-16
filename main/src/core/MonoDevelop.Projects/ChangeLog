@@ -1,5 +1,14 @@
 2008-07-16  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.Projects.Dom/DomType.cs,
+	  MonoDevelop.Projects.Dom/DomMethod.cs,
+	  MonoDevelop.Projects.Dom/IReturnType.cs,
+	  MonoDevelop.Projects.Dom/AbstractMember.cs,
+	  MonoDevelop.Projects.Dom/IMember.cs: Added monodoc documentation
+	  support.
+
+2008-07-16  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.Projects.Dom.Parser/ProjectParserService.cs,
 	  MonoDevelop.Projects.Dom/ResolveResult.cs,
 	  MonoDevelop.Projects.Dom/DomType.cs,

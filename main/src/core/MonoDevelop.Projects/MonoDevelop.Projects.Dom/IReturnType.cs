@@ -36,6 +36,7 @@ namespace MonoDevelop.Projects.Dom
 	{
 		string FullName {
 			get;
+			set;
 		}
 		string Name {
 			get;

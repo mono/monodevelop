@@ -260,6 +260,14 @@ namespace MonoDevelop.Projects.Dom
 			this.location    = location;
 		}
 		
+		public override System.Xml.XmlNode GetMonodocDocumentation ()
+		{
+			System.Xml.XmlDocument doc = ProjectDomService.HelpTree.GetHelpXml (this.HelpUrl);
+			if (doc != null)
+				return doc.SelectSingleNode ("/Type/Docs");
+			return null;
+		}
+		
 		public List<IMember> SearchMember (string name, bool caseSensitive)
 		{
 			List<IMember> result = new List<IMember> ();

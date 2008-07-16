@@ -30,6 +30,8 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Text;
+using System.Xml;
+using MonoDevelop.Projects.Dom.Parser;
 
 namespace MonoDevelop.Projects.Dom
 {
@@ -137,6 +139,41 @@ namespace MonoDevelop.Projects.Dom
 				genericParameters = new List<IReturnType> ();
 			genericParameters.Add (genPara);
 		}
+		
+		XmlNode FindMatch (XmlNodeList nodes)
+		{
+			List<IParameter> p = parameters ?? new List<IParameter> ();
+			foreach (XmlNode node in nodes) {
+				XmlNodeList paramList = node.SelectNodes ("Parameters/*");
+				if (p.Count == 0 && paramList.Count == 0) 
+					return node;
+				if (p.Count != paramList.Count) 
+					continue;
+				bool matched = true;
+				for (int i = 0; i < p.Count; i++) {
+					if (p[i].ReturnType.FullName != paramList[i].Attributes["Type"].Value) {
+						matched = false;
+						break;
+					}
+				}
+				if (matched)
+					return node;
+			}
+			return null;
+		}
+		
+		public override System.Xml.XmlNode GetMonodocDocumentation ()
+		{
+			System.Xml.XmlDocument doc = ProjectDomService.HelpTree.GetHelpXml (DeclaringType.HelpUrl);
+			if (doc != null) {
+				System.Xml.XmlNodeList nodes = doc.SelectNodes ("/Type/Members/Member[@MemberName='" + Name + "']");
+				XmlNode node = nodes.Count == 1 ? nodes[0] : FindMatch (nodes);
+				if (node != null)
+					return node.SelectSingleNode ("Docs");
+			}
+			return null;
+		}
+		
 
 		
 		public override int CompareTo (object obj)

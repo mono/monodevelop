@@ -94,6 +94,7 @@ namespace MonoDevelop.Projects.Dom
 			set;
 		}
 		
+		System.Xml.XmlNode GetMonodocDocumentation ();
 		bool IsAccessibleFrom (ProjectDom dom, IMember member);
 		
 		#region ModifierAccessors
