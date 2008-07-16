@@ -1057,7 +1057,6 @@ namespace MonoDevelop.Projects.Parser
 		
 		void StartParserThread()
 		{
-		/*
 			lock (this) {
 				if (!threadRunning) {
 					threadRunning = true;
@@ -1065,7 +1064,7 @@ namespace MonoDevelop.Projects.Parser
 					t.IsBackground  = true;
 					t.Start();
 				}
-			}*/
+			}
 		}
 		
 		

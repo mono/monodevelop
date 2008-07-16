@@ -1,5 +1,10 @@
 2008-07-16  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.Projects.Parser/DefaultParserService.cs: fixed Bug 409542
+	  - Code completion database regeneration yielding empty databases.
+
+2008-07-16  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.Projects.Dom.Parser/ProjectDom.cs,
 	  MonoDevelop.Projects.Dom/ExpressionResult.cs: some bugfixes.
 
