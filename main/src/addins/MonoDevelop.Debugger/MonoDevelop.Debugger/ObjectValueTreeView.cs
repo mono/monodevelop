@@ -55,6 +55,9 @@ namespace MonoDevelop.Debugger
 		Gtk.Entry editEntry;
 		CompletionData currentCompletionData;
 		
+		TreeViewColumn valueCol;
+		TreeViewColumn typeCol;
+		
 		const int NameCol = 0;
 		const int ValueCol = 1;
 		const int TypeCol = 2;
@@ -86,22 +89,28 @@ namespace MonoDevelop.Debugger
 			col.PackStart (crtExp, true);
 			col.AddAttribute (crtExp, "markup", NameCol);
 			col.AddAttribute (crtExp, "editable", NameEditableCol);
+			col.Resizable = true;
 			AppendColumn (col);
 			
-			col = new TreeViewColumn ();
-			col.Title = GettextCatalog.GetString ("Value");
+			valueCol = new TreeViewColumn ();
+			valueCol.Expand = true;
+			valueCol.Title = GettextCatalog.GetString ("Value");
 			crtValue = new CellRendererText ();
-			col.PackStart (crtValue, true);
-			col.AddAttribute (crtValue, "markup", ValueCol);
-			col.AddAttribute (crtValue, "editable", ValueEditableCol);
-			AppendColumn (col);
+			valueCol.PackStart (crtValue, true);
+			valueCol.AddAttribute (crtValue, "markup", ValueCol);
+			valueCol.AddAttribute (crtValue, "editable", ValueEditableCol);
+			valueCol.Resizable = true;
+			AppendColumn (valueCol);
 			
-			col = new TreeViewColumn ();
-			col.Title = GettextCatalog.GetString ("Type");
+			typeCol = new TreeViewColumn ();
+			typeCol.Expand = true;
+			typeCol.Title = GettextCatalog.GetString ("Type");
 			crtType = new CellRendererText ();
-			col.PackStart (crtType, true);
-			col.AddAttribute (crtType, "text", TypeCol);
-			AppendColumn (col);
+			crtType.Ellipsize = Pango.EllipsizeMode.End;
+			typeCol.PackStart (crtType, true);
+			typeCol.AddAttribute (crtType, "text", TypeCol);
+			typeCol.Resizable = true;
+			AppendColumn (typeCol);
 			
 			state = new TreeViewState (this, NameCol);
 			
@@ -416,7 +425,7 @@ namespace MonoDevelop.Debugger
 				if (currentCompletionData == null && IsCompletionChar (c)) {
 					string exp = entry.Text.Substring (0, entry.CursorPosition);
 					currentCompletionData = GetCompletionData (exp);
-					if (currentCompletionData != null && currentCompletionData.Items.Count > 0) {
+					if (currentCompletionData != null && currentCompletionData.Items.Count > 1) {
 						DebugCompletionDataProvider dataProvider = new DebugCompletionDataProvider (currentCompletionData);
 						ICodeCompletionContext ctx = ((ICompletionWidget)this).CreateCodeCompletionContext (entry.CursorPosition - currentCompletionData.ExpressionLenght);
 						CompletionWindowManager.ShowWindow (c, dataProvider, this, ctx, OnCompletionWindowClosed);
