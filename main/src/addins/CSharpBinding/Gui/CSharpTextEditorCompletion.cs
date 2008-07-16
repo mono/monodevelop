@@ -114,6 +114,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 							break;
 						}
 					}
+					
 					if (startIndex >= 0) {
 						int endIndex = startIndex;
 						while (endIndex <= Editor.CursorColumn && endIndex < lineText.Length && !Char.IsWhiteSpace (lineText[endIndex])) {
@@ -329,6 +330,17 @@ namespace MonoDevelop.CSharpBinding.Gui
 			
 			if (result == null)
 				return null;
+			
+			if (result.ExpressionContext == ExpressionContext.IdentifierExpected) {
+				NRefactoryResolver resolver = new MonoDevelop.CSharpBinding.NRefactoryResolver (dom,
+				                                                                                ICSharpCode.NRefactory.SupportedLanguage.CSharp,
+				                                                                                Editor,
+				                                                                                Document.FileName);
+				
+				ResolveResult resolveResult = resolver.Resolve (result);
+				return CreateCompletionData (resolveResult, result);
+			}
+				
 			return CreateCtrlSpaceCompletionData (result);
 		}
 		
@@ -450,8 +462,10 @@ namespace MonoDevelop.CSharpBinding.Gui
 			                                                                                ICSharpCode.NRefactory.SupportedLanguage.CSharp,
 			                                                                                Editor,
 			                                                                                Document.FileName);
+			
 			//System.Console.WriteLine(expressionResult.ExpressionContext );
 			CodeCompletionDataProvider result = new CodeCompletionDataProvider (null, GetAmbience ());
+			System.Console.WriteLine("ctrlspace expressionResult:" + expressionResult);
 			if (expressionResult.ExpressionContext == ExpressionContext.TypeDeclaration) {
 				AddPrimitiveTypes (result);
 				AddNRefactoryKeywords (result, ICSharpCode.NRefactory.Parser.CSharp.Tokens.TypeLevel);
