@@ -1,3 +1,9 @@
+2008-07-17  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Serialization/XmlDataSerializer.cs,
+	  MonoDevelop.Projects.Serialization/DataValue.cs: Improve
+	  serialization of DataNodes into xml.
+
 2008-07-16  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Parser/DefaultParserService.cs: fixed Bug 409542

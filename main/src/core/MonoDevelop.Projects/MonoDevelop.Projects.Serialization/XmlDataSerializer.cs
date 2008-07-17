@@ -112,23 +112,19 @@ namespace MonoDevelop.Projects.Serialization
 		
 		protected virtual void WriteAttributes (XmlElement elem, DataItem item)
 		{
-			if (item.UniqueNames) {
-				foreach (DataNode data in item.ItemData) {
-					DataValue val = data as DataValue;
-					if (val != null)
-						WriteAttribute (elem, val.Name, val.Value);
-				}
+			foreach (DataNode data in item.ItemData) {
+				DataValue val = data as DataValue;
+				if (val != null && (item.UniqueNames || val.StoreAsAttribute))
+					WriteAttribute (elem, val.Name, val.Value);
 			}
 		}
 		
 		protected virtual void WriteAttributes (XmlWriter writer, DataItem item)
 		{
-			if (item.UniqueNames) {
-				foreach (DataNode data in item.ItemData) {
-					DataValue val = data as DataValue;
-					if (val != null)
-						WriteAttribute (writer, val.Name, val.Value);
-				}
+			foreach (DataNode data in item.ItemData) {
+				DataValue val = data as DataValue;
+				if (val != null && (item.UniqueNames || val.StoreAsAttribute))
+					WriteAttribute (writer, val.Name, val.Value);
 			}
 		}
 		
@@ -150,8 +146,11 @@ namespace MonoDevelop.Projects.Serialization
 						WriteChild (writer, data);
 				}
 			} else {
-				foreach (DataNode data in item.ItemData)
-					WriteChild (writer, data);
+				foreach (DataNode data in item.ItemData) {
+					DataValue dval = data as DataValue;
+					if (dval == null || !dval.StoreAsAttribute)
+						WriteChild (writer, data);
+				}
 			}
 		}
 		
@@ -163,8 +162,11 @@ namespace MonoDevelop.Projects.Serialization
 						WriteChild (elem, data);
 				}
 			} else {
-				foreach (DataNode data in item.ItemData)
-					WriteChild (elem, data);
+				foreach (DataNode data in item.ItemData) {
+					DataValue dval = data as DataValue;
+					if (dval == null || !dval.StoreAsAttribute)
+						WriteChild (elem, data);
+				}
 			}
 		}
 		
@@ -186,6 +188,7 @@ namespace MonoDevelop.Projects.Serialization
 		public DataNode Read (XmlReader reader)
 		{
 			DataItem item = new DataItem (); 
+			item.UniqueNames = false;
 			reader.MoveToContent ();
 			string name = reader.LocalName;
 			item.Name = name;
@@ -194,7 +197,12 @@ namespace MonoDevelop.Projects.Serialization
 				if (reader.LocalName == "xmlns")
 					continue;
 				DataNode data = ReadAttribute (reader.LocalName, reader.Value);
-				if (data != null) item.ItemData.Add (data);
+				if (data != null) {
+					DataValue val = data as DataValue;
+					if (val != null)
+						val.StoreAsAttribute = true;
+					item.ItemData.Add (data);
+				}
 			}
 			
 			reader.MoveToElement ();
@@ -230,6 +238,7 @@ namespace MonoDevelop.Projects.Serialization
 		public DataNode Read (XmlElement elem)
 		{
 			DataItem item = new DataItem (); 
+			item.UniqueNames = false;
 
 			item.Name = elem.LocalName;
 			
@@ -237,7 +246,12 @@ namespace MonoDevelop.Projects.Serialization
 				if (att.LocalName == "xmlns")
 					continue;
 				DataNode data = ReadAttribute (att.LocalName, att.Value);
-				if (data != null) item.ItemData.Add (data);
+				if (data != null) {
+					DataValue val = data as DataValue;
+					if (val != null)
+						val.StoreAsAttribute = true;
+					item.ItemData.Add (data);
+				}
 			}
 
 			string text = "";
