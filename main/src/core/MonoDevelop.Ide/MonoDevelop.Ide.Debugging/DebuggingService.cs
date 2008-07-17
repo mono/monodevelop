@@ -54,7 +54,6 @@ namespace MonoDevelop.Ide.Debugging
 		{
 			executionHandlerFactory = new DebugExecutionHandlerFactory ();
 			TextFileService.LineCountChanged += OnLineCountChanged;
-			breakpoints.AddCatchpoint ("System.InvalidOperationException");
 			IdeApp.Workspace.StoringUserPreferences += OnStoreUserPrefs;
 			IdeApp.Workspace.LoadingUserPreferences += OnLoadUserPrefs;
 		}
