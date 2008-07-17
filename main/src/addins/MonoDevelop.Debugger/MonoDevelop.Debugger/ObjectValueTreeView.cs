@@ -26,6 +26,7 @@
 //
 
 using System;
+using System.Xml;
 using System.Text;
 using System.Collections.Generic;
 using Gtk;
@@ -183,13 +184,19 @@ namespace MonoDevelop.Debugger
 			}
 		}
 		
-		public void AddValue (string exp)
+		public void AddExpression (string exp)
 		{
 			valueNames.Add (exp);
 			Update ();
 		}
 		
-		public void RemoveValue (string exp)
+		public void AddExpressions (IEnumerable<string> exps)
+		{
+			valueNames.AddRange (exps);
+			Update ();
+		}
+		
+		public void RemoveExpression (string exp)
 		{
 			valueNames.Remove (exp);
 			Update ();
@@ -205,6 +212,10 @@ namespace MonoDevelop.Debugger
 		{
 			values.Remove (value);
 			Update ();
+		}
+		
+		public IEnumerable<string> Expressions {
+			get { return valueNames; }
 		}
 		
 		public void Update ()
@@ -544,7 +555,6 @@ namespace MonoDevelop.Debugger
 			else
 				return null;
 		}
-		
 	}
 	
 	class DebugCompletionDataProvider: ICompletionDataProvider

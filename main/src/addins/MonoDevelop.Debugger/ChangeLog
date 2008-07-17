@@ -1,3 +1,9 @@
+2008-07-17  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Debugger/ObjectValueTreeView.cs,
+	  MonoDevelop.Debugger/WatchPad.cs: Store watch pad expressions into
+	  the user preferences when closing a solution.
+
 2008-07-16  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Debugger/ObjectValueTreeView.cs: Make columns resizable.

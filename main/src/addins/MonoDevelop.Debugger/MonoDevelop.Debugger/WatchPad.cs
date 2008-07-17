@@ -26,6 +26,8 @@
 //
 
 using System;
+using System.Xml;
+using System.Collections.Generic;
 using Gtk;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
@@ -34,12 +36,11 @@ using Mono.Debugging.Client;
 
 namespace MonoDevelop.Debugger
 {
-	
-	
-	public class WatchPad: IPadContent
+	public class WatchPad: IPadContent, IMementoCapable, ICustomXmlSerializer
 	{
 		ObjectValueTreeView tree;
 		ScrolledWindow scrolled;
+		List<string> storedVars;
 		
 		public Gtk.Widget Control {
 			get {
@@ -97,5 +98,51 @@ namespace MonoDevelop.Debugger
 		{
 			tree.Sensitive = false;
 		}
+		
+		#region IMementoCapable implementation 
+		
+		public ICustomXmlSerializer CreateMemento ()
+		{
+			return this;
+		}
+		
+		public void SetMemento (ICustomXmlSerializer memento)
+		{
+			if (tree != null && storedVars != null)
+				tree.AddExpressions (storedVars);
+		}
+		
+		void ICustomXmlSerializer.WriteTo (System.Xml.XmlWriter writer)
+		{
+			if (tree != null) {
+				writer.WriteStartElement ("Values");
+				foreach (string name in tree.Expressions)
+					writer.WriteElementString ("Value", name);
+				writer.WriteEndElement ();
+			}
+		}
+		
+		ICustomXmlSerializer ICustomXmlSerializer.ReadFrom (System.Xml.XmlReader reader)
+		{
+			storedVars = new List<string> ();
+			
+			reader.MoveToContent ();
+			if (reader.IsEmptyElement) {
+				reader.Read ();
+				return null;
+			}
+			reader.ReadStartElement ();
+			reader.MoveToContent ();
+			while (reader.NodeType != XmlNodeType.EndElement) {
+				if (reader.NodeType == XmlNodeType.Element) {
+					storedVars.Add (reader.ReadElementString ());
+				} else
+					reader.Skip ();
+			}
+			reader.ReadEndElement ();
+			return null;
+		}
+		
+		#endregion 
 	}
 }
