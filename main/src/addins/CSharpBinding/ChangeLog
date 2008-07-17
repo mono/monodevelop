@@ -1,3 +1,8 @@
+2008-07-17  Mike Krüger <mkrueger@novell.com> 
+
+	* Gui/NRefactoryResolver.cs, Gui/NRefactoryParameterDataProvider.cs,
+	  Gui/CSharpTextEditorCompletion.cs: Worked on code completion.
+
 2008-07-16  Mike Krüger <mkrueger@novell.com> 
 
 	* Gui/CSharpTextEditorCompletion.cs: fixed bug in ctrl+space completion

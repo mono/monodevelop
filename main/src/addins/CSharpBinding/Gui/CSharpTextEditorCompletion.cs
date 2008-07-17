@@ -30,12 +30,14 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
+using System.Xml;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
 
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Dom;
+using MonoDevelop.Projects.Dom.Output;
 using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Projects.Gui.Completion;
 
@@ -344,18 +346,127 @@ namespace MonoDevelop.CSharpBinding.Gui
 			return CreateCtrlSpaceCompletionData (result);
 		}
 		
-		public static void AddCompletionData (CodeCompletionDataProvider provider, object obj)
+		public class CompletionDataCollector
 		{
-			Namespace ns = obj as Namespace;
-			if (ns != null) {
-				provider.AddCompletionData (new CodeCompletionData (ns.Name, ns.StockIcon, ns.Documentation));
-				return;
+			Dictionary<string, CodeCompletionData> data = new Dictionary<string, CodeCompletionData> ();
+			static CSharpAmbience ambience = new CSharpAmbience ();
+			
+			public static string FormatText (string text)
+			{
+				StringBuilder result = new StringBuilder ();
+				bool wasWhitespace = false;
+				foreach (char ch in text) {
+					switch (ch) {
+						case '\n':
+						case '\r':
+							break;
+						case '<':
+							result.Append ("&lt;");
+							break;
+						case '>':
+							result.Append ("&gt;");
+							break;
+						case '&':
+							result.Append ("&amp;");
+							break;
+						default:
+							if (wasWhitespace && Char.IsWhiteSpace (ch))
+								break;
+							wasWhitespace = Char.IsWhiteSpace (ch);
+							result.Append (ch);
+							break;
+					}
+				}
+				return result.ToString ();
 			}
-		
-			IMember member = obj as IMember;
-			if (member != null) {
-				provider.AddCompletionData (new CodeCompletionData (member.Name, member.StockIcon, member.Documentation));
-				return;
+			static string GetCref (string cref)
+			{
+				if (cref == null)
+					return "";
+				
+				if (cref.Length < 2)
+					return cref;
+				
+				if (cref.Substring(1, 1) == ":")
+					return cref.Substring (2, cref.Length - 2);
+				
+				return cref;
+			}
+			public static string GetDocumentation (string doc)
+			{
+				System.IO.StringReader reader = new System.IO.StringReader("<docroot>" + doc + "</docroot>");
+				XmlTextReader xml   = new XmlTextReader(reader);
+				StringBuilder ret   = new StringBuilder(70);
+				
+				try {
+					xml.Read();
+					do {
+						if (xml.NodeType == XmlNodeType.Element) {
+							string elname = xml.Name.ToLower();
+							if (elname == "remarks") {
+								ret.Append("Remarks:\n");
+							// skip <example>-nodes
+							} else if (elname == "example") {
+								xml.Skip();
+								xml.Skip();							
+							} else if (elname == "exception") {
+								ret.Append("Exception: " + GetCref(xml["cref"]) + ":\n");
+							} else if (elname == "returns") {
+								ret.Append("Returns: ");
+							} else if (elname == "see") {
+								ret.Append(GetCref(xml["cref"]) + xml["langword"]);
+							} else if (elname == "seealso") {
+								ret.Append("See also: " + GetCref(xml["cref"]) + xml["langword"]);
+							} else if (elname == "paramref") {
+								ret.Append(xml["name"]);
+							} else if (elname == "param") {
+								ret.Append(xml["name"].Trim() + ": ");
+							} else if (elname == "value") {
+								ret.Append("Value: ");
+							}
+						} else if (xml.NodeType == XmlNodeType.EndElement) {
+							string elname = xml.Name.ToLower();
+							if (elname == "para" || elname == "param") {
+								ret.Append("\n");
+							}
+						} else if (xml.NodeType == XmlNodeType.Text) {
+							ret.Append(xml.Value);
+						}
+					} while (xml.Read ());
+				} catch (Exception ex) {
+					LoggingService.LogError (ex.ToString ());
+					return doc;
+				}
+				return ret.ToString ();
+			}
+			
+			public void AddCompletionData (CodeCompletionDataProvider provider, object obj)
+			{
+				Namespace ns = obj as Namespace;
+				if (ns != null) {
+					provider.AddCompletionData (new CodeCompletionData (ns.Name, ns.StockIcon, ns.Documentation));
+					return;
+				}
+			
+				IMember member = obj as IMember;
+				if (member != null) {
+					string doc = ambience.GetString (member, OutputFlags.ClassBrowserEntries | OutputFlags.IncludeParameterName);
+					XmlNode node = member.GetMonodocDocumentation ();
+					if (node != null) {
+						node = node.SelectSingleNode ("summary");
+						if (node != null) {
+							doc += Environment.NewLine + GetDocumentation (node.InnerXml);
+						}
+					}
+					CodeCompletionData newData = new CodeCompletionData (member.Name, member.StockIcon, doc);
+					if (data.ContainsKey (member.Name)) {
+						data [member.Name].AddOverload (newData);
+					} else {
+						provider.AddCompletionData (newData);
+						data [member.Name] = newData;
+					}
+					return;
+				}
 			}
 		}
 		
@@ -369,11 +480,12 @@ namespace MonoDevelop.CSharpBinding.Gui
 			if (dom == null)
 				return null;
 			IEnumerable<object> objects = resolveResult.CreateResolveResult (dom);
+			CompletionDataCollector col = new CompletionDataCollector ();
 			if (objects != null) {
 				foreach (object obj in objects) {
 					if (expressionResult.ExpressionContext != null && expressionResult.ExpressionContext.FilterEntry (obj))
 						continue;
-					AddCompletionData (result, obj);
+					col.AddCompletionData (result, obj);
 				}
 			}
 			
@@ -421,14 +533,13 @@ namespace MonoDevelop.CSharpBinding.Gui
 				if (searchedTypeResult != null) 
 					resolvedType = searchedTypeResult.Result ?? returnType;
 			}
-			System.Console.WriteLine (resolvedType);
 			CodeCompletionDataProvider result = new CodeCompletionDataProvider (null, GetAmbience ());
+			CompletionDataCollector col = new CompletionDataCollector();
 			foreach (IType type in this.dom.AllAccessibleTypes) {
-				System.Console.WriteLine (type);
 				if (context != null && context.FilterEntry (type))
 					continue;
 				if (resolvedType == null || type.IsBaseType (resolvedType)) 
-					AddCompletionData (result, type);
+					col.AddCompletionData (result, type);
 			}
 			return result;
 		}

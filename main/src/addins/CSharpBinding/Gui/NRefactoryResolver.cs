@@ -132,11 +132,11 @@ namespace MonoDevelop.CSharpBinding
 					provider.AddCompletionData (new CodeCompletionData (parameter.Name, "md-literal"));
 				}
 			}
-			
+			MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.CompletionDataCollector col = new MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.CompletionDataCollector ();
 			foreach (IType type in dom.GetInheritanceTree (CallingType)) {
 				foreach (IMember member in type.Members) {
 //					if (member.IsAccessibleFrom (dom, CallingMember)) {
-						MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.AddCompletionData (provider, member);
+						col.AddCompletionData (provider, member);
 //					}
 				}
 			}
@@ -161,8 +161,9 @@ namespace MonoDevelop.CSharpBinding
 			if (CallingMember is IEvent) {
 				provider.AddCompletionData (new CodeCompletionData ("value", "md-literal"));
 			}
+			MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.CompletionDataCollector col = new MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.CompletionDataCollector ();
 			foreach (object o in dom.GetNamespaceContents ("", true, true)) {
-				MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.AddCompletionData (provider, o);
+				col.AddCompletionData (provider, o);
 			}
 			if (unit != null && unit.Usings != null) {
 				foreach (IUsing u in unit.Usings) {
@@ -170,7 +171,7 @@ namespace MonoDevelop.CSharpBinding
 						continue;
 					foreach (string ns in u.Namespaces) {
 						foreach (object o in dom.GetNamespaceContents (ns, true, true)) {
-							MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.AddCompletionData (provider, o);
+							col.AddCompletionData (provider, o);
 						}
 					}
 				}

@@ -133,17 +133,7 @@ namespace MonoDevelop.CSharpBinding
 		
 		public string GetMethodMarkup (int overload, string[] parameterMarkup)
 		{
-			XmlNode node = methods[overload].GetMonodocDocumentation ();
-			string xmlDoc = "";
-			if (node != null) {
-				XmlNode summary = node.SelectSingleNode ("summary");
-				if (summary != null) {
-					StringBuilder sb = new StringBuilder ();
-					GeneratePango (sb, summary);
-					xmlDoc = sb.ToString ().Trim ();
-				}
-			}
-			return ambience.GetIntellisenseDescription (methods[overload]) + Environment.NewLine + xmlDoc;
+			return ambience.GetIntellisenseDescription (methods[overload]);
 		}
 		
 		public string GetParameterMarkup (int overload, int paramIndex)
