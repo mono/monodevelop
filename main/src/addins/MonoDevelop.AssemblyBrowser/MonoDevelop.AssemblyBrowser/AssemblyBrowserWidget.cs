@@ -28,7 +28,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Text;
 using System.Threading;
+using System.Xml;
+using System.Xml.Xsl;
 
 using Gtk;
 using Mono.Cecil;
@@ -46,7 +50,7 @@ namespace MonoDevelop.AssemblyBrowser
 	public partial class AssemblyBrowserWidget : Gtk.Bin
 	{
 		MonoDevelopTreeView treeView;
-
+		
 		public MonoDevelopTreeView TreeView {
 			get {
 				return treeView;
@@ -73,12 +77,15 @@ namespace MonoDevelop.AssemblyBrowser
 				new BaseTypeFolderNodeBuilder (),
 				new DomReturnTypeNodeBuilder ()
 				}, new TreePadOption [] {});
-			scrolledwindow2.Add (treeView);
+			scrolledwindow2.AddWithViewport (treeView);
 			scrolledwindow2.ShowAll ();
 			
 			this.descriptionLabel.ModifyFont (Pango.FontDescription.FromString ("Sans 9"));
 			this.disassemblerLabel.ModifyFont (Pango.FontDescription.FromString ("Monospace 10"));
-			this.disassemblerLabel.ModifyBg (Gtk.StateType.Normal, new Gdk.Color (255, 255, 220));
+			this.disassemblerLabel.ModifyBg (Gtk.StateType.Normal, new Gdk.Color (255, 255, 250));
+			this.documentationLabel.ModifyFont (Pango.FontDescription.FromString ("Sans 12"));
+			this.documentationLabel.ModifyBg (Gtk.StateType.Normal, new Gdk.Color (255, 255, 225));
+			this.documentationLabel.Wrap = true;
 			this.decompilerLabel.ModifyFont (Pango.FontDescription.FromString ("Monospace 10"));
 			this.decompilerLabel.ModifyBg (Gtk.StateType.Normal, new Gdk.Color (255, 255, 220));
 			
@@ -104,6 +111,7 @@ namespace MonoDevelop.AssemblyBrowser
 				StartSearch ();
 			};
 				
+			this.notebook1.SetTabLabel (this.documentationScrolledWindow, new Label (GettextCatalog.GetString ("Documentation")));
 			this.notebook1.SetTabLabel (this.disassemblerScrolledWindow, new Label (GettextCatalog.GetString ("Disassembler")));
 			this.notebook1.SetTabLabel (this.decompilerScrolledWindow, new Label (GettextCatalog.GetString ("Decompiler")));
 			this.notebook1.SetTabLabel (this.searchWidget, new Label (GettextCatalog.GetString ("Search")));
@@ -383,12 +391,230 @@ namespace MonoDevelop.AssemblyBrowser
 				searchThread = null;
 			}
 		}
+		static bool preformat = false;
+		public static string FormatText (string text)
+		{
+			if (preformat)
+				return text;
+			StringBuilder result = new StringBuilder ();
+			bool wasWhitespace = false;
+			foreach (char ch in text) {
+				switch (ch) {
+					case '\n':
+					case '\r':
+						break;
+					case '<':
+						result.Append ("&lt;");
+						break;
+					case '>':
+						result.Append ("&gt;");
+						break;
+					case '&':
+						result.Append ("&amp;");
+						break;
+					default:
+						if (wasWhitespace && Char.IsWhiteSpace (ch))
+							break;
+						wasWhitespace = Char.IsWhiteSpace (ch);
+						result.Append (ch);
+						break;
+				}
+			}
+			return result.ToString ();
+		}
+		
+		static void OutputChilds (StringBuilder sb, XmlNode node)
+		{
+			foreach (XmlNode child in node.ChildNodes) {
+				OutputNode (sb, child);
+			}
+		}
+		static void OutputNode (StringBuilder sb, XmlNode node)
+		{
+			if (node is XmlText) {
+				sb.Append (FormatText (node.InnerText));
+			} else if (node is XmlElement) {
+				XmlElement el = node as XmlElement;
+				switch (el.Name) {
+					case "block":
+						switch (el.GetAttribute ("type")) {
+						case "note":
+							sb.AppendLine ("<i>Note:</i>");
+							break;
+						case "behaviors":
+							sb.AppendLine ("<b>Operation</b>");
+							break;
+						case "overrides":
+							sb.AppendLine ("<b>Note to Inheritors</b>");
+							break;
+						case "usage":
+							sb.AppendLine ("<b>Usage</b>");
+							break;
+						case "default":
+							sb.AppendLine ();
+							break;
+						default:
+							sb.Append ("<b>");
+							sb.Append (el.GetAttribute ("type"));
+							sb.AppendLine ("</b>");
+							break;
+						}
+						OutputChilds (sb, node);
+						return;
+					case "c":
+						preformat = true;
+						sb.Append ("<tt>");
+						OutputChilds (sb, node);
+						sb.Append ("</tt>");
+						preformat = false;
+						return;
+					case "code":
+						preformat = true;
+						sb.Append ("<tt>");
+						OutputChilds (sb, node);
+						sb.Append ("</tt>");
+						preformat = false;
+						return;
+					case "exception":
+						OutputChilds (sb, node);
+						return;
+					case "list":
+						switch (el.GetAttribute ("type")) {
+						case "table": // todo: table.
+						case "bullet":
+							foreach (XmlNode child in node.ChildNodes) {
+								sb.Append ("    <b>*</b> ");
+								OutputNode (sb, child);
+							}
+							break;
+						case "number":
+							int i = 1;
+							foreach (XmlNode child in node.ChildNodes) {
+								sb.Append ("    <b>" + i++ +"</b> ");
+								OutputNode (sb, child);
+							}
+							break;
+						default:
+							OutputChilds (sb, node);
+							break;
+						}
+						return;
+					case "para":
+						OutputChilds (sb, node);
+						sb.AppendLine ();
+						return;
+					case "paramref":
+						sb.Append (el.GetAttribute ("name"));
+						return;
+					case "permission":
+						sb.Append (el.GetAttribute ("cref"));
+						return;
+					case "see":
+						sb.Append ("<u>");
+						sb.Append (el.GetAttribute ("langword"));
+						sb.Append (el.GetAttribute ("cref"));
+						sb.Append (el.GetAttribute ("internal"));
+						sb.Append (el.GetAttribute ("topic"));
+						sb.Append ("</u>");
+						return;
+					case "seealso":
+						sb.Append ("<u>");
+						sb.Append (el.GetAttribute ("langword"));
+						sb.Append (el.GetAttribute ("cref"));
+						sb.Append (el.GetAttribute ("internal"));
+						sb.Append (el.GetAttribute ("topic"));
+						sb.Append ("</u>");
+						return;
+				}
+			}
 			
+			OutputChilds (sb, node);
+		}
+		
+		static string TransformDocumentation (XmlNode docNode)
+		{ 
+			// after 3 hours to try it with xsl-t I decided to do the transformation in code.
+			if (docNode == null)
+				return null;
+			StringBuilder result = new StringBuilder ();
+			XmlNode node = docNode.SelectSingleNode ("summary");
+			System.Console.WriteLine(node);
+			if (node != null) {
+				OutputChilds (result, node);
+				result.AppendLine ();
+			}
+			
+			XmlNodeList nodes = docNode.SelectNodes ("param");
+			if (nodes != null && nodes.Count > 0) {
+				result.Append ("<big><b>Parameters</b></big>");
+				foreach (XmlNode paraNode in nodes) {
+					result.AppendLine ();
+					result.AppendLine ("  <i>" + paraNode.Attributes["name"].InnerText +  "</i>");
+					result.Append ("    ");
+					OutputChilds (result, paraNode);
+				}
+				result.AppendLine ();
+			}
+			
+			node = docNode.SelectSingleNode ("value");
+			if (node != null) {
+				result.AppendLine ("<big><b>Value</b></big>");
+				OutputChilds (result, node);
+				result.AppendLine ();
+			}
+			
+			node = docNode.SelectSingleNode ("returns");
+			if (node != null) {
+				result.AppendLine ("<big><b>Returns</b></big>");
+				OutputChilds (result, node);
+				result.AppendLine ();
+			}
+				
+			node = docNode.SelectSingleNode ("remarks");
+			if (node != null) {
+				result.AppendLine ("<big><b>Remarks</b></big>");
+				OutputChilds (result, node);
+				result.AppendLine ();
+			}
+				
+			node = docNode.SelectSingleNode ("example");
+			if (node != null) {
+				result.AppendLine ("<big><b>Example</b></big>");
+				OutputChilds (result, node);
+				result.AppendLine ();
+			}
+				
+			node = docNode.SelectSingleNode ("seealso");
+			if (node != null) {
+				result.AppendLine ("<big><b>See also</b></big>");
+				OutputChilds (result, node);
+				result.AppendLine ();
+			}
+			
+			return result.ToString ();
+		}
+		
 		void CreateOutput ()
 		{
 			MonoDevelop.Ide.Gui.Pads.ITreeNavigator nav = treeView.GetSelectedNode ();
 			
 			if (nav != null) {
+				IMember member = nav.DataItem as IMember;
+				string documentation = GettextCatalog.GetString ("No documentation available.");
+				if (member != null) {
+					XmlNode node = member.GetMonodocDocumentation ();
+					if (node != null) {
+						documentation = TransformDocumentation (node) ?? documentation;
+						/*
+						StringWriter writer = new StringWriter ();
+						XmlTextWriter w = new XmlTextWriter (writer);
+						node.WriteTo (w);
+						System.Console.WriteLine ("---------------------------");
+						System.Console.WriteLine (writer);*/
+						
+					}
+				}
+				this.documentationLabel.Markup = documentation;
 				IAssemblyBrowserNodeBuilder builder = nav.TypeNodeBuilder as IAssemblyBrowserNodeBuilder;
 				this.disassemblerLabel.Selectable = false;
 				if (builder != null) {

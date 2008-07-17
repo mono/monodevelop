@@ -49,7 +49,8 @@ REFS =  \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Projects.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Projects.Gui.dll \
 	-r:Mono.Posix \
-	-r:System
+	-r:System \
+	-r:System.Xml
 
 ADDIN_BUILD = $(top_builddir)/build/AddIns
 

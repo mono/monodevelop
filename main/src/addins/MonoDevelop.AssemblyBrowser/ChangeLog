@@ -1,3 +1,9 @@
+2008-07-17  Mike Krüger <mkrueger@novell.com> 
+
+	* gtk-gui/MonoDevelop.AssemblyBrowser.AssemblyBrowserWidget.cs,
+	  MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs: Worked on
+	  documentation view.
+
 2008-07-15  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.AssemblyBrowser/ModuleDefinitionNodeBuilder.cs: some dom

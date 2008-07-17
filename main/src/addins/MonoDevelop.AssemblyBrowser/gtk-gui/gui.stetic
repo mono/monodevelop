@@ -5,9 +5,7 @@
     <target-gtk-version>2.10.2</target-gtk-version>
   </configuration>
   <import>
-    <widget-library name="../../../../build/bin/MonoDevelop.Ide.dll" />
     <widget-library name="../../../../build/bin/MonoDevelop.Components.dll" />
-    <widget-library name="../../../../build/bin/MonoDevelop.Projects.Gui.dll" />
     <widget-library name="../../../../build/AddIns/MonoDevelop.AssemblyBrowser.dll" internal="true" />
   </import>
   <widget class="Gtk.Bin" id="MonoDevelop.AssemblyBrowser.AssemblyBrowserWidget" design-size="702 482">
@@ -76,13 +74,48 @@
           <widget class="Gtk.Notebook" id="notebook1">
             <property name="MemberName" />
             <property name="CanFocus">True</property>
-            <property name="CurrentPage">2</property>
+            <property name="CurrentPage">0</property>
+            <child>
+              <widget class="Gtk.ScrolledWindow" id="documentationScrolledWindow">
+                <property name="MemberName" />
+                <property name="ShadowType">In</property>
+                <child>
+                  <widget class="Gtk.Viewport" id="GtkViewport">
+                    <property name="MemberName" />
+                    <property name="ShadowType">None</property>
+                    <child>
+                      <widget class="Gtk.Label" id="documentationLabel">
+                        <property name="MemberName" />
+                        <property name="ShowScrollbars">True</property>
+                        <property name="Xpad">6</property>
+                        <property name="Ypad">6</property>
+                        <property name="Xalign">0</property>
+                        <property name="Yalign">0</property>
+                        <property name="LabelProp" translatable="yes" />
+                        <property name="UseMarkup">True</property>
+                        <property name="MnemonicWidget">titleTextBox</property>
+                        <property name="Selectable">True</property>
+                      </widget>
+                    </child>
+                  </widget>
+                </child>
+              </widget>
+            </child>
+            <child>
+              <widget class="Gtk.Label" id="label1">
+                <property name="MemberName" />
+                <property name="LabelProp" translatable="yes">page4</property>
+              </widget>
+              <packing>
+                <property name="type">tab</property>
+              </packing>
+            </child>
             <child>
               <widget class="Gtk.ScrolledWindow" id="disassemblerScrolledWindow">
                 <property name="MemberName" />
                 <property name="ShadowType">In</property>
                 <child>
-                  <widget class="Gtk.Viewport" id="GtkViewport">
+                  <widget class="Gtk.Viewport" id="GtkViewport3">
                     <property name="MemberName" />
                     <property name="ShadowType">None</property>
                     <child>
@@ -102,13 +135,16 @@
                   </widget>
                 </child>
               </widget>
+              <packing>
+                <property name="Position">1</property>
+              </packing>
             </child>
             <child>
               <widget class="Gtk.ScrolledWindow" id="decompilerScrolledWindow">
                 <property name="MemberName" />
                 <property name="ShadowType">In</property>
                 <child>
-                  <widget class="Gtk.Viewport" id="GtkViewport3">
+                  <widget class="Gtk.Viewport" id="GtkViewport4">
                     <property name="MemberName" />
                     <property name="ShadowType">None</property>
                     <child>
@@ -129,7 +165,7 @@
                 </child>
               </widget>
               <packing>
-                <property name="Position">1</property>
+                <property name="Position">2</property>
               </packing>
             </child>
             <child>
@@ -222,7 +258,7 @@
                 </child>
               </widget>
               <packing>
-                <property name="Position">2</property>
+                <property name="Position">3</property>
               </packing>
             </child>
           </widget>
