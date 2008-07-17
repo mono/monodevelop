@@ -85,6 +85,23 @@ namespace MonoDevelop.Projects.CodeGeneration
 			return (r.SupportedOperations & operation) == operation;
 		}
 		
+		public void AddAttribute (IClass cls, string name, params object[] parameters)
+		{
+			CodeAttributeArgument[] args = new CodeAttributeArgument[parameters.Length];
+			for (int i = 0; i < parameters.Length; i++)
+				args [i] = new CodeAttributeArgument (new CodePrimitiveExpression (parameters [i]));
+			CodeAttributeDeclaration attr = new CodeAttributeDeclaration (name, args);
+			AddAttribute (cls, attr);
+		}
+
+		public void AddAttribute (IClass cls, CodeAttributeDeclaration attr)
+		{
+			RefactorerContext gctx = GetGeneratorContext (cls);
+			IRefactorer gen = GetGeneratorForClass (cls);
+			gen.AddAttribute (gctx, cls, attr);
+			gctx.Save ();
+		}
+
 		public IClass CreateClass (Project project, string language, string directory, string namspace, CodeTypeDeclaration type)
 		{
 			IParserContext ctx = pdb.GetProjectParserContext (project);

@@ -47,6 +47,28 @@ namespace MonoDevelop.Projects.CodeGeneration
 		
 		protected abstract CodeDomProvider GetCodeDomProvider ();
 		
+		public virtual void AddAttribute (RefactorerContext ctx, IClass cls, CodeAttributeDeclaration attr)
+		{
+			IEditableTextFile buffer = ctx.GetFile (cls.Region.FileName);
+
+			CodeTypeDeclaration type = new CodeTypeDeclaration ("temp");
+			type.CustomAttributes.Add (attr);
+			CodeDomProvider provider = GetCodeDomProvider ();
+			StringWriter sw = new StringWriter ();
+			provider.GenerateCodeFromType (type, sw, GetOptions (false));
+			string code = sw.ToString ();
+			int start = code.IndexOf ('[');
+			int end = code.LastIndexOf (']');
+			code = code.Substring (start, end-start+1) + Environment.NewLine;
+
+			int line = cls.Region.BeginLine;
+			int col = cls.Region.BeginColumn;
+			int pos = buffer.GetPositionFromLineColumn (line, col);
+
+			code = Indent (code, GetLineIndent (buffer, line), false);
+			buffer.InsertText (pos, code);
+		}
+
 		public IClass CreateClass (RefactorerContext ctx, string directory, string namspace, CodeTypeDeclaration type)
 		{
 			CodeCompileUnit unit = new CodeCompileUnit ();
@@ -970,5 +992,6 @@ namespace MonoDevelop.Projects.CodeGeneration
 				ops.BracingStyle = "C";
 			return ops;
 		}
+
 	}
 }

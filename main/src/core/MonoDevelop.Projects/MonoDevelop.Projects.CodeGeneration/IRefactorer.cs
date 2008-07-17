@@ -39,6 +39,8 @@ namespace MonoDevelop.Projects.CodeGeneration
 	{
 		RefactorOperations SupportedOperations { get; }
 		
+		void AddAttribute (RefactorerContext ctx, IClass cls, CodeAttributeDeclaration attr);
+
 		IClass CreateClass (RefactorerContext ctx, string directory, string namspace, CodeTypeDeclaration type);
 		IClass RenameClass (RefactorerContext ctx, IClass cls, string newName);
 		MemberReferenceCollection FindClassReferences (RefactorerContext ctx, string fileName, IClass cls);

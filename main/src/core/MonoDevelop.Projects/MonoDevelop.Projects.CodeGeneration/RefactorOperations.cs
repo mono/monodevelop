@@ -43,6 +43,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 		RenameParameter = 0x80,
 		EncapsulateField = 0x100,
 		AddFoldingRegion = 0x200,
+		AddAttribute = 0x400,
 		All = 0xffff
 	}
 }
