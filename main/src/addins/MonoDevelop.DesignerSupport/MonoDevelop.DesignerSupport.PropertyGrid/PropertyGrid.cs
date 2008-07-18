@@ -50,28 +50,27 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid
 	{
 		object currentObject;
 		object[] propertyProviders;
+
+		PropertyGridTree tree;
+		VPaned vpaned;
 		
-		private bool showHelp = true;
+		Tooltips tips;
 
-		private PropertyGridTree tree;
-		private VPaned vpaned;
-		
-		private Tooltips tips;
+		Toolbar toolbar;
+		RadioToolButton catButton;
+		RadioToolButton alphButton;
+		ToggleToolButton helpButton;
 
-		private Toolbar toolbar;
-		private RadioToolButton catButton;
-		private RadioToolButton alphButton;
-
-		private ScrolledWindow textScroll;
-		private VBox desc;
-		private Label descTitle;
-		private TextView descText;
-		private Frame descFrame;
+		string descTitle, descText;
+		Label descTitleLabel;
+		TextView descTextView;
+		Frame descFrame;
 		
 		EditorManager editorManager;
 		
-		private System.Windows.Forms.PropertySort propertySort = System.Windows.Forms.PropertySort.Categorized;
-
+		System.Windows.Forms.PropertySort propertySort = System.Windows.Forms.PropertySort.Categorized;
+		
+		const string PROP_HELP_KEY = "MonoDevelop.PropertyPad.ShowHelp";
 		
 		public PropertyGrid (): this (new EditorManager ())
 		{
@@ -89,7 +88,8 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid
 			base.PackStart (toolbar, false, false, 0);
 			
 			catButton = new RadioToolButton (new GLib.SList (IntPtr.Zero));
-			catButton.IconWidget = new Gtk.Image (new Gdk.Pixbuf (typeof (PropertyGrid).Assembly, "MonoDevelop.DesignerSupport.PropertyGrid.SortByCat.png"));
+			catButton.IconWidget = new Gtk.Image (new Gdk.Pixbuf (typeof (PropertyGrid).Assembly,
+				"MonoDevelop.DesignerSupport.PropertyGrid.SortByCat.png"));
 			catButton.SetTooltip (tips, GettextCatalog.GetString ("Sort in categories"), null);
 			catButton.Toggled += new EventHandler (toolbarClick);
 			toolbar.Insert (catButton, 0);
@@ -101,40 +101,20 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid
 			
 			catButton.Active = true;
 			
+			helpButton = new ToggleToolButton (Gtk.Stock.Help);
+			helpButton.SetTooltip (tips, GettextCatalog.GetString ("Show description"), null);
+			helpButton.Clicked += delegate {
+				ShowHelp = helpButton.Active;
+				MonoDevelop.Core.PropertyService.Set (PROP_HELP_KEY, helpButton.Active);
+			};
+			toolbar.Insert (helpButton, 2);
+			
 			SeparatorToolItem sep = new SeparatorToolItem();
-			toolbar.Insert (sep, 2);
+			toolbar.Insert (sep, 3);
 			
 			#endregion
 
 			vpaned = new VPaned ();
-
-			descFrame = new Frame ();
-			descFrame.Shadow = ShadowType.In;
-
-			desc = new VBox (false, 0);
-			descFrame.Add (desc);
-
-			descTitle = new Label ();
-			descTitle.SetAlignment(0, 0);
-			descTitle.SetPadding (5, 5);
-			descTitle.UseMarkup = true;
-			desc.PackStart (descTitle, false, false, 0);
-
-			textScroll = new ScrolledWindow ();
-			textScroll.HscrollbarPolicy = PolicyType.Never;
-			textScroll.VscrollbarPolicy = PolicyType.Automatic;
-
-			desc.PackEnd (textScroll, true, true, 0);
-
-			//TODO: Use label, but wrapping seems dodgy.
-			descText = new TextView ();
-			descText.WrapMode = WrapMode.Word;
-			descText.WidthRequest = 1;
-			descText.HeightRequest = 70;
-			descText.Editable = false;
-			descText.LeftMargin = 5;
-			descText.RightMargin = 5;
-			textScroll.Add (descText);
 
 			tree = new PropertyGridTree (editorManager, this);
 			tree.Changed += delegate {
@@ -142,12 +122,14 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid
 			};
 
 			vpaned.Pack1 (tree, true, true);
-			vpaned.Pack2 (descFrame, false, true);
 			
 			AddPropertyTab (new DefaultPropertyTab ());
 			AddPropertyTab (new EventPropertyTab ());
 
 			base.PackEnd (vpaned);
+			
+			helpButton.Active = ShowHelp = MonoDevelop.Core.PropertyService.Get<bool> (PROP_HELP_KEY, true);
+			
 			Populate ();
 		}
 		
@@ -188,8 +170,8 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid
 			}
 		}
 		
-		private ArrayList propertyTabs = new ArrayList ();
-		private PropertyTab selectedTab;
+		ArrayList propertyTabs = new ArrayList ();
+		PropertyTab selectedTab;
 		
 		public PropertyTab SelectedTab {
 			get { return selectedTab; }
@@ -204,7 +186,8 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid
 				rtb.Active = true;
 			}
 			else
-				rtb = new TabRadioToolButton ((RadioToolButton) toolbar.GetNthItem (propertyTabs.Count + FirstTabIndex - 1));
+				rtb = new TabRadioToolButton (
+					(RadioToolButton) toolbar.GetNthItem (propertyTabs.Count + FirstTabIndex - 1));
 			
 			//load image from PropertyTab's bitmap
 			if (tab.Bitmap != null)
@@ -247,7 +230,8 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid
 			}
 		}
 	
-		//TODO: add more intelligence for editing state etc. Maybe need to know which property has changed, then just update that
+		//TODO: add more intelligence for editing state etc. Maybe need to know which property has changed, then 
+		//just update that
 		public void Refresh ()
 		{
 			QueueDraw ();
@@ -290,30 +274,86 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid
 			}
 		}
 		
+		#region Hel Pane
+		
 		public bool ShowHelp
 		{
-			get { return showHelp; }
+			get { return descFrame != null; }
 			set {
-				if (value != showHelp)
-					if (value)
-						vpaned.Pack2 (descFrame, false, true);
-					else
-						vpaned.Remove (descFrame);
+				if (value == ShowHelp)
+					return;
+				if (value) {
+					AddHelpPane ();
+				} else {
+					vpaned.Remove (descFrame);
+					descFrame.Destroy ();
+					descFrame = null;
+					descTextView = null;
+					descTitleLabel = null;
+				}
 			}
+		}
+		
+		void AddHelpPane ()
+		{
+			descFrame = new Frame ();
+			descFrame.Shadow = ShadowType.In;
+			
+			VBox desc = new VBox (false, 0);
+			descFrame.Add (desc);
+			
+			descTitleLabel = new Label ();
+			descTitleLabel.SetAlignment(0, 0);
+			descTitleLabel.SetPadding (5, 5);
+			descTitleLabel.UseMarkup = true;
+			desc.PackStart (descTitleLabel, false, false, 0);
+
+			ScrolledWindow textScroll = new ScrolledWindow ();
+			textScroll.HscrollbarPolicy = PolicyType.Never;
+			textScroll.VscrollbarPolicy = PolicyType.Automatic;
+			
+			desc.PackEnd (textScroll, true, true, 0);
+			
+			//TODO: Use label, but wrapping seems dodgy.
+			descTextView = new TextView ();
+			descTextView.WrapMode = WrapMode.Word;
+			descTextView.WidthRequest = 1;
+			descTextView.HeightRequest = 70;
+			descTextView.Editable = false;
+			descTextView.LeftMargin = 5;
+			descTextView.RightMargin = 5;
+			textScroll.Add (descTextView);
+			
+			vpaned.Pack2 (descFrame, false, true);
+			descFrame.ShowAll ();
+			UpdateHelp ();
 		}
 		
 		public void SetHelp (string title, string description)
 		{
-			descText.Buffer.Clear ();
-			descText.Buffer.InsertAtCursor (description);
-			descTitle.Markup = "<b>" + title + "</b>";
+			descTitle = title;
+			descText = description;
+			UpdateHelp ();
+		}
+		
+		void UpdateHelp ()
+		{
+			if (!ShowHelp)
+				return;
+			descTextView.Buffer.Clear ();
+			if (descText != null)
+				descTextView.Buffer.InsertAtCursor (descText);
+			descTitleLabel.Markup = descTitle != null?
+				"<b>" + descTitle + "</b>" : string.Empty;
 		}
 
 		public void ClearHelp()
 		{
-			descTitle.Text = "";
-			descText.Buffer.Clear ();
+			descTitle = descText = null;
+			UpdateHelp ();
 		}
+		
+		#endregion
 		
 		//for PropertyTab images
 		private Gdk.Pixbuf ImageToPixbuf(System.Drawing.Image image)

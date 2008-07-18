@@ -1,3 +1,8 @@
+2008-07-18  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.DesignerSupport.PropertyGrid/PropertyGrid.cs: Add button
+	  to enable/disable help pane in property grid.
+
 2008-06-25  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.DesignerSupport/BindingService.cs: Require a specific
