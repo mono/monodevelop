@@ -1060,6 +1060,7 @@ namespace Mono.TextEditor
 			SyntaxMode mode;
 			Pango.Layout measureLayout;
 			bool done = false;
+			
 			public VisualLocationTranslator (TextViewMargin margin, int xp, int yp)
 			{
 				this.margin = margin;
@@ -1069,6 +1070,7 @@ namespace Mono.TextEditor
 //				y      = (int)(margin.Document.LogicalToVisualLine (lineNumber) * margin.LineHeight - margin.textEditor.VAdjustment.Value);
 //				lineArea = new Gdk.Rectangle (margin.XOffset, y, margin.textEditor.Allocation.Width - margin.XOffset, margin.LineHeight);
 			}
+			
 			Chunk[] chunks;
 			void ConsumeChunks ()
 			{
@@ -1145,6 +1147,9 @@ namespace Mono.TextEditor
 							foldings = margin.Document.GetStartFoldings (line);
 							i = -1;
 						}
+					} else {
+						chunks = mode.GetChunks (margin.Document, margin.textEditor.ColorStyle, line, foldOffset, folding.EndLine.Offset + folding.EndColumn - offset);
+						ConsumeChunks ();
 					}
 				}
 				
