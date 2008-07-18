@@ -1,3 +1,9 @@
+2008-07-18  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Components.Commands/KeyBindingManager.cs: Map Gdk.Key.L1
+	  to Gdk.Key.F11: they have the same integer value, but name lookups
+	  are returning the more uncommon name. Similarly map L2 to F12.
+
 2008-07-10  Jae Stutzman <jaebird@gmail.com> 
 
 	* MonoDevelop.Components.DockToolbars/DockToolbarFrame.cs: Added the

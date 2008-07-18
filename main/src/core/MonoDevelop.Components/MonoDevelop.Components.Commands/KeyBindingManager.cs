@@ -80,8 +80,17 @@ namespace MonoDevelop.Components.Commands {
 			//HACK: Page_Down and Next are synonyms for the same enum value, but alphabetically, Next gets returned 
 			// first by enum ToString(). Similarly, Page_Up and Prior are synonyms, but Page_Up is returned. Hence the 
 			// default pairing is Next and Page_Up, which is confusingly inconsistent, so we fix this here.
-			if (key == Gdk.Key.Next)
+			//
+			//The same problem applies to some other common keys, so we ensure certain values are mapped
+			// to the most common name.
+			switch (key) {
+			case Gdk.Key.Next:
 				return "Page_Down";
+			case Gdk.Key.L1:
+				return "F11";
+			case Gdk.Key.L2:
+				return "F12";
+			}
 			
 			return key.ToString ();
 		}
