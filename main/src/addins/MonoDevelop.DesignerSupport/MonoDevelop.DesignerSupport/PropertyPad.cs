@@ -43,14 +43,13 @@ namespace MonoDevelop.DesignerSupport
 	public class PropertyPad : AbstractPadContent
 	{
 		pg.PropertyGrid grid;
-		Gtk.Frame frame;
+		MonoDevelop.Components.InvisibleFrame frame;
 		bool customWidget;
 		
 		public PropertyPad ()
 		{
 			grid = new pg.PropertyGrid ();
-			frame = new Gtk.Frame ();
-			frame.Shadow = Gtk.ShadowType.None;
+			frame = new MonoDevelop.Components.InvisibleFrame ();
 			frame.Add (grid);
 			
 			frame.ShowAll ();

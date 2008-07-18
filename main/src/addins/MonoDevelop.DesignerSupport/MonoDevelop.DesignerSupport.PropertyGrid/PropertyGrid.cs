@@ -101,16 +101,14 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid
 			
 			catButton.Active = true;
 			
+			toolbar.Insert (new SeparatorToolItem (), 2);
 			helpButton = new ToggleToolButton (Gtk.Stock.Help);
-			helpButton.SetTooltip (tips, GettextCatalog.GetString ("Show description"), null);
+			helpButton.SetTooltip (tips, GettextCatalog.GetString ("Show help panel"), null);
 			helpButton.Clicked += delegate {
 				ShowHelp = helpButton.Active;
 				MonoDevelop.Core.PropertyService.Set (PROP_HELP_KEY, helpButton.Active);
 			};
-			toolbar.Insert (helpButton, 2);
-			
-			SeparatorToolItem sep = new SeparatorToolItem();
-			toolbar.Insert (sep, 3);
+			toolbar.Insert (helpButton, 3);
 			
 			#endregion
 
@@ -184,6 +182,7 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid
 				selectedTab = tab;
 				rtb = new TabRadioToolButton (new GLib.SList (IntPtr.Zero), Stock.MissingImage);
 				rtb.Active = true;
+				toolbar.Insert (new SeparatorToolItem (), FirstTabIndex - 1);
 			}
 			else
 				rtb = new TabRadioToolButton (
