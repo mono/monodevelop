@@ -1,3 +1,38 @@
+2008-07-21  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Makefile.am, MonoDevelop.Core.Serialization,
+	  MonoDevelop.Core.Serialization/DataType.cs,
+	  MonoDevelop.Core.Serialization/ArrayHandler.cs,
+	  MonoDevelop.Core.Serialization/DataContext.cs,
+	  MonoDevelop.Core.Serialization/TypeAttributeProvider.cs,
+	  MonoDevelop.Core.Serialization/IExtendedDataItem.cs,
+	  MonoDevelop.Core.Serialization/SerializationContext.cs,
+	  MonoDevelop.Core.Serialization/ISerializationAttributeProvider.cs,
+	  MonoDevelop.Core.Serialization/DataCollection.cs,
+	  MonoDevelop.Core.Serialization/ItemPropertyAttribute.cs,
+	  MonoDevelop.Core.Serialization/DataItem.cs,
+	  MonoDevelop.Core.Serialization/ICustomDataItemHandler.cs,
+	  MonoDevelop.Core.Serialization/XmlMapAttributeProvider.cs,
+	  MonoDevelop.Core.Serialization/DataIncludeAttribute.cs,
+	  MonoDevelop.Core.Serialization/DictionaryDataType.cs,
+	  MonoDevelop.Core.Serialization/ClassDataType.cs,
+	  MonoDevelop.Core.Serialization/ICollectionHandler.cs,
+	  MonoDevelop.Core.Serialization/IPropertyFilter.cs,
+	  MonoDevelop.Core.Serialization/ItemProperty.cs,
+	  MonoDevelop.Core.Serialization/DataItemAttribute.cs,
+	  MonoDevelop.Core.Serialization/DataNode.cs,
+	  MonoDevelop.Core.Serialization/XmlDataSerializer.cs,
+	  MonoDevelop.Core.Serialization/GenericCollectionHandler.cs,
+	  MonoDevelop.Core.Serialization/CollectionDataType.cs,
+	  MonoDevelop.Core.Serialization/ExpandedCollectionAttribute.cs,
+	  MonoDevelop.Core.Serialization/EnumDataType.cs,
+	  MonoDevelop.Core.Serialization/DataSerializer.cs,
+	  MonoDevelop.Core.Serialization/PrimitiveDataType.cs,
+	  MonoDevelop.Core.Serialization/XmlElementDataType.cs,
+	  MonoDevelop.Core.Serialization/DataValue.cs,
+	  MonoDevelop.Core.Serialization/ArrayListHandler.cs,
+	  MonoDevelop.Core.mdp: Moved serializer to MD.Core.
+
 2008-06-06  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Core/Runtime.cs: Write application error messages to the

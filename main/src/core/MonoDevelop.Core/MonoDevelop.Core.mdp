@@ -84,6 +84,37 @@
     <File name="MonoDevelop.Core.Execution/ExecutionPlatform.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Core.AddIns/ExecutionModeNode.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Core.Execution/IExecutionMode.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Core.Serialization/ArrayHandler.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Core.Serialization/ArrayListHandler.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Core.Serialization/ClassDataType.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Core.Serialization/CollectionDataType.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Core.Serialization/DataCollection.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Core.Serialization/DataContext.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Core.Serialization/DataIncludeAttribute.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Core.Serialization/DataItem.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Core.Serialization/DataItemAttribute.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Core.Serialization/DataNode.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Core.Serialization/DataSerializer.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Core.Serialization/DataType.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Core.Serialization/DataValue.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Core.Serialization/DictionaryDataType.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Core.Serialization/EnumDataType.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Core.Serialization/ExpandedCollectionAttribute.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Core.Serialization/GenericCollectionHandler.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Core.Serialization/ICollectionHandler.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Core.Serialization/ICustomDataItemHandler.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Core.Serialization/IExtendedDataItem.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Core.Serialization/ILoadController.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Core.Serialization/IPropertyFilter.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Core.Serialization/ISerializationAttributeProvider.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Core.Serialization/ItemProperty.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Core.Serialization/ItemPropertyAttribute.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Core.Serialization/PrimitiveDataType.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Core.Serialization/SerializationContext.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Core.Serialization/TypeAttributeProvider.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Core.Serialization/XmlDataSerializer.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Core.Serialization/XmlElementDataType.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Core.Serialization/XmlMapAttributeProvider.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="False" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
@@ -94,6 +125,7 @@
     <ProjectReference type="Gac" localcopy="True" refto="Mono.Addins, Version=0.3.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
     <ProjectReference type="Gac" localcopy="True" refto="Mono.Addins.Setup, Version=0.3.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
   </References>
+  <GtkDesignInfo gtkVersion="2.8.3" />
   <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="./Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="../../../">
     <ExcludedFiles>
       <File>AssemblyInfo.cs</File>
