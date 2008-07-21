@@ -235,36 +235,6 @@ FILES =  \
 	MonoDevelop.Projects.Parser/TagCollection.cs \
 	MonoDevelop.Projects.Parser/TypedCSharpCollection.cs \
 	MonoDevelop.Projects.Parser/TypeNameResolver.cs \
-	MonoDevelop.Projects.Serialization/ArrayHandler.cs \
-	MonoDevelop.Projects.Serialization/ArrayListHandler.cs \
-	MonoDevelop.Projects.Serialization/ClassDataType.cs \
-	MonoDevelop.Projects.Serialization/CollectionDataType.cs \
-	MonoDevelop.Projects.Serialization/DataCollection.cs \
-	MonoDevelop.Projects.Serialization/DataContext.cs \
-	MonoDevelop.Projects.Serialization/DataIncludeAttribute.cs \
-	MonoDevelop.Projects.Serialization/DataItem.cs \
-	MonoDevelop.Projects.Serialization/DataItemAttribute.cs \
-	MonoDevelop.Projects.Serialization/DataNode.cs \
-	MonoDevelop.Projects.Serialization/DataSerializer.cs \
-	MonoDevelop.Projects.Serialization/DataType.cs \
-	MonoDevelop.Projects.Serialization/DataValue.cs \
-	MonoDevelop.Projects.Serialization/EnumDataType.cs \
-	MonoDevelop.Projects.Serialization/ExpandedCollectionAttribute.cs \
-	MonoDevelop.Projects.Serialization/GenericCollectionHandler.cs \
-	MonoDevelop.Projects.Serialization/ICollectionHandler.cs \
-	MonoDevelop.Projects.Serialization/ICustomDataItemHandler.cs \
-	MonoDevelop.Projects.Serialization/IExtendedDataItem.cs \
-	MonoDevelop.Projects.Serialization/ILoadController.cs \
-	MonoDevelop.Projects.Serialization/IPropertyFilter.cs \
-	MonoDevelop.Projects.Serialization/ISerializationAttributeProvider.cs \
-	MonoDevelop.Projects.Serialization/ItemProperty.cs \
-	MonoDevelop.Projects.Serialization/ItemPropertyAttribute.cs \
-	MonoDevelop.Projects.Serialization/PrimitiveDataType.cs \
-	MonoDevelop.Projects.Serialization/SerializationContext.cs \
-	MonoDevelop.Projects.Serialization/TypeAttributeProvider.cs \
-	MonoDevelop.Projects.Serialization/XmlDataSerializer.cs \
-	MonoDevelop.Projects.Serialization/XmlElementDataType.cs \
-	MonoDevelop.Projects.Serialization/XmlMapAttributeProvider.cs \
 	MonoDevelop.Projects.Text/IEditableTextFile.cs \
 	MonoDevelop.Projects.Text/ITextFile.cs \
 	MonoDevelop.Projects.Text/ITextFileProvider.cs \

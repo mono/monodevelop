@@ -1,5 +1,12 @@
 2008-07-21  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Projects/AbstractProjectConfiguration.cs,
+	  MonoDevelop.Projects/DotNetProject.cs: Allow specifying env vars to
+	  be set when running the project.
+	* Makefile.am: Moved serialization engine to MonoDevelop.Core.
+
+2008-07-21  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* md1format.xml, MonoDevelop.Projects.Formats.MD1/CmbxFileFormat.cs,
 	  MonoDevelop.Projects.Formats.MD1/CombineConfiguration.cs,
 	  MonoDevelop.Projects.Formats.MD1/CombineConfigurationEntry.cs,

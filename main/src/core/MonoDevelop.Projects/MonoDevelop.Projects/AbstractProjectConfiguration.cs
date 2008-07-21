@@ -21,12 +21,13 @@
 using System;
 using System.IO;
 using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.ComponentModel;
 using System.Xml;
 
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Serialization;
+using MonoDevelop.Core.Serialization;
 
 namespace MonoDevelop.Projects
 {
@@ -58,16 +59,22 @@ namespace MonoDevelop.Projects
 		string executeScript = String.Empty;
 		
 		[ItemProperty ("RunWithWarnings", DefaultValue=true)]
-		protected bool runWithWarnings = true;
+		bool runWithWarnings = true;
 		
 		[ItemProperty ("Commandlineparameters", DefaultValue = "")]
-		public string commandLineParameters = String.Empty;
+		string commandLineParameters = String.Empty;
 		
 		[ItemProperty ("Externalconsole", DefaultValue=false)]
-		public bool externalConsole = false;
+		bool externalConsole = false;
 
 		[ItemProperty ("ConsolePause", DefaultValue=true)]
-		public bool pauseconsoleoutput = true;
+		bool pauseconsoleoutput = true;
+
+		[ItemProperty ("EnvironmentVariables")]
+		[ItemProperty ("Variable", Scope="item")]
+		[ItemProperty ("name", Scope="key")]
+		[ItemProperty ("value", Scope="value")]
+		Dictionary<string,string> envVars;
 
 		public ProjectConfiguration ()
 		{
@@ -116,9 +123,18 @@ namespace MonoDevelop.Projects
 			get { return signAssembly; }
 			set { signAssembly = value; }
 		}
+		
 		public string AssemblyKeyFile {
 			get { return assemblyKeyFile; }
 			set { assemblyKeyFile = value; }
+		}
+		
+		public Dictionary<string,string> EnvironmentVariables {
+			get {
+				if (envVars == null)
+					envVars = new Dictionary<string,string> ();
+				return envVars; 
+			}
 		}
 		
 		
@@ -138,6 +154,10 @@ namespace MonoDevelop.Projects
 			pauseconsoleoutput = conf.pauseconsoleoutput;
 			signAssembly = conf.signAssembly;
 			assemblyKeyFile = conf.assemblyKeyFile;
+			if (conf.envVars != null)
+				envVars = new Dictionary<string,string> (conf.envVars);
+			else
+				envVars = null;
 		}
 	}
 }

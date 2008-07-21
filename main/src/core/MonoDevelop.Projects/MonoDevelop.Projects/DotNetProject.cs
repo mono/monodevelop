@@ -32,7 +32,7 @@ using System.Xml;
 using System.Threading;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
-using MonoDevelop.Projects.Serialization;
+using MonoDevelop.Core.Serialization;
 using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Projects.Ambience;
 
@@ -432,7 +432,7 @@ namespace MonoDevelop.Projects
 					return;
 				}
 			
-				IProcessAsyncOperation op = handler.Execute (configuration.CompiledOutputName, configuration.CommandLineParameters, Path.GetDirectoryName (configuration.CompiledOutputName), null, console);
+				IProcessAsyncOperation op = handler.Execute (configuration.CompiledOutputName, configuration.CommandLineParameters, Path.GetDirectoryName (configuration.CompiledOutputName), configuration.EnvironmentVariables, console);
 				
 				operationMonitor.AddOperation (op);
 				op.WaitForCompleted ();
