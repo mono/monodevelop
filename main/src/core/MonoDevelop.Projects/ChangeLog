@@ -1,5 +1,10 @@
 2008-07-21  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Projects/PropertyBag.cs: Fix creation of default value in
+	  GetValue.
+
+2008-07-21  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Projects/Project.cs: Don't set the dirty flag when the
 	  project is being loaded.
 

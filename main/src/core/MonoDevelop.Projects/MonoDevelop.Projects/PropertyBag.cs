@@ -49,7 +49,7 @@ namespace MonoDevelop.Projects
 			get { return properties == null || properties.Count == 0; }
 		}
 		
-		public T GetValue<T> (string name) where T:class
+		public T GetValue<T> (string name)
 		{
 			if (properties != null) {
 				object val;
@@ -59,7 +59,7 @@ namespace MonoDevelop.Projects
 					return (T) val;
 				}
 			}
-			return (new T[0])[0];
+			return (new T[1])[0];
 		}
 		
 		public T GetValue<T> (string name, T defaultValue)
