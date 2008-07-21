@@ -91,13 +91,7 @@
     <ProjectReference type="Project" localcopy="True" refto="Mono.TextEditor" />
   </References>
   <Deployment.LinuxDeployData scriptName="monodevelop.gettext" generatePcFile="False" />
-  <GtkDesignInfo>
-    <ExportedWidgets>
-      <Widget>MonoDevelop.Gettext.POEditorWidget</Widget>
-      <Widget>MonoDevelop.Gettext.EntrySelectionTree</Widget>
-      <Widget>MonoDevelop.Gettext.GettextFeatureWidget</Widget>
-    </ExportedWidgets>
-  </GtkDesignInfo>
+  <GtkDesignInfo />
   <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="./Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="../../../">
     <BuildFilesVar Sync="True" Name="FILES" />
     <DeployFilesVar />

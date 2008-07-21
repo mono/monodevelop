@@ -57,6 +57,8 @@ namespace MonoDevelop.Gettext
 		[ItemProperty(Name = "relPath", DefaultValue = "")]
 		string relPath = String.Empty;
 		
+		bool isDirty;
+		
 		public string PackageName {
 			get { return packageName; }
 			set { packageName = value; }
@@ -89,8 +91,6 @@ namespace MonoDevelop.Gettext
 		public TranslationProject ()
 		{
 			translations = new TranslationCollection (this);
-			SetNeedsBuilding (true);
-			isDirty = true;
 		}
 		
 		protected override List<string> OnGetItemFiles (bool includeReferencedFiles)
@@ -335,50 +335,29 @@ namespace MonoDevelop.Gettext
 		
 		protected override BuildResult OnBuild (IProgressMonitor monitor, string configuration)
 		{
-			CompilerResults results = new CompilerResults (null);
+			BuildResult results = new BuildResult ("", 1, 0);
 			string outputDirectory = GetOutputDirectory (configuration);
 			if (!string.IsNullOrEmpty (outputDirectory)) {
 				foreach (Translation translation in this.Translations) {
-					string poFileName  = translation.PoFile;
-					string moDirectory = Path.Combine (Path.Combine (outputDirectory, translation.IsoCode), "LC_MESSAGES");
-					if (!Directory.Exists (moDirectory))
-						Directory.CreateDirectory (moDirectory);
-					string moFileName  = Path.Combine (moDirectory, PackageName + ".mo");
-					
-					ProcessWrapper process = Runtime.ProcessService.StartProcess ("msgfmt",
-				                                     poFileName + " -o " + moFileName,
-				                                     this.BaseDirectory,
-				                                     monitor.Log,
-				                                     monitor.Log,
-				                                     null);
-					process.WaitForOutput ();
-
-					if (process.ExitCode == 0) {
-						monitor.Log.WriteLine (GettextCatalog.GetString ("Translation {0}: Compilation succeeded.", translation.IsoCode));
-					} else {
-						string error   = process.StandardError.ReadToEnd ();
-						string message = String.Format (GettextCatalog.GetString ("Translation {0}: Compilation failed. Reason: {1}"), translation.IsoCode, error);
-						monitor.Log.WriteLine (message);
-						results.Errors.Add (new CompilerError (this.Name, 0, 0, null, message));
+					if (translation.NeedsBuilding (configuration)) {
+						BuildResult res = translation.Build (monitor, configuration);
+						results.Append (res);
 					}
 				}
 				isDirty = false;
-				SetNeedsBuilding (false);
 			}
-			return new BuildResult (results, "");
+			return results;
 		}
 		
 		protected override void OnClean (IProgressMonitor monitor, string configuration)
 		{
 			isDirty = true;
-			SetNeedsBuilding (true);
 			monitor.Log.WriteLine (GettextCatalog.GetString ("Removing all .mo files."));
 			string outputDirectory = GetOutputDirectory (configuration);
 			if (string.IsNullOrEmpty (outputDirectory))
 				return;
 			foreach (Translation translation in this.Translations) {
-				string moDirectory = Path.Combine (Path.Combine (outputDirectory, translation.IsoCode), "LC_MESSAGES");
-				string moFileName  = Path.Combine (moDirectory, PackageName + ".mo");
+				string moFileName  = translation.GetOutFile (configuration);
 				if (File.Exists (moFileName)) 
 					File.Delete (moFileName);
 			}
@@ -409,10 +388,15 @@ namespace MonoDevelop.Gettext
 		}
 #endregion
 		
-		bool isDirty = true;
 		protected override bool OnGetNeedsBuilding (string configuration)
 		{
-			return this.isDirty;
+			if (isDirty)
+				return true;
+			foreach (Translation translation in this.Translations) {
+				if (translation.NeedsBuilding (configuration))
+					return true;
+			}
+			return false;
 		}
 		
 		protected override void OnSetNeedsBuilding (bool val, string configuration)

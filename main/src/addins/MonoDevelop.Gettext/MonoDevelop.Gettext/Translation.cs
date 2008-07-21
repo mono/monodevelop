@@ -28,6 +28,8 @@
 
 using System;
 using System.IO;
+using MonoDevelop.Core;
+using MonoDevelop.Core.Execution;
 using MonoDevelop.Projects;
 using MonoDevelop.Core.Serialization;
 
@@ -80,6 +82,45 @@ namespace MonoDevelop.Gettext
 		{
 			string moDirectory = Path.Combine (Path.Combine (parentProject.GetOutputDirectory (configuration), isoCode), "LC_MESSAGES");
 			return Path.Combine (moDirectory, parentProject.PackageName + ".mo");
+		}
+		
+		public BuildResult Build (IProgressMonitor monitor, string configuration)
+		{
+			BuildResult results = new BuildResult ("", 0, 0);
+			
+			string moFileName  = GetOutFile (configuration);
+			string moDirectory = Path.GetDirectoryName (moFileName);
+			if (!Directory.Exists (moDirectory))
+				Directory.CreateDirectory (moDirectory);
+			
+			ProcessWrapper process = Runtime.ProcessService.StartProcess ("msgfmt",
+		                                     PoFile + " -o " + moFileName,
+		                                     parentProject.BaseDirectory,
+		                                     monitor.Log,
+		                                     monitor.Log,
+		                                     null);
+			process.WaitForOutput ();
+
+			if (process.ExitCode == 0) {
+				monitor.Log.WriteLine (GettextCatalog.GetString ("Translation {0}: Compilation succeeded.", IsoCode));
+			} else {
+				string error   = process.StandardError.ReadToEnd ();
+				string message = String.Format (GettextCatalog.GetString ("Translation {0}: Compilation failed. Reason: {1}"), IsoCode, error);
+				monitor.Log.WriteLine (message);
+				results.AddError (PoFile, 1, 1, "", message);
+				results.FailedBuildCount = 1;
+			}
+			return results;
+		}
+		
+		public bool NeedsBuilding (string configuration)
+		{
+			if (!File.Exists (PoFile))
+				return false;
+			string moFileName = GetOutFile (configuration);
+			if (!File.Exists (moFileName))
+				return true;
+			return File.GetLastWriteTime (PoFile) > File.GetLastWriteTime (moFileName);
 		}
 	}
 	

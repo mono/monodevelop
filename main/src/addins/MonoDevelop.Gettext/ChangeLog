@@ -1,5 +1,14 @@
 2008-07-21  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Gettext.mdp,
+	  gtk-gui/MonoDevelop.Gettext.Translator.LanguageChooserDialog.cs,
+	  gtk-gui/gui.stetic: Updated.
+	* MonoDevelop.Gettext/TranslationProject.cs,
+	  MonoDevelop.Gettext/Translation.cs: Properly check if a translation
+	  needs to be built.
+
+2008-07-21  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* GettextProjectBinding.cs, MonoDevelop.Gettext/Translation.cs,
 	  MonoDevelop.Gettext/TranslationProject.cs: Moved serialization
 	  engine to MonoDevelop.Core. Use new syntax for specifying attribute
