@@ -5,16 +5,17 @@ ASSEMBLY = $(ADDIN_BUILD)/MonoDevelop.Debugger.dll
 REFS =  \
 	$(GLIB_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
-	-r:../../../build/bin/Mono.Debugging.dll \
-	-r:../../../build/bin/Mono.TextEditor.dll \
-	-r:../../../build/bin/MonoDevelop.Components.dll \
-	-r:../../../build/bin/MonoDevelop.Core.dll \
-	-r:../../../build/bin/MonoDevelop.Core.Gui.dll \
-	-r:../../../build/bin/MonoDevelop.Ide.dll \
-	-r:../../../build/bin/MonoDevelop.Projects.dll \
-	-r:../../../build/bin/MonoDevelop.Projects.Gui.dll \
+	-r:$(top_builddir)/build/bin/Mono.Debugging.dll \
+	-r:$(top_builddir)/build/bin/Mono.TextEditor.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Components.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Core.Gui.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Ide.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Projects.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Projects.Gui.dll \
 	-r:Mono.Cairo \
-	-r:System 
+	-r:System \
+	-r:System.Xml 
 
 FILES =  \
 	AssemblyInfo.cs \

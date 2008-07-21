@@ -1,3 +1,9 @@
+2008-07-21  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* Makefile.am, MonoDevelop.Debugger.mdp: Fix automake build paths. Add
+	  System.Xml reference and don't local copy refs, for build within
+	  MD.
+
 2008-07-21  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Debugger/ObjectValueTreeView.cs: Remove ellupsizing.
