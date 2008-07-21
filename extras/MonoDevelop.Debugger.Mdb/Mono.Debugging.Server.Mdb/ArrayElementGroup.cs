@@ -42,25 +42,25 @@ namespace DebuggerServer
 		int firstIndex;
 		int lastIndex;
 		TargetArrayBounds bounds;
-		TargetArrayObject array;
+		ICollectionAdaptor array;
 		
 		const int MaxChildCount = 150;
 		
-		public ArrayElementGroup (Thread thread, TargetArrayObject array)
+		public ArrayElementGroup (Thread thread, ICollectionAdaptor array)
 			: this (thread, array, new int [0])
 		{
 		}
 		
-		public ArrayElementGroup (Thread thread, TargetArrayObject array, int[] baseIndices)
+		public ArrayElementGroup (Thread thread, ICollectionAdaptor array, int[] baseIndices)
 			: this (thread, array, baseIndices, 0, -1)
 		{
 		}
 		
-		public ArrayElementGroup (Thread thread, TargetArrayObject array, int[] baseIndices, int firstIndex, int lastIndex)
+		public ArrayElementGroup (Thread thread, ICollectionAdaptor array, int[] baseIndices, int firstIndex, int lastIndex)
 		{
 			this.array = array;
 			this.thread = thread;
-			this.bounds = array.GetArrayBounds (thread);
+			this.bounds = array.GetBounds ();
 			this.baseIndices = baseIndices;
 			this.firstIndex = firstIndex;
 			this.lastIndex = lastIndex;
@@ -102,7 +102,7 @@ namespace DebuggerServer
 			if (path.Length > 1) {
 				// Looking for children of an array element
 				int[] idx = StringToIndices (path [1]);
-				TargetObject obj = array.GetElement (thread, idx);
+				TargetObject obj = array.GetElement (idx);
 				return Util.GetObjectValueChildren (thread, obj, firstItemIndex, count);
 			}
 			
@@ -146,7 +146,6 @@ namespace DebuggerServer
 			if (div == 1 && isLastDimension) {
 				// Return array elements
 				
-				ObjectValueFlags flags = ObjectValueFlags.ArrayElement;
 				ObjectValue[] values = new ObjectValue [count];
 				ObjectPath newPath = new ObjectPath ("this");
 				
@@ -163,8 +162,7 @@ namespace DebuggerServer
 						val = ObjectValue.CreateUnknown (sidx);
 					else {
 						curIndex [curIndex.Length - 1] = index;
-						TargetObject elem = array.GetElement (thread, curIndex);
-						val = Util.CreateObjectValue (thread, this, newPath.Append (sidx), elem, flags);
+						val = array.CreateElementValue (this, newPath.Append (sidx), curIndex);
 					}
 					val.Name = "[" + sidx.Replace (",",", ") + "]";
 					values [n] = val;
@@ -234,6 +232,25 @@ namespace DebuggerServer
 			return idx;
 		}
 		
+		public static string GetArrayDescription (TargetArrayBounds bounds)
+		{
+			if (bounds.IsUnbound)
+				return "[...]";
+			else if (bounds.IsMultiDimensional) {
+				StringBuilder sb = new StringBuilder ("[");
+				for (int n=0; n<bounds.Rank; n++) {
+					if (n > 0)
+						sb.Append (", ");
+					sb.Append (bounds.UpperBounds [n] - bounds.LowerBounds [n]);
+				}
+				sb.Append ("]");
+				return sb.ToString ();
+			}
+			else {
+				return "[" + bounds.Length + "]";
+			}
+		}
+		
 		public string SetValue (ObjectPath path, string value)
 		{
 			if (path.Length != 2)
@@ -244,14 +261,14 @@ namespace DebuggerServer
 			TargetObject val;
 			try {
 				EvaluationOptions ops = new EvaluationOptions ();
-				ops.ExpectedType = array.Type.ElementType;
+				ops.ExpectedType = array.ElementType;
 				ops.CanEvaluateMethods = true;
 				ValueReference var = Server.Instance.Evaluator.Evaluate (thread.CurrentFrame, value, ops);
 				val = var.Value;
-				val = TargetObjectConvert.Cast (thread.CurrentFrame, val, array.Type.ElementType);
-				array.SetElement (thread, idx, val);
+				val = TargetObjectConvert.Cast (thread.CurrentFrame, val, array.ElementType);
+				array.SetElement (idx, val);
 			} catch {
-				val = array.GetElement (thread, idx);
+				val = array.GetElement (idx);
 			}
 			try {
 				return Server.Instance.Evaluator.TargetObjectToString (thread, val);

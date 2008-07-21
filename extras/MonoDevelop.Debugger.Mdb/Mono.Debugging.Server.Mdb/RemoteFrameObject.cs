@@ -34,13 +34,19 @@ namespace DebuggerServer
 	{
 		static List<RemoteFrameObject> connectedValues = new List<RemoteFrameObject> ();
 		
+		bool connected;
+		
 		public void Connect ()
 		{
 			// Registers the value reference. Once a remote reference of this object
 			// is created, it will never be released, until DisconnectAll is called,
 			// which is done every time the current backtrace changes
+			
 			lock (connectedValues) {
-				connectedValues.Add (this);
+				if (!connected) {
+					connectedValues.Add (this);
+					connected = true;
+				}
 			}
 		}
 		

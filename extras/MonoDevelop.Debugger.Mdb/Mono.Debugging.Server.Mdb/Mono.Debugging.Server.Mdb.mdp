@@ -34,6 +34,9 @@
     <File name="ExpressionEvaluator.cs" subtype="Code" buildaction="Compile" />
     <File name="ArrayElementGroup.cs" subtype="Code" buildaction="Compile" />
     <File name="RemoteFrameObject.cs" subtype="Code" buildaction="Compile" />
+    <File name="ArrayAdaptor.cs" subtype="Code" buildaction="Compile" />
+    <File name="ICollectionAdaptor.cs" subtype="Code" buildaction="Compile" />
+    <File name="CollectionAdaptor.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
@@ -69,6 +72,7 @@
     <ProjectReference type="Gac" localcopy="True" refto="Mono.Posix, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
   </References>
   <Deployment.LinuxDeployData generateScript="False" />
+  <GtkDesignInfo gtkVersion="2.8.3" />
   <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="Makefile" SyncReferences="True">
     <BuildFilesVar Sync="True" Name="FILES" />
     <DeployFilesVar />

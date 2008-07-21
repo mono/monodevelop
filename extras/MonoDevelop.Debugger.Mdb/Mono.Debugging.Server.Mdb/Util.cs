@@ -40,15 +40,17 @@ namespace DebuggerServer
 		public static ObjectValue CreateObjectValue (MD.Thread thread, IObjectValueSource source, ObjectPath path, TargetObject obj, ObjectValueFlags flags)
 		{
 			try {
-				return CreateObjectValue (thread, source, path, obj, flags, true);
+				return CreateObjectValueImpl (thread, source, path, obj, flags);
 			} catch (Exception ex) {
 				Console.WriteLine (ex);
 				return ObjectValue.CreateError (path.LastName, ex.Message, flags);
 			}
 		}
 		
-		static ObjectValue CreateObjectValue (MD.Thread thread, IObjectValueSource source, ObjectPath path, TargetObject obj, ObjectValueFlags flags, bool recurseCurrentObject)
+		static ObjectValue CreateObjectValueImpl (MD.Thread thread, IObjectValueSource source, ObjectPath path, TargetObject obj, ObjectValueFlags flags)
 		{
+			obj = GetRealObject (thread, obj);
+			
 			if (obj == null)
 				return ObjectValue.CreateObject (null, path, "", null, flags | ObjectValueFlags.ReadOnly, null);
 
@@ -64,22 +66,16 @@ namespace DebuggerServer
 					if (co == null)
 						return ObjectValue.CreateUnknown (path.LastName);
 					else {
-						if (recurseCurrentObject) {
-							TargetObject ob = co.GetCurrentObject (thread);
-							if (ob != null)
-								return CreateObjectValue (thread, source, path, ob, flags, false);
-						}
-						return ObjectValue.CreateObject (source, path, obj.TypeName, Server.Instance.Evaluator.TargetObjectToString (thread, obj, false), flags, null);
+						ObjectValue val = ObjectValue.CreateObject (source, path, obj.TypeName, Server.Instance.Evaluator.TargetObjectToString (thread, obj), flags, null);
+						return val;
 					}
 					
 				case TargetObjectKind.Object:
 					TargetObjectObject oob = obj as TargetObjectObject;
 					if (oob == null)
 						return ObjectValue.CreateUnknown (path.LastName);
-					else if (recurseCurrentObject)
-						return CreateObjectValue (thread, source, path, oob.GetDereferencedObject (thread), flags, false);
 					else
-						return ObjectValue.CreateObject (source, path, obj.TypeName, Server.Instance.Evaluator.TargetObjectToString (thread, obj, false), flags, null);
+						return ObjectValue.CreateObject (source, path, obj.TypeName, Server.Instance.Evaluator.TargetObjectToString (thread, obj), flags, null);
 					
 				case TargetObjectKind.Array:
 					return ObjectValue.CreateObject (source, path, obj.TypeName, Server.Instance.Evaluator.TargetObjectToString (thread, obj), flags, null);
@@ -93,7 +89,7 @@ namespace DebuggerServer
 					return CreateObjectValue (thread, source, path, enumobj.GetValue (thread), flags);
 					
 				case TargetObjectKind.Pointer:
-					return ObjectValue.CreateObject (source, path, obj.TypeName, Server.Instance.Evaluator.TargetObjectToString (thread, obj, false), flags, null);
+					return ObjectValue.CreateObject (source, path, obj.TypeName, Server.Instance.Evaluator.TargetObjectToString (thread, obj), flags, null);
 					
 				default:
 					return ObjectValue.CreateError (path.LastName, "Unknown value type: " + obj.Kind, flags);
@@ -102,34 +98,25 @@ namespace DebuggerServer
 		
 		public static ObjectValue[] GetObjectValueChildren (MD.Thread thread, TargetObject obj, int firstItemIndex, int count)
 		{
-			return GetObjectValueChildren (thread, obj, firstItemIndex, count, false);
-		}
-		
-		static ObjectValue[] GetObjectValueChildren (MD.Thread thread, TargetObject obj, int firstItemIndex, int count, bool recurseCurrentObject)
-		{
+			obj = GetRealObject (thread, obj);
+			
 			switch (obj.Kind)
 			{
-				case MD.Languages.TargetObjectKind.Array:
+				case MD.Languages.TargetObjectKind.Array: {
 					
 					TargetArrayObject arr = obj as TargetArrayObject;
 					if (arr == null)
 						return new ObjectValue [0];
 					
-					ArrayElementGroup agroup = new ArrayElementGroup (thread, arr);
+					ArrayElementGroup agroup = new ArrayElementGroup (thread, new ArrayAdaptor (thread, arr));
 					return agroup.GetChildren ();
-					
+				}
 				case TargetObjectKind.GenericInstance:
 				case TargetObjectKind.Struct:
-				case TargetObjectKind.Class:
+				case TargetObjectKind.Class: {
 					TargetStructObject co = obj as TargetStructObject;
 					if (co == null)
 						return new ObjectValue [0];
-					if (recurseCurrentObject) {
-						TargetObject currob = co.GetCurrentObject (thread);
-						if (currob != null)
-							return GetObjectValueChildren (thread, currob, firstItemIndex, count, false);
-					}
-					
 					List<ObjectValue> values = new List<ObjectValue> ();
 					foreach (ValueReference val in GetMembers (thread, co.Type, co)) {
 						try {
@@ -143,16 +130,18 @@ namespace DebuggerServer
 							values.Add (ObjectValue.CreateError (null, new ObjectPath (val.Name), val.Type.Name, ex.Message, val.Flags));
 						}
 					}
+					CollectionAdaptor col = CollectionAdaptor.CreateAdaptor (thread, co);
+					if (col != null) {
+						ArrayElementGroup agroup = new ArrayElementGroup (thread, col);
+						ObjectValue val = ObjectValue.CreateObject (null, new ObjectPath ("Raw View"), "", "", ObjectValueFlags.ReadOnly, values.ToArray ());
+						values = new List<ObjectValue> ();
+						values.Add (val);
+						values.AddRange (agroup.GetChildren ());
+					}
 					return values.ToArray ();
-					
+				}
 				case TargetObjectKind.Object:
-					TargetObjectObject oob = obj as TargetObjectObject;
-					if (oob == null)
-						return new ObjectValue [0];
-					if (recurseCurrentObject)
-						return GetObjectValueChildren (thread, oob.GetDereferencedObject (thread), firstItemIndex, count, false);
-					else
-						return new ObjectValue [0];
+					return new ObjectValue [0];
 				
 				case TargetObjectKind.Pointer:
 					TargetPointerObject pobj = (TargetPointerObject) obj;
@@ -166,14 +155,19 @@ namespace DebuggerServer
 		
 		public static TargetObject GetRealObject (MD.Thread thread, TargetObject obj)
 		{
+			if (obj == null)
+				return null;
+
 			try {
 				switch (obj.Kind) {
 					case MD.Languages.TargetObjectKind.Array:
 					case TargetObjectKind.Fundamental:
 						return obj;
 						
+					case TargetObjectKind.Struct:
+					case TargetObjectKind.GenericInstance:
 					case TargetObjectKind.Class:
-						TargetClassObject co = obj as TargetClassObject;
+						TargetStructObject co = obj as TargetStructObject;
 						if (co == null)
 							return null;
 						TargetObject res = co.GetCurrentObject (thread);
@@ -187,7 +181,10 @@ namespace DebuggerServer
 						TargetObjectObject oob = obj as TargetObjectObject;
 						if (oob == null)
 							return null;
-						return oob.GetDereferencedObject (thread);
+						if (oob.Type.CanDereference)
+							return oob.GetDereferencedObject (thread);
+						else
+							return oob;
 				}
 			}
 			catch {
@@ -268,19 +265,20 @@ namespace DebuggerServer
 		
 		public static IEnumerable<ValueReference> GetMembers (MD.Thread thread, TargetType t, TargetStructObject co)
 		{
-			foreach (KeyValuePair<TargetMemberInfo,TargetStructType> mem in GetTypeMembers (thread, t, co==null, true, true, false)) {
+			foreach (KeyValuePair<TargetMemberInfo,TargetStructType> mem in GetTypeMembers (thread, t, co==null, true, true, false, true)) {
 				if (mem.Key is TargetFieldInfo) {
 					TargetFieldInfo field = (TargetFieldInfo) mem.Key;
 					yield return new FieldReference (thread, co, mem.Value, field);
 				}
 				if (mem.Key is TargetPropertyInfo) {
 					TargetPropertyInfo prop = (TargetPropertyInfo) mem.Key;
-					yield return new PropertyReference (thread, prop, co);
+					if (prop.Getter.ParameterTypes == null || prop.Getter.ParameterTypes.Length == 0)
+						yield return new PropertyReference (thread, prop, co);
 				}
 			}
 		}
 		
-		public static IEnumerable<KeyValuePair<TargetMemberInfo,TargetStructType>> GetTypeMembers (MD.Thread thread, TargetType t, bool staticOnly, bool includeFields, bool includeProps, bool includeMethods)
+		public static IEnumerable<KeyValuePair<TargetMemberInfo,TargetStructType>> GetTypeMembers (MD.Thread thread, TargetType t, bool staticOnly, bool includeFields, bool includeProps, bool includeMethods, bool publicApiOnly)
 		{
 			TargetStructType type = t as TargetStructType;
 
@@ -320,15 +318,21 @@ namespace DebuggerServer
 				}
 				
 				if (properties != null) {
-					foreach (TargetPropertyInfo prop in properties)
-						if ((prop.IsStatic || !staticOnly) && (prop.Accessibility == TargetMemberAccessibility.Public || prop.Accessibility == TargetMemberAccessibility.Protected))
+					foreach (TargetPropertyInfo prop in properties) {
+						if (publicApiOnly && prop.Accessibility != TargetMemberAccessibility.Public && prop.Accessibility != TargetMemberAccessibility.Protected)
+							continue;
+						if (prop.IsStatic || !staticOnly)
 							yield return new KeyValuePair<TargetMemberInfo,TargetStructType> (prop, type);
+					}
 				}
 				
 				if (methods != null) {
-					foreach (TargetMethodInfo met in methods)
-						if ((met.IsStatic || !staticOnly) && (met.Accessibility == TargetMemberAccessibility.Public || met.Accessibility == TargetMemberAccessibility.Protected))
+					foreach (TargetMethodInfo met in methods) {
+						if (publicApiOnly && met.Accessibility != TargetMemberAccessibility.Public && met.Accessibility != TargetMemberAccessibility.Protected)
+							continue;
+						if (met.IsStatic || !staticOnly)
 							yield return new KeyValuePair<TargetMemberInfo,TargetStructType> (met, type);
+					}
 				}
 				
 				if (type.HasParent)

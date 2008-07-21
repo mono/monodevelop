@@ -233,7 +233,7 @@ namespace DebuggerServer
 		{
 			List<TargetFunctionType> candidates = new List<TargetFunctionType> ();
 
-			foreach (KeyValuePair<TargetMemberInfo,TargetStructType> mem in Util.GetTypeMembers (frame.Thread, type, false, false, false, true)) {
+			foreach (KeyValuePair<TargetMemberInfo,TargetStructType> mem in Util.GetTypeMembers (frame.Thread, type, false, false, false, true, false)) {
 				TargetMethodInfo met = (TargetMethodInfo) mem.Key;
 				if (met.Name == methodName && met.Type.ParameterTypes.Length == argtypes.Length && (met.IsStatic && allowStatic || !met.IsStatic && allowInstance))
 					candidates.Add (met.Type);
@@ -356,7 +356,7 @@ namespace DebuggerServer
 			
 			TargetStructType type = frame.Method.GetDeclaringType (frame.Thread);
 			
-			foreach (KeyValuePair<TargetMemberInfo,TargetStructType> mem in Util.GetTypeMembers (frame.Thread, type, thisobj==null, true, true, false)) {
+			foreach (KeyValuePair<TargetMemberInfo,TargetStructType> mem in Util.GetTypeMembers (frame.Thread, type, thisobj==null, true, true, false, false)) {
 				if (mem.Key.Name != name)
 					continue;
 				if (mem.Key is TargetFieldInfo) {

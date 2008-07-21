@@ -1,4 +1,4 @@
-// FieldVariable.cs
+// ICollectionAdaptor.cs
 //
 // Author:
 //   Lluis Sanchez Gual <lluis@novell.com>
@@ -26,57 +26,18 @@
 //
 
 using System;
-using Mono.Debugger.Languages;
 using Mono.Debugger;
+using Mono.Debugger.Languages;
 using Mono.Debugging.Client;
 
 namespace DebuggerServer
 {
-	public class FieldReference: ValueReference
+	public interface ICollectionAdaptor
 	{
-		TargetStructType type;
-		TargetFieldInfo field;
-		TargetStructObject thisobj;
-		
-		public FieldReference (Thread thread, TargetStructObject thisobj, TargetStructType type, TargetFieldInfo field): base (thread)
-		{
-			this.type = type;
-			this.field = field;
-			if (!field.IsStatic)
-				this.thisobj = thisobj;
-		}
-		
-		public override TargetType Type {
-			get {
-				return field.Type;
-			}
-		}
-		
-		public override TargetObject Value {
-			get {
-				if (field.HasConstValue)
-					return Thread.CurrentFrame.Language.CreateInstance (Thread, field.ConstValue);
-				TargetClass cls = type.GetClass (Thread);
-				return Util.GetRealObject (Thread, cls.GetField (Thread, thisobj, field));
-			}
-			set {
-				TargetClass cls = type.GetClass (Thread);
-				cls.SetField (Thread, thisobj, field, value);
-			}
-		}
-		
-		public override string Name {
-			get {
-				return field.Name;
-			}
-		}
-
-		public override ObjectValueFlags Flags {
-			get {
-				ObjectValueFlags flags = ObjectValueFlags.Field | Util.GetAccessibility (field.Accessibility);
-				if (field.HasConstValue) flags |= ObjectValueFlags.ReadOnly;
-				return flags;
-			}
-		}
+		TargetArrayBounds GetBounds ();
+		TargetObject GetElement (int[] indices);
+		TargetType ElementType { get; }
+		void SetElement (int[] indices, TargetObject val);
+		ObjectValue CreateElementValue (ArrayElementGroup grp, ObjectPath path, int[] indices);
 	}
 }

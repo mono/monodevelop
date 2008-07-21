@@ -44,14 +44,17 @@ RESGEN=resgen2
 DEBUGGERSERVER_EXE_MDB = $(BUILD_DIR)/DebuggerServer.exe.mdb
 
 FILES =  \
+	ArrayAdaptor.cs \
 	ArrayElementGroup.cs \
 	ArrayValueReference.cs \
 	AssemblyInfo.cs \
 	BacktraceWrapper.cs \
+	CollectionAdaptor.cs \
 	Convert.cs \
 	DebuggerServer.cs \
 	ExpressionEvaluator.cs \
 	FieldReference.cs \
+	ICollectionAdaptor.cs \
 	LiteralValueReference.cs \
 	NamespaceValueReference.cs \
 	NRefactoryEvaluator.cs \

@@ -36,13 +36,10 @@ namespace DebuggerServer
 	{
 		public abstract ValueReference Evaluate (StackFrame frame, string exp, EvaluationOptions options);
 		
-		public virtual string TargetObjectToString (Thread thead, TargetObject obj)
+		public virtual string TargetObjectToString (Thread thread, TargetObject obj)
 		{
-			return TargetObjectToString (thead, obj, true);
-		}
-
-		public virtual string TargetObjectToString (Thread thread, TargetObject obj, bool recurseOb)
-		{
+			obj = Util.GetRealObject (thread, obj);
+			
 			switch (obj.Kind) {
 				case Mono.Debugger.Languages.TargetObjectKind.Array:
 					TargetArrayObject arr = obj as TargetArrayObject;
@@ -70,13 +67,11 @@ namespace DebuggerServer
 					TargetStructObject co = obj as TargetStructObject;
 					if (co == null)
 						return "null";
-					if (recurseOb) {
-						TargetObject currob = co.GetCurrentObject (thread);
-						if (currob != null)
-							return TargetObjectToString (thread, currob, false);
-					}
 					if (co.TypeName == "System.Decimal")
 						return Util.CallToString (thread, co);
+					CollectionAdaptor col = CollectionAdaptor.CreateAdaptor (thread, co);
+					if (col != null)
+						return ArrayElementGroup.GetArrayDescription (col.GetBounds ());
 					return "{" + co.TypeName + "}";
 					
 				case TargetObjectKind.Enum:
@@ -100,8 +95,6 @@ namespace DebuggerServer
 					TargetObjectObject oob = obj as TargetObjectObject;
 					if (oob == null)
 						return "null";
-					if (recurseOb)
-						return TargetObjectToString (thread, oob.GetDereferencedObject (thread), false);
 					else
 						return "{" + oob.TypeName + "}";
 			}

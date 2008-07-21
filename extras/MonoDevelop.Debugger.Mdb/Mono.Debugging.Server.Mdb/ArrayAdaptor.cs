@@ -1,4 +1,4 @@
-// FieldVariable.cs
+// ArrayAdaptor.cs
 //
 // Author:
 //   Lluis Sanchez Gual <lluis@novell.com>
@@ -26,57 +26,48 @@
 //
 
 using System;
-using Mono.Debugger.Languages;
 using Mono.Debugger;
+using Mono.Debugger.Languages;
 using Mono.Debugging.Client;
 
 namespace DebuggerServer
 {
-	public class FieldReference: ValueReference
+	class ArrayAdaptor: ICollectionAdaptor
 	{
-		TargetStructType type;
-		TargetFieldInfo field;
-		TargetStructObject thisobj;
+		TargetArrayObject array;
+		Thread thread;
 		
-		public FieldReference (Thread thread, TargetStructObject thisobj, TargetStructType type, TargetFieldInfo field): base (thread)
+		public ArrayAdaptor (Thread thread, TargetArrayObject array)
 		{
-			this.type = type;
-			this.field = field;
-			if (!field.IsStatic)
-				this.thisobj = thisobj;
+			this.thread = thread;
+			this.array = array;
 		}
 		
-		public override TargetType Type {
+		public TargetArrayBounds GetBounds ()
+		{
+			return array.GetArrayBounds (thread);
+		}
+		
+		public TargetObject GetElement (int[] indices)
+		{
+			return array.GetElement (thread, indices);
+		}
+		
+		public void SetElement (int[] indices, TargetObject val)
+		{
+			array.SetElement (thread, indices, val);
+		}
+		
+		public TargetType ElementType {
 			get {
-				return field.Type;
+				return array.Type.ElementType;
 			}
 		}
 		
-		public override TargetObject Value {
-			get {
-				if (field.HasConstValue)
-					return Thread.CurrentFrame.Language.CreateInstance (Thread, field.ConstValue);
-				TargetClass cls = type.GetClass (Thread);
-				return Util.GetRealObject (Thread, cls.GetField (Thread, thisobj, field));
-			}
-			set {
-				TargetClass cls = type.GetClass (Thread);
-				cls.SetField (Thread, thisobj, field, value);
-			}
-		}
-		
-		public override string Name {
-			get {
-				return field.Name;
-			}
-		}
-
-		public override ObjectValueFlags Flags {
-			get {
-				ObjectValueFlags flags = ObjectValueFlags.Field | Util.GetAccessibility (field.Accessibility);
-				if (field.HasConstValue) flags |= ObjectValueFlags.ReadOnly;
-				return flags;
-			}
+		public ObjectValue CreateElementValue (ArrayElementGroup grp, ObjectPath path, int[] indices)
+		{
+			TargetObject elem = array.GetElement (thread, indices);
+			return Util.CreateObjectValue (thread, grp, path, elem, ObjectValueFlags.ArrayElement);
 		}
 	}
 }

@@ -52,7 +52,7 @@ namespace DebuggerServer
 		
 		public override TargetObject Value {
 			get {
-				return Server.Instance.RuntimeInvoke (Thread, prop.Getter, thisobj, new TargetObject[0]);
+				return Util.GetRealObject (Thread, Server.Instance.RuntimeInvoke (Thread, prop.Getter, thisobj, new TargetObject[0]));
 			}
 			set {
 				Server.Instance.RuntimeInvoke (Thread, prop.Setter, thisobj, new TargetObject[] { value });

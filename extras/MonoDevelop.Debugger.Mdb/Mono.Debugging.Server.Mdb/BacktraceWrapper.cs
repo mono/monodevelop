@@ -182,6 +182,7 @@ namespace DebuggerServer
 				if (frame.Method.HasThis) {
 					TargetObject ob = frame.Method.GetThis (frame.Thread).GetObject (frame);
 					thisobj = Util.GetRealObject (frame.Thread, ob) as TargetStructObject;
+					data.Items.Add (new CompletionItem ("this", DL.ObjectValueFlags.Field | DL.ObjectValueFlags.ReadOnly));
 				}
 				
 				TargetStructType type = frame.Method.GetDeclaringType (frame.Thread);

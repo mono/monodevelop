@@ -1,3 +1,24 @@
+2008-07-21  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* DebuggerServer.cs: Set breakpoints using a constructed SourceLocation
+	  instead of looking for it. In this way the breakpoint can be set
+	  even if the library is not yet loaded. Other minor fixes.
+	* Util.cs: Make sure object references are properly dereferenced. Use
+	  new collection adaptors.
+	* ICollectionAdaptor.cs, ExpressionEvaluator.cs,
+	  Mono.Debugging.Server.Mdb.mdp, ArrayAdaptor.cs,
+	  NRefactoryEvaluator.cs, ArrayElementGroup.cs, CollectionAdaptor.cs:
+	  When inspecting objects implementing ICollection and IDictionary,
+	  show the elements as children of the object, and provide a "Raw
+	  View" containing the members of the object.
+	* BacktraceWrapper.cs: Provide completion for 'this' reference.
+	* ArrayValueReference.cs, FieldReference.cs, PropertyReference.cs,
+	  VariableReference.cs: Make sure object references are properly
+	  dereferenced.
+	* RemoteFrameObject.cs: Don't allow connecting a RemoteFrameObject more
+	  than once.
+	* Makefile: Added new files.
+
 2008-07-16  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* DebuggerServer.cs: Implement support for catchpoints.

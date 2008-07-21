@@ -176,10 +176,7 @@ namespace DebuggerServer
 			MD.Event ev = null;
 			
 			if (bp != null) {
-				MD.SourceLocation location = FindFile (bp.FileName, bp.Line);
-				if (location == null)
-					//FIXME: exception types
-					throw new Exception ("invalid location: " + bp.FileName + ":" + bp.Line);
+				MD.SourceLocation location = new MD.SourceLocation (bp.FileName, bp.Line);
 				ev = session.InsertBreakpoint (ThreadGroup.Global, location);
 			}
 			else if (be is Catchpoint) {
@@ -235,19 +232,6 @@ namespace DebuggerServer
 			return handle;
 		}
 
-
-		MD.SourceLocation FindFile (string filename, int line)
-		{
-			SourceFile file = session.FindFile (filename);
-			if (file == null)
-				return null;
-
-			MethodSource source = file.FindMethod (line);
-			if (source == null)
-				return null;
-
-			return new MD.SourceLocation (source, file, line);
-		}
 
 		public void Continue ()
 		{
@@ -359,15 +343,29 @@ namespace DebuggerServer
 			});
 		}
 		
+		public void WriteDebuggerError (Exception ex)
+		{
+			Console.WriteLine (ex);
+		}
+		
+		public ML.TargetObject RuntimeInvoke (MD.Thread thread, ML.TargetFunctionType function,
+							  ML.TargetStructObject object_argument)
+		{
+			return RuntimeInvoke (thread, function, object_argument, null);
+		}
+		
 		public ML.TargetObject RuntimeInvoke (MD.Thread thread, ML.TargetFunctionType function,
 							  ML.TargetStructObject object_argument,
 							  ML.TargetObject[] param_objects)
 		{
+			if (param_objects == null)
+				param_objects = new ML.TargetObject [0];
+			
 			MD.RuntimeInvokeResult res = thread.RuntimeInvoke (function, object_argument, param_objects, true, false);
 			res.Wait ();
 			if (res.ExceptionMessage != null)
 				throw new Exception (res.ExceptionMessage);
-			return res.ReturnObject;
+			return Util.GetRealObject (thread, res.ReturnObject);
 		}
 		
 		DL.Backtrace CreateBacktrace (MD.Thread thread)
@@ -423,6 +421,7 @@ namespace DebuggerServer
 
 			debugger.TargetExitedEvent += OnTargetExitedEvent;
 			guiManager.TargetEvent += OnTargetEvent;
+			
 			activeThread = process.MainThread;
 			running = true;
 			
@@ -598,14 +597,14 @@ namespace DebuggerServer
 			WriteDebuggerOutput (string.Format ("Process {0} execd.\n", process.ID));
 		}
 		
-		private void OnThreadCreatedEvent (MD.Debugger debugger, MD.Thread process)
+		private void OnThreadCreatedEvent (MD.Debugger debugger, MD.Thread thread)
 		{
-			WriteDebuggerOutput (string.Format ("Thread {0} created.\n", process.ID));
+			WriteDebuggerOutput (string.Format ("Thread {0} created.\n", thread.ID));
 		}
 		
-		private void OnThreadExitedEvent (MD.Debugger debugger, MD.Thread process)
+		private void OnThreadExitedEvent (MD.Debugger debugger, MD.Thread thread)
 		{
-			WriteDebuggerOutput (string.Format ("Thread {0} exited.\n", process.ID));
+			WriteDebuggerOutput (string.Format ("Thread {0} exited.\n", thread.ID));
 		}
 
 		private void OnTargetExitedEvent (MD.Debugger debugger)
