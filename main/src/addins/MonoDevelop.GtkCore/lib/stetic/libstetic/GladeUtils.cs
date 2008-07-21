@@ -278,12 +278,12 @@ namespace Stetic {
 			string[] vals = strval.Split (' ');
 			double deflt, min, max, step, page_inc, page_size;
 
-			deflt = Double.Parse (vals[0]);
-			min = Double.Parse (vals[1]);
-			max = Double.Parse (vals[2]);
-			step = Double.Parse (vals[3]);
-			page_inc = Double.Parse (vals[4]);
-			page_size = Double.Parse (vals[5]);
+			deflt = Double.Parse (vals[0], System.Globalization.CultureInfo.InvariantCulture);
+			min = Double.Parse (vals[1], System.Globalization.CultureInfo.InvariantCulture);
+			max = Double.Parse (vals[2], System.Globalization.CultureInfo.InvariantCulture);
+			step = Double.Parse (vals[3], System.Globalization.CultureInfo.InvariantCulture);
+			page_inc = Double.Parse (vals[4], System.Globalization.CultureInfo.InvariantCulture);
+			page_size = Double.Parse (vals[5], System.Globalization.CultureInfo.InvariantCulture);
 			return new GLib.Value (new Gtk.Adjustment (deflt, min, max, step, page_inc, page_size));
 		}
 

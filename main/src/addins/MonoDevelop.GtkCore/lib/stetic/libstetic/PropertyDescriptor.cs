@@ -184,7 +184,14 @@ namespace Stetic {
 				return new DateTime (long.Parse (value));
 			else if (PropertyType == typeof(TimeSpan))
 				return new TimeSpan (long.Parse (value));
-			else
+			else if (PropertyType == typeof(double)) {
+				try {
+					return Convert.ChangeType (value, PropertyType);
+				}
+				catch (InvalidCastException) {
+					return Convert.ChangeType (value, PropertyType, System.Globalization.CultureInfo.InvariantCulture);
+				}
+			} else
 				return Convert.ChangeType (value, PropertyType);
 		}
 		
@@ -199,6 +206,8 @@ namespace Stetic {
 				return ((DateTime)value).Ticks.ToString ();
 			else if (PropertyType == typeof(TimeSpan))
 				return ((TimeSpan)value).Ticks.ToString ();
+			else if (PropertyType == typeof(double))
+				return ((double)value).ToString (System.Globalization.CultureInfo.InvariantCulture);
 			else
 				return value.ToString ();
 		}

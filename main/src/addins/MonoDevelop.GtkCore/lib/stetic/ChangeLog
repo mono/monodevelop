@@ -1,3 +1,9 @@
+2008-07-21  Mike Kestner <mkestner@novell.com> 
+
+	Patch from David Makovsky and Jeremie Laval.
+	* libstetic/PropertyDescriptor.cs: use invariant culture for doubles.
+	* libsteticui/GladeUtils.cs: use invariant culture for doubles.
+
 2008-07-16  Mike Kestner <mkestner@novell.com> 
 
 	* libsteticui/CecilWidgetLibrary.cs (LoadDependencies): always set
