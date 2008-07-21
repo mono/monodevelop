@@ -353,7 +353,7 @@ namespace MonoDevelop.Ide.Gui
 		}
 
 
-		public virtual void Dispose ()
+		public override void Dispose ()
 		{
 			Clear ();
 			foreach (NodeBuilder nb in builders) {
