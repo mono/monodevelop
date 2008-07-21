@@ -237,7 +237,7 @@ namespace MonoDevelop.Projects
 		
 		protected internal override void OnClean (IProgressMonitor monitor, string solutionConfiguration)
 		{
-			isDirty = true;
+			SetDirty ();
 			ProjectConfiguration config = GetActiveConfiguration (solutionConfiguration) as ProjectConfiguration;
 			if (config == null) {
 				monitor.ReportError (GettextCatalog.GetString ("Configuration '{0}' not found in project '{1}'", solutionConfiguration, Name), null);
@@ -306,6 +306,12 @@ namespace MonoDevelop.Projects
 			isDirty = value;
 		}
 		
+		void SetDirty ()
+		{
+			if (!Loading)
+				isDirty = true;
+		}
+		
 		protected virtual void CheckNeedsBuild (string solutionConfiguration)
 		{
 			string config = GetActiveConfigurationId (solutionConfiguration);
@@ -314,7 +320,7 @@ namespace MonoDevelop.Projects
 			
 			DateTime tim = GetLastBuildTime (config);
 			if (tim == DateTime.MinValue) {
-				isDirty = true;
+				SetDirty ();
 				return;
 			}
 			
@@ -323,14 +329,14 @@ namespace MonoDevelop.Projects
 					continue;
 				FileInfo finfo = new FileInfo (file.FilePath);
 				if (finfo.Exists && finfo.LastWriteTime > tim) {
-					isDirty = true;
+					SetDirty ();
 					return;
 				}
 			}
 			
 			foreach (SolutionItem pref in GetReferencedItems (solutionConfiguration)) {
 				if (pref.NeedsBuilding (solutionConfiguration)) {
-					isDirty = true;
+					SetDirty ();
 					return;
 				}
 			}
@@ -355,7 +361,7 @@ namespace MonoDevelop.Projects
 		{
 			ProjectFile file = GetProjectFile (e.FileName);
 			if (file != null) {
-				isDirty = true;
+				SetDirty ();
 				try {
 					NotifyFileChangedInProject (file);
 				} catch {
@@ -413,35 +419,35 @@ namespace MonoDevelop.Projects
 		
 		internal void NotifyFileRemovedFromProject (ProjectFile file)
 		{
-			isDirty = true;
+			SetDirty ();
 			NotifyModified ("Files");
 			OnFileRemovedFromProject (new ProjectFileEventArgs (this, file));
 		}
 		
 		internal void NotifyFileAddedToProject (ProjectFile file)
 		{
-			isDirty = true;
+			SetDirty ();
 			NotifyModified ("Files");
 			OnFileAddedToProject (new ProjectFileEventArgs (this, file));
 		}
 		
 		internal void NotifyFileRenamedInProject (ProjectFileRenamedEventArgs args)
 		{
-			isDirty = true;
+			SetDirty ();
 			NotifyModified ("Files");
 			OnFileRenamedInProject (args);
 		}
 		
 		internal void NotifyReferenceRemovedFromProject (ProjectReference reference)
 		{
-			isDirty = true;
+			SetDirty ();
 			NotifyModified ("References");
 			OnReferenceRemovedFromProject (new ProjectReferenceEventArgs (this, reference));
 		}
 		
 		internal void NotifyReferenceAddedToProject (ProjectReference reference)
 		{
-			isDirty = true;
+			SetDirty ();
 			NotifyModified ("References");
 			OnReferenceAddedToProject (new ProjectReferenceEventArgs (this, reference));
 		}
