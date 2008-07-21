@@ -56,9 +56,13 @@ namespace MonoDevelop.CodeMetrics
 			treeviewMetrics.RulesHint = true;
 			treeviewMetrics.Model = store;
 			
-			TreeViewColumn col = new TreeViewColumn (GettextCatalog.GetString ("File"), new CellRendererText (), "text", 0);
+			CellRendererText crt = new CellRendererText ();
+			crt.Ellipsize = Pango.EllipsizeMode.Start;
+			TreeViewColumn col = new TreeViewColumn (GettextCatalog.GetString ("File"), crt, "text", 0);
 			col.SortIndicator = true;
 			col.SortColumnId = 0;
+			col.Expand = true;
+			col.Resizable = true;
 			treeviewMetrics.AppendColumn (col);
 			
 			col = new TreeViewColumn (GettextCatalog.GetString ("Lines (real)"), new CellRendererText (), "text", 1);
