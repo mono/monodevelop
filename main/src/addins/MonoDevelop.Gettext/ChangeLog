@@ -1,5 +1,10 @@
 2008-07-21  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Gettext/TranslationProject.cs: Don't set the dirty flag
+	  when a translation is added while loading the project.
+
+2008-07-21  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Gettext.mdp,
 	  gtk-gui/MonoDevelop.Gettext.Translator.LanguageChooserDialog.cs,
 	  gtk-gui/gui.stetic: Updated.

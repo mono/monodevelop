@@ -209,7 +209,8 @@ namespace MonoDevelop.Gettext
 		
 		internal void NotifyTranslationAdded (Translation tr)
 		{
-			isDirty = true; 
+			if (!Loading)
+				isDirty = true; 
 			OnTranslationAdded (EventArgs.Empty);
 		}
 		
