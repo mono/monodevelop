@@ -485,7 +485,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 							buildItem = prefgrp.AddNewItem ("ProjectReference", MSBuildProjectService.ToMSBuildPath (project.BaseDirectory, refProj.FileName));
 							MSBuildProjectHandler handler = refProj.ItemHandler as MSBuildProjectHandler;
 							if (handler != null)
-								buildItem.SetMetadata ("Project", Item.ItemId);
+								buildItem.SetMetadata ("Project", handler.Item.ItemId);
 							buildItem.SetMetadata ("Name", refProj.Name);
 							if (!pref.LocalCopy)
 								buildItem.SetMetadata ("Private", "False");
