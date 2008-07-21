@@ -57,7 +57,7 @@
 			</Condition>
 		</Section>
 		<Section id="Build" _label="Build">
-			<Section id="General" _label="General">
+			<Section id="General" _label="General" icon="md-build-combine">
 				<Condition id="ItemType" value="Project">
 					<Panel id = "RuntimeOptionsPanel" _label = "Runtime Options" class = "MonoDevelop.Projects.Gui.Dialogs.OptionPanels.RuntimeOptionsPanel"/>
 				</Condition>
@@ -77,6 +77,13 @@
 					<Panel id = "EntryConfigurations" _label = "Configuration Mappings" fill = "true" grouping="Tab" class = "MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CombineConfigurationPanel"/>
 				</Section>
 			</Condition>
+		</Section>
+		<Section id="Run" _label="Run">
+			<Section id="General" _label="General" icon="gtk-execute">
+				<Condition id="ItemType" value="Project">
+					<Panel id = "RunOptionsPanel" _label = "Run" fill = "true" class = "MonoDevelop.Projects.Gui.Dialogs.OptionPanels.RunOptionsPanel"/>
+				</Condition>
+			</Section>
 		</Section>
 	</Extension>
 </Addin>

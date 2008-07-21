@@ -70,22 +70,15 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 		public OutputOptionsPanelWidget ()
 		{
 			Build ();
-			externalConsoleCheckButton.Toggled += new EventHandler (ExternalConsoleToggle);
 		}
 		
 		public void Load (Project project, DotNetProjectConfiguration config)
 		{	
 			this.configuration = config;
 			assemblyNameEntry.Text = configuration.OutputAssembly;
-			parametersEntry.Text = configuration.CommandLineParameters;
 			
 			outputPathEntry.DefaultPath = project.BaseDirectory;
 			outputPathEntry.Path = configuration.OutputDirectory;
-			
-			externalConsoleCheckButton.Active = configuration.ExternalConsole;
-			pauseConsoleOutputCheckButton.Active = configuration.PauseConsoleOutput;
-			
-			pauseConsoleOutputCheckButton.Sensitive = externalConsoleCheckButton.Active;
 		}
 
 		public bool ValidateChanges ()
@@ -114,20 +107,6 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 			
 			configuration.OutputAssembly = assemblyNameEntry.Text;
 			configuration.OutputDirectory = outputPathEntry.Path;
-			configuration.CommandLineParameters = parametersEntry.Text;
-				configuration.ExternalConsole = externalConsoleCheckButton.Active;
-			configuration.PauseConsoleOutput = pauseConsoleOutputCheckButton.Active;
-		}
-		
-		void ExternalConsoleToggle (object sender, EventArgs e)
-		{
-			if (externalConsoleCheckButton.Active) {
- 				pauseConsoleOutputCheckButton.Sensitive = true;
-				pauseConsoleOutputCheckButton.Active = true;
-			} else {
- 				pauseConsoleOutputCheckButton.Sensitive = false;
-				pauseConsoleOutputCheckButton.Active = false;
-			}
 		}
 	}
 }

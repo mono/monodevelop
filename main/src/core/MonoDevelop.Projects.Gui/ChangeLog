@@ -1,3 +1,17 @@
+2008-07-21  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Gui.addin.xml, MonoDevelop.Projects.Gui.mdp,
+	  gtk-gui/objects.xml,
+	  gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.OutputOptionsPanelWidget.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.RunOptionsPanelWidget.cs,
+	  gtk-gui/gui.stetic, Makefile.am,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/OutputOptionsPanel.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/EnvVarList.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/RunOptionsPanel.cs:
+	  Added new Run options panel which includes some options from the
+	  output panel and a new list for setting env vars to be set when
+	  running the project.
+
 2008-07-12  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:

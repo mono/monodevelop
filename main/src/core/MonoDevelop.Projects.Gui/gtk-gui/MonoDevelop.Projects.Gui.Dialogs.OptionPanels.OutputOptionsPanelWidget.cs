@@ -29,19 +29,11 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels {
         
         private Gtk.Entry assemblyNameEntry;
         
-        private Gtk.Label label100;
-        
         private Gtk.Label label98;
         
         private Gtk.Label label99;
         
         private MonoDevelop.Components.FolderEntry outputPathEntry;
-        
-        private Gtk.Entry parametersEntry;
-        
-        private Gtk.CheckButton externalConsoleCheckButton;
-        
-        private Gtk.CheckButton pauseConsoleOutputCheckButton;
         
         protected virtual void Build() {
             Stetic.Gui.Initialize(this);
@@ -85,7 +77,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels {
             this.vbox69.Name = "vbox69";
             this.vbox69.Spacing = 6;
             // Container child vbox69.Gtk.Box+BoxChild
-            this.table10 = new Gtk.Table(((uint)(3)), ((uint)(2)), false);
+            this.table10 = new Gtk.Table(((uint)(2)), ((uint)(2)), false);
             this.table10.Name = "table10";
             this.table10.RowSpacing = ((uint)(6));
             this.table10.ColumnSpacing = ((uint)(6));
@@ -100,27 +92,15 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels {
             w3.RightAttach = ((uint)(2));
             w3.YOptions = ((Gtk.AttachOptions)(0));
             // Container child table10.Gtk.Table+TableChild
-            this.label100 = new Gtk.Label();
-            this.label100.Name = "label100";
-            this.label100.Xalign = 0F;
-            this.label100.LabelProp = MonoDevelop.Core.GettextCatalog.GetString("Paramet_ers:");
-            this.label100.UseUnderline = true;
-            this.table10.Add(this.label100);
-            Gtk.Table.TableChild w4 = ((Gtk.Table.TableChild)(this.table10[this.label100]));
-            w4.TopAttach = ((uint)(2));
-            w4.BottomAttach = ((uint)(3));
-            w4.XOptions = ((Gtk.AttachOptions)(4));
-            w4.YOptions = ((Gtk.AttachOptions)(0));
-            // Container child table10.Gtk.Table+TableChild
             this.label98 = new Gtk.Label();
             this.label98.Name = "label98";
             this.label98.Xalign = 0F;
             this.label98.LabelProp = MonoDevelop.Core.GettextCatalog.GetString("Assembly _name:");
             this.label98.UseUnderline = true;
             this.table10.Add(this.label98);
-            Gtk.Table.TableChild w5 = ((Gtk.Table.TableChild)(this.table10[this.label98]));
-            w5.XOptions = ((Gtk.AttachOptions)(4));
-            w5.YOptions = ((Gtk.AttachOptions)(0));
+            Gtk.Table.TableChild w4 = ((Gtk.Table.TableChild)(this.table10[this.label98]));
+            w4.XOptions = ((Gtk.AttachOptions)(4));
+            w4.YOptions = ((Gtk.AttachOptions)(0));
             // Container child table10.Gtk.Table+TableChild
             this.label99 = new Gtk.Label();
             this.label99.Name = "label99";
@@ -128,77 +108,42 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels {
             this.label99.LabelProp = MonoDevelop.Core.GettextCatalog.GetString("Output _path:");
             this.label99.UseUnderline = true;
             this.table10.Add(this.label99);
-            Gtk.Table.TableChild w6 = ((Gtk.Table.TableChild)(this.table10[this.label99]));
-            w6.TopAttach = ((uint)(1));
-            w6.BottomAttach = ((uint)(2));
-            w6.XOptions = ((Gtk.AttachOptions)(4));
-            w6.YOptions = ((Gtk.AttachOptions)(0));
+            Gtk.Table.TableChild w5 = ((Gtk.Table.TableChild)(this.table10[this.label99]));
+            w5.TopAttach = ((uint)(1));
+            w5.BottomAttach = ((uint)(2));
+            w5.XOptions = ((Gtk.AttachOptions)(4));
+            w5.YOptions = ((Gtk.AttachOptions)(0));
             // Container child table10.Gtk.Table+TableChild
             this.outputPathEntry = new MonoDevelop.Components.FolderEntry();
             this.outputPathEntry.Name = "outputPathEntry";
             this.table10.Add(this.outputPathEntry);
-            Gtk.Table.TableChild w7 = ((Gtk.Table.TableChild)(this.table10[this.outputPathEntry]));
-            w7.TopAttach = ((uint)(1));
-            w7.BottomAttach = ((uint)(2));
-            w7.LeftAttach = ((uint)(1));
-            w7.RightAttach = ((uint)(2));
-            w7.XOptions = ((Gtk.AttachOptions)(4));
-            w7.YOptions = ((Gtk.AttachOptions)(4));
-            // Container child table10.Gtk.Table+TableChild
-            this.parametersEntry = new Gtk.Entry();
-            this.parametersEntry.Name = "parametersEntry";
-            this.parametersEntry.IsEditable = true;
-            this.parametersEntry.InvisibleChar = '●';
-            this.table10.Add(this.parametersEntry);
-            Gtk.Table.TableChild w8 = ((Gtk.Table.TableChild)(this.table10[this.parametersEntry]));
-            w8.TopAttach = ((uint)(2));
-            w8.BottomAttach = ((uint)(3));
-            w8.LeftAttach = ((uint)(1));
-            w8.RightAttach = ((uint)(2));
-            w8.YOptions = ((Gtk.AttachOptions)(0));
+            Gtk.Table.TableChild w6 = ((Gtk.Table.TableChild)(this.table10[this.outputPathEntry]));
+            w6.TopAttach = ((uint)(1));
+            w6.BottomAttach = ((uint)(2));
+            w6.LeftAttach = ((uint)(1));
+            w6.RightAttach = ((uint)(2));
+            w6.XOptions = ((Gtk.AttachOptions)(4));
+            w6.YOptions = ((Gtk.AttachOptions)(4));
             this.vbox69.Add(this.table10);
-            Gtk.Box.BoxChild w9 = ((Gtk.Box.BoxChild)(this.vbox69[this.table10]));
-            w9.Position = 0;
-            w9.Expand = false;
-            w9.Fill = false;
-            // Container child vbox69.Gtk.Box+BoxChild
-            this.externalConsoleCheckButton = new Gtk.CheckButton();
-            this.externalConsoleCheckButton.Name = "externalConsoleCheckButton";
-            this.externalConsoleCheckButton.Label = MonoDevelop.Core.GettextCatalog.GetString("Run on e_xternal console");
-            this.externalConsoleCheckButton.DrawIndicator = true;
-            this.externalConsoleCheckButton.UseUnderline = true;
-            this.vbox69.Add(this.externalConsoleCheckButton);
-            Gtk.Box.BoxChild w10 = ((Gtk.Box.BoxChild)(this.vbox69[this.externalConsoleCheckButton]));
-            w10.Position = 1;
+            Gtk.Box.BoxChild w7 = ((Gtk.Box.BoxChild)(this.vbox69[this.table10]));
+            w7.Position = 0;
+            w7.Expand = false;
+            w7.Fill = false;
+            this.hbox57.Add(this.vbox69);
+            Gtk.Box.BoxChild w8 = ((Gtk.Box.BoxChild)(this.hbox57[this.vbox69]));
+            w8.Position = 1;
+            this.vbox67.Add(this.hbox57);
+            Gtk.Box.BoxChild w9 = ((Gtk.Box.BoxChild)(this.vbox67[this.hbox57]));
+            w9.Position = 1;
+            this.vbox66.Add(this.vbox67);
+            Gtk.Box.BoxChild w10 = ((Gtk.Box.BoxChild)(this.vbox66[this.vbox67]));
+            w10.Position = 0;
             w10.Expand = false;
             w10.Fill = false;
-            // Container child vbox69.Gtk.Box+BoxChild
-            this.pauseConsoleOutputCheckButton = new Gtk.CheckButton();
-            this.pauseConsoleOutputCheckButton.Name = "pauseConsoleOutputCheckButton";
-            this.pauseConsoleOutputCheckButton.Label = MonoDevelop.Core.GettextCatalog.GetString("Pause _console output");
-            this.pauseConsoleOutputCheckButton.DrawIndicator = true;
-            this.pauseConsoleOutputCheckButton.UseUnderline = true;
-            this.vbox69.Add(this.pauseConsoleOutputCheckButton);
-            Gtk.Box.BoxChild w11 = ((Gtk.Box.BoxChild)(this.vbox69[this.pauseConsoleOutputCheckButton]));
-            w11.Position = 2;
-            w11.Expand = false;
-            w11.Fill = false;
-            this.hbox57.Add(this.vbox69);
-            Gtk.Box.BoxChild w12 = ((Gtk.Box.BoxChild)(this.hbox57[this.vbox69]));
-            w12.Position = 1;
-            this.vbox67.Add(this.hbox57);
-            Gtk.Box.BoxChild w13 = ((Gtk.Box.BoxChild)(this.vbox67[this.hbox57]));
-            w13.Position = 1;
-            this.vbox66.Add(this.vbox67);
-            Gtk.Box.BoxChild w14 = ((Gtk.Box.BoxChild)(this.vbox66[this.vbox67]));
-            w14.Position = 0;
-            w14.Expand = false;
-            w14.Fill = false;
             this.Add(this.vbox66);
             if ((this.Child != null)) {
                 this.Child.ShowAll();
             }
-            this.label100.MnemonicWidget = this.parametersEntry;
             this.label98.MnemonicWidget = this.assemblyNameEntry;
             this.Show();
         }
