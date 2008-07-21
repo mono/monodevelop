@@ -29,7 +29,7 @@ using System.CodeDom.Compiler;
 using System.Threading;
 
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Serialization;
+using MonoDevelop.Core.Serialization;
 
 using MonoDevelop.Core;
 using Mono.Addins;

@@ -32,7 +32,7 @@ using System.Drawing.Design;
 
 using MonoDevelop.Core;
 using MonoDevelop.DesignerSupport.Toolbox;
-using MonoDevelop.Projects.Serialization;
+using MonoDevelop.Core.Serialization;
 
 namespace MonoDevelop.AspNet
 {

@@ -29,7 +29,7 @@ using MonoDevelop.Projects;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Core.ProgressMonitoring;
-using MonoDevelop.Projects.Serialization;
+using MonoDevelop.Core.Serialization;
 using MonoDevelop.Deployment;
 
 using Mono.Unix.Native;

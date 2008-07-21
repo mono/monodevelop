@@ -4,7 +4,7 @@ using System.IO;
 using System.Text;
 using System.Collections;
 using System.Collections.Generic;
-using MonoDevelop.Projects.Serialization;
+using MonoDevelop.Core.Serialization;
 using MonoDevelop.Core;
 
 namespace MonoDevelop.VersionControl

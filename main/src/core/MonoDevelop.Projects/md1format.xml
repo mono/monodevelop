@@ -21,13 +21,13 @@
 		<ItemProperty member="Name" name="name"/>
 		<LiteralProperty name="fileversion" value="2.0" />
 		<ItemProperty member="Configurations"/>
-		<ItemProperty member="Configurations" scope="1" name="Configuration" valueType="MonoDevelop.Projects.SolutionItemConfiguration"/>
+		<ItemProperty member="Configurations" scope="*" name="Configuration" valueType="MonoDevelop.Projects.SolutionItemConfiguration"/>
 	</DataItem>
 	<DataItem class = "MonoDevelop.Projects.Project">
 		<ItemProperty member="description" defaultValue=""/>
 		<ItemProperty member="newFileSearch" name="newfilesearch" defaultValue="None" />
 		<ItemProperty member="Files" name="Contents" />
-		<ItemProperty member="Files" scope="1" name="File" />
+		<ItemProperty member="Files" scope="*" name="File" />
 	</DataItem>
 	<DataItem class = "MonoDevelop.Projects.DotNetProject">
 		<ItemProperty member="language" />
@@ -48,7 +48,7 @@
 	<DataItem class = "MonoDevelop.Projects.ItemConfiguration">
 		<ItemProperty member="Id" name="name" />
 		<ItemProperty member="customCommands" name="CustomCommands" />
-		<ItemProperty member="customCommands" name="Command" scope="1" />
+		<ItemProperty member="customCommands" name="Command" scope="*" />
 	</DataItem>
 	<DataItem class = "MonoDevelop.Projects.ProjectConfiguration">
 		<ItemProperty member="directory" name="Output/directory" serializationDataType="MonoDevelop.Projects.PathDataType"/>
@@ -62,6 +62,10 @@
 		<ItemProperty member="commandLineParameters" name="Execution/commandlineparameters" defaultValue =""/>
 		<ItemProperty member="externalConsole" name="Execution/externalconsole" defaultValue="false" />
 		<ItemProperty member="pauseconsoleoutput" name="Execution/consolepause" />
+		<ItemProperty member="envVars" name="EnvironmentVariables" />
+		<ItemProperty member="envVars" name="Variable" scope="item"/>
+		<ItemProperty member="envVars" name="name" scope="key"/>
+		<ItemProperty member="envVars" name="value" scope="value"/>
 	</DataItem>
 	<DataItem class = "MonoDevelop.Projects.ProjectFile">
 		<ItemProperty member="filename" name="name" serializationDataType="MonoDevelop.Projects.PathDataType"/>

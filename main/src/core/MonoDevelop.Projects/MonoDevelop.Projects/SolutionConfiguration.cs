@@ -29,7 +29,7 @@ using System.Diagnostics;
 using System.CodeDom.Compiler;
 
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Serialization;
+using MonoDevelop.Core.Serialization;
 
 using MonoDevelop.Core;
 

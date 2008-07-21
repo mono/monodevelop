@@ -39,7 +39,7 @@ using MonoDevelop.Core.Gui;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Ide.Gui;
-using MonoDevelop.Projects.Serialization;
+using MonoDevelop.Core.Serialization;
 using MonoDevelop.Projects;
 
 namespace MonoDevelop.Autotools
@@ -56,7 +56,7 @@ namespace MonoDevelop.Autotools
 		CustomMakefile makefile;
 		
 		[ItemProperty ("ExcludedFiles")]
-		[ProjectPathItemProperty("File", Scope=1)]
+		[ProjectPathItemProperty("File", Scope="*")]
 		List<string> excludedFiles = new List<string> ();
 
 		public MakefileData ()

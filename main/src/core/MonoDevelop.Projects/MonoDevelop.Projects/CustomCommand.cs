@@ -28,7 +28,7 @@
 
 using System;
 using System.IO;
-using MonoDevelop.Projects.Serialization;
+using MonoDevelop.Core.Serialization;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
 

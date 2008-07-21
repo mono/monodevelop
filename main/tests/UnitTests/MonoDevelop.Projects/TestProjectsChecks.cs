@@ -30,7 +30,7 @@ using System.Collections.Generic;
 using System.IO;
 using NUnit.Framework;
 using UnitTests;
-using MonoDevelop.Projects.Serialization;
+using MonoDevelop.Core.Serialization;
 using MonoDevelop.Core;
 using CSharpBinding;
 

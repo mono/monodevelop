@@ -6,7 +6,7 @@ using ICSharpCode.SharpZipLib.Zip;
 using MonoDevelop.Core;
 using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Serialization;
+using MonoDevelop.Core.Serialization;
 
 namespace MonoDevelop.Deployment.Targets
 {

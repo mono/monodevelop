@@ -44,7 +44,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
 using Mono.Addins;
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Serialization;
+using MonoDevelop.Core.Serialization;
 
 using MonoDevelop.DesignerSupport.Toolbox;
 

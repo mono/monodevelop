@@ -1,3 +1,11 @@
+2008-07-21  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Project/NUnitAssemblyGroupFileFormat.cs,
+	  Project/NUnitAssemblyGroupProject.cs, Project/TestAssembly.cs,
+	  Services/NUnitOptions.cs, Services/UnitTest.cs: Moved serialization
+	  engine to MonoDevelop.Core. Use new syntax for specifying attribute
+	  scope.
+
 2008-06-17  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Services/NUnitAssemblyTestSuite.cs: When counting test cases, ensure

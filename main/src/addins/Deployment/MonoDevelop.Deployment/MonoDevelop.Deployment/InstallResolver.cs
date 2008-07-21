@@ -29,7 +29,7 @@
 
 using System;
 using System.IO;
-using MonoDevelop.Projects.Serialization;
+using MonoDevelop.Core.Serialization;
 using MonoDevelop.Core;
 using System.Collections.Specialized;
 using MonoDevelop.Projects;

@@ -1,3 +1,24 @@
+2008-07-21  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* md1format.xml,
+	  MonoDevelop.Deployment.Targets/BaseFuseFileCopyConfiguration.cs,
+	  MonoDevelop.Deployment.Targets/BinariesZipPackageBuilder.cs,
+	  MonoDevelop.Deployment.Targets/CommandPackageBuilder.cs,
+	  MonoDevelop.Deployment.Targets/LocalFileCopyConfiguration.cs,
+	  MonoDevelop.Deployment.Targets/SourcesZipPackageBuilder.cs,
+	  MonoDevelop.Deployment/DeployService.cs,
+	  MonoDevelop.Deployment/FileCopyConfiguration.cs,
+	  MonoDevelop.Deployment/InstallResolver.cs,
+	  MonoDevelop.Deployment/MD1Serializer.cs,
+	  MonoDevelop.Deployment/Package.cs,
+	  MonoDevelop.Deployment/PackageBuilder.cs,
+	  MonoDevelop.Deployment/PackageCollection.cs,
+	  MonoDevelop.Deployment/PackagingProject.cs,
+	  MonoDevelop.Deployment/UnknownFileCopyConfiguration.cs,
+	  MonoDevelop.Deployment/UnknownPackageBuilder.cs: Moved
+	  serialization engine to MonoDevelop.Core. Use new syntax for
+	  specifying attribute scope.
+
 2008-06-16  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Deployment.addin.xml: Add missing serializable type.

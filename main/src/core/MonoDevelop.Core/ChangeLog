@@ -1,5 +1,13 @@
 2008-07-21  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Core.Serialization/DataContext.cs,
+	  MonoDevelop.Core.Serialization/ISerializationAttributeProvider.cs,
+	  MonoDevelop.Core.Serialization/XmlMapAttributeProvider.cs: Moved
+	  serialization engine to MonoDevelop.Core. Use new syntax for
+	  specifying attribute scope.
+
+2008-07-21  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* Makefile.am, MonoDevelop.Core.Serialization,
 	  MonoDevelop.Core.Serialization/DataType.cs,
 	  MonoDevelop.Core.Serialization/ArrayHandler.cs,

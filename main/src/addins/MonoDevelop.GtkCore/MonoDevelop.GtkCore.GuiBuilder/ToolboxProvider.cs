@@ -5,7 +5,7 @@ using System.ComponentModel;
 using System.Collections.Generic;
 using MonoDevelop.DesignerSupport.Toolbox;
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Serialization;
+using MonoDevelop.Core.Serialization;
 using Stetic;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;

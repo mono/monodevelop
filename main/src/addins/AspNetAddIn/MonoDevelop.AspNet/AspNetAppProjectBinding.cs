@@ -33,7 +33,7 @@ using System;
 using System.IO;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Serialization;
+using MonoDevelop.Core.Serialization;
 using System.Xml;
 
 namespace MonoDevelop.AspNet

@@ -1,3 +1,9 @@
+2008-07-21  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.GtkCore.GuiBuilder/ToolboxProvider.cs,
+	  MonoDevelop.GtkCore/GtkDesignInfo.cs: Moved serialization engine to
+	  MonoDevelop.Core. Use new syntax for specifying attribute scope.
+
 2008-07-15  Mike Kestner <mkestner@novell.com> 
 
 	* MonoDevelop.GtkCore/GtkDesignInfo.cs: add an updatingVersion 

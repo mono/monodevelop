@@ -34,7 +34,7 @@
 using System;
 using System.IO;
 using System.Collections.Generic;
-using MonoDevelop.Projects.Serialization;
+using MonoDevelop.Core.Serialization;
 
 namespace MonoDevelop.DesignerSupport.Toolbox
 {
@@ -54,7 +54,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		}
 
 		[ItemProperty]
-		[ItemProperty ("Provider",Scope=1)]
+		[ItemProperty ("Provider",Scope="*")]
 		public List<string> LoadedDefaultProviders {
 			get {
 				return loadedDefaultProviders;

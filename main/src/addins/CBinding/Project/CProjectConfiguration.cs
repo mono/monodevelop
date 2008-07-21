@@ -35,7 +35,7 @@ using System.Collections;
 using Mono.Addins;
 
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Serialization;
+using MonoDevelop.Core.Serialization;
 
 namespace CBinding
 {
@@ -60,15 +60,15 @@ namespace CBinding
 		CBinding.CompileTarget target = CBinding.CompileTarget.Bin;
 		
 		[ItemProperty ("Includes")]
-		[ItemProperty ("Include", Scope = 1, ValueType = typeof(string))]
+		[ItemProperty ("Include", Scope = "*", ValueType = typeof(string))]
     	private ArrayList includes = new ArrayList ();
 		
 		[ItemProperty ("LibPaths")]
-		[ItemProperty ("LibPath", Scope = 1, ValueType = typeof(string))]
+		[ItemProperty ("LibPath", Scope = "*", ValueType = typeof(string))]
     	private ArrayList libpaths = new ArrayList ();
 		
 		[ItemProperty ("Libs")]
-		[ItemProperty ("Lib", Scope = 1, ValueType = typeof(string))]
+		[ItemProperty ("Lib", Scope = "*", ValueType = typeof(string))]
     	private ArrayList libs = new ArrayList ();
 		
 		[ItemProperty ("WarningLevel", DefaultValue=WarningLevel.Normal)]

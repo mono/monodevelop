@@ -1,3 +1,16 @@
+2008-07-21  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.DesignerSupport.Toolbox/ItemToolboxNode.cs,
+	  MonoDevelop.DesignerSupport.Toolbox/ToolboxConfiguration.cs,
+	  MonoDevelop.DesignerSupport.Toolbox/ToolboxItemToolboxNode.cs,
+	  MonoDevelop.DesignerSupport.Toolbox/ToolboxList.cs,
+	  MonoDevelop.DesignerSupport.Toolbox/TypeReference.cs,
+	  MonoDevelop.DesignerSupport.Toolbox/TypeToolboxNode.cs,
+	  MonoDevelop.DesignerSupport.Toolbox/UnknownToolboxNode.cs,
+	  MonoDevelop.DesignerSupport/ToolboxService.cs: Moved serialization
+	  engine to MonoDevelop.Core. Use new syntax for specifying attribute
+	  scope.
+
 2008-07-18  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.DesignerSupport.PropertyGrid/PropertyGrid.cs: Add button

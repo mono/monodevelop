@@ -36,7 +36,7 @@ using System.Collections;
 using Mono.Addins;
 
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Serialization;
+using MonoDevelop.Core.Serialization;
 
 namespace MonoDevelop.ValaBinding
 {
@@ -55,7 +55,7 @@ namespace MonoDevelop.ValaBinding
 		ValaBinding.CompileTarget target = ValaBinding.CompileTarget.Bin;
 		
 		[ItemProperty ("Includes")]
-		[ProjectPathItemProperty ("Include", Scope = 1, ValueType = typeof(string))]
+		[ProjectPathItemProperty ("Include", Scope = "*", ValueType = typeof(string))]
 		private ArrayList includes = new ArrayList ();
 		
 //		[ItemProperty ("LibPaths")]
@@ -63,7 +63,7 @@ namespace MonoDevelop.ValaBinding
 //		private ArrayList libpaths = new ArrayList ();
 //		
 		[ItemProperty ("Libs")]
-		[ItemProperty ("Lib", Scope = 1, ValueType = typeof(string))]
+		[ItemProperty ("Lib", Scope = "*", ValueType = typeof(string))]
 		private ArrayList libs = new ArrayList ();
 		
 		[ItemProperty ("CodeGeneration",

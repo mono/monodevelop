@@ -38,7 +38,7 @@ using System.Collections;
 using Mono.Addins;
 
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Serialization;
+using MonoDevelop.Core.Serialization;
 
 namespace MonoDevelop.ValaBinding
 {

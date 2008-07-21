@@ -24,7 +24,7 @@ using System.Diagnostics;
 using System.ComponentModel;
 using MonoDevelop.Core.Gui.Components;
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Serialization;
+using MonoDevelop.Core.Serialization;
 
 namespace CSharpBinding
 {

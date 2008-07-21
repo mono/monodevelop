@@ -44,7 +44,7 @@ using MonoDevelop.Core.Gui;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Serialization;
+using MonoDevelop.Core.Serialization;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Deployment;
 using MonoDevelop.Deployment.Linux;
@@ -331,7 +331,7 @@ namespace CBinding
 					return;
 				}
 				
-				IProcessAsyncOperation op = handler.Execute (Path.Combine (dir, command), args, dir, null, console);
+				IProcessAsyncOperation op = handler.Execute (Path.Combine (dir, command), args, dir, conf.EnvironmentVariables, console);
 				
 				operationMonitor.AddOperation (op);
 				op.WaitForCompleted ();

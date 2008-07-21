@@ -28,7 +28,7 @@
 
 using System;
 using System.IO;
-using MonoDevelop.Projects.Serialization;
+using MonoDevelop.Core.Serialization;
 using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects
@@ -52,7 +52,7 @@ namespace MonoDevelop.Projects
 		{
 		}
 
-		internal protected override DataNode OnSerialize (SerializationContext serCtx, object mapData, object value)
+		protected override DataNode OnSerialize (SerializationContext serCtx, object mapData, object value)
 		{
 			if (value == null || ((string)value).Length == 0) return null;
 			string basePath = Path.GetDirectoryName (serCtx.BaseFile);
@@ -62,7 +62,7 @@ namespace MonoDevelop.Projects
 			return new DataValue (Name, file);
 		}
 		
-		internal protected override object OnDeserialize (SerializationContext serCtx, object mapData, DataNode data)
+		protected override object OnDeserialize (SerializationContext serCtx, object mapData, DataNode data)
 		{
 			string file = ((DataValue)data).Value;
 			if (file == "") return "";

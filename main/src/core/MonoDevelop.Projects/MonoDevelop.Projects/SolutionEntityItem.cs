@@ -38,7 +38,7 @@ using System.CodeDom.Compiler;
 
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Serialization;
+using MonoDevelop.Core.Serialization;
 using MonoDevelop.Projects.Extensions;
 
 namespace MonoDevelop.Projects
@@ -391,7 +391,7 @@ namespace MonoDevelop.Projects
 		}
 		
 		[ItemProperty ("Configurations")]
-		[ItemProperty ("Configuration", ValueType=typeof(SolutionItemConfiguration), Scope=1)]
+		[ItemProperty ("Configuration", ValueType=typeof(SolutionItemConfiguration), Scope="*")]
 		public SolutionItemConfigurationCollection Configurations {
 			get {
 				return configurations;

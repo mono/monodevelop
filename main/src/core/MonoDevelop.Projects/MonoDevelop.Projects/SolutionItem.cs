@@ -32,7 +32,7 @@ using System.Collections.ObjectModel;
 using System.Xml;
 using System.CodeDom.Compiler;
 using MonoDevelop.Core;
-using MonoDevelop.Projects.Serialization;
+using MonoDevelop.Core.Serialization;
 using MonoDevelop.Projects.Extensions;
 
 namespace MonoDevelop.Projects

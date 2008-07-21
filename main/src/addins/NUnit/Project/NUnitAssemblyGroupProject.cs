@@ -32,7 +32,7 @@ using System.IO;
 using System.Xml;
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
-using MonoDevelop.Projects.Serialization;
+using MonoDevelop.Core.Serialization;
 
 namespace MonoDevelop.NUnit
 {
@@ -113,7 +113,7 @@ namespace MonoDevelop.NUnit
 		}
 		
 		[ItemProperty ("Assemblies")]
-		[ItemProperty ("Assembly", ValueType=typeof(TestAssembly), Scope=1)]
+		[ItemProperty ("Assembly", ValueType=typeof(TestAssembly), Scope="*")]
 		public TestAssemblyCollection Assemblies {
 			get { return assemblies; }
 		}

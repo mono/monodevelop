@@ -30,7 +30,7 @@ using System.Xml;
 
 namespace MonoDevelop.Core.Serialization
 {
-	internal interface ISerializationAttributeProvider
+	public interface ISerializationAttributeProvider
 	{
 		object GetCustomAttribute (object ob, Type type, bool inherit);
 		object[] GetCustomAttributes (object ob, Type type, bool inherit);
@@ -39,7 +39,7 @@ namespace MonoDevelop.Core.Serialization
 		ItemMember[] GetItemMembers (Type type);
 	}
 	
-	class ItemMember
+	public class ItemMember
 	{
 		string name;
 		Type type;

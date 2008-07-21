@@ -40,7 +40,7 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.CodeGeneration;
 using MonoDevelop.Projects.Parser;
-using MonoDevelop.Projects.Serialization;
+using MonoDevelop.Core.Serialization;
 
 using MonoDevelop.GtkCore.GuiBuilder;
 using MonoDevelop.GtkCore.NodeBuilders;

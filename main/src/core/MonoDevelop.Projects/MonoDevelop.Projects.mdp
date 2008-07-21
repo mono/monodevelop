@@ -134,29 +134,6 @@
     <File name="MonoDevelop.Projects/ProjectReferenceEventArgs.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects/ProjectFileCollection.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects/ProjectReferenceCollection.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Projects.Serialization/ArrayHandler.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Projects.Serialization/ArrayListHandler.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Projects.Serialization/ClassDataType.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Projects.Serialization/CollectionDataType.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Projects.Serialization/DataCollection.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Projects.Serialization/DataContext.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Projects.Serialization/DataIncludeAttribute.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Projects.Serialization/DataItem.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Projects.Serialization/DataItemAttribute.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Projects.Serialization/DataNode.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Projects.Serialization/DataSerializer.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Projects.Serialization/DataType.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Projects.Serialization/DataValue.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Projects.Serialization/EnumDataType.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Projects.Serialization/ExpandedCollectionAttribute.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Projects.Serialization/GenericCollectionHandler.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Projects.Serialization/ICollectionHandler.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Projects.Serialization/IExtendedDataItem.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Projects.Serialization/ItemProperty.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Projects.Serialization/ItemPropertyAttribute.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Projects.Serialization/PrimitiveDataType.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Projects.Serialization/SerializationContext.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Projects.Serialization/XmlDataSerializer.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.CodeGeneration/CodeRefactorer.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.CodeGeneration/IRefactorer.cs" subtype="Code" buildaction="Compile" />
@@ -214,7 +191,6 @@
     <File name="MonoDevelop.Projects.Extensions/ItemTypeNode.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Extensions/DotNetProjectNode.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Extensions/SolutionItemNode.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Projects.Serialization/IPropertyFilter.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects/WorkspaceItem.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects/WorkspaceItemRenamedEventArgs.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects/Solution.cs" subtype="Code" buildaction="Compile" />
@@ -236,10 +212,6 @@
     <File name="MonoDevelop.Projects/PropertyBag.cs" subtype="Code" buildaction="Compile" />
     <File name="md1format.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="MonoDevelop.Projects.Extensions/SerlializationMapNode.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Projects.Serialization/ISerializationAttributeProvider.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Projects.Serialization/TypeAttributeProvider.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Projects.Serialization/XmlMapAttributeProvider.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Projects.Serialization/ICustomDataItemHandler.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Formats.MD1/MD1CustomDataItem.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Formats.MD1/MD1DotNetProjectHandler.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Formats.MD1/MD1FileFormat.cs" subtype="Code" buildaction="Compile" />
@@ -261,7 +233,6 @@
     <File name="MonoDevelop.Projects.Formats.MD1/CombineStartupMode.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Formats.MSBuild/SlnData.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Formats.MSBuild/MSBuildProject.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Projects.Serialization/XmlElementDataType.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Extensions/ISolutionItemHandler.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects/UnknownWorkspaceItem.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Extensions/SolutionItemHandler.cs" subtype="Code" buildaction="Compile" />
@@ -339,7 +310,6 @@
     <File name="MonoDevelop.Projects.Dom/ExpressionResult.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Dom/ExpressionContext.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Dom/IParserContext.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Projects.Serialization/ILoadController.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Dom/DefaultParserContext.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Dom/ResolveResult.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Dom/IDocumentMetainformation.cs" subtype="Code" buildaction="Compile" />

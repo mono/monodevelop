@@ -31,7 +31,7 @@ using System.Collections;
 using System.IO;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Serialization;
+using MonoDevelop.Core.Serialization;
 using Mono.Addins;
 using Mono.Addins.Description;
 

@@ -29,7 +29,7 @@ using System;
 using Mono.Addins;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Serialization;
+using MonoDevelop.Core.Serialization;
 using MonoDevelop.Projects.Extensions;
 
 namespace MonoDevelop.Projects.Formats.MD1

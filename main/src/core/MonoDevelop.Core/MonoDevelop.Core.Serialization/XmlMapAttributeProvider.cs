@@ -35,7 +35,7 @@ using Mono.Addins;
 
 namespace MonoDevelop.Core.Serialization
 {
-	class XmlMapAttributeProvider: ISerializationAttributeProvider
+	public class XmlMapAttributeProvider: ISerializationAttributeProvider
 	{
 		Dictionary<Type, SerializationMap> maps = new Dictionary<Type,SerializationMap> ();
 		BindingFlags bindingFlags = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public;

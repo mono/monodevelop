@@ -1,6 +1,6 @@
 
 using System;
-using MonoDevelop.Projects.Serialization;
+using MonoDevelop.Core.Serialization;
 
 namespace MonoDevelop.VersionControl
 {

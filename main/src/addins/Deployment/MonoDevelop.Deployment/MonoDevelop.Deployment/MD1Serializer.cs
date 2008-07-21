@@ -28,7 +28,7 @@
 using System;
 using System.Collections.Generic;
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Serialization;
+using MonoDevelop.Core.Serialization;
 using MonoDevelop.Projects.Formats.MD1;
 
 namespace MonoDevelop.Deployment

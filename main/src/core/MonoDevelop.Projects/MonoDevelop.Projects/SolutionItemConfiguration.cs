@@ -28,7 +28,7 @@
 using System;
 using System.Xml;
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Serialization;
+using MonoDevelop.Core.Serialization;
 using System.Collections;
 
 namespace MonoDevelop.Projects

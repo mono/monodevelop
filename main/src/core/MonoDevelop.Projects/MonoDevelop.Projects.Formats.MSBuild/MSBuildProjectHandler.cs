@@ -33,7 +33,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Serialization;
+using MonoDevelop.Core.Serialization;
 using MonoDevelop.Projects.Formats.MD1;
 using MonoDevelop.Projects.Extensions;
 
@@ -780,7 +780,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			SerializationContext.DirectorySeparatorChar = '\\';
 		}
 		
-		protected internal override bool CanHandleProperty (ItemProperty prop, SerializationContext serCtx, object instance)
+		protected override bool CanHandleProperty (ItemProperty prop, SerializationContext serCtx, object instance)
 		{
 			if (instance is Project) {
 				if (prop.Name == "Contents")
@@ -802,7 +802,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			return true;
 		}
 		
-		protected internal override DataNode OnSerializeProperty (ItemProperty prop, SerializationContext serCtx, object instance, object value)
+		protected override DataNode OnSerializeProperty (ItemProperty prop, SerializationContext serCtx, object instance, object value)
 		{
 			DataNode data = base.OnSerializeProperty (prop, serCtx, instance, value);
 			if (instance is SolutionEntityItem) {

@@ -37,7 +37,7 @@ using System.ComponentModel.Design;
 using System.Drawing.Design;
 using Gtk;
 
-using MonoDevelop.Projects.Serialization;
+using MonoDevelop.Core.Serialization;
 using MonoDevelop.Core;
 
 namespace MonoDevelop.DesignerSupport.Toolbox

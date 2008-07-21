@@ -30,7 +30,7 @@
 //
 using System;
 using MonoDevelop.Ide.Gui;
-using MonoDevelop.Projects.Serialization;
+using MonoDevelop.Core.Serialization;
 
 namespace MonoDevelop.AspNet
 {

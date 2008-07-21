@@ -5,7 +5,7 @@ using System.IO;
 using ICSharpCode.SharpZipLib.Zip;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Serialization;
+using MonoDevelop.Core.Serialization;
 
 namespace MonoDevelop.Deployment.Targets
 {

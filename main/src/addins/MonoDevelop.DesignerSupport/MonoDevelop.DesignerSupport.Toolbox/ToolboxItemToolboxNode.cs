@@ -36,7 +36,7 @@ using System.ComponentModel.Design;
 using System.Drawing.Design;
 using System.Runtime.Serialization.Formatters.Binary;
 
-using MonoDevelop.Projects.Serialization;
+using MonoDevelop.Core.Serialization;
 using MonoDevelop.Core;
 
 namespace MonoDevelop.DesignerSupport.Toolbox

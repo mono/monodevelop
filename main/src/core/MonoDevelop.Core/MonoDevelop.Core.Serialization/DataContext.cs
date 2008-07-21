@@ -43,12 +43,12 @@ namespace MonoDevelop.Core.Serialization
 			attributeProvider = TypeAttributeProvider.Instance;
 		}
 		
-		internal DataContext (ISerializationAttributeProvider attributeProvider)
+		public DataContext (ISerializationAttributeProvider attributeProvider)
 		{
 			this.attributeProvider = attributeProvider;
 		}
 		
-		internal ISerializationAttributeProvider AttributeProvider {
+		public ISerializationAttributeProvider AttributeProvider {
 			get {
 				return attributeProvider;
 			}

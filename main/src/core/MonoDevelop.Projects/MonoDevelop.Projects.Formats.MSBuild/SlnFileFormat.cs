@@ -37,7 +37,7 @@ using System.Text.RegularExpressions;
 using System.Xml;
 
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Serialization;
+using MonoDevelop.Core.Serialization;
 using MonoDevelop.Projects.Extensions;
 using MonoDevelop.Core;
 using MonoDevelop.Core.ProgressMonitoring;

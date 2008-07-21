@@ -1,7 +1,7 @@
 
 using System;
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Serialization;
+using MonoDevelop.Core.Serialization;
 
 namespace MonoDevelop.Deployment.Linux
 {

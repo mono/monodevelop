@@ -24,7 +24,7 @@ using System.Drawing;
 using System.Xml;
 
 using MonoDevelop.Core;
-using MonoDevelop.Projects.Serialization;
+using MonoDevelop.Core.Serialization;
 
 namespace MonoDevelop.Ide.Gui
 {

@@ -30,7 +30,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Serialization;
+using MonoDevelop.Core.Serialization;
 using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects
@@ -42,7 +42,7 @@ namespace MonoDevelop.Projects
 		string platform;
 		
 		[ItemProperty ("CustomCommands")]
-		[ItemProperty ("Command", Scope=1)]
+		[ItemProperty ("Command", Scope="*")]
 		CustomCommandCollection customCommands = new CustomCommandCollection ();
 
 		Hashtable properties;

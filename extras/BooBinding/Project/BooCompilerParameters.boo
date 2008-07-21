@@ -24,7 +24,7 @@ import System.Xml
 import System.Diagnostics
 
 import MonoDevelop.Projects
-import MonoDevelop.Projects.Serialization
+import MonoDevelop.Core.Serialization
 
 public class BooCompilerParameters(ICloneable):
 	[ItemProperty("genwarnings")]

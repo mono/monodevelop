@@ -1,3 +1,9 @@
+2008-07-21  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* md1format.xml, Project/CProject.cs, Project/CProjectConfiguration.cs,
+	  Project/Package.cs: Moved serialization engine to MonoDevelop.Core.
+	  Use new syntax for specifying attribute scope.
+
 2008-06-25  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Project/CProject.cs: Don't set the build action for files when

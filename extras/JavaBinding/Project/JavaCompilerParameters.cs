@@ -23,7 +23,7 @@ using System.Xml;
 using System.Diagnostics;
 
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Serialization;
+using MonoDevelop.Core.Serialization;
 
 namespace JavaBinding
 {

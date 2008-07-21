@@ -30,7 +30,7 @@ using System.Xml;
 using System.IO;
 using System.Collections;
 using System.Collections.Generic;
-using MonoDevelop.Projects.Serialization;
+using MonoDevelop.Core.Serialization;
 
 namespace MonoDevelop.Projects
 {

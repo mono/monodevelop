@@ -35,7 +35,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
 using Mono.Addins;
 using MonoDevelop.Projects.Ambience;
-using MonoDevelop.Projects.Serialization;
+using MonoDevelop.Core.Serialization;
 using MonoDevelop.Projects.Extensions;
 
 namespace MonoDevelop.Projects

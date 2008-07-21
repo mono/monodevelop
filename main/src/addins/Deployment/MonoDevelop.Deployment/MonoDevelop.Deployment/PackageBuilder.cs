@@ -30,7 +30,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using MonoDevelop.Projects.Serialization;
+using MonoDevelop.Core.Serialization;
 using MonoDevelop.Core;
 using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Projects;
@@ -45,7 +45,7 @@ namespace MonoDevelop.Deployment
 		List<SolutionItemReference> childEntries = new List<SolutionItemReference> ();
 		
 		[ItemProperty ("ExcludedFiles")]
-		[ItemProperty ("File", Scope=1)]
+		[ItemProperty ("File", Scope="*")]
 		List<string> excludedFiles;
 		
 		[ItemProperty ("RootEntry")]

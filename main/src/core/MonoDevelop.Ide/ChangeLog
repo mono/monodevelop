@@ -1,3 +1,9 @@
+2008-07-21  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Gui/RootWorkspace.cs,
+	  MonoDevelop.Ide.Gui/WorkbenchMemento.cs: Moved serialization engine
+	  to MonoDevelop.Core. Use new syntax for specifying attribute scope.
+
 2008-07-17  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Debugging/DebuggingService.cs: Remove test

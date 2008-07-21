@@ -34,7 +34,7 @@ using System;
 using System.IO;
 using System.Collections.Generic;
 
-using MonoDevelop.Projects.Serialization;
+using MonoDevelop.Core.Serialization;
 using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.DesignerSupport.Toolbox

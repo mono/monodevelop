@@ -31,7 +31,7 @@
 
 using System;
 using System.ComponentModel;
-using MonoDevelop.Projects.Serialization;
+using MonoDevelop.Core.Serialization;
 
 namespace MonoDevelop.DesignerSupport.Toolbox
 {

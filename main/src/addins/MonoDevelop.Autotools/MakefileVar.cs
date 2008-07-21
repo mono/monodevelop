@@ -29,7 +29,7 @@
 using System;
 using System.Collections.Generic;
 
-using MonoDevelop.Projects.Serialization;
+using MonoDevelop.Core.Serialization;
 
 namespace MonoDevelop.Autotools
 {

@@ -1,3 +1,10 @@
+2008-07-21  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Project/ProjectPackage.cs, Project/ValaCompilationParameters.cs,
+	  Project/ValaProject.cs, Project/ValaProjectConfiguration.cs: Moved
+	  serialization engine to MonoDevelop.Core. Use new syntax for
+	  specifying attribute scope.
+
 2008-06-26  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com>
 
 	* Project/ValaProject.cs: Actually turn on debug mode.

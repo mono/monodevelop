@@ -30,7 +30,7 @@ using System;
 using System.Collections;
 
 using MonoDevelop.Core;
-using MonoDevelop.Projects.Serialization;
+using MonoDevelop.Core.Serialization;
 using MonoDevelop.Projects;
 
 namespace MonoDevelop.Deployment

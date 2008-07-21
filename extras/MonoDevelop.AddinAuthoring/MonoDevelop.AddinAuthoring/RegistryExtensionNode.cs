@@ -27,7 +27,7 @@
 
 using System;
 using Mono.Addins;
-using MonoDevelop.Projects.Serialization;
+using MonoDevelop.Core.Serialization;
 
 namespace MonoDevelop.AddinAuthoring
 {

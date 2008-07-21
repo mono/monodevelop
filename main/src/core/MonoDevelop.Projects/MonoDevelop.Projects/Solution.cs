@@ -30,7 +30,7 @@ using System.IO;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading;
-using MonoDevelop.Projects.Serialization;
+using MonoDevelop.Core.Serialization;
 using MonoDevelop.Core;
 using MonoDevelop.Core.ProgressMonitoring;
 
@@ -171,7 +171,7 @@ namespace MonoDevelop.Projects
 		}
 		
 		[ItemProperty ("StartupItems")]
-		[ProjectPathItemProperty ("Item", Scope=1)]
+		[ProjectPathItemProperty ("Item", Scope="*")]
 		internal List<string> MultiStartupItemFileNames {
 			get {
 				if (SingleStartup)

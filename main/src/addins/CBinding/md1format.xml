@@ -9,9 +9,9 @@
 		<ItemProperty member="output" name="Output/output"/>
 		<ItemProperty member="target" name="Build/target"/>
 		<ItemProperty member="includes" name="Includes"/>
-		<ItemProperty member="includes" scope="1" name="Include" valueType="System.String"/>
+		<ItemProperty member="includes" scope="*" name="Include" valueType="System.String"/>
 		<ItemProperty member="libpaths" name="LibPaths"/>
-		<ItemProperty member="libpaths" scope="1" name="LibPath" valueType="System.String"/>
+		<ItemProperty member="libpaths" scope="*" name="LibPath" valueType="System.String"/>
 		<ItemProperty member="warning_level" name="CodeGeneration/WarningLevel"/>
 		<ItemProperty member="warnings_as_errors" name="CodeGeneration/WarningsAsErrors"/>
 		<ItemProperty member="optimization" name="CodeGeneration/OptimizationLevel"/>

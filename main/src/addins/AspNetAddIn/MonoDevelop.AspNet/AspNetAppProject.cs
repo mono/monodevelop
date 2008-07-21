@@ -39,7 +39,7 @@ using MonoDevelop.Core.Execution;
 using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Parser;
-using MonoDevelop.Projects.Serialization;
+using MonoDevelop.Core.Serialization;
 using MonoDevelop.Deployment;
 
 using MonoDevelop.AspNet.Parser;
@@ -62,7 +62,7 @@ namespace MonoDevelop.AspNet
 		protected bool verifyCodeBehindEvents = true;
 		
 		[ItemProperty("WebDeployTargets", IsExternal=true)]
-		[ItemProperty ("Target", ValueType=typeof(WebDeployTarget), Scope=1)]
+		[ItemProperty ("Target", ValueType=typeof(WebDeployTarget), Scope="*")]
 		protected WebDeployTargetCollection webDeployTargets = new WebDeployTargetCollection ();
 		
 		#region properties

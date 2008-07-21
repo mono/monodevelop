@@ -33,7 +33,7 @@ using System.Globalization;
 using Mono.Addins;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Extensions;
-using MonoDevelop.Projects.Serialization;
+using MonoDevelop.Core.Serialization;
 using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects.Formats.MSBuild
@@ -344,12 +344,12 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		{
 		}
 		
-		internal protected override DataNode OnSerialize (SerializationContext serCtx, object mapData, object value)
+		protected override DataNode OnSerialize (SerializationContext serCtx, object mapData, object value)
 		{
 			return new DataValue (Name, (bool)value ? "true" : "false");
 		}
 		
-		internal protected override object OnDeserialize (SerializationContext serCtx, object mapData, DataNode data)
+		protected override object OnDeserialize (SerializationContext serCtx, object mapData, DataNode data)
 		{
 			return ((DataValue)data).Value == "true";
 		}

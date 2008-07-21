@@ -31,7 +31,7 @@ using System;
 using System.Text;
 using System.Collections;
 using System.Collections.Specialized;
-using MonoDevelop.Projects.Serialization;
+using MonoDevelop.Core.Serialization;
 using MonoDevelop.Core;
 
 namespace MonoDevelop.NUnit
@@ -39,7 +39,7 @@ namespace MonoDevelop.NUnit
 	public class NUnitCategoryOptions: ICloneable
 	{
 		[ItemProperty ("Categories")]
-		[ItemProperty ("Category", ValueType=typeof(string), Scope=1)]
+		[ItemProperty ("Category", ValueType=typeof(string), Scope="*")]
 		StringCollection categories = new StringCollection ();
 		
 		bool enableFilter;
