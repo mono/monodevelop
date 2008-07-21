@@ -4,6 +4,10 @@
       <Output directory="../../../build/bin" assembly="MonoDevelop" />
       <Build debugmode="True" target="Exe" />
       <Execution runwithwarnings="True" consolepause="True" runtime="MsNet" clr-version="Net_2_0" />
+      <EnvironmentVariables>
+        <Variable name="MONO_ADDINS_REGISTRY" value="." />
+        <Variable name="MONODEVELOP_LOCALE_PATH" value="../locale" />
+      </EnvironmentVariables>
       <CodeGeneration compiler="Mcs" warninglevel="4" optimize="True" unsafecodeallowed="False" generateoverflowchecks="True" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
     </Configuration>
     <Configuration name="Release" ctype="DotNetProjectConfiguration">
@@ -25,6 +29,7 @@
     <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Ide" />
     <ProjectReference type="Gac" localcopy="True" refto="Mono.Addins, Version=0.3.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
   </References>
+  <GtkDesignInfo gtkVersion="2.8.3" />
   <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="./Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="../../../">
     <BuildFilesVar Sync="True" Name="FILES" />
     <DeployFilesVar />
