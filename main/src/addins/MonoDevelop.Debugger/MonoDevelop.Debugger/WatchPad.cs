@@ -65,6 +65,8 @@ namespace MonoDevelop.Debugger
 			IdeApp.Services.DebuggingService.CurrentFrameChanged += OnFrameChanged;
 			IdeApp.Services.DebuggingService.PausedEvent += OnDebuggerPaused;
 			IdeApp.Services.DebuggingService.ResumedEvent += OnDebuggerResumed;
+			
+			OnFrameChanged (null, null);
 		}
 
 		public void Dispose ()

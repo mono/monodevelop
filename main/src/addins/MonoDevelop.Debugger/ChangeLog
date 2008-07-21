@@ -1,3 +1,8 @@
+2008-07-22  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Debugger/WatchPad.cs: Make sure the value tree is
+	  properly initialized the first time it is shown.
+
 2008-07-21  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* Makefile.am, MonoDevelop.Debugger.mdp: Fix automake build paths. Add
