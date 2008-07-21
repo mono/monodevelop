@@ -107,7 +107,6 @@ namespace MonoDevelop.Debugger
 			typeCol.Expand = true;
 			typeCol.Title = GettextCatalog.GetString ("Type");
 			crtType = new CellRendererText ();
-			crtType.Ellipsize = Pango.EllipsizeMode.End;
 			typeCol.PackStart (crtType, true);
 			typeCol.AddAttribute (crtType, "text", TypeCol);
 			typeCol.Resizable = true;
