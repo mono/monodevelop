@@ -31,13 +31,15 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 using Mono.Addins;
 
 namespace CBinding
 {
 	[Serializable()]
-	public class ProjectPackageCollection : CollectionBase
+	public class ProjectPackageCollection : Collection<Package>
 	{
 		private CProject project;
 		
@@ -50,149 +52,59 @@ namespace CBinding
 		{
 		}
 		
-		public Package this[int index] {
-			get { return (Package)List[index]; }
-			set { List[index] = value; }
-		}
-		
-		public int Add (Package package)
-		{
-			return List.Add (package);
-		}
-		
-		public void AddRange (Package[] packages)
+		public void AddRange (IEnumerable<Package> packages)
 		{
 			foreach (Package p in packages)
-				List.Add (p);
+				Add (p);
 		}
 		
-		public void AddRange (ProjectPackageCollection packages)
+		protected override void ClearItems()
 		{
-			foreach (Package p in packages)
-				List.Add (p);
+			if (project != null) {
+				List<Package> list = new List<Package> (Items);
+				base.ClearItems ();
+				foreach (Package p in list) {
+					project.NotifyPackageRemovedFromProject (p);
+				}
+			}
 		}
 		
-		public bool Contains (Package package)
+		protected override void InsertItem (int index, Package value)
 		{
-			return List.Contains (package);
+			base.InsertItem (index, value);
+			if (project != null) {
+				project.NotifyPackageAddedToProject (value);
+			}
 		}
 		
-		public void CopyTo (Package[] array, int index)
+		protected override void RemoveItem (int index)
 		{
-			List.CopyTo (array, index);
+			Package p = Items [index];
+			base.RemoveItem (index);
+			if (project != null) {
+				project.NotifyPackageRemovedFromProject (p);
+			}
 		}
 		
-		public int IndexOf (Package package)
+		protected override void SetItem (int index, Package item)
 		{
-			return List.IndexOf (package);
+			Package oldValue = Items [index];
+			base.SetItem (index, item);
+			if (project != null) {
+				project.NotifyPackageRemovedFromProject (oldValue);
+				project.NotifyPackageAddedToProject (item);
+			}
 		}
-		
-		public void Insert (int index, Package package)
-		{
-			List.Insert (index, package);
-		}
-		
-		public void Remove (Package package)
-		{
-			List.Remove (package);
-		}
-		
+
 		public string[] ToStringArray ()
 		{
 			string[] array = new string[Count];
 			int i = 0;
 			
-			foreach (Package p in List)
+			foreach (Package p in Items)
 				array[i++] = p.Name;
 			
 			return array;
-		}
-		
-		public new ProjectPackageEnumerator GetEnumerator ()
-		{
-			return new ProjectPackageEnumerator (this);
-		}
-		
-		protected override void OnClear ()
-		{
-			if (project != null) {
-				foreach (Package package in (ArrayList)InnerList) {
-					project.NotifyPackageRemovedFromProject (package);
-				}
-			}
-		}
-		
-//		protected override void OnClearComplete ()
-//		{
-//			if (project != null) {
-//				foreach (ProjectPackage package in (ArrayList)InnerList) {
-//					project.NotifyPackageRemovedFromProject (package);
-//				}
-//			}
-//		}
-		
-		protected override void OnInsertComplete (int index, object value)
-		{
-			if (project != null)
-				project.NotifyPackageAddedToProject ((Package)value);
-		}
-		
-		protected override void OnRemoveComplete (int index, object value)
-		{
-			if (project != null) 
-				project.NotifyPackageRemovedFromProject ((Package)value);
-		}
-		
-		protected override void OnSet (int index, object oldValue, object newValue)
-		{
-			if (project != null)
-				project.NotifyPackageRemovedFromProject ((Package)oldValue);
-		}
-		
-		protected override void OnSetComplete (int index, object oldValue, object newValue)
-		{
-			if (project != null)
-				project.NotifyPackageAddedToProject ((Package)newValue);
-		}
-	}
-	
-	public class ProjectPackageEnumerator : IEnumerator
-	{
-		private IEnumerator enumerator;
-		private IEnumerable temp;
-		
-		public ProjectPackageEnumerator (ProjectPackageCollection packages)
-		{
-			temp = (IEnumerable)packages;
-			enumerator = temp.GetEnumerator ();
-		}
-		
-		public Package Current {
-			get { return (Package)enumerator.Current; }
-		}
-		
-		object IEnumerator.Current {
-			get { return enumerator.Current; }
-		}
-		
-		public bool MoveNext ()
-		{
-			return enumerator.MoveNext ();
-		}
-		
-		bool IEnumerator.MoveNext ()
-		{
-			return enumerator.MoveNext ();
-		}
-		
-		public void Reset ()
-		{
-			enumerator.Reset ();
-		}
-		
-		void IEnumerator.Reset ()
-		{
-			enumerator.Reset ();
 		}
 	}
 }

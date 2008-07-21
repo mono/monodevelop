@@ -1,3 +1,7 @@
+2008-07-21  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com> 
+
+	* Project/ProjectPackageCollection.cs: Cleanup. Fixes bug #390419.
+
 2008-07-21  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* md1format.xml, Project/CProject.cs, Project/CProjectConfiguration.cs,
