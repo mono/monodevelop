@@ -1,5 +1,11 @@
 2008-07-21  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectHandler.cs: Read
+	  and write the RequiredTargetFramework property for ProjectReference
+	  objects.
+
+2008-07-21  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectHandler.cs: (Save)
 	  Use the referenced project's ID, not our ID. Patch by Casey
 	  Marshall.
