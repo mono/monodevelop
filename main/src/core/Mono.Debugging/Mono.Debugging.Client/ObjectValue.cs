@@ -59,8 +59,10 @@ namespace Mono.Debugging.Client
 			ob.path = path;
 			ob.flags = flags | ObjectValueFlags.Object;
 			ob.value = value;
-			if (children != null)
+			if (children != null) {
+				ob.children = new List<ObjectValue> ();
 				ob.children.AddRange (children);
+			}
 			return ob;
 		}
 		
@@ -86,8 +88,10 @@ namespace Mono.Debugging.Client
 			ob.arrayCount = arrayCount;
 			ob.flags = flags | ObjectValueFlags.Array;
 			ob.value = "[" + arrayCount + "]";
-			if (children != null)
+			if (children != null) {
+				ob.children = new List<ObjectValue> ();
 				ob.children.AddRange (children);
+			}
 			return ob;
 		}
 		
@@ -154,7 +158,9 @@ namespace Mono.Debugging.Client
 		
 		public bool HasChildren {
 			get {
-				if (source == null)
+				if (children != null)
+					return children.Count > 0;
+				else if (source == null)
 					return false;
 				else if (IsArray)
 					return arrayCount > 0;
