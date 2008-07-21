@@ -1,5 +1,9 @@
 2008-07-21  Jeffrey Stedfast  <fejj@novell.com>
 
+	* MonoDevelop.Ide.Gui.Pads.ClassBrowser/ClassBrowserPadWidget.cs:
+	Ugh, use System.EventArgs in the delegate - current mono svn seems
+	to break on this :(
+
 	* MonoDevelop.Ide.Gui/MonoDevelopTreeView.cs (Dispose): Override
 	Gtk.Object.Dispose().
 

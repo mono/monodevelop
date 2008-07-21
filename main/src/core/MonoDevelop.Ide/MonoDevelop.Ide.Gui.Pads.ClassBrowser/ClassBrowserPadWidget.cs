@@ -88,7 +88,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassBrowser
 			this.searchEntry.Activated += SearchClicked;
 			this.searchEntry.KeyPressEvent += delegate(object sender, KeyPressEventArgs args) {
 				if (args.Event.Key == Gdk.Key.Escape)
-					CancelSearchClicked (this, EventArgs.Empty);
+					CancelSearchClicked (this, System.EventArgs.Empty);
 			};
 			this.buttonSearch.Clicked += SearchClicked;
 		}
