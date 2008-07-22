@@ -1,3 +1,11 @@
+2008-07-22  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Mono.Debugging.Client/BreakEvent.cs,
+	  Mono.Debugging.Client/Catchpoint.cs,
+	  Mono.Debugging.Client/Breakpoint.cs: Added copying methods. Added
+	  property which allows stopping on a breakpoint after the given hit
+	  count.
+
 2008-07-21  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Mono.Debugging.Client/ObjectValue.cs: Added some missing null checks.

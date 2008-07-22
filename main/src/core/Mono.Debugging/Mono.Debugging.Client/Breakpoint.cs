@@ -96,6 +96,17 @@ namespace Mono.Debugging.Client
 				breakIfConditionChanges = value;
 			}
 		}
+		
+		public override void CopyFrom (BreakEvent ev)
+		{
+			base.CopyFrom (ev);
+			Breakpoint bp = (Breakpoint) ev;
+			fileName = bp.fileName;
+			line = bp.line;
+			conditionExpression = bp.conditionExpression;
+			breakIfConditionChanges = bp.breakIfConditionChanges;
+		}
+
 	}
 	
 	public enum HitAction

@@ -39,6 +39,7 @@ namespace Mono.Debugging.Client
 		HitAction hitAction = HitAction.Break;
 		string customActionId;
 		string traceExpression;
+		int hitCount;
 		
 		public BreakEvent()
 		{
@@ -142,11 +143,33 @@ namespace Mono.Debugging.Client
 				store = value;
 			}
 		}
+
+		public int HitCount {
+			get {
+				return hitCount;
+			}
+			set {
+				hitCount = value;
+			}
+		}
 		
 		public void CommitChanges ()
 		{
 			if (store != null)
 				store.NotifyBreakEventChanged (this);
+		}
+		
+		public BreakEvent Clone ()
+		{
+			return (BreakEvent) MemberwiseClone ();
+		}
+		
+		public virtual void CopyFrom (BreakEvent ev)
+		{
+			hitAction = ev.hitAction;
+			customActionId = ev.customActionId;
+			traceExpression = ev.traceExpression;
+			hitCount = ev.hitCount;
 		}
 	}
 }

@@ -58,5 +58,13 @@ namespace Mono.Debugging.Client
 				return exceptionName;
 			}
 		}
+		
+		public override void CopyFrom (BreakEvent ev)
+		{
+			base.CopyFrom (ev);
+			Catchpoint cp = (Catchpoint) ev;
+			exceptionName = cp.exceptionName;
+		}
+
 	}
 }
