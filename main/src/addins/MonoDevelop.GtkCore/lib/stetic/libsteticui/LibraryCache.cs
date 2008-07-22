@@ -382,17 +382,19 @@ namespace Stetic {
 				if (resolver == null)
 					resolver = new AssemblyResolver (null);
 
-				Hashtable visited = new Hashtable ();
-				foreach (AssemblyNameReference aref in adef.MainModule.AssemblyReferences) {
-					if (!ReferenceChainContainsGtk (resolver, aref, visited))
-						continue;
+				if (doc == null) {
+					Hashtable visited = new Hashtable ();
+					foreach (AssemblyNameReference aref in adef.MainModule.AssemblyReferences) {
+						if (!ReferenceChainContainsGtk (resolver, aref, visited))
+							continue;
 
-					if (doc == null) {
-						doc = new XmlDocument ();
-						doc.AppendChild (doc.CreateElement ("objects"));
+						if (doc == null) {
+							doc = new XmlDocument ();
+							doc.AppendChild (doc.CreateElement ("objects"));
+						}
+						AddObjects (doc, resolver, adef);
+						break;
 					}
-					AddObjects (doc, resolver, adef);
-					break;
 				}
 
 				if (doc != null) {

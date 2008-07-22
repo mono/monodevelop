@@ -1,5 +1,11 @@
 2008-07-22  Mike Kestner <mkestner@novell.com> 
 
+	* libsteticui/LibraryCache.cs: only perform attribute parsing if
+	there is no objects.xml resource. If an objects.xml resource exists,
+	it is the definitive source of exported capabilities.
+
+2008-07-22  Mike Kestner <mkestner@novell.com> 
+
 	* libsteticui/CecilClassDescriptor.cs: some null guarding in prop
 	lookup method.
 
