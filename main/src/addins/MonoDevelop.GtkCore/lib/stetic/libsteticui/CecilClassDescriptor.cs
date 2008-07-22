@@ -157,6 +157,9 @@ namespace Stetic
 				if (propInfo.Name == name)
 					return propInfo;
 			
+			if (cls.BaseType == null)
+				return null;
+
 			string baseType = cls.BaseType.FullName;
 			Type t = Registry.GetType (baseType, false);
 			if (t != null) {
