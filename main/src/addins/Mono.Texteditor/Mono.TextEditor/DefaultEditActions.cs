@@ -118,7 +118,13 @@ namespace Mono.TextEditor
 			if (!data.CanEdit (data.Caret.Line))
 				return;
 			LineSegment line = data.Document.GetLine (data.Caret.Line);
-			data.Document.Remove (line.Offset + data.Caret.Column, line.EditableLength - data.Caret.Column);
+			if (data.Caret.Column == line.EditableLength) {
+				// Nothing after the cursor, delete the end-of-line sequence
+				data.Document.Remove (line.Offset + data.Caret.Column, line.Length - data.Caret.Column);
+			} else {
+				// Delete from cursor position to the end of the line
+				data.Document.Remove (line.Offset + data.Caret.Column, line.EditableLength - data.Caret.Column);
+			}
 			data.Document.CommitLineUpdate (data.Caret.Line);
 		}
 	}

@@ -1,3 +1,9 @@
+2008-07-22  Jeffrey Stedfast  <fejj@novell.com>
+
+	* Mono.TextEditor/DefaultEditActions.cs (DeleteCaretLineToEnd):
+	Mimic Emacs behavior when the cursor is in the last column of the
+	line.
+
 2008-07-18  Mike Krüger <mkrueger@novell.com> 
 
 	* Mono.TextEditor/TextViewMargin.cs: Fixed visual --> document location
