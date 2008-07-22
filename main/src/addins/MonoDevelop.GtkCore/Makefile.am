@@ -59,8 +59,10 @@ FILES =  \
 	MonoDevelop.GtkCore.NodeBuilders/WindowsFolderNodeBuilder.cs \
 	MonoDevelop.GtkCore/GtkCoreService.cs \
 	MonoDevelop.GtkCore/GtkDesignInfo.cs \
+	MonoDevelop.GtkCore/ObjectsDocument.cs \
 	MonoDevelop.GtkCore/ProjectResourceProvider.cs \
-	MonoDevelop.GtkCore/WidgetFileDescriptionTemplate.cs
+	MonoDevelop.GtkCore/WidgetFileDescriptionTemplate.cs \
+	MonoDevelop.GtkCore/WidgetParser.cs
 
 RES =  \
 	gtk-gui/gui.stetic \

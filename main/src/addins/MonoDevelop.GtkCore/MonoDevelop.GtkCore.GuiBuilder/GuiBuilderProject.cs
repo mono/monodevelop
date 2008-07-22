@@ -148,7 +148,6 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		void OnSteticFileChanged (object s, FileSystemEventArgs args)
 		{
 			lock (fileSaveLock) {
-				Console.WriteLine (System.IO.File.GetLastWriteTime (fileName));
 				if (lastSaveTime == System.IO.File.GetLastWriteTime (fileName))
 					return;
 			}
@@ -485,6 +484,12 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			return ctx;
 		}
 		
+		public WidgetParser WidgetParser {
+			get {
+				return new WidgetParser (GetParserContext ());
+			}
+		}
+
 		public void UpdateLibraries ()
 		{
 			if (hasError || disposed || gproject == null)

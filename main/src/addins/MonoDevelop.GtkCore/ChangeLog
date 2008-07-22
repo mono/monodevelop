@@ -1,3 +1,19 @@
+2008-07-22  Mike Kestner <mkestner@novell.com> 
+
+	* MonoDevelop.GtkCore/GtkDesignInfo.cs: Connect to project file
+	events and trigger objects.xml updates. Translate a confirm button
+	label.  Require AddAttribute refactoring.
+	* MonoDevelop.GtkCore/ObjectsDocument.cs: new class reinstating some
+	old document updating code and adding some new.  Inserts ToolBoxItem
+	and Category attrs into sources for a first-time "upgrade" to enable 
+	the attr-sync feature now controlled by a root attribute on the 
+	document.
+	* MonoDevelop.GtkCore/WidgetParser.cs: new class reinstating some
+	old parsing code and adding some new.  This will become the home
+	for all source parsing in the addin. Refactoring to come...
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderProject.cs: Add WidgetParser
+	prop.  Remove Debug spew.
+	
 2008-07-21  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.GtkCore.GuiBuilder/ToolboxProvider.cs,

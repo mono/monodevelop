@@ -1,10 +1,11 @@
 //
 // GtkDesignInfo.cs
 //
-// Author:
+// Authors:
 //   Lluis Sanchez Gual
+//   Mike Kestner
 //
-// Copyright (C) 2006 Novell, Inc (http://www.novell.com)
+// Copyright (C) 2006-2008 Novell, Inc (http://www.novell.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -85,11 +86,22 @@ namespace MonoDevelop.GtkCore
 			if (this.project == null) {
 				this.project = project;
 				binding = Services.Languages.GetBindingPerLanguageName (project.LanguageName) as IDotNetLanguageBinding;
+				project.FileAddedToProject += OnFileEvent;
+				project.FileChangedInProject += OnFileEvent;
+				project.FileRemovedFromProject += OnFileEvent;
 				project.ReferenceAddedToProject += OnReferenceAdded;
 				project.ReferenceRemovedFromProject += OnReferenceRemoved;
 			}
 		}
 		
+		void OnFileEvent (object o, ProjectFileEventArgs args)
+		{
+			if (!IdeApp.Workspace.IsOpen || !File.Exists (ObjectsFile))
+				return;
+
+			UpdateObjectsFile ();
+		}
+
 		void OnReferenceAdded (object o, ProjectReferenceEventArgs args)
 		{
 			if (!updatingVersion && IsGtkReference (args.ProjectReference)) {
@@ -102,7 +114,7 @@ namespace MonoDevelop.GtkCore
 		void OnReferenceRemoved (object o, ProjectReferenceEventArgs args)
 		{
 			if (!updatingVersion && IsGtkReference (args.ProjectReference)) {
-				if (MonoDevelop.Core.Gui.MessageService.Confirm (GettextCatalog.GetString ("The Gtk# User Interface designer will be disabled by removing the gtk-sharp reference."), new MonoDevelop.Core.Gui.AlertButton ("Disable Designer"))) {
+				if (MonoDevelop.Core.Gui.MessageService.Confirm (GettextCatalog.GetString ("The Gtk# User Interface designer will be disabled by removing the gtk-sharp reference."), new MonoDevelop.Core.Gui.AlertButton (GettextCatalog.GetString ("Disable Designer")))) {
 					StringCollection saveFiles = new StringCollection ();
 					saveFiles.AddRange (new string[] {ObjectsFile, SteticFile});
 					CleanGtkFolder (saveFiles);
@@ -126,6 +138,9 @@ namespace MonoDevelop.GtkCore
 				builderProject.Dispose ();
 			builderProject = null;
 			if (project != null) {
+				project.FileAddedToProject -= OnFileEvent;
+				project.FileChangedInProject -= OnFileEvent;
+				project.FileRemovedFromProject -= OnFileEvent;
 				project.ReferenceAddedToProject -= OnReferenceAdded;
 				project.ReferenceRemovedFromProject -= OnReferenceRemoved;
 				project = null;
@@ -221,7 +236,7 @@ namespace MonoDevelop.GtkCore
 				if (project.LanguageBinding == null || project.LanguageBinding.GetCodeDomProvider () == null)
 					return false;
 			
-				RefactorOperations ops = RefactorOperations.AddField | RefactorOperations.AddMethod | RefactorOperations.RenameField;
+				RefactorOperations ops = RefactorOperations.AddField | RefactorOperations.AddMethod | RefactorOperations.RenameField | RefactorOperations.AddAttribute;
 				CodeRefactorer cref = IdeApp.Workspace.GetCodeRefactorer (project.ParentSolution);
 				return cref.LanguageSupportsOperation (project.LanguageBinding.Language, ops); 
 			}
@@ -315,6 +330,8 @@ namespace MonoDevelop.GtkCore
 					projectModified = true;
 				}
 			}
+
+			UpdateObjectsFile ();
 			files.Add (ObjectsFile);
 			files.Add (SteticFile);
 
@@ -391,6 +408,15 @@ namespace MonoDevelop.GtkCore
 			return changed;
 		}
 		
+		void UpdateObjectsFile ()
+		{
+			if (!File.Exists (ObjectsFile))
+				return;
+
+			ObjectsDocument doc = new ObjectsDocument (ObjectsFile);
+			doc.Update (GuiBuilderProject.WidgetParser, GuiBuilderProject.SteticProject, IdeApp.Workspace.GetCodeRefactorer (project.ParentSolution));
+		}
+
 		public static GtkDesignInfo FromProject (Project project)
 		{
 			if (!(project is DotNetProject))
