@@ -1,7 +1,8 @@
 2008-07-23  Mike Kestner <mkestner@novell.com> 
 
-	* MonoDevelop.GtkCore/GtkDesignInfo.cs: another delayed gui folder
-	creation fix.
+	* MonoDevelop.GtkCore.GuiBuilder/ActionGroupDisplayBinding.cs:
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderDisplayBinding.cs:
+	Use HasDesignedObjects not SupportsDesigner.
 
 2008-07-23  Mike Kestner <mkestner@novell.com> 
 
