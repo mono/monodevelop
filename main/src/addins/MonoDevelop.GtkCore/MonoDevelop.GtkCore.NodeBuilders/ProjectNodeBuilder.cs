@@ -61,7 +61,7 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 		
 		public override void BuildChildNodes (ITreeBuilder builder, object dataObject)
 		{
-			if (GtkDesignInfo.FromProject ((Project)dataObject).SupportsDesigner)
+			if (GtkDesignInfo.FromProject ((Project)dataObject).HasDesignedObjects)
 				builder.AddChild (new WindowsFolder ((Project)dataObject));
 		}
 		

@@ -75,7 +75,6 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			if (IdeApp.Workbench == null)
 				return;
 			IdeApp.Workbench.ActiveDocumentChanged += new EventHandler (OnActiveDocumentChanged);
-			IdeApp.ProjectOperations.StartBuild += OnBeforeCompile;
 			IdeApp.ProjectOperations.EndBuild += OnProjectCompiled;
 			IdeApp.Workspace.ParserDatabase.AssemblyInformationChanged += (AssemblyInformationEventHandler) DispatchService.GuiDispatch (new AssemblyInformationEventHandler (OnAssemblyInfoChanged));
 			
@@ -111,14 +110,9 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		}
 
 		
-		public static GuiBuilderProject GetGuiBuilderProject (Project project)
-		{
-			return GtkDesignInfo.FromProject (project).GuiBuilderProject;
-		}
-		
 		public static ActionGroupView OpenActionGroup (Project project, Stetic.ActionGroupInfo group)
 		{
-			GuiBuilderProject p = GetGuiBuilderProject (project);
+			GuiBuilderProject p = GtkDesignInfo.FromProject (project).GuiBuilderProject ;
 			string file = p != null ? p.GetSourceCodeFile (group) : null;
 			if (file == null) {
 				file = ActionGroupDisplayBinding.BindToClass (project, group);
@@ -180,15 +174,6 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			}
 		}
 		
-		static void OnBeforeCompile (object s, BuildEventArgs args)
-		{
-			if (!IdeApp.Workspace.IsOpen)
-				return;
-
-			// Generate stetic files for all modified projects
-			GtkProjectServiceExtension.GenerateSteticCode = true;
-		}
-
 		static void OnProjectCompiled (object s, BuildEventArgs args)
 		{
 			if (args.Success) {
@@ -357,12 +342,12 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				return null;
 
 			GtkDesignInfo info = GtkDesignInfo.FromProject (project);
-			
-			// Check if the stetic file has been modified since last generation
-			if (File.Exists (info.SteticGeneratedFile) && File.Exists (info.SteticFile)) {
-				if (File.GetLastWriteTime (info.SteticGeneratedFile) > File.GetLastWriteTime (info.SteticFile))
-					return null;
-			}
+			if (!info.HasDesignedObjects)
+				return null;
+
+			// Check if generated code is already up to date.
+			if (File.Exists (info.SteticGeneratedFile) && File.GetLastWriteTime (info.SteticGeneratedFile) > File.GetLastWriteTime (info.SteticFile))
+				return null;
 			
 			if (info.GuiBuilderProject.HasError) {
 				monitor.ReportError (GettextCatalog.GetString ("GUI code generation failed for project '{0}'. The file '{1}' could not be loaded.", project.Name, info.SteticFile), null);

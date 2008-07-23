@@ -61,7 +61,6 @@ namespace MonoDevelop.GtkCore.Dialogs
 			GtkDesignInfo info = GtkDesignInfo.FromProject ((DotNetProject) entry);
 			GtkFeatureWidget fw = (GtkFeatureWidget) editor;
 			info.TargetGtkVersion = fw.SelectedVersion;
-			info.UpdateGtkFolder ();
 		}
 		
 		public string Validate (SolutionFolder parentCombine, SolutionItem entry, Gtk.Widget editor)

@@ -1,3 +1,23 @@
+2008-07-23  Mike Kestner <mkestner@novell.com> 
+
+	* MonoDevelop.GtkCore/GtkDesignInfo.cs: delay creation of guifolder
+	until GuiBuilderProject is accessed. Refactor Bind into a Project
+	property to gather all the connect/disconnects together. Add new
+	HasDesignedObjects prop for when SupportsDesigner doesn't cut it.
+	* MonoDevelop.GtkCore.NodeBuilders/ProjectNodeBuilder.cs: use new
+	HasDesignedObjects prop.
+	* MonoDevelop.GtkCore.Dialogs/WidgetBuilderOptionPanel.cs:
+	* MonoDevelop.GtkCore.Dialogs/GtkFeatureWidget.cs: don't 
+	need to update the folder for these options any more.
+	* MonoDevelop.GtkCore.GuiBuilder/ActionGroupDisplayBinding.cs: get
+	GuiBuilderProject from design info directly. 
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs: kill 
+	BeforeCompile handler and GetGuiBuilderProject method. Use new
+	HasDesignedObjects to control code generation.
+	* MonoDevelop.GtkCore.GuiBuilder/GtkProjectServiceExtension.cs: kill 
+	GenerateSteticCode field. It was always set to true. Use new
+	HasDesignedObjects prop to control generation.
+
 2008-07-22  Mike Kestner <mkestner@novell.com> 
 
 	* MonoDevelop.GtkCore/GtkDesignInfo.cs: Connect to project file

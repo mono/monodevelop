@@ -104,9 +104,6 @@ namespace MonoDevelop.GtkCore.Dialogs
 				designInfo.GenerateGettext = checkGettext.Active;
 				designInfo.GettextClass = entryGettext.Text;
 				designInfo.TargetGtkVersion = comboVersions.ActiveText;
-
-				designInfo.UpdateGtkFolder ();
-				designInfo.ForceCodeGenerationOnBuild ();
 			}
 		}
 		

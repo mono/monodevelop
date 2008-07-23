@@ -78,22 +78,35 @@ namespace MonoDevelop.GtkCore
 		{
 			IExtendedDataItem item = (IExtendedDataItem) project;
 			item.ExtendedProperties ["GtkDesignInfo"] = this;
-			Bind (project);
+			Project = project;
 		}
 		
-		public void Bind (DotNetProject project)
-		{
-			if (this.project == null) {
-				this.project = project;
-				binding = Services.Languages.GetBindingPerLanguageName (project.LanguageName) as IDotNetLanguageBinding;
-				project.FileAddedToProject += OnFileEvent;
-				project.FileChangedInProject += OnFileEvent;
-				project.FileRemovedFromProject += OnFileEvent;
-				project.ReferenceAddedToProject += OnReferenceAdded;
-				project.ReferenceRemovedFromProject += OnReferenceRemoved;
+		DotNetProject Project {
+			get { return project; }
+			set {
+				if (project == value)
+					return;
+
+				if (project != null) {
+					project.FileAddedToProject -= OnFileEvent;
+					project.FileChangedInProject -= OnFileEvent;
+					project.FileRemovedFromProject -= OnFileEvent;
+					project.ReferenceAddedToProject -= OnReferenceAdded;
+					project.ReferenceRemovedFromProject -= OnReferenceRemoved;
+					binding = null;
+				}
+				project = value;
+				if (project != null) {
+					binding = Services.Languages.GetBindingPerLanguageName (project.LanguageName) as IDotNetLanguageBinding;
+					project.FileAddedToProject += OnFileEvent;
+					project.FileChangedInProject += OnFileEvent;
+					project.FileRemovedFromProject += OnFileEvent;
+					project.ReferenceAddedToProject += OnReferenceAdded;
+					project.ReferenceRemovedFromProject += OnReferenceRemoved;
+				}
 			}
 		}
-		
+
 		void OnFileEvent (object o, ProjectFileEventArgs args)
 		{
 			if (!IdeApp.Workspace.IsOpen || !File.Exists (ObjectsFile))
@@ -104,11 +117,8 @@ namespace MonoDevelop.GtkCore
 
 		void OnReferenceAdded (object o, ProjectReferenceEventArgs args)
 		{
-			if (!updatingVersion && IsGtkReference (args.ProjectReference)) {
+			if (!updatingVersion && IsGtkReference (args.ProjectReference))
 				builderProject = null;
-				UpdateGtkFolder ();
-				ProjectNodeBuilder.OnSupportChanged (project);
-			}
 		}
 
 		void OnReferenceRemoved (object o, ProjectReferenceEventArgs args)
@@ -137,24 +147,20 @@ namespace MonoDevelop.GtkCore
 			if (builderProject != null)
 				builderProject.Dispose ();
 			builderProject = null;
-			if (project != null) {
-				project.FileAddedToProject -= OnFileEvent;
-				project.FileChangedInProject -= OnFileEvent;
-				project.FileRemovedFromProject -= OnFileEvent;
-				project.ReferenceAddedToProject -= OnReferenceAdded;
-				project.ReferenceRemovedFromProject -= OnReferenceRemoved;
-				project = null;
-			}
-			builderProject = null;
+			Project = null;
 		}
 		
 		public GuiBuilderProject GuiBuilderProject {
 			get {
 				if (builderProject == null) {
-					if (!SupportsDesigner)
-						builderProject = new GuiBuilderProject (project, null);
-					else
+					if (SupportsDesigner) {
+						if (!Directory.Exists (GtkGuiFolder)) {
+							UpdateGtkFolder ();
+							ProjectNodeBuilder.OnSupportChanged (project);
+						}
 						builderProject = new GuiBuilderProject (project, SteticFile);
+					} else
+						builderProject = new GuiBuilderProject (project, null);
 				}
 				return builderProject;
 			}
@@ -207,6 +213,12 @@ namespace MonoDevelop.GtkCore
 			set { gettextClass = value; }
 		}
 		
+		public bool HasDesignedObjects {
+			get {
+				return File.Exists (SteticFile);
+			}
+		}
+
 		public string TargetGtkVersion {
 			get {
 				if (gtkVersion != null)
@@ -427,9 +439,8 @@ namespace MonoDevelop.GtkCore
 			if (info == null) {
 				info = new GtkDesignInfo ((DotNetProject) project);
 				info.TargetGtkVersion = GtkCoreService.DefaultGtkVersion;
-				info.UpdateGtkFolder ();
 			} else
-				info.Bind ((DotNetProject) project);
+				info.Project = (DotNetProject) project;
 			return info;
 		}
 	}	

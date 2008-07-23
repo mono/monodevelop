@@ -104,7 +104,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		internal static string BindToClass (Project project, Stetic.ActionGroupInfo group)
 		{
-			GuiBuilderProject gproject = GuiBuilderService.GetGuiBuilderProject (project);
+			GuiBuilderProject gproject = GtkDesignInfo.FromProject (project).GuiBuilderProject;
 			string file = gproject.GetSourceCodeFile (group);
 			if (file != null)
 				return file;
