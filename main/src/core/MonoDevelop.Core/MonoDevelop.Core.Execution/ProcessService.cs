@@ -139,7 +139,11 @@ namespace MonoDevelop.Core.Execution
 				
 			p.StartInfo = startInfo;
 			ProcessEnvironmentVariableOverrides (p.StartInfo);
-			p.EnableRaisingEvents = true;
+			
+			// WORKAROUND for "Bug 410743 - wapi leak in System.Diagnostic.Process"
+			// Process leaks when an exit event is registered
+			// instead we use another thread to monitor I/O and wait for exit
+			// p.EnableRaisingEvents = true;
 			
 			p.Start ();
 			return p;

@@ -18,29 +18,31 @@ namespace MonoDevelop.Core.Execution
 		
 		public ProcessWrapper ()
 		{
-			Exited += new EventHandler (OnExited);
 		}
 		
 		public new void Start ()
 		{
+			CheckDisposed ();
 			base.Start ();
 			
 			captureOutputThread = new Thread (new ThreadStart(CaptureOutput));
 			captureOutputThread.IsBackground = true;
 			captureOutputThread.Start ();
 			
-			captureErrorThread = new Thread (new ThreadStart(CaptureError));
-			captureErrorThread.IsBackground = true;
-			captureErrorThread.Start ();
+			if (ErrorStreamChanged != null) {
+				captureErrorThread = new Thread (new ThreadStart(CaptureError));
+				captureErrorThread.IsBackground = true;
+				captureErrorThread.Start ();
+			} else {
+				endEventErr.Set ();
+			}
 		}
 		
 		public void WaitForOutput (int milliseconds)
 		{
+			CheckDisposed ();
 			WaitForExit (milliseconds);
-			lock (lockObj) {
-				done = true;
-			}
-			WaitHandle.WaitAll (new WaitHandle[] {endEventOut, endEventErr});
+			WaitHandle.WaitAll (new WaitHandle[] {endEventOut});
 		}
 		
 		public void WaitForOutput ()
@@ -51,8 +53,8 @@ namespace MonoDevelop.Core.Execution
 		private void CaptureOutput ()
 		{
 			try {
-				char[] buffer = new char [1000];
 				if (OutputStreamChanged != null) {
+					char[] buffer = new char [1024];
 					int nr;
 					while ((nr = StandardOutput.Read (buffer, 0, buffer.Length)) > 0) {
 						if (OutputStreamChanged != null)
@@ -60,6 +62,12 @@ namespace MonoDevelop.Core.Execution
 					}
 				}
 			} finally {
+				// WORKAROUND for "Bug 410743 - wapi leak in System.Diagnostic.Process"
+				// Process leaks when an exit event is registered
+				WaitHandle.WaitAll (new WaitHandle[] {endEventErr});
+				OnExited (this, EventArgs.Empty);
+				
+				//call this AFTER the exit event, or the ProcessWrapper may get disposed and abort this thread
 				endEventOut.Set ();
 			}
 		}
@@ -67,17 +75,39 @@ namespace MonoDevelop.Core.Execution
 		private void CaptureError ()
 		{
 			try {
-				char[] buffer = new char [1000];
-				if (ErrorStreamChanged != null) {
-					int nr;
-					while ((nr = StandardError.Read (buffer, 0, buffer.Length)) > 0) {
-						if (ErrorStreamChanged != null)
-							ErrorStreamChanged (this, new string (buffer, 0, nr));
-					}					
-				}
+				char[] buffer = new char [1024];
+				int nr;
+				while ((nr = StandardError.Read (buffer, 0, buffer.Length)) > 0) {
+					if (ErrorStreamChanged != null)
+						ErrorStreamChanged (this, new string (buffer, 0, nr));
+				}					
 			} finally {
 				endEventErr.Set ();
 			}
+		}
+		
+		protected override void Dispose (bool disposing)
+		{
+			lock (lockObj) {
+				if (endEventOut == null)
+					return;
+			}
+			
+			if (!done)
+				((IAsyncOperation)this).Cancel ();
+			
+			captureOutputThread = captureErrorThread = null;
+			endEventOut.Close ();
+			endEventErr.Close ();
+			endEventOut = endEventErr = null;
+			
+			base.Dispose (disposing);
+		}
+		
+		void CheckDisposed ()
+		{
+			if (endEventOut == null)
+				throw new ObjectDisposedException ("ProcessWrapper");
 		}
 		
 		int IProcessAsyncOperation.ExitCode {
@@ -97,8 +127,10 @@ namespace MonoDevelop.Core.Execution
 					} catch {
 						// Ignore
 					}
-					captureOutputThread.Abort ();
-					captureErrorThread.Abort ();
+					if (captureOutputThread != null)
+						captureOutputThread.Abort ();
+					if (captureErrorThread != null)
+						captureErrorThread.Abort ();
 				}
 			} catch (Exception ex) {
 				LoggingService.LogError (ex.ToString ());
@@ -113,7 +145,8 @@ namespace MonoDevelop.Core.Execution
 		void OnExited (object sender, EventArgs args)
 		{
 			try {
-				WaitForOutput ();
+				if (!HasExited)
+					WaitForExit ();
 			} finally {
 				lock (lockObj) {
 					done = true;
