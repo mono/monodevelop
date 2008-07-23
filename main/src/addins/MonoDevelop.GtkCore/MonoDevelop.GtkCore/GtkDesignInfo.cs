@@ -154,7 +154,7 @@ namespace MonoDevelop.GtkCore
 			get {
 				if (builderProject == null) {
 					if (SupportsDesigner) {
-						if (!Directory.Exists (GtkGuiFolder)) {
+						if (!File.Exists (SteticFile)) {
 							UpdateGtkFolder ();
 							ProjectNodeBuilder.OnSupportChanged (project);
 						}
@@ -229,7 +229,7 @@ namespace MonoDevelop.GtkCore
 			set {
 				if (gtkVersion != value) {
 					gtkVersion = value;
-					if (SupportsDesigner) {
+					if (HasDesignedObjects) {
 						GuiBuilderProject.SteticProject.TargetGtkVersion = TargetGtkVersion;
 						GuiBuilderProject.Save (false);
 					}

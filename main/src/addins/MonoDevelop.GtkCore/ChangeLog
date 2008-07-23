@@ -1,5 +1,10 @@
 2008-07-23  Mike Kestner <mkestner@novell.com> 
 
+	* MonoDevelop.GtkCore/GtkDesignInfo.cs: another delayed gui folder
+	creation fix.
+
+2008-07-23  Mike Kestner <mkestner@novell.com> 
+
 	* MonoDevelop.GtkCore/GtkDesignInfo.cs: delay creation of guifolder
 	until GuiBuilderProject is accessed. Refactor Bind into a Project
 	property to gather all the connect/disconnects together. Add new
