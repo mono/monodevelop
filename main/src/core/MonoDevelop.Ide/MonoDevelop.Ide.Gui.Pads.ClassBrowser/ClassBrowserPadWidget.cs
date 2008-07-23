@@ -76,8 +76,8 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassBrowser
 			});
 			model = new TreeModelSort (list);
 			searchResultsTreeView.Model = model;
-			searchResultsTreeView.AppendColumn ("", new Gtk.CellRendererPixbuf (), "pixbuf", 0);
-			searchResultsTreeView.AppendColumn ("", new Gtk.CellRendererText (), "text", 1);
+			searchResultsTreeView.AppendColumn (string.Empty, new Gtk.CellRendererPixbuf (), "pixbuf", 0);
+			searchResultsTreeView.AppendColumn (string.Empty, new Gtk.CellRendererText (), "text", 1);
 			searchResultsTreeView.HeadersVisible = false;
 			searchResultsTreeView.RowActivated += SearchRowActivated;
 			IdeApp.Workspace.WorkspaceItemOpened += OnOpenCombine;
@@ -96,7 +96,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassBrowser
 		List<IType> searchResults = new List<IType> ();
 		Thread searchThread;
 		object matchLock   = new object ();
-		string matchString = "";
+		string matchString = string.Empty;
 
 		void SearchEntryChanged (object sender, EventArgs e)
 		{

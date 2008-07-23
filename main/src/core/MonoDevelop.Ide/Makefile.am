@@ -125,6 +125,7 @@ FILES =  \
 	MonoDevelop.Ide.Gui.Content/ITextBuffer.cs \
 	MonoDevelop.Ide.Gui.Content/IViewHistory.cs \
 	MonoDevelop.Ide.Gui.Content/IZoomable.cs \
+	MonoDevelop.Ide.Gui.Content/SmartIndenter.cs \
 	MonoDevelop.Ide.Gui.Content/TextEditorExtension.cs \
 	MonoDevelop.Ide.Gui.Content/TextEditorProperties.cs \
 	MonoDevelop.Ide.Gui.Dialogs/AddinLoadErrorDialog.cs \

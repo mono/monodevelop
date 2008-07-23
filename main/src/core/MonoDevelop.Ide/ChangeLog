@@ -1,5 +1,16 @@
 2008-07-23  Michael Hutchinson <mhutchinson@novell.com> 
 
+	* MonoDevelop.Ide.Gui.Content/SmartIndenter.cs: Missed a file. It's not
+	  used yet, but my local copy of DocumentStateTracker has code
+	  stubbed using the Indent type from this file, and I've accidentally
+	  committed it twice already. Hopefully by committing this I can
+	  avoid breaking the build again...
+	* MonoDevelop.Ide.mdp, Makefile.am: Updated.
+	* MonoDevelop.Ide.Gui.Pads.ClassBrowser/ClassBrowserPadWidget.cs: Avoid
+	  unnecessary empty string instantiations.
+
+2008-07-23  Michael Hutchinson <mhutchinson@novell.com> 
+
 	* MonoDevelop.Ide.Gui.Content/DocumentStateTracker.cs: Make consumers
 	  supply the initial parser object.
 
