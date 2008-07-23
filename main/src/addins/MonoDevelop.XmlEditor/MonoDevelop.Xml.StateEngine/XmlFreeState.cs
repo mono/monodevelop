@@ -32,71 +32,129 @@ using System.Text;
 
 namespace MonoDevelop.Xml.StateEngine
 {
-	public class XmlFreeState : State
+	public class XmlFreeState : RootState
 	{
-		bool openTag;
+		const int FREE = 0;
+		const int BRACKET = 1;
+		const int BRACKET_EXCLAM = 2;
+		const int COMMENT = 3;
+		const int CDATA = 4;
+		const int DOCTYPE = 5;
 		
-		public XmlFreeState ()
-			: base (null, 0)
-		{
-		}
+		public XmlFreeState () : this (new XmlTagState (), new XmlClosingTagState ()) {}
 		
-		public XmlFreeState (State parent, int position)
-			: base (parent, position)
-		{
-		}
+		public XmlFreeState (XmlTagState tagState, XmlClosingTagState closingTagState)
+			: this (tagState, closingTagState, new XmlCommentState (), new XmlCDataState (),
+			  new XmlDocTypeState (), new XmlProcessingInstructionState ()) {}
 		
-		public override State PushChar (char c, int location, out bool reject)
+		public XmlFreeState (
+			XmlTagState tagState,
+			XmlClosingTagState closingTagState,
+			XmlCommentState commentState,
+			XmlCDataState cDataState,
+			XmlDocTypeState docTypeState,
+		        XmlProcessingInstructionState processingInstructionState)
 		{
-			if (c == '<') {
-				reject = false;
-				openTag = true;
-				return null;
-			}
+			this.TagState = tagState;
+			this.ClosingTagState = closingTagState;
+			this.CommentState = commentState;
+			this.CDataState = cDataState;
+			this.DocTypeState = docTypeState;
+			this.ProcessingInstructionState = processingInstructionState;
 			
-			if (c == '>') {
-				XmlTagState tsParent = Parent as XmlTagState;
-				if (tsParent != null && tsParent.Closing) {
-					reject = true;
-					Close (location);
-					return Parent;
+			Adopt (this.TagState);
+			Adopt (this.ClosingTagState);
+			Adopt (this.CommentState);
+			Adopt (this.CDataState);
+			Adopt (this.DocTypeState);
+			Adopt (this.ProcessingInstructionState);
+		}
+		
+		protected XmlTagState TagState { get; private set; }
+		protected XmlClosingTagState ClosingTagState { get; private set; }
+		protected XmlCommentState CommentState { get; private set; }
+		protected XmlCDataState CDataState { get; private set; }
+		protected XmlDocTypeState DocTypeState { get; private set; }
+		protected XmlProcessingInstructionState ProcessingInstructionState { get; private set; }
+		
+		public override State PushChar (char c, IParseContext context, ref bool reject)
+		{
+			switch (context.StateTag) {
+			case FREE:
+				if (c == '<') {
+					context.StateTag = BRACKET;
 				}
+				//FIXME: handle entities?
+				return null;
+				
+			case BRACKET:
+				if (c == '?') {
+					reject = true;
+					return this.ProcessingInstructionState;
+				} else if (c == '!') {
+					context.StateTag = BRACKET_EXCLAM;
+					return null;
+				} else if (c == '/') {
+					return this.ClosingTagState;
+				} else if (char.IsLetter (c) || c == '_') {
+					reject = true;
+					return TagState;
+				}
+				break;
+				
+			case BRACKET_EXCLAM:
+				if (c == '[') {
+					context.StateTag = CDATA;
+					return null;
+				} else if (c == '-') {
+					context.StateTag = COMMENT;
+					return null;
+				} else if (c == 'D') {
+					context.StateTag = DOCTYPE;
+					return null;
+				}
+				break;
+			
+			case COMMENT:
+				if (c == '-')
+					return CommentState;
+				break;
+				
+			case CDATA:
+				string cdataStr = "CDATA[";
+				if (c == cdataStr [context.KeywordBuilder.Length]) {
+					context.KeywordBuilder.Append (c);
+					if (context.KeywordBuilder.Length < cdataStr.Length)
+						return null;
+					else
+						return CDataState;
+				} else {
+					context.KeywordBuilder.Length = 0;
+				}
+				break;
+				
+			case DOCTYPE:
+				string docTypeStr = "OCTYPE";
+				if (c == docTypeStr [context.KeywordBuilder.Length]) {
+					context.KeywordBuilder.Append (c);
+					if (context.KeywordBuilder.Length < docTypeStr.Length)
+						return null;
+					else
+						return DocTypeState;
+				} else {
+					context.KeywordBuilder.Length = 0;
+				}
+				break;
 			}
 			
-			if (openTag) {
-				openTag = false;
-				reject = true;
-				if (c == '/')
-					return new XmlClosingTagState (this, location);
-				else if (c == '!')
-					return new XmlSpecialTagState (this, location);
-				else if (char.IsLetter (c))
-					return new XmlTagState (this, location);
-				else
-					return new XmlMalformedTagState (this, location);
-			}
-			
-			reject = false;
+			context.LogError ("Unexpected character '" + c + "' in tag opening.");
+			context.StateTag = FREE;
 			return null;
 		}
-
-		public override string ToString ()
+		
+		public override XDocument CreateDocument ()
 		{
-			return "[XmlFree]";
+			return new XDocument ();
 		}
-		
-		#region Cloning API
-		
-		public override State ShallowCopy ()
-		{
-			return new XmlFreeState (this);
-		}
-		
-		protected XmlFreeState (XmlFreeState copyFrom) : base (copyFrom)
-		{
-			openTag = copyFrom.openTag;
-		}
-		
-		#endregion
 	}
 }

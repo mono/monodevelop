@@ -28,6 +28,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace MonoDevelop.Xml.StateEngine
 {
@@ -35,95 +36,101 @@ namespace MonoDevelop.Xml.StateEngine
 	
 	public class XmlClosingTagState : State
 	{
-		XmlTagNameState name;
+		XmlNameState NameState;
+		XmlMalformedTagState MalformedTagState;
 		
-		public XmlClosingTagState (State parent, int position)
-			: base (parent, position)
+		public XmlClosingTagState ()
+			: this (new XmlNameState ()) {}
+		
+		public XmlClosingTagState (XmlNameState nameState)
+			: this (nameState, new XmlMalformedTagState ()) {}
+		
+		public XmlClosingTagState (XmlNameState nameState, XmlMalformedTagState malformedTagState)
 		{
+			NameState = nameState;
+			MalformedTagState = malformedTagState;
+			Adopt (NameState);
+			Adopt (MalformedTagState);
 		}
 
-		public override State PushChar (char c, int position, out bool reject)
+		public override State PushChar (char c, IParseContext context, ref bool reject)
 		{
-			reject = false;
+			XClosingTag ct = context.Nodes.Peek () as XClosingTag;
 			
-			if (position == StartLocation) {
-				if (c != '/')
-					throw new InvalidOperationException ("First character pushed to a XmlClosingTagState must be '/'");
-				return null;
+			if (ct == null) {
+				Debug.Assert (context.CurrentStateLength == 1,
+					"IncompleteNode must not be an XClosingTag when CurrentStateLength is 1");
+				Debug.Assert (c == '/', "First character pushed to a XmlClosingTagState must be '/'");
+				Debug.Assert (context.Nodes.Peek () is XElement);
+				
+				ct = new XClosingTag (context.Position - 1);
+				context.Nodes.Push (ct);
 			}
 			
 			//if tag closed
-			if (c == '>' && name != null) {
-				reject = true;
-				//walk up tree of parents looking for matching tag
-				foreach (XmlTagState ts in TagParents) {
-					//when found, walk back up closing all tags
-					if (ts.Name.FullName == this.Name.FullName) {
-						ts.ClosingTag = this;
-						foreach (XmlTagState ts2 in TagParents) {
-							ts2.Closing = true;
-							if (ts == ts2)
-								break;
-						}
-						break;
-					}
-				}
-			}
-			
 			if (c == '>') {
-				if (EndLocation < 0)
-					Close (position);
+				context.Nodes.Pop ();
+				
+				if (ct.IsNamed) {
+					ct.End (context.Position);
+					
+					// walk up tree of parents looking for matching tag
+					int popCount = 0;
+					bool found = false;
+					foreach (XObject node in context.Nodes) {
+						popCount++;
+						XElement element = node as XElement;
+						if (element != null && element.Name == ct.Name) {
+							found = true;
+							break;
+						}
+					}
+					if (!found)
+						popCount = 0;
+					
+					//clear the stack of intermediate unclosed tags
+					while (popCount > 1) {
+						XElement el = context.Nodes.Pop () as XElement;
+						if (el != null)
+							context.LogError (string.Format (
+								"Unclosed tag '{0}' at '{1}'.", el.Name.FullName, el.Position));
+						popCount--;
+					}
+					
+					//close the start tag, if we found it
+					if (context.BuildTree) {
+						if (popCount > 0) {
+							XElement element = (XElement) context.Nodes.Pop ();
+							if (context.BuildTree)
+								element.Close (ct);
+						} else {
+							context.LogError (
+								"Closing tag '" + ct.Name.FullName + "' does not match any currently open tag.");
+						}
+					} else {
+						context.Nodes.Pop ();
+					}
+					
+				} else {
+					context.LogError ("Closing tag ended prematurely.");
+				}
 				return Parent;
 			}
 			
 			if (c == '<') {
+				context.LogError ("Unexpected '<' in tag.");
 				reject = true;
 				return Parent;
 			}
 			
-			if (position == StartLocation + 1 && char.IsLetter (c)) {
+			if (!ct.IsNamed && (char.IsLetter (c) || c == '_')) {
 				reject = true;
-				name = new XmlTagNameState (this, position);
-				return name;
+				return NameState;
 			}
 			
 			reject = true;
-			return new XmlMalformedTagState (this, position);
+			context.LogError ("Unexpected character '" + c + "' in closing tag.");
+			return MalformedTagState;
 		}
-		
-		public IXmlName Name {
-			get { return name; }
-		}
-		
-		public IEnumerable<XmlTagState> TagParents {
-			get {
-				foreach (State s in ParentStack) {
-					XmlTagState ts = s as XmlTagState;
-					if (ts != null)
-						yield return ts;
-				}
-			}
-		}
-		
-		public override string ToString ()
-		{
-			return string.Format ("[XmlClosingTag({0})]", name != null? name.ToString () : string.Empty);
-		}
-		
-		#region Cloning API
-		
-		public override State ShallowCopy ()
-		{
-			return new XmlClosingTagState (this);
-		}
-		
-		protected XmlClosingTagState (XmlClosingTagState copyFrom) : base (copyFrom)
-		{
-			if (copyFrom.name != null)
-				name = (XmlTagNameState) copyFrom.name.ShallowCopy ();
-		}
-		
-		#endregion
-
 	}
 }

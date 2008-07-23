@@ -25,19 +25,19 @@ FILES =  \
 	gtk-gui/generated.cs \
 	gtk-gui/MonoDevelop.XmlEditor.Gui.XmlEditorOptionsPanelWidget.cs \
 	gtk-gui/MonoDevelop.XmlEditor.Gui.XmlSchemasPanelWidget.cs \
-	MonoDevelop.Xml.StateEngine/CDataState.cs \
 	MonoDevelop.Xml.StateEngine/Parser.cs \
 	MonoDevelop.Xml.StateEngine/State.cs \
 	MonoDevelop.Xml.StateEngine/XDom.cs \
 	MonoDevelop.Xml.StateEngine/XmlAttributeState.cs \
 	MonoDevelop.Xml.StateEngine/XmlAttributeValueState.cs \
+	MonoDevelop.Xml.StateEngine/XmlCDataState.cs \
 	MonoDevelop.Xml.StateEngine/XmlClosingTagState.cs \
 	MonoDevelop.Xml.StateEngine/XmlCommentState.cs \
+	MonoDevelop.Xml.StateEngine/XmlDocTypeState.cs \
 	MonoDevelop.Xml.StateEngine/XmlFreeState.cs \
 	MonoDevelop.Xml.StateEngine/XmlMalformedTagState.cs \
+	MonoDevelop.Xml.StateEngine/XmlNameState.cs \
 	MonoDevelop.Xml.StateEngine/XmlProcessingInstructionState.cs \
-	MonoDevelop.Xml.StateEngine/XmlSpecialTagState.cs \
-	MonoDevelop.Xml.StateEngine/XmlTagNameState.cs \
 	MonoDevelop.Xml.StateEngine/XmlTagState.cs \
 	MonoDevelop.XmlEditor.Completion/ClosingBracketCompletionDataProvider.cs \
 	MonoDevelop.XmlEditor.Completion/EmptyXmlCompletionProvider.cs \
@@ -96,7 +96,7 @@ $(DATA_FILE_BUILD): $(srcdir)$(subst $(ADDIN_BUILD),, $@)
 
 $(ASSEMBLY): $(FILES) $(build_resources) $(top_builddir)/build/AddIns/MonoDevelop.SourceEditor2.dll
 	mkdir -p $(ADDIN_BUILD)
-	$(CSC) $(CSC_FLAGS) $(REFS) $(build_resources:%=/resource:%) $(build_sources) -out:$@ -target:library
+	$(CSC) $(CSC_FLAGS) $(REFS) $(build_resources:%=/resource:%) $(build_sources) -out:$@ -target:library -define:DEBUG
 
 assemblydir = $(MD_ADDIN_DIR)/MonoDevelop.XmlEditor
 assembly_DATA = $(ASSEMBLY) $(ASSEMBLY).mdb

@@ -237,19 +237,15 @@ namespace MonoDevelop.AspNet.Parser
 			
 			//find a variant that doesn't match an existing prefix
 			string trialPrefix = new string (charr);
-			int trialSuffix = 1;
 			string trial = trialPrefix;
-			bool foundMatch = false;
-			do {
-				foundMatch = false;
-				foreach (RegisterDirective r in GetDirectivesForPrefix (trial)) {
-					foundMatch = true;
-					trialSuffix++;
-					trial = trialPrefix + trialSuffix;
-					break;
-				}
-			} while (foundMatch);
-			return trial;
+			
+			for (int trialSuffix = 1; trialSuffix < int.MaxValue; trialSuffix++) {
+				using (IEnumerator<RegisterDirective> en = GetDirectivesForPrefix (trial).GetEnumerator())
+					if (!en.MoveNext ())
+						return trial;
+				trial = trialPrefix + trialSuffix;
+			}
+			throw new InvalidOperationException ("Ran out of integer suffixes for tag prefixes");
 		}
 		
 		string ExprToStr (System.CodeDom.CodeExpression expr)

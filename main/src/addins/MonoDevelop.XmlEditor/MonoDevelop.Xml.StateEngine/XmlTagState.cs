@@ -27,6 +27,7 @@
 //
 
 using System;
+using System.Diagnostics;
 
 namespace MonoDevelop.Xml.StateEngine
 {
@@ -34,114 +35,102 @@ namespace MonoDevelop.Xml.StateEngine
 	
 	public class XmlTagState : State
 	{
-		XmlTagNameState name;
-		bool closing = false;
-		State closingTag;
+		XmlAttributeState AttributeState;
+		XmlNameState NameState;
+		XmlMalformedTagState MalformedTagState;
 		
-		public XmlTagState (State parent, int position)
-			: base (parent, position)
-		{
-		}	
+		public XmlTagState () : this (new XmlAttributeState ()) {}
 		
-		public override State PushChar (char c, int position, out bool reject)
+		public XmlTagState  (XmlAttributeState attributeState)
+			: this (attributeState, new XmlNameState ()) {}
+		
+		public XmlTagState  (XmlAttributeState attributeState, XmlNameState nameState)
+			: this (attributeState, nameState, new XmlMalformedTagState ()) {}
+		
+		public XmlTagState (XmlAttributeState attributeState, XmlNameState nameState,
+			XmlMalformedTagState malformedTagState)
 		{
-			if (name == null) {
-				reject = true;
-				name = new XmlTagNameState (this, position);
-				return name;
-			}
+			this.AttributeState = attributeState;
+			this.NameState = nameState;
+			this.MalformedTagState = malformedTagState;
 			
+			Adopt (this.AttributeState);
+			Adopt (this.NameState);
+			Adopt (this.MalformedTagState);
+		}
+		
+		const int SELFCLOSING = 1;
+		
+		public override State PushChar (char c, IParseContext context, ref bool reject)
+		{
 			if (c == '<') {
-				//FIXME: warning
+				context.LogError ("Unexpected '<' in tag.");
 				reject = true;
-				if (EndLocation < 0)
-					Close (position);
 				return Parent;
 			}
 			
-			if (c == '>') {
-				if (EndLocation < 0)
-					Close (position);
-				if (closing) {
-					reject = true;
-					return Parent;
+			XElement element = context.Nodes.Peek () as XElement;
+			
+			if (element == null || element.IsComplete) {
+				Debug.Assert (context.CurrentStateLength == 1,
+					"IncompleteNode must not be an XClosingTag when CurrentStateLength is 1");
+				Debug.Assert (c == '/', "First character pushed to a XmlClosingTagState must be '/'");
+				Debug.Assert (context.Nodes.Peek () is XElement);
+				
+				element = new XElement (context.Position - 1);
+				context.Nodes.Push (element);
+			}
+			
+			Debug.Assert (!element.IsComplete);
+			
+			if (element.IsClosed && c != '>') {
+				if (char.IsWhiteSpace (c)) {
+					context.LogWarning ("Unexpected whitespace after '/' in self-closing tag.");
+					return null;
 				} else {
-					reject = false;
-					return new XmlFreeState (this, position);
+					context.LogError ("Unexpected character '" + c + "' after '/' in self-closing tag.");
+					return MalformedTagState;
+				}
+			}
+			
+			//if tag closed
+			if (c == '>') {
+				//have already checked that element is not null, i.e. top of stack is our element
+				if (element.IsClosed)
+					context.Nodes.Pop ();
+				
+				if (!element.IsNamed) {
+					context.LogError ("Tag closed prematurely.");
+				} else {
+					element.End (context.Position);
+					if (context.BuildTree) {
+						XContainer container = (XContainer) context.Nodes.Peek (1);
+						container.AddChildNode (element);
+					}
+				}
+				return Parent;
+			}
+			
+			if (char.IsLetter (c) || c == '_') {
+				reject = true;
+				if (!element.IsNamed) {
+					return NameState;
+				} else {
+					return AttributeState;
 				}
 			}
 			
 			if (c == '/') {
-				reject = false;
-				ClosingTag = this;
-				closing = true;
+				element.Close (element);
 				return null;
 			}
 			
-			if (char.IsWhiteSpace (c)) {
-				reject = false;
+			if (char.IsWhiteSpace (c))
 				return null;
-			} else if (closing) {
-				reject = true;
-				return new XmlMalformedTagState (this, position);
-			}
 			
-			if (char.IsLetter (c)) {
-				reject = true;
-				return new XmlAttributeState (this, position);
-			}
-			
-			//FIXME: should we be strict about this?
 			reject = true;
-			return new XmlMalformedTagState (this, position);
+			context.LogError ("Unexpected character '" + c + "' in tag.");
+			return MalformedTagState;
 		}
-		
-		public bool Closing {
-			get { return closing; }
-			set {
-#if DEBUG
-				if (!value || closing)
-					throw new InvalidOperationException ("The tag can only be closed once");
-#endif
-				closing = value;
-			}
-		}
-		
-		public State ClosingTag {
-			get { return closingTag; }
-			set {
-#if DEBUG
-				if (closingTag != null)
-					throw new InvalidOperationException ("The closing tag has already been assigned");
-#endif
-				closingTag = value;
-			}
-		}
-		
-		public IXmlName Name {
-			get { return name; }
-		}
-
-		public override string ToString ()
-		{
-			return string.Format ("[XmlTag({0})]", name != null? name.FullName.ToString () : string.Empty);
-		}
-		
-		#region Cloning API
-		
-		public override State ShallowCopy ()
-		{
-			return new XmlTagState (this);
-		}
-		
-		protected XmlTagState (XmlTagState copyFrom) : base (copyFrom)
-		{
-			if (copyFrom.name != null)
-				name = (XmlTagNameState) copyFrom.name.ShallowCopy ();
-			closing = copyFrom.closing;
-		}
-		
-		#endregion
-		
 	}
 }

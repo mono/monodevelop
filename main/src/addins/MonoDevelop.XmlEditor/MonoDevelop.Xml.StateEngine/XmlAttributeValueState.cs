@@ -34,74 +34,65 @@ namespace MonoDevelop.Xml.StateEngine
 	
 	public class XmlAttributeValueState : State
 	{
-		char startChar;
-		bool done;
-
-		public XmlAttributeValueState (XmlAttributeState parent, int position)
-			: base (parent, position)
+		const int NOTSET = 0;
+		const int UNDELIMITED = 1;
+		const int SINGLEQUOTE = 2;
+		const int DOUBLEQUOTE = 3;
+		
+		public override State PushChar (char c, IParseContext context, ref bool reject)
 		{
-		}
-
-		public override State PushChar (char c, int position, out bool reject)
-		{
-			if (c == '<' || done) {
+			XAttribute att = (XAttribute) context.Nodes.Peek ();
+			System.Diagnostics.Debug.Assert (att.Value == null);
+			
+			if (context.CurrentStateLength == 1) {
+				System.Diagnostics.Debug.Assert (context.KeywordBuilder.Length == 0);
+				if (c == '"') {
+					context.StateTag = DOUBLEQUOTE;
+					return null;
+				} else if (c == '\'') {
+					context.StateTag = SINGLEQUOTE;
+					return null;
+				} else if (char.IsLetterOrDigit (c) || c == '_') {
+					context.LogWarning ("Unquoted attribute value");
+					context.StateTag = UNDELIMITED;
+				} else {
+					context.LogWarning ("Unexpected character '" + c + "' getting attribute value");
+					reject = true;
+					return Parent;
+				}
+			}
+			
+			if (c == '<') {
+				context.LogError  ("Attribute value ended unexpectedly.");
 				reject = true;
-				Close (position);
+				return this.Parent;
+			}
+			
+			//special handling for "undelimited" values
+			if (context.StateTag == UNDELIMITED) {
+				if (char.IsLetterOrDigit (c) || c == '_' || c == '.') {
+					context.KeywordBuilder.Append (c);
+					return null;
+				} else if (char.IsWhiteSpace (c) || c == '>' || c == '\\') {
+					att.Value = context.KeywordBuilder.ToString ();
+				} else {
+					context.LogWarning ("Unexpected character '" + c + "' getting attribute value");
+				}
+				reject = true;
 				return Parent;
 			}
 			
-			reject = false;
-			
-			if (position == StartLocation) {
-				if (c == '\'' || c == '"' || char.IsLetterOrDigit (c)) {
-					startChar = c;
-					return null;
-				} else {
-					throw new InvalidOperationException ("The first char passed to a XmlAttributeValue must be a single or double quote, ot a letter or digit.");
-				}
+			//ending the value
+			if ((c == '"' && context.StateTag == DOUBLEQUOTE)  ||
+				(c == '\'' && context.StateTag == SINGLEQUOTE) ||
+				(char.IsWhiteSpace (c) && context.StateTag == UNDELIMITED))
+			{
+				att.Value = context.KeywordBuilder.ToString ();
+				return Parent;
 			}
 			
-			switch (startChar) {
-			case '"':
-			case '\'':
-				if (c == startChar)
-					done = true;
-				break;
-			default:
-				if (!char.IsLetterOrDigit (c)) {
-					done = true;
-				}
-				break;
-			}
+			context.KeywordBuilder.Append (c);
 			return null;
 		}
-		
-		public string AttributeName {
-			get { return ((XmlAttributeState)Parent).Name; }
-		}
-		
-		public IXmlName TagName {
-			get { return ((XmlAttributeState)Parent).TagName; }
-		}
-
-		public override string ToString ()
-		{
-			return "[XmlAttributeValue]";
-		}
-		
-		#region Cloning API
-		
-		public override State ShallowCopy ()
-		{
-			return new XmlAttributeValueState (this);
-		}
-		
-		protected XmlAttributeValueState (XmlAttributeValueState copyFrom) : base (copyFrom)
-		{
-			startChar = copyFrom.startChar;
-			done = copyFrom.done;
-		}
-		
-		#endregion
 	}
 }

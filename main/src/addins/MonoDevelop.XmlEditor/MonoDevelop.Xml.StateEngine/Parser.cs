@@ -34,84 +34,242 @@ using MonoDevelop.Ide.Gui.Content;
 
 namespace MonoDevelop.Xml.StateEngine
 {
-	public class Parser<T> : IDocumentStateEngine
-		where T : State, new ()
+	public class Parser : IDocumentStateEngine, IParseContext
 	{
+		RootState rootState;
 		State currentState;
+		bool buildTree;
+		
 		int position;
-
-		public Parser ()
+		int stateTag;
+		StringBuilder keywordBuilder;
+		int currentStateLength;
+		NodeStack nodes;
+		List<Error> errors;
+		
+		public Parser (RootState rootState, bool buildTree)
 		{
-			position = 0;
-			currentState = new T ();
+			this.rootState = rootState;
+			this.currentState = rootState;
+			this.buildTree = buildTree;
+			Reset ();
 		}
 		
-		private Parser (Parser<T> old)
+		Parser (Parser copyFrom)
 		{
-			currentState = old.CurrentState.StackCopy ();
-			position = old.position;
+			System.Console.WriteLine("CLONED");
+			buildTree = false;
+			
+			rootState = copyFrom.rootState;
+			currentState = copyFrom.currentState;
+			
+			position = copyFrom.position;
+			stateTag = copyFrom.stateTag;
+			keywordBuilder = copyFrom.keywordBuilder;
+			currentStateLength = copyFrom.currentStateLength;
+			nodes = new NodeStack (CopyXObjects (copyFrom.nodes.ToArray ()));
 		}
 		
-		public State CurrentState {
-			get { return currentState; }
+		IEnumerable<XObject> CopyXObjects (IEnumerable<XObject> src)
+		{
+			foreach (XObject o in src)
+				yield return o.ShallowCopy ();
 		}
 		
-		public int Position {
-			get { return position; }
-		}
+		#region IDocumentStateEngine
+		
+		public int Position { get { return position; } }
 		
 		public void Reset ()
 		{
+			currentState = rootState;
 			position = 0;
-			currentState = new T ();
+			stateTag = 0;
+			keywordBuilder = new StringBuilder ();
+			currentStateLength = 0;
+			nodes = new NodeStack ();
+			nodes.Push (rootState.CreateDocument ());
+			
+			if (buildTree)
+				errors = new List<Error> ();
+			else
+				errors = null;
 		}
 
 		public void Push (char c)
 		{
-			position++;
-			
-			State newState = null;
-			
-			int loopLimit = 200;
-			do {
-				System.Diagnostics.Debug.Assert (currentState != null);
-				
-				bool reject;
-				newState = currentState.PushChar (c, position, out reject);
-				
-				if (newState == currentState) {
-					newState = null;
-				} else if (newState != null) {
-					currentState = newState;
+			try {
+				position++;
+				for (int loopLimit = 0; loopLimit < 100; loopLimit++) {
+					currentStateLength++;
+					bool reject = false;
+					State nextState = currentState.PushChar (c, this, ref reject);
+					
+					// no state change
+					if (nextState == currentState || nextState == null)
+						return;
+					
+					// state changed; reset stuff
+					currentState = nextState;
+					stateTag = 0;
+					currentStateLength = 0;
+					if (keywordBuilder.Length < 50)
+						keywordBuilder.Length = 0;
+					else
+						keywordBuilder = new StringBuilder ();
+					
+					
+					// only loop if the same char should be run through the new state
+					if (!reject)
+						return;
 				}
-				
-				if (!reject)
-					break;
-				
-				loopLimit--;
-				if (loopLimit <= 0)
-					throw new InvalidOperationException ("Too many state changes for char '" + c +"'. Current state is " + currentState.ToString () + ".");
-				
-			} while (newState != null);
-		}
-		
-		public override string ToString ()
-		{
-			StringBuilder builder = new StringBuilder ();
-			builder.AppendFormat ("[Parser Location={0} Stack=", position);
-			State s = currentState;
-			while (s != null) {
-				builder.Append ("\n\t");
-				builder.Append (s.ToString ());
-				s = s.Parent;
+				throw new InvalidOperationException ("Too many state changes for char '" + c + "'. Current state is " + currentState.ToString () + ".");
+			} catch (Exception ex) {
+				MonoDevelop.Core.LoggingService.LogDebug (ToString ());
+				throw;
 			}
-			builder.Append ("\n]");
-			return builder.ToString ();
 		}
 		
 		object ICloneable.Clone ()
 		{
-			return new Parser<T> (this);
+			if (buildTree)
+				throw new InvalidOperationException ("Parser can only be cloned when in stack mode");
+			return new Parser (this);
+		}
+		
+		#endregion
+		
+		public override string ToString ()
+		{
+			StringBuilder builder = new StringBuilder ();
+			builder.AppendFormat ("[Parser Location={0} CurrentStateLength={1}", position, currentStateLength);
+			builder.AppendLine ();
+			
+			builder.Append (' ', 2);
+			builder.AppendLine ("Stack=");
+			
+			XObject rootOb = null;
+			foreach (XObject ob in nodes) {
+				rootOb = ob;
+				builder.Append (' ', 4);
+				builder.Append (ob.ToString ());
+				builder.AppendLine ();
+			}
+			
+			builder.Append (' ', 2);
+			builder.AppendLine ("States=");
+			State s = currentState;
+			while (s != null) {
+				builder.Append (' ', 4);
+				builder.Append (s.ToString ());
+				builder.AppendLine ();
+				s = s.Parent;
+			}
+			
+			if (buildTree && rootOb != null) {
+				builder.Append (' ', 2);
+				builder.AppendLine ("Tree=");
+				rootOb.BuildTreeString (builder, 3);
+			}
+			
+			builder.AppendLine ("]");
+			return builder.ToString ();
+		}
+		
+		#region IParseContext
+				
+		int IParseContext.StateTag {
+			get { return stateTag; }
+			set { stateTag = value; }
+		}
+		
+		StringBuilder IParseContext.KeywordBuilder {
+			get { return keywordBuilder; }
+		}
+		
+		public int CurrentStateLength { get { return currentStateLength; } }
+		public NodeStack Nodes { get { return nodes; } }
+		
+		public bool BuildTree { get { return buildTree; } }
+		
+		void IParseContext.LogError (string message)
+		{
+			Error err = new Error (Position, message, ErrorSeverity.Error);
+			System.Console.WriteLine (err.ToString ());
+			if (errors != null)
+				errors.Add (err);
+			Console.WriteLine (ToString ());
+		}
+		
+		void IParseContext.LogWarning (string message)
+		{
+			Error err = new Error (Position, message, ErrorSeverity.Warning);
+			System.Console.WriteLine (err.ToString ());
+			if (errors != null)
+				errors.Add (err);
+			Console.WriteLine (ToString ());
+		}
+		
+		#endregion
+		
+		public State CurrentState { get { return currentState; } }
+	}
+	
+	public interface IParseContext
+	{
+		int StateTag { get; set; }
+		StringBuilder KeywordBuilder { get; }
+		int CurrentStateLength { get; }
+		int Position { get; }
+		NodeStack Nodes { get; }
+		bool BuildTree { get; }
+		void LogError (string message);
+		void LogWarning (string message);
+	}
+	
+	//NOTE: this is immutable so that collections of it can be cloned safely
+	public class Error
+	{
+		int position;
+		string message;
+		public ErrorSeverity severity;
+		
+		public Error (int position, string message, ErrorSeverity severity)
+		{
+			this.position = position;
+			this.message = message;
+			this.severity = severity;
+		}
+		
+		public int Position { get { return position; } }
+		public string Message { get { return message; } }
+		public ErrorSeverity Severity { get { return severity; } }
+		
+		public override string ToString ()
+		{
+			return string.Format ("[{0}@{1}: {2}]", severity, position, message);
+		}
+	}
+	
+	public enum ErrorSeverity {
+		Error,
+		Warning
+	}
+	
+	public class NodeStack : Stack<XObject>
+	{
+		public NodeStack (IEnumerable<XObject> collection) : base (collection) {}
+		public NodeStack () {}
+		
+		public XObject Peek (int down)
+		{
+			int i = 0;
+			foreach (XObject o in this) {
+				if (i == down)
+					return o;
+				i++;
+			}
+			return null;
 		}
 	}
 }

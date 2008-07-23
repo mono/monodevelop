@@ -34,15 +34,17 @@ using System.Collections.Generic;
 namespace MonoDevelop.Ide.Gui.Content
 {
 	
-	public class DocumentStateTracker<T> where T : IDocumentStateEngine, new()
+	public class DocumentStateTracker<T> where T : IDocumentStateEngine
 	{
-		T currentEngine = new T ();
+		T currentEngine;
 		Stack<T> cachedEngines = new Stack<T> ();
+		Stack<Indent> indents = new Stack<Indent> ();
 		
 		MonoDevelop.Ide.Gui.TextEditor editor;
 		
-		public DocumentStateTracker (MonoDevelop.Ide.Gui.TextEditor editor)
+		public DocumentStateTracker (T engine, MonoDevelop.Ide.Gui.TextEditor editor)
 		{
+			this.currentEngine = engine;
 			this.editor = editor;
 			editor.TextChanged += textChanged;
 		}

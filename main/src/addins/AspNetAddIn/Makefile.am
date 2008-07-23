@@ -81,7 +81,6 @@ FILES =  \
 	MonoDevelop.AspNet.Parser/SuggestedHandlerCompletionData.cs \
 	MonoDevelop.AspNet.Parser/WebFormReferenceManager.cs \
 	MonoDevelop.AspNet.StateEngine/AspNetFreeState.cs \
-	MonoDevelop.AspNet.StateEngine/AspNetSpecialState.cs \
 	MonoDevelop.AspNet/AspNetAppProject.cs \
 	MonoDevelop.AspNet/AspNetAppProjectBinding.cs \
 	MonoDevelop.AspNet/AspNetAppProjectConfiguration.cs \

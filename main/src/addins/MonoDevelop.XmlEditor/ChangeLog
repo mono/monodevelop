@@ -1,3 +1,27 @@
+2008-07-23  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Xml.StateEngine/XmlClosingTagState.cs,
+	  MonoDevelop.Xml.StateEngine/State.cs,
+	  MonoDevelop.Xml.StateEngine/XmlAttributeValueState.cs,
+	  MonoDevelop.Xml.StateEngine/XmlCommentState.cs,
+	  MonoDevelop.Xml.StateEngine/XmlMalformedTagState.cs,
+	  MonoDevelop.Xml.StateEngine/XmlAttributeState.cs,
+	  MonoDevelop.Xml.StateEngine/XmlDocTypeState.cs,
+	  MonoDevelop.Xml.StateEngine/Parser.cs,
+	  MonoDevelop.Xml.StateEngine/XmlTagState.cs,
+	  MonoDevelop.Xml.StateEngine/XmlCDataState.cs,
+	  MonoDevelop.Xml.StateEngine/XmlProcessingInstructionState.cs,
+	  MonoDevelop.Xml.StateEngine/XmlNameState.cs,
+	  MonoDevelop.Xml.StateEngine/XmlFreeState.cs: New XML parser.
+	  Currently only used (in subclassed form) by ASP.NET code completion
+	  engine.
+	* MonoDevelop.Xml.StateEngine/CDataState.cs,
+	  MonoDevelop.Xml.StateEngine/XmlSpecialTagState.cs,
+	  MonoDevelop.Xml.StateEngine/XmlTagNameState.cs: Removed/renamed.
+	* MonoDevelop.Xml.StateEngine/XDom.cs: Minimalistic XML DOM used by new
+	  XML parser. Modelled after System.Xml.Linq
+	* gtk-gui/objects.xml, Makefile.am, MonoDevelop.XmlEditor.mdp: Updated.
+
 2008-06-26  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Xml.StateEngine/Parser.cs: Remove debug code.

@@ -34,45 +34,33 @@ namespace MonoDevelop.Xml.StateEngine
 {
 	public class XmlCommentState : State
 	{
-		char backOne;
-		char backTwo;
-
-		public XmlCommentState (State parent, int position)
-			: base (parent, position)
+		const int NOMATCH = 0;
+		const int SINGLE_DASH = 1;
+		const int DOUBLE_DASH = 2;
+		
+		public override State PushChar (char c, IParseContext context, ref bool reject)
 		{
-		}
-
-		public override State PushChar (char c, int position, out bool reject)
-		{
-			reject = false;
-			if (c == '>' && backOne == '-' && backTwo == '-') {
-				Close (position);
+			if (c == '-') {
+				//make sure we know when there are two '-' chars together
+				if (context.StateTag == NOMATCH)
+					context.StateTag = SINGLE_DASH;
+				else
+					context.StateTag = DOUBLE_DASH;
+				
+			} else if (c == '>' && context.StateTag == DOUBLE_DASH) {
+				// if the '--' is followed by a '>', the state has ended
+				// so attach a node to the DOM and end the state
+				if (context.BuildTree) {
+					int start = context.Position - (context.CurrentStateLength + 4); // <!-- is 4 chars
+					((XContainer) context.Nodes.Peek ()).AddChildNode (new XComment (start, context.Position));
+				}
 				return Parent;
+			} else {
+				// not any part of a '-->', so make sure matching is reset
+				context.StateTag = NOMATCH;
 			}
 			
-			backTwo = backOne;
-			backOne = c;
 			return null;
 		}
-
-		public override string ToString ()
-		{
-			return "[XmlComment]";
-		}
-		
-		#region Cloning API
-		
-		public override State ShallowCopy ()
-		{
-			return new XmlCommentState (this);
-		}
-		
-		protected XmlCommentState (XmlCommentState copyFrom) : base (copyFrom)
-		{
-			backOne = copyFrom.backOne;
-			backTwo = copyFrom.backTwo;
-		}
-		
-		#endregion
 	}
 }

@@ -1,5 +1,5 @@
 // 
-// AspNetSpecialState.cs
+// XmlCDataState.cs
 // 
 // Author:
 //   Michael Hutchinson <mhutchinson@novell.com>
@@ -27,60 +27,40 @@
 //
 
 using System;
+using System.Collections.Generic;
+using System.Text;
 
-using MonoDevelop.Xml.StateEngine;
-
-namespace MonoDevelop.AspNet.StateEngine
+namespace MonoDevelop.Xml.StateEngine
 {
-	
-	
-	public class AspNetSpecialState : State
+	public class XmlCDataState : State
 	{
+		const int NOMATCH = 0;
+		const int SINGLE_BRACKET = 1;
+		const int DOUBLE_BRACKET = 2;
 		
-		Kind mode = Kind.Undetermined;
-		
-		public AspNetSpecialState (State parent, int position)
-			: base (parent, position)
+		public override State PushChar (char c, IParseContext context, ref bool reject)
 		{
-		}
-		
-		public override State PushChar (char c, int position, out bool reject)
-		{
-			reject = true;
-			int index = position - StartLocation;
-			
-			if (c == '<' || c == '>')
+			if (c == ']') {
+				//make sure we know when there are two ']' chars together
+				if (context.StateTag == NOMATCH)
+					context.StateTag = SINGLE_BRACKET;
+				else
+					context.StateTag = DOUBLE_BRACKET;
+				
+			} else if (c == '>' && context.StateTag == DOUBLE_BRACKET) {
+				// if the ']]' is followed by a '>', the state has ended
+				// so attach a node to the DOM and end the state
+				if (context.BuildTree) {
+					int start = context.Position - (context.CurrentStateLength + 9); // <![CDATA[ is 9 chars
+					((XContainer) context.Nodes.Peek ()).AddChildNode (new XCData (start, context.Position));
+				}
 				return Parent;
+			} else {
+				// not any part of a ']]>', so make sure matching is reset
+				context.StateTag = NOMATCH;
+			}
 			
-			return new XmlMalformedTagState (this, position);
+			return null;
 		}
-		
-		enum Kind {
-			Undetermined,
-			RenderExpression,
-			RenderBlock,
-			DatabindingExpression,
-			ResourceExpression,
-			ServerComment
-		}
-
-		public override string ToString ()
-		{
-			return string.Format ("[AspNetSpecial]");
-		}
-		
-		#region Cloning API
-		
-		public override State ShallowCopy ()
-		{
-			return new AspNetSpecialState (this);
-		}
-		
-		protected AspNetSpecialState (AspNetSpecialState copyFrom) : base (copyFrom)
-		{
-			mode = copyFrom.mode;
-		}
-		
-		#endregion
 	}
 }

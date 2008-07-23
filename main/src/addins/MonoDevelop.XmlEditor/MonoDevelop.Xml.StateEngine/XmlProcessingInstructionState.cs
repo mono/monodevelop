@@ -34,42 +34,30 @@ namespace MonoDevelop.Xml.StateEngine
 	
 	public class XmlProcessingInstructionState : State
 	{
+		const int NOMATCH = 0;
+		const int QUESTION = 1;
 		
-		char backOne;
-		
-		public XmlProcessingInstructionState (State parent, int position)
-			: base (parent, position)
+		public override State PushChar (char c, IParseContext context, ref bool reject)
 		{
-		}
-		
-		public override State PushChar (char c, int position, out bool reject)
-		{
-			reject = false;
-			if (c == '>' && backOne == '?') {
-				Close (position);
+			if (c == '?') {
+				if (context.StateTag == NOMATCH) {
+					context.StateTag = QUESTION;
+					return null;
+				}
+			} else if (c == '>' && context.StateTag == QUESTION) {
+				// if the '?' is followed by a '>', the state has ended
+				// so attach a node to the DOM and end the state
+				if (context.BuildTree) {
+					int start = context.Position - (context.CurrentStateLength + 2); // <? is 2 chars
+					((XContainer) context.Nodes.Peek ()).AddChildNode (
+						new XProcessingInstruction (start, context.Position));
+				}
 				return Parent;
+			} else {
+				context.StateTag = NOMATCH;
 			}
-			backOne = c;
+			
 			return null;
 		}
-
-		public override string ToString ()
-		{
-			return "[XmlProcessingInstruction]";
-		}
-		
-		#region Cloning API
-		
-		public override State ShallowCopy ()
-		{
-			return new XmlProcessingInstructionState (this);
-		}
-		
-		protected XmlProcessingInstructionState (XmlProcessingInstructionState copyFrom) : base (copyFrom)
-		{
-			backOne = copyFrom.backOne;
-		}
-		
-		#endregion
 	}
 }

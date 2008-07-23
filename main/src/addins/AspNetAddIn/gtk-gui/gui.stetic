@@ -10,6 +10,7 @@
     <widget-library name="../../../../build/AddIns/MonoDevelop.Deployment/MonoDevelop.Deployment.dll" />
     <widget-library name="../../../../build/bin/MonoDevelop.Projects.Gui.dll" />
     <widget-library name="../../../../build/AddIns/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor.dll" />
+    <widget-library name="../../../../build/AddIns/MonoDevelop.AspNet/MonoDevelop.AspNet.dll" internal="true" />
   </import>
   <widget class="Gtk.Bin" id="MonoDevelop.AspNet.Gui.AspNetConfigurationPanelWidget" design-size="449 300">
     <property name="MemberName" />

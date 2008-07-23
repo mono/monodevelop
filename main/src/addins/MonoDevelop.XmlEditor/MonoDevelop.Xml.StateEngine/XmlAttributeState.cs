@@ -28,6 +28,7 @@
 
 using System;
 using System.Text;
+using System.Diagnostics;
 
 namespace MonoDevelop.Xml.StateEngine
 {
@@ -35,121 +36,92 @@ namespace MonoDevelop.Xml.StateEngine
 	
 	public class XmlAttributeState : State
 	{
-		StringBuilder nameBuilder;
-		string name;
-		Mode mode = Mode.Naming;
+		XmlNameState XmlNameState;
+		XmlAttributeValueState XmlAttributeValueState;
 		
-		public XmlAttributeState (XmlTagState parent, int position)
-			: base (parent, position)
+		const int NAMING = 0;
+		const int GETTINGEQ = 1;
+		const int GETTINGVAL = 2;
+		
+		public XmlAttributeState ()
+			: this (new XmlNameState (), new XmlAttributeValueState ())
+		{}
+		
+		public XmlAttributeState (XmlNameState nameState, XmlAttributeValueState valueState)
 		{
-			nameBuilder = new StringBuilder ();
+			this.XmlNameState = nameState;
+			this.XmlAttributeValueState = valueState;
+			Adopt (this.XmlNameState);
+			Adopt (this.XmlAttributeValueState);
 		}
 
-		public override State PushChar (char c, int position, out bool reject)
+		public override State PushChar (char c, IParseContext context, ref bool reject)
 		{
-			if (c == '<' || c == '>') {
+			XAttribute att = context.Nodes.Peek () as XAttribute;
+			
+			if (c == '<') {
+				context.LogError ("Attribute ended unexpectedly with '<' character.");
+				if (att != null)
+					context.Nodes.Pop ();
 				reject = true;
-				Close (position);
 				return this.Parent;
 			}
 			
-			reject = false;
-			
-			switch (mode) {
-			case Mode.Naming:
-				if (position == StartLocation) {
-					if (char.IsLetter (c)) {
-						nameBuilder.Append (c);
-						return null;
-					} else {
-						throw new InvalidOperationException ("The first char pushed onto an XmlAttributeState must be a letter.");
-					}
+			//state has just been entered
+			if (context.CurrentStateLength == 1)  {
+				
+				//starting a new attribute?
+				if (att == null) {
+					Debug.Assert (context.StateTag == NAMING);
+					att = new XAttribute (context.Position);
+					context.Nodes.Push (att);
+					reject = true;
+					return XmlNameState;
 				} else {
-					if (char.IsLetterOrDigit (c) || c == ':') {
-						nameBuilder.Append (c);
-						return null;
-						
-					} else if (char.IsWhiteSpace (c)) {
-						mode = Mode.GettingEq;
-						name = nameBuilder.ToString ();
-						nameBuilder = null;
-						return null;
-						
-					} else if (c == '=') {
-						mode = Mode.GettingVal;
-						name = nameBuilder.ToString ();
-						nameBuilder = null;
-						return null;
+					Debug.Assert (att.IsNamed);
+					if (att.Value == null) {
+						context.StateTag = GETTINGEQ;
+					} else {
+						//Got value, so end attribute
+						context.Nodes.Pop ();
+						att.End (context.Position);
+						XElement element = (XElement) context.Nodes.Peek ();
+						element.Attributes.AddAttribute (att);
+						reject = true;
+						return Parent;
 					}
 				}
-				break;
-				
-			case Mode.GettingEq:
+			}
+			
+			if (c == '>') {
+				context.LogWarning ("Attribute ended unexpectedly with '>' character.");
+				if (att != null)
+					context.Nodes.Pop ();
+				reject = true;
+				return this.Parent;
+			}
+			
+			if (context.StateTag == GETTINGEQ) {
 				if (char.IsWhiteSpace (c)) {
 					return null;
 				} else if (c == '=') {
-					mode = Mode.GettingVal;
+					context.StateTag = GETTINGVAL;
 					return null;
 				}
-				break;
-				
-			case Mode.GettingVal:
+			} else if (context.StateTag == GETTINGVAL) {
 				if (char.IsWhiteSpace (c)) {
 					return null;
 				} else if (char.IsLetterOrDigit (c) || c== '\'' || c== '"') {
-					mode = Mode.GotVal;
 					reject = true;
-					return new XmlAttributeValueState (this, position);
+					return XmlAttributeValueState;
 				}
-				break;
-				
-			case Mode.GotVal:
-				return Parent;
 			}
 			
-			return new XmlMalformedTagState (this, position);
+			context.LogError ("Unexpected character '" + c + "' in attribute.");
+			if (att != null)
+				context.Nodes.Pop ();
+			reject = true;
+			return Parent;
 		}
-		
-		public string Name {
-			get {
-				if (nameBuilder != null)
-					return nameBuilder.ToString ();
-				else
-					return name?? string.Empty;
-			}
-		}
-		
-		public IXmlName TagName {
-			get { return ((XmlTagState)Parent).Name; }
-		}
-		
-		enum Mode {
-			Naming,
-			GettingEq,
-			GettingVal,
-			GotVal,
-		}
-
-		public override string ToString ()
-		{
-			return string.Format ("[XmlAttribute({0})]", Name);
-		}
-		
-		#region Cloning API
-		
-		public override State ShallowCopy ()
-		{
-			return new XmlAttributeState (this);
-		}
-		
-		protected XmlAttributeState (XmlAttributeState copyFrom) : base (copyFrom)
-		{
-			if (copyFrom.nameBuilder != null)
-				nameBuilder = new StringBuilder (copyFrom.nameBuilder.ToString ());
-			name = copyFrom.name;
-			mode = copyFrom.mode;
-		}
-		
-		#endregion
 	}
 }

@@ -34,40 +34,13 @@ namespace MonoDevelop.Xml.StateEngine
 	public class XmlMalformedTagState : State
 	{
 		
-		public XmlMalformedTagState (State parent, int position)
-			: base (parent, position)
-		{
-		}
-
-		public override State PushChar (char c, int position, out bool reject)
+		public override State PushChar (char c, IParseContext context, ref bool reject)
 		{
 			if (c == '<' || c == '>') {
 				reject = (c == '<');
-				Close (position);
-				return this.Parent;
+				return RootState;
 			}
-			
-			reject= false;
 			return null;
 		}
-
-		public override string ToString ()
-		{
-			return "[XmlMalformedTag]";
-		}
-		
-		#region Cloning API
-		
-		public override State ShallowCopy ()
-		{
-			return new XmlMalformedTagState (this);
-		}
-		
-		protected XmlMalformedTagState (XmlMalformedTagState copyFrom) : base (copyFrom)
-		{
-		}
-		
-		#endregion
-
 	}
 }

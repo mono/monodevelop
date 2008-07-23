@@ -87,7 +87,9 @@ namespace MonoDevelop.AspNet.Parser
 			else
 				region = new DefaultRegion (startLocation.BeginLine, startLocation.BeginColumn + 1, endLocation.EndLine, endLocation.EndColumn + 1);
 			
-			cu.FoldingRegions.Add (new FoldingRegion (name, region));
+			FoldingRegion f = new FoldingRegion (name, region);
+			f.DefaultIsFolded = false;
+			cu.FoldingRegions.Add (f);
 		}
 		
 		bool IsMultiLine (ILocation startLocation, ILocation endLocation)

@@ -1,6 +1,2 @@
-<objects>
-  <object type="MonoDevelop.AspNet.Deployment.WebDeployOptionsPanelWidget" allow-children="false" base-type="Gtk.Bin" palette-category="MonoDevelop.AspNet">
-    <itemgroups />
-    <signals />
-  </object>
+<objects attr-sync="on">
 </objects>

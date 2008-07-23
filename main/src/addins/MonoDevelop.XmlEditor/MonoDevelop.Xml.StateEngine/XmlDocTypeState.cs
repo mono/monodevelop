@@ -1,5 +1,5 @@
 // 
-// CDataState.cs
+// XmlDocTypeState.cs
 // 
 // Author:
 //   Michael Hutchinson <mhutchinson@novell.com>
@@ -32,47 +32,25 @@ using System.Text;
 
 namespace MonoDevelop.Xml.StateEngine
 {
-	public class CDataState : State
+	public class XmlDocTypeState : State
 	{
-		char backOne;
-		char backTwo;
-
-		public CDataState (State parent, int position)
-			: base (parent, position)
+		public override State PushChar (char c, IParseContext context, ref bool reject)
 		{
-		}
-		
-		public override State PushChar (char c, int position, out bool reject)
-		{
-			reject = false;
-			if (c == '>' && backOne == ']' && backTwo == ']') {
-				Close (position);
+			if (c == '>' || c == '<') {
+				if (c == '<') {
+					reject = true;
+					context.LogError ("Doctype ended prematurely.");
+				}
+				
+				if (context.BuildTree) {
+					int start = context.Position - (context.CurrentStateLength + 9); // <!DOCTYPE is 9 chars
+					((XContainer) context.Nodes.Peek ()).AddChildNode (new XDocType (start, context.Position)); 
+				}
 				return Parent;
 			}
-			backTwo = backOne;
-			backOne = c;
+			
 			return null;
 		}
-
-		public override string ToString ()
-		{
-			return "[CData]";
-		}
-		
-		#region Cloning API
-		
-		public override State ShallowCopy ()
-		{
-			return new CDataState (this);
-		}
-		
-		protected CDataState (CDataState copyFrom) : base (copyFrom)
-		{
-			backOne = copyFrom.backOne;
-			backTwo = copyFrom.backTwo;
-		}
-		
-		#endregion
-
 	}
 }
+

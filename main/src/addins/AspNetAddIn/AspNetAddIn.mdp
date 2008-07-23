@@ -1,4 +1,4 @@
-<Project name="MonoDevelop.AspNet" fileversion="2.0" language="C#" clr-version="Net_2_0" UseParentDirectoryAsNamespace="True" ctype="DotNetProject">
+<Project name="MonoDevelop.AspNet" fileversion="2.0" language="C#" UseParentDirectoryAsNamespace="True" clr-version="Net_2_0" ctype="DotNetProject">
   <Configurations active="Debug">
     <Configuration name="Debug" ctype="DotNetProjectConfiguration">
       <Output directory="../../../build/AddIns/MonoDevelop.AspNet" assembly="MonoDevelop.AspNet" />
@@ -111,7 +111,6 @@
     <File name="Schemas/W3C-License.html" subtype="Code" buildaction="FileCopy" />
     <File name="MonoDevelop.AspNet.Parser/SuggestedHandlerCompletionData.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.AspNet.StateEngine/AspNetFreeState.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.AspNet.StateEngine/AspNetSpecialState.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Html/HtmlCompletionDataProvider.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.AspNet/AspNetLanguageBinding.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.AspNet.Parser/AspNetParser.cs" subtype="Code" buildaction="Compile" />

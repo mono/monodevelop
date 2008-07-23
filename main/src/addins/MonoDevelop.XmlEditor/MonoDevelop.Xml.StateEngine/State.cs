@@ -27,6 +27,7 @@
 //
 
 using System;
+using System.Diagnostics;
 using System.Collections.Generic;
 using System.Text;
 
@@ -35,16 +36,6 @@ namespace MonoDevelop.Xml.StateEngine
 	public abstract class State
 	{
 		State parent;
-		int startLocation;
-		int endLocation = -1;
-
-		public State (State parent, int startLocation)
-		{
-			System.Diagnostics.Debug.Assert (parent != null || startLocation == 0);
-			System.Diagnostics.Debug.Assert (startLocation >= parent.StartLocation);
-			this.parent = parent;
-			this.startLocation = startLocation;
-		}
 
 		/// <summary>
 		/// When the <see cref="Parser"/> advances by one character, it calls this method 
@@ -57,67 +48,25 @@ namespace MonoDevelop.Xml.StateEngine
 		/// The next state. A new or parent <see cref="State"/> will change the parser state; 
 		/// the current state or <see cref="null"/> will not.
 		/// </returns>
-		public abstract State PushChar (char c, int location, out bool reject);
+		public abstract State PushChar (char c, IParseContext context, ref bool reject);
 
-		public State Parent {
-			get { return parent; }
-		}
-
-		public int StartLocation {
-			get { return startLocation; }
-		}
-
-		public int EndLocation
+		public State Parent { get { return parent; } }
+		
+		protected void Adopt (State child)
 		{
-			get { return endLocation; }
+			Debug.Assert (child.parent == null);
+			child.parent = this;
 		}
 		
-		public IEnumerable<State> ParentStack
-		{
+		public RootState RootState {
 			get {
-				State p = Parent;
-				while (p != null) {
-					yield return p;
-					p = p.Parent;
-				}
+				return (this as RootState) ?? parent.RootState;
 			}
 		}
-
-		protected void Close (int endLocation)
-		{
-#if DEBUG
-			if (this.endLocation != -1)
-				throw new InvalidOperationException ("The State has already been closed.");
-			if (endLocation < startLocation)
-				throw new InvalidOperationException ("The State cannot end before it starts.");
-#endif
-			this.endLocation = endLocation;
-		}
-		
-		#region Cloning API
-		
-		public State StackCopy ()
-		{
-			State copy = ShallowCopy ();
-			if (parent != null)
-				copy.parent = parent.StackCopy ();
-			
-			//check that the subclass has implemented the API fully
-			System.Diagnostics.Debug.Assert (copy.GetType () == this.GetType ());
-			System.Diagnostics.Debug.Assert (copy.startLocation == this.startLocation);
-			
-			return copy;
-		}
-		
-		//this should simply call the protected cloning constructor chain
-		public abstract State ShallowCopy ();
-		
-		protected State (State copyFrom)
-		{
-			startLocation = copyFrom.startLocation;
-			endLocation = copyFrom.endLocation;
-		}
-		
-		#endregion
+	}
+	
+	public abstract class RootState : State
+	{
+		public abstract XDocument CreateDocument ();
 	}
 }

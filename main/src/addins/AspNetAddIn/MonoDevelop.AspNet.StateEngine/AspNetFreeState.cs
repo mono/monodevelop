@@ -33,23 +33,16 @@ using MonoDevelop.Xml.StateEngine;
 namespace MonoDevelop.AspNet.StateEngine
 {
 	
-	
 	public class AspNetFreeState : XmlFreeState
 	{
-		
-		bool openTag;
-		
-		public AspNetFreeState ()
-			: base (null, 0)
-		{
-		}
-		
-		public AspNetFreeState (State parent, int position)
-			: base (parent, position)
-		{
-		}
-
-		public override State PushChar (char c, int location, out bool reject)
+		const int RENDER_EXPRESSION = 0;
+		const int RENDER_BLOCK = 1;
+		const int DATABINDING_EXPRESSION = 2;
+		const int RESOURCE_EXPRESSION = 3;
+		const int SERVER_COMMENT = 4;
+		const int DIRECTIVE = 5;
+/*
+		public override State PushChar (char c, IParseContext context, ref bool reject)
 		{
 			if (c == '<') {
 				reject = false;
@@ -83,25 +76,6 @@ namespace MonoDevelop.AspNet.StateEngine
 			
 			reject = false;
 			return null;
-		}
-
-		public override string ToString ()
-		{
-			return "[AspNetFree]";
-		}
-		
-		#region Cloning API
-		
-		public override State ShallowCopy ()
-		{
-			return new AspNetFreeState (this);
-		}
-		
-		protected AspNetFreeState (AspNetFreeState copyFrom) : base (copyFrom)
-		{
-			openTag = copyFrom.openTag;
-		}
-		
-		#endregion
+		}*/
 	}
 }

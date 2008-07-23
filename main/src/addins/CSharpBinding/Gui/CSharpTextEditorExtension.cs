@@ -37,7 +37,7 @@ namespace CSharpBinding
 		public override void Initialize ()
 		{
 			base.Initialize ();
-			stateTracker = new DocumentStateTracker<CSharpIndentEngine> (Editor);
+			stateTracker = new DocumentStateTracker<CSharpIndentEngine> (new CSharpIndentEngine (), Editor);
 		}
 		
 		IClass LookupClass (ICompilationUnit unit, int line, int column)

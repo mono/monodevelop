@@ -1,3 +1,17 @@
+2008-07-23  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.AspNet.StateEngine/AspNetSpecialState.cs: Unneeded;
+	  removed.
+	* MonoDevelop.AspNet.StateEngine/AspNetFreeState.cs: Stubbed.
+	* MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs: Use the new XML
+	  parser for ASP.NET completion.
+	* gtk-gui/objects.xml, gtk-gui/gui.stetic, AspNetAddIn.mdp,
+	  Makefile.am: Updated.
+	* MonoDevelop.AspNet.Parser/DocumentReferenceManager.cs: Fix tag prefix
+	  auto-generation logic.
+	* MonoDevelop.AspNet.Parser/CompilationUnitVisitor.cs: Don't fold
+	  regions by default.
+
 2008-07-21  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.AspNet.Deployment/WebDeployTarget.cs,

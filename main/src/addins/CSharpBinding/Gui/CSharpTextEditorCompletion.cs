@@ -59,7 +59,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 		public override void Initialize ()
 		{
 			base.Initialize ();
-			stateTracker = new DocumentStateTracker<CSharpIndentEngine> (Editor);
+			stateTracker = new DocumentStateTracker<CSharpIndentEngine> (new CSharpIndentEngine (),  Editor);
 			dom = ProjectDomService.GetDom (Document.Project);
 		}
 		
