@@ -136,4 +136,11 @@ namespace DebuggerServer
 			}
 		}
 	}
+	
+	public class EvaluatorException: Exception
+	{
+		public EvaluatorException (string msg, params object[] args): base (string.Format (msg, args))
+		{
+		}
+	}
 }

@@ -110,7 +110,11 @@ namespace DebuggerServer
 					EvaluationOptions ops = new EvaluationOptions ();
 					ops.CanEvaluateMethods = evaluateMethods;
 					var = (ValueReference) Server.Instance.Evaluator.Evaluate (frames[frameIndex], exp, ops);
-				} catch {
+				} catch (EvaluatorException ex) {
+					values [n] = ObjectValue.CreateError (exp, ex.Message, ObjectValueFlags.None);
+					continue;
+				} catch (Exception ex) {
+					Server.Instance.WriteDebuggerError (ex);
 					values [n] = ObjectValue.CreateUnknown (exp);
 					continue;
 				}

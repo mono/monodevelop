@@ -43,7 +43,7 @@ namespace DebuggerServer
 		public LiteralValueReference (Thread thread, string name, TargetObject value): base (thread)
 		{
 			this.name = name;
-			this.value = value;
+			this.value = Util.GetRealObject (thread, value);
 			this.type = value.Type;
 		}
 
@@ -67,9 +67,9 @@ namespace DebuggerServer
 			get {
 				if (value == null && objLiteral) {
 					if (objValue == null)
-						value = Thread.CurrentFrame.Language.CreateNullObject (Thread, null);
+						value = Util.GetRealObject (Thread, Thread.CurrentFrame.Language.CreateNullObject (Thread, null));
 					else
-						value = Thread.CurrentFrame.Language.CreateInstance (Thread, objValue);
+						value = Util.GetRealObject (Thread, Thread.CurrentFrame.Language.CreateInstance (Thread, objValue));
 				}
 				return value;
 			}

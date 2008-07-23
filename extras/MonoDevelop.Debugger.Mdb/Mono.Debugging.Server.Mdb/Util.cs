@@ -278,6 +278,32 @@ namespace DebuggerServer
 			}
 		}
 		
+		public static TargetMethodInfo FindMethod (MD.Thread thread, TargetType type, string name, bool staticOnly, bool publicApiOnly, params string[] argTypes)
+		{
+			foreach (KeyValuePair<TargetMemberInfo,TargetStructType> mem in GetTypeMembers (thread, type, staticOnly, false, false, true, publicApiOnly)) {
+				if (mem.Key.Name == name) {
+					TargetMethodInfo met = (TargetMethodInfo) mem.Key;
+					if (met.Type.ParameterTypes.Length == argTypes.Length) {
+						bool allMatch = true;
+						for (int n=0; n<argTypes.Length && allMatch; n++)
+							allMatch = argTypes [n] == FixTypeName (met.Type.ParameterTypes [n].Name);
+						if (allMatch)
+							return met;
+					}
+				}
+			}
+			return null;
+		}
+		
+		public static TargetMemberInfo FindMember (MD.Thread thread, TargetType type, string name, bool staticOnly, bool includeFields, bool includeProps, bool includeMethods, bool publicApiOnly)
+		{
+			foreach (KeyValuePair<TargetMemberInfo,TargetStructType> mem in GetTypeMembers (thread, type, staticOnly, includeFields, includeProps, includeMethods, publicApiOnly)) {
+				if (mem.Key.Name == name)
+					return mem.Key;
+			}
+			return null;
+		}
+		
 		public static IEnumerable<KeyValuePair<TargetMemberInfo,TargetStructType>> GetTypeMembers (MD.Thread thread, TargetType t, bool staticOnly, bool includeFields, bool includeProps, bool includeMethods, bool publicApiOnly)
 		{
 			TargetStructType type = t as TargetStructType;
@@ -456,6 +482,47 @@ namespace DebuggerServer
 					yield return new VariableReference (frame, var, ObjectValueFlags.Parameter);
 			}
 		}
+		
+		public static string FixTypeName (string typeName)
+		{
+			// Required since the debugger uses C# type aliases for fundamental types, 
+			// which is silly, but looks like it won't be fixed any time soon.
+			
+			switch (typeName) {
+				case "short":   return "System.Int16";
+				case "ushort":  return "System.UInt16";
+				case "int":     return "System.Int32";
+				case "uint":    return "System.UInt32";
+				case "long":    return "System.Int64";
+				case "ulong":   return "System.UInt64";
+				case "float":   return "System.Single";
+				case "double":  return "System.Double";
+				case "char":    return "System.Char";
+				case "byte":    return "System.Byte";
+				case "sbyte":   return "System.SByte";
+				case "object":  return "System.Object";
+				case "string":  return "System.String";
+				case "bool":    return "System.Boolean";
+				case "void":    return "System.Void";
+				case "decimal": return "System.Decimal";
+			}
+			return typeName;
+		}
+		
+		public static TargetObject GetTypeOf (MD.StackFrame frame, string typeName)
+		{
+			TargetType tt = frame.Language.LookupType ("System.Type");
+			if (tt == null)
+				return null;
+
+			TargetMethodInfo gt = FindMethod (frame.Thread, tt, "GetType", true, false, "System.String");
+			if (gt == null)
+				return null;
+			
+			TargetObject tn = frame.Language.CreateInstance (frame.Thread, FixTypeName (typeName));
+			return Server.Instance.RuntimeInvoke (frame.Thread, gt.Type, null, new TargetObject [] { tn });
+		}
+		
 		public static string UnscapeString (string text)
 		{
 			StringBuilder sb = new StringBuilder ();

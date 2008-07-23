@@ -91,13 +91,15 @@ namespace DebuggerServer
 				newValue = TargetObjectConvert.Cast (thread.CurrentFrame, newValue, Type);
 				Value = newValue;
 			} catch (Exception ex) {
-				Server.Instance.WriteDebuggerOutput ("Value assignment failed: " + ex.GetType () + ": " + ex.Message);
+				Server.Instance.WriteDebuggerError (ex);
+				Server.Instance.WriteDebuggerOutput ("Value assignment failed: {0}: {1}\n", ex.GetType (), ex.Message);
 			}
 			
 			try {
 				return Server.Instance.Evaluator.TargetObjectToString (Thread, Value);
 			} catch (Exception ex) {
-				Server.Instance.WriteDebuggerOutput ("Value assignment failed: " + ex.GetType () + ": " + ex.Message);
+				Server.Instance.WriteDebuggerError (ex);
+				Server.Instance.WriteDebuggerOutput ("Value assignment failed: {0}: {1}\n", ex.GetType (), ex.Message);
 			}
 			
 			return value;

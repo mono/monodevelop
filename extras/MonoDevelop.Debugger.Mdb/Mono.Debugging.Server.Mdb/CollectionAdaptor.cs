@@ -75,10 +75,6 @@ namespace DebuggerServer
 		
 		public static CollectionAdaptor CreateAdaptor (Thread thread, TargetStructObject obj)
 		{
-			TargetPropertyInfo indexerProp = null;
-			TargetPropertyInfo countProp = null;
-			TargetMethodInfo getEnumMethod = null;
-			
 			ColInfo colInfo;
 			if (colTypes.TryGetValue (obj.Type.Name, out colInfo)) {
 				if (colInfo == null)
@@ -93,7 +89,7 @@ namespace DebuggerServer
 						TargetPropertyInfo prop = (TargetPropertyInfo) mem.Key;
 						if (prop.Name == "Count")
 							colInfo.CountProp = prop;
-						else if (prop.Getter.ParameterTypes.Length == 1)
+						else if (prop.CanRead && prop.Getter.ParameterTypes.Length == 1)
 							colInfo.IndexerProp = prop;
 					}
 					else if (mem.Key is TargetMethodInfo) {

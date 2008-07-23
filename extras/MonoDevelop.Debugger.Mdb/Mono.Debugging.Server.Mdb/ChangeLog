@@ -1,3 +1,11 @@
+2008-07-23  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* BacktraceWrapper.cs, ExpressionEvaluator.cs, ValueReference.cs:
+	  Improved handling of evaluation errors.
+	* CollectionAdaptor.cs: Fix null ref and some warnings.
+	* LiteralValueReference.cs: Fix evaluation of literal value.
+	* Util.cs: Added some new helper methods.
+
 2008-07-21  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* DebuggerServer.cs: Set breakpoints using a constructed SourceLocation
