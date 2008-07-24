@@ -63,17 +63,17 @@ namespace MonoDevelop.Xml.StateEngine
 		
 		public override State PushChar (char c, IParseContext context, ref bool reject)
 		{
-			if (c == '<') {
-				context.LogError ("Unexpected '<' in tag.");
-				reject = true;
-				return Parent;
-			}
-			
 			XElement element = context.Nodes.Peek () as XElement;
 			
 			if (element == null || element.IsComplete) {
 				element = new XElement (context.Position - 2); // 2 == < + current char
 				context.Nodes.Push (element);
+			}
+			
+			if (c == '<') {
+				context.LogError ("Unexpected '<' in tag.");
+				reject = true;
+				return MalformedTagState;
 			}
 			
 			Debug.Assert (!element.IsComplete);
@@ -99,7 +99,9 @@ namespace MonoDevelop.Xml.StateEngine
 				} else {
 					element.End (context.Position);
 					if (context.BuildTree) {
-						XContainer container = (XContainer) context.Nodes.Peek (1);
+						XContainer container = element.IsClosed? 
+							  (XContainer) context.Nodes.Peek ()
+							: (XContainer) context.Nodes.Peek (1);
 						container.AddChildNode (element);
 					}
 				}

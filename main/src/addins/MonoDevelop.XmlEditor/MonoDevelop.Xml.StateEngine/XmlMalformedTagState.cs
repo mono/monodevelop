@@ -36,6 +36,13 @@ namespace MonoDevelop.Xml.StateEngine
 		
 		public override State PushChar (char c, IParseContext context, ref bool reject)
 		{
+			//ensure that we don't drop any nodes or leave them un-ended
+			if (context.CurrentStateLength == 1) {
+				if (context.BuildTree)
+					context.ConnectAll ();
+				context.EndAll (true);
+			}
+			
 			if (c == '<' || c == '>') {
 				reject = (c == '<');
 				return RootState;

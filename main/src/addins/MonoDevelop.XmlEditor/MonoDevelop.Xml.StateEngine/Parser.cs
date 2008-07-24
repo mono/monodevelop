@@ -153,13 +153,7 @@ namespace MonoDevelop.Xml.StateEngine
 			p.buildTree = true;
 			
 			//reconnect the node tree
-			XNode prev = null;
-			foreach (XObject o in p.Nodes) {
-				XContainer container = o as XContainer;
-				if (prev != null && container != null)
-					container.AddChildNode (prev);
-				prev = o as XNode;
-			}
+			((IParseContext)p).ConnectAll ();
 			
 			p.errors = new List<Error> ();
 			
@@ -237,6 +231,35 @@ namespace MonoDevelop.Xml.StateEngine
 			Console.WriteLine (ToString ());
 		}
 		
+		void IParseContext.ConnectAll ()
+		{
+			XNode prev = null;
+			foreach (XObject o in Nodes) {
+				XContainer container = o as XContainer;
+				if (prev != null && container != null && prev.IsComplete)
+					container.AddChildNode (prev);
+				if (o.Parent != null)
+					break;
+				prev = o as XNode;
+			}
+		}
+		
+		void IParseContext.EndAll (bool pop)
+		{
+			int popCount = 0;
+			foreach (XObject ob in Nodes) {
+				if (ob.Position.End < 0) {
+					ob.End (this.Position);
+					popCount++;
+				} else {
+					break;
+				}
+			}
+			if (pop)
+				for (; popCount > 0; popCount--)
+					Nodes.Pop ();
+		}
+		
 		#endregion
 		
 		public State CurrentState { get { return currentState; } }
@@ -252,6 +275,8 @@ namespace MonoDevelop.Xml.StateEngine
 		bool BuildTree { get; }
 		void LogError (string message);
 		void LogWarning (string message);
+		void EndAll (bool pop);
+		void ConnectAll ();
 	}
 	
 	//NOTE: this is immutable so that collections of it can be cloned safely

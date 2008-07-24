@@ -1,5 +1,12 @@
 2008-07-24  Michael Hutchinson <mhutchinson@novell.com> 
 
+	* MonoDevelop.Xml.StateEngine/Parser.cs,
+	  MonoDevelop.Xml.StateEngine/XmlTagState.cs,
+	  MonoDevelop.Xml.StateEngine/XmlMalformedTagState.cs: Make sure that
+	  bad nodes are attached, ended and popped when we recover.
+
+2008-07-24  Michael Hutchinson <mhutchinson@novell.com> 
+
 	* MonoDevelop.Xml.StateEngine/Parser.cs: Copy the stringbuilder when
 	  cloning the parser.
 
