@@ -1,5 +1,13 @@
 2008-07-23  Michael Hutchinson <mhutchinson@novell.com> 
 
+	* MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs: Implemented node
+	  selection with the path bar using the new parser. Much more
+	  reliable, but still breaks on selecting the node the caret's in.
+	* gtk-gui/objects.xml, AspNetAddIn.mdp, Makefile.am: Removed
+	  objects.xml.
+
+2008-07-23  Michael Hutchinson <mhutchinson@novell.com> 
+
 	* MonoDevelop.AspNet.StateEngine/AspNetSpecialState.cs: Unneeded;
 	  removed.
 	* MonoDevelop.AspNet.StateEngine/AspNetFreeState.cs: Stubbed.

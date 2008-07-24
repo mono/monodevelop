@@ -106,7 +106,6 @@ FILES =  \
 
 RES =  \
 	gtk-gui/gui.stetic \
-	gtk-gui/objects.xml \
 	MonoDevelop.AspNet.addin.xml \
 	Templates/GlobalAsax-CodeBehind.xft.xml \
 	Templates/GlobalAsax-Empty.xft.xml \

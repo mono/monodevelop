@@ -655,69 +655,46 @@ namespace MonoDevelop.AspNet.Gui
 		}
 		
 		void SelectPath (int depth, bool contents)
-		{/*
-			XmlTagState start = GetCompleteTag (depth);
-			if (start == null) {
-				MonoDevelop.Core.LoggingService.LogWarning ("Could not find path item in order to select it.");
-				return;
+		{
+			//clone the parser and put it in tree mode
+			S.Parser treeParser = this.tracker.Engine.GetTreeParser ();
+			
+			//locate the node
+			List<S.XElement> path = new List<S.XElement> ();
+			foreach (S.XObject ob in treeParser.Nodes)
+				if (ob is S.XElement)
+					path.Add ((S.XElement)ob);
+			S.XElement el = path [path.Count - (depth + 1)];
+			
+			//hoist this as it may not be cheap to evaluate (P/Invoke), but won't be changing during the loop
+			int textLen = Editor.TextLength;
+			
+			//run the parser until the tag's closed, or we move to its sibling or parent
+			while (el.NextSibling == null && treeParser.Position < textLen && treeParser.Nodes.Peek () != el.Parent) {
+				char c = Editor.GetCharAt (treeParser.Position);
+				treeParser.Push (c);
+				if (el.IsClosed && el.ClosingTag.IsComplete)
+					break;
 			}
 			
-			State end = start.ClosingTag;
-			if (end != null) {
-				MonoDevelop.Core.LoggingService.LogDebug ("Selecting start {0}:{1}, end {2}:{3}",
-				    start.StartLocation, start.EndLocation, end.StartLocation, end.EndLocation);
+			if (el.IsClosed) {
+				MonoDevelop.Core.LoggingService.LogDebug ("Selecting {0}-{1}",
+				    el.Position, el.ClosingTag.Position);
+				
+				if (el.IsSelfClosing)
+					contents = false;
 				
 				//pick out the locations, with some offsets to account for the parsing model
-				int s = contents? start.EndLocation + 1 : start.StartLocation - 2;
-				int e = contents? end.StartLocation - 1 : end.EndLocation + 1;
-				if (contents && end is XmlTagState)
-					e--;
+				int s = contents? el.Position.End : el.Position.Start;
+				int e = contents? el.ClosingTag.Position.Start : el.ClosingTag.Position.End;
 				
 				if (s > -1 && e > s)
 					Editor.Select (s, e);
 			} else {
-				
-				MonoDevelop.Core.LoggingService.LogDebug ("Selecting start {0}:{1}, end (null)",
-				    start.StartLocation, start.EndLocation);
-			}*/
-		}
-		/*
-		XmlTagState GetCompleteTag (int index)
-		{
-			List<State> path = GetCurrentPath ();
-			XmlTagState start = (XmlTagState) path[index].StackCopy ();
-			int pos = start.EndLocation;
-			if (pos < 0)
-				pos = tracker.Engine.Position;
-			
-			State current = start;
-			while (pos < Editor.TextLength) {
-				char c = Editor.GetCharAt (pos);
-				State ret = null;
-				
-				//parser logic from parser.cs
-				State next = null;
-				do {
-					bool reject;
-					next = current.PushChar (c, pos, out reject);
-					//System.Console.WriteLine("{0} {1}", c, current.ToString ());
-					//when end tag found, return it (skip the / to let the tag finish closing
-					//if (start.ClosingTag != null && c != '/')
-					//	return start;
-					if (next == start.Parent)
-						return start;
-					if (!reject)
-						break;
-					if (next != null)
-						current = next;
-					if (next == current || !reject)
-						next = null;
-				} while (next != null);
-				pos++;
+				MonoDevelop.Core.LoggingService.LogDebug ("No end tag found");
 			}
-			return start;
 		}
-		*/
+		
 		public event EventHandler<DocumentPathChangedEventArgs> PathChanged;
 		
 		protected void OnPathChanged (string[] oldPath, int oldSelectedIndex)
