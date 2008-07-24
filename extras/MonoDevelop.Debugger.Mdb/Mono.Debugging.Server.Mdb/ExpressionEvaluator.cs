@@ -38,7 +38,7 @@ namespace DebuggerServer
 		
 		public virtual string TargetObjectToString (Thread thread, TargetObject obj)
 		{
-			obj = Util.GetRealObject (thread, obj);
+			obj = ObjectUtil.GetRealObject (thread, obj);
 			
 			switch (obj.Kind) {
 				case Mono.Debugger.Languages.TargetObjectKind.Array:
@@ -68,7 +68,7 @@ namespace DebuggerServer
 					if (co == null)
 						return "null";
 					if (co.TypeName == "System.Decimal")
-						return Util.CallToString (thread, co);
+						return ObjectUtil.CallToString (thread, co);
 					CollectionAdaptor col = CollectionAdaptor.CreateAdaptor (thread, co);
 					if (col != null)
 						return ArrayElementGroup.GetArrayDescription (col.GetBounds ());

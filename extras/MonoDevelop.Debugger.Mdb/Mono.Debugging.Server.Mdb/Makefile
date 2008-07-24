@@ -55,10 +55,12 @@ FILES =  \
 	ExpressionEvaluator.cs \
 	FieldReference.cs \
 	ICollectionAdaptor.cs \
+	IndexerValueReference.cs \
 	LiteralValueReference.cs \
 	NamespaceValueReference.cs \
 	NRefactoryEvaluator.cs \
 	NullValueReference.cs \
+	ObjectUtil.cs \
 	PropertyReference.cs \
 	RemoteFrameObject.cs \
 	Server.cs \

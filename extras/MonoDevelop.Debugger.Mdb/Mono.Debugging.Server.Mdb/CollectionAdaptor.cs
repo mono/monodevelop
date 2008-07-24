@@ -40,36 +40,24 @@ namespace DebuggerServer
 		TargetStructObject obj;
 		
 		TargetPropertyInfo indexerProp;
-		TargetPropertyInfo countProp;
-		TargetMethodInfo getEnumMethod;
-		
-		TargetMethodInfo moveNextMethod;
-		TargetPropertyInfo currentProp;
-		
-		TargetPropertyInfo dictKeyProp;
-		TargetPropertyInfo dictValueProp;
 		
 		TargetArrayBounds bounds;
-		TargetStructObject enumerator;
+		TargetObject enumerator;
 		List<TargetObject> items = new List<TargetObject> ();
 		
 		static Dictionary<string,ColInfo> colTypes = new Dictionary<string,ColInfo> ();
 		
 		class ColInfo {
 			public TargetPropertyInfo IndexerProp;
-			public TargetPropertyInfo CountProp;
-			public TargetMethodInfo GetEnumMethod;
 		}
 		
 		bool done;
 		string currentObjType;
 		
-		public CollectionAdaptor (Thread thread, TargetStructObject obj, TargetPropertyInfo indexerProp, TargetPropertyInfo countProp, TargetMethodInfo getEnumMethod)
+		public CollectionAdaptor (Thread thread, TargetStructObject obj, TargetPropertyInfo indexerProp)
 		{
 			this.thread = thread;
 			this.indexerProp = indexerProp;
-			this.countProp = countProp;
-			this.getEnumMethod = getEnumMethod;
 			this.obj = obj;
 		}
 		
@@ -81,30 +69,27 @@ namespace DebuggerServer
 					return null;
 			}
 			else {
+				if (!ObjectUtil.IsInstanceOfType (thread, "System.Collections.ICollection", obj)) {
+					colTypes [obj.Type.Name] = null;
+					return null;
+				}
 				colInfo = new ColInfo ();
-				foreach (KeyValuePair<TargetMemberInfo,TargetStructType> mem in Util.GetTypeMembers (thread, obj.Type, false, false, true, true, false)) {
-					if (mem.Key.IsStatic)
+				foreach (MemberReference mem in ObjectUtil.GetTypeMembers (thread, obj.Type, false, false, true, true, false)) {
+					if (mem.Member.IsStatic)
 						continue;
-					if (mem.Key is TargetPropertyInfo) {
-						TargetPropertyInfo prop = (TargetPropertyInfo) mem.Key;
-						if (prop.Name == "Count")
-							colInfo.CountProp = prop;
-						else if (prop.CanRead && prop.Getter.ParameterTypes.Length == 1)
+					if (mem.Member is TargetPropertyInfo) {
+						TargetPropertyInfo prop = (TargetPropertyInfo) mem.Member;
+						if (prop.CanRead && prop.Getter.ParameterTypes.Length == 1)
 							colInfo.IndexerProp = prop;
 					}
-					else if (mem.Key is TargetMethodInfo) {
-						TargetMethodInfo met = (TargetMethodInfo) mem.Key;
-						if (met.Name == "GetEnumerator" && met.Type.ParameterTypes.Length == 0)
-							colInfo.GetEnumMethod = met;
-					}
-					if (colInfo.IndexerProp != null && colInfo.CountProp != null && colInfo.GetEnumMethod != null)
+					if (colInfo.IndexerProp != null)
 						break;
 				}
 			}
 			
-			if (colInfo.IndexerProp != null && colInfo.CountProp != null && colInfo.GetEnumMethod != null) {
+			if (colInfo.IndexerProp != null) {
 				colTypes [obj.Type.Name] = colInfo;
-				return new CollectionAdaptor (thread, obj, colInfo.IndexerProp, colInfo.CountProp, colInfo.GetEnumMethod);
+				return new CollectionAdaptor (thread, obj, colInfo.IndexerProp);
 			}
 			else {
 				colTypes [obj.Type.Name] = null;
@@ -115,8 +100,8 @@ namespace DebuggerServer
 		public TargetArrayBounds GetBounds ()
 		{
 			if (bounds == null) {
-				TargetObject ob = Server.Instance.RuntimeInvoke (thread, countProp.Getter, obj, new TargetObject[0]);
-				ob = Util.GetRealObject (thread, ob);
+				TargetObject ob = ObjectUtil.GetPropertyValue (thread, "Count", obj);
+				ob = ObjectUtil.GetRealObject (thread, ob);
 				TargetFundamentalObject fob = ob as TargetFundamentalObject;
 				int count;
 				if (fob == null)
@@ -135,20 +120,19 @@ namespace DebuggerServer
 			if (idx >= items.Count) {
 				if (enumerator == null) {
 					// call GetEnumerator
-					TargetObject eob = Server.Instance.RuntimeInvoke (thread, getEnumMethod.Type, obj);
-					enumerator = Util.GetRealObject (thread, eob) as TargetStructObject;
-					FindMoveMethods (enumerator);
+					enumerator = ObjectUtil.CallMethod (thread, "GetEnumerator", obj);
 				}
 			}
 			
-			while (idx >= items.Count && !done) {
+			while (bounds.Length > items.Count && !done) {
 				// call MoveNext
-				TargetFundamentalObject res = Server.Instance.RuntimeInvoke (thread, moveNextMethod.Type, enumerator) as TargetFundamentalObject;
+				TargetObject eob = ObjectUtil.GetRealObject (thread, ObjectUtil.CallMethod (thread, "MoveNext", enumerator));
+				TargetFundamentalObject res = eob as TargetFundamentalObject;
 				if (res == null) {
 					done = true;
 				} else if ((bool) res.GetObject (thread)) {
 					// call Current
-					TargetObject current = Server.Instance.RuntimeInvoke (thread, currentProp.Getter, enumerator);
+					TargetObject current = ObjectUtil.GetPropertyValue (thread, "Current", enumerator);
 					items.Add (current);
 				}
 			}
@@ -159,56 +143,17 @@ namespace DebuggerServer
 				return null;
 		}
 		
-		void FindMoveMethods (TargetObject ob)
-		{
-			if (ob == null) {
-				done = true;
-				return;
-			}
-			foreach (KeyValuePair<TargetMemberInfo,TargetStructType> mem in Util.GetTypeMembers (thread, ob.Type, false, false, true, true, false)) {
-				if (mem.Key.IsStatic)
-					continue;
-				if (mem.Key is TargetPropertyInfo) {
-					TargetPropertyInfo prop = (TargetPropertyInfo) mem.Key;
-					if (prop.Name == "Current")
-						currentProp = prop;
-				}
-				else if (mem.Key is TargetMethodInfo) {
-					TargetMethodInfo met = (TargetMethodInfo) mem.Key;
-					if (met.Name == "MoveNext" && met.Type.ParameterTypes.Length == 0 && (met.Type.ReturnType.Name == "System.Boolean" || met.Type.ReturnType.Name == "bool"))
-						moveNextMethod = met;
-				}
-				if (currentProp != null && moveNextMethod != null)
-					break;
-			}
-			if (currentProp == null || moveNextMethod == null)
-				done = true;
-		}
-		
 		bool CheckDictionary (TargetObject currentObj)
 		{
-			currentObj = Util.GetRealObject (thread, currentObj);
+			currentObj = ObjectUtil.GetRealObject (thread, currentObj);
 			
 			if (currentObj.Type.Name == "System.Collections.DictionaryEntry" || currentObj.Type.Name.StartsWith ("KeyValuePair")) {
 				// If the object type changes, we can handle it as a dictionary entry
 				if (currentObjType != null)
 					return currentObjType == currentObj.Type.Name;
-				
-				foreach (KeyValuePair<TargetMemberInfo,TargetStructType> mem in Util.GetTypeMembers (thread, currentObj.Type, false, false, true, true, false)) {
-					if (mem.Key.IsStatic)
-						continue;
-					if (mem.Key is TargetPropertyInfo) {
-						TargetPropertyInfo prop = (TargetPropertyInfo) mem.Key;
-						if (prop.Name == "Key")
-							dictKeyProp = prop;
-						else if (prop.Name == "Value")
-							dictValueProp = prop;
-					}
-					if (dictKeyProp != null && dictValueProp != null) {
-						currentObjType = currentObj.Type.Name;
-						return true;
-					}
-				}
+
+				currentObjType = currentObj.Type.Name;
+				return true;
 			}
 			return false;
 		}
@@ -220,8 +165,10 @@ namespace DebuggerServer
 			
 			if (telem != null && CheckDictionary (telem)) {
 				string sidx = indices[0].ToString ();
-				TargetObject key = Server.Instance.RuntimeInvoke (thread, dictKeyProp.Getter, telem);
-				TargetObject value = Server.Instance.RuntimeInvoke (thread, dictValueProp.Getter, telem);
+				TargetObject key = ObjectUtil.GetPropertyValue (thread, "Key", telem);
+				TargetObject value = ObjectUtil.GetPropertyValue (thread, "Value", telem);
+				key = ObjectUtil.GetRealObject (thread, key);
+				value = ObjectUtil.GetRealObject (thread, value);
 				string val = "{[" + Server.Instance.Evaluator.TargetObjectToString (thread, key) + ", " + Server.Instance.Evaluator.TargetObjectToString (thread, value) + "]}";
 				ObjectValueFlags setFlags = indexerProp.CanWrite ? ObjectValueFlags.None : ObjectValueFlags.ReadOnly;
 				ObjectValue vkey = Util.CreateObjectValue (thread, this, new ObjectPath (sidx).Append ("key"), key, ObjectValueFlags.ReadOnly | ObjectValueFlags.Property);
@@ -243,7 +190,7 @@ namespace DebuggerServer
 			TargetObject newInd = TargetObjectConvert.ExplicitFundamentalConversion (thread.CurrentFrame, ind, ft);
 			if (newInd == null)
 				return;
-			Server.Instance.RuntimeInvoke (thread, indexerProp.Setter, obj, new TargetObject [] { newInd, val });
+			ObjectUtil.SetPropertyValue (thread, null, obj, val, newInd);
 		}
 		
 		
@@ -263,10 +210,10 @@ namespace DebuggerServer
 				return new ObjectValue [0];
 			
 			if (path[1] == "key") {
-				TargetObject key = Server.Instance.RuntimeInvoke (thread, dictKeyProp.Getter, elem);
+				TargetObject key = ObjectUtil.GetPropertyValue (thread, "Key", elem);
 				return Util.GetObjectValueChildren (thread, key, index, count);
 			} else {
-				TargetObject value = Server.Instance.RuntimeInvoke (thread, dictValueProp.Getter, elem);
+				TargetObject value = ObjectUtil.GetPropertyValue (thread, "Value", elem);
 				return Util.GetObjectValueChildren (thread, value, index, count);
 			}
 		}
@@ -278,7 +225,7 @@ namespace DebuggerServer
 			if (elem == null || path [1] != "value")
 				return value;
 			
-			TargetObject key = Server.Instance.RuntimeInvoke (thread, dictKeyProp.Getter, elem);
+			TargetObject key = ObjectUtil.GetPropertyValue (thread, "Key", elem);
 			
 			TargetObject val;
 			try {
@@ -289,14 +236,14 @@ namespace DebuggerServer
 				ValueReference var = Server.Instance.Evaluator.Evaluate (thread.CurrentFrame, value, ops);
 				val = var.Value;
 				val = TargetObjectConvert.Cast (thread.CurrentFrame, val, elemType);
-				Server.Instance.RuntimeInvoke (thread, indexerProp.Setter, obj, new TargetObject [] {key, val});
+				ObjectUtil.SetPropertyValue (thread, null, obj, val, key);
 			} catch (Exception ex) {
 				Server.Instance.WriteDebuggerError (ex);
 				return value;
 			}
 			
 			try {
-				val = Server.Instance.RuntimeInvoke (thread, indexerProp.Getter, obj, new TargetObject [] {key});
+				val = ObjectUtil.GetPropertyValue (thread, null, obj, key);
 				return Server.Instance.Evaluator.TargetObjectToString (thread, val);
 			} catch (Exception ex) {
 				Server.Instance.WriteDebuggerError (ex);

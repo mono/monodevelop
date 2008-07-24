@@ -46,7 +46,7 @@ namespace DebuggerServer
 
 		public override TargetObject Value {
 			get {
-				return Util.GetRealObject (Thread, arr.GetElement (Thread, indices));
+				return ObjectUtil.GetRealObject (Thread, arr.GetElement (Thread, indices));
 			}
 			set {
 				arr.SetElement (Thread, indices, value);

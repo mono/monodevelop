@@ -29,6 +29,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using MD = Mono.Debugger;
+using SR = System.Reflection;
 using Mono.Debugger.Languages;
 using Mono.Debugging.Client;
 using Mono.Debugging.Backend;
@@ -49,7 +50,7 @@ namespace DebuggerServer
 		
 		static ObjectValue CreateObjectValueImpl (MD.Thread thread, IObjectValueSource source, ObjectPath path, TargetObject obj, ObjectValueFlags flags)
 		{
-			obj = GetRealObject (thread, obj);
+			obj = ObjectUtil.GetRealObject (thread, obj);
 			
 			if (obj == null)
 				return ObjectValue.CreateObject (null, path, "", null, flags | ObjectValueFlags.ReadOnly, null);
@@ -98,7 +99,7 @@ namespace DebuggerServer
 		
 		public static ObjectValue[] GetObjectValueChildren (MD.Thread thread, TargetObject obj, int firstItemIndex, int count)
 		{
-			obj = GetRealObject (thread, obj);
+			obj = ObjectUtil.GetRealObject (thread, obj);
 			
 			switch (obj.Kind)
 			{
@@ -152,46 +153,7 @@ namespace DebuggerServer
 					return new ObjectValue [0];
 			}		
 		}
-		
-		public static TargetObject GetRealObject (MD.Thread thread, TargetObject obj)
-		{
-			if (obj == null)
-				return null;
 
-			try {
-				switch (obj.Kind) {
-					case MD.Languages.TargetObjectKind.Array:
-					case TargetObjectKind.Fundamental:
-						return obj;
-						
-					case TargetObjectKind.Struct:
-					case TargetObjectKind.GenericInstance:
-					case TargetObjectKind.Class:
-						TargetStructObject co = obj as TargetStructObject;
-						if (co == null)
-							return null;
-						TargetObject res = co.GetCurrentObject (thread);
-						return res ?? obj;
-						
-					case TargetObjectKind.Enum:
-						TargetEnumObject eob = (TargetEnumObject) obj;
-						return eob.GetValue (thread);
-						
-					case TargetObjectKind.Object:
-						TargetObjectObject oob = obj as TargetObjectObject;
-						if (oob == null)
-							return null;
-						if (oob.Type.CanDereference)
-							return oob.GetDereferencedObject (thread);
-						else
-							return oob;
-				}
-			}
-			catch {
-				// Ignore
-			}
-			return obj;
-		}
 		
 		public static object StringToObject (TargetType type, string value)
 		{
@@ -218,253 +180,18 @@ namespace DebuggerServer
 			throw new InvalidOperationException ("Value '" + value + "' can't be converted to type '" + type.Name + "'");
 		}
 		
-		public static string CallToString (MD.Thread thread, TargetStructObject obj)
-		{
-			TargetStructObject cobj = obj;
-
-			do {
-				TargetStructType ctype = cobj.Type;
-				if ((ctype.Name == "System.Object") || (ctype.Name == "System.ValueType"))
-					return null;
-	
-				TargetClass klass = ctype.GetClass (thread);
-				TargetMethodInfo[] methods = klass.GetMethods (thread);
-				if (methods == null)
-					return null;
-	
-				foreach (TargetMethodInfo minfo in methods) {
-					if (minfo.Name != "ToString")
-						continue;
-	
-					TargetFunctionType ftype = minfo.Type;
-					if (ftype.ParameterTypes.Length != 0)
-						continue;
-					if (ftype.ReturnType != ftype.Language.StringType)
-						continue;
-	
-					MD.RuntimeInvokeResult result = thread.RuntimeInvoke (
-						ftype, obj, new TargetObject [0], true, false);
-	
-					result.CompletedEvent.WaitOne ();
-					if ((result.ExceptionMessage != null) || (result.ReturnObject == null))
-						return null;
-	
-					TargetObject retval = (TargetObject) result.ReturnObject;
-					object s = ((TargetFundamentalObject) retval).GetObject (thread);
-					return s != null ? s.ToString () : "";
-				}
-				if (cobj.Kind != TargetObjectKind.Struct)
-					cobj = cobj.GetParentObject (thread) as TargetStructObject;
-				else
-					break;
-			}
-			while (cobj != null);
-
-			return null;
-		}
-		
 		public static IEnumerable<ValueReference> GetMembers (MD.Thread thread, TargetType t, TargetStructObject co)
 		{
-			foreach (KeyValuePair<TargetMemberInfo,TargetStructType> mem in GetTypeMembers (thread, t, co==null, true, true, false, true)) {
-				if (mem.Key is TargetFieldInfo) {
-					TargetFieldInfo field = (TargetFieldInfo) mem.Key;
-					yield return new FieldReference (thread, co, mem.Value, field);
+			foreach (MemberReference mem in ObjectUtil.GetTypeMembers (thread, t, co==null, true, true, false, true)) {
+				if (mem.Member is TargetFieldInfo) {
+					TargetFieldInfo field = (TargetFieldInfo) mem.Member;
+					yield return new FieldReference (thread, co, mem.DeclaringType, field);
 				}
-				if (mem.Key is TargetPropertyInfo) {
-					TargetPropertyInfo prop = (TargetPropertyInfo) mem.Key;
+				if (mem.Member is TargetPropertyInfo) {
+					TargetPropertyInfo prop = (TargetPropertyInfo) mem.Member;
 					if (prop.Getter.ParameterTypes == null || prop.Getter.ParameterTypes.Length == 0)
 						yield return new PropertyReference (thread, prop, co);
 				}
-			}
-		}
-		
-		public static TargetMethodInfo FindMethod (MD.Thread thread, TargetType type, string name, bool staticOnly, bool publicApiOnly, params string[] argTypes)
-		{
-			foreach (KeyValuePair<TargetMemberInfo,TargetStructType> mem in GetTypeMembers (thread, type, staticOnly, false, false, true, publicApiOnly)) {
-				if (mem.Key.Name == name) {
-					TargetMethodInfo met = (TargetMethodInfo) mem.Key;
-					if (met.Type.ParameterTypes.Length == argTypes.Length) {
-						bool allMatch = true;
-						for (int n=0; n<argTypes.Length && allMatch; n++)
-							allMatch = argTypes [n] == FixTypeName (met.Type.ParameterTypes [n].Name);
-						if (allMatch)
-							return met;
-					}
-				}
-			}
-			return null;
-		}
-		
-		public static TargetMemberInfo FindMember (MD.Thread thread, TargetType type, string name, bool staticOnly, bool includeFields, bool includeProps, bool includeMethods, bool publicApiOnly)
-		{
-			foreach (KeyValuePair<TargetMemberInfo,TargetStructType> mem in GetTypeMembers (thread, type, staticOnly, includeFields, includeProps, includeMethods, publicApiOnly)) {
-				if (mem.Key.Name == name)
-					return mem.Key;
-			}
-			return null;
-		}
-		
-		public static IEnumerable<KeyValuePair<TargetMemberInfo,TargetStructType>> GetTypeMembers (MD.Thread thread, TargetType t, bool staticOnly, bool includeFields, bool includeProps, bool includeMethods, bool publicApiOnly)
-		{
-			TargetStructType type = t as TargetStructType;
-
-			while (type != null) {
-				
-				TargetFieldInfo[] fields = null;
-				TargetPropertyInfo[] properties = null;
-				TargetMethodInfo[] methods = null;
-				
-				TargetClass cls = type.GetClass (thread);
-				if (cls != null) {
-					if (includeFields)
-						fields = cls.GetFields (thread);
-					if (includeProps)
-						properties = cls.GetProperties (thread);
-					if (includeMethods)
-						methods = cls.GetMethods (thread);
-				}
-				else {
-					TargetClassType ct = type as TargetClassType;
-					if (ct == null && type.HasClassType)
-						ct = type.ClassType;
-					if (ct != null) {
-						if (includeFields)
-							fields = ct.Fields;
-						if (includeProps)
-							properties = ct.Properties;
-						if (includeMethods)
-							methods = ct.Methods;
-					}
-				}
-				
-				if (fields != null) {
-					foreach (TargetFieldInfo field in fields)
-						if (field.IsStatic || !staticOnly)
-							yield return new KeyValuePair<TargetMemberInfo,TargetStructType> (field, type);
-				}
-				
-				if (properties != null) {
-					foreach (TargetPropertyInfo prop in properties) {
-						if (publicApiOnly && prop.Accessibility != TargetMemberAccessibility.Public && prop.Accessibility != TargetMemberAccessibility.Protected)
-							continue;
-						if (prop.IsStatic || !staticOnly)
-							yield return new KeyValuePair<TargetMemberInfo,TargetStructType> (prop, type);
-					}
-				}
-				
-				if (methods != null) {
-					foreach (TargetMethodInfo met in methods) {
-						if (publicApiOnly && met.Accessibility != TargetMemberAccessibility.Public && met.Accessibility != TargetMemberAccessibility.Protected)
-							continue;
-						if (met.IsStatic || !staticOnly)
-							yield return new KeyValuePair<TargetMemberInfo,TargetStructType> (met, type);
-					}
-				}
-				
-				if (type.HasParent)
-					type = type.GetParentType (thread);
-				else
-					break;
-			}
-		}
-		
-		public static void PrintObject (MD.StackFrame frame, TargetObject obj)
-		{
-			try {
-				Console.WriteLine ("object");
-				Console.WriteLine ("  kind: " + obj.Kind);
-				Console.WriteLine ("  obj-type: " + obj.GetType ());
-				Console.WriteLine ("  type-name: " + obj.TypeName);
-				Console.WriteLine ("  has-addr: " + obj.HasAddress);
-				switch (obj.Kind) {
-					case MD.Languages.TargetObjectKind.Array:
-						TargetArrayObject arr = obj as TargetArrayObject;
-						if (arr == null) {
-							Console.WriteLine ("  (NULL)");
-							return;
-						}
-						Console.WriteLine ("  prn: " + arr.Type.ElementType.Name);
-						TargetArrayBounds ab = arr.GetArrayBounds (frame.Thread);
-						Console.WriteLine ("  bounds");
-						Console.WriteLine ("     multidim: " + ab.IsMultiDimensional);
-						Console.WriteLine ("     unbound: " + ab.IsUnbound);
-						Console.WriteLine ("     length: " + (!ab.IsMultiDimensional ? ab.Length.ToString () : "(miltidim)"));
-						Console.WriteLine ("     rank: " + ab.Rank);
-						Console.Write ("     lower bounds: ");
-						if (ab.LowerBounds != null)
-							foreach (int b in ab.LowerBounds) Console.Write (b + " ");
-						else
-							Console.WriteLine ("?");
-						Console.WriteLine ();
-						Console.Write ("     upper bounds: ");
-						if (ab.UpperBounds != null)
-							foreach (int b in ab.UpperBounds) Console.Write (b + " ");
-						else
-							Console.WriteLine ("?");
-						Console.WriteLine ();
-						break;
-					case TargetObjectKind.Class:
-						TargetClassObject co = obj as TargetClassObject;
-						if (co == null) {
-							Console.WriteLine ("  (NULL)");
-							return;
-						}
-						TargetObject currob = co.GetCurrentObject (frame.Thread);
-						if (currob != null && currob != co) {
-							Console.WriteLine ("  >> current object");
-							Console.WriteLine ("  " + currob);
-							Console.WriteLine ("  << current object");
-						}
-											
-						currob = co.GetParentObject (frame.Thread);
-						if (currob != null && currob != co) {
-							Console.WriteLine ("  >> parent object");
-							PrintObject (frame, currob);
-							Console.WriteLine ("  << parent object");
-						}
-						break;
-					case TargetObjectKind.Enum:
-						TargetEnumObject eob = (TargetEnumObject) obj;
-						Console.WriteLine ("  print: " + eob.Print (frame.Thread));
-						TargetObject val = eob.GetValue (frame.Thread);
-						Console.WriteLine ("  >> value object");
-						PrintObject (frame, val);
-						Console.WriteLine ("  << value object");
-						break;
-					case TargetObjectKind.Fundamental:
-						TargetFundamentalObject fob = obj as TargetFundamentalObject;
-						if (fob == null) {
-							Console.WriteLine ("  (NULL)");
-							return;
-						}
-//						object ob = fob.GetObject (frame.Thread);
-	//					Console.WriteLine ("  value: " + (ob != null ? ob.ToString () : "(null)"));
-	//					Console.WriteLine ("  print: " + fob.Print (frame.Thread));
-						break;
-					case TargetObjectKind.Object:
-						TargetObjectObject oob = obj as TargetObjectObject;
-						if (oob == null) {
-							Console.WriteLine ("  (NULL)");
-							return;
-						}
-						Console.WriteLine ("  >> dereferenced object");
-						PrintObject (frame, oob.GetDereferencedObject (frame.Thread));
-						Console.WriteLine ("  << dereferenced object");
-						break;
-				}
-			}
-			catch (Exception ex) {
-				Console.WriteLine ("pp: " + ex);
-			}
-		}
-		
-		public static ObjectValueFlags GetAccessibility (TargetMemberAccessibility ma)
-		{
-			switch (ma) {
-				case TargetMemberAccessibility.Internal: return ObjectValueFlags.Internal;
-				case TargetMemberAccessibility.Protected: return ObjectValueFlags.Protected;
-				case TargetMemberAccessibility.Public: return ObjectValueFlags.Public;
-				default: return ObjectValueFlags.Private;
 			}
 		}
 		
@@ -481,46 +208,6 @@ namespace DebuggerServer
 				foreach (TargetVariable var in frame.Method.GetParameters (frame.Thread))
 					yield return new VariableReference (frame, var, ObjectValueFlags.Parameter);
 			}
-		}
-		
-		public static string FixTypeName (string typeName)
-		{
-			// Required since the debugger uses C# type aliases for fundamental types, 
-			// which is silly, but looks like it won't be fixed any time soon.
-			
-			switch (typeName) {
-				case "short":   return "System.Int16";
-				case "ushort":  return "System.UInt16";
-				case "int":     return "System.Int32";
-				case "uint":    return "System.UInt32";
-				case "long":    return "System.Int64";
-				case "ulong":   return "System.UInt64";
-				case "float":   return "System.Single";
-				case "double":  return "System.Double";
-				case "char":    return "System.Char";
-				case "byte":    return "System.Byte";
-				case "sbyte":   return "System.SByte";
-				case "object":  return "System.Object";
-				case "string":  return "System.String";
-				case "bool":    return "System.Boolean";
-				case "void":    return "System.Void";
-				case "decimal": return "System.Decimal";
-			}
-			return typeName;
-		}
-		
-		public static TargetObject GetTypeOf (MD.StackFrame frame, string typeName)
-		{
-			TargetType tt = frame.Language.LookupType ("System.Type");
-			if (tt == null)
-				return null;
-
-			TargetMethodInfo gt = FindMethod (frame.Thread, tt, "GetType", true, false, "System.String");
-			if (gt == null)
-				return null;
-			
-			TargetObject tn = frame.Language.CreateInstance (frame.Thread, FixTypeName (typeName));
-			return Server.Instance.RuntimeInvoke (frame.Thread, gt.Type, null, new TargetObject [] { tn });
 		}
 		
 		public static string UnscapeString (string text)

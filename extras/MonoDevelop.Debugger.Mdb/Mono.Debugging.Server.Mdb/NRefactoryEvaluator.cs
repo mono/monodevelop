@@ -88,7 +88,7 @@ namespace DebuggerServer
 				case UnaryOperatorType.Plus:
 					break;
 				default:
-					throw new NotImplementedException();
+					throw CreateNotSupportedError ();
 			}
 			
 			return new LiteralValueReference (frame.Thread, name, val);
@@ -105,12 +105,16 @@ namespace DebuggerServer
 		
 		public override object VisitTypeReferenceExpression (ICSharpCode.NRefactory.Ast.TypeReferenceExpression typeReferenceExpression, object data)
 		{
-			throw new NotImplementedException();
+			throw CreateNotSupportedError ();
 		}
 
 		public override object VisitTypeOfExpression (ICSharpCode.NRefactory.Ast.TypeOfExpression typeOfExpression, object data)
 		{
-			throw new NotImplementedException();
+			TargetObject ob = ObjectUtil.GetTypeOf (frame, typeOfExpression.TypeReference.SystemType);
+			if (ob != null)
+				return new LiteralValueReference (frame.Thread, typeOfExpression.TypeReference.SystemType, ob);
+			else
+				throw CreateNotSupportedError ();
 		}
 		
 		public override object VisitThisReferenceExpression (ICSharpCode.NRefactory.Ast.ThisReferenceExpression thisReferenceExpression, object data)
@@ -141,13 +145,13 @@ namespace DebuggerServer
 		
 		public override object VisitObjectCreateExpression (ICSharpCode.NRefactory.Ast.ObjectCreateExpression objectCreateExpression, object data)
 		{
-			throw new NotImplementedException();
+			throw CreateNotSupportedError ();
 		}
 		
 		public override object VisitInvocationExpression (ICSharpCode.NRefactory.Ast.InvocationExpression invocationExpression, object data)
 		{
 			if (!options.CanEvaluateMethods)
-				throw new NotSupportedException ();
+				throw CreateNotSupportedError ();
 				
 			ValueReference target = null;
 			string methodName;
@@ -155,8 +159,6 @@ namespace DebuggerServer
 			if (invocationExpression.TargetObject is FieldReferenceExpression) {
 				FieldReferenceExpression field = (FieldReferenceExpression)invocationExpression.TargetObject;
 				target = (ValueReference) field.TargetObject.AcceptVisitor (this, data);
-				if (target == null)
-					return null;
 				methodName = field.FieldName;
 			} else if (invocationExpression.TargetObject is IdentifierExpression) {
 				IdentifierExpression exp = (IdentifierExpression) invocationExpression.TargetObject;
@@ -164,15 +166,13 @@ namespace DebuggerServer
 				target = null;
 			}
 			else
-				throw new NotSupportedException ();
+				throw CreateNotSupportedError ();
 			
 			TargetType[] argtypes = new TargetType [invocationExpression.Arguments.Count];
 			TargetObject[] args = new TargetObject [invocationExpression.Arguments.Count];
 			for (int n=0; n<args.Length; n++) {
 				Expression exp = invocationExpression.Arguments [n];
 				ValueReference vref = (ValueReference) exp.AcceptVisitor (this, data);
-				if (vref == null)
-					return null;
 				args [n] = vref.Value;
 				argtypes [n] = args [n].Type;
 			}
@@ -202,7 +202,7 @@ namespace DebuggerServer
 			}
 			
 			if (type == null)
-				throw CreateParseError ("Unknown method: " + methodName);
+				throw CreateParseError ("Unknown method: {0}", methodName);
 			
 			TargetFunctionType method = OverloadResolve (methodName, type, argtypes, allowInstance, allowStatic);
 
@@ -211,7 +211,7 @@ namespace DebuggerServer
 			TargetObject[] objs = new TargetObject [args.Length];
 			for (int i = 0; i < args.Length; i++) {
 				objs [i] = TargetObjectConvert.ImplicitConversionRequired (
-					frame, args [i], sig.ParameterTypes [i]);
+					frame.Thread, args [i], sig.ParameterTypes [i]);
 			}
 
 			TargetStructObject thisobj = null;
@@ -233,8 +233,8 @@ namespace DebuggerServer
 		{
 			List<TargetFunctionType> candidates = new List<TargetFunctionType> ();
 
-			foreach (KeyValuePair<TargetMemberInfo,TargetStructType> mem in Util.GetTypeMembers (frame.Thread, type, false, false, false, true, false)) {
-				TargetMethodInfo met = (TargetMethodInfo) mem.Key;
+			foreach (MemberReference mem in ObjectUtil.GetTypeMembers (frame.Thread, type, false, false, false, true, false)) {
+				TargetMethodInfo met = (TargetMethodInfo) mem.Member;
 				if (met.Name == methodName && met.Type.ParameterTypes.Length == argtypes.Length && (met.IsStatic && allowStatic || !met.IsStatic && allowInstance))
 					candidates.Add (met.Type);
 			}
@@ -246,22 +246,16 @@ namespace DebuggerServer
 				if (IsApplicable (candidate, argtypes, out error))
 					return candidate;
 
-				throw CreateParseError (string.Format (
-					"The best overload of method `{0}' has some invalid " +
-					"arguments:\n{1}", methodName, error));
+				throw CreateParseError ("The best overload of method `{0}' has some invalid arguments:\n{1}", methodName, error);
 			}
 
 			if (candidates.Count == 0)
-				throw CreateParseError (string.Format (
-					"No overload of method `{0}' has {1} arguments.",
-					methodName, argtypes.Length));
+				throw CreateParseError ("No overload of method `{0}' has {1} arguments.", methodName, argtypes.Length);
 
 			candidate = OverloadResolve (argtypes, candidates);
 
 			if (candidate == null)
-				throw CreateParseError (string.Format (
-					"Ambiguous method `{0}'; need to use " +
-					"full name", methodName));
+				throw CreateParseError ("Ambiguous method `{0}'; need to use full name", methodName);
 
 			return candidate;
 		}
@@ -276,7 +270,7 @@ namespace DebuggerServer
 				if (param_type == types [i])
 					continue;
 
-				if (TargetObjectConvert.ImplicitConversionExists (frame, types [i], param_type))
+				if (TargetObjectConvert.ImplicitConversionExists (frame.Thread, types [i], param_type))
 					continue;
 
 				error = String.Format (
@@ -310,13 +304,14 @@ namespace DebuggerServer
 		
 		public override object VisitInnerClassTypeReference (ICSharpCode.NRefactory.Ast.InnerClassTypeReference innerClassTypeReference, object data)
 		{
-			throw new NotImplementedException();
+			throw CreateNotSupportedError ();
 		}
 		
 		public override object VisitIndexerExpression (ICSharpCode.NRefactory.Ast.IndexerExpression indexerExpression, object data)
 		{
 			ValueReference val = (ValueReference) indexerExpression.TargetObject.AcceptVisitor (this, data);
-			TargetArrayObject arr = val.Value as TargetArrayObject;
+			TargetObject ob = val.Value;
+			TargetArrayObject arr = ob as TargetArrayObject;
 			if (arr != null) {
 				int[] indexes = new int [indexerExpression.Indexes.Count];
 				for (int n=0; n<indexes.Length; n++) {
@@ -325,7 +320,15 @@ namespace DebuggerServer
 				}
 				return new ArrayValueReference (frame.Thread, arr, indexes);
 			}
-			throw new NotImplementedException();
+			
+			if (indexerExpression.Indexes.Count == 1) {
+				ValueReference vi = (ValueReference) indexerExpression.Indexes [0].AcceptVisitor (this, data);
+				IndexerValueReference idx = IndexerValueReference.CreateIndexerValueReference (frame.Thread, ob, vi.Value);
+				if (idx != null)
+					return idx;
+			}
+			
+			throw CreateNotSupportedError ();
 		}
 		
 		public override object VisitIdentifierExpression (ICSharpCode.NRefactory.Ast.IdentifierExpression identifierExpression, object data)
@@ -351,20 +354,20 @@ namespace DebuggerServer
 			
 			if (frame.Method.HasThis) {
 				TargetObject ob = frame.Method.GetThis (frame.Thread).GetObject (frame);
-				thisobj = Util.GetRealObject (frame.Thread, ob) as TargetStructObject;
+				thisobj = ObjectUtil.GetRealObject (frame.Thread, ob) as TargetStructObject;
 			}
 			
 			TargetStructType type = frame.Method.GetDeclaringType (frame.Thread);
 			
-			foreach (KeyValuePair<TargetMemberInfo,TargetStructType> mem in Util.GetTypeMembers (frame.Thread, type, thisobj==null, true, true, false, false)) {
-				if (mem.Key.Name != name)
+			foreach (MemberReference mem in ObjectUtil.GetTypeMembers (frame.Thread, type, thisobj==null, true, true, false, false)) {
+				if (mem.Member.Name != name)
 					continue;
-				if (mem.Key is TargetFieldInfo) {
-					TargetFieldInfo field = (TargetFieldInfo) mem.Key;
-					return new FieldReference (frame.Thread, thisobj, mem.Value, field);
+				if (mem.Member is TargetFieldInfo) {
+					TargetFieldInfo field = (TargetFieldInfo) mem.Member;
+					return new FieldReference (frame.Thread, thisobj, mem.DeclaringType, field);
 				}
-				if (mem.Key is TargetPropertyInfo) {
-					TargetPropertyInfo prop = (TargetPropertyInfo) mem.Key;
+				if (mem.Member is TargetPropertyInfo) {
+					TargetPropertyInfo prop = (TargetPropertyInfo) mem.Member;
 					if (prop.CanRead)
 						return new PropertyReference (frame.Thread, prop, thisobj);
 				}
@@ -379,23 +382,25 @@ namespace DebuggerServer
 			if (frame.Method != null && frame.Method.HasLineNumbers) {
 				string[] namespaces = frame.Method.GetNamespaces ();
 				
-				// Look in types from included namespaces
-			
-				foreach (string ns in namespaces) {
-					vtype = frame.Language.LookupType (ns + "." + name);
-					if (vtype != null)
-						return new TypeValueReference (frame.Thread, vtype);
-				}
-			
-				// Look in namespaces
-			
-				foreach (string ns in namespaces) {
-					if (ns == name || ns.StartsWith (name + "."))
-						return new NamespaceValueReference (frame, name);
+				if (namespaces != null) {
+					// Look in types from included namespaces
+				
+					foreach (string ns in namespaces) {
+						vtype = frame.Language.LookupType (ns + "." + name);
+						if (vtype != null)
+							return new TypeValueReference (frame.Thread, vtype);
+					}
+				
+					// Look in namespaces
+				
+					foreach (string ns in namespaces) {
+						if (ns == name || ns.StartsWith (name + "."))
+							return new NamespaceValueReference (frame, name);
+					}
 				}
 			}
 
-			throw CreateParseError ("Unknwon identifier: " + name);
+			throw CreateParseError ("Unknwon identifier: {0}", name);
 		}
 		
 		public override object VisitFieldReferenceExpression (ICSharpCode.NRefactory.Ast.FieldReferenceExpression fieldReferenceExpression, object data)
@@ -403,7 +408,7 @@ namespace DebuggerServer
 			ValueReference vref = (ValueReference) fieldReferenceExpression.TargetObject.AcceptVisitor (this, data);
 			ValueReference ch = vref.GetChild (fieldReferenceExpression.FieldName);
 			if (ch == null)
-				throw CreateParseError ("Unknown member: " + fieldReferenceExpression.FieldName);
+				throw CreateParseError ("Unknown member: {0}", fieldReferenceExpression.FieldName);
 			return ch;
 		}
 		
@@ -419,7 +424,7 @@ namespace DebuggerServer
 		
 		public override object VisitClassReferenceExpression (ICSharpCode.NRefactory.Ast.ClassReferenceExpression classReferenceExpression, object data)
 		{
-			throw new NotImplementedException();
+			throw CreateNotSupportedError ();
 		}
 		
 		public override object VisitCastExpression (ICSharpCode.NRefactory.Ast.CastExpression castExpression, object data)
@@ -547,412 +552,418 @@ namespace DebuggerServer
 		
 		public override object VisitAssignmentExpression (ICSharpCode.NRefactory.Ast.AssignmentExpression assignmentExpression, object data)
 		{
-			throw new NotImplementedException();
+			throw CreateNotSupportedError ();
 		}
 		
 		public override object VisitArrayInitializerExpression (ICSharpCode.NRefactory.Ast.ArrayInitializerExpression arrayInitializerExpression, object data)
 		{
-			throw new NotImplementedException();
+			throw CreateNotSupportedError ();
 		}
 		
 		public override object VisitArrayCreateExpression (ICSharpCode.NRefactory.Ast.ArrayCreateExpression arrayCreateExpression, object data)
 		{
-			throw new NotImplementedException();
+			throw CreateNotSupportedError ();
 		}
 		
 		#region Unsupported expressions
 		
 		public override object VisitPointerReferenceExpression (ICSharpCode.NRefactory.Ast.PointerReferenceExpression pointerReferenceExpression, object data)
 		{
-			throw new NotImplementedException();
+			throw CreateNotSupportedError ();
 		}
 		
 		public override object VisitSizeOfExpression (ICSharpCode.NRefactory.Ast.SizeOfExpression sizeOfExpression, object data)
 		{
-			throw new NotImplementedException();
+			throw CreateNotSupportedError ();
 		}
 		
 		public override object VisitTypeOfIsExpression (ICSharpCode.NRefactory.Ast.TypeOfIsExpression typeOfIsExpression, object data)
 		{
-			throw new NotImplementedException();
+			throw CreateNotSupportedError ();
 		}
 		
 		public override object VisitYieldStatement (ICSharpCode.NRefactory.Ast.YieldStatement yieldStatement, object data)
 		{
-			throw new NotImplementedException();
+			throw CreateNotSupportedError ();
 		}
 		
 		public override object VisitWithStatement (ICSharpCode.NRefactory.Ast.WithStatement withStatement, object data)
 		{
-			throw new NotImplementedException();
+			throw CreateNotSupportedError ();
 		}
 		
 		public override object VisitVariableDeclaration (ICSharpCode.NRefactory.Ast.VariableDeclaration variableDeclaration, object data)
 		{
-			throw new NotImplementedException();
+			throw CreateNotSupportedError ();
 		}
 		
 		public override object VisitUsing (ICSharpCode.NRefactory.Ast.Using @using, object data)
 		{
-			throw new NotImplementedException();
+			throw CreateNotSupportedError ();
 		}
 		
 		public override object VisitUsingStatement (ICSharpCode.NRefactory.Ast.UsingStatement usingStatement, object data)
 		{
-			throw new NotImplementedException();
+			throw CreateNotSupportedError ();
 		}
 		
 		public override object VisitUsingDeclaration (ICSharpCode.NRefactory.Ast.UsingDeclaration usingDeclaration, object data)
 		{
-			throw new NotImplementedException();
+			throw CreateNotSupportedError ();
 		}
 		
 		public override object VisitUnsafeStatement (ICSharpCode.NRefactory.Ast.UnsafeStatement unsafeStatement, object data)
 		{
-			throw new NotImplementedException();
+			throw CreateNotSupportedError ();
 		}
 		
 		public override object VisitUncheckedStatement (ICSharpCode.NRefactory.Ast.UncheckedStatement uncheckedStatement, object data)
 		{
-			throw new NotImplementedException();
+			throw CreateNotSupportedError ();
 		}
 		
 		public override object VisitTypeDeclaration (ICSharpCode.NRefactory.Ast.TypeDeclaration typeDeclaration, object data)
 		{
-			throw new NotImplementedException();
+			throw CreateNotSupportedError ();
 		}
 		
 		public override object VisitTryCatchStatement (ICSharpCode.NRefactory.Ast.TryCatchStatement tryCatchStatement, object data)
 		{
-			throw new NotImplementedException();
+			throw CreateNotSupportedError ();
 		}
 
 		public override object VisitThrowStatement (ICSharpCode.NRefactory.Ast.ThrowStatement throwStatement, object data)
 		{
-			throw new NotImplementedException();
+			throw CreateNotSupportedError ();
 		}
 		
 		public override object VisitTemplateDefinition (ICSharpCode.NRefactory.Ast.TemplateDefinition templateDefinition, object data)
 		{
-			throw new NotImplementedException();
+			throw CreateNotSupportedError ();
 		}
 		
 		public override object VisitSwitchStatement (ICSharpCode.NRefactory.Ast.SwitchStatement switchStatement, object data)
 		{
-			throw new NotImplementedException();
+			throw CreateNotSupportedError ();
 		}
 		
 		public override object VisitSwitchSection (ICSharpCode.NRefactory.Ast.SwitchSection switchSection, object data)
 		{
-			throw new NotImplementedException();
+			throw CreateNotSupportedError ();
 		}
 		
 		public override object VisitStopStatement (ICSharpCode.NRefactory.Ast.StopStatement stopStatement, object data)
 		{
-			throw new NotImplementedException();
+			throw CreateNotSupportedError ();
 		}
 		
 		public override object VisitStackAllocExpression (ICSharpCode.NRefactory.Ast.StackAllocExpression stackAllocExpression, object data)
 		{
-			throw new NotImplementedException();
+			throw CreateNotSupportedError ();
 		}
 		
 		public override object VisitReturnStatement (ICSharpCode.NRefactory.Ast.ReturnStatement returnStatement, object data)
 		{
-			throw new NotImplementedException();
+			throw CreateNotSupportedError ();
 		}
 		
 		public override object VisitResumeStatement (ICSharpCode.NRefactory.Ast.ResumeStatement resumeStatement, object data)
 		{
-			throw new NotImplementedException();
+			throw CreateNotSupportedError ();
 		}
 		
 		public override object VisitRemoveHandlerStatement (ICSharpCode.NRefactory.Ast.RemoveHandlerStatement removeHandlerStatement, object data)
 		{
-			throw new NotImplementedException();
+			throw CreateNotSupportedError ();
 		}
 		
 		public override object VisitReDimStatement (ICSharpCode.NRefactory.Ast.ReDimStatement reDimStatement, object data)
 		{
-			throw new NotImplementedException();
+			throw CreateNotSupportedError ();
 		}
 		
 		public override object VisitRaiseEventStatement (ICSharpCode.NRefactory.Ast.RaiseEventStatement raiseEventStatement, object data)
 		{
-			throw new NotImplementedException();
+			throw CreateNotSupportedError ();
 		}
 		
 		public override object VisitPropertySetRegion (ICSharpCode.NRefactory.Ast.PropertySetRegion propertySetRegion, object data)
 		{
-			throw new NotImplementedException();
+			throw CreateNotSupportedError ();
 		}
 		
 		public override object VisitPropertyGetRegion (ICSharpCode.NRefactory.Ast.PropertyGetRegion propertyGetRegion, object data)
 		{
-			throw new NotImplementedException();
+			throw CreateNotSupportedError ();
 		}
 		
 		public override object VisitPropertyDeclaration (ICSharpCode.NRefactory.Ast.PropertyDeclaration propertyDeclaration, object data)
 		{
-			throw new NotImplementedException();
+			throw CreateNotSupportedError ();
 		}
 		
 		public override object VisitParameterDeclarationExpression (ICSharpCode.NRefactory.Ast.ParameterDeclarationExpression parameterDeclarationExpression, object data)
 		{
-			throw new NotImplementedException();
+			throw CreateNotSupportedError ();
 		}
 		
 		public override object VisitOptionDeclaration (ICSharpCode.NRefactory.Ast.OptionDeclaration optionDeclaration, object data)
 		{
-			throw new NotImplementedException();
+			throw CreateNotSupportedError ();
 		}
 		
 		public override object VisitOperatorDeclaration (ICSharpCode.NRefactory.Ast.OperatorDeclaration operatorDeclaration, object data)
 		{
-			throw new NotImplementedException();
+			throw CreateNotSupportedError ();
 		}
 		
 		public override object VisitOnErrorStatement (ICSharpCode.NRefactory.Ast.OnErrorStatement onErrorStatement, object data)
 		{
-			throw new NotImplementedException();
+			throw CreateNotSupportedError ();
 		}
 		
 		public override object VisitNamespaceDeclaration (ICSharpCode.NRefactory.Ast.NamespaceDeclaration namespaceDeclaration, object data)
 		{
-			throw new NotImplementedException();
+			throw CreateNotSupportedError ();
 		}
 		
 		public override object VisitNamedArgumentExpression (ICSharpCode.NRefactory.Ast.NamedArgumentExpression namedArgumentExpression, object data)
 		{
-			throw new NotImplementedException();
+			throw CreateNotSupportedError ();
 		}
 		
 		public override object VisitMethodDeclaration (ICSharpCode.NRefactory.Ast.MethodDeclaration methodDeclaration, object data)
 		{
-			throw new NotImplementedException();
+			throw CreateNotSupportedError ();
 		}
 		
 		public override object VisitLockStatement (ICSharpCode.NRefactory.Ast.LockStatement lockStatement, object data)
 		{
-			throw new NotImplementedException();
+			throw CreateNotSupportedError ();
 		}
 		
 		public override object VisitLocalVariableDeclaration (ICSharpCode.NRefactory.Ast.LocalVariableDeclaration localVariableDeclaration, object data)
 		{
-			throw new NotImplementedException();
+			throw CreateNotSupportedError ();
 		}
 		
 		public override object VisitLabelStatement (ICSharpCode.NRefactory.Ast.LabelStatement labelStatement, object data)
 		{
-			throw new NotImplementedException();
+			throw CreateNotSupportedError ();
 		}
 		
 		public override object VisitInterfaceImplementation (ICSharpCode.NRefactory.Ast.InterfaceImplementation interfaceImplementation, object data)
 		{
-			throw new NotImplementedException();
+			throw CreateNotSupportedError ();
 		}
 		
 		public override object VisitIndexerDeclaration (ICSharpCode.NRefactory.Ast.IndexerDeclaration indexerDeclaration, object data)
 		{
-			throw new NotImplementedException();
+			throw CreateNotSupportedError ();
 		}
 		
 		public override object VisitIfElseStatement (ICSharpCode.NRefactory.Ast.IfElseStatement ifElseStatement, object data)
 		{
-			throw new NotImplementedException();
+			throw CreateNotSupportedError ();
 		}
 		
 		public override object VisitGotoStatement (ICSharpCode.NRefactory.Ast.GotoStatement gotoStatement, object data)
 		{
-			throw new NotImplementedException();
+			throw CreateNotSupportedError ();
 		}
 		
 		public override object VisitGotoCaseStatement (ICSharpCode.NRefactory.Ast.GotoCaseStatement gotoCaseStatement, object data)
 		{
-			throw new NotImplementedException();
+			throw CreateNotSupportedError ();
 		}
 		
 		public override object VisitForStatement (ICSharpCode.NRefactory.Ast.ForStatement forStatement, object data)
 		{
-			throw new NotImplementedException();
+			throw CreateNotSupportedError ();
 		}
 		
 		public override object VisitForNextStatement (ICSharpCode.NRefactory.Ast.ForNextStatement forNextStatement, object data)
 		{
-			throw new NotImplementedException();
+			throw CreateNotSupportedError ();
 		}
 		
 		public override object VisitForeachStatement (ICSharpCode.NRefactory.Ast.ForeachStatement foreachStatement, object data)
 		{
-			throw new NotImplementedException();
+			throw CreateNotSupportedError ();
 		}
 		
 		public override object VisitFixedStatement (ICSharpCode.NRefactory.Ast.FixedStatement fixedStatement, object data)
 		{
-			throw new NotImplementedException();
+			throw CreateNotSupportedError ();
 		}
 		
 		public override object VisitFieldDeclaration (ICSharpCode.NRefactory.Ast.FieldDeclaration fieldDeclaration, object data)
 		{
-			throw new NotImplementedException();
+			throw CreateNotSupportedError ();
 		}
 		
 		public override object VisitExpressionStatement (ICSharpCode.NRefactory.Ast.ExpressionStatement expressionStatement, object data)
 		{
-			throw new NotImplementedException();
+			throw CreateNotSupportedError ();
 		}
 		
 		public override object VisitExitStatement (ICSharpCode.NRefactory.Ast.ExitStatement exitStatement, object data)
 		{
-			throw new NotImplementedException();
+			throw CreateNotSupportedError ();
 		}
 		
 		public override object VisitEventRemoveRegion (ICSharpCode.NRefactory.Ast.EventRemoveRegion eventRemoveRegion, object data)
 		{
-			throw new NotImplementedException();
+			throw CreateNotSupportedError ();
 		}
 		
 		public override object VisitEventRaiseRegion (ICSharpCode.NRefactory.Ast.EventRaiseRegion eventRaiseRegion, object data)
 		{
-			throw new NotImplementedException();
+			throw CreateNotSupportedError ();
 		}
 		
 		public override object VisitEventDeclaration (ICSharpCode.NRefactory.Ast.EventDeclaration eventDeclaration, object data)
 		{
-			throw new NotImplementedException();
+			throw CreateNotSupportedError ();
 		}
 		
 		public override object VisitEventAddRegion (ICSharpCode.NRefactory.Ast.EventAddRegion eventAddRegion, object data)
 		{
-			throw new NotImplementedException();
+			throw CreateNotSupportedError ();
 		}
 		
 		public override object VisitErrorStatement (ICSharpCode.NRefactory.Ast.ErrorStatement errorStatement, object data)
 		{
-			throw new NotImplementedException();
+			throw CreateNotSupportedError ();
 		}
 		
 		public override object VisitEraseStatement (ICSharpCode.NRefactory.Ast.EraseStatement eraseStatement, object data)
 		{
-			throw new NotImplementedException();
+			throw CreateNotSupportedError ();
 		}
 		
 		public override object VisitEndStatement (ICSharpCode.NRefactory.Ast.EndStatement endStatement, object data)
 		{
-			throw new NotImplementedException();
+			throw CreateNotSupportedError ();
 		}
 		
 		public override object VisitEmptyStatement (ICSharpCode.NRefactory.Ast.EmptyStatement emptyStatement, object data)
 		{
-			throw new NotImplementedException();
+			throw CreateNotSupportedError ();
 		}
 		
 		public override object VisitElseIfSection (ICSharpCode.NRefactory.Ast.ElseIfSection elseIfSection, object data)
 		{
-			throw new NotImplementedException();
+			throw CreateNotSupportedError ();
 		}
 		
 		public override object VisitDoLoopStatement (ICSharpCode.NRefactory.Ast.DoLoopStatement doLoopStatement, object data)
 		{
-			throw new NotImplementedException();
+			throw CreateNotSupportedError ();
 		}
 		
 		public override object VisitDirectionExpression (ICSharpCode.NRefactory.Ast.DirectionExpression directionExpression, object data)
 		{
-			throw new NotImplementedException();
+			throw CreateNotSupportedError ();
 		}
 		
 		public override object VisitDestructorDeclaration (ICSharpCode.NRefactory.Ast.DestructorDeclaration destructorDeclaration, object data)
 		{
-			throw new NotImplementedException();
+			throw CreateNotSupportedError ();
 		}
 		
 		public override object VisitDelegateDeclaration (ICSharpCode.NRefactory.Ast.DelegateDeclaration delegateDeclaration, object data)
 		{
-			throw new NotImplementedException();
+			throw CreateNotSupportedError ();
 		}
 		
 		public override object VisitDefaultValueExpression (ICSharpCode.NRefactory.Ast.DefaultValueExpression defaultValueExpression, object data)
 		{
-			throw new NotImplementedException();
+			throw CreateNotSupportedError ();
 		}
 		
 		public override object VisitDeclareDeclaration (ICSharpCode.NRefactory.Ast.DeclareDeclaration declareDeclaration, object data)
 		{
-			throw new NotImplementedException();
+			throw CreateNotSupportedError ();
 		}
 		
 		public override object VisitContinueStatement (ICSharpCode.NRefactory.Ast.ContinueStatement continueStatement, object data)
 		{
-			throw new NotImplementedException();
+			throw CreateNotSupportedError ();
 		}
 		
 		public override object VisitConstructorInitializer (ICSharpCode.NRefactory.Ast.ConstructorInitializer constructorInitializer, object data)
 		{
-			throw new NotImplementedException();
+			throw CreateNotSupportedError ();
 		}
 		
 		public override object VisitConstructorDeclaration (ICSharpCode.NRefactory.Ast.ConstructorDeclaration constructorDeclaration, object data)
 		{
-			throw new NotImplementedException();
+			throw CreateNotSupportedError ();
 		}
 		
 		public override object VisitCompilationUnit (ICSharpCode.NRefactory.Ast.CompilationUnit compilationUnit, object data)
 		{
-			throw new NotImplementedException();
+			throw CreateNotSupportedError ();
 		}
 		
 		public override object VisitCheckedStatement (ICSharpCode.NRefactory.Ast.CheckedStatement checkedStatement, object data)
 		{
-			throw new NotImplementedException();
+			throw CreateNotSupportedError ();
 		}
 		
 		public override object VisitCatchClause (ICSharpCode.NRefactory.Ast.CatchClause catchClause, object data)
 		{
-			throw new NotImplementedException();
+			throw CreateNotSupportedError ();
 		}
 		
 		public override object VisitCaseLabel (ICSharpCode.NRefactory.Ast.CaseLabel caseLabel, object data)
 		{
-			throw new NotImplementedException();
+			throw CreateNotSupportedError ();
 		}
 		
 		public override object VisitBreakStatement (ICSharpCode.NRefactory.Ast.BreakStatement breakStatement, object data)
 		{
-			throw new NotImplementedException();
+			throw CreateNotSupportedError ();
 		}
 		
 		public override object VisitAttributeSection (ICSharpCode.NRefactory.Ast.AttributeSection attributeSection, object data)
 		{
-			throw new NotImplementedException();
+			throw CreateNotSupportedError ();
 		}
 		
 		public override object VisitAttribute (ICSharpCode.NRefactory.Ast.Attribute attribute, object data)
 		{
-			throw new NotImplementedException();
+			throw CreateNotSupportedError ();
 		}
 		
 		public override object VisitAnonymousMethodExpression (ICSharpCode.NRefactory.Ast.AnonymousMethodExpression anonymousMethodExpression, object data)
 		{
-			throw new NotImplementedException();
+			throw CreateNotSupportedError ();
 		}
 		
 		public override object VisitAddressOfExpression (ICSharpCode.NRefactory.Ast.AddressOfExpression addressOfExpression, object data)
 		{
-			throw new NotImplementedException();
+			throw CreateNotSupportedError ();
 		}
 		
 		public override object VisitAddHandlerStatement (ICSharpCode.NRefactory.Ast.AddHandlerStatement addHandlerStatement, object data)
 		{
-			throw new NotImplementedException();
+			throw CreateNotSupportedError ();
 		}
 		
 		#endregion
 		
-		Exception CreateParseError (string message)
+		Exception CreateParseError (string message, params object[] args)
 		{
-			return new Exception (message);
+			return new EvaluatorException (message, args);
 		}
+		
+		Exception CreateNotSupportedError ()
+		{
+			return new EvaluatorException ("Expression not supported.");
+		}
+		
 		public string[] GetNamespaces ()
 		{
 			Method method = frame.Method;

@@ -124,9 +124,7 @@ namespace DebuggerServer
 			return false;
 		}
 
-		static bool ImplicitFundamentalConversionExists (StackFrame context,
-								 TargetFundamentalType source,
-								 TargetFundamentalType target)
+		static bool ImplicitFundamentalConversionExists (TargetFundamentalType source, TargetFundamentalType target)
 		{
 			return ImplicitFundamentalConversionExists (
 				source.FundamentalKind, target.FundamentalKind);
@@ -162,7 +160,7 @@ namespace DebuggerServer
 			}
 		}
 
-		static TargetObject ImplicitFundamentalConversion (StackFrame context,
+		static TargetObject ImplicitFundamentalConversion (Thread thread,
 								   TargetFundamentalObject obj,
 								   TargetFundamentalType type)
 		{
@@ -172,20 +170,20 @@ namespace DebuggerServer
 			if (!ImplicitFundamentalConversionExists (skind, tkind))
 				return null;
 
-			object value = obj.GetObject (context.Thread);
+			object value = obj.GetObject (thread);
 
 			object new_value = ImplicitFundamentalConversion (value, tkind);
 			if (new_value == null)
 				return null;
 
-			return type.Language.CreateInstance (context.Thread, new_value);
+			return type.Language.CreateInstance (thread, new_value);
 		}
 
 		public static TargetObject ExplicitFundamentalConversion (StackFrame context,
 									  TargetFundamentalObject obj,
 									  TargetFundamentalType type)
 		{
-			TargetObject retval = ImplicitFundamentalConversion (context, obj, type);
+			TargetObject retval = ImplicitFundamentalConversion (context.Thread, obj, type);
 			if (retval != null)
 				return retval;
 
@@ -203,7 +201,7 @@ namespace DebuggerServer
 			}
 		}
 
-		static bool ImplicitReferenceConversionExists (StackFrame context,
+		static bool ImplicitReferenceConversionExists (Thread thread,
 							       TargetStructType source,
 							       TargetStructType target)
 		{
@@ -213,11 +211,11 @@ namespace DebuggerServer
 			if (!source.HasParent)
 				return false;
 
-			TargetStructType parent_type = source.GetParentType (context.Thread);
-			return ImplicitReferenceConversionExists (context, parent_type, target);
+			TargetStructType parent_type = source.GetParentType (thread);
+			return ImplicitReferenceConversionExists (thread, parent_type, target);
 		}
 
-		static TargetObject ImplicitReferenceConversion (StackFrame context,
+		static TargetObject ImplicitReferenceConversion (Thread thread,
 								 TargetClassObject obj,
 								 TargetClassType type)
 		{
@@ -227,51 +225,102 @@ namespace DebuggerServer
 			if (!obj.Type.HasParent)
 				return null;
 
-			return obj.GetParentObject (context.Thread);
+			return obj.GetParentObject (thread);
 		}
 
-		public static bool ImplicitConversionExists (StackFrame context,
+		public static bool ImplicitConversionExists (Thread thread,
 							     TargetType source, TargetType target)
 		{
 			if (source.Equals (target))
 				return true;
+			
+			if (source is TargetArrayType && target.Name == "System.Array")
+				return true;
+
+			if (ObjectUtil.FixTypeName (target.Name) == "System.Object")
+				return true;
+			
+			if (source is TargetArrayType && target is TargetArrayType) {
+				TargetArrayType sa = (TargetArrayType) source;
+				TargetArrayType ta = (TargetArrayType) target;
+				return sa.ElementType.Equals (ta.ElementType);
+			}
+			
+			if (source is TargetEnumType) {
+				TargetEnumType e = (TargetEnumType) source;
+				if (ImplicitConversionExists (thread, e.Value.Type, target))
+					return true;
+			}
+
+			if (target is TargetEnumType) {
+				TargetEnumType e = (TargetEnumType) target;
+				if (ImplicitConversionExists (thread, source, e.Value.Type))
+					return true;
+			}
 
 			if ((source is TargetFundamentalType) && (target is TargetFundamentalType))
 				return ImplicitFundamentalConversionExists (
-					context, (TargetFundamentalType) source,
+					(TargetFundamentalType) source,
 					(TargetFundamentalType) target);
 
 			if ((source is TargetClassType) && (target is TargetClassType))
 				return ImplicitReferenceConversionExists (
-					context, (TargetClassType) source,
+					thread, (TargetClassType) source,
 					(TargetClassType) target);
 
 			return false;
 		}
 
-		public static TargetObject ImplicitConversion (StackFrame context,
+		public static TargetObject ImplicitConversion (Thread thread,
 							       TargetObject obj, TargetType type)
 		{
 			if (obj.Type.Equals (type))
 				return obj;
+			
+			if (type is TargetObjectType || ObjectUtil.FixTypeName (type.Name) == "System.Object") {
+				if (obj.Type.IsByRef)
+					return obj;
+				return BoxValue (thread.CurrentFrame, obj);
+			}
 
+			if (obj is TargetEnumObject && type is TargetFundamentalType) {
+				TargetEnumObject e = (TargetEnumObject) obj;
+				return ImplicitConversion (thread, e.GetValue (thread), type);
+			}
+
+			if (type is TargetEnumType) {
+				TargetEnumType e = (TargetEnumType) type;
+				return ImplicitConversion (thread, obj, e.Value.Type);
+			}
+			
+			if (obj is TargetArrayObject && type.Name == "System.Array") {
+				return obj;
+			}
+			
+			if (obj is TargetArrayObject && type is TargetArrayType) {
+				TargetArrayObject sa = (TargetArrayObject) obj;
+				TargetArrayType ta = (TargetArrayType) type;
+				if (sa.Type.ElementType.Equals (ta.ElementType))
+					return obj;
+			}
+			
 			if ((obj is TargetFundamentalObject) && (type is TargetFundamentalType))
 				return ImplicitFundamentalConversion (
-					context, (TargetFundamentalObject) obj,
+					thread, (TargetFundamentalObject) obj,
 					(TargetFundamentalType) type);
 
 			if ((obj is TargetClassObject) && (type is TargetClassType))
 				return ImplicitReferenceConversion (
-					context, (TargetClassObject) obj,
+					thread, (TargetClassObject) obj,
 					(TargetClassType) type);
 
 			return null;
 		}
 
-		public static TargetObject ImplicitConversionRequired (StackFrame context,
+		public static TargetObject ImplicitConversionRequired (Thread thread,
 								       TargetObject obj, TargetType type)
 		{
-			TargetObject new_obj = ImplicitConversion (context, obj, type);
+			TargetObject new_obj = ImplicitConversion (thread, obj, type);
 			if (new_obj != null)
 				return new_obj;
 
@@ -334,29 +383,51 @@ namespace DebuggerServer
 			return null;
 		}
 		
-		public static TargetObject Cast (StackFrame frame, TargetObject obj, TargetType target_type)
+		public static TargetObject Cast (StackFrame frame, TargetObject obj, TargetType targetType)
 		{
-			if (target_type is TargetPointerType) {
-				throw new NotSupportedException ();
+			if (targetType is TargetObjectType || ObjectUtil.FixTypeName (targetType.Name) == "System.Object") {
+				if (obj.Type.IsByRef)
+					return obj;
+				return BoxValue (frame, obj);
 			}
+			
+			if (targetType is TargetPointerType)
+				throw new NotSupportedException ();
 
-			if (target_type is TargetFundamentalType) {
+			if (targetType is TargetFundamentalType) {
 				TargetFundamentalObject fobj = obj as TargetFundamentalObject;
 				if (fobj == null)
 					return null;
 
-				TargetFundamentalType ftype = target_type as TargetFundamentalType;
+				TargetFundamentalType ftype = targetType as TargetFundamentalType;
 				return ExplicitFundamentalConversion (frame, fobj, ftype);
 			}
 
-			TargetClassType ctype = ToClassType (target_type);
+			TargetClassType ctype = ToClassType (targetType);
 			TargetClassObject source = ToClassObject (frame.Thread, obj);
 
 			if (source == null)
 				throw new Exception (string.Format ("Variable is not a class type."));
 
 			return TryCast (frame, source, ctype);
-		}		
+		}
+		
+		static TargetObject BoxValue (StackFrame frame, TargetObject fobj)
+		{
+			TargetObject tt = ObjectUtil.GetTypeOf (frame, fobj.TypeName);
+			TargetType at = frame.Language.LookupType ("System.Array");
+			TargetObject len = frame.Language.CreateInstance (frame.Thread, 1);
+			TargetObject arrayob = ObjectUtil.CallStaticMethod (frame.Thread, "CreateInstance", at, tt, len);
+			TargetArrayObject array = ObjectUtil.GetRealObject (frame.Thread, arrayob) as TargetArrayObject;
+			array.SetElement (frame.Thread, new int [] {0}, fobj);
+			
+			TargetObject ot = ObjectUtil.GetTypeOf (frame, "System.Object");
+			TargetObject auxarrayob = ObjectUtil.CallStaticMethod (frame.Thread, "CreateInstance", at, ot, len);
+			ObjectUtil.CallStaticMethod (frame.Thread, "Copy", at, arrayob, auxarrayob, len);
+			
+			array = ObjectUtil.GetRealObject (frame.Thread, auxarrayob) as TargetArrayObject;
+			return array.GetElement (frame.Thread, new int [] {0});
+		}
 		
 		static TargetStructObject TryParentCast (StackFrame frame, TargetStructObject source, TargetStructType source_type, TargetStructType target_type)
 		{

@@ -1,3 +1,25 @@
+2008-07-25  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* DebuggerServer.cs: Added some support for conditional breakpoints and
+	  tracepoints, although it is currently disabled because it requires
+	  changes in GUIManager.
+	* Util.cs, BacktraceWrapper.cs, ExpressionEvaluator.cs,
+	  ArrayValueReference.cs, ValueReference.cs, FieldReference.cs,
+	  PropertyReference.cs, VariableReference.cs,
+	  LiteralValueReference.cs: Moved several methods for handling
+	  TargetObject instances from Util to ObjectUtil.
+	* Convert.cs: Casting fixes.
+	* Mono.Debugging.Server.Mdb.mdp, Makefile: Added new files.
+	* NRefactoryEvaluator.cs: Improved error reporting. Added support for
+	  indexers.
+	* ObjectUtil.cs: Moved several methods for handling TargetObject
+	  instances from Util to ObjectUtil. Added api for invoking target
+	  methods and getting property values.
+	* CollectionAdaptor.cs: Use new api for calling methods and getting
+	  properties.
+	* IndexerValueReference.cs: New value reference to be used to get and
+	  assign values to indexers.
+
 2008-07-23  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* BacktraceWrapper.cs, ExpressionEvaluator.cs, ValueReference.cs:

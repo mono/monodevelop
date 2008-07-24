@@ -57,7 +57,7 @@ namespace DebuggerServer
 				if (field.HasConstValue)
 					return Thread.CurrentFrame.Language.CreateInstance (Thread, field.ConstValue);
 				TargetClass cls = type.GetClass (Thread);
-				return Util.GetRealObject (Thread, cls.GetField (Thread, thisobj, field));
+				return ObjectUtil.GetRealObject (Thread, cls.GetField (Thread, thisobj, field));
 			}
 			set {
 				TargetClass cls = type.GetClass (Thread);
@@ -73,7 +73,7 @@ namespace DebuggerServer
 
 		public override ObjectValueFlags Flags {
 			get {
-				ObjectValueFlags flags = ObjectValueFlags.Field | Util.GetAccessibility (field.Accessibility);
+				ObjectValueFlags flags = ObjectValueFlags.Field | ObjectUtil.GetAccessibility (field.Accessibility);
 				if (field.HasConstValue) flags |= ObjectValueFlags.ReadOnly;
 				return flags;
 			}

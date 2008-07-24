@@ -52,7 +52,7 @@ namespace DebuggerServer
 		
 		public override TargetObject Value {
 			get {
-				return Util.GetRealObject (Thread, Server.Instance.RuntimeInvoke (Thread, prop.Getter, thisobj, new TargetObject[0]));
+				return ObjectUtil.GetRealObject (Thread, Server.Instance.RuntimeInvoke (Thread, prop.Getter, thisobj, new TargetObject[0]));
 			}
 			set {
 				Server.Instance.RuntimeInvoke (Thread, prop.Setter, thisobj, new TargetObject[] { value });
@@ -67,7 +67,7 @@ namespace DebuggerServer
 
 		public override ObjectValueFlags Flags {
 			get {
-				ObjectValueFlags flags = ObjectValueFlags.Property | Util.GetAccessibility (prop.Accessibility);
+				ObjectValueFlags flags = ObjectValueFlags.Property | ObjectUtil.GetAccessibility (prop.Accessibility);
 				if (!prop.CanWrite) flags |= ObjectValueFlags.ReadOnly;
 				return flags;
 			}

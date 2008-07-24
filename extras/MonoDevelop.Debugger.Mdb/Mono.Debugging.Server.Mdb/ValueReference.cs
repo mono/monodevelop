@@ -109,7 +109,7 @@ namespace DebuggerServer
 		{
 			object val = ObjectValue;
 			if (val is TargetStructObject)
-				return Util.CallToString (Thread, (TargetStructObject) val);
+				return ObjectUtil.CallToString (Thread, (TargetStructObject) val);
 			else if (val == null)
 				return string.Empty;
 			else
@@ -145,7 +145,7 @@ namespace DebuggerServer
 			if (obj == null)
 				return null;
 			
-			obj = Util.GetRealObject (Thread, obj);
+			obj = ObjectUtil.GetRealObject (Thread, obj);
 			
 			if (obj == null)
 				return null;

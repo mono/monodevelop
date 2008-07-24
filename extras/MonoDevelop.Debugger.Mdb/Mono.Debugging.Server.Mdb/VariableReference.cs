@@ -49,7 +49,7 @@ namespace DebuggerServer
 		
 		public override TargetObject Value {
 			get {
-				return Util.GetRealObject (Thread, var.GetObject (frame));
+				return ObjectUtil.GetRealObject (Thread, var.GetObject (frame));
 			}
 			set {
 				var.SetObject (frame, value);
