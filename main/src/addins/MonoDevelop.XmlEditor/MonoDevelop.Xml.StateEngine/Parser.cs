@@ -57,7 +57,6 @@ namespace MonoDevelop.Xml.StateEngine
 		
 		Parser (Parser copyFrom)
 		{
-			System.Console.WriteLine("CLONED");
 			buildTree = false;
 			
 			rootState = copyFrom.rootState;
@@ -67,7 +66,11 @@ namespace MonoDevelop.Xml.StateEngine
 			stateTag = copyFrom.stateTag;
 			keywordBuilder = copyFrom.keywordBuilder;
 			currentStateLength = copyFrom.currentStateLength;
-			nodes = new NodeStack (CopyXObjects (copyFrom.nodes.ToArray ()));
+			
+			//clone the node stack
+			List<XObject> l = new List<XObject> (CopyXObjects (copyFrom.nodes));
+			l.Reverse ();
+			nodes = new NodeStack (l);
 		}
 		
 		IEnumerable<XObject> CopyXObjects (IEnumerable<XObject> src)
@@ -75,6 +78,8 @@ namespace MonoDevelop.Xml.StateEngine
 			foreach (XObject o in src)
 				yield return o.ShallowCopy ();
 		}
+		
+		public RootState RootState { get { return rootState; } }
 		
 		#region IDocumentStateEngine
 		
@@ -135,6 +140,28 @@ namespace MonoDevelop.Xml.StateEngine
 			if (buildTree)
 				throw new InvalidOperationException ("Parser can only be cloned when in stack mode");
 			return new Parser (this);
+		}
+		
+		public Parser GetTreeParser ()
+		{
+			if (buildTree)
+				throw new InvalidOperationException ("Parser can only be cloned when in stack mode");
+			Parser p = new Parser (this);
+			
+			p.buildTree = true;
+			
+			//reconnect the node tree
+			XNode prev = null;
+			foreach (XObject o in p.Nodes) {
+				XContainer container = o as XContainer;
+				if (prev != null && container != null)
+					container.AddChildNode (prev);
+				prev = o as XNode;
+			}
+			
+			p.errors = new List<Error> ();
+			
+			return p;
 		}
 		
 		#endregion

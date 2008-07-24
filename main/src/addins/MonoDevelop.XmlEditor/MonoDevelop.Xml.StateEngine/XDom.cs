@@ -110,7 +110,7 @@ namespace MonoDevelop.Xml.StateEngine
 		
 		protected virtual void ShallowCopyFrom (XObject copyFrom)
 		{
-			copyFrom.position = this.position; //immutable value type
+			this.position = copyFrom.position; //immutable value type
 		}
 		
 		protected XObject () {}
@@ -364,6 +364,7 @@ namespace MonoDevelop.Xml.StateEngine
 			base.ShallowCopyFrom (copyFrom);
 			XElement copyFromEl = (XElement) copyFrom;
 			name = copyFromEl.name; //XName is immutable value type
+			attributes = new AttributeCollection (this);
 		}
 		
 		public override string ToString ()

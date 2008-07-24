@@ -1,6 +1,14 @@
 2008-07-23  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Xml.StateEngine/XmlClosingTagState.cs,
+	  MonoDevelop.Xml.StateEngine/XmlTagState.cs: Fix start locations.
+	* MonoDevelop.Xml.StateEngine/Parser.cs,
+	  MonoDevelop.Xml.StateEngine/XDom.cs: Make it possible to clone
+	  parser and switch it into tree mode. Some general cloning fixes.
+
+2008-07-23  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Xml.StateEngine/XmlClosingTagState.cs,
 	  MonoDevelop.Xml.StateEngine/State.cs,
 	  MonoDevelop.Xml.StateEngine/XmlAttributeValueState.cs,
 	  MonoDevelop.Xml.StateEngine/XmlCommentState.cs,

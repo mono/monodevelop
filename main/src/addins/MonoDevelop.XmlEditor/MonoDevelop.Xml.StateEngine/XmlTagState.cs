@@ -72,12 +72,7 @@ namespace MonoDevelop.Xml.StateEngine
 			XElement element = context.Nodes.Peek () as XElement;
 			
 			if (element == null || element.IsComplete) {
-				Debug.Assert (context.CurrentStateLength == 1,
-					"IncompleteNode must not be an XClosingTag when CurrentStateLength is 1");
-				Debug.Assert (c == '/', "First character pushed to a XmlClosingTagState must be '/'");
-				Debug.Assert (context.Nodes.Peek () is XElement);
-				
-				element = new XElement (context.Position - 1);
+				element = new XElement (context.Position - 2); // 2 == < + current char
 				context.Nodes.Push (element);
 			}
 			
