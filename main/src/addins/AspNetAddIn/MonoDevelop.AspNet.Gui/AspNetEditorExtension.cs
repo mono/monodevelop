@@ -198,7 +198,7 @@ namespace MonoDevelop.AspNet.Gui
 					return null;
 				
 				if (tracker.Engine.CurrentState is S.XmlAttributeValueState 
-				    && !(previousChar == '\'' || previousChar == '"'))
+				    && !(previousChar == '\'' || previousChar == '"' || currentChar =='\'' || currentChar == '"'))
 					return null;
 			}
 			
@@ -295,8 +295,12 @@ namespace MonoDevelop.AspNet.Gui
 						
 			//attribute values
 			//determine whether to trigger completion within attribute values quotes
-			if (tracker.Engine.CurrentState is S.XmlAttributeValueState 
-			    && tracker.Engine.CurrentStateLength == (forced? 1 : 2)) {
+			if (tracker.Engine.CurrentState is S.XmlAttributeValueState
+			    //trigger on the opening quote
+			    && (tracker.Engine.CurrentStateLength == 1
+			        //or trigger on first letter of value, if unforced
+			        || (!forced && tracker.Engine.CurrentStateLength == 2))
+			    ) {
 				S.XAttribute att = (S.XAttribute) tracker.Engine.Nodes.Peek ();
 				
 				if (att.IsNamed) {
@@ -306,12 +310,13 @@ namespace MonoDevelop.AspNet.Gui
 					if (currentPosition + 1 < buf.Length)
 						next = buf.GetCharAt (currentPosition + 1);
 					
-					char compareChar = forced? currentChar : previousChar;
+					char compareChar = (tracker.Engine.CurrentStateLength == 1)? currentChar : previousChar;
 					
 					if ((compareChar == '"' || compareChar == '\'') 
 					    && (next == compareChar || char.IsWhiteSpace (next))
 					) {
-						if (!forced)
+						//if triggered by first letter of value, grab that letter
+						if (tracker.Engine.CurrentStateLength == 2)
 							triggerWordLength = 1;
 						
 						CodeCompletionDataProvider cp = new CodeCompletionDataProvider (null, GetAmbience ());
