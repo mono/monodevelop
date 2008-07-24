@@ -1,3 +1,8 @@
+2008-07-24  Mike Kestner <mkestner@novell.com> 
+
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderProject.cs: get paths
+	for gac references to simplify the lookup in stetic.
+
 2008-07-23  Mike Kestner <mkestner@novell.com> 
 
 	* MonoDevelop.GtkCore.GuiBuilder/ActionGroupDisplayBinding.cs:
