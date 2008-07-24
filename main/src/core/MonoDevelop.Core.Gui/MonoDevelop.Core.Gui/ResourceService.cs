@@ -176,6 +176,10 @@ namespace MonoDevelop.Core.Gui
 		
 		public Gdk.Pixbuf GetIcon (string name, Gtk.IconSize size)
 		{
+			//if an icon name begins with '#', we assume it's a hex colour
+			if (name.Length > 0 && name[0] == '#')
+				return GetColourBlock (name, size);
+			
 			string stockid = InternalGetStockId (name);
 			if (stockid != null) {
 				Gtk.IconSet iconset = Gtk.IconFactory.LookupDefault (stockid);
@@ -191,6 +195,56 @@ namespace MonoDevelop.Core.Gui
 			}
 			
 			return null;
+		}
+		
+		//ONLY handles hex colour names of the form "#RRGGBB"
+		Gdk.Pixbuf GetColourBlock (string name, Gtk.IconSize size)
+		{
+			int w, h;
+			if (!Gtk.Icon.SizeLookup (Gtk.IconSize.Menu, out w, out h))
+				w = h = 22;
+			Gdk.Pixbuf p = new Gdk.Pixbuf (Gdk.Colorspace.Rgb, true, 8, w, h);
+			uint colour;
+			if (!TryParseColourFromHex (name, false, out colour))
+				//if lookup fails, make it transparent
+				colour = 0xFFFFFF00;
+			p.Fill (colour);
+			return p;
+		}
+		
+		bool TryParseColourFromHex (string str, bool alpha, out uint val)
+		{
+			val = 0x00000000;
+			if (str.Length != (alpha? 9 : 7))
+				return false;
+			
+			for (int stringIndex = 1; stringIndex < str.Length; stringIndex++) {
+				uint bits;
+				switch (str[stringIndex]) {
+				case '0': bits = 0; break;
+				case '1': bits = 1; break;
+				case '2': bits = 2; break;
+				case '3': bits = 3; break;
+				case '4': bits = 4; break;
+				case '5': bits = 5; break;
+				case '6': bits = 6; break;
+				case '7': bits = 7; break;
+				case '8': bits = 8; break;
+				case '9': bits = 9; break;
+				case 'A': case 'a': bits = 10; break;
+				case 'B': case 'b': bits = 11; break;
+				case 'C': case 'c': bits = 12; break;
+				case 'D': case 'd': bits = 13; break;
+				case 'E': case 'e': bits = 14; break;
+				case 'F': case 'f': bits = 15; break;
+				default: return false;
+				}
+				
+				val = (val << 4) | bits;
+			}
+			if (!alpha)
+				val = (val << 8) | 0xFF;
+			return true;
 		}
 		
 		/// <summary>

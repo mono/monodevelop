@@ -374,7 +374,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 		
 		public Gdk.Pixbuf GetIcon (int n)
 		{
-			return RenderIcon (completionData[n].Image, Gtk.IconSize.Menu, "");
+			return MonoDevelop.Core.Gui.Services.Resources.GetIcon (completionData[n].Image, Gtk.IconSize.Menu);
 		}
 		
 		internal bool IsChanging {
