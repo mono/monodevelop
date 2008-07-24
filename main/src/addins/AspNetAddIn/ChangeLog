@@ -1,3 +1,9 @@
+2008-07-24  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs: For
+	  System.Drawing.Color names colours autocompletion entries, use a
+	  block of the colour as the icon. Don't show system colours.
+
 2008-07-23  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs: Implemented node

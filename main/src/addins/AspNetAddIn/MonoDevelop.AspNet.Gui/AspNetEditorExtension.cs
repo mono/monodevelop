@@ -550,8 +550,12 @@ namespace MonoDevelop.AspNet.Gui
 				//color completion
 				if (prop.ReturnType.FullyQualifiedName == "System.Drawing.Color") {
 					System.Drawing.ColorConverter conv = new System.Drawing.ColorConverter ();
-					foreach (System.Drawing.Color c in conv.GetStandardValues (null))
-						provider.AddCompletionData (new CodeCompletionData (c.Name, "md-literal"));
+					foreach (System.Drawing.Color c in conv.GetStandardValues (null)) {
+						if (c.IsSystemColor)
+							continue;
+						string hexcol = string.Format ("#{0:x2}{1:x2}{2:x2}", c.R, c.G, c.B);
+						provider.AddCompletionData (new CodeCompletionData (c.Name, hexcol));
+					}
 					return;
 				}
 				
