@@ -64,7 +64,7 @@ namespace MonoDevelop.Xml.StateEngine
 			
 			position = copyFrom.position;
 			stateTag = copyFrom.stateTag;
-			keywordBuilder = copyFrom.keywordBuilder;
+			keywordBuilder = new StringBuilder (copyFrom.keywordBuilder.ToString ());
 			currentStateLength = copyFrom.currentStateLength;
 			
 			//clone the node stack
@@ -142,6 +142,8 @@ namespace MonoDevelop.Xml.StateEngine
 			return new Parser (this);
 		}
 		
+		#endregion
+		
 		public Parser GetTreeParser ()
 		{
 			if (buildTree)
@@ -163,8 +165,6 @@ namespace MonoDevelop.Xml.StateEngine
 			
 			return p;
 		}
-		
-		#endregion
 		
 		public override string ToString ()
 		{
