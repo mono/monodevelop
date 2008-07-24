@@ -84,7 +84,7 @@ namespace Stetic
 		
 		public override void Load ()
 		{
-			LibraryCache.LibraryInfo info = cache [name];
+			LibraryCache.LibraryInfo info = cache.Refresh (resolver, name);
 
 			objects_dirty = false;
 			Load (info.ObjectsDocument);

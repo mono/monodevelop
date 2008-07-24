@@ -1,3 +1,9 @@
+2008-07-24  Mike Kestner <mkestner@novell.com> 
+
+	* libsteticui/CecilWidgetLibrary.cs (Load): use Refresh to get
+	the cache info so it has a better resolver to work with if the
+	cache is dirty.
+
 2008-07-22  Mike Kestner <mkestner@novell.com> 
 
 	* libsteticui/LibraryCache.cs: only perform attribute parsing if
