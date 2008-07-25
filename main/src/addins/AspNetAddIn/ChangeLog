@@ -1,3 +1,8 @@
+2008-07-25  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs: Put path bar update
+	  on a timeout so that it doesn't make selection too laggy.
+
 2008-07-24  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs: Improve triggering

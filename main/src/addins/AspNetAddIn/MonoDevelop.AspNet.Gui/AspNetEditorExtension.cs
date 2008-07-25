@@ -646,11 +646,20 @@ namespace MonoDevelop.AspNet.Gui
 		
 		string[] currentPath;
 		int selectedPathIndex;
+		bool pathUpdateQueued = false;
 		
 		
 		public override void CursorPositionChanged ()
 		{
-			UpdatePath ();
+			if (pathUpdateQueued)
+				return;
+			pathUpdateQueued = true;
+			GLib.Timeout.Add (500, delegate {
+				pathUpdateQueued = false;
+				UpdatePath ();
+				return false;
+			});
+				
 		}
 
 		public void SelectPath (int depth)
@@ -700,7 +709,7 @@ namespace MonoDevelop.AspNet.Gui
 				if (s > -1 && e > s)
 					Editor.Select (s, e);
 			} else {
-				MonoDevelop.Core.LoggingService.LogDebug ("No end tag found");
+				MonoDevelop.Core.LoggingService.LogDebug ("No end tag found for selection");
 			}
 		}
 		
