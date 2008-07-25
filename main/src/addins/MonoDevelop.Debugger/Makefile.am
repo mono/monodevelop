@@ -20,7 +20,6 @@ REFS =  \
 
 FILES =  \
 	AssemblyInfo.cs \
-	gtk-gui/generated.cs \
 	MonoDevelop.Debugger/BreakpointPad.cs \
 	MonoDevelop.Debugger/DebugTextMarker.cs \
 	MonoDevelop.Debugger/DisasemblyView.cs \
@@ -32,7 +31,6 @@ FILES =  \
 	MonoDevelop.Debugger/WatchPad.cs
 
 RES =  \
-	gtk-gui/gui.stetic \
 	MonoDevelop.Debugger.addin.xml
 
 DATA_FILES =
