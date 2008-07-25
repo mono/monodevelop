@@ -1,3 +1,8 @@
+2008-07-25  Peter Johanson <peter@peterjohanson.com> 
+
+	* Services/ExternalTestRunner.cs: Prevent an ArgumentOutOfRange
+	  exception if we are running a UnitTestGroup node.
+
 2008-07-21  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Project/NUnitAssemblyGroupFileFormat.cs,

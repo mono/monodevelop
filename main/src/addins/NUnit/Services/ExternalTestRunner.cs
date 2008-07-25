@@ -273,7 +273,10 @@ namespace MonoDevelop.NUnit
 			if (t.Parent == null) return rootTest;
 			
 			string fn = t.FullName;
-			string sname = fn.Substring (rootFullName.Length);
+			string sname = fn;
+			if (sname.StartsWith (rootFullName)) {
+				sname = sname.Substring (rootFullName.Length);
+			}
 			if (sname.StartsWith (".")) sname = sname.Substring (1);
 			UnitTest tt = FindTest (rootTest, sname);
 			return tt;
