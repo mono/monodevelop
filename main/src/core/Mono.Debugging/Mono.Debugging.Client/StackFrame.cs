@@ -63,6 +63,11 @@ namespace Mono.Debugging.Client
 			return sourceBacktrace.GetParameters (index);
 		}
 		
+		public ObjectValue[] GetAllLocals ()
+		{
+			return sourceBacktrace.GetAllLocals (index);
+		}
+		
 		public ObjectValue GetThisReference ()
 		{
 			return sourceBacktrace.GetThisReference (index);
