@@ -118,6 +118,11 @@ namespace Mono.CSharp.Dom
 
 		string Name { get; }
 		ITypeName [] TypeArguments { get; }
+
+		//
+		// Link to parent type for nested types like Foo.Bar<bool>
+		//
+		ITypeName ParentTypeName { get; }
 	}
 
 	public interface ITypeParameter

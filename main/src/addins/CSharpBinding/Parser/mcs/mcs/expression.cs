@@ -7127,7 +7127,7 @@ namespace Mono.CSharp {
 	///   Implements the member access expression
 	/// </summary>
 	public class MemberAccess : ATypeNameExpression {
-		protected Expression expr;
+		protected Expression expr; // FIXME: Has to be FullNamedExpression
 
 		public MemberAccess (Expression expr, string id)
 			: base (id, expr.Location)
@@ -7434,6 +7434,12 @@ namespace Mono.CSharp {
 		public override string GetSignatureForError ()
 		{
 			return expr.GetSignatureForError () + "." + base.GetSignatureForError ();
+		}
+
+		public override Dom.ITypeName ParentTypeName {
+			get {
+				return expr as Dom.ITypeName;
+			}
 		}
 
 		protected override void CloneTo (CloneContext clonectx, Expression t)

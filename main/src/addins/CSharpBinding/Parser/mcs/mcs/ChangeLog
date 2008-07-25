@@ -1,3 +1,8 @@
+2008-07-25  Marek Safar  <marek.safar@gmail.com>
+
+	A fix for bug #410717
+	* expression.cs, ecore.cs: MemberAccess implements ParentTypeName.
+
 2008-07-16  Mike Krüger <mkrueger@novell.com> 
 
 	* cs-tokenizer.cs: some bugfixes.

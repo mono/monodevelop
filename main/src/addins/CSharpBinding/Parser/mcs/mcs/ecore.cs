@@ -2802,6 +2802,10 @@ namespace Mono.CSharp {
 		// TODO: GetSignatureForError should use this to ensure proper testing
 		public abstract string Name { get; }
 
+		public virtual Dom.ITypeName ParentTypeName {
+			get { return null; }
+		}
+
 		public virtual Dom.ITypeName [] TypeArguments {
 			get { return null; }
 		}
