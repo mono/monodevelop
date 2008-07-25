@@ -41,6 +41,7 @@ namespace MonoDevelop.Debugger
 	public class ObjectValueTreeView: Gtk.TreeView, ICompletionWidget
 	{
 		List<string> valueNames = new List<string> ();
+		Dictionary<string,string> oldValues = new Dictionary<string,string> ();
 		List<ObjectValue> values = new List<ObjectValue> ();
 		TreeStore store;
 		TreeViewState state;
@@ -59,6 +60,10 @@ namespace MonoDevelop.Debugger
 		TreeViewColumn valueCol;
 		TreeViewColumn typeCol;
 		
+		string errorColor = "red";
+		string modifiedColor = "blue";
+		string disabledColor = "gray";
+		
 		const int NameCol = 0;
 		const int ValueCol = 1;
 		const int TypeCol = 2;
@@ -67,14 +72,15 @@ namespace MonoDevelop.Debugger
 		const int NameEditableCol = 5;
 		const int ValueEditableCol = 6;
 		const int IconCol = 7;
-		const int NamePlainCol = 8;
+		const int NameColorCol = 8;
+		const int ValueColorCol = 9;
 		
 		public event EventHandler StartEditing;
 		public event EventHandler EndEditing;
 
 		public ObjectValueTreeView ()
 		{
-			store = new TreeStore (typeof(string), typeof(string), typeof(string), typeof(ObjectValue), typeof(bool), typeof(bool), typeof(bool), typeof(string), typeof(string));
+			store = new TreeStore (typeof(string), typeof(string), typeof(string), typeof(ObjectValue), typeof(bool), typeof(bool), typeof(bool), typeof(string), typeof(string), typeof(string));
 			Model = store;
 			RulesHint = true;
 			
@@ -88,8 +94,9 @@ namespace MonoDevelop.Debugger
 			col.AddAttribute (crp, "stock_id", IconCol);
 			crtExp = new CellRendererText ();
 			col.PackStart (crtExp, true);
-			col.AddAttribute (crtExp, "markup", NameCol);
+			col.AddAttribute (crtExp, "text", NameCol);
 			col.AddAttribute (crtExp, "editable", NameEditableCol);
+			col.AddAttribute (crtExp, "foreground", NameColorCol);
 			col.Resizable = true;
 			AppendColumn (col);
 			
@@ -98,8 +105,9 @@ namespace MonoDevelop.Debugger
 			valueCol.Title = GettextCatalog.GetString ("Value");
 			crtValue = new CellRendererText ();
 			valueCol.PackStart (crtValue, true);
-			valueCol.AddAttribute (crtValue, "markup", ValueCol);
+			valueCol.AddAttribute (crtValue, "text", ValueCol);
 			valueCol.AddAttribute (crtValue, "editable", ValueEditableCol);
+			valueCol.AddAttribute (crtValue, "foreground", ValueColorCol);
 			valueCol.Resizable = true;
 			AppendColumn (valueCol);
 			
@@ -213,6 +221,12 @@ namespace MonoDevelop.Debugger
 			Update ();
 		}
 		
+		public void ClearValues ()
+		{
+			values.Clear ();
+			Update ();
+		}
+		
 		public IEnumerable<string> Expressions {
 			get { return valueNames; }
 		}
@@ -233,18 +247,61 @@ namespace MonoDevelop.Debugger
 			}
 			
 			if (AllowAdding)
-				store.AppendValues ("<span color='gray'>" + createMsg + "</span>", "", "", null, true, true);
+				store.AppendValues (createMsg, "", "", null, true, true, null, disabledColor, disabledColor);
 			
 			state.Load ();
+		}
+		
+		public void ResetChangeTracking ()
+		{
+			oldValues.Clear ();
+		}
+		
+		public void ChangeCheckpoint ()
+		{
+			oldValues.Clear ();
+			
+			TreeIter it;
+			if (!store.GetIterFirst (out it))
+				return;
+			
+			ChangeCheckpoint (it, "/");
+		}
+		
+		void ChangeCheckpoint (TreeIter it, string path)
+		{
+			do {
+				string name = (string) store.GetValue (it, NameCol);
+				string val = (string) store.GetValue (it, ValueCol);
+				oldValues [path + name] = val;
+				TreeIter cit;
+				if (store.IterChildren (out cit, it))
+					ChangeCheckpoint (cit, name + "/");
+			} while (store.IterNext (ref it));
 		}
 		
 		void AppendValue (TreeIter parent, string name, ObjectValue val)
 		{
 			string strval;
 			bool canEdit;
+			string nameColor = null;
+			string valueColor = null;
+			
+			if (name == null)
+				name = val.Name;
+			
+			string valPath;
+			if (parent.Equals (TreeIter.Zero))
+				valPath = "/" + name;
+			else
+				valPath = GetIterPath (parent) + "/" + name;
+			
+			string oldValue;
+			oldValues.TryGetValue (valPath, out oldValue);
+			
 			if (val.IsUnknown) {
 				strval = GettextCatalog.GetString ("The name '{0}' does not exist in the current context.", val.Name);
-				strval = GLib.Markup.EscapeText (strval);
+				nameColor = disabledColor;
 				canEdit = false;
 			}
 			else if (val.IsError) {
@@ -252,25 +309,23 @@ namespace MonoDevelop.Debugger
 				int i = strval.IndexOf ('\n');
 				if (i != -1)
 					strval = strval.Substring (0, i);
-				strval = "<span color='red'>" + GLib.Markup.EscapeText (strval) + "</span>";
+				valueColor = errorColor;
 				canEdit = false;
 			}
 			else {
 				canEdit = val.IsPrimitive && !val.IsReadOnly && allowEditing;
 				strval = val.Value != null ? val.Value.ToString () : "(null)";
-				strval = GLib.Markup.EscapeText (strval);
+				if (oldValue != null && strval != oldValue)
+					nameColor = valueColor = modifiedColor;
 			}
-			
-			if (name == null)
-				name = val.Name;
-			string nameMarkup = GLib.Markup.EscapeText (name);
+
 			string icon = GetIcon (val.Flags);
 
 			TreeIter it;
 			if (parent.Equals (TreeIter.Zero))
-				it = store.AppendValues (nameMarkup, strval, val.TypeName, val, !val.HasChildren, allowAdding, canEdit, icon, name);
+				it = store.AppendValues (name, strval, val.TypeName, val, !val.HasChildren, allowAdding, canEdit, icon, nameColor, valueColor);
 			else
-				it = store.AppendValues (parent, nameMarkup, strval, val.TypeName, val, !val.HasChildren, false, canEdit, icon, name);
+				it = store.AppendValues (parent, name, strval, val.TypeName, val, !val.HasChildren, false, canEdit, icon, nameColor, valueColor);
 			
 			if (val.HasChildren) {
 				// Add dummy node
@@ -333,6 +388,16 @@ namespace MonoDevelop.Debugger
 			if (compact)
 				ColumnsAutosize ();
 		}
+		
+		string GetIterPath (TreeIter iter)
+		{
+			StringBuilder sb = new StringBuilder ();
+			do {
+				string name = (string) store.GetValue (iter, NameCol);
+				sb.Insert (0, "/" + name);
+			} while (store.IterParent (out iter, iter));
+			return sb.ToString ();
+		}
 
 		void OnExpEditing (object s, Gtk.EditingStartedArgs args)
 		{
@@ -358,7 +423,7 @@ namespace MonoDevelop.Debugger
 					Update ();
 				}
 			} else {
-				string exp = (string) store.GetValue (it, NamePlainCol);
+				string exp = (string) store.GetValue (it, NameCol);
 				if (args.NewText == exp)
 					return;
 				int i = valueNames.IndexOf (exp);
@@ -395,7 +460,21 @@ namespace MonoDevelop.Debugger
 			} catch (Exception ex) {
 				LoggingService.LogError ("Could not set value for object '" + val.Name + "'", ex);
 			}
-			store.SetValue (it, ValueCol, GLib.Markup.EscapeText (val.Value));
+			store.SetValue (it, ValueCol, val.Value);
+
+			// Update the color
+			
+			string newColor = null;
+			
+			string valPath = GetIterPath (it);
+			string oldValue;
+			if (oldValues.TryGetValue (valPath, out oldValue)) {
+				if (oldValue != val.Value)
+					newColor = modifiedColor;
+			}
+			
+			store.SetValue (it, NameColorCol, newColor);
+			store.SetValue (it, ValueColorCol, newColor);
 		}
 		
 		void OnEditingCancelled (object s, EventArgs args)

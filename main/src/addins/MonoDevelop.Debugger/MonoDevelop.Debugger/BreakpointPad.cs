@@ -56,7 +56,6 @@ namespace MonoDevelop.Debugger
 		ToolButton deleteBtn;
 		ScrolledWindow sw;
 		Gtk.Tooltips tips = new Gtk.Tooltips ();
-		Menu menu;
 		
 		enum Columns
 		{
@@ -293,8 +292,6 @@ namespace MonoDevelop.Debugger
 		[GLib.ConnectBefore]
 		void OnKeyPressed (object o, Gtk.KeyPressEventArgs e)
 		{
-			TreeIter iter;
-			TreeModel model; 	
 			if (e.Event.Key != Gdk.Key.Delete){
 				e.RetVal = true;
 				return;

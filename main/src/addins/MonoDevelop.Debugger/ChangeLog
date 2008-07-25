@@ -1,6 +1,17 @@
 2008-07-25  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Debugger.addin.xml, MonoDevelop.Debugger.mdp,
+	  Makefile.am, MonoDevelop.Debugger/WatchPad.cs,
+	  MonoDevelop.Debugger/LocalsPad.cs,
+	  MonoDevelop.Debugger/BreakpointPad.cs,
+	  MonoDevelop.Debugger/ObjectValuePad.cs: Implemented LocalsPad.
+	  Moved all logic shared with the WatchPad to ObjectValuePad.
+	* MonoDevelop.Debugger/ObjectValueTreeView.cs: Highlight values that
+	  have changed since the last time the debugger was stopped.
+
+2008-07-25  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Debugger.addin.xml, MonoDevelop.Debugger.mdp,
 	  Makefile.am, MonoDevelop.Debugger/BreakpointPad.cs: Initial
 	  implementation of the breakpoints pad by Alfonso Santos Luaces.
 

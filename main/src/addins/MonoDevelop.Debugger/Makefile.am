@@ -25,6 +25,8 @@ FILES =  \
 	MonoDevelop.Debugger/DebugTextMarker.cs \
 	MonoDevelop.Debugger/DisasemblyView.cs \
 	MonoDevelop.Debugger/Initializer.cs \
+	MonoDevelop.Debugger/LocalsPad.cs \
+	MonoDevelop.Debugger/ObjectValuePad.cs \
 	MonoDevelop.Debugger/ObjectValueTreeView.cs \
 	MonoDevelop.Debugger/StackTracePad.cs \
 	MonoDevelop.Debugger/WatchPad.cs

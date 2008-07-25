@@ -20,6 +20,7 @@
 	<Extension path = "/MonoDevelop/Ide/Pads">
 		<Category id="Debug" _name="Debug Windows">
 			<Pad id = "MonoDevelop.Debugger.WatchPad" defaultPlacement = "Bottom" class = "MonoDevelop.Debugger.WatchPad" _label="Watch" />
+			<Pad id = "MonoDevelop.Debugger.LocalsPad" defaultPlacement = "Bottom" class = "MonoDevelop.Debugger.LocalsPad" _label="Locals" />
 			<Pad id = "MonoDevelop.Debugger.StackTracePad" defaultPlacement = "Bottom" class = "MonoDevelop.Debugger.StackTracePad" _label="Call Stack" />
 			<Pad id = "MonoDevelop.Debugger.BreakpointPad" defaultPlacement = "Bottom" class = "MonoDevelop.Debugger.BreakpointPad" _label="Breakpoint List" />
 		</Category>
@@ -27,6 +28,7 @@
 	
 	<Extension path = "/MonoDevelop/Ide/WorkbenchContexts/Edit">
 		<ContextPad id = "MonoDevelop.Debugger.WatchPad" />
+		<ContextPad id = "MonoDevelop.Debugger.LocalsPad" />
 		<ContextPad id = "MonoDevelop.Debugger.StackTracePad" />
 		<ContextPad id = "MonoDevelop.Debugger.BreakpointPad" />
 	</Extension>

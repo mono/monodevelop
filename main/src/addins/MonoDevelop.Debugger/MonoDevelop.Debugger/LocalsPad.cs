@@ -1,4 +1,4 @@
-// WatchPad.cs
+// LocalsPad.cs
 //
 // Author:
 //   Lluis Sanchez Gual <lluis@novell.com>
@@ -36,59 +36,23 @@ using Mono.Debugging.Client;
 
 namespace MonoDevelop.Debugger
 {
-	public class WatchPad: ObjectValuePad, IMementoCapable, ICustomXmlSerializer
+	public class LocalsPad: ObjectValuePad
 	{
-		List<string> storedVars;
-		
-		public WatchPad()
+		public LocalsPad()
 		{
-			tree.AllowAdding = true;
+			tree.AllowEditing = true;
+			tree.AllowAdding = false;
 		}
-		
-		#region IMementoCapable implementation 
-		
-		public ICustomXmlSerializer CreateMemento ()
+
+		public override void OnUpdateList ()
 		{
-			return this;
-		}
-		
-		public void SetMemento (ICustomXmlSerializer memento)
-		{
-			if (tree != null && storedVars != null)
-				tree.AddExpressions (storedVars);
-		}
-		
-		void ICustomXmlSerializer.WriteTo (System.Xml.XmlWriter writer)
-		{
-			if (tree != null) {
-				writer.WriteStartElement ("Values");
-				foreach (string name in tree.Expressions)
-					writer.WriteElementString ("Value", name);
-				writer.WriteEndElement ();
+			base.OnUpdateList ();
+			StackFrame frame = IdeApp.Services.DebuggingService.CurrentFrame;
+			if (frame != null) {
+				tree.ClearValues ();
+				foreach (ObjectValue val in frame.GetAllLocals ())
+					tree.AddValue (val);
 			}
 		}
-		
-		ICustomXmlSerializer ICustomXmlSerializer.ReadFrom (System.Xml.XmlReader reader)
-		{
-			storedVars = new List<string> ();
-			
-			reader.MoveToContent ();
-			if (reader.IsEmptyElement) {
-				reader.Read ();
-				return null;
-			}
-			reader.ReadStartElement ();
-			reader.MoveToContent ();
-			while (reader.NodeType != XmlNodeType.EndElement) {
-				if (reader.NodeType == XmlNodeType.Element) {
-					storedVars.Add (reader.ReadElementString ());
-				} else
-					reader.Skip ();
-			}
-			reader.ReadEndElement ();
-			return null;
-		}
-		
-		#endregion 
 	}
 }
