@@ -110,6 +110,14 @@ namespace MonoDevelop.Debugger.Gdb
 		{
 			return null;
 		}
+		
+		public ObjectValue[] GetAllLocals (int frameIndex)
+		{
+			List<ObjectValue> locals = new List<ObjectValue> ();
+			locals.AddRange (GetParameters (frameIndex));
+			locals.AddRange (GetLocalVariables (frameIndex));
+			return locals.ToArray ();
+		}
 
 		public ObjectValue[] GetExpressionValues (int frameIndex, string[] expressions, bool evaluateMethods)
 		{

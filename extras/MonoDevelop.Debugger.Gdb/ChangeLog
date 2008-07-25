@@ -1,3 +1,7 @@
+2008-07-25  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* GdbBacktrace.cs: Implement GetAllLocals.
+
 2008-07-16  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* GdbSession.cs: Track api changes.
