@@ -21,12 +21,14 @@
 		<Category id="Debug" _name="Debug Windows">
 			<Pad id = "MonoDevelop.Debugger.WatchPad" defaultPlacement = "Bottom" class = "MonoDevelop.Debugger.WatchPad" _label="Watch" />
 			<Pad id = "MonoDevelop.Debugger.StackTracePad" defaultPlacement = "Bottom" class = "MonoDevelop.Debugger.StackTracePad" _label="Call Stack" />
+			<Pad id = "MonoDevelop.Debugger.BreakpointPad" defaultPlacement = "Bottom" class = "MonoDevelop.Debugger.BreakpointPad" _label="Breakpoint List" />
 		</Category>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/WorkbenchContexts/Edit">
 		<ContextPad id = "MonoDevelop.Debugger.WatchPad" />
 		<ContextPad id = "MonoDevelop.Debugger.StackTracePad" />
+		<ContextPad id = "MonoDevelop.Debugger.BreakpointPad" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/StartupHandlers">

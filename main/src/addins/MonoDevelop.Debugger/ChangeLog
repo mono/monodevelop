@@ -1,3 +1,9 @@
+2008-07-25  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Debugger.addin.xml, MonoDevelop.Debugger.mdp,
+	  Makefile.am, MonoDevelop.Debugger/BreakpointPad.cs: Initial
+	  implementation of the breakpoints pad by Alfonso Santos Luaces.
+
 2008-07-22  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Debugger/WatchPad.cs: Make sure the value tree is

@@ -14,11 +14,14 @@ REFS =  \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Projects.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Projects.Gui.dll \
 	-r:Mono.Cairo \
+	-r:Mono.Posix \
 	-r:System \
 	-r:System.Xml 
 
 FILES =  \
 	AssemblyInfo.cs \
+	gtk-gui/generated.cs \
+	MonoDevelop.Debugger/BreakpointPad.cs \
 	MonoDevelop.Debugger/DebugTextMarker.cs \
 	MonoDevelop.Debugger/DisasemblyView.cs \
 	MonoDevelop.Debugger/Initializer.cs \
@@ -26,7 +29,9 @@ FILES =  \
 	MonoDevelop.Debugger/StackTracePad.cs \
 	MonoDevelop.Debugger/WatchPad.cs
 
-RES = MonoDevelop.Debugger.addin.xml
+RES =  \
+	gtk-gui/gui.stetic \
+	MonoDevelop.Debugger.addin.xml
 
 DATA_FILES =
 
