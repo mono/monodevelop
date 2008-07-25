@@ -89,7 +89,7 @@ namespace DebuggerServer
 		public ObjectValue GetThisReference (int frameIndex)
 		{
 			MD.StackFrame frame = frames [frameIndex];
-			if (frame.Method.HasThis) {
+			if (frame.Method != null && frame.Method.HasThis) {
 				ObjectValueFlags flags = ObjectValueFlags.Field | ObjectValueFlags.ReadOnly;
 				TargetVariable var = frame.Method.GetThis (frame.Thread);
 				VariableReference vref = new VariableReference (frame, var, flags);
@@ -97,6 +97,32 @@ namespace DebuggerServer
 			}
 			else
 				return null;
+		}
+		
+		public ObjectValue[] GetAllLocals (int frameIndex)
+		{
+			MD.StackFrame frame = frames [frameIndex];
+			
+			List<ObjectValue> locals = new List<ObjectValue> ();
+			
+			// 'This' reference, or a reference to the type if the method is static
+			
+			ObjectValue val = GetThisReference (frameIndex);
+			if (val != null)
+				locals.Add (val);
+			else if (frame.Method != null) {
+				TargetType t = frame.Method.GetDeclaringType (frame.Thread);
+				ValueReference vr = new TypeValueReference (frame.Thread, t);
+				locals.Add (vr.CreateObjectValue ());
+			}
+			
+			// Parameters
+			locals.AddRange (GetParameters (frameIndex));
+			
+			// Local variables
+			locals.AddRange (GetLocalVariables (frameIndex));
+			
+			return locals.ToArray ();
 		}
 		
 		public ObjectValue[] GetExpressionValues (int frameIndex, string[] expressions, bool evaluateMethods)

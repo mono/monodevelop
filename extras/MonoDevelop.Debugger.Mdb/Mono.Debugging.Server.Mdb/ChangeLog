@@ -1,5 +1,9 @@
 2008-07-25  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* BacktraceWrapper.cs: Implement GetAllLocals.
+
+2008-07-25  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* DebuggerServer.cs: Added some support for conditional breakpoints and
 	  tracepoints, although it is currently disabled because it requires
 	  changes in GUIManager.
