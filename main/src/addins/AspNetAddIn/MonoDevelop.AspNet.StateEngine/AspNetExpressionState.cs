@@ -1,5 +1,5 @@
 // 
-// AspNetFreeState.cs
+// AspNetExpressionState.cs
 // 
 // Author:
 //   Michael Hutchinson <mhutchinson@novell.com>
@@ -27,38 +27,55 @@
 //
 
 using System;
+using System.Diagnostics;
 
 using MonoDevelop.Xml.StateEngine;
 
 namespace MonoDevelop.AspNet.StateEngine
 {
 	
-	public class AspNetFreeState : XmlFreeState
+	
+	public class AspNetExpressionState : State
 	{
-		public AspNetFreeState () : base (new XmlTagState (), new XmlClosingTagState ()) {}
 		
-		public AspNetFreeState (
-			XmlTagState tagState,
-			XmlClosingTagState closingTagState,
-			XmlCommentState commentState,
-			XmlCDataState cDataState,
-			XmlDocTypeState docTypeState,
-		        XmlProcessingInstructionState processingInstructionState,
-			AspNetExpressionState expressionState)
-			: base (tagState, closingTagState, commentState, cDataState, docTypeState, processingInstructionState)
+		public AspNetExpressionState ()
 		{
-			this.ExpressionState = expressionState;
 		}
-		
-		protected AspNetExpressionState ExpressionState { get; private set; } 
 		
 		public override State PushChar (char c, IParseContext context, ref bool reject)
 		{
-			if (c == '%' && context.StateTag == BRACKET) {
-				return ExpressionState;
+			if (context.CurrentStateLength == 1) {
+				switch (c) {
+				//RENDER EXPRESSION <%=
+				case '=':
+					break;
+					
+				//DATABINDING EXPRESSION <%#
+				case '#':
+					break;
+					
+				//RESOURCE EXPRESSION <%$
+				case '$': 
+					break;
+					
+				//DIRECTIVE <%@
+				case '@': 
+					break;
+				
+				// SERVER COMMENT: <%--
+				case '-':
+					break;
+				
+				// RENDER BLOCK
+				default:
+					break;
+				}
 			}
-			return base.PushChar (c, context, ref reject);
 			
+			reject = true;
+			context.LogError ("Unexpected character '" + c + "' in ASP.NET expression.");
+			return null;
 		}
+
 	}
 }

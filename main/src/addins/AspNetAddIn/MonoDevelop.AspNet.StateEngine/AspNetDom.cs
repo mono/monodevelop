@@ -1,5 +1,5 @@
 // 
-// AspNetFreeState.cs
+// AspNetDom.cs
 // 
 // Author:
 //   Michael Hutchinson <mhutchinson@novell.com>
@@ -33,32 +33,31 @@ using MonoDevelop.Xml.StateEngine;
 namespace MonoDevelop.AspNet.StateEngine
 {
 	
-	public class AspNetFreeState : XmlFreeState
+	public class AspNetExpression : XObject
 	{
-		public AspNetFreeState () : base (new XmlTagState (), new XmlClosingTagState ()) {}
-		
-		public AspNetFreeState (
-			XmlTagState tagState,
-			XmlClosingTagState closingTagState,
-			XmlCommentState commentState,
-			XmlCDataState cDataState,
-			XmlDocTypeState docTypeState,
-		        XmlProcessingInstructionState processingInstructionState,
-			AspNetExpressionState expressionState)
-			: base (tagState, closingTagState, commentState, cDataState, docTypeState, processingInstructionState)
+		public AspNetExpression ()
 		{
-			this.ExpressionState = expressionState;
 		}
 		
-		protected AspNetExpressionState ExpressionState { get; private set; } 
-		
-		public override State PushChar (char c, IParseContext context, ref bool reject)
+		protected override XObject NewInstance ()
 		{
-			if (c == '%' && context.StateTag == BRACKET) {
-				return ExpressionState;
-			}
-			return base.PushChar (c, context, ref reject);
-			
+			return new AspNetExpression ();
 		}
+	}
+	
+	public class AspNetDirective : XObject
+	{
+		XAttributeCollection attributes;
+		
+		public AspNetDirective ()
+		{
+			attributes = new XAttributeCollection (this);
+		}
+		
+		protected override XObject NewInstance ()
+		{
+			return new AspNetDirective ();
+		}
+
 	}
 }
