@@ -34,12 +34,12 @@ namespace MonoDevelop.Xml.StateEngine
 {
 	public class XmlFreeState : RootState
 	{
-		const int FREE = 0;
-		const int BRACKET = 1;
-		const int BRACKET_EXCLAM = 2;
-		const int COMMENT = 3;
-		const int CDATA = 4;
-		const int DOCTYPE = 5;
+		protected const int FREE = 0;
+		protected const int BRACKET = FREE + 1;
+		protected const int BRACKET_EXCLAM = BRACKET + 1;
+		protected const int COMMENT = BRACKET_EXCLAM + 1;
+		protected const int CDATA = COMMENT + 1;
+		protected const int DOCTYPE = CDATA + 1;
 		
 		public XmlFreeState () : this (new XmlTagState (), new XmlClosingTagState ()) {}
 		
@@ -79,11 +79,15 @@ namespace MonoDevelop.Xml.StateEngine
 		
 		public override State PushChar (char c, IParseContext context, ref bool reject)
 		{
+			if (c == '<') {
+				if (context.StateTag != FREE)
+					context.LogError ("Unexpected '<' in tag opening.");
+				context.StateTag = BRACKET;
+				return null;
+			}
+			
 			switch (context.StateTag) {
 			case FREE:
-				if (c == '<') {
-					context.StateTag = BRACKET;
-				}
 				//FIXME: handle entities?
 				return null;
 				

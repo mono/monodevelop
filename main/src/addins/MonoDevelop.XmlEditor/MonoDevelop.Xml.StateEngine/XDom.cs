@@ -309,17 +309,17 @@ namespace MonoDevelop.Xml.StateEngine
 	{
 		XNode closingTag;
 		XName name;
-		AttributeCollection attributes;
+		XAttributeCollection attributes;
 		
 		public XElement (int start) : base (start)
 		{
-			attributes = new AttributeCollection (this);
+			attributes = new XAttributeCollection (this);
 		}
 		
 		public XElement (int start, XName name) : base (start)
 		{
 			this.name = name;
-			attributes = new AttributeCollection (this);
+			attributes = new XAttributeCollection (this);
 		}
 		
 		public XNode ClosingTag { get { return closingTag; } }
@@ -346,7 +346,7 @@ namespace MonoDevelop.Xml.StateEngine
 		public override bool IsComplete { get { return base.IsComplete && IsNamed; } }
 		public bool IsNamed { get { return name.IsValid; } }
 		
-		public AttributeCollection Attributes {
+		public XAttributeCollection Attributes {
 			get { return attributes; }
 		}
 		
@@ -364,7 +364,7 @@ namespace MonoDevelop.Xml.StateEngine
 			base.ShallowCopyFrom (copyFrom);
 			XElement copyFromEl = (XElement) copyFrom;
 			name = copyFromEl.name; //XName is immutable value type
-			attributes = new AttributeCollection (this);
+			attributes = new XAttributeCollection (this);
 		}
 		
 		public override string ToString ()
@@ -467,14 +467,15 @@ namespace MonoDevelop.Xml.StateEngine
 
 	}
 	
-	public class AttributeCollection : IEnumerable<XAttribute>
+	public class XAttributeCollection : IEnumerable<XAttribute>
 	{
-		XContainer parent;
+		XObject parent;
 		XAttribute firstChild;
 		XAttribute lastChild;
 		
-		public AttributeCollection (XContainer parent)
+		public XAttributeCollection (XObject parent)
 		{
+			Debug.Assert (parent != null);
 			this.parent = parent;
 		}
 		

@@ -1,3 +1,10 @@
+2008-07-25  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Xml.StateEngine/XmlFreeState.cs: Improve reset on <.
+	  Expose state tag consts for subclasses to use.
+	* MonoDevelop.Xml.StateEngine/XDom.cs: Rename AttributeCollection to
+	  XAttributeCollection.
+
 2008-07-24  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Xml.StateEngine/Parser.cs,
