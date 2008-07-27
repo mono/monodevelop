@@ -1,3 +1,16 @@
+2008-07-27  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Ide.Commands/RefactoryCommands.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassBrowser/ClassBrowserPadWidget.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassBrowser/ProjectNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassBrowser/MemberNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassBrowser/ProjectNamespaceBuilder.cs,
+	  MonoDevelop.Ide.Gui.Content/CompletionTextEditorExtension.cs,
+	  MonoDevelop.Ide.Gui/Document.cs,
+	  MonoDevelop.Ide.Gui/RootWorkspace.cs,
+	  MonoDevelop.Ide.Gui/ProjectOperations.cs: Worked on code
+	  completion/new dom.
+
 2008-07-23  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Ide.Gui.Content/SmartIndenter.cs: Missed a file. It's not

@@ -79,7 +79,8 @@ namespace MonoDevelop.Ide.Commands
 						ctx = IdeApp.Workspace.ParserDatabase.GetFileParserContext (doc.FileName);
 						pinfo = IdeApp.Workspace.ParserDatabase.UpdateFile (doc.FileName, editor.Text);
 					}
-					
+					if (ctx == null)
+						return;
 					// Look for an identifier at the cursor position
 					
 					string id = editor.SelectedText;

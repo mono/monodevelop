@@ -223,6 +223,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 			if (member.DeclaringType == null) 
 				return;
+			System.Console.WriteLine(member.DeclaringType.CompilationUnit);
 			MonoDevelop.Ide.Gui.IdeApp.Workbench.OpenDocument (member.DeclaringType.CompilationUnit.FileName, 
 			                                                   member.Location.Line,
 			                                                   member.Location.Column,

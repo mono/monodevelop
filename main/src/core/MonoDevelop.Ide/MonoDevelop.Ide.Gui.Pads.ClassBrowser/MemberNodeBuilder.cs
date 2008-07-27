@@ -56,7 +56,8 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassBrowser
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
 		{
 			IMember member = dataObject as IMember;
-			label = AmbienceService.Default.GetString (member, OutputFlags.ClassBrowserEntries);
+			
+			label = AmbienceService.GetAmbience (member).GetString (member, OutputFlags.ClassBrowserEntries);
 			icon  = MonoDevelop.Ide.Gui.IdeApp.Services.Resources.GetIcon (member.StockIcon, Gtk.IconSize.Menu);
 		}
 		

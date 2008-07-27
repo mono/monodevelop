@@ -42,6 +42,7 @@ namespace MonoDevelop.Ide.Gui.Content
 		ICompletionWidget completionWidget;
 		bool autoHideCompletionWindow = true;
 		
+		
 		// When a key is pressed, and before the key is processed by the editor, this method will be invoked.
 		// Return true if the key press should be processed by the editor.
 		public override bool KeyPress (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)

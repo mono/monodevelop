@@ -520,6 +520,7 @@ namespace MonoDevelop.Ide.Gui
 					extension != ".MDS" &&
 					extension != ".MDP" && 
 					extension != ".PIDB" &&
+					extension != ".PIDB-JOURNAL" &&
 					!file.EndsWith ("make.sh") &&
 					!file.EndsWith ("~") &&
 					!file.StartsWith (".") &&
@@ -770,9 +771,9 @@ namespace MonoDevelop.Ide.Gui
 		
 		void NotifyItemAddedGui (WorkspaceItem item)
 		{
-			//MonoDevelop.Projects.Dom.Parser.ProjectDomService.Load (item);
 			try {
-				ParserDatabase.Load (item);
+				MonoDevelop.Projects.Dom.Parser.ProjectDomService.Load (item);
+				//ParserDatabase.Load (item);
 			} catch (Exception ex) {
 				LoggingService.LogError ("Could not load parser database.", ex);
 			}
@@ -823,7 +824,7 @@ namespace MonoDevelop.Ide.Gui
 				WorkspaceItemClosed (this, args);
 			
 			MonoDevelop.Projects.Dom.Parser.ProjectDomService.Unload (item);
-			ParserDatabase.Unload (item);
+//			ParserDatabase.Unload (item);
 			
 			NotifyDescendantItemRemoved (this, args);
 		}

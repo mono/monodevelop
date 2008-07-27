@@ -63,7 +63,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassBrowser
 		public override void OnNodeAdded (object dataObject)
 		{
 			Project project = (Project) dataObject;
-			ProjectDom dom = ProjectDomService.GetDom (project);
+			ProjectDom dom = ProjectDomService.GetDatabaseProjectDom (project);
 			dom.Loaded += domLoaded;
 			project.NameChanged += projectNameChanged;
 		}
@@ -71,7 +71,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassBrowser
 		public override void OnNodeRemoved (object dataObject)
 		{
 			Project project = (Project) dataObject;
-			ProjectDom dom = ProjectDomService.GetDom (project);
+			ProjectDom dom = ProjectDomService.GetDatabaseProjectDom (project);
 			dom.Loaded -= domLoaded;
 			project.NameChanged -= projectNameChanged;
 		}
@@ -99,50 +99,29 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassBrowser
 		{
 			bool publicOnly = builder.Options ["PublicApiOnly"];
 			
-			ProjectDom dom = ProjectDomService.GetDom (project);
+			ProjectDom dom = ProjectDomService.GetDatabaseProjectDom (project);
 			
-			Dictionary <string, ProjectNamespace> namespaces = new Dictionary<string, ProjectNamespace> ();
+		//	Dictionary <string, ProjectNamespace> namespaces = new Dictionary<string, ProjectNamespace> ();
+			
+			foreach (MonoDevelop.Projects.Dom.IMember member in dom.GetNamespaceContents ("", false, true)) {
+				builder.AddChild (member);
+/*				if (String.IsNullOrEmpty (type.Namespace)) {
+				} else {
+					if (!namespaces.ContainsKey (type.Namespace)) {
+						namespaces [type.Namespace] = new ProjectNamespace (type.Namespace);
+					}
+					namespaces [type.Namespace].Types.Add (type);
+				}*/
+			}
 			
 //			foreach (CompilationUnit unit in dom.CompilationUnits) {
-				foreach (IType type in dom.Types) {
-					if (String.IsNullOrEmpty (type.Namespace)) {
-						builder.AddChild (type);
-					} else {
-						if (!namespaces.ContainsKey (type.Namespace)) {
-							namespaces [type.Namespace] = new ProjectNamespace (type.Namespace);
-						}
-						namespaces [type.Namespace].Types.Add (type);
-					}
-				}
-//			}
-			foreach (ProjectNamespace ns in namespaces.Values) {
-				builder.AddChild (ns);
-			}
-		}
-			
-		internal class ProjectNamespace
-		{
-			string      name;
-			List<IType> types = new List<IType> ();
-			
-			public string Name {
-				get {
-					return name;
-				}
-			}
 				
-			public List<IType> Types {
-				get {
-					return types;
-				}
-			}
-			
-			public ProjectNamespace (string name)
-			{
-				this.name = name;
-			}
+//			}
+/*			foreach (ProjectNamespace ns in namespaces.Values) {
+				builder.AddChild (ns);
+			}*/
 		}
-		
+			
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
 		{
 			return true;
