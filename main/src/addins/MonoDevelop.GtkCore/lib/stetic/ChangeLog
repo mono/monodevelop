@@ -1,3 +1,7 @@
+2008-07-27  Mike Krüger <mkrueger@novell.com> 
+
+	
+
 2008-07-24  Mike Kestner <mkestner@novell.com> 
 
 	* libsteticui/CecilWidgetLibrary.cs (Load): use Refresh to get

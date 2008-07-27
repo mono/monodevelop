@@ -27,10 +27,11 @@
 //
 
 using System;
+using System.Collections.Generic;
 using Gtk;
 using Gdk;
 using Glade;
-using MonoDevelop.Projects.Parser;
+using MonoDevelop.Projects.Dom;
 using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.GtkCore.Dialogs
@@ -41,7 +42,7 @@ namespace MonoDevelop.GtkCore.Dialogs
 		[Glade.Widget] protected Gtk.TreeView treeClasses;
 		ListStore store;
 		
-		public SelectRenamedClassDialog (ClassCollection classes)
+		public SelectRenamedClassDialog (IEnumerable<IType> classes)
 		{
 			XML glade = new XML (null, "gui.glade", "SelectRenamedClassDialog", null);
 			glade.Autoconnect (this);
@@ -61,10 +62,9 @@ namespace MonoDevelop.GtkCore.Dialogs
 			
 			treeClasses.AppendColumn (column);
 			
-			foreach (IClass cls in classes) {
-				string icon = IdeApp.Services.Icons.GetIcon (cls);
-				Pixbuf pic = IdeApp.Services.Resources.GetIcon (icon);
-				store.AppendValues (pic, cls.FullyQualifiedName);
+			foreach (IType cls in classes) {
+				Pixbuf pic = IdeApp.Services.Resources.GetIcon (cls.StockIcon);
+				store.AppendValues (pic, cls.FullName);
 			}
 		}
 		

@@ -9,6 +9,7 @@ ASSEMBLY_FILES = \
 
 pkglib_DATA = $(ASSEMBLY_FILES)
 libstetic_dll_sources =  \
+	../../gtk-gui/generated.cs \
 	ClassDescriptor.cs \
 	Clipboard.cs \
 	CommandDescriptor.cs \
@@ -168,6 +169,7 @@ libstetic_dll_sources =  \
 	wrapper/Window.cs
 
 libstetic_dll_resources =  \
+	../../gtk-gui/gui.stetic \
 	stetic.glade \
 	wrapper/objects.xml \
 	wrapper/pixmaps/accellabel.png \

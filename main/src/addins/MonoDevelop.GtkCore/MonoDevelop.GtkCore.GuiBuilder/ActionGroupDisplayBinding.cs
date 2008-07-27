@@ -36,7 +36,8 @@ using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Codons;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Parser;
+using MonoDevelop.Projects.Dom;
+using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Projects.CodeGeneration;
 using MonoDevelop.GtkCore.Dialogs;
 
@@ -112,10 +113,10 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			// Find the classes that could be bound to this design
 			
 			ArrayList list = new ArrayList ();
-			IParserContext ctx = gproject.GetParserContext ();
-			foreach (IClass cls in ctx.GetProjectContents ())
+			ProjectDom ctx = gproject.GetParserContext ();
+			foreach (IType cls in ctx.Types)
 				if (IsValidClass (ctx, cls))
-					list.Add (cls.FullyQualifiedName);
+					list.Add (cls.FullName);
 		
 			// Ask what to do
 			
@@ -132,7 +133,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			return gproject.GetSourceCodeFile (group);
 		}
 		
-		static IClass CreateClass (Project project, Stetic.ActionGroupComponent group, string name, string namspace, string folder)
+		static IType CreateClass (Project project, Stetic.ActionGroupComponent group, string name, string namspace, string folder)
 		{
 			string fullName = namspace.Length > 0 ? namspace + "." + name : name;
 			
@@ -178,26 +179,28 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			
 			// Create the class
 			
-			IClass cls = gen.CreateClass (project, ((DotNetProject)project).LanguageName, folder, namspace, type);
-			if (cls == null)
+			IType cls = null;
+// TODO: Class Generation !!!
+//			cls = gen.CreateClass (project, ((DotNetProject)project).LanguageName, folder, namspace, type);
+//			if (cls == null)
 				throw new UserException ("Could not create class " + fullName);
 			
-			project.AddFile (cls.Region.FileName, BuildAction.Compile);
+			project.AddFile (cls.CompilationUnit.FileName, BuildAction.Compile);
 			IdeApp.ProjectOperations.Save (project);
 			
 			// Make sure the database is up-to-date
-			IdeApp.Workspace.ParserDatabase.UpdateFile (project, cls.Region.FileName, null);
+			IdeApp.Workspace.ParserDatabase.UpdateFile (project, cls.CompilationUnit.FileName, null);
 			return cls;
 		}
 		
-		internal static bool IsValidClass (IParserContext ctx, IClass cls)
+		internal static bool IsValidClass (ProjectDom ctx, IType cls)
 		{
 			if (cls.BaseTypes != null) {
 				foreach (IReturnType bt in cls.BaseTypes) {
-					if (bt.FullyQualifiedName == "Gtk.ActionGroup")
+					if (bt.FullName == "Gtk.ActionGroup")
 						return true;
 					
-					IClass baseCls = ctx.GetClass (bt.FullyQualifiedName, true, true);
+					IType baseCls = ctx.GetType (bt);
 					if (baseCls != null && IsValidClass (ctx, baseCls))
 						return true;
 				}
