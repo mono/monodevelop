@@ -53,7 +53,7 @@ namespace MonoDevelop.AssemblyBrowser
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
 		{
 			IReturnType returnType = (IReturnType)dataObject;
-			label = AmbienceService.Default.GetString (returnType, OutputFlags.ClassBrowserEntries);
+			label = AmbienceService.GetAmbience ("text/x-csharp").GetString (returnType, OutputFlags.ClassBrowserEntries);
 			icon = Context.GetIcon (Stock.Class);
 		}
 	}

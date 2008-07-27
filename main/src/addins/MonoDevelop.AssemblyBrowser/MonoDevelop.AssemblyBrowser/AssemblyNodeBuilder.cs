@@ -79,7 +79,7 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			result.Append ("<span font_family=\"monospace\">");
 			
-			result.Append (AmbienceService.Default.SingleLineComment (
+			result.Append (AmbienceService.GetAmbience ("text/x-csharp").SingleLineComment (
                                String.Format (GettextCatalog.GetString ("Assembly <b>{0}</b>, Version {1}"),
 			                                  assemblyDefinition.Name.Name,
 			                                  assemblyDefinition.Name.Version)));
@@ -121,7 +121,7 @@ namespace MonoDevelop.AssemblyBrowser
 			StringBuilder result = new StringBuilder ();
 			PrintAssemblyHeader (result, assemblyDefinition);
 			foreach (CustomAttribute attr in assemblyDefinition.CustomAttributes) {
-				result.Append (AmbienceService.Default.GetString (new DomCecilAttribute (attr), OutputFlags.AssemblyBrowserDescription));
+				result.Append (AmbienceService.GetAmbience ("text/x-csharp").GetString (new DomCecilAttribute (attr), OutputFlags.AssemblyBrowserDescription));
 				result.AppendLine ();
 			}
 			return result.ToString ();

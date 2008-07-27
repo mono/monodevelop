@@ -62,7 +62,7 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			IMethod method = (IMethod)dataObject;
 			
-			label = AmbienceService.Default.GetString (method, OutputFlags.ClassBrowserEntries);
+			label = AmbienceService.GetAmbience ("text/x-csharp").GetString (method, OutputFlags.ClassBrowserEntries);
 			if (method.IsPrivate || method.IsInternal)
 				label = DomMethodNodeBuilder.FormatPrivate (label);
 			
@@ -95,7 +95,7 @@ namespace MonoDevelop.AssemblyBrowser
 			IMethod method = (IMethod)navigator.DataItem;
 			StringBuilder result = new StringBuilder ();
 			result.Append ("<span font_family=\"monospace\">");
-			result.Append (AmbienceService.Default.GetString (method, OutputFlags.AssemblyBrowserDescription));
+			result.Append (AmbienceService.GetAmbience ("text/x-csharp").GetString (method, OutputFlags.AssemblyBrowserDescription));
 			result.Append ("</span>");
 			result.AppendLine ();
 			PrintDeclaringType (result, navigator);

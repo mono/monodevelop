@@ -79,7 +79,7 @@ namespace MonoDevelop.AssemblyBrowser
 			StringBuilder result = new StringBuilder ();
 			if (!String.IsNullOrEmpty (ns.Name)) {
 				result.Append ("<span font_family=\"monospace\">");
-				result.Append (AmbienceService.Default.GetString (ns.Name, OutputFlags.AssemblyBrowserDescription));
+				result.Append (AmbienceService.GetAmbience ("text/x-csharp").GetString (ns.Name, OutputFlags.AssemblyBrowserDescription));
 				result.Append ("</span>");
 				result.AppendLine ();
 			}
@@ -91,14 +91,15 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			Namespace ns = (Namespace)navigator.DataItem;
 			StringBuilder result = new StringBuilder ();
+			Ambience ambience = AmbienceService.GetAmbience ("text/x-csharp");
 			if (!String.IsNullOrEmpty (ns.Name)) {
-				result.Append (AmbienceService.Default.GetString (ns.Name, OutputFlags.AssemblyBrowserDescription));
+				result.Append (ambience.GetString (ns.Name, OutputFlags.AssemblyBrowserDescription));
 				result.AppendLine ();
 			}
 			foreach (IType type in ns.Types) {
 				if (!String.IsNullOrEmpty (ns.Name))
 					result.Append ("\t");
-				result.Append (AmbienceService.Default.GetString (type, OutputFlags.AssemblyBrowserDescription));
+				result.Append (ambience.GetString (type, OutputFlags.AssemblyBrowserDescription));
 				result.AppendLine ();
 			}
 			result.AppendLine ();

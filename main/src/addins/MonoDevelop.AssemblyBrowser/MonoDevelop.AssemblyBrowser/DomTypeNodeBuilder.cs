@@ -63,7 +63,7 @@ namespace MonoDevelop.AssemblyBrowser
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
 		{
 			IType type = (IType)dataObject;
-			label = AmbienceService.Default.GetString (type, OutputFlags.ClassBrowserEntries);
+			label = AmbienceService.GetAmbience ("text/x-csharp").GetString (type, OutputFlags.ClassBrowserEntries);
 			if (type.IsPrivate || type.IsInternal)
 				label = DomMethodNodeBuilder.FormatPrivate (label);
 			icon = MonoDevelop.Ide.Gui.IdeApp.Services.Resources.GetIcon (type.StockIcon, Gtk.IconSize.Menu);
@@ -104,7 +104,7 @@ namespace MonoDevelop.AssemblyBrowser
 			IType type = (IType)navigator.DataItem;
 			StringBuilder result = new StringBuilder ();
 			result.Append ("<span font_family=\"monospace\">");
-			result.Append (AmbienceService.Default.GetString (type, OutputFlags.AssemblyBrowserDescription));
+			result.Append (AmbienceService.GetAmbience ("text/x-csharp").GetString (type, OutputFlags.AssemblyBrowserDescription));
 			result.Append ("</span>");
 			result.AppendLine ();
 			result.Append (String.Format (GettextCatalog.GetString ("<b>Name:</b>\t{0}"),
@@ -118,7 +118,8 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			IType type = (IType)navigator.DataItem;
 			StringBuilder result = new StringBuilder ();
-			result.Append (AmbienceService.Default.GetString (type, OutputFlags.AssemblyBrowserDescription));
+			Ambience ambience = AmbienceService.GetAmbience ("text/x-csharp");
+			result.Append (ambience.GetString (type, OutputFlags.AssemblyBrowserDescription));
 			result.AppendLine ();
 			bool first = true;
 			
@@ -149,13 +150,13 @@ namespace MonoDevelop.AssemblyBrowser
 					result.AppendLine ();
 					result.Append ("\t");
 					result.Append (commentSpan);
-					result.Append (AmbienceService.Default.SingleLineComment (GettextCatalog.GetString ("Fields")));
+					result.Append (ambience.SingleLineComment (GettextCatalog.GetString ("Fields")));
 					result.Append ("</span>");
 					result.AppendLine ();
 				}
 				first = false;
 				result.Append ("\t");
-				result.Append (AmbienceService.Default.GetString (field, OutputFlags.AssemblyBrowserDescription));
+				result.Append (ambience.GetString (field, OutputFlags.AssemblyBrowserDescription));
 				result.AppendLine ();
 			}
 			first = true;
@@ -163,13 +164,13 @@ namespace MonoDevelop.AssemblyBrowser
 				if (first) {
 					result.Append ("\t");
 					result.Append (commentSpan);
-					result.Append (AmbienceService.Default.SingleLineComment (GettextCatalog.GetString ("Events")));
+					result.Append (ambience.SingleLineComment (GettextCatalog.GetString ("Events")));
 					result.Append ("</span>");
 					result.AppendLine ();
 				}
 				first = false;
 				result.Append ("\t");
-				result.Append (AmbienceService.Default.GetString (evt, OutputFlags.AssemblyBrowserDescription));
+				result.Append (ambience.GetString (evt, OutputFlags.AssemblyBrowserDescription));
 				result.AppendLine ();
 			}
 			first = true;
@@ -180,13 +181,13 @@ namespace MonoDevelop.AssemblyBrowser
 					result.AppendLine ();
 					result.Append ("\t");
 					result.Append (commentSpan);
-					result.Append (AmbienceService.Default.SingleLineComment (GettextCatalog.GetString ("Methods")));
+					result.Append (ambience.SingleLineComment (GettextCatalog.GetString ("Methods")));
 					result.Append ("</span>");
 					result.AppendLine ();
 				}
 				first = false;
 				result.Append ("\t");
-				result.Append (AmbienceService.Default.GetString (method, OutputFlags.AssemblyBrowserDescription));
+				result.Append (ambience.GetString (method, OutputFlags.AssemblyBrowserDescription));
 				result.AppendLine ();
 			}
 			first = true;
@@ -195,13 +196,13 @@ namespace MonoDevelop.AssemblyBrowser
 					result.AppendLine ();
 					result.Append ("\t");
 					result.Append (commentSpan);
-					result.Append (AmbienceService.Default.SingleLineComment (GettextCatalog.GetString ("Properties")));
+					result.Append (ambience.SingleLineComment (GettextCatalog.GetString ("Properties")));
 					result.Append ("</span>");
 					result.AppendLine ();
 				}
 				first = false;
 				result.Append ("\t");
-				result.Append (AmbienceService.Default.GetString (property, OutputFlags.AssemblyBrowserDescription));
+				result.Append (ambience.GetString (property, OutputFlags.AssemblyBrowserDescription));
 				result.AppendLine ();
 			}
 			return result.ToString ();
