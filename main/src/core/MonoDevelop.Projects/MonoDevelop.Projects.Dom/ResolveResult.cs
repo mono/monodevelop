@@ -38,7 +38,6 @@ namespace MonoDevelop.Projects.Dom
 		IType       callingType;
 		IMember     callingMember;
 		
-		//IMember     resolvedMember;
 		IReturnType resolvedType;
 		bool        staticResolve = false;
 		
@@ -78,15 +77,6 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
-//		public IMember ResolvedMember {
-//			get {
-//				return resolvedMember;
-//			}
-//			set {
-//				resolvedMember = value;
-//			}
-//		}
-		
 		public ResolveResult ()
 		{
 		}
@@ -96,17 +86,84 @@ namespace MonoDevelop.Projects.Dom
 		}
 		
 		public abstract IEnumerable<object> CreateResolveResult (ProjectDom dom);
-		
-
 	}
+	
+	public class LocalVariableResolveResult : ResolveResult
+	{
+		string variableName;
+		
+		public string VariableName {
+			get {
+				return variableName;
+			}
+		}
+		
+		public LocalVariableResolveResult (string variableName)
+		{
+			this.variableName = variableName;
+		}
+		public override IEnumerable<object> CreateResolveResult (ProjectDom dom)
+		{
+			List<object> result = new List<object> ();
+			MemberResolveResult.AddType (dom, result, ResolvedType, StaticResolve);
+			return result;
+		}
+		
+		public override string ToString ()
+		{
+			return String.Format ("[LocalVariableResolveResult: VariableName={0}, ResolvedType={1}]", VariableName, ResolvedType);
+		}
+	}
+	
+	public class ParameterResolveResult : ResolveResult
+	{
+		IParameter parameter;
+		
+		public IParameter Parameter {
+			get {
+				return parameter;
+			}
+		}
+		
+		public ParameterResolveResult (IParameter parameter)
+		{
+			this.parameter = parameter;
+		}
+		
+		public override IEnumerable<object> CreateResolveResult (ProjectDom dom)
+		{
+			List<object> result = new List<object> ();
+			MemberResolveResult.AddType (dom, result, ResolvedType, StaticResolve);
+			return result;
+		}
+		
+		public override string ToString ()
+		{
+			return String.Format ("[ParameterResolveResult: Parameter={0}]", Parameter);
+		}
+	}
+	
 	
 	public class MemberResolveResult : ResolveResult
 	{
-		public MemberResolveResult ()
-		{
+		IMember resolvedMember;
+		public IMember ResolvedMember {
+			get {
+				return resolvedMember;
+			}
+			set {
+				resolvedMember = value;
+			}
 		}
-		public MemberResolveResult (bool staticResolve) : base (staticResolve)
+		
+		public MemberResolveResult (IMember resolvedMember)
 		{
+			this.resolvedMember = resolvedMember;
+		}
+		
+		public MemberResolveResult (IMember resolvedMember, bool staticResolve) : base (staticResolve)
+		{
+			this.resolvedMember = resolvedMember;
 		}
 		
 		internal static void AddType (ProjectDom dom, List<object> result, IReturnType returnType, bool showStatic)
@@ -114,14 +171,18 @@ namespace MonoDevelop.Projects.Dom
 			IType type = dom.GetType (returnType);
 			if (type == null)
 				return;
+			if (type.ClassType == ClassType.Enum) {
+				foreach (IMember member in type.Fields) {
+					result.Add (member);
+				}
+				return;
+			}
 			foreach (IType curType in dom.GetInheritanceTree (type)) {
 				foreach (IMember member in curType.Members) {
 					if (member is IType || !(showStatic ^ member.IsStatic))
 						result.Add (member);
 				}
 			}
-			if (type.BaseType != null && type.FullName != "System.Object")
-				AddType (dom, result, type.BaseType, showStatic);
 		}
 		
 		public override IEnumerable<object> CreateResolveResult (ProjectDom dom)
@@ -133,9 +194,10 @@ namespace MonoDevelop.Projects.Dom
 		
 		public override string ToString ()
 		{
-			return String.Format ("[MemberResolveResult: CallingType={0}, CallingMember={1}, ResolvedType={2}]",
+			return String.Format ("[MemberResolveResult: CallingType={0}, CallingMember={1}, ResolvedMember={2}, ResolvedType={3}]",
 			                      CallingType,
 			                      CallingMember,
+			                      ResolvedMember,
 			                      ResolvedType);
 		}
 	}
@@ -217,7 +279,6 @@ namespace MonoDevelop.Projects.Dom
 		{
 			return String.Format ("[NamespaceResolveResult: Namespace={0}]", Namespace);
 		}
-
 		
 		public override IEnumerable<object> CreateResolveResult (ProjectDom dom)
 		{

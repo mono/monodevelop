@@ -36,10 +36,16 @@ namespace MonoDevelop.Projects.Dom.Output
 	public abstract class Ambience
 	{
 		string name;
-		
 		public string Name {
 			get {
 				return name;
+			}
+		}
+		
+		string mimeTypes;
+		public string MimeTypes {
+			get {
+				return mimeTypes;
 			}
 		}
 		
@@ -53,10 +59,17 @@ namespace MonoDevelop.Projects.Dom.Output
 			get;
 		}
 		
-		public Ambience (string name)
+		public Ambience (string name, string mimeTypes)
 		{
-			this.name = name;
+			this.name      = name;
+			this.mimeTypes = mimeTypes ?? "";
 		}
+		
+		public virtual bool IsValidFor (string fileName)
+		{
+			return true;
+		}
+		
 		
 		protected string GetString (Modifiers m)
 		{

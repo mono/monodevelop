@@ -65,6 +65,7 @@ namespace MonoDevelop.Projects.Dom
 				evt.CleanCecilDefinitions ();
 			}
 		}
+		
 		public DomCecilType (TypeDefinition typeDefinition) : this (true, true, typeDefinition)
 		{
 		}	
@@ -73,14 +74,16 @@ namespace MonoDevelop.Projects.Dom
 			if (keepDefinitions)
 				this.typeDefinition = typeDefinition;
 			this.classType      = GetClassType (typeDefinition);
+			
 			this.Name           = typeDefinition.Name;
+			
 			this.Namespace      = typeDefinition.Namespace;
 			this.modifiers      = GetModifiers (typeDefinition.Attributes);
 			if (typeDefinition.BaseType != null)
-				this.baseType = new DomCecilReturnType (typeDefinition.BaseType);
+				this.baseType = DomCecilMethod.GetReturnType (typeDefinition.BaseType);
 			
 			foreach (TypeReference interfaceReference in typeDefinition.Interfaces) {
-				this.AddInterfaceImplementation (new DomCecilReturnType (interfaceReference));
+				this.AddInterfaceImplementation (DomCecilMethod.GetReturnType (interfaceReference));
 			}
 			foreach (FieldDefinition fieldDefinition in typeDefinition.Fields) {
 				if (!loadInternal && DomCecilCompilationUnit.IsInternal (DomCecilType.GetModifiers (fieldDefinition.Attributes)))

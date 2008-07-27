@@ -89,15 +89,13 @@ namespace MonoDevelop.Projects.Dom
 			get;
 		}
 		
-		bool IsObsolete {
-			get;
-			set;
-		}
+		
 		
 		System.Xml.XmlNode GetMonodocDocumentation ();
 		bool IsAccessibleFrom (ProjectDom dom, IMember member);
 		
 		#region ModifierAccessors
+		bool IsObsolete { get; }
 		bool IsPrivate   { get; }
 		bool IsInternal  { get; }
 		bool IsProtected { get; }

@@ -49,6 +49,16 @@ namespace MonoDevelop.Projects.Dom
 		}
 		
 		#region ICompilationUnit
+		DateTime parseTime = DateTime.Now;
+		public DateTime ParseTime {
+			get {
+				return parseTime;
+			}
+			set {
+				parseTime = value;
+			}
+		}
+
 		string ICompilationUnit.FileName {
 			get {
 				return fileName;
@@ -93,6 +103,12 @@ namespace MonoDevelop.Projects.Dom
 		public ReadOnlyCollection<Error> Errors {
 			get {
 				return errors.AsReadOnly ();
+			}
+		}
+		bool hasErrors = false;
+		public bool HasErrors {
+			get {
+				return hasErrors;
 			}
 		}
 		
@@ -143,6 +159,7 @@ namespace MonoDevelop.Projects.Dom
 		
 		public void Add (Error error)
 		{
+			hasErrors |= error.ErrorType == ErrorType.Error;
 			errors.Add (error);
 		}
 		

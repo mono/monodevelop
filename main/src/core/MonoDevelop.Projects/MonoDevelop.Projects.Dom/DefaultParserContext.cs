@@ -74,7 +74,7 @@ namespace MonoDevelop.Projects.Dom
 		public IType LookupType (IReturnType returnType)
 		{
 			if (dom != null) 
-				return dom.GetType (returnType.FullName, returnType.GenericArguments.Count, true);
+				return dom.GetType (returnType.FullName, returnType.GenericArguments.Count, true, true);
 			
 			return ProjectDomService.GetType (returnType.FullName, returnType.GenericArguments.Count, true);
 		}

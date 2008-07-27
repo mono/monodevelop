@@ -38,31 +38,29 @@ namespace MonoDevelop.Projects.Dom
 		protected string nspace;
 		protected int pointerNestingLevel;
 		protected int arrayDimensions;
-		protected int[] dimensions = new int [0];
-		protected bool isNullable;
-		protected bool byRef;
-		protected List<IReturnType> typeParameters = new List<IReturnType> ();
-		
-		public static readonly DomReturnType Void = new DomReturnType (null, false, null);
+		protected int[] dimensions = null;
+		ReturnTypeModifiers modifiers;
+		protected List<IReturnType> typeParameters = null;
 		
 		public string FullName {
 			get {
 				return !String.IsNullOrEmpty (nspace) ? nspace + "." + name : name;
 			}
 			set {
-				if (value == null) {
-					nspace = name = null; 
-					return;
-				}
-				int idx = value.LastIndexOf ('.');
-				if (idx >= 0) {
-					nspace = value.Substring (0, idx);
-					name   = value.Substring (idx + 1);
-				} else {
-					nspace = "";
-					name  = value;
-				}
+				KeyValuePair<string, string> splitted = SplitFullName (value);
+				nspace = splitted.Key;
+				name   = splitted.Value;
 			}
+		}
+		
+		public static KeyValuePair<string, string> SplitFullName (string fullName)
+		{
+			if (String.IsNullOrEmpty (fullName)) 
+				return new KeyValuePair<string, string> ("", "");
+			int idx = fullName.LastIndexOf ('.');
+			if (idx >= 0) 
+				return new KeyValuePair<string, string> (fullName.Substring (0, idx), fullName.Substring (idx + 1));
+			return new KeyValuePair<string, string> ("", fullName);
 		}
 
 		public string Name {
@@ -73,6 +71,16 @@ namespace MonoDevelop.Projects.Dom
 				name = value;
 			}
 		}
+		
+		public ReturnTypeModifiers Modifiers {
+			get {
+				return this.modifiers;
+			}
+			set {
+				this.modifiers = value;
+			}
+		}
+		
 
 		public string Namespace {
 			get {
@@ -103,10 +111,14 @@ namespace MonoDevelop.Projects.Dom
 		
 		public bool IsNullable {
 			get {
-				return this.isNullable;
+				return (Modifiers & ReturnTypeModifiers.Nullable) == ReturnTypeModifiers.Nullable;
 			}
 			set {
-				isNullable = value;
+				if (value) {
+					Modifiers |= ReturnTypeModifiers.Nullable;
+				} else {
+					Modifiers &= ~ReturnTypeModifiers.Nullable;
+				}
 			}
 		}
 		
@@ -120,10 +132,14 @@ namespace MonoDevelop.Projects.Dom
 
 		public bool IsByRef {
 			get {
-				return byRef;
+				return (Modifiers & ReturnTypeModifiers.ByRef) == ReturnTypeModifiers.ByRef;
 			}
 			set {
-				byRef = value;
+				if (value) {
+					Modifiers |= ReturnTypeModifiers.ByRef;
+				} else {
+					Modifiers &= ~ReturnTypeModifiers.ByRef;
+				}
 			}
 		}
 		
@@ -135,6 +151,7 @@ namespace MonoDevelop.Projects.Dom
 		{
 			this.FullName = type.FullName;
 		}
+		
 		public override bool Equals (object obj)
 		{
 			DomReturnType type = obj as DomReturnType;
@@ -160,8 +177,7 @@ namespace MonoDevelop.Projects.Dom
 				nspace == type.nspace &&
 				pointerNestingLevel == type.pointerNestingLevel &&
 				arrayDimensions == type.arrayDimensions &&
-				isNullable == type.isNullable &&
-				byRef == type.byRef;
+				Modifiers == type.Modifiers;
 		}
 		
 		public int GetDimension (int arrayDimension)
@@ -185,8 +201,8 @@ namespace MonoDevelop.Projects.Dom
 		
 		public DomReturnType (string name, bool isNullable, List<IReturnType> typeParameters)
 		{
-			this.FullName           = name;
-			this.isNullable     = isNullable;
+			this.FullName       = name;
+			this.IsNullable     = isNullable;
 			this.typeParameters = typeParameters;
 		}
 		
@@ -308,6 +324,61 @@ namespace MonoDevelop.Projects.Dom
 				sharedTypes [typeName].Add (type);
 		}
 		
+#endregion
+		
+		public static readonly IReturnType Void      = GetSharedReturnType ("System.Void");
+		public static readonly IReturnType Object    = GetSharedReturnType ("System.Object");
+		public static readonly IReturnType Exception = GetSharedReturnType ("System.Exception");
+		
+		
+#region shared return types
+		// doesn't work ? 
+		//static Dictionary<string, List<IReturnType>> returnTypeCache  = new Dictionary<string, List<IReturnType>> ();
+		static Dictionary<string, List<IReturnType>> returnTypeCache = null;
+
+		
+		public static IReturnType GetSharedReturnType (string fullName)
+		{
+			if (String.IsNullOrEmpty (fullName))
+				return null;
+			if (returnTypeCache == null)
+				returnTypeCache = new Dictionary<string, List<IReturnType>> ();
+			lock (returnTypeCache) {
+				List<IReturnType> types;
+				if (!returnTypeCache.TryGetValue (fullName, out types)) {
+					types = new List<IReturnType> ();
+					
+					DomReturnType newType = new DomReturnType (fullName);
+					types.Add (newType);
+					returnTypeCache[fullName] = types;
+					return newType;
+				}
+				return types[0];
+			}
+		}
+		
+		public static IReturnType GetSharedReturnType (IReturnType returnType)
+		{
+			if (returnType == null)
+				return null;
+			if (returnTypeCache == null)
+				returnTypeCache = new Dictionary<string, List<IReturnType>> ();
+			lock (returnTypeCache) {
+				List<IReturnType> types;
+				if (!returnTypeCache.TryGetValue (returnType.FullName, out types)) {
+					types = new List<IReturnType> ();
+					types.Add (returnType);
+					returnTypeCache[returnType.FullName] = types;
+					return returnType;
+				}
+				foreach (IReturnType sharedType in types) {
+					if (sharedType.Equals (returnType))
+						return sharedType;
+				}
+				types.Add (returnType);
+				return returnType;
+			}
+		}
 #endregion
 	}
 }

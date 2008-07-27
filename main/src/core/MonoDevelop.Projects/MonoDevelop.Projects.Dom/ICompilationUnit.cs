@@ -42,6 +42,10 @@ namespace MonoDevelop.Projects.Dom
 			get;
 		}
 		
+		DateTime ParseTime {
+			get;
+		}
+		
 		ReadOnlyCollection<IUsing> Usings {
 			get;
 		}
@@ -63,6 +67,10 @@ namespace MonoDevelop.Projects.Dom
 		}
 		
 		ReadOnlyCollection<Error> Errors {
+			get;
+		}
+		
+		bool HasErrors {
 			get;
 		}
 		

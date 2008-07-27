@@ -130,15 +130,6 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
-		bool isObsolete = false;
-		public bool IsObsolete {
-			get {
-				return isObsolete;
-			}
-			set {
-				isObsolete = value;
-			}
-		}
 		
 		public System.Collections.Generic.IEnumerable<IAttribute> Attributes {
 			get {
@@ -263,6 +254,12 @@ namespace MonoDevelop.Projects.Dom
 		}
 		
 		#region ModifierAccessors
+		public bool IsObsolete {
+			get {
+				return (this.Modifiers & Modifiers.IsObsolete) == Modifiers.IsObsolete;
+			}
+		}
+		
 		public bool IsPrivate { 
 			get {
 				return (this.Modifiers & Modifiers.Private) == Modifiers.Private;

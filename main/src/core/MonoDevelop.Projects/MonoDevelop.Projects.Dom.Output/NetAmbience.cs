@@ -41,7 +41,7 @@ namespace MonoDevelop.Projects.Dom.Output
 			}
 		}
 		
-		public NetAmbience () : base ("NET")
+		public NetAmbience () : base ("NET", "")
 		{
 			classTypes[ClassType.Class]     = "Class";
 			classTypes[ClassType.Enum]      = "Enumeration";

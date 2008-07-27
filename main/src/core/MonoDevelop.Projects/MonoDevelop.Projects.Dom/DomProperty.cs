@@ -50,7 +50,7 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
-		public ReadOnlyCollection<IParameter> Parameters {
+		public virtual ReadOnlyCollection<IParameter> Parameters {
 			get {
 				return parameters != null ? parameters.AsReadOnly () : null;
 			}
@@ -140,6 +140,14 @@ namespace MonoDevelop.Projects.Dom
 			this.bodyRegion = bodyRegion;
 			base.returnType = returnType;
 		}
+		
+		public void Add (IParameter parameter)
+		{
+			if (parameters == null) 
+				parameters = new List<IParameter> ();
+			parameters.Add (parameter);
+		}
+				
 		
 		public static IProperty Resolve (IProperty source, ITypeResolver typeResolver)
 		{

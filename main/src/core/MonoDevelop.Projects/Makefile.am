@@ -9,8 +9,12 @@ REFS =  \
 	-r:$(top_builddir)/build/bin/Mono.Cecil.dll \
 	-r:$(top_builddir)/build/bin/Mono.Cecil.Mdb.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
+	-r:Mono.Data \
+	-r:Mono.Data.Sqlite \
+	-r:Mono.Data.SqliteClient \
 	-r:Mono.Posix \
 	-r:System \
+	-r:System.Data \
 	-r:System.Drawing \
 	-r:System.Xml
 
@@ -26,21 +30,34 @@ FILES =  \
 	MonoDevelop.Projects.CodeGeneration/RefactorOperations.cs \
 	MonoDevelop.Projects.CodeGeneration/XmlCodeDomReader.cs \
 	MonoDevelop.Projects.Documentation/IDocumentationService.cs \
+	MonoDevelop.Projects.Dom.CodeGeneration/CodeRefactorer.cs \
+	MonoDevelop.Projects.Dom.CodeGeneration/ICodeGenerator.cs \
+	MonoDevelop.Projects.Dom.Database/CodeCompletionDatabase.cs \
+	MonoDevelop.Projects.Dom.Database/DatabaseColumnAttribute.cs \
+	MonoDevelop.Projects.Dom.Database/DatabaseEvent.cs \
+	MonoDevelop.Projects.Dom.Database/DatabaseField.cs \
+	MonoDevelop.Projects.Dom.Database/DatabaseMethod.cs \
+	MonoDevelop.Projects.Dom.Database/DatabaseParameter.cs \
+	MonoDevelop.Projects.Dom.Database/DatabaseProperty.cs \
+	MonoDevelop.Projects.Dom.Database/DatabaseType.cs \
+	MonoDevelop.Projects.Dom.Database/DateTimeUtil.cs \
+	MonoDevelop.Projects.Dom.Database/HyenaSqliteCommand.cs \
+	MonoDevelop.Projects.Dom.Database/HyenaSqliteConnection.cs \
+	MonoDevelop.Projects.Dom.Database/SqliteUtils.cs \
 	MonoDevelop.Projects.Dom.Output/Ambience.cs \
 	MonoDevelop.Projects.Dom.Output/AmbienceService.cs \
 	MonoDevelop.Projects.Dom.Output/NetAmbience.cs \
 	MonoDevelop.Projects.Dom.Output/OutputFlags.cs \
 	MonoDevelop.Projects.Dom.Parser/AbstractParser.cs \
+	MonoDevelop.Projects.Dom.Parser/DatabaseProjectDom.cs \
 	MonoDevelop.Projects.Dom.Parser/IParser.cs \
+	MonoDevelop.Projects.Dom.Parser/IResolver.cs \
 	MonoDevelop.Projects.Dom.Parser/ProjectDom.cs \
 	MonoDevelop.Projects.Dom.Parser/ProjectDomEventArgs.cs \
 	MonoDevelop.Projects.Dom.Parser/ProjectParserService.cs \
 	MonoDevelop.Projects.Dom/AbstractMember.cs \
-	MonoDevelop.Projects.Dom/AssemblyCodeCompletionDatabase.cs \
 	MonoDevelop.Projects.Dom/AttributeTarget.cs \
-	MonoDevelop.Projects.Dom/ClassEntry.cs \
 	MonoDevelop.Projects.Dom/ClassType.cs \
-	MonoDevelop.Projects.Dom/CodeCompletionDatabase.cs \
 	MonoDevelop.Projects.Dom/Comment.cs \
 	MonoDevelop.Projects.Dom/CommentType.cs \
 	MonoDevelop.Projects.Dom/CompilationUnit.cs \
@@ -56,24 +73,20 @@ FILES =  \
 	MonoDevelop.Projects.Dom/DomCecilMethod.cs \
 	MonoDevelop.Projects.Dom/DomCecilParameter.cs \
 	MonoDevelop.Projects.Dom/DomCecilProperty.cs \
-	MonoDevelop.Projects.Dom/DomCecilReturnType.cs \
 	MonoDevelop.Projects.Dom/DomCecilType.cs \
 	MonoDevelop.Projects.Dom/DomEvent.cs \
 	MonoDevelop.Projects.Dom/DomField.cs \
 	MonoDevelop.Projects.Dom/DomLocation.cs \
 	MonoDevelop.Projects.Dom/DomMethod.cs \
 	MonoDevelop.Projects.Dom/DomParameter.cs \
-	MonoDevelop.Projects.Dom/DomPersistence.cs \
 	MonoDevelop.Projects.Dom/DomProperty.cs \
 	MonoDevelop.Projects.Dom/DomRegion.cs \
 	MonoDevelop.Projects.Dom/DomReturnType.cs \
 	MonoDevelop.Projects.Dom/DomType.cs \
-	MonoDevelop.Projects.Dom/DomTypeProxy.cs \
 	MonoDevelop.Projects.Dom/DomUsing.cs \
 	MonoDevelop.Projects.Dom/Error.cs \
 	MonoDevelop.Projects.Dom/ExpressionContext.cs \
 	MonoDevelop.Projects.Dom/ExpressionResult.cs \
-	MonoDevelop.Projects.Dom/FileEntry.cs \
 	MonoDevelop.Projects.Dom/FoldingRegion.cs \
 	MonoDevelop.Projects.Dom/IAttribute.cs \
 	MonoDevelop.Projects.Dom/ICompilationUnit.cs \
@@ -92,13 +105,10 @@ FILES =  \
 	MonoDevelop.Projects.Dom/IUsing.cs \
 	MonoDevelop.Projects.Dom/Modifiers.cs \
 	MonoDevelop.Projects.Dom/Namespace.cs \
-	MonoDevelop.Projects.Dom/NamespaceEntry.cs \
 	MonoDevelop.Projects.Dom/ParameterModifiers.cs \
 	MonoDevelop.Projects.Dom/PreProcessorDefine.cs \
-	MonoDevelop.Projects.Dom/ProjectCodeCompletionDatabase.cs \
 	MonoDevelop.Projects.Dom/ReferenceEntry.cs \
 	MonoDevelop.Projects.Dom/ResolveResult.cs \
-	MonoDevelop.Projects.Dom/SimpleCodeCompletionDatabase.cs \
 	MonoDevelop.Projects.Dom/Tag.cs \
 	MonoDevelop.Projects.Dom/TypeParameter.cs \
 	MonoDevelop.Projects.Dom/TypeUpdateInformation.cs \

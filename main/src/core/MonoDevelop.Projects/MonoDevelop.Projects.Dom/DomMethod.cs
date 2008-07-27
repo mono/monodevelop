@@ -50,7 +50,7 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
-		public ReadOnlyCollection<IParameter> Parameters {
+		public virtual ReadOnlyCollection<IParameter> Parameters {
 			get {
 				return parameters != null ? parameters.AsReadOnly () : null;
 			}

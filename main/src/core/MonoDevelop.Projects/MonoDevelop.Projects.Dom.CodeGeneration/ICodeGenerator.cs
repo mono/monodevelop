@@ -1,4 +1,4 @@
-// IDocumentMetainformation.cs
+// ICodeGenerator.cs
 //
 // Author:
 //   Mike Krüger <mkrueger@novell.com>
@@ -25,30 +25,14 @@
 //
 
 using System;
-using System.Collections.Generic;
+using System.CodeDom;
 
-namespace MonoDevelop.Projects.Dom
+namespace MonoDevelop.Projects.Dom.CodeGeneration
 {
-	public interface IDocumentMetaInformation
+	public interface ICodeGenerator
 	{
-		IList<Tag> TagComments {
-			get;
-		}
+		IType CreateClass (string folder, string namspace, CodeTypeDeclaration type);
+		IMember AddMember (IType type, CodeTypeMember memberInfo);
 		
-		IList<Comment> Comments {
-			get;
-		}
-		
-		IList<FoldingRegion> FoldingRegion {
-			get;
-		}
-		
-		IList<PreProcessorDefine> Defines {
-			get;
-		}
-		
-		IList<ConditionalRegion> ConditionalRegion {
-			get;
-		}
 	}
 }

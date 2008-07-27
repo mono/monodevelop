@@ -28,10 +28,9 @@ using System;
 
 namespace MonoDevelop.Projects.Dom
 {
-	public struct FoldingRegion
+	public class FoldingRegion
 	{
 		string name;
-		
 		public string Name {
 			get {
 				return name;
@@ -40,6 +39,17 @@ namespace MonoDevelop.Projects.Dom
 				name = value;
 			}
 		}
+		
+		bool defaultIsFolded;
+		public bool DefaultIsFolded {
+			get {
+				return defaultIsFolded;
+			}
+			set {
+				defaultIsFolded = value;
+			}
+		}
+		
 		DomRegion region;
 		public DomRegion Region {
 			get {
@@ -50,10 +60,15 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
-		public FoldingRegion (string name, DomRegion region)
+		public FoldingRegion (string name, DomRegion region) : this (name, region, false)
+		{
+		}
+		
+		public FoldingRegion (string name, DomRegion region, bool defaultIsFolded)
 		{
 			this.name = name;
 			this.region = region;
+			this.defaultIsFolded = defaultIsFolded;
 		}
 	}
 }

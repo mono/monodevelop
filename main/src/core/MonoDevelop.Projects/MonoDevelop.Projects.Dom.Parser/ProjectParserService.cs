@@ -27,18 +27,20 @@
 //
 
 using System;
+using System.Reflection;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Threading;
 using Monodoc;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using Mono.Addins;
+using MonoDevelop.Projects.Dom.Database;
 
 namespace MonoDevelop.Projects.Dom.Parser
 {
-	
 	public static class ProjectDomService
 	{
 		static ProjectDom globalDom = new ProjectDom ();
@@ -57,8 +59,23 @@ namespace MonoDevelop.Projects.Dom.Parser
 			}
 		}
 		
+		static string codeCompletionDataPath;
+		static string GetCodeCompletionDataPath ()
+		{
+			string result = PropertyService.Get ("MonoDevelop.CodeCompletion.DataDirectory", "");
+			if (String.IsNullOrEmpty (result)) {
+				result = Path.Combine (PropertyService.ConfigPath, "codecompletiondata");
+				PropertyService.Set ("MonoDevelop.CodeCompletion.DataDirectory", result);
+			}
+			if (!Directory.Exists (result))
+				Directory.CreateDirectory (result);
+			return result;
+		}
+		
 		static ProjectDomService ()
 		{
+			codeCompletionDataPath = GetCodeCompletionDataPath ();
+			
 			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Ide/DomParser", delegate(object sender, ExtensionNodeEventArgs args) {
 				switch (args.Change) {
 				case ExtensionChange.Add:
@@ -69,7 +86,6 @@ namespace MonoDevelop.Projects.Dom.Parser
 					break;
 				}
 			});
-			StartParserThread ();
 		}
 		
 		static IParser GetParser (string projectType)
@@ -81,7 +97,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 			return null;
 		}
 		
-		static IParser GetParserByMime (string mimeType)
+		public static IParser GetParserByMime (string mimeType)
 		{
 			foreach (IParser parser in parsers) {
 				if (parser.CanParseMimeType (mimeType))
@@ -90,11 +106,12 @@ namespace MonoDevelop.Projects.Dom.Parser
 			return null;
 		}
 		
-		static IParser GetParserByFileName (string fileName)
+		public static IParser GetParserByFileName (string fileName)
 		{
 			foreach (IParser parser in parsers) {
-				if (parser.CanParse (fileName))
+				if (parser.CanParse (fileName)) {
 					return parser;
+				}
 			}
 			return null;
 		}
@@ -113,18 +130,10 @@ namespace MonoDevelop.Projects.Dom.Parser
 			return HasDom (project.FileName); 
 		}
 		
-		public static ProjectDom GetDom (Project project)
-		{
-			Debug.Assert (project != null);
-			if (project == null) 
-				return globalDom;
-			return GetDom (project.FileName); 
-		}
-		
 		public static IType GetType (string fullName, int genericParameterCount, bool caseSensitive)
 		{
 			foreach (ProjectDom dom in doms.Values) {
-				IType type = dom.GetType (fullName, genericParameterCount, caseSensitive);
+				IType type = dom.GetType (fullName, genericParameterCount, caseSensitive, true);
 				if (type != null)
 					return type;
 			}
@@ -140,45 +149,30 @@ namespace MonoDevelop.Projects.Dom.Parser
 			return null;
 		}
 		
-		public static IType GetType (SearchTypeRequest request)
-		{
-			IParserContext context = GetContext (request.CurrentCompilationUnit);
-			SearchTypeResult result = context.SearchType (request);
-			if (result == null)
-				return null;
-			return context.LookupType (result.Result);
-		}
-		
-		public static SearchTypeResult SearchType (SearchTypeRequest request)
-		{
-			IParserContext context = GetContext (request.CurrentCompilationUnit);
-			return context.SearchType (request);
-		}
-		
-		static IParserContext GetContext (ICompilationUnit unit)
-		{
-			ProjectDom foundDom = null;
-			foreach (ProjectDom dom in doms.Values) {
-				ProjectCodeCompletionDatabase pccd = dom.Database as ProjectCodeCompletionDatabase;
-				if (pccd == null)
-					continue;
-				if (pccd.Project.GetProjectFile (unit.FileName) != null) {
-					foundDom = dom;
-					break;
-				}
-			}
-			return	 new DefaultParserContext (foundDom);
-		}
-		
 		public delegate string ContentDelegate ();
 		
 		static Dictionary<string, Thread> refreshThreads = new Dictionary<string,Thread> ();
+		/*
+		static Dictionary<string, ICompilationUnit> compilationUnits = new Dictionary<string, ICompilationUnit> ();
+		public static ICompilationUnit GetCompilationUnit (string fileName) 
+		{
+			if (String.IsNullOrEmpty (fileName))
+				return null;
+			ICompilationUnit result;
+			compilationUnits.TryGetValue (fileName, out result);
+			return result;
+		}
+		
+		public static bool ContainsUnit (string fileName)
+		{
+			return compilationUnits.ContainsKey (fileName) != null;
+		}*/
+		
 		
 		public static void Refresh (Project project, string fileName, string mimeType, ContentDelegate getContent)
 		{
-			ProjectDom dom = GetDom (project);
-			
-			IParser parser = project != null ? GetParser (project is DotNetProject ? ((DotNetProject)project).LanguageName : project.ProjectType) : GetParserByMime (mimeType);
+			ProjectDom dom = GetDatabaseProjectDom (project);
+			IParser parser = GetParser (project, mimeType, fileName);
 			if (parser == null)
 				return;
 			if (refreshThreads.ContainsKey (fileName)) {
@@ -189,7 +183,8 @@ namespace MonoDevelop.Projects.Dom.Parser
 				Thread.Sleep (500);
 				try {
 					ICompilationUnit unit = parser.Parse (fileName, getContent ());
-					dom.UpdateFromParseInfo (unit, fileName);
+					if (dom != null)
+						dom.UpdateFromParseInfo (unit, fileName);
 					OnCompilationUnitUpdated (new CompilationUnitEventArgs (unit));
 					OnDomUpdated (new ProjectDomEventArgs (dom));
 				} catch (ThreadAbortException) {
@@ -204,27 +199,35 @@ namespace MonoDevelop.Projects.Dom.Parser
 		
 		public static IParser GetParser (Project project, string mimeType, string fileName)
 		{
+			if (!String.IsNullOrEmpty (mimeType)) {
+				IParser result = GetParserByMime (mimeType);
+				if (result != null) {
+					return result;
+				}
+			}
+			
+			if (!String.IsNullOrEmpty (fileName)) 
+				return GetParserByFileName (fileName);
+				
 			if (project != null) {
 				IParser result = GetParser (project is DotNetProject ? ((DotNetProject)project).LanguageName : project.ProjectType);
 				if (result != null)
 					return result;
 			}
-			if (!String.IsNullOrEmpty (mimeType)) {
-				IParser result = GetParserByMime (mimeType);
-				if (result != null)
-					return result;
-			}
-			if (!String.IsNullOrEmpty (fileName)) 
-				return GetParserByFileName (fileName);
+			
 			// give up
 			return null;
 		}
 		
+		public static ICompilationUnit Parse (Project project, string fileName, string mimeType)
+		{
+			return Parse (project, fileName, mimeType, delegate () { return System.IO.File.ReadAllText (fileName); });
+		}
+		
 		public static ICompilationUnit Parse (Project project, string fileName, string mimeType, ContentDelegate getContent)
 		{
-			ProjectDom dom = GetDom (project);
+			ProjectDom dom = GetDatabaseProjectDom (project);
 			IParser parser = GetParser (project, mimeType, fileName);
-			
 			if (parser == null)
 				return null;
 			if (refreshThreads.ContainsKey (fileName)) {
@@ -232,19 +235,27 @@ namespace MonoDevelop.Projects.Dom.Parser
 				refreshThreads.Remove (fileName);
 			}
 			ICompilationUnit unit = parser.Parse (fileName, getContent ());
-			((ProjectCodeCompletionDatabase)dom.Database).UpdateFromParseInfo (unit, fileName);
+		//	compilationUnits[fileName] = unit;
+			if (dom != null)
+				dom.UpdateFromParseInfo (unit, fileName);
 			OnCompilationUnitUpdated (new CompilationUnitEventArgs (unit));
-			OnDomUpdated (new ProjectDomEventArgs (dom));
+			if (dom != null)
+				OnDomUpdated (new ProjectDomEventArgs (dom));
 			return unit;
+		}
+		
+		static void InsertDom (string name, ProjectDom dom)
+		{
+			Dictionary<string, ProjectDom> newDoms = new Dictionary<string, ProjectDom> (doms);
+			newDoms [name] = dom;
+			doms = newDoms;
 		}
 		
 		public static ProjectDom GetDom (string fileName)
 		{
 			Debug.Assert (!String.IsNullOrEmpty (fileName));
 			if (!doms.ContainsKey (fileName)) {
-				Dictionary<string, ProjectDom> newDoms = new Dictionary<string, ProjectDom> (doms);
-				newDoms [fileName] = new ProjectDom ();
-				doms = newDoms;
+				InsertDom (fileName, new ProjectDom ());
 			}
 			return doms [fileName];
 		}
@@ -304,56 +315,119 @@ namespace MonoDevelop.Projects.Dom.Parser
 			}
 		}
 		
+		#region Assembly names
+		static string GetFullAssemblyName (string s)
+		{
+			return Runtime.SystemAssemblyService.GetAssemblyFullName (s);
+		}
+		static string EncodeGacAssemblyName (string assemblyName)
+		{
+			string[] assemblyPieces = assemblyName.Split(',');
+			string res = "";
+			foreach (string item in assemblyPieces) {
+				string[] pieces = item.Trim ().Split (new char[] { '=' }, 2);
+				if(pieces.Length == 1)
+					res += pieces[0];
+				else if (!(pieces[0] == "Culture" && pieces[1] != "Neutral"))
+					res += "_" + pieces[1];
+			}
+			return res;
+		}
+		public static bool GetAssemblyInfo (string assemblyName, out string realAssemblyName, out string assemblyFile, out string name)
+		{
+			name = null;
+			assemblyFile = null;
+			realAssemblyName = null;
+			if (String.IsNullOrEmpty (assemblyName))
+				return false;
+			string ext = Path.GetExtension (assemblyName).ToLower ();
+			
+			if (ext == ".dll" || ext == ".exe") 
+			{
+				name = assemblyName.Substring (0, assemblyName.Length - 4);
+				name = name.Replace(',','_').Replace(" ","").Replace('/','_');
+				assemblyFile = assemblyName;
+			}
+			else
+			{
+				assemblyFile = Runtime.SystemAssemblyService.GetAssemblyLocation (assemblyName);
+
+				bool gotname = false;
+				if (assemblyFile != null && File.Exists (assemblyFile)) {
+					try {
+						assemblyName = AssemblyName.GetAssemblyName (assemblyFile).FullName;
+						gotname = true;
+					} catch (Exception ex) {
+						LoggingService.LogError (ex.ToString ());
+					}
+				}
+				if (!gotname) {
+					LoggingService.LogError ("Could not load assembly: " + assemblyName);
+					return false;
+				}
+				name = EncodeGacAssemblyName (assemblyName);
+			}
+			
+			realAssemblyName = assemblyName;
+			return true;
+		}
+		#endregion
+		
 		static ProjectDom Load (Solution solution, string baseDirectory, string uri)
 		{
 			if (uri.StartsWith ("Assembly:")) {
 				string file = uri.Substring (9);
-				string fullName = AssemblyCodeCompletionDatabase.GetFullAssemblyName (file);
-				
-				bool isNew = !HasDom (uri);
-				ProjectDom dom = GetDom (uri);
-				if (isNew) {
-					string realAssemblyName, assemblyFile, name;
-					AssemblyCodeCompletionDatabase.GetAssemblyInfo (fullName, out realAssemblyName, out assemblyFile, out name);
-					Thread thread = new Thread (delegate () {
-						dom.UpdateFromParseInfo (DomCecilCompilationUnit.Load (assemblyFile, false, false), assemblyFile);
-					});
-					thread.Priority = ThreadPriority.Lowest;
-					thread.IsBackground = true;
-					thread.Start ();
-					
-//					AssemblyCodeCompletionDatabase adb = new AssemblyCodeCompletionDatabase (baseDirectory, file);
-//					adb.ParseInExternalProcess = true;
-//					adb.ParseAll ();
-//					dom.Database = adb;
-//					foreach (ReferenceEntry re in dom.Database.References)
-//						Load (baseDirectory, re.Uri);
-				}
+				string fullName = GetFullAssemblyName (file);
+				string realAssemblyName, assemblyFile, name;
+				GetAssemblyInfo (fullName, out realAssemblyName, out assemblyFile, out name);
+				if (String.IsNullOrEmpty (name))
+					return null;
+				string codeCompletionFile = Path.Combine (codeCompletionDataPath, name) + ".pidb";
+				if (HasDom (codeCompletionFile)) 
+					return GetDom (codeCompletionFile);
+				bool shouldCreate = !File.Exists (codeCompletionFile);
+				CodeCompletionDatabase database = new CodeCompletionDatabase (codeCompletionFile);
+				if (shouldCreate)
+					database.InsertCompilationUnit (DomCecilCompilationUnit.Load (assemblyFile, false, false), fullName);
+				ProjectDom dom = new DatabaseProjectDom (database, fullName);
+				InsertDom (codeCompletionFile, dom);
 				return dom;
 			}
 			if (uri.StartsWith ("Project:")) {
 				string projectName = uri.Substring ("Project:".Length);
 				Project referencedProject = solution.FindProjectByName (projectName);
-				if (referencedProject != null) {
-					System.Console.WriteLine("found :" + projectName);
-					return GetDom (referencedProject);
-				}
+				if (referencedProject != null) 
+					return GetDatabaseProjectDom (referencedProject);
 			}
 			return null;
 		}
 		
+		public static DatabaseProjectDom GetDatabaseProjectDom (Project project)
+		{
+			if (project == null)
+				return null;
+			if (!HasDom (project)) {
+				string codeCompletionFile = System.IO.Path.ChangeExtension (project.FileName, ".pidb");
+				CodeCompletionDatabase database = new CodeCompletionDatabase (codeCompletionFile);
+				DatabaseProjectDom dom = new DatabaseProjectDom (database, project.Name);
+				InsertDom (project.FileName, dom);
+				dom.Project = project;
+				return dom;
+			}
+			return (DatabaseProjectDom)GetDom (project.FileName);
+		}
+		
 		static ProjectDom Load (Solution solution, Project project)
 		{
+			if (solution == null || project == null)
+				return null;
 			string type = project.ProjectType;
 			if (project is DotNetProject)
 				type = ((DotNetProject)project).LanguageName;
 			IParser parser = GetParser (type);
-			if (parser == null) {
+			if (parser == null)
 				return null;
-			}
-			
-			ProjectDom dom = GetDom (project);
-			dom.Project = project;
+			DatabaseProjectDom dom = GetDatabaseProjectDom (project);
 			
 			// load References
 			if (project is DotNetProject) {
@@ -371,14 +445,17 @@ namespace MonoDevelop.Projects.Dom.Parser
 				}
 			}
 			
-//			dom.Database.UpdateFromProject ();
 			foreach (ProjectFile file in project.Files) {
 				if (file.BuildAction != BuildAction.Compile)
 					continue;
+				if (!dom.NeedCompilation (file.FilePath)) {
+					continue;
+				}
 				string content = null;
 				try {
 					content = System.IO.File.ReadAllText (file.FilePath);
 				} catch (Exception e) {
+					
 				}
 				if (content != null) {
 					ICompilationUnit unit = parser.Parse (file.FilePath, content);
@@ -409,156 +486,6 @@ namespace MonoDevelop.Projects.Dom.Parser
 					foreach (string s in pr.GetReferencedFileNames (ProjectService.DefaultConfiguration))
 						list.Add ("Assembly:" + s);
 					return (string[]) list.ToArray (typeof(string));
-			}
-		}
-		
-		
-		static bool threadRunning = false;
-		static bool trackingFileChanges = false;
-		static object parseQueueLock = new object ();
-		static Queue parseQueue = new Queue();
-		static AutoResetEvent parseEvent = new AutoResetEvent (false);
-		
-		static void ParserUpdateThread ()
-		{
-			try {
-				while (trackingFileChanges) {
-					if (!parseEvent.WaitOne (5000, true))
-						CheckModifiedFiles ();
-					else if (trackingFileChanges)
-						ConsumeParsingQueue ();
-				}
-			} catch (Exception ex) {
-				LoggingService.LogError ("Unhandled error in parsing thread", ex);
-			}
-			lock (parseQueue) {
-				threadRunning = false;
-				if (trackingFileChanges)
-					StartParserThread ();
-			}
-		}
-		static void ConsumeParsingQueue ()
-		{
-			int pending = 0;
-			IProgressMonitor monitor = null;
-			
-			try {
-				Dictionary<CodeCompletionDatabase,CodeCompletionDatabase> dbsToFlush = new Dictionary<CodeCompletionDatabase,CodeCompletionDatabase> ();
-				do {
-					if (pending > 5 && monitor == null) {
-						monitor = null; //GetParseProgressMonitor ();
-						if (monitor != null)
-							monitor.BeginTask ("Generating database", 0);
-					}
-					
-					ParsingJob job = null;
-					lock (parseQueueLock)
-					{
-						if (parseQueue.Count > 0)
-							job = (ParsingJob) parseQueue.Dequeue ();
-					}
-					
-					if (job != null) {
-						try {
-							job.ParseCallback (job.Data, monitor);
-							dbsToFlush [job.Database] = job.Database;
-						} catch (Exception ex) {
-							if (monitor == null)
-								monitor = null; //GetParseProgressMonitor ();
-							if (monitor != null)
-								monitor.ReportError (null, ex);
-						}
-					}
-					
-					lock (parseQueueLock)
-						pending = parseQueue.Count;
-					
-				}
-				while (pending > 0);
-				
-				// Flush the parsed databases
-				foreach (CodeCompletionDatabase db in dbsToFlush.Keys)
-					db.Flush ();
-				
-			} finally {
-				if (monitor != null) monitor.Dispose ();
-			}
-		}
-		public delegate void JobCallback (object data, IProgressMonitor monitor);
-		class ParsingJob
-		{
-			public object Data;
-			public JobCallback ParseCallback;
-			public CodeCompletionDatabase Database;
-		}
-		
-		static void StartParserThread ()
-		{
-			/*lock (parseQueueLock) {
-				if (!threadRunning) {
-					threadRunning = true;
-					Thread t = new Thread(new ThreadStart(ParserUpdateThread));
-					t.IsBackground  = true;
-					t.Start();
-				}
-			}*/
-		}
-		
-		static void CheckModifiedFiles ()
-		{
-			// Check databases following a bottom-up strategy in the dependency
-			// tree. This will help resolving parsed classes.
-			
-			List<CodeCompletionDatabase> list = new List<CodeCompletionDatabase> ();
-			lock (doms)  {
-				// There may be several uris for the same db
-				foreach (ProjectDom dom in doms.Values) {
-					if (dom.Database == null)
-						continue;
-					if (!list.Contains (dom.Database))
-						list.Add (dom.Database);
-				}
-			}
-			
-			List<CodeCompletionDatabase> done = new List<CodeCompletionDatabase> ();
-			while (list.Count > 0) 
-			{
-				CodeCompletionDatabase readydb = null;
-				CodeCompletionDatabase bestdb = null;
-				int bestRefCount = int.MaxValue;
-				
-				// Look for a db with all references resolved
-				for (int n=0; n<list.Count && readydb==null; n++)
-				{
-					CodeCompletionDatabase db = (CodeCompletionDatabase)list[n];
-
-					bool allDone = true;
-					foreach (ReferenceEntry re in db.References) {
-						CodeCompletionDatabase refdb = GetDom (re.Uri) != null ? GetDom (re.Uri).Database : null;
-						if (refdb != null && !done.Contains (refdb)) {
-							allDone = false;
-							break;
-						}
-					}
-					
-					if (allDone)
-						readydb = db;
-					else if (db.References.Count < bestRefCount) {
-						bestdb = db;
-						bestRefCount = db.References.Count;
-					}
-				}
-
-				// It may not find any db without resolved references if there
-				// are circular dependencies. In this case, take the one with
-				// less references
-				
-				if (readydb == null)
-					readydb = bestdb;
-					
-				readydb.CheckModifiedFiles ();
-				list.Remove (readydb);
-				done.Add (readydb);
 			}
 		}
 		

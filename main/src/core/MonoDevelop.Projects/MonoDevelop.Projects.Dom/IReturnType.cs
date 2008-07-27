@@ -32,6 +32,12 @@ using System.Collections.ObjectModel;
 
 namespace MonoDevelop.Projects.Dom
 {
+	[Flags]
+	public enum ReturnTypeModifiers {
+		None     = 0,
+		ByRef    = 1,
+		Nullable = 2
+	}
 	public interface IReturnType : IDomVisitable
 	{
 		string FullName {
@@ -50,6 +56,10 @@ namespace MonoDevelop.Projects.Dom
 		}
 		
 		int ArrayDimensions {
+			get;
+		}
+		
+		ReturnTypeModifiers Modifiers {
 			get;
 		}
 		

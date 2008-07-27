@@ -283,21 +283,12 @@
     <File name="MonoDevelop.Projects.Dom.Parser/ProjectDom.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Dom.Parser/ProjectDomEventArgs.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Dom.Parser/ProjectParserService.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Projects.Dom/CodeCompletionDatabase.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Projects.Dom/DomPersistence.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Projects.Dom/FileEntry.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Projects.Dom/ClassEntry.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Projects.Dom/NamespaceEntry.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Dom/Tag.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Dom/TypeUpdateInformation.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Dom/ReferenceEntry.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Dom/Namespace.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Projects.Dom/DomTypeProxy.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Dom/CompoundType.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Projects.Dom/SimpleCodeCompletionDatabase.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Projects.Dom/AssemblyCodeCompletionDatabase.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Dom/DomCecilType.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Projects.Dom/DomCecilReturnType.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Dom/DomCecilProperty.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Dom/DomCecilParameter.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Dom/DomCecilMethod.cs" subtype="Code" buildaction="Compile" />
@@ -305,7 +296,6 @@
     <File name="MonoDevelop.Projects.Dom/DomCecilEvent.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Dom/DomCecilAttribute.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Dom/DomCecilCompilationUnit.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Projects.Dom/ProjectCodeCompletionDatabase.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Dom/IExpressionFinder.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Dom/ExpressionResult.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Dom/ExpressionContext.cs" subtype="Code" buildaction="Compile" />
@@ -316,6 +306,22 @@
     <File name="MonoDevelop.Projects.Dom/FoldingRegion.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Dom/PreProcessorDefine.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Dom/ConditionalRegion.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Projects.Dom.Parser/IResolver.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Projects.Dom.CodeGeneration/ICodeGenerator.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Projects.Dom.Database/CodeCompletionDatabase.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Projects.Dom.Database/HyenaSqliteConnection.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Projects.Dom.Database/HyenaSqliteCommand.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Projects.Dom.Database/SqliteUtils.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Projects.Dom.Database/DatabaseColumnAttribute.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Projects.Dom.Database/DateTimeUtil.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Projects.Dom.Parser/DatabaseProjectDom.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Projects.Dom.CodeGeneration/CodeRefactorer.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Projects.Dom.Database/DatabaseType.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Projects.Dom.Database/DatabaseField.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Projects.Dom.Database/DatabaseMethod.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Projects.Dom.Database/DatabaseProperty.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Projects.Dom.Database/DatabaseEvent.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Projects.Dom.Database/DatabaseParameter.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="False" refto="monodoc, Version=1.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
@@ -327,6 +333,10 @@
     <ProjectReference type="Project" localcopy="False" refto="Mono.Cecil" />
     <ProjectReference type="Gac" localcopy="True" refto="Mono.Addins, Version=0.3.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
     <ProjectReference type="Project" localcopy="True" refto="Mono.Cecil.Mdb" />
+    <ProjectReference type="Gac" localcopy="True" refto="Mono.Data, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
+    <ProjectReference type="Gac" localcopy="True" refto="Mono.Data.Sqlite, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
+    <ProjectReference type="Gac" localcopy="True" refto="Mono.Data.SqliteClient, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
+    <ProjectReference type="Gac" localcopy="True" refto="System.Data, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   </References>
   <GtkDesignInfo gtkVersion="2.12.1" />
   <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="./Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="../../../">

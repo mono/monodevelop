@@ -33,6 +33,10 @@ namespace MonoDevelop.Projects.Dom
 {
 	public interface IAttribute : IDomVisitable
 	{
+		string Name {
+			get;
+		}
+		
 		DomRegion Region {
 			get;
 		}
@@ -45,7 +49,7 @@ namespace MonoDevelop.Projects.Dom
 			get;
 		}
 		
-		IEnumerable<object> PositionalArguments {
+		IList<object> PositionalArguments {
 			get;
 		}
 		

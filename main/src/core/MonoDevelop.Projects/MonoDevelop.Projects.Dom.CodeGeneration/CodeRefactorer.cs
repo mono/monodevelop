@@ -1,4 +1,4 @@
-// IDocumentMetainformation.cs
+// CodeRefactorer.cs
 //
 // Author:
 //   Mike Krüger <mkrueger@novell.com>
@@ -25,30 +25,24 @@
 //
 
 using System;
-using System.Collections.Generic;
+using System.CodeDom;
 
-namespace MonoDevelop.Projects.Dom
+namespace MonoDevelop.Projects.Dom.CodeGeneration
 {
-	public interface IDocumentMetaInformation
+	public class CodeRefactorer
 	{
-		IList<Tag> TagComments {
-			get;
+		
+		public CodeRefactorer()
+		{
 		}
 		
-		IList<Comment> Comments {
-			get;
+		public void AddAttribute (IType type, string name, params object[] parameters)
+		{
+		}
+
+		public void AddAttribute (IType type, CodeAttributeDeclaration attr)
+		{
 		}
 		
-		IList<FoldingRegion> FoldingRegion {
-			get;
-		}
-		
-		IList<PreProcessorDefine> Defines {
-			get;
-		}
-		
-		IList<ConditionalRegion> ConditionalRegion {
-			get;
-		}
 	}
 }

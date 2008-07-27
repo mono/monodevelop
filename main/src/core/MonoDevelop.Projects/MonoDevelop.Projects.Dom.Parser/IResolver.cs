@@ -1,4 +1,4 @@
-// IDocumentMetainformation.cs
+// IResolver.cs
 //
 // Author:
 //   Mike Krüger <mkrueger@novell.com>
@@ -25,30 +25,11 @@
 //
 
 using System;
-using System.Collections.Generic;
 
-namespace MonoDevelop.Projects.Dom
+namespace MonoDevelop.Projects.Dom.Parser
 {
-	public interface IDocumentMetaInformation
+	public interface IResolver
 	{
-		IList<Tag> TagComments {
-			get;
-		}
-		
-		IList<Comment> Comments {
-			get;
-		}
-		
-		IList<FoldingRegion> FoldingRegion {
-			get;
-		}
-		
-		IList<PreProcessorDefine> Defines {
-			get;
-		}
-		
-		IList<ConditionalRegion> ConditionalRegion {
-			get;
-		}
+		ResolveResult Resolve (ExpressionResult expressionResult, DomLocation resolvePosition);
 	}
 }
