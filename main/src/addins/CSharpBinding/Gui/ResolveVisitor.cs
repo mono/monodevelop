@@ -68,11 +68,11 @@ namespace MonoDevelop.CSharpBinding
 		
 		ResolveResult CreateResult (string fullTypeName)
 		{
-			MemberResolveResult result = new MemberResolveResult ();
+			MemberResolveResult result = new MemberResolveResult (null);
 			result.CallingType   = resolver.CallingType;
 			result.CallingMember = resolver.CallingMember;
 			if (!String.IsNullOrEmpty (fullTypeName))
-				result.ResolvedType  = new DomReturnType (fullTypeName);
+				result.ResolvedType  = DomReturnType.GetSharedReturnType (fullTypeName);
 			return result;
 		}
 		
@@ -83,7 +83,7 @@ namespace MonoDevelop.CSharpBinding
 		
 		ResolveResult CreateResult (ICompilationUnit unit, IReturnType type)
 		{
-			MemberResolveResult result = new MemberResolveResult ();
+			MemberResolveResult result = new MemberResolveResult (null);
 			result.CallingType   = resolver.CallingType;
 			result.CallingMember = resolver.CallingMember;
 			result.ResolvedType = type;
@@ -196,7 +196,7 @@ namespace MonoDevelop.CSharpBinding
 			ThisResolveResult result = new ThisResolveResult ();
 			result.CallingType   = resolver.CallingType;
 			result.CallingMember = resolver.CallingMember;
-			result.ResolvedType  = new DomReturnType (resolver.CallingType);
+			result.ResolvedType  = DomReturnType.GetSharedReturnType (new DomReturnType (resolver.CallingType));
 			return result;
 		}
 		
@@ -246,7 +246,7 @@ namespace MonoDevelop.CSharpBinding
 				if (resolver.Dom.NamespaceExists (fullName))
 					return new NamespaceResolveResult (fullName);
 				
-				IType type = resolver.Dom.GetType (fullName, -1, true);
+				IType type = resolver.Dom.GetType (fullName, -1, true, true);
 				if (type != null) {
 					result = CreateResult (fullName);
 					result.StaticResolve = true;

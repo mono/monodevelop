@@ -1,3 +1,7 @@
+2008-07-27  Mike Krüger <mkrueger@novell.com> 
+
+	* cs-tokenizer.cs: Worked on code completion/new dom.
+
 2008-07-25  Marek Safar  <marek.safar@gmail.com>
 
 	A fix for bug #410717

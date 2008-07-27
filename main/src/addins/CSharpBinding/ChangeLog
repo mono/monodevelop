@@ -1,3 +1,12 @@
+2008-07-27  Mike Krüger <mkrueger@novell.com> 
+
+	* Gui/NewOverrideCompletionData.cs, Gui/CSharpTextEditorCompletion.cs,
+	  Gui/NRefactoryDocumentMetaInformation.cs,
+	  Gui/MemberCompletionData.cs, Gui/NRefactoryResolver.cs,
+	  Gui/ResolveVisitor.cs, Gui/NewCSharpExpressionFinder.cs,
+	  Gui/CSharpAmbience.cs, Parser/DomParser.cs, CSharpAmbience.cs:
+	  Worked on code completion/new dom.
+
 2008-07-23  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* Gui/CSharpTextEditorCompletion.cs, Gui/CSharpTextEditorExtension.cs:

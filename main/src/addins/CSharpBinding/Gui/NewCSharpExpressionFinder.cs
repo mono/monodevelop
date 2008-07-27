@@ -44,7 +44,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 			this.projectContent = projectContent;
 		}
 		
-		public ExpressionContext FindExactContextForNewCompletion(TextEditor editor, string fileName)
+		public ExpressionContext FindExactContextForNewCompletion(TextEditor editor, ICompilationUnit unit, string fileName)
 		{
 			// find expression on left hand side of the assignment
 			string documentToCursor = editor.GetText (0, editor.CursorPosition);
@@ -53,12 +53,12 @@ namespace MonoDevelop.CSharpBinding.Gui
 				return null;
 			ExpressionResult lhsExpr = FindExpression (documentToCursor, pos);
 			if (lhsExpr.Expression != null) {
-				NRefactoryResolver resolver = new MonoDevelop.CSharpBinding.NRefactoryResolver (projectContent,
+				NRefactoryResolver resolver = new MonoDevelop.CSharpBinding.NRefactoryResolver (projectContent, unit,
 				                                                                                ICSharpCode.NRefactory.SupportedLanguage.CSharp,
 				                                                                                editor,
 				                                                                                fileName);
 				
-				ResolveResult rr = resolver.Resolve (lhsExpr);
+				ResolveResult rr = resolver.Resolve (lhsExpr, new DomLocation (editor.CursorLine, editor.CursorColumn));
 				//ResolveResult rr = ParserService.Resolve (lhsExpr, currentLine.LineNumber, pos, editor.FileName, editor.Text);
 				if (rr != null && rr.ResolvedType != null) {
 					ExpressionContext context;
@@ -605,7 +605,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 					}
 					break;
 				case Tokens.Throw:
-					frame.SetExpectedType (new DomReturnType ("System.Exception"));
+					frame.SetExpectedType (DomReturnType.Exception);
 					break;
 				case Tokens.New:
 					if (frame.InExpressionMode) {

@@ -39,11 +39,19 @@ namespace MonoDevelop.CSharpBinding
 		
 		protected override IDomVisitor OutputVisitor {
 			get {
+			
+			
+			
+			
+			
+			
+			
+			
 				return this;
 			}
 		}
 		
-		public CSharpAmbience () : base ("C#")
+		public CSharpAmbience () : base ("C#", "text/x-csharp")
 		{
 			classTypes[ClassType.Class]     = "class";
 			classTypes[ClassType.Enum]      = "enum";
@@ -98,6 +106,20 @@ namespace MonoDevelop.CSharpBinding
 			netToCSharpTypes["System.String"]  = "string";
 		}
 		
+		public static string NormalizeTypeName (string typeName)
+		{
+			int idx = typeName.IndexOf ('`');
+			if (idx > 0) 
+				return typeName.Substring (0, idx);
+			return typeName;
+		}
+		
+		public override bool IsValidFor (string fileName)
+		{
+			if (fileName == null)
+				return false;
+			return fileName.EndsWith (".cs");
+		}
 		
 		public override string SingleLineComment (string text)
 		{
@@ -189,9 +211,26 @@ namespace MonoDevelop.CSharpBinding
 				result.Append (netToCSharpTypes[returnType.FullName]);
 			} else {
 				if (UseFullName (flags)) {
-					result.Append (Format (returnType.FullName));
+					result.Append (Format (NormalizeTypeName (returnType.FullName)));
 				} else {
-					result.Append (Format (returnType.Name));
+					result.Append (Format (NormalizeTypeName (returnType.Name)));
+				}
+			}
+			if (returnType.GenericArguments != null && returnType.GenericArguments.Count > 0) {
+				if (EmitMarkup (flags)) {
+					result.Append ("&lt;");
+				} else {
+					result.Append ('<');
+				}
+				for (int i = 0; i < returnType.GenericArguments.Count; i++) {
+					if (i > 0)
+						result.Append (", ");
+					result.Append (GetString (returnType.GenericArguments[i], flags));
+				}
+				if (EmitMarkup (flags)) {
+					result.Append ("&gt;");
+				} else {
+					result.Append ('>');
 				}
 			}
 			return result.ToString ();
@@ -284,11 +323,11 @@ namespace MonoDevelop.CSharpBinding
 					result.Append ("</b>");
 			}
 			
-			result.Append (Format (type.Name));
+			result.Append (Format (NormalizeTypeName (type.Name)));
 			
 			if (IncludeBaseTypes (flags) && type.BaseType != null) {
 				result.Append (" : ");
-				result.Append (Format (type.BaseType.Name));
+				result.Append (Format (NormalizeTypeName (type.BaseType.Name)));
 			}
 			return result.ToString ();
 		}

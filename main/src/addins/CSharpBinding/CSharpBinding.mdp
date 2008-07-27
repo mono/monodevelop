@@ -116,6 +116,8 @@
     <File name="Gui/NewCSharpExpressionFinder.cs" subtype="Code" buildaction="Compile" />
     <File name="Gui/NewOverrideCompletionData.cs" subtype="Code" buildaction="Compile" />
     <File name="Gui/CSharpAmbience.cs" subtype="Code" buildaction="Compile" />
+    <File name="Gui/NRefactoryDocumentMetaInformation.cs" subtype="Code" buildaction="Compile" />
+    <File name="Gui/MemberCompletionData.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Core" />

@@ -60,7 +60,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 		{
 			base.Initialize ();
 			stateTracker = new DocumentStateTracker<CSharpIndentEngine> (new CSharpIndentEngine (),  Editor);
-			dom = ProjectDomService.GetDom (Document.Project);
+			dom = ProjectDomService.GetDatabaseProjectDom (Document.Project);
 		}
 		
 		ExpressionResult FindExpression (ProjectDom dom, int offset)
@@ -92,11 +92,12 @@ namespace MonoDevelop.CSharpBinding.Gui
 				if (idx > 0)
 					result.Expression = result.Expression.Substring (0, idx);
 				NRefactoryResolver resolver = new MonoDevelop.CSharpBinding.NRefactoryResolver (dom,
+				                                                                                Document.CompilationUnit,
 				                                                                                ICSharpCode.NRefactory.SupportedLanguage.CSharp,
 				                                                                                Editor,
 				                                                                                Document.FileName);
 				
-				ResolveResult resolveResult = resolver.Resolve (result);
+				ResolveResult resolveResult = resolver.Resolve (result, new DomLocation (Editor.CursorLine, Editor.CursorColumn));
 				return CreateCompletionData (resolveResult, result);
 			case '#':
 				if (stateTracker.Engine.IsInsidePreprocessorDirective) 
@@ -142,7 +143,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 				if (stateTracker.Engine.IsInsideDocLineComment) {
 					StringBuilder generatedComment = new StringBuilder ();
 					bool generateStandardComment = true;
-					IType insideClass = NRefactoryResolver.GetTypeAtCursor (dom, Document.FileName, Editor);
+					IType insideClass = NRefactoryResolver.GetTypeAtCursor (Document.CompilationUnit, Document.FileName, new DomLocation (Editor.CursorLine, Editor.CursorColumn));
 					if (insideClass != null) {
 						string indent = GetLineWhiteSpace (Editor.GetLineText (Editor.CursorLine));
 						if (insideClass.ClassType == ClassType.Delegate) {
@@ -198,13 +199,6 @@ namespace MonoDevelop.CSharpBinding.Gui
 							return CreateCtrlSpaceCompletionData (result);
 						}
 					}
-/*					expressionFinder = new NewCSharpExpressionFinder (dom);
-					try {
-						result = expressionFinder.FindFullExpression (Editor.Text, Editor.CursorPosition);
-					} catch (Exception ex) {
-						LoggingService.LogWarning (ex.Message, ex);
-						return null;
-					}*/
 				}
 				break;
 			}
@@ -221,14 +215,14 @@ namespace MonoDevelop.CSharpBinding.Gui
 			ExpressionResult result = FindExpression (dom , -2);
 			if (result == null)
 				return null;
-			NRefactoryResolver resolver = new MonoDevelop.CSharpBinding.NRefactoryResolver (dom,
+			NRefactoryResolver resolver = new MonoDevelop.CSharpBinding.NRefactoryResolver (dom, Document.CompilationUnit,
 			                                                                                ICSharpCode.NRefactory.SupportedLanguage.CSharp,
 			                                                                                Editor,
 			                                                                                Document.FileName);
 			
 			switch (completionChar) {
 			case '(':
-				ResolveResult resolveResult = resolver.Resolve (result);
+				ResolveResult resolveResult = resolver.Resolve (result, new DomLocation (Editor.CursorLine, Editor.CursorColumn));
 				if (resolveResult != null) {
 					if (resolveResult is MethodResolveResult)
 						return new NRefactoryParameterDataProvider (Editor, resolver.Dom, resolveResult as MethodResolveResult);
@@ -269,14 +263,14 @@ namespace MonoDevelop.CSharpBinding.Gui
 					} else
 						break;
 				}
-				IType cls = NRefactoryResolver.GetTypeAtCursor (dom, Document.FileName, Editor);
+				IType cls = NRefactoryResolver.GetTypeAtCursor (Document.CompilationUnit, Document.FileName, new DomLocation (Editor.CursorLine, Editor.CursorColumn));
 				if (cls != null && (cls.ClassType == ClassType.Class || cls.ClassType == ClassType.Struct)) {
 					string modifiers = Editor.GetText (firstMod, wordStart);
 					return GetOverrideCompletionData (cls, modifiers);
 				}
 				return null;
 			case "new":
-				ExpressionContext exactContext = new NewCSharpExpressionFinder (dom).FindExactContextForNewCompletion(Editor, Document.FileName);
+				ExpressionContext exactContext = new NewCSharpExpressionFinder (dom).FindExactContextForNewCompletion(Editor, Document.CompilationUnit, Document.FileName);
 				if (exactContext is ExpressionContext.TypeExpressionContext)
 					return CreateTypeCompletionData (exactContext, ((ExpressionContext.TypeExpressionContext)exactContext).Type);
 				return CreateTypeCompletionData (exactContext, null);
@@ -334,12 +328,12 @@ namespace MonoDevelop.CSharpBinding.Gui
 				return null;
 			
 			if (result.ExpressionContext == ExpressionContext.IdentifierExpected) {
-				NRefactoryResolver resolver = new MonoDevelop.CSharpBinding.NRefactoryResolver (dom,
+				NRefactoryResolver resolver = new MonoDevelop.CSharpBinding.NRefactoryResolver (dom, Document.CompilationUnit,
 				                                                                                ICSharpCode.NRefactory.SupportedLanguage.CSharp,
 				                                                                                Editor,
 				                                                                                Document.FileName);
 				
-				ResolveResult resolveResult = resolver.Resolve (result);
+				ResolveResult resolveResult = resolver.Resolve (result, new DomLocation (Editor.CursorLine, Editor.CursorColumn));
 				return CreateCompletionData (resolveResult, result);
 			}
 				
@@ -351,94 +345,6 @@ namespace MonoDevelop.CSharpBinding.Gui
 			Dictionary<string, CodeCompletionData> data = new Dictionary<string, CodeCompletionData> ();
 			static CSharpAmbience ambience = new CSharpAmbience ();
 			
-			public static string FormatText (string text)
-			{
-				StringBuilder result = new StringBuilder ();
-				bool wasWhitespace = false;
-				foreach (char ch in text) {
-					switch (ch) {
-						case '\n':
-						case '\r':
-							break;
-						case '<':
-							result.Append ("&lt;");
-							break;
-						case '>':
-							result.Append ("&gt;");
-							break;
-						case '&':
-							result.Append ("&amp;");
-							break;
-						default:
-							if (wasWhitespace && Char.IsWhiteSpace (ch))
-								break;
-							wasWhitespace = Char.IsWhiteSpace (ch);
-							result.Append (ch);
-							break;
-					}
-				}
-				return result.ToString ();
-			}
-			static string GetCref (string cref)
-			{
-				if (cref == null)
-					return "";
-				
-				if (cref.Length < 2)
-					return cref;
-				
-				if (cref.Substring(1, 1) == ":")
-					return cref.Substring (2, cref.Length - 2);
-				
-				return cref;
-			}
-			public static string GetDocumentation (string doc)
-			{
-				System.IO.StringReader reader = new System.IO.StringReader("<docroot>" + doc + "</docroot>");
-				XmlTextReader xml   = new XmlTextReader(reader);
-				StringBuilder ret   = new StringBuilder(70);
-				
-				try {
-					xml.Read();
-					do {
-						if (xml.NodeType == XmlNodeType.Element) {
-							string elname = xml.Name.ToLower();
-							if (elname == "remarks") {
-								ret.Append("Remarks:\n");
-							// skip <example>-nodes
-							} else if (elname == "example") {
-								xml.Skip();
-								xml.Skip();							
-							} else if (elname == "exception") {
-								ret.Append("Exception: " + GetCref(xml["cref"]) + ":\n");
-							} else if (elname == "returns") {
-								ret.Append("Returns: ");
-							} else if (elname == "see") {
-								ret.Append(GetCref(xml["cref"]) + xml["langword"]);
-							} else if (elname == "seealso") {
-								ret.Append("See also: " + GetCref(xml["cref"]) + xml["langword"]);
-							} else if (elname == "paramref") {
-								ret.Append(xml["name"]);
-							} else if (elname == "param") {
-								ret.Append(xml["name"].Trim() + ": ");
-							} else if (elname == "value") {
-								ret.Append("Value: ");
-							}
-						} else if (xml.NodeType == XmlNodeType.EndElement) {
-							string elname = xml.Name.ToLower();
-							if (elname == "para" || elname == "param") {
-								ret.Append("\n");
-							}
-						} else if (xml.NodeType == XmlNodeType.Text) {
-							ret.Append(xml.Value);
-						}
-					} while (xml.Read ());
-				} catch (Exception ex) {
-					LoggingService.LogError (ex.ToString ());
-					return doc;
-				}
-				return ret.ToString ();
-			}
 			
 			public void AddCompletionData (CodeCompletionDataProvider provider, object obj)
 			{
@@ -450,15 +356,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 			
 				IMember member = obj as IMember;
 				if (member != null) {
-					string doc = ambience.GetString (member, OutputFlags.ClassBrowserEntries | OutputFlags.IncludeParameterName);
-					XmlNode node = member.GetMonodocDocumentation ();
-					if (node != null) {
-						node = node.SelectSingleNode ("summary");
-						if (node != null) {
-							doc += Environment.NewLine + GetDocumentation (node.InnerXml);
-						}
-					}
-					CodeCompletionData newData = new CodeCompletionData (member.Name, member.StockIcon, doc);
+					CodeCompletionData newData = new MemberCompletionData (member);
 					if (data.ContainsKey (member.Name)) {
 						data [member.Name].AddOverload (newData);
 					} else {
@@ -476,9 +374,10 @@ namespace MonoDevelop.CSharpBinding.Gui
 			if (resolveResult == null || expressionResult == null)
 				return null;
 			CodeCompletionDataProvider result = new CodeCompletionDataProvider (null, null);
-			ProjectDom dom = ProjectDomService.GetDom (Document.Project);
+			ProjectDom dom = ProjectDomService.GetDatabaseProjectDom (Document.Project);
 			if (dom == null)
 				return null;
+			
 			IEnumerable<object> objects = resolveResult.CreateResolveResult (dom);
 			CompletionDataCollector col = new CompletionDataCollector ();
 			if (objects != null) {
@@ -517,7 +416,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 			}
 			if (searchType.BaseType == null) {
 				if (searchType.FullName != "System.Object")
-					AddVirtuals (provider, type, modifiers, new DomReturnType ("System.Object"));
+					AddVirtuals (provider, type, modifiers, DomReturnType.Object);
 			} else {
 				AddVirtuals (provider, type, modifiers, searchType.BaseType);
 			}
@@ -529,7 +428,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 		{
 			IReturnType resolvedType = returnType;
 			if (returnType != null) {
-				SearchTypeResult searchedTypeResult = dom.SearchType (new SearchTypeRequest (dom.GetCompilationUnit (Document.FileName), -1, -1, returnType.FullName));
+				SearchTypeResult searchedTypeResult = dom.SearchType (new SearchTypeRequest (Document.CompilationUnit, -1, -1, returnType.FullName));
 				if (searchedTypeResult != null) 
 					resolvedType = searchedTypeResult.Result ?? returnType;
 			}
@@ -569,14 +468,13 @@ namespace MonoDevelop.CSharpBinding.Gui
 		
 		ICompletionDataProvider CreateCtrlSpaceCompletionData (ExpressionResult expressionResult)
 		{
-			NRefactoryResolver resolver = new MonoDevelop.CSharpBinding.NRefactoryResolver (dom,
+			NRefactoryResolver resolver = new MonoDevelop.CSharpBinding.NRefactoryResolver (dom, Document.CompilationUnit,
 			                                                                                ICSharpCode.NRefactory.SupportedLanguage.CSharp,
 			                                                                                Editor,
 			                                                                                Document.FileName);
-			
+			resolver.SetupResolver (new DomLocation (Editor.CursorLine, Editor.CursorColumn));
 			//System.Console.WriteLine(expressionResult.ExpressionContext );
 			CodeCompletionDataProvider result = new CodeCompletionDataProvider (null, GetAmbience ());
-			System.Console.WriteLine("ctrlspace expressionResult:" + expressionResult);
 			if (expressionResult.ExpressionContext == ExpressionContext.TypeDeclaration) {
 				AddPrimitiveTypes (result);
 				AddNRefactoryKeywords (result, ICSharpCode.NRefactory.Parser.CSharp.Tokens.TypeLevel);

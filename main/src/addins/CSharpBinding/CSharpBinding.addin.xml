@@ -105,8 +105,8 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/TextEditorExtensions">
-		<Class class = "CSharpBinding.CSharpTextEditorExtension" />
-<!--		<Class class = "MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion" /> -->
+<!--		<Class class = "CSharpBinding.CSharpTextEditorExtension" /> -->
+		<Class class = "MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/MD1SerializationMaps">
@@ -115,6 +115,10 @@
 	
 	<Extension path = "/MonoDevelop/Ide/DomParser">
 		<Class class = "MonoDevelop.CSharpBinding.DomParser" />
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/Ide/Ambiences">
+		<Class class = "MonoDevelop.CSharpBinding.CSharpAmbience" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Core/StockIcons">

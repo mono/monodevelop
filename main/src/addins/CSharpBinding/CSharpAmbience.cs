@@ -65,6 +65,8 @@ namespace CSharpBinding
 			}
 		}
 		
+		
+		
 		bool ModifierIsSet(ModifierEnum modifier, ModifierEnum query)
 		{
 			return (modifier & query) == query;
