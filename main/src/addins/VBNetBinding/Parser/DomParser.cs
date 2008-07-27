@@ -16,35 +16,18 @@ using Mono.CSharp;
 
 namespace MonoDevelop.VBNetBinding
 {
-	public class DomParser : IParser
+	public class DomParser : AbstractParser
 	{
-		public bool CanParseMimeType (string mimeType)
+		public DomParser () : base ("VB.NET", "text/x-vb")
 		{
-			return "text/x-vb" == mimeType;
 		}
 		
-		public bool CanParseProjectType (string projectType)
-		{
-			return "VB.NET" == projectType;
-		}
-		
-		public bool CanParse (string fileName)
+		public override bool CanParse (string fileName)
 		{
 			return Path.GetExtension (fileName) == ".vb";
 		}
 		
-		public IExpressionFinder CreateExpressionFinder ()
-		{
-			return null;
-		}
-		
-		public IDocumentMetaInformation CreateMetaInformation (Stream stream)
-		{
-			return null;
-		}
-				
-
-		public ICompilationUnit Parse (string fileName, string content)
+		public override ICompilationUnit Parse (string fileName, string content)
 		{
 			using (ICSharpCode.NRefactory.IParser parser = ICSharpCode.NRefactory.ParserFactory.CreateParser (ICSharpCode.NRefactory.SupportedLanguage.VBNet, new StringReader(content))) {
 				return Parse (parser, fileName);
