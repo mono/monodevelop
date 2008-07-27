@@ -20,7 +20,6 @@ REFS =  \
 
 FILES =  \
 	MonoDevelop.Projects/DomCompilationUnitTests.cs \
-	MonoDevelop.Projects/DomPersistenceTests.cs \
 	MonoDevelop.Projects/MakefileTests.cs \
 	MonoDevelop.Projects/MdsTests.cs \
 	MonoDevelop.Projects/MonoDeveloperFormatTests.cs \
