@@ -26,9 +26,12 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using Gtk;
 using Mono.TextEditor;
-using MonoDevelop.Projects.Parser;
+using MonoDevelop.Projects.Dom;
+using MonoDevelop.Projects.Dom.Parser;
+using MonoDevelop.Projects.Dom.Output;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Core;
@@ -49,9 +52,10 @@ namespace MonoDevelop.SourceEditor
 		ListStore memberStore;
 		ListStore regionStore;
 		
-		IParseInformation memberParseInfo;
+		ICompilationUnit memberParseInfo;
+		IDocumentMetaInformation metaInfo;
 		bool handlingParseEvent = false;
-		Tooltips tips = new Tooltips ();		
+		Tooltips tips = new Tooltips ();
 		
 		MonoDevelop.SourceEditor.ExtendibleTextEditor textEditor;
 		MonoDevelop.SourceEditor.ExtendibleTextEditor splittedTextEditor;
@@ -160,7 +164,7 @@ namespace MonoDevelop.SourceEditor
 //			classBrowser.PackStart (tbox, true, true, 0);
 			
 			// Set up the data stores for the comboboxes
-			classStore = new ListStore(typeof(Gdk.Pixbuf), typeof(string), typeof(IClass));
+			classStore = new ListStore(typeof(Gdk.Pixbuf), typeof(string), typeof(IType));
 			classCombo.Model = classStore;	
 			classCombo.Changed += new EventHandler (ClassChanged);
 			tips.SetTip (classCombo, GettextCatalog.GetString ("Type list"), null);
@@ -170,27 +174,43 @@ namespace MonoDevelop.SourceEditor
 			membersCombo.Model = memberStore;
 			membersCombo.Changed += new EventHandler (MemberChanged);
 			tips.SetTip (membersCombo, GettextCatalog.GetString ("Member list"), null);
-
-			regionStore = new ListStore(typeof(Gdk.Pixbuf), typeof(string), typeof(IRegion));
+			
+			regionStore = new ListStore(typeof(Gdk.Pixbuf), typeof(string), typeof(DomRegion));
 			regionCombo.Model = regionStore;	
 			regionCombo.Changed += new EventHandler (RegionChanged);
 			tips.SetTip (regionCombo, GettextCatalog.GetString ("Region list"), null);
 			
 			ResetFocusChain ();
-			
-			IdeApp.Workspace.ParserDatabase.ParseInformationChanged += UpdateClassBrowser;
+			ProjectDomService.CompilationUnitUpdated += UpdateClassBrowser;
 			
 			UpdateLineCol ();
 			
 			this.Focused += delegate {
 				UpdateLineCol ();
 			};
-			IdeApp.Workspace.ParserDatabase.ParseInformationChanged += OnParseInformationChanged;
+			ProjectDomService.CompilationUnitUpdated += OnParseInformationChanged;
 //			this.IsClassBrowserVisible = SourceEditorOptions.Options.EnableQuickFinder;
 			
 			this.Destroyed += delegate {
 				this.Dispose ();
 			};
+		}
+
+		void UpdateMetaInformation ()
+		{
+			if (this.textEditor == null || this.textEditor.Document == null)
+				return;
+			IParser parser = ProjectDomService.GetParserByMime (this.textEditor.Document.MimeType);
+			if (parser == null)
+				return;
+			metaInfo = parser.CreateMetaInformation (this.textEditor.Document.OpenTextReader ());
+/*			BindRegionCombo ();
+			UpdateRegionCombo (TextEditor.Caret.Line + 1, TextEditor.Caret.Column);*/
+		}
+		
+		public void SetMime (string mimeType)
+		{
+			IsClassBrowserVisible = MonoDevelop.Projects.Dom.Parser.ProjectDomService.GetParserByMime (mimeType) != null;
 		}
 		
 		void ResetFocusChain ()
@@ -211,64 +231,77 @@ namespace MonoDevelop.SourceEditor
 			
 			base.OnSizeAllocated (allocation);
 		}
-
+		
 		#region Error underlining
 		Dictionary<int, Error> errors = new Dictionary<int, Error> ();
 		uint resetTimerId;
 		ICompilationUnit lastCu = null;
 		bool resetTimerStarted = false;
 		
-		FoldSegment AddMarker (List<FoldSegment> foldSegments, string text, IRegion region, FoldingType type)
+		FoldSegment AddMarker (List<FoldSegment> foldSegments, string text, DomRegion region, FoldingType type)
 		{
-			if (region == null || this.TextEditor == null || this.TextEditor.Document == null || region.BeginLine <= 0 || region.EndLine <= 0 || region.BeginLine >= this.TextEditor.Document.LineCount || region.EndLine >= this.TextEditor.Document.LineCount)
+			if (region == null || this.TextEditor == null || this.TextEditor.Document == null || region.Start.Line <= 0 || region.End.Line <= 0 || region.Start.Line >= this.TextEditor.Document.LineCount || region.End.Line >= this.TextEditor.Document.LineCount)
 				return null;
-			int startOffset = this.TextEditor.Document.LocationToOffset (region.BeginLine - 1,  region.BeginColumn - 1);
-			int endOffset   = this.TextEditor.Document.LocationToOffset (region.EndLine - 1,  region.EndColumn - 1);
+			int startOffset = this.TextEditor.Document.LocationToOffset (region.Start.Line - 1,  region.Start.Column - 1);
+			int endOffset   = this.TextEditor.Document.LocationToOffset (region.End.Line - 1,  region.End.Column - 1);
 			FoldSegment result = new FoldSegment (text, startOffset, endOffset - startOffset, type);
 			
 			foldSegments.Add (result);
 			return result;
 		}
 		
-		void AddClass (List<FoldSegment> foldSegments, IClass cl)
+		void AddClass (List<FoldSegment> foldSegments, IType cl)
 		{
 			if (this.TextEditor == null || this.TextEditor.Document == null)
 				return;
-			if (cl.BodyRegion != null && cl.BodyRegion.EndLine > cl.BodyRegion.BeginLine)
-				AddMarker (foldSegments, "...", cl.BodyRegion, FoldingType.TypeDefinition);
-			foreach (IClass inner in cl.InnerClasses) 
+			if (cl.BodyRegion != null && cl.BodyRegion.End.Line > cl.BodyRegion.Start.Line) {
+				LineSegment startLine = this.TextEditor.Document.GetLine (cl.Location.Line - 1);
+				if (startLine != null) {
+					int startOffset = startLine.Offset + startLine.EditableLength;
+					int endOffset   = this.TextEditor.Document.LocationToOffset (cl.BodyRegion.End.Line - 1,  cl.BodyRegion.End.Column);
+					foldSegments.Add (new FoldSegment ("...", startOffset, endOffset - startOffset, FoldingType.TypeDefinition));
+				}
+			}
+			foreach (IType inner in cl.InnerTypes) 
 				AddClass (foldSegments, inner);
-			
 			if (cl.ClassType == ClassType.Interface)
 				return;
 			foreach (IMethod method in cl.Methods) {
-				if (method.Region == null || method.BodyRegion == null || method.BodyRegion.EndLine <= 0 || method.Region.EndLine == method.BodyRegion.EndLine)
+				if (method.Location == null || method.BodyRegion == null || method.BodyRegion.End.Line <= 0 /*|| method.Region.End.Line == method.BodyRegion.End.Line*/)
 					continue;
-				int startOffset = this.TextEditor.Document.LocationToOffset (method.Region.EndLine - 1,  method.Region.EndColumn - 1);
-				int endOffset   = this.TextEditor.Document.LocationToOffset (method.BodyRegion.EndLine - 1,  method.BodyRegion.EndColumn - 1);
+				LineSegment startLine = this.TextEditor.Document.GetLine (method.Location.Line - 1);
+				if (startLine == null)
+					continue;
+				int startOffset = startLine.Offset + startLine.EditableLength;
+				int endOffset   = this.TextEditor.Document.LocationToOffset (method.BodyRegion.End.Line - 1,  method.BodyRegion.End.Column);
 				foldSegments.Add (new FoldSegment ("...", startOffset, endOffset - startOffset, FoldingType.TypeMember));
 			}
 			
 			foreach (IProperty property in cl.Properties) {
-				if (property.Region == null || property.BodyRegion == null || property.BodyRegion.EndLine <= 0 || property.Region.EndLine == property.BodyRegion.EndLine)
+				if (property.Location == null || property.BodyRegion == null || property.BodyRegion.End.Line <= 0 /*|| property.Region.End.Line == property.BodyRegion.End.Line*/)
 					continue;
-				int startOffset = this.TextEditor.Document.LocationToOffset (property.Region.EndLine - 1,  property.Region.EndColumn - 1);
-				int endOffset   = this.TextEditor.Document.LocationToOffset (property.BodyRegion.EndLine - 1,  property.BodyRegion.EndColumn - 1);
+				LineSegment startLine = this.TextEditor.Document.GetLine (property.Location.Line - 1);
+				if (startLine == null)
+					continue;
+				
+				int startOffset = startLine.Offset + startLine.EditableLength;
+				int endOffset   = this.TextEditor.Document.LocationToOffset (property.BodyRegion.End.Line - 1,  property.BodyRegion.End.Column);
 				foldSegments.Add (new FoldSegment ("...", startOffset, endOffset - startOffset, FoldingType.TypeMember));
 			}
 		}
 		
-		
 		void AddUsings (List<FoldSegment> foldSegments, ICompilationUnit cu)
 		{
-			if (cu.Usings == null || cu.Usings.Count <= 1)
+			if (cu.Usings == null || cu.Usings.Count == 0)
 				return;
 			IUsing first = cu.Usings[0];
 			IUsing last = cu.Usings[cu.Usings.Count - 1];
-			if (first.Region == null || last.Region == null || first.Region.BeginLine == last.Region.EndLine)
+			if (first.Region == null || last.Region == null || first.Region.Start.Line == last.Region.End.Line)
 				return;
-			int startOffset = this.TextEditor.Document.LocationToOffset (first.Region.BeginLine - 1,  first.Region.BeginColumn - 1);
-			int endOffset   = this.TextEditor.Document.LocationToOffset (last.Region.EndLine - 1,  last.Region.EndColumn - 1);
+			System.Console.WriteLine(first.Region);
+			int startOffset = this.TextEditor.Document.LocationToOffset (first.Region.Start.Line - 1,  first.Region.Start.Column - 1);
+			int endOffset   = this.TextEditor.Document.LocationToOffset (last.Region.End.Line - 1,  last.Region.End.Column - 1);
+			
 			foldSegments.Add (new FoldSegment ("...", startOffset, endOffset - startOffset, FoldingType.TypeMember));
 		}
 			
@@ -278,35 +311,23 @@ namespace MonoDevelop.SourceEditor
 			SourceEditorWidget widget;
 			//ParseInformationEventArgs args;
 			
-			public ParseInformationUpdaterWorkerThread (SourceEditorWidget widget, ParseInformationEventArgs args)
+			public ParseInformationUpdaterWorkerThread (SourceEditorWidget widget)
 			{
 				this.widget = widget;
 				//this.args = args;
 			}
 			
-			bool IsInsideMember (FoldSegment marker, MonoDevelop.Projects.Parser.FoldingRegion region, IClass cl)
+			bool IsInsideMember (FoldSegment marker, DomRegion region, IType cl)
 			{
-				if (region == null)
+				if (region == null || !cl.BodyRegion.Contains (region.Start))
 					return false;
-				foreach (IMethod m in cl.Methods) {
-					if (m.BodyRegion == null)
+				foreach (IMember member in cl.Members) {
+					if (member.BodyRegion == null)
 						continue;
-					if (m.BodyRegion.BeginLine <=  region.Region.BeginLine && region.Region.BeginLine <= m.BodyRegion.EndLine) 
+					if (member.BodyRegion.Contains (region.Start) && member.BodyRegion.Contains (region.End)) 
 						return true;
 				}
-				foreach (IProperty p in cl.Properties) {
-					if (p.BodyRegion == null)
-						continue;
-					if (p.BodyRegion.BeginLine <=  region.Region.BeginLine && region.Region.BeginLine <= p.BodyRegion.EndLine) 
-						return true;
-				}
-				foreach (IIndexer i in cl.Indexer) {
-					if (i.BodyRegion == null)
-						continue;
-					if (i.BodyRegion.BeginLine <=  region.Region.BeginLine && region.Region.BeginLine <= i.BodyRegion.EndLine) 
-						return true;
-				}
-				foreach (IClass inner in cl.InnerClasses) {
+				foreach (IType inner in cl.InnerTypes) {
 					if (IsInsideMember (marker, region, inner))
 						return true;
 				}
@@ -319,28 +340,69 @@ namespace MonoDevelop.SourceEditor
 					if (SourceEditorOptions.Options.ShowFoldMargin && widget.lastCu != null) {
 						List<FoldSegment> foldSegments = new List<FoldSegment> ();
 						widget.AddUsings (foldSegments, widget.lastCu);
-						foreach (MonoDevelop.Projects.Parser.FoldingRegion region in widget.lastCu.FoldingRegions) {
-							if (base.IsStopping)
-								return;
-							FoldSegment marker = widget.AddMarker (foldSegments, region.Name, region.Region, FoldingType.Region);
-							if (marker != null) {
-								marker.IsFolded = region.DefaultIsFolded;
-								foreach (IClass cl in widget.lastCu.Classes) {
-									if (base.IsStopping)
-										return;
-									if (IsInsideMember (marker, region, cl)) {
-										marker.IsFolded = false;
-										break;
-									}
-								}
-							 skip:
-								marker.IsFolded &= !widget.TextEditor.Document.HasFoldSegments;
+						
+						if (widget.lastCu != null) {
+							foreach (IType cl in widget.lastCu.Types) {
+								if (base.IsStopping)
+									return;
+								widget.AddClass (foldSegments, cl);
 							}
 						}
-						foreach (IClass cl in widget.lastCu.Classes) {
-							if (base.IsStopping)
-								return;
-							widget.AddClass (foldSegments, cl);
+						
+						if (widget.metaInfo != null && widget.metaInfo.FoldingRegion != null) {
+							foreach (FoldingRegion region in widget.metaInfo.FoldingRegion) {
+								FoldSegment marker = widget.AddMarker (foldSegments, region.Name, region.Region, FoldingType.Region);
+								if (marker != null) 
+									marker.IsFolded = SourceEditorOptions.Options.DefaultRegionsFolding && region.DefaultIsFolded;
+							}
+							
+							if (widget.metaInfo.Comments.Count > 0) {
+								Comment firstComment = null;
+								string commentText = null;
+								DomRegion commentRegion = DomRegion.Empty;
+								for (int i = 0; i < widget.metaInfo.Comments.Count; i++) {
+									Comment comment = widget.metaInfo.Comments[i];
+									FoldSegment marker = null;
+									if (comment.CommentType == CommentType.MultiLine) {
+										commentText = "/* */";
+										firstComment = null;
+										marker = widget.AddMarker (foldSegments, commentText, comment.Region, FoldingType.Region);
+										commentRegion = comment.Region;
+									} else {
+										if (!comment.CommentStartsLine)
+											continue;
+										int j = i;
+										int curLine = comment.Region.Start.Line - 1;
+										DomLocation end = comment.Region.End;
+										for (; j < widget.metaInfo.Comments.Count; j++) {
+											Comment  curComment  = widget.metaInfo.Comments[j];
+											if (curComment == null || !curComment.CommentStartsLine || curComment.CommentType != comment.CommentType || curLine + 1 != curComment.Region.Start.Line)
+												break;
+											end     = curComment.Region.End;
+											curLine = curComment.Region.Start.Line;
+										}
+										if (j - i > 1) {
+											commentRegion = new DomRegion(comment.Region.Start.Line, comment.Region.Start.Column, end.Line, end.Column);
+											marker = widget.AddMarker (foldSegments, 
+											                    comment.IsDocumentation  ? "/// " : "// "  + comment.Text + "...", 
+											                    commentRegion, 
+											                    FoldingType.Region);
+											
+											i = j - 1;
+										}
+									}
+									if (marker != null && widget.lastCu != null && SourceEditorOptions.Options.DefaultCommentFolding) {
+										bool isInsideMember = false;
+										foreach (IType type in widget.lastCu.Types) {
+											if (IsInsideMember (marker, commentRegion, type)) {
+												isInsideMember = true;
+												break;
+											}
+										}
+										marker.IsFolded = !isInsideMember;
+									}
+								}
+							}
 						}
 						widget.TextEditor.Document.UpdateFoldSegments (foldSegments);
 					}
@@ -356,18 +418,19 @@ namespace MonoDevelop.SourceEditor
 		readonly object syncObject = new object();
 		ParseInformationUpdaterWorkerThread parseInformationUpdaterWorkerThread = null;
 		
-		void OnParseInformationChanged (object sender, ParseInformationEventArgs args)
+		void OnParseInformationChanged (object sender, CompilationUnitEventArgs args)
 		{
-			if (this.isDisposed || args == null || args.ParseInformation == null || this.view == null  || this.view.ContentName != args.FileName)
+			UpdateMetaInformation ();
+			if (this.isDisposed || args == null || args.Unit == null || this.view == null  || this.view.ContentName != args.Unit.FileName)
 				return;
 			MonoDevelop.SourceEditor.ExtendibleTextEditor editor = this.TextEditor;
 			if (editor == null || editor.Document == null)
 				return;
 			lock (syncObject) {
-				lastCu = args.ParseInformation.MostRecentCompilationUnit as ICompilationUnit;
+				lastCu = args.Unit;
 				StopParseInfoThread ();
 				if (lastCu != null) {
-					parseInformationUpdaterWorkerThread = new ParseInformationUpdaterWorkerThread (this, args);
+					parseInformationUpdaterWorkerThread = new ParseInformationUpdaterWorkerThread (this);
 					parseInformationUpdaterWorkerThread.Start ();
 				}
 			}
@@ -412,31 +475,31 @@ namespace MonoDevelop.SourceEditor
 				errors.Clear ();
 			}
 		}
-		void ParseCompilationUnit (ICompilationUnitBase cu)
+		void ParseCompilationUnit (ICompilationUnit cu)
 		{
 			// No new errors
-			if (!cu.ErrorsDuringCompile || cu.ErrorInformation == null)
+			if (cu.Errors == null || cu.Errors.Count > 0)
 				return;
 			
 			// Else we underline the error
-			foreach (ErrorInfo info in cu.ErrorInformation)
+			foreach (MonoDevelop.Projects.Dom.Error info in cu.Errors)
 				UnderLineError (info);
 		}
 		
-		void UnderLineError (ErrorInfo info)
+		void UnderLineError (MonoDevelop.Projects.Dom.Error info)
 		{
 			if (this.isDisposed)
 				return;
 			// Adjust the line to Gtk line representation
-			info.Line -= 1;
+//			info.Line -= 1;
 			
 			// If the line is already underlined
-			if (errors.ContainsKey (info.Line))
+			if (errors.ContainsKey (info.Line - 1))
 				return;
 			
-			LineSegment line = this.TextEditor.Document.GetLine (info.Line);
+			LineSegment line = this.TextEditor.Document.GetLine (info.Line - 1);
 			Error error = new Error (this.TextEditor.Document, info, line); 
-			errors [info.Line] = error;
+			errors [info.Line - 1] = error;
 			error.AddToLine ();
 		}
 		#endregion
@@ -450,21 +513,21 @@ namespace MonoDevelop.SourceEditor
 				this.textEditor = null;
 				this.lastActiveEditor = null;
 				this.splittedTextEditor = null;
-				IdeApp.Workspace.ParserDatabase.ParseInformationChanged -= UpdateClassBrowser;
-				IdeApp.Workspace.ParserDatabase.ParseInformationChanged -= OnParseInformationChanged;
+				ProjectDomService.CompilationUnitUpdated -= UpdateClassBrowser;
+				ProjectDomService.CompilationUnitUpdated -= OnParseInformationChanged;
 			}			
 			base.OnDestroyed ();
 		}
 		
-		void UpdateClassBrowser (object sender, ParseInformationEventArgs args)
+		void UpdateClassBrowser (object sender, CompilationUnitEventArgs args)
 		{
 			// This event handler can get called when files other than the current content are updated. eg.
 			// when loading a new document. If we didn't do this check the member combo for this tab would have
 			// methods for a different class in it!
-			if (view.ContentName == args.FileName && !handlingParseEvent) {
+			if (view.ContentName == args.Unit.FileName && !handlingParseEvent) {
 				handlingParseEvent = true;
-				memberParseInfo = args.ParseInformation;
-				GLib.Timeout.Add (1000, new GLib.TimeoutHandler (BindClassCombo));
+				memberParseInfo = args.Unit;
+				GLib.Timeout.Add (100, new GLib.TimeoutHandler (BindClassCombo));
 			}
 		}
 		
@@ -665,7 +728,7 @@ namespace MonoDevelop.SourceEditor
 				return;
 			
 			if (memberParseInfo == null) {
-				classBrowser.Visible = false;
+//				classBrowser.Visible = false;
 				return;
 			}
 			
@@ -674,8 +737,8 @@ namespace MonoDevelop.SourceEditor
 			
 			// Find the selected class
 			
-			KeyValuePair<IClass, int> c = SearchClass (line);
-			IClass classFound = c.Key;
+			KeyValuePair<IType, int> c = SearchClass (line);
+			IType classFound = c.Key;
 			
 			loadingMembers = true;
 			try {
@@ -715,9 +778,9 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 		
-		class LanguageItemComparer: IComparer<ILanguageItem>
+		class LanguageItemComparer: IComparer<IMember>
 		{
-			public int Compare (ILanguageItem x, ILanguageItem y)
+			public int Compare (IMember x, IMember y)
 			{
 				return string.Compare (x.Name, y.Name, true);
 			}
@@ -731,39 +794,37 @@ namespace MonoDevelop.SourceEditor
 			loadingMembers = true;
 			
 			try {
-				BindRegionCombo ();
-				
 				// Clear down all our local stores.
 				classStore.Clear();				
 				
 				// check the IParseInformation member variable to see if we could get ParseInformation for the 
 				// current docuement. If not we can't display class and member info so hide the browser bar.
 				if (memberParseInfo == null) {
-					classBrowser.Visible = false;
+//					classBrowser.Visible = false;
 					return false;
 				}
 				
-				ClassCollection cls = ((ICompilationUnit)memberParseInfo.MostRecentCompilationUnit).Classes;
+				ReadOnlyCollection<IType> cls = memberParseInfo.Types;
 				// if we've got this far then we have valid parse info - but if we have not classes the not much point
 				// in displaying the browser bar
 				if (cls.Count == 0) {
-					classBrowser.Visible = false;
+//					classBrowser.Visible = false;
 					return false;
 				}
 				
-				classBrowser.Visible = true;
-				List<ILanguageItem> classes = new List<ILanguageItem> ();
-				foreach (IClass c in cls)
+//				classBrowser.Visible = true;
+				List<IMember> classes = new List<IMember> ();
+				foreach (IType c in cls)
 					classes.Add (c);
 				classes.Sort (new LanguageItemComparer ());
-				foreach (IClass c in classes)
+				foreach (IType c in classes)
 					Add (c, string.Empty);
 				
 				int line = TextEditor.Caret.Line + 1;
 //				this.GetLineColumnFromPosition(this.CursorPosition, out line, out column);
-				KeyValuePair<IClass, int> ckvp = SearchClass (line);
+				KeyValuePair<IType, int> ckvp = SearchClass (line);
 				
-				IClass foundClass = ckvp.Key;
+				IType foundClass = ckvp.Key;
 				if (foundClass != null) {
 					// found the right class. Now need right method
 					classCombo.Active = ckvp.Value;
@@ -784,12 +845,9 @@ namespace MonoDevelop.SourceEditor
 		void UpdateRegionCombo (int line, int column)
 		{
 			int regionNumber = 0;
-			if (memberParseInfo == null) 
-				return;
-			ICompilationUnit cu = memberParseInfo.MostRecentCompilationUnit as ICompilationUnit;
-			if (cu != null && cu.FoldingRegions != null) {
-				foreach (FoldingRegion region in cu.FoldingRegions) {
-					if (region.Region.BeginLine <= line && line <= region.Region.EndLine) {
+			if (metaInfo != null && metaInfo.FoldingRegion != null) {
+				foreach (FoldingRegion region in metaInfo.FoldingRegion) {
+					if (region.Region.Start.Line <= line && line <= region.Region.End.Line) {
 						regionCombo.Active = regionNumber;
 						tips.SetTip (regionCombo, GettextCatalog.GetString ("Region {0}", region.Name), null);
 						return;
@@ -805,12 +863,9 @@ namespace MonoDevelop.SourceEditor
 		{
 			regionCombo.Model = null;
 			regionStore.Clear ();
-			if (memberParseInfo == null) 
+			if (metaInfo == null || metaInfo.FoldingRegion == null) 
 				return;
-			ICompilationUnit cu = memberParseInfo.MostRecentCompilationUnit as ICompilationUnit;
-			if (cu == null || cu.FoldingRegions == null) 
-				return;
-			foreach (FoldingRegion region in cu.FoldingRegions) {
+			foreach (FoldingRegion region in metaInfo.FoldingRegion) {
 				regionStore.AppendValues (IdeApp.Services.Resources.GetIcon(Gtk.Stock.Add, IconSize.Menu), 
 				                          region.Name, 
 				                          region.Region);
@@ -819,7 +874,7 @@ namespace MonoDevelop.SourceEditor
 			regionCombo.Model = regionStore;
 		}
 		
-		void BindMemberCombo (IClass c)
+		void BindMemberCombo (IType c)
 		{
 			if (!this.IsClassBrowserVisible)
 				return;
@@ -842,26 +897,23 @@ namespace MonoDevelop.SourceEditor
 			
 			Gdk.Pixbuf pix;
 			
-			List<ILanguageItem> members = new List<ILanguageItem> ();
-			foreach (ILanguageItem item in c.Methods)
+			List<IMember> members = new List<IMember> ();
+			foreach (IMember item in c.Methods)
 				 members.Add (item);
-			foreach (ILanguageItem item in c.Properties)
+			foreach (IMember item in c.Properties)
 				 members.Add (item);
-			foreach (ILanguageItem item in c.Fields)
+			foreach (IMember item in c.Fields)
 				 members.Add (item);
 			members.Sort (new LanguageItemComparer ());
 			
 			// Add items to the member drop down 
 			
 			foreach (IMember mem in members) {
-				pix = IdeApp.Services.Resources.GetIcon (IdeApp.Services.Icons.GetIcon (mem), IconSize.Menu); 
+				pix = IdeApp.Services.Resources.GetIcon (mem.StockIcon, IconSize.Menu); 
 				
 				// Add the member to the list
-				MonoDevelop.Projects.Ambience.Ambience am = view.GetAmbience ();
-				string displayName = am.Convert (mem, MonoDevelop.Projects.Ambience.ConversionFlags.UseIntrinsicTypeNames |
-				                                      MonoDevelop.Projects.Ambience.ConversionFlags.ShowParameters |
-				                                      MonoDevelop.Projects.Ambience.ConversionFlags.ShowParameterNames |
-				                                      MonoDevelop.Projects.Ambience.ConversionFlags.ShowGenericParameters);
+				Ambience ambience = AmbienceService.GetAmbienceForFile (view.ContentName);
+				string displayName = ambience.GetString (mem, OutputFlags.ClassBrowserEntries);
 				memberStore.AppendValues (pix, displayName, mem);
 				
 				// Check if the current cursor position in inside this member
@@ -888,7 +940,7 @@ namespace MonoDevelop.SourceEditor
 			if (membersCombo.GetActiveIter (out iter)) {	    
 				// Find the IMember object in our list store by name from the member combo
 				IMember member = (IMember) memberStore.GetValue (iter, 2);
-				int line = member.Region.BeginLine;
+				int line = member.Location.Line;
 				
 				// Get a handle to the current document
 				if (IdeApp.Workbench.ActiveDocument == null) {
@@ -909,8 +961,8 @@ namespace MonoDevelop.SourceEditor
 			
 			Gtk.TreeIter iter;
 			if (classCombo.GetActiveIter(out iter)) {
-				IClass selectedClass = (IClass)classStore.GetValue(iter, 2);
-				int line = selectedClass.Region.BeginLine;
+				IType selectedClass = (IType)classStore.GetValue(iter, 2);
+				int line = selectedClass.Location.Line;
 				
 				// Get a handle to the current document
 				if (IdeApp.Workbench.ActiveDocument == null) {
@@ -938,7 +990,7 @@ namespace MonoDevelop.SourceEditor
 			
 			Gtk.TreeIter iter;
 			if (regionCombo.GetActiveIter (out iter)) {
-				IRegion selectedRegion = (IRegion)regionStore.GetValue (iter, 2);
+				DomRegion selectedRegion = (DomRegion)regionStore.GetValue (iter, 2);
 				
 				// Get a handle to the current document
 				if (IdeApp.Workbench.ActiveDocument == null) {
@@ -948,7 +1000,7 @@ namespace MonoDevelop.SourceEditor
 				// If we can we navigate to the line location of the IMember.
 				IExtensibleTextEditor content = (IExtensibleTextEditor) IdeApp.Workbench.ActiveDocument.GetContent(typeof(IExtensibleTextEditor));
 				if (content != null) {
-					int line = Math.Max (1, selectedRegion.BeginLine);
+					int line = Math.Max (1, selectedRegion.Start.Line);
 					content.SetCaretTo (Math.Max (1, line), 1);
 					foreach (FoldSegment fold in this.textEditor.Document.GetStartFoldings (line - 1)) {
 						if (fold.FoldingType == FoldingType.Region)
@@ -958,27 +1010,27 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 		
-		void Add (IClass c, string prefix)
+		void Add (IType c, string prefix)
 		{
-			MonoDevelop.Projects.Ambience.Ambience am = view.GetAmbience ();
-			Gdk.Pixbuf pix = IdeApp.Services.Resources.GetIcon (IdeApp.Services.Icons.GetIcon (c), IconSize.Menu);
-			string name = prefix + am.Convert (c, MonoDevelop.Projects.Ambience.ConversionFlags.ShowGenericParameters);
+			Ambience ambience = AmbienceService.GetAmbienceForFile (view.ContentName);
+			Gdk.Pixbuf pix = IdeApp.Services.Resources.GetIcon (c.StockIcon, IconSize.Menu);
+			string name = prefix + ambience.GetString (c, OutputFlags.ClassBrowserEntries);
 			classStore.AppendValues (pix, name, c);
 
-			foreach (IClass inner in c.InnerClasses)
+			foreach (IType inner in c.InnerTypes)
 				Add (inner, name + ".");
 		}
 		
-		KeyValuePair<IClass, int> SearchClass (int line)
+		KeyValuePair<IType, int> SearchClass (int line)
 		{
 			TreeIter iter;
 			int i = 0, foundIndex = 0;
-			IClass result = null;
+			IType result = null;
 			if (classStore.GetIterFirst (out iter)) {
 				do {
-					IClass c = (IClass)classStore.GetValue (iter, 2);
-					if (c.BodyRegion != null && c.BodyRegion.BeginLine <= line && line <= c.BodyRegion.EndLine)	{
-						if (result == null || result.BodyRegion.BeginLine <= c.BodyRegion.BeginLine) {
+					IType c = (IType)classStore.GetValue (iter, 2);
+					if (c.BodyRegion != null && c.BodyRegion.Start.Line <= line && line <= c.BodyRegion.End.Line)	{
+						if (result == null || result.BodyRegion.Start.Line <= c.BodyRegion.Start.Line) {
 							result = c;
 							foundIndex = i;
 						}
@@ -986,25 +1038,25 @@ namespace MonoDevelop.SourceEditor
 					i++;
 				} while (classStore.IterNext (ref iter));
 			}
-			return new KeyValuePair<IClass, int> (result, foundIndex);
+			return new KeyValuePair<IType, int> (result, foundIndex);
 		}
 		
-		void UpdateClassComboTip (ILanguageItem it)
+		void UpdateClassComboTip (IMember it)
 		{
 			if (it != null) {
-				MonoDevelop.Projects.Ambience.Ambience am = view.GetAmbience ();
-				string txt = am.Convert (it, MonoDevelop.Projects.Ambience.ConversionFlags.All);
+				Ambience ambience = AmbienceService.GetAmbienceForFile (view.ContentName);
+				string txt = ambience.GetString (it, OutputFlags.ClassBrowserEntries);
 				tips.SetTip (this.classCombo, txt, txt);
 			} else {
 				tips.SetTip (classCombo, GettextCatalog.GetString ("Type list"), null);
 			}
 		}
 		
-		void UpdateMemberComboTip (ILanguageItem it)
+		void UpdateMemberComboTip (IMember it)
 		{
 			if (it != null) {
-				MonoDevelop.Projects.Ambience.Ambience am = view.GetAmbience ();
-				string txt = am.Convert (it, MonoDevelop.Projects.Ambience.ConversionFlags.All);
+				Ambience ambience = AmbienceService.GetAmbienceForFile (view.ContentName);
+				string txt = ambience.GetString (it, OutputFlags.ClassBrowserEntries);
 				tips.SetTip (this.membersCombo, txt, txt);
 			} else {
 				tips.SetTip (membersCombo, GettextCatalog.GetString ("Member list"), null);
@@ -1015,14 +1067,14 @@ namespace MonoDevelop.SourceEditor
 		{
 			if (mem is IMethod) {
 				IMethod method = (IMethod) mem;
-				return (method.BodyRegion != null && method.BodyRegion.BeginLine <= line && line <= method.BodyRegion.EndLine || 
-				       (method.BodyRegion.BeginLine == line && 0 == method.BodyRegion.EndLine));
+				return (method.BodyRegion != null && method.BodyRegion.Start.Line <= line && line <= method.BodyRegion.End.Line || 
+				       (method.BodyRegion.Start.Line == line && 0 == method.BodyRegion.End.Line));
 			} else if (mem is IProperty) {
 				IProperty property = (IProperty) mem;
-				return (property.BodyRegion != null && property.BodyRegion.BeginLine <= line && line <= property.BodyRegion.EndLine);
+				return (property.BodyRegion != null && property.BodyRegion.Start.Line <= line && line <= property.BodyRegion.End.Line);
 			}
 			
-			return (mem.Region != null && mem.Region.BeginLine <= line && line <= mem.Region.EndLine);
+			return (mem.Location != null && mem.Location.Line <= line && line <= mem.Location.Line);
 		}
 		
 //		public void GetLineColumnFromPosition (int position, out int line, out int column)
@@ -1034,8 +1086,6 @@ namespace MonoDevelop.SourceEditor
 		
 		public void LoadClassCombo ()
 		{
-			IFileParserContext context = IdeApp.Workspace.ParserDatabase.GetFileParserContext (view.ContentName);
-			this.memberParseInfo = context.ParseFile (view.ContentName);
 			BindClassCombo();
 		}
 		#endregion
@@ -1302,12 +1352,12 @@ namespace MonoDevelop.SourceEditor
 
 	class Error
 	{
-		public ErrorInfo info;
+		public MonoDevelop.Projects.Dom.Error info;
 		public LineSegment line;
 		public Mono.TextEditor.Document doc;
 		TextMarker marker = new UnderlineMarker ();
 		
-		public Error (Mono.TextEditor.Document doc, ErrorInfo info, LineSegment line)
+		public Error (Mono.TextEditor.Document doc, MonoDevelop.Projects.Dom.Error info, LineSegment line)
 		{
 			this.info = info;
 			this.line = line; // may be null if no line is assigned to the error.

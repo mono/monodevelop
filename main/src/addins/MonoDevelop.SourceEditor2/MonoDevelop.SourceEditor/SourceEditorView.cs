@@ -200,6 +200,7 @@ namespace MonoDevelop.SourceEditor
 			
 			ContentName = fileName; 
 			Document.MimeType = IdeApp.Services.PlatformService.GetMimeTypeForUri (fileName);
+			widget.SetMime (Document.MimeType);
 			Document.SetNotDirtyState ();
 			this.IsDirty = false;
 		}
@@ -230,6 +231,7 @@ namespace MonoDevelop.SourceEditor
 			}
 			
 			Document.MimeType = IdeApp.Services.PlatformService.GetMimeTypeForUri (fileName);
+			widget.SetMime (Document.MimeType);
 			Document.Text = File.ReadAllText (fileName);
 			ContentName = fileName;
 //			InitializeFormatter ();

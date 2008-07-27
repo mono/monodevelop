@@ -110,9 +110,40 @@ namespace MonoDevelop.SourceEditor
 			base.ShowRuler                = PropertyService.Get ("ShowRuler", false);
 			base.FontName                 = PropertyService.Get ("FontName", "Mono 10");
 			base.ColorSheme               =  PropertyService.Get ("ColorSheme", "Default");
+			
+			this.DefaultRegionsFolding      =  PropertyService.Get ("DefaultRegionsFolding", false);
+			this.DefaultCommentFolding      =  PropertyService.Get ("DefaultCommentFolding", true);
 		}
 		
 		#region new options
+		bool defaultRegionsFolding;
+		public bool DefaultRegionsFolding {
+			get {
+				return defaultRegionsFolding;
+			}
+			set {
+				if (value != this.defaultRegionsFolding) {
+					this.defaultRegionsFolding = value;
+					PropertyService.Set ("DefaultRegionsFolding", value);
+					OnChanged (EventArgs.Empty);
+				}
+			}
+		}
+		
+		bool defaultCommentFolding;
+		public bool DefaultCommentFolding {
+			get {
+				return defaultCommentFolding;
+			}
+			set {
+				if (value != this.defaultCommentFolding) {
+					this.defaultCommentFolding = value;
+					PropertyService.Set ("DefaultCommentFolding", value);
+					OnChanged (EventArgs.Empty);
+				}
+			}
+		}
+		
 		bool enableSemanticHighlighting;
 		public bool EnableSemanticHighlighting {
 			get {

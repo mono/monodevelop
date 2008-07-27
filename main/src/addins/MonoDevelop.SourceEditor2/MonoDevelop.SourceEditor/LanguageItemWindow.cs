@@ -32,62 +32,87 @@ using Gtk;
 
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core;
-using MonoDevelop.Projects;
-using MonoDevelop.Projects.Ambience;
-using MonoDevelop.Projects.Parser;
+using MonoDevelop.Projects.Dom;
+using MonoDevelop.Projects.Dom.Output;
+using MonoDevelop.Projects.Dom.Parser;
+
 
 namespace MonoDevelop.SourceEditor
 {
 	public class LanguageItemWindow: MonoDevelop.Projects.Gui.Completion.TooltipWindow
 	{
-		static ConversionFlags WindowConversionFlags = ConversionFlags.StandardConversionFlags | ConversionFlags.IncludePangoMarkup;
+		static OutputFlags WindowConversionFlags = OutputFlags.ClassBrowserEntries | OutputFlags.IncludeParameterName;
 		
 		static string paramStr = GettextCatalog.GetString ("Parameter");
 		static string localStr = GettextCatalog.GetString ("Local variable");
 		static string fieldStr = GettextCatalog.GetString ("Field");
 		static string propertyStr = GettextCatalog.GetString ("Property");
+		static string methodStr = GettextCatalog.GetString ("Method");
+		static string namespaceStr = GettextCatalog.GetString ("Namespace");
 		
-		public LanguageItemWindow (ILanguageItem item, IParserContext ctx, Ambience ambience,
-		                           string errorInformations)
+		static string GetDocumentation (IMember member)
+		{
+			if (member == null)
+				return null;
+			XmlNode node = member.GetMonodocDocumentation ();
+			if (node != null) 
+				return node.InnerXml;
+			return member.Documentation;
+		}
+		
+		public LanguageItemWindow (Ambience ambience, ResolveResult result, string errorInformations)
 		{
 			// Approximate value for usual case
 			StringBuilder s = new StringBuilder(150);
-			
-			if (item != null) {
-				if (item is IParameter) {
+			string doc = null;
+			if (result != null) {
+				if (result is ParameterResolveResult) {
 					s.Append ("<small><i>");
 					s.Append (paramStr);
 					s.Append ("</i></small>\n");
-					s.Append (ambience.Convert ((IParameter)item, WindowConversionFlags));
-				} else if (item is LocalVariable) {
+					s.Append (ambience.GetString (((ParameterResolveResult)result).Parameter, WindowConversionFlags));
+				} else if (result is LocalVariableResolveResult) {
 					s.Append ("<small><i>");
 					s.Append (localStr);
 					s.Append ("</i></small>\n");
-					s.Append (ambience.Convert ((LocalVariable)item, WindowConversionFlags));
-				} else if (item is IField) {				
+					s.Append (ambience.GetString (((LocalVariableResolveResult)result).ResolvedType, WindowConversionFlags));
+					s.Append (" ");
+					s.Append (((LocalVariableResolveResult)result).VariableName);
+				} else if (result is MemberResolveResult) {
+					IMember member = ((MemberResolveResult)result).ResolvedMember;
+					if (member is IField) {
+						s.Append ("<small><i>");
+						s.Append (fieldStr);
+						s.Append ("</i></small>\n");
+					} else if (member is IProperty) {
+						s.Append ("<small><i>");
+						s.Append (propertyStr);
+						s.Append ("</i></small>\n");
+					}
+					s.Append (ambience.GetString (member, WindowConversionFlags));
+					doc = GetDocumentation (member);
+				} else if (result is NamespaceResolveResult) {
 					s.Append ("<small><i>");
-					s.Append (fieldStr);
+					s.Append (namespaceStr);
 					s.Append ("</i></small>\n");
-					s.Append (ambience.Convert ((IField)item, WindowConversionFlags));
-				} else if (item is IProperty) {				
+					s.Append (((NamespaceResolveResult)result).Namespace);
+				} else if (result is MethodResolveResult) {
 					s.Append ("<small><i>");
-					s.Append (propertyStr);
+					s.Append (methodStr);
 					s.Append ("</i></small>\n");
-					s.Append (ambience.Convert ((IProperty)item, WindowConversionFlags));
-				} else if (item is Namespace) {
-					s.Append ("namespace <b>");
-					s.Append (item.Name);
-					s.Append ("</b>");
-				} else
-					s.Append (ambience.Convert (item, WindowConversionFlags));
+					s.Append (ambience.GetString (((MethodResolveResult)result).Methods[0], WindowConversionFlags));
+					doc = GetDocumentation (((MethodResolveResult)result).Methods[0]);
+				} else {
+					s.Append (ambience.GetString (result.ResolvedType, WindowConversionFlags));
+				}
 				
-				string doc = GetDocumentation (item.Documentation).Trim ('\n');
+				
 				if (!string.IsNullOrEmpty (doc)) {
 					s.Append ("\n<small>");
-					s.Append (doc);
+					s.Append (GetDocumentation (doc));
 					s.Append ("</small>");
 				}
-			}			
+			}
 			
 			if (!string.IsNullOrEmpty (errorInformations)) {
 				if (s.Length != 0)
@@ -133,7 +158,7 @@ namespace MonoDevelop.SourceEditor
 						// skip <example>-nodes
 						} else if (elname == "example") {
 							xml.Skip();
-							xml.Skip();							
+							xml.Skip();
 						} else if (elname == "exception") {
 							ret.Append("Exception: " + GetCref(xml["cref"]) + ":\n");
 						} else if (elname == "returns") {
