@@ -1,5 +1,10 @@
 2008-07-27  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.Projects.Dom.Database/DatabaseType.cs: database type
+	  caches compilation unit.
+
+2008-07-27  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.Projects.Dom.CodeGeneration,
 	  MonoDevelop.Projects.Dom.CodeGeneration/CodeRefactorer.cs,
 	  MonoDevelop.Projects.Dom.CodeGeneration/ICodeGenerator.cs,

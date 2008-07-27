@@ -41,17 +41,13 @@ namespace MonoDevelop.Projects.Dom.Database
 		internal const string SubTypeTable   = "SubTypes";
 		
 		CodeCompletionDatabase db;
+		CompilationUnit unit;
 		long typeId;
 		long unitId;
 		
 		public override ICompilationUnit CompilationUnit {
 			get {
-				IDataReader reader = db.Connection.Query (String.Format (@"SELECT Name FROM {0} WHERE UnitID={1}", CodeCompletionDatabase.CompilationUnitTable, unitId));
-				if (reader.Read ()) {
-					string name = SqliteUtils.FromDbFormat<string> (reader[0]);
-					return new CompilationUnit (name);
-				}
-				return null;
+				return unit;
 			}
 		}
 		
@@ -75,6 +71,13 @@ namespace MonoDevelop.Projects.Dom.Database
 			this.Namespace = namespaceName;
 			this.Name      = name;
 			this.ClassType = classType;
+			
+			IDataReader reader = db.Connection.Query (String.Format (@"SELECT Name FROM {0} WHERE UnitID={1}", CodeCompletionDatabase.CompilationUnitTable, unitId));
+			if (reader.Read ()) {
+				unit = new CompilationUnit (SqliteUtils.FromDbFormat<string> (reader[0]));
+			} else {
+				unit = null;
+			}
 		}
 		
 		public override IEnumerable<IMember> Members {
