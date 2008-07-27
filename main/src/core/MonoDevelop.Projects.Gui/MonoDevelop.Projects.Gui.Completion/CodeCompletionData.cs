@@ -123,7 +123,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 			return (desc + "\n" + documentation).Trim ();
 		}		
 		
-		public string Description
+		public virtual string Description
 		{
 			get {
 				if (description == null && cls != null) {
@@ -138,7 +138,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 			}
 		}
 		
-		public string DescriptionPango
+		public virtual string DescriptionPango
 		{
 			get {
 				if (pango_description == null && cls != null) {
@@ -146,10 +146,10 @@ namespace MonoDevelop.Projects.Gui.Completion
 					if (pango_description == null)
 						pango_description = string.Empty;
 				}
-				return GetDescription (pango_description);				
+				return GetDescription (pango_description);
 			}
 			set {
-				description = value;
+				pango_description = value;
 			}
 		}
 
