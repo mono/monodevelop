@@ -19,12 +19,16 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 		{
 		}
 		
+		bool isBegin = true;
 		protected override Token Next()
 		{
 			int nextChar;
 			char ch;
 			bool hadLineEnd = false;
-			if (Line == 1 && Col == 1) hadLineEnd = true; // beginning of document
+			if (Line == 1 && Col == 1) {
+				isBegin = true;
+				hadLineEnd = true; // beginning of document
+			}
 			
 			while ((nextChar = ReaderRead()) != -1) {
 				Token token;
@@ -42,6 +46,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 						}
 						HandleLineEnd((char)nextChar);
 						hadLineEnd = true;
+						isBegin = true;
 						continue;
 					case '/':
 						int peek = ReaderPeek();
@@ -51,18 +56,23 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 						} else {
 							token = ReadOperator('/');
 						}
+						isBegin = false;
 						break;
 					case '#':
 						ReadPreProcessingDirective();
+						isBegin = false;
 						continue;
 					case '"':
 						token = ReadString();
+						isBegin = false;
 						break;
 					case '\'':
 						token = ReadChar();
+						isBegin = false;
 						break;
 					case '@':
 						int next = ReaderRead();
+						isBegin = false;
 						if (next == -1) {
 							errors.Error(Line, Col, String.Format("EOF after @"));
 							continue;
@@ -82,6 +92,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 						}
 						break;
 					default:
+						isBegin = false;
 						ch = (char)nextChar;
 						if (Char.IsLetter(ch) || ch == '_' || ch == '\\') {
 							int x = Col - 1; // Col was incremented above, but we want the start of the identifier
@@ -819,7 +830,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 					if (specialCommentHash.ContainsKey(tag)) {
 						Location p = new Location(Col, Line);
 						string comment = ch + ReadToEndOfLine();
-						this.TagComments.Add(new TagComment(tag, comment, p, new Location(Col, Line)));
+						this.TagComments.Add(new TagComment(tag, isBegin, comment, p, new Location(Col, Line)));
 						sb.Append(comment);
 						break;
 					}
@@ -833,7 +844,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 			if (this.SkipAllComments) {
 				SkipToEndOfLine();
 			} else {
-				specialTracker.StartComment(commentType, new Location(Col, Line));
+				specialTracker.StartComment(commentType, isBegin, new Location(Col, Line));
 				specialTracker.AddString(ReadCommentToEOL());
 				specialTracker.FinishComment(new Location(Col, Line));
 			}
@@ -853,7 +864,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 					}
 				}
 			} else {
-				specialTracker.StartComment(CommentType.Block, new Location(Col, Line));
+				specialTracker.StartComment(CommentType.Block, isBegin, new Location(Col, Line));
 				
 				// sc* = special comment handling (TO DO markers)
 				string scTag = null; // is set to non-null value when we are inside a comment marker
@@ -865,7 +876,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 					
 					if (HandleLineEnd(ch)) {
 						if (scTag != null) {
-							this.TagComments.Add(new TagComment(scTag, scCurWord.ToString(), scStartLocation, new Location(Col, Line)));
+							this.TagComments.Add(new TagComment(scTag, isBegin, scCurWord.ToString(), scStartLocation, new Location(Col, Line)));
 							scTag = null;
 						}
 						scCurWord.Length = 0;
@@ -876,7 +887,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 					// End of multiline comment reached ?
 					if (ch == '*' && ReaderPeek() == '/') {
 						if (scTag != null) {
-							this.TagComments.Add(new TagComment(scTag, scCurWord.ToString(), scStartLocation, new Location(Col, Line)));
+							this.TagComments.Add(new TagComment(scTag, isBegin, scCurWord.ToString(), scStartLocation, new Location(Col, Line)));
 						}
 						ReaderRead();
 						specialTracker.FinishComment(new Location(Col, Line));

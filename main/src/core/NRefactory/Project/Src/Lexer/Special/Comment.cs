@@ -31,12 +31,22 @@ namespace ICSharpCode.NRefactory
 				comment = value;
 			}
 		}
+		bool commentStartsLine;
+		public bool CommentStartsLine {
+			get {
+				return commentStartsLine;
+			}
+			set {
+				commentStartsLine = value;
+			}
+		}
 		
-		public Comment(CommentType commentType, string comment, Location startPosition, Location endPosition)
+		public Comment(CommentType commentType,bool commentStartsLine, string comment, Location startPosition, Location endPosition)
 			: base(startPosition, endPosition)
 		{
-			this.commentType   = commentType;
-			this.comment       = comment;
+			this.commentType       = commentType;
+			this.commentStartsLine = commentStartsLine;
+			this.comment           = comment;
 		}
 		
 		public override string ToString()

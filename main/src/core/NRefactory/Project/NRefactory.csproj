@@ -1,4 +1,5 @@
-﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -23,21 +24,25 @@
     <FileAlignment>4096</FileAlignment>
     <RunCodeAnalysis>False</RunCodeAnalysis>
     <CodeAnalysisRules>-Microsoft.Design#CA1002;-Microsoft.Design#CA1020;-Microsoft.Design#CA1051;-Microsoft.Design#CA1062;-Microsoft.Globalization#CA1303;-Microsoft.Globalization#CA1305;-Microsoft.Naming#CA1704;-Microsoft.Performance#CA1800;-Microsoft.Performance#CA1805;-Microsoft.Usage#CA2211;-Microsoft.Usage#CA2227</CodeAnalysisRules>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <Optimize>False</Optimize>
+    <Optimize>false</Optimize>
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
     <DefineConstants>TEST;DEBUG;NET35</DefineConstants>
     <OutputPath>..\..\..\..\bin\</OutputPath>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <DebugType>none</DebugType>
+    <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <Optimize>True</Optimize>
+    <Optimize>false</Optimize>
     <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
     <DefineConstants>TEST;NET35</DefineConstants>
     <OutputPath>..\..\..\..\bin\</OutputPath>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <DebugType>none</DebugType>
+    <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugType>Full</DebugType>
@@ -54,8 +59,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\ICSharpCode.NRefactory.snk" />
-    <None Include="Src\Lexer\BuildKeywords.pl" />
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="Src\AstBuilder\ExpressionBuilder.cs" />
     <Compile Include="Src\AstBuilder\StatementBuilder.cs" />
@@ -77,9 +80,6 @@
     <Compile Include="Src\Lexer\VBNet\Lexer.cs" />
     <Compile Include="Src\Lexer\VBNet\Tokens.cs" />
     <Compile Include="Src\Lexer\Special\ISpecial.cs" />
-    <Compile Include="..\..\..\Main\GlobalAssemblyInfo.cs">
-      <Link>Configuration\GlobalAssemblyInfo.cs</Link>
-    </Compile>
     <Compile Include="Src\OperatorPrecedence.cs" />
     <Compile Include="Src\Parser\CSharp\CSharpParser.cs" />
     <Compile Include="Src\Parser\CSharp\Parser.cs" />
@@ -131,15 +131,24 @@
     <Compile Include="Src\Ast\TypeReference.cs" />
     <Compile Include="Src\Parser\VBNet\ParamModifierList.cs" />
     <Compile Include="Src\Visitors\NodeTrackingAstVisitor.cs" />
+    <None Include="Resources\ICSharpCode.NRefactory.snk" />
+    <None Include="Src\Lexer\BuildKeywords.pl" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Src\Lexer\CSharp\KeywordList.txt" />
-    <Content Include="Src\Lexer\VBNet\KeywordList.txt" />
     <Folder Include="Src\Parser" />
     <Folder Include="Src\Parser\CSharp" />
+    <Folder Include="Src\Parser\Frames" />
+    <Folder Include="Src\Parser\VBNet" />
+    <Folder Include="Src\PrettyPrinter" />
+    <Folder Include="Src\PrettyPrinter\CSharp" />
+    <Folder Include="Src\PrettyPrinter\VBNet" />
+    <Folder Include="Src\Visitors" />
+    <Folder Include="Src\Ast" />
+    <Folder Include="Src\Ast\General" />
+    <Content Include="Src\Lexer\CSharp\KeywordList.txt" />
+    <Content Include="Src\Lexer\VBNet\KeywordList.txt" />
     <Content Include="Src\Parser\CSharp\cs.ATG" />
     <Content Include="Src\Parser\CSharp\trace.txt" />
-    <Folder Include="Src\Parser\Frames" />
     <Content Include="Src\Parser\Frames\OldSharpCoco.exe" />
     <Content Include="Src\Parser\Frames\Parser.frame" />
     <Content Include="Src\Parser\Frames\Parser.frame.new" />
@@ -147,15 +156,8 @@
     <Content Include="Src\Parser\Frames\Scanner.frame" />
     <Content Include="Src\Parser\Frames\SharpCoco.exe" />
     <Content Include="Src\Parser\Frames\trace.txt" />
-    <Folder Include="Src\Parser\VBNet" />
     <Content Include="Src\Parser\VBNet\VBNET.ATG" />
     <Content Include="Src\Parser\gen.bat" />
-    <Folder Include="Src\PrettyPrinter" />
-    <Folder Include="Src\PrettyPrinter\CSharp" />
-    <Folder Include="Src\PrettyPrinter\VBNet" />
-    <Folder Include="Src\Visitors" />
-    <Folder Include="Src\Ast" />
-    <Folder Include="Src\Ast\General" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Src\AstBuilder" />
@@ -164,4 +166,11 @@
   <PropertyGroup>
     <PreBuildEvent>..\src\Tools\UpdateAssemblyInfo\bin\Debug\UpdateAssemblyInfo.exe</PreBuildEvent>
   </PropertyGroup>
+  <ProjectExtensions>
+    <MonoDevelop>
+      <Properties>
+        <GtkDesignInfo gtkVersion="2.12.1" />
+      </Properties>
+    </MonoDevelop>
+  </ProjectExtensions>
 </Project>
