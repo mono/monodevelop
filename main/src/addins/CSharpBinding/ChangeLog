@@ -1,5 +1,10 @@
 2008-07-28  Mike Krüger <mkrueger@novell.com> 
 
+	* Gui/NRefactoryDocumentMetaInformation.cs, Parser/Parser.cs: Some
+	  changes for nrefactory.
+
+2008-07-28  Mike Krüger <mkrueger@novell.com> 
+
 	* Gui/NRefactoryDocumentMetaInformation.cs, Gui/ResolveVisitor.cs,
 	  Parser/Parser.cs, Parser/CodeGenerator.cs, Parser/TypeVisitor.cs,
 	  Parser/LanguageItemVisitor.cs: Some changes that make the

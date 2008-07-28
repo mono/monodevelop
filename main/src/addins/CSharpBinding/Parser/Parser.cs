@@ -102,11 +102,11 @@ namespace CSharpBinding.Parser
 						int j = i;
 						int curLine = comment.StartPosition.Line - 1;
 						Location end = comment.EndPosition;
-//						if (!comment.CommentStartsLine)
-//							break;
+						if (!comment.CommentStartsLine)
+							break;
 						for (; j < tracker.CurrentSpecials.Count; ++j) {
 							ICSharpCode.NRefactory.Comment curComment  = tracker.CurrentSpecials[j] as ICSharpCode.NRefactory.Comment;
-							if (curComment == null /*|| !curComment.CommentStartsLine */|| curComment.CommentType != comment.CommentType || curLine + 1 != curComment.StartPosition.Line)
+							if (curComment == null || !curComment.CommentStartsLine || curComment.CommentType != comment.CommentType || curLine + 1 != curComment.StartPosition.Line)
 								break;
 							end     = curComment.EndPosition;
 							curLine = curComment.StartPosition.Line;

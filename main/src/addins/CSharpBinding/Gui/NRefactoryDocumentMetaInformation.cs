@@ -89,8 +89,7 @@ namespace MonoDevelop.CSharpBinding
 		object ISpecialVisitor.Visit(ICSharpCode.NRefactory.Comment comment, object data)
 		{
 			MonoDevelop.Projects.Dom.Comment newComment = new MonoDevelop.Projects.Dom.Comment ();
-// TODO:
-//			newComment.CommentStartsLine = comment.CommentStartsLine;
+			newComment.CommentStartsLine = comment.CommentStartsLine;
 			newComment.Text = comment.CommentText;
 			newComment.Region = new DomRegion (comment.StartPosition.Line, comment.StartPosition.Column, comment.EndPosition.Line, comment.EndPosition.Column);
 			switch (comment.CommentType) {
