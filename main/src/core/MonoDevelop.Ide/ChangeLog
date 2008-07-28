@@ -1,3 +1,8 @@
+2008-07-28  Andrés G. Aragoneses <aaragoneses@novell.com> 
+
+	* MonoDevelop.Ide.Gui.Search/CurrentProjectDocumentIterator.cs: Be more
+	  stacktrace friendly (wrt to exception line number).
+
 2008-07-27  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Ide.Commands/RefactoryCommands.cs,

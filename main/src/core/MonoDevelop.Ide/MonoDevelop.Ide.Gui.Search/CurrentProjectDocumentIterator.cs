@@ -42,7 +42,8 @@ namespace MonoDevelop.Ide.Gui.Search
 			files.Clear();
 			Document document = IdeApp.Workbench.ActiveDocument;
 			if (IdeApp.Workspace.IsOpen && document != null) {
-				foreach (ProjectFile file in IdeApp.Workspace.GetProjectContainingFile (document.FileName).Files)
+				Project theProject = IdeApp.Workspace.GetProjectContainingFile (document.FileName);
+				foreach (ProjectFile file in theProject.Files)
 					if (file.Subtype == Subtype.Code)
 						files.Add(file.Name);
 			}
