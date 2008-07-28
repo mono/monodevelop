@@ -62,7 +62,7 @@ namespace MonoDevelop.Projects.Dom
 			get;
 		}
 		
-		IEnumerable<DomRegion> FoldingRegions {
+		IEnumerable<FoldingRegion> FoldingRegions {
 			get;
 		}
 		

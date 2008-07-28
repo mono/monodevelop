@@ -1,3 +1,9 @@
+2008-07-28  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Projects.Dom/CompilationUnit.cs,
+	  MonoDevelop.Projects.Dom/ICompilationUnit.cs: Use the FoldingRegion
+	  class for folding regions.
+
 2008-07-27  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom.Database/DatabaseType.cs: database type

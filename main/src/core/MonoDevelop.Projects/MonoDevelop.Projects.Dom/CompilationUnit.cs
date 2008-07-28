@@ -40,7 +40,7 @@ namespace MonoDevelop.Projects.Dom
 		List<IAttribute> attributes     = new List<IAttribute> ();
 		List<IType>      types          = new List<IType> ();
 		List<Comment>    comments       = new List<Comment> ();
-		List<DomRegion>  foldingRegions = new List<DomRegion> ();
+		List<FoldingRegion> foldingRegions = new List<FoldingRegion> ();
 		List<Error>      errors         = new List<Error> ();
 		
 		public CompilationUnit (string fileName)
@@ -94,7 +94,7 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
-		public IEnumerable<DomRegion> FoldingRegions {
+		public IEnumerable<FoldingRegion> FoldingRegions {
 			get {
 				return foldingRegions;
 			}
@@ -152,9 +152,9 @@ namespace MonoDevelop.Projects.Dom
 			comments.Add (comment);
 		}
 		
-		public void Add (DomRegion domRegion)
+		public void Add (FoldingRegion foldingRegion)
 		{
-			foldingRegions.Add (domRegion);
+			foldingRegions.Add (foldingRegion);
 		}
 		
 		public void Add (Error error)
