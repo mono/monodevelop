@@ -217,7 +217,7 @@ namespace MonoDevelop.CSharpBinding
 		{
 			return CreateResult (typeReferenceExpression.TypeReference);
 		}
-		
+		/*
 		public override object VisitFieldReferenceExpression(FieldReferenceExpression fieldReferenceExpression, object data)
 		{
 			if (fieldReferenceExpression == null) {
@@ -230,11 +230,12 @@ namespace MonoDevelop.CSharpBinding
 					result.StaticResolve = true;
 					return result;
 				}
-/*				if (fieldReferenceExpression.TargetObject is ThisReferenceExpression) {
-					result = CreateResult (((TypeReferenceExpression)fieldReferenceExpression.TargetObject).TypeReference);
-					result.StaticResolve = true;
-					return result;
-				}*/
+//				if (fieldReferenceExpression.TargetObject is ThisReferenceExpression) {
+//					result = CreateResult (((TypeReferenceExpression)fieldReferenceExpression.TargetObject).TypeReference);
+//					result.StaticResolve = true;
+//					return result;
+//				}
+
 //				return fieldReferenceExpression.TargetObject.AcceptVisitor(this, data);
 			}
 			result = fieldReferenceExpression.TargetObject.AcceptVisitor(this, data) as ResolveResult;
@@ -281,7 +282,7 @@ namespace MonoDevelop.CSharpBinding
 			}
 			
 			return result;
-		}
+		}*/
 		
 		public override object VisitInvocationExpression(InvocationExpression invocationExpression, object data)
 		{

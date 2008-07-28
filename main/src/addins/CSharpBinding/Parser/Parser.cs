@@ -71,9 +71,9 @@ namespace CSharpBinding.Parser
 									case "#endregion":
 										--deep;
 										if (deep == 0) {
-											MonoDevelop.Projects.Parser.FoldingRegion region = new MonoDevelop.Projects.Parser.FoldingRegion (directive.Arg.Trim(), new DefaultRegion(directive.StartPosition.ToPoint (), new Point(nextDirective.EndPosition.X, nextDirective.EndPosition.Y)));
-											region.DefaultIsFolded = true;
-											cu.FoldingRegions.Add(region);
+											//MonoDevelop.Projects.Parser.FoldingRegion region = new MonoDevelop.Projects.Parser.FoldingRegion (directive.Arg.Trim(), new DefaultRegion(directive.StartPosition.ToPoint (), new Point(nextDirective.EndPosition.X, nextDirective.EndPosition.Y)));
+											//region.DefaultIsFolded = true;
+//											cu.FoldingRegions.Add(region);
 											goto end;
 										}
 										break;
@@ -102,11 +102,11 @@ namespace CSharpBinding.Parser
 						int j = i;
 						int curLine = comment.StartPosition.Line - 1;
 						Location end = comment.EndPosition;
-						if (!comment.CommentStartsLine)
-							break;
+//						if (!comment.CommentStartsLine)
+//							break;
 						for (; j < tracker.CurrentSpecials.Count; ++j) {
 							ICSharpCode.NRefactory.Comment curComment  = tracker.CurrentSpecials[j] as ICSharpCode.NRefactory.Comment;
-							if (curComment == null || !curComment.CommentStartsLine || curComment.CommentType != comment.CommentType || curLine + 1 != curComment.StartPosition.Line)
+							if (curComment == null /*|| !curComment.CommentStartsLine */|| curComment.CommentType != comment.CommentType || curLine + 1 != curComment.StartPosition.Line)
 								break;
 							end     = curComment.EndPosition;
 							curLine = curComment.StartPosition.Line;
@@ -152,10 +152,10 @@ namespace CSharpBinding.Parser
 					if (para != null && !String.IsNullOrEmpty (para.DefineSymbols)) {
 						string[] symbols = para.DefineSymbols.Split (';');
 						if (symbols != null) {
-							((ICSharpCode.NRefactory.Parser.CSharp.Lexer)p.Lexer).ClearDefinedSymbols ();
+/*							((ICSharpCode.NRefactory.Parser.CSharp.Lexer)p.Lexer).ClearDefinedSymbols ();
 							foreach (string symbol in symbols) {
 								((ICSharpCode.NRefactory.Parser.CSharp.Lexer)p.Lexer).AddDefinedSymbol (symbol);
-							}
+							}*/
 						}
 					}
 				}

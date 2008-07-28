@@ -593,7 +593,7 @@ namespace CSharpBinding.Parser
 			
 			return base.VisitTypeReference (typeReference, data);
 		}
-		
+		/*
 		public override object VisitFieldReferenceExpression (FieldReferenceExpression fieldExp, object data)
 		{
 			//Debug ("FieldReferenceExpression", fieldExp.FieldName, fieldExp);
@@ -611,7 +611,7 @@ namespace CSharpBinding.Parser
 			}
 			
 			return base.VisitFieldReferenceExpression (fieldExp, data);
-		}
+		}*/
 		
 		public override object VisitMethodDeclaration(MethodDeclaration methodDeclaration, object data) 
 		{
@@ -628,7 +628,7 @@ namespace CSharpBinding.Parser
 		public override object VisitInvocationExpression (InvocationExpression invokeExp, object data)
 		{
 			//Debug ("InvocationExpression", invokeExp.ToString (), invokeExp);
-			if (member is IMethod && invokeExp.TargetObject is FieldReferenceExpression) {
+/*			if (member is IMethod && invokeExp.TargetObject is FieldReferenceExpression) {
 				FieldReferenceExpression fieldExp = (FieldReferenceExpression) invokeExp.TargetObject;
 				if (fieldExp.FieldName == member.Name) {
 					IClass cls = resolver.ResolveExpressionType (fileCompilationUnit, fieldExp.TargetObject, fieldExp.StartLocation.Y, fieldExp.StartLocation.X);
@@ -637,7 +637,7 @@ namespace CSharpBinding.Parser
 						AddUniqueReference (fieldExp.StartLocation.Y, fieldExp.StartLocation.X, member.Name);
 					}
 				}
-			}
+			}*/
 			
 			return base.VisitInvocationExpression (invokeExp, data);
 		}

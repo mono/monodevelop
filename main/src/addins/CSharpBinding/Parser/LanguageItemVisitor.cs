@@ -45,7 +45,7 @@ namespace CSharpBinding.Parser
 		
 		public override object VisitInvocationExpression(InvocationExpression invocationExpression, object data)
 		{
-			if (invocationExpression.TargetObject is FieldReferenceExpression) {
+/*			if (invocationExpression.TargetObject is FieldReferenceExpression) {
 				FieldReferenceExpression field = (FieldReferenceExpression)invocationExpression.TargetObject;
 				TypeVisitor tv = new TypeVisitor (resolver);
 				IReturnType type = field.TargetObject.AcceptVisitor(tv, data) as IReturnType;
@@ -56,7 +56,7 @@ namespace CSharpBinding.Parser
 				}
 				// TODO: Find the right method
 				return ResolveOverload (methods, invocationExpression, data);
-			} else if (invocationExpression.TargetObject is IdentifierExpression) {
+			} else */if (invocationExpression.TargetObject is IdentifierExpression) {
 				string id = ((IdentifierExpression)invocationExpression.TargetObject).Identifier;
 				if (resolver.CallingClass == null) {
 					return null;
@@ -69,13 +69,13 @@ namespace CSharpBinding.Parser
 					methods = resolver.SearchMethod(type, id);
 				}
 				resolver.ShowStatic = false;
-				if (methods.Count <= 0) {
+/*				if (methods.Count <= 0) {
 					// It may be a call to a constructor
 					if (invocationExpression.TypeArguments != null && invocationExpression.TypeArguments.Count > 0)
 						return resolver.SearchType (id + "`" + invocationExpression.TypeArguments.Count, null, resolver.CompilationUnit);
 					else
 						return resolver.SearchType (id, null, resolver.CompilationUnit);
-				}
+				}*/
 				// TODO: Find the right method
 				return ResolveOverload (methods, invocationExpression, data);
 			}
@@ -136,7 +136,7 @@ namespace CSharpBinding.Parser
 			// If no exact match can be found, just return one of them
 			return (IMethod) methods [0];
 		}
-		
+		/*
 		public override object VisitFieldReferenceExpression(FieldReferenceExpression fieldReferenceExpression, object data)
 		{
 			if (fieldReferenceExpression == null) {
@@ -174,7 +174,7 @@ namespace CSharpBinding.Parser
 				return resolver.SearchClassMember (returnType, fieldReferenceExpression.FieldName, true);
 			}
 			return null;
-		}
+		}*/
 		
 		public override object VisitPointerReferenceExpression(PointerReferenceExpression pointerReferenceExpression, object data)
 		{
@@ -302,11 +302,11 @@ namespace CSharpBinding.Parser
 			// no calls allowed !!!
 			return null;
 		}
-		
+		/*
 		public override object VisitArrayInitializerExpression(ArrayInitializerExpression arrayInitializerExpression, object data)
 		{
 			// no calls allowed !!!
 			return null;
-		}
+		}*/
 	}
 }

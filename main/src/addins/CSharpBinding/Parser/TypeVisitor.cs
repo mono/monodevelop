@@ -187,7 +187,7 @@ namespace CSharpBinding.Parser
 		
 		public override object VisitInvocationExpression(InvocationExpression invocationExpression, object data)
 		{
-			if (invocationExpression.TargetObject is FieldReferenceExpression) {
+/*			if (invocationExpression.TargetObject is FieldReferenceExpression) {
 				FieldReferenceExpression field = (FieldReferenceExpression)invocationExpression.TargetObject;
 				IReturnType type = field.TargetObject.AcceptVisitor(this, data) as IReturnType;
 				ArrayList methods = resolver.SearchMethod(type, field.FieldName);
@@ -197,7 +197,7 @@ namespace CSharpBinding.Parser
 				}
 				// TODO: Find the right method
 				return ((IMethod)methods[0]).ReturnType;
-			} else if (invocationExpression.TargetObject is IdentifierExpression) {
+			} else */if (invocationExpression.TargetObject is IdentifierExpression) {
 				string id = ((IdentifierExpression)invocationExpression.TargetObject).Identifier;
 				if (resolver.CallingClass == null) {
 					return null;
@@ -226,7 +226,7 @@ namespace CSharpBinding.Parser
 			}
 			return null;
 		}
-		
+		/*
 		public override object VisitFieldReferenceExpression(FieldReferenceExpression fieldReferenceExpression, object data)
 		{
 			if (fieldReferenceExpression == null) {
@@ -263,7 +263,7 @@ namespace CSharpBinding.Parser
 //			Console.WriteLine("returnType of child is null!");
 			return null;
 		}
-		
+		*/
 		public override object VisitPointerReferenceExpression(PointerReferenceExpression pointerReferenceExpression, object data)
 		{
 			ReturnType type = pointerReferenceExpression.TargetObject.AcceptVisitor(this, data) as ReturnType;
@@ -347,12 +347,12 @@ namespace CSharpBinding.Parser
 				case UnaryOperatorType.Decrement:
 				case UnaryOperatorType.PostDecrement:
 					break;
-				case UnaryOperatorType.Star:       // dereference
+/*				case UnaryOperatorType.Star:       // dereference
 					--expressionType.PointerNestingLevel;
 					break;
 				case UnaryOperatorType.BitWiseAnd: // get reference
 					++expressionType.PointerNestingLevel; 
-					break;
+					break;*/
 				case UnaryOperatorType.None:
 					break;
 			}
@@ -479,11 +479,11 @@ namespace CSharpBinding.Parser
 			// no calls allowed !!!
 			return null;
 		}
-		
+		/*
 		public override object VisitArrayInitializerExpression (ArrayInitializerExpression arrayInitializerExpression, object data)
 		{
 			// no calls allowed !!!
 			return null;
-		}
+		}*/
 	}
 }
