@@ -45,8 +45,8 @@ namespace CSharpBinding.Parser
 		
 		public override object VisitInvocationExpression(InvocationExpression invocationExpression, object data)
 		{
-/*			if (invocationExpression.TargetObject is FieldReferenceExpression) {
-				FieldReferenceExpression field = (FieldReferenceExpression)invocationExpression.TargetObject;
+			if (invocationExpression.TargetObject is MemberReferenceExpression) {
+				MemberReferenceExpression field = (MemberReferenceExpression)invocationExpression.TargetObject;
 				TypeVisitor tv = new TypeVisitor (resolver);
 				IReturnType type = field.TargetObject.AcceptVisitor(tv, data) as IReturnType;
 				ArrayList methods = resolver.SearchMethod(type, field.FieldName);
@@ -56,7 +56,7 @@ namespace CSharpBinding.Parser
 				}
 				// TODO: Find the right method
 				return ResolveOverload (methods, invocationExpression, data);
-			} else */if (invocationExpression.TargetObject is IdentifierExpression) {
+			} else if (invocationExpression.TargetObject is IdentifierExpression) {
 				string id = ((IdentifierExpression)invocationExpression.TargetObject).Identifier;
 				if (resolver.CallingClass == null) {
 					return null;
@@ -137,7 +137,7 @@ namespace CSharpBinding.Parser
 			return (IMethod) methods [0];
 		}
 		/*
-		public override object VisitFieldReferenceExpression(FieldReferenceExpression fieldReferenceExpression, object data)
+		public override object VisitMemberReferenceExpression(MemberReferenceExpression fieldReferenceExpression, object data)
 		{
 			if (fieldReferenceExpression == null) {
 				return null;

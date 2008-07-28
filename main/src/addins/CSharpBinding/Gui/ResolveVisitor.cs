@@ -217,8 +217,8 @@ namespace MonoDevelop.CSharpBinding
 		{
 			return CreateResult (typeReferenceExpression.TypeReference);
 		}
-		/*
-		public override object VisitFieldReferenceExpression(FieldReferenceExpression fieldReferenceExpression, object data)
+		
+		public override object VisitMemberReferenceExpression(MemberReferenceExpression fieldReferenceExpression, object data)
 		{
 			if (fieldReferenceExpression == null) {
 				return null;
@@ -282,7 +282,7 @@ namespace MonoDevelop.CSharpBinding
 			}
 			
 			return result;
-		}*/
+		}
 		
 		public override object VisitInvocationExpression(InvocationExpression invocationExpression, object data)
 		{
