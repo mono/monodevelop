@@ -1,3 +1,7 @@
+2008-07-28  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* GnomePlatform.cs: Escape file names when querying the mime type.
+
 2008-07-15  Mike Krüger <mkrueger@novell.com> 
 
 	* GnomePlatform.cs: Fixed possible null reference exception.
