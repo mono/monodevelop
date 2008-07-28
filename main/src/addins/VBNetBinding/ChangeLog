@@ -1,3 +1,7 @@
+2008-07-28  Mike Krüger <mkrueger@novell.com> 
+
+	* Parser/TypeVisitor.cs: Some changes for the new nrefactory.
+
 2008-07-27  Mike Krüger <mkrueger@novell.com> 
 
 	* Parser/DomParser.cs: Worked on code completion/new dom.

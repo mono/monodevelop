@@ -88,7 +88,7 @@ namespace VBBinding.Parser
 			return null;
 		}
 		
-		
+/*		
 		//TODO - Verify logic; did a lot of "just make it work" hacking in this method
 		public override object VisitFieldReferenceExpression(FieldReferenceExpression fieldReferenceExpression, object data)
 		{
@@ -127,7 +127,7 @@ namespace VBBinding.Parser
 //			Console.WriteLine("returnType of child is null!");
 			return null;
 		}
-		
+		*/
 		public override object VisitIdentifierExpression(IdentifierExpression identifierExpression, object data)
 		{
 			//Console.WriteLine("visiting IdentifierExpression");
@@ -176,13 +176,13 @@ namespace VBBinding.Parser
 					break;
 				case UnaryOperatorType.Decrement:
 				case UnaryOperatorType.PostDecrement:
-					break;
+					break;/*
 				case UnaryOperatorType.Star:       // dereference
 					--expressionType.PointerNestingLevel;
 					break;
 				case UnaryOperatorType.BitWiseAnd: // get reference
 					++expressionType.PointerNestingLevel; 
-					break;
+					break;*/
 				case UnaryOperatorType.None:
 					break;
 			}
@@ -263,11 +263,11 @@ namespace VBBinding.Parser
 			}
 			return type;
 		}
-		
+		/*
 		public override object VisitArrayInitializerExpression(ArrayInitializerExpression arrayInitializerExpression, object data)
 		{
 			// no calls allowed !!!
 			return null;
-		}
+		}*/
 	}
 }
