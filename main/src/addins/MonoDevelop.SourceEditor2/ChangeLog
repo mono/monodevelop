@@ -1,3 +1,8 @@
+2008-07-28  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.SourceEditor/SourceEditorView.cs: Don't escape file names
+	  for VFS here. It is done in the platform service.
+
 2008-07-27  Mike Krüger <mkrueger@novell.com> 
 
 	* gtk-gui/MonoDevelop.SourceEditor.OptionPanels.GeneralOptionsPanel.cs,
