@@ -156,10 +156,10 @@ namespace DebuggerServer
 			ValueReference target = null;
 			string methodName;
 			
-			if (invocationExpression.TargetObject is FieldReferenceExpression) {
-				FieldReferenceExpression field = (FieldReferenceExpression)invocationExpression.TargetObject;
+			if (invocationExpression.TargetObject is MemberReferenceExpression) {
+				MemberReferenceExpression field = (MemberReferenceExpression)invocationExpression.TargetObject;
 				target = (ValueReference) field.TargetObject.AcceptVisitor (this, data);
-				methodName = field.FieldName;
+				methodName = field.MemberName;
 			} else if (invocationExpression.TargetObject is IdentifierExpression) {
 				IdentifierExpression exp = (IdentifierExpression) invocationExpression.TargetObject;
 				methodName = exp.Identifier;
@@ -403,12 +403,12 @@ namespace DebuggerServer
 			throw CreateParseError ("Unknwon identifier: {0}", name);
 		}
 		
-		public override object VisitFieldReferenceExpression (ICSharpCode.NRefactory.Ast.FieldReferenceExpression fieldReferenceExpression, object data)
+		public override object VisitMemberReferenceExpression (MemberReferenceExpression memberReferenceExpression, object data)
 		{
-			ValueReference vref = (ValueReference) fieldReferenceExpression.TargetObject.AcceptVisitor (this, data);
-			ValueReference ch = vref.GetChild (fieldReferenceExpression.FieldName);
+			ValueReference vref = (ValueReference) memberReferenceExpression.TargetObject.AcceptVisitor (this, data);
+			ValueReference ch = vref.GetChild (memberReferenceExpression.MemberName);
 			if (ch == null)
-				throw CreateParseError ("Unknown member: {0}", fieldReferenceExpression.FieldName);
+				throw CreateParseError ("Unknown member: {0}", memberReferenceExpression.MemberName);
 			return ch;
 		}
 		
@@ -551,11 +551,6 @@ namespace DebuggerServer
 		}
 		
 		public override object VisitAssignmentExpression (ICSharpCode.NRefactory.Ast.AssignmentExpression assignmentExpression, object data)
-		{
-			throw CreateNotSupportedError ();
-		}
-		
-		public override object VisitArrayInitializerExpression (ICSharpCode.NRefactory.Ast.ArrayInitializerExpression arrayInitializerExpression, object data)
 		{
 			throw CreateNotSupportedError ();
 		}

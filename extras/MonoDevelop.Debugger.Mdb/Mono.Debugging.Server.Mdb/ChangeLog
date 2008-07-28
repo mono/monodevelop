@@ -1,3 +1,7 @@
+2008-07-28  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* NRefactoryEvaluator.cs: Track changes in NRefactory.
+
 2008-07-25  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* BacktraceWrapper.cs: Implement GetAllLocals.
