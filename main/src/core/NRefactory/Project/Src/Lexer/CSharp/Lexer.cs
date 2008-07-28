@@ -787,16 +787,17 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 		
 		void ReadComment()
 		{
+			int col = Col - 1;
 			switch (ReaderRead()) {
 				case '*':
-					ReadMultiLineComment();
+					ReadMultiLineComment (col);
 					break;
 				case '/':
 					if (ReaderPeek() == '/') {
 						ReaderRead();
-						ReadSingleLineComment(CommentType.Documentation);
+						ReadSingleLineComment(col, CommentType.Documentation);
 					} else {
-						ReadSingleLineComment(CommentType.SingleLine);
+						ReadSingleLineComment(col, CommentType.SingleLine);
 					}
 					break;
 				default:
@@ -811,6 +812,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 				return ReadToEndOfLine();
 			}
 			sb.Length = 0;
+			StringBuilder sb2 = new StringBuilder ();
 			StringBuilder curWord = new StringBuilder();
 			
 			int nextChar;
@@ -821,7 +823,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 					break;
 				}
 				
-				sb.Append(ch);
+				sb.Append(ch);sb2.Append(ch);
 				if (IsIdentifierPart(nextChar)) {
 					curWord.Append(ch);
 				} else {
@@ -829,28 +831,31 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 					curWord.Length = 0;
 					if (specialCommentHash.ContainsKey(tag)) {
 						Location p = new Location(Col, Line);
-						string comment = ch + ReadToEndOfLine();
+						string comment = ReadToEndOfLine();
 						this.TagComments.Add(new TagComment(tag, isBegin, comment, p, new Location(Col, Line)));
-						sb.Append(comment);
-						break;
+						sb2.Append(comment);
+						return sb2.ToString ();
 					}
 				}
 			}
-			return sb.ToString();
+			return sb2.ToString();
 		}
 		
-		void ReadSingleLineComment(CommentType commentType)
+		void ReadSingleLineComment(int startCol, CommentType commentType)
 		{
 			if (this.SkipAllComments) {
 				SkipToEndOfLine();
 			} else {
-				specialTracker.StartComment(commentType, isBegin, new Location(Col, Line));
-				specialTracker.AddString(ReadCommentToEOL());
-				specialTracker.FinishComment(new Location(Col, Line));
+				int col = Col;
+				int line = Line;
+				specialTracker.StartComment(commentType, false, new Location(startCol, line));
+				string comment = ReadCommentToEOL();
+				specialTracker.AddString(comment);
+				specialTracker.FinishComment(new Location(col + comment.Length, line));
 			}
 		}
 		
-		void ReadMultiLineComment()
+		void ReadMultiLineComment(int startCol)
 		{
 			int nextChar;
 			if (this.SkipAllComments) {
@@ -864,7 +869,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 					}
 				}
 			} else {
-				specialTracker.StartComment(CommentType.Block, isBegin, new Location(Col, Line));
+				specialTracker.StartComment(CommentType.Block, isBegin, new Location(startCol, Line));
 				
 				// sc* = special comment handling (TO DO markers)
 				string scTag = null; // is set to non-null value when we are inside a comment marker

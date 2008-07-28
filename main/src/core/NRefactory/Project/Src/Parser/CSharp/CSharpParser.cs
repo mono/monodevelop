@@ -27,6 +27,15 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 		}
 		
 		StringBuilder qualidentBuilder = new StringBuilder();
+		
+		bool IsTokenWithGenericParameters ()
+		{
+			StartPeek();
+			Token t = Peek (1);
+			if (t.kind != Tokens.LessThan) 
+				return false;
+			return SkipGeneric(ref t);
+		}
 
 		Token t {
 			[System.Diagnostics.DebuggerStepThrough]
