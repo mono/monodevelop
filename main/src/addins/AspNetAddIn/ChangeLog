@@ -1,5 +1,15 @@
 2008-07-28  Michael Hutchinson <mhutchinson@novell.com> 
 
+	* MonoDevelop.AspNet/AspNetToolboxNode.cs,
+	  MonoDevelop.AspNet/WebTypeManager.cs,
+	  MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs,
+	  MonoDevelop.AspNet.Parser/DocumentReferenceManager.cs: Partial port
+	  to new DOM. A *few* features are working again, but it's not nearly
+	  done. Need to be able to get assembly parse contexts to make
+	  progress.
+
+2008-07-28  Michael Hutchinson <mhutchinson@novell.com> 
+
 	* MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs: Fix document outline
 	  view with new parser infrastructure.
 
