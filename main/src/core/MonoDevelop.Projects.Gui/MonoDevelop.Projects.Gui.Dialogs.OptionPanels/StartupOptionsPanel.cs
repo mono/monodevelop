@@ -34,6 +34,8 @@ using MonoDevelop.Core.Execution;
 
 namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 {
+	[System.ComponentModel.Category("MonoDevelop.Projects.Gui")]
+	[System.ComponentModel.ToolboxItem(true)]
 	partial class StartupOptionsPanelWidget : Gtk.Bin
 	{
 		Solution sol;

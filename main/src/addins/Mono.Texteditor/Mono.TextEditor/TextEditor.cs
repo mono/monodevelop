@@ -39,6 +39,8 @@ using Gtk;
 
 namespace Mono.TextEditor
 {
+	[System.ComponentModel.Category("Mono.TextEditor")]
+	[System.ComponentModel.ToolboxItem(true)]
 	public class TextEditor : Gtk.DrawingArea
 	{
 		TextEditorData textEditorData;

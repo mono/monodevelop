@@ -47,6 +47,8 @@ using MonoDevelop.Projects.Dom;
 
 namespace MonoDevelop.AssemblyBrowser
 {
+	[System.ComponentModel.Category("MonoDevelop.AssemblyBrowser")]
+	[System.ComponentModel.ToolboxItem(true)]
 	public partial class AssemblyBrowserWidget : Gtk.Bin
 	{
 		MonoDevelopTreeView treeView;

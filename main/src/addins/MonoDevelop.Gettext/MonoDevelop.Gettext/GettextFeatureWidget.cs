@@ -38,6 +38,8 @@ using MonoDevelop.Core.ProgressMonitoring;
 
 namespace MonoDevelop.Gettext
 {
+	[System.ComponentModel.Category("widget")]
+	[System.ComponentModel.ToolboxItem(true)]
 	public partial class GettextFeatureWidget : Gtk.Bin
 	{
 		ListStore store;

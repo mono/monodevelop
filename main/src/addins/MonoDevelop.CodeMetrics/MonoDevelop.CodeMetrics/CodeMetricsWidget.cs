@@ -41,6 +41,8 @@ using MonoDevelop.Ide.StandardHeaders;
 
 namespace MonoDevelop.CodeMetrics
 {
+	[System.ComponentModel.Category("MonoDevelop.CodeMetrics")]
+	[System.ComponentModel.ToolboxItem(true)]
 	public partial class CodeMetricsWidget : Gtk.Bin
 	{
 		List<string> files = new List<string> ();
