@@ -1,3 +1,7 @@
+2008-07-29  Mike Krüger <mkrueger@novell.com> 
+
+	* Services/NUnitProjectTestSuite.cs: Translated old code to new dom.
+
 2008-07-25  Peter Johanson <peter@peterjohanson.com> 
 
 	* Services/ExternalTestRunner.cs: Prevent an ArgumentOutOfRange

@@ -34,7 +34,8 @@ using System.Collections;
 
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Parser;
+using MonoDevelop.Projects.Dom;
+using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Ide.Gui;
 
 using NUnit.Core;
@@ -69,16 +70,16 @@ namespace MonoDevelop.NUnit
 
 		protected override SourceCodeLocation GetSourceCodeLocation (string fullClassName, string methodName)
 		{
-			IParserContext ctx = IdeApp.Workspace.ParserDatabase.GetProjectParserContext (project);
-			IClass cls = ctx.GetClass (fullClassName);
+			ProjectDom ctx = ProjectDomService.GetDatabaseProjectDom (project);
+			IType cls = ctx.GetType (fullClassName, -1, true, true);
 			if (cls == null)
 				return null;
 			
 			foreach (IMethod met in cls.Methods) {
 				if (met.Name == methodName)
-					return new SourceCodeLocation (cls.Region.FileName, met.Region.BeginLine, met.Region.BeginColumn);
+					return new SourceCodeLocation (cls.CompilationUnit.FileName, met.Location.Line, met.Location.Column);
 			}
-			return new SourceCodeLocation (cls.Region.FileName, cls.Region.BeginLine, cls.Region.BeginColumn);
+			return new SourceCodeLocation (cls.CompilationUnit.FileName, cls.Location.Line, cls.Location.Column);
 		}
 		
 		public override void Dispose ()
