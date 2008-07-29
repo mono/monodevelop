@@ -36,6 +36,7 @@ FILES =  \
 	MonoDevelop.Projects.Dom.Database/DateTimeUtil.cs \
 	MonoDevelop.Projects.Dom.Database/HyenaSqliteCommand.cs \
 	MonoDevelop.Projects.Dom.Database/HyenaSqliteConnection.cs \
+	MonoDevelop.Projects.Dom.Database/MonoDevelopDatabaseConnection.cs \
 	MonoDevelop.Projects.Dom.Database/SqliteUtils.cs \
 	MonoDevelop.Projects.Dom.Output/Ambience.cs \
 	MonoDevelop.Projects.Dom.Output/AmbienceService.cs \

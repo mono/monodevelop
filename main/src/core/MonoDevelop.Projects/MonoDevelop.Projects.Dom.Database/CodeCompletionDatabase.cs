@@ -46,13 +46,13 @@ namespace MonoDevelop.Projects.Dom.Database
 		public CodeCompletionDatabase (string fileName)
 		{
 			try {
-				connection = new HyenaSqliteConnection (fileName);
+				connection = new MonoDevelopDatabaseConnection (fileName);
 				CheckTables ();
 			} catch (Exception e) {
 				if (connection != null)
 					connection.Dispose ();
 				System.IO.File.Delete (fileName);
-				connection = new HyenaSqliteConnection (fileName);
+				connection = new MonoDevelopDatabaseConnection (fileName);
 				CheckTables ();
 			}
 		}
