@@ -115,14 +115,21 @@ namespace MonoDevelop.Projects.Dom.Parser
 			}
 			return null;
 		}
+		public static IExpressionFinder GetExpressionFinder (string fileName)
+		{
+			IParser parser = GetParserByFileName (fileName);
+			if (parser != null)
+				return parser.CreateExpressionFinder ();
+			return null;
+		}
 		
-		static bool HasDom (string fileName)
+		public static bool HasDom (string fileName)
 		{
 			Debug.Assert (!String.IsNullOrEmpty (fileName));
 			return doms.ContainsKey (fileName);
 		}
 				
-		static bool HasDom (Project project)
+		public static bool HasDom (Project project)
 		{
 			Debug.Assert (project != null);
 			if (project == null) 
@@ -169,6 +176,10 @@ namespace MonoDevelop.Projects.Dom.Parser
 		}*/
 		
 		
+		public static void Refresh (Project project, string fileName, string mimeType)
+		{
+			Refresh (project, fileName, mimeType, delegate () { return System.IO.File.ReadAllText (fileName); });
+		}
 		public static void Refresh (Project project, string fileName, string mimeType, ContentDelegate getContent)
 		{
 			ProjectDom dom = GetDatabaseProjectDom (project);

@@ -89,5 +89,13 @@ namespace MonoDevelop.Projects.Dom.Output
 			ambiences.TryGetValue (mimeType, out result);
 			return result ?? defaultAmbience;
 		}
+		
+		public static Ambience GetAmbienceForLanguage (string mimeType)
+		{
+			Ambience result;
+			ambiences.TryGetValue (mimeType, out result);
+			return result ?? defaultAmbience;
+		}
+		
 	}
 }
