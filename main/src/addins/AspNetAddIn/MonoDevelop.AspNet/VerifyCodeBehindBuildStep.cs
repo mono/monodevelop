@@ -83,7 +83,7 @@ namespace MonoDevelop.AspNet
 				if (cu == null || cu.Document == null)
 					continue;
 				
-				if (cu.ErrorsDuringCompile) {
+				if (cu.HasErrors) {
 					foreach (Exception e in cu.Document.ParseErrors) {
 						CodeBehindWarning cbw;
 						ErrorInFileException eife = e as ErrorInFileException;

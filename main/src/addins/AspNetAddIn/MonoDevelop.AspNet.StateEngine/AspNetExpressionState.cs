@@ -37,10 +37,13 @@ namespace MonoDevelop.AspNet.StateEngine
 	
 	public class AspNetExpressionState : State
 	{
+		const int RENDER_EXPRESSION = 1;
+		const int DATABINDING_EXPRESSION = 2;
+		const int RESOURCE_EXPRESSION = 3;
+		const int DIRECTIVE = 4;
+		const int SERVER_COMMENT = 5;
+		const int RENDER_BLOCK = 6;
 		
-		public AspNetExpressionState ()
-		{
-		}
 		
 		public override State PushChar (char c, IParseContext context, ref bool reject)
 		{

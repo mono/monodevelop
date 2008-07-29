@@ -29,82 +29,47 @@
 using System;
 using System.IO;
 
-using MonoDevelop.Projects.Parser;
+using MonoDevelop.Projects.Dom;
+using MonoDevelop.Projects.Dom.Parser;
 
 
 namespace MonoDevelop.AspNet.Parser
 {
 	
 	
-	public class AspNetParser : IParser
+	public class AspNetParser : AbstractParser
 	{
-		string[] lexerTags;
+		public AspNetParser () : base (null, "application/x-aspx", "application/x-ascx", "application/x-master-page")
+		{
+		}
 		
-		public string[] LexerTags {
-			get { return lexerTags; }
-			set { lexerTags = value; }
-		}
-
-		public IExpressionFinder CreateExpressionFinder (string fileName)
+		public override bool CanParse (string fileName)
 		{
-			return new AspNetExpressionFinder ();
+			return fileName.EndsWith (".aspx") || fileName.EndsWith (".ascx") || fileName.EndsWith (".master");
 		}
-
-		public ICompilationUnitBase Parse (string fileName)
+		
+		public override ICompilationUnit Parse (string fileName, string fileContent)
 		{
-			using (TextReader tr = new StreamReader (fileName)) {
-				Document doc = new Document (tr, null, fileName);
-				return BuildCU (doc);
-			}
-		}
-
-		public ICompilationUnitBase Parse (string fileName, string fileContent)
-		{
+			System.Console.WriteLine("Parsed {0}", fileName);
 			using (TextReader tr = new StringReader (fileContent)) {
 				Document doc = new Document (tr, null, fileName);
-				return BuildCU (doc);
+				AspNetCompilationUnit cu = new AspNetCompilationUnit (fileName);
+				cu.Document = doc;
+				cu.PageInfo = new PageInfo ();
+				
+				CompilationUnitVisitor cuVisitor = new CompilationUnitVisitor (cu);
+				doc.RootNode.AcceptVisit (cuVisitor);
+				
+				PageInfoVisitor piVisitor = new PageInfoVisitor (cu.PageInfo);
+				doc.RootNode.AcceptVisit (piVisitor);
+				
+				foreach (ParserException pe in doc.ParseErrors)
+					cu.Add (new Error (
+						pe.IsWarning? ErrorType.Warning : ErrorType.Error,
+						pe.Line, pe.Column, pe.Message));
+				
+				return cu;
 			}
-		}
-		
-		AspNetCompilationUnit BuildCU (Document doc)
-		{
-			AspNetCompilationUnit cu = new AspNetCompilationUnit ();
-			cu.Document = doc;
-			cu.PageInfo = new PageInfo ();
-			
-			CompilationUnitVisitor cuVisitor = new CompilationUnitVisitor (cu);
-			doc.RootNode.AcceptVisit (cuVisitor);
-			
-			PageInfoVisitor piVisitor = new PageInfoVisitor (cu.PageInfo);
-			doc.RootNode.AcceptVisit (piVisitor);
-			
-			foreach (ParserException pe in doc.ParseErrors)
-				cu.AddError (new ErrorInfo (pe.Line, pe.Column, pe.Message));
-			cu.CompileErrors ();
-			return cu;
-		}
-		
-		ErrorInfo[] GetErrors (Document doc)
-		{
-			System.Collections.Generic.List<ErrorInfo> list = new System.Collections.Generic.List<ErrorInfo> ();
-			foreach (ParserException pe in doc.ParseErrors)
-				list.Add (new ErrorInfo (pe.Line, pe.Column, pe.Message));
-			return list.Count == 0? null : list.ToArray ();
-		}
-
-		public ResolveResult Resolve (IParserContext parserContext, string expression, int caretLineNumber, int caretColumn, string fileName, string fileContent)
-		{
-			return null;
-		}
-
-		public LanguageItemCollection CtrlSpace (IParserContext parserContext, int caretLine, int caretColumn, string fileName)
-		{
-			return null;
-		}
-
-		public ILanguageItem ResolveIdentifier (IParserContext parserContext, string id, int line, int col, string fileName, string fileContent)
-		{
-			return null;
 		}
 	}
 }

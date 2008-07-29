@@ -58,7 +58,7 @@ namespace MonoDevelop.AspNet.Parser
 			get { return message; }
 		}
 		
-		bool IsWarning {
+		public bool IsWarning {
 			get { return isWarning; }
 			set { isWarning = value; }
 		}

@@ -1,3 +1,21 @@
+2008-07-28  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.AspNet/VerifyCodeBehindBuildStep.cs,
+	  MonoDevelop.AspNet/AspNetLanguageBinding.cs,
+	  MonoDevelop.AspNet.addin.xml,
+	  MonoDevelop.AspNet.Parser/AspNetCompilationUnit.cs,
+	  MonoDevelop.AspNet.Parser/CompilationUnitVisitor.cs,
+	  MonoDevelop.AspNet.Parser/AspNetExpressionFinder.cs,
+	  MonoDevelop.AspNet.Parser/AspNetParser.cs,
+	  MonoDevelop.AspNet.Parser/LocatedParserException.cs: Port to new
+	  parser infrastructure so the ASP.NET pages get parsed.
+	* MonoDevelop.AspNet.StateEngine/AspNetExpressionState.cs,
+	  MonoDevelop.AspNet.StateEngine/AspNetServerCommentState.cs,
+	  MonoDevelop.AspNet.StateEngine/AspNetDom.cs,
+	  MonoDevelop.AspNet.StateEngine/AspNetDirectiveState.cs: More
+	  in-progress work on ASP.NET extensions to the XML parser.
+	* AspNetAddIn.mdp, Makefile.am: Updated.
+
 2008-07-25  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.AspNet.StateEngine/AspNetExpressionState.cs,
