@@ -43,7 +43,7 @@ namespace MonoDevelop.VBNetBinding
 /*			visitor.Cu.ErrorsDuringCompile = p.Errors.Count > 0;
 			visitor.Cu.Tag = p.CompilationUnit;
 			RetrieveRegions(visitor.Cu, p.Lexer.SpecialTracker);
-			foreach (IClass c in visitor.Cu.Classes)
+			foreach (IType c in visitor.Cu.Classes)
 				c.Region.FileName = fileName;
 			AddCommentTags(visitor.Cu, p.Lexer.TagComments);*/
 			return result;

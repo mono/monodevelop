@@ -1,13 +1,13 @@
 // created on 06.08.2003 at 12:37
 
 using System.Diagnostics;
-using MonoDevelop.Projects.Parser;
-using ICSharpCode.NRefactory.Parser;
-using Modifier = ICSharpCode.NRefactory.Ast.Modifiers;
-using ClassType = MonoDevelop.Projects.Parser.ClassType;
+using MonoDevelop.Projects.Dom;
+//using ICSharpCode.NRefactory.Parser;
+//using Modifier = ICSharpCode.NRefactory.Ast.Modifiers;
+//using ClassType = MonoDevelop.Projects.Parser.ClassType;
 
 namespace VBBinding.Parser.SharpDevelopTree
-{
+{/*
 	public class Class : DefaultClass
 	{
 		public Class(CompilationUnit cu, MonoDevelop.Projects.Parser.ClassType t, Modifier m, IRegion region): base (cu)
@@ -54,5 +54,5 @@ namespace VBBinding.Parser.SharpDevelopTree
 			}
 			
 		}
-	}
+	}*/
 }
