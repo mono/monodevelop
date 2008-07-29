@@ -214,7 +214,6 @@
     <File name="MonoDevelop.Projects.Dom.Database/DatabaseProperty.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Dom.Database/DatabaseEvent.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Dom.Database/DatabaseParameter.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Projects.Dom/DotNetProject.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="False" refto="monodoc, Version=1.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />

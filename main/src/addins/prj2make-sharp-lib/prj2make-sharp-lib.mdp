@@ -37,7 +37,6 @@
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Core.Gui" />
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Ide" />
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Projects" />
-    <ProjectReference type="Gac" localcopy="True" refto="Mono.Addins, Version=0.4.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Deployment" />
     <ProjectReference type="Gac" localcopy="True" refto="pango-sharp, Version=2.10.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="atk-sharp, Version=2.10.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
@@ -45,6 +44,7 @@
     <ProjectReference type="Gac" localcopy="True" refto="gtk-sharp, Version=2.10.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.CSharpBinding" />
     <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.VBNetBinding" />
+    <ProjectReference type="Gac" localcopy="True" refto="Mono.Addins, Version=0.3.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
   </References>
   <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="./Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="../../../">
     <BuildFilesVar Sync="True" Name="FILES" />

@@ -1,5 +1,11 @@
 2008-07-29  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.Projects/DotNetProject.cs, Makefile.am,
+	  MonoDevelop.Projects.mdp: Removed some parts of the documentation
+	  service.
+
+2008-07-29  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.Projects/ILanguageBinding.cs,
 	  MonoDevelop.Projects/ProjectsServices.cs,
 	  MonoDevelop.Projects/LanguageBindingService.cs,

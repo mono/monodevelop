@@ -1,5 +1,9 @@
 2008-07-29  Mike Krüger <mkrueger@novell.com> 
 
+	* gtk-gui/objects.xml: Removed some parts of the documentation service.
+
+2008-07-29  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.Projects.Gui/ProjectsGuiServices.cs,
 	  MonoDevelop.Projects.Gui/IconService.cs,
 	  MonoDevelop.Projects.Gui.Completion/MethodParameterDataProvider.cs,

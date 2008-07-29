@@ -1,3 +1,7 @@
+2008-07-29  Mike Krüger <mkrueger@novell.com> 
+
+	* WelcomePage.mdp: Removed some parts of the documentation service.
+
 2008-07-05  Zach Lute <zach.lute@gmail.com> 
 
 	* WelcomePageView.cs: Welcome page no longer shows 'Open solution'

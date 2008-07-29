@@ -77,7 +77,6 @@ FILES =  \
 	MonoDevelop.Projects.Dom/DomReturnType.cs \
 	MonoDevelop.Projects.Dom/DomType.cs \
 	MonoDevelop.Projects.Dom/DomUsing.cs \
-	MonoDevelop.Projects.Dom/DotNetProject.cs \
 	MonoDevelop.Projects.Dom/Error.cs \
 	MonoDevelop.Projects.Dom/ExpressionContext.cs \
 	MonoDevelop.Projects.Dom/ExpressionResult.cs \
