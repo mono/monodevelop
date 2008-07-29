@@ -1,5 +1,10 @@
 2008-07-29  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.Ide.Commands/RefactoryCommands.cs: fixed todo in
+	  refactory commands.
+
+2008-07-29  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.Ide/Services.cs,
 	  MonoDevelop.Ide.Gui.Pads/MonodocTreePad.cs,
 	  MonoDevelop.Ide.Gui.Pads.ClassBrowser/ProjectNodeBuilder.cs,

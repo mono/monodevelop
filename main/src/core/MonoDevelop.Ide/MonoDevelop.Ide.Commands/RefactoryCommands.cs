@@ -203,14 +203,12 @@ namespace MonoDevelop.Ide.Commands
 		{
 			Refactorer refactorer = new Refactorer (ctx, pinfo, eclass, item, null);
 			CommandInfoSet ciset = new CommandInfoSet ();
-			Ambience ambience = AmbienceService.GetAmbienceForFile (eclass.CompilationUnit.FileName);
+			Ambience ambience = AmbienceService.GetAmbienceForFile (pinfo.FileName);
 			Project project = IdeApp.Workbench.ActiveDocument.Project;
 			string itemName = EscapeName (ambience.GetString (item, OutputFlags.IncludeParameters | OutputFlags.EmitMarkup));
 			bool canRename = false;
 			string txt;
-	// TODO:
-	// IdeApp.ProjectOperations.CanJumpToDeclaration (item)
-			if (true)
+			if (IdeApp.ProjectOperations.CanJumpToDeclaration (item))
 				ciset.CommandInfos.Add (GettextCatalog.GetString ("_Go to declaration"), new RefactoryOperation (refactorer.GoToDeclaration));
 			
 			if ((item is IMember || item is LocalVariable || item is IParameter) && !(item is IType))
