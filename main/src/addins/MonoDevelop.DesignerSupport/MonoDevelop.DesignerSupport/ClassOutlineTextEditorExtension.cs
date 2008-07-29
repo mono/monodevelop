@@ -90,11 +90,11 @@ namespace MonoDevelop.DesignerSupport
 			
 			TreeViewColumn treeCol = new TreeViewColumn ();
 			treeCol.PackStart (pixRenderer, false);
-// TODO:
-//			treeCol.SetCellDataFunc (pixRenderer, new TreeCellDataFunc (OutlineTreeIconFunc));
+
+			treeCol.SetCellDataFunc (pixRenderer, new TreeCellDataFunc (OutlineTreeIconFunc));
 			treeCol.PackStart (textRenderer, true);
-// TODO:
-//			treeCol.SetCellDataFunc (textRenderer, new TreeCellDataFunc (OutlineTreeTextFunc));
+			
+			treeCol.SetCellDataFunc (textRenderer, new TreeCellDataFunc (OutlineTreeTextFunc));
 			outlineTreeView.AppendColumn (treeCol);
 			
 			outlineTreeView.HeadersVisible = false;
@@ -125,8 +125,8 @@ namespace MonoDevelop.DesignerSupport
 			sw.ShowAll ();
 			return sw;
 		}
-		/* TODO:
-		void OutlineTreeIconFunc (TreeViewColumn column, CellRenderer cell, TreeModelOutputFlags model, TreeIter iter)
+		
+		void OutlineTreeIconFunc (TreeViewColumn column, CellRenderer cell, TreeModel model, TreeIter iter)
 		{
 			CellRendererPixbuf pixRenderer = (CellRendererPixbuf) cell;
 			object o = model.GetValue (iter, 0);
@@ -135,7 +135,7 @@ namespace MonoDevelop.DesignerSupport
 			} else if (o is FoldingRegion) {
 				pixRenderer.Pixbuf = IdeApp.Services.Resources.GetIcon ("gtk-add", IconSize.Menu);
 			}
-		}*/
+		}
 		
 		void OutlineTreeTextFunc (TreeViewColumn column, CellRenderer cell, TreeModel model, TreeIter iter)
 		{
