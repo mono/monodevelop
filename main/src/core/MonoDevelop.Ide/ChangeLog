@@ -1,3 +1,13 @@
+2008-07-29  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Ide.Commands/RefactoryCommands.cs,
+	  MonoDevelop.Ide.Gui.Dialogs/OverridesImplementsDialog.cs,
+	  MonoDevelop.Ide.Gui.Dialogs/EncapsulateFieldDialog.cs,
+	  MonoDevelop.Ide.Gui.Dialogs/RenameItemDialog.cs,
+	  MonoDevelop.Ide.Gui/RootWorkspace.cs,
+	  MonoDevelop.Ide.Gui/ProjectOperations.cs: Changes for converted
+	  refactoring infrastructure.
+
 2008-07-28  Andrés G. Aragoneses <aaragoneses@novell.com> 
 
 	* MonoDevelop.Ide.Gui.Search/CurrentProjectDocumentIterator.cs: Be more

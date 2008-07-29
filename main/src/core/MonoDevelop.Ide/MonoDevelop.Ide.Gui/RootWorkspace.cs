@@ -126,7 +126,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		public CodeRefactorer GetCodeRefactorer (Solution solution) 
 		{
-			CodeRefactorer refactorer = new CodeRefactorer (solution, ParserDatabase);
+			CodeRefactorer refactorer = new CodeRefactorer (solution, null);
 			refactorer.TextFileProvider = new OpenDocumentFileProvider ();
 			return refactorer;
 		}

@@ -199,8 +199,8 @@ namespace MonoDevelop.Ide.Gui
 			} else if (item is IClass) {
 				IClass cls = (IClass) item;
 				return GetClassFileName (cls);
-			} else if (item is LocalVariable) {
-				LocalVariable cls = (LocalVariable) item;
+			} else if (item is MonoDevelop.Projects.Parser.LocalVariable) {
+				MonoDevelop.Projects.Parser.LocalVariable cls = (MonoDevelop.Projects.Parser.LocalVariable) item;
 				return cls.Region.FileName;
 			}
 			return null;
@@ -241,8 +241,8 @@ namespace MonoDevelop.Ide.Gui
 			} else if (item is IClass) {
 				IClass cls = (IClass) item;
 				IdeApp.Workbench.OpenDocument (file, cls.Region.BeginLine, cls.Region.BeginColumn, true);
-			} else if (item is LocalVariable) {
-				LocalVariable lvar = (LocalVariable) item;
+			} else if (item is MonoDevelop.Projects.Parser.LocalVariable) {
+				MonoDevelop.Projects.Parser.LocalVariable lvar = (MonoDevelop.Projects.Parser.LocalVariable) item;
 				IdeApp.Workbench.OpenDocument (file, lvar.Region.BeginLine, lvar.Region.BeginColumn, true);
 			}
 		}

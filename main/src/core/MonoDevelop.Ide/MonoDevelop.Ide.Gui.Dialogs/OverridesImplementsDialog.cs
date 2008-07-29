@@ -33,16 +33,17 @@ using Gtk;
 
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
-using MonoDevelop.Projects.Ambience;
 using MonoDevelop.Projects.CodeGeneration;
-using MonoDevelop.Projects.Parser;
+using MonoDevelop.Projects.Dom;
+using MonoDevelop.Projects.Dom.Parser;
+using MonoDevelop.Projects.Dom.Output;
 using Ambience_ = MonoDevelop.Projects.Ambience.Ambience;
 
 namespace MonoDevelop.Ide
 {
 	public partial class OverridesImplementsDialog : Gtk.Dialog
 	{
-		IClass cls;
+		IType cls;
 		TreeStore store;
 		CodeRefactorer refactorer;
 		Ambience ambience;
@@ -53,14 +54,20 @@ namespace MonoDevelop.Ide
 		private const int colExplicitIndex = 3;
 		private const int colItemIndex = 4;
 
-		private const ConversionFlags default_conversion_flags =
-			ConversionFlags.ShowParameterNames |
-			ConversionFlags.ShowGenericParameters |
-			ConversionFlags.ShowReturnType |
-			ConversionFlags.ShowParameters |
-			ConversionFlags.UseIntrinsicTypeNames;
+/*		private const OutputFlags default_conversion_flags =
+			OutputFlags.ShowParameterNames |
+			OutputFlags.ShowGenericParameters |
+			OutputFlags.ShowReturnType |
+			OutputFlags.ShowParameters |
+			OutputFlags.UseIntrinsicTypeNames;*/
+		private const OutputFlags default_conversion_flags =
+			OutputFlags.IncludeParameters |
+			OutputFlags.IncludeParameterName |
+			OutputFlags.IncludeReturnType
 
-		public OverridesImplementsDialog (IClass cls)
+;
+
+		public OverridesImplementsDialog (IType cls)
 		{
 			this.Build();
 			this.cls = cls;
@@ -68,7 +75,7 @@ namespace MonoDevelop.Ide
 			// FIXME: title
 			Title = GettextCatalog.GetString ("Override and/or implement members");
 
-			store = new TreeStore (typeof (bool), typeof (Gdk.Pixbuf), typeof (string), typeof (bool), typeof (ILanguageItem));
+			store = new TreeStore (typeof (bool), typeof (Gdk.Pixbuf), typeof (string), typeof (bool), typeof (IMember));
 
 			// Column #1
 			TreeViewColumn nameCol = new TreeViewColumn ();
@@ -114,7 +121,7 @@ namespace MonoDevelop.Ide
 			buttonUnselectAll.Clicked += delegate { SelectAll (false); };
 
 			refactorer = IdeApp.Workspace.GetCodeRefactorer (IdeApp.ProjectOperations.CurrentSelectedSolution);
-			ambience = MonoDevelop.Projects.Services.Ambience.GetAmbienceForFile (cls.Region.FileName);
+			ambience = AmbienceService.GetAmbienceForFile (cls.CompilationUnit.FileName);
 			PopulateTreeView ();
 			UpdateOKButton ();
 		}
@@ -137,14 +144,14 @@ namespace MonoDevelop.Ide
 		{
 			foreach (IMember member in members) {
 				TreeIter iter;
-				if (!iter_cache.TryGetValue (member.DeclaringType.FullyQualifiedName, out iter)) {
+				if (!iter_cache.TryGetValue (member.DeclaringType.FullName, out iter)) {
 					iter = store.AppendValues (false, parent_icon,
 			                                   GetDescriptionString (member.DeclaringType), false, member.DeclaringType);
-					iter_cache [member.DeclaringType.FullyQualifiedName] = iter;
+					iter_cache [member.DeclaringType.FullName] = iter;
 				}
 
 				store.AppendValues (iter, false,
-				                    IdeApp.Services.Resources.GetIcon (Services.Icons.GetIcon (member), IconSize.Menu),
+				                    IdeApp.Services.Resources.GetIcon (member.StockIcon, IconSize.Menu),
 				                    GetDescriptionString (member), false, member);
 			}
 		}
@@ -153,18 +160,18 @@ namespace MonoDevelop.Ide
 		void RenderExplicitCheckbox (Gtk.TreeViewColumn column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
 		{
 			CellRendererToggle cellToggle = (CellRendererToggle) cell;
-			ILanguageItem item = (ILanguageItem) store.GetValue (iter, colItemIndex);
+			IMember item = (IMember) store.GetValue (iter, colItemIndex);
 			bool parent_is_class = false;
 
 			// Don't show 'explicit' checkbox for Class/interface rows or class methods
 			TreeIter parentIter;
 			if (item is IMember && store.IterParent (out parentIter, iter)) {
-				IClass parentClass = store.GetValue (parentIter, colItemIndex) as IClass;
+				IType parentClass = store.GetValue (parentIter, colItemIndex) as IType;
 				if (parentClass != null && parentClass.ClassType != ClassType.Interface)
 					parent_is_class = true;
 			}
 
-			if (parent_is_class || item is IClass) {
+			if (parent_is_class || item is IType) {
 				cellToggle.Visible = false;
 			} else {
 				cellToggle.Visible = true;
@@ -231,8 +238,8 @@ namespace MonoDevelop.Ide
 		void OnOKClicked (object sender, EventArgs e)
 		{
 			try {
-				IClass target = this.cls;
-				foreach (KeyValuePair<IClass, IEnumerable<TreeIter>> kvp in GetAllClasses ()) {
+				IType target = this.cls;
+				foreach (KeyValuePair<IType, IEnumerable<TreeIter>> kvp in GetAllClasses ()) {
 					//update the target class so that new members don't get inserted in weird locations
 					target = refactorer.ImplementMembers (target, YieldImpls (kvp), 
 							(kvp.Key.ClassType == ClassType.Interface)?
@@ -246,7 +253,7 @@ namespace MonoDevelop.Ide
 
 #region Helper methods
 		
-		IEnumerable<KeyValuePair<IClass, IEnumerable<TreeIter>>> GetAllClasses ()
+		IEnumerable<KeyValuePair<IType, IEnumerable<TreeIter>>> GetAllClasses ()
 		{
 			TreeIter iter;
 			if (!store.GetIterFirst (out iter))
@@ -256,8 +263,8 @@ namespace MonoDevelop.Ide
 				if (store.IterChildren (out firstMember, iter)) {
 					IEnumerable<TreeIter> children = GetCheckedSiblings (firstMember);
 					if (children.GetEnumerator ().MoveNext ())
-						yield return new KeyValuePair<IClass, IEnumerable<TreeIter>> (
-							(IClass) store.GetValue (iter, colItemIndex),
+						yield return new KeyValuePair<IType, IEnumerable<TreeIter>> (
+							(IType) store.GetValue (iter, colItemIndex),
 							children);
 				}
 			} while (store.IterNext (ref iter));
@@ -273,10 +280,10 @@ namespace MonoDevelop.Ide
 			} while (store.IterNext (ref iter));
 		}
 		
-		IEnumerable<KeyValuePair<IMember, IReturnType>> YieldImpls (KeyValuePair<IClass, IEnumerable<TreeIter>> kvp)
+		IEnumerable<KeyValuePair<IMember, IReturnType>> YieldImpls (KeyValuePair<IType, IEnumerable<TreeIter>> kvp)
 		{
 			bool is_interface = kvp.Key.ClassType == ClassType.Interface;
-			IReturnType privateImplementationType = DefaultReturnType.FromString (kvp.Key.FullyQualifiedName);
+			IReturnType privateImplementationType = new DomReturnType (kvp.Key.FullName);
 			foreach (TreeIter memberIter in kvp.Value) {
 				yield return new KeyValuePair<IMember, IReturnType> (
 					GetIMember (memberIter),
@@ -296,9 +303,9 @@ namespace MonoDevelop.Ide
 			return (bool) store.GetValue (iter, colCheckedIndex);
 		}
 
-		IClass GetIClass (TreeIter iter)
+		IType GetIType (TreeIter iter)
 		{
-			return (IClass) store.GetValue (iter, colItemIndex);
+			return (IType) store.GetValue (iter, colItemIndex);
 		}
 
 		IMember GetIMember (TreeIter iter)
@@ -334,29 +341,22 @@ namespace MonoDevelop.Ide
 			} while (store.IterNext (ref child));
 		}
 
-		string GetDescriptionString (IClass klass)
+		string GetDescriptionString (IType klass)
 		{
-			return String.Format ("{0} ({1})", ambience.Convert (klass, default_conversion_flags), klass.Namespace);
+			return String.Format ("{0} ({1})", ambience.GetString (klass, default_conversion_flags), klass.Namespace);
 		}
 
 		string GetDescriptionString (IMember member)
 		{
 			string sig = null;
-			ConversionFlags flags = default_conversion_flags & ~ConversionFlags.ShowReturnType;
+			OutputFlags flags = default_conversion_flags & ~OutputFlags.IncludeReturnType;
 
-			if (member is IMethod)
-				sig = ambience.Convert ((IMethod) member, flags);
-			if (member is IProperty)
-				sig = ambience.Convert ((IProperty) member, flags);
-			if (member is IEvent)
-				sig = ambience.Convert ((IEvent) member, flags);
-			if (member is IIndexer)
-				sig = ambience.Convert ((IIndexer) member, flags);
+			sig = ambience.GetString ((IMethod) member, flags);
 
 			if (sig == null)
 				throw new InvalidOperationException (String.Format ("Unsupported language member type: {0}", member.GetType ()));
 
-			return sig + " : " + ambience.Convert (member.ReturnType, default_conversion_flags);
+			return sig + " : " + ambience.GetString (member.ReturnType, default_conversion_flags);
 		}
 
 #endregion
