@@ -33,7 +33,8 @@ using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using Microsoft.CSharp;
 
-using MonoDevelop.Projects.Parser;
+using MonoDevelop.Projects.Dom;
+using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Projects.Text;
 using MonoDevelop.Projects.CodeGeneration;
 
@@ -47,9 +48,9 @@ namespace MonoDevelop.Projects.CodeGeneration
 		
 		protected abstract CodeDomProvider GetCodeDomProvider ();
 		
-		public virtual void AddAttribute (RefactorerContext ctx, IClass cls, CodeAttributeDeclaration attr)
+		public virtual void AddAttribute (RefactorerContext ctx, IType cls, CodeAttributeDeclaration attr)
 		{
-			IEditableTextFile buffer = ctx.GetFile (cls.Region.FileName);
+			IEditableTextFile buffer = ctx.GetFile (cls.CompilationUnit.FileName);
 
 			CodeTypeDeclaration type = new CodeTypeDeclaration ("temp");
 			type.CustomAttributes.Add (attr);
@@ -61,15 +62,15 @@ namespace MonoDevelop.Projects.CodeGeneration
 			int end = code.LastIndexOf (']');
 			code = code.Substring (start, end-start+1) + Environment.NewLine;
 
-			int line = cls.Region.BeginLine;
-			int col = cls.Region.BeginColumn;
+			int line = cls.Location.Line;
+			int col = cls.Location.Column;
 			int pos = buffer.GetPositionFromLineColumn (line, col);
 
 			code = Indent (code, GetLineIndent (buffer, line), false);
 			buffer.InsertText (pos, code);
 		}
 
-		public IClass CreateClass (RefactorerContext ctx, string directory, string namspace, CodeTypeDeclaration type)
+		public IType CreateClass (RefactorerContext ctx, string directory, string namspace, CodeTypeDeclaration type)
 		{
 			CodeCompileUnit unit = new CodeCompileUnit ();
 			CodeNamespace ns = new CodeNamespace (namspace);
@@ -84,27 +85,28 @@ namespace MonoDevelop.Projects.CodeGeneration
 			
 			sw.Close ();
 			
-			IParseInformation pi = ctx.ParserContext.ParseFile (file);
-			ClassCollection clss = ((ICompilationUnit)pi.BestCompilationUnit).Classes;
+			
+			ICompilationUnit pi = ProjectDomService.Parse (ctx.ParserContext.Project, file, null);
+			IList<IType> clss = pi.Types;
 			if (clss.Count > 0)
 				return clss [0];
 			else
 				throw new Exception ("Class creation failed. The parser did not find the created class.");
 		}
 		
-		public virtual IClass RenameClass (RefactorerContext ctx, IClass cls, string newName)
+		public virtual IType RenameClass (RefactorerContext ctx, IType cls, string newName)
 		{
 			return null;
 		}
 		
-		public virtual MemberReferenceCollection FindClassReferences (RefactorerContext ctx, string file, IClass cls)
+		public virtual MemberReferenceCollection FindClassReferences (RefactorerContext ctx, string file, IType cls)
 		{
 			return null;
 		}
 		
-		public virtual IMember AddMember (RefactorerContext ctx, IClass cls, CodeTypeMember member)
+		public virtual IMember AddMember (RefactorerContext ctx, IType cls, CodeTypeMember member)
 		{
-			IEditableTextFile buffer = ctx.GetFile (cls.Region.FileName);
+			IEditableTextFile buffer = ctx.GetFile (cls.CompilationUnit.FileName);
 			
 			int pos = GetNewMemberPosition (buffer, cls, member);
 			
@@ -121,13 +123,13 @@ namespace MonoDevelop.Projects.CodeGeneration
 			return FindGeneratedMember (ctx, buffer, cls, member, line);
 		}
 		
-		public virtual void AddMembers (RefactorerContext ctx, IClass cls, IEnumerable<CodeTypeMember> members)
+		public virtual void AddMembers (RefactorerContext ctx, IType cls, IEnumerable<CodeTypeMember> members)
 		{
 			foreach (CodeTypeMember member in members)
 				AddMember (ctx, cls, member);
 		}
 		
-		public virtual void AddMembers (RefactorerContext ctx, IClass cls, 
+		public virtual void AddMembers (RefactorerContext ctx, IType cls, 
 		                                                IEnumerable<CodeTypeMember> members, string foldingRegionName)
 		{
 			//no region name, so distribute them with like members
@@ -136,7 +138,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 				return;
 			}
 			
-			IEditableTextFile buffer = ctx.GetFile (cls.Region.FileName);
+			IEditableTextFile buffer = ctx.GetFile (cls.CompilationUnit.FileName);
 			int pos;
 			
 			// create/find the folding region, or if creation of regions isn't supported, put all the added
@@ -150,7 +152,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 			AddMembersAtPosition (ctx, cls, members, buffer, pos);
 		}
 		
-		protected void AddMembersAtPosition (RefactorerContext ctx, IClass cls, IEnumerable<CodeTypeMember> members, 
+		protected void AddMembersAtPosition (RefactorerContext ctx, IType cls, IEnumerable<CodeTypeMember> members, 
 		                                     IEditableTextFile buffer, int pos)
 		{
 			int line, col;
@@ -185,18 +187,18 @@ namespace MonoDevelop.Projects.CodeGeneration
 			return count;
 		}
 		
-		public virtual int AddFoldingRegion (RefactorerContext ctx, IClass cls, string regionName)
+		public virtual int AddFoldingRegion (RefactorerContext ctx, IType cls, string regionName)
 		{
-			IEditableTextFile buffer = ctx.GetFile (cls.Region.FileName);
+			IEditableTextFile buffer = ctx.GetFile (cls.CompilationUnit.FileName);
 			return GetNewMethodPosition (buffer, cls);
 		}
 		
 		/*
-		IReturnType GetGenericArgument (IClass type, IReturnType rtype, IReturnType hintType)
+		IReturnType GetGenericArgument (IType type, IReturnType rtype, IReturnType hintType)
 		{
 			if (hintType != null && type != null && rtype != null && type.GenericParameters != null)  {
 				for (int i = 0; i < type.GenericParameters.Count; i++) {
-					if (type.GenericParameters[i].Name == rtype.FullyQualifiedName) {
+					if (type.GenericParameters[i].Name == rtype.FullName) {
 						return hintType.GenericArguments[i];
 					}
 				}
@@ -226,21 +228,22 @@ namespace MonoDevelop.Projects.CodeGeneration
 			IReturnType rtype = declaredType;
 			if (rtype == null)
 				return null;
-			ReturnTypeList genericArgs = rtype.GenericArguments;
-			if (genericArgs != null && genericArgs.Count > 0) {
-				argTypes = new CodeTypeReference [genericArgs.Count];
-				for (int i = 0; i < genericArgs.Count; i++) {
-					argTypes[i] = ReturnTypeToDom (ctx, genericArgs[i]);
+
+			if (rtype.GenericArguments != null && rtype.GenericArguments.Count > 0) {
+				argTypes = new CodeTypeReference [rtype.GenericArguments.Count];
+				for (int i = 0; i < rtype.GenericArguments.Count; i++) {
+					argTypes[i] = ReturnTypeToDom (ctx, rtype.GenericArguments[i]);
 				}
 			}
-			string name = IsBaseType (rtype.FullyQualifiedName) ? rtype.FullyQualifiedName : ctx.TypeNameResolver.ResolveName (rtype.FullyQualifiedName);
+			// TODO: resolving with parser context search type
+			//string name = IsBaseType (rtype.FullName) ? rtype.FullName : ctx.TypeNameResolver.ResolveName (rtype.FullName);
+			string name = rtype.FullName;
 			CodeTypeReference typeRef = argTypes != null ? new CodeTypeReference (name, argTypes) : new CodeTypeReference (name);
 			
-			if (rtype.ArrayCount == 0)
+			if (rtype.ArrayDimensions == 0)
 				return typeRef;
-			int [] dim = rtype.ArrayDimensions;
-			for (int i = 0; i < dim.Length; i++)
-				typeRef = new CodeTypeReference (typeRef, dim[i]);
+			for (int i = 0; i < rtype.ArrayDimensions; i++)
+				typeRef = new CodeTypeReference (typeRef, rtype.GetDimension (i));
 			return typeRef;
 		}
 		
@@ -248,17 +251,19 @@ namespace MonoDevelop.Projects.CodeGeneration
 		{
 			if (IsBaseType (type.FullName))
 				return new CodeTypeReference (type);
-			return new CodeTypeReference (ctx.TypeNameResolver.ResolveName (type.FullName));
+// TODO:
+//			return new CodeTypeReference (ctx.TypeNameResolver.ResolveName (type.FullName));
+			return new CodeTypeReference (type.FullName);
 		}
 		
-		public virtual IMember ImplementMember (RefactorerContext ctx, IClass cls, IMember member, 
+		public virtual IMember ImplementMember (RefactorerContext ctx, IType cls, IMember member, 
 		                                        IReturnType privateImplementationType)
 		{
 			CodeTypeMember m = CreateImplementation (ctx, cls, member, privateImplementationType);
 			return AddMember (ctx, cls, m);
 		}
 		
-		public virtual void ImplementMembers (RefactorerContext ctx, IClass cls, 
+		public virtual void ImplementMembers (RefactorerContext ctx, IType cls, 
 		                                                      IEnumerable<KeyValuePair<IMember,IReturnType>> members,
 		                                                      string foldingRegionName)
 		{
@@ -267,19 +272,19 @@ namespace MonoDevelop.Projects.CodeGeneration
 		
 		//FIXME: this is a workaround for not being able to use LINQ, i.e.
 		// from mem in members select CreateImplementation (ctx, cls, mem.Key, mem.Value)
-		IEnumerable<CodeTypeMember> YieldImpls (RefactorerContext ctx, IClass cls, 
+		IEnumerable<CodeTypeMember> YieldImpls (RefactorerContext ctx, IType cls, 
 		                                        IEnumerable<KeyValuePair<IMember,IReturnType>> members)
 		{
 			foreach (KeyValuePair<IMember,IReturnType> mem in members)
 				yield return CreateImplementation (ctx, cls, mem.Key, mem.Value);
 		}
 		
-		protected CodeTypeMember CreateImplementation (RefactorerContext ctx, IClass cls, IMember member, 
+		protected CodeTypeMember CreateImplementation (RefactorerContext ctx, IType cls, IMember member, 
 		                                               IReturnType privateImplementationType)
 		{
 			CodeTypeMember m;
 			bool is_interface_method = member.DeclaringType.ClassType == ClassType.Interface;
-
+			bool isIndexer = false;
 			if (member is IEvent) {
 				CodeMemberEvent mEvent = new CodeMemberEvent ();
 				m = mEvent;
@@ -295,8 +300,8 @@ namespace MonoDevelop.Projects.CodeGeneration
 				m = mMethod;
 
 				if (method.GenericParameters != null) {
-					foreach (GenericParameter param in method.GenericParameters)
-						mMethod.TypeParameters.Add (param.Name);
+					foreach (IReturnType param in method.GenericParameters)
+						mMethod.TypeParameters.Add (param.FullName);
 				}
 				if (!is_interface_method)
 					mMethod.Attributes = MemberAttributes.Override;
@@ -320,55 +325,56 @@ namespace MonoDevelop.Projects.CodeGeneration
 				if (privateImplementationType != null)
 					mMethod.PrivateImplementationType = ReturnTypeToDom (ctx, privateImplementationType);
 			} else if (member is IProperty) {
-				CodeMemberProperty mProperty = new CodeMemberProperty ();
 				IProperty property = (IProperty) member;
-				m = mProperty;
-				if (!is_interface_method)
-					mProperty.Attributes = MemberAttributes.Override;
+				if (!property.IsIndexer) {
+					isIndexer = true;
+					CodeMemberProperty mProperty = new CodeMemberProperty ();
+					m = mProperty;
+					if (!is_interface_method)
+						mProperty.Attributes = MemberAttributes.Override;
 				
-				CodeExpression nieReference = new CodeObjectCreateExpression (TypeToDom (ctx, typeof (NotImplementedException)));
-				CodeStatement throwExpression = new CodeThrowExceptionStatement (nieReference);
-				mProperty.HasGet = property.CanGet;
-				mProperty.HasSet = property.CanSet;
-				if (property.CanGet)
-					mProperty.GetStatements.Add (throwExpression);
-				if (property.CanSet)
-					mProperty.SetStatements.Add (throwExpression);
+					CodeExpression nieReference = new CodeObjectCreateExpression (TypeToDom (ctx, typeof (NotImplementedException)));
+					CodeStatement throwExpression = new CodeThrowExceptionStatement (nieReference);
+					mProperty.HasGet = property.HasGet;
+					mProperty.HasSet = property.HasSet;
+					if (property.HasGet)
+						mProperty.GetStatements.Add (throwExpression);
+					if (property.HasSet)
+						mProperty.SetStatements.Add (throwExpression);
 				
-				mProperty.Type = ReturnTypeToDom (ctx, member.ReturnType);
-				if (privateImplementationType != null)
-					mProperty.PrivateImplementationType = ReturnTypeToDom (ctx, privateImplementationType);
-			} else if (member is IIndexer) {
-				CodeMemberProperty mProperty = new CodeMemberProperty ();
-				IIndexer property = (IIndexer) member;
-				m = mProperty;
-				if (!is_interface_method)
-					mProperty.Attributes = MemberAttributes.Override;
+					mProperty.Type = ReturnTypeToDom (ctx, member.ReturnType);
+					if (privateImplementationType != null)
+						mProperty.PrivateImplementationType = ReturnTypeToDom (ctx, privateImplementationType);
+				} else {
+					CodeMemberProperty mProperty = new CodeMemberProperty ();
+					m = mProperty;
+					if (!is_interface_method)
+						mProperty.Attributes = MemberAttributes.Override;
 				
-				CodeExpression nieReference = new CodeObjectCreateExpression (TypeToDom (ctx, typeof (NotImplementedException)));
-				CodeStatement throwExpression = new CodeThrowExceptionStatement (nieReference);
-				mProperty.HasGet = property.GetterRegion != null;
-				mProperty.HasSet = property.SetterRegion != null;
+					CodeExpression nieReference = new CodeObjectCreateExpression (TypeToDom (ctx, typeof (NotImplementedException)));
+					CodeStatement throwExpression = new CodeThrowExceptionStatement (nieReference);
+					mProperty.HasGet = property.HasGet;
+					mProperty.HasSet = property.HasSet;
 
-				if (mProperty.HasGet)
-					mProperty.GetStatements.Add (throwExpression);
-				if (mProperty.HasSet)
-					mProperty.SetStatements.Add (throwExpression);
+					if (mProperty.HasGet)
+						mProperty.GetStatements.Add (throwExpression);
+					if (mProperty.HasSet)
+						mProperty.SetStatements.Add (throwExpression);
 				
-				foreach (IParameter param in property.Parameters) {
-					CodeParameterDeclarationExpression par;
-					par = new CodeParameterDeclarationExpression (ReturnTypeToDom (ctx, param.ReturnType), param.Name);
-					mProperty.Parameters.Add (par);
-				}
+					foreach (IParameter param in property.Parameters) {
+						CodeParameterDeclarationExpression par;
+						par = new CodeParameterDeclarationExpression (ReturnTypeToDom (ctx, param.ReturnType), param.Name);
+						mProperty.Parameters.Add (par);
+					}
 				
-				mProperty.Type = ReturnTypeToDom (ctx, member.ReturnType);
-				if (privateImplementationType != null)
-					mProperty.PrivateImplementationType = ReturnTypeToDom (ctx, privateImplementationType);
+					mProperty.Type = ReturnTypeToDom (ctx, member.ReturnType);
+					if (privateImplementationType != null)
+						mProperty.PrivateImplementationType = ReturnTypeToDom (ctx, privateImplementationType);
+				} 
 			} else {
 				return null;
-			}
-			
-			m.Name = (member is IIndexer) ? "Item" : member.Name;
+			}			
+			m.Name = isIndexer ? "Item" : member.Name;
 			if ((m.Attributes & MemberAttributes.ScopeMask) != MemberAttributes.Override)
 				// Mark final if not overriding
 				m.Attributes = (m.Attributes & ~MemberAttributes.ScopeMask) | MemberAttributes.Final;
@@ -379,13 +385,12 @@ namespace MonoDevelop.Projects.CodeGeneration
 			return m;
 		}
 		
-		public virtual void RemoveMember (RefactorerContext ctx, IClass cls, IMember member)
+		public virtual void RemoveMember (RefactorerContext ctx, IType cls, IMember member)
 		{
 			IEditableTextFile buffer = null;
 			int pos = -1;
-			
-			for (int i = 0; i < cls.Parts.Length; i++) {
-				if ((buffer = ctx.GetFile (cls.Parts[i].Region.FileName)) == null)
+			foreach (IType part in cls.Parts) {
+				if ((buffer = ctx.GetFile (part.CompilationUnit.FileName)) == null)
 					continue;
 				
 				if ((pos = GetMemberNamePosition (buffer, member)) != -1)
@@ -395,19 +400,19 @@ namespace MonoDevelop.Projects.CodeGeneration
 			if (pos == -1)
 				return;
 			
-			IRegion reg = GetMemberBounds (buffer, member);
-			int sp = buffer.GetPositionFromLineColumn (reg.BeginLine, reg.BeginColumn);
-			int ep = buffer.GetPositionFromLineColumn (reg.EndLine, reg.EndColumn);
+			DomRegion reg = GetMemberBounds (buffer, member);
+			int sp = buffer.GetPositionFromLineColumn (reg.Start.Line, reg.Start.Column);
+			int ep = buffer.GetPositionFromLineColumn (reg.End.Line, reg.End.Column);
 			buffer.DeleteText (sp, ep - sp);
 		}
 		
-		public virtual IMember ReplaceMember (RefactorerContext ctx, IClass cls, IMember oldMember, CodeTypeMember memberInfo)
+		public virtual IMember ReplaceMember (RefactorerContext ctx, IType cls, IMember oldMember, CodeTypeMember memberInfo)
 		{
 			IEditableTextFile buffer = null;
 			int pos = -1;
 			
-			for (int i = 0; i < cls.Parts.Length; i++) {
-				if ((buffer = ctx.GetFile (cls.Parts[i].Region.FileName)) == null)
+			foreach (IType part in cls.Parts) {
+				if ((buffer = ctx.GetFile (part.CompilationUnit.FileName)) == null)
 					continue;
 				
 				if ((pos = GetMemberNamePosition (buffer, oldMember)) != -1)
@@ -417,18 +422,18 @@ namespace MonoDevelop.Projects.CodeGeneration
 			if (pos == -1)
 				return null;
 			
-			IRegion reg = GetMemberBounds (buffer, oldMember);
-			int sp = buffer.GetPositionFromLineColumn (reg.BeginLine, reg.BeginColumn);
-			int ep = buffer.GetPositionFromLineColumn (reg.EndLine, reg.EndColumn);
+			DomRegion reg = GetMemberBounds (buffer, oldMember);
+			int sp = buffer.GetPositionFromLineColumn (reg.Start.Line, reg.Start.Column);
+			int ep = buffer.GetPositionFromLineColumn (reg.End.Line, reg.End.Column);
 			buffer.DeleteText (sp, ep - sp);
 			
 			string code = GenerateCodeFromMember (memberInfo);
-			string indent = GetLineIndent (buffer, reg.BeginLine);
+			string indent = GetLineIndent (buffer, reg.Start.Line);
 			code = Indent (code, indent, false);
 			
 			buffer.InsertText (sp, code);
 			
-			return FindGeneratedMember (ctx, buffer, cls, memberInfo, reg.BeginLine);
+			return FindGeneratedMember (ctx, buffer, cls, memberInfo, reg.Start.Line);
 		}
 
 		public virtual string ConvertToLanguageTypeName (string netTypeName)
@@ -436,13 +441,13 @@ namespace MonoDevelop.Projects.CodeGeneration
 			return netTypeName;
 		}
 		
-		public virtual IMember RenameMember (RefactorerContext ctx, IClass cls, IMember member, string newName)
+		public virtual IMember RenameMember (RefactorerContext ctx, IType cls, IMember member, string newName)
 		{
 			IEditableTextFile file = null;
 			int pos = -1;
 			
-			for (int i = 0; i < cls.Parts.Length; i++) {
-				if ((file = ctx.GetFile (cls.Parts[i].Region.FileName)) == null)
+			foreach (IType part in cls.Parts) {
+				if ((file = ctx.GetFile (part.CompilationUnit.FileName)) == null)
 					continue;
 				
 				if ((pos = GetMemberNamePosition (file, member)) != -1)
@@ -478,10 +483,10 @@ namespace MonoDevelop.Projects.CodeGeneration
 				return null;
 			
 			memberInfo.Name = newName;
-			return FindGeneratedMember (ctx, file, cls, memberInfo, member.Region.BeginLine);
+			return FindGeneratedMember (ctx, file, cls, memberInfo, member.Location.Line);
 		}
 		
-		public virtual MemberReferenceCollection FindMemberReferences (RefactorerContext ctx, string fileName, IClass cls, IMember member)
+		public virtual MemberReferenceCollection FindMemberReferences (RefactorerContext ctx, string fileName, IType cls, IMember member)
 		{
 			if (member is IField)
 				return FindFieldReferences (ctx, fileName, cls, (IField) member);
@@ -500,12 +505,12 @@ namespace MonoDevelop.Projects.CodeGeneration
 		///
 		/// Override this method for each language to fill-in the Get/SetStatements
 		///
-		protected virtual void EncapsulateFieldImpGetSet (RefactorerContext ctx, IClass cls, IField field, CodeMemberProperty  prop)
+		protected virtual void EncapsulateFieldImpGetSet (RefactorerContext ctx, IType cls, IField field, CodeMemberProperty  prop)
 		{
 			
 		}
 		
-		public virtual IMember EncapsulateField (RefactorerContext ctx, IClass cls, IField field, string propName, MemberAttributes attr, bool generateSetter)
+		public virtual IMember EncapsulateField (RefactorerContext ctx, IType cls, IField field, string propName, MemberAttributes attr, bool generateSetter)
 		{
 			// If the field isn't already private/protected/internal, we'll need to fix it to be
 			if (true || field.IsPublic || (!field.IsPrivate && !field.IsProtectedOrInternal)) {
@@ -513,8 +518,8 @@ namespace MonoDevelop.Projects.CodeGeneration
 				int pos = -1;
 				
 				// Find the file the field is contained in
-				for (int i = 0; i < cls.Parts.Length; i++) {
-					if ((file = ctx.GetFile (cls.Parts[i].Region.FileName)) == null)
+				foreach (IType part in cls.Parts) {
+					if ((file = ctx.GetFile (part.CompilationUnit.FileName)) == null)
 						continue;
 					
 					if ((pos = GetMemberNamePosition (file, field)) != -1)
@@ -532,17 +537,17 @@ namespace MonoDevelop.Projects.CodeGeneration
 //					RemoveMember (ctx, cls, field);
 //					AddMember (ctx, cls, fieldInfo);
 					
-					//int begin = file.GetPositionFromLineColumn (field.Region.BeginLine, field.Region.BeginColumn);
-					//int end = file.GetPositionFromLineColumn (field.Region.EndLine, field.Region.EndColumn);
+					//int begin = file.GetPositionFromLineColumn (field.Region.Start.Line, field.Region.Start.Column);
+					//int end = file.GetPositionFromLineColumn (field.Region.End.Line, field.Region.End.Column);
 					//
 					//string snippet = file.GetText (begin, end);
 					//
 					//Console.WriteLine ("field declaration: {0}", snippet);
 					//
-					//IRegion region = GetMemberBounds (file, field);
+					//DomRegion region = GetMemberBounds (file, field);
 					//
-					//begin = file.GetPositionFromLineColumn (region.BeginLine, region.BeginColumn);
-					//end = file.GetPositionFromLineColumn (region.EndLine, region.EndColumn);
+					//begin = file.GetPositionFromLineColumn (region.Start.Line, region.Start.Column);
+					//end = file.GetPositionFromLineColumn (region.End.Line, region.End.Column);
 					//
 					//snippet = file.GetText (begin, end);
 					//
@@ -569,12 +574,12 @@ namespace MonoDevelop.Projects.CodeGeneration
 
 		/// Method overridables ////////////////////////////
 		
-		protected virtual IMethod RenameMethod (RefactorerContext ctx, IClass cls, IMethod method, string newName)
+		protected virtual IMethod RenameMethod (RefactorerContext ctx, IType cls, IMethod method, string newName)
 		{
 			return null;
 		}
 		
-		protected virtual MemberReferenceCollection FindMethodReferences (RefactorerContext ctx, string fileName, IClass cls, IMethod method)
+		protected virtual MemberReferenceCollection FindMethodReferences (RefactorerContext ctx, string fileName, IType cls, IMethod method)
 		{
 			return null;
 		}
@@ -582,12 +587,12 @@ namespace MonoDevelop.Projects.CodeGeneration
 
 		/// Field overridables ////////////////////////////
 		
-		protected virtual IField RenameField (RefactorerContext ctx, IClass cls, IField field, string newName)
+		protected virtual IField RenameField (RefactorerContext ctx, IType cls, IField field, string newName)
 		{
 			return null;
 		}
 		
-		protected virtual MemberReferenceCollection FindFieldReferences (RefactorerContext ctx, string fileName, IClass cls, IField field)
+		protected virtual MemberReferenceCollection FindFieldReferences (RefactorerContext ctx, string fileName, IType cls, IField field)
 		{
 			return null;
 		}
@@ -595,24 +600,24 @@ namespace MonoDevelop.Projects.CodeGeneration
 
 		/// Property overridables ////////////////////////////
 		
-		protected virtual IProperty RenameProperty (RefactorerContext ctx, IClass cls, IProperty property, string newName)
+		protected virtual IProperty RenameProperty (RefactorerContext ctx, IType cls, IProperty property, string newName)
 		{
 			return null;
 		}
 		
-		protected virtual MemberReferenceCollection FindPropertyReferences (RefactorerContext ctx, string fileName, IClass cls, IProperty property)
+		protected virtual MemberReferenceCollection FindPropertyReferences (RefactorerContext ctx, string fileName, IType cls, IProperty property)
 		{
 			return null;
 		}
 
 		/// Event overridables ////////////////////////////		
 		
-		protected virtual IEvent RenameEvent (RefactorerContext ctx, IClass cls, IEvent evnt, string newName)
+		protected virtual IEvent RenameEvent (RefactorerContext ctx, IType cls, IEvent evnt, string newName)
 		{
 			return null;
 		}
 		
-		protected virtual MemberReferenceCollection FindEventReferences (RefactorerContext ctx, string fileName, IClass cls, IEvent evnt)
+		protected virtual MemberReferenceCollection FindEventReferences (RefactorerContext ctx, string fileName, IType cls, IEvent evnt)
 		{
 			return null;
 		}
@@ -622,7 +627,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 		
 		public virtual bool RenameVariable (RefactorerContext ctx, LocalVariable var, string newName)
 		{
-			IEditableTextFile file = ctx.GetFile (var.Region.FileName);
+			IEditableTextFile file = ctx.GetFile (var.CompilationUnit.FileName);
 			if (file == null)
 				return false;
 			
@@ -637,7 +642,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 			file.DeleteText (pos, txt.Length);
 			file.InsertText (pos, newName);
 			
-			ctx.ParserContext.ParserDatabase.UpdateFile (file.Name, file.Text);
+			ProjectDomService.Refresh (ctx.ParserContext.Project, file.Name, null, delegate () { return file.Text; });
 			
 			return true;
 		}
@@ -657,17 +662,17 @@ namespace MonoDevelop.Projects.CodeGeneration
 			int pos = -1;
 			
 			// It'd be nice if we didn't have to worry about this being null
-			if (member.Region.FileName != null) {
-				if ((file = ctx.GetFile (member.Region.FileName)) != null)
+			if (member.DeclaringType.CompilationUnit.FileName != null) {
+				if ((file = ctx.GetFile (member.DeclaringType.CompilationUnit.FileName)) != null)
 					pos = GetParameterNamePosition (file, param);
 			}
 			
 			// Plan B. - fallback to searching all partial class files for this parameter's parent member
 			if (pos == -1) {
-				IClass cls = member.DeclaringType;
+				IType cls = member.DeclaringType;
 				
-				for (int i = 0; i < cls.Parts.Length; i++) {
-					if ((file = ctx.GetFile (cls.Parts[i].Region.FileName)) == null)
+				foreach (IType part in cls.Parts) {
+					if ((file = ctx.GetFile (part.CompilationUnit.FileName)) == null)
 						continue;
 					
 					// sanity check, if the parent member isn't here then neither is the param
@@ -689,7 +694,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 			file.DeleteText (pos, txt.Length);
 			file.InsertText (pos, newName);
 			
-			ctx.ParserContext.ParserDatabase.UpdateFile (file.Name, file.Text);
+			ProjectDomService.Refresh (ctx.ParserContext.Project, file.Name, null, delegate () { return file.Text; });
 			
 			return true;
 		}
@@ -716,29 +721,30 @@ namespace MonoDevelop.Projects.CodeGeneration
 			return -1;
 		}
 
-		protected virtual IRegion GetMemberBounds (IEditableTextFile file, IMember member)
+		protected virtual DomRegion GetMemberBounds (IEditableTextFile file, IMember member)
 		{
-			int minLin = member.Region.BeginLine;
-			int minCol = member.Region.BeginColumn;
-			int maxLin = member.Region.EndLine;
-			int maxCol = member.Region.EndColumn;
+			int minLin = member.Location.Line;
+			int minCol = member.Location.Column;
+			int maxLin = member.BodyRegion.End.Line;
+			int maxCol = member.BodyRegion.End.Column;
 			
-			foreach (IAttributeSection att in member.Attributes) {
-				if (att.Region.BeginLine < minLin) {
-					minLin = att.Region.BeginLine;
-					minCol = att.Region.BeginColumn;
-				} else if (att.Region.BeginLine == minLin && att.Region.BeginColumn < minCol) {
-					minCol = att.Region.BeginColumn;
+		
+			foreach (IAttribute att in member.Attributes) {
+				if (att.Region.Start.Line < minLin) {
+					minLin = att.Region.Start.Line;
+					minCol = att.Region.Start.Column;
+				} else if (att.Region.Start.Line == minLin && att.Region.Start.Column < minCol) {
+					minCol = att.Region.Start.Column;
 				}
 				
-				if (att.Region.EndLine > maxLin) {
-					maxLin = att.Region.EndLine;
-					maxCol = att.Region.EndColumn;
-				} else if (att.Region.EndLine == maxLin && att.Region.EndColumn > maxCol) {
-					maxCol = att.Region.EndColumn;
+				if (att.Region.End.Line > maxLin) {
+					maxLin = att.Region.End.Line;
+					maxCol = att.Region.End.Column;
+				} else if (att.Region.End.Line == maxLin && att.Region.End.Column > maxCol) {
+					maxCol = att.Region.End.Column;
 				}
 			}
-			return new DefaultRegion (minLin, minCol, maxLin, maxCol);
+			return new DomRegion (minLin, minCol, maxLin, maxCol);
 		}
 		
 		protected virtual string GenerateCodeFromMember (CodeTypeMember member)
@@ -761,35 +767,35 @@ namespace MonoDevelop.Projects.CodeGeneration
 
 		/// Helper methods ////////////////////////////
 
-		// Returns a reparsed IClass instance that contains the generated code.
-		protected IClass GetGeneratedClass (RefactorerContext ctx, IEditableTextFile buffer, IClass cls)
+		// Returns a reparsed IType instance that contains the generated code.
+		protected IType GetGeneratedClass (RefactorerContext ctx, IEditableTextFile buffer, IType cls)
 		{
 			// Don't get the class from the parse results because in that class the types are not resolved.
 			// Get the class from the database instead.
-			ctx.ParserContext.ParserDatabase.UpdateFile (buffer.Name, buffer.Text);
-			return ctx.ParserContext.GetClass (cls.FullyQualifiedName);
+			ProjectDomService.Refresh (ctx.ParserContext.Project, buffer.Name, null, delegate () { return buffer.Text; });
+			return ctx.ParserContext.GetType (cls.FullName, -1, true, false);
 		}
 		
-		protected IMember FindGeneratedMember (RefactorerContext ctx, IEditableTextFile buffer, IClass cls, CodeTypeMember member, int line)
+		protected IMember FindGeneratedMember (RefactorerContext ctx, IEditableTextFile buffer, IType cls, CodeTypeMember member, int line)
 		{
-			IClass rclass = GetGeneratedClass (ctx, buffer, cls);
+			IType rclass = GetGeneratedClass (ctx, buffer, cls);
 			
 			if (rclass != null) {
 				if (member is CodeMemberField) {
 					foreach (IField m in rclass.Fields)
-						if (m.Name == member.Name && line == m.Region.BeginLine)
+						if (m.Name == member.Name && line == m.Location.Line)
 							return m;
 				} else if (member is CodeMemberProperty) {
 					foreach (IProperty m in rclass.Properties)
-						if (m.Name == member.Name && line == m.Region.BeginLine)
+						if (m.Name == member.Name && line == m.Location.Line)
 							return m;
 				} else if (member is CodeMemberEvent) {
 					foreach (IEvent m in rclass.Events)
-						if (m.Name == member.Name && line == m.Region.BeginLine)
+						if (m.Name == member.Name && line == m.Location.Line)
 							return m;
 				} else if (member is CodeMemberMethod) {
 					foreach (IMethod m in rclass.Methods) {
-						if (m.Name == member.Name && line == m.Region.BeginLine)
+						if (m.Name == member.Name && line == m.Location.Line)
 							return m;
 					}
 				}
@@ -847,7 +853,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 				return code;
 		}
 		
-		protected virtual int GetNewMemberPosition (IEditableTextFile buffer, IClass cls, CodeTypeMember member)
+		protected virtual int GetNewMemberPosition (IEditableTextFile buffer, IType cls, CodeTypeMember member)
 		{
 			if (member is CodeMemberField)
 				return GetNewFieldPosition (buffer, cls);
@@ -861,32 +867,35 @@ namespace MonoDevelop.Projects.CodeGeneration
 				throw new InvalidOperationException ("Invalid member type: " + member);
 		}
 		
-		protected virtual int GetNewFieldPosition (IEditableTextFile buffer, IClass cls)
+		protected virtual int GetNewFieldPosition (IEditableTextFile buffer, IType cls)
 		{
-			if (cls.Fields.Count == 0) {
-				int sp = buffer.GetPositionFromLineColumn (cls.BodyRegion.BeginLine, cls.BodyRegion.BeginColumn);
-				int ep = buffer.GetPositionFromLineColumn (cls.BodyRegion.EndLine, cls.BodyRegion.EndColumn);
+			if (cls.FieldCount == 0) {
+				int sp = buffer.GetPositionFromLineColumn (cls.BodyRegion.Start.Line, cls.BodyRegion.Start.Column);
+				int ep = buffer.GetPositionFromLineColumn (cls.BodyRegion.End.Line, cls.BodyRegion.End.Column);
 				string s = buffer.GetText (sp, ep);
 				int i = s.IndexOf ('{');
 				if (i == -1) return -1;
 				i++;
 				int pos = GetNextLine (buffer, sp + i);
-				string ind = GetLineIndent (buffer, cls.BodyRegion.BeginLine);
+				string ind = GetLineIndent (buffer, cls.BodyRegion.Start.Line);
 				buffer.InsertText (pos, ind + "\t\n");
 				return pos + ind.Length + 1;
 			} else {
-				IField f = cls.Fields [cls.Fields.Count - 1];
-				int pos = buffer.GetPositionFromLineColumn (f.Region.EndLine, f.Region.EndColumn);
+				IField f = null;
+				foreach (IField field in cls.Fields) {
+					f = field;
+				}
+				int pos = buffer.GetPositionFromLineColumn (f.Location.Line, f.Location.Column);
 				pos = GetNextLine (buffer, pos);
-				string ind = GetLineIndent (buffer, f.Region.EndLine);
+				string ind = GetLineIndent (buffer, f.Location.Line);
 				buffer.InsertText (pos, ind);
 				return pos + ind.Length;
 			}
 		}
 		
-		protected virtual int GetNewMethodPosition (IEditableTextFile buffer, IClass cls)
+		protected virtual int GetNewMethodPosition (IEditableTextFile buffer, IType cls)
 		{
-			if (cls.Methods.Count == 0) {
+			if (cls.MethodCount == 0) {
 				int pos = GetNewPropertyPosition (buffer, cls);
 				int line, col;
 				buffer.GetLineColumnFromPosition (pos, out line, out col);
@@ -895,27 +904,30 @@ namespace MonoDevelop.Projects.CodeGeneration
 				buffer.InsertText (pos, ind);
 				return pos + ind.Length;
 			} else {
-				IMethod m = cls.Methods [cls.Methods.Count - 1];
+				IMethod m = null;
+				foreach (IMethod method in cls.Methods) {
+					m = method;
+				}
 				
 				int pos;
-				if (m.BodyRegion != null && m.BodyRegion.EndLine > 0) {
-					pos = buffer.GetPositionFromLineColumn (m.BodyRegion.EndLine, m.BodyRegion.EndColumn);
+				if (m.BodyRegion != null && m.BodyRegion.End.Line > 0) {
+					pos = buffer.GetPositionFromLineColumn (m.BodyRegion.End.Line, m.BodyRegion.End.Column);
 				} else {
 					// Abstract or P/Inboke methods don't have a body
-					pos = buffer.GetPositionFromLineColumn (m.Region.EndLine, m.Region.EndColumn);
+					pos = buffer.GetPositionFromLineColumn (m.Location.Line, m.Location.Column);
 				}
 				
 				pos = GetNextLine (buffer, pos);
 				pos = GetNextLine (buffer, pos);
-				string ind = GetLineIndent (buffer, m.Region.EndLine);
+				string ind = GetLineIndent (buffer, m.Location.Line);
 				buffer.InsertText (pos, ind);
 				return pos + ind.Length;
 			}
 		}
 		
-		protected virtual int GetNewPropertyPosition (IEditableTextFile buffer, IClass cls)
+		protected virtual int GetNewPropertyPosition (IEditableTextFile buffer, IType cls)
 		{
-			if (cls.Properties.Count == 0) {
+			if (cls.PropertyCount == 0) {
 				int pos = GetNewFieldPosition (buffer, cls);
 				int line, col;
 				buffer.GetLineColumnFromPosition (pos, out line, out col);
@@ -924,19 +936,23 @@ namespace MonoDevelop.Projects.CodeGeneration
 				buffer.InsertText (pos, indent);
 				return pos + indent.Length;
 			} else {
-				IProperty m = cls.Properties [cls.Properties.Count - 1];
-				int pos = buffer.GetPositionFromLineColumn (m.BodyRegion.EndLine, m.BodyRegion.EndColumn);
+				IProperty m = null;
+				foreach (IProperty property in cls.Properties) {
+					m = property;
+				}
+
+				int pos = buffer.GetPositionFromLineColumn (m.BodyRegion.End.Line, m.BodyRegion.End.Column);
 				pos = GetNextLine (buffer, pos);
 				pos = GetNextLine (buffer, pos);
-				string indent = GetLineIndent (buffer, m.Region.EndLine);
+				string indent = GetLineIndent (buffer, m.Location.Line);
 				buffer.InsertText (pos, indent);
 				return pos + indent.Length;
 			}
 		}
 		
-		protected virtual int GetNewEventPosition (IEditableTextFile buffer, IClass cls)
+		protected virtual int GetNewEventPosition (IEditableTextFile buffer, IType cls)
 		{
-			if (cls.Events.Count == 0) {
+			if (cls.EventCount == 0) {
 				int pos = GetNewMethodPosition (buffer, cls);
 				int line, col;
 				buffer.GetLineColumnFromPosition (pos, out line, out col);
@@ -945,11 +961,15 @@ namespace MonoDevelop.Projects.CodeGeneration
 				buffer.InsertText (pos, ind);
 				return pos + ind.Length;
 			} else {
-				IEvent m = cls.Events [cls.Events.Count - 1];
-				int pos = buffer.GetPositionFromLineColumn (m.Region.EndLine, m.Region.EndColumn);
+				IEvent m = null;
+				foreach (IEvent evt in cls.Events) {
+					m = evt;
+				}
+
+				int pos = buffer.GetPositionFromLineColumn (m.Location.Line, m.Location.Column);
 				pos = GetNextLine (buffer, pos);
 				pos = GetNextLine (buffer, pos);
-				string ind = GetLineIndent (buffer, m.Region.EndLine);
+				string ind = GetLineIndent (buffer, m.Location.Line);
 				buffer.InsertText (pos, ind);
 				return pos + ind.Length;
 			}

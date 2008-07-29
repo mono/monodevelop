@@ -30,8 +30,6 @@ FILES =  \
 	MonoDevelop.Projects.CodeGeneration/RefactorOperations.cs \
 	MonoDevelop.Projects.CodeGeneration/XmlCodeDomReader.cs \
 	MonoDevelop.Projects.Documentation/IDocumentationService.cs \
-	MonoDevelop.Projects.Dom.CodeGeneration/CodeRefactorer.cs \
-	MonoDevelop.Projects.Dom.CodeGeneration/ICodeGenerator.cs \
 	MonoDevelop.Projects.Dom.Database/CodeCompletionDatabase.cs \
 	MonoDevelop.Projects.Dom.Database/DatabaseColumnAttribute.cs \
 	MonoDevelop.Projects.Dom.Database/DatabaseEvent.cs \

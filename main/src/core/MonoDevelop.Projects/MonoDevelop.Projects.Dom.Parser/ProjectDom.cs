@@ -61,6 +61,14 @@ namespace MonoDevelop.Projects.Dom.Parser
 			}
 		}
 		
+		public virtual IEnumerable<IType> GetTypes (string fileName)
+		 {
+			foreach (IType type in Types) {
+				if (type.CompilationUnit.FileName == fileName)
+					yield return type;
+			}
+		}
+
 		public void AddReference (ProjectDom dom)
 		{
 			if (dom == null)

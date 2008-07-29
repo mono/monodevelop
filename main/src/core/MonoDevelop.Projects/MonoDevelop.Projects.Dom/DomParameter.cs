@@ -38,7 +38,17 @@ namespace MonoDevelop.Projects.Dom
 		protected IReturnType returnType;
 		protected List<IAttribute> attributes = null;
 		protected DomLocation location;
-		
+		IMember declaringMember;
+
+		public IMember DeclaringMember {
+			get {
+				return declaringMember;
+			}
+			set {
+				declaringMember = value;
+			}
+		}
+
 		public string Name {
 			get {
 				return name;

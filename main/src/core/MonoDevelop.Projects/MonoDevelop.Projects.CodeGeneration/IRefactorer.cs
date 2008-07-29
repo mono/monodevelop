@@ -31,37 +31,43 @@ using System.Collections;
 using System.Collections.Generic;
 using System.CodeDom;
 using MonoDevelop.Projects.Text;
-using MonoDevelop.Projects.Parser;
+using MonoDevelop.Projects.Dom;
 
 namespace MonoDevelop.Projects.CodeGeneration
 {
+	public class LocalVariable {
+		public ICompilationUnit CompilationUnit;
+		public DomLocation Location;
+		public string Name;
+		public IReturnType ReturnType;
+	}
 	public interface IRefactorer
 	{
 		RefactorOperations SupportedOperations { get; }
 		
-		void AddAttribute (RefactorerContext ctx, IClass cls, CodeAttributeDeclaration attr);
+		void AddAttribute (RefactorerContext ctx, IType cls, CodeAttributeDeclaration attr);
 
-		IClass CreateClass (RefactorerContext ctx, string directory, string namspace, CodeTypeDeclaration type);
-		IClass RenameClass (RefactorerContext ctx, IClass cls, string newName);
-		MemberReferenceCollection FindClassReferences (RefactorerContext ctx, string fileName, IClass cls);
+		IType CreateClass (RefactorerContext ctx, string directory, string namspace, CodeTypeDeclaration type);
+		IType RenameClass (RefactorerContext ctx, IType cls, string newName);
+		MemberReferenceCollection FindClassReferences (RefactorerContext ctx, string fileName, IType cls);
 		
-		IMember AddMember (RefactorerContext ctx, IClass cls, CodeTypeMember memberInfo);
-		IMember ImplementMember (RefactorerContext ctx, IClass cls, IMember member, IReturnType privateImplementationType);
+		IMember AddMember (RefactorerContext ctx, IType cls, CodeTypeMember memberInfo);
+		IMember ImplementMember (RefactorerContext ctx, IType cls, IMember member, IReturnType privateImplementationType);
 		
 		// these add contiguous blocks of memebers
 		// NOTE: Handling "foldingRegionName" is optional. Also, it can be null, in which case no region should be created.
-		void AddMembers (RefactorerContext ctx, IClass cls, IEnumerable<CodeTypeMember> memberInfo, string foldingRegionName);
-		void ImplementMembers (RefactorerContext ctx, IClass cls, IEnumerable<KeyValuePair<IMember,IReturnType>> members,
+		void AddMembers (RefactorerContext ctx, IType cls, IEnumerable<CodeTypeMember> memberInfo, string foldingRegionName);
+		void ImplementMembers (RefactorerContext ctx, IType cls, IEnumerable<KeyValuePair<IMember,IReturnType>> members,
 		                       string foldingRegionName);
 		
 		// used by base AddMembers and ImplementMembers implementions
 		// expected to return file offset of space within the new region
-		int AddFoldingRegion (RefactorerContext ctx, IClass cls, string regionName);
+		int AddFoldingRegion (RefactorerContext ctx, IType cls, string regionName);
 		
-		void RemoveMember (RefactorerContext ctx, IClass cls, IMember member);
-		IMember RenameMember (RefactorerContext ctx, IClass cls, IMember member, string newName);
-		IMember ReplaceMember (RefactorerContext ctx, IClass cls, IMember oldMember, CodeTypeMember memberInfo);
-		MemberReferenceCollection FindMemberReferences (RefactorerContext ctx, string fileName, IClass cls, IMember member);
+		void RemoveMember (RefactorerContext ctx, IType cls, IMember member);
+		IMember RenameMember (RefactorerContext ctx, IType cls, IMember member, string newName);
+		IMember ReplaceMember (RefactorerContext ctx, IType cls, IMember oldMember, CodeTypeMember memberInfo);
+		MemberReferenceCollection FindMemberReferences (RefactorerContext ctx, string fileName, IType cls, IMember member);
 		
 		bool RenameVariable (RefactorerContext ctx, LocalVariable var, string newName);
 		MemberReferenceCollection FindVariableReferences (RefactorerContext ctx, string fileName, LocalVariable var);
@@ -69,7 +75,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 		bool RenameParameter (RefactorerContext ctx, IParameter param, string newName);
 		MemberReferenceCollection FindParameterReferences (RefactorerContext ctx, string fileName, IParameter param);
 		
-		IMember EncapsulateField (RefactorerContext ctx, IClass cls, IField field, string propName, MemberAttributes attr, bool generateSetter);
+		IMember EncapsulateField (RefactorerContext ctx, IType cls, IField field, string propName, MemberAttributes attr, bool generateSetter);
 		
 		string ConvertToLanguageTypeName (string netTypeName);
 	}

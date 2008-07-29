@@ -307,7 +307,6 @@
     <File name="MonoDevelop.Projects.Dom/PreProcessorDefine.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Dom/ConditionalRegion.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Dom.Parser/IResolver.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Projects.Dom.CodeGeneration/ICodeGenerator.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Dom.Database/CodeCompletionDatabase.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Dom.Database/HyenaSqliteConnection.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Dom.Database/HyenaSqliteCommand.cs" subtype="Code" buildaction="Compile" />
@@ -315,7 +314,6 @@
     <File name="MonoDevelop.Projects.Dom.Database/DatabaseColumnAttribute.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Dom.Database/DateTimeUtil.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Dom.Parser/DatabaseProjectDom.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Projects.Dom.CodeGeneration/CodeRefactorer.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Dom.Database/DatabaseType.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Dom.Database/DatabaseField.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Dom.Database/DatabaseMethod.cs" subtype="Code" buildaction="Compile" />

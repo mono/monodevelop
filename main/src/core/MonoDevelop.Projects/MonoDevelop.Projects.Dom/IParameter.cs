@@ -40,6 +40,11 @@ namespace MonoDevelop.Projects.Dom
 		ParameterModifiers ParameterModifiers {
 			get;
 		}
+		
+		IMember DeclaringMember {
+			get;
+			set;
+		}
 
 		IReturnType ReturnType {
 			get;

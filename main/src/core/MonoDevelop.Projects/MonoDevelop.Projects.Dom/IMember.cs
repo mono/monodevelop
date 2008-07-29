@@ -89,7 +89,9 @@ namespace MonoDevelop.Projects.Dom
 			get;
 		}
 		
-		
+		bool IsExplicitDeclaration {
+			get;
+		}
 		
 		System.Xml.XmlNode GetMonodocDocumentation ();
 		bool IsAccessibleFrom (ProjectDom dom, IMember member);

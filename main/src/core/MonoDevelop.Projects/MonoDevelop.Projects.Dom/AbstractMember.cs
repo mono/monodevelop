@@ -75,6 +75,12 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
+		public bool IsExplicitDeclaration {
+			get {
+				return explicitInterfaces != null && explicitInterfaces.Count > 0;
+			}
+		}
+		
 		protected string name;
 		protected string documentation;
 		protected string fullName;
