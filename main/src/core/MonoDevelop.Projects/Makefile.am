@@ -159,6 +159,7 @@ FILES =  \
 	MonoDevelop.Projects/CustomCommandExtension.cs \
 	MonoDevelop.Projects/CustomCommandType.cs \
 	MonoDevelop.Projects/CyclicBuildOrderException.cs \
+	MonoDevelop.Projects/DotNetProject.cs \
 	MonoDevelop.Projects/DotNetProjectBinding.cs \
 	MonoDevelop.Projects/DotNetProjectConfiguration.cs \
 	MonoDevelop.Projects/ExecutionContext.cs \
