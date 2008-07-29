@@ -1,5 +1,12 @@
 2008-07-29  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.AspNet/AspNetAppProject.cs,
+	  MonoDevelop.AspNet/AspNetParserService.cs,
+	  MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs: Translated old
+	  code to new dom.
+
+2008-07-29  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.AspNet/CodeBehind.cs,
 	  MonoDevelop.AspNet/VerifyCodeBehindBuildStep.cs,
 	  MonoDevelop.AspNet.Parser/SuggestedHandlerCompletionData.cs:

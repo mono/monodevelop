@@ -483,7 +483,7 @@ namespace MonoDevelop.AspNet.Gui
 				
 				//controlClass = sysWebContext.GetClass ("System.Web.UI.WebControls.WebControl");
 				//if (controlClass == null)
-					LoggingService.LogWarning ("Could not obtain IClass for System.Web.UI.WebControls.WebControl");
+					LoggingService.LogWarning ("Could not obtain IType for System.Web.UI.WebControls.WebControl");
 				return;
 			}
 			
