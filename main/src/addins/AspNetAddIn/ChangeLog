@@ -1,5 +1,10 @@
 2008-07-28  Michael Hutchinson <mhutchinson@novell.com> 
 
+	* MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs: Fix document outline
+	  view with new parser infrastructure.
+
+2008-07-28  Michael Hutchinson <mhutchinson@novell.com> 
+
 	* MonoDevelop.AspNet/VerifyCodeBehindBuildStep.cs,
 	  MonoDevelop.AspNet/AspNetLanguageBinding.cs,
 	  MonoDevelop.AspNet.addin.xml,

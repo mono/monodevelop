@@ -51,9 +51,7 @@ namespace MonoDevelop.AspNet.Gui
 	
 	public class AspNetEditorExtension : CompletionTextEditorExtension, IOutlinedDocument, IPathedDocument
 	{
-		object lockObj = new object ();
 		DocumentStateTracker<S.Parser> tracker;
-		MonoDevelop.AspNet.Parser.AspNetCompilationUnit lastCU = null;
 		
 		Gtk.TreeView outlineTreeView;
 		Gtk.TreeStore outlineTreeStore;
@@ -96,10 +94,6 @@ namespace MonoDevelop.AspNet.Gui
 		
 		void OnParseInformationChanged (object sender, MonoDevelop.Projects.Parser.ParseInformationEventArgs args)
 		{
-			if (args.FileName == FileName)
-				lastCU = args.ParseInformation.MostRecentCompilationUnit
-					as MonoDevelop.AspNet.Parser.AspNetCompilationUnit;
-			
 			RefreshOutline ();
 		}
 		
@@ -108,8 +102,7 @@ namespace MonoDevelop.AspNet.Gui
 		#region Convenience accessors
 		
 		MonoDevelop.AspNet.Parser.AspNetCompilationUnit CU {
-			get { lock (lockObj) { return lastCU; } }
-			set { lock (lockObj) { lastCU = value; } }
+			get { return Document.CompilationUnit as MonoDevelop.AspNet.Parser.AspNetCompilationUnit; }
 		}
 		
 		protected ITextBuffer Buffer {
@@ -898,10 +891,10 @@ namespace MonoDevelop.AspNet.Gui
 				return;
 			
 			outlineTreeStore.Clear ();
-			if (lastCU != null) {
+			if (CU != null) {
 				DateTime start = DateTime.Now;
-				ParentNode p = lastCU.Document.RootNode;
-//				Gtk.TreeIter iter = outlineTreeStore.AppendValues (System.IO.Path.GetFileName (lastCU.Document.FilePath), p);
+				ParentNode p = CU.Document.RootNode;
+//				Gtk.TreeIter iter = outlineTreeStore.AppendValues (System.IO.Path.GetFileName (CU.Document.FilePath), p);
 				BuildTreeChildren (outlineTreeStore, Gtk.TreeIter.Zero, p);
 				outlineTreeView.ExpandAll ();
 				LoggingService.LogDebug ("Built ASP.NET outline in {0}ms", (DateTime.Now - start).Milliseconds);
