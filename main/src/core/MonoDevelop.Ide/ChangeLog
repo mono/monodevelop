@@ -1,3 +1,8 @@
+2008-07-28  Andrés G. Aragoneses <aaragoneses@novell.com> 
+
+	* MonoDevelop.Ide.Gui.Search/CurrentProjectDocumentIterator.cs: Be more
+	  stacktrace friendly (wrt to exception line number).
+
 2008-07-23  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Ide.Gui.Content/SmartIndenter.cs: Missed a file. It's not
