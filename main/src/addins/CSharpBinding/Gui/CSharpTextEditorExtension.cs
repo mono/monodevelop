@@ -829,7 +829,7 @@ namespace CSharpBinding
 		
 		ICompletionDataProvider GetOverridablesCompletionData (IParserContext pctx, ICodeCompletionContext ctx, IClass cls, int insertPos, string typedModifiers, ITypeNameResolver resolver)
 		{
-			List<IMember> classMembers = new List<IMember> ();
+		/*	List<IMember> classMembers = new List<IMember> ();
 			List<IMember> interfaceMembers = new List<IMember> ();
 
 			CodeRefactorer refactorer = IdeApp.Workspace.GetCodeRefactorer (IdeApp.ProjectOperations.CurrentSelectedSolution);
@@ -843,7 +843,8 @@ namespace CSharpBinding
 			foreach (ILanguageItem mem in classMembers) {
 				completionProvider.AddCompletionData (new OverrideCompletionData (Editor, mem, insertPos, typedModifiers, amb, resolver));
 			}
-			return completionProvider;
+			return completionProvider;*/
+			return null;
 		}
 		
 		CodeCompletionDataProvider GetDefineCompletionData ()
