@@ -33,7 +33,8 @@ using System.IO;
 using System.Collections.Generic;
 
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Parser;
+using MonoDevelop.Projects.Dom;
+using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Projects.CodeGeneration;
 using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Core;
@@ -59,13 +60,13 @@ namespace MonoDevelop.AspNet
 			
 			//lists of members to be added 
 			List<System.CodeDom.CodeMemberField> membersToAdd = new List<System.CodeDom.CodeMemberField> ();
-			List<IClass> classesForMembers = new List<IClass> ();
+			List<IType> classesForMembers = new List<IType> ();
 			
 			AspNetAppProjectConfiguration config = (AspNetAppProjectConfiguration) aspProject.GetConfiguration (configuration);
 			
 			//get an updated parser database
-			IParserContext ctx = MonoDevelop.Ide.Gui.IdeApp.Workspace.ParserDatabase.GetProjectParserContext (aspProject);
-			ctx.UpdateDatabase ();
+			ProjectDom ctx = ProjectDomService.GetDatabaseProjectDom (aspProject);
+//			ctx.UpdateDatabase ();
 			
 			monitor.Log.WriteLine (GettextCatalog.GetString ("Generating CodeBehind members..."));
 			if (!config.GenerateNonPartialCodeBehindMembers)
@@ -77,9 +78,8 @@ namespace MonoDevelop.AspNet
 				WebSubtype type = AspNetAppProject.DetermineWebSubtype (Path.GetExtension (file.FilePath));
 				if ((type != WebSubtype.WebForm) && (type != WebSubtype.WebControl) && (type != WebSubtype.MasterPage))
 						continue;
-				
-				IParseInformation pi = ctx.GetParseInformation (file.FilePath);
-				AspNetCompilationUnit cu = pi.MostRecentCompilationUnit as AspNetCompilationUnit;
+
+				AspNetCompilationUnit cu = ProjectDomService.Parse (aspProject, file.FilePath, null) as AspNetCompilationUnit;
 				if (cu == null || cu.Document == null)
 					continue;
 				
@@ -103,7 +103,7 @@ namespace MonoDevelop.AspNet
 				if (className == null)
 					continue;
 				
-				IClass cls = ctx.GetClass (className);
+				IType cls = ctx.GetType (className, -1, true, true);
 				if (cls == null) {
 					CodeBehindWarning cbw = new CodeBehindWarning (
 						GettextCatalog.GetString ("Cannot find CodeBehind class '{0}'.", className),
@@ -115,7 +115,7 @@ namespace MonoDevelop.AspNet
 				}
 				
 				//handle partial designer classes; skip if non-partial and this is disabled
-				IClass partToAddTo = CodeBehind.GetDesignerClass (cls);
+				IType partToAddTo = CodeBehind.GetDesignerClass (cls);
 				if (partToAddTo == null) {
 					if (!config.GenerateNonPartialCodeBehindMembers)
 						continue;
@@ -130,7 +130,7 @@ namespace MonoDevelop.AspNet
 				try {
 					foreach (System.CodeDom.CodeMemberField member in doc.MemberList.Members.Values) {
 						try {
-							MonoDevelop.Projects.Parser.IMember existingMember = BindingService.GetCompatibleMemberInClass (cls, member);
+							MonoDevelop.Projects.Dom.IMember existingMember = BindingService.GetCompatibleMemberInClass (cls, member);
 							if (existingMember == null) {
 								classesForMembers.Add (partToAddTo);
 								membersToAdd.Add (member);
