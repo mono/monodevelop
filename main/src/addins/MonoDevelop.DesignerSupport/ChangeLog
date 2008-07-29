@@ -1,5 +1,11 @@
 2008-07-29  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.DesignerSupport/ClassOutlineTextEditorExtension.cs,
+	  MonoDevelop.DesignerSupport/WrapperDesignView.cs: Translated old
+	  code to new dom.
+
+2008-07-29  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.DesignerSupport/TypeNotFoundException.cs,
 	  MonoDevelop.DesignerSupport/MemberExistsException.cs,
 	  MonoDevelop.DesignerSupport/BindingService.cs,
