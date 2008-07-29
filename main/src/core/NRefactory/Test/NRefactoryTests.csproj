@@ -37,6 +37,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.Drawing" />
     <Reference Include="nunit.framework">
       <HintPath>..\..\..\Tools\NUnit\nunit.framework.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
@@ -46,11 +47,6 @@
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="Lexer\CSharp\LexerTests.cs" />
     <Compile Include="General\UnitTest.cs" />
-    <Compile Include="Lexer\CSharp\PreprocessingTests.cs" />
-    <Compile Include="Lexer\VBNet\CustomLexerTests.cs" />
-    <Compile Include="Parser\Expressions\LambdaExpressionTests.cs" />
-    <Compile Include="Parser\Expressions\QueryExpressionTests.cs" />
-    <Compile Include="Output\SnippetConversion.cs" />
     <Compile Include="Parser\GlobalScope\AttributeSectionTests.cs" />
     <Compile Include="Output\CSharp\CSharpOutputTest.cs" />
     <Compile Include="Parser\Expressions\PrimitiveExpressionTests.cs" />
@@ -63,7 +59,7 @@
     <Compile Include="Parser\Expressions\BinaryOperatorExpressionTests.cs" />
     <Compile Include="Parser\Expressions\UnaryOperatorExpressionTests.cs" />
     <Compile Include="Parser\Expressions\CastExpressionTests.cs" />
-    <Compile Include="Parser\Expressions\MemberReferenceExpressionTests.cs" />
+    <Compile Include="Parser\Expressions\FieldReferenceExpressionTests.cs" />
     <Compile Include="Parser\Expressions\InvocationExpressionTests.cs" />
     <Compile Include="Parser\Expressions\TypeOfExpressionTests.cs" />
     <Compile Include="Parser\Expressions\ArrayCreateExpressionTests.cs" />
@@ -99,7 +95,7 @@
     <Compile Include="Parser\Statements\LocalVariableDeclarationTests.cs" />
     <Compile Include="Parser\Statements\LockStatementTests.cs" />
     <Compile Include="Parser\Statements\ReturnStatementTests.cs" />
-    <Compile Include="Parser\Statements\ExpressionStatementTests.cs" />
+    <Compile Include="Parser\Statements\StatementExpressionTests.cs" />
     <Compile Include="Parser\Statements\SwitchStatementTests.cs" />
     <Compile Include="Parser\Statements\ThrowStatementTests.cs" />
     <Compile Include="Parser\Statements\TryCatchStatementTests.cs" />
@@ -144,9 +140,9 @@
     <Compile Include="Lexer\CSharp\CustomLexerTests.cs" />
     <Compile Include="Parser\Expressions\DefaultValueExpressionTests.cs" />
     <Compile Include="Output\VBNet\VBNetOutputTest.cs" />
-    <Compile Include="Output\VBNet\CSharpToVBNetConverterTest.cs" />
-    <Compile Include="Output\CSharp\VBNetToCSharpConverterTest.cs" />
-    <Compile Include="Output\SpecialOutputVisitorTest.cs" />
+    <Compile Include="Output\VBNet\CSharpToVBConverterTest.cs" />
+    <Compile Include="Output\CSharp\VBToCSharpConverterTest.cs" />
+    <Compile Include="Output\SpecialOutputVisitor.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Project\NRefactory.csproj">

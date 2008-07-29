@@ -5,7 +5,7 @@ using System.Diagnostics;
 using System.Collections;
 using System.CodeDom;
 
-using MonoDevelop.Projects.Dom;
+using MonoDevelop.Projects.Parser;
 using CSharpBinding.Parser.SharpDevelopTree;
 
 using ICSharpCode.NRefactory;
@@ -14,7 +14,7 @@ using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.NRefactory.Visitors;
 
 namespace CSharpBinding.Parser
-{/*
+{
 	public class CSharpVisitor : AbstractAstVisitor
 	{
 		DefaultCompilationUnit cu = new DefaultCompilationUnit();
@@ -114,7 +114,7 @@ namespace CSharpBinding.Parser
 //		}
 		
 		public override object VisitNamespaceDeclaration(NamespaceDeclaration namespaceDeclaration, object data)
-		{./Parser/CSharpVisitor.cs
+		{
 			string name;
 			if (currentNamespace.Count == 0) {
 				name = namespaceDeclaration.Name;
@@ -505,7 +505,7 @@ namespace CSharpBinding.Parser
 			Class c = (Class)currentClass.Peek();
 			DefaultEvent e = null;
 			
-			if (eventDeclaration.VariableDeclarators != null) {
+/*			if (eventDeclaration.VariableDeclarators != null) {
 				foreach (ICSharpCode.NRefactory.Ast.VariableDeclaration varDecl in eventDeclaration.VariableDeclarators) {
 					ModifierFlags mf = eventDeclaration.Modifier;
 					e = new DefaultEvent (c, varDecl.Name, type, mf, region, bodyRegion);
@@ -513,7 +513,7 @@ namespace CSharpBinding.Parser
 					c.Events.Add(e);
 				}
 			} else {
-				Modifiers mf = eventDeclaration.Modifier;
+*/				Modifiers mf = eventDeclaration.Modifier;
 				e = new DefaultEvent (eventDeclaration.Name, type, (ModifierEnum)mf, region, bodyRegion);
 				FillAttributes (e, eventDeclaration.Attributes);
 				c.Events.Add(e);
@@ -544,5 +544,5 @@ namespace CSharpBinding.Parser
 			}
 			return null;
 		}
-	}*/
+	}
 }

@@ -66,6 +66,7 @@ FILES =  \
 	MonoDevelop.AspNet.Parser.Internal/TagAttributes.cs \
 	MonoDevelop.AspNet.Parser.Internal/TagType.cs \
 	MonoDevelop.AspNet.Parser/AspNetCompilationUnit.cs \
+	MonoDevelop.AspNet.Parser/AspNetExpressionFinder.cs \
 	MonoDevelop.AspNet.Parser/AspNetParser.cs \
 	MonoDevelop.AspNet.Parser/CompilationUnitVisitor.cs \
 	MonoDevelop.AspNet.Parser/DebugStringVisitor.cs \
@@ -80,16 +81,15 @@ FILES =  \
 	MonoDevelop.AspNet.Parser/SuggestedHandlerCompletionData.cs \
 	MonoDevelop.AspNet.Parser/WebFormReferenceManager.cs \
 	MonoDevelop.AspNet.StateEngine/AspNetAttributeValueState.cs \
-	MonoDevelop.AspNet.StateEngine/AspNetDirectiveState.cs \
 	MonoDevelop.AspNet.StateEngine/AspNetDom.cs \
 	MonoDevelop.AspNet.StateEngine/AspNetExpressionState.cs \
 	MonoDevelop.AspNet.StateEngine/AspNetFreeState.cs \
-	MonoDevelop.AspNet.StateEngine/AspNetServerCommentState.cs \
 	MonoDevelop.AspNet/AspNetAppProject.cs \
 	MonoDevelop.AspNet/AspNetAppProjectBinding.cs \
 	MonoDevelop.AspNet/AspNetAppProjectConfiguration.cs \
 	MonoDevelop.AspNet/AspNetCommands.cs \
 	MonoDevelop.AspNet/AspNetFileDescriptionTemplate.cs \
+	MonoDevelop.AspNet/AspNetLanguageBinding.cs \
 	MonoDevelop.AspNet/AspNetParserService.cs \
 	MonoDevelop.AspNet/AspNetToolboxLoader.cs \
 	MonoDevelop.AspNet/AspNetToolboxNode.cs \

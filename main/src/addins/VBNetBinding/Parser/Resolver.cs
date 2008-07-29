@@ -24,23 +24,23 @@ using System.Drawing;
 using System.IO;
 
 using MonoDevelop.Core;
-using MonoDevelop.Projects.Dom;
+using MonoDevelop.Projects.Parser;
 using MonoDevelop.Projects;
 using VBBinding.Parser.SharpDevelopTree;
 
-//using ClassType = MonoDevelop.Projects.Parser.ClassType;
+using ClassType = MonoDevelop.Projects.Parser.ClassType;
 using ICSharpCode.NRefactory.Visitors;
-//using ICSharpCode.NRefactory.Parser;
+using ICSharpCode.NRefactory.Parser;
 using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.NRefactory;
 
 namespace VBBinding.Parser
-{/*
+{
 	public class Resolver
 	{
 		IParserContext parserContext;
 		ICompilationUnit cu;
-		IType callingClass;
+		IClass callingClass;
 		LookupTableVisitor lookupTableVisitor;
 		
 		public Resolver (IParserContext parserContext)
@@ -60,7 +60,7 @@ namespace VBBinding.Parser
 			}
 		}
 		
-		public IType CallingClass {
+		public IClass CallingClass {
 			get {
 				return callingClass;
 			}
@@ -105,7 +105,7 @@ namespace VBBinding.Parser
 				//Console.WriteLine("!Warning: no parseinformation!");
 				return null;
 			}
-			
+			/*
 			//// try to find last expression in original string, it could be like " if (act!=null) act"
 			//// in this case only "act" should be parsed as expression  
 			!!is so!! don't change things that work
@@ -130,7 +130,7 @@ namespace VBBinding.Parser
 			}
 			//// here last subexpression should be fixed in expr
 			if it should be changed in expressionfinder don't fix it here
-			
+			*/
 			ICSharpCode.NRefactory.IParser p = ParserFactory.CreateParser (SupportedLanguage.VBNet, new StringReader(expression));
 			Expression expr = p.ParseExpression();
 			if (expr == null) {
@@ -194,10 +194,10 @@ namespace VBBinding.Parser
 		/// Returns the innerst class in which the carret currently is, returns null
 		/// if the carret is outside any class boundaries.
 		/// </remarks>
-		IType GetInnermostClass()
+		IClass GetInnermostClass()
 		{
 			if (cu != null) {
-				foreach (IType c in cu.Classes) {
+				foreach (IClass c in cu.Classes) {
 					if (c != null && c.Region != null && c.Region.IsInside(caretLine, caretColumn)) {
 						return GetInnermostClass(c);
 					}
@@ -206,7 +206,7 @@ namespace VBBinding.Parser
 			return null;
 		}
 		
-		IType GetInnermostClass(IType curClass)
+		IClass GetInnermostClass(IClass curClass)
 		{
 			if (curClass == null) {
 				return null;
@@ -214,7 +214,7 @@ namespace VBBinding.Parser
 			if (curClass.InnerClasses == null) {
 				return GetResolvedClass (curClass);
 			}
-			foreach (IType c in curClass.InnerClasses) {
+			foreach (IClass c in curClass.InnerClasses) {
 				if (c != null && c.Region != null && c.Region.IsInside(caretLine, caretColumn)) {
 					return GetInnermostClass(c);
 				}
@@ -223,9 +223,9 @@ namespace VBBinding.Parser
 		}
 		
 		
-		public IType GetResolvedClass (IType cls)
+		public IClass GetResolvedClass (IClass cls)
 		{
-			// Returns an IType in which all type names have been properly resolved
+			// Returns an IClass in which all type names have been properly resolved
 			return parserContext.GetClass (cls.FullyQualifiedName,true,false);
 		}
 
@@ -272,19 +272,155 @@ namespace VBBinding.Parser
 			if (type.ArrayDimensions != null && type.ArrayDimensions.Length > 0)
 				type = new ReturnType ("System.Array");
 
-//			IType returnClass = SearchType (type.FullyQualifiedName, null, cu);
-			IType returnClass = parserContext.SearchType (type.FullyQualifiedName, null, cu);
+//			IClass returnClass = SearchType (type.FullyQualifiedName, null, cu);
+			IClass returnClass = parserContext.SearchType (type.FullyQualifiedName, null, cu);
 			if (returnClass == null)
 				return null;
 
-			foreach (IType iclass in parserContext.GetClassInheritanceTree (returnClass)) {
+			foreach (IClass iclass in parserContext.GetClassInheritanceTree (returnClass)) {
 				if (!result.Contains (iclass))
 					result.Add (iclass);
 			}
 			return result;
 		}
 		
+/***** #D Legacy Code - remove once replacement code is verified *****
 
+		public ResolveResult Resolve(IParserContext parserContext, string expression, int caretLineNumber, int caretColumn, string fileName, string fileContent)
+		{
+			Console.WriteLine("Entering Resolve for " + expression);
+			expression = expression.TrimStart(null);
+			expression = expression.ToLower();
+			if (expression.StartsWith("new ")) {
+				inNew = true;
+				expression = expression.Substring(4);
+			} else {
+				inNew = false;
+			}
+			//Console.WriteLine("\nStart Resolving expression : >{0}<", expression);
+			
+			Expression expr = null;
+			this.caretLine     = caretLineNumber;
+			this.caretColumn   = caretColumn;
+			this.parserContext = parserContext;
+			IParseInformation parseInfo = parserContext.GetParseInformation(fileName);
+			ICSharpCode.NRefactory.Ast.CompilationUnit fileCompilationUnit = parseInfo.MostRecentCompilationUnit.Tag as ICSharpCode.NRefactory.Ast.CompilationUnit;
+			if (fileCompilationUnit == null) {
+				ICSharpCode.NRefactory.Parser.Parser fileParser = new ICSharpCode.NRefactory.Parser.Parser();
+				fileParser.Parse(new Lexer(new StringReader(fileContent)));
+				Console.WriteLine("!Warning: no parseinformation!");
+				return null;
+			}
+			VBNetVisitor vBNetVisitor = new VBNetVisitor();
+			cu = (ICompilationUnit)vBNetVisitor.Visit(fileCompilationUnit, null);
+			if (cu != null) {
+				callingClass = GetInnermostClass();
+				Console.WriteLine("CallingClass is " + callingClass == null ? "null" : callingClass.Name);
+			}else{
+				Console.WriteLine("NULL compilation unit!");
+			}
+			lookupTableVisitor = new LookupTableVisitor();
+			lookupTableVisitor.Visit(fileCompilationUnit, null);
+			
+			if (expression == null || expression == "") {
+				expr = WithResolve();
+				if (expr == null) {
+					return null;
+				}
+			}
+			
+			if (expression.StartsWith("imports ")) {
+				return ImportsResolve(expression);
+			}
+			Console.WriteLine("Not in imports >{0}<", expression);
+			
+			if (InMain()) {
+				showStatic = true;
+			}
+			
+			// MyBase and MyClass are no expressions, only MyBase.Identifier and MyClass.Identifier
+			if (expression == "mybase") {
+				expr = new BaseReferenceExpression();
+			} else if (expression == "myclass") {
+				expr = new ClassReferenceExpression();
+			}
+			
+			if (expr == null) {
+				Lexer l = new Lexer(new StringReader(expression));
+				ICSharpCode.NRefactory.Parser.Parser p = new ICSharpCode.NRefactory.Parser.Parser();
+				expr = p.ParseExpression(l);
+				if (expr == null) {
+					Console.WriteLine("Warning: No Expression from parsing!");
+					return null;
+				}
+			}
+			
+			Console.WriteLine(expr.ToString());
+			//TypeVisitor typeVisitor = new TypeVisitor(this);
+			//TypeVisitor typeVisitor = new VBBinding.Parser.TypeVisitor(this);
+			//IReturnType type = expr.AcceptVisitor(typeVisitor, null) as IReturnType;
+			//Console.WriteLine("type visited");
+			
+			IReturnType type = internalResolve (parserContext, expression, caretLineNumber, caretColumn, fileName, fileContent);
+			//IClass returnClass = SearchType (type.FullyQualifiedName, cu);
+			
+			if (type == null || type.PointerNestingLevel != 0) {
+				Console.WriteLine("Type == null || type.PointerNestingLevel != 0");
+				if (type != null) {
+					Console.WriteLine("PointerNestingLevel is " + type.PointerNestingLevel);
+				} else {
+					Console.WriteLine("Type == null");
+				}
+				return null;
+			}
+			if (type.ArrayDimensions != null && type.ArrayDimensions.Length > 0) {
+				type = new ReturnType("System.Array");
+			}
+			Console.WriteLine("Here: Type is " + type.FullyQualifiedName);
+			//IClass returnClass = SearchType(type.FullyQualifiedName, callingClass, cu);
+			IClass returnClass = parserContext.GetClass(type.FullyQualifiedName);
+			if (returnClass == null) {
+				Console.WriteLine("IClass is null! Trying namespace!");
+				// Try if type is Namespace:
+				string n = SearchNamespace(type.FullyQualifiedName, cu);
+				if (n == null) {
+					return null;
+				}
+				ArrayList content = parserContext.GetNamespaceContents(n, true,false);
+				ArrayList classes = new ArrayList();
+				for (int i = 0; i < content.Count; ++i) {
+					if (content[i] is IClass) {
+						if (inNew) {
+							IClass c = (IClass)content[i];
+//							Console.WriteLine("Testing " + c.Name);
+							if ((c.ClassType == ClassType.Class) || (c.ClassType == ClassType.Struct)) {
+								classes.Add(c);
+//								Console.WriteLine("Added");
+							}
+						} else {
+							classes.Add((IClass)content[i]);
+						}
+					}
+				}
+				
+				Console.WriteLine("Checking subnamespace " + n);
+				string[] namespaces = parserContext.GetNamespaceList(n, false);
+				Console.WriteLine("Got " + namespaces);
+				return new ResolveResult(namespaces, classes);
+			}
+			Console.WriteLine("Returning Result!");
+			if (inNew) {
+				return new ResolveResult(returnClass, ListTypes(new ArrayList(), returnClass));
+			} else {
+				return new ResolveResult(returnClass,ListMembers(new ArrayList(), returnClass));
+			}
+//			return new ResolveResult(returnClass, ListMembers(new ArrayList(),returnClass));
+		}
+*/
+		
+		
+		
+		
 		
 		public ResolveResult Resolve (string expression, int caretLineNumber, int caretColumn, string fileName, string fileContent) 
 		{
@@ -322,7 +458,7 @@ namespace VBBinding.Parser
 			
 			//Console.WriteLine("Not in Imports");
 			IReturnType type = internalResolve (expression, caretLineNumber, caretColumn, fileName, fileContent);
-			IType returnClass = SearchType (type.FullyQualifiedName, cu);
+			IClass returnClass = SearchType (type.FullyQualifiedName, cu);
 			if (returnClass == null) {
 				// Try if type is Namespace:
 				string n = SearchNamespace(type.FullyQualifiedName, cu);
@@ -332,8 +468,8 @@ namespace VBBinding.Parser
 				LanguageItemCollection content = parserContext.GetNamespaceContents(n,true,false);
 				LanguageItemCollection classes = new LanguageItemCollection();
 				for (int i = 0; i < content.Count; ++i) {
-					if (content[i] is IType) {
-						classes.Add((IType)content[i]);
+					if (content[i] is IClass) {
+						classes.Add((IClass)content[i]);
 					}
 				}
 				string[] namespaces = parserContext.GetNamespaceList(n, true, false);
@@ -352,7 +488,7 @@ namespace VBBinding.Parser
 		
 		
 		
-		LanguageItemCollection ListMembers (LanguageItemCollection members, IType curType)
+		LanguageItemCollection ListMembers (LanguageItemCollection members, IClass curType)
 		{
 			//Console.WriteLine("LIST MEMBERS!!!");
 			//Console.WriteLine("showStatic = " + showStatic);
@@ -362,7 +498,7 @@ namespace VBBinding.Parser
 			//Console.WriteLine(curType.Events.Count + " events");
 			//Console.WriteLine(curType.Fields.Count + " fields");
 			if (showStatic) {
-				foreach (IType c in curType.InnerClasses) {
+				foreach (IClass c in curType.InnerClasses) {
 					if (IsAccessible(curType, c)) {
 						members.Add(c);
 //						Console.WriteLine("Member added");
@@ -413,13 +549,13 @@ namespace VBBinding.Parser
 //			Console.WriteLine("ClassType = " + curType.ClassType);
 			if (curType.ClassType == ClassType.Interface && !showStatic) {
 				foreach (IReturnType s in curType.BaseTypes) {
-					IType baseClass = parserContext.GetClass (s.FullyQualifiedName, true, false);
+					IClass baseClass = parserContext.GetClass (s.FullyQualifiedName, true, false);
 					if (baseClass != null && baseClass.ClassType == ClassType.Interface) {
 						ListMembers(members, baseClass);
 					}
 				}
 			} else {
-				IType baseClass = BaseClass(curType);
+				IClass baseClass = BaseClass(curType);
 				if (baseClass != null) {
 //					Console.WriteLine("Base Class = " + baseClass.FullyQualifiedName);
 					ListMembers(members, baseClass);
@@ -431,13 +567,13 @@ namespace VBBinding.Parser
 		
 		
 		//Hacked from ListMembers - not sure if entirely correct or necessary
-		LanguageItemCollection ListTypes (LanguageItemCollection members, IType curType)
+		LanguageItemCollection ListTypes (LanguageItemCollection members, IClass curType)
 		{
 			//Console.WriteLine("LIST TYPES!!!");
 			//Console.WriteLine("showStatic = " + showStatic);
 			//Console.WriteLine(curType.InnerClasses.Count + " classes");
 			if (showStatic) {
-				foreach (IType c in curType.InnerClasses) {
+				foreach (IClass c in curType.InnerClasses) {
 					if (IsAccessible(curType, c)) {
 						members.Add(c);
 //						Console.WriteLine("Member added");
@@ -447,13 +583,13 @@ namespace VBBinding.Parser
 //			Console.WriteLine("ClassType = " + curType.ClassType);
 			if (curType.ClassType == ClassType.Interface && !showStatic) {
 				foreach (IReturnType s in curType.BaseTypes) {
-					IType baseClass = parserContext.GetClass (s.FullyQualifiedName, true, false);
+					IClass baseClass = parserContext.GetClass (s.FullyQualifiedName, true, false);
 					if (baseClass != null && baseClass.ClassType == ClassType.Interface) {
 						ListTypes(members, baseClass);
 					}
 				}
 			} else {
-				IType baseClass = BaseClass(curType);
+				IClass baseClass = BaseClass(curType);
 				if (baseClass != null) {
 //					Console.WriteLine("Base Class = " + baseClass.FullyQualifiedName);
 					ListTypes(members, baseClass);
@@ -533,7 +669,7 @@ namespace VBBinding.Parser
 			if (type == null || type.PointerNestingLevel != 0) {
 				return new List<IMethod> ();
 			}
-			IType curType;
+			IClass curType;
 			if (type.ArrayDimensions != null && type.ArrayDimensions.Length > 0) {
 				curType = SearchType("System.Array", null, null);
 			} else {
@@ -545,7 +681,7 @@ namespace VBBinding.Parser
 			return SearchMethod(new List<IMethod>(), curType, memberName);
 		}
 		
-		List<IMethod> SearchMethod(List<IMethod> methods, IType curType, string memberName)
+		List<IMethod> SearchMethod(List<IMethod> methods, IClass curType, string memberName)
 		{
 			//bool isClassInInheritanceTree = IsClassInInheritanceTree(curType, callingClass);
 			
@@ -556,7 +692,7 @@ namespace VBBinding.Parser
 					methods.Add(m);
 				}
 			}
-			IType baseClass = BaseClass(curType); //, false);
+			IClass baseClass = BaseClass(curType); //, false);
 			if (baseClass != null) {
 				return SearchMethod(methods, baseClass, memberName);
 			}
@@ -566,23 +702,23 @@ namespace VBBinding.Parser
 		
 		public List<IIndexer> SearchIndexer(IReturnType type)
 		{
-			IType curType = SearchType(type.FullyQualifiedName, null, null);
+			IClass curType = SearchType(type.FullyQualifiedName, null, null);
 			if (curType != null) {
 				return SearchIndexer(new List<IIndexer> (), curType);
 			}
 			return new List<IIndexer> ();
 		}
 		
-		public List<IIndexer> SearchIndexer(List<IIndexer> indexer, IType curType)
+		public List<IIndexer> SearchIndexer(List<IIndexer> indexer, IClass curType)
 		{
 			//bool isClassInInheritanceTree =IsClassInInheritanceTree(curType, callingClass);
 			foreach (IIndexer i in curType.Indexer) {
-				if (MustBeShown(curType, i)
+				if (MustBeShown(curType, i) /* , callingClass, showStatic, isClassInInheritanceTree) */ 
 				&& !((i.Modifiers & ModifierEnum.Override) == ModifierEnum.Override)) {
 					indexer.Add(i);
 				}
 			}
-			IType baseClass = BaseClass(curType);
+			IClass baseClass = BaseClass(curType);
 			if (baseClass != null) {
 				return SearchIndexer(indexer, baseClass);
 			}
@@ -597,7 +733,7 @@ namespace VBBinding.Parser
 				return null;
 			}
 //			Console.WriteLine("searching member {0} in {1}", memberName, type.Name);
-			IType curType = SearchType(type.FullyQualifiedName, callingClass, cu);
+			IClass curType = SearchType(type.FullyQualifiedName, callingClass, cu);
 			//bool isClassInInheritanceTree =IsClassInInheritanceTree(curType, callingClass);
 			
 			if (curType == null) {
@@ -612,7 +748,7 @@ namespace VBBinding.Parser
 			}
 			if (curType.ClassType == ClassType.Enum) {
 				foreach (IField f in curType.Fields) {
-					if (f.Name.ToLower() == memberName.ToLower() && MustBeShown(curType, f)
+					if (f.Name.ToLower() == memberName.ToLower() && MustBeShown(curType, f) /* , callingClass, showStatic, isClassInInheritanceTree) */ ) {
 						showStatic = false;
 						return type; // enum members have the type of the enum
 					}
@@ -620,8 +756,8 @@ namespace VBBinding.Parser
 			}
 			if (showStatic) {
 //				Console.WriteLine("showStatic == true");
-				foreach (IType c in curType.InnerClasses) {
-					if (c.Name.ToLower() == memberName.ToLower()  && IsAccessible(curType, c) ) {
+				foreach (IClass c in curType.InnerClasses) {
+					if (c.Name.ToLower() == memberName.ToLower()  && IsAccessible(curType, c) /*, callingClass, isClassInInheritanceTree) */) {
 						return new ReturnType(c.FullyQualifiedName);
 					}
 				}
@@ -630,7 +766,7 @@ namespace VBBinding.Parser
 			foreach (IProperty p in curType.Properties) {
 //				Console.WriteLine("checke Property " + p.Name);
 //				Console.WriteLine("member name " + memberName);
-				if (p.Name.ToLower() == memberName.ToLower() && MustBeShown(curType, p) ) {
+				if (p.Name.ToLower() == memberName.ToLower() && MustBeShown(curType, p) /*, callingClass, showStatic, isClassInInheritanceTree)*/) {
 //					Console.WriteLine("Property found " + p.Name);
 					showStatic = false;
 					return p.ReturnType;
@@ -639,14 +775,14 @@ namespace VBBinding.Parser
 			foreach (IField f in curType.Fields) {
 //				Console.WriteLine("checke Feld " + f.Name);
 //				Console.WriteLine("member name " + memberName);
-				if (f.Name.ToLower() == memberName.ToLower() && MustBeShown(curType, f) ) {
+				if (f.Name.ToLower() == memberName.ToLower() && MustBeShown(curType, f) /*, callingClass, showStatic, isClassInInheritanceTree)*/) {
 //					Console.WriteLine("Field found " + f.Name);
 					showStatic = false;
 					return f.ReturnType;
 				}
 			}
 			foreach (IEvent e in curType.Events) {
-				if (e.Name.ToLower() == memberName.ToLower() && MustBeShown(curType, e)) {
+				if (e.Name.ToLower() == memberName.ToLower() && MustBeShown(curType, e) /*, callingClass, showStatic, isClassInInheritanceTree)*/) {
 					showStatic = false;
 					return e.ReturnType;
 				}
@@ -654,14 +790,14 @@ namespace VBBinding.Parser
 			foreach (IMethod m in curType.Methods) {
 //				Console.WriteLine("checke Method " + m.Name);
 //				Console.WriteLine("member name " + memberName);
-				if (m.Name.ToLower() == memberName.ToLower() && MustBeShown(curType, m) ) {
+				if (m.Name.ToLower() == memberName.ToLower() && MustBeShown(curType, m) /*, callingClass, showStatic, isClassInInheritanceTree) /* check if m has no parameters && m.*/) {
 //					Console.WriteLine("Method found " + m.Name);
 					showStatic = false;
 					return m.ReturnType;
 				}
 			}
 			foreach (IReturnType baseType in curType.BaseTypes) {
-				IType c = SearchType(baseType.FullyQualifiedName, curType);
+				IClass c = SearchType(baseType.FullyQualifiedName, curType);
 				if (c != null) {
 					IReturnType erg = SearchMember(new ReturnType(c.FullyQualifiedName), memberName);
 					if (erg != null) {
@@ -797,7 +933,7 @@ namespace VBBinding.Parser
 			
 			// try if there exists a static member in outer classes named typeName
 			ClassCollection classes = GetOuterClasses(); //cu, caretLine, caretColumn);
-			foreach (IType c in classes) {
+			foreach (IClass c in classes) {
 				t = SearchMember(callingClass == null ? null : new ReturnType(c.FullyQualifiedName), typeName);
 				if (t != null) {
 					showStatic = false;
@@ -890,14 +1026,14 @@ namespace VBBinding.Parser
 		/// <remarks>
 		/// use the usings and the name of the namespace to find a class
 		/// </remarks>
-		public IType SearchType(string name, ICompilationUnit unit)
+		public IClass SearchType(string name, ICompilationUnit unit)
 		{
 //			Console.WriteLine("Searching Type " + name);
 			if (name == null || name == String.Empty) {
 //				Console.WriteLine("No Name!");
 				return null;
 			}
-			IType c;
+			IClass c;
 			c = parserContext.GetClass(name,true,false);
 			if (c != null) {
 //				Console.WriteLine("Found!");
@@ -942,7 +1078,7 @@ namespace VBBinding.Parser
 		/// <remarks>
 		/// use the usings and the name of the namespace to find a class
 		/// </remarks>
-		public IType SearchType(string name, IType curType)
+		public IClass SearchType(string name, IClass curType)
 		{
 			return parserContext.SearchType(name, curType,null); //, caretLine, caretColumn, false);
 		}
@@ -950,7 +1086,7 @@ namespace VBBinding.Parser
 		/// <remarks>
 		/// use the usings and the name of the namespace to find a class
 		/// </remarks>
-		public IType SearchType(string name, IType curType, ICompilationUnit unit)
+		public IClass SearchType(string name, IClass curType, ICompilationUnit unit)
 		{
 			return parserContext.SearchType(name, curType,unit); //, unit, caretLine, caretColumn, false);
 		}
@@ -1007,10 +1143,10 @@ namespace VBBinding.Parser
 		}
 	
 	
-		public IType BaseClass(IType curClass)
+		public IClass BaseClass(IClass curClass)
 		{
 			foreach (IReturnType s in curClass.BaseTypes) {
-				IType baseClass = parserContext.GetClass (s.FullyQualifiedName, true, false);
+				IClass baseClass = parserContext.GetClass (s.FullyQualifiedName, true, false);
 				if (baseClass != null && baseClass.ClassType != ClassType.Interface) {
 					return baseClass;
 				}
@@ -1018,7 +1154,7 @@ namespace VBBinding.Parser
 			return null;
 		}
 		
-		bool IsAccessible(IType c, IDecoration member)
+		bool IsAccessible(IClass c, IDecoration member)
 		{
 //			Console.WriteLine("member.Modifiers = " + member.Modifiers);
 			if ((member.Modifiers & ModifierEnum.Internal) == ModifierEnum.Internal) {
@@ -1035,7 +1171,7 @@ namespace VBBinding.Parser
 			return c.FullyQualifiedName == callingClass.FullyQualifiedName;
 		}
 		
-		bool MustBeShown(IType c, IDecoration member)
+		bool MustBeShown(IClass c, IDecoration member)
 		{
 //			Console.WriteLine("member:" + member.Modifiers);
 			if ((!showStatic &&  ((member.Modifiers & ModifierEnum.Static) == ModifierEnum.Static)) ||
@@ -1050,7 +1186,7 @@ namespace VBBinding.Parser
 		/// <remarks>
 		/// Returns true, if class possibleBaseClass is in the inheritance tree from c
 		/// </remarks>
-		bool IsClassInInheritanceTree(IType possibleBaseClass, IType c)
+		bool IsClassInInheritanceTree(IClass possibleBaseClass, IClass c)
 		{
 			if (possibleBaseClass == null || c == null) {
 				return false;
@@ -1059,7 +1195,7 @@ namespace VBBinding.Parser
 				return true;
 			}
 			foreach (IReturnType baseClass in c.BaseTypes) {
-				IType bc = parserContext.GetClass (baseClass.FullyQualifiedName, true, false);
+				IClass bc = parserContext.GetClass (baseClass.FullyQualifiedName, true, false);
 				if (IsClassInInheritanceTree(possibleBaseClass, bc)) {
 					return true;
 				}
@@ -1077,7 +1213,7 @@ namespace VBBinding.Parser
 		{
 			ClassCollection classes = new ClassCollection();
 			if (cu != null) {
-				foreach (IType c in cu.Classes) {
+				foreach (IClass c in cu.Classes) {
 					if (c != null && c.Region != null && c.Region.IsInside(caretLine, caretColumn)) {
 						if (c != GetInnermostClass()) {
 							GetOuterClasses(classes, c);
@@ -1091,10 +1227,10 @@ namespace VBBinding.Parser
 			return classes;
 		}
 		
-		void GetOuterClasses(ClassCollection classes, IType curClass)
+		void GetOuterClasses(ClassCollection classes, IClass curClass)
 		{
 			if (curClass != null) {
-				foreach (IType c in curClass.InnerClasses) {
+				foreach (IClass c in curClass.InnerClasses) {
 					if (c != null && c.Region != null && c.Region.IsInside(caretLine, caretColumn)) {
 						if (c != GetInnermostClass()) {
 							GetOuterClasses(classes, c);
@@ -1105,5 +1241,5 @@ namespace VBBinding.Parser
 				}
 			}
 		}
-	}*/
+	}
 }

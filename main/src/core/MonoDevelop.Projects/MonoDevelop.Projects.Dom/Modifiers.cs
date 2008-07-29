@@ -53,14 +53,10 @@ namespace MonoDevelop.Projects.Dom
 		Extern    = 0x1000,
 		Volatile  = 0x2000,
 		Unsafe    = 0x4000,
-		
 		Overloads  = 0x10000,
 		WithEvents = 0x20000,
 		Default    = 0x40000,
 		Fixed      = 0x80000,
-		
-		IsObsolete = 0x100000,
-		
 		
 		ProtectedAndInternal = Internal | Protected,
 		ProtectedOrInternal = 0x8000,

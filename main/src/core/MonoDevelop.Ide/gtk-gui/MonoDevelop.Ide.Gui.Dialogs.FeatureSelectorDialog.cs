@@ -52,7 +52,9 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             w2.Expand = false;
             w2.Fill = false;
             // Container child vbox5.Gtk.Box+BoxChild
-            this.featureList = null;
+            this.featureList = new MonoDevelop.Ide.Gui.Dialogs.CombineEntryFeatureSelector();
+            this.featureList.Events = ((Gdk.EventMask)(256));
+            this.featureList.Name = "featureList";
             this.vbox5.Add(this.featureList);
             Gtk.Box.BoxChild w3 = ((Gtk.Box.BoxChild)(this.vbox5[this.featureList]));
             w3.Position = 1;

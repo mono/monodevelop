@@ -35,42 +35,15 @@ namespace MonoDevelop.CSharpBinding
 	public class CSharpAmbience : Ambience, IDomVisitor
 	{
 		const string nullString = "Null";
-		static Dictionary<string, string> netToCSharpTypes = new Dictionary<string, string> ();
-		static CSharpAmbience ()
-		{
-			netToCSharpTypes["System.Void"]    = "void";
-			netToCSharpTypes["System.Object"]  = "object";
-			netToCSharpTypes["System.Boolean"] = "bool";
-			netToCSharpTypes["System.Byte"]    = "byte";
-			netToCSharpTypes["System.SByte"]   = "sbyte";
-			netToCSharpTypes["System.Char"]    = "char";
-			netToCSharpTypes["System.Enum"]    = "enum";
-			netToCSharpTypes["System.Int16"]   = "short";
-			netToCSharpTypes["System.Int32"]   = "int";
-			netToCSharpTypes["System.Int64"]   = "long";
-			netToCSharpTypes["System.UInt16"]  = "ushort";
-			netToCSharpTypes["System.UInt32"]  = "uint";
-			netToCSharpTypes["System.UInt64"]  = "ulong";
-			netToCSharpTypes["System.Single"]  = "float";
-			netToCSharpTypes["System.Double"]  = "double";
-			netToCSharpTypes["System.Decimal"] = "decimal";
-			netToCSharpTypes["System.String"]  = "string";
-		}
-
-		public static string NetToCSharpTypeName (string netTypeName)
-		{
-			if (netToCSharpTypes.ContainsKey (netTypeName)) 
-				return netToCSharpTypes[netTypeName];
-			return netTypeName;
-		}
-
+		Dictionary<string, string> netToCSharpTypes = new Dictionary<string, string> ();
+		
 		protected override IDomVisitor OutputVisitor {
 			get {
 				return this;
 			}
 		}
 		
-		public CSharpAmbience () : base ("C#", "text/x-csharp")
+		public CSharpAmbience () : base ("C#")
 		{
 			classTypes[ClassType.Class]     = "class";
 			classTypes[ClassType.Enum]      = "enum";
@@ -106,22 +79,25 @@ namespace MonoDevelop.CSharpBinding
 			modifiers[Modifiers.ProtectedAndInternal] = "protected internal";
 			modifiers[Modifiers.ProtectedOrInternal]  = "internal protected";
 			
+			netToCSharpTypes["System.Void"]    = "void";
+			netToCSharpTypes["System.Object"]  = "object";
+			netToCSharpTypes["System.Boolean"] = "bool";
+			netToCSharpTypes["System.Byte"]    = "byte";
+			netToCSharpTypes["System.SByte"]   = "sbyte";
+			netToCSharpTypes["System.Char"]    = "char";
+			netToCSharpTypes["System.Enum"]    = "enum";
+			netToCSharpTypes["System.Int16"]   = "short";
+			netToCSharpTypes["System.Int32"]   = "int";
+			netToCSharpTypes["System.Int64"]   = "long";
+			netToCSharpTypes["System.UInt16"]  = "ushort";
+			netToCSharpTypes["System.UInt32"]  = "uint";
+			netToCSharpTypes["System.UInt64"]  = "ulong";
+			netToCSharpTypes["System.Single"]  = "float";
+			netToCSharpTypes["System.Double"]  = "double";
+			netToCSharpTypes["System.Decimal"] = "decimal";
+			netToCSharpTypes["System.String"]  = "string";
 		}
 		
-		public static string NormalizeTypeName (string typeName)
-		{
-			int idx = typeName.IndexOf ('`');
-			if (idx > 0) 
-				return typeName.Substring (0, idx);
-			return typeName;
-		}
-		
-		public override bool IsValidFor (string fileName)
-		{
-			if (fileName == null)
-				return false;
-			return fileName.EndsWith (".cs");
-		}
 		
 		public override string SingleLineComment (string text)
 		{
@@ -213,26 +189,9 @@ namespace MonoDevelop.CSharpBinding
 				result.Append (netToCSharpTypes[returnType.FullName]);
 			} else {
 				if (UseFullName (flags)) {
-					result.Append (Format (NormalizeTypeName (returnType.FullName)));
+					result.Append (Format (returnType.FullName));
 				} else {
-					result.Append (Format (NormalizeTypeName (returnType.Name)));
-				}
-			}
-			if (returnType.GenericArguments != null && returnType.GenericArguments.Count > 0) {
-				if (EmitMarkup (flags)) {
-					result.Append ("&lt;");
-				} else {
-					result.Append ('<');
-				}
-				for (int i = 0; i < returnType.GenericArguments.Count; i++) {
-					if (i > 0)
-						result.Append (", ");
-					result.Append (GetString (returnType.GenericArguments[i], flags));
-				}
-				if (EmitMarkup (flags)) {
-					result.Append ("&gt;");
-				} else {
-					result.Append ('>');
+					result.Append (Format (returnType.Name));
 				}
 			}
 			return result.ToString ();
@@ -325,11 +284,11 @@ namespace MonoDevelop.CSharpBinding
 					result.Append ("</b>");
 			}
 			
-			result.Append (Format (NormalizeTypeName (type.Name)));
+			result.Append (Format (type.Name));
 			
 			if (IncludeBaseTypes (flags) && type.BaseType != null) {
 				result.Append (" : ");
-				result.Append (Format (NormalizeTypeName (type.BaseType.Name)));
+				result.Append (Format (type.BaseType.Name));
 			}
 			return result.ToString ();
 		}

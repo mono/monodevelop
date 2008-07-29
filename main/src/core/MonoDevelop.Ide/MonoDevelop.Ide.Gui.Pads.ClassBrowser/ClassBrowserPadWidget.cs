@@ -167,7 +167,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassBrowser
 			if (!IdeApp.Workspace.IsOpen)
 				return;
 			foreach (Project project in IdeApp.Workspace.GetAllProjects ()) {
-				ProjectDom dom = ProjectDomService.GetDatabaseProjectDom (project);
+				ProjectDom dom = ProjectDomService.GetDom (project);
 //				foreach (CompilationUnit unit in dom.CompilationUnits) {
 				foreach (IType type in dom.Types) {
 					if (ShouldAdd (type)) {

@@ -1,37 +1,3 @@
-2008-07-29  Mike Krüger <mkrueger@novell.com> 
-
-	* MonoDevelop.GtkCore/WidgetFileDescriptionTemplate.cs,
-	  MonoDevelop.GtkCore.Dialogs/WidgetBuilderOptionPanel.cs,
-	  MonoDevelop.GtkCore.GuiBuilder/ActionGroupDisplayBinding.cs,
-	  MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs,
-	  MonoDevelop.GtkCore.GuiBuilder/GuiBuilderWindow.cs,
-	  MonoDevelop.GtkCore.GuiBuilder/CombinedDesignView.cs: Translated
-	  old code to new dom.
-
-2008-07-29  Mike Krüger <mkrueger@novell.com> 
-
-	* MonoDevelop.GtkCore/GtkDesignInfo.cs,
-	  MonoDevelop.GtkCore/ObjectsDocument.cs,
-	  MonoDevelop.GtkCore.GuiBuilder/ActionGroupDisplayBinding.cs,
-	  MonoDevelop.GtkCore.GuiBuilder/GuiBuilderWindow.cs,
-	  MonoDevelop.GtkCore.GuiBuilder/CodeBinder.cs: Changes for converted
-	  refactoring infrastructure.
-
-2008-07-27  Mike Krüger <mkrueger@novell.com> 
-
-	* MonoDevelop.GtkCore/GtkDesignInfo.cs,
-	  MonoDevelop.GtkCore/WidgetParser.cs,
-	  MonoDevelop.GtkCore/ObjectsDocument.cs,
-	  MonoDevelop.GtkCore.Dialogs/SelectRenamedClassDialog.cs,
-	  MonoDevelop.GtkCore.GuiBuilder/ActionGroupDisplayBinding.cs,
-	  MonoDevelop.GtkCore.GuiBuilder/GuiBuilderProject.cs,
-	  MonoDevelop.GtkCore.GuiBuilder/GuiBuilderWindow.cs,
-	  MonoDevelop.GtkCore.GuiBuilder/ActionGroupView.cs,
-	  MonoDevelop.GtkCore.GuiBuilder/GuiBuilderView.cs,
-	  MonoDevelop.GtkCore.GuiBuilder/ClassUtils.cs,
-	  MonoDevelop.GtkCore.GuiBuilder/CodeBinder.cs: Worked on code
-	  completion/new dom.
-
 2008-07-24  Mike Kestner <mkestner@novell.com> 
 
 	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderProject.cs: get paths

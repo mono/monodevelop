@@ -30,13 +30,13 @@ using Gtk;
 using System;
 using System.Collections;
 using System.CodeDom;
-using MonoDevelop.Projects.Dom;
+using MonoDevelop.Projects.Parser;
 
 namespace MonoDevelop.GtkCore.GuiBuilder
 {
 	internal class ClassUtils
 	{
-		public static IField FindWidgetField (IType cls, string name)
+		public static IField FindWidgetField (IClass cls, string name)
 		{
 			foreach (IField field in cls.Fields) {
 				if (name == GetWidgetFieldName (field))
@@ -47,14 +47,16 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		public static string GetWidgetFieldName (IField field)
 		{
-			foreach (IAttribute att in field.Attributes)	{
-				if (att.Name == "Glade.Widget" || att.Name == "Widget" || att.Name == "Glade.WidgetAttribute" || att.Name == "WidgetAttribute") {
-					if (att.PositionalArguments != null && att.PositionalArguments.Count > 0) {
-						CodePrimitiveExpression exp = att.PositionalArguments [0] as CodePrimitiveExpression;
-						if (exp != null)
-							return exp.Value.ToString ();
-					} else {
-						return field.Name;
+			foreach (IAttributeSection asec in field.Attributes) {
+				foreach (IAttribute att in asec.Attributes)	{
+					if (att.Name == "Glade.Widget" || att.Name == "Widget" || att.Name == "Glade.WidgetAttribute" || att.Name == "WidgetAttribute") {
+						if (att.PositionalArguments != null && att.PositionalArguments.Length > 0) {
+							CodePrimitiveExpression exp = att.PositionalArguments [0] as CodePrimitiveExpression;
+							if (exp != null)
+								return exp.Value.ToString ();
+						} else {
+							return field.Name;
+						}
 					}
 				}
 			}

@@ -16,18 +16,35 @@ using Mono.CSharp;
 
 namespace MonoDevelop.VBNetBinding
 {
-	public class DomParser : AbstractParser
+	public class DomParser : IParser
 	{
-		public DomParser () : base ("VB.NET", "text/x-vb")
+		public bool CanParseMimeType (string mimeType)
 		{
+			return "text/x-vb" == mimeType;
 		}
 		
-		public override bool CanParse (string fileName)
+		public bool CanParseProjectType (string projectType)
+		{
+			return "VB.NET" == projectType;
+		}
+		
+		public bool CanParse (string fileName)
 		{
 			return Path.GetExtension (fileName) == ".vb";
 		}
 		
-		public override ICompilationUnit Parse (string fileName, string content)
+		public IExpressionFinder CreateExpressionFinder ()
+		{
+			return null;
+		}
+		
+		public IDocumentMetaInformation CreateMetaInformation (Stream stream)
+		{
+			return null;
+		}
+				
+
+		public ICompilationUnit Parse (string fileName, string content)
 		{
 			using (ICSharpCode.NRefactory.IParser parser = ICSharpCode.NRefactory.ParserFactory.CreateParser (ICSharpCode.NRefactory.SupportedLanguage.VBNet, new StringReader(content))) {
 				return Parse (parser, fileName);
@@ -43,7 +60,7 @@ namespace MonoDevelop.VBNetBinding
 /*			visitor.Cu.ErrorsDuringCompile = p.Errors.Count > 0;
 			visitor.Cu.Tag = p.CompilationUnit;
 			RetrieveRegions(visitor.Cu, p.Lexer.SpecialTracker);
-			foreach (IType c in visitor.Cu.Classes)
+			foreach (IClass c in visitor.Cu.Classes)
 				c.Region.FileName = fileName;
 			AddCommentTags(visitor.Cu, p.Lexer.TagComments);*/
 			return result;

@@ -2,7 +2,7 @@
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
-//     <version>$Revision: 2195 $</version>
+//     <version>$Revision: 1965 $</version>
 // </file>
 
 using System;
@@ -11,14 +11,12 @@ namespace ICSharpCode.NRefactory
 {
 	public interface IEnvironmentInformationProvider
 	{
-		bool HasField(string fullTypeName, int typeParameterCount, string fieldName);
+		bool HasField(string fullTypeName, string fieldName);
 	}
 	
-	sealed class DummyEnvironmentInformationProvider : IEnvironmentInformationProvider
+	class DummyEnvironmentInformationProvider : IEnvironmentInformationProvider
 	{
-		internal static readonly IEnvironmentInformationProvider Instance = new DummyEnvironmentInformationProvider();
-		
-		public bool HasField(string fullTypeName, int typeParameterCount, string fieldName)
+		public bool HasField(string fullTypeName, string fieldName)
 		{
 			return false;
 		}

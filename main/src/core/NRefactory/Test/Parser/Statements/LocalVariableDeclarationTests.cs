@@ -2,16 +2,16 @@
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
-//     <version>$Revision: 2229 $</version>
+//     <version>$Revision: 1076 $</version>
 // </file>
 
 using System;
 using System.IO;
 using NUnit.Framework;
 using ICSharpCode.NRefactory.Parser;
-using ICSharpCode.NRefactory.Ast;
+using ICSharpCode.NRefactory.Parser.AST;
 
-namespace ICSharpCode.NRefactory.Tests.Ast
+namespace ICSharpCode.NRefactory.Tests.AST
 {
 	[TestFixture]
 	public class LocalVariableDeclarationTests
@@ -32,13 +32,13 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		[Test]
 		public void CSharpComplexGenericLocalVariableDeclarationTest()
 		{
-			LocalVariableDeclaration lvd = ParseUtilCSharp.ParseStatement<LocalVariableDeclaration>("Generic<Namespace.Printable, G<Printable[]> > where = new Generic<Namespace.Printable, G<Printable[]>>();");
+			LocalVariableDeclaration lvd = ParseUtilCSharp.ParseStatement<LocalVariableDeclaration>("Generic<Printable, G<Printable[]> > where = new Generic<Printable, G<Printable[]>>();");
 			Assert.AreEqual(1, lvd.Variables.Count);
 			Assert.AreEqual("where", ((VariableDeclaration)lvd.Variables[0]).Name);
 			TypeReference type = lvd.GetTypeForVariable(0);
 			Assert.AreEqual("Generic", type.Type);
 			Assert.AreEqual(2, type.GenericTypes.Count);
-			Assert.AreEqual("Namespace.Printable", type.GenericTypes[0].Type);
+			Assert.AreEqual("Printable", type.GenericTypes[0].Type);
 			Assert.AreEqual(0, type.GenericTypes[0].GenericTypes.Count);
 			Assert.AreEqual("G", type.GenericTypes[1].Type);
 			Assert.AreEqual(1, type.GenericTypes[1].GenericTypes.Count);
@@ -234,7 +234,7 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 			ArrayCreateExpression ace = (ArrayCreateExpression)lvd.Variables[0].Initializer;
 			Assert.AreEqual(new int[] { 0 } , ace.CreateType.RankSpecifier);
 			Assert.AreEqual(1, ace.Arguments.Count);
-			Assert.AreEqual(10, ((PrimitiveExpression)ace.Arguments[0]).Value);
+			Assert.AreEqual(11, ((PrimitiveExpression)ace.Arguments[0]).Value);
 		}
 		
 		[Test]
@@ -250,7 +250,7 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 			ArrayCreateExpression ace = (ArrayCreateExpression)lvd.Variables[0].Initializer;
 			Assert.AreEqual(new int[] { 0 } , ace.CreateType.RankSpecifier);
 			Assert.AreEqual(1, ace.Arguments.Count);
-			Assert.AreEqual(10, ((PrimitiveExpression)ace.Arguments[0]).Value);
+			Assert.AreEqual(11, ((PrimitiveExpression)ace.Arguments[0]).Value);
 		}
 		
 		[Test]
@@ -276,7 +276,7 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 			ArrayCreateExpression ace = (ArrayCreateExpression)lvd.Variables[0].Initializer;
 			Assert.AreEqual(new int[] {0, 0}, ace.CreateType.RankSpecifier);
 			Assert.AreEqual(1, ace.Arguments.Count);
-			Assert.AreEqual(10, ((PrimitiveExpression)ace.Arguments[0]).Value);
+			Assert.AreEqual(11, ((PrimitiveExpression)ace.Arguments[0]).Value);
 		}
 		
 		[Test]

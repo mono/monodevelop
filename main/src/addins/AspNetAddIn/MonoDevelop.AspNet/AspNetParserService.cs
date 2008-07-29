@@ -30,8 +30,7 @@ using System;
 
 using MonoDevelop.AspNet.Parser;
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
+using MonoDevelop.Projects.Parser;
 using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.AspNet
@@ -41,7 +40,7 @@ namespace MonoDevelop.AspNet
 	public static class AspNetParserService
 	{
 		public static AspNetCompilationUnit GetCompileUnit (Project project, string filename, bool ensureUpToDate)
-		{/*
+		{
 			IParserContext ctx;
 			if (project != null) {
 				ctx = IdeApp.Workspace.ParserDatabase.GetProjectParserContext (project);
@@ -49,10 +48,9 @@ namespace MonoDevelop.AspNet
 				ctx = IdeApp.Workspace.ParserDatabase.GetFileParserContext (filename);
 			}
 			if (ensureUpToDate)
-				ctx.UpdateDatabase ();*/
-			
-			ICompilationUnit pi = ProjectDomService.Parse (project, filename, null);
-			return pi as AspNetCompilationUnit;
+				ctx.UpdateDatabase ();
+			IParseInformation pi = ctx.GetParseInformation (filename);
+			return pi.BestCompilationUnit as AspNetCompilationUnit;
 		}
 		
 		public static AspNetCompilationUnit GetCompileUnit (Project project, string filename)

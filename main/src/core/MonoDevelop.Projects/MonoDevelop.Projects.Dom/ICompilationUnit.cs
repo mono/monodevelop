@@ -42,10 +42,6 @@ namespace MonoDevelop.Projects.Dom
 			get;
 		}
 		
-		DateTime ParseTime {
-			get;
-		}
-		
 		ReadOnlyCollection<IUsing> Usings {
 			get;
 		}
@@ -62,15 +58,11 @@ namespace MonoDevelop.Projects.Dom
 			get;
 		}
 		
-		IEnumerable<FoldingRegion> FoldingRegions {
+		IEnumerable<DomRegion> FoldingRegions {
 			get;
 		}
 		
 		ReadOnlyCollection<Error> Errors {
-			get;
-		}
-		
-		bool HasErrors {
 			get;
 		}
 		

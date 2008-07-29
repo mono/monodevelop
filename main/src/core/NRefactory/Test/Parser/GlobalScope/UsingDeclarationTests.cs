@@ -2,16 +2,19 @@
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
-//     <version>$Revision: 1609 $</version>
+//     <version>$Revision: 1388 $</version>
 // </file>
 
 using System;
+using System.Drawing;
 using System.IO;
-using ICSharpCode.NRefactory.Parser;
-using ICSharpCode.NRefactory.Ast;
+
 using NUnit.Framework;
 
-namespace ICSharpCode.NRefactory.Tests.Ast
+using ICSharpCode.NRefactory.Parser;
+using ICSharpCode.NRefactory.Parser.AST;
+
+namespace ICSharpCode.NRefactory.Tests.AST
 {
 	[TestFixture]
 	public class UsingDeclarationTests
@@ -67,7 +70,7 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 			string program = "using\n";
 			IParser parser = ParserFactory.CreateParser(SupportedLanguage.CSharp, new StringReader(program));
 			parser.Parse();
-			Assert.IsTrue(parser.Errors.Count > 0);
+			Assert.IsTrue(parser.Errors.count > 0);
 		}
 		
 		[Test]
@@ -103,7 +106,7 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 			string program = "Imports\n";
 			IParser parser = ParserFactory.CreateParser(SupportedLanguage.VBNet, new StringReader(program));
 			parser.Parse();
-			Assert.IsTrue(parser.Errors.Count > 0);
+			Assert.IsTrue(parser.Errors.count > 0);
 			UsingDeclaration u = (UsingDeclaration)parser.CompilationUnit.Children[0];
 			foreach (Using us in u.Usings) {
 				Assert.IsNotNull(us);
@@ -116,7 +119,7 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 			string program = "Imports ,\n";
 			IParser parser = ParserFactory.CreateParser(SupportedLanguage.VBNet, new StringReader(program));
 			parser.Parse();
-			Assert.IsTrue(parser.Errors.Count > 0);
+			Assert.IsTrue(parser.Errors.count > 0);
 			UsingDeclaration u = (UsingDeclaration)parser.CompilationUnit.Children[0];
 			foreach (Using us in u.Usings) {
 				Assert.IsNotNull(us);

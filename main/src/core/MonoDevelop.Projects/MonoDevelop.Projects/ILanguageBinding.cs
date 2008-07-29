@@ -25,8 +25,7 @@ using System.Xml;
 
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
+using MonoDevelop.Projects.Parser;
 using MonoDevelop.Projects.CodeGeneration;
 
 namespace MonoDevelop.Projects

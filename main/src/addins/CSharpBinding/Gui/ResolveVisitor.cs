@@ -68,11 +68,11 @@ namespace MonoDevelop.CSharpBinding
 		
 		ResolveResult CreateResult (string fullTypeName)
 		{
-			MemberResolveResult result = new MemberResolveResult (null);
+			MemberResolveResult result = new MemberResolveResult ();
 			result.CallingType   = resolver.CallingType;
 			result.CallingMember = resolver.CallingMember;
 			if (!String.IsNullOrEmpty (fullTypeName))
-				result.ResolvedType  = DomReturnType.GetSharedReturnType (fullTypeName);
+				result.ResolvedType  = new DomReturnType (fullTypeName);
 			return result;
 		}
 		
@@ -83,7 +83,7 @@ namespace MonoDevelop.CSharpBinding
 		
 		ResolveResult CreateResult (ICompilationUnit unit, IReturnType type)
 		{
-			MemberResolveResult result = new MemberResolveResult (null);
+			MemberResolveResult result = new MemberResolveResult ();
 			result.CallingType   = resolver.CallingType;
 			result.CallingMember = resolver.CallingMember;
 			result.ResolvedType = type;
@@ -196,7 +196,7 @@ namespace MonoDevelop.CSharpBinding
 			ThisResolveResult result = new ThisResolveResult ();
 			result.CallingType   = resolver.CallingType;
 			result.CallingMember = resolver.CallingMember;
-			result.ResolvedType  = DomReturnType.GetSharedReturnType (new DomReturnType (resolver.CallingType));
+			result.ResolvedType  = new DomReturnType (resolver.CallingType);
 			return result;
 		}
 		
@@ -218,7 +218,7 @@ namespace MonoDevelop.CSharpBinding
 			return CreateResult (typeReferenceExpression.TypeReference);
 		}
 		
-		public override object VisitMemberReferenceExpression(MemberReferenceExpression fieldReferenceExpression, object data)
+		public override object VisitFieldReferenceExpression(FieldReferenceExpression fieldReferenceExpression, object data)
 		{
 			if (fieldReferenceExpression == null) {
 				return null;
@@ -230,12 +230,11 @@ namespace MonoDevelop.CSharpBinding
 					result.StaticResolve = true;
 					return result;
 				}
-//				if (fieldReferenceExpression.TargetObject is ThisReferenceExpression) {
-//					result = CreateResult (((TypeReferenceExpression)fieldReferenceExpression.TargetObject).TypeReference);
-//					result.StaticResolve = true;
-//					return result;
-//				}
-
+/*				if (fieldReferenceExpression.TargetObject is ThisReferenceExpression) {
+					result = CreateResult (((TypeReferenceExpression)fieldReferenceExpression.TargetObject).TypeReference);
+					result.StaticResolve = true;
+					return result;
+				}*/
 //				return fieldReferenceExpression.TargetObject.AcceptVisitor(this, data);
 			}
 			result = fieldReferenceExpression.TargetObject.AcceptVisitor(this, data) as ResolveResult;
@@ -247,7 +246,7 @@ namespace MonoDevelop.CSharpBinding
 				if (resolver.Dom.NamespaceExists (fullName))
 					return new NamespaceResolveResult (fullName);
 				
-				IType type = resolver.Dom.GetType (fullName, -1, true, true);
+				IType type = resolver.Dom.GetType (fullName, -1, true);
 				if (type != null) {
 					result = CreateResult (fullName);
 					result.StaticResolve = true;

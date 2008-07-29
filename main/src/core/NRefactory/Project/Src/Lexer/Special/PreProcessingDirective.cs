@@ -2,7 +2,7 @@
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="none" email=""/>
-//     <version>$Revision: 3120 $</version>
+//     <version>$Revision: 1965 $</version>
 // </file>
 
 using System;
@@ -12,7 +12,6 @@ namespace ICSharpCode.NRefactory
 {
 	public class PreprocessingDirective : AbstractSpecial
 	{
-		#region Conversion C# <-> VB
 		public static void VBToCSharp(IList<ISpecial> list)
 		{
 			for (int i = 0; i < list.Count; ++i) {
@@ -36,13 +35,10 @@ namespace ICSharpCode.NRefactory
 			} else if (cmd.Equals("#Region", StringComparison.InvariantCultureIgnoreCase)) {
 				cmd = "#region";
 			} else if (cmd.Equals("#If", StringComparison.InvariantCultureIgnoreCase)) {
-				cmd = "#if";
 				if (arg.ToLowerInvariant().EndsWith(" then"))
 					arg = arg.Substring(0, arg.Length - 5);
 			}
-			return new PreprocessingDirective(cmd, arg, dir.StartPosition, dir.EndPosition) {
-				Expression = dir.Expression
-			};
+			return new PreprocessingDirective(cmd, arg, dir.StartPosition, dir.EndPosition);
 		}
 		
 		public static void CSharpToVB(List<ISpecial> list)
@@ -79,46 +75,28 @@ namespace ICSharpCode.NRefactory
 			if (cmd.Length > 1) {
 				cmd = cmd.Substring(0, 2).ToUpperInvariant() + cmd.Substring(2);
 			}
-			return new PreprocessingDirective(cmd, arg, dir.StartPosition, dir.EndPosition) {
-				Expression = dir.Expression
-			};
+			return new PreprocessingDirective(cmd, arg, dir.StartPosition, dir.EndPosition);
 		}
-		#endregion
 		
 		string cmd;
 		string arg;
-		Ast.Expression expression = Ast.Expression.Null;
 		
-		/// <summary>
-		/// Gets the directive name, including '#'.
-		/// </summary>
 		public string Cmd {
 			get {
 				return cmd;
 			}
 			set {
-				cmd = value ?? string.Empty;
+				cmd = value;
 			}
 		}
 		
-		/// <summary>
-		/// Gets the directive argument.
-		/// </summary>
 		public string Arg {
 			get {
 				return arg;
 			}
 			set {
-				arg = value ?? string.Empty;
+				arg = value;
 			}
-		}
-		
-		/// <summary>
-		/// Gets/sets the expression (for directives that take an expression, e.g. #if and #elif).
-		/// </summary>
-		public Ast.Expression Expression {
-			get { return expression; }
-			set { expression = value ?? Ast.Expression.Null; }
 		}
 		
 		public override string ToString()
@@ -131,8 +109,8 @@ namespace ICSharpCode.NRefactory
 		public PreprocessingDirective(string cmd, string arg, Location start, Location end)
 			: base(start, end)
 		{
-			this.Cmd = cmd;
-			this.Arg = arg;
+			this.cmd = cmd;
+			this.arg = arg;
 		}
 		
 		public override object AcceptVisitor(ISpecialVisitor visitor, object data)

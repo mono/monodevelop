@@ -47,26 +47,10 @@ namespace MonoDevelop.Projects.Dom.Parser
 			return Parse (fileName, System.IO.File.ReadAllText (fileName));
 		}
 		
-		public virtual IExpressionFinder CreateExpressionFinder ()
-		{
-			return null;
-		}
-		
-		public virtual IResolver CreateResolver (ProjectDom dom, object editor, string fileName)
-		{
-			return null;
-		}
-		
+		public abstract IExpressionFinder CreateExpressionFinder ();
 		public abstract ICompilationUnit Parse (string fileName, string content);
-		public virtual IDocumentMetaInformation CreateMetaInformation (string text)
-		{
-			return CreateMetaInformation (new StringReader (text));
-		}
+		public abstract IDocumentMetaInformation CreateMetaInformation (Stream stream);
 		
-		public virtual IDocumentMetaInformation CreateMetaInformation (TextReader reader)
-		{
-			return null;
-		}
 		public virtual bool CanParseMimeType (string mimeType)
 		{
 			if (mimeTypes == null)
@@ -85,7 +69,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 		
 		public virtual bool CanParse (string fileName)
 		{
-			return false;
+			return true;
 //			return CanParseMimeType (IdeApp.Services.PlatformService.GetMimeTypeForUri (fileName));
 		}
 	}

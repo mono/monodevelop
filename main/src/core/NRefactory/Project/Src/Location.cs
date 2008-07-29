@@ -2,7 +2,7 @@
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
-//     <version>$Revision: 2659 $</version>
+//     <version>$Revision: 2087 $</version>
 // </file>
 
 using System;
@@ -11,7 +11,6 @@ namespace ICSharpCode.NRefactory
 {
 	/// <summary>
 	/// A line/column position.
-	/// NRefactory lines/columns are counting from one.
 	/// </summary>
 	public struct Location : IComparable<Location>, IEquatable<Location>
 	{
@@ -49,6 +48,11 @@ namespace ICSharpCode.NRefactory
 			get {
 				return x <= 0 && y <= 0;
 			}
+		}
+		
+		public System.Drawing.Point ToPoint ()
+		{
+			return new System.Drawing.Point (X, Y);
 		}
 		
 		public override string ToString()

@@ -23,14 +23,14 @@ using System.Drawing;
 using System.Collections;
 using System.Collections.Generic;
 using MonoDevelop.Core;
-using MonoDevelop.Projects.Dom;
+using MonoDevelop.Projects.Parser;
 using MonoDevelop.Projects;
 using CSharpBinding.Parser.SharpDevelopTree;
 using ICSharpCode.NRefactory.Parser;
 using ICSharpCode.NRefactory;
 
 namespace CSharpBinding.Parser
-{/*
+{
 	public class TParser : MonoDevelop.Projects.Parser.IParser
 	{
 		///<summary>IParser Interface</summary> 
@@ -71,9 +71,9 @@ namespace CSharpBinding.Parser
 									case "#endregion":
 										--deep;
 										if (deep == 0) {
-											//MonoDevelop.Projects.Parser.FoldingRegion region = new MonoDevelop.Projects.Parser.FoldingRegion (directive.Arg.Trim(), new DefaultRegion(directive.StartPosition.ToPoint (), new Point(nextDirective.EndPosition.X, nextDirective.EndPosition.Y)));
-											//region.DefaultIsFolded = true;
-//											cu.FoldingRegions.Add(region);
+											MonoDevelop.Projects.Parser.FoldingRegion region = new MonoDevelop.Projects.Parser.FoldingRegion (directive.Arg.Trim(), new DefaultRegion(directive.StartPosition.ToPoint (), new Point(nextDirective.EndPosition.X, nextDirective.EndPosition.Y)));
+											region.DefaultIsFolded = true;
+											cu.FoldingRegions.Add(region);
 											goto end;
 										}
 										break;
@@ -91,7 +91,7 @@ namespace CSharpBinding.Parser
 					case CommentType.Block:
 						if (comment.StartPosition.Line == comment.EndPosition.Line)
 							break;
-						cu.FoldingRegions.Add(new FoldingRegion ("", 
+						cu.FoldingRegions.Add(new FoldingRegion ("/* */", 
 						                                        new DefaultRegion(comment.StartPosition.Line,
 						                                                          comment.StartPosition.Column,
 						                                                          comment.EndPosition.Line,
@@ -152,10 +152,10 @@ namespace CSharpBinding.Parser
 					if (para != null && !String.IsNullOrEmpty (para.DefineSymbols)) {
 						string[] symbols = para.DefineSymbols.Split (';');
 						if (symbols != null) {
-//							((ICSharpCode.NRefactory.Parser.CSharp.Lexer)p.Lexer).ClearDefinedSymbols ();
-//							foreach (string symbol in symbols) {
-//								((ICSharpCode.NRefactory.Parser.CSharp.Lexer)p.Lexer).AddDefinedSymbol (symbol);
-//							}
+							((ICSharpCode.NRefactory.Parser.CSharp.Lexer)p.Lexer).ClearDefinedSymbols ();
+							foreach (string symbol in symbols) {
+								((ICSharpCode.NRefactory.Parser.CSharp.Lexer)p.Lexer).AddDefinedSymbol (symbol);
+							}
 						}
 					}
 				}
@@ -178,7 +178,7 @@ namespace CSharpBinding.Parser
 			System.Diagnostics.Debug.Assert(p.Errors.Count == errors.Count);
 			
 			RetrieveRegions (visitor.Cu, p.Lexer.SpecialTracker);
-			foreach (IType c in visitor.Cu.Classes)
+			foreach (IClass c in visitor.Cu.Classes)
 				c.Region.FileName = fileName;
 			AddCommentTags (visitor.Cu, p.Lexer.TagComments);
             return visitor.Cu;
@@ -207,11 +207,11 @@ namespace CSharpBinding.Parser
 			return new Resolver (parserContext).Resolve (expression, caretLineNumber, caretColumn, fileName, fileContent);
 		}
 	
-		public IMember ResolveIdentifier (IParserContext parserContext, string id, int caretLineNumber, int caretColumn, string fileName, string fileContent)
+		public ILanguageItem ResolveIdentifier (IParserContext parserContext, string id, int caretLineNumber, int caretColumn, string fileName, string fileContent)
 		{
 			return new Resolver (parserContext).ResolveIdentifier (parserContext, id, caretLineNumber, caretColumn, fileName, fileContent);
 		}
 		
 		///////// IParser Interface END
-	}*/
+	}
 }

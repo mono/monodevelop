@@ -2,7 +2,7 @@
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
-//     <version>$Revision: 2676 $</version>
+//     <version>$Revision: 915 $</version>
 // </file>
 
 using System;
@@ -10,8 +10,7 @@ using System.Collections.Generic;
 using System.CodeDom;
 using NUnit.Framework;
 using ICSharpCode.NRefactory.Parser;
-using ICSharpCode.NRefactory.Ast;
-using ICSharpCode.NRefactory.Visitors;
+using ICSharpCode.NRefactory.Parser.AST;
 
 namespace ICSharpCode.NRefactory.Tests.Output.CodeDom.Tests
 {
@@ -24,7 +23,7 @@ namespace ICSharpCode.NRefactory.Tests.Output.CodeDom.Tests
 			// InitializeComponents();
 			IdentifierExpression identifier = new IdentifierExpression("InitializeComponents");
 			InvocationExpression invocation = new InvocationExpression(identifier, new List<Expression>());
-			object output = invocation.AcceptVisitor(new CodeDomVisitor(), null);
+			object output = invocation.AcceptVisitor(new CodeDOMVisitor(), null);
 			Assert.IsTrue(output is CodeMethodInvokeExpression);
 			CodeMethodInvokeExpression mie = (CodeMethodInvokeExpression)output;
 			Assert.AreEqual("InitializeComponents", mie.Method.MethodName);
@@ -35,9 +34,9 @@ namespace ICSharpCode.NRefactory.Tests.Output.CodeDom.Tests
 		public void MethodOnThisReferenceInvocation()
 		{
 			// InitializeComponents();
-			MemberReferenceExpression field = new MemberReferenceExpression(new ThisReferenceExpression(), "InitializeComponents");
+			FieldReferenceExpression field = new FieldReferenceExpression(new ThisReferenceExpression(), "InitializeComponents");
 			InvocationExpression invocation = new InvocationExpression(field, new List<Expression>());
-			object output = invocation.AcceptVisitor(new CodeDomVisitor(), null);
+			object output = invocation.AcceptVisitor(new CodeDOMVisitor(), null);
 			Assert.IsTrue(output is CodeMethodInvokeExpression);
 			CodeMethodInvokeExpression mie = (CodeMethodInvokeExpression)output;
 			Assert.AreEqual("InitializeComponents", mie.Method.MethodName);
@@ -48,11 +47,11 @@ namespace ICSharpCode.NRefactory.Tests.Output.CodeDom.Tests
 		public void InvocationOfStaticMethod()
 		{
 			// System.Drawing.Color.FromArgb();
-			MemberReferenceExpression field = new MemberReferenceExpression(new IdentifierExpression("System"), "Drawing");
-			field = new MemberReferenceExpression(field, "Color");
-			field = new MemberReferenceExpression(field, "FromArgb");
+			FieldReferenceExpression field = new FieldReferenceExpression(new IdentifierExpression("System"), "Drawing");
+			field = new FieldReferenceExpression(field, "Color");
+			field = new FieldReferenceExpression(field, "FromArgb");
 			InvocationExpression invocation = new InvocationExpression(field, new List<Expression>());
-			object output = invocation.AcceptVisitor(new CodeDomVisitor(), null);
+			object output = invocation.AcceptVisitor(new CodeDOMVisitor(), null);
 			Assert.IsTrue(output is CodeMethodInvokeExpression);
 			CodeMethodInvokeExpression mie = (CodeMethodInvokeExpression)output;
 			Assert.AreEqual("FromArgb", mie.Method.MethodName);
@@ -75,10 +74,10 @@ namespace ICSharpCode.NRefactory.Tests.Output.CodeDom.Tests
 		panel1.BackColor = System.Drawing.SystemColors.Info;
 	}
 }";
-			TypeDeclaration decl = Ast.ParseUtilCSharp.ParseGlobal<TypeDeclaration>(code);
+			TypeDeclaration decl = ICSharpCode.NRefactory.Tests.AST.ParseUtilCSharp.ParseGlobal<TypeDeclaration>(code);
 			CompilationUnit cu = new CompilationUnit();
 			cu.AddChild(decl);
-			CodeNamespace ns = (CodeNamespace)cu.AcceptVisitor(new CodeDomVisitor(), null);
+			CodeNamespace ns = (CodeNamespace)cu.AcceptVisitor(new CodeDOMVisitor(), null);
 			Assert.AreEqual("A", ns.Types[0].Name);
 			Assert.AreEqual("closeButton", ns.Types[0].Members[0].Name);
 			Assert.AreEqual("M", ns.Types[0].Members[1].Name);

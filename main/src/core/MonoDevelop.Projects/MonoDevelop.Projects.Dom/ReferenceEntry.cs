@@ -30,6 +30,7 @@
 using System;
 using System.Collections;
 using MonoDevelop.Projects;
+using MonoDevelop.Projects.Parser;
 
 namespace MonoDevelop.Projects.Dom
 {	

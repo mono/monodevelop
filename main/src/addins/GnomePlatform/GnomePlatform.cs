@@ -72,7 +72,7 @@ namespace MonoDevelop.Platform
 
 		protected override string OnGetMimeTypeForUri (string uri)
 		{
-			return uri != null ? Gnome.Vfs.MimeType.GetMimeTypeForUri (ConvertFileNameToVFS (uri)) : null;
+			return uri != null ? Gnome.Vfs.MimeType.GetMimeTypeForUri (uri) : null;
 		}
 		
 		protected override bool OnGetMimeTypeIsText (string mimeType)
@@ -136,17 +136,10 @@ namespace MonoDevelop.Platform
 				if ((int)c < 32 || (int)c > 127)
 					return null;
 			}
-			return ConvertFileNameToVFS (filename);
+			filename = filename.Replace ("%", "%25");
+			filename = filename.Replace ("#", "%23");
+			return filename.Replace ("?", "%3F");
 		}
-		
-		static string ConvertFileNameToVFS (string fileName)
-		{
-			string result = fileName;
-			result = result.Replace ("%", "%25");
-			result = result.Replace ("#", "%23");
-			result = result.Replace ("?", "%3F");
-			return result;
-		}		
 		
 		Gdk.Pixbuf GetGnomeIcon (string name, Gtk.IconSize size)
 		{

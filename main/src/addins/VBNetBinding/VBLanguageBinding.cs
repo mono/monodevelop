@@ -28,8 +28,7 @@ using System.CodeDom.Compiler;
 
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
+using MonoDevelop.Projects.Parser;
 using MonoDevelop.Projects.CodeGeneration;
 using VBBinding.Parser;
 
@@ -41,7 +40,7 @@ namespace VBBinding
 		
 		VBBindingCompilerServices   compilerServices  = new VBBindingCompilerServices();
 		VBCodeProvider provider;
-		//TParser parser = new TParser ();
+		TParser parser = new TParser ();
 		
 		public string Language {
 			get {
@@ -84,7 +83,7 @@ namespace VBBinding
 		}
 		
 		public IParser Parser {
-			get { return null; }
+			get { return parser; }
 		}
 		
 		public IRefactorer Refactorer {

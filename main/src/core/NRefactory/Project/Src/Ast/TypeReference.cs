@@ -2,7 +2,7 @@
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
-//     <version>$Revision: 2191 $</version>
+//     <version>$Revision: 2035 $</version>
 // </file>
 
 using System;
@@ -197,7 +197,6 @@ namespace ICSharpCode.NRefactory.Ast
 				return pointerNestingLevel;
 			}
 			set {
-				Debug.Assert(this.IsNull == false);
 				pointerNestingLevel = value;
 			}
 		}
@@ -213,7 +212,6 @@ namespace ICSharpCode.NRefactory.Ast
 				return rankSpecifier;
 			}
 			set {
-				Debug.Assert(this.IsNull == false);
 				rankSpecifier = value;
 			}
 		}
@@ -235,7 +233,7 @@ namespace ICSharpCode.NRefactory.Ast
 			return typeReference ?? NullTypeReference.Instance;
 		}
 		
-		public static TypeReference Null {
+		public static NullTypeReference Null {
 			get {
 				return NullTypeReference.Instance;
 			}
@@ -356,9 +354,9 @@ namespace ICSharpCode.NRefactory.Ast
 		}
 	}
 
-	internal sealed class NullTypeReference : TypeReference
+	public class NullTypeReference : TypeReference
 	{
-		public static readonly NullTypeReference Instance = new NullTypeReference();
+		static NullTypeReference nullTypeReference = new NullTypeReference();
 		public override bool IsNull {
 			get {
 				return true;
@@ -368,7 +366,12 @@ namespace ICSharpCode.NRefactory.Ast
 		{
 			return null;
 		}
-		
+		public static NullTypeReference Instance {
+			get {
+				return nullTypeReference;
+			}
+		}
+		NullTypeReference() {}
 		public override string ToString()
 		{
 			return String.Format("[NullTypeReference]");

@@ -33,26 +33,25 @@ using System.Collections.Generic;
 using System.Text;
 using MonoDevelop.Core;
 using MonoDevelop.Projects.Text;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
+using MonoDevelop.Projects.Parser;
 
 namespace MonoDevelop.Projects.CodeGeneration
 {
 	public class CodeRefactorer
 	{
-		ProjectDom pdb;
+		IParserDatabase pdb;
 		Solution solution;
 		ITextFileProvider fileProvider;
 		
 		delegate void RefactorDelegate (IProgressMonitor monitor, RefactorerContext gctx, IRefactorer gen, string file);
 		
-		public CodeRefactorer (Solution solution, ProjectDom pdb)
+		public CodeRefactorer (Solution solution, IParserDatabase pdb)
 		{
 			this.solution = solution;
 			this.pdb = pdb;
 		}
 		
-		public CodeRefactorer (ProjectDom pdb)
+		public CodeRefactorer (IParserDatabase pdb)
 		{
 			this.pdb = pdb;
 		}
@@ -62,7 +61,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 			set { fileProvider = value; } 
 		}
 		
-		public bool ClassSupportsOperation (IType cls, RefactorOperations operation)
+		public bool ClassSupportsOperation (IClass cls, RefactorOperations operation)
 		{
 			IRefactorer r = GetGeneratorForClass (cls);
 			if (r == null)
@@ -86,7 +85,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 			return (r.SupportedOperations & operation) == operation;
 		}
 		
-		public void AddAttribute (IType cls, string name, params object[] parameters)
+		public void AddAttribute (IClass cls, string name, params object[] parameters)
 		{
 			CodeAttributeArgument[] args = new CodeAttributeArgument[parameters.Length];
 			for (int i = 0; i < parameters.Length; i++)
@@ -95,7 +94,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 			AddAttribute (cls, attr);
 		}
 
-		public void AddAttribute (IType cls, CodeAttributeDeclaration attr)
+		public void AddAttribute (IClass cls, CodeAttributeDeclaration attr)
 		{
 			RefactorerContext gctx = GetGeneratorContext (cls);
 			IRefactorer gen = GetGeneratorForClass (cls);
@@ -103,17 +102,17 @@ namespace MonoDevelop.Projects.CodeGeneration
 			gctx.Save ();
 		}
 
-		public IType CreateClass (Project project, string language, string directory, string namspace, CodeTypeDeclaration type)
+		public IClass CreateClass (Project project, string language, string directory, string namspace, CodeTypeDeclaration type)
 		{
-			ProjectDom ctx = ProjectDomService.GetDatabaseProjectDom (project);
+			IParserContext ctx = pdb.GetProjectParserContext (project);
 			RefactorerContext gctx = new RefactorerContext (ctx, fileProvider, null);
 			IRefactorer gen = Services.Languages.GetRefactorerForLanguage (language);
-			IType c = gen.CreateClass (gctx, directory, namspace, type);
+			IClass c = gen.CreateClass (gctx, directory, namspace, type);
 			gctx.Save ();
 			return c;
 		}
 		
-		public IType RenameClass (IProgressMonitor monitor, IType cls, string newName, RefactoryScope scope)
+		public IClass RenameClass (IProgressMonitor monitor, IClass cls, string newName, RefactoryScope scope)
 		{
 			try {
 				MemberReferenceCollection refs = new MemberReferenceCollection ();
@@ -139,7 +138,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 			}
 		}
 		
-		public MemberReferenceCollection FindClassReferences (IProgressMonitor monitor, IType cls, RefactoryScope scope)
+		public MemberReferenceCollection FindClassReferences (IProgressMonitor monitor, IClass cls, RefactoryScope scope)
 		{
 			MemberReferenceCollection refs = new MemberReferenceCollection ();
 			Refactor (monitor, cls, scope, new RefactorDelegate (new RefactorFindClassReferences (cls, refs).Refactor));
@@ -160,17 +159,17 @@ namespace MonoDevelop.Projects.CodeGeneration
 			return refs;
 		}
 		
-		public void FindOverridables (IType cls, List<IMember> classMembers, List<IMember> interfaceMembers,
+		public void FindOverridables (IClass cls, List<IMember> classMembers, List<IMember> interfaceMembers,
 		                              bool includeOverridenClassMembers, bool includeOverridenInterfaceMembers)
 		{
-			ProjectDom pctx = GetParserContext (cls);
-			List<IType> visited = new List<IType> ();
+			IParserContext pctx = GetParserContext (cls);
+			List<IClass> visited = new List<IClass> ();
 
 			FindOverridables (pctx, cls, cls, classMembers, interfaceMembers, visited, includeOverridenClassMembers, includeOverridenInterfaceMembers);
 		}
 
-		void FindOverridables (ProjectDom pctx, IType motherClass, IType cls, List<IMember> classMembers, List<IMember> interfaceMembers,
-		                       List<IType> visited, bool includeOverridenClassMembers, bool includeOverridenInterfaceMembers)
+		void FindOverridables (IParserContext pctx, IClass motherClass, IClass cls, List<IMember> classMembers, List<IMember> interfaceMembers,
+		                       List<IClass> visited, bool includeOverridenClassMembers, bool includeOverridenInterfaceMembers)
 		{
 			if (visited.Contains (cls))
 				return;
@@ -178,7 +177,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 
 			foreach (IReturnType rt in cls.BaseTypes)
 			{
-				IType baseCls = pctx.GetType (rt);
+				IClass baseCls = pctx.GetClass (rt.FullyQualifiedName, rt.GenericArguments, true, true);
 				if (baseCls == null)
 					continue;
 
@@ -198,16 +197,12 @@ namespace MonoDevelop.Projects.CodeGeneration
 						list.Add (m);
 				}
 				foreach (IProperty m in baseCls.Properties) {
-					if (m.IsIndexer)
-						continue;
 					if (m.IsInternal && motherClass.SourceProject != null && motherClass.SourceProject != m.DeclaringType.SourceProject)
 						continue;
 					if ((isInterface || m.IsVirtual || m.IsAbstract) && !m.IsSealed && (includeOverriden || !IsOverridenProperty (motherClass, m)))
 						list.Add (m);
 				}
-				foreach (IProperty m in baseCls.Properties) {
-					if (!m.IsIndexer)
-						continue;
+				foreach (IIndexer m in baseCls.Indexer) {
 					if (m.IsInternal && motherClass.SourceProject != null && motherClass.SourceProject != m.DeclaringType.SourceProject)
 						continue;
 					if ((isInterface || m.IsVirtual || m.IsAbstract) && !m.IsSealed && (includeOverriden || !IsOverridenIndexer (motherClass, m)))
@@ -225,7 +220,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 			}
 		}
 
-		bool IsOverridenMethod (IType cls, IMethod method)
+		bool IsOverridenMethod (IClass cls, IMethod method)
 		{
 			foreach (IMethod m in cls.Methods) {
 				if (method.Name == m.Name && IsEqual (method.Parameters, m.Parameters))
@@ -234,40 +229,36 @@ namespace MonoDevelop.Projects.CodeGeneration
 			return false;
 		}
 
-		bool IsOverridenProperty (IType cls, IProperty prop)
+		bool IsOverridenProperty (IClass cls, IProperty prop)
 		{
 			foreach (IProperty p in cls.Properties) {
-				if (p.IsIndexer)
-					continue;
 				if (prop.Name == p.Name)
 					return true;
 			}
 			return false;
 		}
 
-		bool IsOverridenIndexer (IType cls, IProperty idx)
+		bool IsOverridenIndexer (IClass cls, IIndexer idx)
 		{
-			foreach (IProperty i in cls.Properties) {
-				if (!i.IsIndexer)
-					continue;
+			foreach (IIndexer i in cls.Indexer) {
 				if (idx.Name == i.Name && IsEqual (idx.Parameters, i.Parameters))
 					return true;
 			}
 			return false;
 		}
 
-		bool IsEqual (IList<IParameter> c1, IList<IParameter> c2)
+		bool IsEqual (ParameterCollection c1, ParameterCollection c2)
 		{
 			if (c1.Count != c2.Count)
 				return false;
 			for (int i = 0; i < c1.Count; i++) {
-				if (c1[i].ReturnType.FullName != c2[i].ReturnType.FullName)
+				if (c1[i].ReturnType.FullyQualifiedName != c2[i].ReturnType.FullyQualifiedName)
 					return false;
 			}
 			return true;
 		}
 
-		public IMember AddMember (IType cls, CodeTypeMember member)
+		public IMember AddMember (IClass cls, CodeTypeMember member)
 		{
 			RefactorerContext gctx = GetGeneratorContext (cls);
 			IRefactorer gen = GetGeneratorForClass (cls);
@@ -276,7 +267,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 			return m;
 		}
 		
-		public IType AddMembers (IType cls, IEnumerable<CodeTypeMember> members, string foldingRegionName)
+		public IClass AddMembers (IClass cls, IEnumerable<CodeTypeMember> members, string foldingRegionName)
 		{
 			RefactorerContext gctx = GetGeneratorContext (cls);
 			IRefactorer gen = GetGeneratorForClass (cls);
@@ -285,7 +276,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 			return GetUpdatedClass (gctx, cls);
 		}
 		
-		public IMember ImplementMember (IType cls, IMember member, IReturnType privateReturnType)
+		public IMember ImplementMember (IClass cls, IMember member, IReturnType privateReturnType)
 		{
 			RefactorerContext gctx = GetGeneratorContext (cls);
 			IRefactorer gen = GetGeneratorForClass (cls);
@@ -294,7 +285,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 			return m;
 		}
 		
-		public IType ImplementMembers (IType cls, IEnumerable<KeyValuePair<IMember,IReturnType>> members,
+		public IClass ImplementMembers (IClass cls, IEnumerable<KeyValuePair<IMember,IReturnType>> members,
 		                                              string foldingRegionName)
 		{
 			RefactorerContext gctx = GetGeneratorContext (cls);
@@ -304,13 +295,13 @@ namespace MonoDevelop.Projects.CodeGeneration
 			return GetUpdatedClass (gctx, cls);
 		}
 		
-		string GenerateGenerics (IRefactorer gen, IType iface, IReturnType hintReturnType)
+		string GenerateGenerics (IRefactorer gen, IClass iface, IReturnType hintReturnType)
 		{
 			StringBuilder result = new StringBuilder ();
 			if (hintReturnType != null && hintReturnType.GenericArguments != null) {
 				result.Append ("<");
 				for (int i = 0; i < hintReturnType.GenericArguments.Count; i++)  {
-					result.Append (gen.ConvertToLanguageTypeName (RemoveGenericParamSuffix (hintReturnType.GenericArguments[i].FullName)));
+					result.Append (gen.ConvertToLanguageTypeName (RemoveGenericParamSuffix (hintReturnType.GenericArguments[i].FullyQualifiedName)));
 					result.Append (GenerateGenerics (gen, iface, hintReturnType.GenericArguments[i]));
 					if (i + 1 < hintReturnType.GenericArguments.Count)
 						result.Append (", ");
@@ -328,7 +319,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 			return name;
 		}
 		
-		static bool Equals (IList<IParameter> col1, IList<IParameter> col2)
+		static bool Equals (ParameterCollection col1, ParameterCollection col2)
 		{
 			if (col1 == null && col2 == null)
 				return true;
@@ -342,17 +333,8 @@ namespace MonoDevelop.Projects.CodeGeneration
 			}
 			return true;
 		}
-		string GetExplicitPrefix (IEnumerable<IReturnType> explicitInterfaces)
-		{	
-			if (explicitInterfaces != null) {
-				foreach (IReturnType retType in explicitInterfaces) {
-					return retType.FullName;
-				}
-			}
-			return null;
-		}
 		
-		public IType ImplementInterface (ICompilationUnit pinfo, IType klass, IType iface, bool explicitly, IType declaringClass, IReturnType hintReturnType)
+		public IClass ImplementInterface (IParseInformation pinfo, IClass klass, IClass iface, bool explicitly, IClass declaringClass, IReturnType hintReturnType)
 		{
 			RefactorerContext gctx = GetGeneratorContext (klass);
 			IRefactorer gen = GetGeneratorForClass (klass);
@@ -363,11 +345,11 @@ namespace MonoDevelop.Projects.CodeGeneration
 			
 			List<KeyValuePair<IMember,IReturnType>> toImplement = new List<KeyValuePair<IMember,IReturnType>> ();
 			
-			ProjectDom ctx = GetParserContext (klass);
+			IParserContext ctx = GetParserContext (klass);
 			foreach (IReturnType rType in iface.BaseTypes) {
-				if (rType.FullName == "System.Object")
+				if (rType.FullyQualifiedName == "System.Object")
 					continue;
-				IType baseClass = ctx.GetType (rType);
+				IClass baseClass = ctx.GetClass (rType.FullyQualifiedName, rType.GenericArguments, true, true);
 				if (baseClass == null)
 					LoggingService.LogError (GettextCatalog.GetString
 						("Error while implementing interface '{0}' in '{1}': base type '{2}' was not found.", klass, iface, baseClass)
@@ -376,18 +358,20 @@ namespace MonoDevelop.Projects.CodeGeneration
 					klass = ImplementInterface (pinfo, klass, baseClass, explicitly, declaringClass, hintReturnType);
 			}
 			
-			prefix = new DomReturnType (iface.FullName);
+			prefix = DefaultReturnType.FromString (iface.FullyQualifiedName);
 			
 			// Stub out non-implemented events defined by @iface
-			foreach (IEvent ev in iface.Events) {
+			for (i = 0; i < iface.Events.Count; i++) {
+				IEvent ev = iface.Events[i];
 				bool needsExplicitly = explicitly;
-				alreadyImplemented = false;
-				foreach (IEvent cev in klass.Events) {
+				
+				for (j = 0, alreadyImplemented = false; j < klass.Events.Count && !alreadyImplemented; j++) {
+					IEvent cev = klass.Events[j];
 					if (cev.Name == ev.Name && cev.IsExplicitDeclaration == needsExplicitly) {
 						if (!needsExplicitly && !cev.ReturnType.Equals (ev.ReturnType))
 							needsExplicitly = true;
 						else
-							alreadyImplemented = !needsExplicitly || (iface.FullName == GetExplicitPrefix (cev.ExplicitInterfaces));
+							alreadyImplemented = !needsExplicitly || (iface.FullyQualifiedName == cev.ExplicitDeclaration.ToString ());
 					}
 				}
 				
@@ -396,16 +380,17 @@ namespace MonoDevelop.Projects.CodeGeneration
 			}
 			
 			// Stub out non-implemented methods defined by @iface
-			foreach (IMethod method in iface.Methods) {
+			for (i = 0; i < iface.Methods.Count; i++) {
+				IMethod method = iface.Methods[i];
 				bool needsExplicitly = explicitly;
 				
-				alreadyImplemented = false;
-				foreach (IMethod cmet in klass.Methods) {
+				for (j = 0, alreadyImplemented = false; j < klass.Methods.Count&& !alreadyImplemented; j++) {
+					IMethod cmet = klass.Methods[j];
 					if (cmet.Name == method.Name && Equals (cmet.Parameters, method.Parameters) && cmet.IsExplicitDeclaration == needsExplicitly) {
 						if (!needsExplicitly && !cmet.ReturnType.Equals (method.ReturnType))
 							needsExplicitly = true;
 						else
-							alreadyImplemented = !needsExplicitly || (iface.FullName == GetExplicitPrefix (cmet.ExplicitInterfaces));
+							alreadyImplemented = !needsExplicitly || (iface.FullyQualifiedName == cmet.ExplicitDeclaration.ToString ());
 					}
 				}
 				
@@ -414,22 +399,44 @@ namespace MonoDevelop.Projects.CodeGeneration
 			}
 			
 			// Stub out non-implemented properties defined by @iface
-			foreach (IProperty prop in iface.Properties) {
+			for (i = 0; i < iface.Properties.Count; i++) {
+				IProperty prop = iface.Properties[i];
 				bool needsExplicitly = explicitly;
-				alreadyImplemented = false;
-				foreach (IProperty cprop in klass.Properties) {
+				
+				for (j = 0, alreadyImplemented = false; j < klass.Properties.Count&& !alreadyImplemented; j++) {
+					IProperty cprop = klass.Properties[j];
 					if (cprop.Name == prop.Name && cprop.IsExplicitDeclaration == needsExplicitly) {
 						if (!needsExplicitly && !cprop.ReturnType.Equals (prop.ReturnType))
 							needsExplicitly = true;
 						else
-							alreadyImplemented = !needsExplicitly || (iface.FullName == GetExplicitPrefix (cprop.ExplicitInterfaces));
+							alreadyImplemented = !needsExplicitly || (iface.FullyQualifiedName == cprop.ExplicitDeclaration.ToString ());
 					}
 				}
-
+				
 				if (!alreadyImplemented)
-					toImplement.Add (new KeyValuePair<IMember,IReturnType> (prop, needsExplicitly ? prefix : null)); 				}
+					toImplement.Add (new KeyValuePair<IMember,IReturnType> (prop, needsExplicitly ? prefix : null));
+			}
 			
-		
+			// Stub out non-implemented indexers defined by @iface
+			for (i = 0; i < iface.Indexer.Count; i++) {
+				IIndexer indexer = iface.Indexer[i];
+				bool needsExplicitly = explicitly;
+				
+				for (j = 0, alreadyImplemented = false; j < klass.Indexer.Count && !alreadyImplemented; j++) {
+					IIndexer cmet = klass.Indexer[j];
+					// Ignore the name in indexers, it has no use
+					if (Equals (cmet.Parameters, indexer.Parameters) && cmet.IsExplicitDeclaration == needsExplicitly) {
+						if (!needsExplicitly && !cmet.ReturnType.Equals (indexer.ReturnType))
+							needsExplicitly = true;
+						else
+							alreadyImplemented = !needsExplicitly || (iface.FullyQualifiedName == cmet.ExplicitDeclaration.ToString ());
+					}
+				}
+				
+				if (!alreadyImplemented)
+					toImplement.Add (new KeyValuePair<IMember,IReturnType> (indexer, needsExplicitly ? prefix : null));
+			}
+			
 			//implement members
 			ImplementMembers (klass, toImplement, iface.Name +  " implementation");
 			gctx.Save ();
@@ -437,15 +444,14 @@ namespace MonoDevelop.Projects.CodeGeneration
 			return GetUpdatedClass (gctx, klass);
 		}
 		
-		IType GetUpdatedClass (RefactorerContext gctx, IType klass)
+		IClass GetUpdatedClass (RefactorerContext gctx, IClass klass)
 		{
-			IEditableTextFile file = gctx.GetFile (klass.CompilationUnit.FileName);
-			ProjectDomService.Refresh (gctx.ParserContext.Project, file.Name, null, delegate () { return file.Text; });
-//			gctx.ParserContext.ParserDatabase.UpdateFile (file.Name, file.Text);
-			return gctx.ParserContext.GetType (klass.FullName, -1, true, false);
+			IEditableTextFile file = gctx.GetFile (klass.Region.FileName);
+			gctx.ParserContext.ParserDatabase.UpdateFile (file.Name, file.Text);
+			return gctx.ParserContext.GetClass (klass.FullyQualifiedName);
 		}
 		
-		public void RemoveMember (IType cls, IMember member)
+		public void RemoveMember (IClass cls, IMember member)
 		{
 			try {
 				RefactorerContext gctx = GetGeneratorContext (cls);
@@ -457,7 +463,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 			}
 		}
 		
-		public IMember RenameMember (IProgressMonitor monitor, IType cls, IMember member, string newName, RefactoryScope scope)
+		public IMember RenameMember (IProgressMonitor monitor, IClass cls, IMember member, string newName, RefactoryScope scope)
 		{
 			try {
 				MemberReferenceCollection refs = new MemberReferenceCollection ();
@@ -475,14 +481,14 @@ namespace MonoDevelop.Projects.CodeGeneration
 			}
 		}
 		
-		public MemberReferenceCollection FindMemberReferences (IProgressMonitor monitor, IType cls, IMember member, RefactoryScope scope)
+		public MemberReferenceCollection FindMemberReferences (IProgressMonitor monitor, IClass cls, IMember member, RefactoryScope scope)
 		{
 			MemberReferenceCollection refs = new MemberReferenceCollection ();
 			Refactor (monitor, cls, scope, new RefactorDelegate (new RefactorFindMemberReferences (cls, member, refs).Refactor));
 			return refs;
 		}
 		
-		public IMember ReplaceMember (IType cls, IMember oldMember, CodeTypeMember member)
+		public IMember ReplaceMember (IClass cls, IMember oldMember, CodeTypeMember member)
 		{
 			try {
 				RefactorerContext gctx = GetGeneratorContext (cls);
@@ -535,7 +541,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 			}
 		}
 		
-		public IMember EncapsulateField (IProgressMonitor monitor, IType cls, IField field, string propName, MemberAttributes attr, bool generateSetter, bool updateInternalRefs)
+		public IMember EncapsulateField (IProgressMonitor monitor, IClass cls, IField field, string propName, MemberAttributes attr, bool generateSetter, bool updateInternalRefs)
 		{
 			RefactoryScope scope;
 			
@@ -554,15 +560,16 @@ namespace MonoDevelop.Projects.CodeGeneration
 				
 				foreach (MemberReference mref in list) {
 					bool rename = true;
-					foreach (IType part in field.DeclaringType.Parts) {
-						if (mref.FileName == part.CompilationUnit.FileName) {
-							DomRegion region = part.BodyRegion;
+					
+					for (int i = 0; i < field.DeclaringType.Parts.Length; i++) {
+						if (mref.FileName == field.DeclaringType.Parts[i].Region.FileName) {
+							IRegion region = field.DeclaringType.Parts[i].BodyRegion;
 							
 							// check if the reference is internal to the class
-							if ((mref.Line > region.Start.Line ||
-							     (mref.Line == region.Start.Line && mref.Column >= region.Start.Column)) &&
-							    (mref.Line < region.End.Line ||
-							     (mref.Line == region.End.Line && mref.Column <= region.End.Column))) {
+							if ((mref.Line > region.BeginLine ||
+							     (mref.Line == region.BeginLine && mref.Column >= region.BeginColumn)) &&
+							    (mref.Line < region.EndLine ||
+							     (mref.Line == region.EndLine && mref.Column <= region.EndColumn))) {
 								// Internal to the class, don't rename
 								rename = false;
 								break;
@@ -585,46 +592,46 @@ namespace MonoDevelop.Projects.CodeGeneration
 			return m;
 		}
 		
-		public IType[] FindDerivedClasses (IType baseClass)
+		public IClass[] FindDerivedClasses (IClass baseClass)
 		{
 			ArrayList list = new ArrayList ();
 			
 			if (solution != null) {
 				foreach (Project p in solution.GetAllProjects ()) {
-					ProjectDom ctx = ProjectDomService.GetDatabaseProjectDom (p);
-					foreach (IType cls in ctx.Types) {
+					IParserContext ctx = pdb.GetProjectParserContext (p);
+					foreach (IClass cls in ctx.GetProjectContents ()) {
 						if (IsSubclass (ctx, baseClass, cls))
 							list.Add (cls);
 					}
 				}
 			} else {
-				ProjectDom ctx = GetParserContext (baseClass);
-				foreach (IType cls in ctx.Types) {
+				IParserContext ctx = GetParserContext (baseClass);
+				foreach (IClass cls in ctx.GetProjectContents ()) {
 					if (IsSubclass (ctx, baseClass, cls))
 						list.Add (cls);
 				}
 			}
-			return (IType[]) list.ToArray (typeof(IType));
+			return (IClass[]) list.ToArray (typeof(IClass));
 		}
 		
-		bool IsSubclass (ProjectDom ctx, IType baseClass, IType subclass)
+		bool IsSubclass (IParserContext ctx, IClass baseClass, IClass subclass)
 		{
 			foreach (IReturnType clsName in subclass.BaseTypes)
-				if (clsName.FullName == baseClass.FullName)
+				if (clsName.FullyQualifiedName == baseClass.FullyQualifiedName)
 					return true;
 
 			foreach (IReturnType clsName in subclass.BaseTypes) {
-				IType cls = ctx.GetType (clsName);
+				IClass cls = ctx.GetClass (clsName.FullyQualifiedName, true, true);
 				if (cls != null && IsSubclass (ctx, baseClass, cls))
 					return true;
 			}
 			return false;
 		}
 		
-		void Refactor (IProgressMonitor monitor, IType cls, RefactoryScope scope, RefactorDelegate refactorDelegate)
+		void Refactor (IProgressMonitor monitor, IClass cls, RefactoryScope scope, RefactorDelegate refactorDelegate)
 		{
 			if (scope == RefactoryScope.File || solution == null) {
-				string file = cls.CompilationUnit.FileName;
+				string file = cls.Region.FileName;
 				RefactorerContext gctx = GetGeneratorContext (cls);
 				IRefactorer gen = Services.Languages.GetRefactorerForFile (file);
 				if (gen == null)
@@ -634,7 +641,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 			}
 			else if (scope == RefactoryScope.Project)
 			{
-				string file = cls.CompilationUnit.FileName;
+				string file = cls.Region.FileName;
 				Project prj = GetProjectForFile (file);
 				if (prj == null)
 					return;
@@ -650,7 +657,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 		void Refactor (IProgressMonitor monitor, LocalVariable var, RefactorDelegate refactorDelegate)
 		{
 			RefactorerContext gctx = GetGeneratorContext (var);
-			string file = var.CompilationUnit.FileName;
+			string file = var.Region.FileName;
 			
 			IRefactorer gen = Services.Languages.GetRefactorerForFile (file);
 			if (gen == null)
@@ -664,12 +671,12 @@ namespace MonoDevelop.Projects.CodeGeneration
 		{
 			IMember member = param.DeclaringMember;
 			RefactorerContext gctx = GetGeneratorContext (member.DeclaringType);
-			IType cls = member.DeclaringType;
+			IClass cls = member.DeclaringType;
 			IRefactorer gen;
 			string file;
 			
-			foreach (IType part in cls.Parts) {
-				file = part.CompilationUnit.FileName;
+			for (int i = 0; i < cls.Parts.Length; i++) {
+				file = cls.Parts[i].Region.FileName;
 				
 				if ((gen = Services.Languages.GetRefactorerForFile (file)) == null)
 					continue;
@@ -696,11 +703,11 @@ namespace MonoDevelop.Projects.CodeGeneration
 		
 		RefactorerContext GetGeneratorContext (Project p)
 		{
-			ProjectDom ctx = ProjectDomService.GetDatabaseProjectDom (p);
+			IParserContext ctx = pdb.GetProjectParserContext (p);
 			return new RefactorerContext (ctx, fileProvider, null);
 		}
 		
-		RefactorerContext GetGeneratorContext (IType cls)
+		RefactorerContext GetGeneratorContext (IClass cls)
 		{
 			return new RefactorerContext (GetParserContext (cls), fileProvider, cls);
 		}
@@ -710,20 +717,22 @@ namespace MonoDevelop.Projects.CodeGeneration
 			return new RefactorerContext (GetParserContext (var), fileProvider, null);
 		}
 		
-		ProjectDom GetParserContext (IType cls)
+		IParserContext GetParserContext (IClass cls)
 		{
-			Project p = GetProjectForFile (cls.CompilationUnit.FileName);
+			Project p = GetProjectForFile (cls.Region.FileName);
 			if (p != null)
-				return ProjectDomService.GetDatabaseProjectDom (p);
-			return new ProjectDom ();
+				return pdb.GetProjectParserContext (p);
+			else
+				return pdb.GetFileParserContext (cls.Region.FileName);
 		}
 		
-		ProjectDom GetParserContext (LocalVariable var)
+		IParserContext GetParserContext (LocalVariable var)
 		{
-			Project p = GetProjectForFile (var.CompilationUnit.FileName);
+			Project p = GetProjectForFile (var.Region.FileName);
 			if (p != null)
-				return ProjectDomService.GetDatabaseProjectDom (p);
-			return new ProjectDom ();
+				return pdb.GetProjectParserContext (p);
+			else
+				return pdb.GetFileParserContext (var.Region.FileName);
 		}
 		
 		Project GetProjectForFile (string file)
@@ -737,23 +746,23 @@ namespace MonoDevelop.Projects.CodeGeneration
 			return null;
 		}
 		
-		IRefactorer GetGeneratorForClass (IType cls)
+		IRefactorer GetGeneratorForClass (IClass cls)
 		{
-			return Services.Languages.GetRefactorerForFile (cls.CompilationUnit.FileName);
+			return Services.Languages.GetRefactorerForFile (cls.Region.FileName);
 		}
 		
 		IRefactorer GetGeneratorForVariable (LocalVariable var)
 		{
-			return Services.Languages.GetRefactorerForFile (var.CompilationUnit.FileName);
+			return Services.Languages.GetRefactorerForFile (var.Region.FileName);
 		}
 	}
 	
 	class RefactorFindClassReferences
 	{
 		MemberReferenceCollection references;
-		IType cls;
+		IClass cls;
 		
-		public RefactorFindClassReferences (IType cls, MemberReferenceCollection references)
+		public RefactorFindClassReferences (IClass cls, MemberReferenceCollection references)
 		{
 			this.cls = cls;
 			this.references = references;
@@ -773,11 +782,11 @@ namespace MonoDevelop.Projects.CodeGeneration
 	
 	class RefactorFindMemberReferences
 	{
-		IType cls;
+		IClass cls;
 		MemberReferenceCollection references;
 		IMember member;
 		
-		public RefactorFindMemberReferences (IType cls, IMember member, MemberReferenceCollection references)
+		public RefactorFindMemberReferences (IClass cls, IMember member, MemberReferenceCollection references)
 		{
 			this.cls = cls;
 			this.references = references;

@@ -29,7 +29,9 @@
 using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Projects;
+using MonoDevelop.Projects.Ambience;
 using MonoDevelop.Core.Execution;
+using MonoDevelop.Projects.Parser;
 
 namespace MonoDevelop.Projects.Gui
 {
@@ -37,6 +39,10 @@ namespace MonoDevelop.Projects.Gui
 	{
 		static IconService icons;
 
+		internal static AmbienceService Ambience {
+			get { return MonoDevelop.Projects.Services.Ambience; }
+		}
+	
 		internal static LanguageBindingService Languages {
 			get { return MonoDevelop.Projects.Services.Languages; }
 		}

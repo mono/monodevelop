@@ -111,19 +111,16 @@ namespace MonoDevelop.AspNet
 			
 			//register the assembly and look up the class
 			RegisterReference (project);
-			
-			MonoDevelop.Projects.Dom.Parser.DatabaseProjectDom database =
-				MonoDevelop.Projects.Dom.Parser.ProjectDomService.GetDatabaseProjectDom (project);
-//FIXME: port to new DOM
-//			ctx.UpdateDatabase ();
-			MonoDevelop.Projects.Dom.IType cls = database.GetType (Type.TypeName, 0, true, true);
+			MonoDevelop.Projects.Parser.IParserContext ctx = 
+				MonoDevelop.Ide.Gui.IdeApp.Workspace.ParserDatabase.GetProjectParserContext (project);
+			ctx.UpdateDatabase ();
+			MonoDevelop.Projects.Parser.IClass cls = ctx.GetClass (Type.TypeName);
 			if (cls == null)
 				return tag;
 			
 			//look up the control prefix
-			string mime = MonoDevelop.Core.Gui.Services.PlatformService.GetMimeTypeForUri (path);
 			MonoDevelop.AspNet.Parser.AspNetCompilationUnit cu = 
-				MonoDevelop.Projects.Dom.Parser.ProjectDomService.Parse (project, path, mime)
+				ctx.GetParseInformation (path).BestCompilationUnit
 					as MonoDevelop.AspNet.Parser.AspNetCompilationUnit;
 			
 			System.Reflection.AssemblyName assemName = 

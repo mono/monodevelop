@@ -75,7 +75,18 @@
     <ProjectReference type="Gac" localcopy="True" refto="Mono.Cairo, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
     <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Debugger" />
   </References>
-  <GtkDesignInfo gtkVersion="2.8.3" />
+  <GtkDesignInfo isWidgetLibrary="True" gtkVersion="2.8.3">
+    <ExportedWidgets>
+      <Widget>MonoDevelop.SourceEditor.SourceEditorWidget</Widget>
+      <Widget>MonoDevelop.SourceEditor2.Highlighting</Widget>
+      <Widget>MonoDevelop.SourceEditor.OptionPanels.GeneralOptionsPanel</Widget>
+      <Widget>MonoDevelop.SourceEditor.OptionPanels.HighlightingPanel</Widget>
+      <Widget>MonoDevelop.SourceEditor.OptionPanels.MarkerPanel</Widget>
+      <Widget>MonoDevelop.SourceEditor.SearchAndReplaceWidget</Widget>
+      <Widget>MonoDevelop.SourceEditor.GotoLineNumberWidget</Widget>
+      <Widget>MonoDevelop.SourceEditor.MenuButton</Widget>
+    </ExportedWidgets>
+  </GtkDesignInfo>
   <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="../../..">
     <BuildFilesVar Sync="True" Name="FILES" />
     <DeployFilesVar />

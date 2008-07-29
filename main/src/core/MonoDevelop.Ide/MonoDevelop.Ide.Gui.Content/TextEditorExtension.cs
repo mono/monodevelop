@@ -29,9 +29,8 @@
 using System;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Gui.Completion;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Output;
-using MonoDevelop.Projects.Dom.Parser;
+using MonoDevelop.Projects.Parser;
+using MonoDevelop.Projects.Ambience;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Commands;
 
@@ -63,21 +62,22 @@ namespace MonoDevelop.Ide.Gui.Content
 			}
 		}
 		
-		protected ProjectDom GetParserContext ()
+		protected IParserContext GetParserContext ()
 		{
 			CheckInitialized ();
 			
 			IViewContent view = document.Window.ViewContent;
 			string file = view.IsUntitled ? view.UntitledName : view.ContentName;
 			Project project = view.Project;
-			//IParserDatabase pdb = IdeApp.Workspace.ParserDatabase;
+			IParserDatabase pdb = IdeApp.Workspace.ParserDatabase;
 			
 			if (project != null)
-				return ProjectDomService.GetDatabaseProjectDom (project);
-			return new ProjectDom ();
+				return pdb.GetProjectParserContext (project);
+			else
+				return pdb.GetFileParserContext (file);
 		}
 		
-		protected Ambience GetAmbience ()
+		protected MonoDevelop.Projects.Ambience.Ambience GetAmbience ()
 		{
 			CheckInitialized ();
 			
@@ -88,7 +88,7 @@ namespace MonoDevelop.Ide.Gui.Content
 				return project.Ambience;
 			else {
 				string file = view.IsUntitled ? view.UntitledName : view.ContentName;
-				return AmbienceService.GetAmbienceForFile (file);
+				return MonoDevelop.Projects.Services.Ambience.GetAmbienceForFile (file);
 			}
 		}
 		

@@ -2,16 +2,16 @@
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Markus Palme" email="MarkusPalme@gmx.de"/>
-//     <version>$Revision: 1634 $</version>
+//     <version>$Revision$</version>
 // </file>
 
 using System;
 using System.IO;
 using NUnit.Framework;
 using ICSharpCode.NRefactory.Parser;
-using ICSharpCode.NRefactory.Ast;
+using ICSharpCode.NRefactory.Parser.AST;
 
-namespace ICSharpCode.NRefactory.Tests.Ast
+namespace ICSharpCode.NRefactory.Tests.AST
 {
 	[TestFixture]
 	public class CustomEventTests

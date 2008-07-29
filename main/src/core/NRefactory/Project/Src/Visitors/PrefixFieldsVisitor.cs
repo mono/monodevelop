@@ -2,7 +2,7 @@
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
-//     <version>$Revision: 2819 $</version>
+//     <version>$Revision: 1609 $</version>
 // </file>
 
 using System;
@@ -121,18 +121,18 @@ namespace ICSharpCode.NRefactory.Visitors
 			return base.VisitIdentifierExpression(identifierExpression, data);
 		}
 		
-		public override object VisitMemberReferenceExpression(MemberReferenceExpression fieldReferenceExpression, object data)
+		public override object VisitFieldReferenceExpression(FieldReferenceExpression fieldReferenceExpression, object data)
 		{
 			if (fieldReferenceExpression.TargetObject is ThisReferenceExpression) {
-				string name = fieldReferenceExpression.MemberName;
+				string name = fieldReferenceExpression.FieldName;
 				foreach (VariableDeclaration var in fields) {
 					if (var.Name == name) {
-						fieldReferenceExpression.MemberName = prefix + name;
+						fieldReferenceExpression.FieldName = prefix + name;
 						break;
 					}
 				}
 			}
-			return base.VisitMemberReferenceExpression(fieldReferenceExpression, data);
+			return base.VisitFieldReferenceExpression(fieldReferenceExpression, data);
 		}
 		
 		bool IsLocal(string name)

@@ -51,8 +51,9 @@ namespace MonoDevelop.AspNet.Gui
 	
 	public class AspNetEditorExtension : CompletionTextEditorExtension, IOutlinedDocument, IPathedDocument
 	{
-		AspNetCompilationUnit lastCU;
+		object lockObj = new object ();
 		DocumentStateTracker<S.Parser> tracker;
+		MonoDevelop.AspNet.Parser.AspNetCompilationUnit lastCU = null;
 		
 		Gtk.TreeView outlineTreeView;
 		Gtk.TreeStore outlineTreeStore;
@@ -77,7 +78,7 @@ namespace MonoDevelop.AspNet.Gui
 			S.Parser parser = new S.Parser (new S.XmlFreeState (), false);
 			tracker = new DocumentStateTracker<S.Parser> (parser, Editor);
 			
-			MonoDevelop.Projects.Dom.Parser.ProjectDomService.CompilationUnitUpdated += OnParseInformationChanged;
+			MonoDevelop.Ide.Gui.IdeApp.Workspace.ParserDatabase.ParseInformationChanged += OnParseInformationChanged;
 			
 			//ensure that the schema service is initialised, or code completion may take a couple of seconds to trigger
 			HtmlSchemaService.Initialise ();
@@ -87,16 +88,18 @@ namespace MonoDevelop.AspNet.Gui
 		{
 			if (tracker != null) {
 				tracker = null;
-				MonoDevelop.Projects.Dom.Parser.ProjectDomService.CompilationUnitUpdated 
+				MonoDevelop.Ide.Gui.IdeApp.Workspace.ParserDatabase.ParseInformationChanged 
 					-= OnParseInformationChanged;
 				base.Dispose ();
 			}
 		}
 		
-		void OnParseInformationChanged (object sender, MonoDevelop.Projects.Dom.CompilationUnitEventArgs args)
+		void OnParseInformationChanged (object sender, MonoDevelop.Projects.Parser.ParseInformationEventArgs args)
 		{
-			if (this.FileName == args.Unit.FileName && args.Unit is MonoDevelop.AspNet.Parser.AspNetCompilationUnit)
-				lastCU = (MonoDevelop.AspNet.Parser.AspNetCompilationUnit) args.Unit;
+			if (args.FileName == FileName)
+				lastCU = args.ParseInformation.MostRecentCompilationUnit
+					as MonoDevelop.AspNet.Parser.AspNetCompilationUnit;
+			
 			RefreshOutline ();
 		}
 		
@@ -104,7 +107,10 @@ namespace MonoDevelop.AspNet.Gui
 		
 		#region Convenience accessors
 		
-		MonoDevelop.AspNet.Parser.AspNetCompilationUnit CU { get { return lastCU; } }
+		MonoDevelop.AspNet.Parser.AspNetCompilationUnit CU {
+			get { lock (lockObj) { return lastCU; } }
+			set { lock (lockObj) { lastCU = value; } }
+		}
 		
 		protected ITextBuffer Buffer {
 			get {
@@ -405,7 +411,7 @@ namespace MonoDevelop.AspNet.Gui
 		
 		static void AddAspTags (CodeCompletionDataProvider provider, Document doc, S.XName parentName)
 		{
-			foreach (MonoDevelop.Projects.Dom.IType cls in doc.ReferenceManager.ListControlClasses ())
+			foreach (MonoDevelop.Projects.Parser.IClass cls in doc.ReferenceManager.ListControlClasses ())
 				provider.AddCompletionData (
 				    new CodeCompletionData ("asp:" + cls.Name, Gtk.Stock.GoForward, cls.Documentation));
 		}
@@ -417,49 +423,46 @@ namespace MonoDevelop.AspNet.Gui
 			Debug.Assert (name.HasPrefix);
 			Debug.Assert (doc != null);
 			
-			//get a parser database
-			MonoDevelop.Projects.Dom.Parser.DatabaseProjectDom database = null;
-			
+			//get a parser context
+			MonoDevelop.Projects.Parser.IParserContext ctx = null;
 			if (doc.Project != null)
-				database = MonoDevelop.Projects.Dom.Parser.ProjectDomService.GetDatabaseProjectDom (doc.Project);
-			//else
+				ctx = MonoDevelop.Ide.Gui.IdeApp.Workspace.ParserDatabase.GetProjectParserContext (doc.Project);
+			else
 				//FIXME use correct runtime
-				//FIXME: port to new parser DB
-				//projectDatabase = MonoDevelop.Ide.Gui.IdeApp.Workspace.ParserDatabase.GetAssemblyParserContext ("System.Web");
-			
-			if (database == null) {
+				ctx = MonoDevelop.Ide.Gui.IdeApp.Workspace.ParserDatabase.GetAssemblyParserContext ("System.Web");
+			if (ctx == null) {
 				LoggingService.LogWarning ("Could not obtain parser context in AddAspAttributeCompletionData");
 				return;
 			}
 			
-			MonoDevelop.Projects.Dom.IType controlClass = doc.ReferenceManager.GetControlType (name.Prefix, name.Name);
+			MonoDevelop.Projects.Parser.IClass controlClass = doc.ReferenceManager.GetControlType (name.Prefix, name.Name);
 			if (controlClass == null) {
-				controlClass = database.GetType ("System.Web.UI.WebControls.WebControl", 0, true, true);
+				controlClass = ctx.GetClass ("System.Web.UI.WebControls.WebControl");
 				if (controlClass == null) {
-					LoggingService.LogWarning ("Could not obtain IType for System.Web.UI.WebControls.WebControl");
+					LoggingService.LogWarning ("Could not obtain IClass for System.Web.UI.WebControls.WebControl");
 					return;
 				}
 			}
 			
-			AddControlMembers (provider, database, doc, controlClass, existingAtts);
+			AddControlMembers (provider, ctx, doc, controlClass, existingAtts);
 		}
 		
 		static void AddControlMembers (CodeCompletionDataProvider provider,
-		    MonoDevelop.Projects.Dom.Parser.DatabaseProjectDom database, Document doc,
-		    MonoDevelop.Projects.Dom.IType controlClass, Dictionary<string, string> existingAtts)
+		    MonoDevelop.Projects.Parser.IParserContext ctx, Document doc,
+		    MonoDevelop.Projects.Parser.IClass controlClass, Dictionary<string, string> existingAtts)
 		{
 			//add atts only if they're not already in the tag
-			foreach (MonoDevelop.Projects.Dom.IProperty prop 
-			    in GetUniqueMembers<MonoDevelop.Projects.Dom.IProperty> (GetAllProperties (database, controlClass)))
+			foreach (MonoDevelop.Projects.Parser.IProperty prop 
+			    in GetUniqueMembers<MonoDevelop.Projects.Parser.IProperty> (GetAllProperties (ctx, controlClass)))
 				if (prop.IsPublic && (existingAtts == null || existingAtts.ContainsKey (prop.Name)))
-					provider.AddCompletionData (new CodeCompletionData (prop.Name, prop.StockIcon, prop.Documentation));
+					provider.AddCompletionData (new CodeCompletionData (prop.Name, "md-property", prop.Documentation));
 			
 			//similarly add events
-			foreach (MonoDevelop.Projects.Dom.IEvent eve 
-			    in GetUniqueMembers<MonoDevelop.Projects.Dom.IEvent> (GetAllEvents (database, controlClass))) {
+			foreach (MonoDevelop.Projects.Parser.IEvent eve 
+			    in GetUniqueMembers<MonoDevelop.Projects.Parser.IEvent> (GetAllEvents (ctx, controlClass))) {
 				string eveName = "On" + eve.Name;
 				if (eve.IsPublic && (existingAtts == null || existingAtts.ContainsKey (eveName)))
-					provider.AddCompletionData (new CodeCompletionData (eveName, eve.StockIcon, eve.Documentation));
+					provider.AddCompletionData (new CodeCompletionData (eveName, "md-event", eve.Documentation));
 			}
 		}
 		
@@ -470,94 +473,87 @@ namespace MonoDevelop.AspNet.Gui
 			Debug.Assert (tagName.IsValid && tagName.HasPrefix);
 			Debug.Assert (attName.IsValid && !attName.HasPrefix);
 			
-			MonoDevelop.Projects.Dom.IType controlClass = null;
+			MonoDevelop.Projects.Parser.IClass controlClass = null;
 			if (cu != null)
-				controlClass = cu.Document.ReferenceManager.GetControlType (tagName.Prefix, tagName.Name);
+				cu.Document.ReferenceManager.GetControlType (tagName.Prefix, tagName.Name);
 			if (controlClass == null) {
 				//FIXME: respect runtime version
-				//FIXME: port to new MD DOM
-				//MonoDevelop.Projects.Parser.IParserContext sysWebContext =
-				//	MonoDevelop.Ide.Gui.IdeApp.Workspace.ParserDatabase.GetAssemblyParserContext ("System.Web");
-				//if (sysWebContext == null)
-				//	return;
+				MonoDevelop.Projects.Parser.IParserContext sysWebContext =
+					MonoDevelop.Ide.Gui.IdeApp.Workspace.ParserDatabase.GetAssemblyParserContext ("System.Web");
+				if (sysWebContext == null)
+					return;
 				
-				//controlClass = sysWebContext.GetClass ("System.Web.UI.WebControls.WebControl");
-				//if (controlClass == null)
-					LoggingService.LogWarning ("Could not obtain IType for System.Web.UI.WebControls.WebControl");
-				return;
+				controlClass = sysWebContext.GetClass ("System.Web.UI.WebControls.WebControl");
+				if (controlClass == null)
+					LoggingService.LogWarning ("Could not obtain IClass for System.Web.UI.WebControls.WebControl");
 			}
 			
 			//find the codebehind class
-			MonoDevelop.Projects.Dom.IType codeBehindClass = null;
-			MonoDevelop.Projects.Dom.Parser.DatabaseProjectDom projectDatabase = null;
-			if (cu != null && cu.Document.Project != null) {
-				projectDatabase = MonoDevelop.Projects.Dom.Parser.ProjectDomService.GetDatabaseProjectDom
-					(cu.Document.Project);
-			}
-			
-			if (projectDatabase != null && !string.IsNullOrEmpty (cu.PageInfo.InheritedClass))
-				codeBehindClass = projectDatabase.GetType (cu.PageInfo.InheritedClass, 0, false, false);
+			MonoDevelop.Projects.Parser.IClass codeBehindClass = null;
+			MonoDevelop.Projects.Parser.IParserContext projectContext = null;
+			if (cu != null && cu.Document.Project != null)
+				projectContext = 
+					MonoDevelop.Ide.Gui.IdeApp.Workspace.ParserDatabase.GetProjectParserContext (
+					    cu.Document.Project);
+			if (projectContext != null && !string.IsNullOrEmpty (cu.PageInfo.InheritedClass))
+				codeBehindClass = projectContext.GetClass (cu.PageInfo.InheritedClass);
 			
 			//if it's an event, suggest compatible methods 
 			if (codeBehindClass != null && attName.Name.StartsWith ("On")) {
 				string eventName = attName.Name.Substring (2);
-				foreach (MonoDevelop.Projects.Dom.IEvent ev in GetAllEvents (projectDatabase, controlClass)) {
+				foreach (MonoDevelop.Projects.Parser.IEvent ev in GetAllEvents (projectContext, controlClass)) {
 					if (ev.Name == eventName) {
-//FIXME: port
-//						System.CodeDom.CodeMemberMethod domMethod = 
-//							BindingService.MDDomToCodeDomMethod (ev, projectDatabase);
-//						if (domMethod == null)
-//							return;
+						System.CodeDom.CodeMemberMethod domMethod = 
+							BindingService.MDDomToCodeDomMethod (ev, projectContext);
+						if (domMethod == null)
+							return;
 						
-//						foreach (string meth 
-//						    in BindingService.GetCompatibleMethodsInClass (codeBehindClass, domMethod))
-//						{
-//							provider.AddCompletionData (new CodeCompletionData (meth, "md-method",
-//							    "A compatible method in the CodeBehind class"));
-//						}
+						foreach (string meth 
+						    in BindingService.GetCompatibleMethodsInClass (codeBehindClass, domMethod))
+						{
+							provider.AddCompletionData (new CodeCompletionData (meth, "md-method",
+							    "A compatible method in the CodeBehind class"));
+						}
 						
-//						string suggestedIdentifier = ev.Name;
-//						if (existingAtts != null && !existingAtts.ContainsKey ("id") 
-//						    && !string.IsNullOrEmpty (existingAtts["id"]))
-//						{
-//							suggestedIdentifier = existingAtts["id"] + "_" + suggestedIdentifier;
-//						}
-//							
-//						domMethod.Name = BindingService.GenerateIdentifierUniqueInClass
-//							(projectContext, codeBehindClass, suggestedIdentifier);
-//						provider.AddCompletionData (
-//						    new SuggestedHandlerCompletionData (cu.Document.Project, domMethod, codeBehindClass,
-//						        MonoDevelop.AspNet.CodeBehind.GetNonDesignerClass (codeBehindClass))
-//						    );
+						string suggestedIdentifier = ev.Name;
+						if (existingAtts != null && !existingAtts.ContainsKey ("id") 
+						    && !string.IsNullOrEmpty (existingAtts["id"]))
+						{
+							suggestedIdentifier = existingAtts["id"] + "_" + suggestedIdentifier;
+						}
+							
+						domMethod.Name = BindingService.GenerateIdentifierUniqueInClass
+							(projectContext, codeBehindClass, suggestedIdentifier);
+						provider.AddCompletionData (
+						    new SuggestedHandlerCompletionData (cu.Document.Project, domMethod, codeBehindClass,
+						        MonoDevelop.AspNet.CodeBehind.GetNonDesignerClass (codeBehindClass))
+						    );
 						return;
 					}
 				}
 			}
 			
-			if (projectDatabase == null) {
-				//FIXME: respect runtime version
-				//FIXME: port to new parser DB
-				//projectDatabase = MonoDevelop.Ide.Gui.IdeApp.Workspace.ParserDatabase.GetAssemblyParserContext ("System.Web");
-			}
-			
-			if (projectDatabase == null) {
-				LoggingService.LogWarning ("Could not obtain parser context in AddAspAttributeCompletionData");
+			//FIXME: respect runtime version
+			if (projectContext == null)
+				projectContext = 
+					MonoDevelop.Ide.Gui.IdeApp.Workspace.
+					ParserDatabase.GetAssemblyParserContext ("System.Web");
+			if (projectContext == null)
 				return;
-			}
 			
 			//if it's a property and is an enum or bool, suggest valid values
-			foreach (MonoDevelop.Projects.Dom.IProperty prop in GetAllProperties (projectDatabase, controlClass)) {
+			foreach (MonoDevelop.Projects.Parser.IProperty prop in GetAllProperties (projectContext, controlClass)) {
 				if (prop.Name != attName.Name)
 					continue;
 				
 				//boolean completion
-				if (prop.ReturnType.FullName == "System.Boolean") {
+				if (prop.ReturnType.FullyQualifiedName == "System.Boolean") {
 					AddBooleanCompletionData (provider);
 					return;
 				}
 				
 				//color completion
-				if (prop.ReturnType.FullName == "System.Drawing.Color") {
+				if (prop.ReturnType.FullyQualifiedName == "System.Drawing.Color") {
 					System.Drawing.ColorConverter conv = new System.Drawing.ColorConverter ();
 					foreach (System.Drawing.Color c in conv.GetStandardValues (null)) {
 						if (c.IsSystemColor)
@@ -569,9 +565,10 @@ namespace MonoDevelop.AspNet.Gui
 				}
 				
 				//enum completion
-				MonoDevelop.Projects.Dom.IType retCls = projectDatabase.GetType (prop.ReturnType);
-				if (retCls != null && retCls.ClassType == MonoDevelop.Projects.Dom.ClassType.Enum) {
-					foreach (MonoDevelop.Projects.Dom.IField enumVal in retCls.Fields)
+				MonoDevelop.Projects.Parser.IClass retCls = 
+					projectContext.GetClass (prop.ReturnType.FullyQualifiedName, true, false);
+				if (retCls != null && retCls.ClassType == MonoDevelop.Projects.Parser.ClassType.Enum) {
+					foreach (MonoDevelop.Projects.Parser.IField enumVal in retCls.Fields)
 						if (enumVal.IsPublic && enumVal.IsStatic)
 							provider.AddCompletionData (
 							    new CodeCompletionData (enumVal.Name, "md-literal", enumVal.Documentation));
@@ -580,7 +577,7 @@ namespace MonoDevelop.AspNet.Gui
 			}
 		}
 		
-		static IEnumerable<T> GetUniqueMembers<T> (IEnumerable<T> members) where T : MonoDevelop.Projects.Dom.IMember
+		static IEnumerable<T> GetUniqueMembers<T> (IEnumerable<T> members) where T : MonoDevelop.Projects.Parser.IMember
 		{
 			Dictionary <string, bool> existingItems = new Dictionary<string,bool> ();
 			foreach (T item in members) {
@@ -591,32 +588,32 @@ namespace MonoDevelop.AspNet.Gui
 			}
 		}
 		
-		static IEnumerable<MonoDevelop.Projects.Dom.IProperty> GetAllProperties (
-		    MonoDevelop.Projects.Dom.Parser.DatabaseProjectDom projectDatabase,
-		    MonoDevelop.Projects.Dom.IType cls)
+		static IEnumerable<MonoDevelop.Projects.Parser.IProperty> GetAllProperties (
+		    MonoDevelop.Projects.Parser.IParserContext ctx,
+		    MonoDevelop.Projects.Parser.IClass cls)
 		{
-			foreach (MonoDevelop.Projects.Dom.IProperty prop in cls.Properties)
+			foreach (MonoDevelop.Projects.Parser.IProperty prop in cls.Properties)
 				yield return prop;
 			
-			foreach (MonoDevelop.Projects.Dom.IReturnType rt in cls.BaseTypes) {
-				MonoDevelop.Projects.Dom.IType baseCls = projectDatabase.GetType (rt);
+			foreach (MonoDevelop.Projects.Parser.IReturnType rt in cls.BaseTypes) {
+				MonoDevelop.Projects.Parser.IClass baseCls = ctx.GetClass (rt.FullyQualifiedName);
 				if (baseCls != null)
-					foreach (MonoDevelop.Projects.Dom.IProperty prop in GetAllProperties (projectDatabase, baseCls))
+					foreach (MonoDevelop.Projects.Parser.IProperty prop in GetAllProperties (ctx, baseCls))
 					    yield return prop;
 			}
 		}
 		
-		static IEnumerable<MonoDevelop.Projects.Dom.IEvent> GetAllEvents (
-		    MonoDevelop.Projects.Dom.Parser.DatabaseProjectDom projectDatabase,
-		    MonoDevelop.Projects.Dom.IType cls)
+		static IEnumerable<MonoDevelop.Projects.Parser.IEvent> GetAllEvents (
+		    MonoDevelop.Projects.Parser.IParserContext ctx,
+		    MonoDevelop.Projects.Parser.IClass cls)
 		{
-			foreach (MonoDevelop.Projects.Dom.IEvent ev in cls.Events)
+			foreach (MonoDevelop.Projects.Parser.IEvent ev in cls.Events)
 				yield return ev;
 			
-			foreach (MonoDevelop.Projects.Dom.IReturnType rt in cls.BaseTypes) {
-				MonoDevelop.Projects.Dom.IType baseCls = projectDatabase.GetType (rt);
+			foreach (MonoDevelop.Projects.Parser.IReturnType rt in cls.BaseTypes) {
+				MonoDevelop.Projects.Parser.IClass baseCls = ctx.GetClass (rt.FullyQualifiedName, true, false);
 				if (baseCls != null)
-					foreach (MonoDevelop.Projects.Dom.IEvent ev in GetAllEvents (projectDatabase, baseCls))
+					foreach (MonoDevelop.Projects.Parser.IEvent ev in GetAllEvents (ctx, baseCls))
 					    yield return ev;
 			}
 		}
@@ -901,10 +898,10 @@ namespace MonoDevelop.AspNet.Gui
 				return;
 			
 			outlineTreeStore.Clear ();
-			if (CU != null) {
+			if (lastCU != null) {
 				DateTime start = DateTime.Now;
-				ParentNode p = CU.Document.RootNode;
-//				Gtk.TreeIter iter = outlineTreeStore.AppendValues (System.IO.Path.GetFileName (CU.Document.FilePath), p);
+				ParentNode p = lastCU.Document.RootNode;
+//				Gtk.TreeIter iter = outlineTreeStore.AppendValues (System.IO.Path.GetFileName (lastCU.Document.FilePath), p);
 				BuildTreeChildren (outlineTreeStore, Gtk.TreeIter.Zero, p);
 				outlineTreeView.ExpandAll ();
 				LoggingService.LogDebug ("Built ASP.NET outline in {0}ms", (DateTime.Now - start).Milliseconds);

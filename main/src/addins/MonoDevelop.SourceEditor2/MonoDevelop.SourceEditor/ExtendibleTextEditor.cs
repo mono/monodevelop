@@ -34,8 +34,7 @@ using Mono.TextEditor;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
+using MonoDevelop.Projects.Parser;
 using MonoDevelop.Projects.Gui.Completion;
 using MonoDevelop.Components.Commands;
 using Mono.TextEditor.Highlighting;
@@ -271,33 +270,29 @@ namespace MonoDevelop.SourceEditor
 				return null;
 		}
 		
-		public ResolveResult GetLanguageItem (int offset)
+		public ILanguageItem GetLanguageItem (int offset)
 		{
 			string txt = this.Document.Text;
 			string fileName = view.ContentName;
 			if (fileName == null)
 				fileName = view.UntitledName;
-			MonoDevelop.Ide.Gui.Document doc = IdeApp.Workbench.GetDocument (fileName);
-			if (doc == null)
-				return null;
-			IParser parser = ProjectDomService.GetParser (null, Document.MimeType, fileName);
-			if (parser == null)
-				return null;
-			IResolver         resolver         = parser.CreateResolver (ProjectDomService.GetDatabaseProjectDom (doc.Project), doc, fileName);
-			IExpressionFinder expressionFinder = parser.CreateExpressionFinder ();
-			if (resolver == null || expressionFinder == null) 
+			
+			IParserContext ctx = view.GetParserContext ();
+			if (ctx == null)
 				return null;
 			
-			ExpressionResult expressionResult = expressionFinder.FindFullExpression (txt, offset);
+			IExpressionFinder expressionFinder = null;
+			if (fileName != null)
+				expressionFinder = ctx.GetExpressionFinder (fileName);
 			
-			if (expressionResult == null) 
-				return null;
-			DocumentLocation loc = Document.OffsetToLocation (offset);
-			ResolveResult resolveResult = resolver.Resolve (expressionResult, new DomLocation (loc.Line + 1, loc.Column + 1));
-			if (resolveResult == null) 
+			string expression = expressionFinder == null ? TextUtilities.GetExpressionBeforeOffset (view, offset) : expressionFinder.FindFullExpression (txt, offset).Expression;
+			if (expression == null)
 				return null;
 			
-			return resolveResult;
+			int lineNumber = this.Document.OffsetToLineNumber (offset);
+			LineSegment line = this.Document.GetLine (lineNumber);
+			
+			return ctx.ResolveIdentifier (expression, lineNumber + 1, line.Offset + 1, fileName, txt);
 		}
 		
 		protected override bool OnFocusOutEvent (Gdk.EventFocus evnt)

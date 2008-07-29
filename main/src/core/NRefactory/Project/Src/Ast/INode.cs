@@ -2,7 +2,7 @@
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
-//     <version>$Revision: 2708 $</version>
+//     <version>$Revision: 1609 $</version>
 // </file>
 
 using System;
@@ -27,11 +27,6 @@ namespace ICSharpCode.NRefactory.Ast
 		}
 		
 		Location EndLocation {
-			get;
-			set;
-		}
-		
-		object UserData {
 			get;
 			set;
 		}

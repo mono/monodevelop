@@ -2,7 +2,7 @@
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
-//     <version>$Revision: 2819 $</version>
+//     <version>$Revision: 1301 $</version>
 // </file>
 
 /*
@@ -18,9 +18,9 @@ using System;
 using System.IO;
 using NUnit.Framework;
 using ICSharpCode.NRefactory.Parser;
-using ICSharpCode.NRefactory.Ast;
+using ICSharpCode.NRefactory.Parser.AST;
 
-namespace ICSharpCode.NRefactory.Tests.Ast
+namespace ICSharpCode.NRefactory.Tests.AST
 {
 	[TestFixture]
 	public class TypeReferenceExpressionTests
@@ -45,8 +45,8 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		[Test]
 		public void IntReferenceExpression()
 		{
-			MemberReferenceExpression fre = ParseUtilCSharp.ParseExpression<MemberReferenceExpression>("int.MaxValue");
-			Assert.AreEqual("MaxValue", fre.MemberName);
+			FieldReferenceExpression fre = ParseUtilCSharp.ParseExpression<FieldReferenceExpression>("int.MaxValue");
+			Assert.AreEqual("MaxValue", fre.FieldName);
 			Assert.AreEqual("System.Int32", ((TypeReferenceExpression)fre.TargetObject).TypeReference.SystemType);
 		}
 		
@@ -56,8 +56,8 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 			// this is propably not what really should be returned for a standalone int
 			// reference, but it has to stay consistent because NRefactoryResolver depends
 			// on this trick.
-			MemberReferenceExpression fre = ParseUtilCSharp.ParseExpression<MemberReferenceExpression>("int", true);
-			Assert.AreEqual("", fre.MemberName);
+			FieldReferenceExpression fre = ParseUtilCSharp.ParseExpression<FieldReferenceExpression>("int", true);
+			Assert.AreEqual("", fre.FieldName);
 			Assert.AreEqual("System.Int32", ((TypeReferenceExpression)fre.TargetObject).TypeReference.SystemType);
 		}
 		#endregion
@@ -66,8 +66,8 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		[Test]
 		public void VBIntReferenceExpression()
 		{
-			MemberReferenceExpression fre = ParseUtilVBNet.ParseExpression<MemberReferenceExpression>("inTeGer.MaxValue");
-			Assert.AreEqual("MaxValue", fre.MemberName);
+			FieldReferenceExpression fre = ParseUtilVBNet.ParseExpression<FieldReferenceExpression>("inTeGer.MaxValue");
+			Assert.AreEqual("MaxValue", fre.FieldName);
 			Assert.AreEqual("System.Int32", ((TypeReferenceExpression)fre.TargetObject).TypeReference.SystemType);
 		}
 		
@@ -77,29 +77,11 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 			// this is propably not what really should be returned for a standalone int
 			// reference, but it has to stay consistent because NRefactoryResolver depends
 			// on this trick.
-			MemberReferenceExpression fre = ParseUtilVBNet.ParseExpression<MemberReferenceExpression>("inTeGer", true);
-			Assert.AreEqual("", fre.MemberName);
+			FieldReferenceExpression fre = ParseUtilVBNet.ParseExpression<FieldReferenceExpression>("inTeGer", true);
+			Assert.AreEqual("", fre.FieldName);
 			Assert.AreEqual("System.Int32", ((TypeReferenceExpression)fre.TargetObject).TypeReference.SystemType);
 		}
-		
-		[Test]
-		public void VBObjectReferenceExpression()
-		{
-			MemberReferenceExpression fre = ParseUtilVBNet.ParseExpression<MemberReferenceExpression>("Object.ReferenceEquals");
-			Assert.AreEqual("ReferenceEquals", fre.MemberName);
-			Assert.AreEqual("System.Object", ((TypeReferenceExpression)fre.TargetObject).TypeReference.SystemType);
-		}
-		
-		[Test]
-		public void VBStandaloneObjectReferenceExpression()
-		{
-			// this is propably not what really should be returned for a standalone int
-			// reference, but it has to stay consistent because NRefactoryResolver depends
-			// on this trick.
-			MemberReferenceExpression fre = ParseUtilVBNet.ParseExpression<MemberReferenceExpression>("obJeCt", true);
-			Assert.AreEqual("", fre.MemberName);
-			Assert.AreEqual("System.Object", ((TypeReferenceExpression)fre.TargetObject).TypeReference.SystemType);
-		}
 		#endregion
+		
 	}
 }

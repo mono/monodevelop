@@ -1,16 +1,3 @@
-2008-07-27  Mike Krüger <mkrueger@novell.com> 
-
-	* MonoDevelop.AssemblyBrowser/ModuleDefinitionNodeBuilder.cs,
-	  MonoDevelop.AssemblyBrowser/AssemblyNodeBuilder.cs,
-	  MonoDevelop.AssemblyBrowser/DomMethodNodeBuilder.cs,
-	  MonoDevelop.AssemblyBrowser/DomTypeNodeBuilder.cs,
-	  MonoDevelop.AssemblyBrowser/DomEventNodeBuilder.cs,
-	  MonoDevelop.AssemblyBrowser/DomReturnTypeNodeBuilder.cs,
-	  MonoDevelop.AssemblyBrowser/DomFieldNodeBuilder.cs,
-	  MonoDevelop.AssemblyBrowser/DomPropertyNodeBuilder.cs,
-	  MonoDevelop.AssemblyBrowser/NamespaceBuilder.cs: Worked on code
-	  completion/new dom.
-
 2008-07-17  Mike Krüger <mkrueger@novell.com> 
 
 	* gtk-gui/MonoDevelop.AssemblyBrowser.AssemblyBrowserWidget.cs,

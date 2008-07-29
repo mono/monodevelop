@@ -40,8 +40,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.CodeGeneration;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
+using MonoDevelop.Projects.Parser;
 using MonoDevelop.Core.Serialization;
 
 using MonoDevelop.GtkCore.GuiBuilder;
@@ -248,6 +247,7 @@ namespace MonoDevelop.GtkCore
 			get {
 				if (project.LanguageBinding == null || project.LanguageBinding.GetCodeDomProvider () == null)
 					return false;
+			
 				RefactorOperations ops = RefactorOperations.AddField | RefactorOperations.AddMethod | RefactorOperations.RenameField | RefactorOperations.AddAttribute;
 				CodeRefactorer cref = IdeApp.Workspace.GetCodeRefactorer (project.ParentSolution);
 				return cref.LanguageSupportsOperation (project.LanguageBinding.Language, ops); 

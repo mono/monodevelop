@@ -2,7 +2,7 @@
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
-//     <version>$Revision: 2972 $</version>
+//     <version>$Revision: 1609 $</version>
 // </file>
 
 using System;
@@ -32,20 +32,37 @@ namespace ICSharpCode.NRefactory
 	{
 		public abstract object AcceptVisitor(ISpecialVisitor visitor, object data);
 		
+		Location startPosition, endPosition;
+		
 		protected AbstractSpecial(Location position)
 		{
-			this.StartPosition = position;
-			this.EndPosition = position;
+			this.startPosition = position;
+			this.endPosition = position;
 		}
 		
 		protected AbstractSpecial(Location startPosition, Location endPosition)
 		{
-			this.StartPosition = startPosition;
-			this.EndPosition = endPosition;
+			this.startPosition = startPosition;
+			this.endPosition = endPosition;
 		}
 		
-		public Location StartPosition { get; set; }
-		public Location EndPosition { get; set; }
+		public Location StartPosition {
+			get {
+				return startPosition;
+			}
+			set {
+				startPosition = value;
+			}
+		}
+		
+		public Location EndPosition {
+			get {
+				return endPosition;
+			}
+			set {
+				endPosition = value;
+			}
+		}
 		
 		public override string ToString()
 		{

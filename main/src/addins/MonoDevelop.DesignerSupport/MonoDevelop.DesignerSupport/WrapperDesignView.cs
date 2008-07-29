@@ -39,7 +39,7 @@ using MonoDevelop.Ide.Commands;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Projects.Text;
-using MonoDevelop.Projects.Dom;
+using MonoDevelop.Projects.Parser;
 
 namespace MonoDevelop.DesignerSupport
 {

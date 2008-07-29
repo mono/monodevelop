@@ -33,9 +33,7 @@ using Gtk;
 
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
-using MonoDevelop.Projects.Dom.Output;
+using MonoDevelop.Projects.Parser;
 
 namespace MonoDevelop.DesignerSupport
 {
@@ -60,7 +58,7 @@ namespace MonoDevelop.DesignerSupport
 		
 		public override void Initialize ()
 		{
-			MonoDevelop.Projects.Dom.Parser.ProjectDomService.CompilationUnitUpdated += UpdateDocumentOutline;
+			IdeApp.Workspace.ParserDatabase.ParseInformationChanged += UpdateDocumentOutline;
 			base.Initialize ();
 		}
 		
@@ -69,7 +67,7 @@ namespace MonoDevelop.DesignerSupport
 			if (disposed)
 				return;
 			disposed = true;
-			MonoDevelop.Projects.Dom.Parser.ProjectDomService.CompilationUnitUpdated -= UpdateDocumentOutline;
+			IdeApp.Workspace.ParserDatabase.ParseInformationChanged -= UpdateDocumentOutline;
 			base.Dispose ();
 		}
 		
@@ -90,11 +88,9 @@ namespace MonoDevelop.DesignerSupport
 			
 			TreeViewColumn treeCol = new TreeViewColumn ();
 			treeCol.PackStart (pixRenderer, false);
-// TODO:
-//			treeCol.SetCellDataFunc (pixRenderer, new TreeCellDataFunc (OutlineTreeIconFunc));
+			treeCol.SetCellDataFunc (pixRenderer, new TreeCellDataFunc (OutlineTreeIconFunc));
 			treeCol.PackStart (textRenderer, true);
-// TODO:
-//			treeCol.SetCellDataFunc (textRenderer, new TreeCellDataFunc (OutlineTreeTextFunc));
+			treeCol.SetCellDataFunc (textRenderer, new TreeCellDataFunc (OutlineTreeTextFunc));
 			outlineTreeView.AppendColumn (treeCol);
 			
 			outlineTreeView.HeadersVisible = false;
@@ -105,19 +101,20 @@ namespace MonoDevelop.DesignerSupport
 					return;
 				object o = outlineTreeStore.GetValue (iter, 0);
 				int line = -1, col = -1;
-				if (o is IType) {
-					line = ((IType)o).BodyRegion.Start.Line;
-					col = ((IType)o).BodyRegion.Start.Column;
+				if (o is IClass) {
+					line = ((IClass)o).Region.BeginLine;
+					col = ((IClass)o).Region.BeginColumn;
 				} else if (o is IMember) {
-					line = ((IMember)o).BodyRegion.Start.Line;
-					col = ((IMember)o).BodyRegion.Start.Column;
+					line = ((IMember)o).Region.BeginLine;
+					col = ((IMember)o).Region.BeginColumn;
 				}
 				if (line > -1) {
 					Editor.JumpTo (line, Math.Max (1, col));
 				}
 			};
 			
-			this.lastCU = Document.CompilationUnit;
+			IFileParserContext context = IdeApp.Workspace.ParserDatabase.GetFileParserContext (this.FileName);
+			this.lastCU = (ICompilationUnit) context.ParseFile (this.FileName).MostRecentCompilationUnit;
 			outlineTreeView.Realized += delegate { RefillOutlineStore (); };
 						
 			ScrolledWindow sw = new ScrolledWindow ();
@@ -125,29 +122,39 @@ namespace MonoDevelop.DesignerSupport
 			sw.ShowAll ();
 			return sw;
 		}
-		/* TODO:
-		void OutlineTreeIconFunc (TreeViewColumn column, CellRenderer cell, TreeModelOutputFlags model, TreeIter iter)
+		
+		void OutlineTreeIconFunc (TreeViewColumn column, CellRenderer cell, TreeModel model, TreeIter iter)
 		{
 			CellRendererPixbuf pixRenderer = (CellRendererPixbuf) cell;
 			object o = model.GetValue (iter, 0);
-			if (o is IMember) {
-				pixRenderer.Pixbuf = IdeApp.Services.Resources.GetIcon (((IMember)o).StockIcon, IconSize.Menu);
+			if (o is IClass) {
+				pixRenderer.Pixbuf = IdeApp.Services.Resources.GetIcon
+					(IdeApp.Services.Icons.GetIcon ((IClass)o), IconSize.Menu);
+			} else if (o is IMember) {
+				pixRenderer.Pixbuf = IdeApp.Services.Resources.GetIcon
+					(IdeApp.Services.Icons.GetIcon ((IMember)o), IconSize.Menu);
 			} else if (o is FoldingRegion) {
 				pixRenderer.Pixbuf = IdeApp.Services.Resources.GetIcon ("gtk-add", IconSize.Menu);
 			}
-		}*/
+		}
 		
 		void OutlineTreeTextFunc (TreeViewColumn column, CellRenderer cell, TreeModel model, TreeIter iter)
 		{
 			CellRendererText txtRenderer = (CellRendererText) cell;
 			object o = model.GetValue (iter, 0);
-			Ambience am = GetAmbience ();
-			if (o is IMember) {
-				txtRenderer.Text = am.GetString ((IMember)o, 
-                                                               OutputFlags.UseIntrinsicTypeNames |
-				                               OutputFlags.IncludeParameters |
-				                               OutputFlags.IncludeParameterName |
-				                               OutputFlags.IncludeGenerics);
+			MonoDevelop.Projects.Ambience.Ambience am = GetAmbience ();
+			if (o is IClass) {
+				txtRenderer.Text = am.Convert ((IClass)o,
+				                               MonoDevelop.Projects.Ambience.ConversionFlags.UseIntrinsicTypeNames |
+				                               MonoDevelop.Projects.Ambience.ConversionFlags.ShowParameters |
+				                               MonoDevelop.Projects.Ambience.ConversionFlags.ShowParameterNames |
+				                               MonoDevelop.Projects.Ambience.ConversionFlags.ShowGenericParameters);
+			} else if (o is IMember) {
+				txtRenderer.Text = am.Convert ((IMember)o,
+				                               MonoDevelop.Projects.Ambience.ConversionFlags.UseIntrinsicTypeNames |
+				                               MonoDevelop.Projects.Ambience.ConversionFlags.ShowParameters |
+				                               MonoDevelop.Projects.Ambience.ConversionFlags.ShowParameterNames |
+				                               MonoDevelop.Projects.Ambience.ConversionFlags.ShowGenericParameters);
 			} else if (o is FoldingRegion) {
 				string name = ((FoldingRegion)o).Name.Trim ();
 				if (string.IsNullOrEmpty (name))
@@ -169,13 +176,13 @@ namespace MonoDevelop.DesignerSupport
 			outlineTreeView = null;
 		}
 		
-		void UpdateDocumentOutline (object sender, CompilationUnitEventArgs args)
+		void UpdateDocumentOutline (object sender, ParseInformationEventArgs args)
 		{
 			// This event handler can get called when files other than the current content are updated. eg.
 			// when loading a new document. If we didn't do this check the member combo for this tab would have
 			// methods for a different class in it!
-			if (Document.FileName == args.Unit.FileName) {
-				lastCU = args.Unit;
+			if (Document.FileName == args.FileName) {
+				lastCU = (ICompilationUnit) args.ParseInformation.MostRecentCompilationUnit;
 				//limit update rate to 5s
 				if (!refreshingOutline) {
 					refreshingOutline = true;
@@ -206,7 +213,7 @@ namespace MonoDevelop.DesignerSupport
 		
 		static void BuildTreeChildren (TreeStore store, TreeIter parent, ICompilationUnit unit)
 		{
-			foreach (IType cls in unit.Types) {
+			foreach (IClass cls in unit.Classes) {
 				TreeIter childIter;
 				if (!parent.Equals (TreeIter.Zero))
 					childIter = store.AppendValues (parent, cls);
@@ -217,21 +224,29 @@ namespace MonoDevelop.DesignerSupport
 			}
 		}
 		
-		static void AddTreeClassContents (TreeStore store, TreeIter parent, ICompilationUnit unit, IType cls)
+		static void AddTreeClassContents (TreeStore store, TreeIter parent, ICompilationUnit unit, IClass cls)
 		{
 			List<object> items = new List<object> ();
-			foreach (object o in cls.Members)
+			foreach (object o in cls.Fields)
+				items.Add (o);
+			foreach (object o in cls.Properties)
+				items.Add (o);
+			foreach (object o in cls.Methods)
+				items.Add (o);
+			foreach (object o in cls.Events)
+				items.Add (o);
+			foreach (object o in cls.InnerClasses)
 				items.Add (o);
 			
 			items.Sort (delegate (object x, object y) {
-				DomRegion r1 = GetRegion (x), r2 = GetRegion (y);
+				IRegion r1 = GetRegion (x), r2 = GetRegion (y);
 				return r1.CompareTo (r2);
 			});
 			
 			List<FoldingRegion> regions = new List<FoldingRegion> ();
 			foreach (FoldingRegion fr in unit.FoldingRegions)
 				//check regions inside class
-				if (cls.BodyRegion.Contains (fr.Region))
+				if (RegionContains (cls.Region, fr.Region))
 					regions.Add (fr);
 			regions.Sort (delegate (FoldingRegion x, FoldingRegion y) { return x.Region.CompareTo (y.Region); });
 			
@@ -245,7 +260,7 @@ namespace MonoDevelop.DesignerSupport
 				
 				//no regions left; quick exit
 				if (regionEnumerator != null) {
-					DomRegion itemRegion = GetRegion (item);
+					IRegion itemRegion = GetRegion (item);
 					
 					//advance to a region that could potentially contain this member
 					while (regionEnumerator != null && !OuterEndsAfterInner (regionEnumerator.Current.Region, itemRegion))
@@ -254,7 +269,7 @@ namespace MonoDevelop.DesignerSupport
 					
 					//if member is within region, make sure it's the current parent.
 					//If not, move target iter back to class parent
-					if (regionEnumerator != null && regionEnumerator.Current.Region.Contains (itemRegion)) {
+					if (regionEnumerator != null && RegionContains (regionEnumerator.Current.Region, itemRegion)) {
 						if (currentRegion != regionEnumerator.Current) {
 							currentParent = store.AppendValues (parent, regionEnumerator.Current);
 							currentRegion = regionEnumerator.Current;
@@ -266,24 +281,37 @@ namespace MonoDevelop.DesignerSupport
 				
 				
 				TreeIter childIter = store.AppendValues (currentParent, item);
-				if (item is IType)
-					AddTreeClassContents (store, childIter, unit, (IType)item);
+				if (item is IClass)
+					AddTreeClassContents (store, childIter, unit, (IClass)item);
 			}
 		}
 		
-		static DomRegion GetRegion (object o)
+		static IRegion GetRegion (object o)
 		{
-			if (o is IMember)
-				return ((IMember)o).BodyRegion;
-			throw new InvalidOperationException (o.GetType ().ToString ());
+			if (o is IClass)
+				return ((IClass)o).Region;
+			else if (o is IMember)
+				return ((IMember)o).Region;
+			else
+				throw new InvalidOperationException (o.GetType ().ToString ());
 		}
 		
-		static bool OuterEndsAfterInner (DomRegion outer, DomRegion inner)
+		static bool OuterEndsAfterInner (IRegion outer, IRegion inner)
 		{
-			return (outer.End.Line > inner.End.Line
-			        || (outer.End.Line == inner.End.Line && outer.End.Column > inner.End.Column));
+			return (outer.EndLine > inner.EndLine
+			        || (outer.EndLine == inner.EndLine && outer.EndColumn > inner.EndColumn));
 		}
 		
-		
+		static bool RegionContains (IRegion outer, IRegion inner)
+		{
+			return
+				//check beginning
+				(outer.BeginLine < inner.BeginLine
+					|| (outer.BeginLine == inner.BeginLine && outer.BeginColumn < inner.BeginColumn))
+				//check end
+				&& (outer.EndLine > inner.EndLine
+					|| (outer.EndLine == inner.EndLine && outer.EndColumn > inner.EndColumn));
+			
+		}
 	}
 }

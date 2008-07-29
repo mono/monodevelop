@@ -46,6 +46,7 @@
     <File name="Project/Src/PrettyPrinter/AbstractOutputFormatter.cs" subtype="Code" buildaction="Compile" />
     <File name="Project/Src/PrettyPrinter/AbstractPrettyPrintOptions.cs" subtype="Code" buildaction="Compile" />
     <File name="Project/Src/PrettyPrinter/IOutputAstVisitor.cs" subtype="Code" buildaction="Compile" />
+    <File name="Project/Src/PrettyPrinter/NodeInformVisitor.cs" subtype="Code" buildaction="Compile" />
     <File name="Project/Src/PrettyPrinter/SpecialNodesInserter.cs" subtype="Code" buildaction="Compile" />
     <File name="Project/Src/PrettyPrinter/CSharp/CSharpOutputVisitor.cs" subtype="Code" buildaction="Compile" />
     <File name="Project/Src/PrettyPrinter/CSharp/OutputFormatter.cs" subtype="Code" buildaction="Compile" />
@@ -57,12 +58,15 @@
     <File name="Project/Src/Visitors/AbstractASTVisitor.cs" subtype="Code" buildaction="Compile" />
     <File name="Project/Src/Visitors/CodeDOMOutputVisitor.cs" subtype="Code" buildaction="Compile" />
     <File name="Project/Src/Visitors/CodeDOMVerboseOutputGenerator.cs" subtype="Code" buildaction="Compile" />
+    <File name="Project/Src/Visitors/CSharpConstructsVisitor.cs" subtype="Code" buildaction="Compile" />
+    <File name="Project/Src/Visitors/CSharpToVBNetConvertVisitor.cs" subtype="Code" buildaction="Compile" />
     <File name="Project/Src/Visitors/LookupTableVisitor.cs" subtype="Code" buildaction="Compile" />
     <File name="Project/Src/Visitors/NodeTrackingAstVisitor.cs" subtype="Code" buildaction="Compile" />
     <File name="Project/Src/Visitors/PrefixFieldsVisitor.cs" subtype="Code" buildaction="Compile" />
     <File name="Project/Src/Visitors/ToCSharpConvertVisitor.cs" subtype="Code" buildaction="Compile" />
     <File name="Project/Src/Visitors/ToVBNetConvertVisitor.cs" subtype="Code" buildaction="Compile" />
     <File name="Project/Src/Visitors/VBNetConstructsConvertVisitor.cs" subtype="Code" buildaction="Compile" />
+    <File name="Project/Src/Visitors/VBNetToCSharpConvertVisitor.cs" subtype="Code" buildaction="Compile" />
     <File name="Project/Src/Ast/General/BlockStatement.cs" subtype="Code" buildaction="Compile" />
     <File name="Project/Src/Ast/General/CompilationUnit.cs" subtype="Code" buildaction="Compile" />
     <File name="Project/Src/Ast/General/Expression.cs" subtype="Code" buildaction="Compile" />
@@ -80,21 +84,12 @@
     <File name="Project/Src/Parser/VBNet/VBNetParser.cs" subtype="Code" buildaction="Compile" />
     <File name="Project/Src/Parser/CSharp/cs.ATG" subtype="Code" buildaction="Nothing" />
     <File name="Project/Src/Parser/VBNet/VBNET.ATG" subtype="Code" buildaction="Nothing" />
-    <File name="Project/Src/Visitors/ToVBNetRenameConflictingVariables.cs" subtype="Code" buildaction="Compile" />
-    <File name="Project/Src/Visitors/RenameIdentifierVisitor.cs" subtype="Code" buildaction="Compile" />
-    <File name="Project/Src/Visitors/ConvertVisitorBase.cs" subtype="Code" buildaction="Compile" />
-    <File name="Project/Src/Visitors/CSharpConstructsConvertVisitor.cs" subtype="Code" buildaction="Compile" />
-    <File name="Project/Src/OperatorPrecedence.cs" subtype="Code" buildaction="Compile" />
-    <File name="Project/Src/Lexer/CSharp/ConditionalCompilation.cs" subtype="Code" buildaction="Compile" />
-    <File name="Project/Src/AstBuilder/ExpressionBuilder.cs" subtype="Code" buildaction="Compile" />
-    <File name="Project/Src/AstBuilder/StatementBuilder.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
     <ProjectReference type="Gac" localcopy="True" refto="System.Xml, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
     <ProjectReference type="Gac" localcopy="True" refto="System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   </References>
-  <GtkDesignInfo gtkVersion="2.12.1" />
   <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="./Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="../../../">
     <BuildFilesVar Sync="True" Name="FILES" />
     <DeployFilesVar />

@@ -34,7 +34,7 @@ using System.CodeDom.Compiler;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
 using Mono.Addins;
-using MonoDevelop.Projects.Dom.Output;
+using MonoDevelop.Projects.Ambience;
 using MonoDevelop.Core.Serialization;
 using MonoDevelop.Projects.Extensions;
 
@@ -103,8 +103,8 @@ namespace MonoDevelop.Projects
 			get;
 		}
 		
-		public virtual Ambience Ambience {
-			get { return new NetAmbience (); }
+		public virtual MonoDevelop.Projects.Ambience.Ambience Ambience {
+			get { return Services.Ambience.GenericAmbience; }
 		}
 		
 		[Browsable(false)]

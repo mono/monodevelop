@@ -2,16 +2,16 @@
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
-//     <version>$Revision: 2676 $</version>
+//     <version>$Revision: 1167 $</version>
 // </file>
 
 using System;
 using System.IO;
 using NUnit.Framework;
 using ICSharpCode.NRefactory.Parser;
-using ICSharpCode.NRefactory.Ast;
+using ICSharpCode.NRefactory.Parser.AST;
 
-namespace ICSharpCode.NRefactory.Tests.Ast
+namespace ICSharpCode.NRefactory.Tests.AST
 {
 	[TestFixture]
 	public class ConditionalExpressionTests
@@ -24,7 +24,7 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 			
 			Assert.IsTrue(ce.Condition is BinaryOperatorExpression);
 			Assert.IsTrue(ce.TrueExpression is InvocationExpression);
-			Assert.IsTrue(ce.FalseExpression is MemberReferenceExpression);
+			Assert.IsTrue(ce.FalseExpression is FieldReferenceExpression);
 		}
 		
 		[Test]
@@ -35,17 +35,7 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 			
 			Assert.IsTrue(ce.Condition is TypeOfIsExpression);
 			Assert.IsTrue(ce.TrueExpression is InvocationExpression);
-			Assert.IsTrue(ce.FalseExpression is MemberReferenceExpression);
-		}
-		
-		[Test]
-		public void CSharpConditionalIsWithNullableExpressionTest()
-		{
-			ConditionalExpression ce = ParseUtilCSharp.ParseExpression<ConditionalExpression>("a is b? ? a() : a.B");
-			
-			Assert.IsTrue(ce.Condition is TypeOfIsExpression);
-			Assert.IsTrue(ce.TrueExpression is InvocationExpression);
-			Assert.IsTrue(ce.FalseExpression is MemberReferenceExpression);
+			Assert.IsTrue(ce.FalseExpression is FieldReferenceExpression);
 		}
 		
 		[Test]
@@ -55,38 +45,7 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 			
 			Assert.IsTrue(ce.Condition is TypeOfIsExpression);
 			Assert.IsTrue(ce.TrueExpression is ParenthesizedExpression);
-			Assert.IsTrue(ce.FalseExpression is MemberReferenceExpression);
-		}
-		
-		[Test]
-		public void CSharpConditionalExpressionNegativeValue()
-		{
-			ConditionalExpression ce = ParseUtilCSharp.ParseExpression<ConditionalExpression>("isNegative ? -1 : 1");
-			
-			Assert.IsTrue(ce.Condition is IdentifierExpression);
-			Assert.IsTrue(ce.TrueExpression is UnaryOperatorExpression);
-			Assert.IsTrue(ce.FalseExpression is PrimitiveExpression);
-		}
-		
-		
-		[Test]
-		public void CSharpConditionalIsWithNegativeValue()
-		{
-			ConditionalExpression ce = ParseUtilCSharp.ParseExpression<ConditionalExpression>("a is b ? -1 : 1");
-			
-			Assert.IsTrue(ce.Condition is TypeOfIsExpression);
-			Assert.IsTrue(ce.TrueExpression is UnaryOperatorExpression);
-			Assert.IsTrue(ce.FalseExpression is PrimitiveExpression);
-		}
-		
-		[Test]
-		public void CSharpConditionalIsWithExplicitPositiveValue()
-		{
-			ConditionalExpression ce = ParseUtilCSharp.ParseExpression<ConditionalExpression>("a is b ? +1 : 1");
-			
-			Assert.IsTrue(ce.Condition is TypeOfIsExpression);
-			Assert.IsTrue(ce.TrueExpression is UnaryOperatorExpression);
-			Assert.IsTrue(ce.FalseExpression is PrimitiveExpression);
+			Assert.IsTrue(ce.FalseExpression is FieldReferenceExpression);
 		}
 		#endregion
 		

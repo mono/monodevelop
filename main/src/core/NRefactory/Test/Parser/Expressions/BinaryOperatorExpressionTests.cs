@@ -2,17 +2,17 @@
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
-//     <version>$Revision: 1609 $</version>
+//     <version>$Revision: 972 $</version>
 // </file>
 
 using System;
 using System.IO;
 using NUnit.Framework;
 using ICSharpCode.NRefactory.Parser;
-using ICSharpCode.NRefactory.Ast;
+using ICSharpCode.NRefactory.Parser.AST;
 using ICSharpCode.NRefactory.PrettyPrinter;
 
-namespace ICSharpCode.NRefactory.Tests.Ast
+namespace ICSharpCode.NRefactory.Tests.AST
 {
 	[TestFixture]
 	public class BinaryOperatorExpressionTests
@@ -234,14 +234,6 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		public void CSharpNullCoalescingTest()
 		{
 			CSharpTestBinaryOperatorExpressionTest("a ?? b", BinaryOperatorType.NullCoalescing);
-		}
-		
-		[Test]
-		public void CSharpLessThanOrGreaterTest()
-		{
-			const string expr = "i1 < 0 || i1 > (Count - 1)";
-			BinaryOperatorExpression boe = ParseUtilCSharp.ParseExpression<BinaryOperatorExpression>(expr);
-			Assert.AreEqual(BinaryOperatorType.LogicalOr, boe.Op);
 		}
 		#endregion
 		

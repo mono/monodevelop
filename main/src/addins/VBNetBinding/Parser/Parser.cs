@@ -22,7 +22,7 @@ using System.Drawing;
 using System.Collections.Generic;
 using System.IO;
 using MonoDevelop.Core;
-using MonoDevelop.Projects.Dom;
+using MonoDevelop.Projects.Parser;
 using MonoDevelop.Projects;
 using VBBinding.Parser.SharpDevelopTree;
 
@@ -31,7 +31,7 @@ using ICSharpCode.NRefactory.Parser;
 
 
 namespace VBBinding.Parser
-{/*
+{
 	public class TParser : MonoDevelop.Projects.Parser.IParser
 	{
 	
@@ -116,7 +116,7 @@ namespace VBBinding.Parser
 			visitor.Cu.ErrorsDuringCompile = p.Errors.Count > 0;
 			visitor.Cu.Tag = p.CompilationUnit;
 			RetrieveRegions(visitor.Cu, p.Lexer.SpecialTracker);
-			foreach (IType c in visitor.Cu.Classes)
+			foreach (IClass c in visitor.Cu.Classes)
 				c.Region.FileName = fileName;
 			AddCommentTags(visitor.Cu, p.Lexer.TagComments);
 			return visitor.Cu;
@@ -149,11 +149,11 @@ namespace VBBinding.Parser
 			return new Resolver (parserContext).IsAsResolve (expression, caretLineNumber, caretColumn, fileName, fileContent);
 		}
 		
-		public IMember ResolveIdentifier (IParserContext parserContext, string id, int caretLineNumber, int caretColumn, string fileName, string fileContent)
+		public ILanguageItem ResolveIdentifier (IParserContext parserContext, string id, int caretLineNumber, int caretColumn, string fileName, string fileContent)
 		{
 			return null;
 		}
 		
 		///////// IParser Interface END
-	}*/
+	}
 }

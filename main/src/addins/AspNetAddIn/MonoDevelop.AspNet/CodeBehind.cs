@@ -35,8 +35,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
+using MonoDevelop.Projects.Parser;
 using MonoDevelop.DesignerSupport;
 
 using MonoDevelop.AspNet.Parser;
@@ -54,7 +53,10 @@ namespace MonoDevelop.AspNet
 			if (proj == null)
 				return null;
 			
-			AspNetCompilationUnit cu = ProjectDomService.Parse (file.Project, file.FilePath, null) as AspNetCompilationUnit;
+			IProjectParserContext ppc = 
+				MonoDevelop.Ide.Gui.IdeApp.Workspace.ParserDatabase.GetProjectParserContext (file.Project);
+			IParseInformation pi = ppc.GetParseInformation (file.FilePath);
+			AspNetCompilationUnit cu = pi.MostRecentCompilationUnit as AspNetCompilationUnit;
 			
 			if (cu != null && string.IsNullOrEmpty (cu.PageInfo.InheritedClass))
 				return cu.PageInfo.InheritedClass;
@@ -62,29 +64,29 @@ namespace MonoDevelop.AspNet
 				return null;
 		}
 		
-		public static IType GetDesignerClass (IType cls)
+		public static IClass GetDesignerClass (IClass cls)
 		{
-			if (!cls.HasParts)
+			if (cls.Parts.Length <= 1)
 				return null;
 			
-			string designerEnding = ".designer" + Path.GetExtension (cls.CompilationUnit.FileName);
+			string designerEnding = ".designer" + Path.GetExtension (cls.Region.FileName);
 			
-			foreach (IType c in cls.Parts)
-				if (c.CompilationUnit.FileName.EndsWith (designerEnding, StringComparison.OrdinalIgnoreCase))
+			foreach (IClass c in cls.Parts)
+				if (c.Region.FileName.EndsWith (designerEnding, StringComparison.OrdinalIgnoreCase))
 				    return c;
 			
 			return null;
 		}
 		
-		public static IType GetNonDesignerClass (IType cls)
+		public static IClass GetNonDesignerClass (IClass cls)
 		{
-			if (!cls.HasParts)
+			if (cls.Parts.Length <= 1)
 				return null;
 			
-			string designerEnding = ".designer" + Path.GetExtension (cls.CompilationUnit.FileName);
+			string designerEnding = ".designer" + Path.GetExtension (cls.Region.FileName);
 			
-			foreach (IType c in cls.Parts)
-				if (!c.CompilationUnit.FileName.EndsWith (designerEnding, StringComparison.OrdinalIgnoreCase))
+			foreach (IClass c in cls.Parts)
+				if (!c.Region.FileName.EndsWith (designerEnding, StringComparison.OrdinalIgnoreCase))
 				    return c;
 			
 			return null;

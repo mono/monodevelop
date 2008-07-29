@@ -30,8 +30,8 @@ namespace MonoDevelop.Projects.Dom
 {
 	public class PreProcessorDefine
 	{
-		string      define;
 		DomLocation location;
+		string      define;
 		
 		public DomLocation Location {
 			get {
@@ -53,12 +53,6 @@ namespace MonoDevelop.Projects.Dom
 		
 		public PreProcessorDefine()
 		{
-		}
-		
-		public PreProcessorDefine (string define, DomLocation location)
-		{
-			this.define = define;
-			this.location = location;
 		}
 	}
 }

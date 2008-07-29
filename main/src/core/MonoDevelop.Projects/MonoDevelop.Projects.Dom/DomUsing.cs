@@ -41,9 +41,6 @@ namespace MonoDevelop.Projects.Dom
 			get {
 				return domRegion;
 			}
-			set {
-				domRegion = value;
-			}
 		}
 
 		public IEnumerable<string> Namespaces {

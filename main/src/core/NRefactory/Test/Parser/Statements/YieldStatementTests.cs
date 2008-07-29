@@ -2,16 +2,16 @@
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
-//     <version>$Revision: 1609 $</version>
+//     <version>$Revision: 975 $</version>
 // </file>
 
 using System;
 using System.IO;
 using NUnit.Framework;
 using ICSharpCode.NRefactory.Parser;
-using ICSharpCode.NRefactory.Ast;
+using ICSharpCode.NRefactory.Parser.AST;
 
-namespace ICSharpCode.NRefactory.Tests.Ast
+namespace ICSharpCode.NRefactory.Tests.AST
 {
 	[TestFixture]
 	public class YieldStatementTests
@@ -36,7 +36,7 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		[Test]
 		public void YieldAsVariableTest()
 		{
-			ExpressionStatement se = ParseUtilCSharp.ParseStatement<ExpressionStatement>("yield = 3;");
+			StatementExpression se = ParseUtilCSharp.ParseStatement<StatementExpression>("yield = 3;");
 			AssignmentExpression ae = se.Expression as AssignmentExpression;
 			
 			Assert.AreEqual(AssignmentOperatorType.Assign, ae.Op);

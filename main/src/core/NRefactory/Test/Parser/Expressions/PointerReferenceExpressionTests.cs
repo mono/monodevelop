@@ -2,16 +2,16 @@
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
-//     <version>$Revision: 2676 $</version>
+//     <version>$Revision: 915 $</version>
 // </file>
 
 using System;
 using System.IO;
 using NUnit.Framework;
 using ICSharpCode.NRefactory.Parser;
-using ICSharpCode.NRefactory.Ast;
+using ICSharpCode.NRefactory.Parser.AST;
 
-namespace ICSharpCode.NRefactory.Tests.Ast
+namespace ICSharpCode.NRefactory.Tests.AST
 {
 	[TestFixture]
 	public class PointerReferenceExpressionTests
@@ -21,7 +21,7 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		public void CSharpPointerReferenceExpressionTest()
 		{
 			PointerReferenceExpression pre = ParseUtilCSharp.ParseExpression<PointerReferenceExpression>("myObj.field->b");
-			Assert.IsTrue(pre.TargetObject is MemberReferenceExpression);
+			Assert.IsTrue(pre.TargetObject is FieldReferenceExpression);
 			Assert.AreEqual("b", pre.Identifier);
 		}
 		#endregion

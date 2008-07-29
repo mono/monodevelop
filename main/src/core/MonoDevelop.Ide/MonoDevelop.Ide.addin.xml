@@ -239,10 +239,6 @@
 	<ExtensionPoint path = "/MonoDevelop/Ide/DomParser" name = "Parsers">
 		<ExtensionNode name="Class"/>
 	</ExtensionPoint>
-	
-	<ExtensionPoint path = "/MonoDevelop/Ide/Ambiences" name = "Parsers">
-		<ExtensionNode name="Class"/>
-	</ExtensionPoint>
 		
 	<!-- Extensions -->
 
@@ -1275,7 +1271,7 @@
 			<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.ProjectPad.ShowAllFilesBuilderExtension"/>
 			<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.ProjectPad.UnknownEntryNodeBuilder"/>
 		</SolutionPad>
-		<!--
+		
 		<SolutionPad id = "ClassPad" defaultPlacement = "Left" _label = "Classes" icon = "md-class">
 			<PadOption id = "NestedNamespaces" _label = "Nested namespaces" defaultValue = "True" />
 			<PadOption id = "ShowProjects" _label = "Show project structure" defaultValue = "True" />
@@ -1293,8 +1289,8 @@
 			<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.ClassPad.MethodNodeBuilder"/>
 			<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.ClassPad.PropertyNodeBuilder"/>
 		</SolutionPad>
-		-->
-		<Pad id = "ClassPad" defaultPlacement = "Left" _label = "Classes" class = "MonoDevelop.Ide.Gui.Pads.ClassBrowser.ClassBrowserPad"/> 
+		
+<!--		<Pad id = "ClassPad" defaultPlacement = "Left" _label = "Classes" class = "MonoDevelop.Ide.Gui.Pads.ClassBrowser.ClassBrowserPad"/> -->
 		
 		<Category id="Other" _name="Other Windows">
 			<Pad id = "MonoDevelop.Ide.Gui.Pads.InternalLogPad" defaultPlacement = "Bottom" _label = "Message Log" class = "MonoDevelop.Ide.Gui.Pads.InternalLogPad"/>

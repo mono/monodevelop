@@ -73,7 +73,6 @@ ShiftLeftAssign = "<<="
 #Removed because of generics
 #ShiftRightAssign = ">>="
 Pointer = "->"
-LambdaArrow = "=>"
 
 # Keywordlist
 "abstract"
@@ -154,31 +153,7 @@ LambdaArrow = "=>"
 "volatile"
 "while"
 
-# Context dependent keywords.
-"partial"
-"where"
-"get"
-"set"
-"add"
-"remove"
-"yield"
-"select"
-"group"
-"by"
-"into"
-"from"
-"ascending"
-"descending"
-"orderby"
-"let"
-"join"
-"on"
-"equals"
-
 #Sets
-
-# When changing IdentifierTokens, ensure you also change the "Identifier" production in cs.ATG
-IdentifierTokens(Identifier, "partial", "where", "get", "set", "add", "remove", "yield", "select", "group", "by", "into", "from", "ascending", "descending", "orderby", "let", "join", "on", "equals")
 
 OverloadableUnaryOp("-", "!", "~", "++", "--", "true", "false")
 OverloadableBinaryOp("+", "-", "*", "/", "%", "&", "|", "^", "<<", "==", "!=", ">", "<", ">=", "<=")
@@ -186,30 +161,7 @@ OverloadableBinaryOp("+", "-", "*", "/", "%", "&", "|", "^", "<<", "==", "!=", "
 TypeKW("char", "bool", "object", "string", "sbyte", "byte", "short", "ushort", "int", "uint", "long", "ulong", "float", "double", "decimal")
 UnaryHead("+", "-", "!", "~", "*", "++", "--", "&")
 AssnStartOp("+", "-", "!", "~", "*")
-CastFollower(@SimpleTypeName, Literal, "(", "~", "!", @ExpressionStart)
+CastFollower(Identifier, Literal, "(", "new", "this", "base", "null", "checked", "unchecked", "typeof", "sizeof", "delegate", @OverloadableUnaryOp, @UnaryOp)
 AssgnOps("=", "+=", "-=", "*=", "/=", "%=", "&=", "|=", "<<=")
 UnaryOp("+", "-", "!", "~", "*", "++", "--", "&")
 TypeDeclarationKW("class", "interface", "struct", "enum", "delegate")
-# for §7.5.4.2 "Grammar ambiguities" disambiguation for F(G<A,B>(7))
-GenericFollower("(", ")", "]", "}", ":", ";", Comma, ".", "?", "==", "!=")
-
-ValidInsideTypeName(@IdentifierTokens, @TypeKW, "<", ">", ".", "?", "[", Comma, "]", "*", "::")
-
-# Keywords for keyword-code-completion
-KCCClassModifiers("abstract", "sealed", "static", "unsafe", "partial")
-KCCTypeDeclarationStart("public", "internal", @TypeDeclarationKW, @KCCClassModifiers)
-KCCMemberVisibilityModifiers("protected", "private", "public", "internal")
-SimpleTypeName(@TypeKW, @IdentifierTokens, "void")
-GlobalLevel("namespace", "using", @KCCTypeDeclarationStart)
-ExpressionStart("base", "delegate", "false", "new", "null", "sizeof", "this", "true", "typeof", "checked", "unchecked", "from")
-ExpressionContent("as", "is", "out", "ref", "in")
-# interfaces cannot have inner classes etc., the only keyword (expect for type names) that may appear in them is "event"
-InterfaceLevel("event")
-TypeLevel(@KCCTypeDeclarationStart, @KCCMemberVisibilityModifiers, "const", "event", "explicit", "extern", "fixed", "implicit", "new", "operator", "override", "readonly", "virtual", "volatile")
-StatementStart(@ExpressionStart, @ExpressionContent, "break", "case", "catch", "checked", "unchecked", "const", "continue", "default", "do", "else", "finally", "fixed", "for", "foreach", "goto", "if", "lock", "return", "stackalloc", "switch", "throw", "try", "unsafe", "using", "while", "yield")
-QueryExpressionClauseStart("from", "let", "where", "join", "orderby", "group", "select")
-InPropertyDeclaration(@KCCMemberVisibilityModifiers, "get", "set")
-InEventDeclaration("add", "remove")
-
-# unused: where
-# "by", "into", "ascending", "descending", "on", "equals"

@@ -35,7 +35,6 @@ using Monodoc;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
-using MonoDevelop.Projects.Dom.Parser;
 
 namespace MonoDevelop.Ide.Gui.Pads
 {
@@ -56,7 +55,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			tree_view.Selection.Changed += new EventHandler (RowActivated);
 			
 			store = new TreeStore (typeof (string), typeof (Node));
-			root_iter = store.AppendValues (GettextCatalog.GetString ("Mono Documentation"), ProjectDomService.HelpTree);
+			root_iter = store.AppendValues (GettextCatalog.GetString ("Mono Documentation"), Services.DocumentationService.HelpTree);
 
 			PopulateNode (root_iter);
 
@@ -123,7 +122,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 					}
 				}
 
-				s = ProjectDomService.HelpTree.RenderUrl (url, out match);
+				s = Services.DocumentationService.HelpTree.RenderUrl (url, out match);
 				if (s != null) {
 					IdeApp.HelpOperations.ShowDocs (s, match, url);
 					return;

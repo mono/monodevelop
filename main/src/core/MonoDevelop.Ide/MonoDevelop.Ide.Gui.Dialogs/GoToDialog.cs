@@ -38,8 +38,7 @@ using System.Threading;
 using Gdk;
 using Gtk;
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
+using MonoDevelop.Projects.Parser;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Core;
 
@@ -340,11 +339,14 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				if (searchFiles) {
 					CheckFile (doc.FileName, toMatch);
 				} else {
-					ICompilationUnit info = doc.CompilationUnit;
-					if(info != null) {
-						foreach (IType c in info.Types) {
-							if (!searchCycleActive) return;
-							CheckType (c, toMatch);
+					IParserContext ctx = IdeApp.Workspace.ParserDatabase.GetFileParserContext(doc.FileName);
+					if (ctx != null) {
+						IParseInformation info = ctx.ParseFile(doc.FileName);
+						if(info != null) {
+							foreach (IClass c in ((ICompilationUnit)info.MostRecentCompilationUnit).Classes) {
+								if (!searchCycleActive) return;
+								CheckType (c, toMatch);
+							}
 						}
 					}
 				}
@@ -376,8 +378,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 						CheckFile (file.FilePath, toMatch);
 					}
 				} else {
-
-					foreach (IType c in ProjectDomService.GetDatabaseProjectDom (p).Types) {
+					IParserContext ctx = IdeApp.Workspace.ParserDatabase.GetProjectParserContext (p);
+					foreach (IClass c in ctx.GetProjectContents()) {
 						if (!searchCycleActive) return;
 						CheckType (c, toMatch);
 					}
@@ -395,16 +397,18 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			AddItem (icon, name, path, path, -1, -1);
 		}
 		
-		void CheckType (IType c, string toMatch)
+		void CheckType (IClass c, string toMatch)
 		{
-			if (toMatch.Length > 0 && !c.FullName.ToLower ().Contains (toMatch))
+			if (toMatch.Length > 0 && !c.FullyQualifiedName.ToLower ().Contains (toMatch))
 				return;
 			
-			if (c.BodyRegion.IsEmpty)
+			if (c.Region == null)
 				return;
 			
-			AddItem (c.StockIcon, c.Name, c.FullName, c.CompilationUnit.FileName, 
-				c.Location.Line, c.Location.Column);
+			string icon = Services.Icons.GetIcon (c);
+			
+			AddItem (icon, c.Name, c.FullyQualifiedName, c.Region.FileName, 
+				c.Region.BeginLine, c.Region.BeginColumn);
 		}
 
 		void AddItem (params object[] data)

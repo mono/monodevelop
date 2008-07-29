@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.CodeDom;
 
 using RefParser = ICSharpCode.NRefactory.Parser;
-using MonoDevelop.Projects.Dom;
+using MonoDevelop.Projects.Parser;
 using VBBinding.Parser.SharpDevelopTree;
 using ModifierFlags = ICSharpCode.NRefactory.Ast.Modifiers;
 using ICSharpCode.NRefactory.Visitors;
@@ -14,7 +14,7 @@ using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.NRefactory;
 
 namespace VBBinding.Parser
-{/*
+{
 	public class VBNetVisitor : AbstractAstVisitor
 	{
 		VBBinding.Parser.SharpDevelopTree.CompilationUnit cu = new VBBinding.Parser.SharpDevelopTree.CompilationUnit();
@@ -202,5 +202,5 @@ namespace VBBinding.Parser
 			c.Events.Add(e);
 			return null;
 		}
-	}*/
+	}
 }

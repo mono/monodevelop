@@ -2,7 +2,7 @@
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="none" email=""/>
-//     <version>$Revision: 3010 $</version>
+//     <version>$Revision: 1965 $</version>
 // </file>
 
 using System;
@@ -14,7 +14,7 @@ namespace ICSharpCode.NRefactory.Ast
 	{
 		TypeReference             typeReference;
 		Modifiers                  modifier = Modifiers.None;
-		List<VariableDeclaration> variables = new List<VariableDeclaration>();
+		List<VariableDeclaration> variables = new List<VariableDeclaration>(1);
 		
 		public TypeReference TypeReference {
 			get {

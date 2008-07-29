@@ -1,17 +1,3 @@
-2008-07-29  Mike Krüger <mkrueger@novell.com> 
-
-	* MonoDevelop.Projects.Gui/ProjectsGuiServices.cs,
-	  MonoDevelop.Projects.Gui/IconService.cs,
-	  MonoDevelop.Projects.Gui.Completion/MethodParameterDataProvider.cs,
-	  MonoDevelop.Projects.Gui.Completion/CodeCompletionData.cs,
-	  MonoDevelop.Projects.Gui.Completion/CodeCompletionDataProvider.cs:
-	  Translated old code to new dom.
-
-2008-07-27  Mike Krüger <mkrueger@novell.com> 
-
-	* MonoDevelop.Projects.Gui.Completion/CodeCompletionData.cs: Worked on
-	  new dom/completion/database.
-
 2008-07-24  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs: Use the

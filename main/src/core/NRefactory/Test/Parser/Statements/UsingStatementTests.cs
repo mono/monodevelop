@@ -2,16 +2,16 @@
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
-//     <version>$Revision: 1609 $</version>
+//     <version>$Revision: 915 $</version>
 // </file>
 
 using System;
 using System.IO;
 using NUnit.Framework;
 using ICSharpCode.NRefactory.Parser;
-using ICSharpCode.NRefactory.Ast;
+using ICSharpCode.NRefactory.Parser.AST;
 
-namespace ICSharpCode.NRefactory.Tests.Ast
+namespace ICSharpCode.NRefactory.Tests.AST
 {
 	[TestFixture]
 	public class UsingStatementTests
@@ -42,16 +42,6 @@ End Using";
 		{
 			string usingText = @"
 Using nf As Font = New Font()
-	Bla(nf)
-End Using";
-			UsingStatement usingStmt = ParseUtilVBNet.ParseStatement<UsingStatement>(usingText);
-			// TODO : Extend test.
-		}
-		[Test]
-		public void VBNetUsingStatementTest3()
-		{
-			string usingText = @"
-Using nf As New Font(), nf2 As New List(Of Font)(), nf3 = Nothing
 	Bla(nf)
 End Using";
 			UsingStatement usingStmt = ParseUtilVBNet.ParseStatement<UsingStatement>(usingText);

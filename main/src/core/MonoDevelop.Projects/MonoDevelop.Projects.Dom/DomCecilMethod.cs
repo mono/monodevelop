@@ -49,29 +49,14 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
-		public static IReturnType GetReturnType (TypeReference typeReference)
-		{
-			if (typeReference == null)
-				return DomReturnType.Void;
-			return DomReturnType.GetSharedReturnType (typeReference.FullName); 
-		}
-		
-		public static IReturnType GetReturnType (MethodReference methodReference)
-		{
-			if (methodReference == null)
-				return DomReturnType.Void;
-			return DomReturnType.GetSharedReturnType (methodReference.DeclaringType.FullName);
-		}
-		
 		public DomCecilMethod (MonoDevelop.Projects.Dom.IType declaringType, bool keepDefinitions, MethodDefinition methodDefinition)
 		{
 			this.declaringType    = declaringType;
 			if (keepDefinitions)
 				this.methodDefinition = methodDefinition;
-				
 			base.Name             = methodDefinition.Name;
 			base.modifiers        = DomCecilType.GetModifiers (methodDefinition.Attributes);
-			base.returnType       = DomCecilMethod.GetReturnType (methodDefinition.ReturnType.ReturnType);
+			base.returnType       = new DomCecilReturnType (methodDefinition.ReturnType.ReturnType);
 			foreach (ParameterDefinition paramDef in methodDefinition.Parameters) {
 				Add (new DomCecilParameter (paramDef));
 			}

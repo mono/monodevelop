@@ -87,7 +87,7 @@ namespace MonoDevelop.CSharpBinding
 						}
 						ClassFinder finder = new ClassFinder(fileName, text, typeStart);
 						IReturnType t = finder.SearchType(nonGenericClassName, typeParameterCount);
-						IType c = (t != null) ? t.GetUnderlyingClass() : null;
+						IClass c = (t != null) ? t.GetUnderlyingClass() : null;
 						if (c != null) {
 							ExpressionContext context = ExpressionContext.TypeDerivingFrom(c, true);
 							if (context.ShowEntry(c)) {

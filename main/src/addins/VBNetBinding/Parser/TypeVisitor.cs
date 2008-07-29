@@ -6,13 +6,13 @@ using System.Collections.Generic;
 using ICSharpCode.NRefactory.Parser;
 using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.NRefactory.Visitors;
-//using VBBinding.Parser.SharpDevelopTree;
+using VBBinding.Parser.SharpDevelopTree;
 
-//using MonoDevelop.Projects.Dom;
-//using ClassType = MonoDevelop.Projects.Parser.ClassType;
+using MonoDevelop.Projects.Parser;
+using ClassType = MonoDevelop.Projects.Parser.ClassType;
 
 namespace VBBinding.Parser
-{/*
+{
 	
 	public class TypeVisitor : AbstractAstVisitor
 	{
@@ -48,7 +48,7 @@ namespace VBBinding.Parser
 		
 		public override object VisitInvocationExpression(InvocationExpression invocationExpression, object data)
 		{
-			if (invocationExpression.TargetObject is FieldReferenceOrInvocationExpression) {
+			/*if (invocationExpression.TargetObject is FieldReferenceOrInvocationExpression) {
 				FieldReferenceOrInvocationExpression field = (FieldReferenceOrInvocationExpression)invocationExpression.TargetObject;
 				IReturnType type = field.TargetObject.AcceptVisitor(this, data) as IReturnType;
 				ArrayList methods = resolver.SearchMethod(type, field.FieldName);
@@ -71,13 +71,13 @@ namespace VBBinding.Parser
 				}
 				// TODO: Find the right method
 				return ((IMethod)methods[0]).ReturnType;
-			}
+			}*/
 			// invocationExpression is delegate call
 			IReturnType t = invocationExpression.AcceptChildren(this, data) as IReturnType;
 			if (t == null) {
 				return null;
 			}
-			IType c = resolver.SearchType(t.FullyQualifiedName, resolver.CallingClass, resolver.CompilationUnit);
+			IClass c = resolver.SearchType(t.FullyQualifiedName, resolver.CallingClass, resolver.CompilationUnit);
 			if (c.ClassType == ClassType.Delegate) {
 				List<IMethod> methods = resolver.SearchMethod(t, "invoke");
 				if (methods.Count <= 0) {
@@ -88,8 +88,46 @@ namespace VBBinding.Parser
 			return null;
 		}
 		
-
-
+		
+		//TODO - Verify logic; did a lot of "just make it work" hacking in this method
+		public override object VisitFieldReferenceExpression(FieldReferenceExpression fieldReferenceExpression, object data)
+		{
+			if (fieldReferenceExpression == null) {
+				return null;
+			}
+			
+			IReturnType returnType = fieldReferenceExpression.TargetObject.AcceptVisitor(this, data) as IReturnType;
+			if (returnType != null) {
+				//Console.WriteLine("Got type: " + returnType.FullyQualifiedName);
+				string name = resolver.SearchNamespace(returnType.FullyQualifiedName, resolver.CompilationUnit);
+				if (name != null) {
+					//Console.WriteLine("Got subtype: " + name + "." + fieldReferenceExpression.FieldName);
+					string n = resolver.SearchNamespace(string.Concat(name, ".", fieldReferenceExpression.FieldName), null);
+					if (n != null) {
+						return new ReturnType(n);
+					}
+					//Console.WriteLine("Trying classes");
+					IClass c = resolver.SearchType(string.Concat(name, ".", fieldReferenceExpression.FieldName), resolver.CallingClass, resolver.CompilationUnit);
+					//IClass c = resolver.SearchType(string.Concat(name, ".", fieldReferenceExpression.FieldName),  resolver.CompilationUnit);
+					if (c != null) {
+						resolver.ShowStatic = true;
+						return new ReturnType(c.FullyQualifiedName);
+					}
+					
+					//FIXME?
+					try{
+						return new ReturnType(name + "." + fieldReferenceExpression.FieldName);
+					}catch(Exception){
+						return null;	
+					}
+				}
+				//Console.WriteLine("Trying Members");
+				return resolver.SearchMember(returnType, fieldReferenceExpression.FieldName);
+			}
+//			Console.WriteLine("returnType of child is null!");
+			return null;
+		}
+		
 		public override object VisitIdentifierExpression(IdentifierExpression identifierExpression, object data)
 		{
 			//Console.WriteLine("visiting IdentifierExpression");
@@ -102,7 +140,7 @@ namespace VBBinding.Parser
 				return new ReturnType(name);
 			}
 			//Console.WriteLine("no namespace found");
-			IType c = resolver.SearchType(identifierExpression.Identifier, resolver.CallingClass, resolver.CompilationUnit);
+			IClass c = resolver.SearchType(identifierExpression.Identifier, resolver.CallingClass, resolver.CompilationUnit);
 			if (c != null) {
 				resolver.ShowStatic = true;
 				return new ReturnType(c.FullyQualifiedName);
@@ -156,7 +194,10 @@ namespace VBBinding.Parser
 			return assignmentExpression.Left.AcceptVisitor(this, data);
 		}
 		
-		
+		/*public override object Visit(GetTypeExpression getTypeExpression, object data)
+		{
+			return new ReturnType("System.Type");
+		}*/
 		
 		public override object VisitTypeOfExpression(TypeOfExpression typeOfExpression, object data)
 		{
@@ -195,7 +236,7 @@ namespace VBBinding.Parser
 			if (resolver.CallingClass == null) {
 				return null;
 			}
-			IType baseClass = resolver.BaseClass(resolver.CallingClass);
+			IClass baseClass = resolver.BaseClass(resolver.CallingClass);
 			if (baseClass == null) {
 				return null;
 			}
@@ -228,5 +269,5 @@ namespace VBBinding.Parser
 			// no calls allowed !!!
 			return null;
 		}
-	}*/
+	}
 }

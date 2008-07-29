@@ -2,33 +2,33 @@
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
-//     <version>$Revision: 3184 $</version>
+//     <version>$Revision: 975 $</version>
 // </file>
 
 using System;
 using System.Collections.Generic;
 
-namespace NRefactoryASTGenerator.Ast
+namespace NRefactoryASTGenerator.AST
 {
 	[CustomImplementation]
-	abstract class Expression : AbstractNode, INullable {}
+	abstract class Expression : AbstractNode {}
 	
 	[CustomImplementation]
 	class PrimitiveExpression : Expression {}
 	
-	enum ParameterModifiers { In }
+	enum ParamModifier { In }
 	
 	class ParameterDeclarationExpression : Expression {
 		List<AttributeSection> attributes;
 		[QuestionMarkDefault]
 		string         parameterName;
 		TypeReference  typeReference;
-		ParameterModifiers  paramModifier;
+		ParamModifier  paramModifier;
 		Expression     defaultValue;
 		
 		public ParameterDeclarationExpression(TypeReference typeReference, string parameterName) {}
-		public ParameterDeclarationExpression(TypeReference typeReference, string parameterName, ParameterModifiers paramModifier) {}
-		public ParameterDeclarationExpression(TypeReference typeReference, string parameterName, ParameterModifiers paramModifier, Expression defaultValue) {}
+		public ParameterDeclarationExpression(TypeReference typeReference, string parameterName, ParamModifier paramModifier) {}
+		public ParameterDeclarationExpression(TypeReference typeReference, string parameterName, ParamModifier paramModifier, Expression defaultValue) {}
 	}
 	
 	class NamedArgumentExpression : Expression {
@@ -38,32 +38,22 @@ namespace NRefactoryASTGenerator.Ast
 		public NamedArgumentExpression(string name, Expression expression) {}
 	}
 	
-	[IncludeBoolProperty("IsAnonymousType", "return createType.IsNull || string.IsNullOrEmpty(createType.Type);")]
-	class ObjectCreateExpression : Expression {
-		TypeReference    createType;
-		List<Expression> parameters;
-		CollectionInitializerExpression objectInitializer;
-		
-		public ObjectCreateExpression(TypeReference createType, List<Expression> parameters) {}
-	}
-	
-	[IncludeBoolProperty("IsImplicitlyTyped", "return createType.IsNull || string.IsNullOrEmpty(createType.Type);")]
 	class ArrayCreateExpression : Expression {
 		TypeReference              createType;
 		List<Expression>           arguments;
-		CollectionInitializerExpression arrayInitializer;
+		ArrayInitializerExpression arrayInitializer;
 		
 		public ArrayCreateExpression(TypeReference createType) {}
 		public ArrayCreateExpression(TypeReference createType, List<Expression> arguments) {}
-		public ArrayCreateExpression(TypeReference createType, CollectionInitializerExpression arrayInitializer) {}
+		public ArrayCreateExpression(TypeReference createType, ArrayInitializerExpression arrayInitializer) {}
 	}
 	
 	[ImplementNullable(NullableImplementation.Shadow)]
-	class CollectionInitializerExpression : Expression {
+	class ArrayInitializerExpression : Expression {
 		List<Expression> createExpressions;
 		
-		public CollectionInitializerExpression() {}
-		public CollectionInitializerExpression(List<Expression> createExpressions) {}
+		public ArrayInitializerExpression() {}
+		public ArrayInitializerExpression(List<Expression> createExpressions) {}
 	}
 	
 	enum AssignmentOperatorType {}
@@ -101,27 +91,16 @@ namespace NRefactoryASTGenerator.Ast
 		public CastExpression(TypeReference castTo, Expression expression, CastType castType) {}
 	}
 	
-	[IncludeMember("[Obsolete] public string FieldName { get { return MemberName; } set { MemberName = value; } }")]
-	class MemberReferenceExpression : Expression
+	class FieldReferenceExpression : Expression
 	{
 		Expression targetObject;
-		string     memberName;
-		List<TypeReference> typeArguments;
+		string     fieldName;
 		
-		public MemberReferenceExpression(Expression targetObject, string memberName) {}
-	}
-	
-	class PointerReferenceExpression : Expression {
-		Expression targetObject;
-		string     identifier;
-		List<TypeReference> typeArguments;
-		
-		public PointerReferenceExpression(Expression targetObject, string identifier) {}
+		public FieldReferenceExpression(Expression targetObject, string fieldName) {}
 	}
 	
 	class IdentifierExpression : Expression {
 		string identifier;
-		List<TypeReference> typeArguments;
 		
 		public IdentifierExpression(string identifier) {}
 	}
@@ -129,9 +108,18 @@ namespace NRefactoryASTGenerator.Ast
 	class InvocationExpression : Expression {
 		Expression          targetObject;
 		List<Expression>    arguments;
+		List<TypeReference> typeArguments;
 		
 		public InvocationExpression(Expression targetObject) {}
 		public InvocationExpression(Expression targetObject, List<Expression> arguments) {}
+		public InvocationExpression(Expression targetObject, List<Expression> arguments, List<TypeReference> typeArguments) {}
+	}
+	
+	class ObjectCreateExpression : Expression {
+		TypeReference    createType;
+		List<Expression> parameters;
+		
+		public ObjectCreateExpression(TypeReference createType, List<Expression> parameters) {}
 	}
 	
 	class ParenthesizedExpression : Expression {
@@ -168,14 +156,6 @@ namespace NRefactoryASTGenerator.Ast
 	class AnonymousMethodExpression : Expression {
 		List<ParameterDeclarationExpression> parameters;
 		BlockStatement body;
-		bool hasParameterList;
-	}
-	
-	[IncludeMember("public Location ExtendedEndLocation { get; set; }")]
-	class LambdaExpression : Expression {
-		List<ParameterDeclarationExpression> parameters;
-		BlockStatement statementBody;
-		Expression expressionBody;
 	}
 	
 	class CheckedExpression : Expression {
@@ -209,9 +189,16 @@ namespace NRefactoryASTGenerator.Ast
 	
 	class IndexerExpression : Expression {
 		Expression       targetObject;
-		List<Expression> indexes;
+		List<Expression> indices;
 		
-		public IndexerExpression(Expression targetObject, List<Expression> indexes) {}
+		public IndexerExpression(Expression targetObject, List<Expression> indices) {}
+	}
+	
+	class PointerReferenceExpression : Expression {
+		Expression targetObject;
+		string     identifier;
+		
+		public PointerReferenceExpression(Expression targetObject, string identifier) {}
 	}
 	
 	class SizeOfExpression : Expression {
@@ -246,73 +233,5 @@ namespace NRefactoryASTGenerator.Ast
 		TypeReference typeReference;
 		
 		public TypeOfIsExpression(Expression expression, TypeReference typeReference) {}
-	}
-	
-	[ImplementNullable(NullableImplementation.Shadow)]
-	class QueryExpression : Expression {
-		QueryExpressionFromClause fromClause;
-		List<QueryExpressionClause> middleClauses;
-		QueryExpressionClause selectOrGroupClause;
-		QueryExpressionIntoClause intoClause;
-	}
-	
-	[ImplementNullable]
-	abstract class QueryExpressionClause : AbstractNode, INullable { }
-	
-	class QueryExpressionWhereClause : QueryExpressionClause {
-		Expression condition;
-	}
-	
-	class QueryExpressionLetClause : QueryExpressionClause {
-		[QuestionMarkDefault]
-		string identifier;
-		Expression expression;
-	}
-	
-	abstract class QueryExpressionFromOrJoinClause : QueryExpressionClause {
-		TypeReference type;
-		[QuestionMarkDefault]
-		string identifier;
-		Expression inExpression;
-	}
-	
-	[ImplementNullable(NullableImplementation.Shadow)]
-	class QueryExpressionFromClause : QueryExpressionFromOrJoinClause { }
-	
-	class QueryExpressionJoinClause : QueryExpressionFromOrJoinClause {
-		Expression onExpression;
-		Expression equalsExpression;
-		
-		string intoIdentifier;
-	}
-	
-	class QueryExpressionOrderClause : QueryExpressionClause {
-		List<QueryExpressionOrdering> orderings;
-	}
-	
-	class QueryExpressionOrdering : AbstractNode {
-		Expression criteria;
-		QueryExpressionOrderingDirection direction;
-	}
-	
-	enum QueryExpressionOrderingDirection {
-		None, Ascending, Descending
-	}
-	
-	class QueryExpressionSelectClause : QueryExpressionClause {
-		Expression projection;
-	}
-	
-	class QueryExpressionGroupClause : QueryExpressionClause {
-		Expression projection;
-		Expression groupBy;
-	}
-	
-	[ImplementNullable(NullableImplementation.Shadow)]
-	class QueryExpressionIntoClause : QueryExpressionClause {
-		[QuestionMarkDefault]
-		string intoIdentifier;
-		
-		QueryExpression continuedQuery;
 	}
 }

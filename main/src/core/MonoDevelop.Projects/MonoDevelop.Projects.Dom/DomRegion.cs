@@ -30,7 +30,7 @@ using System;
 
 namespace MonoDevelop.Projects.Dom
 {
-	public struct DomRegion : IComparable
+	public struct DomRegion
 	{
 		public readonly static DomRegion Empty = new DomRegion (-1, -1, -1, -1);
 		
@@ -74,23 +74,6 @@ namespace MonoDevelop.Projects.Dom
 		{
 		}
 		
-		public static DomRegion FromInvariantString (string invariantString)
-		{
-			if (invariantString.ToUpper () == "EMPTY")
-				return DomRegion.Empty;
-			string[] splits = invariantString.Split (',');
-			if (splits.Length == 4) 
-				return new DomRegion (Int32.Parse (splits[0]), Int32.Parse (splits[1]), Int32.Parse (splits[2]), Int32.Parse (splits[3]));
-			return DomRegion.Empty;
-		}
-		
-		public string ToInvariantString ()
-		{
-			if (IsEmpty)
-				return "Empty";
-			return String.Format ("{0},{1},{2},{3}", Start.Line, Start.Column, End.Line, End.Column);
-		}
-		
 		public override string ToString ()
 		{
 			if (this.IsEmpty)
@@ -101,28 +84,6 @@ namespace MonoDevelop.Projects.Dom
 			                      Start.Column,
 			                      End.Line,
 			                      End.Column);
-		}
-		
-		public int CompareTo (DomRegion value)
-		{
-			int cmp;
-			if (0 != (cmp = (Start.Line - value.Start.Line))) 
-				return cmp;
-			if (0 != (cmp = (Start.Column - value.Start.Column)))
-				return cmp;
-			if (0 != (cmp = (End.Line - value.End.Line)))
-				return cmp;
-			return End.Column - value.End.Column;
-		}
-		
-		int IComparable.CompareTo(object value) 
-		{
-			return CompareTo((DomRegion)value);
-		}
-		
-		public bool Contains (DomRegion region)
-		{
-			return Contains (region.Start) && Contains (region.End);
 		}
 		
 		public bool Contains (DomLocation location)

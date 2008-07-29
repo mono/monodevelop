@@ -56,18 +56,6 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
-		protected void SetName (string fullName)
-		{
-			int idx = fullName.LastIndexOf ('.');
-			if (idx >= 0) {
-				Namespace = fullName.Substring (0, idx);
-				Name      = fullName.Substring (idx + 1);
-			} else {
-				Namespace = "";
-				Name      = fullName;
-			}
-		}
-		
 		public string Namespace {
 			get {
 				return nameSpace;
@@ -93,7 +81,7 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 
-		public virtual ICompilationUnit CompilationUnit {
+		public ICompilationUnit CompilationUnit {
 			get {
 				return compilationUnit;
 			}
@@ -151,7 +139,7 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
-		public virtual IEnumerable<IType> InnerTypes {
+		public IEnumerable<IType> InnerTypes {
 			get {
 				foreach (IMember item in Members)
 					if (item is IType)
@@ -159,7 +147,7 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 
-		public virtual IEnumerable<IField> Fields {
+		public IEnumerable<IField> Fields {
 			get {
 				foreach (IMember item in Members)
 					if (item is IField)
@@ -167,7 +155,7 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 
-		public virtual IEnumerable<IProperty> Properties {
+		public IEnumerable<IProperty> Properties {
 			get {
 				foreach (IMember item in Members)
 					if (item is IProperty)
@@ -175,7 +163,7 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 
-		public virtual IEnumerable<IMethod> Methods {
+		public IEnumerable<IMethod> Methods {
 			get {
 				foreach (IMember item in Members)
 					if (item is IMethod)
@@ -183,7 +171,7 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 
-		public virtual IEnumerable<IEvent> Events {
+		public IEnumerable<IEvent> Events {
 			get {
 				foreach (IMember item in Members)
 					if (item is IEvent)
@@ -196,7 +184,6 @@ namespace MonoDevelop.Projects.Dom
 				return null;
 			}
 		}
-		
 		public virtual bool HasParts {
 			get {
 				return false;

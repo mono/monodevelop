@@ -40,10 +40,8 @@ FILES =  \
 	Gui/CSharpTextEditorCompletion.cs \
 	Gui/CSharpTextEditorExtension.cs \
 	Gui/FormattingPanel.cs \
-	Gui/MemberCompletionData.cs \
 	Gui/NewCSharpExpressionFinder.cs \
 	Gui/NewOverrideCompletionData.cs \
-	Gui/NRefactoryDocumentMetaInformation.cs \
 	Gui/NRefactoryParameterDataProvider.cs \
 	Gui/NRefactoryResolver.cs \
 	Gui/OverrideCompletionData.cs \

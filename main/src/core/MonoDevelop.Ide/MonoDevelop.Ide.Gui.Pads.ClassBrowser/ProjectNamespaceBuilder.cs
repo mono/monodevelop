@@ -34,7 +34,7 @@ using System.Text;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Dom;
+using MonoDevelop.Projects.Parser;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
 
@@ -44,7 +44,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassBrowser
 	public class ProjectNamespaceNodeBuilder : TypeNodeBuilder
 	{
 		public override Type NodeDataType {
-			get { return typeof(MonoDevelop.Projects.Dom.Namespace); }
+			get { return typeof(ProjectNodeBuilder.ProjectNamespace); }
 		}
 		
 		public override string ContextMenuAddinPath {
@@ -53,25 +53,22 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassBrowser
 		
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
 		{
-			MonoDevelop.Projects.Dom.Namespace ns = (MonoDevelop.Projects.Dom.Namespace)dataObject;
+			ProjectNodeBuilder.ProjectNamespace ns = (ProjectNodeBuilder.ProjectNamespace)dataObject;
 			return ns.Name;
 		}
 		
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
 		{
-			MonoDevelop.Projects.Dom.Namespace ns = (MonoDevelop.Projects.Dom.Namespace)dataObject;
+			ProjectNodeBuilder.ProjectNamespace ns = (ProjectNodeBuilder.ProjectNamespace)dataObject;
 			label = ns.Name;
-			icon  = Context.GetIcon (ns.StockIcon);
+			icon  = Context.GetIcon (Stock.NameSpace);
 		}
 		
 		public override void BuildChildNodes (ITreeBuilder builder, object dataObject)
 		{
-			MonoDevelop.Projects.Dom.Namespace ns = (MonoDevelop.Projects.Dom.Namespace)dataObject;
-			Project project =  (Project)builder.GetParentDataItem (typeof(Project), false);
-			ProjectDom dom = ProjectDomService.GetDatabaseProjectDom (project);
-			
-			foreach (MonoDevelop.Projects.Dom.IMember member in dom.GetNamespaceContents (ns.Name, false, true)) {
-				builder.AddChild (member);
+			ProjectNodeBuilder.ProjectNamespace ns = (ProjectNodeBuilder.ProjectNamespace)dataObject;
+			foreach (IType type in ns.Types) {
+				builder.AddChild (type);
 			}
 		}
 		

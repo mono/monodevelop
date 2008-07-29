@@ -1,4 +1,4 @@
-<objects attr-sync="on">
+<objects>
   <object type="MonoDevelop.VBNetBinding.CodeGenerationPanelWidget" palette-category="MonoDevelop.VBNetBinding" allow-children="false" base-type="Gtk.Bin">
     <itemgroups />
     <signals />

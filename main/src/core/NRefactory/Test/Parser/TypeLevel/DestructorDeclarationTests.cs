@@ -2,14 +2,19 @@
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
-//     <version>$Revision: 2676 $</version>
+//     <version>$Revision: 915 $</version>
 // </file>
 
 using System;
-using ICSharpCode.NRefactory.Ast;
+using System.Drawing;
+using System.IO;
+
 using NUnit.Framework;
 
-namespace ICSharpCode.NRefactory.Tests.Ast
+using ICSharpCode.NRefactory.Parser;
+using ICSharpCode.NRefactory.Parser.AST;
+
+namespace ICSharpCode.NRefactory.Tests.AST
 {
 	[TestFixture]
 	public class DestructorDeclarationTests
@@ -20,24 +25,10 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		{
 			DestructorDeclaration dd = ParseUtilCSharp.ParseTypeMember<DestructorDeclaration>("~MyClass() {}");
 		}
-		
-		[Test]
-		public void CSharpExternDestructorDeclarationTest()
-		{
-			DestructorDeclaration dd = ParseUtilCSharp.ParseTypeMember<DestructorDeclaration>("extern ~MyClass();");
-			Assert.AreEqual(Modifiers.Extern, dd.Modifier);
-		}
-		
-		[Test]
-		public void CSharpUnsafeDestructorDeclarationTest()
-		{
-			DestructorDeclaration dd = ParseUtilCSharp.ParseTypeMember<DestructorDeclaration>("unsafe ~MyClass() {}");
-			Assert.AreEqual(Modifiers.Unsafe, dd.Modifier);
-		}
 		#endregion
 		
 		#region VB.NET
 		// No VB.NET representation
-		#endregion
+		#endregion 
 	}
 }

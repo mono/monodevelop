@@ -40,9 +40,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 		bool CanParse (string fileName);
 		
 		IExpressionFinder CreateExpressionFinder ();
-		IResolver         CreateResolver (ProjectDom dom, object editor, string fileName);
 		
-		IDocumentMetaInformation CreateMetaInformation (string text);
-		IDocumentMetaInformation CreateMetaInformation (TextReader reader);
+		IDocumentMetaInformation CreateMetaInformation (Stream stream);
 	}
 }

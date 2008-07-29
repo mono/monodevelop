@@ -37,31 +37,31 @@ using Mono.CSharp;
 
 namespace MonoDevelop.CSharpBinding
 {
-	public class DomParser : AbstractParser
+	public class DomParser : IParser
 	{
-		public override bool CanParse (string fileName)
+		public bool CanParseMimeType (string mimeType)
+		{
+			return "text/x-csharp" == mimeType;
+		}
+		
+		public bool CanParseProjectType (string projectType)
+		{
+			return "C#" == projectType;
+		}
+		
+		public bool CanParse (string fileName)
 		{
 			return Path.GetExtension (fileName) == ".cs";
 		}
 		
-		public DomParser () : base ("C#", "text/x-csharp")
-		{
-		}
-		
-		public override IExpressionFinder CreateExpressionFinder ()
+		public IExpressionFinder CreateExpressionFinder ()
 		{
 			return new CSharpExpressionFinder ();
 		}
 		
-		public override IResolver CreateResolver (ProjectDom dom, object editor, string fileName)
+		public IDocumentMetaInformation CreateMetaInformation (Stream stream)
 		{
-			MonoDevelop.Ide.Gui.Document doc = (MonoDevelop.Ide.Gui.Document)editor;
-			return new NRefactoryResolver (dom, doc.CompilationUnit, ICSharpCode.NRefactory.SupportedLanguage.CSharp, doc.TextEditor, fileName);
-		}
-		
-		public override IDocumentMetaInformation CreateMetaInformation (TextReader reader)
-		{
-			return new NRefactoryDocumentMetaInformation (ICSharpCode.NRefactory.SupportedLanguage.CSharp, reader);
+			return null;
 		}
 		
 		static DomRegion Block2Region (Mono.CSharp.Dom.LocationBlock block)
@@ -97,12 +97,10 @@ namespace MonoDevelop.CSharpBinding
 					typeParameters.Add (TypeName2ReturnType (parameter));
 				}
 			}
-			string n = name.Name;
-			if (name.ParentTypeName != null)
-				n = name.ParentTypeName.Name + "." + name.Name;
-			return DomReturnType.GetSharedReturnType (new DomReturnType (n,
-			                                                             name.IsNullable,
-			                                                             typeParameters));
+			return new DomReturnType (name.Name,
+			                          name.IsNullable,
+			                          typeParameters);
+			
 		}
 		
 		static DomLocation Location2DomLocation (Mono.CSharp.Dom.ILocation location)
@@ -231,7 +229,6 @@ namespace MonoDevelop.CSharpBinding
 					members.Add (ConvertType (unit, "", t));
 				}
 			}
-			
 			MonoDevelop.Projects.Dom.DomType result = new MonoDevelop.Projects.Dom.DomType (unit,
 			                                        ClassType.Class,
 			                                        type.Name,
@@ -243,7 +240,6 @@ namespace MonoDevelop.CSharpBinding
 				foreach (Mono.CSharp.Dom.ITypeName baseType in type.BaseTypes) {
 					if (result.BaseType == null) {
 						result.BaseType = TypeName2ReturnType (baseType);
-						System.Console.WriteLine(result.BaseType);
 						continue;
 					}
 					result.AddInterfaceImplementation (TypeName2ReturnType (baseType));
@@ -271,7 +267,7 @@ namespace MonoDevelop.CSharpBinding
 		}
 
 		
-		public override ICompilationUnit Parse (string fileName, string content)
+		public ICompilationUnit Parse (string fileName, string content)
 		{
 //			MemoryStream input = new MemoryStream (Encoding.UTF8.GetBytes (content));
 //			SeekableStreamReader reader = new SeekableStreamReader (input, Encoding.UTF8);
@@ -341,7 +337,7 @@ namespace MonoDevelop.CSharpBinding
 						if (i > 0)
 							namespaceBuilder.Append ('.');
 						namespaceBuilder.Append (names[i]);
-						
+						System.Console.WriteLine(namespaceBuilder.ToString ());
 						domUsing.Add (namespaceBuilder.ToString ());
 						
 					}
@@ -361,10 +357,12 @@ namespace MonoDevelop.CSharpBinding
 					foreach (Mono.CSharp.Dom.INamespaceImport import in cu.UsingBlock.Usings) {
 						domUsing.Add (import.Name);
 					}
-					domUsing.Region = Block2Region (cu.UsingBlock.LocationBlock);
 					result.Add (domUsing);
+					
 				}
+					
 			}
+			
 			return result;
 		}
 	}

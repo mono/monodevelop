@@ -1,11 +1,3 @@
-2008-07-29  Mike Krüger <mkrueger@novell.com> 
-
-	* MonoDevelop.VersionControl/Update.cs,
-	  MonoDevelop.VersionControl/RevertRevisionsCommands.cs,
-	  MonoDevelop.VersionControl/AddRemoveMoveCommand.cs,
-	  MonoDevelop.VersionControl/RevertCommand.cs: Translated old code to
-	  new dom.
-
 2008-07-21  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.VersionControl/Repository.cs,

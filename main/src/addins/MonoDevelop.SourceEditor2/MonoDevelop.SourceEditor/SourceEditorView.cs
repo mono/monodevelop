@@ -38,9 +38,7 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Core;
 using MonoDevelop.Projects.Gui.Completion;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
-using MonoDevelop.Projects.Dom.Output;
+using MonoDevelop.Projects.Parser;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Text;
 using MonoDevelop.Ide.Gui.Search;
@@ -176,6 +174,8 @@ namespace MonoDevelop.SourceEditor
 		
 		public void Save (string fileName, string encoding)
 		{
+			fileName = ConvertFileNameToVFS (fileName);
+
 			if (warnOverwrite) {
 				if (fileName == ContentName) {
 					if (MonoDevelop.Core.Gui.MessageService.AskQuestion (GettextCatalog.GetString ("This file {0} has been changed outside of MonoDevelop. Are you sure you want to overwrite the file?", fileName), MonoDevelop.Core.Gui.AlertButton.Cancel, MonoDevelop.Core.Gui.AlertButton.OverwriteFile) != MonoDevelop.Core.Gui.AlertButton.OverwriteFile)
@@ -200,7 +200,6 @@ namespace MonoDevelop.SourceEditor
 			
 			ContentName = fileName; 
 			Document.MimeType = IdeApp.Services.PlatformService.GetMimeTypeForUri (fileName);
-			widget.SetMime (Document.MimeType);
 			Document.SetNotDirtyState ();
 			this.IsDirty = false;
 		}
@@ -211,9 +210,19 @@ namespace MonoDevelop.SourceEditor
 		}
 		
 		
+		static string ConvertFileNameToVFS (string fileName)
+		{
+			string result = fileName;
+			result = result.Replace ("%", "%25");
+			result = result.Replace ("#", "%23");
+			result = result.Replace ("?", "%3F");
+			return result;
+		}
+		
 		bool warnOverwrite = false;
 		public void Load (string fileName, string encoding)
 		{
+			fileName = ConvertFileNameToVFS (fileName);
 			if (warnOverwrite) {
 				warnOverwrite = false;
 				widget.RemoveReloadBar ();
@@ -221,7 +230,6 @@ namespace MonoDevelop.SourceEditor
 			}
 			
 			Document.MimeType = IdeApp.Services.PlatformService.GetMimeTypeForUri (fileName);
-			widget.SetMime (Document.MimeType);
 			Document.Text = File.ReadAllText (fileName);
 			ContentName = fileName;
 //			InitializeFormatter ();
@@ -258,21 +266,24 @@ namespace MonoDevelop.SourceEditor
 			IdeApp.Services.DebuggingService.Breakpoints.BreakpointStatusChanged -= breakpointStatusChanged;
 		}
 		
-		public ProjectDom GetParserContext ()
+		public IParserContext GetParserContext ()
 		{
-			Project project = IdeApp.ProjectOperations.CurrentSelectedProject;
-			if (Project != null)
-				return ProjectDomService.GetDatabaseProjectDom (Project);
-			return new ProjectDom ();
+			IParserDatabase pdb = IdeApp.Workspace.ParserDatabase;
+			
+			Project project = Project;
+			if (project != null) 
+				return pdb.GetProjectParserContext (project);
+			
+			return pdb.GetFileParserContext (IsUntitled ? UntitledName : ContentName);
 		}
 		
-		public Ambience GetAmbience ()
+		public MonoDevelop.Projects.Ambience.Ambience GetAmbience ()
 		{
 			Project project = Project;
 			if (project != null)
 				return project.Ambience;
 			string file = this.IsUntitled ? this.UntitledName : this.ContentName;
-			return AmbienceService.GetAmbienceForFile (file);
+			return MonoDevelop.Projects.Services.Ambience.GetAmbienceForFile (file);
 		}
 		
 		void OnFileChanged (object sender, FileSystemEventArgs args)

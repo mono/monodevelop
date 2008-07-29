@@ -39,7 +39,7 @@ namespace MonoDevelop.CSharpBinding
 	{
 		TextEditor editor;
 		IMember member;
-		Ambience ambience;
+		CSharpAmbience ambience = new CSharpAmbience ();
 		string indent;
 		int    initialOffset;
 		
@@ -49,9 +49,9 @@ namespace MonoDevelop.CSharpBinding
 			this.member = member;
 			this.initialOffset = editor.CursorPosition;
 			this.indent = GetIndentString (editor.CursorPosition);
-			ambience = AmbienceService.GetAmbience (member);
+			
 			Image       = member.StockIcon;
-			Text        = new string[] { ambience.GetString (member, OutputFlags.ClassBrowserEntries) };
+			Text        = new string[] { AmbienceService.Default.GetString (member, OutputFlags.ClassBrowserEntries) };
 			CompletionString = member.Name;
 		}
 		

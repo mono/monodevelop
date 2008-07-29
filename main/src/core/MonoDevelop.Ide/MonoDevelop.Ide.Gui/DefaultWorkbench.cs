@@ -39,7 +39,6 @@ using MonoDevelop.Core.Gui.Dialogs;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Ide.Codons;
 using MonoDevelop.Ide.Gui.Dialogs;
-using MonoDevelop.Projects.Dom.Parser;
 
 using GLib;
 
@@ -546,13 +545,12 @@ namespace MonoDevelop.Ide.Gui
 		
 		void OnViewTextChanged (object sender, TextChangedEventArgs e)
 		{
-//document does it.
-/*			if (!parsingFile) {
+			if (!parsingFile) {
 				parsingFile = true;
 				GLib.Timeout.Add (500, new TimeoutHandler (ParseCurrentFile));
-			}*/
+			}
 		}
-		/*
+		
 		bool ParseCurrentFile ()
 		{
 			parsingFile = false;
@@ -578,7 +576,7 @@ namespace MonoDevelop.Ide.Gui
 			if (fileName == null || fileName.Length == 0)
 				return false;
 			
-			if (ProjectDomService.GetParserByFileName (fileName) == null)
+			if (Services.ParserService.GetParser (fileName) == null)
 				return false;
 			
 			string text = editable.Text;
@@ -595,7 +593,7 @@ namespace MonoDevelop.Ide.Gui
 			object[] data = (object[]) ob;
 			IdeApp.Workspace.ParserDatabase.UpdateFile ((Project) data[0], (string) data[1], (string) data[2]);
 		}
-*/
+
 		public Gtk.Toolbar[] ToolBars {
 			get { return toolbars; }
 		}

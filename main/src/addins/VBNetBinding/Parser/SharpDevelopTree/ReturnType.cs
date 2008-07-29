@@ -1,9 +1,9 @@
 // created on 04.08.2003 at 18:08
 using System;
-using MonoDevelop.Projects.Dom;
+using MonoDevelop.Projects.Parser;
 
 namespace VBBinding.Parser.SharpDevelopTree
-{/*
+{
 	public class ReturnType : DefaultReturnType
 	{
 		public ReturnType(string fullyQualifiedName): base (fullyQualifiedName)
@@ -28,5 +28,5 @@ namespace VBBinding.Parser.SharpDevelopTree
 		{
 			return new ReturnType(FullyQualifiedName, arrayDimensions, pointerNestingLevel);
 		}
-	}*/
+	}
 }

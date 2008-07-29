@@ -2,14 +2,19 @@
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
-//     <version>$Revision: 2191 $</version>
+//     <version>$Revision: 915 $</version>
 // </file>
 
 using System;
-using ICSharpCode.NRefactory.Ast;
+using System.Drawing;
+using System.IO;
+
 using NUnit.Framework;
 
-namespace ICSharpCode.NRefactory.Tests.Ast
+using ICSharpCode.NRefactory.Parser;
+using ICSharpCode.NRefactory.Parser.AST;
+
+namespace ICSharpCode.NRefactory.Tests.AST
 {
 	[TestFixture]
 	public class DelegateDeclarationTests
@@ -48,7 +53,7 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 			string program = "public delegate void(int a, int secondParam, MyObj lastParam);\n";
 			DelegateDeclaration dd = ParseUtilCSharp.ParseGlobal<DelegateDeclaration>(program, true);
 			Assert.AreEqual("System.Void", dd.ReturnType.SystemType);
-			//Assert.AreEqual("?", dd.Name);
+			Assert.AreEqual("?", dd.Name);
 			TestParameters(dd);
 		}
 		

@@ -5,19 +5,19 @@ using System.Collections;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
 
-using MonoDevelop.Projects.Dom;
+using MonoDevelop.Projects.Parser;
 using MonoDevelop.Projects.Gui.Completion;
 
 using CSharpBinding.Parser;
 
-//using MonoDevelop.Projects.Ambience;
-//using Ambience_ = MonoDevelop.Projects.Ambience.Ambience;
+using MonoDevelop.Projects.Ambience;
+using Ambience_ = MonoDevelop.Projects.Ambience.Ambience;
 
 namespace CSharpBinding
-{/*
+{
 	class OverrideCompletionData : CodeCompletionData, IActionCompletionData
 	{
-		IMember item;
+		ILanguageItem item;
 		TextEditor editor;
 		CSharpAmbience ambience;
 		string typedModifiers;
@@ -25,7 +25,7 @@ namespace CSharpBinding
 		string indent;
 		ITypeNameResolver resolver;
 		
-		public OverrideCompletionData (TextEditor editor, IMember item, int insertOffset, string typedModifiers, CSharpAmbience amb, ITypeNameResolver resolver)
+		public OverrideCompletionData (TextEditor editor, ILanguageItem item, int insertOffset, string typedModifiers, CSharpAmbience amb, ITypeNameResolver resolver)
 		{
 			this.typedModifiers = typedModifiers;
 			this.insertOffset = insertOffset;
@@ -332,5 +332,5 @@ namespace CSharpBinding
 			else
 				return res;
 		}
-	}*/
+	}
 }

@@ -2,7 +2,7 @@
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
-//     <version>$Revision: 3120 $</version>
+//     <version>$Revision: 1965 $</version>
 // </file>
 
 using System;
@@ -26,12 +26,13 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		public override void PrintIdentifier(string identifier)
 		{
-			if (Keywords.IsNonIdentifierKeyword(identifier)) {
+			int token = Keywords.GetToken(identifier);
+			if (token < 0 || Tokens.Unreserved[token]) {
+				PrintText(identifier);
+			} else {
 				PrintText("[");
 				PrintText(identifier);
 				PrintText("]");
-			} else {
-				PrintText(identifier);
 			}
 		}
 		
@@ -47,23 +48,6 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				default:
 					WriteLineInPreviousLine("'" + comment.CommentText, forceWriteInPreviousBlock);
 					break;
-			}
-		}
-		
-		public override void PrintPreprocessingDirective(PreprocessingDirective directive, bool forceWriteInPreviousBlock)
-		{
-			if (IsInMemberBody
-			    && (string.Equals(directive.Cmd, "#Region", StringComparison.InvariantCultureIgnoreCase)
-			        || string.Equals(directive.Cmd, "#End", StringComparison.InvariantCultureIgnoreCase)
-			        && directive.Arg.StartsWith("Region", StringComparison.InvariantCultureIgnoreCase)))
-			{
-				WriteLineInPreviousLine("'" + directive.Cmd + " " + directive.Arg, forceWriteInPreviousBlock);
-			} else if (!directive.Expression.IsNull) {
-				VBNetOutputVisitor visitor = new VBNetOutputVisitor();
-				directive.Expression.AcceptVisitor(visitor, null);
-				WriteLineInPreviousLine(directive.Cmd + " " + visitor.Text + " Then", forceWriteInPreviousBlock);
-			} else {
-				base.PrintPreprocessingDirective(directive, forceWriteInPreviousBlock);
 			}
 		}
 		

@@ -51,7 +51,7 @@ namespace MonoDevelop.Projects.Dom
 			this.parameterDefinition = parameterDefinition;
 			base.name                = parameterDefinition.Name;
 //			base.modifiers           = DomCecilType.GetModifiers (parameterDefinition..Attributes);
-			base.returnType          = DomCecilMethod.GetReturnType (parameterDefinition.ParameterType);
+			base.returnType          = new DomCecilReturnType (parameterDefinition.ParameterType);
 		}
 	}
 }

@@ -29,8 +29,7 @@ using System.CodeDom.Compiler;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Extensions;
 using MonoDevelop.Projects.CodeGeneration;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
+using MonoDevelop.Projects.Parser;
 
 using MonoDevelop.Core;
 using Mono.Addins;
@@ -77,7 +76,7 @@ namespace MonoDevelop.Projects
 
 			return langs;
 		}
-/*
+
 		public IParser GetParserForFile (string fileName)
 		{
 			foreach (LanguageBindingCodon binding in bindings) {
@@ -87,7 +86,7 @@ namespace MonoDevelop.Projects
 			}
 			return null;
 		}
-		*/
+		
 		public IRefactorer GetRefactorerForFile (string fileName)
 		{
 			foreach (LanguageBindingCodon binding in bindings) {

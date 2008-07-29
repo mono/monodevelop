@@ -2,7 +2,7 @@
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="none" email=""/>
-//     <version>$Revision: 2561 $</version>
+//     <version>$Revision: 935 $</version>
 // </file>
 
 using System;
@@ -37,7 +37,6 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.VB
 			Token t = GetSingleToken(text);
 			Assert.AreEqual(tokenType, t.kind, "Tokens.Literal");
 			Assert.IsNotNull(t.literalValue, "literalValue is null");
-			Assert.AreEqual(val.GetType(), t.literalValue.GetType(), "literalValue.GetType()");
 			Assert.AreEqual(val, t.literalValue, "literalValue");
 		}
 		
@@ -64,35 +63,8 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.VB
 		public void TestHexadecimalInteger()
 		{
 			CheckToken("&H10", Tokens.LiteralInteger, 0x10);
-			CheckToken("&H10&", Tokens.LiteralInteger, (long)0x10);
-			CheckToken("&h3ff%", Tokens.LiteralInteger, 0x3ff);
-			CheckToken("&h8000s", Tokens.LiteralInteger, short.MinValue);
-			CheckToken("&h8000us", Tokens.LiteralInteger, (ushort)0x8000);
-			CheckToken("&HffffFFFF", Tokens.LiteralInteger, -1);
-			CheckToken("&HffffFFFF%", Tokens.LiteralInteger, -1);
-			CheckToken("&HffffFFFFui", Tokens.LiteralInteger, uint.MaxValue);
-			CheckToken("&HffffFFFF&", Tokens.LiteralInteger, (long)uint.MaxValue);
-		}
-		
-		[Test]
-		public void TestLongHexadecimalInteger()
-		{
-			CheckToken("&H4244636f446c6d58", Tokens.LiteralInteger, 0x4244636f446c6d58);
-			CheckToken("&hf244636f446c6d58", Tokens.LiteralInteger, -989556688574190248);
-			CheckToken("&hf244636f446c6d58&", Tokens.LiteralInteger, -989556688574190248);
-			CheckToken("&hf244636f446c6d58ul", Tokens.LiteralInteger, 0xf244636f446c6d58);
-		}
-		
-		[Test]
-		public void InvalidHexadecimalInteger()
-		{
-			// just check that we don't get exceptions:
-			GenerateLexer(new StringReader("&H")).NextToken();
-			// >ulong.MaxValue
-			GenerateLexer(new StringReader("&hff244636f446c6d58")).NextToken();
-			// needs an ulong, but "i" postfix specified integer
-			GenerateLexer(new StringReader("&hf244636f446c6d58i")).NextToken();
-			GenerateLexer(new StringReader("&hf244636f446c6d58ui")).NextToken();
+			CheckToken("&H10&", Tokens.LiteralInteger, 0x10);
+			CheckToken("&h3ff&", Tokens.LiteralInteger, 0x3ff);
 		}
 		
 		[Test]

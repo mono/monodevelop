@@ -27,9 +27,7 @@
 
 using System;
 using Mono.TextEditor;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Output;
-using MonoDevelop.Projects.Dom.Parser;
+using MonoDevelop.Projects.Parser;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -51,7 +49,11 @@ namespace MonoDevelop.SourceEditor
 		{
 			ExtendibleTextEditor ed = (ExtendibleTextEditor) editor;
 			
-			return new LanguageItemWindow (AmbienceService.GetAmbience (ed.Document.MimeType), (ResolveResult)item, null);
+			IParserContext pctx = ed.View.GetParserContext ();
+			if (pctx == null)
+				return null;
+
+			return new LanguageItemWindow ((ILanguageItem)item, pctx, ed.View.GetAmbience (), null);
 		}
 		
 		public void GetRequiredPosition (TextEditor editor, Gtk.Window tipWindow, out int requiredWidth, out double xalign)

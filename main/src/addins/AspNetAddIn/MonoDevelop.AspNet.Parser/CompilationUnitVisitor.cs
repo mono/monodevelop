@@ -28,7 +28,7 @@
 
 using System;
 
-using MonoDevelop.Projects.Dom;
+using MonoDevelop.Projects.Parser;
 using MonoDevelop.AspNet.Parser.Dom;
 
 namespace MonoDevelop.AspNet.Parser
@@ -37,14 +37,14 @@ namespace MonoDevelop.AspNet.Parser
 	
 	public class CompilationUnitVisitor : Visitor
 	{
-		AspNetCompilationUnit cu;
+		MonoDevelop.Projects.Parser.DefaultCompilationUnit cu;
 		
-		public CompilationUnitVisitor (AspNetCompilationUnit cu)
+		public CompilationUnitVisitor (MonoDevelop.Projects.Parser.DefaultCompilationUnit cu)
 		{
 			this.cu = cu;
 		}
 		
-		AspNetCompilationUnit CU {
+		MonoDevelop.Projects.Parser.ICompilationUnit CU {
 			get { return cu; }
 		}
 		
@@ -81,14 +81,15 @@ namespace MonoDevelop.AspNet.Parser
 		
 		void AddRegion (string name, ILocation startLocation, ILocation endLocation)
 		{
-			DomRegion region;
+			DefaultRegion region;
 			if (endLocation == null)
-				region = new DomRegion (startLocation.BeginLine, startLocation.BeginColumn + 1, startLocation.EndLine, startLocation.EndColumn + 1);
+				region = new DefaultRegion (startLocation.BeginLine, startLocation.BeginColumn + 1, startLocation.EndLine, startLocation.EndColumn + 1);
 			else
-				region = new DomRegion (startLocation.BeginLine, startLocation.BeginColumn + 1, endLocation.EndLine, endLocation.EndColumn + 1);
+				region = new DefaultRegion (startLocation.BeginLine, startLocation.BeginColumn + 1, endLocation.EndLine, endLocation.EndColumn + 1);
 			
-			FoldingRegion f = new FoldingRegion (name, region, false);
-			cu.Add (f);
+			FoldingRegion f = new FoldingRegion (name, region);
+			f.DefaultIsFolded = false;
+			cu.FoldingRegions.Add (f);
 		}
 		
 		bool IsMultiLine (ILocation startLocation, ILocation endLocation)

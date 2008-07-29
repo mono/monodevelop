@@ -40,7 +40,7 @@ namespace MonoDevelop.Projects.Dom
 		List<IAttribute> attributes     = new List<IAttribute> ();
 		List<IType>      types          = new List<IType> ();
 		List<Comment>    comments       = new List<Comment> ();
-		List<FoldingRegion> foldingRegions = new List<FoldingRegion> ();
+		List<DomRegion>  foldingRegions = new List<DomRegion> ();
 		List<Error>      errors         = new List<Error> ();
 		
 		public CompilationUnit (string fileName)
@@ -49,16 +49,6 @@ namespace MonoDevelop.Projects.Dom
 		}
 		
 		#region ICompilationUnit
-		DateTime parseTime = DateTime.Now;
-		public DateTime ParseTime {
-			get {
-				return parseTime;
-			}
-			set {
-				parseTime = value;
-			}
-		}
-
 		string ICompilationUnit.FileName {
 			get {
 				return fileName;
@@ -94,7 +84,7 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
-		public IEnumerable<FoldingRegion> FoldingRegions {
+		public IEnumerable<DomRegion> FoldingRegions {
 			get {
 				return foldingRegions;
 			}
@@ -103,12 +93,6 @@ namespace MonoDevelop.Projects.Dom
 		public ReadOnlyCollection<Error> Errors {
 			get {
 				return errors.AsReadOnly ();
-			}
-		}
-		bool hasErrors = false;
-		public bool HasErrors {
-			get {
-				return hasErrors;
 			}
 		}
 		
@@ -152,14 +136,13 @@ namespace MonoDevelop.Projects.Dom
 			comments.Add (comment);
 		}
 		
-		public void Add (FoldingRegion foldingRegion)
+		public void Add (DomRegion domRegion)
 		{
-			foldingRegions.Add (foldingRegion);
+			foldingRegions.Add (domRegion);
 		}
 		
 		public void Add (Error error)
 		{
-			hasErrors |= error.ErrorType == ErrorType.Error;
 			errors.Add (error);
 		}
 		

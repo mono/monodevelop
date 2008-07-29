@@ -31,8 +31,7 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
+using MonoDevelop.Projects.Parser;
 using MonoDevelop.Projects.Text;
 using MonoDevelop.Projects.Gui.Dialogs;
 
@@ -185,12 +184,12 @@ namespace CSharpBinding
 		void FillClasses ()
 		{
 			try {
-				ProjectDom     ctx = ProjectDomService.GetDatabaseProjectDom (project);
-				foreach (IType c in ctx.Types) {
+				IParserContext ctx = IdeApp.Workspace.ParserDatabase.GetProjectParserContext (project);
+				foreach (IClass c in ctx.GetProjectContents ()) {
 					if (c.Methods != null) {
 						foreach (IMethod m in c.Methods) {
 							if (m.IsStatic && m.Name == "Main")
-								classListStore.AppendValues (c.FullName);
+								classListStore.AppendValues (c.FullyQualifiedName);
 						}
 					}
 				}

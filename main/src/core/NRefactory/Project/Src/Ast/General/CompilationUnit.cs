@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
@@ -54,7 +54,8 @@ namespace ICSharpCode.NRefactory.Ast
 		
 		public override string ToString()
 		{
-			return String.Format("[CompilationUnit: Children={0}]", GetCollectionString(base.Children));
+			return String.Format("[CompilationUnit: Children={0}]",
+			                     GetCollectionString(base.Children));
 		}
 	}
 }

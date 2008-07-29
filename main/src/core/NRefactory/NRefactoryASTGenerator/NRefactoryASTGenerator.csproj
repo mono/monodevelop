@@ -47,9 +47,6 @@
     <Compile Include="AST\Statements.cs" />
     <Compile Include="AST\TypeLevel.cs" />
     <Compile Include="AST\GlobalLevel.cs" />
-    <Compile Include="..\..\..\Main\ICSharpCode.SharpDevelop.Dom\Project\Src\EasyCodeDom.cs">
-      <Link>EasyCodeDom.cs</Link>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="AST" />

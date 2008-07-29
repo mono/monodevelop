@@ -2,16 +2,16 @@
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
-//     <version>$Revision: 1609 $</version>
+//     <version>$Revision: 915 $</version>
 // </file>
 
 using System;
 using System.IO;
 using NUnit.Framework;
 using ICSharpCode.NRefactory.Parser;
-using ICSharpCode.NRefactory.Ast;
+using ICSharpCode.NRefactory.Parser.AST;
 
-namespace ICSharpCode.NRefactory.Tests.Ast
+namespace ICSharpCode.NRefactory.Tests.AST
 {
 	[TestFixture]
 	public class AssignmentExpressionTests
@@ -97,7 +97,7 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		#region VB.NET
 		void VBNetTestAssignmentExpression(string program, AssignmentOperatorType op)
 		{
-			ExpressionStatement se = ParseUtilVBNet.ParseStatement<ExpressionStatement>(program);
+			StatementExpression se = ParseUtilVBNet.ParseStatement<StatementExpression>(program);
 			AssignmentExpression ae = se.Expression as AssignmentExpression;
 			Assert.AreEqual(op, ae.Op);
 			

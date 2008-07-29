@@ -20,10 +20,10 @@
 
 using System;
 using System.Text;
-using MonoDevelop.Projects.Dom;
+using MonoDevelop.Projects.Parser;
 
 namespace CSharpBinding.Parser
-{/*
+{
 	/// <summary>
 	/// Description of ExpressionFinder.
 	/// </summary>
@@ -54,7 +54,67 @@ namespace CSharpBinding.Parser
 		ExpressionContext GetCreationContext()
 		{
 			return null;
-
+/*			UnGetToken();
+			if (GetNextNonWhiteSpace() == '=') { // was: "= new"
+				ReadNextToken();
+				if (curTokenType == Ident) {     // was: "ident = new"
+					int typeEnd = offset;
+					ReadNextToken();
+					int typeStart = -1;
+					while (curTokenType == Ident) {
+						typeStart = offset + 1;
+						ReadNextToken();
+						if (curTokenType == Dot) {
+							ReadNextToken();
+						} else {
+							break;
+						}
+					}
+					if (typeStart >= 0) {
+						string className = text.Substring(typeStart, typeEnd - typeStart);
+						int pos = className.IndexOf('<');
+						string nonGenericClassName, genericPart;
+						int typeParameterCount = 0;
+						if (pos > 0) {
+							nonGenericClassName = className.Substring(0, pos);
+							genericPart = className.Substring(pos);
+							pos = 0;
+							do {
+								typeParameterCount += 1;
+								pos = genericPart.IndexOf(',', pos + 1);
+							} while (pos > 0);
+						} else {
+							nonGenericClassName = className;
+							genericPart = null;
+						}
+						ClassFinder finder = new ClassFinder(fileName, text, typeStart);
+						IReturnType t = finder.SearchType(nonGenericClassName, typeParameterCount);
+						IClass c = (t != null) ? t.GetUnderlyingClass() : null;
+						if (c != null) {
+							ExpressionContext context = ExpressionContext.TypeDerivingFrom(c, true);
+							if (context.ShowEntry(c)) {
+								if (genericPart != null) {
+									DefaultClass genericClass = new DefaultClass(c.CompilationUnit, c.ClassType, c.Modifiers, c.Region, c.DeclaringType);
+									genericClass.FullyQualifiedName = c.FullyQualifiedName + genericPart;
+									genericClass.Documentation = c.Documentation;
+									context.SuggestedItem = genericClass;
+								} else {
+									context.SuggestedItem = c;
+								}
+							}
+							return context;
+						}
+					}
+				}
+			} else {
+				UnGet();
+				ReadNextToken();
+				if (curTokenType == Ident && lastIdentifier == "throw") {
+					return ExpressionContext.TypeDerivingFrom(ProjectContentRegistry.Mscorlib.GetClass("System.Exception"), true);
+				}
+			}
+			return ExpressionContext.ObjectCreation;
+*/
 		}
 		
 		bool IsInAttribute(string txt, int offset)
@@ -537,7 +597,19 @@ namespace CSharpBinding.Parser
 			}
 			return '\0';
 		}
-
+		
+/*		void UnGet()
+		{
+			++offset;
+		}
+		
+		void UnGetToken()
+		{
+			do {
+				UnGet();
+			} while (char.IsLetterOrDigit(Peek()));
+		}
+*/		
 		// tokens for our lexer
 		static int Err     = 0;
 		static int Dot     = 1;
@@ -794,7 +866,19 @@ namespace CSharpBinding.Parser
 		
 		int state = 0;
 		int lastAccept = 0;
-	
+		static int[,] stateTable = new int[,] {
+			//                   Err,     Dot,     Str,      ID,         New,     Brk,     Par,     Cur,   Using,       digit
+			/*ERROR*/        { ERROR,   ERROR,   ERROR,   ERROR,        ERROR,  ERROR,   ERROR,   ERROR,   ERROR,        ERROR},
+			/*START*/        { ERROR,     DOT,  ACCEPT,  ACCEPT,        ERROR,   MORE, ACCEPT2,   CURLY,   ACCEPTNOMORE, ERROR},
+			/*DOT*/          { ERROR,   ERROR,  ACCEPT,  ACCEPT,        ERROR,   MORE,  ACCEPT,   CURLY,   ERROR,        ACCEPT},
+			/*MORE*/         { ERROR,   ERROR,  ACCEPT,  ACCEPT,        ERROR,   MORE, ACCEPT2,   CURLY,   ERROR,        ACCEPT},
+			/*CURLY*/        { ERROR,   ERROR,   ERROR,   ERROR,        ERROR, CURLY2,   ERROR,   ERROR,   ERROR,        ERROR},
+			/*CURLY2*/       { ERROR,   ERROR,   ERROR,  CURLY3,        ERROR,  ERROR,   ERROR,   ERROR,   ERROR,        CURLY3},
+			/*CURLY3*/       { ERROR,   ERROR,   ERROR,   ERROR, ACCEPTNOMORE,  ERROR,   ERROR,   ERROR,   ERROR,        ERROR},
+			/*ACCEPT*/       { ERROR,    MORE,   ERROR,   ERROR,       ACCEPT,  ERROR,   ERROR,   ERROR,   ACCEPTNOMORE, ERROR},
+			/*ACCEPTNOMORE*/ { ERROR,   ERROR,   ERROR,   ERROR,        ERROR,  ERROR,   ERROR,   ERROR,   ERROR,        ERROR},
+			/*ACCEPT2*/      { ERROR,    MORE,   ERROR,  ACCEPT,       ACCEPT,  ERROR,   ERROR,   ERROR,   ERROR,        ACCEPT},
+		};
 		#endregion
-	}*/
+	}
 }

@@ -28,7 +28,7 @@
 
 using System;
 
-using MonoDevelop.Projects.Dom;
+using MonoDevelop.Projects.Parser;
 using MonoDevelop.Core;
 
 namespace MonoDevelop.DesignerSupport
@@ -39,8 +39,8 @@ namespace MonoDevelop.DesignerSupport
 	{
 		string className;
 		
-		public TypeNotFoundException (string className, DomRegion location, string fileName)
-			: base (location, fileName)
+		public TypeNotFoundException (string className, IRegion location)
+			: base (location)
 		{
 			this.ClassName = className;
 		}

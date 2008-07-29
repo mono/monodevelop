@@ -2,7 +2,7 @@
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
-//     <version>$Revision: 2972 $</version>
+//     <version>$Revision: 2522 $</version>
 // </file>
 
 using System;
@@ -22,8 +22,6 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		bool          indent         = true;
 		bool          doNewLine      = true;
 		AbstractPrettyPrintOptions prettyPrintOptions;
-		
-		public bool IsInMemberBody { get; set; }
 		
 		public int IndentationLevel {
 			get {
@@ -184,11 +182,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		public virtual void PrintPreprocessingDirective(PreprocessingDirective directive, bool forceWriteInPreviousBlock)
 		{
-			if (!directive.Expression.IsNull) {
-				CSharpOutputVisitor visitor = new CSharpOutputVisitor();
-				directive.Expression.AcceptVisitor(visitor, null);
-				WriteLineInPreviousLine(directive.Cmd + " " + visitor.Text, forceWriteInPreviousBlock);
-			} else if (string.IsNullOrEmpty(directive.Arg))
+			if (string.IsNullOrEmpty(directive.Arg))
 				WriteLineInPreviousLine(directive.Cmd, forceWriteInPreviousBlock);
 			else
 				WriteLineInPreviousLine(directive.Cmd + " " + directive.Arg, forceWriteInPreviousBlock);

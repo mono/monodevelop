@@ -10,10 +10,10 @@ using ICSharpCode.NRefactory.Parser;
 using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.NRefactory.Visitors;
 
-using MonoDevelop.Projects.Dom;
+using MonoDevelop.Projects.Parser;
 
 namespace CSharpBinding.Parser
-{/*
+{
 	internal class TypeVisitor : AbstractAstVisitor
 	{
 		Resolver resolver;
@@ -83,7 +83,7 @@ namespace CSharpBinding.Parser
 				case BinaryOperatorType.LessThan:
 					name = "op_LessThan";
 					break;
-				case BinaryOperatorType.LessThanOrEqual:./Parser/TypeVisitor.cs
+				case BinaryOperatorType.LessThanOrEqual:
 					name = "op_LessThanOrEqual";
 					break;
 			}
@@ -93,8 +93,8 @@ namespace CSharpBinding.Parser
 			if (t1 == null || t2 == null)
 				return null;
 			
-			IType c1 = resolver.SearchType (t1, resolver.CompilationUnit);
-			IType c2 = resolver.SearchType (t2, resolver.CompilationUnit);
+			IClass c1 = resolver.SearchType (t1, resolver.CompilationUnit);
+			IClass c2 = resolver.SearchType (t2, resolver.CompilationUnit);
 			
 			if (c1 == null && c2 == null)
 				return t1;
@@ -129,7 +129,7 @@ namespace CSharpBinding.Parser
 		// of the parameter for the class being searched. otherParamPos is the position of the
 		// c2 parameter. met is the method found (or null if not found). sublevel is the number
 		// of superclasses that had to be searched.
-		void FindOperator (string name, IType c1, IReturnType c2, int ownerParamPos, int otherParamPos, out IMethod met, out int sublevel)
+		void FindOperator (string name, IClass c1, IReturnType c2, int ownerParamPos, int otherParamPos, out IMethod met, out int sublevel)
 		{
 			
 			sublevel = 0;
@@ -141,7 +141,7 @@ namespace CSharpBinding.Parser
 							IParameter par1 = m.Parameters [ownerParamPos];
 							if (par1.ReturnType.ArrayCount != 0 || par1.ReturnType.PointerNestingLevel != 0 || par1.ReturnType.ByRef)
 								continue;
-							IType pc = resolver.ParserContext.GetClass (par1.ReturnType.FullyQualifiedName, par1.ReturnType.GenericArguments, true, true);
+							IClass pc = resolver.ParserContext.GetClass (par1.ReturnType.FullyQualifiedName, par1.ReturnType.GenericArguments, true, true);
 							if (pc == null || (pc.FullyQualifiedName != c1.FullyQualifiedName))
 								continue;
 
@@ -158,10 +158,10 @@ namespace CSharpBinding.Parser
 				}
 				// Operator not found in this class, look in the base class
 				// Avoid implemented interfaces
-				IType baseClass = null;
+				IClass baseClass = null;
 				if (c1.BaseTypes != null) {
 					foreach (IReturnType bt in c1.BaseTypes) {
-						IType bc = resolver.ParserContext.GetClass (bt.FullyQualifiedName, bt.GenericArguments, true, true);
+						IClass bc = resolver.ParserContext.GetClass (bt.FullyQualifiedName, bt.GenericArguments, true, true);
 						if (bc.ClassType != MonoDevelop.Projects.Parser.ClassType.Interface) {
 							baseClass = bc;
 							break;
@@ -216,7 +216,7 @@ namespace CSharpBinding.Parser
 			if (t == null) {
 				return null;
 			}
-			IType c = resolver.SearchType(t, resolver.CompilationUnit);
+			IClass c = resolver.SearchType(t, resolver.CompilationUnit);
 			if (c.ClassType == MonoDevelop.Projects.Parser.ClassType.Delegate) {
 				ArrayList methods = resolver.SearchMethod(t, "invoke");
 				if (methods.Count <= 0) {
@@ -247,7 +247,7 @@ namespace CSharpBinding.Parser
 					if (n != null) {
 						return new ReturnType(n);
 					}
-					IType c = resolver.SearchType(string.Concat(name, ".", fieldReferenceExpression.FieldName), null, resolver.CompilationUnit);
+					IClass c = resolver.SearchType(string.Concat(name, ".", fieldReferenceExpression.FieldName), null, resolver.CompilationUnit);
 					if (c != null) {
 						resolver.ShowStatic = true;
 						return new ReturnType(c.FullyQualifiedName);
@@ -311,7 +311,7 @@ namespace CSharpBinding.Parser
 				}
 			}
 			
-			IType c = resolver.SearchType(identifierExpression.Identifier, null, resolver.CompilationUnit);
+			IClass c = resolver.SearchType(identifierExpression.Identifier, null, resolver.CompilationUnit);
 			if (c != null) {
 				resolver.ShowStatic = true;
 				return new ReturnType(c.FullyQualifiedName);
@@ -446,7 +446,7 @@ namespace CSharpBinding.Parser
 			if (resolver.CallingClass == null) {
 				return null;
 			}
-			IType baseClass = resolver.BaseClass(resolver.CallingClass);
+			IClass baseClass = resolver.BaseClass(resolver.CallingClass);
 			if (baseClass == null) {
 //				Console.WriteLine("Base Class not found");
 				return null;
@@ -457,7 +457,7 @@ namespace CSharpBinding.Parser
 		
 		public override object VisitObjectCreateExpression(ObjectCreateExpression objectCreateExpression, object data)
 		{
-			IType type = resolver.SearchType (ReturnType.GetFullTypeName (objectCreateExpression.CreateType), null, resolver.CompilationUnit);
+			IClass type = resolver.SearchType (ReturnType.GetFullTypeName (objectCreateExpression.CreateType), null, resolver.CompilationUnit);
 			if (type == null) return null;
 			return new ReturnType (objectCreateExpression.CreateType, type);
 		}
@@ -479,5 +479,11 @@ namespace CSharpBinding.Parser
 			// no calls allowed !!!
 			return null;
 		}
-	}*/
+		
+		public override object VisitArrayInitializerExpression (ArrayInitializerExpression arrayInitializerExpression, object data)
+		{
+			// no calls allowed !!!
+			return null;
+		}
+	}
 }

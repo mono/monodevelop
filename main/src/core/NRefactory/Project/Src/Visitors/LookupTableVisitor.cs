@@ -2,7 +2,7 @@
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="none" email=""/>
-//     <version>$Revision: 3184 $</version>
+//     <version>$Revision: 2337 $</version>
 // </file>
 
 using System;
@@ -12,31 +12,45 @@ using ICSharpCode.NRefactory.Ast;
 
 namespace ICSharpCode.NRefactory.Visitors
 {
-	public sealed class LocalLookupVariable
+	public class LocalLookupVariable
 	{
-		public readonly string Name;
-		public readonly TypeReference TypeRef;
-		public readonly Location StartPos;
-		public readonly Location EndPos;
-		public readonly bool IsConst;
-		public readonly bool IsLoopVariable;
-		public readonly Expression Initializer;
-		public readonly LambdaExpression ParentLambdaExpression;
+		TypeReference typeRef;
+		Location startPos;
+		Location endPos;
+		bool  isConst;
 		
-		public LocalLookupVariable(string name, TypeReference typeRef, Location startPos, Location endPos, bool isConst, bool isLoopVariable, Expression initializer, LambdaExpression parentLambdaExpression)
+		public TypeReference TypeRef {
+			get {
+				return typeRef;
+			}
+		}
+		public Location StartPos {
+			get {
+				return startPos;
+			}
+		}
+		public Location EndPos {
+			get {
+				return endPos;
+			}
+		}
+		
+		public bool IsConst {
+			get {
+				return isConst;
+			}
+		}
+		
+		public LocalLookupVariable(TypeReference typeRef, Location startPos, Location endPos, bool isConst)
 		{
-			this.Name = name;
-			this.TypeRef = typeRef;
-			this.StartPos = startPos;
-			this.EndPos = endPos;
-			this.IsConst = isConst;
-			this.IsLoopVariable = isLoopVariable;
-			this.Initializer = initializer;
-			this.ParentLambdaExpression = parentLambdaExpression;
+			this.typeRef = typeRef;
+			this.startPos = startPos;
+			this.endPos = endPos;
+			this.isConst = isConst;
 		}
 	}
 	
-	public sealed class LookupTableVisitor : AbstractAstVisitor
+	public class LookupTableVisitor : AbstractAstVisitor
 	{
 		Dictionary<string, List<LocalLookupVariable>> variables;
 		SupportedLanguage language;
@@ -66,10 +80,7 @@ namespace ICSharpCode.NRefactory.Visitors
 			}
 		}
 		
-		public void AddVariable(TypeReference typeRef, string name,
-		                        Location startPos, Location endPos, bool isConst,
-		                        bool isLoopVariable, Expression initializer,
-		                        LambdaExpression parentLambdaExpression)
+		public void AddVariable(TypeReference typeRef, string name, Location startPos, Location endPos, bool isConst)
 		{
 			if (name == null || name.Length == 0) {
 				return;
@@ -80,7 +91,7 @@ namespace ICSharpCode.NRefactory.Visitors
 			} else {
 				list = (List<LocalLookupVariable>)variables[name];
 			}
-			list.Add(new LocalLookupVariable(name, typeRef, startPos, endPos, isConst, isLoopVariable, initializer, parentLambdaExpression));
+			list.Add(new LocalLookupVariable(typeRef, startPos, endPos, isConst));
 		}
 		
 		public override object VisitWithStatement(WithStatement withStatement, object data)
@@ -114,8 +125,7 @@ namespace ICSharpCode.NRefactory.Visitors
 				            varDecl.Name,
 				            localVariableDeclaration.StartLocation,
 				            CurrentEndLocation,
-				            (localVariableDeclaration.Modifier & Modifiers.Const) == Modifiers.Const,
-				            false, varDecl.Initializer, null);
+				            (localVariableDeclaration.Modifier & Modifiers.Const) == Modifiers.Const);
 			}
 			return base.VisitLocalVariableDeclaration(localVariableDeclaration, data);
 		}
@@ -123,67 +133,9 @@ namespace ICSharpCode.NRefactory.Visitors
 		public override object VisitAnonymousMethodExpression(AnonymousMethodExpression anonymousMethodExpression, object data)
 		{
 			foreach (ParameterDeclarationExpression p in anonymousMethodExpression.Parameters) {
-				AddVariable(p.TypeReference, p.ParameterName,
-				            anonymousMethodExpression.StartLocation, anonymousMethodExpression.EndLocation,
-				            false, false, null, null);
+				AddVariable(p.TypeReference, p.ParameterName, anonymousMethodExpression.StartLocation, anonymousMethodExpression.EndLocation, false);
 			}
 			return base.VisitAnonymousMethodExpression(anonymousMethodExpression, data);
-		}
-		
-		public override object VisitLambdaExpression(LambdaExpression lambdaExpression, object data)
-		{
-			foreach (ParameterDeclarationExpression p in lambdaExpression.Parameters) {
-				AddVariable(p.TypeReference, p.ParameterName,
-				            lambdaExpression.StartLocation, lambdaExpression.ExtendedEndLocation,
-				            false, false, null, lambdaExpression);
-			}
-			return base.VisitLambdaExpression(lambdaExpression, data);
-		}
-		
-		public override object VisitQueryExpressionFromClause(QueryExpressionFromClause fromClause, object data)
-		{
-			QueryExpression parentExpression = fromClause.Parent as QueryExpression;
-			if (parentExpression != null) {
-				AddVariable(fromClause.Type, fromClause.Identifier,
-				            parentExpression.StartLocation, parentExpression.EndLocation,
-				            false, true, fromClause.InExpression, null);
-			}
-			return base.VisitQueryExpressionFromClause(fromClause, data);
-		}
-		
-		public override object VisitQueryExpressionJoinClause(QueryExpressionJoinClause joinClause, object data)
-		{
-			if (string.IsNullOrEmpty(joinClause.IntoIdentifier)) {
-				QueryExpression parentExpression = joinClause.Parent as QueryExpression;
-				if (parentExpression != null) {
-					AddVariable(joinClause.Type, joinClause.Identifier,
-					            parentExpression.StartLocation, parentExpression.EndLocation,
-					            false, true, joinClause.InExpression, null);
-				}
-			} else {
-				AddVariable(joinClause.Type, joinClause.Identifier,
-				            joinClause.StartLocation, joinClause.EndLocation,
-				            false, true, joinClause.InExpression, null);
-				
-				QueryExpression parentExpression = joinClause.Parent as QueryExpression;
-				if (parentExpression != null) {
-					AddVariable(joinClause.Type, joinClause.IntoIdentifier,
-					            parentExpression.StartLocation, parentExpression.EndLocation,
-					            false, false, joinClause.InExpression, null);
-				}
-			}
-			return base.VisitQueryExpressionJoinClause(joinClause, data);
-		}
-		
-		public override object VisitQueryExpressionLetClause(QueryExpressionLetClause letClause, object data)
-		{
-			QueryExpression parentExpression = letClause.Parent as QueryExpression;
-			if (parentExpression != null) {
-				AddVariable(null, letClause.Identifier,
-				            parentExpression.StartLocation, parentExpression.EndLocation,
-				            false, false, letClause.Expression, null);
-			}
-			return base.VisitQueryExpressionLetClause(letClause, data);
 		}
 		
 		public override object VisitForNextStatement(ForNextStatement forNextStatement, object data)
@@ -194,19 +146,6 @@ namespace ICSharpCode.NRefactory.Visitors
 			} else {
 				endLocationStack.Push(forNextStatement.EmbeddedStatement.EndLocation);
 				base.VisitForNextStatement(forNextStatement, data);
-				endLocationStack.Pop();
-				return null;
-			}
-		}
-		
-		public override object VisitFixedStatement(FixedStatement fixedStatement, object data)
-		{
-			// uses LocalVariableDeclaration, we just have to put the end location on the stack
-			if (fixedStatement.EmbeddedStatement.EndLocation.IsEmpty) {
-				return base.VisitFixedStatement(fixedStatement, data);
-			} else {
-				endLocationStack.Push(fixedStatement.EmbeddedStatement.EndLocation);
-				base.VisitFixedStatement(fixedStatement, data);
 				endLocationStack.Pop();
 				return null;
 			}
@@ -253,9 +192,7 @@ namespace ICSharpCode.NRefactory.Visitors
 			            foreachStatement.VariableName,
 			            foreachStatement.StartLocation,
 			            foreachStatement.EndLocation,
-			            false, true,
-			            foreachStatement.Expression,
-			            null);
+			            false);
 			
 			if (foreachStatement.Expression != null) {
 				foreachStatement.Expression.AcceptVisitor(this, data);
@@ -282,7 +219,7 @@ namespace ICSharpCode.NRefactory.Visitors
 							            catchClause.VariableName,
 							            catchClause.StatementBlock.StartLocation,
 							            catchClause.StatementBlock.EndLocation,
-							            false, false, null, null);
+							            false);
 						}
 						catchClause.StatementBlock.AcceptVisitor(this, data);
 					}

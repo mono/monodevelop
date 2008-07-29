@@ -2,16 +2,16 @@
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
-//     <version>$Revision: 1634 $</version>
+//     <version>$Revision$</version>
 // </file>
 
 using System;
 using System.IO;
 using NUnit.Framework;
 using ICSharpCode.NRefactory.Parser;
-using ICSharpCode.NRefactory.Ast;
+using ICSharpCode.NRefactory.Parser.AST;
 
-namespace ICSharpCode.NRefactory.Tests.Ast
+namespace ICSharpCode.NRefactory.Tests.AST
 {
 	[TestFixture]
 	public class DefaultValueExpressionTests
@@ -26,8 +26,7 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		[Test]
 		public void CSharpFullQualifiedDefaultValue()
 		{
-			DefaultValueExpression toe = ParseUtilCSharp.ParseExpression<DefaultValueExpression>("default(global::MyNamespace.N1.MyType)");
-			Assert.IsTrue(toe.TypeReference.IsGlobal);
+			DefaultValueExpression toe = ParseUtilCSharp.ParseExpression<DefaultValueExpression>("default(MyNamespace.N1.MyType)");
 			Assert.AreEqual("MyNamespace.N1.MyType", toe.TypeReference.Type);
 		}
 		
@@ -45,14 +44,6 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 			// This test is failing because we need a resolver for the "default:" / "default(" conflict.
 			LocalVariableDeclaration lvd = ParseUtilCSharp.ParseStatement<LocalVariableDeclaration>("T a = default(T);");
 			DefaultValueExpression dve = (DefaultValueExpression)lvd.Variables[0].Initializer;
-			Assert.AreEqual("T", dve.TypeReference.Type);
-		}
-		
-		[Test]
-		public void CSharpDefaultValueInReturnStatement()
-		{
-			ReturnStatement rs = ParseUtilCSharp.ParseStatement<ReturnStatement>("return default(T);");
-			DefaultValueExpression dve = (DefaultValueExpression)rs.Expression;
 			Assert.AreEqual("T", dve.TypeReference.Type);
 		}
 	}

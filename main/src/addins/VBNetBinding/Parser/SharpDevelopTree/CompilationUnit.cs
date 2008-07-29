@@ -1,9 +1,9 @@
 // created on 04.08.2003 at 17:31
 
-using MonoDevelop.Projects.Dom;
+using MonoDevelop.Projects.Parser;
 
 namespace VBBinding.Parser.SharpDevelopTree
-{/*
+{
 	public class CompilationUnit : DefaultCompilationUnit
 	{
 		
@@ -22,5 +22,5 @@ namespace VBBinding.Parser.SharpDevelopTree
 				return null;
 			}
 		}
-	}*/
+	}
 }

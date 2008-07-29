@@ -44,7 +44,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 			this.projectContent = projectContent;
 		}
 		
-		public ExpressionContext FindExactContextForNewCompletion(TextEditor editor, ICompilationUnit unit, string fileName)
+		public ExpressionContext FindExactContextForNewCompletion(TextEditor editor, string fileName)
 		{
 			// find expression on left hand side of the assignment
 			string documentToCursor = editor.GetText (0, editor.CursorPosition);
@@ -53,12 +53,12 @@ namespace MonoDevelop.CSharpBinding.Gui
 				return null;
 			ExpressionResult lhsExpr = FindExpression (documentToCursor, pos);
 			if (lhsExpr.Expression != null) {
-				NRefactoryResolver resolver = new MonoDevelop.CSharpBinding.NRefactoryResolver (projectContent, unit,
+				NRefactoryResolver resolver = new MonoDevelop.CSharpBinding.NRefactoryResolver (projectContent,
 				                                                                                ICSharpCode.NRefactory.SupportedLanguage.CSharp,
 				                                                                                editor,
 				                                                                                fileName);
 				
-				ResolveResult rr = resolver.Resolve (lhsExpr, new DomLocation (editor.CursorLine, editor.CursorColumn));
+				ResolveResult rr = resolver.Resolve (lhsExpr);
 				//ResolveResult rr = ParserService.Resolve (lhsExpr, currentLine.LineNumber, pos, editor.FileName, editor.Text);
 				if (rr != null && rr.ResolvedType != null) {
 					ExpressionContext context;
@@ -83,7 +83,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 								new ClassFinder(ParserService.GetParseInformation(editor.FileName), editor.ActiveTextAreaControl.Caret.Line + 1, editor.ActiveTextAreaControl.Caret.Column + 1)
 							), "");*/
 						if (suggestedClassName != c.Name) {
-							// create an IType instance that includes the type arguments in its name
+							// create an IClass instance that includes the type arguments in its name
 							//context.DefaultItem = new RenamedClass (c, suggestedClassName);
 						} else {
 							context.DefaultItem = c;
@@ -605,7 +605,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 					}
 					break;
 				case Tokens.Throw:
-					frame.SetExpectedType (DomReturnType.Exception);
+					frame.SetExpectedType (new DomReturnType ("System.Exception"));
 					break;
 				case Tokens.New:
 					if (frame.InExpressionMode) {

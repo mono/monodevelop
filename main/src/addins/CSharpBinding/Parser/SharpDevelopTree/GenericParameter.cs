@@ -29,15 +29,15 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
-/*
+
 using SDReturnType = CSharpBinding.Parser.SharpDevelopTree.ReturnType;
 using MDGenericParameter = MonoDevelop.Projects.Parser.GenericParameter;
 using System;
 using ICSharpCode.NRefactory.Ast;
-using MonoDevelop.Projects.Dom;
-*/
+using MonoDevelop.Projects.Parser;
+
 namespace CSharpBinding.Parser.SharpDevelopTree
-{/*
+{
 	public class GenericParameter : MDGenericParameter
 	{
 		public GenericParameter(TemplateDefinition td)
@@ -62,5 +62,5 @@ namespace CSharpBinding.Parser.SharpDevelopTree
 			
 			// TODO: What about other special constraints?
 		}
-	}*/
+	}
 }

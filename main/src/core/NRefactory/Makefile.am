@@ -21,12 +21,9 @@ FILES =  \
 	Project/Src/Ast/INode.cs \
 	Project/Src/Ast/INullable.cs \
 	Project/Src/Ast/TypeReference.cs \
-	Project/Src/AstBuilder/ExpressionBuilder.cs \
-	Project/Src/AstBuilder/StatementBuilder.cs \
 	Project/Src/EnvironmentInformationProvider.cs \
 	Project/Src/IAstVisitor.cs \
 	Project/Src/Lexer/AbstractLexer.cs \
-	Project/Src/Lexer/CSharp/ConditionalCompilation.cs \
 	Project/Src/Lexer/CSharp/Keywords.cs \
 	Project/Src/Lexer/CSharp/Lexer.cs \
 	Project/Src/Lexer/CSharp/Tokens.cs \
@@ -44,7 +41,6 @@ FILES =  \
 	Project/Src/Lexer/VBNet/Lexer.cs \
 	Project/Src/Lexer/VBNet/Tokens.cs \
 	Project/Src/Location.cs \
-	Project/Src/OperatorPrecedence.cs \
 	Project/Src/Parser/AbstractParser.cs \
 	Project/Src/Parser/CSharp/CSharpParser.cs \
 	Project/Src/Parser/CSharp/Parser.cs \
@@ -61,6 +57,7 @@ FILES =  \
 	Project/Src/PrettyPrinter/CSharp/OutputFormatter.cs \
 	Project/Src/PrettyPrinter/CSharp/PrettyPrintOptions.cs \
 	Project/Src/PrettyPrinter/IOutputAstVisitor.cs \
+	Project/Src/PrettyPrinter/NodeInformVisitor.cs \
 	Project/Src/PrettyPrinter/SpecialNodesInserter.cs \
 	Project/Src/PrettyPrinter/VBNet/VBNetOutputFormatter.cs \
 	Project/Src/PrettyPrinter/VBNet/VBNetOutputVisitor.cs \
@@ -70,16 +67,15 @@ FILES =  \
 	Project/Src/Visitors/AbstractASTVisitor.cs \
 	Project/Src/Visitors/CodeDOMOutputVisitor.cs \
 	Project/Src/Visitors/CodeDOMVerboseOutputGenerator.cs \
-	Project/Src/Visitors/ConvertVisitorBase.cs \
-	Project/Src/Visitors/CSharpConstructsConvertVisitor.cs \
+	Project/Src/Visitors/CSharpConstructsVisitor.cs \
+	Project/Src/Visitors/CSharpToVBNetConvertVisitor.cs \
 	Project/Src/Visitors/LookupTableVisitor.cs \
 	Project/Src/Visitors/NodeTrackingAstVisitor.cs \
 	Project/Src/Visitors/PrefixFieldsVisitor.cs \
-	Project/Src/Visitors/RenameIdentifierVisitor.cs \
 	Project/Src/Visitors/ToCSharpConvertVisitor.cs \
 	Project/Src/Visitors/ToVBNetConvertVisitor.cs \
-	Project/Src/Visitors/ToVBNetRenameConflictingVariables.cs \
-	Project/Src/Visitors/VBNetConstructsConvertVisitor.cs
+	Project/Src/Visitors/VBNetConstructsConvertVisitor.cs \
+	Project/Src/Visitors/VBNetToCSharpConvertVisitor.cs
 
 all: $(ASSEMBLY)
 

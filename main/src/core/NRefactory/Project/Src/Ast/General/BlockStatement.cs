@@ -2,7 +2,7 @@
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="none" email=""/>
-//     <version>$Revision: 2191 $</version>
+//     <version>$Revision: 1965 $</version>
 // </file>
 
 using System;
@@ -14,7 +14,7 @@ namespace ICSharpCode.NRefactory.Ast
 		// Children in C#: LabelStatement, LocalVariableDeclaration, Statement
 		// Children in VB: LabelStatement, EndStatement, Statement
 		
-		public static new BlockStatement Null {
+		public static new NullBlockStatement Null {
 			get {
 				return NullBlockStatement.Instance;
 			}
@@ -32,14 +32,24 @@ namespace ICSharpCode.NRefactory.Ast
 		}
 	}
 	
-	internal sealed class NullBlockStatement : BlockStatement
+	public class NullBlockStatement : BlockStatement
 	{
-		public static readonly NullBlockStatement Instance = new NullBlockStatement();
+		static NullBlockStatement nullBlockStatement = new NullBlockStatement();
 		
 		public override bool IsNull {
 			get {
 				return true;
 			}
+		}
+		
+		public static NullBlockStatement Instance {
+			get {
+				return nullBlockStatement;
+			}
+		}
+		
+		NullBlockStatement()
+		{
 		}
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data)

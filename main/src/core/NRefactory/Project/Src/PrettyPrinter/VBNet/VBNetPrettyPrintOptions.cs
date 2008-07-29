@@ -2,7 +2,7 @@
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
-//     <version>$Revision: 2660 $</version>
+//     <version>$Revision: 1965 $</version>
 // </file>
 
 using System;
@@ -14,9 +14,8 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 	/// </summary>
 	public class VBNetPrettyPrintOptions : AbstractPrettyPrintOptions
 	{
-		/// <summary>
-		/// Gets/Sets if the optional "ByVal" modifier should be written.
-		/// </summary>
-		public bool OutputByValModifier { get; set; }
+		public VBNetPrettyPrintOptions()
+		{
+		}
 	}
 }

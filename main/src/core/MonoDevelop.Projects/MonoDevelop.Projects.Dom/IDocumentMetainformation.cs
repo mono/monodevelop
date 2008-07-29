@@ -31,23 +31,23 @@ namespace MonoDevelop.Projects.Dom
 {
 	public interface IDocumentMetaInformation
 	{
-		IList<Tag> TagComments {
+		IEnumerable<Tag> TagComments {
 			get;
 		}
 		
-		IList<Comment> Comments {
+		IEnumerable<Comment> Comments {
 			get;
 		}
 		
-		IList<FoldingRegion> FoldingRegion {
+		IEnumerable<FoldingRegion> FoldingRegion {
 			get;
 		}
 		
-		IList<PreProcessorDefine> Defines {
+		IEnumerable<PreProcessorDefine> Defines {
 			get;
 		}
 		
-		IList<ConditionalRegion> ConditionalRegion {
+		IEnumerable<ConditionalRegion> ConditionalRegion {
 			get;
 		}
 	}

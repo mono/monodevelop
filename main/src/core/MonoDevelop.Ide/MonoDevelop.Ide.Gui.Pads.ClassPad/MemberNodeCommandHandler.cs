@@ -29,7 +29,7 @@
 using System;
 using System.IO;
 
-using MonoDevelop.Projects.Dom;
+using MonoDevelop.Projects.Parser;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 
@@ -39,7 +39,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 	{
 		public override void ActivateItem ()
 		{			
-			IMember member = CurrentNode.DataItem as IMember;
+			ILanguageItem member = CurrentNode.DataItem as ILanguageItem;
 			IdeApp.ProjectOperations.JumpToDeclaration(member);
 		}
 	}

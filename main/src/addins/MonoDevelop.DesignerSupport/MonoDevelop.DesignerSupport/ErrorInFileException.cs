@@ -28,7 +28,7 @@
 
 using System;
 
-using MonoDevelop.Projects.Dom;
+using MonoDevelop.Projects.Parser;
 
 namespace MonoDevelop.DesignerSupport
 {
@@ -39,12 +39,12 @@ namespace MonoDevelop.DesignerSupport
 		int column = 0;
 		string fileName = null;
 		
-		public ErrorInFileException (DomRegion region, string fileName)
+		public ErrorInFileException (IRegion region)
 		{
 			if (region != null) {
-				line = region.Start.Line;
-				column = region.Start.Column;
-				fileName = fileName;
+				line = region.BeginLine;
+				column = region.BeginColumn;
+				fileName = region.FileName;
 			}
 		}
 		

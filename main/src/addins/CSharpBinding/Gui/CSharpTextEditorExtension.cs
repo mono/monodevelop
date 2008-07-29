@@ -9,18 +9,18 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
 
 using MonoDevelop.Projects.CodeGeneration;
-using MonoDevelop.Projects.Dom;
+using MonoDevelop.Projects.Parser;
 using MonoDevelop.Projects.Gui.Completion;
 
 using CSharpBinding.Parser;
 using CSharpBinding.FormattingStrategy;
 
 using MonoDevelop.Projects;
-//using MonoDevelop.Projects.Ambience;
-//using Ambience_ = MonoDevelop.Projects.Ambience.Ambience;
+using MonoDevelop.Projects.Ambience;
+using Ambience_ = MonoDevelop.Projects.Ambience.Ambience;
 
 namespace CSharpBinding
-{/*
+{
 	public class CSharpTextEditorExtension : CompletionTextEditorExtension
 	{
 		DocumentStateTracker<CSharpIndentEngine> stateTracker;
@@ -40,12 +40,12 @@ namespace CSharpBinding
 			stateTracker = new DocumentStateTracker<CSharpIndentEngine> (new CSharpIndentEngine (), Editor);
 		}
 		
-		IType LookupClass (ICompilationUnit unit, int line, int column)
+		IClass LookupClass (ICompilationUnit unit, int line, int column)
 		{
 			if (unit.Classes != null) {
 				int startLine = int.MaxValue;
-				IType result = null;
-				foreach (IType c in unit.Classes) {
+				IClass result = null;
+				foreach (IClass c in unit.Classes) {
 					if (c.Region != null && c.Region.BeginLine < startLine && c.Region.BeginLine > line) { 
 						startLine = c.Region.BeginLine;
 						result = c.ClassType == ClassType.Delegate ? c : null;
@@ -102,7 +102,7 @@ namespace CSharpBinding
 			}
 		}
 		
-		string GenerateBody (IType c, int line, string indent, out int newCursorOffset)
+		string GenerateBody (IClass c, int line, string indent, out int newCursorOffset)
 		{
 			int startLine = int.MaxValue;
 			newCursorOffset = 0;
@@ -139,7 +139,7 @@ namespace CSharpBinding
 			return builder.ToString ();
 		}
 		
-		bool IsInsideClassBody (IType insideClass, int line, int column)
+		bool IsInsideClassBody (IClass insideClass, int line, int column)
 		{
 			if (insideClass.Methods != null) {
 				foreach (IMethod m in insideClass.Methods) {
@@ -240,7 +240,7 @@ namespace CSharpBinding
 					ICompilationUnit unit = pctx.ParseFile (this.FileName, this.Editor.Text).MostRecentCompilationUnit as ICompilationUnit;
 					if (unit != null) {
 						
-						IType insideClass = LookupClass (unit, lin, col);
+						IClass insideClass = LookupClass (unit, lin, col);
 						if (insideClass != null) {
 							string indent = GetLineWhiteSpace (Editor.GetLineText (lin));
 							if (insideClass.ClassType == ClassType.Delegate) {
@@ -496,18 +496,18 @@ namespace CSharpBinding
 				
 				// Find the language item at that position
 				Resolver res = new Resolver (pctx);
-				IMember it = res.ResolveIdentifier (pctx, ex, lin, col - 1, FileName, Editor.Text);
+				ILanguageItem it = res.ResolveIdentifier (pctx, ex, lin, col - 1, FileName, Editor.Text);
 				
 				MethodParameterDataProvider.Scope scope = MethodParameterDataProvider.Scope.All;
 				if (it is IMember) {
 					IMember member = it as IMember;
-					IType insideClass = LookupClass (res.CompilationUnit, lin, col);
+					IClass insideClass = LookupClass (res.CompilationUnit, lin, col);
 					if (insideClass != null) {
 						if (insideClass.FullyQualifiedName == member.DeclaringType.FullyQualifiedName) {
 							scope = MethodParameterDataProvider.Scope.All;
 						} else {
 							scope = MethodParameterDataProvider.Scope.Public;
-							foreach (IType c in pctx.GetClassInheritanceTree (insideClass)) {
+							foreach (IClass c in pctx.GetClassInheritanceTree (insideClass)) {
 								if (c.FullyQualifiedName == member.DeclaringType.FullyQualifiedName) {
 									scope |= MethodParameterDataProvider.Scope.Protected;
 									break;
@@ -526,502 +526,16 @@ namespace CSharpBinding
 				}
 				else if (it is IEvent) {
 					IEvent ev = (IEvent) it;
-					IType cls = pctx.GetClass (ev.ReturnType.FullyQualifiedName, ev.ReturnType.GenericArguments, true, false);
+					IClass cls = pctx.GetClass (ev.ReturnType.FullyQualifiedName, ev.ReturnType.GenericArguments, true, false);
 					if (cls != null) {
 						foreach(IMethod m in cls.Methods) {
 							if (m.Name == "Invoke")
 								return new CSharpParameterDataProvider (Editor, scope, cls, "Invoke");
 						}
-					}rExtension : CompletionTextEditorExtension
-	{
-		DocumentStateTracker<CSharpIndentEngine> stateTracker;
-		
-		public CSharpTextEditorExtension () : base ()
-		{
-		}
-		
-		public override bool ExtendsEditor (Document doc, IEditableTextBuffer editor)
-		{
-			return System.IO.Path.GetExtension (doc.Title) == ".cs";
-		}
-		
-		public override void Initialize ()
-		{
-			base.Initialize ();
-			stateTracker = new DocumentStateTracker<CSharpIndentEngine> (new CSharpIndentEngine (), Editor);
-		}
-		
-		IType LookupClass (ICompilationUnit unit, int line, int column)
-		{
-			if (unit.Classes != null) {
-				int startLine = int.MaxValue;
-				IType result = null;
-				foreach (IType c in unit.Classes) {
-					if (c.Region != null && c.Region.BeginLine < startLine && c.Region.BeginLine > line) { 
-						startLine = c.Region.BeginLine;
-						result = c.ClassType == ClassType.Delegate ? c : null;
-					}
-					if (c.BodyRegion != null && c.BodyRegion.IsInside (line, column))
-						return c;
-				}
-				return result;
-			}
-			
-			return null;
-		}
-		
-		#region Doc comment generation
-		
-		void AppendSummary (StringBuilder sb, string indent, out int newCursorOffset)
-		{
-			Debug.Assert (sb != null);
-			sb.Append ("/ <summary>\n");
-			sb.Append (indent);
-			sb.Append ("/// \n");
-			sb.Append (indent);
-			sb.Append ("/// </summary>");
-			newCursorOffset = ("/ <summary>\n/// " + indent).Length;
-		}
-		
-		void AppendMethodComment (StringBuilder builder, string indent, IMethod method)
-		{
-			if (method.Parameters != null) {
-				foreach (IParameter para in method.Parameters) {
-					builder.Append (Environment.NewLine);
-					builder.Append (indent);
-					builder.Append ("/// <param name=\"");
-					builder.Append (para.Name);
-					builder.Append ("\">\n");
-					builder.Append (indent);
-					builder.Append ("/// A <see cref=\"");
-					builder.Append (para.ReturnType.FullyQualifiedName);
-					builder.Append ("\"/>\n");
-					builder.Append (indent);
-					builder.Append ("/// </param>");
-				}
-			}
-			if (method.ReturnType != null && method.ReturnType.FullyQualifiedName != "System.Void") {
-				builder.Append (Environment.NewLine);
-				builder.Append (indent);
-				builder.Append("/// <returns>\n");
-				builder.Append (indent);
-				builder.Append ("/// A <see cref=\"");
-				builder.Append (method.ReturnType.FullyQualifiedName);
-				builder.Append ("\"/>\n");
-				builder.Append (indent);
-				builder.Append ("/// </returns>");
-			}
-		}
-		
-		string GenerateBody (IType c, int line, string indent, out int newCursorOffset)
-		{
-			int startLine = int.MaxValue;
-			newCursorOffset = 0;
-			StringBuilder builder = new StringBuilder ();
-			
-			IMethod method = null;
-			IProperty property = null;
-			foreach (IMethod m in c.Methods) {
-				if (m.Region.BeginLine < startLine && m.Region.BeginLine > line) {
-					startLine = m.Region.BeginLine;
-					method = m;
-				}
-			}
-			foreach (IProperty p in c.Properties) {
-				if (p.Region.BeginLine < startLine && p.Region.BeginLine > line) {
-					startLine = p.Region.BeginLine;
-					property = p;
-					method = null;
-				}
-			}
-			
-			if (method != null) {
-				AppendSummary (builder, indent, out newCursorOffset);
-				AppendMethodComment (builder, indent, method);
-			} else if (property != null) {
-				builder.Append ("/ <value>\n");
-				builder.Append (indent);
-				builder.Append ("/// \n");
-				builder.Append (indent);
-				builder.Append ("/// </value>");
-				newCursorOffset = ("/ <value>\n/// " + indent).Length;
-			}
-			
-			return builder.ToString ();
-		}
-		
-		bool IsInsideClassBody (IType insideClass, int line, int column)
-		{
-			if (insideClass.Methods != null) {
-				foreach (IMethod m in insideClass.Methods) {
-					if (m.BodyRegion.IsInside (line, column)) {
-						return false;
 					}
 				}
-			}
-			
-			if (insideClass.Properties != null) {
-				foreach (IProperty p in insideClass.Properties) {
-					if (p.BodyRegion.IsInside (line, column)) {
-						return false;
-					}
-				}
-			}
-			
-			if (insideClass.Indexer != null) {
-				foreach (IIndexer p in insideClass.Indexer) {
-					if (p.BodyRegion.IsInside (line, column)) {
-						return false;
-					}
-				}
-			}
-			return true;
-		}
-		
-		bool MayNeedComment (int line, int cursor)
-		{
-			bool inComment = Editor.GetCharAt (cursor - 1) == '/' && Editor.GetCharAt (cursor - 2) == '/';
-			
-			if (inComment) {
-				for (int l = line - 1; l >= 0; l--) {
-					string text = Editor.GetLineText (l).Trim (); 
-					if (text.StartsWith ("///"))
-						return false;
-					if (!String.IsNullOrEmpty (text))
-						break;
-				}
-				for (int l = line + 1; l < line + 100; l++) {
-					string text = Editor.GetLineText (l).Trim (); 
-					if (text.StartsWith ("///"))
-						return false;
-					if (!String.IsNullOrEmpty (text))
-						break;
-				}
-				return true;
-			}
-			return false;
-		}
-		
-		bool GenerateDocComments (Gdk.Key key)
-		{
-			int cursor;
-			int newCursorOffset = 0;
-			int lin, col;
-			switch (key) {
-			case Gdk.Key.greater:	
-				cursor = Editor.SelectionStartPosition;
-				if (IsInsideDocumentationComment (Editor.SelectionStartPosition)) {
-					Editor.GetLineColumnFromPosition (Editor.CursorPosition, out lin, out col);
-					string lineText = Editor.GetLineText (lin);
-					int startIndex = Math.Min (col - 1, lineText.Length - 1);
-					
-					while (startIndex >= 0 && lineText[startIndex] != '<') {
-						--startIndex;
-						if (lineText[startIndex] == '/') { // already closed.
-							startIndex = -1;
-							break;
-						}
-					}
-					if (startIndex >= 0) {
-						int endIndex = startIndex;
-						while (endIndex <= col && endIndex < lineText.Length && !Char.IsWhiteSpace (lineText[endIndex])) {
-							endIndex++;
-						}
-						string tag = endIndex - startIndex - 1 > 0 ? lineText.Substring (startIndex + 1, endIndex - startIndex - 1) : null;
-						if (!String.IsNullOrEmpty (tag) && commentTags.IndexOf (tag) >= 0) {
-							Editor.InsertText (cursor, "></" + tag + ">");
-							Editor.CursorPosition = cursor + 1; 
-							return true;
-						}
-					}
-				}
-				break;
-				
-			case Gdk.Key.KP_Divide:
-			case Gdk.Key.slash:
-				cursor = Editor.SelectionStartPosition;
-				if (cursor < 2)
-					break;
-				Editor.GetLineColumnFromPosition (Editor.CursorPosition, out lin, out col);
-				
-				if (MayNeedComment (lin, cursor)) {
-					StringBuilder generatedComment = new StringBuilder ();
-					bool generateStandardComment = true;
-					IParserContext pctx = GetParserContext ();
-					ICompilationUnit unit = pctx.ParseFile (this.FileName, this.Editor.Text).MostRecentCompilationUnit as ICompilationUnit;
-					if (unit != null) {
-						
-						IType insideClass = LookupClass (unit, lin, col);
-						if (insideClass != null) {
-							string indent = GetLineWhiteSpace (Editor.GetLineText (lin));
-							if (insideClass.ClassType == ClassType.Delegate) {
-								AppendSummary (generatedComment, indent, out newCursorOffset);
-								AppendMethodComment (generatedComment, indent, insideClass.Methods[0]);
-								generateStandardComment = false;
-							} else {
-								if (!IsInsideClassBody (insideClass, lin, col))
-									break;
-								string body = GenerateBody (insideClass, lin, indent, out newCursorOffset);
-								if (!String.IsNullOrEmpty (body)) {
-									generatedComment.Append (body);
-									generateStandardComment = false;
-								}
-							}
-						}
-					}
-					if (generateStandardComment) {
-						string indent = GetLineWhiteSpace (Editor.GetLineText (lin));;
-						AppendSummary (generatedComment, indent, out newCursorOffset);
-					}
-					
-					Editor.InsertText (cursor, generatedComment.ToString ());
-					Editor.CursorPosition = cursor + newCursorOffset;
-					return true;
-				}
-				break;
-			}
-			return false;
-		}
-		
-		#endregion
-		
-		int cursorPositionBeforeKeyPress;
-		public override bool KeyPress (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
-		{
-			if (keyChar == ',') {
-				// Parameter completion
-				if (CanRunParameterCompletionCommand ())
-					RunParameterCompletionCommand ();
-			}
-			
-			if (GenerateDocComments (key))
-				//if doc comments were inserted, further handling not necessary
-				return false;
-			cursorPositionBeforeKeyPress = Editor.CursorPosition;
-			
-			//do the smart indent
-			if (TextEditorProperties.IndentStyle == IndentStyle.Smart) {
-				//capture some of the current state
-				int oldBufLen = Editor.TextLength;
-				int oldLine = Editor.CursorLine;
-				bool hadSelection = Editor.SelectionEndPosition != Editor.SelectionStartPosition;
-				
-				//pass through to the base class, which actually inserts the character
-				//and calls HandleCodeCompletion etc to handles completion
-				bool retval = base.KeyPress (key, keyChar, modifier);
-				stateTracker.UpdateEngine ();
-				
-				//handle inserted characters
-				if (Editor.CursorPosition <= 0)
-					return retval;
-				
-				bool reIndent = false;
-				char lastCharInserted = TranslateKeyCharForIndenter (key, keyChar, Editor.GetCharAt (Editor.CursorPosition - 1));
-				if (!(oldLine == Editor.CursorLine && lastCharInserted == '\n') && (oldBufLen != Editor.TextLength || lastCharInserted != '\0'))
-					DoPostInsertionSmartIndent (lastCharInserted, hadSelection, out reIndent);
-				
-				//reindent the line after the insertion, if needed
-				//N.B. if the engine says we need to reindent, make sure that it's because a char was 
-				//inserted rather than just updating the stack due to moving around
-				stateTracker.UpdateEngine ();
-				bool automaticReindent = (stateTracker.Engine.NeedsReindent && lastCharInserted != '\0');
-				if (reIndent || automaticReindent)
-					DoReSmartIndent ();
-				
-				stateTracker.UpdateEngine ();
-				
-				//re-show directive completion data, since it gets hidden by the docuemnt change event when
-				//the re-indent takes place
-				if (lastCharInserted == '#' && stateTracker.Engine.IsInsidePreprocessorDirective 
-				    && Editor.GetLineText (Editor.CursorLine).TrimStart () == "#")
-					ShowCompletion (GetDirectiveCompletionData (), 0, '#');
-				
-				return retval;
-			}
-			
-			//pass through to the base class, which actually inserts the character
-			//and calls HandleCodeCompletion etc to handles completion
-			return base.KeyPress (key, keyChar, modifier);
-		}
-		
-		static char TranslateKeyCharForIndenter (Gdk.Key key, char keyChar, char docChar)
-		{
-			switch (key) {
-			case Gdk.Key.Return:
-			case Gdk.Key.KP_Enter:
-				return '\n';
-			case Gdk.Key.Tab:
-				return '\t';
-			default:
-				if (docChar == keyChar)
-					return keyChar;
-				break;
-			}
-			return '\0';
-		}
-		
-		//special handling for certain characters just inserted , for comments etc
-		void DoPostInsertionSmartIndent (char charInserted, bool hadSelection, out bool reIndent)
-		{
-			stateTracker.UpdateEngine ();
-			reIndent = false;
-			int cursor = Editor.CursorPosition;
-			
-			//System.Console.WriteLine ("char inserted: '{0}'", charInserted);
-			//stateTracker.Engine.Debug ();
-			
-			switch (charInserted) {
-			case '\n':
-				if (stateTracker.Engine.LineNumber > 0) {
-					string previousLine = Editor.GetLineText (stateTracker.Engine.LineNumber - 1);
-					string trimmedPreviousLine = previousLine.TrimStart ();
-					
-					//xml doc comments
-					if (trimmedPreviousLine.StartsWith ("/// ") //check previous line was a doc comment
-					    && Editor.GetPositionFromLineColumn (stateTracker.Engine.LineNumber + 1, 1) > -1 //check there's a following line?
-					    && cursor > 0 && Editor.GetCharAt (cursor - 1) == '\n') { //check that the newline command actually inserted a newline
-						string nextLine = Editor.GetLineText (stateTracker.Engine.LineNumber + 1);
-						if (nextLine.TrimStart ().StartsWith ("/// ")) {
-						    Editor.InsertText (cursor, GetLineWhiteSpace (previousLine) + "/// ");
-							return;
-						}
-					//multi-line comments
-					} else if (stateTracker.Engine.IsInsideMultiLineComment) {
-					    string commentPrefix = string.Empty;
-						if (trimmedPreviousLine.StartsWith ("* ")) {
-							commentPrefix = "* ";
-						} else if (trimmedPreviousLine.StartsWith ("/**") || trimmedPreviousLine.StartsWith ("/*")) {
-							commentPrefix = " * ";
-						} else if (trimmedPreviousLine.StartsWith ("*")) {
-							commentPrefix = "*";
-						}
-						Editor.InsertText (cursor, GetLineWhiteSpace (previousLine) + commentPrefix);
-						return;
-					}
-				}
-				//newline always reindents unless it's had special handling
-				reIndent = true;
-				break;
-			case '\t':
-				// Tab is a special case... depending on the context, the user may be
-				// requesting a re-indent, tab-completing, or may just be wanting to
-				// insert a literal tab.
-				//
-				// Tab is interpreted as a reindent command when it's neither at the end of a line nor in a verbatim string
-				// and when a tab has just been inserted (i.e. not a template or an autocomplete command)
-				if (TextEditorProperties.TabIsReindent &&
-				    !stateTracker.Engine.IsInsideVerbatimString
-				    && cursor >= 1 && Char.IsWhiteSpace (Editor.GetCharAt (cursor - 1)) //tab was actually inserted, or in a region of tabs
-				    && !hadSelection //was just a cursor, not a block of selected text -- the text editor handles that specially
-				    )
-				{
-					int delta = Editor.CursorPosition - this.cursorPositionBeforeKeyPress;
-					Editor.DeleteText (cursor - delta, delta);
-					reIndent = true;
-				}
-				break;
-			}
-		}
-		
-		string GetLineWhiteSpace (string line)
-		{
-			int trimmedLength = line.TrimStart ().Length;
-			return line.Substring (0, line.Length - trimmedLength);
-		}
-		
-		//does re-indenting and cursor positioning
-		void DoReSmartIndent ()
-		{
-			string newIndent = string.Empty;
-			int cursor = Editor.CursorPosition;
-			
-			// Get context to the end of the line w/o changing the main engine's state
-			CSharpIndentEngine ctx = (CSharpIndentEngine) stateTracker.Engine.Clone ();
-			string line = Editor.GetLineText (ctx.LineNumber);
-			for (int i = ctx.LineOffset; i < line.Length; i++) {
-				ctx.Push (line[i]);
-			}
-			//System.Console.WriteLine("Re-indenting line '{0}'", line);
-			
-			// Measure the current indent
-			int nlwsp = 0;
-			while (nlwsp < line.Length && Char.IsWhiteSpace (line[nlwsp]))
-				nlwsp++;
-			
-			int pos = Editor.GetPositionFromLineColumn (ctx.LineNumber, 1);
-			string curIndent = line.Substring (0, nlwsp);
-			int offset;
-			
-			if (cursor > pos + curIndent.Length)
-				offset = cursor - (pos + curIndent.Length);
-			else
-				offset = 0;
-			
-			if (!stateTracker.Engine.LineBeganInsideMultiLineComment ||
-			    (nlwsp < line.Length && line[nlwsp] == '*')) {
-				// Possibly replace the indent
-				newIndent = ctx.ThisLineIndent;
-				
-				if (newIndent != curIndent) {
-					Editor.DeleteText (pos, nlwsp);
-					Editor.InsertText (pos, newIndent);
-					
-					// Engine state is now invalid
-					stateTracker.ResetEngineToPosition (pos);
-				}
-				
-				pos += newIndent.Length;
-			} else {
-				pos += curIndent.Length;
-			}
-			
-			pos += offset;
-			if (pos != Editor.CursorPosition) {
-				Editor.CursorPosition = pos;
-				Editor.Select (pos, pos);
-			}
-		}
-		
-		public override IParameterDataProvider HandleParameterCompletion (ICodeCompletionContext completionContext, char completionChar)
-		{
-			if (completionChar == '(') {
-				IParserContext pctx = GetParserContext ();
-				int curPos = completionContext.TriggerOffset;
-				
-				// Get the text from the begining of the line
-				int lin, col;
-				Editor.GetLineColumnFromPosition (curPos, out lin, out col);
-				string textToCursor = Editor.GetText (0, curPos - 1);
-				
-				// Find the expression before the '('
-				ExpressionFinder expressionFinder = new ExpressionFinder (null);
-				string ex = expressionFinder.FindExpression (textToCursor, textToCursor.Length - 1).Expression;
-				if (ex == null)
-					return null;
-				
-				// This is a bit of a hack, but for the resolver to properly resolve a constructor
-				// call needs the new keyword and the brackets, so let's provide them
-				int i = curPos - 2 - ex.Length;
-				if (GetPreviousToken ("new", ref i, true))
-					ex = "new " + ex + "()";
-				
-				// Find the language item at that position
-				Resolver res = new Resolver (pctx);
-				IMember it = res.ResolveIdentifier (pctx, ex, lin, col - 1, FileName, Editor.Text);
-				
-				MethodParameterDataProvider.Scope scope = MethodParameterDataProvider.Scope.All;
-				if (it is IMember) {
-					IMember member = it as IMember;
-					IType insideClass = LookupClass (res.CompilationUnit, lin, col);
-					if (insideClass != null) {
-						if (insideClass.FullyQualifiedName == member.DeclaringType.FullyQualifiedName) {
-							scope = MethodParameterDataProvider.Scope.All;
-						} else {
-							scope = MethodParameterDataProvider.Scope.Public;
-							forea
-				}
-				else if (it is IType) {
-					return new CSharpParameterDataProvider (Editor, scope, (IType)it);
+				else if (it is IClass) {
+					return new CSharpParameterDataProvider (Editor, scope, (IClass)it);
 				}
 			}
 			return null;
@@ -1128,7 +642,7 @@ namespace CSharpBinding
 					cp.AddResolveResults (items, true, resolver);
 					
 					// Add the variable type itself to the results list (IsAsResolve only returns subclasses)
-					IType cls = res.SearchType (rt, res.CompilationUnit);
+					IClass cls = res.SearchType (rt, res.CompilationUnit);
 					if (cls != null && cls.ClassType != ClassType.Interface && !cls.IsAbstract) {
 						cp.AddResolveResult (cls, true, resolver);
 						cp.DefaultCompletionString = GetAmbience ().Convert (cls, ConversionFlags.UseIntrinsicTypeNames, null);
@@ -1151,7 +665,7 @@ namespace CSharpBinding
 				// Find the type of the variable that will hold the object
 				IReturnType rt = res.internalResolve (ex, caretLineNumber, caretColumn, FileName, Editor.Text);
 				if (rt != null) {
-					IType cls = res.SearchType (rt, res.CompilationUnit);
+					IClass cls = res.SearchType (rt, res.CompilationUnit);
 					if (cls != null && cls.ClassType == ClassType.Enum) {
 						CodeCompletionDataProvider cp = new CodeCompletionDataProvider (pctx, GetAmbience ());
 						TypeNameResolver resolver = res.CreateTypeNameResolver ();
@@ -1186,7 +700,7 @@ namespace CSharpBinding
 				IParserContext pctx = GetParserContext ();
 				Resolver res = new Resolver (pctx);
 				
-				IType cls = res.GetCallingClass (line, column, FileName, true);
+				IClass cls = res.GetCallingClass (line, column, FileName, true);
 				if (cls != null && (cls.ClassType == ClassType.Class || cls.ClassType == ClassType.Struct)) {
 					string typedModifiers = Editor.GetText (firstMod, ctx.TriggerOffset);
 					return GetOverridablesCompletionData (pctx, ctx, cls, firstMod, typedModifiers, res.CreateTypeNameResolver ());
@@ -1230,7 +744,7 @@ namespace CSharpBinding
 				
 				Resolver res = new Resolver (parserContext);
 				// Don't show namespaces when "using" is not a namespace directive
-				IType cls = res.GetCallingClass (caretLineNumber, caretColumn, FileName, false);
+				IClass cls = res.GetCallingClass (caretLineNumber, caretColumn, FileName, false);
 				if (cls != null)
 					return null;
 				string[] namespaces = parserContext.GetNamespaceList (ns, true, true);
@@ -1242,8 +756,8 @@ namespace CSharpBinding
 					LanguageItemCollection items = res.IsAsResolve (expr, caretLineNumber, caretColumn, FileName, Editor.Text, false);
 					completionProvider.AddResolveResults (items, true, res.CreateTypeNameResolver ());
 				}
-			} else {*/
-				/* '.' */ /*
+			} else {
+				/* '.' */
 				parserContext.ParseFile (this.FileName, this.Editor.Text);
 				Resolver res = new Resolver (parserContext);
 				ResolveResult results = res.Resolve (expression, caretLineNumber, caretColumn, FileName, Editor.Text);
@@ -1255,12 +769,12 @@ namespace CSharpBinding
 			
 			return completionProvider;
 		}
-*/
+
 		/* returns true in case
 		 *	using  : ns - ""
 		 *	using System. : ns - "System"
 		 *	using System.Collections. : ns - "System.Collections"
-		 *//*
+		 */
 		bool IsInUsing (string expr, int triggerOffset, out string ns)
 		{
 			int len = expr.Length;
@@ -1313,9 +827,9 @@ namespace CSharpBinding
 			return Editor.GetText (i, endOffset);
 		}
 		
-		ICompletionDataProvider GetOverridablesCompletionData (IParserContext pctx, ICodeCompletionContext ctx, IType cls, int insertPos, string typedModifiers, ITypeNameResolver resolver)
-		{*/
-		/*	List<IMember> classMembers = new List<IMember> ();
+		ICompletionDataProvider GetOverridablesCompletionData (IParserContext pctx, ICodeCompletionContext ctx, IClass cls, int insertPos, string typedModifiers, ITypeNameResolver resolver)
+		{
+			List<IMember> classMembers = new List<IMember> ();
 			List<IMember> interfaceMembers = new List<IMember> ();
 
 			CodeRefactorer refactorer = IdeApp.Workspace.GetCodeRefactorer (IdeApp.ProjectOperations.CurrentSelectedSolution);
@@ -1326,11 +840,10 @@ namespace CSharpBinding
 
 			CSharpAmbience amb = new CSharpAmbience ();
 			CodeCompletionDataProvider completionProvider = new CodeCompletionDataProvider (pctx, GetAmbience ());
-			foreach (IMember mem in classMembers) {
+			foreach (ILanguageItem mem in classMembers) {
 				completionProvider.AddCompletionData (new OverrideCompletionData (Editor, mem, insertPos, typedModifiers, amb, resolver));
 			}
-			return completionProvider;*//*
-			return null;
+			return completionProvider;
 		}
 		
 		CodeCompletionDataProvider GetDefineCompletionData ()
@@ -1412,5 +925,5 @@ namespace CSharpBinding
 		#endregion
 		
 	}
-	*/
+	
 }
