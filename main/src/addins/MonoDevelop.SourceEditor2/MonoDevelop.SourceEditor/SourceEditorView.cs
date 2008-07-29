@@ -38,7 +38,9 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Core;
 using MonoDevelop.Projects.Gui.Completion;
-using MonoDevelop.Projects.Parser;
+using MonoDevelop.Projects.Dom;
+using MonoDevelop.Projects.Dom.Parser;
+using MonoDevelop.Projects.Dom.Output;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Text;
 using MonoDevelop.Ide.Gui.Search;
@@ -256,24 +258,21 @@ namespace MonoDevelop.SourceEditor
 			IdeApp.Services.DebuggingService.Breakpoints.BreakpointStatusChanged -= breakpointStatusChanged;
 		}
 		
-		public IParserContext GetParserContext ()
+		public ProjectDom GetParserContext ()
 		{
-			IParserDatabase pdb = IdeApp.Workspace.ParserDatabase;
-			
-			Project project = Project;
-			if (project != null) 
-				return pdb.GetProjectParserContext (project);
-			
-			return pdb.GetFileParserContext (IsUntitled ? UntitledName : ContentName);
+			Project project = IdeApp.ProjectOperations.CurrentSelectedProject;
+			if (Project != null)
+				return ProjectDomService.GetDatabaseProjectDom (Project);
+			return new ProjectDom ();
 		}
 		
-		public MonoDevelop.Projects.Ambience.Ambience GetAmbience ()
+		public Ambience GetAmbience ()
 		{
 			Project project = Project;
 			if (project != null)
 				return project.Ambience;
 			string file = this.IsUntitled ? this.UntitledName : this.ContentName;
-			return MonoDevelop.Projects.Services.Ambience.GetAmbienceForFile (file);
+			return AmbienceService.GetAmbienceForFile (file);
 		}
 		
 		void OnFileChanged (object sender, FileSystemEventArgs args)

@@ -35,7 +35,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Parser;
+using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Gui.Completion;
 
 namespace MonoDevelop.SourceEditor
