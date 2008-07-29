@@ -28,7 +28,7 @@
 
 using System;
 using System.Collections;
-using MonoDevelop.Projects.Parser;
+using MonoDevelop.Projects.Dom;
 
 namespace MonoDevelop.Projects.Gui.Completion
 {
@@ -48,7 +48,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 		IMethod[] listMethods;
 		string methodName;
 		
-		public MethodParameterDataProvider (IClass cls, string methodName, Scope scope)
+		public MethodParameterDataProvider (IType cls, string methodName, Scope scope)
 		{
 			this.methodName = methodName;
 			
@@ -59,11 +59,11 @@ namespace MonoDevelop.Projects.Gui.Completion
 			}
 			Init (methods);
 		}
-		public MethodParameterDataProvider (IClass cls, string methodName) : this (cls, methodName, Scope.All)
+		public MethodParameterDataProvider (IType cls, string methodName) : this (cls, methodName, Scope.All)
 		{
 		}
 		
-		public MethodParameterDataProvider (IClass cls, Scope scope)
+		public MethodParameterDataProvider (IType cls, Scope scope)
 		{
 			// Look for constructors
 			
@@ -74,7 +74,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 			}
 			Init (methods);
 		}
-		public MethodParameterDataProvider (IClass cls) : this (cls, Scope.All)
+		public MethodParameterDataProvider (IType cls) : this (cls, Scope.All)
 		{
 		}
 		
