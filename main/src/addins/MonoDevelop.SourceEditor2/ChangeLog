@@ -1,5 +1,10 @@
 2008-07-29  Michael Hutchinson <mhutchinson@novell.com> 
 
+	* MonoDevelop.SourceEditor/SourceEditorWidget.cs: Restore error
+	  underlining functionality.
+
+2008-07-29  Michael Hutchinson <mhutchinson@novell.com> 
+
 	* MonoDevelop.SourceEditor/SourceEditorWidget.cs: Use folding regions
 	  from the CompilationUnit. Restores folding for ASP.NET documents
 

@@ -488,7 +488,7 @@ namespace MonoDevelop.SourceEditor
 		void ParseCompilationUnit (ICompilationUnit cu)
 		{
 			// No new errors
-			if (cu.Errors == null || cu.Errors.Count > 0)
+			if (cu.Errors == null || cu.Errors.Count < 1)
 				return;
 			
 			// Else we underline the error
