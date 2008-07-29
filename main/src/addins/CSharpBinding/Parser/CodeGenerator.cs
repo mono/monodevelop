@@ -54,6 +54,7 @@ using ICSharpCode.NRefactory.Visitors;
 using CSharpBinding.Parser.SharpDevelopTree;
 
 using ClassType = MonoDevelop.Projects.Dom.ClassType;
+using MonoDevelop.CSharpBinding;
 
 namespace CSharpBinding.Parser
 {
@@ -69,14 +70,10 @@ namespace CSharpBinding.Parser
 		{
 			return csharpProvider;
 		}
-		
+		CSharpAmbience ambience = new CSharpAmbience ();
 		public override string ConvertToLanguageTypeName (string netTypeName)
 		{
-			Console.WriteLine ("Convert : '{0}'", netTypeName);
-			string result = CSharpAmbience.TypeConversionTable[netTypeName] as string;
-			if (result != null)
-				return result;
-			return netTypeName;
+			return CSharpAmbience.NetToCSharpTypeName (netTypeName);
 		}
 		
 		public override IType RenameClass (RefactorerContext ctx, IType cls, string newName)
@@ -504,10 +501,10 @@ namespace CSharpBinding.Parser
 		RefactorerContext ctx;
 		IType declaringType;
 		IMember member;
-		Resolver resolver;
+		NRefactoryResolver resolver;
 		Hashtable unique;
 		
-		public MemberRefactoryVisitor (RefactorerContext ctx, Resolver resolver, IType declaringType, IMember member, MemberReferenceCollection references)
+		public MemberRefactoryVisitor (RefactorerContext ctx, NRefactoryResolver resolver, IType declaringType, IMember member, MemberReferenceCollection references)
 		{
 			unique = new Hashtable ();
 			

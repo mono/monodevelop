@@ -30,7 +30,8 @@ using System.Threading;
 using Microsoft.CSharp;
 
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Parser;
+using MonoDevelop.Projects.Dom;
+using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Projects.CodeGeneration;
 using MonoDevelop.Core;
 
@@ -90,9 +91,8 @@ namespace CSharpBinding
 		{
 			return baseName + ".cs";
 		}
-		
+		/*
 		TParser parser = new TParser ();
-		CSharpRefactorer refactorer = new CSharpRefactorer ();
 			
 		public IParser Parser {
 			get { return parser; }
@@ -100,8 +100,15 @@ namespace CSharpBinding
 		
 		public IRefactorer Refactorer {
 			get { return refactorer; }
+		}*/
+		public IParser Parser {
+			get { return null; }
 		}
 		
+		CSharpRefactorer refactorer = new CSharpRefactorer ();
+		public IRefactorer Refactorer {
+			get { return refactorer; }
+		}
 		public ClrVersion[] GetSupportedClrVersions ()
 		{
 			return new ClrVersion[] { ClrVersion.Net_1_1, ClrVersion.Net_2_0, ClrVersion.Clr_2_1 };

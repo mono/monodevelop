@@ -35,18 +35,37 @@ namespace MonoDevelop.CSharpBinding
 	public class CSharpAmbience : Ambience, IDomVisitor
 	{
 		const string nullString = "Null";
-		Dictionary<string, string> netToCSharpTypes = new Dictionary<string, string> ();
-		
+		static Dictionary<string, string> netToCSharpTypes = new Dictionary<string, string> ();
+		static CSharpAmbience ()
+		{
+			netToCSharpTypes["System.Void"]    = "void";
+			netToCSharpTypes["System.Object"]  = "object";
+			netToCSharpTypes["System.Boolean"] = "bool";
+			netToCSharpTypes["System.Byte"]    = "byte";
+			netToCSharpTypes["System.SByte"]   = "sbyte";
+			netToCSharpTypes["System.Char"]    = "char";
+			netToCSharpTypes["System.Enum"]    = "enum";
+			netToCSharpTypes["System.Int16"]   = "short";
+			netToCSharpTypes["System.Int32"]   = "int";
+			netToCSharpTypes["System.Int64"]   = "long";
+			netToCSharpTypes["System.UInt16"]  = "ushort";
+			netToCSharpTypes["System.UInt32"]  = "uint";
+			netToCSharpTypes["System.UInt64"]  = "ulong";
+			netToCSharpTypes["System.Single"]  = "float";
+			netToCSharpTypes["System.Double"]  = "double";
+			netToCSharpTypes["System.Decimal"] = "decimal";
+			netToCSharpTypes["System.String"]  = "string";
+		}
+
+		public static string NetToCSharpTypeName (string netTypeName)
+		{
+			if (netToCSharpTypes.ContainsKey (netTypeName)) 
+				return netToCSharpTypes[netTypeName];
+			return netTypeName;
+		}
+
 		protected override IDomVisitor OutputVisitor {
 			get {
-			
-			
-			
-			
-			
-			
-			
-			
 				return this;
 			}
 		}
@@ -87,23 +106,6 @@ namespace MonoDevelop.CSharpBinding
 			modifiers[Modifiers.ProtectedAndInternal] = "protected internal";
 			modifiers[Modifiers.ProtectedOrInternal]  = "internal protected";
 			
-			netToCSharpTypes["System.Void"]    = "void";
-			netToCSharpTypes["System.Object"]  = "object";
-			netToCSharpTypes["System.Boolean"] = "bool";
-			netToCSharpTypes["System.Byte"]    = "byte";
-			netToCSharpTypes["System.SByte"]   = "sbyte";
-			netToCSharpTypes["System.Char"]    = "char";
-			netToCSharpTypes["System.Enum"]    = "enum";
-			netToCSharpTypes["System.Int16"]   = "short";
-			netToCSharpTypes["System.Int32"]   = "int";
-			netToCSharpTypes["System.Int64"]   = "long";
-			netToCSharpTypes["System.UInt16"]  = "ushort";
-			netToCSharpTypes["System.UInt32"]  = "uint";
-			netToCSharpTypes["System.UInt64"]  = "ulong";
-			netToCSharpTypes["System.Single"]  = "float";
-			netToCSharpTypes["System.Double"]  = "double";
-			netToCSharpTypes["System.Decimal"] = "decimal";
-			netToCSharpTypes["System.String"]  = "string";
 		}
 		
 		public static string NormalizeTypeName (string typeName)

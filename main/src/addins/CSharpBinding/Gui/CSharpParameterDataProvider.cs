@@ -2,26 +2,26 @@
 using System;
 
 using MonoDevelop.Projects.Gui.Completion;
-using MonoDevelop.Projects.Parser;
+using MonoDevelop.Projects.Dom;
+using MonoDevelop.Projects.Dom.Output;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects.Text;
-using MonoDevelop.Projects.Ambience;
 
 using CSharpBinding.FormattingStrategy;
 
 namespace CSharpBinding
-{
+{/*
 	public class CSharpParameterDataProvider : MethodParameterDataProvider
 	{
 		TextEditor editor;
 		CSharpAmbience ambience = new CSharpAmbience ();
 		
-		public CSharpParameterDataProvider (TextEditor editor, MethodParameterDataProvider.Scope scope, IClass cls, string methodName): base (cls, methodName, scope)
+		public CSharpParameterDataProvider (TextEditor editor, MethodParameterDataProvider.Scope scope, IType cls, string methodName): base (cls, methodName, scope)
 		{
 			this.editor = editor;
 		}
 		
-		public CSharpParameterDataProvider (TextEditor editor, MethodParameterDataProvider.Scope scope, IClass cls): base (cls, scope)
+		public CSharpParameterDataProvider (TextEditor editor, MethodParameterDataProvider.Scope scope, IType cls): base (cls, scope)
 		{
 			this.editor = editor;
 		}
@@ -77,5 +77,5 @@ namespace CSharpBinding
 			else
 				return index;
 		}
-	}
+	}*/
 }

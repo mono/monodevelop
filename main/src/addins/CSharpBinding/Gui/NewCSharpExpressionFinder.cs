@@ -83,7 +83,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 								new ClassFinder(ParserService.GetParseInformation(editor.FileName), editor.ActiveTextAreaControl.Caret.Line + 1, editor.ActiveTextAreaControl.Caret.Column + 1)
 							), "");*/
 						if (suggestedClassName != c.Name) {
-							// create an IClass instance that includes the type arguments in its name
+							// create an IType instance that includes the type arguments in its name
 							//context.DefaultItem = new RenamedClass (c, suggestedClassName);
 						} else {
 							context.DefaultItem = c;

@@ -1,9 +1,9 @@
 
-using MonoDevelop.Projects.Parser;
+using MonoDevelop.Projects.Dom;
 using System.Collections.Generic;
 
 namespace CSharpBinding.Parser.SharpDevelopTree
-{
+{/*
 	public class ReturnType : DefaultReturnType
 	{
 		static Dictionary<string, string> types = new Dictionary<string, string>();
@@ -43,7 +43,7 @@ namespace CSharpBinding.Parser.SharpDevelopTree
 		{
 		}
 		
-		public ReturnType (ICSharpCode.NRefactory.Ast.TypeReference type, IClass resolvedClass)
+		public ReturnType (ICSharpCode.NRefactory.Ast.TypeReference type, IType resolvedClass)
 		{
 			this.FullyQualifiedName  = resolvedClass != null ? resolvedClass.FullyQualifiedName : GetSystemType (type.Type);
 			this.pointerNestingLevel = type.PointerNestingLevel;
@@ -103,5 +103,5 @@ namespace CSharpBinding.Parser.SharpDevelopTree
 			else
 				return type;
 		}
-	}
+	}*/
 }

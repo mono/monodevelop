@@ -22,12 +22,11 @@ using System;
 using System.Collections;
 using System.Text;
 
-using MonoDevelop.Projects.Parser;
+using MonoDevelop.Projects.Dom;
 using MonoDevelop.Core;
-using MonoDevelop.Projects.Ambience;
 
 namespace CSharpBinding
-{
+{/*
 	public class CSharpAmbience : Ambience
 	{
 		static string[,] typeConversionList = new string[,] {
@@ -178,7 +177,7 @@ namespace CSharpBinding
 					return false;
 				if (str [p] == ',') {
 					res.Append (',');
-					p++;
+					p++;/home/mkrueger/work/monodevelop/main/src/addins/CSharpBinding
 				}
 			}
 			res.Append ((includeMarkup) ? "&gt;" : ">");
@@ -186,7 +185,7 @@ namespace CSharpBinding
 			return true;
 		}
 		
-		public override string Convert (IClass c, ConversionFlags conversionFlags, ITypeNameResolver resolver)
+		public override string Convert (IType c, ConversionFlags conversionFlags, ITypeNameResolver resolver)
 		{
 			StringBuilder builder = new StringBuilder();
 			
@@ -240,7 +239,7 @@ namespace CSharpBinding
 				builder.Append(' ');
 			}
 			
-			string name;
+			string name;/home/mkrueger/work/monodevelop/main/src/addins/CSharpBinding
 			if (UseFullyQualifiedMemberNames (conversionFlags) || (UseIntrinsicTypeNames (conversionFlags) && typeConversionTable.Contains (c.FullyQualifiedName)))
 				name = c.FullyQualifiedName;
 			else
@@ -299,7 +298,7 @@ namespace CSharpBinding
 			return builder.ToString();		
 		}
 		
-		public override string ConvertEnd(IClass c, ConversionFlags conversionFlags)
+		public override string ConvertEnd(IType c, ConversionFlags conversionFlags)
 		{
 			return "}";
 		}
@@ -710,5 +709,5 @@ namespace CSharpBinding
 				return dotNetTypeName;
 		}
 		
-	}
+	}*/
 }

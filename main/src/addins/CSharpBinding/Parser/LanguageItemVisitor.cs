@@ -5,21 +5,22 @@ using System.Collections;
 
 using CSharpBinding.Parser.SharpDevelopTree;
 
-using MonoDevelop.Projects.Parser;
+using MonoDevelop.Projects.Dom;
 
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Parser;
 using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.NRefactory.Visitors;
+using MonoDevelop.CSharpBinding;
 
 
 namespace CSharpBinding.Parser
-{
+{/*
 	internal class LanguageItemVisitor : AbstractAstVisitor
 	{
-		Resolver resolver;
+		NRefactoryResolver resolver;
 		
-		internal LanguageItemVisitor (Resolver resolver)
+		internal LanguageItemVisitor (NRefactoryResolver resolver)
 		{
 			this.resolver = resolver;
 		}
@@ -69,13 +70,13 @@ namespace CSharpBinding.Parser
 					methods = resolver.SearchMethod(type, id);
 				}
 				resolver.ShowStatic = false;
-/*				if (methods.Count <= 0) {
+				if (methods.Count <= 0) {
 					// It may be a call to a constructor
 					if (invocationExpression.TypeArguments != null && invocationExpression.TypeArguments.Count > 0)
 						return resolver.SearchType (id + "`" + invocationExpression.TypeArguments.Count, null, resolver.CompilationUnit);
 					else
 						return resolver.SearchType (id, null, resolver.CompilationUnit);
-				}*/
+				}
 				// TODO: Find the right method
 				return ResolveOverload (methods, invocationExpression, data);
 			}
@@ -84,7 +85,7 @@ namespace CSharpBinding.Parser
 			if (t == null) {
 				return null;
 			}
-			IClass c = resolver.SearchType (t, resolver.CompilationUnit);
+			IType c = resolver.SearchType (t, resolver.CompilationUnit);
 			if (c.ClassType == MonoDevelop.Projects.Parser.ClassType.Delegate) {
 				ArrayList methods = resolver.SearchMethod (t, "invoke");
 				if (methods.Count <= 0) {
@@ -136,7 +137,7 @@ namespace CSharpBinding.Parser
 			// If no exact match can be found, just return one of them
 			return (IMethod) methods [0];
 		}
-		/*
+		
 		public override object VisitMemberReferenceExpression(MemberReferenceExpression fieldReferenceExpression, object data)
 		{
 			if (fieldReferenceExpression == null) {
@@ -159,7 +160,7 @@ namespace CSharpBinding.Parser
 					if (n != null) {
 						return new Namespace (n, "");
 					}
-					IClass c = resolver.SearchType(string.Concat(name, ".", fieldReferenceExpression.FieldName), null, resolver.CompilationUnit);
+					IType c = resolver.SearchType(string.Concat(name, ".", fieldReferenceExpression.FieldName), null, resolver.CompilationUnit);
 					if (c != null) {
 						resolver.ShowStatic = true;
 						return c;
@@ -174,7 +175,7 @@ namespace CSharpBinding.Parser
 				return resolver.SearchClassMember (returnType, fieldReferenceExpression.FieldName, true);
 			}
 			return null;
-		}*/
+		}
 		
 		public override object VisitPointerReferenceExpression(PointerReferenceExpression pointerReferenceExpression, object data)
 		{
@@ -199,7 +200,7 @@ namespace CSharpBinding.Parser
 			if (name != null) {
 				return new Namespace (name, "");
 			}
-			IClass c = resolver.SearchType(identifierExpression.Identifier, null, resolver.CompilationUnit);
+			IType c = resolver.SearchType(identifierExpression.Identifier, null, resolver.CompilationUnit);
 			if (c != null) {
 				resolver.ShowStatic = true;
 				return c;
@@ -302,11 +303,11 @@ namespace CSharpBinding.Parser
 			// no calls allowed !!!
 			return null;
 		}
-		/*
-		public override object VisitArrayInitializerExpression(ArrayInitializerExpression arrayInitializerExpression, object data)
-		{
-			// no calls allowed !!!
-			return null;
-		}*/
-	}
+
+//		public override object VisitArrayInitializerExpression(ArrayInitializerExpression arrayInitializerExpression, object data)
+//		{
+//			// no calls allowed !!!
+//			return null;
+//		}
+	}*/
 }
