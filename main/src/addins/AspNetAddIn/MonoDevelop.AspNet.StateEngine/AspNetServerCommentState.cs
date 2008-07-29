@@ -38,27 +38,39 @@ namespace MonoDevelop.AspNet.StateEngine
 		const int NOMATCH = 0;
 		const int SINGLE_DASH = 1;
 		const int DOUBLE_DASH = 2;
+		const int PERCENT = 3;
 		
 		public override State PushChar (char c, IParseContext context, ref bool reject)
 		{
-			if (c == '-') {
-				//make sure we know when there are two '-' chars together
-				if (context.StateTag == NOMATCH)
+			switch (context.StateTag) {
+			case NOMATCH:
+				if (c == '-')
 					context.StateTag = SINGLE_DASH;
-				else
-					context.StateTag = DOUBLE_DASH;
+				break;
 				
-			} else if (c == '>' && context.StateTag == DOUBLE_DASH) {
-				// if the '--' is followed by a '>', the state has ended
-				// so attach a node to the DOM and end the state
-				if (context.BuildTree) {
-					int start = context.Position - (context.CurrentStateLength + 4); // <!-- is 4 chars
-					((XContainer) context.Nodes.Peek ()).AddChildNode (new AspNetServerComment (start, context.Position));
+			case SINGLE_DASH:
+				if (c == '-')
+					context.StateTag = DOUBLE_DASH;
+				else
+					context.StateTag = NOMATCH;
+				break;
+				
+			case DOUBLE_DASH:
+				if (c == '%')
+					context.StateTag = PERCENT;
+				else
+					context.StateTag = NOMATCH;
+				break;
+				
+			case PERCENT:
+				if (c == '>') {
+					if (context.BuildTree) {
+						int start = context.Position - (context.CurrentStateLength + 4); // <%-- is 4 chars
+						((XContainer) context.Nodes.Peek ()).AddChildNode (new AspNetServerComment (start, context.Position));
+					}
+					return Parent;
 				}
-				return Parent;
-			} else {
-				// not any part of a '-->', so make sure matching is reset
-				context.StateTag = NOMATCH;
+				break;
 			}
 			
 			return null;
