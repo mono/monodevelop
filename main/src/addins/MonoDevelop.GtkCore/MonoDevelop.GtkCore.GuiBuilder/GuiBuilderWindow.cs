@@ -143,7 +143,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		{
 			string fullName = namspace.Length > 0 ? namspace + "." + name : name;
 			
-			CodeRefactorer gen = new CodeRefactorer (fproject.Project.ParentSolution, IdeApp.Workspace.ParserDatabase);
+			CodeRefactorer gen = new CodeRefactorer (fproject.Project.ParentSolution, ProjectDomService.GetDatabaseProjectDom (fproject.Project));
 			bool partialSupport = fproject.Project.UsePartialTypes;
 			Stetic.WidgetComponent component = (Stetic.WidgetComponent) rootWidget.Component;
 			
@@ -199,10 +199,8 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				AddSignalsRec (type, ag);
 			
 			// Create the class
-			IType cls = null;
-	/*		TODO: Class Generation !!!
 			IType cls = gen.CreateClass (Project.Project, ((DotNetProject)Project.Project).LanguageName, folder, namspace, type);
-			if (cls == null)*/
+			if (cls == null)
 				throw new UserException ("Could not create class " + fullName);
 			
 			Project.Project.AddFile (cls.CompilationUnit.FileName, BuildAction.Compile);
@@ -232,8 +230,6 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		internal bool IsValidClass (ProjectDom ctx, IType cls)
 		{
-			System.Console.WriteLine("is valid:" + cls);
-			System.Console.WriteLine("is valid:" + rootWidget.Component.Type.ClassName);
 			if (cls.BaseTypes != null) {
 				foreach (IReturnType bt in cls.BaseTypes) {
 					if (bt.FullName == rootWidget.Component.Type.ClassName)
@@ -244,7 +240,6 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 						return true;
 				}
 			}
-			System.Console.WriteLine("false");
 			return false;
 		}
 	}

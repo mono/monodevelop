@@ -159,9 +159,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			if (cls != null) {
 				IField f = ClassUtils.FindWidgetField (cls, oldName);
 				if (f != null) {
-					// Rename the field
-					// TODO: Refactoring !!!
-					//cr.RenameMember (new NullProgressMonitor (), cls, f, newName, RefactoryScope.File);
+					cr.RenameMember (new NullProgressMonitor (), cls, f, newName, RefactoryScope.File);
 				}
 			}
 		}
@@ -186,9 +184,8 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			
 			foreach (Stetic.ParameterDescriptor pinfo in signal.SignalDescriptor.HandlerParameters)
 				met.Parameters.Add (new CodeParameterDeclarationExpression (pinfo.TypeName, pinfo.Name));
-// TODO:
-//			CodeRefactorer gen = GetCodeGenerator ();
-//			gen.AddMember (cls, met);
+			CodeRefactorer gen = GetCodeGenerator ();
+			gen.AddMember (cls, met);
 		}
 		
 		public void UpdateSignal (Stetic.Signal oldSignal, Stetic.Signal newSignal)
@@ -204,9 +201,8 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 
 			IMethod met = FindSignalHandler (cls, oldSignal);
 			if (met == null) return;
-// TODO:			
-//			CodeRefactorer gen = GetCodeGenerator ();
-//			gen.RenameMember (new NullProgressMonitor (), cls, met, newSignal.Handler, RefactoryScope.File);
+			CodeRefactorer gen = GetCodeGenerator ();
+			gen.RenameMember (new NullProgressMonitor (), cls, met, newSignal.Handler, RefactoryScope.File);
 		}
 
 		/// Adds a field to the class
@@ -225,9 +221,8 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			
 			IEditableTextFile editor = doc.GetContent<IEditableTextFile> ();
 			if (editor != null) {
-// TODO:
-//				CodeRefactorer gen = GetCodeGenerator ();
-//				gen.AddMember (cls, GetFieldCode (obj, name));
+				CodeRefactorer gen = GetCodeGenerator ();
+				gen.AddMember (cls, GetFieldCode (obj, name));
 			}
 		}
 		
@@ -249,7 +244,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		CodeRefactorer GetCodeGenerator ()
 		{
-			CodeRefactorer cr = new CodeRefactorer (project.ParentSolution, IdeApp.Workspace.ParserDatabase);
+			CodeRefactorer cr = new CodeRefactorer (project.ParentSolution, ProjectDomService.GetDatabaseProjectDom (project));
 			cr.TextFileProvider = textFileProvider;
 			return cr;
 		}

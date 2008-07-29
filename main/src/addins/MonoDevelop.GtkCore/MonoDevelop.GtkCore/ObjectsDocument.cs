@@ -35,7 +35,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 
 using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.CodeGeneration;
+using MonoDevelop.Projects.CodeGeneration;
 
 namespace MonoDevelop.GtkCore
 {

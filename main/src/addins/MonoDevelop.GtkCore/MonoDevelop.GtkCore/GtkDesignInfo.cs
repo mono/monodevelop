@@ -39,8 +39,8 @@ using System.Collections.Specialized;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
+using MonoDevelop.Projects.CodeGeneration;
 using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.CodeGeneration;
 using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Core.Serialization;
 
@@ -246,13 +246,11 @@ namespace MonoDevelop.GtkCore
 
 		bool SupportsRefactoring {
 			get {
-			// TODO: Refactorer
-//				if (project.LanguageBinding == null || project.LanguageBinding.GetCodeDomProvider () == null)
-//					return false;
-//				RefactorOperations ops = RefactorOperations.AddField | RefactorOperations.AddMethod | RefactorOperations.RenameField | RefactorOperations.AddAttribute;
-//				CodeRefactorer cref = IdeApp.Workspace.GetCodeRefactorer (project.ParentSolution);
-//				return cref.LanguageSupportsOperation (project.LanguageBinding.Language, ops); 
-				return true;
+				if (project.LanguageBinding == null || project.LanguageBinding.GetCodeDomProvider () == null)
+					return false;
+				RefactorOperations ops = RefactorOperations.AddField | RefactorOperations.AddMethod | RefactorOperations.RenameField | RefactorOperations.AddAttribute;
+				CodeRefactorer cref = IdeApp.Workspace.GetCodeRefactorer (project.ParentSolution);
+				return cref.LanguageSupportsOperation (project.LanguageBinding.Language, ops); 
 			}
 		}
 		
@@ -428,7 +426,7 @@ namespace MonoDevelop.GtkCore
 				return;
 
 			ObjectsDocument doc = new ObjectsDocument (ObjectsFile);
-			doc.Update (GuiBuilderProject.WidgetParser, GuiBuilderProject.SteticProject, new CodeRefactorer ()/*IdeApp.Workspace.GetCodeRefactorer (project.ParentSolution)*/);
+			doc.Update (GuiBuilderProject.WidgetParser, GuiBuilderProject.SteticProject, IdeApp.Workspace.GetCodeRefactorer (project.ParentSolution));
 		}
 
 		public static GtkDesignInfo FromProject (Project project)

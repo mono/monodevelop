@@ -137,7 +137,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		{
 			string fullName = namspace.Length > 0 ? namspace + "." + name : name;
 			
-			CodeRefactorer gen = new CodeRefactorer (project.ParentSolution, IdeApp.Workspace.ParserDatabase);
+			CodeRefactorer gen = new CodeRefactorer (project.ParentSolution, ProjectDomService.GetDatabaseProjectDom (project));
 			
 			CodeTypeDeclaration type = new CodeTypeDeclaration ();
 			type.Name = name;
@@ -180,9 +180,8 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			// Create the class
 			
 			IType cls = null;
-// TODO: Class Generation !!!
-//			cls = gen.CreateClass (project, ((DotNetProject)project).LanguageName, folder, namspace, type);
-//			if (cls == null)
+			cls = gen.CreateClass (project, ((DotNetProject)project).LanguageName, folder, namspace, type);
+			if (cls == null)
 				throw new UserException ("Could not create class " + fullName);
 			
 			project.AddFile (cls.CompilationUnit.FileName, BuildAction.Compile);
