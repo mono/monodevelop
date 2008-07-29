@@ -36,7 +36,8 @@ using System.Collections.Generic;
 
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Parser;
+using MonoDevelop.Projects.Dom;
+using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.DesignerSupport;
 
 namespace AspNetEdit.Integration
@@ -74,28 +75,28 @@ namespace AspNetEdit.Integration
 		//TODO: make this work with inline code
 		#region event binding
 		
-		IClass GetNonDesignerClass ()
+		IType GetNonDesignerClass ()
 		{
-			IParserContext ctx;
-			IClass cls = GetFullClass (out ctx);
-			IClass nonDesigner = MonoDevelop.AspNet.CodeBehind.GetNonDesignerClass (cls);
+			ProjectDom ctx;
+			IType cls = GetFullClass (out ctx);
+			IType nonDesigner = MonoDevelop.AspNet.CodeBehind.GetNonDesignerClass (cls);
 			return nonDesigner ?? cls;
 		}
 		
-		IClass GetFullClass (out IParserContext ctx)
+		IType GetFullClass (out ProjectDom ctx)
 		{
 			if (project == null || className == null) {
 				ctx = null;
 				return null;
 			}
-			ctx = MonoDevelop.Ide.Gui.IdeApp.Workspace.ParserDatabase.GetProjectParserContext (project);
-			return ctx.GetClass (className, false, false);
+			ctx = MonoDevelop.Projects.Dom.Parser.ProjectDomService.GetDatabaseProjectDom (project);
+			return ctx.GetType (className, -1, false, false);
 		}
 		
 		public bool IdentifierExistsInCodeBehind (string trialIdentifier)
 		{
-			IParserContext ctx;
-			IClass fullClass = GetFullClass (out ctx);
+			ProjectDom ctx;
+			IType fullClass = GetFullClass (out ctx);
 			if (fullClass == null)
 				return false;
 			
@@ -104,8 +105,8 @@ namespace AspNetEdit.Integration
 		
 		public string GenerateIdentifierUniqueInCodeBehind (string trialIdentifier)
 		{
-			IParserContext ctx;
-			IClass fullClass = GetFullClass (out ctx);
+			ProjectDom ctx;
+			IType fullClass = GetFullClass (out ctx);
 			if (fullClass == null)
 				return trialIdentifier;
 			
@@ -115,8 +116,8 @@ namespace AspNetEdit.Integration
 		
 		public string[] GetCompatibleMethodsInCodeBehind (CodeMemberMethod method)
 		{
-			IParserContext ctx;
-			IClass fullClass = GetFullClass (out ctx);
+			ProjectDom ctx;
+			IType fullClass = GetFullClass (out ctx);
 			if (fullClass == null)
 				return new string[0];
 			
@@ -125,12 +126,12 @@ namespace AspNetEdit.Integration
 		
 		public bool ShowMethod (CodeMemberMethod method)
 		{
-			IParserContext ctx;
-			IClass fullCls = GetFullClass (out ctx);
+			ProjectDom ctx;
+			IType fullCls = GetFullClass (out ctx);
 			if (fullCls == null)
 				return false;
 			
-			IClass codeBehindClass = MonoDevelop.AspNet.CodeBehind.GetNonDesignerClass (fullCls) ?? fullCls;
+			IType codeBehindClass = MonoDevelop.AspNet.CodeBehind.GetNonDesignerClass (fullCls) ?? fullCls;
 			
 			Gtk.Application.Invoke ( delegate {
 				BindingService.CreateAndShowMember (project, fullCls, codeBehindClass, method);
@@ -141,12 +142,12 @@ namespace AspNetEdit.Integration
 		
 		public bool ShowLine (int lineNumber)
 		{
-			IClass codeBehindClass = GetNonDesignerClass ();
+			IType codeBehindClass = GetNonDesignerClass ();
 			if (codeBehindClass == null)
 				return false;
 			
 			Gtk.Application.Invoke ( delegate {
-				IdeApp.Workbench.OpenDocument (codeBehindClass.Region.FileName, lineNumber, 1, true);
+				IdeApp.Workbench.OpenDocument (codeBehindClass.CompilationUnit.FileName, lineNumber, 1, true);
 			});
 			
 			return true;
