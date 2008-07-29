@@ -347,6 +347,16 @@ namespace MonoDevelop.SourceEditor
 									return;
 								widget.AddClass (foldSegments, cl);
 							}
+							
+							foreach (FoldingRegion region in widget.lastCu.FoldingRegions) {
+								FoldSegment marker = widget.AddMarker
+									(foldSegments, region.Name, region.Region, FoldingType.Region);
+								if (marker != null) 
+									marker.IsFolded =
+										SourceEditorOptions.Options.DefaultRegionsFolding
+										&& region.DefaultIsFolded;
+							
+							}
 						}
 						
 						if (widget.metaInfo != null && widget.metaInfo.FoldingRegion != null) {
