@@ -1,3 +1,13 @@
+2008-07-29  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.AspNet.StateEngine/AspNetFreeState.cs,
+	  MonoDevelop.AspNet.StateEngine/AspNetDirectiveState.cs,
+	  MonoDevelop.AspNet.StateEngine/AspNetDom.cs: Complete the handling
+	  of directives. Server comments and expressions are still broken.
+	* MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs: Continue port to new
+	  DOM. Enable AspNetFreeState parser instead of XML one.
+	* MonoDevelop.AspNet.Parser/AspNetParser.cs: Remove debug code.
+
 2008-07-29  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.AspNet/AspNetAppProject.cs,

@@ -61,14 +61,14 @@ namespace MonoDevelop.AspNet.StateEngine
 			Adopt (this.MalformedTagState);
 		}
 		
-		const int SELFCLOSING = 1;
+		const int ENDING = 1;
 		
 		public override State PushChar (char c, IParseContext context, ref bool reject)
 		{
 			AspNetDirective directive = context.Nodes.Peek () as AspNetDirective;
 			
 			if (directive == null || directive.IsComplete) {
-				directive = new AspNetDirective (context.Position - 2); // 2 == < + current char
+				directive = new AspNetDirective (context.Position - 3); // 3 == <% + current char
 				context.Nodes.Push (directive);
 			}
 			
@@ -80,24 +80,31 @@ namespace MonoDevelop.AspNet.StateEngine
 			
 			Debug.Assert (!directive.IsComplete);
 			
-			//if tag closed
-			if (c == '>') {
-				//have already checked that directive is not null, i.e. top of stack is our directive
-				context.Nodes.Pop ();
-				
-				if (!directive.IsNamed) {
-					context.LogError ("Directive closed prematurely.");
-				} else {
-					directive.End (context.Position);
-					if (context.BuildTree) {
-						XContainer container = (XContainer) context.Nodes.Peek ();
-						container.AddChildNode (directive);
-					}
-				}
-				return Parent;
+			if (context.StateTag != ENDING && c == '%') {
+				context.StateTag = ENDING;
+				return null;
 			}
 			
-			if (char.IsLetter (c) || c == '_') {
+			
+			if (context.StateTag == ENDING) {
+				if (c == '>') {
+					//have already checked that directive is not null, i.e. top of stack is our directive
+					context.Nodes.Pop ();
+					
+					if (!directive.IsNamed) {
+						context.LogError ("Directive closed prematurely.");
+					} else {
+						directive.End (context.Position);
+						if (context.BuildTree) {
+							XContainer container = (XContainer) context.Nodes.Peek ();
+							container.AddChildNode (directive);
+						}
+					}
+					return Parent;
+				}
+				//ending but not '>'? Error; go to end.
+			}
+			else if (char.IsLetter (c)) {
 				reject = true;
 				if (!directive.IsNamed) {
 					return NameState;
@@ -105,8 +112,7 @@ namespace MonoDevelop.AspNet.StateEngine
 					return AttributeState;
 				}
 			}
-			
-			if (char.IsWhiteSpace (c))
+			else if (char.IsWhiteSpace (c))
 				return null;
 			
 			reject = true;

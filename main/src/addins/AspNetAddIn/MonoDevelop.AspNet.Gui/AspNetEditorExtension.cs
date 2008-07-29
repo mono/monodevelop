@@ -74,7 +74,7 @@ namespace MonoDevelop.AspNet.Gui
 		{
 			base.Initialize ();
 			
-			S.Parser parser = new S.Parser (new S.XmlFreeState (), false);
+			S.Parser parser = new S.Parser (new AspNetFreeState (), false);
 			tracker = new DocumentStateTracker<S.Parser> (parser, Editor);
 			
 			MonoDevelop.Projects.Dom.Parser.ProjectDomService.CompilationUnitUpdated += OnParseInformationChanged;
@@ -503,32 +503,32 @@ namespace MonoDevelop.AspNet.Gui
 				string eventName = attName.Name.Substring (2);
 				foreach (MonoDevelop.Projects.Dom.IEvent ev in GetAllEvents (projectDatabase, controlClass)) {
 					if (ev.Name == eventName) {
-//FIXME: port
-//						System.CodeDom.CodeMemberMethod domMethod = 
-//							BindingService.MDDomToCodeDomMethod (ev, projectDatabase);
-//						if (domMethod == null)
-//							return;
 						
-//						foreach (string meth 
-//						    in BindingService.GetCompatibleMethodsInClass (codeBehindClass, domMethod))
-//						{
-//							provider.AddCompletionData (new CodeCompletionData (meth, "md-method",
-//							    "A compatible method in the CodeBehind class"));
-//						}
+						System.CodeDom.CodeMemberMethod domMethod = 
+							BindingService.MDDomToCodeDomMethod (ev, projectDatabase);
+						if (domMethod == null)
+							return;
 						
-//						string suggestedIdentifier = ev.Name;
-//						if (existingAtts != null && !existingAtts.ContainsKey ("id") 
-//						    && !string.IsNullOrEmpty (existingAtts["id"]))
-//						{
-//							suggestedIdentifier = existingAtts["id"] + "_" + suggestedIdentifier;
-//						}
-//							
-//						domMethod.Name = BindingService.GenerateIdentifierUniqueInClass
-//							(projectContext, codeBehindClass, suggestedIdentifier);
-//						provider.AddCompletionData (
-//						    new SuggestedHandlerCompletionData (cu.Document.Project, domMethod, codeBehindClass,
-//						        MonoDevelop.AspNet.CodeBehind.GetNonDesignerClass (codeBehindClass))
-//						    );
+						foreach (string meth 
+						    in BindingService.GetCompatibleMethodsInClass (codeBehindClass, domMethod))
+						{
+							provider.AddCompletionData (new CodeCompletionData (meth, "md-method",
+							    "A compatible method in the CodeBehind class"));
+						}
+						
+						string suggestedIdentifier = ev.Name;
+						if (existingAtts != null && !existingAtts.ContainsKey ("id") 
+						    && !string.IsNullOrEmpty (existingAtts["id"]))
+						{
+							suggestedIdentifier = existingAtts["id"] + "_" + suggestedIdentifier;
+						}
+							
+						domMethod.Name = BindingService.GenerateIdentifierUniqueInClass
+							(projectDatabase, codeBehindClass, suggestedIdentifier);
+						provider.AddCompletionData (
+						    new SuggestedHandlerCompletionData (cu.Document.Project, domMethod, codeBehindClass,
+						        MonoDevelop.AspNet.CodeBehind.GetNonDesignerClass (codeBehindClass))
+						    );
 						return;
 					}
 				}
@@ -595,30 +595,18 @@ namespace MonoDevelop.AspNet.Gui
 		    MonoDevelop.Projects.Dom.Parser.DatabaseProjectDom projectDatabase,
 		    MonoDevelop.Projects.Dom.IType cls)
 		{
-			foreach (MonoDevelop.Projects.Dom.IProperty prop in cls.Properties)
-				yield return prop;
-			
-			foreach (MonoDevelop.Projects.Dom.IReturnType rt in cls.BaseTypes) {
-				MonoDevelop.Projects.Dom.IType baseCls = projectDatabase.GetType (rt);
-				if (baseCls != null)
-					foreach (MonoDevelop.Projects.Dom.IProperty prop in GetAllProperties (projectDatabase, baseCls))
-					    yield return prop;
-			}
+			foreach (MonoDevelop.Projects.Dom.IType type in projectDatabase.GetInheritanceTree (cls))
+				foreach (MonoDevelop.Projects.Dom.IProperty prop in type.Properties)
+					yield return prop;
 		}
 		
 		static IEnumerable<MonoDevelop.Projects.Dom.IEvent> GetAllEvents (
 		    MonoDevelop.Projects.Dom.Parser.DatabaseProjectDom projectDatabase,
 		    MonoDevelop.Projects.Dom.IType cls)
 		{
-			foreach (MonoDevelop.Projects.Dom.IEvent ev in cls.Events)
-				yield return ev;
-			
-			foreach (MonoDevelop.Projects.Dom.IReturnType rt in cls.BaseTypes) {
-				MonoDevelop.Projects.Dom.IType baseCls = projectDatabase.GetType (rt);
-				if (baseCls != null)
-					foreach (MonoDevelop.Projects.Dom.IEvent ev in GetAllEvents (projectDatabase, baseCls))
-					    yield return ev;
-			}
+			foreach (MonoDevelop.Projects.Dom.IType type in projectDatabase.GetInheritanceTree (cls))
+				foreach (MonoDevelop.Projects.Dom.IEvent ev in type.Events)
+					yield return ev;
 		}
 		
 		static void AddBooleanCompletionData (CodeCompletionDataProvider provider)

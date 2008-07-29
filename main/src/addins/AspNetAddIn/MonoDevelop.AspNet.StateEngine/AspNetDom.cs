@@ -36,7 +36,7 @@ using MonoDevelop.Xml.StateEngine;
 namespace MonoDevelop.AspNet.StateEngine
 {
 	
-	public class AspNetDirective : XNode, INamedXObject
+	public class AspNetDirective : XNode, IAttributedXObject
 	{
 		XName name;
 		XAttributeCollection attributes;

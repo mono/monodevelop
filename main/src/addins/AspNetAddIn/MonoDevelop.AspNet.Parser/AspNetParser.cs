@@ -50,7 +50,6 @@ namespace MonoDevelop.AspNet.Parser
 		
 		public override ICompilationUnit Parse (string fileName, string fileContent)
 		{
-			System.Console.WriteLine("Parsed {0}", fileName);
 			using (TextReader tr = new StringReader (fileContent)) {
 				Document doc = new Document (tr, null, fileName);
 				AspNetCompilationUnit cu = new AspNetCompilationUnit (fileName);
