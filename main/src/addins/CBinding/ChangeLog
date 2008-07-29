@@ -1,3 +1,8 @@
+2008-07-29  Mike Krüger <mkrueger@novell.com> 
+
+	* CLanguageBinding.cs, CppLanguageBinding.cs: Translated old code to
+	  new dom.
+
 2008-07-21  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com> 
 
 	* Project/ProjectPackageCollection.cs: Cleanup. Fixes bug #390419.
