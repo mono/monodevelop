@@ -1,5 +1,15 @@
 2008-07-29  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.GtkCore/WidgetFileDescriptionTemplate.cs,
+	  MonoDevelop.GtkCore.Dialogs/WidgetBuilderOptionPanel.cs,
+	  MonoDevelop.GtkCore.GuiBuilder/ActionGroupDisplayBinding.cs,
+	  MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs,
+	  MonoDevelop.GtkCore.GuiBuilder/GuiBuilderWindow.cs,
+	  MonoDevelop.GtkCore.GuiBuilder/CombinedDesignView.cs: Translated
+	  old code to new dom.
+
+2008-07-29  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.GtkCore/GtkDesignInfo.cs,
 	  MonoDevelop.GtkCore/ObjectsDocument.cs,
 	  MonoDevelop.GtkCore.GuiBuilder/ActionGroupDisplayBinding.cs,

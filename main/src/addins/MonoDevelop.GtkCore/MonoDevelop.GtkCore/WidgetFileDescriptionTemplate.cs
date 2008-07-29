@@ -33,7 +33,8 @@ using System.IO;
 
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Parser;
+using MonoDevelop.Projects.Dom;
+using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Templates;
 using MonoDevelop.GtkCore.GuiBuilder;
@@ -85,7 +86,7 @@ namespace MonoDevelop.GtkCore
 			string fileName = fileTemplate.GetFileName (project, language, directory, name);
 			fileTemplate.AddToProject (project, language, directory, name);
 
-			IdeApp.Workspace.ParserDatabase.UpdateFile (project, fileName, null);
+			ProjectDomService.Refresh (project, fileName, null);
 			
 			DotNetProject netProject = project as DotNetProject;
 			string ns = netProject != null ? netProject.GetDefaultNamespace (fileName) : "";

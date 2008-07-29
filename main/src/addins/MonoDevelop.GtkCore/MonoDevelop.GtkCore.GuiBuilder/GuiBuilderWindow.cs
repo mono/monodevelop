@@ -207,7 +207,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			IdeApp.ProjectOperations.Save (Project.Project);
 			
 			// Make sure the database is up-to-date
-			IdeApp.Workspace.ParserDatabase.UpdateFile (Project.Project, cls.CompilationUnit.FileName, null);
+			ProjectDomService.Refresh (Project.Project, cls.CompilationUnit.FileName, null);
 		}
 		
 		void AddSignalsRec (CodeTypeDeclaration type, Stetic.Component comp)
