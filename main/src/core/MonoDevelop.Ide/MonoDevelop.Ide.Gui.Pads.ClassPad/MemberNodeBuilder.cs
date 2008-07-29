@@ -31,7 +31,7 @@ using System.Collections;
 
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
-using MonoDevelop.Projects.Parser;
+using MonoDevelop.Projects.Dom;
 
 namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 {
@@ -39,13 +39,14 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 	{
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
 		{
-			return ((IMember)dataObject).Name;
+			return "";
+//			return ((IMember)dataObject).Name;
 		}
 		
 		public override Type CommandHandlerType {
 			get { return typeof(MemberNodeCommandHandler); }
 		}
-		
+	/*	
 		public override int CompareObjects (ITreeNavigator thisNode, ITreeNavigator otherNode)
 		{
 			if (!(otherNode.DataItem is IMember)) return 1;
@@ -76,11 +77,11 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 		
 		int GetAccessSortValue (ModifierEnum mods)
 		{
-			if ((mods & ModifierEnum.Private) != 0) return 0;
-			if ((mods & ModifierEnum.Internal) != 0) return 1;
-			if ((mods & ModifierEnum.Protected) != 0) return 2;
-			if ((mods & ModifierEnum.Public) != 0) return 3;
+			if ((mods & Modifiers.Private) != 0) return 0;
+			if ((mods & Modifiers.Internal) != 0) return 1;
+			if ((mods & Modifiers.Protected) != 0) return 2;
+			if ((mods & Modifiers.Public) != 0) return 3;
 			return 4;
-		}
+		}*/
 	}
 }

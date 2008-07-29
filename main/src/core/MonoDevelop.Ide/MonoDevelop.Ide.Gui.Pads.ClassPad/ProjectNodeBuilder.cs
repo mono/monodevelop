@@ -32,7 +32,7 @@ using System.Collections;
 using System.Text;
 
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Parser;
+using MonoDevelop.Projects.Dom;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
 
@@ -40,17 +40,19 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 {
 	public class ProjectNodeBuilder: TypeNodeBuilder
 	{
-		SolutionItemRenamedEventHandler projectNameChanged;
-
 		public ProjectNodeBuilder ()
 		{
-			projectNameChanged = (SolutionItemRenamedEventHandler) DispatchService.GuiDispatch (new SolutionItemRenamedEventHandler (OnProjectRenamed));
 		}
 		
 		public override Type NodeDataType {
 			get { return typeof(Project); }
 		}
-		
+		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
+		{
+			return "";
+		}
+
+		/*
 		public override string ContextMenuAddinPath {
 			get { return "/MonoDevelop/Ide/ContextMenu/ClassPad/Project"; }
 		}
@@ -92,7 +94,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 			
 			IParserContext ctx = IdeApp.Workspace.ParserDatabase.GetProjectParserContext (project);
 			LanguageItemCollection list = ctx.GetNamespaceContents ("", false);
-			foreach (ILanguageItem ob in list) {
+			foreach (IMember ob in list) {
 				if (ob is Namespace) {
 					if (builder.Options ["NestedNamespaces"])
 						builder.AddChild (new NamespaceData (project, ((Namespace)ob).Name));
@@ -100,8 +102,8 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 						FillNamespaces (builder, project, ((Namespace)ob).Name);
 					}
 				}
-				else if (!publicOnly || ((IClass)ob).IsPublic)
-					builder.AddChild (new ClassData (project, ob as IClass));
+				else if (!publicOnly || ((IType)ob).IsPublic)
+					builder.AddChild (new ClassData (project, ob as IType));
 			}
 		}
 		
@@ -131,6 +133,6 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 		{
 			ITreeBuilder tb = Context.GetTreeBuilder (e.SolutionItem);
 			if (tb != null) tb.Update ();
-		}
+		}*/
 	}
 }

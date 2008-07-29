@@ -32,22 +32,22 @@ using System.Collections;
 
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
-using MonoDevelop.Projects.Parser;
+using MonoDevelop.Projects.Dom;
 
 namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 {
 	public class ClassData
 	{
-		IClass cls;
+	/*	IType cls;
 		Project project;
 		
-		public ClassData (Project p, IClass c)
+		public ClassData (Project p, IType c)
 		{
 			cls = c;
 			project = p;
 		}
 		
-		public IClass Class {
+		public IType Class {
 			get { return cls; }
 		}
 		
@@ -70,6 +70,6 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 		public override string ToString ()
 		{
 			return base.ToString () + " [" + cls.FullyQualifiedName + ", " + project.Name + "]";
-		}
+		}*/
 	}
 }

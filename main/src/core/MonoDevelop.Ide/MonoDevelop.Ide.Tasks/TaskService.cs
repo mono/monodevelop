@@ -28,7 +28,7 @@ using MonoDevelop.Core.Gui;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Parser;
+using MonoDevelop.Projects.Dom;
 using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Ide.Tasks
@@ -51,7 +51,8 @@ namespace MonoDevelop.Ide.Tasks
 			IdeApp.Workspace.FileRemovedFromProject += new ProjectFileEventHandler (ProjectFileRemoved);
 
 			PropertyService.PropertyChanged += (EventHandler<PropertyChangedEventArgs>) DispatchService.GuiDispatch (new EventHandler<PropertyChangedEventArgs> (OnPropertyUpdated));
-			IdeApp.Workspace.ParserDatabase.CommentTasksChanged += new CommentTasksChangedEventHandler (OnCommentTasksChanged);
+		// TODO:
+		//	IdeApp.Workspace.ParserDatabase.CommentTasksChanged += new CommentTasksChangedEventHandler (OnCommentTasksChanged);
 			
 			MonoDevelop.Projects.Text.TextFileService.CommitCountChanges += delegate (object sender, MonoDevelop.Projects.Text.TextFileEventArgs args) {
 				foreach (Task task in this.Tasks) {
@@ -82,7 +83,7 @@ namespace MonoDevelop.Ide.Tasks
 			MonoDevelop.Projects.Text.TextFileService.LineCountChanged += delegate (object sender, MonoDevelop.Projects.Text.LineCountEventArgs args) {
 				if (args.TextFile == null || String.IsNullOrEmpty (args.TextFile.Name))
 					return;
-				List<Task> tasks = new List<Task> ();
+				List<Task> tasks = new List<Task>();
 				foreach (Task task in this.Tasks) {
 					if (String.IsNullOrEmpty (task.FileName))
 						continue;
@@ -102,10 +103,12 @@ namespace MonoDevelop.Ide.Tasks
 
 		void ProjectServiceSolutionOpened (object sender, WorkspaceItemEventArgs e)
 		{
+		 /*	Todo:
 			Solution sol = e.Item as Solution;
 			if (sol != null) {
 				// Load all tags that are stored in pidb files
-	            foreach (Project p in sol.GetAllProjects ())
+	           
+foreach (Project p in sol.GetAllProjects ())
 	            {
 	                IProjectParserContext pContext = IdeApp.Workspace.ParserDatabase.GetProjectParserContext (p);
 					if (pContext == null)
@@ -133,13 +136,13 @@ namespace MonoDevelop.Ide.Tasks
 					utasks.AddRange ((IEnumerable<UserTask>)serializer.Deserialize (stream));
 					stream.Close ();
 					if (utasks.Count > 0 && UserTasksChanged != null)
-						UserTasksChanged (this, EventArgs.Empty);
+						UserTasksChanged (tsks);
 				}
 				catch (Exception ex)
 				{
 					LoggingService.LogWarning ("Could not load user tasks: " + fileToLoad, ex);
 				}
-        	}
+        	}*/
 		}
 				
 		void ProjectServiceSolutionClosed (object sender, WorkspaceItemEventArgs e)
@@ -194,6 +197,8 @@ namespace MonoDevelop.Ide.Tasks
 			{
 				ReloadPriories ();
 				// update priorities
+/* TODO:
+
 	            foreach (Project p in IdeApp.Workspace.GetAllProjects ())
 	            {
 	                IProjectParserContext pContext = IdeApp.Workspace.ParserDatabase.GetProjectParserContext (p);
@@ -203,7 +208,7 @@ namespace MonoDevelop.Ide.Tasks
 	                	if (tags !=null)
 	                		UpdateCommentTags (p.ParentSolution, file.Name, tags);
 	                }
-	        	}
+	        	}*/
 			}
 		}
 		
@@ -226,14 +231,14 @@ namespace MonoDevelop.Ide.Tasks
 				}
 			}
 		}
-		
+		/*
 		[AsyncDispatch]
 		void OnCommentTasksChanged (object sender, CommentTasksChangedEventArgs e)
 		{
 			Project p = IdeApp.Workspace.GetProjectContainingFile (e.FileName);
 			if (p != null)
 				UpdateCommentTags (p.ParentSolution, e.FileName, e.TagComments);
-		}
+		}*/
 		
 		public void ClearExceptCommentTasks ()
 		{
@@ -411,7 +416,7 @@ namespace MonoDevelop.Ide.Tasks
 			return false;
 		}
 		
-		public void UpdateCommentTags (Solution sol, string fileName, TagCollection tagComments)
+		public void UpdateCommentTags (Solution sol, string fileName, IEnumerable<MonoDevelop.Projects.Dom.Tag> tagComments)
 		{
 			if (fileName == null) {
 				return;
@@ -419,13 +424,13 @@ namespace MonoDevelop.Ide.Tasks
 			
 			List<Task> newTasks = new List<Task> ();
 			if (tagComments != null) {  
-				foreach (MonoDevelop.Projects.Parser.Tag tag in tagComments) {
+				foreach (MonoDevelop.Projects.Dom.Tag tag in tagComments) {
 					if (!priorities.ContainsKey (tag.Key))
 						continue;
 					Task t = new Task (fileName,
-					                      tag.Key + tag.CommentString,
-					                      tag.Region.BeginColumn - 1,
-					                      tag.Region.BeginLine,
+					                      tag.Key + tag.Text,
+					                      tag.Region.Start.Column - 1,
+					                      tag.Region.Start.Line,
 					                      TaskType.Comment, priorities[tag.Key]);
 					t.OwnerItem = sol;
 					newTasks.Add (t);

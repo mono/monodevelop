@@ -30,19 +30,16 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Gui;
-using MonoDevelop.Documentation;
 using MonoDevelop.Ide.Tasks;
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Parser;
+using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Gui;
-using MonoDevelop.Projects.Documentation;
 
 namespace MonoDevelop.Ide
 {
 	internal class Services
 	{
 		static IconService icons;
-		static IDocumentationService documentationService;
 		static TaskService taskService;
 		
 		public static ResourceService Resources {
@@ -57,14 +54,6 @@ namespace MonoDevelop.Ide
 			}
 		}
 	
-		public static IDocumentationService DocumentationService {
-			get {
-				if (documentationService == null)
-					documentationService = (IDocumentationService) ServiceManager.GetService (typeof(IDocumentationService));
-				return documentationService;
-			}
-		}
-	
 		public static TaskService TaskService {
 			get {
 				if (taskService == null)
@@ -73,10 +62,7 @@ namespace MonoDevelop.Ide
 			}
 		}
 	
-		public static IParserService ParserService {
-			get { return MonoDevelop.Projects.Services.ParserService; }
-		}
-	
+		
 		public static ProjectService ProjectService {
 			get { return MonoDevelop.Projects.Services.ProjectService; }
 		}

@@ -32,7 +32,7 @@ using System.Text;
 
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
-using MonoDevelop.Projects.Parser;
+using MonoDevelop.Projects.Dom;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core.Gui;
 
@@ -54,17 +54,18 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
 		{
-			return GetNameWithGenericParameters(((ClassData)dataObject).Class);
+			return "";
+			//return GetNameWithGenericParameters(((ClassData)dataObject).Class);
 		}
 		
-		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
+	/*	public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
 		{
 			ClassData classData = dataObject as ClassData;
 			label = GetNameWithGenericParameters(classData.Class);
 			icon = Context.GetIcon (Services.Icons.GetIcon (classData.Class));
 		}
 		
-		private string GetNameWithGenericParameters (IClass c)
+		private string GetNameWithGenericParameters (IType c)
 		{
 			if (c.GenericParameters != null && c.GenericParameters.Count > 0)
 			{
@@ -91,7 +92,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 			if (classData.Class.ClassType == ClassType.Delegate)
 				return;
 
-			foreach (IClass innerClass in classData.Class.InnerClasses)
+			foreach (IType innerClass in classData.Class.InnerClasses)
 				if (innerClass.IsPublic || !publicOnly)
 					builder.AddChild (new ClassData (classData.Project, innerClass));
 
@@ -128,25 +129,25 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 				return DefaultSort;
 			else
 				return 1;
-		}
+		}*/
 	}
 	
 	public class ClassNodeCommandHandler: NodeCommandHandler
 	{
 		public override void ActivateItem ()
 		{
-			ClassData cls = CurrentNode.DataItem as ClassData;
+		/*	ClassData cls = CurrentNode.DataItem as ClassData;
 			string file = GetFileName ();
 			int line = cls.Class.Region.BeginLine;
 			
-			IdeApp.Workbench.OpenDocument (file, Math.Max (1, line), 1, true);
+			IdeApp.Workbench.OpenDocument (file, Math.Max (1, line), 1, true);*/
 		}
-		
+		/*
 		string GetFileName ()
 		{
 			ClassData cls = (ClassData) CurrentNode.GetParentDataItem (typeof(ClassData), true);
 			if (cls != null && cls.Class.Region.FileName != null) return cls.Class.Region.FileName;
 			return null;
-		}
+		}*/
 	}	
 }

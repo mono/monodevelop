@@ -1,5 +1,35 @@
 2008-07-29  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.Ide/Services.cs,
+	  MonoDevelop.Ide.Gui.Pads/MonodocTreePad.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassBrowser/ProjectNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassBrowser/SolutionNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassBrowser/ProjectNamespaceBuilder.cs,
+	  MonoDevelop.Ide.Gui.Content/CompletionTextEditorExtension.cs,
+	  MonoDevelop.Ide.Gui.Content/TextEditorExtension.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassPad/MethodNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassPad/EventNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassPad/ClassData.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassPad/FieldNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassPad/PropertyNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassPad/ClassNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassPad/ProjectNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassPad/MemberNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassPad/NamespaceData.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassPad/CombineNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassPad/NamespaceNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassPad/MemberNodeCommandHandler.cs,
+	  MonoDevelop.Ide.Gui.Dialogs/OverridesImplementsDialog.cs,
+	  MonoDevelop.Ide.Gui.Dialogs/GoToDialog.cs,
+	  MonoDevelop.Ide.Gui/RootWorkspace.cs,
+	  MonoDevelop.Ide.Gui/ProjectOperations.cs,
+	  MonoDevelop.Ide.Gui/DefaultWorkbench.cs,
+	  MonoDevelop.Ide.Gui/Ide.cs, MonoDevelop.Ide.Gui/HelpViewer.cs,
+	  MonoDevelop.Ide.Tasks/TaskService.cs: Translated old code to new
+	  dom.
+
+2008-07-29  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.Ide.Commands/RefactoryCommands.cs,
 	  MonoDevelop.Ide.Gui.Dialogs/OverridesImplementsDialog.cs,
 	  MonoDevelop.Ide.Gui.Dialogs/EncapsulateFieldDialog.cs,
@@ -3826,7 +3856,7 @@
 2007-05-29  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Commands/RefactoryCommands.cs: Use the new
-	  IClass.SourceProject property to know if an IClass can be changed
+	  IType.SourceProject property to know if an IType can be changed
 	  or not. CanJumpTo is not reliable since now MD allows jumping to
 	  source code files taken from debug info of assemblies.
 	* MonoDevelop.Ide.Gui/Workbench.cs: (OpenDocument) Columns are 1 based.
@@ -3945,8 +3975,8 @@
 	* MonoDevelop.Ide.Commands/RefactoryCommands.cs (Update): Pass the
 	editor.Text into UpdateFile() to fix a bug preventing the editor
 	state from auto-updating and catching new fields as the user types
-	them. Also fixed a bug which would show IMember, IClass, IMember,
-	IClass (which looks odd).
+	them. Also fixed a bug which would show IMember, IType, IMember,
+	IType (which looks odd).
 	(BuildRefactoryMenuForItem): Keep a canJumpTo bool so we don't
 	have to check it multiple times. Also check canJumpTo when adding
 	an "Encapsulate Field" item (can't encapsulate it unless we have
@@ -4072,8 +4102,8 @@
 	* MonoDevelop.Ide.Commands/RefactoryCommands.cs (Update): If an
 	interface was selected, find the class it is being implemented on
 	to pass to BuildRefactoryMenuForItem().
-	(BuildRefactoryMenuForItem): Now takes an IClass argument for
-	toplevel interface items so that we know which IClass to implement
+	(BuildRefactoryMenuForItem): Now takes an IType argument for
+	toplevel interface items so that we know which IType to implement
 	the interface members on if the user requests to do so.
 	(ImplementInterface): Implemented.
 
@@ -5553,7 +5583,7 @@
 2006-07-05 Matej Urbas <matej.urbas@gmail.com>
  
 	* MonoDevelop.Ide.Commands/RefactoryCommands.cs: Updated to use ReturnType
-	as BaseTypes in IClass instances.
+	as BaseTypes in IType instances.
  
 2006-07-04  Michael Hutchinson <m.j.hutchinson@gmail.com>
 
@@ -9444,11 +9474,11 @@
 	  Internal/Parser/PersistenceLayer/PersistentProperty.cs,
 	  Internal/Parser/PersistenceLayer/PersistentClass.cs,
 	  New implementation of read and write methods based on static methods. In
-	  this way it can be used to write instances of any IClass and not only
+	  this way it can be used to write instances of any IType and not only
 	  PersistentClass. Also use new helper methods for writing strings and
 	  object references.
 	  
-	* Internal/Parser/IClass.cs: Moved ClassInheritanceTree to IParserService.
+	* Internal/Parser/IType.cs: Moved ClassInheritanceTree to IParserService.
 	
 	* Internal/Parser/ReflectionLayer/ReflectionClass.cs: Added Null check for
 	  MonodocService.

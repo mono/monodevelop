@@ -37,7 +37,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Projects.Gui;
 using MonoDevelop.Core.Serialization;
-using MonoDevelop.Projects.Parser;
+using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.CodeGeneration;
 using MonoDevelop.Ide.Gui.Dialogs;
 
@@ -46,7 +46,7 @@ namespace MonoDevelop.Ide.Gui
 	public class RootWorkspace: IBuildTarget, IWorkspaceObject
 	{
 		WorkspaceItemCollection items;
-		IParserDatabase parserDatabase;
+//		IParserDatabase parserDatabase;
 		string activeConfiguration;
 		Dictionary<WorkspaceItem, PropertyBag> userPrefs;
 		
@@ -95,7 +95,7 @@ namespace MonoDevelop.Ide.Gui
 				return items; 
 			}
 		}
-		
+		/*
 		public IParserDatabase ParserDatabase {
 			get { 
 				if (parserDatabase == null) {
@@ -105,7 +105,7 @@ namespace MonoDevelop.Ide.Gui
 				}
 				return parserDatabase; 
 			}
-		}
+		}*/
 		
 		public string ActiveConfiguration {
 			get {

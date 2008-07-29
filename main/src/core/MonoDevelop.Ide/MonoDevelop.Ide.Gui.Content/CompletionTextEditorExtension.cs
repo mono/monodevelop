@@ -29,8 +29,9 @@
 using System;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Gui.Completion;
-using MonoDevelop.Projects.Parser;
-using MonoDevelop.Projects.Ambience;
+using MonoDevelop.Projects.Dom;
+using MonoDevelop.Projects.Dom.Output;
+using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Commands;
 
@@ -253,12 +254,13 @@ namespace MonoDevelop.Ide.Gui.Content
 			}
 			
 			// If there is a parser context, try resolving by calling CtrlSpace.
-			IParserContext ctx = GetParserContext();
+			ProjectDom ctx = GetParserContext();
 			if (ctx != null) {
-				CodeCompletionDataProvider completionProvider = new CodeCompletionDataProvider (ctx, GetAmbience ());
-				completionProvider.AddResolveResults (ctx.CtrlSpace (completionContext.TriggerLine + 1, completionContext.TriggerLineOffset + 1, FileName), true, SimpleTypeNameResolver.Instance);
-				if (!completionProvider.IsEmpty)
-					return completionProvider;
+// TODO:
+				//CodeCompletionDataProvider completionProvider = new CodeCompletionDataProvider (ctx, GetAmbience ());
+				//completionProvider.AddResolveResults (ctx.CtrlSpace (completionContext.TriggerLine + 1, completionContext.TriggerLineOffset + 1, FileName), true, SimpleTypeNameResolver.Instance);
+//				if (!completionProvider.IsEmpty)
+//					return completionProvider;
 			}
 			return null;
 		}
@@ -287,7 +289,10 @@ namespace MonoDevelop.Ide.Gui.Content
 				completionWidget.CompletionContextChanged += OnCompletionContextChanged;
 		}
 	}
-	
+	public interface ITypeNameResolver
+	{
+		string ResolveName (string typeName);
+	}
 	class SimpleTypeNameResolver: ITypeNameResolver
 	{
 		// This simple resolver removes the namespace from all class names.

@@ -37,7 +37,7 @@ using MonoDevelop.Projects.CodeGeneration;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Projects.Dom.Output;
-using Ambience_ = MonoDevelop.Projects.Ambience.Ambience;
+using Ambience_ = MonoDevelop.Projects.Dom.Output.Ambience;
 
 namespace MonoDevelop.Ide
 {

@@ -31,7 +31,7 @@ using System.Collections;
 
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
-using MonoDevelop.Projects.Parser;
+using MonoDevelop.Projects.Dom;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core.Gui;
 
@@ -39,12 +39,16 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 {
 	public class NamespaceNodeBuilder: TypeNodeBuilder
 	{
-		ClassInformationEventHandler changeClassInformationHandler;
-		
 		public override Type NodeDataType {
 			get { return typeof(NamespaceData); }
 		}
-
+		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
+		{	
+			return "";
+		}
+	
+		/*ClassInformationEventHandler changeClassInformationHandler;
+		
 		public override string ContextMenuAddinPath {
 			get { return "/MonoDevelop/Ide/ContextMenu/ClassPad/Namespace"; }
 		}
@@ -96,16 +100,16 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 			bool nestedNs = builder.Options ["NestedNamespaces"];
 			bool publicOnly = builder.Options ["PublicApiOnly"];
 
-			foreach (ILanguageItem ob in list) {
+			foreach (IMember ob in list) {
 				if (ob is Namespace && nestedNs) {
 					Namespace nsob = (Namespace)ob;
 					string ns = nsData.FullName + "." + nsob.Name;
 					if (!builder.HasChild (nsob.Name, typeof(NamespaceData)))
 						builder.AddChild (new NamespaceData (project, ns));
 				}
-				else if (ob is IClass) {
-					if (!publicOnly || ((IClass)ob).IsPublic)
-						builder.AddChild (new ClassData (project, ob as IClass));
+				else if (ob is IType) {
+					if (!publicOnly || ((IType)ob).IsPublic)
+						builder.AddChild (new ClassData (project, ob as IType));
 				}
 			}
 		}
@@ -116,7 +120,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 			ArrayList namespacesToClean = new ArrayList ();
 			ITreeBuilder tb = Context.GetTreeBuilder ();
 			
-			foreach (IClass cls in e.ClassInformation.Removed) {
+			foreach (IType cls in e.ClassInformation.Removed) {
 				if (tb.MoveToObject (new ClassData (e.Project, cls))) {
 					oldStatus [tb.DataItem] = tb.Expanded;
 					
@@ -129,7 +133,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 				namespacesToClean.Add (cls.Namespace);
 			}
 			
-			foreach (IClass cls in e.ClassInformation.Modified) {
+			foreach (IType cls in e.ClassInformation.Modified) {
 				if (tb.MoveToObject (new ClassData (e.Project, cls))) {
 					oldStatus [tb.DataItem] = tb.Expanded;
 					
@@ -142,7 +146,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 				}
 			}
 			
-			foreach (IClass cls in e.ClassInformation.Added) {
+			foreach (IType cls in e.ClassInformation.Added) {
 				AddClass (e.Project, cls);
 			}
 			
@@ -174,7 +178,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 			}
 		}
 		
-		void AddClass (Project project, IClass cls)
+		void AddClass (Project project, IType cls)
 		{
 			ITreeBuilder builder = Context.GetTreeBuilder ();
 			if (!builder.MoveToObject (project)) {
@@ -211,6 +215,6 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
 		{
 			return true;
-		}
+		}*/
 	}
 }

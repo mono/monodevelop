@@ -37,11 +37,11 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 {
 	public class CombineNodeBuilder: TypeNodeBuilder
 	{
-		SolutionItemRenamedEventHandler combineNameChanged;
+//		SolutionItemRenamedEventHandler combineNameChanged;
 		
 		public CombineNodeBuilder ()
 		{
-			combineNameChanged = (SolutionItemRenamedEventHandler) DispatchService.GuiDispatch (new SolutionItemRenamedEventHandler (OnCombineRenamed));
+//			combineNameChanged = (SolutionItemRenamedEventHandler) DispatchService.GuiDispatch (new SolutionItemRenamedEventHandler (OnCombineRenamed));
 		}
 			
 		public override Type NodeDataType {
@@ -54,9 +54,10 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 		
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
 		{
-			return ((SolutionFolder)dataObject).Name;
+			return "";
+//			return ((SolutionFolder)dataObject).Name;
 		}
-		
+		/*
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
 		{
 			SolutionFolder folder = dataObject as SolutionFolder;
@@ -115,6 +116,6 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 		{
 			ITreeBuilder tb = Context.GetTreeBuilder (e.SolutionItem);
 			if (tb != null) tb.Update ();
-		}
+		}*/
 	}
 }

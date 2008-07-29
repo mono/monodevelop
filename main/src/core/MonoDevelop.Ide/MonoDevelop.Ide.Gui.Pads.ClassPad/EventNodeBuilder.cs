@@ -31,7 +31,7 @@ using System.Collections;
 
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
-using MonoDevelop.Projects.Parser;
+using MonoDevelop.Projects.Dom;
 using MonoDevelop.Core.Gui;
 
 namespace MonoDevelop.Ide.Gui.Pads.ClassPad
@@ -48,9 +48,9 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 		
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
 		{
-			IEvent data = dataObject as IEvent;
-			label = data.Name;
-			icon = Context.GetIcon (Services.Icons.GetIcon (data));
+		//	IEvent data = dataObject as IEvent;
+		//	label = data.Name;
+		//	icon = Context.GetIcon (Services.Icons.GetIcon (data));
 		}
 
 		public override int CompareObjects (ITreeNavigator thisNode, ITreeNavigator otherNode)
