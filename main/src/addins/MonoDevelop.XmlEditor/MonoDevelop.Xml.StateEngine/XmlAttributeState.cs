@@ -85,7 +85,7 @@ namespace MonoDevelop.Xml.StateEngine
 						//Got value, so end attribute
 						context.Nodes.Pop ();
 						att.End (context.Position);
-						XElement element = (XElement) context.Nodes.Peek ();
+						IAttributedXObject element = (IAttributedXObject) context.Nodes.Peek ();
 						element.Attributes.AddAttribute (att);
 						reject = true;
 						return Parent;

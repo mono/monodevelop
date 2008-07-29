@@ -1,3 +1,14 @@
+2008-07-29  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Xml.StateEngine/Parser.cs: Don't allow EndAll to close
+	  XDocument.
+	* MonoDevelop.Xml.StateEngine/XmlFreeState.cs: Add a const for
+	  overriding nodes to know what StateTag values they can use.
+	* MonoDevelop.Xml.StateEngine/XmlAttributeState.cs: Operate on any
+	  IAttributedXObject.
+	* MonoDevelop.Xml.StateEngine/XDom.cs: Abstract out objects with
+	  attributes via IAttributedXObject interface.
+
 2008-07-25  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Xml.StateEngine/XmlFreeState.cs: Improve reset on <.

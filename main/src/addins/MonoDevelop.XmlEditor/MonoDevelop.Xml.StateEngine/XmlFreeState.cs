@@ -40,6 +40,7 @@ namespace MonoDevelop.Xml.StateEngine
 		protected const int COMMENT = BRACKET_EXCLAM + 1;
 		protected const int CDATA = COMMENT + 1;
 		protected const int DOCTYPE = CDATA + 1;
+		protected const int MAXCONST = DOCTYPE;
 		
 		public XmlFreeState () : this (new XmlTagState (), new XmlClosingTagState ()) {}
 		

@@ -305,7 +305,7 @@ namespace MonoDevelop.Xml.StateEngine
 
 	}
 	
-	public class XElement : XContainer, INamedXObject
+	public class XElement : XContainer, IAttributedXObject
 	{
 		XNode closingTag;
 		XName name;
@@ -316,10 +316,9 @@ namespace MonoDevelop.Xml.StateEngine
 			attributes = new XAttributeCollection (this);
 		}
 		
-		public XElement (int start, XName name) : base (start)
+		public XElement (int start, XName name) : this (start)
 		{
 			this.name = name;
-			attributes = new XAttributeCollection (this);
 		}
 		
 		public XNode ClosingTag { get { return closingTag; } }
@@ -356,7 +355,11 @@ namespace MonoDevelop.Xml.StateEngine
 			base.AddChildNode (newChild);
 		}
 		
-		protected XElement () {}
+		protected XElement ()
+		{
+			attributes = new XAttributeCollection (this);
+		}
+		
 		protected override XObject NewInstance () { return new XElement (); }
 		
 		protected override void ShallowCopyFrom (XObject copyFrom)
@@ -364,7 +367,6 @@ namespace MonoDevelop.Xml.StateEngine
 			base.ShallowCopyFrom (copyFrom);
 			XElement copyFromEl = (XElement) copyFrom;
 			name = copyFromEl.name; //XName is immutable value type
-			attributes = new XAttributeCollection (this);
 		}
 		
 		public override string ToString ()
@@ -613,5 +615,10 @@ namespace MonoDevelop.Xml.StateEngine
 	{
 		XName Name { get; set; }
 		bool IsNamed { get; }
+	}
+	
+	public interface IAttributedXObject : INamedXObject
+	{
+		XAttributeCollection Attributes { get; }
 	}
 }

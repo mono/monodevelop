@@ -248,7 +248,7 @@ namespace MonoDevelop.Xml.StateEngine
 		{
 			int popCount = 0;
 			foreach (XObject ob in Nodes) {
-				if (ob.Position.End < 0) {
+				if (ob.Position.End < 0 && !(ob is XDocument)) {
 					ob.End (this.Position);
 					popCount++;
 				} else {
