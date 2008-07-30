@@ -63,6 +63,12 @@ namespace MonoDevelop.Projects.Dom.Database
 			}
 		}
 		
+		public long UnitId {
+			get {
+				return unitId;
+			}
+		}
+		
 		public DatabaseType (CodeCompletionDatabase db, long unitId, long typeId, string namespaceName, string name, ClassType classType)
 		{
 			this.db        = db;
@@ -129,7 +135,7 @@ namespace MonoDevelop.Projects.Dom.Database
 				return DatabaseEvent.ReadList (this);
 			}
 		}
-		
+
 		public static void CheckTables (CodeCompletionDatabase db)
 		{
 			if (!db.Connection.TableExists (Table)) {

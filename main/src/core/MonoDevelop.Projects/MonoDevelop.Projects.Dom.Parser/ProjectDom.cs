@@ -34,8 +34,8 @@ namespace MonoDevelop.Projects.Dom.Parser
 {
 	public class ProjectDom
 	{	
-		List<ProjectDom> references = new List<ProjectDom> ();
-		Dictionary<string, IType> typeTable = new Dictionary<string, IType> ();
+		protected List<ProjectDom> references = new List<ProjectDom> ();
+		protected Dictionary<string, IType> typeTable = new Dictionary<string, IType> ();
 		
 		public Project Project;
 		
@@ -69,7 +69,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 			}
 		}
 
-		public void AddReference (ProjectDom dom)
+		public virtual void AddReference (ProjectDom dom)
 		{
 			if (dom == null)
 				return;
@@ -114,22 +114,6 @@ namespace MonoDevelop.Projects.Dom.Parser
 			return null;
 		}
 		
-/*		public IEnumerable<IType> GetTypesFrom (string fileName)
-		{
-			if (Types != null) {
-				foreach (IType type in Types) {
-					if (type.Parts != null) {
-						foreach (IType part in type.Parts) {
-							if (part.CompilationUnit != null && part.CompilationUnit.FileName == fileName)
-								yield return part;
-						}
-					}
-					if (type.CompilationUnit != null && type.CompilationUnit.FileName == fileName)
-						yield return type;
-				}
-			}
-		}*/
-		
 		public virtual void UpdateFromParseInfo (ICompilationUnit unit, string fileName)
 		{
 			if (String.IsNullOrEmpty (fileName))
@@ -138,20 +122,9 @@ namespace MonoDevelop.Projects.Dom.Parser
 				type.SourceProjectDom = this;
 				typeTable[type.FullName] = type;
 			}
-			
 		}
 		
-		public bool NamespaceExists (string name)
-		{
-			string ns = name + ".";
-			foreach (IType type in AllAccessibleTypes) {
-				if (type.FullName.StartsWith (ns))
-					return true;
-			}
-			return false;
-		}
-		
-		protected virtual void GetNamespaceContents (List<IMember> result, IEnumerable<string> subNamespaces, bool caseSensitive)
+		internal virtual void GetNamespaceContentsInternal (List<IMember> result, IEnumerable<string> subNamespaces, bool caseSensitive)
 		{
 			foreach (IType type in Types) {
 				string fullName = type.FullName;
@@ -176,17 +149,22 @@ namespace MonoDevelop.Projects.Dom.Parser
 		{
 			return GetNamespaceContents (new string[] { subNamespace }, includeReferences, caseSensitive);
 		}
-		
-		public List<IMember> GetNamespaceContents (IEnumerable<string> subNamespaces, bool includeReferences, bool caseSensitive)
+		public virtual List<IMember> GetNamespaceContents (IEnumerable<string> subNamespaces, bool includeReferences, bool caseSensitive)
 		{
 			List<IMember> result = new List<IMember> ();
-			GetNamespaceContents (result, subNamespaces, caseSensitive);
+			GetNamespaceContentsInternal (result, subNamespaces, caseSensitive);
 			if (includeReferences) {
 				foreach (ProjectDom reference in references) {
-					reference.GetNamespaceContents (result, subNamespaces, caseSensitive);
+					reference.GetNamespaceContentsInternal (result, subNamespaces, caseSensitive);
 				}
 			}
 			return result;
+		}
+		
+		public bool NamespaceExists (string namespaceName, bool searchDeep)
+		{
+			List<IMember> members = GetNamespaceContents (namespaceName, searchDeep, true);
+			return members != null && members.Count > 0;
 		}
 		
 		public virtual bool NeedCompilation (string fileName)
@@ -226,7 +204,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 			return GetType (null, fullName, genericParameterCount, caseSensitive, searchDeep);
 		}
 		
-		public IType GetType (IEnumerable<string> subNamespaces, string fullName, int genericParameterCount, bool caseSensitive, bool searchDeep)
+		public virtual IType GetType (IEnumerable<string> subNamespaces, string fullName, int genericParameterCount, bool caseSensitive, bool searchDeep)
 		{
 			if (String.IsNullOrEmpty (fullName))
 				return null;

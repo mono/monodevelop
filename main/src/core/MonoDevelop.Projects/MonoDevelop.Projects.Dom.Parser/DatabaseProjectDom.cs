@@ -33,30 +33,63 @@ namespace MonoDevelop.Projects.Dom.Parser
 	public class DatabaseProjectDom : ProjectDom
 	{
 		MonoDevelop.Projects.Dom.Database.CodeCompletionDatabase codeCompletionDatabase;
-		string compilationUnitName;
-		
+		long compilationUnitId;
+		List<long> referencedAssemblyIds = new List<long> ();
+			
 		public override IEnumerable<IType> Types {
 			get {
-				
-				return codeCompletionDatabase.GetTypeList (-1);
+				return codeCompletionDatabase.GetTypeList (new long[] { compilationUnitId });
+			}
+		}
+
+		public long CompilationUnitId {
+			get {
+				return compilationUnitId;
+			}
+			set {
+				compilationUnitId = value;
 			}
 		}
 		
-		public DatabaseProjectDom (MonoDevelop.Projects.Dom.Database.CodeCompletionDatabase codeCompletionDatabase, string compilationUnitName)
+		public override void AddReference (ProjectDom dom)
 		{
-			this.compilationUnitName    = compilationUnitName;
-			this.codeCompletionDatabase = codeCompletionDatabase;
+			DatabaseProjectDom dpd = dom as DatabaseProjectDom;
+			if (dpd != null) {
+				if (dpd.codeCompletionDatabase == ProjectDomService.AssemblyDatabase) {
+					referencedAssemblyIds.Add (dpd.CompilationUnitId);
+					return;
+				}
+			}
+			base.AddReference (dom);
 		}
 		
-		protected override void GetNamespaceContents (List<IMember> result, IEnumerable<string> subNamespaces, bool caseSensitive)
+		public DatabaseProjectDom (MonoDevelop.Projects.Dom.Database.CodeCompletionDatabase codeCompletionDatabase)
 		{
-			
-			codeCompletionDatabase.GetNamespaceContents (result, -1, subNamespaces, caseSensitive);
+			this.codeCompletionDatabase = codeCompletionDatabase;
+			this.compilationUnitId      = -1;
+		}
+		
+		internal override void GetNamespaceContentsInternal (List<IMember> result, IEnumerable<string> subNamespaces, bool caseSensitive)
+		{
+			codeCompletionDatabase.GetNamespaceContents (result, compilationUnitId, subNamespaces, caseSensitive);
+		}
+		
+		public override List<IMember> GetNamespaceContents (IEnumerable<string> subNamespaces, bool includeReferences, bool caseSensitive)
+		{
+			List<IMember> result = new List<IMember> ();
+			GetNamespaceContentsInternal (result, subNamespaces, caseSensitive);
+			if (includeReferences) {
+				foreach (ProjectDom reference in references) {
+					reference.GetNamespaceContentsInternal (result, subNamespaces, caseSensitive);
+				}
+				ProjectDomService.AssemblyDatabase.GetNamespaceContents (result, referencedAssemblyIds, subNamespaces, caseSensitive);
+			}
+			return result;
 		}
 		
 		protected override IType GetType (IEnumerable<string> subNamespaces, string fullName, int genericParameterCount, bool caseSensitive)
 		{
-			foreach (IType type in codeCompletionDatabase.GetTypes (subNamespaces, fullName, caseSensitive)) {
+			foreach (IType type in codeCompletionDatabase.GetTypes (subNamespaces, new long[] {compilationUnitId}, fullName, caseSensitive)) {
 				if (genericParameterCount < 0 || 
 				    (genericParameterCount == 0 && type.TypeParameters == null) || 
 				    (type.TypeParameters != null && type.TypeParameters.Count == genericParameterCount)) {
@@ -66,6 +99,29 @@ namespace MonoDevelop.Projects.Dom.Parser
 			return null;
 		}
 		
+		public override IType GetType (IEnumerable<string> subNamespaces, string fullName, int genericParameterCount, bool caseSensitive, bool searchDeep)
+		{
+			if (String.IsNullOrEmpty (fullName))
+				return null;
+				
+			IType result = GetType (subNamespaces, fullName, genericParameterCount, caseSensitive);
+			if (result == null && searchDeep) {
+				foreach (ProjectDom reference in references) {
+					result = reference.GetType (subNamespaces, fullName, genericParameterCount, caseSensitive, false);
+					if (result != null)
+						return result;
+				}
+				
+				foreach (IType type in ProjectDomService.AssemblyDatabase.GetTypes (subNamespaces, referencedAssemblyIds, fullName, caseSensitive)) {
+					if (genericParameterCount < 0 || (genericParameterCount == 0 && type.TypeParameters == null) ||  (type.TypeParameters != null && type.TypeParameters.Count == genericParameterCount)) {
+						return type;
+					}
+				}
+			}
+			
+			return result;
+		}
+
 		public override bool NeedCompilation (string fileName)
 		{
 			DateTime parseTime = codeCompletionDatabase.GetCompilationUnitParseTime (fileName);

@@ -58,6 +58,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 				return helpTree;
 			}
 		}
+
 		
 		static string codeCompletionDataPath;
 		static string GetCodeCompletionDataPath ()
@@ -72,9 +73,18 @@ namespace MonoDevelop.Projects.Dom.Parser
 			return result;
 		}
 		
+		static CodeCompletionDatabase assemblyDatabase;
+		public static CodeCompletionDatabase AssemblyDatabase {
+			get {
+				return assemblyDatabase;
+			}
+		}
+		
 		static ProjectDomService ()
 		{
 			codeCompletionDataPath = GetCodeCompletionDataPath ();
+			string codeCompletionFile = Path.Combine (codeCompletionDataPath, "assemblydata") + CodeCompletionDatabase.Version + ".adb";
+			assemblyDatabase = new CodeCompletionDatabase (codeCompletionFile);
 			
 			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Ide/DomParser", delegate(object sender, ExtensionNodeEventArgs args) {
 				switch (args.Change) {
@@ -138,6 +148,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 			}
 			return null;
 		}
+		
 		public static IType GetType (IReturnType returnType)
 		{
 			foreach (ProjectDom dom in doms.Values) {
@@ -151,27 +162,11 @@ namespace MonoDevelop.Projects.Dom.Parser
 		public delegate string ContentDelegate ();
 		
 		static Dictionary<string, Thread> refreshThreads = new Dictionary<string,Thread> ();
-		/*
-		static Dictionary<string, ICompilationUnit> compilationUnits = new Dictionary<string, ICompilationUnit> ();
-		public static ICompilationUnit GetCompilationUnit (string fileName) 
-		{
-			if (String.IsNullOrEmpty (fileName))
-				return null;
-			ICompilationUnit result;
-			compilationUnits.TryGetValue (fileName, out result);
-			return result;
-		}
-		
-		public static bool ContainsUnit (string fileName)
-		{
-			return compilationUnits.ContainsKey (fileName) != null;
-		}*/
-		
-		
 		public static void Refresh (Project project, string fileName, string mimeType)
 		{
 			Refresh (project, fileName, mimeType, delegate () { return System.IO.File.ReadAllText (fileName); });
 		}
+		
 		public static void Refresh (Project project, string fileName, string mimeType, ContentDelegate getContent)
 		{
 			ProjectDom dom = GetDatabaseProjectDom (project);
@@ -310,10 +305,15 @@ namespace MonoDevelop.Projects.Dom.Parser
 		}
 		
 		#region Assembly names
-		static string GetFullAssemblyName (string s)
+		static string GetFullAssemblyName (string name)
 		{
-			return Runtime.SystemAssemblyService.GetAssemblyFullName (s);
+			try {
+				return Runtime.SystemAssemblyService.GetAssemblyFullName (name);
+			} catch (Exception) {
+				return null;
+			}
 		}
+		
 		static string EncodeGacAssemblyName (string assemblyName)
 		{
 			string[] assemblyPieces = assemblyName.Split(',');
@@ -366,6 +366,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 			return true;
 		}
 		#endregion
+		
 		static DatabaseProjectDom LoadAssemblyDatabase (string uri)
 		{
 			string file = uri.Substring (9);
@@ -374,15 +375,22 @@ namespace MonoDevelop.Projects.Dom.Parser
 			GetAssemblyInfo (fullName, out realAssemblyName, out assemblyFile, out name);
 			if (String.IsNullOrEmpty (name))
 				return null;
-			string codeCompletionFile = Path.Combine (codeCompletionDataPath, name) + ".pidb";
-			if (HasDom (codeCompletionFile)) 
-				return (DatabaseProjectDom)GetDom (codeCompletionFile);
-			bool shouldCreate = !File.Exists (codeCompletionFile);
-			CodeCompletionDatabase database = new CodeCompletionDatabase (codeCompletionFile);
-			if (shouldCreate)
-				database.InsertCompilationUnit (DomCecilCompilationUnit.Load (assemblyFile, false, false), fullName);
-			DatabaseProjectDom dom = new DatabaseProjectDom (database, fullName);
-			InsertDom (codeCompletionFile, dom);
+			long unitId = assemblyDatabase.GetUnitId (fullName);
+			if (unitId <= 0) {
+				int retrys = 0;
+				ICompilationUnit unit = DomCecilCompilationUnit.Load (assemblyFile, false, false);
+				while (unitId <= 0 && retrys++ < 5) {
+					LoggingService.LogInfo ("Generating database for assembly " + fullName);
+					unitId = assemblyDatabase.InsertCompilationUnit (unit, fullName);
+					if (unitId < 0) {
+						LoggingService.LogError ("Error while inserting assembly: " + fullName +", retrying");
+						Thread.Sleep (500);
+					}
+				}
+			}
+			DatabaseProjectDom dom = new DatabaseProjectDom (assemblyDatabase);
+			dom.CompilationUnitId = unitId;
+			InsertDom (uri, dom);
 			return dom;
 		}
 		
@@ -411,7 +419,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 			if (!HasDom (project)) {
 				string codeCompletionFile = System.IO.Path.ChangeExtension (project.FileName, ".pidb");
 				CodeCompletionDatabase database = new CodeCompletionDatabase (codeCompletionFile);
-				DatabaseProjectDom dom = new DatabaseProjectDom (database, project.Name);
+				DatabaseProjectDom dom = new DatabaseProjectDom (database);
 				InsertDom (project.FileName, dom);
 				dom.Project = project;
 				return dom;

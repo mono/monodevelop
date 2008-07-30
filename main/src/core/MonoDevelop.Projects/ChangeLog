@@ -1,5 +1,16 @@
 2008-07-30  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.Projects.Dom.Parser/DatabaseProjectDom.cs,
+	  MonoDevelop.Projects.Dom.Parser/ProjectParserService.cs,
+	  MonoDevelop.Projects.Dom.Parser/ProjectDom.cs,
+	  MonoDevelop.Projects.Dom.Database/HyenaSqliteCommand.cs,
+	  MonoDevelop.Projects.Dom.Database/DatabaseType.cs,
+	  MonoDevelop.Projects.Dom.Database/CodeCompletionDatabase.cs: Worked
+	  on code completion database, optimized SQL a bit. Tried out single
+	  code completion database for assemblies.
+
+2008-07-30  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.Projects.Dom.Parser/ProjectParserService.cs: Added
 	  GetAssemblyProjectDom method.
 

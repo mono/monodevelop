@@ -36,6 +36,8 @@ namespace MonoDevelop.Projects.Dom.Database
 {
 	public class CodeCompletionDatabase : IDisposable 
 	{
+		public const long Version = 1;
+		
 		HyenaSqliteConnection connection;
 		internal HyenaSqliteConnection Connection {
 			get {
@@ -59,22 +61,49 @@ namespace MonoDevelop.Projects.Dom.Database
 		
 		public long GetUnitId (string name)
 		{
-			return connection.Query<long> (String.Format (@"SELECT UnitID FROM {0} WHERE Name = '{1}'", CompilationUnitTable, name));
+			string query = String.Format (@"SELECT UnitID FROM {0} WHERE Name='{1}'", CompilationUnitTable, name);
+			//System.Console.WriteLine(query);
+			return connection.Query<long> (query);
 		}
 		
 		public void GetNamespaceContents (List<IMember> result, long compilationUnitId, IEnumerable<string> subNamespaces, bool caseSensitive)
 		{
-			StringBuilder nb = new StringBuilder ();
-			foreach (string ns in subNamespaces) {
-				if (nb.Length > 0) 
-					nb.Append (" OR ");
-				nb.Append ("Name = '");
-				nb.Append (ns);
-				nb.Append ("'");
+			GetNamespaceContents (result, compilationUnitId > 0 ? new long[] { compilationUnitId } : null, subNamespaces, caseSensitive);
+		}
+		
+		string CompileNamespaces (IEnumerable<string> subNamespaces)
+		{
+			StringBuilder result = new StringBuilder ();
+			foreach (string namespaceName in subNamespaces) {
+				if (result.Length > 0) 
+					result.Append (" OR ");
+				result.Append ("Name='");
+				result.Append (namespaceName);
+				result.Append ("'");
 			}
-			
+			return result.ToString ();
+		}
+		
+		string CompileCompilationUnits (IEnumerable<long> compilationUnitIds)
+		{
+			StringBuilder result = new StringBuilder ();
+			if (compilationUnitIds != null) {
+				foreach (long unitId in compilationUnitIds) {
+					if (unitId <= 0)
+							continue;
+					if (result.Length > 0) 
+						result.Append (" OR ");
+					result.Append ("UnitID=");
+					result.Append (unitId);
+				}
+			}
+			return result.ToString ();
+		}
+		
+		public void GetNamespaceContents (List<IMember> result, IEnumerable<long> compilationUnitIds, IEnumerable<string> subNamespaces, bool caseSensitive)
+		{
 			StringBuilder sb = new StringBuilder ();
-			string query = String.Format (@"SELECT NamespaceID, Name FROM {0} WHERE ({1})",  NamespaceTable, nb.ToString ());
+			string query = String.Format (@"SELECT NamespaceID, Name FROM {0} WHERE ({1})",  NamespaceTable, CompileNamespaces (subNamespaces));
 			IDataReader reader = connection.Query (query);
 			
 			Dictionary<long, string> namespaceTable = new Dictionary<long, string> ();
@@ -86,7 +115,7 @@ namespace MonoDevelop.Projects.Dom.Database
 						namespaceTable[namespaceID] = name;
 						if (sb.Length > 0) 
 							sb.Append (" OR ");
-						sb.Append ("NamespaceID = ");
+						sb.Append ("NamespaceID=");
 						sb.Append (namespaceID);
 					}
 				} finally {
@@ -95,12 +124,12 @@ namespace MonoDevelop.Projects.Dom.Database
 			}
 			
 			if (sb.Length > 0) {
-				if (compilationUnitId < 0) {
+				string units = CompileCompilationUnits (compilationUnitIds);
+				if (string.IsNullOrEmpty (units)) {
 					query = String.Format (@"SELECT TypeID, UnitID, NamespaceID, Name, ClassType FROM {0} WHERE ({1})",  DatabaseType.Table, sb.ToString ());
 				} else {
-					query = String.Format (@"SELECT TypeID, UnitID, NamespaceID, Name, ClassType FROM {0} WHERE UnitID = {1} AND ({2})",  DatabaseType.Table, compilationUnitId, sb.ToString ());
+					query = String.Format (@"SELECT TypeID, UnitID, NamespaceID, Name, ClassType FROM {0} WHERE ({1}) AND ({2})",  DatabaseType.Table, units, sb.ToString ());
 				}
-				
 				reader = connection.Query (query);
 				if (reader != null) {
 					try {
@@ -137,11 +166,13 @@ namespace MonoDevelop.Projects.Dom.Database
 			}
 		}
 		
-		public IEnumerable<IType> GetTypeList (long compilationUnitId)
+		public IEnumerable<IType> GetTypeList (IEnumerable<long> compilationUnitIds)
 		{
 			string query;
-			if (compilationUnitId >= 0) {
-				query = String.Format (@"SELECT TypeID, UnitID, NamespaceID, Name, ClassType FROM {0} WHERE UnitID = '{1}'",  DatabaseType.Table, compilationUnitId);
+			string units = CompileCompilationUnits (compilationUnitIds);
+			
+			if (!string.IsNullOrEmpty (units)) {
+				query = String.Format (@"SELECT TypeID, UnitID, NamespaceID, Name, ClassType FROM {0} WHERE {1}",  DatabaseType.Table, units);
 			} else {
 				query = String.Format (@"SELECT TypeID, UnitID, NamespaceID, Name, ClassType FROM {0}",  DatabaseType.Table);
 			}
@@ -175,7 +206,7 @@ namespace MonoDevelop.Projects.Dom.Database
 			return new DatabaseType (this, unitId, typeId, nsName, name, classType);
 		}
 		
-		public IEnumerable<IType> GetTypes (IEnumerable<string> subNamespaces, string fullName, bool caseSensitive)
+		public IEnumerable<IType> GetTypes (IEnumerable<string> subNamespaces, IEnumerable<long> compilationUnitIds, string fullName, bool caseSensitive)
 		{
 			StringBuilder nb = new StringBuilder ();
 			if (subNamespaces != null) {
@@ -217,7 +248,12 @@ namespace MonoDevelop.Projects.Dom.Database
 			
 			if (sb.Length > 0) {
 				string typeName = DomReturnType.SplitFullName (fullName).Value;
-				query = String.Format (@"SELECT TypeID, UnitID, NamespaceID, Name, ClassType FROM {0} WHERE Name='{1}' AND ({2})",  DatabaseType.Table, typeName, sb.ToString ());
+				string units = CompileCompilationUnits (compilationUnitIds);
+				if (!string.IsNullOrEmpty (units)) {
+					query = String.Format (@"SELECT TypeID, UnitID, NamespaceID, Name, ClassType FROM {0} WHERE Name='{1}' AND ({2}) AND ({3})",  DatabaseType.Table, typeName, sb.ToString (), units.ToString ());
+				} else {
+					query = String.Format (@"SELECT TypeID, UnitID, NamespaceID, Name, ClassType FROM {0} WHERE Name='{1}' AND ({2})",  DatabaseType.Table, typeName, sb.ToString ());
+				}
 				reader = connection.Query (query);
 				while (reader.Read ()) {
 					yield return CreateDomType (reader, null);
@@ -301,39 +337,54 @@ namespace MonoDevelop.Projects.Dom.Database
 		{
 			long unitID = GetUnitId (name);
 			if (unitID >= 0) {
-//				connection.Execute ("BEGIN TRANSACTION");
 				connection.Execute (String.Format (@"DELETE FROM {0} WHERE UnitID={1}", CompilationUnitTable, unitID));
-				foreach (DatabaseType type in GetTypeList (unitID)) {
+				foreach (DatabaseType type in GetTypeList (new long [] {unitID})) {
 					type.Delete ();
 				}
-//				connection.Execute ("END TRANSACTION");
 			}
 			InsertCompilationUnit (unit, name);
 		}
 		
-		public void InsertCompilationUnit (ICompilationUnit unit, string name)
+		public long InsertCompilationUnit (ICompilationUnit unit, string name)
 		{
-			connection.Execute ("BEGIN TRANSACTION");
-			long unitId = connection.Execute (String.Format (@"INSERT INTO {0} (Name, ParseTime) VALUES ('{1}', {2})", CompilationUnitTable, name, SqliteUtils.ToDbFormat (unit.ParseTime)));
-			foreach (IType type in unit.Types) {
-				DatabaseType.Insert (this, unitId, type);
+			try {
+				connection.Execute ("BEGIN TRANSACTION");
+				long unitId = connection.Execute (String.Format (@"INSERT INTO {0} (Name, ParseTime) VALUES ('{1}', {2})", CompilationUnitTable, name, SqliteUtils.ToDbFormat (unit.ParseTime)));
+				foreach (IType type in unit.Types) {
+					DatabaseType.Insert (this, unitId, type);
+				}
+				connection.Execute ("END TRANSACTION");
+				return unitId;
+			} catch (Exception e) {
+				connection.Execute ("ROLLBACK");
+				MonoDevelop.Core.LoggingService.LogError ("Database error while inserting compilation unit " + name, e);
 			}
-			connection.Execute ("END TRANSACTION");
+			return -1;
 		}
 		
-		internal const string CompilationUnitTable = "CompilationUnits";
-		internal const string MemberTable          = "Members";
-		internal const string ReturnTypeTable      = "ReturnTypes";
+		internal const string ProjectsTable                  = "Projects";
+		internal const string CompilationUnitTable           = "CompilationUnits";
+		internal const string NamespaceTable                 = "Namespaces";
+		internal const string MemberTable                    = "Members";
+		internal const string ReturnTypeTable                = "ReturnTypes";
 		internal const string GenericReturnTypeArgumentTable = "ReturnTypeGenArgs";
-		
-		internal const string NamespaceTable        = "Namespaces";
 		
 		void CheckTables ()
 		{
+			if (!connection.TableExists (ProjectsTable)) {
+				connection.Execute (String.Format (@"
+					CREATE TABLE {0} (
+						ProjectID INTEGER PRIMARY KEY AUTOINCREMENT,
+						Name TEXT,
+						ProjectType INTEGER,
+						LastOpenTime INTEGER)", ProjectsTable
+				));
+			}
 			if (!connection.TableExists (CompilationUnitTable)) {
 				connection.Execute (String.Format (@"
 					CREATE TABLE {0} (
 						UnitID INTEGER PRIMARY KEY AUTOINCREMENT,
+						ProjectID INTEGER,
 						Name TEXT,
 						ParseTime INTEGER)", CompilationUnitTable
 				));
