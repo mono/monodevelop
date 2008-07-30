@@ -605,28 +605,34 @@ namespace MonoDevelop.Core
 	{
 		public string Locate (string assemblyName)
 		{
-			Assembly asm;
+			Assembly asm = null;
 			try {
 				asm = Assembly.Load (assemblyName);
+			} catch {
 			}
-			catch {
-				asm = Assembly.LoadWithPartialName (assemblyName);
+			if (asm == null) {
+				try {
+					asm = Assembly.LoadWithPartialName (assemblyName);
+				} catch {}
 			}
 			if (asm == null)
 				return null;
-			
 			return asm.Location;
 		}
 		
 		public string GetFullName (string assemblyName)
 		{
-			Assembly asm;
+			Assembly asm = null;
 			try {
 				asm = Assembly.Load (assemblyName);
+			} catch {
 			}
-			catch {
-				asm = Assembly.LoadWithPartialName (assemblyName);
+			if (asm == null) {
+				try {
+					asm = Assembly.LoadWithPartialName (assemblyName);
+				} catch {}
 			}
+			
 			if (asm == null)
 				return null;
 			

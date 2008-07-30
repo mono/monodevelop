@@ -1,3 +1,8 @@
+2008-07-30  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Core/SystemAssemblyService.cs: Catched possible
+	  exception.
+
 2008-07-22  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Core.Execution/ProcessWrapper.cs,
