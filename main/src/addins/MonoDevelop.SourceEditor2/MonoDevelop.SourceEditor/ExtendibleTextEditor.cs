@@ -280,7 +280,7 @@ namespace MonoDevelop.SourceEditor
 			MonoDevelop.Ide.Gui.Document doc = IdeApp.Workbench.GetDocument (fileName);
 			if (doc == null)
 				return null;
-			IParser parser = ProjectDomService.GetParser (null, Document.MimeType, fileName);
+			IParser parser = ProjectDomService.GetParser (fileName, Document.MimeType);
 			if (parser == null)
 				return null;
 			IResolver         resolver         = parser.CreateResolver (ProjectDomService.GetDatabaseProjectDom (doc.Project), doc, fileName);
