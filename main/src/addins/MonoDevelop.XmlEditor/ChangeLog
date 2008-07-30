@@ -1,3 +1,12 @@
+2008-07-30  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Xml.StateEngine/XmlParser.cs,
+	  MonoDevelop.Xml.StateEngine/Parser2.cs,
+	  MonoDevelop.Xml.StateEngine/XState.cs, MonoDevelop.XmlEditor.mdp:
+	  Yet another parser that may be easier to extend to handle comments
+	  and expressions in arbitrary locations. Builds the same DOM as the
+	  existing one. Incomplete, and disabled for now.
+
 2008-07-29  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Xml.StateEngine/Parser.cs: Don't allow EndAll to close

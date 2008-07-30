@@ -52,7 +52,7 @@ namespace MonoDevelop.Xml.StateEngine
 				// so attach a node to the DOM and end the state
 				if (context.BuildTree) {
 					int start = context.Position - (context.CurrentStateLength + 4); // <!-- is 4 chars
-					((XContainer) context.Nodes.Peek ()).AddChildNode (new XComment (start, context.Position));
+					//((XCommentable) context.Nodes.Peek ()).AddComment (new XComment (start, context.Position));
 				}
 				return Parent;
 			} else {
