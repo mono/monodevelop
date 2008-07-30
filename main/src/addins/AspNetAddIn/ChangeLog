@@ -1,5 +1,10 @@
 2008-07-29  Michael Hutchinson <mhutchinson@novell.com> 
 
+	* MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs: Filter out
+	  attributes that are already in the tag.
+
+2008-07-29  Michael Hutchinson <mhutchinson@novell.com> 
+
 	* MonoDevelop.AspNet.StateEngine/AspNetExpressionState.cs: Complete the
 	  handling of expressions (in free state).
 
