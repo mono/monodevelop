@@ -105,7 +105,7 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/TextEditorExtensions">
-<!--		<Class class = "CSharpBinding.CSharpTextEditorExtension" /> -->
+		<Class class = "MonoDevelop.CSharpBinding.Gui.CSharpTextEditorIndentation" />
 		<Class class = "MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion" />
 	</Extension>
 	

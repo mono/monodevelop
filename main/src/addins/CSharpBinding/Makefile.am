@@ -38,7 +38,7 @@ FILES =  \
 	Gui/CSharpAmbience.cs \
 	Gui/CSharpParameterDataProvider.cs \
 	Gui/CSharpTextEditorCompletion.cs \
-	Gui/CSharpTextEditorExtension.cs \
+	Gui/CSharpTextEditorIndentation.cs \
 	Gui/FormattingPanel.cs \
 	Gui/MemberCompletionData.cs \
 	Gui/NewCSharpExpressionFinder.cs \
