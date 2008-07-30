@@ -1,3 +1,8 @@
+2008-07-30  Mike Krüger <mkrueger@novell.com> 
+
+	* Gui/NRefactoryResolver.cs, Gui/ResolveVisitor.cs: some changes due to
+	  dom changes.
+
 2008-07-29  Mike Krüger <mkrueger@novell.com> 
 
 	* CSharpLanguageBinding.cs, Gui/CSharpParameterDataProvider.cs,

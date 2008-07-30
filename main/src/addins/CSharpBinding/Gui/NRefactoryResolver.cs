@@ -293,7 +293,7 @@ namespace MonoDevelop.CSharpBinding
 				goto end;
 			}
 			
-			if (dom.NamespaceExists (identifier)) {
+			if (dom.NamespaceExists (identifier, true)) {
 				result = new NamespaceResolveResult (identifier);
 				goto end;
 			}

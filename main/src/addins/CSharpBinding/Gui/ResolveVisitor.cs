@@ -244,7 +244,7 @@ namespace MonoDevelop.CSharpBinding
 				if (String.IsNullOrEmpty (fieldReferenceExpression.FieldName))
 					return namespaceResult;
 				string fullName = namespaceResult.Namespace + "." + fieldReferenceExpression.FieldName;
-				if (resolver.Dom.NamespaceExists (fullName))
+				if (resolver.Dom.NamespaceExists (fullName, true))
 					return new NamespaceResolveResult (fullName);
 				
 				IType type = resolver.Dom.GetType (fullName, -1, true, true);
