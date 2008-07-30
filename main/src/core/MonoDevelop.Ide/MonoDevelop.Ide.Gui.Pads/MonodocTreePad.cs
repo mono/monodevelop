@@ -55,7 +55,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			tree_view.Selection.Changed += new EventHandler (RowActivated);
 			
 			store = new TreeStore (typeof (string), typeof (Node));
-			root_iter = store.AppendValues (GettextCatalog.GetString ("Mono Documentation"), Services.DocumentationService.HelpTree);
+			root_iter = store.AppendValues (GettextCatalog.GetString ("Mono Documentation"), MonoDevelop.Projects.Dom.Parser.ProjectDomService.HelpTree);
 
 			PopulateNode (root_iter);
 
@@ -122,7 +122,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 					}
 				}
 
-				s = Services.DocumentationService.HelpTree.RenderUrl (url, out match);
+				s = MonoDevelop.Projects.Dom.Parser.ProjectDomService.HelpTree.RenderUrl (url, out match);
 				if (s != null) {
 					IdeApp.HelpOperations.ShowDocs (s, match, url);
 					return;
