@@ -1,3 +1,8 @@
+2008-07-30  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Dom.Parser/ProjectParserService.cs: Added
+	  GetAssemblyProjectDom method.
+
 2008-07-29  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Projects.Dom.Database/MonoDevelopDatabaseConnection.cs,

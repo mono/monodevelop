@@ -88,15 +88,6 @@ namespace MonoDevelop.Projects.Dom.Parser
 			});
 		}
 		
-		static IParser GetParser (string projectType)
-		{
-			foreach (IParser parser in parsers) {
-				if (parser.CanParseProjectType (projectType))
-					return parser;
-			}
-			return null;
-		}
-		
 		public static IParser GetParserByMime (string mimeType)
 		{
 			foreach (IParser parser in parsers) {
@@ -115,6 +106,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 			}
 			return null;
 		}
+		
 		public static IExpressionFinder GetExpressionFinder (string fileName)
 		{
 			IParser parser = GetParserByFileName (fileName);
@@ -183,7 +175,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 		public static void Refresh (Project project, string fileName, string mimeType, ContentDelegate getContent)
 		{
 			ProjectDom dom = GetDatabaseProjectDom (project);
-			IParser parser = GetParser (project, mimeType, fileName);
+			IParser parser = GetParser (fileName, mimeType);
 			if (parser == null)
 				return;
 			if (refreshThreads.ContainsKey (fileName)) {
@@ -208,24 +200,15 @@ namespace MonoDevelop.Projects.Dom.Parser
 			thread.Start ();
 		}
 		
-		public static IParser GetParser (Project project, string mimeType, string fileName)
+		public static IParser GetParser (string fileName, string mimeType)
 		{
-			if (!String.IsNullOrEmpty (mimeType)) {
-				IParser result = GetParserByMime (mimeType);
-				if (result != null) {
-					return result;
-				}
-			}
+			IParser result = GetParserByMime (mimeType);
+			if (result != null) 
+				return result;
 			
 			if (!String.IsNullOrEmpty (fileName)) 
 				return GetParserByFileName (fileName);
 				
-			if (project != null) {
-				IParser result = GetParser (project is DotNetProject ? ((DotNetProject)project).LanguageName : project.ProjectType);
-				if (result != null)
-					return result;
-			}
-			
 			// give up
 			return null;
 		}
@@ -238,7 +221,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 		public static ICompilationUnit Parse (Project project, string fileName, string mimeType, ContentDelegate getContent)
 		{
 			ProjectDom dom = GetDatabaseProjectDom (project);
-			IParser parser = GetParser (project, mimeType, fileName);
+			IParser parser = GetParser (fileName, mimeType);
 			if (parser == null)
 				return null;
 			if (refreshThreads.ContainsKey (fileName)) {
@@ -383,27 +366,30 @@ namespace MonoDevelop.Projects.Dom.Parser
 			return true;
 		}
 		#endregion
+		static DatabaseProjectDom LoadAssemblyDatabase (string uri)
+		{
+			string file = uri.Substring (9);
+			string fullName = GetFullAssemblyName (file);
+			string realAssemblyName, assemblyFile, name;
+			GetAssemblyInfo (fullName, out realAssemblyName, out assemblyFile, out name);
+			if (String.IsNullOrEmpty (name))
+				return null;
+			string codeCompletionFile = Path.Combine (codeCompletionDataPath, name) + ".pidb";
+			if (HasDom (codeCompletionFile)) 
+				return (DatabaseProjectDom)GetDom (codeCompletionFile);
+			bool shouldCreate = !File.Exists (codeCompletionFile);
+			CodeCompletionDatabase database = new CodeCompletionDatabase (codeCompletionFile);
+			if (shouldCreate)
+				database.InsertCompilationUnit (DomCecilCompilationUnit.Load (assemblyFile, false, false), fullName);
+			DatabaseProjectDom dom = new DatabaseProjectDom (database, fullName);
+			InsertDom (codeCompletionFile, dom);
+			return dom;
+		}
 		
 		static ProjectDom Load (Solution solution, string baseDirectory, string uri)
 		{
-			if (uri.StartsWith ("Assembly:")) {
-				string file = uri.Substring (9);
-				string fullName = GetFullAssemblyName (file);
-				string realAssemblyName, assemblyFile, name;
-				GetAssemblyInfo (fullName, out realAssemblyName, out assemblyFile, out name);
-				if (String.IsNullOrEmpty (name))
-					return null;
-				string codeCompletionFile = Path.Combine (codeCompletionDataPath, name) + ".pidb";
-				if (HasDom (codeCompletionFile)) 
-					return GetDom (codeCompletionFile);
-				bool shouldCreate = !File.Exists (codeCompletionFile);
-				CodeCompletionDatabase database = new CodeCompletionDatabase (codeCompletionFile);
-				if (shouldCreate)
-					database.InsertCompilationUnit (DomCecilCompilationUnit.Load (assemblyFile, false, false), fullName);
-				ProjectDom dom = new DatabaseProjectDom (database, fullName);
-				InsertDom (codeCompletionFile, dom);
-				return dom;
-			}
+			if (uri.StartsWith ("Assembly:"))
+				return LoadAssemblyDatabase (uri);
 			if (uri.StartsWith ("Project:")) {
 				string projectName = uri.Substring ("Project:".Length);
 				Project referencedProject = solution.FindProjectByName (projectName);
@@ -411,6 +397,11 @@ namespace MonoDevelop.Projects.Dom.Parser
 					return GetDatabaseProjectDom (referencedProject);
 			}
 			return null;
+		}
+		
+		public static DatabaseProjectDom GetAssemblyProjectDom (string assemblyName)
+		{
+			return LoadAssemblyDatabase ("Assembly:" + assemblyName);
 		}
 		
 		public static DatabaseProjectDom GetDatabaseProjectDom (Project project)
@@ -435,9 +426,6 @@ namespace MonoDevelop.Projects.Dom.Parser
 			string type = project.ProjectType;
 			if (project is DotNetProject)
 				type = ((DotNetProject)project).LanguageName;
-			IParser parser = GetParser (type);
-			if (parser == null)
-				return null;
 			DatabaseProjectDom dom = GetDatabaseProjectDom (project);
 			
 			// load References
@@ -462,11 +450,13 @@ namespace MonoDevelop.Projects.Dom.Parser
 				if (!dom.NeedCompilation (file.FilePath)) {
 					continue;
 				}
+				IParser parser = GetParserByFileName (file.FilePath);
+				if (parser == null)
+					continue;
 				string content = null;
 				try {
 					content = System.IO.File.ReadAllText (file.FilePath);
 				} catch (Exception e) {
-					
 				}
 				if (content != null) {
 					ICompilationUnit unit = parser.Parse (file.FilePath, content);
