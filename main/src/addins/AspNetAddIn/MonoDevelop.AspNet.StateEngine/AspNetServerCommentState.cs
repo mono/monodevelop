@@ -40,7 +40,7 @@ namespace MonoDevelop.AspNet.StateEngine
 		const int DOUBLE_DASH = 2;
 		const int PERCENT = 3;
 		
-		public override State PushChar (char c, IParseContext context, ref bool reject)
+		public override State PushChar (char c, IParseContext context, ref string rollback)
 		{
 			switch (context.StateTag) {
 			case NOMATCH:

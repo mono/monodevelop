@@ -38,7 +38,7 @@ namespace MonoDevelop.Xml.StateEngine
 		const int SINGLE_DASH = 1;
 		const int DOUBLE_DASH = 2;
 		
-		public override State PushChar (char c, IParseContext context, ref bool reject)
+		public override State PushChar (char c, IParseContext context, ref string rollback)
 		{
 			if (c == '-') {
 				//make sure we know when there are two '-' chars together
@@ -52,7 +52,7 @@ namespace MonoDevelop.Xml.StateEngine
 				// so attach a node to the DOM and end the state
 				if (context.BuildTree) {
 					int start = context.Position - (context.CurrentStateLength + 4); // <!-- is 4 chars
-					//((XCommentable) context.Nodes.Peek ()).AddComment (new XComment (start, context.Position));
+					((XContainer) context.Nodes.Peek ()).AddChildNode (new XComment (start, context.Position));
 				}
 				return Parent;
 			} else {

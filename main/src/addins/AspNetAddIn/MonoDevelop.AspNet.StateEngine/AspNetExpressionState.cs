@@ -41,7 +41,7 @@ namespace MonoDevelop.AspNet.StateEngine
 		const int PERCENT = 1;
 		
 		
-		public override State PushChar (char c, IParseContext context, ref bool reject)
+		public override State PushChar (char c, IParseContext context, ref string rollback)
 		{
 			if (context.CurrentStateLength == 1) {
 				Debug.Assert (c != '@' && c!= '-', 

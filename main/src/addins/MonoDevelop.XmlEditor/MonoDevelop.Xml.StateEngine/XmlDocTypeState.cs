@@ -34,11 +34,11 @@ namespace MonoDevelop.Xml.StateEngine
 {
 	public class XmlDocTypeState : State
 	{
-		public override State PushChar (char c, IParseContext context, ref bool reject)
+		public override State PushChar (char c, IParseContext context, ref string rollback)
 		{
 			if (c == '>' || c == '<') {
 				if (c == '<') {
-					reject = true;
+					rollback = string.Empty;
 					context.LogError ("Doctype ended prematurely.");
 				}
 				

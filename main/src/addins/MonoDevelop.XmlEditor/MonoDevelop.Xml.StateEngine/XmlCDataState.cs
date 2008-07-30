@@ -38,7 +38,7 @@ namespace MonoDevelop.Xml.StateEngine
 		const int SINGLE_BRACKET = 1;
 		const int DOUBLE_BRACKET = 2;
 		
-		public override State PushChar (char c, IParseContext context, ref bool reject)
+		public override State PushChar (char c, IParseContext context, ref string rollback)
 		{
 			if (c == ']') {
 				//make sure we know when there are two ']' chars together

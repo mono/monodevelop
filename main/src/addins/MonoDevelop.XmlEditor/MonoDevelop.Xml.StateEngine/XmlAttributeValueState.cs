@@ -39,7 +39,7 @@ namespace MonoDevelop.Xml.StateEngine
 		const int SINGLEQUOTE = 2;
 		const int DOUBLEQUOTE = 3;
 		
-		public override State PushChar (char c, IParseContext context, ref bool reject)
+		public override State PushChar (char c, IParseContext context, ref string rollback)
 		{
 			XAttribute att = (XAttribute) context.Nodes.Peek ();
 			System.Diagnostics.Debug.Assert (att.Value == null);
@@ -57,14 +57,14 @@ namespace MonoDevelop.Xml.StateEngine
 					context.StateTag = UNDELIMITED;
 				} else {
 					context.LogWarning ("Unexpected character '" + c + "' getting attribute value");
-					reject = true;
+					rollback = string.Empty;
 					return Parent;
 				}
 			}
 			
 			if (c == '<') {
 				context.LogError  ("Attribute value ended unexpectedly.");
-				reject = true;
+				rollback = string.Empty;
 				return this.Parent;
 			}
 			
@@ -78,7 +78,7 @@ namespace MonoDevelop.Xml.StateEngine
 				} else {
 					context.LogWarning ("Unexpected character '" + c + "' getting attribute value");
 				}
-				reject = true;
+				rollback = string.Empty;
 				return Parent;
 			}
 			

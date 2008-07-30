@@ -37,7 +37,7 @@ namespace MonoDevelop.Xml.StateEngine
 	public class XmlNameState : State
 	{
 		
-		public override State PushChar (char c, IParseContext context, ref bool reject)
+		public override State PushChar (char c, IParseContext context, ref string rollback)
 		{
 			INamedXObject namedObject = context.Nodes.Peek () as INamedXObject;
 			if (namedObject == null || namedObject.Name.Prefix != null)
@@ -50,7 +50,7 @@ namespace MonoDevelop.Xml.StateEngine
 			
 			if (c == '<') {
 				context.LogError ("Unexpected '<' in name.");
-				reject = true;
+				rollback = string.Empty;
 				return this.Parent;
 			}
 			
@@ -65,7 +65,7 @@ namespace MonoDevelop.Xml.StateEngine
 			}
 			
 			if (char.IsWhiteSpace (c) || c == '>' || c == '/' || c == '=') {
-				reject = true;
+				rollback = string.Empty;
 				if (context.KeywordBuilder.Length == 0) {
 					context.LogError ("Zero-length name.");
 				} else if (namedObject.Name.Name != null) {
@@ -82,7 +82,7 @@ namespace MonoDevelop.Xml.StateEngine
 				return null;
 			}
 			
-			reject = true;
+			rollback = string.Empty;
 			context.LogError ("Unexpected character '" + c +"'");
 			return Parent;
 		}

@@ -74,7 +74,7 @@ namespace MonoDevelop.AspNet.StateEngine
 		protected AspNetDirectiveState DirectiveState { get; private set; }
 		protected AspNetServerCommentState ServerCommentState { get; private set; }
 		
-		public override State PushChar (char c, IParseContext context, ref bool reject)
+		public override State PushChar (char c, IParseContext context, ref string rollback)
 		{
 			if (c == '%' && context.StateTag == BRACKET) {
 				context.StateTag = BRACKET_PERCENT;
@@ -98,7 +98,7 @@ namespace MonoDevelop.AspNet.StateEngine
 				}
 			}
 			
-			return base.PushChar (c, context, ref reject);
+			return base.PushChar (c, context, ref rollback);
 			
 		}
 	}

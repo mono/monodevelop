@@ -37,7 +37,7 @@ namespace MonoDevelop.Xml.StateEngine
 		const int NOMATCH = 0;
 		const int QUESTION = 1;
 		
-		public override State PushChar (char c, IParseContext context, ref bool reject)
+		public override State PushChar (char c, IParseContext context, ref string rollback)
 		{
 			if (c == '?') {
 				if (context.StateTag == NOMATCH) {

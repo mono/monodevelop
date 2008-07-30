@@ -63,7 +63,7 @@ namespace MonoDevelop.AspNet.StateEngine
 		
 		const int ENDING = 1;
 		
-		public override State PushChar (char c, IParseContext context, ref bool reject)
+		public override State PushChar (char c, IParseContext context, ref string rollback)
 		{
 			AspNetDirective directive = context.Nodes.Peek () as AspNetDirective;
 			
@@ -74,7 +74,7 @@ namespace MonoDevelop.AspNet.StateEngine
 			
 			if (c == '<') {
 				context.LogError ("Unexpected '<' in directive.");
-				reject = true;
+				rollback = string.Empty;
 				return MalformedTagState;
 			}
 			
@@ -105,7 +105,7 @@ namespace MonoDevelop.AspNet.StateEngine
 				//ending but not '>'? Error; go to end.
 			}
 			else if (char.IsLetter (c)) {
-				reject = true;
+				rollback = string.Empty;
 				if (!directive.IsNamed) {
 					return NameState;
 				} else {
@@ -115,7 +115,7 @@ namespace MonoDevelop.AspNet.StateEngine
 			else if (char.IsWhiteSpace (c))
 				return null;
 			
-			reject = true;
+			rollback = string.Empty;
 			context.LogError ("Unexpected character '" + c + "' in tag.");
 			return MalformedTagState;
 		}

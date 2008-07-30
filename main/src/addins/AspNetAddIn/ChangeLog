@@ -1,3 +1,11 @@
+2008-07-30  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.AspNet.StateEngine/AspNetExpressionState.cs,
+	  MonoDevelop.AspNet.StateEngine/AspNetFreeState.cs,
+	  MonoDevelop.AspNet.StateEngine/AspNetServerCommentState.cs,
+	  MonoDevelop.AspNet.StateEngine/AspNetDirectiveState.cs: API change
+	  to allow more that one character of rollback.
+
 2008-07-29  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs: Filter out

@@ -105,10 +105,10 @@ namespace MonoDevelop.Xml.StateEngine
 		{
 			try {
 				position++;
-				for (int loopLimit = 0; loopLimit < 100; loopLimit++) {
+				for (int loopLimit = 0; loopLimit < 10; loopLimit++) {
 					currentStateLength++;
-					bool reject = false;
-					State nextState = currentState.PushChar (c, this, ref reject);
+					string rollback = null;
+					State nextState = currentState.PushChar (c, this, ref rollback);
 					
 					// no state change
 					if (nextState == currentState || nextState == null)
@@ -125,8 +125,15 @@ namespace MonoDevelop.Xml.StateEngine
 					
 					
 					// only loop if the same char should be run through the new state
-					if (!reject)
+					if (rollback == null)
 						return;
+					
+					//"complex" rollbacks require actually moving backwards
+					else if (rollback.Length > 0) {
+						position -= rollback.Length;
+						foreach (char rollChar in rollback)
+							Push (rollChar);
+					}
 				}
 				throw new InvalidOperationException ("Too many state changes for char '" + c + "'. Current state is " + currentState.ToString () + ".");
 			} catch (Exception ex) {

@@ -34,7 +34,7 @@ namespace MonoDevelop.Xml.StateEngine
 	public class XmlMalformedTagState : State
 	{
 		
-		public override State PushChar (char c, IParseContext context, ref bool reject)
+		public override State PushChar (char c, IParseContext context, ref string rollback)
 		{
 			//ensure that we don't drop any nodes or leave them un-ended
 			if (context.CurrentStateLength == 1) {
@@ -44,7 +44,8 @@ namespace MonoDevelop.Xml.StateEngine
 			}
 			
 			if (c == '<' || c == '>') {
-				reject = (c == '<');
+				if (c == '<')
+					rollback = string.Empty;
 				return RootState;
 			}
 			return null;

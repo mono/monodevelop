@@ -61,7 +61,7 @@ namespace MonoDevelop.Xml.StateEngine
 		
 		const int SELFCLOSING = 1;
 		
-		public override State PushChar (char c, IParseContext context, ref bool reject)
+		public override State PushChar (char c, IParseContext context, ref string rollback)
 		{
 			XElement element = context.Nodes.Peek () as XElement;
 			
@@ -72,7 +72,7 @@ namespace MonoDevelop.Xml.StateEngine
 			
 			if (c == '<') {
 				context.LogError ("Unexpected '<' in tag.");
-				reject = true;
+				rollback = string.Empty;
 				return MalformedTagState;
 			}
 			
@@ -109,7 +109,7 @@ namespace MonoDevelop.Xml.StateEngine
 			}
 			
 			if (char.IsLetter (c) || c == '_') {
-				reject = true;
+				rollback = string.Empty;
 				if (!element.IsNamed) {
 					return NameState;
 				} else {
@@ -125,7 +125,7 @@ namespace MonoDevelop.Xml.StateEngine
 			if (char.IsWhiteSpace (c))
 				return null;
 			
-			reject = true;
+			rollback = string.Empty;
 			context.LogError ("Unexpected character '" + c + "' in tag.");
 			return MalformedTagState;
 		}

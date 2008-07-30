@@ -55,7 +55,7 @@ namespace MonoDevelop.Xml.StateEngine
 			Adopt (this.XmlAttributeValueState);
 		}
 
-		public override State PushChar (char c, IParseContext context, ref bool reject)
+		public override State PushChar (char c, IParseContext context, ref string rollback)
 		{
 			XAttribute att = context.Nodes.Peek () as XAttribute;
 			
@@ -63,7 +63,7 @@ namespace MonoDevelop.Xml.StateEngine
 				context.LogError ("Attribute ended unexpectedly with '<' character.");
 				if (att != null)
 					context.Nodes.Pop ();
-				reject = true;
+				rollback = string.Empty;
 				return this.Parent;
 			}
 			
@@ -75,7 +75,7 @@ namespace MonoDevelop.Xml.StateEngine
 					Debug.Assert (context.StateTag == NAMING);
 					att = new XAttribute (context.Position);
 					context.Nodes.Push (att);
-					reject = true;
+					rollback = string.Empty;
 					return XmlNameState;
 				} else {
 					Debug.Assert (att.IsNamed);
@@ -87,7 +87,7 @@ namespace MonoDevelop.Xml.StateEngine
 						att.End (context.Position);
 						IAttributedXObject element = (IAttributedXObject) context.Nodes.Peek ();
 						element.Attributes.AddAttribute (att);
-						reject = true;
+						rollback = string.Empty;
 						return Parent;
 					}
 				}
@@ -97,7 +97,7 @@ namespace MonoDevelop.Xml.StateEngine
 				context.LogWarning ("Attribute ended unexpectedly with '>' character.");
 				if (att != null)
 					context.Nodes.Pop ();
-				reject = true;
+				rollback = string.Empty;
 				return this.Parent;
 			}
 			
@@ -112,7 +112,7 @@ namespace MonoDevelop.Xml.StateEngine
 				if (char.IsWhiteSpace (c)) {
 					return null;
 				} else if (char.IsLetterOrDigit (c) || c== '\'' || c== '"') {
-					reject = true;
+					rollback = string.Empty;
 					return XmlAttributeValueState;
 				}
 			}
@@ -120,7 +120,7 @@ namespace MonoDevelop.Xml.StateEngine
 			context.LogError ("Unexpected character '" + c + "' in attribute.");
 			if (att != null)
 				context.Nodes.Pop ();
-			reject = true;
+			rollback = string.Empty;
 			return Parent;
 		}
 	}

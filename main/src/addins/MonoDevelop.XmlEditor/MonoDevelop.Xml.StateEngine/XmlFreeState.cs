@@ -78,7 +78,7 @@ namespace MonoDevelop.Xml.StateEngine
 		protected XmlDocTypeState DocTypeState { get; private set; }
 		protected XmlProcessingInstructionState ProcessingInstructionState { get; private set; }
 		
-		public override State PushChar (char c, IParseContext context, ref bool reject)
+		public override State PushChar (char c, IParseContext context, ref string rollback)
 		{
 			if (c == '<') {
 				if (context.StateTag != FREE)
@@ -94,7 +94,7 @@ namespace MonoDevelop.Xml.StateEngine
 				
 			case BRACKET:
 				if (c == '?') {
-					reject = true;
+					rollback = string.Empty;
 					return this.ProcessingInstructionState;
 				} else if (c == '!') {
 					context.StateTag = BRACKET_EXCLAM;
@@ -102,7 +102,7 @@ namespace MonoDevelop.Xml.StateEngine
 				} else if (c == '/') {
 					return this.ClosingTagState;
 				} else if (char.IsLetter (c) || c == '_') {
-					reject = true;
+					rollback = string.Empty;
 					return TagState;
 				}
 				break;
