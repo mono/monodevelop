@@ -37,48 +37,59 @@ namespace MonoDevelop.AspNet.StateEngine
 	
 	public class AspNetExpressionState : State
 	{
-		const int RENDER_EXPRESSION = 1;
-		const int DATABINDING_EXPRESSION = 2;
-		const int RESOURCE_EXPRESSION = 3;
-		const int DIRECTIVE = 4;
-		const int SERVER_COMMENT = 5;
-		const int RENDER_BLOCK = 6;
+		const int NONE = 0;
+		const int PERCENT = 1;
 		
 		
 		public override State PushChar (char c, IParseContext context, ref bool reject)
 		{
 			if (context.CurrentStateLength == 1) {
+				Debug.Assert (c != '@' && c!= '-', 
+					"AspNetExpressionState should not be passed a directive or comment");
+				
 				switch (c) {
-				//RENDER EXPRESSION <%=
-				case '=':
-					break;
-					
+				
 				//DATABINDING EXPRESSION <%#
 				case '#':
+					context.Nodes.Push (new AspNetDataBindingExpression (context.Position - 2));
 					break;
 					
 				//RESOURCE EXPRESSION <%$
-				case '$': 
-					break;
-					
-				//DIRECTIVE <%@
-				case '@': 
+				case '$':
+					context.Nodes.Push (new AspNetResourceExpression (context.Position - 2));
 					break;
 				
-				// SERVER COMMENT: <%--
-				case '-':
+				//RENDER EXPRESSION <%=
+				case '=':
+					context.Nodes.Push (new AspNetRenderExpression (context.Position - 2));
 					break;
 				
 				// RENDER BLOCK
 				default:
+					context.Nodes.Push (new AspNetRenderBlock (context.Position - 2));
 					break;
+				}
+				return null;
+			}
+			else if (c == '%') {
+				if (context.StateTag != PERCENT)
+					context.StateTag = PERCENT;
+			}
+			else if (c == '>') {
+				if (context.StateTag == PERCENT) {
+					XNode expr = (XNode) context.Nodes.Pop ();
+					expr.End (context.Position);
+					if (context.BuildTree) {
+						XContainer container = (XContainer) context.Nodes.Peek ();
+						container.AddChildNode (expr);
+					}
+					return Parent;
+				} else {
+					context.StateTag = NONE;
 				}
 			}
 			
-			reject = true;
-			context.LogError ("Unexpected character '" + c + "' in ASP.NET expression.");
 			return null;
 		}
-
 	}
 }

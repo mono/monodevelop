@@ -1,5 +1,10 @@
 2008-07-29  Michael Hutchinson <mhutchinson@novell.com> 
 
+	* MonoDevelop.AspNet.StateEngine/AspNetExpressionState.cs: Complete the
+	  handling of expressions (in free state).
+
+2008-07-29  Michael Hutchinson <mhutchinson@novell.com> 
+
 	* MonoDevelop.AspNet.StateEngine/AspNetServerCommentState.cs: Implement
 	  server comments handling (in the free state).
 
