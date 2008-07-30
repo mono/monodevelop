@@ -39,6 +39,8 @@ using MonoDevelop.Ide.Commands;
 
 namespace MonoDevelop.SourceEditor
 {
+	[System.ComponentModel.Category("MonoDevelop.SourceEditor2")]
+	[System.ComponentModel.ToolboxItem(true)]
 	public partial class SourceEditorWidget : Gtk.Bin, ITextEditorExtension
 	{
 		SourceEditorView view;

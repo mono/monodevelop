@@ -36,6 +36,8 @@ using MonoDevelop.Components;
 
 namespace MonoDevelop.SourceEditor.OptionPanels
 {
+	[System.ComponentModel.Category("MonoDevelop.SourceEditor2")]
+	[System.ComponentModel.ToolboxItem(true)]
 	public partial class HighlightingPanel : Gtk.Bin, IOptionsPanel
 	{
 		ListStore styleStore = new ListStore (typeof (string), typeof (string));

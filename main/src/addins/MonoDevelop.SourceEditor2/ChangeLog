@@ -1,3 +1,8 @@
+2008-07-30  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.SourceEditor/ExtendibleTextEditor.cs: fixed "Bug 408899 -
+	  Code templates expanded in comments".
+
 2008-07-16  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.SourceEditor/DebugValueWindow.cs: Make sure no rows are

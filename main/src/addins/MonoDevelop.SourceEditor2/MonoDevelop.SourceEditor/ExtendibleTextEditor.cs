@@ -204,7 +204,8 @@ namespace MonoDevelop.SourceEditor
 			}
 			
 			bool inStringOrComment = false;
-			if (SourceEditorOptions.Options.AutoInsertMatchingBracket && (ch == '{' || ch == '[' || ch == '(' || ch == '"' || ch == '\'' )) {
+			bool templateDetected  = SourceEditorOptions.Options.AutoInsertTemplates && IsTemplateKnown ();
+			if (SourceEditorOptions.Options.AutoInsertMatchingBracket && (ch == '{' || ch == '[' || ch == '(' || ch == '"' || ch == '\'' ) || templateDetected) {
 				LineSegment line = Document.GetLine (Caret.Line);
 				Stack<Span> stack = line.StartSpan != null ? new Stack<Span> (line.StartSpan) : new Stack<Span> ();
 				SyntaxModeService.ScanSpans (Document, Document.SyntaxMode, stack, line.Offset, Caret.Offset);
@@ -225,7 +226,7 @@ namespace MonoDevelop.SourceEditor
 				result = base.OnIMProcessedKeyPressEvent (evnt, ch);
 			}
 			
-			if (SourceEditorOptions.Options.AutoInsertTemplates && IsTemplateKnown ())
+			if (!inStringOrComment && templateDetected)
 				DoInsertTemplate ();
 			if (SourceEditorOptions.Options.AutoInsertMatchingBracket && !inStringOrComment) {
 				switch (ch) {
@@ -375,7 +376,7 @@ namespace MonoDevelop.SourceEditor
 			int index = 0;
 			while (index < line.EditableLength && Char.IsWhiteSpace (Document.GetCharAt (line.Offset + index)))
 				index++;
- 	   		return index > 0 ? Document.GetTextAt (line.Offset, index) : "";
+			return index > 0 ? Document.GetTextAt (line.Offset, index) : "";
 		}
 
 		public bool IsTemplateKnown ()

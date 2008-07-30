@@ -1,30 +1,27 @@
-<objects>
-  <object type="MonoDevelop.SourceEditor.SourceEditorWidget" allow-children="false" base-type="Gtk.Bin" palette-category="MonoDevelop.SourceEditor2">
+<objects attr-sync="on">
+  <object type="MonoDevelop.SourceEditor.OptionPanels.GeneralOptionsPanel" palette-category="MonoDevelop.SourceEditor2" allow-children="false" base-type="Gtk.Bin">
+    <itemgroups />
+    <signals />
+  </object>
+  <object type="MonoDevelop.SourceEditor.OptionPanels.HighlightingPanel" palette-category="MonoDevelop.SourceEditor2" allow-children="false" base-type="Gtk.Bin">
+    <itemgroups />
+    <signals />
+  </object>
+  <object type="MonoDevelop.SourceEditor.GotoLineNumberWidget" palette-category="MonoDevelop.SourceEditor2" allow-children="false" base-type="Gtk.Bin">
+    <itemgroups />
+    <signals />
+  </object>
+  <object type="MonoDevelop.SourceEditor.SourceEditorWidget" palette-category="MonoDevelop.SourceEditor2" allow-children="false" base-type="Gtk.Bin">
     <itemgroups>
       <itemgroup label="SourceEditorWidget Properties">
         <property name="IsClassBrowserVisible" />
       </itemgroup>
     </itemgroups>
-    <signals>
-    </signals>
-  </object>
-  <object type="MonoDevelop.SourceEditor.OptionPanels.GeneralOptionsPanel" palette-category="MonoDevelop.SourceEditor2" allow-children="false" base-type="Gtk.Bin">
-    <itemgroups>
-    </itemgroups>
-    <signals>
-    </signals>
-  </object>
-  <object type="MonoDevelop.SourceEditor.OptionPanels.HighlightingPanel" palette-category="MonoDevelop.SourceEditor2" allow-children="false" base-type="Gtk.Bin">
-    <itemgroups>
-    </itemgroups>
-    <signals>
-    </signals>
+    <signals />
   </object>
   <object type="MonoDevelop.SourceEditor.OptionPanels.MarkerPanel" palette-category="MonoDevelop.SourceEditor2" allow-children="false" base-type="Gtk.Bin">
-    <itemgroups>
-    </itemgroups>
-    <signals>
-    </signals>
+    <itemgroups />
+    <signals />
   </object>
   <object type="MonoDevelop.SourceEditor.SearchAndReplaceWidget" palette-category="MonoDevelop.SourceEditor2" allow-children="false" base-type="Gtk.Bin">
     <itemgroups>
@@ -32,10 +29,6 @@
         <property name="SearchPattern" />
       </itemgroup>
     </itemgroups>
-    <signals />
-  </object>
-  <object type="MonoDevelop.SourceEditor.GotoLineNumberWidget" palette-category="MonoDevelop.SourceEditor2" allow-children="false" base-type="Gtk.Bin">
-    <itemgroups />
     <signals />
   </object>
 </objects>
