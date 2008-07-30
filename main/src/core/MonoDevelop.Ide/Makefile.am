@@ -7,6 +7,7 @@ REFS =  \
 	$(MONO_ADDINS_LIBS) \
 	$(MONO_ADDINS_SETUP_LIBS) \
 	$(MONODOC_LIBS) \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Documentation.dll \
 	-r:$(top_builddir)/build/bin/Mono.Debugging.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Components.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \

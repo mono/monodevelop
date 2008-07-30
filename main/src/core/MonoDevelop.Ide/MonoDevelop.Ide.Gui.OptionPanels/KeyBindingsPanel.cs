@@ -39,8 +39,6 @@ using Gtk;
 
 namespace MonoDevelop.Ide.Gui.OptionPanels
 {
-	[System.ComponentModel.Category("MonoDevelop.Ide")]
-	[System.ComponentModel.ToolboxItem(true)]
 	public partial class KeyBindingsPanel : Gtk.Bin, IOptionsPanel
 	{
 		static readonly int commandCol = 0;

@@ -1,14 +1,3 @@
-2008-07-30  Mike Krüger <mkrueger@novell.com> 
-
-	* MonoDevelop.Ide/Services.cs,
-	  MonoDevelop.Ide.Gui.Pads/MonodocTreePad.cs,
-	  MonoDevelop.Ide.Gui.Pads.ClassBrowser/ClassBrowserPadWidget.cs,
-	  MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs,
-	  MonoDevelop.Ide.Gui.Dialogs/CombineEntryFeatureSelector.cs,
-	  MonoDevelop.Ide.StandardHeader/StandardHeaderPanel.cs,
-	  MonoDevelop.Ide.Gui/HelpViewer.cs: removed some documentation
-	  service deps.
-
 2008-07-28  Andrés G. Aragoneses <aaragoneses@novell.com> 
 
 	* MonoDevelop.Ide.Gui.Search/CurrentProjectDocumentIterator.cs: Be more
