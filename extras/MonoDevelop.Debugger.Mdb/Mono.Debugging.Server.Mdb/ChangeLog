@@ -1,5 +1,12 @@
 2008-07-31  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* ObjectUtil.cs: Added hack to make the proxy attribute work for
+	  generic types.
+	* CollectionAdaptor.cs: Don't try to create a collection adaptor for
+	  generic types. It won't work.
+
+2008-07-31  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* DebuggerServer.cs, Util.cs, ExpressionEvaluator.cs,
 	  Mono.Debugging.Server.Mdb.mdp, ValueReference.cs,
 	  NRefactoryEvaluator.cs, ObjectUtil.cs, ArrayElementGroup.cs,

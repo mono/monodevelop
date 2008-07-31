@@ -63,6 +63,9 @@ namespace DebuggerServer
 		
 		public static CollectionAdaptor CreateAdaptor (Thread thread, TargetStructObject obj)
 		{
+			if (obj is TargetGenericInstanceObject)
+				return null;
+			
 			ColInfo colInfo;
 			if (colTypes.TryGetValue (obj.Type.Name, out colInfo)) {
 				if (colInfo == null)

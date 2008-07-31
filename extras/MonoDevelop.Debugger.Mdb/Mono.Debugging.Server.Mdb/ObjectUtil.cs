@@ -114,7 +114,7 @@ namespace DebuggerServer
 
 			TargetObject tt = GetTypeOf (frame, type);
 			TargetObject inherit = frame.Language.CreateInstance (thread, true);
-
+			
 			data = new TypeDisplayData ();
 			
 			data.IsProxyType = proxyTypes.ContainsKey (type);
@@ -122,13 +122,18 @@ namespace DebuggerServer
 			// Look for DebuggerTypeProxyAttribute
 			TargetObject attType = GetTypeOf (frame, "System.Diagnostics.DebuggerTypeProxyAttribute");
 			TargetObject at = CallStaticMethod (thread, "GetCustomAttribute", "System.Attribute", tt, attType, inherit);
+			// HACK: The first call doesn't work the first time for generic types. So we do it again.
+			at = CallStaticMethod (thread, "GetCustomAttribute", "System.Attribute", tt, attType, inherit);
 			at = GetRealObject (thread, at);
 			
 			if (at != null && !(at.HasAddress && at.GetAddress (thread).IsNull)) {
 				TargetFundamentalObject pname = GetPropertyValue (thread, "ProxyTypeName", at) as TargetFundamentalObject;
-				data.ProxyType = (string) pname.GetObject (thread);
-				TargetType ptype = LookupType (frame, data.ProxyType);
-				proxyTypes [ptype] = ptype;
+				string ptname = (string) pname.GetObject (thread);
+				TargetType ptype = LookupType (frame, ptname);
+				if (ptype != null) {
+					data.ProxyType = ptname;
+					proxyTypes [ptype] = ptype;
+				}
 			}
 			
 			// Look for DebuggerDisplayAttribute
@@ -700,10 +705,10 @@ namespace DebuggerServer
 		
 		public static TargetStructObject GetTypeOf (MD.StackFrame frame, TargetType ttype)
 		{
-			if (ttype.ClassType != null && ttype.ClassType.Module != null)
-				return GetTypeOf (frame, ttype.Name + ", " + ttype.ClassType.Module.FullName);
+			if (ttype.HasClassType && ttype.ClassType.Module != null)
+				return GetTypeOf (frame, FixTypeName (ttype.Name) + ", " + ttype.ClassType.Module.FullName);
 			else
-				return GetTypeOf (frame, ttype.Name);
+				return GetTypeOf (frame, FixTypeName (ttype.Name));
 		}
 		
 		public static TargetStructObject GetTypeOf (MD.StackFrame frame, string typeName)
