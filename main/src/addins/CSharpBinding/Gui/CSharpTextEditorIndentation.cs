@@ -62,6 +62,11 @@ namespace MonoDevelop.CSharpBinding.Gui
 			stateTracker = new DocumentStateTracker<CSharpIndentEngine> (new CSharpIndentEngine (), Editor);
 		}
 		
+		public override bool ExtendsEditor (MonoDevelop.Ide.Gui.Document doc, IEditableTextBuffer editor)
+		{
+			return System.IO.Path.GetExtension (doc.Title) == ".cs";
+		}
+		
 		public override bool KeyPress (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
 		{
 			cursorPositionBeforeKeyPress = Editor.CursorPosition;

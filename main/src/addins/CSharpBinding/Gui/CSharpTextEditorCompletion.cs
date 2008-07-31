@@ -63,6 +63,11 @@ namespace MonoDevelop.CSharpBinding.Gui
 			dom = ProjectDomService.GetDatabaseProjectDom (Document.Project);
 		}
 		
+		public override bool ExtendsEditor (MonoDevelop.Ide.Gui.Document doc, IEditableTextBuffer editor)
+		{
+			return System.IO.Path.GetExtension (doc.Title) == ".cs";
+		}
+		
 		ExpressionResult FindExpression (ProjectDom dom, int offset)
 		{
 			NewCSharpExpressionFinder expressionFinder = new NewCSharpExpressionFinder (dom);

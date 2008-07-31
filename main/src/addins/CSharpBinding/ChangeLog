@@ -1,3 +1,8 @@
+2008-07-31  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* Gui/CSharpTextEditorCompletion.cs,
+	  Gui/CSharpTextEditorIndentation.cs: Only attach to C# documents.
+
 2008-07-31  Mike Krüger <mkrueger@novell.com> 
 
 	* Gui/CSharpParameterDataProvider.cs, Gui/OverrideCompletionData.cs,
