@@ -25,6 +25,8 @@
 //
 //
 
+// #define REFLECTION_INVOKE
+
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -225,7 +227,8 @@ namespace DebuggerServer
 							  TargetObject target,
 							  params TargetObject[] args)
 		{
-/*			if (target is TargetGenericInstanceObject || !(target is TargetStructObject)) {
+#if REFLECTION_INVOKE
+			if (target is TargetGenericInstanceObject || !(target is TargetStructObject)) {
 				// Calling methods on generic objects is suprisingly not supported
 				// by the debugger. As a workaround we do the call using reflection.
 				
@@ -239,7 +242,7 @@ namespace DebuggerServer
 				SR.BindingFlags f = SR.BindingFlags.InvokeMethod | SR.BindingFlags.Instance | SR.BindingFlags.Public | SR.BindingFlags.NonPublic;
 				return CallMethodWithReflection (thread, f, name, target.Type, target, args);
 			}
-*/
+#endif
 			TargetType[] types = new TargetType [args.Length];
 			for (int n=0; n<types.Length; n++)
 				types [n] = args [n].Type;
@@ -275,14 +278,15 @@ namespace DebuggerServer
 							  TargetType type,
 							  params TargetObject[] args)
 		{
-/*			if (type is TargetGenericInstanceType || !(type is TargetStructType)) {
+#if REFLECTION_INVOKE
+			if (type is TargetGenericInstanceType || !(type is TargetStructType)) {
 				// Calling methods on generic objects is suprisingly not supported
 				// by the debugger. As a workaround we do the call using reflection.
 				
 				SR.BindingFlags f = SR.BindingFlags.InvokeMethod | SR.BindingFlags.Static | SR.BindingFlags.Public | SR.BindingFlags.NonPublic;
 				return CallMethodWithReflection (thread, f, name, type, null, args);
 			}
-*/			
+#endif			
 			TargetType[] types = new TargetType [args.Length];
 			for (int n=0; n<types.Length; n++)
 				types [n] = args [n].Type;
@@ -306,7 +310,8 @@ namespace DebuggerServer
 		
 		public static void SetPropertyValue (MD.Thread thread, string name, TargetObject target, TargetObject value, params TargetObject[] indexerArgs)
 		{
-/*			if (target is TargetGenericInstanceObject || !(target is TargetStructObject)) {
+#if REFLECTION_INVOKE
+			if (target is TargetGenericInstanceObject || !(target is TargetStructObject)) {
 				// Accessing properties on generic objects is suprisingly not supported
 				// by the debugger. As a workaround we do the call using reflection.
 				TargetObject[] args = new TargetObject [indexerArgs.Length + 1];
@@ -316,24 +321,25 @@ namespace DebuggerServer
 				CallMethodWithReflection (thread, f, name, target.Type, target, args);
 				return;
 			}
-*/
+#endif
 			TargetStructObject starget = (TargetStructObject) target;
 			TargetPropertyInfo prop = ResolveProperty (thread, starget.Type, name, ref indexerArgs);
-			TargetObject[] args = new TargetObject [indexerArgs.Length + 1];
-			Array.Copy (indexerArgs, args, indexerArgs.Length);
-			args [args.Length - 1] = value;
-			Server.Instance.RuntimeInvoke (thread, prop.Setter, starget, args);
+			TargetObject[] sargs = new TargetObject [indexerArgs.Length + 1];
+			Array.Copy (indexerArgs, sargs, indexerArgs.Length);
+			sargs [sargs.Length - 1] = value;
+			Server.Instance.RuntimeInvoke (thread, prop.Setter, starget, sargs);
 		}
 		
 		public static TargetObject GetPropertyValue (MD.Thread thread, string name, TargetObject target, params TargetObject[] indexerArgs)
 		{
-/*			if (target is TargetGenericInstanceObject || !(target is TargetStructObject)) {
+#if REFLECTION_INVOKE
+			if (target is TargetGenericInstanceObject || !(target is TargetStructObject)) {
 				// Accessing properties on generic objects is suprisingly not supported
 				// by the debugger. As a workaround we do the call using reflection.
 				SR.BindingFlags f = SR.BindingFlags.GetProperty | SR.BindingFlags.Instance | SR.BindingFlags.Public | SR.BindingFlags.NonPublic;
 				return CallMethodWithReflection (thread, f, name, target.Type, target, indexerArgs);
 			}
-*/
+#endif
 			TargetStructObject starget = (TargetStructObject) target;
 			TargetPropertyInfo prop = ResolveProperty (thread, starget.Type, name, ref indexerArgs);
 			if (prop.IsStatic)
@@ -343,7 +349,8 @@ namespace DebuggerServer
 		
 		public static void SetStaticPropertyValue (MD.Thread thread, string name, TargetType type, TargetObject value, params TargetObject[] indexerArgs)
 		{
-/*			if (type is TargetGenericInstanceType || !(type is TargetStructType)) {
+#if REFLECTION_INVOKE
+			if (type is TargetGenericInstanceType || !(type is TargetStructType)) {
 				// Accessing properties on generic objects is suprisingly not supported
 				// by the debugger. As a workaround we do the call using reflection.
 				TargetObject[] args = new TargetObject [indexerArgs.Length + 1];
@@ -353,30 +360,32 @@ namespace DebuggerServer
 				CallMethodWithReflection (thread, f, name, type, null, args);
 				return;
 			}
-			*/
+#endif
 			TargetPropertyInfo prop = ResolveProperty (thread, type, name, ref indexerArgs);
-			TargetObject[] args = new TargetObject [indexerArgs.Length + 1];
-			Array.Copy (indexerArgs, args, indexerArgs.Length);
-			args [args.Length - 1] = value;
-			Server.Instance.RuntimeInvoke (thread, prop.Setter, null, args);
+			TargetObject[] sargs = new TargetObject [indexerArgs.Length + 1];
+			Array.Copy (indexerArgs, sargs, indexerArgs.Length);
+			sargs [sargs.Length - 1] = value;
+			Server.Instance.RuntimeInvoke (thread, prop.Setter, null, sargs);
 		}
 		
 		public static TargetObject GetStaticPropertyValue (MD.Thread thread, string name, TargetType type, params TargetObject[] indexerArgs)
 		{
-/*			if (type is TargetGenericInstanceType || !(type is TargetStructType)) {
+#if REFLECTION_INVOKE
+			if (type is TargetGenericInstanceType || !(type is TargetStructType)) {
 				// Accessing properties on generic objects is suprisingly not supported
 				// by the debugger. As a workaround we do the call using reflection.
 				SR.BindingFlags f = SR.BindingFlags.GetProperty | SR.BindingFlags.Static | SR.BindingFlags.FlattenHierarchy | SR.BindingFlags.Public | SR.BindingFlags.NonPublic;
 				return CallMethodWithReflection (thread, f, name, type, null, indexerArgs);
 			}
-*/
+#endif
 			TargetPropertyInfo prop = ResolveProperty (thread, type, name, ref indexerArgs);
 			if (!prop.IsStatic)
 				throw new EvaluatorException ("Property is not static.");
 			return Server.Instance.RuntimeInvoke (thread, prop.Getter, null, indexerArgs);
 		}
-		
-/*		static TargetObject CallMethodWithReflection (MD.Thread thread, SR.BindingFlags flags, string name,
+
+#if REFLECTION_INVOKE
+		static TargetObject CallMethodWithReflection (MD.Thread thread, SR.BindingFlags flags, string name,
 							  TargetType type, TargetObject target,
 							  params TargetObject[] args)
 		{
@@ -409,7 +418,7 @@ namespace DebuggerServer
 			TargetObject res = CallMethod (thread, "InvokeMember", tt, objName, objFlags, objBinder, objTarget, array);
 			return res;
 		}
-*/
+#endif
 		
 		public static MemberReference FindMethod (MD.Thread thread, TargetType type, string name, bool findStatic, bool publicApiOnly, params string[] argTypes)
 		{

@@ -1,3 +1,11 @@
+2008-07-31  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* DebuggerServer.cs: Enable support for conditional breakpoints.
+	* Convert.cs: Allow fundamental conversions of strings. Use new boxing
+	  API.
+	* ObjectUtil.cs: Some cleanup.
+	* ArrayElementGroup.cs: Report exception when setting a value.
+
 2008-07-25  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* BacktraceWrapper.cs: Implement GetAllLocals.

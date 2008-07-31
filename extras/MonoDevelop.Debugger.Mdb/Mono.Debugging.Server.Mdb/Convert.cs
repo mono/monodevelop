@@ -155,6 +155,8 @@ namespace DebuggerServer
 				return System.Convert.ToSingle (value);
 			case FundamentalKind.Double:
 				return System.Convert.ToDouble (value);
+			case FundamentalKind.String:
+				return System.Convert.ToString (value);
 			default:
 				return null;
 			}
@@ -385,6 +387,11 @@ namespace DebuggerServer
 		
 		public static TargetObject Cast (StackFrame frame, TargetObject obj, TargetType targetType)
 		{
+			obj = ObjectUtil.GetRealObject (frame.Thread, obj);
+			
+			if (obj.Type == targetType)
+				return obj;
+			
 			if (targetType is TargetObjectType || ObjectUtil.FixTypeName (targetType.Name) == "System.Object") {
 				if (obj.Type.IsByRef)
 					return obj;
@@ -397,10 +404,13 @@ namespace DebuggerServer
 			if (targetType is TargetFundamentalType) {
 				TargetFundamentalObject fobj = obj as TargetFundamentalObject;
 				if (fobj == null)
-					return null;
+					throw new NotSupportedException ();
 
 				TargetFundamentalType ftype = targetType as TargetFundamentalType;
-				return ExplicitFundamentalConversion (frame, fobj, ftype);
+				TargetObject ob = ExplicitFundamentalConversion (frame, fobj, ftype);
+				if (ob == null)
+					throw new NotSupportedException ();
+				return ob;
 			}
 
 			TargetClassType ctype = ToClassType (targetType);
@@ -414,19 +424,7 @@ namespace DebuggerServer
 		
 		static TargetObject BoxValue (StackFrame frame, TargetObject fobj)
 		{
-			TargetObject tt = ObjectUtil.GetTypeOf (frame, fobj.TypeName);
-			TargetType at = frame.Language.LookupType ("System.Array");
-			TargetObject len = frame.Language.CreateInstance (frame.Thread, 1);
-			TargetObject arrayob = ObjectUtil.CallStaticMethod (frame.Thread, "CreateInstance", at, tt, len);
-			TargetArrayObject array = ObjectUtil.GetRealObject (frame.Thread, arrayob) as TargetArrayObject;
-			array.SetElement (frame.Thread, new int [] {0}, fobj);
-			
-			TargetObject ot = ObjectUtil.GetTypeOf (frame, "System.Object");
-			TargetObject auxarrayob = ObjectUtil.CallStaticMethod (frame.Thread, "CreateInstance", at, ot, len);
-			ObjectUtil.CallStaticMethod (frame.Thread, "Copy", at, arrayob, auxarrayob, len);
-			
-			array = ObjectUtil.GetRealObject (frame.Thread, auxarrayob) as TargetArrayObject;
-			return array.GetElement (frame.Thread, new int [] {0});
+			return frame.Language.CreateBoxedObject (frame.Thread, fobj);
 		}
 		
 		static TargetStructObject TryParentCast (StackFrame frame, TargetStructObject source, TargetStructType source_type, TargetStructType target_type)

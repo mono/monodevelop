@@ -273,6 +273,7 @@ namespace DebuggerServer
 			try {
 				return Server.Instance.Evaluator.TargetObjectToString (thread, val);
 			} catch (Exception ex) {
+				Server.Instance.WriteDebuggerError (ex);
 				return "? (" + ex.Message + ")";
 			}
 		}

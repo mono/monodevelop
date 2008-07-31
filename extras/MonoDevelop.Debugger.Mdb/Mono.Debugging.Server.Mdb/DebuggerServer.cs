@@ -501,7 +501,7 @@ namespace DebuggerServer
 
 			debugger.TargetExitedEvent += OnTargetExitedEvent;
 			guiManager.TargetEvent += OnTargetEvent;
-//			guiManager.BreakpointHitHandler = BreakEventCheck;
+			guiManager.BreakpointHitHandler = BreakEventCheck;
 			
 			activeThread = process.MainThread;
 			running = true;
