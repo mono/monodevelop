@@ -1,3 +1,11 @@
+2008-07-31  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs: Add comment and
+	  CDATA completion. Only trigger tag completion in the free state.
+	* MonoDevelop.AspNet/WebTypeManager.cs: Simplify lookups using new
+	  DOM's methods. They're still broken due to the DOM database
+	  returning bad values.
+
 2008-07-30  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.AspNet/WebTypeManager.cs,

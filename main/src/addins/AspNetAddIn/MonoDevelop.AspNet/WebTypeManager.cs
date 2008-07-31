@@ -254,34 +254,28 @@ namespace MonoDevelop.AspNet
 		public static IEnumerable<IType> ListSystemControlClasses (MonoDevelop.Core.ClrVersion version)
 		{
 			//FIXME respect versions
-			return ListControlClasses ("System.Web");
+			string name =
+				MonoDevelop.Core.Runtime.SystemAssemblyService.GetAssemblyNameForVersion ("System.Web", version);
+			return ListControlClasses (name, "System.Web.UI.WebControls");
 		}
 		
-		public static IEnumerable<IType> ListControlClasses (string assem)
+		public static IEnumerable<IType> ListControlClasses (string assem, string namespac)
 		{
 			
 			ProjectDom database = MonoDevelop.Projects.Dom.Parser.ProjectDomService.GetAssemblyProjectDom (assem);
 			if (database == null)
 				yield break;
 			
-			IType swc = database.GetType ("System.Web.UI.Control", -1, true, true);
-			if (swc == null)
-				throw new Exception ("Could not find IType for System.Web.UI.Control");
+			DomReturnType swc = new DomReturnType ("System.Web.UI.Control");
 			
 			//return classes if they derive from system.web.ui.control
-			foreach (IMember mem in database.GetNamespaceContents ("System.Web.UI", true, true)) {
+			foreach (IMember mem in database.GetNamespaceContents (namespac, true, true)) {
 				IType cls = mem as IType;
-				if (cls != null && !cls.IsAbstract && cls.IsPublic && IsSubclassOf (database, cls, swc))
+				if (cls != null)
+					System.Console.WriteLine("{0} {1} {2}", cls, cls.IsPublic, cls.IsBaseType (swc));
+				if (cls != null && !cls.IsAbstract && cls.IsPublic && cls.IsBaseType (swc))
 					yield return cls;
 			}
-		}
-		
-		static bool IsSubclassOf (ProjectDom database, IType cls, IType baseClass)
-		{
-			foreach (IType t in database.GetInheritanceTree (cls))
-				if (t == baseClass)
-					return true;
-			return false;
 		}
 		
 		#endregion
