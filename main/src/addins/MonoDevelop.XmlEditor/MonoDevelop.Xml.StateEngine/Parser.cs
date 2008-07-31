@@ -38,6 +38,7 @@ namespace MonoDevelop.Xml.StateEngine
 	{
 		RootState rootState;
 		State currentState;
+		State previousState;
 		bool buildTree;
 		
 		int position;
@@ -51,6 +52,7 @@ namespace MonoDevelop.Xml.StateEngine
 		{
 			this.rootState = rootState;
 			this.currentState = rootState;
+			this.previousState = rootState;
 			this.buildTree = buildTree;
 			Reset ();
 		}
@@ -61,6 +63,7 @@ namespace MonoDevelop.Xml.StateEngine
 			
 			rootState = copyFrom.rootState;
 			currentState = copyFrom.currentState;
+			previousState = copyFrom.previousState;
 			
 			position = copyFrom.position;
 			stateTag = copyFrom.stateTag;
@@ -88,6 +91,7 @@ namespace MonoDevelop.Xml.StateEngine
 		public void Reset ()
 		{
 			currentState = rootState;
+			previousState = rootState;
 			position = 0;
 			stateTag = 0;
 			keywordBuilder = new StringBuilder ();
@@ -115,6 +119,7 @@ namespace MonoDevelop.Xml.StateEngine
 						return;
 					
 					// state changed; reset stuff
+					previousState = currentState;
 					currentState = nextState;
 					stateTag = 0;
 					currentStateLength = 0;
@@ -128,11 +133,13 @@ namespace MonoDevelop.Xml.StateEngine
 					if (rollback == null)
 						return;
 					
-					//"complex" rollbacks require actually moving backwards
+					//"complex" rollbacks require actually skipping backwards.
+					//Note the previous state is invalid for this operation.
 					else if (rollback.Length > 0) {
-						position -= rollback.Length;
+						position -= (rollback.Length + 1);
 						foreach (char rollChar in rollback)
 							Push (rollChar);
+						position++;
 					}
 				}
 				throw new InvalidOperationException ("Too many state changes for char '" + c + "'. Current state is " + currentState.ToString () + ".");
@@ -215,6 +222,10 @@ namespace MonoDevelop.Xml.StateEngine
 			get { return keywordBuilder; }
 		}
 		
+		State IParseContext.PreviousState {
+			get { return previousState; }
+		}
+		
 		public int CurrentStateLength { get { return currentStateLength; } }
 		public NodeStack Nodes { get { return nodes; } }
 		
@@ -278,6 +289,7 @@ namespace MonoDevelop.Xml.StateEngine
 		StringBuilder KeywordBuilder { get; }
 		int CurrentStateLength { get; }
 		int Position { get; }
+		State PreviousState { get; }
 		NodeStack Nodes { get; }
 		bool BuildTree { get; }
 		void LogError (string message);

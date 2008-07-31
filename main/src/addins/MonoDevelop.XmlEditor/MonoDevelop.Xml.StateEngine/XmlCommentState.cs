@@ -40,6 +40,11 @@ namespace MonoDevelop.Xml.StateEngine
 		
 		public override State PushChar (char c, IParseContext context, ref string rollback)
 		{
+			if (context.CurrentStateLength == 1) {
+				int start = context.Position - "<!--".Length - 1;
+				context.Nodes.Push (new XComment (start));
+			}
+			
 			if (c == '-') {
 				//make sure we know when there are two '-' chars together
 				if (context.StateTag == NOMATCH)
@@ -51,10 +56,13 @@ namespace MonoDevelop.Xml.StateEngine
 				if (c == '>') {
 					// if the '--' is followed by a '>', the state has ended
 					// so attach a node to the DOM and end the state
+					XComment comment = (XComment) context.Nodes.Pop ();
+					
 					if (context.BuildTree) {
-						int start = context.Position - (context.CurrentStateLength + "<!--".Length);
-						((XContainer) context.Nodes.Peek ()).AddChildNode (new XComment (start, context.Position));
+						comment.End (context.Position);
+						((XContainer) context.Nodes.Peek ()).AddChildNode (comment);
 					}
+					
 					rollback = string.Empty;
 					return Parent;
 				} else {

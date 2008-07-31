@@ -38,21 +38,27 @@ namespace MonoDevelop.Xml.StateEngine
 	{
 		XmlNameState XmlNameState;
 		XmlAttributeValueState XmlAttributeValueState;
+		XmlMalformedTagState MalformedTagState;
 		
 		const int NAMING = 0;
 		const int GETTINGEQ = 1;
 		const int GETTINGVAL = 2;
 		
 		public XmlAttributeState ()
-			: this (new XmlNameState (), new XmlAttributeValueState ())
+			: this (new XmlNameState (), new XmlAttributeValueState (), new XmlMalformedTagState ())
 		{}
 		
-		public XmlAttributeState (XmlNameState nameState, XmlAttributeValueState valueState)
+		public XmlAttributeState (
+			XmlNameState nameState,
+			XmlAttributeValueState valueState,
+			XmlMalformedTagState malformedTagState)
 		{
 			this.XmlNameState = nameState;
 			this.XmlAttributeValueState = valueState;
+			this.MalformedTagState = malformedTagState;
 			Adopt (this.XmlNameState);
 			Adopt (this.XmlAttributeValueState);
+			Adopt (this.MalformedTagState);
 		}
 
 		public override State PushChar (char c, IParseContext context, ref string rollback)
@@ -60,11 +66,12 @@ namespace MonoDevelop.Xml.StateEngine
 			XAttribute att = context.Nodes.Peek () as XAttribute;
 			
 			if (c == '<') {
-				context.LogError ("Attribute ended unexpectedly with '<' character.");
-				if (att != null)
-					context.Nodes.Pop ();
+				//MalformedTagState handles errors and cleanup
+				//context.LogError ("Attribute ended unexpectedly with '<' character.");
+				//if (att != null)
+				//	context.Nodes.Pop ();
 				rollback = string.Empty;
-				return this.Parent;
+				return MalformedTagState;
 			}
 			
 			//state has just been entered
@@ -73,7 +80,7 @@ namespace MonoDevelop.Xml.StateEngine
 				//starting a new attribute?
 				if (att == null) {
 					Debug.Assert (context.StateTag == NAMING);
-					att = new XAttribute (context.Position);
+					att = new XAttribute (context.Position - 1);
 					context.Nodes.Push (att);
 					rollback = string.Empty;
 					return XmlNameState;
@@ -84,7 +91,7 @@ namespace MonoDevelop.Xml.StateEngine
 					} else {
 						//Got value, so end attribute
 						context.Nodes.Pop ();
-						att.End (context.Position);
+						att.End (context.Position - 1);
 						IAttributedXObject element = (IAttributedXObject) context.Nodes.Peek ();
 						element.Attributes.AddAttribute (att);
 						rollback = string.Empty;
@@ -94,11 +101,12 @@ namespace MonoDevelop.Xml.StateEngine
 			}
 			
 			if (c == '>') {
-				context.LogWarning ("Attribute ended unexpectedly with '>' character.");
-				if (att != null)
-					context.Nodes.Pop ();
+				//MalformedTagState handles errors and cleanup
+				//context.LogWarning ("Attribute ended unexpectedly with '>' character.");
+				//if (att != null)
+				//	context.Nodes.Pop ();
 				rollback = string.Empty;
-				return this.Parent;
+				return MalformedTagState;
 			}
 			
 			if (context.StateTag == GETTINGEQ) {
@@ -117,11 +125,12 @@ namespace MonoDevelop.Xml.StateEngine
 				}
 			}
 			
-			context.LogError ("Unexpected character '" + c + "' in attribute.");
-			if (att != null)
-				context.Nodes.Pop ();
+			//MalformedTagState handles errors and cleanup
+			//context.LogError ("Unexpected character '" + c + "' in attribute.");
+			//if (att != null)
+			//	context.Nodes.Pop ();
 			rollback = string.Empty;
-			return Parent;
+			return MalformedTagState;
 		}
 	}
 }

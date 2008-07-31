@@ -40,6 +40,11 @@ namespace MonoDevelop.Xml.StateEngine
 		
 		public override State PushChar (char c, IParseContext context, ref string rollback)
 		{
+			if (context.CurrentStateLength == 1) {
+				int start = context.Position - "<![CDATA[".Length - 1;
+				context.Nodes.Push (new XCData (start));
+			}
+			
 			if (c == ']') {
 				//make sure we know when there are two ']' chars together
 				if (context.StateTag == NOMATCH)
@@ -50,9 +55,11 @@ namespace MonoDevelop.Xml.StateEngine
 			} else if (c == '>' && context.StateTag == DOUBLE_BRACKET) {
 				// if the ']]' is followed by a '>', the state has ended
 				// so attach a node to the DOM and end the state
+				XCData cdata = (XCData) context.Nodes.Pop ();
+				
 				if (context.BuildTree) {
-					int start = context.Position - (context.CurrentStateLength + "<![CDATA[".Length);
-					((XContainer) context.Nodes.Peek ()).AddChildNode (new XCData (start, context.Position));
+					cdata.End (context.Position);
+					((XContainer) context.Nodes.Peek ()).AddChildNode (cdata); 
 				}
 				return Parent;
 			} else {

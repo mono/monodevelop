@@ -114,6 +114,10 @@ namespace MonoDevelop.Xml.StateEngine
 		}
 		
 		protected XObject () {}
+		
+		public virtual string FriendlyPathRepresentation {
+			get { return GetType ().ToString (); }
+		}
 	}
 	
 	public abstract class XNode : XObject
@@ -302,7 +306,6 @@ namespace MonoDevelop.Xml.StateEngine
 			foreach (XNode child in Nodes)
 				child.BuildTreeString (builder, indentLevel + 1);
 		}
-
 	}
 	
 	public class XElement : XContainer, IAttributedXObject
@@ -401,6 +404,10 @@ namespace MonoDevelop.Xml.StateEngine
 			builder.Append (' ', indentLevel * 2);
 			builder.AppendLine ("]");
 		}
+		
+		public override string FriendlyPathRepresentation {
+			get { return name.FullName; }
+		}
 
 	}
 	
@@ -466,6 +473,11 @@ namespace MonoDevelop.Xml.StateEngine
 			return string.Format (
 				"[XAttribute Name='{0}' Location='{1}' Value='{2}']", name.FullName, this.Position, this.valu);
 		}
+		
+		public override string FriendlyPathRepresentation {
+			get { return "@" + name.FullName; }
+		}
+
 
 	}
 	
@@ -539,6 +551,11 @@ namespace MonoDevelop.Xml.StateEngine
 		
 		protected XCData () {}
 		protected override XObject NewInstance () { return new XCData (); }
+		
+		public override string FriendlyPathRepresentation {
+			get { return "<![CDATA[ ]]>"; }
+		}
+
 	}
 	
 	public class XComment : XNode
@@ -548,6 +565,10 @@ namespace MonoDevelop.Xml.StateEngine
 		
 		protected XComment () {}
 		protected override XObject NewInstance () { return new XComment (); }
+		
+		public override string FriendlyPathRepresentation {
+			get { return "<!-- -->"; }
+		}
 	}
 	
 	public class XProcessingInstruction : XNode
@@ -557,6 +578,10 @@ namespace MonoDevelop.Xml.StateEngine
 		
 		protected XProcessingInstruction () {}
 		protected override XObject NewInstance () { return new XProcessingInstruction (); }
+		
+		public override string FriendlyPathRepresentation {
+			get { return "<? ?>"; }
+		}
 	}
 	
 	public class XDocType : XNode 
@@ -566,6 +591,10 @@ namespace MonoDevelop.Xml.StateEngine
 		
 		protected XDocType () {}
 		protected override XObject NewInstance () { return new XDocType (); }
+		
+		public override string FriendlyPathRepresentation {
+			get { return "<!DOCTYPE>"; }
+		}
 	}
 	
 	public class XClosingTag : XNode, INamedXObject
@@ -603,12 +632,21 @@ namespace MonoDevelop.Xml.StateEngine
 			//immutable types
 			name = copyFromAtt.name;
 		}
+		
+		public override string FriendlyPathRepresentation {
+			get { return "/" + name.FullName; }
+		}
+
 	}
 	
 	public class XDocument : XContainer
 	{
 		public XDocument () : base (0) {}
 		protected override XObject NewInstance () { return new XDocument (); }
+		
+		public override string FriendlyPathRepresentation {
+			get { throw new InvalidOperationException ("Should not display document in path bar."); }
+		}
 	}
 	
 	public interface INamedXObject

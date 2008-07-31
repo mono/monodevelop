@@ -39,6 +39,17 @@ namespace MonoDevelop.Xml.StateEngine
 		const int SINGLEQUOTE = 2;
 		const int DOUBLEQUOTE = 3;
 		
+		XmlMalformedTagState MalformedTagState;
+		
+		public XmlAttributeValueState () : this (new XmlMalformedTagState ())
+		{}
+		
+		public XmlAttributeValueState (XmlMalformedTagState malformedTagState)
+		{
+			this.MalformedTagState = malformedTagState;
+			Adopt (this.MalformedTagState);
+		}
+		
 		public override State PushChar (char c, IParseContext context, ref string rollback)
 		{
 			XAttribute att = (XAttribute) context.Nodes.Peek ();
@@ -56,16 +67,18 @@ namespace MonoDevelop.Xml.StateEngine
 					context.LogWarning ("Unquoted attribute value");
 					context.StateTag = UNDELIMITED;
 				} else {
-					context.LogWarning ("Unexpected character '" + c + "' getting attribute value");
+					//MalformedTagState handles error reporting
+					//context.LogWarning ("Unexpected character '" + c + "' getting attribute value");
 					rollback = string.Empty;
-					return Parent;
+					return MalformedTagState;
 				}
 			}
 			
 			if (c == '<') {
-				context.LogError  ("Attribute value ended unexpectedly.");
+				//MalformedTagState handles error reporting
+				//context.LogError  ("Attribute value ended unexpectedly.");
 				rollback = string.Empty;
-				return this.Parent;
+				return MalformedTagState;
 			}
 			
 			//special handling for "undelimited" values
@@ -76,7 +89,9 @@ namespace MonoDevelop.Xml.StateEngine
 				} else if (char.IsWhiteSpace (c) || c == '>' || c == '\\') {
 					att.Value = context.KeywordBuilder.ToString ();
 				} else {
-					context.LogWarning ("Unexpected character '" + c + "' getting attribute value");
+					//MalformedTagState handles error reporting
+					//context.LogWarning ("Unexpected character '" + c + "' getting attribute value");
+					return MalformedTagState;
 				}
 				rollback = string.Empty;
 				return Parent;

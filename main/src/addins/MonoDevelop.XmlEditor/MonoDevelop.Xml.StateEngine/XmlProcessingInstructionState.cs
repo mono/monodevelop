@@ -39,6 +39,11 @@ namespace MonoDevelop.Xml.StateEngine
 		
 		public override State PushChar (char c, IParseContext context, ref string rollback)
 		{
+			if (context.CurrentStateLength == 1) {
+				int start = context.Position - "<?".Length - 1;
+				context.Nodes.Push (new XProcessingInstruction (start));
+			}
+			
 			if (c == '?') {
 				if (context.StateTag == NOMATCH) {
 					context.StateTag = QUESTION;
@@ -47,10 +52,11 @@ namespace MonoDevelop.Xml.StateEngine
 			} else if (c == '>' && context.StateTag == QUESTION) {
 				// if the '?' is followed by a '>', the state has ended
 				// so attach a node to the DOM and end the state
+				XProcessingInstruction xpi = (XProcessingInstruction) context.Nodes.Pop ();
+				
 				if (context.BuildTree) {
-					int start = context.Position - (context.CurrentStateLength + "<?".Length);
-					((XContainer) context.Nodes.Peek ()).AddChildNode (
-						new XProcessingInstruction (start, context.Position));
+					xpi.End (context.Position);
+					((XContainer) context.Nodes.Peek ()).AddChildNode (xpi); 
 				}
 				return Parent;
 			} else {

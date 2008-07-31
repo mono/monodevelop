@@ -1,3 +1,18 @@
+2008-07-31  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Xml.StateEngine/XmlAttributeValueState.cs,
+	  MonoDevelop.Xml.StateEngine/XmlAttributeState.cs: Use a
+	  MalformedTagState for recovery.
+	* MonoDevelop.Xml.StateEngine/XmlCommentState.cs,
+	  MonoDevelop.Xml.StateEngine/XmlDocTypeState.cs,
+	  MonoDevelop.Xml.StateEngine/XmlCDataState.cs,
+	  MonoDevelop.Xml.StateEngine/XmlProcessingInstructionState.cs:
+	  Insert nodes when state begins (instead of end) so that we can use
+	  them in paths.
+	* MonoDevelop.Xml.StateEngine/Parser.cs: Track previous state.
+	* MonoDevelop.Xml.StateEngine/XDom.cs: Add support for getting a
+	  "friendly" representation of the node for a user-visible path.
+
 2008-07-30  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Xml.StateEngine/XmlClosingTagState.cs,
