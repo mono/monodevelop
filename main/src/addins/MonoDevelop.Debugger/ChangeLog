@@ -1,3 +1,7 @@
+2008-07-31  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Debugger/ObjectValuePad.cs: Remove debug code.
+
 2008-07-25  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Debugger.addin.xml, MonoDevelop.Debugger.mdp,
