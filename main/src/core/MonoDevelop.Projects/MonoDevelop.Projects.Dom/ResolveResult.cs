@@ -143,6 +143,31 @@ namespace MonoDevelop.Projects.Dom
 		}
 	}
 	
+	public class AnonymousTypeResolveResult : ResolveResult
+	{
+		IType anonymousType;
+		
+		public IType AnonymousType {
+			get {
+				return anonymousType;
+			}
+			set {
+				anonymousType = value;
+			}
+		}
+		
+		public AnonymousTypeResolveResult (IType anonymousType)
+		{
+			this.anonymousType = anonymousType; 
+		}
+		
+		public override IEnumerable<object> CreateResolveResult (ProjectDom dom)
+		{
+			foreach (IMember member in AnonymousType.Members) {
+				yield return member;
+			}
+		}
+	}
 	
 	public class MemberResolveResult : ResolveResult
 	{

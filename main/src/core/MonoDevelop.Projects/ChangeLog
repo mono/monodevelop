@@ -1,3 +1,8 @@
+2008-07-31  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Dom/ResolveResult.cs: worked on C#3 code
+	  completion.
+
 2008-07-30  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom.Parser/DatabaseProjectDom.cs,
