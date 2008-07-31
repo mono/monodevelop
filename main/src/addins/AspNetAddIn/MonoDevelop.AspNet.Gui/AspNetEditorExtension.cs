@@ -688,24 +688,43 @@ namespace MonoDevelop.AspNet.Gui
 			S.Parser treeParser = this.tracker.Engine.GetTreeParser ();
 			
 			//locate the node
-			List<S.XElement> path = new List<S.XElement> ();
-			foreach (S.XObject ob in treeParser.Nodes)
-				if (ob is S.XElement)
-					path.Add ((S.XElement)ob);
-			S.XElement el = path [path.Count - (depth + 1)];
+			List<S.XObject> path = new List<S.XObject> (treeParser.Nodes);
+			
+			//note: list is backwards, and we want ignore the root XDocument
+			S.XObject ob = path [path.Count - (depth + 2)];
+			S.XNode node = ob as S.XNode;
+			S.XElement el = node as S.XElement;
 			
 			//hoist this as it may not be cheap to evaluate (P/Invoke), but won't be changing during the loop
 			int textLen = Editor.TextLength;
 			
 			//run the parser until the tag's closed, or we move to its sibling or parent
-			while (el.NextSibling == null && treeParser.Position < textLen && treeParser.Nodes.Peek () != el.Parent) {
-				char c = Editor.GetCharAt (treeParser.Position);
-				treeParser.Push (c);
-				if (el.IsClosed && el.ClosingTag.IsComplete)
-					break;
+			if (node != null) {
+				while (node.NextSibling == null &&
+					treeParser.Position < textLen && treeParser.Nodes.Peek () != ob.Parent)
+				{
+					char c = Editor.GetCharAt (treeParser.Position);
+					treeParser.Push (c);
+					if (el != null && el.IsClosed && el.ClosingTag.IsComplete)
+						break;
+				}
+			} else {
+				while (ob.Position.End < ob.Position.Start &&
+			       		treeParser.Position < textLen && treeParser.Nodes.Peek () != ob.Parent)
+				{
+					char c = Editor.GetCharAt (treeParser.Position);
+					treeParser.Push (c);
+				}
 			}
 			
-			if (el.IsClosed) {
+			if (el == null) {
+				MonoDevelop.Core.LoggingService.LogDebug ("Selecting {0}", ob.Position);
+				int s = ob.Position.Start;
+				int e = ob.Position.End;
+				if (s > -1 && e > s)
+					Editor.Select (s, e);
+			}
+			else if (el.IsClosed) {
 				MonoDevelop.Core.LoggingService.LogDebug ("Selecting {0}-{1}",
 				    el.Position, el.ClosingTag.Position);
 				
@@ -750,21 +769,19 @@ namespace MonoDevelop.AspNet.Gui
 			return new S.XName (Editor.GetText (this.tracker.Engine.Position - this.tracker.Engine.CurrentStateLength, pos));
 		}
 		
-		List<S.XElement> GetCurrentPath ()
+		List<S.XObject> GetCurrentPath ()
 		{
 			this.tracker.UpdateEngine ();
-			List<S.XElement> path = new List<S.XElement> ();
+			List<S.XObject> path = new List<S.XObject> (this.tracker.Engine.Nodes);
 			
-			foreach (S.XObject ob in this.tracker.Engine.Nodes) {
-				S.XElement el = ob as S.XElement;
-				if (el != null)
-					path.Add (el);
-			}
+			//remove the root XDocument
+			path.RemoveAt (path.Count - 1);
 			
-			if (this.tracker.Engine.CurrentState is S.XmlNameState 
-			    && this.tracker.Engine.CurrentState.Parent is S.XmlTagState) {
-				path[0] = (S.XElement) path[0].ShallowCopy ();
-				path[0].Name = GetCompleteName ();
+			//complete incomplete XName if present
+			if (this.tracker.Engine.CurrentState is S.XmlNameState && path[0] is S.INamedXObject) {
+				path[0] = (S.XObject) path[0].ShallowCopy ();
+				S.XName completeName = GetCompleteName ();
+				((S.INamedXObject)path[0]).Name = completeName;
 			}
 			path.Reverse ();
 			return path;
@@ -772,10 +789,13 @@ namespace MonoDevelop.AspNet.Gui
 		
 		void UpdatePath ()
 		{
-			List<S.XElement> l = GetCurrentPath ();
+			List<S.XObject> l = GetCurrentPath ();
+			
+			//build the list
 			string[] path = new string[l.Count];
 			for (int i = 0; i < l.Count; i++) {
-				path[i] = l[i].Name.FullName;
+				if (l[i].FriendlyPathRepresentation == null) System.Console.WriteLine(l[i].GetType ());
+				path[i] = l[i].FriendlyPathRepresentation ?? "<>";
 			}
 			
 			string[] oldPath = currentPath;

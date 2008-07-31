@@ -1,5 +1,19 @@
 2008-07-31  Michael Hutchinson <mhutchinson@novell.com> 
 
+	* MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs: Show all kinds of
+	  nodes in the path bar, and allow selecting them.
+	* MonoDevelop.AspNet.StateEngine/AspNetDirectiveState.cs,
+	  MonoDevelop.AspNet.StateEngine/AspNetExpressionState.cs: Fix start
+	  offsets.
+	* MonoDevelop.AspNet.StateEngine/AspNetDom.cs: Add friendly
+	  representations.
+	* MonoDevelop.AspNet.StateEngine/AspNetSpeculativeExpressionState.cs,
+	  MonoDevelop.AspNet.StateEngine/AspNetFreeState.cs: Implement
+	  speculatives states. Works for expressions and server comments
+	  within tags, though not within attributes.
+
+2008-07-31  Michael Hutchinson <mhutchinson@novell.com> 
+
 	* MonoDevelop.AspNet/WebTypeManager.cs,
 	  MonoDevelop.AspNet.Parser/DocumentReferenceManager.cs: Clean up
 	  System.Web lookup code.

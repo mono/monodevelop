@@ -51,17 +51,17 @@ namespace MonoDevelop.AspNet.StateEngine
 				
 				//DATABINDING EXPRESSION <%#
 				case '#':
-					context.Nodes.Push (new AspNetDataBindingExpression (context.Position - 2));
+					context.Nodes.Push (new AspNetDataBindingExpression (context.Position - 3));
 					break;
 					
 				//RESOURCE EXPRESSION <%$
 				case '$':
-					context.Nodes.Push (new AspNetResourceExpression (context.Position - 2));
+					context.Nodes.Push (new AspNetResourceExpression (context.Position - 3));
 					break;
 				
 				//RENDER EXPRESSION <%=
 				case '=':
-					context.Nodes.Push (new AspNetRenderExpression (context.Position - 2));
+					context.Nodes.Push (new AspNetRenderExpression (context.Position - 3));
 					break;
 				
 				// RENDER BLOCK

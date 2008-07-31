@@ -38,18 +38,23 @@ namespace MonoDevelop.AspNet.StateEngine
 	public class AspNetSpeculativeExpressionState : XmlMalformedTagState
 	{
 		AspNetServerCommentState CommentState;
+		AspNetExpressionState ExpressionState;
 		XmlMalformedTagState MalformedTagState;
 		
-		public AspNetSpeculativeExpressionState () : this (new AspNetServerCommentState (), new XmlMalformedTagState ())
+		public AspNetSpeculativeExpressionState () : this (
+			new AspNetServerCommentState (),
+			new AspNetExpressionState ())
 		{
 		}
 		
-		public AspNetSpeculativeExpressionState (AspNetServerCommentState commentState, XmlMalformedTagState malformedTagState)
+		public AspNetSpeculativeExpressionState (
+			AspNetServerCommentState commentState,
+			AspNetExpressionState expressionState)
 		{
 			this.CommentState = commentState;
-			this.MalformedTagState = malformedTagState;
+			this.ExpressionState = expressionState;
 			Adopt (commentState);
-			Adopt (malformedTagState);
+			Adopt (expressionState);
 		}
 		
 		const int INCOMING = 0;
@@ -62,16 +67,29 @@ namespace MonoDevelop.AspNet.StateEngine
 		{
 			switch (context.StateTag) {
 			case INCOMING:
-				if (c == '<') {
+				if (c == '<' && context.PreviousState != ExpressionState) {
 					context.StateTag = BRACKET;
 					return null;
-				} else {
-					//comment has successfully been collected
-					return Parent;
+				} else if (context.PreviousState == ExpressionState) {
+					//expression has successfully been collected
+					//so clean up down to the tag level
+					
+					XObject o = context.Nodes.Peek () as XAttribute;
+					if (o != null) {
+						o.End (context.Position);
+						context.Nodes.Pop ();
+					}
+					
+					rollback = string.Empty;
+					System.Console.WriteLine(c);
+					return (Parent as XmlTagState) ?? 
+						(Parent.Parent as XmlTagState) ??
+							Parent.Parent.Parent;
 				}
+				break;
 				
 			case BRACKET:
-				if (c == '!') {
+				if (c == '%') {
 					context.StateTag = PERCENT;
 					return null;
 				} else {
@@ -85,10 +103,13 @@ namespace MonoDevelop.AspNet.StateEngine
 				if (c == '-') {
 					context.StateTag = PERCENT_DASH;
 					return null;
-				} else {
+				} else if (c == '@') {
 					context.StateTag = MALFORMED;
-					context.LogError ("Malformed comment");
-					rollback = "<!";
+					context.LogError ("Invalid directive location");
+					rollback = "<%";
+				} else {
+					rollback = string.Empty;
+					return ExpressionState;
 				}
 				break;
 				
@@ -97,8 +118,8 @@ namespace MonoDevelop.AspNet.StateEngine
 					return CommentState;
 				} else {
 					context.StateTag = MALFORMED;
-					context.LogError ("Malformed comment");
-					rollback = "<!-";
+					context.LogError ("Malformed server comment");
+					rollback = "<%-";
 				}
 				break;
 				
