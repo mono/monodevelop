@@ -62,6 +62,7 @@ FILES =  \
 	NullValueReference.cs \
 	ObjectUtil.cs \
 	PropertyReference.cs \
+	RawViewSource.cs \
 	RemoteFrameObject.cs \
 	Server.cs \
 	TypeValueReference.cs \

@@ -53,7 +53,7 @@ namespace DebuggerServer
 				return null;
 			
 			TargetPropertyInfo indexerProp = null;
-			foreach (MemberReference mem in ObjectUtil.GetTypeMembers (thread, target.Type, false, false, true, true, false)) {
+			foreach (MemberReference mem in ObjectUtil.GetTypeMembers (thread, target.Type, false, false, true, true, ReqMemberAccess.All)) {
 				if (mem.Member.IsStatic)
 					continue;
 				if (mem.Member is TargetPropertyInfo) {
@@ -94,7 +94,7 @@ namespace DebuggerServer
 		
 		public override string Name {
 			get {
-				return "[" + Server.Instance.Evaluator.TargetObjectToString (Thread, index) + "]";
+				return "[" + Server.Instance.Evaluator.TargetObjectToExpression (Thread, index) + "]";
 			}
 		}
 

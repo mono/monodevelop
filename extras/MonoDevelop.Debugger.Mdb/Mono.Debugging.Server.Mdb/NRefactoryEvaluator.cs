@@ -233,7 +233,7 @@ namespace DebuggerServer
 		{
 			List<TargetFunctionType> candidates = new List<TargetFunctionType> ();
 
-			foreach (MemberReference mem in ObjectUtil.GetTypeMembers (frame.Thread, type, false, false, false, true, false)) {
+			foreach (MemberReference mem in ObjectUtil.GetTypeMembers (frame.Thread, type, false, false, false, true, ReqMemberAccess.All)) {
 				TargetMethodInfo met = (TargetMethodInfo) mem.Member;
 				if (met.Name == methodName && met.Type.ParameterTypes.Length == argtypes.Length && (met.IsStatic && allowStatic || !met.IsStatic && allowInstance))
 					candidates.Add (met.Type);
@@ -359,7 +359,7 @@ namespace DebuggerServer
 			
 			TargetStructType type = frame.Method.GetDeclaringType (frame.Thread);
 			
-			foreach (MemberReference mem in ObjectUtil.GetTypeMembers (frame.Thread, type, thisobj==null, true, true, false, false)) {
+			foreach (MemberReference mem in ObjectUtil.GetTypeMembers (frame.Thread, type, thisobj==null, true, true, false, ReqMemberAccess.All)) {
 				if (mem.Member.Name != name)
 					continue;
 				if (mem.Member is TargetFieldInfo) {

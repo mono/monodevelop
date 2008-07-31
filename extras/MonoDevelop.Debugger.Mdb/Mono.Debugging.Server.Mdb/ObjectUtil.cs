@@ -28,7 +28,9 @@
 // #define REFLECTION_INVOKE
 
 using System;
+using System.Diagnostics;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Text;
 using MD = Mono.Debugger;
 using SR = System.Reflection;
@@ -40,6 +42,9 @@ namespace DebuggerServer
 {
 	public static class ObjectUtil
 	{
+		static Dictionary<string,TypeDisplayData> typeDisplayData = new Dictionary<string,TypeDisplayData> ();
+		static Dictionary<TargetType,TargetType> proxyTypes = new Dictionary<TargetType,TargetType> ();
+		
 		public static TargetObject GetRealObject (MD.Thread thread, TargetObject obj)
 		{
 			if (obj == null)
@@ -80,6 +85,132 @@ namespace DebuggerServer
 			return obj;
 		}	
 		
+		public static TargetObject GetProxyObject (MD.StackFrame frame, TargetObject obj)
+		{
+			TypeDisplayData data = GetTypeDisplayData (frame, obj.Type);
+			if (data.ProxyType == null)
+				return obj;
+
+			TargetType ttype = frame.Language.LookupType (data.ProxyType);
+			if (ttype == null) {
+				int i = data.ProxyType.IndexOf (',');
+				if (i != -1)
+					ttype = frame.Language.LookupType (data.ProxyType.Substring (0, i).Trim ());
+			}
+			if (ttype == null)
+				throw new EvaluatorException ("Unknown type '{0}'", data.ProxyType);
+
+			TargetObject proxy = CreateObject (frame.Thread, ttype, obj);
+			return GetRealObject (frame.Thread, proxy);
+		}
+		
+		public static TypeDisplayData GetTypeDisplayData (MD.StackFrame frame, TargetType type)
+		{
+			MD.Thread thread = frame.Thread;
+			
+			TypeDisplayData data;
+			if (typeDisplayData.TryGetValue (type.Name, out data))
+				return data;
+
+			TargetObject tt = GetTypeOf (frame, type);
+			TargetObject inherit = frame.Language.CreateInstance (thread, true);
+
+			data = new TypeDisplayData ();
+			
+			data.IsProxyType = proxyTypes.ContainsKey (type);
+			
+			// Look for DebuggerTypeProxyAttribute
+			TargetObject attType = GetTypeOf (frame, "System.Diagnostics.DebuggerTypeProxyAttribute");
+			TargetObject at = CallStaticMethod (thread, "GetCustomAttribute", "System.Attribute", tt, attType, inherit);
+			at = GetRealObject (thread, at);
+			
+			if (at != null && !(at.HasAddress && at.GetAddress (thread).IsNull)) {
+				TargetFundamentalObject pname = GetPropertyValue (thread, "ProxyTypeName", at) as TargetFundamentalObject;
+				data.ProxyType = (string) pname.GetObject (thread);
+				TargetType ptype = LookupType (frame, data.ProxyType);
+				proxyTypes [ptype] = ptype;
+			}
+			
+			// Look for DebuggerDisplayAttribute
+			attType = GetTypeOf (frame, "System.Diagnostics.DebuggerDisplayAttribute");
+			at = CallStaticMethod (thread, "GetCustomAttribute", "System.Attribute", tt, attType, inherit);
+			at = GetRealObject (thread, at);
+			
+			if (at != null && !(at.HasAddress && at.GetAddress (thread).IsNull)) {
+				TargetFundamentalObject pname = GetPropertyValue (thread, "Value", at) as TargetFundamentalObject;
+				data.ValueDisplayString = (string) pname.GetObject (thread);
+				pname = GetPropertyValue (thread, "Type", at) as TargetFundamentalObject;
+				data.TypeDisplayString = (string) pname.GetObject (thread);
+				pname = GetPropertyValue (thread, "Name", at) as TargetFundamentalObject;
+				data.NameDisplayString = (string) pname.GetObject (thread);
+			}
+			
+			// Now check fields and properties
+
+			Dictionary<string,DebuggerBrowsableState> members = new Dictionary<string,DebuggerBrowsableState> ();
+			attType = GetTypeOf (frame, "System.Diagnostics.DebuggerBrowsableAttribute");
+			TargetObject flags = frame.Language.CreateInstance (thread, (int) (BindingFlags.Public|BindingFlags.NonPublic|BindingFlags.Static|BindingFlags.Instance));
+			TargetObject fields = CallMethod (thread, "GetFields", tt, flags);
+			TargetObject properties = CallMethod (thread, "GetProperties", tt, flags);
+			foreach (TargetArrayObject array in new TargetObject [] { fields, properties }) {
+				int len = array.GetArrayBounds (thread).Length;
+				int[] idx = new int [1];
+				for (int n=0; n<len; n++) {
+					idx [0] = n;
+					TargetObject member = array.GetElement (thread, idx);
+					at = CallStaticMethod (thread, "GetCustomAttribute", "System.Attribute", member, attType, inherit);
+					if (at != null && !(at.HasAddress && at.GetAddress (thread).IsNull)) {
+						TargetFundamentalObject mname = (TargetFundamentalObject) GetPropertyValue (thread, "Name", member);
+						TargetEnumObject ob = (TargetEnumObject) GetPropertyValue (thread, "State", at);
+						TargetFundamentalObject fob = (TargetFundamentalObject) ob.GetValue (thread);
+						int val = (int) fob.GetObject (thread);
+						members [mname.GetObject (thread).ToString ()] = (DebuggerBrowsableState) val;
+					}
+				}
+			}
+			if (members.Count > 0)
+				data.MemberData = members;
+			
+			typeDisplayData [type.Name] = data;
+			return data;
+		}
+		
+		public static TargetType LookupType (MD.StackFrame frame, string name)
+		{
+			TargetType ttype = frame.Language.LookupType (name);
+			if (ttype == null) {
+				int i = name.IndexOf (',');
+				if (i != -1)
+					ttype = frame.Language.LookupType (name.Substring (0, i).Trim ());
+			}
+			return ttype;
+		}
+		
+		public static string EvaluateDisplayString (MD.StackFrame frame, TargetStructObject obj, string exp)
+		{
+			StringBuilder sb = new StringBuilder ();
+			int last = 0;
+			int i = exp.IndexOf ("{");
+			while (i != -1 && i < exp.Length) {
+				sb.Append (exp.Substring (last, i - last));
+				i++;
+				int j = exp.IndexOf ("}", i);
+				if (j == -1)
+					return exp;
+				string mem = exp.Substring (i, j-i).Trim ();
+				if (mem.Length == 0)
+					return exp;
+				
+				MemberReference mi = ObjectUtil.FindMember (frame.Thread, obj.Type, mem, false, true, true, true, ReqMemberAccess.All);
+				TargetObject val = mi.GetValue (frame.Thread, obj);
+				sb.Append (Server.Instance.Evaluator.TargetObjectToString (frame.Thread, val));
+				last = j + 1;
+				i = exp.IndexOf ("{", last);
+			}
+			sb.Append (exp.Substring (last));
+			return sb.ToString ();
+		}
+		
 		public static string CallToString (MD.Thread thread, TargetStructObject obj)
 		{
 			try {
@@ -99,10 +230,22 @@ namespace DebuggerServer
 		{
 			List<MemberReference> candidates = new List<MemberReference> ();
 
-			foreach (MemberReference mem in ObjectUtil.GetTypeMembers (thread, type, false, false, false, true, false)) {
-				TargetMethodInfo met = (TargetMethodInfo) mem.Member;
-				if (met.Name == methodName && met.Type.ParameterTypes.Length == argtypes.Length && (met.IsStatic && allowStatic || !met.IsStatic && allowInstance))
-					candidates.Add (mem);
+			if (methodName == ".ctor") {
+				TargetClassType ct = type as TargetClassType;
+				if (ct == null && type.HasClassType)
+					ct = type.ClassType;
+				
+				foreach (TargetMethodInfo met in ct.Constructors) {
+					if (met.Type.ParameterTypes.Length == argtypes.Length)
+						candidates.Add (new MemberReference (met, type));
+				}
+			}
+			else {
+				foreach (MemberReference mem in ObjectUtil.GetTypeMembers (thread, type, false, false, false, true, ReqMemberAccess.All)) {
+					TargetMethodInfo met = (TargetMethodInfo) mem.Member;
+					if (met.Name == methodName && met.Type.ParameterTypes.Length == argtypes.Length && (met.IsStatic && allowStatic || !met.IsStatic && allowInstance))
+						candidates.Add (mem);
+				}
 			}
 			
 			if (candidates.Count == 1) {
@@ -194,8 +337,10 @@ namespace DebuggerServer
 		
 		static TargetPropertyInfo ResolveProperty (MD.Thread thread, TargetType type, string name, ref TargetObject[] indexerArgs)
 		{
-			if (indexerArgs.Length == 0)
-				return FindMember (thread, type, name, false, false, true, false, false) as TargetPropertyInfo;
+			if (indexerArgs.Length == 0) {
+				MemberReference mr = FindMember (thread, type, name, false, false, true, false, ReqMemberAccess.All);
+				return mr != null ? mr.Member as TargetPropertyInfo : null;
+			}
 
 			// It is an indexer. Find the best overload.
 			
@@ -204,7 +349,7 @@ namespace DebuggerServer
 				types [n] = indexerArgs [n].Type;
 			
 			List<MemberReference> candidates = new List<MemberReference> ();
-			foreach (MemberReference mem in GetTypeMembers (thread, type, false, false, true, false, false)) {
+			foreach (MemberReference mem in GetTypeMembers (thread, type, false, false, true, false, ReqMemberAccess.All)) {
 				TargetPropertyInfo prop = mem.Member as TargetPropertyInfo;
 				if (prop != null && prop.Getter.ParameterTypes.Length == indexerArgs.Length)
 					candidates.Add (mem);
@@ -272,6 +417,13 @@ namespace DebuggerServer
 			if (res.ExceptionMessage != null)
 				throw new Exception (res.ExceptionMessage);
 			return res.ReturnObject;
+		}
+		
+		public static TargetObject CallStaticMethod (MD.Thread thread, string name,
+							  string typeName,
+							  params TargetObject[] args)
+		{
+			return CallStaticMethod (thread, name, thread.CurrentFrame.Language.LookupType (typeName), args);
 		}
 		
 		public static TargetObject CallStaticMethod (MD.Thread thread, string name,
@@ -384,15 +536,14 @@ namespace DebuggerServer
 			return Server.Instance.RuntimeInvoke (thread, prop.Getter, null, indexerArgs);
 		}
 
-#if REFLECTION_INVOKE
-		static TargetObject CallMethodWithReflection (MD.Thread thread, SR.BindingFlags flags, string name,
+		internal static TargetObject CallMethodWithReflection (MD.Thread thread, SR.BindingFlags flags, string name,
 							  TargetType type, TargetObject target,
 							  params TargetObject[] args)
 		{
 			MD.StackFrame frame = thread.CurrentFrame;
 			string typeName = type.Name;
 			
-			TargetStructObject tt = GetTypeOf (frame, typeName);
+			TargetStructObject tt = GetTypeOf (frame, type);
 			if (tt == null)
 				throw new InvalidOperationException ("Type not found: " + typeName);
 			TargetObject objName = frame.Language.CreateInstance (thread, name);
@@ -418,11 +569,17 @@ namespace DebuggerServer
 			TargetObject res = CallMethod (thread, "InvokeMember", tt, objName, objFlags, objBinder, objTarget, array);
 			return res;
 		}
-#endif
 		
-		public static MemberReference FindMethod (MD.Thread thread, TargetType type, string name, bool findStatic, bool publicApiOnly, params string[] argTypes)
+		public static TargetObject CreateObject (MD.Thread thread, TargetType type, params TargetObject[] args)
 		{
-			foreach (MemberReference mem in GetTypeMembers (thread, type, findStatic, false, false, true, publicApiOnly)) {
+			SR.BindingFlags flags = SR.BindingFlags.CreateInstance | SR.BindingFlags.Public | SR.BindingFlags.Instance | SR.BindingFlags.Static;
+			TargetObject res = CallMethodWithReflection (thread, flags, "", type, null, args);
+			return GetRealObject (thread, res);
+		}
+		
+		public static MemberReference FindMethod (MD.Thread thread, TargetType type, string name, bool findStatic, ReqMemberAccess access, params string[] argTypes)
+		{
+			foreach (MemberReference mem in GetTypeMembers (thread, type, findStatic, false, false, true, access)) {
 				if (mem.Member.Name == name && mem.Member.IsStatic == findStatic) {
 					TargetMethodInfo met = (TargetMethodInfo) mem.Member;
 					if (met.Type.ParameterTypes.Length == argTypes.Length) {
@@ -437,16 +594,16 @@ namespace DebuggerServer
 			return null;
 		}
 		
-		public static TargetMemberInfo FindMember (MD.Thread thread, TargetType type, string name, bool staticOnly, bool includeFields, bool includeProps, bool includeMethods, bool publicApiOnly)
+		public static MemberReference FindMember (MD.Thread thread, TargetType type, string name, bool staticOnly, bool includeFields, bool includeProps, bool includeMethods, ReqMemberAccess access)
 		{
-			foreach (MemberReference mem in GetTypeMembers (thread, type, staticOnly, includeFields, includeProps, includeMethods, publicApiOnly)) {
+			foreach (MemberReference mem in GetTypeMembers (thread, type, staticOnly, includeFields, includeProps, includeMethods, access)) {
 				if (mem.Member.Name == name)
-					return mem.Member;
+					return mem;
 			}
 			return null;
 		}
 		
-		public static IEnumerable<MemberReference> GetTypeMembers (MD.Thread thread, TargetType t, bool staticOnly, bool includeFields, bool includeProps, bool includeMethods, bool publicApiOnly)
+		public static IEnumerable<MemberReference> GetTypeMembers (MD.Thread thread, TargetType t, bool staticOnly, bool includeFields, bool includeProps, bool includeMethods, ReqMemberAccess access)
 		{
 			TargetStructType type = t as TargetStructType;
 			Dictionary<string,string> foundMethods = new Dictionary<string,string> ();
@@ -481,14 +638,19 @@ namespace DebuggerServer
 				}
 				
 				if (fields != null) {
-					foreach (TargetFieldInfo field in fields)
+					foreach (TargetFieldInfo field in fields) {
+						if (access == ReqMemberAccess.Public && field.Accessibility != TargetMemberAccessibility.Public)
+							continue;
 						if (field.IsStatic || !staticOnly)
 							yield return new MemberReference (field, type);
+					}
 				}
 				
 				if (properties != null) {
 					foreach (TargetPropertyInfo prop in properties) {
-						if (publicApiOnly && prop.Accessibility != TargetMemberAccessibility.Public && prop.Accessibility != TargetMemberAccessibility.Protected)
+						if (access == ReqMemberAccess.Public && prop.Accessibility != TargetMemberAccessibility.Public)
+							continue;
+						if (access == ReqMemberAccess.Auto && prop.Accessibility != TargetMemberAccessibility.Public && prop.Accessibility != TargetMemberAccessibility.Protected)
 							continue;
 						if (prop.IsStatic || !staticOnly)
 							yield return new MemberReference (prop, type);
@@ -497,7 +659,9 @@ namespace DebuggerServer
 				
 				if (methods != null) {
 					foreach (TargetMethodInfo met in methods) {
-						if (publicApiOnly && met.Accessibility != TargetMemberAccessibility.Public && met.Accessibility != TargetMemberAccessibility.Protected)
+						if (access == ReqMemberAccess.Public && met.Accessibility != TargetMemberAccessibility.Public)
+							continue;
+						if (access == ReqMemberAccess.Auto && met.Accessibility != TargetMemberAccessibility.Public && met.Accessibility != TargetMemberAccessibility.Protected)
 							continue;
 						if (met.IsStatic || !staticOnly) {
 							string sig = GetSignature (met);
@@ -532,6 +696,14 @@ namespace DebuggerServer
 				case TargetMemberAccessibility.Public: return ObjectValueFlags.Public;
 				default: return ObjectValueFlags.Private;
 			}
+		}
+		
+		public static TargetStructObject GetTypeOf (MD.StackFrame frame, TargetType ttype)
+		{
+			if (ttype.ClassType != null && ttype.ClassType.Module != null)
+				return GetTypeOf (frame, ttype.Name + ", " + ttype.ClassType.Module.FullName);
+			else
+				return GetTypeOf (frame, ttype.Name);
 		}
 		
 		public static TargetStructObject GetTypeOf (MD.StackFrame frame, string typeName)
@@ -630,6 +802,48 @@ namespace DebuggerServer
 		{
 			Member = member;
 			DeclaringType = type;
+		}
+		
+		public TargetObject GetValue (MD.Thread thread, TargetStructObject thisObj)
+		{
+			if (Member is TargetPropertyInfo) {
+				TargetPropertyInfo prop = (TargetPropertyInfo) Member;
+				return ObjectUtil.GetRealObject (thread, Server.Instance.RuntimeInvoke (thread, prop.Getter, thisObj));
+			}
+			else if (Member is TargetFieldInfo) {
+				TargetFieldInfo field = (TargetFieldInfo) Member;
+				if (field.HasConstValue)
+					return thread.CurrentFrame.Language.CreateInstance (thread, field.ConstValue);
+				TargetClass cls = DeclaringType.GetClass (thread);
+				return ObjectUtil.GetRealObject (thread, cls.GetField (thread, thisObj, field));
+			}
+			else {
+				TargetMethodInfo met = (TargetMethodInfo) Member;
+				return ObjectUtil.GetRealObject (thread, Server.Instance.RuntimeInvoke (thread, met.Type, thisObj));
+			}
+		}
+	}
+	
+	public class TypeDisplayData
+	{
+		public string ProxyType;
+		public string ValueDisplayString;
+		public string TypeDisplayString;
+		public string NameDisplayString;
+		public bool IsProxyType;
+		
+		public Dictionary<string,DebuggerBrowsableState> MemberData;
+		
+		public DebuggerBrowsableState GetMemberBrowsableState (string name)
+		{
+			if (MemberData == null)
+				return DebuggerBrowsableState.Collapsed;
+			
+			DebuggerBrowsableState state;
+			if (MemberData.TryGetValue (name, out state))
+				return state;
+			else
+				return DebuggerBrowsableState.Collapsed;
 		}
 	}
 }

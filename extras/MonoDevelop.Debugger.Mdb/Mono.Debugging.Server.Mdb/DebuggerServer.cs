@@ -211,7 +211,7 @@ namespace DebuggerServer
 				// Initial expression evaluation
 				ML.TargetObject ob = EvaluateExp (activeThread.CurrentFrame, bp.ConditionExpression);
 				if (ob != null)
-					lastConditionValue [ev.Index] = evaluator.TargetObjectToString (activeThread, ob);
+					lastConditionValue [ev.Index] = evaluator.TargetObjectToExpression (activeThread, ob);
 			}
 			
 			events [ev.Index] = be;
@@ -270,7 +270,7 @@ namespace DebuggerServer
 				if (val == null)
 					return false;
 				if (bp.BreakIfConditionChanges) {
-					string current = evaluator.TargetObjectToString (frame.Thread, val);
+					string current = evaluator.TargetObjectToExpression (frame.Thread, val);
 					string last;
 					bool found = lastConditionValue.TryGetValue (eventHandle, out last);
 					lastConditionValue [eventHandle] = current;
