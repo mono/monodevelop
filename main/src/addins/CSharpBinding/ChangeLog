@@ -1,3 +1,8 @@
+2008-07-31  Mike Krüger <mkrueger@novell.com> 
+
+	* Gui/NRefactoryResolver.cs, Gui/ResolveVisitor.cs,
+	  Gui/NewCSharpExpressionFinder.cs: Worked on C#3 code completion.
+
 2008-07-30  Mike Krüger <mkrueger@novell.com> 
 
 	* Gui/CSharpTextEditorExtension.cs, Gui/CSharpTextEditorIndentation.cs:

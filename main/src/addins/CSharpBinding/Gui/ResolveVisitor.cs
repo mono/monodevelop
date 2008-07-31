@@ -38,7 +38,7 @@ using ICSharpCode.NRefactory;
 
 namespace MonoDevelop.CSharpBinding
 {
-	internal class ResolveVisitor : AbstractAstVisitor
+	public class ResolveVisitor : AbstractAstVisitor
 	{
 		NRefactoryResolver resolver;
 		
@@ -61,12 +61,12 @@ namespace MonoDevelop.CSharpBinding
 			return result.ResolvedType ?? DomReturnType.Void;
 		}
 		
-		ResolveResult CreateResult (TypeReference typeReference)
+		internal ResolveResult CreateResult (TypeReference typeReference)
 		{
 			return CreateResult (String.IsNullOrEmpty (typeReference.SystemType) ? typeReference.Type : typeReference.SystemType);
 		}
 		
-		ResolveResult CreateResult (string fullTypeName)
+		internal ResolveResult CreateResult (string fullTypeName)
 		{
 			MemberResolveResult result = new MemberResolveResult (null);
 			result.CallingType   = resolver.CallingType;
@@ -76,7 +76,7 @@ namespace MonoDevelop.CSharpBinding
 			return result;
 		}
 		
-		ResolveResult CreateResult (IReturnType type)
+		internal ResolveResult CreateResult (IReturnType type)
 		{
 			return CreateResult (null, type);
 		}
@@ -98,7 +98,7 @@ namespace MonoDevelop.CSharpBinding
 		
 		public override object VisitIdentifierExpression(IdentifierExpression identifierExpression, object data)
 		{
-			return resolver.ResolveIdentifier (identifierExpression.Identifier.TrimEnd ('.'));
+			return resolver.ResolveIdentifier (this, identifierExpression.Identifier.TrimEnd ('.'));
 		}
 		
 		public override object VisitSizeOfExpression (SizeOfExpression sizeOfExpression, object data)
@@ -133,10 +133,57 @@ namespace MonoDevelop.CSharpBinding
 			return Resolve (assignmentExpression.Left);
 		}
 		
-		public override object VisitUnaryOperatorExpression(UnaryOperatorExpression unaryOperatorExpression, object data)
+		public override object VisitUnaryOperatorExpression (UnaryOperatorExpression unaryOperatorExpression, object data)
 		{
 			return Resolve (unaryOperatorExpression.Expression);
 		}
+		
+		static string GetAnonymousTypeFieldName (Expression expr)
+		{
+			System.Console.WriteLine(expr);
+			if (expr is MemberReferenceExpression) 
+				return ((MemberReferenceExpression)expr).MemberName;
+			if (expr is NamedArgumentExpression) 
+				return ((NamedArgumentExpression)expr).Name;
+			if (expr is IdentifierExpression) 
+				return ((IdentifierExpression)expr).Identifier;
+			return "?";
+		}
+		
+		IType CreateAnonymousClass (CollectionInitializerExpression initializer)
+		{
+			DomType result = new DomType ("AnonymousType");
+			foreach (Expression expr in initializer.CreateExpressions) {
+				DomProperty newProperty = new DomProperty (GetAnonymousTypeFieldName (expr), MonoDevelop.Projects.Dom.Modifiers.Public, DomLocation.Empty, DomRegion.Empty, ResolveType(expr));
+				newProperty.DeclaringType = result;
+				result.Add (newProperty);
+			}
+			return result;
+		}
+		public override object VisitNamedArgumentExpression (NamedArgumentExpression expr, object data)
+		{
+			return expr.Expression.AcceptVisitor (this, data);
+		}
+		
+		public override object VisitObjectCreateExpression (ObjectCreateExpression objectCreateExpression, object data)
+		{
+			if (objectCreateExpression.IsAnonymousType) {
+				ResolveResult result =  new AnonymousTypeResolveResult (CreateAnonymousClass (objectCreateExpression.ObjectInitializer));
+				result.CallingType   = resolver.CallingType;
+				result.CallingMember = resolver.CallingMember;
+				return result;
+			}
+			return null;
+		/*else {
+				IReturnType rt = TypeVisitor.CreateReturnType(objectCreateExpression.CreateType, resolver);
+				if (rt == null)
+					return new UnknownConstructorCallResolveResult(resolver.CallingClass, resolver.CallingMember, objectCreateExpression.CreateType.ToString());
+				
+				return ResolveConstructorOverload(rt, objectCreateExpression.Parameters)
+					?? CreateResolveResult(rt);
+			}*/
+		}
+
 		
 		public override object VisitBinaryOperatorExpression(BinaryOperatorExpression binaryOperatorExpression, object data)
 		{
@@ -290,11 +337,51 @@ namespace MonoDevelop.CSharpBinding
 				return null;
 			
 			ResolveResult targetResult = Resolve (invocationExpression.TargetObject);
-		
 			
 			return targetResult;
 		}
-
+		
+		public override object VisitPrimitiveExpression(PrimitiveExpression primitiveExpression, object data)
+		{
+			if (primitiveExpression.Value == null) 
+				return CreateResult ("");
+			Type type = primitiveExpression.Value.GetType();
+			return CreateResult (type.FullName);
+		}
+		
+		public override object VisitLambdaExpression(LambdaExpression lambdaExpression, object data)
+		{
+			return resolver.ResolveLambda (this, lambdaExpression);
+		}
+		
+		public IReturnType ResolveType (Expression expr)
+		{
+			ResolveResult res =  Resolve (expr);
+			if (res != null)
+				return res.ResolvedType;
+			return null;
+		}
+		
+		public override object VisitQueryExpression(QueryExpression queryExpression, object data)
+		{
+			System.Console.WriteLine("visit query !!!");
+			IReturnType type = null;
+			QueryExpressionSelectClause selectClause = queryExpression.SelectOrGroupClause as QueryExpressionSelectClause;
+			if (selectClause != null)  {
+				type = ResolveType (selectClause.Projection);
+			}
+			if (type == null) {
+				QueryExpressionGroupClause groupClause = queryExpression.SelectOrGroupClause as QueryExpressionGroupClause;
+				if (groupClause != null)
+					type = new DomReturnType ("System.Linq.IGrouping", false,  new List<IReturnType> (new IReturnType[] { ResolveType(groupClause.GroupBy), ResolveType(groupClause.Projection) }));
+			}
+			System.Console.WriteLine("type:" + type); 
+			if (type != null) 
+				return CreateResult (new DomReturnType("System.Collections.Generic.IEnumerable", false, new List<IReturnType> (new IReturnType[] { type })));
+			
+			return null;
+		}
+		
 		
 		IReturnType GetCommonType (IReturnType left, IReturnType right)
 		{

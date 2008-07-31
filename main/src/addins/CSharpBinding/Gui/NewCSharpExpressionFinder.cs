@@ -686,9 +686,9 @@ namespace MonoDevelop.CSharpBinding.Gui
 						frame.SetContext(ExpressionContext.Type);
 					}
 					break;
-//				case Tokens.LambdaArrow:
-//					frame.curlyChildType = FrameType.Statements;
-//					break;
+				case Tokens.LambdaArrow:
+					frame.curlyChildType = FrameType.Statements;
+					break;
 				case Tokens.Event:
 					frame.SetContext(ExpressionContext.DelegateType);
 					frame.curlyChildType = FrameType.Event;
@@ -708,12 +708,12 @@ namespace MonoDevelop.CSharpBinding.Gui
 						frame.SetContext(ExpressionContext.IdentifierExpected);
 					}
 					break;
-//				case Tokens.Where:
-//					if (!frame.InExpressionMode && (frame.type == FrameType.Global || frame.type == FrameType.TypeDecl)) {
-//						frame.state = FrameState.Constraints;
-//						frame.SetDefaultContext();
-//					}
-//					break;
+				case Tokens.Where:
+					if (!frame.InExpressionMode && (frame.type == FrameType.Global || frame.type == FrameType.TypeDecl)) {
+						frame.state = FrameState.Constraints;
+						frame.SetDefaultContext();
+					}
+					break;
 				case Tokens.CloseCurlyBrace:
 				case Tokens.Semicolon:
 					frame.state = FrameState.Normal;

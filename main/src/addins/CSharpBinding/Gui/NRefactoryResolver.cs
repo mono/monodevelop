@@ -115,6 +115,7 @@ namespace MonoDevelop.CSharpBinding
 					}
 				}
 			}
+			
 			if (callingMember != null) {
 				string wrapper = CreateWrapperClassForMember (callingMember);
 				
@@ -237,7 +238,43 @@ namespace MonoDevelop.CSharpBinding
 				type.FullName = searchedTypeResult.Result.FullName;
 		}
 		
-		public ResolveResult ResolveIdentifier (string identifier)
+		public ResolveResult ResolveLambda (ResolveVisitor visitor, Expression lambdaExpression)
+		{
+			if (lambdaExpression.Parent is LambdaExpression) 
+				return ResolveLambda (visitor, lambdaExpression.Parent as Expression);
+			if (lambdaExpression.Parent is ParenthesizedExpression) 
+				return ResolveLambda (visitor, lambdaExpression.Parent as Expression);
+			if (lambdaExpression.Parent is AssignmentExpression) 
+				return visitor.Resolve (((AssignmentExpression)lambdaExpression.Parent).Left);
+			if (lambdaExpression.Parent is CastExpression)
+				return visitor.Resolve (((CastExpression)lambdaExpression.Parent));
+			if (lambdaExpression.Parent is VariableDeclaration) {
+				VariableDeclaration varDec = (VariableDeclaration)lambdaExpression.Parent;
+				return visitor.CreateResult (varDec.TypeReference);
+			}
+			
+			if (lambdaExpression.Parent is ObjectCreateExpression) {
+				ObjectCreateExpression objectCreateExpression = (ObjectCreateExpression)lambdaExpression.Parent;
+				int index = objectCreateExpression.Parameters.IndexOf (lambdaExpression);
+				if (index < 0)
+					return null;
+				MemberResolveResult resolvedCreateExpression = visitor.Resolve (objectCreateExpression) as MemberResolveResult;
+				
+				if (resolvedCreateExpression != null) {
+					IMethod method = resolvedCreateExpression.ResolvedMember as IMethod;
+					if (method!= null && index < method.Parameters.Count) {
+						return new ParameterResolveResult (method.Parameters[index]);
+					} else {
+						return null;
+					}
+				}
+			}
+			
+			
+			return null;
+		}
+		
+		public ResolveResult ResolveIdentifier (ResolveVisitor visitor, string identifier)
 		{
 			ResolveResult result = null;
 			SearchTypeResult searchedTypeResult;
@@ -245,7 +282,17 @@ namespace MonoDevelop.CSharpBinding
 				if (identifier == pair.Key) {
 					LocalLookupVariable var = pair.Value[pair.Value.Count - 1];
 					result = new LocalVariableResolveResult (identifier);
-					IReturnType varType = ConvertTypeReference (var.TypeRef);
+					IReturnType varType = null;
+					System.Console.WriteLine("PLE:" + var.ParentLambdaExpression);
+					System.Console.WriteLine("Init:" + var.Initializer);
+					if ((var.TypeRef == null || var.TypeRef.Type == "var" || var.TypeRef.IsNull)) {
+						if (var.ParentLambdaExpression != null) 
+							return ResolveLambda (visitor, var.ParentLambdaExpression);
+						if (var.Initializer != null) 
+							return visitor.Resolve (var.Initializer);
+					} else { 
+						varType = ConvertTypeReference (var.TypeRef);
+					}
 					ResolveType (varType);
 					result.ResolvedType = varType;
 					goto end;
