@@ -252,15 +252,15 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				foreach (GuiBuilderWindow w in formInfos)
 					if (w.RootWidget == widget)
 						return;
-			}
-
-			GuiBuilderWindow win = new GuiBuilderWindow (this, gproject, widget);
-			formInfos.Add (win);
 			
-			if (notify) {
-				if (WindowAdded != null)
-					WindowAdded (this, new WindowEventArgs (win));
-				NotifyChanged ();
+				GuiBuilderWindow win = new GuiBuilderWindow (this, gproject, widget);
+				formInfos.Add (win);
+			
+				if (notify) {
+					if (WindowAdded != null)
+						WindowAdded (this, new WindowEventArgs (win));
+					NotifyChanged ();
+				}
 			}
 		}
 	
@@ -396,9 +396,11 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		public GuiBuilderWindow GetWindowForFile (string fileName)
 		{
-			foreach (GuiBuilderWindow win in Windows) {
-				if (fileName == win.SourceCodeFile)
-					return win;
+			if (Windows != null) {
+				foreach (GuiBuilderWindow win in Windows) {
+					if (fileName == win.SourceCodeFile)
+						return win;
+				}
 			}
 			return null;
 		}
