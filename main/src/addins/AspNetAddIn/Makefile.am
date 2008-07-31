@@ -85,6 +85,7 @@ FILES =  \
 	MonoDevelop.AspNet.StateEngine/AspNetExpressionState.cs \
 	MonoDevelop.AspNet.StateEngine/AspNetFreeState.cs \
 	MonoDevelop.AspNet.StateEngine/AspNetServerCommentState.cs \
+	MonoDevelop.AspNet.StateEngine/AspNetSpeculativeExpressionState.cs \
 	MonoDevelop.AspNet/AspNetAppProject.cs \
 	MonoDevelop.AspNet/AspNetAppProjectBinding.cs \
 	MonoDevelop.AspNet/AspNetAppProjectConfiguration.cs \

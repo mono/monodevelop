@@ -430,10 +430,9 @@ namespace MonoDevelop.AspNet.Gui
 			
 			if (doc.Project != null)
 				database = MonoDevelop.Projects.Dom.Parser.ProjectDomService.GetDatabaseProjectDom (doc.Project);
-			//else
+			else
 				//FIXME use correct runtime
-				//FIXME: port to new parser DB
-				//projectDatabase = MonoDevelop.Ide.Gui.IdeApp.Workspace.ParserDatabase.GetAssemblyParserContext ("System.Web");
+				database = MonoDevelop.Projects.Dom.Parser.ProjectDomService.GetAssemblyProjectDom ("System.Web");
 			
 			if (database == null) {
 				LoggingService.LogWarning ("Could not obtain parser context in AddAspAttributeCompletionData");

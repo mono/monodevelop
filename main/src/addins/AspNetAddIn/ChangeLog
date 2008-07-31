@@ -1,5 +1,17 @@
 2008-07-30  Michael Hutchinson <mhutchinson@novell.com> 
 
+	* MonoDevelop.AspNet/WebTypeManager.cs,
+	  MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs: More porting to
+	  new DOM.
+	* MonoDevelop.AspNet.StateEngine/AspNetSpeculativeExpressionState.cs: A
+	  "speculative state" to replace the MalformedTagState. Can create a
+	  server comment, or
+	* MonoDevelop.AspNet.StateEngine/AspNetServerCommentState.cs: Tidying
+	  up.
+	* AspNetAddIn.mdp, Makefile.am: Updated.
+
+2008-07-30  Michael Hutchinson <mhutchinson@novell.com> 
+
 	* MonoDevelop.AspNet.StateEngine/AspNetExpressionState.cs,
 	  MonoDevelop.AspNet.StateEngine/AspNetFreeState.cs,
 	  MonoDevelop.AspNet.StateEngine/AspNetServerCommentState.cs,
