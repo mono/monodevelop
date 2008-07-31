@@ -1,5 +1,18 @@
 2008-07-30  Michael Hutchinson <mhutchinson@novell.com> 
 
+	* MonoDevelop.Xml.StateEngine/XmlClosingTagState.cs,
+	  MonoDevelop.Xml.StateEngine/XmlCommentState.cs,
+	  MonoDevelop.Xml.StateEngine/XmlMalformedTagState.cs,
+	  MonoDevelop.Xml.StateEngine/XmlTagState.cs,
+	  MonoDevelop.Xml.StateEngine/XmlNameState.cs: Move towards making
+	  the MalformedTagState more replaceable, so that handling of
+	  unexpected '<' can be intercepted.
+	* MonoDevelop.Xml.StateEngine/XmlCDataState.cs,
+	  MonoDevelop.Xml.StateEngine/XmlProcessingInstructionState.cs:
+	  Tidying up.
+
+2008-07-30  Michael Hutchinson <mhutchinson@novell.com> 
+
 	* MonoDevelop.Xml.StateEngine/XmlMalformedTagState.cs,
 	  MonoDevelop.Xml.StateEngine/XmlDocTypeState.cs,
 	  MonoDevelop.Xml.StateEngine/XmlTagState.cs,

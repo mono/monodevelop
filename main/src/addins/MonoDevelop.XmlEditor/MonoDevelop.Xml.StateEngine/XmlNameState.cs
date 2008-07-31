@@ -48,12 +48,6 @@ namespace MonoDevelop.Xml.StateEngine
 			Debug.Assert (context.CurrentStateLength > 1 || context.KeywordBuilder.Length == 0,
 				"Keyword builder must be empty when state begins.");
 			
-			if (c == '<') {
-				context.LogError ("Unexpected '<' in name.");
-				rollback = string.Empty;
-				return this.Parent;
-			}
-			
 			if (c == ':') {
 				if (namedObject.Name.Name != null || context.KeywordBuilder.Length == 0) {
 					context.LogError ("Unexpected ':' in name.");
@@ -64,7 +58,7 @@ namespace MonoDevelop.Xml.StateEngine
 				return null;
 			}
 			
-			if (char.IsWhiteSpace (c) || c == '>' || c == '/' || c == '=') {
+			if (char.IsWhiteSpace (c) || c == '<' || c == '>' || c == '/' || c == '=') {
 				rollback = string.Empty;
 				if (context.KeywordBuilder.Length == 0) {
 					context.LogError ("Zero-length name.");
@@ -74,7 +68,21 @@ namespace MonoDevelop.Xml.StateEngine
 				} else {
 					namedObject.Name = new XName (context.KeywordBuilder.ToString ());
 				}
+				
+				//note: parent's MalformedTagState logs an error, so skip this
+				//if (c == '<')
+				//context.LogError ("Unexpected '<' in name.");
+				
 				return Parent;
+			}
+			if (c == ':') {
+				if (namedObject.Name.Name != null || context.KeywordBuilder.Length == 0) {
+					context.LogError ("Unexpected ':' in name.");
+					return Parent;
+				}
+				namedObject.Name = new XName (context.KeywordBuilder.ToString ());
+				context.KeywordBuilder.Length = 0;
+				return null;
 			}
 			
 			if (char.IsLetterOrDigit (c) || c == '_') {

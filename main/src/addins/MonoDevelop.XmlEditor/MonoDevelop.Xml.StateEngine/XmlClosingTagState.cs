@@ -128,7 +128,8 @@ namespace MonoDevelop.Xml.StateEngine
 			}
 			
 			rollback = string.Empty;
-			context.LogError ("Unexpected character '" + c + "' in closing tag.");
+			//note: MalformedTagState logs an error, so skip this
+			//context.LogError ("Unexpected character '" + c + "' in closing tag.");
 			return MalformedTagState;
 		}
 	}

@@ -71,7 +71,8 @@ namespace MonoDevelop.Xml.StateEngine
 			}
 			
 			if (c == '<') {
-				context.LogError ("Unexpected '<' in tag.");
+				//note: MalformedTagState logs an error, so skip this
+				//context.LogError ("Unexpected '<' in tag.");
 				rollback = string.Empty;
 				return MalformedTagState;
 			}
@@ -83,7 +84,8 @@ namespace MonoDevelop.Xml.StateEngine
 					context.LogWarning ("Unexpected whitespace after '/' in self-closing tag.");
 					return null;
 				} else {
-					context.LogError ("Unexpected character '" + c + "' after '/' in self-closing tag.");
+					//note: MalformedTagState logs an error, so skip this
+					//context.LogError ("Unexpected character '" + c + "' after '/' in self-closing tag.");
 					return MalformedTagState;
 				}
 			}
@@ -126,7 +128,9 @@ namespace MonoDevelop.Xml.StateEngine
 				return null;
 			
 			rollback = string.Empty;
-			context.LogError ("Unexpected character '" + c + "' in tag.");
+			//note: MalformedTagState logs an error, so skip this
+			//context.LogError ("Unexpected character '" + c + "' in tag.");
+			
 			return MalformedTagState;
 		}
 	}

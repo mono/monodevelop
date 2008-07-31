@@ -38,6 +38,7 @@ namespace MonoDevelop.Xml.StateEngine
 		{
 			//ensure that we don't drop any nodes or leave them un-ended
 			if (context.CurrentStateLength == 1) {
+				context.LogError ("Malformed tag: unexpected '" + c + "' character.");
 				if (context.BuildTree)
 					context.ConnectAll ();
 				context.EndAll (true);

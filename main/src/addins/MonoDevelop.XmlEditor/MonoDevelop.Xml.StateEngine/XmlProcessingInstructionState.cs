@@ -48,7 +48,7 @@ namespace MonoDevelop.Xml.StateEngine
 				// if the '?' is followed by a '>', the state has ended
 				// so attach a node to the DOM and end the state
 				if (context.BuildTree) {
-					int start = context.Position - (context.CurrentStateLength + 2); // <? is 2 chars
+					int start = context.Position - (context.CurrentStateLength + "<?".Length);
 					((XContainer) context.Nodes.Peek ()).AddChildNode (
 						new XProcessingInstruction (start, context.Position));
 				}

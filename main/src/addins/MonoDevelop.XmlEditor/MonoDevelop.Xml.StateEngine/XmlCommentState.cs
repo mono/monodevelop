@@ -47,14 +47,19 @@ namespace MonoDevelop.Xml.StateEngine
 				else
 					context.StateTag = DOUBLE_DASH;
 				
-			} else if (c == '>' && context.StateTag == DOUBLE_DASH) {
-				// if the '--' is followed by a '>', the state has ended
-				// so attach a node to the DOM and end the state
-				if (context.BuildTree) {
-					int start = context.Position - (context.CurrentStateLength + 4); // <!-- is 4 chars
-					((XContainer) context.Nodes.Peek ()).AddChildNode (new XComment (start, context.Position));
+			} else if (context.StateTag == DOUBLE_DASH) {
+				if (c == '>') {
+					// if the '--' is followed by a '>', the state has ended
+					// so attach a node to the DOM and end the state
+					if (context.BuildTree) {
+						int start = context.Position - (context.CurrentStateLength + "<!--".Length);
+						((XContainer) context.Nodes.Peek ()).AddChildNode (new XComment (start, context.Position));
+					}
+					rollback = string.Empty;
+					return Parent;
+				} else {
+					context.LogWarning ("The string '--' should not appear within comments.");
 				}
-				return Parent;
 			} else {
 				// not any part of a '-->', so make sure matching is reset
 				context.StateTag = NOMATCH;

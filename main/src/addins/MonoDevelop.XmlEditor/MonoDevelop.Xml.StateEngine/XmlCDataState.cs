@@ -51,7 +51,7 @@ namespace MonoDevelop.Xml.StateEngine
 				// if the ']]' is followed by a '>', the state has ended
 				// so attach a node to the DOM and end the state
 				if (context.BuildTree) {
-					int start = context.Position - (context.CurrentStateLength + 9); // <![CDATA[ is 9 chars
+					int start = context.Position - (context.CurrentStateLength + "<![CDATA[".Length);
 					((XContainer) context.Nodes.Peek ()).AddChildNode (new XCData (start, context.Position));
 				}
 				return Parent;
