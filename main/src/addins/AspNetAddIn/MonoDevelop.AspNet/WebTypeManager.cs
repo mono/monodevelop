@@ -251,12 +251,26 @@ namespace MonoDevelop.AspNet
 		
 		#region System type listings
 		
-		public static IEnumerable<IType> ListSystemControlClasses (MonoDevelop.Core.ClrVersion version)
+		static MonoDevelop.Core.ClrVersion GetProjectClrVersion (AspNetAppProject project)
 		{
-			//FIXME respect versions
-			string name =
-				MonoDevelop.Core.Runtime.SystemAssemblyService.GetAssemblyNameForVersion ("System.Web", version);
-			return ListControlClasses (name, "System.Web.UI.WebControls");
+			return project == null? MonoDevelop.Core.ClrVersion.Default : project.ClrVersion;
+		}
+		
+		public static ProjectDom GetSystemWebDom (AspNetAppProject project)
+		{
+			return MonoDevelop.Projects.Dom.Parser.ProjectDomService.GetAssemblyProjectDom (
+				MonoDevelop.Core.Runtime.SystemAssemblyService.GetAssemblyNameForVersion (
+					"System.Web", GetProjectClrVersion (project)));
+		}
+		
+		
+		public static IEnumerable<IType> ListSystemControlClasses (AspNetAppProject project)
+		{
+			return ListControlClasses (
+				MonoDevelop.Core.Runtime.SystemAssemblyService.GetAssemblyNameForVersion (
+					"System.Web",
+					GetProjectClrVersion (project)),
+				"System.Web.UI.WebControls");
 		}
 		
 		public static IEnumerable<IType> ListControlClasses (string assem, string namespac)
@@ -271,8 +285,6 @@ namespace MonoDevelop.AspNet
 			//return classes if they derive from system.web.ui.control
 			foreach (IMember mem in database.GetNamespaceContents (namespac, true, true)) {
 				IType cls = mem as IType;
-				if (cls != null)
-					System.Console.WriteLine("{0} {1} {2}", cls, cls.IsPublic, cls.IsBaseType (swc));
 				if (cls != null && !cls.IsAbstract && cls.IsPublic && cls.IsBaseType (swc))
 					yield return cls;
 			}

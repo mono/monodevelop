@@ -444,16 +444,15 @@ namespace MonoDevelop.AspNet.Gui
 			Debug.Assert (doc != null);
 			
 			//get a parser database
-			MonoDevelop.Projects.Dom.Parser.DatabaseProjectDom database = null;
+			MonoDevelop.Projects.Dom.Parser.ProjectDom database = null;
 			
 			if (doc.Project != null)
 				database = MonoDevelop.Projects.Dom.Parser.ProjectDomService.GetDatabaseProjectDom (doc.Project);
 			else
-				//FIXME use correct runtime
-				database = MonoDevelop.Projects.Dom.Parser.ProjectDomService.GetAssemblyProjectDom ("System.Web");
+				database = WebTypeManager.GetSystemWebDom (null);
 			
 			if (database == null) {
-				LoggingService.LogWarning ("Could not obtain parser context in AddAspAttributeCompletionData");
+				LoggingService.LogWarning ("Could not obtain project DOM in AddAspAttributeCompletionData");
 				return;
 			}
 			
@@ -470,7 +469,7 @@ namespace MonoDevelop.AspNet.Gui
 		}
 		
 		static void AddControlMembers (CodeCompletionDataProvider provider,
-		    MonoDevelop.Projects.Dom.Parser.DatabaseProjectDom database, Document doc,
+		    MonoDevelop.Projects.Dom.Parser.ProjectDom database, Document doc,
 		    MonoDevelop.Projects.Dom.IType controlClass, Dictionary<string, string> existingAtts)
 		{
 			//add atts only if they're not already in the tag
@@ -498,37 +497,34 @@ namespace MonoDevelop.AspNet.Gui
 			MonoDevelop.Projects.Dom.IType controlClass = null;
 			if (cu != null)
 				controlClass = cu.Document.ReferenceManager.GetControlType (tagName.Prefix, tagName.Name);
+			
 			if (controlClass == null) {
-				//FIXME: respect runtime version
-				//FIXME: port to new MD DOM
-				//MonoDevelop.Projects.Parser.IParserContext sysWebContext =
-				//	MonoDevelop.Ide.Gui.IdeApp.Workspace.ParserDatabase.GetAssemblyParserContext ("System.Web");
-				//if (sysWebContext == null)
-				//	return;
+				MonoDevelop.Projects.Dom.Parser.ProjectDom database =
+					WebTypeManager.GetSystemWebDom (cu == null? null : cu.Document.Project);
+				controlClass = database.GetType ("System.Web.UI.WebControls.WebControl", -1, true, false);
 				
-				//controlClass = sysWebContext.GetClass ("System.Web.UI.WebControls.WebControl");
-				//if (controlClass == null)
+				if (controlClass == null)
 					LoggingService.LogWarning ("Could not obtain IType for System.Web.UI.WebControls.WebControl");
 				return;
 			}
 			
 			//find the codebehind class
 			MonoDevelop.Projects.Dom.IType codeBehindClass = null;
-			MonoDevelop.Projects.Dom.Parser.DatabaseProjectDom projectDatabase = null;
+			MonoDevelop.Projects.Dom.Parser.ProjectDom projectDatabase = null;
 			if (cu != null && cu.Document.Project != null) {
 				projectDatabase = MonoDevelop.Projects.Dom.Parser.ProjectDomService.GetDatabaseProjectDom
 					(cu.Document.Project);
+				
+				if (projectDatabase != null && !string.IsNullOrEmpty (cu.PageInfo.InheritedClass))
+					codeBehindClass = projectDatabase.GetType (cu.PageInfo.InheritedClass, 0, false, false);
 			}
-			
-			if (projectDatabase != null && !string.IsNullOrEmpty (cu.PageInfo.InheritedClass))
-				codeBehindClass = projectDatabase.GetType (cu.PageInfo.InheritedClass, 0, false, false);
 			
 			//if it's an event, suggest compatible methods 
 			if (codeBehindClass != null && attName.Name.StartsWith ("On")) {
 				string eventName = attName.Name.Substring (2);
+				
 				foreach (MonoDevelop.Projects.Dom.IEvent ev in GetAllEvents (projectDatabase, controlClass)) {
 					if (ev.Name == eventName) {
-						
 						System.CodeDom.CodeMemberMethod domMethod = 
 							BindingService.MDDomToCodeDomMethod (ev, projectDatabase);
 						if (domMethod == null)
@@ -560,14 +556,12 @@ namespace MonoDevelop.AspNet.Gui
 			}
 			
 			if (projectDatabase == null) {
-				//FIXME: respect runtime version
-				//FIXME: port to new parser DB
-				//projectDatabase = MonoDevelop.Ide.Gui.IdeApp.Workspace.ParserDatabase.GetAssemblyParserContext ("System.Web");
-			}
-			
-			if (projectDatabase == null) {
-				LoggingService.LogWarning ("Could not obtain parser context in AddAspAttributeCompletionData");
-				return;
+				projectDatabase = WebTypeManager.GetSystemWebDom (cu == null? null : cu.Document.Project);
+				
+				if (projectDatabase == null) {
+					LoggingService.LogWarning ("Could not obtain type database in AddAspAttributeCompletionData");
+					return;
+				}
 			}
 			
 			//if it's a property and is an enum or bool, suggest valid values
@@ -617,7 +611,7 @@ namespace MonoDevelop.AspNet.Gui
 		}
 		
 		static IEnumerable<MonoDevelop.Projects.Dom.IProperty> GetAllProperties (
-		    MonoDevelop.Projects.Dom.Parser.DatabaseProjectDom projectDatabase,
+		    MonoDevelop.Projects.Dom.Parser.ProjectDom projectDatabase,
 		    MonoDevelop.Projects.Dom.IType cls)
 		{
 			foreach (MonoDevelop.Projects.Dom.IType type in projectDatabase.GetInheritanceTree (cls))
@@ -626,7 +620,7 @@ namespace MonoDevelop.AspNet.Gui
 		}
 		
 		static IEnumerable<MonoDevelop.Projects.Dom.IEvent> GetAllEvents (
-		    MonoDevelop.Projects.Dom.Parser.DatabaseProjectDom projectDatabase,
+		    MonoDevelop.Projects.Dom.Parser.ProjectDom projectDatabase,
 		    MonoDevelop.Projects.Dom.IType cls)
 		{
 			foreach (MonoDevelop.Projects.Dom.IType type in projectDatabase.GetInheritanceTree (cls))

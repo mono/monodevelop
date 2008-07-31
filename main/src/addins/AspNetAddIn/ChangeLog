@@ -1,5 +1,13 @@
 2008-07-31  Michael Hutchinson <mhutchinson@novell.com> 
 
+	* MonoDevelop.AspNet/WebTypeManager.cs,
+	  MonoDevelop.AspNet.Parser/DocumentReferenceManager.cs: Clean up
+	  System.Web lookup code.
+	* MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs: Fix the System.Web
+	  fallbacks using new DOM. Respect project's runtime version.
+
+2008-07-31  Michael Hutchinson <mhutchinson@novell.com> 
+
 	* MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs: Add comment and
 	  CDATA completion. Only trigger tag completion in the free state.
 	* MonoDevelop.AspNet/WebTypeManager.cs: Simplify lookups using new

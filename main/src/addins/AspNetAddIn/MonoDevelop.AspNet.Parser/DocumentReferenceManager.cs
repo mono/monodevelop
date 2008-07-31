@@ -102,9 +102,7 @@ namespace MonoDevelop.AspNet.Parser
 		
 		public IEnumerable<IType> ListControlClasses ()
 		{
-			MonoDevelop.Core.ClrVersion clrVersion = 
-				doc.Project == null? MonoDevelop.Core.ClrVersion.Default : doc.Project.ClrVersion;
-			foreach (IType cls in WebTypeManager.ListSystemControlClasses (clrVersion))
+			foreach (IType cls in WebTypeManager.ListSystemControlClasses (doc.Project))
 				yield return cls;
 			
 			//FIXME: return other refernced controls
