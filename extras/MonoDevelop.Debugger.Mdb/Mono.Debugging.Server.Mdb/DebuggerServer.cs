@@ -71,6 +71,9 @@ namespace DebuggerServer
 				config.LoadConfiguration ();
 				debugger = new MD.Debugger (config);
 				
+				debugger.ModuleLoadedEvent += OnModuleLoadedEvent;
+				debugger.ModuleUnLoadedEvent += OnModuleUnLoadedEvent;
+				
 				debugger.ProcessReachedMainEvent += delegate (MD.Debugger deb, MD.Process proc) {
 					OnInitialized (deb, proc);
 					NotifyStarted ();
@@ -78,6 +81,15 @@ namespace DebuggerServer
 
 				DebuggerOptions options = DebuggerOptions.ParseCommandLine (new string[] { startInfo.Command } );
 				options.StopInMain = false;
+				
+				if (!string.IsNullOrEmpty (startInfo.Arguments))
+					options.InferiorArgs = startInfo.Arguments.Split(' ');
+				
+				if (startInfo.EnvironmentVariables != null) {
+					foreach (KeyValuePair<string,string> env in startInfo.EnvironmentVariables)
+						options.SetEnvironment (env.Key, env.Value);
+				}
+				
 				session = new MD.DebuggerSession (config, options, "main", null);
 				
 				debugger.Run(session);
@@ -130,9 +142,7 @@ namespace DebuggerServer
 					internalInterruptionRequested = false;
 				}
 				else
-					process.MainThread.Stop ();
-//					guiManager.Break (process.MainThread);
-				running = false;
+					guiManager.Break (process.MainThread);
 			});
 		}
 
@@ -498,7 +508,7 @@ namespace DebuggerServer
 			
 			debugger.ThreadCreatedEvent += OnThreadCreatedEvent;
 			debugger.ThreadExitedEvent += OnThreadExitedEvent;
-
+			
 			debugger.TargetExitedEvent += OnTargetExitedEvent;
 			guiManager.TargetEvent += OnTargetEvent;
 			guiManager.BreakpointHitHandler = BreakEventCheck;
@@ -693,6 +703,16 @@ namespace DebuggerServer
 		private void OnThreadExitedEvent (MD.Debugger debugger, MD.Thread thread)
 		{
 			WriteDebuggerOutput (string.Format ("Thread {0} exited.\n", thread.ID));
+		}
+		
+		private void OnModuleLoadedEvent (Module module)
+		{
+			WriteDebuggerOutput (string.Format ("Module {0} loaded.\n", module.Name));
+		}
+
+		private void OnModuleUnLoadedEvent (Module module)
+		{
+			WriteDebuggerOutput (string.Format ("Module {0} unloaded.\n", module.Name));
 		}
 
 		private void OnTargetExitedEvent (MD.Debugger debugger)

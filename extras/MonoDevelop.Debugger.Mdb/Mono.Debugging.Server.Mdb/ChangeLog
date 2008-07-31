@@ -1,5 +1,9 @@
 2008-07-31  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* DebuggerServer.cs: Report module loading. Fixed break command.
+
+2008-07-31  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* ObjectUtil.cs: Added hack to make the proxy attribute work for
 	  generic types.
 	* CollectionAdaptor.cs: Don't try to create a collection adaptor for
