@@ -30,13 +30,7 @@
     <File name="Parser/SharpDevelopTree/Class.cs" subtype="Code" buildaction="Compile" />
     <File name="Parser/SharpDevelopTree/AttributeSection.cs" subtype="Code" buildaction="Compile" />
     <File name="Parser/SharpDevelopTree/ReturnType.cs" subtype="Code" buildaction="Compile" />
-    <File name="Parser/TypeVisitor.cs" subtype="Code" buildaction="Compile" />
-    <File name="Parser/CSharpVisitor.cs" subtype="Code" buildaction="Compile" />
-    <File name="Parser/LanguageItemVisitor.cs" subtype="Code" buildaction="Compile" />
-    <File name="Parser/Resolver.cs" subtype="Code" buildaction="Compile" />
-    <File name="Parser/Parser.cs" subtype="Code" buildaction="Compile" />
     <File name="Parser/CodeGenerator.cs" subtype="Code" buildaction="Compile" />
-    <File name="Parser/ExpressionFinder.cs" subtype="Code" buildaction="Compile" />
     <File name="Project/CSharpCompilerParameters.cs" subtype="Code" buildaction="Compile" />
     <File name="CSharpLanguageBinding.cs" subtype="Code" buildaction="Compile" />
     <File name="CSharpBindingCompilerManager.cs" subtype="Code" buildaction="Compile" />
@@ -47,14 +41,11 @@
     <File name="Makefile.am" subtype="Code" buildaction="Nothing" />
     <File name="gtk-gui/gui.stetic" subtype="Code" buildaction="EmbedAsResource" />
     <File name="gtk-gui/generated.cs" subtype="Code" buildaction="Compile" />
-    <File name="Gui/CSharpParameterDataProvider.cs" subtype="Code" buildaction="Compile" />
-    <File name="Gui/OverrideCompletionData.cs" subtype="Code" buildaction="Compile" />
     <File name="FormattingStrategy/CSharpIndentEngine.cs" subtype="Code" buildaction="Compile" />
     <File name="FormattingStrategy/CSharpIndentEngineStack.cs" subtype="Code" buildaction="Compile" />
     <File name="FormattingStrategy/CSharpFormattingProperties.cs" subtype="Code" buildaction="Compile" />
     <File name="gtk-gui/CSharpBinding.CodeGenerationPanelWidget.cs" subtype="Code" buildaction="Compile" />
     <File name="gtk-gui/CSharpBinding.FormattingPanelWidget.cs" subtype="Code" buildaction="Compile" />
-    <File name="CSharpAmbience.cs" subtype="Code" buildaction="Compile" />
     <File name="icons/csharp-icon-32.png" subtype="Code" buildaction="EmbedAsResource" />
     <File name="gtk-gui/CSharpBinding.CompilerOptionsPanelWidget.cs" subtype="Code" buildaction="Compile" />
     <File name="gtk-gui/objects.xml" subtype="Code" buildaction="EmbedAsResource" />
@@ -107,7 +98,6 @@
     <File name="Parser/mcs/mcs/symbolwriter.cs" subtype="Code" buildaction="Compile" />
     <File name="Parser/mcs/mcs/typemanager.cs" subtype="Code" buildaction="Compile" />
     <File name="Project/CSharpResourceIdBuilder.cs" subtype="Code" buildaction="Compile" />
-    <File name="Parser/CSharpExpressionFinder.cs" subtype="Code" buildaction="Compile" />
     <File name="Gui/CSharpTextEditorCompletion.cs" subtype="Code" buildaction="Compile" />
     <File name="Gui/NRefactoryResolver.cs" subtype="Code" buildaction="Compile" />
     <File name="Gui/ResolveVisitor.cs" subtype="Code" buildaction="Compile" />

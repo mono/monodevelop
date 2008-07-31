@@ -50,7 +50,8 @@ namespace MonoDevelop.CSharpBinding
 		
 		public override IExpressionFinder CreateExpressionFinder ()
 		{
-			return new CSharpExpressionFinder ();
+			// unused - moved to parser
+			return null;
 		}
 		
 		public override IResolver CreateResolver (ProjectDom dom, object editor, string fileName)
