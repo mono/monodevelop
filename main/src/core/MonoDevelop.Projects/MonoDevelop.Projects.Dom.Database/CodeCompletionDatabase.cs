@@ -36,7 +36,7 @@ namespace MonoDevelop.Projects.Dom.Database
 {
 	public class CodeCompletionDatabase : IDisposable 
 	{
-		public const long Version = 1;
+		public const long Version = 2;
 		
 		HyenaSqliteConnection connection;
 		internal HyenaSqliteConnection Connection {
@@ -168,6 +168,23 @@ namespace MonoDevelop.Projects.Dom.Database
 			}
 		}
 		
+		public IEnumerable<IReturnType> GetSubclasses (IType type, IEnumerable<long> compilationUnitIds)
+		{
+			DatabaseType databaseType = (DatabaseType)type;
+			if (databaseType == null) {
+				foreach (DatabaseType t in GetTypes (new string [] { type.Namespace }, compilationUnitIds, type.FullName, true)) {
+					databaseType = t;
+					break;
+				}
+			}
+			if (databaseType != null)
+				return databaseType.GetSubclasses (compilationUnitIds);
+			if (type.FullName != "System.Object")
+				return new IReturnType[] { new DomReturnType ("System.Object") };
+			return new IReturnType[] { };
+		}
+		
+		
 		public IEnumerable<IType> GetTypeList (IEnumerable<long> compilationUnitIds)
 		{
 			string query;
@@ -279,20 +296,27 @@ namespace MonoDevelop.Projects.Dom.Database
 		internal IReturnType ReadReturnType (long returnTypeID)
 		{
 			IDataReader reader = connection.Query (String.Format (@"SELECT FullName, Modifiers, PointerNestingLevel, ArrayDimensions, GenericArgumentCount FROM {0} WHERE ReturnTypeID={1}",  ReturnTypeTable, returnTypeID));
-			if (reader != null && reader.Read ()) {
-				DomReturnType result = new DomReturnType();
-				result.FullName            = SqliteUtils.FromDbFormat<string> (reader[0]);
-				result.Modifiers           = (ReturnTypeModifiers)SqliteUtils.FromDbFormat<long> (reader[1]);
-				result.PointerNestingLevel = (int)SqliteUtils.FromDbFormat<long> (reader[2]);
-				result.ArrayDimensions     = (int)SqliteUtils.FromDbFormat<long> (reader[3]);
-				long genericArgumentCount  = SqliteUtils.FromDbFormat<long> (reader[4]);
-				if (genericArgumentCount > 0) {
-					// TODO: Read generic arguments
-					for (int i = 0; i < genericArgumentCount; i++) {
-						result.AddTypeParameter (new DomReturnType ("Arg" + i));
+			if (reader == null)
+				return null;
+			try {
+				if (reader != null && reader.Read ()) {
+					DomReturnType result = new DomReturnType();
+					result.FullName            = SqliteUtils.FromDbFormat<string> (reader[0]);
+					result.Modifiers           = (ReturnTypeModifiers)SqliteUtils.FromDbFormat<long> (reader[1]);
+					result.PointerNestingLevel = (int)SqliteUtils.FromDbFormat<long> (reader[2]);
+					result.ArrayDimensions     = (int)SqliteUtils.FromDbFormat<long> (reader[3]);
+					long genericArgumentCount  = SqliteUtils.FromDbFormat<long> (reader[4]);
+					if (genericArgumentCount > 0) {
+						foreach (long genReturnTypeID in connection.QueryEnumerable<long> (String.Format (@"SELECT GenericArgumentID FROM {0} WHERE ReturnTypeID={1}",
+						                                                                               GenericReturnTypeArgumentTable,
+						                                                                               returnTypeID))) {
+							result.AddTypeParameter (ReadReturnType (genReturnTypeID));
+						}
 					}
+					return result;
 				}
-				return result;
+			} finally {
+				reader.Dispose();
 			}
 			return null;
 		}
@@ -301,14 +325,36 @@ namespace MonoDevelop.Projects.Dom.Database
 		{
 			if (returnType == null)
 				return -1;
-			return connection.Execute (String.Format (@"INSERT INTO {0} (FullName, Modifiers, PointerNestingLevel, ArrayDimensions, GenericArgumentCount) VALUES ('{1}', {2}, {3}, {4}, {5})", 
+			long genargs = returnType.GenericArguments == null ? 0 : returnType.GenericArguments.Count;
+			foreach (long returnTypeID in connection.QueryEnumerable<long> (String.Format (@"SELECT ReturnTypeID FROM {0} WHERE FullName='{1}' AND Modifiers={2} AND PointerNestingLevel={3} AND ArrayDimensions={4} AND GenericArgumentCount={5}", 
+			                                                                                       ReturnTypeTable,
+			                                                                                       returnType.FullName,
+			                                                                                       (long)returnType.Modifiers,
+			                                                                                       returnType.PointerNestingLevel,
+			                                                                                       returnType.ArrayDimensions,
+			                                                                                       genargs
+			                                                                                       ))) {
+				if (genargs == 0)
+					return returnTypeID;
+				// TODO: generic arguments;
+			}
+			
+			long result = connection.Execute (String.Format (@"INSERT INTO {0} (FullName, Modifiers, PointerNestingLevel, ArrayDimensions, GenericArgumentCount) VALUES ('{1}', {2}, {3}, {4}, {5})", 
 					ReturnTypeTable,
 					returnType.FullName,
 					(long)returnType.Modifiers,
 					returnType.PointerNestingLevel,
 					returnType.ArrayDimensions,
-					returnType.GenericArguments == null ? 0 : returnType.GenericArguments.Count
+					genargs
 				));
+			for (int i = 0; i < genargs; i++) {
+				connection.Execute (String.Format (@"INSERT INTO {0} (ReturnTypeID, GenericArgumentID) VALUES ({1}, {2})", 
+					GenericReturnTypeArgumentTable,
+					result,
+					GetReturnTypeID (returnType.GenericArguments[i])
+				));
+			}
+			return result;
 		}
 		
 		internal long InsertMember (IMember member)
@@ -427,6 +473,7 @@ namespace MonoDevelop.Projects.Dom.Database
 						)", ReturnTypeTable
 				));
 			}
+			
 			if (!connection.TableExists (GenericReturnTypeArgumentTable)) {
 				connection.Execute (String.Format (@"
 					CREATE TABLE {0} (

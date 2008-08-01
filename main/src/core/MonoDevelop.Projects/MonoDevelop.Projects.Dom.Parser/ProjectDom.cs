@@ -185,6 +185,18 @@ namespace MonoDevelop.Projects.Dom.Parser
 			return GetType (returnType.FullName, -1, true, searchDeep);
 		}
 		
+		public virtual IEnumerable<IReturnType> GetSubclasses (IType type)
+		{
+			foreach (IType t in AllAccessibleTypes) {
+				if (t.BaseTypes == null)
+					continue;
+				foreach (IReturnType retType in t.BaseTypes) {
+					if (retType.FullName == type.FullName)
+						yield return new DomReturnType (t);
+				}
+			}
+		}
+		
 		protected virtual IType GetType (IEnumerable<string> subNamespaces, string fullName, int genericParameterCount, bool caseSensitive)
 		{
 			IType result;

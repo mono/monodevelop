@@ -162,7 +162,8 @@ namespace MonoDevelop.Projects.Dom.Database
 			if (!db.Connection.TableExists (SubTypeTable)) {
 				db.Connection.Execute (String.Format (@"
 					CREATE TABLE {0} (
-						BaseTypeID INTEGER,
+						ReturnTypeID INTEGER, 
+						BaseReturnTypeID INTEGER,
 						TypeID INTEGER
 					)", SubTypeTable
 				));
@@ -196,6 +197,24 @@ namespace MonoDevelop.Projects.Dom.Database
 			db.Connection.Execute (String.Format (@"DELETE FROM {0} WHERE TypeID={1}", Table, typeId));
 		}
 		
+		
+		public IEnumerable<IReturnType> GetSubclasses (IEnumerable<long> compilationUnitIds)
+		{
+			long returnTypeId = db.GetReturnTypeID (new DomReturnType (this));
+			IDataReader reader = db.Connection.Query (String.Format (@"SELECT ReturnTypeID FROM {0} WHERE BaseReturnTypeID={1}", SubTypeTable, returnTypeId));
+			if (reader != null) {
+				try {
+					while (reader.Read ()) {
+						long subType = SqliteUtils.FromDbFormat<long> (reader[0]);
+						yield return db.ReadReturnType(subType);
+					}
+				} finally {
+					reader.Dispose ();
+				}
+			}			
+			
+		}
+		
 		public static long Insert (CodeCompletionDatabase db, long unitId, IType type)
 		{
 			long namespaceID = db.GetNamespaceID (type.Namespace);
@@ -208,8 +227,9 @@ namespace MonoDevelop.Projects.Dom.Database
 			));
 			
 			foreach (IReturnType baseType in type.BaseTypes) {
-				db.Connection.Execute (String.Format (@"INSERT INTO {0} (BaseTypeID, TypeID) VALUES ({1}, {2})", 
+				db.Connection.Execute (String.Format (@"INSERT INTO {0} (ReturnTypeID, BaseReturnTypeID, TypeID) VALUES ({1}, {2}, {3})", 
 					SubTypeTable,
+					db.GetReturnTypeID (new DomReturnType (type)),
 					db.GetReturnTypeID (baseType),
 					typeId
 				));

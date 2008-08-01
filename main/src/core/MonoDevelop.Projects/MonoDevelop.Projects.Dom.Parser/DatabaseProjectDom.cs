@@ -74,6 +74,23 @@ namespace MonoDevelop.Projects.Dom.Parser
 			codeCompletionDatabase.GetNamespaceContents (result, compilationUnitId, subNamespaces, caseSensitive);
 		}
 		
+		public override IEnumerable<IReturnType> GetSubclasses (IType type)
+		{
+			foreach (IReturnType result in codeCompletionDatabase.GetSubclasses (type, new long [] {compilationUnitId})) {
+				yield return result;
+			}
+			foreach (ProjectDom reference in references) {
+				foreach (IReturnType result in reference.GetSubclasses (type)) {
+					yield return result;
+				}
+			}
+			
+			foreach (IReturnType result in ProjectDomService.AssemblyDatabase.GetSubclasses (type, referencedAssemblyIds)) {
+				yield return result;
+			}
+		}
+		
+		
 		public override List<IMember> GetNamespaceContents (IEnumerable<string> subNamespaces, bool includeReferences, bool caseSensitive)
 		{
 			List<IMember> result = new List<IMember> ();
