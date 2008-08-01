@@ -32,14 +32,9 @@ namespace MonoDevelop.Xml.StateEngine
 {
 	
 	
-	public class XmlAttributeValueState : State
+	public abstract class XmlAttributeValueState : State
 	{
-		const int NOTSET = 0;
-		const int UNDELIMITED = 1;
-		const int SINGLEQUOTE = 2;
-		const int DOUBLEQUOTE = 3;
-		
-		XmlMalformedTagState MalformedTagState;
+		protected XmlMalformedTagState MalformedTagState { get; private set; }
 		
 		public XmlAttributeValueState () : this (new XmlMalformedTagState ())
 		{}
@@ -49,65 +44,93 @@ namespace MonoDevelop.Xml.StateEngine
 			this.MalformedTagState = malformedTagState;
 			Adopt (this.MalformedTagState);
 		}
+	}
+	
+	public class XmlUnquotedAttributeValueState : XmlAttributeValueState
+	{
+		public XmlUnquotedAttributeValueState () : this (new XmlMalformedTagState ()) {}
+		public XmlUnquotedAttributeValueState (XmlMalformedTagState malformedTagState) : base (malformedTagState) {}
 		
 		public override State PushChar (char c, IParseContext context, ref string rollback)
 		{
-			XAttribute att = (XAttribute) context.Nodes.Peek ();
-			System.Diagnostics.Debug.Assert (att.Value == null);
+			System.Diagnostics.Debug.Assert (((XAttribute) context.Nodes.Peek ()).Value == null);
 			
-			if (context.CurrentStateLength == 1) {
-				System.Diagnostics.Debug.Assert (context.KeywordBuilder.Length == 0);
-				if (c == '"') {
-					context.StateTag = DOUBLEQUOTE;
-					return null;
-				} else if (c == '\'') {
-					context.StateTag = SINGLEQUOTE;
-					return null;
-				} else if (char.IsLetterOrDigit (c) || c == '_') {
-					context.LogWarning ("Unquoted attribute value");
-					context.StateTag = UNDELIMITED;
-				} else {
-					//MalformedTagState handles error reporting
-					//context.LogWarning ("Unexpected character '" + c + "' getting attribute value");
-					rollback = string.Empty;
-					return MalformedTagState;
-				}
-			}
-			
-			if (c == '<') {
+			if (c == '<' || c == '>') {
 				//MalformedTagState handles error reporting
 				//context.LogError  ("Attribute value ended unexpectedly.");
 				rollback = string.Empty;
 				return MalformedTagState;
+			} else if (char.IsLetterOrDigit (c) || c == '_' || c == '.') {
+				context.KeywordBuilder.Append (c);
+				return null;
+			} else if (char.IsWhiteSpace (c) || c == '>' || c == '\\') {
+				//ending the value
+				XAttribute att = (XAttribute) context.Nodes.Peek ();
+				att.Value = context.KeywordBuilder.ToString ();
+			} else {
+				//MalformedTagState handles error reporting
+				//context.LogWarning ("Unexpected character '" + c + "' getting attribute value");
+				return MalformedTagState;
 			}
 			
-			//special handling for "undelimited" values
-			if (context.StateTag == UNDELIMITED) {
-				if (char.IsLetterOrDigit (c) || c == '_' || c == '.') {
-					context.KeywordBuilder.Append (c);
-					return null;
-				} else if (char.IsWhiteSpace (c) || c == '>' || c == '\\') {
-					att.Value = context.KeywordBuilder.ToString ();
-				} else {
-					//MalformedTagState handles error reporting
-					//context.LogWarning ("Unexpected character '" + c + "' getting attribute value");
-					return MalformedTagState;
-				}
+			rollback = string.Empty;
+			return Parent;
+		}
+	}
+	
+	public class XmlSingleQuotedAttributeValueState : XmlAttributeValueState
+	{
+		public XmlSingleQuotedAttributeValueState () : this (new XmlMalformedTagState ()) {}
+		public XmlSingleQuotedAttributeValueState (XmlMalformedTagState malformedTagState) : base (malformedTagState) {}
+		
+		public override State PushChar (char c, IParseContext context, ref string rollback)
+		{
+			System.Diagnostics.Debug.Assert (((XAttribute) context.Nodes.Peek ()).Value == null);
+			
+			if (c == '<' || c == '>') {
+				//MalformedTagState handles error reporting
+				//context.LogError  ("Attribute value ended unexpectedly.");
 				rollback = string.Empty;
-				return Parent;
-			}
-			
-			//ending the value
-			if ((c == '"' && context.StateTag == DOUBLEQUOTE)  ||
-				(c == '\'' && context.StateTag == SINGLEQUOTE) ||
-				(char.IsWhiteSpace (c) && context.StateTag == UNDELIMITED))
-			{
+				return MalformedTagState;
+			} 
+			else if (c == '\'') {
+				//ending the value
+				XAttribute att = (XAttribute) context.Nodes.Peek ();
 				att.Value = context.KeywordBuilder.ToString ();
 				return Parent;
 			}
+			else {
+				context.KeywordBuilder.Append (c);
+				return null;
+			}
+		}
+	}
+	
+	public class XmlDoubleQuotedAttributeValueState : XmlAttributeValueState
+	{
+		public XmlDoubleQuotedAttributeValueState () : this (new XmlMalformedTagState ()) {}
+		public XmlDoubleQuotedAttributeValueState (XmlMalformedTagState malformedTagState) : base (malformedTagState) {}
+		
+		public override State PushChar (char c, IParseContext context, ref string rollback)
+		{
+			System.Diagnostics.Debug.Assert (((XAttribute) context.Nodes.Peek ()).Value == null);
 			
-			context.KeywordBuilder.Append (c);
-			return null;
+			if (c == '<' || c == '>') {
+				//MalformedTagState handles error reporting
+				//context.LogError  ("Attribute value ended unexpectedly.");
+				rollback = string.Empty;
+				return MalformedTagState;
+			} 
+			else if (c == '"') {
+				//ending the value
+				XAttribute att = (XAttribute) context.Nodes.Peek ();
+				att.Value = context.KeywordBuilder.ToString ();
+				return Parent;
+			}
+			else {
+				context.KeywordBuilder.Append (c);
+				return null;
+			}
 		}
 	}
 }

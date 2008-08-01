@@ -1,3 +1,11 @@
+2008-08-01  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Xml.StateEngine/XmlAttributeValueState.cs,
+	  MonoDevelop.Xml.StateEngine/XmlAttributeState.cs: Break up
+	  attribute value states.
+	* MonoDevelop.Xml.StateEngine/Parser.cs: Attach parser state to
+	  exceptions.
+
 2008-07-31  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Xml.StateEngine/XmlAttributeValueState.cs,

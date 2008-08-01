@@ -37,27 +37,40 @@ namespace MonoDevelop.Xml.StateEngine
 	public class XmlAttributeState : State
 	{
 		XmlNameState XmlNameState;
-		XmlAttributeValueState XmlAttributeValueState;
+		XmlDoubleQuotedAttributeValueState DoubleQuotedAttributeValueState;
+		XmlSingleQuotedAttributeValueState SingleQuotedAttributeValueState;
+		XmlUnquotedAttributeValueState UnquotedAttributeValueState;
 		XmlMalformedTagState MalformedTagState;
 		
 		const int NAMING = 0;
 		const int GETTINGEQ = 1;
 		const int GETTINGVAL = 2;
 		
-		public XmlAttributeState ()
-			: this (new XmlNameState (), new XmlAttributeValueState (), new XmlMalformedTagState ())
+		public XmlAttributeState () : this (
+			new XmlNameState (),
+			new XmlDoubleQuotedAttributeValueState (),
+			new XmlSingleQuotedAttributeValueState (),
+			new XmlUnquotedAttributeValueState (),
+			new XmlMalformedTagState ())
 		{}
 		
 		public XmlAttributeState (
 			XmlNameState nameState,
-			XmlAttributeValueState valueState,
+			XmlDoubleQuotedAttributeValueState doubleQuotedAttributeValueState,
+			XmlSingleQuotedAttributeValueState singleQuotedAttributeValueState,
+			XmlUnquotedAttributeValueState unquotedAttributeValueState,
 			XmlMalformedTagState malformedTagState)
 		{
 			this.XmlNameState = nameState;
-			this.XmlAttributeValueState = valueState;
+			this.DoubleQuotedAttributeValueState = doubleQuotedAttributeValueState;
+			this.SingleQuotedAttributeValueState = singleQuotedAttributeValueState;
+			this.UnquotedAttributeValueState = unquotedAttributeValueState;
 			this.MalformedTagState = malformedTagState;
+			
 			Adopt (this.XmlNameState);
-			Adopt (this.XmlAttributeValueState);
+			Adopt (this.DoubleQuotedAttributeValueState);
+			Adopt (this.SingleQuotedAttributeValueState);
+			Adopt (this.UnquotedAttributeValueState);
 			Adopt (this.MalformedTagState);
 		}
 
@@ -77,26 +90,27 @@ namespace MonoDevelop.Xml.StateEngine
 			//state has just been entered
 			if (context.CurrentStateLength == 1)  {
 				
-				//starting a new attribute?
-				if (att == null) {
+				if (context.PreviousState is XmlNameState) {
+					Debug.Assert (att.IsNamed);
+					context.StateTag = GETTINGEQ;
+				}
+				else if (context.PreviousState is XmlAttributeValueState) {
+					//Got value, so end attribute
+					context.Nodes.Pop ();
+					att.End (context.Position - 1);
+					IAttributedXObject element = (IAttributedXObject) context.Nodes.Peek ();
+					element.Attributes.AddAttribute (att);
+					rollback = string.Empty;
+					return Parent;
+				}
+				else {
+					//starting a new attribute
+					Debug.Assert (att == null);
 					Debug.Assert (context.StateTag == NAMING);
 					att = new XAttribute (context.Position - 1);
 					context.Nodes.Push (att);
 					rollback = string.Empty;
 					return XmlNameState;
-				} else {
-					Debug.Assert (att.IsNamed);
-					if (att.Value == null) {
-						context.StateTag = GETTINGEQ;
-					} else {
-						//Got value, so end attribute
-						context.Nodes.Pop ();
-						att.End (context.Position - 1);
-						IAttributedXObject element = (IAttributedXObject) context.Nodes.Peek ();
-						element.Attributes.AddAttribute (att);
-						rollback = string.Empty;
-						return Parent;
-					}
 				}
 			}
 			
@@ -119,9 +133,13 @@ namespace MonoDevelop.Xml.StateEngine
 			} else if (context.StateTag == GETTINGVAL) {
 				if (char.IsWhiteSpace (c)) {
 					return null;
-				} else if (char.IsLetterOrDigit (c) || c== '\'' || c== '"') {
+				} else if (c== '"') {
+					return DoubleQuotedAttributeValueState;
+				} else if (c == '\'') {
+					return SingleQuotedAttributeValueState;
+				} else if (char.IsLetterOrDigit (c)) {
 					rollback = string.Empty;
-					return XmlAttributeValueState;
+					return UnquotedAttributeValueState;
 				}
 			}
 			

@@ -143,9 +143,9 @@ namespace MonoDevelop.Xml.StateEngine
 					}
 				}
 				throw new InvalidOperationException ("Too many state changes for char '" + c + "'. Current state is " + currentState.ToString () + ".");
-			} catch (Exception ex) {
-				MonoDevelop.Core.LoggingService.LogDebug (ToString ());
-				throw;
+			} catch (Exception ex)  {
+				//attach parser state to exceptions
+				throw new Exception (ToString (), ex);
 			}
 		}
 		
