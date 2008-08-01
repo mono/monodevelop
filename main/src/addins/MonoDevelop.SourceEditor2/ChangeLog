@@ -1,3 +1,16 @@
+2008-08-01  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* gtk-gui/MonoDevelop.SourceEditor.SourceEditorWidget.cs,
+	  gtk-gui/gui.stetic, Makefile.am, MonoDevelop.SourceEditor.mdp,
+	  MonoDevelop.SourceEditor/SourceEditorWidget.cs,
+	  MonoDevelop.SourceEditor/ClassQuickFinder.cs,
+	  MonoDevelop.SourceEditor/ExtendibleTextEditor.cs,
+	  MonoDevelop.SourceEditor/SourceEditorView.cs: Refactored class
+	  browser into a separate widget. Improved efficiency -- it's no
+	  longer just hidden, but is now not created unless needed. Also
+	  fixed a bug where the class browser would be shown for certain
+	  files even when disabled.
+
 2008-07-30  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.SourceEditor/ExtendibleTextEditor.cs: changed getparser

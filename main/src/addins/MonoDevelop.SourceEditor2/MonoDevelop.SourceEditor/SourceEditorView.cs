@@ -233,7 +233,7 @@ namespace MonoDevelop.SourceEditor
 			IdeApp.Services.DebuggingService.Breakpoints.BreakpointRemoved += breakpointRemoved;
 			IdeApp.Services.DebuggingService.Breakpoints.BreakpointStatusChanged += breakpointStatusChanged;
 
-			widget.LoadClassCombo ();
+			widget.PopulateClassCombo ();
 			this.IsDirty = false;
 		}
 		

@@ -15,13 +15,7 @@ namespace MonoDevelop.SourceEditor {
         
         private Gtk.VBox editorBar;
         
-        private Gtk.Table classBrowser;
-        
-        private Gtk.ComboBox classCombo;
-        
-        private Gtk.ComboBox membersCombo;
-        
-        private Gtk.ComboBox regionCombo;
+        private Gtk.Alignment classBrowserAlignment;
         
         private Gtk.ScrolledWindow mainsw;
         
@@ -33,50 +27,22 @@ namespace MonoDevelop.SourceEditor {
             // Container child MonoDevelop.SourceEditor.SourceEditorWidget.Gtk.Container+ContainerChild
             this.editorBar = new Gtk.VBox();
             this.editorBar.Name = "editorBar";
-            this.editorBar.Spacing = 6;
+            this.editorBar.Spacing = 2;
             // Container child editorBar.Gtk.Box+BoxChild
-            this.classBrowser = new Gtk.Table(((uint)(1)), ((uint)(3)), false);
-            this.classBrowser.Name = "classBrowser";
-            this.classBrowser.RowSpacing = ((uint)(6));
-            this.classBrowser.ColumnSpacing = ((uint)(6));
-            // Container child classBrowser.Gtk.Table+TableChild
-            this.classCombo = new Gtk.ComboBox();
-            this.classCombo.Name = "classCombo";
-            this.classBrowser.Add(this.classCombo);
-            Gtk.Table.TableChild w1 = ((Gtk.Table.TableChild)(this.classBrowser[this.classCombo]));
-            w1.XOptions = ((Gtk.AttachOptions)(4));
-            w1.YOptions = ((Gtk.AttachOptions)(4));
-            // Container child classBrowser.Gtk.Table+TableChild
-            this.membersCombo = new Gtk.ComboBox();
-            this.membersCombo.Name = "membersCombo";
-            this.classBrowser.Add(this.membersCombo);
-            Gtk.Table.TableChild w2 = ((Gtk.Table.TableChild)(this.classBrowser[this.membersCombo]));
-            w2.LeftAttach = ((uint)(1));
-            w2.RightAttach = ((uint)(2));
-            w2.XOptions = ((Gtk.AttachOptions)(4));
-            w2.YOptions = ((Gtk.AttachOptions)(4));
-            // Container child classBrowser.Gtk.Table+TableChild
-            this.regionCombo = new Gtk.ComboBox();
-            this.regionCombo.Name = "regionCombo";
-            this.classBrowser.Add(this.regionCombo);
-            Gtk.Table.TableChild w3 = ((Gtk.Table.TableChild)(this.classBrowser[this.regionCombo]));
-            w3.LeftAttach = ((uint)(2));
-            w3.RightAttach = ((uint)(3));
-            w3.XOptions = ((Gtk.AttachOptions)(4));
-            w3.YOptions = ((Gtk.AttachOptions)(4));
-            this.editorBar.Add(this.classBrowser);
-            Gtk.Box.BoxChild w4 = ((Gtk.Box.BoxChild)(this.editorBar[this.classBrowser]));
-            w4.Position = 0;
-            w4.Expand = false;
-            w4.Fill = false;
+            this.classBrowserAlignment = new Gtk.Alignment(0F, 0F, 1F, 1F);
+            this.classBrowserAlignment.Name = "classBrowserAlignment";
+            this.editorBar.Add(this.classBrowserAlignment);
+            Gtk.Box.BoxChild w1 = ((Gtk.Box.BoxChild)(this.editorBar[this.classBrowserAlignment]));
+            w1.Position = 0;
+            w1.Expand = false;
             // Container child editorBar.Gtk.Box+BoxChild
             this.mainsw = new Gtk.ScrolledWindow();
             this.mainsw.CanFocus = true;
             this.mainsw.Name = "mainsw";
             this.mainsw.ShadowType = ((Gtk.ShadowType)(1));
             this.editorBar.Add(this.mainsw);
-            Gtk.Box.BoxChild w5 = ((Gtk.Box.BoxChild)(this.editorBar[this.mainsw]));
-            w5.Position = 1;
+            Gtk.Box.BoxChild w2 = ((Gtk.Box.BoxChild)(this.editorBar[this.mainsw]));
+            w2.Position = 1;
             this.Add(this.editorBar);
             if ((this.Child != null)) {
                 this.Child.ShowAll();

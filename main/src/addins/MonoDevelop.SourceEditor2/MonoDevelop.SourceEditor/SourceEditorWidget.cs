@@ -45,17 +45,15 @@ namespace MonoDevelop.SourceEditor
 	public partial class SourceEditorWidget : Gtk.Bin, ITextEditorExtension
 	{
 		SourceEditorView view;
-		bool isClassBrowserVisible = true;
-		bool isDisposed = false;
-		bool loadingMembers = false;
-		ListStore classStore;
-		ListStore memberStore;
-		ListStore regionStore;
 		
-		ICompilationUnit memberParseInfo;
+		bool shouldShowclassBrowser;
+		bool canShowClassBrowser;
+		ClassQuickFinder classBrowser;
+		
+		bool isDisposed = false;
+		
 		IDocumentMetaInformation metaInfo;
-		bool handlingParseEvent = false;
-		Tooltips tips = new Tooltips ();
+		ICompilationUnit unit;
 		
 		MonoDevelop.SourceEditor.ExtendibleTextEditor textEditor;
 		MonoDevelop.SourceEditor.ExtendibleTextEditor splittedTextEditor;
@@ -71,16 +69,49 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 		
-		public bool IsClassBrowserVisible {
-			get {
-				return isClassBrowserVisible;
-			}
+		public bool ShowClassBrowser {
+			get { return shouldShowclassBrowser; }
 			set {
-				classBrowser.Visible = value;
-				isClassBrowserVisible = value;
-				if (isClassBrowserVisible)
-					BindClassCombo ();
+				shouldShowclassBrowser = value;
+				UpdateClassBrowserVisibility ();
 			}
+		}
+		
+		bool CanShowClassBrowser {
+			get { return canShowClassBrowser; }
+			set {
+				canShowClassBrowser = value;
+				UpdateClassBrowserVisibility ();
+			}
+		}
+		
+		void UpdateClassBrowserVisibility ()
+		{
+			if (shouldShowclassBrowser && canShowClassBrowser) {
+				if (classBrowser == null) {
+					classBrowser = new ClassQuickFinder (this);
+					this.classBrowserAlignment.Add (classBrowser);
+					this.classBrowserAlignment.ShowAll ();
+					PopulateClassCombo ();
+				}
+			} else {
+				if (classBrowser != null) {
+					this.classBrowserAlignment.Remove (classBrowser);
+					classBrowser.Destroy (); //note: calls dispose() (?)
+					classBrowser = null;
+				}
+			}
+		}
+		
+		public void PopulateClassCombo ()
+		{
+			if (classBrowser != null && this.unit != null) {
+				classBrowser.UpdateCompilationUnit (this.unit, this.metaInfo);
+			}
+		}
+		
+		public Ambience Ambience {
+			get { return AmbienceService.GetAmbienceForFile (view.ContentName); }
 		}
 		
 		#region ITextEditorExtension
@@ -128,60 +159,9 @@ namespace MonoDevelop.SourceEditor
 			this.textEditor.SelectionChanged += delegate {
 				this.UpdateLineCol ();
 			};
-			// Setup the columns and column renders for the comboboxes
-			CellRendererPixbuf pixr = new CellRendererPixbuf ();
-			pixr.Ypad = 0;
-			classCombo.PackStart (pixr, false);
-			classCombo.AddAttribute (pixr, "pixbuf", 0);
-			CellRenderer colr = new CellRendererText();
-			colr.Ypad = 0;
-			classCombo.PackStart (colr, true);
-			classCombo.AddAttribute (colr, "text", 1);
-			
-			pixr = new CellRendererPixbuf ();
-			pixr.Ypad = 0;
-			
-			membersCombo.PackStart (pixr, false);
-			membersCombo.AddAttribute (pixr, "pixbuf", 0);
-			colr = new CellRendererText ();
-			colr.Ypad = 0;
-			membersCombo.PackStart (colr, true);
-			membersCombo.AddAttribute (colr, "text", 1);
-			
-			regionCombo.PackStart (pixr, false);
-			regionCombo.AddAttribute (pixr, "pixbuf", 0);
-			colr = new CellRendererText ();
-			colr.Ypad = 0;
-			regionCombo.PackStart (colr, true);
-			regionCombo.AddAttribute (colr, "text", 1);
-			
-			// Pack the controls into the editorbar just below the file name tabs.
-//			EventBox tbox = new EventBox ();
-//			tbox.Add (classCombo);
-//			classBrowser.PackStart(tbox, true, true, 0);
-//			tbox = new EventBox ();
-//			tbox.Add (membersCombo);
-//			classBrowser.PackStart (tbox, true, true, 0);
-			
-			// Set up the data stores for the comboboxes
-			classStore = new ListStore(typeof(Gdk.Pixbuf), typeof(string), typeof(IType));
-			classCombo.Model = classStore;	
-			classCombo.Changed += new EventHandler (ClassChanged);
-			tips.SetTip (classCombo, GettextCatalog.GetString ("Type list"), null);
-			
-			memberStore = new ListStore(typeof(Gdk.Pixbuf), typeof(string), typeof(IMember));
-			memberStore.SetSortColumnId (1, Gtk.SortType.Ascending);
-			membersCombo.Model = memberStore;
-			membersCombo.Changed += new EventHandler (MemberChanged);
-			tips.SetTip (membersCombo, GettextCatalog.GetString ("Member list"), null);
-			
-			regionStore = new ListStore(typeof(Gdk.Pixbuf), typeof(string), typeof(DomRegion));
-			regionCombo.Model = regionStore;	
-			regionCombo.Changed += new EventHandler (RegionChanged);
-			tips.SetTip (regionCombo, GettextCatalog.GetString ("Region list"), null);
+
 			
 			ResetFocusChain ();
-			ProjectDomService.CompilationUnitUpdated += UpdateClassBrowser;
 			
 			UpdateLineCol ();
 			
@@ -210,26 +190,29 @@ namespace MonoDevelop.SourceEditor
 		
 		public void SetMime (string mimeType)
 		{
-			IsClassBrowserVisible = MonoDevelop.Projects.Dom.Parser.ProjectDomService.GetParserByMime (mimeType) != null;
+			//FIXME: check that the parser is able to return information that we can use
+			CanShowClassBrowser = MonoDevelop.Projects.Dom.Parser.ProjectDomService.GetParserByMime (mimeType) != null;
 		}
 		
 		void ResetFocusChain ()
 		{
-			this.editorBar.FocusChain = new Widget[] {
-				this.textEditor,
-				this.classCombo,
-				this.membersCombo,
-				this.regionCombo
-			};
-		}
-		
-		protected override void OnSizeAllocated (Gdk.Rectangle allocation)
-		{
-			classCombo.WidthRequest   = allocation.Width * 2 / 6 - 6;
-			membersCombo.WidthRequest = allocation.Width * 3 / 6 - 6;
-			regionCombo.WidthRequest  = allocation.Width / 6;
+			List<Widget> focusChain = new List<Widget> ();
 			
-			base.OnSizeAllocated (allocation);
+			focusChain.Add (this.textEditor);
+			if (this.searchAndReplaceWidget != null) {
+				focusChain.Add (this.searchAndReplaceWidget);
+			}
+			if (this.searchWidget != null) {
+				focusChain.Add (this.searchWidget);
+			}
+			if (this.gotoLineNumberWidget != null) {
+				focusChain.Add (this.searchAndReplaceWidget);
+			}
+			if (this.classBrowser != null) {
+				focusChain.Add (this.classBrowser);
+			}
+			
+			this.editorBar.FocusChain = focusChain.ToArray ();
 		}
 		
 		#region Error underlining
@@ -430,9 +413,15 @@ namespace MonoDevelop.SourceEditor
 		
 		void OnParseInformationChanged (object sender, CompilationUnitEventArgs args)
 		{
-			UpdateMetaInformation ();
 			if (this.isDisposed || args == null || args.Unit == null || this.view == null  || this.view.ContentName != args.Unit.FileName)
 				return;
+			
+			this.unit = args.Unit;
+			UpdateMetaInformation ();
+			
+			if (classBrowser != null)
+				classBrowser.UpdateCompilationUnit (this.unit, this.metaInfo);
+			
 			MonoDevelop.SourceEditor.ExtendibleTextEditor editor = this.TextEditor;
 			if (editor == null || editor.Document == null)
 				return;
@@ -523,22 +512,9 @@ namespace MonoDevelop.SourceEditor
 				this.textEditor = null;
 				this.lastActiveEditor = null;
 				this.splittedTextEditor = null;
-				ProjectDomService.CompilationUnitUpdated -= UpdateClassBrowser;
 				ProjectDomService.CompilationUnitUpdated -= OnParseInformationChanged;
 			}			
 			base.OnDestroyed ();
-		}
-		
-		void UpdateClassBrowser (object sender, CompilationUnitEventArgs args)
-		{
-			// This event handler can get called when files other than the current content are updated. eg.
-			// when loading a new document. If we didn't do this check the member combo for this tab would have
-			// methods for a different class in it!
-			if (view.ContentName == args.Unit.FileName && !handlingParseEvent) {
-				handlingParseEvent = true;
-				memberParseInfo = args.Unit;
-				GLib.Timeout.Add (100, new GLib.TimeoutHandler (BindClassCombo));
-			}
 		}
 		
 		Gtk.Paned splitContainer = null;
@@ -670,7 +646,7 @@ namespace MonoDevelop.SourceEditor
 			
 			view.WarnOverwrite = true;
 			editorBar.PackStart (reloadBar, false, true, 0);
-			editorBar.ReorderChild (reloadBar, this.isClassBrowserVisible ? 1 : 0);
+			editorBar.ReorderChild (reloadBar, classBrowser != null ? 1 : 0);
 			reloadBar.ShowAll ();
 			view.WorkbenchWindow.ShowNotification = true;
 		}
@@ -709,7 +685,12 @@ namespace MonoDevelop.SourceEditor
 		void CaretPositionChanged (object o, DocumentLocationEventArgs args)
 		{
 			UpdateLineCol ();
-			UpdateMethodBrowser ();
+			
+			int line = TextEditor.Caret.Line + 1;
+			int column = TextEditor.Caret.Column;
+			
+			if (classBrowser != null)
+				classBrowser.UpdatePosition (line, column);
 		}
 		
 //		void OnChanged (object o, EventArgs e)
@@ -732,372 +713,7 @@ namespace MonoDevelop.SourceEditor
 		#endregion
 		
 		#region Class/Member combo handling
-		void UpdateMethodBrowser ()
-		{
-			if (!this.IsClassBrowserVisible)
-				return;
-			
-			if (memberParseInfo == null) {
-//				classBrowser.Visible = false;
-				return;
-			}
-			
-			int line = TextEditor.Caret.Line + 1;
-			int column = TextEditor.Caret.Column;
-			
-			// Find the selected class
-			
-			KeyValuePair<IType, int> c = SearchClass (line);
-			IType classFound = c.Key;
-			
-			loadingMembers = true;
-			try {
-				UpdateRegionCombo (line, column);
-				if (classFound == null) {
-					classCombo.Active = -1;
-					membersCombo.Active = -1;
-					memberStore.Clear ();
-					this.UpdateClassComboTip (null);
-					this.UpdateMemberComboTip (null);
-					return;
-				}
-				
-				TreeIter iter;
-				if (c.Value != classCombo.Active) {
-					classCombo.Active = c.Value; 
-					BindMemberCombo (classFound);
-					return;
-				}
-				
-				// Find the member
-				if (!memberStore.GetIterFirst (out iter))
-					return;
-				do {
-					IMember mem = (IMember) memberStore.GetValue (iter, 2);
-					if (IsMemberSelected (mem, line, column)) {
-						membersCombo.SetActiveIter (iter);
-						this.UpdateMemberComboTip (mem);
-						return;
-					}
-				}
-				while (memberStore.IterNext (ref iter));
-				membersCombo.Active = -1;
-				this.UpdateMemberComboTip (null);
-			} finally {
-				loadingMembers = false;
-			}
-		}
-		
-		class LanguageItemComparer: IComparer<IMember>
-		{
-			public int Compare (IMember x, IMember y)
-			{
-				return string.Compare (x.Name, y.Name, true);
-			}
-		}
-		
-		bool BindClassCombo ()
-		{
-			if (this.isDisposed || !this.isClassBrowserVisible)
-				return false;
-			
-			loadingMembers = true;
-			
-			try {
-				// Clear down all our local stores.
-				classStore.Clear();				
-				
-				// check the IParseInformation member variable to see if we could get ParseInformation for the 
-				// current docuement. If not we can't display class and member info so hide the browser bar.
-				if (memberParseInfo == null) {
-//					classBrowser.Visible = false;
-					return false;
-				}
-				
-				ReadOnlyCollection<IType> cls = memberParseInfo.Types;
-				// if we've got this far then we have valid parse info - but if we have not classes the not much point
-				// in displaying the browser bar
-				if (cls.Count == 0) {
-//					classBrowser.Visible = false;
-					return false;
-				}
-				
-//				classBrowser.Visible = true;
-				List<IMember> classes = new List<IMember> ();
-				foreach (IType c in cls)
-					classes.Add (c);
-				classes.Sort (new LanguageItemComparer ());
-				foreach (IType c in classes)
-					Add (c, string.Empty);
-				
-				int line = TextEditor.Caret.Line + 1;
-//				this.GetLineColumnFromPosition(this.CursorPosition, out line, out column);
-				KeyValuePair<IType, int> ckvp = SearchClass (line);
-				
-				IType foundClass = ckvp.Key;
-				if (foundClass != null) {
-					// found the right class. Now need right method
-					classCombo.Active = ckvp.Value;
-					BindMemberCombo (foundClass);
-				} else {
-					// Sometimes there might be no classes e.g. AssemblyInfo.cs
-					classCombo.Active = -1;
-					this.UpdateClassComboTip ( null);
-				}
-			} finally {
-				handlingParseEvent = false;
-				loadingMembers = false;
-			}
-			// return false to stop the GLib.Timeout
-			return false;
-		}
-		
-		void UpdateRegionCombo (int line, int column)
-		{
-			int regionNumber = 0;
-			if (metaInfo != null && metaInfo.FoldingRegion != null) {
-				foreach (FoldingRegion region in metaInfo.FoldingRegion) {
-					if (region.Region.Start.Line <= line && line <= region.Region.End.Line) {
-						regionCombo.Active = regionNumber;
-						tips.SetTip (regionCombo, GettextCatalog.GetString ("Region {0}", region.Name), null);
-						return;
-					}
-					regionNumber++;
-				}
-			}
-			tips.SetTip (regionCombo, GettextCatalog.GetString ("Region list"), null);
-			regionCombo.Active = -1;
-		}
-		
-		void BindRegionCombo ()
-		{
-			regionCombo.Model = null;
-			regionStore.Clear ();
-			if (metaInfo == null || metaInfo.FoldingRegion == null) 
-				return;
-			foreach (FoldingRegion region in metaInfo.FoldingRegion) {
-				regionStore.AppendValues (IdeApp.Services.Resources.GetIcon(Gtk.Stock.Add, IconSize.Menu), 
-				                          region.Name, 
-				                          region.Region);
-			}
-			//bool isVisible = cu.FoldingRegions.Count > 0; 
-			regionCombo.Model = regionStore;
-		}
-		
-		void BindMemberCombo (IType c)
-		{
-			if (!this.IsClassBrowserVisible)
-				return;
 
-			int position = 0;
-			int activeIndex = -1;
-			
-			// find out where the current cursor position is and set the combos.
-			int line   = this.TextEditor.Caret.Line + 1;
-			int column = this.TextEditor.Caret.Column + 1;
-			this.UpdateClassComboTip (c);
-			membersCombo.Changed -= new EventHandler (MemberChanged);
-			// Clear down all our local stores.
-			
-			membersCombo.Model = null;
-			memberStore.Clear();
-			this.UpdateMemberComboTip (null);
-				
-			//HybridDictionary methodMap = new HybridDictionary();
-			
-			Gdk.Pixbuf pix;
-			
-			List<IMember> members = new List<IMember> ();
-			foreach (IMember item in c.Methods)
-				 members.Add (item);
-			foreach (IMember item in c.Properties)
-				 members.Add (item);
-			foreach (IMember item in c.Fields)
-				 members.Add (item);
-			members.Sort (new LanguageItemComparer ());
-			
-			// Add items to the member drop down 
-			
-			foreach (IMember mem in members) {
-				pix = IdeApp.Services.Resources.GetIcon (mem.StockIcon, IconSize.Menu); 
-				
-				// Add the member to the list
-				Ambience ambience = AmbienceService.GetAmbienceForFile (view.ContentName);
-				string displayName = ambience.GetString (mem, OutputFlags.ClassBrowserEntries);
-				memberStore.AppendValues (pix, displayName, mem);
-				
-				// Check if the current cursor position in inside this member
-				if (IsMemberSelected (mem, line, column)) {
-					this.UpdateMemberComboTip (mem);
-					activeIndex = position;
-				}
-				
-				position++;
-			}
-			membersCombo.Model = memberStore;
-			
-			// set active the method the cursor is in
-			membersCombo.Active = activeIndex;
-			membersCombo.Changed += new EventHandler (MemberChanged);
-		}
-		
-		void MemberChanged (object sender, EventArgs e)
-		{
-			if (loadingMembers)
-				return;
-
-			Gtk.TreeIter iter;
-			if (membersCombo.GetActiveIter (out iter)) {	    
-				// Find the IMember object in our list store by name from the member combo
-				IMember member = (IMember) memberStore.GetValue (iter, 2);
-				int line = member.Location.Line;
-				
-				// Get a handle to the current document
-				if (IdeApp.Workbench.ActiveDocument == null) {
-					return;
-				}
-				
-				// If we can we navigate to the line location of the IMember.
-				IExtensibleTextEditor content = (IExtensibleTextEditor) IdeApp.Workbench.ActiveDocument.GetContent(typeof(IExtensibleTextEditor));
-				if (content != null)
-					content.SetCaretTo (Math.Max (1, line), 1);
-			}
-		}
-		
-		void ClassChanged(object sender, EventArgs e)
-		{
-			if (loadingMembers)
-				return;
-			
-			Gtk.TreeIter iter;
-			if (classCombo.GetActiveIter(out iter)) {
-				IType selectedClass = (IType)classStore.GetValue(iter, 2);
-				int line = selectedClass.Location.Line;
-				
-				// Get a handle to the current document
-				if (IdeApp.Workbench.ActiveDocument == null) {
-					return;
-				}
-				
-				// If we can we navigate to the line location of the IMember.
-				IExtensibleTextEditor content = (IExtensibleTextEditor) IdeApp.Workbench.ActiveDocument.GetContent(typeof(IExtensibleTextEditor));
-				if (content != null)
-					content.SetCaretTo (Math.Max (1, line), 1);
-				
-				// check that selected "class" isn't a delegate
-				if (selectedClass.ClassType == ClassType.Delegate) {
-					memberStore.Clear();
-				} else {
-					BindMemberCombo(selectedClass);
-				}
-			}
-		}
-		
-		void RegionChanged (object sender, EventArgs e)
-		{
-			if (loadingMembers)
-				return;
-			
-			Gtk.TreeIter iter;
-			if (regionCombo.GetActiveIter (out iter)) {
-				DomRegion selectedRegion = (DomRegion)regionStore.GetValue (iter, 2);
-				
-				// Get a handle to the current document
-				if (IdeApp.Workbench.ActiveDocument == null) {
-					return;
-				}
-				
-				// If we can we navigate to the line location of the IMember.
-				IExtensibleTextEditor content = (IExtensibleTextEditor) IdeApp.Workbench.ActiveDocument.GetContent(typeof(IExtensibleTextEditor));
-				if (content != null) {
-					int line = Math.Max (1, selectedRegion.Start.Line);
-					content.SetCaretTo (Math.Max (1, line), 1);
-					foreach (FoldSegment fold in this.textEditor.Document.GetStartFoldings (line - 1)) {
-						if (fold.FoldingType == FoldingType.Region)
-							fold.IsFolded = false;
-					}
-				}
-			}
-		}
-		
-		void Add (IType c, string prefix)
-		{
-			Ambience ambience = AmbienceService.GetAmbienceForFile (view.ContentName);
-			Gdk.Pixbuf pix = IdeApp.Services.Resources.GetIcon (c.StockIcon, IconSize.Menu);
-			string name = prefix + ambience.GetString (c, OutputFlags.ClassBrowserEntries);
-			classStore.AppendValues (pix, name, c);
-
-			foreach (IType inner in c.InnerTypes)
-				Add (inner, name + ".");
-		}
-		
-		KeyValuePair<IType, int> SearchClass (int line)
-		{
-			TreeIter iter;
-			int i = 0, foundIndex = 0;
-			IType result = null;
-			if (classStore.GetIterFirst (out iter)) {
-				do {
-					IType c = (IType)classStore.GetValue (iter, 2);
-					if (c.BodyRegion != null && c.BodyRegion.Start.Line <= line && line <= c.BodyRegion.End.Line)	{
-						if (result == null || result.BodyRegion.Start.Line <= c.BodyRegion.Start.Line) {
-							result = c;
-							foundIndex = i;
-						}
-					}
-					i++;
-				} while (classStore.IterNext (ref iter));
-			}
-			return new KeyValuePair<IType, int> (result, foundIndex);
-		}
-		
-		void UpdateClassComboTip (IMember it)
-		{
-			if (it != null) {
-				Ambience ambience = AmbienceService.GetAmbienceForFile (view.ContentName);
-				string txt = ambience.GetString (it, OutputFlags.ClassBrowserEntries);
-				tips.SetTip (this.classCombo, txt, txt);
-			} else {
-				tips.SetTip (classCombo, GettextCatalog.GetString ("Type list"), null);
-			}
-		}
-		
-		void UpdateMemberComboTip (IMember it)
-		{
-			if (it != null) {
-				Ambience ambience = AmbienceService.GetAmbienceForFile (view.ContentName);
-				string txt = ambience.GetString (it, OutputFlags.ClassBrowserEntries);
-				tips.SetTip (this.membersCombo, txt, txt);
-			} else {
-				tips.SetTip (membersCombo, GettextCatalog.GetString ("Member list"), null);
-			}
-		}
-		
-		bool IsMemberSelected (IMember mem, int line, int column)
-		{
-			if (mem is IMethod) {
-				IMethod method = (IMethod) mem;
-				return (method.BodyRegion != null && method.BodyRegion.Start.Line <= line && line <= method.BodyRegion.End.Line || 
-				       (method.BodyRegion.Start.Line == line && 0 == method.BodyRegion.End.Line));
-			} else if (mem is IProperty) {
-				IProperty property = (IProperty) mem;
-				return (property.BodyRegion != null && property.BodyRegion.Start.Line <= line && line <= property.BodyRegion.End.Line);
-			}
-			
-			return (mem.Location != null && mem.Location.Line <= line && line <= mem.Location.Line);
-		}
-		
-//		public void GetLineColumnFromPosition (int position, out int line, out int column)
-//		{
-//			DocumentLocation location = TextEditor.Document.OffsetToLocation (posititon);
-//			line = location.Line + 1;
-//			column = location.Column + 1;
-//		}
-		
-		public void LoadClassCombo ()
-		{
-			BindClassCombo();
-		}
 		#endregion
 		
 		#region Search and Replace
@@ -1201,14 +817,8 @@ namespace MonoDevelop.SourceEditor
 				this.textEditor.HighlightSearchPattern = true;
 				if (this.splittedTextEditor != null) 
 					this.splittedTextEditor.HighlightSearchPattern = true;
-				this.editorBar.FocusChain = new Widget[] {
-					this.textEditor,
-					this.searchWidget,
-					this.classCombo,
-					this.membersCombo,
-					this.regionCombo,
-				};
-
+				
+				ResetFocusChain ();
 			}
 			searchWidget.Focus ();
 		}
@@ -1227,14 +837,8 @@ namespace MonoDevelop.SourceEditor
 				this.textEditor.HighlightSearchPattern = true;
 				if (this.splittedTextEditor != null) 
 					this.splittedTextEditor.HighlightSearchPattern = true;
-				this.editorBar.FocusChain = new Widget[] {
-					this.textEditor,
-					this.searchAndReplaceWidget,
-					this.classCombo,
-					this.membersCombo,
-					this.regionCombo,
-				};
 				
+				ResetFocusChain ();
 			}
 			searchAndReplaceWidget.Focus ();
 		}
@@ -1248,13 +852,7 @@ namespace MonoDevelop.SourceEditor
 				editorBar.Add (gotoLineNumberWidget);
 				editorBar.SetChildPacking(gotoLineNumberWidget, false, true, 0, PackType.End);
 				gotoLineNumberWidget.ShowAll ();
-				this.editorBar.FocusChain = new Widget[] {
-					this.textEditor,
-					this.gotoLineNumberWidget,
-					this.classCombo,
-					this.membersCombo,
-					this.regionCombo,
-				};
+				ResetFocusChain ();
 				
 			}
 			gotoLineNumberWidget.Focus ();
