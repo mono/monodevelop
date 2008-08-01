@@ -104,6 +104,7 @@ namespace MonoDevelop.Projects.Dom.Database
 		{
 			StringBuilder sb = new StringBuilder ();
 			string query = String.Format (@"SELECT NamespaceID, Name FROM {0} WHERE ({1})",  NamespaceTable, CompileNamespaces (subNamespaces));
+			
 			IDataReader reader = connection.Query (query);
 			
 			Dictionary<long, string> namespaceTable = new Dictionary<long, string> ();
@@ -112,6 +113,7 @@ namespace MonoDevelop.Projects.Dom.Database
 					while (reader.Read ()) {
 						long   namespaceID = (long)SqliteUtils.FromDbFormat (typeof (long), reader[0]);
 						string name        = (string)SqliteUtils.FromDbFormat (typeof (string), reader[1]);
+						System.Console.WriteLine(namespaceID + " / " + name);
 						namespaceTable[namespaceID] = name;
 						if (sb.Length > 0) 
 							sb.Append (" OR ");
@@ -134,7 +136,7 @@ namespace MonoDevelop.Projects.Dom.Database
 				if (reader != null) {
 					try {
 						while (reader.Read ()) {
-							long nsId = (long)SqliteUtils.FromDbFormat (typeof (long), reader[1]);
+							long nsId = (long)SqliteUtils.FromDbFormat (typeof (long), reader[2]);
 							string nsName = namespaceTable.ContainsKey (nsId) ? namespaceTable[nsId] : GetNamespaceName (nsId);
 							result.Add (CreateDomType (reader, nsName));
 						}

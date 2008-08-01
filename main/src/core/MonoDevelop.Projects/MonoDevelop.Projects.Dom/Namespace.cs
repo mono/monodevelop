@@ -46,6 +46,11 @@ namespace MonoDevelop.Projects.Dom
 			this.Documentation = documentation;
 		}
 		
+		public override string ToString ()
+		{
+			return string.Format ("[Namespace: Name={0}]", name);
+		}
+		
 		public string Name {
 			get {
 				return name;
@@ -63,6 +68,7 @@ namespace MonoDevelop.Projects.Dom
 				documentation = value;
 			}
 		}
+		
 		
 		public virtual int CompareTo (object value)
 		{

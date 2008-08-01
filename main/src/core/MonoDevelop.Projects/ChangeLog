@@ -1,3 +1,9 @@
+2008-08-01  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Dom/Namespace.cs,
+	  MonoDevelop.Projects.Dom.Database/CodeCompletionDatabase.cs: Fixed
+	  bug in getnamespace contents.
+
 2008-07-31  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom/ResolveResult.cs: worked on C#3 code
