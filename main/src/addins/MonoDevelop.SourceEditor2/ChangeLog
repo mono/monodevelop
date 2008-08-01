@@ -16,6 +16,11 @@
 	* MonoDevelop.SourceEditor/ExtendibleTextEditor.cs: changed getparser
 	  call.
 
+2008-07-30  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.SourceEditor/ExtendibleTextEditor.cs: fixed "Bug 408899 -
+	  Code templates expanded in comments".
+
 2008-07-29  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.SourceEditor/SourceEditorWidget.cs: Restore error

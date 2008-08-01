@@ -42,6 +42,8 @@ using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Ide.Gui.Pads.ClassBrowser
 {
+	[System.ComponentModel.Category("MonoDevelop.Ide")]
+	[System.ComponentModel.ToolboxItem(true)]
 	public partial class ClassBrowserPadWidget : Gtk.Bin
 	{
 		MonoDevelopTreeView treeView;

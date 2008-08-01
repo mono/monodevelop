@@ -271,8 +271,9 @@ namespace DebuggerServer
 				val = array.GetElement (idx);
 			}
 			try {
-				return Server.Instance.Evaluator.TargetObjectToString (thread, val);
+				return Server.Instance.Evaluator.TargetObjectToExpression (thread, val);
 			} catch (Exception ex) {
+				Server.Instance.WriteDebuggerError (ex);
 				return "? (" + ex.Message + ")";
 			}
 		}

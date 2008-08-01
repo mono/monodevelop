@@ -96,7 +96,7 @@ namespace DebuggerServer
 			}
 			
 			try {
-				return Server.Instance.Evaluator.TargetObjectToString (Thread, Value);
+				return Server.Instance.Evaluator.TargetObjectToExpression (Thread, Value);
 			} catch (Exception ex) {
 				Server.Instance.WriteDebuggerError (ex);
 				Server.Instance.WriteDebuggerOutput ("Value assignment failed: {0}: {1}\n", ex.GetType (), ex.Message);

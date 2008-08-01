@@ -36,7 +36,21 @@ namespace DebuggerServer
 	{
 		public abstract ValueReference Evaluate (StackFrame frame, string exp, EvaluationOptions options);
 		
-		public virtual string TargetObjectToString (Thread thread, TargetObject obj)
+		public string TargetObjectToString (Thread thread, TargetObject obj)
+		{
+			object res = TargetObjectToObject (thread, obj);
+			if (res == null)
+				return null;
+			else
+				return res.ToString ();
+		}
+		
+		public string TargetObjectToExpression (Thread thread, TargetObject obj)
+		{
+			return ToExpression (TargetObjectToObject (thread, obj));
+		}
+		
+		public virtual object TargetObjectToObject (Thread thread, TargetObject obj)
 		{
 			obj = ObjectUtil.GetRealObject (thread, obj);
 			
@@ -44,7 +58,7 @@ namespace DebuggerServer
 				case Mono.Debugger.Languages.TargetObjectKind.Array:
 					TargetArrayObject arr = obj as TargetArrayObject;
 					if (arr == null)
-						return "null";
+						return null;
 					StringBuilder tn = new StringBuilder (arr.Type.ElementType.Name);
 					tn.Append ("[");
 					TargetArrayBounds ab = arr.GetArrayBounds (thread);
@@ -59,46 +73,54 @@ namespace DebuggerServer
 						tn.Append (ab.Length.ToString ());
 					}
 					tn.Append ("]");
-					return tn.ToString ();
+					return new LiteralExp (tn.ToString ());
 					
 				case TargetObjectKind.GenericInstance:
 				case TargetObjectKind.Struct:
 				case TargetObjectKind.Class:
+					TypeDisplayData tdata = ObjectUtil.GetTypeDisplayData (thread.CurrentFrame, obj.Type);
 					TargetStructObject co = obj as TargetStructObject;
 					if (co == null)
-						return "null";
+						return null;
 					if (co.TypeName == "System.Decimal")
-						return ObjectUtil.CallToString (thread, co);
+						return new LiteralExp (ObjectUtil.CallToString (thread, co));
+					if (tdata.ValueDisplayString != null)
+						return new LiteralExp (ObjectUtil.EvaluateDisplayString (thread.CurrentFrame, co, tdata.ValueDisplayString));
+					
+					// Try using a collection adaptor
 					CollectionAdaptor col = CollectionAdaptor.CreateAdaptor (thread, co);
 					if (col != null)
-						return ArrayElementGroup.GetArrayDescription (col.GetBounds ());
-					return "{" + co.TypeName + "}";
+						return new LiteralExp (ArrayElementGroup.GetArrayDescription (col.GetBounds ()));
+					
+					// Return the type name
+					if (tdata.TypeDisplayString != null)
+						return new LiteralExp ("{" + tdata.TypeDisplayString + "}");
+					return new LiteralExp ("{" + obj.Type.Name + "}");
 					
 				case TargetObjectKind.Enum:
 					TargetEnumObject eob = (TargetEnumObject) obj;
-					return TargetObjectToString (thread, eob.GetValue (thread));
+					return new LiteralExp (TargetObjectToString (thread, eob.GetValue (thread)));
 					
 				case TargetObjectKind.Fundamental:
 					TargetFundamentalObject fob = obj as TargetFundamentalObject;
 					if (fob == null)
 						return "null";
-					object val = fob.GetObject (thread);
-					return ToExpression (val);
+					return fob.GetObject (thread);
 					
 				case TargetObjectKind.Pointer:
 					if (IntPtr.Size < 8)
-						return ToExpression (new IntPtr ((int)obj.GetAddress (thread).Address));
+						return new IntPtr ((int)obj.GetAddress (thread).Address);
 					else
-						return ToExpression (new IntPtr (obj.GetAddress (thread).Address));
+						return new IntPtr (obj.GetAddress (thread).Address);
 					
 				case TargetObjectKind.Object:
 					TargetObjectObject oob = obj as TargetObjectObject;
 					if (oob == null)
-						return "null";
+						return null;
 					else
-						return "{" + oob.TypeName + "}";
+						return new LiteralExp ("{" + oob.TypeName + "}");
 			}
-			return "?";
+			return new LiteralExp ("?");
 		}
 		
 		public virtual string ToExpression (object obj)
@@ -115,6 +137,22 @@ namespace DebuggerServer
 			
 			return obj.ToString ();
 		}
+	}
+	
+	class LiteralExp
+	{
+		public readonly string Exp;
+		
+		public LiteralExp (string exp)
+		{
+			Exp = exp;
+		}
+		
+		public override string ToString ()
+		{
+			return Exp;
+		}
+
 	}
 	
 	public class EvaluationOptions

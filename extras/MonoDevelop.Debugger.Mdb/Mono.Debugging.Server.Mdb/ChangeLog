@@ -1,3 +1,32 @@
+2008-07-31  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* DebuggerServer.cs: Report module loading. Fixed break command.
+
+2008-07-31  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* ObjectUtil.cs: Added hack to make the proxy attribute work for
+	  generic types.
+	* CollectionAdaptor.cs: Don't try to create a collection adaptor for
+	  generic types. It won't work.
+
+2008-07-31  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* DebuggerServer.cs, Util.cs, ExpressionEvaluator.cs,
+	  Mono.Debugging.Server.Mdb.mdp, ValueReference.cs,
+	  NRefactoryEvaluator.cs, ObjectUtil.cs, ArrayElementGroup.cs,
+	  RawViewSource.cs, CollectionAdaptor.cs, Makefile,
+	  IndexerValueReference.cs: Implemented support for
+	  DebuggerDisplayAttribute, DebuggerBrowsableAttribute and
+	  DebuggerTypeProxyAttribute.
+
+2008-07-31  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* DebuggerServer.cs: Enable support for conditional breakpoints.
+	* Convert.cs: Allow fundamental conversions of strings. Use new boxing
+	  API.
+	* ObjectUtil.cs: Some cleanup.
+	* ArrayElementGroup.cs: Report exception when setting a value.
+
 2008-07-28  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* NRefactoryEvaluator.cs: Track changes in NRefactory.

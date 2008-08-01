@@ -63,6 +63,9 @@ namespace DebuggerServer
 		
 		public static CollectionAdaptor CreateAdaptor (Thread thread, TargetStructObject obj)
 		{
+			if (obj is TargetGenericInstanceObject)
+				return null;
+			
 			ColInfo colInfo;
 			if (colTypes.TryGetValue (obj.Type.Name, out colInfo)) {
 				if (colInfo == null)
@@ -74,7 +77,7 @@ namespace DebuggerServer
 					return null;
 				}
 				colInfo = new ColInfo ();
-				foreach (MemberReference mem in ObjectUtil.GetTypeMembers (thread, obj.Type, false, false, true, true, false)) {
+				foreach (MemberReference mem in ObjectUtil.GetTypeMembers (thread, obj.Type, false, false, true, true, ReqMemberAccess.All)) {
 					if (mem.Member.IsStatic)
 						continue;
 					if (mem.Member is TargetPropertyInfo) {
@@ -169,7 +172,7 @@ namespace DebuggerServer
 				TargetObject value = ObjectUtil.GetPropertyValue (thread, "Value", telem);
 				key = ObjectUtil.GetRealObject (thread, key);
 				value = ObjectUtil.GetRealObject (thread, value);
-				string val = "{[" + Server.Instance.Evaluator.TargetObjectToString (thread, key) + ", " + Server.Instance.Evaluator.TargetObjectToString (thread, value) + "]}";
+				string val = "{[" + Server.Instance.Evaluator.TargetObjectToExpression (thread, key) + ", " + Server.Instance.Evaluator.TargetObjectToExpression (thread, value) + "]}";
 				ObjectValueFlags setFlags = indexerProp.CanWrite ? ObjectValueFlags.None : ObjectValueFlags.ReadOnly;
 				ObjectValue vkey = Util.CreateObjectValue (thread, this, new ObjectPath (sidx).Append ("key"), key, ObjectValueFlags.ReadOnly | ObjectValueFlags.Property);
 				ObjectValue vvalue = Util.CreateObjectValue (thread, this, new ObjectPath (sidx).Append ("val"), value, setFlags | ObjectValueFlags.Property);
@@ -244,7 +247,7 @@ namespace DebuggerServer
 			
 			try {
 				val = ObjectUtil.GetPropertyValue (thread, null, obj, key);
-				return Server.Instance.Evaluator.TargetObjectToString (thread, val);
+				return Server.Instance.Evaluator.TargetObjectToExpression (thread, val);
 			} catch (Exception ex) {
 				Server.Instance.WriteDebuggerError (ex);
 				return value;

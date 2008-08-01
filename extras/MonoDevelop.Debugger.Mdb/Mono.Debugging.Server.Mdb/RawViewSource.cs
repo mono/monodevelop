@@ -1,9 +1,9 @@
-// Services.cs
+// RawViewSource.cs
 //
 // Author:
 //   Lluis Sanchez Gual <lluis@novell.com>
 //
-// Copyright (c) 2005 Novell, Inc (http://www.novell.com)
+// Copyright (c) 2008 Novell, Inc (http://www.novell.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -25,47 +25,40 @@
 //
 //
 
+using System;
+using Mono.Debugger;
+using Mono.Debugger.Languages;
+using Mono.Debugging.Backend;
+using Mono.Debugging.Client;
 
-using MonoDevelop.Core;
-using MonoDevelop.Core.Execution;
-using MonoDevelop.Core.Gui;
-using MonoDevelop.Ide.Gui;
-using MonoDevelop.Ide.Tasks;
-using MonoDevelop.Projects;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Gui;
-
-namespace MonoDevelop.Ide
+namespace DebuggerServer
 {
-	internal class Services
+	public class RawViewSource: RemoteFrameObject, IObjectValueSource
 	{
-		static IconService icons;
-		static TaskService taskService;
+		TargetObject obj;
+		Thread thread;
 		
-		public static ResourceService Resources {
-			get { return MonoDevelop.Core.Gui.Services.Resources; }
+		public RawViewSource (Thread thread, TargetObject obj)
+		{
+			this.thread = thread;
+			this.obj = obj;
 		}
-	
-		public static IconService Icons {
-			get {
-				if (icons == null)
-					icons = (IconService) ServiceManager.GetService (typeof(IconService));
-				return icons;
-			}
-		}
-
-		public static TaskService TaskService {
-			get {
-				if (taskService == null)
-					taskService = new TaskService ();
-				return taskService;
-			}
-		}
-	
 		
-		public static ProjectService ProjectService {
-			get { return MonoDevelop.Projects.Services.ProjectService; }
+		public static ObjectValue CreateRawView (Thread thread, TargetObject obj)
+		{
+			RawViewSource src = new RawViewSource (thread, obj);
+			src.Connect ();
+			return ObjectValue.CreateObject (src, new ObjectPath ("Raw View"), "", "", ObjectValueFlags.ReadOnly, null);
+		}
+		
+		public ObjectValue[] GetChildren (ObjectPath path, int index, int count)
+		{
+			return Util.GetObjectValueChildren (thread, obj, index, count, false);
+		}
+		
+		public string SetValue (ObjectPath path, string value)
+		{
+			throw new NotSupportedException ();
 		}
 	}
 }
-

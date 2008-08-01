@@ -96,7 +96,6 @@ namespace MonoDevelop.Debugger
 		
 		public virtual void OnUpdateList ()
 		{
-			Console.WriteLine ("pp updateing: " + this);
 			if (IdeApp.Services.DebuggingService.CurrentFrame != null)
 				tree.Frame = IdeApp.Services.DebuggingService.CurrentFrame;
 		}
