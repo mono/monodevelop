@@ -41,7 +41,11 @@ namespace MonoDevelop.AspNet.StateEngine
 			new XmlTagState (
 				new XmlAttributeState (
 					new XmlNameState (),
-					new XmlAttributeValueState (
+					new XmlDoubleQuotedAttributeValueState (
+						new AspNetSpeculativeExpressionState ()),
+					new XmlSingleQuotedAttributeValueState (
+						new AspNetSpeculativeExpressionState ()),
+					new XmlUnquotedAttributeValueState (
 						new AspNetSpeculativeExpressionState ()),
 					new AspNetSpeculativeExpressionState ()),
 				new XmlNameState (),

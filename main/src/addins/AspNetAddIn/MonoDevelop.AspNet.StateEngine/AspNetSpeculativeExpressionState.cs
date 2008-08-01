@@ -67,24 +67,14 @@ namespace MonoDevelop.AspNet.StateEngine
 		{
 			switch (context.StateTag) {
 			case INCOMING:
-				if (c == '<' && context.PreviousState != ExpressionState) {
+				if (c == '<' && context.PreviousState != ExpressionState && context.PreviousState != CommentState) {
 					context.StateTag = BRACKET;
 					return null;
-				} else if (context.PreviousState == ExpressionState) {
+				} else if (context.PreviousState == ExpressionState || context.PreviousState == CommentState) {
 					//expression has successfully been collected
-					//so clean up down to the tag level
-					
-					XObject o = context.Nodes.Peek () as XAttribute;
-					if (o != null) {
-						o.End (context.Position);
-						context.Nodes.Pop ();
-					}
-					
+					//we should go back to the AttributeValueState or the TagState, not the AttributeState
 					rollback = string.Empty;
-					System.Console.WriteLine(c);
-					return (Parent as XmlTagState) ?? 
-						(Parent.Parent as XmlTagState) ??
-							Parent.Parent.Parent;
+					return Parent is XmlAttributeState ? Parent.Parent : Parent;
 				}
 				break;
 				

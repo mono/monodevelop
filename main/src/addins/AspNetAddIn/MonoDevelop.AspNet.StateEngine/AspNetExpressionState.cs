@@ -80,8 +80,11 @@ namespace MonoDevelop.AspNet.StateEngine
 					XNode expr = (XNode) context.Nodes.Pop ();
 					expr.End (context.Position);
 					if (context.BuildTree) {
-						XContainer container = (XContainer) context.Nodes.Peek ();
-						container.AddChildNode (expr);
+						XObject ob = context.Nodes.Peek ();
+						if (ob is XContainer) {
+							((XContainer)ob).AddChildNode (expr);
+						}
+					 	//FIXME: add to other kinds of node, e.g. if used within a tag
 					}
 					return Parent;
 				} else {

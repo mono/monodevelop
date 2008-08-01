@@ -79,7 +79,6 @@ FILES =  \
 	MonoDevelop.AspNet.Parser/Regexes.cs \
 	MonoDevelop.AspNet.Parser/SuggestedHandlerCompletionData.cs \
 	MonoDevelop.AspNet.Parser/WebFormReferenceManager.cs \
-	MonoDevelop.AspNet.StateEngine/AspNetAttributeValueState.cs \
 	MonoDevelop.AspNet.StateEngine/AspNetDirectiveState.cs \
 	MonoDevelop.AspNet.StateEngine/AspNetDom.cs \
 	MonoDevelop.AspNet.StateEngine/AspNetExpressionState.cs \

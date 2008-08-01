@@ -42,6 +42,11 @@ namespace MonoDevelop.AspNet.StateEngine
 		
 		public override State PushChar (char c, IParseContext context, ref string rollback)
 		{
+			if (context.CurrentStateLength == 1) {
+				int start = context.Position - (context.CurrentStateLength + "<%--".Length);
+				context.Nodes.Push (new AspNetServerComment (start));
+			}
+			
 			switch (context.StateTag) {
 			case NOMATCH:
 				if (c == '-')
@@ -64,9 +69,14 @@ namespace MonoDevelop.AspNet.StateEngine
 				
 			case PERCENT:
 				if (c == '>') {
+					AspNetServerComment comment = (AspNetServerComment) context.Nodes.Pop ();
+					comment.End (context.Position);
 					if (context.BuildTree) {
-						int start = context.Position - (context.CurrentStateLength + "<%--".Length);
-						((XContainer) context.Nodes.Peek ()).AddChildNode (new AspNetServerComment (start, context.Position));
+						XObject ob = context.Nodes.Peek ();
+						if (ob is XContainer) {
+							((XContainer)ob).AddChildNode (comment);
+						}
+					 	//FIXME: add to other kinds of node, e.g. if used within a tag
 					}
 					return Parent;
 				}
