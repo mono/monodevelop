@@ -59,13 +59,31 @@ namespace MonoDevelop.CSharpBinding.Gui
 		public override void Initialize ()
 		{
 			base.Initialize ();
-			stateTracker = new DocumentStateTracker<CSharpIndentEngine> (new CSharpIndentEngine (), Editor);
+			InitTracker ();
 		}
 		
 		public override bool ExtendsEditor (MonoDevelop.Ide.Gui.Document doc, IEditableTextBuffer editor)
 		{
 			return System.IO.Path.GetExtension (doc.Title) == ".cs";
 		}
+		
+		#region Sharing the tracker
+		
+		void InitTracker ()
+		{
+			//if there's a CSharpTextEditorCompletion in the extension chain, we can reuse its stateTracker
+			CSharpTextEditorCompletion c = this.Document.GetContent<CSharpTextEditorCompletion> ();
+			if (c != null && c.StateTracker != null) {
+				stateTracker = c.StateTracker;
+				System.Console.WriteLine("found it");
+			} else {
+				stateTracker = new DocumentStateTracker<CSharpIndentEngine> (new CSharpIndentEngine (), Editor);
+			}
+		}
+		
+		internal DocumentStateTracker<CSharpIndentEngine> StateTracker { get { return stateTracker; } }
+		
+		#endregion
 		
 		public override bool KeyPress (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
 		{

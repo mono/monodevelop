@@ -59,7 +59,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 		public override void Initialize ()
 		{
 			base.Initialize ();
-			stateTracker = new DocumentStateTracker<CSharpIndentEngine> (new CSharpIndentEngine (),  Editor);
+			InitTracker ();
 			dom = ProjectDomService.GetDatabaseProjectDom (Document.Project);
 		}
 		
@@ -67,6 +67,24 @@ namespace MonoDevelop.CSharpBinding.Gui
 		{
 			return System.IO.Path.GetExtension (doc.Title) == ".cs";
 		}
+		
+		#region Sharing the tracker
+		
+		void InitTracker ()
+		{
+			//if there's a CSharpTextEditorIndentation in the extension chain, we can reuse its stateTracker
+			CSharpTextEditorIndentation c = this.Document.GetContent<CSharpTextEditorIndentation> ();
+			if (c != null && c.StateTracker != null) {
+				stateTracker = c.StateTracker;
+				System.Console.WriteLine("found it");
+			} else {
+				stateTracker = new DocumentStateTracker<CSharpIndentEngine> (new CSharpIndentEngine (), Editor);
+			}
+		}
+		
+		internal DocumentStateTracker<CSharpIndentEngine> StateTracker { get { return stateTracker; } }
+		
+		#endregion
 		
 		ExpressionResult FindExpression (ProjectDom dom, int offset)
 		{
