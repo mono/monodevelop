@@ -417,7 +417,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 			if (project == null)
 				return null;
 			if (!HasDom (project)) {
-				string codeCompletionFile = System.IO.Path.ChangeExtension (project.FileName, ".pidb");
+				string codeCompletionFile = System.IO.Path.ChangeExtension (project.FileName, "." + CodeCompletionDatabase.Version + ".pidb");
 				CodeCompletionDatabase database = new CodeCompletionDatabase (codeCompletionFile);
 				DatabaseProjectDom dom = new DatabaseProjectDom (database);
 				InsertDom (project.FileName, dom);

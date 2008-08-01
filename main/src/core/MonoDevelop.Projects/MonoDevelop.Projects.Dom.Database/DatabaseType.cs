@@ -226,10 +226,11 @@ namespace MonoDevelop.Projects.Dom.Database
 				(byte)type.ClassType
 			));
 			
+			long myReturnType = db.GetReturnTypeID (new DomReturnType (type));
 			foreach (IReturnType baseType in type.BaseTypes) {
 				db.Connection.Execute (String.Format (@"INSERT INTO {0} (ReturnTypeID, BaseReturnTypeID, TypeID) VALUES ({1}, {2}, {3})", 
 					SubTypeTable,
-					db.GetReturnTypeID (new DomReturnType (type)),
+					myReturnType,
 					db.GetReturnTypeID (baseType),
 					typeId
 				));

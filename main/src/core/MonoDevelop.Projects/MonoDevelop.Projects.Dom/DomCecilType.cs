@@ -66,6 +66,14 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
+		public static string RemoveGenericParamSuffix (string name)
+		{
+			int idx = name.IndexOf('`');
+			if (idx > 0)
+				return name.Substring (0, idx);
+			return name;
+		}
+		
 		public DomCecilType (TypeDefinition typeDefinition) : this (true, true, typeDefinition)
 		{
 		}	
@@ -75,7 +83,7 @@ namespace MonoDevelop.Projects.Dom
 				this.typeDefinition = typeDefinition;
 			this.classType      = GetClassType (typeDefinition);
 			
-			this.Name           = typeDefinition.Name;
+			this.Name           = DomCecilType.RemoveGenericParamSuffix (typeDefinition.Name);
 			
 			this.Namespace      = typeDefinition.Namespace;
 			this.modifiers      = GetModifiers (typeDefinition.Attributes);

@@ -53,14 +53,14 @@ namespace MonoDevelop.Projects.Dom
 		{
 			if (typeReference == null)
 				return DomReturnType.Void;
-			return DomReturnType.GetSharedReturnType (typeReference.FullName); 
+			return DomReturnType.GetSharedReturnType (DomCecilType.RemoveGenericParamSuffix (typeReference.FullName)); 
 		}
 		
 		public static IReturnType GetReturnType (MethodReference methodReference)
 		{
 			if (methodReference == null)
 				return DomReturnType.Void;
-			return DomReturnType.GetSharedReturnType (methodReference.DeclaringType.FullName);
+			return DomReturnType.GetSharedReturnType (DomCecilType.RemoveGenericParamSuffix (methodReference.DeclaringType.FullName));
 		}
 		
 		public DomCecilMethod (MonoDevelop.Projects.Dom.IType declaringType, bool keepDefinitions, MethodDefinition methodDefinition)

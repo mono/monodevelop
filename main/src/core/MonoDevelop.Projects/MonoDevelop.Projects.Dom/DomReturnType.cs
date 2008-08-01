@@ -29,27 +29,116 @@
 using System;
 using System.Text;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Diagnostics;
 
 namespace MonoDevelop.Projects.Dom
 {
-	public class DomReturnType : IReturnType
+	public class ReturnTypePart : IReturnTypePart
 	{
 		protected string name;
+		public string Name {
+			get {
+				return name;
+			}
+			set {
+				name = value;
+			}
+		}
+		
+		protected List<IReturnType> genericArguments = null;
+		public System.Collections.ObjectModel.ReadOnlyCollection<IReturnType> GenericArguments {
+			get {
+				if (genericArguments == null)
+					return null;
+				return genericArguments.AsReadOnly ();
+			}
+		}
+		public ReturnTypePart ()
+		{
+		}
+		
+		public ReturnTypePart (string name, IEnumerable<IReturnType> typeParameters)
+		{
+			this.name           = name;
+			if (typeParameters != null) 
+				this.genericArguments = new List<IReturnType> (typeParameters);
+		}
+		public ReturnTypePart (string name, IEnumerable<TypeParameter> typeParameters)
+		{
+			this.name           = name;
+			if (typeParameters != null) {
+				this.genericArguments = new List<IReturnType> ();
+				foreach (TypeParameter para in typeParameters) {
+					this.genericArguments.Add (new DomReturnType (para.Name));
+				}
+			}
+		}
+		
+		public string ToInvariantString ()
+		{
+			StringBuilder result = new StringBuilder ();
+			result.Append (Name);
+			if (genericArguments != null && genericArguments.Count > 0) {
+				result.Append ('<');
+				for (int i = 0; i < genericArguments.Count; i++) {
+					if (i > 0)
+						result.Append (',');
+					result.Append (genericArguments[i].ToInvariantString ());
+				}
+				result.Append ('>');
+			}
+			return result.ToString ();
+		}		
+		public void AddTypeParameter (IReturnType type)
+		{
+			if (genericArguments == null)
+				genericArguments = new List<IReturnType> ();
+			this.genericArguments.Add (type);
+		}
+	}
+	
+	public class DomReturnType : ReturnTypePart, IReturnType
+	{
+		List<IReturnTypePart> parts = new List<IReturnTypePart> ();
+		public List<IReturnTypePart> Parts {
+			get {
+				return parts;
+			}
+		}
+		
+		public string Name {
+			get {
+				Debug.Assert (parts.Count > 0);
+				return parts[parts.Count - 1].Name;
+			}
+			set {
+				Debug.Assert (parts.Count > 0);
+				parts[parts.Count - 1].Name = value;
+			}
+		}
+		
+		public ReadOnlyCollection<IReturnType> GenericArguments {
+			get {
+				Debug.Assert (parts.Count > 0);
+				return parts[parts.Count - 1].GenericArguments;
+			}
+		}
+		public void AddTypeParameter (IReturnType type)
+		{
+			Debug.Assert (parts.Count > 0);
+			parts[parts.Count - 1].AddTypeParameter (type);
+		}
+		
 		protected string nspace;
 		protected int pointerNestingLevel;
 		protected int arrayDimensions;
 		protected int[] dimensions = null;
 		ReturnTypeModifiers modifiers;
-		protected List<IReturnType> typeParameters = null;
 		
 		public string FullName {
 			get {
 				return !String.IsNullOrEmpty (nspace) ? nspace + "." + name : name;
-			}
-			set {
-				KeyValuePair<string, string> splitted = SplitFullName (value);
-				nspace = splitted.Key;
-				name   = splitted.Value;
 			}
 		}
 		
@@ -63,15 +152,6 @@ namespace MonoDevelop.Projects.Dom
 			return new KeyValuePair<string, string> ("", fullName);
 		}
 
-		public string Name {
-			get {
-				return name;
-			}
-			set {
-				name = value;
-			}
-		}
-		
 		public ReturnTypeModifiers Modifiers {
 			get {
 				return this.modifiers;
@@ -121,14 +201,6 @@ namespace MonoDevelop.Projects.Dom
 				}
 			}
 		}
-		
-		public System.Collections.ObjectModel.ReadOnlyCollection<IReturnType> GenericArguments {
-			get {
-				if (typeParameters == null)
-					return null;
-				return typeParameters.AsReadOnly ();
-			}
-		}
 
 		public bool IsByRef {
 			get {
@@ -145,11 +217,17 @@ namespace MonoDevelop.Projects.Dom
 		
 		public DomReturnType ()
 		{
+			this.parts.Add (new ReturnTypePart ());
 		}
 		
 		public DomReturnType (IType type)
 		{
-			this.FullName = type.FullName;
+			this.nspace = type.Namespace;
+			IType curType = type;
+			do {
+				this.parts.Insert (0, new ReturnTypePart (curType.Name, curType.TypeParameters));
+				curType = curType.DeclaringType;
+			} while (curType != null);
 		}
 		
 		public override bool Equals (object obj)
@@ -165,11 +243,11 @@ namespace MonoDevelop.Projects.Dom
 						return false;
 				}
 			}
-			if (typeParameters != null && type.typeParameters != null) {
-				if (typeParameters.Count != type.typeParameters.Count)
+			if (genericArguments != null && type.genericArguments != null) {
+				if (genericArguments.Count != type.genericArguments.Count)
 					return false;
-				for (int i = 0; i < typeParameters.Count; i++) {
-					if (!typeParameters[i].Equals (type.typeParameters [i]))
+				for (int i = 0; i < genericArguments.Count; i++) {
+					if (!genericArguments[i].Equals (type.genericArguments [i]))
 						return false;
 				}
 			}
@@ -193,7 +271,7 @@ namespace MonoDevelop.Projects.Dom
 				return;
 			this.dimensions [arrayDimension] = dimension;
 		}
-
+		
 		
 		public DomReturnType (string name) : this (name, false, new List<IReturnType> ())
 		{
@@ -201,18 +279,41 @@ namespace MonoDevelop.Projects.Dom
 		
 		public DomReturnType (string name, bool isNullable, List<IReturnType> typeParameters)
 		{
-			this.FullName       = name;
+			KeyValuePair<string, string> splitted = SplitFullName (name);
+			this.nspace = splitted.Key;
+			this.parts.Add (new ReturnTypePart (splitted.Value, typeParameters));
 			this.IsNullable     = isNullable;
-			this.typeParameters = typeParameters;
+			this.genericArguments = typeParameters;
 		}
 		
-		
-		public void AddTypeParameter (IReturnType type)
+		public static IReturnType FromInvariantString (string invariantString)
 		{
-			if (typeParameters == null)
-				typeParameters = new List<IReturnType> ();
-			this.typeParameters.Add (type);
+			// TODO
+			return new DomReturnType (invariantString);
 		}
+		
+		public string ToInvariantString ()
+		{
+			StringBuilder result = new StringBuilder ();
+			result.Append (Namespace);
+			foreach (ReturnTypePart part in Parts) {
+				if (result.Length > 0)
+					result.Append ('.');
+				result.Append (part.ToInvariantString ());
+			}
+			for (int i = 0; i < ArrayDimensions; i++) {
+				result.Append ('[');
+				result.Append (new string (',', this.GetDimension (i)));
+				result.Append (']');
+			}
+			result.Append (new string ('*', this.PointerNestingLevel));
+			if (this.IsByRef)
+				result.Append ('&');
+			if (this.IsNullable)
+				result.Append ('?');
+			return result.ToString ();
+		}
+		
 		public object AcceptVisitior (IDomVisitor visitor, object data)
 		{
 			return visitor.Visit (this, data);
@@ -260,72 +361,7 @@ namespace MonoDevelop.Projects.Dom
 			
 			return sb.ToString ();
 		}
-#region Shared return types
-		static Dictionary<string, List<IReturnType>> sharedTypes;
-		static string[] sharedTypeList = new string [] {
-			"System.Void",
-			"System.Object",
-			"System.Boolean",
-			"System.Byte",
-			"System.SByte",
-			"System.Char",
-			"System.Enum",
-			"System.Int16",
-			"System.Int32",
-			"System.Int64",
-			"System.UInt16",
-			"System.UInt32",
-			"System.UInt64",
-			"System.Single",
-			"System.Double",
-			"System.Decimal",
-			"System.String",
-			"System.DateTime",
-			"System.IntPtr",
-			"System.Enum",
-			"System.Type",
-			"System.IO.Stream",
-			"System.EventArgs"
-		};
-		
-		internal static IReturnType GetSharedType (IReturnType type)
-		{
-			if (sharedTypes == null)
-				InitSharedTypes ();
-			
-			if (sharedTypes.ContainsKey (type.FullName)) {
-				foreach (IReturnType sharedType in sharedTypes[type.FullName]) {
-					if (sharedType.Equals (type)) {
-						return sharedType;
-					}
-				}
-			}
-			return type;
-		}
-		
-		static void InitSharedTypes ()
-		{
-			sharedTypes = new Dictionary <string, List<IReturnType>> ();
-			foreach (string typeName in sharedTypeList) {
-				AddSharedType (typeName);
-			}
-		}
-		
-		static void AddSharedType (string typeName)
-		{
-			AddSharedType (typeName, new DomReturnType (typeName));
-		}
-		static void AddSharedType (string typeName, DomReturnType type)
-		{
-			if (!sharedTypes.ContainsKey (typeName)) {
-				sharedTypes.Add (typeName, new List <IReturnType> ());
-			}
-			if (!sharedTypes [typeName].Contains (type))
-				sharedTypes [typeName].Add (type);
-		}
-		
-#endregion
-		
+
 		public static readonly IReturnType Void      = GetSharedReturnType ("System.Void");
 		public static readonly IReturnType Object    = GetSharedReturnType ("System.Object");
 		public static readonly IReturnType Exception = GetSharedReturnType ("System.Exception");
@@ -333,27 +369,23 @@ namespace MonoDevelop.Projects.Dom
 		
 #region shared return types
 		// doesn't work ? 
-		//static Dictionary<string, List<IReturnType>> returnTypeCache  = new Dictionary<string, List<IReturnType>> ();
-		static Dictionary<string, List<IReturnType>> returnTypeCache = null;
-
+		//static Dictionary<string, IReturnType> returnTypeCache  = new Dictionary<string, IReturnType> ();
+		static Dictionary<string, IReturnType> returnTypeCache = null;
 		
 		public static IReturnType GetSharedReturnType (string fullName)
 		{
 			if (String.IsNullOrEmpty (fullName))
 				return null;
 			if (returnTypeCache == null)
-				returnTypeCache = new Dictionary<string, List<IReturnType>> ();
+				returnTypeCache = new Dictionary<string, IReturnType> ();
 			lock (returnTypeCache) {
-				List<IReturnType> types;
-				if (!returnTypeCache.TryGetValue (fullName, out types)) {
-					types = new List<IReturnType> ();
-					
+				IReturnType type;
+				if (!returnTypeCache.TryGetValue (fullName, out type)) {
 					DomReturnType newType = new DomReturnType (fullName);
-					types.Add (newType);
-					returnTypeCache[fullName] = types;
+					returnTypeCache[fullName] = newType;
 					return newType;
 				}
-				return types[0];
+				return type;
 			}
 		}
 		
@@ -362,21 +394,15 @@ namespace MonoDevelop.Projects.Dom
 			if (returnType == null)
 				return null;
 			if (returnTypeCache == null)
-				returnTypeCache = new Dictionary<string, List<IReturnType>> ();
+				returnTypeCache = new Dictionary<string, IReturnType> ();
+			string invariantString = returnType.ToInvariantString();
 			lock (returnTypeCache) {
-				List<IReturnType> types;
-				if (!returnTypeCache.TryGetValue (returnType.FullName, out types)) {
-					types = new List<IReturnType> ();
-					types.Add (returnType);
-					returnTypeCache[returnType.FullName] = types;
+				IReturnType type;
+				if (!returnTypeCache.TryGetValue (invariantString, out type)) {
+					returnTypeCache[invariantString] = returnType;
 					return returnType;
 				}
-				foreach (IReturnType sharedType in types) {
-					if (sharedType.Equals (returnType))
-						return sharedType;
-				}
-				types.Add (returnType);
-				return returnType;
+				return type;
 			}
 		}
 #endregion

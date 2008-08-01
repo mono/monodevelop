@@ -1,5 +1,17 @@
 2008-08-01  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.Projects.Dom.Parser/ProjectParserService.cs,
+	  MonoDevelop.Projects.Dom/DomCecilMethod.cs,
+	  MonoDevelop.Projects.Dom/DomReturnType.cs,
+	  MonoDevelop.Projects.Dom/DomCecilType.cs,
+	  MonoDevelop.Projects.Dom/IReturnType.cs,
+	  MonoDevelop.Projects.Dom.Database/DatabaseType.cs,
+	  MonoDevelop.Projects.Dom.Database/CodeCompletionDatabase.cs:
+	  Changed return type representation (now it's possible to represent
+	  types of the form A.B.C<GenArg>.Inner1<a1,...>,...,InnerN<aN,...>)
+
+2008-08-01  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.Projects.Dom.Parser/DatabaseProjectDom.cs,
 	  MonoDevelop.Projects.Dom.Parser/ProjectDom.cs,
 	  MonoDevelop.Projects.Dom.Database/DatabaseType.cs,
