@@ -227,15 +227,16 @@ namespace MonoDevelop.CSharpBinding
 			}
 			return DomReturnType.GetSharedReturnType (result);
 		}
-		void ResolveType (IReturnType type)
+		IReturnType ResolveType (IReturnType type)
 		{
-			ResolveType (unit, type);
+			return ResolveType (unit, type);
 		}
-		void ResolveType (ICompilationUnit unit, IReturnType type)
+		IReturnType ResolveType (ICompilationUnit unit, IReturnType type)
 		{
 			SearchTypeResult searchedTypeResult = dom.SearchType (new SearchTypeRequest (unit, -1, -1, type.FullName));
 			if (searchedTypeResult != null && searchedTypeResult.Result != null) 
-				type.FullName = searchedTypeResult.Result.FullName;
+				return searchedTypeResult.Result;
+			return type;
 		}
 		
 		public ResolveResult ResolveLambda (ResolveVisitor visitor, Expression lambdaExpression)
@@ -293,7 +294,7 @@ namespace MonoDevelop.CSharpBinding
 					} else { 
 						varType = ConvertTypeReference (var.TypeRef);
 					}
-					ResolveType (varType);
+					varType = ResolveType (varType);
 					result.ResolvedType = varType;
 					goto end;
 				}
@@ -304,8 +305,7 @@ namespace MonoDevelop.CSharpBinding
 					List<IMember> members = type.SearchMember (identifier, true);
 					if (members != null &&  members.Count > 0) {
 						result = new MemberResolveResult (members[0]);
-						result.ResolvedType = members[0].ReturnType;
-						ResolveType (type.CompilationUnit, result.ResolvedType);
+						result.ResolvedType = ResolveType (members[0].ReturnType);
 						goto end;
 					}
 				}

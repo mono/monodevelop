@@ -1,3 +1,8 @@
+2008-08-01  Mike Krüger <mkrueger@novell.com> 
+
+	* Gui/NRefactoryResolver.cs: added some changes for return type
+	  representation.
+
 2008-07-31  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* Gui/CSharpTextEditorCompletion.cs,
