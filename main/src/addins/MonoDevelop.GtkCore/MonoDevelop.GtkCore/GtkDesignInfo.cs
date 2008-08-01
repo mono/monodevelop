@@ -215,7 +215,7 @@ namespace MonoDevelop.GtkCore
 		
 		public bool HasDesignedObjects {
 			get {
-				return File.Exists (SteticFile);
+				return SupportsDesigner && File.Exists (SteticFile);
 			}
 		}
 
