@@ -88,7 +88,7 @@ namespace MonoDevelop.Ide.Commands
 					IParser parser = ProjectDomService.GetParserByFileName (editor.Name);
 					ExpressionResult id = new ExpressionResult (editor.SelectedText);
 					if (id.Expression.Length == 0) {
-						IExpressionFinder finder = parser.CreateExpressionFinder ();
+						IExpressionFinder finder = parser.CreateExpressionFinder (ctx);
 						if (finder == null)
 							return;
 						id = finder.FindFullExpression (editor.Text, editor.CursorPosition);
