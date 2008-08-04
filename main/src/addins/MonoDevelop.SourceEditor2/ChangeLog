@@ -3,6 +3,11 @@
 	* MonoDevelop.SourceEditor/ExtendibleTextEditor.cs: fixed "Bug 408899 -
 	  Code templates expanded in comments".
 
+2008-07-28  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.SourceEditor/SourceEditorView.cs: Don't escape file names
+	  for VFS here. It is done in the platform service.
+
 2008-07-16  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.SourceEditor/DebugValueWindow.cs: Make sure no rows are

@@ -174,8 +174,6 @@ namespace MonoDevelop.SourceEditor
 		
 		public void Save (string fileName, string encoding)
 		{
-			fileName = ConvertFileNameToVFS (fileName);
-
 			if (warnOverwrite) {
 				if (fileName == ContentName) {
 					if (MonoDevelop.Core.Gui.MessageService.AskQuestion (GettextCatalog.GetString ("This file {0} has been changed outside of MonoDevelop. Are you sure you want to overwrite the file?", fileName), MonoDevelop.Core.Gui.AlertButton.Cancel, MonoDevelop.Core.Gui.AlertButton.OverwriteFile) != MonoDevelop.Core.Gui.AlertButton.OverwriteFile)
@@ -210,19 +208,9 @@ namespace MonoDevelop.SourceEditor
 		}
 		
 		
-		static string ConvertFileNameToVFS (string fileName)
-		{
-			string result = fileName;
-			result = result.Replace ("%", "%25");
-			result = result.Replace ("#", "%23");
-			result = result.Replace ("?", "%3F");
-			return result;
-		}
-		
 		bool warnOverwrite = false;
 		public void Load (string fileName, string encoding)
 		{
-			fileName = ConvertFileNameToVFS (fileName);
 			if (warnOverwrite) {
 				warnOverwrite = false;
 				widget.RemoveReloadBar ();
