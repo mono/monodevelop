@@ -129,7 +129,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 					win.Dispose ();
 				formInfos = null;
 			}
-			if (gproject != null)
+			if (gproject != null) {
 				gproject.WidgetAdded -= OnAddWidget;
 				gproject.WidgetRemoved -= OnRemoveWidget;
 				gproject.ActionGroupsChanged -= OnGroupsChanged;
