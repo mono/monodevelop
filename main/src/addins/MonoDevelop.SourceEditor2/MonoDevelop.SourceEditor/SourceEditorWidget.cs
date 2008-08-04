@@ -1043,7 +1043,6 @@ namespace MonoDevelop.SourceEditor
 		#endregion
 		
 		#region Search and Replace
-		SearchWidget           searchWidget           = null;
 		SearchAndReplaceWidget searchAndReplaceWidget = null;
 		GotoLineNumberWidget   gotoLineNumberWidget   = null;
 		
@@ -1053,22 +1052,14 @@ namespace MonoDevelop.SourceEditor
 			
 			if (!String.IsNullOrEmpty (selectedText)) {
 				this.SetSearchPattern (selectedText);
-				SearchWidget.searchPattern = selectedText;
-//				SearchWidget.FireSearchPatternChanged ();
+				SearchAndReplaceWidget.searchPattern = selectedText;
+//				SearchAndReplaceWidget.FireSearchPatternChanged ();
 			}
 		}
 		
 		bool KillWidgets ()
 		{
 			bool result = false;
-			if (searchWidget != null) {
-				if (searchWidget.Parent != null)
-					editorBar.Remove (searchWidget);
-				searchWidget.Destroy ();
-				searchWidget.Dispose ();
-				searchWidget = null;
-				result = true;
-			} 
 			if (searchAndReplaceWidget != null) {
 				if (searchAndReplaceWidget.Parent != null)
 					editorBar.Remove (searchAndReplaceWidget);
@@ -1112,7 +1103,7 @@ namespace MonoDevelop.SourceEditor
 		[CommandHandler (SearchCommands.EmacsFindNext)]
 		public void EmacsFindNext ()
 		{
-			if (searchWidget == null) {
+			if (searchAndReplaceWidget == null) {
 				ShowSearchWidget ();
 			} else {
 				this.FindNext ();
@@ -1122,7 +1113,7 @@ namespace MonoDevelop.SourceEditor
 		[CommandHandler (SearchCommands.EmacsFindPrevious)]
 		public void EmacsFindPrevious ()
 		{
-			if (searchWidget == null) {
+			if (searchAndReplaceWidget == null) {
 				ShowSearchWidget ();
 			} else {
 				this.FindPrevious ();
@@ -1132,32 +1123,17 @@ namespace MonoDevelop.SourceEditor
 		[CommandHandler (SearchCommands.Find)]
 		public void ShowSearchWidget ()
 		{
-			if (searchWidget == null) {
-				KillWidgets ();
-				if (TextEditor.IsSomethingSelected)
-					TextEditor.SearchPattern = TextEditor.SelectedText;
-				searchWidget = new SearchWidget (this);
-				editorBar.PackEnd (searchWidget);
-				editorBar.SetChildPacking (searchWidget, false, true, 0, PackType.End);
-				searchWidget.ShowAll ();
-				this.textEditor.HighlightSearchPattern = true;
-				if (this.splittedTextEditor != null) 
-					this.splittedTextEditor.HighlightSearchPattern = true;
-				this.editorBar.FocusChain = new Widget[] {
-					this.textEditor,
-					this.searchWidget,
-					this.classCombo,
-					this.membersCombo,
-					this.regionCombo,
-				};
-
-			}
-			searchWidget.Focus ();
+			ShowSearchReplaceWidget (false);
 		}
 		
 		[CommandHandler (SearchCommands.Replace)]
 		public void ShowReplaceWidget ()
-		{ 
+		{
+			ShowSearchReplaceWidget (true);
+		}
+		
+		private void ShowSearchReplaceWidget (bool replace)
+		{
 			if (searchAndReplaceWidget == null) {
 				KillWidgets ();
 				if (TextEditor.IsSomethingSelected)
@@ -1166,6 +1142,7 @@ namespace MonoDevelop.SourceEditor
 				editorBar.PackEnd (searchAndReplaceWidget);
 				editorBar.SetChildPacking (searchAndReplaceWidget, false, true, 0, PackType.End);
 				searchAndReplaceWidget.ShowAll ();
+				searchAndReplaceWidget.SetSearchReplaceMode (replace);
 				this.textEditor.HighlightSearchPattern = true;
 				if (this.splittedTextEditor != null) 
 					this.splittedTextEditor.HighlightSearchPattern = true;
@@ -1204,14 +1181,14 @@ namespace MonoDevelop.SourceEditor
 		
 		internal void SetSearchOptions ()
 		{
-			this.textEditor.SearchEngine    = SearchWidget.SearchEngine == SearchWidget.DefaultSearchEngine ? (ISearchEngine)new BasicSearchEngine () : (ISearchEngine)new RegexSearchEngine ();
-			this.textEditor.IsCaseSensitive = SearchWidget.IsCaseSensitive;
-			this.textEditor.IsWholeWordOnly = SearchWidget.IsWholeWordOnly;
+			this.textEditor.SearchEngine    = SearchAndReplaceWidget.SearchEngine == SearchAndReplaceWidget.DefaultSearchEngine ? (ISearchEngine)new BasicSearchEngine () : (ISearchEngine)new RegexSearchEngine ();
+			this.textEditor.IsCaseSensitive = SearchAndReplaceWidget.IsCaseSensitive;
+			this.textEditor.IsWholeWordOnly = SearchAndReplaceWidget.IsWholeWordOnly;
 			
 			string error;
-			string pattern = SearchWidget.searchPattern;
-			if (searchWidget != null)
-				pattern = searchWidget.SearchPattern;
+			string pattern = SearchAndReplaceWidget.searchPattern;
+			if (searchAndReplaceWidget != null)
+				pattern = searchAndReplaceWidget.SearchPattern;
 			if (searchAndReplaceWidget != null)
 				pattern = searchAndReplaceWidget.SearchPattern;
 			
@@ -1222,8 +1199,8 @@ namespace MonoDevelop.SourceEditor
 			}
 			this.textEditor.QueueDraw ();
 			if (this.splittedTextEditor != null) {
-				this.splittedTextEditor.IsCaseSensitive = SearchWidget.IsCaseSensitive;
-				this.splittedTextEditor.IsWholeWordOnly = SearchWidget.IsWholeWordOnly;
+				this.splittedTextEditor.IsCaseSensitive = SearchAndReplaceWidget.IsCaseSensitive;
+				this.splittedTextEditor.IsWholeWordOnly = SearchAndReplaceWidget.IsWholeWordOnly;
 				if (valid) {
 					this.splittedTextEditor.SearchPattern = pattern;
 				}
@@ -1234,9 +1211,16 @@ namespace MonoDevelop.SourceEditor
 		[CommandHandler (SearchCommands.FindNext)]
 		public SearchResult FindNext ()
 		{
+			return FindNext (true);
+		}
+		
+		public SearchResult FindNext (bool focus)
+		{
 			SetSearchOptions ();
 			SearchResult result = TextEditor.FindNext ();
-			TextEditor.GrabFocus ();
+			if (focus) {
+				TextEditor.GrabFocus ();
+			}
 			if (result == null) {
 				IdeApp.Workbench.StatusBar.ShowError (GettextCatalog.GetString ("Search pattern not found"));
 			} else if (result.SearchWrapped) {
@@ -1250,9 +1234,16 @@ namespace MonoDevelop.SourceEditor
 		[CommandHandler (SearchCommands.FindPrevious)]
 		public SearchResult FindPrevious ()
 		{
+			return FindNext (true);
+		}
+		
+		public SearchResult FindPrevious (bool focus)
+		{
 			SetSearchOptions ();
 			SearchResult result = TextEditor.FindPrevious ();
-			TextEditor.GrabFocus ();
+			if (focus) {
+				TextEditor.GrabFocus ();
+			}
 			if (result == null) {
 				IdeApp.Workbench.StatusBar.ShowError (GettextCatalog.GetString ("Search pattern not found"));
 			} else if (result.SearchWrapped) {

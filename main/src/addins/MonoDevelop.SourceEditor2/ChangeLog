@@ -1,3 +1,24 @@
+2008-08-04  Aaron Bockover  <abock@gnome.org>
+
+	This commit refactors the search/replace widget to unify the code into
+	a single common widget/class; it additionally adds extensive keybinding
+	support for navigating results and improves the GTK UI/layout of the widget
+
+	* MonoDevelop.SourceEditor/SourceEditorWidget.cs: Fixes in place to use
+	the new merged search/replace widget
+
+	* MonoDevelop.SourceEditor/SearchAndReplaceWidget.cs: Merged
+	Search and Replace functionality into a single widget; implemented 
+	extensive and intuitive keybinding support for navigating search results
+
+	* gtk-gui/MonoDevelop.SourceEditor.SearchAndReplaceWidget.cs: 
+	* gtk-gui/gui.stetic: Redesigned search/replace widget to be easier to
+	maintain, use proper GTK layout techniques, and icons instead of arrows
+	for better semantic and consistent meaning
+
+	* gtk-gui/MonoDevelop.SourceEditor.SearchWidget.cs:
+	* MonoDevelop.SourceEditor/SearchWidget.cs: Removed, merged above
+
 2008-07-30  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.SourceEditor/ExtendibleTextEditor.cs: fixed "Bug 408899 -
