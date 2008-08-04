@@ -124,25 +124,30 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 
 			if (Unloaded != null)
 				Unloaded (this, EventArgs.Empty);
-
-			foreach (GuiBuilderWindow win in formInfos)
-				win.Dispose ();
-
-			gproject.WidgetAdded -= OnAddWidget;
-			gproject.WidgetRemoved -= OnRemoveWidget;
-			gproject.ActionGroupsChanged -= OnGroupsChanged;
-			project.FileRemovedFromProject -= OnFileRemoved;
-			project.ReferenceAddedToProject -= OnReferenceAdded;
-			project.ReferenceRemovedFromProject -= OnReferenceRemoved;
-			gproject.Dispose ();
-			gproject = null;
-			formInfos = null;
+			if (formInfos != null) {
+				foreach (GuiBuilderWindow win in formInfos)
+					win.Dispose ();
+				formInfos = null;
+			}
+			if (gproject != null)
+				gproject.WidgetAdded -= OnAddWidget;
+				gproject.WidgetRemoved -= OnRemoveWidget;
+				gproject.ActionGroupsChanged -= OnGroupsChanged;
+				gproject.Dispose ();
+				gproject = null;
+			}
+			if (project != null) {
+				project.FileRemovedFromProject -= OnFileRemoved;
+				project.ReferenceAddedToProject -= OnReferenceAdded;
+				project.ReferenceRemovedFromProject -= OnReferenceRemoved;
+			}
 			needsUpdate = true;
 			hasError = false;
 			librariesUpdated = false;
-			
-			watcher.Dispose ();
-			watcher = null;
+			if (watcher != null) {
+				watcher.Dispose ();
+				watcher = null;
+			}
 			NotifyChanged ();
 		}
 		

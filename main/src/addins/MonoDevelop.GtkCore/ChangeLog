@@ -1,3 +1,8 @@
+2008-08-04  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderProject.cs: fixed possible
+	  null references in the unload method.
+
 2008-08-01  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.GtkCore/GtkDesignInfo.cs: Fix crash when looking for
