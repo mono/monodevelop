@@ -1,3 +1,14 @@
+2008-08-04  Mike Krüger <mkrueger@novell.com> 
+
+	* gtk-gui/MonoDevelop.SourceEditor.OptionPanels.GeneralOptionsPanel.cs,
+	  MonoDevelop.SourceEditor/SourceEditorWidget.cs,
+	  MonoDevelop.SourceEditor/LanguageItemTooltipProvider.cs,
+	  MonoDevelop.SourceEditor/CompileErrorTooltipProvider.cs,
+	  MonoDevelop.SourceEditor/LanguageItemWindow.cs,
+	  MonoDevelop.SourceEditor/ExtendibleTextEditor.cs,
+	  MonoDevelop.SourceEditor/EditActions.cs: Worked on language window
+	  tooltips
+
 2008-08-01  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* gtk-gui/MonoDevelop.SourceEditor.SourceEditorWidget.cs,

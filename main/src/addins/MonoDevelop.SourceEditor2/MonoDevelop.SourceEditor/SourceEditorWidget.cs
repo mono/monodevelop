@@ -283,7 +283,6 @@ namespace MonoDevelop.SourceEditor
 			IUsing last = cu.Usings[cu.Usings.Count - 1];
 			if (first.Region == null || last.Region == null || first.Region.Start.Line == last.Region.End.Line)
 				return;
-			System.Console.WriteLine(first.Region);
 			int startOffset = this.TextEditor.Document.LocationToOffset (first.Region.Start.Line - 1,  first.Region.Start.Column - 1);
 			int endOffset   = this.TextEditor.Document.LocationToOffset (last.Region.End.Line - 1,  last.Region.End.Column - 1);
 			

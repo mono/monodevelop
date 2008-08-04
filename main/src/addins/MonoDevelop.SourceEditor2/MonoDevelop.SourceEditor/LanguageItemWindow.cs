@@ -36,12 +36,11 @@ using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Output;
 using MonoDevelop.Projects.Dom.Parser;
 
-
 namespace MonoDevelop.SourceEditor
 {
 	public class LanguageItemWindow: MonoDevelop.Projects.Gui.Completion.TooltipWindow
 	{
-		static OutputFlags WindowConversionFlags = OutputFlags.ClassBrowserEntries | OutputFlags.IncludeParameterName;
+		static OutputFlags WindowConversionFlags = OutputFlags.ClassBrowserEntries | OutputFlags.IncludeParameterName | OutputFlags.EmitKeywords | OutputFlags.EmitMarkup;
 		
 		static string paramStr = GettextCatalog.GetString ("Parameter");
 		static string localStr = GettextCatalog.GetString ("Local variable");
@@ -54,13 +53,13 @@ namespace MonoDevelop.SourceEditor
 		{
 			if (member == null)
 				return null;
-			XmlNode node = member.GetMonodocDocumentation ();
+			XmlElement node = (XmlElement)member.GetMonodocDocumentation ();
 			if (node != null) 
-				return node.InnerXml;
+				return node["summary"].InnerXml;
 			return member.Documentation;
 		}
 		
-		public LanguageItemWindow (Ambience ambience, ResolveResult result, string errorInformations)
+		public LanguageItemWindow (ProjectDom dom, Ambience ambience, ResolveResult result, string errorInformations)
 		{
 			// Approximate value for usual case
 			StringBuilder s = new StringBuilder(150);
@@ -80,17 +79,28 @@ namespace MonoDevelop.SourceEditor
 					s.Append (((LocalVariableResolveResult)result).VariableName);
 				} else if (result is MemberResolveResult) {
 					IMember member = ((MemberResolveResult)result).ResolvedMember;
-					if (member is IField) {
-						s.Append ("<small><i>");
-						s.Append (fieldStr);
-						s.Append ("</i></small>\n");
-					} else if (member is IProperty) {
-						s.Append ("<small><i>");
-						s.Append (propertyStr);
-						s.Append ("</i></small>\n");
+					if (member == null) {
+						IReturnType returnType = ((MemberResolveResult)result).ResolvedType;
+						if (returnType != null) {
+							IType type = dom.GetType (returnType);
+							if (type != null) {
+								s.Append (ambience.GetString (type, WindowConversionFlags | OutputFlags.UseFullName | OutputFlags.IncludeModifiers));
+								doc = GetDocumentation (type);
+							}
+						}
+					} else {
+						if (member is IField) {
+							s.Append ("<small><i>");
+							s.Append (fieldStr);
+							s.Append ("</i></small>\n");
+						} else if (member is IProperty) {
+							s.Append ("<small><i>");
+							s.Append (propertyStr);
+							s.Append ("</i></small>\n");
+						}
+						s.Append (ambience.GetString (member, WindowConversionFlags));
+						doc = GetDocumentation (member);
 					}
-					s.Append (ambience.GetString (member, WindowConversionFlags));
-					doc = GetDocumentation (member);
 				} else if (result is NamespaceResolveResult) {
 					s.Append ("<small><i>");
 					s.Append (namespaceStr);
@@ -147,7 +157,6 @@ namespace MonoDevelop.SourceEditor
 			System.IO.StringReader reader = new System.IO.StringReader("<docroot>" + doc + "</docroot>");
 			XmlTextReader xml   = new XmlTextReader(reader);
 			StringBuilder ret   = new StringBuilder(70);
-			
 			try {
 				xml.Read();
 				do {

@@ -51,7 +51,7 @@ namespace MonoDevelop.SourceEditor
 		{
 			ExtendibleTextEditor ed = (ExtendibleTextEditor) editor;
 			
-			return new LanguageItemWindow (AmbienceService.GetAmbience (ed.Document.MimeType), (ResolveResult)item, null);
+			return new LanguageItemWindow (ed.ProjectDom, AmbienceService.GetAmbience (ed.Document.MimeType), (ResolveResult)item, null);
 		}
 		
 		public void GetRequiredPosition (TextEditor editor, Gtk.Window tipWindow, out int requiredWidth, out double xalign)

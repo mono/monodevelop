@@ -272,32 +272,37 @@ namespace MonoDevelop.SourceEditor
 				return null;
 		}
 		
+		public ProjectDom ProjectDom {
+			get {
+				MonoDevelop.Ide.Gui.Document doc = IdeApp.Workbench.ActiveDocument;
+				if (doc == null)
+					return null;
+				return ProjectDomService.GetDatabaseProjectDom (doc.Project);
+			}
+		}
+		
 		public ResolveResult GetLanguageItem (int offset)
 		{
 			string txt = this.Document.Text;
 			string fileName = view.ContentName;
 			if (fileName == null)
 				fileName = view.UntitledName;
-			MonoDevelop.Ide.Gui.Document doc = IdeApp.Workbench.GetDocument (fileName);
+			MonoDevelop.Ide.Gui.Document doc = IdeApp.Workbench.ActiveDocument;
 			if (doc == null)
 				return null;
 			IParser parser = ProjectDomService.GetParser (fileName, Document.MimeType);
 			if (parser == null)
 				return null;
-			IResolver         resolver         = parser.CreateResolver (ProjectDomService.GetDatabaseProjectDom (doc.Project), doc, fileName);
-			IExpressionFinder expressionFinder = parser.CreateExpressionFinder ();
+			ProjectDom dom = ProjectDomService.GetDatabaseProjectDom (doc.Project);
+			IResolver         resolver         = parser.CreateResolver (dom, doc, fileName);
+			IExpressionFinder expressionFinder = parser.CreateExpressionFinder (dom);
 			if (resolver == null || expressionFinder == null) 
 				return null;
-			
 			ExpressionResult expressionResult = expressionFinder.FindFullExpression (txt, offset);
-			
 			if (expressionResult == null) 
 				return null;
 			DocumentLocation loc = Document.OffsetToLocation (offset);
 			ResolveResult resolveResult = resolver.Resolve (expressionResult, new DomLocation (loc.Line + 1, loc.Column + 1));
-			if (resolveResult == null) 
-				return null;
-			
 			return resolveResult;
 		}
 		
