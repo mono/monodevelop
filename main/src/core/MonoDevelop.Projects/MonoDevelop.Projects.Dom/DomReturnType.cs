@@ -138,7 +138,7 @@ namespace MonoDevelop.Projects.Dom
 		
 		public string FullName {
 			get {
-				return !String.IsNullOrEmpty (nspace) ? nspace + "." + name : name;
+				return !String.IsNullOrEmpty (nspace) ? nspace + "." + Name : Name;
 			}
 		}
 		

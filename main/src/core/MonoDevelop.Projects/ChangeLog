@@ -1,3 +1,8 @@
+2008-08-04  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Dom/DomReturnType.cs: fixed fullname bug in
+	  return type.
+
 2008-08-01  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom.Parser/ProjectParserService.cs,
