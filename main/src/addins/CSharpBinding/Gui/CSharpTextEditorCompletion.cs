@@ -501,7 +501,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 			if (expressionResult.ExpressionContext == ExpressionContext.TypeDeclaration) {
 				AddPrimitiveTypes (result);
 				AddNRefactoryKeywords (result, ICSharpCode.NRefactory.Parser.CSharp.Tokens.TypeLevel);
-				result.AddCompletionData (new CodeCompletionData ("partial", "md-literal")); // maybe obsolete in newer nrefactory versions.
+//				result.AddCompletionData (new CodeCompletionData ("partial", "md-literal")); // maybe obsolete in newer nrefactory versions.
 				resolver.AddAccessibleCodeCompletionData (result);
 			} else if (expressionResult.ExpressionContext == ExpressionContext.InterfaceDeclaration) {
 				AddPrimitiveTypes (result);
@@ -509,7 +509,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 				resolver.AddAccessibleCodeCompletionData (result);
 			} else if (expressionResult.ExpressionContext == ExpressionContext.MethodBody) {
 				AddNRefactoryKeywords (result, ICSharpCode.NRefactory.Parser.CSharp.Tokens.StatementStart);
-				result.AddCompletionData (new CodeCompletionData ("yield", "md-literal")); // maybe obsolete in newer nrefactory versions.
+//				result.AddCompletionData (new CodeCompletionData ("yield", "md-literal")); // maybe obsolete in newer nrefactory versions.
 				AddPrimitiveTypes (result);
 				resolver.AddAccessibleCodeCompletionData (result);
 			} else if (expressionResult.ExpressionContext == ExpressionContext.InterfacePropertyDeclaration) {

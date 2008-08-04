@@ -221,21 +221,33 @@ namespace MonoDevelop.CSharpBinding
 		
 		public static IReturnType ConvertTypeReference (TypeReference typeRef)
 		{
-			DomReturnType result = new DomReturnType (typeRef.Type);
+			DomReturnType result = new DomReturnType (typeRef.SystemType ?? typeRef.Type);
 			foreach (TypeReference genericArgument in typeRef.GenericTypes) {
 				result.AddTypeParameter (ConvertTypeReference (genericArgument));
 			}
-			return DomReturnType.GetSharedReturnType (result);
+			result.PointerNestingLevel = typeRef.PointerNestingLevel;
+			if (typeRef.IsArrayType) {
+				result.ArrayDimensions = typeRef.RankSpecifier.Length;
+				for (int i = 0; i < typeRef.RankSpecifier.Length; i++) {
+					result.SetDimension (i, typeRef.RankSpecifier[i]);
+				}
+			}
+			System.Console.WriteLine("converted:" + result + " from:" + typeRef);
+			return result;
 		}
+		
 		IReturnType ResolveType (IReturnType type)
 		{
 			return ResolveType (unit, type);
 		}
+		
 		IReturnType ResolveType (ICompilationUnit unit, IReturnType type)
 		{
 			SearchTypeResult searchedTypeResult = dom.SearchType (new SearchTypeRequest (unit, -1, -1, type.FullName));
-			if (searchedTypeResult != null && searchedTypeResult.Result != null) 
-				return searchedTypeResult.Result;
+			if (searchedTypeResult != null && searchedTypeResult.Result != null) {
+				type.Namespace = searchedTypeResult.Result.Namespace;
+				type.Name      = searchedTypeResult.Result.Name;
+			}
 			return type;
 		}
 		
@@ -282,19 +294,17 @@ namespace MonoDevelop.CSharpBinding
 			foreach (KeyValuePair<string, List<LocalLookupVariable>> pair in this.lookupTableVisitor.Variables) {
 				if (identifier == pair.Key) {
 					LocalLookupVariable var = pair.Value[pair.Value.Count - 1];
-					result = new LocalVariableResolveResult (identifier);
 					IReturnType varType = null;
-					System.Console.WriteLine("PLE:" + var.ParentLambdaExpression);
-					System.Console.WriteLine("Init:" + var.Initializer);
 					if ((var.TypeRef == null || var.TypeRef.Type == "var" || var.TypeRef.IsNull)) {
 						if (var.ParentLambdaExpression != null) 
-							return ResolveLambda (visitor, var.ParentLambdaExpression);
+							varType = ResolveLambda (visitor, var.ParentLambdaExpression).ResolvedType;
 						if (var.Initializer != null) 
-							return visitor.Resolve (var.Initializer);
+							varType = visitor.Resolve (var.Initializer).ResolvedType;
 					} else { 
 						varType = ConvertTypeReference (var.TypeRef);
 					}
 					varType = ResolveType (varType);
+					result = new LocalVariableResolveResult (identifier, var.IsLoopVariable);
 					result.ResolvedType = varType;
 					goto end;
 				}

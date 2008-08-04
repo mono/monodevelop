@@ -356,7 +356,9 @@ namespace MonoDevelop.CSharpBinding
 		
 		public IReturnType ResolveType (Expression expr)
 		{
-			ResolveResult res =  Resolve (expr);
+			ResolveResult res = Resolve (expr);
+			if (res is AnonymousTypeResolveResult)
+				return new DomReturnType (((AnonymousTypeResolveResult)res).AnonymousType);
 			if (res != null)
 				return res.ResolvedType;
 			return null;
@@ -364,10 +366,11 @@ namespace MonoDevelop.CSharpBinding
 		
 		public override object VisitQueryExpression(QueryExpression queryExpression, object data)
 		{
-			System.Console.WriteLine("visit query !!!");
 			IReturnType type = null;
+			System.Console.WriteLine("----------");
+			System.Console.WriteLine(Environment.StackTrace);
 			QueryExpressionSelectClause selectClause = queryExpression.SelectOrGroupClause as QueryExpressionSelectClause;
-			if (selectClause != null)  {
+			if (selectClause != null) {
 				type = ResolveType (selectClause.Projection);
 			}
 			if (type == null) {
@@ -375,7 +378,6 @@ namespace MonoDevelop.CSharpBinding
 				if (groupClause != null)
 					type = new DomReturnType ("System.Linq.IGrouping", false,  new List<IReturnType> (new IReturnType[] { ResolveType(groupClause.GroupBy), ResolveType(groupClause.Projection) }));
 			}
-			System.Console.WriteLine("type:" + type); 
 			if (type != null) 
 				return CreateResult (new DomReturnType("System.Collections.Generic.IEnumerable", false, new List<IReturnType> (new IReturnType[] { type })));
 			

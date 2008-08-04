@@ -1,3 +1,8 @@
+2008-08-04  Mike Krüger <mkrueger@novell.com> 
+
+	* Gui/NRefactoryResolver.cs, Gui/ResolveVisitor.cs,
+	  Gui/CSharpTextEditorCompletion.cs: Worked on C#3 code completion.
+
 2008-08-01  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* Gui/CSharpTextEditorCompletion.cs,
