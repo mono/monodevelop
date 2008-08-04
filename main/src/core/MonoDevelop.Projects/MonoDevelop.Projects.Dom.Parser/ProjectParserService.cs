@@ -121,7 +121,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 		{
 			IParser parser = GetParserByFileName (fileName);
 			if (parser != null)
-				return parser.CreateExpressionFinder ();
+				return parser.CreateExpressionFinder (null);
 			return null;
 		}
 		

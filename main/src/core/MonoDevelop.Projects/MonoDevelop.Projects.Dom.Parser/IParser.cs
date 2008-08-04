@@ -39,7 +39,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 		bool CanParseProjectType (string projectType);
 		bool CanParse (string fileName);
 		
-		IExpressionFinder CreateExpressionFinder ();
+		IExpressionFinder CreateExpressionFinder (ProjectDom dom);
 		IResolver         CreateResolver (ProjectDom dom, object editor, string fileName);
 		
 		IDocumentMetaInformation CreateMetaInformation (string text);

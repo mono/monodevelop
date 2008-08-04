@@ -86,7 +86,7 @@ namespace MonoDevelop.Projects.Dom
 			this.Name           = DomCecilType.RemoveGenericParamSuffix (typeDefinition.Name);
 			
 			this.Namespace      = typeDefinition.Namespace;
-			this.modifiers      = GetModifiers (typeDefinition.Attributes);
+			this.Modifiers      = GetModifiers (typeDefinition.Attributes);
 			if (typeDefinition.BaseType != null)
 				this.baseType = DomCecilMethod.GetReturnType (typeDefinition.BaseType);
 			
@@ -132,7 +132,7 @@ namespace MonoDevelop.Projects.Dom
 			
 			if ((attr & TypeAttributes.NestedPrivate) == TypeAttributes.NestedPrivate) {
 				result |= Modifiers.Private;
-			} else if ((attr & TypeAttributes.Public) == TypeAttributes.Public) {
+			} else if ((attr & TypeAttributes.Public) == TypeAttributes.Public || (attr & TypeAttributes.NestedPublic) == TypeAttributes.NestedPublic) {
 				result |= Modifiers.Public;
 			} else if ((attr & TypeAttributes.NestedFamANDAssem) == TypeAttributes.NestedFamANDAssem) {
 				result |= Modifiers.ProtectedAndInternal;

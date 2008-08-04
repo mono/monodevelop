@@ -36,7 +36,7 @@ namespace MonoDevelop.Projects.Dom.Database
 {
 	public class CodeCompletionDatabase : IDisposable 
 	{
-		public const long Version = 2;
+		public const long Version = 3;
 		
 		HyenaSqliteConnection connection;
 		internal HyenaSqliteConnection Connection {
@@ -113,7 +113,6 @@ namespace MonoDevelop.Projects.Dom.Database
 					while (reader.Read ()) {
 						long   namespaceID = (long)SqliteUtils.FromDbFormat (typeof (long), reader[0]);
 						string name        = (string)SqliteUtils.FromDbFormat (typeof (string), reader[1]);
-						System.Console.WriteLine(namespaceID + " / " + name);
 						namespaceTable[namespaceID] = name;
 						if (sb.Length > 0) 
 							sb.Append (" OR ");
@@ -128,15 +127,15 @@ namespace MonoDevelop.Projects.Dom.Database
 			if (sb.Length > 0) {
 				string units = CompileCompilationUnits (compilationUnitIds);
 				if (string.IsNullOrEmpty (units)) {
-					query = String.Format (@"SELECT TypeID, UnitID, NamespaceID, Name, ClassType FROM {0} WHERE ({1})",  DatabaseType.Table, sb.ToString ());
+					query = String.Format (@"SELECT TypeID, UnitID, MemberID, NamespaceID, ClassType FROM {0} WHERE ({1})",  DatabaseType.Table, sb.ToString ());
 				} else {
-					query = String.Format (@"SELECT TypeID, UnitID, NamespaceID, Name, ClassType FROM {0} WHERE ({1}) AND ({2})",  DatabaseType.Table, units, sb.ToString ());
+					query = String.Format (@"SELECT TypeID, UnitID, MemberID, NamespaceID, ClassType FROM {0} WHERE ({1}) AND ({2})",  DatabaseType.Table, units, sb.ToString ());
 				}
 				reader = connection.Query (query);
 				if (reader != null) {
 					try {
 						while (reader.Read ()) {
-							long nsId = (long)SqliteUtils.FromDbFormat (typeof (long), reader[2]);
+							long nsId = (long)SqliteUtils.FromDbFormat (typeof (long), reader[3]);
 							string nsName = namespaceTable.ContainsKey (nsId) ? namespaceTable[nsId] : GetNamespaceName (nsId);
 							result.Add (CreateDomType (reader, nsName));
 						}
@@ -190,9 +189,9 @@ namespace MonoDevelop.Projects.Dom.Database
 			string units = CompileCompilationUnits (compilationUnitIds);
 			
 			if (!string.IsNullOrEmpty (units)) {
-				query = String.Format (@"SELECT TypeID, UnitID, NamespaceID, Name, ClassType FROM {0} WHERE {1}",  DatabaseType.Table, units);
+				query = String.Format (@"SELECT TypeID, UnitID, MemberID, NamespaceID, ClassType FROM {0} WHERE {1}",  DatabaseType.Table, units);
 			} else {
-				query = String.Format (@"SELECT TypeID, UnitID, NamespaceID, Name, ClassType FROM {0}",  DatabaseType.Table);
+				query = String.Format (@"SELECT TypeID, UnitID, MemberID, NamespaceID, ClassType FROM {0}",  DatabaseType.Table);
 			}
 			IDataReader reader = connection.Query (query);
 			if (reader != null) {
@@ -215,13 +214,14 @@ namespace MonoDevelop.Projects.Dom.Database
 		{
 			long typeId = (long)SqliteUtils.FromDbFormat (typeof (long), reader[0]);
 			if (nsName == null) {
-				long nsId = (long)SqliteUtils.FromDbFormat (typeof (long), reader[2]);
+				long nsId = (long)SqliteUtils.FromDbFormat (typeof (long), reader[3]);
 				nsName = GetNamespaceName (nsId);
 			}
 			long unitId = (long)SqliteUtils.FromDbFormat (typeof (long), reader[1]);
-			string name = (string)SqliteUtils.FromDbFormat (typeof (string), reader[3]);
+			long memberId = (long)SqliteUtils.FromDbFormat (typeof (long), reader[2]);
+			
 			ClassType classType = (ClassType)((long)SqliteUtils.FromDbFormat (typeof (long), reader[4]));
-			return new DatabaseType (this, unitId, typeId, nsName, name, classType);
+			return new DatabaseType (this, unitId, memberId, typeId, nsName, classType);
 		}
 		
 		public IEnumerable<IType> GetTypes (IEnumerable<string> subNamespaces, IEnumerable<long> compilationUnitIds, string fullName, bool caseSensitive)
@@ -268,9 +268,9 @@ namespace MonoDevelop.Projects.Dom.Database
 				string typeName = DomReturnType.SplitFullName (fullName).Value;
 				string units = CompileCompilationUnits (compilationUnitIds);
 				if (!string.IsNullOrEmpty (units)) {
-					query = String.Format (@"SELECT TypeID, UnitID, NamespaceID, Name, ClassType FROM {0} WHERE Name='{1}' AND ({2}) AND ({3})",  DatabaseType.Table, typeName, sb.ToString (), units.ToString ());
+					query = String.Format (@"SELECT TypeID, UnitID, {0}.MemberID, NamespaceID, ClassType FROM {0}, {1} WHERE ({0}.MemberID={1}.MemberID AND {1}.Name='{2}') AND ({3}) AND ({4})",  DatabaseType.Table, MemberTable, typeName, sb.ToString (), units.ToString ());
 				} else {
-					query = String.Format (@"SELECT TypeID, UnitID, NamespaceID, Name, ClassType FROM {0} WHERE Name='{1}' AND ({2})",  DatabaseType.Table, typeName, sb.ToString ());
+					query = String.Format (@"SELECT TypeID, UnitID, {0}.MemberID, NamespaceID, ClassType FROM {0}, {1} WHERE ({0}.MemberID={1}.MemberID AND {1}.Name='{2}') AND ({2})",  DatabaseType.Table, MemberTable, typeName, sb.ToString ());
 				}
 				reader = connection.Query (query);
 				while (reader.Read ()) {

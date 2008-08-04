@@ -47,7 +47,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 			return Parse (fileName, System.IO.File.ReadAllText (fileName));
 		}
 		
-		public virtual IExpressionFinder CreateExpressionFinder ()
+		public virtual IExpressionFinder CreateExpressionFinder (ProjectDom dom)
 		{
 			return null;
 		}

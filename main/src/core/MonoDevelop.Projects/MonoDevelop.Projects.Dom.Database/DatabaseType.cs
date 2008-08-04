@@ -44,7 +44,8 @@ namespace MonoDevelop.Projects.Dom.Database
 		CompilationUnit unit;
 		long typeId;
 		long unitId;
-		
+		long memberId;
+	
 		public override ICompilationUnit CompilationUnit {
 			get {
 				return unit;
@@ -69,13 +70,13 @@ namespace MonoDevelop.Projects.Dom.Database
 			}
 		}
 		
-		public DatabaseType (CodeCompletionDatabase db, long unitId, long typeId, string namespaceName, string name, ClassType classType)
+		public DatabaseType (CodeCompletionDatabase db, long unitId, long memberId, long typeId, string namespaceName, ClassType classType)
 		{
 			this.db        = db;
-			this.typeId    = typeId;
 			this.unitId    = unitId;
+			this.memberId  = memberId;
+			this.typeId    = typeId;
 			this.Namespace = namespaceName;
-			this.Name      = name;
 			this.ClassType = classType;
 			
 			IDataReader reader = db.Connection.Query (String.Format (@"SELECT Name FROM {0} WHERE UnitID={1}", CodeCompletionDatabase.CompilationUnitTable, unitId));
@@ -84,6 +85,7 @@ namespace MonoDevelop.Projects.Dom.Database
 			} else {
 				unit = null;
 			}
+			DatabaseField.FillMembers (this, db, memberId);
 		}
 		
 		public override IEnumerable<IMember> Members {
@@ -143,8 +145,8 @@ namespace MonoDevelop.Projects.Dom.Database
 					CREATE TABLE {0} (
 						TypeID INTEGER PRIMARY KEY AUTOINCREMENT,
 						UnitID INTEGER,
+						MemberID INTEGER,
 						NamespaceID INTEGER,
-						Name TEXT,
 						ClassType INTEGER
 						)", Table
 				));
@@ -172,6 +174,7 @@ namespace MonoDevelop.Projects.Dom.Database
 		
 		public void Delete ()
 		{
+			
 			foreach (DatabaseField field in Fields) {
 				field.Delete ();
 			}
@@ -192,6 +195,7 @@ namespace MonoDevelop.Projects.Dom.Database
 				innerType.Delete ();
 			}
 			
+			db.DeleteMember (memberId);
 			db.Connection.Execute (String.Format (@"DELETE FROM {0} WHERE TypeID={1}", SubTypeTable, typeId));
 			db.Connection.Execute (String.Format (@"DELETE FROM {0} WHERE TypeID={1}", InnerTypeTable, typeId));
 			db.Connection.Execute (String.Format (@"DELETE FROM {0} WHERE TypeID={1}", Table, typeId));
@@ -218,11 +222,12 @@ namespace MonoDevelop.Projects.Dom.Database
 		public static long Insert (CodeCompletionDatabase db, long unitId, IType type)
 		{
 			long namespaceID = db.GetNamespaceID (type.Namespace);
-			long typeId = db.Connection.Execute (String.Format (@"INSERT INTO {0} (UnitID, NamespaceID, Name, ClassType) VALUES ({1}, {2}, '{3}', {4})", 
+			long memberId    = db.InsertMember (type);
+			long typeId = db.Connection.Execute (String.Format (@"INSERT INTO {0} (UnitID, MemberID, NamespaceID, ClassType) VALUES ({1}, {2}, {3}, {4})", 
 				Table,
 				unitId,
+				memberId,
 				namespaceID,
-				type.Name,
 				(byte)type.ClassType
 			));
 			
@@ -265,7 +270,7 @@ namespace MonoDevelop.Projects.Dom.Database
 		
 		public static DatabaseType ReadType (CodeCompletionDatabase db, long typeID)
 		{
-			IDataReader reader = db.Connection.Query (String.Format (@"SELECT TypeID, UnitID, NamespaceID, Name, ClassType FROM {0} WHERE TypeID={1}",  DatabaseType.Table, typeID));
+			IDataReader reader = db.Connection.Query (String.Format (@"SELECT TypeID, UnitID, MemberID, NamespaceID, ClassType FROM {0} WHERE TypeID={1}",  DatabaseType.Table, typeID));
 			if (reader.Read ()) 
 				return db.CreateDomType (reader, null);
 			return null;
