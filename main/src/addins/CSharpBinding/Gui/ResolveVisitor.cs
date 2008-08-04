@@ -49,7 +49,7 @@ namespace MonoDevelop.CSharpBinding
 		
 		public ResolveResult Resolve (Expression expression)
 		{
-			ResolveResult result = (ResolveResult)expression.AcceptVisitor (this, null);
+			ResolveResult result = expression.AcceptVisitor (this, null) as ResolveResult;
 			if (result == null)
 				result = CreateResult ("");
 			return result;
@@ -137,6 +137,12 @@ namespace MonoDevelop.CSharpBinding
 		{
 			return Resolve (unaryOperatorExpression.Expression);
 		}
+		
+		public override object VisitIndexerExpression(IndexerExpression indexerExpression, object data)
+		{
+			return Resolve (indexerExpression.TargetObject);
+		}
+		
 		
 		static string GetAnonymousTypeFieldName (Expression expr)
 		{

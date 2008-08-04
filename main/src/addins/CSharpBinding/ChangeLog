@@ -1,5 +1,10 @@
 2008-08-04  Mike Krüger <mkrueger@novell.com> 
 
+	* Gui/ResolveVisitor.cs, Gui/CSharpAmbience.cs, Parser/DomParser.cs:
+	  Worked on ambiences and resolving
+
+2008-08-04  Mike Krüger <mkrueger@novell.com> 
+
 	* Gui/NRefactoryResolver.cs, Gui/ResolveVisitor.cs,
 	  Gui/CSharpTextEditorCompletion.cs: Worked on C#3 code completion.
 

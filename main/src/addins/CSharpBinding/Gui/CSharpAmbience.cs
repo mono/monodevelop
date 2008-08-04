@@ -324,8 +324,11 @@ namespace MonoDevelop.CSharpBinding
 				if (EmitMarkup (flags))
 					result.Append ("</b>");
 			}
-			
-			result.Append (Format (NormalizeTypeName (type.Name)));
+			if (UseFullName (flags)) {
+				result.Append (Format (type.FullName));
+			} else { 
+				result.Append (Format (NormalizeTypeName (type.Name)));
+			}
 			
 			if (IncludeBaseTypes (flags) && type.BaseType != null) {
 				result.Append (" : ");
