@@ -66,6 +66,7 @@ namespace MonoDevelop.Projects.Dom
 		
 		string Namespace {
 			get;
+			set;
 		}
 		
 		List<IReturnTypePart> Parts {
@@ -89,6 +90,10 @@ namespace MonoDevelop.Projects.Dom
 		}
 		
 		bool IsNullable {
+			get;
+		}
+		
+		IType Type {
 			get;
 		}
 		

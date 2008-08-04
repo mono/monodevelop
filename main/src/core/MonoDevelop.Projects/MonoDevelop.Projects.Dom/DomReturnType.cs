@@ -215,6 +215,16 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
+		protected IType type;
+		public virtual IType Type {
+			get {
+				return type;
+			}
+			set {
+				type = value;
+			}
+		}
+		
 		public DomReturnType ()
 		{
 			this.parts.Add (new ReturnTypePart ());
@@ -222,6 +232,7 @@ namespace MonoDevelop.Projects.Dom
 		
 		public DomReturnType (IType type)
 		{
+			this.type = type;
 			this.nspace = type.Namespace;
 			IType curType = type;
 			do {

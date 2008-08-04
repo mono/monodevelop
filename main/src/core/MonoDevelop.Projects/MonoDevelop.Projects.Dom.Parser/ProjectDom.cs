@@ -182,6 +182,8 @@ namespace MonoDevelop.Projects.Dom.Parser
 		{
 			if (returnType == null)
 				return null;
+			if (returnType.Type != null)
+				return returnType.Type ;
 			return GetType (returnType.FullName, -1, true, searchDeep);
 		}
 		

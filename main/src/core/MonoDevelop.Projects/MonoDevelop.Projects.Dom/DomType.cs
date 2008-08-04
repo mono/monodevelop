@@ -546,6 +546,7 @@ namespace MonoDevelop.Projects.Dom
 					IReturnType retType = typeTable [type.FullName];
 					result.Name      = retType.Name;
 					result.Namespace = retType.Namespace;
+					result.Type      = retType.Type;
 					result.ArrayDimensions = retType.ArrayDimensions;
 					result.PointerNestingLevel = retType.PointerNestingLevel;
 					result.IsNullable  = retType.IsNullable;
@@ -557,10 +558,11 @@ namespace MonoDevelop.Projects.Dom
 					result.Name      = type.Name;
 					result.Namespace = type.Namespace;
 					result.ArrayDimensions = type.ArrayDimensions;
+					result.Type       = type.Type;
 					result.PointerNestingLevel = type.PointerNestingLevel;
 					result.IsNullable = type.IsNullable;
 					foreach (IReturnType param in type.GenericArguments) {
-						result.AddTypeParameter (param);
+						result.AddTypeParameter (Resolve (param));
 					}
 				}
 				return result;

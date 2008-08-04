@@ -91,6 +91,7 @@ namespace MonoDevelop.Projects.Dom
 	public class LocalVariableResolveResult : ResolveResult
 	{
 		string variableName;
+		bool   isLoopVariable;
 		
 		public string VariableName {
 			get {
@@ -98,14 +99,35 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
-		public LocalVariableResolveResult (string variableName)
-		{
-			this.variableName = variableName;
+		public bool IsLoopVariable {
+			get {
+				return isLoopVariable;
+			}
 		}
+		
+		public LocalVariableResolveResult (string variableName) : this (variableName, false)
+		{
+		}
+		public LocalVariableResolveResult (string variableName, bool isLoopVariable)
+		{
+			this.variableName   = variableName;
+			this.isLoopVariable = isLoopVariable;
+		}
+		
 		public override IEnumerable<object> CreateResolveResult (ProjectDom dom)
 		{
 			List<object> result = new List<object> ();
-			MemberResolveResult.AddType (dom, result, ResolvedType, StaticResolve);
+			if (IsLoopVariable) {
+				if (ResolvedType.Name == "IEnumerable" && ResolvedType.GenericArguments != null && ResolvedType.GenericArguments.Count > 0) {
+					MemberResolveResult.AddType (dom, result, ResolvedType.GenericArguments [0], StaticResolve);
+				} else if (ResolvedType.Name == "IEnumerable") {
+					MemberResolveResult.AddType (dom, result, DomReturnType.Object, StaticResolve);
+				} else { 
+					MemberResolveResult.AddType (dom, result, dom.GetType (ResolvedType), StaticResolve);
+				}
+			} else {
+				MemberResolveResult.AddType (dom, result, ResolvedType, StaticResolve);
+			}
 			return result;
 		}
 		
@@ -159,6 +181,12 @@ namespace MonoDevelop.Projects.Dom
 		public AnonymousTypeResolveResult (IType anonymousType)
 		{
 			this.anonymousType = anonymousType; 
+			this.ResolvedType  = new DomReturnType (anonymousType);
+		}
+		
+		public override string ToString ()
+		{
+			return String.Format ("[AnonymousTypeResolveResult: AnonymousType={0}]", AnonymousType);
 		}
 		
 		public override IEnumerable<object> CreateResolveResult (ProjectDom dom)
@@ -191,9 +219,8 @@ namespace MonoDevelop.Projects.Dom
 			this.resolvedMember = resolvedMember;
 		}
 		
-		internal static void AddType (ProjectDom dom, List<object> result, IReturnType returnType, bool showStatic)
+		internal static void AddType (ProjectDom dom, List<object> result, IType type, bool showStatic)
 		{
-			IType type = dom.GetType (returnType);
 			if (type == null)
 				return;
 			if (type.ClassType == ClassType.Enum) {
@@ -208,6 +235,14 @@ namespace MonoDevelop.Projects.Dom
 						result.Add (member);
 				}
 			}
+		}
+		internal static void AddType (ProjectDom dom, List<object> result, IReturnType returnType, bool showStatic)
+		{
+			if (returnType.ArrayDimensions > 0) {
+				AddType (dom, result, dom.GetType ("System.Array", -1, true, true), showStatic);
+				return;
+			}
+			AddType (dom, result, dom.GetType (returnType), showStatic);
 		}
 		
 		public override IEnumerable<object> CreateResolveResult (ProjectDom dom)
