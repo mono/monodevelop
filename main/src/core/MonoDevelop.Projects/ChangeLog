@@ -1,3 +1,8 @@
+2008-08-05  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Dom.Database/CodeCompletionDatabase.cs: fixed
+	  bug in sql statement.
+
 2008-08-04  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom.Parser/AbstractParser.cs,

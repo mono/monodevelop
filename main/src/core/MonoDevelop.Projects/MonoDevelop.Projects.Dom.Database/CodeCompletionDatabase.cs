@@ -270,7 +270,7 @@ namespace MonoDevelop.Projects.Dom.Database
 				if (!string.IsNullOrEmpty (units)) {
 					query = String.Format (@"SELECT TypeID, UnitID, {0}.MemberID, NamespaceID, ClassType FROM {0}, {1} WHERE ({0}.MemberID={1}.MemberID AND {1}.Name='{2}') AND ({3}) AND ({4})",  DatabaseType.Table, MemberTable, typeName, sb.ToString (), units.ToString ());
 				} else {
-					query = String.Format (@"SELECT TypeID, UnitID, {0}.MemberID, NamespaceID, ClassType FROM {0}, {1} WHERE ({0}.MemberID={1}.MemberID AND {1}.Name='{2}') AND ({2})",  DatabaseType.Table, MemberTable, typeName, sb.ToString ());
+					query = String.Format (@"SELECT TypeID, UnitID, {0}.MemberID, NamespaceID, ClassType FROM {0}, {1} WHERE ({0}.MemberID={1}.MemberID AND {1}.Name='{2}') AND ({3})",  DatabaseType.Table, MemberTable, typeName, sb.ToString ());
 				}
 				reader = connection.Query (query);
 				while (reader.Read ()) {
