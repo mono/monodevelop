@@ -1,5 +1,10 @@
 2008-08-05  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Ide.Debugging/DebuggingService.cs: Fix some warnings. Add
+	  ActiveThread property.
+
+2008-08-05  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs,
 	  MonoDevelop.Ide.Gui.Dialogs/CombineEntryFeatureSelector.cs,
 	  MonoDevelop.Ide.StandardHeader/StandardHeaderPanel.cs,
