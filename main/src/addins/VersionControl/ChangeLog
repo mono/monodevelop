@@ -1,3 +1,9 @@
+2008-08-06  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.VersionControl.Subversion/Makefile.am,
+	  MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion.mdp:
+	  Add Ide reference, MD.Version control needs it.
+
 2008-08-05  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Diff/Diff.cs: Add missing accessor.
