@@ -81,6 +81,12 @@ namespace MonoDevelop.CSharpBinding
 			}
 		}
 		
+		public ICompilationUnit Unit {
+			get {
+				return unit;
+			}
+		}
+		
 		public static IType GetTypeAtCursor (ICompilationUnit unit, string fileName, DomLocation position)
 		{
 			foreach (IType type in unit.Types) {
@@ -294,6 +300,7 @@ namespace MonoDevelop.CSharpBinding
 			foreach (KeyValuePair<string, List<LocalLookupVariable>> pair in this.lookupTableVisitor.Variables) {
 				if (identifier == pair.Key) {
 					LocalLookupVariable var = pair.Value[pair.Value.Count - 1];
+					
 					IReturnType varType = null;
 					if ((var.TypeRef == null || var.TypeRef.Type == "var" || var.TypeRef.IsNull)) {
 						if (var.ParentLambdaExpression != null) 
