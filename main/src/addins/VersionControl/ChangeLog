@@ -1,5 +1,9 @@
 2008-08-05  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* Diff/Diff.cs: Add missing accessor.
+
+2008-08-05  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.VersionControl.Subversion/gtk-gui/objects.xml,
 	  MonoDevelop.VersionControl.Subversion/Makefile.am,
 	  MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion.mdp,
