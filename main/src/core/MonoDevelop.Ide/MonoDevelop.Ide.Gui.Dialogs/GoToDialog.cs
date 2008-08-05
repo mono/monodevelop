@@ -303,7 +303,11 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 					break;
 				}
 				
-				SearchThreadCycle ();
+				try {
+					SearchThreadCycle ();
+				} catch (Exception ex) {
+					LoggingService.LogError ("Exception in GoToDialog", ex);
+				}
 			}
 			
 			// Reset all thread state even though this shouldn't be

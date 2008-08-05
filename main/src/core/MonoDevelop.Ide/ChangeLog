@@ -1,3 +1,14 @@
+2008-08-05  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs,
+	  MonoDevelop.Ide.Gui.Dialogs/CombineEntryFeatureSelector.cs,
+	  MonoDevelop.Ide.StandardHeader/StandardHeaderPanel.cs,
+	  MonoDevelop.Ide.mdp, gtk-gui/objects.xml: Updated.
+	* MonoDevelop.Ide.Gui.Dialogs/GoToDialog.cs: Don't crash MD if there is
+	  an exception in the go to dialog.
+	* MonoDevelop.Ide.Gui/Document.cs: Request file edit permission when
+	  saving a document.
+
 2008-07-28  Andrés G. Aragoneses <aaragoneses@novell.com> 
 
 	* MonoDevelop.Ide.Gui.Search/CurrentProjectDocumentIterator.cs: Be more
