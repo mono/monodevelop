@@ -22,7 +22,8 @@
 			<Pad id = "MonoDevelop.Debugger.WatchPad" defaultPlacement = "Bottom" class = "MonoDevelop.Debugger.WatchPad" _label="Watch" />
 			<Pad id = "MonoDevelop.Debugger.LocalsPad" defaultPlacement = "Bottom" class = "MonoDevelop.Debugger.LocalsPad" _label="Locals" />
 			<Pad id = "MonoDevelop.Debugger.StackTracePad" defaultPlacement = "Bottom" class = "MonoDevelop.Debugger.StackTracePad" _label="Call Stack" />
-			<Pad id = "MonoDevelop.Debugger.BreakpointPad" defaultPlacement = "Bottom" class = "MonoDevelop.Debugger.BreakpointPad" _label="Breakpoint List" />
+			<Pad id = "MonoDevelop.Debugger.BreakpointPad" defaultPlacement = "Bottom" class = "MonoDevelop.Debugger.BreakpointPad" _label="Breakpoints" />
+			<Pad id = "MonoDevelop.Debugger.ThreadsPad" defaultPlacement = "Bottom" class = "MonoDevelop.Debugger.ThreadsPad" _label="Threads" />
 		</Category>
 	</Extension>
 	
@@ -31,6 +32,7 @@
 		<ContextPad id = "MonoDevelop.Debugger.LocalsPad" />
 		<ContextPad id = "MonoDevelop.Debugger.StackTracePad" />
 		<ContextPad id = "MonoDevelop.Debugger.BreakpointPad" />
+		<ContextPad id = "MonoDevelop.Debugger.ThreadsPad" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/StartupHandlers">
