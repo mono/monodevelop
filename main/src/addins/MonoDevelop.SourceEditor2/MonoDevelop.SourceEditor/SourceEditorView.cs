@@ -75,6 +75,9 @@ namespace MonoDevelop.SourceEditor
 		List<LineSegment> breakpointSegments = new List<LineSegment> ();
 		LineSegment currentLineSegment;
 		
+		bool writeAllowed;
+		bool writeAccessChecked;
+		
 		public Mono.TextEditor.Document Document {
 			get {
 				return widget.TextEditor.Document;
@@ -124,6 +127,7 @@ namespace MonoDevelop.SourceEditor
 			
 			widget.TextEditor.Document.TextReplacing += OnTextReplacing;
 			widget.TextEditor.Document.TextReplacing += OnTextReplaced;
+			widget.TextEditor.Document.ReadOnlyCheckDelegate = CheckReadOnly;
 			
 //			widget.TextEditor.Document.DocumentUpdated += delegate {
 //				this.IsDirty = Document.IsDirty;
@@ -174,6 +178,13 @@ namespace MonoDevelop.SourceEditor
 		
 		public void Save (string fileName, string encoding)
 		{
+			if (ContentName != fileName) {
+				if (!FileService.RequestFileEdit (fileName))
+					return;
+				writeAllowed = true;
+				writeAccessChecked = true;
+			}
+			
 			if (warnOverwrite) {
 				if (fileName == ContentName) {
 					if (MonoDevelop.Core.Gui.MessageService.AskQuestion (GettextCatalog.GetString ("This file {0} has been changed outside of MonoDevelop. Are you sure you want to overwrite the file?", fileName), MonoDevelop.Core.Gui.AlertButton.Cancel, MonoDevelop.Core.Gui.AlertButton.OverwriteFile) != MonoDevelop.Core.Gui.AlertButton.OverwriteFile)
@@ -283,6 +294,15 @@ namespace MonoDevelop.SourceEditor
 			
 			if (args.ChangeType == WatcherChangeTypes.Changed || args.ChangeType == WatcherChangeTypes.Created) 
 				widget.ShowFileChangedWarning ();
+		}
+		
+		bool CheckReadOnly (int line)
+		{
+			if (!writeAccessChecked && !IsUntitled) {
+				writeAccessChecked = true;
+				writeAllowed = FileService.RequestFileEdit (ContentName);
+			}
+			return writeAllowed;
 		}
 		
 		string oldReplaceText;
