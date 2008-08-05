@@ -1,5 +1,14 @@
 2008-08-05  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.Projects.Dom.Parser/DatabaseProjectDom.cs,
+	  MonoDevelop.Projects.Dom.Parser/ProjectParserService.cs,
+	  MonoDevelop.Projects.Dom/IParserContext.cs,
+	  MonoDevelop.Projects.Dom.Database/HyenaSqliteCommand.cs,
+	  MonoDevelop.Projects.Dom.Database/CodeCompletionDatabase.cs: Worked
+	  on datatabase layer.
+
+2008-08-05  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.Projects.Dom.Database/CodeCompletionDatabase.cs: fixed
 	  bug in sql statement.
 

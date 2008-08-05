@@ -130,5 +130,10 @@ namespace MonoDevelop.Projects.Dom
 		{
 			this.result = result;
 		}
+		
+		public override string ToString ()
+		{
+			return string.Format ("[SearchTypeResult: Result={0}]", Result);
+		}
 	}
 }

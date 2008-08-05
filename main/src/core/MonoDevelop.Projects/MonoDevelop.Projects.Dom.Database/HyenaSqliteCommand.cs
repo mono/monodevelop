@@ -83,7 +83,7 @@ namespace Hyena.Data.Sqlite
             this.command = command;
             ApplyValues (param_values);
         }
-
+	//	public static bool TRACE = false;
         internal void Execute (HyenaSqliteConnection hconnection, SqliteConnection connection)
         {
             if (finished) {
@@ -93,7 +93,8 @@ namespace Hyena.Data.Sqlite
 	//retry:
             execution_exception = null;
             result = null;
-//			System.Console.WriteLine(CurrentSqlText);
+//			if (TRACE)
+//				System.Console.WriteLine(CurrentSqlText);
             SqliteCommand sql_command = new SqliteCommand (CurrentSqlText);
             sql_command.Connection = connection;
 

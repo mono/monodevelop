@@ -142,8 +142,10 @@ namespace MonoDevelop.Projects.Dom.Parser
 		public override bool NeedCompilation (string fileName)
 		{
 			DateTime parseTime = codeCompletionDatabase.GetCompilationUnitParseTime (fileName);
+			if (parseTime.Ticks == 0)
+				return true;
 			DateTime writeTime = System.IO.File.GetLastWriteTime (fileName);
-			return parseTime >= writeTime;
+			return parseTime < writeTime;
 		}
 		
 		public override void UpdateFromParseInfo (ICompilationUnit unit, string fileName)

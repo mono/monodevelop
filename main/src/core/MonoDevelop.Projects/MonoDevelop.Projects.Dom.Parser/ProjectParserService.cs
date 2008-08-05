@@ -382,7 +382,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 				while (unitId <= 0 && retrys++ < 5) {
 					LoggingService.LogInfo ("Generating database for assembly " + fullName);
 					unitId = assemblyDatabase.InsertCompilationUnit (unit, fullName);
-					if (unitId < 0) {
+					if (unitId <= 0) {
 						LoggingService.LogError ("Error while inserting assembly: " + fullName +", retrying");
 						Thread.Sleep (500);
 					}
@@ -451,13 +451,14 @@ namespace MonoDevelop.Projects.Dom.Parser
 					}
 				}
 			}
-			
+				
 			foreach (ProjectFile file in project.Files) {
 				if (file.BuildAction != BuildAction.Compile)
 					continue;
 				if (!dom.NeedCompilation (file.FilePath)) {
 					continue;
 				}
+				System.Console.WriteLine("PARSE:" + file.FilePath);
 				IParser parser = GetParserByFileName (file.FilePath);
 				if (parser == null)
 					continue;

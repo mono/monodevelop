@@ -36,7 +36,7 @@ namespace MonoDevelop.Projects.Dom.Database
 {
 	public class CodeCompletionDatabase : IDisposable 
 	{
-		public const long Version = 3;
+		public const long Version = 4;
 		
 		HyenaSqliteConnection connection;
 		internal HyenaSqliteConnection Connection {
@@ -239,14 +239,17 @@ namespace MonoDevelop.Projects.Dom.Database
 					}
 					nb.Append ("'");
 				}
-			} else {
-				nb.Append ("Name = '");
-				nb.Append (DomReturnType.SplitFullName (fullName).Key);
-				nb.Append ("'");
 			}
+			
+			if (nb.Length > 0) 
+				nb.Append (" OR ");
+			nb.Append ("Name = '");
+			nb.Append (DomReturnType.SplitFullName (fullName).Key);
+			nb.Append ("'");
 			
 			StringBuilder sb = new StringBuilder ();
 			string query = String.Format (@"SELECT NamespaceID, Name FROM {0} WHERE ({1})",  NamespaceTable, nb.ToString ());
+			System.Console.WriteLine(query);
 			IDataReader reader = connection.Query (query);
 			
 			if (reader != null) {
@@ -272,8 +275,10 @@ namespace MonoDevelop.Projects.Dom.Database
 				} else {
 					query = String.Format (@"SELECT TypeID, UnitID, {0}.MemberID, NamespaceID, ClassType FROM {0}, {1} WHERE ({0}.MemberID={1}.MemberID AND {1}.Name='{2}') AND ({3})",  DatabaseType.Table, MemberTable, typeName, sb.ToString ());
 				}
+				System.Console.WriteLine(query);
 				reader = connection.Query (query);
 				while (reader.Read ()) {
+					System.Console.WriteLine("FOUND ONE !!!!");
 					yield return CreateDomType (reader, null);
 				}
 			}
@@ -361,13 +366,13 @@ namespace MonoDevelop.Projects.Dom.Database
 		
 		public DateTime GetCompilationUnitParseTime (string name)
 		{
-			return connection.Query<DateTime> (String.Format (@"SELECT ParseTime FROM {0} WHERE Name = '{1}'", CompilationUnitTable, name));
+			return connection.Query<DateTime> (String.Format (@"SELECT ParseTime FROM {0} WHERE Name='{1}'", CompilationUnitTable, name));
 		}
 		
 		public void UpdateCompilationUnit (ICompilationUnit unit, string name)
 		{
 			long unitID = GetUnitId (name);
-			if (unitID >= 0) {
+			if (unitID > 0) {
 				connection.Execute (String.Format (@"DELETE FROM {0} WHERE UnitID={1}", CompilationUnitTable, unitID));
 				foreach (DatabaseType type in GetTypeList (new long [] {unitID})) {
 					type.Delete ();
