@@ -96,22 +96,27 @@ namespace MonoDevelop.Ide.Commands
 					}
 					IResolver resolver = parser.CreateResolver (ctx, doc, editor.Name);
 					ResolveResult resolveResult = resolver.Resolve (id, new DomLocation (line, column));
-
-					IMember item = null;
+					
+					IDomVisitable item = null;
 					IMember eitem = resolveResult.CallingMember ?? resolveResult.CallingType;
-
-/*					if (resolveResult is ParameterResolveResult) {
+					
+					if (resolveResult is ParameterResolveResult) {
 						item = ((ParameterResolveResult)resolveResult).Parameter;
-					} else */if (resolveResult is LocalVariableResolveResult) {
-						// TODO: Local Variable !!!
-//						item = ((ParameterResolveResult)resolveResult).Parameter;	
+					} else if (resolveResult is LocalVariableResolveResult) {
+						// TODO: Local variables.
+						// item = (LocalVariableResolveResult)resolveResult;
 						//s.Append (ambience.GetString (((LocalVariableResolveResult)result).ResolvedType, WindowConversionFlags));
 					} else if (resolveResult is MemberResolveResult) {
 						item = ((MemberResolveResult)resolveResult).ResolvedMember;
+						if (item == null && ((MemberResolveResult)resolveResult).ResolvedType != null) {
+							item = ctx.GetType (((MemberResolveResult)resolveResult).ResolvedType);
+						}
 					}
-
+					string itemName = null;
+					if (item is IMember)
+						itemName = ((IMember)item).Name;
  					if (item != null && eitem != null && 
-					    (eitem == item || (eitem.Name == item.Name && !(eitem is IProperty) && !(eitem is IMethod)))) {
+					    (eitem == item || (eitem.Name == itemName && !(eitem is IProperty) && !(eitem is IMethod)))) {
 						// If this occurs, then @item is either its own enclosing item, in
 						// which case, we don't want to show it twice, or it is the base-class
 						// version of @eitem, in which case we don't want to show the base-class
@@ -199,7 +204,7 @@ namespace MonoDevelop.Ide.Commands
 			return sb.ToString ();
 		}
 		
-		CommandInfo BuildRefactoryMenuForItem (ProjectDom ctx, ICompilationUnit pinfo, IType eclass, IMember item)
+		CommandInfo BuildRefactoryMenuForItem (ProjectDom ctx, ICompilationUnit pinfo, IType eclass, IDomVisitable item)
 		{
 			Refactorer refactorer = new Refactorer (ctx, pinfo, eclass, item, null);
 			CommandInfoSet ciset = new CommandInfoSet ();
@@ -208,7 +213,7 @@ namespace MonoDevelop.Ide.Commands
 			string itemName = EscapeName (ambience.GetString (item, OutputFlags.IncludeParameters | OutputFlags.EmitMarkup));
 			bool canRename = false;
 			string txt;
-			if (IdeApp.ProjectOperations.CanJumpToDeclaration (item))
+			if (IdeApp.ProjectOperations.CanJumpToDeclaration (item as IMember))
 				ciset.CommandInfos.Add (GettextCatalog.GetString ("_Go to declaration"), new RefactoryOperation (refactorer.GoToDeclaration));
 			
 			if ((item is IMember || item is LocalVariable || item is IParameter) && !(item is IType))
@@ -352,11 +357,11 @@ namespace MonoDevelop.Ide.Commands
 		ISearchProgressMonitor monitor;
 		ICompilationUnit pinfo;
 		ProjectDom ctx;
-		IMember item;
+		IDomVisitable item;
 		IType klass;
 		IReturnType hintReturnType;
 		
-		public Refactorer (ProjectDom ctx, ICompilationUnit pinfo, IType klass, IMember item, IReturnType hintReturnType)
+		public Refactorer (ProjectDom ctx, ICompilationUnit pinfo, IType klass, IDomVisitable item, IReturnType hintReturnType)
 		{
 			this.pinfo = pinfo;
 			this.klass = klass;
@@ -367,7 +372,7 @@ namespace MonoDevelop.Ide.Commands
 		
 		public void GoToDeclaration ()
 		{
-			IdeApp.ProjectOperations.JumpToDeclaration (item);
+			IdeApp.ProjectOperations.JumpToDeclaration (item as IMember);
 		}
 		
 		public void FindReferences ()
@@ -514,7 +519,7 @@ namespace MonoDevelop.Ide.Commands
 					dialog = new EncapsulateFieldDialog (ctx, (IField) item);
 				else
 					dialog = new EncapsulateFieldDialog (ctx, (IType) item);
-
+				
 				dialog.Show ();
 			} finally {
 				if (editor != null)
@@ -522,13 +527,13 @@ namespace MonoDevelop.Ide.Commands
 			}
 			
 		}
-
+		
 		public void OverrideOrImplementMembers ()
 		{
 			IEditableTextBuffer editor = IdeApp.Workbench.ActiveDocument.GetContent <IEditableTextBuffer>();
 			if (editor != null)
 				editor.BeginAtomicUndo ();
-
+			
 			try {
 				OverridesImplementsDialog dialog = new MonoDevelop.Ide.OverridesImplementsDialog ((IType) item);
 				dialog.Show ();
@@ -537,10 +542,10 @@ namespace MonoDevelop.Ide.Commands
 					editor.EndAtomicUndo ();
 			}
 		}
-
+		
 		public void Rename ()
 		{
-			RenameItemDialog dialog = new RenameItemDialog (ctx, item);
+			RenameItemDialog dialog = new RenameItemDialog (ctx, item as IMember);
 			dialog.Show ();
 		}
 	}
