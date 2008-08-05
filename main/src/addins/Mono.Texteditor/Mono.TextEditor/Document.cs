@@ -44,6 +44,7 @@ namespace Mono.TextEditor
 		string mimeType;
 		string fileName;
 		bool   readOnly;
+		ReadOnlyCheckDelegate readOnlyCheckDelegate;
 		
 		/// <value>
 		/// The eol mark used in this document - it's taken from the first line in the document,
@@ -853,6 +854,11 @@ namespace Mono.TextEditor
 				readOnly = value;
 			}
 		}
+		
+		public ReadOnlyCheckDelegate ReadOnlyCheckDelegate {
+			get { return readOnlyCheckDelegate; }
+			set { readOnlyCheckDelegate = value; }
+		}
 
 		public void RequestUpdate (DocumentUpdateRequest request)
 		{
@@ -1149,4 +1155,6 @@ namespace Mono.TextEditor
 //		}
 		#endregion
 	}
+	
+	public delegate bool ReadOnlyCheckDelegate (int line);
 }

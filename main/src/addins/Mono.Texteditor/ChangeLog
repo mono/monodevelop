@@ -1,3 +1,11 @@
+2008-08-05  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Mono.TextEditor/Document.cs, Mono.TextEditor/TextEditorData.cs,
+	  Mono.TextEditor/TextEditor.cs, gtk-gui/objects.xml: Added delegate
+	  which is called to check if a line is read-only. Removed ReadOnly
+	  property from TextEditor since it is not used anymore (it was moved
+	  to Document).
+
 2008-07-22  Jeffrey Stedfast  <fejj@novell.com>
 
 	* Mono.TextEditor/DefaultEditActions.cs (DeleteCaretLineToEnd):
