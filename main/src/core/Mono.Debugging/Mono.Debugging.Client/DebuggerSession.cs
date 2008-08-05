@@ -465,6 +465,8 @@ namespace Mono.Debugging.Client
 		
 		internal protected void OnTargetEvent (TargetEventArgs args)
 		{
+			currentProcesses = null;
+			
 			if (args.Process != null)
 				args.Process.Attach (this);
 			if (args.Thread != null) {

@@ -1,3 +1,10 @@
+2008-08-05  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Mono.Debugging.Client/ThreadInfo.cs,
+	  Mono.Debugging.Client/DebuggerSession.cs: Add location field to
+	  ThreadInfo. Reset the cached process list when receiving a target
+	  event.
+
 2008-07-25  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Mono.Debugging.Client/StackFrame.cs,
