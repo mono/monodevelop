@@ -344,7 +344,7 @@ namespace DebuggerServer
 				return new ThreadInfo [0];
 			List<DL.ThreadInfo> list = new List<DL.ThreadInfo> ();
 			foreach (MD.Thread t in p.GetThreads ()) {
-				DL.ThreadInfo ct = new DL.ThreadInfo (processId, t.ID, t.Name);
+				DL.ThreadInfo ct = CreateThreadInfo (t);
 				list.Add (ct);
 			}
 			return list.ToArray ();
@@ -356,6 +356,15 @@ namespace DebuggerServer
 			foreach (MD.Process p in debugger.Processes)
 				list.Add (new DL.ProcessInfo (p.ID, p.TargetApplication + " " + string.Join (" ", p.CommandLineArguments)));
 			return list.ToArray ();
+		}
+		
+		ThreadInfo CreateThreadInfo (MD.Thread t)
+		{
+			string loc = null;
+			if (t.CurrentFrame != null && t.CurrentFrame.SourceLocation != null) {
+				loc = t.CurrentFrame.SourceLocation.FileName + ":" + t.CurrentFrame.SourceLocation.Line;
+			}
+			return new ThreadInfo (t.Process.ID, t.ID, t.Name, loc, null);
 		}
 		
 		public DL.Backtrace GetThreadBacktrace (int processId, int threadId)
@@ -374,7 +383,7 @@ namespace DebuggerServer
 
 		MD.Thread GetThread (int procId, int threadId)
 		{
-			MD.Process proc = GetProcess (threadId);
+			MD.Process proc = GetProcess (procId);
 			if (proc != null) {
 				foreach (MD.Thread t in proc.GetThreads ()) {
 					if (t.ID == threadId)
@@ -663,17 +672,15 @@ namespace DebuggerServer
 				// Dispose all previous remote objects
 				RemoteFrameObject.DisconnectAll ();
 				
-				DL.TargetEventArgs dl_args = new DL.TargetEventArgs (type);
+				DL.TargetEventArgs targetArgs = new DL.TargetEventArgs (type);
 
-				//FIXME: using Backtrace.Mode.Default right now
-				//FIXME: code from BacktraceCommand.DoExecute
-				//FIXME: better way than args.Frame.Thread.* ?
-				
-				if (args.Type != MD.TargetEventType.TargetExited)
-					dl_args.Backtrace = CreateBacktrace (args.Frame.Thread);
+				if (args.Type != MD.TargetEventType.TargetExited) {
+					targetArgs.Backtrace = CreateBacktrace (args.Frame.Thread);
+					targetArgs.Thread = CreateThreadInfo (activeThread);
+				}
 
 				DispatchEvent (delegate {
-					controller.OnTargetEvent (dl_args);
+					controller.OnTargetEvent (targetArgs);
 				});
 			} catch (Exception e) {
 				Console.WriteLine ("*** DS.OnTargetEvent, exception : {0}", e.ToString ());
