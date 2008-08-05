@@ -25,6 +25,8 @@ namespace MonoDevelop.VersionControl
 		internal static Gdk.Pixbuf overlay_controled;
 		static Gdk.Pixbuf overlay_unversioned;
 		static Gdk.Pixbuf overlay_protected;
+		static Gdk.Pixbuf overlay_locked;
+		static Gdk.Pixbuf overlay_unlocked;
 //		static Gdk.Pixbuf overlay_normal;
 
 		static Gdk.Pixbuf icon_modified;
@@ -54,7 +56,9 @@ namespace MonoDevelop.VersionControl
 			overlay_added = Gdk.Pixbuf.LoadFromResource("overlay_added.png");
 			overlay_controled = Gdk.Pixbuf.LoadFromResource("overlay_controled.png");
 			overlay_unversioned = Gdk.Pixbuf.LoadFromResource("overlay_unversioned.png");
-			overlay_protected = Gdk.Pixbuf.LoadFromResource("overlay_locked.png");
+			overlay_protected = Gdk.Pixbuf.LoadFromResource("overlay_lock_required.png");
+			overlay_unlocked = Gdk.Pixbuf.LoadFromResource("overlay_unlocked.png");
+			overlay_locked = Gdk.Pixbuf.LoadFromResource("overlay_locked.png");
 //			overlay_normal = Gdk.Pixbuf.LoadFromResource("overlay_normal.png");
 			
 			icon_modified = MonoDevelop.Core.Gui.Services.Resources.GetIcon ("gtk-edit", Gtk.IconSize.Menu);
@@ -92,53 +96,60 @@ namespace MonoDevelop.VersionControl
 		
 		public static Gdk.Pixbuf LoadOverlayIconForStatus(VersionStatus status)
 		{
-			switch (status) {
-				case VersionStatus.Unchanged:
-					return null;
-				case VersionStatus.Protected:
-					return overlay_protected;
+			if ((status & VersionStatus.Versioned) == 0)
+				return overlay_unversioned;
+			
+			switch (status & VersionStatus.LocalChangesMask) {
 				case VersionStatus.Modified:
+				case VersionStatus.ScheduledReplace:
+				case VersionStatus.ScheduledIgnore:
 					return overlay_modified;
 				case VersionStatus.Conflicted:
 					return overlay_conflicted;
 				case VersionStatus.ScheduledAdd:
 					return overlay_added;
+				case VersionStatus.Missing:
 				case VersionStatus.ScheduledDelete:
 					return overlay_removed;
-				case VersionStatus.UnversionedIgnored:
-				case VersionStatus.Unversioned:
-					return overlay_unversioned;
 			}
+			
+			if ((status & VersionStatus.LockOwned) != 0)
+				return overlay_unlocked;
+			
+			if ((status & VersionStatus.Locked) != 0)
+				return overlay_locked;
+			
+			if ((status & VersionStatus.LockRequired) != 0)
+				return overlay_protected;
+				
 			return null;
 		}
 		
-		public static Gdk.Pixbuf LoadIconForStatus(VersionStatus status)
+		public static Gdk.Pixbuf LoadIconForStatus (VersionStatus status)
 		{
-			switch (status) {
-				case VersionStatus.Unchanged:
-					return null;
+			switch (status & VersionStatus.LocalChangesMask) {
 				case VersionStatus.Modified:
+				case VersionStatus.ScheduledReplace:
 					return icon_modified;
 				case VersionStatus.Conflicted:
 					return icon_conflicted;
 				case VersionStatus.ScheduledAdd:
 					return icon_added;
+				case VersionStatus.Missing:
 				case VersionStatus.ScheduledDelete:
 					return icon_removed;
-				default:
-					if (status != VersionStatus.Unversioned && status != VersionStatus.UnversionedIgnored)
-						return icon_controled;
-					break;
 			}
 			return null;
 		}
 
 		public static string GetStatusLabel (VersionStatus status)
 		{
-			switch (status) {
-				case VersionStatus.Unchanged:
-					return "";
+			if ((status & VersionStatus.Versioned) == 0)
+				return GettextCatalog.GetString ("Unversioned");
+			
+			switch (status & VersionStatus.LocalChangesMask) {
 				case VersionStatus.Modified:
+				case VersionStatus.ScheduledReplace:
 					return GettextCatalog.GetString ("Modified");
 				case VersionStatus.Conflicted:
 					return GettextCatalog.GetString ("Conflict");
@@ -146,12 +157,10 @@ namespace MonoDevelop.VersionControl
 					return GettextCatalog.GetString ("Add");
 				case VersionStatus.ScheduledDelete:
 					return GettextCatalog.GetString ("Delete");
-				default:
-					if (status != VersionStatus.Unversioned && status != VersionStatus.UnversionedIgnored)
-						return "";
-					break;
+				case VersionStatus.Missing:
+					return GettextCatalog.GetString ("Missing");
 			}
-			return GettextCatalog.GetString ("Unversioned");
+			return "";
 		}
 		
 		public static Repository GetRepository (IWorkspaceObject entry)
@@ -332,7 +341,7 @@ namespace MonoDevelop.VersionControl
 			return true;
 		}
 		
-		internal static void NotifyFileStatusChanged (Repository repo, string localPath, bool isDirectory) 
+		public static void NotifyFileStatusChanged (Repository repo, string localPath, bool isDirectory) 
 		{
 			if (!DispatchService.IsGuiThread)
 				Gtk.Application.Invoke (delegate {

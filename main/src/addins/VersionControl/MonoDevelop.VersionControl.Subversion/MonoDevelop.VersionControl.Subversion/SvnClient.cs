@@ -25,6 +25,9 @@ namespace MonoDevelop.VersionControl.Subversion {
 		ArrayList updateFileList;
 		string commitmessage = null;
 		
+		ArrayList lockFileList;
+		LibSvnClient.NotifyLockState requiredLockState;
+		
 		// retain this so the delegates aren't GC'ed
 		LibSvnClient.svn_client_ctx_t ctxstruct;
 		
@@ -115,7 +118,7 @@ namespace MonoDevelop.VersionControl.Subversion {
 			// calls because it needs to be allocated by SVN.  I hope
 			// this doesn't cause any memory leaks.
 			ctxstruct = new LibSvnClient.svn_client_ctx_t ();
-			ctxstruct.NotifyFunc = new LibSvnClient.svn_wc_notify_func_t (svn_wc_notify_func_t_impl);
+			ctxstruct.NotifyFunc2 = new LibSvnClient.svn_wc_notify_func2_t (svn_wc_notify_func_t_impl);
 			ctxstruct.LogMsgFunc = new LibSvnClient.svn_client_get_commit_log_t (svn_client_get_commit_log_impl);
 			
 			// Load user and system configuration
@@ -649,6 +652,68 @@ namespace MonoDevelop.VersionControl.Subversion {
 			}
 		}
 		
+		public void Lock (IProgressMonitor monitor, string comment, bool stealLock, params string[] paths)
+		{
+			lock (sync) {
+				if (inProgress)
+					throw new SubversionException ("Another Subversion operation is already in progress.");
+				inProgress = true;
+			}
+			
+			IntPtr localpool = newpool (pool);
+			IntPtr array = apr.array_make (localpool, 0, IntPtr.Size);
+			updatemonitor = monitor;
+
+			try {
+				foreach (string path in paths) {
+					IntPtr item = apr.array_push (array);
+					Marshal.WriteIntPtr (item, apr.pstrdup (localpool, path));
+				}
+				lockFileList = new ArrayList ();
+				requiredLockState = LibSvnClient.NotifyLockState.Locked;
+				
+				CheckError (svn.client_lock (array, comment, stealLock ? 1 : 0, ctx, localpool));
+				if (paths.Length != lockFileList.Count)
+					throw new SubversionException ("Lock operation failed.");
+			} finally {
+				apr.pool_destroy (localpool);
+				lockFileList = null;
+				updatemonitor = null;
+				inProgress = false;
+			}
+		}
+		
+		public void Unlock (IProgressMonitor monitor, bool breakLock, params string[] paths)
+		{
+			lock (sync) {
+				if (inProgress)
+					throw new SubversionException ("Another Subversion operation is already in progress.");
+				inProgress = true;
+			}
+			
+			IntPtr localpool = newpool (pool);
+			IntPtr array = apr.array_make (localpool, 0, IntPtr.Size);
+			updatemonitor = monitor;
+			
+			try {
+				foreach (string path in paths) {
+					IntPtr item = apr.array_push (array);
+					Marshal.WriteIntPtr (item, apr.pstrdup (localpool, path));
+				}
+				lockFileList = new ArrayList ();
+				requiredLockState = LibSvnClient.NotifyLockState.Unlocked;
+			
+				CheckError (svn.client_unlock (array, breakLock ? 1 : 0, ctx, localpool));
+				if (paths.Length != lockFileList.Count)
+					throw new SubversionException ("Lock operation failed.");
+			} finally {
+				apr.pool_destroy (localpool);
+				lockFileList = null;
+				updatemonitor = null;
+				inProgress = false;
+			}
+		}
+		
 		public string PathDiff (string path1, LibSvnClient.Rev revision1, string path2, LibSvnClient.Rev revision2, bool recursive)
 		{
 			IntPtr localpool = newpool (pool);
@@ -749,17 +814,13 @@ namespace MonoDevelop.VersionControl.Subversion {
 			throw new SubversionException (msg);
 		}
 		
-		void svn_wc_notify_func_t_impl (IntPtr baton, IntPtr path, LibSvnClient.NotifyAction action,
-		                                LibSvnClient.NodeKind kind, IntPtr mime_type,
-		                                LibSvnClient.NotifyState content_state,
-		                                LibSvnClient.NotifyState prop_state,
-		                                long revision)
+		void svn_wc_notify_func_t_impl (IntPtr baton, ref LibSvnClient.svn_wc_notify_t data, IntPtr pool)
 		{
-			string actiondesc = action.ToString ();
-			string file = Marshal.PtrToStringAnsi (path);
+			string actiondesc = data.action.ToString ();
+			string file = Marshal.PtrToStringAnsi (data.path);
 			bool notifyChange = false;
 			
-			switch (action) {
+			switch (data.action) {
 			case LibSvnClient.NotifyAction.UpdateAdd: actiondesc = GettextCatalog.GetString ("Added"); break;
 			case LibSvnClient.NotifyAction.UpdateDelete: actiondesc = GettextCatalog.GetString ("Deleted"); break;
 			case LibSvnClient.NotifyAction.UpdateUpdate: actiondesc = GettextCatalog.GetString ("Updating"); notifyChange = true; break;
@@ -771,6 +832,12 @@ namespace MonoDevelop.VersionControl.Subversion {
 			case LibSvnClient.NotifyAction.CommitModified: actiondesc = GettextCatalog.GetString ("Modified"); notifyChange = true; break;
 			case LibSvnClient.NotifyAction.CommitReplaced: actiondesc = GettextCatalog.GetString ("Replaced"); notifyChange = true; break;
 			case LibSvnClient.NotifyAction.CommitPostfixTxDelta: actiondesc = GettextCatalog.GetString ("Sending Content"); break;
+					
+			case LibSvnClient.NotifyAction.Locked: actiondesc = GettextCatalog.GetString ("Locked"); break;
+			case LibSvnClient.NotifyAction.Unlocked: actiondesc = GettextCatalog.GetString ("Unlocked"); break;
+			case LibSvnClient.NotifyAction.FailedLock: actiondesc = GettextCatalog.GetString ("Lock Failed"); break;
+			case LibSvnClient.NotifyAction.FailedUnlock: actiondesc = GettextCatalog.GetString ("Unlock Failed"); break;
+					
 				/*Add,
 				 Copy,
 				 Delete,
@@ -788,6 +855,9 @@ namespace MonoDevelop.VersionControl.Subversion {
 				updatemonitor.Log.WriteLine (actiondesc + " " + file);
 			if (updateFileList != null && notifyChange && File.Exists (file))
 				updateFileList.Add (file);
+			
+			if (lockFileList != null && data.lock_state == requiredLockState)
+				lockFileList.Add (file);
 		}
 		
 		public class StatusCollector {

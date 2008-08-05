@@ -106,7 +106,7 @@ namespace MonoDevelop.VersionControl
 			VersionInfo vinfo = GetVersionInfo (localPath, false);
 			if (vinfo == null)
 				return false;
-			return vinfo.Status != VersionStatus.Unversioned && vinfo.Status != VersionStatus.UnversionedIgnored;
+			return vinfo.IsVersioned;
 		}
 		
 		// Returns true if the specified file has been modified since the last commit
@@ -128,7 +128,7 @@ namespace MonoDevelop.VersionControl
 			VersionInfo vinfo = GetVersionInfo (localPath, false);
 			if (vinfo == null)
 				return false;
-			return vinfo.Status == VersionStatus.Unversioned;
+			return !vinfo.IsVersioned;
 		}
 		
 		// Returns true if the repository has history for the specified local file
@@ -157,18 +157,14 @@ namespace MonoDevelop.VersionControl
 			VersionInfo vinfo = GetVersionInfo (localPath, false);
 			if (vinfo == null)
 				return false;
-			return vinfo.Status == VersionStatus.Unchanged || vinfo.Status == VersionStatus.Modified;
+			return vinfo.IsVersioned;
 		}
 		
 		// Returns true if the specified path can be reverted
 		public virtual bool CanRevert (string localPath)
 		{
 			VersionInfo vinfo = GetVersionInfo (localPath, false);
-			return vinfo != null && 
-					vinfo.Status != VersionStatus.Unchanged && 
-					vinfo.Status != VersionStatus.Unversioned &&
-					vinfo.Status != VersionStatus.UnversionedIgnored &&
-					vinfo.Status != VersionStatus.Protected;
+			return vinfo != null && vinfo.IsVersioned && vinfo.HasLocalChanges;
 		}
 		
 		public virtual bool CanLock (string localPath)
@@ -288,13 +284,13 @@ namespace MonoDevelop.VersionControl
 		}
 		
 		// Locks a file in the repository so no other users can change it
-		public virtual void Lock (string localPath)
+		public virtual void Lock (IProgressMonitor monitor, params string[] localPaths)
 		{
 			throw new System.NotSupportedException ();
 		}
 		
 		// Unlocks a file in the repository so other users can change it
-		public virtual void Unlock (string localPath)
+		public virtual void Unlock (IProgressMonitor monitor, params string[] localPaths)
 		{
 			throw new System.NotSupportedException ();
 		}

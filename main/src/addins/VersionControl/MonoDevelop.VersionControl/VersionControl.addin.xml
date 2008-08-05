@@ -100,6 +100,12 @@
 			_label = "C_heckout..."
 			icon = "vc-update"
 			description = "Checkout a project from repository."/>
+		<Command id = "MonoDevelop.VersionControl.Commands.Lock" 
+			_label = "Lock"
+			description = "Lock files in the repository, so that no other user can change them."/>
+		<Command id = "MonoDevelop.VersionControl.Commands.Unlock" 
+			_label = "Release Lock"
+			description = "Unlock files in the repository, so that other user can change them."/>
 		</Category>
 	</Extension>
 	
@@ -113,6 +119,8 @@
 			<CommandItem id = "MonoDevelop.VersionControl.Commands.Add"/>
 			<CommandItem id = "MonoDevelop.VersionControl.Commands.Remove"/>
 			<CommandItem id = "MonoDevelop.VersionControl.Commands.Revert"/>
+			<CommandItem id = "MonoDevelop.VersionControl.Commands.Lock"/>
+			<CommandItem id = "MonoDevelop.VersionControl.Commands.Unlock"/>
 			<SeparatorItem id = "CommandSeparator" />
 			<CommandItem id = "MonoDevelop.VersionControl.Commands.Update"/>
 			<CommandItem id = "MonoDevelop.VersionControl.Commands.Diff"/>
@@ -125,6 +133,8 @@
 			<CommandItem id = "MonoDevelop.VersionControl.Commands.Add"/>
 			<CommandItem id = "MonoDevelop.VersionControl.Commands.Remove"/>
 			<CommandItem id = "MonoDevelop.VersionControl.Commands.Revert"/>
+			<CommandItem id = "MonoDevelop.VersionControl.Commands.Lock"/>
+			<CommandItem id = "MonoDevelop.VersionControl.Commands.Unlock"/>
 			<SeparatorItem id = "CommandSeparator" />
 			<CommandItem id = "MonoDevelop.VersionControl.Commands.Update"/>
 			<CommandItem id = "MonoDevelop.VersionControl.Commands.Diff"/>

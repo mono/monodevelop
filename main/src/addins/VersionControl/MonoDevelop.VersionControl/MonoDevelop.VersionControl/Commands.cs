@@ -14,6 +14,8 @@ namespace MonoDevelop.VersionControl
     	Checkout,
     	Repository,
     	Commit,
-    	Revert
+    	Revert,
+		Lock,
+		Unlock
 	}
 }

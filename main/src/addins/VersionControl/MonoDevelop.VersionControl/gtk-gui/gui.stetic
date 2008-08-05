@@ -6,7 +6,9 @@
   </configuration>
   <import>
     <widget-library name="../../../../../build/bin/MonoDevelop.Ide.dll" />
+    <widget-library name="../../../../../build/bin/MonoDevelop.Core.Gui.dll" />
     <widget-library name="../../../../../build/bin/MonoDevelop.Components.dll" />
+    <widget-library name="../../../../../build/AddIns/VersionControl/MonoDevelop.VersionControl.dll" internal="true" />
   </import>
   <icon-factory>
     <icon-set id="vcs-repository">

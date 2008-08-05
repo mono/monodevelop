@@ -71,6 +71,5 @@ namespace MonoDevelop.VersionControl
 		protected void Warn(string logtext) {
 			tracker.ReportWarning(logtext);
 		}
-		
 	}
 }
