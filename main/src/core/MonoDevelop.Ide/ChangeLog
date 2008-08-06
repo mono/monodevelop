@@ -1,3 +1,7 @@
+2008-08-06  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.addin.xml: Added some missing icons to commands.
+
 2008-08-05  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Debugging/DebuggingService.cs: Fix some warnings. Add
