@@ -32,6 +32,8 @@ using Gtk;
 using Gdk;
 
 namespace MonoDevelop.Components {
+	[System.ComponentModel.Category("MonoDevelop.Components")]
+	[System.ComponentModel.ToolboxItem(true)]
 	public class FileEntry : BaseFileEntry {
 
 		public FileEntry () : base ("")

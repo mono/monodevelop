@@ -34,6 +34,8 @@ using Gtk;
 
 namespace MonoDevelop.Components
 {
+	[System.ComponentModel.Category("MonoDevelop.Components")]
+	[System.ComponentModel.ToolboxItem(true)]
 	public class FixedWidthWrapLabel : Widget
 	{
 		string text;

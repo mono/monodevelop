@@ -61,6 +61,7 @@ namespace MonoDevelop.Components.DockToolbars
 		{
 			grip = new DockGrip ();
 			Add (grip);
+			grip.Hide ();
 			this.id = id;
 			this.title = title;
 			ShowArrow = false;
@@ -69,6 +70,7 @@ namespace MonoDevelop.Components.DockToolbars
 		internal void SetParentFrame (DockToolbarFrame frame)
 		{
 			parentFrame = frame;
+			grip.Show ();
 		}
 		
 		public string Id {
@@ -213,7 +215,7 @@ namespace MonoDevelop.Components.DockToolbars
 		
 		protected override bool OnButtonPressEvent (EventButton e)
 		{
-			if (e.Button == 1) {
+			if (parentFrame != null && e.Button == 1) {
 				if (Orientation == Orientation.Horizontal && e.X <= 10) {
 					dragging = true;
 					parentFrame.StartDragBar (this, (int)e.X, (int)e.Y, e.Time);

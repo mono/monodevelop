@@ -403,9 +403,26 @@ namespace MonoDevelop.Components.Commands
 			ShowContextMenu (menu);
 		}
 		
+		public Gtk.Toolbar CreateToolbar (CommandEntrySet entrySet)
+		{
+			return CreateToolbar ("", entrySet, null);
+		}
+		
+		public Gtk.Toolbar CreateToolbar (CommandEntrySet entrySet, object initialTarget)
+		{
+			return CreateToolbar ("", entrySet, initialTarget);
+		}
+		
 		public Gtk.Toolbar CreateToolbar (string id, CommandEntrySet entrySet)
 		{
+			return CreateToolbar (id, entrySet, null);
+		}
+		
+		public Gtk.Toolbar CreateToolbar (string id, CommandEntrySet entrySet, object initialTarget)
+		{
 			CommandToolbar toolbar = new CommandToolbar (this, id, entrySet.Name);
+			toolbar.InitialCommandTarget = initialTarget;
+			
 			foreach (CommandEntry entry in entrySet) {
 				Gtk.ToolItem ti = entry.CreateToolItem (this);
 				CustomItem ci = ti.Child as CustomItem;

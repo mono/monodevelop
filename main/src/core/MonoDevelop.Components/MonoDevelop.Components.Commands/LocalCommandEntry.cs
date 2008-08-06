@@ -39,11 +39,16 @@ namespace MonoDevelop.Components.Commands
 			this.cmd = cmd;
 		}
 		
-		public LocalCommandEntry (object id, string text): base (id)
+		public LocalCommandEntry (object id, string text): this (id, text, null)
+		{
+		}
+		
+		public LocalCommandEntry (object id, string text, string icon): base (id)
 		{
 			cmd = new ActionCommand ();
 			cmd.Id = id;
 			cmd.Text = text;
+			cmd.Icon = icon;
 		}
 		
 		internal protected override Gtk.MenuItem CreateMenuItem (CommandManager manager)
