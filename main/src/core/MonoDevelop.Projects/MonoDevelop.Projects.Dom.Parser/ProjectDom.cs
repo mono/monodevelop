@@ -86,7 +86,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 					continue;
 				yield return cur;
 				if (cur.BaseType == null && cur.FullName != "System.Object") {
-					types.Push (this.GetType (null, "System.Object", -1, true));
+					types.Push (this.GetType (DomReturnType.Object));
 					continue;
 				}
 				foreach (IReturnType baseType in cur.BaseTypes) {
