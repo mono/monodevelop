@@ -38,6 +38,12 @@ namespace MonoDevelop.Components.Commands
 		{
 			this.menu = menu;
 			Child.ButtonPressEvent += new Gtk.ButtonPressEventHandler (OnButtonPress);
+			
+			if (string.IsNullOrEmpty (icon)) {
+				this.Expand = false;
+				this.Homogeneous = false;
+				this.IconWidget = new Gtk.Arrow (Gtk.ArrowType.Down, Gtk.ShadowType.None);;
+			}
 		}
 		
 		protected override void OnClicked ()

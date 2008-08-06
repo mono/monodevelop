@@ -1,3 +1,8 @@
+2008-08-06  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Components.Commands/MenuToolButton.cs: Show a down arrow
+	  if there's no icon.
+
 2008-08-06  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Components.DockToolbars/DockToolbar.cs: Don't crash if
