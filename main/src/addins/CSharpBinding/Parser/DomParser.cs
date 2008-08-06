@@ -231,14 +231,14 @@ namespace MonoDevelop.CSharpBinding
 					members.Add (ConvertType (unit, "", t));
 				}
 			}
-			
+			System.Console.WriteLine(type.Name + " --- Members: ----" + members.Count);
 			MonoDevelop.Projects.Dom.DomType result = new MonoDevelop.Projects.Dom.DomType (unit,
-			                                        ClassType.Class,
-			                                        type.Name,
-			                                        Location2DomLocation (type.MembersBlock.Start), 
-			                                        nsName, 
-			                                        Block2Region (type.MembersBlock),
-			                                        members);
+			                                                                               ToClassType (type.ContainerType),
+			                                                                                type.Name,
+			                                                                                Location2DomLocation (type.MembersBlock.Start), 
+			                                                                                nsName, 
+			                                                                                Block2Region (type.MembersBlock),
+			                                                                                members);
 			if (type.BaseTypes != null) {
 				foreach (Mono.CSharp.Dom.ITypeName baseType in type.BaseTypes) {
 					if (result.BaseType == null) {
@@ -252,6 +252,20 @@ namespace MonoDevelop.CSharpBinding
 			return result;
 		}
 		
+		static ClassType ToClassType (Mono.CSharp.Kind kind)
+		{
+			switch (kind) {
+			case Kind.Struct:
+				return ClassType.Struct;
+			case Kind.Interface:
+				return ClassType.Interface;
+			case Kind.Enum:
+				return ClassType.Enum;
+			case Kind.Delegate:
+				return ClassType.Delegate;
+			}
+			return ClassType.Class;
+		}
 		public class MessageRecorder : Report.IMessageRecorder 
 		{
 			MonoDevelop.Projects.Dom.CompilationUnit unit;

@@ -90,6 +90,17 @@ namespace MonoDevelop.CSharpBinding.Gui
 		{
 			NewCSharpExpressionFinder expressionFinder = new NewCSharpExpressionFinder (dom);
 			try {
+				return expressionFinder.FindExpression (Editor.Text, Editor.CursorPosition + offset);
+			} catch (Exception ex) {
+				LoggingService.LogWarning (ex.Message, ex);
+				return null;
+			}
+		}
+		
+		ExpressionResult FindFullExpression (ProjectDom dom, int offset)
+		{
+			NewCSharpExpressionFinder expressionFinder = new NewCSharpExpressionFinder (dom);
+			try {
 				return expressionFinder.FindFullExpression (Editor.Text, Editor.CursorPosition + offset);
 			} catch (Exception ex) {
 				LoggingService.LogWarning (ex.Message, ex);
@@ -125,6 +136,28 @@ namespace MonoDevelop.CSharpBinding.Gui
 			case '#':
 				if (stateTracker.Engine.IsInsidePreprocessorDirective) 
 					return GetDirectiveCompletionData ();
+				return null;
+			case '=':
+				result = FindExpression (dom, -2);
+				resolver = new MonoDevelop.CSharpBinding.NRefactoryResolver (dom,
+					                                                         Document.CompilationUnit,
+					                                                         ICSharpCode.NRefactory.SupportedLanguage.CSharp,
+					                                                         Editor,
+					                                                         Document.FileName);
+				
+				resolveResult = resolver.Resolve (result, new DomLocation (Editor.CursorLine, Editor.CursorColumn));
+				if (resolveResult != null) {
+					IType resolvedType = dom.GetType (resolveResult.ResolvedType);
+					System.Console.WriteLine("= result:" + resolveResult + " type:" + resolvedType);
+					if (resolvedType != null && resolvedType.ClassType == ClassType.Enum) {
+						CodeCompletionDataProvider provider = new CodeCompletionDataProvider (null, GetAmbience ());
+						CompletionDataCollector cdc = new CompletionDataCollector();
+						foreach (IField field in resolvedType.Fields) {
+							cdc.AddCompletionData (provider, field);
+						}
+						return provider;
+					}
+				}
 				return null;
 			case '>':
 				cursor = Editor.SelectionStartPosition;
@@ -261,7 +294,6 @@ namespace MonoDevelop.CSharpBinding.Gui
 			return null;
 		}
 		
-		
 		public ICompletionDataProvider HandleKeywordCompletion (ExpressionResult result, int wordStart, string word)
 		{
 			switch (word) {
@@ -270,8 +302,8 @@ namespace MonoDevelop.CSharpBinding.Gui
 				return CreateCompletionData (new NamespaceResolveResult (""), result);
 			case "is":
 			case "as":
-				System.Console.WriteLine("IsAs");
-				return null;
+				result.ExpressionContext = ExpressionContext.Type;
+				return CreateCtrlSpaceCompletionData (result);
 			case "override":
 				// Look for modifiers, in order to find the beginning of the declaration
 				int firstMod = wordStart;
@@ -378,7 +410,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 				}
 			
 				IMember member = obj as IMember;
-				if (member != null) {
+				if (member != null && !String.IsNullOrEmpty (member.Name)) {
 					CodeCompletionData newData = new MemberCompletionData (member);
 					if (data.ContainsKey (member.Name)) {
 						data [member.Name].AddOverload (newData);
@@ -457,11 +489,13 @@ namespace MonoDevelop.CSharpBinding.Gui
 			}
 			CodeCompletionDataProvider result = new CodeCompletionDataProvider (null, GetAmbience ());
 			CompletionDataCollector col = new CompletionDataCollector();
-			foreach (IType type in this.dom.AllAccessibleTypes) {
-				if (context != null && context.FilterEntry (type))
+			IType type = dom.GetType (resolvedType);
+			col.AddCompletionData (result, type);
+			foreach (IReturnType ret in dom.GetSubclasses (type)) {
+				IType curType = dom.GetType (ret);
+				if (context != null && context.FilterEntry (curType))
 					continue;
-				if (resolvedType == null || type.IsBaseType (resolvedType)) 
-					col.AddCompletionData (result, type);
+				col.AddCompletionData (result, curType);
 			}
 			return result;
 		}
@@ -501,7 +535,6 @@ namespace MonoDevelop.CSharpBinding.Gui
 			if (expressionResult.ExpressionContext == ExpressionContext.TypeDeclaration) {
 				AddPrimitiveTypes (result);
 				AddNRefactoryKeywords (result, ICSharpCode.NRefactory.Parser.CSharp.Tokens.TypeLevel);
-//				result.AddCompletionData (new CodeCompletionData ("partial", "md-literal")); // maybe obsolete in newer nrefactory versions.
 				resolver.AddAccessibleCodeCompletionData (result);
 			} else if (expressionResult.ExpressionContext == ExpressionContext.InterfaceDeclaration) {
 				AddPrimitiveTypes (result);
@@ -509,7 +542,6 @@ namespace MonoDevelop.CSharpBinding.Gui
 				resolver.AddAccessibleCodeCompletionData (result);
 			} else if (expressionResult.ExpressionContext == ExpressionContext.MethodBody) {
 				AddNRefactoryKeywords (result, ICSharpCode.NRefactory.Parser.CSharp.Tokens.StatementStart);
-//				result.AddCompletionData (new CodeCompletionData ("yield", "md-literal")); // maybe obsolete in newer nrefactory versions.
 				AddPrimitiveTypes (result);
 				resolver.AddAccessibleCodeCompletionData (result);
 			} else if (expressionResult.ExpressionContext == ExpressionContext.InterfacePropertyDeclaration) {
@@ -534,7 +566,9 @@ namespace MonoDevelop.CSharpBinding.Gui
 				result.AddCompletionData (new CodeCompletionData ("ref", "md-literal"));
 				result.AddCompletionData (new CodeCompletionData ("out", "md-literal"));
 				result.AddCompletionData (new CodeCompletionData ("params", "md-literal"));
-				// TODO: Extension methods for C# 3.0
+				// C# 3.0 extension method
+				if (expressionResult.ExpressionContext == ExpressionContext.FirstParameterType)
+					result.AddCompletionData (new CodeCompletionData ("this", "md-literal"));
 				AddPrimitiveTypes (result);
 				resolver.AddAccessibleCodeCompletionData (result);
 			} else if (expressionResult.ExpressionContext == ExpressionContext.PropertyDeclaration) {
@@ -544,9 +578,8 @@ namespace MonoDevelop.CSharpBinding.Gui
 			} else if (expressionResult.ExpressionContext == ExpressionContext.EventDeclaration) {
 				result.AddCompletionData (new CodeCompletionData ("add", "md-literal"));
 				result.AddCompletionData (new CodeCompletionData ("remove", "md-literal"));
-			} else if (expressionResult.ExpressionContext == ExpressionContext.FullyQualifiedType) {
-				//cu.ProjectContent.AddNamespaceContents(result, "", languageProperties, true);
-			} else if (expressionResult.ExpressionContext == ExpressionContext.Default) {
+			} //else if (expressionResult.ExpressionContext == ExpressionContext.FullyQualifiedType) {} 
+			else if (expressionResult.ExpressionContext == ExpressionContext.Default) {
 				AddPrimitiveTypes (result);
 				AddNRefactoryKeywords (result, ICSharpCode.NRefactory.Parser.CSharp.Tokens.ExpressionStart);
 				AddNRefactoryKeywords (result, ICSharpCode.NRefactory.Parser.CSharp.Tokens.ExpressionContent);

@@ -89,6 +89,8 @@ namespace MonoDevelop.CSharpBinding
 		
 		public static IType GetTypeAtCursor (ICompilationUnit unit, string fileName, DomLocation position)
 		{
+			if (unit == null)
+				return null;
 			foreach (IType type in unit.Types) {
 				if (type.BodyRegion.Contains (position))
 					return type;
