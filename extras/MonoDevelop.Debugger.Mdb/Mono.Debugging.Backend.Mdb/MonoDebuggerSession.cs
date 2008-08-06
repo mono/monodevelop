@@ -40,7 +40,7 @@ namespace Mono.Debugging.Backend.Mdb
 		
 		public void StartDebugger ()
 		{
-			controller = new DebuggerController (Frontend);
+			controller = new DebuggerController (this, Frontend);
 			controller.StartDebugger ();
 		}
 		
@@ -152,6 +152,14 @@ namespace Mono.Debugging.Backend.Mdb
 		protected override AssemblyLine[] OnDisassembleFile (string file)
 		{
 			return controller.DebuggerServer.DisassembleFile (file);
+		}
+		
+		internal void UpdateBreakEvent (object handle, int count, string lastTrace)
+		{
+			if (count != -1)
+				UpdateHitCount (handle, count);
+			if (lastTrace != null)
+				UpdateLastTraceValue (handle, lastTrace);
 		}
 	}
 }

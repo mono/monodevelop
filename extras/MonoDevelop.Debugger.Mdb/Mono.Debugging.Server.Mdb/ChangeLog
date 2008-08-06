@@ -1,3 +1,7 @@
+2008-08-06  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* DebuggerServer.cs: Add support for live hit count and trace updating.
+
 2008-08-05  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* DebuggerServer.cs: Provide a location when creating a ThreadInfo.

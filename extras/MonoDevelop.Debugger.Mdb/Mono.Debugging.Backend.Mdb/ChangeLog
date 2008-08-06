@@ -1,3 +1,9 @@
+2008-08-06  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* IDebuggerController.cs, MonoDebuggerSession.cs,
+	  Mono.Debugging.Backend.Mdb.mdp, DebuggerController.cs: Add support
+	  for live hit count and trace updating.
+
 2008-07-16  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDebuggerSession.cs, IDebuggerServer.cs: Implement support for
