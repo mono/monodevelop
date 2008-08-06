@@ -150,6 +150,7 @@ namespace MonoDevelop.Projects.Dom.Database
 						ClassType INTEGER
 						)", Table
 				));
+				db.Connection.Execute (String.Format (@"CREATE INDEX IDX_{0}_UnitID ON {0}(UnitID)", Table));
 			}
 			
 			if (!db.Connection.TableExists (InnerTypeTable)) {

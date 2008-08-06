@@ -290,6 +290,10 @@ namespace MonoDevelop.Projects.Dom.Parser
 					Unload (project);
 				solution.SolutionItemAdded   -= OnSolutionItemAdded;
 				solution.SolutionItemRemoved -= OnSolutionItemRemoved;
+				
+				string codeCompletionFile = System.IO.Path.ChangeExtension (solution.FileName, "." + CodeCompletionDatabase.Version + ".pidb");
+				if (!solutionDatabases.ContainsKey (codeCompletionFile))
+					solutionDatabases.Remove (codeCompletionFile);
 			}
 		}
 		
@@ -375,13 +379,23 @@ namespace MonoDevelop.Projects.Dom.Parser
 			GetAssemblyInfo (fullName, out realAssemblyName, out assemblyFile, out name);
 			if (String.IsNullOrEmpty (name))
 				return null;
+			long projectId = assemblyDatabase.GetProjectId (fullName);
+			if (projectId <= 0) {
+				int retrys = 0;
+				while (projectId  <= 0 && retrys++ < 5) {
+					projectId = assemblyDatabase.InsertProject (fullName);
+					if (projectId <= 0) 
+						Thread.Sleep (500);
+				}
+			}
+			
 			long unitId = assemblyDatabase.GetUnitId (fullName);
 			if (unitId <= 0) {
 				int retrys = 0;
 				ICompilationUnit unit = DomCecilCompilationUnit.Load (assemblyFile, false, false);
 				while (unitId <= 0 && retrys++ < 5) {
 					LoggingService.LogInfo ("Generating database for assembly " + fullName);
-					unitId = assemblyDatabase.InsertCompilationUnit (unit, fullName);
+					unitId = assemblyDatabase.InsertCompilationUnit (unit, projectId, fullName);
 					if (unitId <= 0) {
 						LoggingService.LogError ("Error while inserting assembly: " + fullName +", retrying");
 						Thread.Sleep (500);
@@ -389,7 +403,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 				}
 			}
 			DatabaseProjectDom dom = new DatabaseProjectDom (assemblyDatabase);
-			dom.CompilationUnitId = unitId;
+			dom.ProjectId = projectId;
 			InsertDom (uri, dom);
 			return dom;
 		}
@@ -411,15 +425,24 @@ namespace MonoDevelop.Projects.Dom.Parser
 		{
 			return LoadAssemblyDatabase ("Assembly:" + assemblyName);
 		}
+		static Dictionary<string, CodeCompletionDatabase> solutionDatabases = new Dictionary<string, CodeCompletionDatabase> ();
 		
 		public static DatabaseProjectDom GetDatabaseProjectDom (Project project)
 		{
 			if (project == null)
 				return null;
 			if (!HasDom (project)) {
-				string codeCompletionFile = System.IO.Path.ChangeExtension (project.FileName, "." + CodeCompletionDatabase.Version + ".pidb");
-				CodeCompletionDatabase database = new CodeCompletionDatabase (codeCompletionFile);
+				string codeCompletionFile = System.IO.Path.ChangeExtension (project.ParentSolution.FileName, "." + CodeCompletionDatabase.Version + ".pidb");
+				if (!solutionDatabases.ContainsKey (codeCompletionFile))
+					solutionDatabases [codeCompletionFile] = new CodeCompletionDatabase (codeCompletionFile);
+				CodeCompletionDatabase database = solutionDatabases [codeCompletionFile];
+				long projectId = database.GetProjectId (project.FileName);
+				if (projectId <= 0) {
+					projectId = database.InsertProject (project.FileName);
+				}
+				System.Console.WriteLine ("ProjectId:" +projectId);
 				DatabaseProjectDom dom = new DatabaseProjectDom (database);
+				dom.ProjectId = projectId;
 				InsertDom (project.FileName, dom);
 				dom.Project = project;
 				return dom;
@@ -458,7 +481,6 @@ namespace MonoDevelop.Projects.Dom.Parser
 				if (!dom.NeedCompilation (file.FilePath)) {
 					continue;
 				}
-				System.Console.WriteLine("PARSE:" + file.FilePath);
 				IParser parser = GetParserByFileName (file.FilePath);
 				if (parser == null)
 					continue;

@@ -36,7 +36,7 @@ namespace MonoDevelop.Projects.Dom.Database
 {
 	public class CodeCompletionDatabase : IDisposable 
 	{
-		public const long Version = 4;
+		public const long Version = 5;
 		
 		HyenaSqliteConnection connection;
 		internal HyenaSqliteConnection Connection {
@@ -66,6 +66,13 @@ namespace MonoDevelop.Projects.Dom.Database
 			return connection.Query<long> (query);
 		}
 		
+		public long GetProjectId (string name)
+		{
+			string query = String.Format (@"SELECT ProjectId FROM {0} WHERE Name='{1}'", ProjectsTable, name);
+			//System.Console.WriteLine(query);
+			return connection.Query<long> (query);
+		}
+		
 		public void GetNamespaceContents (List<IMember> result, long compilationUnitId, IEnumerable<string> subNamespaces, bool caseSensitive)
 		{
 			GetNamespaceContents (result, compilationUnitId > 0 ? new long[] { compilationUnitId } : null, subNamespaces, caseSensitive);
@@ -74,29 +81,33 @@ namespace MonoDevelop.Projects.Dom.Database
 		string CompileNamespaces (IEnumerable<string> subNamespaces)
 		{
 			StringBuilder result = new StringBuilder ();
+			result.Append ("Name IN (");
+			int startLen = result.Length;
 			foreach (string namespaceName in subNamespaces) {
-				if (result.Length > 0) 
-					result.Append (" OR ");
-				result.Append ("Name='");
+				if (result.Length > startLen) 
+					result.Append (",");
+				result.Append ("'");
 				result.Append (namespaceName);
 				result.Append ("'");
 			}
+			result.Append (")");
 			return result.ToString ();
 		}
 		
-		string CompileCompilationUnits (IEnumerable<long> compilationUnitIds)
+		string CompileProjectIds (IEnumerable<long> projectIds)
 		{
+			if (projectIds == null)
+				return "";
 			StringBuilder result = new StringBuilder ();
-			if (compilationUnitIds != null) {
-				foreach (long unitId in compilationUnitIds) {
-					if (unitId <= 0)
-							continue;
-					if (result.Length > 0) 
-						result.Append (" OR ");
-					result.Append ("UnitID=");
-					result.Append (unitId);
-				}
+			result.Append ("(");
+			foreach (long projectId in projectIds) {
+				if (projectId <= 0)
+					continue;
+				if (result.Length > 1) 
+					result.Append (", ");
+				result.Append (projectId);
 			}
+			result.Append (")");
 			return result.ToString ();
 		}
 		
@@ -104,33 +115,46 @@ namespace MonoDevelop.Projects.Dom.Database
 		{
 			StringBuilder sb = new StringBuilder ();
 			string query = String.Format (@"SELECT NamespaceID, Name FROM {0} WHERE ({1})",  NamespaceTable, CompileNamespaces (subNamespaces));
-			
+			System.Console.WriteLine("1" + query);
 			IDataReader reader = connection.Query (query);
 			
 			Dictionary<long, string> namespaceTable = new Dictionary<long, string> ();
+			bool foundNamespace = false;
 			if (reader != null) {
 				try {
+					sb.Append ("NamespaceID IN (");
 					while (reader.Read ()) {
 						long   namespaceID = (long)SqliteUtils.FromDbFormat (typeof (long), reader[0]);
 						string name        = (string)SqliteUtils.FromDbFormat (typeof (string), reader[1]);
 						namespaceTable[namespaceID] = name;
-						if (sb.Length > 0) 
-							sb.Append (" OR ");
-						sb.Append ("NamespaceID=");
+						if (foundNamespace) 
+							sb.Append (", ");
 						sb.Append (namespaceID);
+						foundNamespace = true;
 					}
+					sb.Append (")");
 				} finally {
 					reader.Dispose ();
 				}
 			}
 			
-			if (sb.Length > 0) {
-				string units = CompileCompilationUnits (compilationUnitIds);
-				if (string.IsNullOrEmpty (units)) {
-					query = String.Format (@"SELECT TypeID, UnitID, MemberID, NamespaceID, ClassType FROM {0} WHERE ({1})",  DatabaseType.Table, sb.ToString ());
-				} else {
-					query = String.Format (@"SELECT TypeID, UnitID, MemberID, NamespaceID, ClassType FROM {0} WHERE ({1}) AND ({2})",  DatabaseType.Table, units, sb.ToString ());
-				}
+			string projectIds = CompileProjectIds (compilationUnitIds);
+			query = String.Format (@"SELECT UnitID FROM {0} WHERE {0}.ProjectId IN {1} ",  CompilationUnitTable, projectIds);
+			System.Console.WriteLine(query);
+			StringBuilder unitIds = new StringBuilder ();
+			unitIds.Append ("UnitID IN (");
+			int startLen = unitIds.Length;
+			foreach (long unitId in connection.QueryEnumerable<long> (query)) {
+				if (unitIds.Length > startLen)
+					unitIds.Append (", ");
+				unitIds.Append (unitId);
+			}
+			unitIds.Append (")");
+			
+			if (foundNamespace) {
+				query = String.Format (@"SELECT TypeID, UnitID, MemberID, NamespaceID, ClassType FROM {0} WHERE {1} AND {2}",  DatabaseType.Table, unitIds.ToString (),sb.ToString ());
+				
+				System.Console.WriteLine(query);
 				reader = connection.Query (query);
 				if (reader != null) {
 					try {
@@ -165,34 +189,36 @@ namespace MonoDevelop.Projects.Dom.Database
 					}
 				}
 			}
+			System.Console.WriteLine("DONE");
 		}
 		
-		public IEnumerable<IReturnType> GetSubclasses (IType type, IEnumerable<long> compilationUnitIds)
+		public IEnumerable<IReturnType> GetSubclasses (IType type, IEnumerable<long> projectIds)
 		{
 			DatabaseType databaseType = (DatabaseType)type;
 			if (databaseType == null) {
-				foreach (DatabaseType t in GetTypes (new string [] { type.Namespace }, compilationUnitIds, type.FullName, true)) {
+				foreach (DatabaseType t in GetTypes (new string [] { type.Namespace }, projectIds, type.FullName, true)) {
 					databaseType = t;
 					break;
 				}
 			}
 			if (databaseType != null)
-				return databaseType.GetSubclasses (compilationUnitIds);
+				return databaseType.GetSubclasses (projectIds);
 			if (type.FullName != "System.Object")
 				return new IReturnType[] { new DomReturnType ("System.Object") };
 			return new IReturnType[] { };
 		}
 		
-		public IEnumerable<IType> GetTypeList (IEnumerable<long> compilationUnitIds)
+		public IEnumerable<IType> GetTypeList (IEnumerable<long> projectIds)
 		{
 			string query;
-			string units = CompileCompilationUnits (compilationUnitIds);
+			string compiledIds = CompileProjectIds (projectIds);
 			
-			if (!string.IsNullOrEmpty (units)) {
-				query = String.Format (@"SELECT TypeID, UnitID, MemberID, NamespaceID, ClassType FROM {0} WHERE {1}",  DatabaseType.Table, units);
+			if (!string.IsNullOrEmpty (compiledIds)) {
+				query = String.Format (@"SELECT TypeID, {0}.UnitID, MemberID, NamespaceID, ClassType FROM {1}, {0} WHERE {1}.ProjectId IN {2} AND {0}.UnitID={1}.UnitID",  DatabaseType.Table, CompilationUnitTable, compiledIds);
 			} else {
 				query = String.Format (@"SELECT TypeID, UnitID, MemberID, NamespaceID, ClassType FROM {0}",  DatabaseType.Table);
 			}
+			System.Console.WriteLine("GetTypeList:" + query);
 			IDataReader reader = connection.Query (query);
 			if (reader != null) {
 				try {
@@ -269,9 +295,9 @@ namespace MonoDevelop.Projects.Dom.Database
 			
 			if (sb.Length > 0) {
 				string typeName = DomReturnType.SplitFullName (fullName).Value;
-				string units = CompileCompilationUnits (compilationUnitIds);
-				if (!string.IsNullOrEmpty (units)) {
-					query = String.Format (@"SELECT TypeID, UnitID, {0}.MemberID, NamespaceID, ClassType FROM {0}, {1} WHERE ({0}.MemberID={1}.MemberID AND {1}.Name='{2}') AND ({3}) AND ({4})",  DatabaseType.Table, MemberTable, typeName, sb.ToString (), units.ToString ());
+				string projectIds = CompileProjectIds (compilationUnitIds);
+				if (!string.IsNullOrEmpty (projectIds)) {
+					query = String.Format (@"SELECT TypeID, {0}.UnitID, {0}.MemberID, NamespaceID, ClassType FROM {0}, {2}, {1} WHERE {0}.UnitID={2}.UnitID AND {2}.ProjectId IN {5} AND ({0}.MemberID={1}.MemberID AND {1}.Name='{3}') AND ({4})",  DatabaseType.Table, MemberTable, CompilationUnitTable, typeName, sb.ToString (), projectIds.ToString ());
 				} else {
 					query = String.Format (@"SELECT TypeID, UnitID, {0}.MemberID, NamespaceID, ClassType FROM {0}, {1} WHERE ({0}.MemberID={1}.MemberID AND {1}.Name='{2}') AND ({3})",  DatabaseType.Table, MemberTable, typeName, sb.ToString ());
 				}
@@ -369,7 +395,7 @@ namespace MonoDevelop.Projects.Dom.Database
 			return connection.Query<DateTime> (String.Format (@"SELECT ParseTime FROM {0} WHERE Name='{1}'", CompilationUnitTable, name));
 		}
 		
-		public void UpdateCompilationUnit (ICompilationUnit unit, string name)
+		public void UpdateCompilationUnit (ICompilationUnit unit, long projectId, string name)
 		{
 			long unitID = GetUnitId (name);
 			if (unitID > 0) {
@@ -378,14 +404,14 @@ namespace MonoDevelop.Projects.Dom.Database
 					type.Delete ();
 				}
 			}
-			InsertCompilationUnit (unit, name);
+			InsertCompilationUnit (unit, projectId, name);
 		}
 		
-		public long InsertCompilationUnit (ICompilationUnit unit, string name)
+		public long InsertCompilationUnit (ICompilationUnit unit, long projectId, string name)
 		{
 			try {
 				connection.Execute ("BEGIN TRANSACTION");
-				long unitId = connection.Execute (String.Format (@"INSERT INTO {0} (Name, ParseTime) VALUES ('{1}', {2})", CompilationUnitTable, name, SqliteUtils.ToDbFormat (unit.ParseTime)));
+				long unitId = connection.Execute (String.Format (@"INSERT INTO {0} (Name, ProjectId, ParseTime) VALUES ('{1}', {2}, {3})", CompilationUnitTable, name, projectId, SqliteUtils.ToDbFormat (unit.ParseTime)));
 				foreach (IType type in unit.Types) {
 					DatabaseType.Insert (this, unitId, type);
 				}
@@ -396,6 +422,13 @@ namespace MonoDevelop.Projects.Dom.Database
 				MonoDevelop.Core.LoggingService.LogError ("Database error while inserting compilation unit " + name, e);
 			}
 			return -1;
+		}
+		
+		public long InsertProject (string name)
+		{
+			long projectId = connection.Execute (String.Format (@"INSERT INTO {0} (Name) VALUES ('{1}')", ProjectsTable, name));
+//			System.Console.WriteLine (projectId);
+			return projectId;
 		}
 		
 		internal const string ProjectsTable                  = "Projects";
@@ -410,11 +443,10 @@ namespace MonoDevelop.Projects.Dom.Database
 				connection.Execute (String.Format (@"
 					CREATE TABLE {0} (
 						ProjectID INTEGER PRIMARY KEY AUTOINCREMENT,
-						Name TEXT,
-						ProjectType INTEGER,
-						LastOpenTime INTEGER)", ProjectsTable
+						Name TEXT)", ProjectsTable
 				));
 			}
+			
 			if (!connection.TableExists (CompilationUnitTable)) {
 				connection.Execute (String.Format (@"
 					CREATE TABLE {0} (
@@ -423,6 +455,7 @@ namespace MonoDevelop.Projects.Dom.Database
 						Name TEXT,
 						ParseTime INTEGER)", CompilationUnitTable
 				));
+				connection.Execute (String.Format (@"CREATE INDEX IDX_{0}_ProjectID ON {0}(ProjectID)", CompilationUnitTable));
 			}
 			
 			if (!connection.TableExists (NamespaceTable)) {
@@ -432,6 +465,7 @@ namespace MonoDevelop.Projects.Dom.Database
 						Name TEXT
 					)", NamespaceTable
 				));
+				connection.Execute (String.Format (@"CREATE INDEX IDX_{0}_Name ON {0}(Name)", NamespaceTable));
 			}
 			
 			if (!connection.TableExists (MemberTable)) {

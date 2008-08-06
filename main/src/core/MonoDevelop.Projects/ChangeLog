@@ -1,3 +1,11 @@
+2008-08-06  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Dom.Parser/DatabaseProjectDom.cs,
+	  MonoDevelop.Projects.Dom.Parser/ProjectParserService.cs,
+	  MonoDevelop.Projects.Dom.Database/DatabaseType.cs,
+	  MonoDevelop.Projects.Dom.Database/CodeCompletionDatabase.cs: Worked
+	  on code completion database.
+
 2008-08-05  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom.Parser/DatabaseProjectDom.cs,

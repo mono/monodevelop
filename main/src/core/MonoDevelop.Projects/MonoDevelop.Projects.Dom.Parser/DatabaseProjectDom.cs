@@ -33,21 +33,34 @@ namespace MonoDevelop.Projects.Dom.Parser
 	public class DatabaseProjectDom : ProjectDom
 	{
 		MonoDevelop.Projects.Dom.Database.CodeCompletionDatabase codeCompletionDatabase;
-		long compilationUnitId;
+		long projectId;
 		List<long> referencedAssemblyIds = new List<long> ();
-			
+		List<long> referencedProjectIds = new List<long> ();
+		
+		List<long> projectIds = null;
+		IEnumerable<long> ProjectIds {
+			get {
+				if (projectIds == null) {
+					projectIds = new List<long> (referencedProjectIds);
+					projectIds.Add (projectId);
+				}
+				return projectIds;
+			}
+				
+		}
 		public override IEnumerable<IType> Types {
 			get {
-				return codeCompletionDatabase.GetTypeList (new long[] { compilationUnitId });
+				return codeCompletionDatabase.GetTypeList (new long[] { projectId });
 			}
 		}
-
-		public long CompilationUnitId {
+		
+		public long ProjectId {
 			get {
-				return compilationUnitId;
+				return projectId;
 			}
 			set {
-				compilationUnitId = value;
+				projectId = value;
+				projectIds = null;
 			}
 		}
 		
@@ -56,7 +69,12 @@ namespace MonoDevelop.Projects.Dom.Parser
 			DatabaseProjectDom dpd = dom as DatabaseProjectDom;
 			if (dpd != null) {
 				if (dpd.codeCompletionDatabase == ProjectDomService.AssemblyDatabase) {
-					referencedAssemblyIds.Add (dpd.CompilationUnitId);
+					referencedAssemblyIds.Add (dpd.ProjectId);
+					return;
+				}
+				if (dpd.codeCompletionDatabase == codeCompletionDatabase) {
+					referencedProjectIds.Add (dpd.ProjectId);
+					projectIds = null;
 					return;
 				}
 			}
@@ -66,19 +84,20 @@ namespace MonoDevelop.Projects.Dom.Parser
 		public DatabaseProjectDom (MonoDevelop.Projects.Dom.Database.CodeCompletionDatabase codeCompletionDatabase)
 		{
 			this.codeCompletionDatabase = codeCompletionDatabase;
-			this.compilationUnitId      = -1;
+			this.projectId              = -1;
 		}
 		
 		internal override void GetNamespaceContentsInternal (List<IMember> result, IEnumerable<string> subNamespaces, bool caseSensitive)
 		{
-			codeCompletionDatabase.GetNamespaceContents (result, compilationUnitId, subNamespaces, caseSensitive);
+			codeCompletionDatabase.GetNamespaceContents (result, ProjectIds, subNamespaces, caseSensitive);
 		}
 		
 		public override IEnumerable<IReturnType> GetSubclasses (IType type)
 		{
-			foreach (IReturnType result in codeCompletionDatabase.GetSubclasses (type, new long [] {compilationUnitId})) {
+			foreach (IReturnType result in codeCompletionDatabase.GetSubclasses (type, new long [] { projectId })) {
 				yield return result;
 			}
+			
 			foreach (ProjectDom reference in references) {
 				foreach (IReturnType result in reference.GetSubclasses (type)) {
 					yield return result;
@@ -94,7 +113,11 @@ namespace MonoDevelop.Projects.Dom.Parser
 		public override List<IMember> GetNamespaceContents (IEnumerable<string> subNamespaces, bool includeReferences, bool caseSensitive)
 		{
 			List<IMember> result = new List<IMember> ();
-			GetNamespaceContentsInternal (result, subNamespaces, caseSensitive);
+			if (includeReferences) {
+				codeCompletionDatabase.GetNamespaceContents (result, ProjectIds, subNamespaces, caseSensitive);
+			} else {
+				GetNamespaceContentsInternal (result, subNamespaces, caseSensitive);
+			}
 			if (includeReferences) {
 				foreach (ProjectDom reference in references) {
 					reference.GetNamespaceContentsInternal (result, subNamespaces, caseSensitive);
@@ -106,7 +129,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 		
 		protected override IType GetType (IEnumerable<string> subNamespaces, string fullName, int genericParameterCount, bool caseSensitive)
 		{
-			foreach (IType type in codeCompletionDatabase.GetTypes (subNamespaces, new long[] {compilationUnitId}, fullName, caseSensitive)) {
+			foreach (IType type in codeCompletionDatabase.GetTypes (subNamespaces, new long[] { projectId }, fullName, caseSensitive)) {
 				if (genericParameterCount < 0 || 
 				    (genericParameterCount == 0 && type.TypeParameters == null) || 
 				    (type.TypeParameters != null && type.TypeParameters.Count == genericParameterCount)) {
@@ -120,19 +143,29 @@ namespace MonoDevelop.Projects.Dom.Parser
 		{
 			if (String.IsNullOrEmpty (fullName))
 				return null;
-				
-			IType result = GetType (subNamespaces, fullName, genericParameterCount, caseSensitive);
-			if (result == null && searchDeep) {
-				foreach (ProjectDom reference in references) {
-					result = reference.GetType (subNamespaces, fullName, genericParameterCount, caseSensitive, false);
-					if (result != null)
-						return result;
+			
+			IType result = null;
+			if (searchDeep) {
+				foreach (IType type in codeCompletionDatabase.GetTypes (subNamespaces, ProjectIds, fullName, caseSensitive)) {
+					if (genericParameterCount < 0 || (genericParameterCount == 0 && type.TypeParameters == null) ||  (type.TypeParameters != null && type.TypeParameters.Count == genericParameterCount)) {
+						return type;
+					}
 				}
+			} else {
+				result = GetType (subNamespaces, fullName, genericParameterCount, caseSensitive);
+			}
+			if (result == null && searchDeep) {
 				
 				foreach (IType type in ProjectDomService.AssemblyDatabase.GetTypes (subNamespaces, referencedAssemblyIds, fullName, caseSensitive)) {
 					if (genericParameterCount < 0 || (genericParameterCount == 0 && type.TypeParameters == null) ||  (type.TypeParameters != null && type.TypeParameters.Count == genericParameterCount)) {
 						return type;
 					}
+				}
+				
+				foreach (ProjectDom reference in references) {
+					result = reference.GetType (subNamespaces, fullName, genericParameterCount, caseSensitive, false);
+					if (result != null)
+						return result;
 				}
 			}
 			
@@ -150,7 +183,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 		
 		public override void UpdateFromParseInfo (ICompilationUnit unit, string fileName)
 		{
-			codeCompletionDatabase.UpdateCompilationUnit (unit, fileName);
+			codeCompletionDatabase.UpdateCompilationUnit (unit, projectId, fileName);
 		}
 	}
 }
