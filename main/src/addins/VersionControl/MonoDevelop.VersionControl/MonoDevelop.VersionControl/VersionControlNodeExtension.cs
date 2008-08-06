@@ -86,9 +86,9 @@ namespace MonoDevelop.VersionControl
 		{
 			Gdk.Pixbuf overlay = null;
 			VersionInfo vinfo = rep.GetVersionInfo (folder, false);
-			if (vinfo == null) {
+			if (vinfo == null || !vinfo.IsVersioned) {
 				overlay = VersionControlService.LoadOverlayIconForStatus (VersionStatus.Unversioned);
-			} else if (vinfo.Status == VersionStatus.Unchanged) {
+			} else if (vinfo.IsVersioned && !vinfo.HasLocalChanges) {
 				overlay = VersionControlService.overlay_controled;
 			} else {
 				overlay = VersionControlService.LoadOverlayIconForStatus (vinfo.Status);
@@ -268,6 +268,26 @@ namespace MonoDevelop.VersionControl
 		protected void UpdateRevert(CommandInfo item) {
 			TestCommand(Commands.Revert, item);
 		}
+		
+		[CommandHandler (Commands.Lock)]
+		protected void OnLock() {
+			RunCommand(Commands.Lock, false);
+		}
+		
+		[CommandUpdateHandler (Commands.Lock)]
+		protected void UpdateLock(CommandInfo item) {
+			TestCommand(Commands.Lock, item);
+		}
+		
+		[CommandHandler (Commands.Unlock)]
+		protected void OnUnlock() {
+			RunCommand(Commands.Unlock, false);
+		}
+		
+		[CommandUpdateHandler (Commands.Unlock)]
+		protected void UpdateUnlock(CommandInfo item) {
+			TestCommand(Commands.Unlock, item);
+		}
 			
 		private void TestCommand(Commands cmd, CommandInfo item) {
 			TestResult res = RunCommand(cmd, true);
@@ -345,6 +365,12 @@ namespace MonoDevelop.VersionControl
 						break;
 					case Commands.Revert:
 						res = RevertCommand.Revert (repo, path, test);
+						break;
+					case Commands.Lock:
+						res = LockCommand.Lock (repo, path, test);
+						break;
+					case Commands.Unlock:
+						res = UnlockCommand.Unlock (repo, path, test);
 						break;
 					case Commands.Publish:
 						if (isDir)

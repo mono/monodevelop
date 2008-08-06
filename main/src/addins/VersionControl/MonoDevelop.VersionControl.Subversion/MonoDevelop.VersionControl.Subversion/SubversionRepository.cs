@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Collections;
 using MonoDevelop.Core.Serialization;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Gui;
 
 namespace MonoDevelop.VersionControl.Subversion
 {
@@ -57,7 +58,7 @@ namespace MonoDevelop.VersionControl.Subversion
 		{
 			if (IsVersioned (sourcepath) && File.Exists (sourcepath) && !Directory.Exists (sourcepath)) {
 				VersionInfo srcInfo = GetVersionInfo (sourcepath, false);
-				return srcInfo.Status == VersionStatus.ScheduledDelete;
+				return srcInfo.HasLocalChange (VersionStatus.ScheduledDelete);
 			}
 
 			return Svn.CanAdd (this, sourcepath);
@@ -91,6 +92,53 @@ namespace MonoDevelop.VersionControl.Subversion
 		public override VersionInfo[] GetDirectoryVersionInfo (string sourcepath, bool getRemoteStatus, bool recursive)
 		{
 			return Svn.GetDirectoryVersionInfo (this, sourcepath, getRemoteStatus, recursive);
+		}
+		
+		public override bool RequestFileWritePermission (string path)
+		{
+			if (!File.Exists (path))
+				return true;
+			if ((File.GetAttributes (path) & FileAttributes.ReadOnly) == 0)
+				return true;
+			AlertButton but = new AlertButton ("Lock File");
+			if (!MessageService.Confirm (GettextCatalog.GetString ("File locking required"), GettextCatalog.GetString ("The file '{0}' must be locked before editing.", path), but))
+				return false;
+			try {
+				Svn.Lock (null, "", false, path);
+			} catch (SubversionException ex) {
+				MessageService.ShowError (GettextCatalog.GetString ("The file '{0}' could not be unlocked", path), ex.Message);
+				return false;
+			}
+			VersionControlService.NotifyFileStatusChanged (this, path, false);
+			return true;
+		}
+		
+		public override void Lock (IProgressMonitor monitor, params string[] localPaths)
+		{
+			Svn.Lock (monitor, "", false, localPaths);
+		}
+		
+		public override void Unlock (IProgressMonitor monitor, params string[] localPaths)
+		{
+			Svn.Unlock (monitor, false, localPaths);
+		}
+		
+		public override bool CanLock (string localPath)
+		{
+			if (Directory.Exists (localPath))
+				return false;
+			VersionInfo ver = GetVersionInfo (localPath, false);
+			if (ver == null || !ver.IsVersioned || ver.HasLocalChanges)
+				return false;
+			return (ver.Status & VersionStatus.LockOwned) == 0;
+		}
+		
+		public override bool CanUnlock (string localPath)
+		{
+			if (Directory.Exists (localPath))
+				return false;
+			VersionInfo ver = GetVersionInfo (localPath, false);
+			return ver != null && (ver.Status & VersionStatus.LockOwned) != 0;
 		}
 
 		public override Repository Publish (string serverPath, string localPath, string[] files, string message, IProgressMonitor monitor)
@@ -175,7 +223,7 @@ namespace MonoDevelop.VersionControl.Subversion
 		{
 			if (IsVersioned (path) && File.Exists (path) && !Directory.Exists (path)) {
 				VersionInfo srcInfo = GetVersionInfo (path, false);
-				if (srcInfo.Status == VersionStatus.ScheduledDelete) {
+				if (srcInfo.HasLocalChange (VersionStatus.ScheduledDelete)) {
 					// It is a file that was deleted. It can be restored now since it's going
 					// to be added again.
 					// First of all, make a copy of the file
@@ -215,7 +263,7 @@ namespace MonoDevelop.VersionControl.Subversion
 			}
 			
 			VersionInfo srcInfo = GetVersionInfo (srcPath, false);
-			if (srcInfo != null && srcInfo.Status == VersionStatus.ScheduledAdd) {
+			if (srcInfo != null && srcInfo.HasLocalChange (VersionStatus.ScheduledAdd)) {
 				// If the file is scheduled to add, cancel it, move the file, and schedule to add again
 				Revert (srcPath, false, monitor);
 				if (!destIsVersioned)
@@ -237,7 +285,7 @@ namespace MonoDevelop.VersionControl.Subversion
 			if (IsVersioned (destPath))
 			{
 				VersionInfo vinfo = GetVersionInfo (destPath, false);
-				if (vinfo.Status != VersionStatus.ScheduledDelete && Directory.Exists (destPath))
+				if (!vinfo.HasLocalChange (VersionStatus.ScheduledDelete) && Directory.Exists (destPath))
 					throw new InvalidOperationException ("Cannot move directory. Destination directory already exist.");
 					
 				srcPath = Path.GetFullPath (srcPath);
@@ -307,7 +355,7 @@ namespace MonoDevelop.VersionControl.Subversion
 					throw new InvalidOperationException ("Cannot move directory. Destination directory already exist.");
 				
 				VersionInfo srcInfo = GetVersionInfo (srcPath, false);
-				if (srcInfo != null && srcInfo.Status == VersionStatus.ScheduledAdd) {
+				if (srcInfo != null && srcInfo.HasLocalChange (VersionStatus.ScheduledAdd)) {
 					// If the directory is scheduled to add, cancel it, move the directory, and schedule to add it again
 					MakeDirVersioned (Path.GetDirectoryName (destPath), monitor);
 					Revert (srcPath, true, monitor);
@@ -357,7 +405,7 @@ namespace MonoDevelop.VersionControl.Subversion
 				Svn.Delete (path, force, monitor);
 			else {
 				VersionInfo srcInfo = GetVersionInfo (path, false);
-				if (srcInfo != null && srcInfo.Status == VersionStatus.ScheduledAdd) {
+				if (srcInfo != null && srcInfo.HasLocalChange (VersionStatus.ScheduledAdd)) {
 					// Revert the add command
 					Revert (path, false, monitor);
 				}

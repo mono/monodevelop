@@ -100,7 +100,7 @@ namespace MonoDevelop.SourceEditor
 			while (offset < editor.Document.Length && IsIdChar (editor.Document.GetCharAt (offset)))
 				offset++;
 			start++;
-			if (offset - start > 0)
+			if (offset - start > 0 && start < editor.Document.Length)
 				return editor.Document.GetTextAt (start, offset - start);
 			else
 				return string.Empty;

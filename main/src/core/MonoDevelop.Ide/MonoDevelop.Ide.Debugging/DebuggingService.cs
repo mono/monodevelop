@@ -110,12 +110,6 @@ namespace MonoDevelop.Ide.Debugging
 			}
 		}
 
-		void target_output (bool is_stderr, string line)
-		{
-			Console.WriteLine (line);
-			console.Out.Write (line);
-		}
-
 		void KillApplication (object obj)
 		{
 			Cleanup ();
@@ -239,13 +233,7 @@ namespace MonoDevelop.Ide.Debugging
 				NotifyLocationChanged ();
 				IdeApp.Workbench.RootWindow.Present ();
 			});
-/*			foreach (ProcessInfo p in session.GetPocesses ()) {
-				Console.WriteLine ("proc: " + p.Id + " '" + p.Name + "'");
-				foreach (ThreadInfo t in p.GetThreads ()) {
-					Console.WriteLine ("  t: " + t.Id + " " + t.Name + " f:" + (t.Backtrace != null ? t.Backtrace.GetFrame (0).ToString () : ""));
-				}
-			}
-*/		}
+		}
 		
 		void NotifyLocationChanged ()
 		{
@@ -367,6 +355,16 @@ namespace MonoDevelop.Ide.Debugging
 			}
 		}
 		
+		public ThreadInfo ActiveThread {
+			get {
+				return session.ActiveThread;
+			}
+			set {
+				session.ActiveThread = value;
+				SetCurrentBacktrace (session.ActiveThread.Backtrace);
+			}
+		}
+		
 		void SetCurrentBacktrace (Backtrace bt)
 		{
 			currentBacktrace = bt;
@@ -444,7 +442,7 @@ namespace MonoDevelop.Ide.Debugging
 			foreach (Breakpoint bp in bps) {
 				if (bp.FileName == a.TextFile.Name && bp.Line >= a.LineNumber) {
 					breakpoints.Remove (bp);
-					Breakpoint newBp = breakpoints.Add (bp.FileName, bp.Line + a.LineCount);
+					breakpoints.Add (bp.FileName, bp.Line + a.LineCount);
 				}
 			}
 		}

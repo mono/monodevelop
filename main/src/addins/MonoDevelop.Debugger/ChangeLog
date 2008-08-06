@@ -1,3 +1,15 @@
+2008-08-05  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Debugger.addin.xml, MonoDevelop.Debugger.mdp,
+	  Makefile.am, MonoDevelop.Debugger/ThreadsPad.cs: Added threads pad.
+	  Based on the work by Alfonso Santos Luaces.
+	* MonoDevelop.Debugger/BreakpointPad.cs: Properly unsubscribe debug
+	  service events.
+
+2008-08-05  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Debugger/DisasemblyView.cs: Track api changes.
+
 2008-07-31  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Debugger/ObjectValuePad.cs: Remove debug code.

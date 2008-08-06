@@ -127,6 +127,11 @@ namespace MonoDevelop.VersionControl.Subversion {
 		                                          IntPtr ctx,
 		                                          IntPtr pool);
 		
+		public abstract IntPtr client_lock (IntPtr apr_array_header_t_targets, string comment, int steal_lock, IntPtr ctx, IntPtr pool);
+		
+		public abstract IntPtr client_unlock (IntPtr apr_array_header_t_targets, int break_lock, IntPtr ctx, IntPtr pool);
+		
+		public abstract IntPtr client_prop_get (out IntPtr value, string name, string target, ref Rev revision, int recurse, IntPtr ctx, IntPtr pool);
 		
 		public class DirEnt {
 			public readonly string Name;
@@ -183,6 +188,11 @@ namespace MonoDevelop.VersionControl.Subversion {
 			public readonly bool Switched;
 			public readonly VersionStatus RemoteTextStatus;
 			public readonly VersionStatus RemotePropsStatus;
+			public readonly bool RepoLocked;
+			public readonly bool LockOwned;
+			public readonly string LockToken;
+			public readonly string LockOwner;
+			public readonly string LockComment;
 			
 			static readonly DateTime Epoch = new DateTime (1970, 1, 1);
 			
@@ -224,6 +234,21 @@ namespace MonoDevelop.VersionControl.Subversion {
 	  			LastCommitRevision = ent.last_commit_rev;
 	  			LastCommitDate = Epoch.AddTicks (ent.last_commit_date * 10);
 	  			LastCommitAuthor = ent.last_commit_author;
+				LockToken = ent.lock_token;
+				LockOwner = ent.lock_owner;
+				LockComment = ent.lock_comment;
+				
+				if (status.repos_lock != IntPtr.Zero) {
+					svn_lock_t repoLock = (svn_lock_t) Marshal.PtrToStructure (status.repos_lock, typeof (svn_lock_t));
+					LockToken = repoLock.token;
+					LockOwner = repoLock.owner;
+					LockComment = repoLock.comment;
+					RepoLocked = true;
+				}
+				if (LockToken != null) {
+					LockOwned = true;
+					RepoLocked = true;
+				}
 			}
 		}
 		
@@ -274,6 +299,26 @@ namespace MonoDevelop.VersionControl.Subversion {
 			public svn_client_get_commit_log_t LogMsgFunc;
 			public IntPtr logmsg_baton;
 			public IntPtr config;
+			public IntPtr cancel_func;
+			public IntPtr cancel_baton;
+			public svn_wc_notify_func2_t NotifyFunc2;
+			public IntPtr notify_baton2;
+		}
+		
+		public struct svn_wc_notify_t {
+			public IntPtr path;
+			public LibSvnClient.NotifyAction action;
+			public LibSvnClient.NodeKind kind;
+			public IntPtr mime_type;
+			public IntPtr repo_lock;
+			public IntPtr err;
+			public LibSvnClient.NotifyState content_state;
+			public LibSvnClient.NotifyState prop_state;
+			public LibSvnClient.NotifyLockState lock_state;
+			public long revision;
+			public IntPtr changelist_name;
+			public IntPtr merge_range;
+			public IntPtr path_prefix;
 		}
 		
 		public struct svn_error_t {
@@ -369,6 +414,9 @@ namespace MonoDevelop.VersionControl.Subversion {
 			public int last_commit_rev;
 			public long last_commit_date;
 			public string last_commit_author;
+			public string lock_token;
+			public string lock_owner;
+			public string lock_comment;
 		}
 		
 		public struct svn_wc_status_t {
@@ -380,6 +428,20 @@ namespace MonoDevelop.VersionControl.Subversion {
 			public int switched;
 			public int svn_wc_status_kind_text_repo;
 			public int svn_wc_status_kind_props_repo;
+			public IntPtr repos_lock;
+		}
+		
+		public struct svn_lock_t {
+			public string path;
+			public string token;
+			public string owner;
+			public string comment;
+			public int is_dav_comment;
+		}
+		
+		public struct svn_string_t {
+			public IntPtr data;
+			public int len;
 		}
 		
 		public struct Rev {
@@ -475,7 +537,11 @@ namespace MonoDevelop.VersionControl.Subversion {
 			CommitDeleted,
 			CommitReplaced,
 			CommitPostfixTxDelta,
-			BlameRevision
+			BlameRevision,
+			Locked,
+			Unlocked,
+			FailedLock,
+			FailedUnlock
 		}
 		
 		public enum NotifyState {
@@ -487,6 +553,12 @@ namespace MonoDevelop.VersionControl.Subversion {
 			Changed,
 			Merged,
 			Conflicted
+		}
+		
+		public enum NotifyLockState {
+			Unchanged = 2,
+			Locked = 3,
+			Unlocked = 4
 		}
 		
 		public delegate void svn_wc_status_func_t (IntPtr baton, IntPtr path, ref svn_wc_status_t status);
@@ -517,6 +589,8 @@ namespace MonoDevelop.VersionControl.Subversion {
 		public delegate void svn_wc_notify_func_t (IntPtr baton, IntPtr path, NotifyAction action, NodeKind kind,
 		                                           IntPtr mime_type, NotifyState content_state, NotifyState prop_state,
 		                                           long revision);
+		
+		public delegate void svn_wc_notify_func2_t (IntPtr baton, ref svn_wc_notify_t notify, IntPtr pool);
 		
 		public delegate IntPtr svn_client_get_commit_log_t (ref IntPtr log_msg, ref IntPtr tmp_file, IntPtr commit_items,
 		                                                    IntPtr baton, IntPtr pool);
@@ -747,6 +821,21 @@ namespace MonoDevelop.VersionControl.Subversion {
 			                              merge_options, ctx, pool);
 		}
 		
+		public override IntPtr client_lock (IntPtr apr_array_header_t_targets, string comment, int steal_lock, IntPtr ctx, IntPtr pool)
+		{
+			return svn_client_lock (apr_array_header_t_targets, comment, steal_lock, ctx, pool);
+		}
+		
+		public override IntPtr client_unlock (IntPtr apr_array_header_t_targets, int break_lock, IntPtr ctx, IntPtr pool)
+		{
+			return svn_client_unlock (apr_array_header_t_targets, break_lock, ctx, pool);
+		}
+		
+		public override IntPtr client_prop_get (out IntPtr value, string name, string target, ref Rev revision, int recurse, IntPtr ctx, IntPtr pool)
+		{
+			return svn_client_prop_get (out value, name, target, ref revision, recurse, ctx, pool);
+		}
+		
 		[DllImport(svnclientlib)] static extern void svn_config_ensure (string config_dir, IntPtr pool);
 		[DllImport(svnclientlib)] static extern void svn_config_get_config (ref IntPtr cfg_hash, string config_dir, IntPtr pool);
 		[DllImport(svnclientlib)] static extern void svn_auth_open (out IntPtr auth_baton, IntPtr providers, IntPtr pool);
@@ -844,6 +933,12 @@ namespace MonoDevelop.VersionControl.Subversion {
 		                                                                      IntPtr merge_options,
 		                                                                      IntPtr ctx,
 		                                                                      IntPtr pool);
+		
+		[DllImport(svnclientlib)] static extern IntPtr svn_client_lock (IntPtr apr_array_header_t_targets, string comment, int steal_lock, IntPtr ctx, IntPtr pool);
+		
+		[DllImport(svnclientlib)] static extern IntPtr svn_client_unlock (IntPtr apr_array_header_t_targets, int break_lock, IntPtr ctx, IntPtr pool);
+		
+		[DllImport(svnclientlib)] static extern IntPtr svn_client_prop_get (out IntPtr value, string name, string target, ref Rev revision, int recurse, IntPtr ctx, IntPtr pool);
 	}
 	
 	public class LibSvnClient1 : LibSvnClient {
@@ -1070,6 +1165,21 @@ namespace MonoDevelop.VersionControl.Subversion {
 			                              recurse ? 1: 0, ignore_ancestry ? 1 : 0, force ? 1 : 0, dry_run ? 1 : 0,
 			                              merge_options, ctx, pool);
 		}
+		
+		public override IntPtr client_lock (IntPtr apr_array_header_t_targets, string comment, int steal_lock, IntPtr ctx, IntPtr pool)
+		{
+			return svn_client_lock (apr_array_header_t_targets, comment, steal_lock, ctx, pool);
+		}
+		
+		public override IntPtr client_unlock (IntPtr apr_array_header_t_targets, int break_lock, IntPtr ctx, IntPtr pool)
+		{
+			return svn_client_unlock (apr_array_header_t_targets, break_lock, ctx, pool);
+		}
+		
+		public override IntPtr client_prop_get (out IntPtr value, string name, string target, ref Rev revision, int recurse, IntPtr ctx, IntPtr pool)
+		{
+			return svn_client_prop_get (out value, name, target, ref revision, recurse, ctx, pool);
+		}
 
 		[DllImport(svnclientlib)] static extern void svn_config_ensure (string config_dir, IntPtr pool);
 		[DllImport(svnclientlib)] static extern void svn_config_get_config (ref IntPtr cfg_hash, string config_dir, IntPtr pool);
@@ -1169,5 +1279,11 @@ namespace MonoDevelop.VersionControl.Subversion {
 		                                                                      IntPtr ctx,
 		                                                                      IntPtr pool);
 		
+		
+		[DllImport(svnclientlib)] static extern IntPtr svn_client_lock (IntPtr apr_array_header_t_targets, string comment, int steal_lock, IntPtr ctx, IntPtr pool);
+		
+		[DllImport(svnclientlib)] static extern IntPtr svn_client_unlock (IntPtr apr_array_header_t_targets, int break_lock, IntPtr ctx, IntPtr pool);
+		
+		[DllImport(svnclientlib)] static extern IntPtr svn_client_prop_get (out IntPtr value, string name, string target, ref Rev revision, int recurse, IntPtr ctx, IntPtr pool);
 	}
 }

@@ -36,6 +36,8 @@ using MonoDevelop.Core.Gui;
 
 namespace MonoDevelop.Ide.Gui.Dialogs
 {
+	[System.ComponentModel.Category("MonoDevelop.Ide")]
+	[System.ComponentModel.ToolboxItem(true)]
 	public partial class CombineEntryFeatureSelector : Gtk.Bin
 	{
 		List<ISolutionItemFeature> selectedFeatures = new List<ISolutionItemFeature> ();

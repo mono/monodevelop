@@ -612,7 +612,7 @@ namespace Algorithm.Diff {
 
 		bool IList.IsReadOnly { get { return true; } }
 		
-		object IList.this[int index] { set { throw new InvalidOperationException(); } }
+		object IList.this[int index] { get { throw new InvalidOperationException(); } set { throw new InvalidOperationException(); } }
 
 		int IList.Add(object obj) { throw new InvalidOperationException(); }
 		

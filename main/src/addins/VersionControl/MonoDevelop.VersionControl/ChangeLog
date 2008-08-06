@@ -1,3 +1,22 @@
+2008-08-05  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* overlay_locked.png, overlay_unlocked.png,
+	  MonoDevelop.VersionControl.mdp, VersionControl.addin.xml,
+	  gtk-gui/objects.xml, gtk-gui/gui.stetic,
+	  MonoDevelop.VersionControl.Views/Statuses.cs, Makefile.am,
+	  MonoDevelop.VersionControl/Repository.cs,
+	  MonoDevelop.VersionControl/CommitCommand.cs,
+	  MonoDevelop.VersionControl/LockCommand.cs,
+	  MonoDevelop.VersionControl/VersionStatus.cs,
+	  MonoDevelop.VersionControl/VersionControlNodeExtension.cs,
+	  MonoDevelop.VersionControl/UnlockCommand.cs,
+	  MonoDevelop.VersionControl/Commands.cs,
+	  MonoDevelop.VersionControl/VersionInfo.cs,
+	  MonoDevelop.VersionControl/Task.cs,
+	  MonoDevelop.VersionControl/VersionControlService.cs,
+	  overlay_lock_required.png: Add support for locking/unlocking, and
+	  for on-demand unlocking (RequestFileEdit event).
+
 2008-07-29  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.VersionControl/Update.cs,

@@ -6,6 +6,12 @@
 	  MonoDevelop.Projects.Dom.Database/CodeCompletionDatabase.cs: Worked
 	  on code completion database.
 
+2008-08-05  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects/ProjectService.cs: Request file edit permissions
+	  when saving a project or solution.
+
+
 2008-08-05  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom.Parser/DatabaseProjectDom.cs,

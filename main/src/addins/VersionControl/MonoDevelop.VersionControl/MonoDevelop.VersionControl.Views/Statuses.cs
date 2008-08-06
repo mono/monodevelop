@@ -647,11 +647,7 @@ namespace MonoDevelop.VersionControl.Views
 						break;
 				}
 				
-				if (newInfo == null ||
-					newInfo.Status == VersionStatus.Unchanged ||
-				    newInfo.Status == VersionStatus.Protected ||
-				    newInfo.Status == VersionStatus.Unversioned
-				    ) {
+				if (newInfo == null || !newInfo.HasLocalChanges) {
 					// Just remove the file from the change set
 					changeSet.RemoveFile (args.FilePath);
 					statuses.RemoveAt (n);
@@ -678,7 +674,7 @@ namespace MonoDevelop.VersionControl.Views
 		
 		bool FileVisible (VersionInfo vinfo)
 		{
-			return vinfo != null && vinfo.NeedsCommit;
+			return vinfo != null && vinfo.HasLocalChanges;
 		}
 		
 		void SetFileDiff (TreeIter iter, string file)

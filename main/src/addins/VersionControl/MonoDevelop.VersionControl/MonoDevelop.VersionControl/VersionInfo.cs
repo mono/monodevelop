@@ -10,7 +10,7 @@ namespace MonoDevelop.VersionControl
  		bool isDirectory;
 		VersionStatus status = VersionStatus.Unversioned;
 		Revision revision;
-		VersionStatus remoteStatus = VersionStatus.Unchanged;
+		VersionStatus remoteStatus = VersionStatus.Versioned;
 		Revision remoteRevision;
 		
 		public VersionInfo (string localPath, string repositoryPath, bool isDirectory, VersionStatus status, Revision revision, VersionStatus remoteStatus, Revision remoteRevision)
@@ -22,6 +22,19 @@ namespace MonoDevelop.VersionControl
 			this.revision = revision;
 			this.remoteStatus = remoteStatus;
 			this.remoteRevision = remoteRevision;
+		}
+		
+		public bool IsVersioned {
+			get { return (status & VersionStatus.Versioned) != 0; }
+		}
+		
+		public bool HasLocalChanges {
+			get { return (status & VersionStatus.LocalChangesMask) != 0; }
+		}
+		
+		public bool HasLocalChange (VersionStatus changeKind)
+		{
+			return (status & changeKind) != 0;
 		}
 		
 		public string LocalPath {
@@ -50,15 +63,6 @@ namespace MonoDevelop.VersionControl
 		
 		public Revision RemoteRevision {
 			get { return remoteRevision; }
-		}
-		
-		public bool NeedsCommit {
-			get {
-				return status != VersionStatus.Protected &&
-						status != VersionStatus.Unversioned &&
-						status != VersionStatus.UnversionedIgnored &&
-						status != VersionStatus.Unchanged;
-			}
 		}
 	}
 }

@@ -157,6 +157,15 @@ namespace MonoDevelop.Debugger
 			tree.KeyPressEvent += OnKeyPressed;
 		}
 		
+		public override void Dispose ()
+		{
+			base.Dispose ();
+			IdeApp.Services.DebuggingService.Breakpoints.BreakpointAdded -= OnBpAdded;
+			IdeApp.Services.DebuggingService.Breakpoints.BreakpointRemoved -= OnBpRemoved;
+			IdeApp.Services.DebuggingService.Breakpoints.Changed -= OnBpChanged;
+		}
+
+		
 		[GLib.ConnectBefore]
 		void OnButtonPressed (object o, ButtonPressEventArgs args)
 		{

@@ -35,6 +35,7 @@ namespace Mono.Debugging.Client
 		int id;
 		string name;
 		int processId;
+		string location;
 		Backtrace backtrace;
 		
 		[NonSerialized]
@@ -57,6 +58,10 @@ namespace Mono.Debugging.Client
 			}
 		}
 		
+		public string Location {
+			get { return location; }
+		}
+		
 		internal int ProcessId {
 			get { return processId; }
 		}
@@ -74,16 +79,48 @@ namespace Mono.Debugging.Client
 			session.ActiveThread = this;
 		}
 		
-		public ThreadInfo (int processId, int id, string name): this (processId, id, name, null)
+		public ThreadInfo (int processId, int id, string name, string location): this (processId, id, name, location, null)
 		{
 		}
 		
-		public ThreadInfo (int processId, int id, string name, Backtrace backtrace)
+		public ThreadInfo (int processId, int id, string name, string location, Backtrace backtrace)
 		{
 			this.id = id;
 			this.name = name;
 			this.processId = processId;
+			this.location = location;
 			this.backtrace = backtrace;
+		}
+		
+		public override bool Equals (object obj)
+		{
+			ThreadInfo ot = obj as ThreadInfo;
+			if (ot == null)
+				return false;
+			return id == ot.id && processId == ot.processId;
+		}
+		
+		public override int GetHashCode ()
+		{
+			return id + processId*1000;
+		}
+		
+		public static bool operator == (ThreadInfo t1, ThreadInfo t2)
+		{
+			if (object.ReferenceEquals (t1, t2))
+				return true;
+			if ((object)t1 == null || (object)t2 == null)
+				return false;
+			return t1.Equals (t2);
+		}
+		
+		public static bool operator != (ThreadInfo t1, ThreadInfo t2)
+		{
+			if (object.ReferenceEquals (t1, t2))
+				return false;
+			if ((object)t1 == null || (object)t2 == null)
+				return true;
+			return !t1.Equals (t2);
 		}
 	}
 }

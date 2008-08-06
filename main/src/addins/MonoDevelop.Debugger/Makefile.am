@@ -28,6 +28,7 @@ FILES =  \
 	MonoDevelop.Debugger/ObjectValuePad.cs \
 	MonoDevelop.Debugger/ObjectValueTreeView.cs \
 	MonoDevelop.Debugger/StackTracePad.cs \
+	MonoDevelop.Debugger/ThreadsPad.cs \
 	MonoDevelop.Debugger/WatchPad.cs
 
 RES = MonoDevelop.Debugger.addin.xml

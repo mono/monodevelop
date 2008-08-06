@@ -177,6 +177,9 @@ namespace MonoDevelop.Ide.Gui
 			if (Window.ViewContent.ContentName == null) {
 				SaveAs ();
 			} else {
+				if (!FileService.RequestFileEdit (Window.ViewContent.ContentName))
+					MessageService.ShowMessage (GettextCatalog.GetString ("The file could not be saved. Write permission has not been granted."));
+				
 				FileAttributes attr = FileAttributes.ReadOnly | FileAttributes.Directory | FileAttributes.Offline | FileAttributes.System;
 
 				if (!File.Exists (Window.ViewContent.ContentName) || (File.GetAttributes(window.ViewContent.ContentName) & attr) != 0) {

@@ -139,6 +139,8 @@ namespace Mono.TextEditor
 		
 		public bool CanEdit (int line)
 		{
+			if (document.ReadOnlyCheckDelegate != null)
+				return document.ReadOnlyCheckDelegate (line);
 			return !document.ReadOnly;
 		}
 		

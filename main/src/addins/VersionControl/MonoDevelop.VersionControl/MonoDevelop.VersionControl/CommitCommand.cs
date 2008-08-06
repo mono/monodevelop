@@ -17,7 +17,7 @@ namespace MonoDevelop.VersionControl
 				if (test) return true;
 				ChangeSet cset = vc.CreateChangeSet (path);
 				foreach (VersionInfo vi in vc.GetDirectoryVersionInfo (path, false, true))
-					if (vi.NeedsCommit)
+					if (vi.HasLocalChanges)
 						cset.AddFile (vi);
 				Commit (vc, cset, false);
 			}

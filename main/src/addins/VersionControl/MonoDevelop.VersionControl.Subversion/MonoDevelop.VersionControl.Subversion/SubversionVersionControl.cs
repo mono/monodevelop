@@ -77,7 +77,7 @@ namespace MonoDevelop.VersionControl.Subversion
 				// Directory check is needed since directory links may look like versioned files
 				return File.Exists(GetTextBase(sourcefile)) && !Directory.Exists (sourcefile)
 					&& IsVersioned(sourcefile)
-					&& GetVersionInfo (repo, sourcefile, false).Status == VersionStatus.Modified;
+					&& GetVersionInfo (repo, sourcefile, false).HasLocalChange (VersionStatus.Modified);
 			} catch {
 				// GetVersionInfo may throw an exception
 				return false;
@@ -120,7 +120,7 @@ namespace MonoDevelop.VersionControl.Subversion
 			VersionInfo ver = this.GetVersionInfo (repo, sourcepath, false);
 			if (ver == null)
 				return true;
-			return ver.Status == VersionStatus.Unversioned;
+			return !ver.IsVersioned;
 		}
 		
 		public string GetPathToBaseText (string sourcefile) {
@@ -266,6 +266,16 @@ namespace MonoDevelop.VersionControl.Subversion
 			Client.Move (srcPath, destPath, LibSvnClient.Rev.Head, force, monitor);
 		}
 		
+		public void Lock (IProgressMonitor monitor, string comment, bool stealLock, params string[] paths)
+		{
+			Client.Lock (monitor, comment, stealLock, paths);
+		}
+		
+		public void Unlock (IProgressMonitor monitor, bool breakLock, params string[] paths)
+		{
+			Client.Unlock (monitor, breakLock, paths);
+		}
+		
 		public string PathDiff (string path, bool recursive)
 		{
 			return Client.PathDiff (path, LibSvnClient.Rev.Base, path, LibSvnClient.Rev.Working, recursive);
@@ -282,11 +292,22 @@ namespace MonoDevelop.VersionControl.Subversion
 				                      ent.LastCommitAuthor, "(unavailable)", null);
 			}
 			
-			VersionInfo ret = new VersionInfo (ent.LocalFilePath, ent.Url, ent.IsDirectory,
-			                                   ConvertStatus (ent.Schedule, ent.TextStatus),
-			                                   new SvnRevision (repo, ent.Revision),
-			                                   rs, rr);
+			VersionStatus status = ConvertStatus (ent.Schedule, ent.TextStatus);
 			
+			bool readOnly = File.Exists (ent.LocalFilePath) && (File.GetAttributes (ent.LocalFilePath) & FileAttributes.ReadOnly) != 0;
+			
+			if (ent.RepoLocked) {
+				status |= VersionStatus.LockRequired;
+				if (ent.LockOwned)
+					status |= VersionStatus.LockOwned;
+				else
+					status |= VersionStatus.Locked;
+			} else if (readOnly)
+				status |= VersionStatus.LockRequired;
+
+			VersionInfo ret = new VersionInfo (ent.LocalFilePath, ent.Url, ent.IsDirectory,
+			                                   status, new SvnRevision (repo, ent.Revision),
+			                                   rs, rr);
 			return ret;
 		}
 		
@@ -299,20 +320,20 @@ namespace MonoDevelop.VersionControl.Subversion
 		
 		private VersionStatus ConvertStatus (LibSvnClient.NodeSchedule schedule, LibSvnClient.VersionStatus status) {
 			switch (schedule) {
-				case LibSvnClient.NodeSchedule.Add: return VersionStatus.ScheduledAdd;
-				case LibSvnClient.NodeSchedule.Delete: return VersionStatus.ScheduledDelete;
-				case LibSvnClient.NodeSchedule.Replace: return VersionStatus.ScheduledReplace;
+				case LibSvnClient.NodeSchedule.Add: return VersionStatus.Versioned | VersionStatus.ScheduledAdd;
+				case LibSvnClient.NodeSchedule.Delete: return VersionStatus.Versioned | VersionStatus.ScheduledDelete;
+				case LibSvnClient.NodeSchedule.Replace: return VersionStatus.Versioned | VersionStatus.ScheduledReplace;
 			}
 			
 			switch (status) {
-				case LibSvnClient.VersionStatus.None: return VersionStatus.Unchanged;
-				case LibSvnClient.VersionStatus.Normal: return VersionStatus.Unchanged;
+				case LibSvnClient.VersionStatus.None: return VersionStatus.Versioned;
+				case LibSvnClient.VersionStatus.Normal: return VersionStatus.Versioned;
 				case LibSvnClient.VersionStatus.Unversioned: return VersionStatus.Unversioned;
-				case LibSvnClient.VersionStatus.Modified: return VersionStatus.Modified;
-				case LibSvnClient.VersionStatus.Merged: return VersionStatus.Modified;
-				case LibSvnClient.VersionStatus.Conflicted: return VersionStatus.Conflicted;
-				case LibSvnClient.VersionStatus.Ignored: return VersionStatus.UnversionedIgnored;
-				case LibSvnClient.VersionStatus.Obstructed: return VersionStatus.Obstructed;
+				case LibSvnClient.VersionStatus.Modified: return VersionStatus.Versioned | VersionStatus.Modified;
+				case LibSvnClient.VersionStatus.Merged: return VersionStatus.Versioned | VersionStatus.Modified;
+				case LibSvnClient.VersionStatus.Conflicted: return VersionStatus.Versioned | VersionStatus.Conflicted;
+				case LibSvnClient.VersionStatus.Ignored: return VersionStatus.Unversioned | VersionStatus.Ignored;
+				case LibSvnClient.VersionStatus.Obstructed: return VersionStatus.Versioned;
 			}
 			
 			return VersionStatus.Unversioned;

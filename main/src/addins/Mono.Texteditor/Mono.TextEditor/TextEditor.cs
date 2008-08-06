@@ -60,7 +60,6 @@ namespace Mono.TextEditor
 		IMMulticontext imContext;
 		Gdk.EventKey lastIMEvent;
 		bool imContextActive;
-		bool readOnly;
 		
 		// Tooltip fields
 		const int TooltipTimer = 800;
@@ -107,11 +106,6 @@ namespace Mono.TextEditor
 				if (IsRealized)
 					OptionsChanged (null, null);
 			}
-		}
-		
-		public bool ReadOnly {
-			get { return readOnly; }
-			set { readOnly = value; }
 		}
 		
 		public TextEditor () : this (new Document ())

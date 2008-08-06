@@ -1,3 +1,7 @@
+2008-08-05  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.AspNet/VerifyCodeBehindBuildStep.cs: Add null check.
+
 2008-08-01  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.AspNet.StateEngine/AspNetExpressionState.cs,

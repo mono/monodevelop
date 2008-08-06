@@ -64,6 +64,12 @@ namespace MonoDevelop.AspNet
 			
 			AspNetAppProjectConfiguration config = (AspNetAppProjectConfiguration) aspProject.GetConfiguration (configuration);
 			
+			if (config == null) {
+				monitor.ReportWarning (GettextCatalog.GetString
+					("Project configuration is invalid. Skipping CodeBehind member generation."));
+				return base.Build (monitor, project, configuration);;
+			}
+			
 			//get an updated parser database
 			ProjectDom ctx = ProjectDomService.GetDatabaseProjectDom (aspProject);
 //			ctx.UpdateDatabase ();

@@ -234,6 +234,10 @@ namespace MonoDevelop.Projects
 					return null;
 				file = format.GetValidFileName (item, file);
 			}
+			
+			if (!FileService.RequestFileEdit (file))
+				throw new UserException (GettextCatalog.GetString ("The project could not be saved"), GettextCatalog.GetString ("Write permission has not been granted for file '{0}'", file));
+			
 			format.Format.WriteFile (file, item, monitor);
 			return file;
 		}

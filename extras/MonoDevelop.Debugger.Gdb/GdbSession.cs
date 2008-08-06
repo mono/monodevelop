@@ -295,7 +295,7 @@ namespace MonoDevelop.Debugger.Gdb
 		
 		ThreadInfo GetThread (int id)
 		{
-			return new ThreadInfo (0, id, "Thread #" + id);
+			return new ThreadInfo (0, id, "Thread #" + id, null);
 		}
 		
 		protected override Backtrace OnGetThreadBacktrace (int processId, int threadId)

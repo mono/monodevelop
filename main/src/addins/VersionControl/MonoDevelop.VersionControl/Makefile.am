@@ -21,6 +21,7 @@ FILES =  \
 	MonoDevelop.VersionControl/CommitDialogExtension.cs \
 	MonoDevelop.VersionControl/CommitEventHandler.cs \
 	MonoDevelop.VersionControl/FileUpdateEventHandler.cs \
+	MonoDevelop.VersionControl/LockCommand.cs \
 	MonoDevelop.VersionControl/Publish.cs \
 	MonoDevelop.VersionControl/Repository.cs \
 	MonoDevelop.VersionControl/RevertCommand.cs \
@@ -28,6 +29,7 @@ FILES =  \
 	MonoDevelop.VersionControl/Revision.cs \
 	MonoDevelop.VersionControl/Task.cs \
 	MonoDevelop.VersionControl/UnknownRepository.cs \
+	MonoDevelop.VersionControl/UnlockCommand.cs \
 	MonoDevelop.VersionControl/Update.cs \
 	MonoDevelop.VersionControl/UrlBasedRepository.cs \
 	MonoDevelop.VersionControl/UrlBasedRepositoryEditor.cs \
@@ -71,10 +73,12 @@ RES =  \
 	overlay_added.png \
 	overlay_conflicted.png \
 	overlay_controled.png \
+	overlay_lock_required.png \
 	overlay_locked.png \
 	overlay_modified.png \
 	overlay_normal.png \
 	overlay_removed.png \
+	overlay_unlocked.png \
 	overlay_unversioned.png \
 	repository.png \
 	VersionControl.addin.xml

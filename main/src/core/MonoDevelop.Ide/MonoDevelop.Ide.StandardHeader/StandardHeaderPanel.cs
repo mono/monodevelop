@@ -39,6 +39,8 @@ using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide.StandardHeaders
 {
+	[System.ComponentModel.Category("MonoDevelop.Ide")]
+	[System.ComponentModel.ToolboxItem(true)]
 	internal partial class StandardHeaderPanel : Gtk.Bin, IOptionsPanel
 	{
 		public StandardHeaderPanel()

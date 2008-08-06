@@ -8,7 +8,6 @@
         <property name="HighlightSearchPattern" />
         <property name="IsCaseSensitive" />
         <property name="IsWholeWordOnly" />
-        <property name="ReadOnly" />
       </itemgroup>
     </itemgroups>
     <signals>
