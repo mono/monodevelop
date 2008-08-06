@@ -1,3 +1,12 @@
+2008-08-06  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* gtk-gui, gtk-gui/generated.cs,
+	  gtk-gui/MonoDevelop.Debugger.BreakpointPropertiesDialog.cs,
+	  gtk-gui/gui.stetic, MonoDevelop.Debugger.mdp, Makefile.am,
+	  MonoDevelop.Debugger/BreakpointPropertiesDialog.cs,
+	  MonoDevelop.Debugger/BreakpointPad.cs: Improved breakpoints pad.
+	  Implemented the breakpoint properties dialog.
+
 2008-08-05  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Debugger.addin.xml, MonoDevelop.Debugger.mdp,

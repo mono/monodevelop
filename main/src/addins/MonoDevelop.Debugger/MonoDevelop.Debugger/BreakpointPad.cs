@@ -40,67 +40,87 @@ using Stock = MonoDevelop.Core.Gui.Stock;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Commands;
+using MonoDevelop.Components;
+using MonoDevelop.Components.Commands;
 using Mono.Debugging.Client;
 
 namespace MonoDevelop.Debugger
 {
-	public class BreakpointPad : Gtk.ScrolledWindow, IPadContent
+	public class BreakpointPad : IPadContent
 	{
-		
 		BreakpointStore bps;
 		
 		Gtk.TreeView tree;
 		Gtk.TreeStore store;
 		VBox control;
-		ToggleToolButton enableDisableBtn;
-		ToolButton deleteBtn;
 		ScrolledWindow sw;
-		Gtk.Tooltips tips = new Gtk.Tooltips ();
+		CommandEntrySet menuSet;
+		TreeViewState treeState;
+		
+		EventHandler<BreakpointEventArgs> breakpointUpdatedHandler;
 		
 		enum Columns
 		{
 			Icon,
 			Selected,
 			FileName,
-			Line
+			Breakpoint,
+			Condition,
+			TraceExp,
+			HitCount,
+			LastTrace
+		}
+		
+		enum LocalCommands
+		{
+			GoToFile,
+			Properties
 		}
 		
 		public BreakpointPad()
 		{
 			control = new VBox ();
 			
-			Toolbar toolbar = new Toolbar ();
+			// Toolbar and menu definitions
+			
+			LocalCommandEntry gotoCmd = new LocalCommandEntry (LocalCommands.GoToFile, GettextCatalog.GetString ("Go to File"));
+			LocalCommandEntry propertiesCmd = new LocalCommandEntry (LocalCommands.Properties, GettextCatalog.GetString ("Properties"), Gtk.Stock.Properties);
+			
+			menuSet = new CommandEntrySet ();
+			menuSet.Add (gotoCmd);
+			menuSet.AddSeparator ();
+			menuSet.AddItem (DebugCommands.EnableDisableBreakpoint);
+			menuSet.AddItem (DebugCommands.ClearAllBreakpoints);
+			menuSet.AddItem (DebugCommands.DisableAllBreakpoints);
+			menuSet.AddItem (EditCommands.Delete);
+			menuSet.AddSeparator ();
+			menuSet.Add (propertiesCmd);
+			
+			CommandEntrySet toolbarSet = new CommandEntrySet ();
+			toolbarSet.AddItem (DebugCommands.EnableDisableBreakpoint);
+			toolbarSet.AddItem (DebugCommands.ClearAllBreakpoints);
+			toolbarSet.AddItem (DebugCommands.DisableAllBreakpoints);
+			toolbarSet.AddItem (EditCommands.Delete);
+			toolbarSet.AddSeparator ();
+			toolbarSet.Add (propertiesCmd);
+			
+			Gtk.Toolbar toolbar = IdeApp.CommandService.CreateToolbar ("bps", toolbarSet, control);
 			toolbar.IconSize = IconSize.Menu;
+			toolbar.ToolbarStyle = ToolbarStyle.BothHoriz;
+			toolbar.ShowArrow = false;
+			
 			control.PackStart (toolbar, false, false, 0);
 			
-			enableDisableBtn = new ToggleToolButton ();
-			enableDisableBtn.Label = " " + GettextCatalog.GetString ("Enable / Disable");
-			enableDisableBtn.Active = false;
-			enableDisableBtn.Visible = true;
-			enableDisableBtn.IsImportant = true;
-			enableDisableBtn.IconWidget = new Gtk.Image (Gtk.Stock.ColorPicker, Gtk.IconSize.Button);
-			enableDisableBtn.SetTooltip (tips, GettextCatalog.GetString ("Enable / Disable"), GettextCatalog.GetString ("Enable / Disable"));
-			enableDisableBtn.Toggled += OnEnableDisableClicked;
-			toolbar.Insert (enableDisableBtn, -1);
+			// The breakpoint list
 			
-			toolbar.Insert (new SeparatorToolItem (), -1);
-			
-			deleteBtn = new ToolButton ("deleteBtn");
-			deleteBtn.Label = " " + GettextCatalog.GetString ("Delete");
-			deleteBtn.Visible = true;
-			deleteBtn.IsImportant = true;
-			deleteBtn.IconWidget = new Gtk.Image (Gtk.Stock.Delete, Gtk.IconSize.Button);
-			deleteBtn.SetTooltip (tips, GettextCatalog.GetString ("Delete"), GettextCatalog.GetString ("Delete"));
-			deleteBtn.Clicked += OnDeleteClicked;
-			toolbar.Insert (deleteBtn, -1);
-			
-			this.ShadowType = ShadowType.In;
-
-			store = new TreeStore (typeof(string), typeof (bool), typeof(string), typeof(string), typeof(string));
+			store = new TreeStore (typeof(string), typeof (bool), typeof(string), typeof(object), typeof(string), typeof(string), typeof(string), typeof(string));
 
 			tree = new TreeView (store);
 			tree.RulesHint = true;
 			tree.HeadersVisible = true;
+			
+			treeState = new TreeViewState (tree, (int) Columns.Breakpoint);
 							
 			TreeViewColumn col = new TreeViewColumn ();
 			CellRenderer crp = new CellRendererPixbuf ();
@@ -116,31 +136,33 @@ namespace MonoDevelop.Debugger
 			tree.AppendColumn (col);
 			
 			TreeViewColumn FrameCol = new TreeViewColumn ();
-			CellRenderer FrameRenderer = new CellRendererText ();
+			CellRenderer crt = new CellRendererText ();
 			FrameCol.Title = GettextCatalog.GetString ("File");
-			FrameCol.PackStart (FrameRenderer, true);
-			FrameCol.AddAttribute (FrameRenderer, "text", (int) Columns.FileName);
+			FrameCol.PackStart (crt, true);
+			FrameCol.AddAttribute (crt, "text", (int) Columns.FileName);
 			FrameCol.Resizable = true;
 			FrameCol.Alignment = 0.0f;
 			tree.AppendColumn (FrameCol);
 
-			col = new TreeViewColumn ();
-			col.Title = GettextCatalog.GetString ("Line");
-			CellRenderer crt = new CellRendererText ();
-			col.PackStart (crt, false);
-			col.AddAttribute (crt, "text", (int) Columns.Line);
-			tree.AppendColumn (col);
-
+			col = tree.AppendColumn (GettextCatalog.GetString ("Condition"), crt, "text", (int) Columns.Condition);
+			col.Resizable = true;
+			
+			col = tree.AppendColumn (GettextCatalog.GetString ("Trace Expression"), crt, "text", (int) Columns.TraceExp);
+			col.Resizable = true;
+			
+			col = tree.AppendColumn (GettextCatalog.GetString ("Hit Count"), crt, "text", (int) Columns.HitCount);
+			col.Resizable = true;
+			
+			col = tree.AppendColumn (GettextCatalog.GetString ("Last Trace"), crt, "text", (int) Columns.LastTrace);
+			col.Resizable = true;
+			
 			sw = new Gtk.ScrolledWindow ();
-			sw.ShadowType = ShadowType.None;
+			sw.ShadowType = ShadowType.In;
 			sw.Add (tree);
 			
-			control.Add (sw);
-			toolbar.ToolbarStyle = ToolbarStyle.BothHoriz;
-			toolbar.ShowArrow = false;
+			control.PackStart (sw, true, true, 0);
 			
-			Add (control);
-			ShowAll ();
+			control.ShowAll ();
 			
 			bps = IdeApp.Services.DebuggingService.Breakpoints;
 			
@@ -148,29 +170,36 @@ namespace MonoDevelop.Debugger
 			
 			tree.PopupMenu += new PopupMenuHandler (OnPopupMenu);
 			tree.ButtonPressEvent += new ButtonPressEventHandler (OnButtonPressed);
-					
+
+			breakpointUpdatedHandler = DispatchService.GuiDispatch (new EventHandler<BreakpointEventArgs> (OnBreakpointUpdated));
+			
 			IdeApp.Services.DebuggingService.Breakpoints.BreakpointAdded += OnBpAdded;
 			IdeApp.Services.DebuggingService.Breakpoints.BreakpointRemoved += OnBpRemoved;
 			IdeApp.Services.DebuggingService.Breakpoints.Changed += OnBpChanged;
+			IdeApp.Services.DebuggingService.Breakpoints.BreakpointUpdated += breakpointUpdatedHandler;
 			
 			tree.RowActivated += OnRowActivated;
 			tree.KeyPressEvent += OnKeyPressed;
 		}
 		
-		public override void Dispose ()
+		public void Dispose ()
 		{
-			base.Dispose ();
 			IdeApp.Services.DebuggingService.Breakpoints.BreakpointAdded -= OnBpAdded;
 			IdeApp.Services.DebuggingService.Breakpoints.BreakpointRemoved -= OnBpRemoved;
 			IdeApp.Services.DebuggingService.Breakpoints.Changed -= OnBpChanged;
+			IdeApp.Services.DebuggingService.Breakpoints.BreakpointUpdated -= breakpointUpdatedHandler;
 		}
 
 		
 		[GLib.ConnectBefore]
 		void OnButtonPressed (object o, ButtonPressEventArgs args)
 		{
-			if (args.Event.Button == 3)
-				ShowPopup ();
+			// Show the menu with a small delay, since some options depend on a
+			// tree item to be selected, and this click may select a row
+			Gtk.Application.Invoke (delegate {
+				if (args.Event.Button == 3)
+					ShowPopup ();
+			});
 		}
 		private void OnPopupMenu (object o, PopupMenuArgs args)
 		{
@@ -179,33 +208,63 @@ namespace MonoDevelop.Debugger
 
 		private void ShowPopup ()
 		{
-			Menu menu = new Menu ();
-			
-			MenuItem GoToBp = new MenuItem (GettextCatalog.GetString ("_Go to"));
-			GoToBp.Activated += OnBpJumpTo;
-		 	
-			MenuItem Delete = new MenuItem (GettextCatalog.GetString ("Delete"));
-			Delete.Activated += OnDeleteClicked;
-			
-			MenuItem EnableDisable = new MenuItem (GettextCatalog.GetString ("Enable/Disable"));
-			EnableDisable.Activated += OnEnableDisable;
-				
-			menu.Append (GoToBp);
-			menu.Append (Delete);
-			menu.Append (EnableDisable);
-			menu.Popup ();
-			menu.ShowAll ();
+			IdeApp.CommandService.ShowContextMenu (menuSet, tree);
 		}
 		
-		protected void OnEnableDisable (object o, EventArgs args)
+		[CommandHandler (LocalCommands.Properties)]
+		protected void OnProperties ()
 		{
 			TreeIter iter;
-			TreeModel model; 	
-			if (tree.Selection.GetSelected (out model, out iter)) {
-				string filename = (string) model.GetValue (iter, (int) Columns.FileName);
-				string line = (string) model.GetValue (iter, (int) Columns.Line);
-				EnableDisable(filename, int.Parse (line));
+			if (tree.Selection.GetSelected (out iter)) {
+				Breakpoint bp = (Breakpoint) store.GetValue (iter, (int) Columns.Breakpoint);
+				BreakpointPropertiesDialog dlg = new BreakpointPropertiesDialog (bp, false);
+				try {
+					if (dlg.Run () == (int) ResponseType.Ok)
+						UpdateDisplay ();
+				} finally {
+					dlg.Destroy ();
+				}
 			}
+		}
+		
+		[CommandHandler (DebugCommands.EnableDisableBreakpoint)]
+		protected void OnEnableDisable ()
+		{
+			TreeIter iter;
+			if (tree.Selection.GetSelected (out iter)) {
+				Breakpoint bp = (Breakpoint) store.GetValue (iter, (int) Columns.Breakpoint);
+				bp.Enabled = !bp.Enabled;
+			}
+		}
+		
+		[CommandHandler (LocalCommands.GoToFile)]
+		protected void OnBpJumpTo ()
+		{
+			TreeIter iter;
+			if (tree.Selection.GetSelected (out iter)) {
+				Breakpoint bp = (Breakpoint) store.GetValue (iter, (int) Columns.Breakpoint);
+				IdeApp.Workbench.OpenDocument (bp.FileName, bp.Line, 1, true);	
+			}
+		}
+		
+		[CommandHandler (EditCommands.Delete)]
+		protected void OnDeleted ()
+		{
+			TreeIter iter;
+			if (tree.Selection.GetSelected (out iter)) {
+				Breakpoint bp = (Breakpoint) store.GetValue (iter, (int) Columns.Breakpoint);	
+				bps.Remove (bp);
+			}	
+		}
+		
+		[CommandUpdateHandler (EditCommands.Delete)]
+		[CommandUpdateHandler (LocalCommands.GoToFile)]
+		[CommandUpdateHandler (LocalCommands.Properties)]
+		[CommandUpdateHandler (DebugCommands.EnableDisableBreakpoint)]
+		protected void UpdateBpCommand (CommandInfo cmd)
+		{
+			TreeIter iter;
+			cmd.Enabled = tree.Selection.GetSelected (out iter);
 		}
 		
 		private void ItemToggled (object o, ToggledArgs args)
@@ -213,49 +272,53 @@ namespace MonoDevelop.Debugger
 			Gtk.TreeIter iter;
 			if (store.GetIterFromString(out iter, args.Path)) {
 				bool val = (bool) store.GetValue(iter, (int)Columns.Selected);
-				string filename = (string) store.GetValue (iter, (int) Columns.FileName);
-				string line = (string) store.GetValue (iter, (int) Columns.Line);
-				store.SetValue(iter, (int)Columns.Selected, !val);
-				EnableDisable (filename, int.Parse (line));
+				Breakpoint bp = (Breakpoint) store.GetValue (iter, (int) Columns.Breakpoint);
+				store.SetValue (iter, (int)Columns.Selected, !val);
+				bp.Enabled = !bp.Enabled;
 			}
 			
 		}
 		
-		private void EnableDisable (string filename, int line)
-		{
-			foreach (Breakpoint bp in bps.GetBreakpointsAtFileLine (filename, line) )
-			         bp.Enabled = !bp.Enabled;
-		}
-		
 		void IPadContent.Initialize (IPadWindow window)
 		{
-			window.Title = "Breakpoint List";
+			window.Title = GettextCatalog.GetString ("Breakpoints");
 			window.Icon = Stock.OutputIcon;
 		}
 		
 		public void UpdateDisplay ()
 		{
+			treeState.Save ();
+			
 			store.Clear ();
 			if (bps != null) {		
 				foreach (Breakpoint bp in bps.GetBreakpoints () ){
+					string traceExp = bp.HitAction == HitAction.PrintExpression ? bp.TraceExpression : "";
+					string traceVal = bp.HitAction == HitAction.PrintExpression ? bp.LastTraceValue : "";
+					string hitCount = bp.HitCount > 0 ? bp.HitCount.ToString () : "";
 					if (bp.Enabled)
-						store.AppendValues (Gtk.Stock.No, true, bp.FileName, bp.Line.ToString () );
+						store.AppendValues ("md-breakpoint", true, bp.FileName + ":" + bp.Line.ToString (), bp, bp.ConditionExpression, traceExp, hitCount, traceVal);
 					else
-						store.AppendValues (Gtk.Stock.Yes, false, bp.FileName, bp.Line.ToString () );
+						store.AppendValues ("md-breakpoint-disabled", false, bp.FileName + ":" + bp.Line.ToString (), bp, bp.ConditionExpression, traceExp, hitCount, traceVal);
 				}
-			}			
+			}
+			treeState.Load ();
 		}
 		
-		void OnBpJumpTo (object o, EventArgs args)
+		void OnBreakpointUpdated (object s, BreakpointEventArgs args)
 		{
-			TreeIter iter;
-			TreeModel model;
-			if (tree.Selection.GetSelected (out model, out iter)) {
-				string filename = (string) model.GetValue (iter, (int) Columns.FileName);
-				string line = (string) model.GetValue (iter, (int) Columns.Line);
-				IdeApp.Workbench.OpenDocument (filename, int.Parse(line), 1, true);	
-			}
-			UpdateDisplay ();
+			TreeIter it;
+			if (!store.GetIterFirst (out it))
+				return;
+			do {
+				Breakpoint bp = (Breakpoint) store.GetValue (it, (int) Columns.Breakpoint);
+				if (bp == args.Breakpoint) {
+					string traceVal = bp.HitAction == HitAction.PrintExpression ? bp.LastTraceValue : "";
+					string hitCount = bp.HitCount > 0 ? bp.HitCount.ToString () : "";
+					store.SetValue (it, (int) Columns.HitCount, hitCount);
+					store.SetValue (it, (int) Columns.LastTrace, traceVal);
+					break;
+				}
+			} while (store.IterNext (ref it));
 		}
 		
 		protected void OnBpAdded (object o, EventArgs args)
@@ -276,12 +339,12 @@ namespace MonoDevelop.Debugger
 		
 		void OnRowActivated (object o, Gtk.RowActivatedArgs args)
 		{
-			OnBpJumpTo (null, null);
+			OnBpJumpTo ();
 		}
 		
 		public Gtk.Widget Control {
 			get {
-				return this;
+				return control;
 			}
 		}
 
@@ -309,32 +372,9 @@ namespace MonoDevelop.Debugger
 			e.RetVal = true;
 		}
 		
-		void OnDeleted ()
-		{
-			TreeIter iter;
-			TreeModel model; 
-			if (tree.Selection.GetSelected (out model, out iter)) {
-				string filename = (string) model.GetValue (iter, (int) Columns.FileName);	
-				string line = (string) model.GetValue (iter, (int) Columns.Line);
-				foreach (Breakpoint bp in bps.GetBreakpointsAtFileLine(filename, int.Parse(line)))
-					bps.Remove(bp);		
-			}	
-		}
-		
 		protected void OnDeleteClicked (object o, EventArgs args)
 		{
 			OnDeleted ();
 		}
-		
-		protected void OnEnableDisableClicked (object o, EventArgs args)
-		{
-			foreach (Breakpoint bp in bps.GetBreakpoints ()){
-				if (enableDisableBtn.Active)
-					bp.Enabled = false;
-				else
-					bp.Enabled = true;
-			}
-		}
-		
 	}
 }

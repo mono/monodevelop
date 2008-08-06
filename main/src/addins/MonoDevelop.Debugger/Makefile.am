@@ -20,7 +20,10 @@ REFS =  \
 
 FILES =  \
 	AssemblyInfo.cs \
+	gtk-gui/generated.cs \
+	gtk-gui/MonoDevelop.Debugger.BreakpointPropertiesDialog.cs \
 	MonoDevelop.Debugger/BreakpointPad.cs \
+	MonoDevelop.Debugger/BreakpointPropertiesDialog.cs \
 	MonoDevelop.Debugger/DebugTextMarker.cs \
 	MonoDevelop.Debugger/DisasemblyView.cs \
 	MonoDevelop.Debugger/Initializer.cs \
@@ -31,7 +34,9 @@ FILES =  \
 	MonoDevelop.Debugger/ThreadsPad.cs \
 	MonoDevelop.Debugger/WatchPad.cs
 
-RES = MonoDevelop.Debugger.addin.xml
+RES =  \
+	gtk-gui/gui.stetic \
+	MonoDevelop.Debugger.addin.xml
 
 DATA_FILES =
 
