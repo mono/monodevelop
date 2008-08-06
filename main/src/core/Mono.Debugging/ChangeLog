@@ -1,3 +1,10 @@
+2008-08-06  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Mono.Debugging.Client/BreakpointStore.cs,
+	  Mono.Debugging.Client/BreakEvent.cs,
+	  Mono.Debugging.Client/DebuggerSession.cs, Mono.Debugging.mdp: Add
+	  support for live updating of breakpoint's hit count.
+
 2008-08-05  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Mono.Debugging.Client/ThreadInfo.cs,

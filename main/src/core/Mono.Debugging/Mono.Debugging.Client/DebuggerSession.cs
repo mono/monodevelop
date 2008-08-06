@@ -564,13 +564,37 @@ namespace Mono.Debugging.Client
 			}
 		}
 		
-		internal protected bool OnCustomBreakpointAction (string actionId, object handle)
+		BreakEvent GetBreakEvent (object handle)
 		{
 			foreach (KeyValuePair<BreakEvent,object> e in breakpoints) {
 				if (handle == e.Value || handle.Equals (e.Value))
-					return customBreakpointHitHandler (actionId, e.Key);
+					return e.Key;
 			}
-			return false;
+			return null;
+		}
+		
+		internal protected bool OnCustomBreakpointAction (string actionId, object handle)
+		{
+			BreakEvent ev = GetBreakEvent (handle);
+			return ev != null && customBreakpointHitHandler (actionId, ev);
+		}
+		
+		protected void UpdateHitCount (object breakEventHandle, int count)
+		{
+			BreakEvent ev = GetBreakEvent (breakEventHandle);
+			if (ev != null) {
+				ev.HitCount = count;
+				ev.NotifyUpdate ();
+			}
+		}
+		
+		protected void UpdateLastTraceValue (object breakEventHandle, string value)
+		{
+			BreakEvent ev = GetBreakEvent (breakEventHandle);
+			if (ev != null) {
+				ev.LastTraceValue = value;
+				ev.NotifyUpdate ();
+			}
 		}
 		
 		protected abstract void OnRun (DebuggerStartInfo startInfo);
