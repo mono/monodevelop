@@ -80,7 +80,18 @@ FILES =  \
 RES =  \
 	Base.glade \
 	gtk-gui/gui.stetic \
-	icons/BreakPoint.png \
+	icons/breakpoint-16.png \
+	icons/breakpoint-22.png \
+	icons/breakpoint-disable-all-16.png \
+	icons/breakpoint-disable-all-22.png \
+	icons/breakpoint-disabled-16.png \
+	icons/breakpoint-disabled-22.png \
+	icons/breakpoint-invalid-16.png \
+	icons/breakpoint-invalid-22.png \
+	icons/breakpoint-on-off-16.png \
+	icons/breakpoint-on-off-22.png \
+	icons/breakpoint-remove-all-16.png \
+	icons/breakpoint-remove-all-22.png \
 	icons/build-project-16.png \
 	icons/build-project-22.png \
 	icons/build-solution-16.png \

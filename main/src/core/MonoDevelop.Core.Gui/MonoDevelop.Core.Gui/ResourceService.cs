@@ -320,7 +320,7 @@ namespace MonoDevelop.Core.Gui
 			}
 		}
 		
-		internal void AddToIconFactory (string stockId, Gdk.Pixbuf pixbuf, Gtk.IconSize iconSize)
+		public void AddToIconFactory (string stockId, Gdk.Pixbuf pixbuf, Gtk.IconSize iconSize)
 		{
 			Gtk.IconSet iconSet = iconFactory.Lookup (stockId);
 			if (iconSet == null) {
