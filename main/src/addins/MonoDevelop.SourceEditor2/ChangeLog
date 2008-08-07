@@ -1,3 +1,7 @@
+2008-08-07  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.SourceEditor/LanguageItemWindow.cs: Worked on dom.
+
 2008-08-05  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* gtk-gui/objects.xml, gtk-gui/gui.stetic,

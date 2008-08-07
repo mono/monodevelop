@@ -76,7 +76,7 @@ namespace MonoDevelop.SourceEditor
 					s.Append ("</i></small>\n");
 					s.Append (ambience.GetString (((LocalVariableResolveResult)result).ResolvedType, WindowConversionFlags));
 					s.Append (" ");
-					s.Append (((LocalVariableResolveResult)result).VariableName);
+					s.Append (((LocalVariableResolveResult)result).LocalVariable.Name);
 				} else if (result is MemberResolveResult) {
 					IMember member = ((MemberResolveResult)result).ResolvedMember;
 					if (member == null) {
