@@ -51,6 +51,7 @@ namespace MonoDevelop.Projects.Dom.Database
 				connection = new MonoDevelopDatabaseConnection (fileName);
 				CheckTables ();
 			} catch (Exception e) {
+				System.Console.WriteLine("Error while creating connection to:" + fileName + ". Tying to recreate database.");
 				if (connection != null)
 					connection.Dispose ();
 				System.IO.File.Delete (fileName);
@@ -113,83 +114,82 @@ namespace MonoDevelop.Projects.Dom.Database
 		
 		public void GetNamespaceContents (List<IMember> result, IEnumerable<long> compilationUnitIds, IEnumerable<string> subNamespaces, bool caseSensitive)
 		{
-			StringBuilder sb = new StringBuilder ();
-			string query = String.Format (@"SELECT NamespaceID, Name FROM {0} WHERE ({1})",  NamespaceTable, CompileNamespaces (subNamespaces));
-			System.Console.WriteLine("1" + query);
-			IDataReader reader = connection.Query (query);
-			
-			Dictionary<long, string> namespaceTable = new Dictionary<long, string> ();
-			bool foundNamespace = false;
-			if (reader != null) {
-				try {
-					sb.Append ("NamespaceID IN (");
-					while (reader.Read ()) {
-						long   namespaceID = (long)SqliteUtils.FromDbFormat (typeof (long), reader[0]);
-						string name        = (string)SqliteUtils.FromDbFormat (typeof (string), reader[1]);
-						namespaceTable[namespaceID] = name;
-						if (foundNamespace) 
-							sb.Append (", ");
-						sb.Append (namespaceID);
-						foundNamespace = true;
-					}
-					sb.Append (")");
-				} finally {
-					reader.Dispose ();
-				}
-			}
-			
-			string projectIds = CompileProjectIds (compilationUnitIds);
-			query = String.Format (@"SELECT UnitID FROM {0} WHERE {0}.ProjectId IN {1} ",  CompilationUnitTable, projectIds);
-			System.Console.WriteLine(query);
-			StringBuilder unitIds = new StringBuilder ();
-			unitIds.Append ("UnitID IN (");
-			int startLen = unitIds.Length;
-			foreach (long unitId in connection.QueryEnumerable<long> (query)) {
-				if (unitIds.Length > startLen)
-					unitIds.Append (", ");
-				unitIds.Append (unitId);
-			}
-			unitIds.Append (")");
-			
-			if (foundNamespace) {
-				query = String.Format (@"SELECT TypeID, UnitID, MemberID, NamespaceID, ClassType FROM {0} WHERE {1} AND {2}",  DatabaseType.Table, unitIds.ToString (),sb.ToString ());
+			try {
+				StringBuilder sb = new StringBuilder ();
+				string query = String.Format (@"SELECT NamespaceID, Name FROM {0} WHERE ({1})",  NamespaceTable, CompileNamespaces (subNamespaces));
+				IDataReader reader = connection.Query (query);
 				
-				System.Console.WriteLine(query);
-				reader = connection.Query (query);
+				Dictionary<long, string> namespaceTable = new Dictionary<long, string> ();
+				bool foundNamespace = false;
 				if (reader != null) {
 					try {
+						sb.Append ("NamespaceID IN (");
 						while (reader.Read ()) {
-							long nsId = (long)SqliteUtils.FromDbFormat (typeof (long), reader[3]);
-							string nsName = namespaceTable.ContainsKey (nsId) ? namespaceTable[nsId] : GetNamespaceName (nsId);
-							result.Add (CreateDomType (reader, nsName));
+							long   namespaceID = (long)SqliteUtils.FromDbFormat (typeof (long), reader[0]);
+							string name        = (string)SqliteUtils.FromDbFormat (typeof (string), reader[1]);
+							namespaceTable[namespaceID] = name;
+							if (foundNamespace) 
+								sb.Append (", ");
+							sb.Append (namespaceID);
+							foundNamespace = true;
 						}
+						sb.Append (")");
 					} finally {
 						reader.Dispose ();
 					}
 				}
-			}
-			
-			Dictionary<string, bool> insertedNamespaces = new Dictionary<string, bool> ();
-			foreach (string definedNamespace in connection.QueryEnumerable<string> (String.Format (@"SELECT Name FROM {0}", NamespaceTable))) {
-				if (String.IsNullOrEmpty (definedNamespace))
-					continue;
-				foreach (string subNamespace in subNamespaces) {
-					if (subNamespace.Length >= definedNamespace.Length)
-						continue;
-					if (definedNamespace.StartsWith (subNamespace, caseSensitive ? StringComparison.InvariantCulture : StringComparison.InvariantCultureIgnoreCase)) {
-						string tmp = subNamespace.Length > 0 ? definedNamespace.Substring (subNamespace.Length + 1) : definedNamespace;
-						int idx = tmp.IndexOf('.');
-						string namespaceName = idx > 0 ? tmp.Substring (0, idx) : tmp;
-						if (!insertedNamespaces.ContainsKey (namespaceName)) {
-							Namespace ns = new Namespace (namespaceName);
-							if (!result.Contains (ns))
-								result.Add (ns);
-							insertedNamespaces[namespaceName] = true;
+				
+				string projectIds = CompileProjectIds (compilationUnitIds);
+				query = String.Format (@"SELECT UnitID FROM {0} WHERE ProjectId IN {1} ",  CompilationUnitTable, projectIds);
+				StringBuilder unitIds = new StringBuilder ();
+				unitIds.Append ("UnitID IN (");
+				int startLen = unitIds.Length;
+				foreach (long unitId in connection.QueryEnumerable<long> (query)) {
+					if (unitIds.Length > startLen)
+						unitIds.Append (", ");
+					unitIds.Append (unitId);
+				}
+				unitIds.Append (")");
+				
+				if (foundNamespace) {
+					query = String.Format (@"SELECT TypeID, UnitID, MemberID, NamespaceID, ClassType FROM {0} WHERE {1} AND {2}",  DatabaseType.Table, unitIds.ToString (),sb.ToString ());
+					reader = connection.Query (query);
+					if (reader != null) {
+						try {
+							while (reader.Read ()) {
+								long nsId = (long)SqliteUtils.FromDbFormat (typeof (long), reader[3]);
+								string nsName = namespaceTable.ContainsKey (nsId) ? namespaceTable[nsId] : GetNamespaceName (nsId);
+								result.Add (CreateDomType (reader, nsName));
+							}
+						} finally {
+							reader.Dispose ();
 						}
 					}
 				}
+				
+				Dictionary<string, bool> insertedNamespaces = new Dictionary<string, bool> ();
+				foreach (string definedNamespace in connection.QueryEnumerable<string> (String.Format (@"SELECT Name FROM {0}", NamespaceTable))) {
+					if (String.IsNullOrEmpty (definedNamespace))
+						continue;
+					foreach (string subNamespace in subNamespaces) {
+						if (subNamespace.Length >= definedNamespace.Length)
+							continue;
+						if (definedNamespace.StartsWith (subNamespace, caseSensitive ? StringComparison.InvariantCulture : StringComparison.InvariantCultureIgnoreCase)) {
+							string tmp = subNamespace.Length > 0 ? definedNamespace.Substring (subNamespace.Length + 1) : definedNamespace;
+							int idx = tmp.IndexOf('.');
+							string namespaceName = idx > 0 ? tmp.Substring (0, idx) : tmp;
+							if (!insertedNamespaces.ContainsKey (namespaceName)) {
+								Namespace ns = new Namespace (namespaceName);
+								if (!result.Contains (ns))
+									result.Add (ns);
+								insertedNamespaces[namespaceName] = true;
+							}
+						}
+					}
+				}
+			} catch (Exception e) {
+				MonoDevelop.Core.LoggingService.LogError ("Error while GetNamespaceContents" , e);
 			}
-			System.Console.WriteLine("DONE");
 		}
 		
 		public IEnumerable<IReturnType> GetSubclasses (IType type, IEnumerable<long> projectIds)
@@ -218,8 +218,15 @@ namespace MonoDevelop.Projects.Dom.Database
 			} else {
 				query = String.Format (@"SELECT TypeID, UnitID, MemberID, NamespaceID, ClassType FROM {0}",  DatabaseType.Table);
 			}
-			System.Console.WriteLine("GetTypeList:" + query);
-			IDataReader reader = connection.Query (query);
+			
+			IDataReader reader = null;
+			
+			try {
+				reader = connection.Query (query);
+			} catch (Exception e) {
+				MonoDevelop.Core.LoggingService.LogError ("Error while GetTypeList:" + query, e);
+			}
+			
 			if (reader != null) {
 				try {
 					while (reader.Read ()) {
@@ -275,7 +282,6 @@ namespace MonoDevelop.Projects.Dom.Database
 			
 			StringBuilder sb = new StringBuilder ();
 			string query = String.Format (@"SELECT NamespaceID, Name FROM {0} WHERE ({1})",  NamespaceTable, nb.ToString ());
-			System.Console.WriteLine(query);
 			IDataReader reader = connection.Query (query);
 			
 			if (reader != null) {
@@ -301,10 +307,8 @@ namespace MonoDevelop.Projects.Dom.Database
 				} else {
 					query = String.Format (@"SELECT TypeID, UnitID, {0}.MemberID, NamespaceID, ClassType FROM {0}, {1} WHERE ({0}.MemberID={1}.MemberID AND {1}.Name='{2}') AND ({3})",  DatabaseType.Table, MemberTable, typeName, sb.ToString ());
 				}
-				System.Console.WriteLine(query);
 				reader = connection.Query (query);
 				while (reader.Read ()) {
-					System.Console.WriteLine("FOUND ONE !!!!");
 					yield return CreateDomType (reader, null);
 				}
 			}
@@ -398,11 +402,16 @@ namespace MonoDevelop.Projects.Dom.Database
 		public void UpdateCompilationUnit (ICompilationUnit unit, long projectId, string name)
 		{
 			long unitID = GetUnitId (name);
-			if (unitID > 0) {
-				connection.Execute (String.Format (@"DELETE FROM {0} WHERE UnitID={1}", CompilationUnitTable, unitID));
-				foreach (DatabaseType type in GetTypeList (new long [] {unitID})) {
-					type.Delete ();
+			try {
+				if (unitID > 0) {
+					connection.Execute (String.Format (@"DELETE FROM {0} WHERE UnitID={1}", CompilationUnitTable, unitID));
+					foreach (DatabaseType type in GetTypeList (new long [] {unitID})) {
+						type.Delete ();
+					}
 				}
+			} catch (Exception e) {
+				MonoDevelop.Core.LoggingService.LogError ("Error while UpdateCompilationUnit:" + name, e);
+				return;
 			}
 			InsertCompilationUnit (unit, projectId, name);
 		}
@@ -418,7 +427,10 @@ namespace MonoDevelop.Projects.Dom.Database
 				connection.Execute ("END TRANSACTION");
 				return unitId;
 			} catch (Exception e) {
-				connection.Execute ("ROLLBACK");
+				try {
+					connection.Execute ("ROLLBACK");
+				} catch (Exception)  {
+				}
 				MonoDevelop.Core.LoggingService.LogError ("Database error while inserting compilation unit " + name, e);
 			}
 			return -1;
@@ -426,9 +438,15 @@ namespace MonoDevelop.Projects.Dom.Database
 		
 		public long InsertProject (string name)
 		{
-			long projectId = connection.Execute (String.Format (@"INSERT INTO {0} (Name) VALUES ('{1}')", ProjectsTable, name));
+			try {
+				long projectId = connection.Execute (String.Format (@"INSERT INTO {0} (Name) VALUES ('{1}')", ProjectsTable, name));
 //			System.Console.WriteLine (projectId);
-			return projectId;
+				return projectId;
+			} catch (Exception e) {
+				MonoDevelop.Core.LoggingService.LogError ("Error while InsertProject(" + name+")", e);
+				return -1;
+			}
+				
 		}
 		
 		internal const string ProjectsTable                  = "Projects";

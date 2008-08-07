@@ -48,6 +48,13 @@ namespace MonoDevelop.Projects.Dom.Database
 	
 		public override ICompilationUnit CompilationUnit {
 			get {
+				if (unit == null) {
+					// Compilation unit info may be extended
+					IDataReader reader = db.Connection.Query (String.Format (@"SELECT Name FROM {0} WHERE UnitID={1}", CodeCompletionDatabase.CompilationUnitTable, unitId));
+					if (reader.Read ()) {
+						unit = new CompilationUnit (SqliteUtils.FromDbFormat<string> (reader[0]));
+					}
+				}
 				return unit;
 			}
 		}
@@ -70,6 +77,67 @@ namespace MonoDevelop.Projects.Dom.Database
 			}
 		}
 		
+		public override IReturnType ReturnType {
+			get {
+				CheckReadMembers ();
+				return base.ReturnType;
+			}
+		}
+		
+		public override string FullName {
+			get {
+				CheckReadMembers ();
+				return base.FullName;
+			}
+		}
+		
+		public override string Name {
+			get {
+				CheckReadMembers ();
+				return base.Name;
+			}
+		}
+		public override string Documentation {
+			get {
+				CheckReadMembers ();
+				return base.Documentation;
+			}
+		}
+		public override DomLocation Location {
+			get {
+				CheckReadMembers ();
+				return base.Location;
+			}
+		}
+		public override DomRegion BodyRegion {
+			get {
+				CheckReadMembers ();
+				return base.BodyRegion;
+			}
+		}
+		
+		public override Modifiers Modifiers {
+			get {
+				CheckReadMembers ();
+				return base.Modifiers;
+			}
+		}
+		
+		bool readMembers = false;
+		void CheckReadMembers ()
+		{
+			if (readMembers)
+				return;
+			readMembers = true;
+			DatabaseField.FillMembers (this, db, memberId);
+			base.CalculateFullName ();
+		}
+		
+		protected override void CalculateFullName ()
+		{
+			// Nothing - full name is calculated in CheckReadMembers ()
+		}
+		
 		public DatabaseType (CodeCompletionDatabase db, long unitId, long memberId, long typeId, string namespaceName, ClassType classType)
 		{
 			this.db        = db;
@@ -78,14 +146,6 @@ namespace MonoDevelop.Projects.Dom.Database
 			this.typeId    = typeId;
 			this.Namespace = namespaceName;
 			this.ClassType = classType;
-			
-			IDataReader reader = db.Connection.Query (String.Format (@"SELECT Name FROM {0} WHERE UnitID={1}", CodeCompletionDatabase.CompilationUnitTable, unitId));
-			if (reader.Read ()) {
-				unit = new CompilationUnit (SqliteUtils.FromDbFormat<string> (reader[0]));
-			} else {
-				unit = null;
-			}
-			DatabaseField.FillMembers (this, db, memberId);
 		}
 		
 		public override IEnumerable<IMember> Members {

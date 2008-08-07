@@ -60,7 +60,7 @@ namespace MonoDevelop.Projects.Dom
 			fullName = DeclaringType != null ? DeclaringType.FullName + "." + Name : Name;
 		}
 		
-		public IReturnType ReturnType {
+		public virtual IReturnType ReturnType {
 			get {
 				return returnType;
 			}
@@ -90,7 +90,7 @@ namespace MonoDevelop.Projects.Dom
 		protected Modifiers modifiers;
 		List<IAttribute> attributes = null;
 		
-		public string Name {
+		public virtual string Name {
 			get {
 				return name;
 			}
@@ -100,7 +100,7 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
-		public string Documentation {
+		public virtual string Documentation {
 			get {
 				return documentation;
 			}
@@ -109,7 +109,7 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
-		public DomLocation Location {
+		public virtual DomLocation Location {
 			get {
 				return location;
 			}
@@ -118,7 +118,7 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
-		public DomRegion BodyRegion {
+		public virtual DomRegion BodyRegion {
 			get {
 				return bodyRegion;
 			}
@@ -127,7 +127,7 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
-		public Modifiers Modifiers {
+		public virtual Modifiers Modifiers {
 			get {
 				return modifiers;
 			}
