@@ -208,8 +208,8 @@ namespace CSharpBinding.Parser
 		
 		protected override int GetVariableNamePosition (IEditableTextFile file, LocalVariable var)
 		{
-			int begin = file.GetPositionFromLineColumn (var.Location.Line, var.Location.Column);
-			int end = file.GetPositionFromLineColumn (var.Location.Line, var.Location.Column + var.Name.Length);
+			int begin = file.GetPositionFromLineColumn (var.Region.Start.Line, var.Region.Start.Column);
+			int end = file.GetPositionFromLineColumn (var.Region.Start.Line, var.Region.End.Column);
 			
 			if (begin == -1 || end == -1)
 				return -1;

@@ -313,7 +313,7 @@ namespace MonoDevelop.CSharpBinding
 						varType = ConvertTypeReference (var.TypeRef);
 					}
 					varType = ResolveType (varType);
-					result = new LocalVariableResolveResult (identifier, var.IsLoopVariable);
+					result = new LocalVariableResolveResult (new LocalVariable (this.CallingMember, identifier, varType, new DomRegion (var.StartPos.Line, var.StartPos.Column, var.EndPos.Line, var.EndPos.Column)), var.IsLoopVariable);
 					result.ResolvedType = varType;
 					goto end;
 				}
