@@ -27,7 +27,7 @@ FILES =  \
 	Mono.TextEditor.Highlighting/SyntaxModeService.cs \
 	Mono.TextEditor.Highlighting/WorkerThread.cs \
 	Mono.TextEditor.Highlighting/XmlReadHelper.cs \
-	Mono.TextEditor/BookmarkMargin.cs \
+	Mono.TextEditor/BookmarkMarker.cs \
 	Mono.TextEditor/BufferedTextReader.cs \
 	Mono.TextEditor/Caret.cs \
 	Mono.TextEditor/CodeSegmentPreviewWindow.cs \
@@ -42,7 +42,7 @@ FILES =  \
 	Mono.TextEditor/GapBuffer.cs \
 	Mono.TextEditor/GutterMargin.cs \
 	Mono.TextEditor/IBuffer.cs \
-	Mono.TextEditor/IMargin.cs \
+	Mono.TextEditor/IconMargin.cs \
 	Mono.TextEditor/ISearchEngine.cs \
 	Mono.TextEditor/ISegment.cs \
 	Mono.TextEditor/ITooltipProvider.cs \
@@ -50,6 +50,7 @@ FILES =  \
 	Mono.TextEditor/LineSegment.cs \
 	Mono.TextEditor/LineSegmentTree.cs \
 	Mono.TextEditor/LineSplitter.cs \
+	Mono.TextEditor/Margin.cs \
 	Mono.TextEditor/RedBlackTree.cs \
 	Mono.TextEditor/ReplaceEventArgs.cs \
 	Mono.TextEditor/SearchResult.cs \

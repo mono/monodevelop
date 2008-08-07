@@ -1,3 +1,26 @@
+2008-08-07  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Core.Gui.mdp, Makefile.am, icons/breakpoint-new-16.png,
+	  icons/breakpoint-new-22.png, MonoDevelop.Core.Gui.addin.xml: Added
+	  icons for New Breakpoint.
+	* MonoDevelop.Core.Gui/GLibLogging.cs,
+	  MonoDevelop.Core.Gui/PlatformService.cs: Fix warnings.
+
+2008-08-06  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Core.Gui.mdp, Makefile.am,
+	  icons/breakpoint-on-off-22.png, icons/breakpoint-invalid-16.png,
+	  icons/breakpoint-16.png, icons/breakpoint-disable-all-16.png,
+	  icons/breakpoint-invalid-22.png, icons/breakpoint-22.png,
+	  icons/breakpoint-remove-all-16.png,
+	  icons/breakpoint-disable-all-22.png,
+	  icons/breakpoint-disabled-16.png, icons/BreakPoint.png,
+	  icons/breakpoint-remove-all-22.png,
+	  icons/breakpoint-disabled-22.png, icons/breakpoint-on-off-16.png,
+	  MonoDevelop.Core.Gui.addin.xml: Add new breakpoint icons.
+	* MonoDevelop.Core.Gui/ResourceService.cs: Made public the api for
+	  registering new icons.
+
 2008-07-24  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Core.Gui/ResourceService.cs: For icon names that begin

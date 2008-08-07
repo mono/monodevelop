@@ -57,7 +57,20 @@
 
 
 	<Extension path = "/MonoDevelop/Core/StockIcons">
-		<StockIcon stockid = "md-break-point" resource = "BreakPoint.png" />
+		<StockIcon stockid = "md-breakpoint" resource = "breakpoint-22.png"/>
+		<StockIcon stockid = "md-breakpoint" resource = "breakpoint-16.png" size="Menu"/>
+		<StockIcon stockid = "md-breakpoint-new" resource = "breakpoint-new-22.png"/>
+		<StockIcon stockid = "md-breakpoint-new" resource = "breakpoint-new-16.png" size="Menu"/>
+		<StockIcon stockid = "md-breakpoint-disabled" resource = "breakpoint-disabled-22.png"/>
+		<StockIcon stockid = "md-breakpoint-disabled" resource = "breakpoint-disabled-16.png" size="Menu"/>
+		<StockIcon stockid = "md-breakpoint-invalid" resource = "breakpoint-invalid-22.png"/>
+		<StockIcon stockid = "md-breakpoint-invalid" resource = "breakpoint-invalid-16.png" size="Menu"/>
+		<StockIcon stockid = "md-breakpoint-on-off" resource = "breakpoint-on-off-22.png"/>
+		<StockIcon stockid = "md-breakpoint-on-off" resource = "breakpoint-on-off-16.png" size="Menu"/>
+		<StockIcon stockid = "md-breakpoint-disable-all" resource = "breakpoint-disable-all-22.png"/>
+		<StockIcon stockid = "md-breakpoint-disable-all" resource = "breakpoint-disable-all-16.png" size="Menu"/>
+		<StockIcon stockid = "md-breakpoint-remove-all" resource = "breakpoint-remove-all-22.png"/>
+		<StockIcon stockid = "md-breakpoint-remove-all" resource = "breakpoint-remove-all-16.png" size="Menu"/>
 		<StockIcon stockid = "md-build-combine" resource = "build-solution-22.png" />
 		<StockIcon stockid = "md-build-combine" resource = "build-solution-16.png" size="Menu"/>
 		<StockIcon stockid = "md-build-current-selected-project" resource = "build-project-22.png" />

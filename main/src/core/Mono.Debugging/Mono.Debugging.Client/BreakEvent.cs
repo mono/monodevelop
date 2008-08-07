@@ -40,6 +40,7 @@ namespace Mono.Debugging.Client
 		string customActionId;
 		string traceExpression;
 		int hitCount;
+		string lastTraceValue;
 		
 		public BreakEvent()
 		{
@@ -59,6 +60,9 @@ namespace Mono.Debugging.Client
 			s = elem.GetAttribute ("traceExpression");
 			if (s.Length > 0)
 				traceExpression = s;
+			s = elem.GetAttribute ("hitCount");
+			if (s.Length > 0)
+				hitCount = int.Parse (s);
 		}
 		
 		internal virtual XmlElement ToXml (XmlDocument doc)
@@ -72,6 +76,8 @@ namespace Mono.Debugging.Client
 				elem.SetAttribute ("customActionId", customActionId);
 			if (!string.IsNullOrEmpty (traceExpression))
 				elem.SetAttribute ("traceExpression", traceExpression);
+			if (hitCount > 0)
+				elem.SetAttribute ("hitCount", hitCount.ToString ());
 			return elem;
 		}
 		
@@ -152,11 +158,26 @@ namespace Mono.Debugging.Client
 				hitCount = value;
 			}
 		}
+
+		public string LastTraceValue {
+			get {
+				return lastTraceValue;
+			}
+			internal set {
+				lastTraceValue = value;
+			}
+		}
 		
 		public void CommitChanges ()
 		{
 			if (store != null)
 				store.NotifyBreakEventChanged (this);
+		}
+		
+		internal void NotifyUpdate ()
+		{
+			if (store != null)
+				store.NotifyBreakEventUpdated (this);
 		}
 		
 		public BreakEvent Clone ()

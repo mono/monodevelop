@@ -41,7 +41,6 @@ namespace MonoDevelop.Core.Gui
 {
 	public abstract class PlatformService : AbstractService
 	{
-		Gdk.Pixbuf defaultIcon;
 		Hashtable iconHash = new Hashtable ();
 		
 		public abstract DesktopApplication GetDefaultApplication (string mimetype);

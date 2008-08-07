@@ -34,6 +34,11 @@ namespace DebuggerServer
 		MD.Thread activeThread;
 		Dictionary<int,BreakEvent> events = new Dictionary<int,BreakEvent> ();
 		Dictionary<int,string> lastConditionValue = new Dictionary<int,string> ();
+		
+		DateTime lastBreakEventUpdate = DateTime.Now;
+		Dictionary<int, ST.WaitCallback> breakUpdates = new Dictionary<int,ST.WaitCallback> ();
+		bool breakUpdateEventsQueued;
+		const int BreakEventUpdateNotifyDelay = 500;
 
 		public DebuggerServer (IDebuggerController dc)
 		{
@@ -270,8 +275,10 @@ namespace DebuggerServer
 			// Check hit count
 			if (be.HitCount > 0) {
 				be.HitCount--;
-				if (be.HitCount > 0)
-					return false;
+				DispatchEvent (delegate {
+					NotifyBreakEventUpdate (eventHandle, be.HitCount, null);
+				});
+				return false;
 			}
 			
 			DL.Breakpoint bp = be as DL.Breakpoint;
@@ -308,7 +315,8 @@ namespace DebuggerServer
 					if (val != null) {
 						string str = evaluator.TargetObjectToString (frame.Thread, val);
 						DispatchEvent (delegate {
-							controller.OnTargetOutput (false, str);
+							controller.OnTargetOutput (false, str + "\n");
+							NotifyBreakEventUpdate (eventHandle, -1, str);
 						});
 					}
 					return false;
@@ -327,6 +335,44 @@ namespace DebuggerServer
 			} catch {
 				return null;
 			}
+		}
+		
+		void NotifyBreakEventUpdate (int eventHandle, int hitCount, string lastTrace)
+		{
+			bool notify = false;
+			
+			lock (breakUpdates)
+			{
+				int span = (int) (DateTime.Now - lastBreakEventUpdate).TotalMilliseconds;
+				if (span >= BreakEventUpdateNotifyDelay && !breakUpdateEventsQueued) {
+					// Last update was more than 0.5s ago. The update can be sent.
+					lastBreakEventUpdate = DateTime.Now;
+					notify = true;
+				} else {
+					// Queue the event notifications to avoid wasting too much time
+					breakUpdates [eventHandle] = delegate {
+						controller.UpdateBreakpoint (eventHandle, hitCount, lastTrace);
+					};
+					if (!breakUpdateEventsQueued) {
+						breakUpdateEventsQueued = true;
+						
+						ST.ThreadPool.QueueUserWorkItem (delegate {
+							ST.Thread.Sleep (BreakEventUpdateNotifyDelay - span);
+							List<ST.WaitCallback> copy;
+							lock (breakUpdates) {
+								copy = new List<ST.WaitCallback> (breakUpdates.Values);
+								breakUpdates.Clear ();
+								breakUpdateEventsQueued = false;
+								lastBreakEventUpdate = DateTime.Now;
+							}
+							foreach (ST.WaitCallback wc in copy)
+								wc (null);
+						});
+					}
+				}
+			}
+			if (notify)
+				controller.UpdateBreakpoint (eventHandle, hitCount, lastTrace);
 		}
 
 		public void Continue ()

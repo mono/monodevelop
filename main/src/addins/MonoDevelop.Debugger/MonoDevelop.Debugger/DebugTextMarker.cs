@@ -108,6 +108,14 @@ namespace MonoDevelop.Debugger
 			cr.LineWidth = 1;
 			cr.Stroke ();
 		}
+
+		public void MousePress (MarginMouseEventArgs args)
+		{
+		}
+		
+		public void MouseRelease (MarginMouseEventArgs args)
+		{
+		}
 	}
 	
 	public class BreakpointTextMarker : DebugTextMarker

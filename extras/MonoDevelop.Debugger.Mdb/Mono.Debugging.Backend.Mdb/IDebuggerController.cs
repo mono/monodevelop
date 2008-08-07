@@ -18,5 +18,7 @@ namespace Mono.Debugging.Backend.Mdb
 		void OnDebuggerOutput (bool isStderr, string text);
 		
 		bool OnCustomBreakpointAction (string actionId, object handle);
+		
+		void UpdateBreakpoint (object handle, int count, string lastTrace);
 	}
 }

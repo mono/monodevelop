@@ -36,7 +36,6 @@ namespace Mono.TextEditor
 	{
 		int length;		
 		int delimiterLength;
-		public bool IsBookmarked = false;
 		List<TextMarker> markers = null;
 		RedBlackTree<LineSegmentTree.TreeNode>.RedBlackTreeNode treeNode;
 		
@@ -110,6 +109,23 @@ namespace Mono.TextEditor
 			}
 		}
 
+		public bool IsBookmarked  {
+			get {
+				if (markers == null)
+					return false;
+				return markers.Contains (BookmarkMarker.Instance);
+			}
+			set {
+				if (value) {
+					if (!IsBookmarked)
+						AddMarker (BookmarkMarker.Instance);
+				} else {
+					if (markers != null)
+						markers.Remove (BookmarkMarker.Instance);
+				}
+			}
+		}
+		
 		public LineSegment (int length, int delimiterLength)
 		{
 			this.length          = length;

@@ -16,6 +16,10 @@
 	  MonoDevelop.Projects.Dom.Database/CodeCompletionDatabase.cs: Worked
 	  on database security & speedup.
 
+2008-08-06  Eric Butler <eric@extremeboredom.net>
+
+	* MonoDevelop.Projects/DotNetProject.cs: Add additional null check.
+
 2008-08-06  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom.Parser/DatabaseProjectDom.cs,

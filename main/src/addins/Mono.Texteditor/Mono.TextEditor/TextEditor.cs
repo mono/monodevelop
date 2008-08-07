@@ -46,13 +46,13 @@ namespace Mono.TextEditor
 		TextEditorData textEditorData;
 		
 		protected Dictionary <int, EditAction> keyBindings = new Dictionary<int,EditAction> ();
-		protected BookmarkMargin   bookmarkMargin;
+		protected IconMargin       iconMargin;
 		protected GutterMargin     gutterMargin;
 		protected FoldMarkerMargin foldMarkerMargin;
 		protected TextViewMargin   textViewMargin;
 		
 		internal LineSegment longestLine;
-		List<IMargin> margins = new List<IMargin> ();
+		List<Margin> margins = new List<Margin> ();
 		int oldRequest = -1;
 		
 		bool isDisposed = false;
@@ -325,17 +325,19 @@ namespace Mono.TextEditor
 			
 			keyBindings.Add (GetKeyCode (Gdk.Key.b, Gdk.ModifierType.ControlMask), new GotoMatchingBracket ());
 			
-			bookmarkMargin = new BookmarkMargin (this);
+			iconMargin = new IconMargin (this);
 			gutterMargin = new GutterMargin (this);
 			foldMarkerMargin = new FoldMarkerMargin (this);
 			textViewMargin = new TextViewMargin (this);
 			
-			margins.Add (bookmarkMargin);
+			margins.Add (iconMargin);
 			margins.Add (gutterMargin);
 			margins.Add (foldMarkerMargin);
 			margins.Add (textViewMargin);
 			this.textEditorData.SelectionChanged += TextEditorDataSelectionChanged; 
 			Document.DocumentUpdated += DocumentUpdatedHandler;
+			
+			iconMargin.ButtonPressed += OnIconMarginPressed;
 			
 			this.textEditorData.Options = TextEditorOptions.Options;
 			this.textEditorData.Options.Changed += OptionsChanged;
@@ -471,14 +473,31 @@ namespace Mono.TextEditor
 				return;
 			this.textEditorData.ColorStyle = Options.GetColorStyle (this);
 			
-			bookmarkMargin.IsVisible   = Options.ShowIconMargin;
+			iconMargin.IsVisible   = Options.ShowIconMargin;
 			gutterMargin.IsVisible     = Options.ShowLineNumberMargin;
 			foldMarkerMargin.IsVisible = Options.ShowFoldMargin;
-			foreach (IMargin margin in this.margins) {
+			foreach (Margin margin in this.margins) {
 				margin.OptionsChanged ();
 			}
 			SetAdjustments (Allocation);
 			this.QueueDraw ();
+		}
+		
+		void OnIconMarginPressed (object s, MarginMouseEventArgs args)
+		{
+			if (args.Type != Gdk.EventType.ButtonPress)
+				return;
+			
+			int lineNumber = Document.VisualToLogicalLine ((int)((args.Y + VAdjustment.Value) / LineHeight));
+			if (lineNumber >= Document.LineCount)
+				return;
+			
+			LineSegment lineSegment = Document.GetLine (lineNumber);
+			if (args.Button == 1) {
+				lineSegment.IsBookmarked = !lineSegment.IsBookmarked;
+				Document.RequestUpdate (new LineUpdate (lineNumber));
+				Document.CommitDocumentUpdate ();
+			}
 		}
 		
 		protected static int GetKeyCode (Gdk.Key key)
@@ -526,14 +545,14 @@ namespace Mono.TextEditor
 				}
 				
 				if (margins != null) {
-					foreach (IMargin margin in this.margins) {
+					foreach (Margin margin in this.margins) {
 						if (margin is IDisposable)
 							((IDisposable)margin).Dispose ();
 					}
 					this.margins = null;
 				}
 				
-				bookmarkMargin = null; 
+				iconMargin = null; 
 				gutterMargin = null;
 				foldMarkerMargin = null;
 				textViewMargin = null;
@@ -673,7 +692,7 @@ namespace Mono.TextEditor
 			return true;
 		}
 		
-		bool mousePressed = false;
+		int mouseButtonPressed = 0;
 		uint lastTime;
 		int  pressPositionX, pressPositionY;
 		protected override bool OnButtonPressEvent (Gdk.EventButton e)
@@ -687,21 +706,20 @@ namespace Mono.TextEditor
 				} else {
 					lastTime = 0;
 				}
-				if (e.Button == 1)
-					mousePressed = true;
+				mouseButtonPressed = (int) e.Button;
 				int startPos;
-				IMargin margin = GetMarginAtX ((int)e.X, out startPos);
+				Margin margin = GetMarginAtX ((int)e.X, out startPos);
 				if (margin != null) {
-					margin.MousePressed ((int)e.Button, (int)(e.X - startPos), (int)e.Y, e.Type, e.State);
+					margin.MousePressed (new MarginMouseEventArgs (this, (int)e.Button, (int)(e.X - startPos), (int)e.Y, e.Type, e.State));
 				}
 			}
 			return base.OnButtonPressEvent (e);
 		}
 		
-		IMargin GetMarginAtX (int x, out int startingPos)
+		Margin GetMarginAtX (int x, out int startingPos)
 		{
 			int curX = 0;
-			foreach (IMargin margin in this.margins) {
+			foreach (Margin margin in this.margins) {
 				if (!margin.IsVisible)
 					continue;
 				if (curX <= x && (x <= curX + margin.Width || margin.Width < 0)) {
@@ -717,15 +735,15 @@ namespace Mono.TextEditor
 		protected override bool OnButtonReleaseEvent (EventButton e)
 		{
 			int startPos;
-			IMargin margin = GetMarginAtX ((int)e.X, out startPos);
+			Margin margin = GetMarginAtX ((int)e.X, out startPos);
 			if (margin != null)
-				margin.MouseReleased ((int)e.Button, (int)(e.X - startPos), (int)e.Y, e.State);
+				margin.MouseReleased (new MarginMouseEventArgs (this, (int)e.Button, (int)(e.X - startPos), (int)e.Y, EventType.ButtonRelease, e.State));
 			ResetMouseState ();
 			return base.OnButtonReleaseEvent (e);
 		}
 		protected void ResetMouseState ()
 		{
-			mousePressed = false;
+			mouseButtonPressed = 0;
 			textViewMargin.inDrag = false;
 			textViewMargin.inSelectionDrag = false;
 		}
@@ -820,7 +838,7 @@ namespace Mono.TextEditor
 			return true;
 		}
 		
-		IMargin oldMargin = null;
+		Margin oldMargin = null;
 		protected override bool OnMotionNotifyEvent (Gdk.EventMotion e)
 		{
 			mx = e.X - textViewMargin.XOffset;
@@ -828,7 +846,7 @@ namespace Mono.TextEditor
 			UpdateTooltip ();
 			
 			int startPos;
-			IMargin margin = GetMarginAtX ((int)e.X, out startPos);
+			Margin margin = GetMarginAtX ((int)e.X, out startPos);
 			if (margin != null)
 				GdkWindow.Cursor = margin.MarginCursor;
 			
@@ -845,7 +863,7 @@ namespace Mono.TextEditor
 				selection = SelectionRange;
 				textViewMargin.inDrag = false;
 			} else if (margin != null) {
-				margin.MouseHover ((int)(e.X - startPos), (int)e.Y, mousePressed);
+				margin.MouseHover (new MarginMouseEventArgs (this, mouseButtonPressed, (int)(e.X - startPos), (int)e.Y, EventType.MotionNotify, e.State));
 			}
 			oldMargin = margin;
 			return base.OnMotionNotifyEvent (e);
@@ -899,6 +917,10 @@ namespace Mono.TextEditor
 			get {
 				return textViewMargin;
 			}
+		}
+		
+		public Margin IconMargin {
+			get { return iconMargin; }
 		}
 		
 		public Gdk.Point DocumentToVisualLocation (DocumentLocation loc)
@@ -1045,7 +1067,7 @@ namespace Mono.TextEditor
 			for (int visualLineNumber = startLine; visualLineNumber <= endLine; visualLineNumber++) {
 				int curX = 0;
 				int logicalLineNumber = Document.VisualToLogicalLine (visualLineNumber + firstLine);
-				foreach (IMargin margin in this.margins) {
+				foreach (Margin margin in this.margins) {
 					if (margin.IsVisible) {
 						margin.XOffset = curX;
 						curX += margin.Width;

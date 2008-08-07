@@ -19,6 +19,7 @@ namespace Mono.Debugging.Backend.Mdb
 		IDebuggerServer debugger;
 		Process process;
 		IDebuggerSessionFrontend frontend;
+		MonoDebuggerSession session;
 		string unixRemotingFile;
 		
 		ManualResetEvent runningEvent = new ManualResetEvent (false);
@@ -29,8 +30,9 @@ namespace Mono.Debugging.Backend.Mdb
 			get { return debugger; }
 		}
 		
-		public DebuggerController (IDebuggerSessionFrontend frontend)
+		public DebuggerController (MonoDebuggerSession session, IDebuggerSessionFrontend frontend)
 		{
+			this.session = session;
 			this.frontend = frontend;
 		}
 
@@ -75,6 +77,11 @@ namespace Mono.Debugging.Backend.Mdb
 		public bool OnCustomBreakpointAction (string actionId, object handle)
 		{
 			return frontend.NotifyCustomBreakpointAction (actionId, handle);
+		}
+		
+		public void UpdateBreakpoint (object handle, int count, string lastTrace)
+		{
+			session.UpdateBreakEvent (handle, count, lastTrace);
 		}
 		
 		#endregion

@@ -86,6 +86,8 @@ namespace MonoDevelop.Components.Commands
 				Sensitive = cmdInfo.Enabled;
 			if (cmdInfo.Visible != Visible)
 				Visible = cmdInfo.Visible;
+			if (string.IsNullOrEmpty (cmdInfo.Icon))
+				IsImportant = true;
 		}
 	}
 }

@@ -31,6 +31,8 @@ using System;
 using Gtk;
 
 namespace MonoDevelop.Components {
+	[System.ComponentModel.Category("MonoDevelop.Components")]
+	[System.ComponentModel.ToolboxItem(true)]
 	public class IconView : ScrolledWindow {
 		Gtk.IconView iconView;
 		ListStore store;

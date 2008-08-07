@@ -1,3 +1,8 @@
+2008-08-07  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* GdbSession.cs: Implemented support for conditions, trace expressions
+	  and hit counts.
+
 2008-08-05  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* GdbSession.cs: Track api changes.

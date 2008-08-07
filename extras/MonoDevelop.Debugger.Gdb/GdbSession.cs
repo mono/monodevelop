@@ -25,6 +25,9 @@
 //
 //
 
+// Uncomment to see the commands sent to gdb and the output it generates
+// #define GDB_OUTPUT
+
 using System;
 using System.Globalization;
 using System.Text;
@@ -53,7 +56,14 @@ namespace MonoDevelop.Debugger.Gdb
 		int activeThread = -1;
 		string currentProcessName;
 		List<string> tempVariableObjects = new List<string> ();
+		Dictionary<int,Breakpoint> breakpoints = new Dictionary<int,Breakpoint> ();
+		List<Breakpoint> breakpointsWithHitCount = new List<Breakpoint> ();
 		
+		DateTime lastBreakEventUpdate = DateTime.Now;
+		Dictionary<int, WaitCallback> breakUpdates = new Dictionary<int,WaitCallback> ();
+		bool breakUpdateEventsQueued;
+		const int BreakEventUpdateNotifyDelay = 500;
+
 		bool internalStop;
 			
 		object syncLock = new object ();
@@ -225,10 +235,20 @@ namespace MonoDevelop.Debugger.Gdb
 			lock (gdbLock) {
 				bool dres = InternalStop ();
 				try {
-					GdbCommandResult res = RunCommand ("-break-insert", bp.FileName + ":" + bp.Line);
+					string extraCmd = string.Empty;
+					if (bp.HitCount > 0) {
+						extraCmd += "-i " + bp.HitCount;
+						breakpointsWithHitCount.Add (bp);
+					}
+					if (!string.IsNullOrEmpty (bp.ConditionExpression)) {
+						if (!bp.BreakIfConditionChanges)
+							extraCmd += " -c " + bp.ConditionExpression;
+					}
+					GdbCommandResult res = RunCommand ("-break-insert", extraCmd.Trim (), bp.FileName + ":" + bp.Line);
 					int bh = res.GetObject ("bkpt").GetInt ("number");
 					if (!activate)
 						RunCommand ("-break-disable", bh.ToString ());
+					breakpoints [bh] = bp;
 					return bh;
 				} finally {
 					InternalResume (dres);
@@ -236,10 +256,95 @@ namespace MonoDevelop.Debugger.Gdb
 			}
 		}
 		
+		bool CheckBreakpoint (int handle)
+		{
+			Breakpoint bp = breakpoints [handle];
+			if (bp == null)
+				return true;
+			
+			if (!string.IsNullOrEmpty (bp.ConditionExpression) && bp.BreakIfConditionChanges) {
+				// Update the condition expression
+				GdbCommandResult res = RunCommand ("-data-evaluate-expression", bp.ConditionExpression);
+				string val = res.GetValue ("value");
+				RunCommand ("-break-condition", handle.ToString (), "(" + bp.ConditionExpression + ") != " + val);
+			}
+			
+			if (bp.HitAction == HitAction.PrintExpression) {
+				GdbCommandResult res = RunCommand ("-data-evaluate-expression", bp.TraceExpression);
+				string val = res.GetValue ("value");
+				OnDebuggerOutput (false, val + "\n");
+				NotifyBreakEventUpdate (handle, 0, val);
+				return false;
+			}
+			return true;
+		}
+		
+		void NotifyBreakEventUpdate (int eventHandle, int hitCount, string lastTrace)
+		{
+			bool notify = false;
+			
+			WaitCallback nc = delegate {
+				if (hitCount != -1)
+					UpdateHitCount (eventHandle, hitCount);
+				if (lastTrace != null)
+					UpdateLastTraceValue (eventHandle, lastTrace);
+			};
+			
+			lock (breakUpdates)
+			{
+				int span = (int) (DateTime.Now - lastBreakEventUpdate).TotalMilliseconds;
+				if (span >= BreakEventUpdateNotifyDelay && !breakUpdateEventsQueued) {
+					// Last update was more than 0.5s ago. The update can be sent.
+					lastBreakEventUpdate = DateTime.Now;
+					notify = true;
+				} else {
+					// Queue the event notifications to avoid wasting too much time
+					breakUpdates [eventHandle] = nc;
+					if (!breakUpdateEventsQueued) {
+						breakUpdateEventsQueued = true;
+						
+						ThreadPool.QueueUserWorkItem (delegate {
+							Thread.Sleep (BreakEventUpdateNotifyDelay - span);
+							List<WaitCallback> copy;
+							lock (breakUpdates) {
+								copy = new List<WaitCallback> (breakUpdates.Values);
+								breakUpdates.Clear ();
+								breakUpdateEventsQueued = false;
+								lastBreakEventUpdate = DateTime.Now;
+							}
+							foreach (WaitCallback wc in copy)
+								wc (null);
+						});
+					}
+				}
+			}
+			if (notify)
+				nc (null);
+		}
+		
+		void UpdateHitCountData ()
+		{
+			foreach (Breakpoint bp in breakpointsWithHitCount) {
+				object h;
+				if (GetBreakpointHandle (bp, out h)) {
+					GdbCommandResult res = RunCommand ("-break-info", h.ToString ());
+					string val = res.GetObject ("BreakpointTable").GetObject ("body").GetObject (0).GetObject ("bkpt").GetValue ("ignore");
+					if (val != null)
+						NotifyBreakEventUpdate ((int)h, int.Parse (val), null);
+					else
+						NotifyBreakEventUpdate ((int)h, 0, null);
+				}
+			}
+			breakpointsWithHitCount.Clear ();
+		}
+		
 		protected override void OnRemoveBreakEvent (object handle)
 		{
 			lock (gdbLock) {
 				bool dres = InternalStop ();
+				Breakpoint bp = breakpoints [(int)handle];
+				breakpointsWithHitCount.Remove (bp);
+				breakpoints.Remove ((int)handle);
 				try {
 					RunCommand ("-break-delete", handle.ToString ());
 				} finally {
@@ -268,7 +373,24 @@ namespace MonoDevelop.Debugger.Gdb
 			Breakpoint bp = be as Breakpoint;
 			if (bp == null)
 				return null;
+
+			bool ss = InternalStop ();
 			
+			try {
+				if (bp.HitCount > 0) {
+					RunCommand ("-break-after", handle.ToString (), bp.HitCount.ToString ());
+					breakpointsWithHitCount.Add (bp);
+				} else
+					breakpointsWithHitCount.Remove (bp);
+				
+				if (!string.IsNullOrEmpty (bp.ConditionExpression) && !bp.BreakIfConditionChanges)
+					RunCommand ("-break-condition", handle.ToString (), bp.ConditionExpression);
+				else
+					RunCommand ("-break-condition", handle.ToString ());
+			} finally {
+				InternalResume (ss);
+			}
+
 			return handle;
 		}
 
@@ -357,8 +479,10 @@ namespace MonoDevelop.Debugger.Gdb
 					lock (eventLock) {
 						running = true;
 					}
-					
+
+#if GDB_OUTPUT
 					Console.WriteLine ("gdb<: " + command + " " + string.Join (" ", args));
+#endif
 					sin.WriteLine (command + " " + string.Join (" ", args));
 					
 					if (!Monitor.Wait (syncLock, 4000))
@@ -403,7 +527,9 @@ namespace MonoDevelop.Debugger.Gdb
 		
 		void ProcessOutput (string line)
 		{
+#if GDB_OUTPUT
 			Console.WriteLine ("dbg>: '" + line + "'");
+#endif
 			switch (line [0]) {
 				case '^':
 					lock (syncLock) {
@@ -427,7 +553,8 @@ namespace MonoDevelop.Debugger.Gdb
 					lock (eventLock) {
 						running = false;
 						ev = new GdbEvent (line);
-						currentThread = activeThread = ev.GetInt ("thread-id");
+						if (ev.GetValue ("thread-id") != null)
+							currentThread = activeThread = ev.GetInt ("thread-id");
 						Monitor.PulseAll (eventLock);
 						if (internalStop) {
 							internalStop = false;
@@ -458,6 +585,10 @@ namespace MonoDevelop.Debugger.Gdb
 			switch (ev.Reason) {
 				case "breakpoint-hit":
 					type = TargetEventType.TargetHitBreakpoint;
+					if (!CheckBreakpoint (ev.GetInt ("bkptno"))) {
+						RunCommand ("-exec-continue");
+						return;
+					}
 					break;
 				case "signal-received":
 					if (ev.GetValue ("signal-name") == "SIGINT")
@@ -481,6 +612,8 @@ namespace MonoDevelop.Debugger.Gdb
 		
 		void FireTargetEvent (TargetEventType type, ResultData curFrame)
 		{
+			UpdateHitCountData ();
+
 			TargetEventArgs args = new TargetEventArgs (type);
 			
 			if (type != TargetEventType.TargetExited) {
@@ -503,6 +636,7 @@ namespace MonoDevelop.Debugger.Gdb
 		{
 			foreach (string s in tempVariableObjects)
 				RunCommand ("-var-delete", s);
+			tempVariableObjects.Clear ();
 		}
 	}
 }

@@ -14,6 +14,7 @@ using Mono.Addins;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Projects.Text;
+using MonoDevelop.Ide.Gui.Dialogs;
 
 using MonoDevelop.Ide.Gui;
 
@@ -69,6 +70,19 @@ namespace MonoDevelop.Ide.Debugging
 		
 		public BreakpointStore Breakpoints {
 			get { return breakpoints; }
+		}
+		
+		public bool ShowBreakpointProperties (Breakpoint bp, bool editNew)
+		{
+			BreakpointPropertiesDialog dlg = new BreakpointPropertiesDialog (bp, editNew);
+			try {
+				if (dlg.Run () == (int) Gtk.ResponseType.Ok) {
+					return true;
+				}
+			} finally {
+				dlg.Destroy ();
+			}
+			return false;
 		}
 		
 		void Cleanup ()

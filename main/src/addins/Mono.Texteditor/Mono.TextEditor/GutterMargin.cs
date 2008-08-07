@@ -31,7 +31,7 @@ using Gdk;
 
 namespace Mono.TextEditor
 {
-	public class GutterMargin : AbstractMargin
+	public class GutterMargin : Margin
 	{
 		TextEditor editor;
 		Pango.Layout layout;
@@ -68,16 +68,18 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		public override void MousePressed (int button, int x, int y, Gdk.EventType type, Gdk.ModifierType modifierState)
+		internal protected override void MousePressed (MarginMouseEventArgs args)
 		{
-			if (button != 1)
+			base.MousePressed (args);
+			
+			if (args.Button != 1)
 				return;
-			int lineNumber       = editor.Document.VisualToLogicalLine ((int)(y + editor.VAdjustment.Value) / editor.LineHeight);
-			bool extendSelection = (modifierState & Gdk.ModifierType.ShiftMask) == Gdk.ModifierType.ShiftMask;
+			int lineNumber       = args.LineNumber;
+			bool extendSelection = (args.ModifierState & Gdk.ModifierType.ShiftMask) == Gdk.ModifierType.ShiftMask;
 			if (lineNumber < editor.Document.LineCount) {
 				DocumentLocation loc = new DocumentLocation (lineNumber, 0);
-				LineSegment line = editor.Document.GetLine (lineNumber);
-				if (type == EventType.TwoButtonPress) {
+				LineSegment line = args.LineSegment;
+				if (args.Type == EventType.TwoButtonPress) {
 					editor.SelectionRange = line;
 					editor.SelectionAnchor = editor.Document.LocationToOffset (loc);
 				} else if (extendSelection) {
@@ -106,13 +108,15 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		public override void MouseHover (int x, int y, bool buttonPressed)
+		internal protected override void MouseHover (MarginMouseEventArgs args)
 		{
-			if (buttonPressed) {
+			base.MouseHover (args);
+			
+			if (args.Button == 1) {
 				if (!editor.IsSomethingSelected) {
 					editor.SelectionAnchor = editor.Caret.Offset;
 				} 
-				int lineNumber = System.Math.Min (editor.Document.VisualToLogicalLine ((int)(y + editor.VAdjustment.Value) / editor.LineHeight), editor.Document.LineCount - 1);
+				int lineNumber = args.LineNumber != -1 ? args.LineNumber : editor.Document.LineCount - 1;
 				editor.SetSelectLines (editor.SelectionAnchorLocation.Line, lineNumber);
 				editor.Caret.PreserveSelection = true;
 				editor.Caret.Location = new DocumentLocation (lineNumber, 0);
@@ -120,10 +124,6 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		
-		public override void MouseReleased (int button, int x, int y, Gdk.ModifierType modifierState)
-		{
-		}
 		
 		public override void Dispose ()
 		{
@@ -154,7 +154,7 @@ namespace Mono.TextEditor
 		}
 		
 		Gdk.GC lineNumberBgGC, lineNumberGC, lineNumberHighlightGC;
-		public override void OptionsChanged ()
+		internal protected override void OptionsChanged ()
 		{
 			layout.FontDescription = editor.Options.Font;
 			CalculateWidth ();
@@ -170,7 +170,7 @@ namespace Mono.TextEditor
 			lineNumberHighlightGC.RgbFgColor = editor.ColorStyle.LineNumberFgHighlighted;
 		}
 		
-		public override void Draw (Gdk.Drawable win, Gdk.Rectangle area, int line, int x, int y)
+		internal protected override void Draw (Gdk.Drawable win, Gdk.Rectangle area, int line, int x, int y)
 		{
 			UpdateWidth ();
 			

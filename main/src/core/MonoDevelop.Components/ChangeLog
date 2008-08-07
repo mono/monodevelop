@@ -1,3 +1,28 @@
+2008-08-06  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Components.Commands/MenuToolButton.cs: Show a down arrow
+	  if there's no icon.
+
+2008-08-06  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Components.DockToolbars/DockToolbar.cs: Don't crash if
+	  the toolbar is not bound to a command frame.
+	* gtk-gui/objects.xml, MonoDevelop.Components.mdp,
+	  MonoDevelop.Components/IconView.cs,
+	  MonoDevelop.Components/FixedWidthWrapLabel.cs,
+	  MonoDevelop.Components/FolderEntry.cs,
+	  MonoDevelop.Components/MenuButton.cs,
+	  MonoDevelop.Components/NotebookButtonBar.cs,
+	  MonoDevelop.Components/FileEntry.cs: Stetic updates.
+	* MonoDevelop.Components.Commands/LocalCommandEntry.cs: Added
+	  constructor overload for setting the command icon.
+	* MonoDevelop.Components.Commands/CommandToolButton.cs: If a tool
+	  button does not have an icon, show the full text.
+	* MonoDevelop.Components.Commands/CommandManager.cs: Allow setting the
+	  initial command target when creating a toolbar.
+	* MonoDevelop.Components.Commands/CommandEntrySet.cs: Added helper
+	  method for adding separators to the set.
+
 2008-07-29  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Components.mdp: Removed some parts of the documentation

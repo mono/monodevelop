@@ -291,6 +291,24 @@ namespace Mono.Debugging.Client
 					if (CatchpointModified != null)
 						CatchpointModified (this, new CatchpointEventArgs ((Catchpoint)be));
 				}
+				OnChanged ();
+			} catch {
+				// Ignone
+			}
+		}
+		
+		internal void NotifyBreakEventUpdated (BreakEvent be)
+		{
+			try {
+				if (BreakEventUpdated != null)
+					BreakEventUpdated (this, new BreakEventArgs ((BreakEvent)be));
+				if (be is Breakpoint) {
+					if (BreakpointUpdated != null)
+						BreakpointUpdated (this, new BreakpointEventArgs ((Breakpoint)be));
+				} else if (be is Catchpoint) {
+					if (CatchpointUpdated != null)
+						CatchpointUpdated (this, new CatchpointEventArgs ((Catchpoint)be));
+				}
 			} catch {
 				// Ignone
 			}
@@ -300,14 +318,17 @@ namespace Mono.Debugging.Client
 		public event EventHandler<BreakpointEventArgs> BreakpointRemoved;
 		public event EventHandler<BreakpointEventArgs> BreakpointStatusChanged;
 		public event EventHandler<BreakpointEventArgs> BreakpointModified;
+		public event EventHandler<BreakpointEventArgs> BreakpointUpdated;
 		public event EventHandler<CatchpointEventArgs> CatchpointAdded;
 		public event EventHandler<CatchpointEventArgs> CatchpointRemoved;
 		public event EventHandler<CatchpointEventArgs> CatchpointStatusChanged;
 		public event EventHandler<CatchpointEventArgs> CatchpointModified;
+		public event EventHandler<CatchpointEventArgs> CatchpointUpdated;
 		public event EventHandler<BreakEventArgs> BreakEventAdded;
 		public event EventHandler<BreakEventArgs> BreakEventRemoved;
 		public event EventHandler<BreakEventArgs> BreakEventStatusChanged;
 		public event EventHandler<BreakEventArgs> BreakEventModified;
+		public event EventHandler<BreakEventArgs> BreakEventUpdated;
 		internal event EventHandler<BreakEventArgs> BreakEventEnableStatusChanged;
 		public event EventHandler Changed;
 	}

@@ -283,7 +283,7 @@ namespace Mono.Debugging.Client
 		void RemoveBreakEvent (BreakEvent be)
 		{
 			object handle;
-			if (GetHandle (be, out handle)) {
+			if (GetBreakpointHandle (be, out handle)) {
 				breakpoints.Remove (be);
 				if (handle != null)
 					OnRemoveBreakEvent (handle);
@@ -293,14 +293,14 @@ namespace Mono.Debugging.Client
 		void UpdateBreakEventStatus (BreakEvent be)
 		{
 			object handle;
-			if (GetHandle (be, out handle) && handle != null)
+			if (GetBreakpointHandle (be, out handle) && handle != null)
 				OnEnableBreakEvent (handle, be.Enabled);
 		}
 		
 		void UpdateBreakEvent (BreakEvent be)
 		{
 			object handle;
-			if (GetHandle (be, out handle)) {
+			if (GetBreakpointHandle (be, out handle)) {
 				if (handle != null) {
 					object newHandle = OnUpdateBreakEvent (handle, be);
 					if (newHandle != handle && (newHandle == null || !newHandle.Equals (handle))) {
@@ -360,7 +360,7 @@ namespace Mono.Debugging.Client
 			}
 		}
 		
-		bool GetHandle (BreakEvent be, out object handle)
+		protected bool GetBreakpointHandle (BreakEvent be, out object handle)
 		{
 			return breakpoints.TryGetValue (be, out handle);
 		}
@@ -564,13 +564,37 @@ namespace Mono.Debugging.Client
 			}
 		}
 		
-		internal protected bool OnCustomBreakpointAction (string actionId, object handle)
+		BreakEvent GetBreakEvent (object handle)
 		{
 			foreach (KeyValuePair<BreakEvent,object> e in breakpoints) {
 				if (handle == e.Value || handle.Equals (e.Value))
-					return customBreakpointHitHandler (actionId, e.Key);
+					return e.Key;
 			}
-			return false;
+			return null;
+		}
+		
+		internal protected bool OnCustomBreakpointAction (string actionId, object handle)
+		{
+			BreakEvent ev = GetBreakEvent (handle);
+			return ev != null && customBreakpointHitHandler (actionId, ev);
+		}
+		
+		protected void UpdateHitCount (object breakEventHandle, int count)
+		{
+			BreakEvent ev = GetBreakEvent (breakEventHandle);
+			if (ev != null) {
+				ev.HitCount = count;
+				ev.NotifyUpdate ();
+			}
+		}
+		
+		protected void UpdateLastTraceValue (object breakEventHandle, string value)
+		{
+			BreakEvent ev = GetBreakEvent (breakEventHandle);
+			if (ev != null) {
+				ev.LastTraceValue = value;
+				ev.NotifyUpdate ();
+			}
 		}
 		
 		protected abstract void OnRun (DebuggerStartInfo startInfo);

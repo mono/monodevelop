@@ -1,6 +1,21 @@
+2008-08-07  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Commands/DebugCommands.cs, MonoDevelop.Ide.addin.xml:
+	  Added new breakpoint commands.
+	* MonoDevelop.Ide.Debugging/DebuggingService.cs,
+	  MonoDevelop.Ide.Gui.Dialogs/BreakpointPropertiesDialog.cs,
+	  MonoDevelop.Ide.mdp,
+	  gtk-gui/MonoDevelop.Ide.Gui.Dialogs.BreakpointPropertiesDialog.cs,
+	  gtk-gui/gui.stetic, Makefile.am: Moved breakpoint properties dialog
+	  from the debugger add-in. More stuff likely to come here.
+
 2008-08-07  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Ide.Commands/RefactoryCommands.cs: Worked on dom.
+
+2008-08-06  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.addin.xml: Added some missing icons to commands.
 
 2008-08-05  Lluis Sanchez Gual <lluis@novell.com> 
 

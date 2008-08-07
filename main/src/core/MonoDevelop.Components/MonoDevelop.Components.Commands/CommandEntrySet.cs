@@ -78,6 +78,11 @@ namespace MonoDevelop.Components.Commands
 			return cmd;
 		}
 		
+		public void AddSeparator ()
+		{
+			AddItem (Command.Separator);
+		}
+		
 		public CommandEntrySet AddItemSet (string name)
 		{
 			return AddItemSet (name, "");

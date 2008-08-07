@@ -114,7 +114,7 @@ namespace MonoDevelop.Core.Gui
 			exceptionManagerHook = null;
 		}
 		
-		static void OnUnhandledException (UnhandledExceptionEventArgs args)
+		internal static void OnUnhandledException (UnhandledExceptionEventArgs args)
 		{
 			LoggingService.LogError ("Unhandled exception in GLib event handler.", (Exception) args.ExceptionObject);
 		}
