@@ -52,5 +52,7 @@ namespace MonoDevelop.Projects.Dom
 		object Visit (IParameter parameter, object data);
 		object Visit (IUsing u, object data);
 		object Visit (Namespace namesp, object data);
+		
+		object Visit (LocalVariable var, object data);
 	}
 }

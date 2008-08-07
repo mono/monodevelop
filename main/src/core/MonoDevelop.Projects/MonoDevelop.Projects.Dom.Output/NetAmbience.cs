@@ -316,6 +316,12 @@ namespace MonoDevelop.Projects.Dom.Output
 		{
 			return "Namespace " + ns.Name;
 		}
+		
+		object IDomVisitor.Visit (LocalVariable var, object data)
+		{
+			return var.Name;
+		}
+		
 		object IDomVisitor.Visit (IEvent evt, object data)
 		{
 			OutputFlags flags = (OutputFlags)data;

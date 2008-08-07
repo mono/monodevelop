@@ -90,12 +90,13 @@ namespace MonoDevelop.Projects.Dom
 	
 	public class LocalVariableResolveResult : ResolveResult
 	{
-		string variableName;
+		LocalVariable variable;
+		
 		bool   isLoopVariable;
 		
-		public string VariableName {
+		public LocalVariable LocalVariable {
 			get {
-				return variableName;
+				return variable;
 			}
 		}
 		
@@ -105,12 +106,12 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
-		public LocalVariableResolveResult (string variableName) : this (variableName, false)
+		public LocalVariableResolveResult (LocalVariable variable) : this (variable, false)
 		{
 		}
-		public LocalVariableResolveResult (string variableName, bool isLoopVariable)
+		public LocalVariableResolveResult (LocalVariable variable, bool isLoopVariable)
 		{
-			this.variableName   = variableName;
+			this.variable       = variable;
 			this.isLoopVariable = isLoopVariable;
 		}
 		
@@ -133,7 +134,7 @@ namespace MonoDevelop.Projects.Dom
 		
 		public override string ToString ()
 		{
-			return String.Format ("[LocalVariableResolveResult: VariableName={0}, ResolvedType={1}]", VariableName, ResolvedType);
+			return String.Format ("[LocalVariableResolveResult: LocalVariable={0}, ResolvedType={1}]", LocalVariable, ResolvedType);
 		}
 	}
 	

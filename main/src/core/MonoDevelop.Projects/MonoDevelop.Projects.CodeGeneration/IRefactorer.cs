@@ -35,12 +35,6 @@ using MonoDevelop.Projects.Dom;
 
 namespace MonoDevelop.Projects.CodeGeneration
 {
-	public class LocalVariable {
-		public ICompilationUnit CompilationUnit;
-		public DomLocation Location;
-		public string Name;
-		public IReturnType ReturnType;
-	}
 	public interface IRefactorer
 	{
 		RefactorOperations SupportedOperations { get; }

@@ -650,7 +650,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 		void Refactor (IProgressMonitor monitor, LocalVariable var, RefactorDelegate refactorDelegate)
 		{
 			RefactorerContext gctx = GetGeneratorContext (var);
-			string file = var.CompilationUnit.FileName;
+			string file = var.FileName;
 			
 			IRefactorer gen = Services.Languages.GetRefactorerForFile (file);
 			if (gen == null)
@@ -720,7 +720,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 		
 		ProjectDom GetParserContext (LocalVariable var)
 		{
-			Project p = GetProjectForFile (var.CompilationUnit.FileName);
+			Project p = GetProjectForFile (var.FileName);
 			if (p != null)
 				return ProjectDomService.GetDatabaseProjectDom (p);
 			return new ProjectDom ();
@@ -744,7 +744,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 		
 		IRefactorer GetGeneratorForVariable (LocalVariable var)
 		{
-			return Services.Languages.GetRefactorerForFile (var.CompilationUnit.FileName);
+			return Services.Languages.GetRefactorerForFile (var.FileName);
 		}
 	}
 	

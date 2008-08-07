@@ -627,7 +627,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 		
 		public virtual bool RenameVariable (RefactorerContext ctx, LocalVariable var, string newName)
 		{
-			IEditableTextFile file = ctx.GetFile (var.CompilationUnit.FileName);
+			IEditableTextFile file = ctx.GetFile (var.FileName);
 			if (file == null)
 				return false;
 			

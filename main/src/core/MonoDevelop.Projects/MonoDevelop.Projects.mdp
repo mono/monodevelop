@@ -216,6 +216,7 @@
     <File name="MonoDevelop.Projects.Dom.Database/DatabaseParameter.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects/DotNetProject.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Dom.Database/MonoDevelopDatabaseConnection.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Projects.Dom/LocalVariable.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="False" refto="monodoc, Version=1.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />

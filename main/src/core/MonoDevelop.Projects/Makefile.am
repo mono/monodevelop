@@ -97,6 +97,7 @@ FILES =  \
 	MonoDevelop.Projects.Dom/IReturnType.cs \
 	MonoDevelop.Projects.Dom/IType.cs \
 	MonoDevelop.Projects.Dom/IUsing.cs \
+	MonoDevelop.Projects.Dom/LocalVariable.cs \
 	MonoDevelop.Projects.Dom/Modifiers.cs \
 	MonoDevelop.Projects.Dom/Namespace.cs \
 	MonoDevelop.Projects.Dom/ParameterModifiers.cs \
