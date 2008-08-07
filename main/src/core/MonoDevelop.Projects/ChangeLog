@@ -1,3 +1,7 @@
+2008-08-06  Eric Butler <eric@extremeboredom.net>
+
+	* MonoDevelop.Projects/DotNetProject.cs: Add additional null check.
+
 2008-08-05  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Projects/ProjectService.cs: Request file edit permissions

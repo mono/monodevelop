@@ -223,7 +223,7 @@ namespace MonoDevelop.Projects
 				Configurations.Add (configuration);
 			}
 			
-			if (projectOptions.Attributes["Target"] != null) {
+			if (projectOptions != null && projectOptions.Attributes["Target"] != null) {
 				compileTarget = (CompileTarget) Enum.Parse(typeof(CompileTarget), projectOptions.Attributes["Target"].InnerText);
 			}
 			
