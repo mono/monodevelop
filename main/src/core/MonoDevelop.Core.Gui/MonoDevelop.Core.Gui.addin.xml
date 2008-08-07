@@ -59,6 +59,8 @@
 	<Extension path = "/MonoDevelop/Core/StockIcons">
 		<StockIcon stockid = "md-breakpoint" resource = "breakpoint-22.png"/>
 		<StockIcon stockid = "md-breakpoint" resource = "breakpoint-16.png" size="Menu"/>
+		<StockIcon stockid = "md-breakpoint-new" resource = "breakpoint-new-22.png"/>
+		<StockIcon stockid = "md-breakpoint-new" resource = "breakpoint-new-16.png" size="Menu"/>
 		<StockIcon stockid = "md-breakpoint-disabled" resource = "breakpoint-disabled-22.png"/>
 		<StockIcon stockid = "md-breakpoint-disabled" resource = "breakpoint-disabled-16.png" size="Menu"/>
 		<StockIcon stockid = "md-breakpoint-invalid" resource = "breakpoint-invalid-22.png"/>

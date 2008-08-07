@@ -88,6 +88,8 @@ RES =  \
 	icons/breakpoint-disabled-22.png \
 	icons/breakpoint-invalid-16.png \
 	icons/breakpoint-invalid-22.png \
+	icons/breakpoint-new-16.png \
+	icons/breakpoint-new-22.png \
 	icons/breakpoint-on-off-16.png \
 	icons/breakpoint-on-off-22.png \
 	icons/breakpoint-remove-all-16.png \

@@ -1,3 +1,11 @@
+2008-08-07  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Core.Gui.mdp, Makefile.am, icons/breakpoint-new-16.png,
+	  icons/breakpoint-new-22.png, MonoDevelop.Core.Gui.addin.xml: Added
+	  icons for New Breakpoint.
+	* MonoDevelop.Core.Gui/GLibLogging.cs,
+	  MonoDevelop.Core.Gui/PlatformService.cs: Fix warnings.
+
 2008-08-06  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Core.Gui.mdp, Makefile.am,
