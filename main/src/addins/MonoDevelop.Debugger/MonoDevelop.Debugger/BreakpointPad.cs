@@ -217,13 +217,8 @@ namespace MonoDevelop.Debugger
 			TreeIter iter;
 			if (tree.Selection.GetSelected (out iter)) {
 				Breakpoint bp = (Breakpoint) store.GetValue (iter, (int) Columns.Breakpoint);
-				BreakpointPropertiesDialog dlg = new BreakpointPropertiesDialog (bp, false);
-				try {
-					if (dlg.Run () == (int) ResponseType.Ok)
-						UpdateDisplay ();
-				} finally {
-					dlg.Destroy ();
-				}
+				if (IdeApp.Services.DebuggingService.ShowBreakpointProperties (bp, false))
+					UpdateDisplay ();
 			}
 		}
 		

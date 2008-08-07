@@ -21,9 +21,7 @@ REFS =  \
 FILES =  \
 	AssemblyInfo.cs \
 	gtk-gui/generated.cs \
-	gtk-gui/MonoDevelop.Debugger.BreakpointPropertiesDialog.cs \
 	MonoDevelop.Debugger/BreakpointPad.cs \
-	MonoDevelop.Debugger/BreakpointPropertiesDialog.cs \
 	MonoDevelop.Debugger/DebugTextMarker.cs \
 	MonoDevelop.Debugger/DisasemblyView.cs \
 	MonoDevelop.Debugger/Initializer.cs \
