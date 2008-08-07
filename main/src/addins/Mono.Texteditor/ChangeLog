@@ -1,3 +1,19 @@
+2008-08-07  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Mono.TextEditor.mdp, Makefile.am: Updated.
+	* Mono.TextEditor/Margin.cs, Mono.TextEditor/FoldMarkerMargin.cs,
+	  Mono.TextEditor/TextEditor.cs, Mono.TextEditor/GutterMargin.cs,
+	  Mono.TextEditor/TextViewMargin.cs, Mono.TextEditor/IMargin.cs:
+	  Merged IMargin and AbstractMargin into a new Margin class. Methods
+	  for handling mouse events are now internal, and new public events
+	  have been added.
+	* Mono.TextEditor/TextMarker.cs, Mono.TextEditor/LineSegment.cs,
+	  Mono.TextEditor/IconMargin.cs, Mono.TextEditor/BookmarkMargin.cs,
+	  Mono.TextEditor/BookmarkMarker.cs: Renamed BookmarkMargin into
+	  IconMargin. Moved code for handling bookmarks to the new
+	  BookmarkMarker. Allow IIconBarMarker objects to handle mouse
+	  events.
+
 2008-08-05  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Mono.TextEditor/Document.cs, Mono.TextEditor/TextEditorData.cs,

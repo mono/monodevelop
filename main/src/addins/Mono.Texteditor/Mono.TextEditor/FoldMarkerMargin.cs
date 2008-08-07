@@ -32,7 +32,7 @@ using Gtk;
 
 namespace Mono.TextEditor
 {
-	public class FoldMarkerMargin : AbstractMargin
+	public class FoldMarkerMargin : Margin
 	{
 		TextEditor editor;
 		LineSegment lineHover;
@@ -52,8 +52,10 @@ namespace Mono.TextEditor
 			layout = new Pango.Layout (editor.PangoContext);
 		}
 		
-		public override void MousePressed (int button, int x, int y, Gdk.EventType type, Gdk.ModifierType modifierState)
+		internal protected override void MousePressed (MarginMouseEventArgs args)
 		{
+			base.MousePressed (args);
+			
 			if (lineHover == null)
 				return;
 			foreach (FoldSegment segment in editor.Document.GetStartFoldings (lineHover)) {
@@ -63,12 +65,13 @@ namespace Mono.TextEditor
 			editor.QueueDraw ();
 		}
 		
-		public override void MouseHover (int x, int y, bool buttonPressed)
+		internal protected override void MouseHover (MarginMouseEventArgs args)
 		{
-			int lineNumber = editor.Document.VisualToLogicalLine ((int)(y + editor.VAdjustment.Value) / editor.LineHeight);
+			base.MouseHover (args);
+			
 			LineSegment lineSegment = null;
-			if (lineNumber < editor.Document.LineCount) {
-				lineSegment = editor.Document.GetLine (lineNumber);
+			if (args.LineSegment != null) {
+				lineSegment = args.LineSegment;
 				if (lineHover != lineSegment) {
 					lineHover = lineSegment;
 					editor.QueueDraw ();
@@ -78,15 +81,17 @@ namespace Mono.TextEditor
 			
 		}
 		
-		public override void MouseLeft ()
+		internal protected override void MouseLeft ()
 		{
+			base.MouseLeft ();
+			
 			if (lineHover != null) {
 				lineHover = null;
 				editor.QueueDraw ();
 			}
 		}
 		
-		public override void OptionsChanged ()
+		internal protected override void OptionsChanged ()
 		{
 			DisposeGCs ();
 			foldBgGC = new Gdk.GC (editor.GdkWindow);
@@ -177,7 +182,7 @@ namespace Mono.TextEditor
 			return false;
 		}
 		
-		public override void Draw (Gdk.Drawable win, Gdk.Rectangle area, int line, int x, int y)
+		internal protected override void Draw (Gdk.Drawable win, Gdk.Rectangle area, int line, int x, int y)
 		{
 			foldSegmentSize = Width * 4 / 6;
 			foldSegmentSize -= (foldSegmentSize) % 2;

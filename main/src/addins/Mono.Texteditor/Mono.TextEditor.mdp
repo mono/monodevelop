@@ -32,10 +32,10 @@
     <File name="Mono.TextEditor.Highlighting/Rule.cs" subtype="Code" buildaction="Compile" />
     <File name="Mono.TextEditor.Highlighting/Keywords.cs" subtype="Code" buildaction="Compile" />
     <File name="Mono.TextEditor/LineEventArgs.cs" subtype="Code" buildaction="Compile" />
-    <File name="Mono.TextEditor/BookmarkMargin.cs" subtype="Code" buildaction="Compile" />
+    <File name="Mono.TextEditor/IconMargin.cs" subtype="Code" buildaction="Compile" />
     <File name="Mono.TextEditor/FoldSegment.cs" subtype="Code" buildaction="Compile" />
     <File name="Mono.TextEditor/FoldMarkerMargin.cs" subtype="Code" buildaction="Compile" />
-    <File name="Mono.TextEditor/IMargin.cs" subtype="Code" buildaction="Compile" />
+    <File name="Mono.TextEditor/Margin.cs" subtype="Code" buildaction="Compile" />
     <File name="Mono.TextEditor.Highlighting/Chunk.cs" subtype="Code" buildaction="Compile" />
     <File name="Mono.TextEditor/ISegment.cs" subtype="Code" buildaction="Compile" />
     <File name="Mono.TextEditor/TextEditorOptions.cs" subtype="Code" buildaction="Compile" />
@@ -82,6 +82,7 @@
     <File name="Mono.TextEditor.Highlighting/IXmlProvider.cs" subtype="Code" buildaction="Compile" />
     <File name="JavascriptSyntaxMode.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="Mono.TextEditor/BufferedTextReader.cs" subtype="Code" buildaction="Compile" />
+    <File name="Mono.TextEditor/BookmarkMarker.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
