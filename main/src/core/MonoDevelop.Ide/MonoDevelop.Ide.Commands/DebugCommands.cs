@@ -28,6 +28,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using MonoDevelop.Core.Gui.Dialogs;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
@@ -53,7 +54,10 @@ namespace MonoDevelop.Ide.Commands
 		Detach,
 		EnableDisableBreakpoint,
 		DisableAllBreakpoints,
-		ShowDisassembly
+		ShowDisassembly,
+		NewBreakpoint,
+		RemoveBreakpoint,
+		ShowBreakpointProperties
 	}
 	
 	internal class DebugApplicationHandler: CommandHandler
@@ -233,6 +237,80 @@ namespace MonoDevelop.Ide.Commands
 		protected override void Run ()
 		{
 			IdeApp.Services.DebuggingService.ShowDisassembly ();
+		}
+	}
+	
+	internal class RemoveBreakpointHandler: CommandHandler
+	{
+		protected override void Run ()
+		{
+			IEnumerable<Breakpoint> brs = IdeApp.Services.DebuggingService.Breakpoints.GetBreakpointsAtFileLine (
+			    IdeApp.Workbench.ActiveDocument.FileName,
+			    IdeApp.Workbench.ActiveDocument.TextEditor.CursorLine);
+			
+			List<Breakpoint> list = new List<Breakpoint> (brs);
+			foreach (Breakpoint bp in list)
+				IdeApp.Services.DebuggingService.Breakpoints.Remove (bp);
+		}
+		
+		protected override void Update (CommandInfo info)
+		{
+			if (IdeApp.Workbench.ActiveDocument != null && 
+					IdeApp.Workbench.ActiveDocument.TextEditor != null &&
+					IdeApp.Workbench.ActiveDocument.FileName != null) {
+				info.Enabled = IdeApp.Services.DebuggingService.Breakpoints.GetBreakpointsAtFileLine (
+			    	IdeApp.	Workbench.ActiveDocument.FileName,
+			    	IdeApp.Workbench.ActiveDocument.TextEditor.CursorLine).Count > 0;
+			}
+			else
+				info.Enabled = false;
+		}
+	}
+	
+	internal class NewBreakpointHandler: CommandHandler
+	{
+		protected override void Run ()
+		{
+			Breakpoint bp = new Breakpoint (IdeApp.Workbench.ActiveDocument.FileName, IdeApp.Workbench.ActiveDocument.TextEditor.CursorLine);
+			if (IdeApp.Services.DebuggingService.ShowBreakpointProperties (bp, true))
+				IdeApp.Services.DebuggingService.Breakpoints.Add (bp);
+		}
+		
+		protected override void Update (CommandInfo info)
+		{
+			if (IdeApp.Workbench.ActiveDocument != null && 
+					IdeApp.Workbench.ActiveDocument.TextEditor != null &&
+					IdeApp.Workbench.ActiveDocument.FileName != null) {
+				info.Enabled = true;
+			}
+			else
+				info.Enabled = false;
+		}
+	}
+	
+	internal class ShowBreakpointPropertiesHandler: CommandHandler
+	{
+		protected override void Run ()
+		{
+			IList<Breakpoint> brs = IdeApp.Services.DebuggingService.Breakpoints.GetBreakpointsAtFileLine (
+			    IdeApp.Workbench.ActiveDocument.FileName,
+			    IdeApp.Workbench.ActiveDocument.TextEditor.CursorLine);
+
+			if (brs.Count > 0)
+				IdeApp.Services.DebuggingService.ShowBreakpointProperties (brs [0], false);
+		}
+		
+		protected override void Update (CommandInfo info)
+		{
+			if (IdeApp.Workbench.ActiveDocument != null && 
+					IdeApp.Workbench.ActiveDocument.TextEditor != null &&
+					IdeApp.Workbench.ActiveDocument.FileName != null) {
+				info.Enabled = IdeApp.Services.DebuggingService.Breakpoints.GetBreakpointsAtFileLine (
+			    	IdeApp.	Workbench.ActiveDocument.FileName,
+			    	IdeApp.Workbench.ActiveDocument.TextEditor.CursorLine).Count > 0;
+			}
+			else
+				info.Enabled = false;
 		}
 	}
 }

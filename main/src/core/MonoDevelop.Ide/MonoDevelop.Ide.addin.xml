@@ -815,6 +815,16 @@
 				defaultHandler = "MonoDevelop.Ide.Commands.StepOutHandler"
 				_label = "Step Out"
 				shortcut = "Shift|F11" />
+		<Command id = "MonoDevelop.Ide.Commands.DebugCommands.NewBreakpoint"
+				defaultHandler = "MonoDevelop.Ide.Commands.NewBreakpointHandler"
+				_label = "New Breakpoint..."
+				icon = "md-breakpoint-new" />
+		<Command id = "MonoDevelop.Ide.Commands.DebugCommands.RemoveBreakpoint"
+				defaultHandler = "MonoDevelop.Ide.Commands.RemoveBreakpointHandler"
+				_label = "Remove Breakpoint" />
+		<Command id = "MonoDevelop.Ide.Commands.DebugCommands.ShowBreakpointProperties"
+				defaultHandler = "MonoDevelop.Ide.Commands.ShowBreakpointPropertiesHandler"
+				_label = "Breakpoint Properties" />
 		<Command id = "MonoDevelop.Ide.Commands.DebugCommands.ToggleBreakpoint"
 				_label = "Toggle Breakpoint"
 				icon = "md-breakpoint"
