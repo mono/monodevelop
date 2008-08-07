@@ -291,6 +291,7 @@ namespace Mono.Debugging.Client
 					if (CatchpointModified != null)
 						CatchpointModified (this, new CatchpointEventArgs ((Catchpoint)be));
 				}
+				OnChanged ();
 			} catch {
 				// Ignone
 			}
