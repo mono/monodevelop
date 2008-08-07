@@ -1,2 +1,14 @@
 <objects attr-sync="on">
+  <object type="MonoDevelop.Ide.Gui.OptionPanels.KeyBindingsPanel" palette-category="MonoDevelop.Ide" allow-children="false" base-type="Gtk.Bin">
+    <itemgroups />
+    <signals />
+  </object>
+  <object type="MonoDevelop.Ide.Gui.Pads.ClassBrowser.ClassBrowserPadWidget" palette-category="MonoDevelop.Ide" allow-children="false" base-type="Gtk.Bin">
+    <itemgroups />
+    <signals />
+  </object>
+  <object type="MonoDevelop.Ide.Gui.Dialogs.CombineEntryFeatureSelector" palette-category="MonoDevelop.Ide" allow-children="false" base-type="Gtk.Bin">
+    <itemgroups />
+    <signals />
+  </object>
 </objects>

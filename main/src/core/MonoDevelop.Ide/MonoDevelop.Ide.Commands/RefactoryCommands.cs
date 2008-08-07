@@ -98,13 +98,12 @@ namespace MonoDevelop.Ide.Commands
 					ResolveResult resolveResult = resolver.Resolve (id, new DomLocation (line, column));
 					
 					IDomVisitable item = null;
-					IMember eitem = resolveResult.CallingMember ?? resolveResult.CallingType;
+					IMember eitem = resolveResult != null ? (resolveResult.CallingMember ?? resolveResult.CallingType) : null;
 					
 					if (resolveResult is ParameterResolveResult) {
 						item = ((ParameterResolveResult)resolveResult).Parameter;
 					} else if (resolveResult is LocalVariableResolveResult) {
-						// TODO: Local variables.
-						// item = (LocalVariableResolveResult)resolveResult;
+						item = ((LocalVariableResolveResult)resolveResult).LocalVariable;
 						//s.Append (ambience.GetString (((LocalVariableResolveResult)result).ResolvedType, WindowConversionFlags));
 					} else if (resolveResult is MemberResolveResult) {
 						item = ((MemberResolveResult)resolveResult).ResolvedMember;
