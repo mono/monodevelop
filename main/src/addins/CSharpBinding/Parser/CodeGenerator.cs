@@ -195,13 +195,11 @@ namespace CSharpBinding.Parser
 		
 		public override MemberReferenceCollection FindClassReferences (RefactorerContext ctx, string fileName, IType cls)
 		{
-//TODO:
-			//Resolver resolver = new Resolver (ctx.ParserContext);
+			IEditableTextFile file = ctx.GetFile (fileName);
+			NRefactoryResolver resolver = new NRefactoryResolver (ctx.ParserContext, cls.CompilationUnit, ICSharpCode.NRefactory.SupportedLanguage.CSharp, null, fileName);
 			MemberReferenceCollection refs = new MemberReferenceCollection ();
-			//MemberRefactoryVisitor visitor = new MemberRefactoryVisitor (ctx, resolver, cls, cls, refs);
-			
-//			IEditableTextFile file = ctx.GetFile (fileName);
-//			visitor.Visit (ctx.ParserContext, file);
+			MemberRefactoryVisitor visitor = new MemberRefactoryVisitor (ctx, resolver, cls, cls, refs);
+			visitor.Visit (ctx.ParserContext, file);
 			return refs;
 		
 		}
@@ -428,38 +426,35 @@ namespace CSharpBinding.Parser
 		
 		public override MemberReferenceCollection FindMemberReferences (RefactorerContext ctx, string fileName, IType cls, IMember member)
 		{
-//TODO:
-			//Resolver resolver = new Resolver (ctx.ParserContext);
+			NRefactoryResolver resolver = new NRefactoryResolver (ctx.ParserContext, cls.CompilationUnit, ICSharpCode.NRefactory.SupportedLanguage.CSharp, null, fileName);
 			MemberReferenceCollection refs = new MemberReferenceCollection ();
-			//MemberRefactoryVisitor visitor = new MemberRefactoryVisitor (ctx, resolver, cls, member, refs);
+			MemberRefactoryVisitor visitor = new MemberRefactoryVisitor (ctx, resolver, cls, cls, refs);
 			
-			//IEditableTextFile file = ctx.GetFile (fileName);
-			//visitor.Visit (ctx.ParserContext, file);
+			IEditableTextFile file = ctx.GetFile (fileName);
+			visitor.Visit (ctx.ParserContext, file);
 			return refs;
 		}
 		
 		public override MemberReferenceCollection FindVariableReferences (RefactorerContext ctx, string fileName, LocalVariable var)
 		{
-//TODO:
-			//Resolver resolver = new Resolver (ctx.ParserContext);
+			NRefactoryResolver resolver = new NRefactoryResolver (ctx.ParserContext, var.CompilationUnit, ICSharpCode.NRefactory.SupportedLanguage.CSharp, null, fileName);
 			MemberReferenceCollection refs = new MemberReferenceCollection ();
-//			MemberRefactoryVisitor visitor = new MemberRefactoryVisitor (ctx, resolver, null, var, refs);
+			MemberRefactoryVisitor visitor = new MemberRefactoryVisitor (ctx, resolver, null, var.DeclaringMember, refs);
 			
-//			IEditableTextFile file = ctx.GetFile (fileName);
-//			visitor.Visit (ctx.ParserContext, file);
+			IEditableTextFile file = ctx.GetFile (fileName);
+			visitor.Visit (ctx.ParserContext, file);
 			return refs;
 		}
 		
 		public override MemberReferenceCollection FindParameterReferences (RefactorerContext ctx, string fileName, IParameter param)
 		{
-//TODO:
-//			IMember member = param.DeclaringMember;
-//			Resolver resolver = new Resolver (ctx.ParserContext);
+			IMember member = param.DeclaringMember;
+			NRefactoryResolver resolver = new NRefactoryResolver (ctx.ParserContext, param.DeclaringMember.DeclaringType.CompilationUnit, ICSharpCode.NRefactory.SupportedLanguage.CSharp, null, fileName);
 			MemberReferenceCollection refs = new MemberReferenceCollection ();
-//			MemberRefactoryVisitor visitor = new MemberRefactoryVisitor (ctx, resolver, member.DeclaringType, param, refs);
+			MemberRefactoryVisitor visitor = new MemberRefactoryVisitor (ctx, resolver, member.DeclaringType, param.DeclaringMember, refs);
 			
-//			IEditableTextFile file = ctx.GetFile (fileName);
-//			visitor.Visit (ctx.ParserContext, file);
+			IEditableTextFile file = ctx.GetFile (fileName);
+			visitor.Visit (ctx.ParserContext, file);
 			
 			return refs;
 		}
@@ -496,7 +491,7 @@ namespace CSharpBinding.Parser
 	
 	class MemberRefactoryVisitor: AbstractAstVisitor {
 		MemberReferenceCollection references;
-		MonoDevelop.Projects.Dom.ICompilationUnit fileCompilationUnit;
+		ICSharpCode.NRefactory.Ast.CompilationUnit fileCompilationUnit;
 		IEditableTextFile file;
 		RefactorerContext ctx;
 		IType declaringType;
@@ -518,11 +513,13 @@ namespace CSharpBinding.Parser
 		public void Visit (ProjectDom pctx, IEditableTextFile file)
 		{
 			this.file = file;
-			// TODO
-			fileCompilationUnit = null; //pctx.ParseFile (file);
 			
-		//	if (fileCompilationUnit != null)
-		//		VisitCompilationUnit (fileCompilationUnit, null);
+			ICSharpCode.NRefactory.IParser parser = ICSharpCode.NRefactory.ParserFactory.CreateParser (ICSharpCode.NRefactory.SupportedLanguage.CSharp, new StringReader (file.Text));
+			parser.Parse ();
+			fileCompilationUnit = parser.CompilationUnit;
+			
+			if (fileCompilationUnit != null)
+				VisitCompilationUnit (fileCompilationUnit, null);
 		}
 		
 		bool IsExpectedClass (IType type)
@@ -564,7 +561,7 @@ namespace CSharpBinding.Parser
 		{
 			//Debug ("FieldDeclaration", fieldDeclaration.ToString (), fieldDeclaration);
 //TODO:
-/*			string type = ReturnType.GetSystemType (fieldDeclaration.TypeReference.Type);
+/*			string type = fieldDeclaration.TypeReference.SystemType ?? fieldDeclaration.TypeReference.Type;
 			if (member is IType && member.Name == GetNameWithoutPrefix (type)) {
 				int line = fieldDeclaration.StartLocation.Y;
 				int col = fieldDeclaration.StartLocation.X;
@@ -574,15 +571,16 @@ namespace CSharpBinding.Parser
 					//Debug ("adding FieldDeclaration", cls.FullName, fieldDeclaration);
 					AddUniqueReference (line, col, cls.FullName);
 				}
-			}
-			*/
+			}*/
+			
 			return base.VisitFieldDeclaration (fieldDeclaration, data);
 		}
 		
 		public override object VisitTypeReference(TypeReference typeReference, object data)
 		{
-//TODO:
-			/*string type = ReturnType.GetSystemType (typeReference.Type);
+			//TODO:
+			/*
+			string type = fieldDeclaration.TypeReference.SystemType ?? fieldDeclaration.TypeReference.Type;
 			if (member is IType && member.Name == GetNameWithoutPrefix (type)) {
 				int line = typeReference.StartLocation.Y;
 				int col = typeReference.StartLocation.X;
@@ -592,8 +590,7 @@ namespace CSharpBinding.Parser
 					//Debug ("adding CastExpression", cls.FullName, castExpression);
 					AddUniqueReference (line, col, cls.FullName);
 				}
-			}
-			*/
+			}*/
 			return base.VisitTypeReference (typeReference, data);
 		}
 		
