@@ -39,17 +39,18 @@ namespace MonoDevelop.CSharpBinding
 	{
 		TextEditor editor;
 		IMember member;
-		Ambience ambience;
+		static Ambience ambience = new MonoDevelop.CSharpBinding.CSharpAmbience ();
 		string indent;
 		int    initialOffset;
+		IType  type;
 		
-		public NewOverrideCompletionData (TextEditor editor, IMember member)
+		public NewOverrideCompletionData (TextEditor editor, IType type, IMember member)
 		{
 			this.editor = editor;
+			this.type   = type;
 			this.member = member;
 			this.initialOffset = editor.CursorPosition;
 			this.indent = GetIndentString (editor.CursorPosition);
-			ambience = AmbienceService.GetAmbience (member);
 			Image       = member.StockIcon;
 			Text        = new string[] { ambience.GetString (member, OutputFlags.ClassBrowserEntries) };
 			CompletionString = member.Name;
@@ -57,7 +58,7 @@ namespace MonoDevelop.CSharpBinding
 		
 		public void InsertAction (ICompletionWidget widget, ICodeCompletionContext context)
 		{
-			//editor.DeleteText (insertOffset, editor.CursorPosition - insertOffset);
+			editor.DeleteText (initialOffset, editor.CursorPosition - initialOffset);
 			//editor.InsertText (GetModifiers (member));
 			
 			if (member is IMethod) {
@@ -88,6 +89,34 @@ namespace MonoDevelop.CSharpBinding
 		{
 			sb.Append (this.indent);
 			sb.Append (SingeleIndent);
+			if (method.Name == "ToString" && (method.Parameters == null || method.Parameters.Count == 0) && method.ReturnType != null && method.ReturnType.FullName == "System.String") {
+				sb.Append ("return string.Format(");
+				sb.Append ("\"[");
+				sb.Append (type.Name);
+				sb.Append (": ");
+				int i = 0;
+				foreach (IProperty property in type.Properties) {
+					if (property.IsStatic || !property.IsPublic)
+						continue;
+					if (i > 0)
+						sb.Append (", ");
+					sb.Append (property.Name);
+					sb.Append ("={");
+					sb.Append (i++);
+					sb.Append ("}");
+				}
+				sb.Append ("]\"");
+				foreach (IProperty property in type.Properties) {
+					if (property.IsStatic || !property.IsPublic)
+						continue;
+					sb.Append (", ");
+					sb.Append (property.Name);
+				}
+				sb.Append (");");
+				sb.AppendLine ();
+				return;
+			}
+			
 			if (method.ReturnType != null && method.ReturnType.FullName != "System.Void") {
 				sb.Append ("return base.");
 				sb.Append (method.Name);

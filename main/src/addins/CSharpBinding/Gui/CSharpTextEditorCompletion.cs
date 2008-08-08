@@ -466,7 +466,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 				
 				if ((isInterface || m.IsVirtual || m.IsAbstract) && !m.IsSealed && (includeOverriden || !type.HasOverriden (m))) {
 					//System.Console.WriteLine("add");
-					provider.AddCompletionData (new NewOverrideCompletionData (Editor, m));
+					provider.AddCompletionData (new NewOverrideCompletionData (Editor, type, m));
 				}
 			}
 			if (searchType.BaseType == null) {
