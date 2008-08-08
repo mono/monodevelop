@@ -79,9 +79,9 @@ namespace Hyena.Data.Sqlite
         }
 
         public HyenaSqliteCommand (string command, params object [] param_values)
-        {
-            this.command = command;
-			if (param_values != null)
+		{
+			this.command = command;
+			if (param_values != null && param_values.Length > 0)
 				ApplyValues (param_values);
         }
 		

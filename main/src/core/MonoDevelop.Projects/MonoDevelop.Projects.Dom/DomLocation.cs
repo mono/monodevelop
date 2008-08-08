@@ -100,7 +100,7 @@ namespace MonoDevelop.Projects.Dom
 		{
 			if (invariantString.ToUpper () == "EMPTY")
 				return DomLocation.Empty;
-			string[] splits = invariantString.Split (',');
+			string[] splits = invariantString.Split (',', '/');
 			if (splits.Length == 2) 
 				return new DomLocation (Int32.Parse (splits[0]), Int32.Parse (splits[1]));
 			return DomLocation.Empty;
@@ -110,7 +110,7 @@ namespace MonoDevelop.Projects.Dom
 		{
 			if (IsEmpty)
 				return "Empty";
-			return String.Format ("{0},{1}", Line, Column);
+			return String.Format ("{0}/{1}", Line, Column);
 		}
 		
 		public static bool operator==(DomLocation left, DomLocation right)

@@ -78,7 +78,7 @@ namespace MonoDevelop.Projects.Dom
 		{
 			if (invariantString.ToUpper () == "EMPTY")
 				return DomRegion.Empty;
-			string[] splits = invariantString.Split (',');
+			string[] splits = invariantString.Split (',', '/', '-');
 			if (splits.Length == 4) 
 				return new DomRegion (Int32.Parse (splits[0]), Int32.Parse (splits[1]), Int32.Parse (splits[2]), Int32.Parse (splits[3]));
 			return DomRegion.Empty;
@@ -88,7 +88,7 @@ namespace MonoDevelop.Projects.Dom
 		{
 			if (IsEmpty)
 				return "Empty";
-			return String.Format ("{0},{1},{2},{3}", Start.Line, Start.Column, End.Line, End.Column);
+			return String.Format ("{0}/{1}-{2}/{3}", Start.Line, Start.Column, End.Line, End.Column);
 		}
 		
 		public override string ToString ()

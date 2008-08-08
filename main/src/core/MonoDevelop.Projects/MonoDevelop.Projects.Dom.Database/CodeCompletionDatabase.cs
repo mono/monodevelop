@@ -36,7 +36,7 @@ namespace MonoDevelop.Projects.Dom.Database
 {
 	public class CodeCompletionDatabase : IDisposable 
 	{
-		public const long Version = 5;
+		public const long Version = 6;
 		
 		HyenaSqliteConnection connection;
 		internal HyenaSqliteConnection Connection {
@@ -152,7 +152,7 @@ namespace MonoDevelop.Projects.Dom.Database
 				unitIds.Append (")");
 				
 				if (foundNamespace) {
-					query = String.Format (@"SELECT TypeID, UnitID, MemberID, NamespaceID, ClassType FROM {0} WHERE {1} AND {2}",  DatabaseType.Table, unitIds.ToString (),sb.ToString ());
+					query = String.Format (@"SELECT TypeID, UnitID, MemberID, NamespaceID, ClassType, BaseTypeID FROM {0} WHERE {1} AND {2}",  DatabaseType.Table, unitIds.ToString (),sb.ToString ());
 					reader = connection.Query (query);
 					if (reader != null) {
 						try {
@@ -214,9 +214,9 @@ namespace MonoDevelop.Projects.Dom.Database
 			string compiledIds = CompileProjectIds (projectIds);
 			
 			if (!string.IsNullOrEmpty (compiledIds)) {
-				query = String.Format (@"SELECT TypeID, {0}.UnitID, MemberID, NamespaceID, ClassType FROM {1}, {0} WHERE {1}.ProjectId IN {2} AND {0}.UnitID={1}.UnitID",  DatabaseType.Table, CompilationUnitTable, compiledIds);
+				query = String.Format (@"SELECT TypeID, {0}.UnitID, MemberID, NamespaceID, ClassType, BaseTypeID FROM {1}, {0} WHERE {1}.ProjectId IN {2} AND {0}.UnitID={1}.UnitID",  DatabaseType.Table, CompilationUnitTable, compiledIds);
 			} else {
-				query = String.Format (@"SELECT TypeID, UnitID, MemberID, NamespaceID, ClassType FROM {0}",  DatabaseType.Table);
+				query = String.Format (@"SELECT TypeID, UnitID, MemberID, NamespaceID, ClassType, BaseTypeID FROM {0}",  DatabaseType.Table);
 			}
 			
 			IDataReader reader = null;
@@ -254,7 +254,9 @@ namespace MonoDevelop.Projects.Dom.Database
 			long memberId = (long)SqliteUtils.FromDbFormat (typeof (long), reader[2]);
 			
 			ClassType classType = (ClassType)((long)SqliteUtils.FromDbFormat (typeof (long), reader[4]));
-			return new DatabaseType (this, unitId, memberId, typeId, nsName, classType);
+			long baseTypeId = (long)SqliteUtils.FromDbFormat (typeof (long), reader[5]);
+
+			return new DatabaseType (this, unitId, memberId, typeId, nsName, classType, baseTypeId);
 		}
 		
 		public IEnumerable<IType> GetTypes (IEnumerable<string> subNamespaces, IEnumerable<long> compilationUnitIds, string fullName, bool caseSensitive)
@@ -303,9 +305,9 @@ namespace MonoDevelop.Projects.Dom.Database
 				string typeName = DomReturnType.SplitFullName (fullName).Value;
 				string projectIds = CompileProjectIds (compilationUnitIds);
 				if (!string.IsNullOrEmpty (projectIds)) {
-					query = String.Format (@"SELECT TypeID, {0}.UnitID, {0}.MemberID, NamespaceID, ClassType FROM {0}, {2}, {1} WHERE {0}.UnitID={2}.UnitID AND {2}.ProjectId IN {5} AND ({0}.MemberID={1}.MemberID AND {1}.Name='{3}') AND ({4})",  DatabaseType.Table, MemberTable, CompilationUnitTable, typeName, sb.ToString (), projectIds.ToString ());
+					query = String.Format (@"SELECT TypeID, {0}.UnitID, {0}.MemberID, NamespaceID, ClassType, BaseTypeID FROM {0}, {2}, {1} WHERE {0}.UnitID={2}.UnitID AND {2}.ProjectId IN {5} AND ({0}.MemberID={1}.MemberID AND {1}.Name='{3}') AND ({4})",  DatabaseType.Table, MemberTable, CompilationUnitTable, typeName, sb.ToString (), projectIds.ToString ());
 				} else {
-					query = String.Format (@"SELECT TypeID, UnitID, {0}.MemberID, NamespaceID, ClassType FROM {0}, {1} WHERE ({0}.MemberID={1}.MemberID AND {1}.Name='{2}') AND ({3})",  DatabaseType.Table, MemberTable, typeName, sb.ToString ());
+					query = String.Format (@"SELECT TypeID, UnitID, {0}.MemberID, NamespaceID, ClassType, BaseTypeID FROM {0}, {1} WHERE ({0}.MemberID={1}.MemberID AND {1}.Name='{2}') AND ({3})",  DatabaseType.Table, MemberTable, typeName, sb.ToString ());
 				}
 				reader = connection.Query (query);
 				while (reader.Read ()) {
@@ -421,6 +423,11 @@ namespace MonoDevelop.Projects.Dom.Database
 			try {
 				connection.Execute ("BEGIN TRANSACTION");
 				long unitId = connection.Execute (String.Format (@"INSERT INTO {0} (Name, ProjectId, ParseTime) VALUES ('{1}', {2}, {3})", CompilationUnitTable, name, projectId, SqliteUtils.ToDbFormat (unit.ParseTime)));
+				foreach (IUsing u in unit.Usings) {
+					foreach (string nsName in u.Namespaces) {
+						connection.Execute (String.Format (@"INSERT INTO {0} (UnitID, Namespace, Region) VALUES ({1}, '{2}', '{3}')", UsingTable, unitId, nsName, u.Region.ToInvariantString ()));
+					}
+				}
 				foreach (IType type in unit.Types) {
 					DatabaseType.Insert (this, unitId, type);
 				}
@@ -451,6 +458,7 @@ namespace MonoDevelop.Projects.Dom.Database
 		
 		internal const string ProjectsTable                  = "Projects";
 		internal const string CompilationUnitTable           = "CompilationUnits";
+		internal const string UsingTable                     = "Usings";
 		internal const string NamespaceTable                 = "Namespaces";
 		internal const string MemberTable                    = "Members";
 		internal const string ReturnTypeTable                = "ReturnTypes";
@@ -474,6 +482,15 @@ namespace MonoDevelop.Projects.Dom.Database
 						ParseTime INTEGER)", CompilationUnitTable
 				));
 				connection.Execute (String.Format (@"CREATE INDEX IDX_{0}_ProjectID ON {0}(ProjectID)", CompilationUnitTable));
+			}
+			
+			if (!connection.TableExists (UsingTable)) {
+				connection.Execute (String.Format (@"
+					CREATE TABLE {0} (
+						UnitID INTEGER,
+						Namespace TEXT,
+						Region TEXT)", UsingTable
+				));
 			}
 			
 			if (!connection.TableExists (NamespaceTable)) {

@@ -25,6 +25,7 @@
 //
 
 using System;
+using System.Collections.ObjectModel;
 using System.Collections.Generic;
 using System.Data;
 using System.Text;
@@ -45,6 +46,31 @@ namespace MonoDevelop.Projects.Dom.Database
 		long typeId;
 		long unitId;
 		long memberId;
+		long baseTypeId;
+		
+		public override IReturnType BaseType {
+			get {
+				if (base.BaseType == null && baseTypeId > 0) 
+					base.BaseType = db.ReadReturnType (baseTypeId);
+				return base.BaseType;
+			}
+		}
+		
+		bool readImplementedInteferfaces = false;
+		public override ReadOnlyCollection<IReturnType> ImplementedInterfaces {
+			get {
+				if (!readImplementedInteferfaces) {
+					foreach (long interfaceId in db.Connection.QueryEnumerable<long> (String.Format (@"SELECT BaseReturnTypeID FROM {0} WHERE TypeID={1}", SubTypeTable, typeId))) {
+						if (interfaceId == baseTypeId)
+							continue;
+						AddInterfaceImplementation (db.ReadReturnType (interfaceId));
+					}
+					readImplementedInteferfaces = true;
+				}
+				return base.ImplementedInterfaces;
+			}
+		}
+		
 	
 		public override ICompilationUnit CompilationUnit {
 			get {
@@ -53,6 +79,12 @@ namespace MonoDevelop.Projects.Dom.Database
 					IDataReader reader = db.Connection.Query (String.Format (@"SELECT Name FROM {0} WHERE UnitID={1}", CodeCompletionDatabase.CompilationUnitTable, unitId));
 					if (reader.Read ()) {
 						unit = new CompilationUnit (SqliteUtils.FromDbFormat<string> (reader[0]));
+						
+						IDataReader usingReader = db.Connection.Query (String.Format (@"SELECT Namespace, Region FROM {0} WHERE UnitID={1}", CodeCompletionDatabase.UsingTable, unitId));
+						while (usingReader.Read ()) {
+							unit.Add (new DomUsing (DomRegion.FromInvariantString (SqliteUtils.FromDbFormat<string> (usingReader[1])),
+							                        SqliteUtils.FromDbFormat<string> (usingReader[0])));
+						}
 					}
 				}
 				return unit;
@@ -138,7 +170,7 @@ namespace MonoDevelop.Projects.Dom.Database
 			// Nothing - full name is calculated in CheckReadMembers ()
 		}
 		
-		public DatabaseType (CodeCompletionDatabase db, long unitId, long memberId, long typeId, string namespaceName, ClassType classType)
+		public DatabaseType (CodeCompletionDatabase db, long unitId, long memberId, long typeId, string namespaceName, ClassType classType, long baseTypeId)
 		{
 			this.db        = db;
 			this.unitId    = unitId;
@@ -146,6 +178,7 @@ namespace MonoDevelop.Projects.Dom.Database
 			this.typeId    = typeId;
 			this.Namespace = namespaceName;
 			this.ClassType = classType;
+			this.baseTypeId = baseTypeId;
 		}
 		
 		public override IEnumerable<IMember> Members {
@@ -207,7 +240,8 @@ namespace MonoDevelop.Projects.Dom.Database
 						UnitID INTEGER,
 						MemberID INTEGER,
 						NamespaceID INTEGER,
-						ClassType INTEGER
+						ClassType INTEGER,
+						BaseTypeID INTEGER
 						)", Table
 				));
 				db.Connection.Execute (String.Format (@"CREATE INDEX IDX_{0}_UnitID ON {0}(UnitID)", Table));
@@ -284,12 +318,13 @@ namespace MonoDevelop.Projects.Dom.Database
 		{
 			long namespaceID = db.GetNamespaceID (type.Namespace);
 			long memberId    = db.InsertMember (type);
-			long typeId = db.Connection.Execute (String.Format (@"INSERT INTO {0} (UnitID, MemberID, NamespaceID, ClassType) VALUES ({1}, {2}, {3}, {4})", 
+			long typeId = db.Connection.Execute (String.Format (@"INSERT INTO {0} (UnitID, MemberID, NamespaceID, ClassType, BaseTypeID) VALUES ({1}, {2}, {3}, {4}, {5})", 
 				Table,
 				unitId,
 				memberId,
 				namespaceID,
-				(byte)type.ClassType
+				(byte)type.ClassType,
+				type.BaseType != null ? db.GetReturnTypeID (type.BaseType) : -1
 			));
 			
 			long myReturnType = db.GetReturnTypeID (new DomReturnType (type));
@@ -331,7 +366,7 @@ namespace MonoDevelop.Projects.Dom.Database
 		
 		public static DatabaseType ReadType (CodeCompletionDatabase db, long typeID)
 		{
-			IDataReader reader = db.Connection.Query (String.Format (@"SELECT TypeID, UnitID, MemberID, NamespaceID, ClassType FROM {0} WHERE TypeID={1}",  DatabaseType.Table, typeID));
+			IDataReader reader = db.Connection.Query (String.Format (@"SELECT TypeID, UnitID, MemberID, NamespaceID, ClassType, BaseTypeID FROM {0} WHERE TypeID={1}",  DatabaseType.Table, typeID));
 			if (reader.Read ()) 
 				return db.CreateDomType (reader, null);
 			return null;

@@ -58,6 +58,16 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
+		public DomUsing ()
+		{
+		}
+		
+		public DomUsing (DomRegion region, string nspace)
+		{
+			this.domRegion = region;
+			Add (nspace);
+		}
+		
 		public void Add (string nspace)
 		{
 			if (namespaces == null)
