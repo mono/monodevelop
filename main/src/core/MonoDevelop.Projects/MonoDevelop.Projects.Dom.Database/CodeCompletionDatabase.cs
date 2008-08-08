@@ -364,7 +364,7 @@ namespace MonoDevelop.Projects.Dom.Database
 			if (returnTypes.TryGetValue (invariantString, out result))
 				return result;
 			
-			result = connection.Query<long> (String.Format (@"SELECT ReturnTypeID FROM {0} WHERE InvariantString='{1}' ", ReturnTypeTable, invariantString));
+			result = connection.Query<long> (String.Format (@"SELECT ReturnTypeID FROM {0} WHERE InvariantString='{1}'", ReturnTypeTable, invariantString));
 			if (result > 0) {
 				returnTypes [invariantString] = result;
 				return result;

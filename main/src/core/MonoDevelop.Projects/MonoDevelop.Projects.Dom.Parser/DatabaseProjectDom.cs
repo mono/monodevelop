@@ -46,11 +46,14 @@ namespace MonoDevelop.Projects.Dom.Parser
 				}
 				return projectIds;
 			}
-				
 		}
+		
 		public override IEnumerable<IType> Types {
 			get {
-				return codeCompletionDatabase.GetTypeList (new long[] { projectId });
+				foreach (IType type in codeCompletionDatabase.GetTypeList (new long[] { projectId })) {
+					type.SourceProjectDom = this;
+					yield return type;
+				}
 			}
 		}
 		
@@ -133,6 +136,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 				if (genericParameterCount < 0 || 
 				    (genericParameterCount == 0 && type.TypeParameters == null) || 
 				    (type.TypeParameters != null && type.TypeParameters.Count == genericParameterCount)) {
+					type.SourceProjectDom = this;
 					return type;
 				}
 			}
@@ -148,6 +152,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 			if (searchDeep) {
 				foreach (IType type in codeCompletionDatabase.GetTypes (subNamespaces, ProjectIds, fullName, caseSensitive)) {
 					if (genericParameterCount < 0 || (genericParameterCount == 0 && type.TypeParameters == null) ||  (type.TypeParameters != null && type.TypeParameters.Count == genericParameterCount)) {
+						type.SourceProjectDom = this;
 						return type;
 					}
 				}

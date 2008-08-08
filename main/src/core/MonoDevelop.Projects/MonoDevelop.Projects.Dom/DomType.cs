@@ -193,7 +193,7 @@ namespace MonoDevelop.Projects.Dom
 		
 		public virtual IEnumerable<IType> Parts { 
 			get {
-				return null;
+				return new IType[] { this };
 			}
 		}
 		

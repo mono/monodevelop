@@ -81,8 +81,10 @@ namespace Hyena.Data.Sqlite
         public HyenaSqliteCommand (string command, params object [] param_values)
         {
             this.command = command;
-            ApplyValues (param_values);
+			if (param_values != null)
+				ApplyValues (param_values);
         }
+		
 	//	public static bool TRACE = false;
         internal void Execute (HyenaSqliteConnection hconnection, SqliteConnection connection)
         {
@@ -162,7 +164,7 @@ namespace Hyena.Data.Sqlite
 
             if (param_values.Length != parameter_count) {
                 throw new ArgumentException (String.Format (
-                    "Command has {0} parameters, but {1} values given.", parameter_count, param_values.Length
+                    "Command ({2})has {0} parameters, but {1} values given.", parameter_count, param_values.Length, this.command
                 ));
             }
 
