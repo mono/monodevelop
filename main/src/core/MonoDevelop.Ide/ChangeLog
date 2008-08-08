@@ -1,3 +1,9 @@
+2008-08-08  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Ide.Commands/RefactoryCommands.cs,
+	  MonoDevelop.Ide.Gui.Dialogs/RenameItemDialog.cs: Worked on
+	  refactory commands.
+
 2008-08-07  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Commands/DebugCommands.cs, MonoDevelop.Ide.addin.xml:

@@ -544,7 +544,7 @@ namespace MonoDevelop.Ide.Commands
 		
 		public void Rename ()
 		{
-			RenameItemDialog dialog = new RenameItemDialog (ctx, item as IMember);
+			RenameItemDialog dialog = new RenameItemDialog (ctx, item);
 			dialog.Show ();
 		}
 	}

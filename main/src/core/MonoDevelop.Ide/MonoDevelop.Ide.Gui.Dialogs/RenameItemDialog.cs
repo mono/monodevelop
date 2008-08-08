@@ -36,20 +36,21 @@ using MonoDevelop.Projects.CodeGeneration;
 
 namespace MonoDevelop.Ide.Gui.Dialogs {
 	public partial class RenameItemDialog : Gtk.Dialog {
-		IMember item;
+		IDomVisitable item;
 		
-		public RenameItemDialog (ProjectDom ctx, IMember item)
+		public RenameItemDialog (ProjectDom ctx, IDomVisitable item)
 		{
 			this.item = item;
 			
 			this.Build ();
 
 			if (item is IType) {
-				if (item.IsPublic) {
+				IType type = (IType)item;
+				if (type.IsPublic) {
 					this.renameFileFlag.Visible = true;
 					this.renameFileFlag.Active = true;
 				}
-				if (((IType) item).ClassType == ClassType.Interface)
+				if (type.ClassType == ClassType.Interface)
 					this.Title = GettextCatalog.GetString ("Rename Interface");
 				else
 					this.Title = GettextCatalog.GetString ("Rename Class");
@@ -73,7 +74,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 				this.Title = GettextCatalog.GetString ("Rename Item");
 			}
 			
-			entry.Text = item.Name;
+			entry.Text = item is IMember ? ((IMember)item).Name : ((LocalVariable)item).Name;
 			entry.SelectRegion (0, -1);
 			
 			buttonOk.Sensitive = false;
