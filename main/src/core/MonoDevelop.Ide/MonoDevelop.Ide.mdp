@@ -113,7 +113,7 @@
     <File name="MonoDevelop.Ide.Gui.Pads/FileScout.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui/HelpViewer.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui.Pads/MonodocTreePad.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Ide.Gui.Pads.ProjectPad/CombineNodeBuilder.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Ide.Gui.Pads.ProjectPad/SolutionFolderNodeBuilder.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFolder.cs" subtype="Code" buildaction="Compile" />
