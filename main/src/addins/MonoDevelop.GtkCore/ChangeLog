@@ -1,3 +1,8 @@
+2008-08-08  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.GtkCore.GuiBuilder/CombinedDesignView.cs: Add a null
+	  check.
+
 2008-08-01  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.GtkCore/GtkDesignInfo.cs: Fix crash when looking for
