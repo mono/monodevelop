@@ -41,15 +41,15 @@ namespace MonoDevelop.AspNet
 {
 	public class AspNetAppProjectConfiguration : DotNetProjectConfiguration 
 	{
-		[ItemProperty ("AspNet/GenerateNonPartialCodeBehindMembers")]
-		bool generateNonPartialCodeBehindMembers = false;
+		[ItemProperty ("AspNet/DisableCodeBehindGeneration", DefaultValue = false)]
+		bool disableCodeBehindGeneration = false;
 		
 		[ItemProperty ("AspNet/nonStandardOutputDirectory", DefaultValue = false)]
 		bool nonStandardOutputDirectory = false;
 		
-		public bool GenerateNonPartialCodeBehindMembers {
-			get { return generateNonPartialCodeBehindMembers; }
-			set { generateNonPartialCodeBehindMembers = value; }
+		public bool DisableCodeBehindGeneration {
+			get { return disableCodeBehindGeneration; }
+			set { disableCodeBehindGeneration = value; }
 		}
 		
 		#region //override behaviour of base class to make sure things compile to the right places

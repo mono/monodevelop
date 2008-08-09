@@ -24,12 +24,12 @@ namespace MonoDevelop.AspNet.Gui
 		public void Load (AspNetAppProjectConfiguration configuration)
 		{
 			this.configuration = configuration;
-			autoGenerateNonPartialCodeBehind.Active = configuration.GenerateNonPartialCodeBehindMembers;
+			disableCodeBehindGeneration.Active = configuration.DisableCodeBehindGeneration;
 		}
 		
 		public void Store ()
 		{				
-			configuration.GenerateNonPartialCodeBehindMembers = autoGenerateNonPartialCodeBehind.Active;
+			configuration.DisableCodeBehindGeneration = disableCodeBehindGeneration.Active;
 		}
 	}
 }
