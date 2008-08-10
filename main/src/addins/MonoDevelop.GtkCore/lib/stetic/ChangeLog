@@ -1,3 +1,8 @@
+2008-08-10  Mike Kestner <mkestner@novell.com> 
+
+	* libsteticui/LibraryCache.cs: add browsable properties and events
+	to the toolbox item entries in the objects xml doc.
+
 2008-07-24  Mike Kestner <mkestner@novell.com> 
 
 	* libsteticui/CecilWidgetLibrary.cs (Load): use Refresh to get
