@@ -2708,14 +2708,18 @@ namespace Mono.CSharp {
 
 		#region IType Members
 
-		public Dom.ITypeName [] BaseTypes {
+		Dom.ITypeName [] Dom.IType.BaseTypes {
 			get {
 				return type_bases == null ? null :
 					(Dom.ITypeName [])type_bases.ToArray (typeof (Dom.ITypeName));
 			}
 		}
 
-		string Dom.IType.Name {
+		public Dom.IType DeclaringType {
+			get { return (Dom.IType) Parent; }
+		}
+
+		string Dom.ITypeBase.Name {
 			get { return MemberName.Name; }
 		}
 
@@ -2728,7 +2732,7 @@ namespace Mono.CSharp {
 			set { members_block = value; }
 		}
 
-		Dom.ITypeParameter [] Dom.IType.TypeParameters {
+		Dom.ITypeParameter [] Dom.ITypeBase.TypeParameters {
 			get {
 				return type_params;
 			}

@@ -183,7 +183,6 @@ FILES =  \
 	MonoDevelop.Ide.Gui.Pads.ClassPad/ProjectNodeBuilder.cs \
 	MonoDevelop.Ide.Gui.Pads.ClassPad/PropertyNodeBuilder.cs \
 	MonoDevelop.Ide.Gui.Pads.ClassPad/SolutionNodeBuilder.cs \
-	MonoDevelop.Ide.Gui.Pads.ProjectPad/CombineNodeBuilder.cs \
 	MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs \
 	MonoDevelop.Ide.Gui.Pads.ProjectPad/LinkedFilesFolder.cs \
 	MonoDevelop.Ide.Gui.Pads.ProjectPad/LinkedFilesFolderNodeBuilder.cs \
@@ -197,6 +196,7 @@ FILES =  \
 	MonoDevelop.Ide.Gui.Pads.ProjectPad/ResourceFolder.cs \
 	MonoDevelop.Ide.Gui.Pads.ProjectPad/ResourceFolderNodeBuilder.cs \
 	MonoDevelop.Ide.Gui.Pads.ProjectPad/ShowAllFilesBuilderExtension.cs \
+	MonoDevelop.Ide.Gui.Pads.ProjectPad/SolutionFolderNodeBuilder.cs \
 	MonoDevelop.Ide.Gui.Pads.ProjectPad/SolutionNodeBuilder.cs \
 	MonoDevelop.Ide.Gui.Pads.ProjectPad/SystemFile.cs \
 	MonoDevelop.Ide.Gui.Pads.ProjectPad/SystemFileNodeBuilder.cs \

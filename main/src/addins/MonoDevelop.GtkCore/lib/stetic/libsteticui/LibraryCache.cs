@@ -348,6 +348,151 @@ namespace Stetic {
 			return info;
 		}
 
+		XmlElement GetItemGroup (XmlElement groups, string cat, string default_label)
+		{
+			XmlElement group;
+			
+			if (String.IsNullOrEmpty (cat))
+				group = (XmlElement) groups.SelectSingleNode ("itemgroup[(not(@name) or @name='') and not(@ref)]");
+			else
+				group = (XmlElement) groups.SelectSingleNode ("itemgroup[@name='" + cat + "']");
+			
+			if (group == null) {
+				group = groups.OwnerDocument.CreateElement ("itemgroup");
+				if (String.IsNullOrEmpty (cat))
+					group.SetAttribute ("label", default_label);
+				else {
+					group.SetAttribute ("name", cat);
+					group.SetAttribute ("label", cat);
+				}
+				groups.AppendChild (group);
+			}
+			return group;
+		}
+		
+		void AddProperty (PropertyDefinition prop, string cat, XmlElement obj)
+		{
+			XmlElement groups = obj ["itemgroups"];
+			if (groups == null) {
+				groups = obj.OwnerDocument.CreateElement ("itemgroups");
+				obj.AppendChild (groups);
+			}
+			
+			XmlElement group = GetItemGroup (groups, cat, prop.DeclaringType.FullName + " Properties");
+			XmlElement elem = group.OwnerDocument.CreateElement ("property");
+			elem.SetAttribute ("name", prop.Name);
+			group.AppendChild (elem);
+		}
+
+		static string[] supported_types = new string[] {
+			"System.Boolean",
+			"System.Char",
+			"System.SByte",
+			"System.Byte",
+			"System.Int16",
+			"System.UInt16",
+			"System.Int32",
+			"System.UInt32",
+			"System.Int64",
+			"System.UInt64",
+			"System.Decimal",
+			"System.Single",
+			"System.Double",
+			"System.DateTime",
+			"System.String",
+			"System.TimeSpan",
+			"Gtk.Adjustment",
+		};
+
+		void AddProperties (TypeDefinition tdef, XmlElement obj)
+		{
+			foreach (PropertyDefinition prop in tdef.Properties) {
+				if (prop.GetMethod == null || !prop.GetMethod.IsPublic || prop.SetMethod == null || !prop.SetMethod.IsPublic)
+					continue;
+				else if (Array.IndexOf (supported_types, prop.PropertyType.FullName) < 0)
+					continue;
+				bool browsable = true;
+				string category = String.Empty;
+				foreach (CustomAttribute attr in prop.CustomAttributes) {
+					switch (attr.Constructor.DeclaringType.FullName) {
+					case "System.ComponentModel.BrowsableAttribute":
+						attr.Resolve ();
+						if (attr.ConstructorParameters.Count > 0) {
+							object param = attr.ConstructorParameters [0];
+							if (param.GetType () == typeof (bool))
+								browsable = (bool) param;
+						}
+						break;
+					case "System.ComponentModel.CategoryAttribute":
+						attr.Resolve ();
+						if (attr.ConstructorParameters.Count > 0) {
+							object param = attr.ConstructorParameters [0];
+							if (param.GetType () == typeof (string))
+								category = (string) param;
+						}
+						break;
+					default:
+						continue;
+					}
+					if (!browsable)
+						break;
+				}
+				if (browsable)
+					AddProperty (prop, category, obj);
+			}
+		}
+	
+		void AddEvent (EventDefinition ev, string cat, XmlElement obj)
+		{
+			XmlElement groups = obj ["signals"];
+			if (groups == null) {
+				groups = obj.OwnerDocument.CreateElement ("signals");
+				obj.AppendChild (groups);
+			}
+			
+			XmlElement group = GetItemGroup (groups, cat, ev.DeclaringType.FullName + " Signals");
+			XmlElement elem = group.OwnerDocument.CreateElement ("signal");
+			elem.SetAttribute ("name", ev.Name);
+			group.AppendChild (elem);
+		}
+
+		void AddEvents (TypeDefinition tdef, XmlElement obj)
+		{
+			
+			foreach (EventDefinition ev in tdef.Events) {
+				if (ev.AddMethod == null || !ev.AddMethod.IsPublic)
+					continue;
+				bool browsable = true;
+				string category = String.Empty;
+				foreach (CustomAttribute attr in ev.CustomAttributes) {
+					switch (attr.Constructor.DeclaringType.FullName) {
+					case "System.ComponentModel.BrowsableAttribute":
+						attr.Resolve ();
+						if (attr.ConstructorParameters.Count > 0) {
+							object param = attr.ConstructorParameters [0];
+							if (param.GetType () == typeof (bool))
+								browsable = (bool) param;
+						}
+						break;
+					case "System.ComponentModel.CategoryAttribute":
+						attr.Resolve ();
+						if (attr.ConstructorParameters.Count > 0) {
+							object param = attr.ConstructorParameters [0];
+							if (param.GetType () == typeof (string))
+								category = (string) param;
+						}
+						break;
+					default:
+						continue;
+					}
+					if (!browsable)
+						break;
+				}
+				if (browsable)
+					AddEvent (ev, category, obj);
+			}
+		}
+	
 		void AddObjects (XmlDocument doc, AssemblyResolver resolver, AssemblyDefinition adef)
 		{
 			foreach (TypeDefinition tdef in adef.MainModule.Types) {
@@ -364,6 +509,8 @@ namespace Stetic {
 				elem.SetAttribute ("base-type", tbinfo.BaseType);
 				elem.SetAttribute ("palette-category", tbinfo.PaletteCategory);
 				doc.DocumentElement.AppendChild (elem);
+				AddProperties (tdef, elem);
+				AddEvents (tdef, elem);
 			}
 		}
 

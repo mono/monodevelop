@@ -92,7 +92,11 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		
 		public override object GetParentObject (object dataObject)
 		{
-			return ((SolutionItem) dataObject).ParentFolder;
+			SolutionItem sf = (SolutionItem) dataObject;
+			if (sf.ParentFolder.IsRoot)
+				return sf.ParentSolution;
+			else
+				return sf.ParentFolder;
 		}
 		
 		public override int CompareObjects (ITreeNavigator thisNode, ITreeNavigator otherNode)

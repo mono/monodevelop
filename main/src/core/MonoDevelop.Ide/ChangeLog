@@ -1,3 +1,17 @@
+2008-08-08  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/SolutionFolderNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ProjectPad/CombineNodeBuilder.cs,
+	  MonoDevelop.Ide.mdp, Makefile.am: Renamed file. Fixed
+	  GetParentObject: GetParentObject should return the solution for
+	  root folders.
+
+2008-08-08  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Gui.Dialogs/OverridesImplementsDialog.cs: Fix issue
+	  with enumerator returned by GetCheckedSiblings. The enumerator
+	  can't be reused after calling MoveNext.
+
 2008-08-08  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Ide.Commands/RefactoryCommands.cs,

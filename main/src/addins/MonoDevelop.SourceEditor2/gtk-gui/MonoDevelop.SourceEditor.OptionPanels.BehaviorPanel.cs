@@ -19,6 +19,8 @@ namespace MonoDevelop.SourceEditor.OptionPanels {
         
         private Gtk.CheckButton autoInsertBraceCheckbutton;
         
+        private Gtk.CheckButton removeTrailingWhitespacesCheckbutton;
+        
         private Gtk.Frame frame1;
         
         private Gtk.Alignment GtkAlignment;
@@ -41,7 +43,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels {
         
         private Gtk.CheckButton tabAsReindentCheckbutton;
         
-        private Gtk.Label GtkLabel4;
+        private Gtk.Label GtkLabel5;
         
         protected virtual void Build() {
             Stetic.Gui.Initialize(this);
@@ -77,6 +79,18 @@ namespace MonoDevelop.SourceEditor.OptionPanels {
             w2.Expand = false;
             w2.Fill = false;
             // Container child vbox1.Gtk.Box+BoxChild
+            this.removeTrailingWhitespacesCheckbutton = new Gtk.CheckButton();
+            this.removeTrailingWhitespacesCheckbutton.CanFocus = true;
+            this.removeTrailingWhitespacesCheckbutton.Name = "removeTrailingWhitespacesCheckbutton";
+            this.removeTrailingWhitespacesCheckbutton.Label = Mono.Unix.Catalog.GetString("_Remove trailing whitespaces");
+            this.removeTrailingWhitespacesCheckbutton.DrawIndicator = true;
+            this.removeTrailingWhitespacesCheckbutton.UseUnderline = true;
+            this.vbox1.Add(this.removeTrailingWhitespacesCheckbutton);
+            Gtk.Box.BoxChild w3 = ((Gtk.Box.BoxChild)(this.vbox1[this.removeTrailingWhitespacesCheckbutton]));
+            w3.Position = 2;
+            w3.Expand = false;
+            w3.Fill = false;
+            // Container child vbox1.Gtk.Box+BoxChild
             this.frame1 = new Gtk.Frame();
             this.frame1.Name = "frame1";
             this.frame1.ShadowType = ((Gtk.ShadowType)(0));
@@ -98,23 +112,23 @@ namespace MonoDevelop.SourceEditor.OptionPanels {
             this.label1.LabelProp = Mono.Unix.Catalog.GetString("_Indentation:");
             this.label1.UseUnderline = true;
             this.hbox1.Add(this.label1);
-            Gtk.Box.BoxChild w3 = ((Gtk.Box.BoxChild)(this.hbox1[this.label1]));
-            w3.Position = 0;
-            w3.Expand = false;
-            w3.Fill = false;
+            Gtk.Box.BoxChild w4 = ((Gtk.Box.BoxChild)(this.hbox1[this.label1]));
+            w4.Position = 0;
+            w4.Expand = false;
+            w4.Fill = false;
             // Container child hbox1.Gtk.Box+BoxChild
             this.indentationCombobox = Gtk.ComboBox.NewText();
             this.indentationCombobox.Name = "indentationCombobox";
             this.hbox1.Add(this.indentationCombobox);
-            Gtk.Box.BoxChild w4 = ((Gtk.Box.BoxChild)(this.hbox1[this.indentationCombobox]));
-            w4.Position = 1;
-            w4.Expand = false;
-            w4.Fill = false;
-            this.vbox2.Add(this.hbox1);
-            Gtk.Box.BoxChild w5 = ((Gtk.Box.BoxChild)(this.vbox2[this.hbox1]));
-            w5.Position = 0;
+            Gtk.Box.BoxChild w5 = ((Gtk.Box.BoxChild)(this.hbox1[this.indentationCombobox]));
+            w5.Position = 1;
             w5.Expand = false;
             w5.Fill = false;
+            this.vbox2.Add(this.hbox1);
+            Gtk.Box.BoxChild w6 = ((Gtk.Box.BoxChild)(this.vbox2[this.hbox1]));
+            w6.Position = 0;
+            w6.Expand = false;
+            w6.Fill = false;
             // Container child vbox2.Gtk.Box+BoxChild
             this.hbox2 = new Gtk.HBox();
             this.hbox2.Name = "hbox2";
@@ -125,10 +139,10 @@ namespace MonoDevelop.SourceEditor.OptionPanels {
             this.label3.LabelProp = Mono.Unix.Catalog.GetString("_Tab and indentation size:");
             this.label3.UseUnderline = true;
             this.hbox2.Add(this.label3);
-            Gtk.Box.BoxChild w6 = ((Gtk.Box.BoxChild)(this.hbox2[this.label3]));
-            w6.Position = 0;
-            w6.Expand = false;
-            w6.Fill = false;
+            Gtk.Box.BoxChild w7 = ((Gtk.Box.BoxChild)(this.hbox2[this.label3]));
+            w7.Position = 0;
+            w7.Expand = false;
+            w7.Fill = false;
             // Container child hbox2.Gtk.Box+BoxChild
             this.indentAndTabSizeSpinbutton = new Gtk.SpinButton(0, 100, 1);
             this.indentAndTabSizeSpinbutton.CanFocus = true;
@@ -137,15 +151,15 @@ namespace MonoDevelop.SourceEditor.OptionPanels {
             this.indentAndTabSizeSpinbutton.ClimbRate = 1;
             this.indentAndTabSizeSpinbutton.Numeric = true;
             this.hbox2.Add(this.indentAndTabSizeSpinbutton);
-            Gtk.Box.BoxChild w7 = ((Gtk.Box.BoxChild)(this.hbox2[this.indentAndTabSizeSpinbutton]));
-            w7.Position = 1;
-            w7.Expand = false;
-            w7.Fill = false;
-            this.vbox2.Add(this.hbox2);
-            Gtk.Box.BoxChild w8 = ((Gtk.Box.BoxChild)(this.vbox2[this.hbox2]));
+            Gtk.Box.BoxChild w8 = ((Gtk.Box.BoxChild)(this.hbox2[this.indentAndTabSizeSpinbutton]));
             w8.Position = 1;
             w8.Expand = false;
             w8.Fill = false;
+            this.vbox2.Add(this.hbox2);
+            Gtk.Box.BoxChild w9 = ((Gtk.Box.BoxChild)(this.vbox2[this.hbox2]));
+            w9.Position = 1;
+            w9.Expand = false;
+            w9.Fill = false;
             // Container child vbox2.Gtk.Box+BoxChild
             this.convertTabsToSpacesCheckbutton = new Gtk.CheckButton();
             this.convertTabsToSpacesCheckbutton.CanFocus = true;
@@ -154,10 +168,10 @@ namespace MonoDevelop.SourceEditor.OptionPanels {
             this.convertTabsToSpacesCheckbutton.DrawIndicator = true;
             this.convertTabsToSpacesCheckbutton.UseUnderline = true;
             this.vbox2.Add(this.convertTabsToSpacesCheckbutton);
-            Gtk.Box.BoxChild w9 = ((Gtk.Box.BoxChild)(this.vbox2[this.convertTabsToSpacesCheckbutton]));
-            w9.Position = 2;
-            w9.Expand = false;
-            w9.Fill = false;
+            Gtk.Box.BoxChild w10 = ((Gtk.Box.BoxChild)(this.vbox2[this.convertTabsToSpacesCheckbutton]));
+            w10.Position = 2;
+            w10.Expand = false;
+            w10.Fill = false;
             // Container child vbox2.Gtk.Box+BoxChild
             this.tabAsReindentCheckbutton = new Gtk.CheckButton();
             this.tabAsReindentCheckbutton.CanFocus = true;
@@ -166,22 +180,22 @@ namespace MonoDevelop.SourceEditor.OptionPanels {
             this.tabAsReindentCheckbutton.DrawIndicator = true;
             this.tabAsReindentCheckbutton.UseUnderline = true;
             this.vbox2.Add(this.tabAsReindentCheckbutton);
-            Gtk.Box.BoxChild w10 = ((Gtk.Box.BoxChild)(this.vbox2[this.tabAsReindentCheckbutton]));
-            w10.Position = 3;
-            w10.Expand = false;
-            w10.Fill = false;
+            Gtk.Box.BoxChild w11 = ((Gtk.Box.BoxChild)(this.vbox2[this.tabAsReindentCheckbutton]));
+            w11.Position = 3;
+            w11.Expand = false;
+            w11.Fill = false;
             this.GtkAlignment.Add(this.vbox2);
             this.frame1.Add(this.GtkAlignment);
-            this.GtkLabel4 = new Gtk.Label();
-            this.GtkLabel4.Name = "GtkLabel4";
-            this.GtkLabel4.LabelProp = Mono.Unix.Catalog.GetString("<b>Tabs</b>");
-            this.GtkLabel4.UseMarkup = true;
-            this.frame1.LabelWidget = this.GtkLabel4;
+            this.GtkLabel5 = new Gtk.Label();
+            this.GtkLabel5.Name = "GtkLabel5";
+            this.GtkLabel5.LabelProp = Mono.Unix.Catalog.GetString("<b>Tabs</b>");
+            this.GtkLabel5.UseMarkup = true;
+            this.frame1.LabelWidget = this.GtkLabel5;
             this.vbox1.Add(this.frame1);
-            Gtk.Box.BoxChild w13 = ((Gtk.Box.BoxChild)(this.vbox1[this.frame1]));
-            w13.Position = 2;
-            w13.Expand = false;
-            w13.Fill = false;
+            Gtk.Box.BoxChild w14 = ((Gtk.Box.BoxChild)(this.vbox1[this.frame1]));
+            w14.Position = 3;
+            w14.Expand = false;
+            w14.Fill = false;
             this.Add(this.vbox1);
             if ((this.Child != null)) {
                 this.Child.ShowAll();

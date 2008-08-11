@@ -12,7 +12,7 @@
     <widget-library name="../../../../build/AddIns/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor.dll" />
     <widget-library name="../../../../build/AddIns/MonoDevelop.AspNet/MonoDevelop.AspNet.dll" internal="true" />
   </import>
-  <widget class="Gtk.Bin" id="MonoDevelop.AspNet.Gui.AspNetConfigurationPanelWidget" design-size="449 300">
+  <widget class="Gtk.Bin" id="MonoDevelop.AspNet.Gui.AspNetConfigurationPanelWidget" design-size="496 300">
     <property name="MemberName" />
     <child>
       <widget class="Gtk.VBox" id="vbox1">
@@ -53,10 +53,10 @@
                 <property name="MemberName" />
                 <property name="Spacing">6</property>
                 <child>
-                  <widget class="Gtk.CheckButton" id="autoGenerateNonPartialCodeBehind">
+                  <widget class="Gtk.CheckButton" id="disableCodeBehindGeneration">
                     <property name="MemberName" />
                     <property name="CanFocus">True</property>
-                    <property name="Label" translatable="yes">Autogenerate CodeBehind members for non-partial classes</property>
+                    <property name="Label" translatable="yes">Disable automatic updating of CodeBehind partial classes</property>
                     <property name="DrawIndicator">True</property>
                     <property name="HasLabel">True</property>
                     <property name="UseUnderline">True</property>

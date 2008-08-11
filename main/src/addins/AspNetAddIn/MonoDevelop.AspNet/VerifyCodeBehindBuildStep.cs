@@ -46,49 +46,72 @@ namespace MonoDevelop.AspNet
 	
 	public class VerifyCodeBehindBuildStep : ProjectServiceExtension
 	{
+		
 		protected override BuildResult Build (IProgressMonitor monitor, SolutionEntityItem project, string configuration)
 		{
 			AspNetAppProject aspProject = project as AspNetAppProject;
-			List<CodeBehindWarning> errors = new List<CodeBehindWarning> ();
 			
-			if (aspProject == null || aspProject.LanguageBinding == null || aspProject.LanguageBinding.Refactorer == null)
+			if (aspProject == null || aspProject.LanguageBinding == null)
 				return base.Build (monitor, project, configuration);
 			
-			RefactorOperations ops = aspProject.LanguageBinding.Refactorer.SupportedOperations;
-			if ((ops & RefactorOperations.AddField) != RefactorOperations.AddField)
-				return base.Build (monitor, project, configuration);
-			
-			//lists of members to be added 
-			List<System.CodeDom.CodeMemberField> membersToAdd = new List<System.CodeDom.CodeMemberField> ();
-			List<IType> classesForMembers = new List<IType> ();
-			
+			//get the config object and validate
 			AspNetAppProjectConfiguration config = (AspNetAppProjectConfiguration) aspProject.GetConfiguration (configuration);
-			
 			if (config == null) {
 				monitor.ReportWarning (GettextCatalog.GetString
 					("Project configuration is invalid. Skipping CodeBehind member generation."));
-				return base.Build (monitor, project, configuration);;
+				return base.Build (monitor, project, configuration);
 			}
 			
-			//get an updated parser database
-			ProjectDom ctx = ProjectDomService.GetDatabaseProjectDom (aspProject);
-//			ctx.UpdateDatabase ();
+			if (config.DisableCodeBehindGeneration) {
+				monitor.ReportWarning (GettextCatalog.GetString
+					("Skipping updating of CodeBehind partial classes, because this feature is disabled."));
+				return base.Build (monitor, project, configuration);
+			}
+			
+			System.CodeDom.Compiler.CodeDomProvider provider = aspProject.LanguageBinding.GetCodeDomProvider ();
+			bool supportsPartialTypes = provider.Supports (System.CodeDom.Compiler.GeneratorSupport.PartialTypes);
+			if (!supportsPartialTypes) {
+				monitor.ReportWarning (GettextCatalog.GetString 
+					("The code generation for {0} does not support partial classes."));;
+				return base.Build (monitor, project, configuration);
+			}
+			
+			//get the extension used for codebehind files
+			string langExt = aspProject.LanguageBinding.GetFileName ("a");
+			langExt = langExt.Substring (1, langExt.Length - 1);
+			
+			List<CodeBehindWarning> errors = new List<CodeBehindWarning> ();
 			
 			monitor.Log.WriteLine (GettextCatalog.GetString ("Generating CodeBehind members..."));
-			if (!config.GenerateNonPartialCodeBehindMembers)
-				monitor.Log.WriteLine (GettextCatalog.GetString ("Auto-generation of CodeBehind members is disabled for non-partial classes."));
+			int nUpdated = 0;
+			List<string> openFiles = null;
+			List<KeyValuePair<string,string>> filesToWrite = new List<KeyValuePair<string,string>> ();
 			
-			//find the members that need to be added to CodeBehind classes
-			foreach (ProjectFile file in aspProject.Files) {
-				
+			//go over all the files generating members where necessary
+			foreach (ProjectFile file in aspProject.Files)
+			{
 				WebSubtype type = AspNetAppProject.DetermineWebSubtype (Path.GetExtension (file.FilePath));
-				if ((type != WebSubtype.WebForm) && (type != WebSubtype.WebControl) && (type != WebSubtype.MasterPage))
+				if ((type != WebSubtype.WebForm))//TODO && (type != WebSubtype.WebControl) && (type != WebSubtype.MasterPage))
 						continue;
-
+				
+				//find the designer file
+				ProjectFile designerFile = aspProject.Files.GetFile (file.Name + ".designer" + langExt);
+				if (designerFile == null)
+					aspProject.Files.GetFile (file.Name + ".Designer" + langExt);
+				if (designerFile == null)
+					continue;
+				
+				//only regenerate the designer class if it's older than the aspx (etc) file
+				if (System.IO.File.GetLastWriteTimeUtc (designerFile.FilePath)
+				    > System.IO.File.GetLastWriteTimeUtc (file.FilePath))
+					continue;
+				
+				//parse the ASP.NET file
 				AspNetCompilationUnit cu = ProjectDomService.Parse (aspProject, file.FilePath, null) as AspNetCompilationUnit;
 				if (cu == null || cu.Document == null)
 					continue;
 				
+				//log errors
 				if (cu.HasErrors) {
 					foreach (Exception e in cu.Document.ParseErrors) {
 						CodeBehindWarning cbw;
@@ -100,93 +123,123 @@ namespace MonoDevelop.AspNet
 							    GettextCatalog.GetString ("Parser failed with error {0}. CodeBehind members for this file will not be added.", e.ToString ()),
 							    file.FilePath
 							    );
-						monitor.Log.WriteLine (cbw.ToString ());
 						errors.Add (cbw);
 					}
 				}
 				
 				string className = cu.PageInfo.InheritedClass;
-				if (className == null)
+				if (string.IsNullOrEmpty (className))
 					continue;
 				
-				IType cls = ctx.GetType (className, -1, true, true);
-				if (cls == null) {
-					CodeBehindWarning cbw = new CodeBehindWarning (
-						GettextCatalog.GetString ("Cannot find CodeBehind class '{0}'.", className),
-					    file.FilePath
-					);
-					monitor.Log.WriteLine (cbw.ToString ());
-					errors.Add (cbw);
-					continue;
+				//initialise the generated type
+				System.CodeDom.CodeCompileUnit ccu = new System.CodeDom.CodeCompileUnit ();
+				System.CodeDom.CodeNamespace namespac = new System.CodeDom.CodeNamespace ();
+				ccu.Namespaces.Add (namespac); 
+				System.CodeDom.CodeTypeDeclaration typeDecl = new System.CodeDom.CodeTypeDeclaration ();
+				typeDecl.IsClass = true;
+				typeDecl.IsPartial = true;
+				namespac.Types.Add (typeDecl);
+				
+				//name the class and namespace
+				int namespaceSplit = className.LastIndexOf ('.');
+				string namespaceName = null;
+				if (namespaceSplit > -1) {
+					namespac.Name = className.Substring (0, namespaceSplit);
+					typeDecl.Name = className.Substring (namespaceSplit + 1);
+				} else {
+					typeDecl.Name = className;
 				}
 				
-				//handle partial designer classes; skip if non-partial and this is disabled
-				IType partToAddTo = CodeBehind.GetDesignerClass (cls);
-				if (partToAddTo == null) {
-					if (!config.GenerateNonPartialCodeBehindMembers)
-						continue;
-					else
-						partToAddTo = cls;
-				}
+				//add fields for each control in the page
+				foreach (System.CodeDom.CodeMemberField member in cu.Document.MemberList.Members.Values)
+					typeDecl.Members.Add (member);
 				
-				//parse the ASP document 
-				Document doc = cu.Document;
+				System.CodeDom.Compiler.CodeGeneratorOptions options = new System.CodeDom.Compiler.CodeGeneratorOptions ();
+				options.BlankLinesBetweenMembers = false;
 				
-				//collect the members to be added
-				try {
-					foreach (System.CodeDom.CodeMemberField member in doc.MemberList.Members.Values) {
-						try {
-							MonoDevelop.Projects.Dom.IMember existingMember = BindingService.GetCompatibleMemberInClass (cls, member);
-							if (existingMember == null) {
-								classesForMembers.Add (partToAddTo);
-								membersToAdd.Add (member);
-							}
-						} catch (ErrorInFileException ex) {
-							CodeBehindWarning cbw = new CodeBehindWarning (ex);
-							monitor.Log.WriteLine (cbw.ToString ());
-							errors.Add (cbw);
+				//check if designer files are open in the GUI. if they are, we want to edit them in-place
+				if (openFiles == null)
+					openFiles = GetOpenEditableFilesList ();
+				
+				//no? just write out to disc
+				if (!openFiles.Contains (designerFile.FilePath)) {
+					try {
+						using (StreamWriter sw = new StreamWriter (designerFile.FilePath)) {
+							provider.GenerateCodeFromCompileUnit (ccu, sw, options);
 						}
+						nUpdated++;
+					} catch (IOException ex) {
+						monitor.ReportError (
+							GettextCatalog.GetString ("Failed to write file '{0}'.",
+								designerFile.FilePath),
+							ex);
+					} catch (Exception ex) {
+						monitor.ReportError (
+							GettextCatalog.GetString ("Failed to generate code for file '{0}'.",
+								designerFile.FilePath),
+							ex);
 					}
-				} catch (Exception e) {
-					CodeBehindWarning cbw = new CodeBehindWarning (
-					    GettextCatalog.GetString ("CodeBehind member generation failed with error {0}. Further CodeBehind members for this file will not be added.", e.ToString ()),
-					    file.FilePath
-					    );
-					monitor.Log.WriteLine (cbw.ToString ());
-					errors.Add (cbw);
+				}
+				//file is open, so generate code and queue up for a write in the GUI thread
+				else {
+					try {
+						using (StringWriter sw = new StringWriter ()) {
+							provider.GenerateCodeFromCompileUnit (ccu, sw, options);
+							filesToWrite.Add (new KeyValuePair<string, string> (
+								designerFile.FilePath, sw.ToString ()));
+						}
+					} catch (Exception ex) {
+						monitor.ReportError (
+							GettextCatalog.GetString ("Failed to generate code for file '{0}'.",
+								designerFile.FilePath),
+							ex);
+					}
 				}
 			}
 			
-			//add all the members
-			//documents may be open, so needs to run in GUI thread
+			
+			//these documents are open, so needs to run in GUI thread
 			MonoDevelop.Core.Gui.DispatchService.GuiSyncDispatch (delegate {
-				for (int i = 0; i < membersToAdd.Count; i++)
-				try {
-					BindingService.GetCodeGenerator (project).AddMember (classesForMembers[i], membersToAdd[i]);
-				} catch (MemberExistsException m) {
-					CodeBehindWarning cbw = new CodeBehindWarning (m);
-					monitor.Log.WriteLine (cbw.ToString ());
-					errors.Add (cbw);
+				foreach (KeyValuePair<string, string> item in filesToWrite) {
+					try {
+						//get an interface to edit the file
+						MonoDevelop.Projects.Text.IEditableTextFile textFile = 
+							MonoDevelop.DesignerSupport.
+							OpenDocumentFileProvider.Instance.GetEditableTextFile (item.Key);
+						
+						if (textFile == null)
+							textFile = MonoDevelop.Projects.Text.TextFile.ReadFile (item.Key);
+						
+						//change the contents
+						textFile.Text = item.Value;
+						
+						//save the file
+						MonoDevelop.Projects.Text.TextFile tf = textFile as MonoDevelop.Projects.Text.TextFile;
+						if (tf != null)
+							tf.Save ();
+						
+						nUpdated++;
+						
+					} catch (IOException ex) {
+						monitor.ReportError (
+							GettextCatalog.GetString ("Failed to write file '{0}'.", item.Key),
+							ex);
+					}
+					
+					//save the changes
+					foreach (MonoDevelop.Ide.Gui.Document doc in MonoDevelop.Ide.Gui.IdeApp.Workbench.Documents)
+						doc.Save ();
 				}
 			});
 			
-			if (membersToAdd.Count > 0) {
-				monitor.Log.WriteLine (GettextCatalog.GetPluralString (
-				    "Added {0} member to CodeBehind classes. Saving updated source files.",
-				    "Added {0} members to CodeBehind classes. Saving updated source files.",
-				    membersToAdd.Count, membersToAdd.Count
-				));
-				
-				//make sure updated files are saved before compilation
-				MonoDevelop.Core.Gui.DispatchService.GuiSyncDispatch (delegate {
-					foreach (MonoDevelop.Ide.Gui.Document guiDoc in MonoDevelop.Ide.Gui.IdeApp.Workbench.Documents)
-						if (guiDoc.IsDirty)
-							guiDoc.Save ();
-				});
+			//write out a friendly message aout what we did
+			if (nUpdated > 0) {
+				monitor.Log.WriteLine (GettextCatalog.GetString ("{0} CodeBehind designer classes updated."));
 			} else {
 				monitor.Log.WriteLine (GettextCatalog.GetString ("No changes made to CodeBehind classes."));
 			}
 			
+			//and construct and return a build result
 			BuildResult baseResult = base.Build (monitor, project, configuration);
 			foreach (CodeBehindWarning cbw in errors) {
 				if (cbw.FileName != null)
@@ -196,6 +249,17 @@ namespace MonoDevelop.AspNet
 					
 			}
 			return baseResult;
+		}
+		
+		List<string> GetOpenEditableFilesList ()
+		{
+			List<string> list = new List<string> ();
+			MonoDevelop.Core.Gui.DispatchService.GuiSyncDispatch (delegate {
+				foreach (MonoDevelop.Ide.Gui.Document doc in MonoDevelop.Ide.Gui.IdeApp.Workbench.Documents)
+					if (doc.GetContent<MonoDevelop.Ide.Gui.Content.IEditableTextBuffer> () != null)
+						list.Add (doc.FileName);
+			});
+			return list;
 		}
 		
 		class CodeBehindWarning

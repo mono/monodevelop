@@ -63,6 +63,8 @@ namespace Mono.TextEditor
 		bool enableSyntaxHighlighting = true;
 		bool highlightMatchingBracket = true;
 		bool highlightCaretLine = false;
+		bool removeTrailingWhitespaces = true;
+		
 		string fontName = DEFAULT_FONT;
 		string colorStyle = "Default";
 		
@@ -124,6 +126,15 @@ namespace Mono.TextEditor
 					highlightMatchingBracket = value;
 					OnChanged (EventArgs.Empty);
 				}
+			}
+		}
+		
+		public virtual bool RemoveTrailingWhitespaces {
+			get {
+				return removeTrailingWhitespaces;
+			}
+			set {
+				removeTrailingWhitespaces = value;
 			}
 		}
 		

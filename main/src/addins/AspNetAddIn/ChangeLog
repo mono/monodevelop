@@ -1,3 +1,25 @@
+2008-08-08  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.AspNet/AspNetAppProject.cs: Use Loading property instead
+	  of filename nullness hack.
+	* MonoDevelop.AspNet/VerifyCodeBehindBuildStep.cs: Simplify code
+	  generation appraoch for partial classes: if the file.aspx (etc)
+	  file is newer than the corresponding file.aspx.designer.* file,
+	  regenerate the designer class entirely. This means that we no
+	  longer require refactoring support, so the feature now works with
+	  Boo and VB.NET.
+	
+	  
+	
+	  Also remove support for adding members to non-partial CodeBehind
+	  classes. 
+	* MonoDevelop.AspNet/AspNetAppProjectConfiguration.cs,
+	  MonoDevelop.AspNet.Gui/AspNetConfigurationPanelWidget.cs,
+	  gtk-gui/MonoDevelop.AspNet.Gui.AspNetConfigurationPanelWidget.cs,
+	  gtk-gui/gui.stetic: Remove option for autogenerating members in
+	  non-partial CodeBehind classes. Add an option for disabling
+	  Codebehind updating altogether.
+
 2008-08-05  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.AspNet/VerifyCodeBehindBuildStep.cs: Add null check.

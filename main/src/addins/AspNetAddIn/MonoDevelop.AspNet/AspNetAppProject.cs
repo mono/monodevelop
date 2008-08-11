@@ -342,7 +342,7 @@ namespace MonoDevelop.AspNet
 		protected override void OnReferenceAddedToProject (ProjectReferenceEventArgs e)
 		{
 			//short-circuit if the project is being deserialised
-			if (FileName == null) {
+			if (Loading) {
 				base.OnReferenceAddedToProject (e);
 				return;
 			}
@@ -502,7 +502,7 @@ namespace MonoDevelop.AspNet
 		protected override void OnFileAddedToProject (ProjectFileEventArgs e)
 		{
 			//short-circuit if the project is being deserialised
-			if (FileName == null) {
+			if (Loading) {
 				base.OnFileAddedToProject (e);
 				return;
 			}

@@ -126,6 +126,8 @@ namespace CSharpBinding.Parser
 			return GetGeneratedClass (ctx, file, cls);
 		}
 		
+		
+		//TODO
 		//static CodeStatement ThrowNewNotImplementedException ()
 		//{
 		//	CodeExpression expr = new CodeSnippetExpression ("new NotImplementedException ()");

@@ -23,7 +23,7 @@ namespace MonoDevelop.AspNet.Gui {
         
         private Gtk.VBox vbox2;
         
-        private Gtk.CheckButton autoGenerateNonPartialCodeBehind;
+        private Gtk.CheckButton disableCodeBehindGeneration;
         
         protected virtual void Build() {
             Stetic.Gui.Initialize(this);
@@ -63,14 +63,14 @@ namespace MonoDevelop.AspNet.Gui {
             this.vbox2.Name = "vbox2";
             this.vbox2.Spacing = 6;
             // Container child vbox2.Gtk.Box+BoxChild
-            this.autoGenerateNonPartialCodeBehind = new Gtk.CheckButton();
-            this.autoGenerateNonPartialCodeBehind.CanFocus = true;
-            this.autoGenerateNonPartialCodeBehind.Name = "autoGenerateNonPartialCodeBehind";
-            this.autoGenerateNonPartialCodeBehind.Label = MonoDevelop.Core.GettextCatalog.GetString("Autogenerate CodeBehind members for non-partial classes");
-            this.autoGenerateNonPartialCodeBehind.DrawIndicator = true;
-            this.autoGenerateNonPartialCodeBehind.UseUnderline = true;
-            this.vbox2.Add(this.autoGenerateNonPartialCodeBehind);
-            Gtk.Box.BoxChild w3 = ((Gtk.Box.BoxChild)(this.vbox2[this.autoGenerateNonPartialCodeBehind]));
+            this.disableCodeBehindGeneration = new Gtk.CheckButton();
+            this.disableCodeBehindGeneration.CanFocus = true;
+            this.disableCodeBehindGeneration.Name = "disableCodeBehindGeneration";
+            this.disableCodeBehindGeneration.Label = MonoDevelop.Core.GettextCatalog.GetString("Disable automatic updating of CodeBehind partial classes");
+            this.disableCodeBehindGeneration.DrawIndicator = true;
+            this.disableCodeBehindGeneration.UseUnderline = true;
+            this.vbox2.Add(this.disableCodeBehindGeneration);
+            Gtk.Box.BoxChild w3 = ((Gtk.Box.BoxChild)(this.vbox2[this.disableCodeBehindGeneration]));
             w3.Position = 0;
             w3.Expand = false;
             w3.Fill = false;

@@ -1,3 +1,9 @@
+2008-08-11  Mike Krüger <mkrueger@novell.com> 
+
+	* Mono.TextEditor/TextEditorOptions.cs,
+	  Mono.TextEditor/DefaultEditActions.cs: fixed Bug 416088 - Remove
+	  Whitespace From Newlines.
+
 2008-08-07  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Mono.TextEditor.mdp, Makefile.am: Updated.

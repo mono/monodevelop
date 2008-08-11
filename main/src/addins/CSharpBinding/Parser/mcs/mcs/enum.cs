@@ -117,10 +117,12 @@ namespace Mono.CSharp {
 		}
 	}
 
-	/// <summary>
-	///   Enumeration container
-	/// </summary>
-	public class Enum : TypeContainer
+	//
+	//   Enumeration container
+	//
+	// TODO: Has to defive from DeclSpace
+	//
+	public class Enum : TypeContainer, Dom.IEnum
 	{
 		public static readonly string UnderlyingValueField = "value__";
 
@@ -242,5 +244,19 @@ namespace Mono.CSharp {
 					TypeAttributes.Class | TypeAttributes.Sealed | base.TypeAttr;
 			}
 		}
+
+		#region IEnum Members
+
+		public ArrayList Members {
+			get { return constants; }
+		}
+
+		Dom.ITypeName Dom.IEnum.UnderlyingType {
+			get {
+				return base_type;
+			}
+		}
+
+		#endregion
 	}
 }

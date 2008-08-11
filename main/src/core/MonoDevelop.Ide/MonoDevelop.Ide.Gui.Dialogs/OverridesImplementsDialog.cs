@@ -261,8 +261,8 @@ namespace MonoDevelop.Ide
 			do {
 				TreeIter firstMember;
 				if (store.IterChildren (out firstMember, iter)) {
-					IEnumerable<TreeIter> children = GetCheckedSiblings (firstMember);
-					if (children.GetEnumerator ().MoveNext ())
+					List<TreeIter> children = new List<TreeIter> (GetCheckedSiblings (firstMember));
+					if (children.Count > 0)
 						yield return new KeyValuePair<IType, IEnumerable<TreeIter>> (
 							(IType) store.GetValue (iter, colItemIndex),
 							children);

@@ -110,9 +110,9 @@ namespace MonoDevelop.SourceEditor
 			base.ShowRuler                = PropertyService.Get ("ShowRuler", false);
 			base.FontName                 = PropertyService.Get ("FontName", "Mono 10");
 			base.ColorSheme               =  PropertyService.Get ("ColorSheme", "Default");
-			
 			this.DefaultRegionsFolding      =  PropertyService.Get ("DefaultRegionsFolding", false);
 			this.DefaultCommentFolding      =  PropertyService.Get ("DefaultCommentFolding", true);
+			base.RemoveTrailingWhitespaces = PropertyService.Get ("RemoveTrailingWhitespaces", true);
 		}
 		
 		#region new options
@@ -295,6 +295,14 @@ namespace MonoDevelop.SourceEditor
 				IndentationSize = value;
 			}
 		}
+		
+		public override bool RemoveTrailingWhitespaces {
+			set {
+				PropertyService.Set ("RemoveTrailingWhitespaces", value);
+				base.RemoveTrailingWhitespaces = value;
+			}
+		}
+
 		
 		public override bool ShowLineNumberMargin {
 			set {
