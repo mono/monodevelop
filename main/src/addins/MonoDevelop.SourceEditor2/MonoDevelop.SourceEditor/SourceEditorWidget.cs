@@ -655,7 +655,7 @@ namespace MonoDevelop.SourceEditor
 			if (offset < 0 || offset >= this.TextEditor.Document.Length)
 				return;
 			DocumentLocation location = this.TextEditor.LogicalToVisualLocation (this.TextEditor.Caret.Location);
-			IdeApp.Workbench.StatusBar.ShowCaretState (this.TextEditor.Caret.Line + 1, location.Column + 1, this.textEditor.IsSomethingSelected ? this.TextEditor.SelectionRange.Length : 0, this.TextEditor.Caret.IsInInsertMode);
+			IdeApp.Workbench.StatusBar.ShowCaretState (this.TextEditor.Caret.Line + 1, location.Column + 1, this.TextEditor.IsSomethingSelected ? this.TextEditor.SelectionRange.Length : 0, this.TextEditor.Caret.IsInInsertMode);
 		}
 		
 		#endregion
