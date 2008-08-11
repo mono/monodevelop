@@ -318,7 +318,7 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		public virtual string ColorSheme {
+		public virtual string ColorScheme {
 			get {
 				return colorStyle;
 			}
@@ -329,7 +329,7 @@ namespace Mono.TextEditor
 		}
 		public virtual Style GetColorStyle (Gtk.Widget widget)
 		{
-			return SyntaxModeService.GetColorStyle (widget, ColorSheme);
+			return SyntaxModeService.GetColorStyle (widget, ColorScheme);
 		}
 		
 		public virtual void CopyFrom (TextEditorOptions other)
@@ -352,7 +352,7 @@ namespace Mono.TextEditor
 			AutoIndent = other.AutoIndent;
 			FontName = other.FontName;
 			EnableSyntaxHighlighting = other.EnableSyntaxHighlighting;
-			ColorSheme = other.ColorSheme;
+			ColorScheme = other.ColorScheme;
 		}
 		
 		protected void OnChanged (EventArgs args)

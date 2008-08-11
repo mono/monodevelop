@@ -1,12 +1,4 @@
 <objects attr-sync="on">
-  <object type="MonoDevelop.SourceEditor.OptionPanels.GeneralOptionsPanel" palette-category="MonoDevelop.SourceEditor2" allow-children="false" base-type="Gtk.Bin">
-    <itemgroups />
-    <signals />
-  </object>
-  <object type="MonoDevelop.SourceEditor.OptionPanels.HighlightingPanel" palette-category="MonoDevelop.SourceEditor2" allow-children="false" base-type="Gtk.Bin">
-    <itemgroups />
-    <signals />
-  </object>
   <object type="MonoDevelop.SourceEditor.GotoLineNumberWidget" palette-category="MonoDevelop.SourceEditor2" allow-children="false" base-type="Gtk.Bin">
     <itemgroups />
     <signals />
@@ -17,10 +9,6 @@
         <property name="IsClassBrowserVisible" />
       </itemgroup>
     </itemgroups>
-    <signals />
-  </object>
-  <object type="MonoDevelop.SourceEditor.OptionPanels.MarkerPanel" palette-category="MonoDevelop.SourceEditor2" allow-children="false" base-type="Gtk.Bin">
-    <itemgroups />
     <signals />
   </object>
   <object type="MonoDevelop.SourceEditor.SearchAndReplaceWidget" palette-category="MonoDevelop.SourceEditor2" allow-children="false" base-type="Gtk.Bin">

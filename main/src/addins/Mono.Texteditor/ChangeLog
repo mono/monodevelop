@@ -1,3 +1,7 @@
+2008-08-11  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* Mono.TextEditor/TextEditorOptions.cs: Fix spelling, sheme -> scheme.
+
 2008-08-11  Mike Krüger <mkrueger@novell.com> 
 
 	* Mono.TextEditor/TextEditorOptions.cs,

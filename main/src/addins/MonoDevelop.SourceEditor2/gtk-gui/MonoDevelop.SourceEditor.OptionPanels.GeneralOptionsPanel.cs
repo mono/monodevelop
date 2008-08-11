@@ -15,13 +15,19 @@ namespace MonoDevelop.SourceEditor.OptionPanels {
         
         private Gtk.VBox vbox1;
         
+        private Gtk.Label GtkLabel13;
+        
+        private Gtk.Alignment alignment2;
+        
+        private Gtk.VBox vbox4;
+        
         private Gtk.CheckButton codeCompletioncheckbutton;
         
         private Gtk.CheckButton quickFinderCheckbutton;
         
         private Gtk.CheckButton foldingCheckbutton;
         
-        private Gtk.Frame frame2;
+        private Gtk.Label GtkLabel14;
         
         private Gtk.Alignment GtkAlignment1;
         
@@ -35,8 +41,6 @@ namespace MonoDevelop.SourceEditor.OptionPanels {
         
         private Gtk.FontButton fontselection;
         
-        private Gtk.Label GtkLabel13;
-        
         protected virtual void Build() {
             Stetic.Gui.Initialize(this);
             // Widget MonoDevelop.SourceEditor.OptionPanels.GeneralOptionsPanel
@@ -47,46 +51,78 @@ namespace MonoDevelop.SourceEditor.OptionPanels {
             this.vbox1.Name = "vbox1";
             this.vbox1.Spacing = 6;
             // Container child vbox1.Gtk.Box+BoxChild
-            this.codeCompletioncheckbutton = new Gtk.CheckButton();
-            this.codeCompletioncheckbutton.CanFocus = true;
-            this.codeCompletioncheckbutton.Name = "codeCompletioncheckbutton";
-            this.codeCompletioncheckbutton.Label = Mono.Unix.Catalog.GetString("_Code completion");
-            this.codeCompletioncheckbutton.DrawIndicator = true;
-            this.codeCompletioncheckbutton.UseUnderline = true;
-            this.vbox1.Add(this.codeCompletioncheckbutton);
-            Gtk.Box.BoxChild w1 = ((Gtk.Box.BoxChild)(this.vbox1[this.codeCompletioncheckbutton]));
+            this.GtkLabel13 = new Gtk.Label();
+            this.GtkLabel13.Name = "GtkLabel13";
+            this.GtkLabel13.Xalign = 0F;
+            this.GtkLabel13.LabelProp = Mono.Unix.Catalog.GetString("<b>Coding</b>");
+            this.GtkLabel13.UseMarkup = true;
+            this.vbox1.Add(this.GtkLabel13);
+            Gtk.Box.BoxChild w1 = ((Gtk.Box.BoxChild)(this.vbox1[this.GtkLabel13]));
             w1.Position = 0;
             w1.Expand = false;
             w1.Fill = false;
             // Container child vbox1.Gtk.Box+BoxChild
+            this.alignment2 = new Gtk.Alignment(0.5F, 0.5F, 1F, 1F);
+            this.alignment2.Name = "alignment2";
+            this.alignment2.LeftPadding = ((uint)(12));
+            // Container child alignment2.Gtk.Container+ContainerChild
+            this.vbox4 = new Gtk.VBox();
+            this.vbox4.Name = "vbox4";
+            this.vbox4.Spacing = 6;
+            // Container child vbox4.Gtk.Box+BoxChild
+            this.codeCompletioncheckbutton = new Gtk.CheckButton();
+            this.codeCompletioncheckbutton.CanFocus = true;
+            this.codeCompletioncheckbutton.Name = "codeCompletioncheckbutton";
+            this.codeCompletioncheckbutton.Label = Mono.Unix.Catalog.GetString("Enable _code completion");
+            this.codeCompletioncheckbutton.DrawIndicator = true;
+            this.codeCompletioncheckbutton.UseUnderline = true;
+            this.vbox4.Add(this.codeCompletioncheckbutton);
+            Gtk.Box.BoxChild w2 = ((Gtk.Box.BoxChild)(this.vbox4[this.codeCompletioncheckbutton]));
+            w2.Position = 0;
+            w2.Expand = false;
+            w2.Fill = false;
+            // Container child vbox4.Gtk.Box+BoxChild
             this.quickFinderCheckbutton = new Gtk.CheckButton();
             this.quickFinderCheckbutton.CanFocus = true;
             this.quickFinderCheckbutton.Name = "quickFinderCheckbutton";
-            this.quickFinderCheckbutton.Label = Mono.Unix.Catalog.GetString("C_lass & Method quick finder");
+            this.quickFinderCheckbutton.Label = Mono.Unix.Catalog.GetString("Show c_lass and method navigation bar");
             this.quickFinderCheckbutton.DrawIndicator = true;
             this.quickFinderCheckbutton.UseUnderline = true;
-            this.vbox1.Add(this.quickFinderCheckbutton);
-            Gtk.Box.BoxChild w2 = ((Gtk.Box.BoxChild)(this.vbox1[this.quickFinderCheckbutton]));
-            w2.Position = 1;
-            w2.Expand = false;
-            w2.Fill = false;
-            // Container child vbox1.Gtk.Box+BoxChild
+            this.vbox4.Add(this.quickFinderCheckbutton);
+            Gtk.Box.BoxChild w3 = ((Gtk.Box.BoxChild)(this.vbox4[this.quickFinderCheckbutton]));
+            w3.Position = 1;
+            w3.Expand = false;
+            w3.Fill = false;
+            // Container child vbox4.Gtk.Box+BoxChild
             this.foldingCheckbutton = new Gtk.CheckButton();
             this.foldingCheckbutton.CanFocus = true;
             this.foldingCheckbutton.Name = "foldingCheckbutton";
-            this.foldingCheckbutton.Label = Mono.Unix.Catalog.GetString("Code _folding");
+            this.foldingCheckbutton.Label = Mono.Unix.Catalog.GetString("Enable code _folding");
             this.foldingCheckbutton.DrawIndicator = true;
             this.foldingCheckbutton.UseUnderline = true;
-            this.vbox1.Add(this.foldingCheckbutton);
-            Gtk.Box.BoxChild w3 = ((Gtk.Box.BoxChild)(this.vbox1[this.foldingCheckbutton]));
-            w3.Position = 2;
-            w3.Expand = false;
-            w3.Fill = false;
+            this.vbox4.Add(this.foldingCheckbutton);
+            Gtk.Box.BoxChild w4 = ((Gtk.Box.BoxChild)(this.vbox4[this.foldingCheckbutton]));
+            w4.Position = 2;
+            w4.Expand = false;
+            w4.Fill = false;
+            this.alignment2.Add(this.vbox4);
+            this.vbox1.Add(this.alignment2);
+            Gtk.Box.BoxChild w6 = ((Gtk.Box.BoxChild)(this.vbox1[this.alignment2]));
+            w6.Position = 1;
+            w6.Expand = false;
+            w6.Fill = false;
             // Container child vbox1.Gtk.Box+BoxChild
-            this.frame2 = new Gtk.Frame();
-            this.frame2.Name = "frame2";
-            this.frame2.ShadowType = ((Gtk.ShadowType)(0));
-            // Container child frame2.Gtk.Container+ContainerChild
+            this.GtkLabel14 = new Gtk.Label();
+            this.GtkLabel14.Name = "GtkLabel14";
+            this.GtkLabel14.Xalign = 0F;
+            this.GtkLabel14.LabelProp = Mono.Unix.Catalog.GetString("<b>Font</b>");
+            this.GtkLabel14.UseMarkup = true;
+            this.vbox1.Add(this.GtkLabel14);
+            Gtk.Box.BoxChild w7 = ((Gtk.Box.BoxChild)(this.vbox1[this.GtkLabel14]));
+            w7.Position = 2;
+            w7.Expand = false;
+            w7.Fill = false;
+            // Container child vbox1.Gtk.Box+BoxChild
             this.GtkAlignment1 = new Gtk.Alignment(0F, 0F, 1F, 1F);
             this.GtkAlignment1.Name = "GtkAlignment1";
             this.GtkAlignment1.LeftPadding = ((uint)(12));
@@ -98,15 +134,14 @@ namespace MonoDevelop.SourceEditor.OptionPanels {
             this.radiobutton1 = new Gtk.RadioButton(Mono.Unix.Catalog.GetString("_Default monospace"));
             this.radiobutton1.CanFocus = true;
             this.radiobutton1.Name = "radiobutton1";
-            this.radiobutton1.Active = true;
             this.radiobutton1.DrawIndicator = true;
             this.radiobutton1.UseUnderline = true;
             this.radiobutton1.Group = new GLib.SList(System.IntPtr.Zero);
             this.vbox3.Add(this.radiobutton1);
-            Gtk.Box.BoxChild w4 = ((Gtk.Box.BoxChild)(this.vbox3[this.radiobutton1]));
-            w4.Position = 0;
-            w4.Expand = false;
-            w4.Fill = false;
+            Gtk.Box.BoxChild w8 = ((Gtk.Box.BoxChild)(this.vbox3[this.radiobutton1]));
+            w8.Position = 0;
+            w8.Expand = false;
+            w8.Fill = false;
             // Container child vbox3.Gtk.Box+BoxChild
             this.hbox1 = new Gtk.HBox();
             this.hbox1.Name = "hbox1";
@@ -119,32 +154,28 @@ namespace MonoDevelop.SourceEditor.OptionPanels {
             this.radiobutton2.UseUnderline = true;
             this.radiobutton2.Group = this.radiobutton1.Group;
             this.hbox1.Add(this.radiobutton2);
-            Gtk.Box.BoxChild w5 = ((Gtk.Box.BoxChild)(this.hbox1[this.radiobutton2]));
-            w5.Position = 0;
-            w5.Expand = false;
-            w5.Fill = false;
+            Gtk.Box.BoxChild w9 = ((Gtk.Box.BoxChild)(this.hbox1[this.radiobutton2]));
+            w9.Position = 0;
+            w9.Expand = false;
+            w9.Fill = false;
             // Container child hbox1.Gtk.Box+BoxChild
             this.fontselection = new Gtk.FontButton();
             this.fontselection.CanFocus = true;
             this.fontselection.Name = "fontselection";
             this.hbox1.Add(this.fontselection);
-            Gtk.Box.BoxChild w6 = ((Gtk.Box.BoxChild)(this.hbox1[this.fontselection]));
-            w6.Position = 1;
+            Gtk.Box.BoxChild w10 = ((Gtk.Box.BoxChild)(this.hbox1[this.fontselection]));
+            w10.Position = 1;
             this.vbox3.Add(this.hbox1);
-            Gtk.Box.BoxChild w7 = ((Gtk.Box.BoxChild)(this.vbox3[this.hbox1]));
-            w7.Position = 1;
-            w7.Expand = false;
-            w7.Fill = false;
+            Gtk.Box.BoxChild w11 = ((Gtk.Box.BoxChild)(this.vbox3[this.hbox1]));
+            w11.Position = 1;
+            w11.Expand = false;
+            w11.Fill = false;
             this.GtkAlignment1.Add(this.vbox3);
-            this.frame2.Add(this.GtkAlignment1);
-            this.GtkLabel13 = new Gtk.Label();
-            this.GtkLabel13.Name = "GtkLabel13";
-            this.GtkLabel13.LabelProp = Mono.Unix.Catalog.GetString("<b>Font</b>");
-            this.GtkLabel13.UseMarkup = true;
-            this.frame2.LabelWidget = this.GtkLabel13;
-            this.vbox1.Add(this.frame2);
-            Gtk.Box.BoxChild w10 = ((Gtk.Box.BoxChild)(this.vbox1[this.frame2]));
-            w10.Position = 3;
+            this.vbox1.Add(this.GtkAlignment1);
+            Gtk.Box.BoxChild w13 = ((Gtk.Box.BoxChild)(this.vbox1[this.GtkAlignment1]));
+            w13.Position = 3;
+            w13.Expand = false;
+            w13.Fill = false;
             this.Add(this.vbox1);
             if ((this.Child != null)) {
                 this.Child.ShowAll();

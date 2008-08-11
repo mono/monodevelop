@@ -1,3 +1,18 @@
+2008-08-11  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* gtk-gui/gui.stetic,
+	  gtk-gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs,
+	  gtk-gui/MonoDevelop.SourceEditor.OptionPanels.GeneralOptionsPanel.cs,
+	  gtk-gui/MonoDevelop.SourceEditor.OptionPanels.HighlightingPanel.cs,
+	  gtk-gui/MonoDevelop.SourceEditor.OptionPanels.MarkerPanel.cs,
+	  gtk-gui/objects.xml: Tidy up the text editor options panels.
+	* MonoDevelop.SourceEditor.OptionPanels/GeneralOptionsPanel.cs,
+	  MonoDevelop.SourceEditor.OptionPanels/HighlightingPanel.cs: Removed
+	  unnecessary toolbox item attributes.
+	* MonoDevelop.SourceEditor.OptionPanels/MarkerPanel.cs,
+	  MonoDevelop.SourceEditor/SourceEditorOptions.cs: Fix spelling,
+	  sheme -> scheme.
+
 2008-08-11  Mike Krüger <mkrueger@novell.com> 
 
 	* gtk-gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs,
