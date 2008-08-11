@@ -32,7 +32,9 @@
     <signals />
   </object>
   <object type="MonoDevelop.SourceEditor.ExtendibleTextEditor" palette-category="General" allow-children="false" base-type="Mono.TextEditor.TextEditor">
-    <itemgroups />
-    <signals />
+    <itemgroups>
+    </itemgroups>
+    <signals>
+    </signals>
   </object>
 </objects>

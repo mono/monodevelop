@@ -1,5 +1,12 @@
 2008-08-11  Mike Krüger <mkrueger@novell.com> 
 
+	* gtk-gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs,
+	  MonoDevelop.SourceEditor.OptionPanels/BehaviorPanel.cs,
+	  MonoDevelop.SourceEditor/SourceEditorOptions.cs: fixed Bug 416088 -
+	  Remove Whitespace From Newlines
+
+2008-08-11  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.SourceEditor/SourceEditorWidget.cs: Fixed "Bug 415737 -
 	  Crash with split window".
 
