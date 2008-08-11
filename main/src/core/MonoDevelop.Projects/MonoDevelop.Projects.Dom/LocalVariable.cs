@@ -53,6 +53,12 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
+		public ICompilationUnit CompilationUnit {
+			get {
+				return declaringMember.DeclaringType.CompilationUnit;
+			}
+		}
+		
 		public string FileName {
 			get {
 				return declaringMember.DeclaringType.CompilationUnit.FileName;

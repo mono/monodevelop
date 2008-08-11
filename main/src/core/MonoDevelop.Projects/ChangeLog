@@ -1,3 +1,8 @@
+2008-08-11  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Dom/LocalVariable.cs: Changed  local variable
+	  interface.
+
 2008-08-08  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom.Parser/ProjectDom.cs,
