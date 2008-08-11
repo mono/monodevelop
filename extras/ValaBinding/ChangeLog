@@ -1,3 +1,11 @@
+2008-08-11  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com>
+
+	* Project/ValaProject.cs, Compiler/ValaCompiler.cs, 
+	Project/ProjectPackageCollection.cs, templates/ConsoleValaProject.xpt.xml, 
+	templates/EmptyValaProject.xpt.xml, 
+	templates/SharedLibraryValaProject.xpt.xml: Add glib-2.0 package
+	to new projects by default. Track changes in valac.
+
 2008-07-21  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Project/ProjectPackage.cs, Project/ValaCompilationParameters.cs,

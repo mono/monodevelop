@@ -188,7 +188,7 @@ namespace MonoDevelop.ValaBinding
 				args.Add("-g");
 			
 			if (configuration.CompileTarget == ValaBinding.CompileTarget.SharedLibrary) {
-				args.Add(string.Format("-X \"-shared -fPIC -I'{0}'\" --library \"{1}\"", configuration.OutputDirectory, configuration.Output));
+				args.Add(string.Format("--Xcc=\"-shared\" --Xcc=\"-fPIC\" --Xcc=\"-I'{0}'\" -d '{1}' --library \"{2}\"", configuration.OutputDirectory, configuration.OutputDirectory, configuration.Output));
 			}
 
 // Valac will get these sooner or later			
@@ -209,7 +209,7 @@ namespace MonoDevelop.ValaBinding
 //				args.Append ("-Werror ");
 //			
 			if(0 < cp.OptimizationLevel) { 
-				args.Add("-X \"-O" + cp.OptimizationLevel + "\"");
+				args.Add("--Xcc=\"-O" + cp.OptimizationLevel + "\"");
 			}
 			
 			if (cp.ExtraCompilerArguments != null && cp.ExtraCompilerArguments.Length > 0) {
@@ -357,7 +357,7 @@ namespace MonoDevelop.ValaBinding
 									CompilerResults cr)
 		{			
 			string compiler_args = string.Format ("{0} {1} -o \"{2}\"",
-				args, projectFiles, outputName);
+				args, projectFiles, Path.GetFileName(outputName));
 			
 			string errorOutput = string.Empty;
 			int exitCode = ExecuteCommand (compilerCommand, compiler_args, Path.GetDirectoryName (outputName), monitor, out errorOutput);

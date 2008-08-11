@@ -38,6 +38,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.CodeDom.Compiler;
 using System.Text.RegularExpressions;
+using System.Diagnostics;
 
 using Mono.Addins;
 
@@ -68,6 +69,7 @@ namespace MonoDevelop.ValaBinding
 		private ICompiler compiler_manager;
 		
 		private ProjectPackageCollection packages = new ProjectPackageCollection ();
+		public static string vapidir;
 		
 		public event ProjectPackageEventHandler PackageAddedToProject;
 		public event ProjectPackageEventHandler PackageRemovedFromProject;
@@ -75,9 +77,30 @@ namespace MonoDevelop.ValaBinding
 		private void Init ()
 		{
 			packages.Project = this;
-			
 			//IdeApp.ProjectOperations.EntryAddedToCombine += OnEntryAddedToCombine;
 		}
+		
+		static ValaProject()
+		{
+			try {
+				Process pkgconfig = new Process();
+				pkgconfig.StartInfo.FileName = "pkg-config";
+				pkgconfig.StartInfo.Arguments = "--variable=vapidir vala-1.0";
+				pkgconfig.StartInfo.CreateNoWindow = true;
+				pkgconfig.StartInfo.RedirectStandardOutput = true;
+				pkgconfig.StartInfo.UseShellExecute = false;
+				pkgconfig.Start();
+				vapidir = pkgconfig.StandardOutput.ReadToEnd().Trim();
+				pkgconfig.WaitForExit();
+				pkgconfig.Dispose();
+			} catch(Exception e) {
+				MessageService.ShowError("Unable to detect VAPI path", string.Format("{0}{1}{2}", e.Message, Environment.NewLine, e.StackTrace));
+			}
+			
+			if(!Directory.Exists(vapidir)){ vapidir = "/usr/share/vala/vapi"; }
+		}
+		
+
 		
 		public ValaProject ()
 		{
@@ -134,8 +157,19 @@ namespace MonoDevelop.ValaBinding
 							parameters.ExtraCompilerArguments = projectOptions.Attributes["CompilerArgs"].InnerText;
 						}
 					}
+					if (projectOptions.Attributes["Packages"].InnerText != null) {
+						List<ProjectPackage> packs = new List<ProjectPackage>();
+						foreach(string pack in projectOptions.Attributes["Packages"].InnerText.Split('|')) {
+							packs.Add(new ProjectPackage(
+								string.Format("{0}{1}{2}.vapi", 
+									vapidir, 
+									Path.DirectorySeparatorChar, 
+									pack)));
+						}
+						packages.AddRange(packs);
+					}
 				}
-			}			
+			}
 		}
 		
 		public override string ProjectType {
@@ -383,13 +417,17 @@ namespace MonoDevelop.ValaBinding
 		
 		internal void NotifyPackageRemovedFromProject (ProjectPackage package)
 		{
-			PackageRemovedFromProject (this, new ProjectPackageEventArgs (this, package));
+			if (null != PackageRemovedFromProject) {
+				PackageRemovedFromProject (this, new ProjectPackageEventArgs (this, package));
+			}
 			TagDatabaseManager.Instance.RemoveFileInfo(this, package.File);
 		}
 		
 		internal void NotifyPackageAddedToProject (ProjectPackage package)
 		{
-			PackageAddedToProject (this, new ProjectPackageEventArgs (this, package));
+			if(null != PackageAddedToProject) {
+				PackageAddedToProject (this, new ProjectPackageEventArgs (this, package));
+			}
 			TagDatabaseManager.Instance.UpdateFileTags(this, package.File);
 		}
 

@@ -20,7 +20,9 @@
 				Target = "Bin"
 				PauseConsoleOutput = "True"
 				CompilerArgs = ""
-				LinkerArgs = ""/>
+				LinkerArgs = ""
+				Packages = "glib-2.0"
+				/>
 			
 			<Files>
 				<File name = "main.vala"><![CDATA[// project created on ${Date} at ${Time}

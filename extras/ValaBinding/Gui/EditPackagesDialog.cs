@@ -32,7 +32,6 @@
 using System;
 using System.IO;
 using System.Collections.Generic;
-using System.Diagnostics;
 
 using Mono.Addins;
 
@@ -44,8 +43,6 @@ namespace MonoDevelop.ValaBinding
 {
 	public partial class EditPackagesDialog : Gtk.Dialog
 	{
-		private static string vapidir;
-
 		private Gtk.ListStore normalPackageListStore = new Gtk.ListStore (typeof(bool), typeof(string), typeof(string));
 		private Gtk.ListStore projectPackageListStore = new Gtk.ListStore (typeof(bool), typeof(string), typeof(string));
 		private Gtk.ListStore selectedPackageListStore = new Gtk.ListStore (typeof(string), typeof(string));
@@ -66,26 +63,6 @@ namespace MonoDevelop.ValaBinding
 		const int SelectedPackageNameID = 0;
 		const int SelectedPackageVersionID = 1;
 
-		static EditPackagesDialog()
-		{
-			try {
-				Process pkgconfig = new Process();
-				pkgconfig.StartInfo.FileName = "pkg-config";
-				pkgconfig.StartInfo.Arguments = "--variable=vapidir vala-1.0";
-				pkgconfig.StartInfo.CreateNoWindow = true;
-				pkgconfig.StartInfo.RedirectStandardOutput = true;
-				pkgconfig.StartInfo.UseShellExecute = false;
-				pkgconfig.Start();
-				vapidir = pkgconfig.StandardOutput.ReadToEnd().Trim();
-				pkgconfig.WaitForExit();
-				pkgconfig.Dispose();
-			} catch(Exception e) {
-				MessageService.ShowError("Unable to detect VAPI path", string.Format("{0}{1}{2}", e.Message, Environment.NewLine, e.StackTrace));
-			}
-			
-			if(!Directory.Exists(vapidir)){ vapidir = "/usr/share/vala/vapi"; }
-		}
-		
 		public EditPackagesDialog(ValaProject project)
 		{
 			this.Build();
@@ -255,7 +232,7 @@ namespace MonoDevelop.ValaBinding
 		
 		private string[] ScanDirs ()
 		{
-			return new string[]{ vapidir };
+			return new string[]{ ValaProject.vapidir };
 		}
 		
 		private void OnOkButtonClick (object sender, EventArgs e)

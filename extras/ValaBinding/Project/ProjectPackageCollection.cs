@@ -55,8 +55,15 @@ namespace MonoDevelop.ValaBinding
 		
 		public void AddRange (IEnumerable<ProjectPackage> packages)
 		{
-			foreach (ProjectPackage p in packages)
-				Add (p);
+			foreach (ProjectPackage p in packages) {
+				bool found = false;
+				foreach (ProjectPackage item in Items) {
+					if (item.File == p.File) {
+						found = true;
+					}
+				}
+				if (!found) { Add (p); }
+			}
 		}
 		
 		protected override void ClearItems()
