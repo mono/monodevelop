@@ -85,14 +85,20 @@ namespace Mono.CSharp.Dom
 		IType[] Types { get; }
 	}
 
-	public interface IType
+	public interface ITypeBase
 	{
-		ITypeName [] BaseTypes { get; }
 		Kind ContainerType { get; }
+		IType DeclaringType { get; }
 		string Name { get; }
-		LocationBlock MembersBlock { get; }
 		int ModFlags { get; }
 		ITypeParameter [] TypeParameters { get; }
+
+		LocationBlock MembersBlock { get; }
+	}
+
+	public interface IType : ITypeBase
+	{
+		ITypeName [] BaseTypes { get; }
 
 		IMethod [] Constructors { get; }
 
@@ -108,6 +114,12 @@ namespace Mono.CSharp.Dom
 
 		ArrayList InstanceConstructors { get; }
 		ArrayList Delegates { get; }
+	}
+
+	public interface IEnum : ITypeBase
+	{
+		ArrayList Members { get; }
+		ITypeName UnderlyingType { get; }
 	}
 
 	public interface ITypeName
