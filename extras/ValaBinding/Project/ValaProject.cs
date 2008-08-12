@@ -77,6 +77,7 @@ namespace MonoDevelop.ValaBinding
 		private void Init ()
 		{
 			packages.Project = this;
+			this.PackageAddedToProject += AddDependencies; // Special handling for project packages
 			//IdeApp.ProjectOperations.EntryAddedToCombine += OnEntryAddedToCombine;
 		}
 		
@@ -475,5 +476,29 @@ namespace MonoDevelop.ValaBinding
 			
 			return deployFiles;
 		}
+
+		/// <summary>
+		/// Add dependencies of project packages to current project,
+		/// and add cflags for project package
+		/// </summary>
+		private void AddDependencies (object obj, ProjectPackageEventArgs args) {
+			ProjectPackage package = args.Package;
+			if (!package.IsProject){ return; }
+
+			string depsfile = Path.ChangeExtension (package.File, ".deps");
+			try {
+				string[] lines = File.ReadAllLines (depsfile);
+				List<ProjectPackage> deps = new List<ProjectPackage>();
+				foreach (string line in lines) {
+					deps.Add(new ProjectPackage(Path.Combine(vapidir, line) + ".vapi"));
+				}// add package for each dep
+				packages.AddRange(deps);
+
+				// Currently, we need to add include directory and linker flags - this should be obsoleted
+				string ccargs = string.Format (" --Xcc=\\\\\\\"-I{0}\\\\\\\" --Xcc=\\\\\\\"-l{1}\\\\\\\" ", Path.GetDirectoryName (depsfile), package.Name);
+				ValaCompilationParameters vcp = (ValaCompilationParameters)(((ValaProjectConfiguration)this.DefaultConfiguration).CompilationParameters);
+				if (!vcp.ExtraCompilerArguments.Contains (ccargs)){ vcp.ExtraCompilerArguments += ccargs; }
+			} catch { /* Do anything here? */ }
+		}// AddDependencies
 	}
 }

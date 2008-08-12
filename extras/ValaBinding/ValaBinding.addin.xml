@@ -42,6 +42,7 @@
 		<ProjectTemplate id = "EmptyValaProject" resource = "EmptyValaProject.xpt.xml"/>
 		<ProjectTemplate id = "ConsoleValaProject" resource = "ConsoleValaProject.xpt.xml"/>
 		<ProjectTemplate id = "SharedLibraryValaProject" resource = "SharedLibraryValaProject.xpt.xml"/>
+		<ProjectTemplate id = "ValaTestFixture" resource = "ValaTestFixture.xpt.xml"/>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Core/MimeTypes">

@@ -90,7 +90,11 @@ namespace MonoDevelop.ValaBinding
 			StringBuilder libs = new StringBuilder ();
 			
 			foreach (ProjectPackage p in packages) {
-				libs.Append (string.Format(" --pkg \"{0}\" ",p.Name));
+				if (p.IsProject) {
+					libs.AppendFormat (" \"{0}\" ", p.File);
+				} else {
+					libs.AppendFormat (" --pkg \"{0}\" ", p.Name);
+				}
 			}
 			
 			return libs.ToString ();
@@ -183,12 +187,14 @@ namespace MonoDevelop.ValaBinding
 			
 			ValaCompilationParameters cp =
 				(ValaCompilationParameters)configuration.CompilationParameters;
+
+			args.Add(string.Format("-d '{0}'", configuration.OutputDirectory));
 			
 			if (configuration.DebugMode)
 				args.Add("-g");
-			
+
 			if (configuration.CompileTarget == ValaBinding.CompileTarget.SharedLibrary) {
-				args.Add(string.Format("--Xcc=\"-shared\" --Xcc=\"-fPIC\" --Xcc=\"-I'{0}'\" -d '{1}' --library \"{2}\"", configuration.OutputDirectory, configuration.OutputDirectory, configuration.Output));
+				args.Add(string.Format("--Xcc=\"-shared\" --Xcc=\"-fPIC\" --Xcc=\"-I'{0}'\" --library \"{1}\"", configuration.OutputDirectory, configuration.Output));
 			}
 
 // Valac will get these sooner or later			

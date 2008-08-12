@@ -1,3 +1,12 @@
+2008-08-12  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com>
+
+	* Compiler/ValaCompiler.cs, Project/ProjectPackage.cs, 
+	Project/ValaProject.cs, Gui/EditPackagesDialog.cs:
+	Improve dependency and project package handling.
+	* templates/ValaTestFixture.xpt.xml, ValaBinding.addin.xml, 
+	Makefile.am: Add text fixture project template.
+	* templates/ConsoleValaProject.xpt.xml: Cleanup.
+
 2008-08-11  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com>
 
 	* Project/ValaProject.cs, Compiler/ValaCompiler.cs, 

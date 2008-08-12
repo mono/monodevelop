@@ -93,7 +93,8 @@ namespace MonoDevelop.ValaBinding
 		public ProjectPackage (ValaProject project): this()
 		{
 			name = project.Name;
-			file = Path.Combine (project.BaseDirectory, name + ".md.pc");
+			ValaProjectConfiguration vpc = (ValaProjectConfiguration)(project.DefaultConfiguration);
+			file = Path.Combine (vpc.OutputDirectory, name + ".vapi");
 			is_project = true;
 		}
 		

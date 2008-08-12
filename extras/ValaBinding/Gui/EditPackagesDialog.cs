@@ -194,7 +194,7 @@ namespace MonoDevelop.ValaBinding
 			List<ProjectPackage> packages = new List<ProjectPackage>();
 			ProjectPackage package;
 			
-			foreach (SolutionItem c in project.ParentFolder.Items) {
+			foreach (Project c in IdeApp.Workspace.GetAllProjects()) {
 				if (c is ValaProject) {
 					ValaProject proj = c as ValaProject;
 					ValaProjectConfiguration conf = proj.GetConfiguration (IdeApp.Workspace.ActiveConfiguration) as ValaProjectConfiguration;
