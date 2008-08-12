@@ -1,5 +1,5 @@
 // 
-// XmlMalformedTagState.cs
+// AspNetServerCommentState.cs
 // 
 // Author:
 //   Michael Hutchinson <mhutchinson@novell.com>
@@ -28,27 +28,51 @@
 
 using System;
 
-namespace MonoDevelop.Xml.StateEngine
+using MonoDevelop.Xml.StateEngine;
+
+namespace MonoDevelop.AspNet.StateEngine
 {
-	
-	public class XmlMalformedTagState : State
+	public class AspNetServerCommentState : XmlCommentState
 	{
+		
+		const int NOMATCH = 0;
+		const int SINGLE_DASH = 1;
+		const int DOUBLE_DASH = 2;
+		const int PERCENT = 3;
 		
 		public override State PushChar (char c, IParseContext context, ref string rollback)
 		{
-			//ensure that we don't drop any nodes or leave them un-ended
-			if (context.CurrentStateLength == 1) {
-				context.LogError ("Malformed tag: unexpected '" + c + "' character.");
-				if (context.BuildTree)
-					context.ConnectAll ();
-				context.EndAll (true);
+			switch (context.StateTag) {
+			case NOMATCH:
+				if (c == '-')
+					context.StateTag = SINGLE_DASH;
+				break;
+				
+			case SINGLE_DASH:
+				if (c == '-')
+					context.StateTag = DOUBLE_DASH;
+				else
+					context.StateTag = NOMATCH;
+				break;
+				
+			case DOUBLE_DASH:
+				if (c == '%')
+					context.StateTag = PERCENT;
+				else
+					context.StateTag = NOMATCH;
+				break;
+				
+			case PERCENT:
+				if (c == '>') {
+					if (context.BuildTree) {
+						int start = context.Position - (context.CurrentStateLength + 4); // <%-- is 4 chars
+						((XContainer) context.Nodes.Peek ()).AddChildNode (new AspNetServerComment (start, context.Position));
+					}
+					return Parent;
+				}
+				break;
 			}
 			
-			if (c == '<' || c == '>') {
-				if (c == '<')
-					rollback = string.Empty;
-				return RootState;
-			}
 			return null;
 		}
 	}

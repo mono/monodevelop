@@ -24,6 +24,53 @@
 
 	* MonoDevelop.AspNet/VerifyCodeBehindBuildStep.cs: Add null check.
 
+2008-07-30  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.AspNet.StateEngine/AspNetExpressionState.cs,
+	  MonoDevelop.AspNet.StateEngine/AspNetFreeState.cs,
+	  MonoDevelop.AspNet.StateEngine/AspNetServerCommentState.cs,
+	  MonoDevelop.AspNet.StateEngine/AspNetDirectiveState.cs: API change
+	  to allow more that one character of rollback.
+
+2008-07-29  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs: Filter out
+	  attributes that are already in the tag.
+
+2008-07-29  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.AspNet.StateEngine/AspNetExpressionState.cs: Complete the
+	  handling of expressions (in free state).
+
+2008-07-29  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.AspNet.StateEngine/AspNetServerCommentState.cs: Implement
+	  server comments handling (in the free state).
+
+2008-07-29  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.AspNet.StateEngine/AspNetFreeState.cs,
+	  MonoDevelop.AspNet.StateEngine/AspNetDirectiveState.cs,
+	  MonoDevelop.AspNet.StateEngine/AspNetDom.cs: Complete the handling
+	  of directives. Server comments and expressions are still broken.
+	* MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs: Continue port to new
+	  DOM. Enable AspNetFreeState parser instead of XML one.
+	* MonoDevelop.AspNet.Parser/AspNetParser.cs: Remove debug code.
+
+2008-07-28  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs: Fix document outline
+	  view with new parser infrastructure.
+
+2008-07-28  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.AspNet.StateEngine/AspNetExpressionState.cs,
+	  MonoDevelop.AspNet.StateEngine/AspNetServerCommentState.cs,
+	  MonoDevelop.AspNet.StateEngine/AspNetDom.cs,
+	  MonoDevelop.AspNet.StateEngine/AspNetDirectiveState.cs: More
+	  in-progress work on ASP.NET extensions to the XML parser.
+	* AspNetAddIn.mdp, Makefile.am: Updated.
+
 2008-07-25  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.AspNet.StateEngine/AspNetExpressionState.cs,

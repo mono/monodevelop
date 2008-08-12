@@ -38,8 +38,13 @@ namespace MonoDevelop.Xml.StateEngine
 		const int SINGLE_DASH = 1;
 		const int DOUBLE_DASH = 2;
 		
-		public override State PushChar (char c, IParseContext context, ref bool reject)
+		public override State PushChar (char c, IParseContext context, ref string rollback)
 		{
+			if (context.CurrentStateLength == 1) {
+				int start = context.Position - "<!--".Length - 1;
+				context.Nodes.Push (new XComment (start));
+			}
+			
 			if (c == '-') {
 				//make sure we know when there are two '-' chars together
 				if (context.StateTag == NOMATCH)
@@ -47,14 +52,22 @@ namespace MonoDevelop.Xml.StateEngine
 				else
 					context.StateTag = DOUBLE_DASH;
 				
-			} else if (c == '>' && context.StateTag == DOUBLE_DASH) {
-				// if the '--' is followed by a '>', the state has ended
-				// so attach a node to the DOM and end the state
-				if (context.BuildTree) {
-					int start = context.Position - (context.CurrentStateLength + 4); // <!-- is 4 chars
-					((XContainer) context.Nodes.Peek ()).AddChildNode (new XComment (start, context.Position));
+			} else if (context.StateTag == DOUBLE_DASH) {
+				if (c == '>') {
+					// if the '--' is followed by a '>', the state has ended
+					// so attach a node to the DOM and end the state
+					XComment comment = (XComment) context.Nodes.Pop ();
+					
+					if (context.BuildTree) {
+						comment.End (context.Position);
+						((XContainer) context.Nodes.Peek ()).AddChildNode (comment);
+					}
+					
+					rollback = string.Empty;
+					return Parent;
+				} else {
+					context.LogWarning ("The string '--' should not appear within comments.");
 				}
-				return Parent;
 			} else {
 				// not any part of a '-->', so make sure matching is reset
 				context.StateTag = NOMATCH;

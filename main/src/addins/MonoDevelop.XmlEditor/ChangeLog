@@ -1,3 +1,76 @@
+2008-08-01  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Xml.StateEngine/XmlAttributeValueState.cs,
+	  MonoDevelop.Xml.StateEngine/XmlAttributeState.cs: Break up
+	  attribute value states.
+	* MonoDevelop.Xml.StateEngine/Parser.cs: Attach parser state to
+	  exceptions.
+
+2008-07-31  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Xml.StateEngine/XmlAttributeValueState.cs,
+	  MonoDevelop.Xml.StateEngine/XmlAttributeState.cs: Use a
+	  MalformedTagState for recovery.
+	* MonoDevelop.Xml.StateEngine/XmlCommentState.cs,
+	  MonoDevelop.Xml.StateEngine/XmlDocTypeState.cs,
+	  MonoDevelop.Xml.StateEngine/XmlCDataState.cs,
+	  MonoDevelop.Xml.StateEngine/XmlProcessingInstructionState.cs:
+	  Insert nodes when state begins (instead of end) so that we can use
+	  them in paths.
+	* MonoDevelop.Xml.StateEngine/Parser.cs: Track previous state.
+	* MonoDevelop.Xml.StateEngine/XDom.cs: Add support for getting a
+	  "friendly" representation of the node for a user-visible path.
+
+2008-07-30  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Xml.StateEngine/XmlClosingTagState.cs,
+	  MonoDevelop.Xml.StateEngine/XmlCommentState.cs,
+	  MonoDevelop.Xml.StateEngine/XmlMalformedTagState.cs,
+	  MonoDevelop.Xml.StateEngine/XmlTagState.cs,
+	  MonoDevelop.Xml.StateEngine/XmlNameState.cs: Move towards making
+	  the MalformedTagState more replaceable, so that handling of
+	  unexpected '<' can be intercepted.
+	* MonoDevelop.Xml.StateEngine/XmlCDataState.cs,
+	  MonoDevelop.Xml.StateEngine/XmlProcessingInstructionState.cs:
+	  Tidying up.
+
+2008-07-30  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Xml.StateEngine/XmlMalformedTagState.cs,
+	  MonoDevelop.Xml.StateEngine/XmlDocTypeState.cs,
+	  MonoDevelop.Xml.StateEngine/XmlTagState.cs,
+	  MonoDevelop.Xml.StateEngine/XmlProcessingInstructionState.cs,
+	  MonoDevelop.Xml.StateEngine/XmlNameState.cs,
+	  MonoDevelop.Xml.StateEngine/XmlFreeState.cs,
+	  MonoDevelop.Xml.StateEngine/XmlClosingTagState.cs,
+	  MonoDevelop.Xml.StateEngine/State.cs,
+	  MonoDevelop.Xml.StateEngine/Parser.cs,
+	  MonoDevelop.Xml.StateEngine/XmlAttributeState.cs,
+	  MonoDevelop.Xml.StateEngine/XmlCDataState.cs,
+	  MonoDevelop.Xml.StateEngine/XmlAttributeValueState.cs,
+	  MonoDevelop.Xml.StateEngine/XmlCommentState.cs: API change to allow
+	  more that one character of rollback.
+
+2008-07-30  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Xml.StateEngine/XmlParser.cs,
+	  MonoDevelop.Xml.StateEngine/Parser2.cs,
+	  MonoDevelop.Xml.StateEngine/XState.cs, MonoDevelop.XmlEditor.mdp:
+	  Yet another parser that may be easier to extend to handle comments
+	  and expressions in arbitrary locations. Builds the same DOM as the
+	  existing one. Incomplete, and disabled for now.
+
+2008-07-29  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Xml.StateEngine/Parser.cs: Don't allow EndAll to close
+	  XDocument.
+	* MonoDevelop.Xml.StateEngine/XmlFreeState.cs: Add a const for
+	  overriding nodes to know what StateTag values they can use.
+	* MonoDevelop.Xml.StateEngine/XmlAttributeState.cs: Operate on any
+	  IAttributedXObject.
+	* MonoDevelop.Xml.StateEngine/XDom.cs: Abstract out objects with
+	  attributes via IAttributedXObject interface.
+
 2008-07-25  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Xml.StateEngine/XmlFreeState.cs: Improve reset on <.

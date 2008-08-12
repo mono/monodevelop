@@ -37,68 +37,90 @@ namespace MonoDevelop.Xml.StateEngine
 	public class XmlAttributeState : State
 	{
 		XmlNameState XmlNameState;
-		XmlAttributeValueState XmlAttributeValueState;
+		XmlDoubleQuotedAttributeValueState DoubleQuotedAttributeValueState;
+		XmlSingleQuotedAttributeValueState SingleQuotedAttributeValueState;
+		XmlUnquotedAttributeValueState UnquotedAttributeValueState;
+		XmlMalformedTagState MalformedTagState;
 		
 		const int NAMING = 0;
 		const int GETTINGEQ = 1;
 		const int GETTINGVAL = 2;
 		
-		public XmlAttributeState ()
-			: this (new XmlNameState (), new XmlAttributeValueState ())
+		public XmlAttributeState () : this (
+			new XmlNameState (),
+			new XmlDoubleQuotedAttributeValueState (),
+			new XmlSingleQuotedAttributeValueState (),
+			new XmlUnquotedAttributeValueState (),
+			new XmlMalformedTagState ())
 		{}
 		
-		public XmlAttributeState (XmlNameState nameState, XmlAttributeValueState valueState)
+		public XmlAttributeState (
+			XmlNameState nameState,
+			XmlDoubleQuotedAttributeValueState doubleQuotedAttributeValueState,
+			XmlSingleQuotedAttributeValueState singleQuotedAttributeValueState,
+			XmlUnquotedAttributeValueState unquotedAttributeValueState,
+			XmlMalformedTagState malformedTagState)
 		{
 			this.XmlNameState = nameState;
-			this.XmlAttributeValueState = valueState;
+			this.DoubleQuotedAttributeValueState = doubleQuotedAttributeValueState;
+			this.SingleQuotedAttributeValueState = singleQuotedAttributeValueState;
+			this.UnquotedAttributeValueState = unquotedAttributeValueState;
+			this.MalformedTagState = malformedTagState;
+			
 			Adopt (this.XmlNameState);
-			Adopt (this.XmlAttributeValueState);
+			Adopt (this.DoubleQuotedAttributeValueState);
+			Adopt (this.SingleQuotedAttributeValueState);
+			Adopt (this.UnquotedAttributeValueState);
+			Adopt (this.MalformedTagState);
 		}
 
-		public override State PushChar (char c, IParseContext context, ref bool reject)
+		public override State PushChar (char c, IParseContext context, ref string rollback)
 		{
 			XAttribute att = context.Nodes.Peek () as XAttribute;
 			
 			if (c == '<') {
-				context.LogError ("Attribute ended unexpectedly with '<' character.");
-				if (att != null)
-					context.Nodes.Pop ();
-				reject = true;
-				return this.Parent;
+				//MalformedTagState handles errors and cleanup
+				//context.LogError ("Attribute ended unexpectedly with '<' character.");
+				//if (att != null)
+				//	context.Nodes.Pop ();
+				rollback = string.Empty;
+				return MalformedTagState;
 			}
 			
 			//state has just been entered
 			if (context.CurrentStateLength == 1)  {
 				
-				//starting a new attribute?
-				if (att == null) {
-					Debug.Assert (context.StateTag == NAMING);
-					att = new XAttribute (context.Position);
-					context.Nodes.Push (att);
-					reject = true;
-					return XmlNameState;
-				} else {
+				if (context.PreviousState is XmlNameState) {
 					Debug.Assert (att.IsNamed);
-					if (att.Value == null) {
-						context.StateTag = GETTINGEQ;
-					} else {
-						//Got value, so end attribute
-						context.Nodes.Pop ();
-						att.End (context.Position);
-						XElement element = (XElement) context.Nodes.Peek ();
-						element.Attributes.AddAttribute (att);
-						reject = true;
-						return Parent;
-					}
+					context.StateTag = GETTINGEQ;
+				}
+				else if (context.PreviousState is XmlAttributeValueState) {
+					//Got value, so end attribute
+					context.Nodes.Pop ();
+					att.End (context.Position - 1);
+					IAttributedXObject element = (IAttributedXObject) context.Nodes.Peek ();
+					element.Attributes.AddAttribute (att);
+					rollback = string.Empty;
+					return Parent;
+				}
+				else {
+					//starting a new attribute
+					Debug.Assert (att == null);
+					Debug.Assert (context.StateTag == NAMING);
+					att = new XAttribute (context.Position - 1);
+					context.Nodes.Push (att);
+					rollback = string.Empty;
+					return XmlNameState;
 				}
 			}
 			
 			if (c == '>') {
-				context.LogWarning ("Attribute ended unexpectedly with '>' character.");
-				if (att != null)
-					context.Nodes.Pop ();
-				reject = true;
-				return this.Parent;
+				//MalformedTagState handles errors and cleanup
+				//context.LogWarning ("Attribute ended unexpectedly with '>' character.");
+				//if (att != null)
+				//	context.Nodes.Pop ();
+				rollback = string.Empty;
+				return MalformedTagState;
 			}
 			
 			if (context.StateTag == GETTINGEQ) {
@@ -111,17 +133,22 @@ namespace MonoDevelop.Xml.StateEngine
 			} else if (context.StateTag == GETTINGVAL) {
 				if (char.IsWhiteSpace (c)) {
 					return null;
-				} else if (char.IsLetterOrDigit (c) || c== '\'' || c== '"') {
-					reject = true;
-					return XmlAttributeValueState;
+				} else if (c== '"') {
+					return DoubleQuotedAttributeValueState;
+				} else if (c == '\'') {
+					return SingleQuotedAttributeValueState;
+				} else if (char.IsLetterOrDigit (c)) {
+					rollback = string.Empty;
+					return UnquotedAttributeValueState;
 				}
 			}
 			
-			context.LogError ("Unexpected character '" + c + "' in attribute.");
-			if (att != null)
-				context.Nodes.Pop ();
-			reject = true;
-			return Parent;
+			//MalformedTagState handles errors and cleanup
+			//context.LogError ("Unexpected character '" + c + "' in attribute.");
+			//if (att != null)
+			//	context.Nodes.Pop ();
+			rollback = string.Empty;
+			return MalformedTagState;
 		}
 	}
 }

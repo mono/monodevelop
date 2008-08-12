@@ -38,6 +38,7 @@ namespace MonoDevelop.Xml.StateEngine
 	{
 		RootState rootState;
 		State currentState;
+		State previousState;
 		bool buildTree;
 		
 		int position;
@@ -51,6 +52,7 @@ namespace MonoDevelop.Xml.StateEngine
 		{
 			this.rootState = rootState;
 			this.currentState = rootState;
+			this.previousState = rootState;
 			this.buildTree = buildTree;
 			Reset ();
 		}
@@ -61,6 +63,7 @@ namespace MonoDevelop.Xml.StateEngine
 			
 			rootState = copyFrom.rootState;
 			currentState = copyFrom.currentState;
+			previousState = copyFrom.previousState;
 			
 			position = copyFrom.position;
 			stateTag = copyFrom.stateTag;
@@ -88,6 +91,7 @@ namespace MonoDevelop.Xml.StateEngine
 		public void Reset ()
 		{
 			currentState = rootState;
+			previousState = rootState;
 			position = 0;
 			stateTag = 0;
 			keywordBuilder = new StringBuilder ();
@@ -105,16 +109,17 @@ namespace MonoDevelop.Xml.StateEngine
 		{
 			try {
 				position++;
-				for (int loopLimit = 0; loopLimit < 100; loopLimit++) {
+				for (int loopLimit = 0; loopLimit < 10; loopLimit++) {
 					currentStateLength++;
-					bool reject = false;
-					State nextState = currentState.PushChar (c, this, ref reject);
+					string rollback = null;
+					State nextState = currentState.PushChar (c, this, ref rollback);
 					
 					// no state change
 					if (nextState == currentState || nextState == null)
 						return;
 					
 					// state changed; reset stuff
+					previousState = currentState;
 					currentState = nextState;
 					stateTag = 0;
 					currentStateLength = 0;
@@ -125,13 +130,22 @@ namespace MonoDevelop.Xml.StateEngine
 					
 					
 					// only loop if the same char should be run through the new state
-					if (!reject)
+					if (rollback == null)
 						return;
+					
+					//"complex" rollbacks require actually skipping backwards.
+					//Note the previous state is invalid for this operation.
+					else if (rollback.Length > 0) {
+						position -= (rollback.Length + 1);
+						foreach (char rollChar in rollback)
+							Push (rollChar);
+						position++;
+					}
 				}
 				throw new InvalidOperationException ("Too many state changes for char '" + c + "'. Current state is " + currentState.ToString () + ".");
-			} catch (Exception ex) {
-				MonoDevelop.Core.LoggingService.LogDebug (ToString ());
-				throw;
+			} catch (Exception ex)  {
+				//attach parser state to exceptions
+				throw new Exception (ToString (), ex);
 			}
 		}
 		
@@ -208,6 +222,10 @@ namespace MonoDevelop.Xml.StateEngine
 			get { return keywordBuilder; }
 		}
 		
+		State IParseContext.PreviousState {
+			get { return previousState; }
+		}
+		
 		public int CurrentStateLength { get { return currentStateLength; } }
 		public NodeStack Nodes { get { return nodes; } }
 		
@@ -248,7 +266,7 @@ namespace MonoDevelop.Xml.StateEngine
 		{
 			int popCount = 0;
 			foreach (XObject ob in Nodes) {
-				if (ob.Position.End < 0) {
+				if (ob.Position.End < 0 && !(ob is XDocument)) {
 					ob.End (this.Position);
 					popCount++;
 				} else {
@@ -271,6 +289,7 @@ namespace MonoDevelop.Xml.StateEngine
 		StringBuilder KeywordBuilder { get; }
 		int CurrentStateLength { get; }
 		int Position { get; }
+		State PreviousState { get; }
 		NodeStack Nodes { get; }
 		bool BuildTree { get; }
 		void LogError (string message);

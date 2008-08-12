@@ -75,7 +75,7 @@ namespace MonoDevelop.AspNet.Gui
 		{
 			base.Initialize ();
 			
-			S.Parser parser = new S.Parser (new S.XmlFreeState (), false);
+			S.Parser parser = new S.Parser (new AspNetFreeState (), false);
 			tracker = new DocumentStateTracker<S.Parser> (parser, Editor);
 			
 			MonoDevelop.Ide.Gui.IdeApp.Workspace.ParserDatabase.ParseInformationChanged += OnParseInformationChanged;
@@ -260,19 +260,27 @@ namespace MonoDevelop.AspNet.Gui
 					(S.XElement) tracker.Engine.Nodes.Peek (1);
 				
 				//attributes
-				if (el.Name.IsValid && (forced || (char.IsWhiteSpace (previousChar) && char.IsLetter (currentChar))))
+				if (el != null && el.Name.IsValid && (forced ||
+					(char.IsWhiteSpace (previousChar) && char.IsLetter (currentChar))))
 				{
 					CodeCompletionDataProvider cp = new CodeCompletionDataProvider (null, GetAmbience ());
 					if (!forced)
 						triggerWordLength = 1;
 					
-					if (el.Name.HasPrefix) {
-						AddAspAttributeCompletionData (cp, CU == null? null : CU.Document, el.Name, null);
-					} else {
-						AddHtmlAttributeCompletionData (cp, schema, el.Name, null);
+					Dictionary<string, string> existingAtts = new Dictionary<string,string>
+						(StringComparer.InvariantCultureIgnoreCase);
+					
+					foreach (S.XAttribute att in el.Attributes) {
+						existingAtts [att.Name.FullName] = att.Value ?? string.Empty;
 					}
 					
-					if (true)
+					if (el.Name.HasPrefix) {
+						AddAspAttributeCompletionData (cp, CU == null? null : CU.Document, el.Name, existingAtts);
+					} else {
+						AddHtmlAttributeCompletionData (cp, schema, el.Name, existingAtts);
+					}
+					
+					if (!existingAtts.ContainsKey ("runat"))
 						cp.AddCompletionData (new CodeCompletionData ("runat=\"server\"", "md-literal",
 						    GettextCatalog.GetString ("Required for ASP.NET controls.\n") +
 						    GettextCatalog.GetString (
@@ -280,15 +288,15 @@ namespace MonoDevelop.AspNet.Gui
 						        "manipulated programmatically on the web server.")
 						    ));
 					
-//					if (tn.Attributes["id"] == null)
-//						cp.AddCompletionData (
-//						    new CodeCompletionData ("id", "md-literal",
-//						        GettextCatalog.GetString ("Unique identifier.\n") +
-//						        GettextCatalog.GetString (
-//						            "An identifier that is unique within the document.\n" + 
-//						            "If the tag is a server control, this will be used \n" +
-//						            "for the corresponding variable name in the CodeBehind.")
-//						    ));
+					if (!existingAtts.ContainsKey ("id"))
+						cp.AddCompletionData (
+						    new CodeCompletionData ("id", "md-literal",
+						        GettextCatalog.GetString ("Unique identifier.\n") +
+						        GettextCatalog.GetString (
+						            "An identifier that is unique within the document.\n" + 
+						            "If the tag is a server control, this will be used \n" +
+						            "for the corresponding variable name in the CodeBehind.")
+						    ));
 					return cp;
 				}
 			}
@@ -352,7 +360,7 @@ namespace MonoDevelop.AspNet.Gui
 		}
 		
 		void AddHtmlAttributeCompletionData (CodeCompletionDataProvider provider, HtmlSchema schema, 
-		    S.XName tagName, Dictionary<string, bool> existingAtts)
+		    S.XName tagName, Dictionary<string, string> existingAtts)
 		{
 			Debug.Assert (tagName.IsValid);
 			Debug.Assert (schema != null);
@@ -360,7 +368,7 @@ namespace MonoDevelop.AspNet.Gui
 			
 			//add atts only if they're not aready in the tag
 			foreach (ICompletionData datum in schema.CompletionProvider.GetAttributeCompletionData (tagName.FullName))
-				if (existingAtts == null || existingAtts.ContainsKey (datum.Text[0]))
+				if (existingAtts == null || !existingAtts.ContainsKey (datum.Text[0]))
 					provider.AddCompletionData (datum);
 		}
 		
@@ -454,14 +462,14 @@ namespace MonoDevelop.AspNet.Gui
 			//add atts only if they're not already in the tag
 			foreach (MonoDevelop.Projects.Parser.IProperty prop 
 			    in GetUniqueMembers<MonoDevelop.Projects.Parser.IProperty> (GetAllProperties (ctx, controlClass)))
-				if (prop.IsPublic && (existingAtts == null || existingAtts.ContainsKey (prop.Name)))
+				if (prop.IsPublic && (existingAtts == null || !existingAtts.ContainsKey (prop.Name)))
 					provider.AddCompletionData (new CodeCompletionData (prop.Name, "md-property", prop.Documentation));
 			
 			//similarly add events
 			foreach (MonoDevelop.Projects.Parser.IEvent eve 
 			    in GetUniqueMembers<MonoDevelop.Projects.Parser.IEvent> (GetAllEvents (ctx, controlClass))) {
 				string eveName = "On" + eve.Name;
-				if (eve.IsPublic && (existingAtts == null || existingAtts.ContainsKey (eveName)))
+				if (eve.IsPublic && (existingAtts == null || !existingAtts.ContainsKey (eveName)))
 					provider.AddCompletionData (new CodeCompletionData (eveName, "md-event", eve.Documentation));
 			}
 		}

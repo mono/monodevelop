@@ -86,6 +86,9 @@
     <File name="MonoDevelop.Xml.StateEngine/XmlProcessingInstructionState.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Xml.StateEngine/XDom.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Xml.StateEngine/XmlDocTypeState.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Xml.StateEngine/Parser2.cs" subtype="Code" buildaction="Nothing" />
+    <File name="MonoDevelop.Xml.StateEngine/XmlParser.cs" subtype="Code" buildaction="Nothing" />
+    <File name="MonoDevelop.Xml.StateEngine/XState.cs" subtype="Code" buildaction="Nothing" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />

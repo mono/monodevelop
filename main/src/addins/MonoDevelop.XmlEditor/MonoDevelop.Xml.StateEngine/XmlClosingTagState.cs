@@ -53,7 +53,7 @@ namespace MonoDevelop.Xml.StateEngine
 			Adopt (MalformedTagState);
 		}
 
-		public override State PushChar (char c, IParseContext context, ref bool reject)
+		public override State PushChar (char c, IParseContext context, ref string rollback)
 		{
 			XClosingTag ct = context.Nodes.Peek () as XClosingTag;
 			
@@ -118,17 +118,18 @@ namespace MonoDevelop.Xml.StateEngine
 			
 			if (c == '<') {
 				context.LogError ("Unexpected '<' in tag.");
-				reject = true;
+				rollback = string.Empty;
 				return Parent;
 			}
 			
 			if (!ct.IsNamed && (char.IsLetter (c) || c == '_')) {
-				reject = true;
+				rollback = string.Empty;
 				return NameState;
 			}
 			
-			reject = true;
-			context.LogError ("Unexpected character '" + c + "' in closing tag.");
+			rollback = string.Empty;
+			//note: MalformedTagState logs an error, so skip this
+			//context.LogError ("Unexpected character '" + c + "' in closing tag.");
 			return MalformedTagState;
 		}
 	}

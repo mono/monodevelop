@@ -34,17 +34,24 @@ namespace MonoDevelop.Xml.StateEngine
 {
 	public class XmlDocTypeState : State
 	{
-		public override State PushChar (char c, IParseContext context, ref bool reject)
+		public override State PushChar (char c, IParseContext context, ref string rollback)
 		{
+			if (context.CurrentStateLength == 1) {
+				int start = context.Position - "<!DOCTYPE".Length - 1;
+				context.Nodes.Push (new XDocType (start));
+			}
+			
 			if (c == '>' || c == '<') {
+				XDocType doc = (XDocType) context.Nodes.Pop ();
+				
 				if (c == '<') {
-					reject = true;
+					rollback = string.Empty;
 					context.LogError ("Doctype ended prematurely.");
 				}
 				
 				if (context.BuildTree) {
-					int start = context.Position - (context.CurrentStateLength + 9); // <!DOCTYPE is 9 chars
-					((XContainer) context.Nodes.Peek ()).AddChildNode (new XDocType (start, context.Position)); 
+					doc.End (context.Position);
+					((XContainer) context.Nodes.Peek ()).AddChildNode (doc); 
 				}
 				return Parent;
 			}

@@ -37,7 +37,7 @@ namespace MonoDevelop.Xml.StateEngine
 	public class XmlNameState : State
 	{
 		
-		public override State PushChar (char c, IParseContext context, ref bool reject)
+		public override State PushChar (char c, IParseContext context, ref string rollback)
 		{
 			INamedXObject namedObject = context.Nodes.Peek () as INamedXObject;
 			if (namedObject == null || namedObject.Name.Prefix != null)
@@ -47,12 +47,6 @@ namespace MonoDevelop.Xml.StateEngine
 				"First character pushed to a XmlTagNameState must be a letter.");
 			Debug.Assert (context.CurrentStateLength > 1 || context.KeywordBuilder.Length == 0,
 				"Keyword builder must be empty when state begins.");
-			
-			if (c == '<') {
-				context.LogError ("Unexpected '<' in name.");
-				reject = true;
-				return this.Parent;
-			}
 			
 			if (c == ':') {
 				if (namedObject.Name.Name != null || context.KeywordBuilder.Length == 0) {
@@ -64,8 +58,8 @@ namespace MonoDevelop.Xml.StateEngine
 				return null;
 			}
 			
-			if (char.IsWhiteSpace (c) || c == '>' || c == '/' || c == '=') {
-				reject = true;
+			if (char.IsWhiteSpace (c) || c == '<' || c == '>' || c == '/' || c == '=') {
+				rollback = string.Empty;
 				if (context.KeywordBuilder.Length == 0) {
 					context.LogError ("Zero-length name.");
 				} else if (namedObject.Name.Name != null) {
@@ -74,7 +68,21 @@ namespace MonoDevelop.Xml.StateEngine
 				} else {
 					namedObject.Name = new XName (context.KeywordBuilder.ToString ());
 				}
+				
+				//note: parent's MalformedTagState logs an error, so skip this
+				//if (c == '<')
+				//context.LogError ("Unexpected '<' in name.");
+				
 				return Parent;
+			}
+			if (c == ':') {
+				if (namedObject.Name.Name != null || context.KeywordBuilder.Length == 0) {
+					context.LogError ("Unexpected ':' in name.");
+					return Parent;
+				}
+				namedObject.Name = new XName (context.KeywordBuilder.ToString ());
+				context.KeywordBuilder.Length = 0;
+				return null;
 			}
 			
 			if (char.IsLetterOrDigit (c) || c == '_') {
@@ -82,7 +90,7 @@ namespace MonoDevelop.Xml.StateEngine
 				return null;
 			}
 			
-			reject = true;
+			rollback = string.Empty;
 			context.LogError ("Unexpected character '" + c +"'");
 			return Parent;
 		}

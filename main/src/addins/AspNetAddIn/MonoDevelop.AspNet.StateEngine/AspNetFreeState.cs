@@ -35,7 +35,18 @@ namespace MonoDevelop.AspNet.StateEngine
 	
 	public class AspNetFreeState : XmlFreeState
 	{
-		public AspNetFreeState () : base (new XmlTagState (), new XmlClosingTagState ()) {}
+		protected const int BRACKET_PERCENT = MAXCONST + 1;
+		
+		public AspNetFreeState () : base (new XmlTagState (), new XmlClosingTagState ())
+		{
+			this.ExpressionState = new AspNetExpressionState ();
+			this.DirectiveState = new AspNetDirectiveState ();
+			this.ServerCommentState = new AspNetServerCommentState ();
+			
+			Adopt (this.ExpressionState);
+			Adopt (this.DirectiveState);
+			Adopt (this.ServerCommentState);
+		}
 		
 		public AspNetFreeState (
 			XmlTagState tagState,
@@ -44,20 +55,50 @@ namespace MonoDevelop.AspNet.StateEngine
 			XmlCDataState cDataState,
 			XmlDocTypeState docTypeState,
 		        XmlProcessingInstructionState processingInstructionState,
-			AspNetExpressionState expressionState)
+			AspNetExpressionState expressionState,
+			AspNetDirectiveState directiveState,
+			AspNetServerCommentState serverCommentState
+			)
 			: base (tagState, closingTagState, commentState, cDataState, docTypeState, processingInstructionState)
 		{
 			this.ExpressionState = expressionState;
+			this.DirectiveState = directiveState;
+			this.ServerCommentState = serverCommentState;
+			
+			Adopt (this.ExpressionState);
+			Adopt (this.DirectiveState);
+			Adopt (this.ServerCommentState);
 		}
 		
 		protected AspNetExpressionState ExpressionState { get; private set; } 
+		protected AspNetDirectiveState DirectiveState { get; private set; }
+		protected AspNetServerCommentState ServerCommentState { get; private set; }
 		
-		public override State PushChar (char c, IParseContext context, ref bool reject)
+		public override State PushChar (char c, IParseContext context, ref string rollback)
 		{
 			if (c == '%' && context.StateTag == BRACKET) {
-				return ExpressionState;
+				context.StateTag = BRACKET_PERCENT;
+				return null;
 			}
-			return base.PushChar (c, context, ref reject);
+			else if (context.StateTag == BRACKET_PERCENT) {
+				switch (c) {
+				
+				case '@': //DIRECTIVE <%@
+					return DirectiveState;
+				
+				case '-': // SERVER COMMENT: <%--
+					return ServerCommentState;
+					break;
+				
+				case '=': //RENDER EXPRESSION <%=
+				case '#': //DATABINDING EXPRESSION <%#
+				case '$': //RESOURCE EXPRESSION <%$
+				default:  // RENDER BLOCK
+					return ExpressionState;
+				}
+			}
+			
+			return base.PushChar (c, context, ref rollback);
 			
 		}
 	}

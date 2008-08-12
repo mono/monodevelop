@@ -114,6 +114,10 @@ namespace MonoDevelop.Xml.StateEngine
 		}
 		
 		protected XObject () {}
+		
+		public virtual string FriendlyPathRepresentation {
+			get { return GetType ().ToString (); }
+		}
 	}
 	
 	public abstract class XNode : XObject
@@ -302,10 +306,9 @@ namespace MonoDevelop.Xml.StateEngine
 			foreach (XNode child in Nodes)
 				child.BuildTreeString (builder, indentLevel + 1);
 		}
-
 	}
 	
-	public class XElement : XContainer, INamedXObject
+	public class XElement : XContainer, IAttributedXObject
 	{
 		XNode closingTag;
 		XName name;
@@ -316,10 +319,9 @@ namespace MonoDevelop.Xml.StateEngine
 			attributes = new XAttributeCollection (this);
 		}
 		
-		public XElement (int start, XName name) : base (start)
+		public XElement (int start, XName name) : this (start)
 		{
 			this.name = name;
-			attributes = new XAttributeCollection (this);
 		}
 		
 		public XNode ClosingTag { get { return closingTag; } }
@@ -356,7 +358,11 @@ namespace MonoDevelop.Xml.StateEngine
 			base.AddChildNode (newChild);
 		}
 		
-		protected XElement () {}
+		protected XElement ()
+		{
+			attributes = new XAttributeCollection (this);
+		}
+		
 		protected override XObject NewInstance () { return new XElement (); }
 		
 		protected override void ShallowCopyFrom (XObject copyFrom)
@@ -364,7 +370,6 @@ namespace MonoDevelop.Xml.StateEngine
 			base.ShallowCopyFrom (copyFrom);
 			XElement copyFromEl = (XElement) copyFrom;
 			name = copyFromEl.name; //XName is immutable value type
-			attributes = new XAttributeCollection (this);
 		}
 		
 		public override string ToString ()
@@ -398,6 +403,10 @@ namespace MonoDevelop.Xml.StateEngine
 			
 			builder.Append (' ', indentLevel * 2);
 			builder.AppendLine ("]");
+		}
+		
+		public override string FriendlyPathRepresentation {
+			get { return name.FullName; }
 		}
 
 	}
@@ -464,6 +473,11 @@ namespace MonoDevelop.Xml.StateEngine
 			return string.Format (
 				"[XAttribute Name='{0}' Location='{1}' Value='{2}']", name.FullName, this.Position, this.valu);
 		}
+		
+		public override string FriendlyPathRepresentation {
+			get { return "@" + name.FullName; }
+		}
+
 
 	}
 	
@@ -537,6 +551,11 @@ namespace MonoDevelop.Xml.StateEngine
 		
 		protected XCData () {}
 		protected override XObject NewInstance () { return new XCData (); }
+		
+		public override string FriendlyPathRepresentation {
+			get { return "<![CDATA[ ]]>"; }
+		}
+
 	}
 	
 	public class XComment : XNode
@@ -546,6 +565,10 @@ namespace MonoDevelop.Xml.StateEngine
 		
 		protected XComment () {}
 		protected override XObject NewInstance () { return new XComment (); }
+		
+		public override string FriendlyPathRepresentation {
+			get { return "<!-- -->"; }
+		}
 	}
 	
 	public class XProcessingInstruction : XNode
@@ -555,6 +578,10 @@ namespace MonoDevelop.Xml.StateEngine
 		
 		protected XProcessingInstruction () {}
 		protected override XObject NewInstance () { return new XProcessingInstruction (); }
+		
+		public override string FriendlyPathRepresentation {
+			get { return "<? ?>"; }
+		}
 	}
 	
 	public class XDocType : XNode 
@@ -564,6 +591,10 @@ namespace MonoDevelop.Xml.StateEngine
 		
 		protected XDocType () {}
 		protected override XObject NewInstance () { return new XDocType (); }
+		
+		public override string FriendlyPathRepresentation {
+			get { return "<!DOCTYPE>"; }
+		}
 	}
 	
 	public class XClosingTag : XNode, INamedXObject
@@ -601,17 +632,31 @@ namespace MonoDevelop.Xml.StateEngine
 			//immutable types
 			name = copyFromAtt.name;
 		}
+		
+		public override string FriendlyPathRepresentation {
+			get { return "/" + name.FullName; }
+		}
+
 	}
 	
 	public class XDocument : XContainer
 	{
 		public XDocument () : base (0) {}
 		protected override XObject NewInstance () { return new XDocument (); }
+		
+		public override string FriendlyPathRepresentation {
+			get { throw new InvalidOperationException ("Should not display document in path bar."); }
+		}
 	}
 	
 	public interface INamedXObject
 	{
 		XName Name { get; set; }
 		bool IsNamed { get; }
+	}
+	
+	public interface IAttributedXObject : INamedXObject
+	{
+		XAttributeCollection Attributes { get; }
 	}
 }

@@ -1,5 +1,5 @@
 // 
-// XmlTagState.cs
+// AspNetDirectiveState.cs
 // 
 // Author:
 //   Michael Hutchinson <mhutchinson@novell.com>
@@ -29,25 +29,27 @@
 using System;
 using System.Diagnostics;
 
-namespace MonoDevelop.Xml.StateEngine
+using MonoDevelop.Xml.StateEngine;
+
+namespace MonoDevelop.AspNet.StateEngine
 {
 	
 	
-	public class XmlTagState : State
+	public class AspNetDirectiveState : State
 	{
 		XmlAttributeState AttributeState;
 		XmlNameState NameState;
 		XmlMalformedTagState MalformedTagState;
 		
-		public XmlTagState () : this (new XmlAttributeState ()) {}
+		public AspNetDirectiveState () : this (new XmlAttributeState ()) {}
 		
-		public XmlTagState  (XmlAttributeState attributeState)
+		public AspNetDirectiveState (XmlAttributeState attributeState)
 			: this (attributeState, new XmlNameState ()) {}
 		
-		public XmlTagState  (XmlAttributeState attributeState, XmlNameState nameState)
+		public AspNetDirectiveState (XmlAttributeState attributeState, XmlNameState nameState)
 			: this (attributeState, nameState, new XmlMalformedTagState ()) {}
 		
-		public XmlTagState (XmlAttributeState attributeState, XmlNameState nameState,
+		public AspNetDirectiveState (XmlAttributeState attributeState, XmlNameState nameState,
 			XmlMalformedTagState malformedTagState)
 		{
 			this.AttributeState = attributeState;
@@ -59,78 +61,62 @@ namespace MonoDevelop.Xml.StateEngine
 			Adopt (this.MalformedTagState);
 		}
 		
-		const int SELFCLOSING = 1;
+		const int ENDING = 1;
 		
 		public override State PushChar (char c, IParseContext context, ref string rollback)
 		{
-			XElement element = context.Nodes.Peek () as XElement;
+			AspNetDirective directive = context.Nodes.Peek () as AspNetDirective;
 			
-			if (element == null || element.IsComplete) {
-				element = new XElement (context.Position - 2); // 2 == < + current char
-				context.Nodes.Push (element);
+			if (directive == null || directive.IsComplete) {
+				directive = new AspNetDirective (context.Position - 3); // 3 == <% + current char
+				context.Nodes.Push (directive);
 			}
 			
 			if (c == '<') {
-				//note: MalformedTagState logs an error, so skip this
-				//context.LogError ("Unexpected '<' in tag.");
+				context.LogError ("Unexpected '<' in directive.");
 				rollback = string.Empty;
 				return MalformedTagState;
 			}
 			
-			Debug.Assert (!element.IsComplete);
+			Debug.Assert (!directive.IsComplete);
 			
-			if (element.IsClosed && c != '>') {
-				if (char.IsWhiteSpace (c)) {
-					context.LogWarning ("Unexpected whitespace after '/' in self-closing tag.");
-					return null;
-				} else {
-					//note: MalformedTagState logs an error, so skip this
-					//context.LogError ("Unexpected character '" + c + "' after '/' in self-closing tag.");
-					return MalformedTagState;
-				}
+			if (context.StateTag != ENDING && c == '%') {
+				context.StateTag = ENDING;
+				return null;
 			}
 			
-			//if tag closed
-			if (c == '>') {
-				//have already checked that element is not null, i.e. top of stack is our element
-				if (element.IsClosed)
+			
+			if (context.StateTag == ENDING) {
+				if (c == '>') {
+					//have already checked that directive is not null, i.e. top of stack is our directive
 					context.Nodes.Pop ();
-				
-				if (!element.IsNamed) {
-					context.LogError ("Tag closed prematurely.");
-				} else {
-					element.End (context.Position);
-					if (context.BuildTree) {
-						XContainer container = element.IsClosed? 
-							  (XContainer) context.Nodes.Peek ()
-							: (XContainer) context.Nodes.Peek (1);
-						container.AddChildNode (element);
+					
+					if (!directive.IsNamed) {
+						context.LogError ("Directive closed prematurely.");
+					} else {
+						directive.End (context.Position);
+						if (context.BuildTree) {
+							XContainer container = (XContainer) context.Nodes.Peek ();
+							container.AddChildNode (directive);
+						}
 					}
+					return Parent;
 				}
-				return Parent;
+				//ending but not '>'? Error; go to end.
 			}
-			
-			if (char.IsLetter (c) || c == '_') {
+			else if (char.IsLetter (c)) {
 				rollback = string.Empty;
-				if (!element.IsNamed) {
+				if (!directive.IsNamed) {
 					return NameState;
 				} else {
 					return AttributeState;
 				}
 			}
-			
-			if (c == '/') {
-				element.Close (element);
-				return null;
-			}
-			
-			if (char.IsWhiteSpace (c))
+			else if (char.IsWhiteSpace (c))
 				return null;
 			
 			rollback = string.Empty;
-			//note: MalformedTagState logs an error, so skip this
-			//context.LogError ("Unexpected character '" + c + "' in tag.");
-			
+			context.LogError ("Unexpected character '" + c + "' in tag.");
 			return MalformedTagState;
 		}
 	}

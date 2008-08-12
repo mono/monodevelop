@@ -42,13 +42,14 @@ namespace MonoDevelop.Xml.StateEngine
 		/// on the currently active <see cref="State"/> to determine the next state.
 		/// </summary>
 		/// <param name="c">The current character.</param>
-		/// <param name="reject"> If true, the character is being rejected, and should be 
-		/// passed on to the next state.</param>
+		/// <param name="rollback"> If set non-null, the parser will be rolled back that number 
+		/// of characters (empty string means replay current char to the next state.
+		/// Note that this will not change the DOM state.</param>
 		/// <returns>
 		/// The next state. A new or parent <see cref="State"/> will change the parser state; 
 		/// the current state or <see cref="null"/> will not.
 		/// </returns>
-		public abstract State PushChar (char c, IParseContext context, ref bool reject);
+		public abstract State PushChar (char c, IParseContext context, ref string rollback);
 
 		public State Parent { get { return parent; } }
 		
