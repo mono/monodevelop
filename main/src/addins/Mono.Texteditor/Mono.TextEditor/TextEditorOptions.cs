@@ -64,7 +64,7 @@ namespace Mono.TextEditor
 		bool highlightMatchingBracket = true;
 		bool highlightCaretLine = false;
 		bool removeTrailingWhitespaces = true;
-		
+		bool allowTabsAfterNonTabs = false;
 		string fontName = DEFAULT_FONT;
 		string colorStyle = "Default";
 		
@@ -114,6 +114,15 @@ namespace Mono.TextEditor
 		public string IndentationString {
 			get {
 				return this.tabsToSpaces ? new string (' ', this.TabSize) : "\t";
+			}
+		}
+
+		public virtual bool AllowTabsAfterNonTabs {
+			get {
+				return allowTabsAfterNonTabs;
+			}
+			set {
+				allowTabsAfterNonTabs = value;
 			}
 		}
 		

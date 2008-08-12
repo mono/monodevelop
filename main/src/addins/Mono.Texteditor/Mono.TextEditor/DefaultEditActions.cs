@@ -625,8 +625,25 @@ namespace Mono.TextEditor
 			if (data.IsSomethingSelected) {
 				data.DeleteSelectedText ();
 			}
-			data.Document.Insert (data.Caret.Offset, data.Options.IndentationString);
-			data.Caret.Column += data.Options.IndentationString.Length;
+			string indentationString = "\t";
+			bool convertTabToSpaces = data.Options.TabsToSpaces;
+			
+			if (!convertTabToSpaces && !data.Options.AllowTabsAfterNonTabs) {
+				for (int i = 1; i < data.Caret.Column; i++) {
+					System.Console.WriteLine((data.Caret.Offset - i) + " --> " + (int)data.Document.GetCharAt (data.Caret.Offset - i));
+					if (data.Document.GetCharAt (data.Caret.Offset - i) != '\t') {
+						convertTabToSpaces = true;
+						break;
+					}
+				}
+			}
+			
+			if (convertTabToSpaces) {
+				int tabWidth = TextViewMargin.GetNextTabstop (data, data.Caret.Column) - data.Caret.Column;
+				indentationString = new string (' ', tabWidth);
+			}
+			data.Document.Insert (data.Caret.Offset, indentationString);
+			data.Caret.Column += indentationString.Length;
 			data.Document.EndAtomicUndo ();
 		}
 	}
