@@ -51,17 +51,17 @@ namespace MonoDevelop.AspNet.StateEngine
 				
 				//DATABINDING EXPRESSION <%#
 				case '#':
-					context.Nodes.Push (new AspNetDataBindingExpression (context.Position - 2));
+					context.Nodes.Push (new AspNetDataBindingExpression (context.Position - 3));
 					break;
 					
 				//RESOURCE EXPRESSION <%$
 				case '$':
-					context.Nodes.Push (new AspNetResourceExpression (context.Position - 2));
+					context.Nodes.Push (new AspNetResourceExpression (context.Position - 3));
 					break;
 				
 				//RENDER EXPRESSION <%=
 				case '=':
-					context.Nodes.Push (new AspNetRenderExpression (context.Position - 2));
+					context.Nodes.Push (new AspNetRenderExpression (context.Position - 3));
 					break;
 				
 				// RENDER BLOCK
@@ -80,8 +80,11 @@ namespace MonoDevelop.AspNet.StateEngine
 					XNode expr = (XNode) context.Nodes.Pop ();
 					expr.End (context.Position);
 					if (context.BuildTree) {
-						XContainer container = (XContainer) context.Nodes.Peek ();
-						container.AddChildNode (expr);
+						XObject ob = context.Nodes.Peek ();
+						if (ob is XContainer) {
+							((XContainer)ob).AddChildNode (expr);
+						}
+					 	//FIXME: add to other kinds of node, e.g. if used within a tag
 					}
 					return Parent;
 				} else {

@@ -104,6 +104,11 @@ namespace MonoDevelop.AspNet.StateEngine
 			builder.Append (' ', indentLevel * 2);
 			builder.AppendLine ("]");
 		}
+		
+		public override string FriendlyPathRepresentation {
+			get { return "<%@ " + name.FullName + " %>"; }
+		}
+
 	}
 	
 	public abstract class AspNetExpression : XNode
@@ -126,6 +131,10 @@ namespace MonoDevelop.AspNet.StateEngine
 		{
 			return string.Format ("[AspNetRenderExpression Location='{0}'", this.Position);
 		}
+		
+		public override string FriendlyPathRepresentation {
+			get { return "<%= %>"; }
+		}
 	}
 	
 	public class AspNetDataBindingExpression : AspNetExpression
@@ -139,6 +148,10 @@ namespace MonoDevelop.AspNet.StateEngine
 		public override string ToString ()
 		{
 			return string.Format ("[AspNetDataBindingExpression Location='{0}'", this.Position);
+		}
+		
+		public override string FriendlyPathRepresentation {
+			get { return "<%# %>"; }
 		}
 	}
 	
@@ -154,6 +167,10 @@ namespace MonoDevelop.AspNet.StateEngine
 		{
 			return string.Format ("[AspNetResourceExpression Location='{0}'", this.Position);
 		}
+		
+		public override string FriendlyPathRepresentation {
+			get { return "<%$ %>"; }
+		}
 	}
 	
 	public class AspNetServerComment : XNode
@@ -168,6 +185,10 @@ namespace MonoDevelop.AspNet.StateEngine
 		{
 			return string.Format ("[AspNetServerComment Location='{0}'", this.Position);
 		}
+		
+		public override string FriendlyPathRepresentation {
+			get { return "<%-- --%>"; }
+		}
 	}
 	
 	public class AspNetRenderBlock : XNode
@@ -181,6 +202,11 @@ namespace MonoDevelop.AspNet.StateEngine
 		public override string ToString ()
 		{
 			return string.Format ("[AspNetRenderBlock Location='{0}'", this.Position);
+		}
+		
+		
+		public override string FriendlyPathRepresentation {
+			get { return "<% %>"; }
 		}
 	}
 }

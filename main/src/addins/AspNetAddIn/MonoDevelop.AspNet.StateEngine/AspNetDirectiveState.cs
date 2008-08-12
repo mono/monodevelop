@@ -68,7 +68,7 @@ namespace MonoDevelop.AspNet.StateEngine
 			AspNetDirective directive = context.Nodes.Peek () as AspNetDirective;
 			
 			if (directive == null || directive.IsComplete) {
-				directive = new AspNetDirective (context.Position - 3); // 3 == <% + current char
+				directive = new AspNetDirective (context.Position - 4); // 4 == <%@ + current char
 				context.Nodes.Push (directive);
 			}
 			

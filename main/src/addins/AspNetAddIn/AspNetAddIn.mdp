@@ -123,7 +123,6 @@
     <File name="MonoDevelop.AspNet/AspNetToolboxProvider.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.AspNet.Parser/PageDirectiveVisitor.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.AspNet.StateEngine/AspNetExpressionState.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.AspNet.StateEngine/AspNetAttributeValueState.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.AspNet.StateEngine/AspNetDom.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.AspNet.StateEngine/AspNetDirectiveState.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.AspNet.StateEngine/AspNetServerCommentState.cs" subtype="Code" buildaction="Compile" />

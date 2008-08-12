@@ -24,6 +24,30 @@
 
 	* MonoDevelop.AspNet/VerifyCodeBehindBuildStep.cs: Add null check.
 
+2008-08-01  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.AspNet.StateEngine/AspNetExpressionState.cs,
+	  MonoDevelop.AspNet.StateEngine/AspNetAttributeValueState.cs,
+	  MonoDevelop.AspNet.StateEngine/AspNetFreeState.cs,
+	  MonoDevelop.AspNet.StateEngine/AspNetSpeculativeExpressionState.cs,
+	  MonoDevelop.AspNet.StateEngine/AspNetServerCommentState.cs:
+	  Implement attribute value expressions.
+	* AspNetAddIn.mdp, Makefile.am: Updated.
+
+2008-07-31  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs: Show all kinds of
+	  nodes in the path bar, and allow selecting them.
+	* MonoDevelop.AspNet.StateEngine/AspNetDirectiveState.cs,
+	  MonoDevelop.AspNet.StateEngine/AspNetExpressionState.cs: Fix start
+	  offsets.
+	* MonoDevelop.AspNet.StateEngine/AspNetDom.cs: Add friendly
+	  representations.
+	* MonoDevelop.AspNet.StateEngine/AspNetSpeculativeExpressionState.cs,
+	  MonoDevelop.AspNet.StateEngine/AspNetFreeState.cs: Implement
+	  speculatives states. Works for expressions and server comments
+	  within tags, though not within attributes.
+
 2008-07-31  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs: Add comment and
