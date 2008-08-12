@@ -859,7 +859,9 @@ namespace Mono.TextEditor
 			if (textViewMargin.inDrag && margin == this.textViewMargin && Gtk.Drag.CheckThreshold (this, pressPositionX, pressPositionY, (int)e.X, (int)e.Y)) {
 				dragContents = new CopyAction ();
 				dragContents.CopyData (textEditorData);
-				Gtk.Drag.Begin (this, CopyAction.TargetList, DragAction.Move | DragAction.Copy, 1, e);
+				DragContext context = Gtk.Drag.Begin (this, CopyAction.TargetList, DragAction.Move | DragAction.Copy, 1, e);
+				CodeSegmentPreviewWindow window = new CodeSegmentPreviewWindow (this, textEditorData.SelectionRange, 300, 300);
+				Gtk.Drag.SetIconWidget (context, window, 0, 0);
 				selection = SelectionRange;
 				textViewMargin.inDrag = false;
 			} else if (margin != null) {

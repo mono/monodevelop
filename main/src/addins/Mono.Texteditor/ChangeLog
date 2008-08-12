@@ -1,5 +1,11 @@
 2008-08-12  Mike Krüger <mkrueger@novell.com> 
 
+	* Mono.TextEditor/TextEditor.cs,
+	  Mono.TextEditor/CodeSegmentPreviewWindow.cs: fixed "Bug 405912 -
+	  Dragged text no longer shows preview".
+
+2008-08-12  Mike Krüger <mkrueger@novell.com> 
+
 	* Mono.TextEditor.Highlighting/SyntaxModeService.cs: Fixed "Bug 405926
 	  - Addins cannot add syntax schemes or colour schemes to the text
 	  editor".
