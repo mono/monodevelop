@@ -41,6 +41,17 @@
 		<ExtensionNode name="Class" />
 	</ExtensionPoint>
 	
+	<ExtensionPoint path = "/MonoDevelop/SourceEditor2/SyntaxModes" name = "Text editor syntax modes">
+		<Description>Syntax modes</Description>
+		<ExtensionNode name="Templates" type="MonoDevelop.SourceEditor.Extension.TemplateCodon"/>
+	</ExtensionPoint>
+	
+	<ExtensionPoint path = "/MonoDevelop/SourceEditor2/Styles" name = "Text editor styles">
+		<Description>Styles</Description>
+		<ExtensionNode name="Templates" type="MonoDevelop.SourceEditor.Extension.TemplateCodon"/>
+	</ExtensionPoint>
+	
+	
 	<!-- Extensions -->
 
 	<Extension path = "/MonoDevelop/SourceEditor2/TooltipProviders">
