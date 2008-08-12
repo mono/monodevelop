@@ -29,8 +29,7 @@ using MonoDevelop.Core.Gui;
 
 namespace MonoDevelop.SourceEditor.OptionPanels
 {
-	[System.ComponentModel.Category("MonoDevelop.SourceEditor2")]
-	[System.ComponentModel.ToolboxItem(true)]
+	
 	public partial class MarkerPanel : Gtk.Bin, IOptionsPanel
 	{
 		public MarkerPanel()

@@ -36,8 +36,6 @@ using MonoDevelop.Components;
 
 namespace MonoDevelop.SourceEditor.OptionPanels
 {
-	[System.ComponentModel.Category("MonoDevelop.SourceEditor2")]
-	[System.ComponentModel.ToolboxItem(true)]
 	public partial class HighlightingPanel : Gtk.Bin, IOptionsPanel
 	{
 		ListStore styleStore = new ListStore (typeof (string), typeof (string));
@@ -56,8 +54,8 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 
 		public virtual Gtk.Widget CreatePanelWidget ()
 		{
-			this.addButton.Clicked    += AddColorSheme;
-			this.removeButton.Clicked += RemoveColorSheme;
+			this.addButton.Clicked    += AddColorScheme;
+			this.removeButton.Clicked += RemoveColorScheme;
 			this.enableHighlightingCheckbutton.Active = SourceEditorOptions.Options.EnableSyntaxHighlighting;
 			this.enableSemanticHighlightingCheckbutton.Active = SourceEditorOptions.Options.EnableSemanticHighlighting;
 			this.enableHighlightingCheckbutton.Toggled += EnableHighlightingCheckbuttonToggled;
@@ -73,13 +71,13 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			foreach (string styleName in SyntaxModeService.Styles) {
 				Mono.TextEditor.Highlighting.Style style = SyntaxModeService.GetColorStyle (null, styleName);
 				TreeIter iter = styleStore.AppendValues (GetMarkup (GettextCatalog.GetString (style.Name), GettextCatalog.GetString (style.Description)), style.Name);
-				if (style.Name == SourceEditorOptions.Options.ColorSheme)
+				if (style.Name == SourceEditorOptions.Options.ColorScheme)
 					selectedIter = iter;
 			}
 			styleTreeview.Selection.SelectIter (selectedIter); 
 		}
 		
-		void RemoveColorSheme (object sender, EventArgs args)
+		void RemoveColorScheme (object sender, EventArgs args)
 		{
 			string styleName = null;
 			TreeIter selectedIter;
@@ -98,7 +96,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			
 		}
 		
-		void AddColorSheme (object sender, EventArgs args)
+		void AddColorScheme (object sender, EventArgs args)
 		{
 			FileSelector fd = new FileSelector ();
 			int response = fd.Run ();
@@ -132,7 +130,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			SourceEditorOptions.Options.EnableSemanticHighlighting = this.enableSemanticHighlightingCheckbutton.Active;
 			TreeIter selectedIter;
 			if (styleTreeview.Selection.GetSelected (out selectedIter)) {
-				SourceEditorOptions.Options.ColorSheme = (string)this.styleStore.GetValue (selectedIter, 1);
+				SourceEditorOptions.Options.ColorScheme = (string)this.styleStore.GetValue (selectedIter, 1);
 			}
 		}
 

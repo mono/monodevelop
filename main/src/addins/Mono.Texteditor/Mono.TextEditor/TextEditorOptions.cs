@@ -64,7 +64,7 @@ namespace Mono.TextEditor
 		bool highlightMatchingBracket = true;
 		bool highlightCaretLine = false;
 		bool removeTrailingWhitespaces = true;
-		
+		bool allowTabsAfterNonTabs = false;
 		string fontName = DEFAULT_FONT;
 		string colorStyle = "Default";
 		
@@ -114,6 +114,15 @@ namespace Mono.TextEditor
 		public string IndentationString {
 			get {
 				return this.tabsToSpaces ? new string (' ', this.TabSize) : "\t";
+			}
+		}
+
+		public virtual bool AllowTabsAfterNonTabs {
+			get {
+				return allowTabsAfterNonTabs;
+			}
+			set {
+				allowTabsAfterNonTabs = value;
 			}
 		}
 		
@@ -318,7 +327,7 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		public virtual string ColorSheme {
+		public virtual string ColorScheme {
 			get {
 				return colorStyle;
 			}
@@ -329,7 +338,7 @@ namespace Mono.TextEditor
 		}
 		public virtual Style GetColorStyle (Gtk.Widget widget)
 		{
-			return SyntaxModeService.GetColorStyle (widget, ColorSheme);
+			return SyntaxModeService.GetColorStyle (widget, ColorScheme);
 		}
 		
 		public virtual void CopyFrom (TextEditorOptions other)
@@ -352,7 +361,7 @@ namespace Mono.TextEditor
 			AutoIndent = other.AutoIndent;
 			FontName = other.FontName;
 			EnableSyntaxHighlighting = other.EnableSyntaxHighlighting;
-			ColorSheme = other.ColorSheme;
+			ColorScheme = other.ColorScheme;
 		}
 		
 		protected void OnChanged (EventArgs args)

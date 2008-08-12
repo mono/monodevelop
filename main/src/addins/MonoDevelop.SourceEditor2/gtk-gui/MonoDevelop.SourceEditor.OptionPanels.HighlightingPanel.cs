@@ -15,7 +15,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels {
         
         private Gtk.VBox vbox4;
         
-        private Gtk.Frame frame5;
+        private Gtk.Label GtkLabel4;
         
         private Gtk.Alignment GtkAlignment3;
         
@@ -25,9 +25,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels {
         
         private Gtk.CheckButton enableSemanticHighlightingCheckbutton;
         
-        private Gtk.Label GtkLabel4;
-        
-        private Gtk.Frame frame4;
+        private Gtk.Label GtkLabel5;
         
         private Gtk.Alignment GtkAlignment;
         
@@ -43,8 +41,6 @@ namespace MonoDevelop.SourceEditor.OptionPanels {
         
         private Gtk.Button removeButton;
         
-        private Gtk.Label GtkLabel5;
-        
         protected virtual void Build() {
             Stetic.Gui.Initialize(this);
             // Widget MonoDevelop.SourceEditor.OptionPanels.HighlightingPanel
@@ -55,10 +51,17 @@ namespace MonoDevelop.SourceEditor.OptionPanels {
             this.vbox4.Name = "vbox4";
             this.vbox4.Spacing = 6;
             // Container child vbox4.Gtk.Box+BoxChild
-            this.frame5 = new Gtk.Frame();
-            this.frame5.Name = "frame5";
-            this.frame5.ShadowType = ((Gtk.ShadowType)(0));
-            // Container child frame5.Gtk.Container+ContainerChild
+            this.GtkLabel4 = new Gtk.Label();
+            this.GtkLabel4.Name = "GtkLabel4";
+            this.GtkLabel4.Xalign = 0F;
+            this.GtkLabel4.LabelProp = Mono.Unix.Catalog.GetString("<b>Syntax highlighting</b>");
+            this.GtkLabel4.UseMarkup = true;
+            this.vbox4.Add(this.GtkLabel4);
+            Gtk.Box.BoxChild w1 = ((Gtk.Box.BoxChild)(this.vbox4[this.GtkLabel4]));
+            w1.Position = 0;
+            w1.Expand = false;
+            w1.Fill = false;
+            // Container child vbox4.Gtk.Box+BoxChild
             this.GtkAlignment3 = new Gtk.Alignment(0F, 0F, 1F, 1F);
             this.GtkAlignment3.Name = "GtkAlignment3";
             this.GtkAlignment3.LeftPadding = ((uint)(12));
@@ -74,10 +77,10 @@ namespace MonoDevelop.SourceEditor.OptionPanels {
             this.enableHighlightingCheckbutton.DrawIndicator = true;
             this.enableHighlightingCheckbutton.UseUnderline = true;
             this.vbox6.Add(this.enableHighlightingCheckbutton);
-            Gtk.Box.BoxChild w1 = ((Gtk.Box.BoxChild)(this.vbox6[this.enableHighlightingCheckbutton]));
-            w1.Position = 0;
-            w1.Expand = false;
-            w1.Fill = false;
+            Gtk.Box.BoxChild w2 = ((Gtk.Box.BoxChild)(this.vbox6[this.enableHighlightingCheckbutton]));
+            w2.Position = 0;
+            w2.Expand = false;
+            w2.Fill = false;
             // Container child vbox6.Gtk.Box+BoxChild
             this.enableSemanticHighlightingCheckbutton = new Gtk.CheckButton();
             this.enableSemanticHighlightingCheckbutton.CanFocus = true;
@@ -86,27 +89,28 @@ namespace MonoDevelop.SourceEditor.OptionPanels {
             this.enableSemanticHighlightingCheckbutton.DrawIndicator = true;
             this.enableSemanticHighlightingCheckbutton.UseUnderline = true;
             this.vbox6.Add(this.enableSemanticHighlightingCheckbutton);
-            Gtk.Box.BoxChild w2 = ((Gtk.Box.BoxChild)(this.vbox6[this.enableSemanticHighlightingCheckbutton]));
-            w2.Position = 1;
-            w2.Expand = false;
-            w2.Fill = false;
+            Gtk.Box.BoxChild w3 = ((Gtk.Box.BoxChild)(this.vbox6[this.enableSemanticHighlightingCheckbutton]));
+            w3.Position = 1;
+            w3.Expand = false;
+            w3.Fill = false;
             this.GtkAlignment3.Add(this.vbox6);
-            this.frame5.Add(this.GtkAlignment3);
-            this.GtkLabel4 = new Gtk.Label();
-            this.GtkLabel4.Name = "GtkLabel4";
-            this.GtkLabel4.LabelProp = Mono.Unix.Catalog.GetString("<b>Syntax highlighting</b>");
-            this.GtkLabel4.UseMarkup = true;
-            this.frame5.LabelWidget = this.GtkLabel4;
-            this.vbox4.Add(this.frame5);
-            Gtk.Box.BoxChild w5 = ((Gtk.Box.BoxChild)(this.vbox4[this.frame5]));
-            w5.Position = 0;
+            this.vbox4.Add(this.GtkAlignment3);
+            Gtk.Box.BoxChild w5 = ((Gtk.Box.BoxChild)(this.vbox4[this.GtkAlignment3]));
+            w5.Position = 1;
             w5.Expand = false;
             w5.Fill = false;
             // Container child vbox4.Gtk.Box+BoxChild
-            this.frame4 = new Gtk.Frame();
-            this.frame4.Name = "frame4";
-            this.frame4.ShadowType = ((Gtk.ShadowType)(0));
-            // Container child frame4.Gtk.Container+ContainerChild
+            this.GtkLabel5 = new Gtk.Label();
+            this.GtkLabel5.Name = "GtkLabel5";
+            this.GtkLabel5.Xalign = 0F;
+            this.GtkLabel5.LabelProp = Mono.Unix.Catalog.GetString("<b>Color scheme</b>");
+            this.GtkLabel5.UseMarkup = true;
+            this.vbox4.Add(this.GtkLabel5);
+            Gtk.Box.BoxChild w6 = ((Gtk.Box.BoxChild)(this.vbox4[this.GtkLabel5]));
+            w6.Position = 2;
+            w6.Expand = false;
+            w6.Fill = false;
+            // Container child vbox4.Gtk.Box+BoxChild
             this.GtkAlignment = new Gtk.Alignment(0F, 0F, 1F, 1F);
             this.GtkAlignment.Name = "GtkAlignment";
             this.GtkAlignment.LeftPadding = ((uint)(12));
@@ -120,19 +124,19 @@ namespace MonoDevelop.SourceEditor.OptionPanels {
             this.scrolledwindow1.Name = "scrolledwindow1";
             this.scrolledwindow1.ShadowType = ((Gtk.ShadowType)(1));
             // Container child scrolledwindow1.Gtk.Container+ContainerChild
-            Gtk.Viewport w6 = new Gtk.Viewport();
-            w6.ShadowType = ((Gtk.ShadowType)(0));
+            Gtk.Viewport w7 = new Gtk.Viewport();
+            w7.ShadowType = ((Gtk.ShadowType)(0));
             // Container child GtkViewport.Gtk.Container+ContainerChild
             this.styleTreeview = new Gtk.TreeView();
             this.styleTreeview.CanFocus = true;
             this.styleTreeview.Name = "styleTreeview";
             this.styleTreeview.HeadersVisible = false;
             this.styleTreeview.HeadersClickable = true;
-            w6.Add(this.styleTreeview);
-            this.scrolledwindow1.Add(w6);
+            w7.Add(this.styleTreeview);
+            this.scrolledwindow1.Add(w7);
             this.vbox5.Add(this.scrolledwindow1);
-            Gtk.Box.BoxChild w9 = ((Gtk.Box.BoxChild)(this.vbox5[this.scrolledwindow1]));
-            w9.Position = 0;
+            Gtk.Box.BoxChild w10 = ((Gtk.Box.BoxChild)(this.vbox5[this.scrolledwindow1]));
+            w10.Position = 0;
             // Container child vbox5.Gtk.Box+BoxChild
             this.hbox2 = new Gtk.HBox();
             this.hbox2.Name = "hbox2";
@@ -145,10 +149,10 @@ namespace MonoDevelop.SourceEditor.OptionPanels {
             this.addButton.UseUnderline = true;
             this.addButton.Label = "gtk-add";
             this.hbox2.Add(this.addButton);
-            Gtk.Box.BoxChild w10 = ((Gtk.Box.BoxChild)(this.hbox2[this.addButton]));
-            w10.Position = 1;
-            w10.Expand = false;
-            w10.Fill = false;
+            Gtk.Box.BoxChild w11 = ((Gtk.Box.BoxChild)(this.hbox2[this.addButton]));
+            w11.Position = 1;
+            w11.Expand = false;
+            w11.Fill = false;
             // Container child hbox2.Gtk.Box+BoxChild
             this.removeButton = new Gtk.Button();
             this.removeButton.CanFocus = true;
@@ -157,25 +161,19 @@ namespace MonoDevelop.SourceEditor.OptionPanels {
             this.removeButton.UseUnderline = true;
             this.removeButton.Label = "gtk-remove";
             this.hbox2.Add(this.removeButton);
-            Gtk.Box.BoxChild w11 = ((Gtk.Box.BoxChild)(this.hbox2[this.removeButton]));
-            w11.Position = 2;
-            w11.Expand = false;
-            w11.Fill = false;
-            this.vbox5.Add(this.hbox2);
-            Gtk.Box.BoxChild w12 = ((Gtk.Box.BoxChild)(this.vbox5[this.hbox2]));
-            w12.Position = 1;
+            Gtk.Box.BoxChild w12 = ((Gtk.Box.BoxChild)(this.hbox2[this.removeButton]));
+            w12.Position = 2;
             w12.Expand = false;
             w12.Fill = false;
+            this.vbox5.Add(this.hbox2);
+            Gtk.Box.BoxChild w13 = ((Gtk.Box.BoxChild)(this.vbox5[this.hbox2]));
+            w13.Position = 1;
+            w13.Expand = false;
+            w13.Fill = false;
             this.GtkAlignment.Add(this.vbox5);
-            this.frame4.Add(this.GtkAlignment);
-            this.GtkLabel5 = new Gtk.Label();
-            this.GtkLabel5.Name = "GtkLabel5";
-            this.GtkLabel5.LabelProp = Mono.Unix.Catalog.GetString("<b>Color sheme</b>");
-            this.GtkLabel5.UseMarkup = true;
-            this.frame4.LabelWidget = this.GtkLabel5;
-            this.vbox4.Add(this.frame4);
-            Gtk.Box.BoxChild w15 = ((Gtk.Box.BoxChild)(this.vbox4[this.frame4]));
-            w15.Position = 1;
+            this.vbox4.Add(this.GtkAlignment);
+            Gtk.Box.BoxChild w15 = ((Gtk.Box.BoxChild)(this.vbox4[this.GtkAlignment]));
+            w15.Position = 3;
             this.Add(this.vbox4);
             if ((this.Child != null)) {
                 this.Child.ShowAll();

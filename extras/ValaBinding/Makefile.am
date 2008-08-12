@@ -97,6 +97,7 @@ RES =  \
 	templates/EmptyValaProject.xpt.xml \
 	templates/EmptyValaSourceFile.xft.xml \
 	templates/SharedLibraryValaProject.xpt.xml \
+	templates/ValaTestFixture.xpt.xml \
 	ValaBinding.addin.xml
 
 all: $(ASSEMBLY)

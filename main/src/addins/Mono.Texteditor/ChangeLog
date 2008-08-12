@@ -1,3 +1,25 @@
+2008-08-12  Mike Krüger <mkrueger@novell.com> 
+
+	* Mono.TextEditor/TextEditorOptions.cs,
+	  Mono.TextEditor/DefaultEditActions.cs: fixed "Bug 416089 - Warn
+	  about tabs after non-tabs".
+
+2008-08-12  Mike Krüger <mkrueger@novell.com> 
+
+	* Mono.TextEditor/TextEditor.cs,
+	  Mono.TextEditor/CodeSegmentPreviewWindow.cs: fixed "Bug 405912 -
+	  Dragged text no longer shows preview".
+
+2008-08-12  Mike Krüger <mkrueger@novell.com> 
+
+	* Mono.TextEditor.Highlighting/SyntaxModeService.cs: Fixed "Bug 405926
+	  - Addins cannot add syntax schemes or colour schemes to the text
+	  editor".
+
+2008-08-11  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* Mono.TextEditor/TextEditorOptions.cs: Fix spelling, sheme -> scheme.
+
 2008-08-11  Mike Krüger <mkrueger@novell.com> 
 
 	* Mono.TextEditor/TextEditorOptions.cs,

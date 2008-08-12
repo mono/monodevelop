@@ -218,7 +218,13 @@ namespace MonoDevelop.SourceEditor {
             w34.XOptions = ((Gtk.AttachOptions)(4));
             w34.YOptions = ((Gtk.AttachOptions)(4));
             // Container child table.Gtk.Table+TableChild
-            this.optionsButton = null;
+            this.optionsButton = new MonoDevelop.Components.MenuButton();
+            this.optionsButton.CanFocus = true;
+            this.optionsButton.Name = "optionsButton";
+            this.optionsButton.UseUnderline = true;
+            this.optionsButton.Relief = ((Gtk.ReliefStyle)(2));
+            this.optionsButton.UseMarkup = false;
+            this.optionsButton.Label = "";
             this.table.Add(this.optionsButton);
             Gtk.Table.TableChild w35 = ((Gtk.Table.TableChild)(this.table[this.optionsButton]));
             w35.LeftAttach = ((uint)(5));

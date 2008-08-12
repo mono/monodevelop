@@ -27,14 +27,15 @@ namespace MonoDevelop.SourceEditor {
             // Container child MonoDevelop.SourceEditor.SourceEditorWidget.Gtk.Container+ContainerChild
             this.editorBar = new Gtk.VBox();
             this.editorBar.Name = "editorBar";
-            this.editorBar.Spacing = 2;
+            this.editorBar.Spacing = 6;
             // Container child editorBar.Gtk.Box+BoxChild
-            this.classBrowserAlignment = new Gtk.Alignment(0F, 0F, 1F, 1F);
+            this.classBrowserAlignment = new Gtk.Alignment(0.5F, 0.5F, 1F, 1F);
             this.classBrowserAlignment.Name = "classBrowserAlignment";
             this.editorBar.Add(this.classBrowserAlignment);
             Gtk.Box.BoxChild w1 = ((Gtk.Box.BoxChild)(this.editorBar[this.classBrowserAlignment]));
             w1.Position = 0;
             w1.Expand = false;
+            w1.Fill = false;
             // Container child editorBar.Gtk.Box+BoxChild
             this.mainsw = new Gtk.ScrolledWindow();
             this.mainsw.CanFocus = true;

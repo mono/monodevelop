@@ -35,12 +35,16 @@ namespace Mono.TextEditor
 {
 	public class CodeSegmentPreviewWindow : Gtk.Window
 	{
-		const int MaxWidth = 320;
-		const int MaxHeight = 200;
+		const int DefaultWidth = 320;
+		const int DefaultHeight = 200;
 		TextEditor editor;
 		ISegment segment;
+
+		public CodeSegmentPreviewWindow (TextEditor editor, ISegment segment) : this (editor, segment, DefaultWidth, DefaultHeight)
+		{
+		}
 		
-		public CodeSegmentPreviewWindow (TextEditor editor, ISegment segment) : base (Gtk.WindowType.Popup)
+		public CodeSegmentPreviewWindow (TextEditor editor, ISegment segment, int width, int height) : base (Gtk.WindowType.Popup)
 		{
 			this.editor = editor;
 			this.segment  = segment;
@@ -54,10 +58,10 @@ namespace Mono.TextEditor
 			                                                        segment.Offset,
 			                                                        segment.Length,
 			                                                        true));
-			int width, height;
-			layout.GetPixelSize (out width, out height);
-			this.SetSizeRequest (System.Math.Min (width, MaxWidth), 
-			                     System.Math.Min (height, MaxHeight));
+			int w, h;
+			layout.GetPixelSize (out w, out h);
+			this.SetSizeRequest (System.Math.Min (w, width), 
+			                     System.Math.Min (h, height));
 			layout.Dispose ();
 			
 		}

@@ -455,16 +455,52 @@ namespace Mono.TextEditor.Highlighting
 				if (resource.EndsWith ("SyntaxMode.xml")) {
 					XmlTextReader reader =  new XmlTextReader (assembly.GetManifestResourceStream (resource));
 					string mimeTypes = Scan (reader, SyntaxMode.MimeTypesAttribute);
+					ResourceXmlProvider provider = new ResourceXmlProvider (assembly, resource);
 					foreach (string mimeType in mimeTypes.Split (';')) {
-						syntaxModeLookup [mimeType] = new ResourceXmlProvider (assembly, resource);
+						syntaxModeLookup [mimeType] = provider;
 					}
 					reader.Close ();
 				} else if (resource.EndsWith ("Style.xml")) {
-					XmlTextReader reader =  new XmlTextReader (assembly.GetManifestResourceStream (resource));
+					XmlTextReader reader = new XmlTextReader (assembly.GetManifestResourceStream (resource));
 					string styleName = Scan (reader, Style.NameAttribute);
 					styleLookup [styleName] = new ResourceXmlProvider (assembly, resource);
 					reader.Close ();
 				}
+			}
+		}
+
+		public static void AddSyntaxMode (IXmlProvider provider)
+		{
+			using (XmlTextReader reader = provider.Open ()) {
+				string mimeTypes = Scan (reader, SyntaxMode.MimeTypesAttribute);
+				foreach (string mimeType in mimeTypes.Split (';')) {
+					syntaxModeLookup [mimeType] = provider;
+				}
+			}
+		}
+		
+		public static void RemoveSyntaxMode (IXmlProvider provider)
+		{
+			using (XmlTextReader reader = provider.Open ()) {
+				string mimeTypes = Scan (reader, SyntaxMode.MimeTypesAttribute);
+				foreach (string mimeType in mimeTypes.Split (';')) {
+					syntaxModeLookup.Remove (mimeType);
+				}
+			}
+		}
+		
+		public static void AddStyle (IXmlProvider provider)
+		{
+			using (XmlTextReader reader = provider.Open ()) {
+				string styleName = Scan (reader, Style.NameAttribute);
+				styleLookup [styleName] = provider;
+			}
+		}
+		public static void RemoveStyle (IXmlProvider provider)
+		{
+			using (XmlTextReader reader = provider.Open ()) {
+				string styleName = Scan (reader, Style.NameAttribute);
+				styleLookup.Remove (styleName);
 			}
 		}
 		

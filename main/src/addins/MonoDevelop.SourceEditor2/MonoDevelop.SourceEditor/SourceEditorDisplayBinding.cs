@@ -42,6 +42,7 @@ namespace MonoDevelop.SourceEditor
 		
 		static SourceEditorDisplayBinding ()
 		{
+			MonoDevelop.SourceEditor.Extension.TemplateExtensionNodeLoader.Init ();
 			SourceEditorOptions.Init ();
 			LoadCustomStylesAndModes ();
 		}

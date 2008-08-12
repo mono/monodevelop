@@ -20,7 +20,9 @@
 				Target = "Bin"
 				PauseConsoleOutput = "True"
 				CompilerArgs = ""
-				LinkerArgs = ""/>
+				LinkerArgs = ""
+				Packages = "glib-2.0"
+				/>
 		</Project>
 	</Combine>
 </Template>

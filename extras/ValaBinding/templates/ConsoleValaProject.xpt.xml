@@ -10,7 +10,7 @@
 		<_Category>Vala</_Category>
 		<Icon>md-project-console|res:vala-icon-32.png</Icon>
 		<LanguageName>Vala</LanguageName>
-		<_Description>Creates simple hello world Vala project.</_Description>
+		<_Description>Creates a simple hello world Vala project.</_Description>
 	</TemplateConfiguration>
 	
 	<!-- Template Content -->
@@ -20,7 +20,9 @@
 				Target = "Bin"
 				PauseConsoleOutput = "True"
 				CompilerArgs = ""
-				LinkerArgs = ""/>
+				LinkerArgs = ""
+				Packages = "glib-2.0"
+				/>
 			
 			<Files>
 				<File name = "main.vala"><![CDATA[// project created on ${Date} at ${Time}

@@ -109,7 +109,7 @@ namespace MonoDevelop.SourceEditor
 			base.RulerColumn              = PropertyService.Get ("RulerColumn", 80);
 			base.ShowRuler                = PropertyService.Get ("ShowRuler", false);
 			base.FontName                 = PropertyService.Get ("FontName", "Mono 10");
-			base.ColorSheme               =  PropertyService.Get ("ColorSheme", "Default");
+			base.ColorScheme               =  PropertyService.Get ("ColorScheme", "Default");
 			this.DefaultRegionsFolding      =  PropertyService.Get ("DefaultRegionsFolding", false);
 			this.DefaultCommentFolding      =  PropertyService.Get ("DefaultCommentFolding", true);
 			base.RemoveTrailingWhitespaces = PropertyService.Get ("RemoveTrailingWhitespaces", true);
@@ -408,11 +408,11 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 		
-		public override string ColorSheme {
+		public override string ColorScheme {
 			set {
-				string newColorSheme = !String.IsNullOrEmpty (value) ? value : "Default";
-				PropertyService.Set ("ColorSheme", newColorSheme);
-				base.ColorSheme =  newColorSheme;
+				string newColorScheme = !String.IsNullOrEmpty (value) ? value : "Default";
+				PropertyService.Set ("ColorScheme", newColorScheme);
+				base.ColorScheme =  newColorScheme;
 			}
 		}
 		

@@ -29,8 +29,6 @@ using MonoDevelop.Core.Gui;
 
 namespace MonoDevelop.SourceEditor.OptionPanels
 {
-	[System.ComponentModel.Category("MonoDevelop.SourceEditor2")]
-	[System.ComponentModel.ToolboxItem(true)]
 	public partial class GeneralOptionsPanel : Gtk.Bin, IOptionsPanel
 	{
 		public GeneralOptionsPanel()
@@ -47,11 +45,11 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		
 		public virtual Gtk.Widget CreatePanelWidget ()
 		{
-			this.codeCompletioncheckbutton.Active = SourceEditorOptions.Options.EnableCodeCompletion;
-			this.quickFinderCheckbutton.Active    = SourceEditorOptions.Options.EnableQuickFinder;
+			this.foldCommentsCheckbutton.Active = SourceEditorOptions.Options.EnableCodeCompletion;
+			this.foldregionsCheckbutton.Active    = SourceEditorOptions.Options.EnableQuickFinder;
 			this.foldingCheckbutton.Active        = SourceEditorOptions.Options.ShowFoldMargin;
 			this.foldregionsCheckbutton.Active    = SourceEditorOptions.Options.DefaultRegionsFolding;
-			this.folddocumentationCheckbutton.Active = SourceEditorOptions.Options.DefaultCommentFolding;
+			this.foldCommentsCheckbutton.Active   = SourceEditorOptions.Options.DefaultCommentFolding;
 			
 			this.radiobutton1.Active              = SourceEditorOptions.Options.EditorFontType == EditorFontType.DefaultMonospace;
 			this.radiobutton2.Active              = SourceEditorOptions.Options.EditorFontType == EditorFontType.UserSpecified;
@@ -62,13 +60,13 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		
 		public virtual void ApplyChanges ()
 		{
-			SourceEditorOptions.Options.EnableCodeCompletion = this.codeCompletioncheckbutton.Active;
-			SourceEditorOptions.Options.EnableQuickFinder    = this.quickFinderCheckbutton.Active;
+			SourceEditorOptions.Options.EnableCodeCompletion = this.foldCommentsCheckbutton.Active;
+			SourceEditorOptions.Options.EnableQuickFinder    = this.foldregionsCheckbutton.Active;
 			SourceEditorOptions.Options.ShowFoldMargin       = this.foldingCheckbutton.Active;
 			SourceEditorOptions.Options.EditorFontType       = this.radiobutton1.Active ? EditorFontType.DefaultMonospace : EditorFontType.UserSpecified;
 			SourceEditorOptions.Options.FontName             = this.fontselection.FontName;
 			SourceEditorOptions.Options.DefaultRegionsFolding = this.foldregionsCheckbutton.Active;
-			SourceEditorOptions.Options.DefaultCommentFolding = this.folddocumentationCheckbutton.Active;
+			SourceEditorOptions.Options.DefaultCommentFolding = this.foldCommentsCheckbutton.Active;
 			
 		}
 

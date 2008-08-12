@@ -51,6 +51,8 @@
     <File name="MonoDevelop.SourceEditor/DebugValueWindow.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.SourceEditor/DebugValueTooltipProvider.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.SourceEditor/ClassQuickFinder.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.SourceEditor.Extension/TemplateCodon.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.SourceEditor.Extension/TemplateExtensionNodeLoader.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Project" localcopy="False" refto="Mono.TextEditor" />
