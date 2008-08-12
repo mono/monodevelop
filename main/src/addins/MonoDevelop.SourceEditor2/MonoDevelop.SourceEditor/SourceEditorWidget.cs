@@ -205,12 +205,11 @@ namespace MonoDevelop.SourceEditor
 				focusChain.Add (this.searchAndReplaceWidget);
 			}
 			if (this.gotoLineNumberWidget != null) {
-				focusChain.Add (this.searchAndReplaceWidget);
+				focusChain.Add (this.gotoLineNumberWidget);
 			}
 			if (this.classBrowser != null) {
 				focusChain.Add (this.classBrowser);
 			}
-			
 			this.editorBar.FocusChain = focusChain.ToArray ();
 		}
 		
