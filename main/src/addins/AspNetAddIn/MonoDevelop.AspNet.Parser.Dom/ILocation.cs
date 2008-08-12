@@ -38,6 +38,7 @@ namespace MonoDevelop.AspNet.Parser.Dom
 		int BeginColumn { get; }
 		int EndColumn { get; }
 		string PlainText { get; }
+		string FileText { get; }
 	}
 }
 

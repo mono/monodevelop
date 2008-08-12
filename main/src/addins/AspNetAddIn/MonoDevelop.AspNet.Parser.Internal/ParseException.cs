@@ -88,12 +88,16 @@ namespace MonoDevelop.AspNet.Parser.Internal
 				if (fileText != null)
 					return fileText;
 
+				string text = location != null ? location.FileText : null;
+				if (text != null && text.Length > 0)
+					return text;
+				
 				if (FileName == null)
 					return null;
 
 				//FIXME: encoding
 				using (TextReader reader = new StreamReader (FileName))
-					fileText = reader.ReadToEnd ();			
+					fileText = reader.ReadToEnd ();
 				return fileText;
 			}
 		}
