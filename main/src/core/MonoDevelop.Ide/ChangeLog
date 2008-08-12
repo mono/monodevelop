@@ -43,6 +43,11 @@
 	* MonoDevelop.Ide.Gui/Document.cs: Request file edit permission when
 	  saving a document.
 
+2008-07-31  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Ide.Gui/SdiWorkspaceWindow.cs: Escape < so it doesn't get
+	  handled as GMarkup. Incomplete, but enough for now.
+
 2008-07-28  Andrés G. Aragoneses <aaragoneses@novell.com> 
 
 	* MonoDevelop.Ide.Gui.Search/CurrentProjectDocumentIterator.cs: Be more

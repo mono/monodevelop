@@ -413,10 +413,13 @@ namespace MonoDevelop.Ide.Gui
 			for (int i = 0; i < pathDoc.CurrentPath.Length; i++) {
 				PathMenuButton button = new PathMenuButton (pathDoc, i);
 				button.ArrowType = (i + 1 < pathDoc.CurrentPath.Length)? ArrowType.Right : (ArrowType?) null;
-				if (i == pathDoc.SelectedIndex)
-					button.Markup = string.Concat ("<b>", pathDoc.CurrentPath[i] ,"</b>");
-				else
+				
+				if (i == pathDoc.SelectedIndex) {
+					string escaped = pathDoc.CurrentPath[i].Replace ("<", "&lt;");
+					button.Markup = string.Concat ("<b>", escaped ,"</b>");
+				} else {
 					button.Label = pathDoc.CurrentPath[i];
+				}
 				pathBox.PackStart (button, false, false, 0);
 			}
 			pathBox.PackEnd (new Label (string.Empty), true, true, 0);
