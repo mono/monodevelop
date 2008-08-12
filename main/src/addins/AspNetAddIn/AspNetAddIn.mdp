@@ -127,6 +127,7 @@
     <File name="MonoDevelop.AspNet.StateEngine/AspNetDom.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.AspNet.StateEngine/AspNetDirectiveState.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.AspNet.StateEngine/AspNetServerCommentState.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.AspNet.StateEngine/AspNetSpeculativeExpressionState.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Components" />

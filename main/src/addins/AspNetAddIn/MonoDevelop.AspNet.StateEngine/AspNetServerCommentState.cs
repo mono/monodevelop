@@ -65,7 +65,7 @@ namespace MonoDevelop.AspNet.StateEngine
 			case PERCENT:
 				if (c == '>') {
 					if (context.BuildTree) {
-						int start = context.Position - (context.CurrentStateLength + 4); // <%-- is 4 chars
+						int start = context.Position - (context.CurrentStateLength + "<%--".Length);
 						((XContainer) context.Nodes.Peek ()).AddChildNode (new AspNetServerComment (start, context.Position));
 					}
 					return Parent;

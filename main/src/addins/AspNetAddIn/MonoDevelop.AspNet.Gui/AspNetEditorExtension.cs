@@ -222,16 +222,24 @@ namespace MonoDevelop.AspNet.Gui
 			if (currentChar == '<') {
 				CodeCompletionDataProvider cp = new CodeCompletionDataProvider (null, GetAmbience ());
 				
-				S.XElement el = tracker.Engine.Nodes.Peek () as S.XElement;
-				S.XName parentName = (el != null && el.IsNamed)? el.Name : new S.XName ();
+				if (tracker.Engine.CurrentState is S.XmlFreeState) {
+					
+					S.XElement el = tracker.Engine.Nodes.Peek () as S.XElement;
+					S.XName parentName = (el != null && el.IsNamed)? el.Name : new S.XName ();
+					
+					AddHtmlTagCompletionData (cp, schema, parentName);
+					AddHtmlMiscBegins (cp);
+					AddAspTags (cp, CU == null? null : CU.Document, parentName);
+					AddCloseTag (cp, tracker.Engine.Nodes);
+					
+//						if (line < 3) {
+//						cp.AddCompletionData (new CodeCompletionData ("<?xml version=\"1.0\" encoding=\"UTF-8\" ?>"));
 				
-				AddHtmlTagCompletionData (cp, schema, parentName);
-				AddAspTags (cp, CU == null? null : CU.Document, parentName);
-				AddCloseTag (cp, tracker.Engine.Nodes);
+					if (line < 4 && string.IsNullOrEmpty (doctype))
+						cp.AddCompletionData (new CodeCompletionData ("!DOCTYPE", "md-literal"));
+				}
+				
 				AddAspBeginExpressions (cp, CU == null? null : CU.Document);
-				
-				if (line < 4 && string.IsNullOrEmpty (doctype))
-					cp.AddCompletionData (new CodeCompletionData ("!DOCTYPE", "md-literal"));
 				return cp;
 			}
 			
@@ -384,6 +392,16 @@ namespace MonoDevelop.AspNet.Gui
 			{
 				provider.AddCompletionData (datum);
 			}
+		}
+		
+		static void AddHtmlMiscBegins (CodeCompletionDataProvider provider)
+		{
+			provider.AddCompletionData (
+			    new CodeCompletionData ("!--",  "md-literal", GettextCatalog.GetString ("Comment"))
+			    );
+			provider.AddCompletionData (
+			    new CodeCompletionData ("![CDATA[", "md-literal", GettextCatalog.GetString ("Character data"))
+			    );
 		}
 		
 		#endregion

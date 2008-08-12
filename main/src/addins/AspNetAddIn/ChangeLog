@@ -24,6 +24,26 @@
 
 	* MonoDevelop.AspNet/VerifyCodeBehindBuildStep.cs: Add null check.
 
+2008-07-31  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs: Add comment and
+	  CDATA completion. Only trigger tag completion in the free state.
+	* MonoDevelop.AspNet/WebTypeManager.cs: Simplify lookups using new
+	  DOM's methods. They're still broken due to the DOM database
+	  returning bad values.
+
+2008-07-30  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.AspNet/WebTypeManager.cs,
+	  MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs: More porting to
+	  new DOM.
+	* MonoDevelop.AspNet.StateEngine/AspNetSpeculativeExpressionState.cs: A
+	  "speculative state" to replace the MalformedTagState. Can create a
+	  server comment, or
+	* MonoDevelop.AspNet.StateEngine/AspNetServerCommentState.cs: Tidying
+	  up.
+	* AspNetAddIn.mdp, Makefile.am: Updated.
+
 2008-07-30  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.AspNet.StateEngine/AspNetExpressionState.cs,
