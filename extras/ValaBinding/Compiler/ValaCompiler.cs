@@ -152,15 +152,9 @@ namespace MonoDevelop.ValaBinding
 			string outputName = Path.Combine (configuration.OutputDirectory,
 											  configuration.CompiledOutputName);
 			
-			StringBuilder filelist = new StringBuilder();
 			monitor.BeginTask (GettextCatalog.GetString ("Compiling source"), 1);
-			foreach (ProjectFile f in projectFiles) { 
-				if (f.Subtype != Subtype.Directory && f.BuildAction == BuildAction.Compile) {
-					filelist.Append(string.Format("\"{0}\" ", f.FilePath));
-				}
-			}/// Build file list
 			
-			success = DoCompilation(filelist.ToString(), compilerArgs, outputName, monitor, cr);
+			success = DoCompilation(projectFiles, compilerArgs, outputName, monitor, cr);
 			
 			if (success)
 				monitor.Step (1);
@@ -357,18 +351,25 @@ namespace MonoDevelop.ValaBinding
 		/// <summary>
 		/// Compiles the project
 		/// </summary>
-		private bool DoCompilation (string projectFiles, string args,
+		private bool DoCompilation (ProjectFileCollection projectFiles, string args,
 									string outputName,
 									IProgressMonitor monitor,
 									CompilerResults cr)
-		{			
+		{
+			StringBuilder filelist = new StringBuilder();
+			foreach (ProjectFile f in projectFiles) { 
+				if (f.Subtype != Subtype.Directory && f.BuildAction == BuildAction.Compile) {
+					filelist.AppendFormat("\"{0}\" ", f.FilePath);
+				}
+			}/// Build file list
+
 			string compiler_args = string.Format ("{0} {1} -o \"{2}\"",
-				args, projectFiles, Path.GetFileName(outputName));
+				args, filelist.ToString(), Path.GetFileName(outputName));
 			
 			string errorOutput = string.Empty;
 			int exitCode = ExecuteCommand (compilerCommand, compiler_args, Path.GetDirectoryName (outputName), monitor, out errorOutput);
 			
-			ParseCompilerOutput (errorOutput, cr);
+			ParseCompilerOutput (errorOutput, cr, projectFiles);
 			return exitCode == 0;
 		}
 		
@@ -437,13 +438,13 @@ namespace MonoDevelop.ValaBinding
 		/// The CompilerResults into which to parse errorString
 		/// <see cref="CompilerResults"/>
 		/// </param>
-		protected void ParseCompilerOutput (string errorString, CompilerResults cr)
+		protected void ParseCompilerOutput (string errorString, CompilerResults cr, ProjectFileCollection projectFiles)
 		{
 			TextReader reader = new StringReader (errorString);
 			string next;
 				
 			while ((next = reader.ReadLine ()) != null) {
-				CompilerError error = CreateErrorFromErrorString (next);
+				CompilerError error = CreateErrorFromErrorString (next, projectFiles);
 				// System.Console.WriteLine("Creating error from string \"{0}\"", next);
 				if (error != null) {
 					cr.Errors.Insert (0, error);
@@ -476,7 +477,7 @@ namespace MonoDevelop.ValaBinding
 		/// A newly created CompilerError
 		/// <see cref="CompilerError"/>
 		/// </returns>
-		private CompilerError CreateErrorFromErrorString (string errorString)
+		private CompilerError CreateErrorFromErrorString (string errorString, ProjectFileCollection projectFiles)
 		{
 			CompilerError error = new CompilerError ();
 			
@@ -484,14 +485,22 @@ namespace MonoDevelop.ValaBinding
 			
 			if (errorMatch.Success)
 			{
-				error.FileName = errorMatch.Groups["file"].Value;
+				foreach(ProjectFile pf in projectFiles) {
+					if(Path.GetFileName(pf.Name) == errorMatch.Groups["file"].Value) {
+						error.FileName = pf.FilePath;
+						break;
+					}
+				}// check for fully pathed file
+				if(string.Empty == error.FileName) {
+					error.FileName = errorMatch.Groups["file"].Value;
+				}// fallback to exact match
 				error.Line = int.Parse (errorMatch.Groups["line"].Value);
 				error.Column = int.Parse (errorMatch.Groups["column"].Value);
 				error.IsWarning = errorMatch.Groups["level"].Value.Equals ("warning");
 				error.ErrorText = errorMatch.Groups["message"].Value;
 				
 				return error;
-			}
+			}// if we successfully matched the error pattern
 			
 			return null;
 		}

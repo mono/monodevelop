@@ -1,5 +1,9 @@
 2008-08-12  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com>
 
+	* Compiler/ValaCompiler.cs: Fix error parsing for recent valac.
+
+2008-08-12  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com>
+
 	* Compiler/ValaCompiler.cs, Project/ProjectPackage.cs, 
 	Project/ValaProject.cs, Gui/EditPackagesDialog.cs:
 	Improve dependency and project package handling.
