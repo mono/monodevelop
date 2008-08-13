@@ -1,5 +1,10 @@
 2008-08-13  Mike Krüger <mkrueger@novell.com> 
 
+	* Mono.TextEditor/Document.cs: fixed "Bug 416564 - Syntax highlighting
+	  is lost when reloading a file".
+
+2008-08-13  Mike Krüger <mkrueger@novell.com> 
+
 	* Mono.TextEditor/TextEditorOptions.cs: changed default setting for new
 	  tabs after nontabs option.
 
