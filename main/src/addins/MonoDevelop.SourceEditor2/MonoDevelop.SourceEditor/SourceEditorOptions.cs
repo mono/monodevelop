@@ -111,6 +111,7 @@ namespace MonoDevelop.SourceEditor
 			base.FontName                 = PropertyService.Get ("FontName", "Mono 10");
 			base.ColorScheme               =  PropertyService.Get ("ColorScheme", "Default");
 			base.RemoveTrailingWhitespaces = PropertyService.Get ("RemoveTrailingWhitespaces", true);
+			base.AllowTabsAfterNonTabs = PropertyService.Get ("AllowTabsAfterNonTabs", true);
 		}
 		
 		#region new options
@@ -243,6 +244,13 @@ namespace MonoDevelop.SourceEditor
 		#endregion
 		
 		#region old options
+		public override bool AllowTabsAfterNonTabs {
+			set {
+				PropertyService.Set ("AllowTabsAfterNonTabs", value);
+				base.AllowTabsAfterNonTabs = value;
+			}
+		}
+				
 		public override bool TabsToSpaces {
 			set {
 				PropertyService.Set ("TabsToSpaces", value);

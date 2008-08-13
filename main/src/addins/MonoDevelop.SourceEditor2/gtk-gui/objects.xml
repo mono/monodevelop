@@ -1,4 +1,8 @@
 <objects attr-sync="on">
+  <object type="MonoDevelop.SourceEditor.ExtendibleTextEditor" palette-category="General" allow-children="false" base-type="Mono.TextEditor.TextEditor">
+    <itemgroups />
+    <signals />
+  </object>
   <object type="MonoDevelop.SourceEditor.GotoLineNumberWidget" palette-category="MonoDevelop.SourceEditor2" allow-children="false" base-type="Gtk.Bin">
     <itemgroups />
     <signals />
@@ -18,11 +22,5 @@
       </itemgroup>
     </itemgroups>
     <signals />
-  </object>
-  <object type="MonoDevelop.SourceEditor.ExtendibleTextEditor" palette-category="General" allow-children="false" base-type="Mono.TextEditor.TextEditor">
-    <itemgroups>
-    </itemgroups>
-    <signals>
-    </signals>
   </object>
 </objects>
