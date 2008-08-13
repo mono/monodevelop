@@ -736,15 +736,6 @@ namespace MonoDevelop.Ide.Gui
 			if (prefs == null)
 				return;
 			
-			Document currentDoc;
-			string currentFileName = prefs.ActiveDocument != null ? Path.GetFullPath (Path.Combine (args.Item.BaseDirectory, prefs.ActiveDocument)) : null;
-			
-			foreach (DocumentUserPrefs doc in prefs.Files) {
-				string fileName = Path.GetFullPath (Path.Combine (args.Item.BaseDirectory, doc.FileName));
-				if (File.Exists (fileName))
-					IdeApp.Workbench.OpenDocument (fileName, doc.Line, doc.Column, fileName == currentFileName);
-			}
-			
 			foreach (PadUserPrefs pi in prefs.Pads) {
 				foreach (Pad pad in IdeApp.Workbench.Pads) {
 					if (pi.Id == pad.Id && pad.Content is IMementoCapable) {
@@ -762,6 +753,15 @@ namespace MonoDevelop.Ide.Gui
 						break;
 					}
 				}
+			}
+			
+			Document currentDoc;
+			string currentFileName = prefs.ActiveDocument != null ? Path.GetFullPath (Path.Combine (args.Item.BaseDirectory, prefs.ActiveDocument)) : null;
+			
+			foreach (DocumentUserPrefs doc in prefs.Files) {
+				string fileName = Path.GetFullPath (Path.Combine (args.Item.BaseDirectory, doc.FileName));
+				if (File.Exists (fileName))
+					IdeApp.Workbench.OpenDocument (fileName, doc.Line, doc.Column, fileName == currentFileName);
 			}
 		}
 		

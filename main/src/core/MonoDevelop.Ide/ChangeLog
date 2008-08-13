@@ -1,3 +1,9 @@
+2008-08-12  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Ide.Gui/Workbench.cs: Load documents after restoring pad
+	  states. Partially works around "Bug 398353 - Solution tree starts
+	  collapsed regardless of selection".
+
 2008-08-08  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Gui.Pads.ProjectPad/SolutionFolderNodeBuilder.cs,
