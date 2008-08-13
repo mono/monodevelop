@@ -1,3 +1,10 @@
+2008-08-13  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Ide.Gui.Pads/NodeState.cs: Use current node name rather
+	  than "Node". Along with changes to XmlReadHelper, fixes errors
+	  restoring solution state "Unknown end node: State valid end nodes
+	  are: Node".
+
 2008-08-12  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Ide.Gui/Workbench.cs,
