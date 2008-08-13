@@ -211,6 +211,24 @@ namespace MonoDevelop.CSharpBinding
 			return parser.ParseExpression();
 		}
 		
+		public ResolveResult ResolveIdentifier (string identifier, DomLocation resolvePosition)
+		{
+			this.SetupResolver (resolvePosition);
+			ResolveVisitor visitor = new ResolveVisitor (this);
+			ResolveResult result = this.ResolveIdentifier (visitor, identifier);
+			System.Console.WriteLine ("Resolve identifier result:" + result);
+			return result;
+		}
+		
+		public ResolveResult ResolveExpression (Expression expr, DomLocation resolvePosition)
+		{
+			this.SetupResolver (resolvePosition);
+			ResolveVisitor visitor = new ResolveVisitor (this);
+			ResolveResult result = visitor.Resolve (expr);
+			System.Console.WriteLine("resolve result:" + result);
+			return result;
+		}
+		
 		public ResolveResult Resolve (ExpressionResult expressionResult, DomLocation resolvePosition)
 		{
 			this.SetupResolver (resolvePosition);

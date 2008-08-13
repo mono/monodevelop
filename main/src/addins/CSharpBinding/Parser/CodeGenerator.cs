@@ -562,46 +562,42 @@ namespace CSharpBinding.Parser
 		public override object VisitFieldDeclaration (FieldDeclaration fieldDeclaration, object data)
 		{
 			//Debug ("FieldDeclaration", fieldDeclaration.ToString (), fieldDeclaration);
-//TODO:
-/*			string type = fieldDeclaration.TypeReference.SystemType ?? fieldDeclaration.TypeReference.Type;
+			string type = fieldDeclaration.TypeReference.SystemType ?? fieldDeclaration.TypeReference.Type;
 			if (member is IType && member.Name == GetNameWithoutPrefix (type)) {
 				int line = fieldDeclaration.StartLocation.Y;
 				int col = fieldDeclaration.StartLocation.X;
-				IType cls = resolver.ResolveIdentifier (fileCompilationUnit, type, line, col) as IType;
-				
+				IReturnType cls = resolver.ResolveIdentifier (type, new DomLocation (line, col)).ResolvedType;
 				if (cls != null && cls.FullName == ((IType) member).FullName) {
 					//Debug ("adding FieldDeclaration", cls.FullName, fieldDeclaration);
 					AddUniqueReference (line, col, cls.FullName);
 				}
-			}*/
+			}
 			
 			return base.VisitFieldDeclaration (fieldDeclaration, data);
 		}
 		
 		public override object VisitTypeReference(TypeReference typeReference, object data)
 		{
-			//TODO:
-			/*
-			string type = fieldDeclaration.TypeReference.SystemType ?? fieldDeclaration.TypeReference.Type;
+			string type = typeReference.SystemType ?? typeReference.Type;
 			if (member is IType && member.Name == GetNameWithoutPrefix (type)) {
 				int line = typeReference.StartLocation.Y;
 				int col = typeReference.StartLocation.X;
-				IType cls = resolver.ResolveIdentifier (fileCompilationUnit, type, line, col) as IType;
+				IReturnType cls = resolver.ResolveIdentifier (type, new DomLocation (line, col)).ResolvedType;
 				
 				if (cls != null && cls.FullName == declaringType.FullName) {
 					//Debug ("adding CastExpression", cls.FullName, castExpression);
 					AddUniqueReference (line, col, cls.FullName);
 				}
-			}*/
+			}
 			return base.VisitTypeReference (typeReference, data);
 		}
 		
 		public override object VisitMemberReferenceExpression (MemberReferenceExpression fieldExp, object data)
 		{
 			//Debug ("FieldReferenceExpression", fieldExp.FieldName, fieldExp);
-//TODO:
-/*			if (!(member is IParameter) && fieldExp.FieldName == member.Name) {
-				IType cls = resolver.ResolveExpressionType (fileCompilationUnit, fieldExp.TargetObject, fieldExp.StartLocation.Y, fieldExp.StartLocation.X);
+			if (!(member is IParameter) && fieldExp.FieldName == member.Name) {
+				ResolveResult resolveResult = resolver.ResolveExpression (fieldExp.TargetObject, new DomLocation (fieldExp.StartLocation.Y, fieldExp.StartLocation.X));
+				IType cls = resolveResult != null ? this.ctx.ParserContext.GetType (resolveResult.ResolvedType) : null;
 				if (cls != null && IsExpectedClass (cls)) {
 					int pos = file.GetPositionFromLineColumn (fieldExp.StartLocation.Y, fieldExp.StartLocation.X);
 					int endpos = file.GetPositionFromLineColumn (fieldExp.EndLocation.Y, fieldExp.EndLocation.X);
@@ -611,7 +607,7 @@ namespace CSharpBinding.Parser
 						AddUniqueReference (fieldExp.StartLocation.Y, fieldExp.StartLocation.X, member.Name);
 					}
 				}
-			}*/
+			}
 			
 			return base.VisitMemberReferenceExpression (fieldExp, data);
 		}
@@ -619,44 +615,66 @@ namespace CSharpBinding.Parser
 		public override object VisitMethodDeclaration(MethodDeclaration methodDeclaration, object data) 
 		{
 			// find override references.
-//TODO:
-/*			if (member is IMethod && (methodDeclaration.Modifier & ICSharpCode.NRefactory.Ast.Modifiers.Override) == ICSharpCode.NRefactory.Ast.Modifiers.Override && methodDeclaration.Name == member.Name) {
-				IMember m = resolver.ResolveIdentifier (fileCompilationUnit, member.Name, methodDeclaration.StartLocation.Y, methodDeclaration.StartLocation.X) as IMember;
+			if (member is IMethod && (methodDeclaration.Modifier & ICSharpCode.NRefactory.Ast.Modifiers.Override) == ICSharpCode.NRefactory.Ast.Modifiers.Override && methodDeclaration.Name == member.Name) {
+				MemberResolveResult mrr = resolver.ResolveIdentifier (member.Name, new DomLocation (methodDeclaration.StartLocation.Y, methodDeclaration.StartLocation.X)) as MemberResolveResult;
+				IMember m = mrr.ResolvedMember;
 				if (IsExpectedClass (m.DeclaringType)) {
 					AddUniqueReference (methodDeclaration.StartLocation.Y, methodDeclaration.StartLocation.X, member.Name);
 				}
-			}*/
+			}
 			return base.VisitMethodDeclaration (methodDeclaration, data);
 		}
 		
 		public override object VisitInvocationExpression (InvocationExpression invokeExp, object data)
 		{
 			//Debug ("InvocationExpression", invokeExp.ToString (), invokeExp);
-//TODO:
-/*			if (member is IMethod && invokeExp.TargetObject is MemberReferenceExpression) {
+			if (member is IMethod && invokeExp.TargetObject is MemberReferenceExpression) {
 				MemberReferenceExpression fieldExp = (MemberReferenceExpression) invokeExp.TargetObject;
 				if (fieldExp.FieldName == member.Name) {
-					IType cls = resolver.ResolveExpressionType (fileCompilationUnit, fieldExp.TargetObject, fieldExp.StartLocation.Y, fieldExp.StartLocation.X);
+					ResolveResult resolveResult = resolver.ResolveExpression (fieldExp.TargetObject, new DomLocation (fieldExp.StartLocation.Y, fieldExp.StartLocation.X));
+					IType cls = resolveResult != null ? this.ctx.ParserContext.GetType (resolveResult.ResolvedType) : null;
 					if (cls != null && IsExpectedClass (cls)) {
 						//Debug ("adding InvocationExpression", member.Name, invokeExp);
 						AddUniqueReference (fieldExp.StartLocation.Y, fieldExp.StartLocation.X, member.Name);
 					}
 				}
-			}*/
+			}
 			
 			return base.VisitInvocationExpression (invokeExp, data);
 		}
 		
 		public override object VisitIdentifierExpression (IdentifierExpression idExp, object data)
 		{
-			//Debug ("IdentifierExpression", idExp.Identifier, idExp);
-//TODO:
-/*			if (idExp.Identifier == member.Name) {
+				//Debug ("IdentifierExpression", idExp.Identifier, idExp);
+			if (idExp.Identifier == member.Name) {
 				int line = idExp.StartLocation.Y;
 				int col = idExp.StartLocation.X;
 				
-				IMember item = resolver.ResolveIdentifier (fileCompilationUnit, idExp.Identifier, line, col);
-				if (member is IMember) {
+				ResolveResult result = resolver.ResolveIdentifier (idExp.Identifier, new DomLocation (line, col));
+				if (member is IType) {
+					IMember item = ((MemberResolveResult)result).ResolvedMember;
+					if (item is IType && ((IType) item).FullName == declaringType.FullName) {
+						//Debug ("adding IdentifierExpression class", idExp.Identifier, idExp);
+						AddUniqueReference (line, col, idExp.Identifier);
+					}
+				} else if (member is LocalVariable && result is LocalVariableResolveResult) {
+					LocalVariable avar = member as LocalVariable;
+					LocalVariable var = ((LocalVariableResolveResult)member).LocalVariable;
+					
+					if (var != null && avar.Region.Contains (var.Region.Start)) {
+						//Debug ("adding IdentifierExpression variable", idExp.Identifier, idExp);
+						AddUniqueReference (line, col, idExp.Identifier);
+					}
+				} else if (member is IParameter && result is ParameterResolveResult) {
+					IParameter param = ((ParameterResolveResult)result).Parameter;
+					
+					// FIXME: might need to match more than this?
+					if (param != null && IsExpectedMember (param.DeclaringMember)) {
+						//Debug ("adding IdentifierExpression param", idExp.Identifier, idExp);
+						AddUniqueReference (line, col, idExp.Identifier);
+					}
+				} else if (member is IMember && result is MemberResolveResult) {
+					IMember item = ((MemberResolveResult)result).ResolvedMember;
 					IMember m = item as IMember;
 					if (m != null && IsExpectedClass (m.DeclaringType) &&
 						((member is IField && item is IField) || (member is IMethod && item is IMethod) ||
@@ -664,29 +682,8 @@ namespace CSharpBinding.Parser
 						//Debug ("adding IdentifierExpression member", member.Name, idExp);
 						AddUniqueReference (line, col, member.Name);
 					}
-				} else if (member is IType) {
-					if (item is IType && ((IType) item).FullName == declaringType.FullName) {
-						//Debug ("adding IdentifierExpression class", idExp.Identifier, idExp);
-						AddUniqueReference (line, col, idExp.Identifier);
-					}
-				} else if (member is LocalVariable) {
-					LocalVariable avar = member as LocalVariable;
-					LocalVariable var = item as LocalVariable;
-					
-					if (var != null && avar.Region.IsInside (var.Region.Start.Line, var.Region.Start.Column)) {
-						//Debug ("adding IdentifierExpression variable", idExp.Identifier, idExp);
-						AddUniqueReference (line, col, idExp.Identifier);
-					}
-				} else if (member is IParameter) {
-					IParameter param = item as IParameter;
-					
-					// FIXME: might need to match more than this?
-					if (param != null && IsExpectedMember (param.DeclaringMember)) {
-						//Debug ("adding IdentifierExpression param", idExp.Identifier, idExp);
-						AddUniqueReference (line, col, idExp.Identifier);
-					}
-				}
-			}*/
+				} 
+			}
 			
 			return base.VisitIdentifierExpression (idExp, data);
 		}
@@ -695,27 +692,26 @@ namespace CSharpBinding.Parser
 		{
 			//Debug ("PropertyDeclaration", propertyDeclaration.Name, propertyDeclaration);
 			// find override references.
-//TODO:
-/*
-			if (member is IProperty && (propertyDeclaration.Modifier & Modifiers.Override) == Modifiers.Override && propertyDeclaration.Name == member.Name) {
-				IMember m = resolver.ResolveIdentifier (fileCompilationUnit, member.Name, propertyDeclaration.StartLocation.Y, propertyDeclaration.StartLocation.X) as IMember;
+			if (member is IProperty && (propertyDeclaration.Modifier & ICSharpCode.NRefactory.Ast.Modifiers.Override) == ICSharpCode.NRefactory.Ast.Modifiers.Override && propertyDeclaration.Name == member.Name) {
+				MemberResolveResult mrr = resolver.ResolveIdentifier (member.Name, new DomLocation (propertyDeclaration.StartLocation.Y, propertyDeclaration.StartLocation.X)) as MemberResolveResult;
+				IMember m = mrr.ResolvedMember;
 				if (IsExpectedClass (m.DeclaringType)) {
 					AddUniqueReference (propertyDeclaration.StartLocation.Y, propertyDeclaration.StartLocation.X, member.Name);
 				}
 			}
 			
-			string type = ReturnType.GetSystemType (propertyDeclaration.TypeReference.Type);
+			string type = propertyDeclaration.TypeReference.SystemType ?? propertyDeclaration.TypeReference.Type;
 			if (member is IType && member.Name == GetNameWithoutPrefix (type)) {
 				int line = propertyDeclaration.StartLocation.Y;
 				int col = propertyDeclaration.StartLocation.X;
-				IType cls = resolver.ResolveIdentifier (fileCompilationUnit, type, line, col) as IType;
+				IReturnType cls = resolver.ResolveIdentifier (type, new DomLocation (line, col)).ResolvedType;
 				
 				if (cls != null && cls.FullName == ((IType) member).FullName) {
 					//Debug ("adding PropertyDeclaration", cls.FullName, propertyDeclaration);
 					AddUniqueReference (line, col, cls.FullName);
 				}
 			}
-			*/
+			
 			return base.VisitPropertyDeclaration (propertyDeclaration, data);
 		}
 		
@@ -739,40 +735,37 @@ namespace CSharpBinding.Parser
 		public override object VisitCastExpression (CastExpression castExpression, object data)
 		{
 			//Debug ("CastExpression", castExpression.ToString (), castExpression);
-//TODO:
-/*			string type = ReturnType.GetSystemType (castExpression.CastTo.Type);
+			string type = castExpression.CastTo.SystemType ?? castExpression.CastTo.Type;
 			if (member is IType && member.Name == GetNameWithoutPrefix (type)) {
 				int line = castExpression.CastTo.StartLocation.Y;
 				int col = castExpression.CastTo.StartLocation.X;
-				IType cls = resolver.ResolveIdentifier (fileCompilationUnit, type, line, col) as IType;
+				IReturnType cls = resolver.ResolveIdentifier (type, new DomLocation (line, col)).ResolvedType;
 				
 				if (cls != null && cls.FullName == declaringType.FullName) {
 					//Debug ("adding CastExpression", cls.FullName, castExpression);
 					AddUniqueReference (line, col, cls.FullName);
 				}
 			}
-			*/
+			
 			return base.VisitCastExpression (castExpression, data);
 		}
 		
 		public override object VisitObjectCreateExpression (ObjectCreateExpression objCreateExpression, object data)
 		{
 			//Debug ("ObjectCreateExpression", objCreateExpression.ToString (), objCreateExpression);
-//TODO:
-/*
-			string type = ReturnType.GetSystemType (objCreateExpression.CreateType.Type);
+			string type = objCreateExpression.CreateType.SystemType ?? objCreateExpression.CreateType.Type;
 			int line = objCreateExpression.CreateType.StartLocation.Y;
 			int col = objCreateExpression.CreateType.StartLocation.X;
 			
 			if ((member is IType || (member is IMethod && ((IMethod) member).IsConstructor)) 
 			    && declaringType.Name == GetNameWithoutPrefix (type)) {
-				IType cls = resolver.ResolveIdentifier (fileCompilationUnit, type, line, col) as IType;
+				IReturnType cls = resolver.ResolveIdentifier (type, new DomLocation (line, col)).ResolvedType;
 				
 				if (cls != null && cls.FullName == declaringType.FullName) {
 					//Debug ("adding ObjectCreateExpression", cls.FullName, objCreateExpression);
 					AddUniqueReference (line, col, cls.FullName);
 				}
-			}*/
+			}
 			
 			return base.VisitObjectCreateExpression (objCreateExpression, data);
 		}
@@ -780,13 +773,11 @@ namespace CSharpBinding.Parser
 		public override object VisitVariableDeclaration (VariableDeclaration varDeclaration, object data)
 		{
 			//Debug ("VariableDeclaration", varDeclaration.ToString (), varDeclaration);
-//TODO:
-/*
-			string type = ReturnType.GetSystemType (varDeclaration.TypeReference.Type);
+			string type = varDeclaration.TypeReference.SystemType ?? varDeclaration.TypeReference.Type;
 			if (member is IType && member.Name == GetNameWithoutPrefix (type)) {
 				int line = varDeclaration.StartLocation.Y;
 				int col = varDeclaration.StartLocation.X;
-				IType cls = resolver.ResolveIdentifier (fileCompilationUnit, type, line, col) as IType;
+				IReturnType cls = resolver.ResolveIdentifier (type, new DomLocation (line, col)).ResolvedType;
 				
 				if (cls != null && cls.FullName == declaringType.FullName) {
 					//Debug ("adding varDeclaration", cls.FullName, varDeclaration);
@@ -794,7 +785,7 @@ namespace CSharpBinding.Parser
 					col = varDeclaration.TypeReference.StartLocation.X;
 					AddUniqueReference (line, col, cls.FullName);
 				}
-			}*/
+			}
 			
 			return base.VisitVariableDeclaration (varDeclaration, data);
 		}
@@ -802,13 +793,11 @@ namespace CSharpBinding.Parser
 		public override object VisitTypeDeclaration (TypeDeclaration typeDeclaration, object data)
 		{
 			//Debug ("TypeDeclaration", typeDeclaration.Name, typeDeclaration);
-//TODO:
-/*
 			if (member is IType && typeDeclaration.BaseTypes != null) {
 				string fname = declaringType.FullName;
 				
 				foreach (TypeReference bc in typeDeclaration.BaseTypes) {
-					IType bclass = resolver.ResolveIdentifier (fileCompilationUnit, bc.Type, typeDeclaration.StartLocation.Y, typeDeclaration.StartLocation.X) as IType;
+					IReturnType bclass = resolver.ResolveIdentifier (bc.Type, new DomLocation (typeDeclaration.StartLocation.Y, typeDeclaration.StartLocation.X)).ResolvedType;
 					if (bclass == null || bclass.FullName != fname)
 						continue;
 					
@@ -861,7 +850,7 @@ namespace CSharpBinding.Parser
 					}
 				}
 			}
-			*/
+			
 			return base.VisitTypeDeclaration (typeDeclaration, data);
 		}
 		

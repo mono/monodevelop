@@ -82,10 +82,8 @@ namespace MonoDevelop.CSharpBinding
 			result.CallingType   = resolver.CallingType;
 			result.CallingMember = resolver.CallingMember;
 			result.ResolvedType = type;
-			System.Console.WriteLine("create result in:" + unit);
-			if (unit != null) {
+			if (unit != null && resolver.Dom != null && type != null) {
 				SearchTypeResult searchedTypeResult = resolver.Dom.SearchType (new SearchTypeRequest (unit, -1, -1, type.FullName));
-				System.Console.WriteLine("Search result:" + searchedTypeResult);
 				if (searchedTypeResult != null) {
 					result.ResolvedType.Name      = searchedTypeResult.Result.Name;
 					result.ResolvedType.Namespace = searchedTypeResult.Result.Namespace;
