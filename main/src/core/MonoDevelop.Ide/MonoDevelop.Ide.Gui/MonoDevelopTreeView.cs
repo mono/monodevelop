@@ -866,9 +866,13 @@ namespace MonoDevelop.Ide.Gui
 		public void RestoreTreeState (NodeState state)
 		{
 			ITreeNavigator nav = GetRootNode ();
+			
 			if (nav == null)
 				return;
-			if (state != null) {
+			
+			//HACK: the MoveToFirstChild call is a workaround for Bug 398353
+			// "Solution pad's state is not restored correctly when opening a solution/workspace."
+			if (state != null && nav.MoveToFirstChild ()) {
 				nav.RestoreState (state);
 			}
 		}
