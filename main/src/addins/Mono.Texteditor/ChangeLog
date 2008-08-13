@@ -1,3 +1,8 @@
+2008-08-13  Mike Krüger <mkrueger@novell.com> 
+
+	* Mono.TextEditor/TextEditorOptions.cs: changed default setting for new
+	  tabs after nontabs option.
+
 2008-08-12  Mike Krüger <mkrueger@novell.com> 
 
 	* Mono.TextEditor/TextEditorOptions.cs,
