@@ -870,9 +870,7 @@ namespace MonoDevelop.Ide.Gui
 			if (nav == null)
 				return;
 			
-			//HACK: the MoveToFirstChild call is a workaround for Bug 398353
-			// "Solution pad's state is not restored correctly when opening a solution/workspace."
-			if (state != null && nav.MoveToFirstChild ()) {
+			if (state != null) {
 				nav.RestoreState (state);
 			}
 		}
