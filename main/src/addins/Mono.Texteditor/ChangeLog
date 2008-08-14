@@ -1,5 +1,9 @@
 2008-08-14  Mike Krüger <mkrueger@novell.com> 
 
+	* Mono.TextEditor/TextEditor.cs: fixed color style bug.
+
+2008-08-14  Mike Krüger <mkrueger@novell.com> 
+
 	* Mono.TextEditor/TextEditor.cs,
 	  Mono.TextEditor/CodeSegmentPreviewWindow.cs: optimized text editor
 	  code segment preview & fixed some issues with the drag widget.

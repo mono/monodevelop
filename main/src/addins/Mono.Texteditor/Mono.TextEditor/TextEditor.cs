@@ -341,13 +341,7 @@ namespace Mono.TextEditor
 			
 			this.textEditorData.Options = TextEditorOptions.Options;
 			this.textEditorData.Options.Changed += OptionsChanged;
-			this.textEditorData.Options.Changed += delegate {
-				// This is a hack around a problem with repainting the drag widget.
-				// When this is not set a white square is drawn when the drag widget is moved
-				// when the bg color is differs from the color style bg color (e.g. oblivion style)
-				if (this.ColorStyle != null) 
-					this.ModifyBg (StateType.Normal, this.ColorStyle.Background);
-			};
+			
 			
 			Gtk.TargetList list = new Gtk.TargetList ();
 			list.AddTextTargets (CopyAction.TextType);
@@ -479,6 +473,12 @@ namespace Mono.TextEditor
 			if (!this.IsRealized)
 				return;
 			this.textEditorData.ColorStyle = Options.GetColorStyle (this);
+			
+			// This is a hack around a problem with repainting the drag widget.
+			// When this is not set a white square is drawn when the drag widget is moved
+			// when the bg color is differs from the color style bg color (e.g. oblivion style)
+			if (this.textEditorData.ColorStyle != null) 
+				this.ModifyBg (StateType.Normal, this.textEditorData.ColorStyle.Background);
 			
 			iconMargin.IsVisible   = Options.ShowIconMargin;
 			gutterMargin.IsVisible     = Options.ShowLineNumberMargin;
