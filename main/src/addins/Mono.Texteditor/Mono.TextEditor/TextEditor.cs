@@ -220,7 +220,7 @@ namespace Mono.TextEditor
 			              EventMask.KeyPressMask |
 			              EventMask.KeyReleaseMask;
 			this.DoubleBuffered = false;
-			
+			this.AppPaintable = true;
 			base.CanFocus = true;
 			
 			keyBindings.Add (GetKeyCode (Gdk.Key.KP_Left), new CaretMoveLeft ());
@@ -341,6 +341,13 @@ namespace Mono.TextEditor
 			
 			this.textEditorData.Options = TextEditorOptions.Options;
 			this.textEditorData.Options.Changed += OptionsChanged;
+			this.textEditorData.Options.Changed += delegate {
+				// This is a hack around a problem with repainting the drag widget.
+				// When this is not set a white square is drawn when the drag widget is moved
+				// when the bg color is differs from the color style bg color (e.g. oblivion style)
+				if (this.ColorStyle != null) 
+					this.ModifyBg (StateType.Normal, this.ColorStyle.Background);
+			};
 			
 			Gtk.TargetList list = new Gtk.TargetList ();
 			list.AddTextTargets (CopyAction.TextType);
@@ -567,6 +574,7 @@ namespace Mono.TextEditor
 		
 		internal void RedrawLine (int logicalLine)
 		{
+			repaint = true;
 			lock (disposeLock) {
 				if (isDisposed)
 					return;
@@ -576,6 +584,7 @@ namespace Mono.TextEditor
 		
 		internal void RedrawPosition (int logicalLine, int logicalColumn)
 		{
+			repaint = true;
 			lock (disposeLock) {
 				if (isDisposed)
 					return;
@@ -586,6 +595,7 @@ namespace Mono.TextEditor
 		
 		internal void RedrawLines (int start, int end)
 		{
+			repaint = true;
 			lock (disposeLock) {
 				if (isDisposed)
 					return;
@@ -597,6 +607,7 @@ namespace Mono.TextEditor
 		
 		internal void RedrawFromLine (int logicalLine)
 		{
+			repaint = true;
 			lock (disposeLock) {
 				if (isDisposed)
 					return;
@@ -1017,6 +1028,7 @@ namespace Mono.TextEditor
 		
 		internal void SetAdjustments (Gdk.Rectangle allocation)
 		{
+			repaint = true;
 			if (this.textEditorData.VAdjustment != null) {
 				int maxY = (Document.LogicalToVisualLine (Document.LineCount - 1) + 5) * this.LineHeight;
 				this.textEditorData.VAdjustment.SetBounds (0, 
@@ -1087,26 +1099,36 @@ namespace Mono.TextEditor
 					break;
 			}
 		}
+		/*
+		protected override bool OnWidgetEvent (Event evnt)
+		{
+			System.Console.WriteLine(evnt);
+			return base.OnWidgetEvent (evnt);
+		}*/
 		
 		double oldVadjustment = 0;
+		bool repaint = true;
 		protected override bool OnExposeEvent (Gdk.EventExpose e)
 		{
+			if (this.isDisposed)
+				return true;
 			lock (disposeLock) {
-				if (this.isDisposed)
-					return true;
 				int lastVisibleLine = Document.LogicalToVisualLine (Document.LineCount - 1);
 				if (oldRequest != lastVisibleLine) {
 					SetAdjustments (this.Allocation);
 					oldRequest = lastVisibleLine;
 				}
-				
 				//RenderMargins (e.Window, e.Area);
-				RenderMargins (this.buffer, e.Area);
+				
+				if (repaint) {
+					RenderMargins (this.buffer, e.Area);
+					repaint = false;
+				}
 				
 				e.Window.DrawDrawable (Style.BackgroundGC (StateType.Normal), 
-				                     buffer,
-				                     e.Area.X, e.Area.Y, e.Area.X, e.Area.Y, 
-				                     e.Area.Width, e.Area.Height);
+				                       buffer,
+				                       e.Area.X, e.Area.Y, e.Area.X, e.Area.Y,
+				                       e.Area.Width, e.Area.Height);
 			}
 			return true;
 		}
