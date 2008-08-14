@@ -124,6 +124,7 @@ namespace Mono.TextEditor
 		
 		void DisposeBgBuffer ()
 		{
+			this.repaint = true;
 			if (buffer != null) {
 				buffer.Dispose ();
 				flipBuffer.Dispose ();
@@ -142,53 +143,55 @@ namespace Mono.TextEditor
 		
 		void HAdjustmentValueChanged (object sender, EventArgs args)
 		{
+			this.repaint = true;
 			this.QueueDrawArea (this.textViewMargin.XOffset, 0, this.Allocation.Width - this.textViewMargin.XOffset, this.Allocation.Height);
 		}
 		
 		void VAdjustmentValueChanged (object sender, EventArgs args)
 		{
+			repaint = true;
 //				this.QueueDraw ();
 //				return;
-				if (buffer == null) 
-					AllocateWindowBuffer (this.Allocation);
-				if (this.textEditorData.VAdjustment.Value != System.Math.Ceiling (this.textEditorData.VAdjustment.Value)) {
-					this.textEditorData.VAdjustment.Value = System.Math.Ceiling (this.textEditorData.VAdjustment.Value);
-					return;
-				}
-				int delta = (int)(this.textEditorData.VAdjustment.Value - this.oldVadjustment);
-				oldVadjustment = this.textEditorData.VAdjustment.Value;
-				if (System.Math.Abs (delta) >= Allocation.Height - this.LineHeight * 2 || this.TextViewMargin.inSelectionDrag) {
-					this.QueueDraw ();
-					return;
-				}
-				int from, to;
-				if (delta > 0) {
-					from = delta;
-					to   = 0;
-				} else {
-					from = 0;
-					to   = -delta;
-				}
-				
-				DoFlipBuffer ();
-				Caret.IsVisible = false;
-				this.buffer.DrawDrawable (Style.BackgroundGC (StateType.Normal), 
-				                          this.flipBuffer,
-				                          0, from, 
-				                          0, to, 
-				                          Allocation.Width, Allocation.Height - from - to);
-				if (delta > 0) {
-					RenderMargins (buffer, new Gdk.Rectangle (0, Allocation.Height - delta, Allocation.Width, delta));
-				} else {
-					RenderMargins (buffer, new Gdk.Rectangle (0, 0, Allocation.Width, -delta));
-				}
-				Caret.IsVisible = true;
-				
-				GdkWindow.DrawDrawable (Style.BackgroundGC (StateType.Normal),
-				                        buffer,
-				                        0, 0, 
-				                        0, 0, 
-				                        Allocation.Width, Allocation.Height);
+								if (buffer == null) 
+									AllocateWindowBuffer (this.Allocation);
+								if (this.textEditorData.VAdjustment.Value != System.Math.Ceiling (this.textEditorData.VAdjustment.Value)) {
+									this.textEditorData.VAdjustment.Value = System.Math.Ceiling (this.textEditorData.VAdjustment.Value);
+									return;
+								}
+								int delta = (int)(this.textEditorData.VAdjustment.Value - this.oldVadjustment);
+								oldVadjustment = this.textEditorData.VAdjustment.Value;
+								if (System.Math.Abs (delta) >= Allocation.Height - this.LineHeight * 2 || this.TextViewMargin.inSelectionDrag) {
+									this.QueueDraw ();
+									return;
+								}
+								int from, to;
+								if (delta > 0) {
+									from = delta;
+									to   = 0;
+								} else {
+									from = 0;
+									to   = -delta;
+								}
+								
+								DoFlipBuffer ();
+								Caret.IsVisible = false;
+								this.buffer.DrawDrawable (Style.BackgroundGC (StateType.Normal), 
+								                          this.flipBuffer,
+								                          0, from, 
+								                          0, to, 
+								                          Allocation.Width, Allocation.Height - from - to);
+								if (delta > 0) {
+									RenderMargins (buffer, new Gdk.Rectangle (0, Allocation.Height - delta, Allocation.Width, delta));
+								} else {
+									RenderMargins (buffer, new Gdk.Rectangle (0, 0, Allocation.Width, -delta));
+								}
+								Caret.IsVisible = true;
+								
+								GdkWindow.DrawDrawable (Style.BackgroundGC (StateType.Normal),
+								                        buffer,
+								                        0, 0, 
+								                        0, 0, 
+								                        Allocation.Width, Allocation.Height);
 		}
 		
 		protected override void OnSetScrollAdjustments (Adjustment hAdjustement, Adjustment vAdjustement)
@@ -1015,6 +1018,7 @@ namespace Mono.TextEditor
 		
 		protected override bool OnScrollEvent (EventScroll evnt)
 		{
+			repaint = true;
 			HideTooltip ();
 			if ((evnt.State & Gdk.ModifierType.ControlMask) == Gdk.ModifierType.ControlMask) {
 				if (evnt.Direction == ScrollDirection.Down)
@@ -1108,6 +1112,14 @@ namespace Mono.TextEditor
 		
 		double oldVadjustment = 0;
 		bool repaint = true;
+		internal bool Repaint {
+			get {
+				return repaint;
+			}
+			set {
+				repaint = true;
+			}
+		}
 		protected override bool OnExposeEvent (Gdk.EventExpose e)
 		{
 			if (this.isDisposed)

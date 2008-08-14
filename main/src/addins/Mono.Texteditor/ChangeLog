@@ -1,5 +1,10 @@
 2008-08-14  Mike Krüger <mkrueger@novell.com> 
 
+	* Mono.TextEditor/DocumentUpdateRequest.cs,
+	  Mono.TextEditor/TextEditor.cs: Fixed some drawing issues.
+
+2008-08-14  Mike Krüger <mkrueger@novell.com> 
+
 	* Mono.TextEditor/TextEditor.cs: fixed color style bug.
 
 2008-08-14  Mike Krüger <mkrueger@novell.com> 
