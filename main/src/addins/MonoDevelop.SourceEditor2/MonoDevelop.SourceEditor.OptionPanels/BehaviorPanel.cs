@@ -49,6 +49,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			this.indentationCombobox.Active = (int)SourceEditorOptions.Options.IndentStyle;
 			this.indentAndTabSizeSpinbutton.Value = SourceEditorOptions.Options.TabSize;
 			this.removeTrailingWhitespacesCheckbutton.Active  = SourceEditorOptions.Options.RemoveTrailingWhitespaces;
+			this.tabsAfterNonTabsCheckbutton.Active  = SourceEditorOptions.Options.AllowTabsAfterNonTabs;
 			return this;
 		}
 		
@@ -61,6 +62,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			SourceEditorOptions.Options.TabSize = (int)this.indentAndTabSizeSpinbutton.Value;
 			SourceEditorOptions.Options.TabIsReindent = this.tabAsReindentCheckbutton.Active;
 			SourceEditorOptions.Options.RemoveTrailingWhitespaces = this.removeTrailingWhitespacesCheckbutton.Active;
+			SourceEditorOptions.Options.AllowTabsAfterNonTabs = this.tabsAfterNonTabsCheckbutton.Active;
 		}
 
 		public void Initialize (OptionsDialog dialog, object dataObject)

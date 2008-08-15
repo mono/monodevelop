@@ -64,7 +64,7 @@ namespace Mono.TextEditor
 		bool highlightMatchingBracket = true;
 		bool highlightCaretLine = false;
 		bool removeTrailingWhitespaces = true;
-		bool allowTabsAfterNonTabs = false;
+		bool allowTabsAfterNonTabs = true;
 		string fontName = DEFAULT_FONT;
 		string colorStyle = "Default";
 		

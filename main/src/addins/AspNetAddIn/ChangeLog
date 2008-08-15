@@ -1,3 +1,14 @@
+2008-08-12  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.AspNet.Parser.Internal/AspTokenizer.cs,
+	  MonoDevelop.AspNet.Parser.Internal/Directive.cs,
+	  MonoDevelop.AspNet.Parser.Internal/AspParser.cs,
+	  MonoDevelop.AspNet.Parser.Internal/Location.cs,
+	  MonoDevelop.AspNet.Parser.Internal/ParseException.cs,
+	  MonoDevelop.AspNet.Parser.Dom/ILocation.cs: Update from mcs SVN
+	  HEAD. Fixes "Bug 409109 - The ASP.NET Editor crashes if you leave a
+	  tag opened".
+
 2008-08-08  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.AspNet/AspNetAppProject.cs: Use Loading property instead

@@ -49,6 +49,8 @@ namespace MonoDevelop.SourceEditor.OptionPanels {
         
         private Gtk.CheckButton tabAsReindentCheckbutton;
         
+        private Gtk.CheckButton tabsAfterNonTabsCheckbutton;
+        
         protected virtual void Build() {
             Stetic.Gui.Initialize(this);
             // Widget MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel
@@ -220,12 +222,24 @@ namespace MonoDevelop.SourceEditor.OptionPanels {
             w15.Position = 3;
             w15.Expand = false;
             w15.Fill = false;
+            // Container child vbox2.Gtk.Box+BoxChild
+            this.tabsAfterNonTabsCheckbutton = new Gtk.CheckButton();
+            this.tabsAfterNonTabsCheckbutton.CanFocus = true;
+            this.tabsAfterNonTabsCheckbutton.Name = "tabsAfterNonTabsCheckbutton";
+            this.tabsAfterNonTabsCheckbutton.Label = Mono.Unix.Catalog.GetString("_Allow tabs after non tabs");
+            this.tabsAfterNonTabsCheckbutton.DrawIndicator = true;
+            this.tabsAfterNonTabsCheckbutton.UseUnderline = true;
+            this.vbox2.Add(this.tabsAfterNonTabsCheckbutton);
+            Gtk.Box.BoxChild w16 = ((Gtk.Box.BoxChild)(this.vbox2[this.tabsAfterNonTabsCheckbutton]));
+            w16.Position = 4;
+            w16.Expand = false;
+            w16.Fill = false;
             this.GtkAlignment.Add(this.vbox2);
             this.vbox1.Add(this.GtkAlignment);
-            Gtk.Box.BoxChild w17 = ((Gtk.Box.BoxChild)(this.vbox1[this.GtkAlignment]));
-            w17.Position = 3;
-            w17.Expand = false;
-            w17.Fill = false;
+            Gtk.Box.BoxChild w18 = ((Gtk.Box.BoxChild)(this.vbox1[this.GtkAlignment]));
+            w18.Position = 3;
+            w18.Expand = false;
+            w18.Fill = false;
             this.Add(this.vbox1);
             if ((this.Child != null)) {
                 this.Child.ShowAll();

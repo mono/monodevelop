@@ -47,11 +47,18 @@ namespace Mono.TextEditor
 		public CodeSegmentPreviewWindow (TextEditor editor, ISegment segment, int width, int height) : base (Gtk.WindowType.Popup)
 		{
 			this.editor = editor;
-			this.segment  = segment;
-			
+			this.segment = segment;
+			this.AppPaintable = true;
+			this.DoubleBuffered = false;
 			Pango.Layout layout = new Pango.Layout (this.PangoContext);
 			layout.FontDescription = editor.Options.Font;
 			layout.Ellipsize = Pango.EllipsizeMode.End;
+			// setting a max size for the segment (40 lines should be enough), 
+			// no need to markup thousands of lines for a preview window
+			int startLine = editor.Document.OffsetToLineNumber (segment.Offset);
+			int endLine = editor.Document.OffsetToLineNumber (segment.EndOffset);
+			if (endLine - startLine > 40)
+				this.segment = segment = new Segment (segment.Offset, editor.Document.GetLine (startLine + 20).Offset - segment.Offset);
 			layout.SetMarkup (editor.Document.SyntaxMode.GetMarkup (editor.Document,
 			                                                        editor.Options,
 			                                                        editor.ColorStyle,
@@ -63,28 +70,46 @@ namespace Mono.TextEditor
 			this.SetSizeRequest (System.Math.Min (w, width), 
 			                     System.Math.Min (h, height));
 			layout.Dispose ();
-			
+			this.Hidden += delegate { Destroy (); Dispose ();};
 		}
 		
+		public override void Dispose ()
+		{
+			if (layout != null) {
+				layout.Dispose ();
+				layout = null;
+			}
+			if (gc != null) { 
+				gc.Dispose ();
+				gc = null;
+			}
+			base.Dispose ();
+		}
+		
+		Gdk.GC gc = null;
+		Pango.Layout layout = null;
 		protected override bool OnExposeEvent (Gdk.EventExpose ev)
 		{
-			Gdk.GC gc = new Gdk.GC (ev.Window);
+			if (gc == null)
+				gc = new Gdk.GC (ev.Window);
+			
 			gc.RgbFgColor = editor.ColorStyle.Background;
 			ev.Window.DrawRectangle (gc, true, ev.Area);
-			Pango.Layout layout = new Pango.Layout (this.PangoContext);
-			layout.FontDescription = editor.Options.Font;
-			layout.Ellipsize = Pango.EllipsizeMode.End;
-			layout.SetMarkup (editor.Document.SyntaxMode.GetMarkup (editor.Document,
-			                                                        editor.Options,
-			                                                        editor.ColorStyle,
-			                                                        segment.Offset,
-			                                                        segment.Length,
-			                                                        true));
+			
+			if (layout == null) {
+				layout = new Pango.Layout (this.PangoContext);
+				layout.FontDescription = editor.Options.Font;
+				layout.Ellipsize = Pango.EllipsizeMode.End;
+				layout.SetMarkup (editor.Document.SyntaxMode.GetMarkup (editor.Document,
+				                                                        editor.Options,
+				                                                        editor.ColorStyle,
+				                                                        segment.Offset,
+				                                                        segment.Length,
+				                                                        true));
+			}
 			ev.Window.DrawLayout (Style.TextGC (StateType.Normal), 0, 0, layout);
-			layout.Dispose ();
 			gc.RgbFgColor = editor.ColorStyle.FoldLine;
 			ev.Window.DrawRectangle (gc, false, 0, 0, this.Allocation.Width - 1, this.Allocation.Height - 1);
-			gc.Dispose ();
 			return true;
 		}
 	}

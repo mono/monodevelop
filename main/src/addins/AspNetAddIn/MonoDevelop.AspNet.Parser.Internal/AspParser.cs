@@ -27,11 +27,18 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
+
+#define NET_2_0
+
 using System;
+using System.ComponentModel;
 using System.Collections;
 using System.Globalization;
 using System.IO;
 using System.Text;
+using System.Web.Util;
+using System.Security.Cryptography;
+
 using MonoDevelop.AspNet.Parser.Dom;
 
 namespace MonoDevelop.AspNet.Parser.Internal
@@ -42,6 +49,13 @@ namespace MonoDevelop.AspNet.Parser.Internal
 
 	public class AspParser : ILocation
 	{
+		static readonly object errorEvent = new object ();
+		static readonly object tagParsedEvent = new object ();
+		static readonly object textParsedEvent = new object ();
+
+#if NET_2_0
+		byte[] md5checksum;
+#endif
 		AspTokenizer tokenizer;
 		int beginLine, endLine;
 		int beginColumn, endColumn;
@@ -50,14 +64,41 @@ namespace MonoDevelop.AspNet.Parser.Internal
 		string fileText;
 		string verbatimID;
 
+		EventHandlerList events = new EventHandlerList ();
+		
+		public event ParseErrorHandler Error {
+			add { events.AddHandler (errorEvent, value); }
+			remove { events.RemoveHandler (errorEvent, value); }
+		}
+		
+		public event TagParsedHandler TagParsed {
+			add { events.AddHandler (tagParsedEvent, value); }
+			remove { events.RemoveHandler (tagParsedEvent, value); }
+		}
+		
+		public event TextParsedHandler TextParsed {
+			add { events.AddHandler (textParsedEvent, value); }
+			remove { events.RemoveHandler (textParsedEvent, value); }
+		}
+
 		public AspParser (string filename, TextReader input)
 		{
 			this.filename = filename;
 			fileText = input.ReadToEnd ();
+#if NET_2_0
+			MD5 md5 = MD5.Create ();
+			md5checksum = md5.ComputeHash (Encoding.UTF8.GetBytes (fileText));
+#endif
 			StringReader reader = new StringReader (fileText);
 			tokenizer = new AspTokenizer (reader);
 		}
 
+#if NET_2_0
+		public byte[] MD5Checksum {
+			get { return md5checksum; }
+		}
+#endif
+		
 		public int BeginLine {
 			get { return beginLine; }
 		}
@@ -74,6 +115,10 @@ namespace MonoDevelop.AspNet.Parser.Internal
 			get { return endColumn; }
 		}
 
+		public string FileText {
+			get { return fileText; }
+		}
+		
 		public string PlainText {
 			get {
 				if (beginPosition >= endPosition)
@@ -208,7 +253,7 @@ namespace MonoDevelop.AspNet.Parser.Internal
 			int index = 1;
 			for (; index < str.Length; index++) {
 				if (Char.IsWhiteSpace (str [index]))
-					index++;
+					continue;
 				else if (str [index] == '"')
 					break;
 			}
@@ -458,28 +503,28 @@ namespace MonoDevelop.AspNet.Parser.Internal
 				  (varname ? TagType.CodeRenderExpression : TagType.CodeRender));
 		}
 
-		public event ParseErrorHandler Error;
-		public event TagParsedHandler TagParsed;
-		public event TextParsedHandler TextParsed;
-
 		void OnError (string msg)
 		{
-			if (Error != null)
-				Error (this, msg);
+			ParseErrorHandler eh = events [errorEvent] as ParseErrorHandler;
+			if (eh != null)
+				eh (this, msg);
 		}
 
 		void OnTagParsed (TagType tagtype, string id, TagAttributes attributes)
 		{
-			if (TagParsed != null)
-				TagParsed (this, tagtype, id, attributes);
+			TagParsedHandler eh = events [tagParsedEvent] as TagParsedHandler;
+			if (eh != null)
+				eh (this, tagtype, id, attributes);
 		}
 
 		void OnTextParsed (string text)
 		{
-			if (TextParsed != null)
-				TextParsed (this, text);
+			TextParsedHandler eh = events [textParsedEvent] as TextParsedHandler;
+			if (eh != null)
+				eh (this, text);
 		}
 	}
+
 
 }
 

@@ -4,6 +4,13 @@
 	  bug in general options panel.
 	* gtk-gui/objects.xml: Fixed options button.
 
+2008-08-13  Mike Krüger <mkrueger@novell.com> 
+
+	* gtk-gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs,
+	  MonoDevelop.SourceEditor.OptionPanels/BehaviorPanel.cs,
+	  MonoDevelop.SourceEditor/SourceEditorOptions.cs: fixed "Bug 416847
+	  - Cannot use Tab Button".
+
 2008-08-12  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.SourceEditor/SourceEditorWidget.cs: fixed bug.

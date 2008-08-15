@@ -1,3 +1,30 @@
+2008-08-13  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Ide.Gui/MonoDevelopTreeView.cs: Remove the workaround for
+	  "Bug 398353 - Solution pad's state is not restored correctly when
+	  opening a solution/workspace" now that it's properly fixed by the
+	  deserialisation fixes in r110397.
+
+2008-08-13  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Ide.Gui.Pads/NodeState.cs: Use current node name rather
+	  than "Node". Along with changes to XmlReadHelper, fixes errors
+	  restoring solution state "Unknown end node: State valid end nodes
+	  are: Node".
+
+2008-08-12  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Ide.Gui/Workbench.cs,
+	  MonoDevelop.Ide.Gui/MonoDevelopTreeView.cs: Better workaround for
+	  "Bug 398353 - Solution pad's state is not restored correctly when
+	  opening a solution/workspace".
+
+2008-08-12  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Ide.Gui/Workbench.cs: Load documents after restoring pad
+	  states. Partially works around "Bug 398353 - Solution tree starts
+	  collapsed regardless of selection".
+
 2008-08-08  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Gui.Pads.ProjectPad/SolutionFolderNodeBuilder.cs,

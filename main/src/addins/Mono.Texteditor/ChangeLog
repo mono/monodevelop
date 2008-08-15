@@ -1,7 +1,32 @@
 2008-08-15  Mike Krüger <mkrueger@novell.com> 
 
-	* Mono.TextEditor.mdp, ChangelogSyntaxMode.xml, Makefile.am: Added
-	  changelog syntax mode.
+	* Mono.TextEditor.mdp, ChangeLogSyntaxMode.xml: Added changelog syntax
+	  mode.
+
+2008-08-14  Mike Krüger <mkrueger@novell.com> 
+
+	* Mono.TextEditor/DocumentUpdateRequest.cs,
+	  Mono.TextEditor/TextEditor.cs: Fixed some drawing issues.
+
+2008-08-14  Mike Krüger <mkrueger@novell.com> 
+
+	* Mono.TextEditor/TextEditor.cs: fixed color style bug.
+
+2008-08-14  Mike Krüger <mkrueger@novell.com> 
+
+	* Mono.TextEditor/TextEditor.cs,
+	  Mono.TextEditor/CodeSegmentPreviewWindow.cs: optimized text editor
+	  code segment preview & fixed some issues with the drag widget.
+
+2008-08-13  Mike Krüger <mkrueger@novell.com> 
+
+	* Mono.TextEditor/Document.cs: fixed "Bug 416564 - Syntax highlighting
+	  is lost when reloading a file".
+
+2008-08-13  Mike Krüger <mkrueger@novell.com> 
+
+	* Mono.TextEditor/TextEditorOptions.cs: changed default setting for new
+	  tabs after nontabs option.
 
 2008-08-12  Mike Krüger <mkrueger@novell.com> 
 

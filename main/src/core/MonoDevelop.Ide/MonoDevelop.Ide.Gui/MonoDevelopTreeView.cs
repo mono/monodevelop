@@ -866,8 +866,10 @@ namespace MonoDevelop.Ide.Gui
 		public void RestoreTreeState (NodeState state)
 		{
 			ITreeNavigator nav = GetRootNode ();
+			
 			if (nav == null)
 				return;
+			
 			if (state != null) {
 				nav.RestoreState (state);
 			}

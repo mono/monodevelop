@@ -36,6 +36,7 @@ namespace MonoDevelop.AspNet.Parser.Internal
 	{
 		int beginLine, endLine, beginColumn, endColumn;
 		string fileName, plainText;
+		ILocation location;
 		
 		internal Location ()
 		{	
@@ -63,6 +64,7 @@ namespace MonoDevelop.AspNet.Parser.Internal
 				fileName = location.Filename;
 				plainText = location.PlainText;
 			}
+			this.location = location;
 		}
 
 		public string Filename {
@@ -99,6 +101,15 @@ namespace MonoDevelop.AspNet.Parser.Internal
 		{
 			return string.Format ("{0}({1},{2}-{3},{4})",
 			    System.IO.Path.GetFileName (Filename), BeginLine, BeginColumn, EndLine, EndColumn);
+		}
+		
+		public string FileText {
+			get {
+				if (location != null)
+					return location.FileText;
+
+				return null;
+			}
 		}
 	}
 }

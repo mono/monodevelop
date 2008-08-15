@@ -145,8 +145,8 @@ namespace MonoDevelop.Ide.Gui.Pads
 				result.Expanded = Boolean.Parse (reader.GetAttribute (expandedAttribute));
 			if (!String.IsNullOrEmpty (reader.GetAttribute (selectedAttribute)))
 				result.Selected = Boolean.Parse (reader.GetAttribute (selectedAttribute));
-			
-			XmlReadHelper.ReadList (reader, Node, delegate () {
+				
+			XmlReadHelper.ReadList (reader, reader.LocalName, delegate () {
 				switch (reader.LocalName) {
 				case "Option":
 					if (result.Options == null) 

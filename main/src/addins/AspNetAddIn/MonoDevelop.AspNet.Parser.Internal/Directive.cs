@@ -28,6 +28,8 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+#define NET_2_0
+
 using System;
 using System.Collections;
 using System.Globalization;
@@ -42,7 +44,7 @@ namespace MonoDevelop.AspNet.Parser.Internal
 						"CompilerOptions", "ContentType", "Culture", "Debug",
 						"Description",
 #if NET_2_0
-						"EnableEventValidation", 
+						"EnableEventValidation", "MaintainScrollPositionOnPostBack",
 #endif
 						"EnableSessionState", "EnableViewState",
 						"EnableViewStateMac", "ErrorPage", "Explicit",
@@ -54,7 +56,7 @@ namespace MonoDevelop.AspNet.Parser.Internal
 		static string [] control_atts = { "AutoEventWireup", "ClassName", "CompilerOptions",
 						  "Debug", "Description", "EnableViewState",
 						  "Explicit", "Inherits", "Language", "Strict", "Src",
-						  "WarningLevel", "CodeBehind", "TargetSchema" };
+						  "WarningLevel", "CodeBehind", "TargetSchema", "LinePragmas" };
 
 		static string [] import_atts = { "namespace" };
 		static string [] implements_atts = { "interface" };
@@ -72,6 +74,7 @@ namespace MonoDevelop.AspNet.Parser.Internal
 
 #if NET_2_0
 		static string [] mastertype_atts = { "virtualpath", "typename" };
+		static string [] previouspagetype_atts = { "virtualpath", "typename" };
 #endif
 		
 		static Directive ()
@@ -189,6 +192,10 @@ namespace MonoDevelop.AspNet.Parser.Internal
 			valid_attributes = new Hashtable (comparer);
 			foreach (string att in control_atts) valid_attributes.Add (att, null);
 			directivesHash.Add ("MASTER", valid_attributes);
+
+			valid_attributes = new Hashtable (comparer);
+			foreach (string att in previouspagetype_atts) valid_attributes.Add (att, null);
+			directivesHash.Add ("PREVIOUSPAGETYPE", valid_attributes);
 #endif
 		}
 		
@@ -199,5 +206,6 @@ namespace MonoDevelop.AspNet.Parser.Internal
 			return directivesHash.Contains (id);
 		}
 	}
+
 }
 
