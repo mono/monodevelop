@@ -75,6 +75,7 @@ RES =  \
 	BooSyntaxMode.xml \
 	BrownStyle.xml \
 	C64Style.xml \
+	ChangelogSyntaxMode.xml \
 	CPPSyntaxMode.xml \
 	CSharpSyntaxMode.xml \
 	CSyntaxMode.xml \
