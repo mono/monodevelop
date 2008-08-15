@@ -440,7 +440,6 @@ namespace MonoDevelop.Projects.Dom.Parser
 				if (projectId <= 0) {
 					projectId = database.InsertProject (project.FileName);
 				}
-				System.Console.WriteLine ("ProjectId:" +projectId);
 				DatabaseProjectDom dom = new DatabaseProjectDom (database);
 				dom.ProjectId = projectId;
 				InsertDom (project.FileName, dom);

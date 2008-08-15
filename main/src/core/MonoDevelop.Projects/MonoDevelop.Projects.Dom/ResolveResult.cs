@@ -231,7 +231,6 @@ namespace MonoDevelop.Projects.Dom
 				return;
 			}
 			foreach (IType curType in dom.GetInheritanceTree (type)) {
-				System.Console.WriteLine("curType:" + curType);
 				foreach (IMember member in curType.Members) {
 					if (member is IType || !(showStatic ^ member.IsStatic))
 						result.Add (member);

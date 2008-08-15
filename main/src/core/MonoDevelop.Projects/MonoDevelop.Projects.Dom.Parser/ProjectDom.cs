@@ -94,7 +94,6 @@ namespace MonoDevelop.Projects.Dom.Parser
 					if (searchTypeResult == null)
 						continue;
 					IType resolvedType = this.GetType (searchTypeResult.Result, true);
-					System.Console.WriteLine("base:" + baseType + " === " + resolvedType);
 					if (resolvedType != null) 
 						types.Push (resolvedType);
 				}
