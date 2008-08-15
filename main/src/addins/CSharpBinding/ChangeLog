@@ -1,5 +1,12 @@
 2008-08-15  Mike Krüger <mkrueger@novell.com> 
 
+	* Gui/NRefactoryResolver.cs, Gui/ResolveVisitor.cs,
+	  Gui/NRefactoryParameterDataProvider.cs,
+	  Gui/CSharpTextEditorCompletion.cs,
+	  Gui/CSharpTextEditorIndentation.cs: Worked on completion.
+
+2008-08-15  Mike Krüger <mkrueger@novell.com> 
+
 	* Gui/NRefactoryResolver.cs, Gui/CSharpTextEditorCompletion.cs,
 	  Parser/DomParser.cs, Parser/CodeGenerator.cs,
 	  Parser/LanguageItemVisitor.cs,

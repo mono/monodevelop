@@ -106,14 +106,18 @@ namespace MonoDevelop.CSharpBinding
 			this.editor = editor;
 			this.fileName = fileName;
 		}
-		
+		ICSharpCode.NRefactory.Ast.CompilationUnit memberCompilationUnit;
+		public ICSharpCode.NRefactory.Ast.CompilationUnit MemberCompilationUnit {
+			get {
+				return this.memberCompilationUnit;
+			}
+		}
 		internal void SetupResolver (DomLocation resolvePosition)
 		{
 			this.resolvePosition = resolvePosition;
 			lookupTableVisitor = new LookupTableVisitor (lang);
 			
 			callingType = GetTypeAtCursor (unit, fileName, resolvePosition);
-			
 			if (callingType != null) {
 				foreach (IMember member in callingType.Members) {
 					if (member.Location.Line == resolvePosition.Line || member.BodyRegion.Contains (resolvePosition)) {
@@ -125,9 +129,9 @@ namespace MonoDevelop.CSharpBinding
 			
 			if (callingMember != null) {
 				string wrapper = CreateWrapperClassForMember (callingMember);
-				
 				ICSharpCode.NRefactory.IParser parser = ICSharpCode.NRefactory.ParserFactory.CreateParser (lang, new StringReader (wrapper));
 				parser.Parse ();
+				memberCompilationUnit = parser.CompilationUnit;
 				lookupTableVisitor.VisitCompilationUnit (parser.CompilationUnit, null);
 			}
 		}
@@ -205,7 +209,6 @@ namespace MonoDevelop.CSharpBinding
 			if (expressionResult == null || String.IsNullOrEmpty (expressionResult.Expression))
 				return null;
 			string expr = expressionResult.Expression.Trim ();
-			System.Console.WriteLine("Parse:" + expr);
 			ICSharpCode.NRefactory.IParser parser = ICSharpCode.NRefactory.ParserFactory.CreateParser (this.lang, new StringReader (expr));
 			return parser.ParseExpression();
 		}
@@ -215,7 +218,6 @@ namespace MonoDevelop.CSharpBinding
 			this.SetupResolver (resolvePosition);
 			ResolveVisitor visitor = new ResolveVisitor (this);
 			ResolveResult result = this.ResolveIdentifier (visitor, identifier);
-			System.Console.WriteLine ("Resolve identifier result:" + result);
 			return result;
 		}
 		
@@ -224,7 +226,6 @@ namespace MonoDevelop.CSharpBinding
 			this.SetupResolver (resolvePosition);
 			ResolveVisitor visitor = new ResolveVisitor (this);
 			ResolveResult result = visitor.Resolve (expr);
-			System.Console.WriteLine("resolve result:" + result);
 			return result;
 		}
 		
@@ -236,11 +237,9 @@ namespace MonoDevelop.CSharpBinding
 				System.Console.WriteLine("Can't parse expression");
 				return null;
 			}
-			System.Console.WriteLine("visit:" + expr);
 			ResolveVisitor visitor = new ResolveVisitor (this);
 			
 			ResolveResult result = visitor.Resolve (expr);
-			System.Console.WriteLine("resolve result:" + result);
 			return result;
 		}
 		

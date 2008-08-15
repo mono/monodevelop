@@ -142,7 +142,6 @@ namespace MonoDevelop.CSharpBinding
 		
 		static string GetAnonymousTypeFieldName (Expression expr)
 		{
-			System.Console.WriteLine(expr);
 			if (expr is MemberReferenceExpression) 
 				return ((MemberReferenceExpression)expr).MemberName;
 			if (expr is NamedArgumentExpression) 
@@ -370,8 +369,6 @@ namespace MonoDevelop.CSharpBinding
 		public override object VisitQueryExpression(QueryExpression queryExpression, object data)
 		{
 			IReturnType type = null;
-			System.Console.WriteLine("----------");
-			System.Console.WriteLine(Environment.StackTrace);
 			QueryExpressionSelectClause selectClause = queryExpression.SelectOrGroupClause as QueryExpressionSelectClause;
 			if (selectClause != null) {
 				type = ResolveType (selectClause.Projection);

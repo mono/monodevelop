@@ -75,7 +75,6 @@ namespace MonoDevelop.CSharpBinding.Gui
 			CSharpTextEditorCompletion c = this.Document.GetContent<CSharpTextEditorCompletion> ();
 			if (c != null && c.StateTracker != null) {
 				stateTracker = c.StateTracker;
-				System.Console.WriteLine("found it");
 			} else {
 				stateTracker = new DocumentStateTracker<CSharpIndentEngine> (new CSharpIndentEngine (), Editor);
 			}
@@ -156,7 +155,6 @@ namespace MonoDevelop.CSharpBinding.Gui
 				if (stateTracker.Engine.LineNumber > 0) {
 					string previousLine = Editor.GetLineText (stateTracker.Engine.LineNumber - 1);
 					string trimmedPreviousLine = previousLine.TrimStart ();
-					System.Console.WriteLine(trimmedPreviousLine);
 					//xml doc comments
 					if (trimmedPreviousLine.StartsWith ("/// ") //check previous line was a doc comment
 					    && Editor.GetPositionFromLineColumn (stateTracker.Engine.LineNumber + 1, 1) > -1 //check there's a following line?

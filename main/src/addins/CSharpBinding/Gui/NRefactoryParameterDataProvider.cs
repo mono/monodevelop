@@ -69,8 +69,6 @@ namespace MonoDevelop.CSharpBinding
 			this.editor = editor;
 			if (resolveResult.CallingType != null) {
 				IType baseType = dom.GetType (resolveResult.CallingType.BaseType);
-				System.Console.WriteLine("Calling:" + resolveResult.CallingType);
-				System.Console.WriteLine("base: " + resolveResult.CallingType.BaseType + " resolved :" + baseType);
 				
 				if (baseType != null) {
 					foreach (IMethod method in baseType.Methods) {

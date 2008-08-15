@@ -76,7 +76,6 @@ namespace MonoDevelop.CSharpBinding.Gui
 			CSharpTextEditorIndentation c = this.Document.GetContent<CSharpTextEditorIndentation> ();
 			if (c != null && c.StateTracker != null) {
 				stateTracker = c.StateTracker;
-				System.Console.WriteLine("found it");
 			} else {
 				stateTracker = new DocumentStateTracker<CSharpIndentEngine> (new CSharpIndentEngine (), Editor);
 			}
@@ -136,29 +135,6 @@ namespace MonoDevelop.CSharpBinding.Gui
 			case '#':
 				if (stateTracker.Engine.IsInsidePreprocessorDirective) 
 					return GetDirectiveCompletionData ();
-				return null;
-			case '=':
-				result = FindExpression (dom, -2);
-				resolver = new MonoDevelop.CSharpBinding.NRefactoryResolver (dom,
-					                                                         Document.CompilationUnit,
-					                                                         ICSharpCode.NRefactory.SupportedLanguage.CSharp,
-					                                                         Editor,
-					                                                         Document.FileName);
-				
-				resolveResult = resolver.Resolve (result, new DomLocation (Editor.CursorLine, Editor.CursorColumn));
-				if (resolveResult != null) {
-					IType resolvedType = dom.GetType (resolveResult.ResolvedType);
-					if (resolvedType != null && resolvedType.ClassType == ClassType.Enum) {
-						CodeCompletionDataProvider provider = new CodeCompletionDataProvider (null, GetAmbience ());
-						CompletionDataCollector cdc = new CompletionDataCollector();
-						cdc.AddCompletionData (provider, resolvedType);
-						
-//						foreach (IField field in resolvedType.Fields) {
-//							cdc.AddCompletionData (provider, field);
-//						}
-						return provider;
-					}
-				}
 				return null;
 			case '>':
 				cursor = Editor.SelectionStartPosition;
@@ -237,6 +213,30 @@ namespace MonoDevelop.CSharpBinding.Gui
 				
 				int i = completionContext.TriggerOffset;
 				string token = GetPreviousToken (ref i, false);
+				if (token == "=" || token == "==") {
+					result = FindExpression (dom, i - completionContext.TriggerOffset - 1);
+					resolver = new MonoDevelop.CSharpBinding.NRefactoryResolver (dom,
+						                                                         Document.CompilationUnit,
+						                                                         ICSharpCode.NRefactory.SupportedLanguage.CSharp,
+						                                                         Editor,
+						                                                         Document.FileName);
+					
+					resolveResult = resolver.Resolve (result, new DomLocation (Editor.CursorLine, Editor.CursorColumn));
+					if (resolveResult != null) {
+						IType resolvedType = dom.GetType (resolveResult.ResolvedType);
+						if (resolvedType != null && resolvedType.ClassType == ClassType.Enum) {
+							CodeCompletionDataProvider provider = new CodeCompletionDataProvider (null, GetAmbience ());
+							CompletionDataCollector cdc = new CompletionDataCollector();
+							cdc.AddCompletionData (provider, resolvedType);
+							
+	//						foreach (IField field in resolvedType.Fields) {
+	//							cdc.AddCompletionData (provider, field);
+	//						}
+							return provider;
+						}
+					}
+					return null;
+				}
 				return HandleKeywordCompletion (result, i, token);
 			default:
 				if (Char.IsLetter (completionChar) && !stateTracker.Engine.IsInsideDocLineComment && !stateTracker.Engine.IsInsideOrdinaryCommentOrString) {
@@ -301,6 +301,8 @@ namespace MonoDevelop.CSharpBinding.Gui
 			case "using":
 				result.ExpressionContext = ExpressionContext.Using;
 				return CreateCompletionData (new NamespaceResolveResult (""), result);
+			case "case":
+				return CreateCaseCompletionData (result);
 			case "is":
 			case "as":
 				result.ExpressionContext = ExpressionContext.Type;
@@ -591,6 +593,59 @@ namespace MonoDevelop.CSharpBinding.Gui
 			}
 			return result;
 		}
+
+		#region case completion
+		ICompletionDataProvider CreateCaseCompletionData (ExpressionResult expressionResult)
+		{
+			NRefactoryResolver resolver = new MonoDevelop.CSharpBinding.NRefactoryResolver (dom,
+			                                                                                Document.CompilationUnit,
+			                                                                                ICSharpCode.NRefactory.SupportedLanguage.CSharp,
+			                                                                                Editor,
+			                                                                                Document.FileName);
+			DomLocation location = new DomLocation (Editor.CursorLine - 1, Editor.CursorColumn - 1);
+			
+			resolver.SetupResolver (location);
+			
+			SwitchFinder switchFinder = new SwitchFinder (location);
+			if (resolver.MemberCompilationUnit != null)
+				switchFinder.VisitCompilationUnit (resolver.MemberCompilationUnit, null);
+			CodeCompletionDataProvider result = new CodeCompletionDataProvider (null, GetAmbience ());
+			if (switchFinder.SwitchStatement == null)
+				return result;
+			ResolveResult resolveResult = resolver.ResolveExpression (switchFinder.SwitchStatement.SwitchExpression, location);
+			IType type = dom.GetType (resolveResult.ResolvedType);
+			if (type != null && type.ClassType == ClassType.Enum) {
+				CompletionDataCollector cdc = new CompletionDataCollector();
+				cdc.AddCompletionData (result, type);
+			}
+			return result;
+		}
+		
+		class SwitchFinder : ICSharpCode.NRefactory.Visitors.AbstractAstVisitor
+		{
+			ICSharpCode.NRefactory.Location location;
+			ICSharpCode.NRefactory.Ast.SwitchStatement switchStatement = null;
+			
+			public ICSharpCode.NRefactory.Ast.SwitchStatement SwitchStatement {
+				get {
+					return this.switchStatement;
+				}
+			}
+			
+			public SwitchFinder (DomLocation location)
+			{
+				this.location = new ICSharpCode.NRefactory.Location (location.Column, location.Line);
+			}
+			
+			public override object VisitSwitchStatement (ICSharpCode.NRefactory.Ast.SwitchStatement switchStatement, object data)
+			{
+//				if (switchStatement.StartLocation < caretLocation && caretLocation < switchStatement.EndLocation)
+					this.switchStatement = switchStatement;
+				return base.VisitSwitchStatement(switchStatement, data);
+			}
+
+		}
+		#endregion
 		
 		#region Preprocessor
 		CodeCompletionDataProvider GetDefineCompletionData ()
