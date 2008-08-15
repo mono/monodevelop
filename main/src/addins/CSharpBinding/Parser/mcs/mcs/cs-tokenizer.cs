@@ -2337,8 +2337,7 @@ namespace Mono.CSharp
 			val = null;
 			for (;(c = get_char ()) != -1;) {
 				if (c == '\t'){
-					//col++;
-					//col = ((col + 8) / 8) * 8;
+					col = ((col + 8) / 8) * 8;
 					continue;
 				}
 				

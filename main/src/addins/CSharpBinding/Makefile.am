@@ -89,13 +89,6 @@ FILES =  \
 	Parser/mcs/mcs/support.cs \
 	Parser/mcs/mcs/symbolwriter.cs \
 	Parser/mcs/mcs/typemanager.cs \
-	Parser/SharpDevelopTree/AttributeSection.cs \
-	Parser/SharpDevelopTree/Class.cs \
-	Parser/SharpDevelopTree/Constructor.cs \
-	Parser/SharpDevelopTree/Destructor.cs \
-	Parser/SharpDevelopTree/GenericParameter.cs \
-	Parser/SharpDevelopTree/Method.cs \
-	Parser/SharpDevelopTree/ReturnType.cs \
 	Project/CSharpCompilerParameters.cs \
 	Project/CSharpResourceIdBuilder.cs
 

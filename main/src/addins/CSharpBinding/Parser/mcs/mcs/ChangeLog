@@ -1,11 +1,12 @@
+2008-08-15  Mike Krüger <mkrueger@novell.com> 
+
+	* cs-tokenizer.cs, ChangeLog: worked on code completion/dom/enum
+	  completion,
+
 2008-08-11  Marek Safar  <marek.safar@gmail.com>
 
 	A fix for bug #416220
 	* class.cs, enum.cs: Add IEnumType.
-
-2008-07-27  Mike Krüger <mkrueger@novell.com> 
-
-	* cs-tokenizer.cs: Worked on code completion/new dom.
 
 2008-07-25  Marek Safar  <marek.safar@gmail.com>
 

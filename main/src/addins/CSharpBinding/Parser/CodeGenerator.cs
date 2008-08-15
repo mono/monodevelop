@@ -51,8 +51,6 @@ using ICSharpCode.NRefactory.Parser;
 using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.NRefactory.Visitors;
 
-using CSharpBinding.Parser.SharpDevelopTree;
-
 using ClassType = MonoDevelop.Projects.Dom.ClassType;
 using MonoDevelop.CSharpBinding;
 

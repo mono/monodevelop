@@ -148,13 +148,14 @@ namespace MonoDevelop.CSharpBinding.Gui
 				resolveResult = resolver.Resolve (result, new DomLocation (Editor.CursorLine, Editor.CursorColumn));
 				if (resolveResult != null) {
 					IType resolvedType = dom.GetType (resolveResult.ResolvedType);
-					System.Console.WriteLine("= result:" + resolveResult + " type:" + resolvedType);
 					if (resolvedType != null && resolvedType.ClassType == ClassType.Enum) {
 						CodeCompletionDataProvider provider = new CodeCompletionDataProvider (null, GetAmbience ());
 						CompletionDataCollector cdc = new CompletionDataCollector();
-						foreach (IField field in resolvedType.Fields) {
-							cdc.AddCompletionData (provider, field);
-						}
+						cdc.AddCompletionData (provider, resolvedType);
+						
+//						foreach (IField field in resolvedType.Fields) {
+//							cdc.AddCompletionData (provider, field);
+//						}
 						return provider;
 					}
 				}

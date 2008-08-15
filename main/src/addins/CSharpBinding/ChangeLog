@@ -1,3 +1,18 @@
+2008-08-15  Mike Krüger <mkrueger@novell.com> 
+
+	* Gui/NRefactoryResolver.cs, Gui/CSharpTextEditorCompletion.cs,
+	  Parser/DomParser.cs, Parser/CodeGenerator.cs,
+	  Parser/LanguageItemVisitor.cs,
+	  Parser/SharpDevelopTree/GenericParameter.cs,
+	  Parser/SharpDevelopTree/Destructor.cs,
+	  Parser/SharpDevelopTree/Method.cs,
+	  Parser/SharpDevelopTree/ReturnType.cs,
+	  Parser/SharpDevelopTree/Class.cs,
+	  Parser/SharpDevelopTree/Constructor.cs,
+	  Parser/SharpDevelopTree/AttributeSection.cs,
+	  Parser/CSharpExpressionFinder.cs, Makefile.am: worked on code
+	  completion/dom/enum completion,
+
 2008-08-13  Mike Krüger <mkrueger@novell.com> 
 
 	* Gui/NRefactoryResolver.cs, Gui/ResolveVisitor.cs,

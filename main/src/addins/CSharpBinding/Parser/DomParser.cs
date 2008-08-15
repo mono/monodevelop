@@ -160,6 +160,40 @@ namespace MonoDevelop.CSharpBinding
 			return result;
 		}
 		
+		static MonoDevelop.Projects.Dom.IType ConvertType (MonoDevelop.Projects.Dom.CompilationUnit unit, string nsName, Mono.CSharp.Dom.ITypeBase baseType)
+		{
+			Mono.CSharp.Dom.IEnum e = baseType as Mono.CSharp.Dom.IEnum;
+			if (e != null)
+				return ConvertType (unit, nsName, e);
+			Mono.CSharp.Dom.IType type = baseType as Mono.CSharp.Dom.IType;
+			if (type != null)
+				return ConvertType (unit, nsName, type);
+			return null;
+		}
+		
+		static MonoDevelop.Projects.Dom.IType ConvertType (MonoDevelop.Projects.Dom.CompilationUnit unit, string nsName, Mono.CSharp.Dom.IEnum e)
+		{
+			List<MonoDevelop.Projects.Dom.IMember> members = new List<MonoDevelop.Projects.Dom.IMember> ();
+			if (e.Members != null) {
+				foreach (Mono.CSharp.Dom.ITypeMember member in e.Members) {
+					DomField field = new DomField (member.Name,
+					                               MonoDevelop.Projects.Dom.Modifiers.Public | MonoDevelop.Projects.Dom.Modifiers.Const | MonoDevelop.Projects.Dom.Modifiers.SpecialName,
+					                               Location2DomLocation (member.Location),
+					                               new DomReturnType (e.Name));
+					members.Add (field);
+				}
+			}
+			
+			MonoDevelop.Projects.Dom.DomType result = new MonoDevelop.Projects.Dom.DomType (unit,
+			                                                                                ClassType.Enum,
+			                                                                                e.Name,
+			                                                                                Location2DomLocation (e.MembersBlock.Start), 
+			                                                                                nsName, 
+			                                                                                Block2Region (e.MembersBlock),
+			                                                                                members);
+			return result;
+			
+		}
 		static MonoDevelop.Projects.Dom.IType ConvertType (MonoDevelop.Projects.Dom.CompilationUnit unit, string nsName, Mono.CSharp.Dom.IType type)
 		{
 			List<MonoDevelop.Projects.Dom.IMember> members = new List<MonoDevelop.Projects.Dom.IMember> ();
@@ -231,7 +265,6 @@ namespace MonoDevelop.CSharpBinding
 					members.Add (ConvertType (unit, "", t));
 				}
 			}
-			System.Console.WriteLine(type.Name + " --- Members: ----" + members.Count);
 			MonoDevelop.Projects.Dom.DomType result = new MonoDevelop.Projects.Dom.DomType (unit,
 			                                                                               ToClassType (type.ContainerType),
 			                                                                                type.Name,
@@ -339,7 +372,7 @@ namespace MonoDevelop.CSharpBinding
 			input.Close ();
 			
 			if (cu.Types != null) {
-				foreach (Mono.CSharp.Dom.IType type in cu.Types) {
+				foreach (Mono.CSharp.Dom.ITypeBase type in cu.Types) {
 					result.Add (ConvertType (result, "", type));
 				}
 			}

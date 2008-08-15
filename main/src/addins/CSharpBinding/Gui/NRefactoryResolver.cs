@@ -43,7 +43,6 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Projects.Gui.Completion;
 
-using CSharpBinding.Parser.SharpDevelopTree;
 using ICSharpCode.NRefactory.Visitors;
 using ICSharpCode.NRefactory.Parser;
 using ICSharpCode.NRefactory.Ast;
