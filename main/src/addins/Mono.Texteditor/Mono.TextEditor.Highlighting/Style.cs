@@ -37,159 +37,276 @@ namespace Mono.TextEditor.Highlighting
 		string name;
 		string description;
 		
-		Color def, background, selectedBg, selectedFg;
-		Color searchTextBg;
-		Color caret;
-		Color lineMarker, ruler, whitespaceMarker, invalidLineMarker;
-		Color caretForeground;
+		Dictionary<string, IColorDefinition> colors = new Dictionary<string, IColorDefinition> ();
 		
-		Color breakpointBg, breakpointFg;
-		Color breakpointMarkerColor1, breakpointMarkerColor2;
-		Color disabledBreakpointBg;
-		Color currentDebugLineBg, currentDebugLineFg;
-		Color currentDebugLineMarkerColor1, currentDebugLineMarkerColor2, currentDebugLineMarkerBorder;
-		Color invalidBreakpointBg;
-		Color invalidBreakpointMarkerColor1, invalidBreakpointMarkerBorder;
-		
-		Color bookmarkColor1, bookmarkColor2;
-		
-		Color lineNumberFg, lineNumberBg, lineNumberFgHighlighted;
-		
-		Color iconBarBg, iconBarSeperator;
-		Color bracketHighlightBg, bracketHighlightRectangle;
-		Color foldLine, foldLineHighlighted, foldBg, foldToggleMarker;
 		List<ChunkStyle>        styles           = new List<Mono.TextEditor.ChunkStyle> ();
 		Dictionary<string, int> styleLookupTable = new Dictionary<string, int> (); 
 		Dictionary<string, string> customPalette = new Dictionary<string, string> (); 
+
+		public Color GetColorFromDefinition (string colorName)
+		{
+			IColorDefinition definition;
+			if (colors.TryGetValue (colorName, out definition))
+				return definition.Color;
+			return new Gdk.Color (0, 0, 0); 
+		}
 		
+		public const string DefaultString = "default";
 		public virtual Color Default {
 			get {
-				return def;
+				return GetColorFromDefinition (DefaultString);
 			}
 		}
 		
+		public const string CaretString = "caret";
 		public virtual Color Caret {
 			get {
-				return caret;
+				return GetColorFromDefinition ("caret");
 			}
 		}
 
+		public const string LineNumberFgString = "lineNumber";
 		public virtual Color LineNumberFg {
 			get {
-				return lineNumberFg;
+				return GetColorFromDefinition (LineNumberFgString);
 			}
 		}
 
+		public const string LineNumberBgString = "lineNumberBg";
 		public virtual Color LineNumberBg {
 			get {
-				return lineNumberBg;
+				return GetColorFromDefinition (LineNumberBgString);
 			}
 		}
 
+		public const string LineNumberFgHighlightedString = "lineNumberHighlighted";
 		public virtual Color LineNumberFgHighlighted {
 			get {
-				return lineNumberFgHighlighted;
+				return GetColorFromDefinition (LineNumberFgHighlightedString);
 			}
 		}
 
+		public const string IconBarBgString = "iconBar";
 		public virtual Color IconBarBg {
 			get {
-				return iconBarBg;
+				return GetColorFromDefinition (IconBarBgString);
 			}
 		}
 
+		public const string IconBarSeperatorString = "iconBarSeperator";
 		public virtual Color IconBarSeperator {
 			get {
-				return iconBarSeperator;
+				return GetColorFromDefinition (IconBarSeperatorString);
 			}
 		}
 
+		public const string FoldLineString = "foldLine";
 		public virtual Color FoldLine {
 			get {
-				return foldLine;
+				return GetColorFromDefinition (FoldLineString);
 			}
 		}
 
+		public const string FoldLineHighlightedString = "foldLineHighlighted";
 		public virtual Color FoldLineHighlighted {
 			get {
-				return foldLineHighlighted;
+				return GetColorFromDefinition (FoldLineHighlightedString);
 			}
 		}
-
+		
+		public const string FoldBgString = "foldBg";
 		public virtual Color FoldBg {
 			get {
-				return foldBg;
+				return GetColorFromDefinition (FoldBgString);
 			}
 		}
 
+		public const string BackgroundString = "background";
 		public virtual Color Background {
 			get {
-				return background;
+				return GetColorFromDefinition (BackgroundString);
 			}
 		}
 
+		public const string SelectedBgString = "selectedBackground";
 		public virtual Color SelectedBg {
 			get {
-				return selectedBg;
+				return GetColorFromDefinition (SelectedBgString);
 			}
 		}
 		
+		public const string SelectedFgString = "selectedForeground";
 		public virtual Color SelectedFg {
 			get {
-				return selectedFg;
+				return GetColorFromDefinition (SelectedFgString);
 			}
 		}
 
+		public const string LineMarkerString = "lineMarker";
 		public virtual Color LineMarker {
 			get {
-				return lineMarker;
+				return GetColorFromDefinition (LineMarkerString);
 			}
 		}
 
+		public const string RulerString = "ruler";
 		public virtual Color Ruler {
 			get {
-				return ruler;
+				return GetColorFromDefinition (RulerString);
 			}
 		}
 
+		public const string WhitespaceMarkerString = "whitespaces";
 		public virtual Color WhitespaceMarker {
 			get {
-				return whitespaceMarker;
+				return GetColorFromDefinition (WhitespaceMarkerString);
 			}
 		}
 
+		public const string InvalidLineMarkerString = "invalidLines";
 		public virtual Color InvalidLineMarker {
 			get {
-				return invalidLineMarker;
+				return GetColorFromDefinition (InvalidLineMarkerString);
 			}
 		}
+		
+		public const string FoldToggleMarkerString = "foldToggleMarker";
 		public virtual Color FoldToggleMarker {
 			get {
-				return foldToggleMarker;
+				return GetColorFromDefinition (FoldToggleMarkerString);
 			}
 		}
 
+		public const string BracketHighlightBgString = "bracketHighlightBg";
 		public virtual Color BracketHighlightBg {
 			get {
-				return bracketHighlightBg;
+				return GetColorFromDefinition (BracketHighlightBgString);
 			}
 		}
 		
+		public const string BracketHighlightRectangleString = "bracketHighlightRectangle";
 		public virtual Color BracketHighlightRectangle {
 			get {
-				return bracketHighlightRectangle;
+				return GetColorFromDefinition (BracketHighlightRectangleString);
 			}
 		}
 		
+		public const string BookmarkColor2String = "bookmarkColor2";
 		public virtual Color BookmarkColor2 {
 			get {
-				return bookmarkColor2;
+				return GetColorFromDefinition (BookmarkColor2String);
 			}
 		}
 		
+		public const string BookmarkColor1String = "bookmarkColor1";
 		public virtual Color BookmarkColor1 {
 			get {
-				return bookmarkColor1;
+				return GetColorFromDefinition (BookmarkColor1String);
+			}
+		}
+
+		public const string CaretForegroundString = "caretForeground";
+		public virtual Color CaretForeground {
+			get {
+				return GetColorFromDefinition (CaretForegroundString);
+			}
+		}
+		
+		public const string SearchTextBgString = "searchTextBg";
+		public Color SearchTextBg {
+			get {
+				return GetColorFromDefinition (SearchTextBgString);
+			}
+		}
+
+		public const string BreakpointFgString = "breakpointFg";
+		public Color BreakpointFg {
+			get {
+				return GetColorFromDefinition (BreakpointFgString);
+			}
+		}
+
+		public const string BreakpointBgString = "breakpointBg";
+		public Color BreakpointBg {
+			get {
+				return GetColorFromDefinition (BreakpointBgString);
+			}
+		}
+
+		public const string BreakpointMarkerColor2String = "breakpointMarkerColor2";
+		public Color BreakpointMarkerColor2 {
+			get {
+				return GetColorFromDefinition (BreakpointMarkerColor2String);
+			}
+		}
+
+		public const string BreakpointMarkerColor1String = "breakpointMarkerColor1";
+		public Color BreakpointMarkerColor1 {
+			get {
+				return GetColorFromDefinition (BreakpointMarkerColor1String);
+			}
+		}
+
+		public const string CurrentDebugLineFgString = "currentDebugLineFg";
+		public Color CurrentDebugLineFg {
+			get {
+				return GetColorFromDefinition (CurrentDebugLineFgString);
+			}
+		}
+		
+		public const string CurrentDebugLineBgString = "currentDebugLineBg";
+		public Color CurrentDebugLineBg {
+			get {
+				return GetColorFromDefinition (CurrentDebugLineBgString);
+			}
+		}
+
+		public const string CurrentDebugLineMarkerColor2String = "currentDebugLineMarkerColor2";
+		public Color CurrentDebugLineMarkerColor2 {
+			get {
+				return GetColorFromDefinition (CurrentDebugLineMarkerColor2String);
+			}
+		}
+
+		public const string CurrentDebugLineMarkerColor1String = "currentDebugLineMarkerColor1";
+		public Color CurrentDebugLineMarkerColor1 {
+			get {
+				return GetColorFromDefinition (CurrentDebugLineMarkerColor1String);
+			}
+		}
+
+		public const string CurrentDebugLineMarkerBorderString = "currentDebugLineMarkerBorder";
+		public Color CurrentDebugLineMarkerBorder {
+			get {
+				return GetColorFromDefinition (CurrentDebugLineMarkerBorderString);
+			}
+		}
+
+		public const string InvalidBreakpointBgString = "invalidBreakpointBg";
+		public Color InvalidBreakpointBg {
+			get {
+				return GetColorFromDefinition (InvalidBreakpointBgString);
+			}
+		}
+
+		public const string InvalidBreakpointMarkerColor1String = "invalidBreakpointMarkerColor1";
+		public Color InvalidBreakpointMarkerColor1 {
+			get {
+				return GetColorFromDefinition (InvalidBreakpointMarkerColor1String);
+			}
+		}
+
+		public const string DisabledBreakpointBgString = "disabledBreakpointBg";
+		public Color DisabledBreakpointBg {
+			get {
+				return GetColorFromDefinition (DisabledBreakpointBgString);
+			}
+		}
+
+		public const string InvalidBreakpointMarkerBorderString = "invalidBreakpointMarkerBorder";
+		public Color InvalidBreakpointMarkerBorder {
+			get {
+				return GetColorFromDefinition (InvalidBreakpointMarkerBorderString);
 			}
 		}
 		
@@ -204,108 +321,6 @@ namespace Mono.TextEditor.Highlighting
 				return description;
 			}
 		}
-
-		public virtual Color CaretForeground {
-			get {
-				return caretForeground;
-			}
-		}
-
-		public Color SearchTextBg {
-			get {
-				return searchTextBg;
-			}
-			set {
-				searchTextBg = value;
-			}
-		}
-
-		public Color BreakpointFg {
-			get {
-				return breakpointFg;
-			}
-		}
-
-		public Color BreakpointBg {
-			get {
-				return breakpointBg;
-			}
-		}
-
-		public Color BreakpointMarkerColor2 {
-			get {
-				return breakpointMarkerColor2;
-			}
-		}
-
-		public Color BreakpointMarkerColor1 {
-			get {
-				return breakpointMarkerColor1;
-			}
-		}
-
-		public Color CurrentDebugLineFg {
-			get {
-				return currentDebugLineFg;
-			}
-			set {
-				currentDebugLineFg = value;
-			}
-		}
-
-		public Color CurrentDebugLineBg {
-			get {
-				return currentDebugLineBg;
-			}
-			set {
-				currentDebugLineBg = value;
-			}
-		}
-
-		public Color CurrentDebugLineMarkerColor2 {
-			get {
-				return currentDebugLineMarkerColor2;
-			}
-		}
-
-		public Color CurrentDebugLineMarkerColor1 {
-			get {
-				return currentDebugLineMarkerColor1;
-			}
-		}
-
-		public Color CurrentDebugLineMarkerBorder {
-			get {
-				return currentDebugLineMarkerBorder;
-			}
-		}
-
-		public Color InvalidBreakpointBg {
-			get {
-				return invalidBreakpointBg;
-			}
-			set {
-				invalidBreakpointBg = value;
-			}
-		}
-
-		public Color InvalidBreakpointMarkerColor1 {
-			get {
-				return invalidBreakpointMarkerColor1;
-			}
-		}
-
-		public Color DisabledBreakpointBg {
-			get {
-				return disabledBreakpointBg;
-			}
-		}
-
-		public Color InvalidBreakpointMarkerBorder {
-			get {
-				return invalidBreakpointMarkerBorder;
-			}
-		}
 		
 		public static Cairo.Color ToCairoColor (Gdk.Color color)
 		{
@@ -316,54 +331,55 @@ namespace Mono.TextEditor.Highlighting
 		
 		public Style ()
 		{
+			colors[DefaultString] = new ColorDefinition (new Gdk.Color (0, 0, 0));
+			colors[BackgroundString] = new ColorDefinition (new Gdk.Color (255, 255, 255));
 			
-			def          = new Gdk.Color (0, 0, 0); 
+			colors[CaretString]           = new ReferencedColorDefinition (this, DefaultString);
+			colors[CaretForegroundString] = new ReferencedColorDefinition (this, BackgroundString);
+
+			colors[LineNumberBgString]            = new ReferencedColorDefinition (this, BackgroundString);
+			colors[LineNumberFgString]            = new ColorDefinition (new Gdk.Color (172, 168, 153));
+			colors[LineNumberFgHighlightedString] = new ColorDefinition (new Gdk.Color (122, 118, 103));
 			
-			caret        = new Gdk.Color (0, 0, 0); 
-			caretForeground	 = new Gdk.Color (255, 255, 255);
+			colors[FoldBgString]              = new ReferencedColorDefinition (this, BackgroundString);
+			colors[FoldLineString]            = new ReferencedColorDefinition (this, LineNumberFgString);
+			colors[FoldLineHighlightedString] = new ReferencedColorDefinition (this, LineNumberFgHighlightedString);
+			colors[FoldToggleMarkerString]    = new ReferencedColorDefinition (this, DefaultString);
 			
-			lineNumberBg = new Gdk.Color (255, 255, 255);
-			lineNumberFg = new Gdk.Color (172, 168, 153);
-			lineNumberFgHighlighted = new Gdk.Color (122, 118, 103);
+			colors[SelectedBgString] = new ColorDefinition (new Gdk.Color (96, 87, 210));
+			colors[SelectedFgString] = new ReferencedColorDefinition (this, BackgroundString);
 			
-			foldLine            = new Gdk.Color (172, 168, 153);
-			foldLineHighlighted = new Gdk.Color (122, 118, 103);
-			foldBg              = new Gdk.Color (255, 255, 255);
-			foldToggleMarker    = new Gdk.Color (0, 0, 0);
+			colors[LineMarkerString] = new ColorDefinition (new Gdk.Color (200, 255, 255));
+			colors[RulerString] = new ColorDefinition (new Gdk.Color (187, 187, 187));
+			colors[WhitespaceMarkerString] = new ReferencedColorDefinition (this, RulerString);
 			
-			background = new Gdk.Color (255, 255, 255);
-			selectedBg = new Gdk.Color (96, 87, 210);
-			selectedFg = new Gdk.Color (255, 255, 255);
-			lineMarker = new Gdk.Color (200, 255, 255);
-			ruler      = new Gdk.Color (187, 187, 187);
-			whitespaceMarker  = new Gdk.Color (187, 187, 187);
-			invalidLineMarker = new Gdk.Color (210, 0, 0);
+			colors[InvalidLineMarkerString] = new ColorDefinition (new Gdk.Color (210, 0, 0));
 			
-			breakpointBg = new Gdk.Color (125, 0, 0);
-			breakpointFg = new Gdk.Color (255, 255, 255);
+			colors[BreakpointBgString] = new ColorDefinition (new Gdk.Color (125, 0, 0));
+			colors[BreakpointFgString] = new ReferencedColorDefinition (this, BackgroundString);
 			
-			this.breakpointMarkerColor1 = new Gdk.Color (255, 255, 255);
-			this.breakpointMarkerColor2 = new Gdk.Color (125, 0, 0);
-			this.disabledBreakpointBg = new Gdk.Color (237, 220, 220);
-			this.currentDebugLineBg = new Gdk.Color (255, 255, 0);
-			this.currentDebugLineFg = new Gdk.Color (0, 0, 0);
+			colors[BreakpointMarkerColor1String] = new ReferencedColorDefinition (this, BackgroundString);
+			colors[BreakpointMarkerColor2String] = new ColorDefinition (new Gdk.Color (125, 0, 0));
+
+			colors[DisabledBreakpointBgString] = new ColorDefinition (new Gdk.Color (237, 220, 220));
 			
-			this.currentDebugLineMarkerColor1 = new Gdk.Color (255, 255, 0);
-			this.currentDebugLineMarkerColor2 = new Gdk.Color (255, 255, 204);
-			this.currentDebugLineMarkerBorder = new Gdk.Color (102, 102, 0);
-			this.invalidBreakpointBg          = new Gdk.Color (237, 220, 220);
-			this.invalidBreakpointMarkerColor1 = new Gdk.Color (237, 220, 220);
-			this.invalidBreakpointMarkerBorder = new Gdk.Color (125, 0, 0);
+			colors[CurrentDebugLineBgString] = new ColorDefinition (new Gdk.Color (255, 255, 0));
+			colors[CurrentDebugLineFgString] = new ColorDefinition (new Gdk.Color (0, 0, 0));
 			
-			searchTextBg = new Gdk.Color (250, 250, 0);
+			colors[CurrentDebugLineMarkerColor1String] = new ColorDefinition (new Gdk.Color (255, 255, 0));
+			colors[CurrentDebugLineMarkerColor2String] = new ColorDefinition (new Gdk.Color (255, 255, 204));
+			colors[CurrentDebugLineMarkerBorderString] = new ColorDefinition (new Gdk.Color (102, 102, 0));
+			colors[InvalidBreakpointBgString] = new ColorDefinition (new Gdk.Color (237, 220, 220));
+			colors[InvalidBreakpointMarkerColor1String] = new ColorDefinition (new Gdk.Color (237, 220, 220));
+			colors[InvalidBreakpointMarkerBorderString] = new ColorDefinition (new Gdk.Color (125, 0, 0));
+			colors[SearchTextBgString] = new ColorDefinition (new Gdk.Color (250, 250, 0));
+			colors[BracketHighlightBgString] = new ColorDefinition (new Gdk.Color (196, 196, 196));
+			colors[BracketHighlightRectangleString] = new ColorDefinition (new Gdk.Color (128, 128, 128));
 			
-			bracketHighlightBg        = new Gdk.Color (196, 196, 196);
-			bracketHighlightRectangle = new Gdk.Color (128, 128, 128);
+			colors[BookmarkColor1String] = new ColorDefinition (new Gdk.Color (255, 255, 255));
+			colors[BookmarkColor2String] = new ColorDefinition (new Gdk.Color (105, 156, 235));
 			
-			bookmarkColor1 = new Gdk.Color (255, 255, 255);
-			bookmarkColor2 = new Gdk.Color (105, 156, 235);
-			
-			SetStyle ("default", new Mono.TextEditor.ChunkStyle (def, false, false));
+			SetStyle ("default", new Mono.TextEditor.ChunkStyle (new Gdk.Color (0, 0, 0), false, false));
 			SetStyle ("comment", new Mono.TextEditor.ChunkStyle (new Gdk.Color (0, 0, 255), false, false));
 			SetStyle ("altcomment", new Mono.TextEditor.ChunkStyle (new Gdk.Color (128, 128, 128), true, false));
 			SetStyle ("todocomment", new Mono.TextEditor.ChunkStyle (new Gdk.Color (0, 0, 255), true, false));
@@ -418,7 +434,7 @@ namespace Mono.TextEditor.Highlighting
 		
 		public void SetChunkStyle (string name, string weight, string value)
 		{
-			Gdk.Color color = GetColor (value);
+			Gdk.Color color = this.GetColorFromString (value);
 			SetStyle (name, new Mono.TextEditor.ChunkStyle (color, 
 			                                                weight == null ? false : weight.ToUpper ().IndexOf ("BOLD") >= 0,
 			                                                weight == null ? false : weight.ToUpper ().IndexOf ("ITALIC") >= 0));
@@ -426,54 +442,54 @@ namespace Mono.TextEditor.Highlighting
 		
 		public static bool IsChunkStyle (string name)
 		{
-			switch (name) {
-			case "default":
-			case "background":
-			case "caret":
-			case "caretForeground":
-			case "selectedBackground":
-			case "selectedForeground":
-			case "lineMarker":
-			case "ruler":
-			case "whitespaces":
-			case "invalidLines":
-			case "lineNumber":
-			case "lineNumberHighlighted":
-			case "lineNumberBg":
-			case "iconBar":
-			case "iconBarSeperator":
-			case "foldLine":
-			case "foldBg":
-			case "foldLineHighlighted":
-			case "foldToggleMarker":
-			case "bracketHighlightRectangle":
-			case "bracketHighlightBg":
-			case "bookmarkColor1":
-			case "bookmarkColor2":
-			case "searchTextBg":
 			
-			case "breakpointBg":
-			case "breakpointFg":
-			case "breakpointMarkerColor1":
-			case "breakpointMarkerColor2":
-			case "disabledBreakpointBg":
-			case "currentDebugLineBg":
-			case "currentDebugLineFg":
-			case "currentDebugLineMarkerColor1":
-			case "currentDebugLineMarkerColor2":
-			case "currentDebugLineMarkerBorder":
-			case "invalidBreakpointBg":
-			case "invalidBreakpointMarkerColor1":
-			case "invalidBreakpointMarkerBorder":
+			switch (name) {
+			case DefaultString:
+			case CaretString:
+			case LineNumberFgString:
+			case LineNumberBgString:
+			case LineNumberFgHighlightedString:
+			case IconBarBgString:
+			case IconBarSeperatorString:
+			case FoldLineString:
+			case FoldLineHighlightedString:
+			case FoldBgString:
+			case BackgroundString:
+			case SelectedBgString:
+			case SelectedFgString:
+			case LineMarkerString:
+			case RulerString:
+			case WhitespaceMarkerString:
+			case InvalidLineMarkerString:
+			case FoldToggleMarkerString:
+			case BracketHighlightBgString:
+			case BracketHighlightRectangleString:
+			case BookmarkColor2String:
+			case BookmarkColor1String:
+			case CaretForegroundString:
+			case SearchTextBgString:
+			case BreakpointFgString:
+			case BreakpointBgString:
+			case BreakpointMarkerColor2String:
+			case BreakpointMarkerColor1String:
+			case CurrentDebugLineFgString:
+			case CurrentDebugLineBgString:
+			case CurrentDebugLineMarkerColor2String:
+			case CurrentDebugLineMarkerColor1String:
+			case CurrentDebugLineMarkerBorderString:
+			case InvalidBreakpointBgString:
+			case InvalidBreakpointMarkerColor1String:
+			case DisabledBreakpointBgString:
+			case InvalidBreakpointMarkerBorderString:
 				return false;
 			}
 			return true;
 		}
 		
-		Gdk.Color GetColor (string colorString)
+		Gdk.Color GetColorFromString (string colorString)
 		{
 			if (customPalette.ContainsKey (colorString))
-				return GetColor (customPalette[colorString]);
+				return this.GetColorFromString (customPalette[colorString]);
 			
 			Gdk.Color result = new Color ();
 			if (!Gdk.Color.Parse (colorString, ref result)) {
@@ -484,124 +500,16 @@ namespace Mono.TextEditor.Highlighting
 		
 		public void SetColor (string name, string value)
 		{
-			Gdk.Color color = GetColor (value);
-			switch (name) {
-			case "default":
-				this.def = color;
-				SetStyle ("default", new Mono.TextEditor.ChunkStyle (color, false, false));
-				break;
-			case "caret":
-				this.caret = color;
-				break;
-			case "caretForeground":
-				this.caretForeground = color;
-				break;
-			case "background":
-				this.background = color;
-				break;
-			case "selectedBackground":
-				this.selectedBg = color;
-				break;
-			case "selectedForeground":
-				this.selectedFg = color;
-				break;
-			case "lineMarker":
-				this.lineMarker = color;
-				break;
-			case "ruler":
-				this.ruler = color;
-				break;
-			case "whitespaces":
-				this.whitespaceMarker = color;
-				break;
-			case "invalidLines":
-				this.invalidLineMarker = color;
-				break;
-			case "lineNumber":
-				this.lineNumberFg = color;
-				break;
-			case "lineNumberHighlighted":
-				this.lineNumberFgHighlighted = color;
-				break;
-			case "lineNumberBg":
-				this.lineNumberBg = color;
-				break;
-			case "iconBar":
-				this.iconBarBg = color;
-				break;
-			case "iconBarSeperator":
-				this.iconBarSeperator = color;
-				break;
-			case "foldLine":
-				this.foldLine = color;
-				break;
-			case "foldBg":
-				this.foldBg = color;
-				break;
-			case "foldLineHighlighted":
-				this.foldLineHighlighted = color;
-				break;
-			case "foldToggleMarker":
-				this.foldToggleMarker = color;
-				break;
-			case "bracketHighlightRectangle":
-				this.bracketHighlightRectangle = color;
-				break;
-			case "bracketHighlightBg":
-				this.bracketHighlightBg = color;
-				break;
-			case "bookmarkColor1":
-				this.bookmarkColor1 = color;
-				break;
-			case "bookmarkColor2":
-				this.bookmarkColor2 = color;
-				break;
-			case "searchTextBg":
-				this.searchTextBg = color;
-				break;
-			case "breakpointBg":
-				this.breakpointBg = color;
-				break;
-			case "breakpointFg":
-				this.breakpointFg = color;
-				break;
-			case "breakpointMarkerColor1":
-				this.breakpointMarkerColor1 = color;
-				break;
-			case "breakpointMarkerColor2":
-				this.breakpointMarkerColor2 = color;
-				break;
-			case "disabledBreakpointBg":
-				this.disabledBreakpointBg = color;
-				break;
-			case "currentDebugLineBg":
-				this.currentDebugLineBg = color;
-				break;
-			case "currentDebugLineFg":
-				this.currentDebugLineFg = color;
-				break;
-			case "currentDebugLineMarkerColor1":
-				this.currentDebugLineMarkerColor1 = color;
-				break;
-			case "currentDebugLineMarkerColor2":
-				this.currentDebugLineMarkerColor2 = color;
-				break;
-			case "currentDebugLineMarkerBorder":
-				this.currentDebugLineMarkerBorder = color;
-				break;
-			case "invalidBreakpointBg":
-				this.invalidBreakpointBg = color;
-				break;
-			case "invalidBreakpointMarkerColor1":
-				this.invalidBreakpointMarkerColor1 = color;
-				break;
-			case "invalidBreakpointMarkerBorder":
-				this.invalidBreakpointMarkerBorder = color;
-				break;
-			default:
-				throw new Exception ("color  " + name + " invalid.");
+			if (!IsChunkStyle (value)) {
+				colors[name] = new ReferencedColorDefinition (this, value);
+			} else {
+				Gdk.Color color = GetColorFromString (value);
+				colors[name] = new ColorDefinition (color);
+				if (name == DefaultString)
+					this.SetStyle (DefaultString, new Mono.TextEditor.ChunkStyle (color, false, false));
 			}
 		}
+		
 		public const string NameAttribute = "name";
 		public static Style Read (XmlReader reader)
 		{
