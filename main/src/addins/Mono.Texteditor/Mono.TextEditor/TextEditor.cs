@@ -575,6 +575,15 @@ namespace Mono.TextEditor
 			}
 		}
 		
+		internal void RedrawMargin (Margin margin)
+		{
+			repaint = true;
+			lock (disposeLock) {
+				if (isDisposed)
+					return;
+				this.QueueDrawArea (margin.XOffset, 0, margin.Width,  this.Allocation.Height);
+			}
+		}
 		internal void RedrawLine (int logicalLine)
 		{
 			repaint = true;
@@ -1089,7 +1098,7 @@ namespace Mono.TextEditor
 					if (margin.IsVisible) {
 						margin.XOffset = curX;
 						curX += margin.Width;
-						if (curX > area.X || margin.Width < 0) {
+						if (curX >= area.X || margin.Width < 0) {
 							try {
 								margin.Draw (win, area, logicalLineNumber, margin.XOffset, curY);
 							} catch (Exception e) {
