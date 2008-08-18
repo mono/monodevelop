@@ -1,3 +1,10 @@
+2008-08-18  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.SourceEditor.addin.xml,
+	  MonoDevelop.SourceEditor/SourceEditorView.cs,
+	  MonoDevelop.SourceEditor/DebugValueTooltipProvider.cs: Added
+	  context menu for the editor margin.
+
 2008-08-13  Mike Krüger <mkrueger@novell.com> 
 
 	* gtk-gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs,

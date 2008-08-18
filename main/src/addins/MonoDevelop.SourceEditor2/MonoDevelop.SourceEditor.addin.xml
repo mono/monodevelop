@@ -26,6 +26,11 @@
 		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet" />
 	</ExtensionPoint>
 	
+	<ExtensionPoint path = "/MonoDevelop/SourceEditor2/IconContextMenu/Editor" name = "Editor context menu">
+		<Description>Context menu for the editor's icon margin.</Description>
+		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet" />
+	</ExtensionPoint>
+	
 	<ExtensionPoint path = "/MonoDevelop/SourceEditor2/EditActions" name = "Custom edit actions">
 		<Description>Custom edit actions for the editor.</Description>
 		<ExtensionNode name="EditAction" type="MonoDevelop.SourceEditor.Codons.EditActionCodon"/>
@@ -93,7 +98,19 @@
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.ToggleCodeComment" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.IndentSelection" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.UnIndentSelection" />
-		
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/SourceEditor2/IconContextMenu/Editor">
+		<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.ToggleBookmark" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.ClearBookmarks" />
+		<SeparatorItem id = "Separator1" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.DebugCommands.NewBreakpoint" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.DebugCommands.RemoveBreakpoint" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.DebugCommands.ToggleBreakpoint" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.DebugCommands.EnableDisableBreakpoint" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.DebugCommands.DisableAllBreakpoints" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.DebugCommands.ClearAllBreakpoints" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.DebugCommands.ShowBreakpointProperties" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/GlobalOptionsDialog/TextEditor">
