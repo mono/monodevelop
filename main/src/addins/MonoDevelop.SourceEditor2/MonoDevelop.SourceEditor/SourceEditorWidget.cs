@@ -1234,7 +1234,7 @@ namespace MonoDevelop.SourceEditor
 		[CommandHandler (SearchCommands.FindPrevious)]
 		public SearchResult FindPrevious ()
 		{
-			return FindNext (true);
+			return FindPrevious (true);
 		}
 		
 		public SearchResult FindPrevious (bool focus)
