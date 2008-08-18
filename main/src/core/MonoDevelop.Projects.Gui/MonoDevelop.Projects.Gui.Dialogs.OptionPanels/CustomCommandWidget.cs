@@ -34,6 +34,8 @@ using MonoDevelop.Components;
 
 namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 {
+	[System.ComponentModel.Category("widget")]
+	[System.ComponentModel.ToolboxItem(true)]
 	internal partial class CustomCommandWidget : Gtk.Bin
 	{
 		CustomCommand cmd;

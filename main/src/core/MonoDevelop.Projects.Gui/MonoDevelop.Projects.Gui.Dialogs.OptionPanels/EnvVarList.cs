@@ -32,6 +32,8 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 {
+	[System.ComponentModel.Category("MonoDevelop.Projects.Gui")]
+	[System.ComponentModel.ToolboxItem(true)]
 	public class EnvVarList: ScrolledWindow
 	{
 		TreeView list;

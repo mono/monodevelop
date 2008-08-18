@@ -31,6 +31,8 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 {
 	
 	
+	[System.ComponentModel.Category("MonoDevelop.Projects.Gui")]
+	[System.ComponentModel.ToolboxItem(true)]
 	public partial class BaseDirectoryPanelWidget : Gtk.Bin
 	{
 		public BaseDirectoryPanelWidget()

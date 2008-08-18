@@ -52,7 +52,6 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels {
             this.radioSingle = new Gtk.RadioButton(MonoDevelop.Core.GettextCatalog.GetString("Single startup project:"));
             this.radioSingle.CanFocus = true;
             this.radioSingle.Name = "radioSingle";
-            this.radioSingle.Active = true;
             this.radioSingle.DrawIndicator = true;
             this.radioSingle.UseUnderline = true;
             this.radioSingle.Group = new GLib.SList(System.IntPtr.Zero);

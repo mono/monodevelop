@@ -1,3 +1,15 @@
+2008-08-18  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* gtk-gui/objects.xml,
+	  gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.StartupOptionsPanelWidget.cs,
+	  gtk-gui/gui.stetic,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CustomCommandWidget.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/BaseDirectoryPanelWidget.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/EnvVarList.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CustomCommandPanelWidget.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/StartupOptionsPanel.cs:
+	  Use attributes to describe custom widgets.
+
 2008-07-24  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs: Use the
