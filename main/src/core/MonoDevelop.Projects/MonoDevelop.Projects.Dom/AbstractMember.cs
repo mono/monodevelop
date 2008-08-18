@@ -227,14 +227,14 @@ namespace MonoDevelop.Projects.Dom
 		{
 			if (member == null)
 				return IsStatic;
-			if (member.IsStatic && !IsStatic)
-				return false;
+	//		if (member.IsStatic && !IsStatic)
+	//			return false;
 			if (IsPublic)
 				return true;
 			if (IsInternal) // TODO: internal members
 				return true;
 				
-			if (member.DeclaringType == null || DeclaringType != null)
+			if (member.DeclaringType == null || DeclaringType == null)
 				return false;
 			
 			if (IsProtected) {

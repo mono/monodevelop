@@ -1,3 +1,7 @@
+2008-08-18  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Dom/AbstractMember.cs: Worked on completion.
+
 2008-08-15  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom.Parser/ProjectParserService.cs,
