@@ -1,3 +1,18 @@
+2008-08-18  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.DesignerSupport.PropertyGrid.Editors/TextEditor.cs: Add
+	  support for standard values and exclusive values if the converter
+	  supports/provides them. Supply an ITypeDescriptorContext to the
+	  TypeConverter.
+	* MonoDevelop.DesignerSupport.PropertyGrid.Editors/EnumerationEditorCell.cs:
+	  Don't allow text caret, since the values are not editable.
+	* MonoDevelop.DesignerSupport.PropertyGrid/PropertyEditorCell.cs:
+	  Implement ITypeDescriptorContext on EditorSession, so that cell
+	  editors can easily provide one to the TypeConverter.
+	* MonoDevelop.DesignerSupport.PropertyGrid/PropertyGridTree.cs: Change
+	  some "as" casts to real casts -- InvalidCastException is more
+	  informative than NRE.
+
 2008-07-21  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.DesignerSupport.Toolbox/ItemToolboxNode.cs,

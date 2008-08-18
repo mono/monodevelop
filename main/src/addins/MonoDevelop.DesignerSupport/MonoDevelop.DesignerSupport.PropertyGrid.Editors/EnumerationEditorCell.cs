@@ -98,6 +98,7 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid.PropertyEditors
 			combo = Gtk.ComboBoxEntry.NewText ();
 			combo.Changed += combo_Changed;
 			combo.Entry.IsEditable = false;
+			combo.Entry.CanFocus = false;
 			combo.Entry.HasFrame = false;
 			combo.Entry.HeightRequest = combo.SizeRequest ().Height;
 			combo.Show ();
