@@ -12,11 +12,10 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		protected override BuildResult Build (IProgressMonitor monitor, SolutionEntityItem entry, string configuration)
 		{
 			DotNetProject project = entry as DotNetProject;
-			if (project == null)
-				return base.Build (monitor, entry, configuration);
+			if (GtkDesignInfo.HasDesignedObjects (project)) {
 
-			GtkDesignInfo info = GtkDesignInfo.FromProject (project);
-			if (info.HasDesignedObjects) {
+				GtkDesignInfo info = GtkDesignInfo.FromProject (project);
+
 				// The code generator must run in the GUI thread since it needs to
 				// access to Gtk classes
 				Generator gen = new Generator ();

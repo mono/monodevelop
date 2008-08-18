@@ -338,12 +338,10 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		public static Stetic.CodeGenerationResult GenerateSteticCode (IProgressMonitor monitor, DotNetProject project, string configuration)
 		{
-			if (generating || project == null)
+			if (generating || !GtkDesignInfo.HasDesignedObjects (project))
 				return null;
 
 			GtkDesignInfo info = GtkDesignInfo.FromProject (project);
-			if (!info.HasDesignedObjects)
-				return null;
 
 			// Check if generated code is already up to date.
 			if (File.Exists (info.SteticGeneratedFile) && File.GetLastWriteTime (info.SteticGeneratedFile) > File.GetLastWriteTime (info.SteticFile))

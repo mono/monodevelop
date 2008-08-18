@@ -1,3 +1,19 @@
+2008-08-18  Mike Kestner <mkestner@novell.com> 
+
+	* MonoDevelop.GtkCore/GtkDesignInfo.cs: make HasDesignedObjects
+	and SupportsDesigner static so that we can defer a few more instance
+	creation scenarios.
+	* MonoDevelop.GtkCore/WidgetFileDescriptionTemplate.cs: 
+	* MonoDevelop.GtkCore.Dialogs/GtkFeatureWidget.cs: 
+	* MonoDevelop.GtkCore.Dialogs/WidgetBuilderOptionPanel.cs: 
+	* MonoDevelop.GtkCore.GuiBuilder/ActionGroupDisplayBinding.cs: 
+	* MonoDevelop.GtkCore.GuiBuilder/GtkProjectServiceExtension.cs: 
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderDisplayBinding.cs: 
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs: 
+	* MonoDevelop.GtkCore.NodeBuilders/ProjectFolderNodeBuilderExtension.cs: 
+	* MonoDevelop.GtkCore.NodeBuilders/ProjectNodeBuilder.cs: 
+	  Update to new static API.
+
 2008-08-08  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.GtkCore.GuiBuilder/CombinedDesignView.cs: Add a null

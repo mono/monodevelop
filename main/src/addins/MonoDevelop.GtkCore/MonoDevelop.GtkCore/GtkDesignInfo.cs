@@ -153,7 +153,7 @@ namespace MonoDevelop.GtkCore
 		public GuiBuilderProject GuiBuilderProject {
 			get {
 				if (builderProject == null) {
-					if (SupportsDesigner) {
+					if (SupportsDesigner (project)) {
 						if (!File.Exists (SteticFile)) {
 							UpdateGtkFolder ();
 							ProjectNodeBuilder.OnSupportChanged (project);
@@ -213,10 +213,9 @@ namespace MonoDevelop.GtkCore
 			set { gettextClass = value; }
 		}
 		
-		public bool HasDesignedObjects {
-			get {
-				return SupportsDesigner && File.Exists (SteticFile);
-			}
+		public static bool HasDesignedObjects (Project project)
+		{
+			return SupportsDesigner (project) && File.Exists (FromProject (project).SteticFile);
 		}
 
 		public string TargetGtkVersion {
@@ -229,7 +228,7 @@ namespace MonoDevelop.GtkCore
 			set {
 				if (gtkVersion != value) {
 					gtkVersion = value;
-					if (HasDesignedObjects) {
+					if (HasDesignedObjects (project)) {
 						GuiBuilderProject.SteticProject.TargetGtkVersion = TargetGtkVersion;
 						GuiBuilderProject.Save (false);
 					}
@@ -237,24 +236,23 @@ namespace MonoDevelop.GtkCore
 			}
 		}
 		
-		public bool SupportsDesigner {
-			get {
-				return project != null && HasGtkReference && SupportsRefactoring;
-			}
+		public static bool SupportsDesigner (Project project)
+		{
+			DotNetProject dnp = project as DotNetProject;
+			return dnp != null && HasGtkReference (dnp) && SupportsRefactoring (dnp);
 		}
 
-		bool SupportsRefactoring {
-			get {
-				if (project.LanguageBinding == null || project.LanguageBinding.GetCodeDomProvider () == null)
-					return false;
+		static bool SupportsRefactoring (DotNetProject project)
+		{
+			if (project.LanguageBinding == null || project.LanguageBinding.GetCodeDomProvider () == null)
+				return false;
 			
-				RefactorOperations ops = RefactorOperations.AddField | RefactorOperations.AddMethod | RefactorOperations.RenameField | RefactorOperations.AddAttribute;
-				CodeRefactorer cref = IdeApp.Workspace.GetCodeRefactorer (project.ParentSolution);
-				return cref.LanguageSupportsOperation (project.LanguageBinding.Language, ops); 
-			}
+			RefactorOperations ops = RefactorOperations.AddField | RefactorOperations.AddMethod | RefactorOperations.RenameField | RefactorOperations.AddAttribute;
+			CodeRefactorer cref = IdeApp.Workspace.GetCodeRefactorer (project.ParentSolution);
+			return cref.LanguageSupportsOperation (project.LanguageBinding.Language, ops); 
 		}
 		
-		bool IsGtkReference (ProjectReference pref)
+		static bool IsGtkReference (ProjectReference pref)
 		{
 			if (pref.ReferenceType != ReferenceType.Gac)
 				return false;
@@ -267,18 +265,17 @@ namespace MonoDevelop.GtkCore
 			return name == "gtk-sharp";
 		}
 
-		bool HasGtkReference {
-			get {
-				foreach (ProjectReference pref in project.References)
-					if (IsGtkReference (pref))
-						return true;
-				return false;
-			}
+		static bool HasGtkReference (DotNetProject project)
+		{
+			foreach (ProjectReference pref in project.References)
+				if (IsGtkReference (pref))
+					return true;
+			return false;
 		}
 		
 		public void ForceCodeGenerationOnBuild ()
 		{
-			if (!SupportsDesigner)
+			if (!SupportsDesigner (project))
 				return;
 			try {
 				FileInfo fi = new FileInfo (SteticFile);
@@ -312,7 +309,7 @@ namespace MonoDevelop.GtkCore
 
 		public bool UpdateGtkFolder ()
 		{
-			if (!SupportsDesigner)
+			if (!SupportsDesigner (project))
 				return false;
 
 			// This method synchronizes the current gtk project configuration info

@@ -116,7 +116,7 @@ namespace MonoDevelop.GtkCore.Dialogs
 		
 		public override bool IsVisible () 
 		{
-			return GtkDesignInfo.FromProject (DataObject as Project).SupportsDesigner;
+			return GtkDesignInfo.SupportsDesigner (DataObject as Project);
 		}
 
 		public override void ApplyChanges ()

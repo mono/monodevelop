@@ -73,7 +73,7 @@ namespace MonoDevelop.GtkCore
 		
 		public override bool SupportsProject (Project project, string projectPath)
 		{
-			return GtkDesignInfo.FromProject (project).SupportsDesigner;
+			return GtkDesignInfo.SupportsDesigner (project);
 		}
 		
 		public override bool AddToProject (Project project, string language, string directory, string name)

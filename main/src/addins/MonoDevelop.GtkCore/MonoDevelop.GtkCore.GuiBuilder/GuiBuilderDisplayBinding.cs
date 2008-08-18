@@ -88,13 +88,10 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				}
 			}
 			
-			if (project == null)
+			if (!GtkDesignInfo.HasDesignedObjects (project))
 				return null;
 
-			GtkDesignInfo info = GtkDesignInfo.FromProject (project);
-			if (!info.HasDesignedObjects)
-				return null;
-			return info.GuiBuilderProject.GetWindowForFile (file);
+			return GtkDesignInfo.FromProject (project).GuiBuilderProject.GetWindowForFile (file);
 		}
 	}
 }
