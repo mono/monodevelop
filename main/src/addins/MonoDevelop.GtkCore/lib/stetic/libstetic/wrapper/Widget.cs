@@ -837,7 +837,9 @@ namespace Stetic.Wrapper {
 
 		public override string ToString ()
 		{
-			if (Wrapped.Name != null)
+			if (Wrapped == null)
+				return base.ToString ();
+			else if (Wrapped.Name != null)
 				return "[" + Wrapped.GetType ().Name + " '" + Wrapped.Name + "' " + Wrapped.GetHashCode ().ToString () + "]";
 			else
 				return "[" + Wrapped.GetType ().Name + " " + Wrapped.GetHashCode ().ToString () + "]";
