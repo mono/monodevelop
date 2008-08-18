@@ -49,4 +49,11 @@
 		<DataType class = "ILAsmBinding.ILAsmCompilerParameters" />
 	</Extension>
 	
+	<Extension path = "/MonoDevelop/ProjectModel/MSBuildItemTypes">
+		<DotNetProject 
+			language="ILAsm" 
+			extension="ilproj" 
+			guid="{B4EC64DC-6D44-11DD-AAB0-C9A155D89593}"/>
+	</Extension>
+	
 </Addin>
