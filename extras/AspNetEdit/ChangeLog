@@ -1,3 +1,9 @@
+2008-08-18  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* AspNetEdit.mdp: Fix reference to Mono.TextEditor. The incorrect
+	  add-in version number causes problems in the makefile
+	  synchronization.
+
 2008-06-25  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* AspNetEdit.Editor.ComponentModel/WebFormReferenceManager.cs: Use

@@ -1,3 +1,9 @@
+2008-08-18  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Database.Sql.SqlServer.mdp: Fix reference to
+	  Mono.TextEditor. The incorrect add-in version number causes
+	  problems in the makefile synchronization.
+
 2008-06-04  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Database.Sql.SqlServer.addin.xml: Bump MD version.
