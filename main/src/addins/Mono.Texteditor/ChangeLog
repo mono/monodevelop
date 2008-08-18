@@ -1,3 +1,16 @@
+2008-08-16  Mike Krüger <mkrueger@novell.com> 
+
+	* Mono.TextEditor.Highlighting/Style.cs,
+	  Mono.TextEditor.Highlighting/IColorDefinition.cs: Worked on styles
+	  (fixed 'Bug 405939 - Named colours in colour schemes should have
+	  fallbacks').
+
+2008-08-16  Mike Krüger <mkrueger@novell.com> 
+
+	* Mono.TextEditor/Document.cs, Mono.TextEditor/FoldMarkerMargin.cs,
+	  Mono.TextEditor/TextEditor.cs: fixed 'Bug 405921 - Folding markers
+	  are often not repainted'. Fixed bug on fold marker painting.
+
 2008-08-15  Mike Krüger <mkrueger@novell.com> 
 
 	* Mono.TextEditor.mdp, ChangeLogSyntaxMode.xml: Added changelog syntax

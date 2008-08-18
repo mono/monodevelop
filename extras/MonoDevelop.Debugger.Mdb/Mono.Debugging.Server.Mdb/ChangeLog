@@ -1,3 +1,16 @@
+2008-08-18  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Mono.Debugging.Server.Mdb.mdp: Fix reference to Mono.TextEditor. The
+	  incorrect add-in version number causes problems in the makefile
+	  synchronization.
+
+2008-08-18  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* DebuggerServer.cs: Optimize backtrace retrieval (trying to get the
+	  unmanaged backtrace when the current frame is managed is slow).
+	* Util.cs: Ignore properties which don't have a getter.
+	* ObjectUtil.cs: Added null check.
+
 2008-08-06  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* DebuggerServer.cs: Add support for live hit count and trace updating.

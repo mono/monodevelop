@@ -93,14 +93,10 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		Stetic.ActionGroupInfo GetActionGroup (string file)
 		{
 			Project project = IdeApp.Workspace.GetProjectContainingFile (file);
-			if (project == null)
+			if (!GtkDesignInfo.HasDesignedObjects (project))
 				return null;
 				
-			GtkDesignInfo info = GtkDesignInfo.FromProject (project);
-			if (!info.HasDesignedObjects)
-				return null;
-				
-			return info.GuiBuilderProject.GetActionGroupForFile (file);
+			return GtkDesignInfo.FromProject (project).GuiBuilderProject.GetActionGroupForFile (file);
 		}
 		
 		internal static string BindToClass (Project project, Stetic.ActionGroupInfo group)

@@ -10,7 +10,7 @@
        
     <xsl:attribute name="id">GtkCore.GtkSharp.<xsl:value-of select="/files/targetversion"/></xsl:attribute>
     <xsl:attribute name="name">GTK# <xsl:value-of select="/files/targetversion"/> Compilation Support</xsl:attribute>
-    <xsl:attribute name="version"><xsl:value-of select="/files/gtkversion"/></xsl:attribute>
+    <xsl:attribute name="version"><xsl:value-of select="/files/addinversion"/></xsl:attribute>
     <xsl:attribute name="description">Allows building applications which target GTK# <xsl:value-of select="/files/targetversion"/></xsl:attribute>
 
 	<Runtime>
@@ -20,8 +20,12 @@
 	</Runtime>
 	
 	<Dependencies>
-		<Addin id="Core" version="0.17.0"/>
-		<Addin id="GtkCore" version="0.17.0"/>
+		<Addin id="Core">
+		    <xsl:attribute name="version"><xsl:value-of select="/files/coreaddinversion"/></xsl:attribute>
+		</Addin>
+		<Addin id="GtkCore">
+		    <xsl:attribute name="version"><xsl:value-of select="/files/coreaddinversion"/></xsl:attribute>
+		</Addin>
 	</Dependencies>
 	
 	<Extension path = "/MonoDevelop/Core/SupportPackages">

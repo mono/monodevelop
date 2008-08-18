@@ -1,4 +1,4 @@
-<objects>
+<objects attr-sync="on">
   <object type="MonoDevelop.Database.Components.ProjectDirectoryComboBox" palette-category="widget" allow-children="false" base-type="Gtk.ComboBox">
     <itemgroups />
     <signals />

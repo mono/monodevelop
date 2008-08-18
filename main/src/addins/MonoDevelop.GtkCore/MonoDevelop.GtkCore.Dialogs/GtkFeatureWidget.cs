@@ -70,7 +70,7 @@ namespace MonoDevelop.GtkCore.Dialogs
 		
 		public bool IsEnabled (SolutionFolder parentCombine, SolutionItem entry) 
 		{
-			return GtkDesignInfo.FromProject ((Project)entry).SupportsDesigner;
+			return GtkDesignInfo.SupportsDesigner ((Project)entry);
 		}
 	}
 }

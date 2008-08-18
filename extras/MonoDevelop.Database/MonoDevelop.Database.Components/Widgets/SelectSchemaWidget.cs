@@ -30,6 +30,8 @@ using MonoDevelop.Database.Sql;
 
 namespace MonoDevelop.Database.Components
 {
+	[System.ComponentModel.Category("MonoDevelop.Database.Components")]
+	[System.ComponentModel.ToolboxItem(true)]
 	public class SelectSchemaWidget : ScrolledWindow
 	{
 		private TreeView list;

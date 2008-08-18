@@ -517,13 +517,17 @@ namespace DebuggerServer
 		{
 			List<MD.StackFrame> frames = new List<MD.StackFrame> ();
 			DateTime t = DateTime.Now;
-			MD.Backtrace backtrace = thread.GetBacktrace (MD.Backtrace.Mode.Native, max_frames);
-			Console.WriteLine ("GetBacktrace time: {0} ms n:{1}", (DateTime.Now - t).TotalMilliseconds, backtrace.Count);
-			if (backtrace != null) {
-				frames.AddRange (backtrace.Frames);
+			if (!thread.CurrentFrame.Language.IsManaged) {
+				MD.Backtrace bt = thread.GetBacktrace (MD.Backtrace.Mode.Native, max_frames);
+				if (bt != null) {
+					Console.WriteLine ("GetBacktrace native time: {0} ms n:{1}", (DateTime.Now - t).TotalMilliseconds, bt.Count);
+					frames.AddRange (bt.Frames);
+				}
 			}
-			backtrace = thread.GetBacktrace (MD.Backtrace.Mode.Managed, max_frames);
+			t = DateTime.Now;
+			MD.Backtrace backtrace = thread.GetBacktrace (MD.Backtrace.Mode.Managed, max_frames);
 			if (backtrace != null) {
+				Console.WriteLine ("GetBacktrace managed time: {0} ms n:{1}", (DateTime.Now - t).TotalMilliseconds, backtrace.Count);
 				frames.AddRange (backtrace.Frames);
 			}
 			if (frames.Count > 0) {

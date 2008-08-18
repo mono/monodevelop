@@ -1,5 +1,5 @@
 <Project name="Mono.TextEditor" fileversion="2.0" language="C#" clr-version="Net_2_0" ctype="DotNetProject">
-  <Configurations active="Debug">
+  <Configurations active="Release">
     <Configuration name="Debug" ctype="DotNetProjectConfiguration">
       <Output directory="../../../build/bin" assemblyKeyFile="." assembly="Mono.TextEditor" />
       <Build debugmode="True" target="Library" />
@@ -84,6 +84,7 @@
     <File name="Mono.TextEditor/BufferedTextReader.cs" subtype="Code" buildaction="Compile" />
     <File name="Mono.TextEditor/BookmarkMarker.cs" subtype="Code" buildaction="Compile" />
     <File name="ChangelogSyntaxMode.xml" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="Mono.TextEditor.Highlighting/IColorDefinition.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />

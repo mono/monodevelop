@@ -189,6 +189,8 @@
     <File name="icons/breakpoint-remove-all-22.png" subtype="Code" buildaction="EmbedAsResource" />
     <File name="icons/breakpoint-new-16.png" subtype="Code" buildaction="EmbedAsResource" />
     <File name="icons/breakpoint-new-22.png" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="icons/empty-category-16.png" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="icons/empty-category-22.png" subtype="Code" buildaction="EmbedAsResource" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="False" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />

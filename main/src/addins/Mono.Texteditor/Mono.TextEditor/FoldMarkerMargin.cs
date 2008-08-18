@@ -61,7 +61,7 @@ namespace Mono.TextEditor
 			foreach (FoldSegment segment in editor.Document.GetStartFoldings (lineHover)) {
 				segment.IsFolded = !segment.IsFolded; 
 			}
-			
+			editor.Repaint = true;
 			editor.QueueDraw ();
 		}
 		
@@ -74,7 +74,7 @@ namespace Mono.TextEditor
 				lineSegment = args.LineSegment;
 				if (lineHover != lineSegment) {
 					lineHover = lineSegment;
-					editor.QueueDraw ();
+					editor.RedrawMargin (this);
 				}
 			} 
 			lineHover = lineSegment;
@@ -87,7 +87,7 @@ namespace Mono.TextEditor
 			
 			if (lineHover != null) {
 				lineHover = null;
-				editor.QueueDraw ();
+				editor.RedrawMargin (this);
 			}
 		}
 		

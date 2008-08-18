@@ -1,3 +1,9 @@
+2008-08-18  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* ValaBinding.mdp: Fix reference to Mono.TextEditor. The incorrect
+	  add-in version number causes problems in the makefile
+	  synchronization.
+
 2008-08-12  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com>
 
 	* Compiler/ValaCompiler.cs: Fix error parsing for recent valac.

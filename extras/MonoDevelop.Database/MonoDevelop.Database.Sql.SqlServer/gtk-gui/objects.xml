@@ -1,4 +1,4 @@
-<objects>
+<objects attr-sync="on">
   <object type="MonoDevelop.Database.Sql.SqlServer.SqlServerCreateDatabaseWidget" palette-category="MonoDevelop.Database.Sql.SqlServer" allow-children="false" base-type="Gtk.Bin">
     <itemgroups />
     <signals />

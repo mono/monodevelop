@@ -138,12 +138,8 @@ namespace MonoDevelop.SourceEditor
 			widget.TextEditor.Caret.PositionChanged += delegate {
 				FireCompletionContextChanged ();
 			};
-			
-//			GLib.Timeout.Add (1000, delegate {
-//				if (!widget.IsSplitted)
-//					widget.Split (true);
-//				return true;
-//			});
+
+			widget.TextEditor.IconMargin.ButtonPressed += OnIconButtonPress;
 			
 			widget.ShowAll ();
 			
@@ -434,6 +430,15 @@ namespace MonoDevelop.SourceEditor
 				UpdateBreakpoints ();
 				return false;
 			});
+		}
+		
+		void OnIconButtonPress (object s, MarginMouseEventArgs args)
+		{
+			if (args.Button == 3) {
+				TextEditor.Caret.Line = args.LineNumber;
+				TextEditor.Caret.Column = 1;
+				IdeApp.CommandService.ShowContextMenu ("/MonoDevelop/SourceEditor2/IconContextMenu/Editor");
+			}
 		}
 		
 		#region IExtensibleTextEditor

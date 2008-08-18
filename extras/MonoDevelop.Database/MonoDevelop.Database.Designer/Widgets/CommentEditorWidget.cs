@@ -34,6 +34,8 @@ using MonoDevelop.Database.Sql;
 
 namespace MonoDevelop.Database.Designer
 {
+	[System.ComponentModel.Category("widget")]
+	[System.ComponentModel.ToolboxItem(true)]
 	public partial class CommentEditorWidget : Gtk.Bin
 	{
 		public CommentEditorWidget()

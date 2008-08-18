@@ -123,7 +123,7 @@
     <ProjectReference type="Gac" localcopy="True" refto="MonoDevelop.Components, Version=1.9.0.0, Culture=neutral, PublicKeyToken=null" />
     <ProjectReference type="Gac" localcopy="True" refto="NRefactory, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null" />
     <ProjectReference type="Gac" localcopy="True" refto="Mono.Cecil, Version=0.6.8.8607, Culture=neutral, PublicKeyToken=null" />
-    <ProjectReference type="Gac" localcopy="True" refto="Mono.TextEditor, Version=1.0.3083.32360, Culture=neutral, PublicKeyToken=null" />
+    <ProjectReference type="Gac" localcopy="True" refto="Mono.TextEditor, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
     <ProjectReference type="Gac" localcopy="True" refto="Mono.Debugging, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null" />
     <ProjectReference type="Gac" localcopy="True" refto="MonoDevelop.VersionControl, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null" />
     <ProjectReference type="Gac" localcopy="True" refto="MonoDevelop.NUnit, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null" />

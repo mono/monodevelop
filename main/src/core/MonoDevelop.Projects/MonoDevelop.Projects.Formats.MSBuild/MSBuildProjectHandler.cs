@@ -220,16 +220,17 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			if (dotNetProject != null) {
 				foreach (MSBuildItem buildItem in msproject.GetAllItems ("Reference")) {
 					ProjectReference pref;
-					bool localCopy;
 					if (buildItem.HasMetadata ("HintPath")) {
 						string path = MSBuildProjectService.FromMSBuildPath (dotNetProject.BaseDirectory, buildItem.GetMetadata ("HintPath"));
-						pref = new ProjectReference (ReferenceType.Assembly, path);
-						localCopy = buildItem.GetMetadata ("Private") != "False";
+						if (File.Exists (path)) {
+							pref = new ProjectReference (ReferenceType.Assembly, path);
+							pref.LocalCopy = buildItem.GetMetadata ("Private") != "False";
+						} else {
+							pref = new ProjectReference (ReferenceType.Gac, buildItem.Include);
+						}
 					} else {
 						pref = new ProjectReference (ReferenceType.Gac, buildItem.Include);
-						localCopy = pref.LocalCopy;
 					}
-					pref.LocalCopy = localCopy;
 					ReadBuildItemMetadata (ser, buildItem, pref, typeof(ProjectReference));
 					dotNetProject.References.Add (pref);
 				}

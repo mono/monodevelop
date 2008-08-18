@@ -1,3 +1,15 @@
+2008-08-18  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Widgets/MySqlColumnEditorWidget.cs,
+	  Widgets/MySqlCreateDatabaseWidget.cs, gtk-gui/objects.xml: Use new
+	  model for describing custom stetic widgets.
+
+2008-08-18  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Database.Sql.MySql.mdp: Fix reference to Mono.TextEditor.
+	  The incorrect add-in version number causes problems in the makefile
+	  synchronization.
+
 2008-06-04  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Database.Sql.MySql.addin.xml: Bump MD version.

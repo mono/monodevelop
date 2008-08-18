@@ -34,6 +34,8 @@ using MonoDevelop.Projects.Gui;
 
 namespace MonoDevelop.Database.Components
 {
+	[System.ComponentModel.Category("widget")]
+	[System.ComponentModel.ToolboxItem(true)]
 	public class ProjectDirectoryComboBox : ComboBox
 	{
 		private TreeStore store;

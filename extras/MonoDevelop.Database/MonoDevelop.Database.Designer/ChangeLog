@@ -1,3 +1,21 @@
+2008-08-18  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Widgets/ColumnsEditorWidget.cs,
+	  Widgets/PrimaryKeyConstraintEditorWidget.cs,
+	  Widgets/CheckConstraintEditorWidget.cs,
+	  Widgets/CommentEditorWidget.cs, Widgets/TriggersEditorWidget.cs,
+	  Widgets/ConstraintsEditorWidget.cs,
+	  Widgets/ForeignKeyConstraintEditorWidget.cs,
+	  Widgets/UniqueConstraintEditorWidget.cs,
+	  Widgets/IndicesEditorWidget.cs, gtk-gui/objects.xml: Use new model
+	  for describing custom stetic widgets.
+
+2008-08-18  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Database.Designer.mdp: Fix reference to Mono.TextEditor.
+	  The incorrect add-in version number causes problems in the makefile
+	  synchronization.
+
 2008-06-04  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Database.Designer.addin.xml: Bump MD version.

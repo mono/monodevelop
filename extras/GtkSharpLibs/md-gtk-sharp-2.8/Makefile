@@ -1,3 +1,5 @@
+ADDIN_VERSION=2.8.3.21
+CORE_ADDIN_VERSION=1.9.0
 TARGET_VERSION=2.8
 POLICY_VERSION=2.4 2.6 2.8 2.10
 GTK_VERSION=2.8.3
@@ -58,6 +60,8 @@ $(ADDIN_FILE): $(ADDIN_FILE).xsl
 	echo "<files>"  > files
 	echo "<targetversion>"$(TARGET_VERSION)"</targetversion>"  >> files
 	echo "<gtkversion>"$(GTK_VERSION)"</gtkversion>"  >> files
+	echo "<addinversion>"$(ADDIN_VERSION)"</addinversion>"  >> files
+	echo "<coreaddinversion>"$(CORE_ADDIN_VERSION)"</coreaddinversion>"  >> files
 	find lib -name *.dll -type f -printf "<dll>%p</dll>\n" >> files
 	find lib -name *.config -type f -printf "<config>%p</config>\n" >> files
 	echo "</files>" >> files

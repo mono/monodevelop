@@ -644,12 +644,12 @@ namespace Mono.TextEditor
 				if (i < doc.foldSegments.Count)
 					newSegments.AddRange (doc.foldSegments.GetRange (i, doc.foldSegments.Count - i));
 				GLib.Timeout.Add (0, delegate {
-					bool needsUpdate = doc.foldSegments.Count != newSegments.Count;
+//					bool needsUpdate = doc.foldSegments.Count != newSegments.Count;
 					doc.foldSegments = newSegments;
-					if (needsUpdate) {
+//					if (needsUpdate) {
 						doc.RequestUpdate (new UpdateAll ());
 						doc.CommitDocumentUpdate ();
-					}
+//					}
 					return false;
 				});
 				base.Stop ();

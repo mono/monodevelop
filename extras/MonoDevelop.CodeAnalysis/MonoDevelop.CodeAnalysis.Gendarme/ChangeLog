@@ -1,3 +1,9 @@
+2008-08-18  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.CodeAnalysis.Gendarme.mdp: Fix reference to
+	  Mono.TextEditor. The incorrect add-in version number causes
+	  problems in the makefile synchronization.
+
 2008-04-24  Daniel Abramov <ex@vingrad.ru> 
 
 	* MonoDevelop.CodeAnalysis.Gendarme.addin.xml: added dependencies

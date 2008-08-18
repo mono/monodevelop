@@ -1,3 +1,11 @@
+2008-08-18  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Core.Gui.mdp,
+	  MonoDevelop.Core.Gui.Dialogs/OptionsDialog.cs, Makefile.am,
+	  icons/empty-category-16.png, icons/empty-category-22.png,
+	  MonoDevelop.Core.Gui.addin.xml: Added new simple icon for option
+	  dialog panels which don't have one.
+
 2008-08-07  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Core.Gui.mdp, Makefile.am, icons/breakpoint-new-16.png,

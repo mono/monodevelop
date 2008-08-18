@@ -31,6 +31,8 @@ using MonoDevelop.Database.Sql;
 
 namespace MonoDevelop.Database.Components
 {
+	[System.ComponentModel.Category("MonoDevelop.Database.Components")]
+	[System.ComponentModel.ToolboxItem(true)]
 	public class SelectTableWidget : ScrolledWindow
 	{
 		public event EventHandler TableToggled;

@@ -53,6 +53,9 @@ namespace MonoDevelop.SourceEditor
 		
 		public object GetItem (TextEditor editor, int offset)
 		{
+			if (offset >= editor.Document.Length)
+				return null;
+			
 			if (!IdeApp.Services.DebuggingService.IsDebugging || IdeApp.Services.DebuggingService.IsRunning)
 				return null;
 				

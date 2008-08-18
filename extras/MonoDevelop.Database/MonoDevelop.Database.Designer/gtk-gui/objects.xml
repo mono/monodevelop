@@ -1,4 +1,4 @@
-<objects>
+<objects attr-sync="on">
   <object type="MonoDevelop.Database.Designer.ColumnsEditorWidget" palette-category="widget" allow-children="false" base-type="Gtk.Bin">
     <itemgroups />
     <signals>
