@@ -144,7 +144,7 @@ namespace MonoDevelop.Core.Gui.Dialogs
 				it = store.AppendValues (section, null, section.Label, false);
 			}
 			else {
-				string icon = string.IsNullOrEmpty (section.Icon) ? "gtk-preferences" : section.Icon;
+				string icon = string.IsNullOrEmpty (section.Icon) ? "md-empty-category" : section.Icon;
 				it = store.AppendValues (parentIter, section, icon, section.Label, true);
 			}
 			
@@ -262,7 +262,7 @@ namespace MonoDevelop.Core.Gui.Dialogs
 			if (!string.IsNullOrEmpty (section.Icon))
 				image.Stock = section.Icon;
 			else
-				image.Stock = "gtk-preferences";
+				image.Stock = "md-empty-category";
 			pageFrame.PackStart (page.Widget, true, true, 0);
 			
 			// Ensures that the Shown event is fired for each panel

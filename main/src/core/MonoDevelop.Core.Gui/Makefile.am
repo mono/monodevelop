@@ -112,6 +112,8 @@ RES =  \
 	icons/element-namespace-16.png \
 	icons/element-property-16.png \
 	icons/element-structure-16.png \
+	icons/empty-category-16.png \
+	icons/empty-category-22.png \
 	icons/ExecutionMarker.png \
 	icons/file-addin-16.png \
 	icons/file-class-32.png \
