@@ -1,3 +1,9 @@
+2008-08-18  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectHandler.cs: Commit
+	  fix for bug bug #410408 - HintPath handling invalid. Based on patch
+	  by Scott McNally.
+
 2008-08-06  Eric Butler <eric@extremeboredom.net>
 
 	* MonoDevelop.Projects/DotNetProject.cs: Add additional null check.
