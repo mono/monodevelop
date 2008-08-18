@@ -36,6 +36,8 @@ using MonoDevelop.Components.Commands;
 
 namespace MonoDevelop.Database.Components
 {
+	[System.ComponentModel.Category("MonoDevelop.Database.Components")]
+	[System.ComponentModel.ToolboxItem(true)]
 	public partial class DataGrid : Bin
 	{
 		private bool limitPageSize = true;

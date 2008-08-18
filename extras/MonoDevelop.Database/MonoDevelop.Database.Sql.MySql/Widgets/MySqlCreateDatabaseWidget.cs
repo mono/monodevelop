@@ -31,6 +31,8 @@ using MonoDevelop.Database.Components;
 
 namespace MonoDevelop.Database.Sql.MySql
 {
+	[System.ComponentModel.Category("MonoDevelop.Database.Sql.MySql")]
+	[System.ComponentModel.ToolboxItem(true)]
 	public partial class MySqlCreateDatabaseWidget : Bin
 	{
 		public MySqlCreateDatabaseWidget ()

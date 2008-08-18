@@ -29,6 +29,8 @@ namespace MonoDevelop.Database.Sql.Npgsql
 {
 	
 	
+	[System.ComponentModel.Category("MonoDevelop.Database.Sql.Npgsql")]
+	[System.ComponentModel.ToolboxItem(true)]
 	public partial class NpgsqlCreateDatabaseWidget : Gtk.Bin
 	{
 		

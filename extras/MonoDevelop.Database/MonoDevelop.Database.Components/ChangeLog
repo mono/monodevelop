@@ -1,5 +1,15 @@
 2008-08-18  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* Widgets/DataGrid/DataGrid.cs, Widgets/SelectTableWidget.cs,
+	  Widgets/ColumnMappingWidget.cs, Widgets/SelectColumnWidget.cs,
+	  Widgets/DatabaseConnectionContextComboBox.cs,
+	  Widgets/ProjectDirectoryComboBox.cs, Widgets/SelectSchemaWidget.cs,
+	  Widgets/ConnectionSettingsWidget.cs, Widgets/TableMappingWidget.cs,
+	  Widgets/SqlEditorWidget.cs, gtk-gui/objects.xml: Use new model for
+	  describing custom stetic widgets.
+
+2008-08-18  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Database.Components.mdp: Fix reference to
 	  Mono.TextEditor. The incorrect add-in version number causes
 	  problems in the makefile synchronization.

@@ -33,6 +33,8 @@ using MonoDevelop.Database.Components;
 
 namespace MonoDevelop.Database.Designer
 {
+	[System.ComponentModel.Category("widget")]
+	[System.ComponentModel.ToolboxItem(true)]
 	public partial class CheckConstraintEditorWidget : Gtk.Bin
 	{
 		public event EventHandler ContentChanged;

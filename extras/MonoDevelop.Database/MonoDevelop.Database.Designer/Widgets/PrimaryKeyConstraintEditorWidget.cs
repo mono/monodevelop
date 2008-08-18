@@ -34,6 +34,8 @@ using MonoDevelop.Database.Components;
 
 namespace MonoDevelop.Database.Designer
 {
+	[System.ComponentModel.Category("widget")]
+	[System.ComponentModel.ToolboxItem(true)]
 	public partial class PrimaryKeyConstraintEditorWidget : Gtk.Bin
 	{
 		public event EventHandler ContentChanged;

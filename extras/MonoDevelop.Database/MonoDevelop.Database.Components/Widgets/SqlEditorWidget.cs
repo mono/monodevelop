@@ -39,6 +39,8 @@ namespace MonoDevelop.Database.Components
 {
 	//TODO: use the abstracted MD source editor widget
 	//TODO: remove gtksourceview-sharp as dependency + from configure.in
+	[System.ComponentModel.Category("widget")]
+	[System.ComponentModel.ToolboxItem(true)]
 	public partial class SqlEditorWidget : Bin
 	{
 		public event EventHandler TextChanged;

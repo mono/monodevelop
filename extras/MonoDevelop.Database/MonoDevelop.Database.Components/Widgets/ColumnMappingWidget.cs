@@ -31,6 +31,8 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.Database.Components
 {
+	[System.ComponentModel.Category("widget")]
+	[System.ComponentModel.ToolboxItem(true)]
 	public class ColumnMappingWidget : ScrolledWindow
 	{
 		private TreeView list;
