@@ -121,6 +121,8 @@ namespace DebuggerServer
 			
 			// Look for DebuggerTypeProxyAttribute
 			TargetObject attType = GetTypeOf (frame, "System.Diagnostics.DebuggerTypeProxyAttribute");
+			if (attType == null)
+				return null;
 			TargetObject at = CallStaticMethod (thread, "GetCustomAttribute", "System.Attribute", tt, attType, inherit);
 			// HACK: The first call doesn't work the first time for generic types. So we do it again.
 			at = CallStaticMethod (thread, "GetCustomAttribute", "System.Attribute", tt, attType, inherit);

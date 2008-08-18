@@ -232,7 +232,7 @@ namespace DebuggerServer
 				}
 				if (mem.Member is TargetPropertyInfo) {
 					TargetPropertyInfo prop = (TargetPropertyInfo) mem.Member;
-					if (prop.Getter.ParameterTypes == null || prop.Getter.ParameterTypes.Length == 0)
+					if (prop.CanRead && (prop.Getter.ParameterTypes == null || prop.Getter.ParameterTypes.Length == 0))
 						yield return new PropertyReference (thread, prop, co);
 				}
 			}
