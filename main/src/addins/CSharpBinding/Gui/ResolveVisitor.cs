@@ -312,9 +312,18 @@ namespace MonoDevelop.CSharpBinding
 						List <IMember> member = curType.SearchMember (fieldReferenceExpression.FieldName, true);
 						if (member != null && member.Count > 0) {
 							if (member[0] is IMethod) {
+								bool isStatic = result.StaticResolve;
+								for (int i = 0; i < member.Count; i++) {
+									System.Console.WriteLine(member[i] + "/" + resolver.CallingMember + !member[i].IsAccessibleFrom (resolver.Dom, resolver.CallingMember));
+									if ((member[i].IsStatic ^ isStatic) || !member[i].IsAccessibleFrom (resolver.Dom, resolver.CallingMember)) {
+										member.RemoveAt (i);
+										i--;
+									}
+								}
 								result = new MethodResolveResult (member);
 								result.CallingType   = resolver.CallingType;
 								result.CallingMember = resolver.CallingMember;
+								result.StaticResolve = isStatic;
 								return result;
 							}
 							if (member[0] is IType) {

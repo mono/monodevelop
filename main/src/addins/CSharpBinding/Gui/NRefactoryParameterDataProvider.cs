@@ -43,18 +43,19 @@ namespace MonoDevelop.CSharpBinding
 		TextEditor editor;
 		List<IMethod> methods = new List<IMethod> ();
 		CSharpAmbience ambience = new CSharpAmbience ();
+		NRefactoryResolver resolver;
 		
-		public NRefactoryParameterDataProvider (TextEditor editor, ProjectDom dom, MethodResolveResult resolveResult)
+		public NRefactoryParameterDataProvider (TextEditor editor, NRefactoryResolver resolver, MethodResolveResult resolveResult)
 		{
 			this.editor = editor;
-			
+			this.resolver = resolver;
 			methods.AddRange (resolveResult.Methods);
-			
 		}
 		
-		public NRefactoryParameterDataProvider (TextEditor editor, ProjectDom dom, ThisResolveResult resolveResult)
+		public NRefactoryParameterDataProvider (TextEditor editor, NRefactoryResolver resolver, ThisResolveResult resolveResult)
 		{
 			this.editor = editor;
+			this.resolver = resolver;
 			if (resolveResult.CallingType != null) {
 				foreach (IMethod method in resolveResult.CallingType.Methods) {
 					if (!method.IsConstructor)
@@ -64,11 +65,12 @@ namespace MonoDevelop.CSharpBinding
 			}
 		}
 		
-		public NRefactoryParameterDataProvider (TextEditor editor, ProjectDom dom, BaseResolveResult resolveResult)
+		public NRefactoryParameterDataProvider (TextEditor editor, NRefactoryResolver resolver, BaseResolveResult resolveResult)
 		{
 			this.editor = editor;
+			this.resolver = resolver;
 			if (resolveResult.CallingType != null) {
-				IType baseType = dom.GetType (resolveResult.CallingType.BaseType);
+				IType baseType = resolver.Dom.GetType (resolveResult.CallingType.BaseType);
 				
 				if (baseType != null) {
 					foreach (IMethod method in baseType.Methods) {

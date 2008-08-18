@@ -282,12 +282,12 @@ namespace MonoDevelop.CSharpBinding.Gui
 				ResolveResult resolveResult = resolver.Resolve (result, new DomLocation (Editor.CursorLine, Editor.CursorColumn));
 				if (resolveResult != null) {
 					if (resolveResult is MethodResolveResult)
-						return new NRefactoryParameterDataProvider (Editor, resolver.Dom, resolveResult as MethodResolveResult);
+						return new NRefactoryParameterDataProvider (Editor, resolver, resolveResult as MethodResolveResult);
 					if (result.ExpressionContext == ExpressionContext.BaseConstructorCall) {
 						if (resolveResult is ThisResolveResult)
-							return new NRefactoryParameterDataProvider (Editor, resolver.Dom, resolveResult as ThisResolveResult);
+							return new NRefactoryParameterDataProvider (Editor, resolver, resolveResult as ThisResolveResult);
 						if (resolveResult is BaseResolveResult)
-							return new NRefactoryParameterDataProvider (Editor, resolver.Dom, resolveResult as BaseResolveResult);
+							return new NRefactoryParameterDataProvider (Editor, resolver, resolveResult as BaseResolveResult);
 					}
 				}
 				break;
@@ -478,9 +478,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 			} else {
 				AddVirtuals (provider, type, modifiers, searchType.BaseType);
 			}
-			
 		}
-		
 		
 		CodeCompletionDataProvider CreateTypeCompletionData (ExpressionContext context, IReturnType returnType)
 		{
