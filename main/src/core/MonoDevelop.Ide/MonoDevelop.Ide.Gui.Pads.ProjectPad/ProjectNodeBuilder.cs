@@ -151,7 +151,8 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		
 		public override object GetParentObject (object dataObject)
 		{
-			return ((SolutionItem) dataObject).ParentFolder;
+			SolutionItem it = (SolutionItem) dataObject;
+			return it.ParentFolder.IsRoot ? (object) it.ParentSolution : (object) it.ParentFolder;
 		}
 		
 		void OnAddFile (object sender, ProjectFileEventArgs e)

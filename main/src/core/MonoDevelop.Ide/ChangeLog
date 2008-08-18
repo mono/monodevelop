@@ -1,3 +1,10 @@
+2008-08-18  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ProjectPad/SolutionFolderNodeBuilder.cs:
+	  Fix logic in GetParentObject.
+	* gtk-gui/objects.xml: Updated.
+
 2008-08-13  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Ide.Gui/MonoDevelopTreeView.cs: Remove the workaround for
