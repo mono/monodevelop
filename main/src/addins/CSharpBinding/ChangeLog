@@ -1,3 +1,8 @@
+2008-08-19  Mike Krüger <mkrueger@novell.com> 
+
+	* Parser/DomParser.cs: Fixed type modifiers (fixes some bugs in
+	  stetic).
+
 2008-07-23  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* Gui/CSharpTextEditorCompletion.cs, Gui/CSharpTextEditorExtension.cs:

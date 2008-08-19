@@ -230,12 +230,13 @@ namespace MonoDevelop.CSharpBinding
 				}
 			}
 			MonoDevelop.Projects.Dom.DomType result = new MonoDevelop.Projects.Dom.DomType (unit,
-			                                        ClassType.Class,
-			                                        type.Name,
-			                                        Location2DomLocation (type.MembersBlock.Start), 
-			                                        nsName, 
-			                                        Block2Region (type.MembersBlock),
-			                                        members);
+			                                                                                ClassType.Class,
+			                                                                                type.Name,
+			                                                                                Location2DomLocation (type.MembersBlock.Start),
+			                                                                                nsName,
+			                                                                                Block2Region (type.MembersBlock),
+			                                                                                members);
+			result.Modifiers = ConvertModifier (type.ModFlags);
 			if (type.BaseTypes != null) {
 				foreach (Mono.CSharp.Dom.ITypeName baseType in type.BaseTypes) {
 					if (result.BaseType == null) {
