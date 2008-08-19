@@ -1,5 +1,10 @@
 2008-08-19  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderProject.cs: fixed issue in
+	  GetSourceCodeFile.
+
+2008-08-19  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderProject.cs: fixed some
 	  possible nullrefs.
 

@@ -445,7 +445,6 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		public string GetSourceCodeFile (Stetic.ProjectItemInfo obj, bool getUserClass)
 		{
 			IType cls = GetClass (obj, getUserClass);
-			
 			if (cls != null && cls.CompilationUnit != null)
 				return cls.CompilationUnit.FileName;
 			return null;
@@ -473,25 +472,19 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				return null;
 			foreach (IType cls in classes) {
 				if (cls.FullName == className) {
-					System.Console.WriteLine (cls + " --- " + cls.CompilationUnit);
 					if (getUserClass) {
-						if (cls.HasParts) {
-							// Return this class only if it is declared outside the gtk-gui
-							// folder. Generated partial classes will be ignored.
-							foreach (IType part in cls.Parts) {
-								if (part.CompilationUnit != null && !part.CompilationUnit.FileName.StartsWith (gui_folder))
-									return part;
+						// Return this class only if it is declared outside the gtk-gui
+						// folder. Generated partial classes will be ignored.
+						foreach (IType part in cls.Parts) {
+							if (part.CompilationUnit != null && !part.CompilationUnit.FileName.StartsWith (gui_folder)) {
+								return part;
 							}
-							return null;
-						} else {
-							if (cls.CompilationUnit != null && !cls.CompilationUnit.FileName.StartsWith (gui_folder))
-								return cls;
 						}
+						continue;
 					}
 					if (getUserClass && cls.CompilationUnit != null && !string.IsNullOrEmpty (cls.CompilationUnit.FileName) && cls.CompilationUnit.FileName.StartsWith (gui_folder))
-						return null;
-					else
-						return cls;
+						continue;
+					return cls;
 				}
 			}
 			return null;
