@@ -115,14 +115,13 @@ namespace MonoDevelop.Projects.Dom
 			this.isConstructor = isConstructor;
 		}
 		
-		public DomMethod (string name, Modifiers modifiers, bool isConstructor, DomLocation location, DomRegion bodyRegion, IReturnType returnType, List<IParameter> parameters)
+		public DomMethod (string name, Modifiers modifiers, bool isConstructor, DomLocation location, DomRegion bodyRegion, IReturnType returnType)
 		{
 			this.Name       = name;
 			this.modifiers      = modifiers;
 			this.location   = location;
 			this.bodyRegion = bodyRegion;
 			this.returnType = returnType;
-			this.parameters = parameters;
 			this.isConstructor = isConstructor;
 		}
 		
@@ -131,6 +130,15 @@ namespace MonoDevelop.Projects.Dom
 			if (parameters == null) 
 				parameters = new List<IParameter> ();
 			parameters.Add (parameter);
+		}
+		
+		public void Add (IEnumerable<IParameter> parameters)
+		{
+			if (parameters == null)
+				return;
+			foreach (IParameter parameter in parameters) {
+				Add (parameter);
+			}
 		}
 		
 		public void AddGenericParameter (IReturnType genPara)

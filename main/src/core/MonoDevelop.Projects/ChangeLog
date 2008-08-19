@@ -1,3 +1,10 @@
+2008-08-19  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Dom.Parser/ProjectParserService.cs,
+	  MonoDevelop.Projects.Dom/DomType.cs,
+	  MonoDevelop.Projects.Dom/DomParameter.cs,
+	  MonoDevelop.Projects.Dom/DomMethod.cs: Worked on dom.
+
 2008-08-18  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectHandler.cs: Commit

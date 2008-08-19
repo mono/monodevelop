@@ -366,7 +366,10 @@ namespace MonoDevelop.Projects.Dom
 			result.compilationUnit = compilationUnit;
 			result.Name = name;
 			result.classType = MonoDevelop.Projects.Dom.ClassType.Delegate;
-			result.members.Add (new DomMethod ("Invoke", Modifiers.None, false, location, DomRegion.Empty, type, parameters));
+			DomMethod delegateMethod = new DomMethod ("Invoke", Modifiers.None, false, location, DomRegion.Empty, type);
+			delegateMethod.Add (parameters);
+			result.members.Add (delegateMethod);
+			
 			return result;
 		}
 		

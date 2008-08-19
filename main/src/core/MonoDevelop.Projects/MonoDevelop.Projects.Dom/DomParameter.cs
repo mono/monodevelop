@@ -126,10 +126,11 @@ namespace MonoDevelop.Projects.Dom
 		{
 		}
 		
-		public DomParameter (string name, IReturnType returnType)
+		public DomParameter (IMember declaringMember, string name, IReturnType returnType)
 		{
-			this.name       = name;
-			this.returnType = returnType;
+			this.name            = name;
+			this.declaringMember = declaringMember;
+			this.returnType      = returnType;
 		}
 		
 		public void Add (IAttribute attribute)

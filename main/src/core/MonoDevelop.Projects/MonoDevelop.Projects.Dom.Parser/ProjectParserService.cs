@@ -181,6 +181,11 @@ namespace MonoDevelop.Projects.Dom.Parser
 				Thread.Sleep (500);
 				try {
 					ICompilationUnit unit = parser.Parse (fileName, getContent ());
+					if (unit != null) {
+						foreach (IType type in unit.Types) {
+							type.SourceProjectDom = dom;
+						}
+					}
 					if (dom != null)
 						dom.UpdateFromParseInfo (unit, fileName);
 					OnCompilationUnitUpdated (new CompilationUnitEventArgs (unit));
@@ -224,6 +229,11 @@ namespace MonoDevelop.Projects.Dom.Parser
 				refreshThreads.Remove (fileName);
 			}
 			ICompilationUnit unit = parser.Parse (fileName, getContent ());
+			if (unit != null) {
+				foreach (IType type in unit.Types) {
+					type.SourceProjectDom = dom;
+				}
+			}
 		//	compilationUnits[fileName] = unit;
 			if (dom != null)
 				dom.UpdateFromParseInfo (unit, fileName);
