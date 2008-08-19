@@ -1,3 +1,10 @@
+2008-08-19  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Core.Serialization/ClassDataType.cs: When deserializing
+	  nested properties, make sure the nesting element is not added as
+	  unknown element unless it actually contains unknown properties.
+	  Fixes bug #403847.
+
 2008-08-13  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Core/XmlReadHelper.cs: Add stack trace to error message,
