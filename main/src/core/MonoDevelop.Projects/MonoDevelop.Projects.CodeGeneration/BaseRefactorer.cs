@@ -222,7 +222,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 			return false;
 		}
 		
-		protected CodeTypeReference ReturnTypeToDom (RefactorerContext ctx, IReturnType declaredType)
+		protected CodeTypeReference ReturnTypeToDom (RefactorerContext ctx, ICompilationUnit unit, IReturnType declaredType)
 		{
 			CodeTypeReference [] argTypes = null;
 			IReturnType rtype = declaredType;
@@ -232,12 +232,12 @@ namespace MonoDevelop.Projects.CodeGeneration
 			if (rtype.GenericArguments != null && rtype.GenericArguments.Count > 0) {
 				argTypes = new CodeTypeReference [rtype.GenericArguments.Count];
 				for (int i = 0; i < rtype.GenericArguments.Count; i++) {
-					argTypes[i] = ReturnTypeToDom (ctx, rtype.GenericArguments[i]);
+					argTypes[i] = ReturnTypeToDom (ctx, unit, rtype.GenericArguments[i]);
 				}
 			}
-			// TODO: resolving with parser context search type
-			//string name = IsBaseType (rtype.FullName) ? rtype.FullName : ctx.TypeNameResolver.ResolveName (rtype.FullName);
-			string name = rtype.FullName;
+			
+			SearchTypeResult request = ctx.ParserContext.SearchType (new SearchTypeRequest (unit, -1, -1, rtype.FullName));
+			string name = request != null ? request.Result.FullName : rtype.FullName;
 			CodeTypeReference typeRef = argTypes != null ? new CodeTypeReference (name, argTypes) : new CodeTypeReference (name);
 			
 			if (rtype.ArrayDimensions == 0)
@@ -288,12 +288,12 @@ namespace MonoDevelop.Projects.CodeGeneration
 			if (member is IEvent) {
 				CodeMemberEvent mEvent = new CodeMemberEvent ();
 				m = mEvent;
-				mEvent.Type = ReturnTypeToDom (ctx, member.ReturnType);
+				mEvent.Type = ReturnTypeToDom (ctx, cls.CompilationUnit, member.ReturnType);
 				if (!is_interface_method)
 					mEvent.Attributes = MemberAttributes.Override;
 
 				if (privateImplementationType != null)
-					mEvent.PrivateImplementationType = ReturnTypeToDom (ctx, privateImplementationType);
+					mEvent.PrivateImplementationType = ReturnTypeToDom (ctx, cls.CompilationUnit, privateImplementationType);
 			} else if (member is IMethod) {
 				CodeMemberMethod mMethod = new CodeMemberMethod ();
 				IMethod method = (IMethod) member;
@@ -306,14 +306,14 @@ namespace MonoDevelop.Projects.CodeGeneration
 				if (!is_interface_method)
 					mMethod.Attributes = MemberAttributes.Override;
 				
-				mMethod.ReturnType = ReturnTypeToDom (ctx, member.ReturnType);
+				mMethod.ReturnType = ReturnTypeToDom (ctx, cls.CompilationUnit, member.ReturnType);
 				CodeExpression nieReference = new CodeObjectCreateExpression (TypeToDom (ctx, typeof (NotImplementedException)));
 				CodeStatement throwExpression = new CodeThrowExceptionStatement (nieReference);
 				mMethod.Statements.Add (throwExpression);
 				
 				foreach (IParameter param in method.Parameters) {
 					CodeParameterDeclarationExpression par;
-					par = new CodeParameterDeclarationExpression (ReturnTypeToDom (ctx, param.ReturnType), param.Name);
+					par = new CodeParameterDeclarationExpression (ReturnTypeToDom (ctx, cls.CompilationUnit, param.ReturnType), param.Name);
 					if (param.IsOut)
 						par.Direction = FieldDirection.Out;
 					else if (param.IsRef)
@@ -323,7 +323,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 					mMethod.Parameters.Add (par);
 				}
 				if (privateImplementationType != null)
-					mMethod.PrivateImplementationType = ReturnTypeToDom (ctx, privateImplementationType);
+					mMethod.PrivateImplementationType = ReturnTypeToDom (ctx, cls.CompilationUnit, privateImplementationType);
 			} else if (member is IProperty) {
 				IProperty property = (IProperty) member;
 				if (!property.IsIndexer) {
@@ -342,9 +342,9 @@ namespace MonoDevelop.Projects.CodeGeneration
 					if (property.HasSet)
 						mProperty.SetStatements.Add (throwExpression);
 				
-					mProperty.Type = ReturnTypeToDom (ctx, member.ReturnType);
+					mProperty.Type = ReturnTypeToDom (ctx, cls.CompilationUnit, member.ReturnType);
 					if (privateImplementationType != null)
-						mProperty.PrivateImplementationType = ReturnTypeToDom (ctx, privateImplementationType);
+						mProperty.PrivateImplementationType = ReturnTypeToDom (ctx, cls.CompilationUnit, privateImplementationType);
 				} else {
 					CodeMemberProperty mProperty = new CodeMemberProperty ();
 					m = mProperty;
@@ -363,13 +363,13 @@ namespace MonoDevelop.Projects.CodeGeneration
 				
 					foreach (IParameter param in property.Parameters) {
 						CodeParameterDeclarationExpression par;
-						par = new CodeParameterDeclarationExpression (ReturnTypeToDom (ctx, param.ReturnType), param.Name);
+						par = new CodeParameterDeclarationExpression (ReturnTypeToDom (ctx, cls.CompilationUnit, param.ReturnType), param.Name);
 						mProperty.Parameters.Add (par);
 					}
 				
-					mProperty.Type = ReturnTypeToDom (ctx, member.ReturnType);
+					mProperty.Type = ReturnTypeToDom (ctx, cls.CompilationUnit, member.ReturnType);
 					if (privateImplementationType != null)
-						mProperty.PrivateImplementationType = ReturnTypeToDom (ctx, privateImplementationType);
+						mProperty.PrivateImplementationType = ReturnTypeToDom (ctx, cls.CompilationUnit, privateImplementationType);
 				} 
 			} else {
 				return null;
@@ -558,7 +558,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 			CodeMemberProperty prop = new CodeMemberProperty ();
 			prop.Name = propName;
 			
-			prop.Type = ReturnTypeToDom (ctx, field.ReturnType);
+			prop.Type = ReturnTypeToDom (ctx, cls.CompilationUnit, field.ReturnType);
 			prop.Attributes = attr | MemberAttributes.Final;
 			if (field.IsStatic)
 				prop.Attributes |= MemberAttributes.Static;
