@@ -164,18 +164,18 @@ namespace MonoDevelop.SourceEditor
 			// Set up the data stores for the comboboxes
 			classStore = new ListStore(typeof(Gdk.Pixbuf), typeof(string), typeof(IClass));
 			classCombo.Model = classStore;	
-			classCombo.Changed += new EventHandler (ClassChanged);
+			classCombo.Changed += ClassChanged;
 			tips.SetTip (classCombo, GettextCatalog.GetString ("Type list"), null);
 			
 			memberStore = new ListStore(typeof(Gdk.Pixbuf), typeof(string), typeof(IMember));
 			memberStore.SetSortColumnId (1, Gtk.SortType.Ascending);
 			membersCombo.Model = memberStore;
-			membersCombo.Changed += new EventHandler (MemberChanged);
+			membersCombo.Changed += MemberChanged;
 			tips.SetTip (membersCombo, GettextCatalog.GetString ("Member list"), null);
 
 			regionStore = new ListStore(typeof(Gdk.Pixbuf), typeof(string), typeof(IRegion));
 			regionCombo.Model = regionStore;	
-			regionCombo.Changed += new EventHandler (RegionChanged);
+			regionCombo.Changed += RegionChanged;
 			tips.SetTip (regionCombo, GettextCatalog.GetString ("Region list"), null);
 			
 			ResetFocusChain ();
@@ -184,15 +184,8 @@ namespace MonoDevelop.SourceEditor
 			
 			UpdateLineCol ();
 			
-			this.Focused += delegate {
-				UpdateLineCol ();
-			};
 			IdeApp.Workspace.ParserDatabase.ParseInformationChanged += OnParseInformationChanged;
 //			this.IsClassBrowserVisible = SourceEditorOptions.Options.EnableQuickFinder;
-			
-			this.Destroyed += delegate {
-				this.Dispose ();
-			};
 		}
 		
 		void ResetFocusChain ()
@@ -204,6 +197,14 @@ namespace MonoDevelop.SourceEditor
 				this.regionCombo
 			};
 		}
+
+		protected override bool OnFocused (DirectionType direction)
+		{
+			bool res = base.OnFocused (direction);
+			UpdateLineCol ();
+			return res;
+		}
+
 		
 		protected override void OnSizeAllocated (Gdk.Rectangle allocation)
 		{
@@ -449,9 +450,16 @@ namespace MonoDevelop.SourceEditor
 				isDisposed = true;
 				StopParseInfoThread ();
 				
+				mainsw.ButtonPressEvent -= PrepareEvent;
+				classCombo.Changed -= ClassChanged;
+				membersCombo.Changed -= MemberChanged;
+				regionCombo.Changed -= RegionChanged;
+				
 				this.textEditor = null;
 				this.lastActiveEditor = null;
 				this.splittedTextEditor = null;
+				view = null;
+
 				IdeApp.Workspace.ParserDatabase.ParseInformationChanged -= UpdateClassBrowser;
 				IdeApp.Workspace.ParserDatabase.ParseInformationChanged -= OnParseInformationChanged;
 			}			

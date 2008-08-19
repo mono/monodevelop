@@ -165,6 +165,11 @@ namespace MonoDevelop.SourceEditor
 				fileSystemWatcher.EnableRaisingEvents = true;
 			};
 			ClipbardRingUpdated += UpdateClipboardRing;
+			
+			IdeApp.Services.DebuggingService.ExecutionLocationChanged += executionLocationChanged;
+			IdeApp.Services.DebuggingService.Breakpoints.BreakpointAdded += breakpointAdded;
+			IdeApp.Services.DebuggingService.Breakpoints.BreakpointRemoved += breakpointRemoved;
+			IdeApp.Services.DebuggingService.Breakpoints.BreakpointStatusChanged += breakpointStatusChanged;
 		}
 		
 		public override void Save (string fileName)
@@ -231,10 +236,6 @@ namespace MonoDevelop.SourceEditor
 			
 			UpdateExecutionLocation ();
 			UpdateBreakpoints ();
-			IdeApp.Services.DebuggingService.ExecutionLocationChanged += executionLocationChanged;
-			IdeApp.Services.DebuggingService.Breakpoints.BreakpointAdded += breakpointAdded;
-			IdeApp.Services.DebuggingService.Breakpoints.BreakpointRemoved += breakpointRemoved;
-			IdeApp.Services.DebuggingService.Breakpoints.BreakpointStatusChanged += breakpointStatusChanged;
 
 			widget.LoadClassCombo ();
 			this.IsDirty = false;
@@ -251,6 +252,11 @@ namespace MonoDevelop.SourceEditor
 			}
 			
 			if (widget != null) {
+			
+				widget.TextEditor.Document.TextReplacing -= OnTextReplacing;
+				widget.TextEditor.Document.TextReplacing -= OnTextReplaced;
+				widget.TextEditor.Document.ReadOnlyCheckDelegate = null;
+				
 				widget.Destroy ();
 				widget = null;
 			}
@@ -259,6 +265,18 @@ namespace MonoDevelop.SourceEditor
 			IdeApp.Services.DebuggingService.Breakpoints.BreakpointAdded -= breakpointAdded;
 			IdeApp.Services.DebuggingService.Breakpoints.BreakpointRemoved -= breakpointRemoved;
 			IdeApp.Services.DebuggingService.Breakpoints.BreakpointStatusChanged -= breakpointStatusChanged;
+			
+			// This is not necessary but helps when tracking down memory leaks
+			
+			currentDebugLineMarker = null;
+			breakpointMarker = null;
+			breakpointDisabledMarker = null;
+			breakpointInvalidMarker = null;
+			
+			executionLocationChanged = null;
+			breakpointAdded = null;
+			breakpointRemoved = null;
+			breakpointStatusChanged = null;
 		}
 		
 		public IParserContext GetParserContext ()
