@@ -294,6 +294,8 @@ namespace Stetic
 			
 			if (wrapper is Wrapper.Widget) {
 				Wrapper.Widget ww = wrapper as Wrapper.Widget;
+				if (!String.IsNullOrEmpty (ww.UIManagerName)) 
+					tobind.Add (new ObjectBindInfo ("Gtk.UIManager", ww.UIManagerName));
 
 				if (!ww.IsTopLevel && ww.InternalChildProperty == null && !ww.Unselectable)
 					memberName = ((Wrapper.Widget) wrapper).Wrapped.Name;
@@ -396,8 +398,7 @@ namespace Stetic
 						)
 					);
 					return var;
-				}
-				else
+				} else 
 					return base.GenerateInstanceExpression (wrapper, newObject);
 			} else {
 				CodeExpression var = base.GenerateInstanceExpression (wrapper, newObject);

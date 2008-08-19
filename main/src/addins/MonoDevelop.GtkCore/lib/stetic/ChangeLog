@@ -1,3 +1,14 @@
+2008-08-19  Mike Kestner <mkestner@novell.com> 
+
+	* libstetic/wrapper/ActionTree.cs: use field references for uim
+	access.  Use Action.Name for name in ui string if name isn't set.
+	* libstetic/wrapper/Widget.cs: make UIManagerName fixed and dependent
+	on action group presence. Adjust uim generation to field references.
+	* libsteticui/CodeGenerator.cs (GetFieldsToBind): add uimanager
+	  field if needed.
+	* libsteticui/CodeGeneratorPartialClass.cs: add uimanager field if 
+	  needed.
+
 2008-08-18  Mike Kestner <mkestner@novell.com> 
 
 	* libstetic/wrapper/Widget.cs: null guarding for ToString().

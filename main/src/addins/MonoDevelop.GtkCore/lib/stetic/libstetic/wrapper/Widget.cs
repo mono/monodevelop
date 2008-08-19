@@ -27,8 +27,6 @@ namespace Stetic.Wrapper {
 		
 		bool requiresUndoStatusUpdate;
 		
-		// Name of the generated UIManager
-		string uiManagerName;
 		// List of groups added to the UIManager
 		ArrayList includedActionGroups;
 		
@@ -232,7 +230,9 @@ namespace Stetic.Wrapper {
 		}
 		
 		public string UIManagerName {
-			get { return uiManagerName; }
+			get {
+				return actionGroups != null && actionGroups.Count > 0 ? "UIManager" : String.Empty;
+			}
 		}
 		
 		public string MemberName {
@@ -531,16 +531,11 @@ namespace Stetic.Wrapper {
 		
 		internal protected override void GenerateBuildCode (GeneratorContext ctx, CodeExpression var)
 		{
-			if (actionGroups != null && actionGroups.Count > 0) {
+			if (!String.IsNullOrEmpty (UIManagerName)) {
 				// Create an UI manager
-				uiManagerName = ctx.NewId ();
-				CodeVariableDeclarationStatement uidec = new CodeVariableDeclarationStatement (
-					typeof (Gtk.UIManager),
-					uiManagerName,
-					 new CodeObjectCreateExpression (typeof (Gtk.UIManager))
-				);
-				CodeVariableReferenceExpression uixp = new CodeVariableReferenceExpression (uiManagerName);
-				ctx.Statements.Add (uidec);
+				CodeFieldReferenceExpression uixp = new CodeFieldReferenceExpression (new CodeThisReferenceExpression (), UIManagerName);
+				CodeAssignStatement uim_init = new CodeAssignStatement (uixp, new CodeObjectCreateExpression (typeof (Gtk.UIManager)));
+				ctx.Statements.Add (uim_init);
 				
 				includedActionGroups = new ArrayList ();
 				
@@ -549,7 +544,7 @@ namespace Stetic.Wrapper {
 					
 					// Create the action group
 					string grpVar = ctx.NewId ();
-					uidec = new CodeVariableDeclarationStatement (
+					CodeVariableDeclarationStatement uidec = new CodeVariableDeclarationStatement (
 						typeof (Gtk.ActionGroup),
 						grpVar,
 						actionGroup.GenerateObjectCreation (ctx)
@@ -644,7 +639,7 @@ namespace Stetic.Wrapper {
 			Widget topLevel = GetTopLevel ();
 			string uiName = topLevel.UIManagerName;
 			if (uiName != null) {
-				CodeVariableReferenceExpression uiManager = new CodeVariableReferenceExpression (uiName);
+				CodeFieldReferenceExpression uiManager = new CodeFieldReferenceExpression (new CodeThisReferenceExpression (), uiName);
 				if (topLevel.includedActionGroups == null)
 					topLevel.includedActionGroups = new ArrayList ();
 				
