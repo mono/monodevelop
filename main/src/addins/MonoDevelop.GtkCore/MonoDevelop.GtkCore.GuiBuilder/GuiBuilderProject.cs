@@ -358,9 +358,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			} else if (pref.ReferenceType == ReferenceType.Assembly) {
 				path = pref.Reference;
 			} else if (pref.ReferenceType == ReferenceType.Gac) {
-				path = Runtime.SystemAssemblyService.GetAssemblyLocation (pref.Reference);
-				if (path == null)
-					path = pref.Reference;
+				path = pref.Reference;
 			}
 			if (path != null && GuiBuilderService.SteticApp.IsWidgetLibrary (path))
 				return path;

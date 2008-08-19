@@ -1,3 +1,9 @@
+2008-08-19  Mike Kestner <mkestner@novell.com> 
+
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderProject.cs: revert a silly
+	change that was causing explicit paths to be inserted into gui.stetic
+	files for gac references.  [Fixes #412960]
+
 2008-08-18  Mike Kestner <mkestner@novell.com> 
 
 	* MonoDevelop.GtkCore/GtkDesignInfo.cs: make HasDesignedObjects
