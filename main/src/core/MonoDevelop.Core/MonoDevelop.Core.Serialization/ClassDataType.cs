@@ -472,7 +472,7 @@ namespace MonoDevelop.Core.Serialization
 
 						// If no unknown data has been added, there is no need to keep this
 						// in the unknown items list.
-						if (!root.HasItemData)
+						if (ukwnDataRoot != null && !root.HasItemData)
 							ukwnDataRoot.ItemData.Remove (root);
 					}
 					else if (obj is IExtendedDataItem && (value.Name != "ctype" || baseName.Length > 0)) {

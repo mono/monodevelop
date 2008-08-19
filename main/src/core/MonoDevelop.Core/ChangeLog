@@ -1,5 +1,10 @@
 2008-08-19  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Core.Serialization/ClassDataType.cs: Add missing null
+	  check.
+
+2008-08-19  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Core.Serialization/ClassDataType.cs: When deserializing
 	  nested properties, make sure the nesting element is not added as
 	  unknown element unless it actually contains unknown properties.
