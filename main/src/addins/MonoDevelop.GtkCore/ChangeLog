@@ -1,5 +1,10 @@
 2008-08-19  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderProject.cs: fixed some
+	  possible nullrefs.
+
+2008-08-19  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.GtkCore.mdp, lib/libsteticui.mdp: re-set project
 	  references (fix some libstetic.dll not found issue,  localcopy ==
 	  true was missing).

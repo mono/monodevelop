@@ -183,7 +183,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		public bool IsEmpty {
 			get {
 				// If the project is not loaded, assume not empty
-				return gproject != null && Windows.Count == 0; 
+				return gproject != null && Windows != null && Windows.Count == 0; 
 			}
 		}
 		
@@ -302,7 +302,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		void OnRemoveWidget (object s, Stetic.WidgetInfoEventArgs args)
 		{
-			if (disposed)
+			if (disposed || Windows == null)
 				return;
 			foreach (GuiBuilderWindow form in Windows) {
 				if (form.RootWidget.Name == args.WidgetInfo.Name) {
@@ -392,9 +392,11 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		public GuiBuilderWindow GetWindowForClass (string className)
 		{
-			foreach (GuiBuilderWindow form in Windows) {
-				if (CodeBinder.GetObjectName (form.RootWidget) == className)
-					return form;
+			if (Windows != null) {
+				foreach (GuiBuilderWindow form in Windows) {
+					if (CodeBinder.GetObjectName (form.RootWidget) == className)
+						return form;
+				}
 			}
 			return null;
 		}
@@ -412,9 +414,11 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		public GuiBuilderWindow GetWindow (string name)
 		{
-			foreach (GuiBuilderWindow win in Windows) {
-				if (name == win.Name)
-					return win;
+			if (Windows != null) {
+				foreach (GuiBuilderWindow win in Windows) {
+					if (name == win.Name)
+						return win;
+				}
 			}
 			return null;
 		}
@@ -591,9 +595,11 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				GuiBuilderService.SteticApp.GenerateProjectCode (path, "Stetic", provider, null);
 			}
 			files.Add (path);
-		
-			foreach (GuiBuilderWindow win in Windows)
-				files.Add (GuiBuilderService.GenerateSteticCodeStructure (project, win.RootWidget, true, false));
+
+			if (Windows != null) {
+				foreach (GuiBuilderWindow win in Windows)
+					files.Add (GuiBuilderService.GenerateSteticCodeStructure (project, win.RootWidget, true, false));
+			}
 					
 			foreach (Stetic.ActionGroupInfo ag in SteticProject.ActionGroups)
 				files.Add (GuiBuilderService.GenerateSteticCodeStructure (project, ag, true, false));
