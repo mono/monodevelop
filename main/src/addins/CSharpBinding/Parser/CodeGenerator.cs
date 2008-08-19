@@ -201,7 +201,6 @@ namespace CSharpBinding.Parser
 			MemberRefactoryVisitor visitor = new MemberRefactoryVisitor (ctx, resolver, cls, cls, refs);
 			visitor.Visit (ctx.ParserContext, file);
 			return refs;
-		
 		}
 		
 		protected override int GetVariableNamePosition (IEditableTextFile file, LocalVariable var)
@@ -426,6 +425,7 @@ namespace CSharpBinding.Parser
 		
 		public override MemberReferenceCollection FindMemberReferences (RefactorerContext ctx, string fileName, IType cls, IMember member)
 		{
+//			System.Console.WriteLine("Find member references !!!");
 			NRefactoryResolver resolver = new NRefactoryResolver (ctx.ParserContext, cls.CompilationUnit, ICSharpCode.NRefactory.SupportedLanguage.CSharp, null, fileName);
 			MemberReferenceCollection refs = new MemberReferenceCollection ();
 			MemberRefactoryVisitor visitor = new MemberRefactoryVisitor (ctx, resolver, cls, cls, refs);
@@ -437,7 +437,9 @@ namespace CSharpBinding.Parser
 		
 		public override MemberReferenceCollection FindVariableReferences (RefactorerContext ctx, string fileName, LocalVariable var)
 		{
+//			System.Console.WriteLine("Find variable references !!!");
 			NRefactoryResolver resolver = new NRefactoryResolver (ctx.ParserContext, var.CompilationUnit, ICSharpCode.NRefactory.SupportedLanguage.CSharp, null, fileName);
+			
 			MemberReferenceCollection refs = new MemberReferenceCollection ();
 			MemberRefactoryVisitor visitor = new MemberRefactoryVisitor (ctx, resolver, null, var.DeclaringMember, refs);
 			
@@ -448,6 +450,7 @@ namespace CSharpBinding.Parser
 		
 		public override MemberReferenceCollection FindParameterReferences (RefactorerContext ctx, string fileName, IParameter param)
 		{
+//			System.Console.WriteLine("Find parameter references !!!");
 			IMember member = param.DeclaringMember;
 			NRefactoryResolver resolver = new NRefactoryResolver (ctx.ParserContext, param.DeclaringMember.DeclaringType.CompilationUnit, ICSharpCode.NRefactory.SupportedLanguage.CSharp, null, fileName);
 			MemberReferenceCollection refs = new MemberReferenceCollection ();
@@ -505,6 +508,7 @@ namespace CSharpBinding.Parser
 			
 			this.ctx = ctx;
 			this.resolver = resolver;
+			this.resolver.CallingMember = member;
 			this.declaringType = declaringType;
 			this.references = references;
 			this.member = member;

@@ -72,6 +72,9 @@ namespace MonoDevelop.CSharpBinding
 			get {
 				return callingMember;
 			}
+			set {
+				callingMember = value;
+			}
 		}
 
 		public ProjectDom Dom {
@@ -127,7 +130,7 @@ namespace MonoDevelop.CSharpBinding
 				}
 			}
 			
-			if (callingMember != null) {
+			if (callingMember != null && editor != null) {
 				string wrapper = CreateWrapperClassForMember (callingMember);
 				ICSharpCode.NRefactory.IParser parser = ICSharpCode.NRefactory.ParserFactory.CreateParser (lang, new StringReader (wrapper));
 				parser.Parse ();
@@ -179,7 +182,7 @@ namespace MonoDevelop.CSharpBinding
 			
 			if (CallingMember is IProperty) {
 				IProperty property = (IProperty)callingMember;
-				if (property.HasSet && property.SetMethod != null && property.SetMethod.BodyRegion.Contains (resolvePosition.Line - 1, editor.CursorColumn - 1)) 
+				if (property.HasSet && property.SetMethod != null && editor != null && property.SetMethod.BodyRegion.Contains (resolvePosition.Line - 1, editor.CursorColumn - 1)) 
 					provider.AddCompletionData (new CodeCompletionData ("value", "md-literal"));
 			}
 			

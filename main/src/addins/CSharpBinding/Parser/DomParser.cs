@@ -112,7 +112,7 @@ namespace MonoDevelop.CSharpBinding
 			return new DomLocation (location.Row, location.Column);
 		}
 		
-		static List<MonoDevelop.Projects.Dom.IParameter> ParseParams (Mono.CSharp.Dom.IParameter[] p)
+		static List<MonoDevelop.Projects.Dom.IParameter> ParseParams (IMember declaringMember, Mono.CSharp.Dom.IParameter[] p)
 		{
 			if (p == null || p.Length == 0)
 				return null;
@@ -120,7 +120,7 @@ namespace MonoDevelop.CSharpBinding
 			foreach (Mono.CSharp.Dom.IParameter para in p) {
 				if (para == null)
 					continue;
-				result.Add (new DomParameter (para.Name, TypeName2ReturnType (para.TypeName)));
+				result.Add (new DomParameter (declaringMember, para.Name, TypeName2ReturnType (para.TypeName)));
 			}
 			
 			return result.Count > 0 ? result : null;
@@ -220,31 +220,21 @@ namespace MonoDevelop.CSharpBinding
 			
 			if (type.Constructors != null) {
 				foreach (Mono.CSharp.Dom.IMethod method in type.Constructors) {
-					members.Add (new DomMethod (type.Name,
-					                            ConvertModifier (method.ModFlags),
-					                            true,
-					                            Location2DomLocation (method.Location),
-					                            Block2Region (method.LocationBlock),
-					                            TypeName2ReturnType (method.ReturnTypeName),
-					                            ParseParams (method.Parameters)
-					                            ));
+					DomMethod newMethod = new DomMethod (type.Name, ConvertModifier (method.ModFlags), true,Location2DomLocation (method.Location), Block2Region (method.LocationBlock), TypeName2ReturnType (method.ReturnTypeName));
+					newMethod.Add (ParseParams (newMethod, method.Parameters));
+					members.Add (newMethod);
 				}
 			}
 			if (type.Methods != null) {
 				foreach (Mono.CSharp.Dom.IMethod method in type.Methods) {
-					members.Add (new DomMethod (method.Name,
-					                            ConvertModifier (method.ModFlags),
-					                            false,
-					                            Location2DomLocation (method.Location),
-					                            Block2Region (method.LocationBlock),
-					                            TypeName2ReturnType (method.ReturnTypeName),
-					                            ParseParams (method.Parameters)
-					                            ));
+					DomMethod newMethod = new DomMethod (method.Name, ConvertModifier (method.ModFlags), false, Location2DomLocation (method.Location), Block2Region (method.LocationBlock), TypeName2ReturnType (method.ReturnTypeName));
+					newMethod.Add (ParseParams (newMethod, method.Parameters));
+					members.Add (newMethod);
 				}
 			}
 			if (type.Delegates != null) {
 				foreach (Mono.CSharp.Dom.IDelegate deleg in type.Delegates) {
-					members.Add (DomType.CreateDelegate (unit, deleg.Name, Location2DomLocation (deleg.Location), TypeName2ReturnType (deleg.ReturnTypeName), ParseParams (deleg.Parameters)));
+					members.Add (DomType.CreateDelegate (unit, deleg.Name, Location2DomLocation (deleg.Location), TypeName2ReturnType (deleg.ReturnTypeName), ParseParams (null, deleg.Parameters)));
 				}
 			}
 			
