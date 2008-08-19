@@ -73,8 +73,13 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 			} else {
 				this.Title = GettextCatalog.GetString ("Rename Item");
 			}
-			
-			entry.Text = item is IMember ? ((IMember)item).Name : ((LocalVariable)item).Name;
+			if (item is IMember) {
+				entry.Text = ((IMember)item).Name;
+			} else if (item is LocalVariable) {
+				entry.Text = ((LocalVariable)item).Name;
+			} else {
+				entry.Text = ((IParameter)item).Name;
+			}
 			entry.SelectRegion (0, -1);
 			
 			buttonOk.Sensitive = false;

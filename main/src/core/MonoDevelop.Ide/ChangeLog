@@ -1,3 +1,9 @@
+2008-08-19  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Ide.Commands/RefactoryCommands.cs,
+	  MonoDevelop.Ide.Gui.Dialogs/RenameItemDialog.cs: Fixed some null
+	  ref bugs in refactory commands.
+
 2008-08-18  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectNodeBuilder.cs,
