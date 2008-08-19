@@ -1,3 +1,8 @@
+2008-08-19  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Mono.TextEditor/TextEditor.cs: Fix some memory leaks.
+	* gtk-gui/objects.xml: Updated.
+
 2008-08-16  Mike Krüger <mkrueger@novell.com> 
 
 	* Mono.TextEditor.Highlighting/Style.cs,
