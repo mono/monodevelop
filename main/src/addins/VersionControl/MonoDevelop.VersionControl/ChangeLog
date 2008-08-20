@@ -1,5 +1,11 @@
 2008-08-20  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.VersionControl.Views/StatusView.cs: Fix bug #401846 -
+	  Caught exception closing VersionControl tab before it's done with
+	  remote operation.
+
+2008-08-20  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.VersionControl.mdp,
 	  MonoDevelop.VersionControl.Views/Diffs.cs,
 	  MonoDevelop.VersionControl.Views/Statuses.cs,
