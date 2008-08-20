@@ -368,13 +368,13 @@ namespace MonoDevelop.SourceEditor
 				if (lastDebugLine == IdeApp.Services.DebuggingService.CurrentLineNumber)
 					return;
 				if (currentLineSegment != null)
-					currentLineSegment.RemoveMarker (currentDebugLineMarker);
+					widget.TextEditor.Document.RemoveMarker (currentLineSegment, currentDebugLineMarker);
 				lastDebugLine = IdeApp.Services.DebuggingService.CurrentLineNumber;
 				currentLineSegment = widget.TextEditor.Document.GetLine (lastDebugLine-1);
-				currentLineSegment.AddMarker (currentDebugLineMarker);
+				widget.TextEditor.Document.AddMarker (currentLineSegment, currentDebugLineMarker);
 				widget.TextEditor.QueueDraw ();
 			} else if (currentLineSegment != null) {
-				currentLineSegment.RemoveMarker (currentDebugLineMarker);
+				widget.TextEditor.Document.RemoveMarker (currentLineSegment, currentDebugLineMarker);
 				lastDebugLine = -1;
 				currentLineSegment = null;
 				widget.TextEditor.QueueDraw ();
@@ -384,9 +384,9 @@ namespace MonoDevelop.SourceEditor
 		void UpdateBreakpoints ()
 		{
 			foreach (LineSegment line in breakpointSegments) {
-				line.RemoveMarker (breakpointMarker);
-				line.RemoveMarker (breakpointDisabledMarker);
-				line.RemoveMarker (breakpointInvalidMarker);
+				widget.TextEditor.Document.RemoveMarker (line, breakpointMarker);
+				widget.TextEditor.Document.RemoveMarker (line, breakpointDisabledMarker);
+				widget.TextEditor.Document.RemoveMarker (line, breakpointInvalidMarker);
 			}
 			breakpointSegments.Clear ();
 			foreach (Breakpoint bp in IdeApp.Services.DebuggingService.Breakpoints.GetBreakpoints ())
@@ -403,11 +403,11 @@ namespace MonoDevelop.SourceEditor
 			if (bp.FileName == Path.GetFullPath (ContentName)) {
 				LineSegment line = widget.TextEditor.Document.GetLine (bp.Line-1);
 				if (!bp.Enabled)
-					line.AddMarker (breakpointDisabledMarker);
+					widget.TextEditor.Document.AddMarker (line, breakpointDisabledMarker);
 				else if (bp.IsValid (IdeApp.Services.DebuggingService.DebuggerSession))
-					line.AddMarker (breakpointMarker);
+					widget.TextEditor.Document.AddMarker (line, breakpointMarker);
 				else
-					line.AddMarker (breakpointInvalidMarker);
+					widget.TextEditor.Document.AddMarker (line, breakpointInvalidMarker);
 				widget.TextEditor.QueueDraw ();
 				breakpointSegments.Add (line);
 			}

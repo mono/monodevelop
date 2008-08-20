@@ -1318,16 +1318,14 @@ namespace MonoDevelop.SourceEditor
 		public void AddToLine ()
 		{
 			if (line != null) {
-				line.AddMarker (marker);
-				doc.CommitLineUpdate (doc.OffsetToLineNumber(line.Offset));
+				doc.AddMarker (line, marker);
 			}
 		}
 		
 		public void RemoveFromLine ()
 		{
 			if (line != null) {
-				line.RemoveMarker (marker);
-				doc.CommitLineUpdate (doc.OffsetToLineNumber(line.Offset));
+				doc.RemoveMarker (line, marker);
 			}
 		}
 	}
