@@ -1,3 +1,9 @@
+2008-08-21  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* ProjectPad/ProjectResourcesExtension.cs, ValaBinding.addin.xml,
+	  ValaBinding.mdp, gtk-gui/objects.xml, Makefile.am: Resources folder
+	  has been removed.
+
 2008-08-18  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* ValaBinding.mdp: Fix reference to Mono.TextEditor. The incorrect
