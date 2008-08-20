@@ -43,7 +43,6 @@ namespace MonoDevelop.Ide.Commands
 		AddItem,
 		RemoveFromProject,
 		Options,
-		AddResource,
 		AddReference,
 		AddNewFiles,
 		AddFiles,

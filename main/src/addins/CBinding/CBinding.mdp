@@ -110,7 +110,6 @@
     <File name="templates/EmptyCHeaderFile.xft.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="templates/EmptyCppHeaderFile.xft.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="templates/EmptyCppSourceFile.xft.xml" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="ProjectPad/ProjectResourcesExtension.cs" subtype="Code" buildaction="Compile" />
     <File name="templates/SharedLibraryCProject.xpt.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="templates/SharedLibraryCppProject.xpt.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="CppLanguageBinding.cs" subtype="Code" buildaction="Compile" />

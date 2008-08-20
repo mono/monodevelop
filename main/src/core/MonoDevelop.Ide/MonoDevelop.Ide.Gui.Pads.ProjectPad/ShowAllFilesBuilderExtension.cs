@@ -161,7 +161,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		
 		void OnAddFile (object sender, ProjectFileEventArgs e)
 		{
-			if (e.ProjectFile.BuildAction != BuildAction.EmbedAsResource && !e.ProjectFile.IsExternalToProject) {
+			if (!e.ProjectFile.IsExternalToProject) {
 				ITreeBuilder tb = Context.GetTreeBuilder (new SystemFile (e.ProjectFile.Name, e.Project));
 				if (tb != null) tb.Remove (true);
 				Context.Tree.AddNodeInsertCallback (e.ProjectFile, new TreeNodeCallback (UpdateProjectFileParent));
@@ -180,8 +180,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		
 		void OnRemoveFile (object sender, ProjectFileEventArgs e)
 		{
-			if (e.ProjectFile.BuildAction != BuildAction.EmbedAsResource && 
-				e.ProjectFile.Subtype != Subtype.Directory && 
+			if (e.ProjectFile.Subtype != Subtype.Directory && 
 				!e.ProjectFile.IsExternalToProject &&
 				File.Exists (e.ProjectFile.Name)
 			) {

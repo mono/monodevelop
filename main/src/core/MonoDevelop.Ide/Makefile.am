@@ -194,8 +194,6 @@ FILES =  \
 	MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectReferenceFolderNodeBuilder.cs \
 	MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectReferenceNodeBuilder.cs \
 	MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectSolutionPad.cs \
-	MonoDevelop.Ide.Gui.Pads.ProjectPad/ResourceFolder.cs \
-	MonoDevelop.Ide.Gui.Pads.ProjectPad/ResourceFolderNodeBuilder.cs \
 	MonoDevelop.Ide.Gui.Pads.ProjectPad/ShowAllFilesBuilderExtension.cs \
 	MonoDevelop.Ide.Gui.Pads.ProjectPad/SolutionFolderNodeBuilder.cs \
 	MonoDevelop.Ide.Gui.Pads.ProjectPad/SolutionNodeBuilder.cs \

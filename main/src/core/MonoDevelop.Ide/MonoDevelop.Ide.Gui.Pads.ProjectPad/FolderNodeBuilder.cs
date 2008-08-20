@@ -80,10 +80,6 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			foreach (ProjectFile file in project.Files)
 			{
 				string dir;
-				
-				// Resource files are shown in a special resource folder (?!?!).
-				if (file.BuildAction == BuildAction.EmbedAsResource)
-					continue;
 
 				if (file.Subtype != Subtype.Directory) {
 					if (file.DependsOnFile != null)

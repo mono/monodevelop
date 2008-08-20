@@ -90,8 +90,7 @@ FILES =  \
 	ProjectPad/ProjectNodeExtension.cs \
 	ProjectPad/ProjectPackageNodeBuilder.cs \
 	ProjectPad/ProjectPackagesFolderNodeBuilder.cs \
-	ProjectPad/ProjectReferencesExtension.cs \
-	ProjectPad/ProjectResourcesExtension.cs
+	ProjectPad/ProjectReferencesExtension.cs
 
 RES =  \
 	CBinding.addin.xml \

@@ -100,7 +100,7 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 		
 		public override int CompareObjects (ITreeNavigator thisNode, ITreeNavigator otherNode)
 		{
-			if (otherNode.DataItem is ResourceFolder || otherNode.DataItem is ProjectReferenceCollection)
+			if (otherNode.DataItem is ProjectReferenceCollection)
 				return 1;
 			else
 				return -1;

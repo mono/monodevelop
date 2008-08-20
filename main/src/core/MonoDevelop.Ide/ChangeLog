@@ -1,3 +1,17 @@
+2008-08-20  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Ide.Commands/ProjectCommands.cs,
+	  MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ProjectPad/ResourceFolder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ProjectPad/ResourceFolderNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ProjectPad/ShowAllFilesBuilderExtension.cs,
+	  MonoDevelop.Ide.addin.xml, MonoDevelop.Ide.mdp, Makefile.am: Remove
+	  the "resources folder" feature. Resources are now shown in the
+	  solution tree like any other files. For a detailed explanation see
+	  "Bug 381430 - [PATCH] Display resource files in main project tree".
+
 2008-08-18  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectNodeBuilder.cs,

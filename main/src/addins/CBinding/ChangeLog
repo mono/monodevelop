@@ -1,3 +1,11 @@
+2008-08-20  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* CBinding.addin.xml, ProjectPad/ProjectResourcesExtension.cs,
+	  CBinding.mdp, Makefile.am: Remove the "resources folder" feature.
+	  Resources are now shown in the solution tree like any other files.
+	  For a detailed explanation see "Bug 381430 - [PATCH] Display
+	  resource files in main project tree".
+
 2008-07-21  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com> 
 
 	* Project/ProjectPackageCollection.cs: Cleanup. Fixes bug #390419.
