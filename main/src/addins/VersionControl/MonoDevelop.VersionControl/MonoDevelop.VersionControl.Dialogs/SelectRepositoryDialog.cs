@@ -137,7 +137,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 
 			try {
 				if (r.HasChildRepositories)
-					store.AppendValues (it, null, "", "", true, "vcs-repository");
+					store.AppendValues (it, null, "", "", true, null);
 			}
 			catch (Exception ex) {
 				LoggingService.LogError (ex.ToString ());
@@ -223,7 +223,6 @@ namespace MonoDevelop.VersionControl.Dialogs
 			Repository parent = (Repository) store.GetValue (args.Iter, RepositoryCol);
 			if (!filled) {
 				store.SetValue (args.Iter, FilledCol, true);
-				
 				FullRepoNode (parent, args.Iter);
 			} else
 				args.RetVal = false;
@@ -232,16 +231,18 @@ namespace MonoDevelop.VersionControl.Dialogs
 		void FullRepoNode (Repository parent, TreeIter repoIter)
 		{
 			// Remove the dummy child
-			TreeIter iter, citer;
-			while (store.IterChildren (out iter, repoIter))
-				store.Remove (ref iter);
-			
-			citer = store.AppendValues (repoIter, null, GettextCatalog.GetString ("Loading..."), "", true);
+			TreeIter citer;
+			store.IterChildren (out citer, repoIter);
+
+			store.SetValue (citer, RepoNameCol, GettextCatalog.GetString ("Loading..."));
 
 			loadingRepos.Add (FindRootRepo (repoIter));
 			UpdateControls ();
-
-			Thread t = new Thread (delegate () { LoadRepoInfo (parent, repoIter, citer); });
+			
+			Thread t = new Thread (delegate () {
+				LoadRepoInfo (parent, repoIter, citer);
+			});
+			
 			t.IsBackground = true;
 			t.Start ();
 		}
