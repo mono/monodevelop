@@ -192,10 +192,6 @@ namespace MonoDevelop.Ide.Gui
 			
 			tree.ButtonReleaseEvent += new Gtk.ButtonReleaseEventHandler(OnButtonRelease);
 			tree.PopupMenu += new Gtk.PopupMenuHandler (OnPopupMenu);
-			tree.KeyPressEvent += delegate (object sender, Gtk.KeyPressEventArgs args) {
-				if (args.Event.Key == Gdk.Key.F10 && (args.Event.State & Gdk.ModifierType.ShiftMask) == Gdk.ModifierType.ShiftMask)
-					ShowPopup ();
-			};
 			workNode = new TreeNodeNavigator (this);
 			compareNode1 = new TreeNodeNavigator (this);
 			compareNode2 = new TreeNodeNavigator (this);
@@ -938,7 +934,7 @@ namespace MonoDevelop.Ide.Gui
 			
 			try {
 				NodeBuilder[] chain1 = (NodeBuilder[]) store.GetValue (a, BuilderChainColumn);
-				if (chain1 == null) return 0;
+				if (chain1 == null) return -1;
 				
 				compareNode1.MoveToIter (a);
 				compareNode2.MoveToIter (b);
@@ -948,8 +944,7 @@ namespace MonoDevelop.Ide.Gui
 				if (sort != TypeNodeBuilder.DefaultSort) return sort;
 				
 				NodeBuilder[] chain2 = (NodeBuilder[]) store.GetValue (b, BuilderChainColumn);
-				if (chain2 == null) return 0;
-				
+				if (chain2 == null) return 1;
 				TypeNodeBuilder tb2 = (TypeNodeBuilder) chain2[0];
 				
 				if (chain1 != chain2) {
@@ -1308,6 +1303,8 @@ namespace MonoDevelop.Ide.Gui
 		[GLib.ConnectBefore]
 		void OnKeyPress (object o, Gtk.KeyPressEventArgs args)
 		{
+			if (args.Event.Key == Gdk.Key.F10 && (args.Event.State & Gdk.ModifierType.ShiftMask) == Gdk.ModifierType.ShiftMask)
+				ShowPopup ();
 			if (args.Event.Key == Gdk.Key.Delete || args.Event.Key == Gdk.Key.KP_Delete)
 				DeleteCurrentItem ();
 			
@@ -1315,22 +1312,26 @@ namespace MonoDevelop.Ide.Gui
 			//  The shift-right combo recursively expands all child nodes but the OnTestExpandRow callback
 			//  modifies tree and successive calls get passed an invalid iter. Using the path to regenerate the iter 
 			//  causes a Gtk-Fatal.
-			//NOTE: Also changing behaviour to only expand current node because these views are lazy loaded and tend 
-			//  to be very big.
 			bool shift = (args.Event.State & Gdk.ModifierType.ShiftMask) != 0;
-			if (shift && (args.Event.Key == Gdk.Key.Right || args.Event.Key == Gdk.Key.KP_Right)) {
-				Gtk.TreeModel foo;
+			if (args.Event.Key == Gdk.Key.asterisk || args.Event.Key == Gdk.Key.KP_Multiply || (shift && (args.Event.Key == Gdk.Key.Right || args.Event.Key == Gdk.Key.KP_Right || args.Event.Key == Gdk.Key.plus || args.Event.Key == Gdk.Key.KP_Add))) {
 				Gtk.TreeIter iter;
-				if (tree.Selection.GetSelected (out foo, out iter)) {
-					TreeBuilder tb = new TreeBuilder (this, iter);
-					if (tb.HasChildren ()) {
-						tb.MoveToFirstChild ();
-						tb.ExpandToNode ();
-					}
+				if (tree.Selection.GetSelected (out iter)) {
+					Expand (iter);
 					args.RetVal = true;
 				}
 			}
 			
+		}
+
+		void Expand (Gtk.TreeIter it)
+		{
+			tree.ExpandRow (store.GetPath (it), false);
+			Gtk.TreeIter ci;
+			if (store.IterChildren (out ci, it)) {
+				do {
+					Expand (ci);
+				} while (store.IterNext (ref ci));
+			}
 		}
 			
 		void OnPopupMenu (object o, Gtk.PopupMenuArgs args)
@@ -1985,7 +1986,7 @@ namespace MonoDevelop.Ide.Gui
 			{
 				Gtk.TreeIter oldIter = currentIter;
 				object oldItem = DataItem;
-				
+
 				InitIter (it, dataObject);
 				
 				// It is *critical* that we set this first. We will
@@ -1998,7 +1999,7 @@ namespace MonoDevelop.Ide.Gui
 				
 				bool hasChildren = HasChildNodes (chain, dataObject);
 				store.SetValue (currentIter, MonoDevelopTreeView.FilledColumn, !hasChildren);
-
+				
 				if (hasChildren)
 					store.AppendNode (currentIter);	// Dummy node
 
@@ -2014,8 +2015,9 @@ namespace MonoDevelop.Ide.Gui
 						if (res) return true;
 					} catch (Exception ex) {
 						LoggingService.LogError (ex.ToString ());
+					} finally {
+						MoveToIter (citer);
 					}
-					MoveToIter (citer);
 				}
 				return false;
 			}
