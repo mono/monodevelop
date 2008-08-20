@@ -60,7 +60,7 @@ namespace MonoDevelop.Projects.Dom
 		public virtual bool FilterEntry (object entry)
 		{
 			if (entry is IMember) {
-				return ((IMember)entry).DeclaringType.ClassType != ClassType.Enum && ((IMember)entry).IsSpecialName;
+				return ((IMember)entry).DeclaringType != null && ((IMember)entry).DeclaringType.ClassType != ClassType.Enum && ((IMember)entry).IsSpecialName;
 			}
 			return false;
 		}
