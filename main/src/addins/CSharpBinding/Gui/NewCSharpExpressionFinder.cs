@@ -396,8 +396,10 @@ namespace MonoDevelop.CSharpBinding.Gui
 		
 		void Init(string text, int offset)
 		{
-			if (offset < 0 || offset > text.Length)
-				throw new ArgumentOutOfRangeException("offset", offset, "offset must be between 0 and " + text.Length);
+			if (offset < 0 || offset > text.Length) {
+				System.Console.WriteLine(("offset:" + offset + " - offset must be between 0 and " + text.Length));
+				offset = 0;
+			}
 			lexer = ParserFactory.CreateLexer(SupportedLanguage.CSharp, new StringReader(text));
 			lexer.SkipAllComments = true;
 			lineOffsets = new List<int>();

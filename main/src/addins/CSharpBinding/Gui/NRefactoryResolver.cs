@@ -339,13 +339,30 @@ namespace MonoDevelop.CSharpBinding
 			}
 			
 			if (this.callingType != null && dom != null) {
+				List<IMember> members = new List <IMember> ();
 				foreach (IType type in dom.GetInheritanceTree (callingType)) {
-					List<IMember> members = type.SearchMember (identifier, true);
-					if (members != null &&  members.Count > 0) {
-						result = new MemberResolveResult (members[0]);
-						result.ResolvedType = ResolveType (members[0].ReturnType);
-						goto end;
+					members.AddRange (type.SearchMember (identifier, true));
+				}
+				
+				// filter members
+				if (this.CallingMember != null) {
+					for (int i = 0; i < members.Count; i++) {
+						if (this.CallingMember.IsStatic && !members[i].IsStatic || !members[i].IsAccessibleFrom (dom, this.CallingMember)) {
+							members.RemoveAt (i);
+							i--;
+							continue;
+						}
 					}
+				}
+				
+				if (members.Count > 0) {
+					if (members[0] is IMethod) {
+						result = new MethodResolveResult (members);
+					} else {
+						result = new MemberResolveResult (members[0]);
+					}
+					result.ResolvedType = ResolveType (members[0].ReturnType);
+					goto end;
 				}
 			}
 			

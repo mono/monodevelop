@@ -138,6 +138,8 @@ namespace MonoDevelop.CSharpBinding
 		
 		public string GetParameterMarkup (int overload, int paramIndex)
 		{
+			if (methods[overload].Parameters == null)
+				return "";
 			return ambience.GetIntellisenseDescription (methods[overload].Parameters [paramIndex]);
 		}
 		

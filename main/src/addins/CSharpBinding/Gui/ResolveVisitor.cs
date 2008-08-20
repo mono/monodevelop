@@ -308,33 +308,33 @@ namespace MonoDevelop.CSharpBinding
 				IType type = resolver.Dom.GetType (result.ResolvedType);
 				
 				if (type != null) {
+					List <IMember> member = new List <IMember> ();
 					foreach (IType curType in resolver.Dom.GetInheritanceTree (type)) {
-						List <IMember> member = curType.SearchMember (fieldReferenceExpression.FieldName, true);
-						if (member != null && member.Count > 0) {
-							if (member[0] is IMethod) {
-								bool isStatic = result.StaticResolve;
-								for (int i = 0; i < member.Count; i++) {
-									System.Console.WriteLine(member[i] + "/" + resolver.CallingMember + !member[i].IsAccessibleFrom (resolver.Dom, resolver.CallingMember));
-									if ((member[i].IsStatic ^ isStatic) || !member[i].IsAccessibleFrom (resolver.Dom, resolver.CallingMember)) {
-										member.RemoveAt (i);
-										i--;
-									}
+						member.AddRange (curType.SearchMember (fieldReferenceExpression.FieldName, true));
+					}
+					if (member.Count > 0) {
+						if (member[0] is IMethod) {
+							bool isStatic = result.StaticResolve;
+							for (int i = 0; i < member.Count; i++) {
+								if ((member[i].IsStatic ^ isStatic) || !member[i].IsAccessibleFrom (resolver.Dom, resolver.CallingMember)) {
+									member.RemoveAt (i);
+									i--;
 								}
-								result = new MethodResolveResult (member);
-								result.CallingType   = resolver.CallingType;
-								result.CallingMember = resolver.CallingMember;
-								result.StaticResolve = isStatic;
-								return result;
 							}
-							if (member[0] is IType) {
-								result = CreateResult (member[0].FullName);
-								result.StaticResolve = true;
-							} else {
-								result = CreateResult (curType.CompilationUnit, member[0].ReturnType);
-								((MemberResolveResult)result).ResolvedMember = member[0];
-							}
+							result = new MethodResolveResult (member);
+							result.CallingType   = resolver.CallingType;
+							result.CallingMember = resolver.CallingMember;
+							result.StaticResolve = isStatic;
 							return result;
 						}
+						if (member[0] is IType) {
+							result = CreateResult (member[0].FullName);
+							result.StaticResolve = true;
+						} else {
+							result = CreateResult (member[0].DeclaringType.CompilationUnit, member[0].ReturnType);
+							((MemberResolveResult)result).ResolvedMember = member[0];
+						}
+						return result;
 					}
 				}
 			}
