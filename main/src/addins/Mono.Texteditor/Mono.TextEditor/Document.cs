@@ -783,6 +783,36 @@ namespace Mono.TextEditor
 		}
 		#endregion
 		
+
+		public void AddMarker (int lineNumber, TextMarker marker)
+		{
+			AddMarker (this.GetLine (lineNumber), marker);
+		}
+		public void AddMarker (LineSegment line, TextMarker marker)
+		{
+			line.AddMarker (marker);
+			this.CommitLineUpdate (line);
+		}
+		
+		public void RemoveMarker (int lineNumber, TextMarker marker)
+		{
+			RemoveMarker (this.GetLine (lineNumber), marker);
+		}
+		public void RemoveMarker (LineSegment line, TextMarker marker)
+		{
+			line.RemoveMarker (marker);
+			this.CommitLineUpdate (line);
+		}
+		public void RemoveMarker (int lineNumber, Type type)
+		{
+			RemoveMarker (this.GetLine (lineNumber), type);
+		}
+		public void RemoveMarker (LineSegment line, Type type)
+		{
+			line.RemoveMarker (type);
+			this.CommitLineUpdate (line);
+		}
+		
 		public bool Contains (int offset)
 		{
 			return new Segment (0, Length).Contains (offset);
@@ -887,6 +917,11 @@ namespace Mono.TextEditor
 		{
 			RequestUpdate (new LineUpdate (line));
 			CommitDocumentUpdate ();
+		}
+		
+		public void CommitLineUpdate (LineSegment line)
+		{
+			CommitLineUpdate (this.OffsetToLineNumber (line.Offset));
 		}
 					
 		public void CommitUpdateAll ()
