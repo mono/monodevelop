@@ -42,6 +42,13 @@ namespace MonoDevelop.Xml.StateEngine
 		protected const int DOCTYPE = CDATA + 1;
 		protected const int MAXCONST = DOCTYPE;
 		
+		XmlTagState tagState;
+		XmlClosingTagState closingTagState;
+		XmlCommentState commentState;
+		XmlCDataState cDataState;
+		XmlDocTypeState docTypeState;
+		XmlProcessingInstructionState processingInstructionState;
+		
 		public XmlFreeState () : this (new XmlTagState (), new XmlClosingTagState ()) {}
 		
 		public XmlFreeState (XmlTagState tagState, XmlClosingTagState closingTagState)
@@ -56,12 +63,12 @@ namespace MonoDevelop.Xml.StateEngine
 			XmlDocTypeState docTypeState,
 		        XmlProcessingInstructionState processingInstructionState)
 		{
-			this.TagState = tagState;
-			this.ClosingTagState = closingTagState;
-			this.CommentState = commentState;
-			this.CDataState = cDataState;
-			this.DocTypeState = docTypeState;
-			this.ProcessingInstructionState = processingInstructionState;
+			this.tagState = tagState;
+			this.closingTagState = closingTagState;
+			this.commentState = commentState;
+			this.cDataState = cDataState;
+			this.docTypeState = docTypeState;
+			this.processingInstructionState = processingInstructionState;
 			
 			Adopt (this.TagState);
 			Adopt (this.ClosingTagState);
@@ -71,12 +78,29 @@ namespace MonoDevelop.Xml.StateEngine
 			Adopt (this.ProcessingInstructionState);
 		}
 		
-		protected XmlTagState TagState { get; private set; }
-		protected XmlClosingTagState ClosingTagState { get; private set; }
-		protected XmlCommentState CommentState { get; private set; }
-		protected XmlCDataState CDataState { get; private set; }
-		protected XmlDocTypeState DocTypeState { get; private set; }
-		protected XmlProcessingInstructionState ProcessingInstructionState { get; private set; }
+		protected XmlTagState TagState { 
+			get { return tagState; } 
+		}
+		
+		protected XmlClosingTagState ClosingTagState { 
+			get { return closingTagState; } 
+		}
+		
+		protected XmlCommentState CommentState { 
+			get { return commentState; }
+		}
+		
+		protected XmlCDataState CDataState { 
+			get { return cDataState; } 
+		}
+		
+		protected XmlDocTypeState DocTypeState { 
+			get { return docTypeState; }
+		}
+		
+		protected XmlProcessingInstructionState ProcessingInstructionState { 
+			get { return processingInstructionState; } 
+		}
 		
 		public override State PushChar (char c, IParseContext context, ref string rollback)
 		{

@@ -1,3 +1,9 @@
+2008-08-20  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.AspNet.StateEngine/AspNetFreeState.cs: Replace C#3
+	  automatic properties into C# 2 properties. Fixes build on Mono <
+	  1.9. Thanks to Joshua Simmons for the patch.
+
 2008-08-12  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.AspNet.Parser.Internal/AspTokenizer.cs,

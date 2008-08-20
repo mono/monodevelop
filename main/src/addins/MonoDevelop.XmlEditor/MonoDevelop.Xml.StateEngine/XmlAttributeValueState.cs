@@ -34,14 +34,18 @@ namespace MonoDevelop.Xml.StateEngine
 	
 	public abstract class XmlAttributeValueState : State
 	{
-		protected XmlMalformedTagState MalformedTagState { get; private set; }
+		XmlMalformedTagState malformedTagState;
+		
+		protected XmlMalformedTagState MalformedTagState {
+			get { return malformedTagState; } 
+		}
 		
 		public XmlAttributeValueState () : this (new XmlMalformedTagState ())
 		{}
 		
 		public XmlAttributeValueState (XmlMalformedTagState malformedTagState)
 		{
-			this.MalformedTagState = malformedTagState;
+			this.malformedTagState = malformedTagState;
 			Adopt (this.MalformedTagState);
 		}
 	}
