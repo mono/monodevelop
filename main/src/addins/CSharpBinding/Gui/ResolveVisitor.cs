@@ -136,7 +136,19 @@ namespace MonoDevelop.CSharpBinding
 		
 		public override object VisitIndexerExpression(IndexerExpression indexerExpression, object data)
 		{
-			return Resolve (indexerExpression.TargetObject);
+			ResolveResult result = Resolve (indexerExpression.TargetObject);
+			if (result.ResolvedType != null && result.ResolvedType.ArrayDimensions > 0)
+				return CreateResult (result.ResolvedType.FullName);
+			IType resolvedType = resolver.Dom.GetType (result.ResolvedType);
+			if (resolvedType != null) {
+				foreach (IType curType in resolver.Dom.GetInheritanceTree (resolvedType)) {
+					foreach (IProperty property in curType.Properties) {
+						if (property.IsIndexer)
+							return CreateResult (property.ReturnType);
+					}
+				}
+			}
+			return result;
 		}
 		
 		

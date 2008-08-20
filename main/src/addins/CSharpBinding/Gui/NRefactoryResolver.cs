@@ -259,7 +259,6 @@ namespace MonoDevelop.CSharpBinding
 					result.SetDimension (i, typeRef.RankSpecifier[i]);
 				}
 			}
-			System.Console.WriteLine("converted:" + result + " from:" + typeRef);
 			return result;
 		}
 		

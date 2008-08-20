@@ -1,6 +1,11 @@
 2008-08-20  Mike Krüger <mkrueger@novell.com> 
 
 	* Gui/NRefactoryResolver.cs, Gui/ResolveVisitor.cs,
+	  Parser/DomParser.cs: Worked on indexer resolving.
+
+2008-08-20  Mike Krüger <mkrueger@novell.com> 
+
+	* Gui/NRefactoryResolver.cs, Gui/ResolveVisitor.cs,
 	  Gui/NRefactoryParameterDataProvider.cs,
 	  Gui/NewCSharpExpressionFinder.cs: Fixed some accessibility issues.
 

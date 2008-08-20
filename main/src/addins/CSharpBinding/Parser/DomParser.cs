@@ -217,7 +217,25 @@ namespace MonoDevelop.CSharpBinding
 					
 				}
 			}
-			
+			if (type.Indexers != null) {
+				foreach (Mono.CSharp.Dom.IIndexer indexer in type.Indexers) {
+					DomProperty prop = new DomProperty (indexer.Name,
+					                                    ConvertModifier (indexer.ModFlags),
+					                                    Location2DomLocation (indexer.Location),
+					                                    Block2Region (indexer.AccessorsBlock),
+					                                    TypeName2ReturnType (indexer.ReturnTypeName));
+					prop.IsIndexer = true;
+					if (indexer.GetAccessor != null) {
+						prop.GetMethod = new DomMethod ();
+						prop.GetMethod.BodyRegion = Block2Region (indexer.GetAccessor.LocationBlock);
+					}
+					if (indexer.SetAccessor != null) {
+						prop.SetMethod = new DomMethod ();
+						prop.SetMethod.BodyRegion = Block2Region (indexer.SetAccessor.LocationBlock);
+					}
+					members.Add (prop);
+				}
+			}
 			if (type.Constructors != null) {
 				foreach (Mono.CSharp.Dom.IMethod method in type.Constructors) {
 					DomMethod newMethod = new DomMethod (type.Name, ConvertModifier (method.ModFlags), true,Location2DomLocation (method.Location), Block2Region (method.LocationBlock), TypeName2ReturnType (method.ReturnTypeName));
@@ -266,7 +284,6 @@ namespace MonoDevelop.CSharpBinding
 				foreach (Mono.CSharp.Dom.ITypeName baseType in type.BaseTypes) {
 					if (result.BaseType == null) {
 						result.BaseType = TypeName2ReturnType (baseType);
-						System.Console.WriteLine(result.BaseType);
 						continue;
 					}
 					result.AddInterfaceImplementation (TypeName2ReturnType (baseType));
