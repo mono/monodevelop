@@ -8,6 +8,8 @@ using Gtk;
 
 namespace MonoDevelop.AddinAuthoring
 {
+	[System.ComponentModel.Category("widget")]
+	[System.ComponentModel.ToolboxItem(true)]
 	public partial class AddinDescriptionWidget : Gtk.Bin
 	{
 		AddinDescription adesc;

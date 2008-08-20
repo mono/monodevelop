@@ -101,19 +101,7 @@
     <ProjectReference type="Gac" localcopy="True" refto="gtk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="gtk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
   </References>
-  <GtkDesignInfo isWidgetLibrary="True" gettextClass="Mono.Addins.AddinManager.CurrentLocalizer" gtkVersion="2.8.3">
-    <ExportedWidgets>
-      <Widget>MonoDevelop.AddinAuthoring.AddinDescriptionWidget</Widget>
-      <Widget>MonoDevelop.AddinAuthoring.ExtensionEditorWidget</Widget>
-      <Widget>MonoDevelop.AddinAuthoring.AddinOptionPanelWidget</Widget>
-      <Widget>MonoDevelop.AddinAuthoring.AddinFeatureWidget</Widget>
-      <Widget>MonoDevelop.AddinAuthoring.RegistrySelector</Widget>
-      <Widget>MonoDevelop.AddinAuthoring.AutoSizeEntry</Widget>
-      <Widget>MonoDevelop.AddinAuthoring.TypeSelector</Widget>
-      <Widget>MonoDevelop.AddinAuthoring.NodeSetEditorWidget</Widget>
-      <Widget>MonoDevelop.AddinAuthoring.ExtensionPointsEditorWidget</Widget>
-    </ExportedWidgets>
-  </GtkDesignInfo>
+  <GtkDesignInfo gettextClass="Mono.Addins.AddinManager.CurrentLocalizer" gtkVersion="2.8.3" />
   <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="MonoDevelop.AddinAuthoring.make" RelativeConfigureInPath="../../">
     <BuildFilesVar Sync="True" Name="FILES" />
     <DeployFilesVar />
@@ -123,5 +111,4 @@
     <AsmRefVar Name="REFERENCES" />
     <ProjectRefVar Name="REFERENCES" />
   </MonoDevelop.Autotools.MakefileInfo>
-  <MonoDevelop.Gettext.TranslationInfo />
 </Project>

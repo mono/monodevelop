@@ -34,6 +34,8 @@ using Gtk;
 
 namespace MonoDevelop.AddinAuthoring
 {
+	[System.ComponentModel.Category("MonoDevelop.AddinAuthoring")]
+	[System.ComponentModel.ToolboxItem(true)]
 	public partial class ExtensionPointsEditorWidget : Gtk.Bin
 	{
 		ListStore store;

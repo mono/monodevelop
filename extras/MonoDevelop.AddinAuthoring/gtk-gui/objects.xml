@@ -1,4 +1,4 @@
-<objects>
+<objects attr-sync="on">
   <object type="MonoDevelop.AddinAuthoring.AddinOptionPanelWidget" palette-category="widget" allow-children="false" base-type="Gtk.Widget">
     <itemgroups>
     </itemgroups>

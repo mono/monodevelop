@@ -36,6 +36,8 @@ namespace MonoDevelop.AddinAuthoring
 {
 	
 	
+	[System.ComponentModel.Category("MonoDevelop.AddinAuthoring")]
+	[System.ComponentModel.ToolboxItem(true)]
 	public partial class TypeSelector : Gtk.Bin
 	{
 		bool allowCreate = true;

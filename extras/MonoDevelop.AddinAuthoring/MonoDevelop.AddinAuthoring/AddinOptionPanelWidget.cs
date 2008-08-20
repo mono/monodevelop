@@ -8,6 +8,8 @@ using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.AddinAuthoring
 {
+	[System.ComponentModel.Category("widget")]
+	[System.ComponentModel.ToolboxItem(true)]
 	public partial class AddinOptionPanelWidget : Gtk.Bin
 	{
 		DotNetProject project;

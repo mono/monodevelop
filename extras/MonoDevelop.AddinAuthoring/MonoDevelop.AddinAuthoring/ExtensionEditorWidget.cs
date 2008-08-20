@@ -13,6 +13,8 @@ namespace MonoDevelop.AddinAuthoring
 {
 	
 	
+	[System.ComponentModel.Category("widget")]
+	[System.ComponentModel.ToolboxItem(true)]
 	public partial class ExtensionEditorWidget : Gtk.Bin
 	{
 		AddinData data;
