@@ -32,9 +32,18 @@ namespace MonoDevelop.VersionControl
 			get { return (status & VersionStatus.LocalChangesMask) != 0; }
 		}
 		
+		public bool HasRemoteChanges {
+			get { return (remoteStatus & VersionStatus.LocalChangesMask) != 0; }
+		}
+		
 		public bool HasLocalChange (VersionStatus changeKind)
 		{
 			return (status & changeKind) != 0;
+		}
+		
+		public bool HasRemoteChange (VersionStatus changeKind)
+		{
+			return (remoteStatus & changeKind) != 0;
 		}
 		
 		public string LocalPath {
@@ -59,10 +68,12 @@ namespace MonoDevelop.VersionControl
 
 		public VersionStatus RemoteStatus {
 			get { return remoteStatus; }
+			internal set { remoteStatus = value; }
 		}
 		
 		public Revision RemoteRevision {
 			get { return remoteRevision; }
+			internal set { remoteRevision = value; }
 		}
 	}
 }

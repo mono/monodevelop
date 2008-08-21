@@ -1,3 +1,13 @@
+2008-08-21  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/LibSvnClient.cs,
+	  MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SubversionRepository.cs,
+	  MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SubversionVersionControl.cs:
+	  Properly show the remote status in the status view. Include remote
+	  additions and removals. Show diff between working copy and repo
+	  when remote status is requested. All this fixes bug #395284 - SVN
+	  plugin: Show Remote Status does not work.
+
 2008-08-06  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.VersionControl.Subversion/Makefile.am,

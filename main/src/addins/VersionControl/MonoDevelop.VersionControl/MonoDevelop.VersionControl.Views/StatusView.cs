@@ -40,12 +40,18 @@ namespace MonoDevelop.VersionControl.Views
 		Gtk.Label labelCommit;
 		
 		List<VersionInfo> statuses;
-		
 		bool remoteStatus = false;
-		bool diffRequested = false;
-		bool diffRunning = false;
-		Exception diffException;
-		DiffInfo[] difs;
+
+		class DiffData {
+			public bool diffRequested = false;
+			public bool diffRunning = false;
+			public Exception diffException;
+			public DiffInfo[] difs;
+		};
+
+		DiffData localDiff = new DiffData ();
+		DiffData remoteDiff = new DiffData ();
+		
 		bool updatingComment;
 		ChangeSet changeSet;
 		bool firstLoad = true;
@@ -57,9 +63,13 @@ namespace MonoDevelop.VersionControl.Views
 		const int ColCommit = 4;
 		const int ColFilled = 5;
 		const int ColFullPath = 6;
-		const int ColShowToggle = 7;
+		const int ColShowStatus = 7;
 		const int ColShowComment = 8;
 		const int ColIconFile = 9;
+		const int ColShowToggle = 10;
+		const int ColRemoteIcon = 11;
+		const int ColStatusColor = 12;
+		const int ColStatusRemoteDiff = 13;
 		
 		public static bool Show (Repository vc, string path, bool test)
 		{
@@ -171,8 +181,9 @@ namespace MonoDevelop.VersionControl.Views
 			colStatus.PackStart (crp, false);
 			colStatus.PackStart (crt, true);
 			colStatus.AddAttribute (crp, "pixbuf", ColIcon);
-			colStatus.AddAttribute (crp, "visible", ColShowToggle);
+			colStatus.AddAttribute (crp, "visible", ColShowStatus);
 			colStatus.AddAttribute (crt, "text", ColStatus);
+			colStatus.AddAttribute (crt, "foreground", ColStatusColor);
 			
 			TreeViewColumn colFile = new TreeViewColumn ();
 			colFile.Title = GettextCatalog.GetString ("File");
@@ -182,10 +193,18 @@ namespace MonoDevelop.VersionControl.Views
 			colFile.PackStart (crp, false);
 			colFile.PackStart (diffRenderer, true);
 			colFile.AddAttribute (crp, "stock-id", ColIconFile);
-			colFile.AddAttribute (crp, "visible", ColShowToggle);
+			colFile.AddAttribute (crp, "visible", ColShowStatus);
 			colFile.SetCellDataFunc (diffRenderer, new TreeCellDataFunc (SetDiffCellData));
 			
-			colRemote = new TreeViewColumn("Remote Status", new CellRendererText(), "text", ColRemoteStatus);
+			crt = new CellRendererText();
+			crp = new CellRendererPixbuf();
+			colRemote = new TreeViewColumn ();
+			colRemote.Title = GettextCatalog.GetString ("Remote Status");
+			colRemote.PackStart (crp, false);
+			colRemote.PackStart (crt, true);
+			colRemote.AddAttribute (crp, "pixbuf", ColRemoteIcon);
+			colRemote.AddAttribute (crt, "text", ColRemoteStatus);
+			colRemote.AddAttribute (crt, "foreground", ColStatusColor);
 			
 			filelist.AppendColumn(colStatus);
 			filelist.AppendColumn(colRemote);
@@ -194,7 +213,7 @@ namespace MonoDevelop.VersionControl.Views
 			
 			colRemote.Visible = false;
 
-			filestore = new TreeStore (typeof (Gdk.Pixbuf), typeof (string), typeof (string), typeof (string), typeof(bool), typeof(bool), typeof(string), typeof(bool), typeof (bool), typeof(string));
+			filestore = new TreeStore (typeof (Gdk.Pixbuf), typeof (string), typeof (string), typeof (string), typeof(bool), typeof(bool), typeof(string), typeof(bool), typeof (bool), typeof(string), typeof(bool), typeof (Gdk.Pixbuf), typeof(string), typeof(bool));
 			filelist.Model = filestore;
 			filelist.TestExpandRow += new Gtk.TestExpandRowHandler (OnTestExpandRow);
 			
@@ -339,8 +358,11 @@ namespace MonoDevelop.VersionControl.Views
 		
 		private void Update ()
 		{
-			diffRequested = false;
-			difs = null;
+			localDiff.diffRequested = false;
+			remoteDiff.diffRequested = false;
+			localDiff.difs = null;
+			remoteDiff.difs = null;
+			
 			filestore.Clear();
 			diffRenderer.Reset ();
 			
@@ -367,11 +389,15 @@ namespace MonoDevelop.VersionControl.Views
 			Gdk.Pixbuf statusicon = VersionControlService.LoadIconForStatus(n.Status);
 			string lstatus = VersionControlService.GetStatusLabel (n.Status);
 			
+			Gdk.Pixbuf rstatusicon = VersionControlService.LoadIconForStatus(n.RemoteStatus);
+			string rstatus = VersionControlService.GetStatusLabel (n.RemoteStatus);
+
+			string scolor = n.HasLocalChanges && n.HasRemoteChanges ? "red" : null;
+			
 			string localpath = n.LocalPath.Substring(filepath.Length);
 			if (localpath.Length > 0 && localpath[0] == Path.DirectorySeparatorChar) localpath = localpath.Substring(1);
 			if (localpath == "") { localpath = "."; } // not sure if this happens
 			
-			string rstatus = n.RemoteStatus.ToString();
 			bool hasComment = GetCommitMessage (n.LocalPath).Length > 0;
 			bool commit = changeSet.ContainsFile (n.LocalPath);
 			
@@ -381,9 +407,9 @@ namespace MonoDevelop.VersionControl.Views
 			else
 				fileIcon = IdeApp.Services.Icons.GetImageForFile (n.LocalPath);
 
-			TreeIter it = filestore.AppendValues (statusicon, lstatus, GLib.Markup.EscapeText (localpath), rstatus, commit, false, n.LocalPath, true, hasComment, fileIcon);
+			TreeIter it = filestore.AppendValues (statusicon, lstatus, GLib.Markup.EscapeText (localpath), rstatus, commit, false, n.LocalPath, true, hasComment, fileIcon, n.HasLocalChanges, rstatusicon, scolor, n.HasRemoteChange (VersionStatus.Modified));
 			if (!n.IsDirectory)
-				filestore.AppendValues (it, statusicon, "", "", "", false, true, n.LocalPath, false, false, fileIcon);
+				filestore.AppendValues (it, statusicon, "", "", "", false, true, n.LocalPath, false, false, fileIcon, false, null, null, false);
 			return it;
 		}
 		
@@ -540,7 +566,9 @@ namespace MonoDevelop.VersionControl.Views
 				filestore.SetValue (args.Iter, ColFilled, true);
 				TreeIter iter;
 				filestore.IterChildren (out iter, args.Iter);
-				SetFileDiff (iter, (string) filestore.GetValue (args.Iter, ColFullPath));
+				string fileName = (string) filestore.GetValue (args.Iter, ColFullPath);
+				bool remoteDiff = (bool) filestore.GetValue (args.Iter, ColStatusRemoteDiff);
+				SetFileDiff (iter, fileName, remoteDiff);
 			}
 		}
 		
@@ -621,21 +649,40 @@ namespace MonoDevelop.VersionControl.Views
 				StartUpdate ();
 				return;
 			}
-
-			TreeIter it;
+			
 			bool found = false;
-			if (filestore.GetIterFirst (out it)) {
-				do {
-					if (args.FilePath == (string) filestore.GetValue (it, ColFullPath)) {
-						found = true;
-						break;
-					}
-				} while (filestore.IterNext (ref it));
+			int oldStatusIndex;
+			TreeIter oldStatusIter = TreeIter.Zero;
+			
+			// Locate the file in the status object list
+			for (oldStatusIndex=0; oldStatusIndex<statuses.Count; oldStatusIndex++) {
+				if (statuses [oldStatusIndex].LocalPath == args.FilePath) {
+					found = true;
+					break;
+				}
+			}
+
+			// Locate the file in the treeview
+			if (found) {
+				found = false;
+				if (filestore.GetIterFirst (out oldStatusIter)) {
+					do {
+						if (args.FilePath == (string) filestore.GetValue (oldStatusIter, ColFullPath)) {
+							found = true;
+							break;
+						}
+					} while (filestore.IterNext (ref oldStatusIter));
+				}
 			}
 
 			VersionInfo newInfo;
 			try {
-				newInfo = vc.GetVersionInfo (args.FilePath, remoteStatus);
+				// Reuse remote status from old version info
+				newInfo = vc.GetVersionInfo (args.FilePath, false);
+				if (found) {
+					newInfo.RemoteStatus = statuses [oldStatusIndex].RemoteStatus;
+					newInfo.RemoteRevision = statuses [oldStatusIndex].RemoteRevision;
+				}
 			}
 			catch (Exception ex) {
 				LoggingService.LogError (ex.ToString ());
@@ -643,26 +690,20 @@ namespace MonoDevelop.VersionControl.Views
 			}
 			
 			if (found) {
-				int n;
-				for (n=0; n<statuses.Count; n++) {
-					if (statuses [n].LocalPath == args.FilePath)
-						break;
-				}
-				
-				if (newInfo == null || !newInfo.HasLocalChanges) {
+				if (!FileVisible (newInfo)) {
 					// Just remove the file from the change set
 					changeSet.RemoveFile (args.FilePath);
-					statuses.RemoveAt (n);
-					filestore.Remove (ref it);
+					statuses.RemoveAt (oldStatusIndex);
+					filestore.Remove (ref oldStatusIter);
 					UpdateControlStatus ();
 					return;
 				}
 				
-				statuses [n] = newInfo;
+				statuses [oldStatusIndex] = newInfo;
 				
 				// Update the tree
 				AppendFileInfo (newInfo);
-				filestore.Remove (ref it);
+				filestore.Remove (ref oldStatusIter);
 			}
 			else {
 				if (FileVisible (newInfo)) {
@@ -676,66 +717,78 @@ namespace MonoDevelop.VersionControl.Views
 		
 		bool FileVisible (VersionInfo vinfo)
 		{
-			return vinfo != null && vinfo.HasLocalChanges;
+			return vinfo != null && (vinfo.HasLocalChanges || vinfo.HasRemoteChanges);
+		}
+
+		DiffData GetDiffData (bool remote)
+		{
+			if (remote)
+				return remoteDiff;
+			else
+				return localDiff;
 		}
 		
-		void SetFileDiff (TreeIter iter, string file)
+		void SetFileDiff (TreeIter iter, string file, bool remote)
 		{
 			// If diff information is already loaded, just look for the
 			// diff chunk of the file and fill the tree
-			if (diffRequested) {
-				FillDiffInfo (iter, file);
+
+			DiffData ddata = GetDiffData (remote);
+			if (ddata.diffRequested) {
+				FillDiffInfo (iter, file, ddata);
 				return;
 			}
 			
-			filestore.SetValue (iter, ColPath, GLib.Markup.EscapeText (GettextCatalog.GetString ("Loading data...")));
+			filestore.SetValue (iter, ColPath, GettextCatalog.GetString ("Loading data..."));
 			
-			if (diffRunning)
+			if (ddata.diffRunning)
 				return;
 
 			// Diff not yet requested. Do it now.
-			diffRunning = true;
+			ddata.diffRunning = true;
 			
 			// Run the diff in a separate thread and update the tree when done
 			
 			Thread t = new Thread (
-				delegate () {
-					diffException = null;
-					try {
-						difs = vc.PathDiff (filepath, null);
-					} catch (Exception ex) {
-						diffException = ex;
-					} finally {
-						Gtk.Application.Invoke (OnFillDifs);
-					}
+			delegate () {
+				ddata.diffException = null;
+				try {
+					ddata.difs = vc.PathDiff (filepath, null, remote);
+				} catch (Exception ex) {
+					ddata.diffException = ex;
+				} finally {
+					Gtk.Application.Invoke (delegate {
+						FillDifs (ddata);
+					});
 				}
+			}
 			);
 			t.IsBackground = true;
 			t.Start ();
 		}
 		
-		void FillDiffInfo (TreeIter iter, string file)
+		void FillDiffInfo (TreeIter iter, string file, DiffData ddata)
 		{
-			if (difs != null) {
-				foreach (DiffInfo di in difs) {
+			if (ddata.difs != null) {
+				foreach (DiffInfo di in ddata.difs) {
 					if (di.FileName == file) {
 						filestore.SetValue (iter, ColPath, di.Content);
 						return;
 					}
 				}
 			}
-			filestore.SetValue (iter, ColPath, GLib.Markup.EscapeText (GettextCatalog.GetString ("No differences found")));
+			filestore.SetValue (iter, ColPath, GettextCatalog.GetString ("No differences found"));
 		}
 		
-		void OnFillDifs (object s, EventArgs a)
+		void FillDifs (DiffData ddata)
 		{
 			diffRenderer.Reset ();
 
-			diffRequested = true;
-			diffRunning = false;
+			ddata.diffRequested = true;
+			ddata.diffRunning = false;
 			
-			if (diffException != null) {
-				MessageService.ShowException (diffException, GettextCatalog.GetString ("Could not get diff information. ") + diffException.Message);
+			if (ddata.diffException != null) {
+				MessageService.ShowException (ddata.diffException, GettextCatalog.GetString ("Could not get diff information. ") + ddata.diffException.Message);
 			}
 			
 			TreeIter it;
@@ -746,9 +799,10 @@ namespace MonoDevelop.VersionControl.Views
 				bool filled = (bool) filestore.GetValue (it, ColFilled);
 				if (filled) {
 					string fileName = (string) filestore.GetValue (it, ColFullPath);
+					bool remoteDiff = (bool) filestore.GetValue (it, ColStatusRemoteDiff);
 					TreeIter citer;
 					filestore.IterChildren (out citer, it);
-					FillDiffInfo (citer, fileName);
+					FillDiffInfo (citer, fileName, GetDiffData (remoteDiff));
 				}
 			}
 			while (filestore.IterNext (ref it));
