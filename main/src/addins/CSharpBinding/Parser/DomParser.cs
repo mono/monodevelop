@@ -280,6 +280,7 @@ namespace MonoDevelop.CSharpBinding
 			                                                                                nsName, 
 			                                                                                Block2Region (type.MembersBlock),
 			                                                                                members);
+			result.Modifiers = ConvertModifier (type.ModFlags);
 			if (type.BaseTypes != null) {
 				foreach (Mono.CSharp.Dom.ITypeName baseType in type.BaseTypes) {
 					if (result.BaseType == null) {

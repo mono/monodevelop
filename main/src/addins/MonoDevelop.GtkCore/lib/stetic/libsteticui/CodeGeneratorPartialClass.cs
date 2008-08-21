@@ -67,8 +67,10 @@ namespace Stetic
 			met.ReturnType = new CodeTypeReference (typeof(void));
 			met.Attributes = MemberAttributes.Family;
 			
+			Stetic.Wrapper.Widget wwidget = Stetic.Wrapper.Widget.Lookup (w);
+
 			if (options.GenerateEmptyBuildMethod) {
-				GenerateWrapperFields (type, Wrapper.Widget.Lookup (w));
+				GenerateWrapperFields (type, wwidget);
 				return;
 			}
 
@@ -80,12 +82,14 @@ namespace Stetic
 					)
 			);
 
-			Stetic.Wrapper.Widget wwidget = Stetic.Wrapper.Widget.Lookup (w);
 			if (wwidget.GeneratePublic)
 				type.TypeAttributes = TypeAttributes.Public;
 			else
 				type.TypeAttributes = TypeAttributes.NotPublic;
 			
+			if (!String.IsNullOrEmpty (wwidget.UIManagerName))
+				type.Members.Add (new CodeMemberField ("Gtk.UIManager", wwidget.UIManagerName));
+
 			Stetic.WidgetMap map = Stetic.CodeGenerator.GenerateCreationCode (globalNs, type, w, new CodeThisReferenceExpression (), met.Statements, options, warnings);
 			CodeGenerator.BindSignalHandlers (new CodeThisReferenceExpression (), wwidget, map, met.Statements, options);
 		}

@@ -139,7 +139,16 @@ namespace MonoDevelop.Autotools
 
 				DotNetProject dotnetProject = entry as DotNetProject;
 				if (dotnetProject != null)
-					templateEngine.Variables ["RESGEN"] = (dotnetProject.ClrVersion == ClrVersion.Net_2_0) ? "resgen2" : "resgen";
+				{
+					string resgen = "resgen";
+					if (System.Environment.Version.Major >= 2) {
+						switch (dotnetProject.ClrVersion) {
+							case ClrVersion.Net_2_0: resgen = "resgen2"; break;
+							case ClrVersion.Net_1_1: resgen = "resgen1"; break;
+						}
+					}
+					templateEngine.Variables ["RESGEN"] = resgen;
+				}
 				
 				string pfpath = null;
 				foreach (ProjectFile projectFile in project.Files) 

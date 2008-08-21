@@ -13,6 +13,8 @@ using Gtk;
 
 namespace MonoDevelop.AddinAuthoring
 {
+	[System.ComponentModel.Category("widget")]
+	[System.ComponentModel.ToolboxItem(true)]
 	public partial class AddinFeatureWidget : Gtk.Bin
 	{
 		StringCollection paths = new StringCollection ();

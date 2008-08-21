@@ -161,21 +161,13 @@ namespace MonoDevelop.SourceEditor
 			this.textEditor.SelectionChanged += delegate {
 				this.UpdateLineCol ();
 			};
-
 			
 			ResetFocusChain ();
 			
 			UpdateLineCol ();
 			
-			this.Focused += delegate {
-				UpdateLineCol ();
-			};
 			ProjectDomService.CompilationUnitUpdated += OnParseInformationChanged;
 //			this.IsClassBrowserVisible = SourceEditorOptions.Options.EnableQuickFinder;
-			
-			this.Destroyed += delegate {
-				this.Dispose ();
-			};
 		}
 
 		void UpdateMetaInformation ()
@@ -195,6 +187,14 @@ namespace MonoDevelop.SourceEditor
 			//FIXME: check that the parser is able to return information that we can use
 			CanShowClassBrowser = MonoDevelop.Projects.Dom.Parser.ProjectDomService.GetParserByMime (mimeType) != null;
 		}
+
+		protected override bool OnFocused (DirectionType direction)
+		{
+			bool res = base.OnFocused (direction);
+			UpdateLineCol ();
+			return res;
+		}
+
 		
 		void ResetFocusChain ()
 		{
@@ -506,9 +506,13 @@ namespace MonoDevelop.SourceEditor
 				isDisposed = true;
 				StopParseInfoThread ();
 				
+				mainsw.ButtonPressEvent -= PrepareEvent;
+				
 				this.textEditor = null;
 				this.lastActiveEditor = null;
 				this.splittedTextEditor = null;
+				view = null;
+				
 				ProjectDomService.CompilationUnitUpdated -= OnParseInformationChanged;
 			}			
 			base.OnDestroyed ();
@@ -969,16 +973,14 @@ namespace MonoDevelop.SourceEditor
 		public void AddToLine ()
 		{
 			if (line != null) {
-				line.AddMarker (marker);
-				doc.CommitLineUpdate (doc.OffsetToLineNumber(line.Offset));
+				doc.AddMarker (line, marker);
 			}
 		}
 		
 		public void RemoveFromLine ()
 		{
 			if (line != null) {
-				line.RemoveMarker (marker);
-				doc.CommitLineUpdate (doc.OffsetToLineNumber(line.Offset));
+				doc.RemoveMarker (line, marker);
 			}
 		}
 	}

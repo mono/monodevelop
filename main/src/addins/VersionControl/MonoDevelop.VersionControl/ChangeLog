@@ -1,3 +1,26 @@
+2008-08-20  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.VersionControl.Views/StatusView.cs: Fix bug #401846 -
+	  Caught exception closing VersionControl tab before it's done with
+	  remote operation.
+
+2008-08-20  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.VersionControl.mdp,
+	  MonoDevelop.VersionControl.Views/Diffs.cs,
+	  MonoDevelop.VersionControl.Views/Statuses.cs,
+	  MonoDevelop.VersionControl.Views/LogView.cs,
+	  MonoDevelop.VersionControl.Views/StatusView.cs,
+	  MonoDevelop.VersionControl.Views/DiffView.cs,
+	  MonoDevelop.VersionControl.Views/Logs.cs, Makefile.am,
+	  MonoDevelop.VersionControl/UpdateCommand.cs,
+	  MonoDevelop.VersionControl/Update.cs,
+	  MonoDevelop.VersionControl/Checkout.cs,
+	  MonoDevelop.VersionControl/PublishCommand.cs,
+	  MonoDevelop.VersionControl/Publish.cs,
+	  MonoDevelop.VersionControl/CheckoutCommand.cs: Renamed some files.
+	* gtk-gui/gui.stetic: Updated.
+
 2008-08-05  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* overlay_locked.png, overlay_unlocked.png,

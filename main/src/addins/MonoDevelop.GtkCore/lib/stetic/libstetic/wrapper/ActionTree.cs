@@ -16,7 +16,7 @@ namespace Stetic.Wrapper
 		{
 		}
 		
-		public void GenerateBuildCode (GeneratorContext ctx, CodeVariableReferenceExpression uiManager)
+		public void GenerateBuildCode (GeneratorContext ctx, CodeFieldReferenceExpression uiManager)
 		{
 			StringBuilder sb = new StringBuilder ();
 			sb.Append ("<ui>");
@@ -203,7 +203,12 @@ namespace Stetic.Wrapper
 		public void GenerateUiString (StringBuilder sb)
 		{
 			sb.Append ('<').Append (type.ToString().ToLower());
-			if (name != null && name.Length > 0)
+
+			string name = this.name;
+			if (String.IsNullOrEmpty (name) && action != null)
+				name = action.Name;
+
+			if (!String.IsNullOrEmpty (name))
 				sb.Append (' ').Append ("name='").Append (name).Append ("'");
 			if (action != null)
 				sb.Append (' ').Append ("action='").Append (action.Name).Append ("'");

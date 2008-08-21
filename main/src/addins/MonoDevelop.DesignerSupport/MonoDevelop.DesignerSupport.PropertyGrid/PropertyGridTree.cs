@@ -317,10 +317,10 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid
 		{
 			public int Compare (object x, object y)
 			{
-				int catcomp = (x as PropertyDescriptor).Category.CompareTo ((y as PropertyDescriptor).Category);
+				int catcomp = ((PropertyDescriptor)x).Category.CompareTo (((PropertyDescriptor)y).Category);
 
 				if (catcomp == 0)
-					return (x as PropertyDescriptor).DisplayName.CompareTo ((y as PropertyDescriptor).DisplayName);
+					return ((PropertyDescriptor)x).DisplayName.CompareTo (((PropertyDescriptor)y).DisplayName);
 				else
 					return catcomp;
 			}
@@ -330,7 +330,7 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid
 		{
 			public int Compare(object x, object y)
 			{
-				return (x as PropertyDescriptor).DisplayName.CompareTo ((y as PropertyDescriptor).DisplayName);
+				return ((PropertyDescriptor)x).DisplayName.CompareTo (((PropertyDescriptor)y).DisplayName);
 			}
 		}
 	}

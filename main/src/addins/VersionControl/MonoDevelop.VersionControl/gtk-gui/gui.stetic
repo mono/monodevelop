@@ -6,7 +6,6 @@
   </configuration>
   <import>
     <widget-library name="../../../../../build/bin/MonoDevelop.Ide.dll" />
-    <widget-library name="../../../../../build/bin/MonoDevelop.Core.Gui.dll" />
     <widget-library name="../../../../../build/bin/MonoDevelop.Components.dll" />
     <widget-library name="../../../../../build/AddIns/VersionControl/MonoDevelop.VersionControl.dll" internal="true" />
   </import>
@@ -108,9 +107,6 @@
                       </packing>
                     </child>
                   </widget>
-                  <packing>
-                    <property name="TabExpand">False</property>
-                  </packing>
                 </child>
                 <child>
                   <widget class="Gtk.Label" id="label1">
@@ -209,7 +205,6 @@
                   </widget>
                   <packing>
                     <property name="Position">1</property>
-                    <property name="TabExpand">False</property>
                   </packing>
                 </child>
                 <child>

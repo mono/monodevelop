@@ -131,7 +131,6 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			Project project = (Project) dataObject;
 			if (project is DotNetProject) {
 				builder.AddChild (((DotNetProject)project).References);
-				builder.AddChild (new ResourceFolder (project));
 			}
 			
 			foreach (ProjectFile file in project.Files) {
@@ -169,12 +168,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		{
 			ITreeBuilder tb = Context.GetTreeBuilder ();
 			
-			if (file.BuildAction == BuildAction.EmbedAsResource) {
-				// Resources have a special folder for them
-				if (tb.MoveToObject (new ResourceFolder (project)))
-					tb.AddChild (file);
-			}
-			else if (file.IsExternalToProject) {
+			if (file.IsExternalToProject) {
 				// Files from outside the project folder are added in a special folder
 				if (!tb.MoveToObject (new LinkedFilesFolder (project))) {
 					// This will fill the folder, so there is no need to add the file again
@@ -255,8 +249,6 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			} else {
 				if (tb.MoveToObject (file)) {
 					tb.Remove (true);
-					if (file.BuildAction == BuildAction.EmbedAsResource)
-						return;
 				} else {
 					string parentPath = Path.GetDirectoryName (file.Name);
 					if (!tb.MoveToObject (new ProjectFolder (parentPath, project)))

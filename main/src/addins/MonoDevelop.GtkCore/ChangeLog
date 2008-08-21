@@ -1,3 +1,16 @@
+2008-08-20  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.GtkCore.NodeBuilders/WindowsFolderNodeBuilder.cs: Remove
+	  the "resources folder" feature. Resources are now shown in the
+	  solution tree like any other files. For a detailed explanation see
+	  "Bug 381430 - [PATCH] Display resource files in main project tree".
+
+2008-08-19  Mike Kestner <mkestner@novell.com> 
+
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderProject.cs: revert a silly
+	change that was causing explicit paths to be inserted into gui.stetic
+	files for gac references.  [Fixes #412960]
+
 2008-08-19  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderProject.cs: fixed issue in

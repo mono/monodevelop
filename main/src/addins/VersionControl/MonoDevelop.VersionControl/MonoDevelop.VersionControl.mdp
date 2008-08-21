@@ -39,27 +39,27 @@
     <File name="menu_revert.png" subtype="Code" buildaction="EmbedAsResource" />
     <File name="Makefile.am" subtype="Code" buildaction="Nothing" />
     <File name="MonoDevelop.VersionControl.Views/CellRendererDiff.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.VersionControl.Views/Diffs.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.VersionControl.Views/Logs.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.VersionControl.Views/Statuses.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.VersionControl.Views/DiffView.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.VersionControl.Views/LogView.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.VersionControl.Views/StatusView.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.VersionControl.Dialogs/CommitDialog.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.VersionControl.Dialogs/EditRepositoryDialog.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.VersionControl.Dialogs/SelectRepositoryDialog.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.VersionControl/AddRemoveMoveCommand.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.VersionControl/BaseView.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.VersionControl/ChangeSet.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.VersionControl/Checkout.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.VersionControl/CheckoutCommand.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.VersionControl/Commands.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.VersionControl/CommitCommand.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.VersionControl/CommitDialogExtension.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.VersionControl/CommitEventHandler.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.VersionControl/Publish.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.VersionControl/PublishCommand.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.VersionControl/Repository.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.VersionControl/RevertCommand.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.VersionControl/Revision.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.VersionControl/Task.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.VersionControl/UnknownRepository.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.VersionControl/Update.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.VersionControl/UpdateCommand.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.VersionControl/UrlBasedRepository.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.VersionControl/UrlBasedRepositoryEditor.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.VersionControl/VersionControlConfiguration.cs" subtype="Code" buildaction="Compile" />

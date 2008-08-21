@@ -1,3 +1,10 @@
+2008-08-20  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Xml.StateEngine/XmlAttributeValueState.cs,
+	  MonoDevelop.Xml.StateEngine/XmlFreeState.cs: Replace C#3 automatic
+	  properties into C# 2 properties. Fixes build on Mono < 1.9. Thanks
+	  to Joshua Simmons for the patch.
+
 2008-08-01  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Xml.StateEngine/XmlAttributeValueState.cs,

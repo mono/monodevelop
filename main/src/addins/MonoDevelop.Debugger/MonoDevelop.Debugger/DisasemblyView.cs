@@ -100,8 +100,9 @@ namespace MonoDevelop.Debugger
 		{
 			autoRefill = false;
 			
-			if (lastDebugLine != -1)
-				editor.Document.GetLine (lastDebugLine).RemoveMarker (currentDebugLineMarker);
+			if (lastDebugLine != -1) {
+				editor.Document.RemoveMarker (lastDebugLine, currentDebugLineMarker);
+			}
 			
 			if (IdeApp.Services.DebuggingService.CurrentFrame == null) {
 				sw.Sensitive = false;
@@ -151,14 +152,14 @@ namespace MonoDevelop.Debugger
 				}
 				editor.Document.Text = sb.ToString ();
 				foreach (int li in asmLineNums)
-					editor.Document.GetLine (li).AddMarker (asmMarker);
+					editor.Document.AddMarker (li, asmMarker);
 			}
 			int aline;
 			if (!addressLines.TryGetValue (sf.Address, out aline))
 				return;
 			lastDebugLine = aline;
 			editor.Caret.Line = aline;
-			editor.Document.GetLine (lastDebugLine).AddMarker (currentDebugLineMarker);
+			editor.Document.AddMarker (lastDebugLine, currentDebugLineMarker);
 			editor.QueueDraw ();
 		}
 		
@@ -185,7 +186,7 @@ namespace MonoDevelop.Debugger
 						if (lines [n].Address == sf.Address) {
 							lastDebugLine = n;
 							editor.Caret.Line = n;
-							editor.Document.GetLine (lastDebugLine).AddMarker (currentDebugLineMarker);
+							editor.Document.AddMarker (lastDebugLine, currentDebugLineMarker);
 							editor.QueueDraw ();
 							return;
 						}
@@ -206,7 +207,7 @@ namespace MonoDevelop.Debugger
 			lastDebugLine = lastLine;
 			editor.Caret.Line = 150;
 			
-			editor.Document.GetLine (lastDebugLine).AddMarker (currentDebugLineMarker);
+			editor.Document.AddMarker (lastDebugLine, currentDebugLineMarker);
 			editor.QueueDraw ();
 		}
 		
@@ -234,7 +235,7 @@ namespace MonoDevelop.Debugger
 			
 			if (loc.Line < FillMarginLines) {
 				if (lastDebugLine != -1)
-					editor.Document.GetLine (lastDebugLine).RemoveMarker (currentDebugLineMarker);
+					editor.Document.RemoveMarker (lastDebugLine, currentDebugLineMarker);
 				int num = (FillMarginLines - loc.Line) * 2;
 				InsertLines (0, firstLine - num, firstLine - 1);
 				firstLine -= num;
@@ -247,7 +248,7 @@ namespace MonoDevelop.Debugger
 				
 				if (lastDebugLine != -1) {
 					lastDebugLine += num;
-					editor.Document.GetLine (lastDebugLine).AddMarker (currentDebugLineMarker);
+					editor.Document.AddMarker (lastDebugLine, currentDebugLineMarker);
 					editor.QueueDraw ();
 				}
 			}

@@ -106,26 +106,24 @@ namespace MonoDevelop.SourceEditor
 					}
 				}
 			};
+
 			keyBindings [GetKeyCode (Gdk.Key.Tab)] = new TabAction (this);
 			keyBindings [GetKeyCode (Gdk.Key.BackSpace)] = new AdvancedBackspaceAction ();
 			
-			this.ButtonPressEvent += delegate(object sender, Gtk.ButtonPressEventArgs args) {
-				if (args.Event.Button == 3) {
-					int textEditorXOffset = (int)args.Event.X - this.TextViewMargin.XOffset;
-					if (textEditorXOffset < 0)
-						return;
-					this.menuPopupLocation = new Gdk.Point ((int)args.Event.X, (int)args.Event.Y);
-					DocumentLocation loc= this.TextViewMargin.VisualToDocumentLocation (textEditorXOffset, (int)args.Event.Y);
-					if (!this.IsSomethingSelected || !this.SelectionRange.Contains (Document.LocationToOffset (loc)))
-						Caret.Location = loc;
-					
-					this.ShowPopup ();
-					base.ResetMouseState ();
-				}
-			};
+			this.ButtonPressEvent += OnPopupMenu;
 
 			AddinManager.AddExtensionNodeHandler ("MonoDevelop/SourceEditor2/TooltipProviders", OnTooltipProviderChanged);
 		}
+
+		protected override void OnDestroyed ()
+		{
+			extension = null;
+			view = null;
+			this.ButtonPressEvent -= OnPopupMenu;
+			AddinManager.RemoveExtensionNodeHandler  ("MonoDevelop/SourceEditor2/TooltipProviders", OnTooltipProviderChanged);
+			base.OnDestroyed ();
+		}
+
 		
 		void OnTooltipProviderChanged (object s, ExtensionNodeEventArgs a)
 		{
@@ -133,6 +131,22 @@ namespace MonoDevelop.SourceEditor
 				TooltipProviders.Add ((ITooltipProvider) a.ExtensionObject);
 			else
 				TooltipProviders.Remove ((ITooltipProvider) a.ExtensionObject);
+		}
+
+		void OnPopupMenu (object sender, Gtk.ButtonPressEventArgs args)
+		{
+			if (args.Event.Button == 3) {
+				int textEditorXOffset = (int)args.Event.X - this.TextViewMargin.XOffset;
+				if (textEditorXOffset < 0)
+					return;
+				this.menuPopupLocation = new Gdk.Point ((int)args.Event.X, (int)args.Event.Y);
+				DocumentLocation loc= this.TextViewMargin.VisualToDocumentLocation (textEditorXOffset, (int)args.Event.Y);
+				if (!this.IsSomethingSelected || !this.SelectionRange.Contains (Document.LocationToOffset (loc)))
+					Caret.Location = loc;
+				
+				this.ShowPopup ();
+				base.ResetMouseState ();
+			}
 		}
 		
 		public void FireOptionsChange ()

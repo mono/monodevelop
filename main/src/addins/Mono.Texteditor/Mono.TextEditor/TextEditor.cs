@@ -152,56 +152,61 @@ namespace Mono.TextEditor
 			repaint = true;
 //				this.QueueDraw ();
 //				return;
-								if (buffer == null) 
-									AllocateWindowBuffer (this.Allocation);
-								if (this.textEditorData.VAdjustment.Value != System.Math.Ceiling (this.textEditorData.VAdjustment.Value)) {
-									this.textEditorData.VAdjustment.Value = System.Math.Ceiling (this.textEditorData.VAdjustment.Value);
-									return;
-								}
-								int delta = (int)(this.textEditorData.VAdjustment.Value - this.oldVadjustment);
-								oldVadjustment = this.textEditorData.VAdjustment.Value;
-								if (System.Math.Abs (delta) >= Allocation.Height - this.LineHeight * 2 || this.TextViewMargin.inSelectionDrag) {
-									this.QueueDraw ();
-									return;
-								}
-								int from, to;
-								if (delta > 0) {
-									from = delta;
-									to   = 0;
-								} else {
-									from = 0;
-									to   = -delta;
-								}
-								
-								DoFlipBuffer ();
-								Caret.IsVisible = false;
-								this.buffer.DrawDrawable (Style.BackgroundGC (StateType.Normal), 
-								                          this.flipBuffer,
-								                          0, from, 
-								                          0, to, 
-								                          Allocation.Width, Allocation.Height - from - to);
-								if (delta > 0) {
-									RenderMargins (buffer, new Gdk.Rectangle (0, Allocation.Height - delta, Allocation.Width, delta));
-								} else {
-									RenderMargins (buffer, new Gdk.Rectangle (0, 0, Allocation.Width, -delta));
-								}
-								Caret.IsVisible = true;
-								
-								GdkWindow.DrawDrawable (Style.BackgroundGC (StateType.Normal),
-								                        buffer,
-								                        0, 0, 
-								                        0, 0, 
-								                        Allocation.Width, Allocation.Height);
+					if (buffer == null) 
+						AllocateWindowBuffer (this.Allocation);
+					if (this.textEditorData.VAdjustment.Value != System.Math.Ceiling (this.textEditorData.VAdjustment.Value)) {
+						this.textEditorData.VAdjustment.Value = System.Math.Ceiling (this.textEditorData.VAdjustment.Value);
+						return;
+					}
+					int delta = (int)(this.textEditorData.VAdjustment.Value - this.oldVadjustment);
+					oldVadjustment = this.textEditorData.VAdjustment.Value;
+					if (System.Math.Abs (delta) >= Allocation.Height - this.LineHeight * 2 || this.TextViewMargin.inSelectionDrag) {
+						this.QueueDraw ();
+						return;
+					}
+					int from, to;
+					if (delta > 0) {
+						from = delta;
+						to   = 0;
+					} else {
+						from = 0;
+						to   = -delta;
+					}
+					
+					DoFlipBuffer ();
+					Caret.IsVisible = false;
+					this.buffer.DrawDrawable (Style.BackgroundGC (StateType.Normal), 
+					                          this.flipBuffer,
+					                          0, from, 
+					                          0, to, 
+					                          Allocation.Width, Allocation.Height - from - to);
+					if (delta > 0) {
+						RenderMargins (buffer, new Gdk.Rectangle (0, Allocation.Height - delta, Allocation.Width, delta));
+					} else {
+						RenderMargins (buffer, new Gdk.Rectangle (0, 0, Allocation.Width, -delta));
+					}
+					Caret.IsVisible = true;
+					
+					GdkWindow.DrawDrawable (Style.BackgroundGC (StateType.Normal),
+					                        buffer,
+					                        0, 0, 
+					                        0, 0, 
+					                        Allocation.Width, Allocation.Height);
 		}
 		
 		protected override void OnSetScrollAdjustments (Adjustment hAdjustement, Adjustment vAdjustement)
 		{
+			if (textEditorData.HAdjustment != null)
+				textEditorData.HAdjustment.ValueChanged -= HAdjustmentValueChanged; 
+			if (textEditorData.VAdjustment!= null)
+				textEditorData.VAdjustment.ValueChanged -= VAdjustmentValueChanged;
+			
 			this.textEditorData.HAdjustment = hAdjustement;
 			this.textEditorData.VAdjustment = vAdjustement;
 			
 			if (hAdjustement == null || vAdjustement == null)
 				return;
-			
+
 			this.textEditorData.HAdjustment.ValueChanged += HAdjustmentValueChanged; 
 			this.textEditorData.VAdjustment.ValueChanged += VAdjustmentValueChanged;
 		}
@@ -357,9 +362,7 @@ namespace Mono.TextEditor
 			
 			textViewMargin.Initialize ();
 			
-			this.Realized += delegate {
-				OptionsChanged (null, null);
-			};
+			this.Realized += OptionsChanged;
 		}
 		
 		void CaretPositionChanged (object sender, DocumentLocationEventArgs args) 
@@ -544,7 +547,7 @@ namespace Mono.TextEditor
 					imContext.Dispose ();
 					imContext = null;
 				}
-				
+
 				if (this.textEditorData.HAdjustment != null) {
 					this.textEditorData.HAdjustment.ValueChanged -= HAdjustmentValueChanged; 
 					this.textEditorData.HAdjustment = null;
@@ -572,6 +575,8 @@ namespace Mono.TextEditor
 					this.textEditorData.Dispose ();
 					this.textEditorData = null;
 				}
+
+				this.Realized -= OptionsChanged;
 			}
 		}
 		

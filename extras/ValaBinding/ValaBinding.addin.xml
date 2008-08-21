@@ -101,7 +101,6 @@
 
 	<Extension path = "/MonoDevelop/Ide/Pads/ProjectPad">
 		<NodeBuilder id = "MonoDevelop.ValaBinding.ProjectPad.ProjectReferencesExtension" class = "MonoDevelop.ValaBinding.ProjectPad.ProjectReferencesExtension"/>
-		<NodeBuilder id = "MonoDevelop.ValaBinding.ProjectPad.ProjectResourcesExtension" class = "MonoDevelop.ValaBinding.ProjectPad.ProjectResourcesExtension"/>
 		<NodeBuilder id = "MonoDevelop.ValaBinding.ProjectPad.ProjectPackagesFolderNodeBuilder" class = "MonoDevelop.ValaBinding.ProjectPad.ProjectPackagesFolderNodeBuilder"/>
 		<NodeBuilder id = "MonoDevelop.ValaBinding.ProjectPad.ProjectPackageNodeBuilder" class = "MonoDevelop.ValaBinding.ProjectPad.ProjectPackageNodeBuilder"/>
 		<NodeBuilder id = "MonoDevelop.ValaBinding.ProjectPad.ProjectNodeExtension" class = "MonoDevelop.ValaBinding.ProjectPad.ProjectNodeExtension"/>

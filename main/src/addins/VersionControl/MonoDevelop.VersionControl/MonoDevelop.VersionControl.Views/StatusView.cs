@@ -19,6 +19,7 @@ namespace MonoDevelop.VersionControl.Views
 	{
 		string filepath;
 		Repository vc;
+		bool disposed;
 		
 		Widget widget;
 		Toolbar commandbar;
@@ -240,7 +241,7 @@ namespace MonoDevelop.VersionControl.Views
 			
 			StartUpdate();
 		}
-		
+
 		int CompareNodes (Gtk.TreeModel model, Gtk.TreeIter a, Gtk.TreeIter b)
 		{
 			int col, val=0;
@@ -268,6 +269,7 @@ namespace MonoDevelop.VersionControl.Views
 		
 		public override void Dispose ()
 		{
+			disposed = true;
 			VersionControlService.FileStatusChanged -= OnFileStatusChanged;
 			widget.Destroy ();
 			base.Dispose ();
@@ -788,8 +790,10 @@ namespace MonoDevelop.VersionControl.Views
 		
 			protected override void Finished()
 			{
-				view.statuses = newList;
-				view.Update();
+				if (!view.disposed) {
+					view.statuses = newList;
+					view.Update();
+				}
 			}
 		}
 	}

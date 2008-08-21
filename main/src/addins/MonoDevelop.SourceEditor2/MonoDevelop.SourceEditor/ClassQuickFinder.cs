@@ -484,5 +484,17 @@ namespace MonoDevelop.SourceEditor
 //			line = location.Line + 1;
 //			column = location.Column + 1;
 //		}
+		
+		protected override void OnDestroyed ()
+		{
+			if (editor != null) {
+				editor = null;
+				classCombo.Changed -= ClassChanged;
+				membersCombo.Changed -= MemberChanged;
+				regionCombo.Changed -= RegionChanged;
+			}
+		
+			base.OnDestroyed ();
+		}
 	}
 }

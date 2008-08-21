@@ -115,6 +115,8 @@ namespace MonoDevelop.AddinAuthoring
 		}
 	}
 	
+	[System.ComponentModel.Category("MonoDevelop.AddinAuthoring")]
+	[System.ComponentModel.ToolboxItem(true)]
 	class AutoSizeEntry: Gtk.Entry
 	{
 		public AutoSizeEntry ()

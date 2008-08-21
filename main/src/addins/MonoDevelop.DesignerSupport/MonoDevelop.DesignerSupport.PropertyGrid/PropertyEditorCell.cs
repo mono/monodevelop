@@ -213,7 +213,7 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid
 		public event EventHandler ValueChanged;
 	}
 	
-	public class EditSession
+	public class EditSession : ITypeDescriptorContext
 	{
 		PropertyDescriptor property; 
 		object obj;
@@ -247,6 +247,10 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid
 		}
 		
 		public PropertyDescriptor Property {
+			get { return property; }
+		}
+		
+		PropertyDescriptor ITypeDescriptorContext.PropertyDescriptor {
 			get { return property; }
 		}
 		
@@ -295,6 +299,26 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid
 				syncing = false;
 			}
 		}
+		
+		#region FIXME Unimplemented ITypeDescriptorContext and IServiceProvider members
+		
+		object IServiceProvider.GetService (Type serviceType)
+		{
+			return null;
+		}
+		
+		void ITypeDescriptorContext.OnComponentChanged ()
+		{
+		}
+		
+		bool ITypeDescriptorContext.OnComponentChanging ()
+		{
+			return true;
+		}
+		
+		IContainer ITypeDescriptorContext.Container { get { return null; } }
+		
+		#endregion
 	}
 	
 	class CellRendererWidget: Gtk.DrawingArea

@@ -126,7 +126,6 @@
 	
 	<Extension path = "/MonoDevelop/Ide/Pads/ProjectPad">
 		<NodeBuilder id = "CBinding.ProjectPad.ProjectReferencesExtension" class = "CBinding.ProjectPad.ProjectReferencesExtension"/>
-		<NodeBuilder id = "CBinding.ProjectPad.ProjectResourcesExtension" class = "CBinding.ProjectPad.ProjectResourcesExtension"/>
 		<NodeBuilder id = "CBinding.ProjectPad.ProjectNodeExtension" class = "CBinding.ProjectPad.ProjectNodeExtension"/>
 		<NodeBuilder id = "CBinding.ProjectPad.ProjectPackagesFolderNodeBuilder" class = "CBinding.ProjectPad.ProjectPackagesFolderNodeBuilder"/>
 		<NodeBuilder id = "CBinding.ProjectPad.ProjectPackageNodeBuilder" class = "CBinding.ProjectPad.ProjectPackageNodeBuilder"/>

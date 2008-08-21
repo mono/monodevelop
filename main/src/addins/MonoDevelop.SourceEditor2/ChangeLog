@@ -1,3 +1,16 @@
+2008-08-20  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.SourceEditor/SourceEditorWidget.cs,
+	  MonoDevelop.SourceEditor/SourceEditorView.cs: made some changes
+	  caused by text editor changes.
+
+2008-08-19  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.SourceEditor/ExtendibleTextEditor.cs,
+	  MonoDevelop.SourceEditor/SourceEditorView.cs,
+	  MonoDevelop.SourceEditor/SourceEditorWidget.cs: Fix some memory
+	  leaks.
+
 2008-08-18  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.SourceEditor/SourceEditorWidget.cs: Fix for backward

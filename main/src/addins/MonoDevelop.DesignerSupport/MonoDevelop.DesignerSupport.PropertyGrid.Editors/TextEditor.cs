@@ -3,6 +3,7 @@
 //
 // Author:
 //   Lluis Sanchez Gual
+//   Michael Hutchinson
 //
 // Copyright (C) 2007 Novell, Inc (http://www.novell.com)
 //
@@ -37,23 +38,66 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid.PropertyEditors
 	[PropertyEditorType (typeof (string))]
 	public class TextEditor: Gtk.HBox, IPropertyEditor
 	{
-		protected Gtk.Entry entry;
-		protected Gtk.Button button;
-		PropertyDescriptor property;
+		EditSession session;
 		bool disposed;
 		string initialText;
+		Entry entry;
 		
 		public TextEditor()
 		{
-			Spacing = 3;
-			entry = new Entry ();
+		}
+		
+		public void Initialize (EditSession session)
+		{
+			this.session = session;
+			
+			//if standard values are supported by the converter, then 
+			//we list them in a combo
+			if (session.Property.Converter.GetStandardValuesSupported (session))
+			{
+				ComboBoxEntry combo = ComboBoxEntry.NewText ();
+				PackStart (combo, true, true, 0);
+				combo.Changed += TextChanged;
+				entry = combo.Entry;
+				entry.HeightRequest = combo.SizeRequest ().Height;
+				
+				//but if the converter doesn't allow nonstandard values, 
+				// then we make the entry uneditable
+				if (session.Property.Converter.GetStandardValuesExclusive (session)) {
+					entry.IsEditable = false;
+					entry.CanFocus = false;
+				}
+				
+				//fill the list
+				foreach (object stdValue in session.Property.Converter.GetStandardValues (session)) {
+					combo.AppendText (session.Property.Converter.ConvertToString (session, stdValue));
+				}
+			}
+			// no standard values, so just use an entry
+			else {
+				entry = new Entry ();
+				PackStart (entry, true, true, 0);
+			}
+			
+			//either way we have an entry to play with
 			entry.HasFrame = false;
-			PackStart (entry, true, true, 0);
-			button = new Button ("...");
-			PackStart (button, false, false, 0);
-			button.Clicked += ButtonClicked;
 			entry.Activated += TextChanged;
+			
+			if (ShouldShowDialogButton ()) {
+				Button button = new Button ("...");
+				PackStart (button, false, false, 0);
+				button.Clicked += ButtonClicked;
+			}
+			
+			Spacing = 3;
 			ShowAll ();
+		}
+		
+		protected virtual bool ShouldShowDialogButton ()
+		{
+			//if the object's Localizable, show a dialog, since the text's likely to be more substantial
+			LocalizableAttribute at = (LocalizableAttribute) session.Property.Attributes [typeof(LocalizableAttribute)];
+			return (at != null && at.IsLocalizable);
 		}
 		
 		void ButtonClicked (object s, EventArgs a)
@@ -72,23 +116,23 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid.PropertyEditors
 			if (initialText == entry.Text)
 				return;
 			
-			try {
-				property.Converter.ConvertFromString (entry.Text);
-				entry.ModifyFg (Gtk.StateType.Normal);
-				initialText = entry.Text;
-				if (ValueChanged != null)
-					ValueChanged (this, a);
-			} catch {
-				// Invalid format
-				entry.ModifyFg (Gtk.StateType.Normal, new Gdk.Color (255, 0, 0));
+			bool valid = false;
+			if (session.Property.Converter.IsValid (session, entry.Text)) {
+				try {
+					session.Property.Converter.ConvertFromString (session, entry.Text);
+					initialText = entry.Text;
+					if (ValueChanged != null)
+						ValueChanged (this, a);
+					valid = true;
+				} catch {
+					// Invalid format
+				}
 			}
-		}
-		
-		public void Initialize (EditSession session)
-		{
-			property = session.Property;
-			LocalizableAttribute at = (LocalizableAttribute) property.Attributes [typeof(LocalizableAttribute)];
-			button.Visible = (at != null && at.IsLocalizable);
+			
+			if (valid)
+				entry.ModifyFg (Gtk.StateType.Normal);
+			else
+				entry.ModifyFg (Gtk.StateType.Normal, new Gdk.Color (255, 0, 0));
 		}
 		
 		// Gets/Sets the value of the editor. If the editor supports
@@ -96,12 +140,12 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid.PropertyEditors
 		// to return values with the expected type.
 		public object Value {
 			get {
-				return property.Converter.ConvertFromString (entry.Text);
+				return session.Property.Converter.ConvertFromString (session, entry.Text);
 			}
 			set {
-				string val = property.Converter.ConvertToString (value);
-				entry.Text = val ?? string.Empty;
+				string val = session.Property.Converter.ConvertToString (session, value);
 				initialText = entry.Text;
+				entry.Text = val ?? string.Empty;
 			}
 		}
 		

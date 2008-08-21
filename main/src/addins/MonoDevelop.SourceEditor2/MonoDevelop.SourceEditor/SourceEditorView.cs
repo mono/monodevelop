@@ -167,6 +167,11 @@ namespace MonoDevelop.SourceEditor
 				fileSystemWatcher.EnableRaisingEvents = true;
 			};
 			ClipbardRingUpdated += UpdateClipboardRing;
+			
+			IdeApp.Services.DebuggingService.ExecutionLocationChanged += executionLocationChanged;
+			IdeApp.Services.DebuggingService.Breakpoints.BreakpointAdded += breakpointAdded;
+			IdeApp.Services.DebuggingService.Breakpoints.BreakpointRemoved += breakpointRemoved;
+			IdeApp.Services.DebuggingService.Breakpoints.BreakpointStatusChanged += breakpointStatusChanged;
 		}
 		
 		public override void Save (string fileName)
@@ -235,10 +240,6 @@ namespace MonoDevelop.SourceEditor
 			
 			UpdateExecutionLocation ();
 			UpdateBreakpoints ();
-			IdeApp.Services.DebuggingService.ExecutionLocationChanged += executionLocationChanged;
-			IdeApp.Services.DebuggingService.Breakpoints.BreakpointAdded += breakpointAdded;
-			IdeApp.Services.DebuggingService.Breakpoints.BreakpointRemoved += breakpointRemoved;
-			IdeApp.Services.DebuggingService.Breakpoints.BreakpointStatusChanged += breakpointStatusChanged;
 
 			widget.PopulateClassCombo ();
 			this.IsDirty = false;
@@ -255,6 +256,11 @@ namespace MonoDevelop.SourceEditor
 			}
 			
 			if (widget != null) {
+			
+				widget.TextEditor.Document.TextReplacing -= OnTextReplacing;
+				widget.TextEditor.Document.TextReplacing -= OnTextReplaced;
+				widget.TextEditor.Document.ReadOnlyCheckDelegate = null;
+				
 				widget.Destroy ();
 				widget = null;
 			}
@@ -263,6 +269,18 @@ namespace MonoDevelop.SourceEditor
 			IdeApp.Services.DebuggingService.Breakpoints.BreakpointAdded -= breakpointAdded;
 			IdeApp.Services.DebuggingService.Breakpoints.BreakpointRemoved -= breakpointRemoved;
 			IdeApp.Services.DebuggingService.Breakpoints.BreakpointStatusChanged -= breakpointStatusChanged;
+			
+			// This is not necessary but helps when tracking down memory leaks
+			
+			currentDebugLineMarker = null;
+			breakpointMarker = null;
+			breakpointDisabledMarker = null;
+			breakpointInvalidMarker = null;
+			
+			executionLocationChanged = null;
+			breakpointAdded = null;
+			breakpointRemoved = null;
+			breakpointStatusChanged = null;
 		}
 		
 		public ProjectDom GetParserContext ()
@@ -351,13 +369,13 @@ namespace MonoDevelop.SourceEditor
 				if (lastDebugLine == IdeApp.Services.DebuggingService.CurrentLineNumber)
 					return;
 				if (currentLineSegment != null)
-					currentLineSegment.RemoveMarker (currentDebugLineMarker);
+					widget.TextEditor.Document.RemoveMarker (currentLineSegment, currentDebugLineMarker);
 				lastDebugLine = IdeApp.Services.DebuggingService.CurrentLineNumber;
 				currentLineSegment = widget.TextEditor.Document.GetLine (lastDebugLine-1);
-				currentLineSegment.AddMarker (currentDebugLineMarker);
+				widget.TextEditor.Document.AddMarker (currentLineSegment, currentDebugLineMarker);
 				widget.TextEditor.QueueDraw ();
 			} else if (currentLineSegment != null) {
-				currentLineSegment.RemoveMarker (currentDebugLineMarker);
+				widget.TextEditor.Document.RemoveMarker (currentLineSegment, currentDebugLineMarker);
 				lastDebugLine = -1;
 				currentLineSegment = null;
 				widget.TextEditor.QueueDraw ();
@@ -367,9 +385,9 @@ namespace MonoDevelop.SourceEditor
 		void UpdateBreakpoints ()
 		{
 			foreach (LineSegment line in breakpointSegments) {
-				line.RemoveMarker (breakpointMarker);
-				line.RemoveMarker (breakpointDisabledMarker);
-				line.RemoveMarker (breakpointInvalidMarker);
+				widget.TextEditor.Document.RemoveMarker (line, breakpointMarker);
+				widget.TextEditor.Document.RemoveMarker (line, breakpointDisabledMarker);
+				widget.TextEditor.Document.RemoveMarker (line, breakpointInvalidMarker);
 			}
 			breakpointSegments.Clear ();
 			foreach (Breakpoint bp in IdeApp.Services.DebuggingService.Breakpoints.GetBreakpoints ())
@@ -386,11 +404,11 @@ namespace MonoDevelop.SourceEditor
 			if (bp.FileName == Path.GetFullPath (ContentName)) {
 				LineSegment line = widget.TextEditor.Document.GetLine (bp.Line-1);
 				if (!bp.Enabled)
-					line.AddMarker (breakpointDisabledMarker);
+					widget.TextEditor.Document.AddMarker (line, breakpointDisabledMarker);
 				else if (bp.IsValid (IdeApp.Services.DebuggingService.DebuggerSession))
-					line.AddMarker (breakpointMarker);
+					widget.TextEditor.Document.AddMarker (line, breakpointMarker);
 				else
-					line.AddMarker (breakpointInvalidMarker);
+					widget.TextEditor.Document.AddMarker (line, breakpointInvalidMarker);
 				widget.TextEditor.QueueDraw ();
 				breakpointSegments.Add (line);
 			}

@@ -106,11 +106,6 @@
 		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
 	</ExtensionPoint>
 	
-	<ExtensionPoint path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/ResourceFolder" name = "Resource folder context menu">
-		<Description>Context menu for the resource folder in the solution pad.</Description>
-		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
-	</ExtensionPoint>
-	
 	<ExtensionPoint path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/ReferenceFolder" name = "References folder context menu">
 		<Description>Context menu for the references folder in the solution pad.</Description>
 		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
@@ -390,9 +385,6 @@
 				_label = "_Options" 
 				_description = "Show options window"
 				icon  = "gtk-properties" />
-		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.AddResource"
-				_description = "Add a resource to the project"
-				_label = "Add _Resource" />
 		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.AddReference"
 				_description = "Add and remove project references"
 				_label = "_Edit References..." />
@@ -1137,10 +1129,6 @@
 		<SeparatorItem id = "OptionsSeparator" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Options" />
 	</Extension>
-	
-	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/ResourceFolder">
-		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.AddResource" />
-	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/ReferenceFolder">
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.AddReference" />
@@ -1284,7 +1272,6 @@
 			<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.ProjectPad.ProjectReferenceNodeBuilder"/>
 			<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.ProjectPad.ProjectFileNodeBuilder"/>
 			<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.ProjectPad.ProjectFolderNodeBuilder"/>
-			<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.ProjectPad.ResourceFolderNodeBuilder"/>
 			<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.ProjectPad.SystemFileNodeBuilder"/>
 			<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.ProjectPad.ShowAllFilesBuilderExtension"/>
 			<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.ProjectPad.UnknownEntryNodeBuilder"/>

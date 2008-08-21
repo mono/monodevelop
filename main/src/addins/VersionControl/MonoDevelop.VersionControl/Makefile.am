@@ -9,20 +9,20 @@ FILES =  \
 	MonoDevelop.VersionControl.Dialogs/EditRepositoryDialog.cs \
 	MonoDevelop.VersionControl.Dialogs/SelectRepositoryDialog.cs \
 	MonoDevelop.VersionControl.Views/CellRendererDiff.cs \
-	MonoDevelop.VersionControl.Views/Diffs.cs \
-	MonoDevelop.VersionControl.Views/Logs.cs \
-	MonoDevelop.VersionControl.Views/Statuses.cs \
+	MonoDevelop.VersionControl.Views/DiffView.cs \
+	MonoDevelop.VersionControl.Views/LogView.cs \
+	MonoDevelop.VersionControl.Views/StatusView.cs \
 	MonoDevelop.VersionControl/AddRemoveMoveCommand.cs \
 	MonoDevelop.VersionControl/BaseView.cs \
 	MonoDevelop.VersionControl/ChangeSet.cs \
-	MonoDevelop.VersionControl/Checkout.cs \
+	MonoDevelop.VersionControl/CheckoutCommand.cs \
 	MonoDevelop.VersionControl/Commands.cs \
 	MonoDevelop.VersionControl/CommitCommand.cs \
 	MonoDevelop.VersionControl/CommitDialogExtension.cs \
 	MonoDevelop.VersionControl/CommitEventHandler.cs \
 	MonoDevelop.VersionControl/FileUpdateEventHandler.cs \
 	MonoDevelop.VersionControl/LockCommand.cs \
-	MonoDevelop.VersionControl/Publish.cs \
+	MonoDevelop.VersionControl/PublishCommand.cs \
 	MonoDevelop.VersionControl/Repository.cs \
 	MonoDevelop.VersionControl/RevertCommand.cs \
 	MonoDevelop.VersionControl/RevertRevisionsCommands.cs \
@@ -30,7 +30,7 @@ FILES =  \
 	MonoDevelop.VersionControl/Task.cs \
 	MonoDevelop.VersionControl/UnknownRepository.cs \
 	MonoDevelop.VersionControl/UnlockCommand.cs \
-	MonoDevelop.VersionControl/Update.cs \
+	MonoDevelop.VersionControl/UpdateCommand.cs \
 	MonoDevelop.VersionControl/UrlBasedRepository.cs \
 	MonoDevelop.VersionControl/UrlBasedRepositoryEditor.cs \
 	MonoDevelop.VersionControl/VersionControlConfiguration.cs \

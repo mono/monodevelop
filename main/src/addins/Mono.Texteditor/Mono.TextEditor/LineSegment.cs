@@ -132,7 +132,7 @@ namespace Mono.TextEditor
 			this.delimiterLength = delimiterLength;
 		}
 		
-		public void AddMarker (TextMarker marker)
+		internal void AddMarker (TextMarker marker)
 		{
 			if (markers == null)
 				markers = new List<TextMarker> ();
@@ -148,7 +148,7 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		public void RemoveMarker (TextMarker marker)
+		internal void RemoveMarker (TextMarker marker)
 		{
 			marker.LineSegment = null;
 			if (markers == null)
@@ -158,7 +158,7 @@ namespace Mono.TextEditor
 				markers = null;
 		}
 		
-		public void RemoveMarker (Type type)
+		internal void RemoveMarker (Type type)
 		{
 			if (markers == null)
 				return;

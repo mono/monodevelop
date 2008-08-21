@@ -469,6 +469,11 @@ namespace MonoDevelop.Core.Serialization
 						if (ukwnDataRoot != null)
 							ukwnDataRoot.ItemData.Add (root);
 						Deserialize (serCtx, obj, ((DataItem)value).ItemData, root, baseName + value.Name + "/");
+
+						// If no unknown data has been added, there is no need to keep this
+						// in the unknown items list.
+						if (ukwnDataRoot != null && !root.HasItemData)
+							ukwnDataRoot.ItemData.Remove (root);
 					}
 					else if (obj is IExtendedDataItem && (value.Name != "ctype" || baseName.Length > 0)) {
 						// store unreadable raw data to a special property so it can be 

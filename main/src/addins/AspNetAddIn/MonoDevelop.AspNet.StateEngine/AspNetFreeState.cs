@@ -37,6 +37,10 @@ namespace MonoDevelop.AspNet.StateEngine
 	{
 		protected const int BRACKET_PERCENT = MAXCONST + 1;
 		
+		AspNetExpressionState expressionState;
+		AspNetDirectiveState directiveState;
+		AspNetServerCommentState serverCommentState;
+		
 		public AspNetFreeState () : this (
 			new XmlTagState (
 				new XmlAttributeState (
@@ -73,18 +77,26 @@ namespace MonoDevelop.AspNet.StateEngine
 			)
 			: base (tagState, closingTagState, commentState, cDataState, docTypeState, processingInstructionState)
 		{
-			this.ExpressionState = expressionState;
-			this.DirectiveState = directiveState;
-			this.ServerCommentState = serverCommentState;
+			this.expressionState = expressionState;
+			this.directiveState = directiveState;
+			this.serverCommentState = serverCommentState;
 			
 			Adopt (this.ExpressionState);
 			Adopt (this.DirectiveState);
 			Adopt (this.ServerCommentState);
 		}
 		
-		protected AspNetExpressionState ExpressionState { get; private set; } 
-		protected AspNetDirectiveState DirectiveState { get; private set; }
-		protected AspNetServerCommentState ServerCommentState { get; private set; }
+		protected AspNetExpressionState ExpressionState {
+			get { return expressionState; }
+		} 
+		
+		protected AspNetDirectiveState DirectiveState {
+			get { return directiveState; }
+		}
+		
+		protected AspNetServerCommentState ServerCommentState {
+			get { return serverCommentState; }
+		}
 		
 		public override State PushChar (char c, IParseContext context, ref string rollback)
 		{

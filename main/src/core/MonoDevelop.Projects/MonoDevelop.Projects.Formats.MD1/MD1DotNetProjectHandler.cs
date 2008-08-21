@@ -168,7 +168,13 @@ namespace MonoDevelop.Projects.Formats.MD1
 		{
 			DotNetProject project = Project;
 			
-			string resgen = configuration.ClrVersion == ClrVersion.Net_2_0 ? "resgen2" : "resgen";
+			string resgen = "resgen";
+			if (System.Environment.Version.Major >= 2) {
+				switch (configuration.ClrVersion) {
+					case ClrVersion.Net_2_0: resgen = "resgen2"; break;
+					case ClrVersion.Net_1_1: resgen = "resgen1"; break;
+				}
+			}
 			bool cloned = false;
 			Dictionary<string, string> resourcesByCulture = new Dictionary<string, string> ();
 			foreach (ProjectFile finfo in projectFiles) {

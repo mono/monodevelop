@@ -1,3 +1,10 @@
+2008-08-20  Dean Brettle <dean@brettle.com>
+
+	* MonoDevelop.Projects.Formats.MD1/MD1DotNetProjectHandler.cs:
+	Fixed bug 417791 by using "resgen1" (for ClrVersion.Net_1_1 )
+	and "resgen2" for ClrVersion.Net_2_0, but only when the current
+	runtime major version is greater than 1.
+
 2008-08-20  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom/ExpressionContext.cs: fixed possible null
