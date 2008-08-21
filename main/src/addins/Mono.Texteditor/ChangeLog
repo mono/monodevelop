@@ -1,5 +1,10 @@
 2008-08-21  Mike Krüger <mkrueger@novell.com> 
 
+	* Mono.TextEditor.mdp: set referenced gtk sharp version back to 2.8.
+	* Mono.TextEditor/CodeSegmentPreviewWindow.cs: fixed compiler warning.
+
+2008-08-21  Mike Krüger <mkrueger@novell.com> 
+
 	* TangoLightStyle.xml, JavascriptSyntaxMode.xml, Styles,
 	  Styles/TangoLightStyle.xml, Styles/OblivionStyle.xml,
 	  Styles/BrownStyle.xml, Styles/VisualStudioStyle.xml,

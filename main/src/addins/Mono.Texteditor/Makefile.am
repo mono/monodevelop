@@ -73,7 +73,6 @@ FILES =  \
 
 RES =  \
 	gtk-gui/gui.stetic \
-	gtk-gui/objects.xml \
 	Styles/BrownStyle.xml \
 	Styles/C64Style.xml \
 	Styles/OblivionStyle.xml \
