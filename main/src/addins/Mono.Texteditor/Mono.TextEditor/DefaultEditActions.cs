@@ -31,6 +31,7 @@ using System.Diagnostics;
 using System.Text;
 
 using Gtk;
+using Mono.TextEditor.Highlighting;
 
 namespace Mono.TextEditor
 {
@@ -796,10 +797,10 @@ namespace Mono.TextEditor
 				return;
 			switch (info) {
 			case TextType:
-				selection_data.Text = text;
+				selection_data.Text = copiedDocument.Text;
 				break;
 			case RichTextType:
-				selection_data.Set (RTF_ATOM, UTF8_FORMAT, System.Text.Encoding.UTF8.GetBytes (rtf.ToString ()));
+				selection_data.Set (RTF_ATOM, UTF8_FORMAT, System.Text.Encoding.UTF8.GetBytes (GenerateRtf (copiedDocument, mode, docStyle, options)));
 				break;
 			}
 		}
@@ -814,20 +815,21 @@ namespace Mono.TextEditor
 		{
 			// NOTHING ?
 		}
-		
-		string text;
-		string rtf;
-		static string GenerateRtf (TextEditorData data)
+
+		Document copiedDocument;
+		Mono.TextEditor.Highlighting.Style docStyle;
+		TextEditorOptions options;
+		Mono.TextEditor.Highlighting.SyntaxMode mode;
+	//	string text;
+	//	string rtf;
+		static string GenerateRtf (Document doc, Mono.TextEditor.Highlighting.SyntaxMode mode, Mono.TextEditor.Highlighting.Style style, TextEditorOptions options)
 		{
-			if (!data.IsSomethingSelected) {
-				return "";
-			}
 			StringBuilder rtfText = new StringBuilder ();
 			List<Gdk.Color> colorList = new List<Gdk.Color> ();
 
-			ISegment selection = data.SelectionRange;
-			LineSegment line    = data.Document.GetLineByOffset (selection.Offset);
-			LineSegment endLine = data.Document.GetLineByOffset (selection.EndOffset);
+			ISegment selection = new Segment (0, doc.Length);
+			LineSegment line    = doc.GetLineByOffset (selection.Offset);
+			LineSegment endLine = doc.GetLineByOffset (selection.EndOffset);
 			
 			RedBlackTree<LineSegmentTree.TreeNode>.RedBlackTreeIterator iter = line.Iter;
 			bool isItalic = false;
@@ -835,8 +837,7 @@ namespace Mono.TextEditor
 			int curColor  = -1;
 			do {
 				line = iter.Current;
-				Mono.TextEditor.Highlighting.SyntaxMode mode = data.Document.SyntaxMode != null && data.Options.EnableSyntaxHighlighting ? data.Document.SyntaxMode : Mono.TextEditor.Highlighting.SyntaxMode.Default;
-				Chunk[] chunks = mode.GetChunks (data.Document, data.ColorStyle, line, line.Offset, line.Offset + line.EditableLength);
+				Chunk[] chunks = mode.GetChunks (doc, style, line, line.Offset, line.Offset + line.EditableLength);
 				foreach (Chunk chunk in chunks) {
 					int start = System.Math.Max (selection.Offset, chunk.Offset);
 					int end   = System.Math.Min (chunk.EndOffset, selection.EndOffset);
@@ -861,7 +862,7 @@ namespace Mono.TextEditor
 							appendSpace = true;
 						}
 						for (int i = start; i < end; i++) {
-							char ch = data.Document.GetCharAt (i);
+							char ch = doc.GetCharAt (i);
 							if (appendSpace && ch != '\t') {
 								rtfText.Append (' ');
 								appendSpace = false;
@@ -913,7 +914,7 @@ namespace Mono.TextEditor
 			
 			// font table
 			rtf.Append (@"{\fonttbl");
-			rtf.Append (@"{\f0\fnil\fprq1\fcharset128 " + data.Options.Font.Family + ";}");
+			rtf.Append (@"{\f0\fnil\fprq1\fcharset128 " + options.Font.Family + ";}");
 			rtf.Append ("}");
 			
 			rtf.Append (colorTable.ToString ());
@@ -921,7 +922,7 @@ namespace Mono.TextEditor
 			rtf.Append (@"\viewkind4\uc1\pard");
 			rtf.Append (@"\f0");
 			try {
-				string fontName = data.Options.Font.ToString ();
+				string fontName = options.Font.ToString ();
 				double fontSize = Double.Parse (fontName.Substring (fontName.LastIndexOf (' ')  + 1), System.Globalization.CultureInfo.InvariantCulture) * 2;
 				rtf.Append (@"\fs");
 				rtf.Append (fontSize);
@@ -944,7 +945,25 @@ namespace Mono.TextEditor
 		
 		void CopyData (TextEditorData data, ISegment segment)
 		{
+			if (copiedDocument != null) {
+				copiedDocument.Dispose ();
+				copiedDocument = null;
+			}
 			if (segment != null && data != null && data.Document != null) {
+				copiedDocument = new Document ();
+				copiedDocument.Text = segment != null && segment.Length > 0 ? data.Document.GetTextAt (segment) : "";
+				this.docStyle = data.ColorStyle;
+				this.options  = data.Options;
+				this.mode = data.Document.SyntaxMode != null && data.Options.EnableSyntaxHighlighting ? data.Document.SyntaxMode : Mono.TextEditor.Highlighting.SyntaxMode.Default;
+				
+				LineSegment line    = data.Document.GetLineByOffset (segment.Offset);
+				Stack<Span> spanStack = line.StartSpan != null ? new Stack<Span> (line.StartSpan) : new Stack<Span> ();
+				SyntaxModeService.ScanSpans (data.Document, this.mode, spanStack, line.Offset, segment.Offset);
+
+				this.copiedDocument.GetLine (0).StartSpan = spanStack.ToArray ();
+				
+
+				/*
 				try {
 					text = segment.Length > 0 ? data.Document.GetTextAt (segment) : "";
 				} catch (Exception) {
@@ -957,11 +976,12 @@ namespace Mono.TextEditor
 				} catch (Exception) {
 					System.Console.WriteLine("Copy data failed - unable to generate rtf for text at:" + segment);
 					throw;
-				}
+				}*/
 			} else {
-				text = rtf = null;
+				copiedDocument = null;
 			}
 		}
+		
 		public void CopyData (TextEditorData data)
 		{
 			CopyData (data, data.SelectionRange);
@@ -1002,7 +1022,7 @@ namespace Mono.TextEditor
 				action.CopyData (data);
 				
 				if (Copy != null)
-					Copy (action.text);
+					Copy (action.copiedDocument != null ? action.copiedDocument.Text : null);
 				clipboard.SetWithData ((Gtk.TargetEntry[])TargetList, action.ClipboardGetFunc, action.ClipboardClearFunc);
 			}
 		}

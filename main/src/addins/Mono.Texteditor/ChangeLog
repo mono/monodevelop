@@ -1,5 +1,9 @@
 2008-08-21  Mike Krüger <mkrueger@novell.com> 
 
+	* Mono.TextEditor/DefaultEditActions.cs: optimized copy/cut.
+
+2008-08-21  Mike Krüger <mkrueger@novell.com> 
+
 	* Mono.TextEditor/Document.cs, Mono.TextEditor/LineSegmentTree.cs,
 	  Mono.TextEditor/TextEditor.cs, Mono.TextEditor/LineSplitter.cs,
 	  Mono.TextEditor.Highlighting/SyntaxModeService.cs: Optimized text
