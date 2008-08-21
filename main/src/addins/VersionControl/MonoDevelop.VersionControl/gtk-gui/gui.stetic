@@ -6,6 +6,7 @@
   </configuration>
   <import>
     <widget-library name="../../../../../build/bin/MonoDevelop.Ide.dll" />
+    <widget-library name="../../../../../build/bin/MonoDevelop.Core.Gui.dll" />
     <widget-library name="../../../../../build/bin/MonoDevelop.Components.dll" />
     <widget-library name="../../../../../build/AddIns/VersionControl/MonoDevelop.VersionControl.dll" internal="true" />
   </import>
@@ -758,7 +759,7 @@
                 <property name="ClimbRate">1</property>
                 <property name="Numeric">True</property>
                 <property name="Value">1</property>
-                <signal name="Changed" handler="OnRepositoryPortSpinChanged" />
+                <signal name="ValueChanged" handler="OnRepositoryPortSpinValueChanged" />
               </widget>
               <packing>
                 <property name="Position">0</property>
