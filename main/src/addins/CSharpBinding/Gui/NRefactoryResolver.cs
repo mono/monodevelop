@@ -269,6 +269,8 @@ namespace MonoDevelop.CSharpBinding
 		
 		IReturnType ResolveType (ICompilationUnit unit, IReturnType type)
 		{
+			if (type == null)
+				return DomReturnType.Void;
 			SearchTypeResult searchedTypeResult = dom.SearchType (new SearchTypeRequest (unit, -1, -1, type.FullName));
 			if (searchedTypeResult != null && searchedTypeResult.Result != null) {
 				type.Namespace = searchedTypeResult.Result.Namespace;
