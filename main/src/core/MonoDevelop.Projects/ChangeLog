@@ -1,3 +1,9 @@
+2008-08-21  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Dom/DomCecilProperty.cs,
+	  MonoDevelop.Projects.Dom/DomProperty.cs: Fixed cecil indexer
+	  loading.
+
 2008-08-20  Dean Brettle <dean@brettle.com>
 
 	* MonoDevelop.Projects.Formats.MD1/MD1DotNetProjectHandler.cs:

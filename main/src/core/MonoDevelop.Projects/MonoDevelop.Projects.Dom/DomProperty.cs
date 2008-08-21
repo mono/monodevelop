@@ -169,11 +169,12 @@ namespace MonoDevelop.Projects.Dom
 		
 		public override string ToString ()
 		{
-			return string.Format ("[DomProperty:Name={0}, Modifiers={1}, ReturnType={2}, Location={3}]",
+			return string.Format ("[DomProperty:Name={0}, Modifiers={1}, ReturnType={2}, Location={3}, IsIndexer={4}]",
 			                      Name,
 			                      Modifiers,
 			                      ReturnType,
-			                      Location);
+			                      Location,
+			                      IsIndexer);
 		}
 		
 		public override object AcceptVisitior (IDomVisitor visitor, object data)

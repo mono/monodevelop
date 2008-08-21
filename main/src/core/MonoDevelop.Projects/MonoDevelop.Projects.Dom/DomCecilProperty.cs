@@ -52,6 +52,12 @@ namespace MonoDevelop.Projects.Dom
 			if (keepDefinitions)
 				this.propertyDefinition = propertyDefinition;
 			base.Name               = propertyDefinition.Name;
+			if (Name == "Item" && propertyDefinition.Parameters.Count > 0) {
+				this.isIndexer = true;
+				foreach (ParameterDefinition paramDef in propertyDefinition.Parameters) {
+					Add (new DomCecilParameter (paramDef));
+				}
+			}
 			
 			base.modifiers          = DomCecilType.GetModifiers ((propertyDefinition.GetMethod != null ? propertyDefinition.GetMethod : propertyDefinition.SetMethod).Attributes);
 			if (!propertyDefinition.IsSpecialName)
