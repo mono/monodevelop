@@ -1,3 +1,25 @@
+2008-08-21  Mike Krüger <mkrueger@novell.com> 
+
+	* TangoLightStyle.xml, JavascriptSyntaxMode.xml, Styles,
+	  Styles/TangoLightStyle.xml, Styles/OblivionStyle.xml,
+	  Styles/BrownStyle.xml, Styles/VisualStudioStyle.xml,
+	  Styles/C64Style.xml, VBNetSyntaxMode.xml, BooSyntaxMode.xml,
+	  CSharpSyntaxMode.xml, PythonSyntaxMode.xml, JavaSyntaxMode.xml,
+	  CPPSyntaxMode.xml, CSyntaxMode.xml, ValaSyntaxMode.xml,
+	  OblivionStyle.xml, ChangeLogSyntaxMode.xml, AspNetSyntaxMode.xml,
+	  gtk-gui/objects.xml, BrownStyle.xml, XmlSyntaxMode.xml,
+	  VisualStudioStyle.xml, C64Style.xml, SyntaxModes,
+	  SyntaxModes/JavascriptSyntaxMode.xml,
+	  SyntaxModes/ChangeLogSyntaxMode.xml,
+	  SyntaxModes/AspNetSyntaxMode.xml, SyntaxModes/VBNetSyntaxMode.xml,
+	  SyntaxModes/BooSyntaxMode.xml, SyntaxModes/CSharpSyntaxMode.xml,
+	  SyntaxModes/XmlSyntaxMode.xml, SyntaxModes/JavaSyntaxMode.xml,
+	  SyntaxModes/PythonSyntaxMode.xml, SyntaxModes/CPPSyntaxMode.xml,
+	  SyntaxModes/CSyntaxMode.xml, SyntaxModes/ValaSyntaxMode.xml: Moved
+	  resources to own subdirecttories.
+	* Mono.TextEditor/TextViewMargin.cs: Fixed little issue with folding
+	  markers and invalid lines.
+
 2008-08-20  Mike Krüger <mkrueger@novell.com> 
 
 	* Mono.TextEditor/Document.cs, Mono.TextEditor/TextEditor.cs,

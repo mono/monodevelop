@@ -72,24 +72,25 @@ FILES =  \
 	Mono.TextEditor.Tests/Mono.TextEditor.Tests.DefaultEditActions/CaretMoveTests.cs
 
 RES =  \
-	AspNetSyntaxMode.xml \
-	BooSyntaxMode.xml \
-	BrownStyle.xml \
-	C64Style.xml \
-	CPPSyntaxMode.xml \
-	CSharpSyntaxMode.xml \
-	CSyntaxMode.xml \
 	gtk-gui/gui.stetic \
 	gtk-gui/objects.xml \
-	JavascriptSyntaxMode.xml \
-	JavaSyntaxMode.xml \
-	OblivionStyle.xml \
-	PythonSyntaxMode.xml \
-	TangoLightStyle.xml \
-	ValaSyntaxMode.xml \
-	VBNetSyntaxMode.xml \
-	VisualStudioStyle.xml \
-	XmlSyntaxMode.xml
+	Styles/BrownStyle.xml \
+	Styles/C64Style.xml \
+	Styles/OblivionStyle.xml \
+	Styles/TangoLightStyle.xml \
+	Styles/VisualStudioStyle.xml \
+	SyntaxModes/AspNetSyntaxMode.xml \
+	SyntaxModes/BooSyntaxMode.xml \
+	SyntaxModes/ChangeLogSyntaxMode.xml \
+	SyntaxModes/CPPSyntaxMode.xml \
+	SyntaxModes/CSharpSyntaxMode.xml \
+	SyntaxModes/CSyntaxMode.xml \
+	SyntaxModes/JavascriptSyntaxMode.xml \
+	SyntaxModes/JavaSyntaxMode.xml \
+	SyntaxModes/PythonSyntaxMode.xml \
+	SyntaxModes/ValaSyntaxMode.xml \
+	SyntaxModes/VBNetSyntaxMode.xml \
+	SyntaxModes/XmlSyntaxMode.xml
 
 all: $(ASSEMBLY)
 

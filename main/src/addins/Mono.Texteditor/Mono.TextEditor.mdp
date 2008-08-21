@@ -28,7 +28,6 @@
     <File name="Mono.TextEditor/RedBlackTree.cs" subtype="Code" buildaction="Compile" />
     <File name="Mono.TextEditor/GutterMargin.cs" subtype="Code" buildaction="Compile" />
     <File name="Mono.TextEditor/GapBuffer.cs" subtype="Code" buildaction="Compile" />
-    <File name="CSharpSyntaxMode.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="Mono.TextEditor.Highlighting/Rule.cs" subtype="Code" buildaction="Compile" />
     <File name="Mono.TextEditor.Highlighting/Keywords.cs" subtype="Code" buildaction="Compile" />
     <File name="Mono.TextEditor/LineEventArgs.cs" subtype="Code" buildaction="Compile" />
@@ -39,20 +38,12 @@
     <File name="Mono.TextEditor.Highlighting/Chunk.cs" subtype="Code" buildaction="Compile" />
     <File name="Mono.TextEditor/ISegment.cs" subtype="Code" buildaction="Compile" />
     <File name="Mono.TextEditor/TextEditorOptions.cs" subtype="Code" buildaction="Compile" />
-    <File name="C64Style.xml" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="OblivionStyle.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="Mono.TextEditor/TextEditorData.cs" subtype="Code" buildaction="Compile" />
     <File name="Mono.TextEditor.Highlighting/DefaultStyle.cs" subtype="Code" buildaction="Compile" />
     <File name="Mono.TextEditor/TextMarker.cs" subtype="Code" buildaction="Compile" />
     <File name="Mono.TextEditor/DocumentUpdateRequest.cs" subtype="Code" buildaction="Compile" />
     <File name="ChangeLog" subtype="Code" buildaction="Nothing" />
     <File name="Mono.TextEditor/TextEditor.cs" subtype="Code" buildaction="Compile" />
-    <File name="XmlSyntaxMode.xml" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="TangoLightStyle.xml" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="VBNetSyntaxMode.xml" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="JavaSyntaxMode.xml" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="CSyntaxMode.xml" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="CPPSyntaxMode.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="Mono.TextEditor.Highlighting/ChunkStyle.cs" subtype="Code" buildaction="Compile" />
     <File name="Mono.TextEditor.Highlighting/Match.cs" subtype="Code" buildaction="Compile" />
     <File name="Mono.TextEditor.Highlighting/Span.cs" subtype="Code" buildaction="Compile" />
@@ -65,26 +56,35 @@
     <File name="gtk-gui/generated.cs" subtype="Code" buildaction="Compile" />
     <File name="Mono.TextEditor/FoldingType.cs" subtype="Code" buildaction="Compile" />
     <File name="Mono.TextEditor.Highlighting/Marker.cs" subtype="Code" buildaction="Compile" />
-    <File name="BrownStyle.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="Mono.TextEditor/TextViewMargin.cs" subtype="Code" buildaction="Compile" />
     <File name="Mono.TextEditor.Highlighting/SemanticRule.cs" subtype="Code" buildaction="Compile" />
-    <File name="VisualStudioStyle.xml" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="BooSyntaxMode.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="Mono.TextEditor/SearchResult.cs" subtype="Code" buildaction="Compile" />
     <File name="Mono.TextEditor/Caret.cs" subtype="Code" buildaction="Compile" />
     <File name="Mono.TextEditor.Highlighting/WorkerThread.cs" subtype="Code" buildaction="Compile" />
-    <File name="PythonSyntaxMode.xml" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="AspNetSyntaxMode.xml" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="ValaSyntaxMode.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="Mono.TextEditor/CodeSegmentPreviewWindow.cs" subtype="Code" buildaction="Compile" />
     <File name="Mono.TextEditor/ISearchEngine.cs" subtype="Code" buildaction="Compile" />
     <File name="Mono.TextEditor/ITooltipProvider.cs" subtype="Code" buildaction="Compile" />
     <File name="Mono.TextEditor.Highlighting/IXmlProvider.cs" subtype="Code" buildaction="Compile" />
-    <File name="JavascriptSyntaxMode.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="Mono.TextEditor/BufferedTextReader.cs" subtype="Code" buildaction="Compile" />
     <File name="Mono.TextEditor/BookmarkMarker.cs" subtype="Code" buildaction="Compile" />
-    <File name="ChangeLogSyntaxMode.xml" subtype="Code" buildaction="Nothing" />
     <File name="Mono.TextEditor.Highlighting/IColorDefinition.cs" subtype="Code" buildaction="Compile" />
+    <File name="SyntaxModes/BooSyntaxMode.xml" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="SyntaxModes/AspNetSyntaxMode.xml" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="SyntaxModes/ChangeLogSyntaxMode.xml" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="SyntaxModes/CPPSyntaxMode.xml" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="SyntaxModes/CSharpSyntaxMode.xml" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="SyntaxModes/JavascriptSyntaxMode.xml" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="SyntaxModes/JavaSyntaxMode.xml" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="SyntaxModes/PythonSyntaxMode.xml" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="SyntaxModes/ValaSyntaxMode.xml" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="SyntaxModes/XmlSyntaxMode.xml" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="SyntaxModes/VBNetSyntaxMode.xml" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="SyntaxModes/CSyntaxMode.xml" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="Styles/BrownStyle.xml" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="Styles/C64Style.xml" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="Styles/OblivionStyle.xml" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="Styles/TangoLightStyle.xml" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="Styles/VisualStudioStyle.xml" subtype="Code" buildaction="EmbedAsResource" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
