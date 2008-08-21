@@ -1,3 +1,8 @@
+2008-08-22  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects/Project.cs: Fix nullref.
+	* MonoDevelop.Projects.mdp: Updated.
+
 2008-08-20  Dean Brettle <dean@brettle.com>
 
 	* MonoDevelop.Projects.Formats.MD1/MD1DotNetProjectHandler.cs:
