@@ -616,7 +616,11 @@ namespace Mono.TextEditor
 			lock (disposeLock) {
 				if (isDisposed)
 					return;
+				if (start < 0)
+					start = 0;
 				int visualStart = (int)-this.textEditorData.VAdjustment.Value + Document.LogicalToVisualLine (start) * LineHeight;
+				if (end < 0)
+					end = Document.LineCount - 1;
 				int visualEnd   = (int)-this.textEditorData.VAdjustment.Value + Document.LogicalToVisualLine (end) * LineHeight + LineHeight;
 				this.QueueDrawArea (0, visualStart, this.Allocation.Width, visualEnd - visualStart );
 			}

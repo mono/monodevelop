@@ -1,5 +1,11 @@
 2008-08-21  Mike Krüger <mkrueger@novell.com> 
 
+	* Mono.TextEditor/Document.cs, Mono.TextEditor/TextEditor.cs,
+	  Mono.TextEditor/GutterMargin.cs, Mono.TextEditor/TextViewMargin.cs:
+	  Worked on gutter width change.
+
+2008-08-21  Mike Krüger <mkrueger@novell.com> 
+
 	* Mono.TextEditor.mdp: set referenced gtk sharp version back to 2.8.
 	* Mono.TextEditor/CodeSegmentPreviewWindow.cs: fixed compiler warning.
 

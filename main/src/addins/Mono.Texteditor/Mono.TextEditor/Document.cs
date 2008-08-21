@@ -100,14 +100,14 @@ namespace Mono.TextEditor
 				if (LineChanged != null) 
 					LineChanged (this, args);
 			};
-			splitter.LineSegmentTree.LineInserted += delegate (object sender, LineEventArgs args) {
+		/*	splitter.LineSegmentTree.LineInserted += delegate (object sender, LineEventArgs args) {
 				if (LineInserted != null) 
 					LineInserted (this, args);
-			};
+			};*/
 		}
 		
 		public event EventHandler<LineEventArgs> LineChanged;
-		public event EventHandler<LineEventArgs> LineInserted;
+	//	public event EventHandler<LineEventArgs> LineInserted;
 		
 		
 		public override void Dispose ()

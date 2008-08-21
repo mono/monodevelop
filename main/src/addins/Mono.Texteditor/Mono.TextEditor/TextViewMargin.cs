@@ -116,7 +116,6 @@ namespace Mono.TextEditor
 			Caret.PositionChanged += UpdateBracketHighlighting;
 			base.cursor = new Gdk.Cursor (Gdk.CursorType.Xterm);
 			Document.LineChanged += CheckLongestLine;
-			Document.LineInserted += CheckLongestLine;
 		}
 		
 		internal void Initialize ()
@@ -211,7 +210,7 @@ namespace Mono.TextEditor
 			textEditor.Document.TextReplaced -= UpdateBracketHighlighting;
 			Caret.PositionChanged -= UpdateBracketHighlighting;
 			Document.LineChanged -= CheckLongestLine;
-			Document.LineInserted -= CheckLongestLine;
+	//		Document.LineInserted -= CheckLongestLine;
 		
 			DisposeGCs ();
 			if (layout != null) {
