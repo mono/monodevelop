@@ -380,7 +380,6 @@ namespace Mono.TextEditor
 				new CopyAction ().ClearPrimary ();
 			}
 				
-			
 			// Handle redraw
 			ISegment selection = SelectionRange;
 			int startLine    = selection != null ? Document.OffsetToLineNumber (selection.Offset) : -1;

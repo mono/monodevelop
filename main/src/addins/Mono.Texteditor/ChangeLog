@@ -1,5 +1,13 @@
 2008-08-21  Mike Krüger <mkrueger@novell.com> 
 
+	* Mono.TextEditor/Document.cs, Mono.TextEditor/LineSegmentTree.cs,
+	  Mono.TextEditor/TextEditor.cs, Mono.TextEditor/LineSplitter.cs,
+	  Mono.TextEditor.Highlighting/SyntaxModeService.cs: Optimized text
+	  editor. Syntax update is now running on a single thread using a
+	  queue. Optimized the offset2line number operation.
+
+2008-08-21  Mike Krüger <mkrueger@novell.com> 
+
 	* Mono.TextEditor/Document.cs, Mono.TextEditor/TextEditor.cs,
 	  Mono.TextEditor/GutterMargin.cs, Mono.TextEditor/TextViewMargin.cs:
 	  Worked on gutter width change.

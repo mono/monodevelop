@@ -218,14 +218,16 @@ namespace Mono.TextEditor.Highlighting
 			return true;
 		}
 		
-		class UpdateWorkerThread : WorkerThread
+		static Queue<UpdateWorker> updateQueue = new Queue<UpdateWorker> ();
+		
+		class UpdateWorker
 		{
 			Document doc;
 			SyntaxMode mode;
 			int startOffset;
 			int endOffset;
 			
-			public UpdateWorkerThread (Document doc, SyntaxMode mode, int startOffset, int endOffset)
+			public UpdateWorker (Document doc, SyntaxMode mode, int startOffset, int endOffset)
 			{
 				this.doc         = doc;
 				this.mode        = mode;
@@ -241,15 +243,12 @@ namespace Mono.TextEditor.Highlighting
 				Span curSpan = spanStack.Count > 0 ? spanStack.Peek () : null;
 				Rule curRule = rule;
 				for (int offset = start; offset < end; offset++) {
-					if (IsStopping)
-						return;
 					char ch;
 					try {
 						// document may have been changed and the thread is still running
 						// (however a new highlighting thread will be created after each document change)
 						ch = doc.GetCharAt (offset);
 					} catch (Exception) {
-						base.Stop ();
 						return;
 					}
 					if (curSpan != null && !String.IsNullOrEmpty (curSpan.End)) {
@@ -309,7 +308,7 @@ namespace Mono.TextEditor.Highlighting
 				}
 			}
 			
-			protected override void InnerRun ()
+			public void InnerRun ()
 			{
 				bool doUpdate = false;
 				RedBlackTree<LineSegmentTree.TreeNode>.RedBlackTreeIterator iter = doc.GetLineByOffset (startOffset).Iter;
@@ -343,7 +342,7 @@ namespace Mono.TextEditor.Highlighting
 					ScanSpansThreaded (doc, rule, spanStack, line.Offset, line.EndOffset);
 					while (spanStack.Count > 0 && spanStack.Peek ().StopAtEol)
 						spanStack.Pop ();
-				} while (!IsStopping && iter.MoveNext ());
+				} while (iter.MoveNext ());
 				if (doUpdate) {
 					GLib.Timeout.Add (0, delegate {
 						doc.RequestUpdate (new UpdateAll ());
@@ -351,7 +350,6 @@ namespace Mono.TextEditor.Highlighting
 						return false;
 					});
 				}
-				base.Stop ();
 			}
 		}
 		
@@ -361,35 +359,37 @@ namespace Mono.TextEditor.Highlighting
 //			updateIsRunning = false;
 //		}
 		
-		static readonly object syncObject = new object();
-		static UpdateWorkerThread updateThread = null;
+		static readonly object syncObject  = new object();
+		static Thread         updateThread = null;
+		static AutoResetEvent queueSignal  = new AutoResetEvent (false);
 		
-		public static void WaitForUpdate (bool stopUpdate)
+		static void StartUpdateThread ()
 		{
-			lock (syncObject) {
-				if (updateThread != null) {
-					if (stopUpdate && !updateThread.IsStopping)
-						updateThread.Stop ();
-					updateThread.WaitForFinish ();
-					updateThread = null;
-				}
-			}
+			updateThread = new Thread (ProcessQueue);
+			updateThread.IsBackground = true;
+			updateThread.Start();
 		}
 		
-		public static void WaitForUpdate ()
+		static void ProcessQueue ()
 		{
-			WaitForUpdate (false);
+			while (true) {
+				while (updateQueue.Count > 0) {
+					UpdateWorker worker = null;
+					lock (updateQueue) {
+						worker = updateQueue.Dequeue ();
+					}
+					worker.InnerRun ();
+				}
+				queueSignal.WaitOne ();
+			}
 		}
 		
 		public static void StartUpdate (Document doc, SyntaxMode mode, int startOffset, int endOffset)
 		{
-			lock (syncObject) {
-				if (updateThread != null) 
-					updateThread.Stop ();
-				
-				updateThread = new UpdateWorkerThread (doc, mode, startOffset, endOffset);
-				updateThread.Start ();
+			lock (updateQueue) {
+				updateQueue.Enqueue (new UpdateWorker (doc, mode, startOffset, endOffset));
 			}
+			queueSignal.Set ();
 		}
 		
 		static string Scan (XmlTextReader reader, string attribute)
@@ -506,10 +506,12 @@ namespace Mono.TextEditor.Highlighting
 		
 		static SyntaxModeService ()
 		{
+			StartUpdateThread ();
 			LoadStylesAndModes (typeof (SyntaxModeService).Assembly);
 			SyntaxModeService.GetSyntaxMode ("text/x-csharp").AddSemanticRule ("Comment", new HighlightUrlSemanticRule ("comment"));
 			SyntaxModeService.GetSyntaxMode ("text/x-csharp").AddSemanticRule ("XmlDocumentation", new HighlightUrlSemanticRule ("comment"));
 			SyntaxModeService.GetSyntaxMode ("text/x-csharp").AddSemanticRule ("String", new HighlightUrlSemanticRule ("literal"));
 		}
+
 	}
 }

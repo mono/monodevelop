@@ -163,7 +163,7 @@ namespace Mono.TextEditor
 		{
 			if (this.syntaxMode != null) {
 				Mono.TextEditor.Highlighting.SyntaxModeService.StartUpdate (this, this.syntaxMode, 0, buffer.Length);
-				Mono.TextEditor.Highlighting.SyntaxModeService.WaitForUpdate ();
+			//	Mono.TextEditor.Highlighting.SyntaxModeService.WaitForUpdate ();
 			}
 		}
 		
@@ -185,7 +185,7 @@ namespace Mono.TextEditor
 		public override void Replace (int offset, int count, StringBuilder value)
 		{
 			InterruptFoldWorker ();
-			Mono.TextEditor.Highlighting.SyntaxModeService.WaitForUpdate (true);
+//			Mono.TextEditor.Highlighting.SyntaxModeService.WaitForUpdate (true);
 //			Debug.Assert (count >= 0);
 //			Debug.Assert (0 <= offset && offset + count <= Length);
 			int oldLineCount = this.LineCount;
