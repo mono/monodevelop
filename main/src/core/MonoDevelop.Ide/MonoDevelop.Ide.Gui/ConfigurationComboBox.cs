@@ -27,6 +27,7 @@
 //
 
 using System;
+using System.Collections.ObjectModel;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using MonoDevelop.Core.Gui;
@@ -57,16 +58,20 @@ namespace MonoDevelop.Ide.Gui
 		void RefreshCombo ()
 		{
 			((Gtk.ListStore)Combo.Model).Clear ();
-			int active = 0;
+			int active = -1;
 			int n=0;
-			foreach (string conf in IdeApp.Workspace.GetConfigurations ()) {
+			ReadOnlyCollection<string> configs = IdeApp.Workspace.GetConfigurations ();
+			foreach (string conf in configs) {
 				Combo.AppendText (conf);
 				if (conf == IdeApp.Workspace.ActiveConfiguration)
 					active = n;
 				n++;
 			}
 			Combo.Sensitive = n > 0;
-			Combo.Active = active;
+			if (active >= 0)
+				Combo.Active = active;
+			else if (configs.Count > 0)
+				IdeApp.Workspace.ActiveConfiguration = configs [0];
 			Combo.ShowAll ();
 		}
 
@@ -79,19 +84,27 @@ namespace MonoDevelop.Ide.Gui
 		{
 			if (updating)
 				return;
+
+			string knownConfig = null;
+			
 			Gtk.TreeIter it;
 			if (Combo.Model.GetIterFirst (out it)) {
 				do {
 					string cs = (string) Combo.Model.GetValue (it, 0);
+					if (knownConfig == null)
+						knownConfig = cs;
 					if (IdeApp.Workspace.ActiveConfiguration == cs) {
 						updating = true;
 						Combo.SetActiveIter (it);
 						updating = false;
-						break;
+						return;
 					}
 				}
 				while (Combo.Model.IterNext (ref it));
 			}
+
+			// Configuration not found. Set one that is known.
+			IdeApp.Workspace.ActiveConfiguration = knownConfig;
 		}
 		
 		protected void OnChanged (object sender, EventArgs args)

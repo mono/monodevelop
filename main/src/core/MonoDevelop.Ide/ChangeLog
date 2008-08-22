@@ -1,3 +1,12 @@
+2008-08-22  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Debugging/DebuggingService.cs,
+	  MonoDevelop.Ide.addin.xml: Added debugger factory extension. Moved
+	  from Mono.Debugging.
+	* MonoDevelop.Ide.Gui/ConfigurationComboBox.cs: If the active
+	  configuration can be found in the combo, set a new valid active
+	  configuration.
+
 2008-08-21  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.mdp: Updated.

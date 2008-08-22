@@ -31,7 +31,7 @@ namespace MonoDevelop.Ide.Debugging
 
 	public class DebuggingService
 	{
-		const string FactoriesPath = "/Mono/Debugging/DebuggerFactories";
+		const string FactoriesPath = "/MonoDevelop/Debugging/DebuggerFactories";
 		
 		BreakpointStore breakpoints = new BreakpointStore ();
 		

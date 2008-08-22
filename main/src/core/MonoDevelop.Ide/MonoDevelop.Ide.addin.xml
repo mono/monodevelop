@@ -235,6 +235,11 @@
 		<ExtensionNode name="Class"/>
 	</ExtensionPoint>
 		
+	<ExtensionPoint path="/MonoDevelop/Debugging/DebuggerFactories">
+		<Description>Debug session factories. Specified classes must implement Mono.Debugging.IDebuggerSessionFactory.</Description>
+		<ExtensionNode name="DebuggerFactory" />
+	</ExtensionPoint>
+	
 	<!-- Extensions -->
 
 	<Extension path = "/MonoDevelop/Ide/DisplayBindings">
