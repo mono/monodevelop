@@ -355,7 +355,7 @@ namespace MonoDevelop.Projects.Dom.Database
 			}
 			return null;
 		}
-		
+		static int i = 0, j = 0;
 		Dictionary<string, long> returnTypes = new Dictionary<string,long> ();
 		internal long GetReturnTypeID (IReturnType returnType)
 		{
@@ -363,15 +363,14 @@ namespace MonoDevelop.Projects.Dom.Database
 				return -1;
 			long result;
 			string invariantString = returnType.ToInvariantString ();
-			if (returnTypes.TryGetValue (invariantString, out result))
+			if (returnTypes.TryGetValue (invariantString, out result)) {
 				return result;
-			
+			}
 			result = connection.Query<long> (String.Format (@"SELECT ReturnTypeID FROM {0} WHERE InvariantString='{1}'", ReturnTypeTable, invariantString));
 			if (result > 0) {
 				returnTypes [invariantString] = result;
 				return result;
 			}
-			
 			result = connection.Execute (String.Format (@"INSERT INTO {0} (InvariantString) VALUES ('{1}')", ReturnTypeTable, invariantString));
 			returnTypes [invariantString] = result;
 			return result;

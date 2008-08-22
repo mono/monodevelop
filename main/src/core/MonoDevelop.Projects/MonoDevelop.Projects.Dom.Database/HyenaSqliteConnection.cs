@@ -334,8 +334,7 @@ namespace Hyena.Data.Sqlite
                         break;
                     }
                 }
-
-                transaction_signal.WaitOne ();
+               transaction_signal.WaitOne ();
             }
             queue_signal.Set ();
         }

@@ -77,9 +77,9 @@ namespace MonoDevelop.Projects.Dom
 		
 		public string ToInvariantString ()
 		{
-			StringBuilder result = new StringBuilder ();
-			result.Append (Name);
 			if (genericArguments != null && genericArguments.Count > 0) {
+				StringBuilder result = new StringBuilder ();
+				result.Append (name);
 				result.Append ('<');
 				for (int i = 0; i < genericArguments.Count; i++) {
 					if (i > 0)
@@ -87,9 +87,11 @@ namespace MonoDevelop.Projects.Dom
 					result.Append (genericArguments[i].ToInvariantString ());
 				}
 				result.Append ('>');
+				return result.ToString ();
 			}
-			return result.ToString ();
-		}		
+			return name;
+		}
+		
 		public void AddTypeParameter (IReturnType type)
 		{
 			if (genericArguments == null)
@@ -299,12 +301,15 @@ namespace MonoDevelop.Projects.Dom
 		
 		public static IReturnType FromInvariantString (string invariantString)
 		{
-			// TODO
-			return new DomReturnType (invariantString);
+			return GetSharedReturnType (invariantString);
 		}
 		
+		public static int num = 0;
+		string invariantString = null;
 		public string ToInvariantString ()
 		{
+			if (invariantString != null)
+				return invariantString;
 			StringBuilder result = new StringBuilder ();
 			result.Append (Namespace);
 			foreach (ReturnTypePart part in Parts) {
@@ -322,7 +327,7 @@ namespace MonoDevelop.Projects.Dom
 				result.Append ('&');
 			if (this.IsNullable)
 				result.Append ('?');
-			return result.ToString ();
+			return invariantString = result.ToString ();
 		}
 		
 		public object AcceptVisitior (IDomVisitor visitor, object data)
@@ -383,17 +388,17 @@ namespace MonoDevelop.Projects.Dom
 		//static Dictionary<string, IReturnType> returnTypeCache  = new Dictionary<string, IReturnType> ();
 		static Dictionary<string, IReturnType> returnTypeCache = null;
 		
-		public static IReturnType GetSharedReturnType (string fullName)
+		public static IReturnType GetSharedReturnType (string invariantString)
 		{
-			if (String.IsNullOrEmpty (fullName))
+			if (String.IsNullOrEmpty (invariantString))
 				return null;
 			if (returnTypeCache == null)
 				returnTypeCache = new Dictionary<string, IReturnType> ();
 			lock (returnTypeCache) {
 				IReturnType type;
-				if (!returnTypeCache.TryGetValue (fullName, out type)) {
-					DomReturnType newType = new DomReturnType (fullName);
-					returnTypeCache[fullName] = newType;
+				if (!returnTypeCache.TryGetValue (invariantString, out type)) {
+					DomReturnType newType = new DomReturnType (invariantString);
+					returnTypeCache[invariantString] = newType;
 					return newType;
 				}
 				return type;

@@ -399,8 +399,10 @@ namespace MonoDevelop.Projects.Dom
 		public virtual System.Xml.XmlNode GetMonodocDocumentation ()
 		{
 			System.Xml.XmlDocument doc = ProjectDomService.HelpTree.GetHelpXml (DeclaringType.HelpUrl);
-			if (doc != null) 
-				return doc.SelectSingleNode ("/Type/Members/Member[@MemberName='" + Name + "']/Docs");
+			if (doc != null)  {
+				System.Xml.XmlNode result = doc.SelectSingleNode ("/Type/Members/Member[@MemberName='" + Name + "']/Docs");
+				return result;
+			}
 			return null;
 		}
 		

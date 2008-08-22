@@ -276,8 +276,10 @@ namespace MonoDevelop.Projects.Dom
 		public override System.Xml.XmlNode GetMonodocDocumentation ()
 		{
 			System.Xml.XmlDocument doc = ProjectDomService.HelpTree.GetHelpXml (this.HelpUrl);
-			if (doc != null)
-				return doc.SelectSingleNode ("/Type/Docs");
+			if (doc != null) {
+				System.Xml.XmlNode result = doc.SelectSingleNode ("/Type/Docs");
+				return result;
+			}
 			return null;
 		}
 		
