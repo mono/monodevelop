@@ -1,3 +1,25 @@
+2008-08-22  Mike Kestner <mkestner@novell.com> 
+
+	Fixes bug #413275 and delays more GtkDesignInfo-related project file 
+	churn.
+	* MonoDevelop.GtkCore/GtkCoreService.cs: init the refmgr on startup.
+	* MonoDevelop.GtkCore/GtkDesignInfo.cs: Remove targetVersion field and
+	associated prop.  Move reference updating logic to Ref Manager. Target
+	Version is now exclusively tracked via reference version by the
+	ReferenceManager.
+	* MonoDevelop.GtkCore/ReferenceManager.cs: new class to encapsulate all
+	reference management behaviors, from responding to user add removes to
+	automated updates for designer projects.
+	* MonoDevelop.GtkCore.Dialogs/GtkFeatureWidget.cs: only show feature
+	for projects which support refactoring, since it advertises designer
+	support and that's not available without refactoring yet. Use refmgr
+	for version updates.
+	* MonoDevelop.GtkCore.Dialogs/WidgetBuilderOptionsPanel.cs: use refmgr 
+	for version info and suppress gettext options if no designed objects
+	exist.
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderProject.cs: use refmgr for 
+	target version. 
+
 2008-08-20  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.GtkCore.NodeBuilders/WindowsFolderNodeBuilder.cs: Remove

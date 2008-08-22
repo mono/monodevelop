@@ -54,21 +54,13 @@ namespace MonoDevelop.GtkCore
 		GuiBuilderProject builderProject;
 		IDotNetLanguageBinding binding;
 		ProjectResourceProvider resourceProvider;
-		bool updatingVersion;
-		
-		static string[] GtkSharpAssemblies = new string [] { 
-			"art-sharp", "atk-sharp", "gconf-sharp", "gdk-sharp", "glade-sharp","glib-sharp","gnome-sharp",
-			"gnome-vfs-sharp", "gtk-dotnet", "gtkhtml-sharp", "gtk-sharp", "pango-sharp", "rsvg-sharp", "vte-sharp"
-		};
+		ReferenceManager referenceManager;
 		
 		[ItemProperty (DefaultValue=true)]
 		bool generateGettext = true;
 		
 		[ItemProperty (DefaultValue="Mono.Unix.Catalog")]
 		string gettextClass = "Mono.Unix.Catalog";
-		
-		[ItemProperty]
-		string gtkVersion;
 		
 		public GtkDesignInfo ()
 		{
@@ -91,9 +83,8 @@ namespace MonoDevelop.GtkCore
 					project.FileAddedToProject -= OnFileEvent;
 					project.FileChangedInProject -= OnFileEvent;
 					project.FileRemovedFromProject -= OnFileEvent;
-					project.ReferenceAddedToProject -= OnReferenceAdded;
-					project.ReferenceRemovedFromProject -= OnReferenceRemoved;
 					binding = null;
+					referenceManager = null;
 				}
 				project = value;
 				if (project != null) {
@@ -101,8 +92,6 @@ namespace MonoDevelop.GtkCore
 					project.FileAddedToProject += OnFileEvent;
 					project.FileChangedInProject += OnFileEvent;
 					project.FileRemovedFromProject += OnFileEvent;
-					project.ReferenceAddedToProject += OnReferenceAdded;
-					project.ReferenceRemovedFromProject += OnReferenceRemoved;
 				}
 			}
 		}
@@ -115,30 +104,6 @@ namespace MonoDevelop.GtkCore
 			UpdateObjectsFile ();
 		}
 
-		void OnReferenceAdded (object o, ProjectReferenceEventArgs args)
-		{
-			if (!updatingVersion && IsGtkReference (args.ProjectReference))
-				builderProject = null;
-		}
-
-		void OnReferenceRemoved (object o, ProjectReferenceEventArgs args)
-		{
-			if (!updatingVersion && IsGtkReference (args.ProjectReference)) {
-				if (MonoDevelop.Core.Gui.MessageService.Confirm (GettextCatalog.GetString ("The Gtk# User Interface designer will be disabled by removing the gtk-sharp reference."), new MonoDevelop.Core.Gui.AlertButton (GettextCatalog.GetString ("Disable Designer")))) {
-					StringCollection saveFiles = new StringCollection ();
-					saveFiles.AddRange (new string[] {ObjectsFile, SteticFile});
-					CleanGtkFolder (saveFiles);
-					project.Files.Remove (ObjectsFile);
-					project.Files.Remove (SteticFile);
-					if (builderProject != null)
-						builderProject = new GuiBuilderProject (project, null);
-					ProjectNodeBuilder.OnSupportChanged (project);
-				} else {
-					project.References.Add (new ProjectReference (ReferenceType.Gac, "gtk-sharp, " + GtkAsmVersion));
-				}
-			}
-		}
-
 		public void Dispose ()
 		{
 			if (resourceProvider != null)
@@ -147,6 +112,7 @@ namespace MonoDevelop.GtkCore
 			if (builderProject != null)
 				builderProject.Dispose ();
 			builderProject = null;
+			referenceManager = null;
 			Project = null;
 		}
 		
@@ -166,6 +132,14 @@ namespace MonoDevelop.GtkCore
 			}
 		}
 		
+		public ReferenceManager ReferenceManager {
+			get {
+				if (referenceManager == null)
+					referenceManager = new ReferenceManager (project);
+				return referenceManager;
+			}
+		}
+
 		public void ReloadGuiBuilderProject ()
 		{
 			if (builderProject != null)
@@ -218,33 +192,15 @@ namespace MonoDevelop.GtkCore
 			return SupportsDesigner (project) && File.Exists (FromProject (project).SteticFile);
 		}
 
-		public string TargetGtkVersion {
-			get {
-				if (gtkVersion != null)
-					return gtkVersion;
-				else
-					return GtkCoreService.DefaultGtkVersion;
-			}
-			set {
-				if (gtkVersion != value) {
-					gtkVersion = value;
-					if (HasDesignedObjects (project)) {
-						GuiBuilderProject.SteticProject.TargetGtkVersion = TargetGtkVersion;
-						GuiBuilderProject.Save (false);
-					}
-				}
-			}
-		}
-		
 		public static bool SupportsDesigner (Project project)
 		{
 			DotNetProject dnp = project as DotNetProject;
 			return dnp != null && HasGtkReference (dnp) && SupportsRefactoring (dnp);
 		}
 
-		static bool SupportsRefactoring (DotNetProject project)
+		public static bool SupportsRefactoring (DotNetProject project)
 		{
-			if (project.LanguageBinding == null || project.LanguageBinding.GetCodeDomProvider () == null)
+			if (project == null || project.LanguageBinding == null || project.LanguageBinding.GetCodeDomProvider () == null)
 				return false;
 			
 			RefactorOperations ops = RefactorOperations.AddField | RefactorOperations.AddMethod | RefactorOperations.RenameField | RefactorOperations.AddAttribute;
@@ -347,76 +303,9 @@ namespace MonoDevelop.GtkCore
 			if (CleanGtkFolder (files))
 				projectModified = true;
 
-			return UpdateReferences () || projectModified;
+			return ReferenceManager.Update () || projectModified;
 		}
 
-		string GtkAsmVersion {
-			get {
-				string gtkAsmVersion = "";
-			
-				if (gtkVersion != null) {
-					foreach (SystemPackage p in Runtime.SystemAssemblyService.GetPackages ()) {
-						if (p.Name == "gtk-sharp-2.0" && p.Version == TargetGtkVersion) {
-							string fn = Runtime.SystemAssemblyService.GetAssemblyFullName (p.Assemblies[0]);
-							int i = fn.IndexOf (',');
-							gtkAsmVersion = fn.Substring (i+1).Trim ();
-							break;
-						}
-					}
-				}	
-				return gtkAsmVersion;
-			}
-		}
-
-		bool UpdateReferences ()
-		{
-			string gtkAsmVersion = GtkAsmVersion;
-			
-			bool changed = false, gdk=false, posix=false;
-			
-			foreach (ProjectReference r in new List<ProjectReference> (project.References)) {
-				if (r.ReferenceType != ReferenceType.Gac)
-					continue;
-				int i = r.StoredReference.IndexOf (',');
-				string name;
-				if (i == -1)
-					name = r.StoredReference;
-				else
-					name = r.StoredReference.Substring (0,i).Trim ();
-				if (name == "gdk-sharp")
-					gdk = true;
-				else if (name == "Mono.Posix")
-					posix = true;
-				
-				// Is a gtk-sharp-2.0 assembly?
-				if (Array.IndexOf (GtkSharpAssemblies, name) == -1)
-					continue;
-				
-				// Check and correct the assembly version only if a version is set
-				if (!string.IsNullOrEmpty (gtkAsmVersion) && r.StoredReference.Substring (i+1).Trim() != gtkAsmVersion) {
-					updatingVersion = true;
-					project.References.Remove (r);
-					project.References.Add (new ProjectReference (ReferenceType.Gac, name + ", " + gtkAsmVersion));
-					updatingVersion = false;
-					changed = true;
-				}
-			}
-			if (!gdk) {
-				project.References.Add (new ProjectReference (ReferenceType.Gac, typeof(Gdk.Window).Assembly.FullName));
-				changed = true;
-			}
-				
-			if (!posix && GenerateGettext && GettextClass == "Mono.Unix.Catalog") {
-				// Add a reference to Mono.Posix. Use the version for the selected project's runtime version.
-				string aname = Runtime.SystemAssemblyService.FindInstalledAssembly ("Mono.Posix, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756");
-				aname = Runtime.SystemAssemblyService.GetAssemblyNameForVersion (aname, project.ClrVersion);
-				project.References.Add (new ProjectReference (ReferenceType.Gac, aname));
-				changed = true;
-			}
-			
-			return changed;
-		}
-		
 		void UpdateObjectsFile ()
 		{
 			if (!File.Exists (ObjectsFile))
@@ -426,6 +315,23 @@ namespace MonoDevelop.GtkCore
 			doc.Update (GuiBuilderProject.WidgetParser, GuiBuilderProject.SteticProject, IdeApp.Workspace.GetCodeRefactorer (project.ParentSolution));
 		}
 
+		public static void DisableProject (Project project)
+		{
+			if (HasDesignedObjects (project))
+				return;
+
+			GtkDesignInfo info = FromProject (project);
+			StringCollection saveFiles = new StringCollection ();
+			saveFiles.AddRange (new string[] {info.ObjectsFile, info.SteticFile});
+			info.CleanGtkFolder (saveFiles);
+			project.Files.Remove (info.ObjectsFile);
+			project.Files.Remove (info.SteticFile);
+			IExtendedDataItem item = (IExtendedDataItem) project;
+			item.ExtendedProperties.Remove ("GtkDesignInfo");
+			info.Dispose ();
+			ProjectNodeBuilder.OnSupportChanged (project);
+		}
+
 		public static GtkDesignInfo FromProject (Project project)
 		{
 			if (!(project is DotNetProject))
@@ -433,10 +339,9 @@ namespace MonoDevelop.GtkCore
 
 			IExtendedDataItem item = (IExtendedDataItem) project;
 			GtkDesignInfo info = item.ExtendedProperties ["GtkDesignInfo"] as GtkDesignInfo;
-			if (info == null) {
+			if (info == null)
 				info = new GtkDesignInfo ((DotNetProject) project);
-				info.TargetGtkVersion = GtkCoreService.DefaultGtkVersion;
-			} else
+			else
 				info.Project = (DotNetProject) project;
 			return info;
 		}

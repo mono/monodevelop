@@ -55,16 +55,20 @@ namespace MonoDevelop.GtkCore.Dialogs
 			Gtk.Entry entryGettext;
 			Gtk.ComboBox comboVersions;
 			
-			GtkDesignInfo designInfo;
+			DotNetProject project;
 			
 			public WidgetBuilderOptionPanelWidget (Project project) : base (false, 6)
 			{
-				designInfo = GtkDesignInfo.FromProject (project);
+				this.project = project as DotNetProject;
 
 				Gtk.HBox box = new Gtk.HBox (false, 3);
 				Gtk.Label lbl = new Gtk.Label (GettextCatalog.GetString ("Target Gtk# version:"));
 				box.PackStart (lbl, false, false, 0);
 				comboVersions = ComboBox.NewText ();
+				foreach (string v in GtkCoreService.SupportedGtkVersions)
+					comboVersions.AppendText (v);
+				ReferenceManager refmgr = new ReferenceManager (project as DotNetProject);
+				comboVersions.Active = Array.IndexOf (GtkCoreService.SupportedGtkVersions, refmgr.GtkPackageVersion);
 				box.PackStart (comboVersions, false, false, 0);
 				box.ShowAll ();
 				PackStart (box, false, false, 0);
@@ -73,6 +77,10 @@ namespace MonoDevelop.GtkCore.Dialogs
 				sep.Show ();
 				PackStart (sep, false, false, 0);
 				
+				if (!GtkDesignInfo.HasDesignedObjects (project))
+					return;
+
+				GtkDesignInfo designInfo = GtkDesignInfo.FromProject (project);
 				checkGettext = new CheckButton (GettextCatalog.GetString ("Enable gettext support"));
 				checkGettext.Active = designInfo.GenerateGettext;
 				checkGettext.Show ();
@@ -86,12 +94,6 @@ namespace MonoDevelop.GtkCore.Dialogs
 				box.ShowAll ();
 				PackStart (box, false, false, 0);
 				
-				
-				foreach (string v in GtkCoreService.SupportedGtkVersions)
-					comboVersions.AppendText (v);
-
-				comboVersions.Active = Array.IndexOf (GtkCoreService.SupportedGtkVersions, designInfo.TargetGtkVersion);
-				
 				checkGettext.Clicked += delegate {
 					box.Sensitive = checkGettext.Active;
 					if (checkGettext.Active)
@@ -101,9 +103,15 @@ namespace MonoDevelop.GtkCore.Dialogs
 			
 			public void Store ()
 			{
-				designInfo.GenerateGettext = checkGettext.Active;
-				designInfo.GettextClass = entryGettext.Text;
-				designInfo.TargetGtkVersion = comboVersions.ActiveText;
+				ReferenceManager refmgr = new ReferenceManager (project);
+				refmgr.GtkPackageVersion = comboVersions.ActiveText;
+				if (GtkDesignInfo.HasDesignedObjects (project)) {
+					GtkDesignInfo info = GtkDesignInfo.FromProject (project);
+					info.GenerateGettext = checkGettext.Active;
+					info.GettextClass = entryGettext.Text;
+					info.GuiBuilderProject.SteticProject.TargetGtkVersion = comboVersions.ActiveText;
+					info.GuiBuilderProject.Save (false);
+				}
 			}
 		}
 		
