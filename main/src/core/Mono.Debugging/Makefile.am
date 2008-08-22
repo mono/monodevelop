@@ -4,12 +4,10 @@ ASSEMBLY = $(ASSEMBLY_BUILD_DIR)/Mono.Debugging.dll
   
 
 REFS =  \
-	$(MONO_ADDINS_LIBS) \
 	-r:System \
 	-r:System.Xml
 
 FILES =  \
-	Mono.Debugging.Backend/DebuggerExtensionNode.cs \
 	Mono.Debugging.Backend/DissassemblyBuffer.cs \
 	Mono.Debugging.Backend/IBacktrace.cs \
 	Mono.Debugging.Backend/IDebuggerSessionFrontend.cs \
@@ -39,7 +37,7 @@ FILES =  \
 	Mono.Debugging.Client/ThreadEventArgs.cs \
 	Mono.Debugging.Client/ThreadInfo.cs
 
-RES = Mono.Debugging.addin.xml 
+RES = 
 
 all: $(ASSEMBLY)
 
