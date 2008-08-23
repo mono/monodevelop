@@ -1,3 +1,8 @@
+2008-08-22  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.DesignerSupport.PropertyGrid/PropertyGridTree.cs: Make
+	  property grid groups default to expanded.
+
 2008-08-18  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.DesignerSupport.PropertyGrid.Editors/TextEditor.cs: Add

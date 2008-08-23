@@ -43,7 +43,7 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid
 		InternalTree tree;
 		TreeViewColumn editorColumn;
 		Hashtable propertyRows;
-		ArrayList expandStatus = new ArrayList ();
+		ArrayList collapseStatus = new ArrayList ();
 		EditorManager editorManager;
 		PropertyGrid parentGrid;
 		
@@ -105,15 +105,15 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid
 		
 		public void SaveStatus ()
 		{
-			expandStatus.Clear ();
+			collapseStatus.Clear ();
 
 			TreeIter iter;
 			if (!tree.Model.GetIterFirst (out iter))
 				return;
 			
 			do {
-				if (tree.GetRowExpanded (tree.Model.GetPath (iter))) {
-					expandStatus.Add (tree.Model.GetValue (iter, 0));
+				if (!tree.GetRowExpanded (tree.Model.GetPath (iter))) {
+					collapseStatus.Add (tree.Model.GetValue (iter, 0));
 				}
 			} while (tree.Model.IterNext (ref iter));
 		}
@@ -133,8 +133,8 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid
 			
 			do {
 				object grp = tree.Model.GetValue (iter, 0);
-				if (expandStatus.Contains (grp))
-					tree.ExpandRow (tree.Model.GetPath (iter), true);
+				if (!collapseStatus.Contains (grp))
+					tree.ExpandRow (tree.Model.GetPath (iter), false);
 			} while (tree.Model.IterNext (ref iter));
 		}
 		
