@@ -173,8 +173,9 @@ namespace MonoDevelop.AspNet.Gui
 			char currentChar = buf.GetCharAt (currentPosition);
 			char previousChar = buf.GetCharAt (currentPosition - 1);
 			
-			LoggingService.LogDebug ("Attempting ASP.NET completion for state '{0}', previousChar='{1}'," 
-			    + " currentChar='{2}', forced='{3}'", tracker.Engine.CurrentState, previousChar, currentChar, forced);
+			LoggingService.LogDebug ("Attempting ASP.NET completion for state '{0}'x{1}, previousChar='{2}'," 
+				+ " currentChar='{3}', forced='{4}'", tracker.Engine.CurrentState, tracker.Engine.CurrentStateLength,
+				previousChar, currentChar, forced);
 			
 			//doctype completion
 			if (line <= 5 && currentChar ==' ' && previousChar == 'E') {
@@ -308,14 +309,15 @@ namespace MonoDevelop.AspNet.Gui
 					return cp;
 				}
 			}
-						
+			
 			//attribute values
 			//determine whether to trigger completion within attribute values quotes
-			if (tracker.Engine.CurrentState is S.XmlAttributeValueState
+			if ((tracker.Engine.CurrentState is S.XmlDoubleQuotedAttributeValueState
+			    || tracker.Engine.CurrentState is S.XmlSingleQuotedAttributeValueState)
 			    //trigger on the opening quote
-			    && (tracker.Engine.CurrentStateLength == 1
+			    && (tracker.Engine.CurrentStateLength == 0
 			        //or trigger on first letter of value, if unforced
-			        || (!forced && tracker.Engine.CurrentStateLength == 2))
+			        || (!forced && tracker.Engine.CurrentStateLength == 1))
 			    ) {
 				S.XAttribute att = (S.XAttribute) tracker.Engine.Nodes.Peek ();
 				
@@ -326,13 +328,13 @@ namespace MonoDevelop.AspNet.Gui
 					if (currentPosition + 1 < buf.Length)
 						next = buf.GetCharAt (currentPosition + 1);
 					
-					char compareChar = (tracker.Engine.CurrentStateLength == 1)? currentChar : previousChar;
+					char compareChar = (tracker.Engine.CurrentStateLength == 0)? currentChar : previousChar;
 					
 					if ((compareChar == '"' || compareChar == '\'') 
 					    && (next == compareChar || char.IsWhiteSpace (next))
 					) {
 						//if triggered by first letter of value, grab that letter
-						if (tracker.Engine.CurrentStateLength == 2)
+						if (tracker.Engine.CurrentStateLength == 1)
 							triggerWordLength = 1;
 						
 						CodeCompletionDataProvider cp = new CodeCompletionDataProvider (null, GetAmbience ());
