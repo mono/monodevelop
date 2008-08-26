@@ -58,7 +58,7 @@ namespace MonoDevelop.Xml.StateEngine
 				return null;
 			}
 			
-			if (char.IsWhiteSpace (c) || c == '<' || c == '>' || c == '/' || c == '=') {
+			if (XmlChar.IsWhitespace (c) || c == '<' || c == '>' || c == '/' || c == '=') {
 				rollback = string.Empty;
 				if (context.KeywordBuilder.Length == 0) {
 					context.LogError ("Zero-length name.");
@@ -85,7 +85,7 @@ namespace MonoDevelop.Xml.StateEngine
 				return null;
 			}
 			
-			if (char.IsLetterOrDigit (c) || c == '_') {
+			if (XmlChar.IsNameChar (c)) {
 				context.KeywordBuilder.Append (c);
 				return null;
 			}

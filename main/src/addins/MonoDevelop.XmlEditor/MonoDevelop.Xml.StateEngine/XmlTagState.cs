@@ -110,7 +110,7 @@ namespace MonoDevelop.Xml.StateEngine
 				return Parent;
 			}
 			
-			if (char.IsLetter (c) || c == '_') {
+			if (XmlChar.IsFirstNameChar (c)) {
 				rollback = string.Empty;
 				if (!element.IsNamed) {
 					return NameState;
@@ -124,7 +124,7 @@ namespace MonoDevelop.Xml.StateEngine
 				return null;
 			}
 			
-			if (char.IsWhiteSpace (c))
+			if (XmlChar.IsWhitespace (c))
 				return null;
 			
 			rollback = string.Empty;
