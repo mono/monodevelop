@@ -1,3 +1,8 @@
+2008-08-26  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs: Fixing
+	  compilation error.
+
 2008-07-17  Mike Krüger <mkrueger@novell.com> 
 
 	* gtk-gui/MonoDevelop.AssemblyBrowser.AssemblyBrowserWidget.cs,

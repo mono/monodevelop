@@ -47,6 +47,10 @@ using MonoDevelop.Projects.Dom;
 
 namespace MonoDevelop.AssemblyBrowser
 {
+	[System.ComponentModel.Category("MonoDevelop.AssemblyBrowser")]
+	[System.ComponentModel.ToolboxItem(true)]
+	[System.ComponentModel.Category("MonoDevelop.AssemblyBrowser")]
+	[System.ComponentModel.ToolboxItem(true)]
 	public partial class AssemblyBrowserWidget : Gtk.Bin
 	{
 		MonoDevelopTreeView treeView;
@@ -145,13 +149,13 @@ namespace MonoDevelop.AssemblyBrowser
 					}
 					if (searchMode == SearchMode.Disassembler) {
 						this.notebook1.Page = 0;
-						int idx = DomMethodNodeBuilder.Disassemble ((DomCecilMethod)member, false).ToUpper ().IndexOf (searchEntry.Text.ToUpper ());
+						int idx = DomMethodNodeBuilder.Disassemble ((MonoDevelop.Projects.Dom.DomCecilMethod)member, false).ToUpper ().IndexOf (searchEntry.Text.ToUpper ());
 						this.disassemblerLabel.Selectable = true;
 						this.disassemblerLabel.SelectRegion (idx, idx + searchEntry.Text.Length);
 					}
 					if (searchMode == SearchMode.Decompiler) {
 						this.notebook1.Page = 1;
-						int idx = DomMethodNodeBuilder.Decompile ((DomCecilMethod)member, false).ToUpper ().IndexOf (searchEntry.Text.ToUpper ());
+						int idx = DomMethodNodeBuilder.Decompile ((MonoDevelop.Projects.Dom.DomCecilMethod)member, false).ToUpper ().IndexOf (searchEntry.Text.ToUpper ());
 						this.disassemblerLabel.Selectable = true;
 						this.disassemblerLabel.SelectRegion (idx, idx + searchEntry.Text.Length);
 					}
