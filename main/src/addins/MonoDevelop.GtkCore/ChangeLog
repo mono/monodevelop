@@ -1,3 +1,9 @@
+2008-08-27  Mike Kestner <mkestner@novell.com> 
+
+	* MonoDevelop.GtkCore.NodeBuilders/ProjectFolderNodeBuilderExtension.cs:
+	Restrict to DotNetProjects and verify ProjectFolders are for DNPs.
+	Fixes #412448.
+
 2008-08-22  Mike Kestner <mkestner@novell.com> 
 
 	Fixes bug #413275 and delays more GtkDesignInfo-related project file 
