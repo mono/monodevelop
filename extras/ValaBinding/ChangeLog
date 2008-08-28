@@ -1,3 +1,7 @@
+2008-08-28  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com>
+
+	* Compiler/ValaCompiler.cs: Generate .deps file on library compilation.
+
 2008-08-21  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* ProjectPad/ProjectResourcesExtension.cs, ValaBinding.addin.xml,
