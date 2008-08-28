@@ -1,5 +1,15 @@
 2008-08-27  Mike Kestner <mkestner@novell.com> 
 
+	* MonoDevelop.GtkCore/WidgetFileDesciptionTemplate.cs: perform a 
+	project save after the file insertions and updates.  This seems
+	suboptimal, since it would probably be better to mark the project
+	dirty and let the user save the project, but until we switch to
+	one-widget-per-design-file, we probably need to save the project
+	automatically to avoid problems.
+	Fixes #385712.
+
+2008-08-27  Mike Kestner <mkestner@novell.com> 
+
 	* MonoDevelop.GtkCore.NodeBuilders/ProjectFolderNodeBuilderExtension.cs:
 	Restrict to DotNetProjects and verify ProjectFolders are for DNPs.
 	Fixes #412448.
