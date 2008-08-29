@@ -1,3 +1,7 @@
+2008-08-29  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* DebuggerServer.cs: Fix build.
+
 2008-08-22  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MyTextReader.cs, Expression.cs: Remove unused stuff.
