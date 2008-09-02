@@ -132,15 +132,20 @@ namespace MonoDevelop.Projects.Dom.Parser
 		
 		protected override IType GetType (IEnumerable<string> subNamespaces, string fullName, int genericParameterCount, bool caseSensitive)
 		{
+			IType result = null;
 			foreach (IType type in codeCompletionDatabase.GetTypes (subNamespaces, new long[] { projectId }, fullName, caseSensitive)) {
 				if (genericParameterCount < 0 || 
 				    (genericParameterCount == 0 && type.TypeParameters == null) || 
 				    (type.TypeParameters != null && type.TypeParameters.Count == genericParameterCount)) {
 					type.SourceProjectDom = this;
-					return type;
+					if (result == null) {
+						result = type;
+					} else {
+						result = CompoundType.Merge (result, type);
+					}
 				}
 			}
-			return null;
+			return result;
 		}
 		
 		public override IType GetType (IEnumerable<string> subNamespaces, string fullName, int genericParameterCount, bool caseSensitive, bool searchDeep)
@@ -153,17 +158,24 @@ namespace MonoDevelop.Projects.Dom.Parser
 				foreach (IType type in codeCompletionDatabase.GetTypes (subNamespaces, ProjectIds, fullName, caseSensitive)) {
 					if (genericParameterCount < 0 || (genericParameterCount == 0 && type.TypeParameters == null) ||  (type.TypeParameters != null && type.TypeParameters.Count == genericParameterCount)) {
 						type.SourceProjectDom = this;
-						return type;
+						if (result == null) {
+							result = type;
+						} else {
+							result = CompoundType.Merge (result, type);
+						}
 					}
 				}
 			} else {
 				result = GetType (subNamespaces, fullName, genericParameterCount, caseSensitive);
 			}
 			if (result == null && searchDeep) {
-				
 				foreach (IType type in ProjectDomService.AssemblyDatabase.GetTypes (subNamespaces, referencedAssemblyIds, fullName, caseSensitive)) {
 					if (genericParameterCount < 0 || (genericParameterCount == 0 && type.TypeParameters == null) ||  (type.TypeParameters != null && type.TypeParameters.Count == genericParameterCount)) {
-						return type;
+						if (result == null) {
+							result = type;
+						} else {
+							result = CompoundType.Merge (result, type);
+						}
 					}
 				}
 				
