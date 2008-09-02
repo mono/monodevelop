@@ -1,3 +1,8 @@
+2008-09-02  Andrés G. Aragoneses  <aaragoneses@novell.com>
+
+	* class.cs: Backport r105700 from trunk in order to let this MD branch
+	compile with mono HEAD.
+
 2008-05-27  Mike Krüger <mkrueger@novell.com> 
 
 	* report.cs: Added new dom & new class browser.
