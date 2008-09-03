@@ -112,7 +112,7 @@ namespace MonoDevelop.AspNet
 			//register the assembly and look up the class
 			RegisterReference (project);
 			
-			MonoDevelop.Projects.Dom.Parser.DatabaseProjectDom database =
+			MonoDevelop.Projects.Dom.Parser.ProjectDom database =
 				MonoDevelop.Projects.Dom.Parser.ProjectDomService.GetDatabaseProjectDom (project);
 //FIXME: port to new DOM
 //			ctx.UpdateDatabase ();
