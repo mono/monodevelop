@@ -42,6 +42,7 @@
     <File name="Mono.Debugging.Client/BreakEvent.cs" subtype="Code" buildaction="Compile" />
     <File name="Mono.Debugging.Client/CatchpointEventArgs.cs" subtype="Code" buildaction="Compile" />
     <File name="Mono.Debugging.Client/BreakEventArgs.cs" subtype="Code" buildaction="Compile" />
+    <File name="Mono.Debugging.Client/DebuggerFeatures.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
