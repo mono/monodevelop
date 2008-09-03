@@ -706,7 +706,7 @@ namespace DebuggerServer
 						controller.OnDebuggerOutput (false, string.Format ("Thread {0:x} received signal {1}.\n", args.Frame.Thread.ID, args.Data));
 					});
 				}
-				
+
 				DL.TargetEventType type;
 				
 				switch (args.Type) {
@@ -730,6 +730,12 @@ namespace DebuggerServer
 				if (args.Type != MD.TargetEventType.TargetExited) {
 					targetArgs.Backtrace = CreateBacktrace (thread);
 					targetArgs.Thread = CreateThreadInfo (activeThread);
+				}
+
+				if ((args.Type == MD.TargetEventType.UnhandledException || args.Type == MD.TargetEventType.Exception) && (args.Data is TargetAddress)) {
+					TargetAddress addr = (TargetAddress) args.Data;
+					ML.TargetObject exc = args.Frame.Language.CreateObject (args.Frame.Thread, addr);
+					targetArgs.Exception = new LiteralValueReference (args.Frame.Thread, "Exception", exc).CreateObjectValue ();
 				}
 
 				DispatchEvent (delegate {
