@@ -139,6 +139,8 @@ namespace MonoDevelop.Projects.Dom
 		
 		public System.Collections.Generic.IEnumerable<IAttribute> Attributes {
 			get {
+				if (attributes == null)
+					return new IAttribute [] {};
 				return attributes;
 			}
 		}

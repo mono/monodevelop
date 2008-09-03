@@ -1,3 +1,8 @@
+2008-09-03  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Dom/AbstractMember.cs: member attributes are now
+	  always != null.
+
 2008-09-02  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom.Parser/DatabaseProjectDom.cs: fixed bug with
