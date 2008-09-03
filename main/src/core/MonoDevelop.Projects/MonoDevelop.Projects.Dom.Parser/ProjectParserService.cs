@@ -431,13 +431,13 @@ namespace MonoDevelop.Projects.Dom.Parser
 			return null;
 		}
 		
-		public static DatabaseProjectDom GetAssemblyProjectDom (string assemblyName)
+		public static ProjectDom GetAssemblyProjectDom (string assemblyName)
 		{
 			return LoadAssemblyDatabase ("Assembly:" + assemblyName);
 		}
 		static Dictionary<string, CodeCompletionDatabase> solutionDatabases = new Dictionary<string, CodeCompletionDatabase> ();
 		
-		public static DatabaseProjectDom GetDatabaseProjectDom (Project project)
+		public static ProjectDom GetDatabaseProjectDom (Project project)
 		{
 			if (project == null)
 				return null;
@@ -466,7 +466,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 			string type = project.ProjectType;
 			if (project is DotNetProject)
 				type = ((DotNetProject)project).LanguageName;
-			DatabaseProjectDom dom = GetDatabaseProjectDom (project);
+			ProjectDom dom = GetDatabaseProjectDom (project);
 			
 			// load References
 			if (project is DotNetProject) {

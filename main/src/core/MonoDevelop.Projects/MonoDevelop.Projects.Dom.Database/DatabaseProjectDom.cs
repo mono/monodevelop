@@ -26,9 +26,9 @@
 
 using System;
 using System.Collections.Generic;
-using MonoDevelop.Projects.Dom.Database;
+using MonoDevelop.Projects.Dom.Parser;
 
-namespace MonoDevelop.Projects.Dom.Parser
+namespace MonoDevelop.Projects.Dom.Database
 {
 	public class DatabaseProjectDom : ProjectDom
 	{

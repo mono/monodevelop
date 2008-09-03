@@ -207,7 +207,6 @@
     <File name="MonoDevelop.Projects.Dom.Database/SqliteUtils.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Dom.Database/DatabaseColumnAttribute.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Dom.Database/DateTimeUtil.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Projects.Dom.Parser/DatabaseProjectDom.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Dom.Database/DatabaseType.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Dom.Database/DatabaseField.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Dom.Database/DatabaseMethod.cs" subtype="Code" buildaction="Compile" />
@@ -217,6 +216,16 @@
     <File name="MonoDevelop.Projects/DotNetProject.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Dom.Database/MonoDevelopDatabaseConnection.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Dom/LocalVariable.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Projects.Dom.Serialization/DomPersistence.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Projects.Dom.Serialization/AssemblyCodeCompletionDatabase.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Projects.Dom.Serialization/CodeCompletionDatabase.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Projects.Dom.Serialization/ClassEntry.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Projects.Dom.Serialization/ProjectCodeCompletionDatabase.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Projects.Dom.Serialization/SimpleCodeCompletionDatabase.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Projects.Dom.Serialization/FileEntry.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Projects.Dom.Serialization/NamespaceEntry.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Projects.Dom.Serialization/DomTypeProxy.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Projects.Dom.Database/DatabaseProjectDom.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="False" refto="monodoc, Version=1.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
@@ -243,8 +252,5 @@
     <AsmRefVar Sync="True" Name="REFS" Prefix="-r:" />
     <ProjectRefVar Sync="True" Name="REFS" Prefix="-r:" />
   </MonoDevelop.Autotools.MakefileInfo>
-  <MonoDevelop.Gettext.TranslationInfo />
-  <DeploymentInformation strategy="File">
-    <excludeFiles />
-  </DeploymentInformation>
+  <DeploymentInformation strategy="File" />
 </Project>

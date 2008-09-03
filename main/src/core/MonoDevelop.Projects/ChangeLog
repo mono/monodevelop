@@ -1,5 +1,23 @@
 2008-09-03  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.Projects.Dom.Parser/DatabaseProjectDom.cs,
+	  MonoDevelop.Projects.Dom.Parser/ProjectParserService.cs,
+	  MonoDevelop.Projects.mdp,
+	  MonoDevelop.Projects.Dom.Database/DatabaseProjectDom.cs,
+	  Makefile.am, MonoDevelop.Projects.Dom.Serialization,
+	  MonoDevelop.Projects.Dom.Serialization/NamespaceEntry.cs,
+	  MonoDevelop.Projects.Dom.Serialization/ProjectCodeCompletionDatabase.cs,
+	  MonoDevelop.Projects.Dom.Serialization/FileEntry.cs,
+	  MonoDevelop.Projects.Dom.Serialization/SimpleCodeCompletionDatabase.cs,
+	  MonoDevelop.Projects.Dom.Serialization/DomTypeProxy.cs,
+	  MonoDevelop.Projects.Dom.Serialization/DomPersistence.cs,
+	  MonoDevelop.Projects.Dom.Serialization/ClassEntry.cs,
+	  MonoDevelop.Projects.Dom.Serialization/AssemblyCodeCompletionDatabase.cs,
+	  MonoDevelop.Projects.Dom.Serialization/CodeCompletionDatabase.cs:
+	  Worked on custom database layer.
+
+2008-09-03  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.Projects.Dom/AbstractMember.cs: member attributes are now
 	  always != null.
 

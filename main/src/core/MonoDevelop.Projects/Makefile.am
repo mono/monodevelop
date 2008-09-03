@@ -31,6 +31,7 @@ FILES =  \
 	MonoDevelop.Projects.Dom.Database/DatabaseField.cs \
 	MonoDevelop.Projects.Dom.Database/DatabaseMethod.cs \
 	MonoDevelop.Projects.Dom.Database/DatabaseParameter.cs \
+	MonoDevelop.Projects.Dom.Database/DatabaseProjectDom.cs \
 	MonoDevelop.Projects.Dom.Database/DatabaseProperty.cs \
 	MonoDevelop.Projects.Dom.Database/DatabaseType.cs \
 	MonoDevelop.Projects.Dom.Database/DateTimeUtil.cs \
@@ -43,12 +44,20 @@ FILES =  \
 	MonoDevelop.Projects.Dom.Output/NetAmbience.cs \
 	MonoDevelop.Projects.Dom.Output/OutputFlags.cs \
 	MonoDevelop.Projects.Dom.Parser/AbstractParser.cs \
-	MonoDevelop.Projects.Dom.Parser/DatabaseProjectDom.cs \
 	MonoDevelop.Projects.Dom.Parser/IParser.cs \
 	MonoDevelop.Projects.Dom.Parser/IResolver.cs \
 	MonoDevelop.Projects.Dom.Parser/ProjectDom.cs \
 	MonoDevelop.Projects.Dom.Parser/ProjectDomEventArgs.cs \
 	MonoDevelop.Projects.Dom.Parser/ProjectParserService.cs \
+	MonoDevelop.Projects.Dom.Serialization/AssemblyCodeCompletionDatabase.cs \
+	MonoDevelop.Projects.Dom.Serialization/ClassEntry.cs \
+	MonoDevelop.Projects.Dom.Serialization/CodeCompletionDatabase.cs \
+	MonoDevelop.Projects.Dom.Serialization/DomPersistence.cs \
+	MonoDevelop.Projects.Dom.Serialization/DomTypeProxy.cs \
+	MonoDevelop.Projects.Dom.Serialization/FileEntry.cs \
+	MonoDevelop.Projects.Dom.Serialization/NamespaceEntry.cs \
+	MonoDevelop.Projects.Dom.Serialization/ProjectCodeCompletionDatabase.cs \
+	MonoDevelop.Projects.Dom.Serialization/SimpleCodeCompletionDatabase.cs \
 	MonoDevelop.Projects.Dom/AbstractMember.cs \
 	MonoDevelop.Projects.Dom/AttributeTarget.cs \
 	MonoDevelop.Projects.Dom/ClassType.cs \
