@@ -614,6 +614,8 @@ namespace MonoDevelop.ValaBinding
 		public void GenerateDepfile (ValaProjectConfiguration configuration, ProjectPackageCollection packages)
 		{
 			try {
+				if(configuration.CompileTarget != CompileTarget.SharedLibrary){ return; }
+				
 				using (StreamWriter writer = new StreamWriter (Path.Combine (configuration.OutputDirectory, Path.ChangeExtension (configuration.Output, ".deps")))) {
 					foreach (ProjectPackage package in packages) {
 						writer.WriteLine(package.Name);

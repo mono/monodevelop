@@ -1,3 +1,13 @@
+2008-09-03  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com>
+
+	* Project/ValaProject.cs: Add output directory to library path 
+	for project packages.
+
+2008-09-03  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com>
+
+	* Compiler/ValaCompiler.cs: Only generate .deps file 
+	for shared library targets.
+
 2008-08-28  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com>
 
 	* Compiler/ValaCompiler.cs: Generate .deps file on library compilation.

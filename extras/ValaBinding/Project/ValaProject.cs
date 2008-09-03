@@ -495,7 +495,7 @@ namespace MonoDevelop.ValaBinding
 				packages.AddRange(deps);
 
 				// Currently, we need to add include directory and linker flags - this should be obsoleted
-				string ccargs = string.Format (" --Xcc=\\\\\\\"-I{0}\\\\\\\" --Xcc=\\\\\\\"-l{1}\\\\\\\" ", Path.GetDirectoryName (depsfile), package.Name);
+				string ccargs = string.Format (" --Xcc=\\\\\\\"-I{0}\\\\\\\" --Xcc=\\\\\\\"-L{0}\\\\\\\" --Xcc=\\\\\\\"-l{1}\\\\\\\" ", Path.GetDirectoryName (depsfile), package.Name);
 				ValaCompilationParameters vcp = (ValaCompilationParameters)(((ValaProjectConfiguration)this.DefaultConfiguration).CompilationParameters);
 				if (!vcp.ExtraCompilerArguments.Contains (ccargs)){ vcp.ExtraCompilerArguments += ccargs; }
 			} catch { /* Do anything here? */ }
