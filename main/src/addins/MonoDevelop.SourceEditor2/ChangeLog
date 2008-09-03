@@ -1,3 +1,9 @@
+2008-09-03  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.SourceEditor/SourceEditorWidget.cs: fixed "[Bug 422095]
+	  New: NRE in the console when opening file ( seems related to
+	  folding regions)".
+
 2008-08-20  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.SourceEditor/SourceEditorWidget.cs,

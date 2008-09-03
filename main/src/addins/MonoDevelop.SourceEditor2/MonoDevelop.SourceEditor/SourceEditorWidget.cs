@@ -282,36 +282,48 @@ namespace MonoDevelop.SourceEditor
 			//ParseInformationEventArgs args;
 			
 			public ParseInformationUpdaterWorkerThread (SourceEditorWidget widget, ParseInformationEventArgs args)
-			{
+			{ 
 				this.widget = widget;
 				//this.args = args;
 			}
 			
 			bool IsInsideMember (FoldSegment marker, MonoDevelop.Projects.Parser.FoldingRegion region, IClass cl)
 			{
-				if (region == null)
+				if (region == null || cl == null)
 					return false;
-				foreach (IMethod m in cl.Methods) {
-					if (m.BodyRegion == null)
-						continue;
-					if (m.BodyRegion.BeginLine <=  region.Region.BeginLine && region.Region.BeginLine <= m.BodyRegion.EndLine) 
-						return true;
+				
+				if (cl.Methods != null) {
+					foreach (IMethod m in cl.Methods) {
+						if (m.BodyRegion == null)
+							continue;
+						if (m.BodyRegion.BeginLine <= region.Region.BeginLine && region.Region.BeginLine <= m.BodyRegion.EndLine) 
+							return true;
+					}
 				}
-				foreach (IProperty p in cl.Properties) {
-					if (p.BodyRegion == null)
-						continue;
-					if (p.BodyRegion.BeginLine <=  region.Region.BeginLine && region.Region.BeginLine <= p.BodyRegion.EndLine) 
-						return true;
+				
+				if (cl.Properties != null) {
+					foreach (IProperty p in cl.Properties) {
+						if (p.BodyRegion == null)
+							continue;
+						if (p.BodyRegion.BeginLine <= region.Region.BeginLine && region.Region.BeginLine <= p.BodyRegion.EndLine) 
+							return true;
+					}
 				}
-				foreach (IIndexer i in cl.Indexer) {
-					if (i.BodyRegion == null)
-						continue;
-					if (i.BodyRegion.BeginLine <=  region.Region.BeginLine && region.Region.BeginLine <= i.BodyRegion.EndLine) 
-						return true;
+				
+				if (cl.Indexer != null) {
+					foreach (IIndexer i in cl.Indexer) {
+						if (i.BodyRegion == null)
+							continue;
+						if (i.BodyRegion.BeginLine <=  region.Region.BeginLine && region.Region.BeginLine <= i.BodyRegion.EndLine) 
+							return true;
+					}
 				}
-				foreach (IClass inner in cl.InnerClasses) {
-					if (IsInsideMember (marker, region, inner))
-						return true;
+				
+				if (cl.InnerClasses != null) {
+					foreach (IClass inner in cl.InnerClasses) {
+						if (IsInsideMember (marker, region, inner))
+							return true;
+					}
 				}
 				return false;
 			}
