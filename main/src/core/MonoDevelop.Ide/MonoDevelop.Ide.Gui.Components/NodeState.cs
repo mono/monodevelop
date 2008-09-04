@@ -41,7 +41,7 @@ namespace MonoDevelop.Ide.Gui.Components
 		
 		bool expanded;
 		bool selected;
-		MonoDevelopTreeView.TreeOptions options;
+		ExtensibleTreeView.TreeOptions options;
 		
 		List<NodeState> childrenState;
 
@@ -72,7 +72,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			}
 		}
 
-		internal MonoDevelopTreeView.TreeOptions Options {
+		internal ExtensibleTreeView.TreeOptions Options {
 			get {
 				return options;
 			}
@@ -105,7 +105,7 @@ namespace MonoDevelop.Ide.Gui.Components
 		const string expandedAttribute = "expanded";
 		const string selectedAttribute = "selected";
 
-		void WriteTo (XmlWriter writer, MonoDevelopTreeView.TreeOptions parentOptions)
+		void WriteTo (XmlWriter writer, ExtensibleTreeView.TreeOptions parentOptions)
 		{
 			writer.WriteStartElement (Node);
 			if (NodeName != null)
@@ -115,7 +115,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			if (Selected)
 				writer.WriteAttributeString (selectedAttribute, bool.TrueString);
 
-			MonoDevelopTreeView.TreeOptions ops = Options;
+			ExtensibleTreeView.TreeOptions ops = Options;
 			if (ops != null) {
 				foreach (DictionaryEntry de in ops) {
 					object parentVal = parentOptions != null ? parentOptions [de.Key] : null;
@@ -137,7 +137,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			writer.WriteEndElement (); // NodeState
 		}
 
-		ICustomXmlSerializer ReadFrom (XmlReader reader, MonoDevelopTreeView.TreeOptions parentOptions)
+		ICustomXmlSerializer ReadFrom (XmlReader reader, ExtensibleTreeView.TreeOptions parentOptions)
 		{
 			NodeState result = new NodeState ();
 			result.NodeName = reader.GetAttribute (nameAttribute);
@@ -150,7 +150,7 @@ namespace MonoDevelop.Ide.Gui.Components
 				switch (reader.LocalName) {
 				case "Option":
 					if (result.Options == null) 
-						result.Options = parentOptions != null ? parentOptions.CloneOptions (Gtk.TreeIter.Zero) : new MonoDevelopTreeView.TreeOptions ();   
+						result.Options = parentOptions != null ? parentOptions.CloneOptions (Gtk.TreeIter.Zero) : new ExtensibleTreeView.TreeOptions ();   
 					result.Options [reader.GetAttribute ("id")] = bool.Parse (reader.GetAttribute ("value"));
 					return true;
 				case "Node":
@@ -191,7 +191,7 @@ namespace MonoDevelop.Ide.Gui.Components
 				nav.MoveToParent ();
 			}
 			
-			MonoDevelopTreeView.TreeOptions ops = pad.GetIterOptions (it);
+			ExtensibleTreeView.TreeOptions ops = pad.GetIterOptions (it);
 			
 			if (ops != null || nav.Expanded || childrenState != null || nav.Selected) {
 				NodeState es = new NodeState ();

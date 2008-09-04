@@ -1,5 +1,5 @@
 //
-// MonoDevelopTreeView.cs
+// ExtensibleTreeView.cs
 //
 // Author:
 //   Lluis Sanchez Gual
