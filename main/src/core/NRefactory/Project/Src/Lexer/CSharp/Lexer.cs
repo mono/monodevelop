@@ -848,7 +848,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 			} else {
 				int col = Col;
 				int line = Line;
-				specialTracker.StartComment(commentType, false, new Location(startCol, line));
+				specialTracker.StartComment(commentType, isBegin, new Location(startCol, line));
 				string comment = ReadCommentToEOL();
 				specialTracker.AddString(comment);
 				specialTracker.FinishComment(new Location(col + comment.Length, line));
