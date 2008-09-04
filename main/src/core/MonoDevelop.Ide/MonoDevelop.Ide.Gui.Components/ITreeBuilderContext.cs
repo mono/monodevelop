@@ -41,6 +41,6 @@ namespace MonoDevelop.Ide.Gui.Components
 		Gdk.Pixbuf GetComposedIcon (Gdk.Pixbuf baseIcon, object compositionKey);
 		void CacheComposedIcon (Gdk.Pixbuf baseIcon, object compositionKey, Gdk.Pixbuf composedIcon);
 		
-		MonoDevelopTreeView Tree { get; }
+		ExtensibleTreeView Tree { get; }
 	}
 }

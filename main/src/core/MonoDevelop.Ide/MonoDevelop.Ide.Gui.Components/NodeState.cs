@@ -164,7 +164,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			return result;
 		}
 		
-		internal static NodeState SaveState (MonoDevelopTreeView pad, ITreeNavigator nav)
+		internal static NodeState SaveState (ExtensibleTreeView pad, ITreeNavigator nav)
 		{
 			NodeState state = SaveStateRec (pad, nav);
 			if (state == null) 
@@ -172,7 +172,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			else return state;
 		}
 		
-		static NodeState SaveStateRec (MonoDevelopTreeView pad, ITreeNavigator nav)
+		static NodeState SaveStateRec (ExtensibleTreeView pad, ITreeNavigator nav)
 		{
 			Gtk.TreeIter it = nav.CurrentPosition._iter;
 			
@@ -214,7 +214,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			                      this.childrenState != null ? this.childrenState.Count.ToString () : "null");
 		}
 		 
-		internal static void RestoreState (MonoDevelopTreeView pad, ITreeNavigator nav, NodeState es)
+		internal static void RestoreState (ExtensibleTreeView pad, ITreeNavigator nav, NodeState es)
 		{
 			if (es == null) 
 				return;

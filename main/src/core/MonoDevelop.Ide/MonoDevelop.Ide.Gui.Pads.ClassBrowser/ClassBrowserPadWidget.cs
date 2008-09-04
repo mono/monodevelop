@@ -47,7 +47,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassBrowser
 	[System.ComponentModel.ToolboxItem(true)]
 	public partial class ClassBrowserPadWidget : Gtk.Bin
 	{
-		MonoDevelopTreeView treeView;
+		ExtensibleTreeView treeView;
 		TreeView searchResultsTreeView = new Gtk.TreeView ();
 		ListStore list;
 		TreeModelSort model;
@@ -57,7 +57,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassBrowser
 		{
 			this.Build();
 			
-			treeView = new MonoDevelopTreeView (new NodeBuilder[] { 
+			treeView = new ExtensibleTreeView (new NodeBuilder[] { 
 				new SolutionNodeBuilder (),
 				new ProjectNodeBuilder (),
 				new TypeNodeBuilder (),

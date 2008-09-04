@@ -109,11 +109,11 @@ FILES =  \
 	MonoDevelop.Ide.Gui.BrowserDisplayBinding/BrowserDisplayBinding.cs \
 	MonoDevelop.Ide.Gui.BrowserDisplayBinding/HtmlViewPane.cs \
 	MonoDevelop.Ide.Gui.Components/DragOperation.cs \
+	MonoDevelop.Ide.Gui.Components/ExtensibleTreeView.cs \
 	MonoDevelop.Ide.Gui.Components/ITreeBuilder.cs \
 	MonoDevelop.Ide.Gui.Components/ITreeBuilderContext.cs \
 	MonoDevelop.Ide.Gui.Components/ITreeNavigator.cs \
 	MonoDevelop.Ide.Gui.Components/ITreeOptions.cs \
-	MonoDevelop.Ide.Gui.Components/MonoDevelopTreeView.cs \
 	MonoDevelop.Ide.Gui.Components/NodeAttributes.cs \
 	MonoDevelop.Ide.Gui.Components/NodeBuilder.cs \
 	MonoDevelop.Ide.Gui.Components/NodeBuilderExtension.cs \

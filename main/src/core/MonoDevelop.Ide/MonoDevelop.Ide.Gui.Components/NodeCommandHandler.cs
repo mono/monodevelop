@@ -36,10 +36,10 @@ namespace MonoDevelop.Ide.Gui.Components
 	public class NodeCommandHandler: ICommandRouter
 	{
 		ITreeNavigator[] currentNodes;
-		MonoDevelopTreeView tree;
+		ExtensibleTreeView tree;
 		object nextTarget;
 		
-		internal void Initialize (MonoDevelopTreeView tree)
+		internal void Initialize (ExtensibleTreeView tree)
 		{
 			this.tree = tree;
 		}
@@ -72,7 +72,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			get { return currentNodes [0]; }
 		}
 		
-		protected MonoDevelopTreeView Tree {
+		protected ExtensibleTreeView Tree {
 			get { return tree; }
 		}
 		

@@ -1,5 +1,16 @@
 2008-09-04  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* Makefile.am, MonoDevelop.Ide.Gui.Components/ExtensibleTreeView.cs,
+	  MonoDevelop.Ide.Gui.Components/ITreeBuilderContext.cs,
+	  MonoDevelop.Ide.Gui.Components/MonoDevelopTreeView.cs,
+	  MonoDevelop.Ide.Gui.Components/NodeCommandHandler.cs,
+	  MonoDevelop.Ide.Gui.Components/NodeState.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassBrowser/ClassBrowserPadWidget.cs,
+	  MonoDevelop.Ide.Gui.Pads/TreeViewPad.cs, MonoDevelop.Ide.mdp:
+	  Renamed MonoDevelopTreeView to ExtensibleTreeView.
+
+2008-09-04  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Ide.Gui.Content/DocumentStateTracker.cs,
 	  MonoDevelop.Ide.Gui.Dialogs/NewFileDialog.cs,
 	  MonoDevelop.Ide.Gui.Dialogs/OverridesImplementsDialog.cs,

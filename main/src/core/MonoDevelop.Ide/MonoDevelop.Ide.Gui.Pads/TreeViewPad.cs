@@ -55,9 +55,9 @@ namespace MonoDevelop.Ide.Gui.Pads
 	/// </summary>
 	public class TreeViewPad : AbstractPadContent, IMementoCapable, ICommandDelegatorRouter
 	{
-		protected MonoDevelopTreeView treeView = new MonoDevelopTreeView ();
+		protected ExtensibleTreeView treeView = new ExtensibleTreeView ();
 		
-		public MonoDevelopTreeView TreeView {
+		public ExtensibleTreeView TreeView {
 			get {
 				return treeView;
 			}

@@ -49,7 +49,7 @@ using MonoDevelop.Ide.Gui.Pads;
 
 namespace MonoDevelop.Ide.Gui.Components
 {
-	public class MonoDevelopTreeView : Gtk.ScrolledWindow
+	public class ExtensibleTreeView : Gtk.ScrolledWindow
 	{
 		internal const int TextColumn         = 0;
 		internal const int OpenIconColumn     = 1;
@@ -101,11 +101,11 @@ namespace MonoDevelop.Ide.Gui.Components
 			}
 		}
 		
-		public MonoDevelopTreeView ()
+		public ExtensibleTreeView ()
 		{
 		}
 		
-		public MonoDevelopTreeView (NodeBuilder[] builders, TreePadOption[] options)
+		public ExtensibleTreeView (NodeBuilder[] builders, TreePadOption[] options)
 		{
 			Initialize (builders, options);
 		}
@@ -910,7 +910,7 @@ namespace MonoDevelop.Ide.Gui.Components
 
 			node.ExpandToNode (); //make sure the parent of the node that is being edited is expanded
 			
-			store.SetValue (iter, MonoDevelopTreeView.TextColumn, node.NodeName);
+			store.SetValue (iter, ExtensibleTreeView.TextColumn, node.NodeName);
 			
 			text_render.Editable = true;
 			tree.SetCursor (store.GetPath (iter), complete_column, true);
@@ -1044,7 +1044,7 @@ namespace MonoDevelop.Ide.Gui.Components
 		
 		TypeNodeBuilder GetTypeNodeBuilder (Gtk.TreeIter iter)
 		{
-			NodeBuilder[] chain = (NodeBuilder[]) store.GetValue (iter, MonoDevelopTreeView.BuilderChainColumn);
+			NodeBuilder[] chain = (NodeBuilder[]) store.GetValue (iter, ExtensibleTreeView.BuilderChainColumn);
 			if (chain != null && chain.Length > 0)
 				return chain[0] as TypeNodeBuilder;
 			return null;
@@ -1559,11 +1559,11 @@ namespace MonoDevelop.Ide.Gui.Components
 		
 		internal class TreeBuilderContext: ITreeBuilderContext
 		{
-			MonoDevelopTreeView pad;
+			ExtensibleTreeView pad;
 			Hashtable icons = new Hashtable ();
 			Hashtable composedIcons = new Hashtable ();
 			
-			internal TreeBuilderContext (MonoDevelopTreeView pad)
+			internal TreeBuilderContext (ExtensibleTreeView pad)
 			{
 				this.pad = pad;
 			}
@@ -1623,24 +1623,24 @@ namespace MonoDevelop.Ide.Gui.Components
 				return new TreeNodeNavigator (pad, iter);
 			}
 			
-			public MonoDevelopTreeView Tree {
+			public ExtensibleTreeView Tree {
 				get { return pad; }
 			}
 		}
 		
 		internal class TreeNodeNavigator: ITreeNavigator, ITreeOptions
 		{
-			protected MonoDevelopTreeView pad;
+			protected ExtensibleTreeView pad;
 			protected Gtk.TreeView tree;
 			protected Gtk.TreeStore store;
 			Gtk.TreeIter currentNavIter;
 			object dataItem;
 			
-			public TreeNodeNavigator (MonoDevelopTreeView pad): this (pad, Gtk.TreeIter.Zero)
+			public TreeNodeNavigator (ExtensibleTreeView pad): this (pad, Gtk.TreeIter.Zero)
 			{
 			}
 			
-			public TreeNodeNavigator (MonoDevelopTreeView pad, Gtk.TreeIter iter)
+			public TreeNodeNavigator (ExtensibleTreeView pad, Gtk.TreeIter iter)
 			{
 				this.pad = pad;
 				tree = pad.Tree;
@@ -1687,7 +1687,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			internal NodeBuilder[] NodeBuilderChain {
 				get {
 					AssertIsValid ();
-					NodeBuilder[] chain = (NodeBuilder[]) store.GetValue (currentIter, MonoDevelopTreeView.BuilderChainColumn);
+					NodeBuilder[] chain = (NodeBuilder[]) store.GetValue (currentIter, ExtensibleTreeView.BuilderChainColumn);
 					if (chain != null)
 						return chain;
 					else
@@ -1743,7 +1743,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			{
 				currentNavIter = iter;
 				if (!iter.Equals (Gtk.TreeIter.Zero))
-					dataItem = store.GetValue (currentNavIter, MonoDevelopTreeView.DataItemColumn);
+					dataItem = store.GetValue (currentNavIter, ExtensibleTreeView.DataItemColumn);
 				else
 					dataItem = null;
 			}
@@ -1798,7 +1798,7 @@ namespace MonoDevelop.Ide.Gui.Components
 				AssertIsValid ();
 				Gtk.TreeIter newIter = currentIter;
 				while (store.IterParent (out newIter, newIter)) {
-					object data = store.GetValue (newIter, MonoDevelopTreeView.DataItemColumn);
+					object data = store.GetValue (newIter, ExtensibleTreeView.DataItemColumn);
 					if (dataType.IsInstanceOfType (data)) {
 						MoveToIter (newIter);
 						return true;
@@ -1956,14 +1956,14 @@ namespace MonoDevelop.Ide.Gui.Components
 					object data = DataItem;
 					NodeBuilder[] chain = BuilderChain;
 					if (chain != null && chain.Length > 0) return ((TypeNodeBuilder)chain[0]).GetNodeName (this, data);
-					else return store.GetValue (currentIter, MonoDevelopTreeView.TextColumn) as string;
+					else return store.GetValue (currentIter, ExtensibleTreeView.TextColumn) as string;
 				}
 			}
 			
 			public NodeBuilder[] BuilderChain {
 				get {
 					AssertIsValid ();
-					return (NodeBuilder[]) store.GetValue (currentIter, MonoDevelopTreeView.BuilderChainColumn);
+					return (NodeBuilder[]) store.GetValue (currentIter, ExtensibleTreeView.BuilderChainColumn);
 				}
 			}
 			
@@ -1974,7 +1974,7 @@ namespace MonoDevelop.Ide.Gui.Components
 
 				Gtk.TreeIter it = currentIter;
 				while (store.IterParent (out it, it)) {
-					object data = store.GetValue (it, MonoDevelopTreeView.DataItemColumn);
+					object data = store.GetValue (it, ExtensibleTreeView.DataItemColumn);
 					if (type.IsInstanceOfType (data))
 						return data;
 				}
@@ -1984,44 +1984,44 @@ namespace MonoDevelop.Ide.Gui.Components
 			protected virtual void EnsureFilled ()
 			{
 				AssertIsValid ();
-				if (!(bool) store.GetValue (currentIter, MonoDevelopTreeView.FilledColumn))
+				if (!(bool) store.GetValue (currentIter, ExtensibleTreeView.FilledColumn))
 					new TreeBuilder (pad, currentIter).FillNode ();
 			}
 			
 			public bool Filled {
 				get {
 					AssertIsValid ();
-					return (bool) store.GetValue (currentIter, MonoDevelopTreeView.FilledColumn);
+					return (bool) store.GetValue (currentIter, ExtensibleTreeView.FilledColumn);
 				}
 			}
 		}
 		
 		internal class TreeBuilder: TreeNodeNavigator, ITreeBuilder
 		{
-			public TreeBuilder (MonoDevelopTreeView pad) : base (pad)
+			public TreeBuilder (ExtensibleTreeView pad) : base (pad)
 			{
 			}
 
-			public TreeBuilder (MonoDevelopTreeView pad, Gtk.TreeIter iter): base (pad, iter)
+			public TreeBuilder (ExtensibleTreeView pad, Gtk.TreeIter iter): base (pad, iter)
 			{
 			}
 			
 			protected override void EnsureFilled ()
 			{
-				if (!(bool) store.GetValue (currentIter, MonoDevelopTreeView.FilledColumn))
+				if (!(bool) store.GetValue (currentIter, ExtensibleTreeView.FilledColumn))
 					FillNode ();
 			}
 			
 			public bool FillNode ()
 			{
-				store.SetValue (currentIter, MonoDevelopTreeView.FilledColumn, true);
+				store.SetValue (currentIter, ExtensibleTreeView.FilledColumn, true);
 				
 				Gtk.TreeIter child;
 				if (store.IterChildren (out child, currentIter))
 					store.Remove (ref child);
 				
-				NodeBuilder[] chain = (NodeBuilder[]) store.GetValue (currentIter, MonoDevelopTreeView.BuilderChainColumn);
-				object dataObject = store.GetValue (currentIter, MonoDevelopTreeView.DataItemColumn);
+				NodeBuilder[] chain = (NodeBuilder[]) store.GetValue (currentIter, ExtensibleTreeView.BuilderChainColumn);
+				object dataObject = store.GetValue (currentIter, ExtensibleTreeView.DataItemColumn);
 				CreateChildren (chain, dataObject);
 				return store.IterHasChild (currentIter);
 			}
@@ -2034,8 +2034,8 @@ namespace MonoDevelop.Ide.Gui.Components
 			
 			public void Update ()
 			{
-				object data = store.GetValue (currentIter, MonoDevelopTreeView.DataItemColumn);
-				NodeBuilder[] chain = (NodeBuilder[]) store.GetValue (currentIter, MonoDevelopTreeView.BuilderChainColumn);
+				object data = store.GetValue (currentIter, ExtensibleTreeView.DataItemColumn);
+				NodeBuilder[] chain = (NodeBuilder[]) store.GetValue (currentIter, ExtensibleTreeView.BuilderChainColumn);
 				
 				NodeAttributes ats = GetAttributes (chain, data);
 				UpdateNode (chain, ats, data);
@@ -2046,24 +2046,24 @@ namespace MonoDevelop.Ide.Gui.Components
 				Update ();
 				RemoveChildren (currentIter);
 
-				object data = store.GetValue (currentIter, MonoDevelopTreeView.DataItemColumn);
-				NodeBuilder[] chain = (NodeBuilder[]) store.GetValue (currentIter, MonoDevelopTreeView.BuilderChainColumn);
+				object data = store.GetValue (currentIter, ExtensibleTreeView.DataItemColumn);
+				NodeBuilder[] chain = (NodeBuilder[]) store.GetValue (currentIter, ExtensibleTreeView.BuilderChainColumn);
 
 				if (!HasChildNodes (chain, data))
 					FillNode ();
 				else {
 					RemoveChildren (currentIter);
 					store.AppendNode (currentIter);	// Dummy node
-					store.SetValue (currentIter, MonoDevelopTreeView.FilledColumn, false);
+					store.SetValue (currentIter, ExtensibleTreeView.FilledColumn, false);
 				}
 			}
 			
 			public void UpdateChildren ()
 			{
-				object data = store.GetValue (currentIter, MonoDevelopTreeView.DataItemColumn);
-				NodeBuilder[] chain = (NodeBuilder[]) store.GetValue (currentIter, MonoDevelopTreeView.BuilderChainColumn);
+				object data = store.GetValue (currentIter, ExtensibleTreeView.DataItemColumn);
+				NodeBuilder[] chain = (NodeBuilder[]) store.GetValue (currentIter, ExtensibleTreeView.BuilderChainColumn);
 				
-				if (!(bool) store.GetValue (currentIter, MonoDevelopTreeView.FilledColumn)) {
+				if (!(bool) store.GetValue (currentIter, ExtensibleTreeView.FilledColumn)) {
 					if (!HasChildNodes (chain, data))
 						FillNode ();
 					return;
@@ -2078,7 +2078,7 @@ namespace MonoDevelop.Ide.Gui.Components
 				Gtk.TreeIter child;
 				while (store.IterChildren (out child, it)) {
 					RemoveChildren (child);
-					object childData = store.GetValue (child, MonoDevelopTreeView.DataItemColumn);
+					object childData = store.GetValue (child, ExtensibleTreeView.DataItemColumn);
 					if (childData != null)
 						pad.UnregisterNode (childData, child, null);
 					store.Remove (ref child);
@@ -2088,7 +2088,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			public void Remove ()
 			{
 				RemoveChildren (currentIter);
-				object data = store.GetValue (currentIter, MonoDevelopTreeView.DataItemColumn);
+				object data = store.GetValue (currentIter, ExtensibleTreeView.DataItemColumn);
 				pad.UnregisterNode (data, currentIter, null);
 				Gtk.TreeIter it = currentIter;
 				if (store.Remove (ref it) && !it.Equals (Gtk.TreeIter.Zero))
@@ -2169,13 +2169,13 @@ namespace MonoDevelop.Ide.Gui.Components
 				// It is *critical* that we set this first. We will
 				// sort after this call, so we must give as much info
 				// to the sort function as possible.
-				store.SetValue (it, MonoDevelopTreeView.DataItemColumn, dataObject);
-				store.SetValue (it, MonoDevelopTreeView.BuilderChainColumn, chain);
+				store.SetValue (it, ExtensibleTreeView.DataItemColumn, dataObject);
+				store.SetValue (it, ExtensibleTreeView.BuilderChainColumn, chain);
 				
 				UpdateNode (chain, ats, dataObject);
 				
 				bool hasChildren = HasChildNodes (chain, dataObject);
-				store.SetValue (currentIter, MonoDevelopTreeView.FilledColumn, !hasChildren);
+				store.SetValue (currentIter, ExtensibleTreeView.FilledColumn, !hasChildren);
 				
 				if (hasChildren)
 					store.AppendNode (currentIter);	// Dummy node
@@ -2237,9 +2237,9 @@ namespace MonoDevelop.Ide.Gui.Components
 			
 			void SetNodeInfo (Gtk.TreeIter it, NodeAttributes ats, string text, Gdk.Pixbuf icon, Gdk.Pixbuf closedIcon)
 			{
-				store.SetValue (it, MonoDevelopTreeView.TextColumn, text);
-				if (icon != null) store.SetValue (it, MonoDevelopTreeView.OpenIconColumn, icon);
-				if (closedIcon != null) store.SetValue (it, MonoDevelopTreeView.ClosedIconColumn, closedIcon);
+				store.SetValue (it, ExtensibleTreeView.TextColumn, text);
+				if (icon != null) store.SetValue (it, ExtensibleTreeView.OpenIconColumn, icon);
+				if (closedIcon != null) store.SetValue (it, ExtensibleTreeView.ClosedIconColumn, closedIcon);
 				pad.Tree.QueueDraw ();
 			}
 
@@ -2259,20 +2259,20 @@ namespace MonoDevelop.Ide.Gui.Components
 		
 		internal class TreeOptions : Hashtable, ITreeOptions
 		{
-			MonoDevelopTreeView pad;
+			ExtensibleTreeView pad;
 			Gtk.TreeIter iter;
 			
 			public TreeOptions ()
 			{
 			}
 			
-			public TreeOptions (MonoDevelopTreeView pad, Gtk.TreeIter iter)
+			public TreeOptions (ExtensibleTreeView pad, Gtk.TreeIter iter)
 			{
 				this.pad = pad;
 				this.iter = iter;
 			}
 			
-			public MonoDevelopTreeView Pad {
+			public ExtensibleTreeView Pad {
 				get { return pad; }
 				set { pad = value; }
 			}
