@@ -422,18 +422,20 @@ namespace MonoDevelop.Projects.Dom.Database
 		public long InsertCompilationUnit (ICompilationUnit unit, long projectId, string name)
 		{
 			try {
-				connection.Execute ("BEGIN TRANSACTION");
-				long unitId = connection.Execute (String.Format (@"INSERT INTO {0} (Name, ProjectId, ParseTime) VALUES ('{1}', {2}, {3})", CompilationUnitTable, name, projectId, SqliteUtils.ToDbFormat (unit.ParseTime)));
-				foreach (IUsing u in unit.Usings) {
-					foreach (string nsName in u.Namespaces) {
-						connection.Execute (String.Format (@"INSERT INTO {0} (UnitID, Namespace, Region) VALUES ({1}, '{2}', '{3}')", UsingTable, unitId, nsName, u.Region.ToInvariantString ()));
+				lock (connection) {
+					connection.Execute ("BEGIN TRANSACTION");
+					long unitId = connection.Execute (String.Format (@"INSERT INTO {0} (Name, ProjectId, ParseTime) VALUES ('{1}', {2}, {3})", CompilationUnitTable, name, projectId, SqliteUtils.ToDbFormat (unit.ParseTime)));
+					foreach (IUsing u in unit.Usings) {
+						foreach (string nsName in u.Namespaces) {
+							connection.Execute (String.Format (@"INSERT INTO {0} (UnitID, Namespace, Region) VALUES ({1}, '{2}', '{3}')", UsingTable, unitId, nsName, u.Region.ToInvariantString ()));
+						}
 					}
+					foreach (IType type in unit.Types) {
+						DatabaseType.Insert (this, unitId, type);
+					}
+					connection.Execute ("END TRANSACTION");
+					return unitId;
 				}
-				foreach (IType type in unit.Types) {
-					DatabaseType.Insert (this, unitId, type);
-				}
-				connection.Execute ("END TRANSACTION");
-				return unitId;
 			} catch (Exception e) {
 				try {
 					connection.Execute ("ROLLBACK");
