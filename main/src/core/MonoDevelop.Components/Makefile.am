@@ -56,13 +56,16 @@ FILES =  \
 	MonoDevelop.Components.Commands/CommandToolbar.cs \
 	MonoDevelop.Components.Commands/CommandToolButton.cs \
 	MonoDevelop.Components.Commands/CustomCommand.cs \
+	MonoDevelop.Components.Commands/CustomCommandUpdaterAttribute.cs \
 	MonoDevelop.Components.Commands/CustomItem.cs \
 	MonoDevelop.Components.Commands/CustomMenuItem.cs \
 	MonoDevelop.Components.Commands/ICommandDelegatorRouter.cs \
 	MonoDevelop.Components.Commands/ICommandMenuItem.cs \
 	MonoDevelop.Components.Commands/ICommandRouter.cs \
 	MonoDevelop.Components.Commands/ICommandTargetVisitor.cs \
+	MonoDevelop.Components.Commands/ICommandUpdateHandler.cs \
 	MonoDevelop.Components.Commands/ICommandUserItem.cs \
+	MonoDevelop.Components.Commands/IMultiCastCommandRouter.cs \
 	MonoDevelop.Components.Commands/KeyBindingManager.cs \
 	MonoDevelop.Components.Commands/KeyBindingService.cs \
 	MonoDevelop.Components.Commands/LinkCommandEntry.cs \

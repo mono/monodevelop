@@ -1,4 +1,4 @@
-<Project name="MonoDevelop.Components" fileversion="2.0" language="C#" clr-version="Net_2_0" ctype="DotNetProject">
+<Project name="MonoDevelop.Components" fileversion="2.0" language="C#" UseParentDirectoryAsNamespace="True" clr-version="Net_2_0" ctype="DotNetProject">
   <Configurations active="Debug">
     <Configuration name="Debug" ctype="DotNetProjectConfiguration">
       <Output directory="../../../build/bin" assembly="MonoDevelop.Components" />
@@ -107,6 +107,9 @@
     <File name="MonoDevelop.Components/MenuButton.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Components/FixedWidthWrapLabel.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Components/InvisibleFrame.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Components.Commands/IMultiCastCommandRouter.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Components.Commands/ICommandUpdateHandler.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Components.Commands/CustomCommandUpdaterAttribute.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
@@ -136,8 +139,5 @@
     <AsmRefVar Sync="True" Name="REFS" Prefix="-r:" />
     <ProjectRefVar Sync="True" Name="REFS" Prefix="-r:" />
   </MonoDevelop.Autotools.MakefileInfo>
-  <MonoDevelop.Gettext.TranslationInfo />
-  <DeploymentInformation strategy="File">
-    <excludeFiles />
-  </DeploymentInformation>
+  <DeploymentInformation strategy="File" />
 </Project>

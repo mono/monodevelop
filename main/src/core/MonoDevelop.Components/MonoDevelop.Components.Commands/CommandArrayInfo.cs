@@ -37,10 +37,16 @@ namespace MonoDevelop.Components.Commands
 		List<CommandInfo> list = new List<CommandInfo> ();
 		CommandInfo defaultInfo;
 		bool bypass;
+		internal object UpdateHandlerData;
 		
 		internal CommandArrayInfo (CommandInfo defaultInfo)
 		{
 			this.defaultInfo = defaultInfo;
+		}
+
+		public void Clear ()
+		{
+			list.Clear ();
 		}
 		
 		public void Insert (int index, CommandInfoSet infoSet)
