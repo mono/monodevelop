@@ -254,7 +254,7 @@ namespace MonoDevelop.SourceEditor
 				if (startLine == null)
 					continue;
 				int startOffset = startLine.Offset + startLine.EditableLength;
-				int endOffset   = this.TextEditor.Document.LocationToOffset (method.BodyRegion.End.Line - 1,  method.BodyRegion.End.Column);
+				int endOffset   = this.TextEditor.Document.LocationToOffset (method.BodyRegion.End.Line - 1,  method.BodyRegion.End.Column - 1);
 				foldSegments.Add (new FoldSegment ("...", startOffset, endOffset - startOffset, FoldingType.TypeMember));
 			}
 			
@@ -265,8 +265,8 @@ namespace MonoDevelop.SourceEditor
 				if (startLine == null)
 					continue;
 				
-				int startOffset = startLine.Offset + startLine.EditableLength;
-				int endOffset   = this.TextEditor.Document.LocationToOffset (property.BodyRegion.End.Line - 1,  property.BodyRegion.End.Column);
+				int startOffset = this.TextEditor.Document.LocationToOffset (property.BodyRegion.Start.Line - 1,  property.BodyRegion.Start.Column - 1);
+				int endOffset   = this.TextEditor.Document.LocationToOffset (property.BodyRegion.End.Line - 1,  property.BodyRegion.End.Column - 1);
 				foldSegments.Add (new FoldSegment ("...", startOffset, endOffset - startOffset, FoldingType.TypeMember));
 			}
 		}

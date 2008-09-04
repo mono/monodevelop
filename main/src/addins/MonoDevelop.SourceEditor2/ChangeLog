@@ -1,3 +1,8 @@
+2008-09-04  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.SourceEditor/SourceEditorWidget.cs: Some folding location
+	  fixes.
+
 2008-08-20  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.SourceEditor/SourceEditorWidget.cs,
