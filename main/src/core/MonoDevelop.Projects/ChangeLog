@@ -1,5 +1,10 @@
 2008-09-04  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.Projects.Dom.Database/CodeCompletionDatabase.cs: fixed
+	  possible null ref.
+
+2008-09-04  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.Projects.Dom.Database/HyenaSqliteCommand.cs,
 	  MonoDevelop.Projects.Dom.Database/CodeCompletionDatabase.cs: Added
 	  a lock for insert compilation unit.
