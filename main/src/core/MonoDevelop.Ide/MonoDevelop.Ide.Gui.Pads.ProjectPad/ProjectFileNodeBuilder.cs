@@ -29,6 +29,7 @@
 using System;
 using System.IO;
 using System.Collections;
+using System.Collections.Generic;
 
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
@@ -38,6 +39,7 @@ using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Codons;
+using MonoDevelop.Core.Collections;
 
 namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 {
@@ -177,11 +179,14 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		}
 		
 		[CommandHandler (FileCommands.OpenContainingFolder)]
+		[AllowMultiSelection]
 		public void OnOpenFolder ()
 		{
-			ProjectFile file = (ProjectFile) CurrentNode.DataItem;
-			string path = System.IO.Path.GetDirectoryName (file.FilePath);
-			System.Diagnostics.Process.Start ("file://" + path);
+			foreach (ITreeNavigator node in CurrentNodes) {
+				ProjectFile file = (ProjectFile) node.DataItem;
+				string path = System.IO.Path.GetDirectoryName (file.FilePath);
+				System.Diagnostics.Process.Start ("file://" + path);
+			}
 		}
 		
 		public override bool CanDeleteItem ()
@@ -190,21 +195,38 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		}
 		
 		[CommandHandler (EditCommands.Delete)]
+		[AllowMultiSelection]
 		public override void DeleteItem ()
 		{
-			ProjectFile file = (ProjectFile) CurrentNode.DataItem;
-			Project project = CurrentNode.GetParentDataItem (typeof(Project), false) as Project;
+			bool hasChildren = false;
+			List<ProjectFile> files = new List<ProjectFile> ();
+			Set<SolutionEntityItem> projects = new Set<SolutionEntityItem> ();
+			foreach (ITreeNavigator node in CurrentNodes) {
+				ProjectFile pf = (ProjectFile) node.DataItem;
+				projects.Add (pf.Project);
+				if (pf.HasChildren)
+					hasChildren = true;
+				files.Add (pf);
+			}
+			
 			AlertButton removeFromProject = new AlertButton (GettextCatalog.GetString ("_Remove from Project"), Gtk.Stock.Remove);
 			
 			string question, secondaryText;
-			if (file.HasChildren) {
-				question = GettextCatalog.GetString ("Are you sure you want to remove the file {0} and " + 
-				                                     "its CodeBehind children from project {1}?",
-				                                     Path.GetFileName (file.Name), project.Name);
+			if (hasChildren) {
+				if (files.Count == 1)
+					question = GettextCatalog.GetString ("Are you sure you want to remove the file {0} and " + 
+					                                     "its code-behind children from project {1}?",
+					                                     Path.GetFileName (files[0].Name), files[0].Project.Name);
+				else
+					question = GettextCatalog.GetString ("Are you sure you want to remove the selected files and " + 
+					                                     "their code-behind children from the project?");
 				secondaryText = GettextCatalog.GetString ("Delete physically removes the files from disc.");
 			} else {
-				question = GettextCatalog.GetString ("Are you sure you want to remove file {0} from project {1}?",
-				                                     Path.GetFileName (file.Name), project.Name);
+				if (files.Count == 1)
+					question = GettextCatalog.GetString ("Are you sure you want to remove file {0} from project {1}?",
+					                                     Path.GetFileName (files[0].Name), files[0].Project.Name);
+				else
+					question = GettextCatalog.GetString ("Are you sure you want to remove the selected files from the project?");
 				secondaryText = GettextCatalog.GetString ("Delete physically removes the file from disc.");
 			}
 			
@@ -213,78 +235,99 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			if (result != removeFromProject && result != AlertButton.Delete) 
 				return;
 			   
-			if (!file.IsExternalToProject) {
-				ProjectFile[] inFolder = project.Files.GetFilesInPath (Path.GetDirectoryName (file.Name));
-				if (inFolder.Length == 1 && inFolder [0] == file) {
-					// This is the last project file in the folder. Make sure we keep
-					// a reference to the folder, so it is not deleted from the tree.
-					ProjectFile folderFile = new ProjectFile (Path.GetDirectoryName (file.Name));
-					folderFile.Subtype = Subtype.Directory;
-					project.Files.Add (folderFile);
+			foreach (ProjectFile file in files) {
+				Project project = file.Project;
+				if (!file.IsExternalToProject) {
+					ProjectFile[] inFolder = project.Files.GetFilesInPath (Path.GetDirectoryName (file.Name));
+					if (inFolder.Length == 1 && inFolder [0] == file) {
+						// This is the last project file in the folder. Make sure we keep
+						// a reference to the folder, so it is not deleted from the tree.
+						ProjectFile folderFile = new ProjectFile (Path.GetDirectoryName (file.Name));
+						folderFile.Subtype = Subtype.Directory;
+						project.Files.Add (folderFile);
+					}
 				}
-			}
-			
-			if (file.HasChildren) {
-				foreach (ProjectFile f in file.DependentChildren) {
-					project.Files.Remove (f);
-					if (result == AlertButton.Delete)
-						FileService.DeleteFile (f.Name);
+				
+				if (file.HasChildren) {
+					foreach (ProjectFile f in file.DependentChildren) {
+						project.Files.Remove (f);
+						if (result == AlertButton.Delete)
+							FileService.DeleteFile (f.Name);
+					}
 				}
-			}
 			
-			project.Files.Remove (file);
-			if (result == AlertButton.Delete)
-				FileService.DeleteFile (file.Name);
-		
-			IdeApp.ProjectOperations.Save (project);				
+				project.Files.Remove (file);
+				if (result == AlertButton.Delete)
+					FileService.DeleteFile (file.Name);
+			}
+
+			IdeApp.ProjectOperations.Save (projects);
 		}
 		
 		[CommandUpdateHandler (EditCommands.Delete)]
 		public void UpdateRemoveItem (CommandInfo info)
 		{
 			//don't allow removing children from parents. The parent can be removed and will remove the whole group.
-			info.Enabled = CanDeleteItem ();
-			
+			info.Enabled = CanDeleteMultipleItems ();
 			info.Text = GettextCatalog.GetString ("Remove");
+		}
+		
+		void UpdateBuildActionToggle (CommandInfo info, BuildAction action)
+		{
+			int val = -1;
+			foreach (ITreeNavigator node in CurrentNodes) {
+				ProjectFile file = (ProjectFile) node.DataItem;
+				if (val == -1)
+					val = (int) file.BuildAction;
+				else if ((int) file.BuildAction != val) {
+					val = -2;
+					break;
+				}
+			}
+			info.Checked = ((BuildAction) val) == action;
+			info.CheckedInconsistent = val == -2;
+		}
+
+		void BuildActionToggle (BuildAction action)
+		{
+			ProjectFile firstFile = null;
+			Set<SolutionEntityItem> projects = new Set<SolutionEntityItem> ();
+			foreach (ITreeNavigator node in CurrentNodes) {
+				ProjectFile finfo = (ProjectFile) node.DataItem;
+				if (firstFile == null) {
+					finfo.BuildAction = (finfo.BuildAction == action) ? BuildAction.Nothing : action;
+					firstFile = finfo;
+				} else
+					finfo.BuildAction = firstFile.BuildAction;
+				projects.Add (finfo.Project);
+			}
+			IdeApp.ProjectOperations.Save (projects);
 		}
 		
 		[CommandUpdateHandler (ProjectCommands.IncludeInBuild)]
 		public void OnUpdateIncludeInBuild (CommandInfo info)
 		{
-			ProjectFile file = (ProjectFile) CurrentNode.DataItem;
-			info.Checked = (file.BuildAction == BuildAction.Compile);
+			UpdateBuildActionToggle (info, BuildAction.Compile);
 		}
 		
 		[CommandHandler (ProjectCommands.IncludeInBuild)]
+		[AllowMultiSelection]
 		public void OnIncludeInBuild ()
 		{
-			ProjectFile finfo = (ProjectFile) CurrentNode.DataItem;
-			if (finfo.BuildAction == BuildAction.Compile) {
-				finfo.BuildAction = BuildAction.Nothing;
-			} else {
-				finfo.BuildAction = BuildAction.Compile;
-			}
-			IdeApp.ProjectOperations.Save (finfo.Project);
+			BuildActionToggle (BuildAction.Compile);
 		}
 		
 		[CommandUpdateHandler (ProjectCommands.IncludeInDeploy)]
 		public void OnUpdateIncludeInDeploy (CommandInfo info)
 		{
-			ProjectFile finfo = (ProjectFile) CurrentNode.DataItem;
-			info.Checked = finfo.BuildAction == BuildAction.FileCopy;
+			UpdateBuildActionToggle (info, BuildAction.FileCopy);
 		}
 		
 		[CommandHandler (ProjectCommands.IncludeInDeploy)]
+		[AllowMultiSelection]
 		public void OnIncludeInDeploy ()
 		{
-			ProjectFile finfo = (ProjectFile) CurrentNode.DataItem;
-
-			if (finfo.BuildAction == BuildAction.FileCopy) {
-				finfo.BuildAction = BuildAction.Nothing;
-			} else {
-				finfo.BuildAction = BuildAction.FileCopy;
-			}
-			IdeApp.ProjectOperations.Save (finfo.Project);
+			BuildActionToggle (BuildAction.FileCopy);
 		}
 		
 		[CommandHandler (ViewCommands.OpenWithList)]

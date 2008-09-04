@@ -32,9 +32,10 @@ using MonoDevelop.Components.Commands;
 
 namespace MonoDevelop.Ide.Gui.Pads
 {
+	[MultiSelectionNodeHandler]
 	public class NodeCommandHandler: ICommandRouter
 	{
-		ITreeNavigator currentNode;
+		ITreeNavigator[] currentNodes;
 		MonoDevelopTreeView tree;
 		object nextTarget;
 		
@@ -45,7 +46,12 @@ namespace MonoDevelop.Ide.Gui.Pads
 		
 		internal void SetCurrentNode (ITreeNavigator currentNode)
 		{
-			this.currentNode = currentNode;
+			this.currentNodes = new ITreeNavigator [] { currentNode };
+		}
+		
+		internal void SetCurrentNodes (ITreeNavigator[] currentNodes)
+		{
+			this.currentNodes = currentNodes;
 		}
 		
 		internal void SetNextTarget (object nextTarget)
@@ -58,8 +64,12 @@ namespace MonoDevelop.Ide.Gui.Pads
 			return nextTarget;
 		}
 		
+		internal protected ITreeNavigator[] CurrentNodes {
+			get { return currentNodes; }
+		}
+		
 		protected ITreeNavigator CurrentNode {
-			get { return currentNode; }
+			get { return currentNodes [0]; }
 		}
 		
 		protected MonoDevelopTreeView Tree {
@@ -72,6 +82,24 @@ namespace MonoDevelop.Ide.Gui.Pads
 		
 		public virtual void ActivateItem ()
 		{
+		}
+		
+		public virtual void ActivateMultipleItems ()
+		{
+			if (currentNodes.Length == 1)
+				ActivateItem ();
+			else {
+				ITreeNavigator[] nodes = currentNodes;
+				try {
+					currentNodes = new ITreeNavigator [1];
+					foreach (ITreeNavigator nod in nodes) {
+						currentNodes [0] = nod;
+						ActivateItem ();
+					}
+				} finally {
+					currentNodes = nodes;
+				}
+			}
 		}
 		
 		public virtual void OnItemSelected ()
@@ -95,8 +123,46 @@ namespace MonoDevelop.Ide.Gui.Pads
 			return GetType().GetMethod ("DeleteItem").DeclaringType != typeof(NodeCommandHandler);
 		}
 		
+		public virtual bool CanDeleteMultipleItems ()
+		{
+			if (currentNodes.Length == 1)
+				return CanDeleteItem ();
+			else {
+				ITreeNavigator[] nodes = currentNodes;
+				try {
+					currentNodes = new ITreeNavigator [1];
+					foreach (ITreeNavigator nod in nodes) {
+						currentNodes [0] = nod;
+						if (!CanDeleteItem ())
+							return false;
+					}
+				} finally {
+					currentNodes = nodes;
+				}
+				return true;
+			}
+		}
+		
 		public virtual void DeleteItem ()
 		{
+		}
+		
+		public virtual void DeleteMultipleItems ()
+		{
+			if (currentNodes.Length == 1)
+				DeleteItem ();
+			else {
+				ITreeNavigator[] nodes = currentNodes;
+				try {
+					currentNodes = new ITreeNavigator [1];
+					foreach (ITreeNavigator nod in nodes) {
+						currentNodes [0] = nod;
+						DeleteItem ();
+					}
+				} finally {
+					currentNodes = nodes;
+				}
+			}
 		}
 		
 		public virtual DragOperation CanDragNode ()
@@ -109,8 +175,72 @@ namespace MonoDevelop.Ide.Gui.Pads
 			return false;
 		}
 		
-		public virtual void OnNodeDrop (object dataObject, DragOperation operation)
+		public virtual bool CanDropMultipleNodes (object[] dataObjects, DragOperation operation)
+		{
+			foreach (object ob in dataObjects)
+				if (!CanDropNode (ob, operation))
+					return false;
+			return true;
+		}
+		
+		public virtual void OnNodeDrop (object dataObjects, DragOperation operation)
 		{
 		}
+		
+		public virtual void OnMultipleNodeDrop (object[] dataObjects, DragOperation operation)
+		{
+			foreach (object ob in dataObjects)
+				OnNodeDrop (ob, operation);
+		}
+	}
+
+	internal class MultiSelectionNodeHandlerAttribute: CustomCommandUpdaterAttribute
+	{
+		// If multiple nodes are selected and the method does not have the AllowMultiSelectionAttribute
+		// attribute, disable the command.
+		
+		protected override void CommandUpdate (object target, CommandArrayInfo cinfo)
+		{
+			NodeCommandHandler nc = (NodeCommandHandler) target;
+			base.CommandUpdate (target, cinfo);
+			if (nc.CurrentNodes.Length > 1) {
+				bool allowMultiArray = false;
+				ICommandArrayUpdateHandler h = ((ICommandArrayUpdateHandler)this).Next;
+				while (h != null) {
+					if (h is AllowMultiSelectionAttribute) {
+						allowMultiArray = true;
+						break;
+					}
+					h = h.Next;
+				}
+				if (!allowMultiArray)
+					cinfo.Clear ();
+			}
+		}
+		
+		protected override void CommandUpdate (object target, CommandInfo cinfo)
+		{
+			NodeCommandHandler nc = (NodeCommandHandler) target;
+			
+			base.CommandUpdate (target, cinfo);
+			
+			if (nc.CurrentNodes.Length > 1) {
+				bool allowMulti = false;
+				ICommandUpdateHandler h = ((ICommandUpdateHandler)this).Next;
+				while (h != null) {
+					if (h is AllowMultiSelectionAttribute) {
+						allowMulti = true;
+						break;
+					}
+					h = h.Next;
+				}
+				if (!allowMulti)
+					cinfo.Enabled = false;
+			}
+		}
+	}
+
+	public class AllowMultiSelectionAttribute: CustomCommandUpdaterAttribute
+	{
 	}
 }

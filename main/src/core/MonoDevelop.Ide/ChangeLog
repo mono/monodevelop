@@ -1,3 +1,17 @@
+2008-09-04  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Debugging/DebuggingService.cs: Added proper license
+	  info.
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectReferenceNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ProjectPad/SolutionFolderNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads/NodeCommandHandler.cs,
+	  MonoDevelop.Ide.Gui/MonoDevelopTreeView.cs: Some initial support
+	  for multi-selection in the solution tree.
+	* MonoDevelop.Ide.Gui/ProjectOperations.cs: Added method for saving
+	  several items at once. Switch to Debug layout when starting a debug
+	  session.
+
 2008-08-22  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Debugging/DebuggingService.cs,

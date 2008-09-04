@@ -160,12 +160,11 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			IdeApp.ProjectOperations.Save (folder.ParentSolution);
 		}
 			
-		public override void ActivateItem ()
+		public override void ActivateMultipleItems ()
 		{
 			SolutionFolder folder = CurrentNode.DataItem as SolutionFolder;
 			IdeApp.ProjectOperations.ShowOptions (folder);
 		}
-
 		
 		public override void DeleteItem ()
 		{
@@ -214,19 +213,30 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		}
 		
 		[CommandHandler (ProjectCommands.Reload)]
+		[AllowMultiSelection]
 		public void OnReload ()
 		{
-			SolutionFolder folder = (SolutionFolder) CurrentNode.DataItem;
 			using (IProgressMonitor m = IdeApp.Workbench.ProgressMonitors.GetLoadProgressMonitor (true)) {
-				folder.ParentFolder.ReloadItem (m, folder);
+				m.BeginTask (null, CurrentNodes.Length);
+				foreach (ITreeNavigator node in CurrentNodes) {
+					SolutionFolder folder = (SolutionFolder) node.DataItem;
+					folder.ParentFolder.ReloadItem (m, folder);
+					m.Step (1);
+				}
+				m.EndTask ();
 			}
 		}
 		
 		[CommandUpdateHandler (ProjectCommands.Reload)]
 		public void OnUpdateReload (CommandInfo info)
 		{
-			SolutionFolder folder = (SolutionFolder) CurrentNode.DataItem;
-			info.Visible = (folder.ParentFolder != null) && folder.NeedsReload;
+			foreach (ITreeNavigator node in CurrentNodes) {
+				SolutionFolder folder = (SolutionFolder) CurrentNode.DataItem;
+				if (folder.ParentFolder == null || !folder.NeedsReload) {
+					info.Visible = false;
+					return;
+				}
+			}
 		}
 		
 		[CommandHandler (FileCommands.OpenContainingFolder)]

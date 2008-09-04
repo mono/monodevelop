@@ -29,6 +29,7 @@
 using System;
 using System.IO;
 using System.Collections;
+using System.Collections.Generic;
 
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
@@ -83,43 +84,65 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 	
 	public class ProjectReferenceNodeCommandHandler: NodeCommandHandler
 	{
-
 		public override void ActivateItem ()
 		{
 			ProjectReference pref = CurrentNode.DataItem as ProjectReference;
-			if (pref == null)
-				return;
-			foreach (string fileName in pref.GetReferencedFileNames (IdeApp.Workspace.ActiveConfiguration)) {
-				IdeApp.Workbench.OpenDocument (fileName);
+			if (pref != null) {
+				foreach (string fileName in pref.GetReferencedFileNames (IdeApp.Workspace.ActiveConfiguration))
+					IdeApp.Workbench.OpenDocument (fileName);
 			}
 		}
 				
-		public override void DeleteItem ()
+		public override void DeleteMultipleItems ()
 		{
-			ProjectReference pref = (ProjectReference) CurrentNode.DataItem;
-			DotNetProject project = CurrentNode.GetParentDataItem (typeof(DotNetProject), false) as DotNetProject;
-			project.References.Remove (pref);
-			IdeApp.ProjectOperations.Save (project);
+			Dictionary<Project,Project> projects = new Dictionary<Project,Project> ();
+			foreach (ITreeNavigator nav in CurrentNodes) {
+				ProjectReference pref = (ProjectReference) nav.DataItem;
+				DotNetProject project = nav.GetParentDataItem (typeof(DotNetProject), false) as DotNetProject;
+				project.References.Remove (pref);
+				projects [project] = project;
+			}
+			foreach (Project p in projects.Values)
+				IdeApp.ProjectOperations.Save (p);
 		}
 		
 		[CommandHandler (ProjectCommands.LocalCopyReference)]
+		[AllowMultiSelection]
 		public void ChangeLocalReference ()
 		{
-			ProjectReference pref = (ProjectReference) CurrentNode.DataItem;
-			pref.LocalCopy = !pref.LocalCopy;
-			Project project = CurrentNode.GetParentDataItem (typeof(Project), false) as Project;
-			IdeApp.ProjectOperations.Save (project);
+			Dictionary<Project,Project> projects = new Dictionary<Project,Project> ();
+			ProjectReference firstRef = null;
+			foreach (ITreeNavigator node in CurrentNodes) {
+				ProjectReference pref = (ProjectReference) node.DataItem;
+				if (firstRef == null) {
+					firstRef = pref;
+					pref.LocalCopy = !pref.LocalCopy;
+				} else
+					pref.LocalCopy = firstRef.LocalCopy;
+				Project project = node.GetParentDataItem (typeof(Project), false) as Project;
+				projects [project] = project;
+			}
+			foreach (Project p in projects.Values)
+				IdeApp.ProjectOperations.Save (p);
 		}
 		
 		[CommandUpdateHandler (ProjectCommands.LocalCopyReference)]
 		public void UpdateLocalReference (CommandInfo info)
 		{
-			ProjectReference pref = (ProjectReference) CurrentNode.DataItem;
-			if (pref.ReferenceType != ReferenceType.Gac)
-				info.Checked = pref.LocalCopy;
-			else {
-				info.Checked = false;
-				info.Enabled = false;
+			ProjectReference lastRef = null;
+			foreach (ITreeNavigator node in CurrentNodes) {
+				ProjectReference pref = (ProjectReference) node.DataItem;
+				if (pref.ReferenceType != ReferenceType.Gac) {
+					if (lastRef == null || lastRef.LocalCopy == pref.LocalCopy) {
+						lastRef = pref;
+						info.Checked = pref.LocalCopy;
+					} else
+						info.CheckedInconsistent = true;
+				}
+				else {
+					info.Checked = false;
+					info.Enabled = false;
+				}
 			}
 		}
 		
