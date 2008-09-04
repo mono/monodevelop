@@ -96,7 +96,7 @@ namespace Hyena.Data.Sqlite
             execution_exception = null;
             result = null;
 //			if (TRACE)
-//				System.Console.WriteLine(CurrentSqlText);
+			System.Console.WriteLine("cmd:" + CurrentSqlText);
             SqliteCommand sql_command = new SqliteCommand (CurrentSqlText);
             sql_command.Connection = connection;
 
