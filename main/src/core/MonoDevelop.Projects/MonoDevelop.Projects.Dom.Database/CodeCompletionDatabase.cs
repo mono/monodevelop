@@ -426,8 +426,10 @@ namespace MonoDevelop.Projects.Dom.Database
 					connection.Execute ("BEGIN TRANSACTION");
 					long unitId = connection.Execute (String.Format (@"INSERT INTO {0} (Name, ProjectId, ParseTime) VALUES ('{1}', {2}, {3})", CompilationUnitTable, name, projectId, SqliteUtils.ToDbFormat (unit.ParseTime)));
 					foreach (IUsing u in unit.Usings) {
-						foreach (string nsName in u.Namespaces) {
-							connection.Execute (String.Format (@"INSERT INTO {0} (UnitID, Namespace, Region) VALUES ({1}, '{2}', '{3}')", UsingTable, unitId, nsName, u.Region != null ? u.Region.ToInvariantString () : ""));
+						if (u.Namespaces != null) {
+							foreach (string nsName in u.Namespaces) {
+								connection.Execute (String.Format (@"INSERT INTO {0} (UnitID, Namespace, Region) VALUES ({1}, '{2}', '{3}')", UsingTable, unitId, nsName, u.Region != null ? u.Region.ToInvariantString () : ""));
+							}
 						}
 					}
 					foreach (IType type in unit.Types) {
