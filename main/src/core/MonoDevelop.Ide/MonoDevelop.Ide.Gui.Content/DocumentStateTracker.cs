@@ -38,7 +38,6 @@ namespace MonoDevelop.Ide.Gui.Content
 	{
 		T currentEngine;
 		Stack<T> cachedEngines = new Stack<T> ();
-		Stack<Indent> indents = new Stack<Indent> ();
 		
 		MonoDevelop.Ide.Gui.TextEditor editor;
 		

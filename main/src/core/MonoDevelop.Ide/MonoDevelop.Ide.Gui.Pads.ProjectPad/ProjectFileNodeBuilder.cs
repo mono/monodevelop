@@ -183,10 +183,12 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		[AllowMultiSelection]
 		public void OnOpenFolder ()
 		{
+			Set<string> paths = new Set<string> ();
 			foreach (ITreeNavigator node in CurrentNodes) {
 				ProjectFile file = (ProjectFile) node.DataItem;
 				string path = System.IO.Path.GetDirectoryName (file.FilePath);
-				System.Diagnostics.Process.Start ("file://" + path);
+				if (paths.Add (path))
+					System.Diagnostics.Process.Start ("file://" + path);
 			}
 		}
 		
@@ -197,7 +199,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		
 		[CommandHandler (EditCommands.Delete)]
 		[AllowMultiSelection]
-		public override void DeleteItem ()
+		public override void DeleteMultipleItems ()
 		{
 			bool hasChildren = false;
 			List<ProjectFile> files = new List<ProjectFile> ();
@@ -268,6 +270,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		[CommandUpdateHandler (EditCommands.Delete)]
 		public void UpdateRemoveItem (CommandInfo info)
 		{
+			Console.WriteLine ("pp: " + info.Enabled);
 			//don't allow removing children from parents. The parent can be removed and will remove the whole group.
 			info.Enabled = CanDeleteMultipleItems ();
 			info.Text = GettextCatalog.GetString ("Remove");

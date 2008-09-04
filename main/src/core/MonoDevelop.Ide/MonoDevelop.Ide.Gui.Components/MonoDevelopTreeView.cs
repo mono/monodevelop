@@ -480,16 +480,11 @@ namespace MonoDevelop.Ide.Gui.Components
 
 			public bool RestorePositions ()
 			{
-				try {
-					savedPos = new NodePosition [Nodes.Count];
-					for (int n=0; n<Nodes.Count; n++) {
-						if (store.IterIsValid (savedPos[n]._iter))
-							Nodes [n].MoveToPosition (savedPos [n]);
-						else
-							return false;
-					}
-				} finally {
-					savedPos = null;
+				for (int n=0; n<Nodes.Count; n++) {
+					if (store.IterIsValid (savedPos[n]._iter))
+						Nodes [n].MoveToPosition (savedPos [n]);
+					else
+						return false;
 				}
 				return true;
 			}

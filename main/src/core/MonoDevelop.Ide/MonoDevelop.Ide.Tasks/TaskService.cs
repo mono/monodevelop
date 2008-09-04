@@ -39,7 +39,6 @@ namespace MonoDevelop.Ide.Tasks
 		Dictionary<TaskType, int> taskCount = new Dictionary<TaskType, int> ();
 		Dictionary<string, TaskPriority> priorities = new Dictionary<string, TaskPriority> ();
 		Dictionary<object,List<UserTask>> userTasks = new Dictionary<object,List<UserTask>> ();
-		string compilerOutput = String.Empty;
 		
 		public TaskService ()
 		{
@@ -278,7 +277,6 @@ namespace MonoDevelop.Ide.Tasks
 		
 		public int TaskCount {
 			get {
-				int c = 0;
 				return tasks.Count - GetCount (TaskType.Comment);
 			}
 		}
@@ -379,7 +377,6 @@ namespace MonoDevelop.Ide.Tasks
 			if (owner is SolutionItem)
 				owner = ((SolutionItem)owner).ParentSolution;
 			
-			List<Task> tlist;
 			tasks.Add (task);
 			int count;
 			if (!taskCount.TryGetValue (task.TaskType, out count))

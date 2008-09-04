@@ -31,6 +31,7 @@ using System.Collections.Generic;
 
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Collections;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core.Gui;
@@ -45,7 +46,6 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		EventHandler<WorkspaceItemChangeEventArgs> combineEntryAdded;
 		EventHandler<WorkspaceItemChangeEventArgs> combineEntryRemoved;
 		EventHandler<WorkspaceItemRenamedEventArgs> combineNameChanged;
-		EventHandler startupChanged;
 		
 		public WorkspaceNodeBuilder ()
 		{
@@ -173,24 +173,28 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			return false;
 		}
 		
-		public override void OnNodeDrop (object dataObject, DragOperation operation)
+		public override void OnMultipleNodeDrop (object[] dataObjects, DragOperation operation)
 		{
-			Workspace ws = (Workspace) CurrentNode.DataItem;
-			WorkspaceItem it = (WorkspaceItem) dataObject;
-			
-			if (!MessageService.Confirm (GettextCatalog.GetString ("Are you sure you want to move the item '{0}' to the workspace '{1}'?", it.Name, ws.Name), AlertButton.Move))
-				return;
-			
-			if (it.ParentWorkspace != null) {
-				it.ParentWorkspace.Items.Remove (it);
-				ws.Items.Add (it);
-				IdeApp.ProjectOperations.Save (it.ParentWorkspace);
-				IdeApp.ProjectOperations.Save (ws);
-			} else {
-				IdeApp.Workspace.Items.Remove (it);
-				ws.Items.Add (it);
-				IdeApp.ProjectOperations.Save (ws);
+			Set<IWorkspaceFileObject> toSave = new Set<IWorkspaceFileObject> ();
+			foreach (object dataObject in dataObjects) {
+				Workspace ws = (Workspace) CurrentNode.DataItem;
+				WorkspaceItem it = (WorkspaceItem) dataObject;
+				
+				if (!MessageService.Confirm (GettextCatalog.GetString ("Are you sure you want to move the item '{0}' to the workspace '{1}'?", it.Name, ws.Name), AlertButton.Move))
+					return;
+				
+				if (it.ParentWorkspace != null) {
+					it.ParentWorkspace.Items.Remove (it);
+					ws.Items.Add (it);
+					toSave.Add (it.ParentWorkspace);
+					toSave.Add (ws);
+				} else {
+					IdeApp.Workspace.Items.Remove (it);
+					ws.Items.Add (it);
+					toSave.Add (ws);
+				}
 			}
+			IdeApp.ProjectOperations.Save (toSave);
 		}
 			
 		public override void ActivateItem ()
@@ -198,27 +202,35 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			Workspace ws = CurrentNode.DataItem as Workspace;
 			IdeApp.ProjectOperations.ShowOptions (ws);
 		}
-		
+
 		[CommandHandler (EditCommands.Delete)]
+		[AllowMultiSelection]
 		public void RemoveItem ()
 		{
-			Workspace ws = CurrentNode.DataItem as Workspace;
-			Workspace parent = CurrentNode.GetParentDataItem (typeof(Workspace), false) as Workspace;
-			if (parent == null) return;
-			
-			if (MessageService.Confirm (GettextCatalog.GetString ("Do you really want to remove the item '{0}' from workspace '{1}'?", ws.Name, parent.Name), AlertButton.Remove)) {
-				parent.Items.Remove (ws);
-				ws.Dispose ();
-				IdeApp.Workspace.Save();
+			foreach (ITreeNavigator node in CurrentNodes) {
+				Workspace ws = node.DataItem as Workspace;
+				Workspace parent = node.GetParentDataItem (typeof(Workspace), false) as Workspace;
+				if (parent == null) return;
+				
+				if (MessageService.Confirm (GettextCatalog.GetString ("Do you really want to remove the item '{0}' from workspace '{1}'?", ws.Name, parent.Name), AlertButton.Remove)) {
+					parent.Items.Remove (ws);
+					ws.Dispose ();
+				}
 			}
+			IdeApp.Workspace.Save();
 		}
 		
 		[CommandUpdateHandler (EditCommands.Delete)]
 		public void OnUpdateRemoveItem (CommandInfo info)
 		{
-			Workspace parent = CurrentNode.GetParentDataItem (typeof(Workspace), false) as Workspace;
-			info.Enabled = parent != null;
 			info.Text = GettextCatalog.GetString ("Remove");
+			foreach (ITreeNavigator node in CurrentNodes) {
+				Workspace parent = node.GetParentDataItem (typeof(Workspace), false) as Workspace;
+				if (parent == null) {
+					info.Enabled = false;
+					return;
+				}
+			}
 		}
 		
 		[CommandHandler (ProjectCommands.AddNewSolution)]
@@ -252,19 +264,30 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		}
 		
 		[CommandHandler (ProjectCommands.Reload)]
+		[AllowMultiSelection]
 		public void OnReload ()
 		{
-			Workspace ws = (Workspace) CurrentNode.DataItem;
 			using (IProgressMonitor m = IdeApp.Workbench.ProgressMonitors.GetLoadProgressMonitor (true)) {
-				ws.ParentWorkspace.ReloadItem (m, ws);
+				m.BeginTask (null, CurrentNodes.Length);
+				foreach (ITreeNavigator node in CurrentNodes) {
+					Workspace ws = (Workspace) node.DataItem;
+					ws.ParentWorkspace.ReloadItem (m, ws);
+					m.Step (1);
+				}
+				m.EndTask ();
 			}
 		}
 		
 		[CommandUpdateHandler (ProjectCommands.Reload)]
 		public void OnUpdateReload (CommandInfo info)
 		{
-			Workspace ws = (Workspace) CurrentNode.DataItem;
-			info.Visible = (ws.ParentWorkspace != null) && ws.NeedsReload;
+			foreach (ITreeNavigator node in CurrentNodes) {
+				Workspace ws = (Workspace) node.DataItem;
+				if (ws.ParentWorkspace == null || !ws.NeedsReload) {
+					info.Visible = false;
+					return;
+				}
+			}
 		}
 		
 		void OnEntryInserted (ITreeNavigator nav)
@@ -273,18 +296,16 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			nav.Expanded = true;
 		}
 		
-		void OnFolderInserted (ITreeNavigator nav)
-		{
-			nav.Selected = true;
-			nav.Expanded = true;
-			Tree.StartLabelEdit ();
-		}
-		
 		[CommandHandler (FileCommands.OpenContainingFolder)]
+		[AllowMultiSelection]
 		public void OnOpenFolder ()
 		{
-			Workspace ws = (Workspace) CurrentNode.DataItem;
-			System.Diagnostics.Process.Start ("file://" + ws.BaseDirectory);
+			Set<string> paths = new Set<string> ();
+			foreach (ITreeNavigator node in CurrentNodes) {
+				Workspace ws = (Workspace) node.DataItem;
+				if (paths.Add (ws.BaseDirectory))
+					System.Diagnostics.Process.Start ("file://" + ws.BaseDirectory);
+			}
 		}
 		
 		[CommandHandler (SearchCommands.FindInFiles)]
@@ -296,17 +317,25 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		}
 		
 		[CommandHandler (FileCommands.CloseWorkspaceItem)]
+		[AllowMultiSelection]
 		public void OnCloseItem ()
 		{
-			Workspace ws = (Workspace) CurrentNode.DataItem;
-			IdeApp.Workspace.CloseWorkspaceItem (ws);
+			foreach (ITreeNavigator node in CurrentNodes) {
+				Workspace ws = (Workspace) node.DataItem;
+				IdeApp.Workspace.CloseWorkspaceItem (ws);
+			}
 		}
 		
 		[CommandUpdateHandler (FileCommands.CloseWorkspaceItem)]
 		public void OnUpdateCloseItem (CommandInfo info)
 		{
-			Workspace ws = (Workspace) CurrentNode.DataItem;
-			info.Visible = ws.ParentWorkspace == null;
+			foreach (ITreeNavigator node in CurrentNodes) {
+				Workspace ws = (Workspace) node.DataItem;
+				if (ws.ParentWorkspace != null) {
+					info.Visible = false;
+					return;
+				}
+			}
 		}
 	}
 }

@@ -93,19 +93,30 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 	public class UnknownEntryCommandHandler: NodeCommandHandler
 	{
 		[CommandHandler (ProjectCommands.Reload)]
+		[AllowMultiSelection]
 		public void OnReload ()
 		{
-			UnknownSolutionItem entry = (UnknownSolutionItem) CurrentNode.DataItem;
 			using (IProgressMonitor m = IdeApp.Workbench.ProgressMonitors.GetLoadProgressMonitor (true)) {
-				entry.ParentFolder.ReloadItem (m, entry);
+				m.BeginTask (null, CurrentNodes.Length);
+				foreach (ITreeNavigator node in CurrentNodes) {
+					UnknownSolutionItem entry = (UnknownSolutionItem) node.DataItem;
+					entry.ParentFolder.ReloadItem (m, entry);
+					m.Step (1);
+				}
+				m.EndTask ();
 			}
 		}
 		
 		[CommandUpdateHandler (ProjectCommands.Reload)]
 		public void OnUpdateReload (CommandInfo info)
 		{
-			UnknownSolutionItem entry = (UnknownSolutionItem) CurrentNode.DataItem;
-			info.Enabled = entry.ParentFolder != null;
+			foreach (ITreeNavigator node in CurrentNodes) {
+				UnknownSolutionItem entry = (UnknownSolutionItem) node.DataItem;
+				if (entry.ParentFolder == null) {
+					info.Enabled = false;
+					return;
+				}
+			}
 		}
 		
 		public override void DeleteItem ()

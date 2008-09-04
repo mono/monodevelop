@@ -32,6 +32,7 @@ using System.Collections;
 
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Collections;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Components.Commands;
@@ -142,17 +143,21 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		}
 		
 		[CommandHandler (ProjectCommands.IncludeToProject)]
+		[AllowMultiSelection]
 		public void IncludeFileToProject ()
 		{
-			Project project = CurrentNode.GetParentDataItem (typeof(Project), true) as Project;
-			SystemFile file = (SystemFile) CurrentNode.DataItem;
-			
-			if (project.IsCompileable (file.Path))
-				project.AddFile (file.Path, BuildAction.Compile);
-			else
-				project.AddFile (file.Path, BuildAction.Nothing);
-			
-			IdeApp.ProjectOperations.Save (project);
+			Set<SolutionEntityItem> projects = new Set<SolutionEntityItem> ();
+			foreach (ITreeNavigator node in CurrentNodes) {
+				Project project = node.GetParentDataItem (typeof(Project), true) as Project;
+				SystemFile file = (SystemFile) node.DataItem;
+				
+				if (project.IsCompileable (file.Path))
+					project.AddFile (file.Path, BuildAction.Compile);
+				else
+					project.AddFile (file.Path, BuildAction.Nothing);
+				projects.Add (project);
+			}
+			IdeApp.ProjectOperations.Save (projects);
 		}
 		
 		[CommandUpdateHandler (ProjectCommands.IncludeToProject)]
@@ -168,13 +173,6 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			SystemFile file = CurrentNode.DataItem as SystemFile;
 			((FileViewer)ob).OpenFile (file.Path);
 		}
-		[CommandHandler (FileCommands.OpenContainingFolder)]
-		public void OnOpenFolder ()
-		{
-			SystemFile file = CurrentNode.DataItem as SystemFile;
-			string path = System.IO.Path.GetDirectoryName (file.Path);
-			System.Diagnostics.Process.Start ("file://" + path);
-		}
 		
 		[CommandUpdateHandler (ViewCommands.OpenWithList)]
 		public void OnOpenWithUpdate (CommandArrayInfo info)
@@ -186,6 +184,19 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 					info.AddSeparator ();
 				info.Add (fv.Title, fv);
 				prev = fv;
+			}
+		}
+		
+		[CommandHandler (FileCommands.OpenContainingFolder)]
+		[AllowMultiSelection]
+		public void OnOpenFolder ()
+		{
+			Set<string> folders = new Set<string> ();
+			foreach (ITreeNavigator node in CurrentNodes) {
+				SystemFile file = node.DataItem as SystemFile;
+				string path = System.IO.Path.GetDirectoryName (file.Path);
+				if (folders.Add (path))
+					System.Diagnostics.Process.Start ("file://" + path);
 			}
 		}
 	}

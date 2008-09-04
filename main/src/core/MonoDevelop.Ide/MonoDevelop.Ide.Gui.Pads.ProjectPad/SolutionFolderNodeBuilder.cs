@@ -31,6 +31,7 @@ using System.Collections;
 
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Collections;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core.Gui;
@@ -232,7 +233,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		public void OnUpdateReload (CommandInfo info)
 		{
 			foreach (ITreeNavigator node in CurrentNodes) {
-				SolutionFolder folder = (SolutionFolder) CurrentNode.DataItem;
+				SolutionFolder folder = (SolutionFolder) node.DataItem;
 				if (folder.ParentFolder == null || !folder.NeedsReload) {
 					info.Visible = false;
 					return;
@@ -241,10 +242,15 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		}
 		
 		[CommandHandler (FileCommands.OpenContainingFolder)]
+		[AllowMultiSelection]
 		public void OpenContainingFolder ()
 		{
-			SolutionFolder folder = (SolutionFolder) CurrentNode.DataItem;
-			System.Diagnostics.Process.Start ("file://" + folder.BaseDirectory);
+			Set<string> paths = new Set<string> ();
+			foreach (ITreeNavigator node in CurrentNodes) {
+				SolutionFolder folder = (SolutionFolder) node.DataItem;
+				if (paths.Add (folder.BaseDirectory))
+					System.Diagnostics.Process.Start ("file://" + folder.BaseDirectory);
+			}
 		}
 		
 		[CommandHandler (SearchCommands.FindInFiles)]

@@ -339,10 +339,13 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			}
 		}
 		[CommandHandler (FileCommands.OpenContainingFolder)]
+		[AllowMultiSelection]
 		public void OpenContainingFolder ()
 		{
-			Project prj = CurrentNode.DataItem as Project;
-			System.Diagnostics.Process.Start ("file://" + prj.BaseDirectory);
+			foreach (ITreeNavigator nav in CurrentNodes) {
+				Project prj = nav.DataItem as Project;
+				System.Diagnostics.Process.Start ("file://" + prj.BaseDirectory);
+			}
 		}
 		
 		[CommandHandler (ProjectCommands.AddReference)]
@@ -360,19 +363,30 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		}
 		
 		[CommandHandler (ProjectCommands.Reload)]
+		[AllowMultiSelection]
 		public void OnReload ()
 		{
-			Project p = (Project) CurrentNode.DataItem;
 			using (IProgressMonitor m = IdeApp.Workbench.ProgressMonitors.GetLoadProgressMonitor (true)) {
-				p.ParentFolder.ReloadItem (m, p);
+				m.BeginTask (null, CurrentNodes.Length);
+				foreach (ITreeNavigator nav in CurrentNodes) {
+					Project p = (Project) nav.DataItem;
+					p.ParentFolder.ReloadItem (m, p);
+					m.Step (1);
+				}
+				m.EndTask ();
 			}
 		}
 		
 		[CommandUpdateHandler (ProjectCommands.Reload)]
 		public void OnUpdateReload (CommandInfo info)
 		{
-			Project p = (Project) CurrentNode.DataItem;
-			info.Visible = (p.ParentFolder != null) && p.NeedsReload;
+			foreach (ITreeNavigator nav in CurrentNodes) {
+				Project p = (Project) nav.DataItem;
+				if (p.ParentFolder == null || !p.NeedsReload) {
+					info.Visible = false;
+					return;
+				}
+			}
 		}
 		
 		public override DragOperation CanDragNode ()

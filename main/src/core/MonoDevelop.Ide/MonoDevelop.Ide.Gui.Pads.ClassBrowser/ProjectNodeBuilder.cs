@@ -98,8 +98,6 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassBrowser
 		
 		public static void BuildChildNodes (ITreeBuilder builder, Project project)
 		{
-			bool publicOnly = builder.Options ["PublicApiOnly"];
-			
 			ProjectDom dom = ProjectDomService.GetDom (project);
 			
 			Dictionary <string, ProjectNamespace> namespaces = new Dictionary<string, ProjectNamespace> ();

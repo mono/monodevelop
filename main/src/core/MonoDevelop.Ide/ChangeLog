@@ -1,5 +1,31 @@
 2008-09-04  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Ide.Gui.Content/DocumentStateTracker.cs,
+	  MonoDevelop.Ide.Gui.Dialogs/NewFileDialog.cs,
+	  MonoDevelop.Ide.Gui.Dialogs/OverridesImplementsDialog.cs,
+	  MonoDevelop.Ide.Gui.Pads/DefaultMonitorPad.cs,
+	  MonoDevelop.Ide.Gui/MonoDevelopStatusBar.cs,
+	  MonoDevelop.Ide.Gui/RootWorkspace.cs,
+	  MonoDevelop.Ide.Gui/Workbench.cs,
+	  MonoDevelop.Ide.Tasks/TaskService.cs: Fix warnings.
+	* MonoDevelop.Ide.Gui/ProjectOperations.cs: Added new overload for
+	  saving lists of workspace items. Fix warnings.
+	* MonoDevelop.Ide.Gui.Pads.ClassBrowser/ProjectNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFolderNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ProjectPad/SolutionFolderNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ProjectPad/SolutionNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ProjectPad/SystemFileNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ProjectPad/UnknownEntryNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ProjectPad/WorkspaceNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Components/NodeCommandHandler.cs,
+	  MonoDevelop.Ide.Gui.Components/MonoDevelopTreeView.cs: Solution pad
+	  multi-selection fixes and improvements.
+
+2008-09-04  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Ide.Gui.Pads/TreePadOption.cs,
 	  MonoDevelop.Ide.Gui.Pads/TreeViewPad.cs,
 	  MonoDevelop.Ide.Gui.Pads/ITreeBuilder.cs,

@@ -429,7 +429,6 @@ namespace MonoDevelop.Ide.Gui
 
 			IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetLoadProgressMonitor (true);
 			
-			object[] data = new object[] { filename, monitor };
 			DispatchService.BackgroundDispatch (delegate {
 				BackgroundLoadWorkspace (monitor, filename);
 			});
@@ -1020,8 +1019,6 @@ namespace MonoDevelop.Ide.Gui
 		public event EventHandler<UserPreferencesEventArgs> LoadingUserPreferences;
 		
 		public event EventHandler<SolutionEventArgs> CurrentSelectedSolutionChanged;
-		
-		public event ProjectEventHandler CurrentProjectChanged;
 		
 		public event ProjectReferenceEventHandler ReferenceAddedToProject;
 		public event ProjectReferenceEventHandler ReferenceRemovedFromProject;

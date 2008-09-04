@@ -109,13 +109,14 @@ namespace MonoDevelop.Ide.Gui.Components
 		[CommandUpdateHandler (EditCommands.Delete)]
 		internal void CanDeleteCurrentItem (CommandInfo info)
 		{
-			info.Bypass = !CanDeleteItem ();
+			info.Bypass = !CanDeleteMultipleItems ();
 		}
 		
 		[CommandHandler (EditCommands.Delete)]
+		[AllowMultiSelection]
 		internal void DeleteCurrentItem ()
 		{
-			DeleteItem ();
+			DeleteMultipleItems ();
 		}
 		
 		public virtual bool CanDeleteItem ()

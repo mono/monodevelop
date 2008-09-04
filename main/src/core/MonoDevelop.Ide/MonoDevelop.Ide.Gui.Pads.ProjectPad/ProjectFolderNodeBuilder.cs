@@ -33,6 +33,7 @@ using System.Collections.Generic;
 
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Collections;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core.Gui;
@@ -168,61 +169,83 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			}
 		}
 		
-		public override void DeleteItem ()
+		public override void DeleteMultipleItems ()
 		{
-			ProjectFolder folder = (ProjectFolder) CurrentNode.DataItem as ProjectFolder;
-			Project project = folder.Project;
-			ProjectFile[] files = folder.Project.Files.GetFilesInPath (folder.Path);
-			
-			if (files.Length == 0) {
-				bool yes = MessageService.Confirm (GettextCatalog.GetString ("Are you sure you want to permanently delete the folder {0}?", folder.Path), AlertButton.Delete);
-				if (!yes) 
-					return;
-
-				try {
-					FileService.DeleteDirectory (folder.Path);
-				} catch {
-					MessageService.ShowError (GettextCatalog.GetString ("The folder {0} could not be deleted", folder.Path));
+			Set<SolutionEntityItem> projects = new Set<SolutionEntityItem> ();
+			foreach (ITreeNavigator node in CurrentNodes) {
+				ProjectFolder folder = (ProjectFolder) node.DataItem as ProjectFolder;
+				Project project = folder.Project;
+				ProjectFile[] files = folder.Project.Files.GetFilesInPath (folder.Path);
+				
+				if (files.Length == 0) {
+					bool yes = MessageService.Confirm (GettextCatalog.GetString ("Are you sure you want to permanently delete the folder {0}?", folder.Path), AlertButton.Delete);
+					if (!yes) 
+						return;
+	
+					try {
+						FileService.DeleteDirectory (folder.Path);
+					} catch {
+						MessageService.ShowError (GettextCatalog.GetString ("The folder {0} could not be deleted", folder.Path));
+					}
+				}
+				else {
+					bool yes = MessageService.Confirm (GettextCatalog.GetString ("Do you really want to remove folder {0}?", folder.Name), AlertButton.Remove);
+					if (!yes) return;
+					
+					ProjectFile[] inParentFolder = project.Files.GetFilesInPath (Path.GetDirectoryName (folder.Path));
+					
+					if (inParentFolder.Length == files.Length) {
+						// This is the last folder in the parent folder. Make sure we keep
+						// a reference to the folder, so it is not deleted from the tree.
+						ProjectFile folderFile = new ProjectFile (Path.GetDirectoryName (folder.Path));
+						folderFile.Subtype = Subtype.Directory;
+						project.Files.Add (folderFile);
+					}
+					
+					foreach (ProjectFile file in files)
+						folder.Project.Files.Remove (file);
+					
+					projects.Add (folder.Project);
 				}
 			}
-			else {
-				bool yes = MessageService.Confirm (GettextCatalog.GetString ("Do you really want to remove folder {0}?", folder.Name), AlertButton.Remove);
-				if (!yes) return;
-				
-				ProjectFile[] inParentFolder = project.Files.GetFilesInPath (Path.GetDirectoryName (folder.Path));
-				
-				if (inParentFolder.Length == files.Length) {
-					// This is the last folder in the parent folder. Make sure we keep
-					// a reference to the folder, so it is not deleted from the tree.
-					ProjectFile folderFile = new ProjectFile (Path.GetDirectoryName (folder.Path));
-					folderFile.Subtype = Subtype.Directory;
-					project.Files.Add (folderFile);
-				}
-				
-				foreach (ProjectFile file in files)
-					folder.Project.Files.Remove (file);
-
-				IdeApp.Workspace.Save();
-			}
+			IdeApp.ProjectOperations.Save (projects);
 		}
 
 		[CommandHandler (ProjectCommands.IncludeToProject)]
+		[AllowMultiSelection]
 		public void IncludeToProject ()
 		{
-			Project project = CurrentNode.GetParentDataItem (typeof(Project), true) as Project;
-			if (CurrentNode.HasChildren ()) {
-				List<SystemFile> filesToAdd = new List<SystemFile> ();
-				ITreeNavigator nav = CurrentNode.Clone ();
-				GetFiles (nav, filesToAdd);
+			Set<SolutionEntityItem> projects = new Set<SolutionEntityItem> ();
+			foreach (ITreeNavigator node in CurrentNodes) {
+				Project project = node.GetParentDataItem (typeof(Project), true) as Project;
+				if (node.HasChildren ()) {
+					List<SystemFile> filesToAdd = new List<SystemFile> ();
+					ITreeNavigator nav = node.Clone ();
+					GetFiles (nav, filesToAdd);
+	
+					foreach (SystemFile file in filesToAdd) {
+						if (project.IsCompileable (file.Path))
+							project.AddFile (file.Path, BuildAction.Compile);
+						else
+							project.AddFile (file.Path, BuildAction.Nothing);
+					}
 
-				foreach (SystemFile file in filesToAdd) {
-					if (project.IsCompileable (file.Path))
-						project.AddFile (file.Path, BuildAction.Compile);
-					else
-						project.AddFile (file.Path, BuildAction.Nothing);
+					projects.Add (project);
 				}
+			}
+			IdeApp.ProjectOperations.Save (projects);
+		}
 
-				IdeApp.ProjectOperations.Save (project);
+		[CommandUpdateHandler (ProjectCommands.IncludeToProject)]
+		protected void IncludeToProjectUpdate (CommandInfo item)
+		{
+			foreach (ITreeNavigator nav in CurrentNodes) {
+				Project project = nav.GetParentDataItem (typeof (Project), true) as Project;
+				string thisPath = GetFolderPath (nav.DataItem);
+				if (HasProjectFiles (project, thisPath)) {
+					item.Visible = false;
+					return;
+				}
 			}
 		}
 
@@ -239,14 +262,6 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		public override void OnNodeDrop (object dataObject, DragOperation operation)
 		{
 			base.OnNodeDrop (dataObject, operation);
-		}
-
-		[CommandUpdateHandler (ProjectCommands.IncludeToProject)]
-		protected void IncludeToProjectUpdate (CommandInfo item)
-		{
-			Project project = CurrentNode.GetParentDataItem (typeof (Project), true) as Project;
-			string thisPath = GetFolderPath (CurrentNode.DataItem);
-			item.Visible = !HasProjectFiles (project, thisPath);
 		}
 
 		private void GetFiles (ITreeNavigator nav, List<SystemFile> filesToAdd)

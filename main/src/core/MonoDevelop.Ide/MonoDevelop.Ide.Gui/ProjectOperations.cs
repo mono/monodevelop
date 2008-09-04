@@ -65,7 +65,6 @@ namespace MonoDevelop.Ide.Gui
 		IBuildTarget currentBuildOperationOwner;
 		IBuildTarget currentRunOperationOwner;
 		
-		GuiHelper guiHelper = new GuiHelper ();
 		SelectReferenceDialog selDialog = null;
 		
 		SolutionItem currentSolutionItem = null;
@@ -283,8 +282,10 @@ namespace MonoDevelop.Ide.Gui
 		public void Save (IEnumerable<SolutionEntityItem> entries)
 		{
 			int count = 0;
-			foreach (SolutionEntityItem it in entries)
+			IEnumerator<SolutionEntityItem> e = entries.GetEnumerator ();
+			while (e.MoveNext ())
 				count++;
+			
 			IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetSaveProgressMonitor (true);
 			try {
 				monitor.BeginTask (null, count);
@@ -319,6 +320,29 @@ namespace MonoDevelop.Ide.Gui
 			try {
 				item.Save (monitor);
 				monitor.ReportSuccess (GettextCatalog.GetString ("Solution saved."));
+			} catch (Exception ex) {
+				monitor.ReportError (GettextCatalog.GetString ("Save failed."), ex);
+			} finally {
+				monitor.Dispose ();
+			}
+		}
+		
+		public void Save (IEnumerable<IWorkspaceFileObject> items)
+		{
+			int count = 0;
+			IEnumerator<IWorkspaceFileObject> e = items.GetEnumerator ();
+			while (e.MoveNext ())
+				count++;
+			
+			IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetSaveProgressMonitor (true);
+			try {
+				monitor.BeginTask (null, count);
+				foreach (IWorkspaceFileObject item in items) {
+					item.Save (monitor);
+					monitor.Step (1);
+				}
+				monitor.EndTask ();
+				monitor.ReportSuccess (GettextCatalog.GetString ("Items saved."));
 			} catch (Exception ex) {
 				monitor.ReportError (GettextCatalog.GetString ("Save failed."), ex);
 			} finally {
@@ -823,12 +847,6 @@ namespace MonoDevelop.Ide.Gui
 		void BuildDone (IProgressMonitor monitor, BuildResult result, IBuildTarget entry)
 		{
 			Task[] tasks = null;
-			Solution solution;
-			
-			if (entry is SolutionItem)
-				solution = ((SolutionItem)entry).ParentSolution;
-			else
-				solution = entry as Solution;
 		
 			try {
 				if (result != null) {
@@ -1171,17 +1189,6 @@ namespace MonoDevelop.Ide.Gui
 		
 		// Fired just before an entry is added to a combine
 		public event AddEntryEventHandler AddingEntryToCombine;
-
-		
-		// All methods inside this class are gui thread safe
-		
-		class GuiHelper: GuiSyncObject
-		{
-			public void SetWorkbenchContext (WorkbenchContext ctx)
-			{
-				IdeApp.Workbench.Context = ctx;
-			}
-		}
 	}
 	
 	class ParseProgressMonitorFactory: IProgressMonitorFactory
