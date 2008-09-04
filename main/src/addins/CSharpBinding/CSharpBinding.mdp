@@ -101,6 +101,7 @@
     <File name="Gui/NRefactoryDocumentMetaInformation.cs" subtype="Code" buildaction="Compile" />
     <File name="Gui/MemberCompletionData.cs" subtype="Code" buildaction="Compile" />
     <File name="Gui/CSharpTextEditorIndentation.cs" subtype="Code" buildaction="Compile" />
+    <File name="Parser/NRefactoryParser.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Core" />

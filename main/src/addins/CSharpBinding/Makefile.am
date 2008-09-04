@@ -89,6 +89,7 @@ FILES =  \
 	Parser/mcs/mcs/support.cs \
 	Parser/mcs/mcs/symbolwriter.cs \
 	Parser/mcs/mcs/typemanager.cs \
+	Parser/NRefactoryParser.cs \
 	Project/CSharpCompilerParameters.cs \
 	Project/CSharpResourceIdBuilder.cs
 

@@ -114,7 +114,8 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/DomParser">
-		<Class class = "MonoDevelop.CSharpBinding.DomParser" />
+<!--	<Class class = "MonoDevelop.CSharpBinding.DomParser" /> -->
+		<Class class = "MonoDevelop.CSharpBinding.NRefactoryParser" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/Ambiences">

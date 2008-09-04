@@ -1,3 +1,9 @@
+2008-09-04  Mike Krüger <mkrueger@novell.com> 
+
+	* Gui/NRefactoryParameterDataProvider.cs, CSharpBinding.addin.xml,
+	  CSharpBinding.mdp, Parser/NRefactoryParser.cs, gtk-gui/gui.stetic,
+	  Makefile.am: Added nrefactory based parser.
+
 2008-08-21  Mike Krüger <mkrueger@novell.com> 
 
 	* Gui/NRefactoryResolver.cs: fixed possible null ref.
