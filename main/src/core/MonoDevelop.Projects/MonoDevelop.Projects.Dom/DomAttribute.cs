@@ -54,11 +54,17 @@ namespace MonoDevelop.Projects.Dom
 			get {
 				return region;
 			}
+			set {
+				region = value;
+			}
 		}
 
 		public AttributeTarget AttributeTarget {
 			get {
 				return attributeTarget;
+			}
+			set {
+				attributeTarget = value;
 			}
 		}
 

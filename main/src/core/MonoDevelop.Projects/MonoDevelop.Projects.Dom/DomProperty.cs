@@ -147,7 +147,15 @@ namespace MonoDevelop.Projects.Dom
 				parameters = new List<IParameter> ();
 			parameters.Add (parameter);
 		}
-				
+		
+		public void Add (IEnumerable<IParameter> parameters)
+		{
+			if (parameters == null)
+				return;
+			foreach (IParameter parameter in parameters) {
+				Add (parameter);
+			}
+		}
 		
 		public static IProperty Resolve (IProperty source, ITypeResolver typeResolver)
 		{

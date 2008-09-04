@@ -194,7 +194,9 @@ namespace MonoDevelop.Projects.Dom.Database
 		
 		public IEnumerable<IReturnType> GetSubclasses (IType type, IEnumerable<long> projectIds)
 		{
-			DatabaseType databaseType = (DatabaseType)type;
+			if (type == null)
+				return new IReturnType[] { };
+			DatabaseType databaseType = type as DatabaseType;
 			if (databaseType == null) {
 				foreach (DatabaseType t in GetTypes (new string [] { type.Namespace }, projectIds, type.FullName, true)) {
 					databaseType = t;
