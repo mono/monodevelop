@@ -52,9 +52,9 @@ namespace MonoDevelop.AssemblyBrowser
 	[System.ComponentModel.ToolboxItem(true)]
 	public partial class AssemblyBrowserWidget : Gtk.Bin
 	{
-		MonoDevelopTreeView treeView;
+		ExtensibleTreeView treeView;
 		
-		public MonoDevelopTreeView TreeView {
+		public ExtensibleTreeView TreeView {
 			get {
 				return treeView;
 			}
@@ -63,7 +63,7 @@ namespace MonoDevelop.AssemblyBrowser
 		public AssemblyBrowserWidget ()
 		{
 			this.Build();
-			treeView = new MonoDevelopTreeView (new NodeBuilder[] { 
+			treeView = new ExtensibleTreeView (new NodeBuilder[] { 
 				new ErrorNodeBuilder (),
 				new AssemblyNodeBuilder (),
 				new ModuleReferenceNodeBuilder (),

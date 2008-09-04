@@ -1,5 +1,10 @@
 2008-09-04  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs: Renamed
+	  MonoDevelopTreeView to ExtensibleTreeView.
+
+2008-09-04  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* gtk-gui/objects.xml,
 	  MonoDevelop.AssemblyBrowser/ModuleDefinitionNodeBuilder.cs,
 	  MonoDevelop.AssemblyBrowser/ModuleReferenceNodeBuilder.cs,
