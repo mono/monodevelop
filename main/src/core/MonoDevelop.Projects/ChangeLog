@@ -1,5 +1,10 @@
 2008-09-04  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.Projects.Dom.Parser/ProjectParserService.cs: Changed
+	  parser threading.
+
+2008-09-04  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.Projects.Dom.Database/CodeCompletionDatabase.cs: fixed
 	  possible null ref.
 

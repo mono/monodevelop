@@ -259,29 +259,38 @@ namespace MonoDevelop.Projects.Dom.Parser
 			return doms [fileName];
 		}
 		
-		public static void Load (WorkspaceItem item)
+		public static void Load (WorkspaceItem workspaceItem)
 		{
-			if (item is Workspace) {
-				Workspace ws = (Workspace) item;
-				foreach (WorkspaceItem childItem in ws.Items)
-					Load (childItem);
-				ws.ItemAdded   += OnWorkspaceItemAdded;
-				ws.ItemRemoved += OnWorkspaceItemRemoved;
-				return;
+			List<Solution> solutions = new List <Solution> ();
+			Stack<WorkspaceItem> stack= new Stack<WorkspaceItem> ();
+			stack.Push (workspaceItem);
+			while (stack.Count > 0) {
+				WorkspaceItem item = stack.Pop ();
+				if (item is Workspace) {
+					Workspace ws = (Workspace) item;
+					foreach (WorkspaceItem childItem in ws.Items) {
+						stack.Push (childItem);
+					}
+					ws.ItemAdded   += OnWorkspaceItemAdded;
+					ws.ItemRemoved += OnWorkspaceItemRemoved;	
+				} else if (item is Solution) {
+					solutions.Add ((Solution)item);
+				}
 			}
-			if (item is Solution) {
-				Thread thread = new Thread (delegate () {
-					Solution solution = (Solution) item;
+			if (solutions.Count == 0)
+				return;
+			Thread thread = new Thread (delegate () {
+				foreach (Solution solution in solutions) {
 					foreach (Project project in solution.GetAllProjects ()) {
 						Load (solution, project);
 					}
 					solution.SolutionItemAdded   += OnSolutionItemAdded;
 					solution.SolutionItemRemoved += OnSolutionItemRemoved;
-				});
-				thread.Priority = ThreadPriority.Lowest;
-				thread.IsBackground = true;
-				thread.Start ();
-			}
+				}
+			});
+			thread.Priority = ThreadPriority.Lowest;
+			thread.IsBackground = true;
+			thread.Start ();
 		}
 		
 		public static void Unload (WorkspaceItem item)
