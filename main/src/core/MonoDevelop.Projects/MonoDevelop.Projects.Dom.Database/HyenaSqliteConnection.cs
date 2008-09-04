@@ -72,6 +72,12 @@ namespace Hyena.Data.Sqlite
         internal ManualResetEvent ResultReadySignal {
             get { return result_ready_signal; }
         }
+
+        public string Dbpath {
+        	get {
+        		return dbpath;
+        	}
+        }
         
         public event EventHandler<ExecutingEventArgs> Executing;
         
