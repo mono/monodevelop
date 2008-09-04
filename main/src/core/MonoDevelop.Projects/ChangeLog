@@ -1,5 +1,10 @@
 2008-09-04  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.Projects.Dom/ResolveResult.cs: fixed some resolve result
+	  issues.
+
+2008-09-04  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.Projects.Dom.Database/HyenaSqliteCommand.cs: changed
 	  error message.
 

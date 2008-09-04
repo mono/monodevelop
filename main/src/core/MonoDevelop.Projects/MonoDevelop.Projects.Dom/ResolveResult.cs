@@ -232,6 +232,8 @@ namespace MonoDevelop.Projects.Dom
 			}
 			foreach (IType curType in dom.GetInheritanceTree (type)) {
 				foreach (IMember member in curType.Members) {
+					if (member is IMethod && ((IMethod)member).IsConstructor)
+						continue;
 					if (member is IType || !(showStatic ^ member.IsStatic))
 						result.Add (member);
 				}
@@ -298,7 +300,8 @@ namespace MonoDevelop.Projects.Dom
 		public override IEnumerable<object> CreateResolveResult (ProjectDom dom)
 		{
 			List<object> result = new List<object> ();
-			MemberResolveResult.AddType (dom, result, new DomReturnType (CallingType), StaticResolve);
+			if (CallingMember != null && !CallingMember.IsStatic)
+				MemberResolveResult.AddType (dom, result, new DomReturnType (CallingType), StaticResolve);
 			return result;
 		}
 		
@@ -313,7 +316,8 @@ namespace MonoDevelop.Projects.Dom
 		public override IEnumerable<object> CreateResolveResult (ProjectDom dom)
 		{
 			List<object> result = new List<object> ();
-			MemberResolveResult.AddType (dom, result, CallingType.BaseType, StaticResolve);
+			if (CallingMember != null && !CallingMember.IsStatic)
+				MemberResolveResult.AddType (dom, result, CallingType.BaseType, StaticResolve);
 			return result;
 		}
 		public override string ToString ()
