@@ -88,6 +88,15 @@ namespace MonoDevelop.CSharpBinding
 				return unit;
 			}
 		}
+
+		public static IType GetTypeAtCursor (IType outerType, string fileName, DomLocation position)
+		{
+			foreach (IType type in outerType.InnerTypes) {
+				if (type.BodyRegion.Contains (position))
+					return GetTypeAtCursor (type, fileName, position);
+			}
+			return outerType;
+		}
 		
 		public static IType GetTypeAtCursor (ICompilationUnit unit, string fileName, DomLocation position)
 		{
@@ -95,7 +104,7 @@ namespace MonoDevelop.CSharpBinding
 				return null;
 			foreach (IType type in unit.Types) {
 				if (type.BodyRegion.Contains (position))
-					return type;
+					return GetTypeAtCursor (type, fileName, position);
 			}
 			return null;
 		}
@@ -129,6 +138,7 @@ namespace MonoDevelop.CSharpBinding
 					}
 				}
 			}
+			System.Console.WriteLine("calling member:" + callingMember );
 			
 			if (callingMember != null && editor != null) {
 				string wrapper = CreateWrapperClassForMember (callingMember);
@@ -240,9 +250,11 @@ namespace MonoDevelop.CSharpBinding
 				System.Console.WriteLine("Can't parse expression");
 				return null;
 			}
+			System.Console.WriteLine("parsed expression:" + expr);
 			ResolveVisitor visitor = new ResolveVisitor (this);
 			
 			ResolveResult result = visitor.Resolve (expr);
+			System.Console.WriteLine("result:" + result);
 			return result;
 		}
 		
