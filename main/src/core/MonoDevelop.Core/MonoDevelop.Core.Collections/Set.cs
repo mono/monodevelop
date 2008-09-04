@@ -45,9 +45,18 @@ namespace MonoDevelop.Core.Collections
 			return dict.Keys.GetEnumerator ();
 		}
 
-		public void Add (T item)
+		public bool Add (T item)
 		{
-			dict [item] = this;
+			if (!dict.ContainsKey (item)) {
+				dict [item] = this;
+				return true;
+			} else
+				return false;
+		}
+
+		void ICollection<T>.Add (T item)
+		{
+			Add (item);
 		}
 		
 		public void Clear ()

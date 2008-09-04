@@ -1,5 +1,10 @@
 2008-09-04  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Core.Collections/Set.cs: The Add method now returns true
+	  if the item was not already present. False otherwise.
+
+2008-09-04  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Core.Collections, MonoDevelop.Core.Collections/Set.cs,
 	  MonoDevelop.Core.mdp, Makefile.am: Added Set collection.
 
