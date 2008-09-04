@@ -122,7 +122,7 @@ namespace Hyena.Data.Sqlite
                 }
 
             } catch (Exception e) {
-                MonoDevelop.Core.LoggingService.LogError (String.Format ("Exception executing command: {0}", sql_command.CommandText), e.ToString ()); 
+                MonoDevelop.Core.LoggingService.LogError (String.Format ("Exception executing command: {0} : {1}", sql_command.CommandText, e.ToString ())); 
                 execution_exception = e;
             }
 

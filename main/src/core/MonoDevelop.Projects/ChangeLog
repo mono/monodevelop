@@ -1,5 +1,10 @@
 2008-09-04  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.Projects.Dom.Database/HyenaSqliteCommand.cs: changed
+	  error message.
+
+2008-09-04  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.Projects.Dom/DomAttribute.cs,
 	  MonoDevelop.Projects.Dom/DomProperty.cs,
 	  MonoDevelop.Projects.Dom.Database/CodeCompletionDatabase.cs: Some
