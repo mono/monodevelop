@@ -1,5 +1,5 @@
 //
-// ITreeBuilderContext.cs
+// NodeBuilderExtension.cs
 //
 // Author:
 //   Lluis Sanchez Gual
@@ -28,19 +28,10 @@
 
 using System;
 
-namespace MonoDevelop.Ide.Gui.Pads
+namespace MonoDevelop.Ide.Gui.Components
 {
-	public interface ITreeBuilderContext
+	public abstract class NodeBuilderExtension: NodeBuilder
 	{
-		ITreeBuilder GetTreeBuilder ();
-		ITreeBuilder GetTreeBuilder (object dataObject);
-		ITreeBuilder GetTreeBuilder (ITreeNavigator navigator);
-		ITreeNavigator GetTreeNavigator (object dataObject);
-		
-		Gdk.Pixbuf GetIcon (string iconId);
-		Gdk.Pixbuf GetComposedIcon (Gdk.Pixbuf baseIcon, object compositionKey);
-		void CacheComposedIcon (Gdk.Pixbuf baseIcon, object compositionKey, Gdk.Pixbuf composedIcon);
-		
-		MonoDevelopTreeView Tree { get; }
+		public abstract bool CanBuildNode (Type dataType);
 	}
 }

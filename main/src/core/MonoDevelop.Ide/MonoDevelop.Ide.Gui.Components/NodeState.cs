@@ -33,7 +33,7 @@ using System.Xml;
 using System.Xml.Serialization;
 using MonoDevelop.Core;
 
-namespace MonoDevelop.Ide.Gui.Pads
+namespace MonoDevelop.Ide.Gui.Components
 {
 	public class NodeState : ICustomXmlSerializer
 	{
@@ -81,7 +81,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			}
 		}
 
-		public System.Collections.Generic.List<MonoDevelop.Ide.Gui.Pads.NodeState> ChildrenState {
+		public System.Collections.Generic.List<NodeState> ChildrenState {
 			get {
 				return childrenState;
 			}
@@ -155,7 +155,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 					return true;
 				case "Node":
 					if (result.ChildrenState == null)
-						result.ChildrenState = new List<MonoDevelop.Ide.Gui.Pads.NodeState> ();
+						result.ChildrenState = new List<NodeState> ();
 					result.ChildrenState.Add ((NodeState)ReadFrom (reader, result.Options != null ? result.Options : parentOptions));
 					return true;
 				}

@@ -1,3 +1,8 @@
+2008-09-04  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.DesignerSupport.Projects/ComponentNodeBuilder.cs: Moved
+	  the extensible tree view to its own directory.
+
 2008-08-22  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.DesignerSupport.PropertyGrid/PropertyGridTree.cs: Make

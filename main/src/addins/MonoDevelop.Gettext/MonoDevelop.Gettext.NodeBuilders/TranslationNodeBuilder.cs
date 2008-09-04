@@ -38,6 +38,7 @@ using MonoDevelop.Ide.Gui.Pads.ProjectPad;
 using MonoDevelop.Components;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Projects;
+using MonoDevelop.Ide.Gui.Components;
 
 namespace MonoDevelop.Gettext.NodeBuilders
 {

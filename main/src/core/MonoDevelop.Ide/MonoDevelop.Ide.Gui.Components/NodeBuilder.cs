@@ -29,7 +29,7 @@
 using System;
 using MonoDevelop.Core;
 
-namespace MonoDevelop.Ide.Gui.Pads
+namespace MonoDevelop.Ide.Gui.Components
 {
 	public abstract class NodeBuilder: IDisposable
 	{

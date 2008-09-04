@@ -30,10 +30,11 @@ using System;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Projects.Dom.Output;
+using MonoDevelop.Ide.Gui.Components;
 
 namespace MonoDevelop.Ide.Gui.Pads.ClassBrowser
 {
-	public class MemberNodeBuilder  : MonoDevelop.Ide.Gui.Pads.TypeNodeBuilder
+	public class MemberNodeBuilder: MonoDevelop.Ide.Gui.Components.TypeNodeBuilder
 	{
 		public override Type NodeDataType {
 			get { return typeof(MonoDevelop.Projects.Dom.IMember); }

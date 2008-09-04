@@ -28,7 +28,7 @@
 
 using System;
 
-namespace MonoDevelop.Ide.Gui.Pads
+namespace MonoDevelop.Ide.Gui.Components
 {
 	public abstract class TypeNodeBuilder: NodeBuilder
 	{

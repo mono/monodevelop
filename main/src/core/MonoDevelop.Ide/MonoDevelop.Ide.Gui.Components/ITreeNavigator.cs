@@ -1,5 +1,5 @@
 //
-// PropertyNodeBuilder.cs
+// ITreeNavigator.cs
 //
 // Author:
 //   Lluis Sanchez Gual
@@ -29,29 +29,49 @@
 using System;
 using System.Collections;
 
-using MonoDevelop.Projects;
-using MonoDevelop.Core;
-using MonoDevelop.Projects.Parser;
-using MonoDevelop.Core.Gui;
-using MonoDevelop.Ide.Gui.Components;
-
-namespace MonoDevelop.Ide.Gui.Pads.ClassPad
+namespace MonoDevelop.Ide.Gui.Components
 {
-	public class PropertyNodeBuilder: MemberNodeBuilder
+	public interface ITreeNavigator
 	{
-		public override Type NodeDataType {
-			get { return typeof(IProperty); }
-		}
+		object DataItem { get; }
+		string NodeName { get; }
 
-		public override string ContextMenuAddinPath {
-			get { return "/MonoDevelop/Ide/ContextMenu/ClassPad/Property"; }
-		}
+		object GetParentDataItem (Type type, bool includeCurrent);
+		bool Selected { get; set; }
+		bool Expanded { get; set; }
+		void ExpandToNode ();
+		ITreeOptions Options { get; }
+		TypeNodeBuilder  TypeNodeBuilder  { get; }
 		
-		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
-		{
-			IProperty data = dataObject as IProperty;
-			label = data.Name;
-			icon = Context.GetIcon (Services.Icons.GetIcon (data));
-		}
+		NodeState SaveState ();
+		void RestoreState (NodeState state);
+
+		NodePosition CurrentPosition { get; }
+		bool MoveToPosition (NodePosition position);
+		
+		bool MoveToParent ();
+		bool MoveToParent (Type type);
+		bool MoveToRoot ();
+		bool MoveToFirstChild ();
+		bool MoveToChild (string name, Type dataType);
+		bool HasChild (string name, Type dataType);
+		bool HasChildren ();
+		bool MoveNext ();
+		
+		// The following methods only look through nodes already created
+		// (the tree is lazily created)
+		bool MoveToObject (object dataObject);
+		bool MoveToNextObject ();
+		bool FindChild (object dataObject);
+		bool FindChild (object dataObject, bool recursive);
+		
+		// True if the node has been filled with child data.
+		bool Filled { get; }
+		
+		ITreeNavigator Clone ();
+	}
+	
+	public struct NodePosition {
+		internal Gtk.TreeIter _iter;
 	}
 }

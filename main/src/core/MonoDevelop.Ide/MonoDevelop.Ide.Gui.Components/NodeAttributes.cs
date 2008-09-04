@@ -1,5 +1,5 @@
 //
-// ITreeOptions.cs
+// NodeAttributes.cs
 //
 // Author:
 //   Lluis Sanchez Gual
@@ -28,10 +28,13 @@
 
 using System;
 
-namespace MonoDevelop.Ide.Gui.Pads
+namespace MonoDevelop.Ide.Gui.Components
 {
-	public interface ITreeOptions
+	[Flags]
+	public enum NodeAttributes
 	{
-		bool this [string name] { get; set; }
+		None = 0,
+		Hidden = 1,
+		AllowRename = 2
 	}
 }

@@ -38,6 +38,7 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Ide.Gui.Pads.ProjectPad;
 using MonoDevelop.GtkCore.GuiBuilder;
+using MonoDevelop.Ide.Gui.Components;
 
 namespace MonoDevelop.GtkCore.NodeBuilders
 {

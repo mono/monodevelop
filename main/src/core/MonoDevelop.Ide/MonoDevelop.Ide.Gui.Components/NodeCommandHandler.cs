@@ -30,7 +30,7 @@ using System;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Components.Commands;
 
-namespace MonoDevelop.Ide.Gui.Pads
+namespace MonoDevelop.Ide.Gui.Components
 {
 	[MultiSelectionNodeHandler]
 	public class NodeCommandHandler: ICommandRouter

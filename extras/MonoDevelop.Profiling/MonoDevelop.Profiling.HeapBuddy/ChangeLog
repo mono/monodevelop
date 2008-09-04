@@ -1,3 +1,10 @@
+2008-09-04  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Gui/HeapBuddyProfilingSnapshotNodeBuilder.cs,
+	  Gui/HistoryNodeBuilder.cs, Gui/BacktracesNodeBuilder.cs,
+	  Gui/TypesNodeBuilder.cs: Moved the extensible tree view to its own
+	  directory.
+
 2008-08-18  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Profiling.HeapBuddy.mdp: Fix reference to

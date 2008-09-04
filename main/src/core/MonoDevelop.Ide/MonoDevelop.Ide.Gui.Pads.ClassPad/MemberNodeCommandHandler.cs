@@ -32,6 +32,7 @@ using System.IO;
 using MonoDevelop.Projects.Parser;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Gui.Components;
 
 namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 {

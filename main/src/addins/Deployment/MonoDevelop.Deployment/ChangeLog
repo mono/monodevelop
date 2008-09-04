@@ -1,3 +1,9 @@
+2008-09-04  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Deployment.NodeBuilders/PackagingProjectNodeBuilder.cs,
+	  MonoDevelop.Deployment.NodeBuilders/PackageNodeBuilder.cs: Moved
+	  the extensible tree view to its own directory.
+
 2008-07-21  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* md1format.xml,

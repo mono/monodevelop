@@ -44,6 +44,7 @@ using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Projects.Dom;
+using MonoDevelop.Ide.Gui.Components;
 
 namespace MonoDevelop.AssemblyBrowser
 {
@@ -140,7 +141,7 @@ namespace MonoDevelop.AssemblyBrowser
 				Gtk.TreeIter selectedIter;
 				if (searchTreeview.Selection.GetSelected (out selectedIter)) {
 					MonoDevelop.Projects.Dom.IMember member = (MonoDevelop.Projects.Dom.IMember)(searchMode != SearchMode.Type ? memberListStore.GetValue (selectedIter, 4) : typeListStore.GetValue (selectedIter, 4));
-					MonoDevelop.Ide.Gui.Pads.ITreeNavigator nav = SearchMember (member);
+					ITreeNavigator nav = SearchMember (member);
 					if (nav != null) {
 						nav.ExpandToNode ();
 						nav.Selected = true;
@@ -598,7 +599,7 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		void CreateOutput ()
 		{
-			MonoDevelop.Ide.Gui.Pads.ITreeNavigator nav = treeView.GetSelectedNode ();
+			ITreeNavigator nav = treeView.GetSelectedNode ();
 			
 			if (nav != null) {
 				IMember member = nav.DataItem as IMember;

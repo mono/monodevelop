@@ -41,15 +41,13 @@ using System.Text;
 
 using Mono.Addins;
 using MonoDevelop.Core;
-using MonoDevelop.Projects;
-using MonoDevelop.Core.Gui.Dialogs;
 using MonoDevelop.Components;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Gui.Pads;
 
-namespace MonoDevelop.Ide.Gui
+namespace MonoDevelop.Ide.Gui.Components
 {
 	public class MonoDevelopTreeView : Gtk.ScrolledWindow
 	{

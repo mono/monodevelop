@@ -10,6 +10,7 @@ using MonoDevelop.Core.Gui;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.WebReferences.Commands;
+using MonoDevelop.Ide.Gui.Components;
 
 namespace MonoDevelop.WebReferences.NodeBuilders
 {

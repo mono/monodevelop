@@ -38,6 +38,7 @@ using MonoDevelop.Ide.Commands;
 using MonoDevelop.Ide.Gui.Pads.ProjectPad;
 using MonoDevelop.Core.Gui;
 using Mono.Addins;
+using MonoDevelop.Ide.Gui.Components;
 
 namespace MonoDevelop.AddinAuthoring
 {

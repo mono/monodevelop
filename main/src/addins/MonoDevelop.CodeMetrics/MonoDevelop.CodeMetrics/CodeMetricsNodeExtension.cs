@@ -36,6 +36,7 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.Ide.Gui.Pads.ProjectPad;
 using MonoDevelop.Projects;
+using MonoDevelop.Ide.Gui.Components;
 
 namespace MonoDevelop.CodeMetrics
 {

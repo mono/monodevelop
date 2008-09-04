@@ -1,3 +1,10 @@
+2008-09-04  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Gui/NUnitAssemblyGroupConfigurationNodeBuilder.cs,
+	  Gui/NUnitAssemblyGroupNodeBuilder.cs, Gui/TestNodeBuilder.cs,
+	  Gui/TestAssemblyNodeBuilder.cs, Gui/TestPad.cs: Moved the
+	  extensible tree view to its own directory.
+
 2008-07-25  Peter Johanson <peter@peterjohanson.com> 
 
 	* Services/ExternalTestRunner.cs: Prevent an ArgumentOutOfRange

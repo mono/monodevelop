@@ -11,6 +11,7 @@ using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.Ide.Gui.Pads.ProjectPad;
 using MonoDevelop.WebReferences.Commands;
+using MonoDevelop.Ide.Gui.Components;
 
 namespace MonoDevelop.WebReferences.NodeBuilders
 {

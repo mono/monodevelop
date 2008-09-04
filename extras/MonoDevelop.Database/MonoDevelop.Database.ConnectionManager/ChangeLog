@@ -1,3 +1,31 @@
+2008-09-04  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* NodeBuilders/UsersNodeBuilder.cs,
+	  NodeBuilders/ParametersNodeBuilder.cs,
+	  NodeBuilders/TypesNodeBuilder.cs,
+	  NodeBuilders/ConnectionContextNodeBuilder.cs,
+	  NodeBuilders/LanguagesNodeBuilder.cs,
+	  NodeBuilders/ConstraintsNodeBuilder.cs,
+	  NodeBuilders/AggregatesNodeBuilder.cs,
+	  NodeBuilders/ViewNodeBuilder.cs, NodeBuilders/TablesNodeBuilder.cs,
+	  NodeBuilders/ProceduresNodeBuilder.cs,
+	  NodeBuilders/UserNodeBuilder.cs,
+	  NodeBuilders/OperatorsNodeBuilder.cs,
+	  NodeBuilders/GroupsNodeBuilder.cs,
+	  NodeBuilders/ConnectionContextCollectionNodeBuilder.cs,
+	  NodeBuilders/ParameterNodeBuilder.cs,
+	  NodeBuilders/ColumnsNodeBuilder.cs,
+	  NodeBuilders/RolesNodeBuilder.cs,
+	  NodeBuilders/ConstraintNodeBuilder.cs,
+	  NodeBuilders/TriggersNodeBuilder.cs,
+	  NodeBuilders/TableNodeBuilder.cs,
+	  NodeBuilders/ProcedureNodeBuilder.cs,
+	  NodeBuilders/RulesNodeBuilder.cs,
+	  NodeBuilders/SequencesNodeBuilder.cs,
+	  NodeBuilders/ColumnNodeBuilder.cs,
+	  NodeBuilders/ViewsNodeBuilder.cs, ConnectionManagerPad.cs: Moved
+	  the extensible tree view to its own directory.
+
 2008-08-18  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Database.ConnectionManager.mdp: Fix reference to

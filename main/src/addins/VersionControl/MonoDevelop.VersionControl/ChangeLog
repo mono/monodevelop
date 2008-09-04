@@ -1,3 +1,8 @@
+2008-09-04  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.VersionControl/VersionControlNodeExtension.cs: Moved the
+	  extensible tree view to its own directory.
+
 2008-08-21  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.VersionControl.Views/StatusView.cs,

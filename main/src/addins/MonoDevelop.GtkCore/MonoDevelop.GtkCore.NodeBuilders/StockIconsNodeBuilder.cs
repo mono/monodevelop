@@ -7,6 +7,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.GtkCore.GuiBuilder;
+using MonoDevelop.Ide.Gui.Components;
 
 namespace MonoDevelop.GtkCore.NodeBuilders
 {

@@ -1,3 +1,25 @@
+2008-09-04  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* gtk-gui/objects.xml,
+	  MonoDevelop.AssemblyBrowser/ModuleDefinitionNodeBuilder.cs,
+	  MonoDevelop.AssemblyBrowser/ModuleReferenceNodeBuilder.cs,
+	  MonoDevelop.AssemblyBrowser/BaseTypeFolderNodeBuilder.cs,
+	  MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs,
+	  MonoDevelop.AssemblyBrowser/AssemblyNodeBuilder.cs,
+	  MonoDevelop.AssemblyBrowser/DomMethodNodeBuilder.cs,
+	  MonoDevelop.AssemblyBrowser/DomReturnTypeNodeBuilder.cs,
+	  MonoDevelop.AssemblyBrowser/DomEventNodeBuilder.cs,
+	  MonoDevelop.AssemblyBrowser/DomTypeNodeBuilder.cs,
+	  MonoDevelop.AssemblyBrowser/DomFieldNodeBuilder.cs,
+	  MonoDevelop.AssemblyBrowser/ResourceFolderNodeBuilder.cs,
+	  MonoDevelop.AssemblyBrowser/DomPropertyNodeBuilder.cs,
+	  MonoDevelop.AssemblyBrowser/NamespaceBuilder.cs,
+	  MonoDevelop.AssemblyBrowser/ResourceNodeBuilder.cs,
+	  MonoDevelop.AssemblyBrowser/ErrorNodeBuilder.cs,
+	  MonoDevelop.AssemblyBrowser/ReferenceFolderNodeBuilder.cs,
+	  MonoDevelop.AssemblyBrowser/IAssemblyBrowserNodeBuilder.cs: Moved
+	  the extensible tree view to its own directory.
+
 2008-08-26  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs: Fixing

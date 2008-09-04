@@ -37,6 +37,7 @@ using MonoDevelop.Components.Commands;
 using MonoDevelop.NUnit.Commands;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Core.Gui;
+using MonoDevelop.Ide.Gui.Components;
 
 namespace MonoDevelop.NUnit
 {

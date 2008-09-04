@@ -34,6 +34,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Projects.Parser;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core.Gui;
+using MonoDevelop.Ide.Gui.Components;
 
 namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 {

@@ -125,20 +125,8 @@
     <File name="MonoDevelop.Ide.Gui.Pads.ProjectPad/ShowAllFilesBuilderExtension.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui.Pads.ProjectPad/SystemFile.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui.Pads.ProjectPad/SystemFileNodeBuilder.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Ide.Gui.Pads/DragOperation.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Ide.Gui.Pads/ITreeBuilder.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Ide.Gui.Pads/ITreeBuilderContext.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Ide.Gui.Pads/ITreeNavigator.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Ide.Gui.Pads/ITreeOptions.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Ide.Gui.Pads/NodeAttributes.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Ide.Gui.Pads/NodeBuilder.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Ide.Gui.Pads/NodeBuilderExtension.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Ide.Gui.Pads/NodeCommandHandler.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Ide.Gui.Pads/NodeState.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui.Pads/SolutionPad.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Ide.Gui.Pads/TreePadOption.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui.Pads/TreeViewPad.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Ide.Gui.Pads/TypeNodeBuilder.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui.Search/DefaultFind.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui.Search/IFind.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui.Search/SearchOptions.cs" subtype="Code" buildaction="Compile" />
@@ -227,7 +215,6 @@
     <File name="templates/GenericProject.xpt.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="gtk-gui/gui.stetic" subtype="Code" buildaction="EmbedAsResource" />
     <File name="MonoDevelop.Ide.Gui.Pads.ProjectPad/UnknownEntryNodeBuilder.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Ide.Gui.Pads/TreeViewItem.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui.Dialogs/GoToDialog.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui.Content/TextEditorExtension.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui/TextEditor.cs" subtype="Code" buildaction="Compile" />
@@ -308,7 +295,6 @@
     <File name="gtk-gui/MonoDevelop.Ide.Gui.Dialogs.GotoLineDialog.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui.Content/ISplittable.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui.Content/IFoldable.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Ide.Gui/MonoDevelopTreeView.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs" subtype="Code" buildaction="Compile" />
     <File name="gtk-gui/MonoDevelop.Ide.ExternalTools.ExternalToolPanelWidget.cs" subtype="Code" buildaction="Compile" />
     <File name="options/KeyBindingSchemeMonoDevelop1.xml" subtype="Code" buildaction="EmbedAsResource" />
@@ -366,6 +352,20 @@
     <File name="MonoDevelop.Ide.Gui.Search/FilesDocumentIterator.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui.Dialogs/BreakpointPropertiesDialog.cs" subtype="Code" buildaction="Compile" />
     <File name="gtk-gui/MonoDevelop.Ide.Gui.Dialogs.BreakpointPropertiesDialog.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Ide.Gui.Components/MonoDevelopTreeView.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Ide.Gui.Components/ITreeBuilder.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Ide.Gui.Components/ITreeBuilderContext.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Ide.Gui.Components/ITreeNavigator.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Ide.Gui.Components/ITreeOptions.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Ide.Gui.Components/NodeAttributes.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Ide.Gui.Components/NodeBuilder.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Ide.Gui.Components/NodeBuilderExtension.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Ide.Gui.Components/NodeCommandHandler.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Ide.Gui.Components/NodeState.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Ide.Gui.Components/DragOperation.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Ide.Gui.Components/TreePadOption.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Ide.Gui.Components/TypeNodeBuilder.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Ide.Gui.Components/TreeViewItem.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="False" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />

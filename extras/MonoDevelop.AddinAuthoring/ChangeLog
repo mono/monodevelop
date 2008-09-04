@@ -1,3 +1,13 @@
+2008-09-04  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.AddinAuthoring.NodeBuilders/AddinReferenceNodeBuilder.cs,
+	  MonoDevelop.AddinAuthoring.NodeBuilders/ExtensionsNodeBuilder.cs,
+	  MonoDevelop.AddinAuthoring.NodeBuilders/ProjectFolderNodeBuilderExtension.cs,
+	  MonoDevelop.AddinAuthoring.NodeBuilders/ExtensionPointsNodeBuilder.cs,
+	  MonoDevelop.AddinAuthoring.NodeBuilders/AddinFolderNodeBuilder.cs,
+	  MonoDevelop.AddinAuthoring.NodeBuilders/ReferencesFolderNodeBuilder.cs:
+	  Moved the extensible tree view to its own directory.
+
 2008-08-21  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.AddinAuthoring/NodeSetEditorWidget.cs,

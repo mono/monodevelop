@@ -1,4 +1,4 @@
-<objects>
+<objects attr-sync="on">
   <object type="MonoDevelop.AssemblyBrowser.AssemblyBrowserWidget" palette-category="MonoDevelop.AssemblyBrowser" allow-children="false" base-type="Gtk.Bin">
     <itemgroups />
     <signals />

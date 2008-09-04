@@ -1,5 +1,5 @@
 //
-// DragOperation.cs
+// ITreeBuilderContext.cs
 //
 // Author:
 //   Lluis Sanchez Gual
@@ -28,11 +28,19 @@
 
 using System;
 
-namespace MonoDevelop.Ide.Gui.Pads
+namespace MonoDevelop.Ide.Gui.Components
 {
-	public enum DragOperation {
-		None = 0,
-		Copy = 1,
-		Move = 2
+	public interface ITreeBuilderContext
+	{
+		ITreeBuilder GetTreeBuilder ();
+		ITreeBuilder GetTreeBuilder (object dataObject);
+		ITreeBuilder GetTreeBuilder (ITreeNavigator navigator);
+		ITreeNavigator GetTreeNavigator (object dataObject);
+		
+		Gdk.Pixbuf GetIcon (string iconId);
+		Gdk.Pixbuf GetComposedIcon (Gdk.Pixbuf baseIcon, object compositionKey);
+		void CacheComposedIcon (Gdk.Pixbuf baseIcon, object compositionKey, Gdk.Pixbuf composedIcon);
+		
+		MonoDevelopTreeView Tree { get; }
 	}
 }

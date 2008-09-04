@@ -1,3 +1,13 @@
+2008-09-04  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.GtkCore.NodeBuilders/ProjectFolderNodeBuilderExtension.cs,
+	  MonoDevelop.GtkCore.NodeBuilders/StockIconsNodeBuilder.cs,
+	  MonoDevelop.GtkCore.NodeBuilders/WidgetNodeBuilder.cs,
+	  MonoDevelop.GtkCore.NodeBuilders/ProjectNodeBuilder.cs,
+	  MonoDevelop.GtkCore.NodeBuilders/WindowsFolderNodeBuilder.cs,
+	  MonoDevelop.GtkCore.NodeBuilders/ActionGroupNodeBuilder.cs: Moved
+	  the extensible tree view to its own directory.
+
 2008-08-27  Mike Kestner <mkestner@novell.com> 
 
 	* MonoDevelop.GtkCore/WidgetFileDesciptionTemplate.cs: perform a 
