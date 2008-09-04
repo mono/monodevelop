@@ -52,6 +52,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 						int peek = ReaderPeek();
 						if (peek == '/' || peek == '*') {
 							ReadComment();
+							isBegin = false;
 							continue;
 						} else {
 							token = ReadOperator('/');
@@ -71,8 +72,8 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 						isBegin = false;
 						break;
 					case '@':
-						int next = ReaderRead();
 						isBegin = false;
+						int next = ReaderRead();
 						if (next == -1) {
 							errors.Error(Line, Col, String.Format("EOF after @"));
 							continue;
@@ -934,13 +935,16 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 				lastToken = curToken;
 				curToken = curToken.next;
 			}
+			isBegin = true;
 			int nextChar;
 			while ((nextChar = ReaderRead()) != -1) {
 				switch (nextChar) {
 					case '{':
+						isBegin = false;
 						braceCount++;
 						break;
 					case '}':
+						isBegin = false;
 						if (--braceCount < 0) {
 							curToken = new Token(Tokens.CloseCurlyBrace, Col - 1, Line);
 							return;
@@ -951,19 +955,24 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 						if (peek == '/' || peek == '*') {
 							ReadComment();
 						}
+						isBegin = false;
 						break;
 					case '#':
 						ReadPreProcessingDirective();
+						isBegin = false;
 						break;
 					case '"':
 						ReadString();
+						isBegin = false;
 						break;
 					case '\'':
 						ReadChar();
+						isBegin = false;
 						break;
 					case '\r':
 					case '\n':
 						HandleLineEnd((char)nextChar);
+						isBegin = true;
 						break;
 					case '@':
 						int next = ReaderRead();
@@ -972,6 +981,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 						} else if (next == '"') {
 							ReadVerbatimString();
 						}
+						isBegin = false;
 						break;
 				}
 			}
