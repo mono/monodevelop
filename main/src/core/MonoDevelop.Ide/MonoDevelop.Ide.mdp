@@ -366,6 +366,9 @@
     <File name="MonoDevelop.Ide.Gui.Components/TreePadOption.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui.Components/TypeNodeBuilder.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Ide.Gui.Components/TreeViewItem.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Ide.Gui.Components/TreeNodeNavigator.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Ide.Gui.Components/TreeBuilder.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Ide.Gui.Components/TreeOptions.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="False" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />

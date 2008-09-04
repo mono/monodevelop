@@ -1,5 +1,13 @@
 2008-09-04  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* Makefile.am, MonoDevelop.Ide.Gui.Components/ExtensibleTreeView.cs,
+	  MonoDevelop.Ide.Gui.Components/TreeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Components/TreeNodeNavigator.cs,
+	  MonoDevelop.Ide.Gui.Components/TreeOptions.cs, MonoDevelop.Ide.mdp:
+	  Move some tree view classes to its own file.
+
+2008-09-04  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Ide.Gui.Components/ExtensibleTreeView.cs,
 	  MonoDevelop.Ide.Gui.Components/NodeState.cs: Missed some class
 	  renames.
