@@ -115,6 +115,7 @@
     <File name="MonoDevelop.Core.Serialization/XmlDataSerializer.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Core.Serialization/XmlElementDataType.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Core.Serialization/XmlMapAttributeProvider.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Core.Collections/Set.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="False" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
@@ -138,8 +139,5 @@
     <AsmRefVar Sync="True" Name="REFS" Prefix="-r:" />
     <ProjectRefVar Sync="True" Name="REFS" Prefix="-r:" />
   </MonoDevelop.Autotools.MakefileInfo>
-  <MonoDevelop.Gettext.TranslationInfo />
-  <DeploymentInformation strategy="File">
-    <excludeFiles />
-  </DeploymentInformation>
+  <DeploymentInformation strategy="File" />
 </Project>
