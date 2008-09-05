@@ -315,6 +315,18 @@ namespace MonoDevelop.Ide.Gui
 			toolbarBox.PackStart (subViewToolbar, false, false, 0);
 		}
 		
+		void EnsureToolbarBoxSeparator ()
+		{
+			if (toolbarBox == null || subViewToolbar == null)
+				return;
+			
+			SeparatorToolItem sep = subViewToolbar.GetNthItem (subViewToolbar.NumChildren - 1) as SeparatorToolItem;
+			if (sep != null && pathBox == null)
+				subViewToolbar.Remove (sep);
+			else if (sep == null && pathBox != null)
+				subViewToolbar.Insert (new SeparatorToolItem (), -1);
+		}
+		
 		void CheckCreateToolbarBox ()
 		{
 			if (toolbarBox != null)
@@ -336,6 +348,7 @@ namespace MonoDevelop.Ide.Gui
 			subViewNotebook = new Notebook ();
 			subViewNotebook.TabPos = PositionType.Bottom;
 			subViewNotebook.ShowTabs = false;
+			subViewNotebook.ShowBorder = false;
 			subViewNotebook.Show ();
 			subViewNotebook.SwitchPage += subViewNotebookIndexChanged;
 			
@@ -371,9 +384,10 @@ namespace MonoDevelop.Ide.Gui
 			button.IsImportant = true;
 			button.Clicked += new EventHandler (OnButtonToggled);
 			button.ShowAll ();
-			subViewToolbar.Insert (button, -1);
+			subViewToolbar.Insert (button, subViewToolbar.NumChildren - 1);
 			subViewNotebook.AppendPage (page, new Gtk.Label ());
 			page.ShowAll ();
+			EnsureToolbarBoxSeparator ();
 			updating = false;
 			return button;
 		}
@@ -443,6 +457,7 @@ namespace MonoDevelop.Ide.Gui
 					toolbarBox.Remove (pathBox);
 					toolbarBox.Destroy ();
 				}
+				EnsureToolbarBoxSeparator ();
 			}
 		}
 		

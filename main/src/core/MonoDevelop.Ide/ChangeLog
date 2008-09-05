@@ -1,3 +1,8 @@
+2008-09-05  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Ide.Gui/SdiWorkspaceWindow.cs: Add a separator between
+	  the path bar and the secondary view buttions.
+
 2008-09-04  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Makefile.am, MonoDevelop.Ide.Gui.Components/ExtensibleTreeView.cs,
