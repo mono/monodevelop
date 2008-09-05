@@ -205,13 +205,14 @@ namespace MonoDevelop.CSharpBinding
 					                                    Location2DomLocation (property.Location),
 					                                    Block2Region (property.AccessorsBlock),
 					                                    TypeName2ReturnType (property.ReturnTypeName));
+					
 					if (property.GetAccessor != null) {
-						prop.GetMethod = new DomMethod ();
-						prop.GetMethod.BodyRegion = Block2Region (property.GetAccessor.LocationBlock);
+						prop.PropertyModifier |= PropertyModifier.HasGet;
+						prop.GetRegion = Block2Region (property.GetAccessor.LocationBlock);
 					}
 					if (property.SetAccessor != null) {
-						prop.SetMethod = new DomMethod ();
-						prop.SetMethod.BodyRegion = Block2Region (property.SetAccessor.LocationBlock);
+						prop.PropertyModifier |= PropertyModifier.HasSet;
+						prop.SetRegion = Block2Region (property.SetAccessor.LocationBlock);
 					}
 					members.Add (prop);
 					
@@ -224,14 +225,14 @@ namespace MonoDevelop.CSharpBinding
 					                                    Location2DomLocation (indexer.Location),
 					                                    Block2Region (indexer.AccessorsBlock),
 					                                    TypeName2ReturnType (indexer.ReturnTypeName));
-					prop.IsIndexer = true;
+					prop.PropertyModifier |= PropertyModifier.IsIndexer;
 					if (indexer.GetAccessor != null) {
-						prop.GetMethod = new DomMethod ();
-						prop.GetMethod.BodyRegion = Block2Region (indexer.GetAccessor.LocationBlock);
+						prop.PropertyModifier |= PropertyModifier.HasGet;
+						prop.GetRegion = Block2Region (indexer.GetAccessor.LocationBlock);
 					}
 					if (indexer.SetAccessor != null) {
-						prop.SetMethod = new DomMethod ();
-						prop.SetMethod.BodyRegion = Block2Region (indexer.SetAccessor.LocationBlock);
+						prop.PropertyModifier |= PropertyModifier.HasSet;
+						prop.SetRegion = Block2Region (indexer.SetAccessor.LocationBlock);
 					}
 					members.Add (prop);
 				}

@@ -369,12 +369,12 @@ namespace MonoDevelop.CSharpBinding
 				AddAttributes (property, propertyDeclaration.Attributes);
 				AddExplicitInterfaces (property, propertyDeclaration.InterfaceImplementations);
 				if (propertyDeclaration.HasGetRegion) {
-					property.GetMethod = new DomMethod ();
-					property.GetMethod.BodyRegion = ConvertRegion (propertyDeclaration.GetRegion.StartLocation, propertyDeclaration.GetRegion.EndLocation);
+					property.PropertyModifier |= PropertyModifier.HasGet;
+					property.GetRegion = ConvertRegion (propertyDeclaration.GetRegion.StartLocation, propertyDeclaration.GetRegion.EndLocation);
 				}
 				if (propertyDeclaration.HasSetRegion) {
-					property.SetMethod = new DomMethod ();
-					property.SetMethod.BodyRegion = ConvertRegion (propertyDeclaration.SetRegion.StartLocation, propertyDeclaration.SetRegion.EndLocation);
+					property.PropertyModifier |= PropertyModifier.HasSet;
+					property.SetRegion = ConvertRegion (propertyDeclaration.SetRegion.StartLocation, propertyDeclaration.SetRegion.EndLocation);
 				}
 				property.DeclaringType = typeStack.Peek ();
 				typeStack.Peek ().Add (property);
@@ -385,7 +385,7 @@ namespace MonoDevelop.CSharpBinding
 			{
 				DomProperty indexer = new DomProperty ();
 				indexer.Name      = "this";
-				indexer.IsIndexer = true;
+				indexer.PropertyModifier |= PropertyModifier.IsIndexer;
 				indexer.Location  = ConvertLocation (indexerDeclaration.StartLocation);
 				indexer.BodyRegion = ConvertRegion (indexerDeclaration.BodyStart, indexerDeclaration.BodyEnd);
 				indexer.Modifiers  = ConvertModifiers (indexerDeclaration.Modifier);
@@ -396,12 +396,12 @@ namespace MonoDevelop.CSharpBinding
 				AddExplicitInterfaces (indexer, indexerDeclaration.InterfaceImplementations);
 				
 				if (indexerDeclaration.HasGetRegion) {
-					indexer.GetMethod = new DomMethod ();
-					indexer.GetMethod.BodyRegion = ConvertRegion (indexerDeclaration.GetRegion.StartLocation, indexerDeclaration.GetRegion.EndLocation);
+					indexer.PropertyModifier |= PropertyModifier.HasGet;
+					indexer.GetRegion = ConvertRegion (indexerDeclaration.GetRegion.StartLocation, indexerDeclaration.GetRegion.EndLocation);
 				}
 				if (indexerDeclaration.HasSetRegion) {
-					indexer.SetMethod = new DomMethod ();
-					indexer.SetMethod.BodyRegion = ConvertRegion (indexerDeclaration.SetRegion.StartLocation, indexerDeclaration.SetRegion.EndLocation);
+					indexer.PropertyModifier |= PropertyModifier.HasSet;
+					indexer.SetRegion = ConvertRegion (indexerDeclaration.SetRegion.StartLocation, indexerDeclaration.SetRegion.EndLocation);
 				}
 				indexer.DeclaringType = typeStack.Peek ();
 				typeStack.Peek ().Add (indexer);
