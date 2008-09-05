@@ -29,7 +29,7 @@ using MonoDevelop.Core.Gui;
 
 namespace MonoDevelop.SourceEditor.OptionPanels
 {
-	public partial class GeneralOptionsPanel : Gtk.Bin, IOptionsPanel
+	partial class GeneralOptionsPanel : Gtk.Bin, IOptionsPanel
 	{
 		public GeneralOptionsPanel()
 		{

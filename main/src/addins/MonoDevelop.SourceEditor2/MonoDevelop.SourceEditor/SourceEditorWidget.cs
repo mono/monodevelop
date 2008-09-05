@@ -93,12 +93,14 @@ namespace MonoDevelop.SourceEditor
 				if (classBrowser == null) {
 					classBrowser = new ClassQuickFinder (this);
 					this.classBrowserAlignment.Add (classBrowser);
+					this.classBrowserAlignment.BottomPadding = 2;
 					this.classBrowserAlignment.ShowAll ();
 					PopulateClassCombo ();
 				}
 			} else {
 				if (classBrowser != null) {
 					this.classBrowserAlignment.Remove (classBrowser);
+					this.classBrowserAlignment.BottomPadding = 0;
 					classBrowser.Destroy (); //note: calls dispose() (?)
 					classBrowser = null;
 				}

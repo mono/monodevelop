@@ -16,7 +16,6 @@
     <child>
       <widget class="Gtk.VBox" id="editorBar">
         <property name="MemberName" />
-        <property name="Spacing">6</property>
         <child>
           <widget class="Gtk.Alignment" id="classBrowserAlignment">
             <property name="MemberName" />

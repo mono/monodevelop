@@ -27,7 +27,6 @@ namespace MonoDevelop.SourceEditor {
             // Container child MonoDevelop.SourceEditor.SourceEditorWidget.Gtk.Container+ContainerChild
             this.editorBar = new Gtk.VBox();
             this.editorBar.Name = "editorBar";
-            this.editorBar.Spacing = 6;
             // Container child editorBar.Gtk.Box+BoxChild
             this.classBrowserAlignment = new Gtk.Alignment(0.5F, 0.5F, 1F, 1F);
             this.classBrowserAlignment.Name = "classBrowserAlignment";

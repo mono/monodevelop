@@ -1,3 +1,12 @@
+2008-09-05  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.SourceEditor.OptionPanels/GeneralOptionsPanel.cs,
+	  gtk-gui/MonoDevelop.SourceEditor.OptionPanels.GeneralOptionsPanel.cs:
+	  Fix build.
+	* gtk-gui/MonoDevelop.SourceEditor.SourceEditorWidget.cs,
+	  gtk-gui/gui.stetic, MonoDevelop.SourceEditor/SourceEditorWidget.cs:
+	  Reduce wasted screen space.
+
 2008-09-04  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.SourceEditor/SourceEditorWidget.cs: Some folding location
