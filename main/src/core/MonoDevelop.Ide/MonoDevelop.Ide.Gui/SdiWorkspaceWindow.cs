@@ -333,7 +333,7 @@ namespace MonoDevelop.Ide.Gui
 				return;
 			toolbarBox = new HBox (false, 6);
 			toolbarBox.Show ();
-			box.PackEnd (toolbarBox, false, false, 0);
+			box.PackEnd (toolbarBox, false, false, 3);
 		}
 		
 		void CheckCreateSubViewContents ()
