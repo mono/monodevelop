@@ -175,6 +175,11 @@ namespace MonoDevelop.CSharpBinding
 			Stack<string> namespaceStack = new Stack<string> ();
 			public override object VisitNamespaceDeclaration (ICSharpCode.NRefactory.Ast.NamespaceDeclaration namespaceDeclaration, object data)
 			{
+				DomUsing domUsing = new DomUsing ();
+				domUsing.Region   = ConvertRegion (namespaceDeclaration.StartLocation, namespaceDeclaration.EndLocation);
+				domUsing.Add (namespaceDeclaration.Name);
+				result.Add (domUsing);
+				
 				namespaceStack.Push (namespaceStack.Count == 0 ? namespaceDeclaration.Name : namespaceStack.Peek() + "." + namespaceDeclaration.Name);
 				namespaceDeclaration.AcceptChildren (this, data);
 				namespaceStack.Pop ();

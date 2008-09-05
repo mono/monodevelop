@@ -1,3 +1,7 @@
+2008-09-05  Mike Krüger <mkrueger@novell.com> 
+
+	* Parser/NRefactoryParser.cs: fixed bug with namespace resolving.
+
 2008-09-04  Mike Krüger <mkrueger@novell.com> 
 
 	* Gui/NRefactoryResolver.cs: Fixed inner type bug.
