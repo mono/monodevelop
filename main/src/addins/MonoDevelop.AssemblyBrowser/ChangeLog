@@ -1,3 +1,8 @@
+2008-09-05  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.AssemblyBrowser/DomPropertyNodeBuilder.cs: some changed
+	  due dom changes.
+
 2008-07-27  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.AssemblyBrowser/ModuleDefinitionNodeBuilder.cs,

@@ -72,10 +72,10 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		public override void BuildChildNodes (ITreeBuilder ctx, object dataObject)
 		{
-			IProperty property = (IProperty)dataObject;
-			if (property.GetMethod != null)
+			DomCecilProperty property = (DomCecilProperty)dataObject;
+			if (property.HasGet)
 				ctx.AddChild (property.GetMethod);
-			if (property.SetMethod != null)
+			if (property.HasSet)
 				ctx.AddChild (property.SetMethod);
 		}
 		
