@@ -1,5 +1,22 @@
 2008-09-05  Michael Hutchinson <mhutchinson@novell.com> 
 
+	* gtk-gui/MonoDevelop.SourceEditor.SearchAndReplaceWidget.cs,
+	  gtk-gui/MonoDevelop.SourceEditor.GotoLineNumberWidget.cs,
+	  MonoDevelop.SourceEditor/SearchAndReplaceWidget.cs,
+	  MonoDevelop.SourceEditor/ClassQuickFinder.cs,
+	  MonoDevelop.SourceEditor/GotoLineNumberWidget.cs,
+	  MonoDevelop.SourceEditor/SourceEditorView.cs: Make non-reusable
+	  widgets internal.
+	* gtk-gui/objects.xml, Makefile.am, MonoDevelop.SourceEditor.mdp:
+	  Updated.
+	* gtk-gui/MonoDevelop.SourceEditor.SourceEditorWidget.cs,
+	  gtk-gui/gui.stetic: Replace stetic widget by manual code.
+	* MonoDevelop.SourceEditor/SourceEditorWidget.cs: Slim down unnecessary
+	  spacing around the edge of the text editor. Tidy up padding for
+	  child widgets.
+
+2008-09-05  Michael Hutchinson <mhutchinson@novell.com> 
+
 	* MonoDevelop.SourceEditor.OptionPanels/GeneralOptionsPanel.cs,
 	  gtk-gui/MonoDevelop.SourceEditor.OptionPanels.GeneralOptionsPanel.cs:
 	  Fix build.

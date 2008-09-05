@@ -38,9 +38,8 @@ using Mono.TextEditor;
 
 namespace MonoDevelop.SourceEditor
 {
-	[System.ComponentModel.Category("MonoDevelop.SourceEditor2")]
-	[System.ComponentModel.ToolboxItem(true)]
-	public partial class SearchAndReplaceWidget : Gtk.Bin
+	
+	partial class SearchAndReplaceWidget : Gtk.Bin
 	{
 		const char historySeparator = '\n';
 		const int  historyLimit = 20;

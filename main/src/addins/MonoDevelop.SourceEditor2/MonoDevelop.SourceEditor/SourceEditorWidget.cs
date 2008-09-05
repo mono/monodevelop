@@ -42,11 +42,13 @@ using MonoDevelop.Ide.Commands;
 
 namespace MonoDevelop.SourceEditor
 {
-	[System.ComponentModel.Category("MonoDevelop.SourceEditor2")]
-	[System.ComponentModel.ToolboxItem(true)]
-	public partial class SourceEditorWidget : Gtk.Bin, ITextEditorExtension
+	
+	class SourceEditorWidget : Gtk.VBox, ITextEditorExtension
 	{
 		SourceEditorView view;
+		ScrolledWindow mainsw;
+		
+		const uint CHILD_PADDING = 3;
 		
 		bool shouldShowclassBrowser;
 		bool canShowClassBrowser;
@@ -92,15 +94,14 @@ namespace MonoDevelop.SourceEditor
 			if (shouldShowclassBrowser && canShowClassBrowser) {
 				if (classBrowser == null) {
 					classBrowser = new ClassQuickFinder (this);
-					this.classBrowserAlignment.Add (classBrowser);
-					this.classBrowserAlignment.BottomPadding = 2;
-					this.classBrowserAlignment.ShowAll ();
+					this.PackStart (classBrowser, false, false, CHILD_PADDING);
+					this.ReorderChild (classBrowser, 0);
+					classBrowser.ShowAll ();
 					PopulateClassCombo ();
 				}
 			} else {
 				if (classBrowser != null) {
-					this.classBrowserAlignment.Remove (classBrowser);
-					this.classBrowserAlignment.BottomPadding = 0;
+					this.Remove (classBrowser);
 					classBrowser.Destroy (); //note: calls dispose() (?)
 					classBrowser = null;
 				}
@@ -150,9 +151,10 @@ namespace MonoDevelop.SourceEditor
 		{
 			this.view = view;
 			this.SetSizeRequest (32, 32);
-			this.Build();
 			this.lastActiveEditor = this.textEditor = new MonoDevelop.SourceEditor.ExtendibleTextEditor (view);
-			this.mainsw.Child = this.TextEditor;
+			mainsw = new ScrolledWindow ();
+			mainsw.Child = this.TextEditor;
+			this.PackStart (mainsw, true, true, 0);
 			this.mainsw.ButtonPressEvent += PrepareEvent;
 			this.textEditor.Errors = errors;
 			
@@ -212,7 +214,7 @@ namespace MonoDevelop.SourceEditor
 			if (this.classBrowser != null) {
 				focusChain.Add (this.classBrowser);
 			}
-			this.editorBar.FocusChain = focusChain.ToArray ();
+			this.FocusChain = focusChain.ToArray ();
 		}
 		
 		#region Error underlining
@@ -565,12 +567,12 @@ namespace MonoDevelop.SourceEditor
 				lastActiveEditor = this.textEditor = splittedTextEditor;
 				splittedTextEditor = null;
 			}
-			editorBar.Remove (splitContainer);
+			this.Remove (splitContainer);
 			splitContainer.Destroy ();
 			splitContainer = null;
 			
-			editorBar.PackStart (mainsw);
-			editorBar.ShowAll ();
+			this.PackStart (mainsw, true, true, 0);
+			this.ShowAll ();
 		}
 		
 		public void SwitchWindow ()
@@ -587,7 +589,7 @@ namespace MonoDevelop.SourceEditor
  			if (splitContainer != null) 
 				Unsplit ();
 			
-			editorBar.Remove (this.mainsw);
+			this.Remove (this.mainsw);
 			
 			this.splitContainer = vSplit ? (Gtk.Paned)new VPaned () : (Gtk.Paned)new HPaned ();
 			
@@ -612,9 +614,9 @@ namespace MonoDevelop.SourceEditor
 			
 			secondsw.Child = splittedTextEditor;
 			splitContainer.Add2 (secondsw);
-			editorBar.PackStart (splitContainer);
+			this.PackStart (splitContainer, true, true, 0);
 			this.splitContainer.Position = (vSplit ? this.Allocation.Height : this.Allocation.Width) / 2;
-			editorBar.ShowAll ();
+			this.ShowAll ();
 			
 		}
 //		void SplitContainerSizeRequested (object sender, SizeRequestedArgs args)
@@ -648,8 +650,8 @@ namespace MonoDevelop.SourceEditor
 			}
 			
 			view.WarnOverwrite = true;
-			editorBar.PackStart (reloadBar, false, true, 0);
-			editorBar.ReorderChild (reloadBar, classBrowser != null ? 1 : 0);
+			this.PackStart (reloadBar, true, false, CHILD_PADDING);
+			this.ReorderChild (reloadBar, classBrowser != null ? 1 : 0);
 			reloadBar.ShowAll ();
 			view.WorkbenchWindow.ShowNotification = true;
 		}
@@ -657,8 +659,8 @@ namespace MonoDevelop.SourceEditor
 		public void RemoveReloadBar ()
 		{
 			if (reloadBar != null) {
-				if (reloadBar.Parent == editorBar)
-					editorBar.Remove (reloadBar);
+				if (reloadBar.Parent == this)
+					this.Remove (reloadBar);
 				reloadBar.Destroy ();
 				reloadBar = null;
 			}
@@ -739,7 +741,7 @@ namespace MonoDevelop.SourceEditor
 			bool result = false;
 			if (searchAndReplaceWidget != null) {
 				if (searchAndReplaceWidget.Parent != null)
-					editorBar.Remove (searchAndReplaceWidget);
+					this.Remove (searchAndReplaceWidget);
 				searchAndReplaceWidget.Destroy ();
 				searchAndReplaceWidget.Dispose ();
 				searchAndReplaceWidget = null;
@@ -747,7 +749,7 @@ namespace MonoDevelop.SourceEditor
 			}
 			if (gotoLineNumberWidget != null) {
 				if (gotoLineNumberWidget.Parent != null)
-					editorBar.Remove (gotoLineNumberWidget);
+					this.Remove (gotoLineNumberWidget);
 				gotoLineNumberWidget.Destroy ();
 				gotoLineNumberWidget.Dispose ();
 				gotoLineNumberWidget = null;
@@ -816,8 +818,8 @@ namespace MonoDevelop.SourceEditor
 				if (TextEditor.IsSomethingSelected)
 					TextEditor.SearchPattern = TextEditor.SelectedText;
 				searchAndReplaceWidget = new SearchAndReplaceWidget (this);
-				editorBar.PackEnd (searchAndReplaceWidget);
-				editorBar.SetChildPacking (searchAndReplaceWidget, false, true, 0, PackType.End);
+				this.PackEnd (searchAndReplaceWidget);
+				this.SetChildPacking (searchAndReplaceWidget, false, false, CHILD_PADDING, PackType.End);
 				searchAndReplaceWidget.ShowAll ();
 				searchAndReplaceWidget.SetSearchReplaceMode (replace);
 				this.textEditor.HighlightSearchPattern = true;
@@ -835,8 +837,8 @@ namespace MonoDevelop.SourceEditor
 			if (gotoLineNumberWidget == null) {
 				KillWidgets ();
 				gotoLineNumberWidget = new GotoLineNumberWidget (this);
-				editorBar.Add (gotoLineNumberWidget);
-				editorBar.SetChildPacking(gotoLineNumberWidget, false, true, 0, PackType.End);
+				this.Add (gotoLineNumberWidget);
+				this.SetChildPacking(gotoLineNumberWidget, false, false, CHILD_PADDING, PackType.End);
 				gotoLineNumberWidget.ShowAll ();
 				ResetFocusChain ();
 				

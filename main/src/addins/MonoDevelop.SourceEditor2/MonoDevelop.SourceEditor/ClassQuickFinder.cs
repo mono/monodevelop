@@ -40,8 +40,7 @@ using MonoDevelop.Projects.Dom.Output;
 namespace MonoDevelop.SourceEditor
 {
 	
-	
-	public class ClassQuickFinder : HBox
+	class ClassQuickFinder : HBox
 	{
 		bool loadingMembers = false;
 		bool handlingParseEvent = false;

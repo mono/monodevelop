@@ -31,9 +31,8 @@ using Mono.TextEditor;
 
 namespace MonoDevelop.SourceEditor
 {
-	[System.ComponentModel.Category("MonoDevelop.SourceEditor2")]
-	[System.ComponentModel.ToolboxItem(true)]
-	public partial class GotoLineNumberWidget : Gtk.Bin
+	
+	partial class GotoLineNumberWidget : Gtk.Bin
 	{
 		SourceEditorWidget widget;
 		double vSave, hSave;

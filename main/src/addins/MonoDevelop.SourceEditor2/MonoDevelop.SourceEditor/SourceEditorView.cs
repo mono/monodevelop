@@ -92,7 +92,7 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 		
-		public SourceEditorWidget SourceEditorWidget {
+		internal SourceEditorWidget SourceEditorWidget {
 			get {
 				return widget;
 			}

@@ -11,7 +11,7 @@
 namespace MonoDevelop.SourceEditor {
     
     
-    public partial class GotoLineNumberWidget {
+    internal partial class GotoLineNumberWidget {
         
         private Gtk.HBox hbox1;
         
