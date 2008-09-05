@@ -26,6 +26,7 @@
     <File name="MonoDevelop.Projects/PackagingTests.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects/MakefileTests.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects/DomCompilationUnitTests.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Projects/DomPersistenceTests.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
@@ -39,7 +40,7 @@
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Autotools" />
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.CSharpBinding" />
   </References>
-  <GtkDesignInfo gtkVersion="2.12.1" />
+  <GtkDesignInfo />
   <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="Makefile.am" BuildTargetName="" CleanTargetName="" ExecuteTargetName="test" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="../..">
     <BuildFilesVar Sync="True" Name="FILES" />
     <DeployFilesVar />
