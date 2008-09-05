@@ -36,7 +36,7 @@ using MonoDevelop.Projects;
 using MonoDevelop.Projects.Dom.Parser;
 using System.Reflection;
 
-namespace MonoDevelop.Projects.Dom
+namespace MonoDevelop.Projects.Dom.Serialization
 {
 	internal class ProjectCodeCompletionDatabase : SerializationCodeCompletionDatabase
 	{
@@ -123,6 +123,7 @@ namespace MonoDevelop.Projects.Dom
 		
 		void OnProjectModified (object s, SolutionItemModifiedEventArgs args)
 		{
+			UpdateCorlibReference ();
 			// TODO:
 //			if (UpdateCorlibReference ())
 //				parserDatabase.NotifyReferencesChanged (this);

@@ -31,7 +31,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 
-namespace MonoDevelop.Projects.Dom
+namespace MonoDevelop.Projects.Dom.Serialization
 {
 	internal class DomTypeProxy : DomType
 	{

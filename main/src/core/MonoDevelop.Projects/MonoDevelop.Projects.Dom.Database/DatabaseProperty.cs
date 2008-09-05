@@ -35,13 +35,6 @@ using Hyena.Data.Sqlite;
 
 namespace MonoDevelop.Projects.Dom.Database
 {
-	[Flags]
-	public enum PropertyModifier {	
-		None      = 0,
-		IsIndexer = 1,
-		HasGet    = 2,
-		HasSet    = 4
-	}
 	
 	public class DatabaseProperty : DomProperty
 	{
@@ -49,21 +42,6 @@ namespace MonoDevelop.Projects.Dom.Database
 		
 		DatabaseType declaringType;
 		long memberId;
-		
-		bool hasSet;
-		bool hasGet;
-		
-		public override bool HasSet {
-			get {
-				return hasSet;
-			}
-		}
-		
-		public override bool HasGet {
-			get {
-				return hasGet;
-			}
-		}
 		
 		bool readParameterList = false;
 		public override ReadOnlyCollection<IParameter> Parameters {
@@ -82,10 +60,7 @@ namespace MonoDevelop.Projects.Dom.Database
 		{
 			this.memberId = memberId;
 			this.DeclaringType = this.declaringType = declaringType;
-			
-			this.hasGet        = (modifier & PropertyModifier.HasGet) == PropertyModifier.HasGet;
-			this.hasSet        = (modifier & PropertyModifier.HasSet) == PropertyModifier.HasSet;
-			this.IsIndexer     = (modifier & PropertyModifier.IsIndexer) == PropertyModifier.IsIndexer;
+			base.propertyModifier = modifier;
 			
 			DatabaseField.FillMembers (this, declaringType.Database, memberId);
 		}

@@ -31,7 +31,7 @@ using System;
 using MonoDevelop.Core;
 using MonoDevelop.Projects.Dom.Parser;
 
-namespace MonoDevelop.Projects.Dom
+namespace MonoDevelop.Projects.Dom.Serialization
 {
 	internal class SimpleCodeCompletionDatabase : SerializationCodeCompletionDatabase
 	{

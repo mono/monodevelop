@@ -31,7 +31,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 
-namespace MonoDevelop.Projects.Dom
+namespace MonoDevelop.Projects.Dom.Serialization
 {
 	public static class DomPersistence
 	{
@@ -96,15 +96,15 @@ namespace MonoDevelop.Projects.Dom
 		{
 			if (ReadNull (reader))
 				return null;
-			// TODO: Attributes
+			
 			string name       = ReadString (reader, nameTable);
 			int  pointerNesting = reader.ReadInt32 ();
 			bool isNullable = reader.ReadBoolean ();
 			bool isByRef = reader.ReadBoolean ();
-			
 			int  arrayDimensions = reader.ReadInt32 ();
 			uint arguments  = reader.ReadUInt32 ();
 			List<IReturnType> parameters = new List<IReturnType> ();
+			
 			while (arguments-- > 0) {
 				parameters.Add (ReadReturnType (reader, nameTable));
 			}
@@ -139,7 +139,7 @@ namespace MonoDevelop.Projects.Dom
 			DomMethod result = new DomMethod ();
 			ReadMemberInformation (reader, nameTable, result);
 			result.BodyRegion = ReadRegion (reader, nameTable);
-			result.ReturnType    = ReadReturnType (reader, nameTable);
+			result.ReturnType = ReadReturnType (reader, nameTable);
 			result.IsConstructor = reader.ReadBoolean ();
 			uint arguments = reader.ReadUInt32 ();
 			
@@ -191,13 +191,11 @@ namespace MonoDevelop.Projects.Dom
 		{
 			DomProperty result = new DomProperty ();
 			ReadMemberInformation (reader, nameTable, result);
-			result.BodyRegion = ReadRegion (reader, nameTable);
+ 			result.BodyRegion = ReadRegion (reader, nameTable);
 			result.ReturnType = ReadReturnType (reader, nameTable);
-			result.IsIndexer  = reader.ReadBoolean ();
-			if (!ReadNull (reader))
-				result.GetMethod = ReadMethod (reader, nameTable);
-			if (!ReadNull (reader))
-				result.SetMethod = ReadMethod (reader, nameTable);
+			result.PropertyModifier = (PropertyModifier)reader.ReadInt32 ();
+			result.GetRegion = ReadRegion (reader, nameTable);
+			result.SetRegion = ReadRegion (reader, nameTable);
 			return result;
 		}
 		
@@ -207,11 +205,9 @@ namespace MonoDevelop.Projects.Dom
 			WriteMemberInformation (writer, nameTable, property);
 			Write (writer, nameTable, property.BodyRegion);
 			Write (writer, nameTable, property.ReturnType);
-			writer.Write (property.IsIndexer);
-			if (!WriteNull (writer, property.GetMethod)) 
-				Write (writer, nameTable, property.GetMethod);
-			if (!WriteNull (writer, property.SetMethod)) 
-				Write (writer, nameTable, property.SetMethod);
+			writer.Write ((int)property.PropertyModifier);
+			Write (writer, nameTable, property.GetRegion);
+			Write (writer, nameTable, property.SetRegion);
 		}
 		
 		public static DomEvent ReadEvent (BinaryReader reader, INameDecoder nameTable)
@@ -227,6 +223,7 @@ namespace MonoDevelop.Projects.Dom
 				result.RaiseMethod = ReadMethod (reader, nameTable);
 			return result;
 		}
+		
 		public static void Write (BinaryWriter writer, INameEncoder nameTable, IEvent evt)
 		{
 			Debug.Assert (evt != null);
@@ -276,21 +273,20 @@ namespace MonoDevelop.Projects.Dom
 				result.Add (field);
 			}
 			
+			// methods
+			count = reader.ReadUInt32 ();
+			while (count-- > 0) {
+				DomMethod method = ReadMethod (reader, nameTable);
+				method.DeclaringType = result;
+				result.Add (method);
+			}
+			
 			// properties
 			count = reader.ReadUInt32 ();
 			while (count-- > 0) {
 				DomProperty property = ReadProperty (reader, nameTable);
 				property.DeclaringType = result;
 				result.Add (property);
-			}
-			
-			// methods
-			count = reader.ReadUInt32 ();
-			
-			while (count-- > 0) {
-				DomMethod method = ReadMethod (reader, nameTable);
-				method.DeclaringType = result;
-				result.Add (method);
 			}
 			
 			// events
@@ -333,13 +329,13 @@ namespace MonoDevelop.Projects.Dom
 			foreach (IField field in type.Fields) {
 				Write (writer, nameTable, field);
 			}
-			writer.Write (type.PropertyCount);
-			foreach (IProperty property in type.Properties) {
-				Write (writer, nameTable, property);
-			}
 			writer.Write (type.MethodCount + type.ConstructorCount);
 			foreach (IMethod method in type.Methods) {
 				Write (writer, nameTable, method);
+			}
+			writer.Write (type.PropertyCount + type.IndexerCount);
+			foreach (IProperty property in type.Properties) {
+				Write (writer, nameTable, property);
 			}
 			writer.Write (type.EventCount);
 			foreach (IEvent evt in type.Events) {

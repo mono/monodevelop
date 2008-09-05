@@ -36,17 +36,35 @@ namespace MonoDevelop.Projects.Dom
 {
 	public class DomProperty : AbstractMember, IProperty
 	{
-		protected bool isIndexer;
+		protected PropertyModifier propertyModifier;
 		protected List<IParameter> parameters = null;
-		protected IMethod getMethod = null;
-		protected IMethod setMethod = null;
+		protected DomRegion getRegion = DomRegion.Empty;
+		protected DomRegion setRegion = DomRegion.Empty;
+
+		public PropertyModifier PropertyModifier {
+			get {
+				return propertyModifier;
+			}
+			set {
+				propertyModifier = value;
+			}
+		}
 		
 		public bool IsIndexer {
 			get {
-				return isIndexer;
+				return (propertyModifier & PropertyModifier.IsIndexer) == PropertyModifier.IsIndexer;
 			}
-			set {
-				isIndexer = value;
+		}
+		
+		public bool HasGet {
+			get {
+				return (propertyModifier & PropertyModifier.HasGet) == PropertyModifier.HasGet;
+			}
+		}
+		
+		public bool HasSet {
+			get {
+				return (propertyModifier & PropertyModifier.HasSet) == PropertyModifier.HasSet;
 			}
 		}
 		
@@ -55,41 +73,24 @@ namespace MonoDevelop.Projects.Dom
 				return parameters != null ? parameters.AsReadOnly () : null;
 			}
 		}
-		
-		public virtual bool HasSet {
+
+		public DomRegion GetRegion {
 			get {
-				return GetMethod != null;
-			}
-		}
-		
-		public virtual bool HasGet {
-			get {
-				return SetMethod != null;
-			}
-		}
-		
-		public virtual IMethod GetMethod {
-			get {
-				if (getMethod != null)
-					return getMethod;
-				return LookupSpecialMethod ("get_");
+				return this.getRegion;
 			}
 			set {
-				getMethod = value;
+				this.getRegion = value;
 			}
 		}
 		
-		public virtual IMethod SetMethod {
+		public DomRegion SetRegion {
 			get {
-				if (setMethod != null)
-					return setMethod;
-				return LookupSpecialMethod ("set_");
+				return this.setRegion;
 			}
 			set {
-				setMethod = value;
+				this.setRegion = value;
 			}
 		}
-		
 		public override string HelpUrl {
 			get {
 				StringBuilder result = new StringBuilder ();
@@ -165,24 +166,23 @@ namespace MonoDevelop.Projects.Dom
 			result.Modifiers      = source.Modifiers;
 			result.ReturnType     = DomReturnType.Resolve (source.ReturnType, typeResolver);
 			result.Location       = source.Location;
-			result.IsIndexer      = source.IsIndexer;
+			result.PropertyModifier = source.PropertyModifier;
 			result.AddRange (DomAttribute.Resolve (source.Attributes, typeResolver));
-			
-			if (source.GetMethod != null)
-				result.GetMethod = DomMethod.Resolve (source.GetMethod, typeResolver);
-			if (source.SetMethod != null)
-				result.SetMethod = DomMethod.Resolve (source.SetMethod, typeResolver);
+			result.GetRegion = source.GetRegion;
+			result.SetRegion = source.SetRegion;
 			return result;
 		}
 		
 		public override string ToString ()
 		{
-			return string.Format ("[DomProperty:Name={0}, Modifiers={1}, ReturnType={2}, Location={3}, IsIndexer={4}]",
+			return string.Format ("[DomProperty:Name={0}, Modifiers={1}, ReturnType={2}, Location={3}, PropertyModifier={4}, GetRegion={5}, SetRegion={6}]",
 			                      Name,
 			                      Modifiers,
 			                      ReturnType,
 			                      Location,
-			                      IsIndexer);
+			                      PropertyModifier,
+			                      GetRegion,
+			                      SetRegion);
 		}
 		
 		public override object AcceptVisitior (IDomVisitor visitor, object data)

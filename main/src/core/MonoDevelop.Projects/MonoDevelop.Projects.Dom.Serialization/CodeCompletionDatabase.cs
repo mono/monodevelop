@@ -43,7 +43,7 @@ using Mono.Addins;
 using System.Reflection;
 using MonoDevelop.Projects.Dom.Parser;
 
-namespace MonoDevelop.Projects.Dom
+namespace MonoDevelop.Projects.Dom.Serialization
 {
 	internal class SerializationCodeCompletionDatabase : IDisposable
 	{
@@ -424,7 +424,7 @@ namespace MonoDevelop.Projects.Dom
 		{
 		}
 		
-		protected FileEntry GetFile (string name)
+		internal FileEntry GetFile (string name)
 		{
 			return files [name] as FileEntry;
 		}
@@ -740,10 +740,7 @@ namespace MonoDevelop.Projects.Dom
 		
 		protected virtual bool IsFileModified (FileEntry file)
 		{
-			if (!File.Exists (file.FileName))
-				return false;
-			FileInfo fi = new FileInfo (file.FileName);
-			return ((fi.LastWriteTime > file.LastParseTime || file.ParseErrorRetries > 0) && !file.DisableParse);
+			return file.IsModified;
 		}
 		
 		protected virtual void QueueParseJob (FileEntry file)
@@ -751,6 +748,7 @@ namespace MonoDevelop.Projects.Dom
 			if (file.InParseQueue)
 				return;
 			file.InParseQueue = true;
+			ParseCallback (file.FileName, null);
 			// TODO:
 			//parserDatabase.QueueParseJob (this, new JobCallback (ParseCallback), file.FileName);
 		}

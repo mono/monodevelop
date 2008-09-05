@@ -226,6 +226,7 @@
     <File name="MonoDevelop.Projects.Dom.Serialization/NamespaceEntry.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Dom.Serialization/DomTypeProxy.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Dom.Database/DatabaseProjectDom.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Projects.Dom.Serialization/DatabaseProjectDom.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="False" refto="monodoc, Version=1.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />

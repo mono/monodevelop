@@ -38,7 +38,7 @@ using System.Reflection;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
 
-namespace MonoDevelop.Projects.Dom
+namespace MonoDevelop.Projects.Dom.Serialization
 {	
 	internal class AssemblyCodeCompletionDatabase: SerializationCodeCompletionDatabase
 	{

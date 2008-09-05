@@ -45,6 +45,22 @@ namespace MonoDevelop.Projects.Dom
 		{
 			propertyDefinition = null;
 		}
+
+		public const string GetMethodPrefix = "get_";
+		public const string SetMethodPrefix = "set_";
+		
+		public IMethod GetMethod {
+			get {
+				return LookupSpecialMethod (GetMethodPrefix);
+			}
+		}
+		
+		public IMethod SetMethod {
+			get {
+				return LookupSpecialMethod (SetMethodPrefix);
+			}
+		}
+		
 		
 		public DomCecilProperty (MonoDevelop.Projects.Dom.IType declaringType, bool keepDefinitions, PropertyDefinition propertyDefinition)
 		{
@@ -53,11 +69,15 @@ namespace MonoDevelop.Projects.Dom
 				this.propertyDefinition = propertyDefinition;
 			base.Name               = propertyDefinition.Name;
 			if (Name == "Item" && propertyDefinition.Parameters.Count > 0) {
-				this.isIndexer = true;
+				this.propertyModifier |= PropertyModifier.IsIndexer;
 				foreach (ParameterDefinition paramDef in propertyDefinition.Parameters) {
 					Add (new DomCecilParameter (paramDef));
 				}
 			}
+			if (propertyDefinition.GetMethod != null) 
+				this.propertyModifier |= PropertyModifier.HasGet;
+			if (propertyDefinition.SetMethod != null) 
+				this.propertyModifier |= PropertyModifier.HasSet;
 			
 			base.modifiers          = DomCecilType.GetModifiers ((propertyDefinition.GetMethod != null ? propertyDefinition.GetMethod : propertyDefinition.SetMethod).Attributes);
 			if (!propertyDefinition.IsSpecialName)

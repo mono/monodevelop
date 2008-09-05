@@ -32,7 +32,7 @@ using System.Collections;
 using System.Collections.Generic;
 using MonoDevelop.Projects;
 
-namespace MonoDevelop.Projects.Dom
+namespace MonoDevelop.Projects.Dom.Serialization
 {
 	[Serializable]
 	internal class NamespaceEntry

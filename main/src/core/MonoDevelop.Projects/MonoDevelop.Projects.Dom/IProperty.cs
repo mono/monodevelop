@@ -31,13 +31,25 @@ using System.Collections.ObjectModel;
 
 namespace MonoDevelop.Projects.Dom
 {
+	[Flags]
+	public enum PropertyModifier {	
+		None      = 0,
+		IsIndexer = 1,
+		HasGet    = 2,
+		HasSet    = 4
+	}
+	
 	public interface IProperty : IMember
 	{
-		bool IsIndexer {
+		PropertyModifier PropertyModifier {
 			get;
 		}
 		
 		ReadOnlyCollection<IParameter> Parameters {
+			get;
+		}
+		
+		bool IsIndexer {
 			get;
 		}
 		
@@ -49,13 +61,12 @@ namespace MonoDevelop.Projects.Dom
 			get;
 		}
 		
-		IMethod GetMethod {
+		DomRegion GetRegion {
 			get;
 		}
 		
-		IMethod SetMethod {
+		DomRegion SetRegion {
 			get;
 		}
-		
 	}
 }

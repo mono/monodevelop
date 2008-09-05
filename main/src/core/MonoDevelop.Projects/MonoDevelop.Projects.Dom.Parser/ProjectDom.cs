@@ -237,6 +237,10 @@ namespace MonoDevelop.Projects.Dom.Parser
 			return result;
 		}
 		
+		public virtual void Unload ()
+		{
+		}
+		
 		internal void FireLoaded ()
 		{
 			if (Loaded != null) {

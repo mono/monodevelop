@@ -320,7 +320,10 @@ namespace MonoDevelop.Projects.Dom.Parser
 		{
 			if (project == null)
 				return;
+			project.ReferenceAddedToProject -= OnProjectReferencesChanged;
+			project.ReferenceRemovedFromProject -= OnProjectReferencesChanged;
 			if (doms.ContainsKey (project.FileName)) {
+				doms[project.FileName].Unload ();
 				Dictionary<string, ProjectDom> newDoms = new Dictionary<string, ProjectDom> (doms);
 				newDoms.Remove (project.FileName);
 				doms = newDoms;
@@ -390,7 +393,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 		}
 		#endregion
 		
-		static DatabaseProjectDom LoadAssemblyDatabase (string uri)
+		static ProjectDom LoadAssemblyDatabase (string uri)
 		{
 			string file = uri.Substring (9);
 			string fullName = GetFullAssemblyName (file);
@@ -398,6 +401,18 @@ namespace MonoDevelop.Projects.Dom.Parser
 			GetAssemblyInfo (fullName, out realAssemblyName, out assemblyFile, out name);
 			if (String.IsNullOrEmpty (name))
 				return null;
+			// Custom code completion db:
+			/*
+			MonoDevelop.Projects.Dom.Serialization.AssemblyCodeCompletionDatabase accd = new MonoDevelop.Projects.Dom.Serialization.AssemblyCodeCompletionDatabase (codeCompletionDataPath, fullName);
+
+			accd.ParseInExternalProcess = false;
+			accd.CheckModifiedFiles ();
+			
+			MonoDevelop.Projects.Dom.Serialization.DatabaseProjectDom dpd = new MonoDevelop.Projects.Dom.Serialization.DatabaseProjectDom (accd);
+			InsertDom (uri, dpd);
+			return dpd;*/
+
+			// SQLite code completion db:
 			long projectId = assemblyDatabase.GetProjectId (fullName);
 			if (projectId <= 0) {
 				int retrys = 0;
@@ -451,6 +466,16 @@ namespace MonoDevelop.Projects.Dom.Parser
 			if (project == null)
 				return null;
 			if (!HasDom (project)) {
+				project.ReferenceAddedToProject += OnProjectReferencesChanged;
+				project.ReferenceRemovedFromProject += OnProjectReferencesChanged;
+				// Custom code completion db:
+				/*
+				MonoDevelop.Projects.Dom.Serialization.ProjectCodeCompletionDatabase pccd = new MonoDevelop.Projects.Dom.Serialization.ProjectCodeCompletionDatabase (project);
+				MonoDevelop.Projects.Dom.Serialization.DatabaseProjectDom dpd = new MonoDevelop.Projects.Dom.Serialization.DatabaseProjectDom (pccd);
+				InsertDom (project.FileName, dpd);
+				return dpd;*/
+				
+				// SQLite code completion db:
 				string codeCompletionFile = System.IO.Path.ChangeExtension (project.ParentSolution.FileName, "." + CodeCompletionDatabase.Version + ".pidb");
 				if (!solutionDatabases.ContainsKey (codeCompletionFile))
 					solutionDatabases [codeCompletionFile] = new CodeCompletionDatabase (codeCompletionFile);
@@ -465,7 +490,18 @@ namespace MonoDevelop.Projects.Dom.Parser
 				dom.Project = project;
 				return dom;
 			}
-			return (DatabaseProjectDom)GetDom (project.FileName);
+			return (ProjectDom)GetDom (project.FileName);
+		}
+		
+		static void OnProjectReferencesChanged (object sender, ProjectReferenceEventArgs args)
+		{
+			ProjectDom dom = GetDatabaseProjectDom (args.Project);
+			if (args.Project is DotNetProject) {
+				string[] refIds = GetReferenceKeys (args.ProjectReference);
+				foreach (string refId in refIds) {
+					dom.AddReference (Load (args.Project.ParentSolution, args.Project.BaseDirectory, refId));
+				}
+			}
 		}
 		
 		static ProjectDom Load (Solution solution, Project project)

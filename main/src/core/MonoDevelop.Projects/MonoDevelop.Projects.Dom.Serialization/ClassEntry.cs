@@ -31,7 +31,7 @@ using System;
 using System.Collections;
 using MonoDevelop.Projects;
 
-namespace MonoDevelop.Projects.Dom
+namespace MonoDevelop.Projects.Dom.Serialization
 {
 	[Serializable]
 	class ClassEntry

@@ -52,6 +52,7 @@ FILES =  \
 	MonoDevelop.Projects.Dom.Serialization/AssemblyCodeCompletionDatabase.cs \
 	MonoDevelop.Projects.Dom.Serialization/ClassEntry.cs \
 	MonoDevelop.Projects.Dom.Serialization/CodeCompletionDatabase.cs \
+	MonoDevelop.Projects.Dom.Serialization/DatabaseProjectDom.cs \
 	MonoDevelop.Projects.Dom.Serialization/DomPersistence.cs \
 	MonoDevelop.Projects.Dom.Serialization/DomTypeProxy.cs \
 	MonoDevelop.Projects.Dom.Serialization/FileEntry.cs \
