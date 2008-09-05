@@ -35,6 +35,7 @@ using System.ComponentModel;
 using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.Core;
 using Mono.Addins;
+using MonoDevelop.Ide.Gui.Components;
 
 namespace MonoDevelop.Ide.Codons
 {

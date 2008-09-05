@@ -35,12 +35,12 @@ namespace Mono.TextEditor
 {
 	public class CodeSegmentPreviewWindow : Gtk.Window
 	{
-		const int DefaultWidth = 320;
-		const int DefaultHeight = 200;
+		const int DefaultPreviewWindowWidth = 320;
+		const int DefaultPreviewWindowHeight = 200;
 		TextEditor editor;
 		ISegment segment;
 
-		public CodeSegmentPreviewWindow (TextEditor editor, ISegment segment) : this (editor, segment, DefaultWidth, DefaultHeight)
+		public CodeSegmentPreviewWindow (TextEditor editor, ISegment segment) : this (editor, segment, DefaultPreviewWindowWidth, DefaultPreviewWindowHeight)
 		{
 		}
 		

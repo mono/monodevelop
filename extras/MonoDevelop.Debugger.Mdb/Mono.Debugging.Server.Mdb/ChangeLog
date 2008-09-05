@@ -1,3 +1,16 @@
+2008-09-03  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* DebuggerServer.cs: Fill the Exception property for the Exception and
+	  UnhandledException events.
+
+2008-08-29  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* DebuggerServer.cs: Fix build.
+
+2008-08-22  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MyTextReader.cs, Expression.cs: Remove unused stuff.
+
 2008-08-18  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Mono.Debugging.Server.Mdb.mdp: Fix reference to Mono.TextEditor. The

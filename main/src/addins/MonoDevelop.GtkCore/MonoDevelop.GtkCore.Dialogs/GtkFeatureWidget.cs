@@ -48,7 +48,7 @@ namespace MonoDevelop.GtkCore.Dialogs
 
 		public bool SupportsSolutionItem (SolutionFolder parentCombine, SolutionItem entry)
 		{
-			return entry is DotNetProject;
+			return GtkDesignInfo.SupportsRefactoring (entry as DotNetProject);
 		}
 		
 		public Widget CreateFeatureEditor (SolutionFolder parentCombine, SolutionItem entry)
@@ -58,9 +58,9 @@ namespace MonoDevelop.GtkCore.Dialogs
 
 		public void ApplyFeature (SolutionFolder parentCombine, SolutionItem entry, Widget editor)
 		{
-			GtkDesignInfo info = GtkDesignInfo.FromProject ((DotNetProject) entry);
 			GtkFeatureWidget fw = (GtkFeatureWidget) editor;
-			info.TargetGtkVersion = fw.SelectedVersion;
+			ReferenceManager refmgr = new ReferenceManager ((DotNetProject) entry);
+			refmgr.GtkPackageVersion = fw.SelectedVersion;
 		}
 		
 		public string Validate (SolutionFolder parentCombine, SolutionItem entry, Gtk.Widget editor)

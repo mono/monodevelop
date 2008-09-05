@@ -299,7 +299,7 @@ namespace MonoDevelop.SourceEditor
 			
 			bool IsInsideMember (FoldSegment marker, DomRegion region, IType cl)
 			{
-				if (region == null || !cl.BodyRegion.Contains (region.Start))
+				if (region == null || cl == null || !cl.BodyRegion.Contains (region.Start))
 					return false;
 				foreach (IMember member in cl.Members) {
 					if (member.BodyRegion == null)

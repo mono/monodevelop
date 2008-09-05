@@ -1,3 +1,51 @@
+2008-09-04  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.GtkCore.NodeBuilders/ProjectFolderNodeBuilderExtension.cs,
+	  MonoDevelop.GtkCore.NodeBuilders/StockIconsNodeBuilder.cs,
+	  MonoDevelop.GtkCore.NodeBuilders/WidgetNodeBuilder.cs,
+	  MonoDevelop.GtkCore.NodeBuilders/ProjectNodeBuilder.cs,
+	  MonoDevelop.GtkCore.NodeBuilders/WindowsFolderNodeBuilder.cs,
+	  MonoDevelop.GtkCore.NodeBuilders/ActionGroupNodeBuilder.cs: Moved
+	  the extensible tree view to its own directory.
+
+2008-08-27  Mike Kestner <mkestner@novell.com> 
+
+	* MonoDevelop.GtkCore/WidgetFileDesciptionTemplate.cs: perform a 
+	project save after the file insertions and updates.  This seems
+	suboptimal, since it would probably be better to mark the project
+	dirty and let the user save the project, but until we switch to
+	one-widget-per-design-file, we probably need to save the project
+	automatically to avoid problems.
+	Fixes #385712.
+
+2008-08-27  Mike Kestner <mkestner@novell.com> 
+
+	* MonoDevelop.GtkCore.NodeBuilders/ProjectFolderNodeBuilderExtension.cs:
+	Restrict to DotNetProjects and verify ProjectFolders are for DNPs.
+	Fixes #412448.
+
+2008-08-22  Mike Kestner <mkestner@novell.com> 
+
+	Fixes bug #413275 and delays more GtkDesignInfo-related project file 
+	churn.
+	* MonoDevelop.GtkCore/GtkCoreService.cs: init the refmgr on startup.
+	* MonoDevelop.GtkCore/GtkDesignInfo.cs: Remove targetVersion field and
+	associated prop.  Move reference updating logic to Ref Manager. Target
+	Version is now exclusively tracked via reference version by the
+	ReferenceManager.
+	* MonoDevelop.GtkCore/ReferenceManager.cs: new class to encapsulate all
+	reference management behaviors, from responding to user add removes to
+	automated updates for designer projects.
+	* MonoDevelop.GtkCore.Dialogs/GtkFeatureWidget.cs: only show feature
+	for projects which support refactoring, since it advertises designer
+	support and that's not available without refactoring yet. Use refmgr
+	for version updates.
+	* MonoDevelop.GtkCore.Dialogs/WidgetBuilderOptionsPanel.cs: use refmgr 
+	for version info and suppress gettext options if no designed objects
+	exist.
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderProject.cs: use refmgr for 
+	target version. 
+
 2008-08-20  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.GtkCore.NodeBuilders/WindowsFolderNodeBuilder.cs: Remove

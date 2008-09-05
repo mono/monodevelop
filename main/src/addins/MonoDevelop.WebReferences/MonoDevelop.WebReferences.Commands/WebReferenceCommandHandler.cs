@@ -10,6 +10,7 @@ using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.Ide.Gui.Pads.ProjectPad;
 using MonoDevelop.Projects;
 using MonoDevelop.WebReferences.Dialogs;
+using MonoDevelop.Ide.Gui.Components;
 
 namespace MonoDevelop.WebReferences.Commands
 {

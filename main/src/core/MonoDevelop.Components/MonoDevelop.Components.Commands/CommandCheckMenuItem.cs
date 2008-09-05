@@ -168,6 +168,7 @@ namespace MonoDevelop.Components.Commands
 			Sensitive = cmdInfo.Enabled;
 			Visible = cmdInfo.Visible;
 			Active = cmdInfo.Checked;
+			Inconsistent = cmdInfo.CheckedInconsistent;
 			
 			updating = false;
 		}

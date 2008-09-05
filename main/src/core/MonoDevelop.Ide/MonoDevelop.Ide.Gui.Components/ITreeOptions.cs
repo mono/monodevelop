@@ -1,5 +1,5 @@
 //
-// ITreeBuilder.cs
+// ITreeOptions.cs
 //
 // Author:
 //   Lluis Sanchez Gual
@@ -28,31 +28,10 @@
 
 using System;
 
-namespace MonoDevelop.Ide.Gui.Pads
+namespace MonoDevelop.Ide.Gui.Components
 {
-	public interface ITreeBuilder: ITreeNavigator
+	public interface ITreeOptions
 	{
-		// Updates the current node and its children
-		void UpdateAll ();
-		
-		// Updates the label and icon of the current node
-		void Update ();
-		
-		// Updates the children of the current node
-		void UpdateChildren ();
-		
-		// Removes the current node
-		void Remove ();
-		
-		// Removes de current node and if moveToParent is true, it moves
-		// to the parent node.
-		void Remove (bool moveToParent);
-		
-		// Adds a child to the current node
-		void AddChild (object dataObject);
-		
-		// Adds a child to the current node and if moveToChild is true, it
-		// moves to the new child.
-		void AddChild (object dataObject, bool moveToChild);
+		bool this [string name] { get; set; }
 	}
 }

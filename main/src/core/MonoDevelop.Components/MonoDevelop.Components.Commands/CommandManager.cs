@@ -47,7 +47,7 @@ namespace MonoDevelop.Components.Commands
 		Dictionary<object,Command> cmds = new Dictionary<object,Command> ();
 		Hashtable handlerInfo = new Hashtable ();
 		ArrayList toolbars = new ArrayList ();
-		ArrayList globalHandlers = new ArrayList ();
+		CommandTargetChain globalHandlerChain;
 		ArrayList commandUpdateErrors = new ArrayList ();
 		ArrayList visitors = new ArrayList ();
 		Dictionary<Gtk.Window,Gtk.Window> topLevelWindows = new Dictionary<Gtk.Window,Gtk.Window> ();
@@ -56,6 +56,10 @@ namespace MonoDevelop.Components.Commands
 		bool toolbarUpdaterRunning;
 		bool enableToolbarUpdate;
 		int guiLock;
+		
+		internal static readonly object CommandRouteTerminator = new object ();
+		
+		internal bool handlerFoundInMulticast;
 		
 		public CommandManager (): this (null)
 		{
@@ -285,13 +289,12 @@ namespace MonoDevelop.Components.Commands
 		
 		public void RegisterGlobalHandler (object handler)
 		{
-			if (!globalHandlers.Contains (handler))
-				globalHandlers.Add (handler);
+			globalHandlerChain = CommandTargetChain.AddTarget (globalHandlerChain, handler);
 		}
 		
 		public void UnregisterGlobalHandler (object handler)
 		{
-			globalHandlers.Remove (handler);
+			globalHandlerChain = CommandTargetChain.RemoveTarget (globalHandlerChain, handler);
 		}
 		
 		public void RegisterCommandTargetVisitor (ICommandTargetVisitor visitor)
@@ -449,17 +452,17 @@ namespace MonoDevelop.Components.Commands
 		{
 			if (guiLock > 0)
 				return false;
-			
+
+			List<HandlerCallback> handlers = new List<HandlerCallback> ();
 			ActionCommand cmd = null;
 			try {
 				cmd = GetActionCommand (commandId);
 				if (cmd == null)
 					return false;
 				
-				int globalPos = -1;
-				object cmdTarget = initialTarget != null ? initialTarget : GetFirstCommandTarget (out globalPos);
+				object cmdTarget = GetFirstCommandTarget (initialTarget);
 				CommandInfo info = new CommandInfo (cmd);
-				
+
 				while (cmdTarget != null)
 				{
 					HandlerTypeInfo typeInfo = GetTypeHandlerInfo (cmdTarget);
@@ -498,25 +501,46 @@ namespace MonoDevelop.Components.Commands
 					if (!bypass) {
 						CommandHandlerInfo chi = typeInfo.GetCommandHandler (commandId);
 						if (chi != null) {
-							if (cmd.CommandArray)
-								chi.Run (cmdTarget, dataItem);
+							object localTarget = cmdTarget;
+							if (cmd.CommandArray) {
+								handlers.Add (delegate {
+									chi.Run (localTarget, dataItem);
+								});
+							}
+							else {
+								handlers.Add (delegate {
+									chi.Run (localTarget);
+								});
+							}
+							handlerFoundInMulticast = true;
+							cmdTarget = NextMulticastTarget ();
+							if (cmdTarget == null)
+								break;
 							else
-								chi.Run (cmdTarget);
-							UpdateToolbars ();
-							return true;
+								continue;
 						}
 					}
-					cmdTarget = GetNextCommandTarget (cmdTarget, ref globalPos);
+					cmdTarget = GetNextCommandTarget (cmdTarget);
+				}
+
+				if (handlers.Count > 0) {
+					foreach (HandlerCallback c in handlers)
+						c ();
+					UpdateToolbars ();
+					return true;
 				}
 	
-				return cmd.DispatchCommand (dataItem);
+				if (cmd.DispatchCommand (dataItem)) {
+					UpdateToolbars ();
+					return true;
+				}
 			}
 			catch (Exception ex) {
 				string name = (cmd != null && cmd.Text != null && cmd.Text.Length > 0) ? cmd.Text : commandId.ToString ();
 				name = name.Replace ("_","");
 				ReportError (commandId, "Error while executing command: " + name, ex);
-				return false;
 			}
+			return false;
 		}
 		
 		internal CommandInfo GetCommandInfo (object commandId, object initialTarget)
@@ -528,8 +552,9 @@ namespace MonoDevelop.Components.Commands
 			CommandInfo info = new CommandInfo (cmd);
 			
 			try {
-				int globalPos = -1;
-				object cmdTarget = initialTarget != null ? initialTarget : GetFirstCommandTarget (out globalPos);
+				object cmdTarget = GetFirstCommandTarget (initialTarget);
+				bool multiCastEnabled = true;
+				bool multiCastVisible = false;
 				
 				while (cmdTarget != null)
 				{
@@ -537,6 +562,8 @@ namespace MonoDevelop.Components.Commands
 					CommandUpdaterInfo cui = typeInfo.GetCommandUpdater (commandId);
 					
 					bool bypass = false;
+					bool handlerFound = false;
+					
 					if (cui != null) {
 						if (cmd.CommandArray) {
 							info.ArrayInfo = new CommandArrayInfo (info);
@@ -544,7 +571,7 @@ namespace MonoDevelop.Components.Commands
 							if (!info.ArrayInfo.Bypass) {
 								if (guiLock > 0)
 									info.Enabled = false;
-								return info;
+								handlerFound = true;
 							}
 						}
 						else {
@@ -553,19 +580,36 @@ namespace MonoDevelop.Components.Commands
 							if (!info.Bypass) {
 								if (guiLock > 0)
 									info.Enabled = false;
-								return info;
+								handlerFound = true;
 							}
 						}
-						bypass = true;
+						if (!handlerFound)
+							bypass = true;
 					}
-					
-					if (!bypass && typeInfo.GetCommandHandler (commandId) != null) {
+
+					if (handlerFound) {
+						handlerFoundInMulticast = true;
+						if (!info.Enabled || !info.Visible)
+							multiCastEnabled = false;
+						if (info.Visible)
+							multiCastVisible = true;
+						cmdTarget = NextMulticastTarget ();
+						if (cmdTarget == null) {
+							if (!multiCastEnabled)
+								info.Enabled = false;
+							if (multiCastVisible)
+								info.Visible = true;
+							return info;
+						}
+						continue;
+					}
+					else if (!bypass && typeInfo.GetCommandHandler (commandId) != null) {
 						info.Enabled = guiLock == 0;
 						info.Visible = true;
 						return info;
 					}
 					
-					cmdTarget = GetNextCommandTarget (cmdTarget, ref globalPos);
+					cmdTarget = GetNextCommandTarget (cmdTarget);
 				}
 				
 				cmd.UpdateCommandInfo (info);
@@ -585,15 +629,14 @@ namespace MonoDevelop.Components.Commands
 		
 		public object VisitCommandTargets (ICommandTargetVisitor visitor, object initialTarget)
 		{
-			int globalPos = -1;
-			object cmdTarget = initialTarget != null ? initialTarget : GetFirstCommandTarget (out globalPos);
+			object cmdTarget = GetFirstCommandTarget (initialTarget);
 			
 			while (cmdTarget != null)
 			{
 				if (visitor.Visit (cmdTarget))
 					return cmdTarget;
 
-				cmdTarget = GetNextCommandTarget (cmdTarget, ref globalPos);
+				cmdTarget = GetNextCommandTarget (cmdTarget);
 			}
 			
 			visitor.Visit (null);
@@ -681,57 +724,126 @@ namespace MonoDevelop.Components.Commands
 			Type type = cmdTarget.GetType ();
 			typeInfo = new HandlerTypeInfo ();
 			
-			ArrayList handlers = new ArrayList ();
-			ArrayList updaters = new ArrayList ();
+			List<CommandHandlerInfo> handlers = new List<CommandHandlerInfo> ();
+			List<CommandUpdaterInfo> updaters = new List<CommandUpdaterInfo> ();
 			
 			Type curType = type;
 			while (curType != null && curType.Assembly != typeof(Gtk.Widget).Assembly && curType.Assembly != typeof(object).Assembly) {
 				MethodInfo[] methods = curType.GetMethods (BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
 				foreach (MethodInfo method in methods) {
-					foreach (CommandHandlerAttribute attr in method.GetCustomAttributes (typeof(CommandHandlerAttribute), true))
-						handlers.Add (new CommandHandlerInfo (method, (CommandHandlerAttribute) attr));
 
-					foreach (CommandUpdateHandlerAttribute attr in method.GetCustomAttributes (typeof(CommandUpdateHandlerAttribute), true))
-						updaters.Add (new CommandUpdaterInfo (method, (CommandUpdateHandlerAttribute) attr));
+					ICommandUpdateHandler customHandlerChain = null;
+					ICommandArrayUpdateHandler customArrayHandlerChain = null;
+					List<CommandHandlerInfo> methodHandlers = new List<CommandHandlerInfo> ();
+					
+					foreach (object attr in method.GetCustomAttributes (true)) {
+						if (attr is CommandHandlerAttribute)
+							methodHandlers.Add (new CommandHandlerInfo (method, (CommandHandlerAttribute) attr));
+						else if (attr is CommandUpdateHandlerAttribute)
+							AddUpdater (updaters, method, (CommandUpdateHandlerAttribute) attr);
+						else {
+							customHandlerChain = ChainUpdater (customHandlerChain, attr);
+							customArrayHandlerChain = ChainUpdater (customArrayHandlerChain, attr);
+						}
+					}
+
+					foreach (object attr in type.GetCustomAttributes (true)) {
+						customHandlerChain = ChainUpdater (customHandlerChain, attr);
+						customArrayHandlerChain = ChainUpdater (customArrayHandlerChain, attr);
+					}
+					
+					if (methodHandlers.Count > 0 && (customHandlerChain != null || customArrayHandlerChain != null)) {
+						// There are custom handlers. Create update handlers for all commands
+						// that the method handles so the custom update handlers can be chained
+						foreach (CommandHandlerInfo ci in methodHandlers) {
+							CommandUpdaterInfo c = AddUpdateHandler (updaters, ci.CommandId);
+							c.AddCustomHandlers (customHandlerChain, customArrayHandlerChain);
+						}
+					}
+					handlers.AddRange (methodHandlers);
 				}
 				curType = curType.BaseType;
 			}
 			
 			if (handlers.Count > 0)
-				typeInfo.CommandHandlers = (CommandHandlerInfo[]) handlers.ToArray (typeof(CommandHandlerInfo)); 
+				typeInfo.CommandHandlers = handlers.ToArray (); 
 			if (updaters.Count > 0)
-				typeInfo.CommandUpdaters = (CommandUpdaterInfo[]) updaters.ToArray (typeof(CommandUpdaterInfo));
+				typeInfo.CommandUpdaters = updaters.ToArray ();
 				 
 			handlerInfo [type] = typeInfo;
 			return typeInfo;
 		}
-		
-		object GetFirstCommandTarget (out int globalPos)
+
+		CommandUpdaterInfo AddUpdateHandler (List<CommandUpdaterInfo> methodUpdaters, object cmdId)
 		{
-			object cmdTarget = GetActiveWidget (rootWidget);
-			if (cmdTarget == null) {
-				globalPos = 0;
-				if (globalHandlers.Count == 0)
-					return null;
-				return globalHandlers [0];
-			} else {
-				globalPos = -1;
-				return cmdTarget;
+			foreach (CommandUpdaterInfo ci in methodUpdaters) {
+				if (ci.CommandId.Equals (cmdId))
+					return ci;
 			}
+			// Not found, it needs to be added
+			CommandUpdaterInfo cinfo = new CommandUpdaterInfo (cmdId);
+			methodUpdaters.Add (cinfo);
+			return cinfo;
+		}
+
+		void AddUpdater (List<CommandUpdaterInfo> methodUpdaters, MethodInfo method, CommandUpdateHandlerAttribute attr)
+		{
+			foreach (CommandUpdaterInfo ci in methodUpdaters) {
+				if (ci.CommandId.Equals (attr.CommandId)) {
+					ci.Init (method, attr);
+					return;
+				}
+			}
+			// Not found, it needs to be added
+			CommandUpdaterInfo cinfo = new CommandUpdaterInfo (method, attr);
+			methodUpdaters.Add (cinfo);
+		}
+
+		ICommandArrayUpdateHandler ChainUpdater (ICommandArrayUpdateHandler chain, object attr)
+		{
+			if (attr is ICommandArrayUpdateHandler) {
+				ICommandArrayUpdateHandler h = (ICommandArrayUpdateHandler) attr;
+				h.Next = chain ?? DefaultCommandHandler.Instance;
+				chain = h;
+			}
+			return chain;
+		}
+
+		ICommandUpdateHandler ChainUpdater (ICommandUpdateHandler chain, object attr)
+		{
+			if (attr is ICommandUpdateHandler) {
+				ICommandUpdateHandler h = (ICommandUpdateHandler) attr;
+				h.Next = chain ?? DefaultCommandHandler.Instance;
+				chain = h;
+			}
+			return chain;
 		}
 		
-		object GetNextCommandTarget (object cmdTarget, ref int globalPos)
+		object GetFirstCommandTarget (object initialTarget)
 		{
-			if (globalPos != -1) {
-				if (++globalPos < globalHandlers.Count)
-					return globalHandlers [globalPos];
-				else
-					return null;
-			}
+			delegatorStack.Clear ();
+			handlerFoundInMulticast = false;
+			if (initialTarget != null)
+				return initialTarget;
+			object cmdTarget = GetActiveWidget (rootWidget);
+			if (cmdTarget != null)
+				return cmdTarget;
+			else
+				return globalHandlerChain;
+		}
+		
+		object GetNextCommandTarget (object cmdTarget)
+		{
+			if (cmdTarget is IMultiCastCommandRouter) 
+				cmdTarget = new MultiCastDelegator (this, (IMultiCastCommandRouter)cmdTarget);
 			
 			if (cmdTarget is ICommandDelegatorRouter) {
-				delegatorStack.Push (cmdTarget);
-				cmdTarget = ((ICommandDelegatorRouter)cmdTarget).GetDelegatedCommandTarget ();
+				object oldCmdTarget = cmdTarget;
+				cmdTarget = ((ICommandDelegatorRouter)oldCmdTarget).GetDelegatedCommandTarget ();
+				if (cmdTarget != null)
+					delegatorStack.Push (oldCmdTarget);
+				else
+					cmdTarget = ((ICommandDelegatorRouter)oldCmdTarget).GetNextCommandTarget ();
 			}
 			else if (cmdTarget is ICommandRouter)
 				cmdTarget = ((ICommandRouter)cmdTarget).GetNextCommandTarget ();
@@ -744,15 +856,26 @@ namespace MonoDevelop.Components.Commands
 				if (delegatorStack.Count > 0) {
 					ICommandDelegatorRouter del = (ICommandDelegatorRouter) delegatorStack.Pop ();
 					cmdTarget = del.GetNextCommandTarget ();
+					if (cmdTarget == CommandManager.CommandRouteTerminator)
+						return null;
 					if (cmdTarget != null)
 						return cmdTarget;
 				}
-				if (globalHandlers.Count == 0)
-					return null;
-				globalPos = 0;
-				return globalHandlers [0];
+				return globalHandlerChain;
 			} else
 				return cmdTarget;
+		}
+
+		internal object NextMulticastTarget ()
+		{
+			while (delegatorStack.Count > 0) {
+				MultiCastDelegator del = delegatorStack.Pop () as MultiCastDelegator;
+				if (del != null) {
+					object cmdTarget = GetNextCommandTarget (del);
+					return cmdTarget == globalHandlerChain ? null : cmdTarget;
+				}
+			}
+			return null;
 		}
 		
 		Gtk.Widget GetActiveWidget (Gtk.Window win)
@@ -859,17 +982,40 @@ namespace MonoDevelop.Components.Commands
 		
 		public CommandMethodInfo (MethodInfo method, CommandMethodAttribute attr)
 		{
+			Init (method, attr);
+		}
+		
+		protected void Init (MethodInfo method, CommandMethodAttribute attr)
+		{
 			this.Method = method;
 			CommandId = attr.CommandId;
+		}
+		
+		public CommandMethodInfo (object commandId)
+		{
+			CommandId = commandId;
 		}
 	}
 		
 	internal class CommandUpdaterInfo: CommandMethodInfo
 	{
+		ICommandUpdateHandler customHandlerChain;
+		ICommandArrayUpdateHandler customArrayHandlerChain;
+		
 		bool isArray;
+		
+		public CommandUpdaterInfo (object commandId): base (commandId)
+		{
+		}
 		
 		public CommandUpdaterInfo (MethodInfo method, CommandUpdateHandlerAttribute attr): base (method, attr)
 		{
+			Init (method, attr);
+		}
+
+		public void Init (MethodInfo method, CommandUpdateHandlerAttribute attr)
+		{
+			base.Init (method, attr);
 			ParameterInfo[] pars = method.GetParameters ();
 			if (pars.Length == 1) {
 				Type t = pars[0].ParameterType;
@@ -882,19 +1028,76 @@ namespace MonoDevelop.Components.Commands
 			}
 			throw new InvalidOperationException ("Invalid signature for command update handler: " + method.DeclaringType + "." + method.Name + "()");
 		}
+
+		public void AddCustomHandlers (ICommandUpdateHandler handlerChain, ICommandArrayUpdateHandler arrayHandlerChain)
+		{
+			this.customHandlerChain = handlerChain;
+			this.customArrayHandlerChain = arrayHandlerChain;
+		}
 		
 		public void Run (object cmdTarget, CommandInfo info)
 		{
-			if (isArray)
-				throw new InvalidOperationException ("Invalid signature for command update handler: " + Method.DeclaringType + "." + Method.Name + "()");
-			Method.Invoke (cmdTarget, new object[] {info} );
+			if (customHandlerChain != null) {
+				info.UpdateHandlerData = Method;
+				customHandlerChain.CommandUpdate (cmdTarget, info);
+			} else {
+				if (Method == null)
+					throw new InvalidOperationException ("Invalid custom update handler. An implementation of ICommandUpdateHandler was expected.");
+				if (isArray)
+					throw new InvalidOperationException ("Invalid signature for command update handler: " + Method.DeclaringType + "." + Method.Name + "()");
+				Method.Invoke (cmdTarget, new object[] {info} );
+			}
 		}
 		
 		public void Run (object cmdTarget, CommandArrayInfo info)
 		{
-			if (!isArray)
-				throw new InvalidOperationException ("Invalid signature for command update handler: " + Method.DeclaringType + "." + Method.Name + "()");
-			Method.Invoke (cmdTarget, new object[] {info} );
+			if (customArrayHandlerChain != null) {
+				info.UpdateHandlerData = Method;
+				customArrayHandlerChain.CommandUpdate (cmdTarget, info);
+			} else {
+				if (Method == null)
+					throw new InvalidOperationException ("Invalid custom update handler. An implementation of ICommandArrayUpdateHandler was expected.");
+				if (!isArray)
+					throw new InvalidOperationException ("Invalid signature for command update handler: " + Method.DeclaringType + "." + Method.Name + "()");
+				Method.Invoke (cmdTarget, new object[] {info} );
+			}
+		}
+	}
+	
+	class DefaultCommandHandler: ICommandUpdateHandler, ICommandArrayUpdateHandler
+	{
+		public static DefaultCommandHandler Instance = new DefaultCommandHandler ();
+		
+		public void CommandUpdate (object target, CommandInfo info)
+		{
+			MethodInfo mi = (MethodInfo) info.UpdateHandlerData;
+			if (mi != null)
+				mi.Invoke (target, new object[] {info} );
+		}
+		
+		public void CommandUpdate (object target, CommandArrayInfo info)
+		{
+			MethodInfo mi = (MethodInfo) info.UpdateHandlerData;
+			if (mi != null)
+				mi.Invoke (target, new object[] {info} );
+		}
+
+		ICommandArrayUpdateHandler ICommandArrayUpdateHandler.Next {
+			get {
+				// Last one in the chain
+				return null;
+			}
+			set {
+			}
+		}
+		
+		public ICommandUpdateHandler Next {
+			get {
+				// Last one in the chain
+				return null;
+			}
+			set {
+			}
 		}
 	}
 	
@@ -917,7 +1120,7 @@ namespace MonoDevelop.Components.Commands
 			Method.Invoke (cmdTarget, new object[] {dataItem});
 		}
 	}
-	
+
 	internal class ToolbarTracker
 	{
 		Gtk.IconSize lastSize;
@@ -945,5 +1148,103 @@ namespace MonoDevelop.Components.Commands
 			}
 		}
 	}
+
+	class MultiCastDelegator: ICommandDelegatorRouter
+	{
+		IEnumerator enumerator;
+		object nextTarget;
+		CommandManager manager;
+		bool done;
+		
+		public MultiCastDelegator (CommandManager manager, IMultiCastCommandRouter mcr)
+		{
+			this.manager = manager;
+			enumerator = mcr.GetCommandTargets ().GetEnumerator ();
+		}
+		
+		public object GetNextCommandTarget ()
+		{
+			if (nextTarget != null)
+				return this;
+			else {
+				if (manager.handlerFoundInMulticast)
+					return manager.NextMulticastTarget ();
+				else
+					return null;
+			}
+		}
+		
+		public object GetDelegatedCommandTarget ()
+		{
+			object currentTarget;
+			if (done)
+				return null;
+			if (nextTarget != null) {
+				currentTarget = nextTarget;
+				nextTarget = null;
+			} else {
+				if (enumerator.MoveNext ())
+					currentTarget = enumerator.Current;
+				else
+					return null;
+			}
+			
+			if (enumerator.MoveNext ())
+				nextTarget = enumerator.Current;
+			else {
+				done = true;
+				nextTarget = null;
+			}
+
+			return currentTarget;
+		}
+	}
+
+	class CommandTargetChain: ICommandDelegatorRouter
+	{
+		object target;
+		internal CommandTargetChain Next;
+
+		public CommandTargetChain (object target)
+		{
+			this.target = target;
+		}
+		
+		public object GetNextCommandTarget ()
+		{
+			if (Next == null)
+				return CommandManager.CommandRouteTerminator;
+			else
+				return Next;
+		}
+		
+		public object GetDelegatedCommandTarget ()
+		{
+			return target;
+		}
+
+		public static CommandTargetChain RemoveTarget (CommandTargetChain chain, object target)
+		{
+			if (chain == null)
+				return null;
+			if (chain.target == target)
+				return chain.Next;
+			else if (chain.Next != null)
+				chain.Next = CommandTargetChain.RemoveTarget (chain.Next, target);
+			return chain;
+		}
+
+		public static CommandTargetChain AddTarget (CommandTargetChain chain, object target)
+		{
+			if (chain == null)
+				return new CommandTargetChain (target);
+			else {
+				chain.Next = AddTarget (chain.Next, target);
+				return chain;
+			}
+		}
+	}
+
+	delegate void HandlerCallback ();
 }
 

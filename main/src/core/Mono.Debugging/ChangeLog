@@ -1,3 +1,18 @@
+2008-09-03  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Mono.Debugging.Client/DebuggerFeatures.cs,
+	  Mono.Debugging.Client/DebuggerSession.cs,
+	  Mono.Debugging.Client/TargetEventArgs.cs, Mono.Debugging.mdp,
+	  Makefile.am: When firing the TargetEvent for an Exception, provide
+	  the exception object. Added property for getting the debugger
+	  capabilities.
+
+2008-08-22  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Mono.Debugging.addin.xml, Mono.Debugging.mdp,
+	  Mono.Debugging.Backend/DebuggerExtensionNode.cs, Makefile.am:
+	  Remove Mono.Addins dependency.
+
 2008-08-07  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Mono.Debugging.Client/BreakpointStore.cs: Fire the change event when

@@ -39,6 +39,7 @@ using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Commands;
+using MonoDevelop.Ide.Gui.Components;
 
 namespace MonoDevelop.ValaBinding.ProjectPad
 {

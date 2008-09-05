@@ -107,6 +107,23 @@ FILES =  \
 	MonoDevelop.Ide.ExternalTools/ExternalToolService.cs \
 	MonoDevelop.Ide.Gui.BrowserDisplayBinding/BrowserDisplayBinding.cs \
 	MonoDevelop.Ide.Gui.BrowserDisplayBinding/HtmlViewPane.cs \
+	MonoDevelop.Ide.Gui.Components/DragOperation.cs \
+	MonoDevelop.Ide.Gui.Components/ExtensibleTreeView.cs \
+	MonoDevelop.Ide.Gui.Components/ITreeBuilder.cs \
+	MonoDevelop.Ide.Gui.Components/ITreeBuilderContext.cs \
+	MonoDevelop.Ide.Gui.Components/ITreeNavigator.cs \
+	MonoDevelop.Ide.Gui.Components/ITreeOptions.cs \
+	MonoDevelop.Ide.Gui.Components/NodeAttributes.cs \
+	MonoDevelop.Ide.Gui.Components/NodeBuilder.cs \
+	MonoDevelop.Ide.Gui.Components/NodeBuilderExtension.cs \
+	MonoDevelop.Ide.Gui.Components/NodeCommandHandler.cs \
+	MonoDevelop.Ide.Gui.Components/NodeState.cs \
+	MonoDevelop.Ide.Gui.Components/TreeBuilder.cs \
+	MonoDevelop.Ide.Gui.Components/TreeNodeNavigator.cs \
+	MonoDevelop.Ide.Gui.Components/TreeOptions.cs \
+	MonoDevelop.Ide.Gui.Components/TreePadOption.cs \
+	MonoDevelop.Ide.Gui.Components/TreeViewItem.cs \
+	MonoDevelop.Ide.Gui.Components/TypeNodeBuilder.cs \
 	MonoDevelop.Ide.Gui.Content/CompletionTextEditorExtension.cs \
 	MonoDevelop.Ide.Gui.Content/DocumentStateTracker.cs \
 	MonoDevelop.Ide.Gui.Content/IBookmarkBuffer.cs \
@@ -201,30 +218,17 @@ FILES =  \
 	MonoDevelop.Ide.Gui.Pads.ProjectPad/UnknownEntryNodeBuilder.cs \
 	MonoDevelop.Ide.Gui.Pads.ProjectPad/WorkspaceNodeBuilder.cs \
 	MonoDevelop.Ide.Gui.Pads/DefaultMonitorPad.cs \
-	MonoDevelop.Ide.Gui.Pads/DragOperation.cs \
 	MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs \
 	MonoDevelop.Ide.Gui.Pads/FileList.cs \
 	MonoDevelop.Ide.Gui.Pads/FileListItem.cs \
 	MonoDevelop.Ide.Gui.Pads/FileScout.cs \
 	MonoDevelop.Ide.Gui.Pads/ILocationListPad.cs \
 	MonoDevelop.Ide.Gui.Pads/InternalLogPad.cs \
-	MonoDevelop.Ide.Gui.Pads/ITreeBuilder.cs \
-	MonoDevelop.Ide.Gui.Pads/ITreeBuilderContext.cs \
-	MonoDevelop.Ide.Gui.Pads/ITreeNavigator.cs \
-	MonoDevelop.Ide.Gui.Pads/ITreeOptions.cs \
 	MonoDevelop.Ide.Gui.Pads/MonodocTreePad.cs \
-	MonoDevelop.Ide.Gui.Pads/NodeAttributes.cs \
-	MonoDevelop.Ide.Gui.Pads/NodeBuilder.cs \
-	MonoDevelop.Ide.Gui.Pads/NodeBuilderExtension.cs \
-	MonoDevelop.Ide.Gui.Pads/NodeCommandHandler.cs \
-	MonoDevelop.Ide.Gui.Pads/NodeState.cs \
 	MonoDevelop.Ide.Gui.Pads/SearchResultPad.cs \
 	MonoDevelop.Ide.Gui.Pads/SolutionPad.cs \
 	MonoDevelop.Ide.Gui.Pads/TaskListPad.cs \
-	MonoDevelop.Ide.Gui.Pads/TreePadOption.cs \
-	MonoDevelop.Ide.Gui.Pads/TreeViewItem.cs \
 	MonoDevelop.Ide.Gui.Pads/TreeViewPad.cs \
-	MonoDevelop.Ide.Gui.Pads/TypeNodeBuilder.cs \
 	MonoDevelop.Ide.Gui.Search/AllOpenDocumentIterator.cs \
 	MonoDevelop.Ide.Gui.Search/BruteForceSearchStrategy.cs \
 	MonoDevelop.Ide.Gui.Search/CurrentDocumentIterator.cs \
@@ -288,7 +292,6 @@ FILES =  \
 	MonoDevelop.Ide.Gui/IWorkbenchWindow.cs \
 	MonoDevelop.Ide.Gui/LayoutComboBox.cs \
 	MonoDevelop.Ide.Gui/MonoDevelopStatusBar.cs \
-	MonoDevelop.Ide.Gui/MonoDevelopTreeView.cs \
 	MonoDevelop.Ide.Gui/NavigationHistory.cs \
 	MonoDevelop.Ide.Gui/NavigationService.cs \
 	MonoDevelop.Ide.Gui/OutputProgressMonitor.cs \

@@ -37,6 +37,7 @@ using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.Database.Query;
 using MonoDevelop.Database.Components;
 using MonoDevelop.Components.Commands;
+using MonoDevelop.Ide.Gui.Components;
 
 namespace MonoDevelop.Database.ConnectionManager
 {

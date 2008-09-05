@@ -146,15 +146,7 @@ namespace Mono.TextEditor
 		
 		public int OffsetToLineNumber (int offset)
 		{
-			for (int i = 0; i < lines.Count - 1; ++i) {
-				LineSegment line = Get (i);
-				if (line.Offset <= offset && offset < line.EndOffset)
-					return i;
-			}
-			
-			if (lines.Count > 0 && Get (lines.Count - 1).Offset <= offset && offset <= Get (lines.Count - 1).EndOffset)
-				return lines.Count - 1;
-			return 0;
+			return lines.OffsetToLineNumber (offset);
 		}
 		
 		Segment FindDelimiter (StringBuilder text, int startOffset) 

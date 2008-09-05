@@ -39,6 +39,7 @@ using MonoDevelop.Projects;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Gui.Components;
 
 namespace MonoDevelop.Ide.Gui.Pads.ClassBrowser
 {
@@ -46,7 +47,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassBrowser
 	[System.ComponentModel.ToolboxItem(true)]
 	public partial class ClassBrowserPadWidget : Gtk.Bin
 	{
-		MonoDevelopTreeView treeView;
+		ExtensibleTreeView treeView;
 		TreeView searchResultsTreeView = new Gtk.TreeView ();
 		ListStore list;
 		TreeModelSort model;
@@ -56,7 +57,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassBrowser
 		{
 			this.Build();
 			
-			treeView = new MonoDevelopTreeView (new NodeBuilder[] { 
+			treeView = new ExtensibleTreeView (new NodeBuilder[] { 
 				new SolutionNodeBuilder (),
 				new ProjectNodeBuilder (),
 				new TypeNodeBuilder (),

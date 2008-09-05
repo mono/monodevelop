@@ -33,7 +33,7 @@ using System.Xml;
 using System.Xml.Serialization;
 using MonoDevelop.Core;
 
-namespace MonoDevelop.Ide.Gui.Pads
+namespace MonoDevelop.Ide.Gui.Components
 {
 	public class NodeState : ICustomXmlSerializer
 	{
@@ -41,7 +41,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 		
 		bool expanded;
 		bool selected;
-		MonoDevelopTreeView.TreeOptions options;
+		ExtensibleTreeView.TreeOptions options;
 		
 		List<NodeState> childrenState;
 
@@ -72,7 +72,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			}
 		}
 
-		internal MonoDevelopTreeView.TreeOptions Options {
+		internal ExtensibleTreeView.TreeOptions Options {
 			get {
 				return options;
 			}
@@ -81,7 +81,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			}
 		}
 
-		public System.Collections.Generic.List<MonoDevelop.Ide.Gui.Pads.NodeState> ChildrenState {
+		public System.Collections.Generic.List<NodeState> ChildrenState {
 			get {
 				return childrenState;
 			}
@@ -105,7 +105,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 		const string expandedAttribute = "expanded";
 		const string selectedAttribute = "selected";
 
-		void WriteTo (XmlWriter writer, MonoDevelopTreeView.TreeOptions parentOptions)
+		void WriteTo (XmlWriter writer, ExtensibleTreeView.TreeOptions parentOptions)
 		{
 			writer.WriteStartElement (Node);
 			if (NodeName != null)
@@ -115,7 +115,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			if (Selected)
 				writer.WriteAttributeString (selectedAttribute, bool.TrueString);
 
-			MonoDevelopTreeView.TreeOptions ops = Options;
+			ExtensibleTreeView.TreeOptions ops = Options;
 			if (ops != null) {
 				foreach (DictionaryEntry de in ops) {
 					object parentVal = parentOptions != null ? parentOptions [de.Key] : null;
@@ -137,7 +137,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			writer.WriteEndElement (); // NodeState
 		}
 
-		ICustomXmlSerializer ReadFrom (XmlReader reader, MonoDevelopTreeView.TreeOptions parentOptions)
+		ICustomXmlSerializer ReadFrom (XmlReader reader, ExtensibleTreeView.TreeOptions parentOptions)
 		{
 			NodeState result = new NodeState ();
 			result.NodeName = reader.GetAttribute (nameAttribute);
@@ -150,12 +150,12 @@ namespace MonoDevelop.Ide.Gui.Pads
 				switch (reader.LocalName) {
 				case "Option":
 					if (result.Options == null) 
-						result.Options = parentOptions != null ? parentOptions.CloneOptions (Gtk.TreeIter.Zero) : new MonoDevelopTreeView.TreeOptions ();   
+						result.Options = parentOptions != null ? parentOptions.CloneOptions (Gtk.TreeIter.Zero) : new ExtensibleTreeView.TreeOptions ();   
 					result.Options [reader.GetAttribute ("id")] = bool.Parse (reader.GetAttribute ("value"));
 					return true;
 				case "Node":
 					if (result.ChildrenState == null)
-						result.ChildrenState = new List<MonoDevelop.Ide.Gui.Pads.NodeState> ();
+						result.ChildrenState = new List<NodeState> ();
 					result.ChildrenState.Add ((NodeState)ReadFrom (reader, result.Options != null ? result.Options : parentOptions));
 					return true;
 				}
@@ -164,7 +164,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			return result;
 		}
 		
-		internal static NodeState SaveState (MonoDevelopTreeView pad, ITreeNavigator nav)
+		internal static NodeState SaveState (ExtensibleTreeView pad, ITreeNavigator nav)
 		{
 			NodeState state = SaveStateRec (pad, nav);
 			if (state == null) 
@@ -172,7 +172,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			else return state;
 		}
 		
-		static NodeState SaveStateRec (MonoDevelopTreeView pad, ITreeNavigator nav)
+		static NodeState SaveStateRec (ExtensibleTreeView pad, ITreeNavigator nav)
 		{
 			Gtk.TreeIter it = nav.CurrentPosition._iter;
 			
@@ -191,7 +191,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 				nav.MoveToParent ();
 			}
 			
-			MonoDevelopTreeView.TreeOptions ops = pad.GetIterOptions (it);
+			ExtensibleTreeView.TreeOptions ops = pad.GetIterOptions (it);
 			
 			if (ops != null || nav.Expanded || childrenState != null || nav.Selected) {
 				NodeState es = new NodeState ();
@@ -214,7 +214,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			                      this.childrenState != null ? this.childrenState.Count.ToString () : "null");
 		}
 		 
-		internal static void RestoreState (MonoDevelopTreeView pad, ITreeNavigator nav, NodeState es)
+		internal static void RestoreState (ExtensibleTreeView pad, ITreeNavigator nav, NodeState es)
 		{
 			if (es == null) 
 				return;

@@ -7,10 +7,11 @@
        version   = "0.1">
 
 	<Dependencies>
-		<Addin id="Mono.Debugging" version="0.1"/>
+		<Addin id="MonoDevelop.Core" version="1.9.0"/>
+		<Addin id="MonoDevelop.Ide" version="1.9.0"/>
 	</Dependencies>
 	
-	<Extension path="/Mono/Debugging/DebuggerFactories">
+	<Extension path="/MonoDevelop/Debugging/DebuggerFactories">
 		<DebuggerFactory type="Mono.Debugging.Backend.Mdb.MonoDebuggerSessionFactory" />
 	</Extension>
 

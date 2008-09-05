@@ -31,6 +31,7 @@ FILES =  \
 	MonoDevelop.Xml.StateEngine/XmlAttributeState.cs \
 	MonoDevelop.Xml.StateEngine/XmlAttributeValueState.cs \
 	MonoDevelop.Xml.StateEngine/XmlCDataState.cs \
+	MonoDevelop.Xml.StateEngine/XmlChar.cs \
 	MonoDevelop.Xml.StateEngine/XmlClosingTagState.cs \
 	MonoDevelop.Xml.StateEngine/XmlCommentState.cs \
 	MonoDevelop.Xml.StateEngine/XmlDocTypeState.cs \

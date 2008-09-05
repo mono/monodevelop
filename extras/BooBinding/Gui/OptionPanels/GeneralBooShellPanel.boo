@@ -33,6 +33,6 @@ import BooBinding.Properties
 
 public class GeneralBooShellPanel(GeneralShellPanel):
 
-	public Properties as ShellProperties:
+	public ShellProperties as ShellProperties:
 		get:
 			return BooShellProperties()

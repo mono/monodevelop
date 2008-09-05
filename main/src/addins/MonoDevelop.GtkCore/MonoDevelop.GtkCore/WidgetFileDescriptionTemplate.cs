@@ -108,6 +108,7 @@ namespace MonoDevelop.GtkCore
 				
 				gproject.AddNewComponent (doc.DocumentElement);
 				gproject.Save (false);
+				IdeApp.ProjectOperations.Save (project);
 				return true;
 			}
 			
@@ -121,6 +122,7 @@ namespace MonoDevelop.GtkCore
 				
 				gproject.SteticProject.AddNewActionGroup (doc.DocumentElement);
 				gproject.Save (false);
+				IdeApp.ProjectOperations.Save (project);
 				return true;
 			}
 			

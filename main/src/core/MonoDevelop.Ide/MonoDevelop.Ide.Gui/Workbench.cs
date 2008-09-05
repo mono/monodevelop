@@ -736,7 +736,6 @@ namespace MonoDevelop.Ide.Gui
 			if (prefs == null)
 				return;
 			
-			Document currentDoc;
 			string currentFileName = prefs.ActiveDocument != null ? Path.GetFullPath (Path.Combine (args.Item.BaseDirectory, prefs.ActiveDocument)) : null;
 			
 			foreach (DocumentUserPrefs doc in prefs.Files) {

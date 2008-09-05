@@ -1,3 +1,8 @@
+2008-09-04  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.CodeMetrics/CodeMetricsNodeExtension.cs: Moved the
+	  extensible tree view to its own directory.
+
 2008-07-21  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.CodeMetrics.mdp: Updated.

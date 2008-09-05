@@ -524,8 +524,8 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 					libs.Add (wref);
 			}
 			
-			// If the project is a library, add itself as a widget source
-			string target_version = GtkDesignInfo.FromProject (project).TargetGtkVersion;
+			ReferenceManager refmgr = new ReferenceManager (project);
+			string target_version = refmgr.GtkPackageVersion;
 			
 			// Make sure the target gtk version is properly set
 			if (gproject.TargetGtkVersion != target_version) {

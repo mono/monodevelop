@@ -155,7 +155,9 @@ namespace MonoDevelop.ValaBinding
 			monitor.BeginTask (GettextCatalog.GetString ("Compiling source"), 1);
 			
 			success = DoCompilation(projectFiles, compilerArgs, outputName, monitor, cr);
-			
+
+			GenerateDepfile(configuration, packages);
+
 			if (success)
 				monitor.Step (1);
 			monitor.EndTask ();
@@ -607,6 +609,19 @@ namespace MonoDevelop.ValaBinding
 			} catch {
 				return false;
 			}
+		}
+
+		public void GenerateDepfile (ValaProjectConfiguration configuration, ProjectPackageCollection packages)
+		{
+			try {
+				if(configuration.CompileTarget != CompileTarget.SharedLibrary){ return; }
+				
+				using (StreamWriter writer = new StreamWriter (Path.Combine (configuration.OutputDirectory, Path.ChangeExtension (configuration.Output, ".deps")))) {
+					foreach (ProjectPackage package in packages) {
+						writer.WriteLine(package.Name);
+					}
+				}
+			} catch { /* Don't care */ }
 		}
 	}
 }

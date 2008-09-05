@@ -43,7 +43,7 @@ public class GeneralShellPanel(OptionsPanel):
 	private defaultMonoRadio as RadioButton
 	private customFontRadio as RadioButton
 
-	protected virtual Properties as ShellProperties:
+	protected virtual ShellProperties as ShellProperties:
 		get:
 			pass
 
@@ -91,7 +91,7 @@ public class GeneralShellPanel(OptionsPanel):
 		hboxTmp.PackStart (fontButton, false, false, 0)
 		vbox.PackStart (hboxTmp, false, false, 0)
 
-		s = Properties.FontName
+		s = ShellProperties.FontName
 
 		if s == "__default_monospace":
 			defaultMonoRadio.Active = true
@@ -100,29 +100,29 @@ public class GeneralShellPanel(OptionsPanel):
 			customFontRadio.Active = true
 
 		fontButton.Sensitive = customFontRadio.Active
-		autoIndentCheckButton.Active = Properties.AutoIndentBlocks
-		resetClearsScrollbackCheckButton.Active = Properties.ResetClearsScrollback
-		resetClearsHistoryCheckButton.Active = Properties.ResetClearsHistory
-		loadAssemblyCheckButton.Active =  Properties.LoadAssemblyAfterBuild
+		autoIndentCheckButton.Active = ShellProperties.AutoIndentBlocks
+		resetClearsScrollbackCheckButton.Active = ShellProperties.ResetClearsScrollback
+		resetClearsHistoryCheckButton.Active = ShellProperties.ResetClearsHistory
+		loadAssemblyCheckButton.Active =  ShellProperties.LoadAssemblyAfterBuild
 		vbox.ShowAll ()
 		return vbox
 
 
 	public override def ApplyChanges () as void:
 		if customFontRadio.Active:
-			Properties.FontName =  fontButton.FontName
+			ShellProperties.FontName =  fontButton.FontName
 		elif defaultMonoRadio.Active:
-			Properties.FontName = "__default_monospace"
+			ShellProperties.FontName = "__default_monospace"
 
-		if Properties.AutoIndentBlocks != autoIndentCheckButton.Active:
-			Properties.AutoIndentBlocks = autoIndentCheckButton.Active
+		if ShellProperties.AutoIndentBlocks != autoIndentCheckButton.Active:
+			ShellProperties.AutoIndentBlocks = autoIndentCheckButton.Active
 
-		if Properties.ResetClearsScrollback != resetClearsScrollbackCheckButton.Active:
-			Properties.ResetClearsScrollback = resetClearsScrollbackCheckButton.Active
-		if Properties.ResetClearsHistory != resetClearsHistoryCheckButton.Active:
-			Properties.ResetClearsHistory = resetClearsHistoryCheckButton.Active
-		if Properties.LoadAssemblyAfterBuild != loadAssemblyCheckButton.Active:
-			Properties.LoadAssemblyAfterBuild = loadAssemblyCheckButton.Active
+		if ShellProperties.ResetClearsScrollback != resetClearsScrollbackCheckButton.Active:
+			ShellProperties.ResetClearsScrollback = resetClearsScrollbackCheckButton.Active
+		if ShellProperties.ResetClearsHistory != resetClearsHistoryCheckButton.Active:
+			ShellProperties.ResetClearsHistory = resetClearsHistoryCheckButton.Active
+		if ShellProperties.LoadAssemblyAfterBuild != loadAssemblyCheckButton.Active:
+			ShellProperties.LoadAssemblyAfterBuild = loadAssemblyCheckButton.Active
 	
 	private def ItemToggled (o, args as EventArgs):
 		fontButton.Sensitive = customFontRadio.Active

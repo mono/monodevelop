@@ -95,6 +95,11 @@
 	* MonoDevelop.Projects.Dom.Parser/DatabaseProjectDom.cs: fixed bug with
 	  compound types.
 
+2008-08-22  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects/Project.cs: Fix nullref.
+	* MonoDevelop.Projects.mdp: Updated.
+
 2008-08-22  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom/DomType.cs,

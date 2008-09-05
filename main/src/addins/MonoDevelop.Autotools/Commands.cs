@@ -33,6 +33,7 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Deployment;
+using MonoDevelop.Ide.Gui.Components;
 
 using Gtk;
 

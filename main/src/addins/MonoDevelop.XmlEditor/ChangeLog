@@ -1,3 +1,11 @@
+2008-08-26  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Xml.StateEngine/XmlTagState.cs,
+	  MonoDevelop.Xml.StateEngine/XmlChar.cs,
+	  MonoDevelop.Xml.StateEngine/XmlNameState.cs, Makefile.am,
+	  MonoDevelop.XmlEditor.mdp: Use Mono's System.Xml.XmlChar to check
+	  whether name chars are valid for XML.
+
 2008-08-20  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Xml.StateEngine/XmlAttributeValueState.cs,

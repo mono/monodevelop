@@ -1,5 +1,5 @@
 //
-// NodeBuilderExtension.cs
+// TreePadOption.cs
 //
 // Author:
 //   Lluis Sanchez Gual
@@ -28,10 +28,32 @@
 
 using System;
 
-namespace MonoDevelop.Ide.Gui.Pads
+namespace MonoDevelop.Ide.Gui.Components
 {
-	public abstract class NodeBuilderExtension: NodeBuilder
+	public class TreePadOption
 	{
-		public abstract bool CanBuildNode (Type dataType);
+		string label;
+		bool defaultValue;
+		string id;
+		
+		public TreePadOption (string id, string label, bool defaultValue)
+		{
+			this.label = label;
+			this.id = id;
+			this.defaultValue = defaultValue;
+		}
+		
+		public string Id {
+			get { return id; }
+		}
+
+		public bool DefaultValue {
+			get { return defaultValue; }
+		}
+		
+		public string Label {
+			get { return label; }
+		}
+		
 	}
 }

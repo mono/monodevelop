@@ -41,9 +41,11 @@ namespace MonoDevelop.Components.Commands
 		bool checkd;
 		bool useMarkup;
 		bool bypass;
+		bool checkedInconsistent;
 		internal object DataItem; 
 		internal CommandArrayInfo ArrayInfo;
 		internal bool IsArraySeparator;
+		internal object UpdateHandlerData;
 		
 		internal CommandInfo (Command cmd)
 		{
@@ -102,6 +104,11 @@ namespace MonoDevelop.Components.Commands
 		public bool Checked {
 			get { return checkd; }
 			set { checkd = value; }
+		}
+		
+		public bool CheckedInconsistent {
+			get { return checkedInconsistent; }
+			set { checkedInconsistent = value; }
 		}
 		
 		public bool UseMarkup {

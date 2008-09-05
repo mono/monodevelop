@@ -54,7 +54,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		TreeStore catStore;
 		
 		// Add To Project widgets
-		WorkspaceItem solution;
 		string[] projectNames;
 		Project[] projectRefs;
 		

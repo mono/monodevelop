@@ -272,7 +272,7 @@ namespace MonoDevelop.Ide
 		
 		IEnumerable<TreeIter> GetCheckedSiblings (TreeIter firstMember)
 		{
-			TreeIter iter = firstMember.Copy ();
+			TreeIter iter = firstMember;
 			do {
 				if (GetChecked (iter)) {
 					yield return iter;
@@ -302,12 +302,7 @@ namespace MonoDevelop.Ide
 		{
 			return (bool) store.GetValue (iter, colCheckedIndex);
 		}
-
-		IType GetIType (TreeIter iter)
-		{
-			return (IType) store.GetValue (iter, colItemIndex);
-		}
-
+		
 		IMember GetIMember (TreeIter iter)
 		{
 			return (IMember) store.GetValue (iter, colItemIndex);

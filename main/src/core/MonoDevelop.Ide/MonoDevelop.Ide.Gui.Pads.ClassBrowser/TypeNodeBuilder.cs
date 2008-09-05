@@ -29,10 +29,11 @@
 using System;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Parser;
+using MonoDevelop.Ide.Gui.Components;
 
 namespace MonoDevelop.Ide.Gui.Pads.ClassBrowser
 {
-	public class TypeNodeBuilder  : MonoDevelop.Ide.Gui.Pads.TypeNodeBuilder
+	public class TypeNodeBuilder  : MonoDevelop.Ide.Gui.Components.TypeNodeBuilder
 	{
 		public override Type NodeDataType {
 			get { return typeof(MonoDevelop.Projects.Dom.IType); }

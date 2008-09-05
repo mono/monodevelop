@@ -38,6 +38,7 @@ using MonoDevelop.Ide.Commands;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Deployment.Gui;
 using GuiServices = MonoDevelop.Core.Gui.Services;
+using MonoDevelop.Ide.Gui.Components;
 
 namespace MonoDevelop.Deployment.NodeBuilders
 {

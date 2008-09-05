@@ -182,12 +182,12 @@ namespace MonoDevelop.VersionControl.Subversion {
   			public readonly DateTime LastCommitDate;
   			public readonly string LastCommitAuthor;
  			
-			public readonly VersionStatus TextStatus;
-			public readonly VersionStatus PropsStatus;
+			public readonly LibSvnClient.VersionStatus TextStatus;
+			public readonly LibSvnClient.VersionStatus PropsStatus;
 			public readonly bool Locked;
 			public readonly bool Switched;
-			public readonly VersionStatus RemoteTextStatus;
-			public readonly VersionStatus RemotePropsStatus;
+			public readonly LibSvnClient.VersionStatus RemoteTextStatus;
+			public readonly LibSvnClient.VersionStatus RemotePropsStatus;
 			public readonly bool RepoLocked;
 			public readonly bool LockOwned;
 			public readonly string LockToken;
@@ -206,7 +206,7 @@ namespace MonoDevelop.VersionControl.Subversion {
 				Switched = status.switched != 0;
 				RemoteTextStatus = (VersionStatus) status.svn_wc_status_kind_text_repo;
 				RemotePropsStatus = (VersionStatus) status.svn_wc_status_kind_props_repo;
-				
+
 				if (status.to_svn_wc_entry_t == IntPtr.Zero)
 					return;
 				
@@ -421,13 +421,13 @@ namespace MonoDevelop.VersionControl.Subversion {
 		
 		public struct svn_wc_status_t {
 			public IntPtr to_svn_wc_entry_t;
-			public int svn_wc_status_kind_text;
-			public int svn_wc_status_kind_props;
+			public int svn_wc_status_kind_text;      // Field not shown in the documentation
+			public int svn_wc_status_kind_props;     // Field not shown in the documentation
 			public int locked;
 			public int copied;
 			public int switched;
-			public int svn_wc_status_kind_text_repo;
-			public int svn_wc_status_kind_props_repo;
+			public int svn_wc_status_kind_text_repo;  // Field not shown in the documentation
+			public int svn_wc_status_kind_props_repo; // Field not shown in the documentation
 			public IntPtr repos_lock;
 		}
 		

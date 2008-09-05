@@ -298,7 +298,7 @@ namespace MonoDevelop.VersionControl
 		// Returns a dif description between local files and the remote files.
 		// baseLocalPath is the root path of the diff. localPaths is optional and
 		// it can be a list of files to compare.
-		public virtual DiffInfo[] PathDiff (string baseLocalPath, string[] localPaths)
+		public virtual DiffInfo[] PathDiff (string baseLocalPath, string[] localPaths, bool remoteDiff)
 		{
 			return new DiffInfo [0];
 		}

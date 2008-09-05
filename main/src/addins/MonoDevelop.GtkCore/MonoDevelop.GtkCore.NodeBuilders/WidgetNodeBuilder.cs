@@ -36,6 +36,7 @@ using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Commands;
+using MonoDevelop.Ide.Gui.Components;
 
 using MonoDevelop.GtkCore.GuiBuilder;
 using MonoDevelop.GtkCore.Dialogs;

@@ -77,7 +77,7 @@ namespace MonoDevelop.Core.Execution
 				? BashPause
 				: String.Empty;
 			
-			return String.Format (@" -title ""{4}"" -e ""cd {3} ; '{0}' {1} ; {2}""",
+			return String.Format (@" -title ""{4}"" -e bash -c ""cd {3} ; '{0}' {1} ; {2}""",
 				command,
 				EscapeArgs (args),
 				extra_commands,

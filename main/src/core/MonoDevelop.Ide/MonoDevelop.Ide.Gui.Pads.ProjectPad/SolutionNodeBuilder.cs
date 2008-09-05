@@ -31,11 +31,13 @@ using System.Collections.Generic;
 
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Collections;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Gui.Search;
+using MonoDevelop.Ide.Gui.Components;
 
 namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 {
@@ -211,31 +213,33 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		{
 		}
 			
-		public override void ActivateItem ()
+		public override void ActivateMultipleItems ()
 		{
 			Solution sol = CurrentNode.DataItem as Solution;
 			IdeApp.ProjectOperations.ShowOptions (sol);
 		}
 		
-		[CommandHandler (EditCommands.Delete)]
-		public void RemoveItem ()
+		public override void DeleteMultipleItems ()
 		{
-			Solution solution = CurrentNode.DataItem as Solution;
-			Workspace parent = CurrentNode.GetParentDataItem (typeof(Workspace), false) as Workspace;
-			if (parent == null) return;
-			
-			if (MessageService.Confirm (GettextCatalog.GetString ("Do you really want to remove solution {0} from workspace {1}?", solution.Name, parent.Name), AlertButton.Remove)) {
-				parent.Items.Remove (solution);
-				solution.Dispose ();
-				IdeApp.Workspace.Save();
+			Set<IWorkspaceFileObject> items = new Set<IWorkspaceFileObject> ();
+			foreach (ITreeNavigator node in CurrentNodes) {
+				Solution solution = node.DataItem as Solution;
+				Workspace parent = node.GetParentDataItem (typeof(Workspace), false) as Workspace;
+				if (parent == null) return;
+				
+				if (MessageService.Confirm (GettextCatalog.GetString ("Do you really want to remove solution {0} from workspace {1}?", solution.Name, parent.Name), AlertButton.Remove)) {
+					parent.Items.Remove (solution);
+					solution.Dispose ();
+					items.Add (parent);
+				}
 			}
+			IdeApp.ProjectOperations.Save (items);
 		}
 		
-		[CommandUpdateHandler (EditCommands.Delete)]
-		public void OnUpdateRemoveItem (CommandInfo info)
+		public override bool CanDeleteItem ()
 		{
 			Workspace parent = CurrentNode.GetParentDataItem (typeof(Workspace), false) as Workspace;
-			info.Enabled = parent != null;
+			return parent != null;
 		}
 		
 		[CommandHandler (ProjectCommands.AddNewProject)]
@@ -270,19 +274,30 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		}
 		
 		[CommandHandler (ProjectCommands.Reload)]
+		[AllowMultiSelection]
 		public void OnReload ()
 		{
-			Solution solution = (Solution) CurrentNode.DataItem;
 			using (IProgressMonitor m = IdeApp.Workbench.ProgressMonitors.GetLoadProgressMonitor (true)) {
-				solution.ParentWorkspace.ReloadItem (m, solution);
+				m.BeginTask (null, CurrentNodes.Length);
+				foreach (ITreeNavigator node in CurrentNodes) {
+					Solution solution = (Solution) node.DataItem;
+					solution.ParentWorkspace.ReloadItem (m, solution);
+					m.Step (1);
+				}
+				m.EndTask ();
 			}
 		}
 		
 		[CommandUpdateHandler (ProjectCommands.Reload)]
 		public void OnUpdateReload (CommandInfo info)
 		{
-			Solution solution = (Solution) CurrentNode.DataItem;
-			info.Visible = (solution.ParentWorkspace != null) && solution.NeedsReload;
+			foreach (ITreeNavigator node in CurrentNodes) {
+				Solution solution = (Solution) node.DataItem;
+				if (solution.ParentWorkspace == null || !solution.NeedsReload) {
+					info.Visible = false;
+					return;
+				}
+			}
 		}
 		
 		void OnEntryInserted (ITreeNavigator nav)
@@ -299,10 +314,15 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		}
 		
 		[CommandHandler (FileCommands.OpenContainingFolder)]
+		[AllowMultiSelection]
 		public void OnOpenFolder ()
 		{
-			Solution solution = (Solution) CurrentNode.DataItem;
-			System.Diagnostics.Process.Start ("file://" + solution.BaseDirectory);
+			Set<string> paths = new Set<string> ();
+			foreach (ITreeNavigator node in CurrentNodes) {
+				Solution solution = (Solution) node.DataItem;
+				if (paths.Add (solution.BaseDirectory))
+					System.Diagnostics.Process.Start ("file://" + solution.BaseDirectory);
+			}
 		}
 		
 		[CommandHandler (SearchCommands.FindInFiles)]
@@ -314,17 +334,25 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		}
 		
 		[CommandHandler (FileCommands.CloseWorkspaceItem)]
+		[AllowMultiSelection]
 		public void OnCloseItem ()
 		{
-			Solution solution = (Solution) CurrentNode.DataItem;
-			IdeApp.Workspace.CloseWorkspaceItem (solution);
+			foreach (ITreeNavigator node in CurrentNodes) {
+				Solution solution = (Solution) node.DataItem;
+				IdeApp.Workspace.CloseWorkspaceItem (solution);
+			}
 		}
 		
 		[CommandUpdateHandler (FileCommands.CloseWorkspaceItem)]
 		public void OnUpdateCloseItem (CommandInfo info)
 		{
-			Solution solution = (Solution) CurrentNode.DataItem;
-			info.Visible = solution.ParentWorkspace == null;
+			foreach (ITreeNavigator node in CurrentNodes) {
+				Solution solution = (Solution) node.DataItem;
+				if (solution.ParentWorkspace != null) {
+					info.Visible = false;
+					return;
+				}
+			}
 		}
 	}
 }

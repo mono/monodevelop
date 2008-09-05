@@ -192,12 +192,12 @@ namespace Mono.TextEditor
 			}
 			return offset;
 		}
-		
-		public TreeNode GetNodeAtOffset (int offset)
+
+		RedBlackTree<TreeNode>.RedBlackTreeNode GetTreeNodeAtOffset (int offset)
 		{
 			Debug.Assert (0 <= offset && offset <= tree.Root.value.totalLength);
 			if (offset == tree.Root.value.totalLength) 
-				return tree.Root.OuterRight.value;
+				return tree.Root.OuterRight;
 			RedBlackTree<TreeNode>.RedBlackTreeNode node = tree.Root;
 			int i = offset;
 			while (true) {
@@ -210,10 +210,33 @@ namespace Mono.TextEditor
 						i -= node.left.value.totalLength;
 					i -= node.value.Length;
 					if (i < 0) 
-						return node.value;
+						return node;
 					node = node.right;
 				} 
 			}
+		}
+		
+		public TreeNode GetNodeAtOffset (int offset)
+		{
+			RedBlackTree<TreeNode>.RedBlackTreeNode node = GetTreeNodeAtOffset (offset);
+			return node != null ? node.value : null;
+		}
+		
+		public int OffsetToLineNumber (int offset)
+		{
+			RedBlackTree<TreeNode>.RedBlackTreeNode node = GetTreeNodeAtOffset (offset);
+			if (node == null)
+				return -1;
+			int result = node.left != null ? node.left.value.count : 0;;
+			while (node.parent != null) {
+				if (node == node.parent.right) {
+					if (node.parent.left != null)
+						result += node.parent.left.value.count;
+					result++;
+				}
+				node = node.parent;
+			}
+			return result;
 		}
 		
 		public void RemoveLine (LineSegment line)

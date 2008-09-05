@@ -31,11 +31,13 @@ using System.Collections;
 
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Collections;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Gui.Search;
+using MonoDevelop.Ide.Gui.Components;
 
 namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 {
@@ -160,12 +162,11 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			IdeApp.ProjectOperations.Save (folder.ParentSolution);
 		}
 			
-		public override void ActivateItem ()
+		public override void ActivateMultipleItems ()
 		{
 			SolutionFolder folder = CurrentNode.DataItem as SolutionFolder;
 			IdeApp.ProjectOperations.ShowOptions (folder);
 		}
-
 		
 		public override void DeleteItem ()
 		{
@@ -214,26 +215,42 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		}
 		
 		[CommandHandler (ProjectCommands.Reload)]
+		[AllowMultiSelection]
 		public void OnReload ()
 		{
-			SolutionFolder folder = (SolutionFolder) CurrentNode.DataItem;
 			using (IProgressMonitor m = IdeApp.Workbench.ProgressMonitors.GetLoadProgressMonitor (true)) {
-				folder.ParentFolder.ReloadItem (m, folder);
+				m.BeginTask (null, CurrentNodes.Length);
+				foreach (ITreeNavigator node in CurrentNodes) {
+					SolutionFolder folder = (SolutionFolder) node.DataItem;
+					folder.ParentFolder.ReloadItem (m, folder);
+					m.Step (1);
+				}
+				m.EndTask ();
 			}
 		}
 		
 		[CommandUpdateHandler (ProjectCommands.Reload)]
 		public void OnUpdateReload (CommandInfo info)
 		{
-			SolutionFolder folder = (SolutionFolder) CurrentNode.DataItem;
-			info.Visible = (folder.ParentFolder != null) && folder.NeedsReload;
+			foreach (ITreeNavigator node in CurrentNodes) {
+				SolutionFolder folder = (SolutionFolder) node.DataItem;
+				if (folder.ParentFolder == null || !folder.NeedsReload) {
+					info.Visible = false;
+					return;
+				}
+			}
 		}
 		
 		[CommandHandler (FileCommands.OpenContainingFolder)]
+		[AllowMultiSelection]
 		public void OpenContainingFolder ()
 		{
-			SolutionFolder folder = (SolutionFolder) CurrentNode.DataItem;
-			System.Diagnostics.Process.Start ("file://" + folder.BaseDirectory);
+			Set<string> paths = new Set<string> ();
+			foreach (ITreeNavigator node in CurrentNodes) {
+				SolutionFolder folder = (SolutionFolder) node.DataItem;
+				if (paths.Add (folder.BaseDirectory))
+					System.Diagnostics.Process.Start ("file://" + folder.BaseDirectory);
+			}
 		}
 		
 		[CommandHandler (SearchCommands.FindInFiles)]

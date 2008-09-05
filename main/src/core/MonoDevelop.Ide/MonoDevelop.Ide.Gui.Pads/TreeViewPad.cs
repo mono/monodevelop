@@ -46,6 +46,7 @@ using MonoDevelop.Components;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Components.Commands;
+using MonoDevelop.Ide.Gui.Components;
 
 namespace MonoDevelop.Ide.Gui.Pads
 {
@@ -54,9 +55,9 @@ namespace MonoDevelop.Ide.Gui.Pads
 	/// </summary>
 	public class TreeViewPad : AbstractPadContent, IMementoCapable, ICommandDelegatorRouter
 	{
-		protected MonoDevelopTreeView treeView = new MonoDevelopTreeView ();
+		protected ExtensibleTreeView treeView = new ExtensibleTreeView ();
 		
-		public MonoDevelopTreeView TreeView {
+		public ExtensibleTreeView TreeView {
 			get {
 				return treeView;
 			}

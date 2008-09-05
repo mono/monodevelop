@@ -65,7 +65,6 @@ namespace MonoDevelop.Ide.Gui
 		IBuildTarget currentBuildOperationOwner;
 		IBuildTarget currentRunOperationOwner;
 		
-		GuiHelper guiHelper = new GuiHelper ();
 		SelectReferenceDialog selDialog = null;
 		
 		SolutionItem currentSolutionItem = null;
@@ -293,6 +292,28 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
+		public void Save (IEnumerable<SolutionEntityItem> entries)
+		{
+			int count = 0;
+			IEnumerator<SolutionEntityItem> e = entries.GetEnumerator ();
+			while (e.MoveNext ())
+				count++;
+			
+			IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetSaveProgressMonitor (true);
+			try {
+				monitor.BeginTask (null, count);
+				foreach (SolutionEntityItem entry in entries) {
+					entry.Save (monitor);
+					monitor.Step (1);
+				}
+				monitor.ReportSuccess (GettextCatalog.GetString ("Project saved."));
+			} catch (Exception ex) {
+				monitor.ReportError (GettextCatalog.GetString ("Save failed."), ex);
+			} finally {
+				monitor.Dispose ();
+			}
+		}
+		
 		public void Save (SolutionEntityItem entry)
 		{
 			IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetSaveProgressMonitor (true);
@@ -312,6 +333,29 @@ namespace MonoDevelop.Ide.Gui
 			try {
 				item.Save (monitor);
 				monitor.ReportSuccess (GettextCatalog.GetString ("Solution saved."));
+			} catch (Exception ex) {
+				monitor.ReportError (GettextCatalog.GetString ("Save failed."), ex);
+			} finally {
+				monitor.Dispose ();
+			}
+		}
+		
+		public void Save (IEnumerable<IWorkspaceFileObject> items)
+		{
+			int count = 0;
+			IEnumerator<IWorkspaceFileObject> e = items.GetEnumerator ();
+			while (e.MoveNext ())
+				count++;
+			
+			IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetSaveProgressMonitor (true);
+			try {
+				monitor.BeginTask (null, count);
+				foreach (IWorkspaceFileObject item in items) {
+					item.Save (monitor);
+					monitor.Step (1);
+				}
+				monitor.EndTask ();
+				monitor.ReportSuccess (GettextCatalog.GetString ("Items saved."));
 			} catch (Exception ex) {
 				monitor.ReportError (GettextCatalog.GetString ("Save failed."), ex);
 			} finally {
@@ -622,29 +666,28 @@ namespace MonoDevelop.Ide.Gui
 		{
 			if (currentRunOperation != null && !currentRunOperation.IsCompleted)
 				return currentRunOperation;
-			
-			//guiHelper.SetWorkbenchContext (WorkbenchContext.Debug);
+
+			string oldLayout = IdeApp.Workbench.CurrentLayout;
+			IdeApp.Workbench.CurrentLayout = "Debug";
 
 			IProgressMonitor monitor = new MessageDialogProgressMonitor ();
 			ExecutionContext context = new ExecutionContext (IdeApp.Services.DebuggingService.GetExecutionHandlerFactory (), IdeApp.Workbench.ProgressMonitors);
 			
 			DispatchService.ThreadDispatch (delegate {
-				DebugSolutionItemAsync (monitor, entry, context, null);
+				try {
+					entry.Execute (monitor, context, IdeApp.Workspace.ActiveConfiguration);
+				} catch (Exception ex) {
+					monitor.ReportError (GettextCatalog.GetString ("Execution failed."), ex);
+				} finally {
+					monitor.Dispose ();
+				}
+				Gtk.Application.Invoke (delegate {
+					IdeApp.Workbench.CurrentLayout = oldLayout;
+				});
 			}, null);
+			
 			currentRunOperation = monitor.AsyncOperation;
 			return currentRunOperation;
-		}
-		
-		void DebugSolutionItemAsync (IProgressMonitor monitor, IBuildTarget entry, ExecutionContext context, WorkbenchContext oldContext)
-		{
-			try {
-				entry.Execute (monitor, context, IdeApp.Workspace.ActiveConfiguration);
-			} catch (Exception ex) {
-				monitor.ReportError (GettextCatalog.GetString ("Execution failed."), ex);
-			} finally {
-				monitor.Dispose ();
-			}
-			//guiHelper.SetWorkbenchContext (WorkbenchContext.Edit);
 		}
 		
 		public IAsyncOperation DebugFile (string file)
@@ -664,13 +707,17 @@ namespace MonoDevelop.Ide.Gui
 		{
 			if (currentRunOperation != null && !currentRunOperation.IsCompleted) return currentRunOperation;
 			
-//			guiHelper.SetWorkbenchContext (WorkbenchContext.Debug);
+			string oldLayout = IdeApp.Workbench.CurrentLayout;
+			IdeApp.Workbench.CurrentLayout = "Debug";
 
 			IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetRunProgressMonitor ();
 
 			IAsyncOperation oper = IdeApp.Services.DebuggingService.Run (executableFile, (IConsole) monitor);
 			oper.Completed += delegate {
 				monitor.Dispose ();
+				Gtk.Application.Invoke (delegate {
+					IdeApp.Workbench.CurrentLayout = oldLayout;
+				});
 			};
 			
 			currentRunOperation = monitor.AsyncOperation;
@@ -813,12 +860,6 @@ namespace MonoDevelop.Ide.Gui
 		void BuildDone (IProgressMonitor monitor, BuildResult result, IBuildTarget entry)
 		{
 			Task[] tasks = null;
-			Solution solution;
-			
-			if (entry is SolutionItem)
-				solution = ((SolutionItem)entry).ParentSolution;
-			else
-				solution = entry as Solution;
 		
 			try {
 				if (result != null) {
@@ -1161,17 +1202,6 @@ namespace MonoDevelop.Ide.Gui
 		
 		// Fired just before an entry is added to a combine
 		public event AddEntryEventHandler AddingEntryToCombine;
-
-		
-		// All methods inside this class are gui thread safe
-		
-		class GuiHelper: GuiSyncObject
-		{
-			public void SetWorkbenchContext (WorkbenchContext ctx)
-			{
-				IdeApp.Workbench.Context = ctx;
-			}
-		}
 	}
 	
 	class ParseProgressMonitorFactory

@@ -35,6 +35,7 @@ using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.Ide.Gui.Pads.ProjectPad;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.GtkCore.GuiBuilder;
+using MonoDevelop.Ide.Gui.Components;
 
 namespace MonoDevelop.GtkCore.NodeBuilders
 {
@@ -43,7 +44,7 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 		public override bool CanBuildNode (Type dataType)
 		{
 			return typeof(ProjectFolder).IsAssignableFrom (dataType) ||
-					typeof(Project).IsAssignableFrom (dataType);
+			       typeof(DotNetProject).IsAssignableFrom (dataType);
 		}
 		
 		public override Type CommandHandlerType {
@@ -56,7 +57,7 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 				return;
 
 			ProjectFolder folder = dataObject as ProjectFolder;
-			if (folder != null && folder.Project != null) {
+			if (folder != null && folder.Project is DotNetProject) {
 				GtkDesignInfo info = GtkDesignInfo.FromProject (folder.Project);
 				if (info.GtkGuiFolder == folder.Path)
 					attributes |= NodeAttributes.Hidden;

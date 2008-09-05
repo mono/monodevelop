@@ -86,13 +86,6 @@ namespace MonoDevelop.VersionControl
 			UpdateUrl ();
 		}
 
-		protected virtual void OnRepositoryPortSpinChanged(object sender, System.EventArgs e)
-		{
-			if (updating) return;
-			repo.Port = (int) repositoryPortSpin.Value;
-			UpdateUrl ();
-		}
-
 		protected virtual void OnRepositoryPathEntryChanged(object sender, System.EventArgs e)
 		{
 			if (updating) return;
@@ -120,6 +113,13 @@ namespace MonoDevelop.VersionControl
 			repo.Method = Protocol;
 			UpdateUrl ();
 			UpdateControls ();
+		}
+
+		protected virtual void OnRepositoryPortSpinValueChanged (object sender, System.EventArgs e)
+		{
+			if (updating) return;
+			repo.Port = (int) repositoryPortSpin.Value;
+			UpdateUrl ();
 		}
 		
 		string Protocol {

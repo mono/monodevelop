@@ -421,12 +421,12 @@ namespace MonoDevelop.VersionControl.Subversion
 				base.DeleteDirectory (path, force, monitor);
 		}
 		
-		public override DiffInfo[] PathDiff (string baseLocalPath, string[] localPaths)
+		public override DiffInfo[] PathDiff (string baseLocalPath, string[] localPaths, bool remoteDiff)
 		{
 			if (localPaths != null) {
 				ArrayList list = new ArrayList ();
 				foreach (string path in localPaths) {
-					string diff = Svn.PathDiff (path, false);
+					string diff = Svn.PathDiff (path, false, remoteDiff);
 					if (diff == null)
 						continue;
 					try {
@@ -437,7 +437,7 @@ namespace MonoDevelop.VersionControl.Subversion
 				}
 				return (DiffInfo[]) list.ToArray (typeof(DiffInfo));
 			} else {
-				string diff = Svn.PathDiff (baseLocalPath, true);
+				string diff = Svn.PathDiff (baseLocalPath, true, remoteDiff);
 				try {
 					return GenerateUnifiedDiffInfo (diff, baseLocalPath, null);
 				} finally {

@@ -1,3 +1,8 @@
+2008-09-04  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Pads/ProfilingPad.cs, Pads/ProfilingSnapshotCollectionNodeBuilder.cs:
+	  Moved the extensible tree view to its own directory.
+
 2008-08-18  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Profiling.mdp: Fix reference to Mono.TextEditor. The

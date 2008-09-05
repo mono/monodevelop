@@ -276,9 +276,12 @@ namespace MonoDevelop.VersionControl.Subversion
 			Client.Unlock (monitor, breakLock, paths);
 		}
 		
-		public string PathDiff (string path, bool recursive)
+		public string PathDiff (string path, bool recursive, bool remoteDiff)
 		{
-			return Client.PathDiff (path, LibSvnClient.Rev.Base, path, LibSvnClient.Rev.Working, recursive);
+			if (remoteDiff)
+				return Client.PathDiff (path, LibSvnClient.Rev.Head, path, LibSvnClient.Rev.Working, recursive);
+			else
+				return Client.PathDiff (path, LibSvnClient.Rev.Base, path, LibSvnClient.Rev.Working, recursive);
 		}
 		
 		private VersionInfo CreateNode (LibSvnClient.StatusEnt ent, Repository repo) 
@@ -291,7 +294,7 @@ namespace MonoDevelop.VersionControl.Subversion
 				rr = new SvnRevision (repo, ent.LastCommitRevision, ent.LastCommitDate,
 				                      ent.LastCommitAuthor, "(unavailable)", null);
 			}
-			
+
 			VersionStatus status = ConvertStatus (ent.Schedule, ent.TextStatus);
 			
 			bool readOnly = File.Exists (ent.LocalFilePath) && (File.GetAttributes (ent.LocalFilePath) & FileAttributes.ReadOnly) != 0;
@@ -334,6 +337,9 @@ namespace MonoDevelop.VersionControl.Subversion
 				case LibSvnClient.VersionStatus.Conflicted: return VersionStatus.Versioned | VersionStatus.Conflicted;
 				case LibSvnClient.VersionStatus.Ignored: return VersionStatus.Unversioned | VersionStatus.Ignored;
 				case LibSvnClient.VersionStatus.Obstructed: return VersionStatus.Versioned;
+				case LibSvnClient.VersionStatus.Added: return VersionStatus.Versioned | VersionStatus.ScheduledAdd;
+				case LibSvnClient.VersionStatus.Deleted: return VersionStatus.Versioned | VersionStatus.ScheduledDelete;
+				case LibSvnClient.VersionStatus.Replaced: return VersionStatus.Versioned | VersionStatus.ScheduledReplace;
 			}
 			
 			return VersionStatus.Unversioned;

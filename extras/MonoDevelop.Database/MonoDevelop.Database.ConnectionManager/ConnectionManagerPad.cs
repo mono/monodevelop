@@ -33,6 +33,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.Components.Commands;
+using MonoDevelop.Ide.Gui.Components;
 
 using MonoDevelop.Database.Sql;
 

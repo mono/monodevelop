@@ -1,5 +1,5 @@
 //
-// MonoDevelopTreeView.cs
+// ExtensibleTreeView.cs
 //
 // Author:
 //   Lluis Sanchez Gual
@@ -41,17 +41,15 @@ using System.Text;
 
 using Mono.Addins;
 using MonoDevelop.Core;
-using MonoDevelop.Projects;
-using MonoDevelop.Core.Gui.Dialogs;
 using MonoDevelop.Components;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Gui.Pads;
 
-namespace MonoDevelop.Ide.Gui
+namespace MonoDevelop.Ide.Gui.Components
 {
-	public class MonoDevelopTreeView : Gtk.ScrolledWindow
+	public partial class ExtensibleTreeView : Gtk.ScrolledWindow
 	{
 		internal const int TextColumn         = 0;
 		internal const int OpenIconColumn     = 1;
@@ -81,8 +79,8 @@ namespace MonoDevelop.Ide.Gui
 		TreeNodeNavigator compareNode2;
 		internal bool sorting;
 		
-		object dragObject;
-		object copyObject;
+		object[] dragObjects;
+		object[] copyObjects;
 		DragOperation currentTransferOperation;
 		
 		private static Gtk.TargetEntry [] target_table = new Gtk.TargetEntry [] {
@@ -103,11 +101,11 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
-		public MonoDevelopTreeView ()
+		public ExtensibleTreeView ()
 		{
 		}
 		
-		public MonoDevelopTreeView (NodeBuilder[] builders, TreePadOption[] options)
+		public ExtensibleTreeView (NodeBuilder[] builders, TreePadOption[] options)
 		{
 			Initialize (builders, options);
 		}
@@ -152,6 +150,7 @@ namespace MonoDevelop.Ide.Gui
 			*/
 			store = new Gtk.TreeStore (typeof (string), typeof (Gdk.Pixbuf), typeof (Gdk.Pixbuf), typeof (object), typeof (object), typeof(bool));
 			tree.Model = store;
+			tree.Selection.Mode = Gtk.SelectionMode.Multiple;
 
 			tree.EnableModelDragDest (target_table, Gdk.DragAction.Copy | Gdk.DragAction.Move);
 			Gtk.Drag.SourceSet (tree, Gdk.ModifierType.Button1Mask, target_table, Gdk.DragAction.Copy | Gdk.DragAction.Move);
@@ -190,7 +189,9 @@ namespace MonoDevelop.Ide.Gui
 			tree.TestExpandRow += new Gtk.TestExpandRowHandler (OnTestExpandRow);
 			tree.RowActivated += new Gtk.RowActivatedHandler(OnNodeActivated);
 			
-			tree.ButtonReleaseEvent += new Gtk.ButtonReleaseEventHandler(OnButtonRelease);
+			tree.ButtonReleaseEvent += new Gtk.ButtonReleaseEventHandler (OnButtonRelease);
+			tree.ButtonPressEvent += new Gtk.ButtonPressEventHandler (OnButtonPress);
+			
 			tree.PopupMenu += new Gtk.PopupMenuHandler (OnPopupMenu);
 			workNode = new TreeNodeNavigator (this);
 			compareNode1 = new TreeNodeNavigator (this);
@@ -274,20 +275,22 @@ namespace MonoDevelop.Ide.Gui
 
 		void OnDragBegin (object o, Gtk.DragBeginArgs arg)
 		{
-			ITreeNavigator nav = GetSelectedNode ();
-			if (nav == null) return;
-			dragObject = nav.DataItem;
-			Gdk.Pixbuf px = (Gdk.Pixbuf) store.GetValue (nav.CurrentPosition._iter, OpenIconColumn);
+			ITreeNavigator[] navs = GetSelectedNodes ();
+			if (navs.Length == 0) return;
+			dragObjects = new object [navs.Length];
+			for (int n=0; n<navs.Length; n++)
+				dragObjects [n] = navs [n].DataItem;
+			Gdk.Pixbuf px = (Gdk.Pixbuf) store.GetValue (navs[0].CurrentPosition._iter, OpenIconColumn);
 			Gtk.Drag.SetIconPixbuf (arg.Context, px, -10, -10);
 		}
 		
 		void OnDragDataReceived (object o, Gtk.DragDataReceivedArgs args)
 		{
-			if (dragObject != null) {
-				bool res = CheckAndDrop (args.X, args.Y, true, args.Context, dragObject);
+			if (dragObjects != null) {
+				bool res = CheckAndDrop (args.X, args.Y, true, args.Context, dragObjects);
 				Gtk.Drag.Finish (args.Context, res, true, args.Time);
 			} else {
-				bool res = CheckAndDrop (args.X, args.Y, true, args.Context, args.SelectionData);
+				bool res = CheckAndDrop (args.X, args.Y, true, args.Context, new object[] { args.SelectionData });
 //				string fullData = System.Text.Encoding.UTF8.GetString (args.SelectionData.Data);
 				Gtk.Drag.Finish (args.Context, res, true, args.Time);
 			}
@@ -295,29 +298,29 @@ namespace MonoDevelop.Ide.Gui
 		
 		void OnDragDrop (object o, Gtk.DragDropArgs args)
 		{
-			if (dragObject != null) {
-				bool res = CheckAndDrop (args.X, args.Y, true, args.Context, dragObject);
+			if (dragObjects != null) {
+				bool res = CheckAndDrop (args.X, args.Y, true, args.Context, dragObjects);
 				Gtk.Drag.Finish (args.Context, res, true, args.Time);
 			}
 		}
 		
 		void OnDragEnd (object o, Gtk.DragEndArgs args)
 		{
-			dragObject = null;
+			dragObjects = null;
 		}
 		
 		[GLib.ConnectBefore]
 		void OnDragMotion (object o, Gtk.DragMotionArgs args)
 		{
-			if (dragObject != null) {
-				if (!CheckAndDrop (args.X, args.Y, false, args.Context, dragObject)) {
+			if (dragObjects != null) {
+				if (!CheckAndDrop (args.X, args.Y, false, args.Context, dragObjects)) {
 					Gdk.Drag.Status (args.Context, (Gdk.DragAction)0, args.Time);
 					args.RetVal = true;
 				}
 			}
 		}
 		
-		bool CheckAndDrop (int x, int y, bool drop, Gdk.DragContext ctx, object obj)
+		bool CheckAndDrop (int x, int y, bool drop, Gdk.DragContext ctx, object[] obj)
 		{
 			Gtk.TreePath path;
 			Gtk.TreeViewDropPosition pos;
@@ -336,10 +339,10 @@ namespace MonoDevelop.Ide.Gui
 				try {
 					NodeCommandHandler handler = nb.CommandHandler;
 					handler.SetCurrentNode (nav);
-					if (handler.CanDropNode (obj, oper)) {
+					if (handler.CanDropMultipleNodes (obj, oper)) {
 						foundHandler = true;
 						if (drop)
-							handler.OnNodeDrop (obj, oper);
+							handler.OnMultipleNodeDrop (obj, oper);
 					}
 				} catch (Exception ex) {
 					LoggingService.LogError (ex.ToString ());
@@ -384,12 +387,12 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 
-		public object CopyObject {
+		public object[] CopyObjects {
 			get {
-				return copyObject;
+				return copyObjects;
 			}
 			set {
-				copyObject = value;
+				copyObjects = value;
 			}
 		}
 
@@ -423,7 +426,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		public void Clear ()
 		{
-			copyObject = dragObject = null;
+			copyObjects = dragObjects = null;
 			
 			object[] obs = new object [nodeHash.Count];
 			nodeHash.Keys.CopyTo (obs, 0);
@@ -438,14 +441,108 @@ namespace MonoDevelop.Ide.Gui
 		
 		public ITreeNavigator GetSelectedNode ()
 		{
-			Gtk.TreeModel foo;
-			Gtk.TreeIter iter;
-			if (!tree.Selection.GetSelected (out foo, out iter))
+			Gtk.TreePath[] sel = tree.Selection.GetSelectedRows ();
+			if (sel.Length == 0)
 				return null;
+			Gtk.TreeIter iter;
+			if (store.GetIter (out iter, sel[0]))
+				return new TreeNodeNavigator (this, iter);
+			else
+				return null;
+		}
+
+		class SelectionGroup
+		{
+			public NodeBuilder[] BuilderChain;
+			public List<ITreeNavigator> Nodes;
+			public Gtk.TreeStore store;
 			
-			return new TreeNodeNavigator (this, iter);
+			NodePosition[] savedPos;
+			object[] dataItems;
+
+			public object[] DataItems {
+				get {
+					if (dataItems == null) {
+						dataItems = new object [Nodes.Count];
+						for (int n=0; n<Nodes.Count; n++)
+							dataItems [n] = Nodes [n].DataItem;
+					}
+					return dataItems;
+				}
+			}
+
+			public void SavePositions ()
+			{
+				savedPos = new NodePosition [Nodes.Count];
+				for (int n=0; n<Nodes.Count; n++)
+					savedPos [n] = Nodes [n].CurrentPosition;
+			}
+
+			public bool RestorePositions ()
+			{
+				for (int n=0; n<Nodes.Count; n++) {
+					if (store.IterIsValid (savedPos[n]._iter))
+						Nodes [n].MoveToPosition (savedPos [n]);
+					else
+						return false;
+				}
+				return true;
+			}
 		}
 		
+		IEnumerable<SelectionGroup> GetSelectedNodesGrouped ()
+		{
+			Gtk.TreePath[] paths = tree.Selection.GetSelectedRows ();
+			if (paths.Length == 0) {
+				return new SelectionGroup [0];
+			}
+			if (paths.Length == 1) {
+				Gtk.TreeIter it;
+				store.GetIter (out it, paths [0]);
+				SelectionGroup grp = new SelectionGroup ();
+				TreeNodeNavigator nav = new TreeNodeNavigator (this, it);
+				grp.BuilderChain = nav.BuilderChain;
+				grp.Nodes = new List<ITreeNavigator> ();
+				grp.Nodes.Add (nav);
+				grp.store = store;
+				return new SelectionGroup [] { grp };
+			}
+			
+			Dictionary<NodeBuilder[], SelectionGroup> dict = new Dictionary<NodeBuilder[],SelectionGroup> ();
+			for (int n=0; n<paths.Length; n++) {
+				Gtk.TreeIter it;
+				store.GetIter (out it, paths [n]);
+				SelectionGroup grp;
+				TreeNodeNavigator nav = new TreeNodeNavigator (this, it);
+				if (!dict.TryGetValue (nav.BuilderChain, out grp)) {
+					grp = new SelectionGroup ();
+					grp.BuilderChain = nav.BuilderChain;
+					grp.Nodes = new List<ITreeNavigator> ();
+					grp.store = store;
+					dict [nav.BuilderChain] = grp;
+				}
+				grp.Nodes.Add (nav);
+			}
+			return dict.Values;
+		}
+
+		public bool MultipleNodesSelected ()
+		{
+			return tree.Selection.GetSelectedRows ().Length > 1;
+		}
+
+		public ITreeNavigator[] GetSelectedNodes ()
+		{
+			Gtk.TreePath[] paths = tree.Selection.GetSelectedRows ();
+			ITreeNavigator [] navs = new ITreeNavigator [paths.Length];
+			for (int n=0; n<paths.Length; n++) {
+				Gtk.TreeIter it;
+				store.GetIter (out it, paths [n]);
+				navs [n] = new TreeNodeNavigator (this, it);
+			}
+			return navs;
+		}
+
 		public ITreeNavigator GetNodeAtPosition (NodePosition position)
 		{
 			return new TreeNodeNavigator (this, position._iter);
@@ -514,7 +611,22 @@ namespace MonoDevelop.Ide.Gui
 		{
 			return null;
 		}
-		
+
+		class MulticastNodeRouter: IMultiCastCommandRouter
+		{
+			ArrayList targets;
+
+			public MulticastNodeRouter (ArrayList targets)
+			{
+				this.targets = targets;
+			}
+			
+			public IEnumerable GetCommandTargets ()
+			{
+				return targets;
+			}
+		}
+
 		internal object GetDelegatedCommandTarget ()
 		{
 			// If a node is being edited, don't delegate commands to the
@@ -523,42 +635,48 @@ namespace MonoDevelop.Ide.Gui
 			// will be handled by the node Entry.
 			if (editingText)
 				return null;
+
+			ArrayList targets = new ArrayList ();
 			
-			TreeNodeNavigator node = (TreeNodeNavigator) GetSelectedNode ();
-			if (node != null) {
-				NodeBuilder[] chain = node.NodeBuilderChain;
+			foreach (SelectionGroup grp in GetSelectedNodesGrouped ()) {
+				NodeBuilder[] chain = grp.BuilderChain;
 				if (chain.Length > 0) {
-					NodeCommandHandler[] handlers = new NodeCommandHandler [chain.Length];
-					for (int n=0; n<chain.Length; n++)
-						handlers [n] = chain [n].CommandHandler;
-					
-					for (int n=0; n<handlers.Length; n++) {
-						handlers [n].SetCurrentNode (node);
-						if (n < chain.Length - 1)
-							handlers [n].SetNextTarget (handlers [n+1]);
-						else
-							handlers [n].SetNextTarget (null);
+					ITreeNavigator[] nodes = grp.Nodes.ToArray ();
+					NodeCommandTargetChain targetChain = null;
+					NodeCommandTargetChain lastNode = null;
+					foreach (NodeBuilder nb in chain) {
+						NodeCommandTargetChain newNode = new NodeCommandTargetChain (nb.CommandHandler, nodes);
+						if (lastNode == null)
+							targetChain = lastNode = newNode;
+						else {
+							lastNode.Next = newNode;
+							lastNode = newNode;
+						}
 					}
-					return handlers [0];
+
+					if (targetChain != null)
+						targets.Add (targetChain);
 				}
 			}
-			return null;
+			if (targets.Count == 1)
+				return targets [0];
+			else if (targets.Count > 1)
+				return new MulticastNodeRouter (targets);
+			else
+				return null;
 		}
 
 		[CommandHandler (ViewCommands.Open)]
 		public virtual void ActivateCurrentItem ()
 		{
-			TreeNodeNavigator node = (TreeNodeNavigator) GetSelectedNode ();
-			if (node != null) {
-				NodeBuilder[] chain = node.NodeBuilderChain;
-				NodePosition pos = node.CurrentPosition;
-				foreach (NodeBuilder b in chain) {
+			foreach (SelectionGroup grp in GetSelectedNodesGrouped ()) {
+				grp.SavePositions ();
+				foreach (NodeBuilder b in grp.BuilderChain) {
 					NodeCommandHandler handler = b.CommandHandler;
-					handler.SetCurrentNode (node);
+					handler.SetCurrentNodes (grp.Nodes.ToArray ());
 					handler.ActivateItem ();
-					if (!store.IterIsValid (pos._iter))
+					if (!grp.RestorePositions ())
 						break;
-					node.MoveToPosition (pos);
 				}
 			}
 			OnCurrentItemActivated (EventArgs.Empty);
@@ -566,37 +684,38 @@ namespace MonoDevelop.Ide.Gui
 		
 		public virtual void DeleteCurrentItem ()
 		{
-			TreeNodeNavigator node = (TreeNodeNavigator) GetSelectedNode ();
-			if (node != null) {
-				NodeBuilder[] chain = node.NodeBuilderChain;
-				NodePosition pos = node.CurrentPosition;
+			foreach (SelectionGroup grp in GetSelectedNodesGrouped ()) {
+				NodeBuilder[] chain = grp.BuilderChain;
+				grp.SavePositions ();
 				foreach (NodeBuilder b in chain) {
 					NodeCommandHandler handler = b.CommandHandler;
-					handler.SetCurrentNode (node);
-					if (handler.CanDeleteItem ()) {
-						node.MoveToPosition (pos);
-						handler.DeleteItem ();
+					handler.SetCurrentNodes (grp.Nodes.ToArray ());
+					if (handler.CanDeleteMultipleItems ()) {
+						if (!grp.RestorePositions ())
+							return;
+						handler.DeleteMultipleItems ();
 						// FIXME: fixes bug #396566, but it is not 100% correct
 						// It can only be fully fixed if updates to the tree are delayed
 						break;
 					}
-					node.MoveToPosition (pos);
+					if (!grp.RestorePositions ())
+						return;
 				}
 			}
 		}
 		
 		protected virtual bool CanDeleteCurrentItem ()
 		{
-			TreeNodeNavigator node = (TreeNodeNavigator) GetSelectedNode ();
-			if (node != null) {
-				NodeBuilder[] chain = node.NodeBuilderChain;
-				NodePosition pos = node.CurrentPosition;
+			foreach (SelectionGroup grp in GetSelectedNodesGrouped ()) {
+				NodeBuilder[] chain = grp.BuilderChain;
+				grp.SavePositions ();
 				foreach (NodeBuilder b in chain) {
 					NodeCommandHandler handler = b.CommandHandler;
-					handler.SetCurrentNode (node);
-					if (handler.CanDeleteItem ())
+					handler.SetCurrentNodes (grp.Nodes.ToArray ());
+					if (handler.CanDeleteMultipleItems ())
 						return true;
-					node.MoveToPosition (pos);
+					if (!grp.RestorePositions ())
+						return false;
 				}
 			}
 			return false;
@@ -623,10 +742,12 @@ namespace MonoDevelop.Ide.Gui
 			CancelTransfer ();
 			TransferCurrentItem (DragOperation.Move);
 			
-			if (copyObject != null) {
-				TreeBuilder tb = new TreeBuilder (this);
-				if (tb.MoveToObject (copyObject))
-					tb.Update ();
+			if (copyObjects != null) {
+				foreach (object ob in copyObjects) {
+					TreeBuilder tb = new TreeBuilder (this);
+					if (tb.MoveToObject (ob))
+						tb.Update ();
+				}
 			}
 		}
 		
@@ -652,24 +773,23 @@ namespace MonoDevelop.Ide.Gui
 		
 		void TransferCurrentItem (DragOperation oper)
 		{
-			TreeNodeNavigator node = (TreeNodeNavigator) GetSelectedNode ();
-			if (node != null) {
-				NodeBuilder[] chain = node.NodeBuilderChain;
-				NodePosition pos = node.CurrentPosition;
+			foreach (SelectionGroup grp in GetSelectedNodesGrouped ()) {
+				NodeBuilder[] chain = grp.BuilderChain;
+				grp.SavePositions ();
 				foreach (NodeBuilder b in chain) {
 					try {
 						NodeCommandHandler handler = b.CommandHandler;
-						handler.SetCurrentNode (node);
+						handler.SetCurrentNodes (grp.Nodes.ToArray ());
 						if ((handler.CanDragNode () & oper) != 0) {
-							node.MoveToPosition (pos);
-							copyObject = node.DataItem;
+							grp.RestorePositions ();
+							copyObjects = grp.DataItems;
 							currentTransferOperation = oper;
 							break;
 						}
 					} catch (Exception ex) {
 						LoggingService.LogError (ex.ToString ());
 					}
-					node.MoveToPosition (pos);
+					grp.RestorePositions ();
 				}
 			}
 		}
@@ -698,7 +818,7 @@ namespace MonoDevelop.Ide.Gui
 		[CommandHandler (EditCommands.Paste)]
 		public void PasteToCurrentItem ()
 		{
-			if (copyObject == null) return;
+			if (copyObjects == null) return;
 			
 			TreeNodeNavigator node = (TreeNodeNavigator) GetSelectedNode ();
 			if (node != null) {
@@ -707,9 +827,9 @@ namespace MonoDevelop.Ide.Gui
 				foreach (NodeBuilder b in chain) {
 					NodeCommandHandler handler = b.CommandHandler;
 					handler.SetCurrentNode (node);
-					if (handler.CanDropNode (copyObject, currentTransferOperation)) {
+					if (handler.CanDropMultipleNodes (copyObjects, currentTransferOperation)) {
 						node.MoveToPosition (pos);
-						handler.OnNodeDrop (copyObject, currentTransferOperation);
+						handler.OnMultipleNodeDrop (copyObjects, currentTransferOperation);
 					}
 					node.MoveToPosition (pos);
 				}
@@ -725,7 +845,7 @@ namespace MonoDevelop.Ide.Gui
 				return;
 			}
 			
-			if (copyObject != null) {
+			if (copyObjects != null) {
 				TreeNodeNavigator node = (TreeNodeNavigator) GetSelectedNode ();
 				if (node != null) {
 					NodeBuilder[] chain = node.NodeBuilderChain;
@@ -733,7 +853,7 @@ namespace MonoDevelop.Ide.Gui
 					foreach (NodeBuilder b in chain) {
 						NodeCommandHandler handler = b.CommandHandler;
 						handler.SetCurrentNode (node);
-						if (handler.CanDropNode (copyObject, currentTransferOperation)) {
+						if (handler.CanDropMultipleNodes (copyObjects, currentTransferOperation)) {
 							info.Enabled = true;
 							return;
 						}
@@ -746,13 +866,15 @@ namespace MonoDevelop.Ide.Gui
 
 		void CancelTransfer ()
 		{
-			if (copyObject != null) {
-				object oldCopyObject = copyObject;
-				copyObject = null;
+			if (copyObjects != null) {
+				object[] oldCopyObjects = copyObjects;
+				copyObjects = null;
 				if (currentTransferOperation == DragOperation.Move) {
-					TreeBuilder tb = new TreeBuilder (this);
-					if (tb.MoveToObject (oldCopyObject))
-						tb.Update ();
+					foreach (object ob in oldCopyObjects) {
+						TreeBuilder tb = new TreeBuilder (this);
+						if (tb.MoveToObject (ob))
+							tb.Update ();
+					}
 				}
 			}
 		}
@@ -788,7 +910,7 @@ namespace MonoDevelop.Ide.Gui
 
 			node.ExpandToNode (); //make sure the parent of the node that is being edited is expanded
 			
-			store.SetValue (iter, MonoDevelopTreeView.TextColumn, node.NodeName);
+			store.SetValue (iter, ExtensibleTreeView.TextColumn, node.NodeName);
 			
 			text_render.Editable = true;
 			tree.SetCursor (store.GetPath (iter), complete_column, true);
@@ -922,7 +1044,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		TypeNodeBuilder GetTypeNodeBuilder (Gtk.TreeIter iter)
 		{
-			NodeBuilder[] chain = (NodeBuilder[]) store.GetValue (iter, MonoDevelopTreeView.BuilderChainColumn);
+			NodeBuilder[] chain = (NodeBuilder[]) store.GetValue (iter, ExtensibleTreeView.BuilderChainColumn);
 			if (chain != null && chain.Length > 0)
 				return chain[0] as TypeNodeBuilder;
 			return null;
@@ -1024,9 +1146,34 @@ namespace MonoDevelop.Ide.Gui
 		
 		internal void UnregisterNode (object dataObject, Gtk.TreeIter iter, NodeBuilder[] chain)
 		{
-			if (dataObject == copyObject)
-				copyObject = null;
+			// Remove object from copy list
+
+			if (copyObjects != null) {
+				int i = Array.IndexOf (copyObjects, dataObject);
+				if (i != -1) {
+					ArrayList list = new ArrayList (copyObjects);
+					list.RemoveAt (i);
+					if (list.Count > 0)
+						copyObjects = list.ToArray ();
+					else
+						copyObjects = null;
+				}
+			}
 				
+			// Remove object from drag list
+
+			if (dragObjects != null) {
+				int i = Array.IndexOf (dragObjects, dataObject);
+				if (i != -1) {
+					ArrayList list = new ArrayList (dragObjects);
+					list.RemoveAt (i);
+					if (list.Count > 0)
+						dragObjects = list.ToArray ();
+					else
+						dragObjects = null;
+				}
+			}
+			
 			nodeOptions.Remove (iter);
 			object currentIt = nodeHash [dataObject];
 			if (currentIt is Gtk.TreeIter[]) {
@@ -1203,6 +1350,12 @@ namespace MonoDevelop.Ide.Gui
 		{
 			GLib.Timeout.Add (20, new GLib.TimeoutHandler (wantFocus));
 		}
+
+		[CommandUpdateHandler (EditCommands.Rename)]
+		public void UpdateStartLabelEdit (CommandInfo info)
+		{
+			info.Enabled = GetSelectedNodes ().Length == 1;
+		}
 		
 		bool wantFocus ()
 		{
@@ -1261,37 +1414,34 @@ namespace MonoDevelop.Ide.Gui
 		[CommandHandler (ViewCommands.TreeDisplayOptionList)]
 		protected void OptionToggled (string optionId)
 		{
-			Gtk.TreeModel foo;
-			Gtk.TreeIter iter;
-			if (!tree.Selection.GetSelected (out foo, out iter))
-				return;
-
-			TreeOptions ops = GetOptions (iter, true);
-			ops [optionId] = !ops [optionId];
+			foreach (TreeNodeNavigator node in GetSelectedNodes ()) {
+				node.Options [optionId] = !node.Options [optionId];
+			}
 		}
 		
 		[CommandHandler (ViewCommands.ResetTreeDisplayOptions)]
 		protected void ResetOptions ()
 		{
-			Gtk.TreeModel foo;
-			Gtk.TreeIter iter;
-			if (!tree.Selection.GetSelected (out foo, out iter))
-				return;
-
-			ClearOptions (iter);
-			TreeBuilder tb = new TreeBuilder (this, iter);
-			tb.UpdateAll ();
+			foreach (TreeNodeNavigator node in GetSelectedNodes ()) {
+				Gtk.TreeIter it = node.CurrentPosition._iter;
+				if (store.IterIsValid (it)) {
+					ClearOptions (it);
+					TreeBuilder tb = new TreeBuilder (this, it);
+					tb.UpdateAll ();
+				}
+			}
 		}
 
 		[CommandHandler (ViewCommands.RefreshTree)]
 		protected void RefreshTree ()
 		{
-			Gtk.TreeModel foo;
-			Gtk.TreeIter iter;
-			if (!tree.Selection.GetSelected (out foo, out iter))
-				return;
-			TreeBuilder tb = new TreeBuilder (this, iter);
-			tb.UpdateAll ();
+			foreach (TreeNodeNavigator node in GetSelectedNodes ()) {
+				Gtk.TreeIter it = node.CurrentPosition._iter;
+				if (store.IterIsValid (it)) {
+					TreeBuilder tb = new TreeBuilder (this, it);
+					tb.UpdateAll ();
+				}
+			}
 		}
 		
 		[CommandHandler (ViewCommands.CollapseAllTreeNodes)]
@@ -1315,10 +1465,11 @@ namespace MonoDevelop.Ide.Gui
 			bool shift = (args.Event.State & Gdk.ModifierType.ShiftMask) != 0;
 			if (args.Event.Key == Gdk.Key.asterisk || args.Event.Key == Gdk.Key.KP_Multiply || (shift && (args.Event.Key == Gdk.Key.Right || args.Event.Key == Gdk.Key.KP_Right || args.Event.Key == Gdk.Key.plus || args.Event.Key == Gdk.Key.KP_Add))) {
 				Gtk.TreeIter iter;
-				if (tree.Selection.GetSelected (out iter)) {
+				foreach (Gtk.TreePath path in tree.Selection.GetSelectedRows ()) {
+					store.GetIter (out iter, path);
 					Expand (iter);
-					args.RetVal = true;
 				}
+				args.RetVal = true;
 			}
 			
 		}
@@ -1340,11 +1491,37 @@ namespace MonoDevelop.Ide.Gui
 				ShowPopup ();
 		}
 
-		private void OnButtonRelease(object sender, Gtk.ButtonReleaseEventArgs args)
+		[GLib.ConnectBefore]
+		private void OnButtonPress (object sender, Gtk.ButtonPressEventArgs args)
+		{
+			bool withModifider = (args.Event.State & Gdk.ModifierType.ShiftMask) != 0 || (args.Event.State & Gdk.ModifierType.ControlMask) != 0;
+			if (IsClickedNodeSelected ((int)args.Event.X, (int)args.Event.Y) && MultipleNodesSelected () && !withModifider) {
+				args.RetVal = true;
+			}
+		}
+
+		private void OnButtonRelease (object sender, Gtk.ButtonReleaseEventArgs args)
 		{
 			if (args.Event.Button == 3 && GetSelectedNode() != null) {
 				ShowPopup ();
 			}
+			
+			bool withModifider = (args.Event.State & Gdk.ModifierType.ShiftMask) != 0 || (args.Event.State & Gdk.ModifierType.ControlMask) != 0;
+			if (args.Event.Button == 1 && MultipleNodesSelected () && !withModifider) {
+				tree.Selection.UnselectAll ();
+				Gtk.TreePath path;
+				if (tree.GetPathAtPos ((int)args.Event.X, (int)args.Event.Y, out path))
+					tree.Selection.SelectPath (path);
+			}
+		}
+
+		bool IsClickedNodeSelected (int x, int y)
+		{
+			Gtk.TreePath path;
+			if (tree.GetPathAtPos (x, y, out path))
+				return tree.Selection.PathIsSelected (path);
+			else
+				return false;
 		}
 
 		protected virtual void OnNodeActivated (object sender, Gtk.RowActivatedArgs args)
@@ -1382,11 +1559,11 @@ namespace MonoDevelop.Ide.Gui
 		
 		internal class TreeBuilderContext: ITreeBuilderContext
 		{
-			MonoDevelopTreeView pad;
+			ExtensibleTreeView pad;
 			Hashtable icons = new Hashtable ();
 			Hashtable composedIcons = new Hashtable ();
 			
-			internal TreeBuilderContext (MonoDevelopTreeView pad)
+			internal TreeBuilderContext (ExtensibleTreeView pad)
 			{
 				this.pad = pad;
 			}
@@ -1446,685 +1623,33 @@ namespace MonoDevelop.Ide.Gui
 				return new TreeNodeNavigator (pad, iter);
 			}
 			
-			public MonoDevelopTreeView Tree {
+			public ExtensibleTreeView Tree {
 				get { return pad; }
 			}
 		}
-		
-		internal class TreeNodeNavigator: ITreeNavigator, ITreeOptions
+	}
+
+	class NodeCommandTargetChain: ICommandDelegatorRouter
+	{
+		NodeCommandHandler target;
+		ITreeNavigator[] nodes;
+		internal NodeCommandTargetChain Next;
+
+		public NodeCommandTargetChain (NodeCommandHandler target, ITreeNavigator[] nodes)
 		{
-			protected MonoDevelopTreeView pad;
-			protected Gtk.TreeView tree;
-			protected Gtk.TreeStore store;
-			Gtk.TreeIter currentNavIter;
-			object dataItem;
-			
-			public TreeNodeNavigator (MonoDevelopTreeView pad): this (pad, Gtk.TreeIter.Zero)
-			{
-			}
-			
-			public TreeNodeNavigator (MonoDevelopTreeView pad, Gtk.TreeIter iter)
-			{
-				this.pad = pad;
-				tree = pad.Tree;
-				store = pad.Store;
-				MoveToIter (iter);
-			}
-			
-			protected Gtk.TreeIter currentIter {
-				get { return currentNavIter; }
-			}
-			
-			public ITreeNavigator Clone ()
-			{
-				return new TreeNodeNavigator (pad, currentIter);
-			}
-			
-			void AssertIsValid ()
-			{
-				if (!pad.sorting && !store.IterIsValid (currentIter)) {
-					if (dataItem == null || !MoveToObject (dataItem))
-						throw new InvalidOperationException ("Tree iterator has been invalidated.");
-				}
-			}
-			
-			protected void InitIter (Gtk.TreeIter it, object dataObject)
-			{
-				currentNavIter = it;
-				dataItem = dataObject;
-			}
-
-			
-			public object DataItem {
-				get {
-					return dataItem;
-				}
-			}
-			
-			public TypeNodeBuilder TypeNodeBuilder {
-				get {
-					return pad.GetTypeNodeBuilder (CurrentPosition._iter);
-				}
-			}
-			
-			internal NodeBuilder[] NodeBuilderChain {
-				get {
-					AssertIsValid ();
-					NodeBuilder[] chain = (NodeBuilder[]) store.GetValue (currentIter, MonoDevelopTreeView.BuilderChainColumn);
-					if (chain != null)
-						return chain;
-					else
-						return new NodeBuilder [0];
-				}
-			}
-			
-			public bool Selected {
-				get {
-					AssertIsValid ();
-					return tree.Selection.IterIsSelected (currentIter);
-				}
-				set {
-					AssertIsValid ();
-					if (value != Selected) {
-						ExpandToNode ();
-						try {
-							tree.Selection.SelectIter (currentIter);
-							tree.SetCursor (store.GetPath (currentIter), pad.CompleteColumn, false);
-						} catch (Exception) {}
-//						tree.ScrollToCell (store.GetPath (currentIter), null, false, 0, 0);
-					}
-				}
-			}
-			
-			public NodePosition CurrentPosition {
-				get {
-					AssertIsValid ();
-					NodePosition pos = new NodePosition ();
-					pos._iter = currentIter;
-					return pos;
-				}
-			}
-		
-			bool ITreeOptions.this [string name] {
-				get {
-					AssertIsValid ();
-					return pad.GetOptions (currentIter, false) [name]; 
-				}
-				set {
-					AssertIsValid ();
-					pad.GetOptions (currentIter, true) [name] = value;
-				}
-			}
-			
-			public bool MoveToPosition (NodePosition position)
-			{
-				MoveToIter ((Gtk.TreeIter) position._iter);
-				return true;
-			}
-			
-			internal void MoveToIter (Gtk.TreeIter iter)
-			{
-				currentNavIter = iter;
-				if (!iter.Equals (Gtk.TreeIter.Zero))
-					dataItem = store.GetValue (currentNavIter, MonoDevelopTreeView.DataItemColumn);
-				else
-					dataItem = null;
-			}
-			
-			public bool MoveToRoot ()
-			{
-				AssertIsValid ();
-				Gtk.TreeIter it;
-				if (!store.GetIterFirst (out it))
-					return false;
-				
-				MoveToIter (it);
-				return true;
-			}
-		
-			public bool MoveToObject (object dataObject)
-			{
-				Gtk.TreeIter iter;
-				if (!pad.GetFirstNode (dataObject, out iter)) return false;
-				MoveToIter (iter);
-				return true;
-			}
-		
-			public bool MoveToNextObject ()
-			{
-				object dataItem = DataItem;
-				if (dataItem == null)
-					return false;
-				if (currentIter.Equals (Gtk.TreeIter.Zero))
-					return false;
-				Gtk.TreeIter it = currentIter;
-				if (!pad.GetNextNode (dataItem, ref it))
-					return false;
-				
-				MoveToIter (it);
-				return true;
-			}
-		
-			public bool MoveToParent ()
-			{
-				AssertIsValid ();
-				Gtk.TreeIter it;
-				if (store.IterParent (out it, currentIter)) {
-					MoveToIter (it);
-					return true;
-				} else
-					return false;
-			}
-			
-			public bool MoveToParent (Type dataType)
-			{
-				AssertIsValid ();
-				Gtk.TreeIter newIter = currentIter;
-				while (store.IterParent (out newIter, newIter)) {
-					object data = store.GetValue (newIter, MonoDevelopTreeView.DataItemColumn);
-					if (dataType.IsInstanceOfType (data)) {
-						MoveToIter (newIter);
-						return true;
-					}
-				}
-				return false;
-			}
-			
-			public bool MoveToFirstChild ()
-			{
-				EnsureFilled ();
-				Gtk.TreeIter it;
-				if (!store.IterChildren (out it, currentIter))
-					return false;
-				
-				MoveToIter (it);
-				return true;
-			}
-			
-			public bool MoveNext ()
-			{
-				AssertIsValid ();
-				Gtk.TreeIter it = currentIter;
-				if (!store.IterNext (ref it))
-					return false;
-				MoveToIter (it);
-				return true;
-			}
-			
-			public bool HasChild (string name, Type dataType)
-			{
-				if (MoveToChild (name, dataType)) {
-					MoveToParent ();
-					return true;
-				} else
-					return false;
-			}
-			
-			public bool HasChildren ()
-			{
-				EnsureFilled ();
-				Gtk.TreeIter it;
-				return store.IterChildren (out it, currentIter);
-			}
-		
-			public bool FindChild (object dataObject)
-			{
-				return FindChild (dataObject, false);
-			}
-			
-			public bool FindChild (object dataObject, bool recursive)
-			{
-				AssertIsValid ();
-				object it = pad.NodeHash [dataObject];
-				
-				if (it == null)
-					return false;
-				else if (it is Gtk.TreeIter) {
-					if (IsChildIter (currentIter, (Gtk.TreeIter)it, recursive)) {
-						MoveToIter ((Gtk.TreeIter)it);
-						return true;
-					} else
-						return false;
-				} else {
-					foreach (Gtk.TreeIter cit in (Gtk.TreeIter[])it) {
-						if (IsChildIter (currentIter, cit, recursive)) {
-							MoveToIter ((Gtk.TreeIter)cit);
-							return true;
-						}
-					}
-					return false;
-				}
-			}
-			
-			bool IsChildIter (Gtk.TreeIter pit, Gtk.TreeIter cit, bool recursive)
-			{
-				while (store.IterParent (out cit, cit)) {
-					if (cit.Equals (pit)) return true;
-					if (!recursive) return false;
-				}
-				return false;
-			}
-			
-			public bool MoveToChild (string name, Type dataType)
-			{
-				EnsureFilled ();
-				Gtk.TreeIter oldIter = currentIter;
-
-				if (!MoveToFirstChild ()) {
-					MoveToIter (oldIter);
-					return false;
-				}
-
-				do {
-					if (name == NodeName)
-						return true;
-				} while (MoveNext ());
-
-				MoveToIter (oldIter);
-				return false;
-			}
-			
-			public bool Expanded {
-				get {
-					AssertIsValid ();
-					return tree.GetRowExpanded (store.GetPath (currentIter));
-				}
-				set {
-					AssertIsValid ();
-					if (value && !Expanded) {
-						Gtk.TreePath path = store.GetPath (currentIter);
-						tree.ExpandRow (path, false);
-					}
-					else if (!value && Expanded) {
-						Gtk.TreePath path = store.GetPath (currentIter);
-						tree.CollapseRow (path);
-					}
-				}
-			}
-
-			public ITreeOptions Options {
-				get { return this; }
-			}
-			
-			public NodeState SaveState ()
-			{
-				AssertIsValid ();
-				return NodeState.SaveState (pad, this);
-			}
-			
-			public void RestoreState (NodeState state)
-			{
-				AssertIsValid ();
-				NodeState.RestoreState (pad, this, state);
-			}
-		
-			public void Refresh ()
-			{
-				ITreeBuilder builder = new TreeBuilder (pad, currentIter);
-				builder.UpdateAll ();
-			}
-			
-			public void ExpandToNode ()
-			{
-				Gtk.TreeIter it;
-				AssertIsValid ();
-				if (store.IterParent (out it, currentIter)) {
-					Gtk.TreePath path = store.GetPath (it);
-					tree.ExpandToPath (path);
-				}
-			}
-			
-			public string NodeName {
-				get {
-					object data = DataItem;
-					NodeBuilder[] chain = BuilderChain;
-					if (chain != null && chain.Length > 0) return ((TypeNodeBuilder)chain[0]).GetNodeName (this, data);
-					else return store.GetValue (currentIter, MonoDevelopTreeView.TextColumn) as string;
-				}
-			}
-			
-			public NodeBuilder[] BuilderChain {
-				get {
-					AssertIsValid ();
-					return (NodeBuilder[]) store.GetValue (currentIter, MonoDevelopTreeView.BuilderChainColumn);
-				}
-			}
-			
-			public object GetParentDataItem (Type type, bool includeCurrent)
-			{
-				if (includeCurrent && type.IsInstanceOfType (DataItem))
-					return DataItem;
-
-				Gtk.TreeIter it = currentIter;
-				while (store.IterParent (out it, it)) {
-					object data = store.GetValue (it, MonoDevelopTreeView.DataItemColumn);
-					if (type.IsInstanceOfType (data))
-						return data;
-				}
-				return null;
-			}
-		
-			protected virtual void EnsureFilled ()
-			{
-				AssertIsValid ();
-				if (!(bool) store.GetValue (currentIter, MonoDevelopTreeView.FilledColumn))
-					new TreeBuilder (pad, currentIter).FillNode ();
-			}
-			
-			public bool Filled {
-				get {
-					AssertIsValid ();
-					return (bool) store.GetValue (currentIter, MonoDevelopTreeView.FilledColumn);
-				}
-			}
+			this.nodes = nodes;
+			this.target = target;
 		}
 		
-		internal class TreeBuilder: TreeNodeNavigator, ITreeBuilder
+		public object GetNextCommandTarget ()
 		{
-			public TreeBuilder (MonoDevelopTreeView pad) : base (pad)
-			{
-			}
-
-			public TreeBuilder (MonoDevelopTreeView pad, Gtk.TreeIter iter): base (pad, iter)
-			{
-			}
-			
-			protected override void EnsureFilled ()
-			{
-				if (!(bool) store.GetValue (currentIter, MonoDevelopTreeView.FilledColumn))
-					FillNode ();
-			}
-			
-			public bool FillNode ()
-			{
-				store.SetValue (currentIter, MonoDevelopTreeView.FilledColumn, true);
-				
-				Gtk.TreeIter child;
-				if (store.IterChildren (out child, currentIter))
-					store.Remove (ref child);
-				
-				NodeBuilder[] chain = (NodeBuilder[]) store.GetValue (currentIter, MonoDevelopTreeView.BuilderChainColumn);
-				object dataObject = store.GetValue (currentIter, MonoDevelopTreeView.DataItemColumn);
-				CreateChildren (chain, dataObject);
-				return store.IterHasChild (currentIter);
-			}
-			
-			public void UpdateAll ()
-			{
-				Update ();
-				UpdateChildren ();
-			}
-			
-			public void Update ()
-			{
-				object data = store.GetValue (currentIter, MonoDevelopTreeView.DataItemColumn);
-				NodeBuilder[] chain = (NodeBuilder[]) store.GetValue (currentIter, MonoDevelopTreeView.BuilderChainColumn);
-				
-				NodeAttributes ats = GetAttributes (chain, data);
-				UpdateNode (chain, ats, data);
-			}
-			
-			public void ResetState ()
-			{
-				Update ();
-				RemoveChildren (currentIter);
-
-				object data = store.GetValue (currentIter, MonoDevelopTreeView.DataItemColumn);
-				NodeBuilder[] chain = (NodeBuilder[]) store.GetValue (currentIter, MonoDevelopTreeView.BuilderChainColumn);
-
-				if (!HasChildNodes (chain, data))
-					FillNode ();
-				else {
-					RemoveChildren (currentIter);
-					store.AppendNode (currentIter);	// Dummy node
-					store.SetValue (currentIter, MonoDevelopTreeView.FilledColumn, false);
-				}
-			}
-			
-			public void UpdateChildren ()
-			{
-				object data = store.GetValue (currentIter, MonoDevelopTreeView.DataItemColumn);
-				NodeBuilder[] chain = (NodeBuilder[]) store.GetValue (currentIter, MonoDevelopTreeView.BuilderChainColumn);
-				
-				if (!(bool) store.GetValue (currentIter, MonoDevelopTreeView.FilledColumn)) {
-					if (!HasChildNodes (chain, data))
-						FillNode ();
-					return;
-				}
-				
-				NodeState ns = SaveState ();
-				RestoreState (ns);
-			}
-			
-			void RemoveChildren (Gtk.TreeIter it)
-			{
-				Gtk.TreeIter child;
-				while (store.IterChildren (out child, it)) {
-					RemoveChildren (child);
-					object childData = store.GetValue (child, MonoDevelopTreeView.DataItemColumn);
-					if (childData != null)
-						pad.UnregisterNode (childData, child, null);
-					store.Remove (ref child);
-				}
-			}
-			
-			public void Remove ()
-			{
-				RemoveChildren (currentIter);
-				object data = store.GetValue (currentIter, MonoDevelopTreeView.DataItemColumn);
-				pad.UnregisterNode (data, currentIter, null);
-				Gtk.TreeIter it = currentIter;
-				if (store.Remove (ref it) && !it.Equals (Gtk.TreeIter.Zero))
-					MoveToIter (it);
-			}
-			
-			public void Remove (bool moveToParent)
-			{
-				Gtk.TreeIter parent;
-				store.IterParent (out parent, currentIter);
-
-				Remove ();
-
-				if (moveToParent) {
-					MoveToIter (parent);
-				}
-			}
-			
-			public void AddChild (object dataObject)
-			{
-				AddChild (dataObject, false);
-			}
-			
-			NodeAttributes GetAttributes (NodeBuilder[] chain, object dataObject)
-			{
-				Gtk.TreeIter oldIter = currentIter;
-				NodeAttributes ats = NodeAttributes.None;
-				
-				foreach (NodeBuilder nb in chain) {
-					try {
-						nb.GetNodeAttributes (this, dataObject, ref ats);
-					} catch (Exception ex) {
-						LoggingService.LogError (ex.ToString ());
-					}
-					MoveToIter (oldIter);
-				}
-				return ats;
-			}
-			
-			public void AddChild (object dataObject, bool moveToChild)
-			{
-				if (dataObject == null) throw new ArgumentNullException ("dataObject");
-				
-				NodeBuilder[] chain = pad.GetBuilderChain (dataObject.GetType ());
-				if (chain == null) return;
-				
-				Gtk.TreeIter oldIter = currentIter;
-				NodeAttributes ats = GetAttributes (chain, dataObject);
-				if ((ats & NodeAttributes.Hidden) != 0)
-					return;
-				
-				Gtk.TreeIter it;
-				if (!currentIter.Equals (Gtk.TreeIter.Zero)) {
-					if (!Filled) return;
-					it = store.AppendValues (currentIter, "", null, null, dataObject, chain, false);
-				}
-				else
-					it = store.AppendValues ("", null, null, dataObject, chain, false);
-				
-				pad.RegisterNode (it, dataObject, chain);
-				
-				BuildNode (it, chain, ats, dataObject);
-				if (moveToChild)
-					MoveToIter (it);
-				else
-					MoveToIter (oldIter);
-
-				pad.NotifyInserted (it, dataObject);
-			}
-			
-			void BuildNode (Gtk.TreeIter it, NodeBuilder[] chain, NodeAttributes ats, object dataObject)
-			{
-				Gtk.TreeIter oldIter = currentIter;
-				object oldItem = DataItem;
-
-				InitIter (it, dataObject);
-				
-				// It is *critical* that we set this first. We will
-				// sort after this call, so we must give as much info
-				// to the sort function as possible.
-				store.SetValue (it, MonoDevelopTreeView.DataItemColumn, dataObject);
-				store.SetValue (it, MonoDevelopTreeView.BuilderChainColumn, chain);
-				
-				UpdateNode (chain, ats, dataObject);
-				
-				bool hasChildren = HasChildNodes (chain, dataObject);
-				store.SetValue (currentIter, MonoDevelopTreeView.FilledColumn, !hasChildren);
-				
-				if (hasChildren)
-					store.AppendNode (currentIter);	// Dummy node
-
-				InitIter (oldIter, oldItem);
-			}
-			
-			bool HasChildNodes (NodeBuilder[] chain, object dataObject)
-			{
-				Gtk.TreeIter citer = currentIter;
-				foreach (NodeBuilder nb in chain) {
-					try {
-						bool res = nb.HasChildNodes (this, dataObject);
-						if (res) return true;
-					} catch (Exception ex) {
-						LoggingService.LogError (ex.ToString ());
-					} finally {
-						MoveToIter (citer);
-					}
-				}
-				return false;
-			}
-			
-			void UpdateNode (NodeBuilder[] chain, NodeAttributes ats, object dataObject)
-			{
-				Gdk.Pixbuf icon = null;
-				Gdk.Pixbuf closedIcon = null;
-				string text = string.Empty;
-				Gtk.TreeIter citer = currentIter;
-				
-				foreach (NodeBuilder builder in chain) {
-					try {
-						builder.BuildNode (this, dataObject, ref text, ref icon, ref closedIcon);
-					} catch (Exception ex) {
-						LoggingService.LogError (ex.ToString ());
-					}
-					MoveToIter (citer);
-				}
-					
-				if (closedIcon == null) closedIcon = icon;
-				
-				if (dataObject == pad.CopyObject && pad.CurrentTransferOperation == DragOperation.Move) {
-					Gdk.Pixbuf gicon = pad.BuilderContext.GetComposedIcon (icon, "fade");
-					if (gicon == null) {
-						gicon = Services.Icons.MakeTransparent (icon, 0.5);
-						pad.BuilderContext.CacheComposedIcon (icon, "fade", gicon);
-					}
-					icon = gicon;
-					gicon = pad.BuilderContext.GetComposedIcon (closedIcon, "fade");
-					if (gicon == null) {
-						gicon = Services.Icons.MakeTransparent (closedIcon, 0.5);
-						pad.BuilderContext.CacheComposedIcon (closedIcon, "fade", gicon);
-					}
-					closedIcon = gicon;
-				}
-				
-				SetNodeInfo (currentIter, ats, text, icon, closedIcon);
-			}
-			
-			void SetNodeInfo (Gtk.TreeIter it, NodeAttributes ats, string text, Gdk.Pixbuf icon, Gdk.Pixbuf closedIcon)
-			{
-				store.SetValue (it, MonoDevelopTreeView.TextColumn, text);
-				if (icon != null) store.SetValue (it, MonoDevelopTreeView.OpenIconColumn, icon);
-				if (closedIcon != null) store.SetValue (it, MonoDevelopTreeView.ClosedIconColumn, closedIcon);
-				pad.Tree.QueueDraw ();
-			}
-
-			void CreateChildren (NodeBuilder[] chain, object dataObject)
-			{
-				Gtk.TreeIter it = currentIter;
-				foreach (NodeBuilder builder in chain) {
-					try {
-						builder.BuildChildNodes (this, dataObject);
-					} catch (Exception ex) {
-						LoggingService.LogError (ex.ToString ());
-					}
-					MoveToIter (it);
-				}
-			}
+			return Next;
 		}
 		
-		internal class TreeOptions : Hashtable, ITreeOptions
+		public object GetDelegatedCommandTarget ()
 		{
-			MonoDevelopTreeView pad;
-			Gtk.TreeIter iter;
-			
-			public TreeOptions ()
-			{
-			}
-			
-			public TreeOptions (MonoDevelopTreeView pad, Gtk.TreeIter iter)
-			{
-				this.pad = pad;
-				this.iter = iter;
-			}
-			
-			public MonoDevelopTreeView Pad {
-				get { return pad; }
-				set { pad = value; }
-			}
-
-			public Gtk.TreeIter Iter {
-				get { return iter; }
-				set { iter = value; }
-			}
-
-			public bool this [string name] {
-				get {
-					object op = base [name];
-					if (op == null) return false;
-					return (bool) op;
-				}
-				set {
-					base [name] = value;
-					if (pad != null)
-						pad.RefreshNode (iter);
-				}
-			}
-			
-			public TreeOptions CloneOptions (Gtk.TreeIter newIter)
-			{
-				TreeOptions ops = new TreeOptions (pad, newIter);
-				foreach (DictionaryEntry de in this)
-					ops [de.Key] = de.Value;
-				return ops;
-			}
+			target.SetCurrentNodes (nodes);
+			return target;
 		}
 	}
 }

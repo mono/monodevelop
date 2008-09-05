@@ -1,7 +1,17 @@
+2008-09-04  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.AspNet/ProjectFolderNodeBuilderExtension.cs: Moved the
+	  extensible tree view to its own directory.
+
 2008-09-03  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.AspNet/AspNetToolboxNode.cs, AspNetAddIn.mdp: Changes
 	  caused by parser service change.
+
+2008-08-22  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs: Fix attribute value
+	  completion.
 
 2008-08-20  Michael Hutchinson <mhutchinson@novell.com> 
 

@@ -1,3 +1,48 @@
+2008-08-21  Mike Krüger <mkrueger@novell.com> 
+
+	* Mono.TextEditor/DefaultEditActions.cs: optimized copy/cut.
+
+2008-08-21  Mike Krüger <mkrueger@novell.com> 
+
+	* Mono.TextEditor/Document.cs, Mono.TextEditor/LineSegmentTree.cs,
+	  Mono.TextEditor/TextEditor.cs, Mono.TextEditor/LineSplitter.cs,
+	  Mono.TextEditor.Highlighting/SyntaxModeService.cs: Optimized text
+	  editor. Syntax update is now running on a single thread using a
+	  queue. Optimized the offset2line number operation.
+
+2008-08-21  Mike Krüger <mkrueger@novell.com> 
+
+	* Mono.TextEditor/Document.cs, Mono.TextEditor/TextEditor.cs,
+	  Mono.TextEditor/GutterMargin.cs, Mono.TextEditor/TextViewMargin.cs:
+	  Worked on gutter width change.
+
+2008-08-21  Mike Krüger <mkrueger@novell.com> 
+
+	* Mono.TextEditor.mdp: set referenced gtk sharp version back to 2.8.
+	* Mono.TextEditor/CodeSegmentPreviewWindow.cs: fixed compiler warning.
+
+2008-08-21  Mike Krüger <mkrueger@novell.com> 
+
+	* TangoLightStyle.xml, JavascriptSyntaxMode.xml, Styles,
+	  Styles/TangoLightStyle.xml, Styles/OblivionStyle.xml,
+	  Styles/BrownStyle.xml, Styles/VisualStudioStyle.xml,
+	  Styles/C64Style.xml, VBNetSyntaxMode.xml, BooSyntaxMode.xml,
+	  CSharpSyntaxMode.xml, PythonSyntaxMode.xml, JavaSyntaxMode.xml,
+	  CPPSyntaxMode.xml, CSyntaxMode.xml, ValaSyntaxMode.xml,
+	  OblivionStyle.xml, ChangeLogSyntaxMode.xml, AspNetSyntaxMode.xml,
+	  gtk-gui/objects.xml, BrownStyle.xml, XmlSyntaxMode.xml,
+	  VisualStudioStyle.xml, C64Style.xml, SyntaxModes,
+	  SyntaxModes/JavascriptSyntaxMode.xml,
+	  SyntaxModes/ChangeLogSyntaxMode.xml,
+	  SyntaxModes/AspNetSyntaxMode.xml, SyntaxModes/VBNetSyntaxMode.xml,
+	  SyntaxModes/BooSyntaxMode.xml, SyntaxModes/CSharpSyntaxMode.xml,
+	  SyntaxModes/XmlSyntaxMode.xml, SyntaxModes/JavaSyntaxMode.xml,
+	  SyntaxModes/PythonSyntaxMode.xml, SyntaxModes/CPPSyntaxMode.xml,
+	  SyntaxModes/CSyntaxMode.xml, SyntaxModes/ValaSyntaxMode.xml: Moved
+	  resources to own subdirecttories.
+	* Mono.TextEditor/TextViewMargin.cs: Fixed little issue with folding
+	  markers and invalid lines.
+
 2008-08-20  Mike Krüger <mkrueger@novell.com> 
 
 	* Mono.TextEditor/Document.cs, Mono.TextEditor/TextEditor.cs,

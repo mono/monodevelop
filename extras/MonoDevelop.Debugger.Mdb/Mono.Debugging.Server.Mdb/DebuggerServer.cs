@@ -147,7 +147,7 @@ namespace DebuggerServer
 					internalInterruptionRequested = false;
 				}
 				else
-					guiManager.Break (process.MainThread);
+					guiManager.Stop (process.MainThread);
 			});
 		}
 
@@ -523,12 +523,13 @@ namespace DebuggerServer
 					Console.WriteLine ("GetBacktrace native time: {0} ms n:{1}", (DateTime.Now - t).TotalMilliseconds, bt.Count);
 					frames.AddRange (bt.Frames);
 				}
-			}
-			t = DateTime.Now;
-			MD.Backtrace backtrace = thread.GetBacktrace (MD.Backtrace.Mode.Managed, max_frames);
-			if (backtrace != null) {
-				Console.WriteLine ("GetBacktrace managed time: {0} ms n:{1}", (DateTime.Now - t).TotalMilliseconds, backtrace.Count);
-				frames.AddRange (backtrace.Frames);
+			} else {
+				t = DateTime.Now;
+				MD.Backtrace backtrace = thread.GetBacktrace (MD.Backtrace.Mode.Managed, max_frames);
+				if (backtrace != null) {
+					Console.WriteLine ("GetBacktrace managed time: {0} ms n:{1}", (DateTime.Now - t).TotalMilliseconds, backtrace.Count);
+					frames.AddRange (backtrace.Frames);
+				}
 			}
 			if (frames.Count > 0) {
 				BacktraceWrapper wrapper = new BacktraceWrapper (frames.ToArray ());
@@ -570,7 +571,9 @@ namespace DebuggerServer
 			
 			debugger.TargetExitedEvent += OnTargetExitedEvent;
 			guiManager.TargetEvent += OnTargetEvent;
-			guiManager.BreakpointHitHandler = BreakEventCheck;
+
+			// Not supported
+			//guiManager.BreakpointHitHandler = BreakEventCheck;
 			
 			activeThread = process.MainThread;
 			running = true;
@@ -632,7 +635,7 @@ namespace DebuggerServer
 			Console.WriteLine ("Server OnTargetEvent: {0} stopped:{1} data:{2} internal:{3} queue:{4} thread:{5}", args.Type, args.IsStopped, args.Data, internalInterruptionRequested, stoppedWorkQueue.Count, args.Frame != null ? args.Frame.Thread : null);
 		}
 
-		private void OnTargetEvent (object sender, MD.TargetEventArgs args)
+		private void OnTargetEvent (MD.Thread thread, MD.TargetEventArgs args)
 		{
 			try {
 				if (!running) {
@@ -677,7 +680,7 @@ namespace DebuggerServer
 								if (resume)
 									process.MainThread.Continue ();
 								else if (notifyToClient)
-									NotifyTargetEvent (args);
+									NotifyTargetEvent (thread, args);
 							});
 							return;
 						}
@@ -685,14 +688,14 @@ namespace DebuggerServer
 				}
 				
 				if (notifyToClient)
-					NotifyTargetEvent (args);
+					NotifyTargetEvent (thread, args);
 
 			} catch (Exception e) {
 				Console.WriteLine ("*** DS.OnTargetEvent, exception : {0}", e.ToString ());
 			}
 		}
 		
-		void NotifyTargetEvent (MD.TargetEventArgs args)
+		void NotifyTargetEvent (MD.Thread thread, MD.TargetEventArgs args)
 		{
 			if (args.Frame != null)
 				activeThread = args.Frame.Thread;
@@ -703,7 +706,7 @@ namespace DebuggerServer
 						controller.OnDebuggerOutput (false, string.Format ("Thread {0:x} received signal {1}.\n", args.Frame.Thread.ID, args.Data));
 					});
 				}
-				
+
 				DL.TargetEventType type;
 				
 				switch (args.Type) {
@@ -725,8 +728,14 @@ namespace DebuggerServer
 				DL.TargetEventArgs targetArgs = new DL.TargetEventArgs (type);
 
 				if (args.Type != MD.TargetEventType.TargetExited) {
-					targetArgs.Backtrace = CreateBacktrace (args.Frame.Thread);
+					targetArgs.Backtrace = CreateBacktrace (thread);
 					targetArgs.Thread = CreateThreadInfo (activeThread);
+				}
+
+				if ((args.Type == MD.TargetEventType.UnhandledException || args.Type == MD.TargetEventType.Exception) && (args.Data is TargetAddress)) {
+					TargetAddress addr = (TargetAddress) args.Data;
+					ML.TargetObject exc = args.Frame.Language.CreateObject (args.Frame.Thread, addr);
+					targetArgs.Exception = new LiteralValueReference (args.Frame.Thread, "Exception", exc).CreateObjectValue ();
 				}
 
 				DispatchEvent (delegate {

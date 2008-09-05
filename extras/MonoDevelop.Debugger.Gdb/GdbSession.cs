@@ -70,6 +70,11 @@ namespace MonoDevelop.Debugger.Gdb
 		object eventLock = new object ();
 		object gdbLock = new object ();
 		
+		protected override DebuggerFeatures OnGetSupportedFeatures ()
+		{
+			return DebuggerFeatures.ConditionalBreakpoints | DebuggerFeatures.Tracepoints;
+		}
+		
 		protected override void OnRun (DebuggerStartInfo startInfo)
 		{
 			lock (gdbLock) {

@@ -116,7 +116,6 @@ namespace Mono.TextEditor
 			Caret.PositionChanged += UpdateBracketHighlighting;
 			base.cursor = new Gdk.Cursor (Gdk.CursorType.Xterm);
 			Document.LineChanged += CheckLongestLine;
-			Document.LineInserted += CheckLongestLine;
 		}
 		
 		internal void Initialize ()
@@ -211,7 +210,7 @@ namespace Mono.TextEditor
 			textEditor.Document.TextReplaced -= UpdateBracketHighlighting;
 			Caret.PositionChanged -= UpdateBracketHighlighting;
 			Document.LineChanged -= CheckLongestLine;
-			Document.LineInserted -= CheckLongestLine;
+	//		Document.LineInserted -= CheckLongestLine;
 		
 			DisposeGCs ();
 			if (layout != null) {
@@ -885,6 +884,8 @@ namespace Mono.TextEditor
 		List<System.Collections.Generic.KeyValuePair<Gdk.Rectangle,FoldSegment>> GetFoldRectangles (int lineNr)
 		{
 			List<System.Collections.Generic.KeyValuePair<Gdk.Rectangle,FoldSegment>> result = new List<System.Collections.Generic.KeyValuePair<Gdk.Rectangle,FoldSegment>> ();
+			if (lineNr < 0)
+				return result;
 			layout.Alignment = Pango.Alignment.Left;
 			LineSegment line = lineNr < Document.LineCount ? Document.GetLine (lineNr) : null;
 //			int xStart = XOffset;

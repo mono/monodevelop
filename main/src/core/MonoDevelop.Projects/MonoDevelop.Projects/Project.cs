@@ -232,7 +232,8 @@ namespace MonoDevelop.Projects
 		
 		protected virtual BuildResult DoBuild (IProgressMonitor monitor, string itemConfiguration)
 		{
-			return ItemHandler.RunTarget (monitor, "Build", itemConfiguration);
+			BuildResult res = ItemHandler.RunTarget (monitor, "Build", itemConfiguration);
+			return res ?? new BuildResult ();
 		}
 		
 		protected internal override void OnClean (IProgressMonitor monitor, string solutionConfiguration)

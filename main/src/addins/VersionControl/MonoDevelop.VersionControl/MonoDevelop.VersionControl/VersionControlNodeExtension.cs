@@ -11,6 +11,7 @@ using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.Ide.Gui.Pads.ProjectPad;
 using MonoDevelop.Projects;
 using MonoDevelop.Components.Commands;
+using MonoDevelop.Ide.Gui.Components;
 
 using MonoDevelop.VersionControl.Views;
 

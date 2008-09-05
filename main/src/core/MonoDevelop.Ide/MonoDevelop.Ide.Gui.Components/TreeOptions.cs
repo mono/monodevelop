@@ -1,4 +1,4 @@
-// DebuggerExtensionNode.cs
+// TreeOptions.cs
 //
 // Author:
 //   Lluis Sanchez Gual <lluis@novell.com>
@@ -26,21 +26,56 @@
 //
 
 using System;
-using Mono.Addins;
+using System.Collections;
 
-namespace MonoDevelop.Ide.Debugging
+namespace MonoDevelop.Ide.Gui.Components
 {
-	class DebuggerExtensionNode: TypeExtensionNode
+	public partial class ExtensibleTreeView
 	{
-		[NodeAttribute]
-		string platform;
-		
-		public string Platform {
-			get {
-				return platform;
+		internal class TreeOptions : Hashtable, ITreeOptions
+		{
+			ExtensibleTreeView pad;
+			Gtk.TreeIter iter;
+			
+			public TreeOptions ()
+			{
 			}
-			set {
-				platform = value;
+			
+			public TreeOptions (ExtensibleTreeView pad, Gtk.TreeIter iter)
+			{
+				this.pad = pad;
+				this.iter = iter;
+			}
+			
+			public ExtensibleTreeView Pad {
+				get { return pad; }
+				set { pad = value; }
+			}
+
+			public Gtk.TreeIter Iter {
+				get { return iter; }
+				set { iter = value; }
+			}
+
+			public bool this [string name] {
+				get {
+					object op = base [name];
+					if (op == null) return false;
+					return (bool) op;
+				}
+				set {
+					base [name] = value;
+					if (pad != null)
+						pad.RefreshNode (iter);
+				}
+			}
+			
+			public TreeOptions CloneOptions (Gtk.TreeIter newIter)
+			{
+				TreeOptions ops = new TreeOptions (pad, newIter);
+				foreach (DictionaryEntry de in this)
+					ops [de.Key] = de.Value;
+				return ops;
 			}
 		}
 	}

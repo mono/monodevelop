@@ -36,6 +36,7 @@ using Gtk;
 
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Collections;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Components;
@@ -43,6 +44,7 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Gui.Search;
+using MonoDevelop.Ide.Gui.Components;
 
 namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 {
@@ -140,7 +142,15 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			return false;
 		}
 		
-		public override void OnNodeDrop (object dataObject, DragOperation operation)
+		public override void OnMultipleNodeDrop (object[] dataObjects, DragOperation operation)
+		{
+			Set<SolutionEntityItem> toSave = new Set<SolutionEntityItem> ();
+			foreach (object dataObject in dataObjects)
+				DropNode (toSave, dataObject, operation);
+			IdeApp.ProjectOperations.Save (toSave);
+		}
+		
+		void DropNode (Set<SolutionEntityItem> projectsToSave, object dataObject, DragOperation operation)
 		{
 			string targetPath = GetFolderPath (CurrentNode.DataItem);
 			string what, source;
@@ -236,13 +246,17 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 					}
 				}
 			}
+
+			if (operation == DragOperation.Move && sourceProject != null)
+				projectsToSave.Add (sourceProject);
+			if (targetProject != null)
+				projectsToSave.Add (targetProject);
 			
 			using (IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor (GettextCatalog.GetString("Copying files..."), MonoDevelop.Core.Gui.Stock.CopyIcon, true))
 			{
 				bool move = operation == DragOperation.Move;
 				IdeApp.ProjectOperations.TransferFiles (monitor, sourceProject, source, targetProject, targetPath, move, false);
 			}
-			IdeApp.Workspace.Save();
 		}
 		
 		[CommandHandler (ProjectCommands.AddFiles)]
@@ -331,18 +345,28 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		}
 		
 		[CommandHandler (FileCommands.OpenInTerminal)]
+		[AllowMultiSelection]
 		public void OnOpenInTerminal ()
 		{
-			string path = GetFolderPath (CurrentNode.DataItem);
-			string terminal = TerminalCommand;
-			Runtime.ProcessService.StartProcess (terminal, "", path, null);
+			Set<string> paths = new Set<string> ();
+			foreach (ITreeNavigator node in CurrentNodes) {
+				string path = GetFolderPath (node.DataItem);
+				string terminal = TerminalCommand;
+				if (paths.Add (path))
+					Runtime.ProcessService.StartProcess (terminal, "", path, null);
+			}
 		}
 		
 		[CommandHandler (FileCommands.OpenFolder)]
+		[AllowMultiSelection]
 		public void OnOpenFolder ()
 		{
-			string path = GetFolderPath (CurrentNode.DataItem);
-			System.Diagnostics.Process.Start ("file://" + path);
+			Set<string> paths = new Set<string> ();
+			foreach (ITreeNavigator node in CurrentNodes) {
+				string path = GetFolderPath (node.DataItem);
+				if (paths.Add (path))
+					System.Diagnostics.Process.Start ("file://" + path);
+			}
 		}
 	}	
 }

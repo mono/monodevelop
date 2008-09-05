@@ -43,6 +43,9 @@ namespace Mono.TextEditor
 			this.editor = editor;
 			layout = new Pango.Layout (editor.PangoContext);
 			base.cursor = new Gdk.Cursor (Gdk.CursorType.RightPtr);
+			this.editor.Document.LineChanged += delegate {
+				UpdateWidth ();
+			};
 		}
 		
 		void CalculateWidth ()
@@ -55,7 +58,7 @@ namespace Mono.TextEditor
 		void UpdateWidth ()
 		{
 			int currentLineCountLog10 = (int)System.Math.Log10 (editor.Document.LineCount);
-			if (oldLineCountLog10 < currentLineCountLog10) {
+			if (oldLineCountLog10 != currentLineCountLog10) {
 				CalculateWidth ();
 				oldLineCountLog10 = currentLineCountLog10;
 				editor.Document.CommitUpdateAll ();
@@ -172,7 +175,6 @@ namespace Mono.TextEditor
 		
 		internal protected override void Draw (Gdk.Drawable win, Gdk.Rectangle area, int line, int x, int y)
 		{
-			UpdateWidth ();
 			
 			Gdk.Rectangle drawArea = new Rectangle (x, y, Width, editor.LineHeight);
 			win.DrawRectangle (lineNumberBgGC, true, drawArea);

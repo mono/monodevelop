@@ -49,8 +49,6 @@ namespace MonoDevelop.Ide
 		HBox statusBox = new HBox ();
 		Image currentStatusImage;
 		
-		bool cancelEnabled;
-		
 		public MonoDevelopStatusBar()
 		{
 			Spacing = 3;

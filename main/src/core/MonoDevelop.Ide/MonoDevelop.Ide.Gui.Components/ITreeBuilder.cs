@@ -1,5 +1,5 @@
 //
-// ITreeNavigator.cs
+// ITreeBuilder.cs
 //
 // Author:
 //   Lluis Sanchez Gual
@@ -27,51 +27,32 @@
 //
 
 using System;
-using System.Collections;
 
-namespace MonoDevelop.Ide.Gui.Pads
+namespace MonoDevelop.Ide.Gui.Components
 {
-	public interface ITreeNavigator
+	public interface ITreeBuilder: ITreeNavigator
 	{
-		object DataItem { get; }
-		string NodeName { get; }
-
-		object GetParentDataItem (Type type, bool includeCurrent);
-		bool Selected { get; set; }
-		bool Expanded { get; set; }
-		void ExpandToNode ();
-		ITreeOptions Options { get; }
-		TypeNodeBuilder  TypeNodeBuilder  { get; }
+		// Updates the current node and its children
+		void UpdateAll ();
 		
-		NodeState SaveState ();
-		void RestoreState (NodeState state);
-
-		NodePosition CurrentPosition { get; }
-		bool MoveToPosition (NodePosition position);
+		// Updates the label and icon of the current node
+		void Update ();
 		
-		bool MoveToParent ();
-		bool MoveToParent (Type type);
-		bool MoveToRoot ();
-		bool MoveToFirstChild ();
-		bool MoveToChild (string name, Type dataType);
-		bool HasChild (string name, Type dataType);
-		bool HasChildren ();
-		bool MoveNext ();
+		// Updates the children of the current node
+		void UpdateChildren ();
 		
-		// The following methods only look through nodes already created
-		// (the tree is lazily created)
-		bool MoveToObject (object dataObject);
-		bool MoveToNextObject ();
-		bool FindChild (object dataObject);
-		bool FindChild (object dataObject, bool recursive);
+		// Removes the current node
+		void Remove ();
 		
-		// True if the node has been filled with child data.
-		bool Filled { get; }
+		// Removes de current node and if moveToParent is true, it moves
+		// to the parent node.
+		void Remove (bool moveToParent);
 		
-		ITreeNavigator Clone ();
-	}
-	
-	public struct NodePosition {
-		internal Gtk.TreeIter _iter;
+		// Adds a child to the current node
+		void AddChild (object dataObject);
+		
+		// Adds a child to the current node and if moveToChild is true, it
+		// moves to the new child.
+		void AddChild (object dataObject, bool moveToChild);
 	}
 }

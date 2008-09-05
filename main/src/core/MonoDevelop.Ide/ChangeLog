@@ -1,3 +1,148 @@
+2008-09-04  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Makefile.am, MonoDevelop.Ide.Gui.Components/ExtensibleTreeView.cs,
+	  MonoDevelop.Ide.Gui.Components/TreeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Components/TreeNodeNavigator.cs,
+	  MonoDevelop.Ide.Gui.Components/TreeOptions.cs, MonoDevelop.Ide.mdp:
+	  Move some tree view classes to its own file.
+
+2008-09-04  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Gui.Components/ExtensibleTreeView.cs,
+	  MonoDevelop.Ide.Gui.Components/NodeState.cs: Missed some class
+	  renames.
+
+2008-09-04  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Makefile.am, MonoDevelop.Ide.Gui.Components/ExtensibleTreeView.cs,
+	  MonoDevelop.Ide.Gui.Components/ITreeBuilderContext.cs,
+	  MonoDevelop.Ide.Gui.Components/MonoDevelopTreeView.cs,
+	  MonoDevelop.Ide.Gui.Components/NodeCommandHandler.cs,
+	  MonoDevelop.Ide.Gui.Components/NodeState.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassBrowser/ClassBrowserPadWidget.cs,
+	  MonoDevelop.Ide.Gui.Pads/TreeViewPad.cs, MonoDevelop.Ide.mdp:
+	  Renamed MonoDevelopTreeView to ExtensibleTreeView.
+
+2008-09-04  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Gui.Content/DocumentStateTracker.cs,
+	  MonoDevelop.Ide.Gui.Dialogs/NewFileDialog.cs,
+	  MonoDevelop.Ide.Gui.Dialogs/OverridesImplementsDialog.cs,
+	  MonoDevelop.Ide.Gui.Pads/DefaultMonitorPad.cs,
+	  MonoDevelop.Ide.Gui/MonoDevelopStatusBar.cs,
+	  MonoDevelop.Ide.Gui/RootWorkspace.cs,
+	  MonoDevelop.Ide.Gui/Workbench.cs,
+	  MonoDevelop.Ide.Tasks/TaskService.cs: Fix warnings.
+	* MonoDevelop.Ide.Gui/ProjectOperations.cs: Added new overload for
+	  saving lists of workspace items. Fix warnings.
+	* MonoDevelop.Ide.Gui.Pads.ClassBrowser/ProjectNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFolderNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ProjectPad/SolutionFolderNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ProjectPad/SolutionNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ProjectPad/SystemFileNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ProjectPad/UnknownEntryNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ProjectPad/WorkspaceNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Components/NodeCommandHandler.cs,
+	  MonoDevelop.Ide.Gui.Components/MonoDevelopTreeView.cs: Solution pad
+	  multi-selection fixes and improvements.
+
+2008-09-04  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Gui.Pads/TreePadOption.cs,
+	  MonoDevelop.Ide.Gui.Pads/TreeViewPad.cs,
+	  MonoDevelop.Ide.Gui.Pads/ITreeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads/NodeCommandHandler.cs,
+	  MonoDevelop.Ide.Gui.Pads/ITreeNavigator.cs,
+	  MonoDevelop.Ide.Gui.Pads/ITreeBuilderContext.cs,
+	  MonoDevelop.Ide.Gui.Pads/ITreeOptions.cs,
+	  MonoDevelop.Ide.Gui.Pads/NodeState.cs,
+	  MonoDevelop.Ide.Gui.Pads/NodeBuilderExtension.cs,
+	  MonoDevelop.Ide.Gui.Pads/NodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads/NodeAttributes.cs,
+	  MonoDevelop.Ide.Gui.Pads/DragOperation.cs,
+	  MonoDevelop.Ide.Gui.Pads/TypeNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads/SolutionPad.cs,
+	  MonoDevelop.Ide.Gui.Pads/TreeViewItem.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassBrowser/ClassBrowserPad.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassBrowser/TypeNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassBrowser/ClassBrowserPadWidget.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassBrowser/ProjectNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassBrowser/MemberNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassBrowser/SolutionNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassBrowser/ProjectNamespaceBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassPad/MethodNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassPad/EventNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassPad/FieldNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassPad/PropertyNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassPad/ClassNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassPad/ProjectNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassPad/MemberNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassPad/CombineNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassPad/NamespaceNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassPad/SolutionNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassPad/MemberNodeCommandHandler.cs,
+	  MonoDevelop.Ide.Gui.Pads.ProjectPad/WorkspaceNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFolderNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ProjectPad/SolutionFolderNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectSolutionPad.cs,
+	  MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ProjectPad/SolutionNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectReferenceFolderNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ProjectPad/UnknownEntryNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ProjectPad/ShowAllFilesBuilderExtension.cs,
+	  MonoDevelop.Ide.Gui.Pads.ProjectPad/SystemFileNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectReferenceNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ProjectPad/LinkedFilesFolderNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Components,
+	  MonoDevelop.Ide.Gui.Components/NodeAttributes.cs,
+	  MonoDevelop.Ide.Gui.Components/NodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Components/TreePadOption.cs,
+	  MonoDevelop.Ide.Gui.Components/DragOperation.cs,
+	  MonoDevelop.Ide.Gui.Components/TypeNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Components/ITreeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Components/MonoDevelopTreeView.cs,
+	  MonoDevelop.Ide.Gui.Components/NodeCommandHandler.cs,
+	  MonoDevelop.Ide.Gui.Components/ITreeNavigator.cs,
+	  MonoDevelop.Ide.Gui.Components/ITreeBuilderContext.cs,
+	  MonoDevelop.Ide.Gui.Components/ITreeOptions.cs,
+	  MonoDevelop.Ide.Gui.Components/NodeState.cs,
+	  MonoDevelop.Ide.Gui.Components/NodeBuilderExtension.cs,
+	  MonoDevelop.Ide.Gui.Components/TreeViewItem.cs,
+	  MonoDevelop.Ide.mdp, Makefile.am,
+	  MonoDevelop.Ide.Gui/MonoDevelopTreeView.cs,
+	  MonoDevelop.Ide.Codons/NodeBuilderCodon.cs,
+	  MonoDevelop.Ide.Codons/PadOptionCodon.cs,
+	  MonoDevelop.Ide.Codons/SolutionPadCodon.cs: Moved the extensible
+	  tree view to its own directory.
+
+2008-09-04  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Debugging/DebuggingService.cs: Added proper license
+	  info.
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectReferenceNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ProjectPad/SolutionFolderNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads/NodeCommandHandler.cs,
+	  MonoDevelop.Ide.Gui/MonoDevelopTreeView.cs: Some initial support
+	  for multi-selection in the solution tree.
+	* MonoDevelop.Ide.Gui/ProjectOperations.cs: Added method for saving
+	  several items at once. Switch to Debug layout when starting a debug
+	  session.
+
+2008-08-22  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Debugging/DebuggingService.cs,
+	  MonoDevelop.Ide.addin.xml: Added debugger factory extension. Moved
+	  from Mono.Debugging.
+	* MonoDevelop.Ide.Gui/ConfigurationComboBox.cs: If the active
+	  configuration can be found in the combo, set a new valid active
+	  configuration.
+
 2008-08-21  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.mdp: Updated.

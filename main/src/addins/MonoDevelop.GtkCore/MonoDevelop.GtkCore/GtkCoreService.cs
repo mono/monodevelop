@@ -83,6 +83,7 @@ namespace MonoDevelop.GtkCore
 		protected override void Run()
 		{
 			GtkCoreService.Initialize ();
+			ReferenceManager.Initialize ();
 		}
 	}
 }

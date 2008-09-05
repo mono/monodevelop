@@ -61,6 +61,7 @@ FILES =  \
 	MonoDevelop.GtkCore/GtkDesignInfo.cs \
 	MonoDevelop.GtkCore/ObjectsDocument.cs \
 	MonoDevelop.GtkCore/ProjectResourceProvider.cs \
+	MonoDevelop.GtkCore/ReferenceManager.cs \
 	MonoDevelop.GtkCore/WidgetFileDescriptionTemplate.cs \
 	MonoDevelop.GtkCore/WidgetParser.cs
 

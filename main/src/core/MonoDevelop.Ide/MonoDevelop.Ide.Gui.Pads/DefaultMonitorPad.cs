@@ -305,12 +305,6 @@ namespace MonoDevelop.Ide.Gui.Pads
 			addQueuedUpdate (w);
 		}
 		
-		void WriteText (string text, TextTag extraTag)
-		{
-			QueuedTextWrite w = new QueuedTextWrite (text, extraTag);
-			addQueuedUpdate (w);
-		}
-		
 		public virtual Gtk.Widget Control {
 			get { return hbox; }
 		}
