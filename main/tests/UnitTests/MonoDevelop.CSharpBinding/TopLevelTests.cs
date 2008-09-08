@@ -116,6 +116,22 @@ using NUnit.Framework;");
 			TestStruct (new DomParser ());
 		}
 		
+		public void TestInterface (IParser parser)
+		{
+			ICompilationUnit unit = parser.Parse ("a.cs", @"interface TestInterface { }");
+			Assert.AreEqual (1, unit.Types.Count);
+			IType type = unit.Types[0];
+			Assert.AreEqual (ClassType.Interface, type.ClassType);
+			Assert.AreEqual ("TestInterface", type.Name);
+		}
+		
+		[Test()]
+		public void TestInterface ()
+		{
+			TestInterface (new NRefactoryParser ());
+			TestInterface (new DomParser ());
+		}
+		
 		public void TestDelegate (IParser parser)
 		{
 			ICompilationUnit unit = parser.Parse ("a.cs", @"delegate void TestDelegate (int a, string b);");
