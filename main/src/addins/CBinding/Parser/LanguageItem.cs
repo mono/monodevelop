@@ -43,7 +43,7 @@ namespace CBinding.Parser
 		private Project project;
 		private string name;
 		private string file;
-		private string pattern;
+		private UInt64 line;
 		private AccessModifier access;
 		private LanguageItem parent;
 		
@@ -52,7 +52,7 @@ namespace CBinding.Parser
 			this.project = project;
 			this.name = tag.Name;
 			this.file = tag.File;
-			this.pattern = tag.Pattern;
+			this.line = tag.Line;
 			this.access = tag.Access;
 		}
 		
@@ -223,8 +223,8 @@ namespace CBinding.Parser
 			get { return file; }
 		}
 		
-		public string Pattern {
-			get { return pattern; }
+		public UInt64 Line {
+			get { return line; }
 		}
 		
 		public AccessModifier Access {
@@ -246,7 +246,7 @@ namespace CBinding.Parser
 		
 		public override int GetHashCode ()
 		{
-			return (name + file + pattern + project.Name).GetHashCode ();
+			return (name + file + line.ToString() + project.Name).GetHashCode ();
 		}
 	}
 }

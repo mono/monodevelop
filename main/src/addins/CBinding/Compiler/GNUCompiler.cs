@@ -3,6 +3,7 @@
 //
 // Authors:
 //   Marcos David Marin Amador <MarcosMarin@gmail.com>
+//   Mitchell Wheeler <mitchell.wheeler@gmail.com>
 //
 // Copyright (C) 2007 Marcos David Marin Amador
 //
@@ -108,8 +109,8 @@ namespace CBinding
 				if (f.Subtype == Subtype.Directory || f.BuildAction != BuildAction.Compile || CProject.IsHeaderFile (f.FilePath))
 					continue;
 				
-				if (configuration.UseCcache || NeedsCompiling (f))
-					success = DoCompilation (f, compilerArgs, monitor, cr, configuration.UseCcache);
+				if (configuration.UseCcache || NeedsCompiling (f, configuration))
+					success = DoCompilation (f, configuration, compilerArgs, monitor, cr, configuration.UseCcache);
 			}
 			if (success)
 				monitor.Step (1);
@@ -119,13 +120,13 @@ namespace CBinding
 				switch (configuration.CompileTarget)
 				{
 				case CBinding.CompileTarget.Bin:
-					MakeBin (projectFiles, packages, configuration, cr, monitor, outputName);
+					MakeBin (projectFiles, configuration, packages, cr, monitor, outputName);
 					break;
 				case CBinding.CompileTarget.StaticLibrary:
-					MakeStaticLibrary (projectFiles, monitor, outputName);
+					MakeStaticLibrary (projectFiles, configuration, packages, cr, monitor, outputName);
 					break;
 				case CBinding.CompileTarget.SharedLibrary:
-					MakeSharedLibrary (projectFiles, packages, configuration, cr, monitor, outputName);
+					MakeSharedLibrary (projectFiles, configuration, packages, cr, monitor, outputName);
 					break;
 				}
 			}
@@ -195,15 +196,14 @@ namespace CBinding
 			return ProcessDefineSymbols (configuration.DefineSymbols);
 		}
 		
-		private bool NeedsCompiling (ProjectFile file)
+		private bool NeedsCompiling (ProjectFile file, CProjectConfiguration configuration)
 		{
-			string objectFile = Path.ChangeExtension (file.Name, ".o");
-					
+			string objectFile = Path.Combine(configuration.OutputDirectory, Path.GetFileName(file.Name));
+			objectFile = Path.ChangeExtension(objectFile, ".o");
 			if (!File.Exists (objectFile))
 				return true;
 			
-			string[] dependedOnFiles = DependedOnFiles (file);
-			
+			string[] dependedOnFiles = DependedOnFiles (file, configuration);
 			if (dependedOnFiles == null) {
 				return true;
 			}
@@ -232,10 +232,11 @@ namespace CBinding
 		/// Returns an array of depended on files or null if the
 		/// file containing the depended on files (.d) does does not exist.
 		/// </summary>
-		private string[] DependedOnFiles (ProjectFile file)
+		private string[] DependedOnFiles (ProjectFile file, CProjectConfiguration configuration)
 		{
 			List<string> dependencies = new List<string> ();
-			string dependenciesFile = Path.ChangeExtension (file.Name, ".d");
+			string dependenciesFile = Path.Combine(configuration.OutputDirectory, Path.GetFileName(file.Name));
+			dependenciesFile = Path.ChangeExtension(dependenciesFile, ".d");
 			
 			if (!File.Exists (dependenciesFile))
 				return null;
@@ -244,31 +245,22 @@ namespace CBinding
 			dependencies.Add (file.Name);
 			
 			string temp;
-			StringBuilder output = new StringBuilder ();
-			
 			using (StreamReader reader = new StreamReader (dependenciesFile)) {
 				while ((temp = reader.ReadLine ()) != null) {
-					output.Append (temp);
+					// TODO: We really should be using a regex here,
+					// this will have issues with pathnames containing double spaces.
+					string depfile = temp.Replace(" \\", String.Empty).Trim();
+	
+					// Ignore empty strings &  object files...
+					if(String.IsNullOrEmpty(depfile) ||
+					   depfile.EndsWith(".o:") || depfile.EndsWith(".o"))
+					   continue;
+					
+					dependencies.Add(depfile.Replace(@"\ ", " "));
 				}
 			}
-			
-			string[] lines = output.ToString ().Split ('\\');
-			
-			for (int i = 0; i < lines.Length; i++) {
-				string[] files = lines[i].Split (' ');
-				// first line contains the rule (eg. file.o: dep1.c dep2.h ...) and we must skip it
-				// and we skip the *.cpp or *.c etc. too
-				for (int j = 0; j < files.Length; j++) {
-					if (j == 0 || j == 1) continue;
-					
-					string depfile = files[j].Trim ();
-					
-					if (!string.IsNullOrEmpty (depfile))
-						dependencies.Add (depfile);
-				}
-			}
-			
-			return dependencies.ToArray ();
+
+			return dependencies.ToArray();
 		}
 		
 		private bool PrecompileHeaders (ProjectFileCollection projectFiles,
@@ -314,16 +306,34 @@ namespace CBinding
 			ParseCompilerOutput (errorOutput, cr);
 			return (exitCode == 0);
 		}
+
+		internal bool IsStandardLibrary(CProjectConfiguration configuration,
+		                                string directory, string library,
+		                                ref string std_lib)
+		{
+			if((String.IsNullOrEmpty(directory) || configuration.LibPaths.Contains(directory)) == false)
+				return false;
+
+			if((library.Contains(".") == false || library.StartsWith("lib")) == false)
+				return false;
+
+			if(library.Contains(".") == false)
+				std_lib = library;
+			else
+				std_lib = library.Substring(3, library.IndexOf('.') - 3);
+
+			return true;
+		}
 		
 		private void MakeBin (ProjectFileCollection projectFiles,
-		                     ProjectPackageCollection packages,
 		                     CProjectConfiguration configuration,
+		                     ProjectPackageCollection packages,
 		                     CompilerResults cr,
 		                     IProgressMonitor monitor, string outputName)
-		{			
-			if (!NeedsUpdate (projectFiles, outputName)) return;
+		{
+			if (!NeedsUpdate (projectFiles, configuration, outputName)) return;
 			
-			string objectFiles = string.Join (" ", ObjectFiles (projectFiles, true));
+			string objectFiles = string.Join (" ", ObjectFiles (projectFiles, configuration, true));
 			string pkgargs = GeneratePkgLinkerArgs (packages);
 			StringBuilder args = new StringBuilder ();
 			
@@ -336,9 +346,20 @@ namespace CBinding
 				foreach (string libpath in configuration.LibPaths)
 					args.Append ("-L\"" + StringParserService.Parse (libpath) + "\" ");
 			
-			if (configuration.Libs != null)
-				foreach (string lib in configuration.Libs)
-					args.Append ("-l\"" + lib + "\" ");
+			if (configuration.Libs != null) {
+				foreach (string lib in configuration.Libs) {
+					string directory = Path.GetDirectoryName(lib);
+					string library = Path.GetFileName(lib);
+
+					// Is this a 'standard' (as in, uses an orthodox naming convention) library..?
+					string link_lib = String.Empty;
+					if(IsStandardLibrary(configuration, directory, library, ref link_lib))
+						args.Append ("-l\"" + link_lib + "\" ");
+					// If not, reference the library by it's full pathname.
+					else
+						args.Append ("\"" + lib + "\" ");
+				}
+			}
 			
 			string linker_args = string.Format ("-o \"{0}\" {1} {2} {3}",
 			    outputName, objectFiles, args.ToString (), pkgargs);
@@ -356,11 +377,14 @@ namespace CBinding
 		}
 		
 		private void MakeStaticLibrary (ProjectFileCollection projectFiles,
+		                                CProjectConfiguration configuration,
+		                                ProjectPackageCollection packages,
+		                                CompilerResults cr,
 		                                IProgressMonitor monitor, string outputName)
 		{
-			if (!NeedsUpdate (projectFiles, outputName)) return;
+			if (!NeedsUpdate (projectFiles, configuration, outputName)) return;
 			
-			string objectFiles = string.Join (" ", ObjectFiles (projectFiles, true));
+			string objectFiles = string.Join (" ", ObjectFiles (projectFiles, configuration, true));
 			string args = string.Format ("rcs \"{0}\" {1}", outputName, objectFiles);
 			
 			monitor.BeginTask (GettextCatalog.GetString ("Generating static library {0} from object files", Path.GetFileName (outputName)), 1);
@@ -370,17 +394,20 @@ namespace CBinding
 			if (exitCode == 0)
 				monitor.Step (1);
 			monitor.EndTask ();
+			
+			ParseCompilerOutput (errorOutput, cr);
+			ParseLinkerOutput (errorOutput, cr);
 		}
 		
 		private void MakeSharedLibrary(ProjectFileCollection projectFiles,
-		                               ProjectPackageCollection packages,
 		                               CProjectConfiguration configuration,
+		                               ProjectPackageCollection packages,
 		                               CompilerResults cr,
 		                               IProgressMonitor monitor, string outputName)
 		{
-			if (!NeedsUpdate (projectFiles, outputName)) return;
+			if (!NeedsUpdate (projectFiles, configuration, outputName)) return;
 			
-			string objectFiles = string.Join (" ", ObjectFiles (projectFiles, true));
+			string objectFiles = string.Join (" ", ObjectFiles (projectFiles, configuration, true));
 			string pkgargs = GeneratePkgLinkerArgs (packages);
 			StringBuilder args = new StringBuilder ();
 			
@@ -393,9 +420,20 @@ namespace CBinding
 				foreach (string libpath in configuration.LibPaths)
 					args.Append ("-L\"" + StringParserService.Parse (libpath) + "\" ");
 			
-			if (configuration.Libs != null)
-				foreach (string lib in configuration.Libs)
-					args.Append ("-l\"" + lib + "\" ");
+			if (configuration.Libs != null) {
+				foreach (string lib in configuration.Libs) {
+					string directory = Path.GetDirectoryName(lib);
+					string library = Path.GetFileName(lib);
+
+					// Is this a 'standard' (as in, uses an orthodox naming convention) library..?
+					string link_lib = String.Empty;
+					if(IsStandardLibrary(configuration, directory, library, ref link_lib))
+						args.Append ("-l\"" + link_lib + "\" ");
+					// If not, reference the library by it's full pathname.
+					else
+						args.Append ("\"" + lib + "\" ");
+				}
+			}
 			
 			string linker_args = string.Format ("-shared -o \"{0}\" {1} {2} {3}",
 			    outputName, objectFiles, args.ToString (), pkgargs);
@@ -473,18 +511,21 @@ namespace CBinding
 		/// Compiles a single source file into object code
 		/// and creates a file with it's dependencies.
 		/// </summary>
-		private bool DoCompilation (ProjectFile file, string args,
+		private bool DoCompilation (ProjectFile file,
+		                            CProjectConfiguration configuration,
+		                            string args,
 		                            IProgressMonitor monitor,
 		                            CompilerResults cr,
 		                            bool use_ccache)
-		{			
-			string outputName = Path.ChangeExtension (file.Name, ".o");
+		{
+
+			string outputName = Path.Combine(configuration.OutputDirectory, Path.GetFileName(Path.ChangeExtension (file.Name, ".o")));
 			
 			string compiler_args = string.Format ("{0} -MMD \"{1}\" {2} -c -o \"{3}\"",
 			    (use_ccache ? compilerCommand : string.Empty), file.Name, args, outputName);
-			
+
 			string errorOutput;
-			int exitCode = ExecuteCommand ((use_ccache ? "ccache" : compilerCommand), compiler_args, Path.GetDirectoryName (outputName), monitor, out errorOutput);
+			int exitCode = ExecuteCommand ((use_ccache ? "ccache" : compilerCommand), compiler_args, configuration.OutputDirectory, monitor, out errorOutput);
 			
 			ParseCompilerOutput (errorOutput, cr);
 			return exitCode == 0;
@@ -497,6 +538,10 @@ namespace CBinding
 		/// A <see cref="ProjectFileCollection"/>
 		/// The project's files, extracts from here the files that get compiled into object code.
 		/// </param>
+		/// <param name="configuration">
+		/// A <see cref="CProjectConfiguration"/>
+		/// The configuration to get the object files for...
+		/// </param>
 		/// <param name="withQuotes">
 		/// A <see cref="System.Boolean"/>
 		/// If true, it will surround each object file with quotes 
@@ -507,16 +552,24 @@ namespace CBinding
 		/// that will get compiled into object code. The file name
 		/// will already have the .o extension.
 		/// </returns>
-		private string[] ObjectFiles (ProjectFileCollection projectFiles, bool withQuotes)
+		private string[] ObjectFiles (ProjectFileCollection projectFiles, CProjectConfiguration configuration, bool withQuotes)
 		{
+			if(projectFiles.Count == 0)
+				return new string[] {};
+
 			List<string> objectFiles = new List<string> ();
 			
 			foreach (ProjectFile f in projectFiles) {
 				if (f.BuildAction == BuildAction.Compile) {
+					string PathName = Path.Combine(configuration.OutputDirectory, Path.GetFileNameWithoutExtension(f.Name) + ".o");
+
+					if(File.Exists(PathName) == false)
+						continue;
+					
 					if (!withQuotes)
-						objectFiles.Add (Path.ChangeExtension (f.Name, ".o"));
+						objectFiles.Add (PathName);
 					else
-						objectFiles.Add ("\"" + Path.ChangeExtension (f.Name, ".o") + "\"");
+						objectFiles.Add ("\"" + PathName + "\"");
 				}
 			}
 			
@@ -526,15 +579,13 @@ namespace CBinding
 		public override void Clean (ProjectFileCollection projectFiles, CProjectConfiguration configuration, IProgressMonitor monitor)
 		{
 			//clean up object files
-			foreach (ProjectFile file in projectFiles) {
-				if (file.BuildAction == BuildAction.Compile) {
-					string oFile = Path.ChangeExtension (file.Name, ".o");
-					if (File.Exists (oFile))
-						File.Delete (oFile);
-					string dFile = Path.ChangeExtension (file.Name, ".d");
-					if (File.Exists (dFile))
-						File.Delete (dFile);
-				}
+			foreach (string oFile in ObjectFiles(projectFiles, configuration, false)) {
+				if (File.Exists (oFile))
+					File.Delete (oFile);
+				
+				string dFile = Path.ChangeExtension (oFile, ".d");
+				if (File.Exists (dFile))
+					File.Delete (dFile);
 			}
 			
 			CleanPrecompiledHeaders (configuration);
@@ -551,13 +602,12 @@ namespace CBinding
 				Directory.Delete (precDir, true);
 		}
 		
-		private bool NeedsUpdate (ProjectFileCollection projectFiles,
-		                          string target)
+		private bool NeedsUpdate (ProjectFileCollection projectFiles, CProjectConfiguration configuration, string target)
 		{
 			if (!File.Exists (target))
 				return true;
 			
-			foreach (string obj in ObjectFiles (projectFiles, false))
+			foreach (string obj in ObjectFiles (projectFiles, configuration, false))
 				if (File.GetLastWriteTime (obj) > File.GetLastWriteTime (target))
 					return true;
 			
@@ -670,9 +720,12 @@ namespace CBinding
 		}
 
 		// expands backticked portions of the parameter-list using "sh" and "echo"
+		// TODO: Do this ourselves, relying on sh/echo - and launching an entire process just for this is ... excessive.
 		public string ExpandBacktickedParameters(string tmp)
 		{
-			string parameters = "-c \"echo -n " + tmp + "\"";
+			// 1) Quadruple \ required, to escape both echo's and sh's escape character filtering
+			// 2) \\\" required inside of echo, to translate into \" in sh, so it translates back as a " to MD...
+			string parameters = "-c \"echo -n " + tmp.Replace("\\", "\\\\\\\\").Replace("\"", "\\\\\\\"") + "\"";
 			Process p = new Process();
 			
 			p.StartInfo.FileName = "sh";

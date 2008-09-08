@@ -1,3 +1,32 @@
+2008-09-08  Mitchell Wheeler <mitchell.wheeler@gmail.com>
+
+	* Gui/CTextEditorExtension.cs, Gui/AddLibraryDialog.cs,
+	  Navigation/LanguageItemCommandHandler.cs,
+	  Project/CProjectConfiguration.cs, Project/CProject.cs,
+	  gtk-gui/CBinding.PackageDetails.cs, gtk-gui/generated.cs,
+	  gtk-gui/CBinding.EditPackagesDialog.cs,
+	  gtk-gui/CBinding.AddPathDialog.cs,
+	  gtk-gui/CBinding.CodeGenerationPanel.cs,
+	  gtk-gui/CBinding.GeneralOptionsPanel.cs,
+	  gtk-gui/CBinding.CompilerPanel.cs,
+	  gtk-gui/CBinding.OutputOptionsPanel.cs,
+	  gtk-gui/CBinding.AddLibraryDialog.cs, gtk-gui/gui.stetic,
+	  Compiler/GNUCompiler.cs: Fixed various (dependency parsing,
+	  compiling, linking) bugs, so the binding now properly handles
+	  pathnames with spaces, and use the appropriate project
+	  configuration information.  Started removing various gcc-specific
+	  library naming conventions from 'generic' areas of the C Binding
+	  codebase...  Compiled object & dependency files are now stored in the
+	  output directory, so they no longer pollute the source tree.
+	* Parser/Tag.cs, Parser/ProjectInformation.cs,
+	  Parser/TagDatabaseManager.cs, Parser/LanguageItem.cs,
+	  Parser/Member.cs: Fixed various ctags parsing bugs, in relation to
+	  pathnames containing spaces;  Tag information now references code by
+	  file & line number, to avoid potential cases where the pattern
+	  matches more than just the expected section.
+	* md1format.xml: Updated MD1 file format serialization to serialize
+	  libraries (library paths still broken?).
+
 2008-09-04  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* ProjectPad/ProjectPackagesFolderNodeBuilder.cs,

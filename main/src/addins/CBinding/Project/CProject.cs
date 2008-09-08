@@ -373,7 +373,8 @@ namespace CBinding
 				} else {
 					object[] compilers = AddinManager.GetExtensionObjects ("/CBinding/Compilers");
 					string compiler;
-					
+
+					// TODO: This should depend on platform (eg: windows would be mingw or msvc)
 					if (language == Language.C)
 						compiler = PropertyService.Get ("CBinding.DefaultCCompiler", new GccCompiler ().Name);
 					else

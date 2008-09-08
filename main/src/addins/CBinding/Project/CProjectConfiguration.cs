@@ -44,13 +44,17 @@ namespace CBinding
 		StaticLibrary,
 		SharedLibrary
 	};
-	
+
+	// TODO: Warning levels should be compiler specific...
 	public enum WarningLevel {
 		None,
 		Normal,
 		All
 	}
-	
+
+	// I believe it would be in the C/C++ binding's best interest to let the configuration determine
+	// which compiler to use... currently the project as a whole does this - which isn't necessarily as flexible
+	// as some may require...
 	public class CProjectConfiguration : ProjectConfiguration
 	{
 		[ItemProperty("OutputName")]
@@ -108,7 +112,7 @@ namespace CBinding
 			set { target = value; }
 		}
 
-		// TODO: This should be revised to use the naming conventions depending on OS
+		// TODO: This should be revised to use the naming conventions depending on OS & compiler...
 		public string CompiledOutputName {
 			get {
 				string suffix = string.Empty;

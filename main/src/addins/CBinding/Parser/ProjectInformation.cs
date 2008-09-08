@@ -213,7 +213,8 @@ namespace CBinding.Parser
 			set { is_filled = value; }
 		}
 	}
-	
+
+	// TODO: Update this such that it either supports multiple configurations - or is used in a configuration specific manner.
 	public class ProjectInformation : FileInformation
 	{
 		private Globals globals;

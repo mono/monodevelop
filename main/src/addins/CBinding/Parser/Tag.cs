@@ -62,7 +62,7 @@ namespace CBinding.Parser
 	{
 		private string name;
 		private string file;
-		private string pattern;
+		private UInt64 line;
 		private TagKind kind;
 		private AccessModifier access;
 		private string field_class;
@@ -74,7 +74,7 @@ namespace CBinding.Parser
 		
 		public Tag (string name,
 		            string file,
-		            string pattern,
+		            UInt64 line,
 		            TagKind kind,
 		            AccessModifier access,
 		            string field_class,
@@ -86,7 +86,7 @@ namespace CBinding.Parser
 		{
 			this.name = name;
 			this.file = file;
-			this.pattern = pattern;	
+			this.line = line;	
 			this.kind = kind;
 			this.access = access;
 			this.field_class = field_class;
@@ -105,8 +105,8 @@ namespace CBinding.Parser
 			get { return file; }
 		}
 
-		public string Pattern {
-			get { return pattern; }
+		public UInt64 Line {
+			get { return line; }
 		}
 		
 		public TagKind Kind {
