@@ -63,7 +63,7 @@ namespace MonoDevelop.SourceEditor
 			if (frame == null)
 				return null;
 			
-			ExtendibleTextEditor ed = (ExtendibleTextEditor) editor;
+			ExtensibleTextEditor ed = (ExtensibleTextEditor) editor;
 			
 			string fileName = ed.View.ContentName;
 			if (fileName == null)

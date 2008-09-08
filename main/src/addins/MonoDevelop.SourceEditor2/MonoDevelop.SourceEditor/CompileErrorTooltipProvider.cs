@@ -43,7 +43,7 @@ namespace MonoDevelop.SourceEditor
 		
 		public object GetItem (TextEditor editor, int offset)
 		{
-			ExtendibleTextEditor ed = (ExtendibleTextEditor) editor;
+			ExtensibleTextEditor ed = (ExtensibleTextEditor) editor;
 			return ed.GetErrorInformationAt (offset);
 		}
 		

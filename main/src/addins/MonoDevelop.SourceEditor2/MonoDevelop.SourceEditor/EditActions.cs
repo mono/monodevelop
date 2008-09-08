@@ -30,9 +30,9 @@ namespace MonoDevelop.SourceEditor
 {
 	public class TabAction : InsertTab
 	{
-		ExtendibleTextEditor editor;
+		ExtensibleTextEditor editor;
 		
-		public TabAction (ExtendibleTextEditor editor)
+		public TabAction (ExtensibleTextEditor editor)
 		{
 			this.editor = editor;
 		}

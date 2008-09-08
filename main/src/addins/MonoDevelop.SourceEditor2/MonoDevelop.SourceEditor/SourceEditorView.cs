@@ -86,7 +86,7 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 		
-		public ExtendibleTextEditor TextEditor {
+		public ExtensibleTextEditor TextEditor {
 			get {
 				return widget.TextEditor;
 			}

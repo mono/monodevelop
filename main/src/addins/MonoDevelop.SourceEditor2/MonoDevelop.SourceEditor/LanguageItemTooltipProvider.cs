@@ -43,13 +43,13 @@ namespace MonoDevelop.SourceEditor
 		
 		public object GetItem (TextEditor editor, int offset)
 		{
-			ExtendibleTextEditor ed = (ExtendibleTextEditor) editor;
+			ExtensibleTextEditor ed = (ExtensibleTextEditor) editor;
 			return ed.GetLanguageItem (offset);
 		}
 		
 		public Gtk.Window CreateTooltipWindow (TextEditor editor, object item)
 		{
-			ExtendibleTextEditor ed = (ExtendibleTextEditor) editor;
+			ExtensibleTextEditor ed = (ExtensibleTextEditor) editor;
 			
 			return new LanguageItemWindow (ed.ProjectDom, AmbienceService.GetAmbience (ed.Document.MimeType), (ResolveResult)item, null);
 		}

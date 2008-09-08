@@ -44,7 +44,7 @@ using Mono.Addins;
 
 namespace MonoDevelop.SourceEditor
 {
-	public class ExtendibleTextEditor : Mono.TextEditor.TextEditor
+	public class ExtensibleTextEditor : Mono.TextEditor.TextEditor
 	{
 		ITextEditorExtension extension = null;
 		SourceEditorView view;
@@ -61,12 +61,12 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 		
-		public ExtendibleTextEditor (SourceEditorView view, Mono.TextEditor.Document doc) : base (doc)
+		public ExtensibleTextEditor (SourceEditorView view, Mono.TextEditor.Document doc) : base (doc)
 		{
 			Initialize (view);
 		}
 		
-		public ExtendibleTextEditor (SourceEditorView view)
+		public ExtensibleTextEditor (SourceEditorView view)
 		{
 			Initialize (view);
 		}

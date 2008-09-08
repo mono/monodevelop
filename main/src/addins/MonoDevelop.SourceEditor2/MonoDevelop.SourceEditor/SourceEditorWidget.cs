@@ -59,11 +59,11 @@ namespace MonoDevelop.SourceEditor
 		IDocumentMetaInformation metaInfo;
 		ICompilationUnit unit;
 		
-		MonoDevelop.SourceEditor.ExtendibleTextEditor textEditor;
-		MonoDevelop.SourceEditor.ExtendibleTextEditor splittedTextEditor;
-		MonoDevelop.SourceEditor.ExtendibleTextEditor lastActiveEditor;
+		MonoDevelop.SourceEditor.ExtensibleTextEditor textEditor;
+		MonoDevelop.SourceEditor.ExtensibleTextEditor splittedTextEditor;
+		MonoDevelop.SourceEditor.ExtensibleTextEditor lastActiveEditor;
 		
-		public MonoDevelop.SourceEditor.ExtendibleTextEditor TextEditor {
+		public MonoDevelop.SourceEditor.ExtensibleTextEditor TextEditor {
 			get {
 				if (this.splittedTextEditor != null && this.splittedTextEditor.Parent != null && this.splittedTextEditor.HasFocus)
 					lastActiveEditor = this.splittedTextEditor;
@@ -151,7 +151,7 @@ namespace MonoDevelop.SourceEditor
 		{
 			this.view = view;
 			this.SetSizeRequest (32, 32);
-			this.lastActiveEditor = this.textEditor = new MonoDevelop.SourceEditor.ExtendibleTextEditor (view);
+			this.lastActiveEditor = this.textEditor = new MonoDevelop.SourceEditor.ExtensibleTextEditor (view);
 			mainsw = new ScrolledWindow ();
 			mainsw.Child = this.TextEditor;
 			this.PackStart (mainsw, true, true, 0);
@@ -423,7 +423,7 @@ namespace MonoDevelop.SourceEditor
 			if (classBrowser != null)
 				classBrowser.UpdateCompilationUnit (this.unit, this.metaInfo);
 			
-			MonoDevelop.SourceEditor.ExtendibleTextEditor editor = this.TextEditor;
+			MonoDevelop.SourceEditor.ExtensibleTextEditor editor = this.TextEditor;
 			if (editor == null || editor.Document == null)
 				return;
 			lock (syncObject) {
@@ -602,7 +602,7 @@ namespace MonoDevelop.SourceEditor
 			};
 			secondsw = new ScrolledWindow ();
 			secondsw.ButtonPressEvent += PrepareEvent;
-			this.splittedTextEditor = new MonoDevelop.SourceEditor.ExtendibleTextEditor (view, textEditor.Document);
+			this.splittedTextEditor = new MonoDevelop.SourceEditor.ExtensibleTextEditor (view, textEditor.Document);
 			this.splittedTextEditor.Extension = textEditor.Extension;
 			this.splittedTextEditor.Caret.ModeChanged += delegate {
 				this.UpdateLineCol ();
