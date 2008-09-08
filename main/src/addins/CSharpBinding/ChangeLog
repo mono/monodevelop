@@ -1,3 +1,8 @@
+2008-09-08  Mike Krüger <mkrueger@novell.com> 
+
+	* Parser/DomParser.cs, Parser/NRefactoryParser.cs: Fixed some issues
+	  found by unit testing.
+
 2008-09-05  Mike Krüger <mkrueger@novell.com> 
 
 	* Gui/NRefactoryResolver.cs, Parser/DomParser.cs,

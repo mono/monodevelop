@@ -389,6 +389,16 @@ namespace MonoDevelop.CSharpBinding
 			StringBuilder namespaceBuilder = new StringBuilder ();
 			if (cu.Namespaces != null) {
 				foreach (Mono.CSharp.Dom.INamespace namesp in cu.Namespaces) {
+					
+					string[] splittedNamespace = namesp.Name.Split ('.');
+					for (int i = splittedNamespace.Length; i > 0; i--) {
+						DomUsing domUsing = new DomUsing ();
+						//domUsing.Region   = ConvertRegion (namespaceDeclaration.StartLocation, namespaceDeclaration.EndLocation);
+						
+						domUsing.Add (String.Join (".", splittedNamespace, 0, i));
+						result.Add (domUsing);
+					}
+/*
 					DomUsing domUsing = new DomUsing ();
 					string[] names = namesp.Name.Split ('.');
 					namespaceBuilder.Length = 0;
@@ -402,7 +412,7 @@ namespace MonoDevelop.CSharpBinding
 						
 					}
 					
-					result.Add (domUsing);
+					result.Add (domUsing);*/
 					
 					if (namesp.Types != null) {
 						foreach (Mono.CSharp.Dom.IType type in namesp.Types) {

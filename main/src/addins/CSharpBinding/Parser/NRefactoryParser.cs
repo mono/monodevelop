@@ -175,10 +175,14 @@ namespace MonoDevelop.CSharpBinding
 			Stack<string> namespaceStack = new Stack<string> ();
 			public override object VisitNamespaceDeclaration (ICSharpCode.NRefactory.Ast.NamespaceDeclaration namespaceDeclaration, object data)
 			{
-				DomUsing domUsing = new DomUsing ();
-				domUsing.Region   = ConvertRegion (namespaceDeclaration.StartLocation, namespaceDeclaration.EndLocation);
-				domUsing.Add (namespaceDeclaration.Name);
-				result.Add (domUsing);
+				string[] splittedNamespace = namespaceDeclaration.Name.Split ('.');
+				for (int i = splittedNamespace.Length; i > 0; i--) {
+					DomUsing domUsing = new DomUsing ();
+					domUsing.Region   = ConvertRegion (namespaceDeclaration.StartLocation, namespaceDeclaration.EndLocation);
+					
+					domUsing.Add (String.Join (".", splittedNamespace, 0, i));
+					result.Add (domUsing);
+				}
 				
 				namespaceStack.Push (namespaceStack.Count == 0 ? namespaceDeclaration.Name : namespaceStack.Peek() + "." + namespaceDeclaration.Name);
 				namespaceDeclaration.AcceptChildren (this, data);
@@ -197,6 +201,14 @@ namespace MonoDevelop.CSharpBinding
 				newType.Modifiers  = ConvertModifiers (typeDeclaration.Modifier);
 				
 				AddAttributes (newType, typeDeclaration.Attributes);
+				
+				foreach (ICSharpCode.NRefactory.Ast.TemplateDefinition template in typeDeclaration.Templates) {
+					TypeParameter parameter = new TypeParameter (template.Name);
+					newType.AddTypeParameter (parameter);
+					foreach (ICSharpCode.NRefactory.Ast.TypeReference typeRef in template.Bases) {
+						parameter.AddConstraint (ConvertReturnType (typeRef));
+					}
+				}
 				
 				if (typeDeclaration.BaseTypes != null) {
 					foreach (ICSharpCode.NRefactory.Ast.TypeReference type in typeDeclaration.BaseTypes) {
@@ -353,6 +365,11 @@ namespace MonoDevelop.CSharpBinding
 					field.ReturnType = ConvertReturnType (fieldDeclaration.TypeReference);
 					AddAttributes (field, fieldDeclaration.Attributes);
 					field.DeclaringType = typeStack.Peek ();
+					if (field.DeclaringType.ClassType == ClassType.Enum) {
+						field.Modifiers |= Modifiers.Const;
+						field.Modifiers |= Modifiers.SpecialName;
+						field.Modifiers |= Modifiers.Public;
+					}
 					typeStack.Peek ().Add (field);
 				}
 				return null;
