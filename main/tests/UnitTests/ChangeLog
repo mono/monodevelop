@@ -1,3 +1,9 @@
+2008-09-08  Mike Krüger <mkrueger@novell.com> 
+
+	* UnitTests.mdp, MonoDevelop.CSharpBinding,
+	  MonoDevelop.CSharpBinding/TopLevelTests.cs, Makefile.am: Added dom
+	  parser top level tests.
+
 2008-09-05  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects/DomPersistenceTests.cs: Added persistance tests.

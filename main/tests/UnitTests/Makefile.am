@@ -19,6 +19,7 @@ REFS =  \
 	-r:System.Xml
 
 FILES =  \
+	MonoDevelop.CSharpBinding/TopLevelTests.cs \
 	MonoDevelop.Projects/DomCompilationUnitTests.cs \
 	MonoDevelop.Projects/DomPersistenceTests.cs \
 	MonoDevelop.Projects/MakefileTests.cs \
