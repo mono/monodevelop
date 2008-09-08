@@ -96,6 +96,7 @@ namespace Mono.TextEditor
 		{
 			buffer   = new GapBuffer ();
 			splitter = new LineSplitter (buffer);
+			
 			splitter.LineSegmentTree.LineChanged += delegate (object sender, LineEventArgs args) {
 				if (LineChanged != null) 
 					LineChanged (this, args);

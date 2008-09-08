@@ -1,3 +1,8 @@
+2008-09-08  Mike Krüger <mkrueger@novell.com> 
+
+	* Mono.TextEditor/TextEditor.cs: fixed "Bug 423278 - wrong view when
+	  jumping in editor without scrollbar".
+
 2008-08-21  Mike Krüger <mkrueger@novell.com> 
 
 	* Mono.TextEditor/DefaultEditActions.cs: optimized copy/cut.
