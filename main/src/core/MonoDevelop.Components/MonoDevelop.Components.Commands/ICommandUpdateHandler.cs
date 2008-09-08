@@ -40,4 +40,16 @@ namespace MonoDevelop.Components.Commands
 		ICommandArrayUpdateHandler Next { get; set; }
 		void CommandUpdate (object target, CommandArrayInfo cinfo);
 	}
+
+	public interface ICommandTargetHandler
+	{
+		ICommandTargetHandler Next { get; set; }
+		void Run (object target, Command cmd);
+	}
+
+	public interface ICommandArrayTargetHandler
+	{
+		ICommandArrayTargetHandler Next { get; set; }
+		void Run (object target, Command cmd, object data);
+	}
 }

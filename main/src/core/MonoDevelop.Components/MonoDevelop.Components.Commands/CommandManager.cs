@@ -504,12 +504,12 @@ namespace MonoDevelop.Components.Commands
 							object localTarget = cmdTarget;
 							if (cmd.CommandArray) {
 								handlers.Add (delegate {
-									chi.Run (localTarget, dataItem);
+									chi.Run (localTarget, cmd, dataItem);
 								});
 							}
 							else {
 								handlers.Add (delegate {
-									chi.Run (localTarget);
+									chi.Run (localTarget, cmd);
 								});
 							}
 							handlerFoundInMulticast = true;
@@ -734,6 +734,8 @@ namespace MonoDevelop.Components.Commands
 
 					ICommandUpdateHandler customHandlerChain = null;
 					ICommandArrayUpdateHandler customArrayHandlerChain = null;
+					ICommandTargetHandler customTargetHandlerChain = null;
+					ICommandArrayTargetHandler customArrayTargetHandlerChain = null;
 					List<CommandHandlerInfo> methodHandlers = new List<CommandHandlerInfo> ();
 					
 					foreach (object attr in method.GetCustomAttributes (true)) {
@@ -742,22 +744,32 @@ namespace MonoDevelop.Components.Commands
 						else if (attr is CommandUpdateHandlerAttribute)
 							AddUpdater (updaters, method, (CommandUpdateHandlerAttribute) attr);
 						else {
-							customHandlerChain = ChainUpdater (customHandlerChain, attr);
-							customArrayHandlerChain = ChainUpdater (customArrayHandlerChain, attr);
+							customHandlerChain = ChainHandler (customHandlerChain, attr);
+							customArrayHandlerChain = ChainHandler (customArrayHandlerChain, attr);
+							customTargetHandlerChain = ChainHandler (customTargetHandlerChain, attr);
+							customArrayTargetHandlerChain = ChainHandler (customArrayTargetHandlerChain, attr);
 						}
 					}
 
 					foreach (object attr in type.GetCustomAttributes (true)) {
-						customHandlerChain = ChainUpdater (customHandlerChain, attr);
-						customArrayHandlerChain = ChainUpdater (customArrayHandlerChain, attr);
+						customHandlerChain = ChainHandler (customHandlerChain, attr);
+						customArrayHandlerChain = ChainHandler (customArrayHandlerChain, attr);
+						customTargetHandlerChain = ChainHandler (customTargetHandlerChain, attr);
+						customArrayTargetHandlerChain = ChainHandler (customArrayTargetHandlerChain, attr);
 					}
 					
-					if (methodHandlers.Count > 0 && (customHandlerChain != null || customArrayHandlerChain != null)) {
-						// There are custom handlers. Create update handlers for all commands
-						// that the method handles so the custom update handlers can be chained
-						foreach (CommandHandlerInfo ci in methodHandlers) {
-							CommandUpdaterInfo c = AddUpdateHandler (updaters, ci.CommandId);
-							c.AddCustomHandlers (customHandlerChain, customArrayHandlerChain);
+					if (methodHandlers.Count > 0) {
+						if (customHandlerChain != null || customArrayHandlerChain != null) {
+							// There are custom handlers. Create update handlers for all commands
+							// that the method handles so the custom update handlers can be chained
+							foreach (CommandHandlerInfo ci in methodHandlers) {
+								CommandUpdaterInfo c = AddUpdateHandler (updaters, ci.CommandId);
+								c.AddCustomHandlers (customHandlerChain, customArrayHandlerChain);
+							}
+						}
+						if (customTargetHandlerChain != null || customArrayTargetHandlerChain != null) {
+							foreach (CommandHandlerInfo ci in methodHandlers)
+								ci.AddCustomHandlers (customTargetHandlerChain, customArrayTargetHandlerChain);
 						}
 					}
 					handlers.AddRange (methodHandlers);
@@ -799,24 +811,36 @@ namespace MonoDevelop.Components.Commands
 			methodUpdaters.Add (cinfo);
 		}
 
-		ICommandArrayUpdateHandler ChainUpdater (ICommandArrayUpdateHandler chain, object attr)
+		ICommandArrayUpdateHandler ChainHandler (ICommandArrayUpdateHandler chain, object attr)
 		{
-			if (attr is ICommandArrayUpdateHandler) {
-				ICommandArrayUpdateHandler h = (ICommandArrayUpdateHandler) attr;
-				h.Next = chain ?? DefaultCommandHandler.Instance;
-				chain = h;
-			}
-			return chain;
+			ICommandArrayUpdateHandler h = attr as ICommandArrayUpdateHandler;
+			if (h == null) return chain;
+			h.Next = chain ?? DefaultCommandHandler.Instance;
+			return h;
 		}
 
-		ICommandUpdateHandler ChainUpdater (ICommandUpdateHandler chain, object attr)
+		ICommandUpdateHandler ChainHandler (ICommandUpdateHandler chain, object attr)
 		{
-			if (attr is ICommandUpdateHandler) {
-				ICommandUpdateHandler h = (ICommandUpdateHandler) attr;
-				h.Next = chain ?? DefaultCommandHandler.Instance;
-				chain = h;
-			}
-			return chain;
+			ICommandUpdateHandler h = attr as ICommandUpdateHandler;
+			if (h == null) return chain;
+			h.Next = chain ?? DefaultCommandHandler.Instance;
+			return h;
+		}
+
+		ICommandTargetHandler ChainHandler (ICommandTargetHandler chain, object attr)
+		{
+			ICommandTargetHandler h = attr as ICommandTargetHandler;
+			if (h == null) return chain;
+			h.Next = chain ?? DefaultCommandHandler.Instance;
+			return h;
+		}
+
+		ICommandArrayTargetHandler ChainHandler (ICommandArrayTargetHandler chain, object attr)
+		{
+			ICommandArrayTargetHandler h = attr as ICommandArrayTargetHandler;
+			if (h == null) return chain;
+			h.Next = chain ?? DefaultCommandHandler.Instance;
+			return h;
 		}
 		
 		object GetFirstCommandTarget (object initialTarget)
@@ -996,6 +1020,45 @@ namespace MonoDevelop.Components.Commands
 			CommandId = commandId;
 		}
 	}
+	
+	internal class CommandHandlerInfo: CommandMethodInfo
+	{
+		ICommandTargetHandler  customHandlerChain;
+		ICommandArrayTargetHandler  customArrayHandlerChain;
+		
+		public CommandHandlerInfo (MethodInfo method, CommandHandlerAttribute attr): base (method, attr)
+		{
+			ParameterInfo[] pars = method.GetParameters ();
+			if (pars.Length > 1)
+				throw new InvalidOperationException ("Invalid signature for command handler: " + method.DeclaringType + "." + method.Name + "()");
+		}
+		
+		public void Run (object cmdTarget, Command cmd)
+		{
+			if (customHandlerChain != null) {
+				cmd.HandlerData = Method;
+				customHandlerChain.Run (cmdTarget, cmd);
+			}
+			else
+				Method.Invoke (cmdTarget, null);
+		}
+		
+		public void Run (object cmdTarget, Command cmd, object dataItem)
+		{
+			if (customArrayHandlerChain != null) {
+				cmd.HandlerData = Method;
+				customArrayHandlerChain.Run (cmdTarget, cmd, dataItem);
+			}
+			else
+				Method.Invoke (cmdTarget, new object[] {dataItem});
+		}
+		
+		public void AddCustomHandlers (ICommandTargetHandler handlerChain, ICommandArrayTargetHandler arrayHandlerChain)
+		{
+			this.customHandlerChain = handlerChain;
+			this.customArrayHandlerChain = arrayHandlerChain;
+		}
+	}
 		
 	internal class CommandUpdaterInfo: CommandMethodInfo
 	{
@@ -1064,7 +1127,7 @@ namespace MonoDevelop.Components.Commands
 		}
 	}
 	
-	class DefaultCommandHandler: ICommandUpdateHandler, ICommandArrayUpdateHandler
+	class DefaultCommandHandler: ICommandUpdateHandler, ICommandArrayUpdateHandler, ICommandTargetHandler, ICommandArrayTargetHandler
 	{
 		public static DefaultCommandHandler Instance = new DefaultCommandHandler ();
 		
@@ -1082,6 +1145,36 @@ namespace MonoDevelop.Components.Commands
 				mi.Invoke (target, new object[] {info} );
 		}
 
+		public void Run (object target, Command cmd)
+		{
+			MethodInfo mi = (MethodInfo) cmd.HandlerData;
+			if (mi != null)
+				mi.Invoke (target, new object[0] );
+		}
+		
+		public void Run (object target, Command cmd, object data)
+		{
+			MethodInfo mi = (MethodInfo) cmd.HandlerData;
+			if (mi != null)
+				mi.Invoke (target, new object[] {data} );
+		}
+
+		ICommandArrayTargetHandler ICommandArrayTargetHandler.Next {
+			get {
+				return null;
+			}
+			set {
+			}
+		}
+		
+		ICommandTargetHandler ICommandTargetHandler.Next {
+			get {
+				return null;
+			}
+			set {
+			}
+		}
+		
 		ICommandArrayUpdateHandler ICommandArrayUpdateHandler.Next {
 			get {
 				// Last one in the chain
@@ -1098,26 +1191,6 @@ namespace MonoDevelop.Components.Commands
 			}
 			set {
 			}
-		}
-	}
-	
-	internal class CommandHandlerInfo: CommandMethodInfo
-	{
-		public CommandHandlerInfo (MethodInfo method, CommandHandlerAttribute attr): base (method, attr)
-		{
-			ParameterInfo[] pars = method.GetParameters ();
-			if (pars.Length > 1)
-				throw new InvalidOperationException ("Invalid signature for command handler: " + method.DeclaringType + "." + method.Name + "()");
-		}
-		
-		public void Run (object cmdTarget)
-		{
-			Method.Invoke (cmdTarget, null);
-		}
-		
-		public void Run (object cmdTarget, object dataItem)
-		{
-			Method.Invoke (cmdTarget, new object[] {dataItem});
 		}
 	}
 

@@ -44,6 +44,7 @@ namespace MonoDevelop.Components.Commands
 		string category;
 		bool disabledVisible;
 		internal string AccelPath;
+		internal object HandlerData; // Used internally when dispatching the command
 		
 		public Command ()
 		{
