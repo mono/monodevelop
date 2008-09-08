@@ -53,7 +53,7 @@ namespace MonoDevelop.SourceEditor
 		ListStore searchHistory = new ListStore (typeof (string));
 		ListStore replaceHistory = new ListStore (typeof (string));
 		
-		bool searchReplaceMode = true;
+		bool isReplaceMode = true;
 		Widget [] replaceWidgets;
 				
 		public static bool IsCaseSensitive {
@@ -122,7 +122,7 @@ namespace MonoDevelop.SourceEditor
 			};
 			
 			buttonSearchMode.Clicked += delegate {
-				SetSearchReplaceMode (searchReplaceMode = !searchReplaceMode);
+				IsReplaceMode = !IsReplaceMode;
 			};
 			
 			// comboboxSearchAs.AppendText (GettextCatalog.GetString ("Text"));
@@ -291,12 +291,18 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 		
-		public void SetSearchReplaceMode (bool replace)
-		{
-			searchButtonModeArrow.ArrowType = replace ? ArrowType.Down : ArrowType.Up;
-			table.RowSpacing = replace ? 6u : 0u;
-			foreach (Widget widget in replaceWidgets) {
-				widget.Visible = replace;		
+		public bool IsReplaceMode {
+			get { return isReplaceMode; }
+			set {
+				if (value == isReplaceMode)
+					return;
+				
+				isReplaceMode = value;
+				searchButtonModeArrow.ArrowType = isReplaceMode ? ArrowType.Down : ArrowType.Up;
+				table.RowSpacing = isReplaceMode ? 6u : 0u;
+				foreach (Widget widget in replaceWidgets) {
+					widget.Visible = isReplaceMode;		
+				}
 			}
 		}
 		

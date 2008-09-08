@@ -821,13 +821,13 @@ namespace MonoDevelop.SourceEditor
 				this.PackEnd (searchAndReplaceWidget);
 				this.SetChildPacking (searchAndReplaceWidget, false, false, CHILD_PADDING, PackType.End);
 				searchAndReplaceWidget.ShowAll ();
-				searchAndReplaceWidget.SetSearchReplaceMode (replace);
 				this.textEditor.HighlightSearchPattern = true;
 				if (this.splittedTextEditor != null) 
 					this.splittedTextEditor.HighlightSearchPattern = true;
 				
 				ResetFocusChain ();
 			}
+			searchAndReplaceWidget.IsReplaceMode = replace;
 			searchAndReplaceWidget.Focus ();
 		}
 		
