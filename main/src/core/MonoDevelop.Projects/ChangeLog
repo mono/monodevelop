@@ -1,3 +1,11 @@
+2008-09-08  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Dom/TypeParameter.cs,
+	  MonoDevelop.Projects.Dom/DomUsing.cs,
+	  MonoDevelop.Projects.Dom/IUsing.cs,
+	  MonoDevelop.Projects.Dom/Modifiers.cs: Fixed some issues found by
+	  unit testing.
+
 2008-09-05  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom.Parser/ProjectParserService.cs,

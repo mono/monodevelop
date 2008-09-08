@@ -46,7 +46,7 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 
-		public IEnumerable<string> Namespaces {
+		public IList<string> Namespaces {
 			get {
 				return namespaces;
 			}

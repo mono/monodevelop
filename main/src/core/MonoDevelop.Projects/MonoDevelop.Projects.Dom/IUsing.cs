@@ -37,7 +37,7 @@ namespace MonoDevelop.Projects.Dom
 			get;
 		}
 		
-		IEnumerable<string> Namespaces {
+		IList<string> Namespaces {
 			get;
 		}
 		IDictionary<string, IReturnType> Aliases {

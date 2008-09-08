@@ -46,13 +46,13 @@ namespace MonoDevelop.Projects.Dom
 		Static    = 0x0080,
 		Override  = 0x0100,
 		Readonly  = 0x0200,
-		Const	 = 0X0400,
+		Const	  = 0X0400,
 		New       = 0x0800,
 		Partial   = 0x1000,
 		
-		Extern    = 0x1000,
-		Volatile  = 0x2000,
-		Unsafe    = 0x4000,
+		Extern    = 0x2000,
+		Volatile  = 0x4000,
+		Unsafe    = 0x8000,
 		
 		Overloads  = 0x10000,
 		WithEvents = 0x20000,

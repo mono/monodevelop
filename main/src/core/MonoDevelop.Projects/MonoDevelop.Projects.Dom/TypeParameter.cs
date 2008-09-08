@@ -49,7 +49,7 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 
-		public IEnumerable<IReturnType> Constraints {
+		public IList<IReturnType> Constraints {
 			get {
 				return constraints;
 			}
@@ -58,6 +58,11 @@ namespace MonoDevelop.Projects.Dom
 		public TypeParameter (string name)
 		{
 			this.name = name;
+		}
+
+		public void AddConstraint (IReturnType type)
+		{
+			this.constraints.Add (type);
 		}
 	}
 }
