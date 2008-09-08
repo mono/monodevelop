@@ -1,3 +1,8 @@
+2008-09-08  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.SourceEditor/ExtendibleTextEditor.cs: Optimized language
+	  item tooltip.
+
 2008-09-05  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* gtk-gui/MonoDevelop.SourceEditor.SearchAndReplaceWidget.cs,

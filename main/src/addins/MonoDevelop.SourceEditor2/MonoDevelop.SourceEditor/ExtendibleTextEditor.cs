@@ -295,29 +295,40 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 		
+		int           oldOffset = -1;
+		ResolveResult resolveResult = null;
 		public ResolveResult GetLanguageItem (int offset)
 		{
 			string txt = this.Document.Text;
-			string fileName = view.ContentName;
-			if (fileName == null)
-				fileName = view.UntitledName;
+			string fileName = view.ContentName ?? view.UntitledName;
+			
+			// we'll cache old results.
+			if (offset == oldOffset)
+				return this.resolveResult;
+			oldOffset = offset;
+			
+			this.resolveResult = null;
 			MonoDevelop.Ide.Gui.Document doc = IdeApp.Workbench.ActiveDocument;
 			if (doc == null)
 				return null;
+			
 			IParser parser = ProjectDomService.GetParser (fileName, Document.MimeType);
 			if (parser == null)
 				return null;
-			ProjectDom dom = ProjectDomService.GetDatabaseProjectDom (doc.Project);
-			IResolver         resolver         = parser.CreateResolver (dom, doc, fileName);
+			
+			ProjectDom        dom      = ProjectDomService.GetDatabaseProjectDom (doc.Project);
+			IResolver         resolver = parser.CreateResolver (dom, doc, fileName);
 			IExpressionFinder expressionFinder = parser.CreateExpressionFinder (dom);
 			if (resolver == null || expressionFinder == null) 
 				return null;
+			
 			ExpressionResult expressionResult = expressionFinder.FindFullExpression (txt, offset);
 			if (expressionResult == null) 
 				return null;
+			
 			DocumentLocation loc = Document.OffsetToLocation (offset);
-			ResolveResult resolveResult = resolver.Resolve (expressionResult, new DomLocation (loc.Line + 1, loc.Column + 1));
-			return resolveResult;
+			this.resolveResult = resolver.Resolve (expressionResult, new DomLocation (loc.Line + 1, loc.Column + 1));
+			return this.resolveResult;
 		}
 		
 		protected override bool OnFocusOutEvent (Gdk.EventFocus evnt)
