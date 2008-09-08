@@ -239,7 +239,8 @@ namespace MonoDevelop.SourceEditor
 					Add (c, string.Empty);
 				
 				int line = editor.TextEditor.Caret.Line + 1;
-//				this.GetLineColumnFromPosition(this.CursorPosition, out line, out column);
+				int column = editor.TextEditor.Caret.Column + 1;
+				
 				KeyValuePair<IType, int> ckvp = SearchClass (line);
 				
 				IType foundClass = ckvp.Key;
@@ -252,6 +253,9 @@ namespace MonoDevelop.SourceEditor
 					classCombo.Active = -1;
 					this.UpdateClassComboTip ( null);
 				}
+				
+				BindRegionCombo ();
+				UpdateRegionCombo (line, column);
 			} finally {
 				handlingParseEvent = false;
 				loadingMembers = false;
