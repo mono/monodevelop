@@ -174,8 +174,6 @@ namespace MonoDevelop.Ide.Gui.Components
 		
 		static NodeState SaveStateRec (ExtensibleTreeView pad, ITreeNavigator nav)
 		{
-			Gtk.TreeIter it = nav.CurrentPosition._iter;
-			
 			List<NodeState> childrenState = null;
 
 			if (nav.Filled && nav.MoveToFirstChild ()) {
@@ -191,7 +189,7 @@ namespace MonoDevelop.Ide.Gui.Components
 				nav.MoveToParent ();
 			}
 			
-			ExtensibleTreeView.TreeOptions ops = pad.GetIterOptions (it);
+			ExtensibleTreeView.TreeOptions ops = pad.GetNodeOptions (nav);
 			
 			if (ops != null || nav.Expanded || childrenState != null || nav.Selected) {
 				NodeState es = new NodeState ();
@@ -219,11 +217,10 @@ namespace MonoDevelop.Ide.Gui.Components
 			if (es == null) 
 				return;
 			
-			Gtk.TreeIter it = nav.CurrentPosition._iter;
 			if (es.Options != null) 
-				pad.SetIterOptions (it, es.Options);
+				pad.SetNodeOptions (nav, es.Options);
 			
-			pad.ResetState (it);
+			pad.ResetState (nav);
 			nav.Expanded = es.Expanded;
 			
 			if (es.ChildrenState != null) {

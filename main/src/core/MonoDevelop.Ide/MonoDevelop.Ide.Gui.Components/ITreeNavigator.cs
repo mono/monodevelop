@@ -73,5 +73,6 @@ namespace MonoDevelop.Ide.Gui.Components
 	
 	public struct NodePosition {
 		internal Gtk.TreeIter _iter;
+		internal object _node;
 	}
 }

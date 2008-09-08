@@ -1,3 +1,17 @@
+2008-09-08  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Gui.Components/ExtensibleTreeView.cs,
+	  MonoDevelop.Ide.Gui.Components/TransactedTreeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Components/NodeCommandHandler.cs,
+	  MonoDevelop.Ide.Gui.Components/ITreeNavigator.cs,
+	  MonoDevelop.Ide.Gui.Components/NodeState.cs,
+	  MonoDevelop.Ide.Gui.Components/TreeBuilder.cs, MonoDevelop.Ide.mdp,
+	  Makefile.am, MonoDevelop.Ide.Gui.Components/TreeNodeNavigator.cs:
+	  Implemented support for update locking. When a command is executed,
+	  all updates to the tree will be postponed until the command
+	  execution has completed. It avoids crashes due to the tree being
+	  modified while the command is still iterating on the nodes.
+
 2008-09-05  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.Ide.Gui/SdiWorkspaceWindow.cs: Add some spacing back.

@@ -43,7 +43,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			{
 			}
 			
-			protected override void EnsureFilled ()
+			public override void EnsureFilled ()
 			{
 				if (!(bool) store.GetValue (currentIter, ExtensibleTreeView.FilledColumn))
 					FillNode ();
@@ -74,7 +74,7 @@ namespace MonoDevelop.Ide.Gui.Components
 				object data = store.GetValue (currentIter, ExtensibleTreeView.DataItemColumn);
 				NodeBuilder[] chain = (NodeBuilder[]) store.GetValue (currentIter, ExtensibleTreeView.BuilderChainColumn);
 				
-				NodeAttributes ats = GetAttributes (chain, data);
+				NodeAttributes ats = GetAttributes (this, chain, data);
 				UpdateNode (chain, ats, data);
 			}
 			
@@ -86,7 +86,7 @@ namespace MonoDevelop.Ide.Gui.Components
 				object data = store.GetValue (currentIter, ExtensibleTreeView.DataItemColumn);
 				NodeBuilder[] chain = (NodeBuilder[]) store.GetValue (currentIter, ExtensibleTreeView.BuilderChainColumn);
 
-				if (!HasChildNodes (chain, data))
+				if (!HasChildNodes (this, chain, data))
 					FillNode ();
 				else {
 					RemoveChildren (currentIter);
@@ -101,7 +101,7 @@ namespace MonoDevelop.Ide.Gui.Components
 				NodeBuilder[] chain = (NodeBuilder[]) store.GetValue (currentIter, ExtensibleTreeView.BuilderChainColumn);
 				
 				if (!(bool) store.GetValue (currentIter, ExtensibleTreeView.FilledColumn)) {
-					if (!HasChildNodes (chain, data))
+					if (!HasChildNodes (this, chain, data))
 						FillNode ();
 					return;
 				}
@@ -149,18 +149,18 @@ namespace MonoDevelop.Ide.Gui.Components
 				AddChild (dataObject, false);
 			}
 			
-			NodeAttributes GetAttributes (NodeBuilder[] chain, object dataObject)
+			internal static NodeAttributes GetAttributes (ITreeBuilder tb, NodeBuilder[] chain, object dataObject)
 			{
-				Gtk.TreeIter oldIter = currentIter;
+				NodePosition pos = tb.CurrentPosition;
 				NodeAttributes ats = NodeAttributes.None;
 				
 				foreach (NodeBuilder nb in chain) {
 					try {
-						nb.GetNodeAttributes (this, dataObject, ref ats);
+						nb.GetNodeAttributes (tb, dataObject, ref ats);
 					} catch (Exception ex) {
 						LoggingService.LogError (ex.ToString ());
 					}
-					MoveToIter (oldIter);
+					tb.MoveToPosition (pos);
 				}
 				return ats;
 			}
@@ -173,7 +173,7 @@ namespace MonoDevelop.Ide.Gui.Components
 				if (chain == null) return;
 				
 				Gtk.TreeIter oldIter = currentIter;
-				NodeAttributes ats = GetAttributes (chain, dataObject);
+				NodeAttributes ats = GetAttributes (this, chain, dataObject);
 				if ((ats & NodeAttributes.Hidden) != 0)
 					return;
 				
@@ -211,7 +211,7 @@ namespace MonoDevelop.Ide.Gui.Components
 				
 				UpdateNode (chain, ats, dataObject);
 				
-				bool hasChildren = HasChildNodes (chain, dataObject);
+				bool hasChildren = HasChildNodes (this, chain, dataObject);
 				store.SetValue (currentIter, ExtensibleTreeView.FilledColumn, !hasChildren);
 				
 				if (hasChildren)
@@ -220,17 +220,17 @@ namespace MonoDevelop.Ide.Gui.Components
 				InitIter (oldIter, oldItem);
 			}
 			
-			bool HasChildNodes (NodeBuilder[] chain, object dataObject)
+			internal static bool HasChildNodes (ITreeBuilder tb, NodeBuilder[] chain, object dataObject)
 			{
-				Gtk.TreeIter citer = currentIter;
+				NodePosition pos = tb.CurrentPosition;
 				foreach (NodeBuilder nb in chain) {
 					try {
-						bool res = nb.HasChildNodes (this, dataObject);
+						bool res = nb.HasChildNodes (tb, dataObject);
 						if (res) return true;
 					} catch (Exception ex) {
 						LoggingService.LogError (ex.ToString ());
 					} finally {
-						MoveToIter (citer);
+						tb.MoveToPosition (pos);
 					}
 				}
 				return false;
@@ -238,38 +238,46 @@ namespace MonoDevelop.Ide.Gui.Components
 			
 			void UpdateNode (NodeBuilder[] chain, NodeAttributes ats, object dataObject)
 			{
-				Gdk.Pixbuf icon = null;
-				Gdk.Pixbuf closedIcon = null;
-				string text = string.Empty;
-				Gtk.TreeIter citer = currentIter;
+				string text;
+				Gdk.Pixbuf icon;
+				Gdk.Pixbuf closedIcon;
+				GetNodeInfo (pad, this, chain, dataObject, out text, out icon, out closedIcon);
+				SetNodeInfo (currentIter, ats, text, icon, closedIcon);
+			}
+			
+			internal static void GetNodeInfo (ExtensibleTreeView tree, ITreeBuilder tb, NodeBuilder[] chain, object dataObject, out string text, out Gdk.Pixbuf icon, out Gdk.Pixbuf closedIcon)
+			{
+				icon = null;
+				closedIcon = null;
+				text = string.Empty;
+				
+				NodePosition pos = tb.CurrentPosition;
 				
 				foreach (NodeBuilder builder in chain) {
 					try {
-						builder.BuildNode (this, dataObject, ref text, ref icon, ref closedIcon);
+						builder.BuildNode (tb, dataObject, ref text, ref icon, ref closedIcon);
 					} catch (Exception ex) {
 						LoggingService.LogError (ex.ToString ());
 					}
-					MoveToIter (citer);
+					tb.MoveToPosition (pos);
 				}
 					
 				if (closedIcon == null) closedIcon = icon;
 				
-				if (pad.CopyObjects != null && ((IList)pad.CopyObjects).Contains (dataObject) && pad.CurrentTransferOperation == DragOperation.Move) {
-					Gdk.Pixbuf gicon = pad.BuilderContext.GetComposedIcon (icon, "fade");
+				if (tree.CopyObjects != null && ((IList)tree.CopyObjects).Contains (dataObject) && tree.CurrentTransferOperation == DragOperation.Move) {
+					Gdk.Pixbuf gicon = tree.BuilderContext.GetComposedIcon (icon, "fade");
 					if (gicon == null) {
 						gicon = Services.Icons.MakeTransparent (icon, 0.5);
-						pad.BuilderContext.CacheComposedIcon (icon, "fade", gicon);
+						tree.BuilderContext.CacheComposedIcon (icon, "fade", gicon);
 					}
 					icon = gicon;
-					gicon = pad.BuilderContext.GetComposedIcon (closedIcon, "fade");
+					gicon = tree.BuilderContext.GetComposedIcon (closedIcon, "fade");
 					if (gicon == null) {
 						gicon = Services.Icons.MakeTransparent (closedIcon, 0.5);
-						pad.BuilderContext.CacheComposedIcon (closedIcon, "fade", gicon);
+						tree.BuilderContext.CacheComposedIcon (closedIcon, "fade", gicon);
 					}
 					closedIcon = gicon;
 				}
-				
-				SetNodeInfo (currentIter, ats, text, icon, closedIcon);
 			}
 			
 			void SetNodeInfo (Gtk.TreeIter it, NodeAttributes ats, string text, Gdk.Pixbuf icon, Gdk.Pixbuf closedIcon)

@@ -118,6 +118,7 @@ FILES =  \
 	MonoDevelop.Ide.Gui.Components/NodeBuilderExtension.cs \
 	MonoDevelop.Ide.Gui.Components/NodeCommandHandler.cs \
 	MonoDevelop.Ide.Gui.Components/NodeState.cs \
+	MonoDevelop.Ide.Gui.Components/TransactedTreeBuilder.cs \
 	MonoDevelop.Ide.Gui.Components/TreeBuilder.cs \
 	MonoDevelop.Ide.Gui.Components/TreeNodeNavigator.cs \
 	MonoDevelop.Ide.Gui.Components/TreeOptions.cs \

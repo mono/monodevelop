@@ -82,6 +82,9 @@ namespace MonoDevelop.Ide.Gui.Components
 		object[] dragObjects;
 		object[] copyObjects;
 		DragOperation currentTransferOperation;
+
+		TransactedNodeStore transactionStore;
+		int updateLockCount;
 		
 		private static Gtk.TargetEntry [] target_table = new Gtk.TargetEntry [] {
 			new Gtk.TargetEntry ("text/uri-list", 0, 11 ),
@@ -334,19 +337,30 @@ namespace MonoDevelop.Ide.Gui.Components
 			bool foundHandler = false;
 			
 			DragOperation oper = ctx.Action == Gdk.DragAction.Copy ? DragOperation.Copy : DragOperation.Move;
-			
-			foreach (NodeBuilder nb in chain) {
-				try {
-					NodeCommandHandler handler = nb.CommandHandler;
-					handler.SetCurrentNode (nav);
-					if (handler.CanDropMultipleNodes (obj, oper)) {
-						foundHandler = true;
-						if (drop)
-							handler.OnMultipleNodeDrop (obj, oper);
+			bool updatesLocked = false;
+
+			try {
+				foreach (NodeBuilder nb in chain) {
+					try {
+						NodeCommandHandler handler = nb.CommandHandler;
+						handler.SetCurrentNode (nav);
+						if (handler.CanDropMultipleNodes (obj, oper)) {
+							foundHandler = true;
+							if (drop) {
+								if (!updatesLocked) {
+									LockUpdates ();
+									updatesLocked = true;
+								}
+								handler.OnMultipleNodeDrop (obj, oper);
+							}
+						}
+					} catch (Exception ex) {
+						LoggingService.LogError (ex.ToString ());
 					}
-				} catch (Exception ex) {
-					LoggingService.LogError (ex.ToString ());
 				}
+			} finally {
+				if (updatesLocked)
+					UnlockUpdates ();
 			}
 			return foundHandler;
 		}
@@ -362,6 +376,33 @@ namespace MonoDevelop.Ide.Gui.Components
 					LoggingService.LogError (ex.ToString ());
 				}
 			}
+		}
+
+		internal void LockUpdates ()
+		{
+			if (++updateLockCount == 1)
+				transactionStore = new TransactedNodeStore (this);
+		}
+
+		internal void UnlockUpdates ()
+		{
+			if (--updateLockCount == 0) {
+				transactionStore.CommitChanges ();
+				transactionStore = null;
+			}
+		}
+
+		internal ITreeBuilder CreateBuilder ()
+		{
+			return CreateBuilder (Gtk.TreeIter.Zero);
+		}
+
+		internal ITreeBuilder CreateBuilder (Gtk.TreeIter it)
+		{
+			if (transactionStore != null)
+				return new TransactedTreeBuilder (this, transactionStore, it);
+			else
+				return new TreeBuilder (this, it);
 		}
 		
 		protected NodeBuilder[] NodeBuilders {
@@ -669,38 +710,48 @@ namespace MonoDevelop.Ide.Gui.Components
 		[CommandHandler (ViewCommands.Open)]
 		public virtual void ActivateCurrentItem ()
 		{
-			foreach (SelectionGroup grp in GetSelectedNodesGrouped ()) {
-				grp.SavePositions ();
-				foreach (NodeBuilder b in grp.BuilderChain) {
-					NodeCommandHandler handler = b.CommandHandler;
-					handler.SetCurrentNodes (grp.Nodes.ToArray ());
-					handler.ActivateItem ();
-					if (!grp.RestorePositions ())
-						break;
+			try {
+				LockUpdates ();
+				foreach (SelectionGroup grp in GetSelectedNodesGrouped ()) {
+					grp.SavePositions ();
+					foreach (NodeBuilder b in grp.BuilderChain) {
+						NodeCommandHandler handler = b.CommandHandler;
+						handler.SetCurrentNodes (grp.Nodes.ToArray ());
+						handler.ActivateItem ();
+						if (!grp.RestorePositions ())
+							break;
+					}
 				}
+				OnCurrentItemActivated (EventArgs.Empty);
+			} finally {
+				UnlockUpdates ();
 			}
-			OnCurrentItemActivated (EventArgs.Empty);
 		}
 		
 		public virtual void DeleteCurrentItem ()
 		{
-			foreach (SelectionGroup grp in GetSelectedNodesGrouped ()) {
-				NodeBuilder[] chain = grp.BuilderChain;
-				grp.SavePositions ();
-				foreach (NodeBuilder b in chain) {
-					NodeCommandHandler handler = b.CommandHandler;
-					handler.SetCurrentNodes (grp.Nodes.ToArray ());
-					if (handler.CanDeleteMultipleItems ()) {
+			try {
+				LockUpdates ();
+				foreach (SelectionGroup grp in GetSelectedNodesGrouped ()) {
+					NodeBuilder[] chain = grp.BuilderChain;
+					grp.SavePositions ();
+					foreach (NodeBuilder b in chain) {
+						NodeCommandHandler handler = b.CommandHandler;
+						handler.SetCurrentNodes (grp.Nodes.ToArray ());
+						if (handler.CanDeleteMultipleItems ()) {
+							if (!grp.RestorePositions ())
+								return;
+							handler.DeleteMultipleItems ();
+							// FIXME: fixes bug #396566, but it is not 100% correct
+							// It can only be fully fixed if updates to the tree are delayed
+							break;
+						}
 						if (!grp.RestorePositions ())
 							return;
-						handler.DeleteMultipleItems ();
-						// FIXME: fixes bug #396566, but it is not 100% correct
-						// It can only be fully fixed if updates to the tree are delayed
-						break;
 					}
-					if (!grp.RestorePositions ())
-						return;
 				}
+			} finally {
+				UnlockUpdates ();
 			}
 		}
 		
@@ -744,7 +795,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			
 			if (copyObjects != null) {
 				foreach (object ob in copyObjects) {
-					TreeBuilder tb = new TreeBuilder (this);
+					ITreeBuilder tb = CreateBuilder ();
 					if (tb.MoveToObject (ob))
 						tb.Update ();
 				}
@@ -819,22 +870,27 @@ namespace MonoDevelop.Ide.Gui.Components
 		public void PasteToCurrentItem ()
 		{
 			if (copyObjects == null) return;
-			
-			TreeNodeNavigator node = (TreeNodeNavigator) GetSelectedNode ();
-			if (node != null) {
-				NodeBuilder[] chain = node.NodeBuilderChain;
-				NodePosition pos = node.CurrentPosition;
-				foreach (NodeBuilder b in chain) {
-					NodeCommandHandler handler = b.CommandHandler;
-					handler.SetCurrentNode (node);
-					if (handler.CanDropMultipleNodes (copyObjects, currentTransferOperation)) {
+
+			try {
+				LockUpdates ();
+				TreeNodeNavigator node = (TreeNodeNavigator) GetSelectedNode ();
+				if (node != null) {
+					NodeBuilder[] chain = node.NodeBuilderChain;
+					NodePosition pos = node.CurrentPosition;
+					foreach (NodeBuilder b in chain) {
+						NodeCommandHandler handler = b.CommandHandler;
+						handler.SetCurrentNode (node);
+						if (handler.CanDropMultipleNodes (copyObjects, currentTransferOperation)) {
+							node.MoveToPosition (pos);
+							handler.OnMultipleNodeDrop (copyObjects, currentTransferOperation);
+						}
 						node.MoveToPosition (pos);
-						handler.OnMultipleNodeDrop (copyObjects, currentTransferOperation);
 					}
-					node.MoveToPosition (pos);
 				}
+				CancelTransfer ();
+			} finally {
+				UnlockUpdates ();
 			}
-			CancelTransfer ();
 		}
 
 		[CommandUpdateHandler (EditCommands.Paste)]
@@ -871,7 +927,7 @@ namespace MonoDevelop.Ide.Gui.Components
 				copyObjects = null;
 				if (currentTransferOperation == DragOperation.Move) {
 					foreach (object ob in oldCopyObjects) {
-						TreeBuilder tb = new TreeBuilder (this);
+						ITreeBuilder tb = CreateBuilder ();
 						if (tb.MoveToObject (ob))
 							tb.Update ();
 					}
@@ -932,16 +988,21 @@ namespace MonoDevelop.Ide.Gui.Components
 					ITreeNavigator nav = new TreeNodeNavigator (this, iter);
 					NodePosition pos = nav.CurrentPosition;
 
-					NodeBuilder[] chain = (NodeBuilder[]) store.GetValue (iter, BuilderChainColumn);
-					foreach (NodeBuilder b in chain) {
-						try {
-							NodeCommandHandler handler = b.CommandHandler;
-							handler.SetCurrentNode (nav);
-							handler.RenameItem (e.NewText);
-						} catch (Exception ex) {
-							LoggingService.LogError (ex.ToString ());
+					try {
+						LockUpdates ();
+						NodeBuilder[] chain = (NodeBuilder[]) store.GetValue (iter, BuilderChainColumn);
+						foreach (NodeBuilder b in chain) {
+							try {
+								NodeCommandHandler handler = b.CommandHandler;
+								handler.SetCurrentNode (nav);
+								handler.RenameItem (e.NewText);
+							} catch (Exception ex) {
+								LoggingService.LogError (ex.ToString ());
+							}
+							nav.MoveToPosition (pos);
 						}
-						nav.MoveToPosition (pos);
+					} finally {
+						UnlockUpdates ();
 					}
 				}
 				
@@ -949,7 +1010,7 @@ namespace MonoDevelop.Ide.Gui.Components
 				if (!store.GetIterFromString (out iter, e.Path))
 					return;
 
-				ITreeBuilder builder = new TreeBuilder (this, iter);
+				ITreeBuilder builder = CreateBuilder (iter);
 				builder.Update ();
 			}
 			catch (Exception ex) {
@@ -968,7 +1029,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			
 			// Restore the original node label
 			Gtk.TreeIter iter = node.CurrentPosition._iter;
-			ITreeBuilder builder = new TreeBuilder (this, iter);
+			ITreeBuilder builder = CreateBuilder (iter);
 			builder.Update ();
 		}
 		
@@ -1276,18 +1337,6 @@ namespace MonoDevelop.Ide.Gui.Components
 				nodeOptions.Remove (ob);
 		}
 		
-		internal TreeOptions GetIterOptions (Gtk.TreeIter iter)
-		{
-			return nodeOptions [iter] as TreeOptions;
-		}
-
-		internal void SetIterOptions (Gtk.TreeIter iter, TreeOptions ops)
-		{
-			ops.Pad = this;
-			ops.Iter = iter;
-			nodeOptions [iter] = ops;
-		}
-
 		internal string GetNamePathFromIter (Gtk.TreeIter iter)
 		{
 			workNode.MoveToIter (iter);
@@ -1305,14 +1354,43 @@ namespace MonoDevelop.Ide.Gui.Components
 		
 		public void RefreshNode (Gtk.TreeIter iter)
 		{
-			ITreeBuilder builder = new TreeBuilder (this, iter);
+			ITreeBuilder builder = CreateBuilder (iter);
 			builder.UpdateAll ();
 		}
 		
-		public void ResetState (Gtk.TreeIter iter)
+		internal void ResetState (ITreeNavigator nav)
 		{
-			TreeBuilder builder = new TreeBuilder (this, iter);
-			builder.ResetState ();
+			if (nav is TreeBuilder)
+				((TreeBuilder)nav).ResetState ();
+			else if (nav is TransactedTreeBuilder)
+				((TransactedTreeBuilder)nav).ResetState ();
+			else {
+				ITreeBuilder builder = CreateBuilder (nav.CurrentPosition._iter);
+				ResetState (builder);
+			}
+		}
+
+		internal void SetNodeOptions (ITreeNavigator nav, TreeOptions ops)
+		{
+			if (nav.CurrentPosition._node != null)
+				return;
+			
+			// TODO transaction
+			Gtk.TreeIter iter = nav.CurrentPosition._iter;
+			ops.Pad = this;
+			ops.Iter = iter;
+			nodeOptions [iter] = ops;
+		}
+
+		internal TreeOptions GetNodeOptions (ITreeNavigator nav)
+		{
+			TreeNode node = nav.CurrentPosition._node as TreeNode;
+			if (node != null && node.HasIter)
+				return nodeOptions [node.NodeIter] as TreeOptions;
+			else if (node != null)
+				return null;
+			else
+				return nodeOptions [nav.CurrentPosition._iter] as TreeOptions;
 		}
 		
 		internal bool GetIterFromNamePath (string path, out Gtk.TreeIter iter)
@@ -1426,7 +1504,7 @@ namespace MonoDevelop.Ide.Gui.Components
 				Gtk.TreeIter it = node.CurrentPosition._iter;
 				if (store.IterIsValid (it)) {
 					ClearOptions (it);
-					TreeBuilder tb = new TreeBuilder (this, it);
+					ITreeBuilder tb = CreateBuilder (it);
 					tb.UpdateAll ();
 				}
 			}
@@ -1438,7 +1516,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			foreach (TreeNodeNavigator node in GetSelectedNodes ()) {
 				Gtk.TreeIter it = node.CurrentPosition._iter;
 				if (store.IterIsValid (it)) {
-					TreeBuilder tb = new TreeBuilder (this, it);
+					ITreeBuilder tb = CreateBuilder (it);
 					tb.UpdateAll ();
 				}
 			}
@@ -1572,21 +1650,23 @@ namespace MonoDevelop.Ide.Gui.Components
 			{
 				Gtk.TreeIter iter;
 				if (!pad.store.GetIterFirst (out iter))
-					return new TreeBuilder (pad, Gtk.TreeIter.Zero);
+					return pad.CreateBuilder (Gtk.TreeIter.Zero);
 				else
-					return new TreeBuilder (pad, iter);
+					return pad.CreateBuilder (iter);
 			}
 			
 			public ITreeBuilder GetTreeBuilder (object dataObject)
 			{
-				Gtk.TreeIter iter;
-				if (!pad.GetFirstNode (dataObject, out iter)) return null;
-				return new TreeBuilder (pad, iter);
+				ITreeBuilder tb = pad.CreateBuilder ();
+				if (tb.MoveToObject (dataObject))
+					return tb;
+				else
+					return null;
 			}
 			
 			public ITreeBuilder GetTreeBuilder (ITreeNavigator navigator)
 			{
-				return new TreeBuilder (pad, navigator.CurrentPosition._iter);
+				return pad.CreateBuilder (navigator.CurrentPosition._iter);
 			}
 		
 			public Gdk.Pixbuf GetIcon (string id)
