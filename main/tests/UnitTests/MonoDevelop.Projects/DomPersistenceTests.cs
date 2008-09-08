@@ -161,7 +161,7 @@ namespace MonoDevelop.Projects.DomTests
 			Assert.AreEqual ("Test", result.Name);
 			Assert.AreEqual (true, result.IsConstructor);
 			Assert.AreEqual ("par1", result.Parameters [0].Name);
-			Assert.AreEqual (null, result.Parameters [0].ReturnType.Name);
+			Assert.AreEqual ("Void", result.Parameters [0].ReturnType.Name);
 		}
 		
 		[Test()]
