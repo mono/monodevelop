@@ -54,7 +54,6 @@ FILES =  \
 	gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.KeyBindingsPanel.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.LoadSavePanelWidget.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.TasksPanelWidget.cs \
-	gtk-gui/MonoDevelop.Ide.Gui.Pads.ClassBrowser.ClassBrowserPadWidget.cs \
 	gtk-gui/MonoDevelop.Ide.OverridesImplementsDialog.cs \
 	gtk-gui/MonoDevelop.Ide.SelectEncodingsDialog.cs \
 	gtk-gui/MonoDevelop.Ide.StandardHeaders.NewHeaderTemplateDialog.cs \

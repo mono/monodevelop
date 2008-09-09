@@ -1,3 +1,11 @@
+2008-09-09  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* gtk-gui/gui.stetic,
+	  gtk-gui/MonoDevelop.Ide.Gui.Pads.ClassBrowser.ClassBrowserPadWidget.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassPad/ClassBrowserPadWidget.cs:
+	  De-uglify new class pad.
+	* gtk-gui/objects.xml, Makefile.am, MonoDevelop.Ide.mdp: Updated.
+
 2008-09-09  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Ide.Gui.Pads.ClassPad/ClassNodeBuilder.cs,

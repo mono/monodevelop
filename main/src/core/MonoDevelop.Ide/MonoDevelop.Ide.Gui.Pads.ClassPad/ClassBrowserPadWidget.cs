@@ -43,35 +43,44 @@ using MonoDevelop.Ide.Gui.Components;
 
 namespace MonoDevelop.Ide.Gui.Pads.ClassBrowser
 {
-	[System.ComponentModel.Category("MonoDevelop.Ide")]
-	[System.ComponentModel.ToolboxItem(true)]
-	public partial class ClassBrowserPadWidget : Gtk.Bin
+	
+	class ClassBrowserPadWidget : VBox
 	{
 		ExtensibleTreeView treeView;
 		TreeView searchResultsTreeView = new Gtk.TreeView ();
 		ListStore list;
 		TreeModelSort model;
+		Entry searchEntry;
+		Button buttonSearch, buttonCancelSearch;
+		Notebook notebook;
+		
 		
 		bool isInBrowerMode = true;
 		public ClassBrowserPadWidget (ExtensibleTreeView treeView)
 		{
-			this.Build();
 			this.treeView = treeView;
-			/*
-			treeView = new ExtensibleTreeView (new NodeBuilder[] { 
-				new SolutionNodeBuilder (),
-				new ProjectNodeBuilder (),
-				new TypeNodeBuilder (),
-				new ProjectNamespaceNodeBuilder (),
-				new MemberNodeBuilder ()
-				}, new TreePadOption [] {});
-				*/
-			this.notebook1.ShowTabs = false;
-			scrolledwindow1.AddWithViewport (treeView);
-			scrolledwindow1.ShowAll ();
 			
-			scrolledwindow2.AddWithViewport (searchResultsTreeView);
-			scrolledwindow2.ShowAll ();
+			HBox searchBox = new HBox ();
+			Alignment align = new Alignment (0.5f, 0.5f, 1f, 1f);
+			align.Add (searchBox);
+			align.BottomPadding = 2;
+			this.PackStart (align, false, false, 0);
+			searchEntry = new Entry ();
+			searchBox.PackStart (searchEntry, true, true, 0);
+			buttonSearch = new Button (new Gtk.Image (Gtk.Stock.GoForward, IconSize.Menu));
+			buttonCancelSearch = new Button (new Gtk.Image (Gtk.Stock.Stop, IconSize.Menu));
+			searchBox.PackStart (buttonSearch, false, false, 2);
+			searchBox.PackStart (buttonCancelSearch, false, false, 0);
+			
+			notebook = new Notebook ();
+			notebook.ShowTabs = false;
+			notebook.ShowBorder = false;
+			this.PackEnd (notebook, true, true, 0);
+			
+			notebook.AppendPage (treeView, null);
+			ScrolledWindow scrolledWindow = new ScrolledWindow ();
+			scrolledWindow.Add (searchResultsTreeView);
+			notebook.AppendPage (scrolledWindow, null);
 			
 			list = new ListStore (new Type[] {
 				typeof (Pixbuf),
@@ -95,6 +104,8 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassBrowser
 					CancelSearchClicked (this, System.EventArgs.Empty);
 			};
 			this.buttonSearch.Clicked += SearchClicked;
+			
+			this.ShowAll ();
 		}
 		
 		List<IType> searchResults = new List<IType> ();
@@ -203,7 +214,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassBrowser
 		{
 			if (!isInBrowerMode)
 				return;
-			this.notebook1.Page = 1;
+			this.notebook.Page = 1;
 			isInBrowerMode = false;
 			PerformSearch ();
 		}
@@ -212,7 +223,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassBrowser
 		{
 			if (isInBrowerMode)
 				return;
-			this.notebook1.Page = 0;
+			this.notebook.Page = 0;
 			isInBrowerMode = true;
 		}
 			
