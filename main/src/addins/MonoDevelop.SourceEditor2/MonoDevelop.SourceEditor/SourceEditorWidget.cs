@@ -650,7 +650,7 @@ namespace MonoDevelop.SourceEditor
 			}
 			
 			view.WarnOverwrite = true;
-			this.PackStart (reloadBar, true, false, CHILD_PADDING);
+			this.PackStart (reloadBar, false, false, CHILD_PADDING);
 			this.ReorderChild (reloadBar, classBrowser != null ? 1 : 0);
 			reloadBar.ShowAll ();
 			view.WorkbenchWindow.ShowNotification = true;

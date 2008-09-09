@@ -1,3 +1,8 @@
+2008-09-09  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.SourceEditor/SourceEditorWidget.cs: Fix packing on reload
+	  bar.
+
 2008-09-08  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.SourceEditor/ClassQuickFinder.cs: Restore region combo
