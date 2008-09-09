@@ -401,13 +401,16 @@ namespace MonoDevelop.CSharpBinding.Gui
 		public class CompletionDataCollector
 		{
 			Dictionary<string, CodeCompletionData> data = new Dictionary<string, CodeCompletionData> ();
+			Dictionary<string, bool> namespaces = new Dictionary<string,bool> ();
 			static CSharpAmbience ambience = new CSharpAmbience ();
-			
 			
 			public void AddCompletionData (CodeCompletionDataProvider provider, object obj)
 			{
 				Namespace ns = obj as Namespace;
 				if (ns != null) {
+					if (namespaces.ContainsKey(ns.Name))
+						return;
+					namespaces[ns.Name] = true;
 					provider.AddCompletionData (new CodeCompletionData (ns.Name, ns.StockIcon, ns.Documentation));
 					return;
 				}
@@ -415,6 +418,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 				IMember member = obj as IMember;
 				if (member != null && !String.IsNullOrEmpty (member.Name)) {
 					CodeCompletionData newData = new MemberCompletionData (member);
+					
 					if (data.ContainsKey (member.Name)) {
 						data [member.Name].AddOverload (newData);
 					} else {
