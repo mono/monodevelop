@@ -49,6 +49,23 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 		{
 			projectNameChanged = (SolutionItemRenamedEventHandler) DispatchService.GuiDispatch (new SolutionItemRenamedEventHandler (OnProjectRenamed));
 		}
+
+		EventHandler<CompilationUnitEventArgs> compilationUnitUpdated;
+		protected override void Initialize ()
+		{
+			compilationUnitUpdated = (EventHandler<CompilationUnitEventArgs>) DispatchService.GuiDispatch (new EventHandler<CompilationUnitEventArgs> (OnCompilationUnitUpdated));
+			ProjectDomService.CompilationUnitUpdated += compilationUnitUpdated;
+		}
+		public override void Dispose ()
+		{
+			ProjectDomService.CompilationUnitUpdated -= compilationUnitUpdated;
+		}
+		
+		void OnCompilationUnitUpdated (object sender, CompilationUnitEventArgs args)
+		{
+			ITreeBuilder tb = Context.GetTreeBuilder ();
+			tb.UpdateAll ();
+		}
 		
 		public override Type NodeDataType {
 			get { return typeof(Project); }
@@ -128,10 +145,6 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 					FillNamespaces (builder, project, ns + "." + ((Namespace)ob).Name);
 				}
 			}
-			/*	
-			string[] list = ctx.GetNamespaceList (ns, false, true);
-			foreach (string subns in list)
-				FillNamespaces (builder, project, ns + "." + subns);*/
 		}
 		
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)

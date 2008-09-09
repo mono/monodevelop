@@ -33,6 +33,7 @@ using System.Text;
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
 using MonoDevelop.Projects.Dom;
+using MonoDevelop.Projects.Dom.Output;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Gui.Components;
@@ -55,16 +56,16 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
 		{
-			return GetNameWithGenericParameters(((ClassData)dataObject).Class);
+			return ((ClassData)dataObject).Class.FullName;
 		}
 		
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
 		{
 			ClassData classData = dataObject as ClassData;
-			label = GetNameWithGenericParameters(classData.Class);
+			label = AmbienceService.GetAmbience (classData.Class).GetString (classData.Class, OutputFlags.ClassBrowserEntries);
 			icon = Context.GetIcon (classData.Class.StockIcon);
 		}
-		
+		/*
 		private string GetNameWithGenericParameters (IType c)
 		{
 			if (c.TypeParameters != null && c.TypeParameters.Count > 0)
@@ -81,7 +82,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 			}
 			else
 				return c.Name;
-		}
+		}*/
 
 		public override void BuildChildNodes (ITreeBuilder builder, object dataObject)
 		{
