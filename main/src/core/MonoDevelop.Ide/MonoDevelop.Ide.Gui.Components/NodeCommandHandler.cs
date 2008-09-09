@@ -33,7 +33,6 @@ using MonoDevelop.Components.Commands;
 namespace MonoDevelop.Ide.Gui.Components
 {
 	[MultiSelectionNodeHandler]
-	[NodeCommandHandler.TransactedNodeHandler]
 	public class NodeCommandHandler: ICommandRouter
 	{
 		ITreeNavigator[] currentNodes;
@@ -194,27 +193,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			foreach (object ob in dataObjects)
 				OnNodeDrop (ob, operation);
 		}
-		
-		internal class TransactedNodeHandlerAttribute: CustomCommandTargetAttribute
-		{
-			protected override void Run (object target, Command cmd)
-			{
-				NodeCommandHandler nch = (NodeCommandHandler) target;
-				try {
-					nch.tree.LockUpdates ();
-					base.Run (target, cmd);
-				} finally {
-					nch.tree.UnlockUpdates ();
-				}
-			}
-	
-			protected override void Run (object target, Command cmd, object data)
-			{
-				base.Run (target, cmd, data);
-			}
-		}
 	}
-
 
 	internal class MultiSelectionNodeHandlerAttribute: CustomCommandUpdaterAttribute
 	{
