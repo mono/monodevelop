@@ -1,9 +1,5 @@
 2008-09-09  Mike Krüger <mkrueger@novell.com> 
 
-	* MonoDevelop.Ide.Gui.Components/NodeCommandHandler.cs: Update branch
-
-2008-09-09  Mike Krüger <mkrueger@novell.com> 
-
 	* MonoDevelop.Ide.Gui.Pads.ClassPad/ClassNodeBuilder.cs,
 	  MonoDevelop.Ide.Gui.Pads.ClassPad/ProjectNodeBuilder.cs,
 	  MonoDevelop.Ide.Gui.Pads.ClassPad/MemberNodeBuilder.cs,
