@@ -85,7 +85,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		
 		public override ClassType ClassType {
 			get {
-				return entry.Modifiers;
+				return entry.ClassType;
 			}
 		}
 		
