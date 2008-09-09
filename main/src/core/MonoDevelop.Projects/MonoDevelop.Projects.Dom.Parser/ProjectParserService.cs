@@ -185,6 +185,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 							type.SourceProjectDom = dom;
 						}
 					}
+					unit.FileName = fileName;
 					if (dom != null)
 						dom.UpdateFromParseInfo (unit, fileName);
 					OnCompilationUnitUpdated (new CompilationUnitEventArgs (unit));
@@ -234,6 +235,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 				}
 			}
 		//	compilationUnits[fileName] = unit;
+			unit.FileName = fileName;
 			if (dom != null)
 				dom.UpdateFromParseInfo (unit, fileName);
 			OnCompilationUnitUpdated (new CompilationUnitEventArgs (unit));
@@ -544,6 +546,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 				}
 				if (content != null) {
 					ICompilationUnit unit = parser.Parse (file.FilePath, content);
+					unit.FileName = file.FilePath;
 					dom.UpdateFromParseInfo (unit, file.FilePath);
 					OnCompilationUnitUpdated (new CompilationUnitEventArgs (unit));
 				}

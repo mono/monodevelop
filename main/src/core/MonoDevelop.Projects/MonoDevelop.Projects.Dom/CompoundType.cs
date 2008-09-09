@@ -55,6 +55,16 @@ namespace MonoDevelop.Projects.Dom
 				return parts;
 			}
 		}
+
+		// get the unit & compilation of the suggested main part.
+		public override ICompilationUnit CompilationUnit {
+			get { return parts.Count > 0 ? parts[0].CompilationUnit : null; }
+			set { if (parts.Count > 0) parts[0].CompilationUnit = value; }
+		}
+		
+		public override DomLocation Location {
+			get { return parts.Count > 0 ? parts[0].Location : DomLocation.Empty; }
+		}
 		
 		public override bool HasParts {
 			get {

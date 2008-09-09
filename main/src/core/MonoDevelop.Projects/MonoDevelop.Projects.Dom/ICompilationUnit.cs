@@ -36,6 +36,7 @@ namespace MonoDevelop.Projects.Dom
 	{
 		string FileName {
 			get;
+			set;
 		}
 		
 		int TypeCount {

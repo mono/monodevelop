@@ -51,6 +51,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		
 		public override void UpdateFromParseInfo (ICompilationUnit unit, string fileName)
 		{
+			unit.FileName = fileName;
 			database.UpdateTypeInformation (unit.Types, fileName);
 		}
 		

@@ -130,5 +130,17 @@ namespace MonoDevelop.Projects.Dom.Serialization
 				return WrappedType != null ? WrappedType.HasParts : false;
 			}
 		}
+		
+		public override ICompilationUnit CompilationUnit {
+			get {
+				return WrappedType != null ? WrappedType.CompilationUnit : null;
+			}
+		}
+		
+		public override DomLocation Location {
+			get {
+				return WrappedType != null ? WrappedType.Location : DomLocation.Empty;
+			}
+		}
 	}
 }

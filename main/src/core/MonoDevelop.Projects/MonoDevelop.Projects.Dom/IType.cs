@@ -50,6 +50,7 @@ namespace MonoDevelop.Projects.Dom
 		
 		ICompilationUnit CompilationUnit {
 			get;
+			set;
 		}
 		
 		ClassType ClassType {

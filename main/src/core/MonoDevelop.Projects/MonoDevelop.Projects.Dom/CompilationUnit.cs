@@ -63,6 +63,9 @@ namespace MonoDevelop.Projects.Dom
 			get {
 				return fileName;
 			}
+			set {
+				fileName = value;
+			}
 		}
 		
 		public ReadOnlyCollection<IUsing> Usings {
@@ -144,6 +147,7 @@ namespace MonoDevelop.Projects.Dom
 		
 		public void Add (IType newType)
 		{
+			newType.CompilationUnit = this;
 			types.Add (newType);
 		}
 		
