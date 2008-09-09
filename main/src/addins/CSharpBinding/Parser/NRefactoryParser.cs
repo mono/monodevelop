@@ -299,7 +299,7 @@ namespace MonoDevelop.CSharpBinding
 			{
 				DomMethod constructor = new DomMethod ();
 				constructor.Name      = ".ctor";
-				constructor.IsConstructor = true;
+				constructor.MethodModifier |= MethodModifier.IsConstructor;
 				constructor.Location  = ConvertLocation (constructorDeclaration.StartLocation);
 				constructor.BodyRegion = ConvertRegion (constructorDeclaration.EndLocation, constructorDeclaration.Body != null ? constructorDeclaration.Body.EndLocation : new ICSharpCode.NRefactory.Location (-1, -1));
 				constructor.Modifiers  = ConvertModifiers (constructorDeclaration.Modifier);
@@ -318,6 +318,8 @@ namespace MonoDevelop.CSharpBinding
 				method.Location  = ConvertLocation (methodDeclaration.StartLocation);
 				method.BodyRegion = ConvertRegion (methodDeclaration.EndLocation, methodDeclaration.Body != null ? methodDeclaration.Body.EndLocation : new ICSharpCode.NRefactory.Location (-1, -1));
 				method.Modifiers  = ConvertModifiers (methodDeclaration.Modifier);
+				if (methodDeclaration.IsExtensionMethod)
+					method.MethodModifier |= MethodModifier.IsExtension;
 				method.ReturnType = ConvertReturnType (methodDeclaration.TypeReference);
 				AddAttributes (method, methodDeclaration.Attributes);
 				method.Add (ConvertParameterList (method, methodDeclaration.Parameters));

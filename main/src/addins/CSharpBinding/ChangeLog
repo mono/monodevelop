@@ -1,3 +1,8 @@
+2008-09-09  Mike Krüger <mkrueger@novell.com> 
+
+	* Parser/DomParser.cs, Parser/NRefactoryParser.cs: Some changes caused
+	  by interface changes.
+
 2008-09-08  Mike Krüger <mkrueger@novell.com> 
 
 	* Parser/DomParser.cs, Parser/NRefactoryParser.cs: Fixed some issues

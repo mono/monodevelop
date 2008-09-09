@@ -239,14 +239,14 @@ namespace MonoDevelop.CSharpBinding
 			}
 			if (type.Constructors != null) {
 				foreach (Mono.CSharp.Dom.IMethod method in type.Constructors) {
-					DomMethod newMethod = new DomMethod (type.Name, ConvertModifier (method.ModFlags), true,Location2DomLocation (method.Location), Block2Region (method.LocationBlock), TypeName2ReturnType (method.ReturnTypeName));
+					DomMethod newMethod = new DomMethod (type.Name, ConvertModifier (method.ModFlags), MethodModifier.IsConstructor,Location2DomLocation (method.Location), Block2Region (method.LocationBlock), TypeName2ReturnType (method.ReturnTypeName));
 					newMethod.Add (ParseParams (newMethod, method.Parameters));
 					members.Add (newMethod);
 				}
 			}
 			if (type.Methods != null) {
 				foreach (Mono.CSharp.Dom.IMethod method in type.Methods) {
-					DomMethod newMethod = new DomMethod (method.Name, ConvertModifier (method.ModFlags), false, Location2DomLocation (method.Location), Block2Region (method.LocationBlock), TypeName2ReturnType (method.ReturnTypeName));
+					DomMethod newMethod = new DomMethod (method.Name, ConvertModifier (method.ModFlags), MethodModifier.None, Location2DomLocation (method.Location), Block2Region (method.LocationBlock), TypeName2ReturnType (method.ReturnTypeName));
 					newMethod.Add (ParseParams (newMethod, method.Parameters));
 					members.Add (newMethod);
 				}
