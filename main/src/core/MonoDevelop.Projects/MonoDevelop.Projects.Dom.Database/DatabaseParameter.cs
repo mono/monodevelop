@@ -23,84 +23,84 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 //
-
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Text;
-
-using Mono.Data.SqliteClient;
-using Hyena.Data.Sqlite;
-
-namespace MonoDevelop.Projects.Dom.Database
-{
-	public class DatabaseParameter : DomParameter
-	{
-		internal const string Table = "Parameters";
-		CodeCompletionDatabase db;
-		long typeId;
-		long memberId;
-		
-		public DatabaseParameter (CodeCompletionDatabase db, long typeId, long memberId)
-		{
-			this.db = db;
-			this.typeId = typeId;
-			this.memberId = memberId;
-		}
-		
-		public void Delete ()
-		{
-			db.Connection.Execute (String.Format (@"DELETE FROM {0} WHERE TypeID={1} AND MemberID={2}", Table, typeId, memberId));
-		}
-	
-		public static IEnumerable<IParameter> ReadList (CodeCompletionDatabase db, long typeId, long memberId)
-		{
-			IDataReader reader = db.Connection.Query (String.Format (@"SELECT ParameterModifiers, ReturnTypeID, Name FROM {0} WHERE TypeId={1} AND MemberId={2}", Table, typeId, memberId));
-			if (reader != null) {
-				try {
-					while (reader.Read ()) {
-						DatabaseParameter result = new DatabaseParameter (db, typeId, memberId);
-						result.ParameterModifiers = (ParameterModifiers)SqliteUtils.FromDbFormat<long> (reader[0]);
-						result.ReturnType         = db.ReadReturnType (SqliteUtils.FromDbFormat<long> (reader[1]));
-						result.Name               = SqliteUtils.FromDbFormat<string> (reader[2]);
-						yield return result;
-					}
-				} finally {
-					reader.Dispose ();
-				}
-			}
-		}
-
-		
-		public static void CheckTables (CodeCompletionDatabase db)
-		{
-			if (!db.Connection.TableExists (Table)) {
-				db.Connection.Execute (String.Format (@"
-					CREATE TABLE {0} (
-						TypeID INTEGER,
-						MemberID INTEGER,
-						ParameterModifiers INTEGER,
-						ReturnTypeID INTEGER,
-						Name TEXT
-						)", Table
-				));
-			}
-		}
-		
-		public static void InsertParameterList (CodeCompletionDatabase db, long typeId, long memberId, IEnumerable<IParameter> parameters)
-		{
-			if (parameters == null)
-				return;
-			foreach (IParameter param in parameters) {
-				db.Connection.Execute (String.Format (@"INSERT INTO {0} (TypeID, MemberID, ParameterModifiers, ReturnTypeID, Name) VALUES ({1}, {2}, {3}, {4}, '{5}')", 
-					Table,
-					typeId,
-					memberId,
-					(long)param.ParameterModifiers,
-					db.GetReturnTypeID (param.ReturnType),
-					param.Name
-				));
-			}
-		}
-	}
-}
+//
+//using System;
+//using System.Collections.Generic;
+//using System.Data;
+//using System.Text;
+//
+//using Mono.Data.SqliteClient;
+//using Hyena.Data.Sqlite;
+//
+//namespace MonoDevelop.Projects.Dom.Database
+//{
+//	public class DatabaseParameter : DomParameter
+//	{
+//		internal const string Table = "Parameters";
+//		CodeCompletionDatabase db;
+//		long typeId;
+//		long memberId;
+//		
+//		public DatabaseParameter (CodeCompletionDatabase db, long typeId, long memberId)
+//		{
+//			this.db = db;
+//			this.typeId = typeId;
+//			this.memberId = memberId;
+//		}
+//		
+//		public void Delete ()
+//		{
+//			db.Connection.Execute (String.Format (@"DELETE FROM {0} WHERE TypeID={1} AND MemberID={2}", Table, typeId, memberId));
+//		}
+//	
+//		public static IEnumerable<IParameter> ReadList (CodeCompletionDatabase db, long typeId, long memberId)
+//		{
+//			IDataReader reader = db.Connection.Query (String.Format (@"SELECT ParameterModifiers, ReturnTypeID, Name FROM {0} WHERE TypeId={1} AND MemberId={2}", Table, typeId, memberId));
+//			if (reader != null) {
+//				try {
+//					while (reader.Read ()) {
+//						DatabaseParameter result = new DatabaseParameter (db, typeId, memberId);
+//						result.ParameterModifiers = (ParameterModifiers)SqliteUtils.FromDbFormat<long> (reader[0]);
+//						result.ReturnType         = db.ReadReturnType (SqliteUtils.FromDbFormat<long> (reader[1]));
+//						result.Name               = SqliteUtils.FromDbFormat<string> (reader[2]);
+//						yield return result;
+//					}
+//				} finally {
+//					reader.Dispose ();
+//				}
+//			}
+//		}
+//
+//		
+//		public static void CheckTables (CodeCompletionDatabase db)
+//		{
+//			if (!db.Connection.TableExists (Table)) {
+//				db.Connection.Execute (String.Format (@"
+//					CREATE TABLE {0} (
+//						TypeID INTEGER,
+//						MemberID INTEGER,
+//						ParameterModifiers INTEGER,
+//						ReturnTypeID INTEGER,
+//						Name TEXT
+//						)", Table
+//				));
+//			}
+//		}
+//		
+//		public static void InsertParameterList (CodeCompletionDatabase db, long typeId, long memberId, IEnumerable<IParameter> parameters)
+//		{
+//			if (parameters == null)
+//				return;
+//			foreach (IParameter param in parameters) {
+//				db.Connection.Execute (String.Format (@"INSERT INTO {0} (TypeID, MemberID, ParameterModifiers, ReturnTypeID, Name) VALUES ({1}, {2}, {3}, {4}, '{5}')", 
+//					Table,
+//					typeId,
+//					memberId,
+//					(long)param.ParameterModifiers,
+//					db.GetReturnTypeID (param.ReturnType),
+//					param.Name
+//				));
+//			}
+//		}
+//	}
+//}

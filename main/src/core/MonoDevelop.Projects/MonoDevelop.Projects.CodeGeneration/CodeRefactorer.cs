@@ -712,9 +712,11 @@ namespace MonoDevelop.Projects.CodeGeneration
 		
 		ProjectDom GetParserContext (IType cls)
 		{
-			Project p = GetProjectForFile (cls.CompilationUnit.FileName);
-			if (p != null)
-				return ProjectDomService.GetDatabaseProjectDom (p);
+			if (cls != null && cls.CompilationUnit != null) {
+				Project p = GetProjectForFile (cls.CompilationUnit.FileName);
+				if (p != null)
+					return ProjectDomService.GetDatabaseProjectDom (p);
+			}
 			return new ProjectDom ();
 		}
 		

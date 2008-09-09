@@ -33,10 +33,11 @@ namespace MonoDevelop.Projects.Dom
 {
 	[Flags]
 	public enum PropertyModifier {	
-		None      = 0,
-		IsIndexer = 1,
-		HasGet    = 2,
-		HasSet    = 4
+		None        = 0,
+		IsIndexer   = 1,
+		HasGet      = 2,
+		HasSet      = 4,
+		IsExtension = 8
 	}
 	
 	public interface IProperty : IMember

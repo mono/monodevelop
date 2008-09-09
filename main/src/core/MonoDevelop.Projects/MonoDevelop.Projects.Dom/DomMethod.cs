@@ -37,19 +37,31 @@ namespace MonoDevelop.Projects.Dom
 {
 	public class DomMethod : AbstractMember, IMethod
 	{
-		protected bool isConstructor;
+		protected MethodModifier methodModifier;
 		protected List<IParameter> parameters = null;
 		protected List<IReturnType> genericParameters = null;
-		
-		public bool IsConstructor {
+
+		public MethodModifier MethodModifier {
 			get {
-				return isConstructor;
+				return methodModifier;
 			}
 			set {
-				isConstructor = value;
+				methodModifier = value;
 			}
 		}
 		
+		public bool IsConstructor {
+			get {
+				return (methodModifier & MethodModifier.IsConstructor) == MethodModifier.IsConstructor;
+			}
+		}
+		
+		public bool IsExtension {
+			get {
+				return (methodModifier & MethodModifier.IsExtension) == MethodModifier.IsExtension;
+			}
+		}
+
 		public virtual ReadOnlyCollection<IParameter> Parameters {
 			get {
 				return parameters != null ? parameters.AsReadOnly () : null;
@@ -106,23 +118,23 @@ namespace MonoDevelop.Projects.Dom
 		{
 		}
 		
-		public DomMethod (string name, Modifiers modifiers, bool isConstructor, DomLocation location, DomRegion bodyRegion)
+		public DomMethod (string name, Modifiers modifiers, MethodModifier methodModifier, DomLocation location, DomRegion bodyRegion)
 		{
-			this.Name       = name;
+			this.Name           = name;
 			this.modifiers      = modifiers;
-			this.location   = location;
-			this.bodyRegion = bodyRegion;
-			this.isConstructor = isConstructor;
+			this.location       = location;
+			this.bodyRegion     = bodyRegion;
+			this.methodModifier = methodModifier;
 		}
 		
-		public DomMethod (string name, Modifiers modifiers, bool isConstructor, DomLocation location, DomRegion bodyRegion, IReturnType returnType)
+		public DomMethod (string name, Modifiers modifiers, MethodModifier methodModifier, DomLocation location, DomRegion bodyRegion, IReturnType returnType)
 		{
-			this.Name       = name;
+			this.Name           = name;
 			this.modifiers      = modifiers;
-			this.location   = location;
-			this.bodyRegion = bodyRegion;
-			this.returnType = returnType;
-			this.isConstructor = isConstructor;
+			this.location       = location;
+			this.bodyRegion     = bodyRegion;
+			this.returnType     = returnType;
+			this.methodModifier = methodModifier;
 		}
 		
 		public void Add (IParameter parameter)

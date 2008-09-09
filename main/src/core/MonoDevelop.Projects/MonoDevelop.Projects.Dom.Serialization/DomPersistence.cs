@@ -140,7 +140,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			ReadMemberInformation (reader, nameTable, result);
 			result.BodyRegion = ReadRegion (reader, nameTable);
 			result.ReturnType = ReadReturnType (reader, nameTable);
-			result.IsConstructor = reader.ReadBoolean ();
+			result.MethodModifier = (MethodModifier)reader.ReadInt32 ();
 			uint arguments = reader.ReadUInt32 ();
 			
 			while (arguments-- > 0) {
@@ -155,7 +155,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			WriteMemberInformation (writer, nameTable, method);
 			Write (writer, nameTable, method.BodyRegion);
 			Write (writer, nameTable, method.ReturnType);
-			writer.Write (method.IsConstructor);
+			writer.Write ((int)method.MethodModifier);
 			if (method.Parameters == null) {
 				writer.Write (0);
 			} else {
@@ -242,7 +242,9 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		{
 			DomType result = new DomType ();
 			ReadMemberInformation (reader, nameTable, result);
-			
+//			bool verbose = result.Name == "CopyDelegate";
+//			if (verbose) System.Console.WriteLine("read type:" + result.Name);
+
 			result.BodyRegion = ReadRegion (reader, nameTable);
 			string compilationUnitFileName = ReadString (reader, nameTable);
 			result.CompilationUnit = new CompilationUnit (compilationUnitFileName);
@@ -253,12 +255,15 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			
 			// implemented interfaces
 			long count = reader.ReadUInt32 ();
+//			if (verbose) System.Console.WriteLine("impl. interfaces:" + count);
 			while (count-- > 0) {
 				result.AddInterfaceImplementation (ReadReturnType (reader, nameTable));
 			}
 			
 			// innerTypes
+//			if (verbose) System.Console.WriteLine("pos:" + reader.BaseStream.Position);
 			count = reader.ReadUInt32 ();
+//			if (verbose) System.Console.WriteLine("inner types:" + count);
 			while (count-- > 0) {
 				DomType innerType = ReadType (reader, nameTable);
 				innerType.DeclaringType = result;
@@ -266,7 +271,9 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			}
 			
 			// fields
+//			if (verbose) System.Console.WriteLine("pos:" + reader.BaseStream.Position);
 			count = reader.ReadUInt32 ();
+//			if (verbose) System.Console.WriteLine("fields:" + count);
 			while (count-- > 0) {
 				DomField field = ReadField (reader, nameTable);
 				field.DeclaringType = result;
@@ -274,7 +281,9 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			}
 			
 			// methods
+//			if (verbose) System.Console.WriteLine("pos:" + reader.BaseStream.Position);
 			count = reader.ReadUInt32 ();
+//			if (verbose) System.Console.WriteLine("methods:" + count);
 			while (count-- > 0) {
 				DomMethod method = ReadMethod (reader, nameTable);
 				method.DeclaringType = result;
@@ -282,7 +291,9 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			}
 			
 			// properties
+//			if (verbose) System.Console.WriteLine("pos:" + reader.BaseStream.Position);
 			count = reader.ReadUInt32 ();
+//			if (verbose) System.Console.WriteLine("properties:" + count);
 			while (count-- > 0) {
 				DomProperty property = ReadProperty (reader, nameTable);
 				property.DeclaringType = result;
@@ -290,7 +301,9 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			}
 			
 			// events
+//			if (verbose) System.Console.WriteLine("pos:" + reader.BaseStream.Position);
 			count = reader.ReadUInt32 ();
+//			if (verbose) System.Console.WriteLine("events:" + count);
 			while (count-- > 0) {
 				DomEvent evt = ReadEvent (reader, nameTable);
 				evt.DeclaringType = result;
@@ -302,6 +315,9 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		public static void Write (BinaryWriter writer, INameEncoder nameTable, IType type)
 		{
 			Debug.Assert (type != null);
+//			bool verbose  = type.Name == "CopyDelegate";
+//			if (verbose) Console.WriteLine (type.GetType ());
+			
 			WriteMemberInformation (writer, nameTable, type);
 			Write (writer, nameTable, type.BodyRegion);
 			
@@ -322,22 +338,27 @@ namespace MonoDevelop.Projects.Dom.Serialization
 				}
 			}
 			writer.Write (type.InnerTypeCount);
+//			if (verbose) System.Console.WriteLine("pos:{0}, write {1} inner types.", writer.BaseStream.Position, type.InnerTypeCount);
 			foreach (IType innerType in type.InnerTypes) {
 				Write (writer, nameTable, innerType);
 			}
 			writer.Write (type.FieldCount);
+//			if (verbose) System.Console.WriteLine("pos:{0}, write {1} fields.", writer.BaseStream.Position, type.FieldCount);
 			foreach (IField field in type.Fields) {
 				Write (writer, nameTable, field);
 			}
 			writer.Write (type.MethodCount + type.ConstructorCount);
+//			if (verbose) System.Console.WriteLine("pos:{0}, write {1} methods.", writer.BaseStream.Position, type.MethodCount + type.ConstructorCount);
 			foreach (IMethod method in type.Methods) {
 				Write (writer, nameTable, method);
 			}
 			writer.Write (type.PropertyCount + type.IndexerCount);
+//			if (verbose) System.Console.WriteLine("pos:{0}, write {1} properties.", writer.BaseStream.Position, type.PropertyCount + type.IndexerCount);
 			foreach (IProperty property in type.Properties) {
 				Write (writer, nameTable, property);
 			}
 			writer.Write (type.EventCount);
+//			if (verbose) System.Console.WriteLine("pos:{0}, write {1} events.", writer.BaseStream.Position, type.EventCount);
 			foreach (IEvent evt in type.Events) {
 				Write (writer, nameTable, evt);
 			}

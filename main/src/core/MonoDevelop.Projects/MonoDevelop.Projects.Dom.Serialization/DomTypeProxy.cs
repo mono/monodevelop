@@ -85,7 +85,13 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		
 		public override ClassType ClassType {
 			get {
-				return WrappedType != null ? WrappedType.ClassType : ClassType.Class;
+				return entry.Modifiers;
+			}
+		}
+		
+		public override Modifiers Modifiers {
+			get {
+				return entry.Modifiers;
 			}
 		}
 		

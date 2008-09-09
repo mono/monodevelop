@@ -234,6 +234,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 						break;
 				}
 			}
+			
 			return result;
 		}
 		

@@ -1,3 +1,34 @@
+2008-09-09  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Dom.Parser/ProjectParserService.cs,
+	  MonoDevelop.Projects.Dom.Parser/ProjectDom.cs,
+	  MonoDevelop.Projects.Dom/ResolveResult.cs,
+	  MonoDevelop.Projects.Dom/DomType.cs,
+	  MonoDevelop.Projects.Dom/IMethod.cs,
+	  MonoDevelop.Projects.Dom/IProperty.cs,
+	  MonoDevelop.Projects.Dom/DomMethod.cs,
+	  MonoDevelop.Projects.Dom.Database/SqliteUtils.cs,
+	  MonoDevelop.Projects.Dom.Database/HyenaSqliteCommand.cs,
+	  MonoDevelop.Projects.Dom.Database/CodeCompletionDatabase.cs,
+	  MonoDevelop.Projects.Dom.Database/DateTimeUtil.cs,
+	  MonoDevelop.Projects.Dom.Database/DatabaseProjectDom.cs,
+	  MonoDevelop.Projects.Dom.Database/MonoDevelopDatabaseConnection.cs,
+	  MonoDevelop.Projects.Dom.Database/DatabaseCommand.cs,
+	  MonoDevelop.Projects.Dom.Database/DatabaseParameter.cs,
+	  MonoDevelop.Projects.Dom.Database/DatabaseMethod.cs,
+	  MonoDevelop.Projects.Dom.Database/HyenaSqliteConnection.cs,
+	  MonoDevelop.Projects.Dom.Database/DatabaseType.cs,
+	  MonoDevelop.Projects.Dom.Database/DatabaseEvent.cs,
+	  MonoDevelop.Projects.Dom.Database/DatabaseColumnAttribute.cs,
+	  MonoDevelop.Projects.Dom.Database/DatabaseField.cs,
+	  MonoDevelop.Projects.Dom.Database/DatabaseProperty.cs,
+	  MonoDevelop.Projects.CodeGeneration/CodeRefactorer.cs,
+	  MonoDevelop.Projects.Dom.Serialization/DatabaseProjectDom.cs,
+	  MonoDevelop.Projects.Dom.Serialization/DomTypeProxy.cs,
+	  MonoDevelop.Projects.Dom.Serialization/DomPersistence.cs,
+	  MonoDevelop.Projects.Dom.Serialization/CodeCompletionDatabase.cs:
+	  Activated custom code completion database.
+
 2008-09-08  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom/TypeParameter.cs,

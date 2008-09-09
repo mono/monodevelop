@@ -70,7 +70,7 @@ namespace MonoDevelop.Projects.Dom
 		
 		public string Namespace {
 			get {
-				return nameSpace;
+				return nameSpace ?? "";
 			}
 			set {
 				nameSpace = value;
@@ -368,10 +368,10 @@ namespace MonoDevelop.Projects.Dom
 			result.compilationUnit = compilationUnit;
 			result.Name = name;
 			result.classType = MonoDevelop.Projects.Dom.ClassType.Delegate;
-			DomMethod delegateMethod = new DomMethod ("Invoke", Modifiers.None, false, location, DomRegion.Empty, type);
+			DomMethod delegateMethod = new DomMethod ("Invoke", Modifiers.None, MethodModifier.None, location, DomRegion.Empty, type);
 			delegateMethod.Add (parameters);
 			result.members.Add (delegateMethod);
-			
+			result.methodCount = 1;
 			return result;
 		}
 		

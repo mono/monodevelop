@@ -26,28 +26,28 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
-
-using System;
-
-namespace MonoDevelop.Projects.Dom.Database
-{
-	
-	public class MonoDevelopDatabaseConnection : Hyena.Data.Sqlite.HyenaSqliteConnection
-	{
-		public MonoDevelopDatabaseConnection (string fileName) : base (fileName)
-		{
-			// Each cache page is about 1.5K, so 32768 pages = 49152K = 48M
-			int cache_size = 32768;
-			Execute ("PRAGMA cache_size = ?", cache_size);
-			Execute ("PRAGMA synchronous = OFF");
-			Execute ("PRAGMA temp_store = MEMORY");
-			Execute ("PRAGMA count_changes = OFF");
-
-			// do we want this or not?
-			//Execute ("PRAGMA case_sensitive_like=ON");
-			
-			//for debugging
-			//Hyena.Data.Sqlite.HyenaSqliteCommand.LogAll = true;
-		}
-	}
-}
+//
+//using System;
+//
+//namespace MonoDevelop.Projects.Dom.Database
+//{
+//	
+//	public class MonoDevelopDatabaseConnection : Hyena.Data.Sqlite.HyenaSqliteConnection
+//	{
+//		public MonoDevelopDatabaseConnection (string fileName) : base (fileName)
+//		{
+//			// Each cache page is about 1.5K, so 32768 pages = 49152K = 48M
+//			int cache_size = 32768;
+//			Execute ("PRAGMA cache_size = ?", cache_size);
+//			Execute ("PRAGMA synchronous = OFF");
+//			Execute ("PRAGMA temp_store = MEMORY");
+//			Execute ("PRAGMA count_changes = OFF");
+//
+//			// do we want this or not?
+//			//Execute ("PRAGMA case_sensitive_like=ON");
+//			
+//			//for debugging
+//			//Hyena.Data.Sqlite.HyenaSqliteCommand.LogAll = true;
+//		}
+//	}
+//}

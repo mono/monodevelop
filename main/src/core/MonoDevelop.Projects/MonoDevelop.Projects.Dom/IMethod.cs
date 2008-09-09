@@ -32,9 +32,24 @@ using System.Collections.ObjectModel;
 
 namespace MonoDevelop.Projects.Dom
 {
+	[Flags]
+	public enum MethodModifier {	
+		None          = 0,
+		IsConstructor = 1,
+		IsExtension   = 2
+	}
+	
 	public interface IMethod : IMember
 	{
+		MethodModifier MethodModifier {
+			get;
+		}
+		
 		bool IsConstructor {
+			get;
+		}
+
+		bool IsExtension {
 			get;
 		}
 		

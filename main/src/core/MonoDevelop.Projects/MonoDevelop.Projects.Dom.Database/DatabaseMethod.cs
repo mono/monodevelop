@@ -23,96 +23,96 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 //
-
-using System;
-using System.Collections.ObjectModel;
-using System.Collections.Generic;
-using System.Data;
-using System.Text;
-
-using Mono.Data.SqliteClient;
-using Hyena.Data.Sqlite;
-
-namespace MonoDevelop.Projects.Dom.Database
-{
-	public class DatabaseMethod : DomMethod
-	{
-		internal const string Table = "Methods";
-		DatabaseType declaringType;
-		long memberId;
-		
-		bool readParameterList = false;
-		public override ReadOnlyCollection<IParameter> Parameters {
-			get {
-				if (!readParameterList) {
-					foreach (IParameter parameter in DatabaseParameter.ReadList (declaringType.Database, declaringType.TypeId, memberId)) {
-						Add (parameter);
-					}
-					readParameterList = true;
-				}
-				return base.Parameters;
-			}
-		}
-		
-		public DatabaseMethod (DatabaseType declaringType, long memberId, bool isConstructor)
-		{
-			this.memberId = memberId;
-			this.DeclaringType = this.declaringType = declaringType;
-			DatabaseField.FillMembers (this, declaringType.Database, memberId);
-			this.IsConstructor = isConstructor;
-			
-		}
-		
-		public void Delete ()
-		{
-			if (Parameters != null) {
-				foreach (DatabaseParameter para in Parameters) {
-					para.Delete ();
-				}
-			}
-			declaringType.Database.DeleteMember (memberId);
-			declaringType.Database.Connection.Execute (String.Format (@"DELETE FROM {0} WHERE TypeID={1} AND MemberID={2}", Table, declaringType.TypeId, memberId));
-		}
-		
-		public static void CheckTables (CodeCompletionDatabase db)
-		{
-			if (!db.Connection.TableExists (Table)) {
-				db.Connection.Execute (String.Format (@"
-					CREATE TABLE {0} (
-						TypeID INTEGER,
-						MemberID INTEGER,
-						IsConstructor INTEGER
-					)", Table
-				));
-			}
-		}
-		
-		public static IEnumerable<IMethod> ReadList (DatabaseType declaringType)
-		{
-			IDataReader reader = declaringType.Database.Connection.Query (String.Format (@"SELECT MemberID, IsConstructor FROM {0} WHERE TypeId={1}", Table, declaringType.TypeId));
-			if (reader != null) {
-				try {
-					while (reader.Read ()) {
-						long memberId = SqliteUtils.FromDbFormat<long> (reader[0]);
-						bool isConstructor = SqliteUtils.FromDbFormat<bool> (reader[1]);
-						yield return new DatabaseMethod (declaringType, memberId, isConstructor);
-					}
-				} finally {
-					reader.Dispose ();
-				}
-			}
-		}
-		
-		public static void Insert (CodeCompletionDatabase db, long typeId, IMethod method)
-		{
-			long memberId = db.InsertMember (method);
-			DatabaseParameter.InsertParameterList (db, typeId, memberId, method.Parameters);
-			db.Connection.Execute (String.Format (@"INSERT INTO {0} (TypeID, MemberID, IsConstructor) VALUES ({1}, {2}, '{3}')", 
-				Table,
-				typeId,
-				memberId,
-				SqliteUtils.ToDbFormat (method.IsConstructor)
-			));
-		}
-	}
-}
+//
+//using System;
+//using System.Collections.ObjectModel;
+//using System.Collections.Generic;
+//using System.Data;
+//using System.Text;
+//
+//using Mono.Data.SqliteClient;
+//using Hyena.Data.Sqlite;
+//
+//namespace MonoDevelop.Projects.Dom.Database
+//{
+//	public class DatabaseMethod : DomMethod
+//	{
+//		internal const string Table = "Methods";
+//		DatabaseType declaringType;
+//		long memberId;
+//		
+//		bool readParameterList = false;
+//		public override ReadOnlyCollection<IParameter> Parameters {
+//			get {
+//				if (!readParameterList) {
+//					foreach (IParameter parameter in DatabaseParameter.ReadList (declaringType.Database, declaringType.TypeId, memberId)) {
+//						Add (parameter);
+//					}
+//					readParameterList = true;
+//				}
+//				return base.Parameters;
+//			}
+//		}
+//		
+//		public DatabaseMethod (DatabaseType declaringType, long memberId, MethodModifier modifier)
+//		{
+//			this.memberId = memberId;
+//			this.DeclaringType = this.declaringType = declaringType;
+//			DatabaseField.FillMembers (this, declaringType.Database, memberId);
+//			this.MethodModifier = modifier;
+//			
+//		}
+//		
+//		public void Delete ()
+//		{
+//			if (Parameters != null) {
+//				foreach (DatabaseParameter para in Parameters) {
+//					para.Delete ();
+//				}
+//			}
+//			declaringType.Database.DeleteMember (memberId);
+//			declaringType.Database.Connection.Execute (String.Format (@"DELETE FROM {0} WHERE TypeID={1} AND MemberID={2}", Table, declaringType.TypeId, memberId));
+//		}
+//		
+//		public static void CheckTables (CodeCompletionDatabase db)
+//		{
+//			if (!db.Connection.TableExists (Table)) {
+//				db.Connection.Execute (String.Format (@"
+//					CREATE TABLE {0} (
+//						TypeID INTEGER,
+//						MemberID INTEGER,
+//						MethodModifier INTEGER
+//					)", Table
+//				));
+//			}
+//		}
+//		
+//		public static IEnumerable<IMethod> ReadList (DatabaseType declaringType)
+//		{
+//			IDataReader reader = declaringType.Database.Connection.Query (String.Format (@"SELECT MemberID, IsConstructor FROM {0} WHERE TypeId={1}", Table, declaringType.TypeId));
+//			if (reader != null) {
+//				try {
+//					while (reader.Read ()) {
+//						long memberId = SqliteUtils.FromDbFormat<long> (reader[0]);
+//						MethodModifier modifier = (MethodModifier)SqliteUtils.FromDbFormat<long> (reader[1]);
+//						yield return new DatabaseMethod (declaringType, memberId, modifier);
+//					}
+//				} finally {
+//					reader.Dispose ();
+//				}
+//			}
+//		}
+//		
+//		public static void Insert (CodeCompletionDatabase db, long typeId, IMethod method)
+//		{
+//			long memberId = db.InsertMember (method);
+//			DatabaseParameter.InsertParameterList (db, typeId, memberId, method.Parameters);
+//			db.Connection.Execute (String.Format (@"INSERT INTO {0} (TypeID, MemberID, MethodModifier) VALUES ({1}, {2}, {3})", 
+//				Table,
+//				typeId,
+//				memberId,
+//				(long)method.MethodModifier
+//			));
+//		}
+//	}
+//}

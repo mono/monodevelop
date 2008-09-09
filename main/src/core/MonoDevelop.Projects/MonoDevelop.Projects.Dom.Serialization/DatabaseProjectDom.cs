@@ -56,6 +56,10 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		
 		internal override void GetNamespaceContentsInternal (List<IMember> result, IEnumerable<string> subNamespaces, bool caseSensitive)
 		{
+			if (subNamespaces == null) {
+				database.GetNamespaceContents (result, "", caseSensitive);
+				return;
+			}
 			foreach (string subNamespace in subNamespaces) {
 				database.GetNamespaceContents (result, subNamespace, caseSensitive);
 			}
@@ -76,12 +80,21 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		
 		protected override IType GetType (IEnumerable<string> subNamespaces, string fullName, int genericParameterCount, bool caseSensitive)
 		{
+			List<string> namespaces = subNamespaces != null ? new List<string> (subNamespaces) : new List<string> ();
+			int    idx = fullName.LastIndexOf ('.');
+			string typeName;
+			if (idx >= 0) {
+				namespaces.Add (fullName.Substring (0, idx));
+				typeName = fullName.Substring (idx + 1);
+			} else {
+				typeName = fullName;
+			}
 			List<IMember> members = new List<IMember> ();
-			GetNamespaceContentsInternal (members, subNamespaces, caseSensitive);
+			GetNamespaceContentsInternal (members, namespaces, caseSensitive);
 			IType result = null;
 			foreach (IMember member in members) {
 				IType type = member as IType;
-				if (type != null && (type.Name == fullName || type.FullName == fullName) && 
+				if (type != null && type.Name == typeName && 
 				    (genericParameterCount < 0 ||
 				     (genericParameterCount == 0 && type.TypeParameters == null) ||
 				     (type.TypeParameters != null && type.TypeParameters.Count == genericParameterCount))) {
