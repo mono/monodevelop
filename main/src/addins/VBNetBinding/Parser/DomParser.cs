@@ -163,7 +163,7 @@ namespace MonoDevelop.VBNetBinding
 				
 				type.Add (new DomMethod (methodDeclaration.Name,
 				                         (Modifiers)methodDeclaration.Modifier,
-				                         false, // isConstructor
+				                         MethodModifier.None,
 				                         new DomLocation (methodDeclaration.StartLocation.Line, methodDeclaration.StartLocation.Column),
 				                         methodDeclaration.Body != null ? TranslateRegion (methodDeclaration.Body.StartLocation, methodDeclaration.Body.EndLocation) : DomRegion.Empty));
 				return null;
@@ -176,7 +176,7 @@ namespace MonoDevelop.VBNetBinding
 				
 				type.Add (new DomMethod (constructorDeclaration.Name,
 				                         (Modifiers)constructorDeclaration.Modifier,
-				                         true, // isConstructor
+				                         MethodModifier.IsConstructor,
 				                         new DomLocation (constructorDeclaration.StartLocation.Line, constructorDeclaration.StartLocation.Column),
 				                         constructorDeclaration.Body != null ? TranslateRegion (constructorDeclaration.Body.StartLocation, constructorDeclaration.Body.EndLocation) : DomRegion.Empty));
 				return null;
