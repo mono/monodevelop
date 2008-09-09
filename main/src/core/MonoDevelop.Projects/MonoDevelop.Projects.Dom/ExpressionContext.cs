@@ -115,7 +115,7 @@ namespace MonoDevelop.Projects.Dom
 		public class TypeExpressionContext : ExpressionContext
 		{
 			IReturnType type;
-			public IReturnType Type {
+			public new IReturnType Type {
 				get {
 					return type;
 				}
@@ -129,7 +129,7 @@ namespace MonoDevelop.Projects.Dom
 				}
 			}
 		
-			public virtual bool FilterEntry (object entry)
+			public override bool FilterEntry (object entry)
 			{
 				if (IsObjectCreation && entry is IType) {
 					IType type = entry as IType;

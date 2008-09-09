@@ -76,6 +76,12 @@ namespace MonoDevelop.Projects.Dom
 				return false;
 			return (DomLocation)other == this;
 		}
+
+		public override int GetHashCode ()
+		{
+			return line + column*5000;
+		}
+
 		
 		public bool Equals (DomLocation other)
 		{

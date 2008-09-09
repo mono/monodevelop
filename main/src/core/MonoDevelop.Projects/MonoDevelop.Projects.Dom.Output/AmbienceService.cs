@@ -38,12 +38,6 @@ namespace MonoDevelop.Projects.Dom.Output
 		static Ambience defaultAmbience                = new NetAmbience ();
 		static Dictionary <string, Ambience> ambiences= new Dictionary <string, Ambience> ();
 		
-		static Ambience Default {
-			get {
-				return defaultAmbience;
-			}
-		}
-		
 		static AmbienceService ()
 		{
 			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Ide/Ambiences", delegate(object sender, ExtensionNodeEventArgs args) {

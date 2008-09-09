@@ -33,8 +33,6 @@ namespace MonoDevelop.Projects.Dom.Output
 {
 	public class NetAmbience : Ambience, IDomVisitor
 	{
-		const string nullString = "Null";
-		
 		protected override IDomVisitor OutputVisitor {
 			get {
 				return this;

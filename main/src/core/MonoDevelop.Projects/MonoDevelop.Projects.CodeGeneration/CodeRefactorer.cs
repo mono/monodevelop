@@ -355,11 +355,8 @@ namespace MonoDevelop.Projects.CodeGeneration
 		public IType ImplementInterface (ICompilationUnit pinfo, IType klass, IType iface, bool explicitly, IType declaringClass, IReturnType hintReturnType)
 		{
 			RefactorerContext gctx = GetGeneratorContext (klass);
-			IRefactorer gen = GetGeneratorForClass (klass);
 			bool alreadyImplemented;
 			IReturnType prefix = null;
-			IMember newMember;
-			int i, j;
 			
 			List<KeyValuePair<IMember,IReturnType>> toImplement = new List<KeyValuePair<IMember,IReturnType>> ();
 			

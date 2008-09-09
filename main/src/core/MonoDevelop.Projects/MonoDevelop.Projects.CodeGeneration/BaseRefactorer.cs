@@ -178,15 +178,6 @@ namespace MonoDevelop.Projects.CodeGeneration
 			}
 		}
 		
-		int countNewlines (string str)
-		{
-			int count = 0;
-			foreach (char c in str)
-				if (c == '\n')
-					count++;
-			return count;
-		}
-		
 		public virtual int AddFoldingRegion (RefactorerContext ctx, IType cls, string regionName)
 		{
 			IEditableTextFile buffer = ctx.GetFile (cls.CompilationUnit.FileName);
@@ -910,7 +901,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 				}
 				
 				int pos;
-				if (m.BodyRegion != null && m.BodyRegion.End.Line > 0) {
+				if (!m.BodyRegion.IsEmpty && m.BodyRegion.End.Line > 0) {
 					pos = buffer.GetPositionFromLineColumn (m.BodyRegion.End.Line, m.BodyRegion.End.Column);
 				} else {
 					// Abstract or P/Inboke methods don't have a body

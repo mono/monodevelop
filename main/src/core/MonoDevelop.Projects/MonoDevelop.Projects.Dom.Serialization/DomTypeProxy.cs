@@ -78,11 +78,6 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			return String.Format ("[DomTypeProxy: WrappedType={0}]", this.WrappedType);
 		}
 		
-		bool HasFlags (ContentFlags cf)
-		{
-			return (entry.ContentFlags & cf) != 0 && WrappedType != null;
-		}
-		
 		public override ClassType ClassType {
 			get {
 				return entry.ClassType;

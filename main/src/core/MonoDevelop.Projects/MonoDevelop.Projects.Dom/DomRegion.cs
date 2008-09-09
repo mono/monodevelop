@@ -143,6 +143,17 @@ namespace MonoDevelop.Projects.Dom
 		{
 			return left.Start != right.Start|| left.End != right.End;
 		}
-		
+
+		public override bool Equals (object obj)
+		{
+			if (!(obj is DomRegion))
+				return false;
+			return this == (DomRegion) obj;
+		}
+
+		public override int GetHashCode ()
+		{
+			return start.GetHashCode () + end.GetHashCode ();
+		}
 	}
 }

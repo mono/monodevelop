@@ -1,3 +1,16 @@
+2008-09-10  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs,
+	  MonoDevelop.Projects.CodeGeneration/CodeRefactorer.cs,
+	  MonoDevelop.Projects.Dom.Output/Ambience.cs,
+	  MonoDevelop.Projects.Dom.Output/AmbienceService.cs,
+	  MonoDevelop.Projects.Dom.Output/NetAmbience.cs,
+	  MonoDevelop.Projects.Dom.Serialization/DomTypeProxy.cs,
+	  MonoDevelop.Projects.Dom/DomLocation.cs,
+	  MonoDevelop.Projects.Dom/DomRegion.cs,
+	  MonoDevelop.Projects.Dom/ExpressionContext.cs,
+	  MonoDevelop.Projects.Dom/Namespace.cs: Fix warnings.
+
 2008-09-09  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom.Parser/ProjectParserService.cs,

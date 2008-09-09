@@ -53,7 +53,7 @@ namespace MonoDevelop.Projects.Dom.Output
 		protected Dictionary<ClassType, string> classTypes = new Dictionary<ClassType, string> ();
 		protected Dictionary<ParameterModifiers, string> parameterModifiers = new Dictionary<ParameterModifiers, string> ();
 		protected Dictionary<string, string> constructs = new Dictionary<string, string> ();
-		protected string nullString = "null";
+		protected const string nullString = "null";
 		
 		protected abstract IDomVisitor OutputVisitor {
 			get;
