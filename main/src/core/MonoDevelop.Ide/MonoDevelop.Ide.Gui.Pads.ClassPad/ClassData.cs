@@ -38,7 +38,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 {
 	public class ClassData
 	{
-	/*	IType cls;
+		IType cls;
 		Project project;
 		
 		public ClassData (Project p, IType c)
@@ -58,18 +58,18 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 		public override bool Equals (object ob)
 		{
 			ClassData other = ob as ClassData;
-			return (other != null && cls.FullyQualifiedName == other.cls.FullyQualifiedName &&
+			return (other != null && cls.FullName == other.cls.FullName &&
 					project == other.project);
 		}
 		
 		public override int GetHashCode ()
 		{
-			return (cls.FullyQualifiedName + project.Name).GetHashCode ();
+			return (cls.FullName + project.Name).GetHashCode ();
 		}
 		
 		public override string ToString ()
 		{
-			return base.ToString () + " [" + cls.FullyQualifiedName + ", " + project.Name + "]";
-		}*/
+			return base.ToString () + " [" + cls.FullName + ", " + project.Name + "]";
+		}
 	}
 }

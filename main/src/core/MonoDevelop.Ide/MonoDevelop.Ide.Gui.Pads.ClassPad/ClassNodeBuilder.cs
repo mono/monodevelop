@@ -59,23 +59,23 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 			//return GetNameWithGenericParameters(((ClassData)dataObject).Class);
 		}
 		
-	/*	public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
+		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
 		{
 			ClassData classData = dataObject as ClassData;
 			label = GetNameWithGenericParameters(classData.Class);
-			icon = Context.GetIcon (Services.Icons.GetIcon (classData.Class));
+			icon = Context.GetIcon (classData.Class.StockIcon);
 		}
 		
 		private string GetNameWithGenericParameters (IType c)
 		{
-			if (c.GenericParameters != null && c.GenericParameters.Count > 0)
+			if (c.TypeParameters != null && c.TypeParameters.Count > 0)
 			{
 				StringBuilder builder = new StringBuilder (c.Name);
 				builder.Append("&lt;");
-				for (int i = 0; i < c.GenericParameters.Count; i++)
+				for (int i = 0; i < c.TypeParameters.Count; i++)
 				{
-					builder.Append(c.GenericParameters[i].Name);
-					if (i + 1 < c.GenericParameters.Count) builder.Append(", ");
+					builder.Append(c.TypeParameters[i].Name);
+					if (i + 1 < c.TypeParameters.Count) builder.Append(", ");
 				}
 				builder.Append("&gt;");
 				return builder.ToString();
@@ -93,7 +93,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 			if (classData.Class.ClassType == ClassType.Delegate)
 				return;
 
-			foreach (IType innerClass in classData.Class.InnerClasses)
+			foreach (IType innerClass in classData.Class.InnerTypes)
 				if (innerClass.IsPublic || !publicOnly)
 					builder.AddChild (new ClassData (classData.Project, innerClass));
 
@@ -117,11 +117,11 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
 		{
 			ClassData classData = dataObject as ClassData;
-			return 	classData.Class.InnerClasses.Count > 0 ||
-					classData.Class.Methods.Count > 0 ||
-					classData.Class.Properties.Count > 0 ||
-					classData.Class.Fields.Count > 0 ||
-					classData.Class.Events.Count > 0;
+			return 	classData.Class.InnerTypeCount > 0 ||
+					classData.Class.MethodCount > 0 ||
+					classData.Class.PropertyCount > 0 ||
+					classData.Class.FieldCount > 0 ||
+					classData.Class.EventCount > 0;
 		}
 		
 		public override int CompareObjects (ITreeNavigator thisNode, ITreeNavigator otherNode)
@@ -130,25 +130,15 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 				return DefaultSort;
 			else
 				return 1;
-		}*/
+		}
 	}
 	
 	public class ClassNodeCommandHandler: NodeCommandHandler
 	{
 		public override void ActivateItem ()
 		{
-		/*	ClassData cls = CurrentNode.DataItem as ClassData;
-			string file = GetFileName ();
-			int line = cls.Class.Region.BeginLine;
-			
-			IdeApp.Workbench.OpenDocument (file, Math.Max (1, line), 1, true);*/
+			ClassData cls = CurrentNode.DataItem as ClassData;
+			IdeApp.ProjectOperations.JumpToDeclaration (cls.Class);
 		}
-		/*
-		string GetFileName ()
-		{
-			ClassData cls = (ClassData) CurrentNode.GetParentDataItem (typeof(ClassData), true);
-			if (cls != null && cls.Class.Region.FileName != null) return cls.Class.Region.FileName;
-			return null;
-		}*/
 	}	
 }

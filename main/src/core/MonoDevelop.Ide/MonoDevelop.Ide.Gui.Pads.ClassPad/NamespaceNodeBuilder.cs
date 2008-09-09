@@ -28,10 +28,12 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
 using MonoDevelop.Projects.Dom;
+using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Gui.Components;
@@ -43,12 +45,8 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 		public override Type NodeDataType {
 			get { return typeof(NamespaceData); }
 		}
-		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
-		{	
-			return "";
-		}
-	
-		/*ClassInformationEventHandler changeClassInformationHandler;
+		
+//		ClassInformationEventHandler changeClassInformationHandler;
 		
 		public override string ContextMenuAddinPath {
 			get { return "/MonoDevelop/Ide/ContextMenu/ClassPad/Namespace"; }
@@ -56,13 +54,13 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 		
 		protected override void Initialize ()
 		{
-			changeClassInformationHandler = (ClassInformationEventHandler) DispatchService.GuiDispatch (new ClassInformationEventHandler (OnClassInformationChanged));
-			IdeApp.Workspace.ParserDatabase.ClassInformationChanged += changeClassInformationHandler;
+/*			changeClassInformationHandler = (ClassInformationEventHandler) DispatchService.GuiDispatch (new ClassInformationEventHandler (OnClassInformationChanged));
+			IdeApp.Workspace.ParserDatabase.ClassInformationChanged += changeClassInformationHandler;*/
 		}
 		
 		public override void Dispose ()
 		{
-			IdeApp.Workspace.ParserDatabase.ClassInformationChanged -= changeClassInformationHandler;
+//			IdeApp.Workspace.ParserDatabase.ClassInformationChanged -= changeClassInformationHandler;
 		}
 		
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
@@ -82,21 +80,24 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 			NamespaceData nsData = dataObject as NamespaceData;
 			
 			if (nsData.Project != null) {
-				IParserContext ctx = IdeApp.Workspace.ParserDatabase.GetProjectParserContext (nsData.Project);
-				LanguageItemCollection list = ctx.GetNamespaceContents (nsData.FullName, false);
-				AddProjectContent (builder, nsData.Project, nsData, list);
+				ProjectDom dom = ProjectDomService.GetDatabaseProjectDom (nsData.Project);
+//				IParserContext ctx = IdeApp.Workspace.ParserDatabase.GetProjectParserContext (nsData.Project);
+//				LanguageItemCollection list = ctx.GetNamespaceContents (nsData.FullName, false);
+				
+				AddProjectContent (builder, nsData.Project, nsData, dom.GetNamespaceContents (nsData.FullName, false, false));
 			}
 			else {
 				foreach (Project p in IdeApp.Workspace.GetAllProjects ()) {
-					IParserContext ctx = IdeApp.Workspace.ParserDatabase.GetProjectParserContext (p);
-					LanguageItemCollection list = ctx.GetNamespaceContents (nsData.FullName, false);
-					AddProjectContent (builder, p, nsData, list);
+					ProjectDom dom = ProjectDomService.GetDatabaseProjectDom (p);
+//					IParserContext ctx = IdeApp.Workspace.ParserDatabase.GetProjectParserContext (p);
+//					LanguageItemCollection list = ctx.GetNamespaceContents (nsData.FullName, false);
+					AddProjectContent (builder, p, nsData, dom.GetNamespaceContents (nsData.FullName, false, false));
 				}
 			}
 			
 		}
 		
-		void AddProjectContent (ITreeBuilder builder, Project project, NamespaceData nsData, LanguageItemCollection list)
+		void AddProjectContent (ITreeBuilder builder, Project project, NamespaceData nsData, List<IMember> list)
 		{
 			bool nestedNs = builder.Options ["NestedNamespaces"];
 			bool publicOnly = builder.Options ["PublicApiOnly"];
@@ -115,7 +116,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 			}
 		}
 		
-		void OnClassInformationChanged (object sender, ClassInformationEventArgs e)
+/*		void OnClassInformationChanged (object sender, ClassInformationEventArgs e)
 		{
 			Hashtable oldStatus = new Hashtable ();
 			ArrayList namespacesToClean = new ArrayList ();
@@ -178,7 +179,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 				}
 			}
 		}
-		
+		*/
 		void AddClass (Project project, IType cls)
 		{
 			ITreeBuilder builder = Context.GetTreeBuilder ();
@@ -216,6 +217,6 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
 		{
 			return true;
-		}*/
+		}
 	}
 }

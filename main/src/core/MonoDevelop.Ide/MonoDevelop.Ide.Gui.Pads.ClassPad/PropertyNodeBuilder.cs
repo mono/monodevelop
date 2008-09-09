@@ -49,9 +49,9 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 		
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
 		{
-			/*IProperty data = dataObject as IProperty;
+			IProperty data = dataObject as IProperty;
 			label = data.Name;
-			icon = Context.GetIcon (Services.Icons.GetIcon (data));*/
+			icon = Context.GetIcon (data.StockIcon);
 		}
 	}
 }

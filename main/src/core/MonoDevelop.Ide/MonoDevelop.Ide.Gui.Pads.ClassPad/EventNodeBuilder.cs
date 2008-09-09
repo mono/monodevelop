@@ -49,9 +49,9 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 		
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
 		{
-		//	IEvent data = dataObject as IEvent;
-		//	label = data.Name;
-		//	icon = Context.GetIcon (Services.Icons.GetIcon (data));
+			IEvent data = dataObject as IEvent;
+			label = data.Name;
+			icon = Context.GetIcon (data.StockIcon);
 		}
 
 		public override int CompareObjects (ITreeNavigator thisNode, ITreeNavigator otherNode)

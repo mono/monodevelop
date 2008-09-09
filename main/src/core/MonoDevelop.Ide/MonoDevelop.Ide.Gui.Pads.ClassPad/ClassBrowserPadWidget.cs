@@ -53,10 +53,11 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassBrowser
 		TreeModelSort model;
 		
 		bool isInBrowerMode = true;
-		public ClassBrowserPadWidget()
+		public ClassBrowserPadWidget (ExtensibleTreeView treeView)
 		{
 			this.Build();
-			
+			this.treeView = treeView;
+			/*
 			treeView = new ExtensibleTreeView (new NodeBuilder[] { 
 				new SolutionNodeBuilder (),
 				new ProjectNodeBuilder (),
@@ -64,7 +65,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassBrowser
 				new ProjectNamespaceNodeBuilder (),
 				new MemberNodeBuilder ()
 				}, new TreePadOption [] {});
-				
+				*/
 			this.notebook1.ShowTabs = false;
 			scrolledwindow1.AddWithViewport (treeView);
 			scrolledwindow1.ShowAll ();

@@ -1,3 +1,19 @@
+2008-09-09  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Ide.Gui.Pads.ClassPad/ClassNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassPad/ProjectNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassPad/MemberNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassPad/CombineNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassPad/MethodNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassPad/ClassBrowserPad.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassPad/EventNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassPad/ClassData.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassPad/FieldNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassPad/PropertyNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassPad/ClassBrowserPadWidget.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassPad/NamespaceNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui/ProjectOperations.cs: Worked on class pad
+
 2008-09-08  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Gui.Components/ExtensibleTreeView.cs,

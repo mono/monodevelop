@@ -29,10 +29,12 @@
 using System;
 using System.IO;
 using System.Collections;
+using System.Collections.Generic;
 using System.Text;
 
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Dom;
+using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Gui.Components;
@@ -41,19 +43,17 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 {
 	public class ProjectNodeBuilder: TypeNodeBuilder
 	{
+		SolutionItemRenamedEventHandler projectNameChanged;
+
 		public ProjectNodeBuilder ()
 		{
+			projectNameChanged = (SolutionItemRenamedEventHandler) DispatchService.GuiDispatch (new SolutionItemRenamedEventHandler (OnProjectRenamed));
 		}
 		
 		public override Type NodeDataType {
 			get { return typeof(Project); }
 		}
-		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
-		{
-			return "";
-		}
-
-		/*
+		
 		public override string ContextMenuAddinPath {
 			get { return "/MonoDevelop/Ide/ContextMenu/ClassPad/Project"; }
 		}
@@ -92,10 +92,9 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 		public static void BuildChildNodes (ITreeBuilder builder, Project project)
 		{
 			bool publicOnly = builder.Options ["PublicApiOnly"];
-			
-			IParserContext ctx = IdeApp.Workspace.ParserDatabase.GetProjectParserContext (project);
-			LanguageItemCollection list = ctx.GetNamespaceContents ("", false);
-			foreach (IMember ob in list) {
+			ProjectDom dom = ProjectDomService.GetDatabaseProjectDom (project);
+			//IParserContext ctx = IdeApp.Workspace.ParserDatabase.GetProjectParserContext (project);
+			foreach (IMember ob in dom.GetNamespaceContents ("", false, false)) {
 				if (ob is Namespace) {
 					if (builder.Options ["NestedNamespaces"])
 						builder.AddChild (new NamespaceData (project, ((Namespace)ob).Name));
@@ -110,8 +109,10 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 		
 		public static void FillNamespaces (ITreeBuilder builder, Project project, string ns)
 		{
-			IParserContext ctx = IdeApp.Workspace.ParserDatabase.GetProjectParserContext (project);
-			if (ctx.GetClassList (ns, false, true).Length > 0) {
+			ProjectDom dom = ProjectDomService.GetDatabaseProjectDom (project);
+			List<IMember> members = dom.GetNamespaceContents ("", false, false);
+			//IParserContext ctx = IdeApp.Workspace.ParserDatabase.GetProjectParserContext (project);
+			if (members.Count > 0) {
 				if (builder.Options ["ShowProjects"])
 					builder.AddChild (new NamespaceData (project, ns));
 				else {
@@ -119,10 +120,15 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 						builder.AddChild (new NamespaceData (null, ns));
 				}
 			}
-				
+			foreach (IMember ob in members) {
+				if (ob is Namespace) {
+					FillNamespaces (builder, project, ns + "." + ((Namespace)ob).Name);
+				}
+			}
+			/*	
 			string[] list = ctx.GetNamespaceList (ns, false, true);
 			foreach (string subns in list)
-				FillNamespaces (builder, project, ns + "." + subns);
+				FillNamespaces (builder, project, ns + "." + subns);*/
 		}
 		
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
@@ -134,6 +140,6 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 		{
 			ITreeBuilder tb = Context.GetTreeBuilder (e.SolutionItem);
 			if (tb != null) tb.Update ();
-		}*/
+		}
 	}
 }

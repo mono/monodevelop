@@ -40,14 +40,13 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 	{
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
 		{
-			return "";
-//			return ((IMember)dataObject).Name;
+			return ((IMember)dataObject).Name;
 		}
 		
 		public override Type CommandHandlerType {
 			get { return typeof(MemberNodeCommandHandler); }
 		}
-	/*	
+		
 		public override int CompareObjects (ITreeNavigator thisNode, ITreeNavigator otherNode)
 		{
 			if (!(otherNode.DataItem is IMember)) return 1;
@@ -76,13 +75,13 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 			return 4;
 		}
 		
-		int GetAccessSortValue (ModifierEnum mods)
+		int GetAccessSortValue (Modifiers mods)
 		{
 			if ((mods & Modifiers.Private) != 0) return 0;
 			if ((mods & Modifiers.Internal) != 0) return 1;
 			if ((mods & Modifiers.Protected) != 0) return 2;
 			if ((mods & Modifiers.Public) != 0) return 3;
 			return 4;
-		}*/
+		}
 	}
 }

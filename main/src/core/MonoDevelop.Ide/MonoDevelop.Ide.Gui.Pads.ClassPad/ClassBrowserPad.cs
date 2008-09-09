@@ -37,18 +37,19 @@ using MonoDevelop.Ide.Gui.Components;
 
 namespace MonoDevelop.Ide.Gui.Pads.ClassBrowser
 {
-	public class ClassBrowserPad : AbstractPadContent
+	public class ClassBrowserPad : SolutionPad
 	{
-		ClassBrowserPadWidget widget; 
+		ClassBrowserPadWidget widget;
+		
 		public override Gtk.Widget Control {
 			get {
 				return widget;
 			}
 		}
 		
-		public ClassBrowserPad () : base ("Classes")
+		public ClassBrowserPad ()
 		{
-			this.widget = new ClassBrowserPadWidget (); 
+			this.widget = new ClassBrowserPadWidget (base.TreeView); 
 		}
 	}
 }

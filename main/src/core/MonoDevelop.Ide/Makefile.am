@@ -181,13 +181,8 @@ FILES =  \
 	MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs \
 	MonoDevelop.Ide.Gui.OptionPanels/LoadSavePanel.cs \
 	MonoDevelop.Ide.Gui.OptionPanels/TasksOptionsPanel.cs \
-	MonoDevelop.Ide.Gui.Pads.ClassBrowser/ClassBrowserPad.cs \
-	MonoDevelop.Ide.Gui.Pads.ClassBrowser/ClassBrowserPadWidget.cs \
-	MonoDevelop.Ide.Gui.Pads.ClassBrowser/MemberNodeBuilder.cs \
-	MonoDevelop.Ide.Gui.Pads.ClassBrowser/ProjectNamespaceBuilder.cs \
-	MonoDevelop.Ide.Gui.Pads.ClassBrowser/ProjectNodeBuilder.cs \
-	MonoDevelop.Ide.Gui.Pads.ClassBrowser/SolutionNodeBuilder.cs \
-	MonoDevelop.Ide.Gui.Pads.ClassBrowser/TypeNodeBuilder.cs \
+	MonoDevelop.Ide.Gui.Pads.ClassPad/ClassBrowserPad.cs \
+	MonoDevelop.Ide.Gui.Pads.ClassPad/ClassBrowserPadWidget.cs \
 	MonoDevelop.Ide.Gui.Pads.ClassPad/ClassData.cs \
 	MonoDevelop.Ide.Gui.Pads.ClassPad/ClassNodeBuilder.cs \
 	MonoDevelop.Ide.Gui.Pads.ClassPad/CombineNodeBuilder.cs \

@@ -227,6 +227,7 @@ namespace MonoDevelop.Ide.Gui
 			if (member == null) 
 				return;
 			if (member is MonoDevelop.Projects.Dom.IType) {
+				System.Console.WriteLine(((MonoDevelop.Projects.Dom.IType)member).CompilationUnit.FileName + " loc:" + member.Location);
 				MonoDevelop.Ide.Gui.IdeApp.Workbench.OpenDocument (((MonoDevelop.Projects.Dom.IType)member).CompilationUnit.FileName,
 				                                                   member.Location.Line,
 				                                                   member.Location.Column,
@@ -234,7 +235,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 			if (member.DeclaringType == null) 
 				return;
-			System.Console.WriteLine(member.DeclaringType.CompilationUnit);
+			System.Console.WriteLine(member.DeclaringType + " --- " + member.DeclaringType.CompilationUnit.FileName + " loc:" + member.Location);
 			MonoDevelop.Ide.Gui.IdeApp.Workbench.OpenDocument (member.DeclaringType.CompilationUnit.FileName, 
 			                                                   member.Location.Line,
 			                                                   member.Location.Column,
