@@ -91,13 +91,16 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 		
 		public static void BuildChildNodes (ITreeBuilder builder, Project project)
 		{
+			if (project is DotNetProject) {
+				builder.AddChild (((DotNetProject)project).References);
+			}
 			bool publicOnly = builder.Options ["PublicApiOnly"];
 			ProjectDom dom = ProjectDomService.GetDatabaseProjectDom (project);
 			//IParserContext ctx = IdeApp.Workspace.ParserDatabase.GetProjectParserContext (project);
 			foreach (IMember ob in dom.GetNamespaceContents ("", false, false)) {
 				if (ob is Namespace) {
 					if (builder.Options ["NestedNamespaces"])
-						builder.AddChild (new NamespaceData (project, ((Namespace)ob).Name));
+						builder.AddChild (new ProjectNamespaceData (project, ((Namespace)ob).Name));
 					else {
 						FillNamespaces (builder, project, ((Namespace)ob).Name);
 					}
@@ -110,14 +113,14 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 		public static void FillNamespaces (ITreeBuilder builder, Project project, string ns)
 		{
 			ProjectDom dom = ProjectDomService.GetDatabaseProjectDom (project);
-			List<IMember> members = dom.GetNamespaceContents ("", false, false);
+			List<IMember> members = dom.GetNamespaceContents (ns, false, false);
 			//IParserContext ctx = IdeApp.Workspace.ParserDatabase.GetProjectParserContext (project);
 			if (members.Count > 0) {
 				if (builder.Options ["ShowProjects"])
-					builder.AddChild (new NamespaceData (project, ns));
+					builder.AddChild (new ProjectNamespaceData (project, ns));
 				else {
 					if (!builder.HasChild (ns, typeof (NamespaceData)))
-						builder.AddChild (new NamespaceData (null, ns));
+						builder.AddChild (new ProjectNamespaceData (null, ns));
 				}
 			}
 			foreach (IMember ob in members) {

@@ -195,6 +195,7 @@ FILES =  \
 	MonoDevelop.Ide.Gui.Pads.ClassPad/NamespaceNodeBuilder.cs \
 	MonoDevelop.Ide.Gui.Pads.ClassPad/ProjectNodeBuilder.cs \
 	MonoDevelop.Ide.Gui.Pads.ClassPad/PropertyNodeBuilder.cs \
+	MonoDevelop.Ide.Gui.Pads.ClassPad/ReferenceNodeBuilder.cs \
 	MonoDevelop.Ide.Gui.Pads.ClassPad/SolutionNodeBuilder.cs \
 	MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs \
 	MonoDevelop.Ide.Gui.Pads.ProjectPad/LinkedFilesFolder.cs \

@@ -78,43 +78,13 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 		public override void BuildChildNodes (ITreeBuilder builder, object dataObject)
 		{
 			NamespaceData nsData = dataObject as NamespaceData;
+
+			nsData.AddProjectContent (builder);
 			
-			if (nsData.Project != null) {
-				ProjectDom dom = ProjectDomService.GetDatabaseProjectDom (nsData.Project);
-//				IParserContext ctx = IdeApp.Workspace.ParserDatabase.GetProjectParserContext (nsData.Project);
-//				LanguageItemCollection list = ctx.GetNamespaceContents (nsData.FullName, false);
-				
-				AddProjectContent (builder, nsData.Project, nsData, dom.GetNamespaceContents (nsData.FullName, false, false));
-			}
-			else {
-				foreach (Project p in IdeApp.Workspace.GetAllProjects ()) {
-					ProjectDom dom = ProjectDomService.GetDatabaseProjectDom (p);
-//					IParserContext ctx = IdeApp.Workspace.ParserDatabase.GetProjectParserContext (p);
-//					LanguageItemCollection list = ctx.GetNamespaceContents (nsData.FullName, false);
-					AddProjectContent (builder, p, nsData, dom.GetNamespaceContents (nsData.FullName, false, false));
-				}
-			}
 			
 		}
 		
-		void AddProjectContent (ITreeBuilder builder, Project project, NamespaceData nsData, List<IMember> list)
-		{
-			bool nestedNs = builder.Options ["NestedNamespaces"];
-			bool publicOnly = builder.Options ["PublicApiOnly"];
-
-			foreach (IMember ob in list) {
-				if (ob is Namespace && nestedNs) {
-					Namespace nsob = (Namespace)ob;
-					string ns = nsData.FullName + "." + nsob.Name;
-					if (!builder.HasChild (nsob.Name, typeof(NamespaceData)))
-						builder.AddChild (new NamespaceData (project, ns));
-				}
-				else if (ob is IType) {
-					if (!publicOnly || ((IType)ob).IsPublic)
-						builder.AddChild (new ClassData (project, ob as IType));
-				}
-			}
-		}
+		
 		
 /*		void OnClassInformationChanged (object sender, ClassInformationEventArgs e)
 		{
@@ -198,7 +168,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 							if (ns.Length > 0) ns += ".";
 							ns += nsp;
 							if (!builder.MoveToChild (nsp, typeof(NamespaceData))) {
-								builder.AddChild (new NamespaceData (project, ns), true);
+								builder.AddChild (new ProjectNamespaceData (project, ns), true);
 								break;
 							}
 						} else
@@ -209,7 +179,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 					if (builder.MoveToChild (cls.Namespace, typeof(NamespaceData)))
 						builder.AddChild (new ClassData (project, cls));
 					else
-						builder.AddChild (new NamespaceData (project, cls.Namespace));
+						builder.AddChild (new ProjectNamespaceData (project, cls.Namespace));
 				}
 			}
 		}

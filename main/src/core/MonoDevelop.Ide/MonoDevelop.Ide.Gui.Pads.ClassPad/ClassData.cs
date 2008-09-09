@@ -64,12 +64,14 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 		
 		public override int GetHashCode ()
 		{
+			if (project == null)
+				return cls.FullName.GetHashCode ();
 			return (cls.FullName + project.Name).GetHashCode ();
 		}
 		
 		public override string ToString ()
 		{
-			return base.ToString () + " [" + cls.FullName + ", " + project.Name + "]";
+			return base.ToString () + " [" + cls.FullName + ", " + (project != null ? project.Name : "null")+ "]";
 		}
 	}
 }

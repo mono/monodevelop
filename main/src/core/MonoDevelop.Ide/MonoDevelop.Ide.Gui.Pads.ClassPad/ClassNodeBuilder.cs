@@ -55,8 +55,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
 		{
-			return "";
-			//return GetNameWithGenericParameters(((ClassData)dataObject).Class);
+			return GetNameWithGenericParameters(((ClassData)dataObject).Class);
 		}
 		
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)

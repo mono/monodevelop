@@ -90,6 +90,11 @@
 		<Description>Context menu for projects in the class pad.</Description>
 		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
 	</ExtensionPoint>
+
+	<ExtensionPoint path = "/MonoDevelop/Ide/ContextMenu/ClassPad/References" name = "Reference node context menu in the class pad">
+		<Description>Context menu for references in the class pad.</Description>
+		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
+	</ExtensionPoint>
 	
 	<ExtensionPoint path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/Workspace" name = "Workspace context menu">
 		<Description>Context menu for workspaces in the solution pad.</Description>
@@ -1298,6 +1303,8 @@
 			<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.ClassPad.FieldNodeBuilder"/>
 			<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.ClassPad.MethodNodeBuilder"/>
 			<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.ClassPad.PropertyNodeBuilder"/>
+			<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.ProjectPad.ProjectReferenceFolderNodeBuilder"/>
+			<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.ClassPad.ReferenceNodeBuilder"/>
 		</SolutionPad>
 		
 		<Category id="Other" _name="Other Windows">

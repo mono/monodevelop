@@ -28,24 +28,21 @@
 
 using System;
 using System.IO;
-using System.Collections;
+using System.Collections.Generic;
 
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
 using MonoDevelop.Projects.Dom;
+using MonoDevelop.Projects.Dom.Parser;
+using MonoDevelop.Ide.Gui;
+using MonoDevelop.Core.Gui;
+using MonoDevelop.Ide.Gui.Components;
 
 namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 {
-	public class NamespaceData
+	public abstract class NamespaceData
 	{
-		string namesp;
-		Project project;
-		
-		public NamespaceData (Project p, string fullNamespace)
-		{
-			project = p;
-			namesp = fullNamespace;
-		}
+		protected string namesp;
 		
 		public string Name {
 			get {
@@ -59,13 +56,79 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 			get { return namesp; }
 		}
 		
-		public Project Project {
-			get { return project; }
+		public NamespaceData (string fullNamespace)
+		{
+			namesp = fullNamespace;
 		}
+		
+		public abstract void AddProjectContent (ITreeBuilder builder);
 		
 		public override bool Equals (object ob)
 		{
 			NamespaceData other = ob as NamespaceData;
+			return (other != null && namesp == other.namesp);
+		}
+		
+		public override int GetHashCode ()
+		{
+			return namesp.GetHashCode ();
+		}
+		
+		public override string ToString ()
+		{
+			return base.ToString () + " [" + namesp + "]";
+		}
+	}
+	
+	public class ProjectNamespaceData : NamespaceData
+	{
+		Project project;
+		
+		public Project Project {
+			get { return project; }
+		}
+
+		public ProjectNamespaceData (Project project, string fullNamespace) : base (fullNamespace)
+		{
+			this.project = project;
+		}
+		
+		public override void AddProjectContent (ITreeBuilder builder)
+		{
+			if (project != null) {
+				ProjectDom dom = ProjectDomService.GetDatabaseProjectDom (Project);
+				AddProjectContent (builder, dom.GetNamespaceContents (FullName, false, false));
+			} else {
+				foreach (Project p in IdeApp.Workspace.GetAllProjects ()) {
+					ProjectDom dom = ProjectDomService.GetDatabaseProjectDom (p);
+					AddProjectContent (builder, dom.GetNamespaceContents (FullName, false, false));
+				}
+			}
+		}
+		
+		void AddProjectContent (ITreeBuilder builder, List<IMember> list)
+		{
+			bool nestedNs = builder.Options ["NestedNamespaces"];
+			bool publicOnly = builder.Options ["PublicApiOnly"];
+
+			foreach (IMember ob in list) {
+				System.Console.WriteLine(ob);
+				if (ob is Namespace && nestedNs) {
+					Namespace nsob = (Namespace)ob;
+					string ns = FullName + "." + nsob.Name;
+					if (!builder.HasChild (nsob.Name, typeof(NamespaceData)))
+						builder.AddChild (new ProjectNamespaceData (project, ns));
+				}
+				else if (ob is IType) {
+					if (!publicOnly || ((IType)ob).IsPublic)
+						builder.AddChild (new ClassData (project, ob as IType));
+				}
+			}
+		}
+		
+		public override bool Equals (object ob)
+		{
+			ProjectNamespaceData other = ob as ProjectNamespaceData;
 			return (other != null && namesp == other.namesp && project == other.project);
 		}
 		
@@ -78,6 +141,39 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 		public override string ToString ()
 		{
 			return base.ToString () + " [" + namesp + ", " + (project != null ? project.Name : "no project") + "]";
+		}
+	}
+	
+	public class CompilationUnitNamespaceData : NamespaceData
+	{
+		ICompilationUnit unit;
+		
+		public CompilationUnitNamespaceData (ICompilationUnit unit, string fullNamespace) : base (fullNamespace)
+		{
+			this.unit = unit;
+		}
+
+		public override void AddProjectContent (ITreeBuilder builder)
+		{
+			bool nestedNs = builder.Options ["NestedNamespaces"];
+			bool publicOnly = builder.Options ["PublicApiOnly"];
+			Dictionary<string, bool> namespaces = new Dictionary<string, bool> ();
+			foreach (IType type in unit.Types) {
+				if (type.Namespace == FullName) {
+					builder.AddChild (new ClassData (null, type));
+					continue;
+				}
+				if (nestedNs && type.Namespace.StartsWith (FullName)) {
+					string ns = type.Namespace.Substring (FullName.Length + 1);
+					int idx = ns.IndexOf ('.');
+					if (idx >= 0)
+						ns = ns.Substring (0, idx);
+					if (namespaces.ContainsKey (ns))
+						continue;
+					namespaces[ns] = true;
+					builder.AddChild (new CompilationUnitNamespaceData (unit, FullName + "." + ns));
+				}
+			}
 		}
 	}
 }
