@@ -1,3 +1,7 @@
+2008-09-09  Mike Krüger <mkrueger@novell.com> 
+
+	* Makefile.am, MonoDevelop.Components.mdp: Update branch.
+
 2008-09-08  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Makefile.am, MonoDevelop.Components.mdp,
