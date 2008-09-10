@@ -290,7 +290,7 @@ namespace MonoDevelop.AssemblyBrowser
 				string pattern = searchEntry.Text.ToUpper ();
 				int types = 0, curType = 0;
 				foreach (DomCecilCompilationUnit unit in this.definitions) {
-					types += unit.TypeCount;
+					types += unit.Types.Count;
 				}
 				List<IMember> members = new List<IMember> ();
 				switch (searchMode) {
