@@ -1,5 +1,9 @@
 2008-09-10  Mike Krüger <mkrueger@novell.com> 
 
+	* Gui/ResolveVisitor.cs: Added missing search type.
+
+2008-09-10  Mike Krüger <mkrueger@novell.com> 
+
 	* Parser/NRefactoryParser.cs: recognizing using/namespace import
 	  differences
 
