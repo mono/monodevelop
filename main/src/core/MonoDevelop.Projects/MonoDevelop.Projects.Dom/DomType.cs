@@ -68,7 +68,7 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
-		public string Namespace {
+		public virtual string Namespace {
 			get {
 				return nameSpace ?? "";
 			}

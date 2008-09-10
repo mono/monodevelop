@@ -78,6 +78,24 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			return String.Format ("[DomTypeProxy: WrappedType={0}, Entry={1}]", this.WrappedType, this.entry);
 		}
 		
+		public override string Name {
+			get {
+				return DomReturnType.SplitFullName (entry.Name).Value;
+			}
+		}
+		
+		public override string Namespace {
+			get {
+				return DomReturnType.SplitFullName (entry.Name).Key;
+			}
+		}
+		
+		public override string FullName {
+			get {
+				return entry.Name;
+			}
+		}
+		
 		public override ClassType ClassType {
 			get {
 				return entry.ClassType;

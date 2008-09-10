@@ -1,5 +1,12 @@
 2008-09-10  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.Projects.Dom/DomType.cs,
+	  MonoDevelop.Projects.Dom.Serialization/DatabaseProjectDom.cs,
+	  MonoDevelop.Projects.Dom.Serialization/DomTypeProxy.cs: Worked on
+	  type lookup.
+
+2008-09-10  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.Projects.Dom/DomUsing.cs,
 	  MonoDevelop.Projects.Dom/IUsing.cs: Added the information to
 	  IUsing, if it came from namespace declaration.

@@ -81,17 +81,31 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		protected override IType GetType (IEnumerable<string> subNamespaces, string fullName, int genericParameterCount, bool caseSensitive)
 		{
 			List<string> namespaces = subNamespaces != null ? new List<string> (subNamespaces) : new List<string> ();
-			int    idx = fullName.LastIndexOf ('.');
+			if (!namespaces.Contains (""))
+				namespaces.Add ("");
+/*			int idx = fullName.LastIndexOf ('.');
 			string typeName;
 			if (idx >= 0) {
 				namespaces.Add (fullName.Substring (0, idx));
 				typeName = fullName.Substring (idx + 1);
 			} else {
 				typeName = fullName;
+			}*/
+			IType result = null;
+			foreach (string ns in namespaces) {
+				IType type = database.GetClass (ns.Length > 0 ? ns + "." + fullName : fullName, null, caseSensitive);
+				if (type == null)
+					continue;
+				if (result == null) {
+					result = type;
+				} else {
+					result = CompoundType.Merge (result, type);
+				}
 			}
+			/*
 			List<IMember> members = new List<IMember> ();
 			GetNamespaceContentsInternal (members, namespaces, caseSensitive);
-			IType result = null;
+			
 			foreach (IMember member in members) {
 				IType type = member as IType;
 				if (type != null && type.Name == typeName && 
@@ -104,7 +118,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 						result = CompoundType.Merge (result, type);
 					}
 				}
-			}
+			}*/
 			return result;
 		}
 		
