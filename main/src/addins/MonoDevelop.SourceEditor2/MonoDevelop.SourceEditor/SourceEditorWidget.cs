@@ -1084,15 +1084,14 @@ namespace MonoDevelop.SourceEditor
 				if (searchAndReplaceWidget.Parent != null)
 					editorBar.Remove (searchAndReplaceWidget);
 				searchAndReplaceWidget.Destroy ();
-				searchAndReplaceWidget.Dispose ();
 				searchAndReplaceWidget = null;
 				result = true;
 			}
+			
 			if (gotoLineNumberWidget != null) {
 				if (gotoLineNumberWidget.Parent != null)
 					editorBar.Remove (gotoLineNumberWidget);
 				gotoLineNumberWidget.Destroy ();
-				gotoLineNumberWidget.Dispose ();
 				gotoLineNumberWidget = null;
 				result = true;
 			}
@@ -1100,6 +1099,7 @@ namespace MonoDevelop.SourceEditor
 				this.textEditor.HighlightSearchPattern = false;
 			if (this.splittedTextEditor != null) 
 				this.splittedTextEditor.HighlightSearchPattern = false;
+			
 			if (!isDisposed)
 				ResetFocusChain ();
 			return result;
@@ -1161,7 +1161,7 @@ namespace MonoDevelop.SourceEditor
 				searchAndReplaceWidget = new SearchAndReplaceWidget (this);
 				editorBar.PackEnd (searchAndReplaceWidget);
 				editorBar.SetChildPacking (searchAndReplaceWidget, false, true, 0, PackType.End);
-				searchAndReplaceWidget.ShowAll ();
+		//		searchAndReplaceWidget.ShowAll ();
 				searchAndReplaceWidget.SetSearchReplaceMode (replace);
 				this.textEditor.HighlightSearchPattern = true;
 				if (this.splittedTextEditor != null) 
