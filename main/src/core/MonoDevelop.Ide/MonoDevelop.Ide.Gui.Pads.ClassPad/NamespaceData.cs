@@ -112,7 +112,6 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 			bool publicOnly = builder.Options ["PublicApiOnly"];
 
 			foreach (IMember ob in list) {
-				System.Console.WriteLine(ob);
 				if (ob is Namespace && nestedNs) {
 					Namespace nsob = (Namespace)ob;
 					string ns = FullName + "." + nsob.Name;
