@@ -207,7 +207,6 @@ namespace MonoDevelop.SourceEditor
 		#region Error underlining
 		Dictionary<int, Error> errors = new Dictionary<int, Error> ();
 		uint resetTimerId;
-		ParsedDocument lastCu = null;
 		bool resetTimerStarted = false;
 		
 		FoldSegment AddMarker (List<FoldSegment> foldSegments, string text, DomRegion region, FoldingType type)
@@ -267,7 +266,13 @@ namespace MonoDevelop.SourceEditor
 			if (cu.CompilationUnit == null || cu.CompilationUnit.Usings == null || cu.CompilationUnit.Usings.Count == 0)
 				return;
 			IUsing first = cu.CompilationUnit.Usings[0];
-			IUsing last = cu.CompilationUnit.Usings[cu.CompilationUnit.Usings.Count - 1];
+			IUsing last = first;
+			for (int i = 1; i < cu.CompilationUnit.Usings.Count; i++) {
+				if (cu.CompilationUnit.Usings[i].IsFromNamespace)
+					break;
+				last = cu.CompilationUnit.Usings[i];
+			}
+			
 			if (first.Region == null || last.Region == null || first.Region.Start.Line == last.Region.End.Line)
 				return;
 			int startOffset = this.TextEditor.Document.LocationToOffset (first.Region.Start.Line - 1,  first.Region.Start.Column - 1);
@@ -308,12 +313,12 @@ namespace MonoDevelop.SourceEditor
 			protected override void InnerRun ()
 			{
 				try {
-					if (SourceEditorOptions.Options.ShowFoldMargin && widget.lastCu != null) {
+					if (SourceEditorOptions.Options.ShowFoldMargin && widget.parsedDocument != null) {
 						List<FoldSegment> foldSegments = new List<FoldSegment> ();
-						widget.AddUsings (foldSegments, widget.lastCu);
+						widget.AddUsings (foldSegments, widget.parsedDocument);
 						
-						if (widget.lastCu != null && widget.lastCu.CompilationUnit != null) {
-							foreach (IType cl in widget.lastCu.CompilationUnit.Types) {
+						if (widget.parsedDocument != null && widget.parsedDocument.CompilationUnit != null) {
+							foreach (IType cl in widget.parsedDocument.CompilationUnit.Types) {
 								if (base.IsStopping)
 									return;
 								widget.AddClass (foldSegments, cl);
@@ -330,19 +335,20 @@ namespace MonoDevelop.SourceEditor
 							}*/
 						}
 						
-						if (widget.lastCu != null ) {
-							foreach (FoldingRegion region in widget.lastCu.FoldingRegions) {
+						if (widget.parsedDocument != null ) {
+							foreach (FoldingRegion region in widget.parsedDocument.FoldingRegions) {
 								FoldSegment marker = widget.AddMarker (foldSegments, region.Name, region.Region, FoldingType.Region);
 								if (marker != null) 
 									marker.IsFolded = SourceEditorOptions.Options.DefaultRegionsFolding && region.DefaultIsFolded;
 							}
 							
-							if (widget.lastCu.Comments.Count > 0) {
+							if (widget.parsedDocument.Comments.Count > 0) {
 								Comment firstComment = null;
 								string commentText = null;
 								DomRegion commentRegion = DomRegion.Empty;
-								for (int i = 0; i < widget.lastCu.Comments.Count; i++) {
-									Comment comment = widget.lastCu.Comments[i];
+								for (int i = 0; i < widget.parsedDocument.Comments.Count; i++) {
+									Comment comment = widget.parsedDocument.Comments[i];
+									System.Console.WriteLine(comment.CommentStartsLine + " -- " + comment.CommentType + " -- " + comment.Region + " --- " + comment.Text);
 									FoldSegment marker = null;
 									if (comment.CommentType == CommentType.MultiLine) {
 										commentText = "/* */";
@@ -364,7 +370,8 @@ namespace MonoDevelop.SourceEditor
 										}
 										if (j - i > 1) {
 											commentRegion = new DomRegion(comment.Region.Start.Line, comment.Region.Start.Column, end.Line, end.Column);
-											marker = widget.AddMarker (foldSegments, 
+											System.Console.WriteLine("add region: " + commentRegion);
+											marker = widget.AddMarker (foldSegments,
 											                    comment.IsDocumentation  ? "/// " : "// "  + comment.Text + "...", 
 											                    commentRegion, 
 											                    FoldingType.Region);
@@ -413,9 +420,9 @@ namespace MonoDevelop.SourceEditor
 			if (editor == null || editor.Document == null)
 				return;
 			lock (syncObject) {
-				lastCu = args.ParsedDocument;
+				parsedDocument = args.ParsedDocument;
 				StopParseInfoThread ();
-				if (lastCu != null) {
+				if (parsedDocument != null) {
 					parseInformationUpdaterWorkerThread = new ParseInformationUpdaterWorkerThread (this);
 					parseInformationUpdaterWorkerThread.Start ();
 				}
@@ -446,8 +453,8 @@ namespace MonoDevelop.SourceEditor
 		bool AutocorrResetMeth ()
 		{
 			ResetUnderlineChangement ();
-			if (lastCu != null)
-				ParseCompilationUnit (lastCu);
+			if (parsedDocument != null)
+				ParseCompilationUnit (parsedDocument);
 			resetTimerStarted = false;
 			return false;
 		}

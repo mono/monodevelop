@@ -1,5 +1,10 @@
 2008-09-10  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.SourceEditor/SourceEditorWidget.cs: recognizing
+	  using/namespace import differences
+
+2008-09-10  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.SourceEditor/SourceEditorWidget.cs,
 	  MonoDevelop.SourceEditor/ClassQuickFinder.cs: Changed compilation
 	  unit/document meta information interface.
