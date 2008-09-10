@@ -52,12 +52,11 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 						int peek = ReaderPeek();
 						if (peek == '/' || peek == '*') {
 							ReadComment();
-							isBegin = false;
 							continue;
 						} else {
 							token = ReadOperator('/');
+							isBegin = false;
 						}
-						isBegin = false;
 						break;
 					case '#':
 						ReadPreProcessingDirective();
@@ -792,6 +791,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 			switch (ReaderRead()) {
 				case '*':
 					ReadMultiLineComment (col);
+					isBegin = false;
 					break;
 				case '/':
 					if (ReaderPeek() == '/') {
@@ -800,6 +800,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 					} else {
 						ReadSingleLineComment(col, CommentType.SingleLine);
 					}
+					this.isBegin = true;
 					break;
 				default:
 					errors.Error(Line, Col, String.Format("Error while reading comment"));

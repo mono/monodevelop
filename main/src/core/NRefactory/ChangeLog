@@ -1,3 +1,7 @@
+2008-09-10  Mike Krüger <mkrueger@novell.com> 
+
+	* Project/Src/Lexer/CSharp/Lexer.cs: fixing comment bug.
+
 2008-09-04  Mike Krüger <mkrueger@novell.com> 
 
 	* Project/Src/Lexer/CSharp/Lexer.cs: fix for comment begin line.
