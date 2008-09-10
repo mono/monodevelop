@@ -35,13 +35,15 @@ namespace MonoDevelop.Projects.Dom
 	public class CompilationUnit : ICompilationUnit
 	{
 		string fileName;
+		public string FileName {
+			get {
+				return fileName;
+			}
+		}
 		
 		List<IUsing>     usings         = new List<IUsing> ();
 		List<IAttribute> attributes     = new List<IAttribute> ();
 		List<IType>      types          = new List<IType> ();
-		List<Comment>    comments       = new List<Comment> ();
-		List<FoldingRegion> foldingRegions = new List<FoldingRegion> ();
-		List<Error>      errors         = new List<Error> ();
 		
 		public CompilationUnit (string fileName)
 		{
@@ -49,25 +51,6 @@ namespace MonoDevelop.Projects.Dom
 		}
 		
 		#region ICompilationUnit
-		DateTime parseTime = DateTime.Now;
-		public DateTime ParseTime {
-			get {
-				return parseTime;
-			}
-			set {
-				parseTime = value;
-			}
-		}
-
-		string ICompilationUnit.FileName {
-			get {
-				return fileName;
-			}
-			set {
-				fileName = value;
-			}
-		}
-		
 		public ReadOnlyCollection<IUsing> Usings {
 			get {
 				return usings.AsReadOnly ();
@@ -79,11 +62,6 @@ namespace MonoDevelop.Projects.Dom
 				return attributes;
 			}
 		}
-		public int TypeCount {
-			get {
-				return types.Count;
-			}
-		}
 		
 		public ReadOnlyCollection<IType> Types {
 			get {
@@ -91,29 +69,7 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
-		public IEnumerable<Comment> Comments {
-			get {
-				return comments;
-			}
-		}
 		
-		public IEnumerable<FoldingRegion> FoldingRegions {
-			get {
-				return foldingRegions;
-			}
-		}
-		
-		public ReadOnlyCollection<Error> Errors {
-			get {
-				return errors.AsReadOnly ();
-			}
-		}
-		bool hasErrors = false;
-		public bool HasErrors {
-			get {
-				return hasErrors;
-			}
-		}
 		
 		object IDomVisitable.AcceptVisitior (IDomVisitor visitor, object data)
 		{
@@ -151,21 +107,6 @@ namespace MonoDevelop.Projects.Dom
 			types.Add (newType);
 		}
 		
-		public void Add (Comment comment)
-		{
-			comments.Add (comment);
-		}
-		
-		public void Add (FoldingRegion foldingRegion)
-		{
-			foldingRegions.Add (foldingRegion);
-		}
-		
-		public void Add (Error error)
-		{
-			hasErrors |= error.ErrorType == ErrorType.Error;
-			errors.Add (error);
-		}
 		
 		public void GetNamespaceContents (List<IMember> list, string subNamespace, bool caseSensitive)
 		{

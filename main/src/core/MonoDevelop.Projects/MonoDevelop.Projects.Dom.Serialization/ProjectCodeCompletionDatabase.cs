@@ -243,7 +243,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 				ICompilationUnit parserInfo = ProjectDomService.Parse (this.project,
 				                                                         fileName,
 				                                                         null,
-				                                                         delegate () { return File.ReadAllText (fileName); });
+				                                                         delegate () { return File.ReadAllText (fileName); }).CompilationUnit;
 				if (parserInfo != null) {
 					lock (rwlock) {
 						TypeUpdateInformation res = UpdateFromParseInfo (parserInfo, fileName);

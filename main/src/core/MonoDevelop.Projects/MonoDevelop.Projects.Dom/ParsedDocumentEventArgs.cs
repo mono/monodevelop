@@ -1,5 +1,5 @@
 //
-// CompilationUnitEventArgs.cs
+// ParsedDocumentEventArgs.cs
 //
 // Author:
 //   Mike Krüger <mkrueger@novell.com>
@@ -30,19 +30,27 @@ using System;
 
 namespace MonoDevelop.Projects.Dom
 {
-	public class CompilationUnitEventArgs : EventArgs
+	public class ParsedDocumentEventArgs : EventArgs
 	{
-		ICompilationUnit unit;
+		string fileName;
+		ParsedDocument parsedDocument;
 		
-		public MonoDevelop.Projects.Dom.ICompilationUnit Unit {
+		public MonoDevelop.Projects.Dom.ParsedDocument ParsedDocument {
 			get {
-				return unit;
+				return parsedDocument;
+			}
+		}
+
+		public string FileName {
+			get {
+				return fileName;
 			}
 		}
 		
-		public CompilationUnitEventArgs (ICompilationUnit unit)
+		public ParsedDocumentEventArgs (string fileName, ParsedDocument parsedDocument)
 		{
-			this.unit = unit;
+			this.fileName       = fileName;
+			this.parsedDocument = parsedDocument;
 		}
 	}
 }

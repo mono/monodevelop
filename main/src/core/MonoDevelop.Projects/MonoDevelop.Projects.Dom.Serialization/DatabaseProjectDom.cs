@@ -49,10 +49,9 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			return database.GetFileContents (fileName);
 		}
 		
-		public override void UpdateFromParseInfo (ICompilationUnit unit, string fileName)
+		public override void UpdateFromParseInfo (ICompilationUnit unit)
 		{
-			unit.FileName = fileName;
-			database.UpdateTypeInformation (unit.Types, fileName);
+			database.UpdateTypeInformation (unit.Types, unit.FileName);
 		}
 		
 		internal override void GetNamespaceContentsInternal (List<IMember> result, IEnumerable<string> subNamespaces, bool caseSensitive)

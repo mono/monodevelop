@@ -86,7 +86,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 			sw.Close ();
 			
 			
-			ICompilationUnit pi = ProjectDomService.Parse (ctx.ParserContext.Project, file, null);
+			ICompilationUnit pi = ProjectDomService.Parse (ctx.ParserContext.Project, file, null).CompilationUnit;
 			IList<IType> clss = pi.Types;
 			if (clss.Count > 0)
 				return clss [0];

@@ -1,3 +1,21 @@
+2008-09-10  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Dom.Parser/AbstractParser.cs,
+	  MonoDevelop.Projects.Dom.Parser/ProjectParserService.cs,
+	  MonoDevelop.Projects.Dom.Parser/IParser.cs,
+	  MonoDevelop.Projects.Dom.Parser/ProjectDom.cs,
+	  MonoDevelop.Projects.Dom/ParsedDocumentEventArgs.cs,
+	  MonoDevelop.Projects.Dom/IDocumentMetainformation.cs,
+	  MonoDevelop.Projects.Dom/ParsedDocument.cs,
+	  MonoDevelop.Projects.Dom/CompilationUnit.cs,
+	  MonoDevelop.Projects.Dom/ICompilationUnit.cs,
+	  MonoDevelop.Projects.Dom/CompilationUnitEventArgs.cs,
+	  MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs,
+	  MonoDevelop.Projects.Dom.Serialization/DatabaseProjectDom.cs,
+	  MonoDevelop.Projects.Dom.Serialization/ProjectCodeCompletionDatabase.cs,
+	  MonoDevelop.Projects.Dom.Serialization/DomTypeProxy.cs: Changed
+	  compilation unit/document meta information interface.
+
 2008-09-10  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs,

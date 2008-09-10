@@ -140,7 +140,7 @@
     <File name="MonoDevelop.Projects.Dom/Comment.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Dom/CommentType.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Dom/CompilationUnit.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Projects.Dom/CompilationUnitEventArgs.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Projects.Dom/ParsedDocumentEventArgs.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Dom/DomAttribute.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Dom/DomEvent.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Dom/DomField.cs" subtype="Code" buildaction="Compile" />
@@ -196,7 +196,7 @@
     <File name="MonoDevelop.Projects.Dom/IParserContext.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Dom/DefaultParserContext.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Dom/ResolveResult.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Projects.Dom/IDocumentMetainformation.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Projects.Dom/ParsedDocument.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Dom/FoldingRegion.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Dom/PreProcessorDefine.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Dom/ConditionalRegion.cs" subtype="Code" buildaction="Compile" />

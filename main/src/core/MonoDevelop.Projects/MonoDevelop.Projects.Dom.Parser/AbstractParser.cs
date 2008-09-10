@@ -42,7 +42,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 			this.mimeTypes   = mimeTypes;
 		}
 		
-		public ICompilationUnit Parse (string fileName)
+		public ParsedDocument Parse (string fileName)
 		{
 			return Parse (fileName, System.IO.File.ReadAllText (fileName));
 		}
@@ -57,16 +57,13 @@ namespace MonoDevelop.Projects.Dom.Parser
 			return null;
 		}
 		
-		public abstract ICompilationUnit Parse (string fileName, string content);
-		public virtual IDocumentMetaInformation CreateMetaInformation (string text)
+		public abstract ParsedDocument Parse (string fileName, string content);
+		
+		public virtual ParsedDocument Parse (string fileName, TextReader content)
 		{
-			return CreateMetaInformation (new StringReader (text));
+			return Parse (fileName, content.ReadToEnd ());
 		}
 		
-		public virtual IDocumentMetaInformation CreateMetaInformation (TextReader reader)
-		{
-			return null;
-		}
 		public virtual bool CanParseMimeType (string mimeType)
 		{
 			if (mimeTypes == null)

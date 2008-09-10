@@ -75,7 +75,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		
 		public override string ToString ()
 		{
-			return String.Format ("[DomTypeProxy: WrappedType={0}]", this.WrappedType);
+			return String.Format ("[DomTypeProxy: WrappedType={0}, Entry={1}]", this.WrappedType, this.entry);
 		}
 		
 		public override ClassType ClassType {

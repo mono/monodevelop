@@ -117,10 +117,8 @@ namespace MonoDevelop.Projects.Dom.Parser
 			return null;
 		}
 		
-		public virtual void UpdateFromParseInfo (ICompilationUnit unit, string fileName)
+		public virtual void UpdateFromParseInfo (ICompilationUnit unit)
 		{
-			if (String.IsNullOrEmpty (fileName))
-				return;
 			foreach (IType type in unit.Types) {
 				type.SourceProjectDom = this;
 				typeTable[type.FullName] = type;

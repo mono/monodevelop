@@ -65,7 +65,6 @@ FILES =  \
 	MonoDevelop.Projects.Dom/Comment.cs \
 	MonoDevelop.Projects.Dom/CommentType.cs \
 	MonoDevelop.Projects.Dom/CompilationUnit.cs \
-	MonoDevelop.Projects.Dom/CompilationUnitEventArgs.cs \
 	MonoDevelop.Projects.Dom/CompoundType.cs \
 	MonoDevelop.Projects.Dom/ConditionalRegion.cs \
 	MonoDevelop.Projects.Dom/DefaultParserContext.cs \
@@ -94,7 +93,6 @@ FILES =  \
 	MonoDevelop.Projects.Dom/FoldingRegion.cs \
 	MonoDevelop.Projects.Dom/IAttribute.cs \
 	MonoDevelop.Projects.Dom/ICompilationUnit.cs \
-	MonoDevelop.Projects.Dom/IDocumentMetainformation.cs \
 	MonoDevelop.Projects.Dom/IDomVisitor.cs \
 	MonoDevelop.Projects.Dom/IEvent.cs \
 	MonoDevelop.Projects.Dom/IExpressionFinder.cs \
@@ -111,6 +109,8 @@ FILES =  \
 	MonoDevelop.Projects.Dom/Modifiers.cs \
 	MonoDevelop.Projects.Dom/Namespace.cs \
 	MonoDevelop.Projects.Dom/ParameterModifiers.cs \
+	MonoDevelop.Projects.Dom/ParsedDocument.cs \
+	MonoDevelop.Projects.Dom/ParsedDocumentEventArgs.cs \
 	MonoDevelop.Projects.Dom/PreProcessorDefine.cs \
 	MonoDevelop.Projects.Dom/ReferenceEntry.cs \
 	MonoDevelop.Projects.Dom/ResolveResult.cs \

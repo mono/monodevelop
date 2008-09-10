@@ -36,17 +36,8 @@ namespace MonoDevelop.Projects.Dom
 	{
 		string FileName {
 			get;
-			set;
 		}
-		
-		int TypeCount {
-			get;
-		}
-		
-		DateTime ParseTime {
-			get;
-		}
-		
+				
 		ReadOnlyCollection<IUsing> Usings {
 			get;
 		}
@@ -56,22 +47,6 @@ namespace MonoDevelop.Projects.Dom
 		}
 		
 		ReadOnlyCollection<IType> Types {
-			get;
-		}
-		
-		IEnumerable<Comment> Comments {
-			get;
-		}
-		
-		IEnumerable<FoldingRegion> FoldingRegions {
-			get;
-		}
-		
-		ReadOnlyCollection<Error> Errors {
-			get;
-		}
-		
-		bool HasErrors {
 			get;
 		}
 		

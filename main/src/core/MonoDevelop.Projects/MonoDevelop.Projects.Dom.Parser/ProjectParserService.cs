@@ -179,17 +179,16 @@ namespace MonoDevelop.Projects.Dom.Parser
 			Thread thread = new Thread (delegate () {
 				Thread.Sleep (500);
 				try {
-					ICompilationUnit unit = parser.Parse (fileName, getContent ());
-					if (unit != null) {
-						foreach (IType type in unit.Types) {
+					ParsedDocument parsedDocument = parser.Parse (fileName, getContent ());
+					if (parsedDocument.CompilationUnit != null) {
+						foreach (IType type in parsedDocument.CompilationUnit.Types) {
 							type.SourceProjectDom = dom;
 						}
+						if (dom != null)
+							dom.UpdateFromParseInfo (parsedDocument.CompilationUnit);
+						OnParsedDocumentUpdated (new ParsedDocumentEventArgs (fileName, parsedDocument));
+						OnDomUpdated (new ProjectDomEventArgs (dom));
 					}
-					unit.FileName = fileName;
-					if (dom != null)
-						dom.UpdateFromParseInfo (unit, fileName);
-					OnCompilationUnitUpdated (new CompilationUnitEventArgs (unit));
-					OnDomUpdated (new ProjectDomEventArgs (dom));
 				} catch (ThreadAbortException) {
 				}
 			});
@@ -213,12 +212,12 @@ namespace MonoDevelop.Projects.Dom.Parser
 			return null;
 		}
 		
-		public static ICompilationUnit Parse (Project project, string fileName, string mimeType)
+		public static ParsedDocument Parse (Project project, string fileName, string mimeType)
 		{
 			return Parse (project, fileName, mimeType, delegate () { return System.IO.File.ReadAllText (fileName); });
 		}
 		
-		public static ICompilationUnit Parse (Project project, string fileName, string mimeType, ContentDelegate getContent)
+		public static ParsedDocument Parse (Project project, string fileName, string mimeType, ContentDelegate getContent)
 		{
 			ProjectDom dom = GetDatabaseProjectDom (project);
 			IParser parser = GetParser (fileName, mimeType);
@@ -228,20 +227,18 @@ namespace MonoDevelop.Projects.Dom.Parser
 				refreshThreads [fileName].Abort ();
 				refreshThreads.Remove (fileName);
 			}
-			ICompilationUnit unit = parser.Parse (fileName, getContent ());
-			if (unit != null) {
-				foreach (IType type in unit.Types) {
+			ParsedDocument parsedDocument = parser.Parse (fileName, getContent ());
+			if (parsedDocument.CompilationUnit != null) {
+				foreach (IType type in parsedDocument.CompilationUnit.Types) {
 					type.SourceProjectDom = dom;
 				}
-			}
-		//	compilationUnits[fileName] = unit;
-			unit.FileName = fileName;
-			if (dom != null)
-				dom.UpdateFromParseInfo (unit, fileName);
-			OnCompilationUnitUpdated (new CompilationUnitEventArgs (unit));
-			if (dom != null)
+				if (dom != null)
+					dom.UpdateFromParseInfo (parsedDocument.CompilationUnit);
+				OnParsedDocumentUpdated (new ParsedDocumentEventArgs (fileName, parsedDocument));
 				OnDomUpdated (new ProjectDomEventArgs (dom));
-			return unit;
+			}
+			
+			return parsedDocument;
 		}
 		
 		static void InsertDom (string name, ProjectDom dom)
@@ -545,10 +542,11 @@ namespace MonoDevelop.Projects.Dom.Parser
 				} catch (Exception e) {
 				}
 				if (content != null) {
-					ICompilationUnit unit = parser.Parse (file.FilePath, content);
-					unit.FileName = file.FilePath;
-					dom.UpdateFromParseInfo (unit, file.FilePath);
-					OnCompilationUnitUpdated (new CompilationUnitEventArgs (unit));
+					ParsedDocument parsedDocument = parser.Parse (file.FilePath, content);
+					if (parsedDocument.CompilationUnit != null) {
+						dom.UpdateFromParseInfo (parsedDocument.CompilationUnit);
+						OnParsedDocumentUpdated (new ParsedDocumentEventArgs (file.FilePath, parsedDocument));
+					}
 				}
 			}
 			dom.FireLoaded ();
@@ -604,12 +602,12 @@ namespace MonoDevelop.Projects.Dom.Parser
 			Unload (args.Item);
 		}
 		
-		static void OnCompilationUnitUpdated (CompilationUnitEventArgs args) 
+		static void OnParsedDocumentUpdated (ParsedDocumentEventArgs args) 
 		{
-			if (CompilationUnitUpdated != null) 
-				CompilationUnitUpdated (null, args);
+			if (ParsedDocumentUpdated != null) 
+				ParsedDocumentUpdated (null, args);
 		}
-		public static event EventHandler<CompilationUnitEventArgs> CompilationUnitUpdated;
+		public static event EventHandler<ParsedDocumentEventArgs> ParsedDocumentUpdated;
 		
 		public static void NotifyTypeUpdate (Project project, string fileName, TypeUpdateInformation info)
 		{
