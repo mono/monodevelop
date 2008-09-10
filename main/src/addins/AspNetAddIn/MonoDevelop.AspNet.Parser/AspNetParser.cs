@@ -48,26 +48,28 @@ namespace MonoDevelop.AspNet.Parser
 			return fileName.EndsWith (".aspx") || fileName.EndsWith (".ascx") || fileName.EndsWith (".master");
 		}
 		
-		public override ICompilationUnit Parse (string fileName, string fileContent)
+		public override ParsedDocument Parse (string fileName, string fileContent)
 		{
 			using (TextReader tr = new StringReader (fileContent)) {
 				Document doc = new Document (tr, null, fileName);
+				ParsedDocument result = new ParsedDocument ();
 				AspNetCompilationUnit cu = new AspNetCompilationUnit (fileName);
+				result.CompilationUnit = cu;
 				cu.Document = doc;
 				cu.PageInfo = new PageInfo ();
 				
-				CompilationUnitVisitor cuVisitor = new CompilationUnitVisitor (cu);
+				CompilationUnitVisitor cuVisitor = new CompilationUnitVisitor (result, cu);
 				doc.RootNode.AcceptVisit (cuVisitor);
 				
 				PageInfoVisitor piVisitor = new PageInfoVisitor (cu.PageInfo);
 				doc.RootNode.AcceptVisit (piVisitor);
 				
 				foreach (ParserException pe in doc.ParseErrors)
-					cu.Add (new Error (
+					result.Add (new Error (
 						pe.IsWarning? ErrorType.Warning : ErrorType.Error,
 						pe.Line, pe.Column, pe.Message));
 				
-				return cu;
+				return result;
 			}
 		}
 	}

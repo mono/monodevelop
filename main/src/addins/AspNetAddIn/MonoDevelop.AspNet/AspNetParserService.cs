@@ -51,7 +51,7 @@ namespace MonoDevelop.AspNet
 			if (ensureUpToDate)
 				ctx.UpdateDatabase ();*/
 			
-			ICompilationUnit pi = ProjectDomService.Parse (project, filename, null);
+			ICompilationUnit pi = ProjectDomService.Parse (project, filename, null).CompilationUnit;
 			return pi as AspNetCompilationUnit;
 		}
 		

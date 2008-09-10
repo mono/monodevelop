@@ -107,12 +107,13 @@ namespace MonoDevelop.AspNet
 					continue;
 				
 				//parse the ASP.NET file
-				AspNetCompilationUnit cu = ProjectDomService.Parse (aspProject, file.FilePath, null) as AspNetCompilationUnit;
+				ParsedDocument parsedDocument = ProjectDomService.Parse (aspProject, file.FilePath, null);
+				AspNetCompilationUnit cu = parsedDocument.CompilationUnit as AspNetCompilationUnit;
 				if (cu == null || cu.Document == null)
 					continue;
 				
 				//log errors
-				if (cu.HasErrors) {
+				if (parsedDocument.HasErrors) {
 					foreach (Exception e in cu.Document.ParseErrors) {
 						CodeBehindWarning cbw;
 						ErrorInFileException eife = e as ErrorInFileException;

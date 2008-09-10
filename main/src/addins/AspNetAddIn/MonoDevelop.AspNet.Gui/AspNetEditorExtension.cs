@@ -77,7 +77,7 @@ namespace MonoDevelop.AspNet.Gui
 			S.Parser parser = new S.Parser (new AspNetFreeState (), false);
 			tracker = new DocumentStateTracker<S.Parser> (parser, Editor);
 			
-			MonoDevelop.Projects.Dom.Parser.ProjectDomService.CompilationUnitUpdated += OnParseInformationChanged;
+			MonoDevelop.Projects.Dom.Parser.ProjectDomService.ParsedDocumentUpdated += OnParseInformationChanged;
 			
 			//ensure that the schema service is initialised, or code completion may take a couple of seconds to trigger
 			HtmlSchemaService.Initialise ();
@@ -87,16 +87,16 @@ namespace MonoDevelop.AspNet.Gui
 		{
 			if (tracker != null) {
 				tracker = null;
-				MonoDevelop.Projects.Dom.Parser.ProjectDomService.CompilationUnitUpdated 
+				MonoDevelop.Projects.Dom.Parser.ProjectDomService.ParsedDocumentUpdated
 					-= OnParseInformationChanged;
 				base.Dispose ();
 			}
 		}
 		
-		void OnParseInformationChanged (object sender, MonoDevelop.Projects.Dom.CompilationUnitEventArgs args)
+		void OnParseInformationChanged (object sender, MonoDevelop.Projects.Dom.ParsedDocumentEventArgs args)
 		{
-			if (this.FileName == args.Unit.FileName && args.Unit is MonoDevelop.AspNet.Parser.AspNetCompilationUnit)
-				lastCU = (MonoDevelop.AspNet.Parser.AspNetCompilationUnit) args.Unit;
+			if (this.FileName == args.FileName && args.ParsedDocument.CompilationUnit is MonoDevelop.AspNet.Parser.AspNetCompilationUnit)
+				lastCU = (MonoDevelop.AspNet.Parser.AspNetCompilationUnit) args.ParsedDocument.CompilationUnit;
 			RefreshOutline ();
 		}
 		

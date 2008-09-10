@@ -123,7 +123,7 @@ namespace MonoDevelop.AspNet
 			//look up the control prefix
 			string mime = MonoDevelop.Core.Gui.Services.PlatformService.GetMimeTypeForUri (path);
 			MonoDevelop.AspNet.Parser.AspNetCompilationUnit cu = 
-				MonoDevelop.Projects.Dom.Parser.ProjectDomService.Parse (project, path, mime)
+				MonoDevelop.Projects.Dom.Parser.ProjectDomService.Parse (project, path, mime).CompilationUnit
 					as MonoDevelop.AspNet.Parser.AspNetCompilationUnit;
 			
 			System.Reflection.AssemblyName assemName = 

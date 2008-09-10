@@ -37,10 +37,12 @@ namespace MonoDevelop.AspNet.Parser
 	
 	public class CompilationUnitVisitor : Visitor
 	{
+		ParsedDocument doc;
 		AspNetCompilationUnit cu;
 		
-		public CompilationUnitVisitor (AspNetCompilationUnit cu)
+		public CompilationUnitVisitor (ParsedDocument doc, AspNetCompilationUnit cu)
 		{
+			this.doc = doc;
 			this.cu = cu;
 		}
 		
@@ -88,7 +90,7 @@ namespace MonoDevelop.AspNet.Parser
 				region = new DomRegion (startLocation.BeginLine, startLocation.BeginColumn + 1, endLocation.EndLine, endLocation.EndColumn + 1);
 			
 			FoldingRegion f = new FoldingRegion (name, region, false);
-			cu.Add (f);
+			doc.Add (f);
 		}
 		
 		bool IsMultiLine (ILocation startLocation, ILocation endLocation)
