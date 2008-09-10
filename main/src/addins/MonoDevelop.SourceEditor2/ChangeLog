@@ -1,5 +1,10 @@
 2008-09-10  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.SourceEditor/SourceEditorWidget.cs: Fixed crash with
+	  search/replace widgets.
+
+2008-09-10  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.SourceEditor/SourceEditorWidget.cs: recognizing
 	  using/namespace import differences
 

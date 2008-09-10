@@ -736,7 +736,6 @@ namespace MonoDevelop.SourceEditor
 				if (searchAndReplaceWidget.Parent != null)
 					this.Remove (searchAndReplaceWidget);
 				searchAndReplaceWidget.Destroy ();
-				searchAndReplaceWidget.Dispose ();
 				searchAndReplaceWidget = null;
 				result = true;
 			}
@@ -744,7 +743,6 @@ namespace MonoDevelop.SourceEditor
 				if (gotoLineNumberWidget.Parent != null)
 					this.Remove (gotoLineNumberWidget);
 				gotoLineNumberWidget.Destroy ();
-				gotoLineNumberWidget.Dispose ();
 				gotoLineNumberWidget = null;
 				result = true;
 			}
