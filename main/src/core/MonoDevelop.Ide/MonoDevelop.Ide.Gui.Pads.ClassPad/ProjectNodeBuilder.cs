@@ -50,18 +50,18 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 			projectNameChanged = (SolutionItemRenamedEventHandler) DispatchService.GuiDispatch (new SolutionItemRenamedEventHandler (OnProjectRenamed));
 		}
 
-		EventHandler<CompilationUnitEventArgs> compilationUnitUpdated;
+		EventHandler<ParsedDocumentEventArgs> compilationUnitUpdated;
 		protected override void Initialize ()
 		{
-			compilationUnitUpdated = (EventHandler<CompilationUnitEventArgs>) DispatchService.GuiDispatch (new EventHandler<CompilationUnitEventArgs> (OnCompilationUnitUpdated));
-			ProjectDomService.CompilationUnitUpdated += compilationUnitUpdated;
+			compilationUnitUpdated = (EventHandler<ParsedDocumentEventArgs>) DispatchService.GuiDispatch (new EventHandler<ParsedDocumentEventArgs> (OnCompilationUnitUpdated));
+			ProjectDomService.ParsedDocumentUpdated += compilationUnitUpdated;
 		}
 		public override void Dispose ()
 		{
-			ProjectDomService.CompilationUnitUpdated -= compilationUnitUpdated;
+			ProjectDomService.ParsedDocumentUpdated -= compilationUnitUpdated;
 		}
 		
-		void OnCompilationUnitUpdated (object sender, CompilationUnitEventArgs args)
+		void OnCompilationUnitUpdated (object sender, ParsedDocumentEventArgs args)
 		{
 			ITreeBuilder tb = Context.GetTreeBuilder ();
 			tb.UpdateAll ();

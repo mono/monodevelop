@@ -84,7 +84,7 @@ namespace MonoDevelop.Ide.Gui
 		internal Document (IWorkbenchWindow window)
 		{
 			this.window = window;
-			MonoDevelop.Projects.Dom.Parser.ProjectDomService.CompilationUnitUpdated += CompilationUnitUpdated;
+			MonoDevelop.Projects.Dom.Parser.ProjectDomService.ParsedDocumentUpdated += CompilationUnitUpdated;
 			window.Closed += OnClosed;
 			window.ActiveViewContentChanged += OnActiveViewContentChanged;
 			IdeApp.Workspace.ItemRemovedFromSolution += OnEntryRemoved;
@@ -327,7 +327,7 @@ namespace MonoDevelop.Ide.Gui
 		void OnClosed (object s, EventArgs a)
 		{
 			ClearTasks ();
-			MonoDevelop.Projects.Dom.Parser.ProjectDomService.CompilationUnitUpdated -= CompilationUnitUpdated;
+			MonoDevelop.Projects.Dom.Parser.ProjectDomService.ParsedDocumentUpdated -= CompilationUnitUpdated;
 			
 			if (window is SdiWorkspaceWindow)
 				((SdiWorkspaceWindow)window).DetachFromPathedDocument ();
@@ -345,11 +345,16 @@ namespace MonoDevelop.Ide.Gui
 #region document tasks
 		List<Task> tasks = new List<Task> ();
 		object lockObj = new object ();
-		ICompilationUnit compilationUnit;
 		
+		ParsedDocument parsedDocument;
+		public ParsedDocument ParsedDocument {
+			get {
+				return parsedDocument;
+			}
+		}
 		public ICompilationUnit CompilationUnit {
 			get {
-				return compilationUnit;
+				return parsedDocument.CompilationUnit;
 			}
 		}
 		
@@ -363,11 +368,11 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
-		void CompilationUnitUpdated (object sender, CompilationUnitEventArgs args)
+		void CompilationUnitUpdated (object sender, ParsedDocumentEventArgs args)
 		{
-			if (this.FileName == args.Unit.FileName) {
-				if (!args.Unit.HasErrors)
-					compilationUnit = args.Unit;
+			if (this.FileName == args.FileName) {
+//				if (!args.Unit.HasErrors)
+				parsedDocument = args.ParsedDocument;
 /* TODO: Implement better task update algorithm.
 
 				ClearTasks ();
