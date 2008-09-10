@@ -58,19 +58,91 @@ namespace MonoDevelop.CSharpBinding
 			return new NRefactoryResolver (dom, doc.CompilationUnit, ICSharpCode.NRefactory.SupportedLanguage.CSharp, doc.TextEditor, fileName);
 		}
 		
-		public override IDocumentMetaInformation CreateMetaInformation (TextReader reader)
+	/*	public override IDocumentMetaInformation CreateMetaInformation (TextReader reader)
 		{
 			return new NRefactoryDocumentMetaInformation (ICSharpCode.NRefactory.SupportedLanguage.CSharp, reader);
+		}*/
+		
+		class SpecialTracker : ICSharpCode.NRefactory.ISpecialVisitor
+		{
+			ParsedDocument result;
+			
+			public SpecialTracker (ParsedDocument result)
+			{
+				this.result = result;
+			}
+			
+			public object Visit (ICSharpCode.NRefactory.ISpecial special, object data)
+			{
+				return null;
+			}
+			
+			public object Visit (ICSharpCode.NRefactory.BlankLine special, object data)
+			{
+				return null;
+			}
+			
+			public object Visit (ICSharpCode.NRefactory.Comment comment, object data)
+			{
+				MonoDevelop.Projects.Dom.Comment newComment = new MonoDevelop.Projects.Dom.Comment ();
+				newComment.CommentStartsLine = comment.CommentStartsLine;
+				newComment.Text = comment.CommentText;
+				newComment.Region = new DomRegion (comment.StartPosition.Line, comment.StartPosition.Column, comment.EndPosition.Line, comment.EndPosition.Column);
+				switch (comment.CommentType) {
+					case ICSharpCode.NRefactory.CommentType.Block:
+						newComment.CommentType = MonoDevelop.Projects.Dom.CommentType.MultiLine;
+						break;
+					case ICSharpCode.NRefactory.CommentType.Documentation:
+						newComment.CommentType = MonoDevelop.Projects.Dom.CommentType.SingleLine;
+						newComment.IsDocumentation = true;
+						break;
+					default:
+						newComment.CommentType = MonoDevelop.Projects.Dom.CommentType.SingleLine;
+						break;
+				}
+				
+				result.Add (newComment);
+				return null;
+			}
+			
+			Stack<ICSharpCode.NRefactory.PreprocessingDirective> regions = new Stack<ICSharpCode.NRefactory.PreprocessingDirective> ();
+			public object Visit (ICSharpCode.NRefactory.PreprocessingDirective directive, object data)
+			{
+				switch (directive.Cmd) {
+					case "#define":
+						result.Add (new PreProcessorDefine (directive.Arg, new DomLocation (directive.StartPosition.Line, directive.StartPosition.Column)));
+						break;
+					case "#region":
+						regions.Push (directive);
+						break;
+					case "#endregion":
+						if (regions.Count > 0) {
+							ICSharpCode.NRefactory.PreprocessingDirective start = regions.Pop ();
+							result.Add (new FoldingRegion (start.Arg,
+							                                       new DomRegion (start.StartPosition.Line, start.StartPosition.Column, directive.EndPosition.Line, directive.EndPosition.Column),
+							                                       true));
+						}
+						break;
+				}
+				return null;
+			}
 		}
 		
-		public override ICompilationUnit Parse (string fileName, string content)
+		public override ParsedDocument Parse (string fileName, string content)
 		{
 			using (ICSharpCode.NRefactory.IParser parser = ICSharpCode.NRefactory.ParserFactory.CreateParser (ICSharpCode.NRefactory.SupportedLanguage.CSharp, new StringReader (content))) {
-				MonoDevelop.Projects.Dom.CompilationUnit result = new MonoDevelop.Projects.Dom.CompilationUnit (fileName);
+				ParsedDocument result = new ParsedDocument ();
+				result.CompilationUnit = new MonoDevelop.Projects.Dom.CompilationUnit (fileName);
 				parser.Errors.Error += delegate (int line, int col, string message) {
 					result.Add (new Error (ErrorType.Error, col, line, message));
 				};
 				parser.Parse ();
+				
+				SpecialTracker tracker = new SpecialTracker (result);
+				foreach (ICSharpCode.NRefactory.ISpecial special in parser.Lexer.SpecialTracker.CurrentSpecials) {
+					special.AcceptVisitor (tracker, null);
+				}
+				
 				ConversionVisitior visitor = new ConversionVisitior (result);
 				visitor.VisitCompilationUnit (parser.CompilationUnit, null);
 				
@@ -80,9 +152,9 @@ namespace MonoDevelop.CSharpBinding
 
 		class ConversionVisitior : ICSharpCode.NRefactory.Visitors.AbstractAstVisitor
 		{
-			MonoDevelop.Projects.Dom.CompilationUnit result;
+			MonoDevelop.Projects.Dom.ParsedDocument result;
 			
-			public ConversionVisitior (MonoDevelop.Projects.Dom.CompilationUnit result)
+			public ConversionVisitior (MonoDevelop.Projects.Dom.ParsedDocument result)
 			{
 				this.result = result;
 			}
@@ -168,7 +240,7 @@ namespace MonoDevelop.CSharpBinding
 						domUsing.Add (u.Name);
 					}
 				}
-				result.Add (domUsing);
+				((CompilationUnit)result.CompilationUnit).Add (domUsing);
 				return data;
 			}
 
@@ -181,7 +253,7 @@ namespace MonoDevelop.CSharpBinding
 					domUsing.Region   = ConvertRegion (namespaceDeclaration.StartLocation, namespaceDeclaration.EndLocation);
 					
 					domUsing.Add (String.Join (".", splittedNamespace, 0, i));
-					result.Add (domUsing);
+					((CompilationUnit)result.CompilationUnit).Add (domUsing);
 				}
 				
 				namespaceStack.Push (namespaceStack.Count == 0 ? namespaceDeclaration.Name : namespaceStack.Peek() + "." + namespaceDeclaration.Name);
@@ -239,7 +311,7 @@ namespace MonoDevelop.CSharpBinding
 				} else {
 					if (namespaceStack.Count > 0) 
 						type.Namespace = namespaceStack.Peek ();
-					result.Add (type);
+					((CompilationUnit)result.CompilationUnit).Add (type);
 				}
 			}
 
@@ -278,7 +350,7 @@ namespace MonoDevelop.CSharpBinding
 			public override object VisitDelegateDeclaration (ICSharpCode.NRefactory.Ast.DelegateDeclaration delegateDeclaration, object data)
 			{
 				List<IParameter> parameter = ConvertParameterList (null, delegateDeclaration.Parameters);
-				DomType delegateType = DomType.CreateDelegate (result, 
+				DomType delegateType = DomType.CreateDelegate (result.CompilationUnit, 
 				                                               delegateDeclaration.Name,
 				                                               ConvertLocation (delegateDeclaration.StartLocation),
 				                                               ConvertReturnType (delegateDeclaration.ReturnType),
