@@ -86,8 +86,8 @@ namespace MonoDevelop.CSharpBinding
 			{
 				MonoDevelop.Projects.Dom.Comment newComment = new MonoDevelop.Projects.Dom.Comment ();
 				newComment.CommentStartsLine = comment.CommentStartsLine;
-				newComment.Text = comment.CommentText;
-				newComment.Region = new DomRegion (comment.StartPosition.Line, comment.StartPosition.Column, comment.EndPosition.Line, comment.EndPosition.Column);
+				newComment.Text              = comment.CommentText;
+				newComment.Region            = new DomRegion (comment.StartPosition.Line, comment.StartPosition.Column, comment.EndPosition.Line, comment.EndPosition.Column);
 				switch (comment.CommentType) {
 					case ICSharpCode.NRefactory.CommentType.Block:
 						newComment.CommentType = MonoDevelop.Projects.Dom.CommentType.MultiLine;
@@ -233,6 +233,7 @@ namespace MonoDevelop.CSharpBinding
 			{
 				DomUsing domUsing = new DomUsing ();
 				domUsing.Region   = ConvertRegion (usingDeclaration.StartLocation, usingDeclaration.EndLocation);
+				
 				foreach (ICSharpCode.NRefactory.Ast.Using u in usingDeclaration.Usings) {
 					if (u.IsAlias) {
 						domUsing.Add (u.Name, ConvertReturnType (u.Alias));
@@ -250,6 +251,7 @@ namespace MonoDevelop.CSharpBinding
 				string[] splittedNamespace = namespaceDeclaration.Name.Split ('.');
 				for (int i = splittedNamespace.Length; i > 0; i--) {
 					DomUsing domUsing = new DomUsing ();
+					domUsing.IsFromNamespace = true;
 					domUsing.Region   = ConvertRegion (namespaceDeclaration.StartLocation, namespaceDeclaration.EndLocation);
 					
 					domUsing.Add (String.Join (".", splittedNamespace, 0, i));
