@@ -348,7 +348,6 @@ namespace MonoDevelop.SourceEditor
 								DomRegion commentRegion = DomRegion.Empty;
 								for (int i = 0; i < widget.parsedDocument.Comments.Count; i++) {
 									Comment comment = widget.parsedDocument.Comments[i];
-									System.Console.WriteLine(comment.CommentStartsLine + " -- " + comment.CommentType + " -- " + comment.Region + " --- " + comment.Text);
 									FoldSegment marker = null;
 									if (comment.CommentType == CommentType.MultiLine) {
 										commentText = "/* */";
@@ -370,7 +369,6 @@ namespace MonoDevelop.SourceEditor
 										}
 										if (j - i > 1) {
 											commentRegion = new DomRegion(comment.Region.Start.Line, comment.Region.Start.Column, end.Line, end.Column);
-											System.Console.WriteLine("add region: " + commentRegion);
 											marker = widget.AddMarker (foldSegments,
 											                    comment.IsDocumentation  ? "/// " : "// "  + comment.Text + "...", 
 											                    commentRegion, 
