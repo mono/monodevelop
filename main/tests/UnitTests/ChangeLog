@@ -1,5 +1,9 @@
 2008-09-10  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.CSharpBinding/MemberTests.cs: Added member unit tests.
+
+2008-09-10  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.CSharpBinding/TopLevelTests.cs: changed compilation unit
 	  interface.
 
