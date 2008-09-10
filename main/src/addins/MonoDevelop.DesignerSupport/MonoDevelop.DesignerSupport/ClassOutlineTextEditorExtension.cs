@@ -43,7 +43,7 @@ namespace MonoDevelop.DesignerSupport
 	
 	public class ClassOutlineTextEditorExtension : TextEditorExtension, IOutlinedDocument
 	{
-		ICompilationUnit lastCU = null;
+		ParsedDocument lastCU = null;
 		TreeView outlineTreeView;
 		TreeStore outlineTreeStore;
 		bool refreshingOutline;
@@ -60,7 +60,7 @@ namespace MonoDevelop.DesignerSupport
 		
 		public override void Initialize ()
 		{
-			MonoDevelop.Projects.Dom.Parser.ProjectDomService.CompilationUnitUpdated += UpdateDocumentOutline;
+			MonoDevelop.Projects.Dom.Parser.ProjectDomService.ParsedDocumentUpdated += UpdateDocumentOutline;
 			base.Initialize ();
 		}
 		
@@ -69,7 +69,7 @@ namespace MonoDevelop.DesignerSupport
 			if (disposed)
 				return;
 			disposed = true;
-			MonoDevelop.Projects.Dom.Parser.ProjectDomService.CompilationUnitUpdated -= UpdateDocumentOutline;
+			MonoDevelop.Projects.Dom.Parser.ProjectDomService.ParsedDocumentUpdated -= UpdateDocumentOutline;
 			base.Dispose ();
 		}
 		
@@ -117,7 +117,7 @@ namespace MonoDevelop.DesignerSupport
 				}
 			};
 			
-			this.lastCU = Document.CompilationUnit;
+			this.lastCU = Document.ParsedDocument;
 			outlineTreeView.Realized += delegate { RefillOutlineStore (); };
 						
 			ScrolledWindow sw = new ScrolledWindow ();
@@ -169,13 +169,13 @@ namespace MonoDevelop.DesignerSupport
 			outlineTreeView = null;
 		}
 		
-		void UpdateDocumentOutline (object sender, CompilationUnitEventArgs args)
+		void UpdateDocumentOutline (object sender, ParsedDocumentEventArgs args)
 		{
 			// This event handler can get called when files other than the current content are updated. eg.
 			// when loading a new document. If we didn't do this check the member combo for this tab would have
 			// methods for a different class in it!
-			if (Document.FileName == args.Unit.FileName) {
-				lastCU = args.Unit;
+			if (Document.FileName == args.FileName) {
+				lastCU = args.ParsedDocument;
 				//limit update rate to 5s
 				if (!refreshingOutline) {
 					refreshingOutline = true;
@@ -204,20 +204,22 @@ namespace MonoDevelop.DesignerSupport
 			return false;
 		}
 		
-		static void BuildTreeChildren (TreeStore store, TreeIter parent, ICompilationUnit unit)
+		static void BuildTreeChildren (TreeStore store, TreeIter parent, ParsedDocument parsedDocument)
 		{
-			foreach (IType cls in unit.Types) {
+			if (parsedDocument.CompilationUnit == null)
+				return;
+			foreach (IType cls in parsedDocument.CompilationUnit.Types) {
 				TreeIter childIter;
 				if (!parent.Equals (TreeIter.Zero))
 					childIter = store.AppendValues (parent, cls);
 				else
 					childIter = store.AppendValues (cls);
 				
-				AddTreeClassContents (store, childIter, unit, cls);
+				AddTreeClassContents (store, childIter, parsedDocument, cls);
 			}
 		}
 		
-		static void AddTreeClassContents (TreeStore store, TreeIter parent, ICompilationUnit unit, IType cls)
+		static void AddTreeClassContents (TreeStore store, TreeIter parent, ParsedDocument parsedDocument, IType cls)
 		{
 			List<object> items = new List<object> ();
 			foreach (object o in cls.Members)
@@ -229,7 +231,7 @@ namespace MonoDevelop.DesignerSupport
 			});
 			
 			List<FoldingRegion> regions = new List<FoldingRegion> ();
-			foreach (FoldingRegion fr in unit.FoldingRegions)
+			foreach (FoldingRegion fr in parsedDocument.FoldingRegions)
 				//check regions inside class
 				if (cls.BodyRegion.Contains (fr.Region))
 					regions.Add (fr);
@@ -267,7 +269,7 @@ namespace MonoDevelop.DesignerSupport
 				
 				TreeIter childIter = store.AppendValues (currentParent, item);
 				if (item is IType)
-					AddTreeClassContents (store, childIter, unit, (IType)item);
+					AddTreeClassContents (store, childIter, parsedDocument, (IType)item);
 			}
 		}
 		
