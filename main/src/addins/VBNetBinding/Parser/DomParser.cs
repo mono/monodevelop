@@ -27,19 +27,20 @@ namespace MonoDevelop.VBNetBinding
 			return Path.GetExtension (fileName) == ".vb";
 		}
 		
-		public override ICompilationUnit Parse (string fileName, string content)
+		public override ParsedDocument Parse (string fileName, string content)
 		{
 			using (ICSharpCode.NRefactory.IParser parser = ICSharpCode.NRefactory.ParserFactory.CreateParser (ICSharpCode.NRefactory.SupportedLanguage.VBNet, new StringReader(content))) {
 				return Parse (parser, fileName);
 			}
 		}
 		
-		ICompilationUnit Parse (ICSharpCode.NRefactory.IParser parser, string fileName)
+		ParsedDocument Parse (ICSharpCode.NRefactory.IParser parser, string fileName)
 		{
 			parser.Parse();
 			
 			DomConverter visitor = new DomConverter (fileName);
-			ICompilationUnit result = (ICompilationUnit)visitor.VisitCompilationUnit(parser.CompilationUnit, null);
+			ParsedDocument result = new ParsedDocument ();
+			result.CompilationUnit = (ICompilationUnit)visitor.VisitCompilationUnit(parser.CompilationUnit, null);
 /*			visitor.Cu.ErrorsDuringCompile = p.Errors.Count > 0;
 			visitor.Cu.Tag = p.CompilationUnit;
 			RetrieveRegions(visitor.Cu, p.Lexer.SpecialTracker);
