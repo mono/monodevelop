@@ -1,5 +1,11 @@
 2008-09-10  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.Projects.Dom/DomUsing.cs,
+	  MonoDevelop.Projects.Dom/IUsing.cs: Added the information to
+	  IUsing, if it came from namespace declaration.
+
+2008-09-10  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.Projects.Dom.Parser/AbstractParser.cs,
 	  MonoDevelop.Projects.Dom.Parser/ProjectParserService.cs,
 	  MonoDevelop.Projects.Dom.Parser/IParser.cs,

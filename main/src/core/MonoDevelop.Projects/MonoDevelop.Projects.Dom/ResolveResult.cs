@@ -222,7 +222,6 @@ namespace MonoDevelop.Projects.Dom
 		
 		internal static void AddType (ProjectDom dom, List<object> result, IType type, bool showStatic)
 		{
-			System.Console.WriteLine("Add type2:" + type);
 			if (type == null)
 				return;
 			if (type.ClassType == ClassType.Enum) {
@@ -247,7 +246,6 @@ namespace MonoDevelop.Projects.Dom
 				AddType (dom, result, dom.GetType ("System.Array", -1, true, true), showStatic);
 				return;
 			}
-			System.Console.WriteLine("Add type:" + returnType);
 			AddType (dom, result, dom.GetType (returnType), showStatic);
 		}
 		

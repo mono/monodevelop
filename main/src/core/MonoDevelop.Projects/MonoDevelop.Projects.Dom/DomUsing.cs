@@ -36,6 +36,7 @@ namespace MonoDevelop.Projects.Dom
 		protected DomRegion domRegion;
 		protected List<string>                    namespaces = null;
 		protected Dictionary<string, IReturnType> aliases    = null;
+		bool isFromNamespace = false;
 		
 		public DomRegion Region {
 			get {
@@ -55,6 +56,15 @@ namespace MonoDevelop.Projects.Dom
 		public IDictionary<string, IReturnType> Aliases {
 			get {
 				return aliases;
+			}
+		}
+
+		public bool IsFromNamespace {
+			get {
+				return isFromNamespace;
+			}
+			set {
+				isFromNamespace = value;
 			}
 		}
 		

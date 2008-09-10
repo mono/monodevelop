@@ -36,6 +36,11 @@ namespace MonoDevelop.Projects.Dom
 		DomRegion Region {
 			get;
 		}
+
+		bool IsFromNamespace {
+			get;
+		}
+		
 		
 		IList<string> Namespaces {
 			get;
