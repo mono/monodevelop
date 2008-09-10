@@ -44,8 +44,7 @@ namespace MonoDevelop.SourceEditor
 	{
 		bool loadingMembers = false;
 		bool handlingParseEvent = false;
-		ICompilationUnit memberParseInfo;
-		IDocumentMetaInformation metaInfo;
+		ParsedDocument parsedDocument;
 		
 		ListStore classStore;
 		ListStore memberStore;
@@ -136,7 +135,7 @@ namespace MonoDevelop.SourceEditor
 		
 		public void UpdatePosition (int line, int column)
 		{
-			if (memberParseInfo == null) {
+			if (parsedDocument == null) {
 				return;
 			}
 			
@@ -191,15 +190,14 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 		
-		public void UpdateCompilationUnit (ICompilationUnit memberParseInfo, IDocumentMetaInformation metaInfo)
+		public void UpdateCompilationUnit (ParsedDocument parsedDocument)
 		{
 			if (handlingParseEvent)
 				return;
 			
 			handlingParseEvent = true;
 			
-			this.memberParseInfo = memberParseInfo;
-			this.metaInfo = metaInfo;
+			this.parsedDocument = parsedDocument;
 			
 			GLib.Timeout.Add (100, new GLib.TimeoutHandler (Repopulate));
 		}
@@ -217,12 +215,12 @@ namespace MonoDevelop.SourceEditor
 				
 				// check the IParseInformation member variable to see if we could get ParseInformation for the 
 				// current docuement. If not we can't display class and member info so hide the browser bar.
-				if (memberParseInfo == null) {
+				if (parsedDocument == null || parsedDocument.CompilationUnit == null) {
 //					classBrowser.Visible = false;
 					return false;
 				}
 				
-				ReadOnlyCollection<IType> cls = memberParseInfo.Types;
+				ReadOnlyCollection<IType> cls = parsedDocument.CompilationUnit.Types;
 				// if we've got this far then we have valid parse info - but if we have not classes the not much point
 				// in displaying the browser bar
 				if (cls.Count == 0) {
@@ -267,8 +265,8 @@ namespace MonoDevelop.SourceEditor
 		void UpdateRegionCombo (int line, int column)
 		{
 			int regionNumber = 0;
-			if (metaInfo != null && metaInfo.FoldingRegion != null) {
-				foreach (FoldingRegion region in metaInfo.FoldingRegion) {
+			if (parsedDocument != null && parsedDocument.FoldingRegions != null) {
+				foreach (FoldingRegion region in parsedDocument.FoldingRegions) {
 					if (region.Region.Start.Line <= line && line <= region.Region.End.Line) {
 						regionCombo.Active = regionNumber;
 						tips.SetTip (regionCombo, GettextCatalog.GetString ("Region {0}", region.Name), null);
@@ -285,9 +283,9 @@ namespace MonoDevelop.SourceEditor
 		{
 			regionCombo.Model = null;
 			regionStore.Clear ();
-			if (metaInfo == null || metaInfo.FoldingRegion == null) 
+			if (parsedDocument == null || parsedDocument.FoldingRegions == null) 
 				return;
-			foreach (FoldingRegion region in metaInfo.FoldingRegion) {
+			foreach (FoldingRegion region in parsedDocument.FoldingRegions) {
 				regionStore.AppendValues (
 					MonoDevelop.Core.Gui.Services.Resources.GetIcon (Gtk.Stock.Add, IconSize.Menu), 
 					region.Name, 

@@ -56,8 +56,7 @@ namespace MonoDevelop.SourceEditor
 		
 		bool isDisposed = false;
 		
-		IDocumentMetaInformation metaInfo;
-		ICompilationUnit unit;
+		ParsedDocument parsedDocument;
 		
 		MonoDevelop.SourceEditor.ExtensibleTextEditor textEditor;
 		MonoDevelop.SourceEditor.ExtensibleTextEditor splittedTextEditor;
@@ -110,8 +109,8 @@ namespace MonoDevelop.SourceEditor
 		
 		public void PopulateClassCombo ()
 		{
-			if (classBrowser != null && this.unit != null) {
-				classBrowser.UpdateCompilationUnit (this.unit, this.metaInfo);
+			if (classBrowser != null && this.parsedDocument != null) {
+				classBrowser.UpdateCompilationUnit (this.parsedDocument);
 			}
 		}
 		
@@ -170,22 +169,10 @@ namespace MonoDevelop.SourceEditor
 			
 			UpdateLineCol ();
 			
-			ProjectDomService.CompilationUnitUpdated += OnParseInformationChanged;
+			ProjectDomService.ParsedDocumentUpdated += OnParseInformationChanged;
 //			this.IsClassBrowserVisible = SourceEditorOptions.Options.EnableQuickFinder;
 		}
 
-		void UpdateMetaInformation ()
-		{
-			if (this.textEditor == null || this.textEditor.Document == null)
-				return;
-			IParser parser = ProjectDomService.GetParserByMime (this.textEditor.Document.MimeType);
-			if (parser == null)
-				return;
-			metaInfo = parser.CreateMetaInformation (this.textEditor.Document.OpenTextReader ());
-/*			BindRegionCombo ();
-			UpdateRegionCombo (TextEditor.Caret.Line + 1, TextEditor.Caret.Column);*/
-		}
-		
 		public void SetMime (string mimeType)
 		{
 			//FIXME: check that the parser is able to return information that we can use
@@ -220,7 +207,7 @@ namespace MonoDevelop.SourceEditor
 		#region Error underlining
 		Dictionary<int, Error> errors = new Dictionary<int, Error> ();
 		uint resetTimerId;
-		ICompilationUnit lastCu = null;
+		ParsedDocument lastCu = null;
 		bool resetTimerStarted = false;
 		
 		FoldSegment AddMarker (List<FoldSegment> foldSegments, string text, DomRegion region, FoldingType type)
@@ -275,12 +262,12 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 		
-		void AddUsings (List<FoldSegment> foldSegments, ICompilationUnit cu)
+		void AddUsings (List<FoldSegment> foldSegments, ParsedDocument cu)
 		{
-			if (cu.Usings == null || cu.Usings.Count == 0)
+			if (cu.CompilationUnit == null || cu.CompilationUnit.Usings == null || cu.CompilationUnit.Usings.Count == 0)
 				return;
-			IUsing first = cu.Usings[0];
-			IUsing last = cu.Usings[cu.Usings.Count - 1];
+			IUsing first = cu.CompilationUnit.Usings[0];
+			IUsing last = cu.CompilationUnit.Usings[cu.CompilationUnit.Usings.Count - 1];
 			if (first.Region == null || last.Region == null || first.Region.Start.Line == last.Region.End.Line)
 				return;
 			int startOffset = this.TextEditor.Document.LocationToOffset (first.Region.Start.Line - 1,  first.Region.Start.Column - 1);
@@ -325,13 +312,13 @@ namespace MonoDevelop.SourceEditor
 						List<FoldSegment> foldSegments = new List<FoldSegment> ();
 						widget.AddUsings (foldSegments, widget.lastCu);
 						
-						if (widget.lastCu != null) {
-							foreach (IType cl in widget.lastCu.Types) {
+						if (widget.lastCu != null && widget.lastCu.CompilationUnit != null) {
+							foreach (IType cl in widget.lastCu.CompilationUnit.Types) {
 								if (base.IsStopping)
 									return;
 								widget.AddClass (foldSegments, cl);
 							}
-							
+						/*	
 							foreach (FoldingRegion region in widget.lastCu.FoldingRegions) {
 								FoldSegment marker = widget.AddMarker
 									(foldSegments, region.Name, region.Region, FoldingType.Region);
@@ -340,22 +327,22 @@ namespace MonoDevelop.SourceEditor
 										SourceEditorOptions.Options.DefaultRegionsFolding
 										&& region.DefaultIsFolded;
 							
-							}
+							}*/
 						}
 						
-						if (widget.metaInfo != null && widget.metaInfo.FoldingRegion != null) {
-							foreach (FoldingRegion region in widget.metaInfo.FoldingRegion) {
+						if (widget.lastCu != null ) {
+							foreach (FoldingRegion region in widget.lastCu.FoldingRegions) {
 								FoldSegment marker = widget.AddMarker (foldSegments, region.Name, region.Region, FoldingType.Region);
 								if (marker != null) 
 									marker.IsFolded = SourceEditorOptions.Options.DefaultRegionsFolding && region.DefaultIsFolded;
 							}
 							
-							if (widget.metaInfo.Comments.Count > 0) {
+							if (widget.lastCu.Comments.Count > 0) {
 								Comment firstComment = null;
 								string commentText = null;
 								DomRegion commentRegion = DomRegion.Empty;
-								for (int i = 0; i < widget.metaInfo.Comments.Count; i++) {
-									Comment comment = widget.metaInfo.Comments[i];
+								for (int i = 0; i < widget.lastCu.Comments.Count; i++) {
+									Comment comment = widget.lastCu.Comments[i];
 									FoldSegment marker = null;
 									if (comment.CommentType == CommentType.MultiLine) {
 										commentText = "/* */";
@@ -368,8 +355,8 @@ namespace MonoDevelop.SourceEditor
 										int j = i;
 										int curLine = comment.Region.Start.Line - 1;
 										DomLocation end = comment.Region.End;
-										for (; j < widget.metaInfo.Comments.Count; j++) {
-											Comment  curComment  = widget.metaInfo.Comments[j];
+										for (; j < widget.parsedDocument.Comments.Count; j++) {
+											Comment  curComment  = widget.parsedDocument.Comments[j];
 											if (curComment == null || !curComment.CommentStartsLine || curComment.CommentType != comment.CommentType || curLine + 1 != curComment.Region.Start.Line)
 												break;
 											end     = curComment.Region.End;
@@ -385,9 +372,9 @@ namespace MonoDevelop.SourceEditor
 											i = j - 1;
 										}
 									}
-									if (marker != null && widget.lastCu != null && SourceEditorOptions.Options.DefaultCommentFolding) {
+									if (marker != null && widget.parsedDocument != null && widget.parsedDocument.CompilationUnit != null && SourceEditorOptions.Options.DefaultCommentFolding) {
 										bool isInsideMember = false;
-										foreach (IType type in widget.lastCu.Types) {
+										foreach (IType type in widget.parsedDocument.CompilationUnit.Types) {
 											if (IsInsideMember (marker, commentRegion, type)) {
 												isInsideMember = true;
 												break;
@@ -412,22 +399,21 @@ namespace MonoDevelop.SourceEditor
 		readonly object syncObject = new object();
 		ParseInformationUpdaterWorkerThread parseInformationUpdaterWorkerThread = null;
 		
-		void OnParseInformationChanged (object sender, CompilationUnitEventArgs args)
+		void OnParseInformationChanged (object sender, ParsedDocumentEventArgs args)
 		{
-			if (this.isDisposed || args == null || args.Unit == null || this.view == null  || this.view.ContentName != args.Unit.FileName)
+			if (this.isDisposed || args == null || args.ParsedDocument == null || this.view == null  || this.view.ContentName != args.FileName)
 				return;
 			
-			this.unit = args.Unit;
-			UpdateMetaInformation ();
+			this.parsedDocument = args.ParsedDocument;
 			
 			if (classBrowser != null)
-				classBrowser.UpdateCompilationUnit (this.unit, this.metaInfo);
+				classBrowser.UpdateCompilationUnit (this.parsedDocument);
 			
 			MonoDevelop.SourceEditor.ExtensibleTextEditor editor = this.TextEditor;
 			if (editor == null || editor.Document == null)
 				return;
 			lock (syncObject) {
-				lastCu = args.Unit;
+				lastCu = args.ParsedDocument;
 				StopParseInfoThread ();
 				if (lastCu != null) {
 					parseInformationUpdaterWorkerThread = new ParseInformationUpdaterWorkerThread (this);
@@ -475,7 +461,7 @@ namespace MonoDevelop.SourceEditor
 				errors.Clear ();
 			}
 		}
-		void ParseCompilationUnit (ICompilationUnit cu)
+		void ParseCompilationUnit (ParsedDocument cu)
 		{
 			// No new errors
 			if (cu.Errors == null || cu.Errors.Count < 1)
@@ -517,7 +503,7 @@ namespace MonoDevelop.SourceEditor
 				this.splittedTextEditor = null;
 				view = null;
 				
-				ProjectDomService.CompilationUnitUpdated -= OnParseInformationChanged;
+				ProjectDomService.ParsedDocumentUpdated -= OnParseInformationChanged;
 			}			
 			base.OnDestroyed ();
 		}

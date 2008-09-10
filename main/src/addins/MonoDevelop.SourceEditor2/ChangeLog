@@ -1,3 +1,9 @@
+2008-09-10  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.SourceEditor/SourceEditorWidget.cs,
+	  MonoDevelop.SourceEditor/ClassQuickFinder.cs: Changed compilation
+	  unit/document meta information interface.
+
 2008-09-09  Michael Hutchinson <mhutchinson@novell.com> 
 
 	* MonoDevelop.SourceEditor/SourceEditorWidget.cs: Fix packing on reload
