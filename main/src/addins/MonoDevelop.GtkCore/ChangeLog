@@ -1,3 +1,8 @@
+2008-09-11  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.GtkCore.GuiBuilder/CodeBinder.cs: Changes caused by
+	  interface changes.
+
 2008-09-04  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.GtkCore.NodeBuilders/ProjectFolderNodeBuilderExtension.cs,

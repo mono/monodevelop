@@ -91,7 +91,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			if (targetObject == null)
 				return;
 			
-			ICompilationUnit pi = ProjectDomService.Parse (project, fileName, null);
+			ICompilationUnit pi = ProjectDomService.Parse (project, fileName, null).CompilationUnit;
 			classFile = fileName;
 			
 			if (pi != null /*&& !pi.ErrorsDuringCompile*/) {
@@ -266,7 +266,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			// The class name may have changed. Try to guess the new name.
 			
 			ProjectDom ctx = gproject.GetParserContext ();
-			ICompilationUnit pi = ProjectDomService.Parse (ctx.Project, classFile, null);
+			ICompilationUnit pi = ProjectDomService.Parse (ctx.Project, classFile, null).CompilationUnit;
 			System.Console.WriteLine(classFile + " unit:" + pi + " >>" +  pi.Types.Count);
 			ArrayList matches = new ArrayList ();
 			foreach (IType fcls in pi.Types) {
