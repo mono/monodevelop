@@ -1,3 +1,8 @@
+2008-09-11  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Dom/ParsedDocument.cs: Worked on fold
+	  information update.
+
 2008-09-10  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom/DomType.cs,

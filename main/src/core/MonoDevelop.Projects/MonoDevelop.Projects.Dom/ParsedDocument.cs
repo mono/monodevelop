@@ -101,6 +101,58 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
+		protected void GenerateFoldsFromUsings ()
+		{
+			if (CompilationUnit.Usings == null || CompilationUnit.Usings.Count == 0)
+				return;
+			IUsing first = CompilationUnit.Usings[0];
+			IUsing last = first;
+			for (int i = 1; i < CompilationUnit.Usings.Count; i++) {
+				if (CompilationUnit.Usings[i].IsFromNamespace)
+					break;
+				last = CompilationUnit.Usings[i];
+			}
+			
+			if (first.Region == null || last.Region == null || first.Region.Start.Line == last.Region.End.Line)
+				return;
+			foldingRegions.Add (new FoldingRegion ("...", new DomRegion (first.Region.Start, last.Region.End)));
+		}
+		
+		protected void GenerateFoldsFromType (IType type)
+		{
+			if (type.BodyRegion != null && type.BodyRegion.End.Line > type.BodyRegion.Start.Line) {
+				foldingRegions.Add (new FoldingRegion ("...", type.BodyRegion));
+			}
+			foreach (IType inner in type.InnerTypes) 
+				GenerateFoldsFromType (inner);
+			
+			if (type.ClassType == ClassType.Interface)
+				return;
+
+			foreach (IMethod method in type.Methods) {
+				if (method.BodyRegion.End.Line <= 0)
+					continue;
+				foldingRegions.Add (new FoldingRegion ("...", method.BodyRegion));
+			}
+			
+			foreach (IProperty property in type.Properties) {
+				if (property.BodyRegion.End.Line <= 0)
+					continue;
+				foldingRegions.Add (new FoldingRegion ("...", property.BodyRegion));
+			}
+		}
+		
+		public virtual void GenerateFoldInformation ()
+		{
+			if (CompilationUnit == null)
+				return;
+			GenerateFoldsFromUsings ();
+			
+			foreach (IType type in CompilationUnit.Types) {
+				GenerateFoldsFromType (type);
+			}
+		}
+		
 		public void Add (Error error)
 		{
 			hasErrors |= error.ErrorType == ErrorType.Error;
