@@ -479,7 +479,7 @@ namespace MonoDevelop.ValaBinding
 
 		/// <summary>
 		/// Add dependencies of project packages to current project,
-		/// and add cflags for project package
+		/// and add cflags for project package and LD_LIBRARY_PATH
 		/// </summary>
 		private void AddDependencies (object obj, ProjectPackageEventArgs args) {
 			ProjectPackage package = args.Package;
@@ -496,8 +496,24 @@ namespace MonoDevelop.ValaBinding
 
 				// Currently, we need to add include directory and linker flags - this should be obsoleted
 				string ccargs = string.Format (" --Xcc=\\\\\\\"-I{0}\\\\\\\" --Xcc=\\\\\\\"-L{0}\\\\\\\" --Xcc=\\\\\\\"-l{1}\\\\\\\" ", Path.GetDirectoryName (depsfile), package.Name);
-				ValaCompilationParameters vcp = (ValaCompilationParameters)(((ValaProjectConfiguration)this.DefaultConfiguration).CompilationParameters);
-				if (!vcp.ExtraCompilerArguments.Contains (ccargs)){ vcp.ExtraCompilerArguments += ccargs; }
+				string ldpath = string.Empty;
+				string packagePath = Path.GetDirectoryName(package.File);
+				
+				foreach (string pc in GetConfigurations ()) {
+					ValaProjectConfiguration valapc = GetConfiguration (pc) as ValaProjectConfiguration;
+					if (null == valapc){ continue; }
+
+					ValaCompilationParameters vcp = (ValaCompilationParameters)valapc.CompilationParameters;
+					if (!vcp.ExtraCompilerArguments.Contains (ccargs)){ vcp.ExtraCompilerArguments += ccargs; }
+
+					if(valapc.EnvironmentVariables.TryGetValue ("LD_LIBRARY_PATH", out ldpath)) {
+						if (!ldpath.Contains (packagePath)){ ldpath += Path.PathSeparator + packagePath; }
+					} else {
+						ldpath = packagePath;
+					}
+					
+					valapc.EnvironmentVariables["LD_LIBRARY_PATH"] = ldpath;
+				}// add compilation parameters and LD_LIBRARY_PATH
 			} catch { /* Do anything here? */ }
 		}// AddDependencies
 	}
