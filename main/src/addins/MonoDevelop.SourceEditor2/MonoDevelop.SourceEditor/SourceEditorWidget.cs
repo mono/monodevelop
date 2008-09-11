@@ -225,62 +225,10 @@ namespace MonoDevelop.SourceEditor
 		{
 			if (this.TextEditor == null || this.TextEditor.Document == null)
 				return;
-			if (cl.BodyRegion != null && cl.BodyRegion.End.Line > cl.BodyRegion.Start.Line) {
-				LineSegment startLine = this.TextEditor.Document.GetLine (cl.Location.Line - 1);
-				if (startLine != null) {
-					int startOffset = startLine.Offset + startLine.EditableLength;
-					int endOffset   = this.TextEditor.Document.LocationToOffset (cl.BodyRegion.End.Line - 1,  cl.BodyRegion.End.Column);
-					foldSegments.Add (new FoldSegment ("...", startOffset, endOffset - startOffset, FoldingType.TypeDefinition));
-				}
-			}
-			foreach (IType inner in cl.InnerTypes) 
-				AddClass (foldSegments, inner);
-			if (cl.ClassType == ClassType.Interface)
-				return;
-			foreach (IMethod method in cl.Methods) {
-				if (method.Location == null || method.BodyRegion == null || method.BodyRegion.End.Line <= 0 /*|| method.Region.End.Line == method.BodyRegion.End.Line*/)
-					continue;
-				LineSegment startLine = this.TextEditor.Document.GetLine (method.Location.Line - 1);
-				if (startLine == null)
-					continue;
-				int startOffset = startLine.Offset + startLine.EditableLength;
-				int endOffset   = this.TextEditor.Document.LocationToOffset (method.BodyRegion.End.Line - 1,  method.BodyRegion.End.Column - 1);
-				foldSegments.Add (new FoldSegment ("...", startOffset, endOffset - startOffset, FoldingType.TypeMember));
-			}
 			
-			foreach (IProperty property in cl.Properties) {
-				if (property.Location == null || property.BodyRegion == null || property.BodyRegion.End.Line <= 0 /*|| property.Region.End.Line == property.BodyRegion.End.Line*/)
-					continue;
-				LineSegment startLine = this.TextEditor.Document.GetLine (property.Location.Line - 1);
-				if (startLine == null)
-					continue;
-				
-				int startOffset = this.TextEditor.Document.LocationToOffset (property.BodyRegion.Start.Line - 1,  property.BodyRegion.Start.Column - 1);
-				int endOffset   = this.TextEditor.Document.LocationToOffset (property.BodyRegion.End.Line - 1,  property.BodyRegion.End.Column - 1);
-				foldSegments.Add (new FoldSegment ("...", startOffset, endOffset - startOffset, FoldingType.TypeMember));
-			}
+			
+			
 		}
-		
-		void AddUsings (List<FoldSegment> foldSegments, ParsedDocument cu)
-		{
-			if (cu.CompilationUnit == null || cu.CompilationUnit.Usings == null || cu.CompilationUnit.Usings.Count == 0)
-				return;
-			IUsing first = cu.CompilationUnit.Usings[0];
-			IUsing last = first;
-			for (int i = 1; i < cu.CompilationUnit.Usings.Count; i++) {
-				if (cu.CompilationUnit.Usings[i].IsFromNamespace)
-					break;
-				last = cu.CompilationUnit.Usings[i];
-			}
-			
-			if (first.Region == null || last.Region == null || first.Region.Start.Line == last.Region.End.Line)
-				return;
-			int startOffset = this.TextEditor.Document.LocationToOffset (first.Region.Start.Line - 1,  first.Region.Start.Column - 1);
-			int endOffset   = this.TextEditor.Document.LocationToOffset (last.Region.End.Line - 1,  last.Region.End.Column - 1);
-			
-			foldSegments.Add (new FoldSegment ("...", startOffset, endOffset - startOffset, FoldingType.TypeMember));
-		}
-			
 		
 		class ParseInformationUpdaterWorkerThread : WorkerThread
 		{
@@ -315,25 +263,6 @@ namespace MonoDevelop.SourceEditor
 				try {
 					if (SourceEditorOptions.Options.ShowFoldMargin && widget.parsedDocument != null) {
 						List<FoldSegment> foldSegments = new List<FoldSegment> ();
-						widget.AddUsings (foldSegments, widget.parsedDocument);
-						
-						if (widget.parsedDocument != null && widget.parsedDocument.CompilationUnit != null) {
-							foreach (IType cl in widget.parsedDocument.CompilationUnit.Types) {
-								if (base.IsStopping)
-									return;
-								widget.AddClass (foldSegments, cl);
-							}
-						/*	
-							foreach (FoldingRegion region in widget.lastCu.FoldingRegions) {
-								FoldSegment marker = widget.AddMarker
-									(foldSegments, region.Name, region.Region, FoldingType.Region);
-								if (marker != null) 
-									marker.IsFolded =
-										SourceEditorOptions.Options.DefaultRegionsFolding
-										&& region.DefaultIsFolded;
-							
-							}*/
-						}
 						
 						if (widget.parsedDocument != null ) {
 							foreach (FoldingRegion region in widget.parsedDocument.FoldingRegions) {

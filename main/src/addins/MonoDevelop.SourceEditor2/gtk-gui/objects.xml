@@ -1,6 +1,2 @@
 <objects attr-sync="on">
-  <object type="MonoDevelop.SourceEditor.ExtensibleTextEditor" palette-category="General" allow-children="false" base-type="Mono.TextEditor.TextEditor">
-    <itemgroups />
-    <signals />
-  </object>
 </objects>
