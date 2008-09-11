@@ -415,7 +415,7 @@ namespace MonoDevelop.Ide.Gui
 					return TextEditor.Text;
 				});
 			};
-			MonoDevelop.Projects.Dom.Parser.ProjectDomService.Refresh (Project, FileName, MonoDevelop.Core.Gui.Services.PlatformService.GetMimeTypeForUri (FileName),
+			MonoDevelop.Projects.Dom.Parser.ProjectDomService.Parse (Project, FileName, MonoDevelop.Core.Gui.Services.PlatformService.GetMimeTypeForUri (FileName),
 				                                                           delegate () {
 					return TextEditor.Text;
 				});
