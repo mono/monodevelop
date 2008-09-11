@@ -1,3 +1,11 @@
+2008-09-10  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* Makefile.am, AspNetAddIn.mdp: Updated.
+	* MonoDevelop.AspNet.Parser/SimpleCompletionData.cs: Utility completion
+	  data classes -- in C#3!
+	* MonoDevelop.AspNet.Parser/Directive.cs: Work-in-progress on directive
+	  completion.
+
 2008-09-10  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.AspNet/CodeBehind.cs,

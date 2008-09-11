@@ -16,6 +16,7 @@ REFS =  \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Projects.Gui.dll \
 	-r:System \
 	-r:System.Configuration \
+	-r:System.Core \
 	-r:System.Design \
 	-r:System.Drawing \
 	-r:System.Drawing.Design \
@@ -69,6 +70,7 @@ FILES =  \
 	MonoDevelop.AspNet.Parser/AspNetParser.cs \
 	MonoDevelop.AspNet.Parser/CompilationUnitVisitor.cs \
 	MonoDevelop.AspNet.Parser/DebugStringVisitor.cs \
+	MonoDevelop.AspNet.Parser/Directive.cs \
 	MonoDevelop.AspNet.Parser/Document.cs \
 	MonoDevelop.AspNet.Parser/DocumentReferenceManager.cs \
 	MonoDevelop.AspNet.Parser/LocatedParserException.cs \
@@ -77,6 +79,7 @@ FILES =  \
 	MonoDevelop.AspNet.Parser/PageInfo.cs \
 	MonoDevelop.AspNet.Parser/PageInfoVisitor.cs \
 	MonoDevelop.AspNet.Parser/Regexes.cs \
+	MonoDevelop.AspNet.Parser/SimpleCompletionData.cs \
 	MonoDevelop.AspNet.Parser/SuggestedHandlerCompletionData.cs \
 	MonoDevelop.AspNet.Parser/WebFormReferenceManager.cs \
 	MonoDevelop.AspNet.StateEngine/AspNetDirectiveState.cs \
