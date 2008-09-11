@@ -145,7 +145,7 @@ namespace MonoDevelop.CSharpBinding
 				
 				ConversionVisitior visitor = new ConversionVisitior (result);
 				visitor.VisitCompilationUnit (parser.CompilationUnit, null);
-				
+				result.GenerateFoldInformation ();
 				return result;
 			}
 		}
