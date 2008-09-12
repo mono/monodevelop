@@ -89,8 +89,8 @@ namespace AspNetEdit.Integration
 				ctx = null;
 				return null;
 			}
-			ctx = MonoDevelop.Projects.Dom.Parser.ProjectDomService.GetDatabaseProjectDom (project);
-			return ctx.GetType (className, -1, false, false);
+			ctx = MonoDevelop.Projects.Dom.Parser.ProjectDomService.GetProjectDom (project);
+			return ctx.GetType (className, false, false);
 		}
 		
 		public bool IdentifierExistsInCodeBehind (string trialIdentifier)

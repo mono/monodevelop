@@ -189,7 +189,7 @@ namespace AspNetEdit.Integration
 					MonoDevelop.Projects.Dom.Parser.ProjectDomService.Parse (
 						null,
 						viewContent.ContentName,
-						mimeType)
+						mimeType).CompilationUnit
 					as MonoDevelop.AspNet.Parser.AspNetCompilationUnit;
 					
 				if (cu != null && cu.PageInfo != null && !string.IsNullOrEmpty (cu.PageInfo.InheritedClass))
