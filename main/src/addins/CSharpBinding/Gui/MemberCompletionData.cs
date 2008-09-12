@@ -54,7 +54,7 @@ namespace MonoDevelop.CSharpBinding
 			}
 		}
 		
-		public MemberCompletionData (IMember member) : base (member.Name, member.StockIcon)
+		public MemberCompletionData (IMember member) : base (ambience.GetString (member, OutputFlags.ClassBrowserEntries), member.StockIcon)
 		{
 			this.member = member;
 		}
@@ -138,7 +138,7 @@ namespace MonoDevelop.CSharpBinding
 						// skip <example>-nodes
 						} else if (elname == "example") {
 							xml.Skip();
-							xml.Skip();							
+							xml.Skip();
 						} else if (elname == "exception") {
 							ret.Append("Exception: " + GetCref(xml["cref"]) + ":\n");
 						} else if (elname == "returns") {

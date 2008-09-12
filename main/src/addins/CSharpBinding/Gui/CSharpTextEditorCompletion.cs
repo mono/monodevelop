@@ -414,7 +414,13 @@ namespace MonoDevelop.CSharpBinding.Gui
 					provider.AddCompletionData (new CodeCompletionData (ns.Name, ns.StockIcon, ns.Documentation));
 					return;
 				}
-			
+				IReturnType rt = obj as IReturnType;
+				if (rt != null) {
+					CodeCompletionData cd = new CodeCompletionData (ambience.GetString (rt, OutputFlags.ClassBrowserEntries), "md-class", "");
+					cd.CompletionString = ambience.GetString (rt, OutputFlags.ClassBrowserEntries | OutputFlags.UseFullName);
+					provider.AddCompletionData (cd);
+					return;
+				}
 				IMember member = obj as IMember;
 				if (member != null && !String.IsNullOrEmpty (member.Name)) {
 					CodeCompletionData newData = new MemberCompletionData (member);
@@ -430,7 +436,6 @@ namespace MonoDevelop.CSharpBinding.Gui
 			}
 		}
 		
-		
 		ICompletionDataProvider CreateCompletionData (ResolveResult resolveResult, ExpressionResult expressionResult)
 		{
 			if (resolveResult == null || expressionResult == null)
@@ -439,7 +444,6 @@ namespace MonoDevelop.CSharpBinding.Gui
 			ProjectDom dom = ProjectDomService.GetProjectDom (Document.Project);
 			if (dom == null)
 				return null;
-			
 			IEnumerable<object> objects = resolveResult.CreateResolveResult (dom);
 			CompletionDataCollector col = new CompletionDataCollector ();
 			if (objects != null) {
@@ -491,13 +495,19 @@ namespace MonoDevelop.CSharpBinding.Gui
 			IType type = null;
 			if (returnType != null)
 				type = dom.SearchType (new SearchTypeRequest (Document.CompilationUnit, returnType));
+			ExpressionContext.TypeExpressionContext tce = context as ExpressionContext.TypeExpressionContext;
+			
+			
 			if (type == null)
 				return result;
 			
 			CompletionDataCollector col = new CompletionDataCollector();
-			col.AddCompletionData (result, type);
+			if (tce != null && tce.Type != null) {
+				col.AddCompletionData (result, tce.Type);
+			} else {
+				col.AddCompletionData (result, type);
+			}
 			foreach (IType curType in dom.GetSubclasses (type)) {
-				Console.WriteLine ("pp tt: " + curType.Name + " " + curType.ClassType);
 				if (context != null && context.FilterEntry (curType))
 					continue;
 				col.AddCompletionData (result, curType);
