@@ -461,27 +461,26 @@ namespace MonoDevelop.CSharpBinding.Gui
 		
 		void AddVirtuals (CodeCompletionDataProvider provider, IType type, string modifiers, IReturnType curType)
 		{
+			if (curType == null)
+				return;
 			IType searchType = dom.SearchType (new SearchTypeRequest (Document.CompilationUnit, curType));
 			//System.Console.WriteLine("Add Virtuals for:" + searchType + " / " + curType);
 			if (searchType == null)
 				return;
 			bool isInterface      = type.ClassType == ClassType.Interface;
 			bool includeOverriden = false;
-			foreach (IMember m in searchType.Members) {
-				//System.Console.WriteLine ("scan:" + m);
-				if (m.IsInternal && searchType.SourceProject != Document.Project)
-					continue;
-				
-				if ((isInterface || m.IsVirtual || m.IsAbstract) && !m.IsSealed && (includeOverriden || !type.HasOverriden (m))) {
-					//System.Console.WriteLine("add");
-					provider.AddCompletionData (new NewOverrideCompletionData (Editor, type, m));
+			foreach (IType t in this.dom.GetInheritanceTree (searchType)) {
+				//System.Console.WriteLine("t:" + t);
+				foreach (IMember m in t.Members) {
+					//System.Console.WriteLine ("scan:" + m);
+					if (m.IsInternal && searchType.SourceProject != Document.Project)
+						continue;
+					
+					if ((isInterface || m.IsVirtual || m.IsAbstract) && !m.IsSealed && (includeOverriden || !type.HasOverriden (m))) {
+						//System.Console.WriteLine("add");
+						provider.AddCompletionData (new NewOverrideCompletionData (Editor, type, m));
+					}
 				}
-			}
-			if (searchType.BaseType == null) {
-				if (searchType.FullName != "System.Object")
-					AddVirtuals (provider, type, modifiers, DomReturnType.Object);
-			} else {
-				AddVirtuals (provider, type, modifiers, searchType.BaseType);
 			}
 		}
 		
@@ -509,7 +508,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 		CodeCompletionDataProvider GetOverrideCompletionData (IType type, string modifiers)
 		{
 			CodeCompletionDataProvider result = new CodeCompletionDataProvider (null, GetAmbience ());
-			AddVirtuals (result, type, modifiers, type.BaseType);
+			AddVirtuals (result, type, modifiers, type.BaseType ?? DomReturnType.Object);
 			return result;
 		}
 		

@@ -93,7 +93,8 @@ namespace MonoDevelop.CSharpBinding
 				sb.Append ("return string.Format(");
 				sb.Append ("\"[");
 				sb.Append (type.Name);
-				sb.Append (": ");
+				if (type.PropertyCount > 0) 
+					sb.Append (": ");
 				int i = 0;
 				foreach (IProperty property in type.Properties) {
 					if (property.IsStatic || !property.IsPublic)
