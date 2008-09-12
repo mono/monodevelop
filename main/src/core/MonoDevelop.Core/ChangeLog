@@ -1,3 +1,9 @@
+2008-09-12  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Core.Collections/ReadOnlyDictionary.cs,
+	  MonoDevelop.Core.mdp, Makefile.am: Implemented new
+	  ReadOnlyDictionary class.
+
 2008-09-04  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Core.Collections/Set.cs: The Add method now returns true
