@@ -39,6 +39,7 @@ using MonoDevelop.Projects;
 using MonoDevelop.Projects.Text;
 using MonoDevelop.Projects.Gui.Dialogs;
 using MonoDevelop.Projects.Dom;
+using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Projects.CodeGeneration;
 using MonoDevelop.Components;
 using MonoDevelop.Core;
@@ -1205,7 +1206,7 @@ namespace MonoDevelop.Ide.Gui
 		public event AddEntryEventHandler AddingEntryToCombine;
 	}
 	
-	class ParseProgressMonitorFactory
+	class ParseProgressMonitorFactory: IProgressMonitorFactory
 	{
 		public IProgressMonitor CreateProgressMonitor ()
 		{

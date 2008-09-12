@@ -244,8 +244,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 
 		bool IsValidPropertyName (string name, out string error_msg)
 		{
-			int i;
-
 			// Don't allow the user to click OK unless there is a new name
 			if (name.Length == 0) {
 				error_msg = GettextCatalog.GetString ("Property name must be non-empty.");

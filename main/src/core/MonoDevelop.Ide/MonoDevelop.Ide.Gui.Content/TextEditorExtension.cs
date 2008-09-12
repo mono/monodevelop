@@ -70,11 +70,11 @@ namespace MonoDevelop.Ide.Gui.Content
 			IViewContent view = document.Window.ViewContent;
 			string file = view.IsUntitled ? view.UntitledName : view.ContentName;
 			Project project = view.Project;
-			//IParserDatabase pdb = IdeApp.Workspace.ParserDatabase;
 			
 			if (project != null)
-				return ProjectDomService.GetDatabaseProjectDom (project);
-			return new ProjectDom ();
+				return ProjectDomService.GetProjectDom (project);
+			else
+				return ProjectDomService.GetFileDom (file);
 		}
 		
 		protected Ambience GetAmbience ()

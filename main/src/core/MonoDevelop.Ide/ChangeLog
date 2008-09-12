@@ -1,3 +1,16 @@
+2008-09-12  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Commands/RefactoryCommands.cs,
+	  MonoDevelop.Ide.Gui.Content/TextEditorExtension.cs,
+	  MonoDevelop.Ide.Gui.Dialogs/GoToDialog.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassPad/ClassBrowserPadWidget.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassPad/NamespaceData.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassPad/ProjectNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui/Document.cs, MonoDevelop.Ide.Gui/Ide.cs,
+	  MonoDevelop.Ide.Gui/ProjectOperations.cs,
+	  MonoDevelop.Ide.Gui/RootWorkspace.cs: Track api changes.
+	* MonoDevelop.Ide.Gui.Dialogs/EncapsulateFieldDialog.cs: Fix warning.
+
 2008-09-11  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Ide.Gui/Document.cs: Worked on fold information update.

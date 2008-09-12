@@ -151,6 +151,12 @@ namespace MonoDevelop.Ide.Gui
 			IdeApp.Preferences.DefaultProjectFileFormatChanged += delegate {
 				IdeApp.Services.ProjectService.DefaultFileFormatId = IdeApp.Preferences.DefaultProjectFileFormat;
 			};
+
+			// Perser service initialization
+
+			MonoDevelop.Projects.Dom.Parser.ProjectDomService.TrackFileChanges = true;
+			MonoDevelop.Projects.Dom.Parser.ProjectDomService.ParseProgressMonitorFactory = new ParseProgressMonitorFactory (); 
+
 			
 			// Startup commands
 			

@@ -381,7 +381,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 					}
 				} else {
 
-					foreach (IType c in ProjectDomService.GetDatabaseProjectDom (p).Types) {
+					foreach (IType c in ProjectDomService.GetProjectDom (p).Types) {
 						if (!searchCycleActive) return;
 						CheckType (c, toMatch);
 					}

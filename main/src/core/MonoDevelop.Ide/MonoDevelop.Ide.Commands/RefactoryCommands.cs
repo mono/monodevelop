@@ -75,10 +75,10 @@ namespace MonoDevelop.Ide.Commands
 					ICompilationUnit pinfo;
 					ProjectDom ctx;
 					if (doc.Project != null) {
-						ctx = ProjectDomService.GetDatabaseProjectDom (doc.Project);
+						ctx = ProjectDomService.GetProjectDom (doc.Project);
 						pinfo = doc.CompilationUnit;
 					} else {
-						ctx = new ProjectDom ();
+						ctx = ProjectDom.Empty;
 						pinfo = doc.CompilationUnit;
 					}
 					if (ctx == null)
@@ -210,7 +210,6 @@ namespace MonoDevelop.Ide.Commands
 			Refactorer refactorer = new Refactorer (ctx, pinfo, eclass, item, null);
 			CommandInfoSet ciset = new CommandInfoSet ();
 			Ambience ambience = AmbienceService.GetAmbienceForFile (pinfo.FileName);
-			Project project = IdeApp.Workbench.ActiveDocument.Project;
 			string itemName = EscapeName (ambience.GetString (item, OutputFlags.IncludeParameters | OutputFlags.EmitMarkup));
 			bool canRename = false;
 			string txt;
@@ -341,7 +340,7 @@ namespace MonoDevelop.Ide.Commands
 		
 		void AddRefactoryMenuForClass (ProjectDom ctx, ICompilationUnit pinfo, CommandInfoSet ciset, string className)
 		{
-			IType cls = ctx.GetType (className, -1, true, true);
+			IType cls = ctx.GetType (className, null, true, true);
 			if (cls != null) {
 				CommandInfo ci = BuildRefactoryMenuForItem (ctx, pinfo, null, cls);
 				if (ci != null)
@@ -425,7 +424,7 @@ namespace MonoDevelop.Ide.Commands
 			if (cls != null && cls.BaseTypes != null) {
 				foreach (IReturnType bc in cls.BaseTypes) {
 					IType bcls = ctx.GetType (bc);
-					if (bcls != null && bcls.ClassType != ClassType.Interface && bcls.Location != null) {
+					if (bcls != null && bcls.ClassType != ClassType.Interface && !bcls.Location.IsEmpty) {
 						IdeApp.Workbench.OpenDocument (bcls.CompilationUnit.FileName, bcls.Location.Line, bcls.Location.Column, true);
 						return;
 					}
@@ -436,7 +435,7 @@ namespace MonoDevelop.Ide.Commands
 			if (method != null) {
 				foreach (IReturnType bc in method.DeclaringType.BaseTypes) {
 					IType bcls = ctx.GetType (bc);
-					if (bcls != null && bcls.ClassType != ClassType.Interface && bcls.Location != null) {
+					if (bcls != null && bcls.ClassType != ClassType.Interface && !bcls.Location.IsEmpty) {
 						IMethod baseMethod = null;
 						foreach (IMethod m in bcls.Methods) {
 							if (m.Name == method.Name && m.Parameters.Count == m.Parameters.Count) {
@@ -469,7 +468,7 @@ namespace MonoDevelop.Ide.Commands
 
 				CodeRefactorer cr = IdeApp.Workspace.GetCodeRefactorer (IdeApp.ProjectOperations.CurrentSelectedSolution);
 				foreach (IType sub in cr.FindDerivedClasses (cls)) {
-					if (sub.Location != null)
+					if (!sub.Location.IsEmpty)
 						monitor.ReportResult (sub.CompilationUnit.FileName, sub.Location.Line, sub.Location.Column, sub.FullName);
 				}
 			}

@@ -354,7 +354,7 @@ namespace MonoDevelop.Ide.Gui
 		}
 		public ICompilationUnit CompilationUnit {
 			get {
-				return parsedDocument.CompilationUnit;
+				return parsedDocument != null ? parsedDocument.CompilationUnit : null;
 			}
 		}
 		
@@ -408,7 +408,7 @@ namespace MonoDevelop.Ide.Gui
 			if (editor == null)
 				return;
 			editor.TextChanged += delegate {
-				MonoDevelop.Projects.Dom.Parser.ProjectDomService.Refresh (Project, 
+				MonoDevelop.Projects.Dom.Parser.ProjectDomService.Parse (Project, 
 				                                                           FileName, 
 				                                                           MonoDevelop.Core.Gui.Services.PlatformService.GetMimeTypeForUri (FileName),
 				                                                           delegate () {

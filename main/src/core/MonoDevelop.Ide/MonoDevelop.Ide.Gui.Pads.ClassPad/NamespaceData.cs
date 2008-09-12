@@ -96,11 +96,11 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 		public override void AddProjectContent (ITreeBuilder builder)
 		{
 			if (project != null) {
-				ProjectDom dom = ProjectDomService.GetDatabaseProjectDom (Project);
+				ProjectDom dom = ProjectDomService.GetProjectDom (Project);
 				AddProjectContent (builder, dom.GetNamespaceContents (FullName, false, false));
 			} else {
 				foreach (Project p in IdeApp.Workspace.GetAllProjects ()) {
-					ProjectDom dom = ProjectDomService.GetDatabaseProjectDom (p);
+					ProjectDom dom = ProjectDomService.GetProjectDom (p);
 					AddProjectContent (builder, dom.GetNamespaceContents (FullName, false, false));
 				}
 			}
