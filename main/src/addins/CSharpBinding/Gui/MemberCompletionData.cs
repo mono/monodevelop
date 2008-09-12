@@ -54,7 +54,7 @@ namespace MonoDevelop.CSharpBinding
 			}
 		}
 		
-		public MemberCompletionData (IMember member) : base (ambience.GetString (member, OutputFlags.ClassBrowserEntries), member.StockIcon)
+		public MemberCompletionData (IMember member) : base (ambience.GetString (member, OutputFlags.None), member.StockIcon)
 		{
 			this.member = member;
 		}

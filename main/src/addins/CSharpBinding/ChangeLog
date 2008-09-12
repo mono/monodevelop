@@ -1,5 +1,9 @@
 2008-09-12  Mike Krüger <mkrueger@novell.com> 
 
+	* Gui/MemberCompletionData.cs: fixed bug in code completion list.
+
+2008-09-12  Mike Krüger <mkrueger@novell.com> 
+
 	* Gui/MemberCompletionData.cs, Gui/CSharpAmbience.cs,
 	  Gui/CSharpTextEditorCompletion.cs: Worked on code completion.
 
