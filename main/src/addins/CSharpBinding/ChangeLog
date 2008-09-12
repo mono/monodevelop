@@ -1,3 +1,7 @@
+2008-09-12  Mike Krüger <mkrueger@novell.com> 
+
+	* Gui/CSharpTextEditorCompletion.cs: Fixed bug in override completion.
+
 2008-09-12  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Autotools/Autotools.mdp, gtk-gui/generated.cs,

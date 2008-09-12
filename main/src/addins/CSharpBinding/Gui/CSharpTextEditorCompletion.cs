@@ -461,7 +461,8 @@ namespace MonoDevelop.CSharpBinding.Gui
 		
 		void AddVirtuals (CodeCompletionDataProvider provider, IType type, string modifiers, IReturnType curType)
 		{
-			IType searchType = dom.GetType (curType);
+			IType searchType = dom.SearchType (new SearchTypeRequest (Document.CompilationUnit, curType));
+			//System.Console.WriteLine("Add Virtuals for:" + searchType + " / " + curType);
 			if (searchType == null)
 				return;
 			bool isInterface      = type.ClassType == ClassType.Interface;
