@@ -41,6 +41,8 @@ namespace MonoDevelop.Projects.Dom
 		protected List<IParameter> parameters = null;
 		protected List<IReturnType> genericParameters = null;
 
+		static readonly ReadOnlyCollection<IParameter> emptyParameters = new ReadOnlyCollection<IParameter> (new IParameter [0]);
+
 		public MethodModifier MethodModifier {
 			get {
 				return methodModifier;
@@ -64,7 +66,7 @@ namespace MonoDevelop.Projects.Dom
 
 		public virtual ReadOnlyCollection<IParameter> Parameters {
 			get {
-				return parameters != null ? parameters.AsReadOnly () : null;
+				return parameters != null ? parameters.AsReadOnly () : emptyParameters;
 			}
 		}
 		

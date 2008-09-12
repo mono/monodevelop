@@ -183,7 +183,9 @@ namespace MonoDevelop.Projects.Dom.Serialization
 
 		public ProjectDom LoadProjectDom (Project project)
 		{
-			return new DatabaseProjectDom (this, new ProjectCodeCompletionDatabase (project, this));
+			DatabaseProjectDom dom = new DatabaseProjectDom (this, new ProjectCodeCompletionDatabase (project, this));
+			dom.Project = project;
+			return dom;
 		}
 		
 		void DeleteObsoleteDatabases ()

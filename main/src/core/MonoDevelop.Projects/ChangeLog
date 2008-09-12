@@ -1,3 +1,10 @@
+2008-09-12  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Dom/DomMethod.cs: Return an empty collection if
+	  the method has no parameters.
+	* MonoDevelop.Projects.Dom.Serialization/ParserDatabase.cs: Set the
+	  source project to project doms.
+
 2008-09-12  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom.Parser/ProjectParserService.cs,
