@@ -41,6 +41,7 @@ namespace MonoDevelop.Projects.Dom
 		
 		ProjectDom SourceProjectDom {
 			get;
+			set;
 		}
 		
 		SolutionItem SourceProject {

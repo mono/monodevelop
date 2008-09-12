@@ -1,5 +1,13 @@
 2008-09-12  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Projects.Dom.Parser/ProjectParserService.cs,
+	  MonoDevelop.Projects.Dom/IType.cs: Set the source project dom to
+	  types just after parsing.
+	* MonoDevelop.Projects.Dom/DomType.cs: For inner types, return the
+	  project dom of the parent class.
+
+2008-09-12  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Projects.Dom/DomMethod.cs: Return an empty collection if
 	  the method has no parameters.
 	* MonoDevelop.Projects.Dom.Serialization/ParserDatabase.cs: Set the

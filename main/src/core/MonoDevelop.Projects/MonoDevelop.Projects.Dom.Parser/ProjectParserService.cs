@@ -773,6 +773,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 						return null;
 					
 					if (projects != null && projects.Length > 0) {
+						SetSourceProject (parseInformation.CompilationUnit, GetProjectDom (projects [0]));
 						foreach (Project project in projects) {
 							ProjectDom db = GetProjectDom (project);
 							if (db != null) {
@@ -860,6 +861,12 @@ namespace MonoDevelop.Projects.Dom.Parser
 			
 			OnParsedDocumentUpdated (new ParsedDocumentEventArgs (fileName, parserOutput));
 			return parserOutput;
+		}
+
+		static void SetSourceProject (ICompilationUnit unit, ProjectDom dom)
+		{
+			foreach (IType t in unit.Types)
+				t.SourceProjectDom = dom;
 		}
 
 		static ParsedDocument GetCachedParseInformation (string fileName)

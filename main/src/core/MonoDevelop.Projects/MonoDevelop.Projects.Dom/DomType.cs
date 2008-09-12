@@ -83,6 +83,8 @@ namespace MonoDevelop.Projects.Dom
 		
 		public ProjectDom SourceProjectDom {
 			get {
+				if (sourceProjectDom == null && DeclaringType != null)
+					return DeclaringType.SourceProjectDom;
 				return sourceProjectDom;
 			}
 			set {
