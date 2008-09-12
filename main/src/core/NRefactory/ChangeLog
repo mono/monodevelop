@@ -1,3 +1,7 @@
+2008-09-12  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* NRefactory.mdp: Updated.
+
 2008-09-10  Mike Krüger <mkrueger@novell.com> 
 
 	* Project/Src/Lexer/CSharp/Lexer.cs: fixing comment bug.
