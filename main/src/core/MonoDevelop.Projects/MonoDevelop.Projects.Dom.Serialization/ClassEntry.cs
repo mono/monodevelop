@@ -135,6 +135,8 @@ namespace MonoDevelop.Projects.Dom.Serialization
 				flags |= ContentFlags.HasRegion;
 			if (cls.BodyRegion != DomRegion.Empty)
 				flags |= ContentFlags.HasBodyRegion;
+			if (cls.ConstructorCount > 0)
+				flags |= ContentFlags.HasConstructors;
 		}
 		
 		public string Name {
@@ -175,7 +177,8 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			set { subclasses = value; }
 		}
 	}
-	
+
+	[Flags]
 	enum ContentFlags: ushort
 	{
 		HasGenericParams   = 0x0001,
@@ -191,6 +194,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		HasBodyRegion      = 0x0400,
 		HasCompilationUnit = 0x0800,
 		HasAttributes      = 0x1000,
-		HasDocumentation   = 0x2000
+		HasDocumentation   = 0x2000,
+		HasConstructors    = 0x4000
 	}
 }

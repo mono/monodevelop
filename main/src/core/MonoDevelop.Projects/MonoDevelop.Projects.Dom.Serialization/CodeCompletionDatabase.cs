@@ -49,21 +49,24 @@ namespace MonoDevelop.Projects.Dom.Serialization
 	{
 		static protected readonly int MAX_ACTIVE_COUNT = 100;
 		static protected readonly int MIN_ACTIVE_COUNT = 10;
-		static protected readonly int FORMAT_VERSION   = 33;
+		static protected readonly int FORMAT_VERSION   = 37;
 		
 		NamespaceEntry rootNamespace;
 		protected ArrayList references;
 		protected Hashtable files;
 		protected Hashtable headers;
+		ParserDatabase pdb;
 		
 		BinaryReader datareader;
-		FileStream datafile;
+		FileStream dataFileStream;
 		int currentGetTime = 0;
 		bool modified;
 		bool disposed;
 		
 		string basePath;
 		string dataFile;
+		string tempDataFile;
+		DatabaseProjectDom sourceProjectDom;
 		
 		// This table is a cache of instantiated generic types. It is not stored
 		// in disk, it's created under demand when a specific type is requested.
@@ -81,20 +84,35 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		
 		protected Object rwlock = new Object ();
 		
-		public SerializationCodeCompletionDatabase ()
+		public SerializationCodeCompletionDatabase (ParserDatabase pdb)
 		{
 			rootNamespace = new NamespaceEntry (null, null);
 			files = new Hashtable ();
 			references = new ArrayList ();
 			headers = new Hashtable ();
+			this.pdb = pdb;
 			
 			PropertyService.PropertyChanged += new EventHandler<PropertyChangedEventArgs> (OnPropertyUpdated);	
 		}
 		
 		public virtual void Dispose ()
 		{
+			if (dataFileStream != null)
+				dataFileStream.Close ();
+			if (tempDataFile != null) {
+				File.Delete (tempDataFile);
+				tempDataFile = null;
+			}
 			PropertyService.PropertyChanged -= new EventHandler<PropertyChangedEventArgs> (OnPropertyUpdated);
 			disposed = true;
+		}
+
+		~SerializationCodeCompletionDatabase ()
+		{
+			if (tempDataFile != null) {
+				File.Delete (tempDataFile);
+				tempDataFile = null;
+			}
 		}
 		
 		public string DataFile
@@ -110,9 +128,8 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		public bool Disposed {
 			get { return disposed; }
 		}
-		
-		ProjectDom sourceProjectDom;
-		public virtual ProjectDom SourceProjectDom {
+
+		public virtual DatabaseProjectDom SourceProjectDom {
 			get { return sourceProjectDom; }
 			set { sourceProjectDom = value; }
 		}
@@ -147,59 +164,64 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			
 			lock (rwlock)
 			{
-				FileStream ifile = null;
+				rootNamespace = new NamespaceEntry (null, null);
+				files = new Hashtable ();
+				references = new ArrayList ();
+				headers = new Hashtable ();
+				unresolvedSubclassTable = new Hashtable ();
+			
+				LoggingService.LogDebug ("Reading " + dataFile);
+				CloseReader ();
+
+				try {
+					dataFileStream = OpenForWrite ();
+					datareader = new BinaryReader (dataFileStream);
+				} catch (Exception ex) {
+					LoggingService.LogError ("PIDB file '{0}' could not be loaded: '{1}'. The file will be recreated.", dataFile, ex);
+					return;
+				}
+					
 				try 
 				{
 					modified = false;
 					currentGetTime = 0;
-					CloseReader ();
 					
-					LoggingService.LogDebug ("Reading " + dataFile);
-					
-					ifile = new FileStream (dataFile, FileMode.Open, FileAccess.Read, FileShare.Read);
 					BinaryFormatter bf = new BinaryFormatter ();
 					
 					// Read the headers
-					headers = (Hashtable) bf.Deserialize (ifile);
+					headers = (Hashtable) bf.Deserialize (dataFileStream);
 					int ver = (int) headers["Version"];
 					if (ver != FORMAT_VERSION)
 						throw new OldPidbVersionException (ver, FORMAT_VERSION);
 					
 					// Move to the index offset and read the index
-					BinaryReader br = new BinaryReader (ifile);
+					BinaryReader br = new BinaryReader (dataFileStream);
 					long indexOffset = br.ReadInt64 ();
-					ifile.Position = indexOffset;
-					
-					object[] data = (object[]) bf.Deserialize (ifile);
+					dataFileStream.Position = indexOffset;
+
+					object oo = bf.Deserialize (dataFileStream);
+					object[] data = (object[]) oo;
 					Queue dataQueue = new Queue (data);
 					references = (ArrayList) dataQueue.Dequeue ();
 					rootNamespace = (NamespaceEntry)  dataQueue.Dequeue ();
 					files = (Hashtable)  dataQueue.Dequeue ();
 					unresolvedSubclassTable = (Hashtable) dataQueue.Dequeue ();
 					DeserializeData (dataQueue);
-
-					ifile.Close ();
 				}
 				catch (Exception ex)
 				{
-					if (ifile != null) ifile.Close ();
 					OldPidbVersionException opvEx = ex as OldPidbVersionException;
 					if (opvEx != null)
 						LoggingService.LogWarning ("PIDB file '{0}' could not be loaded. Expected version {1}, found version {2}'. The file will be recreated.", dataFile, opvEx.ExpectedVersion, opvEx.FoundVersion);
 					else
-						LoggingService.LogError ("PIDB file '{0}' could not be loaded: '{1}'. The file will be recreated.", dataFile, ex.Message);
-					rootNamespace = new NamespaceEntry (null, null);
-					files = new Hashtable ();
-					references = new ArrayList ();
-					headers = new Hashtable ();
-					unresolvedSubclassTable = new Hashtable ();
+						LoggingService.LogError ("PIDB file '{0}' could not be loaded: '{1}'. The file will be recreated.", dataFile, ex);
 				}
 			}
 			
 			// Notify read comments
 			foreach (FileEntry fe in files.Values) {
 				if (! fe.IsAssembly && fe.CommentTasks != null) {
-					ProjectDomService.UpdateCommentTasks (fe.FileName);
+					ProjectDomService.UpdatedCommentTasks (fe.FileName, fe.CommentTasks);
 				}
 			}
 			
@@ -207,82 +229,34 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			PropertyChangedEventArgs args = new PropertyChangedEventArgs ("Monodevelop.TaskListTokens", LastValidTaskListTokens, PropertyService.Get ("Monodevelop.TaskListTokens", ""));
 			this.OnPropertyUpdated (null, args);
 		}
+
+		FileStream OpenForWrite ()
+		{
+			FileStream stream;
+			
+			try {
+				stream = new FileStream (dataFile, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Write);
+			}
+			catch (IOException) {
+				stream = null;
+			}
+
+			if (stream != null)
+				return stream;
+			
+			// The file is locked, so it can be opened. The solution is to make
+			// a copy of the file and opend the copy. The copy will later be discarded,
+			// and this is not a problem because if the main file is locked it means
+			// that it is being updated by another MD instance.
+
+			tempDataFile = Path.GetTempFileName ();
+			File.Copy (dataFile, tempDataFile, true);
+			return new FileStream (tempDataFile, FileMode.Open, FileAccess.ReadWrite, FileShare.Read);
+		}
 		
 		protected bool ResolveTypes (ICompilationUnit unit, IList<IType> types, out List<IType> result)
 		{
-			CompilationUnitTypeResolver resolver = new CompilationUnitTypeResolver (this, unit);
-			bool allResolved = true;
-			result = new List<IType> ();
-			foreach (IType c in types) {
-				resolver.CallingClass = c;
-				resolver.AllResolved = true;
-				IType rc = DomType.Resolve (c, resolver);
-				
-				if (resolver.AllResolved && c.FullName != "System.Object") {
-					// If the class has no base classes, make sure it subclasses System.Object
-					bool foundBase = false;
-					foreach (IEnumerable<IReturnType> typeList in new IEnumerable<IReturnType> [] {new IReturnType [] { rc.BaseType }, rc.ImplementedInterfaces }) {
-						if (typeList == null)
-							continue;
-						foreach (IReturnType bt in typeList) {
-							if (bt == null)
-								continue;
-							IType bc = this.GetClass (bt.FullName, null, true);
-							if (bc == null || bc.ClassType != ClassType.Interface) {
-								foundBase =  true;
-								break;
-							}
-						}
-					}
-					if (!foundBase) 
-						rc.BaseType = new DomReturnType ("System.Object");
-				}
-				
-				result.Add (rc);
-				allResolved = allResolved && resolver.AllResolved;
-			}
-				
-			return allResolved;
-		}
-		
-		class CompilationUnitTypeResolver: ITypeResolver
-		{
-			public IType CallingClass;
-			SerializationCodeCompletionDatabase db;
-			ICompilationUnit unit;
-			bool allResolved;
-			
-			public CompilationUnitTypeResolver (SerializationCodeCompletionDatabase db, ICompilationUnit unit)
-			{
-				this.db = db;
-				this.unit = unit;
-			}
-			
-			public IReturnType Resolve (IReturnType type)
-			{
-				IType c = ProjectDomService.GetType (type);
-				if (c == null) {
-					allResolved = false;
-					return type;
-				}
-				DomReturnType rt = new DomReturnType (c);
-/*				rt.IsByRef = type.IsByRef;
-				rt.PointerNestingLevel = type.PointerNestingLevel;
-				rt.ArrayDimensions = type.ArrayDimensions;
-				
-				if (type.GenericArguments != null && type.GenericArguments.Count > 0) {
-					foreach (IReturnType ga in type.GenericArguments) {
-						rt.AddTypeParameter (DomReturnType.Resolve (ga, this));
-					}
-				}*/
-				return DomReturnType.GetSharedReturnType (rt);
-			}
-			
-			public bool AllResolved
-			{
-				get { return allResolved; }
-				set { allResolved = value; }
-			}
+			return ProjectDomService.ResolveTypes (SourceProjectDom, unit, types, out result);
 		}
 		
 		private class OldPidbVersionException : Exception
@@ -318,20 +292,23 @@ namespace MonoDevelop.Projects.Dom.Serialization
 				headers["LastValidTaskListTokens"] = (string)PropertyService.Get ("Monodevelop.TaskListTokens", "");
 
 				LoggingService.LogDebug ("Writing " + dataFile);
-				
-				string tmpDataFile = dataFile + ".tmp";
-				FileStream dfile = new FileStream (tmpDataFile, FileMode.Create, FileAccess.Write, FileShare.Write);
-				
+
+				if (dataFileStream == null) {
+					dataFileStream = OpenForWrite ();
+					datareader = new BinaryReader (dataFileStream);
+				}
+
+				MemoryStream tmpStream = new MemoryStream ();
 				BinaryFormatter bf = new BinaryFormatter ();
-				BinaryWriter bw = new BinaryWriter (dfile);
+				BinaryWriter bw = new BinaryWriter (tmpStream);
 				
 				try {
 					// The headers are the first thing to write, so they can be read
 					// without deserializing the whole file.
-					bf.Serialize (dfile, headers);
+					bf.Serialize (tmpStream, headers);
 					
 					// The position of the index will be written here
-					long indexOffsetPos = dfile.Position;
+					long indexOffsetPos = tmpStream.Position;
 					bw.Write ((long)0);
 					
 					MemoryStream buffer = new MemoryStream ();
@@ -346,11 +323,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 						
 						if (c == null) {
 							// Copy the data from the source file
-							if (datareader == null) {
-								datafile = new FileStream (dataFile, FileMode.Open, FileAccess.Read, FileShare.Read);
-								datareader = new BinaryReader (datafile);
-							}
-							datafile.Position = ce.Position;
+							dataFileStream.Position = ce.Position;
 							len = datareader.ReadInt32 ();
 							
 							// Sanity check to avoid allocating huge byte arrays if something
@@ -361,17 +334,17 @@ namespace MonoDevelop.Projects.Dom.Serialization
 							data = new byte[len];
 							int nr = 0;
 							while (nr < len)
-								nr += datafile.Read (data, nr, len - nr);
+								nr += dataFileStream.Read (data, nr, len - nr);
 						}
 						else {
 							buffer.Position = 0;
-							DomPersistence.Write (bufWriter, DefaultNameEncoder, c);
+							DomPersistence.Write (bufWriter, pdb.DefaultNameEncoder, c);
 							bufWriter.Flush ();
 							data = buffer.GetBuffer ();
 							len = (int)buffer.Position;
 						}
 						
-						ce.Position = dfile.Position;
+						ce.Position = tmpStream.Position;
 						bw.Write (len);
 						bw.Write (data, 0, len);
 					}
@@ -379,7 +352,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 					bw.Flush ();
 					
 					// Write the index
-					long indexOffset = dfile.Position;
+					long indexOffset = tmpStream.Position;
 					
 					Queue dataQueue = new Queue ();
 					dataQueue.Enqueue (references);
@@ -387,27 +360,23 @@ namespace MonoDevelop.Projects.Dom.Serialization
 					dataQueue.Enqueue (files);
 					dataQueue.Enqueue (unresolvedSubclassTable);
 					SerializeData (dataQueue);
-					bf.Serialize (dfile, dataQueue.ToArray ());
+					bf.Serialize (tmpStream, dataQueue.ToArray ());
 					
-					dfile.Position = indexOffsetPos;
+					tmpStream.Position = indexOffsetPos;
 					bw.Write (indexOffset);
+
+					// Save to file
 					
-					bw.Close ();
-					dfile.Close ();
-					dfile = null;
+					dataFileStream.SetLength (0);
+					dataFileStream.Position = 0;
+
+					byte[] dataDump = tmpStream.ToArray ();
+					dataFileStream.Write (dataDump, 0, dataDump.Length);
 					
-					CloseReader ();
-					
-					if (File.Exists (dataFile))
-						FileService.DeleteFile (dataFile);
-						
-					FileService.MoveFile (tmpDataFile, dataFile);
 				} catch (Exception ex) {
 					LoggingService.LogError (ex.ToString ());
-					if (dfile != null)
-						dfile.Close ();
-					if (File.Exists (tmpDataFile))
-						FileService.DeleteFile (tmpDataFile);
+					dataFileStream.Close ();
+					dataFileStream = null;
 				}
 			}
 			
@@ -424,7 +393,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		{
 		}
 		
-		internal FileEntry GetFile (string name)
+		internal protected FileEntry GetFile (string name)
 		{
 			return files [name] as FileEntry;
 		}
@@ -467,14 +436,10 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		internal IType ReadClass (ClassEntry ce)
 		{
 			lock (rwlock) {
-				if (datareader == null) {
-					datafile = new FileStream (dataFile, FileMode.Open, FileAccess.Read, FileShare.Read);
-					datareader = new BinaryReader (datafile);
-				}
-				datafile.Position = ce.Position;
+				dataFileStream.Position = ce.Position;
 				datareader.ReadInt32 ();// Length of data
 				
-				IType cls = DomPersistence.ReadType (datareader, DefaultNameEncoder);
+				DomType cls = DomPersistence.ReadType (datareader, pdb.DefaultNameDecoder);
 				cls.SourceProjectDom = SourceProjectDom;
 				return cls;
 			}
@@ -483,8 +448,9 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		void CloseReader ()
 		{
 			if (datareader != null) {
-				datareader.Close ();
 				datareader = null;
+				dataFileStream.Close ();
+				dataFileStream = null;
 			}
 		}
 		
@@ -496,7 +462,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			headers = new Hashtable ();
 		}
 		
-		public IType GetClass (string typeName, List<IReturnType> genericArguments, bool caseSensitive)
+		public IType GetClass (string typeName, IList<IReturnType> genericArguments, bool caseSensitive)
 		{
 			lock (rwlock)
 			{
@@ -583,8 +549,10 @@ namespace MonoDevelop.Projects.Dom.Serialization
 				foreach (object ob in subs) {
 					if (ob is ClassEntry) {
 						string ns = ((ClassEntry) ob).NamespaceRef.FullName;
-						if (namespaces == null || nsList.Contains (ns))
-							yield return GetClass ((ClassEntry)ob);
+						if (namespaces == null || nsList.Contains (ns)) {
+							IType t = GetClass ((ClassEntry)ob);
+							yield return t;
+						}
 					}
 					else {
 						// It's a full class name
@@ -698,7 +666,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 						if (tag.Key == token) markedTags.Add (tag);
 					foreach (Tag tag in markedTags)
 						fe.CommentTasks.Remove (tag);
-					ProjectDomService.UpdateCommentTasks (fe.FileName);
+					ProjectDomService.UpdatedCommentTasks (fe.FileName, fe.CommentTasks);
 				}
 			}
 		}
@@ -743,14 +711,12 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			return file.IsModified;
 		}
 		
-		protected virtual void QueueParseJob (FileEntry file)
+		protected void QueueParseJob (FileEntry file)
 		{
 			if (file.InParseQueue)
 				return;
 			file.InParseQueue = true;
-			ParseCallback (file.FileName, null);
-			// TODO:
-			//parserDatabase.QueueParseJob (this, new JobCallback (ParseCallback), file.FileName);
+			ProjectDomService.QueueParseJob (SourceProjectDom, new JobCallback (ParseCallback), file.FileName);
 		}
 		
 		protected void QueueAllFilesForParse ()
@@ -888,7 +854,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 				NamespaceEntry[] newNss = new NamespaceEntry [newClasses.Count];
 				for (int n = 0; n < newClasses.Count; n++) {
 					string[] path = newClasses[n].Namespace.Split ('.');
-					((IType)newClasses[n]).SourceProjectDom = SourceProjectDom;
+					((DomType)newClasses[n]).SourceProjectDom = sourceProjectDom;
 					newNss[n] = GetNamespaceEntry (path, path.Length, true, true);
 				}
 				
@@ -1000,30 +966,31 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			if (ce.Subclasses != null)
 				unresolvedSubclassTable [ce.Class.FullName] = ce.Subclasses;
 		}
+
+		IEnumerable<IReturnType> GetAllBaseTypes (IType type)
+		{
+			if (type.BaseType != null)
+				yield return type.BaseType;
+			foreach (IReturnType rt in type.ImplementedInterfaces)
+				yield return rt;
+		}
 		
 		void AddSubclassReferences (ClassEntry ce)
 		{
-			foreach (IEnumerable<IReturnType> col in new IEnumerable<IReturnType>[] { new IReturnType[] { ce.Class.BaseType}, ce.Class.ImplementedInterfaces}) {
-				if (col == null)
+			foreach (IReturnType type in GetAllBaseTypes (ce.Class)) {
+				string bt = type.FullName;
+				if (bt == "System.Object")
 					continue;
-				foreach (IReturnType type in col) {
-					if (type == null)
-						continue;
-										
-					string bt = type.FullName;
-					if (bt == "System.Object")
-						continue;
-					ClassEntry sup = FindClassEntry (bt);
-					if (sup != null)
-						sup.RegisterSubclass (ce);
-					else {
-						ArrayList subs = (ArrayList) unresolvedSubclassTable [bt];
-						if (subs == null) {
-							subs = new ArrayList ();
-							unresolvedSubclassTable [bt] = subs;
-						}
-						subs.Add (ce);
+				ClassEntry sup = FindClassEntry (bt);
+				if (sup != null)
+					sup.RegisterSubclass (ce);
+				else {
+					ArrayList subs = (ArrayList) unresolvedSubclassTable [bt];
+					if (subs == null) {
+						subs = new ArrayList ();
+						unresolvedSubclassTable [bt] = subs;
 					}
+					subs.Add (ce);
 				}
 			}
 			foreach (IType cls in ce.Class.InnerTypes)
@@ -1032,22 +999,16 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		
 		void AddInnerSubclassReferences (IType cls)
 		{
-			foreach (IEnumerable<IReturnType> col in new IEnumerable<IReturnType>[] { new IReturnType[] { cls.BaseType}, cls.ImplementedInterfaces}) {
-				if (col == null)
+			foreach (IReturnType type in GetAllBaseTypes (cls)) {
+				string bt = type.FullName;
+				if (bt == "System.Object")
 					continue;
-				foreach (IReturnType type in col) {
-					if (type == null)
-						continue;
-					string bt = type.FullName;
-					if (bt == "System.Object")
-						continue;
-					ArrayList subs = (ArrayList) unresolvedSubclassTable [bt];
-					if (subs == null) {
-						subs = new ArrayList ();
-						unresolvedSubclassTable [bt] = subs;
-					}
-					subs.Add (cls.FullName);
+				ArrayList subs = (ArrayList) unresolvedSubclassTable [bt];
+				if (subs == null) {
+					subs = new ArrayList ();
+					unresolvedSubclassTable [bt] = subs;
 				}
+				subs.Add (cls.FullName);
 			}
 			foreach (IType ic in cls.InnerTypes)
 				AddInnerSubclassReferences (ic);
@@ -1055,22 +1016,16 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		
 		void RemoveSubclassReferences (ClassEntry ce)
 		{
-			foreach (IEnumerable<IReturnType> col in new IEnumerable<IReturnType>[] { new IReturnType[] { ce.Class.BaseType}, ce.Class.ImplementedInterfaces}) {
-				if (col == null)
-					continue;
-				foreach (IReturnType type in col) {
-					if (type == null)
-						continue;
-					ClassEntry sup = FindClassEntry (type.FullName);
-					if (sup != null)
-						sup.UnregisterSubclass (ce);
-						
-					ArrayList subs = (ArrayList) unresolvedSubclassTable [type.FullName];
-					if (subs != null) {
-						subs.Remove (ce);
-						if (subs.Count == 0)
-							unresolvedSubclassTable.Remove (type.FullName);
-					}
+			foreach (IReturnType type in GetAllBaseTypes (ce.Class)) {
+				ClassEntry sup = FindClassEntry (type.FullName);
+				if (sup != null)
+					sup.UnregisterSubclass (ce);
+					
+				ArrayList subs = (ArrayList) unresolvedSubclassTable [type.FullName];
+				if (subs != null) {
+					subs.Remove (ce);
+					if (subs.Count == 0)
+						unresolvedSubclassTable.Remove (type.FullName);
 				}
 			}
 			foreach (IType cls in ce.Class.InnerTypes)
@@ -1079,16 +1034,10 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		
 		void RemoveInnerSubclassReferences (IType cls)
 		{
-			foreach (IEnumerable<IReturnType> col in new IEnumerable<IReturnType>[] { new IReturnType[] { cls.BaseType}, cls.ImplementedInterfaces}) {
-				if (col == null)
-					continue;
-				foreach (IReturnType type in col) {
-					if (type == null)
-						continue;
-					ArrayList subs = (ArrayList) unresolvedSubclassTable [type.FullName];
-					if (subs != null)
-						subs.Remove (type.FullName);
-				}
+			foreach (IReturnType type in GetAllBaseTypes (cls)) {
+				ArrayList subs = (ArrayList) unresolvedSubclassTable [type.FullName];
+				if (subs != null)
+					subs.Remove (type.FullName);
 			}
 			foreach (IType ic in cls.InnerTypes)
 				RemoveInnerSubclassReferences (ic);
@@ -1225,11 +1174,11 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		{
 			using (MemoryStream memoryStream = new MemoryStream ()) {
 				BinaryWriter writer = new BinaryWriter (memoryStream);
-				DomPersistence.Write(writer, DefaultNameEncoder, cls);
+				DomPersistence.Write(writer, pdb.DefaultNameEncoder, cls);
 				writer.Flush ();
 				memoryStream.Position = 0;
 				BinaryReader reader = new BinaryReader (memoryStream);
-				IType result = DomPersistence.ReadType (reader, DefaultNameDecoder);
+				DomType result = DomPersistence.ReadType (reader, pdb.DefaultNameDecoder);
 				writer.Close ();
 				reader.Close ();
 				result.SourceProjectDom = cls.SourceProjectDom;
@@ -1275,118 +1224,6 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			else
 				return null;
 		}
-		
-		static StringNameTable DefaultNameEncoder;
-		static StringNameTable DefaultNameDecoder;
-		
-		static SerializationCodeCompletionDatabase ()
-		{
-			DefaultNameEncoder = new StringNameTable (sharedNameTable);
-			DefaultNameDecoder = new StringNameTable (sharedNameTable);
-		}
-		
-		static readonly string[] sharedNameTable = new string[] {
-			"", // 505195
-			"System.Void", // 116020
-			"To be added", // 78598
-			"System.Int32", // 72669
-			"System.String", // 72097
-			"System.Object", // 48530
-			"System.Boolean", // 46200
-			".ctor", // 39938
-			"System.IntPtr", // 35184
-			"To be added.", // 19082
-			"value", // 11906
-			"System.Byte", // 8524
-			"To be added: an object of type 'string'", // 7928
-			"e", // 7858
-			"raw", // 7830
-			"System.IAsyncResult", // 7760
-			"System.Type", // 7518
-			"name", // 7188
-			"object", // 6982
-			"System.UInt32", // 6966
-			"index", // 6038
-			"To be added: an object of type 'int'", // 5196
-			"System.Int64", // 4166
-			"callback", // 4158
-			"System.EventArgs", // 4140
-			"method", // 4030
-			"System.Enum", // 3980
-			"value__", // 3954
-			"Invoke", // 3906
-			"result", // 3856
-			"System.AsyncCallback", // 3850
-			"System.MulticastDelegate", // 3698
-			"BeginInvoke", // 3650
-			"EndInvoke", // 3562
-			"node", // 3416
-			"sender", // 3398
-			"context", // 3310
-			"System.EventHandler", // 3218
-			"System.Double", // 3206
-			"type", // 3094
-			"x", // 3056
-			"System.Single", // 2940
-			"data", // 2930
-			"args", // 2926
-			"System.Char", // 2813
-			"Gdk.Key", // 2684
-			"ToString", // 2634
-			"'a", // 2594
-			"System.Drawing.Color", // 2550
-			"y", // 2458
-			"To be added: an object of type 'object'", // 2430
-			"System.DateTime", // 2420
-			"message", // 2352
-			"GLib.GType", // 2292
-			"o", // 2280
-			"a <see cref=\"T:System.Int32\" />", // 2176
-			"path", // 2062
-			"obj", // 2018
-			"Nemerle.Core.list`1", // 1950
-			"System.Windows.Forms", // 1942
-			"System.Collections.ArrayList", // 1918
-			"a <see cref=\"T:System.String\" />", // 1894
-			"key", // 1868
-			"Add", // 1864
-			"arg0", // 1796
-			"System.IO.Stream", // 1794
-			"s", // 1784
-			"arg1", // 1742
-			"provider", // 1704
-			"System.UInt64", // 1700
-			"System.Drawing.Rectangle", // 1684
-			"System.IFormatProvider", // 1684
-			"gch", // 1680
-			"System.Exception", // 1652
-			"Equals", // 1590
-			"System.Drawing.Pen", // 1584
-			"count", // 1548
-			"System.Collections.IEnumerator", // 1546
-			"info", // 1526
-			"Name", // 1512
-			"System.Attribute", // 1494
-			"gtype", // 1470
-			"To be added: an object of type 'Type'", // 1444
-			"System.Collections.Hashtable", // 1416
-			"array", // 1380
-			"System.Int16", // 1374
-			"Gtk", // 1350
-			"System.ComponentModel.ITypeDescriptorContext", // 1344
-			"System.Collections.ICollection", // 1330
-			"Dispose", // 1330
-			"Gtk.Widget", // 1326
-			"System.Runtime.Serialization.StreamingContext", // 1318
-			"Nemerle.Compiler.Parsetree.PExpr", // 1312
-			"System.Guid", // 1310
-			"i", // 1302
-			"Gtk.TreeIter", // 1300
-			"text", // 1290
-			"System.Runtime.Serialization.SerializationInfo", // 1272
-			"state", // 1264
-			"Remove" // 1256
-		};		
 	}
 }
 
@@ -1429,10 +1266,9 @@ namespace MonoDevelop.Projects.Dom
 			else
 				all [text] = 1;
 #endif
-			return -1;
-//			int i = Array.BinarySearch (table, text);
-//			if (i >= 0) return i;
-//			else return -1;
+			int i = Array.BinarySearch (table, text);
+			if (i >= 0) return i;
+			else return -1;
 		}
 
 #if CHECK_STRINGS

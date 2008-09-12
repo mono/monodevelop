@@ -219,22 +219,18 @@ namespace MonoDevelop.Projects.CodeGeneration
 			IReturnType rtype = declaredType;
 			if (rtype == null)
 				return null;
-
-			if (rtype.GenericArguments != null && rtype.GenericArguments.Count > 0) {
-				argTypes = new CodeTypeReference [rtype.GenericArguments.Count];
-				for (int i = 0; i < rtype.GenericArguments.Count; i++) {
-					argTypes[i] = ReturnTypeToDom (ctx, unit, rtype.GenericArguments[i]);
+			IList<IReturnType> genericArgs = rtype.GenericArguments;
+			if (genericArgs != null && genericArgs.Count > 0) {
+				argTypes = new CodeTypeReference [genericArgs.Count];
+				for (int i = 0; i < genericArgs.Count; i++) {
+					argTypes[i] = ReturnTypeToDom (ctx, unit, genericArgs[i]);
 				}
 			}
-			
-			SearchTypeResult request = ctx.ParserContext.SearchType (new SearchTypeRequest (unit, -1, -1, rtype.FullName));
-			string name = request != null ? request.Result.FullName : rtype.FullName;
+			string name = IsBaseType (rtype.FullName) ? rtype.FullName : ctx.TypeNameResolver.ResolveName (rtype.FullName);
 			CodeTypeReference typeRef = argTypes != null ? new CodeTypeReference (name, argTypes) : new CodeTypeReference (name);
 			
-			if (rtype.ArrayDimensions == 0)
-				return typeRef;
-			for (int i = 0; i < rtype.ArrayDimensions; i++)
-				typeRef = new CodeTypeReference (typeRef, rtype.GetDimension (i));
+			if (rtype.ArrayDimensions > 0)
+				typeRef = new CodeTypeReference (typeRef, rtype.ArrayDimensions);
 			return typeRef;
 		}
 		
@@ -633,7 +629,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 			file.DeleteText (pos, txt.Length);
 			file.InsertText (pos, newName);
 			
-			ProjectDomService.Refresh (ctx.ParserContext.Project, file.Name, null, delegate () { return file.Text; });
+			ProjectDomService.Parse (ctx.ParserContext.Project, file.Name, null, delegate () { return file.Text; });
 			
 			return true;
 		}
@@ -685,7 +681,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 			file.DeleteText (pos, txt.Length);
 			file.InsertText (pos, newName);
 			
-			ProjectDomService.Refresh (ctx.ParserContext.Project, file.Name, null, delegate () { return file.Text; });
+			ProjectDomService.Parse (ctx.ParserContext.Project, file.Name, null, delegate () { return file.Text; });
 			
 			return true;
 		}
@@ -763,8 +759,8 @@ namespace MonoDevelop.Projects.CodeGeneration
 		{
 			// Don't get the class from the parse results because in that class the types are not resolved.
 			// Get the class from the database instead.
-			ProjectDomService.Refresh (ctx.ParserContext.Project, buffer.Name, null, delegate () { return buffer.Text; });
-			return ctx.ParserContext.GetType (cls.FullName, -1, true, false);
+			ProjectDomService.Parse (ctx.ParserContext.Project, buffer.Name, null, delegate () { return buffer.Text; });
+			return ctx.ParserContext.GetType (cls.FullName, null, true, true);
 		}
 		
 		protected IMember FindGeneratedMember (RefactorerContext ctx, IEditableTextFile buffer, IType cls, CodeTypeMember member, int line)

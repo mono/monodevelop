@@ -27,15 +27,20 @@
 //
 
 using System;
+using MonoDevelop.Core.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace MonoDevelop.Projects.Dom
 {
 	public class DomUsing : IUsing
 	{
+		static readonly Dictionary<string, IReturnType> emptyAliases = new Dictionary<string,IReturnType> ();
+		static readonly List<string> emptyNamespaces = new List<string> ();
+		
 		protected DomRegion domRegion;
-		protected List<string>                    namespaces = null;
-		protected Dictionary<string, IReturnType> aliases    = null;
+		protected List<string>                    namespaces = emptyNamespaces;
+		protected Dictionary<string, IReturnType> aliases    = emptyAliases;
 		bool isFromNamespace = false;
 		
 		public DomRegion Region {
@@ -47,15 +52,15 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 
-		public IList<string> Namespaces {
+		public ReadOnlyCollection<string> Namespaces {
 			get {
-				return namespaces;
+				return namespaces.AsReadOnly ();
 			}
 		}
 
-		public IDictionary<string, IReturnType> Aliases {
+		public ReadOnlyDictionary<string, IReturnType> Aliases {
 			get {
-				return aliases;
+				return new ReadOnlyDictionary<string, IReturnType> (aliases);
 			}
 		}
 
@@ -80,14 +85,14 @@ namespace MonoDevelop.Projects.Dom
 		
 		public void Add (string nspace)
 		{
-			if (namespaces == null)
+			if (namespaces == null || namespaces == emptyNamespaces)
 				namespaces = new List<string> ();
 			namespaces.Add (nspace);
 		}
 		
 		public void Add (string nspace, IReturnType alias)
 		{
-			if (aliases == null)
+			if (aliases == null || aliases == emptyAliases)
 				aliases = new Dictionary<string, IReturnType> ();
 			aliases[nspace] = alias;
 		}

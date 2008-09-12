@@ -101,7 +101,12 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			int  pointerNesting = reader.ReadInt32 ();
 			bool isNullable = reader.ReadBoolean ();
 			bool isByRef = reader.ReadBoolean ();
+			
 			int  arrayDimensions = reader.ReadInt32 ();
+			int[] dims = new int [arrayDimensions];
+			for (int n=0; n<arrayDimensions; n++)
+				dims [n] = reader.ReadInt32 ();
+			
 			uint arguments  = reader.ReadUInt32 ();
 			List<IReturnType> parameters = new List<IReturnType> ();
 			
@@ -112,9 +117,10 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			DomReturnType result = new DomReturnType (name, isNullable, parameters);
 			result.PointerNestingLevel = pointerNesting;
 			result.IsByRef = isByRef;
-			result.ArrayDimensions = arrayDimensions;
+			result.SetDimensions (dims);
 			return result;
 		}
+		
 		public static void Write (BinaryWriter writer, INameEncoder nameTable, IReturnType returnType)
 		{
 			if (WriteNull (writer, returnType))
@@ -124,12 +130,14 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			writer.Write (returnType.IsNullable);
 			writer.Write (returnType.IsByRef);
 			writer.Write (returnType.ArrayDimensions);
+			for (int n=0; n<returnType.ArrayDimensions; n++)
+				writer.Write (returnType.GetDimension (n));
 			if (returnType.GenericArguments == null) {
 				writer.Write ((uint)0);
 				return;
 			}
 			writer.Write ((uint)returnType.GenericArguments.Count);
-			foreach (DomReturnType param in returnType.GenericArguments) {
+			foreach (IReturnType param in returnType.GenericArguments) {
 				Write (writer, nameTable, param);
 			}
 		}
@@ -309,6 +317,12 @@ namespace MonoDevelop.Projects.Dom.Serialization
 				evt.DeclaringType = result;
 				result.Add (evt);
 			}
+
+			count = reader.ReadUInt32 ();
+			while (count-- > 0) {
+				TypeParameter tp = ReadTypeParameter (reader, nameTable);
+				result.AddTypeParameter (tp);
+			}
 			return result;
 		}
 		
@@ -362,6 +376,64 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			foreach (IEvent evt in type.Events) {
 				Write (writer, nameTable, evt);
 			}
+			writer.Write (type.TypeParameters.Count);
+			foreach (TypeParameter tp in type.TypeParameters)
+				Write (writer, nameTable, tp);
+		}
+
+		public static TypeParameter ReadTypeParameter (BinaryReader reader, INameDecoder nameTable)
+		{
+			string name = ReadString (reader, nameTable);
+			TypeParameter tp = new TypeParameter (name);
+
+			// Constraints
+			
+			uint count = reader.ReadUInt32 ();
+			while (count-- > 0)
+				tp.AddConstraint (ReadReturnType (reader, nameTable));
+
+			// Attributes
+			
+			count = reader.ReadUInt32 ();
+			while (count-- > 0)
+				tp.AddAttribute (ReadAttribute (reader, nameTable));
+
+			return tp;
+		}
+		
+		public static void Write (BinaryWriter writer, INameEncoder nameTable, TypeParameter typeParameter)
+		{
+			WriteString (typeParameter.Name, writer, nameTable);
+
+			// Constraints
+			
+			writer.Write (GetCount (typeParameter.Constraints));
+			foreach (IReturnType rt in typeParameter.Constraints)
+				Write (writer, nameTable, rt);
+
+			// Attributes
+			
+			writer.Write (GetCount (typeParameter.Attributes));
+			foreach (IAttribute attr in typeParameter.Attributes)
+				Write (writer, nameTable, attr);
+		}
+
+		public static DomAttribute ReadAttribute (BinaryReader reader, INameDecoder nameTable)
+		{
+			DomAttribute attr = new DomAttribute ();
+			attr.Name = ReadString (reader, nameTable);
+			attr.Region = ReadRegion (reader, nameTable);
+			attr.AttributeTarget = (AttributeTarget) reader.ReadInt32 ();
+			attr.AttributeType = ReadReturnType (reader, nameTable);
+			return attr;
+		}
+		
+		public static void Write (BinaryWriter writer, INameEncoder nameTable, IAttribute attr)
+		{
+			WriteString (attr.Name, writer, nameTable);
+			Write (writer, nameTable, attr.Region);
+			writer.Write ((int)attr.AttributeTarget);
+			Write (writer, nameTable, attr.AttributeType);
 		}
 		
 		public static uint GetCount<T> (IEnumerable<T> list)
@@ -369,7 +441,8 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			if (list == null)
 				return 0;
 			uint result = 0;
-			foreach (T o in list) {
+			IEnumerator<T> en = list.GetEnumerator ();
+			while (en.MoveNext ()) {
 				result++;
 			}
 			return result;
@@ -379,19 +452,25 @@ namespace MonoDevelop.Projects.Dom.Serialization
 #region Helper methods
 		static void WriteMemberInformation (BinaryWriter writer, INameEncoder nameTable, IMember member)
 		{
-			// TODO: Attributes
 			WriteString (member.Name, writer, nameTable);
 			WriteString (member.Documentation, writer, nameTable);
 			writer.Write ((uint)member.Modifiers);
 			Write (writer, nameTable, member.Location);
+			
+			writer.Write (GetCount (member.Attributes));
+			foreach (IAttribute attr in member.Attributes)
+				Write (writer, nameTable, attr);
 		}
-		static void ReadMemberInformation (BinaryReader reader, INameDecoder nameTable, IMember member)
+		static void ReadMemberInformation (BinaryReader reader, INameDecoder nameTable, AbstractMember member)
 		{
-			// TODO: Attributes
 			member.Name          = ReadString (reader, nameTable);
 			member.Documentation = ReadString (reader, nameTable);
 			member.Modifiers     = (Modifiers)reader.ReadUInt32();
 			member.Location      = ReadLocation (reader, nameTable);
+			
+			uint count = reader.ReadUInt32 ();
+			while (count-- > 0)
+				member.Add (ReadAttribute (reader, nameTable));
 		}
 		
 		static void WriteString (string s, BinaryWriter writer, INameEncoder nameTable)

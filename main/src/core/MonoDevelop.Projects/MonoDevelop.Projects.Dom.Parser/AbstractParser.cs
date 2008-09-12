@@ -35,6 +35,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 	{
 		string projectType;
 		string[] mimeTypes;
+		string[] lexerTags;
 		
 		protected AbstractParser (string projectType, params string[] mimeTypes)
 		{
@@ -84,6 +85,15 @@ namespace MonoDevelop.Projects.Dom.Parser
 		{
 			return false;
 //			return CanParseMimeType (IdeApp.Services.PlatformService.GetMimeTypeForUri (fileName));
+		}
+
+		public string[] LexerTags {
+			get {
+				return lexerTags;
+			}
+			set {
+				lexerTags = value;
+			}
 		}
 	}
 }

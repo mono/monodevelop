@@ -29,6 +29,7 @@
 
 using System;
 using MonoDevelop.Core;
+using System.Collections.Generic;
 using MonoDevelop.Projects.Dom.Parser;
 
 namespace MonoDevelop.Projects.Dom.Serialization
@@ -37,7 +38,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 	{
 		string file = "_currentFile";
 		
-		public SimpleCodeCompletionDatabase (string file)
+		public SimpleCodeCompletionDatabase (string file, ParserDatabase pdb): base (pdb)
 		{
 			AddFile (file);
 			this.file = file;
@@ -47,16 +48,15 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			AddReference (requiredRefUri);
 		}
 		
-		public TypeUpdateInformation UpdateFromParseInfo (ICompilationUnit parserInfo)
+		public TypeUpdateInformation UpdateFromParseInfo (ICompilationUnit cu)
 		{
-			//ICompilationUnit cu = (ICompilationUnit)parserInfo.BestCompilationUnit;
-			//UpdateTagComments (cu.TagComments, file);
-			//ClassCollection resolved;
-			//parserDatabase.ResolveTypes (this, cu, cu.Classes, out resolved);
-			//ClassUpdateInformation res = UpdateClassInformation (resolved, file);
-			//Flush ();
-			//return res;
-			return null;
+			// TODO dom Get tag comments
+//			UpdateTagComments (cu.TagComments, file);
+			List<IType> resolved;
+			ProjectDomService.ResolveTypes (SourceProjectDom, cu, cu.Types, out resolved);
+			TypeUpdateInformation res = UpdateTypeInformation (resolved, file);
+			Flush ();
+			return res;
 		}
 		
 		public override void Read () {}

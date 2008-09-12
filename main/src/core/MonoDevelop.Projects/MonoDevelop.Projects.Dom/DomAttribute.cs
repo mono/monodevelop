@@ -72,6 +72,9 @@ namespace MonoDevelop.Projects.Dom
 			get {
 				return attributeType;
 			}
+			set {
+				attributeType = value;
+			}
 		}
 
 		public System.Collections.Generic.IList<object> PositionalArguments {

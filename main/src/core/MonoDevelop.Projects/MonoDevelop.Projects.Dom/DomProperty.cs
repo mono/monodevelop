@@ -161,13 +161,8 @@ namespace MonoDevelop.Projects.Dom
 		public static IProperty Resolve (IProperty source, ITypeResolver typeResolver)
 		{
 			DomProperty result = new DomProperty ();
-			result.Name           = source.Name;
-			result.Documentation  = source.Documentation;
-			result.Modifiers      = source.Modifiers;
-			result.ReturnType     = DomReturnType.Resolve (source.ReturnType, typeResolver);
-			result.Location       = source.Location;
+			AbstractMember.Resolve (source, result, typeResolver);
 			result.PropertyModifier = source.PropertyModifier;
-			result.AddRange (DomAttribute.Resolve (source.Attributes, typeResolver));
 			result.GetRegion = source.GetRegion;
 			result.SetRegion = source.SetRegion;
 			return result;

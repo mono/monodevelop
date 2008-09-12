@@ -75,7 +75,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		
 		public override string ToString ()
 		{
-			return String.Format ("[DomTypeProxy: WrappedType={0}, Entry={1}]", this.WrappedType, this.entry);
+			return String.Format ("[DomTypeProxy: Entry={0}]", this.entry);
 		}
 		
 		public override string Name {
@@ -110,19 +110,37 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		
 		public override IReturnType BaseType {
 			get {
-				return WrappedType != null ? WrappedType.BaseType : null;
+				if (HasContent (ContentFlags.HasBaseTypes))
+					return WrappedType.BaseType;
+				else
+					return null;
+			}
+		}
+		
+		public override IEnumerable<IType> InnerTypes {
+			get {
+				if (HasContent (ContentFlags.HasInnerClasses))
+					return WrappedType.InnerTypes;
+				else
+					return new IType [0];
 			}
 		}
 		
 		public override ReadOnlyCollection<IReturnType> ImplementedInterfaces {
 			get {
-				return WrappedType != null ? WrappedType.ImplementedInterfaces : null;
+				if (HasContent (ContentFlags.HasBaseTypes))
+					return WrappedType.ImplementedInterfaces;
+				else
+					return new ReadOnlyCollection<IReturnType> (new IReturnType[0]);
 			}
 		}
 		
 		public override ReadOnlyCollection<TypeParameter> TypeParameters {
 			get {
-				return WrappedType != null ? WrappedType.TypeParameters : null;
+				if (HasContent (ContentFlags.HasGenericParams))
+					return WrappedType.TypeParameters;
+				else
+					return new ReadOnlyCollection<TypeParameter> (new TypeParameter[0]);
 			}
 		}
 		
@@ -132,28 +150,168 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			}
 		}
 		
+		public override IEnumerable<IField> Fields {
+			get {
+				if (HasContent (ContentFlags.HasFields))
+					return WrappedType.Fields;
+				else
+					return new IField [0];
+			}
+		}
+		
+		public override IEnumerable<IProperty> Properties {
+			get {
+				if (HasContent (ContentFlags.HasProperties))
+					return WrappedType.Properties;
+				else
+					return new IProperty [0];
+			}
+		}
+		
+		public override IEnumerable<IMethod> Methods {
+			get {
+				if (HasContent (ContentFlags.HasMethods))
+					return WrappedType.Methods;
+				else
+					return new IMethod [0];;
+			}
+		}
+		
+		public override IEnumerable<IEvent> Events {
+			get {
+				if (HasContent (ContentFlags.HasEvents))
+					return WrappedType.Events;
+				else
+					return new IEvent [0];
+			}
+		}
+		
 		public override IEnumerable<IType> Parts { 
 			get {
-				return WrappedType != null ? WrappedType.Parts : null;
+				if (HasContent (ContentFlags.HasParts))
+					return WrappedType.Parts;
+				else
+					return base.Parts;
 			}
 		}
 		
 		public override bool HasParts {
 			get {
-				return WrappedType != null ? WrappedType.HasParts : false;
+				return HasContent (ContentFlags.HasParts);
 			}
 		}
 		
 		public override ICompilationUnit CompilationUnit {
 			get {
-				return WrappedType != null ? WrappedType.CompilationUnit : null;
+				if (HasContent (ContentFlags.HasCompilationUnit))
+					return WrappedType.CompilationUnit;
+				else
+					return null;
+			}
+		}
+		
+		public override DomRegion BodyRegion {
+			get {
+				if (HasContent (ContentFlags.HasBodyRegion))
+					return WrappedType.BodyRegion;
+				else
+					return DomRegion.Empty;
+			}
+			set {
+				throw new NotSupportedException ();
 			}
 		}
 		
 		public override DomLocation Location {
 			get {
-				return WrappedType != null ? WrappedType.Location : DomLocation.Empty;
+				if (HasContent (ContentFlags.HasRegion))
+					return WrappedType.Location;
+				else
+					return DomLocation.Empty;
 			}
+		}
+		
+		public override int PropertyCount {
+			get {
+				if (HasContent (ContentFlags.HasProperties))
+					return WrappedType.PropertyCount;
+				else
+					return 0;
+			}
+		}
+		public override int FieldCount {
+			get {
+				if (HasContent (ContentFlags.HasFields))
+					return WrappedType.FieldCount;
+				else
+					return 0;
+			}
+		}
+		public override int MethodCount {
+			get {
+				if (HasContent (ContentFlags.HasMethods))
+					return WrappedType.MethodCount;
+				else
+					return 0;
+			}
+		}
+		public override int ConstructorCount {
+			get {
+				if (HasContent (ContentFlags.HasConstructors))
+					return WrappedType.ConstructorCount;
+				else
+					return 0;
+			}
+		}
+		public override int IndexerCount {
+			get {
+				if (HasContent (ContentFlags.HasIndexers))
+					return WrappedType.IndexerCount;
+				else
+					return 0;
+			}
+		}
+		public override int EventCount {
+			get {
+				if (HasContent (ContentFlags.HasEvents))
+					return WrappedType.EventCount;
+				else
+					return 0;
+			}
+		}
+		public override int InnerTypeCount {
+			get {
+				if (HasContent (ContentFlags.HasInnerClasses))
+					return WrappedType.InnerTypeCount;
+				else
+					return 0;
+			}
+		}
+		
+		public override string Documentation {
+			get {
+				if (HasContent (ContentFlags.HasDocumentation))
+					return WrappedType.Documentation;
+				else
+					return null;
+			}
+			set {
+				throw new NotSupportedException ();
+			}
+		}
+		
+		public override IEnumerable<IAttribute> Attributes {
+			get {
+				if (HasContent (ContentFlags.HasAttributes))
+					return WrappedType.Attributes;
+				else
+					return new IAttribute [0];
+			}
+		}
+		
+		bool HasContent (ContentFlags cf)
+		{
+			return (entry.ContentFlags & cf) != 0 && WrappedType != null;
 		}
 	}
 }

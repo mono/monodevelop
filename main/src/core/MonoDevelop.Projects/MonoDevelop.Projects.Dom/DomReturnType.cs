@@ -100,16 +100,41 @@ namespace MonoDevelop.Projects.Dom
 		}
 	}
 	
-	public class DomReturnType : ReturnTypePart, IReturnType
+	public class DomReturnType : IReturnType
 	{
+		static readonly int[] zeroDimensions = new int[0];
+		static readonly int[] oneDimensions = new int[] { 1 };
+		string name;
+		
 		List<IReturnTypePart> parts = new List<IReturnTypePart> ();
+		
+		// TODO dom: free unused return types
+		static Dictionary<string, IReturnType> returnTypeCache;
+		
+		public static readonly IReturnType Void;
+		public static readonly IReturnType Object;
+		public static readonly IReturnType Exception;
+		
+		static DomReturnType ()
+		{
+			// Initialization is done here instead of using field initializers to
+			// ensure that the returnTypeCache dictionary us properly initialized
+			// when calling GetSharedReturnType.
+			
+			returnTypeCache = new Dictionary<string, IReturnType> ();
+			
+			Void      = GetSharedReturnType ("System.Void");
+			Object    = GetSharedReturnType ("System.Object");
+			Exception = GetSharedReturnType ("System.Exception");
+		}
+
 		public List<IReturnTypePart> Parts {
 			get {
 				return parts;
 			}
 		}
 		
-		public string Name {
+		public new string Name {
 			get {
 				Debug.Assert (parts.Count > 0);
 				return parts[parts.Count - 1].Name;
@@ -120,13 +145,13 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
-		public ReadOnlyCollection<IReturnType> GenericArguments {
+		public new ReadOnlyCollection<IReturnType> GenericArguments {
 			get {
 				Debug.Assert (parts.Count > 0);
 				return parts[parts.Count - 1].GenericArguments;
 			}
 		}
-		public void AddTypeParameter (IReturnType type)
+		public new void AddTypeParameter (IReturnType type)
 		{
 			Debug.Assert (parts.Count > 0);
 			parts[parts.Count - 1].AddTypeParameter (type);
@@ -134,7 +159,6 @@ namespace MonoDevelop.Projects.Dom
 		
 		protected string nspace;
 		protected int pointerNestingLevel;
-		protected int arrayDimensions;
 		protected int[] dimensions = null;
 		ReturnTypeModifiers modifiers;
 		
@@ -183,11 +207,10 @@ namespace MonoDevelop.Projects.Dom
 		
 		public int ArrayDimensions {
 			get {
-				return arrayDimensions;
+				return dimensions != null ? dimensions.Length : 0;
 			}
 			set {
-				arrayDimensions = value;
-				this.dimensions = new int [arrayDimensions];
+				SetDimensions (new int [value]);
 			}
 		}
 		
@@ -248,43 +271,66 @@ namespace MonoDevelop.Projects.Dom
 			DomReturnType type = obj as DomReturnType;
 			if (type == null)
 				return false;
-			if (dimensions != null && type.dimensions != null) {
-				if (dimensions.Length != type.dimensions.Length)
+			if (ArrayDimensions != type.ArrayDimensions)
+				return false;
+			for (int n=0; n<ArrayDimensions; n++) {
+				if (GetDimension (n) != type.GetDimension (n))
 					return false;
-				for (int i = 0; i < dimensions.Length; i++) {
-					if (dimensions [i] != type.dimensions [i])
-						return false;
-				}
 			}
-			if (genericArguments != null && type.genericArguments != null) {
-				if (genericArguments.Count != type.genericArguments.Count)
+			if (GenericArguments.Count != type.GenericArguments.Count)
+				return false;
+			for (int i = 0; i < GenericArguments.Count; i++) {
+				if (!GenericArguments[i].Equals (type.GenericArguments [i]))
 					return false;
-				for (int i = 0; i < genericArguments.Count; i++) {
-					if (!genericArguments[i].Equals (type.genericArguments [i]))
-						return false;
-				}
 			}
+
 			return name == type.name &&
 				nspace == type.nspace &&
 				pointerNestingLevel == type.pointerNestingLevel &&
-				arrayDimensions == type.arrayDimensions &&
 				Modifiers == type.Modifiers;
 		}
+
+		public override int GetHashCode ()
+		{
+			return ToInvariantString ().GetHashCode ();
+		}
+
 		
 		public int GetDimension (int arrayDimension)
 		{
-			if (arrayDimension < 0 || arrayDimension >= this.arrayDimensions)
+			if (dimensions == null || arrayDimension < 0 || arrayDimension >= dimensions.Length)
 				return -1;
 			return this.dimensions [arrayDimension];
 		}
-		
+
 		public void SetDimension (int arrayDimension, int dimension)
 		{
-			if (arrayDimension < 0 || arrayDimension >= this.arrayDimensions)
+			if (arrayDimension < 0 || arrayDimension >= ArrayDimensions)
 				return;
-			this.dimensions [arrayDimension] = dimension;
+			
+			// Avoid changing the shared dimension
+			if (dimensions == oneDimensions)
+				dimensions = new int [ArrayDimensions];
+			
+			dimensions [arrayDimension] = dimension;
+			SetDimensions (dimensions);
 		}
 		
+		public void SetDimensions (int[] arrayDimensions)
+		{
+			// Reuse common dimension constants to save memory
+			if (arrayDimensions == null)
+				dimensions = null;
+			else if (arrayDimensions != null && arrayDimensions.Length == 1 && arrayDimensions[0] == 1)
+				dimensions = oneDimensions;
+			else
+				dimensions = arrayDimensions;
+		}
+
+		public int[] GetDimensions ()
+		{
+			return dimensions ?? zeroDimensions;
+		}
 		
 		public DomReturnType (string name) : this (name, false, new List<IReturnType> ())
 		{
@@ -296,7 +342,6 @@ namespace MonoDevelop.Projects.Dom
 			this.nspace = splitted.Key;
 			this.parts.Add (new ReturnTypePart (splitted.Value, typeParameters));
 			this.IsNullable     = isNullable;
-			this.genericArguments = typeParameters;
 		}
 		
 		public static IReturnType FromInvariantString (string invariantString)
@@ -377,23 +422,13 @@ namespace MonoDevelop.Projects.Dom
 			
 			return sb.ToString ();
 		}
-
-		public static readonly IReturnType Void      = GetSharedReturnType ("System.Void");
-		public static readonly IReturnType Object    = GetSharedReturnType ("System.Object");
-		public static readonly IReturnType Exception = GetSharedReturnType ("System.Exception");
-		
 		
 #region shared return types
-		// doesn't work ? 
-		//static Dictionary<string, IReturnType> returnTypeCache  = new Dictionary<string, IReturnType> ();
-		static Dictionary<string, IReturnType> returnTypeCache = null;
-		
+
 		public static IReturnType GetSharedReturnType (string invariantString)
 		{
 			if (String.IsNullOrEmpty (invariantString))
 				return null;
-			if (returnTypeCache == null)
-				returnTypeCache = new Dictionary<string, IReturnType> ();
 			lock (returnTypeCache) {
 				IReturnType type;
 				if (!returnTypeCache.TryGetValue (invariantString, out type)) {
@@ -409,8 +444,6 @@ namespace MonoDevelop.Projects.Dom
 		{
 			if (returnType == null)
 				return null;
-			if (returnTypeCache == null)
-				returnTypeCache = new Dictionary<string, IReturnType> ();
 			string invariantString = returnType.ToInvariantString();
 			lock (returnTypeCache) {
 				IReturnType type;

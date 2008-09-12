@@ -28,6 +28,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using MonoDevelop.Core.Collections;
 
 namespace MonoDevelop.Projects.Dom
 {
@@ -41,11 +43,10 @@ namespace MonoDevelop.Projects.Dom
 			get;
 		}
 		
-		
-		IList<string> Namespaces {
+		ReadOnlyCollection<string> Namespaces {
 			get;
 		}
-		IDictionary<string, IReturnType> Aliases {
+		ReadOnlyDictionary<string, IReturnType> Aliases {
 			get;
 		}
 	}

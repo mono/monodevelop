@@ -40,21 +40,18 @@ namespace MonoDevelop.Projects.CodeGeneration
 {
 	public class CodeRefactorer
 	{
-		ProjectDom pdb;
 		Solution solution;
 		ITextFileProvider fileProvider;
 		
 		delegate void RefactorDelegate (IProgressMonitor monitor, RefactorerContext gctx, IRefactorer gen, string file);
 		
-		public CodeRefactorer (Solution solution, ProjectDom pdb)
+		public CodeRefactorer (Solution solution)
 		{
 			this.solution = solution;
-			this.pdb = pdb;
 		}
 		
-		public CodeRefactorer (ProjectDom pdb)
+		public CodeRefactorer ()
 		{
-			this.pdb = pdb;
 		}
 		
 		public ITextFileProvider TextFileProvider {
@@ -105,7 +102,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 
 		public IType CreateClass (Project project, string language, string directory, string namspace, CodeTypeDeclaration type)
 		{
-			ProjectDom ctx = ProjectDomService.GetDatabaseProjectDom (project);
+			ProjectDom ctx = ProjectDomService.GetProjectDom (project);
 			RefactorerContext gctx = new RefactorerContext (ctx, fileProvider, null);
 			IRefactorer gen = Services.Languages.GetRefactorerForLanguage (language);
 			IType c = gen.CreateClass (gctx, directory, namspace, type);
@@ -437,9 +434,8 @@ namespace MonoDevelop.Projects.CodeGeneration
 		IType GetUpdatedClass (RefactorerContext gctx, IType klass)
 		{
 			IEditableTextFile file = gctx.GetFile (klass.CompilationUnit.FileName);
-			ProjectDomService.Refresh (gctx.ParserContext.Project, file.Name, null, delegate () { return file.Text; });
-//			gctx.ParserContext.ParserDatabase.UpdateFile (file.Name, file.Text);
-			return gctx.ParserContext.GetType (klass.FullName, -1, true, false);
+			ProjectDomService.Parse (gctx.ParserContext.Project, file.Name, null, delegate () { return file.Text; });
+			return gctx.ParserContext.GetType (klass.FullName, null, true, true);
 		}
 		
 		public void RemoveMember (IType cls, IMember member)
@@ -588,7 +584,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 			
 			if (solution != null) {
 				foreach (Project p in solution.GetAllProjects ()) {
-					ProjectDom ctx = ProjectDomService.GetDatabaseProjectDom (p);
+					ProjectDom ctx = ProjectDomService.GetProjectDom (p);
 					foreach (IType cls in ctx.Types) {
 						if (IsSubclass (ctx, baseClass, cls))
 							list.Add (cls);
@@ -693,7 +689,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 		
 		RefactorerContext GetGeneratorContext (Project p)
 		{
-			ProjectDom ctx = ProjectDomService.GetDatabaseProjectDom (p);
+			ProjectDom ctx = ProjectDomService.GetProjectDom (p);
 			return new RefactorerContext (ctx, fileProvider, null);
 		}
 		
@@ -712,17 +708,17 @@ namespace MonoDevelop.Projects.CodeGeneration
 			if (cls != null && cls.CompilationUnit != null) {
 				Project p = GetProjectForFile (cls.CompilationUnit.FileName);
 				if (p != null)
-					return ProjectDomService.GetDatabaseProjectDom (p);
+					return ProjectDomService.GetProjectDom (p);
 			}
-			return new ProjectDom ();
+			return ProjectDom.Empty;
 		}
 		
 		ProjectDom GetParserContext (LocalVariable var)
 		{
 			Project p = GetProjectForFile (var.FileName);
 			if (p != null)
-				return ProjectDomService.GetDatabaseProjectDom (p);
-			return new ProjectDom ();
+				return ProjectDomService.GetProjectDom (p);
+			return ProjectDom.Empty;
 		}
 		
 		Project GetProjectForFile (string file)

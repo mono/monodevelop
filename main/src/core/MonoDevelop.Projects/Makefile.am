@@ -44,19 +44,29 @@ FILES =  \
 	MonoDevelop.Projects.Dom.Output/NetAmbience.cs \
 	MonoDevelop.Projects.Dom.Output/OutputFlags.cs \
 	MonoDevelop.Projects.Dom.Parser/AbstractParser.cs \
+	MonoDevelop.Projects.Dom.Parser/AssemblyInformationEventHandler.cs \
+	MonoDevelop.Projects.Dom.Parser/CommentTasksChangedEventHandler.cs \
 	MonoDevelop.Projects.Dom.Parser/IParser.cs \
+	MonoDevelop.Projects.Dom.Parser/IParserDatabase.cs \
 	MonoDevelop.Projects.Dom.Parser/IResolver.cs \
+	MonoDevelop.Projects.Dom.Parser/ITypeNameResolver.cs \
+	MonoDevelop.Projects.Dom.Parser/ParseInformation.cs \
+	MonoDevelop.Projects.Dom.Parser/ParseInformationEventHandler.cs \
 	MonoDevelop.Projects.Dom.Parser/ProjectDom.cs \
 	MonoDevelop.Projects.Dom.Parser/ProjectDomEventArgs.cs \
 	MonoDevelop.Projects.Dom.Parser/ProjectParserService.cs \
+	MonoDevelop.Projects.Dom.Parser/TypeNameResolver.cs \
 	MonoDevelop.Projects.Dom.Serialization/AssemblyCodeCompletionDatabase.cs \
 	MonoDevelop.Projects.Dom.Serialization/ClassEntry.cs \
+	MonoDevelop.Projects.Dom.Serialization/ClassInformationEventHandler.cs \
 	MonoDevelop.Projects.Dom.Serialization/CodeCompletionDatabase.cs \
 	MonoDevelop.Projects.Dom.Serialization/DatabaseProjectDom.cs \
 	MonoDevelop.Projects.Dom.Serialization/DomPersistence.cs \
 	MonoDevelop.Projects.Dom.Serialization/DomTypeProxy.cs \
 	MonoDevelop.Projects.Dom.Serialization/FileEntry.cs \
+	MonoDevelop.Projects.Dom.Serialization/IParserService.cs \
 	MonoDevelop.Projects.Dom.Serialization/NamespaceEntry.cs \
+	MonoDevelop.Projects.Dom.Serialization/ParserDatabase.cs \
 	MonoDevelop.Projects.Dom.Serialization/ProjectCodeCompletionDatabase.cs \
 	MonoDevelop.Projects.Dom.Serialization/SimpleCodeCompletionDatabase.cs \
 	MonoDevelop.Projects.Dom/AbstractMember.cs \
@@ -67,7 +77,6 @@ FILES =  \
 	MonoDevelop.Projects.Dom/CompilationUnit.cs \
 	MonoDevelop.Projects.Dom/CompoundType.cs \
 	MonoDevelop.Projects.Dom/ConditionalRegion.cs \
-	MonoDevelop.Projects.Dom/DefaultParserContext.cs \
 	MonoDevelop.Projects.Dom/DomAttribute.cs \
 	MonoDevelop.Projects.Dom/DomCecilAttribute.cs \
 	MonoDevelop.Projects.Dom/DomCecilCompilationUnit.cs \
@@ -100,7 +109,6 @@ FILES =  \
 	MonoDevelop.Projects.Dom/IMember.cs \
 	MonoDevelop.Projects.Dom/IMethod.cs \
 	MonoDevelop.Projects.Dom/IParameter.cs \
-	MonoDevelop.Projects.Dom/IParserContext.cs \
 	MonoDevelop.Projects.Dom/IProperty.cs \
 	MonoDevelop.Projects.Dom/IReturnType.cs \
 	MonoDevelop.Projects.Dom/IType.cs \
@@ -114,6 +122,7 @@ FILES =  \
 	MonoDevelop.Projects.Dom/PreProcessorDefine.cs \
 	MonoDevelop.Projects.Dom/ReferenceEntry.cs \
 	MonoDevelop.Projects.Dom/ResolveResult.cs \
+	MonoDevelop.Projects.Dom/SearchTypeRequest.cs \
 	MonoDevelop.Projects.Dom/Tag.cs \
 	MonoDevelop.Projects.Dom/TypeParameter.cs \
 	MonoDevelop.Projects.Dom/TypeUpdateInformation.cs \

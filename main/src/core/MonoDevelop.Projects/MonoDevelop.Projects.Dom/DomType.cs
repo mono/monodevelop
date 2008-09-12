@@ -40,6 +40,9 @@ namespace MonoDevelop.Projects.Dom
 		protected ICompilationUnit compilationUnit;
 		protected IReturnType baseType;
 		
+		static readonly ReadOnlyCollection<TypeParameter> emptyParamList = new List<TypeParameter> ().AsReadOnly ();
+		static readonly ReadOnlyCollection<IReturnType> emptyTypeList = new List<IReturnType> ().AsReadOnly ();
+		
 		List<TypeParameter> typeParameters      = null;
 		List<IMember> members                   = new List<IMember> ();
 		List<IReturnType> implementedInterfaces = null;
@@ -125,23 +128,21 @@ namespace MonoDevelop.Projects.Dom
 				IReturnType baseType = BaseType;
 				if (baseType != null)
 					yield return baseType;
-				if (implementedInterfaces != null) {
-					for (int i = 0; i < implementedInterfaces.Count; i++) {
-						yield return implementedInterfaces[i];
-					}
+				for (int i = 0; i < ImplementedInterfaces.Count; i++) {
+					yield return ImplementedInterfaces[i];
 				}
 			}
 		}
 		
 		public virtual ReadOnlyCollection<IReturnType> ImplementedInterfaces {
 			get {
-				return implementedInterfaces != null ? implementedInterfaces.AsReadOnly () : null;
+				return implementedInterfaces != null ? implementedInterfaces.AsReadOnly () : emptyTypeList;
 			}
 		}
 		
 		public virtual ReadOnlyCollection<TypeParameter> TypeParameters {
 			get {
-				return typeParameters != null ? typeParameters.AsReadOnly () : null;
+				return typeParameters != null ? typeParameters.AsReadOnly () : emptyParamList;
 			}
 		}
 		
@@ -251,7 +252,7 @@ namespace MonoDevelop.Projects.Dom
 			this.location    = location;
 			
 			foreach (IMember member in members) {
-				member.DeclaringType = this;
+				((AbstractMember)member).DeclaringType = this;
 			}
 		}
 		
@@ -269,7 +270,6 @@ namespace MonoDevelop.Projects.Dom
 			this.Name        = name;
 			this.Namespace   = namesp;
 			this.bodyRegion  = region;
-			this.members     = members;
 			this.location    = location;
 		}
 		
@@ -348,14 +348,10 @@ namespace MonoDevelop.Projects.Dom
 				if (baseType.FullName == type.FullName)
 					return true;
 			}
-			SearchTypeRequest request = new SearchTypeRequest (this.CompilationUnit, -1, -1, null);
+			SearchTypeRequest request = new SearchTypeRequest (this.CompilationUnit);
 			foreach (IReturnType baseType in BaseTypes) {
 				request.Name = baseType.FullName;
-				SearchTypeResult searchTypeResult = this.SourceProjectDom.SearchType (request);
-				if (searchTypeResult == null)
-					continue;
-				IReturnType resolvedType = searchTypeResult.Result ?? baseType;
-				IType resolvedBaseType = this.SourceProjectDom.GetType (resolvedType);
+				IType resolvedBaseType = this.SourceProjectDom.SearchType (request);
 				if (resolvedBaseType != null && resolvedBaseType.IsBaseType (type))
 					return true;
 			}
@@ -383,37 +379,37 @@ namespace MonoDevelop.Projects.Dom
 		protected int eventCount       = 0;
 		protected int innerTypeCount   = 0;
 		
-		public int PropertyCount {
+		public virtual int PropertyCount {
 			get {
 				return propertyCount;
 			}
 		}
-		public int FieldCount {
+		public virtual int FieldCount {
 			get {
 				return fieldCount;
 			}
 		}
-		public int MethodCount {
+		public virtual int MethodCount {
 			get {
 				return methodCount;
 			}
 		}
-		public int ConstructorCount {
+		public virtual int ConstructorCount {
 			get {
 				return constructorCount;
 			}
 		}
-		public int IndexerCount {
+		public virtual int IndexerCount {
 			get {
 				return indexerCount;
 			}
 		}
-		public int EventCount {
+		public virtual int EventCount {
 			get {
 				return eventCount;
 			}
 		}
-		public int InnerTypeCount {
+		public virtual int InnerTypeCount {
 			get {
 				return innerTypeCount;
 			}
@@ -422,6 +418,7 @@ namespace MonoDevelop.Projects.Dom
 		public void Add (IField member)
 		{
 			fieldCount++;
+			((AbstractMember)member).DeclaringType = this;
 			this.members.Add (member);
 		}
 		public void Add (IMethod member)
@@ -431,6 +428,7 @@ namespace MonoDevelop.Projects.Dom
 			} else {
 				methodCount++;
 			}
+			((AbstractMember)member).DeclaringType = this;
 			this.members.Add (member);
 		}
 		public void Add (IProperty member)
@@ -440,16 +438,19 @@ namespace MonoDevelop.Projects.Dom
 			} else {
 				propertyCount++;
 			}
+			((AbstractMember)member).DeclaringType = this;
 			this.members.Add (member);
 		}
 		public void Add (IEvent member)
 		{
 			eventCount++;
+			((AbstractMember)member).DeclaringType = this;
 			this.members.Add (member);
 		}
 		public void Add (IType member)
 		{
 			innerTypeCount++;
+			((AbstractMember)member).DeclaringType = this;
 			this.members.Add (member);
 		}
 		
@@ -526,7 +527,8 @@ namespace MonoDevelop.Projects.Dom
 			
 			DomType result = (DomType)Resolve (type, resolver);
 			result.Name = name;
-			result.typeParameters.Clear ();
+			if (result.typeParameters != null)
+				result.typeParameters.Clear ();
 			return result;
 		}
 		
@@ -541,53 +543,39 @@ namespace MonoDevelop.Projects.Dom
 			
 			public IReturnType Resolve (IReturnType type)
 			{
-				DomReturnType result = null;
+				IReturnType copyFrom = type;
+				
 				if (typeTable.ContainsKey (type.FullName)) {
 					if (type.GenericArguments == null || type.GenericArguments.Count == 0)
 						return typeTable [type.FullName];
-					
-					result = new DomReturnType ();
-					
-					IReturnType retType = typeTable [type.FullName];
-					result.Name      = retType.Name;
-					result.Namespace = retType.Namespace;
-					result.Type      = retType.Type;
-					result.ArrayDimensions = retType.ArrayDimensions;
-					result.PointerNestingLevel = retType.PointerNestingLevel;
-					result.IsNullable  = retType.IsNullable;
-					foreach (IReturnType param in retType.GenericArguments) {
-						result.AddTypeParameter (Resolve (param));
-					}
-				} else {
-					result = new DomReturnType ();
-					result.Name      = type.Name;
-					result.Namespace = type.Namespace;
-					result.ArrayDimensions = type.ArrayDimensions;
-					result.Type       = type.Type;
-					result.PointerNestingLevel = type.PointerNestingLevel;
-					result.IsNullable = type.IsNullable;
-					foreach (IReturnType param in type.GenericArguments) {
-						result.AddTypeParameter (Resolve (param));
-					}
+					copyFrom = typeTable [type.FullName];
+				}
+				
+				DomReturnType result = new DomReturnType ();
+				result.Name      = copyFrom.Name;
+				result.Namespace = copyFrom.Namespace;
+				result.Type       = copyFrom.Type;
+				result.PointerNestingLevel = copyFrom.PointerNestingLevel;
+				result.IsNullable = copyFrom.IsNullable;
+				result.ArrayDimensions = copyFrom.ArrayDimensions;
+				for (int n=0; n<copyFrom.ArrayDimensions; n++)
+					result.SetDimension (n, copyFrom.GetDimension (n));
+				foreach (IReturnType param in copyFrom.GenericArguments) {
+					result.AddTypeParameter (Resolve (param));
 				}
 				return result;
 			}
 		}
 		
 		
-		public static IType Resolve (IType type, ITypeResolver typeResolver)
+		public static DomType Resolve (IType type, ITypeResolver typeResolver)
 		{
 			DomType result = new DomType ();
+			AbstractMember.Resolve (type, result, typeResolver);
 			result.CompilationUnit = type.CompilationUnit;
 			result.Name          = type.Name;
 			result.Namespace     = type.Namespace;
-			result.Documentation = type.Documentation;
 			result.ClassType     = type.ClassType;
-			result.Modifiers     = type.Modifiers;
-			
-			result.Location      = type.Location;
-			result.bodyRegion    = type.BodyRegion;
-			result.AddRange (DomAttribute.Resolve (type.Attributes, typeResolver));
 			
 			if (type.BaseType != null)
 				result.baseType = DomReturnType.Resolve (type.BaseType, typeResolver);

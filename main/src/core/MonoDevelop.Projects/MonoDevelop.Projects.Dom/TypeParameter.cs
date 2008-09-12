@@ -64,5 +64,10 @@ namespace MonoDevelop.Projects.Dom
 		{
 			this.constraints.Add (type);
 		}
+
+		public void AddAttribute (IAttribute attr)
+		{
+			attributes.Add (attr);
+		}
 	}
 }

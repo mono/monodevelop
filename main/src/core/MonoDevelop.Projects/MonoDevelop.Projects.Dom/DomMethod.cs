@@ -206,13 +206,7 @@ namespace MonoDevelop.Projects.Dom
 		public static IMethod Resolve (IMethod source, ITypeResolver typeResolver)
 		{
 			DomMethod result = new DomMethod ();
-			result.Name          = source.Name;
-			result.Documentation = source.Documentation;
-			result.Modifiers     = source.Modifiers;
-			result.ReturnType    = DomReturnType.Resolve (source.ReturnType, typeResolver);
-			result.Location      = source.Location;
-			result.bodyRegion    = source.BodyRegion;
-			result.AddRange (DomAttribute.Resolve (source.Attributes, typeResolver));
+			AbstractMember.Resolve (source, result, typeResolver);
 			
 			if (source.Parameters != null) {
 				foreach (IParameter parameter in source.Parameters)

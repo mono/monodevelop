@@ -42,5 +42,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 		
 		IExpressionFinder CreateExpressionFinder (ProjectDom dom);
 		IResolver         CreateResolver (ProjectDom dom, object editor, string fileName);
+
+		string[] LexerTags { get; set; }
 	}
 }

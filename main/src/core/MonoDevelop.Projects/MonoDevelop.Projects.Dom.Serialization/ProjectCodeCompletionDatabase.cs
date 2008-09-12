@@ -45,8 +45,9 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		ClrVersion lastVersion = ClrVersion.Default;
 		int parseCount;
 		
-		public ProjectCodeCompletionDatabase (Project project)
+		public ProjectCodeCompletionDatabase (Project project, ParserDatabase pdb): base (pdb)
 		{
+			Console.WriteLine ("pp opening: " + project.FileName);
 			SetLocation (project.BaseDirectory, project.Name);
 			
 			this.project = project;
@@ -124,9 +125,8 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		void OnProjectModified (object s, SolutionItemModifiedEventArgs args)
 		{
 			UpdateCorlibReference ();
-			// TODO:
-//			if (UpdateCorlibReference ())
-//				parserDatabase.NotifyReferencesChanged (this);
+			if (UpdateCorlibReference ())
+				SourceProjectDom.UpdateReferences ();
 		}
 
 		public void UpdateFromProject ()
@@ -240,13 +240,13 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			if (monitor != null) monitor.BeginTask ("Parsing file: " + Path.GetFileName (fileName), 1);
 			
 			try {
-				ICompilationUnit parserInfo = ProjectDomService.Parse (this.project,
+				ParsedDocument parserInfo = ProjectDomService.Parse (this.project,
 				                                                         fileName,
 				                                                         null,
-				                                                         delegate () { return File.ReadAllText (fileName); }).CompilationUnit;
+				                                                         delegate () { return File.ReadAllText (fileName); });
 				if (parserInfo != null) {
 					lock (rwlock) {
-						TypeUpdateInformation res = UpdateFromParseInfo (parserInfo, fileName);
+						TypeUpdateInformation res = UpdateFromParseInfo (parserInfo.CompilationUnit, fileName);
 						if (res != null) 
 							ProjectDomService.NotifyTypeUpdate (project, fileName, res);
 					}
@@ -256,19 +256,6 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			}
 		}
 		
-		protected override void QueueParseJob (FileEntry file)
-		{
-			if (file.InParseQueue)
-				return;
-			file.InParseQueue = true;
-			ProjectDomService.Parse (this.project,
-			                           file.FileName,
-			                           "",
-			                           delegate () {
-				return File.ReadAllText (file.FileName);
-			});
-		}
-
 		public TypeUpdateInformation UpdateFromParseInfo (ICompilationUnit parserInfo, string fileName)
 		{
 			ICompilationUnit cu = parserInfo;
@@ -276,7 +263,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			List<IType> resolved;
 			
 			bool allResolved = ResolveTypes (cu, cu.Types, out resolved);
-			TypeUpdateInformation res = UpdateTypeInformation (resolved, fileName);
+			TypeUpdateInformation res = UpdateTypeInformation (resolved, parserInfo.FileName);
 			
 			FileEntry file = files [fileName] as FileEntry;
 			if (file != null) {

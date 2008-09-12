@@ -28,38 +28,30 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using MonoDevelop.Projects;
 
 namespace MonoDevelop.Projects.Dom.Parser
 {
-	public class ProjectDom
+	public abstract class ProjectDom
 	{	
 		protected List<ProjectDom> references = new List<ProjectDom> ();
-		protected Dictionary<string, IType> typeTable = new Dictionary<string, IType> ();
 		
 		public Project Project;
-		
-		public IEnumerable<IType> AllAccessibleTypes {
+		internal int ReferenceCount;
+		internal string Uri;
+
+		public static readonly ProjectDom Empty = new EmptyProjectDom ();
+
+		public ReadOnlyCollection<ProjectDom> References {
 			get {
-				foreach (IType type in Types) {
-					yield return type;
-				}
-				
-				foreach (ProjectDom reference in references) {
-					foreach (IType type in reference.Types) {
-						yield return type;
-					}
-				}
+				if (references == null)
+					UpdateReferences ();
+				return references.AsReadOnly ();
 			}
 		}
 		
-		public virtual IEnumerable<IType> Types {
-			get {
-				foreach (IType type in typeTable.Values) {
-					yield return type;
-				}
-			}
-		}
+		public abstract IEnumerable<IType> Types { get; }
 		
 		public virtual IEnumerable<IType> GetTypes (string fileName)
 		 {
@@ -67,13 +59,6 @@ namespace MonoDevelop.Projects.Dom.Parser
 				if (type.CompilationUnit.FileName == fileName)
 					yield return type;
 			}
-		}
-
-		public virtual void AddReference (ProjectDom dom)
-		{
-			if (dom == null)
-				return;
-			references.Add (dom);
 		}
 		
 		public IEnumerable<IType> GetInheritanceTree (IType type)
@@ -86,43 +71,144 @@ namespace MonoDevelop.Projects.Dom.Parser
 					continue;
 				yield return cur;
 				if (cur.BaseType == null && cur.FullName != "System.Object") {
-					types.Push (this.GetType (DomReturnType.Object));
+					types.Push (GetType (DomReturnType.Object));
 					continue;
 				}
 				foreach (IReturnType baseType in cur.BaseTypes) {
-					SearchTypeResult searchTypeResult = SearchType (new SearchTypeRequest (cur.CompilationUnit, -1, -1, baseType.FullName));
-					if (searchTypeResult == null)
-						continue;
-					IType resolvedType = this.GetType (searchTypeResult.Result, true);
+					IType resolvedType = GetType (baseType, true);
 					if (resolvedType != null) 
 						types.Push (resolvedType);
 				}
 			}
 		}
 		
-		public SearchTypeResult SearchType (SearchTypeRequest request)
+		public virtual IType SearchType (SearchTypeRequest request)
 		{
-			List<string> namespaces = new List<string> ();
-			namespaces.Add ("");
-			if (request.CurrentCompilationUnit != null) {
-				foreach (IUsing u in request.CurrentCompilationUnit.Usings) {
-					foreach (string ns in u.Namespaces) {
-						namespaces.Add (ns);
+			return SearchType (request.Name, request.CallingType, request.CurrentCompilationUnit, request.GenericParameterCount);
+		}
+		
+		internal IType SearchType (string name, IType callingClass, ICompilationUnit unit, int genericParameterCount)
+		{
+			// TODO dom check generic parameter count
+			
+			if (name == null || name == String.Empty)
+				return null;
+				
+			IType c;
+			c = GetType (name, null, false, true);
+			if (c != null)
+				return c;
+
+			// If the name matches an alias, try using the alias first.
+			if (unit != null) {
+				IReturnType ualias = FindAlias (name, unit.Usings);
+				if (ualias != null) {
+					// Don't provide the compilation unit when trying to resolve the alias,
+					// since aliases are not affected by other 'using' directives.
+					c = GetType (ualias.FullName, ualias.GenericArguments, false, true);
+					if (c != null)
+						return c;
+				}
+			}
+			
+			// The enclosing namespace has preference over the using directives.
+			// Check it now.
+
+			if (callingClass != null) {
+				string fullname = callingClass.FullName;
+				string[] namespaces = fullname.Split(new char[] {'.'});
+				string curnamespace = "";
+				int i = 0;
+				
+				do {
+					curnamespace += namespaces[i] + '.';
+					c = GetType (curnamespace + name, null, false, true);
+					if (c != null) {
+						return c;
+					}
+					i++;
+				}
+				while (i < namespaces.Length);
+			}
+			
+			// Now try to find the class using the included namespaces
+			
+			if (unit != null) {
+				foreach (IUsing u in unit.Usings) {
+					if (u != null) {
+						c = SearchType (u, name, null, true);
+						if (c != null) {
+							return c;
+						}
 					}
 				}
 			}
-			IType type = GetType (namespaces, request.Name, request.GenericParameterCount, true, true);
-			if (type != null)
-				return new SearchTypeResult (type);
+			
 			return null;
 		}
 		
-		public virtual void UpdateFromParseInfo (ICompilationUnit unit)
+		IReturnType FindAlias (string name, IEnumerable<IUsing> usings)
 		{
-			foreach (IType type in unit.Types) {
-				type.SourceProjectDom = this;
-				typeTable[type.FullName] = type;
+			// If the name matches an alias, try using the alias first.
+			if (usings == null)
+				return null;
+				
+			foreach (IUsing u in usings) {
+				if (u != null) {
+					IReturnType a;
+					if (u.Aliases.TryGetValue (name, out a))
+						return a;
+				}
 			}
+			return null;
+		}
+		
+		public IType SearchType (IUsing iusing, string partitialTypeName, IList<IReturnType> genericArguments, bool caseSensitive)
+		{
+			IType c = GetType (partitialTypeName, genericArguments, false, caseSensitive);
+			if (c != null) {
+				return c;
+			}
+			
+			foreach (string str in iusing.Namespaces) {
+				string possibleType = String.Concat(str, ".", partitialTypeName);
+				c = GetType (possibleType, genericArguments, false, caseSensitive);
+				if (c != null)
+					return c;
+			}
+
+			IReturnType alias;
+			// search class in partial namespaces
+			if (iusing.Aliases.TryGetValue ("", out alias)) {
+				string declaringNamespace = alias.FullName;
+				while (declaringNamespace.Length > 0) {
+					string className = String.Concat(declaringNamespace, ".", partitialTypeName);
+					c = GetType (className, genericArguments, false, caseSensitive);
+					if (c != null)
+						return c;
+					int index = declaringNamespace.IndexOf('.');
+					if (index > 0) {
+						declaringNamespace = declaringNamespace.Substring(0, index);
+					} else {
+						break;
+					}
+				}
+			}
+			
+			foreach (string aliasString in iusing.Aliases.Keys) {
+				if (caseSensitive ? partitialTypeName.StartsWith(aliasString) : partitialTypeName.ToLower().StartsWith(aliasString.ToLower())) {
+					string className = null;
+					if (aliasString.Length > 0) {
+						IReturnType rt = iusing.Aliases [aliasString];
+						className = String.Concat (rt.FullName, partitialTypeName.Remove (0, aliasString.Length));
+						c = GetType (className, genericArguments, false, caseSensitive);
+						if (c != null)
+							return c;
+					}
+				}
+			}
+			
+			return null;
 		}
 		
 		internal virtual void GetNamespaceContentsInternal (List<IMember> result, IEnumerable<string> subNamespaces, bool caseSensitive)
@@ -162,9 +248,19 @@ namespace MonoDevelop.Projects.Dom.Parser
 			return result;
 		}
 		
+		public bool NamespaceExists (string namespaceName)
+		{
+			return NamespaceExists (namespaceName, false);
+		}
+		
 		public bool NamespaceExists (string namespaceName, bool searchDeep)
 		{
-			List<IMember> members = GetNamespaceContents (namespaceName, searchDeep, true);
+			return NamespaceExists (namespaceName, searchDeep, true);
+		}
+		
+		public virtual bool NamespaceExists (string namespaceName, bool searchDeep, bool caseSensitive)
+		{
+			List<IMember> members = GetNamespaceContents (namespaceName, searchDeep, caseSensitive);
 			return members != null && members.Count > 0;
 		}
 		
@@ -173,10 +269,12 @@ namespace MonoDevelop.Projects.Dom.Parser
 			return false;
 		}
 		
+		public abstract IEnumerable<IType> GetSubclasses (IType type);
+		
 		
 		public IType GetType (IReturnType returnType)
 		{
-			return GetType (returnType, true);
+			return GetType (returnType.FullName, returnType.GenericArguments, true, true);
 		}
 		
 		public IType GetType (IReturnType returnType, bool searchDeep)
@@ -185,58 +283,38 @@ namespace MonoDevelop.Projects.Dom.Parser
 				return null;
 			if (returnType.Type != null)
 				return returnType.Type ;
-			return GetType (returnType.FullName, -1, true, searchDeep);
+			return GetType (returnType.FullName, returnType.GenericArguments, searchDeep, true);
 		}
 		
-		public virtual IEnumerable<IReturnType> GetSubclasses (IType type)
+		public IType GetType (string typeName)
 		{
-			foreach (IType t in AllAccessibleTypes) {
-				if (t.BaseTypes == null)
-					continue;
-				foreach (IReturnType retType in t.BaseTypes) {
-					if (retType.FullName == type.FullName)
-						yield return new DomReturnType (t);
-				}
-			}
+			return GetType (typeName, null, true, true);
 		}
 		
-		protected virtual IType GetType (IEnumerable<string> subNamespaces, string fullName, int genericParameterCount, bool caseSensitive)
+		public IType GetType (string typeName, IList<IReturnType> genericArguments)
 		{
-			IType result;
-			if (typeTable.TryGetValue (fullName, out result))
-				return result;
-			if (subNamespaces != null) {
-				foreach (string ns in subNamespaces) {
-					if (typeTable.TryGetValue (ns + "." + fullName, out result))
-						return result;
-				}
-			}
+			return GetType (typeName, genericArguments, true, true);
+		}
+		
+		public IType GetType (string typeName, bool deepSearchReferences)
+		{
+			return GetType (typeName, null, deepSearchReferences, true);
+		}
+		
+		public IType GetType (string typeName, bool deepSearchReferences, bool caseSensitive)
+		{
+			return GetType (typeName, null, deepSearchReferences, caseSensitive);
+		}
+		
+		public abstract IType GetType (string typeName, IList<IReturnType> genericArguments, bool deepSearchReferences, bool caseSensitive);
+
+		
+		internal virtual TypeUpdateInformation UpdateFromParseInfo (ICompilationUnit unit)
+		{
 			return null;
 		}
-		
-		public IType GetType (string fullName, int genericParameterCount, bool caseSensitive, bool searchDeep)
-		{
-			return GetType (null, fullName, genericParameterCount, caseSensitive, searchDeep);
-		}
-		
-		public virtual IType GetType (IEnumerable<string> subNamespaces, string fullName, int genericParameterCount, bool caseSensitive, bool searchDeep)
-		{
-			if (String.IsNullOrEmpty (fullName))
-				return null;
-				
-			IType result = GetType (subNamespaces, fullName, genericParameterCount, caseSensitive);
-			if (result == null && searchDeep) {
-				foreach (ProjectDom reference in references) {
-					result = reference.GetType (subNamespaces, fullName, genericParameterCount, caseSensitive, false);
-					if (result != null)
-						break;
-				}
-			}
-			
-			return result;
-		}
-		
-		public virtual void Unload ()
+
+		internal virtual void Unload ()
 		{
 		}
 		
@@ -246,7 +324,79 @@ namespace MonoDevelop.Projects.Dom.Parser
 				Loaded (this, EventArgs.Empty);
 			}
 		}
+
+		internal void UpdateReferences ()
+		{
+			if (references == null)
+				references = new List<ProjectDom> ();
+
+			List<ProjectDom> refs = new List<ProjectDom> ();
+			foreach (string uri in OnGetReferences ()) {
+				int curRefCount = ReferenceCount;
+				ProjectDom dom = ProjectDomService.GetDom (uri);
+				ReferenceCount = curRefCount;
+				if (dom == this)
+					continue;
+				if (dom != null) {
+					refs.Add (dom);
+					dom.ReferenceCount++;
+				}
+			}
+			List<ProjectDom> oldRefs = references;
+			references = refs;
+			foreach (ProjectDom dom in oldRefs)
+				ProjectDomService.UnloadDom (dom.Uri);
+		}
+
+		internal IReturnType GetSharedReturnType (IReturnType rt)
+		{
+			return DomReturnType.GetSharedReturnType (rt);
+		}
+
+		internal abstract IEnumerable<string> OnGetReferences ();
+
+		internal virtual void OnProjectReferenceAdded (ProjectReference pref)
+		{
+		}
+
+		internal virtual void OnProjectReferenceRemoved (ProjectReference pref)
+		{
+		}
+
+		// This method has to check all modified files and start parsing jobs if needed
+		internal virtual void CheckModifiedFiles ()
+		{
+		}
+
+		// This method can be overriden to flush cached data into the database
+		internal virtual void Flush ()
+		{
+		}
 		
 		public event EventHandler Loaded;
+	}
+
+	class EmptyProjectDom: ProjectDom
+	{
+		public override IType GetType (string typeName, IList<IReturnType> genericArguments, bool deepSearchReferences, bool caseSensitive)
+		{
+			return null;
+		}
+
+		public override IEnumerable<IType> Types {
+			get {
+				yield break;
+			}
+		}
+
+		public override IEnumerable<IType> GetSubclasses (IType type)
+		{
+			yield break;
+		}
+
+		internal override IEnumerable<string> OnGetReferences ()
+		{
+			yield break;
+		}
 	}
 }

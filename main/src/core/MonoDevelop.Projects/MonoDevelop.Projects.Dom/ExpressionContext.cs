@@ -131,11 +131,11 @@ namespace MonoDevelop.Projects.Dom
 		
 			public override bool FilterEntry (object entry)
 			{
+				IType type = entry as IType;
 				if (IsObjectCreation && entry is IType) {
-					IType type = entry as IType;
-					return (type.ClassType == ClassType.Class || type.ClassType == ClassType.Struct) && !type.IsStatic && !type.IsAbstract;
+					return type.ClassType != ClassType.Class && type.ClassType != ClassType.Struct && (type.IsStatic || type.IsAbstract);
 				}
-				return false;
+				return true;
 			}
 			
 

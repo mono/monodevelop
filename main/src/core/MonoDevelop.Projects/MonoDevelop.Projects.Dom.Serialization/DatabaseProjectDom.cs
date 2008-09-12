@@ -34,24 +34,29 @@ namespace MonoDevelop.Projects.Dom.Serialization
 {
 	internal class DatabaseProjectDom : ProjectDom
 	{
+		ParserDatabase dbProvider;
 		SerializationCodeCompletionDatabase database;
+
+		public DatabaseProjectDom (ParserDatabase dbProvider, SerializationCodeCompletionDatabase database)
+		{
+			this.dbProvider = dbProvider;
+			this.database = database;
+			database.SourceProjectDom = this;
+		}
+
+		public SerializationCodeCompletionDatabase Database {
+			get { return database; }
+		}
 
 		public override IEnumerable<IType> Types {
 			get {
-				foreach (ClassEntry entry in database.GetAllClasses ()) {
-					yield return new DomTypeProxy (database, entry);
-				}
+				return database.GetClassList ();
 			}
 		}
 
 		public override IEnumerable<IType> GetTypes (string fileName)
 		{
 			return database.GetFileContents (fileName);
-		}
-		
-		public override void UpdateFromParseInfo (ICompilationUnit unit)
-		{
-			database.UpdateTypeInformation (unit.Types, unit.FileName);
 		}
 		
 		internal override void GetNamespaceContentsInternal (List<IMember> result, IEnumerable<string> subNamespaces, bool caseSensitive)
@@ -65,72 +70,83 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			}
 		}
 
+		public override bool NamespaceExists (string name, bool searchDeep, bool caseSensitive)
+		{
+			if (database.NamespaceExists (name, caseSensitive)) return true;
+			foreach (ReferenceEntry re in database.References) {
+				SerializationCodeCompletionDatabase cdb = dbProvider.GetDatabase (re.Uri);
+				if (cdb == null) continue;
+				if (cdb.NamespaceExists (name, caseSensitive)) return true;
+			}
+			return false;
+		}
+
+
 		public override bool NeedCompilation (string fileName)
 		{
 			FileEntry entry = database.GetFile (fileName);
 			return entry != null ? entry.IsModified : true;
 		}
 		
-		public override IEnumerable<IReturnType> GetSubclasses (IType type)
+		public override IEnumerable<IType> GetSubclasses (IType type)
 		{
-			foreach (IType subType in database.GetSubclasses (type.FullName, new string [] {})) {
-				yield return new DomReturnType (subType);
+			foreach (IType subType in dbProvider.GetSubclassesTree (database, type, null)) {
+				yield return subType;
 			}
 		}
 		
-		protected override IType GetType (IEnumerable<string> subNamespaces, string fullName, int genericParameterCount, bool caseSensitive)
+		internal override IEnumerable<string> OnGetReferences ()
 		{
-			List<string> namespaces = subNamespaces != null ? new List<string> (subNamespaces) : new List<string> ();
-			if (!namespaces.Contains (""))
-				namespaces.Add ("");
-/*			int idx = fullName.LastIndexOf ('.');
-			string typeName;
-			if (idx >= 0) {
-				namespaces.Add (fullName.Substring (0, idx));
-				typeName = fullName.Substring (idx + 1);
-			} else {
-				typeName = fullName;
-			}*/
-			IType result = null;
-			foreach (string ns in namespaces) {
-				IType type = database.GetClass (ns.Length > 0 ? ns + "." + fullName : fullName, null, caseSensitive);
-				if (type == null)
-					continue;
-				if (result == null) {
-					result = type;
-				} else {
-					result = CompoundType.Merge (result, type);
-				}
-			}
-			/*
-			List<IMember> members = new List<IMember> ();
-			GetNamespaceContentsInternal (members, namespaces, caseSensitive);
-			
-			foreach (IMember member in members) {
-				IType type = member as IType;
-				if (type != null && type.Name == typeName && 
-				    (genericParameterCount < 0 ||
-				     (genericParameterCount == 0 && type.TypeParameters == null) ||
-				     (type.TypeParameters != null && type.TypeParameters.Count == genericParameterCount))) {
-					if (result == null) {
-						result = type;
-					} else {
-						result = CompoundType.Merge (result, type);
-					}
-				}
-			}*/
-			return result;
+			foreach (ReferenceEntry re in database.References)
+				yield return re.Uri;
 		}
 		
-		public DatabaseProjectDom (SerializationCodeCompletionDatabase database)
-		{
-			this.database = database;
-		}
-		
-		public override void Unload ()
+		internal override void Unload ()
 		{
 			database.Write ();
-			database.Dispose ();
+			if (!database.Disposed)
+				database.Dispose ();
+		}
+
+		internal override void OnProjectReferenceAdded (ProjectReference pref)
+		{
+			ProjectCodeCompletionDatabase db = (ProjectCodeCompletionDatabase) database;
+			db.UpdateFromProject ();
+		}
+
+		internal override void OnProjectReferenceRemoved (ProjectReference pref)
+		{
+			ProjectCodeCompletionDatabase db = (ProjectCodeCompletionDatabase) database;
+			db.UpdateFromProject ();
+			// TODO dom add reference
+		}
+
+		internal override void CheckModifiedFiles ()
+		{
+			database.CheckModifiedFiles ();
+		}
+
+		internal override void Flush ()
+		{
+			database.Flush ();
+		}
+		
+		internal override TypeUpdateInformation UpdateFromParseInfo (ICompilationUnit unit)
+		{
+			ProjectCodeCompletionDatabase db = database as ProjectCodeCompletionDatabase;
+			if (db != null)
+				return db.UpdateFromParseInfo (unit, unit.FileName);
+			
+			SimpleCodeCompletionDatabase sdb = database as SimpleCodeCompletionDatabase;
+			if (sdb != null)
+				return sdb.UpdateFromParseInfo (unit);
+			
+			return null;
+		}
+		
+		public override IType GetType (string typeName, IList<IReturnType> genericArguments, bool deepSearchReferences, bool caseSensitive)
+		{
+			return dbProvider.GetClass (database, typeName, genericArguments, deepSearchReferences, caseSensitive);
 		}
 	}
 }

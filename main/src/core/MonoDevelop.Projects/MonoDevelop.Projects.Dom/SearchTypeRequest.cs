@@ -31,16 +31,6 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.Projects.Dom
 {
-	public interface IParserContext
-	{
-		IExpressionFinder GetExpressionFinderFor (string fileName);
-		ICompilationUnit  GetCompilationUnitFor (string fileName);
-		
-		List<IMember> GetNamespaceContents (string nsName);
-		SearchTypeResult SearchType (SearchTypeRequest request);
-		IType LookupType (IReturnType returnType);
-	}
-	
 	public class SearchTypeRequest
 	{
 		string name;
@@ -48,6 +38,7 @@ namespace MonoDevelop.Projects.Dom
 		ICompilationUnit currentCompilationUnit;
 		int    caretLine, caretColumn;
 		bool   caseSensitive = true;
+		IType  callingType;
 		
 		public string Name {
 			get {
@@ -90,12 +81,55 @@ namespace MonoDevelop.Projects.Dom
 				caseSensitive = value;
 			}
 		}
+
+		public IType CallingType {
+			get {
+				return callingType;
+			}
+			set {
+				callingType = value;
+			}
+		}
+		
+		public SearchTypeRequest (ICompilationUnit currentCompilationUnit)
+		{
+			this.currentCompilationUnit = currentCompilationUnit;
+			this.caretLine   = -1;
+			this.caretColumn = -1;
+			this.genericParameterCount = -1;
+		}
+		
+		public SearchTypeRequest (ICompilationUnit currentCompilationUnit, string name)
+		{
+			this.currentCompilationUnit = currentCompilationUnit;
+			this.caretLine   = -1;
+			this.caretColumn = -1;
+			this.name        = name;
+			this.genericParameterCount = -1;
+		}
+		
+		public SearchTypeRequest (ICompilationUnit currentCompilationUnit, IReturnType rtype)
+		{
+			this.currentCompilationUnit = currentCompilationUnit;
+			this.caretLine   = -1;
+			this.caretColumn = -1;
+			this.name        = rtype.FullName;
+			this.genericParameterCount = rtype.GenericArguments.Count;
+		}
 		
 		public SearchTypeRequest (ICompilationUnit currentCompilationUnit, int caretLine, int caretColumn, string name)
 		{
 			this.currentCompilationUnit = currentCompilationUnit;
 			this.caretLine   = caretLine;
 			this.caretColumn = caretColumn;
+			this.name        = name;
+			this.genericParameterCount = -1;
+		}
+		
+		public SearchTypeRequest (ICompilationUnit currentCompilationUnit, IType callingType, string name)
+		{
+			this.currentCompilationUnit = currentCompilationUnit;
+			this.callingType = callingType;
 			this.name        = name;
 			this.genericParameterCount = -1;
 		}

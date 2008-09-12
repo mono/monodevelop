@@ -137,7 +137,7 @@ namespace MonoDevelop.Projects.Dom
 		}
 		
 		
-		public System.Collections.Generic.IEnumerable<IAttribute> Attributes {
+		public virtual System.Collections.Generic.IEnumerable<IAttribute> Attributes {
 			get {
 				if (attributes == null)
 					return new IAttribute [] {};
@@ -400,12 +400,26 @@ namespace MonoDevelop.Projects.Dom
 		
 		public virtual System.Xml.XmlNode GetMonodocDocumentation ()
 		{
+			if (DeclaringType == null)
+				return null;
+			
 			System.Xml.XmlDocument doc = ProjectDomService.HelpTree.GetHelpXml (DeclaringType.HelpUrl);
 			if (doc != null)  {
 				System.Xml.XmlNode result = doc.SelectSingleNode ("/Type/Members/Member[@MemberName='" + Name + "']/Docs");
 				return result;
 			}
 			return null;
+		}
+		
+		public static void Resolve (IMember source, AbstractMember target, ITypeResolver typeResolver)
+		{
+			target.Name           = source.Name;
+			target.Documentation  = source.Documentation;
+			target.Modifiers      = source.Modifiers;
+			target.ReturnType     = DomReturnType.Resolve (source.ReturnType, typeResolver);
+			target.Location       = source.Location;
+			target.BodyRegion     = source.BodyRegion;
+			target.AddRange (DomAttribute.Resolve (source.Attributes, typeResolver));
 		}
 		
 		public abstract object AcceptVisitior (IDomVisitor visitor, object data);

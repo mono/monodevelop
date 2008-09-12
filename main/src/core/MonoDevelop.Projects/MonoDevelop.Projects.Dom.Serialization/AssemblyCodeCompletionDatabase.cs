@@ -37,6 +37,7 @@ using MonoDevelop.Projects;
 using System.Reflection;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
+using MonoDevelop.Projects.Dom.Parser;
 
 namespace MonoDevelop.Projects.Dom.Serialization
 {	
@@ -53,7 +54,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		// This is the package version of the assembly. It is serialized.
 		string packageVersion;
 		
-		public AssemblyCodeCompletionDatabase (string baseDir, string assemblyName)
+		public AssemblyCodeCompletionDatabase (string assemblyName, ParserDatabase pdb): base (pdb)
 		{
 			string name;
 			
@@ -73,7 +74,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 					isPackageAssembly = false;
 			}
 
-			this.baseDir = baseDir;
+			this.baseDir = ProjectDomService.CodeCompletionPath;
 			
 			SetLocation (baseDir, name);
 
@@ -166,8 +167,6 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			if (!File.Exists (fileName))
 				return;
 			IProgressMonitor monitor = parentMonitor;
-//			if (parentMonitor == null)
-//				monitor = parserDatabase.GetParseProgressMonitor ();
 			
 			// Update the package version
 			SystemPackage pkg = Runtime.SystemAssemblyService.GetPackageFromFullName (assemblyName);
@@ -175,6 +174,8 @@ namespace MonoDevelop.Projects.Dom.Serialization
 				packageVersion = pkg.Name + " " + pkg.Version;
 				
 			try {
+				if (parentMonitor == null)
+					monitor = ProjectDomService.GetParseProgressMonitor ();
 				parsing = true;
 				if (monitor != null)
 					monitor.BeginTask ("Parsing assembly: " + Path.GetFileName (fileName), 1);
@@ -186,7 +187,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 						Read ();
 					}
 				} else {
-					ICompilationUnit ainfo = DomCecilCompilationUnit.Load (fileName);
+					ICompilationUnit ainfo = DomCecilCompilationUnit.Load (fileName, false, false);
 					
 					UpdateTypeInformation (ainfo.Types, fileName);
 					
@@ -218,7 +219,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 						monitor.Dispose ();
 				}
 			}
-		//	parserDatabase.NotifyAssemblyInfoChange (fileName, assemblyName);
+			ProjectDomService.NotifyAssemblyInfoChange (fileName, assemblyName);
 		}
 		
 		public bool ParseInExternalProcess
@@ -229,14 +230,18 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		
 		public static void CleanDatabase (string baseDir, string name)
 		{
-			// Read the headers of the file without fully loading the database
-			Hashtable headers = ReadHeaders (baseDir, name);
-			string checkFile = (string) headers ["CheckFile"];
-			int version = (int) headers ["Version"];
-			if (!File.Exists (checkFile) || version != FORMAT_VERSION) {
-				string dataFile = Path.Combine (baseDir, name + ".pidb");
-				FileService.DeleteFile (dataFile);
-				LoggingService.LogInfo ("Deleted " + dataFile);
+			try {
+				// Read the headers of the file without fully loading the database
+				Hashtable headers = ReadHeaders (baseDir, name);
+				string checkFile = (string) headers ["CheckFile"];
+				int version = (int) headers ["Version"];
+				if (!File.Exists (checkFile) || version != FORMAT_VERSION) {
+					string dataFile = Path.Combine (baseDir, name + ".pidb");
+					FileService.DeleteFile (dataFile);
+					LoggingService.LogInfo ("Deleted " + dataFile);
+				}
+			} catch {
+				// Ignore errors while cleaning
 			}
 		}
 		
@@ -320,19 +325,24 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		}
 	}
 	
-	[AddinDependency ("MonoDevelop.Documentation")]
 	internal class DatabaseGenerator: RemoteProcessObject
 	{
 		public void GenerateDatabase (string baseDir, string assemblyName)
 		{
-			AssemblyCodeCompletionDatabase db = new AssemblyCodeCompletionDatabase (baseDir, assemblyName);
-			
-			if (db.LoadError)
-				throw new InvalidOperationException ("Could find assembly: " + assemblyName);
+			try {
+				Runtime.Initialize (false);
+				ParserDatabase pdb = new ParserDatabase ();
+				AssemblyCodeCompletionDatabase db = new AssemblyCodeCompletionDatabase (assemblyName, pdb);
 				
-			db.ParseInExternalProcess = false;
-			db.ParseAll ();
-			db.Write ();
+				if (db.LoadError)
+					throw new InvalidOperationException ("Could find assembly: " + assemblyName);
+					
+				db.ParseInExternalProcess = false;
+				db.ParseAll ();
+				db.Write ();
+			} catch (Exception ex) {
+				Console.WriteLine (ex);
+			}
 		}
 	}
 	

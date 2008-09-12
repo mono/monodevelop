@@ -113,6 +113,12 @@ namespace MonoDevelop.Projects.Dom
 					continue;
 				base.Add (new DomCecilEvent (this, keepDefinitions,eventDefinition));
 			}
+			foreach (GenericParameter parameter in typeDefinition.GenericParameters) {
+				TypeParameter tp = new TypeParameter (parameter.FullName);
+				foreach (TypeReference tr in parameter.Constraints)
+					tp.AddConstraint (DomCecilMethod.GetReturnType (tr));
+				AddTypeParameter (tp);
+			}
 		}
 		
 		public TypeDefinition TypeDefinition {

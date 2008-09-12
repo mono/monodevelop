@@ -34,6 +34,12 @@ namespace MonoDevelop.Projects.Dom.Parser
 	{
 		ProjectDom dom;
 		
+		public ProjectDom ProjectDom {
+			get {
+				return dom;
+			}
+		}
+		
 		public ProjectDomEventArgs (ProjectDom dom)
 		{
 			this.dom = dom;
