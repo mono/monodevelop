@@ -1,3 +1,13 @@
+2008-09-12  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MakefileIntegrationFeatureWidget.cs, gtk-gui/generated.cs,
+	  gtk-gui/MonoDevelop.Autotools.MakefileIntegrationFeatureWidget.cs,
+	  gtk-gui/MonoDevelop.Autotools.TarballBuilderEditorWidget.cs,
+	  gtk-gui/objects.xml,
+	  gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs,
+	  gtk-gui/MonoDevelop.Autotools.GenerateMakefilesDialog.cs: Updated
+	  generated code.
+
 2008-09-04  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* FileNodeBuilderExtension.cs, Commands.cs: Moved the extensible tree

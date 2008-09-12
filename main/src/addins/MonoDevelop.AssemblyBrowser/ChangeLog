@@ -1,3 +1,9 @@
+2008-09-12  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* gtk-gui/generated.cs,
+	  gtk-gui/MonoDevelop.AssemblyBrowser.AssemblyBrowserWidget.cs,
+	  MonoDevelop.AssemblyBrowser.mdp: Updated generated code.
+
 2008-09-10  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs: Changed

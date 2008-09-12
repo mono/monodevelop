@@ -1,3 +1,14 @@
+2008-09-12  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* gtk-gui/CBinding.PackageDetails.cs, gtk-gui/generated.cs,
+	  gtk-gui/CBinding.EditPackagesDialog.cs,
+	  gtk-gui/CBinding.AddPathDialog.cs,
+	  gtk-gui/CBinding.CodeGenerationPanel.cs,
+	  gtk-gui/CBinding.GeneralOptionsPanel.cs,
+	  gtk-gui/CBinding.CompilerPanel.cs,
+	  gtk-gui/CBinding.OutputOptionsPanel.cs,
+	  gtk-gui/CBinding.AddLibraryDialog.cs: Updated generated code.
+
 2008-09-04  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* ProjectPad/ProjectPackagesFolderNodeBuilder.cs,

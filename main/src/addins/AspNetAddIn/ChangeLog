@@ -1,5 +1,16 @@
 2008-09-12  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* gtk-gui/MonoDevelop.AspNet.Gui.XspOptionsPanelWidget.cs,
+	  gtk-gui/generated.cs,
+	  gtk-gui/MonoDevelop.AspNet.Deployment.WebDeployLaunchDialog.cs,
+	  gtk-gui/MonoDevelop.AspNet.Deployment.WebDeployTargetEditor.cs,
+	  gtk-gui/MonoDevelop.AspNet.Deployment.WebDeployOptionsPanelWidget.cs,
+	  gtk-gui/MonoDevelop.AspNet.Gui.AspNetConfigurationPanelWidget.cs,
+	  gtk-gui/MonoDevelop.AspNet.Deployment.WebTargetEditor.cs: Updated
+	  generated code.
+
+2008-09-12  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs,
 	  MonoDevelop.AspNet/AspNetToolboxNode.cs,
 	  MonoDevelop.AspNet/WebTypeManager.cs: Track api changes.

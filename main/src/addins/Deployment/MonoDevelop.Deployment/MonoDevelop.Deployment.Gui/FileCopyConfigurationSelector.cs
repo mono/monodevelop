@@ -8,6 +8,8 @@ namespace MonoDevelop.Deployment.Gui
 {
 	
 	
+	[System.ComponentModel.Category("widget")]
+	[System.ComponentModel.ToolboxItem(true)]
 	public partial class FileCopyConfigurationSelector : Gtk.Bin
 	{
 		FileCopyHandler[] handlers;

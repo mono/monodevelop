@@ -1,5 +1,10 @@
 2008-09-12  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* lib/libsteticui.mdp, lib/libstetic.mdp, lib/gtk-gui/generated.cs,
+	  gtk-gui/generated.cs: Updated generated code.
+
+2008-09-12  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.GtkCore.GuiBuilder/ActionGroupDisplayBinding.cs,
 	  MonoDevelop.GtkCore.GuiBuilder/CodeBinder.cs,
 	  MonoDevelop.GtkCore.GuiBuilder/GuiBuilderProject.cs,

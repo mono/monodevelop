@@ -1,5 +1,13 @@
 2008-09-12  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* Autotools/Autotools.mdp, gtk-gui/generated.cs,
+	  gtk-gui/CSharpBinding.CodeGenerationPanelWidget.cs,
+	  gtk-gui/CSharpBinding.CompilerOptionsPanelWidget.cs,
+	  gtk-gui/CSharpBinding.FormattingPanelWidget.cs, gtk-gui/gui.stetic:
+	  Updated generated code.
+
+2008-09-12  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* Gui/CompilerOptionsPanelWidget.cs, Gui/CSharpTextEditorCompletion.cs,
 	  Gui/NRefactoryResolver.cs, Gui/ResolveVisitor.cs: Track api
 	  changes.

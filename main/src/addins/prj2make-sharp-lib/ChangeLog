@@ -1,3 +1,7 @@
+2008-09-12  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* prj2make-sharp-lib.mdp: Updated generated code.
+
 2008-07-29  Mike Krüger <mkrueger@novell.com> 
 
 	* prj2make-sharp-lib.mdp: Removed some parts of the documentation

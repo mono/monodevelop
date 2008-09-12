@@ -33,7 +33,5 @@
     <AsmRefVar Name="REFS" Prefix="-r:" />
     <ProjectRefVar Name="REFS" Prefix="-r:" />
   </MonoDevelop.Autotools.MakefileInfo>
-  <DeploymentInformation strategy="File">
-    <excludeFiles />
-  </DeploymentInformation>
+  <DeploymentInformation strategy="File" />
 </Project>

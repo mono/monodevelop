@@ -1,5 +1,9 @@
 2008-09-12  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.NUnit.mdp: Updated generated code.
+
+2008-09-12  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* Services/NUnitProjectTestSuite.cs: Track api changes.
 
 2008-09-04  Lluis Sanchez Gual <lluis@novell.com> 

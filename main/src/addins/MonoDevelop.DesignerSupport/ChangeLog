@@ -1,5 +1,11 @@
 2008-09-12  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* gtk-gui/generated.cs,
+	  gtk-gui/MonoDevelop.DesignerSupport.Toolbox.ComponentSelectorDialog.cs:
+	  Updated generated code.
+
+2008-09-12  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.DesignerSupport/BindingService.cs: Track api changes.
 
 2008-09-10  Mike Krüger <mkrueger@novell.com> 

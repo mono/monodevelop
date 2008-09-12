@@ -1,3 +1,13 @@
+2008-09-12  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* gtk-gui/MonoDevelop.Gettext.GettextFeatureWidget.cs,
+	  gtk-gui/generated.cs,
+	  gtk-gui/MonoDevelop.Gettext.POEditorWidget.cs,
+	  gtk-gui/MonoDevelop.Gettext.Translator.LanguageChooserDialog.cs,
+	  gtk-gui/MonoDevelop.Gettext.Editor.CatalogHeadersWidget.cs,
+	  gtk-gui/MonoDevelop.Gettext.TranslationProjectOptionsDialog.cs:
+	  Updated generated code.
+
 2008-09-04  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Gettext.NodeBuilders/TranslationNodeBuilder.cs,

@@ -1,5 +1,11 @@
 2008-09-12  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* VBNetBinding.mdp, gtk-gui/generated.cs,
+	  gtk-gui/MonoDevelop.VBNetBinding.CodeGenerationPanelWidget.cs:
+	  Updated generated code.
+
+2008-09-12  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* Gui/CodeGenerationPanelWidget.cs: Track api changes.
 
 2008-09-10  Mike Krüger <mkrueger@novell.com> 

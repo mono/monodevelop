@@ -9,6 +9,8 @@ using Gtk;
 
 namespace MonoDevelop.Deployment.Gui
 {
+	[System.ComponentModel.Category("MonoDevelop.Deployment")]
+	[System.ComponentModel.ToolboxItem(true)]
 	internal partial class EntrySelectionTree : Gtk.Bin
 	{
 		TreeStore store;

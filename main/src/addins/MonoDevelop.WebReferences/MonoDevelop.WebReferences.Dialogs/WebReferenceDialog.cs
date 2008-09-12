@@ -20,21 +20,9 @@ using Gtk;
 namespace MonoDevelop.WebReferences.Dialogs
 {
 	
-	internal class WebReferenceDialog : Gtk.Dialog
+	internal partial class WebReferenceDialog : Gtk.Dialog
 	{
 		#region Widgets
-		protected Gtk.Action btnNext;
-		protected Gtk.Action btnBack;
-		protected Gtk.Action btnRefresh;
-		protected Gtk.Action btnStop;
-		protected Gtk.Action btnHome;
-		protected Gtk.Button btnGO;
-		protected Gtk.Button btnOK;
-		protected Gtk.Button btnCancel;
-		protected Gtk.Entry tbxNamespace;
-		protected Gtk.Entry tbxReferenceName;
-		protected Gtk.Entry tbxReferenceURL;
-		protected Gtk.Frame frmBrowser;
 		protected Widget browserWidget = null;
 		protected IWebBrowser browser = null;
 		#endregion
@@ -145,7 +133,7 @@ namespace MonoDevelop.WebReferences.Dialogs
 		/// <summary>Initializes a new instance of the AddWebReferenceDialog widget.</summary>
 		public WebReferenceDialog(string basePath)
 		{
-			Stetic.Gui.Build(this, typeof(MonoDevelop.WebReferences.Dialogs.WebReferenceDialog));
+			Build();
 			this.basePath = basePath;
 			this.IsWebService = false;
 			

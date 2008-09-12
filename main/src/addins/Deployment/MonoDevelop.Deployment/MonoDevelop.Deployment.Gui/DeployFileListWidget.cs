@@ -9,6 +9,8 @@ namespace MonoDevelop.Deployment
 {
 	
 	
+	[System.ComponentModel.Category("MonoDevelop.Deployment")]
+	[System.ComponentModel.ToolboxItem(true)]
 	internal partial class DeployFileListWidget : Gtk.Bin
 	{
 		ListStore store;

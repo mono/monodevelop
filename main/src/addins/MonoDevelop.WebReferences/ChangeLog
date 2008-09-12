@@ -1,3 +1,10 @@
+2008-09-12  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.WebReferences.Dialogs/WebReferenceDialog.cs,
+	  gtk-gui/generated.cs,
+	  gtk-gui/MonoDevelop.WebReferences.Dialogs.WebReferenceDialog.cs:
+	  Updated generated code.
+
 2008-09-04  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.WebReferences.NodeBuilders/ProjectFolderNodeBuilderExtension.cs,

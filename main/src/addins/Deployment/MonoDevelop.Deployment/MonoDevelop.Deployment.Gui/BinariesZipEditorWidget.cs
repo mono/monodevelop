@@ -5,6 +5,8 @@ using MonoDevelop.Deployment.Targets;
 
 namespace MonoDevelop.Deployment.Gui
 {
+	[System.ComponentModel.Category("MonoDevelop.Deployment")]
+	[System.ComponentModel.ToolboxItem(true)]
 	internal partial class BinariesZipEditorWidget : Gtk.Bin
 	{
 		BinariesZipPackageBuilder builder;
