@@ -22,13 +22,13 @@
 // along with BooBinding; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #endregion
-
+/*
 namespace BooBinding.Parser
 
 import System
 import System.Collections
 import MonoDevelop.Core
-import MonoDevelop.Projects.Parser
+import MonoDevelop.Projects.Dom
 import Boo.Lang.Compiler
 import Boo.Lang.Compiler.Ast as AST
 import Boo.Lang.Compiler.IO
@@ -85,7 +85,7 @@ class Visitor(AbstractVisitorCompilerStep):
 	private def GetRegion(m as AST.Node):
 		l = m.LexicalInfo
 		return null if (l.Line < 0)
-		return DefaultRegion(l.Line, 0 /*l.Column*/, l.Line, GetLineEnd(l.Line))
+		return DefaultRegion(l.Line, 0 , l.Line, GetLineEnd(l.Line))
 	
 	private def GetClientRegion(m as AST.Node) as DefaultRegion:
 		l = m.LexicalInfo
@@ -144,12 +144,6 @@ class Visitor(AbstractVisitorCompilerStep):
 		EnterTypeDefinition(node, ClassType.Enum)
 		return super(node)
 	
-	/*
-	override def EnterModule(node as AST.Module):
-		EnterTypeDefinition(node, ClassType.Class) unless _firstModule
-		_firstModule = false
-		return super(node)
-		*/
 	
 	private def EnterTypeDefinition(node as AST.TypeDefinition, classType as ClassType):
 		try:
@@ -184,11 +178,7 @@ class Visitor(AbstractVisitorCompilerStep):
 		LeaveTypeDefinition(node)
 		super(node)
 	
-	/*
-	override def LeaveModule(node as AST.Module):
-		LeaveTypeDefinition(node) unless _currentClass.Count == 0
-		super(node)
-		*/
+
 	
 	private def LeaveTypeDefinition(node as AST.TypeDefinition):
 		c as Class = _currentClass.Pop()
@@ -290,7 +280,7 @@ class Visitor(AbstractVisitorCompilerStep):
 	
 	private def Error (message):
 		BooParser.Error (self.GetType(), message)
-	
+	*/
 	/*
 	// TODO: Detect indexer method and add it as Indexer
 	override def Visit(indexerDeclaration as AST.IndexerDeclaration, data as object) as object:

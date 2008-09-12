@@ -16,7 +16,7 @@
 // along with BooBinding; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #endregion
-
+/*
 namespace BooBinding
 
 import System
@@ -355,15 +355,6 @@ class BooAmbience(Ambience):
 			return ''
 		
 		builder as StringBuilder = StringBuilder()
-		/*
-		linkSet as bool = false
-		if UseLinkArrayList:
-			ret as SharpAssemblyReturnType = returnType as SharpAssemblyReturnType
-			if ret != null:
-				if ret.UnderlyingClass != null:
-					builder.Append('<a href=\'as://' + linkArrayList.Add(ret.UnderlyingClass) + '\'>')
-					linkSet = true
-		*/
 		
 		for i in range(returnType.ArrayCount):
 			builder.Append('(')
@@ -435,3 +426,4 @@ class BooAmbience(Ambience):
 		if _typeConversionTable[dotNetTypeName] != null:
 			return _typeConversionTable[dotNetTypeName]
 		return dotNetTypeName
+*/

@@ -22,12 +22,13 @@
 // along with BooBinding; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #endregion
-
+/*
 namespace BooBinding.Parser
 
 import System
 import System.Text
-import MonoDevelop.Projects.Parser
+import MonoDevelop.Projects.Dom
+import MonoDevelop.Projects.Dom.Parser
 
 class ExpressionFinder(IExpressionFinder):
 	// The expression finder can find an expression in a text
@@ -139,26 +140,26 @@ class ExpressionFinder(IExpressionFinder):
 	// TODO: We could need some unit tests for this.
 	
 	static _elseIndex = 10
-	
-	static _stateTable = ( // "    '    \    \n   $    {    }    #    /    *   else
-	/* 0: in Code       */  ( 1  , 7  , 0  , 0  , 0  , 0  , 0  , 13 , 12 , 0  , 0  ),
-	/* 1: after "       */  ( 2  , 6  , 10 , 0  , 8  , 6  , 6  , 6  , 6  , 6  , 6  ),
-	/* 2: after ""      */  ( 3  , 7  , 0  , 0  , 0  , 0  , 0  , 13 , 12 , 0  , 0  ),
-	/* 3: in """        */  ( 4  , 3  , 3  , 3  , 3  , 3  , 3  , 3  , 3  , 3  , 3  ),
-	/* 4: in """, "     */  ( 5  , 3  , 3  , 3  , 3  , 3  , 3  , 3  , 3  , 3  , 3  ),
-	/* 5: in """, ""    */  ( 0  , 3  , 3  , 3  , 3  , 3  , 3  , 3  , 3  , 3  , 3  ),
-	/* 6: in "-string   */  ( 0  , 6  , 10 , 0  , 8  , 6  , 6  , 6  , 6  , 6  , 6  ),
-	/* 7: in '-string   */  ( 7  , 0  , 11 , 0  , 7  , 7  , 7  , 7  , 7  , 7  , 7  ),
-	/* 8: after $ in "  */  ( 0  , 6  , 10 , 0  , 8  , 9  , 6  , 6  , 6  , 6  , 6  ),
-	/* 9: in "{         */  ( 9  , 9  , 9  , 9  , 9  , 9  , 6  , 9  , 9  , 9  , 9  ),
-	/* 10: after \ in " */  ( 6  , 6  , 6  , 0  , 6  , 6  , 6  , 6  , 6  , 6  , 6  ),
-	/* 11: after \ in ' */  ( 7  , 7  , 7  , 0  , 7  , 7  , 7  , 7  , 7  , 7  , 7  ),
-	/* 12: after /      */  ( 1  , 7  , 0  , 0  , 0  , 0  , 0  , 0  , 13 ,-14 , 0  ),
-	/* 13: line comment */  ( 13 , 13 , 13 , 0  , 13 , 13 , 13 , 13 , 13 , 13 , 13 ),
-	/* 14: block comment*/  ( 14 , 14 , 14 , 14 , 14 , 14 , 14 , 14 , 14 , 15 , 14 ),
-	/* 15: after * in bc*/  ( 14 , 14 , 14 , 14 , 14 , 14 , 14 , 14 ,-15 , 15 , 14 )
-	                     )
-	
+	*/
+//	static _stateTable = ( // "    '    \    \n   $    {    }    #    /    *   else
+//	/* 0: in Code       */  ( 1  , 7  , 0  , 0  , 0  , 0  , 0  , 13 , 12 , 0  , 0  ),
+//	/* 1: after "       */  ( 2  , 6  , 10 , 0  , 8  , 6  , 6  , 6  , 6  , 6  , 6  ),
+//	/* 2: after ""      */  ( 3  , 7  , 0  , 0  , 0  , 0  , 0  , 13 , 12 , 0  , 0  ),
+//	/* 3: in """        */  ( 4  , 3  , 3  , 3  , 3  , 3  , 3  , 3  , 3  , 3  , 3  ),
+//	/* 4: in """, "     */  ( 5  , 3  , 3  , 3  , 3  , 3  , 3  , 3  , 3  , 3  , 3  ),
+//	/* 5: in """, ""    */  ( 0  , 3  , 3  , 3  , 3  , 3  , 3  , 3  , 3  , 3  , 3  ),
+//	/* 6: in "-string   */  ( 0  , 6  , 10 , 0  , 8  , 6  , 6  , 6  , 6  , 6  , 6  ),
+//	/* 7: in '-string   */  ( 7  , 0  , 11 , 0  , 7  , 7  , 7  , 7  , 7  , 7  , 7  ),
+//	/* 8: after $ in "  */  ( 0  , 6  , 10 , 0  , 8  , 9  , 6  , 6  , 6  , 6  , 6  ),
+//	/* 9: in "{         */  ( 9  , 9  , 9  , 9  , 9  , 9  , 6  , 9  , 9  , 9  , 9  ),
+//	/* 10: after \ in " */  ( 6  , 6  , 6  , 0  , 6  , 6  , 6  , 6  , 6  , 6  , 6  ),
+//	/* 11: after \ in ' */  ( 7  , 7  , 7  , 0  , 7  , 7  , 7  , 7  , 7  , 7  , 7  ),
+//	/* 12: after /      */  ( 1  , 7  , 0  , 0  , 0  , 0  , 0  , 0  , 13 ,-14 , 0  ),
+//	/* 13: line comment */  ( 13 , 13 , 13 , 0  , 13 , 13 , 13 , 13 , 13 , 13 , 13 ),
+//	/* 14: block comment*/  ( 14 , 14 , 14 , 14 , 14 , 14 , 14 , 14 , 14 , 15 , 14 ),
+//	/* 15: after * in bc*/  ( 14 , 14 , 14 , 14 , 14 , 14 , 14 , 14 ,-15 , 15 , 14 )
+//	                     )
+/*	
 	def SimplifyCode(inText as string, offset as int):
 		result = StringBuilder()
 		inStringResult = StringBuilder(' ')
@@ -221,3 +222,4 @@ class ExpressionFinder(IExpressionFinder):
 	
 	private def Log (message):
 		BooParser.Log (self.GetType(), message)
+*/

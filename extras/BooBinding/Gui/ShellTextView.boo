@@ -35,7 +35,8 @@ import MonoDevelop.Projects.Gui.Completion
 import MonoDevelop.Core
 import MonoDevelop.Projects
 import MonoDevelop.Ide.Gui
-import MonoDevelop.Projects.Parser
+import MonoDevelop.Projects.Dom.Parser
+import MonoDevelop.Projects.Dom.Output
 
 /*
  * TODO
@@ -68,15 +69,13 @@ class ShellTextView (SourceView, ICompletionWidget):
 	private _assembliesLoaded as bool
 
 	private _fakeProject as DotNetProject
-	private _parserService as IParserDatabase
+	private _fakeSolution as Solution
 	private _fakeFileName as string
 	private _fileInfo as FileStream
-	private _parserContext as IParserContext;
-	private _ambience as BooBinding.BooAmbience
+	private _parserContext as ProjectDom;
 	
 	def constructor(model as IShellModel):
-		_parserService = IdeApp.Workspace.ParserDatabase
-
+		
 		manager = SourceLanguagesManager()
 		lang = manager.GetLanguageFromMimeType(model.MimeType)
 		if lang != null:
@@ -102,10 +101,11 @@ class ShellTextView (SourceView, ICompletionWidget):
 			_fileInfo  = System.IO.File.Create (_fakeFileName)
 			_fileInfo.Close ()
 		_fakeProject = DotNetProject(Model.LanguageName, Name: "___ShellProject", FileName: shellProjectFile)
-
-		_parserService.Load(_fakeProject)
-		_parserContext = _parserService.GetProjectParserContext (_fakeProject)
-		_ambience = BooBinding.BooAmbience ()
+		_fakeSolution = Solution()
+		_fakeSolution.RootFolder.AddItem(_fakeProject)
+		ProjectDomService.Load (_fakeSolution)
+		
+		_parserContext = ProjectDomService.GetDatabaseProjectDom (_fakeProject)
 
 		Model.Properties.InternalProperties.PropertyChanged += OnPropertyChanged
 		Model.RegisterOutputHandler (HandleOutput)
@@ -178,7 +178,7 @@ class ShellTextView (SourceView, ICompletionWidget):
 			_fakeProject.AddReference(assembly)
 
 		GLib.Idle.Add () do:
-			_parserContext.ParseFile (_fakeFileName, _scriptLines)
+			ProjectDomService.Parse (_fakeProject, _fakeFileName, _scriptLines)
 		return false
 			
 	override def Dispose():

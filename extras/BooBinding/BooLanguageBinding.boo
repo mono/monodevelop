@@ -31,7 +31,8 @@ import System.CodeDom.Compiler;
 import Boo.Lang.CodeDom;
 
 import MonoDevelop.Projects
-import MonoDevelop.Projects.Parser
+import MonoDevelop.Projects.Dom
+import MonoDevelop.Projects.Dom.Parser
 import MonoDevelop.Projects.CodeGeneration
 import MonoDevelop.Core.Gui
 import MonoDevelop.Core
@@ -40,7 +41,7 @@ public class BooLanguageBinding(IDotNetLanguageBinding):
 	internal static LanguageName = "Boo"
 	compilerServices = BooBindingCompilerServices ()
 	provider = BooEnhancedCodeProvider ()
-	parser = BooBinding.Parser.BooParser ()
+//	parser = BooBinding.Parser.BooParser ()
 	
 	public Language as string:
 		get:
@@ -76,7 +77,7 @@ public class BooLanguageBinding(IDotNetLanguageBinding):
 	
 	public Parser as IParser:
 		get:
-			return parser
+			return null
 		
 	public Refactorer as IRefactorer:
 		get:
