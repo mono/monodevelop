@@ -113,7 +113,7 @@ namespace MonoDevelop.VBNetBinding
 		{
 			try {
 				classListStore.Clear ();
-				ProjectDom ctx = ProjectDomService.GetDatabaseProjectDom (project);
+				ProjectDom ctx = ProjectDomService.GetProjectDom (project);
 				foreach (IType c in ctx.Types) {
 					if (c.Methods == null) 
 						continue;

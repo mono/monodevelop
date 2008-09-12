@@ -1,3 +1,10 @@
+2008-09-12  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.SourceEditor/EditActions.cs,
+	  MonoDevelop.SourceEditor/ExtendibleTextEditor.cs,
+	  MonoDevelop.SourceEditor/HighlightPropertiesSemanticRule.cs,
+	  MonoDevelop.SourceEditor/SourceEditorView.cs: Track api changes.
+
 2008-09-11  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.SourceEditor/SourceEditorWidget.cs: Worked on fold

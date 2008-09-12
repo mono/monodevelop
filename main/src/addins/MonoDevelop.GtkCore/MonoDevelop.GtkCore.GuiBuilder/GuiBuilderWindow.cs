@@ -143,7 +143,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		{
 			string fullName = namspace.Length > 0 ? namspace + "." + name : name;
 			
-			CodeRefactorer gen = new CodeRefactorer (fproject.Project.ParentSolution, ProjectDomService.GetDatabaseProjectDom (fproject.Project));
+			CodeRefactorer gen = new CodeRefactorer (fproject.Project.ParentSolution);
 			bool partialSupport = fproject.Project.UsePartialTypes;
 			Stetic.WidgetComponent component = (Stetic.WidgetComponent) rootWidget.Component;
 			
@@ -207,7 +207,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			IdeApp.ProjectOperations.Save (Project.Project);
 			
 			// Make sure the database is up-to-date
-			ProjectDomService.Refresh (Project.Project, cls.CompilationUnit.FileName, null);
+			ProjectDomService.Parse (Project.Project, cls.CompilationUnit.FileName, null);
 		}
 		
 		void AddSignalsRec (CodeTypeDeclaration type, Stetic.Component comp)

@@ -133,7 +133,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		{
 			string fullName = namspace.Length > 0 ? namspace + "." + name : name;
 			
-			CodeRefactorer gen = new CodeRefactorer (project.ParentSolution, ProjectDomService.GetDatabaseProjectDom (project));
+			CodeRefactorer gen = new CodeRefactorer (project.ParentSolution);
 			
 			CodeTypeDeclaration type = new CodeTypeDeclaration ();
 			type.Name = name;
@@ -184,7 +184,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			IdeApp.ProjectOperations.Save (project);
 			
 			// Make sure the database is up-to-date
-			ProjectDomService.Refresh (project, cls.CompilationUnit.FileName, null);
+			ProjectDomService.Parse (project, cls.CompilationUnit.FileName, null);
 			return cls;
 		}
 		

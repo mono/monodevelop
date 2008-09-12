@@ -125,7 +125,7 @@ namespace MonoDevelop.GtkCore
 		
 		public IType GetClass (string classname)
 		{
-			return ctx.GetType (classname, -1, true, true);
+			return ctx.GetType (classname);
 		}
 
 		public bool IsBrowsable (IMember member)

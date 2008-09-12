@@ -45,8 +45,8 @@ namespace MonoDevelop.SourceEditor
 		{
 			Project project = IdeApp.ProjectOperations.CurrentSelectedProject;
 			if (project != null)
-				return ProjectDomService.GetDatabaseProjectDom (project);
-			return new ProjectDom ();
+				return ProjectDomService.GetProjectDom (project);
+			return ProjectDom.Empty;
 		}
 		
 		string expression;

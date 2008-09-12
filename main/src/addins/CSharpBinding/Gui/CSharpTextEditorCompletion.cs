@@ -60,7 +60,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 		{
 			base.Initialize ();
 			InitTracker ();
-			dom = ProjectDomService.GetDatabaseProjectDom (Document.Project);
+			dom = ProjectDomService.GetProjectDom (Document.Project);
 		}
 		
 		public override bool ExtendsEditor (MonoDevelop.Ide.Gui.Document doc, IEditableTextBuffer editor)
@@ -436,7 +436,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 			if (resolveResult == null || expressionResult == null)
 				return null;
 			CodeCompletionDataProvider result = new CodeCompletionDataProvider (null, null);
-			ProjectDom dom = ProjectDomService.GetDatabaseProjectDom (Document.Project);
+			ProjectDom dom = ProjectDomService.GetProjectDom (Document.Project);
 			if (dom == null)
 				return null;
 			
@@ -486,18 +486,18 @@ namespace MonoDevelop.CSharpBinding.Gui
 		
 		CodeCompletionDataProvider CreateTypeCompletionData (ExpressionContext context, IReturnType returnType)
 		{
-			IReturnType resolvedType = returnType;
-			if (returnType != null) {
-				SearchTypeResult searchedTypeResult = dom.SearchType (new SearchTypeRequest (Document.CompilationUnit, -1, -1, returnType.FullName));
-				if (searchedTypeResult != null) 
-					resolvedType = searchedTypeResult.Result ?? returnType;
-			}
 			CodeCompletionDataProvider result = new CodeCompletionDataProvider (null, GetAmbience ());
+			
+			IType type = null;
+			if (returnType != null)
+				type = dom.SearchType (new SearchTypeRequest (Document.CompilationUnit, returnType));
+			if (type == null)
+				return result;
+			
 			CompletionDataCollector col = new CompletionDataCollector();
-			IType type = dom.GetType (resolvedType);
 			col.AddCompletionData (result, type);
-			foreach (IReturnType ret in dom.GetSubclasses (type)) {
-				IType curType = dom.GetType (ret);
+			foreach (IType curType in dom.GetSubclasses (type)) {
+				Console.WriteLine ("pp tt: " + curType.Name + " " + curType.ClassType);
 				if (context != null && context.FilterEntry (curType))
 					continue;
 				col.AddCompletionData (result, curType);

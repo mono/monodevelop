@@ -291,7 +291,7 @@ namespace MonoDevelop.SourceEditor
 				MonoDevelop.Ide.Gui.Document doc = IdeApp.Workbench.ActiveDocument;
 				if (doc == null)
 					return null;
-				return ProjectDomService.GetDatabaseProjectDom (doc.Project);
+				return ProjectDomService.GetProjectDom (doc.Project);
 			}
 		}
 		
@@ -316,7 +316,7 @@ namespace MonoDevelop.SourceEditor
 			if (parser == null)
 				return null;
 			
-			ProjectDom        dom      = ProjectDomService.GetDatabaseProjectDom (doc.Project);
+			ProjectDom        dom      = ProjectDomService.GetProjectDom (doc.Project);
 			IResolver         resolver = parser.CreateResolver (dom, doc, fileName);
 			IExpressionFinder expressionFinder = parser.CreateExpressionFinder (dom);
 			if (resolver == null || expressionFinder == null) 

@@ -287,8 +287,8 @@ namespace MonoDevelop.SourceEditor
 		{
 			Project project = IdeApp.ProjectOperations.CurrentSelectedProject;
 			if (Project != null)
-				return ProjectDomService.GetDatabaseProjectDom (Project);
-			return new ProjectDom ();
+				return ProjectDomService.GetProjectDom (Project);
+			return ProjectDom.Empty;
 		}
 		
 		public Ambience GetAmbience ()

@@ -70,8 +70,8 @@ namespace MonoDevelop.NUnit
 
 		protected override SourceCodeLocation GetSourceCodeLocation (string fullClassName, string methodName)
 		{
-			ProjectDom ctx = ProjectDomService.GetDatabaseProjectDom (project);
-			IType cls = ctx.GetType (fullClassName, -1, true, true);
+			ProjectDom ctx = ProjectDomService.GetProjectDom (project);
+			IType cls = ctx.GetType (fullClassName);
 			if (cls == null)
 				return null;
 			

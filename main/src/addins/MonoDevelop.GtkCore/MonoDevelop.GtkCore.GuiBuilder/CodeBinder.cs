@@ -244,7 +244,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		CodeRefactorer GetCodeGenerator ()
 		{
-			CodeRefactorer cr = new CodeRefactorer (project.ParentSolution, ProjectDomService.GetDatabaseProjectDom (project));
+			CodeRefactorer cr = new CodeRefactorer (project.ParentSolution);
 			cr.TextFileProvider = textFileProvider;
 			return cr;
 		}

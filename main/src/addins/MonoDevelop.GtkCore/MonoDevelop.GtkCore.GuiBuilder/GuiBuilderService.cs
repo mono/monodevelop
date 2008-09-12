@@ -325,6 +325,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			}
 
 			if (ProjectDomService.HasDom (project)) {
+				// TODO dom
 				// Only update the parser database if the project is actually loaded in the IDE.
 /*				if (saveToFile)
 					IdeApp.Workspace.ParserDatabase.GetProjectParserContext (project).UpdateDatabase ();

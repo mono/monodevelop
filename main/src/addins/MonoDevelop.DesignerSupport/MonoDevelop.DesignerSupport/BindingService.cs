@@ -53,7 +53,7 @@ namespace MonoDevelop.DesignerSupport
 		
 		public static IMember GetCompatibleMemberInClass (IType cls, CodeTypeMember member)
 		{
-			ProjectDom ctx = ProjectDomService.GetDatabaseProjectDom ((MonoDevelop.Projects.Project) cls.SourceProject);
+			ProjectDom ctx = ProjectDomService.GetProjectDom ((MonoDevelop.Projects.Project) cls.SourceProject);
 			return GetCompatibleMemberInClass (ctx, cls, member);
 		}
 		
@@ -126,7 +126,7 @@ namespace MonoDevelop.DesignerSupport
 		
 		static IType EnsureClassExists (ProjectDom ctx, string className, DomRegion location)
 		{
-			IType cls = ctx.GetType (className, -1, true, true);
+			IType cls = ctx.GetType (className);
 			if (cls == null)
 				throw new TypeNotFoundException (className, location, null);
 			return cls;
@@ -166,7 +166,7 @@ namespace MonoDevelop.DesignerSupport
 		
 		public static CodeRefactorer GetCodeGenerator (SolutionItem entry)
 		{			
-			CodeRefactorer cr = new CodeRefactorer (entry.ParentSolution, null); 
+			CodeRefactorer cr = new CodeRefactorer (entry.ParentSolution);
 			cr.TextFileProvider = OpenDocumentFileProvider.Instance;
 			return cr;
 		}

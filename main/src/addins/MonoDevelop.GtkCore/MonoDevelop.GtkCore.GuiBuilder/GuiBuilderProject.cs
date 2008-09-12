@@ -490,7 +490,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		public ProjectDom GetParserContext ()
 		{
-			return ProjectDomService.GetDatabaseProjectDom (Project);
+			return ProjectDomService.GetProjectDom (Project);
 /*			IParserContext ctx = IdeApp.Workspace.ParserDatabase.GetProjectParserContext (Project);
 			if (ctx != null && needsUpdate) {
 				needsUpdate = false;

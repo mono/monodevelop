@@ -113,10 +113,10 @@ namespace MonoDevelop.AspNet
 			RegisterReference (project);
 			
 			MonoDevelop.Projects.Dom.Parser.ProjectDom database =
-				MonoDevelop.Projects.Dom.Parser.ProjectDomService.GetDatabaseProjectDom (project);
+				MonoDevelop.Projects.Dom.Parser.ProjectDomService.GetProjectDom (project);
 //FIXME: port to new DOM
 //			ctx.UpdateDatabase ();
-			MonoDevelop.Projects.Dom.IType cls = database.GetType (Type.TypeName, 0, true, true);
+			MonoDevelop.Projects.Dom.IType cls = database.GetType (Type.TypeName);
 			if (cls == null)
 				return tag;
 			

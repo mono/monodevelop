@@ -283,10 +283,10 @@ namespace MonoDevelop.CSharpBinding
 		{
 			if (type == null)
 				return DomReturnType.Void;
-			SearchTypeResult searchedTypeResult = dom.SearchType (new SearchTypeRequest (unit, -1, -1, type.FullName));
-			if (searchedTypeResult != null && searchedTypeResult.Result != null) {
-				type.Namespace = searchedTypeResult.Result.Namespace;
-				type.Name      = searchedTypeResult.Result.Name;
+			IType resolvedType = dom.SearchType (new SearchTypeRequest (unit, type));
+			if (resolvedType != null) {
+				type.Namespace = resolvedType.Namespace;
+				type.Name      = resolvedType.Name;
 			}
 			return type;
 		}
@@ -330,7 +330,6 @@ namespace MonoDevelop.CSharpBinding
 		public ResolveResult ResolveIdentifier (ResolveVisitor visitor, string identifier)
 		{
 			ResolveResult result = null;
-			SearchTypeResult searchedTypeResult;
 			foreach (KeyValuePair<string, List<LocalLookupVariable>> pair in this.lookupTableVisitor.Variables) {
 				if (identifier == pair.Key) {
 					LocalLookupVariable var = pair.Value[pair.Value.Count - 1];
@@ -401,10 +400,10 @@ namespace MonoDevelop.CSharpBinding
 				}
 			}
 			
-			searchedTypeResult = dom.SearchType (new SearchTypeRequest (unit, -1, -1, identifier));
-			if (searchedTypeResult != null) {
+			IType searchedType = dom.SearchType (new SearchTypeRequest (unit, -1, -1, identifier));
+			if (searchedType != null) {
 				result = new MemberResolveResult (null, true);
-				result.ResolvedType = searchedTypeResult.Result;
+				result.ResolvedType = new DomReturnType (searchedType);
 				goto end;
 			}
 			

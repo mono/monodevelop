@@ -222,14 +222,14 @@ namespace MonoDevelop.AspNet
 		public static string SystemWebControlLookup (string tagName, MonoDevelop.Core.ClrVersion clrVersion)
 		{
 			ProjectDom database = GetSystemWebAssemblyContext (clrVersion);
-			IType cls = database.GetType ("System.Web.UI.WebControls." + tagName, -1, false, true);
+			IType cls = database.GetType ("System.Web.UI.WebControls." + tagName, false);
 			return cls != null? cls.FullName : null;
 		}
 		
 		static ProjectDom GetSystemWebAssemblyContext (MonoDevelop.Core.ClrVersion clrVersion)
 		{
 			string assem = MonoDevelop.Core.Runtime.SystemAssemblyService.GetAssemblyNameForVersion ("System.Web", clrVersion);
-			return MonoDevelop.Projects.Dom.Parser.ProjectDomService.GetAssemblyProjectDom (assem);
+			return MonoDevelop.Projects.Dom.Parser.ProjectDomService.GetAssemblyDom (assem);
 		}
 		
 		public static string AssemblyTypeNameLookup (string tagName, string namespac, string assem)
@@ -240,11 +240,11 @@ namespace MonoDevelop.AspNet
 		
 		public static IType AssemblyTypeLookup (string tagName, string namespac, string assem)
 		{
-			ProjectDom database = MonoDevelop.Projects.Dom.Parser.ProjectDomService.GetAssemblyProjectDom (assem);
+			ProjectDom database = MonoDevelop.Projects.Dom.Parser.ProjectDomService.GetAssemblyDom (assem);
 			if (database == null)
 				return null;
 //			ctx.UpdateDatabase ();
-			return database.GetType (namespac + "." + tagName, -1, false, true);
+			return database.GetType (namespac + "." + tagName, false);
 		}
 		
 		#endregion
@@ -258,7 +258,7 @@ namespace MonoDevelop.AspNet
 		
 		public static ProjectDom GetSystemWebDom (AspNetAppProject project)
 		{
-			return MonoDevelop.Projects.Dom.Parser.ProjectDomService.GetAssemblyProjectDom (
+			return MonoDevelop.Projects.Dom.Parser.ProjectDomService.GetAssemblyDom (
 				MonoDevelop.Core.Runtime.SystemAssemblyService.GetAssemblyNameForVersion (
 					"System.Web", GetProjectClrVersion (project)));
 		}
@@ -276,7 +276,7 @@ namespace MonoDevelop.AspNet
 		public static IEnumerable<IType> ListControlClasses (string assem, string namespac)
 		{
 			
-			ProjectDom database = MonoDevelop.Projects.Dom.Parser.ProjectDomService.GetAssemblyProjectDom (assem);
+			ProjectDom database = MonoDevelop.Projects.Dom.Parser.ProjectDomService.GetAssemblyDom (assem);
 			if (database == null)
 				yield break;
 			
@@ -305,9 +305,9 @@ namespace MonoDevelop.AspNet
 			
 			if (!string.IsNullOrEmpty (namespac)) {
 				if (!string.IsNullOrEmpty (assem))
-					database = MonoDevelop.Projects.Dom.Parser.ProjectDomService.GetAssemblyProjectDom (assem);
+					database = MonoDevelop.Projects.Dom.Parser.ProjectDomService.GetAssemblyDom (assem);
 				else if (project != null)
-					database = MonoDevelop.Projects.Dom.Parser.ProjectDomService.GetDatabaseProjectDom (project);
+					database = MonoDevelop.Projects.Dom.Parser.ProjectDomService.GetProjectDom (project);
 				else
 					database = GetSystemWebAssemblyContext (MonoDevelop.Core.ClrVersion.Default);
 //FIXME				
@@ -318,7 +318,7 @@ namespace MonoDevelop.AspNet
 					return null;
 				}
 				
-				cls = database.GetType (namespac + "." + tagName, 0, false, true);
+				cls = database.GetType (namespac + "." + tagName, false);
 			}
 			return cls;
 		}

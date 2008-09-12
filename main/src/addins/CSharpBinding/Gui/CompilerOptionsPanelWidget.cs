@@ -185,7 +185,7 @@ namespace CSharpBinding
 		void FillClasses ()
 		{
 			try {
-				ProjectDom     ctx = ProjectDomService.GetDatabaseProjectDom (project);
+				ProjectDom     ctx = ProjectDomService.GetProjectDom (project);
 				foreach (IType c in ctx.Types) {
 					if (c.Methods != null) {
 						foreach (IMethod m in c.Methods) {

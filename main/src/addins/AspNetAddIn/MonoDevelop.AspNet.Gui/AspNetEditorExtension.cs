@@ -449,7 +449,7 @@ namespace MonoDevelop.AspNet.Gui
 			MonoDevelop.Projects.Dom.Parser.ProjectDom database = null;
 			
 			if (doc.Project != null)
-				database = MonoDevelop.Projects.Dom.Parser.ProjectDomService.GetDatabaseProjectDom (doc.Project);
+				database = MonoDevelop.Projects.Dom.Parser.ProjectDomService.GetProjectDom (doc.Project);
 			else
 				database = WebTypeManager.GetSystemWebDom (null);
 			
@@ -460,7 +460,7 @@ namespace MonoDevelop.AspNet.Gui
 			
 			MonoDevelop.Projects.Dom.IType controlClass = doc.ReferenceManager.GetControlType (name.Prefix, name.Name);
 			if (controlClass == null) {
-				controlClass = database.GetType ("System.Web.UI.WebControls.WebControl", 0, true, true);
+				controlClass = database.GetType ("System.Web.UI.WebControls.WebControl");
 				if (controlClass == null) {
 					LoggingService.LogWarning ("Could not obtain IType for System.Web.UI.WebControls.WebControl");
 					return;
@@ -503,7 +503,7 @@ namespace MonoDevelop.AspNet.Gui
 			if (controlClass == null) {
 				MonoDevelop.Projects.Dom.Parser.ProjectDom database =
 					WebTypeManager.GetSystemWebDom (cu == null? null : cu.Document.Project);
-				controlClass = database.GetType ("System.Web.UI.WebControls.WebControl", -1, true, false);
+				controlClass = database.GetType ("System.Web.UI.WebControls.WebControl", true, false);
 				
 				if (controlClass == null)
 					LoggingService.LogWarning ("Could not obtain IType for System.Web.UI.WebControls.WebControl");
@@ -514,11 +514,11 @@ namespace MonoDevelop.AspNet.Gui
 			MonoDevelop.Projects.Dom.IType codeBehindClass = null;
 			MonoDevelop.Projects.Dom.Parser.ProjectDom projectDatabase = null;
 			if (cu != null && cu.Document.Project != null) {
-				projectDatabase = MonoDevelop.Projects.Dom.Parser.ProjectDomService.GetDatabaseProjectDom
+				projectDatabase = MonoDevelop.Projects.Dom.Parser.ProjectDomService.GetProjectDom
 					(cu.Document.Project);
 				
 				if (projectDatabase != null && !string.IsNullOrEmpty (cu.PageInfo.InheritedClass))
-					codeBehindClass = projectDatabase.GetType (cu.PageInfo.InheritedClass, 0, false, false);
+					codeBehindClass = projectDatabase.GetType (cu.PageInfo.InheritedClass, false, false);
 			}
 			
 			//if it's an event, suggest compatible methods 
