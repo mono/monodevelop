@@ -31,6 +31,7 @@ using MonoDevelop.Core.Gui;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects;
 using Ambience_ = MonoDevelop.Projects.Dom.Output.Ambience;
+using MonoDevelop.Projects.Dom.Parser;
 
 using Stock = MonoDevelop.Core.Gui.Stock;
 
@@ -49,34 +50,28 @@ namespace MonoDevelop.Projects.Gui.Completion
 		Hashtable insertedEventElements      = new Hashtable();
 		
 		Ambience_ ambience;
-		IParserContext parserContext;
 		EventHandler onStartedParsing;
 		EventHandler onFinishedParsing;
 
 		string defaultCompletionString;
 		ArrayList completionData = new ArrayList ();
 		
-		public CodeCompletionDataProvider (IParserContext parserContext, Ambience_ ambience) 
+		public CodeCompletionDataProvider (ProjectDom dom, Ambience_ ambience) 
 		{
-			this.parserContext = parserContext;
 			this.ambience = ambience;
 			
 			onStartedParsing = (EventHandler) DispatchService.GuiDispatch (new EventHandler (OnStartedParsing));
 			onFinishedParsing = (EventHandler) DispatchService.GuiDispatch (new EventHandler (OnFinishedParsing));
-//TODO:
-//			if (parserContext != null) {
-//				parserContext.ParserDatabase.ParseOperationStarted += onStartedParsing;
-//				parserContext.ParserDatabase.ParseOperationFinished += onFinishedParsing;
-//			}
+			if (dom != null) {
+				ProjectDomService.ParseOperationStarted += onStartedParsing;
+				ProjectDomService.ParseOperationFinished += onFinishedParsing;
+			}
 		}
 		
 		public virtual void Dispose ()
 		{
-//TODO:
-//			if (parserContext != null) {
-//				parserContext.ParserDatabase.ParseOperationStarted -= onStartedParsing;
-//				parserContext.ParserDatabase.ParseOperationFinished -= onFinishedParsing;
-//			}
+			ProjectDomService.ParseOperationStarted -= onStartedParsing;
+			ProjectDomService.ParseOperationFinished -= onFinishedParsing;
 		}
 		
 		public void Clear ()
@@ -106,6 +101,8 @@ namespace MonoDevelop.Projects.Gui.Completion
 		{
 			completionData.Add (data);
 		}
+
+		// TODO dom
 	/*	
 		public void AddResolveResults (IEnumerable<IMember> list) 
 		{
@@ -135,6 +132,8 @@ namespace MonoDevelop.Projects.Gui.Completion
 			}
 			return null;
 		}
+
+		// TODO dom
 		/*
 		public void AddResolveResult (IMember o, bool allowInstrinsicNames, ITypeNameResolver typeNameResolver) 
 		{
@@ -200,9 +199,8 @@ namespace MonoDevelop.Projects.Gui.Completion
 		}*/
 		
 		public bool IsChanging { 
-			get { 
-				return false;
-			//return parserContext != null && parserContext.ParserDatabase.IsParsing; 
+			get {
+				return ProjectDomService.IsParsing;
 			} 
 		}
 

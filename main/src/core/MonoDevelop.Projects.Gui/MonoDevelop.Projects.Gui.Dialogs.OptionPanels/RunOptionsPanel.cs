@@ -55,7 +55,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 		
 		public override void LoadConfigData ()
 		{
-			widget.Load (ConfiguredProject, (DotNetProjectConfiguration) CurrentConfiguration);
+			widget.Load (ConfiguredProject, (ProjectConfiguration) CurrentConfiguration);
 		}
 
 		
@@ -67,7 +67,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 	
 	public partial class RunOptionsPanelWidget : Gtk.Bin
 	{
-		DotNetProjectConfiguration configuration;
+		ProjectConfiguration configuration;
 
 		public RunOptionsPanelWidget()
 		{
@@ -75,7 +75,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 			externalConsoleCheckButton.Toggled += new EventHandler (ExternalConsoleToggle);
 		}
 		
-		public void Load (Project project, DotNetProjectConfiguration config)
+		public void Load (Project project, ProjectConfiguration config)
 		{	
 			this.configuration = config;
 			

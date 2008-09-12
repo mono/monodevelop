@@ -63,6 +63,12 @@ namespace MonoDevelop.Projects.Gui.Dialogs
 			}
 		}
 		
+		public ItemConfigurationCollection<ItemConfiguration> Configurations {
+			get {
+				return ConfigurationData.Configurations;
+			}
+		}
+		
 		protected override void ApplyChanges ()
 		{
 			base.ApplyChanges ();

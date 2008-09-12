@@ -1,3 +1,12 @@
+2008-09-12  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Gui.Completion/CodeCompletionDataProvider.cs:
+	  Track api changes.
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/RunOptionsPanel.cs: Run
+	  options panel will now work for non-dot net projects.
+	* MonoDevelop.Projects.Gui.Dialogs/MultiConfigItemOptionsDialog.cs:
+	  Added Configurations property to be used by subclasses.
+
 2008-08-18  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* gtk-gui/objects.xml,
