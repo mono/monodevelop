@@ -273,11 +273,19 @@ namespace MonoDevelop.Projects.Dom
 			this.location    = location;
 		}
 		
+		System.Xml.XmlDocument helpXml;
+		public System.Xml.XmlDocument HelpXml {
+			get {
+				if (helpXml == null)
+					helpXml = ProjectDomService.HelpTree.GetHelpXml (this.HelpUrl);
+				return helpXml;
+			}
+		}
+		
 		public override System.Xml.XmlNode GetMonodocDocumentation ()
 		{
-			System.Xml.XmlDocument doc = ProjectDomService.HelpTree.GetHelpXml (this.HelpUrl);
-			if (doc != null) {
-				System.Xml.XmlNode result = doc.SelectSingleNode ("/Type/Docs");
+			if (HelpXml != null) {
+				System.Xml.XmlNode result = HelpXml.SelectSingleNode ("/Type/Docs");
 				return result;
 			}
 			return null;

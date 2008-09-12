@@ -251,6 +251,12 @@ namespace MonoDevelop.Projects.Dom.Parser
 			return Parse (project, fileName, mimeType, delegate () { return System.IO.File.ReadAllText (fileName); });
 		}
 		
+		public static ParsedDocument Parse (Project project, string fileName, string mimeType, string content)
+		{
+			return Parse (project, fileName, mimeType, delegate () { return content; });
+		}
+		
+		
 		public static ParsedDocument Parse (Project project, string fileName, string mimeType, ContentDelegate getContent)
 		{
 			Project[] projects = project != null ? new Project[] { project } : null;

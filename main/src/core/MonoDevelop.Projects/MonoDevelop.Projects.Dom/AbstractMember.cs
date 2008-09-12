@@ -403,9 +403,8 @@ namespace MonoDevelop.Projects.Dom
 			if (DeclaringType == null)
 				return null;
 			
-			System.Xml.XmlDocument doc = ProjectDomService.HelpTree.GetHelpXml (DeclaringType.HelpUrl);
-			if (doc != null)  {
-				System.Xml.XmlNode result = doc.SelectSingleNode ("/Type/Members/Member[@MemberName='" + Name + "']/Docs");
+			if (DeclaringType.HelpXml != null)  {
+				System.Xml.XmlNode result = DeclaringType.HelpXml.SelectSingleNode ("/Type/Members/Member[@MemberName='" + Name + "']/Docs");
 				return result;
 			}
 			return null;

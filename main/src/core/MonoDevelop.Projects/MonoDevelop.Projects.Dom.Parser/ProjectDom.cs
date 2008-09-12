@@ -71,11 +71,11 @@ namespace MonoDevelop.Projects.Dom.Parser
 					continue;
 				yield return cur;
 				if (cur.BaseType == null && cur.FullName != "System.Object") {
-					types.Push (GetType (DomReturnType.Object));
+					types.Push (this.GetType (DomReturnType.Object));
 					continue;
 				}
 				foreach (IReturnType baseType in cur.BaseTypes) {
-					IType resolvedType = GetType (baseType, true);
+					IType resolvedType = this.GetType (baseType, true);
 					if (resolvedType != null) 
 						types.Push (resolvedType);
 				}

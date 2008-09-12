@@ -184,12 +184,14 @@ namespace MonoDevelop.Projects.Dom
 		
 		public override System.Xml.XmlNode GetMonodocDocumentation ()
 		{
-			System.Xml.XmlDocument doc = ProjectDomService.HelpTree.GetHelpXml (DeclaringType.HelpUrl);
-			if (doc != null) {
-				System.Xml.XmlNodeList nodes = doc.SelectNodes ("/Type/Members/Member[@MemberName='" + Name + "']");
+			if (DeclaringType.HelpXml != null) {
+				System.Xml.XmlNodeList nodes = DeclaringType.HelpXml.SelectNodes ("/Type/Members/Member[@MemberName='" + Name + "']");
 				XmlNode node = nodes.Count == 1 ? nodes[0] : FindMatch (nodes);
-				if (node != null)
-					return node.SelectSingleNode ("Docs");
+				if (node != null) {
+					System.Xml.XmlNode result = node.SelectSingleNode ("Docs");
+					System.Console.Write("done");
+					return result;
+				}
 			}
 			return null;
 		}

@@ -1,3 +1,12 @@
+2008-09-12  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Dom.Parser/ProjectParserService.cs,
+	  MonoDevelop.Projects.Dom/DomType.cs,
+	  MonoDevelop.Projects.Dom/DomMethod.cs,
+	  MonoDevelop.Projects.Dom/IType.cs,
+	  MonoDevelop.Projects.Dom/AbstractMember.cs: Worked on monodoc xml
+	  documentation optimization.
+
 2008-09-12  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Projects.Dom.Parser/ITypeNameResolver.cs,
