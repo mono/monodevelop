@@ -7,6 +7,7 @@
     <widget-library name="../../../../build/bin/MonoDevelop.Dock.dll" />
     <widget-library name="../../../../build/bin/MonoDevelop.Components.dll" />
     <widget-library name="../../../../build/bin/MonoDevelop.Projects.Gui.dll" />
+    <widget-library name="Mono.Addins.Gui, Version=0.4.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
     <widget-library name="../../../../build/bin/MonoDevelop.Ide.dll" internal="true" />
   </import>
   <widget class="Gtk.Dialog" id="MonoDevelop.Ide.Gui.Dialogs.GoToDialog" design-size="750 579">
