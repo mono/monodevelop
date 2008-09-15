@@ -85,7 +85,7 @@ namespace MonoDevelop.Projects.Dom
 			this.staticResolve = staticResolve;
 		}
 		
-		public abstract IEnumerable<object> CreateResolveResult (ProjectDom dom);
+		public abstract IEnumerable<object> CreateResolveResult (ProjectDom dom, IMember callingMember);
 	}
 	
 	public class LocalVariableResolveResult : ResolveResult
@@ -115,19 +115,19 @@ namespace MonoDevelop.Projects.Dom
 			this.isLoopVariable = isLoopVariable;
 		}
 		
-		public override IEnumerable<object> CreateResolveResult (ProjectDom dom)
+		public override IEnumerable<object> CreateResolveResult (ProjectDom dom, IMember callingMember)
 		{
 			List<object> result = new List<object> ();
 			if (IsLoopVariable) {
 				if (ResolvedType.Name == "IEnumerable" && ResolvedType.GenericArguments != null && ResolvedType.GenericArguments.Count > 0) {
-					MemberResolveResult.AddType (dom, result, ResolvedType.GenericArguments [0], StaticResolve);
+					MemberResolveResult.AddType (dom, result, ResolvedType.GenericArguments [0], callingMember, StaticResolve);
 				} else if (ResolvedType.Name == "IEnumerable") {
-					MemberResolveResult.AddType (dom, result, DomReturnType.Object, StaticResolve);
+					MemberResolveResult.AddType (dom, result, DomReturnType.Object, callingMember, StaticResolve);
 				} else { 
-					MemberResolveResult.AddType (dom, result, dom.GetType (ResolvedType), StaticResolve);
+					MemberResolveResult.AddType (dom, result, dom.GetType (ResolvedType), callingMember, StaticResolve);
 				}
 			} else {
-				MemberResolveResult.AddType (dom, result, ResolvedType, StaticResolve);
+				MemberResolveResult.AddType (dom, result, ResolvedType, callingMember, StaticResolve);
 			}
 			return result;
 		}
@@ -153,10 +153,10 @@ namespace MonoDevelop.Projects.Dom
 			this.parameter = parameter;
 		}
 		
-		public override IEnumerable<object> CreateResolveResult (ProjectDom dom)
+		public override IEnumerable<object> CreateResolveResult (ProjectDom dom, IMember callingMember)
 		{
 			List<object> result = new List<object> ();
-			MemberResolveResult.AddType (dom, result, ResolvedType, StaticResolve);
+			MemberResolveResult.AddType (dom, result, ResolvedType, callingMember, StaticResolve);
 			return result;
 		}
 		
@@ -190,7 +190,7 @@ namespace MonoDevelop.Projects.Dom
 			return String.Format ("[AnonymousTypeResolveResult: AnonymousType={0}]", AnonymousType);
 		}
 		
-		public override IEnumerable<object> CreateResolveResult (ProjectDom dom)
+		public override IEnumerable<object> CreateResolveResult (ProjectDom dom, IMember callingMember)
 		{
 			foreach (IMember member in AnonymousType.Members) {
 				yield return member;
@@ -220,7 +220,7 @@ namespace MonoDevelop.Projects.Dom
 			this.resolvedMember = resolvedMember;
 		}
 		
-		internal static void AddType (ProjectDom dom, List<object> result, IType type, bool showStatic)
+		internal static void AddType (ProjectDom dom, List<object> result, IType type, IMember callingMember, bool showStatic)
 		{
 			if (type == null)
 				return;
@@ -231,8 +231,9 @@ namespace MonoDevelop.Projects.Dom
 				return;
 			}
 			foreach (IType curType in dom.GetInheritanceTree (type)) {
-			//	System.Console.WriteLine("curType:" + curType + " /" + curType.FieldCount);
 				foreach (IMember member in curType.Members) {
+					if (callingMember != null && !member.IsAccessibleFrom (dom, callingMember))
+						continue;
 					if (member is IMethod && ((IMethod)member).IsConstructor)
 						continue;
 					if (member is IType || !(showStatic ^ (member.IsStatic || member.IsConst)))
@@ -241,19 +242,22 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
-		internal static void AddType (ProjectDom dom, List<object> result, IReturnType returnType, bool showStatic)
+		internal static void AddType (ProjectDom dom, List<object> result, IReturnType returnType, IMember callingMember, bool showStatic)
 		{
 			if (returnType.ArrayDimensions > 0) {
-				AddType (dom, result, dom.GetType ("System.Array", null, true, true), showStatic);
+				AddType (dom, result, dom.GetType ("System.Array", null, true, true), callingMember, showStatic);
 				return;
 			}
-			AddType (dom, result, dom.GetType (returnType), showStatic);
+			IType type = dom.GetType (returnType);
+			
+			AddType (dom, result, type, callingMember, showStatic);
 		}
 		
-		public override IEnumerable<object> CreateResolveResult (ProjectDom dom)
+		public override IEnumerable<object> CreateResolveResult (ProjectDom dom, IMember callingMember)
 		{
 			List<object> result = new List<object> ();
-			AddType (dom, result, ResolvedType, StaticResolve);
+			
+			AddType (dom, result, ResolvedType, callingMember, StaticResolve);
 			return result;
 		}
 		
@@ -285,7 +289,7 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
-		public override IEnumerable<object> CreateResolveResult (ProjectDom dom)
+		public override IEnumerable<object> CreateResolveResult (ProjectDom dom, IMember callingMember)
 		{
 			return null;
 		}
@@ -298,11 +302,11 @@ namespace MonoDevelop.Projects.Dom
 	
 	public class ThisResolveResult : ResolveResult
 	{
-		public override IEnumerable<object> CreateResolveResult (ProjectDom dom)
+		public override IEnumerable<object> CreateResolveResult (ProjectDom dom, IMember callingMember)
 		{
 			List<object> result = new List<object> ();
 			if (CallingMember != null && !CallingMember.IsStatic)
-				MemberResolveResult.AddType (dom, result, new DomReturnType (CallingType), StaticResolve);
+				MemberResolveResult.AddType (dom, result, new DomReturnType (CallingType), callingMember, StaticResolve);
 			return result;
 		}
 		
@@ -314,11 +318,11 @@ namespace MonoDevelop.Projects.Dom
 	
 	public class BaseResolveResult : ResolveResult
 	{
-		public override IEnumerable<object> CreateResolveResult (ProjectDom dom)
+		public override IEnumerable<object> CreateResolveResult (ProjectDom dom, IMember callingMember)
 		{
 			List<object> result = new List<object> ();
 			if (CallingMember != null && !CallingMember.IsStatic)
-				MemberResolveResult.AddType (dom, result, CallingType.BaseType, StaticResolve);
+				MemberResolveResult.AddType (dom, result, CallingType.BaseType, callingMember, StaticResolve);
 			return result;
 		}
 		public override string ToString ()
@@ -347,7 +351,7 @@ namespace MonoDevelop.Projects.Dom
 			return String.Format ("[NamespaceResolveResult: Namespace={0}]", Namespace);
 		}
 		
-		public override IEnumerable<object> CreateResolveResult (ProjectDom dom)
+		public override IEnumerable<object> CreateResolveResult (ProjectDom dom, IMember callingMember)
 		{
 			List<object> result = new List<object> ();
 			foreach (object o in dom.GetNamespaceContents (ns, true, true)) {
