@@ -337,13 +337,21 @@ namespace MonoDevelop.CSharpBinding
 			}
 			
 			if (IncludeGenerics (flags) && type.TypeParameters != null && type.TypeParameters.Count > 0) {
-				result.Append ('<');
+				if (EmitMarkup (flags)) {
+					result.Append ("&lt;");
+				} else {
+					result.Append ('<');
+				}
 				for (int i = 0; i < type.TypeParameters.Count; i++) {
 					if (i > 0)
 						result.Append (", ");
 					result.Append (type.TypeParameters[i].Name);
 				}
-				result.Append ('>');
+				if (EmitMarkup (flags)) {
+					result.Append ("&gt;");
+				} else {
+					result.Append ('>');
+				}
 			}
 			
 			if (IncludeBaseTypes (flags) && type.BaseType != null) {

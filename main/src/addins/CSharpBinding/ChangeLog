@@ -1,3 +1,10 @@
+2008-09-15  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Gui/MemberCompletionData.cs: Use the EmitMarkup flag when generating
+	  member documentation.
+	* Gui/CSharpAmbience.cs: Escape '<' and '>' when emitting type names
+	  with markup.
+
 2008-09-15  Mike Krüger <mkrueger@novell.com> 
 
 	* Gui/NewCSharpExpressionFinder.cs: fixed regression 324908

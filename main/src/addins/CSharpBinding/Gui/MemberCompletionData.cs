@@ -70,15 +70,20 @@ namespace MonoDevelop.CSharpBinding
 			descriptionCreated = true;
 			
 			string doc = ambience.GetString (member, OutputFlags.ClassBrowserEntries | OutputFlags.IncludeParameterName);
+			string docMarkup = ambience.GetString (member, OutputFlags.ClassBrowserEntries | OutputFlags.IncludeParameterName | OutputFlags.EmitMarkup);
+			
 			XmlNode node = member.GetMonodocDocumentation ();
 			if (node != null) {
 				node = node.SelectSingleNode ("summary");
 				if (node != null) {
-					doc += Environment.NewLine + GetDocumentation (node.InnerXml);
+					string mdDoc = GetDocumentation (node.InnerXml);
+					doc += Environment.NewLine + mdDoc;
+					docMarkup += Environment.NewLine + mdDoc;
 				}
 			}
 			base.Documentation = "";
-			base.Description = base.DescriptionPango = doc;
+			base.Description = doc;
+			base.DescriptionPango = docMarkup;
 		}
 	
 		public static string FormatText (string text)
