@@ -233,8 +233,12 @@ namespace MonoDevelop.Projects.Dom
 	//			return false;
 			if (IsPublic)
 				return true;
-			if (IsInternal) // TODO: internal members
-				return true;
+			if (IsInternal) {
+				IType type1 = this is IType ? (IType)this : DeclaringType;
+				IType type2 = member is IType ? (IType)member : member.DeclaringType;
+				return type1.SourceProjectDom == type2.SourceProjectDom;
+			}
+				
 				
 			if (member.DeclaringType == null || DeclaringType == null)
 				return false;
