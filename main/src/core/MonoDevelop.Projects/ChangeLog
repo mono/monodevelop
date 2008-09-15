@@ -1,3 +1,9 @@
+2008-09-15  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Dom.Output/OutputFlags.cs,
+	  MonoDevelop.Projects.Dom.Output/Ambience.cs: Ambiences now take
+	  care of the IncludeGenerics flag.
+
 2008-09-12  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Projects.Dom.Parser/ProjectParserService.cs,

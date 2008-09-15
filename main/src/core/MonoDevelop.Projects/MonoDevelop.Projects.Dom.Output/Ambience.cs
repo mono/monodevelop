@@ -139,6 +139,10 @@ namespace MonoDevelop.Projects.Dom.Output
 		{
 			return (outputFlags & OutputFlags.IncludeBaseTypes) == OutputFlags.IncludeBaseTypes;
 		}
+		protected static bool IncludeGenerics (OutputFlags outputFlags)
+		{
+			return (outputFlags & OutputFlags.IncludeGenerics) == OutputFlags.IncludeGenerics;
+		}
 		#endregion			
 		
 		public static string Format (string str)
