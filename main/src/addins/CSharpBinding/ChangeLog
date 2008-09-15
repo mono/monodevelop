@@ -1,3 +1,8 @@
+2008-09-15  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* CSharpBinding.addin.xml: Run the completion extension before the
+	  indentation extension. Fixes tab completion of 'override'.
+
 2008-09-12  Mike Krüger <mkrueger@novell.com> 
 
 	* Gui/MemberCompletionData.cs: fixed bug in code completion list.

@@ -105,8 +105,8 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/TextEditorExtensions">
-		<Class class = "MonoDevelop.CSharpBinding.Gui.CSharpTextEditorIndentation" />
 		<Class class = "MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion" />
+		<Class class = "MonoDevelop.CSharpBinding.Gui.CSharpTextEditorIndentation" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/MD1SerializationMaps">
