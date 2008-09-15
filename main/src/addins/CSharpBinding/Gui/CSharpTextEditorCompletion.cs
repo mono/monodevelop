@@ -170,6 +170,36 @@ namespace MonoDevelop.CSharpBinding.Gui
 				if (stateTracker.Engine.IsInsideDocLineComment) 
 					return GetXmlDocumentationCompletionData ();
 				return null;
+			case '(':
+				result = FindExpression (dom, -1);
+				if (result == null)
+					return null;
+				resolver = new MonoDevelop.CSharpBinding.NRefactoryResolver (dom, Document.CompilationUnit,
+				                                                                                ICSharpCode.NRefactory.SupportedLanguage.CSharp,
+				                                                                                Editor,
+				                                                                                Document.FileName);
+				resolveResult = resolver.Resolve (result, new DomLocation (Editor.CursorLine, Editor.CursorColumn - 1));
+				System.Console.WriteLine(resolver.ResolvedExpression );
+				if (resolveResult != null && resolver.ResolvedExpression is ICSharpCode.NRefactory.Ast.TypeOfExpression) {
+					CodeCompletionDataProvider provider = new CodeCompletionDataProvider (null, GetAmbience ());
+					List<string> namespaceList = new List<string> ();
+					namespaceList.Add ("");
+					if (Document.CompilationUnit != null && Document.CompilationUnit.Usings != null) {
+						foreach (IUsing u in Document.CompilationUnit.Usings) {
+							if (u.Namespaces == null)
+								continue;
+							foreach (string ns in u.Namespaces) {
+								namespaceList.Add (ns);
+							}
+						}
+					}
+					MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.CompletionDataCollector col = new MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.CompletionDataCollector (dom, Document.CompilationUnit);
+					foreach (object o in dom.GetNamespaceContents (namespaceList, true, true)) {
+						col.AddCompletionData (provider, o);
+					}
+					return provider;
+				}
+				return null;
 			case '/':
 				cursor = Editor.SelectionStartPosition;
 				if (cursor < 2)
@@ -298,6 +328,8 @@ namespace MonoDevelop.CSharpBinding.Gui
 		
 		public ICompletionDataProvider HandleKeywordCompletion (ExpressionResult result, int wordStart, string word)
 		{
+			System.Console.WriteLine(result.ExpressionContext + "word:" + word);
+				
 			switch (word) {
 			case "using":
 				result.ExpressionContext = ExpressionContext.Using;

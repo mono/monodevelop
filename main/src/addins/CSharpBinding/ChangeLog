@@ -1,5 +1,9 @@
 2008-09-15  Mike Krüger <mkrueger@novell.com> 
 
+	* Gui/CSharpTextEditorCompletion.cs: added typeof ( context.
+
+2008-09-15  Mike Krüger <mkrueger@novell.com> 
+
 	* Gui/CSharpTextEditorCompletion.cs: added base class context.
 
 2008-09-15  Mike Krüger <mkrueger@novell.com> 
