@@ -1,5 +1,9 @@
 2008-09-15  Mike Krüger <mkrueger@novell.com> 
 
+	* Gui/NewCSharpExpressionFinder.cs: fixed regression 324908
+
+2008-09-15  Mike Krüger <mkrueger@novell.com> 
+
 	* Gui/NRefactoryParameterDataProvider.cs, Gui/CSharpAmbience.cs: fixed
 	  regression 324907.
 
