@@ -71,7 +71,7 @@ namespace MonoDevelop.Projects.Dom
 		
 		public IEnumerable<IReturnType> ExplicitInterfaces {
 			get {
-				return explicitInterfaces;
+				return (IEnumerable<IReturnType>)explicitInterfaces ?? new IReturnType [0];
 			}
 		}
 		
@@ -137,11 +137,9 @@ namespace MonoDevelop.Projects.Dom
 		}
 		
 		
-		public virtual System.Collections.Generic.IEnumerable<IAttribute> Attributes {
+		public virtual IEnumerable<IAttribute> Attributes {
 			get {
-				if (attributes == null)
-					return new IAttribute [] {};
-				return attributes;
+				return (IEnumerable<IAttribute>)attributes ?? new IAttribute[0];
 			}
 		}
 		

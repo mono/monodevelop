@@ -47,10 +47,11 @@ namespace MonoDevelop.Projects.Dom
 		}
 		
 		protected List<IReturnType> genericArguments = null;
+		static readonly ReadOnlyCollection<IReturnType> emptyGenericParameters = new ReadOnlyCollection<IReturnType> (new IReturnType [0]);
 		public System.Collections.ObjectModel.ReadOnlyCollection<IReturnType> GenericArguments {
 			get {
 				if (genericArguments == null)
-					return null;
+					return emptyGenericParameters;
 				return genericArguments.AsReadOnly ();
 			}
 		}

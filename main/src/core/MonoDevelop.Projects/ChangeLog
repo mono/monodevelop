@@ -1,5 +1,14 @@
 2008-09-15  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.Projects.Dom/DomReturnType.cs,
+	  MonoDevelop.Projects.Dom/DomParameter.cs,
+	  MonoDevelop.Projects.Dom/DomMethod.cs,
+	  MonoDevelop.Projects.Dom/DomProperty.cs,
+	  MonoDevelop.Projects.Dom/AbstractMember.cs: CHANGE: DOM objects
+	  that return collections now should always return != null.
+
+2008-09-15  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.Projects.Dom/AbstractMember.cs: now recognizing internal
 	  members in isaccessible.
 

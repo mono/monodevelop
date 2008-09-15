@@ -109,7 +109,7 @@ namespace MonoDevelop.Projects.Dom
 
 		public System.Collections.Generic.IEnumerable<IAttribute> Attributes {
 			get {
-				return attributes;
+				return (IEnumerable<IAttribute>)attributes ?? new IAttribute[0];
 			}
 		}
 

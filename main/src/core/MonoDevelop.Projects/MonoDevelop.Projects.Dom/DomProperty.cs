@@ -67,10 +67,10 @@ namespace MonoDevelop.Projects.Dom
 				return (propertyModifier & PropertyModifier.HasSet) == PropertyModifier.HasSet;
 			}
 		}
-		
+		static readonly ReadOnlyCollection<IParameter> emptyParameters = new ReadOnlyCollection<IParameter> (new IParameter [0]);
 		public virtual ReadOnlyCollection<IParameter> Parameters {
 			get {
-				return parameters != null ? parameters.AsReadOnly () : null;
+				return parameters != null ? parameters.AsReadOnly () : emptyParameters;
 			}
 		}
 
