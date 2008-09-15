@@ -106,6 +106,7 @@ namespace MonoDevelop.Projects.Dom
 		public static ExpressionContext Interface                    = new ExpressionContext ("Interface");
 		public static ExpressionContext EnumBaseType                 = new ExpressionContext ("EnumBaseType");
 		public static ExpressionContext InheritableType              = new ExpressionContext ("InheritableType");
+		public static ExpressionContext NamespaceNameExcepted        = new ExpressionContext ("NamespaceNameExcepted");
 		
 		public static TypeExpressionContext TypeDerivingFrom (IReturnType baseType, bool isObjectCreation)
 		{
