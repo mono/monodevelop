@@ -418,14 +418,16 @@ namespace MonoDevelop.CSharpBinding
 				result = new NamespaceResolveResult (identifier);
 				goto end;
 			}
-			
-			foreach (IUsing u in unit.Usings) {
-				if (!u.IsFromNamespace)
-					continue;
-				foreach (string ns in u.Namespaces) {
-					if (dom.NamespaceExists (ns + "."  + identifier, true)) {
-						result = new NamespaceResolveResult (ns + "."  + identifier);
-						goto end;
+
+			if (unit.Usings != null) {
+				foreach (IUsing u in unit.Usings) {
+					if (!u.IsFromNamespace)
+						continue;
+					foreach (string ns in u.Namespaces) {
+						if (dom.NamespaceExists (ns + "."  + identifier, true)) {
+							result = new NamespaceResolveResult (ns + "."  + identifier);
+							goto end;
+						}
 					}
 				}
 			}
