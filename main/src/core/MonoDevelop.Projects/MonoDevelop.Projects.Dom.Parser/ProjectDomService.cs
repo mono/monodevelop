@@ -200,7 +200,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 		{
 			string path = PropertyService.Get<string> ("MonoDevelop.CodeCompletion.DataDirectory", String.Empty);
 			if (string.IsNullOrEmpty (path)) {
-				path = Path.Combine (PropertyService.ConfigPath, "CodeCompletionData2");
+				path = Path.Combine (PropertyService.ConfigPath, "CodeCompletionData");
 				PropertyService.Set ("MonoDevelop.CodeCompletion.DataDirectory", path);
 				PropertyService.SaveProperties ();
 			}

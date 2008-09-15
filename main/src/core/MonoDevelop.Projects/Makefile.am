@@ -54,7 +54,7 @@ FILES =  \
 	MonoDevelop.Projects.Dom.Parser/ParseInformationEventHandler.cs \
 	MonoDevelop.Projects.Dom.Parser/ProjectDom.cs \
 	MonoDevelop.Projects.Dom.Parser/ProjectDomEventArgs.cs \
-	MonoDevelop.Projects.Dom.Parser/ProjectParserService.cs \
+	MonoDevelop.Projects.Dom.Parser/ProjectDomService.cs \
 	MonoDevelop.Projects.Dom.Parser/TypeNameResolver.cs \
 	MonoDevelop.Projects.Dom.Serialization/AssemblyCodeCompletionDatabase.cs \
 	MonoDevelop.Projects.Dom.Serialization/ClassEntry.cs \

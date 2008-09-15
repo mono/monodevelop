@@ -1,3 +1,9 @@
+2008-09-15  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Dom.Parser/ProjectDomService.cs,
+	  MonoDevelop.Projects.mdp, Makefile.am: Renamed. Set correct path
+	  for shared code completion data.
+
 2008-09-15  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom/ResolveResult.cs: Resolve result now gets

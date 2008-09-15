@@ -176,7 +176,7 @@
     <File name="MonoDevelop.Projects.Dom.Parser/IParser.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Dom.Parser/ProjectDom.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Dom.Parser/ProjectDomEventArgs.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Projects.Dom.Parser/ProjectParserService.cs" subtype="Code" buildaction="Compile" />
+    <File name="MonoDevelop.Projects.Dom.Parser/ProjectDomService.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Dom/Tag.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Dom/TypeUpdateInformation.cs" subtype="Code" buildaction="Compile" />
     <File name="MonoDevelop.Projects.Dom/ReferenceEntry.cs" subtype="Code" buildaction="Compile" />
