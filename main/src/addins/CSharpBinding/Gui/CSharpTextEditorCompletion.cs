@@ -304,6 +304,33 @@ namespace MonoDevelop.CSharpBinding.Gui
 				return CreateCompletionData (new NamespaceResolveResult (""), result, null);
 			case "case":
 				return CreateCaseCompletionData (result);
+			case ",":
+			case ":":
+				if (result.ExpressionContext == ExpressionContext.InheritableType) {
+					IType cls = NRefactoryResolver.GetTypeAtCursor (Document.CompilationUnit, Document.FileName, new DomLocation (Editor.CursorLine, Editor.CursorColumn));
+					CodeCompletionDataProvider provider = new CodeCompletionDataProvider (null, GetAmbience ());
+					List<string> namespaceList = new List<string> ();
+					namespaceList.Add ("");
+					if (Document.CompilationUnit != null && Document.CompilationUnit.Usings != null) {
+						foreach (IUsing u in Document.CompilationUnit.Usings) {
+							if (u.Namespaces == null)
+								continue;
+							foreach (string ns in u.Namespaces) {
+								namespaceList.Add (ns);
+							}
+						}
+					}
+					MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.CompletionDataCollector col = new MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.CompletionDataCollector (dom, Document.CompilationUnit);
+					foreach (object o in dom.GetNamespaceContents (namespaceList, true, true)) {
+						if (cls != null && o is IType && ((IType)o).Name == cls.Name) {
+							continue;
+						}
+						col.AddCompletionData (provider, o);
+					}
+					return provider;
+					
+				}
+				break;
 			case "is":
 			case "as":
 				result.ExpressionContext = ExpressionContext.Type;
