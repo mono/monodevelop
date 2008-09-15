@@ -258,11 +258,14 @@ namespace MonoDevelop.CSharpBinding
 				result.Append (GetString (method.ReturnType, flags));
 				result.Append (" ");
 			}
-			
-			if (UseFullName (flags)) {
-				result.Append (Format (method.FullName));
-			} else {
-				result.Append (Format (method.Name));
+			if (method.IsConstructor) {
+				result.Append (Format (method.DeclaringType.Name));
+			} else {
+				if (UseFullName (flags)) {
+					result.Append (Format (method.FullName));
+				} else {
+					result.Append (Format (method.Name));
+				}
 			}
 			
 			if (IncludeParameters (flags)) {

@@ -70,13 +70,16 @@ namespace MonoDevelop.CSharpBinding
 			this.editor = editor;
 			this.resolver = resolver;
 			if (resolveResult.CallingType != null) {
-				IType baseType = resolver.Dom.GetType (resolveResult.CallingType.BaseType);
-				
-				if (baseType != null) {
-					foreach (IMethod method in baseType.Methods) {
-						if (!method.IsConstructor)
-							continue;
-						methods.Add (method);
+				foreach (IReturnType rt in resolveResult.CallingType.BaseTypes) {
+					IType baseType = resolver.Dom.SearchType (new SearchTypeRequest (resolver.Unit, rt));
+					System.Console.WriteLine("base type:" + baseType + " rt: " + rt);
+					if (baseType != null) {
+						foreach (IMethod method in baseType.Methods) {
+							System.Console.WriteLine(method + "/" + method.IsConstructor + " / " + method.MethodModifier);
+							if (!method.IsConstructor)
+								continue;
+							methods.Add (method);
+						}
 					}
 				}
 			}
