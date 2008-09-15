@@ -226,7 +226,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 						IType resolvedType = dom.GetType (resolveResult.ResolvedType);
 						if (resolvedType != null && resolvedType.ClassType == ClassType.Enum) {
 							CodeCompletionDataProvider provider = new CodeCompletionDataProvider (null, GetAmbience ());
-							CompletionDataCollector cdc = new CompletionDataCollector();
+							CompletionDataCollector cdc = new CompletionDataCollector (dom, Document.CompilationUnit);
 							cdc.AddCompletionData (provider, resolvedType);
 							
 	//						foreach (IField field in resolvedType.Fields) {
@@ -403,6 +403,14 @@ namespace MonoDevelop.CSharpBinding.Gui
 			Dictionary<string, CodeCompletionData> data = new Dictionary<string, CodeCompletionData> ();
 			Dictionary<string, bool> namespaces = new Dictionary<string,bool> ();
 			static CSharpAmbience ambience = new CSharpAmbience ();
+			ProjectDom dom;
+			ICompilationUnit unit;
+			
+			public CompletionDataCollector (ProjectDom dom, ICompilationUnit unit)
+			{
+				this.dom  = dom;
+				this.unit = unit;
+			}
 			
 			public void AddCompletionData (CodeCompletionDataProvider provider, object obj)
 			{
@@ -417,7 +425,19 @@ namespace MonoDevelop.CSharpBinding.Gui
 				IReturnType rt = obj as IReturnType;
 				if (rt != null) {
 					CodeCompletionData cd = new CodeCompletionData (ambience.GetString (rt, OutputFlags.ClassBrowserEntries), "md-class", "");
-					cd.CompletionString = ambience.GetString (rt, OutputFlags.ClassBrowserEntries | OutputFlags.UseFullName);
+					OutputFlags flags = OutputFlags.ClassBrowserEntries;
+					bool foundNamespace = false;
+					foreach (IUsing u in unit.Usings) {
+						foreach (string n in u.Namespaces) {
+							if (n == rt.Namespace) {
+								foundNamespace = true;
+								break;
+							}
+						}
+					}
+					if (!foundNamespace)
+						flags |= OutputFlags.UseFullName;
+					cd.CompletionString = ambience.GetString (rt, flags);
 					provider.AddCompletionData (cd);
 					return;
 				}
@@ -445,7 +465,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 			if (dom == null)
 				return null;
 			IEnumerable<object> objects = resolveResult.CreateResolveResult (dom);
-			CompletionDataCollector col = new CompletionDataCollector ();
+			CompletionDataCollector col = new CompletionDataCollector (dom, Document.CompilationUnit);
 			if (objects != null) {
 				foreach (object obj in objects) {
 					if (expressionResult.ExpressionContext != null && expressionResult.ExpressionContext.FilterEntry (obj))
@@ -501,7 +521,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 			if (type == null)
 				return result;
 			
-			CompletionDataCollector col = new CompletionDataCollector();
+			CompletionDataCollector col = new CompletionDataCollector (dom, Document.CompilationUnit);
 			if (tce != null && tce.Type != null) {
 				col.AddCompletionData (result, tce.Type);
 			} else {
@@ -627,7 +647,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 			ResolveResult resolveResult = resolver.ResolveExpression (switchFinder.SwitchStatement.SwitchExpression, location);
 			IType type = dom.GetType (resolveResult.ResolvedType);
 			if (type != null && type.ClassType == ClassType.Enum) {
-				CompletionDataCollector cdc = new CompletionDataCollector();
+				CompletionDataCollector cdc = new CompletionDataCollector (dom, Document.CompilationUnit);
 				cdc.AddCompletionData (result, type);
 			}
 			return result;

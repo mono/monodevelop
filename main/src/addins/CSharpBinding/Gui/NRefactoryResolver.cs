@@ -166,7 +166,7 @@ namespace MonoDevelop.CSharpBinding
 					provider.AddCompletionData (new CodeCompletionData (parameter.Name, "md-literal"));
 				}
 			}
-			MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.CompletionDataCollector col = new MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.CompletionDataCollector ();
+			MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.CompletionDataCollector col = new MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.CompletionDataCollector (dom, unit);
 			foreach (IType type in dom.GetInheritanceTree (CallingType)) {
 				foreach (IMember member in type.Members) {
 //					if (member.IsAccessibleFrom (dom, CallingMember)) {
@@ -211,7 +211,7 @@ namespace MonoDevelop.CSharpBinding
 					}
 				}
 			}
-			MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.CompletionDataCollector col = new MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.CompletionDataCollector ();
+			MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.CompletionDataCollector col = new MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.CompletionDataCollector (dom, unit);
 			foreach (object o in dom.GetNamespaceContents (namespaceList, true, true)) {
 				col.AddCompletionData (provider, o);
 			}

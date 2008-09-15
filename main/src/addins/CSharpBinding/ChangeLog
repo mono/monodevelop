@@ -1,3 +1,8 @@
+2008-09-15  Mike Krüger <mkrueger@novell.com> 
+
+	* Gui/NRefactoryResolver.cs, Gui/CSharpTextEditorCompletion.cs: fixed
+	  cc bug.
+
 2008-09-15  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* CSharpBinding.addin.xml: Run the completion extension before the
