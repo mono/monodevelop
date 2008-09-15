@@ -624,6 +624,11 @@ namespace MonoDevelop.CSharpBinding.Gui
 				AddPrimitiveTypes (result);
 				resolver.AddAccessibleCodeCompletionData (result);
 			}
+			if (resolver.CallingMember is IMethod) {
+				foreach (IReturnType returnType in ((IMethod)resolver.CallingMember).GenericParameters) {
+					result.AddCompletionData (new CodeCompletionData (returnType.Name, "md-literal"));
+				}
+			}
 			return result;
 		}
 
