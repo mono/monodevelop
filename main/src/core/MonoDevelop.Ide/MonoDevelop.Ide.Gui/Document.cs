@@ -84,7 +84,6 @@ namespace MonoDevelop.Ide.Gui
 		internal Document (IWorkbenchWindow window)
 		{
 			this.window = window;
-			MonoDevelop.Projects.Dom.Parser.ProjectDomService.ParsedDocumentUpdated += CompilationUnitUpdated;
 			window.Closed += OnClosed;
 			window.ActiveViewContentChanged += OnActiveViewContentChanged;
 			IdeApp.Workspace.ItemRemovedFromSolution += OnEntryRemoved;
@@ -415,10 +414,9 @@ namespace MonoDevelop.Ide.Gui
 					return TextEditor.Text;
 				});
 			};
-			MonoDevelop.Projects.Dom.Parser.ProjectDomService.Parse (Project, FileName, MonoDevelop.Core.Gui.Services.PlatformService.GetMimeTypeForUri (FileName),
-				                                                           delegate () {
-					return TextEditor.Text;
-				});
+			this.parsedDocument = MonoDevelop.Projects.Dom.Parser.ProjectDomService.Parse (Project, FileName, MonoDevelop.Core.Gui.Services.PlatformService.GetMimeTypeForUri (FileName), TextEditor.Text);
+			MonoDevelop.Projects.Dom.Parser.ProjectDomService.ParsedDocumentUpdated += CompilationUnitUpdated;
+
 			// If the new document is a text editor, attach the extensions
 			
 			TextEditorExtension[] extensions = (TextEditorExtension[]) AddinManager.GetExtensionObjects ("/MonoDevelop/Ide/TextEditorExtensions", typeof(TextEditorExtension), false);
