@@ -331,8 +331,9 @@ namespace MonoDevelop.CSharpBinding.Gui
 			System.Console.WriteLine(result.ExpressionContext + "word:" + word);
 				
 			switch (word) {
+			case "namespace":
 			case "using":
-				result.ExpressionContext = ExpressionContext.Using;
+				result.ExpressionContext = ExpressionContext.NamespaceNameExcepted;
 				return CreateCompletionData (new NamespaceResolveResult (""), result, null);
 			case "case":
 				return CreateCaseCompletionData (result);
@@ -526,9 +527,12 @@ namespace MonoDevelop.CSharpBinding.Gui
 				return null;
 			IEnumerable<object> objects = resolveResult.CreateResolveResult (dom, resolver != null ? resolver.CallingMember : null);
 			CompletionDataCollector col = new CompletionDataCollector (dom, Document.CompilationUnit);
+			System.Console.WriteLine(expressionResult.ExpressionContext);
 			if (objects != null) {
 				foreach (object obj in objects) {
 					if (expressionResult.ExpressionContext != null && expressionResult.ExpressionContext.FilterEntry (obj))
+						continue;
+					if (expressionResult.ExpressionContext == ExpressionContext.NamespaceNameExcepted && !(obj is Namespace))
 						continue;
 					col.AddCompletionData (result, obj);
 				}

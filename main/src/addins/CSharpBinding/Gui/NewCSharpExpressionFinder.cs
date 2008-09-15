@@ -623,7 +623,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 					}
 					break;
 				case Tokens.Namespace:
-					frame.SetContext(ExpressionContext.IdentifierExpected);
+					frame.SetContext(ExpressionContext.NamespaceNameExcepted);
 					break;
 				case Tokens.Assign:
 					if (frame.type == FrameType.Global) {
@@ -647,6 +647,8 @@ namespace MonoDevelop.CSharpBinding.Gui
 						goto default;
 					}
 				case Tokens.Colon:
+					if (frame.context == ExpressionContext.NamespaceNameExcepted)
+						break;
 					if (frame.state == FrameState.MethodDecl && lastToken == Tokens.CloseParenthesis) {
 						frame.SetContext(ExpressionContext.BaseConstructorCall);
 						frame.parenthesisChildType = FrameType.Expression;
@@ -760,6 +762,8 @@ namespace MonoDevelop.CSharpBinding.Gui
 					frame.parenthesisChildType = FrameType.TypeReference;
 					break;
 				default:
+					if (frame.context == ExpressionContext.NamespaceNameExcepted)
+						break;
 					if (Tokens.SimpleTypeName[token.kind]) {
 						if (frame.type == FrameType.Interface || frame.type == FrameType.TypeDecl) {
 							if (frame.state == FrameState.Normal) {
