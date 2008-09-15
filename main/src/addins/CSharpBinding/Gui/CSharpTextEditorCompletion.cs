@@ -132,7 +132,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 				ResolveResult resolveResult = resolver.Resolve (result, new DomLocation (Editor.CursorLine, Editor.CursorColumn));
 				if (resolver.ResolvedExpression is ICSharpCode.NRefactory.Ast.PrimitiveExpression)
 					return null;
-				return CreateCompletionData (resolveResult, result);
+				return CreateCompletionData (resolveResult, result, resolver);
 			case '#':
 				if (stateTracker.Engine.IsInsidePreprocessorDirective) 
 					return GetDirectiveCompletionData ();
@@ -301,7 +301,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 			switch (word) {
 			case "using":
 				result.ExpressionContext = ExpressionContext.Using;
-				return CreateCompletionData (new NamespaceResolveResult (""), result);
+				return CreateCompletionData (new NamespaceResolveResult (""), result, null);
 			case "case":
 				return CreateCaseCompletionData (result);
 			case "is":
@@ -393,7 +393,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 				                                                                                Document.FileName);
 				
 				ResolveResult resolveResult = resolver.Resolve (result, new DomLocation (Editor.CursorLine, Editor.CursorColumn));
-				return CreateCompletionData (resolveResult, result);
+				return CreateCompletionData (resolveResult, result, resolver);
 			}
 				
 			return CreateCtrlSpaceCompletionData (result);
@@ -457,7 +457,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 			}
 		}
 		
-		ICompletionDataProvider CreateCompletionData (ResolveResult resolveResult, ExpressionResult expressionResult)
+		ICompletionDataProvider CreateCompletionData (ResolveResult resolveResult, ExpressionResult expressionResult, NRefactoryResolver resolver)
 		{
 			if (resolveResult == null || expressionResult == null)
 				return null;
@@ -465,7 +465,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 			ProjectDom dom = ProjectDomService.GetProjectDom (Document.Project);
 			if (dom == null)
 				return null;
-			IEnumerable<object> objects = resolveResult.CreateResolveResult (dom);
+			IEnumerable<object> objects = resolveResult.CreateResolveResult (dom, resolver != null ? resolver.CallingMember : null);
 			CompletionDataCollector col = new CompletionDataCollector (dom, Document.CompilationUnit);
 			if (objects != null) {
 				foreach (object obj in objects) {
