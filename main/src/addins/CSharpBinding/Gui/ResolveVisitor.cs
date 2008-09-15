@@ -189,16 +189,11 @@ namespace MonoDevelop.CSharpBinding
 				result.CallingType   = resolver.CallingType;
 				result.CallingMember = resolver.CallingMember;
 				return result;
+			} else {
+				return CreateResult (objectCreateExpression.CreateType);
 			}
 			return null;
-		/*else {
-				IReturnType rt = TypeVisitor.CreateReturnType(objectCreateExpression.CreateType, resolver);
-				if (rt == null)
-					return new UnknownConstructorCallResolveResult(resolver.CallingClass, resolver.CallingMember, objectCreateExpression.CreateType.ToString());
-				
-				return ResolveConstructorOverload(rt, objectCreateExpression.Parameters)
-					?? CreateResolveResult(rt);
-			}*/
+		
 		}
 
 		

@@ -1,5 +1,9 @@
 2008-09-15  Mike Krüger <mkrueger@novell.com> 
 
+	* Gui/ResolveVisitor.cs: fixed regression 323317.
+
+2008-09-15  Mike Krüger <mkrueger@novell.com> 
+
 	* Gui/ResolveVisitor.cs: fixed regression from 323283.
 
 2008-09-15  Mike Krüger <mkrueger@novell.com> 
