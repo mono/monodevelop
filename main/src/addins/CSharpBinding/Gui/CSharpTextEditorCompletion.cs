@@ -424,7 +424,6 @@ namespace MonoDevelop.CSharpBinding.Gui
 				}
 				IReturnType rt = obj as IReturnType;
 				if (rt != null) {
-					CodeCompletionData cd = new CodeCompletionData (ambience.GetString (rt, OutputFlags.ClassBrowserEntries), "md-class", "");
 					OutputFlags flags = OutputFlags.ClassBrowserEntries;
 					bool foundNamespace = false;
 					foreach (IUsing u in unit.Usings) {
@@ -437,6 +436,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 					}
 					if (!foundNamespace)
 						flags |= OutputFlags.UseFullName;
+					CodeCompletionData cd = new CodeCompletionData (ambience.GetString (rt, flags), "md-class", "");
 					cd.CompletionString = ambience.GetString (rt, flags);
 					provider.AddCompletionData (cd);
 					return;
