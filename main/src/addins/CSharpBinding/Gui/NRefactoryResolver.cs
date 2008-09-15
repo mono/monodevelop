@@ -419,6 +419,18 @@ namespace MonoDevelop.CSharpBinding
 				goto end;
 			}
 			
+			foreach (IUsing u in unit.Usings) {
+				if (!u.IsFromNamespace)
+					continue;
+				foreach (string ns in u.Namespaces) {
+					if (dom.NamespaceExists (ns + "."  + identifier, true)) {
+						result = new NamespaceResolveResult (ns + "."  + identifier);
+						goto end;
+					}
+				}
+			}
+				
+			
 		end:
 			if (result != null) {
 				result.CallingType   = CallingType;
