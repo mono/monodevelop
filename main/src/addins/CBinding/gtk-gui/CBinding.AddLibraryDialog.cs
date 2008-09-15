@@ -33,7 +33,6 @@ namespace CBinding {
             // Container child dialog1_VBox.Gtk.Box+BoxChild
             this.file_chooser_widget = new Gtk.FileChooserWidget(((Gtk.FileChooserAction)(0)));
             this.file_chooser_widget.Name = "file_chooser_widget";
-            this.file_chooser_widget.ShowHidden = true;
             w1.Add(this.file_chooser_widget);
             Gtk.Box.BoxChild w2 = ((Gtk.Box.BoxChild)(w1[this.file_chooser_widget]));
             w2.Position = 0;

@@ -978,6 +978,12 @@ namespace Mono.TextEditor
 		{
 			if (Caret.Line < 0 || Caret.Line >= Document.LineCount)
 				return;
+//			Adjustment adj;
+			//adj.Upper
+			if (this.textEditorData.VAdjustment.Upper < Allocation.Height)  {
+				this.textEditorData.VAdjustment.Value = 0;
+				return;
+			}
 //			int yMargin = 1 * this.LineHeight;
 			int xMargin = 10 * this.textViewMargin.CharWidth;
 			int caretPosition = Document.LogicalToVisualLine (Caret.Line) * this.LineHeight;
@@ -994,6 +1000,10 @@ namespace Mono.TextEditor
 		{
 			if (Caret.Line < 0 || Caret.Line >= Document.LineCount)
 				return;
+			if (this.textEditorData.VAdjustment.Upper < Allocation.Height)  {
+				this.textEditorData.VAdjustment.Value = 0;
+				return;
+			}
 			int yMargin = 1 * this.LineHeight;
 			int xMargin = 10 * this.textViewMargin.CharWidth;
 			int caretPosition = Document.LogicalToVisualLine (Caret.Line) * this.LineHeight;

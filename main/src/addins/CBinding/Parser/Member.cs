@@ -80,7 +80,7 @@ namespace CBinding.Parser
 		/// <see cref="System.Boolean"/>
 		/// </returns>
 		protected bool GetInstanceType (Tag tag) {
-			Match m = InstanceTypeExpression.Match (tag.Pattern);
+			/*Match m = InstanceTypeExpression.Match (tag.Pattern);
 			
 			if (null == m)
 				return false;
@@ -88,7 +88,9 @@ namespace CBinding.Parser
 			instanceType = m.Groups["type"].Value;
 			isPointer = m.Groups["pointer"].Success;
 			
-			return true;
+			return true;*/
+			// TODO: Fix this back up, without using the tag pattern (we reference tags by line number now)
+			return false;
 		}
 	}
 }

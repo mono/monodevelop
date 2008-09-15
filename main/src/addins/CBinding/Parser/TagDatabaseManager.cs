@@ -3,6 +3,7 @@
 //
 // Authors:
 //   Marcos David Marin Amador <MarcosMarin@gmail.com>
+//   Mitchell Wheeler <mitchell.wheeler@gmail.com>
 //
 // Copyright (C) 2007 Marcos David Marin Amador
 //
@@ -32,6 +33,7 @@
 using System;
 using System.IO;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Collections.Generic;
 using System.Threading;
 
@@ -42,6 +44,10 @@ using MonoDevelop.Ide.Gui;
 
 using CBinding.Navigation;
 
+//  TODO
+//  Generic, language independant 'TagDatabaseManager'
+//  Parsing of ctags data into a Sqlite database, for easy/efficient access & updates.
+//  
 namespace CBinding.Parser
 {
 	/// <summary>
@@ -109,38 +115,36 @@ namespace CBinding.Parser
 		private string[] Headers (Project project, string filename, bool with_system)
 		{
 			string option = (with_system ? "-M" : "-MM");
-			ProcessWrapper p;
+			StringBuilder output = new StringBuilder ();
+			
+			ProcessWrapper p = null;
 			try {
-				p = Runtime.ProcessService.StartProcess ("gcc", option + " -MG " + filename, null, null);
-				p.WaitForExit ();
+				p = Runtime.ProcessService.StartProcess ("gcc", option + " -MG " + filename.Replace(@"\ ", " ").Replace(" ", @"\ "), null, null);
+				p.WaitForOutput ();
+
+				// Skip first two lines (.o & .c* files) - WARNING, sometimes this is compacted to 1 line... we need a better way of handling this.
+				if(p.StandardOutput.ReadLine () == null) return new string[0]; // object file
+				if(p.StandardOutput.ReadLine () == null) return new string[0]; // compile file
+
+				string line;
+				while ((line = p.StandardOutput.ReadLine ()) != null)
+					output.Append (line);
 			} catch (Exception ex) {
 				LoggingService.LogError (ex.ToString ());
 				return new string [0];
 			}
-			
-			StringBuilder output = new StringBuilder ();
-			string line;
-			
-			while ((line = p.StandardOutput.ReadLine ()) != null)
-				output.Append (line);
-			
-			p.Close ();
-			
-			string[] lines = output.ToString ().Split ('\\');
+			finally {
+				if(p != null)
+					p.Dispose();
+			}
+
 			List<string> headers = new List<string> ();
-			
-			for (int i = 0; i < lines.Length; i++) {
-				string[] files = lines[i].Split (' ');
-				// first line contains the rule (eg. file.o: dep1.c dep2.h ...) and we must skip it
-				// and we skip the *.cpp or *.c etc. too
-				for (int j = 0; j < files.Length; j++) {
-					if (j == 0 || j == 1) continue;
-					
-					string depfile = files[j].Trim ();
-					
-					if (!string.IsNullOrEmpty (depfile))
-						headers.Add (findFileInIncludes (project, depfile));
-				}
+			MatchCollection files = Regex.Matches(output.ToString().Replace(@" \", String.Empty), @" (?<file>([^ \\]|(\\ ))+)", RegexOptions.IgnoreCase);
+
+			foreach (Match match in files) {
+				string depfile = findFileInIncludes(project, match.Groups["file"].Value.Trim());
+				
+				headers.Add (depfile.Replace(@"\ ", " ").Replace(" ", @"\ "));
 			}
 			
 			return headers.ToArray ();
@@ -166,6 +170,11 @@ namespace CBinding.Parser
 			string fullpath = string.Empty;
 			
 			if (!Path.IsPathRooted (filename)) {
+				// Check against base directory
+				fullpath = findFileInPath (filename, project.BaseDirectory);
+				if (string.Empty != fullpath) return fullpath;
+
+				// Check project's additional configuration includes
 				foreach (string p in conf.Includes) {
 					fullpath = findFileInPath (filename, p);
 					if (string.Empty != fullpath) return fullpath;
@@ -248,12 +257,12 @@ namespace CBinding.Parser
 			string tagFileName = Path.GetFileName (fileInfo.FileName) + ".tag";
 			string tagdir = Path.Combine (confdir, "system-tags");
 			string tagFullFileName = Path.Combine (tagdir, tagFileName);
-			string ctags_kinds = "--C++-kinds=+u";
+			string ctags_kinds = "--C++-kinds=+px";
 			
-			if (PropertyService.Get<bool> ("CBinding.ParseLocalVariables", false))
-				ctags_kinds += "+l";
+			if (PropertyService.Get<bool> ("CBinding.ParseLocalVariables", true))
+				ctags_kinds += "l";
 			
-			string ctags_options = ctags_kinds + " --fields=+a-f+S --language-force=C++ --excmd=pattern -f \"" + tagFullFileName + "\" " + fileInfo.FileName;
+			string ctags_options = ctags_kinds + " --fields=+aStisk-fz --language-force=C++ --excmd=number --line-directives=yes -f '" + tagFullFileName + "' '" + fileInfo.FileName + "'";
 			
 			if (!Directory.Exists (tagdir))
 				Directory.CreateDirectory (tagdir);
@@ -318,6 +327,10 @@ namespace CBinding.Parser
 				DepsInstalled = false;
 				return;
 			}
+			catch {
+				LoggingService.LogError("Unexpected error while updating parser database. Disabling C/C++ parsing.");
+				DepsInstalled = false;
+			}
 		}
 		
 		public void UpdateFileTags (Project project, string filename)
@@ -346,22 +359,25 @@ namespace CBinding.Parser
 				return;
 
 			string[] headers = Headers (project, filename, false);
-			string ctags_kinds = "--C++-kinds=+u";
+			string ctags_kinds = "--C++-kinds=+px";
 			
-			if (PropertyService.Get<bool> ("CBinding.ParseLocalVariables", false))
+			if (PropertyService.Get<bool> ("CBinding.ParseLocalVariables", true))
 				ctags_kinds += "+l";
 			
-			string ctags_options = ctags_kinds + " --fields=+a-f+S --language-force=C++ --excmd=pattern -f - '" + filename + "' " + string.Join (" ", headers);
+			// Maybe we should only ask for locals for 'local' files? (not external #includes?)
+			string ctags_options = ctags_kinds + " --fields=+aStisk-fz --language-force=C++ --excmd=number --line-directives=yes -f - '" + filename + "'";// " + string.Join (" ", headers);
 			
 			string[] system_headers = diff (Headers (project, filename, true), headers);
 			
+			string ctags_output = string.Empty;
+
 			ProcessWrapper p = null;
 			System.IO.StringWriter output = null, error = null;
-			string ctags_output = string.Empty;
 			try {
 				output = new System.IO.StringWriter ();
 				error = new System.IO.StringWriter ();
-				p = Runtime.ProcessService.StartProcess ("ctags", ctags_options, null, output, error, null);
+				
+				p = Runtime.ProcessService.StartProcess ("ctags", ctags_options, project.BaseDirectory, output, error, null);
 				p.WaitForOutput (10000);
 				if (p.ExitCode != 0) {
 					LoggingService.LogError ("Ctags did not successfully populate the tags database from '{0}' within ten seconds.\nError output: {1}", filename, error.ToString ());
@@ -481,9 +497,8 @@ namespace CBinding.Parser
 		
 		private Tag ParseTag (string tagEntry)
 		{
-			int i1, i2;
 			string file;
-			string pattern;
+			UInt64 line;
 			string name;
 			string tagField;
 			TagKind kind;
@@ -494,30 +509,23 @@ namespace CBinding.Parser
 			string _union = null;
 			string _enum = null;
 			string signature = null;
-			char delimiter;
 			
+			int i1 = tagEntry.IndexOf ('\t');
 			name = tagEntry.Substring (0, tagEntry.IndexOf ('\t'));
 			
-			i1 = tagEntry.IndexOf ('\t') + 1;
-			i2 = tagEntry.IndexOf ('\t', i1);
-			
+			i1 += 1;
+			int i2 = tagEntry.IndexOf ('\t', i1);
 			file = tagEntry.Substring (i1, i2 - i1);
 			
-			delimiter = tagEntry[i2 + 1];
+			i1 = i2 + 1;
+			i2 = tagEntry.IndexOf (";\"", i1);
+			line = UInt64.Parse(tagEntry.Substring (i1, i2 - i1));
+
+			i1 = i2 + 3;	
+			kind = (TagKind)tagEntry[i1];
 			
-			i1 = i2 + 2;
-			i2 = tagEntry.IndexOf (delimiter, i1) - 1;
-			
-			// apparentlty sometimes ctags will create faulty tags, make sure this is not one of them
-			if (i2 < 0 || i1 < 0)
-				return null;
-			
-			pattern = tagEntry.Substring (i1 + 1, i2 - i1 - 1);
-			
-			tagField = tagEntry.Substring (i2 + 5);
-			
-			// parse tag field
-			kind = (TagKind)tagField[0];
+			i1 += 2;
+			tagField = (tagEntry.Length > i1? tagField = tagEntry.Substring(i1) : String.Empty);
 			
 			string[] fields = tagField.Split ('\t');
 			int index;
@@ -531,35 +539,35 @@ namespace CBinding.Parser
 					string val = field.Substring (index + 1);
 					
 					switch (key) {
-					case "access":
-						try {
-							access = (AccessModifier)System.Enum.Parse (typeof(AccessModifier), val, true);
-						} catch (ArgumentException) {
-						}
-						break;
-					case "class":
-						_class = val;
-						break;
-					case "namespace":
-						_namespace = val;
-						break;
-					case "struct":
-						_struct = val;
-						break;
-					case "union":
-						_union = val;
-						break;
-					case "enum":
-						_enum = val;
-						break;
-					case "signature":
-						signature = val;
-						break;
+						case "access":
+							try {
+								access = (AccessModifier)System.Enum.Parse (typeof(AccessModifier), val, true);
+							} catch (ArgumentException) {
+							}
+							break;
+						case "class":
+							_class = val;
+							break;
+						case "namespace":
+							_namespace = val;
+							break;
+						case "struct":
+							_struct = val;
+							break;
+						case "union":
+							_union = val;
+							break;
+						case "enum":
+							_enum = val;
+							break;
+						case "signature":
+							signature = val;
+							break;
 					}
 				}
 			}
 			
-			return new Tag (name, file, pattern, kind, access, _class, _namespace, _struct, _union, _enum, signature);
+			return new Tag (name, file, line, kind, access, _class, _namespace, _struct, _union, _enum, signature);
 		}
 		
 		Tag BinarySearch (string[] ctags_lines, TagKind kind, string name)

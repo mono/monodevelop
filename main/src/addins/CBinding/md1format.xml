@@ -12,6 +12,8 @@
 		<ItemProperty member="includes" scope="*" name="Include" valueType="System.String"/>
 		<ItemProperty member="libpaths" name="LibPaths"/>
 		<ItemProperty member="libpaths" scope="*" name="LibPath" valueType="System.String"/>
+		<ItemProperty member="libs" name="Libs"/>
+		<ItemProperty member="libs" scope="*" name="Lib" valueType="System.String"/>
 		<ItemProperty member="warning_level" name="CodeGeneration/WarningLevel"/>
 		<ItemProperty member="warnings_as_errors" name="CodeGeneration/WarningsAsErrors"/>
 		<ItemProperty member="optimization" name="CodeGeneration/OptimizationLevel"/>

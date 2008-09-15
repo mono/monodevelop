@@ -2,10 +2,10 @@
 <stetic-interface>
   <configuration>
     <images-root-path>..</images-root-path>
-    <target-gtk-version>2.8.3</target-gtk-version>
   </configuration>
   <import>
     <widget-library name="../../../../build/bin/MonoDevelop.Components.dll" />
+    <widget-library name="../../../../build/bin/MonoDevelop.Core.Gui.dll" />
     <widget-library name="../../../../build/bin/MonoDevelop.Ide.dll" />
     <widget-library name="../../../../build/bin/MonoDevelop.Projects.Gui.dll" />
     <widget-library name="../../../../build/AddIns/MonoDevelop.Deployment/MonoDevelop.Deployment.dll" />
@@ -18,7 +18,7 @@
       <widget class="Gtk.Notebook" id="notebook1">
         <property name="MemberName" />
         <property name="CanFocus">True</property>
-        <property name="CurrentPage">0</property>
+        <property name="CurrentPage">2</property>
         <child>
           <widget class="Gtk.VBox" id="vbox6">
             <property name="MemberName" />

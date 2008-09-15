@@ -49,24 +49,10 @@ namespace CBinding.Navigation
 		public override void ActivateItem ()
 		{
 			LanguageItem item = (LanguageItem)CurrentNode.DataItem;
-			
 			Document doc = IdeApp.Workbench.OpenDocument (item.File);
+			//bool isMacro = item is Macro;
 			
-			int lineNum = 0;
-			string line;
-			bool isMacro = item is Macro;
-			StringReader reader = new StringReader (doc.TextEditor.Text);
-			
-			while ((line = reader.ReadLine ()) != null) {
-				lineNum++;
-				
-				if (line.Equals (item.Pattern) || (isMacro && line.StartsWith (item.Pattern))) {
-					doc.TextEditor.JumpTo (lineNum, line.Length + 1);
-					break;
-				}
-			}
-			
-			reader.Close ();
+			doc.TextEditor.JumpTo((int)item.Line, 0); // TODO: get column?
 		}
 	}
 }

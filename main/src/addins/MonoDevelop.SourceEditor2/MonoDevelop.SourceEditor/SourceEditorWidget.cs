@@ -666,6 +666,7 @@ namespace MonoDevelop.SourceEditor
 				searchAndReplaceWidget = null;
 				result = true;
 			}
+			
 			if (gotoLineNumberWidget != null) {
 				if (gotoLineNumberWidget.Parent != null)
 					this.Remove (gotoLineNumberWidget);
@@ -677,6 +678,7 @@ namespace MonoDevelop.SourceEditor
 				this.textEditor.HighlightSearchPattern = false;
 			if (this.splittedTextEditor != null) 
 				this.splittedTextEditor.HighlightSearchPattern = false;
+			
 			if (!isDisposed)
 				ResetFocusChain ();
 			return result;
@@ -738,7 +740,7 @@ namespace MonoDevelop.SourceEditor
 				searchAndReplaceWidget = new SearchAndReplaceWidget (this);
 				this.PackEnd (searchAndReplaceWidget);
 				this.SetChildPacking (searchAndReplaceWidget, false, false, CHILD_PADDING, PackType.End);
-				searchAndReplaceWidget.ShowAll ();
+		//		searchAndReplaceWidget.ShowAll ();
 				this.textEditor.HighlightSearchPattern = true;
 				if (this.splittedTextEditor != null) 
 					this.splittedTextEditor.HighlightSearchPattern = true;

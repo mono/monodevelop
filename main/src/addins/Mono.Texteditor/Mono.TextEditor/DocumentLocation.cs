@@ -62,6 +62,7 @@ namespace Mono.TextEditor
 		
 		public DocumentLocation (int line, int column)
 		{
+			
 			this.line = line;
 			this.column = column;
 		}

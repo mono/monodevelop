@@ -3,6 +3,7 @@
 //
 // Authors:
 //   Marcos David Marin Amador <MarcosMarin@gmail.com>
+//   Mitchell Wheeler <mitchell.wheeler@gmail.com>
 //
 // Copyright (C) 2007 Marcos David Marin Amador
 //
@@ -44,27 +45,32 @@ namespace CBinding
 		{
 			this.Build();
 			
-			Gtk.FileFilter libs = new Gtk.FileFilter ();
+			// TODO: Add different library types depending on the current platform...
+			Gtk.FileFilter static_libs = new Gtk.FileFilter ();
+			Gtk.FileFilter shared_libs = new Gtk.FileFilter ();
 			Gtk.FileFilter all = new Gtk.FileFilter ();
+
+			static_libs.AddPattern ("*.a");
+			static_libs.Name = "Static Library";
 			
-			libs.AddPattern ("*.a");
-			libs.Name = "Library";
+			shared_libs.AddPattern ("*.so");
+			shared_libs.Name = "Dynamic Library";
 			
 			all.AddPattern ("*.*");
 			all.Name = "All Files";
 			
-			file_chooser_widget.AddFilter (libs);
+			file_chooser_widget.AddFilter (static_libs);
+			file_chooser_widget.AddFilter (shared_libs);
 			file_chooser_widget.AddFilter (all);
+
+			// TODO: This is platform specific... the C Binding should have a global list of 'standard' library dirs...
 			file_chooser_widget.SetCurrentFolder ("/usr/lib");
 		}
 		
 		private void OnOkButtonClick (object sender, EventArgs e)
 		{
-			lib = System.IO.Path.GetFileNameWithoutExtension (
-				file_chooser_widget.Filename);
-			
-			if (lib.StartsWith ("lib"))
-				lib = lib.Remove (0, 3);
+			lib = file_chooser_widget.Filename;
+			// TODO: Check if the library is part of the C Binding's 'global' library paths (eg: /usr/lib)
 			
 			Destroy ();
 		}

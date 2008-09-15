@@ -82,12 +82,12 @@ namespace CBinding
 		{
 			int line, column;
 			Editor.GetLineColumnFromPosition (Editor.CursorPosition, out line, out column);
-			string lineText = Editor.GetLineText (line);
+			string lineText = Editor.GetLineText (line).TrimEnd();
 			
 			// smart formatting strategy
 			if (TextEditorProperties.IndentStyle == IndentStyle.Smart) {
 				if (key == Gdk.Key.Return) {
-					if (lineText.TrimEnd ().EndsWith ("{")) {
+					if (lineText.EndsWith ("{")) {
 						Editor.InsertText (Editor.CursorPosition, 
 						    "\n" + TextEditorProperties.IndentString + GetIndent (Editor, line));
 						return false;
@@ -107,7 +107,7 @@ namespace CBinding
 		public override ICompletionDataProvider HandleCodeCompletion (
 		    ICodeCompletionContext completionContext, char completionChar)
 		{
-			string lineText = Editor.GetLineText (completionContext.TriggerLine + 1);
+			string lineText = Editor.GetLineText (completionContext.TriggerLine + 1).TrimEnd();
 			
 			// If the line ends with a matched extension, invoke its handler
 			foreach (KeyValuePair<string, GetMembersForExtension> pair in completionExtensions) {
@@ -133,10 +133,10 @@ namespace CBinding
 			int pos = completionContext.TriggerOffset;
 			int line, column;
 			Editor.GetLineColumnFromPosition (Editor.CursorPosition, out line, out column);
-			string lineText = Editor.GetLineText (line);
+			string lineText = Editor.GetLineText (line).Trim();
 			
 			foreach (KeyValuePair<string, GetMembersForExtension> pair in completionExtensions) {
-				if(lineText.Contains (pair.Key)) {
+				if(lineText.EndsWith(pair.Key)) {
 					return HandleCodeCompletion (completionContext, Editor.GetCharAt (pos));
 				}
 			}
