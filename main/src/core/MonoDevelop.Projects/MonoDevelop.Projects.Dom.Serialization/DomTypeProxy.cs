@@ -55,6 +55,10 @@ namespace MonoDevelop.Projects.Dom.Serialization
 							base.eventCount       = wrappedType.EventCount;
 							base.innerTypeCount   = wrappedType.InnerTypeCount;
 						}
+//						System.Console.WriteLine("read type:" + wrappedType);
+						foreach (object o in wrappedType.Members) {
+							System.Console.WriteLine(o);
+						}
 					} catch (Exception ex) {
 						MonoDevelop.Core.LoggingService.LogError (ex.ToString ());
 					}

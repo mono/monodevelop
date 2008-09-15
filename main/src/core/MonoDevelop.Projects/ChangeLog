@@ -1,5 +1,11 @@
 2008-09-15  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.Projects.Dom/ResolveResult.cs,
+	  MonoDevelop.Projects.Dom.Serialization/DomTypeProxy.cs: worked on
+	  resolve result bug.
+
+2008-09-15  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.Projects.Dom.Output/OutputFlags.cs,
 	  MonoDevelop.Projects.Dom.Output/Ambience.cs: Ambiences now take
 	  care of the IncludeGenerics flag.

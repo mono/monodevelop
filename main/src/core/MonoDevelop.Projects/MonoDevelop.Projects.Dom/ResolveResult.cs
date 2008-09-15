@@ -231,10 +231,11 @@ namespace MonoDevelop.Projects.Dom
 				return;
 			}
 			foreach (IType curType in dom.GetInheritanceTree (type)) {
+			//	System.Console.WriteLine("curType:" + curType + " /" + curType.FieldCount);
 				foreach (IMember member in curType.Members) {
 					if (member is IMethod && ((IMethod)member).IsConstructor)
 						continue;
-					if (member is IType || !(showStatic ^ member.IsStatic))
+					if (member is IType || !(showStatic ^ (member.IsStatic || member.IsConst)))
 						result.Add (member);
 				}
 			}
