@@ -168,9 +168,9 @@ namespace MonoDevelop.SourceEditor
 			ResetFocusChain ();
 			
 			UpdateLineCol ();
-			
 			ProjectDomService.ParsedDocumentUpdated += OnParseInformationChanged;
 //			this.IsClassBrowserVisible = SourceEditorOptions.Options.EnableQuickFinder;
+
 		}
 
 		public void SetMime (string mimeType)
@@ -261,6 +261,10 @@ namespace MonoDevelop.SourceEditor
 			protected override void InnerRun ()
 			{
 				try {
+					if (widget.classBrowser != null)
+						widget.classBrowser.UpdateCompilationUnit (widget.parsedDocument);
+			
+				
 					if (SourceEditorOptions.Options.ShowFoldMargin && widget.parsedDocument != null) {
 						List<FoldSegment> foldSegments = new List<FoldSegment> ();
 						
@@ -337,21 +341,27 @@ namespace MonoDevelop.SourceEditor
 		{
 			if (this.isDisposed || args == null || args.ParsedDocument == null || this.view == null  || this.view.ContentName != args.FileName)
 				return;
-			
+			/*
 			this.parsedDocument = args.ParsedDocument;
-			
-			if (classBrowser != null)
-				classBrowser.UpdateCompilationUnit (this.parsedDocument);
 			
 			MonoDevelop.SourceEditor.ExtensibleTextEditor editor = this.TextEditor;
 			if (editor == null || editor.Document == null)
-				return;
-			lock (syncObject) {
-				parsedDocument = args.ParsedDocument;
-				StopParseInfoThread ();
-				if (parsedDocument != null) {
-					parseInformationUpdaterWorkerThread = new ParseInformationUpdaterWorkerThread (this);
-					parseInformationUpdaterWorkerThread.Start ();
+				return;*/
+			ParsedDocument = args.ParsedDocument;
+		}
+		
+		public ParsedDocument ParsedDocument  {
+			get {
+				return this.parsedDocument;
+			}
+			set {
+				this.parsedDocument = value;
+				lock (syncObject) {
+					StopParseInfoThread ();
+					if (parsedDocument != null) {
+						parseInformationUpdaterWorkerThread = new ParseInformationUpdaterWorkerThread (this);
+						parseInformationUpdaterWorkerThread.Start ();
+					}
 				}
 			}
 		}

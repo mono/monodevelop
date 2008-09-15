@@ -236,6 +236,7 @@ namespace MonoDevelop.SourceEditor
 			widget.SetMime (Document.MimeType);
 			Document.Text = File.ReadAllText (fileName);
 			ContentName = fileName;
+			widget.ParsedDocument = ProjectDomService.GetParsedDocument (fileName);
 //			InitializeFormatter ();
 			
 			UpdateExecutionLocation ();

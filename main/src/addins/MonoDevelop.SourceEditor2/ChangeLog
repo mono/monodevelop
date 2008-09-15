@@ -1,3 +1,9 @@
+2008-09-15  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.SourceEditor/SourceEditorWidget.cs,
+	  MonoDevelop.SourceEditor/SourceEditorView.cs: Fixed bug in source
+	  editor caused by an change in the parser service update behavior.
+
 2008-09-12  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* gtk-gui/MonoDevelop.SourceEditor.OptionPanels.HighlightingPanel.cs,
