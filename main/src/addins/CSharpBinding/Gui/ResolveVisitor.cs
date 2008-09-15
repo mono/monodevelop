@@ -150,6 +150,8 @@ namespace MonoDevelop.CSharpBinding
 					}
 				}
 			}
+			if (result.ResolvedType != null && result.ResolvedType.GenericArguments.Count > 0)
+				return result.ResolvedType.GenericArguments[0];
 			return result;
 		}
 		
