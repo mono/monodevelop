@@ -1,5 +1,9 @@
 2008-09-15  Mike Krüger <mkrueger@novell.com> 
 
+	* Gui/CSharpTextEditorCompletion.cs: fixed code completion bug.
+
+2008-09-15  Mike Krüger <mkrueger@novell.com> 
+
 	* Gui/CSharpTextEditorCompletion.cs: added typeof ( context.
 
 2008-09-15  Mike Krüger <mkrueger@novell.com> 

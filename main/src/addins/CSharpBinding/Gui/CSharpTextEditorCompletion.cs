@@ -179,7 +179,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 				                                                                                Editor,
 				                                                                                Document.FileName);
 				resolveResult = resolver.Resolve (result, new DomLocation (Editor.CursorLine, Editor.CursorColumn - 1));
-				System.Console.WriteLine(resolver.ResolvedExpression );
+				
 				if (resolveResult != null && resolver.ResolvedExpression is ICSharpCode.NRefactory.Ast.TypeOfExpression) {
 					CodeCompletionDataProvider provider = new CodeCompletionDataProvider (null, GetAmbience ());
 					List<string> namespaceList = new List<string> ();
@@ -683,7 +683,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 				AddPrimitiveTypes (result);
 				resolver.AddAccessibleCodeCompletionData (result);
 			}
-			if (resolver.CallingMember is IMethod) {
+			if (resolver.CallingMember is IMethod && ((IMethod)resolver.CallingMember).GenericParameters != null) {
 				foreach (IReturnType returnType in ((IMethod)resolver.CallingMember).GenericParameters) {
 					result.AddCompletionData (new CodeCompletionData (returnType.Name, "md-literal"));
 				}
