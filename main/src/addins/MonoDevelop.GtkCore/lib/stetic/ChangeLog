@@ -1,3 +1,8 @@
+2008-09-15  Mike Kestner <mkestner@novell.com> 
+
+	* libstetic/ErrorWidget.cs: add Project filename to the generation
+	warning messages.  Fixes #373244.
+
 2008-08-19  Mike Kestner <mkestner@novell.com> 
 
 	* libstetic/wrapper/ActionTree.cs: use field references for uim

@@ -96,9 +96,9 @@ namespace Stetic
 			ErrorWidget ew = (ErrorWidget) Wrapped;
 			string msg;
 			if (ew.Exception != null)
-				msg = "Could not generate code for an invalid widget. The widget failed to load: " + ew.Exception.Message + ". The generated code may be invalid.";
+				msg = Project.FileName + ": Could not generate code for an invalid widget. The widget failed to load: " + ew.Exception.Message + ". The generated code may be invalid.";
 			else
-				msg = "Could not generate code for widgets of type: " + ew.ClassName + ". The widget could not be found in any referenced library. The generated code may be invalid.";
+				msg = Project.FileName + ": Could not generate code for widgets of type: " + ew.ClassName + ". The widget could not be found in any referenced library. The generated code may be invalid.";
 			
 			if (ctx.Options.FailForUnknownWidgets) {
 				throw new InvalidOperationException (msg);
