@@ -1,5 +1,9 @@
 2008-09-15  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.Projects.Dom/DomMethod.cs: fixed regression 324907.
+
+2008-09-15  Mike Krüger <mkrueger@novell.com> 
+
 	* MonoDevelop.Projects.Dom/ResolveResult.cs,
 	  MonoDevelop.Projects.Dom.Serialization/DomTypeProxy.cs: worked on
 	  resolve result bug.

@@ -211,7 +211,7 @@ namespace MonoDevelop.Projects.Dom
 		{
 			DomMethod result = new DomMethod ();
 			AbstractMember.Resolve (source, result, typeResolver);
-			
+			result.MethodModifier = source.MethodModifier;
 			if (source.Parameters != null) {
 				foreach (IParameter parameter in source.Parameters)
 					result.Add (DomParameter.Resolve (parameter, typeResolver));
