@@ -218,21 +218,23 @@ namespace MonoDevelop.CSharpBinding
 					result.Append (Format (NormalizeTypeName (returnType.Name)));
 				}
 			}
-			if (returnType.GenericArguments != null && returnType.GenericArguments.Count > 0) {
-				if (EmitMarkup (flags)) {
-					result.Append ("&lt;");
-				} else {
-					result.Append ('<');
-				}
-				for (int i = 0; i < returnType.GenericArguments.Count; i++) {
-					if (i > 0)
-						result.Append (", ");
-					result.Append (GetString (returnType.GenericArguments[i], flags));
-				}
-				if (EmitMarkup (flags)) {
-					result.Append ("&gt;");
-				} else {
-					result.Append ('>');
+			if (IncludeGenerics (flags)) {
+				if (returnType.GenericArguments != null && returnType.GenericArguments.Count > 0) {
+					if (EmitMarkup (flags)) {
+						result.Append ("&lt;");
+					} else {
+						result.Append ('<');
+					}
+					for (int i = 0; i < returnType.GenericArguments.Count; i++) {
+						if (i > 0)
+							result.Append (", ");
+						result.Append (GetString (returnType.GenericArguments[i], flags));
+					}
+					if (EmitMarkup (flags)) {
+						result.Append ("&gt;");
+					} else {
+						result.Append ('>');
+					}
 				}
 			}
 			return result.ToString ();
@@ -331,7 +333,7 @@ namespace MonoDevelop.CSharpBinding
 				result.Append (Format (NormalizeTypeName (type.Name)));
 			}
 			
-			if (type.TypeParameters != null && type.TypeParameters.Count > 0) {
+			if (IncludeGenerics (flags) && type.TypeParameters != null && type.TypeParameters.Count > 0) {
 				result.Append ('<');
 				for (int i = 0; i < type.TypeParameters.Count; i++) {
 					if (i > 0)
