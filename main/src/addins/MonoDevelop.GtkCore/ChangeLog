@@ -1,3 +1,9 @@
+2008-09-15  Mike Kestner <mkestner@novell.com> 
+
+	* MonoDevelop.GtkCode.GuiBuilder/GtkProjectServiceExtension.cs:
+	add the project stetic file to any generation warnings produced.
+	Fixes #373244.
+
 2008-09-12  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* lib/libsteticui.mdp, lib/libstetic.mdp, lib/gtk-gui/generated.cs,
