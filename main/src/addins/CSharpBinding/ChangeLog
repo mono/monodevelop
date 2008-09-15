@@ -1,5 +1,10 @@
 2008-09-15  Mike Krüger <mkrueger@novell.com> 
 
+	* Gui/CSharpTextEditorCompletion.cs: Fixed offset for method
+	  completion.
+
+2008-09-15  Mike Krüger <mkrueger@novell.com> 
+
 	* Gui/ResolveVisitor.cs: fixed regression 323317.
 
 2008-09-15  Mike Krüger <mkrueger@novell.com> 

@@ -270,7 +270,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 		{
 			if (dom == null)
 				return null;
-			ExpressionResult result = FindExpression (dom , -2);
+			ExpressionResult result = FindExpression (dom , -1);
 			if (result == null)
 				return null;
 			NRefactoryResolver resolver = new MonoDevelop.CSharpBinding.NRefactoryResolver (dom, Document.CompilationUnit,
