@@ -236,16 +236,23 @@ namespace MonoDevelop.CSharpBinding
 		
 		public ResolveResult ResolveExpression (Expression expr, DomLocation resolvePosition)
 		{
+			this.expr = expr;
 			this.SetupResolver (resolvePosition);
 			ResolveVisitor visitor = new ResolveVisitor (this);
 			ResolveResult result = visitor.Resolve (expr);
 			return result;
 		}
 		
+		Expression expr;
+		public Expression ResolvedExpression {
+			get {
+				return expr;
+			}
+		}
 		public ResolveResult Resolve (ExpressionResult expressionResult, DomLocation resolvePosition)
 		{
 			this.SetupResolver (resolvePosition);
-			Expression expr = ParseExpression (expressionResult);
+			expr = ParseExpression (expressionResult);
 			if (expr == null) {
 				System.Console.WriteLine("Can't parse expression");
 				return null;

@@ -129,8 +129,9 @@ namespace MonoDevelop.CSharpBinding.Gui
 				                                                                                ICSharpCode.NRefactory.SupportedLanguage.CSharp,
 				                                                                                Editor,
 				                                                                                Document.FileName);
-				
 				ResolveResult resolveResult = resolver.Resolve (result, new DomLocation (Editor.CursorLine, Editor.CursorColumn));
+				if (resolver.ResolvedExpression is ICSharpCode.NRefactory.Ast.PrimitiveExpression)
+					return null;
 				return CreateCompletionData (resolveResult, result);
 			case '#':
 				if (stateTracker.Engine.IsInsidePreprocessorDirective) 
