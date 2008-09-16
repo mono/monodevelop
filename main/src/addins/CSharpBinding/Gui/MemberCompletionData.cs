@@ -132,6 +132,7 @@ namespace MonoDevelop.CSharpBinding
 			System.IO.StringReader reader = new System.IO.StringReader("<docroot>" + doc + "</docroot>");
 			XmlTextReader xml   = new XmlTextReader(reader);
 			StringBuilder ret   = new StringBuilder(70);
+			int lastLinePos = -1;
 			
 			try {
 				xml.Read();
@@ -158,16 +159,35 @@ namespace MonoDevelop.CSharpBinding
 							ret.Append(xml["name"].Trim() + ": ");
 						} else if (elname == "value") {
 							ret.Append("Value: ");
-						}
+						} else if (elname == "para")
+							continue; // Keep new line flag
+						lastLinePos = -1;
 					} else if (xml.NodeType == XmlNodeType.EndElement) {
 						string elname = xml.Name.ToLower();
 						if (elname == "para" || elname == "param") {
-							ret.Append("\n");
+							if (lastLinePos == -1)
+								lastLinePos = ret.Length;
+							ret.Append("<span size=\"2000\">\n\n</span>");
 						}
 					} else if (xml.NodeType == XmlNodeType.Text) {
-						ret.Append(xml.Value);
+						string txt = xml.Value.Replace ("\r","").Replace ("\n"," ");
+						if (lastLinePos != -1)
+							txt = txt.TrimStart (' ');
+						
+						// Remove duplcate spaces.
+						int len;
+						do {
+							len = txt.Length;
+							txt = txt.Replace ("  ", " ");
+						} while (len != txt.Length);
+						
+						txt = GLib.Markup.EscapeText (txt);
+						ret.Append(txt);
+						lastLinePos = -1;
 					}
 				} while (xml.Read ());
+				if (lastLinePos != -1)
+					ret.Remove (lastLinePos, ret.Length - lastLinePos);
 			} catch (Exception ex) {
 				LoggingService.LogError (ex.ToString ());
 				return doc;
