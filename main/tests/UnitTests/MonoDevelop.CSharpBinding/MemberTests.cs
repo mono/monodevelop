@@ -93,15 +93,19 @@ namespace MonoDevelop.CSharpBinding.Tests
 		public void TestConstructor (IParser parser)
 		{
 			ICompilationUnit unit = parser.Parse ("a.cs", 
-@"class AClass {
-     AClass () {}
+@"public abstract class BaseClass {
+     BaseClass () {}
+  	protected BaseClass(int id)
+    {
+    }     
 }").CompilationUnit;
 			Assert.AreEqual (1, unit.Types.Count);
 			IType type = unit.Types[0];
 			
-			Assert.AreEqual (1, type.ConstructorCount);
+			Assert.AreEqual (2, type.ConstructorCount);
 			List<IMethod> methods = new List<IMethod> (type.Methods);
 			Assert.IsTrue (methods[0].IsConstructor);
+			Assert.IsTrue (methods[1].IsConstructor);
 		}
 		
 		[Test()]

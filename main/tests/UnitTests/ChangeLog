@@ -1,3 +1,8 @@
+2008-09-16  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.CSharpBinding/MemberTests.cs: Extended test constructor
+	  test.
+
 2008-09-10  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.CSharpBinding/MemberTests.cs: Added member unit tests.
