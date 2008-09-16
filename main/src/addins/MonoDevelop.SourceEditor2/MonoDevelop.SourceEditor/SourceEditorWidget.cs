@@ -261,10 +261,11 @@ namespace MonoDevelop.SourceEditor
 			protected override void InnerRun ()
 			{
 				try {
-					if (widget.classBrowser != null)
-						widget.classBrowser.UpdateCompilationUnit (widget.parsedDocument);
-			
 				
+/* Is unneccessary: (because position is changed when typing)
+					if (widget.classBrowser != null)
+						widget.classBrowser.UpdateCompilationUnit (widget.parsedDocument);*/
+						
 					if (SourceEditorOptions.Options.ShowFoldMargin && widget.parsedDocument != null) {
 						List<FoldSegment> foldSegments = new List<FoldSegment> ();
 						
