@@ -56,7 +56,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 				}
 
 				string[] parts = value.Split (newline, 2);
-				headlabel.Markup = parts[0].Trim (whitespace);
+				headlabel.Markup = "<b>" + parts[0].Trim (whitespace) + "</b>";
 				bodylabel.Markup = parts.Length == 2 ?
 					"<span size=\"smaller\">" + parts[1].Trim (whitespace) + "</span>" : String.Empty;
 
@@ -132,7 +132,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 			} else {
 				headlabel.MaxWidth = -1;
 			}
-			bodylabel.MaxWidth = headlabel.RealWidth;
+			bodylabel.MaxWidth = headlabel.RealWidth > 350 ? headlabel.RealWidth : 350;
 			QueueResize ();
 		}
 
