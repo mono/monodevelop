@@ -536,7 +536,8 @@ namespace MonoDevelop.Components.Docking
 		protected override void ForAll (bool include_internals, Callback callback)
 		{
 			base.ForAll (include_internals, callback);
-			foreach (DockFrameTopLevel child in topLevels)
+			List<DockFrameTopLevel> clone = new List<DockFrameTopLevel> (topLevels);
+			foreach (DockFrameTopLevel child in clone)
 				callback (child);
 		}
 	}
