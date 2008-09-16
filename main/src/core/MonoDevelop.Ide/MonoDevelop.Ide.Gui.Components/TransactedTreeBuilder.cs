@@ -165,8 +165,10 @@ namespace MonoDevelop.Ide.Gui.Components
 					node = (TreeNode) position._node;
 					return !node.Deleted;
 				}
-				else
+				else {
+					node = null;
 					return navigator.MoveToPosition (position) && CheckNode ();
+				}
 			}
 	
 			public bool MoveToParent ()
@@ -175,8 +177,12 @@ namespace MonoDevelop.Ide.Gui.Components
 					node = node.Parent;
 					return true;
 				}
+				NodePosition oldPos = CurrentPosition;
 				InitNavigator ();
-				return navigator.MoveToParent () && CheckNode ();
+				if (navigator.MoveToParent () && CheckNode ())
+					return true;
+				MoveToPosition (oldPos);
+				return false;
 			}
 	
 			public bool MoveToParent (Type type)
@@ -212,12 +218,18 @@ namespace MonoDevelop.Ide.Gui.Components
 				if (node != null && (node.Reset || !node.HasIter))
 					return false;
 				
+				NodePosition oldPos = CurrentPosition;
 				InitNavigator ();
-				if (!navigator.MoveToFirstChild ())
+				if (!navigator.MoveToFirstChild ()) {
+					MoveToPosition (oldPos);
 					return false;
+				}
 				if (CheckNode ())
 					return true;
-				return MoveNext ();
+				if (MoveNext ())
+					return true;
+				MoveToPosition (oldPos);
+				return false;
 			}
 	
 			public bool MoveToChild (string name, Type dataType)
@@ -312,11 +324,13 @@ namespace MonoDevelop.Ide.Gui.Components
 					if (CheckNodeAndAncestors ())
 						return true;
 				}
+				NodePosition oldPos = CurrentPosition;
 				InitNavigator ();
 				while (navigator.MoveToNextObject ()) {
 					if (CheckNodeAndAncestors ())
 						return true;
 				}
+				MoveToPosition (oldPos);
 				return false;
 			}
 
@@ -345,12 +359,14 @@ namespace MonoDevelop.Ide.Gui.Components
 				if (node != null && !node.HasIter)
 					return false;
 
+				NodePosition oldPos = CurrentPosition;
 				InitNavigator ();
 
 				Gtk.TreeIter piter = navigator.CurrentPosition._iter;
-				
-				if (!navigator.MoveToObject (dataObject))
+				if (!navigator.MoveToObject (dataObject)) {
+					MoveToPosition (oldPos);
 					return false;
+				}
 
 				do {
 					if (!CheckNodeAndAncestors ())
@@ -359,8 +375,7 @@ namespace MonoDevelop.Ide.Gui.Components
 						return true;
 				} while (navigator.MoveToNextObject ());
 
-				navigator.MoveToIter (piter);
-				CheckNode ();
+				MoveToPosition (oldPos);
 				return false;
 			}
 			
@@ -421,8 +436,10 @@ namespace MonoDevelop.Ide.Gui.Components
 					node.Filled = !TreeBuilder.HasChildNodes (this, node.BuilderChain, node.DataItem);
 					return;
 				}
-				
+
+				NodePosition pos = CurrentPosition;
 				NodeState ns = SaveState ();
+				MoveToPosition (pos);
 				RestoreState (ns);
 			}
 

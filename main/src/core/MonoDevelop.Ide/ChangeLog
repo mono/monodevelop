@@ -1,3 +1,9 @@
+2008-09-16  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Gui.Components/TransactedTreeBuilder.cs: Make sure
+	  the current navigator position is restored when a move operation
+	  fails.
+
 2008-09-15  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Ide.Gui/Document.cs: changed document update.
