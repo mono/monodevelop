@@ -1,3 +1,8 @@
+2008-09-16  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Core.Serialization/XmlMapAttributeProvider.cs: Allow
+	  chaining several serialization maps for a type.
+
 2008-09-12  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Core.Collections/ReadOnlyDictionary.cs,
