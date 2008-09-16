@@ -1,3 +1,8 @@
+2008-09-16  Mike Kestner <mkestner@novell.com> 
+
+	* MonoDevelop.Core.Execution/ProcessWrapper.cs: null check to avoid
+	NREs.  Fixes #418650.
+
 2008-09-16  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Core.Serialization/XmlMapAttributeProvider.cs: Allow

@@ -68,7 +68,8 @@ namespace MonoDevelop.Core.Execution
 				OnExited (this, EventArgs.Empty);
 				
 				//call this AFTER the exit event, or the ProcessWrapper may get disposed and abort this thread
-				endEventOut.Set ();
+				if (endEventOut != null)
+					endEventOut.Set ();
 			}
 		}
 		
