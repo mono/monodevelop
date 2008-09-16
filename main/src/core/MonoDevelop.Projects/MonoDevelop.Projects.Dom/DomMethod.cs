@@ -192,7 +192,6 @@ namespace MonoDevelop.Projects.Dom
 				XmlNode node = nodes.Count == 1 ? nodes[0] : FindMatch (nodes);
 				if (node != null) {
 					System.Xml.XmlNode result = node.SelectSingleNode ("Docs");
-					System.Console.Write("done");
 					return result;
 				}
 			}
