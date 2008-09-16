@@ -346,10 +346,10 @@ namespace MonoDevelop.CSharpBinding
 							varType = ResolveLambda (visitor, var.ParentLambdaExpression).ResolvedType;
 						if (var.Initializer != null) 
 							varType = visitor.Resolve (var.Initializer).ResolvedType;
-						varType = ResolveType (varType);
 					} else { 
 						varType = ConvertTypeReference (var.TypeRef);
 					}
+					varType = ResolveType (varType);
 					
 					result = new LocalVariableResolveResult (new LocalVariable (this.CallingMember, identifier, varType, new DomRegion (var.StartPos.Line, var.StartPos.Column, var.EndPos.Line, var.EndPos.Column)), var.IsLoopVariable);
 					result.ResolvedType = varType;
