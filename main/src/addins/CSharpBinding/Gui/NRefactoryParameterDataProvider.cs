@@ -72,10 +72,8 @@ namespace MonoDevelop.CSharpBinding
 			if (resolveResult.CallingType != null) {
 				foreach (IReturnType rt in resolveResult.CallingType.BaseTypes) {
 					IType baseType = resolver.Dom.SearchType (new SearchTypeRequest (resolver.Unit, rt));
-					System.Console.WriteLine("base type:" + baseType + " rt: " + rt);
 					if (baseType != null) {
 						foreach (IMethod method in baseType.Methods) {
-							System.Console.WriteLine(method + "/" + method.IsConstructor + " / " + method.MethodModifier);
 							if (!method.IsConstructor)
 								continue;
 							methods.Add (method);

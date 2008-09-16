@@ -328,8 +328,6 @@ namespace MonoDevelop.CSharpBinding.Gui
 		
 		public ICompletionDataProvider HandleKeywordCompletion (ExpressionResult result, int wordStart, string word)
 		{
-			System.Console.WriteLine(result.ExpressionContext + "word:" + word);
-				
 			switch (word) {
 			case "namespace":
 			case "using":
@@ -390,7 +388,6 @@ namespace MonoDevelop.CSharpBinding.Gui
 				return null;
 			case "new":
 				ExpressionContext exactContext = new NewCSharpExpressionFinder (dom).FindExactContextForNewCompletion(Editor, Document.CompilationUnit, Document.FileName);
-				System.Console.WriteLine(exactContext);
 				if (exactContext is ExpressionContext.TypeExpressionContext)
 					return CreateTypeCompletionData (exactContext, ((ExpressionContext.TypeExpressionContext)exactContext).Type);
 				return CreateTypeCompletionData (exactContext, null);
@@ -528,7 +525,6 @@ namespace MonoDevelop.CSharpBinding.Gui
 				return null;
 			IEnumerable<object> objects = resolveResult.CreateResolveResult (dom, resolver != null ? resolver.CallingMember : null);
 			CompletionDataCollector col = new CompletionDataCollector (dom, Document.CompilationUnit);
-			System.Console.WriteLine(expressionResult.ExpressionContext);
 			if (objects != null) {
 				foreach (object obj in objects) {
 					if (expressionResult.ExpressionContext != null && expressionResult.ExpressionContext.FilterEntry (obj))
