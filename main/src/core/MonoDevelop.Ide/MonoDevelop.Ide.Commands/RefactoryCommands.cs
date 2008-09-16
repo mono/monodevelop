@@ -116,6 +116,7 @@ namespace MonoDevelop.Ide.Commands
 					string itemName = null;
 					if (item is IMember)
 						itemName = ((IMember)item).Name;
+
  					if (item != null && eitem != null && 
 					    (eitem == item || (eitem.Name == itemName && !(eitem is IProperty) && !(eitem is IMethod)))) {
 						// If this occurs, then @item is either its own enclosing item, in
@@ -139,7 +140,7 @@ namespace MonoDevelop.Ide.Commands
 						CommandInfo ci;
 						
 						// Add the selected item
-						if ((ci = BuildRefactoryMenuForItem (ctx, pinfo, eclass, item)) != null) {
+						if ((ci = BuildRefactoryMenuForItem (ctx, pinfo, eclass, item, IsModifiable (item))) != null) {
 							ainfo.Add (ci, null);
 							added = true;
 						}
@@ -147,7 +148,7 @@ namespace MonoDevelop.Ide.Commands
 						if (item is IParameter) {
 							// Add the encompasing method for the previous item in the menu
 							item = ((IParameter) item).DeclaringMember;
-							if (item != null && (ci = BuildRefactoryMenuForItem (ctx, pinfo, null, item)) != null) {
+							if (item != null && (ci = BuildRefactoryMenuForItem (ctx, pinfo, null, item, true)) != null) {
 								ainfo.Add (ci, null);
 								added = true;
 							}
@@ -156,7 +157,7 @@ namespace MonoDevelop.Ide.Commands
 						if (item is IMember && !(eitem != null && eitem is IMember)) {
 							// Add the encompasing class for the previous item in the menu
 							item = ((IMember) item).DeclaringType;
-							if (item != null && (ci = BuildRefactoryMenuForItem (ctx, pinfo, null, item)) != null) {
+							if (item != null && (ci = BuildRefactoryMenuForItem (ctx, pinfo, null, item, IsModifiable (item))) != null) {
 								ainfo.Add (ci, null);
 								added = true;
 							}
@@ -171,6 +172,23 @@ namespace MonoDevelop.Ide.Commands
 						ainfo.AddSeparator ();
 				}
 			}
+		}
+
+		bool IsModifiable (IDomVisitable member)
+		{
+			IType t = member as IType;
+			if (t != null) {
+				if (t.CompilationUnit != null) {
+					ITextBuffer editor = IdeApp.Workbench.ActiveDocument.GetContent <ITextBuffer>();
+					return t.CompilationUnit.FileName == editor.Name;
+				}
+				else
+					return false;
+			}
+			if (member is IMember)
+				return IsModifiable (((IMember)member).DeclaringType);
+			else
+				return false;
 		}
 		
 		// public class Funkadelic : IAwesomeSauce, IRockOn { ...
@@ -205,7 +223,7 @@ namespace MonoDevelop.Ide.Commands
 			return sb.ToString ();
 		}
 		
-		CommandInfo BuildRefactoryMenuForItem (ProjectDom ctx, ICompilationUnit pinfo, IType eclass, IDomVisitable item)
+		CommandInfo BuildRefactoryMenuForItem (ProjectDom ctx, ICompilationUnit pinfo, IType eclass, IDomVisitable item, bool includeModifyCommands)
 		{
 			Refactorer refactorer = new Refactorer (ctx, pinfo, eclass, item, null);
 			CommandInfoSet ciset = new CommandInfoSet ();
@@ -260,7 +278,7 @@ namespace MonoDevelop.Ide.Commands
 				if ((cls.ClassType == ClassType.Class && !cls.IsSealed) || cls.ClassType == ClassType.Interface)
 					ciset.CommandInfos.Add (GettextCatalog.GetString ("Find _derived classes"), new RefactoryOperation (refactorer.FindDerivedClasses));
 
-				if (cls.SourceProject != null && ((cls.ClassType == ClassType.Class) || (cls.ClassType == ClassType.Struct))) {
+				if (cls.SourceProject != null && includeModifyCommands && ((cls.ClassType == ClassType.Class) || (cls.ClassType == ClassType.Struct))) {
 					ciset.CommandInfos.Add (GettextCatalog.GetString ("Encapsulate Fields..."), new RefactoryOperation (refactorer.EncapsulateField));
 					ciset.CommandInfos.Add (GettextCatalog.GetString ("Override/Implement members..."), new RefactoryOperation (refactorer.OverrideOrImplementMembers));
 				}
@@ -274,7 +292,7 @@ namespace MonoDevelop.Ide.Commands
 					// An interface is selected, so just need to provide these 2 submenu items
 					ciset.CommandInfos.Add (GettextCatalog.GetString ("Implement Interface (implicit)"), new RefactoryOperation (refactorer.ImplementImplicitInterface));
 					ciset.CommandInfos.Add (GettextCatalog.GetString ("Implement Interface (explicit)"), new RefactoryOperation (refactorer.ImplementExplicitInterface));
-				} else if (canRename && cls.BaseType != null && cls.ClassType != ClassType.Interface && cls == eclass) {
+				} else if (canRename && includeModifyCommands && cls.BaseType != null && cls.ClassType != ClassType.Interface && cls == eclass) {
 					// Class might have interfaces... offer to implement them
 					CommandInfoSet impset = new CommandInfoSet ();
 					CommandInfoSet expset = new CommandInfoSet ();
@@ -298,7 +316,7 @@ namespace MonoDevelop.Ide.Commands
 						ciset.CommandInfos.Add (expset, null);
 					}
 				}
-			} else if (item is IField) {
+			} else if ((item is IField) && includeModifyCommands) {
 				txt = GettextCatalog.GetString ("Field <b>{0}</b>", itemName);
 				if (canRename)
 					ciset.CommandInfos.Add (GettextCatalog.GetString ("Encapsulate Field..."), new RefactoryOperation (refactorer.EncapsulateField));
@@ -342,7 +360,7 @@ namespace MonoDevelop.Ide.Commands
 		{
 			IType cls = ctx.GetType (className, null, true, true);
 			if (cls != null) {
-				CommandInfo ci = BuildRefactoryMenuForItem (ctx, pinfo, null, cls);
+				CommandInfo ci = BuildRefactoryMenuForItem (ctx, pinfo, null, cls, false);
 				if (ci != null)
 					ciset.CommandInfos.Add (ci, null);
 			}

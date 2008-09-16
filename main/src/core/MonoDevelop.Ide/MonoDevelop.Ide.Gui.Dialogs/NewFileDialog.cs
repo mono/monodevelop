@@ -440,6 +440,9 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 					return;
 				}
 
+				if (project != null)
+					IdeApp.ProjectOperations.Save (project);
+
 				if (OnOked != null)
 					OnOked (null, null);
 				Respond (Gtk.ResponseType.Ok);

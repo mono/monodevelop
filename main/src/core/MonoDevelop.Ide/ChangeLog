@@ -1,3 +1,13 @@
+2008-09-16  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Commands/RefactoryCommands.cs: Don't show refactoring
+	  commands that modify classes unless the refactoring menu is being
+	  shown for the file where the class is implemented. Fixes bug
+	  #402323 - Automatic override/implementation behaves unintuitively.
+	* MonoDevelop.Ide.Gui.Dialogs/NewFileDialog.cs: Save the project after
+	  adding the file. Fixes bug #420919 - Adding New File To Solution Is
+	  *NOT* Included In Next Opening of Solution.
+
 2008-09-16  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Ide.Gui.Content/TextEditorExtension.cs,
