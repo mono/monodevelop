@@ -81,12 +81,13 @@ namespace MonoDevelop.Ide.Gui
 			return (T) GetContent (typeof(T));
 		}
 		
-		internal Document (IWorkbenchWindow window)
+		public Document (IWorkbenchWindow window)
 		{
 			this.window = window;
 			window.Closed += OnClosed;
 			window.ActiveViewContentChanged += OnActiveViewContentChanged;
-			IdeApp.Workspace.ItemRemovedFromSolution += OnEntryRemoved;
+			if (IdeApp.Workspace != null)
+				IdeApp.Workspace.ItemRemovedFromSolution += OnEntryRemoved;
 		}
 		
 		public string FileName {
@@ -332,7 +333,8 @@ namespace MonoDevelop.Ide.Gui
 				((SdiWorkspaceWindow)window).DetachFromPathedDocument ();
 			window.Closed -= OnClosed;
 			window.ActiveViewContentChanged -= OnActiveViewContentChanged;
-			IdeApp.Workspace.ItemRemovedFromSolution -= OnEntryRemoved;
+			if (IdeApp.Workspace != null)
+				IdeApp.Workspace.ItemRemovedFromSolution -= OnEntryRemoved;
 			OnClosed (a);
 			
 			while (editorExtension != null) {

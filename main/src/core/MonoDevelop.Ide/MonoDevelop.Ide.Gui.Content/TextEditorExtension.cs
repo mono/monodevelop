@@ -42,7 +42,7 @@ namespace MonoDevelop.Ide.Gui.Content
 		internal ITextEditorExtension Next;
 		internal Document document;
 		
-		internal void Initialize (Document document)
+		internal protected void Initialize (Document document)
 		{
 			this.document = document;
 			Initialize ();
