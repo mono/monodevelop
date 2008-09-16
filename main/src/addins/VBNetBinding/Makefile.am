@@ -45,6 +45,7 @@ RES =  \
 	gtk-gui/objects.xml \
 	icons/VB.FileIcon \
 	icons/vb-icon-32.png \
+	md1format.xml \
 	templates/AssemblyInfo.xft.xml \
 	templates/EmptyVBFile.xft.xml \
 	templates/EmptyVBProject.xpt.xml \

@@ -45,6 +45,7 @@
     <File name="Gui/CodeGenerationPanel.cs" subtype="Code" buildaction="Compile" />
     <File name="Project/VBNetResourceIdBuilder.cs" subtype="Code" buildaction="Compile" />
     <File name="Parser/DomParser.cs" subtype="Code" buildaction="Compile" />
+    <File name="md1format.xml" subtype="Code" buildaction="EmbedAsResource" />
   </Contents>
   <References>
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Core" />

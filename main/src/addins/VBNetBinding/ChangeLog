@@ -1,3 +1,7 @@
+2008-09-16  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* VBNetBinding.mdp, md1format.xml, Makefile.am: Add missing file.
+
 2008-09-12  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* VBNetBinding.mdp, gtk-gui/generated.cs,
