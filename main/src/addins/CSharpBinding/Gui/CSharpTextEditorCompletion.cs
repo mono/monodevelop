@@ -390,6 +390,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 				return null;
 			case "new":
 				ExpressionContext exactContext = new NewCSharpExpressionFinder (dom).FindExactContextForNewCompletion(Editor, Document.CompilationUnit, Document.FileName);
+				System.Console.WriteLine(exactContext);
 				if (exactContext is ExpressionContext.TypeExpressionContext)
 					return CreateTypeCompletionData (exactContext, ((ExpressionContext.TypeExpressionContext)exactContext).Type);
 				return CreateTypeCompletionData (exactContext, null);
@@ -581,11 +582,14 @@ namespace MonoDevelop.CSharpBinding.Gui
 				type = dom.SearchType (new SearchTypeRequest (Document.CompilationUnit, returnType));
 			ExpressionContext.TypeExpressionContext tce = context as ExpressionContext.TypeExpressionContext;
 			
-			
-			if (type == null)
-				return result;
-			
 			CompletionDataCollector col = new CompletionDataCollector (dom, Document.CompilationUnit);
+			if (type == null) {
+				if (returnType != null) {
+					col.AddCompletionData (result, returnType);
+				}
+				return result;
+			}
+			
 			if (tce != null && tce.Type != null) {
 				col.AddCompletionData (result, tce.Type);
 			} else {

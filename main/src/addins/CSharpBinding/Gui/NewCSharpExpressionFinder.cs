@@ -56,7 +56,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 			if (pos <= 0)
 				return null;
 			ExpressionResult lhsExpr = FindExpression (documentToCursor, pos);
-			System.Console.WriteLine(lhsExpr);
+			
 			if (lhsExpr.Expression != null) {
 				NRefactoryResolver resolver = new MonoDevelop.CSharpBinding.NRefactoryResolver (projectContent, unit,
 				                                                                                ICSharpCode.NRefactory.SupportedLanguage.CSharp,
@@ -64,6 +64,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 				                                                                                fileName);
 				
 				ResolveResult rr = resolver.Resolve (lhsExpr, new DomLocation (editor.CursorLine, editor.CursorColumn));
+				
 				//ResolveResult rr = ParserService.Resolve (lhsExpr, currentLine.LineNumber, pos, editor.FileName, editor.Text);
 				if (rr != null && rr.ResolvedType != null) {
 					ExpressionContext context;
@@ -77,7 +78,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 						// when creating a normal instance, all non-abstract classes deriving from the type
 						// are allowed
 						c = projectContent.GetType (rr.ResolvedType);
-						context = ExpressionContext.TypeDerivingFrom(rr.ResolvedType, true);
+						context = ExpressionContext.TypeDerivingFrom (rr.ResolvedType, true);
 					}
 					if (c != null && !context.FilterEntry (c)) {
 						// Try to suggest an entry (List<int> a = new => suggest List<int>).

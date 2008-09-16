@@ -118,12 +118,14 @@ namespace MonoDevelop.CSharpBinding
 			this.editor = editor;
 			this.fileName = fileName;
 		}
+		
 		ICSharpCode.NRefactory.Ast.CompilationUnit memberCompilationUnit;
 		public ICSharpCode.NRefactory.Ast.CompilationUnit MemberCompilationUnit {
 			get {
 				return this.memberCompilationUnit;
 			}
 		}
+		
 		internal void SetupResolver (DomLocation resolvePosition)
 		{
 			this.resolvePosition = resolvePosition;
@@ -138,7 +140,6 @@ namespace MonoDevelop.CSharpBinding
 					}
 				}
 			}
-			System.Console.WriteLine("calling member:" + callingMember );
 			
 			if (callingMember != null && editor != null) {
 				string wrapper = CreateWrapperClassForMember (callingMember);
@@ -347,10 +348,11 @@ namespace MonoDevelop.CSharpBinding
 							varType = ResolveLambda (visitor, var.ParentLambdaExpression).ResolvedType;
 						if (var.Initializer != null) 
 							varType = visitor.Resolve (var.Initializer).ResolvedType;
+						varType = ResolveType (varType);
 					} else { 
 						varType = ConvertTypeReference (var.TypeRef);
 					}
-					varType = ResolveType (varType);
+					
 					result = new LocalVariableResolveResult (new LocalVariable (this.CallingMember, identifier, varType, new DomRegion (var.StartPos.Line, var.StartPos.Column, var.EndPos.Line, var.EndPos.Column)), var.IsLoopVariable);
 					result.ResolvedType = varType;
 					goto end;
