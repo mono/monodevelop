@@ -532,8 +532,10 @@ namespace MonoDevelop.Projects.Dom
 		{
 			string name = GetInstantiatedTypeName (type.Name, genericArguments);
 			GenericTypeInstanceResolver resolver = new GenericTypeInstanceResolver ();
-			for (int i = 0; i < type.TypeParameters.Count; i++)
-				resolver.Add (type.TypeParameters[i].Name, genericArguments[i]);
+			if (genericArguments != null) {
+				for (int i = 0; i < type.TypeParameters.Count && i < genericArguments.Count; i++)
+					resolver.Add (type.TypeParameters[i].Name, genericArguments[i]);
+			}
 			
 			DomType result = (DomType)Resolve (type, resolver);
 			result.Name = name;

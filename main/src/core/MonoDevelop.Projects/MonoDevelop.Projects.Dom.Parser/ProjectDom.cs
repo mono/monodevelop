@@ -388,8 +388,8 @@ namespace MonoDevelop.Projects.Dom.Parser
 		public override IType GetType (string typeName, IList<IReturnType> genericArguments, bool deepSearchReferences, bool caseSensitive)
 		{
 			foreach (IType type in Types) {
-				if (type.FullName == typeName)
-					return type;
+				if (type.FullName == typeName) 
+					return DomType.CreateInstantiatedGenericType (type, genericArguments);
 			}
 			return null;
 		}
@@ -406,7 +406,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 
 		public override IEnumerable<IType> GetSubclasses (IType type)
 		{
-			yield break;
+			yield return type;
 		}
 
 		internal override IEnumerable<string> OnGetReferences ()
