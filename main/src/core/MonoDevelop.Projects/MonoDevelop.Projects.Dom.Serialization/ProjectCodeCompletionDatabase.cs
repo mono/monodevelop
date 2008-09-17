@@ -47,7 +47,6 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		
 		public ProjectCodeCompletionDatabase (Project project, ParserDatabase pdb): base (pdb)
 		{
-			Console.WriteLine ("pp opening: " + project.FileName);
 			SetLocation (project.BaseDirectory, project.Name);
 			
 			this.project = project;
