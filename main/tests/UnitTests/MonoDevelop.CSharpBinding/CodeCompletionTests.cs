@@ -116,12 +116,197 @@ namespace ThisOne {
 			Assert.IsNotNull (provider.SearchData ("Other.TheEnum"));
 		}
 
+		/// <summary>
+		/// Bug 318834 - autocompletion kicks in when inputting decimals
+		/// </summary>
+		[Test()]
+		public void TestBug318834 ()
+		{
+			CodeCompletionDataProvider provider = CreateProvider (
+@"class T
+{
+        static void Main ()
+        {
+                decimal foo = 0.$
+        }
+}
 
+");
+			Assert.IsNull (provider);
+		}
+
+		/// <summary>
+		/// Bug 321306 - Code completion doesn't recognize child namespaces
+		/// </summary>
+		[Test()]
+		public void TestBug321306 ()
+		{
+			CodeCompletionDataProvider provider = CreateProvider (
+@"namespace a
+{
+	namespace b
+	{
+		public class c
+		{
+			public static int hi;
+		}
+	}
+	
+	public class d
+	{
+		public d ()
+		{
+			b.$
+		}
+	}
+}");
+			Assert.IsNotNull (provider, "provider not found.");
+			Assert.AreEqual (1, provider.CompletionDataCount);
+			Assert.IsNotNull (provider.SearchData ("c"), "class 'c' not found.");
+		}
+
+		/// <summary>
+		/// Bug 322089 - Code completion for indexer
+		/// </summary>
+		[Test()]
+		public void TestBug322089 ()
+		{
+			CodeCompletionDataProvider provider = CreateProvider (
+@"class AClass
+{
+	public int AField;
+	public int BField;
+}
+
+class Test
+{
+	public void TestMethod ()
+	{
+		AClass[] list = new AClass[0];
+		list[0].$
+	}
+}");
+			Assert.IsNotNull (provider, "provider not found.");
+			Assert.AreEqual (2, provider.CompletionDataCount);
+			Assert.IsNotNull (provider.SearchData ("AField"), "field 'AField' not found.");
+			Assert.IsNotNull (provider.SearchData ("BField"), "field 'BField' not found.");
+		}
+		
+		/// <summary>
+		/// Bug 323283 - Code completion for indexers offered by generic types (generics)
+		/// </summary>
+		[Test()]
+		public void TestBug323283 ()
+		{
+			CodeCompletionDataProvider provider = CreateProvider (
+@"class AClass
+{
+	public int AField;
+	public int BField;
+}
+
+class MyClass<T>
+{
+	public T this[int i] {
+		get {
+			return default (T);
+		}
+	}
+}
+
+class Test
+{
+	public void TestMethod ()
+	{
+		MyClass<AClass> list = new MyClass<AClass> ();
+		list[0].$
+	}
+}");
+			Assert.IsNotNull (provider, "provider not found.");
+			Assert.AreEqual (2, provider.CompletionDataCount);
+			Assert.IsNotNull (provider.SearchData ("AField"), "field 'AField' not found.");
+			Assert.IsNotNull (provider.SearchData ("BField"), "field 'BField' not found.");
+		}
+
+		/// <summary>
+		/// Bug 323317 - Code completion not working just after a constructor
+		/// </summary>
+		[Test()]
+		public void TestBug323317 ()
+		{
+			CodeCompletionDataProvider provider = CreateProvider (
+@"class AClass
+{
+	public int AField;
+	public int BField;
+}
+
+class Test
+{
+	public void TestMethod ()
+	{
+		new AClass().$
+	}
+}");
+			Assert.IsNotNull (provider, "provider not found.");
+			Assert.AreEqual (2, provider.CompletionDataCount);
+			Assert.IsNotNull (provider.SearchData ("AField"), "field 'AField' not found.");
+			Assert.IsNotNull (provider.SearchData ("BField"), "field 'BField' not found.");
+		}
+		
+		/// <summary>
+		/// Bug 325509 - Inaccessible methods displayed in autocomplete
+		/// </summary>
+		[Test()]
+		public void TestBug325509 ()
+		{
+			CodeCompletionDataProvider provider = CreateProvider (
+@"class AClass
+{
+	public int A;
+	public int B;
+	
+	protected int C;
+	int D;
+}
+
+class Test
+{
+	public void TestMethod ()
+	{
+		AClass a;
+		a.$
+	}
+}");
+			Assert.IsNotNull (provider, "provider not found.");
+			Assert.AreEqual (2, provider.CompletionDataCount);
+			Assert.IsNotNull (provider.SearchData ("A"), "field 'A' not found.");
+			Assert.IsNotNull (provider.SearchData ("B"), "field 'B' not found.");
+		}
+
+		/// <summary>
+		/// Bug 338392 - MD tries to use types when declaring namespace
+		/// </summary>
+		[Test()]
+		public void TestBug338392 ()
+		{
+			CodeCompletionDataProvider provider = CreateProvider (
+@"namespace A
+{
+        class C
+        {
+        }
+}
+
+namespace A.$
+");
+			Assert.IsNotNull (provider, "provider not found.");
+			Assert.AreEqual (0, provider.CompletionDataCount);
+		}
 
 		[TestFixtureSetUp] 
 		public void SetUp()
 		{
-			System.Console.WriteLine("set up");
 			Gtk.Application.Init ();
 		}
 		

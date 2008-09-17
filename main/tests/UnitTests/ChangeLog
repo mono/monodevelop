@@ -1,5 +1,10 @@
 2008-09-17  Mike Krüger <mkrueger@novell.com> 
 
+	* MonoDevelop.CSharpBinding/CodeCompletionTests.cs: Added some unit
+	  tests.
+
+2008-09-17  Mike Krüger <mkrueger@novell.com> 
+
 	* UnitTests.mdp, MonoDevelop.CSharpBinding/TestViewContent.cs,
 	  MonoDevelop.CSharpBinding/CodeCompletionTests.cs,
 	  MonoDevelop.CSharpBinding/TestWorkbenchWindow.cs, Makefile.am:
