@@ -1,3 +1,10 @@
+2008-09-17  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Deployment.addin.xml: Add icon for Create Package
+	  command.
+	* MonoDevelop.Deployment/DefaultDeployServiceExtension.cs: Fix bug
+	  #422764 - Support "App.config" as well as "app.config" (lowercase)
+
 2008-09-12  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* gtk-gui/MonoDevelop.Deployment.Gui.InstallDialog.cs,

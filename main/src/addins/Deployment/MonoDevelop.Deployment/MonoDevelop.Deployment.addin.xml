@@ -22,6 +22,7 @@
 		<Category _name = "Deployment" id = "Deployment">
 		<Command id = "MonoDevelop.Deployment.Commands.CreatePackage"
 				defaultHandler = "MonoDevelop.Deployment.CreatePackageHandler"
+				icon = "md-package"	
 				_label = "Create Package..." />
 		<Command id = "MonoDevelop.Deployment.Commands.AddPackage"
 				defaultHandler = "MonoDevelop.Deployment.AddPackageHandler"
