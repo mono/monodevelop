@@ -28,7 +28,6 @@
     <Execute type="None" entry="Tools" />
     <Execute type="None" entry="tests" />
   </StartMode>
-  <DeployTargets />
   <Entries>
     <Entry filename="src/core/Core.mds" />
     <Entry filename="src/addins/Addins.mds" />

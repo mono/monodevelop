@@ -26,7 +26,6 @@
     <ProjectReference type="Gac" localcopy="True" refto="MonoDevelop.Core.Gui, Version=0.18.0.0, Culture=neutral" />
     <ProjectReference type="Gac" localcopy="True" refto="MonoDevelop.Core, Version=0.18.0.0, Culture=neutral" />
     <ProjectReference type="Gac" localcopy="True" refto="MonoDevelop.Projects, Version=0.19.0.0, Culture=neutral, PublicKeyToken=null" />
-    <ProjectReference type="Gac" localcopy="True" refto="MonoDevelop.Projects.Gui, Version=0.19.0.0, Culture=neutral, PublicKeyToken=null" />
     <ProjectReference type="Gac" localcopy="True" refto="MonoDevelop.Ide, Version=0.19.0.0, Culture=neutral, PublicKeyToken=null" />
     <ProjectReference type="Gac" localcopy="True" refto="MonoDevelop.Components, Version=0.19.0.0, Culture=neutral, PublicKeyToken=null" />
     <ProjectReference type="Gac" localcopy="True" refto="NRefactory, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null" />
@@ -38,6 +37,7 @@
     <ProjectReference type="Gac" localcopy="True" refto="gtk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="Mono.TextEditor, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
     <ProjectReference type="Gac" localcopy="True" refto="Mono.Debugging, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null" />
+    <ProjectReference type="Gac" localcopy="True" refto="MonoDevelop.Projects.Gui, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null" />
   </References>
   <GtkDesignInfo />
   <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="GeckoWebBrowser.make" SyncReferences="True" RelativeConfigureInPath="../../..">

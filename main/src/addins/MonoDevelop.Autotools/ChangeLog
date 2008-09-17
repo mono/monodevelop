@@ -1,3 +1,7 @@
+2008-09-17  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Autotools.mdp: Updated projects.
+
 2008-09-12  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MakefileIntegrationFeatureWidget.cs, gtk-gui/generated.cs,

@@ -72,7 +72,7 @@
     <ProjectReference type="Gac" localcopy="True" refto="Mono.TextEditor, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
     <ProjectReference type="Gac" localcopy="True" refto="Mono.Debugging, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null" />
   </References>
-  <GtkDesignInfo gettextClass="AddinCatalog" gtkVersion="2.8.3" />
+  <GtkDesignInfo gettextClass="AddinCatalog" />
   <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="Makefile.am" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="..">
     <BuildFilesVar Sync="True" Name="FILES" />
     <DeployFilesVar />

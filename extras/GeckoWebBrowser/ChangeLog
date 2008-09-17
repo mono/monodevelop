@@ -1,3 +1,7 @@
+2008-09-17  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* GeckoWebBrowser.mdp: Updated projects.
+
 2008-08-18  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* GeckoWebBrowser.mdp: Fix reference to Mono.TextEditor. The incorrect

@@ -49,7 +49,6 @@
     <ProjectReference type="Gac" localcopy="True" refto="Mono.Debugger, Version=1.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
     <ProjectReference type="Gac" localcopy="True" refto="MonoDevelop.Core, Version=0.19.0.0, Culture=neutral" />
     <ProjectReference type="Gac" localcopy="True" refto="MonoDevelop.Core.Gui, Version=0.19.0.0, Culture=neutral" />
-    <ProjectReference type="Gac" localcopy="True" refto="MonoDevelop.Projects.Gui, Version=0.19.0.0, Culture=neutral" />
     <ProjectReference type="Gac" localcopy="True" refto="MonoDevelop.Ide, Version=0.19.0.0, Culture=neutral" />
     <ProjectReference type="Gac" localcopy="True" refto="MonoDevelop.Components, Version=0.19.0.0, Culture=neutral" />
     <ProjectReference type="Gac" localcopy="True" refto="NRefactory, Version=0.0.0.0, Culture=neutral" />
@@ -73,9 +72,10 @@
     <ProjectReference type="Gac" localcopy="True" refto="Mono.Debugging, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null" />
     <ProjectReference type="Gac" localcopy="True" refto="Mono.Addins, Version=0.3.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
     <ProjectReference type="Gac" localcopy="True" refto="Mono.Posix, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
+    <ProjectReference type="Gac" localcopy="True" refto="MonoDevelop.Projects.Gui, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null" />
   </References>
   <Deployment.LinuxDeployData generateScript="False" />
-  <GtkDesignInfo gtkVersion="2.8.3" />
+  <GtkDesignInfo />
   <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="Makefile" SyncReferences="True">
     <BuildFilesVar Sync="True" Name="FILES" />
     <DeployFilesVar />

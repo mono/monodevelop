@@ -43,7 +43,6 @@
     <ProjectReference type="Gac" localcopy="True" refto="MonoDevelop.Core.Gui, Version=0.17.0.0, Culture=neutral" />
     <ProjectReference type="Gac" localcopy="True" refto="MonoDevelop.Ide, Version=0.17.0.0, Culture=neutral" />
     <ProjectReference type="Gac" localcopy="True" refto="MonoDevelop.Projects, Version=0.0.0.0, Culture=neutral" />
-    <ProjectReference type="Gac" localcopy="True" refto="MonoDevelop.Projects.Gui, Version=0.17.0.0, Culture=neutral" />
     <ProjectReference type="Gac" localcopy="True" refto="NRefactory, Version=0.0.0.0, Culture=neutral" />
     <ProjectReference type="Gac" localcopy="True" refto="Mono.Cecil, Version=0.6.8.8607, Culture=neutral" />
     <ProjectReference type="Gac" localcopy="True" refto="Mono.Posix, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
@@ -53,14 +52,10 @@
     <ProjectReference type="Gac" localcopy="True" refto="gdk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="Mono.TextEditor, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
     <ProjectReference type="Gac" localcopy="True" refto="Mono.Debugging, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null" />
+    <ProjectReference type="Gac" localcopy="True" refto="MonoDevelop.Projects.Gui, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null" />
   </References>
   <Deployment.LinuxDeployData generatePcFile="False" />
-  <GtkDesignInfo isWidgetLibrary="True" gettextClass="AddinCatalog" gtkVersion="2.8.3">
-    <ExportedWidgets>
-      <Widget>MonoDevelop.Database.Sql.SqlServer.SqlServerCreateDatabaseWidget</Widget>
-      <Widget>MonoDevelop.Database.Sql.SqlServer.SqlServerColumnEditorWidget</Widget>
-    </ExportedWidgets>
-  </GtkDesignInfo>
+  <GtkDesignInfo gettextClass="AddinCatalog" />
   <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="Makefile.am" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="..">
     <BuildFilesVar Sync="True" Name="FILES" />
     <DeployFilesVar />

@@ -72,7 +72,6 @@
     <ProjectReference type="Gac" localcopy="True" refto="MonoDevelop.CBinding, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null" />
     <ProjectReference type="Gac" localcopy="True" refto="MonoDevelop.CSharpBinding, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null" />
     <ProjectReference type="Gac" localcopy="True" refto="MonoDevelop.Autotools, Version=0.1.0.0, Culture=neutral, PublicKeyToken=null" />
-    <ProjectReference type="Gac" localcopy="True" refto="MonoDevelop.Projects.Gui, Version=0.19.0.0, Culture=neutral, PublicKeyToken=null" />
     <ProjectReference type="Gac" localcopy="True" refto="NRefactory, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null" />
     <ProjectReference type="Gac" localcopy="True" refto="Mono.Cecil, Version=0.6.8.8607, Culture=neutral, PublicKeyToken=null" />
     <ProjectReference type="Gac" localcopy="True" refto="glib-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
@@ -83,8 +82,9 @@
     <ProjectReference type="Gac" localcopy="True" refto="MonoDevelop.XmlEditor, Version=0.6.0.0, Culture=neutral, PublicKeyToken=null" />
     <ProjectReference type="Gac" localcopy="True" refto="Mono.TextEditor, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
     <ProjectReference type="Gac" localcopy="True" refto="Mono.Debugging, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null" />
+    <ProjectReference type="Gac" localcopy="True" refto="MonoDevelop.Projects.Gui, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null" />
   </References>
-  <GtkDesignInfo isWidgetLibrary="True" gtkVersion="2.10.2" />
+  <GtkDesignInfo />
   <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="Makefile.am" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="..">
     <BuildFilesVar Sync="True" Name="FILES" />
     <DeployFilesVar />

@@ -85,7 +85,6 @@
     <ProjectReference type="Gac" localcopy="True" refto="MonoDevelop.Core.Gui, Version=0.17.0.0, Culture=neutral" />
     <ProjectReference type="Gac" localcopy="True" refto="MonoDevelop.Ide, Version=0.17.0.0, Culture=neutral" />
     <ProjectReference type="Gac" localcopy="True" refto="MonoDevelop.Projects, Version=0.17.0.0, Culture=neutral" />
-    <ProjectReference type="Gac" localcopy="True" refto="MonoDevelop.Projects.Gui, Version=0.17.0.0, Culture=neutral" />
     <ProjectReference type="Gac" localcopy="True" refto="MonoDevelop.Components, Version=0.17.0.0, Culture=neutral" />
     <ProjectReference type="Gac" localcopy="True" refto="NRefactory, Version=0.0.0.0, Culture=neutral" />
     <ProjectReference type="Gac" localcopy="True" refto="Mono.Addins, Version=0.3.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
@@ -97,22 +96,10 @@
     <ProjectReference type="Gac" localcopy="True" refto="gtk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="Mono.TextEditor, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
     <ProjectReference type="Gac" localcopy="True" refto="Mono.Debugging, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null" />
+    <ProjectReference type="Gac" localcopy="True" refto="MonoDevelop.Projects.Gui, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null" />
   </References>
   <Deployment.LinuxDeployData generatePcFile="False" />
-  <GtkDesignInfo isWidgetLibrary="True" gettextClass="AddinCatalog" gtkVersion="2.8.3">
-    <ExportedWidgets>
-      <Widget>MonoDevelop.Database.Components.SelectColumnWidget</Widget>
-      <Widget>MonoDevelop.Database.Components.ColumnMappingWidget</Widget>
-      <Widget>MonoDevelop.Database.Components.ProjectDirectoryComboBox</Widget>
-      <Widget>MonoDevelop.Database.Components.TableMappingWidget</Widget>
-      <Widget>MonoDevelop.Database.Components.DatabaseConnectionContextComboBox</Widget>
-      <Widget>MonoDevelop.Database.Components.SqlEditorWidget</Widget>
-      <Widget>MonoDevelop.Database.Components.DataGrid</Widget>
-      <Widget>MonoDevelop.Database.Components.SelectTableWidget</Widget>
-      <Widget>MonoDevelop.Database.Components.SelectSchemaWidget</Widget>
-      <Widget>MonoDevelop.Database.Components.ConnectionSettingsWidget</Widget>
-    </ExportedWidgets>
-  </GtkDesignInfo>
+  <GtkDesignInfo gettextClass="AddinCatalog" />
   <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="Makefile.am" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="..">
     <BuildFilesVar Sync="True" Name="FILES" />
     <DeployFilesVar />

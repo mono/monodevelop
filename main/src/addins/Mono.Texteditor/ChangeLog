@@ -1,5 +1,9 @@
 2008-09-17  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* Mono.TextEditor.mdp: Updated projects.
+
+2008-09-17  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* Mono.TextEditor/CodeSegmentPreviewWindow.cs: Fix crash caused by the
 	  double buffer flag. Dispose resources on destroy.
 

@@ -1,3 +1,7 @@
+2008-09-17  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Database.Sql.Sqlite.mdp: Updated projects.
+
 2008-08-18  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Database.Sql.Sqlite.mdp: Fix reference to

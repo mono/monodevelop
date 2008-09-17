@@ -1,5 +1,9 @@
 2008-09-17  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Database.Designer.mdp: Updated projects.
+
+2008-09-17  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* gtk-gui/objects.xml: Update.
 
 2008-08-18  Lluis Sanchez Gual <lluis@novell.com> 

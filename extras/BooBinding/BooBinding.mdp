@@ -82,7 +82,5 @@
     <ProjectRefVar Name="REFERENCES" />
     <MessageRegex Error="(^\s*(?&lt;file&gt;.*)\((?&lt;line&gt;\d*){1}(,(?&lt;column&gt;\d*[\+]*))?\)(:|)\s+)*(?=BCE)(?&lt;number&gt;.*?):\s(?&lt;message&gt;.*)" Warning="(^\s*(?&lt;file&gt;.*)\((?&lt;line&gt;\d*){1}(,(?&lt;column&gt;\d*[\+]*))?\)(:|)\s+)*(?=BCW)(?&lt;number&gt;.*?):\sWARNING:\s(?&lt;message&gt;.*)" Name="Custom" />
   </MonoDevelop.Autotools.MakefileInfo>
-  <DeploymentInformation strategy="File">
-    <excludeFiles />
-  </DeploymentInformation>
+  <DeploymentInformation strategy="File" />
 </Project>

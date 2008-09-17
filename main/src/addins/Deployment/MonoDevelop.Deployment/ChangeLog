@@ -1,5 +1,9 @@
 2008-09-17  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Deployment.mdp: Updated projects.
+
+2008-09-17  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Deployment.addin.xml: Add icon for Create Package
 	  command.
 	* MonoDevelop.Deployment/DefaultDeployServiceExtension.cs: Fix bug

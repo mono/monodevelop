@@ -122,7 +122,7 @@
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Projects" />
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Ide" />
   </References>
-  <GtkDesignInfo gtkVersion="2.8.3" />
+  <GtkDesignInfo />
   <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="./Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="../../../">
     <BuildFilesVar Sync="True" Name="FILES" />
     <DeployFilesVar />

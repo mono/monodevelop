@@ -1,3 +1,7 @@
+2008-09-17  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* CBinding.mdp: Updated projects.
+
 2008-09-12  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* gtk-gui/CBinding.PackageDetails.cs, gtk-gui/generated.cs,

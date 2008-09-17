@@ -1,3 +1,7 @@
+2008-09-17  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Gettext.mdp: Updated projects.
+
 2008-09-12  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* gtk-gui/MonoDevelop.Gettext.GettextFeatureWidget.cs,

@@ -1,5 +1,9 @@
 2008-09-17  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* ValaBinding.mdp: Updated projects.
+
+2008-09-17  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* ValaLanguageBinding.cs: Fix build.
 
 2008-09-11  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com>

@@ -1,3 +1,7 @@
+2008-09-17  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Debugger.mdp: Updated projects.
+
 2008-09-12  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* gtk-gui/generated.cs: Updated generated code.

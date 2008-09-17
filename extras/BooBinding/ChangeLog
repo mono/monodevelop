@@ -1,3 +1,7 @@
+2008-09-17  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* BooBinding.mdp: Updated projects.
+
 2008-09-12  Mike Krüger <mkrueger@novell.com> 
 
 	* BooAmbience.boo, Gui/ShellTextView.boo,

@@ -1,3 +1,7 @@
+2008-09-17  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Profiling.HeapShot.mdp: Updated projects.
+
 2008-09-04  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Gui/HeapShotProfilingSnapshotNodeBuilder.cs: Moved the extensible

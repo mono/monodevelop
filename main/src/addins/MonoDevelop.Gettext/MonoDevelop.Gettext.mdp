@@ -101,5 +101,4 @@
     <AsmRefVar Sync="True" Name="REFS" Prefix="-r:" />
     <ProjectRefVar Sync="True" Name="REFS" Prefix="-r:" />
   </MonoDevelop.Autotools.MakefileInfo>
-  <MonoDevelop.Gettext.TranslationInfo />
 </Project>

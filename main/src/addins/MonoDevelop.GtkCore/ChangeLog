@@ -1,3 +1,7 @@
+2008-09-17  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.GtkCore.mdp: Updated projects.
+
 2008-09-15  Mike Kestner <mkestner@novell.com> 
 
 	* MonoDevelop.GtkCode.GuiBuilder/GtkProjectServiceExtension.cs:

@@ -1,3 +1,7 @@
+2008-09-17  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* JavaBinding.mdp: Updated projects.
+
 2008-09-12  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* JavaLanguageBinding.cs: Track api changes.

@@ -61,7 +61,6 @@
     <ProjectReference type="Gac" localcopy="True" refto="MonoDevelop.Ide, Version=0.17.0.0, Culture=neutral" />
     <ProjectReference type="Gac" localcopy="True" refto="MonoDevelop.Projects, Version=0.0.0.0, Culture=neutral" />
     <ProjectReference type="Gac" localcopy="True" refto="gtksourceview-sharp, Version=1.0.0.2, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <ProjectReference type="Gac" localcopy="True" refto="MonoDevelop.Projects.Gui, Version=0.17.0.0, Culture=neutral" />
     <ProjectReference type="Gac" localcopy="True" refto="NRefactory, Version=0.0.0.0, Culture=neutral" />
     <ProjectReference type="Gac" localcopy="True" refto="Mono.Cecil, Version=0.6.8.8607, Culture=neutral" />
     <ProjectReference type="Gac" localcopy="True" refto="pango-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
@@ -70,24 +69,10 @@
     <ProjectReference type="Gac" localcopy="True" refto="gtk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="Mono.TextEditor, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
     <ProjectReference type="Gac" localcopy="True" refto="Mono.Debugging, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null" />
+    <ProjectReference type="Gac" localcopy="True" refto="MonoDevelop.Projects.Gui, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null" />
   </References>
   <Deployment.LinuxDeployData generatePcFile="False" />
-  <GtkDesignInfo isWidgetLibrary="True" gettextClass="AddinCatalog" gtkVersion="2.8.3">
-    <ExportedWidgets>
-      <Widget>MonoDevelop.Database.Designer.ColumnEditorWidget</Widget>
-      <Widget>MonoDevelop.Database.Designer.TriggersEditorWidget</Widget>
-      <Widget>MonoDevelop.Database.Designer.ColumnsEditorWidget</Widget>
-      <Widget>MonoDevelop.Database.Designer.ConstraintsEditorWidget</Widget>
-      <Widget>MonoDevelop.Database.Designer.IndicesEditorWidget</Widget>
-      <Widget>MonoDevelop.Database.Designer.CommentEditorWidget</Widget>
-      <Widget>MonoDevelop.Database.Designer.SelectColumnConstraintWidget</Widget>
-      <Widget>MonoDevelop.Database.Designer.ForeignKeyConstraintEditorWidget</Widget>
-      <Widget>MonoDevelop.Database.Designer.CheckConstraintEditorWidget</Widget>
-      <Widget>MonoDevelop.Database.Designer.PrimaryKeyConstraintEditorWidget</Widget>
-      <Widget>MonoDevelop.Database.Designer.UniqueConstraintEditorWidget</Widget>
-      <Widget>MonoDevelop.Database.Designer.CreateDatabaseWidget</Widget>
-    </ExportedWidgets>
-  </GtkDesignInfo>
+  <GtkDesignInfo gettextClass="AddinCatalog" />
   <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="Makefile.am" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="..">
     <BuildFilesVar Sync="True" Name="FILES" />
     <DeployFilesVar />
