@@ -387,9 +387,8 @@ namespace MonoDevelop.Projects.Dom.Parser
 		
 		public override IType GetType (string typeName, IList<IReturnType> genericArguments, bool deepSearchReferences, bool caseSensitive)
 		{
-			System.Console.WriteLine("GetType:" + typeName);
 			foreach (IType type in Types) {
-				if (type.Name == typeName)
+				if (type.FullName == typeName)
 					return type;
 			}
 			return null;
